@@ -10,6 +10,7 @@ orderlogs/
 *.bz2
 /cache/*
 /mapstore/*
+*cache/*
 /doc/phpDoc/*
 pointslog.txt
 pointlog.txt
