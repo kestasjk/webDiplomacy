@@ -9,7 +9,14 @@ orderlogs/
 *.tgz
 *.tbz
 *.bz2
-mapstore/
-phpDoc/
+/mapstore/
+/doc/phpDoc/
 pointslog.txt
 pointlog.txt
+/.settings/
+/.buildpath
+/.project
+/datc/maps/
+!/datc/maps/.htaccess
+!/mapstore/.htaccess
+!/cache/.htaccess
