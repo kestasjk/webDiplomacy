@@ -9,7 +9,6 @@ orderlogs/
 *.tbz
 *.bz2
 /cache/
-/variants/*/cache/*
 /mapstore/
 /doc/phpDoc/
 pointslog.txt
