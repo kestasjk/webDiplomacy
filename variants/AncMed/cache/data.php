@@ -1,1 +1,0 @@
-O:13:"AncMedVariant":6:{s:14:"variantClasses";a:2:{s:7:"drawMap";s:6:"AncMed";s:18:"adjudicatorPreGame";s:6:"AncMed";}s:22:"coastParentIDByChildID";N;s:23:"coastChildIDsByParentID";N;s:12:"terrIDByName";N;s:17:"supplyCenterCount";s:2:"34";s:18:"supplyCenterTarget";d:18;}
