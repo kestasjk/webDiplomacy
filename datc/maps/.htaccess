@@ -1,0 +1,14 @@
+
+	# Prevent people from viewing protected files by hiding directory indexes
+	Options All -Indexes
+	
+	# Enable mod_rewrite
+	RewriteEngine On
+	RewriteBase /webdiplomacy/cache
+	
+	# If a file isn't available in the cache redirect to cache.php with 
+	# the missing URL, so that it can generate it.
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^(.*)$ /webdiplomacy/cache.php?URI=$1 [L]
+	
+	

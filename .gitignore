@@ -1,4 +1,3 @@
-cache/
 config.php
 errorlog/
 errorlogs/
@@ -9,14 +8,13 @@ orderlogs/
 *.tgz
 *.tbz
 *.bz2
-/mapstore/
-/doc/phpDoc/
+/cache/*
+/mapstore/*
+/doc/phpDoc/*
 pointslog.txt
 pointlog.txt
 /.settings/
 /.buildpath
 /.project
-/datc/maps/
-!/datc/maps/.htaccess
-!/mapstore/.htaccess
-!/cache/.htaccess
+/datc/maps/*
+!.htaccess
