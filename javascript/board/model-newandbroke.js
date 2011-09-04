@@ -368,7 +368,134 @@ function loadModel() {
 				ns.routeSetLoad(this);
 				return ns;
 			},
+			/*
 			pathArmyToCoast: function(StartTerr, EndTerr) {
+				var ns=this.nodeSetClass();
+				ns.routeSetStart(
+					StartTerr, 
+					function(EndNode) { return ( EndNode.id == EndTerr.id ); },
+					function(AllNode) { return ( AllNode.type=='Sea' ); },
+					function(AnyNode) { return true; }
+				);
+				return ns.Path;
+			},
+			pathArmyToCoastWithoutFleet: function(StartTerr, EndTerr, WithoutFleetTerr) {
+				var ns=this.nodeSetClass();
+				ns.routeSetStart(
+					StartTerr, 
+					function(EndNode) { return ( EndNode.id == EndTerr.id ); },
+					function(AllNode) { return ( AllNode.type == 'Sea' && AllNode.id != WithoutFleetTerr.id ); },
+					function(AnyNode) { return true; }
+				);
+				return ns.Path;
+			},
+			pathArmyToCoastWithFleet: function(StartTerr, EndTerr, WithFleetTerr) {
+				var ns=this.nodeSetClass();
+				ns.routeSetStart(
+					StartTerr, 
+					function(EndNode) { return ( EndNode.id == EndTerr.id ); },
+					function(AllNode) { return ( AllNode.type == 'Sea' ); },
+					function(AnyNode) { return ( AnyNode.id == WithFleetTerr.id ); }
+				);
+				return ns.Path;
+			},
+			*/
+			/* 
+				Improved efficiency path finding, for larger variants. The functions above are simple and flexible,
+				but highly inefficient if there are large pemutations of possible routes to try, since it effectively 
+				generates all possible routes until the given functions match it. i.e. there is no intelligence in it 
+				to restrict what sort of route to look for.
+			*/
+			generateDepths: function() {
+				
+				// Generate initial row of all potential links, with a starting depth of 0 to indicate not found
+				var PotentialLinks = $H({});
+				var PotentialTerritories = snapTogether(this.Fleets.pluck('Territory'),this.Coasts);
+				this.PotentialTerritories.pluck('id').map(function(subNodeID) {
+					PotentialLinks.set(subNodeID,0);
+				},this);
+				
+				// Clone initial row of potential links into a 2D table, mapping all potential links for each node
+				var Nodes = $H({});
+				this.Fleets.keys().map(function(nodeID) {
+					Nodes.set(nodeID, PotentialLinks.clone());
+				},this);
+				
+				// Load initial set of directly bordering link values into table, setting depth=1 for direct borders
+				PotentialTerritories.map(function(t) {
+					t.getBorderingTerritories.pluck('id').intersect(Nodes.keys()).map(function(borderingNodeID) {
+						if( t.id < borderingNodeID ) {
+							Nodes.get(t.id).set(borderingNodeID,1);
+							Nodes.get(borderingNodeID).set(t.id,1);
+						}
+					},this);
+				},this);
+				// The table is now initialized, no more border lookups will be needed to find the lowest depths for all links
+				
+				
+				// For each node which has a linked node at depth D go to the linked node. 
+					// For each of the linked node's links, where the depth is 0 or greater than D+1, set the depth to D+1 (because a better route has been found)
+				// The cycle is complete when all depths have been set.
+				
+				// Begin increasing the depths to be updated, starting at 1. 
+				var currentDepth = 0;
+				var finished = false;
+				while( !finished ) {
+					finished = true;
+					currentDepth++;
+					
+					Nodes.each(function(node) {
+						// Choose the node which is being updated from. (This node will not be updated itself, but the nodes which it links to may be updated)
+						node.value.each(function(link) {
+							if( node.key < link.key && link.value == currentDepth ) {
+								Nodes.get(link).each(function(linkLink) {
+									if( linkLink.value == 0 || linkLink.value > currentDepth+1 ) {
+										// We have found a path, or a better path
+										
+										linkLink.value = currentDepth+1;
+										Nodes.get(linkLink.key).set(link.key,currentDepth+1);
+										
+										finished = false; // We need to iterate at least once more
+									}
+								},this);
+							}
+						},this)
+					},this);
+				}
+				
+				// All done; Nodes now contains all possible links to/from all territories, along with the depths the links can be found at.
+			},
+			lookupPath(Nodes, StartID, EndID) {
+				var Path = $A([]);
+				
+				var currentDepth = Nodes.get(StartID).get(EndID);
+				if( currentDepth == 0 ) return false; // No path
+				
+				var currentID = StartID;
+				// Once currentDepth==1 the path is complete
+				
+				// To get the shortest paths
+				
+				// Looking up the path is easy, since 
+				while( currentDepth > 1 ) {
+					Nodes.get(currentID).each(function(link) {
+						
+					});
+				}
+				
+			},
+			pathArmyToCoast: function(StartTerr, EndTerr) {
+				var FleetPaths = $H({});
+				
+				var fromID = StartTerr.id;
+				StartTerr.getBorderTerritories().pluck('id').intersect(this.Fleets.pluck('Territory').pluck('id')).map(
+					function(fleetID) {
+						if( !FleetPaths.keys().any(function(id) { return ( id == fleetID ); }) ) {
+							FleetPaths.
+						}
+					}
+				);
+				
 				var ns=this.nodeSetClass();
 				ns.routeSetStart(
 					StartTerr, 

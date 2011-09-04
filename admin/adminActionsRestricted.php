@@ -229,7 +229,7 @@ class adminActionsRestricted extends adminActions
 			$DB->sql_put('UPDATE wD_Games SET processTime = processTime+'.round($timeHours*60*60).'
 				WHERE processStatus="Not-processing" AND NOT phase="Finished" AND
 					(
-					( phase="Pre-game" AND processTime-'.time().'<=phaseMinutes*60 )
+					( phase="Pre-game" AND processTime<=phaseMinutes*60+'.time().' )
 					OR (NOT phase="Pre-game" AND '.round($timeHours*60*60).'<=phaseMinutes*60 )
 					)');
 

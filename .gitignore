@@ -8,7 +8,8 @@ orderlogs/
 *.tgz
 *.tbz
 *.bz2
-cache/
+/cache/
+/variants/*/cache/*
 /mapstore/
 /doc/phpDoc/
 pointslog.txt
@@ -18,3 +19,4 @@ pointlog.txt
 /.project
 /datc/maps/
 !.htaccess
+
