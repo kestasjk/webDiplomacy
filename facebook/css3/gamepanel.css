@@ -1,0 +1,386 @@
+
+.gamesList {
+	margin-top:10px;	
+}
+
+
+.gamePanel {
+	width:95%;
+	color: #333;
+	margin:0 auto;
+}
+.memberVotes {
+	font-weight:bold;
+	}
+.gamePanelHome {
+	width:100%;
+	border-top: 1px solid #cecece;
+}
+.boardHeader {
+	color: #000;
+	}
+
+.bar {
+	padding:5px 2%;
+	background-color:#f5f5f5;
+}
+.gamePanel .bar {
+	margin-left:2%;
+	margin-right:2%;
+	border:0;
+}
+.barAlt1, .barAltLight1 {
+	background-color:#f5f5f5 !important;
+	}
+.barAlt2, .barAltLight2 {
+	background-color:#f0f0f0 !important;
+	}
+.homeMembersTable .barAlt1 {
+	background-color:#eaeaea !important;
+	}
+.homeMembersTable .barAlt2 {
+	background-color:#e5e5e5 !important;
+	}
+	
+	
+.lastBar {
+	height:0;
+	padding:0;
+	
+	}
+.gamePanel .lastBar {
+	border-bottom: 1px solid #cecece;
+}
+.gamePanelHome .lastBar {
+	border-bottom: 1px solid #cecece;
+}
+
+/* ---- titleBar ---- */
+.titleBar {
+}
+.titleBarHomeGameName {
+	white-space:nowrap;
+	overflow:hidden;
+}
+.titleBarHomeGameName .game{
+	text-align:center;
+}
+.gamePanel .titleBar {
+	border-top: 1px solid #cecece;
+}
+.boardHeader .titleBar {
+	padding: 8px 16px;	
+	padding-bottom:6px;
+	font-size:15px;
+}
+.gamePanelHome .titleBar {
+	padding:4px 2%;
+	font-size:12px;
+}
+.titleBarRightSide {
+	float:right;
+	text-align:right;
+}
+.gamePanelHome .titleBarRightSide {
+	}
+.titleBarLeftSide {
+	float:left;
+}
+.gamePanelHome .titleBarLeftSide {
+	}
+
+.gameName {
+	font-weight:bold;
+	color: #009902;
+}
+.gamePanel .gameName {
+	font-size:16px;
+}
+.boardHeader .gameName {
+	font-size:17px;
+}
+.gamePanelHome .gameName {
+	font-size:12px;
+}
+.gameDate, .gamePhase {
+	} 
+.gameDate {
+	font-style:italic;
+	}
+.gamePanelHome .gameDate {
+	font-size:11px;
+}
+.gamePhase {
+	font-style:italic;
+	font-weight:bold;
+}
+.gameTimeRemaining {
+	font-weight:bold;
+}
+.gameTimeRemainingNextPhase {
+	font-weight:normal;
+}
+.gameHoursPerPhase {
+}
+.gameTimeHoursPerPhaseText {
+	font-style:italic;
+	}
+.gameTimeRemainingFixed {
+	font-style:italic;
+	font-weight:normal;
+}
+.gamePot {
+	font-weight:bold;
+}
+.gamePotType {
+	font-style:italic;
+}
+
+div.memberBoardHeader {
+	padding:0 !important;
+	border:0;
+}
+
+/* ---- noticeBar ---- */
+.gameNoticeBar {
+	border-top:solid 1px #c9c9c9 !important;
+	text-align:center;
+	
+	font-weight:bold;
+}
+
+/* ---- occupationBar ---- */
+
+.occupationBarJoined {
+	background-color: #A4C499;
+}
+.occupationBarNotJoined {
+	background-color: #C48F85;
+}
+.occupationBarEngland {
+	background-color: #EFC4E4;
+}
+.occupationBarAustria {
+	background-color: #C48F85;
+}
+.occupationBarGermany {
+	background-color: #A08A75;
+}
+.occupationBarItaly {
+	background-color: #A4C499;
+}
+.occupationBarFrance {
+	background-color: #79AFC6;
+}
+.occupationBarTurkey {
+	background-color: #EAEAAF;
+}
+.occupationBarRussia {
+	background-color: #A87E9F;
+}
+
+/* ---- membersList ---- */
+.membersList {
+	margin-left:2%;
+	margin-right:2%;
+	color: #444;
+}
+.boardHeader .membersList, .gamePanelHome .membersList {
+	margin:0;
+	border:0;
+	}
+
+.chatbox .membersList {
+	border:0;
+}
+.member {
+	padding:3px 2%;
+}
+.membersList em {
+	font-weight:bold;
+	font-style:italic;
+	}
+.membersList em.bad {
+	color: #D36161 !important;
+	}
+.membersList em.good {
+	color: #7CCE5F !important;
+	}
+.memberRightSide {
+	width:85%;
+	padding-right:8px;
+}
+.memberGameDetail {
+	float:right;
+	font-style:italic;
+	text-align:right;
+}
+.memberUserDetail {
+	float:left;
+}
+	
+.memberLeftSide {
+	text-align:right;
+	width:auto;
+}
+.membersFullTable .memberLeftSide {
+	border-right: 1px solid #c1c1c1;
+	}
+.memberYourCountry {
+	font-weight:bold;
+	}
+.memberName {
+	white-space: nowrap;
+	}
+.memberStatus {
+	font-style:italic;
+}
+.memberStatus em {
+	font-weight:bold;
+	font-style:italic;
+	color:#444;
+	}
+.memberStatusFade {
+	color:#777;
+	}
+.memberStatusWon, .memberStatusDrawn {
+	text-decoration: underline
+	}
+.memberStatusLeft, .memberStatusResigned {
+	font-style:italic;
+}
+.memberStatusDefeated, .memberStatusResigned {
+	text-decoration: line-through
+	}
+.memberStatusHeader {
+	border-top: 1px solid #cecece;
+	}
+.memberAlternate1 {
+	background-color:#eaeaea;
+}
+.memberAlternate2 {
+	background-color:#e5e5e5;
+}
+.memberPreGameList {
+	text-align:center;
+	font-weight:normal !important;
+	}
+.panelBarGraph {
+	padding:0;
+	margin:0;
+	overflow:hidden;
+	height:6px;
+}
+.panelBarGraph  {
+}
+.panelBarGraph td.first {
+	border-left:solid 0px #fff !important;
+}
+.panelBarGraph td {
+	border-left:solid 1px #666;
+	height:6px;
+}
+.barDivBorderTop {
+	border-top:solid 1px #c1c1c1;
+	}
+.barDivBorderBottom{
+	border-bottom:solid 1px #c1c1c1;
+	}
+.memberProgressBar, .memberProgressBarBlank {
+	border-top:solid 1px #cecece;
+	margin-top:3px;
+}
+.boardHeader .memberProgressBar, .boardHeader .memberProgressBarBlank {
+	margin-top:0;
+	height:6px;
+}
+.gamePanelHome .panelBarGraph {
+	margin-top:0;
+	height:4px;
+}
+.memberPointsCount {
+	font-style:italic;
+	}
+.memberUnitCount {
+	font-style:italic;
+	}
+.memberLastSeen {
+	font-style:italic;
+}
+.missedPhases {
+	font-style:italic;
+}
+.memberProgressBarSCs {
+	background-color: #829ACD;
+}
+.memberProgressBarUnitDeficit {
+	background-color: #A4C499;
+}
+.memberProgressBarUnitSurplus {
+	background-color: #C48F85;
+}
+.memberProgressBarRemaining, .memberProgressBarBlank {
+	/*background-color: #c1c1c1*/
+}
+.memberAlternate1 .memberProgressBarRemaining, .memberAlternate1 .memberProgressBarBlank,
+.memberAlternate2 .memberProgressBarRemaining, .memberAlternate2 .memberProgressBarBlank,
+.memberProgressBarBlank, .memberProgressBarRemaining {
+}
+.gamePanelHome .membersList {
+
+}
+.gamePanelHome table.homeMembersTable  {
+	text-align:center;
+	table-layout:fixed;
+	margin:0;
+	padding:0;
+}
+.gamePanelHome .homeMembersTable td {
+	margin:0;
+	padding:2px 0;
+}
+
+/* ---- .archiveBar, .joinBar, .openBar ---- */
+
+.enterBar {
+}
+.enterBar em {
+	font-style:normal;
+	font-weight:bold;
+}
+
+.enterBarJoin {
+	float:right;
+	text-align:right;
+}
+
+.enterBarOpen {
+	float:left;
+}
+
+.archiveBar {
+	/*text-align:center;&*/
+	}
+.archiveBar a {
+	
+	font-weight:normal !important;
+}
+
+.homeGameLinks {
+	/*text-align:center;&*/
+	font-size:12px;
+	}
+.homeGameLinks a {
+	margin:0 4px;
+	}
+
+/* --- Home game panel --- */
+.gamePanelHome {
+	font-size:11px;
+}
+
+
+.memberVotePanel {
+	border-top: 1px solid #cecece!important;
+	padding:0 5%;
+}

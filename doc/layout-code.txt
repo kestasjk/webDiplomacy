@@ -1,0 +1,91 @@
+Layout
+------
+--- Main scripts
+board.php is the script which generates the "Board", containing the map, chatbox, order entry form, and game summary
+board/ is a folder containing board.php specific code
+board/orders/ is a folder containing order code that a player will need
+
+gamemaster.php processes games and maintains the "Logged on users" sessions table; cleaning out old users
+gamemaster/ is a folder containing gamemaster.php specific code
+gamemaster/adjudicator/ is a folder containing the adjudication scripts
+gamemaster/adjudicator/diplomacy/ is a folder containing the Diplomacy phase specific adjudication code, as the Diplomacy
+								  phase is by far the most complex phase to adjudicate 
+gamemaster/orders/ is a folder containing order managing scripts; creation, archival, conversion to Moves, completion, etc
+
+map.php draws the map and saves it to disk, as well as creating the JavaScript files which allow maps to be browsed easily
+map/ is a folder containing map.php specific code
+
+The three code sections above are the largest three code sections in phpDiplomacy, and together they do almost all of the game
+related functions.
+
+--- Other folders
+mapstore/ is one of two folders which phpDip will actively create and write to. Inside this folder rendered
+		  maps are saved, so that they can be displayed without having to re-draw them. Also stored are 
+		  JavaScript files which allow a user to easily scroll through maps from old turns/games
+
+errorlog-[md5-hash]/ is the other folder which gets written to. When an error occurs a variable dump and stack trace is
+		  taken, and saved to a text file in this folder, which can be viewed from admincp.php.
+		  The md5 hash appended to the folder prevents the error logs from being accessed publically, as it may contain 
+		  sensitive data such as passwords (or more likely MD5 hashes of passwords), or orders, or private correspondence
+		  This detailed logging can be enabled in config.php, as it is disabled by default
+
+css/ contains phpDip's CSS file(s)
+
+global/ contains miscellaneous code which is used globally, usually in the header.php; error handling, global constants
+ 
+lib/ is a folder containing static libraries of related functions
+	e.g. libHTML, libTime, libAuth, etc
+
+objects/ is a folder containing objects which are not specific to a single page, or are used on every page
+		 e.g. Database, User, Game, Member(used everywhere); 
+		 Order, Territory, Unit, Convoy (used both in gamemaster/ and board/)
+
+captcha/ contains the code which renders the easyCaptcha which is used on the registration page
+contrib/ contains work from other projects which phpDip uses and is under a non-BSD compatible license
+	e.g. phpMailer, the fonts used in the large map, the small/large image icons
+doc/ contains developer notes
+images/ contains images used in phpDip
+install/ contains code which will help update phpDip from the previous version, or install phpDip from scratch
+locales/ will, at some point in the future, contain the data required to view phpDiplomacy in alternate languages
+
+--- Root folder/front-end scripts
+
+admincp.php displays the admin control panel, which makes admin specific functions easier, such as error log and moderator 
+management
+
+config.php contains configurations variables, such as the database connection parameters and e-mail settings
+
+datc.php runs the DATC Test Cases (acronym redundancy alert). By toggling a config.php setting the DATC results will 
+		be displayed, but may not be re-run (as it is intended for debugging/verification and not safe for use live)
+
+gamecreate.php will display a form to create a game, and on valid submission of the form will create the new game
+
+gamelistings.php will display various the summaries of all the games going on in the phpDip server
+
+header.php will sanitize the environment, run security checks, load required scripts, load required objects, 
+		   and authenticate the viewer as a user.
+
+index.php will show the forum
+
+logon.php presents a form allowing a user to enter a username and password to authenticate as a registered user, or if
+		  they are logged on a form allowing them to log off is presented
+
+modcp.php displays the moderator control panel, allowing (restricted/controlled) management of games and users, and displays
+		  a public log of moderator actions 
+
+profile.php displays the phpDip profile for a certain user, containing their statistics/details, and the games they're 
+			currently playing in
+
+register.php presents a form allowing someone to create a new user phpDip user account
+
+usercp.php presents a form allowing an existing user to change their profile details and other preferences
+
+-- Static pages
+AGPL.txt - The AGPL license which applies to phpDip
+index.html - The welcome screen
+credits.php - The credits
+faq.php - The FAQ
+intro.php - The intro to (php)Diplomacy
+points.php - An explanation of phpDip points
+roadmap.php - A roadmap detailing what phpDip is aiming for
+translating.php - A guide to translating phpDip (just a placeholder, which was written a few years prematurely)

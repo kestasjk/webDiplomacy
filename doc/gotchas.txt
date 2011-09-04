@@ -1,0 +1,39 @@
+Gotchas
+-------
+
+Quirks of phpDip that could be troublesome:
+
+It is assumed that once a game is over no players will remain as 'Playing',
+all should be 'Won','Survived', 'Drawn', 'Left', or 'Defeated'. A member that is
+defeated will be set to defeated, even if they had already left. *However* a 
+member that has left, but then Survived or Drew, will remain set to 'Left'. The "priority"
+goes: "Defeated", "Left", 'Survived'/'Drawn'/'Won'
+
+For unit placement orders the territory where a unit is being created or destroyed is 
+stored in pD_Orders.toTerr, but in pD_MovesArchive the territory is stored in 
+pD_MovesArchive.terr, and pD_MovesArchive.toTerr is NULL
+
+In a Diplomacy phase the map displayed is the map from the previous turn. This means that
+when selecting the map during a Diplomacy phase the game's turn must be decremented.
+
+When in the first Diplomacy phase after the game is created there is no previous map, so
+a static map is shown.
+
+A user can have multiple account types. It isn't enough to set someone as banned, they must
+have their user/moderator/admin privileges revoked too.
+
+When a coast order is selected a move order affecting the unit being convoyed is set to
+$_REQUEST, so that the army being convoyed will go via the convoy (if it the user's own
+army). To cater to this the orders are processed twice: Once to produce any extra $_REQUESTs,
+another to process the new $_REQUESTs and output.
+In this way a unit is forced to move via convoy if it is being convoyed by its own fleet.
+
+A game does not change turn once it goes into the 'Finished' phase
+
+A game password is not salted, but a user password is
+
+If a territory is a North/South coast, and its parent is a supply center, it will not be a
+supply center.
+
+pD_Borders will not be affected by coastal limitations, and will not link to or from coastal 
+territories, whereas pD_CoastalBorders will. 

@@ -1,0 +1,56 @@
+Coasts
+------
+
+This document is about how coasts are handled.
+
+The following territory name fields can hold Child coasts:
+pD_CoastalBorders: toTerr, fromTerr
+pD_Territories: terr
+pD_Orders: toTerr, fromTerr
+pD_Units: terr
+
+The following territory name fields cannot hold Child coasts:
+pD_Borders: toTerr, fromTerr
+pD_Moves: terr, toTerr, fromTerr
+
+
+The following situations require_once that coasts can be specified:
+- Orders
+	- Move: toTerr
+	- Retreats: toTerr
+	- Unit placement: toTerr
+- Pre-game adjudication: Unit creation
+
+
+The places where coasts are required to be specified are greatly out numbered
+by the places where coasts aren't important.
+
+Units and Orders are the main two tables which need to store and handle coast
+information.
+TerrStatus and Moves are the main two tables in which coast information is 
+irrelevant and discarded.
+
+
+When Orders and Units are converted into Moves to be processed care is taken to 
+strip out any unneeded coast data. Because Units are fairly static compared to 
+Orders most of the coast handling code, which has to take coasts into account, 
+is located in the various Order classes.
+
+
+A custom SQL function is created: deCoast(), which simply removes ' (North Coast)'
+and ' (South Coast)' from the territory name.
+
+Because of problems relating to coasts it is important to link TerrStatus and Unit
+records via the TerrStatus.occupyingUnitID or TerrStatus.retreatingUnitID, and not
+via Unit.terr->TerrStatus.terr 
+Also because of the coast problems supply center numbers should be calculated using
+TerrStatus, not Units, as Units may be on a coastal territory, which may result in
+counting or not counting coastal North/South territories as supply centers.
+
+
+The biggest problems relating to coasts usually come from finding territories adjacent 
+to units using borders, without factoring in coastal territories
+
+
+Also note that coastal child territories are not marked as supply centers, even when
+their parents are, although this should not have to be assumed.

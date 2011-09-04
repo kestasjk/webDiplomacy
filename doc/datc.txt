@@ -1,0 +1,27 @@
+DATC Compliance
+---------------
+
+As of 0.8 phpDip passes all of the Diplomacy phase test cases which apply. Some
+of the tests test whether an order parser would have problems with certain textual
+orders, and these types of tests don't apply to phpDip which supplies the user with
+only a valid selection of orders.
+
+
+Retreats test cases haven't been attempted, most are simple but some will require
+changes; such as making sure that a unit dislodged by an adjacent unit from a convoy
+will be able to retreat to that units old spot.
+
+In unit placement there is a certain rule for the order in which to remove units 
+from a civil disorder player who has lost supply centers. It is a very bizarre rule
+which would rarely come into play, or bother anyone if it wasn't followed, but all
+these rules will eventually be followed closely.
+
+Regarding retreats and unit placement the most important changes required in the future
+will be explicitly saying which way phpDip goes with the controversial issues, and 
+making sure that those controversial issues behave as expected.
+
+ 
+The important things for developers to note is the datc.php script; this script will 
+take data from the pD_DATC and pD_DATCOrders table to be able to cycle through all of
+the test cases, and verify that everything is in order. This makes it easier for changes
+to the adjudicator to be debugged.

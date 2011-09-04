@@ -1,0 +1,1010 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   sodipodi:docbase="C:\Documents and Settings\Kestas\Desktop"
+   sodipodi:docname="phpdiplomacy-db.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Mend"
+       style="overflow:visible;">
+      <path
+         id="path3612"
+         style="font-size:12.0;fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round;"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(0.6) rotate(180) translate(0,0)" />
+    </marker>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective217" />
+    <marker
+       inkscape:stockid="TriangleOutM"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="TriangleOutM"
+       style="overflow:visible">
+      <path
+         id="path7524"
+         d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none"
+         transform="scale(0.4)" />
+    </marker>
+    <marker
+       inkscape:stockid="TriangleInM"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="TriangleInM"
+       style="overflow:visible">
+      <path
+         id="path7515"
+         d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none"
+         transform="scale(-0.4)" />
+    </marker>
+    <marker
+       inkscape:stockid="TriangleInL"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="TriangleInL"
+       style="overflow:visible">
+      <path
+         id="path7512"
+         d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none"
+         transform="scale(-0.8)" />
+    </marker>
+    <marker
+       inkscape:stockid="TriangleOutL"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="TriangleOutL"
+       style="overflow:visible">
+      <path
+         id="path7521"
+         d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none"
+         transform="scale(0.8)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lend"
+       style="overflow:visible;">
+      <path
+         id="path7426"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none;"
+         transform="scale(0.8) rotate(180) translate(12.5,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lstart"
+       style="overflow:visible">
+      <path
+         id="path7423"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none"
+         transform="scale(0.8) translate(12.5,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     gridtolerance="10000"
+     guidetolerance="10"
+     objecttolerance="10"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="1766.8619"
+     inkscape:cy="886.05308"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     width="990px"
+     height="765px"
+     inkscape:window-width="1680"
+     inkscape:window-height="1031"
+     inkscape:window-x="1020"
+     inkscape:window-y="-4"
+     showgrid="false" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect4957"
+       width="2087.2617"
+       height="1402.8993"
+       x="854.44574"
+       y="-565.29578"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect3423"
+       width="121.50494"
+       height="99.80249"
+       x="1331.8787"
+       y="-502.34155"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="1351.4351"
+       y="-472.73834"
+       id="text6417"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan6419"
+         x="1351.4351"
+         y="-472.73834">DATC</tspan></text>
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800064;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2590"
+       width="164.36209"
+       height="99.80249"
+       x="1310.3396"
+       y="-335.38242"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="1329.9342"
+       y="-305.48233"
+       id="text2592"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan2594"
+         x="1329.9342"
+         y="-305.48233">DATCOrders</tspan></text>
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2596"
+       width="146.50494"
+       height="99.80249"
+       x="1324.6254"
+       y="-159.52454"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="1344.1946"
+       y="-129.31175"
+       id="text2598"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan2600"
+         x="1344.1946"
+         y="-129.31175">Territories</tspan></text>
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22799969;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2602"
+       width="202.21922"
+       height="99.80249"
+       x="1023.1968"
+       y="-304.52457"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="1043.3013"
+       y="-274.56958"
+       id="text2604"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan2606"
+         x="1043.3013"
+         y="-274.56958">UnitDestroyIndex</tspan></text>
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2608"
+       width="121.50494"
+       height="99.80249"
+       x="1104.6252"
+       y="-160.95311"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="1124.5852"
+       y="-130.74286"
+       id="text2610"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan2612"
+         x="1124.5852"
+         y="-130.74286">Borders</tspan></text>
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2614"
+       width="187.9335"
+       height="99.80249"
+       x="1037.4825"
+       y="-6.6673741"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="1057.5616"
+       y="23.817236"
+       id="text2616"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan2618"
+         x="1057.5616"
+         y="23.817236">CoastalBorders</tspan></text>
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2620"
+       width="128.3222"
+       height="99.80249"
+       x="1570.9911"
+       y="1.2107903"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="1590.1233"
+       y="31.709433"
+       id="text2622"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan2624"
+         x="1590.1233"
+         y="31.709433">Orders</tspan></text>
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2626"
+       width="126.3019"
+       height="99.80249"
+       x="1490.662"
+       y="212.35941"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="1509.9366"
+       y="243.2336"
+       id="text2628"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan2630"
+         x="1509.9366"
+         y="243.2336">Units</tspan></text>
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2632"
+       width="146.50494"
+       height="99.80249"
+       x="1866.4502"
+       y="-69.356308"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="1885.0575"
+       y="-38.983185"
+       id="text2634"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan2636"
+         x="1885.0575"
+         y="-38.983185">TerrStatus</tspan></text>
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800064;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2638"
+       width="225.29684"
+       height="99.80249"
+       x="2124.1252"
+       y="-155.66954"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="2142.2751"
+       y="-125.44993"
+       id="text2640"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan2642"
+         x="2142.2751"
+         y="-125.44993">TerrStatusArchive</tspan></text>
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2644"
+       width="110.13946"
+       height="99.80249"
+       x="1288.3125"
+       y="280.95551"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="1307.9464"
+       y="311.95163"
+       id="text2646"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan2648"
+         x="1307.9464"
+         y="311.95163">Moves</tspan></text>
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2650"
+       width="180.85013"
+       height="99.80249"
+       x="1040.0455"
+       y="424.60742"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="1060.1204"
+       y="455.85904"
+       id="text2652"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan2654"
+         x="1060.1204"
+         y="455.85904">MovesArchive</tspan></text>
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2656"
+       width="146.50494"
+       height="99.80249"
+       x="2072.3115"
+       y="327.67905"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="2090.5535"
+       y="358.75833"
+       id="text2658"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan2660"
+         x="2090.5535"
+         y="358.75833">Members</tspan></text>
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2662"
+       width="128.3222"
+       height="99.80249"
+       x="1678.3521"
+       y="547.89227"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="1697.2935"
+       y="579.36328"
+       id="text2664"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan2666"
+         x="1697.2935"
+         y="579.36328">Games</tspan></text>
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800064;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2668"
+       width="205.0938"
+       height="99.80249"
+       x="1993.5198"
+       y="650.92786"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="2011.9015"
+       y="682.58209"
+       id="text2670"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan2672"
+         x="2011.9015"
+         y="682.58209">GameMessages</tspan></text>
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2674"
+       width="146.50494"
+       height="99.80249"
+       x="2320.8088"
+       y="319.59781"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="2338.6099"
+       y="350.66269"
+       id="text2676"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan2678"
+         x="2338.6099"
+         y="350.66269">AccessLog</tspan></text>
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2680"
+       width="146.50494"
+       height="99.80249"
+       x="2330.9104"
+       y="642.84662"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="2348.6934"
+       y="674.48651"
+       id="text2682"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan2684"
+         x="2348.6934"
+         y="674.48651">Users</tspan></text>
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2686"
+       width="146.50494"
+       height="99.80249"
+       x="2470.3115"
+       y="491.32373"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="2487.8469"
+       y="522.69409"
+       id="text2688"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan2690"
+         x="2487.8469"
+         y="522.69409">Sessions</tspan></text>
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2692"
+       width="130.3425"
+       height="99.80249"
+       x="2579.408"
+       y="319.59781"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="2596.7495"
+       y="350.66269"
+       id="text2694"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan2696"
+         x="2596.7495"
+         y="350.66269">Misc</tspan></text>
+    <rect
+       style="opacity:1;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22799969;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2698"
+       width="199.03287"
+       height="99.80249"
+       x="2611.7329"
+       y="665.07001"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:21.67312813px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="2629.0171"
+       y="696.74939"
+       id="text2700"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"
+       transform="scale(1.0017786,0.9982245)"><tspan
+         sodipodi:role="line"
+         id="tspan2702"
+         x="2629.0171"
+         y="696.74939">ForumMessages</tspan></text>
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 2395.7024,422.0143 L 2402.5218,640.23262"
+       id="path2704"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2674"
+       inkscape:connection-end="#rect2680"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#00be0f;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 2497.8448,488.70973 L 2439.7805,422.0143"
+       id="path2706"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2686"
+       inkscape:connection-end="#rect2674"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 2495.2499,593.74022 L 2452.4769,640.23262"
+       id="path2708"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2686"
+       inkscape:connection-end="#rect2680"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 2609.1189,707.58023 L 2480.0293,698.23821"
+       id="path2710"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2698"
+       inkscape:connection-end="#rect2680"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 2188.6534,430.09554 L 2361.0735,640.23262"
+       id="path2712"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2656"
+       inkscape:connection-end="#rect2680"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 2069.6975,419.03114 L 1809.2883,561.30988"
+       id="path2714"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2656"
+       inkscape:connection-end="#rect2662"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1990.9058,670.18222 L 1809.2883,617.25369"
+       id="path2716"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2668"
+       inkscape:connection-end="#rect2662"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1223.5097,493.2497 L 1675.7381,584.34289"
+       id="path2718"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2650"
+       inkscape:connection-end="#rect2662"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1401.066,369.43534 L 1675.7381,553.13466"
+       id="path2720"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2644"
+       inkscape:connection-end="#rect2662"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1583.347,314.7759 L 1712.9791,545.27827"
+       id="path2722"
+       inkscape:connector-type="polyline"
+       inkscape:connection-end="#rect2662"
+       inkscape:connection-start="#rect2626"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1645.4655,103.62728 L 1732.1999,545.27827"
+       id="path2724"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2620"
+       inkscape:connection-end="#rect2662"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1922.9259,33.060182 L 1759.29,545.27827"
+       id="path2726"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2632"
+       inkscape:connection-end="#rect2662"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 2199.8811,-53.25305 L 1779.4057,545.27827"
+       id="path2728"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2638"
+       inkscape:connection-end="#rect2662"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#acacac;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:18.4, 18.4;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1223.5097,465.62463 L 2069.6975,384.82456"
+       id="path2730"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2650"
+       inkscape:connection-end="#rect2656"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#acacac;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:18.4, 18.4;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1401.066,334.21657 L 2069.6975,373.16141"
+       id="path2732"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2644"
+       inkscape:connection-end="#rect2656"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#acacac;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:18.4, 18.4;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1619.5779,275.07683 L 2069.6975,362.79554"
+       id="path2734"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2626"
+       inkscape:connection-end="#rect2656"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#acacac;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:18.4, 18.4;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1701.9273,93.822551 L 2069.6975,329.05478"
+       id="path2736"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2620"
+       inkscape:connection-end="#rect2656"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#acacac;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:18.4, 18.4;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1966.9316,33.060182 L 2118.335,325.06505"
+       id="path2738"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2632"
+       inkscape:connection-end="#rect2656"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#acacac;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:18.4, 18.4;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 2226.8638,-53.25305 L 2155.4738,325.06505"
+       id="path2740"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2638"
+       inkscape:connection-end="#rect2656"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1568.3771,5.8769826 L 1473.7443,-58.229527"
+       id="path2742"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2620"
+       inkscape:connection-end="#rect2596"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1531.7927,209.74541 L 1419.8981,-57.108046"
+       id="path2744"
+       inkscape:connector-type="polyline"
+       inkscape:connection-end="#rect2596"
+       inkscape:connection-start="#rect2626"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1349.8793,278.34151 L 1391.3807,-57.108046"
+       id="path2746"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2644"
+       inkscape:connection-end="#rect2596"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 1154.5113,421.99342 L 1373.8371,-57.108046"
+       id="path2748"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2650"
+       inkscape:connection-end="#rect2596"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1863.8362,-32.080445 L 1473.7443,-96.997909"
+       id="path2750"
+       inkscape:connector-type="polyline"
+       inkscape:connection-end="#rect2596"
+       inkscape:connection-start="#rect2632"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 2121.5112,-106.29796 L 1473.7443,-109.27466"
+       id="path2752"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2638"
+       inkscape:connection-end="#rect2596"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#00be0f;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 2015.5691,-41.497876 L 2121.5112,-72.279088"
+       id="path2754"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2632"
+       inkscape:connection-end="#rect2638"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1867.7681,33.060182 L 1619.5779,214.24947"
+       id="path2756"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2632"
+       inkscape:connection-end="#rect2626"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1614.9221,103.62728 L 1574.043,209.74541"
+       id="path2758"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2620"
+       inkscape:connection-end="#rect2626"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1401.066,312.05304 L 1488.048,283.69868"
+       id="path2760"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2644"
+       inkscape:connection-end="#rect2626"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#00be0f;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1285.6985,369.77608 L 1208.3053,421.99342"
+       id="path2762"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2644"
+       inkscape:connection-end="#rect2650"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1222.9829,-9.2813742 L 1322.0114,-66.096672"
+       id="path2764"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2614"
+       inkscape:connection-end="#rect2596"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1228.7442,-110.66252 L 1322.0114,-110.08944"
+       id="path2766"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2608"
+       inkscape:connection-end="#rect2596"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1223.3869,-202.10808 L 1322.0114,-149.83451"
+       id="path2768"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2602"
+       inkscape:connection-end="#rect2596"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1394.1204,-232.96593 L 1396.2781,-162.13854"
+       id="path2770"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2590"
+       inkscape:connection-end="#rect2596"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 1392.5554,-337.99642 L 1392.5964,-399.92506"
+       id="path2772"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2590"
+       inkscape:connection-end="#rect3423"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#acacac;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:18.4, 18.4;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       d="M 2104.108,648.31386 L 2137.5226,430.09554"
+       id="path2774"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#rect2668"
+       inkscape:connection-end="#rect2656"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+  </g>
+</svg>

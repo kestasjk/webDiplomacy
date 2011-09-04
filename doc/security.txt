@@ -1,0 +1,52 @@
+Security
+--------
+
+Make sure your database password and admin password are different and impossible
+to guess, also make sure that you have made the config.php random secret string 
+sufficiently long and random.
+
+Detailed error logging should be disabled unless a recurring error is 
+bothering you, or you are a developer, or you are sure of yourself.
+The error logs contain lots of sensitive information which could be useful
+to an attacker.
+The errorlog folder is protecting by appending an md5 hash of the secret
+word in config.php, but this is rather weak security. If it is being used
+it is recommended to also place an .htaccess file in the errorlog directory.
+
+Backups should be taken regularly while the code is still in beta, and the tables
+should be installed into a separate database accessible by a separate user from 
+any other.
+
+Once installed almost everything can, and should, be made read-only. Only the 
+mapstore and errorlog folders, which should be created automatically, need to
+retain read/write access
+
+The board/, gamemaster/, objects/, locales/, lib/, errorlog-[md5]/, global/,
+and contrib/phpmailer/ folders should use an .htaccess file to prevent public 
+access to anything within them.
+
+phpDip was designed with security in mind, and user inputs are rigorously checked. 
+It's unlikely that there are any serious SQL injection vulnerabilities, and nowhere
+in the code is anything eval()ed, or anything included() which contains user variables.
+register_globals and magic_quotes are accounted for, and all user input is run through
+the database filter or converted to an integer, and checked for HTML being inserted, 
+before being entered.
+Inputted data includes: Form variables which are filtered and escaped, various numbers
+for certain IDs and UI choices which are always cast as numbers, text messages which are
+carefully quote escaped and HTML escaped, and order selections which are required to match
+one of a given selection of internally generated orders.
+
+The main possible security problem is resource use: Few steps have been taken to 
+limit the amount of resources that users can take up. In the future a feature should 
+be added to ensure that for any given user the number of queries/time, the amount of
+execution time/time, the number of page requests/time, etc, remain at sane levels.
+Until features are added to secure this area care should be taken that quotas are set on
+the account under which phpDip runs, and that phpDip's resource use can be kept in 
+check by external security software.
+
+
+Failed forum posts, which have been filtered, need to be entered back into the form so that
+they don't have to be rewritten. The problem is that unfiltering UTF 8 strings seems to
+require_once a UTF library. $_REQUEST is used to repost the original without un-filtering it, 
+but this allows users to post malicious code. As with many XSS attacks it is hard to see how
+it could be exploited.

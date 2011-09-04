@@ -1,0 +1,111 @@
+Basic API structure
+------------------------
+map.php?type=xml	- Send all the XML notes which cannot be changed by the client (e.g. territory owners)
+	(Territory owners, unit locations, [standoff territories], [processed orders from previous phases/the previous turn])
+	
+<orderAPIInitialize>	- Send all the XML order nodes, which the client can change
+	(Orders (each with a set of options as sub-nodes), finalized flag, auth token/cookie)
+	
+<orderAPIRequest>	- Send a list of name&value pairs to be used to update the <order> node attributes
+	(Auth token/cookie, update nodes each with an attribute to set, requesting-finalize/unfinalize flag)
+	
+<orderAPIResponse>	- Send all the XML order nodes which have been updated, or an error on failure
+	(Error message OR [ Updated orders (each with a set of options as sub-nodes), finalized flag ] )
+
+
+orderAPIInitialize
+---------------------
+<orderAPIInitialize>
+	<auth gameID="123" country="England" token="asfo..." /> (*1)
+	[<finalized />]
+	<order id="12345" type="Move" [terr="Brest"] [toTerr="Paris"] [fromTerr=""] [viaConvoy="No"]> (*2)
+		<option value="Hold" />
+		<option value="Move">
+			<option value="Paris">
+				<option value="No" /> (*3)
+			</option>
+			<option value="London">
+				<option value="Yes" />
+			</option>
+			<option value="Picardy">
+				<option value="No" />
+				<option value="Yes" />
+			</option>
+		</option>
+		<option value="Support move">
+			<option value="Gascony">
+				<option value="Spain" /> (*4)
+				<option value="Mid-Atlantic Ocean" />
+			</option>
+			<option value="Marseilles" /> (*5)
+		</option>
+	</order>
+	[<order ...>
+		...
+	</order>]
+</orderAPIInitialize>
+
+*1 Cookies/user&pass used for first authentication, then <auth token=""/> is used
+*2 All parameters which could be used will be set here. e.g. For a retreat order unitID and toTerr will be present.
+	A parameter which could be used but isn't yet being used is set to a zero length string (e.g. toTerr="")
+*3 viaConvoy="No"; this may be given as a sub-option for Paris even before the Paris option is selected
+*4 Support moves from a territory don't use coast data, the client needs to know where coast data is/isn't appropriate
+*5 A support move order has a toTerr and fromTerr parameter, so because this option has no sub-nodes it must be 
+	incomplete. Marseilles has to be selected for toTerr, then the sub-options will be given for it 
+	(like with the HTML order drop-down lists)
+
+
+orderAPIRequest
+---------------------
+<orderAPIRequest>
+	<auth gameID="123" country="England" token="asfo..." />
+	[<update orderID="12345" name="toTerr" value="Paris" />]
+	[ [<finalize />] / [<unfinalize />] ]
+</orderAPIRequest>
+
+
+orderAPIResponse
+-----------------------
+<orderAPIResponse>
+	[<error type="Invalid order">Order #12345 update toTerr to Paris invalid</error>] (*1)
+	[<finalized />](*2)
+	[<order ...>
+		... (*3)
+	</order>]
+</orderAPIResponse>
+
+*1 If an error is returned nothing else will be, and any changes made for the 
+	orderAPIRequest before the error occurred are undone
+*2 This is always returned if the player is finalized
+*3 This follows the same format as in orderAPIInitialize
+
+
+orderAPIInitialize vs orderAPIResponse
+------------------------------------------------
+<orderAPIResponse> is identical to <orderAPIInitialize>, except:
+- Only orders which were updated are returned in Responses, whereas Initialize
+	sends all orders
+- Initialize won't have an <error />, and will have an <auth />
+
+<orderAPIResponse> is effectively just a set of order nodes which need to replace
+those first given in <orderAPIInitialize>
+
+
+Server / Client assumptions
+---------------------------------
+Server responsibilities:
+- Set optionless order attributes when there's only one option
+	(e.g Map->		<update id="123" name="type" value="Support hold" />
+		*Paris only option*
+		Server->	<order [...] type="Support hold" toTerr="Paris">)
+- Unset attributes and remove invalid options when a dead-end is found
+	(e.g. Support move to Paris from [No units can be supported to Paris]
+		-> Remove <option value="Paris" />, unset toTerr="Paris")
+- On error return only error, and roll-back any other pre-error updates
+
+Client responsibilities:
+- Handle getting dead-ends, where previously allowed options no longer are allowed
+	(e.g. Support move to Paris from [No units can be supported to Paris])
+- Handle getting pre-set orders, where there is only one order option and it is filled in
+	(e.g. 	Map->		<update id="123" name="toTerr" value="Paris" />
+			Server->	<order [...] toTerr="Paris" viaConvoy="No" />)

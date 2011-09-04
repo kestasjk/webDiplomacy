@@ -1,0 +1,56 @@
+phpDip is tested only on MySQL5, however with little to no exceptions the code is ANSI compliant,
+and there is also a database abstraction class.
+The main thing which causes MySQL dependence is the use of MySQL datatypes, such as SET and ENUM, 
+and the lack of need to support anything else.
+
+All tables have pD_ at the end, in-case there would otherwise be a conflict with existing tables 
+in the database, and limited databases are available. pD_, if taken, could be changed with a simple
+search and replace.
+
+As regards security the following tables are read-only, and can be set as such once installed:
+Borders, CoastalBorders, Territories, [DATC, in a production environment, ] DATCOrders
+
+The following tables require_once ACID, and so InnoDB is used:
+Games, Members, Orders, TerrStatus, Units, Users
+
+The following tables do not need transaction support, so MyISAM is used:
+AccessLog, Borders, CoastalBorders, DATC, DATCOrders, ForumMessages, GameMessages, 
+Misc, OrdersArchive, Territories, TerrStatusArchive, UnitsArchive.
+
+The following tables are archive tables, and may get large:
+AccessLog, OrdersArchive, TerrStatusArchive, UnitsArchive
+AccessLog can be cleaned out whenever desired, but doing so will destory data about possible multi-accounters
+
+The following tables contain full text, and may also get large:
+ForumMessages, GameMessages, 
+
+The following tables don't contain long-lived data, and the MEMORY engine is used:
+Moves, Sessions 
+
+
+Tables: Orders, Units, TerrStatus
+---------------------------------
+
+These are the main three tables where game data is stored. The Member and Game
+tables also store game related info, but this info is irrelevant when in the 
+context of playing in a game.
+
+Orders: Contains the orders which players can fill out to order their units around.
+	- What move type, where to, where from, via convoy, which country's order, 
+	  the status of the order (Pending/Success/Failed)
+Units: Contains the positions and types of a players units on the board
+	- Where is the unit, which country owns it, is it an army or fleet
+TerrStatus: Contains data on what the status of a certain territory with a certain 
+			game is.
+	- Which territory in which game, who owns it, which unit is occupying it, which
+	  unit is retreating from it, where did an attacking unit come from
+
+
+Table: Moves
+------------
+
+The moves table is the data set upon which adjudication acts. When a game is about to
+be processed the game's Orders, Units and TerrStatus records will be combined to create
+Moves records.
+These records contain the unit ID, order ID, current territory, move type, where to, where
+from, the unit type, was the unit dislodged, was the unit successful

@@ -1,0 +1,28 @@
+The archive tables and the map
+------------------------------
+
+The aim of the archive tables is to reduce the amount of data which needs
+to be stored in InnoDB tables, which are transaction safe but don't perform
+perfectly on Dreamhost, and have a very large index size:data size ratio.
+
+Data in the archive tables is used to either: Return a game to a previous 
+state, to enable generating statistics, or more usually to allow maps from
+any game and any turn to be drawn whenever required.
+ 
+
+The orders from the *previous* phases are the ones which the map draws, and
+so the map will always get the orders to be drawn from the archive, and 
+not from the active orders table.
+
+At the end of every phase Orders, TerrStatus, and Units are placed in the 
+archive. TerrStatus and Units will delete any conflicting records from a 
+previous phase in the same turn, while Orders doesn't have conflicts and
+so can be written without problem.
+
+During the Diplomacy phase the previous turn is still drawn; only after the
+Diplomacy phase is a fresh map with newly processed Diplomacy orders rendered.
+
+e.g. In turn 0 the map seen is not the map created at the end. The map during
+the Diplomacy phase displays the outcome of the previous turn, and so the map
+for a given turn is not a map of what happened during that turn, but a map of
+what things looked like *at the start* of that turn.

@@ -1,0 +1,106 @@
+*** This may be out of date
+
+In most parts of phpDiplomacy locking isn't necessary. In the forum records are 
+only added, not changed. If a new message is added by one user while the forum 
+is being loaded by another it won't corrupt anything.
+
+However, weird results can occur if changes to the database can be made while 
+half way through a page. If the first half of the map is rendered for one phase, 
+and the second half is rendered for the next phase, there will be weird results.
+
+In pages where locking isn't necessary it's only important that things don't 
+*appear* to change half way through, though if they actually change that's 
+fine because the information is only being displayed, not acted on.
+
+Because of this all page requests are wrapped in a REPEATABLE READ transaction. 
+This means that if a page is being rendered and the database changes the changes 
+will not appear until the end of the transaction. The whole page operates on a 
+single, static, transaction, which doesn't change because of the effects of other 
+transactions.
+
+
+However if one transaction UPDATEs a row, another transaction will have to wait 
+for the first transaction to finish until it can update that row. (Though it can 
+still view the row as if it hadn't been updated)
+
+This means care should be taken when UPDATEing. If user A updates row A, user B 
+updates row B, then user A asks to update row B and user B asks to update row A 
+there will be a deadlock.
+
+
+There are some sections where the data which gets selected must not be modified 
+as well as not appearing to be modified, because decisions will be made based on 
+the selected data.
+For example in the board many decisions are made based on the game's mode, and 
+corruption could occur if the game gets altered.
+This is different from the map in that data isn't just being presented based 
+on the selected data, data gets modified based on the selected data.
+For this SELECT .. LOCK IN SHARE MODE is used. While a transaction has a row 
+locked in share mode it can be read by other users, but it cannot be altered.
+
+
+LOCK IN SHARE MODE isn't good if you intend to update the database though. If 
+two users both access a row in SHARE MODE, and then either tries to update the 
+row, they won't be able to because they will both have locked the other out of 
+changing the row.
+SELECT .. FOR UPDATE gets around this problem. Only one user can have a lock on 
+a row FOR UPDATE (it isn't shared), and while it is locked FOR UPDATE no-one 
+can lock it in SHARE MODE.
+
+For example in the game join code block, it checks that there are less than 7 
+users before joining. It must make sure that no other users can add themselves 
+to the number of users after having checked that there are less than 7 but 
+before we get added to complete those 7. If that happened there would be 8 
+users, and there would be corruption. (It has happened)
+
+Note that locking FOR UPDATE stops it being locked in SHARE MODE, but it 
+doesn't stop the row being viewed without locking.
+
+
+Finally there are some code sections which are called less often, and it is 
+more convenient to simply lock the code section rather than try to use fine 
+grained locking.
+eg Adding a user. If two users were added with the same name there would be 
+problems, but instead of indexing the username and locking a large section 
+of the users table while adding a user, thus blocking out other users from 
+viewing phpDiplomacy, it is simpler to lock the user creation code. (Making 
+the username row unique would also solve the problem, but it would mean an 
+database uniqueness error would be presented instead of a friendly "username 
+taken" error message.)
+
+GET_LOCK is used to get a named lock; only one thread can get the lock at a 
+time, and if the lock can't be retrieved the code will not run. Because all 
+phpDiplomacy's access runs in a transaction results aren't committed until 
+the end of the page, so all locks requested with GET_LOCK must be kept until 
+the end of the page, after the data has been committed.
+
+
+
+LOCK IN SHARE MODE:
+	board.php and ajax.php locks the game row being viewed in share mode
+	In ajax.php the membership being used is locked in share mode
+	
+FOR UPDATE:
+	The user being used is locked FOR UPDATE, unless they are a guest user.
+	In board.php the membership being used is locked FOR UPDATE
+	Orders are always locked FOR UPDATE
+
+	Gamemaster locks the game being processed FOR UPDATE, which prevents it 
+	being processed while being viewed in board.php
+
+GET_LOCK:
+	User creation
+	Game creation
+	User control panel
+	Gamemaster
+
+
+To prevent deadlocks it is vital that this order is followed when locking:
+USER -> GAME -> MEMBERSHIP -> ORDER
+
+These are defined, and passed to the objects above to dictate how they are to 
+be locked: NOLOCK, SHARE, UPDATE
+
+
+Careful consideration should be given to locking to prevent very hard to 
+reproduce and potentially very damaging bugs.

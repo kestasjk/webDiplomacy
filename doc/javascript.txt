@@ -1,0 +1,153 @@
+JavaScript in webDiplomacy
+--------------------------
+
+Uses
+----
+JavaScript is used in webDiplomacy for three things mainly:
+- Processing static, cached HTML to be suited to the user viewing it
+	- Altering timestamps for a user's timezone
+	- Turning on user-online icons for the users currently online
+	- Turning on the new-message icons for new messages
+	- Counting down time-remaining values correctly
+	- Italicizing posts made by the user viewing messages
+- Generating valid orders for the user to select from, and submitting them
+- Extra neat features
+	- Hovering over a game title on the home page filters out notices from that game
+	- The FAQ and "New thread" button in the forum
+	- Allowing the map image history of a game to be scrolled through
+
+Prototype framework
+-------------------
+The Prototype framework is used to make this functionality possible as 
+easily as possible, and pretty much all of the JavaScript we use can't 
+be properly understood without some understanding of Prototype.
+- When processing static, cached HTML it is used to select the HTML elements 
+	which need to be updated, and is used to hide()/show() various elements and
+	alter their styles as required.
+- In generating valid orders it is used extensively to filter out sets. e.g.
+	Selecting the list of borders a territory links to, filtering out which ones 
+	are coastal borders, applying a function to filter out which of these can be
+	supported into by a certain third unit, then getting the names of the 
+	territories from the list of territory objects. This sort of thing is made 
+	very easy using Prototype's "Enumerable" class functionality.
+	
+JavaScript Code
+---------------
+JavaScript code is mostly all bundled into the javascript folder. Because many 
+web browsers cache JavaScript and this causes problems when there is a bug in
+JavaScript code it has been made easy to change the location of the javascript 
+folder, so that after a change it can be renamed and no issues with old, cached
+code will persist.
+The server defined JSDIR as the location of the javascript directory in 
+global/definitions.php
+
+Within the javascript folder there is:
+utility.js 
+	- Handles JS errors, submitting them to the server for logging
+	- Makes text entry forms on the forum and board safer by making users confirm 
+		before leaving a page when they have an unsubmitted comment.
+timeHandler.js
+	- Updates timestamps to be in the users timezone, in the static HTML all 
+		timestamps are GMT/UTC
+	- Updates countdown timers to make them countdown in 
+		real time. 
+home.js
+	- Contains JavaScript which only runs on index.php, such as the JS which filters
+		notices out for a certain game.
+mapUI.js
+	- Alters the board map, allowing old turns to be shown using the back/forward arrows, 
+		and the large map button.
+forum.js
+	- Contains JavaScript which only runs in forum.php, allowing posting and forum 
+		traversal more efficiently/quickly without needing constant page refreshes. 
+cacheUpdate.js
+	- Contains the general purpose code which runs through all HTML on the page, updating 
+		it to be from the perspective of the current user.
+	- User-online icons are shown based on an array of online users saved to 
+		cache/onlineUsers.json by gamemaster.php 
+	- Message icons on the forum and homepage updated depending on whether the current 
+		user has viewed the message.
+	- Messages from the viewing user italicized
+	
+board/ 
+	- Contains code which represents board/game data; providing a data-structure which
+		can be used to easily generate orders or draw dynamic data to the map.
+board/territories.js
+	- Loads the basic data which represents territories and borders.
+board/model.js
+	- Loads the classes into which the raw territory and unit data will be loaded.
+	- These classes manage things like finding adjacant units/territories, used to 
+		generate orders.
+	- If in Diplomacy phase loads the class which will allow convoy groups to be enumerated.
+board/load.js
+	- Loads the raw data into the model, preparing the board data for use:
+	- Loads terrstatus data (who owns which country, standoffs, etc) into the territories
+		data-structure
+	- Loads units data (saved to a JSON file in cache/games/123/12345/) into their own 
+		class, and loads these into the territories data-structure. Also saves all units
+		owned by the viewing user into a separate list.
+	- Begins phase-specific tasks: 
+		- Diplomacy: Iterates through coastal armies to get groups of convoyable locations
+			for order generation.
+		- Retreats: Loads standoff territories into a separate list.
+		- Builds: Loads supply-center territories into a separate list
+
+orders/order.js
+	- Contains the class which contains an order's data
+	- Contains the function which loads basic order data into the order class and initializes. 
+		This usually involves linking into the relevant board/* datastructure to allow it to be 
+		easily queried.
+	- Draws the form HTML, with the valid order options, and refreshes it when different options
+		are selected. Also controls whether an individual order segment has changed, coloring 
+		changed and unsaved segments a red shade.
+	- The order segments available to be changed are: type, toTerr, fromTerr, viaConvoy. The 
+		valid options for each of these segments depend on:
+		- Previous segments
+		- The phase the game is in
+		- The unit/board context (who surrounds the unit etc)
+		Because generating these options varies significantly depending on the phase the code
+		for generating them for each phase is contained in separate files, which extend the 
+		generic order class for that specific phase.
+orders/phaseDiplomacy.js
+	- Extends the order class for the Diplomacy phase. 
+	- type = Hold/Move/Support-hold/Support-move/Convoy
+orders/phaseRetreats.js
+	- Retreats phase. type = Retreat/Disband
+orders/phaseBuilds.js
+	- Builds phase. type = Build-army/Build-fleet/Wait/Destroy
+orders/form.js
+	- Handles order submission:
+	- Manages the complete, loaded list of the user's orders.
+	- Keeps tabs on whether orders are completed and ready for finalization, whether 
+		the player is currently finalzied, whether new, unsaved order data is present, etc. 
+		This data is used to show the correct Save/Ready buttons beneath the order form, and 
+		to respond correctly whent they are clicked.
+	- On submission it will send a request to ajax.php, wait for a response, and display that 
+		response appropriately; updating whether currently finalized/saved, displaying moves 
+		which had errors occur, and updating the order-status icon throughout the board page.
+		If there is a server-side error it will display it textually, allowing the user to 
+		re-submit their orders if appropriate.
+
+Server-side code
+----------------
+libHTML::$footerIncludes
+	An array of JavaScript files in the JavaScript folder which are to be loaded in the footer.
+	Used to load JavaScript files which are only relevant to a certain page in certain 
+	circumstances; e.g. mapUI.js, home.js, forum.js, etc
+libHTML::$footerScript
+	An array of JavaScript code strings which is output in the footer, and will run when the DOM is 
+	loaded. Can rely on the Prototype framework being available, and all of $footerIncludes[] 
+	being loaded, and the entire page DOM being loaded, but not on all resources e.g. images
+	being loaded.
+	Often used to call functions in JavaScript included via $footerIncludes, which often relies 
+	on the page being loaded and Prototype being available before being run.
+
+ajax.php
+	The main place where JavaScript code dynamically interacts with the server. Tries to load a 
+	slimmed down webDiplomacy environment, with no user logon; user credentials have to be 
+	specified using a token rather than authenticated via user/password.
+	Via utility.js any runtime errors that occur in the JavaScript are logged silently via ajax.php
+	providing debugging info.
+	orders/form.js interacts with ajax.php to submit orders, using JSON token data to authenticate
+	as a certain country with control over certain orders without having to authenticate the user
+	first.

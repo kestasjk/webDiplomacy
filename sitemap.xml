@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url><loc>http://webdiplomacy.net/index.php</loc><changefreq>hourly</changefreq></url>
+<url><loc>http://webdiplomacy.net/help.php</loc><changefreq>monthly</changefreq></url>
+<url><loc>http://webdiplomacy.net/intro.php</loc><changefreq>monthly</changefreq></url>
+<url><loc>http://webdiplomacy.net/halloffame.php</loc><changefreq>monthly</changefreq></url>
+<url><loc>http://webdiplomacy.net/points.php</loc><changefreq>monthly</changefreq></url>
+<url><loc>http://webdiplomacy.net/faq.php</loc><changefreq>monthly</changefreq></url>
+<url><loc>http://webdiplomacy.net/credits.php</loc><changefreq>monthly</changefreq></url>
+<url><loc>http://webdiplomacy.net/developers.php</loc><changefreq>monthly</changefreq></url>
+<url><loc>http://webdiplomacy.net/AGPL.txt</loc><changefreq>never</changefreq></url>
+<url><loc>http://webdiplomacy.net/datc.php</loc><changefreq>monthly</changefreq></url>
+<url><loc>http://webdiplomacy.net/doc/</loc><changefreq>monthly</changefreq></url>
+<url><loc>http://webdiplomacy.net/doc/phpDoc/</loc><changefreq>monthly</changefreq></url>
+</urlset>

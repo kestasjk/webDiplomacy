@@ -1,0 +1,155 @@
+/**
+ * Variants (for variant developers and webmasters)
+ * ================================================
+ *
+ * Before starting
+ * ---------------
+ * *Please understand the open-source license of webDiplomacy before creating a variant for it*!
+ * The deal is: You get lots of free, flexible source-code which you can change however you like,
+ * but *you have to share derivative works (improvements, variants, etc)*!
+ * If someone requests a copy of the code you are running the license means you have to send it to
+ * them! If that doesn't fit your project *you cannot* use webDiplomacy!
+ *
+ * Also forum.webdiplomacy.net is available if you have a variant in mind but don't understand
+ * something technical here; every webmaster running webDiplomacy wants good variants for their
+ * server, so there'll be lots of help available, don't worry if you don't understand something.
+ *
+ *
+ * What a variant is in webDiplomacy
+ * ---------------------------------
+ * A variant is basically Diplomacy with a different map, which means a few things need to be flexible:
+ * 	- The map image
+ * 	- Countries; names, starting unit positions, colors, supply-centers
+ * 	- Territories; names, positions, borders, supply-center status
+ *
+ * But allowing only these things to change from variant to variant has two problems:
+ * 	- A variant may be different in unexpected ways, requiring patches throughout the code, making updates difficult.
+ * 	- If a variant is just a slight modification of an existing variant lots of things need to be duplicated.
+ *
+ * The way variants work in webDiplomacy is intended to allow changes to be as wide ranging as possible,
+ * making it possible to change just about any aspect of how a game works, keeping all variant code and
+ * data in one place, and allowing small changes to existing variants.
+ *
+ *
+ * How to install a variant
+ * ------------------------
+ * Variants contain PHP code, and like any code you should only run it if it is from a
+ * trusted source. Also check that it will work with the webDiplomacy version you have installed.
+ * 
+ * 
+ * > Once checked copy the folder into your "variants/" folder. 
+ * 
+ * > Open the folder you just copied across and check on variant.php; the main class for any variant, 
+ *   which every variant has. 
+ * -> You may want to change the $id value, the variant-ID number, if you have already installed a 
+ *    variant with the new variant's default ID.
+ * -> Also you may need to change the $mapID from the default value; this ID refers to the map this 
+ *    variant uses. When two variants use the same map (a rule-variant) it is more efficient to make 
+ *    them use the same map data, and this is done by making them share the same mapID.
+ * -> On the same note some variants may depend on others (usually because they share map data).
+ * -> Finally you should check the cache/ sub-folder, which all variants have to store frequently used
+ *    pre-calculated data, that it can be written to by your web-server user.
+ * 
+ * > Now that you know the variant-ID number, the name of the new variant, and have done the checks
+ *   above you can go to config.php to activate the variant.
+ * -> Find $variants, and add the new variant to the list. The list contains the variant-names indexed
+ *    by the ID number. So the "Classic" variant has a variant ID of 1, it is stored in the $variants 
+ *    list as 1=>'Classic'. To add a variant called "Foobar" with a variant ID of 10 it would be set to 
+ *    $variants=array(1=>'Classic',10=>'Foobar');
+ * -> The variant is now activated. When the code is first initialized (probably on the "New Game" page) 
+ *    it will detect that it is the first time it has run and will run the install.php file automatically, 
+ *    which will load up the board data into the database, save javascript board representations, and 
+ *    make caches for efficiency.
+ *    This may take a while the first time it runs, especially for large maps.
+ *   
+ * > The variant can now be played by the users
+ * 
+ * 
+ * What a variant looks like
+ * -------------------------
+ * variant.php 	= The main variant class, which handles most of the variant-specific tasks like specifying 
+ * 				which classes the variant changes.
+ * install.php	= Runs when the main variant class is loaded but detects that the variant data isn't loaded
+ * 				into the database. Usually installs map data; variants which don't use their own map can 
+ * 				directly call the install.php of the variant which defined the map they use.
+ * cache/		= Data is stored in here which would otherwise need to be recalculated from the database 
+ * 				each time the variant gets loaded. (Supply center counts, coastal->decoastal territory 
+ * 				translation, etc.)
+ * resources/	= Static files used by the variant like images, style-sheets, javascript code.
+ * 				For variants which define their own map this will usually contain the map images. All 
+ * 				variants must have a variant.css file here, which defines the country-colors the variant 
+ * 				uses. 
+ * classes/		= The code which the variant modifies, more on this later. If this was empty the variant 
+ * 				would do more or less nothing; the contents of this folder sets out exactly what the 
+ * 				variant changes.
+ * 
+ * 
+ * How a variant works
+ * -------------------
+ * All objects loaded for processing/displaying games/members/chatboxes/orders etc etc are done through a 
+ * variant layer. Just about any functionality in any game-related code can be replaced or extended, without 
+ * needing to alter the standard non-variant code in any way.
+ * However by default, without any direction from variant.php, all object loaded pass directly through the 
+ * variant layer without any replacement. Even quite different variants usually only need to change a few 
+ * small things.
+ * 
+ * The standard variants which come with webDiplomacy were written to test and demo this more than anything 
+ * else; most of them use the Classic map but alter some code in various ways.
+ * 
+ * Classic itself alters standard webDip code:
+ * 	- It defines its own map, and so has to extend drawMap.php . variants/Classic/classes/drawMap.php 
+ * 	contains a list of all the things that will usually need to be changed to draw a new map.
+ * 	- Also most all variants which define their own map will need to alter the pre-game adjudicator, which 
+ * 	allocates which units go to which countries. This is done via variants/Classic/classes/adjudicatorPreGame.php
+ * 	- Classic uses fair country-balancing code, which aren't yet made generic for all variants, so the default 
+ *  is simple random country-balancing which works with any variant, and Classic's extended adjudicatorPreGame
+ *  object contains the fairer country-balancer.
+ * 
+ * 
+ * The World variant shows how an alternate map can be defined, but it's fairly similar to the Classic 
+ * variant in terms of rules etc, only the map has changed, so it works similarly to Classic. Other than 
+ * changing Game objects to show different dates (starting in the year 2000 instead of 1901) it is like 
+ * Classic except with different map data.
+ * 
+ * 
+ * The other variants all extend the Classic variant in different ways, in ways that show how to make 
+ * fun changes to parts of the game while keeping within the variant's own folder. Combined with alternate 
+ * maps the techniques let variants make lots of changes.
+ * 
+ * 
+ * FleetRome is the best example of a small variant, showing the bare basics of what is required. It is 
+ * simply Classic except Rome starts with a fleet instead of an army.
+ * It doesn't define its own map, and makes no changes to it, so it doesn't need its own install.php data, 
+ * or its own drawMap extension. It uses the same mapID as Classic, and extends the Classic variant object 
+ * which means it immidiately behaves just like Classic and only modifications need to be layered on.
+ * 
+ * variants/FleetRome/classes/adjudicatorPreGame.php is the only object modified. It extends 
+ * variants/Classic/classes/adjudicatorPreGame.php, so without any code it inherits Classic's fair-balancing
+ * code.
+ * The class simply alters the starting unit data which adjudicatorPreGame uses, making the one Army->Fleet 
+ * change needed.
+ * 
+ * The single CSS resource file, install.php, and cache directory, are bare-bones and represent the minimum 
+ * a variant needs to run.
+ * 
+ * 
+ * Next on the difficulty scale is CustomStart. It also extends Classic, and uses the standard map. It 
+ * changes game rules so that the first phase is unit-placing, before Spring 1901 starts. 
+ * adjudicatorPreGame is modified so that no starting units are created. The two functions which write the 
+ * start units to the database are replaced with nothing, removing the standard functionality without 
+ * leaving the variants folder.
+ * processGame is also altered to change the way phases progress. Other than in the first turn it calls 
+ * standard processGame code which behaves as usual, the only modifications apply to the first turn.
+ * 
+ * 
+ * Finally BuildAnywhere demos altering the OrderInterface and userOrderBuilds order validator to make 
+ * changes to what moves are allowed. In this case build rules are changed so that players can build on 
+ * any supply center they own.
+ * This also requires modifications to the client-side JavaScript, so this variant comes with a JavaScript 
+ * resource which alters order-generation code.
+ * 
+ * 
+ * The best way to build a variant is to take an existing one and change it until it does what you need. 
+ * The code should be commented enough to copy a variant and change it as you go.
+ * 
+ */

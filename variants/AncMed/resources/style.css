@@ -1,0 +1,14 @@
+@CHARSET "ISO-8859-1";
+
+.variantAncMed .country0 { color: #CE7800 ! important; } /* Global   */
+.variantAncMed .country1 { color: #007BA5 ! important; } /* Carthage */
+.variantAncMed .country2 { color: #b8ad00 ! important; } /* Egypt    */
+.variantAncMed .country3 { color: #259901 ! important; } /* Greece   */
+.variantAncMed .country4 { color: #6F005D ! important; } /* Persia   */
+.variantAncMed .country5 { color: #D62929 ! important; } /* Rome     */
+
+.variantAncMed .occupationBar1 { background-color: #79AFC6; } /* Carthage */
+.variantAncMed .occupationBar2 { background-color: #EAEAAF; } /* Egypt    */
+.variantAncMed .occupationBar3 { background-color: #A4C499; } /* Greece   */
+.variantAncMed .occupationBar4 { background-color: #A87E9F; } /* Persia   */
+.variantAncMed .occupationBar5 { background-color: #C48F85; } /* Rome     */

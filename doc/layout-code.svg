@@ -1,0 +1,1477 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   sodipodi:docbase="C:\Documents and Settings\Kestas\Desktop"
+   sodipodi:docname="phpdiplomacy-arch.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective217" />
+    <marker
+       inkscape:stockid="TriangleOutM"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="TriangleOutM"
+       style="overflow:visible">
+      <path
+         id="path7524"
+         d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none"
+         transform="scale(0.4)" />
+    </marker>
+    <marker
+       inkscape:stockid="TriangleInM"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="TriangleInM"
+       style="overflow:visible">
+      <path
+         id="path7515"
+         d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none"
+         transform="scale(-0.4)" />
+    </marker>
+    <marker
+       inkscape:stockid="TriangleInL"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="TriangleInL"
+       style="overflow:visible">
+      <path
+         id="path7512"
+         d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none"
+         transform="scale(-0.8)" />
+    </marker>
+    <marker
+       inkscape:stockid="TriangleOutL"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="TriangleOutL"
+       style="overflow:visible">
+      <path
+         id="path7521"
+         d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none"
+         transform="scale(0.8)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lend"
+       style="overflow:visible;">
+      <path
+         id="path7426"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none;"
+         transform="scale(0.8) rotate(180) translate(12.5,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lstart"
+       style="overflow:visible">
+      <path
+         id="path7423"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none"
+         transform="scale(0.8) translate(12.5,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     gridtolerance="10000"
+     guidetolerance="10"
+     objecttolerance="10"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="1029.5457"
+     inkscape:cy="656.62932"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     width="990px"
+     height="765px"
+     inkscape:window-width="1024"
+     inkscape:window-height="696"
+     inkscape:window-x="-4"
+     inkscape:window-y="-4"
+     showgrid="false" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:6.09999990000000030;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2590"
+       width="3168.5713"
+       height="1897.1428"
+       x="-960"
+       y="-607.63782" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#ababab;stroke-width:4.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 445,202.36218 L 565,-291.92354"
+       id="path6401"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#ababab;stroke-width:4.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 955.71429,12.362185 L 547.14286,435.21932"
+       id="path9619"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <rect
+       style="opacity:1;color:#000000;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect3423"
+       width="201.46661"
+       height="166.07109"
+       x="490.7301"
+       y="-416.8652"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#ababab;stroke-width:4.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 535.71429,29.50504 L 555.71429,435.21932"
+       id="path5422"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#ababab;stroke-width:4.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 497.14286,200.93361 L 455.71429,450.9336"
+       id="path6393"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#ababab;stroke-width:4.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 726.42858,470.21933 L 610.71429,167.36218"
+       id="path6395"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <rect
+       style="opacity:1;color:#000000;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect3409"
+       width="1634.4197"
+       height="537.40118"
+       x="-902.82697"
+       y="-197.25597"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <rect
+       style="opacity:1;color:#000000;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect3411"
+       width="895.92645"
+       height="501.03568"
+       x="-880.53204"
+       y="-182.10368"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <rect
+       style="opacity:1;color:#000000;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect3415"
+       width="670.74152"
+       height="248.49753"
+       x="45.698845"
+       y="-184.12399"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#ababab;stroke-width:4.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 739.28572,470.93361 L 953.44527,315.72695"
+       id="path6397"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#ababab;stroke-width:4.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 1160.7143,423.79075 L 1459.2857,45.219318"
+       id="path6403"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#ababab;stroke-width:4.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 1127.8571,429.50503 L 1325,88.07646"
+       id="path6399"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <rect
+       style="opacity:1;color:#000000;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2438"
+       width="1147.5333"
+       height="670.74127"
+       x="79.033958"
+       y="385.60202"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="339.65335"
+       y="693.69855"
+       id="text2160"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2162"
+         x="339.65335"
+         y="693.69855">error_handler()</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="387.13055"
+       y="726.02344"
+       id="text2164"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2166"
+         x="387.13055"
+         y="726.02344">Config</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="367.93765"
+       y="760.36859"
+       id="text2168"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2170"
+         x="367.93765"
+         y="760.36859">Database</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="393.19147"
+       y="789.66302"
+       id="text2172"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2174"
+         x="393.19147"
+         y="789.66302">EMail</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="399.25238"
+       y="821.98792"
+       id="text2176"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2178"
+         x="399.25238"
+         y="821.98792">User</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="601.2829"
+       y="847.24182"
+       id="text2180"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2182"
+         x="601.2829"
+         y="847.24182">libAuth</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="599.26263"
+       y="774.51074"
+       id="text2184"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2186"
+         x="599.26263"
+         y="774.51074">libHTML</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="602.29303"
+       y="808.85602"
+       id="text2188"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2190"
+         x="602.29303"
+         y="808.85602">libTime</tspan></text>
+    <rect
+       style="opacity:1;color:#000000;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800064;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect3417"
+       width="402.04092"
+       height="161.62442"
+       x="110.34864"
+       y="874.51575"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#008000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="152.77515"
+       y="906.8407"
+       id="text2192"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2194"
+         x="152.77515"
+         y="906.8407" /><tspan
+         sodipodi:role="line"
+         x="152.77515"
+         y="941.8407"
+         id="tspan2196">usercp.php</tspan><tspan
+         sodipodi:role="line"
+         x="152.77515"
+         y="976.8407"
+         id="tspan2198">register.php</tspan><tspan
+         sodipodi:role="line"
+         x="152.77515"
+         y="1011.8407"
+         id="tspan2200">logon.php</tspan></text>
+    <rect
+       style="opacity:1;color:#000000;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800064;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect3421"
+       width="1117.2289"
+       height="234.35541"
+       x="95.196358"
+       y="400.75433"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#008000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="126.51122"
+       y="454.29239"
+       id="text2202"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2204"
+         x="126.51122"
+         y="454.29239">gamecreate.php</tspan><tspan
+         sodipodi:role="line"
+         x="126.51122"
+         y="489.29239"
+         id="tspan2346">gamelistings.php</tspan><tspan
+         sodipodi:role="line"
+         x="126.51122"
+         y="524.29239"
+         id="tspan2206">profile.php</tspan><tspan
+         sodipodi:role="line"
+         x="126.51122"
+         y="559.29239"
+         id="tspan2208">halloffame.php</tspan><tspan
+         sodipodi:role="line"
+         x="126.51122"
+         y="594.29239"
+         id="tspan2344" /></text>
+    <rect
+       style="opacity:1;color:#000000;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800112;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect3419"
+       width="214.15257"
+       height="240.45839"
+       x="934.63312"
+       y="801.7428"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#008000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="958.87689"
+       y="832.39398"
+       id="text2210"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2212"
+         x="958.87689"
+         y="832.39398">credits.php</tspan><tspan
+         sodipodi:role="line"
+         x="958.87689"
+         y="867.39398"
+         id="tspan2214">faq.php</tspan><tspan
+         sodipodi:role="line"
+         x="958.87689"
+         y="902.39398"
+         id="tspan2216">help.php</tspan><tspan
+         sodipodi:role="line"
+         x="958.87689"
+         y="937.39398"
+         id="tspan2218">intro.php</tspan><tspan
+         sodipodi:role="line"
+         x="958.87689"
+         y="972.39398"
+         id="tspan2220">points.php</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="315.4097"
+       y="978.56146"
+       id="text2222"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2224"
+         x="315.4097"
+         y="978.56146">EasyCaptcha</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="598.25238"
+       y="688.64783"
+       id="text2226"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2228"
+         x="598.25238"
+         y="688.64783">header.php</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="799.27271"
+       y="446.21115"
+       id="text2230"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2232"
+         x="799.27271"
+         y="446.21115" /><tspan
+         sodipodi:role="line"
+         x="799.27271"
+         y="481.21115"
+         id="tspan2234">libGameMessage</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="519.46057"
+       y="443.18073"
+       id="text2236"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2238"
+         x="519.46057"
+         y="443.18073">order</tspan><tspan
+         sodipodi:role="line"
+         x="519.46057"
+         y="478.18073"
+         id="tspan2240">Territory</tspan><tspan
+         sodipodi:role="line"
+         x="519.46057"
+         y="513.18073"
+         id="tspan2242">Unit</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="677.04431"
+       y="476.51578"
+       id="text2244"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2246"
+         x="677.04431"
+         y="476.51578">Member</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="1032.6179"
+       y="434.08932"
+       id="text2248"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2250"
+         x="1032.6179"
+         y="434.08932">convoyQuery</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="827.55707"
+       y="666.42438"
+       id="text2252"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2254"
+         x="827.55707"
+         y="666.42438">Message</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="445.71942"
+       y="595.71368"
+       id="text2256"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2258"
+         x="445.71942"
+         y="595.71368">libFindGames</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#008000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="1011.4048"
+       y="678.5462"
+       id="text2260"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2262"
+         x="1011.4048"
+         y="678.5462">index.php</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="396.22195"
+       y="458.33298"
+       id="text2264"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2266"
+         x="396.22195"
+         y="458.33298">Game</tspan></text>
+    <rect
+       style="opacity:1;color:#000000;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800064;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect3427"
+       width="945.50299"
+       height="488.91385"
+       x="756.84625"
+       y="-149.77881"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <rect
+       style="opacity:1;color:#000000;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22800016;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect3429"
+       width="923.27966"
+       height="315.16757"
+       x="766.94781"
+       y="-135.63667"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#008000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="1040.6521"
+       y="285.11905"
+       id="text2268"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2270"
+         x="1040.6521"
+         y="285.11905">board.php</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="989.18158"
+       y="88.617188"
+       id="text2272"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2274"
+         x="989.18158"
+         y="88.617188">OrderInterface</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="799.44604"
+       y="220.87538"
+       id="text2276"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2278"
+         x="799.44604"
+         y="220.87538">libChatbox</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="883.11554"
+       y="322.9726"
+       id="text2280"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2282"
+         x="883.11554"
+         y="322.9726">userMember</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="918.19598"
+       y="20.201641"
+       id="text2284"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2286"
+         x="918.19598"
+         y="20.201641">userOrder</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="985.14093"
+       y="-17.448854"
+       id="text2288"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2290"
+         x="985.14093"
+         y="-17.448854">userOrderDiplomacy</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="885.13574"
+       y="-52.804169"
+       id="text2292"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2294"
+         x="885.13574"
+         y="-52.804169">userOrderRetreats</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="779.0697"
+       y="-88.159515"
+       id="text2296"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2298"
+         x="779.0697"
+         y="-88.159515">userOrderBuilds</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="1348.6809"
+       y="56.474148"
+       id="text2300"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2302"
+         x="1348.6809"
+         y="56.474148">convoyQueryConvoyFrom</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="1298.2882"
+       y="98.718681"
+       id="text2304"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2306"
+         x="1298.2882"
+         y="98.718681">convoyQueryConvoyTo</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="1314.4506"
+       y="131.04358"
+       id="text2308"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2310"
+         x="1314.4506"
+         y="131.04358">convoyQueryGame</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="1317.4811"
+       y="159.32784"
+       id="text2312"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2314"
+         x="1317.4811"
+         y="159.32784">convoyQueryMove</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="1347.7856"
+       y="21.947044"
+       id="text2316"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2318"
+         x="1347.7856"
+         y="21.947044">convoyQuerySupportMove</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="410.36404"
+       y="207.8152"
+       id="text2320"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2322"
+         x="410.36404"
+         y="207.8152">processGame</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="478.04428"
+       y="175.4903"
+       id="text2324"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2326"
+         x="478.04428"
+         y="175.4903">processMember</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="448.74985"
+       y="40.129875"
+       id="text2328"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2330"
+         x="448.74985"
+         y="40.129875">processOrder</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="345.71426"
+       y="-28.560495"
+       id="text2332"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2334"
+         x="345.71426"
+         y="-28.560495">processOrderDiplomacy</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="319.45035"
+       y="-75.027534"
+       id="text2336"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2338"
+         x="319.45035"
+         y="-75.027534">processOrderRetreats</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="291.16602"
+       y="-117.45399"
+       id="text2340"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2342"
+         x="291.16602"
+         y="-117.45399">processOrderBuilds</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="-360.92688"
+       y="97.941338"
+       id="text2352"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2354"
+         x="-360.92688"
+         y="97.941338">adjConvoyChains</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="-749.2912"
+       y="27.965973"
+       id="text2356"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2358"
+         x="-749.2912"
+         y="27.965973">adjDependencyNode</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="-648.27588"
+       y="119.88983"
+       id="text2360"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2362"
+         x="-648.27588"
+         y="119.88983">adjHeadToHeadMove</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="-683.63116"
+       y="93.6259"
+       id="text2364"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2366"
+         x="-683.63116"
+         y="93.6259">adjMove</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="-721.00677"
+       y="62.311157"
+       id="text2368"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2370"
+         x="-721.00677"
+         y="62.311157">adjHold</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="-678.58051"
+       y="177.46858"
+       id="text2372"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2374"
+         x="-678.58051"
+         y="177.46858">adjSupport</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="-615.95093"
+       y="210.80359"
+       id="text2376"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2378"
+         x="-615.95093"
+         y="210.80359">adjSupportHold</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="-609.89014"
+       y="241.10815"
+       id="text2380"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2382"
+         x="-609.89014"
+         y="241.10815">adjSupportMove</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="-786.41437"
+       y="277.62952"
+       id="text2384"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2386"
+         x="-786.41437"
+         y="277.62952">adjParadoxException</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="-648.95758"
+       y="149.35934"
+       id="text2388"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2390"
+         x="-648.95758"
+         y="149.35934">adjConvoyMove</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="-284.30402"
+       y="-13.611274"
+       id="text2392"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2394"
+         x="-284.30402"
+         y="-13.611274" /><tspan
+         sodipodi:role="line"
+         x="-284.30402"
+         y="21.388726"
+         id="tspan2396">adjudicateDiplomacy()</tspan><tspan
+         sodipodi:role="line"
+         x="-284.30402"
+         y="56.388726"
+         id="tspan2398" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="-436.25775"
+       y="64.893471"
+       id="text2400"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2402"
+         x="-436.25775"
+         y="64.893471">adjLoadUnits()</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="-263.40771"
+       y="-103.9753"
+       id="text2404"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2406"
+         x="-263.40771"
+         y="-103.9753">adjudicateRetreats()</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="-285.63104"
+       y="-147.75854"
+       id="text2408"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2410"
+         x="-285.63104"
+         y="-147.75854">adjudicateBuilds()</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="39.638054"
+       y="207.8152"
+       id="text2412"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2414"
+         x="39.638054"
+         y="207.8152">adjudicatePreGame()</tspan></text>
+    <rect
+       style="opacity:1;color:#000000;fill:#6680ff;fill-opacity:0.35526315;fill-rule:nonzero;stroke:#0035ff;stroke-width:5.22799969;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect3425"
+       width="571.74652"
+       height="197.45763"
+       x="792.29083"
+       y="-417.16974"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#008000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="1046.8494"
+       y="-305.04285"
+       id="text2416"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2418"
+         x="1046.8494"
+         y="-305.04285">map.php</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="1182.2098"
+       y="-248.47429"
+       id="text2420"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2422"
+         x="1182.2098"
+         y="-248.47429">displayMap</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="865.02191"
+       y="-261.60629"
+       id="text2424"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2426"
+         x="865.02191"
+         y="-261.60629">drawMap</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="525.52142"
+       y="-320.4946"
+       id="text2428"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2430"
+         x="525.52142"
+         y="-320.4946" /><tspan
+         sodipodi:role="line"
+         x="525.52142"
+         y="-285.4946"
+         id="tspan2432">datcGame</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#008000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="41.658348"
+       y="300.74921"
+       id="text2434"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan2436"
+         x="41.658348"
+         y="300.74921">gamemaster.php</tspan></text>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5.4000001;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#TriangleInM);marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:32.4, 10.8;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 155,-53.352097 L -30.714284,-53.352112"
+       id="path5396"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5.4000001;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#TriangleInM);marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:32.4, 10.8;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 1247.8571,-24.066382 L 1335,11.647888"
+       id="path5408"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5.4000001;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#TriangleInM);marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:32.4, 10.8;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 1223.5714,-5.4949527 L 1290.7143,80.219317"
+       id="path5410"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5.4000001;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#TriangleInM);marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:32.4, 10.8;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 955,217.36218 L 1035,255.9336"
+       id="path5418"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-weight:normal;fill:#800000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="-857.14276"
+       y="-133.3521"
+       id="text6405"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan6407"
+         x="-857.14276"
+         y="-133.3521">Adjudicator</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-weight:normal;fill:#800000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="42.85714"
+       y="143.79076"
+       id="text6409"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan6411"
+         x="42.85714"
+         y="143.79076">GameMaster</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-weight:normal;fill:#800000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="66.144402"
+       y="45.246948"
+       id="text6413"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan6415"
+         x="66.144402"
+         y="45.246948">Orders</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;color:#000000;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="527.14288"
+       y="-366.20929"
+       id="text6417"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan6419"
+         x="527.14288"
+         y="-366.20929">DATC</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;color:#000000;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="811.42853"
+       y="-376.20926"
+       id="text6421"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan6423"
+         x="811.42853"
+         y="-376.20926">Map</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;color:#000000;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="1555.7142"
+       y="-90.494957"
+       id="text6425"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan6427"
+         x="1555.7142"
+         y="-90.494957">Orders</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;color:#000000;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="1577.1427"
+       y="310.93359"
+       id="text6429"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan6431"
+         x="1577.1427"
+         y="310.93359">Board</tspan></text>
+    <path
+       style="font-size:36px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;color:#000000;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       d="M 1113.4074,607.96906 L 1113.4074,604.94563 L 1124.3234,604.92805 L 1124.3234,614.49055 C 1122.6476,615.82649 1120.9191,616.83137 1119.1379,617.5052 C 1117.3566,618.17902 1115.5285,618.51594 1113.6535,618.51594 C 1111.1222,618.51594 1108.8224,617.97395 1106.7541,616.88996 C 1104.6857,615.80598 1103.1242,614.2386 1102.0695,612.18781 C 1101.0148,610.13704 1100.4875,607.84603 1100.4875,605.31477 C 1100.4875,602.80697 1101.0119,600.46615 1102.0607,598.29231 C 1103.1095,596.1185 1104.6183,594.50424 1106.5871,593.44953 C 1108.5558,592.39487 1110.8234,591.86753 1113.3898,591.8675 C 1115.2531,591.86753 1116.9377,592.16929 1118.4435,592.77277 C 1119.9494,593.37632 1121.13,594.21713 1121.9855,595.29524 C 1122.841,596.37338 1123.4914,597.77963 1123.9367,599.51399 L 1120.8605,600.35774 C 1120.4738,599.04525 1119.9933,598.01401 1119.4191,597.26399 C 1118.8449,596.51401 1118.0246,595.91342 1116.9582,595.46223 C 1115.8918,595.01108 1114.7082,594.78549 1113.4074,594.78547 C 1111.8488,594.78549 1110.5011,595.0228 1109.3644,595.49738 C 1108.2277,595.97202 1107.3107,596.59604 1106.6135,597.36945 C 1105.9162,598.14291 1105.3742,598.99252 1104.9875,599.91828 C 1104.3312,601.51205 1104.0031,603.24056 1104.0031,605.10383 C 1104.0031,607.40072 1104.3986,609.32259 1105.1896,610.86945 C 1105.9806,612.41634 1107.132,613.56477 1108.6437,614.31477 C 1110.1554,615.06477 1111.7609,615.43977 1113.4601,615.43977 C 1114.9367,615.43977 1116.3781,615.15559 1117.7843,614.58723 C 1119.1906,614.01887 1120.257,613.41243 1120.9836,612.76789 L 1120.9836,607.96906 L 1113.4074,607.96906 z M 1141.1105,615.77375 C 1139.9386,616.76985 1138.8107,617.47297 1137.7267,617.88313 C 1136.6427,618.29328 1135.4797,618.49836 1134.2375,618.49836 C 1132.1867,618.49836 1130.6105,617.99738 1129.509,616.99543 C 1128.4074,615.99348 1127.8566,614.71321 1127.8566,613.15461 C 1127.8566,612.24055 1128.0646,611.40559 1128.4806,610.64973 C 1128.8967,609.89388 1129.4416,609.28743 1130.1154,608.83039 C 1130.7892,608.37337 1131.548,608.02767 1132.3918,607.79328 C 1133.0129,607.62923 1133.9504,607.47103 1135.2043,607.31867 C 1137.7589,607.014 1139.6398,606.65072 1140.8468,606.22883 C 1140.8586,605.79525 1140.8644,605.51986 1140.8644,605.40266 C 1140.8644,604.11361 1140.5656,603.20541 1139.9679,602.67805 C 1139.1593,601.96322 1137.9582,601.6058 1136.3644,601.60578 C 1134.8761,601.6058 1133.7775,601.86654 1133.0685,602.38801 C 1132.3595,602.90951 1131.8351,603.83236 1131.4953,605.15656 L 1128.4015,604.73469 C 1128.6828,603.41048 1129.1457,602.34115 1129.7902,601.52668 C 1130.4347,600.71225 1131.3664,600.08529 1132.5851,599.64582 C 1133.8039,599.20639 1135.216,598.98666 1136.8215,598.98664 C 1138.4152,598.98666 1139.7101,599.17416 1140.7062,599.54914 C 1141.7023,599.92416 1142.4347,600.39584 1142.9035,600.96418 C 1143.3722,601.53256 1143.7003,602.25033 1143.8879,603.1175 C 1143.9933,603.65658 1144.0461,604.62923 1144.0461,606.03547 L 1144.0461,610.25422 C 1144.0461,613.19563 1144.1134,615.05598 1144.2482,615.83527 C 1144.383,616.61457 1144.6496,617.36164 1145.048,618.07649 L 1141.7433,618.07649 C 1141.4152,617.42024 1141.2043,616.65266 1141.1105,615.77375 L 1141.1105,615.77375 z M 1140.8468,608.70735 C 1139.6984,609.1761 1137.9757,609.57454 1135.6789,609.90266 C 1134.3781,610.09017 1133.4582,610.3011 1132.9191,610.53547 C 1132.38,610.76985 1131.964,611.11263 1131.6711,611.56379 C 1131.3781,612.01497 1131.2316,612.51594 1131.2316,613.06672 C 1131.2316,613.91047 1131.5509,614.6136 1132.1896,615.1761 C 1132.8283,615.7386 1133.7629,616.01985 1134.9933,616.01985 C 1136.2121,616.01985 1137.2961,615.75325 1138.2453,615.22004 C 1139.1945,614.68684 1139.8918,613.95735 1140.3371,613.03156 C 1140.6769,612.31673 1140.8468,611.26204 1140.8468,609.8675 L 1140.8468,608.70735 z M 1148.9679,618.07649 L 1148.9679,599.40852 L 1151.798,599.40852 L 1151.798,602.02766 C 1152.384,601.11361 1153.1632,600.37826 1154.1359,599.8216 C 1155.1086,599.26498 1156.216,598.98666 1157.4582,598.98664 C 1158.841,598.98666 1159.9748,599.27377 1160.8595,599.84797 C 1161.7443,600.42221 1162.3683,601.22494 1162.7316,602.25617 C 1164.2082,600.0765 1166.13,598.98666 1168.4972,598.98664 C 1170.3488,598.98666 1171.7726,599.49936 1172.7687,600.52473 C 1173.7648,601.55014 1174.2628,603.12924 1174.2629,605.26203 L 1174.2629,618.07649 L 1171.1164,618.07649 L 1171.1164,606.31672 C 1171.1164,605.05111 1171.0138,604.13998 1170.8088,603.58332 C 1170.6037,603.0267 1170.2316,602.57845 1169.6926,602.2386 C 1169.1535,601.89877 1168.5207,601.72885 1167.7941,601.72883 C 1166.4816,601.72885 1165.3918,602.16537 1164.5246,603.0384 C 1163.6574,603.91146 1163.2238,605.30892 1163.2238,607.23078 L 1163.2238,618.07649 L 1160.0597,618.07649 L 1160.0597,605.94758 C 1160.0597,604.54134 1159.8019,603.48666 1159.2863,602.78352 C 1158.7707,602.08041 1157.9269,601.72885 1156.7551,601.72883 C 1155.8644,601.72885 1155.0412,601.96322 1154.2853,602.43195 C 1153.5295,602.90072 1152.9816,603.58627 1152.6418,604.4886 C 1152.3019,605.39095 1152.132,606.69173 1152.132,608.39094 L 1152.132,618.07649 L 1148.9679,618.07649 z M 1191.7707,612.06477 L 1195.0402,612.46906 C 1194.5246,614.37922 1193.5695,615.86164 1192.175,616.91633 C 1190.7804,617.97102 1188.9992,618.49836 1186.8312,618.49836 C 1184.1007,618.49836 1181.9357,617.65754 1180.3361,615.9759 C 1178.7365,614.29426 1177.9367,611.93587 1177.9367,608.9007 C 1177.9367,605.76009 1178.7453,603.32259 1180.3625,601.5882 C 1181.9797,599.85385 1184.0773,598.98666 1186.6554,598.98664 C 1189.1515,598.98666 1191.1906,599.83627 1192.7726,601.53547 C 1194.3546,603.2347 1195.1457,605.62533 1195.1457,608.70735 C 1195.1457,608.89485 1195.1398,609.1761 1195.1281,609.5511 L 1181.2062,609.5511 C 1181.3234,611.60188 1181.9035,613.17219 1182.9465,614.26203 C 1183.9894,615.35188 1185.2902,615.8968 1186.8488,615.8968 C 1188.0089,615.8968 1188.9992,615.59211 1189.8195,614.98274 C 1190.6398,614.37336 1191.2902,613.40071 1191.7707,612.06477 L 1191.7707,612.06477 z M 1181.382,606.94953 L 1191.8058,606.94953 C 1191.6652,605.37923 1191.2668,604.2015 1190.6105,603.41633 C 1189.6027,602.1976 1188.2961,601.58822 1186.6906,601.5882 C 1185.2375,601.58822 1184.0158,602.07455 1183.0256,603.04719 C 1182.0353,604.01986 1181.4875,605.32064 1181.382,606.94953 L 1181.382,606.94953 z "
+       id="text6433"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;color:#000000;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="391.42856"
+       y="915.2193"
+       id="text6437"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan6439"
+         x="391.42856"
+         y="915.2193">Forms</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;color:#000000;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="1044.2856"
+       y="1028.0765"
+       id="text6441"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan6443"
+         x="1044.2856"
+         y="1028.0765">Static</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;opacity:1;color:#000000;fill:#800000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial"
+       x="101.42857"
+       y="696.64795"
+       id="text6445"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan6447"
+         x="101.42857"
+         y="696.64795">Base</tspan></text>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker-start:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:27.6, 9.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 808.94271,455.30343 L 825.30819,239.48462"
+       id="path6449"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker-start:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:27.6, 9.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 466.90054,564.00168 L 356.90053,492.5731"
+       id="path7622"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker-start:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:27.6, 9.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 439.61852,572.42986 L 295.3328,521.00128"
+       id="path7624"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker-start:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:27.6, 9.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 283.90423,431.00129 L 429.6185,235.287"
+       id="path7626"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker-start:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:27.6, 9.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 832.47566,-57.570133 L 653.90423,-77.570146"
+       id="path7630"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker-start:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:27.6, 9.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 1099.6185,249.57272 L 1082.4757,119.57272"
+       id="path7634"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker-start:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:27.6, 9.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 1075.3328,68.144153 L 1048.1899,39.572714"
+       id="path7636"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5.4000001;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#TriangleInM);marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:32.4, 10.8;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 961.63163,664.99525 L 993.0602,669.28095"
+       id="path9590"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5.4000001;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#TriangleInM);marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:32.4, 10.8;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 395.71428,219.50504 L 264.28572,285.21931"
+       id="path9597"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5.4000001;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#TriangleInM);marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:32.4, 10.8;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 568.57143,218.79076 C 568.57143,218.79076 671.62142,658.20922 809.00217,652.1483"
+       id="path9609"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5.4000001;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#TriangleInM);marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:32.4, 10.8;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 680,-266.92353 L 828.57143,-151.20925"
+       id="path9611"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5.4000001;stroke-linecap:butt;stroke-linejoin:miter;marker-start:url(#TriangleInM);marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:32.4, 10.8;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 617.14286,-258.35211 L 605.71429,-191.20926"
+       id="path9613"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker-start:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:27.6, 9.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 702.55756,-185.36488 L 826.84327,-225.3649"
+       id="path9615"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker-start:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:27.6, 9.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 1245.4147,-233.93631 L 1275.4147,-133.93632"
+       id="path9617"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;fill:#008000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial"
+       x="531.42859"
+       y="-319.06638"
+       id="text9621"
+       inkscape:export-filename="C:\Documents and Settings\Kestas\Desktop\path2366.png"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003"><tspan
+         sodipodi:role="line"
+         id="tspan9623"
+         x="531.42859"
+         y="-319.06638">datc.php</tspan></text>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;marker-start:none;marker-end:url(#TriangleOutM);stroke-miterlimit:4;stroke-dasharray:27.6, 9.2;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 594.05839,210.89244 L 803.18975,450.60827"
+       id="path2366"
+       sodipodi:nodetypes="cc"
+       inkscape:export-xdpi="90.300003"
+       inkscape:export-ydpi="90.300003" />
+  </g>
+</svg>
