@@ -1,1 +1,15 @@
 cache/
+config.php
+errorlog/
+errorlogs/
+orderlog/
+orderlogs/
+*.zip
+*.gz
+*.tgz
+*.tbz
+*.bz2
+mapstore/
+phpDoc/
+pointslog.txt
+pointlog.txt
