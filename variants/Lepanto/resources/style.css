@@ -1,0 +1,8 @@
+@CHARSET "ISO-8859-1";
+
+.variantLepanto .country0 { color: #08374d ! important; }  /* Global           */
+.variantLepanto .country1 { color: #259901 ! important; }  /* Holy League */
+.variantLepanto .country2 { color: #D62929 ! important; }  /* Ottoman Empire */
+
+.variantLepanto .occupationBar1 { background-color: #A4C499; }  /* Holy League */
+.variantLepanto .occupationBar2 { background-color: #C48F85; }  /* Ottoman Empire */

@@ -1,0 +1,11 @@
+@CHARSET "ISO-8859-1";
+
+.variantHundred .country0 { color: #CE7800 ! important; } /* Global   */
+.variantHundred .country1 { color: #8B481A ! important; } /* Burgundy */
+.variantHundred .country2 { color: #DD51BD ! important; } /* England  */
+.variantHundred .country3 { color: #007BA5 ! important; } /* France   */
+
+.variantHundred .occupationBar1 { background-color: #A08A75; } /* Burgundy */
+.variantHundred .occupationBar2 { background-color: #EFC4E4; } /* England  */
+.variantHundred .occupationBar3 { background-color: #79AFC6; } /* France   */
+

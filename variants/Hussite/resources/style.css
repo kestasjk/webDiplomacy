@@ -1,0 +1,23 @@
+@CHARSET "ISO-8859-1";
+
+.variantHussite .country0 { color: #CE7800 ! important; } /* Neutral                      */
+.variantHussite .country1 { color: #B2A38F ! important; } /* Bavaria                      */
+.variantHussite .country2 { color: #E8EA26 ! important; } /* Catholic Landfrieden         */
+.variantHussite .country3 { color: #98555C ! important; } /* Hungary                      */
+.variantHussite .country4 { color: #EC6275 ! important; } /* Kingdom of Poland            */
+.variantHussite .country5 { color: #7B5A5A ! important; } /* Margraviate of Brandenburg   */
+.variantHussite .country6 { color: #18835C ! important; } /* Orebites                     */
+.variantHussite .country7 { color: #5961C6 ! important; } /* Praguers                     */
+.variantHussite .country8 { color: #9B93B4 ! important; } /* Saxony                       */
+.variantHussite .country9 { color: #FF9A22 ! important; } /* Taborites                    */
+
+.variantHussite .occupationBar1 { background-color: #A19381; } /* Bavaria                      */
+.variantHussite .occupationBar2 { background-color: #D3D523; } /* Catholic Landfrieden         */
+.variantHussite .occupationBar3 { background-color: #80484E; } /* Hungary                      */
+.variantHussite .occupationBar4 { background-color: #D25768; } /* Kingdom of Poland            */
+.variantHussite .occupationBar5 { background-color: #5E4545; } /* Margraviate of Brandenburg   */
+.variantHussite .occupationBar6 { background-color: #136849; } /* Orebites                     */
+.variantHussite .occupationBar7 { background-color: #4A51A5; } /* Praguers                     */
+.variantHussite .occupationBar7 { background-color: #817A94; } /* Saxony                       */
+.variantHussite .occupationBar7 { background-color: #DC851D; } /* Taborites                    */
+

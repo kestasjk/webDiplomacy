@@ -1,0 +1,16 @@
+@CHARSET "ISO-8859-1";
+
+.variantGreekDip .country0 { color: #CE7800 ! important; } /* Global    */
+.variantGreekDip .country1 { color: #08374d ! important; } /* Athens    */
+.variantGreekDip .country2 { color: #259901 ! important; } /* Byzantium */
+.variantGreekDip .country3 { color: #6F005D ! important; } /* Macedonia */
+.variantGreekDip .country4 { color: #b8ad00 ! important; } /* Persia    */
+.variantGreekDip .country5 { color: #007BA5 ! important; } /* Rhoades   */
+.variantGreekDip .country6 { color: #D62929 ! important; } /* Sparta    */
+
+.variantGreekDip .occupationBar1 { background-color: #406c80; } /* Athens    */
+.variantGreekDip .occupationBar2 { background-color: #A4C499; } /* Byzantium */
+.variantGreekDip .occupationBar3 { background-color: #A87E9F; } /* Macedonia */
+.variantGreekDip .occupationBar4 { background-color: #EAEAAF; } /* Persia    */
+.variantGreekDip .occupationBar5 { background-color: #79AFC6; } /* Rhoades   */
+.variantGreekDip .occupationBar6 { background-color: #C48F85; } /* Sparta    */

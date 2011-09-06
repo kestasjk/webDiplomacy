@@ -1,0 +1,10 @@
+@CHARSET "ISO-8859-1";
+
+.variantFGA .country0 { color: #CE7800 ! important; } /* Global */
+.variantFGA .country1 { color: #007BA5 ! important; } /* France */
+.variantFGA .country2 { color: #D62929 ! important; } /* Austria */
+.variantFGA .country3 { color: #8B481A ! important; } /* German */
+
+.variantFGA .occupationBar1 { background-color: #79AFC6; } /* France */
+.variantFGA .occupationBar2 { background-color: #C48F85; } /* Austria */
+.variantFGA .occupationBar3 { background-color: #A08A75; } /* German */

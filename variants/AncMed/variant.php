@@ -1,6 +1,6 @@
 <?php
 /*
-	Copyright (C) 2010 Oliver Auth
+	Copyright (C) 2011 Oliver Auth
 
 	This file is part of the Ancient Mediterranean variant for webDiplomacy
 
@@ -16,21 +16,26 @@
 
 	You should have received a copy of the GNU Affero General Public License
 	along with webDiplomacy. If not, see <http://www.gnu.org/licenses/>.
+	
+	If you have questions or suggestions send me a mail: Oliver.Auth@rhoen.de
 
 	---
 
 	Rules for the the Ancient Mediterranean Variant by Don Hessong:
 	http://www.variantbank.org/results/rules/a/ancient_med.htm
 
-	This is Version: 1.7
-
 	Changelog:
-	1.0: initial version
-	1.1: fixed some graphic issues on the maps
-	1.5: new webdip0.97 variant code
-	1.6: minor fixes
+	1.0:   initial version
+	1.1:   fixed some graphic issues on the maps
+	1.5:   new webdip0.97 variant code
+	1.6:   minor fixes
 	1.6.1: Added color-function to avoid black flags and stars
-	1.6.2: some adjustments to the new variant.php funtionality
+	1.6.2: some adjustments to the new variant.php functionality
+	1.6.3: borderfix
+	1.6.4: smallmap color-fix
+	1.7:   new: rules.html added to explain the rule-change for the Baleares.
+	1.7.2: New icons
+	
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -43,7 +48,7 @@ class AncMedVariant extends WDVariant {
 	public $description='A variant with a map of the Ancient Mediterranean.';
 	public $author='Don Hessong';
 	public $adapter='Oliver Auth';
-	public $version='1.6.2';
+	public $version='1.7.2';
 	public $homepage='http://www.variantbank.org/results/rules/a/ancient_med.htm';
 
 	public $countries=array('Carthage','Egypt','Greece','Persia','Rome');
@@ -51,9 +56,9 @@ class AncMedVariant extends WDVariant {
 	public function __construct() {
 		parent::__construct();
 
-		$this->variantClasses['drawMap'] = 'AncMed';
+		$this->variantClasses['drawMap']            = 'AncMed';
 		$this->variantClasses['adjudicatorPreGame'] = 'AncMed';
-
+		$this->variantClasses['OrderInterface']     = 'AncMed';
 	}
 
 	public function turnAsDate($turn) {

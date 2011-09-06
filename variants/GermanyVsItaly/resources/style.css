@@ -1,0 +1,8 @@
+@CHARSET "ISO-8859-1";
+
+.variantGermanyVsItaly .country0 { color: #CE7800 ! important; } /* Global */
+.variantGermanyVsItaly .country1 { color: #8B481A ! important; } /* Germany */
+.variantGermanyVsItaly .country2 { color: #259901 ! important; } /* Italy */
+
+.variantGermanyVsItaly .occupationBar1 { background-color: #A08A75; } /* Germany */
+.variantGermanyVsItaly .occupationBar2 { background-color: #A4C499; } /* Italy */

@@ -1,6 +1,6 @@
 <?php
 /*
-	Copyright (C) 2010 Oliver Auth
+	Copyright (C) 2011 Oliver Auth
 
 	This file is part of the the Ancient Mediterranean variant for webDiplomacy
 
@@ -32,24 +32,32 @@ class AncMedVariant_drawMap extends drawMap {
 		5 =>  array(196, 143, 133)  // Rome
 	);
 
+	// No need to set the transparency for our custom icons and mapnames.
+	protected function setTransparancy(array $image, array $color=array(255,255,255))
+	{
+	}
+	
 	protected function resources() {
+	
+		global $Variant;
+		
 		if( $this->smallmap )
 		{
 			return array(
-				'map'     =>'variants/AncMed/resources/smallmap.png',
-				'army'    =>'contrib/smallarmy.png',
-				'fleet'   =>'contrib/smallfleet.png',
-				'names'   =>'variants/AncMed/resources/smallmapNames.png',
+				'map'     =>'variants/'.$Variant->name.'/resources/smallmap.png',
+				'army'    =>'variants/'.$Variant->name.'/resources/smallarmy.png',
+				'fleet'   =>'variants/'.$Variant->name.'/resources/smallfleet.png',
+				'names'   =>'variants/'.$Variant->name.'/resources/smallmapNames.png',
 				'standoff'=>'images/icons/cross.png'
 			);
 		}
 		else
 		{
 			return array(
-				'map'     =>'variants/AncMed/resources/map.png',
-				'army'    =>'contrib/army.png',
-				'fleet'   =>'contrib/fleet.png',
-				'names'   =>'variants/AncMed/resources/mapNames.png',
+				'map'     =>'variants/'.$Variant->name.'/resources/map.png',
+				'army'    =>'variants/'.$Variant->name.'/resources/army.png',
+				'fleet'   =>'variants/'.$Variant->name.'/resources/fleet.png',
+				'names'   =>'variants/'.$Variant->name.'/resources/mapNames.png',
 				'standoff'=>'images/icons/cross.png'
 			);
 		}

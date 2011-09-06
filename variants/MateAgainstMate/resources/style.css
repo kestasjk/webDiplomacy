@@ -1,0 +1,28 @@
+@CHARSET "ISO-8859-1";
+
+
+
+.variantMateAgainstMate .country0 { color: #CE7800 ! important; } /* Global    */
+.variantMateAgainstMate .country1 { color: #ff69c7 ! important; } /* Indonesia */
+.variantMateAgainstMate .country2 { color: #9d8f44 ! important; } /* Western Australia   */
+.variantMateAgainstMate .country3 { color: #D62929 ! important; } /* South Australia */
+.variantMateAgainstMate .country4 { color: #7ba26c ! important; } /* Tasmania */
+.variantMateAgainstMate .country5 { color: #797979 ! important; } /* New Zealand */
+.variantMateAgainstMate .country6 { color: #406c80 ! important; } /* Victoria */
+.variantMateAgainstMate .country7 { color: #7fb7f8 ! important; } /* New South Wales      */
+.variantMateAgainstMate .country8 { color: #882727 ! important; } /* Queensland */
+.variantMateAgainstMate .country9 { color: #74593f ! important; } /* Neutral units */
+
+
+
+.variantMateAgainstMate .occupationBar1 { background-color: #efc4e4; } /* Indonesia */
+.variantMateAgainstMate .occupationBar2 { background-color: #d8c559; } /* Western Australia   */
+.variantMateAgainstMate .occupationBar3 { background-color: #c46d5d; } /* South Australia */
+.variantMateAgainstMate .occupationBar4 { background-color: #96c882; } /* Tasmania */
+.variantMateAgainstMate .occupationBar5 { background-color: #797979; } /* New Zealand */
+.variantMateAgainstMate .occupationBar6 { background-color: #406c80; } /* Victoria */
+.variantMateAgainstMate .occupationBar7 { background-color: #7fb7f8; } /* New South Wales      */
+.variantMateAgainstMate .occupationBar8 { background-color: #882727; } /* Queensland */
+.variantMateAgainstMate .occupationBar9 { background-color: #a08a75; } /* Neutral units */
+
+

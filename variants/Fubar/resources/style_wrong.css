@@ -1,0 +1,16 @@
+@CHARSET "ISO-8859-1";
+	
+.variantDutchRevolt .country0 { color: #CE7800 ! important; } /* Global   */
+.variantDutchRevolt .country1 { color: #2E8B57 ! important; } /* Fatflap+  */
+.variantDutchRevolt .country2 { color: #8B008B ! important; } /* Howdoileave+   */
+.variantDutchRevolt .country3 { color: #FF6347 ! important; } /*  timmy+   */
+.variantDutchRevolt .country4 { color: #00FA9A ! important; } /* shitnoob+ */
+.variantDutchRevolt .country5 { color: #1E90FF ! important; } /*  omgslut+ */
+.variantDutchRevolt .country5 { color: #CE7800 ! important; } /*  multi+ */
+
+.variantDutchRevolt .occupationBar1 { background-color: #006400 ! important; } /* Fatflap+  */
+.variantDutchRevolt .occupationBar2 { background-color: #800080 ! important; } /* howdoileave+ */
+.variantDutchRevolt .occupationBar3 { background-color: #FF7F50 ! important; } /*  timmy +  */
+.variantDutchRevolt .occupationBar4 { background-color: #00FF7F ! important; } /* shitnoob+ */
+.variantDutchRevolt .occupationBar5 { background-color: #6495ED ! important; } /* omgslut+  */
+.variantDutchRevolt .occupationBar5 { background-color: #EFC4E4 ! important; } /*  multi+ */

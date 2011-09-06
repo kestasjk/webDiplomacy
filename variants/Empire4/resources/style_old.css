@@ -1,0 +1,24 @@
+@CHARSET "ISO-8859-1";
+
+.variantEmpire4 .country0 { color: #CE7800 ! important; }  /* Global           */
+.variantEmpire4 .country1 { color: #b8ad00 ! important; }  /* British-Columbia */
+.variantEmpire4 .country2 { color: #fc0204 ! important; }  /* California       */
+.variantEmpire4 .country3 { color: #e57779 ! important; }  /* Florida          */
+.variantEmpire4 .country4 { color: #006b6d ! important; }  /* Heartland        */
+.variantEmpire4 .country5 { color: #39b500 ! important; }  /* Mexico           */
+.variantEmpire4 .country6 { color: #840284 ! important; }  /* New-York         */
+.variantEmpire4 .country7 { color: #fc02fc ! important; }  /* Peru             */
+.variantEmpire4 .country8 { color: #648204 ! important; }  /* Quebec           */
+.variantEmpire4 .country9 { color: #6a6868 ! important; }  /* Texas            */
+.variantEmpire4 .country10 { color: #00b2af ! important; } /* Cuba             */
+
+.variantEmpire4 .occupationBar1 { background-color: #dcde04; }  /* British-Columbia */
+.variantEmpire4 .occupationBar2 { background-color: #fc0204; }  /* California       */
+.variantEmpire4 .occupationBar3 { background-color: #fc8284; }  /* Florida          */
+.variantEmpire4 .occupationBar4 { background-color: #048284; }  /* Heartland        */
+.variantEmpire4 .occupationBar5 { background-color: #64d232; }  /* Mexico           */
+.variantEmpire4 .occupationBar6 { background-color: #840284; }  /* New-York         */
+.variantEmpire4 .occupationBar7 { background-color: #fc02fc; }  /* Peru             */
+.variantEmpire4 .occupationBar8 { background-color: #A4C244; }  /* Quebec           */
+.variantEmpire4 .occupationBar9 { background-color: #6a6868; }  /* Texas            */
+.variantEmpire4 .occupationBar10 { background-color: #04dedc; } /* Cuba             */

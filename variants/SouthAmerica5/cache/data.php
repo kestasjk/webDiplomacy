@@ -1,0 +1,1 @@
+O:20:"SouthAmerica5Variant":6:{s:14:"variantClasses";a:2:{s:7:"drawMap";s:13:"SouthAmerica5";s:18:"adjudicatorPreGame";s:13:"SouthAmerica5";}s:22:"coastParentIDByChildID";a:2:{i:32;s:2:"31";i:33;s:2:"31";}s:23:"coastChildIDsByParentID";a:1:{i:31;a:2:{i:0;s:2:"32";i:1;s:2:"33";}}s:12:"terrIDByName";N;s:17:"supplyCenterCount";s:2:"24";s:18:"supplyCenterTarget";d:13;}

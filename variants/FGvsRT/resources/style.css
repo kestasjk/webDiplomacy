@@ -1,0 +1,10 @@
+@CHARSET "ISO-8859-1";
+
+.variantFGvsRT .country0 { color: #CE7800 ! important; } /* Global */
+.variantFGvsRT .country1 { color: #b05500 ! important; } /* Frankland */
+.variantFGvsRT .country2 { color: #514f4f ! important; } /* Juggernaut*/
+
+.variantFGvsRT .occupationBar1 { background-color: #ce9967; } /* Frankland */
+.variantFGvsRT .occupationBar2 { background-color: #6a6868; } /* Juggernaut*/
+
+
