@@ -839,8 +839,11 @@ class libHTML
 		else
 			$buf .= '<script type="text/javascript">onlineUsers = $A([ ]);</script>';
 
+		foreach( self::$footerIncludes as $includeJS )
+			$buf .= '<script type="text/javascript" src="'.STATICSRV.JSDIR.'/'.$includeJS.'"></script>';
 
-		if( $User->type['User'] ) {
+		if( !is_object($User) ) return $buf;
+		elseif( $User->type['User'] )
 			$gameMutePairs = array();
 			foreach($User->getMuteCountries() as $gameMutePair)
 				$gameMutePairs[] = '['.$gameMutePair[0].','.$gameMutePair[1].']';
@@ -853,14 +856,7 @@ class libHTML
 			unset($gameMutePairs);
 			self::$footerIncludes[] = 'mute.js';
 			self::$footerScript[] = 'muteAll();';
-		}
-
-		foreach( self::$footerIncludes as $includeJS )
-			$buf .= '<script type="text/javascript" src="'.STATICSRV.JSDIR.'/'.$includeJS.'"></script>';
-
-		if( !is_object($User) ) return $buf;
-		elseif( $User->type['User'] )
-		{
+			
 			$cacheUserParticipatedThreadIDsFilename = libCache::dirID('users',$User->id).'/readThreads.js';
 
 			if( file_exists($cacheUserParticipatedThreadIDsFilename) )
