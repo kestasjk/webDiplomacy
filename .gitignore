@@ -8,7 +8,10 @@ orderlogs/
 *.tgz
 *.tbz
 *.bz2
-/cache/
+/variants/*/cache/data.php
+/variants/*/cache/sampleMap.png
+/variants/*/cache/sampleMap-thumbnail.png
+/variants/*/cache/territories.js
 /mapstore/
 /doc/phpDoc/
 pointslog.txt
