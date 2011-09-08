@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2004-2010 Kestas J. Kuliukas
+    Copyright (C) 2004-2009 Kestas J. Kuliukas
 
 	This file is part of webDiplomacy.
 
@@ -33,6 +33,9 @@ print '<div class="variant'.$Game->Variant->name.'">';
 
 $CB = $Game->Variant->Chatbox();
 print '<table>'.$CB->getMessages( -1, false).'</table>';
+
+// Set the global messages as seen (usefull in Nopress games to remove the newmessage-icon after a Gamemaster post)
+$Member->seen(0);
 
 print '</div>';
 
