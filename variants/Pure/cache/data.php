@@ -1,1 +1,0 @@
-O:11:"PureVariant":6:{s:14:"variantClasses";a:5:{s:7:"drawMap";s:4:"Pure";s:18:"adjudicatorPreGame";s:4:"Pure";s:15:"userOrderBuilds";s:4:"Pure";s:14:"OrderInterface";s:4:"Pure";s:18:"processOrderBuilds";s:4:"Pure";}s:22:"coastParentIDByChildID";N;s:23:"coastChildIDsByParentID";N;s:12:"terrIDByName";N;s:17:"supplyCenterCount";s:1:"7";s:18:"supplyCenterTarget";d:4;}
