@@ -1,4 +1,7 @@
 config.php
+config_lab.php
+config_local.php
+config_vdip.php
 errorlog/
 errorlogs/
 orderlog/
