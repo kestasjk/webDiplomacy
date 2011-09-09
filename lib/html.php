@@ -844,6 +844,7 @@ class libHTML
 
 		if( !is_object($User) ) return $buf;
 		elseif( $User->type['User'] )
+		{
 			$gameMutePairs = array();
 			foreach($User->getMuteCountries() as $gameMutePair)
 				$gameMutePairs[] = '['.$gameMutePair[0].','.$gameMutePair[1].']';
