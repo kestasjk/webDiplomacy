@@ -3,9 +3,11 @@ body {
 	font-family: sans-serif;
 	margin: 0;
 	padding: 0;
-	background-color: #d9d9d9;
+/*	background-color: #d9d9d9;*/
+	background:url(../images/background.jpg) center top repeat-y #dcbea4;
+	background-attachment: fixed;
 	text-align: center;
-	color: #39383A;
+	color: #2d2c2e;
 }
 div.content-title-header {
     border-bottom:#bbb 1px solid !important;
@@ -17,7 +19,7 @@ div.pageTitle, .boardHeader .gameName {
 }
 div.pageTitle {
     font-size:18pt;
-    color:#009922;
+    color:#472C12;
     font-weight:bold;
     padding:4px 20px;
 }
@@ -41,9 +43,9 @@ span.points {
 }
 input[type="text"], input[type="submit"], input[type="password"], textarea, select {
 	font-size: 14px;
-	background-color: #eaffea;
+	/*background-color: #eaffea;*/
 	border: 1px solid #c1c1c1;
-	color:#009902;
+	color:#006699;
 }
 textarea {
 	font-size: 16px ! important; 
@@ -72,7 +74,7 @@ div.clear {
 	border-bottom: 0;
 }
 h1, h2, h3, h4 {
-	color: #009902;
+	color: #472C12;
 	margin-bottom:5px;
 }
 h3 {
@@ -242,16 +244,16 @@ a {
 	text-decoration:underline;
 }
 a:link {
-	color: #006699;
+	color: #6d5238;
 }
 a:visited {
-	color: #006699;
+	color: #6d5238;
 }
 a:active {
-	color: #006699;
+	color: #6d5238;
 }
 a:hover {
-	color: #009902 ! important;
+	color: #233E43 ! important;
 }
 a.light {
 	font-weight:normal;
@@ -262,7 +264,7 @@ a.light {
 	margin:0 auto;
 }
 #header {
-	background-color: #fff;
+	background:transparent;
 	width: auto;
 	padding:0;
 	margin:0;
@@ -270,7 +272,7 @@ a.light {
 }
 #header-container {
 	padding-left:0;
-	background-color: #fff;
+	background:transparent;
 	height:50px;
 	padding-right:0;
 	padding-top:6px;
@@ -318,10 +320,10 @@ a.light {
 	margin: 0;
 	padding: 0;
 	width: auto;
-	background-color: #006699;
+	background-color: #6898A1;
 	font-size: 0;
 	height: 5px;
-	border-top: 1px solid #000;
+/*	border-top: 1px solid #000;*/
 	border-bottom: 1px solid #f5f5f5;
 	margin-bottom:5px;
 }
@@ -332,10 +334,10 @@ a.light {
 	margin: 0;
 	padding: 0;
 	width: 800px;
-	background-color: #006699;
+	background-color: #6898A1;
 	font-size: 0;
 	height: 5px;
-	border-top: 1px solid #000;
+/*	border-top: 1px solid #000;*/
 	border-bottom: 1px solid #f5f5f5;
 }
 div.content {
@@ -345,8 +347,8 @@ div.content {
 	margin-right: auto;
 	margin-top: 5px;
 	width: 750px;
-	background-color: #fff;
-	border: 1px solid #aaa;
+	/*background-color: #fff;*/
+	/*border: 1px solid #aaa;*/
 	padding: 15px 24px;	
 }
 div.content-bare {
@@ -363,8 +365,8 @@ div.content-notice {
 	margin-right: auto;
 	margin-top: 5px;
 	width: 768px;
-	background-color: #fff;
-	border: 1px solid #aaa;
+	/*background-color: #fff;*/
+	/*border: 1px solid #aaa;*/
 	padding: 8px 15px;	
 	
 }
@@ -373,8 +375,8 @@ div.content-board-header, div.content-home-header {
 	border-bottom:0;
 	}
 div.content-board-header {
-	border: 1px solid #aaa;
-	background-color:#f5f5f5;
+	/*border: 1px solid #aaa;*/
+	background-color:transparent; /*#f5f5f5;*/
 	border-bottom:0;
 	}
 div.content-follow-on {
@@ -469,7 +471,7 @@ div.gamelistings-tabs a {
 	border-left:1px solid #aaa;
 	border-right:1px solid #aaa;
 	
-	border-bottom:2px solid #006699 ! important;
+	border-bottom:2px solid #6898A1 ! important;
 }
 div#chatboxtabs a {
 	margin-left:2px;
@@ -650,7 +652,7 @@ TABLE.credits {
 	margin-right:auto;
 }
 TABLE.orders {
-	border: solid #c1c1c1 1px;
+	border: solid #6898A1 1px;
 	width:95%;
 	margin-top:10px;
 	margin-left:auto;

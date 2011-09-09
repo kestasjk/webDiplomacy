@@ -11,7 +11,7 @@
 	text-align:right;
 	font-size:14px;
 	font-style:italic;	
-	background-color:#fff;
+	background-color:transparent;
 	padding-left:10px;
 	padding-bottom:15px;
 	border-left:1px solid #c1c1c1;
@@ -55,8 +55,8 @@ td.homeNoticesPMs textarea, td.homeNoticesGame textarea {
 }
 
 td.homeMessages, td.homeGameNotices, td.homeGamesStats, td.homeNoticesPMs, td.homeNoticesGame {
-	border:1px solid #aaa;
-	background-color: #fff;
+	/*border:1px solid #aaa;*/
+	background-color: transparent;
 	padding:0 !important;
 	margin:0;
 	}
@@ -96,7 +96,7 @@ div.homeHeader {
 	font-weight:bold;
 	font-size:16px;
 	text-align: center;
-	color: #009902;
+	color: #524234;
 	padding-top: 3px;
 }
 
