@@ -35,7 +35,8 @@ $CB = $Game->Variant->Chatbox();
 print '<table>'.$CB->getMessages( -1, false).'</table>';
 
 // Set the global messages as seen (usefull in Nopress games to remove the newmessage-icon after a Gamemaster post)
-$Member->seen(0);
+if( is_object($Member) )
+	$Member->seen(0);
 
 print '</div>';
 
