@@ -504,7 +504,17 @@ class libHTML
 		sort($gameIDs);
 
 		$gameNotifyBlock = '';
-
+/*******************************
+*INPUT FROM FIGLESQUIDGE HACK: *
+********************************/            
+		if( !isset($_SESSION['lastSeenHome']) || $_SESSION['lastSeenHome'] < $User->timeLastSessionEnded )
+						  	$_SESSION['lastSeenHome']=$User->timeLastSessionEnded;
+		$newMsg = $DB->sql_row("SELECT timeSent FROM wD_Notices WHERE toUserID=".$User->id."
+								AND type='PM' AND SUBSTRING(linkName,1,3)!='To:'
+								AND timeSent>'".$_SESSION['lastSeenHome']."' LIMIT 1;");
+		if ($newMsg)
+			$gameNotifyBlock =  '<span class="variantClassic"><a class="country5" href="index.php?notices=on"><img title="Unread" alt="Not received" src="images/icons/alert.png"> New PM <img src="images/icons/mail.png" alt="New messages" title="New messages!"></a></span>';
+// END HACK
 		foreach ( $gameIDs as $gameID )
 		{
 			$notifyGame = $notifyGames[$gameID];
@@ -599,7 +609,23 @@ class libHTML
 			$links['logon.php']['inmenu']=false;
 			$links['register.php']['inmenu']=false;
 		}
-
+/************************
+*INPUT FROM MENUE HACK: *
+*************************/            
+		if (isset(Config::$top_menue))
+		{
+			if (array_key_exists('all',Config::$top_menue))
+				$links = array_merge($links,Config::$top_menue['all']);
+				
+			if ( is_object($User) )
+			{
+				if (array_key_exists('user',Config::$top_menue))
+					$links = array_merge($links,Config::$top_menue['user']);
+				if (( $User->type['Admin'] or $User->type['Moderator'] ) && array_key_exists('admin',Config::$top_menue))
+					$links = array_merge($links,Config::$top_menue['admin']);
+			}
+		}
+// END HACK
 		return $links;
 	}
 
