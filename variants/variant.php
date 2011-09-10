@@ -349,7 +349,9 @@ abstract class WDVariant {
 	}
 
 	public function link() {
-		return '<a class="light" href="variants.php#'.$this->name.'">'.$this->fullName.'</a>';
+		// Changed the link so it displays only the variant, not the whole list.
+		// return '<a class="light" href="variants.php#'.$this->name.'">'.$this->fullName.'</a>';
+		return '<a class="light" href="variants.php?variantID='.$this->id.'">'.$this->fullName.'</a>';
 	}
 }
 

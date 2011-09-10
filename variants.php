@@ -1,8 +1,8 @@
 <?php
 /*
-    Copyright (C) 2004-2010 Kestas J. Kuliukas
+    Copyright (C) 2004-2011 Oliver Auth
 
-   This file is part of webDiplomacy.
+   This file is part of vDiplomacy.
 
     webDiplomacy is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published by
@@ -27,60 +27,73 @@ require_once('header.php');
 
 libHTML::starthtml();
 
-print libHTML::pageTitle('webDiplomacy variants','A list of the variants available on this server, with credits and information on variant-specific rules.');
-
-$variantsOn=array();
-$variantsOff=array();
-
-$variants = glob('variants/*');
-foreach($variants as $variantDir) {
-   if( file_exists($variantDir.'/variant.php') )
-   {
-      $variantDir=substr($variantDir,9);
-      if( in_array($variantDir, Config::$variants) )
-         $variantsOn[] = $variantDir;
-      else
-         $variantsOff[] = $variantDir;
-   }
+if( isset($_REQUEST['variantID']) )
+{	
+	$id=intval($_REQUEST['variantID']);
+	if (! is_int($id)) $id=1;
+	if ($id < 1) $id=1;
+	$Variant = libVariant::loadFromVariantID($id);
+	print libHTML::pageTitle($Variant->fullName . ' (' . count($Variant->countries) . ' players)',$Variant->description);
+	$variantsOn[] = Config::$variants[$id];
 }
-
-if( count($variantsOff) )
-   print '<a name="top"></a><h4>Active variants</h4>';
-
-print '<ul>';
-foreach( $variantsOn as $variantName )
+else
 {
-   $Variant = libVariant::loadFromVariantName($variantName);
-   print '<li><a href="variants.php#' . $Variant->name . '">' . $Variant->fullName . '</a> (' . count($Variant->countries) . ' Players)';
-   $sql = 'SELECT COUNT(*) FROM wD_Games WHERE variantID=' .  $Variant->id . ' AND phase != "Pre-game"';
-   list($num) = $DB->sql_row($sql);
-   print ' - '.$num.' game'.($num!=1?'s':'').' played on this server</li>';
-}
-print '</ul>';
+	print libHTML::pageTitle('webDiplomacy variants','A list of the variants available on this server, with credits and information on variant-specific rules.');
+	$variantsOn=array();
+	$variantsOff=array();
 
-if( count($variantsOff) )
-{
-   print '<h4>Disabled variants</h4>';
-   print '<p>Variants which are present but not activated.</p>';
-   print '<ul>';
-	foreach( $variantsOff as $variantName )
+	foreach(glob('variants/*') as $variantDir)
+	{
+	   if( file_exists($variantDir.'/variant.php') )
+	   {
+		  $variantDir=substr($variantDir,9);
+		  if( in_array($variantDir, Config::$variants) )
+			 $variantsOn[] = $variantDir;
+		  else
+			 $variantsOff[] = $variantDir;
+	   }
+	}
+	
+	if( count($variantsOff) )
+		print '<a name="top"></a><h4>Active variants</h4>';
+	print '<ul>';
+	foreach( $variantsOn as $variantName )
 	{
 	   $Variant = libVariant::loadFromVariantName($variantName);
-	   print '<li><a href="variants.php#'   . $Variant->name . '">' . $Variant->name . '</a> (' . count($Variant->countries) . ' Players)</li>';
+	   print '<li><a href="variants.php#' . $Variant->name . '">' . $Variant->fullName . '</a> (' . count($Variant->countries) . ' Players)';
+	   $sql = 'SELECT COUNT(*) FROM wD_Games WHERE variantID=' .  $Variant->id . ' AND phase != "Pre-game"';
+	   list($num) = $DB->sql_row($sql);
+	   print ' - '.$num.' game'.($num!=1?'s':'').' played on this server</li>';
 	}
 	print '</ul>';
+
+	if( count($variantsOff) )
+	{
+		print '<h4>Disabled variants</h4>';
+		print '<p>Variants which are present but not activated.</p>';
+		print '<ul>';
+		foreach( $variantsOff as $variantName )
+		{
+			$Variant = libVariant::loadFromVariantName($variantName);
+			print '<li><a href="variants.php#'   . $Variant->name . '">' . $Variant->name . '</a> (' . count($Variant->countries) . ' Players)</li>';
+		}
+		print '</ul>';
+	}
+	
+	print '<div class="hr"></div>';
 }
-
-libHTML::pagebreak();
-
 
 foreach( $variantsOn as $variantName )
 {
    $Variant = libVariant::loadFromVariantName($variantName);
-   print '<h2><a name="'. $Variant->name .'"></a>'. $Variant->fullName . ' (' . count($Variant->countries) . ' players)</h2>';
-   if (isset($Variant->description))
-      print $Variant->description."<br /><br />";
-
+	if( !isset($_REQUEST['variantID']) )
+	{
+		$Variant = libVariant::loadFromVariantName($variantName);
+		print '<h2><a name="'. $Variant->name .'"></a>'. $Variant->fullName . ' (' . count($Variant->countries) . ' players)</h1>';
+		if (isset($Variant->description))
+			print $Variant->description."<br /><br />";
+	}
+	   
    print '<div style="text-align:center"><img id="Image_'. $Variant->name . '" src="';
    if (file_exists(libVariant::cacheDir($Variant->name).'/sampleMap.png'))
       print libVariant::cacheDir($Variant->name).'/sampleMap.png';
@@ -110,9 +123,8 @@ foreach( $variantsOn as $variantName )
       print '<p><strong>Special rules/information:</strong></p>';
       print '<div>'.file_get_contents('variants/'. $Variant->name .'/rules.html').'</div>';
    }
-   print '<div><a href="#top" class="light">Back to top</a></div>';
-
-   print '<div class="hr"></div>';
+	if(!isset($_REQUEST['variantID']))
+		print '<div><a href="#top" class="light">Back to top</a></div><div class="hr"></div>';
 }
 
 print '</div>';
