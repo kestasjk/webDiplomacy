@@ -75,6 +75,10 @@ class libCache
 
 		if( is_null($name) ) return $dir;
 
+		// A custom cache dir for the lab...
+		if($_SERVER['SERVER_NAME']=="lab.vdiplomacy.com" && $dir=='cache') 
+			$dir = 'cache_lab';
+		
 		if( !is_dir($dir.'/'.$name) && !mkdir($dir.'/'.$name, 0775, true) )
 			throw new Exception("Couldn't make cache directory '".$dir.'/'.$name."'.");
 
