@@ -1,1 +1,23 @@
-webDipomacy git repository readme file. See README.txt for details on using webDiplomacy as a webmaster.
+Diplomacy is a popular turn based strategy game in which you battle to control Europe; to win you must be diplomatic and strategic.
+ 
+webDiplomacy lets you play Diplomacy online.
+
+--- 
+
+README.txt - Installation information.
+
+AGPL.txt - The license webDiplomacy is distributed under.
+
+---
+
+http://webdiplomacy.net/ - The official webDiplomacy server.
+
+http://forum.webdiplomacy.net/ - The official webDiplomacy developer forum.
+
+https://github.com/kestasjk/webDiplomacy - The webDiplomacy github source repository.
+
+http://sourceforge.net/projects/phpdiplomacy - The webDiplomacy Sourceforge project page.
+
+---
+
+Kestas J. Kuliukas - kestas@kuliukas.com

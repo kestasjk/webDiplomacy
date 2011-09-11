@@ -31,15 +31,11 @@ print libHTML::pageTitle('Developer/webmaster info','If you want to fix/improve/
 
 <h4>Links</h4>
 
-<p><a href="http://forum.webdiplomacy.net" class="light">forum.webdiplomacy.net</a> - The forum for developers, for discussing ideas etc</p>
+<p><a href="http://forum.webdiplomacy.net" class="light">forum.webdiplomacy.net</a> - The forum for developers.</p>
 
-<p><a href="http://sourceforge.net/projects/phpdiplomacy" class="light">Sourceforge.net</a> - Where the webDip code is hosted</p>
+<p><a href="http://sourceforge.net/projects/phpdiplomacy" class="light">forum.webdiplomacy.net</a> - The sourceforge.net project page.</p>
 
-<p><a href="http://webdiplomacy.net/doc/phpDoc/" class="light">The code</a> - Browse the code online, commented and laid out with phpDocumentor. Check the
-layout below to know where to find various parts</p>
-
-<p><a href="http://webdiplomacy.net/webDiplomacy-latest.tgz" class="light">The latest code tarball</a> - The latest code is always available
-in the CVS repo, and in this tarball which updated whenever CVS is. The releases may not contain the latest code but this tarball will.</p>
+<p><a href="https://github.com/kestasjk/webDiplomacy" class="light">github.com/kestasjk/webDiplomacy</a> - The github .</p>
 
 <div class="hr"></div>
 
