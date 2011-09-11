@@ -1,8 +1,20 @@
-Diplomacy is a popular turn based strategy game in which you battle to control Europe; to win you must be diplomatic and strategic.
- 
-webDiplomacy lets you play Diplomacy online.
+This is a branch of the official webdip code with many variants (and some tools for variant development)
+
+You can get the latest code here:
+https://github.com/Sleepcap/vDiplomacy - The vDiplomacy github source repository.
+
+Oliver Auth - Oliver.Auth@rhoen.de
+
+
+Original webDiplomacy README:
 
 --- 
+Diplomacy is a popular turn based strategy game in which you battle to control Europe; to win you must be diplomatic and strategic.
+
+webDiplomacy lets you play Diplomacy online.
+
+---
+
 
 README.txt - Installation information.
 
