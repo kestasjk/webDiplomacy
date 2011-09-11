@@ -865,9 +865,6 @@ class libHTML
 		else
 			$buf .= '<script type="text/javascript">onlineUsers = $A([ ]);</script>';
 
-		foreach( self::$footerIncludes as $includeJS )
-			$buf .= '<script type="text/javascript" src="'.STATICSRV.JSDIR.'/'.$includeJS.'"></script>';
-
 		if( !is_object($User) ) return $buf;
 		elseif( $User->type['User'] ) // Run user-specific page modifications
 		{
@@ -894,6 +891,9 @@ class libHTML
 				libHTML::$footerScript[]='setForumParticipatedIcons();';
 			}
 		}
+
+		foreach( self::$footerIncludes as $includeJS )
+			$buf .= '<script type="text/javascript" src="'.STATICSRV.JSDIR.'/'.$includeJS.'"></script>';
 
 		// Utility (error detection, message protection), HTML post-processing,
 		// time handling functions. Only logged-in users need to run these
