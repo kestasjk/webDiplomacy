@@ -59,6 +59,20 @@ abstract class WDVariant {
 	public $mapID;
 
 	/**
+	 * The version of the variant code. This is loaded into $cacheVersion on initialize, so that
+	 * old caches can be detected and wiped. If this isn't set this functionality is not used.
+	 * @var int
+	 */
+	public $codeVersion;
+
+	/**
+	 * The version number as loaded from the cache. If this is less than the code version the
+	 * variant will be re-initialized.
+	 * @var int
+	 */
+	public $cacheVersion;
+
+	/**
 	 * The simple truncated variant name. Determines the variant folder and naming scheme of variant classes.
 	 * @var string
 	 */
@@ -168,7 +182,7 @@ abstract class WDVariant {
 	 * @return array
 	 */
 	public function __sleep() {
-		return array('variantClasses','coastParentIDByChildID','coastChildIDsByParentID','terrIDByName','supplyCenterCount','supplyCenterTarget');
+		return array('cacheVersion','variantClasses','coastParentIDByChildID','coastChildIDsByParentID','terrIDByName','supplyCenterCount','supplyCenterTarget');
 	}
 	/**
 	 * Actions to perform when loaded from a serialized cache
@@ -233,6 +247,9 @@ abstract class WDVariant {
 		list($this->supplyCenterCount) = $DB->sql_row("SELECT COUNT(id) FROM wD_Territories WHERE mapID=".$this->mapID." AND supply='Yes'");
 
 		$this->supplyCenterTarget = round((18.0/34.0)*$this->supplyCenterCount);
+
+		if( isset($this->codeVersion) && $this->codeVersion != null && $this->codeVersion > 0 )
+			$this->cacheVersion = $this->codeVersion;
 	}
 
 	/**

@@ -32,6 +32,16 @@ require_once('variants/variant.php');
  */
 class libVariant {
 
+	/**
+	 * When a change in behavior is made to the variants system this is incremented to allow
+	 * variants to react to changes in the variant system.
+	 *
+	 * 1: $WDVariant->codeVersion and ->cacheVersion added, allowing variant versioning and cache wipes.
+	 *
+	 * @var int
+	 */
+	public static $Version=1;
+
 	public static $Variant;
 
 	/**
@@ -135,6 +145,21 @@ class libVariant {
 				// This variant is saved, and doesn't need to waste database queries retreiving this data again
 				$variantData = file_get_contents($variantCache);
 				$Variant = unserialize($variantData);
+
+
+				if( isset($Variant->codeVersion)
+					&& $Variant->codeVersion !=null && $Variant->codeVersion != 0 )
+				{
+					// Cache version checking is enabled
+
+					if( !isset($Variant->cacheVersion) || $Variant->cacheVersion==null
+					|| $Variant->cacheVersion < $Variant->codeVersion || !$Variant->cacheVersion )
+					{
+						// An old cache version has been loaded; wipe this variant's cache and try again.
+						self::wipe($variantName);
+						$Variant = self::loadFromVariantName($variantName);
+					}
+				}
 			}
 
 			self::$Variants[$variantName]=$Variant;
