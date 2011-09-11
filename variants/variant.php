@@ -36,6 +36,16 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 abstract class WDVariant {
 
 	/**
+	 * When a change in behavior is made to the variants system this is incremented to allow
+	 * variants to react to changes in the variant system.
+	 *
+	 * 1: $codeVersion and $cacheVersion added, allowing variant versioning and cache wipes.
+	 *
+	 * @var int
+	 */
+	public static $VARIANTSYSTEM=1;
+
+	/**
 	 * An array where the keys are the class names that this variant wants replaced with its own
 	 * objects, and the values are the name of the variant which requested the replacement. (So
 	 * that, say, FleetRome, which extends Classic and requires Classic's drawMap, isn't mistakenly
