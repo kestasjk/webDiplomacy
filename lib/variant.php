@@ -32,6 +32,16 @@ require_once('variants/variant.php');
  */
 class libVariant {
 
+	/**
+	 * When a change in behavior is made to the variants system this is incremented to allow
+	 * variants to react to changes in the variant system.
+	 *
+	 * 1: $WDVariant->codeVersion and ->cacheVersion added, allowing variant versioning and cache wipes.
+	 *
+	 * @var int
+	 */
+	public static $Version=1;
+
 	public static $Variant;
 
 	/**
