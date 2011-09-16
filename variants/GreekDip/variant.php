@@ -27,7 +27,7 @@
 	1.1:   new icons, errorfixes
 	1.1.1: small fix for the new icons
 	1.1.5: 2 coasts added to territory Thrace
-
+	1.2:   now uses the codeversion instead of $version for code-change documentation
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -40,8 +40,8 @@ class GreekDipVariant extends WDVariant {
 	public $description= 'War in the Greek City States time period';
 	public $author     = 'Hirum Hibbert';
 	public $adapter    = 'Oliver Auth';
-	public $version    = '1.1.6';
-	public $codeVersion= '1.1.6';
+	public $version    = '1.0';
+	public $codeVersion= '1.2';
 	
 	public $countries=array('Athens','Byzantinum','Macedonia','Persia','Rhodes','Sparta');
 
