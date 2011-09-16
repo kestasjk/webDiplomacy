@@ -2,7 +2,7 @@
 
 // If called from inside the download script print version number and exit.
 if (defined('IN_CODE')) {
-    print "0.9";
+    print "0.10";
     return;
 }
 
@@ -230,11 +230,11 @@ function check_edit() {
 
     if ($edit == 'newoff') {
         $edit = 'off';
-        if ($version != '' && $version != $variant->version) {
+        if ($version != '' && $version != $variant->codeVersion) {
             //read the variant.php
             $str = file_get_contents($inst_dir . 'variant.php');
             // replace the versionstring
-            $str = str_replace("'" . $variant->version . "'", "'" . $version . "'", $str);
+            $str = str_replace("'" . $variant->codeVersion . "'", "'" . $version . "'", $str);
             $fp = fopen($inst_dir . 'variant.php', 'w');
             //now, TOTALLY rewrite the file
             fwrite($fp, $str, strlen($str));
@@ -297,7 +297,7 @@ function check_edit() {
         print 'Version-number: ';
         $html = '<form style="display: inline" method="get" name="edit">';
         $html .= add_form_defaults();
-        $html .= '<input type="text" name="version" value="' . $variant->version . '" size="2"> - ';
+        $html .= '<input type="text" name="version" value="' . $variant->codeVersion . '" size="3"> - ';
         $html .= '<input type="hidden" name="edit" value="newoff">';
         $html .= '<input type="submit" class="form-submit" value="Click here to clear editor-cache, and reload "live" data" />';
         $html .= '</form>';
@@ -556,7 +556,7 @@ function display_interface() {
 
     // Show Data
     if ($edit == 'data') {
-        print " Version: " . $variant->version;
+        print " Code-Version: " . $variant->codeVersion;
         print '</li>';
         print display_button_form('edit', 'install', 'write install.php and exit edit-mode');
         print ' - ';
