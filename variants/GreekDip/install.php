@@ -126,7 +126,7 @@ foreach($territoryRawData as $territoryRawRow)
 unset($territoryRawData);
 
 $bordersRawData=array(
-	array('Achaia','Argos','Yes','Yes'),
+	array('Achaia','Argos','No','Yes'),
 	array('Achaia','Corinth','No','Yes'),
 	array('Achaia','Corinth (West Coast)','Yes','No'),
 	array('Achaia','Gulf of Corinth','Yes','No'),
@@ -1037,6 +1037,7 @@ $DB->sql_put('DELETE b FROM wD_CoastalBorders b
 
 InstallCache::terrJSON($this->territoriesJSONFile(),$this->mapID);
 ?>
+
 
 
 

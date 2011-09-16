@@ -40,8 +40,9 @@ class GreekDipVariant extends WDVariant {
 	public $description= 'War in the Greek City States time period';
 	public $author     = 'Hirum Hibbert';
 	public $adapter    = 'Oliver Auth';
-	public $version    = '1.1.5';
-
+	public $version    = '1.1.6';
+	public $codeVersion= $version;
+	
 	public $countries=array('Athens','Byzantinum','Macedonia','Persia','Rhodes','Sparta');
 
 	public function __construct() {
