@@ -9,7 +9,7 @@ function IconsCorrect() {
 				$('orderID'+this.id).addClassName(newIcon.toLowerCase());
 				this.currentUnitIcon=newIcon;
 		
-				this.unitIconArea.update('<img src="variants/Migraine/resources/'+newIcon+'.png" alt="'+newIcon+'" />');
+				this.unitIconArea.update('<img src="variants/Migraine/resources/'+newIcon.toLowerCase()+'.png" alt="'+newIcon+'" />');
 			};
 		});			
 }

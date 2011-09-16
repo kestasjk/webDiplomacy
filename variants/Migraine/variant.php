@@ -30,6 +30,7 @@
 	1.5.3: fixed a problem with the terrstatus not changing on new turn
 	1.5.4: color fix
 	1.5.5: display the custom icons in the orderinterface
+	1.6:   now use codeversion to check for changes and fixed a problem with the custom icons
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -42,7 +43,8 @@ class MigraineVariant extends WDVariant {
 	public $description='8 Player Diplomacy on a symetrical map';
 	public $author     ='Stephen D. Koehler';
 	public $adapter    ='Carey Jensen / Oliver Auth';
-	public $version    ='1.5.5';
+	public $version    ='1.6';
+	public $codeVersion='1.6';
 	public $homepage   ='http://www.variantbank.org/results/rules/m/migraine.htm';
 
 	public $countries=array('Beta', 'Delta', 'Gamma', 'Kappa', 'Lambda', 'Sigma', 'Theta', 'Zeta');

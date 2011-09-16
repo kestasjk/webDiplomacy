@@ -50,8 +50,8 @@ class MigraineVariant_drawMap extends drawMap {
 		{
 			return array(
 				'map'     =>'variants/Migraine/resources/map.png',
-				'army'    =>'variants/Migraine/resources/Army.png',
-				'fleet'   =>'variants/Migraine/resources/Fleet.png',
+				'army'    =>'variants/Migraine/resources/army.png',
+				'fleet'   =>'variants/Migraine/resources/fleet.png',
 				'names'   =>'variants/Migraine/resources/mapNames.png',
 				'standoff'=>'images/icons/cross.png'
 			);
