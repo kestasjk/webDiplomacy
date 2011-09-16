@@ -102,7 +102,12 @@ foreach( $variantsOn as $variantName )
    print '" alt=" " title="The map for the '. $Variant->name .' Variant" /></div><br />';
    print '<strong>Variant Parameters';
    if (isset($Variant->version))
-      print ' (Version: '. $Variant->version .')';
+	{
+		print ' (Version: '. $Variant->version;
+		if (isset($Variant->codeVersion))
+			print ' / Code: '. $Variant->codeVersion;
+		print ')';
+	}
    print ':</strong>';
    print '<ul>';
 
