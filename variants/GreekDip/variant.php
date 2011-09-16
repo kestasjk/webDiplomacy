@@ -41,7 +41,7 @@ class GreekDipVariant extends WDVariant {
 	public $author     = 'Hirum Hibbert';
 	public $adapter    = 'Oliver Auth';
 	public $version    = '1.1.6';
-	public $codeVersion= $version;
+	public $codeVersion= $this->version;
 	
 	public $countries=array('Athens','Byzantinum','Macedonia','Persia','Rhodes','Sparta');
 
