@@ -34,6 +34,7 @@
 	1.1.1: error-fix 
 	1.1.2: spelling error fixed
 	1.1.3: color glitch fixed
+	1.2  : use now codeversion
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -46,7 +47,8 @@ class Sengoku5Variant extends WDVariant {
 	public $description='The Sengoku Variant is a historical transplant to medieval Japan.';
 	public $author     ='Benjamin Hester';
 	public $adapter    ='Oliver Auth';
-	public $version    ='1.1.3';
+	public $version    ='5.0';
+	public $codeVersion='1.2';
 	public $homepage   ='http://www.variantbank.org/results/rules/s/sengoku.htm';
 
 	public $countries=array('Shimazu','Mori','Chosokabe','Asakura','Oda','Uesugi','Takeda','Hojo');
