@@ -450,12 +450,6 @@ class adminMultiCheck
 			WHERE userID = ".$this->aUserID
 		);
 
-		$this->aLogsData['fullGameIDs'] = self::sql_list(
-			"SELECT DISTINCT gameID
-			FROM wD_Members
-			WHERE userID = ".$this->aUserID
-		);
-
 		// Up until now all aLogsData arrays must be populated
 		foreach($this->aLogsData as $name=>$data)
 		{
@@ -464,6 +458,12 @@ class adminMultiCheck
 				throw new Exception($name.' does not have enough data; this account cannot be checked.');
 			}
 		}
+
+		$this->aLogsData['fullGameIDs'] = self::sql_list(
+			"SELECT DISTINCT gameID
+			FROM wD_Members
+			WHERE userID = ".$this->aUserID
+		);
 
 		list($this->aLogsData['total']) = $DB->sql_row(
 				"SELECT COUNT(ip) FROM wD_AccessLog WHERE userID = ".$this->aUserID
@@ -678,8 +678,9 @@ class adminMultiCheck
 		$this->compareIPData($bUser->id, $bUserTotal);
 		$this->compareCookieCodeData($bUser->id, $bUserTotal);
 		$this->compareUserAgentData($bUser->id, $bUserTotal);
-
-		$this->compareGames('All games', $bUser->id, $this->aLogsData['fullGameIDs']);
+		
+		if ( count($this->aLogsData['fullGameIDs']) > 0 )
+			$this->compareGames('All games', $bUser->id, $this->aLogsData['fullGameIDs']);
 
 		if ( count($this->aLogsData['activeGameIDs']) > 0 )
 			$this->compareGames('Active games', $bUser->id, $this->aLogsData['activeGameIDs']);
