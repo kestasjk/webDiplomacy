@@ -61,14 +61,6 @@ class ClassicFogVariant_panelMember extends panelMember
 		return '??';
 	}	
 
-	// Hide the Points-value from countries in CD
-	function pointsValue()
-	{
-		global $User;
-		if (($this->userID == $User->id) || ($User->type['Admin'])) return parent::pointsValue();
-		return '??';
-	}
-
 	function memberFinalized()
 	{
 		global $User;

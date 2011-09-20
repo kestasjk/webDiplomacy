@@ -32,7 +32,8 @@
 	1.0.10: New fix...
 	1.0.11: copy orders.php to board/info
 	1.0.12: countries no longer sorted by value...
-	
+	1.0.13: do not hide the county-value for CDed countries, so new players can join...
+
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -44,7 +45,8 @@ class ClassicFogVariant extends WDVariant {
 	public $fullName   = 'Classic map - Fog of War';
 	public $description= 'This is the classic map, but players can only see a limited part of the map';
 	public $adapter    = 'Oliver Auth';
-	public $version    = '1.0.12';
+	public $version    = '1.0';
+	public $codeVersion= '1.0.13';
 
 	public $countries=array('England', 'France', 'Italy', 'Germany', 'Austria', 'Turkey', 'Russia');
 	
