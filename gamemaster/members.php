@@ -31,6 +31,26 @@ require_once('gamemaster/member.php');
 class processMembers extends Members
 {
 	/**
+	 * Adjust the missed turns of each member and update the phase counter.
+	 * "Left" users are included (for civil disorder to total phases ratio calculating)
+	 */
+	function updateReliability()
+	{
+		global $DB;
+		
+		foreach($this->ByStatus['Playing'] as $Member) {
+			$DB->sql_put("UPDATE wD_Users SET phasesPlayed = phasesPlayed + 1 WHERE id=".$Member->userID);
+			if ($Member->missedPhases > 0)
+				$DB->sql_put("UPDATE wD_Users SET missedMoves = missedMoves + 1 WHERE id=".$Member->userID);
+		}
+		
+		foreach($this->ByStatus['Left'] as $Member) {
+			$DB->sql_put("UPDATE wD_Users SET phasesPlayed = phasesPlayed + 1 WHERE id=".$Member->userID);
+			$DB->sql_put("UPDATE wD_Users SET missedMoves  = missedMoves  + 1 WHERE id=".$Member->userID);
+		}
+	}
+
+	/**
 	 * Load a processMember, overrides Members->loadMember which loads a Member
 	 *
 	 * @param array $row The database record array hash for this member

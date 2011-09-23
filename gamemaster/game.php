@@ -849,6 +849,11 @@ class processGame extends Game
 		 */
 
 		/*
+		 * Check for missed turns and adjust the counter in the user-data...
+		 */
+		$this->Members->updateReliability();
+		
+		/*
 		 * The findSet* functions affect the Members arrays and Member objects and records,
 		 * and will send messages, but they will not affect the rest of the game.
 		 */

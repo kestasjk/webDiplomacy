@@ -123,6 +123,13 @@ class User {
 	 */
 	public $points;
 
+	/**
+	 * Number of Missed moves and phases played by the user...
+	 * @var int
+	 */
+	public $missedMoves;
+	public $phasesPlayed;
+	
 	public $lastMessageIDViewed;
 
 	/**
@@ -387,6 +394,8 @@ class User {
 			u.points,
 			u.lastMessageIDViewed,
 			u.muteReports,
+			u.missedMoves,
+			u.phasesPlayed,			
 			IF(s.userID IS NULL,0,1) as online
 			FROM wD_Users u
 			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
@@ -777,5 +786,33 @@ class User {
 			$DB->sql_put("INSERT INTO wD_MuteCountry (userID, gameID, muteCountryID) VALUES (".$this->id.",".$gameID.",".$muteCountryID.")");
 
 	}
+	
+	/**
+	 * Get a user's reliability rating.  Reliability rating is 100 minus % of games missed times 200, not to be lower than 0
+	 * Examples: If a user misses 5% of their games, rating would be 90, 15% would be 70, etc.  Certain features of the site (such as creating and joining games) will be restricted if the reliability rating is too low.
+	 * @return reliability
+	 */
+	public function getReliability()
+	{
+		if ($this->phasesPlayed == 0) {
+			$reliability = 100;
+		} else {
+			$reliability = ceil(100 - $this->missedMoves / $this->phasesPlayed * 200);
+			if ($reliability < 0) $reliability = 0;
+		}
+		return $reliability;
+	}
+	
+	/**
+	 * Count how many uncompleted games a user has...
+	 */
+	function getUncompletedGames()
+	{
+		global $DB;
+		
+		list($number) = $DB->sql_row("SELECT COUNT(*) as games FROM wD_Members m, wD_Games g WHERE m.userID=".$this->id." and m.gameID=g.id and g.phase!='Finished' GROUP BY m.userID");
+		return $number;
+	}
+	
 }
 ?>
