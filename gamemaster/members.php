@@ -39,15 +39,17 @@ class processMembers extends Members
 		global $DB;
 		
 		foreach($this->ByStatus['Playing'] as $Member) {
-			$DB->sql_put("UPDATE wD_Users SET phasesPlayed = phasesPlayed + 1 WHERE id=".$Member->userID);
-			if (($Member->missedPhases > 0) && ($this->phaseMinutes > 30))
+			if (($Member->missedPhases > 0) && ($this->phaseMinutes > 30)) {
+				$DB->sql_put("UPDATE wD_Users SET phasesPlayed = phasesPlayed + 1 WHERE id=".$Member->userID);
 				$DB->sql_put("UPDATE wD_Users SET missedMoves = missedMoves + 1 WHERE id=".$Member->userID);
+			}
 		}
 		
 		foreach($this->ByStatus['Left'] as $Member) {
-			$DB->sql_put("UPDATE wD_Users SET phasesPlayed = phasesPlayed + 1 WHERE id=".$Member->userID);
-			if ($this->phaseMinutes > 30)
+			if ($this->phaseMinutes > 30) {
+				$DB->sql_put("UPDATE wD_Users SET phasesPlayed = phasesPlayed + 1 WHERE id=".$Member->userID);
 				$DB->sql_put("UPDATE wD_Users SET missedMoves  = missedMoves  + 1 WHERE id=".$Member->userID);
+			}
 		}
 	}
 
