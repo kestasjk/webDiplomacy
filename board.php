@@ -268,6 +268,40 @@ if ( 'Pre-game' != $Game->phase && $Game->pressType!='NoPress' && ( isset($Membe
 	libHTML::$footerScript[] = 'makeFormsSafe();';
 }
 
+/*
+ * Pregame-chat hack
+ */
+class ChatMember {
+	function memberCountryName() { return ""; }
+	function memberNameCountry() { return ""; }
+	public $online = 0;
+}
+
+if ($Game->phase == 'Pre-game')
+{	
+
+	$forum = '<div class="hr"></div>';
+	
+	for($countryID=1; $countryID<=count($Game->Variant->countries); $countryID++)
+		$Game->Members->ByCountryID[$countryID] = new ChatMember();
+
+	$CB = $Game->Variant->Chatbox();
+
+	if( isset($_REQUEST['newmessage']) AND $_REQUEST['newmessage']!="")
+	{
+		$_REQUEST['newmessage'] = "(".$User->username."): ".$_REQUEST['newmessage'];
+		$CB->postMessage(0);
+		$DB->sql_put("COMMIT");
+	}
+	
+	$forum = $CB->output(0);
+	unset($CB);
+	$forum = preg_replace('-<div id="chatboxtabs".*</div>-',"",$forum);
+	$forum = preg_replace('-<div class="chatboxMembersList">.*</div>-',"",$forum);
+
+	libHTML::$footerScript[] = 'makeFormsSafe();';
+}	
+
 $map = $Game->mapHTML();
 
 /*if( isset($_REQUEST['goNow']) )
@@ -300,6 +334,7 @@ if ( isset($forum) )
 
 print $map.'<div class="hr"></div>';
 
+// END PREGAME-CHAT HACK
 if (isset($Orders))
 {
 	print $Orders.'<div class="hr"></div>';

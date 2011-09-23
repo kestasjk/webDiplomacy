@@ -61,9 +61,6 @@ class WWIVVariant extends WDVariant {
 		// Map is Warparound
 		$this->variantClasses['drawMap']            = 'WWIV';
 		
-		// Pregame chat
-		$this->variantClasses['panelGameBoard']     = 'WWIV';
-
 		// Bigger message-limit because of that much players:
 		$this->variantClasses['Chatbox']            = 'WWIV';
 		

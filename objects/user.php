@@ -788,7 +788,7 @@ class User {
 	}
 	
 	/**
-	 * Get a user's reliability rating.  Reliability rating is 100 minus % of games missed times 200, not to be lower than 0
+	 * Get a user's reliability rating.  Reliability rating is 100 minus phases missed / phases played * 200, not to be lower than 0
 	 * Examples: If a user misses 5% of their games, rating would be 90, 15% would be 70, etc.  Certain features of the site (such as creating and joining games) will be restricted if the reliability rating is too low.
 	 * @return reliability
 	 */

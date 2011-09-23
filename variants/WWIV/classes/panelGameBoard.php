@@ -20,54 +20,8 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 	
-require_once('board/chatbox.php');
 
-class ChatMember
-{
-	function memberCountryName() { return ""; }
-	function memberNameCountry() { return ""; }
-	public $online = 0;
-}
-
-class PreGameChat_panelGameBoard extends panelGameBoard
-{
-	function mapHTML()
-	{
-		$html = parent::mapHTML();
-		
-		if ($this->phase == 'Pre-game')
-		{	
-			global $DB, $User;
-		
-			$html .= '<div class="hr"></div>';
-			
-			for($countryID=1; $countryID<=count($this->Variant->countries); $countryID++)
-				$this->Members->ByCountryID[$countryID] = new ChatMember();
-
-			$CB = $this->Variant->Chatbox();
-
-			if( isset($_REQUEST['newmessage']) AND $_REQUEST['newmessage']!="")
-			{
-				$_REQUEST['newmessage'] = "(".$User->username."): ".$_REQUEST['newmessage'];
-				$CB->postMessage(0);
-				$DB->sql_put("COMMIT");
-			}
-			
-			$chat = $CB->output(0);
-			$chat = preg_replace('-<div id="chatboxtabs".*</div>-',"",$chat);
-			$chat = preg_replace('-<div class="chatboxMembersList">.*</div>-',"",$chat);
-
-			$html .= $chat;
-			unset($CB);
-
-			libHTML::$footerScript[] = 'makeFormsSafe();';
-			
-		}	
-		return $html;
-	}
-}
-
-class ZoomMap_panelGameBoard extends PreGameChat_panelGameBoard
+class ZoomMap_panelGameBoard extends panelGameBoard
 {
 	function mapHTML() {
 		$mapTurn = (($this->phase=='Pre-game'||$this->phase=='Diplomacy') ? $this->turn-1 : $this->turn);
