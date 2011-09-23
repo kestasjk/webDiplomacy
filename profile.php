@@ -286,7 +286,7 @@ elseif ($reliability >= 50)
 	$relColor = 'orange';
 else
 	$relColor = 'red';
-print '<li><strong>Reliabilty Rating:</strong> <span style="color: '.$relColor.'">'.$reliability.'</span></li>';
+print '<li><strong>Reliabilty Rating:</strong> <span style="color: '.$relColor.'">'.$reliability.' (missed '.$UserProfile->missedMoves.' of '.$UserProfile->phasesPlayed.' phases)</span></li>';
 // End Relibility-Hack
 
 if ( $rankingDetails['position'] < $rankingDetails['rankingPlayers'] )
