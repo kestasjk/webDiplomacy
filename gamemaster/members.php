@@ -36,17 +36,17 @@ class processMembers extends Members
 	 */
 	function updateReliability()
 	{
-		global $DB;
+		global $DB, $Game;
 		
 		foreach($this->ByStatus['Playing'] as $Member) {
-			if (($Member->missedPhases > 0) && ($this->phaseMinutes > 30)) {
+			if (($Member->missedPhases > 0) && ($this->Game->phaseMinutes > 30)) {
 				$DB->sql_put("UPDATE wD_Users SET phasesPlayed = phasesPlayed + 1 WHERE id=".$Member->userID);
 				$DB->sql_put("UPDATE wD_Users SET missedMoves = missedMoves + 1 WHERE id=".$Member->userID);
 			}
 		}
 		
 		foreach($this->ByStatus['Left'] as $Member) {
-			if ($this->phaseMinutes > 30) {
+			if ($this->Game->phaseMinutes > 30) {
 				$DB->sql_put("UPDATE wD_Users SET phasesPlayed = phasesPlayed + 1 WHERE id=".$Member->userID);
 				$DB->sql_put("UPDATE wD_Users SET missedMoves  = missedMoves  + 1 WHERE id=".$Member->userID);
 			}
