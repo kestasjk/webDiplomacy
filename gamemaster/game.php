@@ -849,9 +849,11 @@ class processGame extends Game
 		 */
 
 		/*
-		 * Check for missed turns and adjust the counter in the user-data...
+		 * Check for missed turns and adjust the counter in the user-data
+		 * for games with more then 2 players and not live games...
 		 */
-		$this->Members->updateReliability();
+		 if (count($this->Variant->countries) > 2)
+			$this->Members->updateReliability();
 		
 		/*
 		 * The findSet* functions affect the Members arrays and Member objects and records,
