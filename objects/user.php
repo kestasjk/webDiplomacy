@@ -808,9 +808,8 @@ class User {
 	 */
 	function getUncompletedGames()
 	{
-		global $DB;
-		
-		list($number) = $DB->sql_row("SELECT COUNT(*) as games FROM wD_Members m, wD_Games g WHERE m.userID=".$this->id." and m.gameID=g.id and g.phase!='Finished' GROUP BY m.userID");
+		global $DB;		
+		list($number) = $DB->sql_row("SELECT COUNT(*) FROM wD_Members m, wD_Games g WHERE m.userID=".$this->id." and m.gameID=g.id and g.phase!='Finished'");
 		return $number;
 	}
 	
