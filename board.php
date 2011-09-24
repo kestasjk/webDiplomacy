@@ -284,13 +284,14 @@ if ($Game->phase == 'Pre-game')
 		$DB->sql_put("COMMIT");
 	}
 	
-	$forum = $CB->output(0);
+	$forum. = $CB->output(0);
 	unset($CB);
 	$forum = preg_replace('-<div id="chatboxtabs".*</div>-',"",$forum);
 	$forum = preg_replace('-<div class="chatboxMembersList">.*</div>-',"",$forum);
 
 	libHTML::$footerScript[] = 'makeFormsSafe();';
 }	
+// END PREGAME-CHAT
 
 $map = $Game->mapHTML();
 
@@ -324,7 +325,6 @@ if ( isset($forum) )
 
 print $map.'<div class="hr"></div>';
 
-// END PREGAME-CHAT HACK
 if (isset($Orders))
 {
 	print $Orders.'<div class="hr"></div>';
