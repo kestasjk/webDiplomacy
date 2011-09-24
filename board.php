@@ -363,7 +363,7 @@ if($User->type['Moderator'])
 			$modActions[] = '<br />Multi-check:';
 			foreach($Game->Members->ByCountryID as $countryID=>$Member)
 			{
-				$modActions[] = '<a href="admincp.php?tab=Multi-accounts&aUserID='.$Member->userID.'&bUserIDs='.$userIDs.'" class="light">'.
+				$modActions[] = '<a href="admincp.php?tab=Multi-accoun&aUserID='.$Member->userID.'&bUserIDs='.$userIDs.'" class="light">'.
 					$Member->memberCountryName().'</a>';
 			}
 		}
