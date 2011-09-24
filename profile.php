@@ -277,16 +277,7 @@ print '<li><strong>Rank:</strong> '.$rankingDetails['rank'].'</li>';
 /**
  * Add reliability-rating to the profile-page
  */
-$reliability = $UserProfile->getReliability();
-if ($reliability >= 90)
-	$relColor= 'blue';
-elseif ($reliability >= 80)
-	$relColor = 'green';
-elseif ($reliability >= 50)
-	$relColor = 'orange';
-else
-	$relColor = 'red';
-print '<li><strong>Reliabilty Rating:</strong> <span style="color: '.$relColor.'">'.$reliability.' (missed '.$UserProfile->missedMoves.' of '.$UserProfile->phasesPlayed.' phases)</span></li>';
+print '<li><strong>Reliabilty Rating:</strong> '.$UserProfile->ReliabilityAsString().'</li>';
 // End Relibility-Hack
 
 if ( $rankingDetails['position'] < $rankingDetails['rankingPlayers'] )

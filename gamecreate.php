@@ -41,19 +41,8 @@ if( !$User->type['User'] )
 /**
  * Check for reliability, bevore a user can create a new game...
  */
-$reliability = $User->getReliability();
-$phasesPlayed = $User->phasesPlayed;
-$maxGames = ceil($reliability / 10);
-$totalGames = $User->getUncompletedGames();
-if ($reliability < 100) { // If the rating is 90 or above, there are restrictions other than the possible newbie restriction below.
-	if ( $reliability == 0 )
-		libHTML::notice('Reliability rating zero', "NOTICE: You are not allowed to join or create any games given your reliability rating of ZERO (meaning you have missed more than 50% of your orders across all of your games)</p><p>You can improve your reliability rating by not missing any orders, even if it's just saving the default 'Hold' for everything.</p><p>If you are not currently in a game and cannot join one, then you may contact an <a href=\"profile.php?userID=5\">admin</a> and explain your extremely low rating.  The admin, at his or her discretion, may set your reliability rating high enough to allow you 1 game at a time.  By consistently putting orders every turn in that game, your reliability rating will improve enough to allow you more simultaneous games</p>");
-	elseif ( $reliability < 50 ) 
-		libHTML::notice('Reliability too low to create a new game',"<p>NOTICE: You cannot start a new game when you have trouble keeping up with the ones you have.</p><p>You can improve your reliability rating by not missing any orders, even if it's just saving the default 'Hold' for everything.</p><p>If you are not currently in a game, you may still join one, so long as you have not reached the maximum for your reliability rating.</p><p>Please note that if you are marked as 'Left' for a game, your rating will continue to take hits until someone takes over for you.</p>");
-	elseif ( $totalGames >= $maxGames ) // Can't have more than reliability rating / 10 games up
-		libHTML::notice('Reliability too low to create a new game',"<p>NOTICE: You cannot start a new game, because you seem to be having trouble keeping up with the orders in the ones you already have</p><p>You can improve your reliability rating by not missing any orders, even if it's just saving the default 'Hold' for everything.</p><p>Please note that if you are marked as 'Left' for a game, your rating will continue to take hits until someone takes over for you.</p><p>Your current rating of <strong>".$reliability."</strong> allows you to have no more than <strong>".$maxGames."</strong> concurrent games before you see this message.  Every 10 reliability points will allow you an additional game.</p>");
-} elseif ( $totalGames > 1 && $phasesPlayed / $totalGames < 3 ) // This will prevent newbies from joining 10 games and then leaving right away.  Everyone can join 2 without any restrictions, then they can join more after they've played them for 3 phases.  
-	libHTML::notice('Slow down there, partner.',"<p>You're taking on too many games at once for a new member.  Please relax and enjoy the game or games that you are currently in before joining a new one.  You need to play <strong>".($totalGames*3-$phasesPlayed)."</strong> more phases (across all your games) before you can take on another game.  This restriction is to prevent new users from joining a bunch of games, and then leaving the site completely the next day without playing in any of them.</p>");
+if( ($message = $User->isReliable()) )
+	libHTML::notice('Reliable rating not high enough', $message);
 // END RELIABILITY-PATCH
 
 libHTML::starthtml();
