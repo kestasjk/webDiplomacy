@@ -463,9 +463,10 @@ class User {
 
 		$buf='';
 
-		if( strstr($type,'Moderator') )
-			$buf .= ' <img src="images/icons/mod.png" alt="Mod" title="Moderator" />';
-		elseif(strstr($type,'Banned') )
+		//if( strstr($type,'Moderator') )
+		//	$buf .= ' <img src="images/icons/mod.png" alt="Mod" title="Moderator" />';
+		//else
+		if(strstr($type,'Banned') )
 			$buf .= ' <img src="images/icons/cross.png" alt="X" title="Banned" />';
 
 		if( strstr($type,'DonatorPlatinum') )
