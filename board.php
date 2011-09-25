@@ -289,6 +289,9 @@ if ($Game->phase == 'Pre-game')
 	$forum = preg_replace('-<div class="chatboxMembersList">.*</div>-',"",$forum);
 	$forum = preg_replace('-<DIV class="chatbox ">-','<DIV class="chatbox chatboxnotabs">',$forum);
 
+	if (isset($Member))
+		$Member->seen(0);
+
 	libHTML::$footerScript[] = 'makeFormsSafe();';
 }	
 // END PREGAME-CHAT

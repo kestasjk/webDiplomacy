@@ -88,7 +88,15 @@ class libGameMessage
 
 		$DB->sql_put("COMMIT"); // Prevent deadlocks
 
-		if ( $toCountryID == 0 )
+		if ( $toCountryID == 0 && $fromCountryID == 0)
+		{
+			$DB->sql_put("UPDATE wD_Members
+						SET newMessagesFrom = IF( (newMessagesFrom+0) = 0,
+												'0',
+												CONCAT_WS(',',newMessagesFrom,'0') )
+						WHERE gameID = ".$Game->id);
+		}
+		elseif ( $toCountryID == 0 )
 		{
 			$DB->sql_put("UPDATE wD_Members
 						SET newMessagesFrom = IF( (newMessagesFrom+0) = 0,
