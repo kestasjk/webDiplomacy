@@ -395,12 +395,13 @@ while( $message = $DB->tabl_hash($tabl) )
 	print '<strong>'.$message['subject'].'</strong>';
 
 	print '</div>
-
+		
 		<div class="message-body threadalternate'.$switch.'">
 			<div class="message-contents" fromUserID="'.$message['fromUserID'].'">
 				'.$message['message'].'
 			</div>
-		</div>';
+		</div>
+	<div style="clear:both;"></div>';
 
 	if( $message['id'] == $viewthread )
 	{
