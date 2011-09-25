@@ -405,10 +405,19 @@ list($posts) = $DB->sql_row(
 		SELECT COUNT(fromUserID) FROM `wD_ForumMessages` WHERE type='ThreadReply' AND fromUserID = ".$UserProfile->id."
 		)"); // Doing the query this way makes MySQL use the type, fromUserID index
 if( is_null($posts) ) $posts=0;
-print '<li><strong>Forum posts:</strong> '.$posts.'
-	(View: <a href="profile.php?detail=threads&userID='.$UserProfile->id.'">Threads</a>,
-		<a href="profile.php?detail=replies&userID='.$UserProfile->id.'">replies</a>)
+list($likes) = $DB->sql_row("SELECT COUNT(*) FROM wD_LikePost WHERE userID=".$UserProfile->id);
+list($liked) = $DB->sql_row("SELECT COUNT(*) FROM wD_ForumMessages fm 
+	INNER JOIN wD_LikePost lp ON lp.likeMessageID = fm.id 
+	WHERE fm.fromUserID=".$UserProfile->id);
+$likes = ($likes ? '<strong>Likes:</strong> '.$likes : '');
+$liked = ($liked ? '<strong>Liked:</strong> '.$liked : '');
+
+print '<li><strong>Forum posts:</strong> '.$posts.'<br />
+	<strong>View:</strong> <a class="light" href="profile.php?detail=threads&userID='.$UserProfile->id.'">Threads</a>,
+		<a class="light" href="profile.php?detail=replies&userID='.$UserProfile->id.'">replies</a><br />
+		'.implode(' / ',array($likes,$liked)).'
 	</li>';
+unset($likes,$liked);
 
 print '<li>&nbsp;</li>';
 print '<li><strong>Joined:</strong> '.$UserProfile->timeJoinedtxt().'</li>';

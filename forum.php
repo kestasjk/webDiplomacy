@@ -322,7 +322,8 @@ if( file_exists($cacheHTML) )
 
 $tabl = $DB->sql_tabl("SELECT
 	f.id, fromUserID, timeSent, message, subject, replies,
-		u.username as fromusername, u.points as points, latestReplySent, IF(s.userID IS NULL,0,1) as online, u.type as userType
+		u.username as fromusername, u.points as points, latestReplySent, IF(s.userID IS NULL,0,1) as online, u.type as userType, 
+		(SELECT COUNT(*) FROM wD_LikePost lp WHERE lp.likeMessageID = f.id) as likeCount
 	FROM wD_ForumMessages f
 		INNER JOIN wD_Users u ON ( f.fromUserID = u.id )
 		LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
@@ -337,13 +338,13 @@ $tabl = $DB->sql_tabl("SELECT
 $switch = 2;
 while( $message = $DB->tabl_hash($tabl) )
 {
-	print '<div class="hr userID'.$message['fromUserID'].'"></div>'; // Add the userID so banned users dont create lines where their threads were
+	print '<div class="hr userID'.$message['fromUserID'].' threadID'.$message['id'].'"></div>'; // Add the userID and threadID so muted users/threads dont create lines where their threads were
 
 	$switch = 3-$switch; // 1,2,1,2,1,2...
 
 	$messageAnchor = '<a name="'.($new['id'] == $message['id'] ? 'postbox' : $message['id']).'"></a>';
 
-	print '<div class="thread threadborder'.$switch.' threadalternate'.$switch.' userID'.$message['fromUserID'].'">';
+	print '<div class="thread threadID'.$message['id'].' threadborder'.$switch.' threadalternate'.$switch.' userID'.$message['fromUserID'].'">';
 
 	// New or archived posts anchor to the start of the thread
 	if ( $User->timeLastSessionEnded < $message['timeSent'] || $message['latestReplySent'] < $Misc->ThreadAliveThreshold )
@@ -356,6 +357,18 @@ while( $message = $DB->tabl_hash($tabl) )
 	{
 		print $messageAnchor;
 	}
+	
+	$muteLink='';
+	if( $User->type['User'] ) {
+		$isThreadMuted = $User->isThreadMuted($message['id']);
+		if( isset($_REQUEST['toggleMuteThreadID']) && $_REQUEST['toggleMuteThreadID']==$message['id'] ) {
+			$User->toggleThreadMute($message['id']);
+			$isThreadMuted = !$isThreadMuted;
+		}
+		
+		$toggleMuteURL = 'forum.php?toggleMuteThreadID='.$message['id'].'&rand='.rand(1,99999).'#'.$message['id'];
+		$muteLink = ' <br /><a title="Mute this thread, hiding it from your forum and home page" class="light likeMessageToggleLink" href="'.$toggleMuteURL.'">'.($isThreadMuted ? 'Un-mute' : 'Mute' ).' thread</a>';
+	}
 
 	print '<div class="leftRule message-head threadalternate'.$switch.'">
 
@@ -363,8 +376,9 @@ while( $message = $DB->tabl_hash($tabl) )
 			' '.libHTML::loggedOn($message['fromUserID']).
 				' ('.$message['points'].' '.libHTML::points().User::typeIcon($message['userType']).')</a>'.
 			'<br />
-			<strong><em>'.libTime::text($message['timeSent']).'</em></strong>
-		</div>';
+			<strong><em>'.libTime::text($message['timeSent']).'</em></strong>'.$muteLink.'<br />
+			'.$User->likeMessageToggleLink($message['id'],$message['fromUserID']).libHTML::likeCount($message['likeCount']).
+		'</div>';
 
 	print '<div class="message-subject">';
 
@@ -375,16 +389,19 @@ while( $message = $DB->tabl_hash($tabl) )
 	{
 		print '<img src="images/icons/lock.png" title="This thread is too old to reply to." /> ';
 	}
+	
+	
+	
+	print '<strong>'.$message['subject'].'</strong>';
 
-	print '<strong>'.$message['subject'].'</strong>
-
-		</div>
-
+	print '</div>
+		
 		<div class="message-body threadalternate'.$switch.'">
 			<div class="message-contents" fromUserID="'.$message['fromUserID'].'">
 				'.$message['message'].'
 			</div>
-		</div>';
+		</div>
+	<div style="clear:both;"></div>';
 
 	if( $message['id'] == $viewthread )
 	{
@@ -399,7 +416,8 @@ while( $message = $DB->tabl_hash($tabl) )
 		// We are viewing the thread; print replies
 		$replytabl = $DB->sql_tabl(
 			"SELECT f.id, fromUserID, f.timeSent, f.message, u.points as points, IF(s.userID IS NULL,0,1) as online,
-					u.username as fromusername, f.toID, u.type as userType
+					u.username as fromusername, f.toID, u.type as userType, 
+					(SELECT COUNT(*) FROM wD_LikePost lp WHERE lp.likeMessageID = f.id) as likeCount
 				FROM wD_ForumMessages f, wD_Users u LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
 				WHERE f.toID=".$message['id']." AND f.type='ThreadReply'
 					AND f.fromUserID = u.id
@@ -407,6 +425,7 @@ while( $message = $DB->tabl_hash($tabl) )
 				".(isset($threadPager)?$threadPager->SQLLimit():''));
 		$replyswitch = 2;
 		$replyNumber = 0;
+		list($maxReplyID) = $DB->sql_row("SELECT MAX(id) FROM wD_ForumMessages WHERE toID=".$message['id']." AND type='ThreadReply'");
 		while($reply = $DB->tabl_hash($replytabl) )
 		{
 			$replyToID = $reply['toID'];
@@ -430,7 +449,7 @@ while( $message = $DB->tabl_hash($tabl) )
 				print $messageAnchor;
 				$messageAnchor = '';
 			}
-			elseif ( $message['replies'] == $replyNumber )
+			elseif ( $reply['id'] == $maxReplyID )
 			{
 				print $messageAnchor;
 				$messageAnchor = '';
@@ -447,6 +466,7 @@ while( $message = $DB->tabl_hash($tabl) )
 
 			print '<em>'.libTime::text($reply['timeSent']).'</em>';
 
+			print '<br />'.$User->likeMessageToggleLink($reply['id'],$reply['fromUserID']).libHTML::likeCount($reply['likeCount']);
 			print '</div>';
 
 
