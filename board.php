@@ -267,8 +267,7 @@ class ChatMember {
 
 if ($Game->phase == 'Pre-game')
 {	
-	$forum = '<div class="hr"></div>';
-	
+
 	for($countryID=1; $countryID<=count($Game->Variant->countries); $countryID++)
 		$Game->Members->ByCountryID[$countryID] = new ChatMember();
 
@@ -284,10 +283,11 @@ if ($Game->phase == 'Pre-game')
 		$DB->sql_put("COMMIT");
 	}
 	
-	$forum .= $CB->output(0);
+	$forum = $CB->output(0);
 	unset($CB);
 	$forum = preg_replace('-<div id="chatboxtabs".*</div>-',"",$forum);
 	$forum = preg_replace('-<div class="chatboxMembersList">.*</div>-',"",$forum);
+	$forum = preg_replace('-<DIV class="chatbox ">-','<DIV class="chatbox chatboxnotabs">',$forum);
 
 	libHTML::$footerScript[] = 'makeFormsSafe();';
 }	

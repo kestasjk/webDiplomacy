@@ -464,9 +464,11 @@ class panelGame extends Game
 	{
 		global $User;
 
+/*		I've put the following code in remarks to isplay the view Button, even if it's the PreGame-Phase 
+		(to view the chat for example).
 		if( !$this->Members->isJoined() && $this->phase == 'Pre-game' )
 			return '';
-
+*/
 		return '<a href="board.php?gameID='.$this->id.'#gamePanel">'.
 			($this->Members->isJoined()?'Open':'View').'</a>';
 
