@@ -423,7 +423,7 @@ while( $message = $DB->tabl_hash($tabl) )
 				".(isset($threadPager)?$threadPager->SQLLimit():''));
 		$replyswitch = 2;
 		$replyNumber = 0;
-		list($maxReplyID) = $DB->sql_row("SELECT MAX(id) FROM wD_ForumMessages WHERE toID=".$message['id']);
+		list($maxReplyID) = $DB->sql_row("SELECT MAX(id) FROM wD_ForumMessages WHERE toID=".$message['id']." AND type='ThreadReply'");
 		while($reply = $DB->tabl_hash($replytabl) )
 		{
 			$replyToID = $reply['toID'];
