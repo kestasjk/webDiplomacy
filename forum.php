@@ -365,7 +365,7 @@ while( $message = $DB->tabl_hash($tabl) )
 				' ('.$message['points'].' '.libHTML::points().User::typeIcon($message['userType']).')</a>'.
 			'<br />
 			<strong><em>'.libTime::text($message['timeSent']).'</em></strong><br />
-			'.$User->likeMessageToggleLink($message['id']).libHTML::likeCount($message['likeCount']).
+			'.$User->likeMessageToggleLink($message['id'],$message['fromUserID']).libHTML::likeCount($message['likeCount']).
 		'</div>';
 
 	print '<div class="message-subject">';
@@ -464,7 +464,7 @@ while( $message = $DB->tabl_hash($tabl) )
 
 			print '<em>'.libTime::text($reply['timeSent']).'</em>';
 
-			print '<br />'.$User->likeMessageToggleLink($reply['id']).libHTML::likeCount($reply['likeCount']);
+			print '<br />'.$User->likeMessageToggleLink($reply['id'],$reply['fromUserID']).libHTML::likeCount($reply['likeCount']);
 			print '</div>';
 
 

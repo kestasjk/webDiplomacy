@@ -777,9 +777,9 @@ class User {
 
 		return $likeMessages;
 	}
-	public function likeMessageToggleLink($messageID) {
+	public function likeMessageToggleLink($messageID, $fromUserID=-1) {
 		
-		if( $this->type['User'] && !in_array($messageID, $this->getLikeMessages()))
+		if( $this->type['User'] && $this->id != $fromUserID && !in_array($messageID, $this->getLikeMessages()))
 			return '<a id="likeMessageToggleLink'.$messageID.'" 
 			href="#" class="light likeMessageToggleLink" '.
 			'onclick="likeMessageToggle('.$this->id.','.$messageID.',\''.libAuth::likeToggleToken($this->id, $messageID).'\'); '.
