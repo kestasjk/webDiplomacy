@@ -844,17 +844,15 @@ class processGame extends Game
 		}
 
 		/*
+		 * Check for missed turns and adjust the counter in the user-data
+		 */
+		$this->Members->updateReliability();
+		
+		/*
 		 * In the functions below only 'Playing' and 'Left' status members are dealt with:
 		 * 'Defeated' players have no bearing, and the other statuses cannot exist at this stage.
 		 */
 
-		/*
-		 * Check for missed turns and adjust the counter in the user-data
-		 * for games with more then 2 players and not live games...
-		 */
-		 if (count($this->Variant->countries) > 2)
-			$this->Members->updateReliability();
-		
 		/*
 		 * The findSet* functions affect the Members arrays and Member objects and records,
 		 * and will send messages, but they will not affect the rest of the game.

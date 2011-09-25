@@ -31,22 +31,24 @@ require_once('gamemaster/member.php');
 class processMembers extends Members
 {
 	/**
-	 * Adjust the missed turns of each member and update the phase counter.
+	 * Adjust the missed turns of each member and update the phase counter
+	 * for games with more then 2 players and not live games...
 	 * "Left" users are included (for civil disorder to total phases ratio calculating)
 	 */
 	function updateReliability()
 	{
-		global $DB, $Game;
+		if ( (count($this->Game->Variant->countries) > 2) && ($this->Game->phaseMinutes > 30) ) {
 		
-		foreach($this->ByStatus['Playing'] as $Member) {
-			if (($Member->missedPhases > 0) && ($this->Game->phaseMinutes > 30)) {
+			global $DB;
+
+			foreach($this->ByStatus['Playing'] as $Member) {
 				$DB->sql_put("UPDATE wD_Users SET phasesPlayed = phasesPlayed + 1 WHERE id=".$Member->userID);
-				$DB->sql_put("UPDATE wD_Users SET missedMoves = missedMoves + 1 WHERE id=".$Member->userID);
+				if ($Member->missedPhases > 0) {
+					$DB->sql_put("UPDATE wD_Users SET missedMoves = missedMoves + 1 WHERE id=".$Member->userID);
+				}
 			}
-		}
-		
-		foreach($this->ByStatus['Left'] as $Member) {
-			if ($this->Game->phaseMinutes > 30) {
+			
+			foreach($this->ByStatus['Left'] as $Member) {
 				$DB->sql_put("UPDATE wD_Users SET phasesPlayed = phasesPlayed + 1 WHERE id=".$Member->userID);
 				$DB->sql_put("UPDATE wD_Users SET missedMoves  = missedMoves  + 1 WHERE id=".$Member->userID);
 			}
