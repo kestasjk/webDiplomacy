@@ -357,6 +357,18 @@ while( $message = $DB->tabl_hash($tabl) )
 	{
 		print $messageAnchor;
 	}
+	
+	$muteLink='';
+	if( $User->type['User'] ) {
+		$isThreadMuted = $User->isThreadMuted($message['id']);
+		if( isset($_REQUEST['toggleMuteThreadID']) && $_REQUEST['toggleMuteThreadID']==$message['id'] ) {
+			$User->toggleThreadMute($message['id']);
+			$isThreadMuted = !$isThreadMuted;
+		}
+		
+		$toggleMuteURL = 'forum.php?toggleMuteThreadID='.$message['id'].'&rand='.rand(1,99999).'#'.$message['id'];
+		$muteLink = ' <br /><a class="light likeMessageToggleLink" href="'.$toggleMuteURL.'">'.($isThreadMuted ? 'Un-mute' : 'Mute' ).'</a>';
+	}
 
 	print '<div class="leftRule message-head threadalternate'.$switch.'">
 
@@ -364,7 +376,7 @@ while( $message = $DB->tabl_hash($tabl) )
 			' '.libHTML::loggedOn($message['fromUserID']).
 				' ('.$message['points'].' '.libHTML::points().User::typeIcon($message['userType']).')</a>'.
 			'<br />
-			<strong><em>'.libTime::text($message['timeSent']).'</em></strong><br />
+			<strong><em>'.libTime::text($message['timeSent']).'</em></strong>'.$muteLink.'<br />
 			'.$User->likeMessageToggleLink($message['id'],$message['fromUserID']).libHTML::likeCount($message['likeCount']).
 		'</div>';
 
@@ -381,17 +393,6 @@ while( $message = $DB->tabl_hash($tabl) )
 	
 	
 	print '<strong>'.$message['subject'].'</strong>';
-	
-	if( $User->type['User'] ) {
-		$isThreadMuted = $User->isThreadMuted($message['id']);
-		if( isset($_REQUEST['toggleMuteThreadID']) && $_REQUEST['toggleMuteThreadID']==$message['id'] ) {
-			$User->toggleThreadMute($message['id']);
-			$isThreadMuted = !$isThreadMuted;
-		}
-		
-		$toggleMuteURL = 'forum.php?toggleMuteThreadID='.$message['id'].'&rand='.rand(1,99999).'#'.$message['id'];
-		print ' '.($isThreadMuted ? libHTML::muted($toggleMuteURL) : libHTML::unmuted($toggleMuteURL));
-	}
 
 	print '</div>
 
