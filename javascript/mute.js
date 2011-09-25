@@ -33,4 +33,9 @@ function muteAll() {
 			mt.hide();
 		});
 	});
+	muteThreads.map(function(m) {
+		$$(".threadID"+m).map(function(mt) {
+			mt.hide();
+		});
+	});
 }

@@ -62,6 +62,30 @@ class libAuth
 	{
 		return md5($gameID.$time.Config::$gameMasterSecret);
 	}
+	public static function likeToggleToken_Key($userID, $messageID) {
+		
+		return md5('likeToggle-'.$userID.'-'.$messageID.'-'.Config::$secret);
+	}
+	public static function likeToggleToken($userID, $messageID) {
+		
+		return $userID.'_'.$messageID.'_'.self::likeToggleToken_Key($userID, $messageID);
+	}
+	public static function likeToggleToken_Valid($token) {
+		
+		$token = explode('_',$token);
+		
+		if( count($token) != 3 )
+			throw new Exception('Corrupt token '.$token);
+		
+		$userID = (int)$token[0];
+		$messageID = (int)$token[1];
+		$key = $token[2];
+		
+		if( $key !== self::likeToggleToken_Key($userID, $messageID))
+			throw new Exception('Invalid token '.$token);
+		
+		return true;
+	}
 
 	public static function gamemasterToken($gameID)
 	{

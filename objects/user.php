@@ -763,6 +763,58 @@ class User {
 
 		return $muteCountries[$gameID];
 	}
+	public function getLikeMessages() {
+		global $DB;
+
+		static $likeMessages;
+		if( !isset($likeMessages) ) $likeMessages = array();
+		else return $likeMessages;
+
+		$tabl = $DB->sql_tabl("SELECT likeMessageID FROM wD_LikePost WHERE userID=".$this->id);
+
+		while(list($likeMessageID) = $DB->tabl_row($tabl))
+			$likeMessages[] = $likeMessageID;
+
+		return $likeMessages;
+	}
+	public function likeMessageToggleLink($messageID) {
+		
+		if( $this->type['User'] && !in_array($messageID, $this->getLikeMessages()))
+			return '<a id="likeMessageToggleLink'.$messageID.'" 
+			href="#" class="light likeMessageToggleLink" '.
+			'onclick="likeMessageToggle('.$this->id.','.$messageID.',\''.libAuth::likeToggleToken($this->id, $messageID).'\'); '.
+			'return false;">'.
+			'Like</a>';
+		else return '';
+	}
+	public function getMuteThreads($refresh=false) {
+		global $DB;
+
+		static $muteThreads;
+		if( $refresh || !isset($muteThreads) ) $muteThreads = array();
+		else return $muteThreads;
+
+		$tabl = $DB->sql_tabl("SELECT muteThreadID FROM wD_MuteThread WHERE userID=".$this->id);
+
+		while(list($muteThreadID) = $DB->tabl_row($tabl))
+			$muteThreads[] = $muteThreadID;
+
+		return $muteThreads;
+	}
+	
+	public function isThreadMuted($threadID) {
+		return in_array($threadID,$this->getMuteThreads($threadID));
+	}
+	public function toggleThreadMute($threadID) {
+		global $DB;
+		
+		if( $this->isThreadMuted($threadID)) 
+			$DB->sql_put("DELETE FROM wD_MuteThread WHERE userID = ".$this->id." AND muteThreadID=".$threadID);
+		else
+			$DB->sql_put("INSERT INTO wD_MuteThread (userID, muteThreadID) VALUES (".$this->id.", ".$threadID.")");
+	
+		$this->getMuteThreads(true);
+	}
 	public function isCountryMuted($gameID, $muteCountryID) {
 		return in_array($muteCountryID,$this->getMuteCountries($gameID));
 	}

@@ -700,3 +700,7 @@ TD.army, div.army {
 span.orderNotice {
 	font-weight:bold;
 }
+.likeMessageToggleLink, .likeCount {
+	font-size:8pt;
+	font-style:italic;
+}

@@ -132,6 +132,45 @@ if( $User->type['User'] ) {
 		}
 		print '</ul></li>';
 	}
+	
+	$tablMutedThreads = $DB->sql_tabl(
+		"SELECT mt.muteThreadID, f.subject, f.replies, fu.username ".
+		"FROM wD_MuteThread mt ".
+		"INNER JOIN wD_ForumMessages f ON f.id = mt.muteThreadID ".
+		"INNER JOIN wD_Users fu ON fu.id = f.fromUserID ".
+		"WHERE mt.userID = ".$User->id);
+	$mutedThreads = array();
+	while( $mutedThread = $DB->tabl_hash($tablMutedThreads))
+		$mutedThreads[] = $mutedThread;
+	unset($tablMutedThreads);
+	
+	if( count($mutedThreads) > 0 ) {
+		print '<li class="formlisttitle"><a name="threadmutes"></a>Muted threads:</li>';
+		print '<li class="formlistdesc">The threads which you muted.</li>';
+		
+		$unmuteThreadID=0;
+		if( isset($_GET['unmuteThreadID']) ) {
+			
+			$unmuteThreadID = (int)$_GET['unmuteThreadID'];
+			$User->toggleThreadMute($unmuteThreadID);
+			
+			print '<li class="formlistfield"><strong>Thread <a class="light" href="forum.php?threadID='.$unmuteThreadID.'#'.$unmuteThreadID.
+				'">#'.$unmuteThreadID.'</a> unmuted.</strong></li>';
+		}
+		
+		print '<li class="formlistfield"><ul>';
+		
+		foreach ($mutedThreads as $mutedThread) {
+			if( $unmuteThreadID == $mutedThread['muteThreadID']) continue;
+			print '<li>'.
+				'<a class="light" href="forum.php?threadID='.$mutedThread['muteThreadID'].'#'.$mutedThread['muteThreadID'].'">'.
+				$mutedThread['subject'].'</a> '.
+				libHTML::muted('usercp.php?unmuteThreadID='.$mutedThread['muteThreadID'].'#threadmutes').'<br />'.
+				$mutedThread['username'].' ('.$mutedThread['replies'].' replies)<br />'.
+				'</li>';
+		}
+		print '</ul></li>';
+	}
 }
 /*
  * This is done in PHP because Eclipse complains about HTML syntax errors otherwise

@@ -42,7 +42,22 @@ logJavaScriptError();
 
 $results = array('status'=>'Invalid', 'notice'=>'No valid action specified');
 
-if( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($_REQUEST['orderUpdates']) )
+if( isset($_GET['likeMessageToggleToken']) ) {
+	if( libAuth::likeToggleToken_Valid($_GET['likeMessageToggleToken']) ) {
+		
+		$token = explode('_', $_GET['likeMessageToggleToken']);
+		$userID = (int) $token[0];
+		$likeMessageID = (int) $token[1];
+		
+		list($likeExists) = $DB->sql_row("SELECT COUNT(*) FROM wD_LikePost WHERE userID = ".$userID." AND likeMessageID = ".$likeMessageID);
+		
+		if( $likeExists == 0  )
+			$DB->sql_put("INSERT INTO wD_LikePost ( userID, likeMessageID ) VALUES ( ".$userID.", ".$likeMessageID." )");
+		else
+			$DB->sql_put("DELETE FROM wD_LikePost WHERE userID = ".$userID." AND likeMessageID = ".$likeMessageID);
+	}
+}
+elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($_REQUEST['orderUpdates']) )
 {
 	require_once('board/orders/orderinterface.php');
 

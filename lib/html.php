@@ -823,9 +823,13 @@ class libHTML
 	}*/
 
 	public static $footerScript=array();
-	public static $footerIncludes=array('utility.js','cacheUpdate.js','timeHandler.js');
-
-
+	public static $footerIncludes=array('utility.js','cacheUpdate.js','timeHandler.js','forum.js');
+	
+	public static function likeCount($likeCount) {
+		if($likeCount==0) return '';
+		return ' <span class="likeCount">('.$likeCount.' like'.($likeCount>1?'s':'').')</span>';
+	}
+	
 	static private function footerScripts() {
 		global $User;
 
@@ -851,6 +855,7 @@ class libHTML
 			<script type="text/javascript">
 			muteUsers = $A(['.implode(',',$User->getMuteUsers()).']);
 			muteCountries = $A(['.implode(',',$gameMutePairs).']);
+			muteThreads = $A(['.implode(',',$User->getMuteThreads()).']);
 			</script>';
 			unset($gameMutePairs);
 			self::$footerIncludes[] = 'mute.js';
