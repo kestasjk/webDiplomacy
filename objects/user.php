@@ -782,7 +782,7 @@ class User {
 		
 		if( $this->type['User'] && $this->id != $fromUserID && !in_array($messageID, $this->getLikeMessages()))
 			return '<a id="likeMessageToggleLink'.$messageID.'" 
-			href="#" class="light likeMessageToggleLink" '.
+			href="#" title="Give a mark of approval for this post" class="light likeMessageToggleLink" '.
 			'onclick="likeMessageToggle('.$this->id.','.$messageID.',\''.libAuth::likeToggleToken($this->id, $messageID).'\'); '.
 			'return false;">'.
 			'Like</a>';
