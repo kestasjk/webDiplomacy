@@ -367,7 +367,7 @@ while( $message = $DB->tabl_hash($tabl) )
 		}
 		
 		$toggleMuteURL = 'forum.php?toggleMuteThreadID='.$message['id'].'&rand='.rand(1,99999).'#'.$message['id'];
-		$muteLink = ' <br /><a class="light likeMessageToggleLink" href="'.$toggleMuteURL.'">'.($isThreadMuted ? 'Un-mute' : 'Mute' ).'</a>';
+		$muteLink = ' <br /><a class="light likeMessageToggleLink" href="'.$toggleMuteURL.'">'.($isThreadMuted ? 'Un-mute' : 'Mute' ).' thread</a>';
 	}
 
 	print '<div class="leftRule message-head threadalternate'.$switch.'">
