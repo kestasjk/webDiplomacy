@@ -1,0 +1,7 @@
+
+/config.php
+/config_*.php
+/cache
+/css_lab
+/variants/*/cache/*
+!.htaccess
