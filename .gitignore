@@ -5,3 +5,4 @@
 /css_lab
 /variants/*/cache/*
 !.htaccess
+*.zip
