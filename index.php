@@ -327,7 +327,7 @@ class libHome
 
 			if( strlen($message) >= 50 ) $message = substr($message,0,50).'...';
 
-			$message = '<div class="message-contents" fromUserID="'.$userID.'">'.$message.'</div>';
+			$message = '<div class="message-contents threadID'.$threadID.'" fromUserID="'.$userID.'">'.$message.'</div>';
 
 			$threads[$threadID]['posts'][] = array(
 				'iconMessage'=>$iconMessage,'userID'=>$userID, 'username'=>$username,
