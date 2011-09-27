@@ -881,8 +881,8 @@ class User {
 			elseif ( $totalGames >= $maxGames ) // Can't have more than reliability rating / 10 games up
 				return "<p>NOTICE: You cannot join or create a new game, because you seem to be having trouble keeping up with the orders in the ones you already have</p><p>You can improve your reliability rating by not missing any orders, even if it's just saving the default 'Hold' for everything.</p><p>Please note that if you are marked as 'Left' for a game, your rating will continue to take hits until someone takes over for you.</p><p>Your current rating of <strong>".$reliability."</strong> allows you to have no more than <strong>".$maxGames."</strong> concurrent games before you see this message.  Every 10 reliability points will allow you an additional game.</p>";
 		}
-//		elseif ( $totalGames > 1 && $this->phasesPlayed / $totalGames < 3 ) // This will prevent newbies from joining 10 games and then leaving right away.  Everyone can join 2 without any restrictions, then they can join more after they've played them for 3 phases.  
-//			return "<p>You're taking on too many games at once for a new member.  Please relax and enjoy the game or games that you are currently in before joining a new one.  You need to play <strong>".($totalGames*3-$this->phasesPlayed)."</strong> more phases (across all your games) before you can take on another game.  The quickest way to do this is to leave any pre-games you might be in and take over a civil disorder power from another game</p>";
+		elseif ( $totalGames > 1 && $this->phasesPlayed / $totalGames < 3 ) // This will prevent newbies from joining 10 games and then leaving right away.  Everyone can join 2 without any restrictions, then they can join more after they've played them for 3 phases.  
+			return "<p>You're taking on too many games at once for a new member.  Please relax and enjoy the game or games that you are currently in before joining a new one.  You need to play <strong>".($totalGames*3-$this->phasesPlayed)."</strong> more phases (across all your games) before you can take on another game.  The quickest way to do this is to leave any pre-games you might be in and take over a civil disorder power from another game</p>";
 	}
 	
 	public function ReliabilityAsString()
@@ -896,7 +896,7 @@ class User {
 			$relColor = 'orange';
 		else
 			$relColor = 'red';			
-		return '<span style="color: '.$relColor.'">'.$reliability.' (missed '.$this->missedMoves.' of '.$this->phasesPlayed.' phases)</span>';
+		return '<span style="color: '.$relColor.'">'.$reliability.'% (missed '.$this->missedMoves.' of '.$this->phasesPlayed.' phases)</span>';
 	}
 	
 }
