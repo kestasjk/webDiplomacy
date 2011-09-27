@@ -338,6 +338,21 @@ $tabl = $DB->sql_tabl("SELECT
 $switch = 2;
 while( $message = $DB->tabl_hash($tabl) )
 {
+	// Check for mutes first, before continuing
+	$muteLink='';
+	if( $User->type['User'] ) {
+		$isThreadMuted = $User->isThreadMuted($message['id']);
+		if( isset($_REQUEST['toggleMuteThreadID']) && $_REQUEST['toggleMuteThreadID']==$message['id'] ) {
+			$User->toggleThreadMute($message['id']);
+			$isThreadMuted = !$isThreadMuted;
+		}
+		
+		if( $isThreadMuted ) continue;
+		
+		$toggleMuteURL = 'forum.php?toggleMuteThreadID='.$message['id'].'&rand='.rand(1,99999).'#'.$message['id'];
+		$muteLink = ' <br /><a title="Mute this thread, hiding it from your forum and home page" class="light likeMessageToggleLink" href="'.$toggleMuteURL.'">'.($isThreadMuted ? 'Un-mute' : 'Mute' ).' thread</a>';
+	}
+	
 	print '<div class="hr userID'.$message['fromUserID'].' threadID'.$message['id'].'"></div>'; // Add the userID and threadID so muted users/threads dont create lines where their threads were
 
 	$switch = 3-$switch; // 1,2,1,2,1,2...
@@ -356,20 +371,6 @@ while( $message = $DB->tabl_hash($tabl) )
 	if ( $message['replies'] == 0 )
 	{
 		print $messageAnchor;
-	}
-	
-	$muteLink='';
-	if( $User->type['User'] ) {
-		$isThreadMuted = $User->isThreadMuted($message['id']);
-		if( isset($_REQUEST['toggleMuteThreadID']) && $_REQUEST['toggleMuteThreadID']==$message['id'] ) {
-			$User->toggleThreadMute($message['id']);
-			$isThreadMuted = !$isThreadMuted;
-		}
-		
-		if( $isThreadMuted ) continue;
-		
-		$toggleMuteURL = 'forum.php?toggleMuteThreadID='.$message['id'].'&rand='.rand(1,99999).'#'.$message['id'];
-		$muteLink = ' <br /><a title="Mute this thread, hiding it from your forum and home page" class="light likeMessageToggleLink" href="'.$toggleMuteURL.'">'.($isThreadMuted ? 'Un-mute' : 'Mute' ).' thread</a>';
 	}
 
 	print '<div class="leftRule message-head threadalternate'.$switch.'">
