@@ -20,9 +20,96 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class HussiteVariant_drawMap extends drawMap {
+include('coords.txt');
 
-    	public function __construct($smallmap)
+class MoveFlags_drawMap extends Coords_drawMap
+{
+	public function countryFlag($terrID, $countryID)
+	{
+		$flagBlackback = $this->color(array(0, 0, 0));
+		$flagColor = $this->color($this->countryColors[$countryID]);
+		
+		list($x, $y) = $this->territoryPositions[$terrID];
+
+		$coordinates = array(
+			'top-left' => array( 
+						 'x'=>$x-intval($this->fleet['width']/2+1),
+						 'y'=>$y-intval($this->fleet['height']/2+1)
+						 ),
+			'bottom-right' => array(
+						 'x'=>$x+intval($this->fleet['width']/2+1),
+						 'y'=>$y+intval($this->fleet['height']/2-1)
+						 )
+		);
+
+		imagefilledrectangle($this->map['image'],
+			$coordinates['top-left']['x'], $coordinates['top-left']['y'],
+			$coordinates['bottom-right']['x'], $coordinates['bottom-right']['y'],
+			$flagBlackback);
+		imagefilledrectangle($this->map['image'],
+			$coordinates['top-left']['x']+1, $coordinates['top-left']['y']+1,
+			$coordinates['bottom-right']['x']-1, $coordinates['bottom-right']['y']-1,
+			$flagColor);
+	}
+}
+
+class NeutralScBox_drawMap extends MoveFlags_drawMap
+{
+	
+	/**
+	* An array containing the neutral support-center icon image resource, and its width and height.
+	* $image['image'],['width'],['height']
+	* @var array
+	**/
+	protected $sc=array();
+	
+	/**
+	* An array containing the information if one of the first 9 territories 
+	* still has a neutral support-center (So we might not need to draw a flag)
+	**/
+	protected $nsc=array();
+
+	protected function loadImages()
+	{
+		parent::loadImages();
+		$this->sc = $this->loadImage('variants/Hussite/resources/'.($this->smallmap ? 'small' : '').'sc.png');	
+	}
+
+	/**
+	* There are some territories on the map that belong to a country but have a supply-center
+	* that is considered "neutral".
+	* They are set to owner "Neutral" in the installation-file, so we need to check if they are
+	* still "neutal" and paint the territory in the color of the country they "should" belong to.
+	* After that draw the "Neutral-SC-overloay" on the map.
+	**/
+	public function ColorTerritory($terrID, $countryID)
+	{
+		parent::ColorTerritory($terrID, $countryID);
+
+		if ((isset($this->nsc_info[$terrID][0])) && $countryID==0)
+		{
+			parent::ColorTerritory($terrID, $this->nsc_info[$terrID][0]);
+			$this->nsc[$terrID]=$countryID;
+			$sx=($this->smallmap ? $this->nsc_info[$terrID][1] : $this->nsc_info[$terrID][3]);
+			$sy=($this->smallmap ? $this->nsc_info[$terrID][2] : $this->nsc_info[$terrID][4]);
+			$this->putImage($this->sc, $sx, $sy);
+		}
+	}
+		
+	/* No need to draw the country flags for "neural-SC-territories if they get occupied by 
+	** the country they should belong to
+	*/
+	public function countryFlag($terrID, $countryID)
+	{
+		if (isset($this->nsc[$terrID]) && ($this->nsc[$terrID] == $countryID)) return;
+		parent::countryFlag($terrID, $countryID);
+	}
+
+}
+
+class HussiteVariant_drawMap extends NeutralScBox_drawMap {
+
+    public function __construct($smallmap)
 	{
 		// LargeMap is too big, so up the memory-limit
 		parent::__construct($smallmap);
@@ -48,8 +135,8 @@ class HussiteVariant_drawMap extends drawMap {
 		{
 			return array(
 				'map'=>'variants/Hussite/resources/smallmap.png',
-				'army'=>'contrib/smallarmy.png',
-				'fleet'=>'contrib/smallfleet.png',
+				'army'=>'variants/Hussite/resources/smallarmy.png',
+				'fleet'=>'variants/Hussite/resources/smallfleet.png',
 				'names'=>'variants/Hussite/resources/smallmapNames.png',
 				'standoff'=>'images/icons/cross.png'
 			);
@@ -58,31 +145,37 @@ class HussiteVariant_drawMap extends drawMap {
 		{
 			return array(
 				'map'=>'variants/Hussite/resources/map.png',
-				'army'=>'contrib/army.png',
-				'fleet'=>'contrib/fleet.png',
+				'army'=>'variants/Hussite/resources/army.png',
+				'fleet'=>'variants/Hussite/resources/fleet.png',
 				'names'=>'variants/Hussite/resources/mapNames.png',
 				'standoff'=>'images/icons/cross.png'
 			);
 		}
 	}
 	
+	// The icons have a transparent background already
+	protected function setTransparancies() {}
+
 	protected function color(array $color, $image=false)
 	{
 		if ( ! is_array($image) )
-                    $image = $this->map;
+		{
+			$image = $this->map;
+		}
 		
 		list($r, $g, $b) = $color;
 		
 		$colorRes = imagecolorexact($image['image'], $r, $g, $b);
 		if ($colorRes == -1)
 		{
-			$colorRes = imageColorAllocate($image['image'], $r, $g, $b);
+		$colorRes = imageColorAllocate($image['image'], $r, $g, $b);
 			if (!$colorRes)
 				$colorRes = imageColorClosest($image['image'], $r, $g, $b);
 		}
 		
 		return $colorRes; 
-	}	
+	}
+
 }
 
 ?>
