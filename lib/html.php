@@ -827,7 +827,8 @@ class libHTML
 	
 	public static function likeCount($likeCount) {
 		if($likeCount==0) return '';
-		return ' <span class="likeCount">('.$likeCount.' like'.($likeCount>1?'s':'').')</span>';
+		//return ' <span class="likeCount">('.$likeCount.' like'.($likeCount>1?'s':'').')</span>';
+		return ' <span class="likeCount">(+'.$likeCount.')</span>';
 	}
 	
 	static private function footerScripts() {
