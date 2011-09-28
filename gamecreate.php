@@ -38,13 +38,6 @@ if( !$User->type['User'] )
 		Please <a href='logon.php' class='light'>log on</a> to create your own games.");
 }
 
-/**
- * Check for reliability, bevore a user can create a new game...
- */
-if( ($message = $User->isReliable()) )
-	libHTML::notice('Reliable rating not high enough', $message);
-// END RELIABILITY-PATCH
-
 libHTML::starthtml();
 
 //print '<div class="content">';
@@ -113,6 +106,16 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		require_once('gamemaster/game.php');
 		$Game = processGame::create($input['variantID'], $input['name'], $input['password'], $input['bet'], $input['potType'], $input['phaseMinutes'], $input['joinPeriod'], $input['anon'], $input['pressType']);
 
+		/**
+		 * Check for reliability, bevore a user can create a new game...
+		 */
+		if( (count($Game->Variant->countries)>2) && ($message = $User->isReliable($Game)) )
+		{
+			processGame::eraseGame($Game->id);
+			libHTML::notice('Reliable rating not high enough', $message);
+		}
+		// END RELIABILITY-PATCH
+		
 		// Create first Member record & object
 		processMember::create($User->id, $input['bet']);
 		$Game->Members->joinedRedirect();
