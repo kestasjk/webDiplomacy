@@ -794,7 +794,7 @@ class User {
 			href="#" title="Give a mark of approval for this post" class="light likeMessageToggleLink" '.
 			'onclick="likeMessageToggle('.$this->id.','.$messageID.',\''.libAuth::likeToggleToken($this->id, $messageID).'\'); '.
 			'return false;">'.
-			'Like</a>';
+			'+1</a>';
 		else return '';
 	}
 	public function getMuteThreads($refresh=false) {

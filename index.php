@@ -341,9 +341,10 @@ class libHome
 		{
 			$data = $threads[$threadID];
 
-			$buf .= '<div class="hr userID'.$threads[$threadID]['threadStarterUserID'].'"></div>';
+			$buf .= '<div class="hr userID'.$threads[$threadID]['threadStarterUserID'].' threadID'.$threadID.'"></div>';
 
-			$buf .= '<div class="homeForumGroup homeForumAlt'.($threadCount%2 + 1).' userID'.$threads[$threadID]['threadStarterUserID'].'">
+			$buf .= '<div class="homeForumGroup homeForumAlt'.($threadCount%2 + 1).
+				' userID'.$threads[$threadID]['threadStarterUserID'].' threadID'.$threadID.'">
 				<div class="homeForumSubject homeForumTopBorder">'.libHTML::forumParticipated($threadID).' '.$data['subject'].'</div> ';
 
 			if( count($data['posts']) < $data['replies'])
