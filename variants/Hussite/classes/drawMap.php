@@ -20,9 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-include('coords.txt');
-
-class MoveFlags_drawMap extends Coords_drawMap
+class MoveFlags_drawMap extends drawMap
 {
 	public function countryFlag($terrID, $countryID)
 	{
@@ -55,6 +53,31 @@ class MoveFlags_drawMap extends Coords_drawMap
 
 class NeutralScBox_drawMap extends MoveFlags_drawMap
 {
+	
+	/**
+	* An array containing the XY-positions of the "neutral-SC-box" and 
+	* the country-color it should be colored if it's still unoccupied.
+	*
+	* Format: terrID => array (countryID, smallmapx, smallmapy, mapx, mapy)
+	**/
+	protected $nsc_info=array(
+		 10 => array( 2, 225,  175, 453,  354), 
+		 11 => array( 2, 314,  152, 631,  308), 
+		 18 => array( 2, 273,  250, 549,  504), 
+		 21 => array( 2, 433,  253, 869,  510), 
+		 29 => array( 7, 201,  309, 405,  622), 
+		 30 => array( 2, 282,  282, 567,  568), 
+		 34 => array( 2, 528,  411, 1059, 826), 
+		 38 => array( 2,  72,  380, 147,  764), 
+		 39 => array( 7, 163,  350, 329,  704), 
+		 55 => array( 2, 107,  409, 217,  822), 
+		 60 => array( 7, 295,  396, 593,  796), 
+		 76 => array( 2, 234,  512, 471,  1028), 
+		 78 => array( 2, 421,  538, 845,  1080),
+		 87 => array( 2, 235,  247, 473,  498), 
+		 88 => array( 2, 525,  370, 1053, 744), 
+		 89 => array( 4, 601,  299, 1205, 602), 		 
+	);
 	
 	/**
 	* An array containing the neutral support-center icon image resource, and its width and height.

@@ -21,6 +21,7 @@
 	
 	Changelog:
 	0.9: test verson
+	1.0: initial release
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -32,7 +33,8 @@ class HussiteVariant extends WDVariant {
 	public $fullName='Hussite Wars';
 	public $description='Diplomacy in the heart of Europe, amidst 15th century religious struggle.';
 	public $author='Milan Mach (WebDip: Milan Mach)';
-	public $version='0.9.4';
+	public $version='1.0';
+	public $codeVersion='1.0';
         
 	public $countries=array('Bavaria','Catholic Landfrieden','Hungary','Kingdom of Poland','Margraviate of Brandenburg','Orebites','Praguers','Saxony','Taborites');
 
