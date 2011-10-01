@@ -714,7 +714,7 @@ class libHTML
 			print self::footerCopyright();
 		}
 
-		print '</div></html>';
+		print '</div></body></html>';
 
 		close();
 	}
