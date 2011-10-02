@@ -23,15 +23,43 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 class HussiteVariant_adjudicatorPreGame extends adjudicatorPreGame {
 
 	protected $countryUnits = array(
-		'Bavaria' 			=> array('München'	=>'Army' , 'Regensburg'  =>'Army' , 'Passau'	  =>'Fleet'			),
-		'Catholic Landfrieden'   	=> array('Iglau'  	=>'Army' , 'Olmütz'      =>'Army' , 'Brünn'	  =>'Army' ,'Pilsen' =>'Army'	),
-		'Hungary'  			=> array('Ofen'  	=>'Army' , 'Pressburg'   =>'Army' , 'Sillein'     =>'Army' 			),
-		'Kingdom of Poland'  		=> array('Posen'	=>'Army' , 'Warschau'    =>'Army' , 'Krakau'      =>'Army'   			),
-		'Margraviate of Brandenburg' 	=> array('Berlin' 	=>'Army' , 'Potsdam'     =>'Fleet', 'Frankfurt'   =>'Army'   			),
-		'Orebites'   			=> array('Oreb'   	=>'Army' , 'Königgratz'  =>'Army' , 'Leitomischl' =>'Army'			),
-		'Praguers'  			=> array('Schlan'  	=>'Army' , 'Neustadt'	 =>'Army' , 'Altstadt'    =>'Fleet' 			), 
-		'Saxony' 			=> array('Leipzig'  	=>'Army' , 'Dresden'	 =>'Army' , 'Chemnitz'    =>'Army' 			), 
-		'Taborites'  			=> array('Tabor'  	=>'Army' , 'Pisek'	 =>'Army' , 'Budweis'     =>'Army' 			) 
+		'Bavaria' => array(
+			'München'	=>'Army',
+			'Regensburg'=>'Army',
+			'Passau'	=>'Fleet'),
+		'Catholic Landfrieden' => array(
+			'Iglau'  =>'Army',
+			'Olmütz' =>'Army',
+			'Brünn'	 =>'Army',
+			'Pilsen' =>'Army'),
+		'Hungary'=> array(
+			'Ofen'  	=>'Army',
+			'Pressburg' =>'Army',
+			'Sillein'   =>'Army'),
+		'Kingdom of Poland' => array(
+			'Posen'	   =>'Army',
+			'Warschau' =>'Army',
+			'Krakau'   =>'Army'),
+		'Margraviate of Brandenburg' => array(
+			'Berlin' 	=>'Army',
+			'Potsdam'   =>'Fleet',
+			'Frankfurt' =>'Army'),
+		'Orebites' => array(
+			'Oreb'   	 =>'Army',
+			'Königgratz' =>'Army',
+			'Leitomischl'=>'Army'),
+		'Praguers' => array(
+			'Schlan'  =>'Army',
+			'Neustadt'=>'Army',
+			'Altstadt'=>'Fleet'), 
+		'Saxony' => array(
+			'Leipzig' =>'Army',
+			'Dresden' =>'Army',
+			'Chemnitz'=>'Army'), 
+		'Taborites' => array(
+			'Tabor'    =>'Army',
+			'Pisek'    =>'Army',
+			'Rokitzan' =>'Army') 
 	);
 
 }
