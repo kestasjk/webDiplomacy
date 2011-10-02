@@ -50,6 +50,10 @@ class panelGameBoard extends panelGame
 					<img id="Backward" src="images/historyicons/Backward_disabled.png" alt="Backward" title="View the map from the previous turn" />
 				</a>
 
+				<a href="#" onClick="toggleMoves('.$this->id.','.$mapTurn.'); return false;">
+					<img id="NoMoves" src="images/historyicons/hidemoves.png" alt="NoMoves" title="Toggle movement lines" />
+				</a>
+				
 				<span id="LargeMapLink" class="lightgrey" style="width:150px"><a href="'.$largemapLink.'" target="_blank" class="light">
 					<img src="images/historyicons/external.png" alt="Open large map" title="This button will open the large map in a new window. The large map shows all the moves, and is useful when the small map isn\'t clear enough." />
 				</a></span>
