@@ -37,6 +37,12 @@ if( isset($_REQUEST['uncache'])||isset($_REQUEST['profile']) )
 else
 	define('DELETECACHE',0);
 
+// Check if we should hide the move arrows.
+if( isset($_REQUEST['hideMoves']))
+	define('HIDEMOVES',1);
+else
+	define('HIDEMOVES',0);
+
 if( !IGNORECACHE )
 {
 	// We might be able to fetch the map from the cache
@@ -45,6 +51,10 @@ if( !IGNORECACHE )
 	require_once('lib/cache.php');
 
 	$filename = Game::mapFilename((int)$_REQUEST['gameID'], (int)$_REQUEST['turn']);
+	
+	// Map without arrows 
+	if (HIDEMOVES)
+		$filename = str_replace(".map","-hideMoves.map",$filename);
 
 	if( file_exists($filename) )
 	{
@@ -127,7 +137,6 @@ else
 	$turn=-1;
 }
 
-
 // Load the drawMap object for the given map type
 if ( $mapType == 'xml' )
 {
@@ -188,10 +197,10 @@ while(list($terrID, $terrName, $terrType, $countryID, $standoff) = $DB->tabl_row
 		$drawMap->colorTerritory($terrID, $countryID);
 	}
 
-	if ( isset($Game) && $Game->phase == 'Retreats' or $mapType!='small' )
+	if (isset($Game) && $Game->phase == 'Retreats' or $mapType!='small' )
 	{
 		// Only draw standoffs if we're in the retreats phase, or we're viewing that large map
-		if ( $standoff == 'Yes' ) $drawMap->drawStandoff($terrID);
+		if ( !HIDEMOVES && $standoff == 'Yes' ) $drawMap->drawStandoff($terrID);
 	}
 }
 
@@ -247,7 +256,6 @@ while(list($toTerrID) = $DB->tabl_row($tabl))
 		$deCoastMap['DestroyToTerrID'][$toTerrDeCoast] = $toTerrID;
 }
 
-
 // Territories are colored, standoffs drawn, decoast mappings collected. Now the moves need to be drawn:
 /*
  * Draw moves
@@ -288,6 +296,7 @@ while(list($moveType, $terrID,
 		$unitType,
 		$success, $dislodged) = $DB->tabl_row($tabl))
 {
+	
 	$success = ( $success == 'Yes' );
 	$dislodged = ( $dislodged == 'Yes' );
 
@@ -312,11 +321,11 @@ while(list($moveType, $terrID,
 		if ( $success ) $drawToTerrID = $toTerrID;
 		else $drawToTerrID = $terrID;
 
-		$drawMap->drawMove($terrID, $toTerrID, $success);
+		if (!HIDEMOVES) $drawMap->drawMove($terrID, $toTerrID, $success);
 	}
 	elseif ( $moveType == 'Retreat' )
 	{
-		$drawMap->drawRetreat($terrID, $toTerrID, $success);
+		if (!HIDEMOVES) $drawMap->drawRetreat($terrID, $toTerrID, $success);
 
 		if ( $success ) $drawToTerrID = $toTerrID;
 		else continue;
@@ -337,20 +346,20 @@ while(list($moveType, $terrID,
 
 	if ( $moveType == 'Support hold' )
 	{
-		$drawMap->drawSupportHold($terrID,
+		if (!HIDEMOVES) $drawMap->drawSupportHold($terrID,
 			isset($deCoastMap['SupportHoldToTerrID'][$toTerrID]) ? $deCoastMap['SupportHoldToTerrID'][$toTerrID] : $toTerrID,
 			$success);
 	}
 	elseif ( $moveType == 'Support move' )
 	{
-		$drawMap->drawSupportMove($terrID,
+		if (!HIDEMOVES) $drawMap->drawSupportMove($terrID,
 			isset($deCoastMap['SupportMoveFromTerrID'][$fromTerrID]) ? $deCoastMap['SupportMoveFromTerrID'][$fromTerrID] : $fromTerrID,
 			isset($deCoastMap['SupportMoveToTerrID'][$fromTerrID.'-'.$toTerrID]) ? $deCoastMap['SupportMoveToTerrID'][$fromTerrID.'-'.$toTerrID] : $toTerrID,
 			$success);
 	}
 	elseif ( $moveType == 'Convoy' )
 	{
-		$drawMap->drawConvoy($terrID, $fromTerrID, $toTerrID, $success);
+		if (!HIDEMOVES) $drawMap->drawConvoy($terrID, $fromTerrID, $toTerrID, $success);
 	}
 
 	/*
@@ -374,9 +383,15 @@ while(list($moveType, $terrID,
 	}
 }
 
-foreach( $destroyedTerrs as $terrID ) $drawMap->drawDestroyedUnit(isset($deCoastMap['DestroyToTerrID'][$terrID]) ? $deCoastMap['DestroyToTerrID'][$terrID] : $terrID );
-foreach( $dislodgedTerrs as $terrID ) $drawMap->drawDislodgedUnit($terrID);
-foreach( $builtTerrs as $terrID=>$unitType ) $drawMap->drawCreatedUnit($terrID, $unitType);
+foreach( $destroyedTerrs as $terrID ) 
+	if (!HIDEMOVES) $drawMap->drawDestroyedUnit(isset($deCoastMap['DestroyToTerrID'][$terrID]) ? $deCoastMap['DestroyToTerrID'][$terrID] : $terrID );
+foreach( $dislodgedTerrs as $terrID )
+	if (!HIDEMOVES) $drawMap->drawDislodgedUnit($terrID);
+foreach( $builtTerrs as $terrID=>$unitType )
+	if (!HIDEMOVES)
+		$drawMap->drawCreatedUnit($terrID, $unitType);
+	else 
+		$drawMap->addUnit($terrID, $unitType);
 
 // support hold to, support move from, support move to, build/destroy fleet
 
@@ -399,8 +414,7 @@ if( DELETECACHE )
 elseif( $Game->phase == 'Finished' and $turn == $latestTurn )
 	$drawMap->caption($Game->gameovertxt(TRUE));
 
-
-
+	
 /*
  * All done; save map to disk, then generate a new JavaScript list
  * of available maps which includes the new map, and finally output
@@ -408,6 +422,9 @@ elseif( $Game->phase == 'Finished' and $turn == $latestTurn )
  */
 
 $filename = Game::mapFilename($Game->id, $turn);
+
+if (HIDEMOVES)
+	$filename = str_replace(".map","-hideMoves.map",$filename);
 
 if( defined('DATC') && $mapType!='small')
 	$drawMap->saveThumbnail($filename.'-thumb');
