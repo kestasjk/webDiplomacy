@@ -125,19 +125,34 @@ else
 ?>
 	<li class="formlisttitle">Variant map/rules:</li>
 	<li class="formlistfield">
+	<script type="text/javascript">
+	var description = new Array();
 	<?php
 	$checkboxes=array();
-	$first=true;
+	$first=true;	
 	foreach(Config::$variants as $variantID=>$variantName)
 	{
-		if( $first )
-			$defaultVariantName=$variantName;
 		$Variant = libVariant::loadFromVariantName($variantName);
-		$checkboxes[] = '<input type="radio" '.($first?'checked="on" ':'').'name="newGame[variantID]" value="'.$variantID.'"> '.$Variant->link();
+		$checkboxes[$variantName] = '<option value="'.$variantID.'"'.($first?' selected':'').'>'.$variantName.'</option>';
+		if( $first ) {
+			$defaultVariantName=$variantName;
+			$defaultDescription='<a class=\'light\' href=\'variants.php?variantID='.$variantID.'\'>'.$Variant->fullName.'</a><hr style=\'color: #aaa\'>'.$Variant->description;
+		}
+		print 'description['.$variantID.']="<a class=\'light\' href=\'variants.php?variantID='.$variantID.'\'>'.$Variant->fullName.'</a><hr style=\'color: #aaa\'>'.$Variant->description.'";'."\n";
 		$first=false;
-	}
-	print '<p>'.implode('</p><p>', $checkboxes).'</p>';
-	?>
+	}	
+	ksort($checkboxes);	
+	?>	
+	</script>
+	
+	<table><tr>
+		<td	align="left" width="0%">
+			<select name="newGame[variantID]" onChange="document.getElementById('desc').innerHTML = description[this.value]">
+			<?php print implode($checkboxes); ?>
+			</select> </td>
+		<td align="left" width="100%">
+			<div id="desc" style="border-left: 1px solid #aaa; padding: 5px;"><?php print $defaultDescription ?></div></td>
+	</tr></table>
 	</li>
 	<li class="formlistdesc">
 		Select which type of Diplomacy game you would like to play from a selection of maps and alternate rule settings
