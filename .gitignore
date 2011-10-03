@@ -1,4 +1,3 @@
-
 /config.php
 /config_*.php
 /cache
@@ -6,3 +5,4 @@
 /variants/*/cache/*
 !.htaccess
 *.zip
+/variants/*/install-save*
