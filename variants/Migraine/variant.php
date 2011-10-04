@@ -43,8 +43,8 @@ class MigraineVariant extends WDVariant {
 	public $description='8 Player Diplomacy on a symetrical map';
 	public $author     ='Stephen D. Koehler';
 	public $adapter    ='Carey Jensen / Oliver Auth';
-	public $version    ='1.6';
-	public $codeVersion='1.6';
+	public $version    ='1.0';
+	public $codeVersion='1.6.1';
 	public $homepage   ='http://www.variantbank.org/results/rules/m/migraine.htm';
 
 	public $countries=array('Beta', 'Delta', 'Gamma', 'Kappa', 'Lambda', 'Sigma', 'Theta', 'Zeta');

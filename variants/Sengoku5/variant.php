@@ -48,7 +48,7 @@ class Sengoku5Variant extends WDVariant {
 	public $author     ='Benjamin Hester';
 	public $adapter    ='Oliver Auth';
 	public $version    ='5.0';
-	public $codeVersion='1.2';
+	public $codeVersion='1.2.1';
 	public $homepage   ='http://www.variantbank.org/results/rules/s/sengoku.htm';
 
 	public $countries=array('Shimazu','Mori','Chosokabe','Asakura','Oda','Uesugi','Takeda','Hojo');

@@ -269,7 +269,8 @@ function check_edit() {
     } elseif ($edit == 'del_cache') {
         rename($inst_dir . 'install-backup.php', $inst_file);
         unlink($inst_dir . 'cache/data.php');
-        unlink($inst_dir . 'cache/territories.js');
+		$del_files = glob($inst_dir.'cache/territories*.js');
+		foreach ($del_files as $v) unlink($v);
         $edit = 'off';
         $terrID = '0';
         libHTML::starthtml();
@@ -290,7 +291,8 @@ function check_edit() {
         rename($inst_dir . 'install-new.php', $inst_file);
         unlink($inst_dir . 'install-backup.php');
         unlink($inst_dir . 'cache/data.php');
-        unlink($inst_dir . 'cache/territories.js');
+		$del_files = glob($inst_dir.'cache/territories*.js');
+		foreach ($del_files as $v) unlink($v);
         libHTML::starthtml();
         print '<div class="content">';
         print '<li class="formlisttitle">ATTENTION: New install.php for variant "' . $variant->name . '" written.</li>';

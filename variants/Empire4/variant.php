@@ -48,7 +48,7 @@ class Empire4Variant extends WDVariant {
 	public $author     = 'Vincent Mous';
 	public $adapter    = 'Carey Jensen / Oliver Auth';
 	public $version    = '1.7';
-	public $codeVersion= '1.7.2';
+	public $codeVersion= '1.7.3';
 	public $homepage   = 'http://www.variantbank.org/results/rules/e/empire4.htm';
 
 	public $countries=array('British-Columbia', 'California', 'Florida', 'Heartland', 'Mexico', 'New-York', 'Peru', 'Quebec', 'Texas', 'Cuba');

@@ -362,7 +362,7 @@ abstract class WDVariant {
 	 * @return string
 	 */
 	public function territoriesJSONFile() {
-		return libVariant::cacheDir($this->name).'/territories.js';
+		return libVariant::cacheDir($this->name).'/territories'.(isset($this->codeVersion)?'-'.$this->codeVersion:'').'.js';
 	}
 
 	public function link() {
