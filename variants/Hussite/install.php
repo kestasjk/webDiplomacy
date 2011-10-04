@@ -266,6 +266,7 @@ $bordersRawData=array(
 	array('Altstadt','Pilsen','Yes','No'),
 	array('Altstadt','Rokitzan','Yes','No'),
 	array('Bunzlau','Königgratz','No','Yes'),
+	array('Bunzlau','Oreb','No','Yes'),
 	array('Bunzlau','Neustadt','No','Yes'),
 	array('Bunzlau','Kuttenberg','No','Yes'),
 	array('Königgratz','Oreb','No','Yes'),

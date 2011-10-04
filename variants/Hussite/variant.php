@@ -33,8 +33,8 @@ class HussiteVariant extends WDVariant {
 	public $fullName='Hussite Wars';
 	public $description='Diplomacy in the heart of Europe, amidst 15th century religious struggle.';
 	public $author='Milan Mach (WebDip: Milan Mach)';
-	public $version='1.0.2';
-	public $codeVersion='1.0.2';
+	public $version='1.0.3';
+	public $codeVersion='1.0.3';
         
 	public $countries=array('Bavaria','Catholic Landfrieden','Hungary','Kingdom of Poland','Margraviate of Brandenburg','Orebites','Praguers','Saxony','Taborites');
 
@@ -47,6 +47,11 @@ class HussiteVariant extends WDVariant {
 		$this->variantClasses['OrderInterface']     = 'Hussite';		
 		$this->variantClasses['processOrderBuilds'] = 'Hussite';
 		$this->variantClasses['userOrderBuilds']    = 'Hussite';
+	}
+	
+	public function initialize() {
+		parent::initialize();
+		$this->supplyCenterTarget = 24;
 	}
 	
 	public function turnAsDate($turn) {
