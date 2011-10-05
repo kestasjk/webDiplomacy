@@ -370,6 +370,10 @@ while(list($moveType, $terrID,
 		and !isset($fullTerrID[$terrID])
 		and ( isset($drawToTerrID) and ! isset($fullTerrID[$drawToTerrID]) ) )
 	{
+
+		// Don't add a unit if it's destroyed.
+		if (HIDEMOVES && in_array($drawToTerr, $destroyedTerrs)) continue;
+	
 		/*
 		 * We're drawing a unit onto the board
 		 */
