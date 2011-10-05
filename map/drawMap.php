@@ -817,15 +817,19 @@ abstract class drawMap
 	protected function color(array $color, $image=false)
 	{
 		if ( ! is_array($image) )
-		{
 			$image = $this->map;
-		}
-
+		
 		list($r, $g, $b) = $color;
-
-		$colorRes = imageColorAllocate($image['image'], $r, $g, $b);
-
-		return $colorRes;
+		
+		$colorRes = imagecolorexact($image['image'], $r, $g, $b);
+		if ($colorRes == -1)
+		{
+			$colorRes = imageColorAllocate($image['image'], $r, $g, $b);
+			if (!$colorRes)
+				$colorRes = imageColorClosest($image['image'], $r, $g, $b);
+		}
+		
+		return $colorRes; 
 	}
 
 	/**
