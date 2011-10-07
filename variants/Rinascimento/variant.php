@@ -1,5 +1,6 @@
 <?php
 /*
+	Copyright (C) 2011 Emmanuele Ravaioli / Oliver Auth
 
 	This file is part of the Rinascimento variant for webDiplomacy
 
@@ -29,6 +30,7 @@
 	1.4:   Positions of unit icons edited in the install file (both small and large map) (27-07-2010)
 	1.5:   Edited icons for supply centers in large map / Edited SC_large file, now 19x20 (31-07-2010)
 	1.5.1: Fixed error in new pot disribution.
+	1.6:   Finally the new "neutral units code" and some bigger code cleanups.
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -38,14 +40,15 @@ class RinascimentoVariant extends WDVariant {
 	public $mapID      =29;
 	public $name       ='Rinascimento';
 	public $fullName   ='Rinascimento';
-	public $description='The Rinascimento variant allows 12 players (+ 1 neutral force) to struggle for the supremacy in Italy, during the Renaissance.';
+	public $description='The Rinascimento variant allows 12 players to struggle for the supremacy in Italy, during the Renaissance.';
 	public $author     ='Emmanuele Ravaioli (Tadar Es Darden) and Francesco Malossini';
 	public $adapter    ='Emmanuele Ravaioli / Oliver Auth';
-	public $version    ='1.5.1';
+	public $version    ='1.6';
+	public $codeVersion='1.6';
 
 	public $countries=array(
 		'Ferrara','Firenze','French','Genova','Milano','Napoli','Pisa',
-		'Savoia','Siena','Stato della Chiesa','Turkish','Venezia','Impartial');
+		'Savoia','Siena','Stato della Chiesa','Turkish','Venezia');
 
 	public function __construct() {
 		parent::__construct();
@@ -58,27 +61,36 @@ class RinascimentoVariant extends WDVariant {
 
 		// Javascript corrections (Build everywhere, and No-Move)
 		$this->variantClasses['OrderInterface']     = 'Rinascimento';
+		
 		// Build everywhere
+		$this->variantClasses['OrderInterface']     = 'Rinascimento';
 		$this->variantClasses['processOrderBuilds'] = 'Rinascimento';
 		$this->variantClasses['userOrderBuilds']    = 'Rinascimento';
 		
-		// Winner needs ROME + Custom Point distribution
+		// Custom Win Condition (Winner needs ROME)
 		$this->variantClasses['processMembers']     = 'Rinascimento';
 		
 		// Custom Point distribution based on growth
 		$this->variantClasses['panelMember']        = 'Rinascimento';
-		$this->variantClasses['userMember']         = 'Rinascimento';
+		$this->variantClasses['panelMembers']       = 'Rinascimento';
 		$this->variantClasses['processMember']      = 'Rinascimento';
+		$this->variantClasses['processMembers']     = 'Rinascimento';
+		$this->variantClasses['userMember']         = 'Rinascimento';
 
 		// Neutral units:
-		$this->variantClasses['processGame']        = 'Rinascimento';
-		$this->variantClasses['panelGameBoard']     = 'Rinascimento';
-		$this->variantClasses['panelGame']          = 'Rinascimento';
-		$this->variantClasses['Chatbox']            = 'Rinascimento';
-		$this->variantClasses['panelMembersHome']   = 'Rinascimento';
-		$this->variantClasses['panelMembers']       = 'Rinascimento';		
-
+		$this->variantClasses['OrderArchiv']        = 'TenSixtySix';
+		$this->variantClasses['processGame']        = 'TenSixtySix';
+		$this->variantClasses['processMembers']     = 'TenSixtySix';
 	}
+	
+	public function countryID($countryName)
+	{
+		if ($countryName == 'Neutral units')
+			return count($this->countries)+1;
+		
+		return parent::countryID($countryName);
+	}
+
 	public function initialize() {
 		parent::initialize();
 		$this->supplyCenterTarget = 33;
@@ -112,7 +124,7 @@ class RinascimentoVariant extends WDVariant {
 		$all_value += $member->Game->Members->supplyCenterCount('Left')    + $member->Game->Members->unitCount('Left');
 
 		// The number of players
-		$playerNo = count($i_percent) - 1;
+		$playerNo = count($this->countries);
 		
 		// The basic pot-share of each player (pot split even between all players)
 		$pot_share = 1 / $playerNo;

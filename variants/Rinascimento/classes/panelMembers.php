@@ -1,31 +1,27 @@
 <?php
+/*
+	Copyright (C) 2011 Emmanuele Ravaioli / Oliver Auth
+
+	This file is part of the Rinascimento variant for webDiplomacy
+
+	The Rinascimento variant for webDiplomacy" is free software:
+	you can redistribute it and/or modify it under the terms of the GNU Affero
+	General Public License as published by the Free Software Foundation, either 
+	version 3 of the License, or (at your option) any later version.
+
+	The Rinascimento variant for webDiplomacy is distributed in the hope
+	that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU Affero General Public License
+	along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class RinascimentoVariant_panelMembers extends panelMembers {
-
-	// Delete the "neutral" player (UserID=3) from the playerlist
-	public function membersList()
-	{
-		if (isset($this->ByUserID[3])) {
-			unset($this->ByStatus[$this->ByUserID[3]->status][$this->ByUserID[3]->id]);
-			$ret=parent::membersList();
-			$this->ByStatus[$this->ByUserID[3]->status][$this->ByUserID[3]->id]=$this->ByUserID[3];
-		} else {
-			$ret=parent::membersList();
-		}
-		return $ret;
-	}
-	
-	// 1 less players needed to start the game
-	function occupationBar()
-	{
-		$a=array_pop($this->Game->Variant->countries);
-		$ret=parent::occupationBar();
-		array_push($this->Game->Variant->countries,$a);
-		return $ret;
-	}
-
+class CustomPoints_panelMembers extends panelMembers
+{
 	// Count the units each player owns.
 	public function unitCount($forMemberStatus=false)
 	{
@@ -37,11 +33,10 @@ class RinascimentoVariant_panelMembers extends panelMembers {
 			$Members = $this->ByID;
 
 		foreach($Members as $Member)
-			$count += $Member->unitNo;
+		$count += $Member->unitNo;
 
 		return $count;
-	}
-
+	}	
 }
 
-?>
+class RinascimentoVariant_panelMembers extends CustomPoints_panelMembers {}

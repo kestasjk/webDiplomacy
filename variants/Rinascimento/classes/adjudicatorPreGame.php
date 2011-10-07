@@ -1,4 +1,22 @@
 <?php
+/*
+	Copyright (C) 2011 Emmanuele Ravaioli / Oliver Auth
+
+	This file is part of the Rinascimento variant for webDiplomacy
+
+	The Rinascimento variant for webDiplomacy" is free software:
+	you can redistribute it and/or modify it under the terms of the GNU Affero
+	General Public License as published by the Free Software Foundation, either 
+	version 3 of the License, or (at your option) any later version.
+
+	The Rinascimento variant for webDiplomacy is distributed in the hope
+	that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU Affero General Public License
+	along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
@@ -18,31 +36,9 @@ class RinascimentoVariant_adjudicatorPreGame extends adjudicatorPreGame {
 		'Turkish'=> array('East Gateway'  =>'Fleet' ,'Outer Ionian Sea' =>'Fleet','Eastern Mediterranean Sea' =>'Fleet','Arcipelago di Spalato' =>'Fleet'),
 		'Venezia'=> array('Venezia'       =>'Fleet' ,'Spalato'          =>'Fleet','Verona'                    =>'Army' ,'Brescia'                =>'Army'),
 		'Stato della Chiesa' => array('ROMA'=>'Army','Bologna'          =>'Army','Benevento'                  =>'Army' ,'Perugia'                =>'Army'),
-		'Impartial'=> array('Geneve'=>'Army','Trieste'=>'Army','Trento'=>'Army')
+		'Neutral units'=> array('Geneve'=>'Army','Trieste'=>'Army','Trento'=>'Army')
 	);
 	
-	// remove the "neutral" player bevore the check
-	protected function isEnoughPlayers() {
-		global $Game;
-		
-		$a=array_pop($Game->Variant->countries);
-		$ret=parent::isEnoughPlayers();
-		array_push($Game->Variant->countries,$a);
-		
-		return $ret;
-	}
-
-	// add 1 player (USerID=3 => Civil disorder system account) as "neutral" forces player
-	protected function userCountries() {
-		global $Game, $DB;
-		$ret=parent::userCountries();
-		$DB->sql_put("INSERT INTO wD_Members SET
-			userID = 3, gameID = ".$Game->id.", orderStatus='None,Completed,Ready', bet = 0, timeLoggedIn = ".time());
-		$Game->Members->load();
-		$ret[3] = count($Game->Variant->countries);
-		return $ret;
-	}
-
 	// Save the UnitID from the Unit in Benevento to prevent "move" commands
 	function adjudicate() {
 		global $DB, $Game;

@@ -1,10 +1,45 @@
 <?php
+/*
+	Copyright (C) 2011 Emmanuele Ravaioli / Oliver Auth
+
+	This file is part of the Rinascimento variant for webDiplomacy
+
+	The Rinascimento variant for webDiplomacy" is free software:
+	you can redistribute it and/or modify it under the terms of the GNU Affero
+	General Public License as published by the Free Software Foundation, either 
+	version 3 of the License, or (at your option) any later version.
+
+	The Rinascimento variant for webDiplomacy is distributed in the hope
+	that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU Affero General Public License
+	along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class RinascimentoVariant_processMembers extends processMembers {
+class NeutralMember
+{
+	public $supplyCenterNo;
+	public $unitNo;
+}
 
-	// Winner need to occupie ROME
+// bevore the processing add a minimal-member-object for the "neutral  player"
+class NeutralUnits_processMembers extends processMembers
+{
+	function countUnitsSCs()
+	{
+		$this->ByCountryID[count($this->Game->Variant->countries)+1] = new NeutralMember();
+		parent::countUnitsSCs();
+		unset($this->ByCountryID[count($this->Game->Variant->countries)+1]);
+	}
+}
+
+// Winner need to occupie ROME
+class CustomWinCondition_processMembers extends NeutralUnits_processMembers
+{
 	function checkForWinner()
 	{
 		global $DB, $Game;
@@ -18,7 +53,10 @@ class RinascimentoVariant_processMembers extends processMembers {
 		else
 			return false;
 	}
+}
 	
+class CustomPoints_processMembers extends CustomWinCondition_processMembers
+{
 	function setWon(Member $Winner)
 	{
 		$potShareRatios = $this->my_potShareRatios($Winner);
@@ -106,7 +144,7 @@ class RinascimentoVariant_processMembers extends processMembers {
 		$count += $Member->unitNo;
 
 		return $count;
-	}
-	
+	}	
 }
-?>
+
+class RinascimentoVariant_processMembers extends CustomPoints_processMembers {}

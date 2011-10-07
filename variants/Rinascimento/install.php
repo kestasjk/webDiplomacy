@@ -6,7 +6,7 @@ require_once("variants/install.php");
 InstallTerritory::$Territories=array();
 $countries=$this->countries;
 $territoryRawData=array(
-	array('Geneve', 'Land', 'Yes', 87, 90, 47, 48, 'Impartial'),
+	array('Geneve', 'Land', 'Yes', 87, 90, 47, 48, 'Neutral units'),
 	array('Annecy', 'Land', 'No', 25, 142, 13, 71, 'French'),
 	array('Domodossola', 'Land', 'No', 204, 66, 103, 32, 'French'),
 	array('Sion', 'Land', 'No', 145, 153, 71, 77, 'Neutral'),
@@ -38,12 +38,12 @@ $territoryRawData=array(
 	array('Brescia', 'Land', 'Yes', 417, 245, 210, 124, 'Venezia'),
 	array('Verona', 'Land', 'Yes', 532, 271, 252, 104, 'Venezia'),
 	array('Arco', 'Land', 'No', 560, 144, 250, 63, 'Neutral'),
-	array('Trento', 'Land', 'Yes', 489, 80, 242, 40, 'Impartial'),
+	array('Trento', 'Land', 'Yes', 489, 80, 242, 40, 'Neutral units'),
 	array('Vicenza', 'Land', 'No', 558, 226, 278, 111, 'Venezia'),
 	array('Treviso', 'Land', 'No', 637, 195, 319, 97, 'Venezia'),
 	array('Udine', 'Land', 'Yes', 722, 96, 362, 48, 'Neutral'),
 	array('Aquileia', 'Coast', 'No', 752, 199, 377, 100, 'Venezia'),
-	array('Trieste', 'Coast', 'Yes', 796, 206, 396, 100, 'Impartial'),
+	array('Trieste', 'Coast', 'Yes', 796, 206, 396, 100, 'Neutral units'),
 	array('Pola', 'Coast', 'Yes', 823, 297, 412, 148, 'Neutral'),
 	array('Fiume', 'Coast', 'No', 955, 335, 477, 164, 'Venezia'),
 	array('Zara', 'Coast', 'Yes', 1020, 466, 503, 229, 'Neutral'),

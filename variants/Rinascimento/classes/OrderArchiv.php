@@ -20,12 +20,13 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class CustomPoints_panelMember extends panelMember
-{
-	function pointsValue()
+class NeutralUnits_OrderArchiv extends OrderArchiv
+{	
+	public function __construct()
 	{
-		return round($this->Game->Variant->PotShare($this) * $this->Game->pot);
+		parent::__construct();
+		$this->countryIDToName[]='Neutral units';
 	}
 }
 
-class RinascimentoVariant_panelMember extends CustomPoints_panelMember {}
+class RinascimentoVariant_OrderArchiv extends NeutralUnits_OrderArchiv {}
