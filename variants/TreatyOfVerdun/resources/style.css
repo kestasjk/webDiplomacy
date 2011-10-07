@@ -1,0 +1,10 @@
+@CHARSET "ISO-8859-1";
+
+.variantTreatyOfVerdun .country0 { color: #CE7800 ! important; } /* Neutral                */
+.variantTreatyOfVerdun .country1 { color: #F7F8A7 ! important; } /* East Francia           */
+.variantTreatyOfVerdun .country2 { color: #D0E8B8 ! important; } /* Middle Francia         */
+.variantTreatyOfVerdun .country3 { color: #E6BDD9 ! important; } /* West Francia           */
+
+.variantTreatyOfVerdun .occupationBar1 { background-color: #F6F7C4; } /* East Francia      */
+.variantTreatyOfVerdun .occupationBar2 { background-color: #E5F7D2; } /* Middle Francia    */
+.variantTreatyOfVerdun .occupationBar3 { background-color: #F4D3EA; } /* West Francia      */
