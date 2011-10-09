@@ -6,3 +6,4 @@
 !.htaccess
 *.zip
 /variants/*/install-save*
+Thumbs.db
