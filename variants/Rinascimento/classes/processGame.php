@@ -20,7 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class NeutralUnits_processGame extends Fog_processGame
+class NeutralUnits_processGame extends processGame
 {
 	function process()
 	{
