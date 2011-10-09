@@ -27,12 +27,13 @@ class CustomIcons_OrderInterface extends OrderInterface
 	protected function jsLoadBoard()
 	{
 		global $Variant;
-		if( $this->phase!='Builds' )
 		parent::jsLoadBoard();
-		libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/iconscorrect.js';
-		foreach(libHTML::$footerScript as $index=>$script)
-			if(strpos($script, 'loadOrdersPhase();') )
-				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();IconsCorrect("'.$Variant->name.'");', $script);
+		if( $this->phase!='Builds' ) {
+			libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/iconscorrect.js';
+			foreach(libHTML::$footerScript as $index=>$script)
+				if(strpos($script, 'loadOrdersPhase();') )
+					libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();IconsCorrect("'.$Variant->name.'");', $script);
+		}
 	}
 }
 
