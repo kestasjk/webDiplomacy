@@ -26,8 +26,9 @@ class CustomIcons_OrderInterface extends OrderInterface
 {
 	protected function jsLoadBoard()
 	{
-		parent::jsLoadBoard();
 		global $Variant;
+		if( $this->phase!='Builds' )
+		parent::jsLoadBoard();
 		libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/iconscorrect.js';
 		foreach(libHTML::$footerScript as $index=>$script)
 			if(strpos($script, 'loadOrdersPhase();') )
