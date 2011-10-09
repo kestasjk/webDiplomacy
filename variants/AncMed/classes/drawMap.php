@@ -21,8 +21,8 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class AncMedVariant_drawMap extends drawMap {
-
+class AncMedVariant_drawMap extends drawMap
+{
 	protected $countryColors = array(
 		0 =>  array(226, 198, 158), // Neutral
 		1 =>  array(121, 175, 198), // Carthage
@@ -33,16 +33,13 @@ class AncMedVariant_drawMap extends drawMap {
 	);
 
 	// No need to set the transparency for our custom icons and mapnames.
-	protected function setTransparancy(array $image, array $color=array(255,255,255))
+	protected function setTransparancy(array $image, array $color=array(255,255,255)) {}
+	
+	protected function resources()
 	{
-	}
-	
-	protected function resources() {
-	
 		global $Variant;
 		
-		if( $this->smallmap )
-		{
+		if( $this->smallmap ) {
 			return array(
 				'map'     =>'variants/'.$Variant->name.'/resources/smallmap.png',
 				'army'    =>'variants/'.$Variant->name.'/resources/smallarmy.png',
@@ -50,9 +47,7 @@ class AncMedVariant_drawMap extends drawMap {
 				'names'   =>'variants/'.$Variant->name.'/resources/smallmapNames.png',
 				'standoff'=>'images/icons/cross.png'
 			);
-		}
-		else
-		{
+		} else {
 			return array(
 				'map'     =>'variants/'.$Variant->name.'/resources/map.png',
 				'army'    =>'variants/'.$Variant->name.'/resources/army.png',
@@ -62,22 +57,5 @@ class AncMedVariant_drawMap extends drawMap {
 			);
 		}
 	}
-	
-	protected function color(array $color, $image=false)
-	{
-
-		if ( ! is_array($image) )
-			$image = $this->map;
-
-		list($r, $g, $b) = $color;
-
-		$colorRes = imagecolorexact($image['image'], $r, $g, $b);
-		if ($colorRes == -1)
-			$colorRes = imageColorAllocate($image['image'], $r, $g, $b);
-
- 		return $colorRes;
- 	}
-	
 }
 
-?>
