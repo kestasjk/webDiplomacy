@@ -21,20 +21,18 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class AncMedVariant_OrderInterface extends OrderInterface {
-
-	protected function jsLoadBoard() {
+// Custom Unit-Icons in javascript-code
+class CustomIcons_OrderInterface extends OrderInterface
+{
+	protected function jsLoadBoard()
+	{
 		parent::jsLoadBoard();
-
 		global $Variant;
-		// Unit-Icons in javascript-code
 		libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/iconscorrect.js';
 		foreach(libHTML::$footerScript as $index=>$script)
-			if(strpos($script, 'loadOrdersModel();') )
-				libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect();', $script);
+			if(strpos($script, 'loadOrdersPhase();') )
+				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();IconsCorrect("'.$Variant->name.'");', $script);
 	}
-
-
 }
 
-?>
+class AncMedVariant_OrderInterface extends CustomIcons_OrderInterface {}
