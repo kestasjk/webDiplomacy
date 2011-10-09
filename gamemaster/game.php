@@ -1010,6 +1010,45 @@ class processGame extends Game
 
 		Game::wipeCache($this->id,$this->turn);
 	}
+	
+	/**
+	 * Special CD for the first 2 turns
+	 * In the first 2 turns extend the gamephase and CD all users who failed to enter an order.
+	 */
+	function needsProcess()
+	{
+		global $DB;
+		require_once "lib/gamemessage.php";
+		
+		$check = parent::needsProcess();
+		
+		if ($check && $this->turn<2)
+		{
+			$foundNMR=false;
+			foreach($this->Members->ByID as $Member)
+			{
+				if ($Member->missedPhases > 0)
+				{
+					$foundNMR=true;
+					if ($Member->status=='Playing') {
+						$Member->setLeft();
+						libGameMessage::send(0, 'GameMaster', 'NMR from '.$Member->country.'. Send the country in CD.', $this->id);
+					}
+				}
+			}
+			
+			if ($foundNMR) {
+				if (time() >= $this->processTime) {
+					$this->processTime = time() + $this->phaseMinutes*60;
+					$DB->sql_put("UPDATE wD_Games SET processTime = ".$this->processTime." WHERE id = ".$this->id);
+					libGameMessage::send(0, 'GameMaster', 'Missing orders for '.$this->Variant->turnAsDate($this->turn).' ('.$this->phase.'). Extending phase.', $this->id);
+					$this->Members->updateReliability();
+				}
+				return false;
+			}
+		}
+		return $check;
+	}
 }
 
 ?>
