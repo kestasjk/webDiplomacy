@@ -44,7 +44,7 @@ class RinascimentoVariant extends WDVariant {
 	public $author     ='Emmanuele Ravaioli (Tadar Es Darden) and Francesco Malossini';
 	public $adapter    ='Emmanuele Ravaioli / Oliver Auth';
 	public $version    ='1.6';
-	public $codeVersion='1.6';
+	public $codeVersion='1.6.1';
 
 	public $countries=array(
 		'Ferrara','Firenze','French','Genova','Milano','Napoli','Pisa',
@@ -78,9 +78,9 @@ class RinascimentoVariant extends WDVariant {
 		$this->variantClasses['userMember']         = 'Rinascimento';
 
 		// Neutral units:
-		$this->variantClasses['OrderArchiv']        = 'TenSixtySix';
-		$this->variantClasses['processGame']        = 'TenSixtySix';
-		$this->variantClasses['processMembers']     = 'TenSixtySix';
+		$this->variantClasses['OrderArchiv']        = 'Rinascimento';
+		$this->variantClasses['processGame']        = 'Rinascimento';
+		$this->variantClasses['processMembers']     = 'Rinascimento';
 	}
 	
 	public function countryID($countryName)
