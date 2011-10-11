@@ -432,7 +432,16 @@ class panelGame extends Game
 		$buf = '<form onsubmit="return confirm(\'Are you sure you want to join this game?\');" method="post" action="board.php?gameID='.$this->id.'"><div>
 			<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />';
 
-		if( $this->phase == 'Pre-game' )
+		if( $this->phase == 'Pre-game'&& count($this->Members->ByCountryID)>0 )
+		{
+			$buf .= '<label>Join for</label> <em>'.$this->minimumBet.libHTML::points().'</em> as: <select name="countryID">';
+			foreach($this->Variant->countries as $id=>$name)
+				if (!isset($this->Members->ByCountryID[($id +1)]))
+					$buf .= '<option value="'.($id +1).'" />'.$name.'</option>';
+			$buf .= '</select>';
+			$buf .= '<input type="submit" name="join" value="Join" class="form-submit" />';			
+		}
+		elseif( $this->phase == 'Pre-game' )
 		{
 			$buf .= 'Bet to join: <em>'.$this->minimumBet.libHTML::points().'</em>: ';
 

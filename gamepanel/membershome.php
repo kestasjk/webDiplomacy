@@ -48,7 +48,7 @@ class panelMembersHome extends panelMembers
 		// $membersList[$i]=array($nameOrCountryID,$iconOne,$iconTwo,...);
 		$membersList = array();
 
-		if( $this->Game->phase == 'Pre-game')
+		if( $this->Game->phase == 'Pre-game' && count($this->ByCountryID)==0 )
 		{
 			$count=count($this->ByID);
 			for($i=0;$i<$count;$i++)
@@ -60,14 +60,16 @@ class panelMembersHome extends panelMembers
 		{
 			for($countryID=1; $countryID<=count($this->Game->Variant->countries); $countryID++)
 			{
-				$Member = $this->ByCountryID[$countryID];
+				if (isset($this->ByCountryID[$countryID])) {
+					$Member = $this->ByCountryID[$countryID];
 
-				//if ( $User->id == $this->ByCountryID[$countryID]->userID )
-				//	continue;
-				//elseif( $Member->status != 'Playing' && $Member->status != 'Left' )
-				//	continue;
+					//if ( $User->id == $this->ByCountryID[$countryID]->userID )
+					//	continue;
+					//elseif( $Member->status != 'Playing' && $Member->status != 'Left' )
+					//	continue;
 
-				$membersList[] = $Member->memberColumn();
+					$membersList[] = $Member->memberColumn();
+				}
 			}
 		}
 

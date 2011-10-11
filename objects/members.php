@@ -158,10 +158,14 @@ class Members
 			'Won'=>array(),'Drawn'=>array(),'Survived'=>array(),'Resigned'=>array()
 		);
 
-		if($this->Game->phase == 'Pre-game')
-			$this->ByCountryID=null;
-		else
-			$this->ByCountryID=array();
+//CountrySelect-Patch:
+//  Init the ByCountryID even if in PreGame.
+//		if($this->Game->phase == 'Pre-game')
+//			$this->ByCountryID=null;
+//		else
+//			$this->ByCountryID=array();
+ 
+		$this->ByCountryID=array();
 
 		foreach($this->ByOrder as $Member)
 		{

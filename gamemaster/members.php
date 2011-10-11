@@ -581,6 +581,11 @@ class processMembers extends Members
 				// Ready to start
 				$this->Game->resetMinimumBet();
 			}
+			
+			// Set the choosen CountryID in the Database:
+			if( $countryID!=-1 )
+				$DB->sql_put("UPDATE wD_Members
+					SET countryID = ".$countryID ."	WHERE id = ".$M->id);
 		}
 		else
 		{

@@ -267,6 +267,7 @@ class ChatMember {
 if ($Game->phase == 'Pre-game')
 {	
 
+	$saveCountryMembers=$Game->Members->ByCountryID;
 	for($countryID=1; $countryID<=count($Game->Variant->countries); $countryID++)
 		$Game->Members->ByCountryID[$countryID] = new ChatMember();
 
@@ -284,6 +285,7 @@ if ($Game->phase == 'Pre-game')
 	
 	$forum = $CB->output(0);
 	unset($CB);
+	$Game->Members->ByCountryID=$saveCountryMembers;
 	$forum = preg_replace('-<div id="chatboxtabs".*</div>-',"",$forum);
 	$forum = preg_replace('-<div class="chatboxMembersList">.*</div>-',"",$forum);
 	$forum = preg_replace('-<DIV class="chatbox ">-','<DIV class="chatbox chatboxnotabs">',$forum);
@@ -333,7 +335,6 @@ if (isset($Orders))
 }
 
 print $Game->summary(true);
-
 
 if($User->type['Moderator'])
 {

@@ -49,7 +49,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$form = $_REQUEST['newGame'];
 
 		$input = array();
-		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType');
+		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType', 'countryID');
 
 		foreach($required as $requiredName)
 		{
@@ -117,7 +117,11 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		// END RELIABILITY-PATCH
 		
 		// Create first Member record & object
-		processMember::create($User->id, $input['bet']);
+		if ($input['countryID'] != 0)
+			processMember::create($User->id, $input['bet'],$input['countryID']);
+		else
+			processMember::create($User->id, $input['bet']);
+			
 		$Game->Members->joinedRedirect();
 	}
 	catch(Exception $e)

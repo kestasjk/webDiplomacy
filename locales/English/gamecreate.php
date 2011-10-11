@@ -126,32 +126,43 @@ else
 	<li class="formlisttitle">Variant map/rules:</li>
 	<li class="formlistfield">
 	<script type="text/javascript">
-	var description = new Array();
-	<?php
-	$checkboxes=array();
-	$first=true;	
-	foreach(Config::$variants as $variantID=>$variantName)
-	{
-		$Variant = libVariant::loadFromVariantName($variantName);
-		$checkboxes[$variantName] = '<option value="'.$variantID.'"'.($first?' selected':'').'>'.$variantName.'</option>';
-		if( $first ) {
-			$defaultVariantName=$variantName;
-			$defaultDescription='<a class=\'light\' href=\'variants.php?variantID='.$variantID.'\'>'.$Variant->fullName.'</a><hr style=\'color: #aaa\'>'.$Variant->description;
+	
+	function setExtOptions(i){
+		document.getElementById('countryID').options.length=0;
+		switch(i)
+		{
+			<?php
+			$checkboxes=array();
+			$first='';
+			foreach(Config::$variants as $variantID=>$variantName)
+			{
+				$Variant = libVariant::loadFromVariantName($variantName);
+				$checkboxes[$variantName] = '<option value="'.$variantID.'"'.(($first=='')?' selected':'').'>'.$variantName.'</option>';
+				if($first=='') {
+					$first='"'.$variantID.'"';
+					$defaultName=$variantName;
+				}
+				print "case \"".$variantID."\":\n";
+				print 'document.getElementById(\'desc\').innerHTML = "<a class=\'light\' href=\'variants.php?variantID='.$variantID.'\'>'.$Variant->fullName.'</a><hr style=\'color: #aaa\'>'.$Variant->description.'";'."\n";		
+				print "document.getElementById('countryID').options[0]=new Option ('Random','0');";
+				for ($i=1; $i<=count($Variant->countries); $i++)
+					print "document.getElementById('countryID').options[".$i."]=new Option ('".$Variant->countries[($i -1)]."', '".$i."');";
+				print "break;\n";		
+			}	
+			ksort($checkboxes);	
+			?>	
 		}
-		print 'description['.$variantID.']="<a class=\'light\' href=\'variants.php?variantID='.$variantID.'\'>'.$Variant->fullName.'</a><hr style=\'color: #aaa\'>'.$Variant->description.'";'."\n";
-		$first=false;
-	}	
-	ksort($checkboxes);	
-	?>	
+
+	}
 	</script>
 	
 	<table><tr>
 		<td	align="left" width="0%">
-			<select name="newGame[variantID]" onChange="document.getElementById('desc').innerHTML = description[this.value]">
+			<select name="newGame[variantID]" onChange="setExtOptions(this.value)">
 			<?php print implode($checkboxes); ?>
 			</select> </td>
 		<td align="left" width="100%">
-			<div id="desc" style="border-left: 1px solid #aaa; padding: 5px;"><?php print $defaultDescription ?></div></td>
+			<div id="desc" style="border-left: 1px solid #aaa; padding: 5px;"></div></td>
 	</tr></table>
 	</li>
 	<li class="formlistdesc">
@@ -160,12 +171,26 @@ else
 
 		Click any of the variant names to view the details on the variants page.<br /><br />
 
-		<strong>Default:</strong> <?php print $defaultVariantName; ?>
+		<strong>Default: <?php print $defaultName;?></strong>
 	</li>
 <?php
 }
 ?>
+	<li class="formlisttitle">Country assignment:</li>
+	<li class="formlistfield">
+		<select id="countryID" name="newGame[countryID]">
+		</select>
+	</li>
 
+	<li class="formlistdesc">
+		Random distribution of each country, or players pick their country (gamecreator get's the selected country).<br /><br />
+		<strong>Default:</strong> Random
+	</li>
+	
+	<script type="text/javascript">
+	setExtOptions(<?php print $first;?>);
+	</script>
+	
 	<li class="formlisttitle">Pot type:</li>
 	<li class="formlistfield">
 		<input type="radio" name="newGame[potType]" value="Points-per-supply-center" checked > Points-per-supply-center<br />
