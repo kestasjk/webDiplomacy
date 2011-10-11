@@ -25,7 +25,6 @@ function NewUnitNames() {
 		
 	} else {	
 	
-
 		MyOrders.map(function(OrderObj) {
 			OrderObj.beginHTML = function () {
 				if (this.Unit.type.toLowerCase() == 'army')

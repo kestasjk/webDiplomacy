@@ -2,38 +2,23 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class Germany1648Variant_processGame extends processGame {
-
-	public function needsProcess()
-	{
-		$a=array_pop($this->Variant->countries);
-		$ret=parent::needsProcess();
-		array_push($this->Variant->countries,$a);
-		return $ret;
-	}
-	
-	public function isJoinable()
-	{
-		$a=array_pop($this->Variant->countries);
-		$ret=parent::isJoinable();
-		array_push($this->Variant->countries,$a);
-		return $ret;
-	}		
-
+class NeutralUnits_processGame extends processGame
+{
 	function process()
 	{
 		global $DB;
-
-		// Set neutral player to "Playing" bevore processing
-		$DB->sql_put("UPDATE wD_Members SET status='Playing' WHERE gameID=".$this->id." AND userID=3");
-
 		parent::process();
 		
-		// Set "neutral player" as defeated, so we don't need to wait for his orders and votes
-		$DB->sql_put("UPDATE wD_Members SET status='Defeated', missedPhases=0 WHERE gameID=".$this->id." AND userID=3");
-		
+		// If only the "neutral player has to do retreats process again.
+		if ($this->phase == 'Retreats')
+		{	
+			list($count) = $DB->sql_row("SELECT COUNT(*)
+				FROM wD_Members 
+				WHERE orderStatus != 'None' AND gameID = ".$this->id);
+			if ($count == 0)
+				parent::process();
+		}	
 	}
-			
 }
 
-?>
+class Germany1648Variant_processGame extends NeutralUnits_processGame {}

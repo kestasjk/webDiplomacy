@@ -1,6 +1,6 @@
 <?php
 /*
-	Copyright (C) 2010 Emmanuele Ravaioli
+	Copyright (C) 2010 Emmanuele Ravaioli / 2011 Oliver Auth
 
 	This file is part of the Germany1648 variant for webDiplomacy
 
@@ -21,11 +21,7 @@
 	
 	Changelog:
 	1.0: initial version
-	1.0.1: border fixes
-	1.0.2: border fixes
-	1.0.3: border fixes
-	1.0.4: border fixes
-	1.0.5: border fixes
+	1.1: really big code cleanup
 	
 */
 
@@ -39,10 +35,11 @@ class Germany1648Variant extends WDVariant {
 	public $description='Seven powerful noble Families fight for the conquer of the Free Imperial Cities and the Holy German Empire.';
 	public $author     ='Emmanuele Ravaioli (Tadar Es Darden)';
 	public $adapter    ='Emmanuele Ravaioli / Oliver Auth';
-	public $version    ='1.0.5';
+	public $version    ='1.0';
+	public $codeVersion='1.1.0';
 
 	public $countries=array(
-		'Austrian Habsburg','Spanish Habsburg','Wettin','Bavarian Wittelsbach','Palatinate Wittelsbach','Hohenzollern','Ecclesiastic Lands','Free Imperial Cities');
+		'Austrian Habsburg','Spanish Habsburg','Wettin','Bavarian Wittelsbach','Palatinate Wittelsbach','Hohenzollern','Ecclesiastic Lands');
 
 	public function __construct() {
 		parent::__construct();
@@ -53,13 +50,10 @@ class Germany1648Variant extends WDVariant {
 		// Color the territories, Draw the "neutral" SC's
 		$this->variantClasses['drawMap']            = 'Germany1648';
 
-		// Implement the "neutral units"
-		$this->variantClasses['Chatbox']           = 'Germany1648';
-		$this->variantClasses['processGame']       = 'Germany1648';
-		$this->variantClasses['panelMembers']      = 'Germany1648';
-		$this->variantClasses['panelMembersHome']  = 'Germany1648';
-		$this->variantClasses['panelGameBoard']    = 'Germany1648';	
-		$this->variantClasses['panelGame']         = 'Germany1648';	
+		// Neutral units:
+		$this->variantClasses['OrderArchiv']        = 'Germany1648';
+		$this->variantClasses['processGame']        = 'Germany1648';
+		$this->variantClasses['processMembers']     = 'Germany1648';
 
 		// Build anywhere
 		$this->variantClasses['userOrderBuilds']    = 'Germany1648';
@@ -68,6 +62,13 @@ class Germany1648Variant extends WDVariant {
 		
 	}
 	
+	public function countryID($countryName)
+	{
+		if ($countryName == 'Neutral units')
+			return count($this->countries)+1;
+		
+		return parent::countryID($countryName);
+	}
 	
 	public function turnAsDate($turn) {
 		if ( $turn==-1 ) return "Pre-game";

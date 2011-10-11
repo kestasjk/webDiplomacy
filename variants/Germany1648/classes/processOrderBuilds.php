@@ -2,9 +2,8 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class Germany1648Variant_processOrderBuilds extends processOrderBuilds
+class BuildAnywhere_processOrderBuilds extends processOrderBuilds
 {
-
 	public function create()
 	{
 		global $DB, $Game;
@@ -40,4 +39,5 @@ class Germany1648Variant_processOrderBuilds extends processOrderBuilds
 
 }
 
-?>
+class Germany1648Variant_processOrderBuilds extends BuildAnywhere_processOrderBuilds {}
+
