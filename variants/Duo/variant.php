@@ -1,4 +1,29 @@
 <?php
+/*
+	Copyright (C) 2011 Oliver Auth
+
+	This file is part of the Duo variant for webDiplomacy
+
+	The Duo variant for webDiplomacy is free software: you can redistribute
+	it and/or modify it under the terms of the GNU Affero General Public License
+	as published by the Free Software Foundation, either version 3 of the License,
+	or (at your option) any later version.
+
+	The Duo variant for webDiplomacy is distributed in the hope that it will
+	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU Affero General Public License
+	along with webDiplomacy. If not, see <http://www.gnu.org/licenses/>.
+
+	---
+
+	Changelog:
+	0.8: initial release
+	0.9: big codecleanup, doTo: neutral units movement
+
+*/
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
@@ -7,32 +32,48 @@ class DuoVariant extends WDVariant {
 	public $mapID=22;
 	public $name='Duo';
 	public $fullName='Duo';
-	public $description='2 player map';
+	public $description='A symmetric 2 player map featuring the transform command and neutral units.';
 	public $author='Frank Hegermann';
 	public $adapter='Oliver Auth';
-	public $version='0.8';
+	public $codeVersion='0.9';
 	public $homepage='http://www.dipwiki.com/?title=Duo';
 
-	public $countries=array('Red','Green','Black');
+	public $countries=array('Red','Green');
 	
 	public function __construct() {
 		parent::__construct();
 
-		$this->variantClasses['Chatbox']              = 'Duo';
-		$this->variantClasses['drawMap']              = 'Duo';
-		$this->variantClasses['processGame']          = 'Duo';
-		$this->variantClasses['processMember']        = 'Duo';
-		$this->variantClasses['OrderInterface']       = 'Duo';
-		$this->variantClasses['adjudicatorPreGame']   = 'Duo';
-		$this->variantClasses['adjudicatorDiplomacy'] = 'Duo';
-		$this->variantClasses['panelMembers']         = 'Duo';
-		$this->variantClasses['panelMembersHome']     = 'Duo';
-		$this->variantClasses['panelGameBoard']       = 'Duo';
+		// Game Setup
+		$this->variantClasses['drawMap']               = 'Duo';
+		$this->variantClasses['adjudicatorPreGame']    = 'Duo';
+
+		// Transform command
+		$this->variantClasses['drawMap']               = 'Duo';
+		$this->variantClasses['OrderArchiv']           = 'Duo';
+		$this->variantClasses['OrderInterface']        = 'Duo';
+		$this->variantClasses['processOrderDiplomacy'] = 'Duo';
+		$this->variantClasses['userOrderDiplomacy']    = 'Duo';
+		
+		// Fixed bet at 1DPoint
+		$this->variantClasses['processMember']         = 'Duo';
+		
+		// Neutral units:
+		$this->variantClasses['OrderArchiv']           = 'Duo';
+		$this->variantClasses['processGame']           = 'Duo';
+		$this->variantClasses['processMembers']        = 'Duo';
 	}
 
 	public function initialize() {
 		parent::initialize();
 		$this->supplyCenterTarget = 19;
+	}
+	
+	public function countryID($countryName)
+	{
+		if ($countryName == 'Black')
+			return count($this->countries)+1;
+		
+		return parent::countryID($countryName);
 	}
 
 	public function turnAsDate($turn) {

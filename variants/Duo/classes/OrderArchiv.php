@@ -21,12 +21,28 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class DuoVariant_adjudicatorPreGame extends adjudicatorPreGame
+class Transform_OrderArchiv extends OrderArchiv
 {
-	protected $countryUnits = array(
-		'Green' => array('Jadestadt'=>'Army','Schloss Gruenburg'=>'Fleet','Gruenheim'  =>'Army'),
-		'Red'   => array('Rotheim'  =>'Army','Zinnoberburg'     =>'Fleet','Karminstadt'=>'Army'),
-		'Black' => array('Westberg' =>'Army','Ostberg'          =>'Army' ,'Norterend'  =>'Army' ,'Sund'  =>'Army',
-					     'Gawar'    =>'Army','Pirh'             =>'Army' ,'Abaun'      =>'Fleet','Helom'=>'Fleet')
-	 );	 
+	public function OutputOrder($order)
+	{
+		if ($order['toTerrID'] > 1000)
+		{
+			$order['toTerrID'] = $order['toTerrID'] - 1000;
+			$order['type'] = 'transform';
+			if ($order['toTerrID'] == $order['terrID'])
+				$order['toTerrID']=false;		
+		}
+		return parent::OutputOrder($order);
+	}
 }
+
+class NeutralUnits_OrderArchiv extends Transform_OrderArchiv
+{	
+	public function __construct()
+	{
+		parent::__construct();
+		$this->countryIDToName[]='Black';
+	}
+}
+
+class DuoVariant_OrderArchiv extends NeutralUnits_OrderArchiv {}

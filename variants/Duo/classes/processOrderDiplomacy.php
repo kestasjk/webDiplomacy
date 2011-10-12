@@ -21,12 +21,21 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class DuoVariant_adjudicatorPreGame extends adjudicatorPreGame
+class Transform_processOrderDiplomacy extends processOrderDiplomacy
 {
-	protected $countryUnits = array(
-		'Green' => array('Jadestadt'=>'Army','Schloss Gruenburg'=>'Fleet','Gruenheim'  =>'Army'),
-		'Red'   => array('Rotheim'  =>'Army','Zinnoberburg'     =>'Fleet','Karminstadt'=>'Army'),
-		'Black' => array('Westberg' =>'Army','Ostberg'          =>'Army' ,'Norterend'  =>'Army' ,'Sund'  =>'Army',
-					     'Gawar'    =>'Army','Pirh'             =>'Army' ,'Abaun'      =>'Fleet','Helom'=>'Fleet')
-	 );	 
+	public function apply($standoffTerrs)
+	{
+		global $Game, $DB;
+
+		// Transform all sucessfull "Transformations":
+		$DB->sql_put("UPDATE wD_Units u 
+						INNER JOIN wD_Orders o ON (o.unitID = u.id)
+						INNER JOIN wD_Moves  m ON (m.gameID=o.gameID AND m.orderID = o.id)
+				SET u.type = IF(u.type='Fleet','Army','Fleet'), u.terrID = (o.toTerrID - 1000)
+				WHERE o.type='Support hold' AND m.success='Yes' AND o.toTerrID>1000
+				AND u.id = o.unitID AND o.gameID = ".$Game->id);
+		parent::apply($standoffTerrs);
+	}	
 }
+
+class DuoVariant_processOrderDiplomacy extends Transform_processOrderDiplomacy {}

@@ -1,33 +1,34 @@
 <?php
+/*
+	Copyright (C) 2011 Oliver Auth
+
+	This file is part of the Duo variant for webDiplomacy
+
+	The Duo variant for webDiplomacy is free software: you can redistribute
+	it and/or modify it under the terms of the GNU Affero General Public License
+	as published by the Free Software Foundation, either version 3 of the License,
+	or (at your option) any later version.
+
+	The Duo variant for webDiplomacy is distributed in the hope that it will
+	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU Affero General Public License
+	along with webDiplomacy. If not, see <http://www.gnu.org/licenses/>.
+
+*/
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class DuoVariant_processGame extends processGame {
-
-	public function __construct($id)
-	{
-		parent::__construct($id);
-	}
-
-	// 2 players are enough in Pregame to start the game:
-	public function needsProcess()
-	{
-		if ($this->phase=='Pre-game' && count($this->Members->ByID)==2 && $this->phaseMinutes>30 )
-			return true;
-		return parent::needsProcess();
-	}
-	
+class NeutralUnits_processGame extends processGame
+{
 	function process()
 	{
 		global $DB;
-
-		// Set neutral player to "Playing" bevore processing
-		$DB->sql_put("UPDATE wD_Members SET status='Playing' WHERE gameID=".$this->id." AND countryID=3");
-
 		parent::process();
-		
-		// custom movement code here:
 
+		// custom movement code here:
 /*	
 		$orders=$DB->sql_tabl("SELECT o.unitID, u.terrID, o.type 
 						FROM wD_Orders o INNER JOIN wD_Units u ON (u.id = o.unitID)
@@ -94,13 +95,19 @@ class DuoVariant_processGame extends processGame {
 				$DB->sql_put("UPDATE wD_Orders SET ".$order." WHERE gameID=".$this->id." AND countryID=3 AND unitID=".$row['unitID']);
 			}
 		}
-*/
-		// Set "neutral player" as defeated, so we don't need to wait for his orders and votes
-		$DB->sql_put("UPDATE wD_Members SET status='Defeated', missedPhases=0 WHERE gameID=".$this->id." AND countryID=3");
-
-		
+*/	
+		// If only the "neutral player has to do retreats process again.
+		if ($this->phase == 'Retreats')
+		{	
+			list($count) = $DB->sql_row("SELECT COUNT(*)
+				FROM wD_Members 
+				WHERE orderStatus != 'None' AND gameID = ".$this->id);
+			if ($count == 0)
+				parent::process();
+		}	
 	}
-		
 }
+
+class DuoVariant_processGame extends NeutralUnits_processGame {}
 
 ?>

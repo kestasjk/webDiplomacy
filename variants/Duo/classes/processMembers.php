@@ -21,12 +21,23 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class DuoVariant_adjudicatorPreGame extends adjudicatorPreGame
+class NeutralMember
 {
-	protected $countryUnits = array(
-		'Green' => array('Jadestadt'=>'Army','Schloss Gruenburg'=>'Fleet','Gruenheim'  =>'Army'),
-		'Red'   => array('Rotheim'  =>'Army','Zinnoberburg'     =>'Fleet','Karminstadt'=>'Army'),
-		'Black' => array('Westberg' =>'Army','Ostberg'          =>'Army' ,'Norterend'  =>'Army' ,'Sund'  =>'Army',
-					     'Gawar'    =>'Army','Pirh'             =>'Army' ,'Abaun'      =>'Fleet','Helom'=>'Fleet')
-	 );	 
+	public $supplyCenterNo;
+	public $unitNo;
 }
+
+class NeutralUnits_processMembers extends processMembers
+{
+	// bevore the processing add a minimal-member-object for the "neutral  player"
+	function countUnitsSCs()
+	{
+		$this->ByCountryID[count($this->Game->Variant->countries)+1] = new NeutralMember();
+		parent::countUnitsSCs();
+		unset($this->ByCountryID[count($this->Game->Variant->countries)+1]);
+	}
+}
+
+class DuoVariant_processMembers extends NeutralUnits_processMembers {}
+
+?>
