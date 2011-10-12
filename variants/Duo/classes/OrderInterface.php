@@ -31,7 +31,7 @@ class Transform_OrderInterface extends OrderInterface
 
 		if( $this->phase=='Diplomacy' )
 		{
-			libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/transform.js';
+			libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/transform_2.js';
 			foreach(libHTML::$footerScript as $index=>$script)
 				if(strpos($script, 'loadOrdersPhase();') )
 					libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();loadTransform();', $script);
