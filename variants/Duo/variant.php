@@ -32,7 +32,7 @@ class DuoVariant extends WDVariant {
 	public $mapID=22;
 	public $name='Duo';
 	public $fullName='Duo';
-	public $description='A symmetric 2 player map featuring the transform command and neutral units.';
+	public $description='Duo is a Diplomacy variant for 2 players. The map is point symmetric, so that each player has same chances and the tactics/strategy are thus the only relevant items in the game.';
 	public $author='Frank Hegermann';
 	public $adapter='Oliver Auth';
 	public $codeVersion='0.9';
