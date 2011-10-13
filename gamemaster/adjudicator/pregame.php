@@ -146,12 +146,13 @@ class adjudicatorPreGame {
 		// Will give back bets, send messages, delete the game, and throw an exception to get back to gamemaster.php
 		if( !$this->isEnoughPlayers() ) $Game->setNotEnoughPlayers();
 
-
-		// Determine which countryID is given to which userID
-		$userCountries = $this->userCountries();// $userCountries[$userID]=$countryID
-
-		assert('count($userCountries) == count($Game->Variant->countries) && count($userCountries) == count($Game->Members->ByID)');
-
+		// Determine which countryID is given to which userID if not already set during gamecreate.
+		if (count($Game->Members->ByCountryID)==0)
+		{
+			$userCountries = $this->userCountries();// $userCountries[$userID]=$countryID
+			assert('count($userCountries) == count($Game->Variant->countries) && count($userCountries) == count($Game->Members->ByID)');
+			$this->assignCountries($userCountries);
+		}
 		$this->assignCountries($userCountries);
 
 		// Create starting board conditions, typically based on $countryUnits
