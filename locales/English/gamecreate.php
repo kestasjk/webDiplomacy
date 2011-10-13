@@ -74,7 +74,7 @@ Start a new game; you decide the name, how long it runs, and how much it's worth
 	</li>
 
 	<li class="formlisttitle">
-		Bet size: (5<?php print libHTML::points(); ?>-
+		Bet size: (1<?php print libHTML::points(); ?>-
 			<?php print $User->points.libHTML::points(); ?>)
 	</li>
 	<li class="formlistfield">
@@ -171,7 +171,7 @@ else
 
 		Click any of the variant names to view the details on the variants page.<br /><br />
 
-		<strong>Default: <?php print $defaultName;?></strong>
+		<strong>Default:</strong> <?php print $defaultName;?>
 	</li>
 <?php
 }
