@@ -434,6 +434,10 @@ class panelGame extends Game
 
 		if( $this->phase == 'Pre-game'&& count($this->Members->ByCountryID)>0 )
 		{
+		
+			if ( $this->private )
+				$buf .= '<br />'.self::passwordBox();
+		
 			$buf .= '<label>Join for</label> <em>'.$this->minimumBet.libHTML::points().'</em> as: <select name="countryID">';
 			foreach($this->Variant->countries as $id=>$name)
 				if (!isset($this->Members->ByCountryID[($id +1)]))
