@@ -81,6 +81,10 @@ class processMember extends Member
 
 		assert('$Game instanceof processGame');
 
+		// Fixed bet of 1 for 2-player games
+		if ((count($Game->Variant->countries) < 3)
+			$bet=1;
+			
 		// It is assumed this is being run within a transaction
 
 		if ($countryID > count($Game->Variant->countries))
