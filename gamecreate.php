@@ -80,7 +80,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		}
 
 		$input['bet'] = (int) $input['bet'];
-		if ( $input['bet'] < 5 or $input['bet'] > $User->points )
+		if ( $input['bet'] < 1 or $input['bet'] > $User->points )
 		{
 			throw new Exception((string)$input['bet']." is an invalid bet size.");
 		}
@@ -102,6 +102,8 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			throw new Exception("Joining period value out of range.");
 		}
 
+		$input['countryID'] = (int)$input['countryID'];
+
 		// Create Game record & object
 		require_once('gamemaster/game.php');
 		$Game = processGame::create($input['variantID'], $input['name'], $input['password'], $input['bet'], $input['potType'], $input['phaseMinutes'], $input['joinPeriod'], $input['anon'], $input['pressType']);
@@ -117,11 +119,8 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		// END RELIABILITY-PATCH
 		
 		// Create first Member record & object
-		if ($input['countryID'] != 0)
-			processMember::create($User->id, $input['bet'],$input['countryID']);
-		else
-			processMember::create($User->id, $input['bet']);
-			
+		processMember::create($User->id, $input['bet'],$input['countryID']);
+		
 		$Game->Members->joinedRedirect();
 	}
 	catch(Exception $e)

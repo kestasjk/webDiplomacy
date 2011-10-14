@@ -153,7 +153,6 @@ class adjudicatorPreGame {
 			assert('count($userCountries) == count($Game->Variant->countries) && count($userCountries) == count($Game->Members->ByID)');
 			$this->assignCountries($userCountries);
 		}
-		$this->assignCountries($userCountries);
 
 		// Create starting board conditions, typically based on $countryUnits
 		$this->assignTerritories(); // TerrStatus

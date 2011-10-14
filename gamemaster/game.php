@@ -315,6 +315,12 @@ class processGame extends Game
 		 */
 		$pTime = time() + $joinPeriod*60;
 		$pTime = $pTime - fmod($pTime, 300) + 300;	// for short game & phase timer
+		
+		// Fix the bet to 1 for 2-player games.
+		$Variant=libVariant::loadFromVariantID($variantID);
+		if (count($Variant->countries)<3)
+			$bet=1;
+			
 		$DB->sql_put("INSERT INTO wD_Games
 					SET variantID=".$variantID.",
 						name = '".$name.($i > 1 ? '-'.$i : '')."',
@@ -329,7 +335,6 @@ class processGame extends Game
 
 		$gameID = $DB->last_inserted();
 
-		$Variant=libVariant::loadFromVariantID($variantID);
 		return $Variant->processGame($gameID);
 	}
 
