@@ -209,6 +209,19 @@ else
 
 		<br /><br /><strong>Default:</strong> The same as phase length
 	</li>
+	
+	<li class="formlisttitle">
+		Game end after X turns: 
+	</li>
+	<li class="formlistfield"> (>4 turns, 0=no end after x turns)
+		<input type="text" name="newGame[endAfterTurn]" size="5" value="0" />
+	</li>
+	<li class="formlistdesc">
+		The duration of the game.
+		The first turn is calles turn 0, so the first Autumn is happening at turn 1.
+		0 = game ends once a player reach the target SC count.
+		<strong>Default:</strong> 0
+	</li>
 
 	<li class="formlisttitle">
 		<img src="images/icons/lock.png" alt="Private" /> Password protect (optional):

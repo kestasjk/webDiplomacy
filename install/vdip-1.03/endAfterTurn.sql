@@ -1,0 +1,1 @@
+ALTER TABLE `wD_Games` ADD `endAfterTurn` int(11) NOT NULL default '0';

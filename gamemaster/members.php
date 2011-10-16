@@ -248,7 +248,54 @@ class processMembers extends Members
 				// The players which have lost go into 'Survived' mode when the other player is set to Won
 			}
 		}
+		if (($this->Game->turn > $this->Game->endAfterTurn) && ($this->Game->endAfterTurn > 0))
+		{
+			// Game reached the set last turn
+			$winners=array();
+			$maxSC=0;
+			foreach($this->ByStatus['Playing'] as $Member)
+			{
+				if ( $Member->supplyCenterNo > $maxSC )
+				{
+					$maxSC=$Member->supplyCenterNo;
+					$winners=array();
+				}	
+				if ( (count($winners)==0) or ($Member->supplyCenterNo == $maxSC) )
+					$winners[]=$Member->countryID;
+			}
+			if (count($winners) > 1)
+			{
+				global $DB;
+				for ($turn=$this->Game->turn; $turn>-1; $turn--)
+				{
+					$sql='SELECT ts.countryID, COUNT(*) AS ct FROM Wd_TerrStatusArchive ts 
+							JOIN Wd_Territories as t ON (t.id = ts.terrID AND t.mapID='.$this->Game->Variant->mapID.')
+						WHERE t.supply="Yes" AND ts.turn='.$turn.' AND ts.gameID='.$this->Game->id.'
+							AND ts.countryID IN ('.implode(', ', $winners).')
+						GROUP BY ts.countryID 
+						HAVING ct = (
+							SELECT COUNT(*) AS ct2 FROM Wd_TerrStatusArchive ts2
+								JOIN Wd_Territories as t2 ON (t2.id = ts2.terrID AND t2.mapID='.$this->Game->Variant->mapID.')
+							WHERE t2.supply="Yes" AND ts2.turn='.$turn.' AND ts2.gameID='.$this->Game->id.'
+								AND ts2.countryID IN ('.implode(', ', $winners).')
+							GROUP BY ts2.countryID ORDER BY ct2 DESC LIMIT 1)';
+					$winners=array();
+					$tabl = $DB->sql_tabl($sql);
+					while( list($countryID, $sc) = $DB->tabl_row($tabl) )
+						$winners[]=$countryID;
+					// Exit loop if only one winner is left...
+					if (count($winners) == 1)
+						$turn=0;
+				}
+			}
+			// Still no winner found:
+			if (count($winners) > 1)
+				$winners[0]=$winners[rand(1,count($winners))];
 
+			return $this->ByCountryID[$winners[0]];
+				
+		}
+		
 		return false;
 	}
 
