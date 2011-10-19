@@ -257,6 +257,10 @@ class panelGame extends Game
 			$alternatives[]='Anonymous players';
 		if( $this->potType=='Winner-takes-all' )
 			$alternatives[]=$this->potType;
+			
+		//	Show the end of the game in the options if set.
+		if( $this->maxTurns > 0)
+			$alternatives[]='EoG: "'.$this->Variant->turnAsDate($this->maxTurns -1).'"';
 
 		if ( $alternatives )
 			return '<div class="titleBarLeftSide" style="float:left">
