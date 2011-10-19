@@ -676,7 +676,7 @@ class processMembers extends Members
 	 *
 	 * @return processMember The winning Member, or false if no winner
 	 */
-	function check_FixedEndWinner()
+	function check_MaxTurnsWinner()
 	{
 		if (($this->Game->turn == ($this->Game->maxTurns - 1)) && ($this->Game->maxTurns > 0))
 		{
