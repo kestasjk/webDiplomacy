@@ -286,7 +286,7 @@ class processGame extends Game
 	 *
 	 * @return Game The object corresponding to the new game
 	 */
-	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $joinPeriod, $anon, $press)
+	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $joinPeriod, $anon, $press, $maxTurns)
 	{
 		global $DB;
 
@@ -308,7 +308,7 @@ class processGame extends Game
 			else
 				$i++;
 		}
-
+		
 		/*
 		 * The password is not salted, because it's given out to several people anyway and it
 		 * isn't worth changing the existing behaviour.
@@ -331,6 +331,7 @@ class processGame extends Game
 						pressType = '".$press."',
 						".( $password ? "password = UNHEX('".md5($password)."')," : "").
 						"processTime = ".$pTime.",
+						maxTurns = ".$maxTurns.", 
 						phaseMinutes = ".$phaseMinutes);
 
 		$gameID = $DB->last_inserted();

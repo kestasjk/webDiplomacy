@@ -209,7 +209,12 @@ class Game
 	 */
 	public $missingPlayerPolicy;
 
-
+	/**
+	 * If any value > 0 ends the game after the given turn. Winner is the one with the most SC at this time.
+	 * @var int
+	 */
+	 public $maxTurns;
+	
 	/**
 	 * @param int/array $gameData The game ID of the game to load, or the array of its database row
 	 * @param string[optional] $lockMode The database locking phase to use; no locking by default
@@ -326,6 +331,7 @@ class Game
 			g.minimumBet,
 			g.anon,
 			g.pressType,
+			g.maxTurns,
 			g.missingPlayerPolicy
 			FROM wD_Games g
 			WHERE g.id=".$this->id.' '.$this->lockMode);

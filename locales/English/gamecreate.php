@@ -251,6 +251,21 @@ else
 	</li>
 
 	<li class="formlisttitle">
+		Max turns: (min=4; max=200) 
+	</li>
+	<li class="formlistfield"> 
+		<input type="text" name="newGame[maxTurns]" size="4" value="0" />
+	</li>
+	<li class="formlistdesc">
+		If set to any value > 4 the game ends after X diplomacy phases.
+		Winner is the player with the most SCs after that turns diplomacy phase. If 2 or more player have the same SCs at the end of the game
+		the game checks for the turn bevore. If some players have the exact same SCs during the complete game the winner is
+		decided at random between the players in tie.
+		Any other value will end the game as usuall as soon as one player reach the target SCs.		
+		<br /><br /><strong>Default:</strong> 0 (no fixed game duration)
+	</li>
+
+	<li class="formlisttitle">
 		<img src="images/icons/lock.png" alt="Private" /> Password protect (optional):
 	</li>
 	<li class="formlistfield">

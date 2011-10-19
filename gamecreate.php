@@ -49,7 +49,10 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$form = $_REQUEST['newGame'];
 
 		$input = array();
-		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType', 'countryID');
+		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType'
+						,'countryID'
+						,'maxTurns'
+					);
 
 		foreach($required as $requiredName)
 		{
@@ -101,12 +104,18 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		{
 			throw new Exception("Joining period value out of range.");
 		}
-
+	
+		$input['maxTurns'] = (int)$input['maxTurns'];		
+		if ( $input['maxTurns'] < 4 )
+			$input['maxTurns'] = 0;
+		if ( $input['maxTurns'] > 200 )
+			$input['maxTurns'] = 200;
+		
 		$input['countryID'] = (int)$input['countryID'];
 
 		// Create Game record & object
 		require_once('gamemaster/game.php');
-		$Game = processGame::create($input['variantID'], $input['name'], $input['password'], $input['bet'], $input['potType'], $input['phaseMinutes'], $input['joinPeriod'], $input['anon'], $input['pressType']);
+		$Game = processGame::create($input['variantID'], $input['name'], $input['password'], $input['bet'], $input['potType'], $input['phaseMinutes'], $input['joinPeriod'], $input['anon'], $input['pressType'],$input['maxTurns']);
 
 		/**
 		 * Check for reliability, bevore a user can create a new game...
