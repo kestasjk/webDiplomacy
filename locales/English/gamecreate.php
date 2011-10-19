@@ -209,18 +209,20 @@ else
 
 		<br /><br /><strong>Default:</strong> The same as phase length
 	</li>
-	
+
 	<li class="formlisttitle">
-		Game end after X turns: 
+		Max turns: (min=4; max=200) 
 	</li>
-	<li class="formlistfield"> (>4 turns, 0=no end after x turns)
-		<input type="text" name="newGame[endAfterTurn]" size="5" value="0" />
+	<li class="formlistfield"> 
+		<input type="text" name="newGame[maxTurns]" size="4" value="0" />
 	</li>
 	<li class="formlistdesc">
-		The duration of the game.
-		The first turn is calles turn 0, so the first Autumn is happening at turn 1.
-		0 = game ends once a player reach the target SC count.
-		<strong>Default:</strong> 0
+		If set to any value > 4 the game ends after X diplomacy phases.
+		Winner is the player with the most SCs after that turns diplomacy phase. If 2 or more player have the same SCs at the end of the game
+		the game checks for the turn bevore. If some players have the exact same SCs during the complete game the winner is
+		decided at random between the players in tie.
+		Any other value will end the game as usuall as soon as one player reach the target SCs.		
+		<br /><br /><strong>Default:</strong> 0 (no fixed game duration)
 	</li>
 
 	<li class="formlisttitle">

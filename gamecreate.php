@@ -49,7 +49,9 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$form = $_REQUEST['newGame'];
 
 		$input = array();
-		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType','endAfterTurn');
+		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType'
+						,'maxTurns'
+					);
 
 		foreach($required as $requiredName)
 		{
@@ -102,16 +104,15 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			throw new Exception("Joining period value out of range.");
 		}
 		
-		$input['endAfterTurn'] = (int)$input['endAfterTurn'];
-		
-		if ( $input['endAfterTurn'] < 4 && $input['endAfterTurn'] != 0)
-		{
-			throw new Exception("endAfterTurn value out of range.");
-		}
+		$input['maxTurns'] = (int)$input['maxTurns'];		
+		if ( $input['maxTurns'] < 4 )
+			$input['maxTurns'] = 0;
+		if ( $input['maxTurns'] > 200 )
+			$input['maxTurns'] = 200;
 		
 		// Create Game record & object
 		require_once('gamemaster/game.php');
-		$Game = processGame::create($input['variantID'], $input['name'], $input['password'], $input['bet'], $input['potType'], $input['phaseMinutes'], $input['joinPeriod'], $input['anon'], $input['pressType'],$input['endAfterTurn']);
+		$Game = processGame::create($input['variantID'], $input['name'], $input['password'], $input['bet'], $input['potType'], $input['phaseMinutes'], $input['joinPeriod'], $input['anon'], $input['pressType'],$input['maxTurns']);
 
 		// Create first Member record & object
 		processMember::create($User->id, $input['bet']);
