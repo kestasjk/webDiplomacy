@@ -257,11 +257,11 @@ else
 		<input type="text" name="newGame[maxTurns]" size="4" value="0" />
 	</li>
 	<li class="formlistdesc">
-		If set to any value > 4 the game ends after X diplomacy phases.
-		Winner is the player with the most SCs after that turns diplomacy phase. If 2 or more player have the same SCs at the end of the game
-		the game checks for the turn bevore. If some players have the exact same SCs during the complete game the winner is
-		decided at random between the players in tie.
-		Any other value will end the game as usuall as soon as one player reach the target SCs.		
+		This setting lets you limit how many turns are played before a winner is declared.
+		<br />The winning player is decided by who has the most SCs after that turn's diplomacy phase.
+		If 2 or more player have the same SCs at the end of the game, the game checks for the turn before, and so on.
+		If player's SC counts are the same throughout the whole game the winner is decided at random.
+		<br />A value of "0" (the default) ends the game as usual, as soon as one player reach the target SCs.
 		<br /><br /><strong>Default:</strong> 0 (no fixed game duration)
 	</li>
 
