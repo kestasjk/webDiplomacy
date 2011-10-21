@@ -20,8 +20,8 @@
 	---
 
 	Changelog:
-	0.2: first dev-install
-	
+	1.0: first install
+	1.0.10: USA wins with 14 SC.
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -34,7 +34,7 @@ class USofAVariant extends WDVariant {
 	public $description= 'Because it\'s not really a war without the U.S. of A.';
 	public $author     = 'T. Moscal';
 	public $adapter    = 'kaner406';
-	public $codeVersion= '1.0';
+	public $codeVersion= '1.0.10';
 	public $homepage   = 'http://www.dipwiki.com/index.php?title=USA';
 	
 	public $countries=array('England', 'France', 'Italy', 'Germany', 'Austria', 'Turkey', 'Russia', 'USA');
@@ -43,6 +43,9 @@ class USofAVariant extends WDVariant {
 		parent::__construct();
 		$this->variantClasses['drawMap']            = 'USofA';
 		$this->variantClasses['adjudicatorPreGame'] = 'USofA';
+		
+		// USA only needs 14 SC:
+		$this->variantClasses['processMembers']     = 'USofA';
 	}
 
 	public function initialize() {
