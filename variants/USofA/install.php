@@ -245,6 +245,7 @@ $bordersRawData=array(
 	array('Norway','Skagerrack','Yes','No'),
 	array('Norway','St. Petersburg (North Coast)','Yes','No'),
 	array('Denmark','Kiel','Yes','Yes'),
+	array('Denmark','North Sea','Yes','No'),
 	array('Denmark','Skagerrack','Yes','No'),
 	array('Denmark','Heligoland Bight','Yes','No'),
 	array('Denmark','Baltic Sea','Yes','No'),

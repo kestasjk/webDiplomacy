@@ -34,7 +34,7 @@ class USofAVariant extends WDVariant {
 	public $description= 'Because it\'s not really a war without the U.S. of A.';
 	public $author     = 'T. Moscal';
 	public $adapter    = 'kaner406';
-	public $codeVersion= '1.0.12';
+	public $codeVersion= '1.0.13';
 	public $homepage   = 'http://www.dipwiki.com/index.php?title=USA';
 	
 	public $countries=array('England', 'France', 'Italy', 'Germany', 'Austria', 'Turkey', 'Russia', 'USA');
