@@ -568,7 +568,14 @@ class processMembers extends Members
 		if ( $this->Game->phase == 'Pre-game' )
 		{
 			// Creates the Member record, the member object, and records the bet
-			processMember::create($User->id, $this->Game->minimumBet);
+			if( $countryID!=-1 )
+			{
+				if (isset($this->ByCountryID[$countryID]))
+					throw new Exception("You cannot join this game as ".$this->Game->Variant->countries[$countryID -1]."someone else was faster.");
+				processMember::create($User->id, $this->Game->minimumBet,$countryID);
+			}
+			else
+				processMember::create($User->id, $this->Game->minimumBet);
 
 			$M = $this->ByUserID[$User->id];
 			if ($this->Game->isMemberInfoHidden() )
@@ -583,10 +590,6 @@ class processMembers extends Members
 				$this->Game->resetMinimumBet();
 			}
 			
-			// Set the choosen CountryID in the Database:
-			if( $countryID!=-1 )
-				$DB->sql_put("UPDATE wD_Members
-					SET countryID = ".$countryID ."	WHERE id = ".$M->id);
 		}
 		else
 		{
