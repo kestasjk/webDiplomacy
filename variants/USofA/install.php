@@ -323,6 +323,7 @@ $bordersRawData=array(
 	array('Tyrrhenian Sea','Ionian Sea','Yes','No'),
 	array('Ionian Sea','Adriatic Sea','Yes','No'),
 	array('Ionian Sea','Aegean Sea','Yes','No'),
+	array('Ionian Sea','Eastern Mediterranean','Yes','No'),
 	array('Ionian Sea','Albania','Yes','No'),
 	array('Adriatic Sea','Trieste','Yes','No'),
 	array('Adriatic Sea','Albania','Yes','No'),
