@@ -1046,9 +1046,10 @@ class processGame extends Game
 			if ($foundNMR) {
 				if (time() >= $this->processTime) {
 					$this->processTime = time() + $this->phaseMinutes*60;
-					$DB->sql_put("UPDATE wD_Games SET processTime = ".$this->processTime." WHERE id = ".$this->id);
-					$DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$Game->id);
-					$DB->sql_put("COMMIT");					
+					$DB->sql_put("UPDATE wD_Games 
+									SET processTime = ".$this->processTime.",
+									attempts = 0
+									WHERE id = ".$this->id);
 					libGameMessage::send(0, 'GameMaster', 'Missing orders for '.$this->Variant->turnAsDate($this->turn).' ('.$this->phase.'). Extending phase.', $this->id);
 					$this->Members->updateReliability();
 				}
