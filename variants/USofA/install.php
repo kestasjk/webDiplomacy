@@ -254,6 +254,7 @@ $bordersRawData=array(
 	array('Kiel','Ruhr','No','Yes'),
 	array('Kiel','Holland','Yes','Yes'),
 	array('Kiel','Heligoland Bight','Yes','No'),
+	array('Kiel','Baltic Sea','Yes','No'),
 	array('Berlin','Prussia','Yes','Yes'),
 	array('Berlin','Silesia','No','Yes'),
 	array('Berlin','Baltic Sea','Yes','No'),

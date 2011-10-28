@@ -168,7 +168,6 @@ $bordersRawData=array(
 	array('Meissen','Teplitz','No','Yes'),
 	array('Meissen','Tetschen','No','Yes'),
 	array('Dresden','Senftenberg','No','Yes'),
-	array('Dresden','Görlitz','No','Yes'),
 	array('Dresden','Tetschen','No','Yes'),
 	array('Dresden','Aussig','Yes','No'),
 	array('Dresden','Bautzen','No','Yes'),
