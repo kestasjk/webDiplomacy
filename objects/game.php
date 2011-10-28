@@ -471,7 +471,7 @@ class Game
 	 */
 	function needsProcess()
 	{
-		global $Misc;
+		global $Misc, $DB;
 
 		/*
 		 * - Games are processing as normal
@@ -491,9 +491,54 @@ class Game
 					|| ($this->phase=='Pre-game' && count($this->Members->ByID)==count($this->Variant->countries) && $this->phaseMinutes>30 ) )
 				)
 			)
+		{
+			/**
+			 * Special CD for the first turns
+			 * In the first turns extend the gamephase and CD all users who failed to enter an order.
+			 */
+			$specialCD=(isset(Config::$specialCD) ? (Config::$specialCD) : 0);
+			if ($this->turn < $specialCD )
+			{
+				require_once "lib/gamemessage.php";
+				$foundNMR=false;
+				
+				foreach($this->Members->ByID as $Member)
+				{
+					if ($Member->missedPhases > 0)
+					{
+						$foundNMR=true;
+						if ($Member->status=='Playing') {
+							$DB->sql_put(
+								"INSERT INTO wD_CivilDisorders ( gameID, userID, countryID, turn, bet, SCCount )
+									VALUES ( ".$this->id.", ".$Member->userID.", ".$Member->countryID.", ".$this->turn.", ".$Member->bet.", ".$Member->supplyCenterNo.")"
+								);
+							$DB->sql_put("UPDATE wD_Members SET status='Left' WHERE id = ".$Member->id);
+							unset($this->Members->ByStatus['Playing'][$Member->id]);
+							$Member->status = 'Left';
+							$this->Members->ByStatus['Left'][$Member->id] = $Member;
+							libGameMessage::send(0, 'GameMaster', 'NMR from '.$Member->country.'. Send the country in CD.', $this->id);
+						}
+					}
+				}				
+				if ($foundNMR) {
+					if (time() >= $this->processTime) {
+						$this->processTime = time() + $this->phaseMinutes*60;
+						$this->minimumBet = $this->Members->pointsLowestCD();
+						$DB->sql_put("UPDATE wD_Games 
+										SET processTime = ".$this->processTime.",
+										attempts = 0,
+										minimumBet = ".$this->minimumBet."
+										WHERE id = ".$this->id);
+						libGameMessage::send(0, 'GameMaster', 'Missing orders for '.$this->Variant->turnAsDate($this->turn).' ('.$this->phase.'). Extending phase.', $this->id);
+						$this->Members->updateReliability();
+					}
+					return false;
+				}
+			}
 			return true;
+		}	
 		else
-			return false;
+			return false;			
 	}
 }
 
