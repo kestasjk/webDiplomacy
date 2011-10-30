@@ -41,7 +41,7 @@ class ClassicVSVariant extends WDVariant {
 	public $id         =42;
 	public $mapID      =42;
 	public $name       ='ClassicVS';
-	public $fullName   ='ClassicVS';
+	public $fullName   ='Classic - Pick your countries';
 	public $description='The standard Diplomacy map of Europe, but you can choose what countries you want to be playable.';
 	public $adapter    ='Oliver Auth';
 	public $version    ='1.0.14';

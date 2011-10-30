@@ -8,7 +8,7 @@ class BuildAnywhereVariant extends ClassicVariant {
 	public $id=5;
 	//public $mapID=1;
 	public $name='BuildAnywhere';
-	public $fullName='Classic, but build anywhere';
+	public $fullName='Classic - Build anywhere';
 	public $description='The same as the standard map, except you can build on all supply centers you own.';
 	//public $author='Avalon Hill';
 

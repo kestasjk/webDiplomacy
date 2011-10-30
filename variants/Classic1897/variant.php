@@ -34,7 +34,7 @@ class Classic1897Variant extends WDVariant {
 	public $id         =28;
 	public $mapID      =28;
 	public $name       ='Classic1897';
-	public $fullName   ='1897';
+	public $fullName   ='Classic - 1897';
 	public $description='The standard Diplomacy map of Europe but start in Winter 1897.';
 	public $author     ='Mark Nelson, Josh Smith, and Rick Westerman';
 	public $adapter    ='Oliver Auth / Carey Jensen';

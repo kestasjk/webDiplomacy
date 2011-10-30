@@ -1,0 +1,8 @@
+@CHARSET "ISO-8859-1";
+
+.variantClassicGvR .country0 { color: #CE7800 ! important; } /* Global */
+.variantClassicGvR .country1 { color: #8B481A ! important; } /* Germany */
+.variantClassicGvR .country2 { color: #6F005D ! important; } /* Russia*/
+
+.variantClassicGvR .occupationBar1 { background-color: #A08A75; } /* Germany */
+.variantClassicGvR .occupationBar2 { background-color: #A87E9F; } /* Russia*/

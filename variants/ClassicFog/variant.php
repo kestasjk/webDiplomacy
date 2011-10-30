@@ -42,7 +42,7 @@ class ClassicFogVariant extends WDVariant {
 	public $id         = 30;
 	public $mapID      = 30;
 	public $name       = 'ClassicFog';
-	public $fullName   = 'Classic map - Fog of War';
+	public $fullName   = 'Classic - Fog of War';
 	public $description= 'This is the classic map, but players can only see a limited part of the map';
 	public $adapter    = 'Oliver Auth';
 	public $version    = '1.0';

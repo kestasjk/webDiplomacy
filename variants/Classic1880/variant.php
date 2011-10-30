@@ -6,7 +6,7 @@ class Classic1880Variant extends WDVariant {
 	public $id=34;
 	public $mapID=34;
 	public $name='Classic1880';
-	public $fullName='1880';
+	public $fullName='Classic - 1880';
 	public $description='The standard Diplomacy map of Europe, expanded to play area for a different game.';
 	public $author='airborne';
 
