@@ -30,12 +30,12 @@ class KnownWorld_901Variant extends WDVariant {
 	public $id         =57;
 	public $mapID      =57;
 	public $name       ='KnownWorld_901';
-	public $fullName   ='KnownWorld_901';
+	public $fullName   ='Known World 901';
 	public $description='Conquer the Known World of 901';
 	public $author     ='David E. Cohen';
 	public $adapter    ='Kaner406 & Oliver Auth';
 	public $version    ='3.0';
-	public $codeVersion='1.0';
+	public $codeVersion='1.0.1';
 	public $homepage  ='http://diplomiscellany.tripod.com/id20.html';
 	
 	public $countries=array('Arabia','Axum','Byzantinum','China','Denmark','Egypt','France','Germany','Khazaria','Russia','Spain','Turan','Srivijaya','Wagadu', 'India');	
