@@ -18,7 +18,7 @@ $delete    =(isset($_REQUEST['delete']))    ? $_REQUEST['delete']    : '' ;     
 $basedir   =(isset($_REQUEST['basedir']))   ? $_REQUEST['basedir']   : '/';      // The Basedir
 $view      =(isset($_REQUEST['view']))      ? $_REQUEST['view']      : '' ;      // Should I display a file?
 $verify    =(isset($_REQUEST['verify']))    ? $_REQUEST['verify']    : '' ;      // Should I verify a file?
-$download    =(isset($_REQUEST['download']))    ? $_REQUEST['download']    : '' ;      // Should I verify a file?
+$download  =(isset($_REQUEST['download']))  ? $_REQUEST['download']  : '' ;      // Should I verify a file?
 
 // Users can only access these 3 directories.
 $basedir = ( (strpos($basedir,'classes') > 0) ? '/classes/' : 
@@ -97,7 +97,7 @@ if ($variantID != 0) {
 	print '<form style="display: inline" action="'. $_SERVER['SCRIPT_NAME'] .'"	method="POST">
 			<input type="hidden" name="variantID" value="' . $variantID . '" />
 			<input type="hidden" name="download" value="zip" />
-			<input type="submit" value="Download as zip" />';
+			<input type="submit" value="Download as zip" /></form>';
 
 	$variantbase = "variants/" . Config::$variants[$variantID];
 
