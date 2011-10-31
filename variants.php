@@ -95,8 +95,9 @@ else
 			print 'Version: '. $Variant->version.(isset($Variant->codeVersion)?' / ':'');
 		if (isset($Variant->codeVersion))
 			print 'Code: ' . $Variant->codeVersion;
-		print ' )';
+		print ')';
 	}
+	print ' (<a href=files.php?variantID='.$Variant->id.'>view files</a>)';
 	print ':</strong>';
 	
 	print '<ul>';
