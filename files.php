@@ -39,8 +39,9 @@ if ($view != '' && $variantID != 0) {
 
 if ($download != '' && $variantID != '0') {
 	$Variant = libVariant::loadFromVariantID($variantID);
-	$version= (isset($Variant->version)?$Variant->version:'1.0');
-	$filename=$Variant->name . '_' .str_replace('.','_',$version) . '.zip';
+	$version= (isset($Variant->version)?'_V'.$Variant->version:'');
+	$code   = (isset($Variant->codeVersion)?'_C'.$Variant->codeVersion:'');
+	$filename=$Variant->name .str_replace('.','_',$version). str_replace('.','_',$code) . '.zip';
 	chdir('variants');
 	if (!file_exists($filename)) {
 		$zip = new ZipArchive();
