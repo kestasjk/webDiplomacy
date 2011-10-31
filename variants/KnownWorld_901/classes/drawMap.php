@@ -99,7 +99,11 @@ class ResetPaletteVariant_drawMap extends ZoomMap_drawMap
 	protected function loadColors()
 	{
 		if ($this->setColors==true)
-			parent::loadColors();
+			$this->colors = array(
+				'border'=>array(0,0,0),
+				'standoff'=>array(200,20,20)
+			);
+		parent::loadColors();
 	}
 	
 	protected function loadOrderArrows()
