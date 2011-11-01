@@ -313,6 +313,7 @@ $bordersRawData=array(
 	array('Irish Sea','English Channel','Yes','No'),
 	array('Irish Sea','Mid-Atlantic Ocean','Yes','No'),
 	array('English Channel','Mid-Atlantic Ocean','Yes','No'),
+	array('Mid-Atlantic Ocean','Western Mediterranean','Yes','No'),
 	array('Mid-Atlantic Ocean','Spain (North Coast)','Yes','No'),
 	array('Mid-Atlantic Ocean','Spain (South Coast)','Yes','No'),
 	array('Mid-Atlantic Ocean','West Atlantic Ocean','Yes','No'),
