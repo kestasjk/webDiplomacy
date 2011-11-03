@@ -74,7 +74,7 @@ Start a new game; you decide the name, how long it runs, and how much it's worth
 	</li>
 
 	<li class="formlisttitle">
-		Bet size: (1<?php print libHTML::points(); ?>-
+		Bet size: (3<?php print libHTML::points(); ?> -
 			<?php print $User->points.libHTML::points(); ?>)
 	</li>
 	<li class="formlistfield">
