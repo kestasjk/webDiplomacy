@@ -157,6 +157,7 @@ $bordersRawData=array(
 	array('Kalisch','Breslau','No','Yes'),
 	array('Lodz','Breslau','No','Yes'),
 	array('Lodz','Radom','No','Yes'),
+	array('Lodz','Oppeln','No','Yes'),
 	array('Lodz','Tschenstochau','No','Yes'),
 	array('Leipzig','Meissen','No','Yes'),
 	array('Leipzig','Dresden','Yes','No'),
