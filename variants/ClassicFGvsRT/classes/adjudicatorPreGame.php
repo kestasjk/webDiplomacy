@@ -21,7 +21,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class FGvsRTVariant_adjudicatorPreGame extends adjudicatorPreGame {
+class ClassicFGvsRTVariant_adjudicatorPreGame extends adjudicatorPreGame {
 
 	protected $countryUnits = array(
 		'Frankland'  => array('Kiel'=>'Fleet', 'Munich'=>'Army', 'Berlin'=>'Army', 'Marseilles'=>'Army', 'Paris'=>'Army', 'Brest'=>'Fleet'),

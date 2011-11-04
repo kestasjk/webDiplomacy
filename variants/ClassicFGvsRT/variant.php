@@ -27,6 +27,7 @@
 	1.0.1: small adjustments, maxbet = 1
 	1.0.2: fixed: spelling error on smallmap
 	1.0.3: fixed: wrong sc on smallmap
+	1.0.4: fixed: typo
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -38,7 +39,7 @@ class ClassicFGvsRTVariant extends WDVariant {
 	public $fullName   ='Classic - Frankland Vs Juggernaut';
 	public $description='The standard Diplomacy map of Europe, but each player take two countries France and Germany against Russia and Turkey.';
 	public $adapter    ='Orathaic';
-	public $version    ='1.0.3';
+	public $version    ='1.0.4';
 
 	public $countries=array('Frankland','Juggernaut');
 
