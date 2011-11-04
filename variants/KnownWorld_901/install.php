@@ -683,6 +683,7 @@ $bordersRawData=array(
 	array('Egyptian Sea','Barca','Yes','No'),
 	array('Egyptian Sea','Alexandria','Yes','No'),
 	array('Egyptian Sea','Jerusalem','Yes','No'),
+	array('Ionian Sea','Illyrian Sea','Yes','No'),
 	array('Ionian Sea','Tyrrhenian Sea','Yes','No'),
 	array('Ionian Sea','Libyan Sea','Yes','No'),
 	array('Illyrian Sea','Rome (East Coast)','Yes','No'),
@@ -1143,6 +1144,7 @@ InstallCache::terrJSON($this->territoriesJSONFile(),$this->mapID);
 
 // Copy the smallmap-sample to the cache-directory to avoid a screwed variantpage (there is no smallmap available)
 copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
+
 
 
 
