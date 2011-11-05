@@ -20,7 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class EconomicVariant_drawMap extends drawMap {
+class ClassicEconomicVariant_drawMap extends drawMap {
 
 	/**
 	 * An array of colors for different countries, indexed by countryID
@@ -45,41 +45,24 @@ class EconomicVariant_drawMap extends drawMap {
 		if( $this->smallmap )
 		{
 			return array(
-				'map'=>'variants/Economic/resources/smallmap.png',
+				'map'=>'variants/ClassicEconomic/resources/smallmap.png',
 				'army'=>'contrib/smallarmy.png',
 				'fleet'=>'contrib/smallfleet.png',
-				'names'=>'variants/Economic/resources/smallmapNames.png',
+				'names'=>'variants/ClassicEconomic/resources/smallmapNames.png',
 				'standoff'=>'images/icons/cross.png'
 			);
 		}
 		else
 		{
 			return array(
-				'map'=>'variants/Economic/resources/map.png',
+				'map'=>'variants/ClassicEconomic/resources/map.png',
 				'army'=>'contrib/army.png',
 				'fleet'=>'contrib/fleet.png',
-				'names'=>'variants/Economic/resources/mapNames.png',
+				'names'=>'variants/ClassicEconomic/resources/mapNames.png',
 				'standoff'=>'images/icons/cross.png'
 			);
 		}
 	}
-	// Draw the colored flags behind the units.
-	protected function color(array $color, $image=false)
-	{
-
-		if ( ! is_array($image) )
-			$image = $this->map;
-
-		list($r, $g, $b) = $color;
-
-		$colorRes = imagecolorexact($image['image'], $r, $g, $b);
-		if ($colorRes == -1)
-			$colorRes = imageColorAllocate($image['image'], $r, $g, $b);
-
- 		return $colorRes;
- 	}	
-
-
 }
 
 ?>

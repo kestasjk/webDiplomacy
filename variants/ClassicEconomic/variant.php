@@ -22,29 +22,31 @@
 	Changelog:
 	1.0:   initial release
 	1.0.1: fixed: spelling error on the large map
+	1.1: New naming (Economic -> ClassicEconomic)
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class EconomicVariant extends WDVariant {
+class ClassicEconomicVariant extends WDVariant {
 	public $id=53;
 	public $mapID=53;
-	public $name='Economic';
-	public $fullName='Economic';
+	public $name='ClassicEconomic';
+	public $fullName='Classic - Economic';
 	public $description='A variant to the standard Diplomacy map comprising an economic warfield!';
 	public $author='Emmanuele Ravaioli (Tadar Es Darden)';
 	public $adapter ='Emmanuele Ravaioli';
-	public $version ='1.0.1';
+	public $version ='1.1';
 
 	public $countries=array('England', 'France', 'Italy', 'Germany', 'Austria', 'Turkey', 'Russia');
 
 	public function __construct() {
 		parent::__construct();
 
-		$this->variantClasses['drawMap'] = 'Economic';
-		$this->variantClasses['adjudicatorPreGame'] = 'Economic';
+		$this->variantClasses['drawMap'] = 'ClassicEconomic';
+		$this->variantClasses['adjudicatorPreGame'] = 'ClassicEconomic';
 	}
-// Change the number of supply centers required for winning the game.
+	
+	// Change the number of supply centers required for winning the game.
 	public function initialize() {
 		parent::initialize();
 		$this->supplyCenterTarget = 24;
