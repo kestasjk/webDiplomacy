@@ -113,7 +113,7 @@ $bordersRawData=array(
 	array('Clyde','Liverpool','Yes','Yes'),
 	array('Clyde','Norwegian Sea','Yes','No'),
 	array('Clyde','North Atlantic Ocean','Yes','No'),
-	array('Edinburgh','Liverpool','Yes','Yes'),
+	array('Edinburgh','Liverpool','No','Yes'),
 	array('Edinburgh','Yorkshire','Yes','Yes'),
 	array('Edinburgh','Norwegian Sea','Yes','No'),
 	array('Edinburgh','North Sea','Yes','No'),
