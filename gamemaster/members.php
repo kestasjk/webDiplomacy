@@ -676,14 +676,14 @@ class processMembers extends Members
 				global $DB;
 				for ($turn=$this->Game->turn; $turn>-1; $turn--)
 				{
-					$sql='SELECT ts.countryID, COUNT(*) AS ct FROM Wd_TerrStatusArchive ts 
-							JOIN Wd_Territories as t ON (t.id = ts.terrID AND t.mapID='.$this->Game->Variant->mapID.')
+					$sql='SELECT ts.countryID, COUNT(*) AS ct FROM wD_TerrStatusArchive ts 
+							JOIN wD_Territories as t ON (t.id = ts.terrID AND t.mapID='.$this->Game->Variant->mapID.')
 						WHERE t.supply="Yes" AND ts.turn='.$turn.' AND ts.gameID='.$this->Game->id.'
 							AND ts.countryID IN ('.implode(', ', $winners).')
 						GROUP BY ts.countryID 
 						HAVING ct = (
-							SELECT COUNT(*) AS ct2 FROM Wd_TerrStatusArchive ts2
-								JOIN Wd_Territories as t2 ON (t2.id = ts2.terrID AND t2.mapID='.$this->Game->Variant->mapID.')
+							SELECT COUNT(*) AS ct2 FROM wD_TerrStatusArchive ts2
+								JOIN wD_Territories as t2 ON (t2.id = ts2.terrID AND t2.mapID='.$this->Game->Variant->mapID.')
 							WHERE t2.supply="Yes" AND ts2.turn='.$turn.' AND ts2.gameID='.$this->Game->id.'
 								AND ts2.countryID IN ('.implode(', ', $winners).')
 							GROUP BY ts2.countryID ORDER BY ct2 DESC LIMIT 1)';
