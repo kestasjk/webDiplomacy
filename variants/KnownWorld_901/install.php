@@ -825,6 +825,7 @@ $bordersRawData=array(
 	array('Damascus','Armenia','No','Yes'),
 	array('Damascus','Mosul','No','Yes'),
 	array('Damascus','Baghdad','No','Yes'),
+	array('Damascus','Mecca','No','Yes'),
 	array('Damascus','Jerusalem','Yes','Yes'),
 	array('Damascus','Nefud','No','Yes'),
 	array('Kakheti','Armenia','No','Yes'),
@@ -1144,6 +1145,7 @@ InstallCache::terrJSON($this->territoriesJSONFile(),$this->mapID);
 
 // Copy the smallmap-sample to the cache-directory to avoid a screwed variantpage (there is no smallmap available)
 copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
+
 
 
 
