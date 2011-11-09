@@ -281,6 +281,7 @@ $bordersRawData=array(
 	array('Schönberg','Iglau','No','Yes'),
 	array('Schönberg','Ratibor','No','Yes'),
 	array('Olmütz','Prerau','No','Yes'),
+	array('Olmütz','Pardubitz','No','Yes'),
 	array('Olmütz','Brünn','No','Yes'),
 	array('Olmütz','Iglau','No','Yes'),
 	array('Olmütz','Znoim','No','Yes'),
