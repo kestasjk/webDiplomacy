@@ -87,7 +87,40 @@ else
 	else
 		print 'map.php?variantID=' . $Variant->id;
 	print '" alt=" " title="The map for the '. $Variant->name .' Variant" /></div><br />';
-	print '<strong>Variant Parameters';
+
+	print '<table>
+		<td style="text-align:left">Search for games: 		
+			<form style="display: inline" action="gamelistings.php" method="POST">
+				<input type="hidden" name="gamelistType" value="New" />
+				<input type="hidden" name="searchOff" value="true" />
+				<input type="hidden" name="search[chooseVariant]" value="'.$Variant->id.'" />
+				<input type="submit" value="New" /></form>							
+			<form style="display: inline" action="gamelistings.php" method="POST">
+				<input type="hidden" name="gamelistType" value="Open" />
+				<input type="hidden" name="searchOff" value="true" />
+				<input type="hidden" name="search[chooseVariant]" value="'.$Variant->id.'" />
+				<input type="submit" value="Open"/></form>				
+			<form style="display: inline" action="gamelistings.php" method="POST">
+				<input type="hidden" name="gamelistType" value="Active" />
+				<input type="hidden" name="searchOff" value="true" />
+				<input type="hidden" name="search[chooseVariant]" value="'.$Variant->id.'" />
+				<input type="submit" value="Active" /></form>
+			<form style="display: inline" action="gamelistings.php" method="POST">
+				<input type="hidden" name="gamelistType" value="Finished" />
+				<input type="hidden" name="searchOff" value="true" />
+				<input type="hidden" name="search[chooseVariant]" value="'.$Variant->id.'" />
+				<input type="submit" value="Finished" /></form>
+		</td> <td style="text-align:right">
+			<form style="display: inline" action="stats.php" method="POST">
+				<input type="hidden" name="variantID" value="'.$Variant->id.'" />
+				<input type="submit" value="View statistics" /></form>			
+			<form style="display: inline" action="files.php" method="POST">
+				<input type="hidden" name="variantID" value="'.$Variant->id.'" />
+				<input type="submit" value="View/Download code" /></form>
+		</td>
+	</table>';
+			
+	print '<br><div><strong>Variant Parameters';
 	if ((isset($Variant->version)) || (isset($Variant->CodeVersion)))
 	{
 		print ' (';
@@ -97,7 +130,6 @@ else
 			print 'Code: ' . $Variant->codeVersion;
 		print ')';
 	}
-	print ' (<a href=files.php?variantID='.$Variant->id.'>view files</a>)';
 	print ':</strong>';
 	
 	print '<ul>';

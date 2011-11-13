@@ -147,6 +147,7 @@ $Pager->addArgs('gamelistType='.$tab);
 
 if ( $tab=='Search' or isset($_REQUEST['searchOn']) or isset($_REQUEST['search']) )
 {
+
 	$Pager->addArgs('searchOn=on');
 
 	if ( isset($_REQUEST['search']) )
@@ -156,19 +157,26 @@ if ( $tab=='Search' or isset($_REQUEST['searchOn']) or isset($_REQUEST['search']
 	}
 	elseif( isset($_SESSION['search-gamelistings.php']) )
 		$search->filterInput($_SESSION['search-gamelistings.php']);
+		
+	if (!isset($_REQUEST['searchOff']))
+	{
+		print '<div style="margin:30px">';
+		print '<form action="gamelistings.php?gamelistType='.$tab.'&amp;page=1#top" method="post">';
+	
+		$search->formHTML();
 
-	print '<div style="margin:30px">';
-	print '<form action="gamelistings.php?gamelistType='.$tab.'&amp;page=1#top" method="post">';
-
-	$search->formHTML();
-
-	print '</form>';
-	print '<p><a href="gamelistings.php?page=1" class="light">Close search</a></p>';
-	print '</div>';
-
-	libHTML::pagebreak();
-
-	print $Pager->pagerBar('top', '<h4>Results:</h4>');
+		print '</form>';
+		print '<p><a href="gamelistings.php?page=1" class="light">Close search</a></p>';
+		print '</div>';
+		
+		libHTML::pagebreak();
+		print $Pager->pagerBar('top', '<h4>Results:</h4>');
+	} else {
+		$Pager->addArgs('searchOff=true');
+		libHTML::pagebreak();
+		print $Pager->pagerBar('top');
+	}
+	
 	print '<div class="hr"></div>';
 
 	$gameCount = $search->printGamesList($Pager);
