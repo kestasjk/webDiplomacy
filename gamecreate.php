@@ -83,7 +83,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		}
 
 		$input['bet'] = (int) $input['bet'];
-		if ( $input['bet'] < 3 or $input['bet'] > $User->points )
+		if ( $input['bet'] < 2 or $input['bet'] > $User->points )
 		{
 			throw new Exception((string)$input['bet']." is an invalid bet size.");
 		}
