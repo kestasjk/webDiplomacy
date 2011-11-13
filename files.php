@@ -1,8 +1,8 @@
 <?php
 
 // For security reasons fileupload and all variables are ussually discarded in header.php. Save this in constants.
-$uploadname=(isset($_FILES['upload']['name']))    ? $_FILES['upload']['name']     : '' ; // 
-$uploadtmp =(isset($_FILES['upload']['tmp_name']))? $_FILES['upload']['tmp_name'] : '' ; // 
+$uploadname=(isset($_FILES['upload']['name']))    ? $_FILES['upload']['name']     : '' ; // The uploaded filename
+$uploadtmp =(isset($_FILES['upload']['tmp_name']))? $_FILES['upload']['tmp_name'] : '' ; // the tmp-filename from PHP
 define('UP',$uploadname);
 define('UPTMP',$uploadtmp);
 
@@ -16,7 +16,7 @@ $file       =(isset($_REQUEST['file']))       ? $_REQUEST['file']       : '' ; /
 $updatedfile=(isset($_REQUEST['updatedfile']))? $_REQUEST['updatedfile']: '' ; // Filled with the new content after editing
 $msg        =(isset($_REQUEST['msg']))        ? $_REQUEST['msg']        : '' ; // a message to diaplay.
 
-$uploadtmp = UPTMP;
+$uploadtmp = UPTMP; // Get the 
 $uploadname = UP;
 
 // Users can only access these 3 directories.
@@ -50,20 +50,19 @@ if ($action == 'download' && $variantID != '0') {
 	if (!file_exists($filename)) {
 		$zip = new ZipArchive();
 
-		if ($zip->open($filename, ZIPARCHIVE::CREATE)!==TRUE) {
+		if ($zip->open($filename, ZIPARCHIVE::CREATE)!==TRUE)
 			exit("cannot open <$filename>\n");
-		}
 		
-		$zip->addEmptyDir($Variant->name);
-		$zip->addEmptyDir($Variant->name.'/cache');
-		$zip->addEmptyDir($Variant->name.'/classes');
-		$zip->addEmptyDir($Variant->name.'/resources');
-		foreach (glob($Variant->name. '/classes/*') as $file) $zip->addFile($file);
-		foreach (glob($Variant->name. '/resources/*') as $file) $zip->addFile($file);
-		$zip->addFile($Variant->name. '/variant.php');
-		$zip->addFile($Variant->name. '/install.php');
-		if (file_exists($Variant->name. '/rules.html'))
-			$zip->addFile($Variant->name. '/rules.html');
+		$zip->addEmptyDir($variant->name);
+		$zip->addEmptyDir($variant->name.'/cache');
+		$zip->addEmptyDir($variant->name.'/classes');
+		$zip->addEmptyDir($variant->name.'/resources');
+		foreach (glob($variant->name. '/classes/*') as $file) $zip->addFile($file);
+		foreach (glob($variant->name. '/resources/*') as $file) $zip->addFile($file);
+		$zip->addFile($variant->name. '/variant.php');
+		$zip->addFile($variant->name. '/install.php');
+		if (file_exists($variant->name. '/rules.html'))
+			$zip->addFile($variant->name. '/rules.html');
 		
 		$zip->close();		
 	}
@@ -79,23 +78,14 @@ if ($action == 'download' && $variantID != '0') {
 libHTML::starthtml();
 print '<div class="content">';
 
-// Generate an array with all variants available:
-$all_variants = array();
-foreach (Config::$variants as $id => $name)
-	$all_variants[$id] = $name;
-if ($variantID == 0)
-	$all_variants[0] = ' Choose a variant...';
-asort($all_variants);
-
 print '<li class="formlisttitle">Variant: ';
 print '<form style="display: inline" method="get" name="set_map">';
 print '<select name="variantID" onchange="this.form.submit();">';
-foreach ( $all_variants as $id=>$name ) {
-	print '<option value="'.$id.'"';
-	if ($id == $variantID)
-		print ' selected';
-	print '>'.$name.'</option>';
-}
+if ($variantID == 0)
+	Config::$variants[0] = ' Choose a variant...';
+asort(Config::$variants);
+foreach ( Config::$variants as $id=>$name )
+	print '<option value="'.$id.'"'.($id == $variantID ? ' selected':'').'>'.$name.'</option>';
 print '</select></form>';
 
 if ($variantID != 0) {
@@ -136,7 +126,7 @@ if ($variantID != 0) {
 					<input type="hidden" name="variantID" value="' . $variantID . '" />
 					<input type="hidden" name="basedir" value="'.$basedir.'"/>
 					<input type="hidden" name="file" value="'.$file.'"/>
-					<textarea rows="20" style="border: 1px solid #666666;" name="updatedfile">';
+					<textarea rows="20" style="border: 1px solid #666666; font-family: courier;" name="updatedfile">';
 			//Open the file chosen in the select box in the previous form into the text area
 			$file2open = fopen($variantbase.$basedir.$file, "r");
 			$current_data = @fread($file2open, filesize($variantbase.$basedir.$file));
