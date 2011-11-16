@@ -34,7 +34,7 @@ class ClassicNoNeutralsVariant extends WDVariant {
 	public $description='The classic map no neutrals';
 	public $author     ='Unknown';
 	public $adapter    ='Carey Jensen / Oliver Auth / Orathaic';
-	public $version    ='1.0';
+	public $codeVersion    ='1.0.1';
 	
 	public $countries=array('England', 'France', 'Italy', 'Germany', 'Austria', 'Turkey', 'Russia');	
 
