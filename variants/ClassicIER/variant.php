@@ -33,7 +33,7 @@ class ClassicIERVariant extends WDVariant {
 	public $fullName   ='Classic - Italy+ Vs England+ Vs Russia';
 	public $description='The standard Diplomacy map of Europe, but with Russia, England and Italy as the only playable countries. To offset the balance of Russia\'s four builds, England gians Holland as a home suppply center while Italy gains trieste - each for based on historical links.';
 	public $adapter    = 'Orathaic';
-	public $version    = '1.0.1';
+	public $codeVersion= '1.0.2';
 
 	public $countries=array('England','Italy','Russia');
 

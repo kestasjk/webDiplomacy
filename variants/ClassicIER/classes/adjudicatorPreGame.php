@@ -21,7 +21,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class IERVariant_adjudicatorPreGame extends adjudicatorPreGame {
+class ClassicIERVariant_adjudicatorPreGame extends adjudicatorPreGame {
 
 	protected $countryUnits = array(
 		'England'  => array('London'  =>'Fleet', 'Liverpool' =>'Army', 'Edinburgh'=>'Fleet', 'Holland'=>'Army' ),
