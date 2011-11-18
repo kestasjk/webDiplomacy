@@ -111,10 +111,10 @@ else
 				<input type="hidden" name="search[chooseVariant]" value="'.$Variant->id.'" />
 				<input type="submit" value="Finished" /></form>
 		</td> <td style="text-align:right">
-			<form style="display: inline" action="stats.php" method="POST">
+			<form style="display: inline" action="stats.php" method="GET">
 				<input type="hidden" name="variantID" value="'.$Variant->id.'" />
 				<input type="submit" value="View statistics" /></form>			
-			<form style="display: inline" action="files.php" method="POST">
+			<form style="display: inline" action="files.php" method="GET">
 				<input type="hidden" name="variantID" value="'.$Variant->id.'" />
 				<input type="submit" value="View/Download code" /></form>
 		</td>
