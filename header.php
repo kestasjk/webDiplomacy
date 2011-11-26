@@ -116,6 +116,8 @@ ob_start(); // Buffer output. libHTML::footer() flushes.
 require_once('lib/cache.php');
 require_once('lib/time.php');
 require_once('lib/html.php');
+
+require_once('objects/silence.php');
 require_once('objects/user.php');
 require_once('objects/game.php');
 

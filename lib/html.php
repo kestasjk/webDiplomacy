@@ -280,6 +280,8 @@ class libHTML
 					$output .= '&amp;globalGameID='.$val;
 				elseif ( $name == 'userID' )
 					$output .= '&amp;globalUserID='.$val;
+				elseif ( $name == 'postID' )
+					$output .= '&amp;globalPostID='.$val;
 
 				$output .= '&amp;'.$name.'='.$val;
 			}
@@ -291,7 +293,20 @@ class libHTML
 		else
 			return $output;
 	}
-
+	
+	
+	public static function threadLink($postID) {
+		global $DB;
+	
+		$postID = (int)$postID;
+	
+		list($toID) = $DB->sql_row("SELECT toID FROM wD_ForumMessages WHERE id=".$postID);
+	
+		if( $toID == null || $toID == 0 )
+		$toID = $postID;
+	
+		return '<a href="forum.php?threadID='.$toID.'#'.$postID.'">Go to thread</a>';
+	}
 	static function admincpType($actionType, $id)
 	{
 		return '<a href="admincp.php?tab=Control%20Panel&amp;global'.$actionType.'ID='.$id.'#'.strtolower($actionType).'Actions">
