@@ -174,6 +174,7 @@ $bordersRawData=array(
 	array('Dresden','Bautzen','No','Yes'),
 	array('Senftenberg','Bautzen','No','Yes'),
 	array('Görlitz','Glogau','No','Yes'),
+	array('Görlitz','Breslau','Yes','No'),
 	array('Görlitz','Tetschen','No','Yes'),
 	array('Görlitz','Friedland','Yes','Yes'),
 	array('Görlitz','Hirschberg','No','Yes'),
