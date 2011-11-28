@@ -244,13 +244,16 @@ class processMembers extends Members
 			foreach($this->ByStatus['Playing'] as $Member)
 			{
 				if ( $this->Game->Variant->supplyCenterTarget <= $Member->supplyCenterNo )
-					return $Member;
+					return $this->check_for_Winner_that_works_with_same_SC_count();
 				// The players which have lost go into 'Survived' mode when the other player is set to Won
 			}
 		}
+		
 		// Do an additional check if we reached maxTurns:
-		//return false;
-		return $this->check_MaxTurnsWinner();
+		if (($this->Game->turn == ($this->Game->maxTurns - 1)) && ($this->Game->maxTurns > 0))
+			return $this->check_for_Winner_that_works_with_same_SC_count();
+		
+		return false;
 	}
 
 	/**
@@ -650,60 +653,54 @@ class processMembers extends Members
 	}
 	
 	/**
-	 * Check if the game reached a pregame-set maximum turn.s.
+	 * Check the previous turns if more than one players reach the target SCs at the same turn.
 	 *
-	 * @return processMember The winning Member, or false if no winner
+	 * @return processMember The winning Member.
 	 */
-	function check_MaxTurnsWinner()
+	function check_for_Winner_that_works_with_same_SC_count()
 	{
-		if (($this->Game->turn == ($this->Game->maxTurns - 1)) && ($this->Game->maxTurns > 0))
+		$winners=array();
+		$maxSC=0;
+		foreach($this->ByStatus['Playing'] as $Member)
 		{
-			// Game reached the set last turn
-			$winners=array();
-			$maxSC=0;
-			foreach($this->ByStatus['Playing'] as $Member)
+			if ( $Member->supplyCenterNo > $maxSC )
 			{
-				if ( $Member->supplyCenterNo > $maxSC )
-				{
-					$maxSC=$Member->supplyCenterNo;
-					$winners=array();
-				}	
-				if ( (count($winners)==0) or ($Member->supplyCenterNo == $maxSC) )
-					$winners[]=$Member->countryID;
-			}
-			if (count($winners) > 1)
-			{
-				global $DB;
-				for ($turn=$this->Game->turn; $turn>-1; $turn--)
-				{
-					$sql='SELECT ts.countryID, COUNT(*) AS ct FROM wD_TerrStatusArchive ts 
-							JOIN wD_Territories as t ON (t.id = ts.terrID AND t.mapID='.$this->Game->Variant->mapID.')
-						WHERE t.supply="Yes" AND ts.turn='.$turn.' AND ts.gameID='.$this->Game->id.'
-							AND ts.countryID IN ('.implode(', ', $winners).')
-						GROUP BY ts.countryID 
-						HAVING ct = (
-							SELECT COUNT(*) AS ct2 FROM wD_TerrStatusArchive ts2
-								JOIN wD_Territories as t2 ON (t2.id = ts2.terrID AND t2.mapID='.$this->Game->Variant->mapID.')
-							WHERE t2.supply="Yes" AND ts2.turn='.$turn.' AND ts2.gameID='.$this->Game->id.'
-								AND ts2.countryID IN ('.implode(', ', $winners).')
-							GROUP BY ts2.countryID ORDER BY ct2 DESC LIMIT 1)';
-					$tabl = $DB->sql_tabl($sql);
-					$winners=array();
-					while( list($countryID, $sc) = $DB->tabl_row($tabl) )
-						$winners[]=$countryID;
-					// Exit loop if only one winner is left...
-					if (count($winners) == 1)
-						$turn=0;
-				}
-			}
-			// Still no winner found:
-			if (count($winners) > 1)
-				$winners[0]=$winners[rand(0,count($winners)-1)];
-
-			return $this->ByCountryID[$winners[0]];
-				
+				$maxSC=$Member->supplyCenterNo;
+				$winners=array();
+			}	
+			if ( (count($winners)==0) or ($Member->supplyCenterNo == $maxSC) )
+				$winners[]=$Member->countryID;
 		}
-		return false;		
+		if (count($winners) > 1)
+		{
+			global $DB;
+			for ($turn=$this->Game->turn; $turn>-1; $turn--)
+			{
+				$sql='SELECT ts.countryID, COUNT(*) AS ct FROM wD_TerrStatusArchive ts 
+						JOIN wD_Territories as t ON (t.id = ts.terrID AND t.mapID='.$this->Game->Variant->mapID.')
+					WHERE t.supply="Yes" AND ts.turn='.$turn.' AND ts.gameID='.$this->Game->id.'
+						AND ts.countryID IN ('.implode(', ', $winners).')
+					GROUP BY ts.countryID 
+					HAVING ct = (
+						SELECT COUNT(*) AS ct2 FROM wD_TerrStatusArchive ts2
+							JOIN wD_Territories as t2 ON (t2.id = ts2.terrID AND t2.mapID='.$this->Game->Variant->mapID.')
+						WHERE t2.supply="Yes" AND ts2.turn='.$turn.' AND ts2.gameID='.$this->Game->id.'
+							AND ts2.countryID IN ('.implode(', ', $winners).')
+						GROUP BY ts2.countryID ORDER BY ct2 DESC LIMIT 1)';
+				$tabl = $DB->sql_tabl($sql);
+				$winners=array();
+				while( list($countryID, $sc) = $DB->tabl_row($tabl) )
+					$winners[]=$countryID;
+				// Exit loop if only one winner is left...
+				if (count($winners) == 1)
+					$turn=0;
+			}
+		}
+		// Still no winner found:
+		if (count($winners) > 1)
+			$winners[0]=$winners[rand(0,count($winners)-1)];
+			
+		return $this->ByCountryID[$winners[0]];		
 	}
 }
 ?>
