@@ -31,7 +31,7 @@ class VikingVariant_adjudicatorPreGame extends adjudicatorPreGame {
 		'Arab Caliphates'     => array('Trebizond'  =>'Army' ,'Antakya' =>'Army' ,'Palmyra'    =>'Fleet','Tunis'     =>'Fleet','Palermo'     =>'Fleet','Sevilla'  =>'Fleet','Lisboa'    =>'Army' ,'Cordoba'     =>'Army' ),
 		'Eastern Roman Empire'=> array('Syracuse'   =>'Fleet','Napoli'  =>'Fleet','Venezia'    =>'Army' ,'Spalato'   =>'Army' ,'Athinai'     =>'Fleet','Miklagard'=>'Army' ,'Ankara'    =>'Army' ,'Smyrna'      =>'Fleet'),
 		'Burgundy'            => array('Groningen'  =>'Army' ,'Koln'    =>'Army' ,'Verdun'     =>'Army' ,'Avignon'   =>'Army' ,'Marseilles'  =>'Fleet','Genova'   =>'Army' ,'Pisa'      =>'Army' ,'Roma'        =>'Army' ),
-		'France'              => array('Paris'      =>'Army' ,'Tours'   =>'Army' ,'Nantes'     =>'Feet' ,'Toulouse'  =>'Army' ,'Hamburg'     =>'Army' ,'Frankfurt'=>'Army' ,'St. Gallen'=>'Army' ,'Graz'        =>'Army' ),
+		'France'              => array('Paris'      =>'Army' ,'Tours'   =>'Army' ,'Nantes'     =>'Fleet' ,'Toulouse'  =>'Army' ,'Hamburg'     =>'Army' ,'Frankfurt'=>'Army' ,'St. Gallen'=>'Army' ,'Graz'        =>'Army' ),
 		'Neutral units'       => array('London'     =>'Army' ,'Buda'    =>'Army' ,'Pest'       =>'Army' ,'Alexandria'=>'Army' ,'Jorsal'      =>'Army')
 	);
 }

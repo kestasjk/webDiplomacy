@@ -21,6 +21,7 @@
 
 	Changelog:
 	1.0: first install
+	1.0.2: fixed: typo in adjucatorPregame
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -35,7 +36,7 @@ class VikingVariant extends WDVariant {
 	public $adapter    ='kaner406 / Oliver Auth';
 	public $homepage   ='http://www.variantbank.org/results/rules/v/viking4.htm';
 	public $version    ='4.0';	
-	public $codeVersion='1.0';	
+	public $codeVersion='1.0.2';	
 	
 	public $countries=array('Arab Caliphates','Burgundy','Danmark','Eastern Roman Empire','France','Slavic Nations','Norge','Sverige');	
 
