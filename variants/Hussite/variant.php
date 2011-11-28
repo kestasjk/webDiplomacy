@@ -34,7 +34,7 @@ class HussiteVariant extends WDVariant {
 	public $description='Diplomacy in the heart of Europe, amidst 15th century religious struggle.';
 	public $author='Milan Mach (WebDip: Milan Mach)';
 	public $version='1.0';
-	public $codeVersion='1.0.12';
+	public $codeVersion='1.0.13';
         
 	public $countries=array('Bavaria','Catholic Landfrieden','Hungary','Kingdom of Poland','Margraviate of Brandenburg','Orebites','Praguers','Saxony','Taborites');
 

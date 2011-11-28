@@ -122,6 +122,7 @@ $bordersRawData=array(
 	array('Frankfurt','Landsberg','No','Yes'),
 	array('Frankfurt','Posen','Yes','No'),
 	array('Frankfurt','Warschau','Yes','No'),
+	array('Frankfurt','Fürstenwalde','No','Yes'),
 	array('Frankfurt','Cottbus','Yes','Yes'),
 	array('Frankfurt','Görlitz','Yes','No'),
 	array('Frankfurt','Breslau','Yes','No'),
