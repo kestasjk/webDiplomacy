@@ -804,7 +804,9 @@ class User {
 		if( isset($muteCountries[$gameID]) ) return $muteCountries[$gameID];
 
 		$muteCountries[$gameID] = array();
-		$tabl = $DB->sql_tabl("SELECT gameID, muteCountryID FROM wD_MuteCountry WHERE userID=".$this->id.($gameID>0?" AND gameID=".$gameID:''));
+		$tabl = $DB->sql_tabl("SELECT m.gameID, m.muteCountryID 
+			FROM wD_MuteCountry m INNER JOIN wD_Games g ON g.id = m.gameID
+			WHERE m.userID=".$this->id.($gameID>0?" AND m.gameID=".$gameID:''));
 
 		while(list($muteGameID,$muteCountryID) = $DB->tabl_row($tabl))
 		{

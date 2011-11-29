@@ -505,10 +505,19 @@ while( $message = $DB->tabl_hash($tabl) )
 		$replytabl = $DB->sql_tabl(
 			"SELECT f.id, fromUserID, f.timeSent, f.message, u.points as points, IF(s.userID IS NULL,0,1) as online,
 					u.username as fromusername, f.toID, u.type as userType, 
-					(SELECT COUNT(*) FROM wD_LikePost lp WHERE lp.likeMessageID = f.id) as likeCount
+					(SELECT COUNT(*) FROM wD_LikePost lp WHERE lp.likeMessageID = f.id) as likeCount, 
+					f.silenceID,
+					silence.userID as silenceUserID,
+					silence.postID as silencePostID,
+					silence.moderatorUserID as silenceModeratorUserID,
+					silence.enabled as silenceEnabled,
+					silence.startTime as silenceStartTime,
+					silence.length as silenceLength,
+					silence.reason as silenceReason
 				FROM wD_ForumMessages f
 				INNER JOIN wD_Users u ON f.fromUserID = u.id
 				LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
+				LEFT JOIN wD_Silences silence ON ( f.silenceID = silence.id )
 				WHERE f.toID=".$message['id']." AND f.type='ThreadReply'
 				order BY f.timeSent ASC
 				".(isset($threadPager)?$threadPager->SQLLimit():''));
@@ -556,6 +565,24 @@ while( $message = $DB->tabl_hash($tabl) )
 			print '<em>'.libTime::text($reply['timeSent']).'</em>';
 
 			print '<br />'.$User->likeMessageToggleLink($reply['id'],$reply['fromUserID']).libHTML::likeCount($reply['likeCount']);
+			
+			
+			if( $User->type['Admin'] || $User->type['ForumModerator'] ) {
+				
+				if( Silence::isSilenced($reply) )
+					$silence = new Silence($reply);
+				else
+					unset($silence);
+				
+				print '<br />';
+				
+				if( isset($silence) && $silence->isEnabled() ) 
+					print '<a class="light" href="admincp.php?tab=Control%20Panel&amp;silenceID='.$silence->id.'#disableSilence">Disable silence</a>';
+				else
+					print '<a class="light" href="admincp.php?tab=Control%20Panel&amp;postID='.$reply['id'].'&amp;userID='.$reply['fromUserID'].'#createUserThreadSilence">Silence user</a>';
+				
+			}
+					
 			print '</div>';
 
 

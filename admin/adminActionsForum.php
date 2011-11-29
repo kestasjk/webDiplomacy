@@ -64,18 +64,82 @@ class adminActionsForum extends adminActions
 		adminActions::$actions = array_merge(adminActions::$actions, $forumActions);
 	}
 	
+	private static function setNextActivePostSilence($silenceID) {
+		global $DB;
+		
+		/*
+		 * For this silence ID find the thread that is being silenced
+		 * Then find silences on posts which are part of that thread
+		 * Find an active silence, and link it to the thread
+		 */
+		$silence = new Silence($silenceID);
+		
+		// Find replacement silences for the post
+		$tabl = $DB->sql_tabl("
+			SELECT silence.id 
+			FROM wD_Silences silence 
+			WHERE silence.postID = ".$silence->postID." AND NOT silence.id = ".$silence->id);
+		while(list($potentialSilenceID) = $DB->tabl_row($tabl)) {
+			$potentialSilence = new Silence($potentialSilenceID);
+			
+			if( $potentialSilence->isEnabled() ) {
+				$DB->sql_put("
+					UPDATE wD_ForumMessages 
+					SET silenceID = ".$silenceID."
+					WHERE id=".$potentialSilence->postID);
+				break; // Only one active silence is needed
+			}
+		}
+		
+		
+		// Find replacement silences for the thread
+		$tabl = $DB->sql_tabl("
+			SELECT thread.id, silence.id 
+			FROM wD_ForumMessages thread
+			INNER JOIN wD_ForumMessages response ON response.toID = thread.id
+			INNER JOIN wD_Silences silence ON silence.id = response.silenceID
+			WHERE thread.silenceID = ".$silenceID." AND silence.id = ".$silenceID);
+		while(list($threadID, $potentialSilenceID) = $DB->tabl_row($tabl)) {
+			$potentialSilence = new Silence($potentialSilenceID);
+			
+			if( $potentialSilence->isEnabled() ) {
+				$DB->sql_put("
+					UPDATE wD_ForumMessages 
+					SET silenceID = ".$silenceID."
+					WHERE id=".$threadID);
+				break; // Only one active silence is needed
+			}
+		}
+	}
+	private static function setNextActiveUserSilence($silenceID) {
+		global $DB;
+		$silence = new Silence($silenceID);
+		if( !$silence->userID ) return;
+		
+		$SilencedUser = new User($silence->userID);
+		foreach($SilencedUser->getSilences() as $potentialSilence) {
+			
+			if( $potentialSilence->id == $silenceID ) continue;
+			
+			if( $potentialSilence->isEnabled() ) {
+				$SilencedUser->silenceID = $potentialSilence->id;
+				$DB->sql_put("UPDATE wD_Users SET silenceID = ".$potentialSilence->id." WHERE id = ".$SilencedUser->id);
+				break; // Only one active silence is needed
+			}
+		}
+	}
 	public function disableSilence(array $params) {
 		
 		$silence = new Silence($params['silenceID']);
 		$silence->disable();
 		
 		/*
-		 * Disabling a silence becomes a bit more complicated because a user / thread can
-		 * only have one silence. A disabled silence may not cover other silences against a 
-		 * user / thread which are still in effect.
-		 * 
-		 * TODO: Look for other applicable silences and reapply those, instead of the disabled one.
+		 * Disabling a silence is tricky, because disabling one silence may bring another silence
+		 * into play as the active silence, so other applicable active silences need to be looked for,
+		 * and linked in the place of this one if found.
 		 */
+		self::setNextActiveUserSilence($silence->id);
+		self::setNextActivePostSilence($silence->id);
 		
 		return $silence->toString().' disabled.';
 	}
@@ -95,10 +159,10 @@ class adminActionsForum extends adminActions
 		// This function will validate the given length and check that it's not a post silence
 		$silence->changeLength($params['length']);
 		
-		/*
-		 * For the same reasons as in the disable silence section, reducing the length may effectively 
-		 * disable it, which may bring another silence into play, and this should be found and applied.
-		*/
+		if( !$silence->isEnabled() ) {
+			// Don't look for changes to posts, because they will not be affected by length changes
+			self::setNextActiveUserSilence($silence->id);
+		}
 		
 		return $silence->toString().' changed from <i>'.
 			Silence::printLength($previousLength).'</i> to <i>'.
