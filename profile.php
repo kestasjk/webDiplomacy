@@ -387,7 +387,7 @@ if ( $UserProfile->comment )
 
 print '<p><ul class="formlist">';
 
-if ( $UserProfile->type['Moderator'] || $UserProfile->type['Admin'] )
+if ( $UserProfile->type['Moderator'] ||  $UserProfile->type['ForumModerator'] || $UserProfile->type['Admin'] )
 {
 	print '<li><strong>Mod/Admin team</strong></li>';
 	print '<li>&nbsp;</li>';
@@ -482,7 +482,7 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 
 	if( !$UserProfile->type['Admin'] && ( $User->type['Admin'] || !$UserProfile->type['Moderator'] ) )
 		$modActions[] = libHTML::admincp('banUser',array('userID'=>$UserProfile->id), 'Ban user');
-
+	
 	if( !$UserProfile->type['Donator'])
 		$modActions[] = libHTML::admincp('makeDonator',array('userID'=>$UserProfile->id), 'Give donator benefits');
 
@@ -491,7 +491,13 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 
 	if( $User->type['Admin'] && ($UserProfile->type['Moderator'] && !$UserProfile->type['Admin']) )
 		$modActions[] = libHTML::admincp('takeModerator',array('userID'=>$UserProfile->id), 'Remove moderator');
-
+	
+	if( $User->type['Admin'] && $UserProfile->type['ForumModerator'] )
+		$modActions[] = libHTML::admincp('giveForumModerator',array('userID'=>$UserProfile->id), 'Make forum moderator');
+	
+	if( $User->type['Admin'] && ($UserProfile->type['ForumModerator'] && !$UserProfile->type['Admin']) )
+		$modActions[] = libHTML::admincp('takeForumModerator',array('userID'=>$UserProfile->id), 'Remove forum moderator');
+	
 	$modActions[] = libHTML::admincp('reportMuteToggle',array('userID'=>$UserProfile->id), ($UserProfile->muteReports=='No'?'Mute':'Unmute').' mod reports');
 
 	$modActions[] = '<a href="admincp.php?tab=Multi-accounts&aUserID='.$UserProfile->id.'" class="light">'.
@@ -503,6 +509,32 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 		print '<p class="notice">';
 		print implode(' - ', $modActions);
 		print '</p>';
+	}
+	
+	
+	if( !$UserProfile->type['Admin'] 
+		&& ( $User->type['Admin'] || $User->type['ForumModerator'] ) )
+	{
+		$silences = $UserProfile->getSilences();
+		
+		print '<p><ul class="formlist"><li><strong>Silences:</strong></li><li>';
+		
+		if( count($silences) == 0 )
+			print 'No silences against this user.</p>';
+		else
+		{
+			print '<ul class="formlist">';
+			foreach($silences as $silence) {
+				// There should only be one active silence displayed; other active silences could be misleading
+				if( !$silence->isEnabled() || $silence->id == $UserProfile->silenceID )
+					print '<li>'.$silence->toString().'</li>';
+			}
+			print '</ul>';
+		}
+		
+		print '</li><li>';
+		print libHTML::admincp('createUserSilence',array('userID'=>$UserProfile->id,'reason'=>''),'Silence user');
+		print '</li></ul></p>';
 	}
 }
 

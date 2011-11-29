@@ -21,13 +21,15 @@
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 /**
- * This class will enable adminActions moderator tasks to be performed,
- * but also allow tasks which only admins should be able to perform.
- * This class should only be loaded if an admin is using it.
+ * This class will enable adminActions and adminActionsForum moderator 
+ * tasks to be performed, but also allow tasks which only admins should 
+ * be able to perform.
+ * This will be included anyway, but the class will only be initialized if
+ * the user is an admin.
  *
  * @package Admin
  */
-class adminActionsRestricted extends adminActions
+class adminActionsRestricted extends adminActionsForum
 {
 	public function __construct()
 	{
@@ -69,6 +71,16 @@ class adminActionsRestricted extends adminActions
 			'takeModerator' => array(
 				'name' => 'Take moderator status',
 				'description' => 'Takes moderator status from the specified user ID.',
+				'params' => array('userID'=>'Mod User ID'),
+			),
+			'giveForumModerator' => array(
+				'name' => 'Give forum moderator status',
+				'description' => 'Gives forum moderator status to the specified user ID.',
+				'params' => array('userID'=>'User ID'),
+			),
+			'takeForumModerator' => array(
+				'name' => 'Take forum moderator status',
+				'description' => 'Takes forum moderator status from the specified user ID.',
 				'params' => array('userID'=>'Mod User ID'),
 			),
 			'reprocessGame' => array(
@@ -381,6 +393,42 @@ class adminActionsRestricted extends adminActions
 		);
 
 		return 'This user had their moderator status taken.';
+	}
+
+	public function giveForumModerator(array $params)
+	{
+		global $DB;
+
+		$userID = (int)$params['userID'];
+
+		$modUser = new User($userID);
+
+		if( $modUser->type['ForumModerator'] )
+			throw new Exception("This user is already a moderator");
+
+		$DB->sql_put(
+			"UPDATE wD_Users SET type = CONCAT_WS(',',type,'ForumModerator') WHERE id = ".$userID
+		);
+
+		return 'This user was given forum moderator status.';
+	}
+
+	public function takeForumModerator(array $params)
+	{
+		global $DB;
+
+		$userID = (int)$params['userID'];
+
+		$modUser = new User($userID);
+
+		if( ! $modUser->type['ForumModerator'] )
+			throw new Exception("This user isn't a forum moderator");
+
+		$DB->sql_put(
+			"UPDATE wD_Users SET type = REPLACE(type,'ForumModerator','') WHERE id = ".$userID
+		);
+
+		return 'This user had their forum moderator status taken.';
 	}
 
 	public function checkPausedGames(array $params)

@@ -21,6 +21,7 @@
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 require_once('admin/adminActions.php');
+require_once('admin/adminActionsForum.php');
 require_once('admin/adminActionsRestricted.php');
 
 /**
@@ -44,6 +45,7 @@ class adminActionsForms
 
 	public static $globalGameID;
 	public static $globalUserID;
+	public static $globalPostID;
 
 	/**
 	 * Output the form which needs to be filled out to perform some action
@@ -60,7 +62,9 @@ class adminActionsForms
 			print '<input type="hidden" name="globalGameID" value="'.intval($_REQUEST['globalGameID']).'" />';
 		if ( isset($_REQUEST['globalUserID']) )
 			print '<input type="hidden" name="globalUserID" value="'.intval($_REQUEST['globalUserID']).'" />';
-
+		if ( isset($_REQUEST['globalPostID']) )
+			print '<input type="hidden" name="globalPostID" value="'.intval($_REQUEST['globalPostID']).'" />';
+		
 		if ($description)
 			print '<li class="formlistdesc" style="margin-bottom:10px">'.$description.'</li>';
 
@@ -73,6 +77,8 @@ class adminActionsForms
 				$defaultValue = self::$globalGameID;
 			elseif ( $paramCode == 'userID' && self::$globalUserID )
 				$defaultValue = self::$globalUserID;
+			elseif ( $paramCode == 'postID' && self::$globalPostID )
+				$defaultValue = self::$globalPostID;
 			else
 				$defaultValue = '';
 
@@ -118,7 +124,7 @@ class adminActionsForms
 		$DB->sql_put("INSERT INTO wD_AdminLog ( name, userID, time, details, params )
 					VALUES ( '".$name."', ".$User->id.", ".time().", '".$details."', '".$paramValues."' )");
 	}
-
+	
 	/**
 	 * For the given task display the form, and run the task if data entered from the corresponding form
 	 *
@@ -158,6 +164,11 @@ class adminActionsForms
 				{
 					$User = new User((int)$paramValues['userID']);
 					print '<p>User link: '.$User->profile_link().'</p>';
+				}
+
+				if( isset($paramValues['postID']) )
+				{
+					print '<p>Post link: '.libHTML::threadLink($paramValues['postID']).'</p>';
 				}
 
 				// If it needs confirming but ( hasn't been confirmed or is being resubmitted ):
@@ -301,6 +312,8 @@ if ( isset($_REQUEST['globalGameID']) )
 	adminActionsForms::$globalGameID = (int)$_REQUEST['globalGameID'];
 if ( isset($_REQUEST['globalUserID']) )
 	adminActionsForms::$globalUserID = (int)$_REQUEST['globalUserID'];
+if ( isset($_REQUEST['globalPostID']) )
+	adminActionsForms::$globalPostID = (int)$_REQUEST['globalPostID'];
 
 print '<div class="hr"></div>';
 
@@ -312,6 +325,8 @@ require_once('lib/gamemessage.php');
 // Include the admin-only tasks?
 if ( $User->type['Admin'] )
 	$adminActions = new adminActionsRestricted();
+elseif ( $User->type['ForumModerator'] )
+	$adminActions = new adminActionsForum();
 else
 	$adminActions = new adminActions();
 

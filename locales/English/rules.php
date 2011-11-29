@@ -3,7 +3,7 @@
 color:#444;
 font-weight:normal;
 margin-bottom:30px;
-margin-left:20px;
+margin-left:40px;
 margin-right:20px;
 padding-left:10px;
 }
@@ -15,6 +15,16 @@ color:black;
 text-decoration:underline;
 font-style:normal;
 }
+#rulebook ul {
+	margin-left:40px;
+	color:#666;
+}
+#rulebook p {
+	margin-bottom:0;
+}
+#rulebook h4 {
+	margin-left:30px;
+}
 </style>
 
 <div id="rulebook">
@@ -22,6 +32,7 @@ font-style:normal;
 <img src="images/icons/tick.png" alt=" " /> <a href="#Rights">Rights</a>
 - <img src="images/icons/alert_minor.png" alt=" " /> <a href="#Responsibilities">Responsibilities</a>
 - <img src="images/icons/alert.png" alt=" " /> <a href="#Rules">Rules</a>
+- <img src="images/icons/unmute.png" alt=" " /> <a href="#silenceInfo">Forum moderation</a>
 - <img src="images/icons/mail.png" alt=" " /> <a href="#Reporting">Contacting a mod/admin</a>
 </p>
 
@@ -101,17 +112,69 @@ font-style:normal;
 
 <div class="hr"></div>
 
+<a name="silenceInfo"></a><h3><img src="images/icons/unmute.png" alt=" " title="An icon indicating someone isn't muted; use this to mute people" /> Forum moderation:</h3>
+
+<h4><img src="images/icons/mute.png" alt=" " title="An icon indicating someone is muted; use this to unmute people" /> Self-moderation:</h4>
+<p>
+A user-driven approach is generally taken to forum moderation;
+</p>
+<ul>
+<li>You can <em>mute any other user</em> which you don't want to see in the forum or get PMs from.</li>
+<li>You can <em>mute any forum thread</em> you aren't interested in.</li>
+<li>You can <em>mute any country</em> playing in a game with you.</li>
+</ul>
+<p>
+This allows you to block out anyone or any discussion you find offensive, and be as open or
+restrictive in what you see as you like!
+</p>
+
+<h4><img src="images/icons/lock.png" alt=" " /> Site-moderation:</h4>
+<p>
+Rarely self-moderation isn't enough; e.g. threads which share information on a 
+<em>private / anonymous / gunboat game</em>, or threads about 
+<em>suspected multi-accounters / meta-gamers / bugs</em>.
+<br /><br />
+These have a negative impact on games which self-moderation can't prevent, so the 
+mod team can <em>lock/silence</em> these threads:
+</p>
+<ul>
+<li>Silences can apply to a <em>user or a thread</em>.</li>
+<li>The details can be viewed on the forum page, when the "New thread" button is pressed.</li>
+<li>Thread silences last indefinitely, but user silences expire after a brief <em>cool-off period</em>.</li>
+<li>Silenced threads / users can <em>still be viewed</em>, however no more messages may be posted.</li>
+<li>Silenced users can <em>still play in games</em>; it affects the forum only.</li>
+</ul>
+
+<p>
+
+Remember that mods will only silence users / threads when there has been a <em>clear rule violation</em>, as
+a <em>last resort</em>.<br />
+If it's a <em>first time mistake</em>, and you inform the mods that you won't repeat it, they will probably
+be happy to <em>reduce your cool-off period</em>!<br /><br />
+
+Don't create new accounts to work around user silences, or post threads to continue on from 
+ones which have been silenced! This may result in bans etc, which would be worse than simply 
+keeping off the forum for a few days.
+<br /><br />
+
+Thanks for helping keep the forum from negatively impacting peoples' games!
+</p>
+
+<div class="hr"></div>
+
 <a name="Reporting"></a><h3><img src="images/icons/mail.png" alt=" " /> Contacting a mod/admin:</h3>
 
 <h4>Why contact a mod/admin:</h4>
 <p>
-Mods can:<ul><li>Pause/Unpause/Draw games when a player is unavailable to vote.</li>
+Mods can:</p>
+
+<ul><li>Pause/Unpause/Draw games when a player is unavailable to vote.</li>
 <li>Access months of server logs and the software to detect/analyze possible multi-accounters based on a range of criteria.</li>
 <li>Ban/unban users, reset user/game passwords, give/take points, change game settings like phase length, etc.</li>
+<li>Silence / unsilence forum threads and users, and reduce the cool-off period for a silenced user.</li>
 </ul>
-For these issues use the info below to send reports.
-</p>
-<p>For other issues such as bug reports, general questions, etc, you should go elsewhere (e.g. the
+<p>
+For these issues use the info below to send reports. For other issues such as bug reports, general questions, etc, you should go elsewhere (e.g. the
 <a href="forum.php" class="light">built-in forum</a> or the <a href="http://forum.webdiplomacy.net/" class="light">
 developer forum</a>).</p>
 
@@ -126,7 +189,7 @@ developer forum</a>).</p>
 
 <h4>What to send</h4>
 <p>Always try to have some clear reasons when contacting and do not mention it on the forum. In your report/email text you should include:
-<ul>
+</p><ul>
 	<li>If making a general request (e.g for an unpause):</li>
 	<ul><li>
 	Ensure that you make the subject line useful (e.g. "Unpausing help" or "Phaselength change") so we know we can quickly deal with it in a spare moment - if you don't it might not be solved for some time.</li>
@@ -149,8 +212,10 @@ developer forum</a>).</p>
     </li>
     <li>If reporting via email please make the subject line more useful than "<i>multis?</i>" Something like "<i>Multis: Username1 and Username2?</i>" is more helpful for the moderators!</li>
     </ul></li>
-</ul></p>
+</ul>
 <p>We will try to reply to you quickly, but be patient: investigations can take quite some time. If a week or two after we still haven't got back to you then feel free to follow it up.</p>
+
+
 
 <div class="hr"></div>
 

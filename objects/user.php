@@ -42,7 +42,58 @@ class User {
 		libCache::wipeDir($dir, $glob);
 		file_put_contents($dir.'/index.html', '');
 	}
-
+	
+	public function getSilences() {
+		global $DB;
+		
+		$tabl = $DB->sql_tabl("SELECT 
+			silence.id as silenceID,
+			silence.userID as silenceUserID,
+			silence.postID as silencePostID,
+			silence.moderatorUserID as silenceModeratorUserID,
+			silence.enabled as silenceEnabled,
+			silence.startTime as silenceStartTime,
+			silence.length as silenceLength,
+			silence.reason as silenceReason
+		FROM wD_Silences silence
+		WHERE silence.userID = ".$this->id."
+		ORDER BY silence.startTime DESC");
+		
+		$silences = array();
+		while( $record = $DB->tabl_hash($tabl) )
+			$silences[] = new Silence($record);
+		
+		return $silences;
+	}
+	
+	private $ActiveSilence;
+	
+	public function isSilenced() {
+		if( !$this->silenceID ) 
+			return false;
+		
+		$ActiveSilence = new Silence($this->silenceID);
+		
+		if( $ActiveSilence->isEnabled() ) {
+			$this->ActiveSilence = $ActiveSilence;
+			return true;
+		}
+		else
+			return false;
+	}
+	public function getActiveSilence() {
+		
+		if( !$this->isSilenced() ) return null;
+		else return $this->ActiveSilence;
+		
+	}
+	
+	/**
+	* Silence ID; the ID of the last silence set to this user (may be expired / disabled since)
+	* @var int/null
+	*/
+	public $silenceID;
+	
 	/**
 	 * User ID
 	 * @var int
@@ -394,6 +445,7 @@ class User {
 			u.points,
 			u.lastMessageIDViewed,
 			u.muteReports,
+			u.silenceID,
 			u.missedMoves,
 			u.phasesPlayed,			
 			IF(s.userID IS NULL,0,1) as online
@@ -413,7 +465,7 @@ class User {
 
 		// Convert an array of types this user has into an array of true/false indexed by type
 		$this->type = explode(',', $this->type);
-		$validTypes = array('System','Banned','User','Moderator','Guest','Admin','Donator','DonatorBronze','DonatorSilver','DonatorGold','DonatorPlatinum');
+		$validTypes = array('System','Banned','User','Moderator','Guest','Admin','Donator','DonatorBronze','DonatorSilver','DonatorGold','DonatorPlatinum','ForumModerator');
 		$types = array();
 		foreach($validTypes as $type)
 		{
@@ -761,7 +813,9 @@ class User {
 		if( isset($muteCountries[$gameID]) ) return $muteCountries[$gameID];
 
 		$muteCountries[$gameID] = array();
-		$tabl = $DB->sql_tabl("SELECT gameID, muteCountryID FROM wD_MuteCountry WHERE userID=".$this->id.($gameID>0?" AND gameID=".$gameID:''));
+		$tabl = $DB->sql_tabl("SELECT m.gameID, m.muteCountryID 
+			FROM wD_MuteCountry m INNER JOIN wD_Games g ON g.id = m.gameID
+			WHERE m.userID=".$this->id.($gameID>0?" AND m.gameID=".$gameID:''));
 
 		while(list($muteGameID,$muteCountryID) = $DB->tabl_row($tabl))
 		{
