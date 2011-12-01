@@ -339,6 +339,7 @@ $bordersRawData=array(
 	array('Jorvik (East Coast)','North German Sea','Yes','No'),
 	array('Jorvik (West Coast)','Wales','Yes','No'),
 	array('Jorvik (West Coast)','Welsh Sea','Yes','No'),
+	array('Wales','Welsh Sea','Yes','No'),
 	array('Wales','Wessex','Yes','Yes'),
 	array('Welsh Sea','Wessex','Yes','No'),
 	array('Welsh Sea','North Ocean Sea','Yes','No'),
@@ -1145,6 +1146,7 @@ InstallCache::terrJSON($this->territoriesJSONFile(),$this->mapID);
 
 // Copy the smallmap-sample to the cache-directory to avoid a screwed variantpage (there is no smallmap available)
 copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
+
 
 
 
