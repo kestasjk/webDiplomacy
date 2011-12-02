@@ -35,9 +35,12 @@ if ($msg == 6) $msg = 'Editing canceled. File '.$basedir.$file.' not saved!';
 
 if ($action == 'view' && $variantID != 0) {
 	$filename = "variants/" . Config::$variants[$variantID] . $basedir . '/' . $file;
-	header("Content-type: text/plain; charset=utf-8");
-	header("Content-disposition: inline; filename=".$file);
-	readfile($filename);
+	if (file_exists($filename))
+	{
+		header("Content-type: text/plain; charset=utf-8");
+		header("Content-disposition: inline; filename=".$file);
+		readfile($filename);
+	}
 	exit;
 }
 
