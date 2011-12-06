@@ -20,6 +20,9 @@ class BuildAnywhereVariant extends ClassicVariant {
 
 		// Order validation code, changed to validate builds on non-home SCs
 		$this->variantClasses['userOrderBuilds'] = 'BuildAnywhere';
+		
+		// Count all free SCs and not just the home SCs.
+		$this->variantClasses['processOrderBuilds'] = 'BuildAnywhere';
 
 		// Order interface/generation code, changed to add javascript in resources which makes non-home SCs an option
 		$this->variantClasses['OrderInterface'] = 'BuildAnywhere';
