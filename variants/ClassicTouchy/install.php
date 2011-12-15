@@ -111,7 +111,7 @@ $bordersRawData=array(
 	array('Berlin','Kiel','Yes','Yes'),
 	array('Berlin','Munich','No','Yes'),
 	array('Kiel','Munich','No','Yes'),
-	array('Kiel','Marseilles','Yes','Yes'),
+	array('Kiel','Marseilles','No','Yes'),
 	array('Kiel','Holland','Yes','Yes'),
 	array('Munich','Vienna','No','Yes'),
 	array('Munich','Budapest','No','Yes'),
