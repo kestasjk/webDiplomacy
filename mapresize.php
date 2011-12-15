@@ -11,8 +11,13 @@ if ($_SERVER['REQUEST_METHOD'] != "POST") {
 	libHTML::starthtml();
 	print '<div class="content">';
 
+	$edit=true;
+	if (!($User->type['Admin']))
+		if (!(array_key_exists($User->username, Config::$devs)))
+			$edit = false;
+			
 	// Admins only
-	if ( $User->type['Admin'] )  {
+	if ($edit=true)  {
 		print '<li class="formlisttitle"><form enctype="multipart/form-data" action="'.$_SERVER['PHP_SELF'].'" method="POST">';
 		print '<input type="hidden" name="MAX_FILE_SIZE" value="100000" />';
 		print 'Choose a picture in PNG-format to upload: <input name="imgfile" type="file" />';
