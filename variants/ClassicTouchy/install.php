@@ -44,7 +44,7 @@ $territoryRawData=array(
 	array('Western Medierranean', 'Sea', 'No', 0, 369, 825, 193, 335),
 	array('Eastern Medierranean', 'Sea', 'No', 0, 841, 957, 405, 380),
 	array('Ionian Sea', 'Sea', 'No', 0, 600, 934, 335, 383),
-	array('Black Sea', 'Sea', 'Yes', 0, 870, 744, 450, 294),
+	array('Black Sea', 'Sea', 'No', 0, 870, 744, 450, 294),
 	array('Brest', 'Coast', 'Yes', 2, 301, 577, 150, 262),
 	array('Holland', 'Coast', 'Yes', 0, 401, 532, 215, 198)
 );

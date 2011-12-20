@@ -9,7 +9,7 @@ class ClassicTouchyVariant extends WDVariant {
 	public $fullName   ='Classic Touchy';
 	public $author     ='airborne';
 	public $adapter    ='airborne';
-	public $codeVersion='1.0.3';	
+	public $codeVersion='1.0.4';	
 	
 	public $countries=array('England', 'France', 'Italy', 'Germany', 'Austria', 'Turkey', 'Russia');
 
