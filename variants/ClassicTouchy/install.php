@@ -145,6 +145,7 @@ $bordersRawData=array(
 	array('Trieste','Ionian Sea','Yes','No'),
 	array('Venice','Rome','No','Yes'),
 	array('Venice','Naples','Yes','Yes'),
+	array('Venice','Ionian Sea','Yes','No'),
 	array('Rome','Naples','Yes','Yes'),
 	array('Rome','Marseilles','Yes','Yes'),
 	array('Rome','Western Medierranean','Yes','No'),
