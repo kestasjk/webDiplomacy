@@ -148,7 +148,7 @@ $territoryRawData=array(
 	array('g7', 'Coast', 'No', 0, 251, 350, 174, 276),
 	array('g6', 'Land', 'Yes', 0, 348, 299, 274, 225),
 	array('g5', 'Coast', 'No', 0, 300, 301, 225, 225),
-	array('g4', 'Coast', 'No', 0, 252, 304, 177, 229),
+	array('g4', 'Coast', 'Yes', 0, 252, 304, 177, 229),
 	array('g2', 'Coast', 'No', 0, 300, 250, 222, 176),
 	array('f9', 'Coast', 'No', 0, 200, 349, 125, 279),
 	array('f8', 'Coast', 'No', 0, 150, 347, 74, 276),
