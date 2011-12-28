@@ -51,12 +51,12 @@ function dateToText(date) {
 			I -= 12;
 			p = "PM";
 			if( I==0 ) I="12";
-			else if( I<10 ) I="0"+I.toString();
 		}
-		else if ( I == 0 )
-			I="12";
+		
+		// apply leading zero to single digit hour
+		if( I<10 ) I="0"+I.toString();
 
-		if ( secondDifference < 22*60*60 )
+		if ( secondDifference < 22*60*60 ) // YW: should 22 be replaced with 24?
 			return I+":"+M+" "+p; // HH:MM AM/PM
 		else
 			return a+" "+I+" "+p; // Day HH AM/PM
@@ -68,7 +68,7 @@ function dateToText(date) {
 		var y = date.getYear();
 		if ( y < 1900 ) y+=1900;
 		
-		if ( secondDifference < 3*7*22*60*60 )
+		if ( secondDifference < 3*7*22*60*60 ) // YW: should 22 be replaced with 24?
 			return a+" "+d+" "+b; // Day Day# Month
 		else
 			return d+" "+b+" "+y; // Day# Month Year
