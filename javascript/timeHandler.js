@@ -69,7 +69,7 @@ function dateToText(date) {
 		var y = date.getYear();
 		if ( y < 1900 ) y+=1900;
 		
-		if ( secondDifference < 3*7*22*60*60 ) // with 19 days, 6 hours
+		if ( secondDifference < 3*7*22*60*60 ) // within 19 days, 6 hours
 			return a+" "+d+" "+b; // Day Day# Month
 		else
 			return d+" "+b+" "+y; // Day# Month Year
