@@ -42,7 +42,7 @@ $territoryRawData=array(
 	array('Spain', 'Coast', 'Yes', 0, 152, 764, 90, 327),
 	array('North Africa', 'Coast', 'Yes', 0, 340, 936, 155, 388),
 	array('Western Medierranean', 'Sea', 'No', 0, 369, 825, 193, 335),
-	array('Eastern Medierranean', 'Sea', 'No', 0, 841, 957, 405, 380),
+	array('Eastern Mediterranean', 'Sea', 'No', 0, 841, 957, 405, 380),
 	array('Ionian Sea', 'Sea', 'No', 0, 600, 934, 335, 383),
 	array('Black Sea', 'Sea', 'No', 0, 870, 744, 450, 294),
 	array('Brest', 'Coast', 'Yes', 2, 301, 577, 150, 262),
@@ -123,18 +123,18 @@ $bordersRawData=array(
 	array('Constantinople','Bulgaria','No','Yes'),
 	array('Constantinople','Bulgaria (South Coast)','Yes','No'),
 	array('Constantinople','Bulgaria (North Coast)','Yes','No'),
-	array('Constantinople','Eastern Medierranean','Yes','No'),
+	array('Constantinople','Eastern Mediterranean','Yes','No'),
 	array('Constantinople','Black Sea','Yes','No'),
-	array('Smyrna','Eastern Medierranean','Yes','No'),
+	array('Smyrna','Eastern Mediterranean','Yes','No'),
 	array('Bulgaria','Serbia','No','Yes'),
 	array('Bulgaria','Budapest','No','Yes'),
 	array('Bulgaria (South Coast)','Serbia','Yes','No'),
-	array('Bulgaria (South Coast)','Eastern Medierranean','Yes','No'),
+	array('Bulgaria (South Coast)','Eastern Mediterranean','Yes','No'),
 	array('Bulgaria (North Coast)','Black Sea','Yes','No'),
 	array('Serbia','Budapest','No','Yes'),
 	array('Serbia','Trieste','Yes','Yes'),
 	array('Serbia','Naples','Yes','Yes'),
-	array('Serbia','Eastern Medierranean','Yes','No'),
+	array('Serbia','Eastern Mediterranean','Yes','No'),
 	array('Serbia','Ionian Sea','Yes','No'),
 	array('Vienna','Budapest','No','Yes'),
 	array('Vienna','Trieste','No','Yes'),
@@ -164,7 +164,7 @@ $bordersRawData=array(
 	array('North Africa','Western Medierranean','Yes','No'),
 	array('North Africa','Ionian Sea','Yes','No'),
 	array('Western Medierranean','Ionian Sea','Yes','No'),
-	array('Eastern Medierranean','Ionian Sea','Yes','No')
+	array('Eastern Mediterranean','Ionian Sea','Yes','No')
 );
 
 foreach($bordersRawData as $borderRawRow)
