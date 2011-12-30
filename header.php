@@ -56,6 +56,38 @@ if( strlen(Config::$serverMessages['ServerOffline']) )
 		'<body>'.Config::$serverMessages['ServerOffline'].'</body></html>');
 
 
+if( ini_get('request_order') !== false ) {
+	
+	// There is a request_order php.ini variable; this must be PHP 5.3.0+
+	
+	/* 
+	 * This variable determines whether $_COOKIE is included in $_REQUEST; 
+	 * if request_order contains no 'c' then $_COOKIE is not included.
+	 * 
+	 * $_COOKIE shouldn't be included in $_REQUEST, however since webDip
+	 * has historically relied on it being there this code is here 
+	 * temporarily, while the improper $_REQUEST references are found and 
+	 * switched to $_COOKIE.
+	 */
+	if( substr_count(strtolower(ini_get('request_order')), 'c') == 0 ) {
+		/*
+		 * No 'c' in request_order, so no $_COOKIE variables in $_REQUEST; 
+		 * $_COOKIE will need to be merged into $_REQUEST manually.
+		 * 
+		 * The default config used to be GPC ($_GET, $_POST, $_COOKIE), so 
+		 * to get the standard behaviour $_COOKIE overwrites variables 
+		 * already in $_REQUEST.
+		 */
+		
+		foreach($_COOKIE as $key=>$value)
+		{
+			$_REQUEST[$key] = $value; 
+			// array_merge could be used here, but creating a new array 
+			// for use as a super-global can have weird results.
+		}
+	}
+}
+
 /*
  * If register_globals in enabled remove globals.
  */
@@ -74,10 +106,10 @@ if (ini_get('register_globals') or get_magic_quotes_gpc())
 	{
 		switch( $var_name )
 		{
+			case "_COOKIE":
 			case "_POST":
 			case "_GET":
 			case "_REQUEST":
-			case "_COOKIE":
 				if (get_magic_quotes_gpc())
 				{
 					// Strip slashes if magic quotes added slashes
