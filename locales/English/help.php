@@ -36,8 +36,8 @@ and the rules of webDiplomacy.</li>
 <li><a href="faq.php">FAQ</a></li>
 <li class="formlistdesc">The webDiplomacy FAQ.</li>
 
-<li><a href="rules.php">Etiquette</a></li>
-<li class="formlistdesc">The webDiplomacy etiquette.</li>
+<li><a href="rules.php">Rulebook</a></li>
+<li class="formlistdesc">The webDiplomacy rulebook.</li>
 
 <li><a href="halloffame.php">Hall of fame</a></li>
 <li class="formlistdesc">The pros of this server; the top 100!</li>
