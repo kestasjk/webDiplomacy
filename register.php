@@ -48,12 +48,12 @@ libHTML::starthtml();
 
 $page = 'firstValidationForm';
 
-if ( isset($_REQUEST['imageToken']) && isset($_REQUEST['imageText']) && isset($_REQUEST['emailValidate']) )
+if ( isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText']) && isset($_REQUEST['emailValidate']) )
 {
 	try
 	{
 		// Validate and send e-mail
-		$imageToken = explode('|', $_REQUEST['imageToken'], 2);
+		$imageToken = explode('|', $_COOKIE['imageToken'], 2);
 
 		if ( count($imageToken) != 2 )
 			throw new Exception("A bad anti-script code was given, please try again");
