@@ -822,9 +822,21 @@ abstract class drawMap
 		}
 
 		list($r, $g, $b) = $color;
-
-		$colorRes = imageColorAllocate($image['image'], $r, $g, $b);
-
+		
+		// Try to get the exact color (which can cause issues if a limit is reached on palette-based PNGs ?), 
+		$colorRes = imagecolorexact($image['image'], $r, $g, $b);
+		if ($colorRes == -1)
+		{
+			// .. if it fails allocate the color within the palette, 
+			$colorRes = imageColorAllocate($image['image'], $r, $g, $b);
+			
+			if (!$colorRes)
+			{
+				// .. and failing that get the best available thing.
+				$colorRes = imageColorClosest($image['image'], $r, $g, $b);
+			}
+		}
+		
 		return $colorRes;
 	}
 
