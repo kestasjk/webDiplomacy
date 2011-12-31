@@ -112,6 +112,14 @@ class Config
 	public static $adminEMail='webmaster@yourdiplomacyserver.com';
 
 	/**
+	 * The moderator e-mail
+	 * This mail-adress will be diplayed in the rules-section of the FAQ
+	 *
+	 * @var string
+	 */
+	public static $modEMail='webdipmod@gmail.com';
+	
+	/**
 	 * An array of variants available on the server (for future releases, not yet enabled)
 	 * @var array
 	 */
