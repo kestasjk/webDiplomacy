@@ -125,6 +125,12 @@ class User {
 	public $type;
 
 	/**
+	 * Notification flags; an array of notification flags, each set to true if notification should be done.
+	 * @var array
+	 */
+	public $notifications;
+
+	/**
 	 * The user-profile comment
 	 * @var string
 	 */
@@ -439,6 +445,7 @@ class User {
 			u.lastMessageIDViewed,
 			u.muteReports,
 			u.silenceID,
+			u.notifications,
 			IF(s.userID IS NULL,0,1) as online
 			FROM wD_Users u
 			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
@@ -470,6 +477,23 @@ class User {
 			}
 		}
 		$this->type = $types;
+
+		// Convert an array of notification flags this user has into an array for true/false indexed by type
+		$this->notifications = explode(',', $this->notifications);
+		$validNotifications = array('PrivateMessage', 'GameMessage', 'Unfinalized', 'GameUpdate');
+		$notifications = array();
+		foreach($validNotifications as $notification)
+		{
+			if ( in_array($notification, $this->notifications) )
+			{
+				$notifications[$notification] = true;
+			}
+			else
+			{
+				$notifications[$notification] = false;
+			}
+		}
+		$this->notifications = $notifications;
 
 		$this->online = (bool) $this->online;
 	}
@@ -544,8 +568,6 @@ class User {
 
 	function sendPM(User $FromUser, $message)
 	{
-		global $DB;
-
 		$message = htmlentities( $message, ENT_NOQUOTES, 'UTF-8');
 		require_once('lib/message.php');
 		$message = message::linkify($message);
@@ -561,9 +583,42 @@ class User {
 			notice::send($this->id, $FromUser->id, 'PM', 'Yes', 'Yes',
 				$message, $FromUser->username, $FromUser->id);
 
+			$this->setNotification('PrivateMessage');
+
 			notice::send($FromUser->id, $this->id, 'PM', 'No', 'Yes',
 				'You sent: <em>'.$message.'</em>', 'To: '.$this->username,
 				$this->id);
+		}
+	}
+
+        /**
+	 * This will set a notification value in both the object and wd_users table if not already set.
+	 * @param notification notification value to set, must be 'PrivateMessage', 'GameMessage', 'Unfinalized', or 'GameUpdate'.
+	 **/
+	function setNotification($notification)
+	{
+		global $DB;
+
+		if ( ! $this->notifications[$notification] )
+		{
+			$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications,'".$notification."') WHERE id = ".$this->id);
+			$this->notifications[$notification] = true;
+		}
+	}
+
+        /**
+	 * This will clear a notification value in both the object and the wd_users table if not already cleared.
+	 * @param notification notification value to clear, must be 'PrivateMessage', 'GameMessage', 'Unfinalized', or 'GameUpdate'.
+	 **/
+	function clearNotification($notification)
+	{
+		global $DB;
+
+		if ( $this->notifications[$notification] )
+		{
+			$DB->sql_put("UPDATE wD_Users SET notifications = REPLACE(notifications,'".$notification."','') WHERE id = ".$this->id);
+
+			$this->notifications[$notification] = false;
 		}
 	}
 
