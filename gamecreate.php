@@ -46,7 +46,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 {
 	try
 	{
-		$form = $_REQUEST['newGame'];
+		$form = $_REQUEST['newGame']; // This makes $form look harmless when it is unsanitized; the parameters must all be sanitized
 
 		$input = array();
 		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType');
@@ -73,7 +73,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		if ( !$input['name'] )
 			throw new Exception("No name entered.");
 
-
+		// This is hashed, so doesn't need validation
 		if ( $input['password'] != $input['passwordcheck'] )
 		{
 			throw new Exception("The two passwords entered don't match.");
@@ -91,15 +91,29 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		}
 
 		$input['phaseMinutes'] = (int)$input['phaseMinutes'];
-
 		if ( $input['phaseMinutes'] < 5 or $input['phaseMinutes'] > 1440*10 )
 		{
 			throw new Exception("The phase value is too large or small; it must be between 5 minutes and 10 days.");
 		}
 
+		$input['joinPeriod'] = (int)$input['joinPeriod'];
 		if ( $input['joinPeriod'] < 5 or $input['joinPeriod'] > 1440*10 )
 		{
 			throw new Exception("Joining period value out of range.");
+		}
+		
+		$input['anon'] = ( (strtolower($input['anon']) == 'Yes') ? 'Yes' : 'No' );
+		
+		switch($input['pressType']) {
+			case 'PublicPressOnly':
+				$input['pressType'] = 'PublicPressOnly';
+				break;
+			case 'NoPress':
+				$input['pressType'] = 'NoPress';
+				break;
+			case 'Regular': // Regular is the default
+			default:
+				$input['pressType'] = 'Regular';
 		}
 
 		// Create Game record & object
