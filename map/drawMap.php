@@ -448,7 +448,7 @@ abstract class drawMap
 	protected function putImage(array $image, $x, $y)
 	{
 		imagecopymerge($this->map['image'], $image['image'],
-			$x, $y, 0, 0, $image['width'], $image['height'], 100);
+			$x, $y, 0, 0, $image['width'], $image['height'], 99);
 	}
 
 	/**
