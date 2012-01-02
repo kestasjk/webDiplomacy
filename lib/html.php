@@ -729,7 +729,7 @@ class libHTML
 			print self::footerCopyright();
 		}
 
-		print '</div></html>';
+		print '</div></body></html>';
 
 		close();
 	}
@@ -809,7 +809,7 @@ class libHTML
 		return 'webDiplomacy version <strong>'.number_format(VERSION/100,2).'</strong><br />
 			<a href="http://sourceforge.net/projects/phpdiplomacy">
 				<img alt="webDiplomacy @ Sourceforge"
-					src="http://sourceforge.net/sflogo.php?group_id=125692">
+					src="http://sourceforge.net/sflogo.php?group_id=125692" />
 			</a>';
 	}
 
