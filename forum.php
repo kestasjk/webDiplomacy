@@ -439,7 +439,7 @@ while( $message = $DB->tabl_hash($tabl) )
 		
 		if( $User->type['Admin'] || $User->type['ForumModerator'] ) {
 			
-			$muteLink .= '<br />Silence: ';
+			$muteLink .= '<br /><span class="likeMessageToggleLink">Silence: ';
 			
 			if( isset($silence) && $silence->isEnabled() ) {
 				$muteLink .= '<a class="light" href="admincp.php?tab=Control%20Panel&amp;silenceID='.$silence->id.'#disableSilence">Disable silence</a>';
@@ -450,6 +450,8 @@ while( $message = $DB->tabl_hash($tabl) )
 				
 				$muteLink .= '<a class="light" href="admincp.php?tab=Control%20Panel&amp;postID='.$message['id'].'&amp;userID='.$message['fromUserID'].'#createUserThreadSilence">user</a>';
 			}
+			
+			$muteLink .= '</span>';
 		}
 	}
 	
@@ -609,9 +611,9 @@ while( $message = $DB->tabl_hash($tabl) )
 				print '<br />';
 				
 				if( isset($silence) && $silence->isEnabled() ) 
-					print '<a class="light" href="admincp.php?tab=Control%20Panel&amp;silenceID='.$silence->id.'#disableSilence">Disable silence</a>';
+					print '<a class="light likeMessageToggleLink" href="admincp.php?tab=Control%20Panel&amp;silenceID='.$silence->id.'#disableSilence">Disable silence</a>';
 				else
-					print '<a class="light" href="admincp.php?tab=Control%20Panel&amp;postID='.$reply['id'].'&amp;userID='.$reply['fromUserID'].'#createUserThreadSilence">Silence user</a>';
+					print '<a class="light likeMessageToggleLink" href="admincp.php?tab=Control%20Panel&amp;postID='.$reply['id'].'&amp;userID='.$reply['fromUserID'].'#createUserThreadSilence">Silence user</a>';
 				
 			}
 					
