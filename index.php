@@ -511,5 +511,3 @@ $_SESSION['lastSeenHome']=time();
 libHTML::footer();
 
 ?>
-test
-test2
