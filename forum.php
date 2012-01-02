@@ -87,12 +87,15 @@ if( !isset($_REQUEST['page']) && isset($_REQUEST['viewthread']) && $viewthread )
 }
 
 
-if( !isset($_REQUEST['newmessage']) ) $_REQUEST['newmessage']  = '';
+if( !isset($_REQUEST['newmessage']) ) $_REQUEST['newmessage'] = '';
 if( !isset($_REQUEST['newsubject']) ) $_REQUEST['newsubject'] = '';
+if( !isset($_REQUEST['newmessagereply']) ) $_REQUEST['newmessagereply'] = '';
 
 $new = array('message' => "", 'subject' => "", 'id' => -1);
-if(isset($_REQUEST['newmessage']) AND $User->type['User']
-AND ($_REQUEST['newmessage'] != "") ) {
+if( $User->type['User'] AND
+    ((isset($_REQUEST['newmessage']) AND ($_REQUEST['newmessage'] != "")) OR
+     (isset($_REQUEST['newmessagereply']) AND ($_REQUEST['newmessagereply'] != ""))) )
+{
 	// We're being asked to send a message.
 
 	$new['message'] = $DB->msg_escape($_REQUEST['newmessage']);
@@ -104,148 +107,173 @@ AND ($_REQUEST['newmessage'] != "") ) {
 
 	$new['sendtothread'] = $viewthread;
 
-		if( isset($_SESSION['lastPostText']) && $_SESSION['lastPostText'] == $new['message'] )
+	$doreplymessage = 0;
+	if( isset($_SESSION['lastPostText']) && $_SESSION['lastPostText'] == $new['message'] )
+	{
+		$messageproblem = "You are posting the same message again, please don't post repeat messages.";
+		$postboxopen = !$new['sendtothread'];
+	}
+	elseif( isset($_SESSION['lastPostTime']) && $_SESSION['lastPostTime'] > (time()-20)
+		&& ! ( $new['sendtothread'] && isset($_SESSION['lastPostType']) && $_SESSION['lastPostType']=='ThreadStart' ) )
+	{
+		$messageproblem = "You are posting too frequently, please slow down.";
+		$postboxopen = !$new['sendtothread'];
+	}
+	elseif(!$new['sendtothread']) // New thread to the forum
+	{
+		if ( 4 <= substr_count($new['message'], '<br />') )
 		{
-			$messageproblem = "You are posting the same message again, please don't post repeat messages.";
-			$postboxopen = !$new['sendtothread'];
+			$messageproblem = "Too many lines in the summary; ".
+				"please write a summary of the message in 4 lines or less  ".
+				"and write the rest of the message in the message box.";
+			$postboxopen = true;
 		}
-		elseif( isset($_SESSION['lastPostTime']) && $_SESSION['lastPostTime'] > (time()-20)
-			&& ! ( $new['sendtothread'] && isset($_SESSION['lastPostType']) && $_SESSION['lastPostType']=='ThreadStart' ) )
+		elseif( 500 < strlen($new['message']) )
 		{
-			$messageproblem = "You are posting too frequently, please slow down.";
-			$postboxopen = !$new['sendtothread'];
+			$messageproblem = "Too many characters in the summary; ".
+				"please write a summary of the message in 500 characters or less ".
+				"and write the rest of the message in the message box";
+			$postboxopen = true;
+		}
+		elseif( empty($new['message']) )
+		{
+			$messageproblem = "You haven't given a summary.";
+			$postboxopen = true;
+		}
+		elseif( empty($new['subject']) )
+		{
+			$messageproblem = "You haven't given a subject.";
+			$postboxopen = true;
+		}
+		elseif( strlen($new['subject'])>=90 )
+		{
+			$messageproblem = "Subject is too long, please keep it within 90 characters.";
+			$postboxopen = true;
 		}
 		else
 		{
-			if(!$new['sendtothread']) // New thread to the forum
+			try
 			{
-				if ( 4 <= substr_count($new['message'], '<br />') )
-				{
-					$messageproblem = "Too many lines in this message; ".
-						"please write a summary of the message in less than 4 ".
-						"lines and write the rest of the message as a response.";
-					$postboxopen = true;
-				}
-				elseif( 500 < strlen($new['message']) )
-				{
-					$messageproblem = "Too many characters in this message; ".
-						"please write a summary of the message in less than 500 ".
-						"characters and write the rest of the message as a response.";
-					$postboxopen = true;
-				}
-				elseif( empty($new['subject']) )
-				{
-					$messageproblem = "You haven't given a subject.";
-					$postboxopen = true;
-				}
-				elseif( strlen($new['subject'])>=90 )
-				{
-					$messageproblem = "Subject is too long, please keep it within 90 characters.";
-					$postboxopen = true;
-				}
-				else
-				{
-					try
-					{
-						$subjectWords = explode(' ', $new['subject']);
-						foreach( $subjectWords as $subjectWord )
-							if( strlen($subjectWord)> 25 )
-								throw new Exception("A word in the subject, '".$subjectWord."' is longer than 25 ".
-									"characters, please choose a subject with normal words.");
+				$subjectWords = explode(' ', $new['subject']);
+				foreach( $subjectWords as $subjectWord )
+					if( strlen($subjectWord)> 25 )
+						throw new Exception("A word in the subject, '".$subjectWord."' is longer than 25 ".
+							"characters, please choose a subject with normal words.");
 
-						$new['id'] = Message::send(0,
-							$User->id,
-							$new['message'],
-							$new['subject'],
-							'ThreadStart');
+				$new['id'] = Message::send(0,
+					$User->id,
+					$new['message'],
+					$new['subject'],
+					'ThreadStart');
 
-						$_SESSION['lastPostText']=$new['message'];
-						$_SESSION['lastPostTime']=time();
-						$_SESSION['lastPostType']='ThreadStart';
+				$_SESSION['lastPostText']=$new['message'];
+				$_SESSION['lastPostTime']=time();
+				$_SESSION['lastPostType']='ThreadStart';
 
-						$messageproblem = "Thread posted sucessfully.";
-						$new['message'] = "";
-						$new['subject'] = "";
-						$postboxopen = false;
+				$messageproblem = "Thread posted sucessfully.";
+				$new['message'] = "";
+				$new['subject'] = "";
+				$postboxopen = false;
 
-						$viewthread = $new['id'];
-					}
-					catch(Exception $e)
-					{
-						$messageproblem=$e->getMessage();
-						$postboxopen = true;
-					}
+				$viewthread = $new['id'];
+
+				if ( isset($_REQUEST['newmessagereply']) && $_REQUEST['newmessagereply'] != '')
+				{
+					$doreplymessage = 2;
+					$new['message'] = $DB->msg_escape($_REQUEST['newmessagereply']);
+					$new['sendtothread'] = $viewthread;
 				}
 			}
-			else
+			catch(Exception $e)
 			{
-				// To a thread
-				$threadDetails = $DB->sql_hash(
-					"SELECT f.id, f.latestReplySent, 
-						f.silenceID,
-						silence.userID as silenceUserID,
-						silence.postID as silencePostID,
-						silence.moderatorUserID as silenceModeratorUserID,
-						silence.enabled as silenceEnabled,
-						silence.startTime as silenceStartTime,
-						silence.length as silenceLength,
-						silence.reason as silenceReason
-					FROM wD_ForumMessages f 
-					LEFT JOIN wD_Silences silence ON ( f.silenceID = silence.id )
-					WHERE f.id=".$new['sendtothread']."
-						AND f.type='ThreadStart'");
-
-				unset($messageproblem);
-				if( $threadDetails['latestReplySent'] < $Misc->ThreadAliveThreshold )
-				{
-					$messageproblem="The thread you are attempting to reply to is too old, and has expired.";
-				}
-				elseif( Silence::isSilenced($threadDetails) ) {
-					$silence = new Silence($threadDetails);
-					
-					if( $silence->isEnabled() ) {
-						$messageproblem="The thread you are attempting to reply to has been silenced; ".$silence->reason;
-					}
-					
-					unset($silence);
-				}
-				
-				if( isset($threadDetails['id']) && !isset($messageproblem) )
-				{
-					// It's being sent to an existing, non-silenced / dated thread.
-					try
-					{
-						$new['id'] = Message::send( $new['sendtothread'],
-							$User->id,
-							$new['message'],
-								'',
-								'ThreadReply');
-
-						$_SESSION['lastPostText']=$new['message'];
-						$_SESSION['lastPostTime']=time();
-						$_SESSION['lastPostType']='ThreadReply';
-
-						$messageproblem="Reply posted sucessfully.";
-						$new['message']=""; $new['subject']="";
-					}
-					catch(Exception $e)
-					{
-						$messageproblem=$e->getMessage();
-					}
-				}
-				else
-				{
-					$messageproblem="The thread you attempted to reply to doesn't exist.";
-				}
-				
-				unset($threadDetails);
+				$messageproblem=$e->getMessage();
+				$postboxopen = true;
 			}
 		}
+	}
+	else
+	{
+		$doreplymessage = 1;
+	}
+
+	if ($doreplymessage > 0)
+	{
+		// To a thread
+		$threadDetails = $DB->sql_hash(
+			"SELECT f.id, f.latestReplySent,
+				f.silenceID,
+				silence.userID as silenceUserID,
+				silence.postID as silencePostID,
+				silence.moderatorUserID as silenceModeratorUserID,
+				silence.enabled as silenceEnabled,
+				silence.startTime as silenceStartTime,
+				silence.length as silenceLength,
+				silence.reason as silenceReason
+			FROM wD_ForumMessages f
+			LEFT JOIN wD_Silences silence ON ( f.silenceID = silence.id )
+			WHERE f.id=".$new['sendtothread']."
+				AND f.type='ThreadStart'");
+
+		unset($messageproblem);
+		if( $threadDetails['latestReplySent'] < $Misc->ThreadAliveThreshold )
+		{
+			$messageproblem="The thread you are attempting to reply to is too old, and has expired.";
+		}
+		elseif( Silence::isSilenced($threadDetails) ) {
+			$silence = new Silence($threadDetails);
+
+			if( $silence->isEnabled() ) {
+				$messageproblem="The thread you are attempting to reply to has been silenced; ".$silence->reason;
+			}
+
+			unset($silence);
+		}
+
+		if( isset($threadDetails['id']) && !isset($messageproblem) )
+		{
+			// It's being sent to an existing, non-silenced / dated thread.
+			try
+			{
+				$new['id'] = Message::send( $new['sendtothread'],
+					$User->id,
+					$new['message'],
+						'',
+						'ThreadReply');
+
+				$_SESSION['lastPostText']=$new['message'];
+				$_SESSION['lastPostTime']=time();
+				$_SESSION['lastPostType']='ThreadReply';
+
+				if ($doreplymessage == 1)
+				{
+					$messageproblem="Reply posted sucessfully.";
+				}
+				else
+				{
+					$messageproblem="Thread with reply posted sucessfully.";
+					$new['sendtothread'] = 0;
+				}
+
+				$new['message']=""; $new['subject']="";
+			}
+			catch(Exception $e)
+			{
+				$messageproblem=$e->getMessage();
+			}
+		}
+		else
+		{
+			$messageproblem="The thread you attempted to reply to doesn't exist.";
+		}
+
+		unset($threadDetails);
+	}
 
 	if ( isset($messageproblem) and $new['id'] != -1 )
 	{
 		$_REQUEST['newmessage'] = '';
 		$_REQUEST['newsubject'] = '';
+		$_REQUEST['newmessagereply'] = '';
 	}
 }
 else
@@ -257,6 +285,7 @@ else
 	 */
 	$_REQUEST['newmessage'] = '';
 	$_REQUEST['newsubject'] = '';
+	$_REQUEST['newmessagereply'] = '';
 }
 
 $_SESSION['viewthread'] = $viewthread;
@@ -316,8 +345,11 @@ print '
 			<div style="text-align:left; width:80%; margin-left:auto; margin-right:auto; float:middle">
 			<strong>Subject:</strong><br />
 			<input style="width:100%" maxLength=2000 size=60 name="newsubject" value="'.$_REQUEST['newsubject'].'"><br /><br />
+			<strong>Summary:</strong> (Up to 4 lines and 500 characters)<br />
+			<TEXTAREA NAME="newmessage" ROWS="4" style="width:100%">'.$_REQUEST['newmessage'].'</TEXTAREA><br />
+			<br />
 			<strong>Message:</strong><br />
-			<TEXTAREA NAME="newmessage" ROWS="6" style="width:100%">'.$_REQUEST['newmessage'].'</TEXTAREA>
+			<TEXTAREA NAME="newmessagereply" ROWS="6" style="width:100%">'.$_REQUEST['newmessagereply'].'</TEXTAREA>
 			<input type="hidden" name="viewthread" value="0" />
 			</div>
 			<br />
