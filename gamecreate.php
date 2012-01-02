@@ -102,7 +102,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			throw new Exception("Joining period value out of range.");
 		}
 		
-		$input['anon'] = ( (strtolower($input['anon']) == 'Yes') ? 'Yes' : 'No' );
+		$input['anon'] = ( (strtolower($input['anon']) == 'yes') ? 'Yes' : 'No' );
 		
 		switch($input['pressType']) {
 			case 'PublicPressOnly':
