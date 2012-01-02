@@ -46,12 +46,12 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 		}
 
 		$m->printCheckSummary();
-
+		
 		$m->aLogsDataCollect();
 
 		if ( !is_array($m->bUserIDs) )
 			$m->findbUserIDs();
-
+		
 		if ( ! $m->bUserIDs )
 		{
 			print '<p>This account has no links with other accounts</p>';
@@ -60,6 +60,8 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 		{
 			if( isset($_REQUEST['showHistory']) )
 			{
+				$m->printUserTimeprint();
+				
 				$m->timeData();
 			}
 			else
@@ -686,6 +688,195 @@ class adminMultiCheck
 			$this->compareGames('Active games', $bUser->id, $this->aLogsData['activeGameIDs']);
 
 		print '</ul></li></ul>';
+	}
+	
+	/**
+	 * Get the time data for a userID
+	 * 
+	 * @param int $userID The userID to load data for
+	 * @return array[int][int] $array[$day][$hour] = % of hits in that time period, from 0 to 1. $day is 1 to 7, $hour is 0 to 23
+	 */
+	private function timeprintLoad($userID) {
+		global $DB;
+	
+		$userID = (int)$userID;
+	
+		$tabl = $DB->sql_tabl("SELECT day, hour, SUM(hits) as hits FROM (SELECT userID, hits, DAYOFWEEK(lastRequest) as day, HOUR(lastRequest) as hour FROM wD_AccessLog WHERE userID=".$userID.") as a GROUP BY day, hour");
+	
+		$result = $this->timeprintBlank();
+		
+		while ( list($day, $hour, $hits) = $DB->tabl_row($tabl) )
+			$result[$day][$hour] = $hits;
+	
+		return $this->timeprintReduce($result);
+	}
+	
+	/**
+	 * Get a blank timeprint array
+	 * @return array[int][int] $array[$day][$hour] = An array of 0s. $day is 1 to 7, $hour is 0 to 23
+	 */
+	private function timeprintBlank() {
+		
+		$result = array();
+		
+		for($day=1; $day<=7; $day++) {
+			$result[$day] = array();
+			for($hour=0; $hour<24; $hour++)
+				$result[$day][$hour] = 0;
+		}
+		
+		return $result;
+	}
+	
+	private function timeprintSum(array $weekData) {
+		
+		// Sum it all up
+		$sum=0;
+		foreach($weekData as $day=>$dayData)
+			foreach($dayData as $hour=>$value)
+				$sum += $value;
+		
+		return $sum;
+	}
+	
+	/**
+	 * For each cell in the timeprint array get the % of that cell that is the total, so that the whole contents of the array adds up to 1.
+	 * 
+	 * @return array[int][int] $array[$day][$hour] = An array of 0-1 values which adds up to 1, (or 0 if it was 0 before). $day is 1 to 7, $hour is 0 to 23
+	 */
+	private function timeprintReduce(array $weekData) {
+		
+		$result = $this->timeprintBlank();
+		
+		// Sum it all up
+		$sum=$this->timeprintSum($weekData);
+		
+		// Divide it all by the sum
+		if( $sum > 0 )
+			foreach($weekData as $day=>$dayData)
+				foreach($dayData as $hour=>$value)
+					$result[$day][$hour] = $value / $sum;
+		
+		return $result;
+	}
+	
+	/**
+	 * Multiply two timeData arrays together, getting a result which gives an indication of time overlaps.
+	 * 
+	 * If one of the two weeks has no data the one which does have data will be returned.
+	 * 
+	 * @param array $weekDataA
+	 * @param array $weekDataB
+	 * 
+	 * @return array[int][int] $array[$day][$hour] = An array of 0-1 values which adds up to 1, (or 0 if it was 0 before). $day is 1 to 7, $hour is 0 to 23
+	 */
+	private function timeprintMerge(array $weekDataA, array $weekDataB) {
+		$weekDataA = $this->timeprintReduce($weekDataA);
+		$weekDataB = $this->timeprintReduce($weekDataB);
+		
+		if( $this->timeprintSum($weekDataA) == 0 )
+			return $weekDataB;
+		elseif( $this->timeprintSum($weekDataB) == 0 )
+			return $weekDataA;
+		else
+		{
+			$weekDataC = $this->timeprintBlank();
+			
+			foreach($weekDataA as $day=>$hourDataA)
+				foreach($hourDataA as $hour=>$valueA)
+					$weekDataC[$day][$hour] = $valueA * $weekDataB[$day][$hour];
+			
+			return $this->timeprintReduce($weekDataC);
+		}
+	}
+	
+	public function printUserTimeprint() {
+		print '<style>
+		.timeprintData table {
+			border-top: 1px solid #aaa;
+			border-left: 1px solid #aaa;
+		}
+		.timeprintData td {
+			border-bottom: 1px solid #aaa;
+			border-right: 1px solid #aaa;
+			margin:0;
+			font-size:90%;
+			padding:0;
+			text-align:center;
+			background:#eee;
+			font-weight:bold;
+			color: #666;
+		}
+		.timeprintData th {
+			font-weight:normal;
+			border-bottom: 1px solid #aaa;
+			border-right: 1px solid #aaa;
+			background:#ddd;
+			text-align:center;
+		}
+		</style>';
+		
+		print '<div class="timeprintData" style="font-size:80%"><h3>Timeprint data:</h3>';
+		
+		$timeprints = array();
+		
+		$timeprint = $this->timeprintLoad($this->aUserID);
+		$timeprints[] = $timeprint;
+		
+		print '<h4>User # '.$this->aUserID.':</h4>'.$this->printTimeprint($timeprint);
+		
+		if(count($this->bUserIDs) > 0 ) {
+			foreach($this->bUserIDs as $bUserID) {
+				$timeprint = $this->timeprintLoad($bUserID);
+				$timeprints[] = $timeprint;
+				print '<h4>User # '.$bUserID.':</h4>'.$this->printTimeprint($timeprint);
+			}
+			
+			print '<h4>Comparison timeprint:</h4>';
+			$timeprintComparison = $this->timeprintBlank();
+			foreach($timeprints as $timeprint)
+				$timeprintComparison = $this->timeprintMerge($timeprintComparison, $timeprint);
+			
+			print $this->printTimeprint($timeprintComparison);
+		}
+		
+		print '<div class="hr"></div>';
+		
+		print '</div>';
+	}
+	
+	private function printTimeprint(array $weekData) {
+		$buf = '<table>';
+		
+		$buf .= '<tr><th><strong>Hour:</strong></th>';
+		for($i=0;$i<24;$i++)
+			$buf .= '<th>'.$i.'</th>';
+		$buf .= '</tr>';
+		
+		foreach( $weekData as $day=>$hourData) {
+			switch($day) {
+				case 1: $day = 'Mon'; break;
+				case 2: $day = 'Tue'; break;
+				case 3: $day = 'Wed'; break;
+				case 4: $day = 'Thu'; break;
+				case 5: $day = 'Fri'; break;
+				case 6: $day = 'Sat'; break;
+				case 7: $day = 'Sun'; break;
+			}
+			$buf .= '<tr><th>'.$day.'</th>';
+			foreach($hourData as $hour=>$value) {
+				$value = round($value * 100).'%';
+				if( $value == 0 )
+					$value = '&nbsp;';
+				
+				$buf .= '<td>'.$value.'</td>';
+			}
+			$buf .= '</tr>';
+		}
+		
+		$buf .= '</table>';
+		
+		return $buf;
 	}
 }
 
