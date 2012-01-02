@@ -823,11 +823,11 @@ abstract class drawMap
 
 		list($r, $g, $b) = $color;
 		
-		// Try to get the exact color (which can cause issues if a limit is reached on palette-based PNGs ?), 
+		// Try to allocate the color from the palette .. 
 		$colorRes = imagecolorexact($image['image'], $r, $g, $b);
 		if ($colorRes == -1)
 		{
-			// .. if it fails allocate the color within the palette, 
+			// .. if the color doesn't exist within the palette add it to the palette (which can hit a limit if the palette gets full) .. 
 			$colorRes = imageColorAllocate($image['image'], $r, $g, $b);
 			
 			if (!$colorRes)
