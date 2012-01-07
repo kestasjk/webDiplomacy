@@ -5,7 +5,7 @@ include('contrib/FusionChartsFree/FusionCharts.php');
 define('DELETECACHE',1);
 
 // all possible parameters:
-$variantID = (isset($_REQUEST['variantID'])) ? $_REQUEST['variantID'] : '0';      // The Variant-ID for the map
+$variantID = (isset($_REQUEST['variantID'])) ? (int) $_REQUEST['variantID'] : '0';      // The Variant-ID for the map
 
 if ($variantID == 0)
 	Config::$variants[0]=' Choose a variant...';		
