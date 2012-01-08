@@ -46,6 +46,8 @@ class Coast_Convoy_userOrderDiplomacy extends userOrderDiplomacy
 		if( $mustNotContainTerrID && in_array($mustNotContainTerrID, $this->convoyPath) )
 			return false; // Doesn't contain a terrID that it must (a fleet convoying a unit)
 
+		return true;
+		
 		static $validConvoyPaths;
 		if( !isset($validConvoyPaths) )
 			$validConvoyPaths=array();
