@@ -155,10 +155,7 @@ function remainingText(secondsRemaining)
 	if ( days > 0 ) // D, H
 	{
 		minutes += Math.round(seconds/60); // Add a minute if the seconds almost give a minute
-		seconds = 0;
-			
 		hours += Math.round(minutes/60); // Add an hour if the minutes almost gives an hour
-		minutes = 0;
 		
 		if ( days < 2 )
 		{
@@ -200,10 +197,12 @@ function remainingText(secondsRemaining)
 		{
 			setMinimumTimerInterval(1);
 			
-			if( minutes < 0 )
-				return seconds+' secs';
-			else if ( minutes < 5 )
+			if( minutes > 1 )
 				return minutes+' mins, '+seconds+' secs';
+			else if ( minutes > 0 )
+				return minutes+' min, '+seconds+' secs';
+			else
+				return seconds+' secs';
 		}
 	}
 }
