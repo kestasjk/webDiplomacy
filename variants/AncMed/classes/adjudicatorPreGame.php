@@ -21,8 +21,8 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class AncMedVariant_adjudicatorPreGame extends adjudicatorPreGame {
-
+class AncMedVariant_adjudicatorPreGame extends adjudicatorPreGame
+{
 	protected $countryUnits = array(
 		'Carthage' => array('Thapsus'   =>'Fleet' , 'Cirta'  =>'Army' , 'Carthage' =>'Army'),
 		'Egypt'    => array('Alexandria'=>'Fleet' , 'Memphis'=>'Army' , 'Thebes'   =>'Army'),
@@ -30,7 +30,4 @@ class AncMedVariant_adjudicatorPreGame extends adjudicatorPreGame {
 		'Persia'   => array('Sidon'     =>'Fleet' , 'Antioch'=>'Army' , 'Damascus' =>'Army'),
 		'Rome'     => array('Neapolis'  =>'Fleet' , 'Roma'   =>'Army' , 'Ravenna'  =>'Army')
 	);
-
 }
-
-?>
