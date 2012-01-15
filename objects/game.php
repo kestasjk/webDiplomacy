@@ -423,6 +423,15 @@ class Game
 	}
 
 	/**
+	 * Check whether this game will be considered a "live" game.
+	 * @return true if phase minutes are less than 60.
+	 **/
+	function isLiveGame()
+	{
+		return $this->phaseMinutes < 60;
+	}
+
+	/**
 	 * Return the next process time in textual format, in terms of time remaining
 	 *
 	 * @return string
@@ -482,7 +491,7 @@ class Game
 			!( $this->missingPlayerPolicy=='Strict'&&!$this->Members->isComplete() ) && (
 				time() >= $this->processTime
 				|| ( ($this->phase!='Pre-game' && $this->Members->isReady() )
-					|| ($this->phase=='Pre-game' && count($this->Members->ByID)==count($this->Variant->countries) && $this->phaseMinutes>30 ) )
+					|| ($this->phase=='Pre-game' && count($this->Members->ByID)==count($this->Variant->countries) && !($this->isLiveGame()) ) )
 				)
 			)
 			return true;

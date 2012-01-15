@@ -84,7 +84,7 @@ class panelGame extends Game
 		if( $this->phase == 'Finished' )
 			return $this->gameGameOverDetails();
 		elseif( $this->phase == 'Pre-game' && count($this->Members->ByID)==count($this->Variant->countries) )
-			return count($this->Variant->countries).' players joined; game will start on next process cycle';
+			return count($this->Variant->countries).' players joined; game will start '.($this->isLiveGame() ? 'at the scheduled time' : 'on next process cycle');
 		elseif( $this->missingPlayerPolicy=='Strict'&&!$this->Members->isComplete() && time()>=$this->processTime )
 			return "One or more players need to complete their orders before this strict/tournament game can go on";
 	}
@@ -277,15 +277,15 @@ class panelGame extends Game
 		$buf = '<strong>'.libTime::timeLengthText($this->phaseMinutes*60).'</strong>
 			/phase <span class="gameTimeHoursPerPhaseText">(';
 
-		if ( $this->phaseMinutes < 60 )
+		if ( $this->isLiveGame() )
 			$buf .= 'live';
 		elseif ( $this->phaseMinutes < 6*60 )
 			$buf .= 'very fast';
 		elseif ( $this->phaseMinutes < 16*60 )
 			$buf .= 'fast';
-		elseif( $this->phaseMinutes < 36*60 )
+		elseif ( $this->phaseMinutes < 36*60 )
 			$buf .= 'normal';
-		elseif( $this->phaseMinutes < 3*24*60 )
+		elseif ( $this->phaseMinutes < 3*24*60 )
 			$buf .= 'slow';
 		else
 			$buf .= 'very slow';
@@ -429,28 +429,26 @@ class panelGame extends Game
 			return 'A newly registered account can join this game;
 				<a href="register.php" class="light">register now</a> to join.';
 
-		$buf = '<form onsubmit="return confirm(\'Are you sure you want to join this game?\');" method="post" action="board.php?gameID='.$this->id.'"><div>
+		$question = 'Are you sure you want to join this game?\n\n'.
+			    'The game will start '.($this->isLiveGame() ? 'at the schedule time even if' : 'when').
+			    ' all '.count($this->Variant->countries).' players have joined.';
+
+		$buf = '<form onsubmit="return confirm(\''.$question.'\');" method="post" action="board.php?gameID='.$this->id.'"><div>
 			<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />';
 
 		if( $this->phase == 'Pre-game' )
 		{
 			$buf .= 'Bet to join: <em>'.$this->minimumBet.libHTML::points().'</em>: ';
-
-			if ( $this->private )
-				$buf .= '<br />'.self::passwordBox();
-
-			$buf .= '<input type="submit" name="join" value="Join" class="form-submit" />';
-
 		}
 		else
 		{
 			$buf .= $this->Members->selectCivilDisorder();
-
-			if ( $this->private )
-				$buf .= '<br />'.self::passwordBox();
-
-			$buf .= ' <input type="submit" name="join" value="Join" class="form-submit" />';
 		}
+
+		if ( $this->private )
+			$buf .= '<br />'.self::passwordBox();
+
+		$buf .= ' <input type="submit" name="join" value="Join" class="form-submit" />';
 
 		$buf .= '</div></form>';
 		return $buf;
