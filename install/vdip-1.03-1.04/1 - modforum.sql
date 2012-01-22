@@ -1,6 +1,3 @@
-ALTER TABLE `wD_Users` ADD `missedMoves` int(11) NOT NULL default '0';
-ALTER TABLE `wD_Users` ADD `phasesPlayed` int(11) NOT NULL default '0';
-
 CREATE TABLE `wD_ModForumMessages` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `toID` int(10) unsigned NOT NULL,
@@ -11,7 +8,7 @@ CREATE TABLE `wD_ModForumMessages` (
   `type` enum('ThreadStart','ThreadReply') NOT NULL,
   `replies` smallint(5) unsigned NOT NULL,
   `latestReplySent` int(10) unsigned NOT NULL,
-  `silenceID` INT UNSIGNED NULL DEFAULT NULL ;  
+  `silenceID` INT UNSIGNED NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `latest` (`timeSent`),
   KEY `threadReplies` (`type`,`toID`,`timeSent`),
