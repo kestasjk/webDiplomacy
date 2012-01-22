@@ -328,7 +328,6 @@ $bordersRawData=array(
 	array('Archbishopric of Bremen','Holstein Gluckstadt','Yes','Yes'),
 	array('Archbishopric of Bremen','Holstein Gottorp','Yes','No'),
 	array('Archbishopric of Bremen','Duchy of Lauenburg','Yes','No'),
-	array('Archbishopric of Bremen','Duchy of Meklenburg','Yes','No'),
 	array('Archbishopric of Bremen','Duchy of Brunswick Luneburg','Yes','Yes'),
 	array('Archbishopric of Bremen','Duchy of Kalenberg','Yes','No'),
 	array('Archbishopric of Bremen','Electorate of Brandenburg','Yes','No'),

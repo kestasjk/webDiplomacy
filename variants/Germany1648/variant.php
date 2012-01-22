@@ -36,7 +36,7 @@ class Germany1648Variant extends WDVariant {
 	public $author     ='Emmanuele Ravaioli (Tadar Es Darden)';
 	public $adapter    ='Emmanuele Ravaioli / Oliver Auth';
 	public $version    ='1.0';
-	public $codeVersion='1.1.0';
+	public $codeVersion='1.1.1';
 
 	public $countries=array(
 		'Austrian Habsburg','Spanish Habsburg','Wettin','Bavarian Wittelsbach','Palatinate Wittelsbach','Hohenzollern','Ecclesiastic Lands');
