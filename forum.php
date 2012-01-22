@@ -631,6 +631,21 @@ while( $message = $DB->tabl_hash($tabl) )
 				</div>';
 		}
 		unset($replytabl, $replyfirst, $replyswitch);
+
+		print '<br />';
+		if (isset($threadPager) && $threadPager->currentPage < $threadPager->pageCount)
+		{
+			$threadPager->pagerBar('threadPager');
+		}
+		else
+		{
+			print '<form action="forum.php#'.$replyID.'" method="get">
+							<input type="hidden" name="viewthread" value="'.$message['id'].'" />
+							<input type="hidden" name="rand" value="'.rand(0,99999).'" />
+							<input type="submit" class="form-submit" value="Refresh"
+								title="Refresh your view of this thread to see if there are any new replies" />
+					</form>';
+		}
 	}
 
 	// Replies done, now print the footer
