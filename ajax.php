@@ -22,6 +22,10 @@ define('AJAX', true); // Makes header.php ignore some of the unneeded stuff, mai
 
 require_once('header.php');
 
+/*
+ * This function logs a huge amount of javascript errors, sent from javascript/utility.js on error,
+ * but it seems to log trivial errors in lots of different languages, and isn't very useful except
+ * perhaps for development.
 function logJavaScriptError() {
 	$errorVars=array('Location','Message','URL','Line');
 	$errorVals=array();
@@ -38,7 +42,7 @@ function logJavaScriptError() {
 	trigger_error('JavaScript error logged');
 }
 logJavaScriptError();
-
+*/
 
 $results = array('status'=>'Invalid', 'notice'=>'No valid action specified');
 

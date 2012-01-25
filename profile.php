@@ -147,16 +147,19 @@ else
 if ( ! $UserProfile->type['User'] && !$UserProfile->type['Banned'] )
 {
 	$message = 'Cannot display profile: The specified account #'.$userID.' is not an active user; ';
-	if( $UserProfile->type['System'] )
-		$message .= 'it\'s a system account, without a real human using it.';
-	elseif( $UserProfile->type['Guest'] )
+	if( $UserProfile->type['Guest'] )
 		$message .= 'it\'s a guest account, used by unregistered people to
 			view the server without interacting.';
+	elseif( $UserProfile->type['System'] )
+		$message .= 'it\'s a system account, without a real human using it.';
 	else
 		$message .= 'in fact I\'m not sure what this account is...';
 
 	foreach($UserProfile->type as $name=>$on)
-		$message .= $name.', ';
+	{
+		if ( $on )
+			$message .= $name.', ';
+	}
 	libHTML::error($message);
 }
 
@@ -251,11 +254,14 @@ if ( isset($_REQUEST['detail']) )
 			break;
 
 		case 'reports':
-			require_once('lib/modnotes.php');
-			libModNotes::checkDeleteNote();
-			libModNotes::checkInsertNote();
-			print libModNotes::reportBoxHTML('User', $UserProfile->id);
-			print libModNotes::reportsDisplay('User', $UserProfile->id);
+			if ( $User->type['Moderator'] )
+			{
+				require_once('lib/modnotes.php');
+				libModNotes::checkDeleteNote();
+				libModNotes::checkInsertNote();
+				print libModNotes::reportBoxHTML('User', $UserProfile->id);
+				print libModNotes::reportsDisplay('User', $UserProfile->id);
+			}
 		break;
 	}
 
@@ -291,8 +297,8 @@ print '<li><strong>Points in play:</strong> '.($rankingDetails['worth']-$UserPro
 print '<li><strong>Total points:</strong> '.$rankingDetails['worth'].' '.libHTML::points().'</li>';
 
 if( $UserProfile->type['DonatorPlatinum'] )
-	$donatorMarker = libHTML::star().' - <strong>Platinum</strong>';
-if( $UserProfile->type['DonatorGold'] )
+	$donatorMarker = libHTML::platinum().' - <strong>Platinum</strong>';
+elseif( $UserProfile->type['DonatorGold'] )
 	$donatorMarker = libHTML::gold().' - <strong>Gold</strong>';
 elseif( $UserProfile->type['DonatorSilver'] )
 	$donatorMarker = libHTML::silver().' - Silver';
@@ -422,7 +428,13 @@ unset($likes,$liked);
 print '<li>&nbsp;</li>';
 print '<li><strong>Joined:</strong> '.$UserProfile->timeJoinedtxt().'</li>';
 print '<li><strong>User ID#:</strong> '.$UserProfile->id.'</li>';
-if ( $UserProfile->hideEmail == 'No' )
+if( $User->type['Moderator'] )
+{
+	print '<li><strong>E-mail:</strong>
+			'.$UserProfile->email.($UserProfile->hideEmail == 'No' ? '' : ' <em>(hidden for non-mods)</em>').'
+		</li>';
+}
+elseif ( $UserProfile->hideEmail == 'No' )
 {
 	$emailCacheFilename = libCache::dirID('users',$UserProfile->id).'/email.png';
 	if( !file_exists($emailCacheFilename) )
@@ -440,19 +452,13 @@ if ( $UserProfile->hideEmail == 'No' )
 			<img src="'.STATICSRV.$emailCacheFilename.'" alt="[E-mail address image]" title="To protect e-mails from spambots they are embedded in an image" >
 		</li>';
 }
-else
+
+if ( $UserProfile->hideEmail != 'No' )
 {
 	$emailCacheFilename = libCache::dirID('users',$UserProfile->id).'/email.png';
 
 	if( file_exists($emailCacheFilename) )
 		unlink($emailCacheFilename);
-
-	if( $User->type['Moderator'] )
-	{
-		print '<li><strong>E-mail:</strong>
-				'.$UserProfile->email.' <em>(hidden for non-mods)</em>
-			</li>';
-	}
 }
 
 if ( $UserProfile->homepage )

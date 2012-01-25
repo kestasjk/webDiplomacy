@@ -22,7 +22,8 @@
 var inErrorCode=0;
 
 // Submit JavaScript errors encountered to ajax.php for logging
-window.onerror = function (msg, url, line) {
+/*
+ * window.onerror = function (msg, url, line) {
 
 	if( msg=="Error loading script" )
 		return false;
@@ -57,6 +58,7 @@ window.onerror = function (msg, url, line) {
 	inErrorCode=0;
 	return false;
 };
+*/
 
 // If false it's okay to leave the page. makeFormsSafe sets this to true, and runs code which makes only
 // certain forms safe.
