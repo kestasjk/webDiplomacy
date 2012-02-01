@@ -274,6 +274,13 @@ class WarpAround_drawMap extends ZoomMap_drawMap
 
 class WWIVVariant_drawMap extends WarpAround_drawMap {
 
+	public function __construct($smallmap)
+	{
+		// Map is too big, so up the memory-limit
+		parent::__construct($smallmap);
+		ini_set('memory_limit',"58M");
+	}
+	
 	protected $countryColors = array(
   		 0=> array(226, 198, 158), // Neutral
 		 1=> array( 10,  35, 192), // Amazon-Empire 
@@ -323,21 +330,6 @@ class WWIVVariant_drawMap extends WarpAround_drawMap {
 			'standoff'=>'images/icons/cross.png'
 		);
 	}
-	
-	// Better color function for all the different colors.
-	protected function color(array $color, $image=false)
-	{
-		if ( ! is_array($image) )
-			$image = $this->map;
-
-		list($r, $g, $b) = $color;
-		
-		$colorRes = imagecolorexact($image['image'], $r, $g, $b);
-		if ($colorRes == -1)
-			$colorRes = imageColorAllocate($image['image'], $r, $g, $b);
-
-		return $colorRes;
-	}	
 	
 }
 
