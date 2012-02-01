@@ -37,7 +37,7 @@ class Abstraction3Variant extends WDVariant {
 	public $author     ='airborne';
 	public $adapter    ='airborne';
 	public $version    ='III';
-	public $codeVersion='1.0.1';	
+	public $codeVersion='1.0.2';	
 	
 	public $countries=array('Austria','France','Germany','Italy','Britain','Russia','Turkey');	
 

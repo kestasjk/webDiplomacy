@@ -295,7 +295,6 @@ $bordersRawData=array(
 	array('Albania','Zara','Yes','Yes'),
 	array('Albania','Adriatic Sea','Yes','No'),
 	array('Greece','Aegean Sea','Yes','No'),
-	array('Greece','Eastern Mediterranean Sea','Yes','No'),
 	array('Greece','Ionian Sea','Yes','No'),
 	array('Constantinople','Smyrna','Yes','Yes'),
 	array('Constantinople','Aegean Sea','Yes','No'),
