@@ -15,7 +15,7 @@ class ClassicOctopusVariant extends WDVariant {
 	public $description='Description of Octopus';
 	public $author='Emmanuele Ravaioli (Tadar Es Darden)';
 	public $adapter ='Emmanuele Ravaioli / Oliver Auth';
-	public $version ='1.0.1';
+	public $codeVersion ='1.0.2';
 
 	public $countries=array('England', 'France', 'Italy', 'Germany', 'Austria', 'Turkey', 'Russia');
 
