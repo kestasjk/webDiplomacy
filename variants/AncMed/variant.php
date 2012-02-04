@@ -48,7 +48,7 @@ class AncMedVariant extends WDVariant {
 	public $description='A variant with a map of the Ancient Mediterranean.';
 	public $author='Don Hessong';
 	public $adapter='Oliver Auth';
-	public $codeVersion='1.8';
+	public $codeVersion='1.8.1';
 	public $homepage='http://www.variantbank.org/results/rules/a/ancient_med.htm';
 
 	public $countries=array('Carthage','Egypt','Greece','Persia','Rome');
