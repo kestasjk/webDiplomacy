@@ -39,6 +39,8 @@ $version = (isset($_REQUEST['version'])) ? $_REQUEST['version'] : ''; // Change 
 
 if ($variantID != 0) {
     $variant = libVariant::loadFromVariantID($variantID);
+	global $Variant;
+	$Variant=$variant;
     $mapID = $variant->mapID;
     libVariant::setGlobals($variant);
 }
