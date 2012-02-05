@@ -58,7 +58,9 @@ function coastConvoy_loadModel(Coasts)
 			ns.routeSetStart(
 				StartTerr, 
 				function(EndNode) { return ( EndNode.id == EndTerr.id ); },
-				function(AllNode) { return ( AllNode.type == 'Sea' || Coasts.inArray(AllNode.id)); },
+				function(AllNode) { return ( AllNode.type == 'Sea' || 
+					(Coasts.inArray(AllNode.id) && 
+						Units.select(function(a){return(a.terrID==AllNode.id);}).type == 'Fleet')) },
 				function(AnyNode) { return true; }
 			);
 			return ns.Path;
@@ -83,7 +85,7 @@ function coastConvoy_loadBoard(Coasts)
 {
 	CGs=new Array();
 	Units.values().map(function(f) {
-		if( f.type == 'Fleet' && Coasts.inArray(f.Territory.id) ) 
+		if( f.type == 'Fleet' && Coasts.inArray(f.Territory.id)  && !f.convoyLink ) 
 		{
 			var CG=new ConvoyGroupClass();
 			CG.loadFleet(f);

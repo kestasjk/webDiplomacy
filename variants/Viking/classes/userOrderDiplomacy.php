@@ -46,14 +46,12 @@ class Coast_Convoy_userOrderDiplomacy extends userOrderDiplomacy
 		if( $mustNotContainTerrID && in_array($mustNotContainTerrID, $this->convoyPath) )
 			return false; // Doesn't contain a terrID that it must (a fleet convoying a unit)
 
-		return true;
-		
 		static $validConvoyPaths;
 		if( !isset($validConvoyPaths) )
 			$validConvoyPaths=array();
 		elseif( in_array($startCoastTerrID.'-'.$endCoastTerrID, $validConvoyPaths) )
 			return true;
-
+	
 		/*
 		 * The first convoyPath entry is the starting coast with the army.
 		 * [ $this->convoyPath[0], $this->convoyPath[1], $this->convoyPath[2], ..., $endFleetTerrID, $endCoastTerrID ]
@@ -74,7 +72,7 @@ class Coast_Convoy_userOrderDiplomacy extends userOrderDiplomacy
 		$endFleetTerrID=$toTerrID;
 
 		$borderLinks='('.implode(') OR (',$borderLinks).')';
-
+ 
 		/*
 		 * - The first select checks that an army is in the starting position.
 		 * - The second union select checks all the intermediate fleets in the chain

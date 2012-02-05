@@ -23,6 +23,8 @@
 	1.0: first install
 	1.0.2: fixed: typo in adjucatorPregame
 	1.0.3: quickfix: convoy validation failed (most of the time) disabled.
+	1.0.4: improved javascript convoy-code. Works now.
+	
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -37,7 +39,7 @@ class VikingVariant extends WDVariant {
 	public $adapter    ='kaner406 / Oliver Auth';
 	public $homepage   ='http://www.variantbank.org/results/rules/v/viking4.htm';
 	public $version    ='4.0';	
-	public $codeVersion='1.0.3';	
+	public $codeVersion='1.0.4';	
 	
 	public $countries=array('Arab Caliphates','Burgundy','Danmark','Eastern Roman Empire','France','Slavic Nations','Norge','Sverige');	
 
