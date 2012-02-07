@@ -341,7 +341,6 @@ $bordersRawData=array(
 	array('Trieste','Tyrol','No','Yes'),
 	array('Trieste','Venetia','Yes','Yes'),
 	array('Trieste','Adriatic Sea','Yes','No'),
-	array('Western Mediterranean Sea','Rome','Yes','No'),
 	array('Western Mediterranean Sea','Tyrrhenian Sea','Yes','No'),
 	array('Western Mediterranean Sea','Gulf of Lyons','Yes','No'),
 	array('Western Mediterranean Sea','Catalonia','Yes','No'),
