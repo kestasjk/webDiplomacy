@@ -343,7 +343,6 @@ $bordersRawData=array(
 	array('Trieste','Adriatic Sea','Yes','No'),
 	array('Western Mediterranean Sea','Tyrrhenian Sea','Yes','No'),
 	array('Western Mediterranean Sea','Gulf of Lyons','Yes','No'),
-	array('Western Mediterranean Sea','Catalonia','Yes','No'),
 	array('Western Mediterranean Sea','Valencia','Yes','No'),
 	array('Western Mediterranean Sea','Gibraltar','Yes','No'),
 	array('Western Mediterranean Sea','Morocco','Yes','No'),
