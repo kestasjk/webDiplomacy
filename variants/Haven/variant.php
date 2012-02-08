@@ -41,7 +41,8 @@ class HavenVariant extends WDVariant {
 	public $fullName   = 'Haven';
 	public $description= 'Epic 19 player battle in a fantasy world.';
 	public $adapter    = 'Oliver Auth';
-	public $version    = '1.1.9';
+	public $version    = '1.1';
+	public $codeVersion= '1.1.9';
 	public $author     = 'Michael Sims';
 	public $homepage   = 'http://www.dipwiki.com/index.php?title=Haven';
 

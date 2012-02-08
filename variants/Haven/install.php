@@ -343,7 +343,6 @@ $bordersRawData=array(
 	array('Anhondon Plain','Devils Canyon','No','Yes'),
 	array('Anhondon Plain','Forbidden City','No','Yes'),
 	array('Anhondon Plain','France','Yes','Yes'),
-	array('Anhondon Plain','Shining Stream','Yes','No'),
 	array('Anhondon Plain','Traal','No','Yes'),
 	array('Ansalon','Bikini Bottom','Yes','No'),
 	array('Ansalon','Ithin\\\'Carthia','No','Yes'),
@@ -1044,6 +1043,7 @@ if (!file_exists('variants/'.$this->name.'/cache/sampleMap.png'))
 	copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
 
 ?>
+
 
 
 
