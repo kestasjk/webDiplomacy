@@ -82,7 +82,7 @@ class NeutralScBox_drawMap extends drawMap
 	protected function loadImages()
 	{
 		parent::loadImages();
-		$this->sc = $this->loadImage('variants/Empire4_TGAC/resources/'.($this->smallmap ? 'small' : 'large').'_sc.png');	
+		$this->sc = $this->loadImage('variants/AmericanConflict/resources/'.($this->smallmap ? 'small' : 'large').'_sc.png');	
 	}
 
 	/**
