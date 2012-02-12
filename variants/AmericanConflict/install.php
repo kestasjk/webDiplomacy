@@ -83,7 +83,7 @@ $territoryRawData=array(
 	array('Washington DC', 'Coast', 'Yes', 3, 937, 805, 500, 429),
 	array('Richmond', 'Coast', 'Yes', 2, 898, 817, 484, 440),
 	array('West Virginia', 'Land', 'No', 3, 870, 810, 458, 447),
-	array('Kentucky', 'Coast', 'No', 0, 755, 871, 424, 458),
+	array('Kentucky', 'Coast', 'Yes', 0, 755, 871, 435, 464),
 	array('Tennessee', 'Coast', 'Yes', 2, 770, 895, 433, 477),
 	array('Deep South', 'Coast', 'Yes', 0, 734, 950, 433, 512),
 	array('Georgia', 'Coast', 'Yes', 0, 884, 935, 462, 499),
