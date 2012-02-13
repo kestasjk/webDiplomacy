@@ -44,7 +44,26 @@ class Config
 			'download.php' => array('name'=>'Download', 'inmenu'=>FALSE, 'title'=>"Download"),
 			'stats.php'    => array('name'=>'Stats',    'inmenu'=>TRUE,  'title'=>"Statistics")
 		)
+	);
+	
+	/**
+	 * If you use the piwik-webanalyser define his path here. If not comment this out.
+	 */		
+	// public static $piwik='piwik/';
 
+	/**
+	 * If set to any value > 0 the game will not progress for the given turns if a country misses it's orders.
+	 * It will send the country in CD and extend the game for another phase.
+	 *
+	 * @var int.
+	 */
+	public static $specialCD=1;
+
+	/**
+	 * If set to any value it wil display this mail adress in the rules section instead of the admin-mail.
+	 */
+	//public static $modEMail = 'admin@vDiplomacy.com';
+	
 }
 
 ?>

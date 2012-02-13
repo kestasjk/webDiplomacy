@@ -676,7 +676,7 @@ class libHTML
 						'.(is_object($User)?'Welcome, '.$User->profile_link(TRUE).' -
 						<span class="logon">('.
 							($User->type['User'] ?
-							'<a href="logon.php?logoff=on" class="light">Log off</a>)'.
+							'<a href="logon.php?logoff=on&user='.$User->username.'" class="light">Log off</a>)'.
 								( defined('AdminUserSwitch') ? ' (<a href="index.php?auid=0" class="light">Switch back</a>)' : '' )
 							:'<a href="logon.php" class="light">Log on</a>)').
 						'</span>'
@@ -945,6 +945,16 @@ class libHTML
 			}, this);
 		</script>
 		';
+		if (isset(Config::$piwik))
+			$buf .= '<script type="text/javascript" src="'.Config::$piwik.'piwik.js"></script>
+			<script type="text/javascript">
+				try {
+					var piwikTracker = Piwik.getTracker("'.Config::$piwik.'piwik.php", 1);
+					piwikTracker.setCustomVariable(1, "User", "'.htmlentities($User->username).'", "visit");
+					piwikTracker.trackPageView();
+					piwikTracker.enableLinkTracking();
+				} catch( err ) {}
+			</script><noscript><p><img src="'.Config::$piwik.'piwik.php?idsite=1" style="border:0" alt="" /></p></noscript>';
 
 		return $buf;
 	}

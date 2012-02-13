@@ -7,3 +7,4 @@
 *.zip
 /variants/*/install-save*
 Thumbs.db
+/piwik
