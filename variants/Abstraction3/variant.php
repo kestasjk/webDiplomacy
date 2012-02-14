@@ -23,6 +23,7 @@
 
 	Changelog:
 	1.0: initial version
+	1.0.6: new rules.html
 
 */
 
@@ -37,7 +38,7 @@ class Abstraction3Variant extends WDVariant {
 	public $author     ='airborne';
 	public $adapter    ='airborne';
 	public $version    ='III';
-	public $codeVersion='1.0.5';	
+	public $codeVersion='1.0.6';	
 	
 	public $countries=array('Austria','France','Germany','Italy','Britain','Russia','Turkey');	
 
