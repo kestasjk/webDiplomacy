@@ -58,9 +58,11 @@ function coastConvoy_loadModel(Coasts)
 			ns.routeSetStart(
 				StartTerr, 
 				function(EndNode) { return ( EndNode.id == EndTerr.id ); },
-				function(AllNode) { return ( AllNode.type == 'Sea' || 
-					(Coasts.inArray(AllNode.id) && 
-						Units.select(function(a){return(a.terrID==AllNode.id);}).type == 'Fleet')) },
+				function(AllNode) { 
+					return (AllNode.type == 'Sea' ||
+						(Coasts.inArray(AllNode.id) && 
+							!Object.isUndefined(Units.find(function(p){return (p[1].terrID==AllNode.id && p[1].type=='Fleet');}))));
+				},
 				function(AnyNode) { return true; }
 			);
 			return ns.Path;
@@ -119,6 +121,4 @@ function coastConvoy_loadOrdersPhase(Coasts)
 		OrderObj.setSelectsGreen();
 
 	}, this);
-	
 }
-
