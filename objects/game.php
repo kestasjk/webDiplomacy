@@ -529,7 +529,7 @@ class Game
 										attempts = 0,
 										minimumBet = ".$this->minimumBet."
 										WHERE id = ".$this->id);
-						libGameMessage::send(0, 'GameMaster', 'Missing orders for '.$this->Variant->turnAsDate($this->turn).' ('.$this->phase.'). Extending phase.', $this->id);
+						libGameMessage::send(0, 'GameMaster', 'Missing orders for '.$this->Variant->turnAsDate($this->turn).' ('.$this->phase.'). Extending phase. You need to search for a replacement to make this game progress.', $this->id);
 						$this->Members->updateReliability();
 					}
 					return false;
