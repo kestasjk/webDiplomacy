@@ -156,18 +156,18 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 	}
 }
 
-if ( $User->points >= 5 )
+if ( $User->points >= 3 )
 {
 	$roundedDefault = round(($User->points/7)/10)*10;
-	if ($roundedDefault > 5 )
+	if ($roundedDefault > 3 )
 		$defaultPoints = $roundedDefault;
 	else
-		$defaultPoints = 5;
+		$defaultPoints = 3;
 
 }
 else
 {
-	print "You can't create a new game; you have fewer than 5".libHTML::points().", you only have ".$User->points.libHTML::points().".
+	print "You can't create a new game; you have fewer than 3".libHTML::points().", you only have ".$User->points.libHTML::points().".
 		You will always have at least 100 points, including the points that you have bet into active games, so if you want
 		to start a new game just wait until your other games have finished (<a href='points.php#minpoints' class='light'>read more</a>).";
 
