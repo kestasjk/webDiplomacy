@@ -622,6 +622,7 @@ $bordersRawData=array(
 	array('Galapagos','Gulf of Fonseca','Yes','No'),
 	array('Galapagos','South East Pacific Ocean','Yes','No'),
 	array('Gulf of Panama','Coronado Bay','Yes','No'),
+	array('Gulf of Panama','Gulf of Fonseca','Yes','No'),
 	array('Gulf of Panama','South East Pacific Ocean','Yes','No'),
 	array('Gulf of Panama','Panama (South Coast)','Yes','No'),
 	array('Coronado Bay','Gulf of Fonseca','Yes','No'),
