@@ -621,6 +621,7 @@ $bordersRawData=array(
 	array('Central Pacific Ocean','Galapagos','Yes','No'),
 	array('Central Pacific Ocean','South West Pacific Ocean','Yes','No'),
 	array('Central Pacific Ocean','Southern Pacific Ocean','Yes','No'),
+	array('Central Pacific Ocean','South East Pacific Ocean','Yes','No'),
 	array('Galapagos','Gulf of Panama','Yes','No'),
 	array('Galapagos','Gulf of Fonseca','Yes','No'),
 	array('Galapagos','South East Pacific Ocean','Yes','No'),

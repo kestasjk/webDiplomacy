@@ -39,7 +39,7 @@ class AmericanConflictVariant extends WDVariant {
 	public $author     = 'Gavin Atkinson';
 	public $adapter    = 'Gavin Atkinson';
 	public $version    = '1';
-	public $codeVersion= '1.0.7';
+	public $codeVersion= '1.0.8';
 
 	public $countries=array('Russia', 'Confederate States', 'United States', 'England', 'France', 'Spain');
 
