@@ -260,6 +260,7 @@ $bordersRawData=array(
 	array('West Texas','Chihuahua','No','Yes'),
 	array('West Texas','Coahuila','No','Yes'),
 	array('West Texas','Nuevo Leon','Yes','Yes'),
+	array('West Texas','Gulf of Mexico','Yes','No'),
 	array('Minneapolis','Iowa','No','Yes'),
 	array('Minneapolis','Milwaukee','No','Yes'),
 	array('Minneapolis','Milwaukee (North Coast)','Yes','No'),
