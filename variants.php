@@ -139,7 +139,7 @@ else
 		print '<li> Created by: '. $Variant->author .'</li>';
 	if (isset($Variant->adapter))
 		print '<li> Adapted for webDiplomacy by: '. $Variant->adapter .'</li>';
-	print '<li> SCs required for solo win: ' . $Variant->supplyCenterTarget . '</li>';
+	print '<li> SCs required for solo win: ' . $Variant->supplyCenterTarget . ' (of '.$Variant->supplyCenterCount.')</li>';
 	if (!file_exists('variants/'. $Variant->name .'/rules.html'))
 		print '<li>Standard Diplomacy Rules Apply</li>';
 	print '</ul>';
