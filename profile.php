@@ -321,7 +321,7 @@ print '<li><strong>Game messages:</strong> '.$posts.'</li>';
 
 print '<li>&nbsp;</li>';
 $total = 0;
-$includeStatus=array('Won','Drawn','Survived','Defeated','Resigned');
+$includeStatus=array('Won','Drawn','Survived','Defeated','Resigned','Left');
 foreach($rankingDetails['stats'] as $name => $status)
 {
 	if ( !in_array($name, $includeStatus) ) continue;

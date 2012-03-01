@@ -711,6 +711,10 @@ class User {
 			$rankingDetails['stats'][$status] = $number;
 		}
 
+		// Check for games left:
+		list($number) = $DB->sql_row("SELECT gamesLeft FROM wD_Users WHERE id=".$this->id);
+		$rankingDetails['stats']['Left'] = $number;
+		
 		$tabl = $DB->sql_tabl( "SELECT COUNT(m.id), m.status, SUM(m.bet) FROM wD_Members AS m
 					INNER JOIN wD_Games AS g ON m.gameID = g.id
 					WHERE m.userID = ".$this->id."

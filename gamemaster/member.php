@@ -307,7 +307,12 @@ class processMember extends Member
 		global $DB;
 
 		$this->setStatus('Left');
-
+		
+		/*
+		 * Increase the "Left" counter for the player...
+		 */
+		 $this->recordLeft();
+		 
 		// Register the civil disorder
 		$DB->sql_put(
 			"INSERT INTO wD_CivilDisorders ( gameID, userID, countryID, turn, bet, SCCount )
@@ -465,6 +470,20 @@ class processMember extends Member
 
 		return $a;
 	}
+
+	/*
+	 * Add 1 for each game the player Left.
+	 */
+	function recordLeft()
+	{
+		if ( (count($this->Game->Variant->countries) > 2) && ($this->Game->phaseMinutes > 30) )
+		{
+			global $DB;
+			$DB->sql_put("UPDATE wD_Users SET gamesLeft = gamesLeft + 1 WHERE id=".$this->userID);
+		}
+	
+	}
+
 }
 
 ?>
