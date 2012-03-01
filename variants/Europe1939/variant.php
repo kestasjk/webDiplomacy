@@ -21,6 +21,7 @@
 
 	Changelog:
 	1.0: first install
+	1.0.1: new format of the names-overlay.
 	
 */
 
@@ -33,7 +34,8 @@ class Europe1939Variant extends WDVariant {
 	public $fullName   ='Europe 1939';
 	public $author     ='Mikalis Kamaritis';
 	public $adapter    ='Mikalis Kamaritis';
-	public $codeVersion='1.0';	
+	public $version    ='I';	
+	public $codeVersion='1.0.1';	
 		
 	public $countries=array('Britain', 'France', 'Germany', 'Spain', 'Italy', 'Poland', 'USSR', 'Turkey');
 
