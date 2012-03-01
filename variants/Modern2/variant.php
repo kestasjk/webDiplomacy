@@ -23,12 +23,9 @@
 	1.0:     initial release by Carey Jensen
 	1.5:     new webdip v.98 code by Oliver Auth
 	1.5.1:   small adjustments for the new variant.php code
-	1.5.2:   Borderfix
 	1.5.2.1: New color for Ukraine
 	1.6:     New smallmap
-	1.6.0.1: Borderfix
 	1.6.0.2: Spelling error on smallmap fixed
-	1.6.0.3: Borderfix
 	1.6.1:   New color-allocation
 	1.6.2:   small improvements on both maps
 	1.7:     NEW ORDERGENERATION-TEST
@@ -47,7 +44,8 @@ class Modern2Variant extends WDVariant {
 	public $description= 'Modern Diplomacy II is intended to be diplomacy with an updated map, circa 1994, taking place in Europe, the Middle East and North Africa.';
 	public $author     = 'Vincent Mous';
 	public $adapter    = 'Carey Jensen / Oliver Auth';
-	public $version    = '1.7.3';
+	public $version    = 'II';
+	public $codeVersion= '1.7.4';
 	public $homepage   = 'http://www.variantbank.org/results/rules/m/modern2.htm';
 
 	public $countries=array('Britain', 'Egypt', 'France', 'Germany', 'Italy', 'Poland', 'Russia', 'Spain', 'Turkey', 'Ukraine');
