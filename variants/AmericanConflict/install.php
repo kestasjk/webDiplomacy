@@ -601,7 +601,6 @@ $bordersRawData=array(
 	array('Gulf of Alaska','Queen Charlotte Sound','Yes','No'),
 	array('Gulf of Alaska','Straits of Juan de Fuca','Yes','No'),
 	array('Gulf of Alaska','West Coast','Yes','No'),
-	array('Gulf of Alaska','Siberia','Yes','No'),
 	array('Gulf of Alaska','Vladivostok','Yes','No'),
 	array('Queen Charlotte Sound','Straits of Juan de Fuca','Yes','No'),
 	array('Straits of Juan de Fuca','West Coast','Yes','No'),
