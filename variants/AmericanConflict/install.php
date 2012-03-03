@@ -100,7 +100,7 @@ $territoryRawData=array(
 	array('Tabasco', 'Coast', 'No', 5, 750, 1196, 399, 643),
 	array('Yucatan', 'Coast', 'Yes', 0, 784, 1149, 427, 634),
 	array('El Salvador', 'Coast', 'No', 0, 826, 1259, 444, 674),
-	array('Panama', 'Land', 'Yes', 0, 1025, 1278, 542, 693),
+	array('Panama', 'Coast', 'Yes', 0, 1025, 1278, 542, 693),
 	array('Hawaii', 'Coast', 'Yes', 0, 134, 1233, 53, 654),
 	array('Greenland', 'Coast', 'No', 0, 914, 146, 491, 75),
 	array('Bering Sea', 'Sea', 'No', 0, 32, 230, 15, 137),
@@ -177,8 +177,8 @@ $territoryRawData=array(
 	array('Portsmouth', 'Coast', 'Yes', 4, 1355, 498, 724, 268),
 	array('Belize', 'Coast', 'No', 4, 828, 1188, 443, 639),
 	array('Puerto Rico', 'Coast', 'Yes', 6, 1248, 1013, 669, 544),
-	array('Panama (North Coast)', 'Coast', 'Yes', 0, 1016, 1280, 545, 687),
-	array('Panama (South Coast)', 'Coast', 'Yes', 0, 1018, 1305, 546, 699)
+	array('Panama (North Coast)', 'Coast', 'No', 0, 1016, 1280, 545, 687),
+	array('Panama (South Coast)', 'Coast', 'No', 0, 1018, 1305, 546, 699)
 );
 
 foreach($territoryRawData as $territoryRawRow)
