@@ -541,6 +541,24 @@ class processMembers extends Members
 		if ( !$this->Game->isJoinable() )
 			throw new Exception("You cannot join this game.");
 
+		// Check for additional requirements:
+		if ( $this->Game->minRating > $User->getReliability())
+			throw new Exception("You reliable-rating is too low to join this game. (Required:".$this->Game->minRating."% / You:".$User->getReliability()."%)");
+		if ( $this->Game->minPhases > $User->phasesPlayed)
+			throw new Exception("You did not play enough phases to join this game. (Required:".$this->Game->minPhases." / You:".$User->phasesPlayed.")");
+		if ( $this->Game->maxLeft < $User->gamesLeft )
+			throw new Exception("You went CD in too many games. (Required: not more than ".$this->Game->maxLeft." / You:".$User->gamesLeft.")");
+
+		// Check if there is a mute against a player
+		list($muted) = $DB->sql_row("SELECT count(*) FROM wD_Members AS m
+									LEFT JOIN wD_MuteUser AS f ON ( m.userID = f.userID )
+									LEFT JOIN wD_MuteUser AS t ON ( m.userID = t.muteUserID )
+								WHERE m.gameID = ".$this->Game->id." AND (f.muteUserID =".$User->id." OR t.userID =".$User->id.")");
+		if ($muted > 0)
+		{
+			throw new Exception("You can't join. A player in this game has you muted or you muted a player in this game");
+		}
+		
 		// We can join, the only question is how?
 
 		if ( $this->Game->phase == 'Pre-game' )

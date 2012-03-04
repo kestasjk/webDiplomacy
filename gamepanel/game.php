@@ -261,7 +261,7 @@ class panelGame extends Game
 		//	Show the end of the game in the options if set.
 		if( $this->maxTurns > 0)
 			$alternatives[]='EoG: "'.$this->Variant->turnAsDate($this->maxTurns -1).'"';
-
+		
 		if ( $alternatives )
 			return '<div class="titleBarLeftSide" style="float:left">
 				<span class="gamePotType">'.implode(', ',$alternatives).'</span>
@@ -435,7 +435,19 @@ class panelGame extends Game
 
 		$buf = '<form onsubmit="return confirm(\'Are you sure you want to join this game?\');" method="post" action="board.php?gameID='.$this->id.'"><div>
 			<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />';
-
+			
+		// Show join requirements:
+		if (($this->minRating > 0) || ($this->minPhases > 0) || ($this->maxLeft < 99))
+		{
+			$buf .= '<em>Requirements:</em> ';
+			if( $this->minRating > 0)
+				$buf .= 'RR > <em>'.(int)($this->minRating - 1) .'%</em> / ';
+			if( $this->minPhases > 0)
+				$buf .= 'MinPhases > <em>'.(int)($this->minPhases - 1) .'</em> / ';
+			if( $this->maxLeft < 99)
+				$buf .= 'CDs < <em>'.(int)($this->maxLeft + 1) .'</em> / ';
+		}
+		
 		if( $this->phase == 'Pre-game'&& count($this->Members->ByCountryID)>0 )
 		{
 			$buf .= '<label>Join for</label> <em>'.$this->minimumBet.libHTML::points().'</em> as: <select name="countryID">';

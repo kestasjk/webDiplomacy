@@ -214,6 +214,14 @@ class Game
 	 * @var int
 	 */
 	 public $maxTurns;
+	 
+	/**
+	 * Some special settings to restrict acces to players baed on their rating
+	 * @var int
+	 */
+	 public $minRating;
+	 public $minPhases;
+	 public $maxLeft;
 	
 	/**
 	 * @param int/array $gameData The game ID of the game to load, or the array of its database row
@@ -332,6 +340,9 @@ class Game
 			g.anon,
 			g.pressType,
 			g.maxTurns,
+			g.minRating,
+			g.minPhases,
+			g.maxLeft,
 			g.missingPlayerPolicy
 			FROM wD_Games g
 			WHERE g.id=".$this->id.' '.$this->lockMode);

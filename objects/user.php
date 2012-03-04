@@ -180,6 +180,7 @@ class User {
 	 */
 	public $missedMoves;
 	public $phasesPlayed;
+	public $gamesLeft;
 	
 	public $lastMessageIDViewed;
 
@@ -448,6 +449,7 @@ class User {
 			u.silenceID,
 			u.missedMoves,
 			u.phasesPlayed,			
+			u.gamesLeft,			
 			IF(s.userID IS NULL,0,1) as online
 			FROM wD_Users u
 			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )

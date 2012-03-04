@@ -251,6 +251,19 @@ else
 	</li>
 
 	<li class="formlisttitle">
+		Rating requirements:
+	</li>
+	<li class="formlistfield">
+		<b>Min Rating: </b><input type="text" name="newGame[minRating]" value="0" size="3"> / 
+		<b>Min Phases: </b><input type="text" name="newGame[minPhases]" value="0" size="5"> / 
+		<b>Max CDs: </b><input type="text" name="newGame[maxLeft]" value="99" size="2">
+	</li>
+	<li class="formlistdesc">
+		You can set some requirements that the players for your game need to fulfill. This might lead to people not able to join your games, so choose your options wisely.
+		<br /><br /> <strong>Default:</strong> No restrictions:
+	</li>
+
+	<li class="formlisttitle">
 		Max turns: (min=4; max=200) 
 	</li>
 	<li class="formlistfield"> 
