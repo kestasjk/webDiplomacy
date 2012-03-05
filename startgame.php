@@ -35,13 +35,22 @@ if ($_SERVER['REQUEST_METHOD'] != "POST") {
 	libVariant::setGlobals($Variant);
 	$Game = $Variant->processGame($gameID);
 	
-	$userID=6;
+	global $DB;
+	$dummy_add=0;
 	$Game->phaseMinutes = 60;
 
-	while (!($Game->needsProcess()) && ($userID<=55)) {
-		processMember::create($userID++, $Game->minimumBet);
+	while (!($Game->needsProcess()))
+	{
+		$dummy_add++;
+		list($id)=$DB->sql_row("SELECT id FROM wD_Users WHERE username = 'dummy_".$dummy_add."'");
+		if (!($id))
+		{
+			$DB->sql_put("INSERT INTO wD_Users (username, email, points) VALUES ('dummy_".$dummy_add."', 'dummy_".$dummy_add."', 20000)");
+			list($id)=$DB->sql_row("SELECT id FROM wD_Users WHERE username = 'dummy_".$dummy_add."'");
+		}
+		processMember::create($id, $Game->minimumBet);
 	}
-	print "Filled the game with ".($userID-6)." users. ";
+	print "Filled the game with ".($dummy_add)." users. ";
 	print "Click <u><a href='board.php?gameID=".$Game->id."'>here</a></u> to open the game.";
 
 }
