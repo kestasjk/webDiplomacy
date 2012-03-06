@@ -259,8 +259,15 @@ else
 		<b>Max CDs: </b><input type="text" name="newGame[maxLeft]" value="99" size="2">
 	</li>
 	<li class="formlistdesc">
-		You can set some requirements that the players for your game need to fulfill. This might lead to people not able to join your games, so choose your options wisely.
-		<br /><br /> <strong>Default:</strong> No restrictions:
+		You can set some requirements that the players for your game need to fulfill.
+		
+		<ul>
+			<li><b>Minimum Rating:</b> Here you can choose the minimum Reliability Rating a player must have in order to join your game. (ie. 50 = only players who have a Reliability Rating of 50+ can join)</li>
+			<li><b>Minimum Phases:</b> Here you can choose how many phases a player must have played in order to join your game. (ie. 300 = only players who have played 300+ phases on vDip can join)</li>
+			<li><b>Maximum CDs:</b> Here you can set the maximum amount of CDs a player may have had before they are not allowed to join your game (ie. 15 = only players who have resigned/left a game 14 or less times can join your game)</li>
+		</ul>
+		This might lead to people not able to join your games, so choose your options wisely.<br /><br />
+		<strong>Default:</strong> No restrictions:
 	</li>
 
 	<li class="formlisttitle">
