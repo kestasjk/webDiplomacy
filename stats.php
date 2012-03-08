@@ -84,11 +84,15 @@ if ($variantID != 0)
 		$g_info['All']   += $count;
 		$g_info[$pot]    += $count;
 	}
+	
+	list($turns) = $DB->sql_row('SELECT SUM(turn) FROM wD_Games WHERE variantID='.$variant->id.' AND phase = "Finished"');
 
-	print '<ul><li><b>Number of games played:</b> '.$g_info['All'].'</li>';
+	print '<ul><li><b>Number of games finished:</b> '.$g_info['All'].'</li>';
 
 	if ($g_info['All'] > 0)
 	{
+	
+		print '<li><b>Avg. turns played:</b> '.number_format($turns/$g_info['All'],2).' turns</li>';
 	
 		// Get the hex-color of the country for the tables
 		$id=1;

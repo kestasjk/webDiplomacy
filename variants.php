@@ -29,6 +29,7 @@ libHTML::starthtml();
 
 if(!(isset($_REQUEST['variantID'])))
 {
+	print '<script type="text/javascript" src="contrib/tablekit/tablekit.js"></script>';
 	print libHTML::pageTitle('webDiplomacy variants','A list of the variants available on this server, with credits and information on variant-specific rules.');
 	$variantsOn=array();
 	$variantsOff=array();
@@ -44,20 +45,51 @@ if(!(isset($_REQUEST['variantID'])))
 				$variantsOff[] = $variantDir;
 		}
 	}
-
+	
 	if( count($variantsOff) )
-		print '<a name="top"></a><h4>Active variants</h4>';
+		print '<a name="top"></a><h4>Active variants:</h4>';
+	
+	print '<style type="text/css">
+			.sortcol { cursor: pointer;
+				padding-right: 20px;
+				background-repeat: no-repeat;
+				background-position: right center; }
+			.sortasc {
+				background-color: #DDFFAC;
+				background-image: url(contrib/tablekit/up.gif); }
+			.sortdesc {
+				background-color: #B9DDFF;
+				background-image: url(contrib/tablekit/down.gif); }
+			.nosort { cursor: default;} 
+		</style>';
 		
-	print '<ul>';
+	print '<TABLE class="sortable">
+				<THEAD>
+					<TH style="border: 1px solid #000" class="sortfirstasc">Name</TH>
+					<TH style="border: 1px solid #000">Players</TH>
+					<TH style="border: 1px solid #000">Games finished</TH>
+					<TH style="border: 1px solid #000">avg. Turns</TH>
+					<TH style="border: 1px solid #000">Rating*</TH>
+				</THEAD>
+				<TFOOT>
+					<tr style="border: 1px solid #666"><td colspan=6><b>*Rating</b> = ("players" x "games played")</td></tr>
+				</TFOOT>';
+			
 	foreach( $variantsOn as $variantName )
 	{
 		$Variant = libVariant::loadFromVariantName($variantName);
-		print '<li>'.$Variant->link().' (' . count($Variant->countries) . ' Players)';
-		$sql = 'SELECT COUNT(*) FROM wD_Games WHERE variantID=' .  $Variant->id . ' AND phase != "Pre-game"';
-		list($num) = $DB->sql_row($sql);
-		print ' - '.$num.' game'.($num!=1?'s':'').' played on this server</li>';
+		list($players)=$DB->sql_row(
+			'SELECT COUNT(*) FROM wD_Members m
+				INNER JOIN wD_Games g ON (g.id = m.gameID) 
+			WHERE g.variantID='.$Variant->id.' AND g.phase = "Finished"');
+		list($turns,$games) = $DB->sql_row('SELECT SUM(turn), COUNT(*) FROM wD_Games WHERE variantID='.$Variant->id.' AND phase = "Finished"');
+		print '<TR><TD style="border: 1px solid #666">'.$Variant->link().'</TD>';
+		print '<TD style="border: 1px solid #666">'.($games==0?count($Variant->countries):round($players/$games,2)) .' players</TD>';
+		print '<TD style="border: 1px solid #666">'.$games.' game'.($games!=1?'s':'').'</TD>';
+		print '<TD style="border: 1px solid #666">'.($games==0?'0.00':number_format($turns/$games,2)).' turns</TD>';
+		print '<TD style="border: 1px solid #666">'.$players.'</TD></TR>';
 	}
-	print '</ul>';
+	print '</TABLE>';
 
 	if( count($variantsOff) )
 	{
@@ -139,7 +171,13 @@ else
 		print '<li> Created by: '. $Variant->author .'</li>';
 	if (isset($Variant->adapter))
 		print '<li> Adapted for webDiplomacy by: '. $Variant->adapter .'</li>';
+
+	list($turns,$games) = $DB->sql_row('SELECT SUM(turn), COUNT(*) FROM wD_Games WHERE variantID='.$Variant->id.' AND phase = "Finished"');
+	print '<li> Games finished: '. $games .' game'.($games!=1?'s':'').'</li>';
+	print '<li> avg. Duration: '. ($games==0?'0.00':number_format($turns/$games,2)) .' turns</li>';
+
 	print '<li> SCs required for solo win: ' . $Variant->supplyCenterTarget . ' (of '.$Variant->supplyCenterCount.')</li>';
+	
 	if (!file_exists('variants/'. $Variant->name .'/rules.html'))
 		print '<li>Standard Diplomacy Rules Apply</li>';
 	print '</ul>';

@@ -21,6 +21,8 @@
 	
 	Changelog:
 	1.0:   initial release
+	1.0.1: new map names overlay
+	1.0.2: new map names overlay
 
 */
 
@@ -35,7 +37,7 @@ class YoungstownReduxVariant extends WDVariant {
 	public $author     ='airborne';
 	public $adapter    ='airborne';
 	public $version    ='I';
-	public $codeVersion='1.0';	
+	public $codeVersion='1.0.2';	
 	
 	public $countries=array('India','Japan','Austria','Italy','China','Britain','France','Germany','Turkey','Russia');	
 
