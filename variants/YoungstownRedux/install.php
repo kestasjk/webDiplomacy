@@ -170,7 +170,7 @@ $territoryRawData=array(
 	array('Saigon', 'Coast', 'Yes', 7, 807, 457, 812, 455),
 	array('Philippines', 'Coast', 'Yes', 0, 926, 465, 926, 466),
 	array('Formosa', 'Coast', 'Yes', 0, 864, 363, 862, 365),
-	array('Yellow Sea', 'Sea', 'No', 0, 0, 0, 846, 256),
+	array('Yellow Sea', 'Sea', 'No', 0, 844, 257, 841, 258),
 	array('Sapporo', 'Coast', 'Yes', 2, 934, 208, 938, 209),
 	array('Sea of Okhotsk', 'Sea', 'No', 0, 910, 121, 905, 118),
 	array('Sea of Japan', 'Sea', 'No', 0, 904, 249, 903, 252),
@@ -769,3 +769,4 @@ if (!file_exists('variants/'.$this->name.'/cache/sampleMap.png'))
 	copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
 
 ?>
+
