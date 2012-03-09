@@ -177,7 +177,20 @@ else
 	print '<li> avg. Duration: '. ($games==0?'0.00':number_format($turns/$games,2)) .' turns</li>';
 
 	print '<li> SCs required for solo win: ' . $Variant->supplyCenterTarget . ' (of '.$Variant->supplyCenterCount.')</li>';
-	
+
+	$count=array('Sea'=>0,'Land'=>0,'Coast'=>0,'All'=>0);
+	$tabl = $DB->sql_tabl(
+		'SELECT TYPE,count(TYPE) FROM wD_Territories t
+			WHERE EXISTS (SELECT * FROM wD_Borders b WHERE b.fromTerrID = t.id && b.mapID = t.mapID) 
+			&& t.mapID ='.$Variant->mapID.' && t.name NOT LIKE "% Coast)%" 
+		GROUP BY TYPE');
+	while(list($type,$counter) = $DB->tabl_row($tabl))
+	{
+		$count[$type]=$counter;
+		$count['All']+=$counter;
+	}	
+	print '<li> Territories: '.$count['All'].' (Land='.$count['Land'].'; Coast='.$count['Coast'].'; Sea='.$count['Sea'].')</li>';
+
 	if (!file_exists('variants/'. $Variant->name .'/rules.html'))
 		print '<li>Standard Diplomacy Rules Apply</li>';
 	print '</ul>';

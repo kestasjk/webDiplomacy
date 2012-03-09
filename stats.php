@@ -93,7 +93,23 @@ if ($variantID != 0)
 	{
 	
 		print '<li><b>Avg. turns played:</b> '.number_format($turns/$g_info['All'],2).' turns</li>';
-	
+
+		$count=array('Sea'=>0,'Land'=>0,'Coast'=>0,'All'=>0);
+		$tabl = $DB->sql_tabl(
+			'SELECT TYPE,count(TYPE) FROM wD_Territories t
+				WHERE EXISTS (SELECT * FROM wD_Borders b WHERE b.fromTerrID = t.id && b.mapID = t.mapID) 
+				&& t.mapID ='.$variant->mapID.' && t.name NOT LIKE "% Coast)%" 
+			GROUP BY TYPE');
+		while(list($type,$counter) = $DB->tabl_row($tabl))
+		{
+			$count[$type]=$counter;
+			$count['All']+=$counter;
+		}	
+		print '<li><b>Territories:</b> '.$count['All'];
+		print '<ul><li>Land: '.$count['Land'].' ('.number_format($count['Land']/$count['All']*100,2).'%)</li>';
+		print '<li>Coast: '.$count['Coast'].' ('.number_format($count['Coast']/$count['All']*100,2).'%)</li>';
+		print '<li>Sea: '.$count['Sea'].' ('.number_format($count['Sea']/$count['All']*100,2).'%)</li></ul>';
+
 		// Get the hex-color of the country for the tables
 		$id=1;
 		$css=fopen('variants/'. $variant->name .'/resources/style.css', 'r');
