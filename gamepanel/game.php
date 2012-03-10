@@ -259,9 +259,13 @@ class panelGame extends Game
 			$alternatives[]=$this->potType;
 			
 		//	Show the end of the game in the options if set.
-		if( $this->maxTurns > 0)
-			$alternatives[]='EoG: "'.$this->Variant->turnAsDate($this->maxTurns -1).'"';
-		
+		if(( $this->targetSCs > 0) && ($this->maxTurns > 0))
+			$alternatives[]='EoG: '.$this->targetSCs.' SCs or turn>"'.$this->Variant->turnAsDate($this->maxTurns -1).'"';
+		elseif( $this->maxTurns > 0)
+			$alternatives[]='EoG: turn>"'.$this->Variant->turnAsDate($this->maxTurns -1).'"';
+		elseif( $this->targetSCs > 0)
+			$alternatives[]='EoG: '.$this->targetSCs.' SCs';
+			
 		if ( $alternatives )
 			return '<div class="titleBarLeftSide" style="float:left">
 				<span class="gamePotType">'.implode(', ',$alternatives).'</span>

@@ -286,7 +286,7 @@ class processGame extends Game
 	 *
 	 * @return Game The object corresponding to the new game
 	 */
-	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $joinPeriod, $anon, $press, $maxTurns, $minRating, $minPhases, $maxLeft)
+	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $joinPeriod, $anon, $press, $maxTurns, $targetSCs, $minRating, $minPhases, $maxLeft)
 	{
 		global $DB;
 
@@ -320,7 +320,21 @@ class processGame extends Game
 		$Variant=libVariant::loadFromVariantID($variantID);
 		if (count($Variant->countries)<3)
 			$bet=1;
+		
+		// Check the starting SCs for each player (multiplied by 2)...
+		$sql='SELECT count(*)*2 FROM wD_Territories
+				WHERE mapID='.$Variant->mapID.' AND supply="Yes" AND countryID>0 
+				GROUP BY countryID DESC LIMIT 1';
+		list($minSC) = $DB->sql_row($sql);
+		
+		// TargetSCs greater than any starting SCs
+		if ($minSC > $targetSCs)
+			$targetSCs = $minSC;
 			
+		// Set the target SCs maximum to the available SCs
+		if ($Variant->supplyCenterCount < $targetSCs)
+			$targetSCs = $Variant->supplyCenterCount;
+										
 		$DB->sql_put("INSERT INTO wD_Games
 					SET variantID=".$variantID.",
 						name = '".$name.($i > 1 ? '-'.$i : '')."',
@@ -332,6 +346,7 @@ class processGame extends Game
 						".( $password ? "password = UNHEX('".md5($password)."')," : "").
 						"processTime = ".$pTime.",
 						maxTurns = ".$maxTurns.", 
+						targetSCs = ".$targetSCs.", 
 						minRating = ".$minRating.", 
 						minPhases = ".$minPhases.", 
 						maxLeft = ".$maxLeft.", 

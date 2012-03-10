@@ -271,18 +271,20 @@ else
 	</li>
 
 	<li class="formlisttitle">
-		Max turns: (min=4; max=200) 
+		Alternate winning conditions:
 	</li>
 	<li class="formlistfield"> 
-		<input type="text" name="newGame[maxTurns]" size="4" value="0" />
+		<b>Target SCs: </b><input type="text" name="newGame[targetSCs]" size="4" value="0" /><br>
+		<b>Max. turns: </b><input type="text" name="newGame[maxTurns]" size="4" value="0" /> (4 < maxTurns < 200)
 	</li>
 	<li class="formlistdesc">
-		This setting lets you limit how many turns are played before a winner is declared.
-		<br />The winning player is decided by who has the most SCs after that turn's diplomacy phase.
+		This setting lets you limit how many turns are played and/or how many SCs need to be conquered before a winner is declared.
+		Please check the variant-description for infomation about the average turns or the default SCs for a win.<br />
+		The winning player is decided by who has the most SCs after that turn's diplomacy phase.
 		If 2 or more player have the same SCs at the end of the game, the game checks for the turn before, and so on.
 		If player's SC counts are the same throughout the whole game the winner is decided at random.
-		<br />A value of "0" (the default) ends the game as usual, as soon as one player reach the target SCs.
-		<br /><br /><strong>Default:</strong> 0 (no fixed game duration)
+		<br />A value of "0" (the default) ends the game as usual, as soon as one player reach the default target SCs.
+		<br /><br /><strong>Default:</strong> 0 (no fixed game duration / default number of SCs needed)
 	</li>
 
 	<li class="formlisttitle">

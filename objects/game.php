@@ -210,10 +210,16 @@ class Game
 	public $missingPlayerPolicy;
 
 	/**
-	 * If any value > 0 ends the game after the given turn. Winner is the one with the most SC at this time.
+	 * Any value > 0 ends the game after the given turn. Winner is the one with the most SC at this time.
 	 * @var int
 	 */
 	 public $maxTurns;
+	 
+	/**
+	 * Any value > 0 ends the game after a player reaches the given SC count. Winner is the one with the most SC at this time.
+	 * @var int
+	 */
+	 public $targetSCs;
 	 
 	/**
 	 * Some special settings to restrict acces to players baed on their rating
@@ -340,6 +346,7 @@ class Game
 			g.anon,
 			g.pressType,
 			g.maxTurns,
+			g.targetSCs,
 			g.minRating,
 			g.minPhases,
 			g.maxLeft,

@@ -55,6 +55,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 						,'minPhases'
 						,'maxLeft'
 						,'maxTurns'
+						,'targetSCs'
 					);
 
 		foreach($required as $requiredName)
@@ -145,12 +146,14 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input['maxTurns'] = 0;
 		if ( $input['maxTurns'] > 200 )
 			$input['maxTurns'] = 200;
-		
+
+		$input['targetSCs'] = (int)$input['targetSCs'];		
+			
 		$input['countryID'] = (int)$input['countryID'];
 
 		// Create Game record & object
 		require_once('gamemaster/game.php');
-		$Game = processGame::create($input['variantID'], $input['name'], $input['password'], $input['bet'], $input['potType'], $input['phaseMinutes'], $input['joinPeriod'], $input['anon'], $input['pressType'],$input['maxTurns'],$input['minRating'],$input['minPhases'],$input['maxLeft']);
+		$Game = processGame::create($input['variantID'], $input['name'], $input['password'], $input['bet'], $input['potType'], $input['phaseMinutes'], $input['joinPeriod'], $input['anon'], $input['pressType'],$input['maxTurns'],$input['targetSCs'],$input['minRating'],$input['minPhases'],$input['maxLeft']);
 
 		/**
 		 * Check for reliability, bevore a user can create a new game...
