@@ -171,7 +171,7 @@ class KnownWorld_901Variant_drawMap extends ResetPaletteVariant_drawMap {
 	}
 
 	// No need to set the transparency for our custom icons.
-	protected function setTransparancies() {}
+	protected function setTransparancy(array $image, array $color=array(255,255,255)) {}
 
 	protected function resources() {
 		return array(
