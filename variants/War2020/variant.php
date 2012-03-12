@@ -33,7 +33,7 @@ class War2020Variant extends WDVariant {
 	public $description='In 2020 a world war breaks out';
 	public $author     ='Jason B.';
 	public $adapter    ='kaner406 & Oliver Auth';
-	public $codeVersion='1.0';
+	public $codeVersion='1.0.1';
 
 	public $countries=array('Australia', 'USA', 'OAS', 'EU', 'South Africa', 'India', 'OPEC', 'China', 'Russia', 'Japan');
 
