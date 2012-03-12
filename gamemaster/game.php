@@ -324,11 +324,11 @@ class processGame extends Game
 		// Check the starting SCs for each player (multiplied by 2)...
 		$sql='SELECT count(*)*2 FROM wD_Territories
 				WHERE mapID='.$Variant->mapID.' AND supply="Yes" AND countryID>0 
-				GROUP BY countryID DESC LIMIT 1';
+				GROUP BY countryID ASC LIMIT 1';
 		list($minSC) = $DB->sql_row($sql);
 		
 		// TargetSCs greater than any starting SCs
-		if ($minSC > $targetSCs)
+		if ($targetSCs != 0 && $minSC > $targetSCs)
 			$targetSCs = $minSC;
 			
 		// Set the target SCs maximum to the available SCs

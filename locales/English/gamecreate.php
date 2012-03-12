@@ -274,7 +274,7 @@ else
 		Alternate winning conditions:
 	</li>
 	<li class="formlistfield"> 
-		<b>Target SCs: </b><input type="text" name="newGame[targetSCs]" size="4" value="0" /><br>
+		<b>Target SCs: </b><input type="text" name="newGame[targetSCs]" size="4" value="0" /> (0 = default)<br>
 		<b>Max. turns: </b><input type="text" name="newGame[maxTurns]" size="4" value="0" /> (4 < maxTurns < 200)
 	</li>
 	<li class="formlistdesc">
