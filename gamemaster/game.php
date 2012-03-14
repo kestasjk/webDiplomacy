@@ -93,6 +93,10 @@ class processGame extends Game
 		{
 			$this->togglePause();
 		}
+		elseif( in_array('Extend', $votes) )
+		{
+			$this->extendPhase();
+		}
 	}
 
 	/**
@@ -1033,6 +1037,30 @@ class processGame extends Game
 		$DB->sql_put("DELETE FROM wD_TerrStatus WHERE gameID = ".$this->id);
 
 		Game::wipeCache($this->id,$this->turn);
+	}
+	
+	public function extendPhase()
+	{
+		global $DB;
+
+		if( $this->phase == 'Pre-game' )
+			throw new Exception("This game hasn't started");
+
+		if( $this->phase == 'Finished' )
+			throw new Exception("This game is finished");
+
+		if( $this->processStatus == 'Paused' )
+			throw new Exception("This game is paused");
+			
+		$this->Members->notifyExtended();
+		
+		$DB->sql_put(
+			"UPDATE wD_Games
+			SET processTime = ".($this->processTime + 345600)."
+			WHERE id = ".$this->id);
+
+		// Any extend votes are now void
+		$DB->sql_put("UPDATE wD_Members SET votes = REPLACE(votes,'Extend','') WHERE gameID = ".$this->id);
 	}
 	
 }

@@ -66,6 +66,14 @@ class processMembers extends Members
 	}
 
 	/**
+	 * Send message about the game phase being extended
+	 */
+	function notifyExtended()
+	{
+		libGameMessage::send(0, 'GameMaster', 'Per vote the gamephase got extended by 4 days.', $this->Game->id);
+		$this->sendToPlaying('No',"The gamephase got extended by 4 days.");
+	}
+	/**
 	 * Count the units and supply centers of the members in this game, and refresh the
 	 * Member objects and update the member records.
 	 */

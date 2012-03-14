@@ -110,7 +110,7 @@ class Members
 		return ((float)$this->Game->pot / (float)$this->supplyCenterCount('Playing'));
 	}
 
-	static $votes = array('Draw','Pause','Cancel');
+	static $votes = array('Draw','Pause','Cancel','Extend');
 
 	function votesPassed()
 	{
