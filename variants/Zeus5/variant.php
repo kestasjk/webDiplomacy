@@ -21,6 +21,7 @@
 
 	Changelog:
 	1.0: first install
+	1.0.1: hotfix for the coast (will need a better solution later)
 	
 */
 
