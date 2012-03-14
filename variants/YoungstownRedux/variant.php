@@ -37,7 +37,7 @@ class YoungstownReduxVariant extends WDVariant {
 	public $author     ='airborne';
 	public $adapter    ='airborne';
 	public $version    ='I';
-	public $codeVersion='1.0.6';	
+	public $codeVersion='1.0.7';	
 	
 	public $countries=array('India','Japan','Austria','Italy','China','Britain','France','Germany','Turkey','Russia');	
 

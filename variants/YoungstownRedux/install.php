@@ -197,7 +197,7 @@ $territoryRawData=array(
 	array('Eastern Indian Ocean', 'Sea', 'No', 0, 718, 552, 729, 553),
 	array('Celebes Sea', 'Sea', 'No', 0, 878, 562, 880, 563),
 	array('Fez', 'Land', 'No', 0, 246, 432, 251, 432),
-	array('Gulf of Thailand', 'Sea', 'No', 0, 801, 386, 799, 385),
+	array('Gulf of Thailand', 'Sea', 'No', 0, 776, 475, 776, 477),
 	array('Rumania', 'Coast', 'Yes', 0, 313, 255, 314, 254),
 	array('Spain (North Coast)', 'Coast', 'No', 0, 57, 295, 55, 297),
 	array('Spain (South Coast)', 'Coast', 'No', 0, 98, 336, 94, 345),
@@ -418,9 +418,12 @@ $bordersRawData=array(
 	array('Ankara','Armenia','Yes','Yes'),
 	array('Ankara','Black Sea','Yes','No'),
 	array('Konya','Armenia','No','Yes'),
+	array('Konya','Levant','No','Yes'),
+	array('Konya','Levant (North Coast)','Yes','No'),
 	array('Konya','Eastern Mediterranean Sea','Yes','No'),
 	array('Konya','Aegean Sea','Yes','No'),
 	array('Armenia','Bagdad','No','Yes'),
+	array('Armenia','Levant','No','Yes'),
 	array('Armenia','Black Sea','Yes','No'),
 	array('Armenia','Persia','No','Yes'),
 	array('Bagdad','Levant','No','Yes'),
@@ -769,6 +772,7 @@ if (!file_exists('variants/'.$this->name.'/cache/sampleMap.png'))
 	copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
 
 ?>
+
 
 
 
