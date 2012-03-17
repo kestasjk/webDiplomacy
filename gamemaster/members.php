@@ -70,7 +70,12 @@ class processMembers extends Members
 	 */
 	function notifyExtended()
 	{
-		libGameMessage::send(0, 'GameMaster', 'Per vote the gamephase got extended by 4 days.', $this->Game->id);
+		$msg= "Per 2/3 majority vote the gamephase got extended by 4 days.\n(Voters: ";
+		foreach($this->ByStatus['Playing'] as $Member)
+			if (in_array('Extend',$Member->votes))
+				$msg.= $Member->country . ' / ';
+		$msg=rtrim($msg,' /') . ")"; 
+		libGameMessage::send(0, 'GameMaster', $msg , $this->Game->id);		
 		$this->sendToPlaying('No',"The gamephase got extended by 4 days.");
 	}
 	/**

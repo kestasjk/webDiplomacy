@@ -115,11 +115,16 @@ class Members
 	function votesPassed()
 	{
 		$votes=self::$votes;
+		$ext=0;
 		foreach($this->ByStatus['Playing'] as $Member)
 		{
 			$votes = array_intersect($votes, $Member->votes);
-			if(count($votes)==0) break;
+			if (in_array('Extend',$Member->votes))
+				$ext++;
 		}
+		if ($ext >= 2/3*count($this->ByStatus['Playing']))
+			$votes[]='Extend';
+			
 		return $votes;
 	}
 
