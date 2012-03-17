@@ -263,6 +263,7 @@ $bordersRawData=array(
 	array('Vladivostok','Korea','Yes','Yes'),
 	array('Vladivostok','Sea of Okhotsk','Yes','No'),
 	array('Vladivostok','Sea of Japan','Yes','No'),
+	array('Saint Petersburg','Norway','No','Yes'),
 	array('Saint Petersburg (South Coast)','Gulf of Bothina','Yes','No'),
 	array('Saint Petersburg (North Coast)','Norway','Yes','No'),
 	array('Saint Petersburg (North Coast)','Barents Sea','Yes','No'),
@@ -773,6 +774,7 @@ if (!file_exists('variants/'.$this->name.'/cache/sampleMap.png'))
 	copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
 
 ?>
+
 
 
 
