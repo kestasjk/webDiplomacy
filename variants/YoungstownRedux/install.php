@@ -709,6 +709,7 @@ $bordersRawData=array(
 	array('Yellow Sea','East China Sea','Yes','No'),
 	array('Sapporo','Sea of Japan','Yes','No'),
 	array('Sapporo','North Pacific Ocean','Yes','No'),
+	array('Sea of Okhotsk','Sea of Japan','Yes','No'),
 	array('Sea of Okhotsk','North Pacific Ocean','Yes','No'),
 	array('Sea of Japan','North Pacific Ocean','Yes','No'),
 	array('Sea of Japan','Akita','Yes','No'),
@@ -772,6 +773,7 @@ if (!file_exists('variants/'.$this->name.'/cache/sampleMap.png'))
 	copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
 
 ?>
+
 
 
 
