@@ -1,0 +1,31 @@
+@CHARSET "ISO-8859-1";
+	
+.variantPirates .country0 { color: #CE7800 ! important; } /* Global  */
+.variantPirates .country1 { color: #b8ad00 ! important; } /* Spain */
+.variantPirates .country2 { color: #DD51BD ! important; } /* England */
+.variantPirates .country3 { color: #007BA5 ! important; } /* France */
+.variantPirates .country4 { color: #E6B43C ! important; } /* Holland */
+.variantPirates .country5 { color: #b05500 ! important; } /* Dunkirkers */
+.variantPirates .country6 { color: #6F005D ! important; } /* Henry Morgan */
+.variantPirates .country7 { color: #5050FA ! important; } /* Francois l Olonnais */
+.variantPirates .country8 { color: #F08282 ! important; } /* Isaac Rochussen */
+.variantPirates .country9 { color: #8cac5e ! important; } /* The Infamous El Guapo */
+.variantPirates .country10 { color: #9a76af ! important; } /* Daniel "The Exterminator" Montbars */
+.variantPirates .country11 { color: #8B481A ! important; } /* Roche "The Rock" Braziliano */
+.variantPirates .country12 { color: #32AA1E ! important; } /* Bartolomeu "The Portuguese" de la Cueva */
+.variantPirates .country13 { color: #71b5a6 ! important; } /* Daniel "The Terror" Johnson */
+
+.variantPirates .occupationBar1 { background-color: #b8ad00; } /* Spain */
+.variantPirates .occupationBar2 { background-color: #DD51BD; } /* England */
+.variantPirates .occupationBar3 { background-color: #007BA5; } /* France */
+.variantPirates .occupationBar4 { background-color: #E6B43C; } /* Holland */
+.variantPirates .occupationBar5 { background-color: #b05500; } /* Dunkirkers */
+.variantPirates .occupationBar6 { background-color: #6F005D; } /* Henry Morgan */
+.variantPirates .occupationBar7 { background-color: #5050FA; } /* Francois l Olonnais */
+.variantPirates .occupationBar8 { background-color: #F08282; } /* Isaac Rochussen */
+.variantPirates .occupationBar9 { background-color: #8cac5e; } /* The Infamous El Guapo */
+.variantPirates .occupationBar10 { background-color: #9a76af; } /* Daniel "The Exterminator" Montbars */
+.variantPirates .occupationBar11 { background-color: #8B481A; } /* Roche "The Rock" Braziliano */
+.variantPirates .occupationBar12 { background-color: #32AA1E; } /* Bartolomeu "The Portuguese" de la Cueva */
+.variantPirates .occupationBar13 { background-color: #71b5a6; } /* Daniel "The Terror" Johnson */
+
