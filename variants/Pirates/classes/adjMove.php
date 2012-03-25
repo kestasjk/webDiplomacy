@@ -48,8 +48,22 @@ class PiratesVariant_adjMove extends adjMove
 			$attackStrength['min'] = $attackStrength['min']+3;
 			$attackStrength['max'] = $attackStrength['max']+3;
 		}
-		
 		return $attackStrength;
 	}
 	
+	protected function _holdStrength()
+	{
+		global $Game;
+		$holdStrength = parent::_holdStrength();
+		// If we're a fregatte 
+		if ( in_array($this->id, $Game->Variant->fregatte) ) {
+			$holdStrength['min'] = $holdStrength['min']+0.5;
+			$holdStrength['max'] = $holdStrength['max']+0.5;
+		}
+		if ( $this->countryID == 14 ) {
+			$holdStrength['min'] = $holdStrength['min']+3;
+			$holdStrength['max'] = $holdStrength['max']+3;
+		}		
+		return $holdStrength;
+	}
 }
