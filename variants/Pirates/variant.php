@@ -35,7 +35,7 @@ class PiratesVariant extends WDVariant {
 	public $author     ='Gavin Atkinson';
 	public $adapter    ='Gavin Atkinson, Oliver Auth';
 	public $version    ='1';
-	public $codeVersion='1.0.1';	
+	public $codeVersion='1.0.2';	
 	
 	public $countries=array('Spain','England','France','Holland','Dunkirkers','Henry Morgan','Francois l Olonnais','Isaac Rochussen','The Infamous El Guapo','Daniel "The Exterminator" Montbars','Roche "The Rock" Braziliano','Bartolomeu "The Portuguese" de la Cueva','Daniel "The Terror" Johnson');	
 

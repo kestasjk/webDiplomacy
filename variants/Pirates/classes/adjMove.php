@@ -35,35 +35,88 @@ class PiratesVariant_adjMove extends adjMove
 		return parent::defenderMoving();
 	}
 	
-	protected function _attackStrength()
+	protected function supportStrength($checkCountryID=false)
 	{
 		global $Game;
-		$attackStrength = parent::_attackStrength();
-		// If we're a fregatte 
+		$min = 1;
+		$max = 1;
+		
 		if ( in_array($this->id, $Game->Variant->fregatte) ) {
-			$attackStrength['min'] = $attackStrength['min']+0.5;
-			$attackStrength['max'] = $attackStrength['max']+0.5;
+			$min += 0.5;
+			$max += 0.5;
+		} elseif ( $this->countryID == 14 ) {
+			$min += 3;
+			$max += 3;
 		}
-		if ( $this->countryID == 14 ) {
-			$attackStrength['min'] = $attackStrength['min']+3;
-			$attackStrength['max'] = $attackStrength['max']+3;
+		
+		foreach($this->supporters as $supporter)
+		{
+			/*
+			 * If specified then countries are checked to ensure no-one can
+			 * give attack support against their own countryID
+			 */
+			if ( $checkCountryID and $this->defender->countryID == $supporter->countryID )
+				continue;
+			
+			try
+			{
+				if( $supporter->success() )
+				{
+					$min++;
+					$max++;
+				}
+			}
+			catch(adjParadoxException $pe)
+			{
+				$max++; // It is a possible supporter
+				if ( isset($p) ) $p->downSizeTo($pe);
+				else $p = $pe;
+			}
 		}
-		return $attackStrength;
+		
+		$support = array('min'=>$min,'max'=>$max);
+		if ( isset($p) )
+			$support['paradox'] = $p;
+		
+		return $support;
 	}
 	
 	protected function _holdStrength()
 	{
 		global $Game;
-		$holdStrength = parent::_holdStrength();
-		// If we're a fregatte 
-		if ( in_array($this->id, $Game->Variant->fregatte) ) {
-			$holdStrength['min'] = $holdStrength['min']+0.5;
-			$holdStrength['max'] = $holdStrength['max']+0.5;
+		try
+		{
+			if ( $this->success() )
+			{
+				$min = 0;
+				$max = 0;
+			}
+			else
+			{
+				$min = 1;
+				$max = 1;
+			}
 		}
-		if ( $this->countryID == 14 ) {
-			$holdStrength['min'] = $holdStrength['min']+3;
-			$holdStrength['max'] = $holdStrength['max']+3;
-		}		
+		catch(adjParadoxException $p)
+		{
+			$min = 0;
+			$max = 1;
+		}
+		
+		if ( in_array($this->id, $Game->Variant->fregatte) ) {
+			$min += 0.5;
+			$max += 0.5;
+		} elseif ( $this->countryID == 14 ) {
+			$min += 3;
+			$max += 3;
+		}
+		
+		$holdStrength = array('min'=>$min,'max'=>$max);
+		if ( isset($p) )
+			$holdStrength['paradox'] = $p;
+		
 		return $holdStrength;
 	}
+	
+	
 }
