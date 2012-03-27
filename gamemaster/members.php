@@ -571,6 +571,10 @@ class processMembers extends Members
 		if ( $this->Game->maxLeft < $User->gamesLeft )
 			throw new Exception("You went CD in too many games. (Required: not more than ".$this->Game->maxLeft." / You:".$User->gamesLeft.")");
 
+		// Check for reliability-rating:
+		if ( count($this->Game->Variant->countries)>2 && $this->Game->phase == 'Pre-game' && $message = $User->isReliable())
+			libHTML::notice('Reliable rating not high enough', $message);
+
 		// Check if there is a mute against a player
 		list($muted) = $DB->sql_row("SELECT count(*) FROM wD_Members AS m
 									LEFT JOIN wD_MuteUser AS f ON ( m.userID = f.userID )
@@ -660,6 +664,11 @@ class processMembers extends Members
 			$CD->send('No','No','You took over '.$CDCountryName.'! Good luck');
 		}
 
+		if ($User->leftBalanced < $User->gamesLeft)
+			$DB->sql_put("UPDATE wD_Users
+					SET leftBalanced = leftBalanced + 1
+					WHERE id = ".$User->id);
+			
 		$this->Game->gamelog('New member joined');
 
 		$this->joinedRedirect();

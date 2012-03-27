@@ -181,6 +181,7 @@ class User {
 	public $missedMoves;
 	public $phasesPlayed;
 	public $gamesLeft;
+	public $leftBalanced;
 	
 	public $lastMessageIDViewed;
 
@@ -449,7 +450,8 @@ class User {
 			u.silenceID,
 			u.missedMoves,
 			u.phasesPlayed,			
-			u.gamesLeft,			
+			u.gamesLeft,
+			u.leftBalanced,			
 			IF(s.userID IS NULL,0,1) as online
 			FROM wD_Users u
 			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
@@ -910,7 +912,7 @@ class User {
 		if ($this->phasesPlayed == 0) {
 			$reliability = 100;
 		} else {
-			$reliability = ceil(100 - $this->missedMoves / $this->phasesPlayed * 200);
+			$reliability = ceil(100 - $this->missedMoves / $this->phasesPlayed * 200 - (10 * ($this->gamesLeft - $this->leftBalanced)));
 			if ($reliability < 0) $reliability = 0;
 		}
 		return $reliability;
@@ -939,7 +941,7 @@ class User {
 			if ( $reliability == 0 )
 				return "<p>NOTICE: You are not allowed to join or create any games given your reliability rating of ZERO (meaning you have missed more than 50% of your orders across all of your games)</p><p>You can improve your reliability rating by not missing any orders, even if it's just saving the default 'Hold' for everything.</p><p>If you are not currently in a game and cannot join one because of this restriction, then you may contact an <a href=\"profile.php?userID=5\">admin</a> and briefly explain your extremely low rating.  The admin, at his or her discretion, may set your reliability rating high enough to allow you 1 game at a time.  By consistently putting in orders every turn in that new game, your reliability rating will improve enough to allow you more simultaneous games.  2-player variants are not affected by this restriction.</p>";
 			elseif ( $totalGames >= $maxGames ) // Can't have more than reliability rating / 10 games up
-				return "<p>NOTICE: You cannot join or create a new game, because you seem to be having trouble keeping up with the orders in the ones you already have</p><p>You can improve your reliability rating by not missing any orders, even if it's just saving the default 'Hold' for everything.</p><p>Please note that if you are marked as 'Left' for a game, your rating will continue to take hits until someone takes over for you.</p><p>Your current rating of <strong>".$reliability."</strong> allows you to have no more than <strong>".$maxGames."</strong> concurrent games before you see this message.  Every 10 reliability points will allow you an additional game. 2-player variants are not affected by this restriction.</p>";
+				return "<p>NOTICE: You cannot join or create a new game, because you seem to be having trouble keeping up with the orders in the ones you already have</p><p>You can improve your reliability rating by not missing any orders, even if it's just saving the default 'Hold' for everything.</p><p>Please note that if you are marked as 'Left' for a game, your rating will continue to take hits until someone takes over for you.</p><p>Your current rating of <strong>".$reliability."</strong> allows you to have no more than <strong>".$maxGames."</strong> concurrent games before you see this message.  Every 10 reliability points will allow you an additional game. 2-player variants are not affected by this restriction. Any you can join as many 'open' spots in ongoing games as you like if there are no additional restrictions for the game.</p>";
 		}
 		elseif ( $totalGames > 1 && $this->phasesPlayed / $totalGames < 3 ) // This will prevent newbies from joining 10 games and then leaving right away.  Everyone can join 2 without any restrictions, then they can join more after they've played them for 3 phases.  
 			return "<p>You're taking on too many games at once for a new member.  Please relax and enjoy the game or games that you are currently in before joining/creating a new one.  You need to play <strong>".($totalGames*3-$this->phasesPlayed)."</strong> more phases (across all your games) before you can take on another game.  The quickest way to do this is to leave any pre-games you might be in and take over a civil disorder power from another game. 2-player variants are not affected by this restriction.</p>";
@@ -949,14 +951,17 @@ class User {
 	{
 		$reliability = $this->getReliability();
 		if ($reliability >= 90)
-			$relColor = 'blue';
+			return 'A';
 		elseif ($reliability >= 80)
-			$relColor = 'green';
+			return 'B';
+		elseif ($reliability >= 70)
+			return 'C';
+		elseif ($reliability >= 60)
+			return 'D';
 		elseif ($reliability >= 50)
-			$relColor = 'orange';
+			return 'E';
 		else
-			$relColor = 'red';			
-		return '<span style="color: '.$relColor.'">'.$reliability.'% (missed '.$this->missedMoves.' of '.$this->phasesPlayed.' phases)</span>';
+			return 'F';			
 	}
 	
 }

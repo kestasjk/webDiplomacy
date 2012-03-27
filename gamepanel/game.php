@@ -444,8 +444,20 @@ class panelGame extends Game
 		if (($this->minRating > 0) || ($this->minPhases > 0) || ($this->maxLeft < 99))
 		{
 			$buf .= '<em>Requirements:</em> ';
-			if( $this->minRating > 0)
-				$buf .= 'RR > <em>'.(int)($this->minRating - 1) .'%</em> / ';
+			if( $this->minRating > 0) {
+				$buf .= 'RR >= <em>';
+				if ($this->minRating >= 90)
+					$buf .=  'A';
+				elseif ($this->minRating >= 80)
+					$buf .=  'B';
+				elseif ($this->minRating >= 70)
+					$buf .=  'C';
+				elseif ($this->minRating >= 60)
+					$buf .=  'D';
+				else
+					$buf .=  'E';
+				$buf .= '</em> / ';
+			}
 			if( $this->minPhases > 0)
 				$buf .= 'MinPhases > <em>'.(int)($this->minPhases - 1) .'</em> / ';
 			if( $this->maxLeft < 99)

@@ -145,6 +145,15 @@ class Member
 	 * @var string
 	 */
 	var $userType;
+	
+	/**
+	 * Number of Missed moves and phases played by the member...
+	 * @var int
+	 */
+	public $missedMoves;
+	public $phasesPlayed;
+	public $gamesLeft;
+	public $leftBalanced;
 
 	/**
 	 * Create a Member object from a database Member record row
@@ -204,7 +213,7 @@ class Member
 
 			$output .= 'href="profile.php?userID='.$this->userID.'">'.$this->username;
 		}
-		return $output.' ('.$this->points.User::typeIcon($this->userType).')</a>';
+		return $output.' ('.$this->points.User::typeIcon($this->userType).'/'.$this->missedMoves.')</a>';
 	}
 
 	function pointsValue()
@@ -226,5 +235,26 @@ class Member
 			$this->userID, $this->gameID, 'Game',
 			$keep, $private, $text, $this->Game->name, $this->gameID);
 	}
+	
+	public function ReliabilityAsString()
+	{
+		if ($this->phasesPlayed == 0)
+			return '?';
+			
+		$reliability = ceil(100 - $this->missedMoves / $this->phasesPlayed * 200 - (10 * ($this->gamesLeft - $this->leftBalanced)));
+		if ($reliability >= 90)
+			return 'A';
+		elseif ($reliability >= 80)
+			return 'B';
+		elseif ($reliability >= 70)
+			return 'C';
+		elseif ($reliability >= 60)
+			return 'D';
+		elseif ($reliability >= 50)
+			return 'E';
+		else
+			return 'F';			
+	}
+	
 }
 ?>

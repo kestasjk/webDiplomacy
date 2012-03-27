@@ -46,13 +46,6 @@ if ( $User->type['User'] && ( isset($_REQUEST['join']) || isset($_REQUEST['leave
 		libVariant::setGlobals($Variant);
 		$Game = $Variant->processGame($gameID);
 		
-		/**
-		* Check for reliability, bevore a user can join a game...
-		*/
-		if ( (isset($_REQUEST['join'])) && (count($Game->Variant->countries)>2) && ($message = $User->isReliable()) )
-			libHTML::notice('Reliable rating not high enough', $message);
-		// END RELIABILITY-PATCH
-
 		if ( isset($_REQUEST['join']) )
 		{
 			// They will be stopped here if they're not allowed.

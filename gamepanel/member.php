@@ -165,7 +165,7 @@ class panelMember extends Member
 		else
 			return '<a href="profile.php?userID='.$this->userID.'">'.$this->username.'</a>
 				'.libHTML::loggedOn($this->userID).'
-				<span class="points">('.$this->points.libHTML::points().User::typeIcon($this->userType).')</span>'
+				<span class="points">('.$this->points.libHTML::points().User::typeIcon($this->userType).' / <b>'.$this->ReliabilityAsString().'</b>)</span>'
 				.(defined('AdminUserSwitch') ? ' (<a href="board.php?gameID='.$this->gameID.'&auid='.$this->userID.'" class="light">+</a>)':'');
 	}
 

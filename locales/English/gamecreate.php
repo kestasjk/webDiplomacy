@@ -254,7 +254,14 @@ else
 		Rating requirements:
 	</li>
 	<li class="formlistfield">
-		<b>Min Rating: </b><input type="text" name="newGame[minRating]" value="0" size="3"> / 
+		<b>Min Rating: </b><select name="newGame[minRating]">
+			<option value=00 selected>none</option>
+			<option value=90>A</option>
+			<option value=80>B</option>
+			<option value=70>C</option>
+			<option value=60>D</option>
+			<option value=50>E</option>
+			</select> / 
 		<b>Min Phases: </b><input type="text" name="newGame[minPhases]" value="0" size="5"> / 
 		<b>Max CDs: </b><input type="text" name="newGame[maxLeft]" value="99" size="2">
 	</li>
