@@ -356,7 +356,6 @@ $bordersRawData=array(
 	array('South German Sea','Bremen','Yes','No'),
 	array('South German Sea','Friesland','Yes','No'),
 	array('South German Sea','Lothairingia','Yes','No'),
-	array('South German Sea','Gulf of Aden','Yes','No'),
 	array('South German Sea','Veletia (West Coast)','Yes','No'),
 	array('Brittish Channel','North Ocean Sea','Yes','No'),
 	array('Brittish Channel','Lothairingia','Yes','No'),
@@ -1146,6 +1145,7 @@ InstallCache::terrJSON($this->territoriesJSONFile(),$this->mapID);
 
 // Copy the smallmap-sample to the cache-directory to avoid a screwed variantpage (there is no smallmap available)
 copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
+
 
 
 
