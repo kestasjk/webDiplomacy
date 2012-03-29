@@ -515,7 +515,7 @@ class Game
 			 * In the first turns extend the gamephase and CD all users who failed to enter an order.
 			 */
 			$specialCD=(isset(Config::$specialCD) ? (Config::$specialCD) : 0);
-			if ($this->turn < $specialCD )
+			if (($this->turn < $specialCD) && (count($this->Variant->countries) > 2))
 			{
 				require_once "lib/gamemessage.php";
 				$foundNMR=false;
