@@ -295,6 +295,25 @@ class processMembers extends Members
 			$Member->setDrawn( $winnings );
 		$this->writeLog();
 	}
+	
+	/**
+	 * Set members to drawn, giving points to those still around and supplements to those who had left
+	 */
+	function setConcede()
+	{
+		$this->prepareLog();
+		assert('count($this->ByStatus[\'Playing\']) > 0');
+
+		foreach($this->ByStatus['Left'] as $Member)
+			$Member->setResigned( );
+
+		foreach($this->ByStatus['Playing'] as $Member)
+		{
+			if (in_array('Concede',$Member->votes))
+				$Member->setDefeated();
+		}
+		$this->writeLog();
+	}
 
 	/**
 	 * Set members to cancelled due to not enough players, giving all their bets back

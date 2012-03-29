@@ -110,20 +110,24 @@ class Members
 		return ((float)$this->Game->pot / (float)$this->supplyCenterCount('Playing'));
 	}
 
-	static $votes = array('Draw','Pause','Cancel','Extend');
+	static $votes = array('Draw','Pause','Cancel','Extend','Concede');
 
 	function votesPassed()
 	{
 		$votes=self::$votes;
-		$ext=0;
+		$ext=0; $concede=0;
 		foreach($this->ByStatus['Playing'] as $Member)
 		{
 			$votes = array_intersect($votes, $Member->votes);
-			if (in_array('Extend',$Member->votes))
+			if (in_array('Extend' ,$Member->votes))
 				$ext++;
+			if (in_array('Concede',$Member->votes))
+				$concede++;
 		}
 		if ($ext >= 2/3*count($this->ByStatus['Playing']))
 			$votes[]='Extend';
+		if ($concede >= (count($this->ByStatus['Playing']) - 1) && ($concede > 0))
+			$votes[]='Concede';
 			
 		return $votes;
 	}
