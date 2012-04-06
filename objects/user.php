@@ -21,6 +21,7 @@
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 require_once('objects/notice.php');
+require_once('lib/reliability.php');
 
 /**
  * Holds information on a user for display, or to manage certain user related functions such as logging
@@ -903,19 +904,12 @@ class User {
 	}
 	
 	/**
-	 * Get a user's reliability rating.  Reliability rating is 100 minus phases missed / phases played * 200, not to be lower than 0
-	 * Examples: If a user misses 5% of their games, rating would be 90, 15% would be 70, etc.  Certain features of the site (such as creating and joining games) will be restricted if the reliability rating is too low.
+	 * Get a user's reliability rating.	 
 	 * @return reliability
 	 */
 	public function getReliability()
 	{
-		if ($this->phasesPlayed == 0) {
-			$reliability = 100;
-		} else {
-			$reliability = ceil(100 - $this->missedMoves / $this->phasesPlayed * 200 - (10 * ($this->gamesLeft - $this->leftBalanced)));
-			if ($reliability < 0) $reliability = 0;
-		}
-		return $reliability;
+		return libReliability::calcReliability($this->missedMoves, $this->phasesPlayed, $this->gamesLeft, $this->leftBalanced);
 	}
 	
 	/**
@@ -946,23 +940,6 @@ class User {
 		elseif ( $totalGames > 1 && $this->phasesPlayed / $totalGames < 3 ) // This will prevent newbies from joining 10 games and then leaving right away.  Everyone can join 2 without any restrictions, then they can join more after they've played them for 3 phases.  
 			return "<p>You're taking on too many games at once for a new member.  Please relax and enjoy the game or games that you are currently in before joining/creating a new one.  You need to play <strong>".($totalGames*3-$this->phasesPlayed)."</strong> more phases (across all your games) before you can take on another game.  The quickest way to do this is to leave any pre-games you might be in and take over a civil disorder power from another game. 2-player variants are not affected by this restriction.</p>";
 	}
-	
-	public function ReliabilityAsString()
-	{
-		$reliability = $this->getReliability();
-		if ($reliability >= 90)
-			return 'A';
-		elseif ($reliability >= 80)
-			return 'B';
-		elseif ($reliability >= 70)
-			return 'C';
-		elseif ($reliability >= 60)
-			return 'D';
-		elseif ($reliability >= 50)
-			return 'E';
-		else
-			return 'F';			
-	}
-	
+
 }
 ?>

@@ -533,6 +533,7 @@ class Game
 							$DB->sql_put("UPDATE wD_Members SET status='Left' WHERE id = ".$Member->id);
 							unset($this->Members->ByStatus['Playing'][$Member->id]);
 							$Member->status = 'Left';
+							$Member->updateReliability('gamesLeft', '+ 1');
 							$this->Members->ByStatus['Left'][$Member->id] = $Member;
 							libGameMessage::send(0, 'GameMaster', 'NMR from '.$Member->country.'. Send the country in CD.', $this->id);
 						}
@@ -548,7 +549,7 @@ class Game
 										minimumBet = ".$this->minimumBet."
 										WHERE id = ".$this->id);
 						libGameMessage::send(0, 'GameMaster', 'Missing orders for '.$this->Variant->turnAsDate($this->turn).' ('.$this->phase.'). Extending phase. You need to search for a replacement to make this game progress.', $this->id);
-						$this->Members->updateReliability();
+						$this->Members->updateReliabilities();
 					}
 					return false;
 				}

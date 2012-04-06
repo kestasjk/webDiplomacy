@@ -583,10 +583,10 @@ class processMembers extends Members
 			throw new Exception("You cannot join this game.");
 
 		// Check for additional requirements:
-		if ( $this->Game->minRating > $User->getReliability())
-			throw new Exception("You reliable-rating is too low to join this game. (Required:".$this->Game->minRating."% / You:".$User->getReliability()."%)");
 		if ( $this->Game->minPhases > $User->phasesPlayed)
 			throw new Exception("You did not play enough phases to join this game. (Required:".$this->Game->minPhases." / You:".$User->phasesPlayed.")");
+		if ( $this->Game->minRating > $User->getReliability())
+			throw new Exception("You reliable-rating is too low to join this game. (Required:".$this->Game->minRating."% / You:".$User->getReliability()."%)");
 		if ( $this->Game->maxLeft < $User->gamesLeft )
 			throw new Exception("You went CD in too many games. (Required: not more than ".$this->Game->maxLeft." / You:".$User->gamesLeft.")");
 
@@ -667,6 +667,12 @@ class processMembers extends Members
 			$CD->missedPhases = 0;
 			$CD->orderStatus->Ready=false;
 			$CD->points = $User->points;
+			$CD->missedMoves = $User->missedMoves;
+			$CD->phasesPlayed = $User->phasesPlayed;
+			$CD->gamesLeft = $User->gamesLeft;
+			$CD->leftBalanced = $User->leftBalanced;
+			
+			$CD->updateReliability('leftBalanced', '+ 1');
 
 			$this->ByUserID[$CD->userID] = $CD;
 			$this->ByStatus['Playing'][$CD->id] = $CD;
@@ -682,11 +688,6 @@ class processMembers extends Members
 				$this->sendExcept($CD,'No',$User->username.' has taken over '.$CDCountryName.'.');
 			$CD->send('No','No','You took over '.$CDCountryName.'! Good luck');
 		}
-
-		if ($User->leftBalanced < $User->gamesLeft)
-			$DB->sql_put("UPDATE wD_Users
-					SET leftBalanced = leftBalanced + 1
-					WHERE id = ".$User->id);
 			
 		$this->Game->gamelog('New member joined');
 

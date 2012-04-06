@@ -878,7 +878,7 @@ class processGame extends Game
 		/*
 		 * Check for missed turns and adjust the counter in the user-data
 		 */
-		$this->Members->updateReliability();
+		$this->Members->updateReliabilities();
 		
 		/*
 		 * In the functions below only 'Playing' and 'Left' status members are dealt with:

@@ -19,6 +19,7 @@
  */
 
 require_once('objects/basic/set.php');
+require_once('lib/reliability.php');
 
 /**
  * An object representing a relationship between a user and a game. Mostly contains
@@ -236,24 +237,28 @@ class Member
 			$keep, $private, $text, $this->Game->name, $this->gameID);
 	}
 	
-	public function ReliabilityAsString()
+	/**
+	 * Update a members reliability-stats
+	 */
+	function updateReliability($type, $calc)
 	{
-		if ($this->phasesPlayed == 0)
-			return '?';
+		global $DB;
+		
+		if ($type == 'leftBalanced' && ($this->leftBalanced >= $this->gamesLeft))
+			return;
 			
-		$reliability = ceil(100 - $this->missedMoves / $this->phasesPlayed * 200 - (10 * ($this->gamesLeft - $this->leftBalanced)));
-		if ($reliability >= 90)
-			return 'A';
-		elseif ($reliability >= 80)
-			return 'B';
-		elseif ($reliability >= 70)
-			return 'C';
-		elseif ($reliability >= 60)
-			return 'D';
-		elseif ($reliability >= 50)
-			return 'E';
-		else
-			return 'F';			
+		if ( (count($this->Game->Variant->countries) > 2) && ($this->Game->phaseMinutes > 30) )
+			$DB->sql_put("UPDATE wD_Users SET ".$type." = ".$type." ".$calc." WHERE id=".$this->userID);		
+	}
+
+	/**
+	 * Get a user's Grade... 
+	 * @return grade as string...
+	 */
+	public function getGrade()
+	{
+		$reliability = libReliability::calcReliability($this->missedMoves, $this->phasesPlayed, $this->gamesLeft, $this->leftBalanced);
+		return libReliability::Grade($reliability);
 	}
 	
 }

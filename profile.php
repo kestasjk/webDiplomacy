@@ -283,7 +283,7 @@ print '<li><strong>Rank:</strong> '.$rankingDetails['rank'].'</li>';
 /**
  * Add reliability-rating to the profile-page
  */
-print '<li><strong>Reliabilty Rating:</strong> <b>'.$UserProfile->ReliabilityAsString().'</b>';
+print '<li><strong>Reliabilty Rating:</strong> <b>'.libReliability::Grade($UserProfile->getReliability()).'</b>';
 print ' - ('.
 	$UserProfile->getReliability().'%) <a class="light" href="reliability.php?userID='.$UserProfile->id.'">(what\'s this?)</a><br>(missed '.
 	$UserProfile->missedMoves.' of '.

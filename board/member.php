@@ -90,6 +90,10 @@ class userMember extends panelMember
 					missedPhases=0, timeLoggedIn = ".time()."
 				WHERE id = ".$this->id
 			);
+			
+		// Ballanc his reliability
+		$this->updateReliability('leftBalanced', '+ 1');
+
 	}
 
 	/**

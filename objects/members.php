@@ -35,23 +35,19 @@ class Members
 	 * for games with more then 2 players and not live games...
 	 * "Left" users are included (for civil disorder to total phases ratio calculating)
 	 */
-	function updateReliability()
+	function updateReliabilities()
 	{
-		if ( (count($this->Game->Variant->countries) > 2) && ($this->Game->phaseMinutes > 30) )
+		foreach($this->ByStatus['Playing'] as $Member)
 		{
-			global $DB;
-
-			foreach($this->ByStatus['Playing'] as $Member) {
-				$DB->sql_put("UPDATE wD_Users SET phasesPlayed = phasesPlayed + 1 WHERE id=".$Member->userID);
-				if ($Member->missedPhases > 0) {
-					$DB->sql_put("UPDATE wD_Users SET missedMoves = missedMoves + 1 WHERE id=".$Member->userID);
-				}
-			}
-			
-			foreach($this->ByStatus['Left'] as $Member) {
-				$DB->sql_put("UPDATE wD_Users SET phasesPlayed = phasesPlayed + 1 WHERE id=".$Member->userID);
-				$DB->sql_put("UPDATE wD_Users SET missedMoves  = missedMoves  + 1 WHERE id=".$Member->userID);
-			}
+			$Member->updateReliability('phasesPlayed', '+ 1');
+			if ($Member->missedPhases > 0)
+				$Member->updateReliability('missedMoves', '+ 1');
+		}
+		
+		foreach($this->ByStatus['Left'] as $Member)
+		{
+			$Member->updateReliability('phasesPlayed', '+ 1');
+			$Member->updateReliability('missedMoves' , '+ 1');
 		}
 	}
 
