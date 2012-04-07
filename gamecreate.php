@@ -24,6 +24,7 @@
  */
 
 require_once('header.php');
+require_once('lib/reliability.php');
 
 if ( $Misc->Panic )
 {
@@ -53,7 +54,6 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 						,'countryID'
 						,'minRating' 
 						,'minPhases'
-						,'maxLeft'
 						,'maxTurns'
 						,'targetSCs'
 					);
@@ -135,12 +135,6 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			throw new Exception("You didn't play enough phases (".$User->phasesPlayed.") for your own requirement (".$input['minPhases'].")");
 		}
 		
-		$input['maxLeft'] = (int)$input['maxLeft'];		
-		if ( $input['maxLeft'] < $User->gamesLeft )
-		{
-			throw new Exception("You went CD in too many games (".$User->gamesLeft.") for your own requirement(".$input['maxLeft'].").");
-		}
-
 		$input['maxTurns'] = (int)$input['maxTurns'];		
 		if ( $input['maxTurns'] < 4 )
 			$input['maxTurns'] = 0;
@@ -153,7 +147,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 
 		// Create Game record & object
 		require_once('gamemaster/game.php');
-		$Game = processGame::create($input['variantID'], $input['name'], $input['password'], $input['bet'], $input['potType'], $input['phaseMinutes'], $input['joinPeriod'], $input['anon'], $input['pressType'],$input['maxTurns'],$input['targetSCs'],$input['minRating'],$input['minPhases'],$input['maxLeft']);
+		$Game = processGame::create($input['variantID'], $input['name'], $input['password'], $input['bet'], $input['potType'], $input['phaseMinutes'], $input['joinPeriod'], $input['anon'], $input['pressType'],$input['maxTurns'],$input['targetSCs'],$input['minRating'],$input['minPhases']);
 
 		/**
 		 * Check for reliability, bevore a user can create a new game...

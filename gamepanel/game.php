@@ -21,6 +21,7 @@
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 require_once('gamepanel/members.php');
+require_once('lib/reliability.php');
 
 /**
  * The game panel class; it extends the Game class, which contains the information, with a set
@@ -441,27 +442,13 @@ class panelGame extends Game
 			<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />';
 			
 		// Show join requirements:
-		if (($this->minRating > 0) || ($this->minPhases > 0) || ($this->maxLeft < 99))
+		if (($this->minRating > 0) || ($this->minPhases > 0))
 		{
 			$buf .= '<em>Requirements:</em> ';
-			if( $this->minRating > 0) {
-				$buf .= 'RR >= <em>';
-				if ($this->minRating >= 90)
-					$buf .=  'A';
-				elseif ($this->minRating >= 80)
-					$buf .=  'B';
-				elseif ($this->minRating >= 70)
-					$buf .=  'C';
-				elseif ($this->minRating >= 60)
-					$buf .=  'D';
-				else
-					$buf .=  'E';
-				$buf .= '</em> / ';
-			}
+			if( $this->minRating > 0)
+				$buf .= 'RR >= <em>'.libReliability::Grade($this->minRating).'</em> / ';
 			if( $this->minPhases > 0)
 				$buf .= 'MinPhases > <em>'.(int)($this->minPhases - 1) .'</em> / ';
-			if( $this->maxLeft < 99)
-				$buf .= 'CDs < <em>'.(int)($this->maxLeft + 1) .'</em> / ';
 		}
 		
 		if( $this->phase == 'Pre-game'&& count($this->Members->ByCountryID)>0 )

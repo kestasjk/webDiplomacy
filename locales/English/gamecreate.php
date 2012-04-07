@@ -253,25 +253,38 @@ else
 	<li class="formlisttitle">
 		Rating requirements:
 	</li>
+	<script type="text/javascript">
+		function changeMinPhases(i){
+			if (i > 0) {
+				document.getElementById('minPhases').options[0].value = '20';
+				document.getElementById('minPhases').options[0].text  = '20+';
+			} else {
+				document.getElementById('minPhases').options[0].value = '0';
+				document.getElementById('minPhases').options[0].text  = 'none';
+			}
+		}
+	</script>
 	<li class="formlistfield">
-		<b>Min Rating: </b><select name="newGame[minRating]">
-			<option value=00 selected>none</option>
-			<option value=90>A</option>
-			<option value=80>B</option>
-			<option value=70>C</option>
-			<option value=60>D</option>
-			<option value=50>E</option>
+		<b>Min Rating: </b><select name="newGame[minRating]" onChange="changeMinPhases(this.value)">
+			<option value=0 selected>none</option>
+			<?php
+				foreach (libReliability::$grades as $limit=>$grade)
+					print '<option value='.$limit.'>'.$grade.'</option>';
+			?>
 			</select> / 
-		<b>Min Phases: </b><input type="text" name="newGame[minPhases]" value="0" size="5"> / 
-		<b>Max CDs: </b><input type="text" name="newGame[maxLeft]" value="99" size="2">
+		<b>Min Phases: </b><select id="minPhases" name="newGame[minPhases]">
+			<option value=0 selected>none</option>
+			<option value=50>50+</option>
+			<option value=100>100+</option>
+			<option value=300>300+</option>
+			<option value=600>600+</option>
+			</select>
 	</li>
 	<li class="formlistdesc">
-		You can set some requirements that the players for your game need to fulfill.
-		
+		You can set some requirements that the players for your game need to fulfill.		
 		<ul>
-			<li><b>Minimum Rating:</b> Here you can choose the minimum Reliability Rating a player must have in order to join your game. (ie. 50 = only players who have a Reliability Rating of 50+ can join)</li>
-			<li><b>Minimum Phases:</b> Here you can choose how many phases a player must have played in order to join your game. (ie. 300 = only players who have played 300+ phases on vDip can join)</li>
-			<li><b>Maximum CDs:</b> Here you can set the maximum amount of CDs a player may have had before they are not allowed to join your game (ie. 15 = only players who have resigned/left a game 14 or less times can join your game)</li>
+			<li><b>Min Rating:</b> Here you can choose the minimum reliability a player must have to join your game.</li>
+			<li><b>Min Phases:</b> Here you can choose how many phases a player must have played to join your game.</li>
 		</ul>
 		This might lead to people not able to join your games, so choose your options wisely.<br /><br />
 		<strong>Default:</strong> No restrictions:
