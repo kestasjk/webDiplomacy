@@ -1092,7 +1092,8 @@ class processGame extends Game
 
 		// Sets the Members statuses to Drawn as needed, gives refunds, sends messages
 		$this->Members->setConcede();
-		$Winner = $this->Members->checkForWinner();
+		foreach($this->Members->ByStatus['Playing'] as $Member)
+			$Winner = $Member;
 		$this->setWon($Winner);
 
 		$DB->sql_put("DELETE FROM wD_Orders WHERE gameID = ".$this->id);

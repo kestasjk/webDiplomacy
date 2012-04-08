@@ -297,7 +297,7 @@ class processMembers extends Members
 	}
 	
 	/**
-	 * Set members to drawn, giving points to those still around and supplements to those who had left
+	 * Set all but one members to defeated. 
 	 */
 	function setConcede()
 	{
@@ -305,7 +305,7 @@ class processMembers extends Members
 		assert('count($this->ByStatus[\'Playing\']) > 0');
 
 		foreach($this->ByStatus['Left'] as $Member)
-			$Member->setResigned( );
+			$Member->setResigned();
 
 		foreach($this->ByStatus['Playing'] as $Member)
 		{
