@@ -24,6 +24,11 @@ class adminActionsVDip extends adminActions
 				'description' => 'Enter the min. Rating / min. phases played and the max. games left needed to join this game.',
 				'params' => array('gameID'=>'Game ID', 'minRating'=>'Min. Rating','minPhases'=>'Min. Phases played')
 			),
+			'extendPhase' => array(
+				'name' => 'Extend the curent phase',
+				'description' => 'How many days should the curent phase extend?',
+				'params' => array('gameID'=>'Game ID', 'extend'=>'Days to extend')
+			),
 		);
 		
 		adminActions::$actions = array_merge(adminActions::$actions, $vDipActions);
@@ -51,6 +56,20 @@ class adminActionsVDip extends adminActions
 
 		return 'The max. turns for the game was changed to: '.$targetSCs;
 	}
+	public function extendPhase(array $params)
+	{
+		global $DB;
+
+		$gameID = (int)$params['gameID'];
+		$extend = (int)$params['extend'];
+		
+		$DB->sql_put("UPDATE wD_Games
+			SET processTime = processTime + ". $extend * 86400 ."
+			WHERE id = ".$gameID);
+			
+		return 'The target curend phase for the game was extended by '.$extend.' day(s).';
+	}
+	
 	public function changeGameReq(array $params)
 	{
 		global $DB;
