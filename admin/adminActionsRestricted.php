@@ -29,7 +29,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  *
  * @package Admin
  */
-class adminActionsRestricted extends adminActionsVDip
+class adminActionsRestricted extends adminActionsRestrictedVDip
 {
 	public function __construct()
 	{

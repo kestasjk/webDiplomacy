@@ -21,8 +21,9 @@
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 require_once('admin/adminActions.php');
+require_once('admin/adminActionsVDip.php');
 require_once('admin/adminActionsForum.php');
-require_once('admin/adminActionsVdip.php');
+require_once('admin/adminActionsRestrictedVDip.php');
 require_once('admin/adminActionsRestricted.php');
 
 /**
