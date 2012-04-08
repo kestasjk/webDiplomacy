@@ -93,7 +93,7 @@ class processGame extends Game
 		{
 			$this->togglePause();
 		}
-		elseif( in_array('Extend', $votes) )
+		elseif( in_array('Extend', $votes) && $this->processStatus != 'Paused')
 		{
 			$this->extendPhase();
 		}
