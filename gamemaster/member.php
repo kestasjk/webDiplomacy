@@ -311,7 +311,7 @@ class processMember extends Member
 		/*
 		 * Increase the "Left" counter for the player...
 		 */
-		 $this->recordLeft();
+		 $this->updateReliability("gamesLeft", "+ 1");
 		 
 		// Register the civil disorder
 		$DB->sql_put(
