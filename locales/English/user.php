@@ -171,7 +171,10 @@ if( $User->type['User'] ) {
 		}
 		print '</ul></li>';
 	}
+	// Include the code for the countryswitch...
+	require_once('locales/'.$User->locale.'/countryswitch.php');
 }
+
 /*
  * This is done in PHP because Eclipse complains about HTML syntax errors otherwise
  * because the starting <form><ul> is elsewhere
@@ -182,5 +185,6 @@ print '</ul>
 
 <input type="submit" class="form-submit notice" value="Update">
 </form>';
+
 
 ?>
