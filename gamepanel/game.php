@@ -412,7 +412,7 @@ class panelGame extends Game
 	 */
 	function joinBar()
 	{
-		global $User;
+		global $DB,$User;
 
 		if ( $this->Members->isJoined() )
 		{
@@ -438,7 +438,20 @@ class panelGame extends Game
 			return 'A newly registered account can join this game;
 				<a href="register.php" class="light">register now</a> to join.';
 
-		$buf = '<form onsubmit="return confirm(\'Are you sure you want to join this game?\');" method="post" action="board.php?gameID='.$this->id.'"><div>
+				
+		$buf = '<form onsubmit="return confirm(\'Are you sure you want to join this game?';
+		
+		if ($this->phaseMinutes > 30)
+		{
+			list($turns,$games) = $DB->sql_row('SELECT SUM(turn), COUNT(*) FROM wD_Games WHERE variantID='.$this->Variant->id.' AND phase = "Finished"');
+			if ($games > 0)
+			{
+				$avgDur = libTime::timeLengthText($turns * 3 * $this->phaseMinutes * 60 / $games);
+				$buf .= '\nOn average a game with this settings takes '.$avgDur.' to complete.';
+			}
+		}
+		
+		$buf .= '\');" method="post" action="board.php?gameID='.$this->id.'"><div>
 			<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />';
 			
 		// Show join requirements:
