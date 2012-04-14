@@ -82,11 +82,7 @@ if ( isset($_REQUEST['newSwitch']) )
 								LEFT JOIN wD_MuteUser AS f ON ( m.userID = f.userID )
 								LEFT JOIN wD_MuteUser AS t ON ( m.userID = t.muteUserID )
 							WHERE m.gameID = ".$Game->id." AND (f.muteUserID =".$SendUser->id." OR t.userID =".$SendUser->id.")");
-	if ($muted > 0)
-	{
-		throw new Exception("You can't join. A player in this game has you muted or you muted a player in this game");
-	}
-
+							
 	// Check for additional requirements:
 	if ( $Game->minPhases > $SendUser->phasesPlayed)
 		print '<b>ERROR.</b>The User you selected did not play enough phases to join this game.<hr>';
@@ -94,7 +90,7 @@ if ( isset($_REQUEST['newSwitch']) )
 		print '<b>ERROR.</b>The reliability of User you selected is not high enough to join this game.<hr>';
 	elseif ( count($Variant->countries)>2 && $message = $SendUser->isReliable())
 		print '<b>ERROR.</b>The User you selected can not join new games at the moment.<hr>';
-	elseif ( array_key_exists ( $SendUser->id , $Game->Members->ByID))
+	elseif ( array_key_exists ( $toID , $Game->Members->ByUserID))
 		print '<b>ERROR.</b>The User you selected is already a member of this game.<hr>';
 	elseif ( $muted > 0)
 		print "<b>ERROR.</b>The User you selected can't join. A player in this game has him muted or he muted a player in this game<hr>";
