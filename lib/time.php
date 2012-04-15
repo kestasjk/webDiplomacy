@@ -92,7 +92,7 @@ class libTime
                 {
                     $days -= $month*30;
                     if ( $days > 0 )
-                        return $month.' month'.($month>1?'s':'').', '.$days.' days';
+                        return $month.' month'.($month>1?'s':'').', '.$days.' day'.($days>1?'s':'');
                     else
                         return $month.' month'.($month>1?'s':'');
                 }

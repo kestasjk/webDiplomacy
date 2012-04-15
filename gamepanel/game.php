@@ -444,10 +444,11 @@ class panelGame extends Game
 		if ($this->phaseMinutes > 30)
 		{
 			list($turns,$games) = $DB->sql_row('SELECT SUM(turn), COUNT(*) FROM wD_Games WHERE variantID='.$this->Variant->id.' AND phase = "Finished"');
-			if ($games > 0)
+			if ($games > 3)
 			{
-				$avgDur = libTime::timeLengthText($turns * 3 * $this->phaseMinutes * 60 / $games);
-				$buf .= '\nOn average a game with this settings takes '.$avgDur.' to complete.';
+				$avgDur = libTime::timeLengthText(($turns - $this->turn) * 3 * $this->phaseMinutes * 60 / $games);
+				if ($avgDur > 0)
+					$buf .= '\nOn average a game with this settings takes '.$avgDur.' to complete.';
 			}
 		}
 		
