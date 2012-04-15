@@ -118,8 +118,21 @@ class userMember extends panelMember
 		if(in_array($voteName, $this->votes))
 			unset($this->votes[array_search($voteName, $this->votes)]);
 		else
+		{
 			$this->votes[] = $voteName;
-
+			if ($voteName == 'Extend' || $voteName == 'Pause')
+			{
+				$count=0;
+				foreach($this->Game->Members->ByStatus['Playing'] as $Member)
+					if (in_array($voteName ,$Member->votes))
+						$count++;
+				if ($count == 1)
+				{
+					require_once "lib/gamemessage.php";
+					libGameMessage::send(0, 'GameMaster', $this->country.' voted for '.$voteName.'. Please consider backing this.', $this->Game->id);
+				}
+			}
+		}
 		$DB->sql_put("UPDATE wD_Members SET votes='".implode(',',$this->votes)."' WHERE id=".$this->id);
 	}
 
