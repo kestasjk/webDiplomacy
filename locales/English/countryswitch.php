@@ -101,7 +101,7 @@ if ( isset($_REQUEST['newSwitch']) )
 
 ?>
 	<form method="post"><ul class="formlist">
-	<li class="formlisttitle">Countries given away (BETA, use at your own rist):</li>
+	<li class="formlisttitle">Countries given away (BETA, use at your own risk):</li>
 	<li class="formlistfield">
 	<TABLE> <THEAD><TH>GameName</TH><TH>Send to</TH><TH>Send from</TH><TH>Status</TH><TH></TH></THEAD>
 		<?php
@@ -136,7 +136,7 @@ if ( isset($_REQUEST['newSwitch']) )
 	</li>
 	<li class="formlistdesc">All active switches.</li>
 	
-	<li class="formlisttitle">Create new Country Switch (BETA, use at your own rist):</li>
+	<li class="formlisttitle">Create new Country Switch (BETA, use at your own risk):</li>
 	<li class="formlistfield">
 	<TABLE> <THEAD><TH>GameName / ID</TH><TH>Send to UserID</TH><TH> </TH></THEAD><TR>
 	<TD><select name="newSwitch[gameID]">
