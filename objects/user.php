@@ -928,6 +928,13 @@ class User {
 	 */
 	function isReliable()
 	{
+		global $DB;
+		
+		// A player can't join new games, as long as he has active CountrySwiches.
+		list($openSwitches)=$DB->sql_row('SELECT COUNT(*) FROM wD_CountrySwitch WHERE (status = "Send" OR status = "Active") AND fromID='.$this->id);
+		if ($openSwitches > 0)
+			return "<p><b>NOTICE:</b></p><p>You can't join or create new games, as you have active CountrySwitches at the moment.</p>";
+
 		$reliability = $this->getReliability();
 		$maxGames = ceil($reliability / 10);
 		$totalGames = $this->getUncompletedGames();
