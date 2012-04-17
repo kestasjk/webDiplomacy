@@ -70,7 +70,7 @@ if ( isset($_REQUEST['newSwitch']) )
 {
 	$form  	= $_REQUEST['newSwitch'];
 	$fromID = (int)$User->id;
-	if ( isset ($form['toID']))
+	if ( isset ($form['toID']) &&  isset ($form['gameID']))
 	{
 
 		$toID   = (int)$form['toID'];
