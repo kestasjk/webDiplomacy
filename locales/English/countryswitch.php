@@ -70,10 +70,11 @@ if ( isset($_REQUEST['newSwitch']) )
 {
 	$form  	= $_REQUEST['newSwitch'];
 	$fromID = (int)$User->id;
-	$toID   = (int)$form['toID'];
-	$gameID = (int)$form['gameID'];
-	if ( $toID > 0)
+	if ( isset ($form['toID']))
 	{
+
+		$toID   = (int)$form['toID'];
+		$gameID = (int)$form['gameID'];
 		$Variant=libVariant::loadFromGameID($gameID);
 		$Game = $Variant->Game($gameID);
 		$SendUser = new User($toID);
