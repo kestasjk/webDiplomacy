@@ -523,13 +523,30 @@ class libHTML
 *INPUT FROM FIGLESQUIDGE HACK: *
 ********************************/            
 		if( !isset($_SESSION['lastSeenHome']) || $_SESSION['lastSeenHome'] < $User->timeLastSessionEnded )
-						  	$_SESSION['lastSeenHome']=$User->timeLastSessionEnded;
+			$_SESSION['lastSeenHome']=$User->timeLastSessionEnded;
+			
 		$newMsg = $DB->sql_row("SELECT timeSent FROM wD_Notices WHERE toUserID=".$User->id."
 								AND type='PM' AND SUBSTRING(linkName,1,3)!='To:'
 								AND timeSent>'".$_SESSION['lastSeenHome']."' LIMIT 1;");
 		if ($newMsg)
-			$gameNotifyBlock =  '<span class="variantClassic"><a class="country5" href="index.php?notices=on"><img title="Unread" alt="Not received" src="images/icons/alert.png"> New PM <img src="images/icons/mail.png" alt="New messages" title="New messages!"></a></span>';
+			$gameNotifyBlock .=  '<span class="variantClassic"><a class="country5" href="index.php?notices=on"><img title="Unread" alt="Not received" src="images/icons/alert.png"> New PM <img src="images/icons/mail.png" alt="New messages" title="New messages!"></a></span>';
 // END HACK
+
+/*****************************************************
+*  Alert the mods about a new Mesage in the ModForum *
+*****************************************************/
+		if( $User->type['Moderator'] )
+		{
+			if( !isset($_SESSION['lastSeenModForum']) || $_SESSION['lastSeenModForum'] < $User->timeLastSessionEnded )
+				$_SESSION['lastSeenModForum']=$User->timeLastSessionEnded;
+				
+			$newMsg = $DB->sql_row("SELECT timeSent FROM wD_ModForumMessages WHERE timeSent>'".$_SESSION['lastSeenModForum']."' LIMIT 1;");
+
+			if ($newMsg)
+				$gameNotifyBlock .=  '<span class="variantClassic"><a class="country5" href="modforum.php">New Post in Modforum <img src="images/icons/mail.png" alt="Mods" title="Modforum"></a></span>';
+		}
+// END ModMessage
+			
 		foreach ( $gameIDs as $gameID )
 		{
 			$notifyGame = $notifyGames[$gameID];
@@ -925,6 +942,7 @@ class libHTML
 				this.username="'.htmlentities($User->username).'";
 				this.points='.$User->points.'
 				this.lastMessageIDViewed='.$User->lastMessageIDViewed.';
+				this.lastModMessageIDViewed='.$User->lastModMessageIDViewed.';
 				this.timeLastSessionEnded='.$User->timeLastSessionEnded.';
 				this.type='.$User->type.';
 				this.token="'.md5(Config::$secret.$User->id.$User->type).'";

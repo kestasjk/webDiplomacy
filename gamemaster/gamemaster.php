@@ -79,8 +79,8 @@ class libGameMaster
 
 			$DB->sql_put("UPDATE wD_Users
 					SET timeLastSessionEnded = ".time().", lastMessageIDViewed = (SELECT MAX(f.id) FROM wD_ForumMessages f)
+					, lastModMessageIDViewed = (SELECT MAX(fm.id) FROM wD_ModForumMessages fm)
 					WHERE id IN (".$userIDs.")");
-
 		}
 
 		$DB->sql_put("COMMIT");

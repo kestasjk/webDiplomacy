@@ -185,6 +185,7 @@ class User {
 	public $leftBalanced;
 	
 	public $lastMessageIDViewed;
+	public $lastModMessageIDViewed;
 
 	/**
 	 * 'No' if the player can submit mod reports, 'Yes' if they are muted
@@ -446,6 +447,7 @@ class User {
 			u.locale,
 			u.timeLastSessionEnded,
 			u.points,
+			u.lastModMessageIDViewed,
 			u.lastMessageIDViewed,
 			u.muteReports,
 			u.silenceID,

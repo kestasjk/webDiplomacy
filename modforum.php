@@ -1,23 +1,4 @@
 <?php
-/*
-    Copyright (C) 2004-2010 Kestas J. Kuliukas
-
-	This file is part of webDiplomacy.
-
-    webDiplomacy is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    webDiplomacy is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 
 /**
  * @package Base
@@ -112,9 +93,9 @@ class Message
 			$participatedThreadIDs[$participatedThreadID] = $participatedThreadID;
 		}
 
-		$cacheUserParticipatedThreadIDsFilename = libCache::dirID('users',$fromUserID).'/readThreads.js';
+		$cacheUserParticipatedThreadIDsFilename = libCache::dirID('users',$fromUserID).'/readModThreads.js';
 
-		file_put_contents($cacheUserParticipatedThreadIDsFilename, 'participatedThreadIDs = $A(['.implode(',',$participatedThreadIDs).']);');
+		file_put_contents($cacheUserParticipatedThreadIDsFilename, 'participatedModThreadIDs = $A(['.implode(',',$participatedThreadIDs).']);');
 
 		return $id;
 	}
@@ -184,7 +165,6 @@ if( !isset($_SESSION['lastSeenModForum']) || $_SESSION['lastSeenModForum'] < $Us
 {
 	$_SESSION['lastSeenModForum']=$User->timeLastSessionEnded;
 }
-
 
 if( !isset($_REQUEST['page']) && isset($_REQUEST['viewthread']) && $viewthread )
 {
@@ -361,8 +341,61 @@ else
 }
 
 $_SESSION['viewthread'] = $viewthread;
+$_SESSION['lastSeenModForum']=time();
 
 libHTML::starthtml();
+
+// Participated threads
+$cacheUserParticipatedThreadIDsFilename = libCache::dirID('users',$User->id).'/readModThreads.js';
+
+if( file_exists($cacheUserParticipatedThreadIDsFilename) )
+{
+	print '<script type="text/javascript" src="'.STATICSRV.$cacheUserParticipatedThreadIDsFilename.'?nocache='.rand(0,999999).'"></script>';
+	libHTML::$footerScript[]='setModForumParticipatedIcons();';
+}
+
+print '
+	<script type="text/javascript">
+	// Update new message icon for forum posts depending on stored cookie values
+	function setModForumMessageIcons() {
+		$$(".messageIconForum").map(function (e) {
+			var messageID = e.getAttribute("messageID");
+			var threadID = e.getAttribute("threadID");
+			
+			if( isModPostNew(threadID, messageID) )
+				e.show();
+
+		});
+	}
+
+	function setModForumParticipatedIcons() {
+		if( !Object.isUndefined(participatedModThreadIDs) ) {
+			$$(".participatedIconForum").map(function (e) {
+				var threadID = e.getAttribute("threadID");
+				
+				if( participatedModThreadIDs.member(threadID) )
+					e.show();
+			});
+		}
+	}
+	function isModPostNew(threadID, messageID) {
+		if( messageID <= User.lastModMessageIDViewed )
+			return false;
+		
+		var lastReadID = readCookie("wD_ModRead_"+threadID);
+
+		if( Object.isUndefined(lastReadID) )
+			return true;
+		else
+			return ( messageID > lastReadID );
+	}
+	
+	// Set a threadID as having been read, up to lastMessageID 
+	function readModThread(threadID, lastMessageID) {
+		createCookie("wD_ModRead_"+threadID, lastMessageID);
+	}
+	</script>';
+	libHTML::$footerScript[]='setModForumMessageIcons();';
 
 if( $User->type['Guest'] )
 	print libHTML::pageTitle('ModForum', 'A place to discuss Mod topics.');
@@ -380,83 +413,83 @@ print '
 	<div id="forumPostbox" style="'.($postboxopen?'':libHTML::$hideStyle).'" class="thread threadalternate1 threadborder1">
 	<div style="margin:0;padding:0">
 	<div class="message-head">
-		<strong>Start a new discussion in the public forum</strong>
+		<strong>Start a new discussion in the mod forum</strong>
 		</div>
 	<div class="message-subject"><strong>Post a new thread</strong></div>
 	<div style="clear:both;"></div>
 	</div>
-	<div class="hr"></div>
-	';
-	if( $User->isSilenced() ) {
-		print '<div class="message-body postbox" style="padding-top:0; padding-left:auto; padding-right:auto">';
-		
-		print '<p>Cannot post due to a temporary silence:'.$User->getActiveSilence()->toString().'</p>
-				<div class="hr"></div>
-				<p>Please see <a class="light" href="rules.php#silenceInfo">our silenced section</a>
-				for info on how to dispute it or get the length reduced.</p>';
-		
-		print '</div>';
-	}
-	else
-	{
-		print '
-		<div class="message-body threadalternate1 postboxadvice">
-				If your post relates to a particular game please include the <strong>URL or ID#</strong>
-				of the game.<br />
-				If you are posting a <strong>feature request</strong> please check that it isn\'t mentioned in the
-				<a href="http://forum.webdiplomacy.net">todo list</a>.<br />
-				If you are posting a question please <strong>check the <a href="faq.php">FAQ</a></strong> before posting.<br />
-				If your message is long you may need to write a summary message, and add the full message as a reply.
+	<div class="hr"></div>';
 	
-		</div>
-		<div class="hr" ></div>
+if( $User->isSilenced() ) {
+	print '<div class="message-body postbox" style="padding-top:0; padding-left:auto; padding-right:auto">';
 	
-		<div class="message-body postbox" style="padding-top:0; padding-left:auto; padding-right:auto">
+	print '<p>Cannot post due to a temporary silence:'.$User->getActiveSilence()->toString().'</p>
+			<div class="hr"></div>
+			<p>Please see <a class="light" href="rules.php#silenceInfo">our silenced section</a>
+			for info on how to dispute it or get the length reduced.</p>';
 	
-			<form class="safeForm" action="modforum.php#postbox" method="post"><p>
-			<div style="text-align:left; width:80%; margin-left:auto; margin-right:auto; float:middle">
-			<strong>Subject:</strong><br />
-			<input style="width:100%" maxLength=2000 size=60 name="newsubject" value="'.$_REQUEST['newsubject'].'"><br /><br />
-			<strong>Message:</strong><br />
-			<TEXTAREA NAME="newmessage" ROWS="6" style="width:100%">'.$_REQUEST['newmessage'].'</TEXTAREA>
-			<input type="hidden" name="viewthread" value="0" />
-			</div>
-			<br />
-	
-			<input type="submit" class="form-submit" value="Post new thread" name="Post">
-			</p></form>
-		</div>';
-	}
+	print '</div>';
+}
+else
+{
+	print '
+	<div class="message-body threadalternate1 postboxadvice">
+			If your post relates to a particular game please include the <strong>URL or ID#</strong>
+			of the game.<br />
+			If you are posting a <strong>feature request</strong> please check that it isn\'t mentioned in the
+			<a href="http://forum.webdiplomacy.net">todo list</a>.<br />
+			If you are posting a question please <strong>check the <a href="faq.php">FAQ</a></strong> before posting.<br />
+			If your message is long you may need to write a summary message, and add the full message as a reply.
 
-	print '<div class="hr"></div>
-	<div class="message-foot threadalternate1">
-		<form action="modforum.php" method="get" onsubmit="$(\'forumPostbox\').hide(); $(\'forumOpenPostbox\').show(); return false;">
-			<input type="hidden" name="postboxopen" value="0" />
-			<input type="submit" class="form-submit" value="Cancel" />
-		</form>
 	</div>
-	</div>';
+	<div class="hr" ></div>
 
-	print '<div>';
-	print $forumPager->html();
+	<div class="message-body postbox" style="padding-top:0; padding-left:auto; padding-right:auto">
 
-	if($User->type['User'] )
-	{
-		print '<div id="forumOpenPostbox" style="'.($postboxopen?libHTML::$hideStyle:'').'" >
-			<form action="modforum.php#postbox" method="get" onsubmit="$(\'forumPostbox\').show(); $(\'forumOpenPostbox\').hide(); return false;">
-			<p style="padding:5px;">
-				<input type="hidden" name="postboxopen" value="1" />
-				<input type="hidden" name="page" value="'.$forumPager->pageCount.'" />
-				<input type="submit" class="form-submit" value="New thread" />
-			</p>
-		</form>
-		</div>';
-	}
-	print '<div style="clear:both;"> </div>
+		<form class="safeForm" action="modforum.php#postbox" method="post"><p>
+		<div style="text-align:left; width:80%; margin-left:auto; margin-right:auto; float:middle">
+		<strong>Subject:</strong><br />
+		<input style="width:100%" maxLength=2000 size=60 name="newsubject" value="'.$_REQUEST['newsubject'].'"><br /><br />
+		<strong>Message:</strong><br />
+		<TEXTAREA NAME="newmessage" ROWS="6" style="width:100%">'.$_REQUEST['newmessage'].'</TEXTAREA>
+		<input type="hidden" name="viewthread" value="0" />
 		</div>
-		';
+		<br />
 
-$cacheHTML=libCache::dirName('forum').'/page_'.$forumPager->currentPage.'.html';
+		<input type="submit" class="form-submit" value="Post new thread" name="Post">
+		</p></form>
+	</div>';
+}
+
+print '<div class="hr"></div>
+<div class="message-foot threadalternate1">
+	<form action="modforum.php" method="get" onsubmit="$(\'forumPostbox\').hide(); $(\'forumOpenPostbox\').show(); return false;">
+		<input type="hidden" name="postboxopen" value="0" />
+		<input type="submit" class="form-submit" value="Cancel" />
+	</form>
+</div>
+</div>';
+
+print '<div>';
+print $forumPager->html();
+
+if($User->type['User'] )
+{
+	print '<div id="forumOpenPostbox" style="'.($postboxopen?libHTML::$hideStyle:'').'" >
+		<form action="modforum.php#postbox" method="get" onsubmit="$(\'forumPostbox\').show(); $(\'forumOpenPostbox\').hide(); return false;">
+		<p style="padding:5px;">
+			<input type="hidden" name="postboxopen" value="1" />
+			<input type="hidden" name="page" value="'.$forumPager->pageCount.'" />
+			<input type="submit" class="form-submit" value="New thread" />
+		</p>
+	</form>
+	</div>';
+}
+print '<div style="clear:both;"> </div>
+	</div>
+	';
+
+$cacheHTML=libCache::dirName('mod_forum').'/page_'.$forumPager->currentPage.'.html';
 if( file_exists($cacheHTML) )
 	print $cacheHTML;
 
@@ -487,41 +520,14 @@ $tabl = $DB->sql_tabl("SELECT
 $switch = 2;
 while( $message = $DB->tabl_hash($tabl) )
 {
+	if (!$User->type['Moderator'] && $message['fromUserID'] != $User->id)
+		continue;
+	
 	if( Silence::isSilenced($message) )
 		$silence = new Silence($message);
 	else
 		unset($silence);
-	
-	// Check for mutes first, before continuing
-	$muteLink='';
-	if( $User->type['User'] ) {
-		$isThreadMuted = $User->isThreadMuted($message['id']);
-		if( isset($_REQUEST['toggleMuteThreadID']) && $_REQUEST['toggleMuteThreadID']==$message['id'] ) {
-			$User->toggleThreadMute($message['id']);
-			$isThreadMuted = !$isThreadMuted;
-		}
 		
-		if( $isThreadMuted ) continue;
-		
-		$toggleMuteURL = 'modforum.php?toggleMuteThreadID='.$message['id'].'&rand='.rand(1,99999).'#'.$message['id'];
-		$muteLink = ' <br /><a title="Mute this thread, hiding it from your forum and home page" class="light likeMessageToggleLink" href="'.$toggleMuteURL.'">'.($isThreadMuted ? 'Un-mute' : 'Mute' ).' thread</a>';
-		
-		if( $User->type['Admin'] || $User->type['ForumModerator'] ) {
-			
-			$muteLink .= '<br />Silence: ';
-			
-			if( isset($silence) && $silence->isEnabled() ) {
-				$muteLink .= '<a class="light" href="admincp.php?tab=Control%20Panel&amp;silenceID='.$silence->id.'#disableSilence">Disable silence</a>';
-			}
-			else
-			{
-				$muteLink .= '<a class="light" href="admincp.php?tab=Control%20Panel&amp;postID='.$message['id'].'#createThreadSilence">thread</a>, ';
-				
-				$muteLink .= '<a class="light" href="admincp.php?tab=Control%20Panel&amp;postID='.$message['id'].'&amp;userID='.$message['fromUserID'].'#createUserThreadSilence">user</a>';
-			}
-		}
-	}
-	
 	print '<div class="hr userID'.$message['fromUserID'].' threadID'.$message['id'].'"></div>'; // Add the userID and threadID so muted users/threads dont create lines where their threads were
 
 	$switch = 3-$switch; // 1,2,1,2,1,2...
@@ -743,13 +749,6 @@ while( $message = $DB->tabl_hash($tabl) )
 	{
 		print '<a href="modforum.php?viewthread='.$message['id'].'#'.$message['id'].'" '.
 			'title="Open this thread to view the replies, or post your own reply">Open</a>';
-		/*
-		print '<form action="modforum.php#'.$message['id'].'" method="get">
-						<input type="hidden" name="viewthread" value="'.$message['id'].'" />
-						<input type="submit" class="form-submit" value="Open"
-							title="Open this thread to view the replies, or post your own reply" />
-				</form>';
-		*/
 	}
 
 	print "</div>
@@ -772,15 +771,12 @@ print '</div>';
 
 if( $User->type['User'] )
 {
-
-
 	if( isset($replyToID) )
-		libHTML::$footerScript[] = 'readThread('.$replyToID.', '.$replyID.');';
+		libHTML::$footerScript[] = 'readModThread('.$replyToID.', '.$replyID.');';
 }
 
-libHTML::$footerScript[] = 'makeFormsSafe();';
 
-$_SESSION['lastSeenForum']=time();
+libHTML::$footerScript[] = 'makeFormsSafe();';
 
 libHTML::footer();
 
