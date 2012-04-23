@@ -69,10 +69,9 @@ if ( isset($_REQUEST['AcceptSwitch']) )
 if ( isset($_REQUEST['newSwitch']) )
 {
 	$form  	= $_REQUEST['newSwitch'];
-	$fromID = (int)$User->id;
-	if ( isset ($form['toID']) &&  isset ($form['gameID']))
+	if ( isset ($form['toID']) && $form['toID']>0 && isset ($form['gameID']))
 	{
-
+		$fromID = (int)$User->id;
 		$toID   = (int)$form['toID'];
 		$gameID = (int)$form['gameID'];
 		$Variant=libVariant::loadFromGameID($gameID);
