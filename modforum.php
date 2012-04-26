@@ -4,7 +4,35 @@
  * @package Base
  */
 require_once('header.php');
-require_once('pager/pagerforum.php');
+require_once('pager/pagerthread.php');
+class PagerForum extends Pager
+{
+	public static $defaultPostsPerPage=30;
+	public $type='forum';
+	
+	function __construct($itemsTotal)
+	{
+		parent::__construct('forum.php',$itemsTotal,self::$defaultPostsPerPage);
+	}
+	function getCurrentPage($currentPage=1)
+	{
+		parent::getCurrentPage($this->pageCount);
+		if ( $this->currentPage>$this->pageCount )
+			$this->currentPage = $this->pageCount;
+	}
+	function currentPageNumber()
+	{
+		if( $this->currentPage != $this->pageCount )
+			return parent::currentPageNumber();
+		else
+			return '';
+	}
+	
+	function SQLLimit()
+	{
+		return ' LIMIT '.($this->pageCount-$this->currentPage)*$this->itemsPerPage.', '.$this->itemsPerPage;
+	}
+}
 
 class Message
 {
@@ -158,7 +186,8 @@ if( $User->type['User'] AND isset($_REQUEST['postboxopen'])) {
 
 if( !$viewthread) $viewthread=false;
 
-$forumPager = new PagerForum($Misc->ForumThreads);
+list($ForumThreads) = $DB->sql_row("SELECT COUNT(type) FROM wD_ModForumMessages WHERE type='ThreadStart'");
+$forumPager = new PagerForum($ForumThreads);
 //$pageCount = $currentPage = ceil(($Misc->ForumThreads+1)/$forumPager->pageCount);
 
 if( !isset($_SESSION['lastSeenModForum']) || $_SESSION['lastSeenModForum'] < $User->timeLastSessionEnded )
