@@ -43,6 +43,18 @@ and if you rating is too low you might not be able to join all the games as you 
 Also for each 10% of reliability you can join 1 game. If your reliability is 90% or better you can join as many games as you want.</p>
 
 <div class="hr" ></div>
+<p class="intro">
+On the games-pages your rating is displayed as a grade after your name.
+The current grades are:<br>
+<?php
+	require_once ("lib/reliability.php");
+	foreach (libReliability::$grades as $limit=>$grade)
+	{
+		print $grade." = ".$limit." or better.<br>";
+	}
+?>
+This grading-system might change in the future.
+<div class="hr" ></div>
 
 <p class="intro">
 <b>Why should I continue a game if my country can't win?</b><br>
