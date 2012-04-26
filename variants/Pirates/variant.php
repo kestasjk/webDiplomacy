@@ -21,6 +21,7 @@
 
 	Changelog:
 	1.0: first install
+	1.0.5: many combat issues fixed...
 	
 */
 
@@ -34,8 +35,8 @@ class PiratesVariant extends WDVariant {
 	public $description='Pirates, European powers and privateers all fighting it out on the high seas of the Caribbean - what more could you want? ';
 	public $author     ='Gavin Atkinson';
 	public $adapter    ='Gavin Atkinson, Oliver Auth';
-	public $version    ='1';
-	public $codeVersion='1.0.2';	
+	public $version    ='I';
+	public $codeVersion='1.0.5';	
 	
 	public $countries=array('Spain','England','France','Holland','Dunkirkers','Henry Morgan','Francois l Olonnais','Isaac Rochussen','The Infamous El Guapo','Daniel "The Exterminator" Montbars','Roche "The Rock" Braziliano','Bartolomeu "The Portuguese" de la Cueva','Daniel "The Terror" Johnson');	
 
