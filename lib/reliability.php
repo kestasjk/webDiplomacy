@@ -4,7 +4,7 @@ class libReliability
 {
 
 	public static $grades = array (
-		98=>'A+', 90=>'A', 80=>'B', 70=>'C', 60=>'D', 0=>'F'
+		98=>'A+', 90=>'A', 80=>'B', 70=>'C', 60=>'D', 50=>'E', 40=>'F', 30=>'G', 20=>'H', 10=>'I', 0=>'J'
 	);
 	
 	static public function Grade($reliability)
