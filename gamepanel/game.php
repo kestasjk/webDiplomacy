@@ -255,11 +255,9 @@ class panelGame extends Game
 		elseif( $this->pressType=='PublicPressOnly' )
 			$alternatives[]='Public messaging only';
 		if( $this->anon=='Yes' )
-			$alternatives[]='Anonymous';
+			$alternatives[]='Anon';
 		if( $this->potType=='Winner-takes-all' )
 			$alternatives[]='WTA';			
-		if( $this->anon=='Yes' )
-			$alternatives[]='Anonymous players';
 		if( $this->specialCDturn >= $this->turn)
 			$alternatives[]='NMR-extend:'.$this->specialCDturn.' turn'.($this->specialCDturn > 1 ? 's':'').' / '.$this->specialCDcount.' time'.($this->specialCDcount > 1 ? 's':'');
 			
