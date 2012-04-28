@@ -255,15 +255,19 @@ class panelGame extends Game
 		elseif( $this->pressType=='PublicPressOnly' )
 			$alternatives[]='Public messaging only';
 		if( $this->anon=='Yes' )
-			$alternatives[]='Anonymous players';
+			$alternatives[]='Anonymous';
 		if( $this->potType=='Winner-takes-all' )
-			$alternatives[]=$this->potType;
+			$alternatives[]='WTA';			
+		if( $this->anon=='Yes' )
+			$alternatives[]='Anonymous players';
+		if( $this->specialCDturn >= $this->turn)
+			$alternatives[]='NMR-extend:'.$this->specialCDturn.' turn'.($this->specialCDturn > 1 ? 's':'').' / '.$this->specialCDcount.' time'.($this->specialCDcount > 1 ? 's':'');
 			
 		//	Show the end of the game in the options if set.
 		if(( $this->targetSCs > 0) && ($this->maxTurns > 0))
-			$alternatives[]='EoG: '.$this->targetSCs.' SCs or turn>"'.$this->Variant->turnAsDate($this->maxTurns -1).'"';
+			$alternatives[]='EoG: '.$this->targetSCs.' SCs or "'.$this->Variant->turnAsDate($this->maxTurns -1).'"';
 		elseif( $this->maxTurns > 0)
-			$alternatives[]='EoG: turn>"'.$this->Variant->turnAsDate($this->maxTurns -1).'"';
+			$alternatives[]='EoG: "'.$this->Variant->turnAsDate($this->maxTurns -1).'"';
 		elseif( $this->targetSCs > 0)
 			$alternatives[]='EoG: '.$this->targetSCs.' SCs';
 			

@@ -228,7 +228,13 @@ class Game
 	 public $minRating;
 	 public $minPhases;
 	 public $maxLeft;
-	
+
+	/**
+	 * Some settings to force a CD on early NMRs
+	 */
+	 public $specialCDcount;
+	 public $specialCDturns;
+	 
 	/**
 	 * @param int/array $gameData The game ID of the game to load, or the array of its database row
 	 * @param string[optional] $lockMode The database locking phase to use; no locking by default
@@ -350,6 +356,8 @@ class Game
 			g.minRating,
 			g.minPhases,
 			g.maxLeft,
+			g.specialCDcount,
+			g.specialCDturn,
 			g.missingPlayerPolicy
 			FROM wD_Games g
 			WHERE g.id=".$this->id.' '.$this->lockMode);
@@ -514,8 +522,7 @@ class Game
 			 * Special CD for the first turns
 			 * In the first turns extend the gamephase and CD all users who failed to enter an order.
 			 */
-			$specialCD=(isset(Config::$specialCD) ? (Config::$specialCD) : 0);
-			if (($this->turn < $specialCD) && (count($this->Variant->countries) > 2))
+			if (($this->turn < $this->specialCDturn) && (count($this->Variant->countries) > 2))
 			{
 				require_once "lib/gamemessage.php";
 				$foundNMR=false;
@@ -541,15 +548,34 @@ class Game
 				}				
 				if ($foundNMR) {
 					if (time() >= $this->processTime) {
-						$this->processTime = time() + $this->phaseMinutes*60;
-						$this->minimumBet = $this->Members->pointsLowestCD();
-						$DB->sql_put("UPDATE wD_Games 
-										SET processTime = ".$this->processTime.",
-										attempts = 0,
-										minimumBet = ".$this->minimumBet."
-										WHERE id = ".$this->id);
-						libGameMessage::send(0, 'GameMaster', 'Missing orders for '.$this->Variant->turnAsDate($this->turn).' ('.$this->phase.'). Extending phase. You need to search for a replacement to make this game progress.', $this->id);
-						$this->Members->updateReliabilities();
+						$search = 'Missing orders for '.$this->Variant->turnAsDate($this->turn).' ('.$this->phase.')';
+						$sql='SELECT COUNT(*) FROM wD_GameMessages WHERE message LIKE "%'.$search.'%" AND toCountryID = 0 AND fromCountryID = 0 AND gameID='.$this->id;
+						list($extCount)=$DB->sql_row($sql);
+						if ($extCount < $this->specialCDcount || $this->specialCDcount == 0)
+						{
+							$this->processTime = time() + $this->phaseMinutes*60;
+							$this->minimumBet = $this->Members->pointsLowestCD();
+							$DB->sql_put("UPDATE wD_Games 
+											SET processTime = ".$this->processTime.",
+											attempts = 0,
+											minimumBet = ".$this->minimumBet."
+											WHERE id = ".$this->id);
+							$gameMasterText = 'Missing orders for '.$this->Variant->turnAsDate($this->turn).' ('.$this->phase.'). Extending phase.';
+							$repeat = $this->specialCDcount - $extCount - 1;
+							if ($this->specialCDcount == 0)
+								$gameMasterText .= 	'The phase will extend again till you find a replacement.';
+							elseif ($repeat > 0)
+								$gameMasterText .= 	'The phase will extend '.$repeat.' time'.($repeat > 1 ? 's':'').' again if you do not find a replacement.';
+							else
+								$gameMasterText .= 	'The game will continue after this phase even if you do not find a replacement.';
+							
+							libGameMessage::send(0, 'GameMaster', $gameMasterText, $this->id);
+							$this->Members->updateReliabilities();
+						}
+						else
+						{
+							return true;
+						}
 					}
 					return false;
 				}

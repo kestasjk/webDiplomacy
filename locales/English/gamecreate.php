@@ -19,7 +19,6 @@
  */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
-
 /**
  * @package Base
  * @subpackage Forms
@@ -291,6 +290,19 @@ else
 	</li>
 
 	<li class="formlisttitle">
+		NMR sends country in CD and extends phase:
+	</li>
+	<li class="formlistfield"> 
+		<b>How many turns: </b><input type="text" name="newGame[specialCDturn]" size="4" value="<?php print Config::$specialCDturnsDefault;?>" /> (0 = feature off / <?php print Config::$specialCDturnsDefault;?> = default)<br>
+		<b>How many extends: </b><input type="text" name="newGame[specialCDcount]" size="4" value="<?php print Config::$specialCDcountDefault;?>" /> (0 = extend till a replacement is found / <?php print Config::$specialCDcountDefault;?> = default)
+	</li>
+	<li class="formlistdesc">
+		This special rule sends a country in civil disorder (CD) if it does not enter an order (NMR) and extend the phase so a replacement can be found.
+		This works on all phases of a turn (diplomacy, retreat, build).
+		<br /><br /><strong>Default:</strong> <?php print Config::$specialCDturnsDefault;?> / <?php print Config::$specialCDcountDefault;?>
+	</li>
+
+	<li class="formlisttitle">
 		Alternate winning conditions:
 	</li>
 	<li class="formlistfield"> 
@@ -306,7 +318,7 @@ else
 		<br />A value of "0" (the default) ends the game as usual, as soon as one player reach the default target SCs.
 		<br /><br /><strong>Default:</strong> 0 (no fixed game duration / default number of SCs needed)
 	</li>
-
+	
 	<li class="formlisttitle">
 		<img src="images/icons/lock.png" alt="Private" /> Password protect (optional):
 	</li>
