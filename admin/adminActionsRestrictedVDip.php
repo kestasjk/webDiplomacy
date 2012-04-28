@@ -9,45 +9,26 @@ class adminActionsRestrictedVDip extends adminActionsForum
 		parent::__construct();
 
 		$vDipActionsRestricted = array(
-			'changeReliability' => array(
-				'name' => 'Change reliability',
-				'description' => 'Enter the new phases played and missed and the new CD-count',
-				'params' => array('userID'=>'User ID', 'missedMoves'=>'Moves missed','phasesPlayed'=>'Phases played','gamesLeft'=>'Games Left')
-			),
 			'delCache' => array(
 				'name' => 'Clean the cache directory.',
-				'description' => 'Delete the cache files older than the given date (default = "-30 days").',
-				'params' => array('keep'=>'deletion date')
+				'description' => 'Delete the cache files older than the given date.',
+				'params' => array('keep'=>'File age (in days):')
 			),
 		);
 		
 		adminActions::$actions = array_merge(adminActions::$actions, $vDipActionsRestricted);
 	}
 
-	public function changeReliability(array $params)
-	{
-		global $DB;
-
-		$userID      = (int)$params['userID'];
-		$missedMoves = (int)$params['missedMoves'];
-		$phasesPlayed= (int)$params['phasesPlayed'];
-		$gamesLeft   = (int)$params['gamesLeft'];
-		
-		$DB->sql_put("UPDATE wD_Users SET missedMoves = ".$missedMoves.", phasesPlayed = ".$phasesPlayed.", gamesLeft = ".$gamesLeft." WHERE id=".$userID);
-
-		return 'This users reliability was changed to: missedMoves = '.$missedMoves.', phasesPlayed = '.$phasesPlayed.', gamesLeft = '.$gamesLeft;
-	}
-	
 	public function delcache(array $params)
 	{
-		$keep = $params['keep'];
+		$keep = '-'.(int)$params['keep'].' days';
 		$this->del_cache('cache', $keep);
-		return 'Deleted files older than "'.$keep.'"';
+		return 'Deleted files older than '.(int)$params['keep'].' days.';
 	}
 	public function delcacheConfirm(array $params)
 	{
-		$keep = $params['keep'];
-		return 'Are you sure you want to delete files in the cache directory older than "'.$keep.'"';
+		$keep = (int)$params['keep'];
+		return 'Are you sure you want to delete files in the cache directory older than '.$keep.' days?';
 	}
 
 	function del_cache($dirname, $keep) 
