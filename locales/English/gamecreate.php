@@ -268,7 +268,8 @@ else
 			<option value=0 selected>none</option>
 			<?php
 				foreach (libReliability::$grades as $limit=>$grade)
-					print '<option value='.$limit.'>'.$grade.'</option>';
+					if ($limit > 0)
+						print '<option value='.$limit.'>'.$grade.'</option>';
 			?>
 			</select> / 
 		<b>Min Phases: </b><select id="minPhases" name="newGame[minPhases]">
