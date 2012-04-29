@@ -1,5 +1,3 @@
-<hr>
-
 <?php
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -80,9 +78,9 @@ if ( isset($_REQUEST['newSwitch']) )
 		
 		// Check if there is a mute against a player
 		list($muted) = $DB->sql_row("SELECT count(*) FROM wD_Members AS m
-									LEFT JOIN wD_MuteUser AS f ON ( m.userID = f.userID )
-									LEFT JOIN wD_MuteUser AS t ON ( m.userID = t.muteUserID )
-								WHERE m.gameID = ".$Game->id." AND (f.muteUserID =".$SendUser->id." OR t.userID =".$SendUser->id.")");
+									LEFT JOIN wD_BlockUser AS f ON ( m.userID = f.userID )
+									LEFT JOIN wD_BlockUser AS t ON ( m.userID = t.blockUserID )
+								WHERE m.gameID = ".$Game->id." AND (f.blockUserID =".$SendUser->id." OR t.userID =".$SendUser->id.")");
 								
 		// Check for additional requirements:
 		if ( $Game->minPhases > $SendUser->phasesPlayed)
@@ -102,6 +100,7 @@ if ( isset($_REQUEST['newSwitch']) )
 }
 
 ?>
+	<br><hr>
 	<form method="post"><ul class="formlist">
 	<li class="formlisttitle">Countries given away (BETA, use at your own risk):</li>
 	<li class="formlistfield">
