@@ -662,6 +662,7 @@ class processMembers extends Members
 			unset($this->ByUserID[$CD->userID]);
 			unset($this->ByStatus['Left'][$CD->id]);
 
+			$playerLeftID=$CD->userID;
 			$CD->userID = $User->id;
 			$CD->status = 'Playing';
 			$CD->missedPhases = 0;
@@ -685,13 +686,15 @@ class processMembers extends Members
 			if ( $this->Game->isMemberInfoHidden() )
 			{
 				require_once "lib/gamemessage.php";
-				libGameMessage::send(0, 'GameMaster', 'Someone has taken over '.$CDCountryName.' replacing "'.$CD->username.'". Reconsider your alliances.', $this->Game->id);
+				$msg = 'Someone has taken over '.$CDCountryName.' replacing "<a href="profile.php?userID='.$playerLeftID.'">'.$CD->username.'</a>". Reconsider your alliances.';
+				libGameMessage::send(0, 'GameMaster', $msg , $this->Game->id);
 				$this->sendExcept($CD,'No','Someone has taken over '.$CDCountryName.'.');
 			}
 			else
 			{
 				require_once "lib/gamemessage.php";
-				libGameMessage::send(0, 'GameMaster', $User->username.' has taken over '.$CDCountryName.' replacing "'.$CD->username.'". Reconsider your alliances.', $this->Game->id);
+				$msg = $User->username.' has taken over '.$CDCountryName.' replacing "<a href="profile.php?userID='.$playerLeftID.'">'.$CD->username.'</a>". Reconsider your alliances.';
+				libGameMessage::send(0, 'GameMaster', $msg, $this->Game->id);
 				$this->sendExcept($CD,'No',$User->username.' has taken over '.$CDCountryName.'.');
 			}
 			$CD->send('No','No','You took over '.$CDCountryName.'! Good luck');
