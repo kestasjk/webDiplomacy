@@ -976,6 +976,35 @@ class libHTML
 
 		return $buf;
 	}
+	
+	/**
+	 * The icon to block an unblocked player, optionally with link
+	 * @param $url URL to link to
+	 * @return string
+	 */
+	static function unblocked($url=false)
+	{
+		$buf = '';
+		if($url) $buf .= '<a href="'.$url.'">';
+		$buf .= '<img src="images/icons/good.png" alt="Block player" title="Block player" />';
+		if($url) $buf .= '</a>';
+		return $buf;
+	}
+
+	/**
+	 * The icon to unblocked an block player, optionally with link
+	 * @param $url URL to link to
+	 * @return string
+	 */
+	static function blocked($url=false)
+	{
+		$buf = '';
+		if($url) $buf .= '<a href="'.$url.'">';
+		$buf .= '<img src="images/icons/bad.png" alt="Blocked. Click to un-block." title="Blocked. Click to un-block." />';
+		if($url) $buf .= '</a>';
+		return $buf;
+	}
+
 }
 
 ?>

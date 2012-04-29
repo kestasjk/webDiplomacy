@@ -382,6 +382,18 @@ if ( $User->type['User'] && $UserProfile->type['User'] && ! ( $User->id == $User
 	}
 	$muteURL = 'profile.php?userID='.$UserProfile->id.'&toggleMute=on&rand='.rand(0,99999).'#mute';
 	print ' '.($userMuted ? libHTML::muted($muteURL) : libHTML::unmuted($muteURL));
+	
+// Start BlockUser-feature (Same as mute, but he can't join your games.
+	$userBlocked = $User->isUserBlocked($UserProfile->id);
+
+	print '<a name="block"></a>';
+	if( isset($_REQUEST['toggleBlock'])) {
+		$User->toggleUserBlock($UserProfile->id);
+		$userBlocked = !$userBlocked;
+	}
+	$blockURL = 'profile.php?userID='.$UserProfile->id.'&toggleBlock=on&rand='.rand(0,99999).'#block';
+	print ' '.($userBlocked ? libHTML::blocked($blockURL) : libHTML::unblocked($blockURL));
+// End BlockUserFeature	
 }
 print '</h2>';
 

@@ -47,8 +47,8 @@ class libGameMessage
 			$Game = $Variant->Game($gameID);
 		}
 
-		$message = $DB->msg_escape($message);
-
+		$message = $DB->msg_escape($message,($fromCountryID == 0));
+		
 		if ( !is_numeric($toCountryID) )
 			$toCountryID=0;
 

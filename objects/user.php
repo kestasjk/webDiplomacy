@@ -950,5 +950,34 @@ class User {
 			return "<p>You're taking on too many games at once for a new member.  Please relax and enjoy the game or games that you are currently in before joining/creating a new one.  You need to play <strong>".($totalGames*3-$this->phasesPlayed)."</strong> more phases (across all your games) before you can take on another game.  The quickest way to do this is to leave any pre-games you might be in and take over a civil disorder power from another game. 2-player variants are not affected by this restriction.</p>";
 	}
 
+	/*
+	 * The functions to check if a user is Blocked
+	 * Basicalle it's the same as the Mute feature, but only to block a user from joining your games
+	 */
+	public function getBlockUsers() {
+		global $DB;
+
+		static $blockUsers;
+		if( isset($blockUsers) ) return $blockUsers;
+		$blockUsers = array();
+
+		$tabl = $DB->sql_tabl("SELECT blockUserID FROM wD_BlockUser WHERE userID=".$this->id);
+		while(list($blockUserID) = $DB->tabl_row($tabl))
+			$blockUsers[] = $blockUserID;
+
+		return $blockUsers;
+	}
+	public function isUserBlocked($blockUserID) {
+		return in_array($blockUserID,$this->getBlockUsers());
+	}
+	public function toggleUserBlock($blockUserID) {
+		global $DB;
+		$blockUserID = (int)$blockUserID;
+		if( $this->isUserBlocked($blockUserID) )
+			$DB->sql_put("DELETE FROM wD_BlockUser WHERE userID=".$this->id." AND blockUserID=".$blockUserID);
+		else
+			$DB->sql_put("INSERT INTO wD_BlockUser (userID, blockUserID) VALUES (".$this->id.",".$blockUserID.")");
+	}
+
 }
 ?>
