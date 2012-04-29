@@ -683,9 +683,17 @@ class processMembers extends Members
 			$CDCountryName=$this->Game->Variant->countries[$CD->countryID-1];
 
 			if ( $this->Game->isMemberInfoHidden() )
+			{
+				require_once "lib/gamemessage.php";
+				libGameMessage::send(0, 'GameMaster', 'Someone has taken over '.$CDCountryName.' replacing "'.$CD->username.'". Reconsider your alliances.', $this->Game->id);
 				$this->sendExcept($CD,'No','Someone has taken over '.$CDCountryName.'.');
+			}
 			else
+			{
+				require_once "lib/gamemessage.php";
+				libGameMessage::send(0, 'GameMaster', $User->username.' has taken over '.$CDCountryName.' replacing "'.$CD->username.'". Reconsider your alliances.', $this->Game->id);
 				$this->sendExcept($CD,'No',$User->username.' has taken over '.$CDCountryName.'.');
+			}
 			$CD->send('No','No','You took over '.$CDCountryName.'! Good luck');
 		}
 			

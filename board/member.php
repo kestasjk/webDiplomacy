@@ -120,17 +120,26 @@ class userMember extends panelMember
 		else
 		{
 			$this->votes[] = $voteName;
-			if ($voteName == 'Extend' || $voteName == 'Pause')
+			
+			$count=0;
+			foreach($this->Game->Members->ByStatus['Playing'] as $Member)
+				if (in_array($voteName ,$Member->votes))
+					$count++;
+			if ($count == 1)
 			{
-				$count=0;
-				foreach($this->Game->Members->ByStatus['Playing'] as $Member)
-					if (in_array($voteName ,$Member->votes))
-						$count++;
-				if ($count == 1)
-				{
-					require_once "lib/gamemessage.php";
-					libGameMessage::send(0, 'GameMaster', $this->country.' voted for '.$voteName.'. Please consider backing this.', $this->Game->id);
-				}
+				require_once "lib/gamemessage.php";
+				$msg = $this->country.' voted for a '.$voteName.'. ';
+				if ($voteName == 'Draw')
+					$msg .= 'If everyone votes Draw the game will end and the points are split equally among all the surviving players, regardless of how many supply centers each player has.';
+				if ($voteName == 'Pause')
+					$msg .= 'If everyone votes Pause the game stop and wait till everybody votes Unpause. Please consider backing this.';
+				if ($voteName == 'Cancel')
+					$msg .= 'If everyone votes Cancel all points will be refunded and the game will be deleted from the database.';
+				if ($voteName == 'Extend')
+					$msg .= 'If 2/3 of the active players vote Extend the the current phase will be extend by 4 days. Please consider backing this.';
+				if ($voteName == 'Concede')
+					$msg .= 'If everyone (but one) votes Concede the game will end and the player _not_ voting Conceede will get all the points. Everybody else will get a defeat.';			
+				libGameMessage::send(0, 'GameMaster', $msg , $this->Game->id);
 			}
 		}
 		$DB->sql_put("UPDATE wD_Members SET votes='".implode(',',$this->votes)."' WHERE id=".$this->id);
