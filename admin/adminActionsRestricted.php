@@ -505,7 +505,6 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 		// - Calculate the turn being moved back to
 		$lastTurn = ( ( $Game->phase == 'Diplomacy' ) ? $Game->turn-1 : $Game->turn );
 
-
 		// Begin moving the archives back
 		{
 			// - Move the old MovesArchive back to Units
@@ -525,10 +524,12 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 
 			// - Move the old TerrStatusArchive back to TerrStatus
 			$DB->sql_put("INSERT INTO wD_TerrStatus ( terrID, standoff, gameID, countryID, occupyingUnitID )
-						SELECT t.terrID, t.standoff, t.gameID, t.countryID, u.id
+						SELECT t.terrID, t.standoff, t.gameID, t2.countryID, u.id
 						FROM wD_TerrStatusArchive t
 							LEFT JOIN wD_Units u
 							ON ( ".$Game->Variant->deCoastCompare('t.terrID','u.terrID')." AND u.gameID = t.gameID )
+							LEFT JOIN wD_TerrStatusArchive t2
+							ON ( t2.gameID = t.gameID AND t2.terrID = t.terrID AND t2.turn = ".( ( $lastTurn == 0 ) ? 0 : $lastTurn-1 ).")
 						WHERE t.gameID = ".$Game->id." AND t.turn = ".$lastTurn);
 		}
 
@@ -561,6 +562,11 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 
 		return 'This game was moved from '.$oldPhase.', '.$Game->datetxt($oldTurn).
 				' back to Diplomacy, '.$Game->datetxt($lastTurn).', and is ready to be reprocessed.';
+	}
+	public function reprocessGameConfirm(array $params)
+	{
+		$gameID = (int)$params['gameID'];
+		return 'Are you sure you want to reprocess this game?';
 	}
 }
 

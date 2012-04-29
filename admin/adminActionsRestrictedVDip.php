@@ -14,11 +14,31 @@ class adminActionsRestrictedVDip extends adminActionsForum
 				'description' => 'Delete the cache files older than the given date.',
 				'params' => array('keep'=>'File age (in days):')
 			),
+			'allReady' => array(
+				'name' => 'Ready all orders.',
+				'description' => 'Set the orderstatus of all countries to "Ready".',
+				'params' => array('gameID'=>'GameID:')
+			),
 		);
 		
 		adminActions::$actions = array_merge(adminActions::$actions, $vDipActionsRestricted);
 	}
 
+	public function allReady(array $params)
+	{
+		global $DB;
+		$gameID = (int)$params['gameID'];
+		$DB->sql_put("UPDATE wD_Members SET orderStatus = 'Ready',
+			missedPhases=IF(missedPhases > 0 , missedPhases - 1, 0)
+			WHERE gameID = ".$gameID);		
+		return 'Orderstatus of all countries set to "Ready".';
+	}
+	public function allReadyConfirm(array $params)
+	{
+		$gameID = (int)$params['gameID'];
+		return 'Are you sure you want to change the orderstatus of all countries to "Ready"';
+	}
+	
 	public function delcache(array $params)
 	{
 		$keep = '-'.(int)$params['keep'].' days';

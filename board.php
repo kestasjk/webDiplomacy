@@ -351,6 +351,7 @@ if($User->type['Moderator'])
 				$modActions[] = libHTML::admincp('unCrashGames',array('excludeGameIDs'=>''), 'Un-crash all crashed games');
 
 			$modActions[] = libHTML::admincp('reprocessGame',array('gameID'=>$Game->id), 'Reprocess game');
+			$modActions[] = libHTML::admincp('allReady',array('gameID'=>$Game->id), 'Set Ready');
 		}
 
 		if( $Game->phase!='Pre-game' && !$Game->isMemberInfoHidden() )
