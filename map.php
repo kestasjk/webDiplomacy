@@ -346,7 +346,8 @@ while(list($moveType, $terrID,
 
 	if ( $moveType == 'Support hold' )
 	{
-		if (!HIDEMOVES) $drawMap->drawSupportHold($terrID,
+		// The "&& $toTerrID < 1000" needs to be added, because of the fake SupportHold in the Trafo-command.
+		if (!HIDEMOVES || $toTerrID > 999) $drawMap->drawSupportHold($terrID,
 			isset($deCoastMap['SupportHoldToTerrID'][$toTerrID]) ? $deCoastMap['SupportHoldToTerrID'][$toTerrID] : $toTerrID,
 			$success);
 	}
