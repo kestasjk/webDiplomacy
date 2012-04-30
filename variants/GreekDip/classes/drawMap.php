@@ -81,6 +81,14 @@ class BiddingStart_drawmap extends drawMap
 
 class GreekDipVariant_drawMap extends BiddingStart_drawmap {
 
+	public function __construct($smallmap)
+	{
+		// Map is too big, so up the memory-limit
+		parent::__construct($smallmap);
+		if ( !$this->smallmap )
+			ini_set('memory_limit',"28M");
+	}
+	
 	protected $countryColors = array(
 		0 => array(226, 198, 158), // Neutral
 		1 => array( 64, 108, 128), // Athens
