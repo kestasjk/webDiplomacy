@@ -70,9 +70,10 @@ if(!(isset($_REQUEST['variantID'])))
 					<TH style="border: 1px solid #000">Games finished</TH>
 					<TH style="border: 1px solid #000">avg. Turns</TH>
 					<TH style="border: 1px solid #000">Rating*</TH>
+					<TH style="border: 1px solid #000">Hot**</TH>
 				</THEAD>
 				<TFOOT>
-					<tr style="border: 1px solid #666"><td colspan=6><b>*Rating</b> = ("players" x "games played")</td></tr>
+					<tr style="border: 1px solid #666"><td colspan=6><b>**Rating</b> = ("players" x "games played") - <b>**Hot</b> = Number of active games</td></tr>
 				</TFOOT>';
 			
 	foreach( $variantsOn as $variantName )
@@ -83,11 +84,13 @@ if(!(isset($_REQUEST['variantID'])))
 				INNER JOIN wD_Games g ON (g.id = m.gameID) 
 			WHERE g.variantID='.$Variant->id.' AND g.phase = "Finished"');
 		list($turns,$games) = $DB->sql_row('SELECT SUM(turn), COUNT(*) FROM wD_Games WHERE variantID='.$Variant->id.' AND phase = "Finished"');
+		list($hot) = $DB->sql_row('SELECT COUNT(*) FROM wD_Games WHERE variantID='.$Variant->id.' AND phase != "Finished" AND phase != "Pre-game"');
 		print '<TR><TD style="border: 1px solid #666">'.$Variant->link().'</TD>';
 		print '<TD style="border: 1px solid #666">'.($games==0?count($Variant->countries):round($players/$games,2)) .' players</TD>';
 		print '<TD style="border: 1px solid #666">'.$games.' game'.($games!=1?'s':'').'</TD>';
 		print '<TD style="border: 1px solid #666">'.($games==0?'0.00':number_format($turns/$games,2)).' turns</TD>';
-		print '<TD style="border: 1px solid #666">'.$players.'</TD></TR>';
+		print '<TD style="border: 1px solid #666">'.$players.'</TD>';
+		print '<TD style="border: 1px solid #666">'.$hot.'</TD></TR>';
 	}
 	print '</TABLE>';
 
