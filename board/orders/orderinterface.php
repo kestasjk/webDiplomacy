@@ -290,7 +290,10 @@ class OrderInterface
 		libHTML::$footerIncludes[] = 'board/model.js';
 		libHTML::$footerIncludes[] = 'board/load.js';
 		libHTML::$footerIncludes[] = 'orders/order.js';
-		libHTML::$footerIncludes[] = 'orders/phase'.$this->phase.'.js';
+		if ($this->phase == 'Diplomacy')
+			libHTML::$footerIncludes[] = 'orders/phaseDiplomacy_vDip.js';
+		else
+			libHTML::$footerIncludes[] = 'orders/phase'.$this->phase.'.js';
 		libHTML::$footerIncludes[] = '../'.libVariant::$Variant->territoriesJSONFile();
 
 		libHTML::$footerScript[] = '
