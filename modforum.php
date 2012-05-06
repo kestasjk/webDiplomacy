@@ -12,7 +12,7 @@ class PagerForum extends Pager
 	
 	function __construct($itemsTotal)
 	{
-		parent::__construct('forum.php',$itemsTotal,self::$defaultPostsPerPage);
+		parent::__construct('modforum.php',$itemsTotal,self::$defaultPostsPerPage);
 	}
 	function getCurrentPage($currentPage=1)
 	{
@@ -186,9 +186,11 @@ if( $User->type['User'] AND isset($_REQUEST['postboxopen'])) {
 
 if( !$viewthread) $viewthread=false;
 
-list($ForumThreads) = $DB->sql_row("SELECT COUNT(type) FROM wD_ModForumMessages WHERE type='ThreadStart'");
+if ($User->type['Moderator'])
+	list($ForumThreads) = $DB->sql_row("SELECT COUNT(type) FROM wD_ModForumMessages WHERE type='ThreadStart'");
+else
+	list($ForumThreads) = $DB->sql_row("SELECT COUNT(type) FROM wD_ModForumMessages WHERE type='ThreadStart' AND fromUserID='".$User->id."'");
 $forumPager = new PagerForum($ForumThreads);
-//$pageCount = $currentPage = ceil(($Misc->ForumThreads+1)/$forumPager->pageCount);
 
 if( !isset($_SESSION['lastSeenModForum']) || $_SESSION['lastSeenModForum'] < $User->timeLastSessionEnded )
 {
@@ -539,6 +541,7 @@ $tabl = $DB->sql_tabl("SELECT
 	LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
 	LEFT JOIN wD_Silences silence ON ( f.silenceID = silence.id )
 	WHERE f.type = 'ThreadStart'
+	".($User->type['Moderator'] ? '' : " AND fromUserID = '".$User->id."'")."
 	ORDER BY f.latestReplySent DESC
 	".$forumPager->SQLLimit());
 
