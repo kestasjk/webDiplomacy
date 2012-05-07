@@ -21,7 +21,7 @@ $territoryRawData=array(
 	array('Los Angeles', 'Coast', 'Yes', 0, 261, 884, 160, 474),
 	array('Dallas', 'Land', 'Yes', 0, 649, 970, 328, 526),
 	array('Houston', 'Coast', 'Yes', 0, 669, 1021, 363, 545),
-	array('West Texas', 'Land', 'No', 2, 612, 1041, 297, 533),
+	array('West Texas', 'Coast', 'No', 2, 612, 1041, 297, 533),
 	array('Minneapolis', 'Coast', 'Yes', 0, 664, 707, 346, 411),
 	array('Iowa', 'Land', 'No', 3, 680, 785, 355, 436),
 	array('Indiana', 'Coast', 'No', 3, 773, 807, 415, 435),
