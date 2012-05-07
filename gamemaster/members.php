@@ -671,10 +671,10 @@ class processMembers extends Members
 			$CD->missedMoves = $User->missedMoves;
 			$CD->phasesPlayed = $User->phasesPlayed;
 			$CD->gamesLeft = $User->gamesLeft;
-			$CD->leftBalanced = $User->leftBalanced;
-			
-			$CD->updateReliability('leftBalanced', '+ 1');
 
+			if (($User->leftBalanced < $User->gamesLeft) && (count($this->Game->Variant->countries) > 2) && ($this->Game->phaseMinutes > 30) )
+				$DB->sql_put("UPDATE wD_Users SET leftBalanced = leftBalanced +1 WHERE id=".$User->userID);		
+			
 			$this->ByUserID[$CD->userID] = $CD;
 			$this->ByStatus['Playing'][$CD->id] = $CD;
 
