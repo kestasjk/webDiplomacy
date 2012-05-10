@@ -673,7 +673,7 @@ class processMembers extends Members
 			$CD->gamesLeft = $User->gamesLeft;
 
 			if (($User->leftBalanced < $User->gamesLeft) && (count($this->Game->Variant->countries) > 2) && ($this->Game->phaseMinutes > 30) )
-				$DB->sql_put("UPDATE wD_Users SET leftBalanced = leftBalanced +1 WHERE id=".$User->userID);		
+				$DB->sql_put("UPDATE wD_Users SET leftBalanced = leftBalanced +1 WHERE id=".$User->id);		
 			
 			$this->ByUserID[$CD->userID] = $CD;
 			$this->ByStatus['Playing'][$CD->id] = $CD;
