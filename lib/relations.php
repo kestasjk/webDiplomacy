@@ -88,8 +88,8 @@ class libRelations {
 		
 		if ($groupID1 == 0 && $groupID2 == 0)
 		{
-			$DB->sql_put('INSERT INTO wD_RLGroup SET summary="",notes=""');
-			$groupID = $DB->last_inserted();
+			list($groupID)=$DB->sql_row("SELECT RLGroup from wD_Users ORDER BY RLGroup DESC LIMIT 1");
+			$groupID++;
 			$DB->sql_put('UPDATE wD_Users SET RLGroup="'.$groupID.'" WHERE id='.$userID1.' OR id='.$userID2);
 		}
 		elseif ($groupID1 == 0 && $groupID2 != 0)
