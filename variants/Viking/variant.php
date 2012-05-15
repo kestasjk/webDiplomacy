@@ -25,6 +25,7 @@
 	1.0.3: quickfix: convoy validation failed (most of the time) disabled.
 	1.0.4: improved javascript convoy-code. Works now.
 	1.1:   another updated javascript-code much better and cleaner now.
+	1.1.1: but does not work again... (disabled)
 	
 */
 
@@ -40,7 +41,7 @@ class VikingVariant extends WDVariant {
 	public $adapter    ='kaner406 / Oliver Auth';
 	public $homepage   ='http://www.variantbank.org/results/rules/v/viking4.htm';
 	public $version    ='4.0';	
-	public $codeVersion='1.1';	
+	public $codeVersion='1.1.1';	
 	
 	public $countries=array('Arab Caliphates','Burgundy','Danmark','Eastern Roman Empire','France','Slavic Nations','Norge','Sverige');	
 

@@ -32,6 +32,8 @@ class Coast_Convoy_userOrderDiplomacy extends userOrderDiplomacy
 	
 	protected function checkConvoyPath($startCoastTerrID, $endCoastTerrID, $mustContainTerrID=false, $mustNotContainTerrID=false) {
 
+		return true;
+	
 		global $DB;
 
 		if( count($this->convoyPath)<2 ) // First, plus one fleet, then $endCoastTerrID makes the minimum 3
