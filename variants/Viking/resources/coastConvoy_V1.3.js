@@ -73,7 +73,11 @@ function coastConvoy_loadModel(Coasts)
 			ns.routeSetStart(
 				StartTerr, 
 				function(EndNode) { return ( EndNode.id == EndTerr.id ); },
-				function(AllNode) { return ( AllNode.type == 'Sea' || Coasts.inArray(AllNode.id)); },
+				function(AllNode) { 
+					return (AllNode.type == 'Sea' ||
+						(Coasts.inArray(AllNode.id) && 
+							!Object.isUndefined(Units.find(function(p){return (p[1].terrID==AllNode.id && p[1].type=='Fleet');}))));
+				},
 				function(AnyNode) { return ( AnyNode.id == WithFleetTerr.id ); }
 			);
 			return ns.Path;
