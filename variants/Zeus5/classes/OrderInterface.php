@@ -49,7 +49,7 @@ class CoastConvoy_OrderInterface extends AlternateBuildSC_OrderInterface
 		{
 			$convoyCoastsJS='Array("'.implode($Variant->convoyCoasts, '","').'")';
 			
-			libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/coastConvoy.js';
+			libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/coastConvoy_V1.3.js';
 			foreach(libHTML::$footerScript as $index=>$script)
 				libHTML::$footerScript[$index]=str_replace('loadModel();','loadModel();coastConvoy_loadModel('.$convoyCoastsJS.');', $script);
 			foreach(libHTML::$footerScript as $index=>$script)
