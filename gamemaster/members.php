@@ -590,6 +590,14 @@ class processMembers extends Members
 		if ( $this->Game->maxLeft < $User->gamesLeft )
 			throw new Exception("You went CD in too many games. (Required: not more than ".$this->Game->maxLeft." / You:".$User->gamesLeft.")");
 
+		// It the game is anon: check if there is already another player he knows RL in this game:
+		if ( $this->Game->anon == 'Yes' && $User->rlGroup > 0)
+		{
+			require_once ("lib/relations.php");			
+			if ($message = libRelations::checkRelationsGame($User->id, $this->Game->id))
+				throw new Exception($message);
+		}
+
 		// Check for reliability-rating:
 		if ( count($this->Game->Variant->countries)>2 && $this->Game->phase == 'Pre-game' && $message = $User->isReliable())
 			libHTML::notice('Reliable rating not high enough', $message);
@@ -603,7 +611,7 @@ class processMembers extends Members
 		{
 			throw new Exception("You can't join. A player in this game has you muted or you muted a player in this game");
 		}
-		
+				
 		// We can join, the only question is how?
 
 		if ( $this->Game->phase == 'Pre-game' )
@@ -612,7 +620,7 @@ class processMembers extends Members
 			if( $countryID!=-1 )
 			{
 				if (isset($this->ByCountryID[$countryID]))
-					throw new Exception("You cannot join this game as ".$this->Game->Variant->countries[$countryID -1]."someone else was faster.");
+					throw new Exception("You cannot join this game as ".$this->Game->Variant->countries[$countryID -1]." someone else was faster.");
 				processMember::create($User->id, $this->Game->minimumBet,$countryID);
 			}
 			else

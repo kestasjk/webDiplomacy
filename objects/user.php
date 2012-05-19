@@ -187,6 +187,9 @@ class User {
 	public $lastMessageIDViewed;
 	public $lastModMessageIDViewed;
 
+	// Tag if he knows other people on this site in RL...
+	public $rlGroup;
+	
 	/**
 	 * 'No' if the player can submit mod reports, 'Yes' if they are muted
 	 * @var string
@@ -454,6 +457,7 @@ class User {
 			u.missedMoves,
 			u.phasesPlayed,			
 			u.gamesLeft,
+			u.rlGroup,
 			u.leftBalanced,			
 			IF(s.userID IS NULL,0,1) as online
 			FROM wD_Users u

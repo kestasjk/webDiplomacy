@@ -268,10 +268,8 @@ if ( isset($_REQUEST['detail']) )
 			if ( $User->type['Moderator'] )
 			{
 				require_once('lib/relations.php');
-				libRelations::checkDeleteNote();
-				libRelations::checkInsertNote();
+				libRelations::checkRelationsChange();
 				print libRelations::reportsDisplay($UserProfile->id);
-				print libRelations::reportBoxHTML($UserProfile->id);
 			}
 		break;
 	}
