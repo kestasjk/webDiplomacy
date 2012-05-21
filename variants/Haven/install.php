@@ -676,7 +676,6 @@ $bordersRawData=array(
 	array('Forbidden City','Ogrun','No','Yes'),
 	array('France','Magrathea','Yes','Yes'),
 	array('France','Shining Stream','Yes','Yes'),
-	array('France','The Wilderland','Yes','No'),
 	array('France','Traal','No','Yes'),
 	array('Garthim','Gelfling','Yes','Yes'),
 	array('Garthim','Marshes of Morva','No','Yes'),
@@ -1043,6 +1042,7 @@ if (!file_exists('variants/'.$this->name.'/cache/sampleMap.png'))
 	copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
 
 ?>
+
 
 
 
