@@ -85,6 +85,19 @@ class InstallCache {
 		$javascript = "function loadTerritories() {\n".'Territories = $H('.json_encode($territories).');'."\n}\n";
 
 		file_put_contents($jsonFileLocation, $javascript);
+		
+		// Small hook to generate a global CSS file for all variants...
+		$variantCSS = '';
+		foreach(Config::$variants as $variantName)
+			$variantCSS .= file_get_contents('variants/'.$variantName.'/resources/style.css')."\n";
+			
+		$CSSname = CSSDIR."/variants-".md5(serialize(Config::$variants)).".css";
+
+		$handle = fopen($CSSname, 'w');
+		fwrite($handle, $variantCSS);
+        fclose($handle);
+		// End alternate CSS file patch
+		
 	}
 }
 
