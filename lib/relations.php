@@ -200,6 +200,9 @@ class libRelations {
 	{
 		global $User, $DB;
 
+		if( !$User->type['Moderator'] && $User->id != $userID)
+			return 'You can only view your own profile...';
+		
 		list($groupID, $username)=$DB->sql_row("SELECT rlGroup, username FROM wD_Users WHERE id=".$userID);
 		
 		if ($groupID != 0)

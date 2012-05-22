@@ -265,12 +265,9 @@ if ( isset($_REQUEST['detail']) )
 		break;
 
 		case 'relations':
-			if ( $User->type['Moderator'] )
-			{
-				require_once('lib/relations.php');
-				libRelations::checkRelationsChange();
-				print libRelations::reportsDisplay($UserProfile->id);
-			}
+			require_once('lib/relations.php');
+			libRelations::checkRelationsChange();
+			print libRelations::reportsDisplay($UserProfile->id);
 		break;
 	}
 
@@ -503,7 +500,9 @@ print '<li>&nbsp;</li>';
 //print '<li>&nbsp;</li>';
 
 if ( $User->type['Moderator'])
-	print '<li><a href="profile.php?detail=relations&userID='.$UserProfile->id.'" class="light">View/edit relations of this user.</a></li><li>&nbsp;</li>';
+	print '<li><a href="profile.php?detail=relations&userID='.$UserProfile->id.'" class="light">View/edit relations of this user.</a></li>';
+elseif ( $UserProfile->id == $User->id)
+	print '<li><a href="profile.php?detail=relations&userID='.$UserProfile->id.'" class="light">View your relations.</a></li>';
 
 print '</li></ul></p></div><div style="clear:both"></div></div>';
 

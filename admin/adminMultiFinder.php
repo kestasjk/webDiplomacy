@@ -20,6 +20,10 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
+// Add userrelations
+require_once('lib/relations.php');
+libRelations::checkRelationsChange();
+
 /**
  * This script gives mods and admins the data needed to find multi-accounters, by parsing
  * wD_AccessLog, as well as other techniques.
@@ -550,7 +554,10 @@ class adminMultiCheck
 			$newMatches = array();
 			foreach($matches as $match)
 			{
-				$newMatches[] = $match.' ('.round(100*$aTally[$match]/$aTotalCount).'%-'.round(100*$bTally[$match]/$bTotalCount).'%)';
+				if ($name == 'IPs')
+					$newMatches[] = long2ip($match).' ('.round(100*$aTally[$match]/$aTotalCount).'%-'.round(100*$bTally[$match]/$bTotalCount).'%)';
+				else
+					$newMatches[] = $match.' ('.round(100*$aTally[$match]/$aTotalCount).'%-'.round(100*$bTally[$match]/$bTotalCount).'%)';
 			}
 			print implode(', ', $newMatches);
 		}
@@ -672,9 +679,16 @@ class adminMultiCheck
 
 		list($bUserGames) = $DB->sql_row("SELECT COUNT(id) FROM wD_Members WHERE userID = ".$bUser->id);
 
+		$info = '';
+		if ($bUser->rlGroup == $this->aUser->rlGroup && $bUser->rlGroup > 0)
+			$info .= '(<img src="images/icons/friends.png" alt="RL friends">)';
+		elseif ($bUser->rlGroup > 0)
+			$info .= '(rlG:'.$bUser->rlGroup.')';			
+		$info .= ' (played '.$bUserGames.' games)';
+		
 		print '<ul>';
 		print '<li><a href="profile.php?userID='.$bUser->id.'">'.$bUser->username.'</a> ('.$bUser->points.' '.libHTML::points().')
-					(played '.$bUserGames.' games) (<a href="?aUserID='.$bUser->id.'#viewMultiFinder" class="light">check userID='.$bUser->id.'</a>)
+					'.$info.' (<a href="?aUserID='.$bUser->id.'#viewMultiFinder" class="light">check userID='.$bUser->id.'</a>)
 				<ul>';
 
 		list($bUserTotal) = $DB->sql_row("SELECT COUNT(ip) FROM wD_AccessLog WHERE userID = ".$bUser->id);
@@ -689,7 +703,19 @@ class adminMultiCheck
 		if ( count($this->aLogsData['activeGameIDs']) > 0 )
 			$this->compareGames('Active games', $bUser->id, $this->aLogsData['activeGameIDs']);
 
-		print '</ul></li></ul>';
+		print '</ul>';
+		if ($bUser->rlGroup != $this->aUser->rlGroup)
+		{
+			print '<form method="post" style="display:inline;">';
+			if ($this->aUser->rlGroup > 0)
+				print '<input type="hidden" name="groupID" value="'.$this->aUser->rlGroup.'" />';
+			else
+				print '<input type="hidden" name="userID" value="'.$this->aUser->id.'" />';
+			print '<input type="hidden" name="addUserID" value="'.$bUser->id.'" />
+				<input type="Submit" value="Add to Group" />
+			</form>';
+		}
+		print '</li></ul>';
 	}
 	
 	/**
