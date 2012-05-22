@@ -368,13 +368,25 @@ class libHTML
 	 */
 	static public function prebody ( $title )
 	{
-		/* Instead of many small files only load one big file:
+		/* Instead of many small css files only load one big file:
 		$variantCSS=array();
 		foreach(Config::$variants as $variantName)
 			$variantCSS[] = '<link rel="stylesheet" href="'.STATICSRV.'variants/'.$variantName.'/resources/style.css" type="text/css" />';
 		$variantCSS=implode("\n",$variantCSS);
 		*/
-		$variantCSS = '<link rel="stylesheet" href="'.CSSDIR.'/variants-'.md5(serialize(Config::$variants)).'.css" type="text/css" />';
+
+		$CSSname = libCache::Dirname("css")."/variants-".md5(serialize(Config::$variants)).".css";
+		if (!file_exists($CSSname))
+		{
+			$variantCSS = '';
+			foreach(Config::$variants as $variantName)
+				$variantCSS .= file_get_contents('variants/'.$variantName.'/resources/style.css')."\n";
+			$handle = fopen($CSSname, 'w');
+			fwrite($handle, $variantCSS);
+			fclose($handle);
+		}
+		$variantCSS = '<link rel="stylesheet" href="'.$CSSname.'" type="text/css" />';
+		// End alternate CSS file patch
 		
 		return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 		<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">

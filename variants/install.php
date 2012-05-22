@@ -86,18 +86,13 @@ class InstallCache {
 
 		file_put_contents($jsonFileLocation, $javascript);
 		
-		// Small hook to generate a global CSS file for all variants...
-		$variantCSS = '';
-		foreach(Config::$variants as $variantName)
-			$variantCSS .= file_get_contents('variants/'.$variantName.'/resources/style.css')."\n";
-			
-		$CSSname = CSSDIR."/variants-".md5(serialize(Config::$variants)).".css";
-
-		$handle = fopen($CSSname, 'w');
-		fwrite($handle, $variantCSS);
-        fclose($handle);
-		// End alternate CSS file patch
-		
+		// Small patch for global variant-css (delete the file so it's created new after installation of a variant)
+		$dir_handle=opendir(libCache::Dirname("css")); 
+		while (false !== ($file=readdir($dir_handle)))
+			if($file!="." && $file!="..") 
+				unlink (libCache::Dirname("css")."/".$file);
+		closedir($dir_handle); 
+		// End patch
 	}
 }
 
