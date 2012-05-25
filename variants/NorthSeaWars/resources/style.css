@@ -1,0 +1,12 @@
+@CHARSET "ISO-8859-1";
+	
+.variantNorthSeaWars .country0 { color: #CE7800 ! important; } /* Global  */
+.variantNorthSeaWars .country1 { color: #6F005D ! important; } /* Briton */
+.variantNorthSeaWars .country2 { color: #259901 ! important; } /* Roman */
+.variantNorthSeaWars .country3 { color: #D62929 ! important; } /* Frysian */
+.variantNorthSeaWars .country4 { color: #DD51BD ! important; } /* Norse */
+
+.variantNorthSeaWars .occupationBar1 { background-color: #A87E9F; } /* Briton */
+.variantNorthSeaWars .occupationBar2 { background-color: #A4C499; } /* Roman */
+.variantNorthSeaWars .occupationBar3 { background-color: #C48F85; } /* Frysian */
+.variantNorthSeaWars .occupationBar4 { background-color: #EFC4E4; } /* Norse */
