@@ -715,12 +715,26 @@ function draw_map() {
 
     global $DB, $variant, $mapID, $terrID, $mode, $mapsize, $zoom_x, $zoom_y;
 
+    if ($mapsize == 'large')
+		$picname = 'variants/'.$variant->name.'/resources/map.png';
+	else
+		$picname = 'variants/'.$variant->name.'/resources/smallMap.png';
+	$image = imagecreatefrompng($picname);
+	
+	if (imageistruecolor($image))
+	{
+		imagetruecolortopalette($image, false, 200);
+		imagepng($image, $picname);
+		imagedestroy($image);		
+	}
+	
     // Load the drawMap object for the given map type
     if ($mapsize == 'large')
         $drawMap = $variant->drawMap(false);
     else
         $drawMap = $variant->drawMap(true);
 
+		
     // Draw TerrStatus
     $tabl = $DB->sql_tabl("SELECT id, type, countryID, MapX, SmallMapX FROM wD_Territories WHERE (coast='No' OR coast='Parent') AND type!='Sea' AND mapID=" . $mapID);
     while (list($id, $type, $countryID, $x, $sx) = $DB->tabl_row($tabl)) {
