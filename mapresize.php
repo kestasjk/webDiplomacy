@@ -1,20 +1,15 @@
 <?php
 
-// If called from inside the download script print version number and exit.
-if (defined('IN_CODE')) {
-    print "0.9";
-    return;
-}
+require_once('header.php');
 
 if ($_SERVER['REQUEST_METHOD'] != "POST") {
-	require_once('header.php');
 	libHTML::starthtml();
 	print '<div class="content">';
 
 	$edit=true;
-	if (!($User->type['Admin']))
-		if (!(array_key_exists($User->username, Config::$devs)))
-			$edit = false;
+    if (!($User->type['Admin']))
+        if (!(array_key_exists($User->username, Config::$devs)))
+            $edit = 'false';
 			
 	// Admins only
 	if ($edit=true)  {
@@ -26,53 +21,36 @@ if ($_SERVER['REQUEST_METHOD'] != "POST") {
 		print '<li class="formlisttitle"><input type="submit" value="Upload File" />';
 		print '</form>';
 	} else {
-		print "Admins only";
+		print "Admins and devs only";
 	}
 	print '</div>';
 	libHTML::footer();
 	
 } else {
-
-	if ($_FILES['imgfile']['type'] != "image/png")
-	{
-		require_once('header.php');
-		libHTML::starthtml();
-		print '<div class="content">';
-		print "<h1>ERROR</h1>Image Extension Unknown.<br>";
-		print "<p>Please upload only a PNG image.<br><br>";
-		print '</div>';
-		libHTML::footer();
-		return;
-    }
-	if (file_exists("cache/stop"))
-	{
-		require_once('header.php');
-		libHTML::starthtml();
-		print '<div class="content">';
-		print "<h1>ERROR</h1>Another user is resizing it's map<br>";
-		print '</div>';
-		libHTML::footer();
-		return;
-    }	
+	
+	include_once ("lib/cache.php");
 	
 	set_time_limit(190);
 	ini_set('memory_limit','100M');
 
-	$new_x = (isset($_POST['new_x'])) ? $_POST['new_x'] : '250';  // 
-	$new_y = (isset($_POST['new_y'])) ? $_POST['new_y'] : '250';  // 
+	$new_x = (isset($_POST['new_x'])) ? (int)$_POST['new_x'] : '250';  // 
+	$new_y = (isset($_POST['new_y'])) ? (int)$_POST['new_y'] : '250';  // 
 
 	if ($new_x < 100) $new_x=100;
 	if ($new_x > 2000) $new_x=2000;
 	if ($new_y < 100) $new_y=100;
 	if ($new_y > 2000) $new_y=2000;
 	
-	touch("cache/stop");
-	$img=imagecreatefrompng($_FILES['imgfile']['tmp_name']);
+	$img=imagecreatefromstring(file_get_contents($_FILES['imgfile']['tmp_name']));
+
+	if (imageistruecolor($img))
+		imagetruecolortopalette($img, false, 200);
+		
 	$width=imagesx($img);
 	$height=imagesy($img);
 	
 	// Output original Image:
-	imagepng($img, 'cache/resize_orig.png');
+	imagepng($img, libCache::dirID('users',$User->id).'/resize_orig.png');
 
 	// Create BW:
 	$white=imagecolorallocate($img,255,255,255);
@@ -87,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] != "POST") {
 				imagesetpixel($img,$x,$y,$white);		
 		}
 	}
-	imagepng($img,'cache/resize_bw.png');
+	imagepng($img,libCache::dirID('users',$User->id).'/resize_bw.png');
 
 	// Color the territories:
 	for ( $x=0; ($x < $width); $x++) {
@@ -103,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] != "POST") {
 			}
 		}
 	}
-	imagepng($img,'cache/resize_col.png');
+	imagepng($img,libCache::dirID('users',$User->id).'/resize_col.png');
 
 	// Remove the borders:
 	for ($i=0; $i<7; $i++) {
@@ -123,13 +101,13 @@ if ($_SERVER['REQUEST_METHOD'] != "POST") {
 		}
 
 	}
-	imagepng($img,'cache/resize_wo_br.png');
+	imagepng($img,libCache::dirID('users',$User->id).'/resize_wo_br.png');
 
 	// create new picture
 	$img_new=imagecreate($new_x,$new_y);
 	imagecopyresized($img_new,$img,0,0,0,0,$new_x,$new_y,$width,$height);
 	imagedestroy($img);	
-	imagepng($img_new,'cache/resize_new.png');
+	imagepng($img_new,libCache::dirID('users',$User->id).'/resize_new.png');
 
 	// Add the borders:
 	$black=imagecolorallocate($img_new,0,0,0);
@@ -152,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] != "POST") {
 
 		}
 	}
-	imagepng($img_new,'cache/resize_new_br.png');
+	imagepng($img_new,libCache::dirID('users',$User->id).'/resize_new_br.png');
 
 	// Enhance the borders:
 	// Soften the edges:
@@ -225,30 +203,28 @@ if ($_SERVER['REQUEST_METHOD'] != "POST") {
 		}
 	}
 	
-	
-	
-	imagepng($img_new,'cache/resize_new_br_enh.png');
+		
+	imagepng($img_new,libCache::dirID('users',$User->id).'/resize_new_br_enh.png');
 
 	imagedestroy($img_new);
-	unlink("cache/stop");
-	
+
 	require_once('header.php');
 	libHTML::starthtml();
 	print '<div class="content">';
 	print "Original:<hr>";
-	print '<img src="cache/resize_orig.png">';
+	print '<img src="'.libCache::dirID('users',$User->id).'/resize_orig.png">';
 	print "<hr>BW:<hr>";
-	print '<img src="cache/resize_bw.png" >';
+	print '<img src="'.libCache::dirID('users',$User->id).'/resize_bw.png" >';
 	print "<hr>Col:<hr>";
-	print '<img src="cache/resize_col.png">';
+	print '<img src="'.libCache::dirID('users',$User->id).'/resize_col.png">';
 	print "<hr>Borders removed:<hr>";
-	print '<img src="cache/resize_wo_br.png">';
+	print '<img src="'.libCache::dirID('users',$User->id).'/resize_wo_br.png">';
 	print "<hr>New size:<hr>";
-	print '<img src="cache/resize_new.png">';
+	print '<img src="'.libCache::dirID('users',$User->id).'/resize_new.png">';
 	print "<hr>Borders:<hr>";
-	print '<img src="cache/resize_new_br.png">';
+	print '<img src="'.libCache::dirID('users',$User->id).'/resize_new_br.png">';
 	print "<hr>Enhanched borders:<hr>";
-	print '<img src="cache/resize_new_br_enh.png">';
+	print '<img src="'.libCache::dirID('users',$User->id).'/resize_new_br_enh.png">';
 	
 	print '</div>';
 	libHTML::footer();
