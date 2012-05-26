@@ -12,28 +12,28 @@ require_once('map/drawMap.php');
 ini_set('memory_limit', '14M');
 
 // all possible parameters:
-$variantID = (isset($_REQUEST['variantID'])) ? $_REQUEST['variantID'] : '0';      // The Variant-ID for the map
-$terrID = (isset($_REQUEST['terrID'])) ? $_REQUEST['terrID'] : '0';      // Global or only one territory
+$variantID = (isset($_REQUEST['variantID'])) ? (int)$_REQUEST['variantID'] : '0';      // The Variant-ID for the map
+$terrID = (isset($_REQUEST['terrID'])) ? (int)$_REQUEST['terrID'] : '0';      // Global or only one territory
 $showmode = (isset($_REQUEST['showmode'])) ? $_REQUEST['showmode'] : 'none';   // Units, Links, None or both
 $mapmode = (isset($_REQUEST['mapmode'])) ? $_REQUEST['mapmode'] : 'all';    // zoom map or view all
 $mapsize = (isset($_REQUEST['mapsize'])) ? $_REQUEST['mapsize'] : 'small';  // large or smallmap
 $mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : 'none';   // border or territory data
 $edit = (isset($_REQUEST['edit'])) ? $_REQUEST['edit'] : 'newoff'; // view or edit data
 // new settings
-$map_x = (isset($_REQUEST['map_x'])) ? $_REQUEST['map_x'] : ''; // new X coordinate
-$map_y = (isset($_REQUEST['map_y'])) ? $_REQUEST['map_y'] : ''; // new Y coordinate
+$map_x = (isset($_REQUEST['map_x'])) ? (int)$_REQUEST['map_x'] : ''; // new X coordinate
+$map_y = (isset($_REQUEST['map_y'])) ? (int)$_REQUEST['map_y'] : ''; // new Y coordinate
 $type = (isset($_REQUEST['type'])) ? $_REQUEST['type'] : ''; // new type (Land, Sea, Coast)
 $sc = (isset($_REQUEST['sc'])) ? $_REQUEST['sc'] : ''; // SupportCenter (Yes, No)
 $name = (isset($_REQUEST['name'])) ? $_REQUEST['name'] : ''; // new name
-$countryID = (isset($_REQUEST['countryID'])) ? $_REQUEST['countryID'] : ''; // new countryID
+$countryID = (isset($_REQUEST['countryID'])) ? (int)$_REQUEST['countryID'] : ''; // new countryID
 $calcxy = (isset($_REQUEST['calcxy'])) ? $_REQUEST['calcxy'] : ''; // calculate the coordinates for the largemap from the smallmap
 $calclinks = (isset($_REQUEST['calclinks'])) ? $_REQUEST['calclinks'] : ''; // calculate the links for the map
 $set_link = (isset($_REQUEST['set_link'])) ? $_REQUEST['set_link'] : ''; // change what units can pass a border
 $new_link = (isset($_REQUEST['new_link'])) ? $_REQUEST['new_link'] : ''; // add a new border
 $del_terr = (isset($_REQUEST['del_terr'])) ? $_REQUEST['del_terr'] : ''; // delte territory
 // Zoomoffsets:
-$zoom_x = (isset($_REQUEST['zoom_x'])) ? $_REQUEST['zoom_x'] : '0'; // change the offset for the x coordinate if map is zoomed
-$zoom_y = (isset($_REQUEST['zoom_y'])) ? $_REQUEST['zoom_y'] : '0'; // change the offset for the y coordinate if map is zoomed
+$zoom_x = (isset($_REQUEST['zoom_x'])) ? (int)$_REQUEST['zoom_x'] : '0'; // change the offset for the x coordinate if map is zoomed
+$zoom_y = (isset($_REQUEST['zoom_y'])) ? (int)$_REQUEST['zoom_y'] : '0'; // change the offset for the y coordinate if map is zoomed
 // VersionNumber
 $version = (isset($_REQUEST['version'])) ? $_REQUEST['version'] : ''; // Change the version number
 
@@ -718,9 +718,9 @@ function draw_map() {
     if ($mapsize == 'large')
 		$picname = 'variants/'.$variant->name.'/resources/map.png';
 	else
-		$picname = 'variants/'.$variant->name.'/resources/smallMap.png';
+		$picname = 'variants/'.$variant->name.'/resources/smallmap.png';
 	$image = imagecreatefrompng($picname);
-	
+ 	
 	if (imageistruecolor($image))
 	{
 		imagetruecolortopalette($image, false, 200);
