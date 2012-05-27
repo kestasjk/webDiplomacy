@@ -251,15 +251,15 @@ class panelGame extends Game
 		if( $this->variantID!=1 )
 			$alternatives[]=$this->Variant->link();
 		if( $this->pressType=='NoPress')
-			$alternatives[]='No in-game messaging';
+			$alternatives[]='Gunboat';
 		elseif( $this->pressType=='PublicPressOnly' )
-			$alternatives[]='Public messaging only';
+			$alternatives[]='Public Press';
 		if( $this->anon=='Yes' )
 			$alternatives[]='Anon';
 		if( $this->potType=='Winner-takes-all' )
 			$alternatives[]='WTA';			
 		if( $this->specialCDturn >= $this->turn)
-			$alternatives[]='NMR-extend:'.$this->specialCDturn.' turn'.($this->specialCDturn > 1 ? 's':'').' / '.$this->specialCDcount.' time'.($this->specialCDcount > 1 ? 's':'');
+			$alternatives[]='NMR:'.$this->specialCDturn.'/'.$this->specialCDcount;
 			
 		//	Show the end of the game in the options if set.
 		if(( $this->targetSCs > 0) && ($this->maxTurns > 0))
