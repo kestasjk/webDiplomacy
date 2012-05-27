@@ -207,17 +207,21 @@ class libRelations {
 				</TFOOT>';
 				
 			foreach ($games as $gameID => $count)
-			{
+			{				
 				$Variant=libVariant::loadFromGameID($gameID);
 				$Game = $Variant->Game($gameID);
-				$html .= '<TR><TD style="border: 1px solid #666"><a href="board.php?gameID='.$Game->id.'">'.$Game->name.'</a></TD>';
-				$html .= '<TD style="border: 1px solid #666">'.count($Variant->countries).'</TD>';
-				$html .= '<TD style="border: 1px solid #666">'.$count.'</TD>';
-				$html .= '<TD style="border: 1px solid #666">'.$Game->anon.'</TD>';
-				$html .= '<TD style="border: 1px solid #666">'.$Game->rlPolicy.'</TD>';
-				$html .= '<TD style="border: 1px solid #666">'.$Game->pressType.'</TD>';
-				$html .= '<TD style="border: 1px solid #666">'.($Game->password != '' ? 'Yes':'No').'</TD>';
-				$html .= '</TR>';
+				if ($Game->anon == 'No' || $User->type['Moderator'])
+				{
+					$html .= '<TR>';
+					$html .= '<TR><TD style="border: 1px solid #666"><a href="board.php?gameID='.$Game->id.'">'.$Game->name.'</a></TD>';
+					$html .= '<TD style="border: 1px solid #666">'.count($Variant->countries).'</TD>';
+					$html .= '<TD style="border: 1px solid #666">'.$count.'</TD>';
+					$html .= '<TD style="border: 1px solid #666">'.$Game->anon.'</TD>';
+					$html .= '<TD style="border: 1px solid #666">'.$Game->rlPolicy.'</TD>';
+					$html .= '<TD style="border: 1px solid #666">'.$Game->pressType.'</TD>';
+					$html .= '<TD style="border: 1px solid #666">'.($Game->password != '' ? 'Yes':'No').'</TD>';
+					$html .= '</TR>';
+				}
 			}
 			$html .= '</TABLE>';			
 		}
@@ -226,6 +230,56 @@ class libRelations {
 	
 	static function DisclaimerHTML()
 	{
+		return "
+			<div class='hr'></div>
+			<div style='font-weight:bold'><strong>Information about rlGroups and gamesettings:</strong></div>
+			<ul class='formlist'>
+				<li class='formlisttitle'>
+					What is a rlGroup?
+				</li>
+				<li class='formlistdesc'>
+					If you know and meet other players on this site in real life too (for example at school, at work or relatives) it's called a rlGroup.
+				</li>
+				<li class='formlisttitle'>
+					Why rlGroups?
+				</li>
+				<li class='formlistdesc'>
+					This feature is not meant to put freinds in a ghetto on this site. There is no problems with friends playing here. But there are some issues to keep in mind:<br>
+					If you know other players by person it's much easier to communicate and coordinate your moves.
+					This gives friends a big advantage about all other players in the game.
+					There is a deeper thrust between friends and some even fear a stab of a good friend might damage their friendship.<br>
+					If mods check the games in question it looks like there is only onle player with multiple accounts cheating. And becasue of
+					that your account might be in danger of getting banned.<br>
+					So the mods knowing you are friends keeps your account save.
+				</li>
+				<li class='formlisttitle'>
+					But I want to play with my friends...!
+				</li>
+				<li class='formlistdesc'>
+					Fear not. The default setting for games is to allow friends to join a game together.
+					There is only a small message at the beginning of the game to inform everybody about this.<br>
+					Anon-games by default do not allow rlFriends to join, but during gamecreation you can switch this setting to \"No restrictions\".
+				</li>
+				<li class='formlisttitle'>
+					I created a game for my friends only, but other players joined before it started...
+				</li>
+				<li class='formlistdesc'>
+					During gamecreation you can choose to allow only players in the same group as you to join your games...
+				</li>				
+				<li class='formlisttitle'>
+					How do I add/remove friends to my group?
+				</li>
+				<li class='formlistdesc'>
+					You can't change the members of your group. You need to contact the mods at the <a href='modforum.php'>modforum</a>.
+				</li>				
+				<li class='formlisttitle'>
+					Help! I don't know all these users in my group. How do I leave this group?
+				</li>
+				<li class='formlistdesc'>
+					You need to contact the mods at the <a href='modforum.php'>modforum</a>.
+				</li>				
+			</ul>
+		";
 	}
 	
 	static function reportsDisplay($userID)
@@ -236,18 +290,18 @@ class libRelations {
 			return 'You can only view your own profile...';
 		
 		list($groupID, $username)=$DB->sql_row("SELECT rlGroup, username FROM wD_Users WHERE id=".$userID);
+
+		$disclaimer = self::DisclaimerHTML();
 		
 		if ($groupID != 0)
 		{
 			$notes = self::notesHTML($groupID);
 			$games = self::commonGamesHTML($groupID);
 			$allusers = self::allUsersHTML($groupID);
-			
-			return '<b>'.$username.'</b> is in a RL usergroup.<br><br>'.$notes."<br>".$games."<br>".$allusers;
+			return '<b>'.$username.'</b> is in a RL usergroup.<br><br>'.$notes."<br>".$games."<br>".$allusers."<br>".$disclaimer;
 		}
 		else
-			return 'No user relations exist for <b>'.$username.'</b><br>'.self::addUserHTML("userID", $userID);
-
+			return 'No user relations exist for <b>'.$username.'</b>.<br><br>'.self::addUserHTML("userID", $userID)."<br>".$disclaimer;
 	}
 
 	static function checkRelationsChange()
