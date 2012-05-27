@@ -58,6 +58,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 						,'specialCDturn'
 						,'specialCDcount'
 						,'targetSCs'
+						,'rlPolicy'					
 					);
 
 		foreach($required as $requiredName)
@@ -150,12 +151,31 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		if ( $input['specialCDturn'] < 0 ) $input['specialCDturn'] = 0;
 		$input['specialCDcount'] = (int)$input['specialCDcount'];
 		if ( $input['specialCDcount'] < 0 )	$input['specialCDcount'] = 0;
+		
+		switch($input['rlPolicy']) {
+			case 'Friends':
+				$input['rlPolicy'] = 'Friends';
+				break;
+			case 'Strict':
+				$input['rlPolicy'] = 'Strict';
+				break;
+			case 'None': // Regular is the default
+			default:
+				$input['rlPolicy'] = 'None';
+		}
 
 		// Create Game record & object
 		require_once('gamemaster/game.php');
 		$Game = processGame::create($input['variantID'], $input['name'], $input['password'], $input['bet'], $input['potType'], $input['phaseMinutes'], 
-										$input['joinPeriod'], $input['anon'], $input['pressType'],$input['maxTurns'],$input['targetSCs'],$input['minRating'],
-										$input['minPhases'],$input['specialCDturn'],$input['specialCDcount']);
+										$input['joinPeriod'], $input['anon'], $input['pressType'],
+										$input['maxTurns'],
+										$input['targetSCs'],
+										$input['minRating'],
+										$input['minPhases'],
+										$input['specialCDturn'],
+										$input['specialCDcount'],
+										$input['rlPolicy']
+										);
 
 		/**
 		 * Check for reliability, bevore a user can create a new game...

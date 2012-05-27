@@ -236,6 +236,11 @@ class Game
 	 public $specialCDturns;
 	 
 	/**
+	 * How to handle RL-friends (None, Strict, Only)
+	 */
+	 public $rlPolicy;
+	 
+	/**
 	 * @param int/array $gameData The game ID of the game to load, or the array of its database row
 	 * @param string[optional] $lockMode The database locking phase to use; no locking by default
 	 */
@@ -358,6 +363,7 @@ class Game
 			g.maxLeft,
 			g.specialCDcount,
 			g.specialCDturn,
+			g.rlPolicy,
 			g.missingPlayerPolicy
 			FROM wD_Games g
 			WHERE g.id=".$this->id.' '.$this->lockMode);

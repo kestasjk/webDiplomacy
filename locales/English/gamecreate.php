@@ -206,13 +206,26 @@ else
 		Anonymous players:
 	</li>
 	<li class="formlistfield">
-		<input type="radio" name="newGame[anon]" value="No" checked>No
-		<input type="radio" name="newGame[anon]" value="Yes">Yes
+		<input type="radio" name="newGame[anon]" value="No"  onclick="document.getElementById('rlPolicyNone').checked = true;" checked>No
+		<input type="radio" name="newGame[anon]" value="Yes" onclick="document.getElementById('rlPolicyStrict').checked = true;">Yes
 	</li>
 	<li class="formlistdesc">
 		If enabled players will not see each others names and user information, players are anonymous until the game ends.<br /><br />
 
 		<strong>Default:</strong> No, players aren't anonymous
+	</li>
+	
+	<li class="formlisttitle">
+		RL policy:
+	</li>
+	<li class="formlistfield">
+		<input id="rlPolicyNone" type="radio" name="newGame[rlPolicy]" value="None" checked>No restrictions.<br>
+		<input id="rlPolicyStrict" type="radio" name="newGame[rlPolicy]" value="Strict">If people have RL friends on this site only one of them can join.<br>
+		<input type="radio" name="newGame[rlPolicy]" value="Friends">Only people in your rlGroup can join this game.
+	</li>
+	<li class="formlistdesc">
+		This setting let you choose how to handle games with people that know each other in RL.
+		<br /><br /><strong>Default:</strong> Anon games prevent friends from joining together all others have no Restrictions.
 	</li>
 
 	<li class="formlisttitle">
@@ -237,7 +250,6 @@ else
 		<?php
 			foreach ($phaseList as $i) {
 				$opt = libTime::timeLengthText($i*60);
-
 				print '<option value="'.$i.'"'.($i==1440 ? ' selected' : '').'>'.$opt.'</option>';
 			}
 		?>
@@ -248,7 +260,7 @@ else
 
 		<br /><br /><strong>Default:</strong> The same as phase length
 	</li>
-
+	
 	<li class="formlisttitle">
 		Rating requirements:
 	</li>

@@ -269,6 +269,11 @@ class panelGame extends Game
 		elseif( $this->targetSCs > 0)
 			$alternatives[]='EoG: '.$this->targetSCs.' SCs';
 			
+		if( $this->rlPolicy=='Strict' )
+			$alternatives[]='NoFriends';
+		elseif( $this->rlPolicy=='Friends' )
+			$alternatives[]='OnlyFriends';
+
 		if ( $alternatives )
 			return '<div class="titleBarLeftSide" style="float:left">
 				<span class="gamePotType">'.implode(', ',$alternatives).'</span>

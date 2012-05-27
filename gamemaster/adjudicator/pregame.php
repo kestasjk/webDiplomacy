@@ -134,29 +134,17 @@ class adjudicatorPreGame {
 	
 	function checkForRelations()
 	{
+		require_once "lib/relations.php";
 		global $DB, $Game;
-		$sql = "SELECT u.rlGroup, count(u.rlGroup) FROM wD_Users u
+
+		$sql = "SELECT u.rlGroup FROM wD_Users u
 					LEFT JOIN wD_Members m ON ( u.id = m.userID )
-					WHERE m.gameID=".$Game->id." AND rlGroup != 0 GROUP BY rlGroup";
+					WHERE m.gameID=".$Game->id." AND rlGroup != 0
+					GROUP BY rlGroup
+					HAVING count(u.rlGroup) > 1";
 		$tabl= $DB->sql_tabl($sql);
-		while (list ($rlGroupID, $count) = $DB->tabl_row($tabl))
-		{
-			if ($count > 1)
-			{
-				require_once "lib/gamemessage.php";
-				if ($Game->anon == 'Yes') {
-					$usersHTML=$count.' players ';
-				} else {
-					$usersHTML='';
-					$sql = "SELECT id,username FROM wD_Users WHERE rlGroup = ".$rlGroupID;
-					$user_tabl= $DB->sql_tabl($sql);
-					while (list ($id, $username) = $DB->tabl_row($user_tabl))
-						$usersHTML .= '<a href="profile.php?userID='.$id.'">'.$username.'</a> ';
-				}
-				$msg = '<b>Attention!</b> '.$usersHTML.'know each other in RL. This is no issue as long as everybody plays the best he can, has no set alliances with his friends and no communication outsite the game is happening. Everything else might lead to a ban for all players involved.';
-				libGameMessage::send(0, 'GameMaster', $msg, $Game->id);
-			}
-		}
+		while (list ($groupID) = $DB->tabl_row($tabl))
+			libRelations::sendGameMessage($groupID);
 	}
 
 	/**

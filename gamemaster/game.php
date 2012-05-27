@@ -294,7 +294,15 @@ class processGame extends Game
 	 *
 	 * @return Game The object corresponding to the new game
 	 */
-	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $joinPeriod, $anon, $press, $maxTurns, $targetSCs, $minRating, $minPhases, $specialCDturn, $specialCDcount)
+	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $joinPeriod, $anon, $press
+		,$maxTurns 
+		,$targetSCs 
+		,$minRating 
+		,$minPhases
+		,$specialCDturn 
+		,$specialCDcount
+		,$rlPolicy
+		)
 	{
 		global $DB;
 
@@ -359,6 +367,7 @@ class processGame extends Game
 						minPhases = ".$minPhases.", 
 						specialCDturn = ".$specialCDturn.", 
 						specialCDcount = ".$specialCDcount.", 
+						rlPolicy = '".$rlPolicy."', 
 						phaseMinutes = ".$phaseMinutes);
 
 		$gameID = $DB->last_inserted();

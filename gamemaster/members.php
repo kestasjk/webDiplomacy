@@ -590,13 +590,10 @@ class processMembers extends Members
 		if ( $this->Game->maxLeft < $User->gamesLeft )
 			throw new Exception("You went CD in too many games. (Required: not more than ".$this->Game->maxLeft." / You:".$User->gamesLeft.")");
 
-		// It the game is anon: check if there is already another player he knows RL in this game:
-		if ( $this->Game->anon == 'Yes' && $User->rlGroup > 0)
-		{
-			require_once ("lib/relations.php");			
-			if ($message = libRelations::checkRelationsGame($User->id, $this->Game->id))
-				throw new Exception($message);
-		}
+		// Handle RL-relations
+		require_once ("lib/relations.php");			
+		if ($message = libRelations::checkRelationsGame($User, $this->Game))
+			throw new Exception($message);
 
 		// Check for reliability-rating:
 		if ( count($this->Game->Variant->countries)>2 && $this->Game->phase == 'Pre-game' && $message = $User->isReliable())

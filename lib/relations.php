@@ -2,15 +2,25 @@
 
 class libRelations {
 
-	static function checkRelationsGame($userID, $gameID, $ingame=false)
+	static function checkRelationsGame(User $User, Game $Game)
 	{
 		global $DB;
-		list($rlFriends) = $DB->sql_row("SELECT count(*) FROM wD_Members AS m
-											LEFT JOIN wD_Users AS u ON ( u.id = m.userID )
-											WHERE m.gameID=".$gameID." AND u.id != ".$userID." AND u.rlGroup = (SELECT rlGroup from wD_Users WHERE id=".$userID.")");
-
-		if ($rlFriends > 0)
-			return "Sorry, you are unable to join this game. This is probably because somebody you know in real life has already joined, which can cause all sorts of metagaming issues. You are welcome to play non-anon games with friends as long as you don't metagame.";
+		if ($Game->rlPolicy == 'Strict')
+		{
+			list($rlFriends) = $DB->sql_row("SELECT count(*) FROM wD_Members AS m
+												LEFT JOIN wD_Users AS u ON ( u.id = m.userID )
+												WHERE m.gameID=".$Game->id." AND u.id != ".$User->id." AND u.rlGroup = ".$User->rlGroup);
+			if ($rlFriends > 0)
+				return "Sorry, you are unable to join this game.<br>This is probably because somebody you know in real life has already joined and the RLPolicy of this game is <b>No Friends</b>.<br>You are welcome to play games with no RLPolicy set together with friends as long as you don't metagame.";
+		}
+		if ($Game->rlPolicy == 'Friends')
+		{
+			list($gameRLgroup) = $DB->sql_row("SELECT rlGroup FROM wD_Users AS u
+												LEFT JOIN wD_Members AS m ON ( u.id = m.userID )
+												WHERE m.gameID=".$Game->id);
+			if ($gameRLgroup != $User->rlGroup)
+				return "Sorry, you are unable to join this game.<br>The players of this game know each other in RL and want to discuss alliances outside this website too.";
+		}
 	}
 	
 	static function getallUsers($groupID)
@@ -40,36 +50,49 @@ class libRelations {
 
 		$games=array();
 		while (list ($gameID, $count) = $DB->tabl_row($tabl))
-			$games[$gameID]=$count;
-		
+		{
+			$Variant=libVariant::loadFromGameID($gameID);
+			if (count($Variant->countries) > $count)
+				$games[$gameID]=$count;
+		}
 		return $games;
+	}
+	
+	static function sendGameMessage($groupID)
+	{	
+		global $DB, $Game;
+		require_once "lib/gamemessage.php";
+		
+		if ($Game->anon == 'Yes') {
+			list($count) = $DB->sql_row(
+				"SELECT count(m.id) FROM wD_Members m
+					LEFT JOIN wD_Users u ON ( u.id = m.userID )
+					LEFT JOIN wD_Games g ON ( g.id = m.gameID )
+				WHERE g.id = ".$Game->id." AND u.rlGroup=".$groupID);
+			$usersHTML=$count.' players ';
+		} else {
+			$usersHTML='';
+			$sql = "SELECT u.id,u.username FROM wD_Users u
+						LEFT JOIN wD_Members m ON ( u.id = m.userID )
+						WHERE rlGroup=".$groupID." AND gameID=".$Game->id;
+			$user_tabl= $DB->sql_tabl($sql);
+			while (list ($id, $username) = $DB->tabl_row($user_tabl))
+				$usersHTML .= '<a href="profile.php?userID='.$id.'">'.$username.'</a> ';
+		}
+		$msg = '<b>Attention!</b> '.$usersHTML.'know each other in Real Life.<br>This is not an issue provided that: everybody plays the best game that they can, has no pre-set alliances with their friend, and communicates within the game environment while playing.'; 
+		libGameMessage::send(0, 'GameMaster', $msg);
 	}
 	
 	static function sendGameMessages($groupID)
 	{
-		global $Game, $DB;
-
+		global $Game;
 		$games = self::getCommonGames($groupID);
 		
 		foreach ($games as $gameID => $count)
 		{
-			require_once "lib/gamemessage.php";
 			$Variant=libVariant::loadFromGameID($gameID);
 			$Game = $Variant->Game($gameID);
-			
-			if ($Game->anon == 'Yes') {
-				$usersHTML=$count.' players ';
-			} else {
-				$usersHTML='';
-				$sql = "SELECT u.id,u.username FROM wD_Users u
-							LEFT JOIN wD_Members m ON ( u.id = m.userID )
-							WHERE rlGroup=".$groupID." AND gameID=".$gameID;
-				$user_tabl= $DB->sql_tabl($sql);
-				while (list ($id, $username) = $DB->tabl_row($user_tabl))
-					$usersHTML .= '<a href="profile.php?userID='.$id.'">'.$username.'</a> ';
-			}
-			$msg = '<b>Attention!</b> '.$usersHTML.'know each other in Real Life.<br>This is not an issue provided that: everybody plays the best game that they can, has no pre-set alliances with their friend, and communicates within the game environment while playing.'; 
-			libGameMessage::send(0, 'GameMaster', $msg);
+			self::sendGameMessage($groupID);
 		}
 	}
 	
@@ -155,14 +178,16 @@ class libRelations {
 		if (count($games > 0))
 		{
 			$html = '
-				<b>Common games:</b>
+				<b>Common games (with players <b><u>not</u></b> in this group):</b>
 				<TABLE>
 					<THEAD>
 						<TH style="border: 1px solid #000">Game</TH>
-						<TH style="border: 1px solid #000">No. Players</TH>
-						<TH style="border: 1px solid #000">No. RL Friends</TH>
+						<TH style="border: 1px solid #000">Players</TH>
+						<TH style="border: 1px solid #000">Friends</TH>
 						<TH style="border: 1px solid #000">Anon</TH>
+						<TH style="border: 1px solid #000">rlPolicy</TH>
 						<TH style="border: 1px solid #000">Press type</TH>
+						<TH style="border: 1px solid #000">Password</TH>
 					</THEAD>';
 			
 			if ($User->type['Moderator'])
@@ -189,11 +214,18 @@ class libRelations {
 				$html .= '<TD style="border: 1px solid #666">'.count($Variant->countries).'</TD>';
 				$html .= '<TD style="border: 1px solid #666">'.$count.'</TD>';
 				$html .= '<TD style="border: 1px solid #666">'.$Game->anon.'</TD>';
-				$html .= '<TD style="border: 1px solid #666">'.$Game->pressType.'</TD></TR>';
+				$html .= '<TD style="border: 1px solid #666">'.$Game->rlPolicy.'</TD>';
+				$html .= '<TD style="border: 1px solid #666">'.$Game->pressType.'</TD>';
+				$html .= '<TD style="border: 1px solid #666">'.($Game->password != '' ? 'Yes':'No').'</TD>';
+				$html .= '</TR>';
 			}
 			$html .= '</TABLE>';			
 		}
 		return $html;
+	}
+	
+	static function DisclaimerHTML()
+	{
 	}
 	
 	static function reportsDisplay($userID)
@@ -251,7 +283,15 @@ class libRelations {
 			$userID   =( isset($_REQUEST['userID']) ? (int)$_REQUEST['userID'] : 0);
 			$groupID  =( isset($_REQUEST['groupID'])? (int)$_REQUEST['groupID']: 0);
 			
-			// Check if there is alread a relation-group
+			// Check if there is alread a relation-group of user 1
+			if ($userID != 0)
+			{
+				list($userGroup)=$DB->sql_row("SELECT rlGroup FROM wD_Users WHERE id=".$userID);
+				if ($userGroup > 0)
+					$groupID = $userGroup;
+			}
+			
+			// Check if there is alread a relation-group for the new user.
 			list($adduserGroup)=$DB->sql_row("SELECT rlGroup FROM wD_Users WHERE id=".$adduserID);
 			
 			// Create a new group and put both in...
