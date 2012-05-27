@@ -231,54 +231,8 @@ class libRelations {
 	static function DisclaimerHTML()
 	{
 		return "
+			<div style='font-weight:bold'><strong>For information about rlGroups and gamesettings check the <a href='features.php#faq_5'>features page</a>.</strong></div>
 			<div class='hr'></div>
-			<div style='font-weight:bold'><strong>Information about rlGroups and gamesettings:</strong></div>
-			<ul class='formlist'>
-				<li class='formlisttitle'>
-					What is a rlGroup?
-				</li>
-				<li class='formlistdesc'>
-					If you know and meet other players on this site in real life too (for example at school, at work or relatives) it's called a rlGroup.
-				</li>
-				<li class='formlisttitle'>
-					Why rlGroups?
-				</li>
-				<li class='formlistdesc'>
-					This feature is not meant to put freinds in a ghetto on this site. There is no problems with friends playing here. But there are some issues to keep in mind:<br>
-					If you know other players by person it's much easier to communicate and coordinate your moves.
-					This gives friends a big advantage about all other players in the game.
-					There is a deeper thrust between friends and some even fear a stab of a good friend might damage their friendship.<br>
-					If mods check the games in question it looks like there is only onle player with multiple accounts cheating. And becasue of
-					that your account might be in danger of getting banned.<br>
-					So the mods knowing you are friends keeps your account save.
-				</li>
-				<li class='formlisttitle'>
-					But I want to play with my friends...!
-				</li>
-				<li class='formlistdesc'>
-					Fear not. The default setting for games is to allow friends to join a game together.
-					There is only a small message at the beginning of the game to inform everybody about this.<br>
-					Anon-games by default do not allow rlFriends to join, but during gamecreation you can switch this setting to \"No restrictions\".
-				</li>
-				<li class='formlisttitle'>
-					I created a game for my friends only, but other players joined before it started...
-				</li>
-				<li class='formlistdesc'>
-					During gamecreation you can choose to allow only players in the same group as you to join your games...
-				</li>				
-				<li class='formlisttitle'>
-					How do I add/remove friends to my group?
-				</li>
-				<li class='formlistdesc'>
-					You can't change the members of your group. You need to contact the mods at the <a href='modforum.php'>modforum</a>.
-				</li>				
-				<li class='formlisttitle'>
-					Help! I don't know all these users in my group. How do I leave this group?
-				</li>
-				<li class='formlistdesc'>
-					You need to contact the mods at the <a href='modforum.php'>modforum</a>.
-				</li>				
-			</ul>
 		";
 	}
 	

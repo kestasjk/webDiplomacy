@@ -36,6 +36,9 @@ and the rules of webDiplomacy.</li>
 <li><a href="faq.php">FAQ</a></li>
 <li class="formlistdesc">The webDiplomacy FAQ.</li>
 
+<li><a href="features.php">VDiplomacy features</a></li>
+<li class="formlistdesc">Features you should be aware of (not available at webdiplomacy.net).</li>
+
 <li><a href="rules.php">Etiquette</a></li>
 <li class="formlistdesc">The webDiplomacy etiquette.</li>
 
