@@ -138,7 +138,7 @@ foreach( $faq as $q => $a )
 		print '<li><div id="faq_answer_'.$section.'_'.$question.'">
 			<a class="faq_question" name="faq_'.$section.'_'.$question.'"
 			onclick="FAQShow('.$section.', '.$question.'); return false;" href="#">'.$q.'</a>
-			<div class="faq_answer" style="margin-top:5px; margin-bottom:15px;"><ul><li>'.$a.'</li></ul></div>
+			<div class="faq_answer" style="margin-top:5px; display:none; margin-bottom:15px;"><ul><li>'.$a.'</li></ul></div>
 			</div></li>';
 		$question++;
 	}
@@ -159,7 +159,6 @@ function FAQShow(section, question) {
 }
 
 function FAQInit() {
-	FAQHide();
 	ancor = self.document.location.hash.substring(1).match(/\d+/g);
 	section  = ancor[0];
 	question = ancor[1];
