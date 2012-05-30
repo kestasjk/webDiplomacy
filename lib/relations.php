@@ -5,20 +5,20 @@ class libRelations {
 	static function checkRelationsGame(User $User, Game $Game)
 	{
 		global $DB;
-		if ($Game->rlPolicy == 'Strict')
+		if ($Game->rlPolicy == 'Strict' && $User->rlGroup != 0)
 		{
 			list($rlFriends) = $DB->sql_row("SELECT count(*) FROM wD_Members AS m
 												LEFT JOIN wD_Users AS u ON ( u.id = m.userID )
 												WHERE m.gameID=".$Game->id." AND u.id != ".$User->id." AND u.rlGroup = ".$User->rlGroup);
-			if ($rlFriends > 0 && $User->rlGroup != 0)
+			if ($rlFriends > 0)
 				return "Sorry, you are unable to join this game.<br>This is probably because somebody you know in real life has already joined and the RLPolicy of this game is <b>No Friends</b>.<br>You are welcome to play games with no RLPolicy set together with friends as long as you don't metagame.";
 		}
-		if ($Game->rlPolicy == 'Friends')
+		if ($Game->rlPolicy == 'Friends' )
 		{
 			list($gameRLgroup) = $DB->sql_row("SELECT rlGroup FROM wD_Users AS u
 												LEFT JOIN wD_Members AS m ON ( u.id = m.userID )
 												WHERE m.gameID=".$Game->id);
-			if ($gameRLgroup != $User->rlGroup && $User->rlGroup != 0)
+			if ($gameRLgroup != $User->rlGroup && $gameRLgroup != 0)
 				return "Sorry, you are unable to join this game.<br>The players of this game know each other in RL and want to discuss alliances outside this website too.";
 		}
 	}
