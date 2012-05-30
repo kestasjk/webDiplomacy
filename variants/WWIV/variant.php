@@ -41,7 +41,7 @@ class WWIVVariant extends WDVariant {
 	public $description= 'A variant with an enormous map for 35 players over the whole globe.';
 	public $author     = 'Tom Mulledy';
 	public $adapter    = 'Carey Jensen / Oliver Auth';
-	public $codeVersion= '1.1.8';
+	public $codeVersion= '1.1.9';
 	public $homepage   = 'http://www.dipwiki.com/index.php?title=World_War_IV';
 	
 	public $countries=array('Amazon-Empire', 'Argentina', 'Australia', 'Brazil', 'California', 'Canada', 'Catholica', 'Central-Asia', 'Colombia', 'Congo', 'Cuba', 'Egypt', 'Germany', 'Illinois', 'Inca-Empire', 'India', 'Indonesia', 'Iran', 'Japan', 'Kenya', 'Manchuria', 'Mexico', 'Nigeria', 'Oceania', 'Philippines', 'Quebec', 'Russia', 'Sichuan-Empire', 'Song-Empire', 'South-Africa', 'Texas', 'Thailand', 'Turkey', 'United-Kingdom', 'United-States');

@@ -1822,7 +1822,6 @@ $bordersRawData=array(
 	array('Labrador Sea (lab)','Labrador (lbr)','Yes','No'),
 	array('Labrador Sea (lab)','Mid North Atlantic Ocean (mna)','Yes','No'),
 	array('Labrador Sea (lab)','Newfoundland (nwf)','Yes','No'),
-	array('Labrador (lbr)','Labrador (lbr)','Yes','No'),
 	array('Labrador (lbr)','Newfoundland (nwf)','Yes','Yes'),
 	array('Labrador (lbr)','Peninsule D\\\' Ungava (pdu)','Yes','Yes'),
 	array('Labrador (lbr)','Quebec (qbc)','Yes','Yes'),
@@ -2107,4 +2106,5 @@ if (!file_exists('variants/'.$this->name.'/cache/sampleMap.png'))
 	copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
 
 ?>
+
 
