@@ -215,18 +215,24 @@ else
 		<strong>Default:</strong> No, players aren't anonymous
 	</li>
 	
-	<li class="formlisttitle">
-		RL policy:
-	</li>
-	<li class="formlistfield">
-		<input id="rlPolicyNone" type="radio" name="newGame[rlPolicy]" value="None" checked>No restrictions.<br>
-		<input id="rlPolicyStrict" type="radio" name="newGame[rlPolicy]" value="Strict">If people have RL friends on this site only one of them can join.<br>
-		<input type="radio" name="newGame[rlPolicy]" value="Friends">Only people in your rlGroup can join this game.
-	</li>
-	<li class="formlistdesc">
-		This setting let you choose how to handle games with people that know each other in RL.
-		<br /><br /><strong>Default:</strong> Anon games prevent friends from joining together all others have no Restrictions.
-	</li>
+	<div id="RLGroup" style="
+		<?php 
+			if ($User->rlGroup == 0)
+				print libHTML::$hideStyle; 
+		?>">
+		<li class="formlisttitle">
+			RL policy:
+		</li>
+		<li class="formlistfield">
+			<input id="rlPolicyNone" type="radio" name="newGame[rlPolicy]" value="None" checked>No restrictions.<br>
+			<input id="rlPolicyStrict" type="radio" name="newGame[rlPolicy]" value="Strict">If people have RL friends on this site only one of them can join.<br>
+			<input type="radio" name="newGame[rlPolicy]" value="Friends">Only people in your rlGroup can join this game.
+		</li>
+		<li class="formlistdesc">
+			This setting let you choose how to handle games with people that know each other in RL.
+			<br /><br /><strong>Default:</strong> Anon games prevent friends from joining together all others have no Restrictions.
+		</li>
+	</div>
 
 	<li class="formlisttitle">
 		Disable in-game messaging:
