@@ -272,10 +272,8 @@ class panelGame extends Game
 		elseif( $this->targetSCs > 0)
 			$alternatives[]='EoG: '.$this->targetSCs.' SCs';
 			
-		if( $this->rlPolicy=='Strict' && $User->rlGroup != 0)
-			$alternatives[]='NoGroup';
-		elseif( $this->rlPolicy=='Friends' && $User->rlGroup != 0)
-			$alternatives[]='OnlyGroup';
+		if( $this->rlPolicy=='Friends')
+			$alternatives[]='OnlyFriends';
 
 		if ( $alternatives )
 			return '<div class="titleBarLeftSide" style="float:left">
