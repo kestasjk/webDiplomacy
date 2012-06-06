@@ -85,10 +85,40 @@ print '<li class="formlisttitle">Variant: ';
 print '<form style="display: inline" method="get" name="set_map">';
 print '<select name="variantID" onchange="this.form.submit();">';
 if ($variantID == 0)
-	Config::$variants[0] = ' Choose a variant...';
+	print '<option value="0" selected>Choose a variant...</option>';
+
 asort(Config::$variants);
+
 foreach ( Config::$variants as $id=>$name )
-	print '<option value="'.$id.'"'.($id == $variantID ? ' selected':'').'>'.$name.'</option>';
+{
+	if (isset(Config::$devs))
+	{
+		if (array_key_exists($User->username, Config::$devs))
+		{
+			foreach (Config::$devs[$User->username] as $variantName)
+			{
+				if ($name == $variantName)
+					print '<option value="'.$id.'"'.($id == $variantID ? ' selected':'').'>'.$name.'</option>';
+			}
+		
+		}
+		elseif ($User->id == 5)
+		{
+			foreach ( Config::$devs as $dev=>$variants )
+			{
+				foreach ($variants as $variantName)
+				{
+					if ($name == $variantName)
+						print '<option value="'.$id.'"'.($id == $variantID ? ' selected':'').'>'.$dev.': '.$name.'</option>';
+				}
+			}
+		}
+	}
+	else
+	{
+		print '<option value="'.$id.'"'.($id == $variantID ? ' selected':'').'>'.$name.'</option>';
+	}
+}
 print '</select></form>';
 
 if ($variantID != 0) {
@@ -242,7 +272,7 @@ if ($variantID != 0) {
 				print('<td><a href="' . $_SERVER['SCRIPT_NAME'].'?variantID='.$variantID.'&action=delete&file='.$file.'&basedir='.$dirname.'">Delete</a></td>');
 				
 			// Superuser can edit files:
-			if ($User->id == 5)
+			if ($edit == 'on')
 				print('<td><a href="' . $_SERVER['SCRIPT_NAME'].'?variantID='.$variantID.'&action=edit&file='.$file.'&basedir='.$dirname.'">Edit</a></td>');
 				
 			// Superuser can verify files:
