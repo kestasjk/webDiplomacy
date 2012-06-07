@@ -99,7 +99,7 @@ class Message
 			throw new Exception("Message too long");
 		}
 
-		libCache::wipeDir(libCache::dirName('forum'));
+		libCache::wipeDir(libCache::dirName('mod_forum'));
 
 		$DB->sql_put("INSERT INTO wD_ModForumMessages
 						SET toID = ".$toID.", fromUserID = ".$fromUserID.", timeSent = ".$sentTime.",
@@ -339,6 +339,15 @@ AND ($_REQUEST['newmessage'] != "") ) {
 
 						$messageproblem="Reply posted sucessfully.";
 						$new['message']=""; $new['subject']="";
+						
+						// Send a Notice to the threadstarter (if not a started by a mod)
+						list($starter) = $DB->sql_row(
+							"SELECT u.id FROM wD_ModforumMessages m
+								LEFT JOIN wd_Users u ON (u.id = m.fromUserID)
+								WHERE u.type NOT LIKE '%Moderator%' AND m.id=". $new['sendtothread']);
+						if ($starter != 0)
+						{
+						}
 					}
 					catch(Exception $e)
 					{

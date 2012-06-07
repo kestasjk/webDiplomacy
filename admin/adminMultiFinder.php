@@ -680,8 +680,8 @@ class adminMultiCheck
 		list($bUserGames) = $DB->sql_row("SELECT COUNT(id) FROM wD_Members WHERE userID = ".$bUser->id);
 
 		$info = '';
-		if ($bUser->rlGroup == $this->aUser->rlGroup && $bUser->rlGroup > 0)
-			$info .= '(<img src="images/icons/friends.png" alt="RL friends">)';
+		if ($bUser->rlGroup == $this->aUser->rlGroup && $bUser->rlGroup != 0)
+			$info .= '(<img src="'.libRelations::statusIcon($bUser->rlGroup).'" alt="RL friends">)';
 		elseif ($bUser->rlGroup > 0)
 			$info .= '(rlG:'.$bUser->rlGroup.')';			
 		$info .= ' (played '.$bUserGames.' games)';

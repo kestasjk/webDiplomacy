@@ -5,7 +5,7 @@ class libRelations {
 	static function checkRelationsGame(User $User, Game $Game)
 	{
 		global $DB;
-		if ($Game->rlPolicy == 'Strict' && $User->rlGroup != 0)
+		if ($Game->rlPolicy == 'Strict' && $User->rlGroup < 0)
 		{
 			list($rlFriends) = $DB->sql_row("SELECT count(*) FROM wD_Members AS m
 												LEFT JOIN wD_Users AS u ON ( u.id = m.userID )
@@ -59,28 +59,31 @@ class libRelations {
 	}
 	
 	static function sendGameMessage($groupID)
-	{	
-		global $DB, $Game;
-		require_once "lib/gamemessage.php";
-		
-		if ($Game->anon == 'Yes') {
-			list($count) = $DB->sql_row(
-				"SELECT count(m.id) FROM wD_Members m
-					LEFT JOIN wD_Users u ON ( u.id = m.userID )
-					LEFT JOIN wD_Games g ON ( g.id = m.gameID )
-				WHERE g.id = ".$Game->id." AND u.rlGroup=".$groupID);
-			$usersHTML=$count.' players ';
-		} else {
-			$usersHTML='';
-			$sql = "SELECT u.id,u.username FROM wD_Users u
-						LEFT JOIN wD_Members m ON ( u.id = m.userID )
-						WHERE rlGroup=".$groupID." AND gameID=".$Game->id;
-			$user_tabl= $DB->sql_tabl($sql);
-			while (list ($id, $username) = $DB->tabl_row($user_tabl))
-				$usersHTML .= '<a href="profile.php?userID='.$id.'">'.$username.'</a> ';
+	{
+		if ($groupID < 0)
+		{
+			global $DB, $Game;
+			require_once "lib/gamemessage.php";
+			
+			if ($Game->anon == 'Yes') {
+				list($count) = $DB->sql_row(
+					"SELECT count(m.id) FROM wD_Members m
+						LEFT JOIN wD_Users u ON ( u.id = m.userID )
+						LEFT JOIN wD_Games g ON ( g.id = m.gameID )
+					WHERE g.id = ".$Game->id." AND u.rlGroup=".$groupID);
+				$usersHTML=$count.' players ';
+			} else {
+				$usersHTML='';
+				$sql = "SELECT u.id,u.username FROM wD_Users u
+							LEFT JOIN wD_Members m ON ( u.id = m.userID )
+							WHERE rlGroup=".$groupID." AND gameID=".$Game->id;
+				$user_tabl= $DB->sql_tabl($sql);
+				while (list ($id, $username) = $DB->tabl_row($user_tabl))
+					$usersHTML .= '<a href="profile.php?userID='.$id.'">'.$username.'</a> ';
+			}
+			$msg = '<b>Attention!</b> '.$usersHTML.'know each other in Real Life.<br>This is not an issue provided that: everybody plays the best game that they can, has no pre-set alliances with their friend, and communicates within the game environment while playing.'; 
+			libGameMessage::send(0, 'GameMaster', $msg);
 		}
-		$msg = '<b>Attention!</b> '.$usersHTML.'know each other in Real Life.<br>This is not an issue provided that: everybody plays the best game that they can, has no pre-set alliances with their friend, and communicates within the game environment while playing.'; 
-		libGameMessage::send(0, 'GameMaster', $msg);
 	}
 	
 	static function sendGameMessages($groupID)
@@ -116,7 +119,7 @@ class libRelations {
 		global $User, $DB;
 		if( !$User->type['Moderator']) return;
 
-		list($notes)=$DB->sql_row("SELECT note FROM wD_ModeratorNotes WHERE linkIDType='rlGroup' AND linkID=".$groupID);
+		list($notes)=$DB->sql_row("SELECT note FROM wD_ModeratorNotes WHERE linkIDType='rlGroup' AND linkID=".abs($groupID));
 		
 		$html = '
 		<b>Notes<span id="EditNoteButton"> (<a href="#" onclick="$(\'EditNoteBox\').show(); $(\'EditNoteText\').hide(); $(\'EditNoteButton\').hide(); return false;">Edit</a>)</span>:</b>
@@ -169,6 +172,25 @@ class libRelations {
 		return $html;		
 	}
 	
+	static function statusIcon($groupID)
+	{
+		return 'images/icons/'.($groupID < 0 ? 'bad':'').'friends.png';
+	}
+	
+	static function toggleStatusIconHTML($groupID)
+	{
+		return '<form style="display:inline; white-space:nowarp" method="post">
+					<input hidden name="toggleGroup" value="'.$groupID.'">
+					<input type="image" title="Toggle Status" src="'.self::statusIcon($groupID).'" /></form>';
+	}
+	
+	static function statusHTML($groupID)
+	{
+		global $User;
+		if (!$User->type['Moderator']) return;
+		return "(Status: ".self::toggleStatusIconHTML($groupID).")";		
+	}
+	
 	static function commonGamesHTML($groupID)
 	{
 		global $DB, $User;
@@ -190,7 +212,7 @@ class libRelations {
 						<TH style="border: 1px solid #000">Password</TH>
 					</THEAD>';
 			
-			if ($User->type['Moderator'])
+			if ($User->type['Moderator'] && $groupID < 0)
 				$html .=
 				'<TFOOT>
 					<TR style="border: 1px solid #666"><td colspan=5>
@@ -249,10 +271,11 @@ class libRelations {
 		
 		if ($groupID != 0)
 		{
+			$status = self::statusHTML($groupID);
 			$notes = self::notesHTML($groupID);
 			$games = self::commonGamesHTML($groupID);
 			$allusers = self::allUsersHTML($groupID);
-			return '<b>'.$username.'</b> is in a RL usergroup.<br><br>'.$notes."<br>".$games."<br>".$allusers."<br>".$disclaimer;
+			return '<b>'.$username.'</b> is in a RL usergroup. '.$status.'<br><br>'.$notes."<br>".$games."<br>".$allusers."<br>".$disclaimer;
 		}
 		else
 			return 'No user relations exist for <b>'.$username.'</b>.<br><br>'.self::addUserHTML("userID", $userID)."<br>".$disclaimer;
@@ -268,12 +291,20 @@ class libRelations {
 		// Send a notification to all games where 2 or more players of this group have joined...
 		if (isset($_REQUEST['GameNotify']))
 			self::sendGameMessages((int)$_REQUEST['GameNotify']);
+			
+		// Toggle the Usergroup (good<->bad)
+		if( isset($_REQUEST['toggleGroup']))
+		{
+			$groupID=(int)$_REQUEST['toggleGroup'];
+			$newGroupID = $groupID * -1;
+			$DB->sql_put("UPDATE wD_Users SET rlGroup='".$newGroupID."' WHERE rlGroup=".$groupID);
+		}
 		
 		// Edit the note of the group
 		if (isset($_REQUEST['EditNote']) && isset($_REQUEST['groupID']))
 		{
 			$notes=$DB->msg_escape($_REQUEST['EditNote'],false);
-			$groupID=(int)$_REQUEST['groupID'];
+			$groupID=abs((int)$_REQUEST['groupID']);
 			$DB->sql_put("DELETE FROM wD_ModeratorNotes WHERE linkIDType='rlGroup' AND linkID=".$groupID);			
 			$DB->sql_put("INSERT INTO wD_ModeratorNotes SET 
 				note='".$notes."',
@@ -305,8 +336,7 @@ class libRelations {
 			// Create a new group and put both in...
 			if ($groupID == 0 && $adduserGroup == 0)
 			{
-				list($groupID)=$DB->sql_row("SELECT rlGroup from wD_Users ORDER BY rlGroup DESC LIMIT 1");
-				$groupID++;
+				list($groupID)=$DB->sql_row("SELECT ABS(rlGroup)+1 from wD_Users ORDER BY ABS(rlGroup) DESC LIMIT 1");
 				$DB->sql_put('UPDATE wD_Users SET rlGroup="'.$groupID.'" WHERE id='.$userID.' OR id='.$adduserID);
 			}
 			
