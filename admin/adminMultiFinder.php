@@ -375,7 +375,10 @@ class adminMultiCheck
 	{
 		print '<p>Checking <a href="profile.php?userID='.$this->aUserID.'">'.$this->aUser->username.'</a>'.
 			' ('.$this->aUser->points.' '.libHTML::points().')
-			(#'.$this->aUserID.')</p>';
+			(#'.$this->aUserID.')';
+		if ($this->aUser->rlGroup != 0)
+			print '(<img src="'.libRelations::statusIcon($this->aUser->rlGroup).'">)';
+		print '</p>';
 
 		if( is_array($this->bUserIDs) )
 		{
@@ -680,10 +683,13 @@ class adminMultiCheck
 		list($bUserGames) = $DB->sql_row("SELECT COUNT(id) FROM wD_Members WHERE userID = ".$bUser->id);
 
 		$info = '';
-		if ($bUser->rlGroup == $this->aUser->rlGroup && $bUser->rlGroup != 0)
-			$info .= '(<img src="'.libRelations::statusIcon($bUser->rlGroup).'" alt="RL friends">)';
-		elseif ($bUser->rlGroup > 0)
-			$info .= '(rlG:'.$bUser->rlGroup.')';			
+		if ($bUser->rlGroup != 0)
+		{
+			$info .= '(<img src="'.libRelations::statusIcon($bUser->rlGroup).'">';
+			if ($bUser->rlGroup != $this->aUser->rlGroup)
+				$info .= ':<b>'.$bUser->rlGroup.'</b>';
+			$info .= ')';
+		}
 		$info .= ' (played '.$bUserGames.' games)';
 		
 		print '<ul>';
@@ -704,10 +710,10 @@ class adminMultiCheck
 			$this->compareGames('Active games', $bUser->id, $this->aLogsData['activeGameIDs']);
 
 		print '</ul>';
-		if ($bUser->rlGroup != $this->aUser->rlGroup)
+		if ($bUser->rlGroup != $this->aUser->rlGroup || $bUser->rlGroup == 0 )
 		{
 			print '<form method="post" style="display:inline;">';
-			if ($this->aUser->rlGroup > 0)
+			if ($this->aUser->rlGroup != 0)
 				print '<input type="hidden" name="groupID" value="'.$this->aUser->rlGroup.'" />';
 			else
 				print '<input type="hidden" name="userID" value="'.$this->aUser->id.'" />';
