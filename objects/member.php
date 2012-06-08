@@ -157,6 +157,12 @@ class Member
 	public $leftBalanced;
 
 	/**
+	 * rlGroup of the player
+	 * @var int
+	 */
+	public $rlGroup;
+	
+	/**
 	 * Create a Member object from a database Member record row
 	 * @param array $row Member record
 	 */

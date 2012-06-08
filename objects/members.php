@@ -228,6 +228,7 @@ class Members
 				m.unitNo as unitNo,
 				u.username AS username,
 				u.points AS points,
+				u.rlGroup AS rlGroup,
 				u.missedMoves AS missedMoves,
 				u.phasesPlayed AS phasesPlayed,			
 				u.gamesLeft AS gamesLeft,
