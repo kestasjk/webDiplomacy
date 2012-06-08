@@ -342,8 +342,8 @@ AND ($_REQUEST['newmessage'] != "") ) {
 						
 						// Send a Notice to the threadstarter (if not a started by a mod)
 						list($starter) = $DB->sql_row(
-							"SELECT u.id FROM wD_ModforumMessages m
-								LEFT JOIN wd_Users u ON (u.id = m.fromUserID)
+							"SELECT u.id FROM wD_ModForumMessages m
+								LEFT JOIN wD_Users u ON (u.id = m.fromUserID)
 								WHERE u.type NOT LIKE '%Moderator%' AND m.id=". $new['sendtothread']);
 						if ($starter != 0)
 						{
