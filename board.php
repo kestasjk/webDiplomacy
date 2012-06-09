@@ -83,7 +83,7 @@ else
 
 		// In an game with strict rlPolicy don't allow users to join from a Left if they know someone else in this game
 		// Usually after a Mod set them to CD.
-		if ( $Game->Members->isJoined() && $Game->rlPolicy == 'Strict' && $User->rlGroup > 0 && $Game->Members->ByUserID[$User->id]->status == 'Left')
+		if ( $Game->Members->isJoined() && $Game->rlPolicy == 'Strict' && $User->rlGroup < 0 && $Game->Members->ByUserID[$User->id]->status == 'Left')
 		{
 			require_once ("lib/relations.php");			
 			if ($message = libRelations::checkRelationsGame($User, $Game))

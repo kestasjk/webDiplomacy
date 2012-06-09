@@ -209,7 +209,8 @@ class libRelations {
 						<TH style="border: 1px solid #000">Anon</TH>
 						<TH style="border: 1px solid #000">rlPolicy</TH>
 						<TH style="border: 1px solid #000">Press type</TH>
-						<TH style="border: 1px solid #000">Password</TH>
+						<TH style="border: 1px solid #000">Password</TH>'.
+						(($User->type['Moderator'] && $groupID < 0) ? '<TH style="border: 1px solid #000">Action</TH>':'').'
 					</THEAD>';
 			
 			if ($User->type['Moderator'] && $groupID < 0)
@@ -239,9 +240,27 @@ class libRelations {
 					$html .= '<TD style="border: 1px solid #666">'.count($Variant->countries).'</TD>';
 					$html .= '<TD style="border: 1px solid #666">'.$count.'</TD>';
 					$html .= '<TD style="border: 1px solid #666">'.$Game->anon.'</TD>';
-					$html .= '<TD style="border: 1px solid #666">'.$Game->rlPolicy.'</TD>';
+					$html .= '<TD style="border: 1px solid #666">'.$Game->rlPolicy.' 
+								<form style="display:inline; white-space:nowarp" method="post">
+								<input type="hidden" name="toggleGamePolicy" value="'.$Game->id.'">
+								<input type="hidden" name="gamePolicy" value="'.$Game->rlPolicy.'">
+								<input type="submit" name="Toggle rlPolicy" value="<>"></form>
+							</TD>';
 					$html .= '<TD style="border: 1px solid #666">'.$Game->pressType.'</TD>';
 					$html .= '<TD style="border: 1px solid #666">'.($Game->password != '' ? 'Yes':'No').'</TD>';
+					if ($User->type['Moderator'] && $groupID < 0)
+						$html .= '<TD style="border: 1px solid #666">
+									<SPAN id="KickButton'.$Game->id.'">
+										 <a href="#" onclick="$(\'KickButtonConfirm'.$Game->id.'\').show(); $(\'KickButton'.$Game->id.'\').hide();return false;">Kick</a>
+									</SPAN>
+									<SPAN id="KickButtonConfirm'.$Game->id.'" style="display:none;">
+										<form method="post" style="display:inline;">
+											<input type="hidden" name="kickGroup" value="'.$groupID.'">
+											<input type="hidden" name="kickGame" value="'.$Game->id.'">
+											<input type="Submit" value="Confirm" />
+										</form>
+									</SPAN>					
+								</TD>';
 					$html .= '</TR>';
 				}
 			}
@@ -300,6 +319,57 @@ class libRelations {
 			$DB->sql_put("UPDATE wD_Users SET rlGroup='".$newGroupID."' WHERE rlGroup=".$groupID);
 		}
 		
+		// Toggle the Gamepolicy (Strict -> None)
+		if( isset($_REQUEST['toggleGamePolicy']))
+		{
+			$gameID=(int)$_REQUEST['toggleGamePolicy'];
+			if ($_REQUEST['gamePolicy'] == 'None')
+				$newPolicy='Strict';
+			else
+				$newPolicy='None';
+			
+			$DB->sql_put("UPDATE wD_Games SET rlPolicy='".$newPolicy."' WHERE id=".$gameID);
+		}
+		
+		// Remove players of a group from a game:
+		if (isset($_REQUEST['kickGroup']) && isset($_REQUEST['kickGame']))
+		{
+			$groupID=(int)$_REQUEST['kickGroup'];
+			$gameID=(int)$_REQUEST['kickGame'];
+			if ($groupID < 0)
+			{
+				global $DB, $Game;
+				require_once('gamemaster/game.php');
+				require_once "lib/gamemessage.php";
+				
+				$Variant=libVariant::loadFromGameID($gameID);
+				$Game = $Variant->processGame($gameID);
+
+				if( $Game->phase == 'Pre-game' || $Game->phase == 'Finished' )
+					throw new Exception("Invalid phase to set CD");
+
+				$usersHTML='';
+				foreach ($Game->Members->ByID as $Member)
+				{
+					if ($Member->rlGroup == $groupID)
+					{
+						$Member->setLeft();
+						$usersHTML .= '<a href="profile.php?userID='.$Member->userID.'">'.$Member->username.'</a>, ';
+					}
+				}
+				$msg = '<b>Attention!</b> Removed '.$usersHTML.'from the game because of metagaming issues. The phase-timer got resetted for a full phase length. Please try to find a replacement'; 
+				libGameMessage::send(0, 'GameMaster', $msg);
+				if( $Game->processStatus == 'Not-processing' || $Game->phase != 'Finished' )
+				{
+					$DB->sql_put(
+						"UPDATE wD_Games
+						SET processTime = ".time()." + phaseMinutes * 60
+						WHERE id = ".$Game->id
+					);
+				}
+			}
+		}
+
 		// Edit the note of the group
 		if (isset($_REQUEST['EditNote']) && isset($_REQUEST['groupID']))
 		{
