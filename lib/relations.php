@@ -297,7 +297,7 @@ class libRelations {
 			return '<b>'.$username.'</b> is in a RL usergroup. '.$status.'<br><br>'.$notes."<br>".$games."<br>".$allusers."<br>".$disclaimer;
 		}
 		else
-			return 'No user relations exist for <b>'.$username.'</b>.<br><br>'.self::addUserHTML("userID", $userID)."<br>".$disclaimer;
+			return 'No user relations exist for <b>'.$username.'</b>.<br><br>'.($User->type['Moderator'] ? self::addUserHTML("userID", $userID):'')."<br>".$disclaimer;
 	}
 
 	static function checkRelationsChange()
