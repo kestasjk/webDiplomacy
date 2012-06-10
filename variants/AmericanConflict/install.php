@@ -587,6 +587,7 @@ $bordersRawData=array(
 	array('West Caribbean Sea','Honduras (North Coast)','Yes','No'),
 	array('West Caribbean Sea','Nicaragua (East Coast)','Yes','No'),
 	array('South Caribbean Sea','Gulf of Mosquitos','Yes','No'),
+	array('South Caribbean Sea','South West Atlantic Ocean','Yes','No'),
 	array('South Caribbean Sea','South Atlantic Ocean','Yes','No'),
 	array('South Caribbean Sea','Panama (North Coast)','Yes','No'),
 	array('Gulf of Mosquitos','Nicaragua (East Coast)','Yes','No'),
