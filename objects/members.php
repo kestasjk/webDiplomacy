@@ -58,6 +58,7 @@ class Members
 	public $ByUserID;
 	public $ByCountryID;
 	public $ByStatus;
+	public $ByRlGroup;
 
 	function SCPercents()
 	{
@@ -183,6 +184,7 @@ class Members
 	function indexMembers()
 	{
 		$this->ByID=array();
+		$this->ByRlGroup=array();
 		$this->ByUserID=array();
 		$this->ByStatus=array(
 			'Playing'=>array(),'Defeated'=>array(),'Left'=>array(),
@@ -203,6 +205,7 @@ class Members
 			$this->ByID[$Member->id] = $Member;
 			$this->ByStatus[$Member->status][$Member->id] = $Member;
 			$this->ByUserID[$Member->userID] = $Member;
+			$this->ByRlGroup[$Member->rlGroup][] = $Member;
 
 			// If pre-game all countries are 'Unassigned', so members cannot be indexed by countryID.
 			if ( $Member->countryID != 0 )

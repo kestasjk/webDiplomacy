@@ -169,8 +169,8 @@ class panelMember extends Member
 			return '<a href="profile.php?userID='.$this->userID.'">'.$this->username.'</a>
 				'.libHTML::loggedOn($this->userID).'
 				<span class="points">('.$this->points.libHTML::points().User::typeIcon($this->userType).' / <b>'.$this->getGrade().'</b>'.
-				(($User->type['Moderator'] && !$this->Game->Members->isJoined() && $this->rlGroup != 0) ? 
-				' / <img src="'.libRelations::statusIcon($this->rlGroup).'">:<b>'.abs($this->rlGroup).'</b>'
+				(($User->type['Moderator'] && $this->rlGroup != 0 && count($this->Game->Members->ByRlGroup[$this->rlGroup])>1) ? 
+				' / <img src="'.libRelations::statusIcon($this->rlGroup).'">:<b>'.abs($this->rlGroup).'/'.count($this->Game->Members->ByRlGroup[$this->rlGroup]).'</b>'
 				: '')
 				.')</span>'
 				.(defined('AdminUserSwitch') ? ' (<a href="board.php?gameID='.$this->gameID.'&auid='.$this->userID.'" class="light">+</a>)':'');
