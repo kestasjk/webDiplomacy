@@ -7,11 +7,12 @@ define('DELETECACHE',1);
 // all possible parameters:
 $variantID = (isset($_REQUEST['variantID'])) ? (int) $_REQUEST['variantID'] : '0';      // The Variant-ID for the map
 
+libHTML::starthtml();
+
 if ($variantID == 0)
 	Config::$variants[0]=' Choose a variant...';		
 asort(Config::$variants);
 
-libHTML::starthtml();
 print '<SCRIPT LANGUAGE="Javascript" SRC="contrib/FusionChartsFree/FusionCharts.js"></SCRIPT>';
 print '<div class="content">';
 
