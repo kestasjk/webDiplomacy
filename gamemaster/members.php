@@ -78,6 +78,27 @@ class processMembers extends Members
 		libGameMessage::send(0, 'GameMaster', $msg , $this->Game->id);		
 		$this->sendToPlaying('No',"The gamephase got extended by 4 days.");
 	}
+	
+	/**
+	 * Clear all extend votes from each Member for the next phase
+	 */
+	function clearExtendVotes()
+	{
+		global $DB;
+		$extVoteSet=false;
+		foreach($this->ByStatus['Playing'] as $Member)
+		{
+			if (in_array('Extend',$Member->votes))
+			{
+				$extVoteSet=true;
+				unset($Member->votes[array_search('Extend', $Member->votes)]);
+				$DB->sql_put("UPDATE wD_Members SET votes='".implode(',',$Member->votes)."' WHERE id=".$Member->id);	
+			}
+		}
+		if ($extVoteSet)
+			libGameMessage::send(0, 'GameMaster', 'Extend-request didn\'t reach 2/3 majority. All extend-votes cleared.' , $this->Game->id);
+	}
+	
 	/**
 	 * Count the units and supply centers of the members in this game, and refresh the
 	 * Member objects and update the member records.

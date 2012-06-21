@@ -496,6 +496,11 @@ class processGame extends Game
 		 * have been taken now only Games and Members need to be updated, and new orders added
 		 */
 		$this->Members->countUnitsSCs();
+		
+		/*
+		 * Clear all extend-votes for the current phase
+		 */
+		$this->Members->clearExtendVotes();
 
 		if( $this->turn<1 )
 		{
