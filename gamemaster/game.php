@@ -497,11 +497,6 @@ class processGame extends Game
 		 */
 		$this->Members->countUnitsSCs();
 		
-		/*
-		 * Clear all extend-votes for the current phase
-		 */
-		$this->Members->clearExtendVotes();
-
 		if( $this->turn<1 )
 		{
 			Game::wipeCache($this->id);
@@ -530,6 +525,11 @@ class processGame extends Game
 
 		if ( $newTurn )
 		{
+			/*
+			 * Clear all extend-votes for the current phase
+			 */
+			$this->Members->clearExtendVotes();
+		
 			/*
 			 * We have entered a new turn; clean the TerrStatus records of the previous turn's
 			 * retreatingUnitID, occupiedFromTerrID, standoff data, which is no longer valid.
