@@ -441,7 +441,13 @@ if( $User->type['Guest'] )
 	print libHTML::pageTitle('ModForum', 'A place to discuss Mod topics.');
 else
 	print '<div class="content">';
-
+	
+if ($ForumThreads == 0)
+	print '<div class="content-notice"><p class="notice">
+			This is where you post issues you may have with certain users, games and bugs.<br>
+			Every thread you post here is confidential and can only be viewed by yourself and the moderators.<br>
+			All mods receive an alert when you make a post in this forum. </p></p></div>';
+	
 if(isset($messageproblem) and !$new['sendtothread']) {
 	print '<p class="notice"><a name="postbox"></a>'.$messageproblem.'</p>';
 	libHTML::pagebreak();
