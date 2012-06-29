@@ -6,40 +6,40 @@ require_once("variants/install.php");
 InstallTerritory::$Territories=array();
 $countries=$this->countries;
 $territoryRawData=array(
-	array('South Britanny', 'Coast', 'Yes', 1, 0, 0, 239, 708),
-	array('Cymru', 'Land', 'Yes', 1, 0, 0, 106, 688),
-	array('Albion', 'Coast', 'No', 0, 0, 0, 204, 749),
-	array('North Britanny', 'Coast', 'No', 1, 0, 0, 186, 583),
-	array('Alba', 'Coast', 'Yes', 0, 0, 0, 125, 457),
-	array('Channel', 'Sea', 'No', 0, 0, 0, 289, 788),
-	array('Lower North Sea', 'Sea', 'No', 0, 0, 0, 372, 577),
-	array('West North Sea', 'Sea', 'No', 0, 0, 0, 258, 530),
-	array('Upper North Sea', 'Sea', 'No', 0, 0, 0, 302, 366),
-	array('East North Sea', 'Sea', 'No', 0, 0, 0, 470, 445),
-	array('Frisia', 'Coast', 'Yes', 3, 0, 0, 497, 602),
-	array('Batavia', 'Coast', 'Yes', 0, 0, 0, 442, 665),
-	array('Menapia', 'Coast', 'Yes', 2, 0, 0, 387, 743),
-	array('West Belgica', 'Coast', 'No', 2, 0, 0, 365, 793),
-	array('East Belgica', 'Land', 'No', 2, 0, 0, 538, 776),
-	array('Germania Inferior', 'Land', 'No', 0, 0, 0, 553, 700),
-	array('Germania Superior', 'Land', 'Yes', 2, 0, 0, 614, 793),
-	array('Magna Germania', 'Land', 'Yes', 0, 0, 0, 649, 641),
-	array('Amsivaria', 'Coast', 'Yes', 3, 0, 0, 563, 551),
-	array('Sealand', 'Coast', 'No', 0, 0, 0, 672, 398),
-	array('Limfjorden', 'Coast', 'Yes', 0, 0, 0, 564, 307),
-	array('Skagerrak', 'Sea', 'No', 0, 0, 0, 534, 246),
-	array('Vestland', 'Coast', 'No', 4, 0, 0, 418, 126),
-	array('Ostland', 'Coast', 'No', 4, 0, 0, 528, 139),
-	array('Sorland', 'Coast', 'Yes', 4, 0, 0, 454, 217),
-	array('Gotaland', 'Coast', 'Yes', 4, 0, 0, 667, 238),
-	array('wood', 'Coast', 'Yes', 0, 0, 0, 174, 122),
-	array('iron', 'Coast', 'Yes', 0, 0, 0, 302, 123),
-	array('grains', 'Coast', 'Yes', 0, 0, 0, 258, 189),
-	array('Central North Sea', 'Sea', 'No', 0, 0, 0, 355, 465),
-	array('Jutland', 'Coast', 'No', 0, 0, 0, 565, 423),
-	array('Jutland (East Coast)', 'Coast', 'No', 0, 0, 0, 602, 448),
-	array('Jutland (West Coast)', 'Coast', 'No', 0, 0, 0, 554, 439),
-	array('Central North Sea (2)', 'Sea', 'No', 0, 0, 0, 237, 144)
+	array('South Britanny', 'Coast', 'Yes', 1, 239, 708, 239, 708),
+	array('Cymru', 'Land', 'Yes', 1, 106, 688, 106, 688),
+	array('Albion', 'Coast', 'No', 0, 204, 749, 204, 749),
+	array('North Britanny', 'Coast', 'No', 1, 186, 583, 186, 583),
+	array('Alba', 'Coast', 'Yes', 0, 125, 457, 125, 457),
+	array('Channel', 'Sea', 'No', 0, 289, 788, 289, 788),
+	array('Lower North Sea', 'Sea', 'No', 0, 372, 577, 372, 577),
+	array('West North Sea', 'Sea', 'No', 0, 258, 530, 258, 530),
+	array('Upper North Sea', 'Sea', 'No', 0, 302, 366, 302, 366),
+	array('East North Sea', 'Sea', 'No', 0, 470, 445, 470, 445),
+	array('Frisia', 'Coast', 'Yes', 3, 497, 602, 497, 602),
+	array('Batavia', 'Coast', 'Yes', 0, 442, 665, 442, 665),
+	array('Menapia', 'Coast', 'Yes', 2, 387, 743, 387, 743),
+	array('West Belgica', 'Coast', 'No', 2, 365, 793, 365, 793),
+	array('East Belgica', 'Land', 'No', 2, 538, 776, 538, 776),
+	array('Germania Inferior', 'Land', 'No', 0, 553, 700, 553, 700),
+	array('Germania Superior', 'Land', 'Yes', 2, 614, 793, 614, 793),
+	array('Magna Germania', 'Land', 'Yes', 0, 649, 641, 649, 641),
+	array('Amsivaria', 'Coast', 'Yes', 3, 563, 551, 563, 551),
+	array('Sealand', 'Coast', 'No', 0, 672, 398, 672, 398),
+	array('Limfjorden', 'Coast', 'Yes', 0, 564, 307, 564, 307),
+	array('Skagerrak', 'Sea', 'No', 0, 534, 246, 534, 246),
+	array('Vestland', 'Coast', 'No', 4, 418, 126, 418, 126),
+	array('Ostland', 'Coast', 'No', 4, 528, 139, 528, 139),
+	array('Sorland', 'Coast', 'Yes', 4, 454, 217, 454, 217),
+	array('Gotaland', 'Coast', 'Yes', 4, 667, 238, 667, 238),
+	array('wood', 'Coast', 'Yes', 0, 174, 122, 174, 122),
+	array('iron', 'Coast', 'Yes', 0, 302, 123, 302, 123),
+	array('grains', 'Coast', 'Yes', 0, 258, 189, 258, 189),
+	array('Central North Sea', 'Sea', 'No', 0, 355, 465, 355, 465),
+	array('Jutland', 'Coast', 'No', 0, 565, 423, 565, 423),
+	array('Jutland (East Coast)', 'Coast', 'No', 0, 602, 448, 602, 448),
+	array('Jutland (West Coast)', 'Coast', 'No', 0, 554, 439, 554, 439),
+	array('Central North Sea (2)', 'Sea', 'No', 0, 237, 144, 237, 144)
 );
 
 foreach($territoryRawData as $territoryRawRow)
@@ -123,10 +123,10 @@ $bordersRawData=array(
 	array('Ostland','Gotaland','Yes','Yes'),
 	array('wood','iron','Yes','Yes'),
 	array('wood','grains','Yes','Yes'),
-	array('wood','Central North Sea','Yes','No'),
 	array('iron','grains','Yes','Yes'),
-	array('iron','Central North Sea','Yes','No'),
-	array('grains','Central North Sea','Yes','No')
+	array('Central North Sea','wood','Yes','No'),
+	array('Central North Sea','iron','Yes','No'),
+	array('Central North Sea','grains','Yes','No')
 );
 
 foreach($bordersRawData as $borderRawRow)
@@ -141,7 +141,7 @@ unset($bordersRawData);
 InstallTerritory::runSQL($this->mapID);
 InstallCache::terrJSON($this->territoriesJSONFile(),$this->mapID);
 
-// Remove the links to Spain... (you can only leave Spain)
+// Change the links to CentralNorthSea from the economic-resources.
 global $DB;
 $DB->sql_put('DELETE FROM wD_Borders        WHERE mapID='.$this->mapID.' AND fromTerrID=27 AND toTerrID=30');
 $DB->sql_put('DELETE FROM wD_CoastalBorders WHERE mapID='.$this->mapID.' AND fromTerrID=27 AND toTerrID=30');
@@ -151,6 +151,7 @@ $DB->sql_put('DELETE FROM wD_Borders        WHERE mapID='.$this->mapID.' AND fro
 $DB->sql_put('DELETE FROM wD_CoastalBorders WHERE mapID='.$this->mapID.' AND fromTerrID=29 AND toTerrID=30');
 
 ?>
+
 
 
 

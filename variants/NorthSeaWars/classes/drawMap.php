@@ -1,4 +1,23 @@
 <?php
+/*
+	Copyright (C) 2012 Oliver Auth / sqrg
+
+	This file is part of the NorthSeaWars variant for webDiplomacy
+
+	The NorthSeaWars variant for webDiplomacy is free software: you can redistribute
+	it and/or modify it under the terms of the GNU Affero General Public License
+	as published by the Free Software Foundation, either version 3 of the License,
+	or (at your option) any later version.
+
+	The NorthSeaWars variant for webDiplomacy is distributed in the hope that it will
+	be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of 
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU Affero General Public License
+	along with webDiplomacy. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
@@ -100,6 +119,11 @@ class NorthSeaWarsVariant_drawMap extends drawMap {
 		
 	}
 	
+	// Always load the largemap
+	public function __construct($smallmap) {
+		parent::__construct(false);
+	}
+
 	protected $countryColors = array(
 		0  => array(226, 198, 158), /* Neutral   */
 		1  => array(168, 126, 159), /* Briton */
@@ -109,26 +133,13 @@ class NorthSeaWarsVariant_drawMap extends drawMap {
 	);
 
 	protected function resources() {
-		if( $this->smallmap )
-		{
-			return array(
-				'map'     =>'variants/NorthSeaWars/resources/smallmap.png',
-				'army'    =>'variants/NorthSeaWars/resources/army.png',
-				'fleet'   =>'variants/NorthSeaWars/resources/fleet.png',
-				'names'   =>'variants/NorthSeaWars/resources/smallmapNames.png',
-				'standoff'=>'images/icons/cross.png'
-			);
-		}
-		else
-		{
-			return array(
-				'map'     =>'variants/NorthSeaWars/resources/map.png',
-				'army'    =>'contrib/army.png',
-				'fleet'   =>'contrib/fleet.png',
-				'names'   =>'variants/NorthSeaWars/resources/mapNames.png',
-				'standoff'=>'images/icons/cross.png'
-			);
-		}
+		return array(
+			'map'     =>'variants/NorthSeaWars/resources/map.png',
+			'army'    =>'variants/NorthSeaWars/resources/army.png',
+			'fleet'   =>'variants/NorthSeaWars/resources/fleet.png',
+			'names'   =>'variants/NorthSeaWars/resources/mapNames.png',
+			'standoff'=>'images/icons/cross.png'
+		);
 	}
 
 }
