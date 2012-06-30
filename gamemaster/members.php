@@ -70,6 +70,7 @@ class processMembers extends Members
 	 */
 	function notifyExtended()
 	{
+		require_once "lib/gamemessage.php";
 		$msg= "Per 2/3 majority vote the gamephase got extended by 4 days.\n(Voters: ";
 		foreach($this->ByStatus['Playing'] as $Member)
 			if (in_array('Extend',$Member->votes))
@@ -96,7 +97,10 @@ class processMembers extends Members
 			}
 		}
 		if ($extVoteSet)
+		{
+			require_once "lib/gamemessage.php";
 			libGameMessage::send(0, 'GameMaster', 'Extend-request didn\'t reach 2/3 majority. All extend-votes cleared.' , $this->Game->id);
+		}
 	}
 	
 	/**
