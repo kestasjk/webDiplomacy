@@ -528,7 +528,7 @@ class processGame extends Game
 			/*
 			 * Clear all extend-votes for the current phase
 			 */
-			$this->Members->clearExtendVotes();
+			// $this->Members->clearExtendVotes();
 		
 			/*
 			 * We have entered a new turn; clean the TerrStatus records of the previous turn's
