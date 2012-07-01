@@ -136,7 +136,7 @@ class userMember extends panelMember
 				if ($voteName == 'Cancel')
 					$msg .= 'If everyone votes Cancel all points will be refunded and the game will be deleted from the database.';
 				if ($voteName == 'Extend')
-					$msg .= 'If 2/3 of the active players vote Extend the the current phase will be extend by 4 days. Please consider backing this.';
+					$msg .= 'If 2/3 of the active players vote Extend the the current phase will be extend by 4 days. Please consider backing this. If the majority is not reached by "'.$this->Game->Variant->turnAsDate($this->Game->turn + 2).'" the votes will be cleared.';
 				if ($voteName == 'Concede')
 					$msg .= 'If everyone (but one) votes Concede the game will end and the player _not_ voting Conceede will get all the points. Everybody else will get a defeat.';			
 				libGameMessage::send(0, 'GameMaster', $msg , $this->Game->id);
