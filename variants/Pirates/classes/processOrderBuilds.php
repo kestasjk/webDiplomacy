@@ -83,6 +83,7 @@ class Hurricane_processOrderBuilds extends BuildAnywhere_processOrderBuilds
 		list($new_hurricane) = $DB->sql_row("SELECT t.id FROM wD_Territories t
 					LEFT JOIN wD_TerrStatus ts ON (t.id = ts.terrID && ts.gameID=".$Game->id.")
 					WHERE t.mapID=".$Game->Variant->mapID." && ts.occupyingUnitID IS NULL && t.supply='No'
+						&& t.id IN (SELECT fromTerrID AS id FROM wD_Borders WHERE mapID=".$Game->Variant->mapID.")
 					ORDER BY RAND() LIMIT 1");
 		
 		// And put a hurricane on it.
