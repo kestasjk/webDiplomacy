@@ -705,10 +705,14 @@ while( $message = $DB->tabl_hash($tabl) )
 
 			print '<div class="message-head replyalternate'.$replyswitch.' leftRule">';
 
-			print '<strong><a href="profile.php?userID='.$reply['fromUserID'].'">'.$reply['fromusername'].' '.
-			libHTML::loggedOn($reply['fromUserID']).
-					' ('.$reply['points'].' '.libHTML::points().User::typeIcon($reply['userType']).')</a>'.
-				'</strong><br />';
+			if ($User->type['Moderator'])
+				print '<strong><a href="profile.php?userID='.$reply['fromUserID'].'">'.$reply['fromusername'].' '.
+					libHTML::loggedOn($reply['fromUserID']).
+						' ('.$reply['points'].' '.libHTML::points().User::typeIcon($reply['userType']).')';
+			else
+				print '<strong><a href="modforum.php">Moderator (X '.libHTML::points().')';
+			
+			print '</a></strong><br />';
 
 			print libHTML::forumMessage($message['id'],$reply['id']);
 
