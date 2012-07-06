@@ -420,7 +420,7 @@ if ( $UserProfile->comment )
 
 print '<p><ul class="formlist">';
 
-if ( $UserProfile->type['Moderator'] ||  $UserProfile->type['ForumModerator'] || $UserProfile->type['Admin'] )
+if ( $UserProfile->type['ForumModerator'] || $UserProfile->type['Admin'] )
 {
 	print '<li><strong>Mod/Admin team</strong></li>';
 	print '<li>&nbsp;</li>';
