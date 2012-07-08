@@ -171,10 +171,14 @@ class panelGameBoard extends panelGame
 			if ( $vote == 'Pause' && $this->processStatus == 'Paused' )
 				$vote = 'Unpause';
 
-			$buf .= '<input type="submit" class="form-submit" name="vote" value="'.$vote.'" /> ';
+			$buf .= '<input type="submit" class="form-submit" name="vote" value="'.$vote.'" > ';
+			
 		}
 		$buf .= '</div>';
 
+		if (count($this->Variant->countries) < 4)
+			$buf = str_replace('Concede','Concede" onClick="return confirm(\'Are you sure you want to vote for Concede?\\nIn a '.count($this->Variant->countries).' player game it usually takes effect immediately.\');',$buf);
+		
 		if( $vCancel )
 		{
 			$buf .= '<div class="memberGameDetail">Cancel: ';
