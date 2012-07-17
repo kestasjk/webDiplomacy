@@ -50,6 +50,10 @@ $globalFaq = array(
 		You can send your games temporary to a different player using your settings-page. (better explanation needed)",
 	"Much improved variant-page" =>
 		"You can browse many information and statistics for all variants and view and download the code for the variant.",
+	"Anonymous posts in forum" =>
+		"You can make an anonymous post in the forum (to search for players in an anon game for example) by linking to an anon game.
+		If you link to the game in the subject line all posts are labeled as anon, if you link to an anon game in the post only this post is anon.
+		Be careful, the mods still can see your real username, so don't misuse this feature.",
 		
 "Reliability-rating" => "Sub-section",
 	"What's this numbers behind my name?" =>

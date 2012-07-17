@@ -390,6 +390,30 @@ while( $message = $DB->tabl_hash($tabl) )
 		$silence = new Silence($message);
 	else
 		unset($silence);
+		
+	// Check for Anon posting:
+	// ThreadAnon =Link to Anon game in subject -> all will be anon
+	// PostAnon  = Link to Anon game in post    -> this one post will be anon.
+	$threadAnon = $postAnon = 'No';
+	$gameID=preg_replace('/.*gameID[:= _]?([0-9]+).*/i' , '\1' , $message['subject']);
+	if ($gameID != $message['subject'])
+		list($threadAnon)=$DB->sql_row('SELECT anon FROM wD_Games WHERE phase != "Finished" AND id = '.$gameID);
+		
+	$gameID=preg_replace('/.*gameID[:= _]?([0-9]+).*/i' , '\1' , $message['message']);
+	if ($gameID != $message['message'])
+		list($postAnon)=$DB->sql_row('SELECT anon FROM wD_Games WHERE phase != "Finished" AND id = '.$gameID);
+		
+	if ($threadAnon == 'Yes' || $postAnon=='Yes')
+	{
+		if (!$User->type['Moderator'])
+		{
+			$message['fromusername'] = 'Anon';
+			$message['fromUserID'] = 0;
+			$message['points'] = '??';
+		}
+		else
+			$message['fromusername'] = $message['fromusername'].' (Anon)';
+	}
 	
 	// Check for mutes first, before continuing
 	$muteLink='';
@@ -399,7 +423,7 @@ while( $message = $DB->tabl_hash($tabl) )
 			$User->toggleThreadMute($message['id']);
 			$isThreadMuted = !$isThreadMuted;
 		}
-		
+				
 		if( $isThreadMuted ) continue;
 		
 		$toggleMuteURL = 'forum.php?toggleMuteThreadID='.$message['id'].'&rand='.rand(1,99999).'#'.$message['id'];
@@ -528,6 +552,23 @@ while( $message = $DB->tabl_hash($tabl) )
 		list($maxReplyID) = $DB->sql_row("SELECT MAX(id) FROM wD_ForumMessages WHERE toID=".$message['id']." AND type='ThreadReply'");
 		while($reply = $DB->tabl_hash($replytabl) )
 		{
+			$postAnon = 'No';
+			$gameID=preg_replace('/.*gameID[:= _]?([0-9]+).*/i' , '\1' , $reply['message']);
+			if ($gameID != $reply['message'])
+				list($postAnon)=$DB->sql_row('SELECT anon FROM wD_Games WHERE phase != "Finished" AND id = '.$gameID);
+				
+			if ($threadAnon == 'Yes' || $postAnon=='Yes')
+			{
+				if (!$User->type['Moderator'])
+				{
+					$reply['fromusername'] = 'Anon';
+					$reply['fromUserID'] = 0;
+					$reply['points'] = '??';
+				}
+				else
+					$reply['fromusername'] = $reply['fromusername'].' (Anon)';
+			}
+		
 			$replyToID = $reply['toID'];
 			$replyID = $reply['id'];
 
