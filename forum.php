@@ -364,6 +364,7 @@ $tabl = $DB->sql_tabl("SELECT
 		u.username as fromusername, u.points as points, f.latestReplySent, IF(s.userID IS NULL,0,1) as online, u.type as userType, 
 		(SELECT COUNT(*) FROM wD_LikePost lp WHERE lp.likeMessageID = f.id) as likeCount, 
 		f.silenceID,
+		f.anon,
 		silence.userID as silenceUserID,
 		silence.postID as silencePostID,
 		silence.moderatorUserID as silenceModeratorUserID,
@@ -392,18 +393,7 @@ while( $message = $DB->tabl_hash($tabl) )
 		unset($silence);
 		
 	// Check for Anon posting:
-	// ThreadAnon =Link to Anon game in subject -> all will be anon
-	// PostAnon  = Link to Anon game in post    -> this one post will be anon.
-	$threadAnon = $postAnon = 'No';
-	$gameID=preg_replace('/.*gameID[:= _]?([0-9]+).*/i' , '\1' , $message['subject']);
-	if ($gameID != $message['subject'])
-		list($threadAnon)=$DB->sql_row('SELECT anon FROM wD_Games WHERE phase != "Finished" AND id = '.$gameID);
-		
-	$gameID=preg_replace('/.*gameID[:= _]?([0-9]+).*/i' , '\1' , $message['message']);
-	if ($gameID != $message['message'])
-		list($postAnon)=$DB->sql_row('SELECT anon FROM wD_Games WHERE phase != "Finished" AND id = '.$gameID);
-		
-	if ($threadAnon == 'Yes' || $postAnon=='Yes')
+	if ($message['anon'] == 'Yes')
 	{
 		if (!$User->type['Moderator'])
 		{
@@ -533,6 +523,7 @@ while( $message = $DB->tabl_hash($tabl) )
 					u.username as fromusername, f.toID, u.type as userType, 
 					(SELECT COUNT(*) FROM wD_LikePost lp WHERE lp.likeMessageID = f.id) as likeCount, 
 					f.silenceID,
+					f.anon,
 					silence.userID as silenceUserID,
 					silence.postID as silencePostID,
 					silence.moderatorUserID as silenceModeratorUserID,
@@ -552,12 +543,8 @@ while( $message = $DB->tabl_hash($tabl) )
 		list($maxReplyID) = $DB->sql_row("SELECT MAX(id) FROM wD_ForumMessages WHERE toID=".$message['id']." AND type='ThreadReply'");
 		while($reply = $DB->tabl_hash($replytabl) )
 		{
-			$postAnon = 'No';
-			$gameID=preg_replace('/.*gameID[:= _]?([0-9]+).*/i' , '\1' , $reply['message']);
-			if ($gameID != $reply['message'])
-				list($postAnon)=$DB->sql_row('SELECT anon FROM wD_Games WHERE phase != "Finished" AND id = '.$gameID);
-				
-			if ($threadAnon == 'Yes' || $postAnon=='Yes')
+			// Check for Anon posting:
+			if ($reply['anon'] == 'Yes')
 			{
 				if (!$User->type['Moderator'])
 				{

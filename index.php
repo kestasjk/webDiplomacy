@@ -287,8 +287,9 @@ class libHome
 		$tabl = $DB->sql_tabl("
 			SELECT m.id as postID, t.id as threadID, m.type, m.timeSent, IF(t.replies IS NULL,m.replies,t.replies) as replies,
 				IF(t.subject IS NULL,m.subject,t.subject) as subject,
+				m.anon,
 				u.id as userID, u.username, u.points, IF(s.userID IS NULL,0,1) as online, u.type as userType,
-				m.message as message, m.latestReplySent, t.fromUserID as threadStarterUserID
+				SUBSTRING(m.message,1,100) as message, m.latestReplySent, t.fromUserID as threadStarterUserID
 			FROM wD_ForumMessages m
 			INNER JOIN wD_Users u ON ( m.fromUserID = u.id )
 			LEFT JOIN wD_Sessions s ON ( m.fromUserID = s.userID )
@@ -303,28 +304,18 @@ class libHome
 
 		while(list(
 				$postID, $threadID, $type, $timeSent, $replies, $subject,
+				$anon,
 				$userID, $username, $points, $online, $userType, $message, $latestReplySent,$threadStarterUserID
 			) = $DB->tabl_row($tabl))
 		{
 		
 			// Anonymize the forum posts on the home-screen too
-			$threadAnon = $postAnon = 'No';
-			$gameID=preg_replace('/.*gameID[:= _]?([0-9]+).*/i' , '\1' , $subject);
-			if ($gameID != $subject)
-				list($threadAnon)=$DB->sql_row('SELECT anon FROM wD_Games WHERE phase != "Finished" AND id = '.$gameID);
-				
-			$gameID=preg_replace('/.*gameID[:= _]?([0-9]+).*/i' , '\1' , $message);
-			if ($gameID != $message)
-				list($postAnon)=$DB->sql_row('SELECT anon FROM wD_Games WHERE phase != "Finished" AND id = '.$gameID);
-				
-			if ($threadAnon == 'Yes' || $postAnon=='Yes')
+			if ($anon == 'Yes')
 			{
 				$username = 'Anon';
 				$userID = 0;
 				$points = '??';
 			}
-			 
-			$message = substr($message,0,100);
 			// End anonymizer
 			
 			$threadCount++;

@@ -64,6 +64,38 @@ class Message
 		return preg_replace($patterns, $replacements, $message);
 	}
 
+	static public function check_anon($toID, $message, $subject)
+	{
+	
+		global $DB;
+		
+		$anon = 'No';
+		
+		// Check if there is a link to an anon game in the message.
+		$gameID=preg_replace('/.*gameID[:= _]?([0-9]+).*/i' , '\1' , $message);
+		if ($gameID != $message)
+			list($anon)=$DB->sql_row('SELECT anon FROM wD_Games WHERE phase != "Finished" AND id = '.$gameID);
+
+		// If there is nothing in the message-body test the subject of the thread.
+		if ($anon != 'Yes')
+		{
+			// If this is a threadstart test the subject
+			if ($toID == 0) 
+			{
+				$gameID=preg_replace('/.*gameID[:= _]?([0-9]+).*/i' , '\1' , $subject);
+				if ($gameID != $subject)
+					list($anon)=$DB->sql_row('SELECT anon FROM wD_Games WHERE phase != "Finished" AND id = '.$gameID);		
+			}
+			else
+			// If not check the anon-status of the threadstart.
+			{
+				list($anon)=$DB->sql_row('SELECT anon FROM wD_ForumMessages WHERE id = '.$toID);
+			}
+		}
+		
+		return ($anon=='Yes'?'Yes':'No');
+	}
+	
 	/**
 	 * Send a message to the public forum. The variables passed are assumed to be already sanitized
 	 *
@@ -95,6 +127,7 @@ class Message
 		$DB->sql_put("INSERT INTO wD_ForumMessages
 						SET toID = ".$toID.", fromUserID = ".$fromUserID.", timeSent = ".$sentTime.",
 						message = '".$message."', subject = '".$subject."', replies = 0,
+						anon = '".self::check_anon($toID, $message, $subject)."',
 						type = '".$type."', latestReplySent = 0");
 
 		$id = $DB->last_inserted();
