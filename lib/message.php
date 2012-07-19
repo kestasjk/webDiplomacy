@@ -64,33 +64,35 @@ class Message
 		return preg_replace($patterns, $replacements, $message);
 	}
 
-	static public function check_anon($toID, $message, $subject)
+	static public function check_anon($toID, $fromUserID, $message, $subject)
 	{
 	
 		global $DB;
 		
 		$anon = 'No';
 		
-		// Check if there is a link to an anon game in the message.
-		$gameID=preg_replace('/.*gameID[:= _]?([0-9]+).*/i' , '\1' , $message);
-		if ($gameID != $message)
+		$search = $message . $subject;
+		
+		// Check if there is a link to an anon game in the message or the subject.
+		$gameID=preg_replace('/.*gameID[:= _]?([0-9]+).*/i' , '\1' , $search);
+		if ($gameID != $search)
 			list($anon)=$DB->sql_row('SELECT anon FROM wD_Games WHERE phase != "Finished" AND id = '.$gameID);
 
-		// If there is nothing in the message-body test the subject of the thread.
-		if ($anon != 'Yes')
+		// If there is nothing in the message-body test the subject of the thread-start
+		if ($anon != 'Yes' && $toID != 0)
 		{
-			// If this is a threadstart test the subject
-			if ($toID == 0) 
-			{
-				$gameID=preg_replace('/.*gameID[:= _]?([0-9]+).*/i' , '\1' , $subject);
-				if ($gameID != $subject)
-					list($anon)=$DB->sql_row('SELECT anon FROM wD_Games WHERE phase != "Finished" AND id = '.$gameID);		
-			}
-			else
-			// If not check the anon-status of the threadstart.
-			{
-				list($anon)=$DB->sql_row('SELECT anon FROM wD_ForumMessages WHERE id = '.$toID);
-			}
+			list($subject)=$DB->sql_row('SELECT subject FROM wD_ForumMessages WHERE id = '.$toID);
+			$gameID=preg_replace('/.*gameID[:= _]?([0-9]+).*/i' , '\1' , $subject);
+			if ($gameID != $subject)
+				list($anon)=$DB->sql_row('SELECT anon FROM wD_Games WHERE phase != "Finished" AND id = '.$gameID);
+		}
+		
+		// IF the game is anon, check if the user in question is a member of this game...
+		if ($anon == 'Yes')
+		{		
+			list($id)=$DB->sql_row('SELECT id FROM wD_Members WHERE gameID = '.$gameID.' AND userID = '.$fromUserID);		
+			if ($id < 1)
+				$anon = 'No';
 		}
 		
 		return ($anon=='Yes'?'Yes':'No');
@@ -127,7 +129,7 @@ class Message
 		$DB->sql_put("INSERT INTO wD_ForumMessages
 						SET toID = ".$toID.", fromUserID = ".$fromUserID.", timeSent = ".$sentTime.",
 						message = '".$message."', subject = '".$subject."', replies = 0,
-						anon = '".self::check_anon($toID, $message, $subject)."',
+						anon = '".self::check_anon($toID, $fromUserID, $message, $subject)."',
 						type = '".$type."', latestReplySent = 0");
 
 		$id = $DB->last_inserted();

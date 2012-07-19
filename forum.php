@@ -395,7 +395,7 @@ while( $message = $DB->tabl_hash($tabl) )
 	// Check for Anon posting:
 	if ($message['anon'] == 'Yes')
 	{
-		if (!$User->type['Moderator'])
+		if (!$User->type['Moderator'] && $message['fromUserID'] != $User->id)
 		{
 			$message['fromusername'] = 'Anon';
 			$message['fromUserID'] = 0;
@@ -546,7 +546,7 @@ while( $message = $DB->tabl_hash($tabl) )
 			// Check for Anon posting:
 			if ($reply['anon'] == 'Yes')
 			{
-				if (!$User->type['Moderator'])
+				if (!$User->type['Moderator'] && $reply['fromUserID'] != $User->id)
 				{
 					$reply['fromusername'] = 'Anon';
 					$reply['fromUserID'] = 0;
