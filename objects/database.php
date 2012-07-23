@@ -83,9 +83,14 @@ class Database {
 			trigger_error("Couldn't connect to the MySQL server, if this problem persists please inform the admin.");
 
 		if( ! mysql_select_db(Config::$database_name, $this->link) )
-			trigger_error("Connected to the MySQL server, but couldn't access the specified database.
-						If this problem persists please inform the admin.");
-
+		{
+			if (file_exists ('install/'.Config::$easyDevInstall))
+				require('install/'.Config::$easyDevInstall);
+			else
+				trigger_error("Connected to the MySQL server, but couldn't access the specified database.
+							If this problem persists please inform the admin.");
+		}
+		
 			/*
 			 * Using InnoDB's default transaction isolation level (REPEATABLE-READ) a snapshot is taken when you
 			 * first read.
