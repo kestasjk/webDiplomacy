@@ -202,14 +202,17 @@ if ($variantID != 0) {
 		if ($action == 'upload') {
 			if (!($file == 'install.php' && file_exists($variantbase.'/install-backup.php')))
 			{
-				if (file_exists ($variantbase.$basedir.$file))
-					rename($variantbase.$basedir.$file, $variantbase."/backup/".date("ymd-His")."-upl-".$file);
-				if (file_exists ($variantbase.$basedir.$file.' (wait for verify)'))
-					rename($variantbase.$basedir.$file.' (wait for verify)', $variantbase."/backup/".date("ymd-His")."-upl-".$file);
-				if (!stripos($file, 'php') === false)
-					$file .= ' (wait for verify)';
-				rename ($uploadtmp, $variantbase.$basedir.$file);
-				chmod($variantbase.$basedir.$file, 0644);
+				if ($file != '')
+				{
+					if (file_exists ($variantbase.$basedir.$file))
+						rename($variantbase.$basedir.$file, $variantbase."/backup/".date("ymd-His")."-upl-".$file);
+					if (file_exists ($variantbase.$basedir.$file.' (wait for verify)'))
+						rename($variantbase.$basedir.$file.' (wait for verify)', $variantbase."/backup/".date("ymd-His")."-upl-".$file);
+					if (!stripos($file, 'php') === false)
+						$file .= ' (wait for verify)';
+					rename ($uploadtmp, $variantbase.$basedir.$file);
+					chmod($variantbase.$basedir.$file, 0644);
+				}
 			}
 			echo '<script type="text/javascript">top.location.replace("'.$_SERVER['SCRIPT_NAME'].'?variantID='.$variantID.'&msg=3&file='.$file.'&basedir='.$basedir.'");</script>';
 			exit;
