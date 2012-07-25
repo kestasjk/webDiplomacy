@@ -398,6 +398,7 @@ class libHTML
 		<meta name="keywords" content="diplomacy,diplomacy game,online diplomacy,classic diplomacy,web diplomacy,diplomacy board game,play diplomacy,php diplomacy" />
 		<link rel="shortcut icon" href="'.STATICSRV.'favicon.ico" />
 		<link rel="icon" href="'.STATICSRV.'favicon.ico" />
+		<link rel="apple-touch-icon-precomposed" href="'.STATICSRV.'apple-touch-icon.png" />
 		<link rel="stylesheet" href="'.CSSDIR.'/global.css" type="text/css" />
 		<link rel="stylesheet" href="'.CSSDIR.'/gamepanel.css" type="text/css" />
 		<link rel="stylesheet" href="'.CSSDIR.'/home.css" type="text/css" />
