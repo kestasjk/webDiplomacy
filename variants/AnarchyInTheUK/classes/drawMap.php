@@ -84,6 +84,13 @@ class AnarchyInTheUKVariant_drawMap extends drawMap
 			$coordinates['bottom-right']['x']-1, $coordinates['bottom-right']['y']-1,
 			$flagColor);
 	}
-   
+	
+	// only set transparency if the color to make transparent exists
+	protected function setTransparancy(array $image, array $color=array(255,255,255))
+	{
+ 		$colorRes = imagecolorexact($image['image'], $color[0], $color[1], $color[2]);
+		if ($colorRes != -1)
+			parent::setTransparancy($image, $color);
+	}
 }
 ?>
