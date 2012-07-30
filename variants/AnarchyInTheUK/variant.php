@@ -28,7 +28,7 @@ class AnarchyInTheUKVariant extends WDVariant {
    public $fullName   ='Anarchy in the UK';
    public $author     ='amisond and Evansevern';
    public $adapter    ='amisond and Acquiesce';
-   public $codeVersion='1.1';   
+   public $codeVersion='1.1.1';   
    
    public $countries=array('Merseyside', 'Up North', 'London', 'Bristol', 'Wales', 'East-Anglia');
 
