@@ -21,6 +21,7 @@
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 require_once('objects/notice.php');
+require_once('objects/basic/set.php');
 require_once('lib/reliability.php');
 
 /**
@@ -124,6 +125,12 @@ class User {
 	 * @var array
 	 */
 	public $type;
+	
+ 	/**
+	 * Notification flags; an array of notification flags, each set to true if notification should be done.
+	 * @var array
+	 */
+	public $notifications;
 
 	/**
 	 * The user-profile comment
@@ -454,6 +461,7 @@ class User {
 			u.lastMessageIDViewed,
 			u.muteReports,
 			u.silenceID,
+			u.notifications,
 			u.missedMoves,
 			u.phasesPlayed,			
 			u.gamesLeft,
@@ -490,6 +498,8 @@ class User {
 			}
 		}
 		$this->type = $types;
+		
+		$this->notifications=new setUserNotifications($this->notifications);
 
 		$this->online = (bool) $this->online;
 	}
@@ -564,7 +574,6 @@ class User {
 
 	function sendPM(User $FromUser, $message)
 	{
-		global $DB;
 
 		$message = htmlentities( $message, ENT_NOQUOTES, 'UTF-8');
 		require_once('lib/message.php');
@@ -581,12 +590,46 @@ class User {
 			notice::send($this->id, $FromUser->id, 'PM', 'Yes', 'Yes',
 				$message, $FromUser->username, $FromUser->id);
 
+			$this->setNotification('PrivateMessage');
+			
 			notice::send($FromUser->id, $this->id, 'PM', 'No', 'Yes',
 				'You sent: <em>'.$message.'</em>', 'To: '.$this->username,
 				$this->id);
 		}
 	}
 
+	/**
+	 * This will set a notification value in both the object and wd_users table if not already set.
+	 * @param notification notification value to set, must be 'PrivateMessage', 'GameMessage', 'Unfinalized', or 'GameUpdate'.
+	 **/
+	function setNotification($notification)
+	{
+	global $DB;
+
+		$this->notifications->$notification = true;
+		if ($this->notifications->updated)
+		{
+		$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications,'".$notification."') WHERE id = ".$this->id);
+		$this->notifications->updated = false;
+		}
+	}
+
+	/**
+	 * This will clear a notification value in both the object and the wd_users table if not already cleared.
+	 * @param notification notification value to clear, must be 'PrivateMessage', 'GameMessage', 'Unfinalized', or 'GameUpdate'.
+	 **/
+	function clearNotification($notification)
+	{
+		global $DB;
+
+		$this->notifications->$notification = false;
+		if ($this->notifications->updated)
+		{
+			$DB->sql_put("UPDATE wD_Users SET notifications = REPLACE(notifications,'".$notification."','') WHERE id = ".$this->id);
+			$this->notifications->updated = false;
+		}
+	}
+	
 	/**
 	 * The time this user joined
 	 * @return string Date joined
