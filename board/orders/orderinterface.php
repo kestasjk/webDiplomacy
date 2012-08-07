@@ -287,7 +287,7 @@ class OrderInterface
 	}
 
 	protected function jsLoadBoard() {
-		libHTML::$footerIncludes[] = 'board/model.js';
+		libHTML::$footerIncludes[] = 'board/model_vDip.js';
 		libHTML::$footerIncludes[] = 'board/load.js';
 		libHTML::$footerIncludes[] = 'orders/order.js';
 		if ($this->phase == 'Diplomacy')
