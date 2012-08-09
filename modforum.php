@@ -5,6 +5,9 @@
  */
 require_once('header.php');
 require_once('pager/pagerthread.php');
+
+$User->clearNotification('ModForum');
+
 class PagerForum extends Pager
 {
 	public static $defaultPostsPerPage=30;
@@ -86,7 +89,7 @@ class Message
 	 */
 	static public function send($toID, $fromUserID, $message, $subject="", $type='Bulletin')
 	{
-		global $DB;
+		global $DB, $User;
 
 		if( defined('AdminUserSwitch') ) $fromUserID = AdminUserSwitch;
 
@@ -108,11 +111,20 @@ class Message
 
 		$id = $DB->last_inserted();
 
+		$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications, 'ModForum') WHERE type LIKE '%Moderator%' AND id != ".$fromUserID);
+		
 		if ( $type == 'ThreadReply' )
 			$DB->sql_put("UPDATE wD_ModForumMessages ".
 				"SET latestReplySent = ".$id.", replies = replies + 1 WHERE ( id=".$id." OR id=".$toID." )");
 		else
 			$DB->sql_put("UPDATE wD_ModForumMessages SET latestReplySent = id WHERE id = ".$id);
+			
+		if ( $type == 'ThreadReply' )
+		{
+			list($starter) = $DB->sql_row('SELECT fromUserID FROM wD_ModForumMessages WHERE id = '.$toID);
+			if ($starter != $fromUserID)
+				$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications, 'ModForum') WHERE id = ".$starter);
+		}	
 
 
 		$tabl=$DB->sql_tabl("SELECT t.id FROM wD_ModForumMessages t LEFT JOIN wD_ModForumMessages r ON ( r.toID=t.id AND r.fromUserID=".$fromUserID." AND r.type='ThreadReply' ) WHERE t.type='ThreadStart' AND ( t.fromUserID=".$fromUserID." OR r.id IS NOT NULL ) GROUP BY t.id");
@@ -340,14 +352,6 @@ AND ($_REQUEST['newmessage'] != "") ) {
 						$messageproblem="Reply posted sucessfully.";
 						$new['message']=""; $new['subject']="";
 						
-						// Send a Notice to the threadstarter (if not a started by a mod)
-						list($starter) = $DB->sql_row(
-							"SELECT u.id FROM wD_ModForumMessages m
-								LEFT JOIN wD_Users u ON (u.id = m.fromUserID)
-								WHERE u.type NOT LIKE '%Moderator%' AND m.id=". $new['sendtothread']);
-						if ($starter != 0)
-						{
-						}
 					}
 					catch(Exception $e)
 					{
@@ -705,12 +709,12 @@ while( $message = $DB->tabl_hash($tabl) )
 
 			print '<div class="message-head replyalternate'.$replyswitch.' leftRule">';
 
-			if ($User->type['Moderator'])
+			if ($User->type['Moderator'] || $reply['fromUserID'] == $User->id || $reply['fromUserID'] == 5)
 				print '<strong><a href="profile.php?userID='.$reply['fromUserID'].'">'.$reply['fromusername'].' '.
 					libHTML::loggedOn($reply['fromUserID']).
 						' ('.$reply['points'].' '.libHTML::points().User::typeIcon($reply['userType']).')';
 			else
-				print '<strong><a href="modforum.php">Moderator (X '.libHTML::points().')';
+				print '<strong><a href="modforum.php">Mod-Team';
 			
 			print '</a></strong><br />';
 

@@ -689,6 +689,8 @@ $sql[]="ALTER TABLE `wD_Users` CHANGE `rlGroup` `rlGroup` MEDIUMINT( 8 ) NOT NUL
 
 $sql[]="ALTER TABLE `wD_ForumMessages` ADD `anon` enum('Yes','No') CHARACTER SET utf8 NOT NULL DEFAULT 'No';";
 
+$sql[]="ALTER TABLE `wD_Users` MODIFY `notifications` set('PrivateMessage','GameMessage','Unfinalized','GameUpdate','ModForum');";
+
 // Create a default Admin-Account
 require_once ('lib/auth.php');
 $sql[]="INSERT INTO `wD_Users` (`username`, `email`, `points`, `password`, `type`) VALUES

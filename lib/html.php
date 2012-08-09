@@ -558,16 +558,12 @@ class libHTML
 /*****************************************************
 *  Alert the mods about a new Mesage in the ModForum *
 *****************************************************/
-		if( $User->type['Moderator'] )
-		{
-			if( !isset($_SESSION['lastSeenModForum']) || $_SESSION['lastSeenModForum'] < $User->timeLastSessionEnded )
-				$_SESSION['lastSeenModForum']=$User->timeLastSessionEnded;
-				
-			$newMsg = $DB->sql_row("SELECT timeSent FROM wD_ModForumMessages WHERE timeSent>'".$_SESSION['lastSeenModForum']."' LIMIT 1;");
-
-			if ($newMsg)
-				$gameNotifyBlock .=  '<span class="variantClassic"><a class="country5" href="modforum.php">New Post in Modforum <img src="images/icons/mail.png" alt="Mods" title="Modforum"></a></span>';
-		}
+	if ( $User->notifications->ModForum )
+	{
+		$gameNotifyBlock .= '<span class=""><a href="modforum.php">'.
+			'New Post in Modforum <img src="images/icons/mail.png" alt="New private messages" title="New private messages!" />'.
+			'</a></span> ';
+	}
 // END ModMessage
 			
 		foreach ( $gameIDs as $gameID )
