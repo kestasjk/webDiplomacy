@@ -632,15 +632,13 @@ class processMembers extends Members
 		if ( count($this->Game->Variant->countries)>2 && $this->Game->phase == 'Pre-game' && $message = $User->isReliable())
 			libHTML::notice('Reliable rating not high enough', $message);
 
-		// Check if there is a mute against a player
+		// Check if there is a block against a player
 		list($muted) = $DB->sql_row("SELECT count(*) FROM wD_Members AS m
 									LEFT JOIN wD_BlockUser AS f ON ( m.userID = f.userID )
 									LEFT JOIN wD_BlockUser AS t ON ( m.userID = t.blockUserID )
 								WHERE m.gameID = ".$this->Game->id." AND (f.blockUserID =".$User->id." OR t.userID =".$User->id.")");
 		if ($muted > 0)
-		{
-			throw new Exception("You can't join. A player in this game has you muted or you muted a player in this game");
-		}
+			throw new Exception("You can't join. A player in this game has you blocked or you blocked a player in this game");
 				
 		// We can join, the only question is how?
 
