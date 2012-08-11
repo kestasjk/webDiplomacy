@@ -4,11 +4,11 @@ class libReliability
 {
 
 	public static $grades = array (
-		98=>'98+', 90=>'90+', 80=>'80+', 60=>'60+', 40=>'40+', 10=>'10+', 0=>'0'
+		98=>'98+', 90=>'90+', 80=>'80+', 60=>'60+', 40=>'40+', 10=>'10+', 0=>'0', '-100'=>'Rookie'
 	);
 	
 	static public function Grade($reliability)
-	{
+	{		
 		foreach (self::$grades as $limit=>$grade)
 			if ($reliability >= $limit)
 				return $grade;
@@ -29,6 +29,9 @@ class libReliability
 
 		if ($reliability < 0) $reliability = 0;
 		
+		if ( $phasesPlayed < 20 ) $reliability = $reliability * -1;
+		if ( $phasesPlayed < 20 && $reliability == 0) $reliability = -1;
+
 		return $reliability;
 	}
 		

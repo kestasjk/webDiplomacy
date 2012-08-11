@@ -291,7 +291,7 @@ print '<li><strong>Rank:</strong> '.$rankingDetails['rank'].'</li>';
  */
 print '<li><strong>Reliabilty Rating:</strong> <b>'.libReliability::Grade($UserProfile->getReliability()).'</b>';
 print ' - ('.
-	$UserProfile->getReliability().'%) <a class="light" href="reliability.php?userID='.$UserProfile->id.'">(what\'s this?)</a><br>(missed '.
+	abs($UserProfile->getReliability()).'%) <a class="light" href="reliability.php?userID='.$UserProfile->id.'">(what\'s this?)</a><br>(missed '.
 	$UserProfile->missedMoves.' of '.
 	$UserProfile->phasesPlayed.
 	' phases, unbalanced CDs: '.($UserProfile->gamesLeft - $UserProfile->leftBalanced).

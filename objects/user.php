@@ -765,10 +765,6 @@ class User {
 			$rankingDetails['stats'][$status] = $number;
 		}
 
-		// Check for games left:
-		list($number) = $DB->sql_row("SELECT gamesLeft FROM wD_Users WHERE id=".$this->id);
-		$rankingDetails['stats']['Left'] = $number;
-		
 		$tabl = $DB->sql_tabl( "SELECT COUNT(m.id), m.status, SUM(m.bet) FROM wD_Members AS m
 					INNER JOIN wD_Games AS g ON m.gameID = g.id
 					WHERE m.userID = ".$this->id."
@@ -991,7 +987,7 @@ class User {
 		if ( $totalGames > 4 && $this->phasesPlayed < 20 ) // This will prevent newbies from joining 10 games and then leaving right away.  Everyone can join 2 without any restrictions, then they can join more after they've played them for 3 phases.  
 			return "<p>You're taking on too many games at once for a new member.<br>Please relax and enjoy the game or games that you are currently in before joining/creating a new one.<br>You need to play at least <strong>20 phases</strong>, bevore you can join more than 4 games. Once you played 20 phases your reliability-rating will affect how many games you can play at once. You can than join 1 game for each 10% RR. If your RR if better than 90% you can join as many games as you want.<br>2-player variants are not affected by this restriction.</p>";
 		
-		if ($maxGames < 10) { // If the rating is 90 or above, there is no game limit restriction
+		if ($maxGames < 10 && $this->phasesPlayed >= 20) { // If the rating is 90 or above, there is no game limit restriction
 			if ( $reliability == 0 )
 				return "<p>NOTICE: You are not allowed to join or create any games given your reliability rating of ZERO (meaning you have missed more than 50% of your orders across all of your games)</p><p>You can improve your reliability rating by not missing any orders, even if it's just saving the default 'Hold' for everything.</p><p>If you are not currently in a game and cannot join one because of this restriction, then you may contact an <a href=\"modforum.php\">admin</a> and briefly explain your extremely low rating.  The admin, at his or her discretion, may set your reliability rating high enough to allow you 1 game at a time. By consistently putting in orders every turn in that new game, your reliability rating will improve enough to allow you more simultaneous games. 2-player variants are not affected by this restriction.</p>";
 			elseif ( $totalGames >= $maxGames ) // Can't have more than reliability rating / 10 games up

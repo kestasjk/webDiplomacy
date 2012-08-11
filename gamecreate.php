@@ -127,7 +127,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		}
 	
 		$input['minRating'] = (int)$input['minRating'];		
-		if ( $input['minRating'] > $User->getReliability() )
+		if ( $input['minRating'] > abs($User->getReliability()) )
 		{
 			throw new Exception("Your reliability-rating is to low (".$User->getReliability().") for your own requirement (".$input['minRating'].").");
 		}
