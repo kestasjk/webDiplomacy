@@ -679,7 +679,7 @@ class processMembers extends Members
 			if ( $CD->status != 'Left' )
 				throw new Exception('The player selected is not in civil disorder.');
 
-			$bet = $CD->pointsValue();
+			$bet = ( method_exists ('Config','adjustCD') ? Config::adjustCD($CD->pointsValue()) : $CD->pointsValue() );
 			if ( $User->points < $bet )
 				throw new Exception("You do not have enough points to take over that countryID.");
 

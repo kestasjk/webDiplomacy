@@ -63,6 +63,14 @@ class Config
 	 * If set to any value it wil display this mail adress in the rules section instead of the admin-mail.
 	 */
 	//public static $modEMail = 'admin@vDiplomacy.com';
+
+	/*
+	 * Make CD-takeovers cheaper
+	 */
+	public static function adjustCD($bet)
+	{
+		return ceil($bet / 2);
+	}
 	
 }
 

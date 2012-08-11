@@ -113,8 +113,11 @@ class panelMembers extends Members
 		{
 			foreach($this->ByStatus['Left'] as $Member);
 
+			$bet = ( method_exists ('Config','adjustCD') ? Config::adjustCD($Member->pointsValue()) : $Member->pointsValue() );
+			
 			$buf .= '<input type="hidden" name="countryID" value="'.$Member->countryID.'" />
-				<label>Take over:</label> '.$Member->countryColored().', for <em>'.$Member->pointsValue().libHTML::points().'</em>.';
+				<label>Take over:</label> '.$Member->countryColored().', for <em>'.$bet.libHTML::points().'</em>'.
+				( ($bet != $Member->pointsValue()) ? ' (worth:'.$Member->pointsValue().libHTML::points().')':'');
 		}
 		else
 		{
@@ -123,11 +126,14 @@ class panelMembers extends Members
 			{
 				$pointsValue = $Member->pointsValue();
 
+				$bet = ( method_exists ('Config','adjustCD') ? Config::adjustCD($pointsValue) : $pointsValue );
+
 				if ( $User->points >= $pointsValue )
 				{
 					$buf .= '<option value="'.$Member->countryID.'" />
-						'.$Member->country.', for '.$pointsValue.'
-						</option>';
+						'.$Member->country.', for '.$bet.'</em>'.
+						( ($bet != $pointsValue) ? ' (worth:'.$pointsValue.')':'').
+						'</option>';
 				}
 			}
 			$buf .= '</select>';
