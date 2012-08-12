@@ -379,13 +379,13 @@ class processMember extends Member
 	 */
 	function setTakenOver()
 	{
-/* No refunds if your country was taken over...	
-		$refundedPoints = $this->awardSupplement();
+// No refunds if your country was taken over...	
+//		$refundedPoints = $this->awardSupplement();
 
 		$but="";
-		if($refundedPoints)
-			$but=", but you have been refunded ".$refundedPoints." to make up your starting 100";
-*/
+//		if($refundedPoints)
+//			$but=", but you have been refunded ".$refundedPoints." to make up your starting 100";
+
 		$this->send('No','No',"Your empire in civil disorder was taken over, so you have lost your ".
 			"bet in this game".$but.". Better luck next time!");
 	}
