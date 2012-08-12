@@ -618,7 +618,7 @@ class processMembers extends Members
 		// Check for additional requirements:
 		if ( $this->Game->minPhases > $User->phasesPlayed)
 			throw new Exception("You did not play enough phases to join this game. (Required:".$this->Game->minPhases." / You:".$User->phasesPlayed.")");
-		if ( $this->Game->minRating > $User->getReliability())
+		if ( $this->Game->minRating > abs($User->getReliability()))
 			throw new Exception("You reliable-rating is too low to join this game. (Required:".$this->Game->minRating."% / You:".$User->getReliability()."%)");
 		if ( $this->Game->maxLeft < $User->gamesLeft )
 			throw new Exception("You went CD in too many games. (Required: not more than ".$this->Game->maxLeft." / You:".$User->gamesLeft.")");
