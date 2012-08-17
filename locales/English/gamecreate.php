@@ -50,7 +50,8 @@ Start a new game; you decide the name, how long it runs, and how much it's worth
 		Phase length: (5 minutes - 10 days)
 	</li>
 	<li class="formlistfield">
-		<select name="newGame[phaseMinutes]" onChange="document.getElementById('wait').selectedIndex = this.selectedIndex">
+		<select id="phaseMinutes" name="newGame[phaseMinutes]" onChange="document.getElementById('wait').selectedIndex = this.selectedIndex; 
+			document.getElementById('phaseHours').value = this.value/60">
 		<?php
 			$phaseList = array(5, 10, 15, 20, 30,
 				60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
@@ -62,7 +63,13 @@ Start a new game; you decide the name, how long it runs, and how much it's worth
 				print '<option value="'.$i.'"'.($i==1440 ? ' selected' : '').'>'.$opt.'</option>';
 			}
 		?>
+		<option value="0">custom</option>
 		</select>
+		 - Phase length: <input type="text" id="phaseHours" name="newGame[phaseHours]" value="24" size="2" style="text-align:right;"
+		 onChange="document.getElementById('phaseMinutes').selectedIndex = 28;
+		  document.getElementById('phaseMinutes').options[28].value = this.value * 60;
+		  document.getElementById('wait').selectedIndex = 17;" > hours.
+		
 	</li>
 	<li class="formlistdesc">
 		The maximum number of hours allowed for players to discuss and enter orders each phase.<br />
@@ -309,7 +316,7 @@ else
 	</li>
 
 	<li class="formlisttitle">
-		NMR sends country in CD and extends phase:
+		NMR policy:
 	</li>
 	<li class="formlistfield"> 
 		<b>How many turns: </b><input type="text" name="newGame[specialCDturn]" size="4" value="<?php print Config::$specialCDturnsDefault;?>" /> (0 = feature off / <?php print Config::$specialCDturnsDefault;?> = default)<br>
