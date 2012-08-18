@@ -318,13 +318,25 @@ else
 	<li class="formlisttitle">
 		NMR policy:
 	</li>
-	<li class="formlistfield"> 
-		<b>How many turns: </b><input type="text" name="newGame[specialCDturn]" size="4" value="<?php print Config::$specialCDturnsDefault;?>" /> (0 = feature off / <?php print Config::$specialCDturnsDefault;?> = default)<br>
-		<b>How many extends: </b><input type="text" name="newGame[specialCDcount]" size="4" value="<?php print Config::$specialCDcountDefault;?>" /> (0 = extend till a replacement is found / <?php print Config::$specialCDcountDefault;?> = default)
+	<li class="formlistfield">
+		<select id="NMRpolicy" name="newGame[NMRpolicy]" 
+			onChange="
+				opt = this.value.split('/');
+				document.getElementById('specialCDturn').value  = opt[0];
+				document.getElementById('specialCDcount').value = opt[1];">
+			<option value="0/0">Off</option>
+			<option value="<?php print Config::$specialCDturnsDefault;?>/<?php print Config::$specialCDcountDefault;?>" selected>Default</option>
+			<option value="5/2">Committed</option>
+			<option value="99/5">Serious</option>
+			<option value="0/0">Custom</option>
+		</select>
+		 - Turns: </b><input type="text" id="specialCDturn" onChange="document.getElementById('NMRpolicy').selectedIndex = 4;" name="newGame[specialCDturn]" size="2" value="<?php print Config::$specialCDturnsDefault;?>">		 		 
+		 - Delay: </b><input type="text" id="specialCDcount" onChange="document.getElementById('NMRpolicy').selectedIndex = 4;" name="newGame[specialCDcount]" size="2" value="<?php print Config::$specialCDcountDefault;?>"> 
 	</li>
 	<li class="formlistdesc">
 		This special rule sends a country in civil disorder (CD) if it does not enter an order (NMR) and extend the phase so a replacement can be found.
-		This works on all phases of a turn (diplomacy, retreat, build).
+		This works for the given number of turns on all phases (diplomacy, retreat, build). If a replacement is not found till the phase expires again it
+		the processing will be pushed back again for the given number of delays.
 		<br /><br /><strong>Default:</strong> <?php print Config::$specialCDturnsDefault;?> / <?php print Config::$specialCDcountDefault;?>
 	</li>
 

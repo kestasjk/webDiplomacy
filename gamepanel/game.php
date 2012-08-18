@@ -260,10 +260,21 @@ class panelGame extends Game
 		if( $this->anon=='Yes' )
 			$alternatives[]='Anon';
 		if( $this->potType=='Winner-takes-all' )
-			$alternatives[]='WTA';			
-		if( $this->specialCDturn >= $this->turn)
-			$alternatives[]='NMR:'.$this->specialCDturn.'/'.$this->specialCDcount;
+			$alternatives[]='WTA';
 			
+		// The NMR-policy defaults
+		if( $this->specialCDturn != Config::$specialCDturnsDefault && $this->specialCDcount != Config::$specialCDcountDefault && $this->specialCDturn >= $this->turn)
+		{
+			if ( $this->specialCDturn == 0  && $this->specialCDcount == 0 )
+				$alternatives[]='NMR: Off';
+			elseif( $this->specialCDturn == 5  && $this->specialCDcount == 2 )
+				$alternatives[]='NMR: Committed';
+			elseif( $this->specialCDturn == 99 && $this->specialCDcount == 5 )
+				$alternatives[]='NMR: Serious';
+			else
+				$alternatives[]='NMR:'.$this->specialCDturn.'/'.$this->specialCDcount;
+		}
+		
 		//	Show the end of the game in the options if set.
 		if(( $this->targetSCs > 0) && ($this->maxTurns > 0))
 			$alternatives[]='EoG: '.$this->targetSCs.' SCs or "'.$this->Variant->turnAsDate($this->maxTurns -1).'"';

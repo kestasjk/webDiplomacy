@@ -149,6 +149,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		
 		$input['specialCDturn'] = (int)$input['specialCDturn'];
 		if ( $input['specialCDturn'] < 0 ) $input['specialCDturn'] = 0;
+		
 		$input['specialCDcount'] = (int)$input['specialCDcount'];
 		if ( $input['specialCDcount'] < 0 )	$input['specialCDcount'] = 0;
 		
