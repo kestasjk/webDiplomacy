@@ -447,10 +447,17 @@ else
 	print '<div class="content">';
 	
 if ($ForumThreads == 0)
+{
+	list($threads)= $DB->sql_row("SELECT COUNT(type) FROM wD_ModForumMessages WHERE type='ThreadStart'");
+	list($posts)= $DB->sql_row("SELECT COUNT(type) FROM wD_ModForumMessages WHERE 1");
+
 	print '<div class="content-notice"><p class="notice">
 			This is where you post issues you may have with certain users, games and bugs.<br>
 			Every thread you post here is confidential and can only be viewed by yourself and the moderators.<br>
-			All mods receive an alert when you make a post in this forum. </p></p></div>';
+			All mods receive an alert when you make a post in this forum. </p><br>
+			<p class="notice">To date there have been '.$threads.' threads and a total of '.$posts.' posts made here.</p>
+			</p></div>';
+}
 	
 if(isset($messageproblem) and !$new['sendtothread']) {
 	print '<p class="notice"><a name="postbox"></a>'.$messageproblem.'</p>';
