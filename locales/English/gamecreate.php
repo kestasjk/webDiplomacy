@@ -50,8 +50,9 @@ Start a new game; you decide the name, how long it runs, and how much it's worth
 		Phase length: (5 minutes - 10 days)
 	</li>
 	<li class="formlistfield">
-		<select id="phaseMinutes" name="newGame[phaseMinutes]" onChange="document.getElementById('wait').selectedIndex = this.selectedIndex; 
-			document.getElementById('phaseHours').value = this.value/60">
+		<select id="phaseMinutes" name="newGame[phaseMinutes]" onChange="
+			document.getElementById('wait').selectedIndex = this.selectedIndex; 
+			if (this.selectedIndex == 28) $('phaseHoursText').show(); else $('phaseHoursText').hide();" >
 		<?php
 			$phaseList = array(5, 10, 15, 20, 30,
 				60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
@@ -65,10 +66,15 @@ Start a new game; you decide the name, how long it runs, and how much it's worth
 		?>
 		<option value="0">custom</option>
 		</select>
-		 - Phase length: <input type="text" id="phaseHours" name="newGame[phaseHours]" value="24" size="2" style="text-align:right;"
-		 onChange="document.getElementById('phaseMinutes').selectedIndex = 28;
-		  document.getElementById('phaseMinutes').options[28].value = this.value * 60;
-		  document.getElementById('wait').selectedIndex = 17;" > hours.
+		<span id="phaseHoursText" style="display:none">
+			 - Phase length: <input type="text" id="phaseHours" name="newGame[phaseHours]" value="24" size="2" style="text-align:right;"
+			 onChange="
+			  this.value = parseInt(this.value);
+			  document.getElementById('phaseMinutes').selectedIndex = 28;
+			  document.getElementById('phaseMinutes').options[28].value = this.value * 60;
+			  document.getElementById('wait').selectedIndex = 17;" > hours.
+		</span>
+
 		
 	</li>
 	<li class="formlistdesc">
@@ -305,15 +311,23 @@ else
 			onChange="
 				opt = this.value.split('/');
 				document.getElementById('specialCDturn').value  = opt[0];
-				document.getElementById('specialCDcount').value = opt[1];">
+				document.getElementById('specialCDcount').value = opt[1];
+				if (this.value == '0/0') {
+					document.getElementById('specialCDturn').disabled  = false;
+					document.getElementById('specialCDcount').disabled = false;
+				} else {
+					document.getElementById('specialCDturn').disabled  = true;
+					document.getElementById('specialCDcount').disabled = true;
+				}
+			">
 			<option value="off/off">Off</option>
 			<option value="<?php print Config::$specialCDturnsDefault;?>/<?php print Config::$specialCDcountDefault;?>" selected>Default</option>
 			<option value="5/2">Committed</option>
 			<option value="99/5">Serious</option>
 			<option value="0/0">Custom</option>
 		</select>
-		 - Turns: </b><input type="text" id="specialCDturn" onChange="document.getElementById('NMRpolicy').selectedIndex = 4;" name="newGame[specialCDturn]" size="2" value="<?php print Config::$specialCDturnsDefault;?>">		 		 
-		 - Delay: </b><input type="text" id="specialCDcount" onChange="document.getElementById('NMRpolicy').selectedIndex = 4;" name="newGame[specialCDcount]" size="2" value="<?php print Config::$specialCDcountDefault;?>"> 
+		 - Turns: </b><input type="text" disabled= "true" id="specialCDturn" onChange="document.getElementById('NMRpolicy').selectedIndex = 4;" name="newGame[specialCDturn]" size="2" value="<?php print Config::$specialCDturnsDefault;?>">		 		 
+		 - Delay: </b><input type="text" disabled= "true" id="specialCDcount" onChange="document.getElementById('NMRpolicy').selectedIndex = 4;" name="newGame[specialCDcount]" size="2" value="<?php print Config::$specialCDcountDefault;?>"> 
 	</li>
 	<li class="formlistdesc">
 		This rule will send a players into Civil Disorder (CD) if there are No Moves Received (NMR) from them.
