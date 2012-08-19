@@ -307,34 +307,66 @@ else
 		NMR policy:
 	</li>
 	<li class="formlistfield">
+		<?php 
+			$specialCDturnsTxt = ( Config::$specialCDturnsDefault == 0 ? 'off' : (Config::$specialCDturnsDefault > 99 ? '&infin;' : Config::$specialCDturnsDefault) );
+			$specialCDcountTxt = ( Config::$specialCDcountDefault == 0 ? 'off' : (Config::$specialCDcountDefault > 99 ? '&infin;' : Config::$specialCDcountDefault) );
+		?>
+		
+		<input type="hidden" id="specialCDturn"  name="newGame[specialCDturn]"  value="<?php print $specialCDturnsTxt;?>">
+		<input type="hidden" id="specialCDcount" name="newGame[specialCDcount]" value="<?php print $specialCDcountTxt;?>">
+		
 		<select id="NMRpolicy" name="newGame[NMRpolicy]" 
 			onChange="
-				opt = this.value.split('/');
-				document.getElementById('specialCDturn').value  = opt[0];
-				document.getElementById('specialCDcount').value = opt[1];
-				if (this.value == '0/0') {
+				if (this.value == 'c/c') {
 					$('NMRpolicyCustom').show();
 					$('NMRpolicyText').hide();
 				} else {
-					$('NMRpolicyCustom').hide();
+					opt = this.value.split('/');
+					document.getElementById('specialCDturn').value  = opt[0];
+					document.getElementById('specialCDcount').value = opt[1];
+					if (opt[0] == 0) opt[0] = 'off'; if (opt[0] > 90) opt[0] = '&infin;'; 
+					if (opt[1] == 0) opt[1] = 'off'; if (opt[1] > 90) opt[1] = '&infin;'; 
+					document.getElementById('specialCDturnCustom').value  = opt[0];
+					document.getElementById('specialCDcountCustom').value = opt[1];
 					document.getElementById('NMRpolicyText').innerHTML = ' - Turns: <b>' + opt[0] + '</b> - Delay: <b>' + opt[1] + '</b>';
+					$('NMRpolicyCustom').hide();
 					$('NMRpolicyText').show();
-					
 				}
 			">
-			<option value="off/off">Off</option>
-			<option value="<?php print Config::$specialCDturnsDefault;?>/<?php print Config::$specialCDcountDefault;?>" selected>Default</option>
+			<option value="0/0">Off</option>
+			<option value="<?php print $specialCDturnsTxt;?>/<?php print $specialCDcountTxt;?>" selected>Default</option>
 			<option value="5/2">Committed</option>
-			<option value="99/5">Serious</option>
-			<option value="0/0">Custom</option>
+			<option value="99/99">Serious</option>
+			<option value="c/c">Custom</option>
 		</select>
+		
+		
 		<span id="NMRpolicyCustom" style="display:none">
-			 - Turns: </b><input type="text" id="specialCDturn" onChange="document.getElementById('NMRpolicy').selectedIndex = 4;" name="newGame[specialCDturn]" size="2" value="<?php print Config::$specialCDturnsDefault;?>">		 		 
-			 - Delay: </b><input type="text" id="specialCDcount" onChange="document.getElementById('NMRpolicy').selectedIndex = 4;" name="newGame[specialCDcount]" size="2" value="<?php print Config::$specialCDcountDefault;?>"> 
+			 - Turns: </b><input 
+							type="text" 
+							id="specialCDturnCustom" 
+							size="2" 
+							value='<?php print $specialCDturnsTxt; ?>'
+							onkeypress="if (event.keyCode==13) this.blur(); return event.keyCode!=13"
+							onChange="document.getElementById('NMRpolicy').selectedIndex = 4;
+								document.getElementById('specialCDturn').value  = this.value;
+								if (this.value > 90) this.value = '&infin;';
+								if (this.value == 0) this.value = 'off';"
+							>
+			 - Delay: </b><input
+							type="text"
+							id="specialCDcountCustom"
+							value = '<?php print $specialCDcountTxt; ?>'
+							onkeypress="if (event.keyCode==13) this.blur(); return event.keyCode!=13"
+							onChange="document.getElementById('NMRpolicy').selectedIndex = 4;
+								document.getElementById('specialCDcount').value = this.value;
+								if (this.value > 90) this.value = '&infin;';
+								if (this.value == 0) this.value = 'off';"
+							size="2"
+							> 
 		</span>
 		<span id="NMRpolicyText">
-			 - Turns: <b><?php print Config::$specialCDturnsDefault;?></b>
-			 - Delay: <b><?php print Config::$specialCDcountDefault;?></b>
+			 - Turns: <b><?php print $specialCDturnsTxt;?></b> - Delay: <b><?php print $specialCDcountTxt;?></b>
 		</span>
 	</li>
 	<li class="formlistdesc">
@@ -343,8 +375,7 @@ else
 		<li><strong>Turns:</strong> How many turns this action will be in effect for.</li>
 		<li><strong>Delay:</strong> How much time to advertise and find a replacement player (the current phase will be extended by the current phase length that many times).</li>
 		</ul>
-		<strong>Attention:</strong> A custom entered "0" for deleay will <u>not</u> turn this feature off, but delay the processing till a replacement is found.
-		<br /><br /><strong>Default:</strong> <?php print Config::$specialCDturnsDefault;?> / <?php print Config::$specialCDcountDefault;?>
+		<br /><strong>Default:</strong> <?php print $specialCDturnsTxt;?> / <?php print $specialCDcountTxt;?>
 	</li>
 
 	<li class="formlisttitle">

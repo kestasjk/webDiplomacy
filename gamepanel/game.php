@@ -263,16 +263,17 @@ class panelGame extends Game
 			$alternatives[]='WTA';
 			
 		// The NMR-policy defaults
-		if( $this->specialCDturn != Config::$specialCDturnsDefault && $this->specialCDcount != Config::$specialCDcountDefault && $this->specialCDturn >= $this->turn)
+		if( ($this->specialCDturn != Config::$specialCDturnsDefault || $this->specialCDcount != Config::$specialCDcountDefault) && $this->specialCDturn >= $this->turn)
 		{
-			if ( $this->specialCDturn == 0  && $this->specialCDcount == 0 )
+			if ( $this->specialCDturn == 0 )
 				$alternatives[]='NMR: Off';
 			elseif( $this->specialCDturn == 5  && $this->specialCDcount == 2 )
 				$alternatives[]='NMR: Committed';
-			elseif( $this->specialCDturn == 99 && $this->specialCDcount == 5 )
+			elseif( $this->specialCDturn > 90 && $this->specialCDcount > 90 )
 				$alternatives[]='NMR: Serious';
 			else
-				$alternatives[]='NMR:'.$this->specialCDturn.'/'.$this->specialCDcount;
+			
+				$alternatives[]='NMR:'.($this->specialCDturn > 90 ? '&infin;' : $this->specialCDturn).'/'.($this->specialCDcount > 90 ? '&infin;' : ($this->specialCDcount == 0 ? 'off' : $this->specialCDcount));
 		}
 		
 		//	Show the end of the game in the options if set.

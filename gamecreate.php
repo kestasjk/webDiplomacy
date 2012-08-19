@@ -146,12 +146,13 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$input['targetSCs'] = (int)$input['targetSCs'];		
 		$input['countryID'] = (int)$input['countryID'];
 		
-		if ( $input['specialCDturn'] == '&infin;' ) $input['specialCDturn'] = 999;
 		$input['specialCDturn'] = (int)$input['specialCDturn'];
-		if ( $input['specialCDturn'] < 0 ) $input['specialCDturn'] = 0;
+		if ( $input['specialCDturn'] <  0 ) $input['specialCDturn'] = 0;
+		if ( $input['specialCDturn'] > 99 ) $input['specialCDturn'] = 99;
 		
 		$input['specialCDcount'] = (int)$input['specialCDcount'];
-		if ( $input['specialCDcount'] < 0 )	$input['specialCDcount'] = 0;
+		if ( $input['specialCDcount'] <  0 ) $input['specialCDcount'] = 0;
+		if ( $input['specialCDcount'] > 99 ) $input['specialCDcount'] = 99;
 		
 		// Create Game record & object
 		require_once('gamemaster/game.php');

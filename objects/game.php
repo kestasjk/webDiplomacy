@@ -557,7 +557,7 @@ class Game
 						$search = 'Missing orders for '.$this->Variant->turnAsDate($this->turn).' ('.$this->phase.')';
 						$sql='SELECT COUNT(*) FROM wD_GameMessages WHERE message LIKE "%'.$search.'%" AND toCountryID = 0 AND fromCountryID = 0 AND gameID='.$this->id;
 						list($extCount)=$DB->sql_row($sql);
-						if ($extCount < $this->specialCDcount || $this->specialCDcount == 0)
+						if ($extCount < $this->specialCDcount || $this->specialCDcount > 90)
 						{
 							$this->processTime = time() + $this->phaseMinutes*60;
 							$this->minimumBet = $this->Members->pointsLowestCD();
@@ -568,7 +568,7 @@ class Game
 											WHERE id = ".$this->id);
 							$gameMasterText = 'Missing orders for '.$this->Variant->turnAsDate($this->turn).' ('.$this->phase.'). Extending phase.';
 							$repeat = $this->specialCDcount - $extCount - 1;
-							if ($this->specialCDcount == 0)
+							if ($this->specialCDcount > 90)
 								$gameMasterText .= 	'The phase will extend again till you find a replacement.';
 							elseif ($repeat > 0)
 								$gameMasterText .= 	'The phase will extend '.$repeat.' time'.($repeat > 1 ? 's':'').' again if you do not find a replacement.';
