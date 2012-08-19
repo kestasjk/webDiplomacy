@@ -40,7 +40,8 @@ Start a new game; you decide the name, how long it runs, and how much it's worth
 		Name:
 	</li>
 	<li class="formlistfield">
-		<input type="text" name="newGame[name]" value="" size="30">
+		<input type="text" name="newGame[name]" value="" size="30" onkeypress="if (event.keyCode==13) this.blur(); return event.keyCode!=13"
+>
 	</li>
 	<li class="formlistdesc">
 		The name of your game
@@ -64,10 +65,11 @@ Start a new game; you decide the name, how long it runs, and how much it's worth
 				print '<option value="'.$i.'"'.($i==1440 ? ' selected' : '').'>'.$opt.'</option>';
 			}
 		?>
-		<option value="0">custom</option>
+		<option value="0">Custom</option>
 		</select>
 		<span id="phaseHoursText" style="display:none">
 			 - Phase length: <input type="text" id="phaseHours" name="newGame[phaseHours]" value="24" size="2" style="text-align:right;"
+			 onkeypress="if (event.keyCode==13) this.blur(); return event.keyCode!=13"
 			 onChange="
 			  this.value = parseInt(this.value);
 			  document.getElementById('phaseMinutes').selectedIndex = 28;
@@ -75,7 +77,6 @@ Start a new game; you decide the name, how long it runs, and how much it's worth
 			  document.getElementById('wait').selectedIndex = 17;" > hours.
 		</span>
 
-		
 	</li>
 	<li class="formlistdesc">
 		The maximum number of hours allowed for players to discuss and enter orders each phase.<br />
