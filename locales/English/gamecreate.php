@@ -92,31 +92,7 @@ Start a new game; you decide the name, how long it runs, and how much it's worth
 
 		<strong>Default:</strong> <?php print $defaultPoints.libHTML::points(); ?>
 	</li>
-</ul>
-
-<div class="hr"></div>
-
-<div id="AdvancedSettingsButton">
-<ul class="formlist">
-	<li class="formlisttitle">
-		<a href="#" onclick="$('AdvancedSettings').show(); $('AdvancedSettingsButton').hide(); return false;">
-		Open Advanced Settings
-		</a>
-	</li>
-	<li class="formlistdesc">
-		Advanced settings allowing extra customization of games for seasoned players, allowing
-		different map choices, alternate rules, and non-standard timing options.<br /><br />
-
-		The default settings are fine for <strong>new players</strong>.
-	</li>
-</ul>
-</div>
-
-<div id="AdvancedSettings" style="<?php print libHTML::$hideStyle; ?>">
-
-<h3>Advanced settings</h3>
-
-<ul class="formlist">
+	
 <?php
 if( count(Config::$variants)==1 )
 {
@@ -222,25 +198,6 @@ else
 		<strong>Default:</strong> No, players aren't anonymous
 	</li>
 	
-	<div id="RLGroup" style="
-		<?php 
-			if ($User->rlGroup == 0)
-				print libHTML::$hideStyle; 
-		?>">
-		<li class="formlisttitle">
-			RL policy:
-		</li>
-		<li class="formlistfield">
-			<input id="rlPolicyNone" type="radio" name="newGame[rlPolicy]" value="None" checked>No restrictions.<br>
-			<input id="rlPolicyStrict" type="radio" name="newGame[rlPolicy]" value="Strict">If people have RL friends on this site only one of them can join.<br>
-			<input type="radio" name="newGame[rlPolicy]" value="Friends">Only people in your rlGroup can join this game.
-		</li>
-		<li class="formlistdesc">
-			This setting let you choose how to handle games with people that know each other in RL.
-			<br /><br /><strong>Default:</strong> Anon games prevent friends from joining together all others have no Restrictions.
-		</li>
-	</div>
-
 	<li class="formlisttitle">
 		Disable in-game messaging:
 	</li>
@@ -254,6 +211,32 @@ else
 
 		<br /><br /><strong>Default:</strong> Allow all
 	</li>
+	
+</ul>
+
+<div class="hr"></div>
+
+<div id="AdvancedSettingsButton">
+<ul class="formlist">
+	<li class="formlisttitle">
+		<a href="#" onclick="$('AdvancedSettings').show(); $('AdvancedSettingsButton').hide(); return false;">
+		Open Advanced Settings
+		</a>
+	</li>
+	<li class="formlistdesc">
+		Advanced settings allowing extra customization of games for seasoned players, allowing
+		different map choices, alternate rules, and non-standard timing options.<br /><br />
+
+		The default settings are fine for <strong>new players</strong>.
+	</li>
+</ul>
+</div>
+
+<div id="AdvancedSettings" style="<?php print libHTML::$hideStyle; ?>">
+
+<h3>Advanced settings</h3>
+
+<ul class="formlist">
 
 	<li class="formlisttitle">
 		Joining pre-game period length: (5 minutes - 10 days)
@@ -308,10 +291,10 @@ else
 	<li class="formlistdesc">
 		You can set some requirements that the players for your game need to fulfill.		
 		<ul>
-			<li><b>Min Rating:</b> Here you can choose the minimum reliability a player must have to join your game.</li>
-			<li><b>Min Phases:</b> Here you can choose how many phases a player must have played to join your game.</li>
+			<li><b>Min Rating:</b> The minimum reliability a player must have to join your game.</li>
+			<li><b>Min Phases:</b> How many phases a player must have played to join your game.</li>
 		</ul>
-		This might lead to people not able to join your games, so choose your options wisely.<br /><br />
+		This might lead to not enough people able to join your games, so choose your options wisely.<br /><br />
 		<strong>Default:</strong> No restrictions:
 	</li>
 
@@ -334,9 +317,12 @@ else
 		 - Delay: </b><input type="text" id="specialCDcount" onChange="document.getElementById('NMRpolicy').selectedIndex = 4;" name="newGame[specialCDcount]" size="2" value="<?php print Config::$specialCDcountDefault;?>"> 
 	</li>
 	<li class="formlistdesc">
-		This special rule sends a country in civil disorder (CD) if it does not enter an order (NMR) and extend the phase so a replacement can be found.
-		This works for the given number of turns on all phases (diplomacy, retreat, build). If a replacement is not found till the phase expires again it
-		the processing will be pushed back again for the given number of delays.
+		This rule will send a players into Civil Disorder (CD) if there are No Moves Received (NMR) from them.
+		<ul>
+		<li><strong>Turns:</strong> How many turns this action will be in effect for.</li>
+		<li><strong>Delay:</strong> How much time to advertise and find a replacement player (the current phase will be extended by the current phase length that many times).</li>
+		</ul>
+		<strong>Attention:</strong> A custom entered "0" for deleay will <u>not</u> turn this feature off, but delay the processing till a replacement is found.
 		<br /><br /><strong>Default:</strong> <?php print Config::$specialCDturnsDefault;?> / <?php print Config::$specialCDcountDefault;?>
 	</li>
 
