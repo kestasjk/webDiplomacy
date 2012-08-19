@@ -194,7 +194,7 @@ else
 		Anonymous players:
 	</li>
 	<li class="formlistfield">
-		<input type="radio" name="newGame[anon]" value="No">No
+		<input type="radio" name="newGame[anon]" value="No" checked>No
 		<input type="radio" name="newGame[anon]" value="Yes">Yes
 	</li>
 	<li class="formlistdesc">
