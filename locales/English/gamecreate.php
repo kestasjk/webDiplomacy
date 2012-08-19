@@ -107,8 +107,8 @@ else
 ?>
 	<li class="formlisttitle">Variant map/rules:</li>
 	<li class="formlistfield">
-	<script type="text/javascript">
 	
+	<script type="text/javascript">
 	function setExtOptions(i){
 		document.getElementById('countryID').options.length=0;
 		switch(i)
@@ -134,7 +134,6 @@ else
 			ksort($checkboxes);	
 			?>	
 		}
-
 	}
 	</script>
 	
@@ -189,8 +188,8 @@ else
 		Anonymous players:
 	</li>
 	<li class="formlistfield">
-		<input type="radio" name="newGame[anon]" value="No"  onclick="document.getElementById('rlPolicyNone').checked = true;" checked>No
-		<input type="radio" name="newGame[anon]" value="Yes" onclick="document.getElementById('rlPolicyStrict').checked = true;">Yes
+		<input type="radio" name="newGame[anon]" value="No">No
+		<input type="radio" name="newGame[anon]" value="Yes">Yes
 	</li>
 	<li class="formlistdesc">
 		If enabled players will not see each others names and user information, players are anonymous until the game ends.<br /><br />
@@ -307,7 +306,7 @@ else
 				opt = this.value.split('/');
 				document.getElementById('specialCDturn').value  = opt[0];
 				document.getElementById('specialCDcount').value = opt[1];">
-			<option value="0/0">Off</option>
+			<option value="off/off">Off</option>
 			<option value="<?php print Config::$specialCDturnsDefault;?>/<?php print Config::$specialCDcountDefault;?>" selected>Default</option>
 			<option value="5/2">Committed</option>
 			<option value="99/5">Serious</option>
