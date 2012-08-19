@@ -366,7 +366,7 @@ class processGame extends Game
 						minPhases = ".$minPhases.", 
 						specialCDturn = ".$specialCDturn.", 
 						specialCDcount = ".$specialCDcount.", 
-						rlPolicy = ".($anon == 'Yes' ? 'Strict' : 'None' ).", 
+						rlPolicy = '".($anon == 'Yes' ? 'Strict' : 'None' )."', 
 						phaseMinutes = ".$phaseMinutes);
 
 		$gameID = $DB->last_inserted();

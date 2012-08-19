@@ -146,6 +146,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$input['targetSCs'] = (int)$input['targetSCs'];		
 		$input['countryID'] = (int)$input['countryID'];
 		
+		if ( $input['specialCDturn'] == '&infin;' ) $input['specialCDturn'] = 999;
 		$input['specialCDturn'] = (int)$input['specialCDturn'];
 		if ( $input['specialCDturn'] < 0 ) $input['specialCDturn'] = 0;
 		

@@ -313,11 +313,13 @@ else
 				document.getElementById('specialCDturn').value  = opt[0];
 				document.getElementById('specialCDcount').value = opt[1];
 				if (this.value == '0/0') {
-					document.getElementById('specialCDturn').disabled  = false;
-					document.getElementById('specialCDcount').disabled = false;
+					$('NMRpolicyCustom').show();
+					$('NMRpolicyText').hide();
 				} else {
-					document.getElementById('specialCDturn').disabled  = true;
-					document.getElementById('specialCDcount').disabled = true;
+					$('NMRpolicyCustom').hide();
+					document.getElementById('NMRpolicyText').innerHTML = ' - Turns: <b>' + opt[0] + '</b> - Delay: <b>' + opt[1] + '</b>';
+					$('NMRpolicyText').show();
+					
 				}
 			">
 			<option value="off/off">Off</option>
@@ -326,8 +328,14 @@ else
 			<option value="99/5">Serious</option>
 			<option value="0/0">Custom</option>
 		</select>
-		 - Turns: </b><input type="text" disabled= "true" id="specialCDturn" onChange="document.getElementById('NMRpolicy').selectedIndex = 4;" name="newGame[specialCDturn]" size="2" value="<?php print Config::$specialCDturnsDefault;?>">		 		 
-		 - Delay: </b><input type="text" disabled= "true" id="specialCDcount" onChange="document.getElementById('NMRpolicy').selectedIndex = 4;" name="newGame[specialCDcount]" size="2" value="<?php print Config::$specialCDcountDefault;?>"> 
+		<span id="NMRpolicyCustom" style="display:none">
+			 - Turns: </b><input type="text" id="specialCDturn" onChange="document.getElementById('NMRpolicy').selectedIndex = 4;" name="newGame[specialCDturn]" size="2" value="<?php print Config::$specialCDturnsDefault;?>">		 		 
+			 - Delay: </b><input type="text" id="specialCDcount" onChange="document.getElementById('NMRpolicy').selectedIndex = 4;" name="newGame[specialCDcount]" size="2" value="<?php print Config::$specialCDcountDefault;?>"> 
+		</span>
+		<span id="NMRpolicyText">
+			 - Turns: <b><?php print Config::$specialCDturnsDefault;?></b>
+			 - Delay: <b><?php print Config::$specialCDcountDefault;?></b>
+		</span>
 	</li>
 	<li class="formlistdesc">
 		This rule will send a players into Civil Disorder (CD) if there are No Moves Received (NMR) from them.
