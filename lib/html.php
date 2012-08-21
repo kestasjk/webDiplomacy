@@ -410,7 +410,7 @@ class libHTML
 		<script type="text/javascript">
 		STATICSRV="'.STATICSRV.'";
 		</script>
-		<title>'.$title.' - webDiplomacy</title>
+		<title>'.$title.' - vDiplomacy</title>
 	</head>';
 	}
 
