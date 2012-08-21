@@ -12,18 +12,53 @@ class adminActionsRestrictedVDip extends adminActionsForum
 			'delCache' => array(
 				'name' => 'Clean the cache directory.',
 				'description' => 'Delete the cache files older than the given date.',
-				'params' => array('keep'=>'File age (in days):')
+				'params' => array('keep'=>'File age (in days)')
 			),
 			'allReady' => array(
 				'name' => 'Ready all orders.',
 				'description' => 'Set the orderstatus of all countries to "Ready".',
-				'params' => array('gameID'=>'GameID:')
+				'params' => array('gameID'=>'GameID')
+			),
+			'delVariantGameCache' => array(
+				'name' => 'Clear cache of a given variant.',
+				'description' => 'Clear all cache files of all games from a given variant.',
+				'params' => array('variantID'=>'VariantID')
 			),
 		);
 		
 		adminActions::$actions = array_merge(adminActions::$actions, $vDipActionsRestricted);
 	}
 
+	public function delVariantGameCache(array $params)
+	{
+		global $DB;
+		$variantID = (int)$params['variantID'];
+		$Variant = libVariant::loadFromVariantID($variantID);
+		$tabl=$DB->sql_tabl("SELECT id FROM wD_Games WHERE variantID = ".$variantID );
+		$count = 0;
+		while( list($gameID) = $DB->tabl_row($tabl) )
+		{
+			$gamesDir = libCache::dirID('games',$gameID);
+			$this->del_cache($gamesDir, '0 days');
+			$count++;
+		}
+		$VariantCache=opendir('variants/'.$Variant->name.'/cache');
+		while (false !== ($file=readdir($VariantCache)))
+			if($file[0]!=".") unlink ('variants/'.$Variant->name.'/cache/'.$file);
+		return 'Cleared all cache data for the '.$Variant->name.'-variant ('.$count.' games).';
+	}
+	public function delVariantGameCacheConfirm(array $params)
+	{
+		global $DB;
+		$variantID = (int)$params['variantID'];
+		$Variant = libVariant::loadFromVariantID($variantID);
+		list($runningGamesCount)=$DB->sql_row("SELECT count(*) FROM wD_Games WHERE variantID = ".$variantID );
+		$tabl=$DB->sql_tabl("SELECT id FROM wD_Games WHERE variantID = ".$variantID );
+		
+		return 'Do you want to clear all cache data for the '.$Variant->name.'-variant ('.$runningGamesCount.' games)?';
+	}
+	
+	
 	public function allReady(array $params)
 	{
 		global $DB;
