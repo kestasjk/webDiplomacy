@@ -27,9 +27,9 @@ class AnarchyInTheUKVariant_drawMap extends drawMap
 		0 => array(211, 249, 188),
 		1 => array(239, 196, 228),
 		2 => array(030, 144, 255),
-		3 => array(255, 000, 000),
+		3 => array(185, 000, 000),
+		5 => array(032, 162, 032),
 		4 => array(240, 205, 041),
-		5 => array(050, 205, 050),
 		6 => array(147, 112, 219),
 	);
 
