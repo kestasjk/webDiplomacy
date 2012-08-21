@@ -40,8 +40,7 @@ Start a new game; you decide the name, how long it runs, and how much it's worth
 		Name:
 	</li>
 	<li class="formlistfield">
-		<input type="text" name="newGame[name]" value="" size="30" onkeypress="if (event.keyCode==13) this.blur(); return event.keyCode!=13"
->
+		<input type="text" name="newGame[name]" value="" size="30" onkeypress="if (event.keyCode==13) this.blur(); return event.keyCode!=13">
 	</li>
 	<li class="formlistdesc">
 		The name of your game
@@ -68,10 +67,12 @@ Start a new game; you decide the name, how long it runs, and how much it's worth
 		<option value="0">Custom</option>
 		</select>
 		<span id="phaseHoursText" style="display:none">
-			 - Phase length: <input type="text" id="phaseHours" name="newGame[phaseHours]" value="24" size="2" style="text-align:right;"
+			 - Phase length: <input type="text" id="phaseHours" name="newGame[phaseHours]" value="24" size="4" style="text-align:right;"
 			 onkeypress="if (event.keyCode==13) this.blur(); return event.keyCode!=13"
 			 onChange="
 			  this.value = parseInt(this.value);
+			  if (this.value == 'NaN' ) this.value = 24;
+			  if (this.value < 1 ) this.value = 1;
 			  document.getElementById('phaseMinutes').selectedIndex = 28;
 			  document.getElementById('phaseMinutes').options[28].value = this.value * 60;
 			  document.getElementById('wait').selectedIndex = 17;" > hours.
@@ -91,7 +92,14 @@ Start a new game; you decide the name, how long it runs, and how much it's worth
 			<?php print $User->points.libHTML::points(); ?>)
 	</li>
 	<li class="formlistfield">
-		<input type="text" name="newGame[bet]" size="7" value="<?php print $formPoints ?>" />
+		<input type="text" name="newGame[bet]" size="7" value="<?php print $formPoints ?>" 
+			onkeypress="if (event.keyCode==13) this.blur(); return event.keyCode!=13"
+			onChange="
+				this.value = parseInt(this.value);
+				if (this.value == 'NaN' ) this.value = <?php print $defaultPoints; ?>;
+				if (this.value < 2) this.value = 2;
+				if (this.value > <?php print $User->points; ?>) this.value = <?php print $User->points; ?>;"
+			/>
 	</li>
 	<li class="formlistdesc">
 		The bet required to join this game. This is the amount of points that all players, including you,
@@ -350,6 +358,8 @@ else
 							value='<?php print $specialCDturnsTxt; ?>'
 							onkeypress="if (event.keyCode==13) this.blur(); return event.keyCode!=13"
 							onChange="document.getElementById('NMRpolicy').selectedIndex = 4;
+								if (this.value == 'off') this.value = 0;
+								this.value = parseInt(this.value);
 								document.getElementById('specialCDturn').value  = this.value;
 								if (this.value > 90) this.value = '&infin;';
 								if (this.value == 0) this.value = 'off';"
@@ -360,6 +370,8 @@ else
 							value = '<?php print $specialCDcountTxt; ?>'
 							onkeypress="if (event.keyCode==13) this.blur(); return event.keyCode!=13"
 							onChange="document.getElementById('NMRpolicy').selectedIndex = 4;
+								if (this.value == 'off') this.value = 0;
+								this.value = parseInt(this.value);
 								document.getElementById('specialCDcount').value = this.value;
 								if (this.value > 90) this.value = '&infin;';
 								if (this.value == 0) this.value = 'off';"
@@ -373,18 +385,33 @@ else
 	<li class="formlistdesc">
 		This rule will send a players into Civil Disorder (CD) if there are No Moves Received (NMR) from them.
 		<ul>
-		<li><strong>Turns:</strong> How many turns this action will be in effect for.</li>
-		<li><strong>Delay:</strong> How much time to advertise and find a replacement player (the current phase will be extended by the current phase length that many times).</li>
+		<li><strong>Turns:</strong> How many turns this action will be in effect for. Be carefull, a turn has up to three phases.
+		Example: A two will send the country in CD for the diplomacy, retreat and build phase of the first 2 turns (usually Spring and Autumn).</li>
+		<li><strong>Delay:</strong> How much time to advertise and find a replacement player (the current phase will be extended by the current phase length that many times).
+		A zero will send the country in CD, but proceed with the turn as usual.</li>
 		</ul>
-		<br /><strong>Default:</strong> <?php print $specialCDturnsTxt;?> / <?php print $specialCDcountTxt;?>
+		Any value greater 90 will set the value to &infin;, a value of 0 will set this to off.
+		<br /><br /><strong>Default:</strong> <?php print $specialCDturnsTxt;?> / <?php print $specialCDcountTxt;?>
 	</li>
 
 	<li class="formlisttitle">
 		Alternate winning conditions:
 	</li>
 	<li class="formlistfield"> 
-		<b>Target SCs: </b><input type="text" name="newGame[targetSCs]" size="4" value="0" /> (0 = default)<br>
-		<b>Max. turns: </b><input type="text" name="newGame[maxTurns]" size="4" value="0" /> (4 < maxTurns < 200)
+		<b>Target SCs: </b><input type="text" name="newGame[targetSCs]" size="4" value="0"
+			onkeypress="if (event.keyCode==13) this.blur(); return event.keyCode!=13"
+			onChange="
+				this.value = parseInt(this.value);
+				if (this.value == 'NaN' ) this.value = 0;"
+		/> (0 = default)<br>
+		<b>Max. turns: </b><input type="text" name="newGame[maxTurns]" size="4" value="0"
+			onkeypress="if (event.keyCode==13) this.blur(); return event.keyCode!=13"
+			onChange="
+				this.value = parseInt(this.value);
+				if (this.value == 'NaN' ) this.value = 0;
+				if (this.value < 4 && this.value != 0) this.value = 4;
+				if (this.value > 200) this.value = 200;"
+		/> (4 < maxTurns < 200)
 	</li>
 	<li class="formlistdesc">
 		This setting lets you limit how many turns are played and/or how many SCs need to be conquered before a winner is declared.
