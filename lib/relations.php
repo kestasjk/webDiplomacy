@@ -36,7 +36,7 @@ class libRelations {
 		return $groupUsers;
 	}
 	
-	static function getCommonGames($groupID)
+	static function getCommonGames($groupID,$finished=true)
 	{
 		global $DB;
 		
@@ -44,7 +44,7 @@ class libRelations {
 			"SELECT m.gameID, count(m.gameID) FROM wD_Members m
 				LEFT JOIN wD_Users u ON ( u.id = m.userID )
 				LEFT JOIN wD_Games g ON ( g.id = m.gameID )
-			WHERE g.phase != 'Finished' AND g.phase != 'Pre-game' AND u.rlGroup=".$groupID."
+			WHERE ".($finished ? "g.phase != 'Finished' AND " : "")."g.phase != 'Pre-game' AND u.rlGroup=".$groupID."
 			GROUP BY gameID
 			HAVING count(*) > 1");
 
@@ -196,7 +196,7 @@ class libRelations {
 		global $DB, $User;
 		$html = '';
 		
-		$games = self::getCommonGames($groupID);
+		$games = self::getCommonGames($groupID,false);
 		if (count($games > 0))
 		{
 			$html = '
@@ -236,7 +236,7 @@ class libRelations {
 				if ($Game->anon == 'No' || $User->type['Moderator'])
 				{
 					$html .= '<TR>';
-					$html .= '<TR><TD style="border: 1px solid #666"><a href="board.php?gameID='.$Game->id.'">'.$Game->name.'</a></TD>';
+					$html .= '<TR><TD style="border: 1px solid #666"><a href="board.php?gameID='.$Game->id.'">'.$Game->name.'</a>'.($Game->phase == 'Finished' ? ' (Finished)' : '').'</TD>';
 					$html .= '<TD style="border: 1px solid #666">'.count($Variant->countries).'</TD>';
 					$html .= '<TD style="border: 1px solid #666">'.$count.'</TD>';
 					$html .= '<TD style="border: 1px solid #666">'.$Game->anon.'</TD>';
