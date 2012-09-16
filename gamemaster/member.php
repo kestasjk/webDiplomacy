@@ -61,7 +61,12 @@ class processMember extends Member
 		else
 		{
 			// Notify the remaining players
-			$Game->Members->sendExcept($this,'No',"<strong>".$this->username."</strong> left the game.");
+			if ( $this->Game->isMemberInfoHidden() )
+				$name = 'Someone';
+			else
+				$name = "<strong>".$this->username."</strong>";
+				
+			$Game->Members->sendExcept($this,'No',$name." left the game.");
 		}
 
 		header('refresh: 4; url=index.php');
