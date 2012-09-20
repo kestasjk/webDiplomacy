@@ -40,8 +40,8 @@ class ClassicChaoctopiVariant_panelMembersHome extends panelMembersHome
 		for ($i=0; $i<count($this->Game->Variant->countries); $i++)
 		{
 			$part1.=$parts[$i].'</td>';
-			$part2.=$parts[$i+34].'</td>';
-			if (ceil(($i+1)/9) == (($i+1)/9))
+			$part2.=$parts[$i+35].'</td>';
+			if (ceil(($i+1)/2) == (($i+1)/2))
 			{
 				$html .= $part1.'</tr><tr>'.$part2.'</tr><tr>';
 				$part1=$part2='';
