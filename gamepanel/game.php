@@ -261,6 +261,8 @@ class panelGame extends Game
 			$alternatives[]='Anon';
 		if( $this->potType=='Winner-takes-all' )
 			$alternatives[]='WTA';
+		if( $this->chessTime > 0)
+			$alternatives[]='Chess:'.$this->chessTime." min.";
 			
 		// The NMR-policy defaults
 		if( ($this->specialCDturn != Config::$specialCDturnsDefault || $this->specialCDcount != Config::$specialCDcountDefault) && $this->specialCDturn >= $this->turn)

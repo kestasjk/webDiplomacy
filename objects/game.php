@@ -241,6 +241,11 @@ class Game
 	 public $rlPolicy;
 	 
 	/**
+	 * ChessTimer (Countdown timer)
+	 */
+	public $chessTime;
+	 
+	/**
 	 * @param int/array $gameData The game ID of the game to load, or the array of its database row
 	 * @param string[optional] $lockMode The database locking phase to use; no locking by default
 	 */
@@ -364,6 +369,7 @@ class Game
 			g.specialCDcount,
 			g.specialCDturn,
 			g.rlPolicy,
+			g.chessTime,
 			g.missingPlayerPolicy
 			FROM wD_Games g
 			WHERE g.id=".$this->id.' '.$this->lockMode);

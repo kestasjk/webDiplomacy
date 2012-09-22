@@ -132,6 +132,20 @@ class adjudicatorPreGame {
 		);
 	}
 	
+	/**
+	 * Give each member the same time-limit on his chessTimer
+	 */
+	protected function assignTime()
+	{
+		global $DB, $Game;
+
+		$DB->sql_put(
+			"UPDATE wD_Members
+			SET chessTime='".$Game->chessTime."'
+			WHERE gameID = ".$Game->id
+		);
+	}
+	
 	function checkForRelations()
 	{
 		require_once "lib/relations.php";
@@ -173,6 +187,7 @@ class adjudicatorPreGame {
 		$this->assignTerritories(); // TerrStatus
 		$this->assignUnits(); // Units
 		$this->assignUnitOccupations(); // TerrStatus occupyingUnitID
+		$this->assignTime();
 		$this->checkForRelations();
 	}
 }

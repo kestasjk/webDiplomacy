@@ -163,6 +163,11 @@ class Member
 	public $rlGroup;
 	
 	/**
+	 * ChessTimer (Countdown timer)
+	 */
+	public $chessTime;
+	
+	/**
 	 * Create a Member object from a database Member record row
 	 * @param array $row Member record
 	 */

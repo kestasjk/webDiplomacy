@@ -301,6 +301,7 @@ class processGame extends Game
 		,$minPhases
 		,$specialCDturn 
 		,$specialCDcount
+		,$chessTime
 		)
 	{
 		global $DB;
@@ -366,6 +367,7 @@ class processGame extends Game
 						minPhases = ".$minPhases.", 
 						specialCDturn = ".$specialCDturn.", 
 						specialCDcount = ".$specialCDcount.", 
+						chessTime = ".$chessTime.", 
 						rlPolicy = '".($anon == 'Yes' ? 'Strict' : 'None' )."', 
 						phaseMinutes = ".$phaseMinutes);
 

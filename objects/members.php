@@ -229,6 +229,7 @@ class Members
 				m.votes AS votes,
 				m.supplyCenterNo as supplyCenterNo,
 				m.unitNo as unitNo,
+				m.chessTime AS chessTime,
 				u.username AS username,
 				u.points AS points,
 				u.rlGroup AS rlGroup,

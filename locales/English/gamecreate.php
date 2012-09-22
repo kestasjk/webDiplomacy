@@ -422,6 +422,16 @@ else
 		<br />A value of "0" (the default) ends the game as usual, as soon as one player reach the default target SCs.
 		<br /><br /><strong>Default:</strong> 0 (no fixed game duration / default number of SCs needed)
 	</li>
+
+	<li class="formlisttitle">
+		[ Chess Timer: ] - (not working, still in development...)
+	</li>
+	<li class="formlistfield">
+		<b>Hours: </b><input type="text" name="newGame[chessTime]" value="0" size="8">
+	</li>
+	<li class="formlistdesc">
+		If you want a chesstimer you can enter the time each player has on it's clock here.
+	</li>
 	
 	<li class="formlisttitle">
 		<img src="images/icons/lock.png" alt="Private" /> Password protect (optional):

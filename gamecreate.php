@@ -57,6 +57,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 						,'maxTurns'
 						,'specialCDturn'
 						,'specialCDcount'
+						,'chessTime'
 						,'targetSCs'
 					);
 
@@ -154,17 +155,24 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		if ( $input['specialCDcount'] <  0 ) $input['specialCDcount'] = 0;
 		if ( $input['specialCDcount'] > 99 ) $input['specialCDcount'] = 99;
 		
+		$input['chessTime'] = (int)$input['chessTime'];
+		if ( $input['chessTime'] < 0 or $input['chessTime'] > 1440*100 )
+		{
+			throw new Exception("The chessTime value is too large or small; it must be between 0 minutes and 100 days.");
+		}
+		
 		// Create Game record & object
 		require_once('gamemaster/game.php');
 		$Game = processGame::create($input['variantID'], $input['name'], $input['password'], $input['bet'], $input['potType'], $input['phaseMinutes'], 
-										$input['joinPeriod'], $input['anon'], $input['pressType'],
-										$input['maxTurns'],
-										$input['targetSCs'],
-										$input['minRating'],
-										$input['minPhases'],
-										$input['specialCDturn'],
-										$input['specialCDcount']
-										);
+										$input['joinPeriod'], $input['anon'], $input['pressType']
+										,$input['maxTurns']
+										,$input['targetSCs']
+										,$input['minRating']
+										,$input['minPhases']
+										,$input['specialCDturn']
+										,$input['specialCDcount']
+										,$input['chessTime']
+									);
 
 		/**
 		 * Check for reliability, bevore a user can create a new game...
