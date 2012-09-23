@@ -423,15 +423,24 @@ else
 		<br /><br /><strong>Default:</strong> 0 (no fixed game duration / default number of SCs needed)
 	</li>
 
-	<li class="formlisttitle">
-		[ Chess Timer: ] - (not working, still in development...)
-	</li>
-	<li class="formlistfield">
-		<b>Hours: </b><input type="text" name="newGame[chessTime]" value="0" size="8">
-	</li>
-	<li class="formlistdesc">
-		If you want a chesstimer you can enter the time each player has on it's clock here.
-	</li>
+	<?php
+		if ($User->id == 5)
+			print '
+				<li class="formlisttitle">
+					Chess Timer:
+				</li>
+				<li class="formlistfield">
+					<b>Hours: </b><input type="text" name="newGame[chessTime]" value="0" size="8">
+				</li>
+				<li class="formlistdesc">
+					If you want a chesstimer you can enter the time each player has on it\'s clock here.
+				</li>
+			';
+		else
+			print '
+				<input type="hidden" name="newGame[chessTime]" value="0"
+			';
+	?>
 	
 	<li class="formlisttitle">
 		<img src="images/icons/lock.png" alt="Private" /> Password protect (optional):
