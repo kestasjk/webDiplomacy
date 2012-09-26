@@ -84,6 +84,21 @@ class libHTML
 		return ' <img src="images/icons/bronze.png" alt="(B)" title="Donator - bronze" />';
 	}
 
+	static function devbronze()
+	{
+		return ' <img src="images/icons/dev_bronze.png" alt="(B)" title="Developer - bronze" />';
+	}
+
+	static function devsilver()
+	{
+		return ' <img src="images/icons/dev_silver.png" alt="(B)" title="Developer - silver" />';
+	}
+
+	static function devgold()
+	{
+		return ' <img src="images/icons/dev_gold.png" alt="(B)" title="Developer - gold" />';
+	}
+
 	/**
 	 * The points icon
 	 * @return string

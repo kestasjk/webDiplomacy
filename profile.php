@@ -322,6 +322,18 @@ else
 if( $donatorMarker )
 	print '<li>&nbsp;</li><li><strong>Donator:</strong> '.$donatorMarker.'</li>';
 
+if( $UserProfile->type['DevGold'] )
+	$donatorMarker = libHTML::devgold().' - <strong>Gold</strong>';
+elseif( $UserProfile->type['DevSilver'] )
+	$donatorMarker = libHTML::devsilver().' - Silver';
+elseif( $UserProfile->type['DevBronze'] )
+	$donatorMarker = libHTML::devbronze().' - Bronze';
+else
+	$donatorMarker = false;
+
+if( $donatorMarker )
+	print '<li>&nbsp;</li><li><strong>Developer:</strong> '.$donatorMarker.'</li>';
+	
 print '<li>&nbsp;</li>';
 
 

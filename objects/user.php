@@ -484,7 +484,8 @@ class User {
 
 		// Convert an array of types this user has into an array of true/false indexed by type
 		$this->type = explode(',', $this->type);
-		$validTypes = array('System','Banned','User','Moderator','Guest','Admin','Donator','DonatorBronze','DonatorSilver','DonatorGold','DonatorPlatinum','ForumModerator');
+		$validTypes = array('System','Banned','User','Moderator','Guest','Admin','Donator','DonatorBronze','DonatorSilver','DonatorGold','DonatorPlatinum','ForumModerator'
+								,'DevBronze','DevSilver','DevGold');
 		$types = array();
 		foreach($validTypes as $type)
 		{
@@ -559,6 +560,13 @@ class User {
 			$buf .= libHTML::silver();
 		elseif( strstr($type,'DonatorBronze') )
 			$buf .= libHTML::bronze();
+			
+		if( strstr($type,'DevGold') )
+			$buf .= libHTML::devgold();
+		elseif( strstr($type,'DevSilver') )
+			$buf .= libHTML::devsilver();
+		elseif( strstr($type,'DevBronze') )
+			$buf .= libHTML::devbronze();
 
 		return $buf;
 	}

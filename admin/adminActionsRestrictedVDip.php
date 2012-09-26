@@ -24,11 +24,48 @@ class adminActionsRestrictedVDip extends adminActionsForum
 				'description' => 'Clear all cache files of all games from a given variant.',
 				'params' => array('variantID'=>'VariantID')
 			),
+			'makeDevGold' => array(
+				'name' => 'Dev: gold',
+				'description' => 'Give gold developer marker',
+				'params' => array('userID'=>'User ID'),
+			),
+			'makeDevSilver' => array(
+				'name' => 'Dev: silver',
+				'description' => 'Give silver developer marker',
+				'params' => array('userID'=>'User ID'),
+			),
+			'makeDevBronze' => array(
+				'name' => 'Dev: bronze',
+				'description' => 'Give bronze developer marker',
+				'params' => array('userID'=>'User ID'),
+			),			
 		);
 		
 		adminActions::$actions = array_merge(adminActions::$actions, $vDipActionsRestricted);
 	}
 
+	private function makeDevType(array $params, $type='') {
+		global $DB;
+
+		$userID = (int)$params['userID'];
+
+		$DB->sql_put("UPDATE wD_Users SET type = CONCAT_WS(',',type,'Dev".$type."') WHERE id = ".$userID);
+
+		return 'User ID '.$userID.' given donator status.';
+	}
+	public function makeDevGold(array $params)
+	{
+		return $this->makeDevType($params,'Gold');
+	}
+	public function makeDevSilver(array $params)
+	{
+		return $this->makeDevType($params,'Silver');
+	}
+	public function makeDevBronze(array $params)
+	{
+		return $this->makeDevType($params,'Bronze');
+	}
+	
 	public function delVariantGameCache(array $params)
 	{
 		global $DB;
