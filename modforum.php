@@ -87,7 +87,7 @@ class Message
 	 *
 	 * @return int The message ID
 	 */
-	static public function send($toID, $fromUserID, $message, $subject="", $type='Bulletin')
+	static public function send($toID, $fromUserID, $message, $subject="", $type='Bulletin', $adminReply='No')
 	{
 		global $DB, $User;
 
@@ -107,7 +107,7 @@ class Message
 		$DB->sql_put("INSERT INTO wD_ModForumMessages
 						SET toID = ".$toID.", fromUserID = ".$fromUserID.", timeSent = ".$sentTime.",
 						message = '".$message."', subject = '".$subject."', replies = 0,
-						type = '".$type."', latestReplySent = 0");
+						type = '".$type."', latestReplySent = 0, adminReply = '".$adminReply."'");
 
 		$id = $DB->last_inserted();
 
@@ -119,7 +119,7 @@ class Message
 		else
 			$DB->sql_put("UPDATE wD_ModForumMessages SET latestReplySent = id WHERE id = ".$id);
 			
-		if ( $type == 'ThreadReply' )
+		if ( $type == 'ThreadReply' && $adminReply=='No')
 		{
 			list($starter) = $DB->sql_row('SELECT fromUserID FROM wD_ModForumMessages WHERE id = '.$toID);
 			if ($starter != $fromUserID)
@@ -343,7 +343,9 @@ AND ($_REQUEST['newmessage'] != "") ) {
 							$User->id,
 							$new['message'],
 								'',
-								'ThreadReply');
+								'ThreadReply',
+								(isset($_REQUEST['ReplyAdmin']) ? 'Yes' : 'No')
+								);
 
 						$_SESSION['lastPostText']=$new['message'];
 						$_SESSION['lastPostTime']=time();
@@ -667,6 +669,7 @@ while( $message = $DB->tabl_hash($tabl) )
 			"SELECT f.id, fromUserID, f.timeSent, f.message, u.points as points, IF(s.userID IS NULL,0,1) as online,
 					u.username as fromusername, f.toID, u.type as userType, 
 					(SELECT COUNT(*) FROM wD_LikePost lp WHERE lp.likeMessageID = f.id) as likeCount, 
+					f.adminReply as adminReply ,
 					f.silenceID,
 					silence.userID as silenceUserID,
 					silence.postID as silencePostID,
@@ -690,10 +693,15 @@ while( $message = $DB->tabl_hash($tabl) )
 			$replyToID = $reply['toID'];
 			$replyID = $reply['id'];
 
+			if ($reply['adminReply']=='Yes' && !$User->type['Moderator'])
+				continue;
+
 			$replyswitch = 3-$replyswitch;//1,2,1,2,1...
 			
 			print '<div class="reply replyborder'.$replyswitch.' replyalternate'.$replyswitch.'
-				'.($replyNumber ? '' : 'reply-top').' userID'.$reply['fromUserID'].'">';
+				'.($replyNumber ? '' : 'reply-top').' userID'.$reply['fromUserID'].'"
+				'.($reply['adminReply']=='Yes' ? 'style="background-color:#ffffff;"' : '').'
+				>';
 			$replyNumber++;
 
 			print '<a name="'.$reply['id'].'"></a>';
@@ -714,7 +722,8 @@ while( $message = $DB->tabl_hash($tabl) )
 				$messageAnchor = '';
 			}
 
-			print '<div class="message-head replyalternate'.$replyswitch.' leftRule">';
+			print '<div class="message-head replyalternate'.$replyswitch.' leftRule"
+					'.($reply['adminReply']=='Yes' ? 'style="background-color:#ffffff;"' : '').'>';
 
 			if ($User->type['Moderator'] || $reply['fromUserID'] == $User->id || $reply['fromUserID'] == 5)
 				print '<strong><a href="profile.php?userID='.$reply['fromUserID'].'">'.$reply['fromusername'].' '.
@@ -752,7 +761,8 @@ while( $message = $DB->tabl_hash($tabl) )
 
 
 			print '
-				<div class="message-body replyalternate'.$replyswitch.'">
+				<div class="message-body replyalternate'.$replyswitch.'" '
+					.($reply['adminReply']=='Yes' ? 'style="background-color:#ffffff;"' : '').'>
 					<div class="message-contents" fromUserID="'.$reply['fromUserID'].'">
 						'.$reply['message'].'
 					</div>
@@ -788,8 +798,17 @@ while( $message = $DB->tabl_hash($tabl) )
 			print '<TEXTAREA NAME="newmessage" style="margin-bottom:5px;" ROWS="4">'.$_REQUEST['newmessage'].'</TEXTAREA><br />
 					<input type="hidden" value="'.libHTML::formTicket().'" name="formTicket">
 					<input type="hidden" name="page" value="'.$forumPager->pageCount.'" />
-					<input type="submit" class="form-submit" value="Post reply" name="Reply"></p></form>
-					</div>
+					<input type="submit" ';
+					
+			if (strpos($message['userType'],'Moderator')===false && $User->type['Moderator'])
+				print 'onclick="return confirm(\'Are you sure you want post this reply visible for the thread-starter too?\');"';
+							
+			print 'class="form-submit" value="Post reply" name="Reply">';
+	
+			if (strpos($message['userType'],'Moderator')===false && $User->type['Moderator'])
+				print ' - <input type="submit" class="form-submit" value="Only for admins" name="ReplyAdmin">';
+			
+			print '</p></form></div>
 					<div class="hrthin"></div>';
 		} else {
 			print '<br />';
