@@ -114,11 +114,15 @@ class Message
 		$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications, 'ModForum') WHERE type LIKE '%Moderator%' AND id != ".$fromUserID);
 		
 		if ( $type == 'ThreadReply' )
-			$DB->sql_put("UPDATE wD_ModForumMessages ".
-				"SET latestReplySent = ".$id.", replies = replies + 1 WHERE ( id=".$id." OR id=".$toID." )");
+			$DB->sql_put("UPDATE wD_ModForumMessages SET latestReplySent = ".$id.", replies = replies + 1 WHERE ( id=".$id." OR id=".$toID." )");
 		else
 			$DB->sql_put("UPDATE wD_ModForumMessages SET latestReplySent = id WHERE id = ".$id);
 			
+		if ($User->type['Moderator'] && $adminReply=='No')
+		{
+			$DB->sql_put("UPDATE wD_ModForumMessages SET status='Open' WHERE status='New' AND id = ".$toID);
+		}
+		
 		if ( $type == 'ThreadReply' && $adminReply=='No')
 		{
 			list($starter) = $DB->sql_row('SELECT fromUserID FROM wD_ModForumMessages WHERE id = '.$toID);
@@ -223,6 +227,12 @@ if( !isset($_REQUEST['page']) && isset($_REQUEST['viewthread']) && $viewthread )
 	$forumPager->currentPage = $forumPager->pageCount - floor($position/PagerForum::$defaultPostsPerPage);
 }
 
+if (isset($_REQUEST['toggleStatus']) && $User->type['Moderator'])
+{
+	list($status)=$DB->sql_row("SELECT status FROM wD_ModForumMessages WHERE id = ".$viewthread);
+	$newstatus = ($status=='Resolved' ? 'Open' : 'Resolved');
+	$DB->sql_put("UPDATE wD_ModForumMessages SET status='".$newstatus."' WHERE id = ".$viewthread);
+}
 
 if( !isset($_REQUEST['newmessage']) ) $_REQUEST['newmessage']  = '';
 if( !isset($_REQUEST['newsubject']) ) $_REQUEST['newsubject'] = '';
@@ -555,7 +565,8 @@ if( file_exists($cacheHTML) )
 $tabl = $DB->sql_tabl("SELECT
 	f.id, f.fromUserID, f.timeSent, f.message, f.subject, f.replies,
 		u.username as fromusername, u.points as points, f.latestReplySent, IF(s.userID IS NULL,0,1) as online, u.type as userType, 
-		(SELECT COUNT(*) FROM wD_LikePost lp WHERE lp.likeMessageID = f.id) as likeCount, 
+		(SELECT COUNT(*) FROM wD_LikePost lp WHERE lp.likeMessageID = f.id) as likeCount,
+		f.status as status,
 		f.silenceID,
 		silence.userID as silenceUserID,
 		silence.postID as silencePostID,
@@ -583,13 +594,15 @@ while( $message = $DB->tabl_hash($tabl) )
 	if (!$User->type['Moderator'] && $message['fromUserID'] != $User->id)
 		continue;
 	
-	if( Silence::isSilenced($message) )
-		$silence = new Silence($message);
-	else
-		unset($silence);
-		
+	if (!$User->type['Moderator'])
+	{
+		list($message['replies']) =  $DB->sql_row("SELECT count(*) FROM wD_ModForumMessages WHERE adminReply='No' AND toID = ".$message['id']);
+		list($message['latestReplySent']) = $DB->sql_row("SELECT id FROM wD_ModForumMessages WHERE (toID=".$message['id']." OR id=".$message['id'].") AND adminReply='No' ORDER BY id DESC LIMIT 1");
+	}
+	
 	print '<div class="hr userID'.$message['fromUserID'].' threadID'.$message['id'].'"></div>'; // Add the userID and threadID so muted users/threads dont create lines where their threads were
 
+	$switch = 3-$switch; // 1,2,1,2,1,2...
 	$switch = 3-$switch; // 1,2,1,2,1,2...
 
 	$messageAnchor = '<a name="'.($new['id'] == $message['id'] ? 'postbox' : $message['id']).'"></a>';
@@ -618,8 +631,13 @@ while( $message = $DB->tabl_hash($tabl) )
 		</div>';
 	
 	
-	print '<div class="message-subject">';
-
+	if ($message['status']== "New")
+		print '<div class="message-subject" style="color:#990000;">';
+	elseif ($message['status']== "Resolved")
+		print '<div class="message-subject" style="color:#888888;">';
+	else
+		print '<div class="message-subject">';
+	
 	print libHTML::forumMessage($message['id'],$message['latestReplySent']);
 	print libHTML::forumParticipated($message['id']);
 
@@ -641,9 +659,12 @@ while( $message = $DB->tabl_hash($tabl) )
 		print '<img src="images/icons/lock.png" title="'.$postLockedReason.'" /> ';
 	}
 	
-	
-	
-	print '<strong>'.$message['subject'].'</strong>';
+	if ($message['status']== "Resolved")
+		print '<strong>'.$message['subject'].' (resolved)</strong>';
+	elseif ($message['status']== "New")
+		print '<strong>'.$message['subject'].' (new)</strong>';
+	else
+		print '<strong>'.$message['subject'].'</strong>';
 
 	print '</div>
 		
@@ -795,6 +816,9 @@ while( $message = $DB->tabl_hash($tabl) )
 				print '<p class="notice">'.$messageproblem.'</p>';
 			}
 
+			if (isset($_REQUEST['toggleStatus']) && $User->type['Moderator'])
+				print '<p class="notice">Status changed to '.$newstatus.'</p>';
+	
 			print '<TEXTAREA NAME="newmessage" style="margin-bottom:5px;" ROWS="4">'.$_REQUEST['newmessage'].'</TEXTAREA><br />
 					<input type="hidden" value="'.libHTML::formTicket().'" name="formTicket">
 					<input type="hidden" name="page" value="'.$forumPager->pageCount.'" />
@@ -807,6 +831,9 @@ while( $message = $DB->tabl_hash($tabl) )
 	
 			if (strpos($message['userType'],'Moderator')===false && $User->type['Moderator'])
 				print ' - <input type="submit" class="form-submit" value="Only for admins" name="ReplyAdmin">';
+
+			if ($message['status']!= 'New' && $User->type['Moderator'])
+				print ' - <input type="submit" class="form-submit" value="Toggle Status" name="toggleStatus">';
 			
 			print '</p></form></div>
 					<div class="hrthin"></div>';
