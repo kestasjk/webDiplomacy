@@ -35,7 +35,8 @@ class DuoVariant extends WDVariant {
 	public $description='Duo is a Diplomacy variant for 2 players. The map is point symmetric, so that each player has same chances and the tactics/strategy are thus the only relevant items in the game.';
 	public $author='Frank Hegermann';
 	public $adapter='Oliver Auth';
-	public $codeVersion='0.9';
+	public $version='1.0';
+	public $codeVersion='0.10';
 	public $homepage='http://www.dipwiki.com/?title=Duo';
 
 	public $countries=array('Red','Green');
