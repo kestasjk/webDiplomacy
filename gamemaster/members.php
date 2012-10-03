@@ -88,11 +88,10 @@ class processMembers extends Members
 		global $DB;
 		list($clearTurn) = $DB->sql_row('
 			SELECT turn + 2 FROM wD_GameMessages WHERE
-				message LIKE "%voted for a Extend%" AND fromCountryID = 0 
+				message LIKE "%voted for a Extend%" AND fromCountryID = 0 AND gameID = '.$this->Game->id.'
 				ORDER BY turn DESC LIMIT 1');
 		
-		if ($clearTurn != $this->Game->turn)
-			return;
+		if ($clearTurn != $this->Game->turn) return;
 			
 		$extVoteSet=false;
 		foreach($this->ByStatus['Playing'] as $Member)
