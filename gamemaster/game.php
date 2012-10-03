@@ -593,6 +593,10 @@ class processGame extends Game
 			$this->processTime = time() + $this->phaseMinutes*60;
 
 			$DB->sql_put("UPDATE wD_Games SET processTime = ".$this->processTime." WHERE id = ".$this->id);
+			
+			// Set the "lastProcessed"-time for the chessClock
+			$this->lastProcessed = time();
+			$DB->sql_put("UPDATE wD_Games SET lastProcessed = ".$this->lastProcessed." WHERE id = ".$this->id);
 		}
 	}
 
