@@ -1,52 +1,115 @@
 <?php
-
-// If called from inside the download script print version number and exit.
-if (defined('IN_CODE')) {
-    print "0.10";
-    return;
-}
-
 define('DELETECACHE', 1);
 require_once('header.php');
 require_once('map/drawMap.php');
 ini_set('memory_limit', '14M');
 
 // all possible parameters:
-$variantID = (isset($_REQUEST['variantID'])) ? (int)$_REQUEST['variantID'] : '0';      // The Variant-ID for the map
-$terrID = (isset($_REQUEST['terrID'])) ? (int)$_REQUEST['terrID'] : '0';      // Global or only one territory
-$showmode = (isset($_REQUEST['showmode'])) ? $_REQUEST['showmode'] : 'none';   // Units, Links, None or both
-$mapmode = (isset($_REQUEST['mapmode'])) ? $_REQUEST['mapmode'] : 'all';    // zoom map or view all
-$mapsize = (isset($_REQUEST['mapsize'])) ? $_REQUEST['mapsize'] : 'small';  // large or smallmap
-$mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : 'none';   // border or territory data
-$edit = (isset($_REQUEST['edit'])) ? $_REQUEST['edit'] : 'newoff'; // view or edit data
-// new settings
-$map_x = (isset($_REQUEST['map_x'])) ? (int)$_REQUEST['map_x'] : ''; // new X coordinate
-$map_y = (isset($_REQUEST['map_y'])) ? (int)$_REQUEST['map_y'] : ''; // new Y coordinate
-$type = (isset($_REQUEST['type'])) ? $_REQUEST['type'] : ''; // new type (Land, Sea, Coast)
-$sc = (isset($_REQUEST['sc'])) ? $_REQUEST['sc'] : ''; // SupportCenter (Yes, No)
-$name = (isset($_REQUEST['name'])) ? $_REQUEST['name'] : ''; // new name
-$countryID = (isset($_REQUEST['countryID'])) ? (int)$_REQUEST['countryID'] : ''; // new countryID
-$calcxy = (isset($_REQUEST['calcxy'])) ? $_REQUEST['calcxy'] : ''; // calculate the coordinates for the largemap from the smallmap
-$calclinks = (isset($_REQUEST['calclinks'])) ? $_REQUEST['calclinks'] : ''; // calculate the links for the map
-$set_link = (isset($_REQUEST['set_link'])) ? $_REQUEST['set_link'] : ''; // change what units can pass a border
-$new_link = (isset($_REQUEST['new_link'])) ? $_REQUEST['new_link'] : ''; // add a new border
-$del_terr = (isset($_REQUEST['del_terr'])) ? $_REQUEST['del_terr'] : ''; // delte territory
+
+// The Variant-ID for the map
+$variantID = (isset($_REQUEST['variantID'])) ? (int)$_REQUEST['variantID'] : '0'; 
+
+// Global or only one territory
+$terrID = (isset($_REQUEST['terrID'])) ? (int)$_REQUEST['terrID'] : '0';      
+
+// zoom map or view all
+$mapmode = ((isset($_REQUEST['mapmode']) && $_REQUEST['mapmode'] == 'zoom') ? 'zoom' : 'all');
+
+// large or smallmap
+$mapsize = ((isset($_REQUEST['mapsize']) && $_REQUEST['mapsize'] == 'large')) ? 'large' : 'small';  
+
+// border or territory data
+$mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : 'none';   
+switch($mode) {
+	case 'units': $mode = 'units'; break;
+	case 'links': $mode = 'links'; break;
+	case 'none':
+	default:      $mode = 'none';
+}
+
+// view or edit data, or different confirm screens
+$edit = (isset($_REQUEST['edit'])) ? $_REQUEST['edit'] : 'newoff'; 
+switch($edit) {
+	case 'off':        $edit = 'off';        break;
+	case 'on':         $edit = 'on';         break;
+	case 'newon':      $edit = 'newon';      break;
+	case 'del_cache':  $edit = 'del_cache';  break;
+	case 'install':    $edit = 'install';    break;
+	case 'del_terr':   $edit = 'del_terr';   break;
+	case 'calc_links': $edit = 'calc_links'; break;
+	case 'data':       $edit = 'data';       break;
+	case 'newoff':
+	default:           $edit = 'newoff';
+}
+
+// new XY coordinates
+$map_x = isset($_REQUEST['map_x']) ? (int)$_REQUEST['map_x'] : ''; // new X coordinate
+$map_y = isset($_REQUEST['map_y']) ? (int)$_REQUEST['map_y'] : ''; // new Y coordinate
+
+// new type (Land, Sea, Coast)
+$type = (isset($_REQUEST['type'])) ? $_REQUEST['type'] : '';
+switch($type) {
+	case 'Land':  $type = 'Land';  break;
+	case 'Coast': $type = 'Coast'; break;
+	case 'Sea':   $type = 'Sea';   break;
+	default:      $type = '';
+}
+
+// SupportCenter (Yes, No)
+$sc = (isset($_REQUEST['sc'])) ? $_REQUEST['sc'] : ''; 
+switch($sc) {
+	case 'Yes': $sc = 'Yes'; break;
+	case 'No':  $sc = 'No';  break;
+	default:    $sc = '';
+}
+
+// new name
+$name = isset($_REQUEST['name']) ? $DB->escape($_REQUEST['name']) : '';
+
+// new countryID
+$countryID = isset($_REQUEST['countryID']) ? (int)$_REQUEST['countryID'] : '';
+
+// calculate the coordinates for the largemap from the smallmap
+$calcxy = (isset($_REQUEST['calcxy'])) ? $_REQUEST['calcxy'] : '';
+switch($calcxy) {
+	case 'terr': $calcxy = 'terr'; break;
+	case 'all':  $calcxy = 'all';  break;
+	default:     $calcxy = '';
+}
+
+// calculate the links for the map
+$calclinks = (isset($_REQUEST['calclinks'])) ? 'all' : ''; 
+
+// change what units can pass a border
+$set_link = (isset($_REQUEST['set_link'])) ? $_REQUEST['set_link'] : ''; 
+switch(substr($set_link, 0, 2)) {
+	case 'yn':  $set_link = 'yn'.(int)substr($set_link, 2); break; // Fleets only
+	case 'ny':  $set_link = 'ny'.(int)substr($set_link, 2); break; // Armys only
+	case 'yy':  $set_link = 'yy'.(int)substr($set_link, 2); break; // Fleets and Armys
+	case 'nn':  $set_link = 'nn'.(int)substr($set_link, 2); break; // (delete link)
+	default:    $set_link = '';
+}
+  
+$new_link = (isset($_REQUEST['new_link'])) ? (int)$_REQUEST['new_link'] : ''; // add a new border
+$del_terr = (isset($_REQUEST['del_terr'])) ? (int)$_REQUEST['del_terr'] : ''; // delte territory
+
 // Zoomoffsets:
 $zoom_x = (isset($_REQUEST['zoom_x'])) ? (int)$_REQUEST['zoom_x'] : '0'; // change the offset for the x coordinate if map is zoomed
 $zoom_y = (isset($_REQUEST['zoom_y'])) ? (int)$_REQUEST['zoom_y'] : '0'; // change the offset for the y coordinate if map is zoomed
-// VersionNumber
+
+// VersionNumber (only numbers and dots)
 $version = (isset($_REQUEST['version'])) ? $_REQUEST['version'] : ''; // Change the version number
+$version = preg_replace('/[^0-9\.]/i', '', $version);
 
-if ($variantID != 0) {
-    $variant = libVariant::loadFromVariantID($variantID);
+if ($variantID != 0)
+{
 	global $Variant;
-	$Variant=$variant;
-    $mapID = $variant->mapID;
-    libVariant::setGlobals($variant);
-}
-
-if ($variantID != 0) {
-    if (!($User->type['Admin'])) {
+    $Variant = libVariant::loadFromVariantID($variantID);
+    $mapID = $Variant->mapID;
+    libVariant::setGlobals($Variant);
+	
+    if (!($User->type['Admin']))
+	{
         if (!(array_key_exists($User->username, Config::$devs))) {
             $edit = 'off';
         } elseif (!(in_array(Config::$variants[$variantID], Config::$devs[$User->username]))) {
@@ -126,8 +189,8 @@ function write_changes() {
         $terrID = 0;
     }
     if ($calcxy != '') {
-        list($sw, $sh) = getimagesize('variants/' . $variant->name . '/resources/smallmap.png');
-        list($lw, $lh) = getimagesize('variants/' . $variant->name . '/resources/map.png');
+        list($sw, $sh) = getimagesize('variants/' . $Variant->name . '/resources/smallmap.png');
+        list($lw, $lh) = getimagesize('variants/' . $Variant->name . '/resources/map.png');
         $multix = $lw / $sw;
         $multiy = $lh / $sh;
         if ($calcxy == 'terr')
@@ -142,13 +205,12 @@ function write_changes() {
         }
     }
     if ($calclinks != '') {
-        $img = imagecreatefrompng('variants/' . $variant->name . '/resources/smallmap.png');
+        $img = imagecreatefrompng('variants/' . $Variant->name . '/resources/smallmap.png');
         $width = imagesx($img);
         $height = imagesy($img);
         $black = imagecolorallocate($img, 0, 0, 0);
 
         // make sure every territory has black borders:
-        $black = imagecolorallocate($img, 0, 0, 0);
         for ($x = 0; ($x < $width - 1); $x++) {
             for ($y = 0; ($y < $height - 1); $y++) {
                 $col1 = imagecolorat($img, $x, $y);
@@ -225,18 +287,18 @@ function write_changes() {
 
 // Check if we switch between the edit modes...
 function check_edit() {
-    global $DB, $variant, $edit, $mapID, $terrID, $variantID, $version;
+    global $DB, $Variant, $edit, $mapID, $terrID, $variantID, $version;
 
-    $inst_dir = 'variants/' . $variant->name . '/';
+    $inst_dir = 'variants/' . $Variant->name . '/';
     $inst_file = $inst_dir . 'install.php';
 
     if ($edit == 'newoff') {
         $edit = 'off';
-        if ($version != '' && $version != $variant->codeVersion) {
+        if ($version != '' && $version != $Variant->codeVersion) {
             //read the variant.php
             $str = file_get_contents($inst_dir . 'variant.php');
             // replace the versionstring
-            $str = str_replace("'" . $variant->codeVersion . "'", "'" . $version . "'", $str);
+            $str = str_replace("'" . $Variant->codeVersion . "'", "'" . $version . "'", $str);
             $fp = fopen($inst_dir . 'variant.php', 'w');
             //now, TOTALLY rewrite the file
             fwrite($fp, $str, strlen($str));
@@ -244,7 +306,7 @@ function check_edit() {
         if (!(file_exists($inst_file))) {
             libHTML::starthtml();
             print '<div class="content">';
-            print '<li class="formlisttitle">ATTENTION: Map Data for variant "' . $variant->name . '" already in editor. ';
+            print '<li class="formlisttitle">ATTENTION: Map Data for variant "' . $Variant->name . '" already in editor. ';
             print display_button_form('edit', 'del_cache', 'Delete changes');
             print ' or ';
             print display_button_form('edit', 'on', 'Keep');
@@ -255,12 +317,12 @@ function check_edit() {
     } elseif ($edit == 'newon') {
         $edit = 'on';
         if (file_exists($inst_file)) {
-            copy($inst_file, $inst_dir . 'install-save-' . date("d-m-y -- H-i-s") . '.php');
-            rename($inst_file, $inst_dir . 'install-backup.php');
+            copy($inst_file, $inst_dir . 'cache/install-save-' . date("d-m-y -- H-i-s") . '.php');
+            rename($inst_file, $inst_dir . 'cache/install-backup.php');
         } else {
             libHTML::starthtml();
             print '<div class="content">';
-            print '<li class="formlisttitle">ATTENTION: Map Data for variant "' . $variant->name . '" already in editor. ';
+            print '<li class="formlisttitle">ATTENTION: Map Data for variant "' . $Variant->name . '" already in editor. ';
             print display_button_form('edit', 'del_cache', 'Delete changes');
             print ' or ';
             print display_button_form('edit', 'on', 'Keep');
@@ -269,7 +331,7 @@ function check_edit() {
             exit;
         }
     } elseif ($edit == 'del_cache') {
-        rename($inst_dir . 'install-backup.php', $inst_file);
+        rename($inst_dir . 'cache/install-backup.php', $inst_file);
         unlink($inst_dir . 'cache/data.php');
 		$del_files = glob($inst_dir.'cache/territories*.js');
 		foreach ($del_files as $v) unlink($v);
@@ -277,7 +339,7 @@ function check_edit() {
         $terrID = '0';
         libHTML::starthtml();
         print '<div class="content">';
-        print '<li class="formlisttitle">ATTENTION: Old install.php for variant "' . $variant->name . '" restored.</li>';
+        print '<li class="formlisttitle">ATTENTION: Old install.php for variant "' . $Variant->name . '" restored.</li>';
         print display_button_form('edit', 'newoff', 'Click here to clear editor-cache and reload "live" data');
         print '<hr>';
         libHTML::footer();
@@ -291,17 +353,19 @@ function check_edit() {
         }
         fclose($handle);
         rename($inst_dir . 'install-new.php', $inst_file);
-        unlink($inst_dir . 'install-backup.php');
-        unlink($inst_dir . 'cache/data.php');
+        unlink($inst_dir . 'cache/install-backup.php');
+		unlink($inst_dir . 'cache/data.php');
 		$del_files = glob($inst_dir.'cache/territories*.js');
+		foreach ($del_files as $v) unlink($v);
+		$del_files = glob($inst_dir.'cache/*.png');
 		foreach ($del_files as $v) unlink($v);
         libHTML::starthtml();
         print '<div class="content">';
-        print '<li class="formlisttitle">ATTENTION: New install.php for variant "' . $variant->name . '" written.</li>';
+        print '<li class="formlisttitle">ATTENTION: New install.php for variant "' . $Variant->name . '" written.</li>';
         print 'Version-number: ';
         $html = '<form style="display: inline" method="get" name="edit">';
         $html .= add_form_defaults();
-        $html .= '<input type="text" name="version" value="' . $variant->codeVersion . '" size="3"> - ';
+        $html .= '<input type="text" name="version" value="' . $Variant->codeVersion . '" size="3"> - ';
         $html .= '<input type="hidden" name="edit" value="newoff">';
         $html .= '<input type="submit" class="form-submit" value="Click here to clear editor-cache, and reload "live" data" />';
         $html .= '</form>';
@@ -338,7 +402,7 @@ function check_edit() {
 			</li><li class="formlisttitle">It does create links for all neighbour territories. This might not enough or too much, depending on your map.
 			</li></ul></li>
 			</li><li class="formlisttitle">Is does not save the data in the install.php. You need to save as usuall.
-			</li><li class="formlisttitle">If you have edited other variant-data, you might cancel now and save your data bevore proceeding.
+			</li><li class="formlisttitle">If you have edited other Variant-data, you might cancel now and save your data bevore proceeding.
 			</li><li class="formlisttitle"><u>If you do not like the result you can turn edit mode off and restore the old data.</u>
 			<li class="formlisttitle">';
         $edit = 'on';
@@ -353,7 +417,7 @@ function check_edit() {
 
 function display_interface() {
 
-    global $DB, $variant, $variantID, $mapID, $terrID, $mode, $mapsize, $mapmode, $edit;
+    global $DB, $Variant, $variantID, $mapID, $terrID, $mode, $mapsize, $mapmode, $edit;
 
     // Start the page:
     libHTML::starthtml();
@@ -375,7 +439,7 @@ function display_interface() {
         print display_select_form('variantID', $all_variants, $variantID);
         $terrID = $terr_save;
     } else
-        print $variant->name . ' (locked)';
+        print $Variant->name . ' (locked)';
 
     // Print main menues:
     if ($variantID != 0) {
@@ -434,82 +498,130 @@ function display_interface() {
     }
 
     // Territory information
-    if (($terrID != '0') && ($edit == 'on') && ($mode == 'units')) {
+    if (($terrID != '0') && ($mode == 'units')) {
 
         // Get values from database
         list($type, $supply, $countryID, $x, $y, $sx, $sy) = $DB->sql_row('SELECT type,supply,countryID,mapX,mapY,smallMapX,smallMapY FROM wD_Territories WHERE mapID=' . $mapID . ' AND id=' . $terrID);
 
         //Landtype + Supply-Centers + initial occupation
         print '<li class="formlisttitle">Type: ';
-        print display_select_form('type', array('Land' => 'Land', 'Coast' => 'Coast', 'Sea' => 'Sea'), $type);
+		if ($edit != 'on')
+			print '<span style="font-weight: normal;">'.$type.'</span>';
+		else
+			print display_select_form('type', array('Land' => 'Land', 'Coast' => 'Coast', 'Sea' => 'Sea'), $type);
+			
         print ' - Supply: ';
-        print display_select_form('sc', array('Yes' => 'Yes', 'No' => 'No'), $supply);
+		if ($edit != 'on')
+			print '<span style="font-weight: normal;">'.$supply.'</span>';
+		else
+			print display_select_form('sc', array('Yes' => 'Yes', 'No' => 'No'), $supply);
+			
         print ' - Initial country: ';
-        array_unshift($variant->countries, "Neutral");
-        if ($countryID >= count($variant->countries))
-            $variant->countries[$countryID] = 'Special ID: ' . $countryID;
-        print display_select_form('countryID', $variant->countries, $countryID);
-        print ' ID: ' . display_text_form('countryID', $countryID, 1);
+        array_unshift($Variant->countries, "Neutral");
+        if ($countryID >= count($Variant->countries))
+            $Variant->countries[$countryID] = 'Special ID: ' . $countryID;
+			
+		if ($edit != 'on')
+			print '<span style="font-weight: normal;">'.$Variant->countries[$countryID].'</span>';
+		else
+			print display_select_form('countryID', $Variant->countries, $countryID). ' ID: ' . display_text_form('countryID', $countryID, 1);
+		
         print '</li>';
 
         // Coordinates:
         print '<li class="formlisttitle">';
         if ($mapsize == 'large') {
             print 'MapX: ';
-            print display_button_form('map_x', ($x - 5), '-5');
-            print display_button_form('map_x', ($x - 1), '-1');
-            print display_text_form('map_x', $x);
-            print display_button_form('map_x', ($x + 1), '+1');
-            print display_button_form('map_x', ($x + 5), '+5');
+			if ($edit != 'on')
+				print '<span style="font-weight: normal;">'.$x.'</span>';
+			else
+			{
+				print display_button_form('map_x', ($x - 5), '-5');
+				print display_button_form('map_x', ($x - 1), '-1');
+				print display_text_form('map_x', $x);
+				print display_button_form('map_x', ($x + 1), '+1');
+				print display_button_form('map_x', ($x + 5), '+5');
+			}
             print ' - MapY: ';
-            print display_button_form('map_y', ($y - 5), '-5');
-            print display_button_form('map_y', ($y - 1), '-1');
-            print display_text_form('map_y', $y);
-            print display_button_form('map_y', ($y + 1), '+1');
-            print display_button_form('map_y', ($y + 5), '+5');
-            print ' - Calculate: ';
-            print display_button_form('calcxy', 'terr', 'territory');
-            print display_button_form('calcxy', 'all', 'all unset');
+			if ($edit != 'on')
+				print '<span style="font-weight: normal;">'.$y.'</span>';
+			else
+			{
+				print display_button_form('map_y', ($y - 5), '-5');
+				print display_button_form('map_y', ($y - 1), '-1');
+				print display_text_form('map_y', $y);
+				print display_button_form('map_y', ($y + 1), '+1');
+				print display_button_form('map_y', ($y + 5), '+5');
+				print ' - Calculate: ';
+				print display_button_form('calcxy', 'terr', 'territory');
+				print display_button_form('calcxy', 'all', 'all unset');
+			}
         } else {
             print 'SmallMapX: ';
-            print display_button_form('map_x', ($sx - 1), '-');
-            print display_text_form('map_x', $sx);
-            print display_button_form('map_x', ($sx + 1), '+');
+			if ($edit != 'on')
+				print '<span style="font-weight: normal;">'.$sx.'</span>';
+			else
+			{
+				print display_button_form('map_x', ($sx - 1), '-');
+				print display_text_form('map_x', $sx);
+				print display_button_form('map_x', ($sx + 1), '+');
+			}
             print ' - SmallMapY: ';
-            print display_button_form('map_y', ($sy - 1), '-');
-            print display_text_form('map_y', $sy);
-            print display_button_form('map_y', ($sy + 1), '+');
+			if ($edit != 'on')
+				print '<span style="font-weight: normal;">'.$sy.'</span>';
+			else
+			{
+				print display_button_form('map_y', ($sy - 1), '-');
+				print display_text_form('map_y', $sy);
+				print display_button_form('map_y', ($sy + 1), '+');
+			}
         }
         print '</li>';
     }
 
     // Link-list
-    if (($edit == 'on') && ($mode == 'links')) {
+    if ($mode == 'links') {
         if ($terrID != '0') {
             $tabl = $DB->sql_tabl('SELECT a.id,a.name, armysPass, fleetsPass FROM wD_CoastalBorders c
-				INNER JOIN wD_Territories a ON ( toTerrID=a.id ) WHERE c.fromTerrID=' . $terrID . ' AND a.mapID=' . $mapID . ' AND c.mapID=' . $mapID);
+				INNER JOIN wD_Territories a ON ( toTerrID=a.id ) WHERE c.fromTerrID=' . $terrID . ' AND a.mapID=' . $mapID . ' AND c.mapID=' . $mapID . ' ORDER BY a.name ASC');
+				
+			print '<li class="formlisttitle">Links:</li><table>';
             while (list($toTerrID, $toTerrName, $armysPass, $fleetsPass) = $DB->tabl_row($tabl)) {
-                print '<li class="formlisttitle">Link: ';
                 if (($fleetsPass == 'Yes') && ($armysPass == 'No')) {
                     $def = 'yn' . $toTerrID;
+					$deftxt = 'Fleets only';
                 }
                 if (($fleetsPass == 'No') && ($armysPass == 'Yes')) {
                     $def = 'ny' . $toTerrID;
+					$deftxt = 'Armys only';
                 }
                 if (($fleetsPass == 'Yes') && ($armysPass == 'Yes')) {
                     $def = 'yy' . $toTerrID;
+					$deftxt = 'Fleets and Armys';
                 }
-                print display_select_form('set_link', array(
-                            'yn' . $toTerrID => 'Fleets only',
-                            'ny' . $toTerrID => 'Armys only',
-                            'yy' . $toTerrID => 'Fleets and Armys',
-                            'nn' . $toTerrID => '(delete link)'), $def);
-                print ' => ' . $toTerrName . '</li>';
+				
+				unset($all_terr[$toTerrID]);
+				
+				if ($edit != 'on')
+					print "<TR><TD style='padding:0;'>" . display_button_form('terrID', $toTerrID, $toTerrName) . " </TD>
+					<TD style='padding:0; width:100%'><b>=> </b> ".$deftxt.'</TD></TR>';
+				else
+					print "<TR><TD style='padding:0;'>" . display_button_form('terrID', $toTerrID, $toTerrName) .
+							" </TD><TD style='padding:0; width:100%'>=> " .display_select_form('set_link', array(
+								'yn' . $toTerrID => 'Fleets only',
+								'ny' . $toTerrID => 'Armys only',
+								'yy' . $toTerrID => 'Fleets and Armys',
+								'nn' . $toTerrID => '(delete link)'), $def) . '</TD></TR>';
             }
-            print '<li class="formlisttitle">Add Link: ';
-            print display_select_form('new_link', $all_terr, '');
-            print '</li>';
-        } else {
+			print '</table>';
+			
+			if ($edit == 'on')
+			{
+				print '<li class="formlisttitle">Add Link: ';
+				print display_select_form('new_link', $all_terr, '');
+				print '</li>';
+			}
+        } elseif ($edit == 'on') {
             print '<li class="formlisttitle">Expermental: ';
             print display_button_form('edit', 'calc_links', '(re-)calculate all borderlinks!');
             print '</li>';
@@ -524,7 +636,7 @@ function display_interface() {
 						FROM wD_Territories WHERE mapID=' . $mapID . ' AND id=' . $terrID;
             list($x, $y) = $DB->sql_row($sql);
             if ($x > 0 && $y > 0) {
-                $imgSrc = 'variants/' . $variant->name . '/resources/' . ($mapsize == 'small' ? 'small' : '') . 'map.png';
+                $imgSrc = 'variants/' . $Variant->name . '/resources/' . ($mapsize == 'small' ? 'small' : '') . 'map.png';
                 list($width, $height) = getimagesize($imgSrc);
 
                 if (($x < 300) || ($width < 600))
@@ -560,7 +672,7 @@ function display_interface() {
 
     // Show Data
     if ($edit == 'data') {
-        print " Code-Version: " . $variant->codeVersion;
+        print " Code-Version: " . $Variant->codeVersion;
         print '</li>';
         print display_button_form('edit', 'install', 'write install.php and exit edit-mode');
         print ' - ';
@@ -634,11 +746,11 @@ function remove_html($text) {
 
 function generate_install() {
 
-    global $DB, $variant;
+    global $DB, $Variant;
 
     $installPHP = array();
     $installPHP[] = '<?php';
-    $installPHP[] = '// This is file installs the map data for the ' . $variant->name . ' variant';
+    $installPHP[] = '// This is file installs the map data for the ' . $Variant->name . ' variant';
     $installPHP[] = "defined('IN_CODE') or die('This script can not be run by itself.');";
     $installPHP[] = 'require_once("variants/install.php");';
     $installPHP[] = '';
@@ -646,7 +758,7 @@ function generate_install() {
     $installPHP[] = '$countries=$this->countries;';
     $installPHP[] = '$territoryRawData=array(';
 
-    $tabl = $DB->sql_tabl("SELECT w.name, w.type, w.supply, w.countryID, w.mapX, w.mapY, w.smallMapX, w.smallMapY FROM wD_Territories w WHERE w.mapID=" . $variant->mapID . " ORDER BY w.id");
+    $tabl = $DB->sql_tabl("SELECT w.name, w.type, w.supply, w.countryID, w.mapX, w.mapY, w.smallMapX, w.smallMapY FROM wD_Territories w WHERE w.mapID=" . $Variant->mapID . " ORDER BY w.id");
     while (list($name, $type, $supply, $countryID, $mapX, $mapY, $smallMapX, $smallMapY) = $DB->tabl_row($tabl)) {
         $name = $DB->escape($name);
         $name = str_replace('\\', '\\\\\\', $name);
@@ -667,7 +779,7 @@ function generate_install() {
 
     $tabl = $DB->sql_tabl('SELECT a.name, b.name, armysPass, fleetsPass FROM wD_CoastalBorders c
 		INNER JOIN wD_Territories a ON ( fromTerrID=a.id ) INNER JOIN wD_Territories b ON ( toTerrID=b.id )
-		WHERE a.mapID=' . $variant->mapID . ' AND b.mapID=' . $variant->mapID . ' AND c.mapID=' . $variant->mapID);
+		WHERE a.mapID=' . $Variant->mapID . ' AND b.mapID=' . $Variant->mapID . ' AND c.mapID=' . $Variant->mapID);
     while (list($fromTerrName, $toTerrName, $armysPass, $fleetsPass) = $DB->tabl_row($tabl)) {
         $fromTerrName = $DB->escape($fromTerrName);
         $fromTerrName = str_replace('\\', '\\\\\\', $fromTerrName);
@@ -689,7 +801,7 @@ function generate_install() {
     $installPHP[] = '';
 
     // Check for custom footer
-    $handle = fopen('variants/' . $variant->name . '/install-backup.php', 'r');
+    $handle = fopen('variants/' . $Variant->name . '/cache/install-backup.php', 'r');
     while ((strpos(fgets($handle), 'Custom footer') === false) && (!(feof($handle)))) {
         
     }
@@ -713,12 +825,12 @@ function generate_install() {
 // Draw the map
 function draw_map() {
 
-    global $DB, $variant, $mapID, $terrID, $mode, $mapsize, $zoom_x, $zoom_y;
+    global $DB, $Variant, $mapID, $terrID, $mode, $mapsize, $zoom_x, $zoom_y;
 
     if ($mapsize == 'large')
-		$picname = 'variants/'.$variant->name.'/resources/map.png';
+		$picname = 'variants/'.$Variant->name.'/resources/map.png';
 	else
-		$picname = 'variants/'.$variant->name.'/resources/smallmap.png';
+		$picname = 'variants/'.$Variant->name.'/resources/smallmap.png';
 	$image = imagecreatefrompng($picname);
  	
 	if (imageistruecolor($image))
@@ -730,9 +842,9 @@ function draw_map() {
 	
     // Load the drawMap object for the given map type
     if ($mapsize == 'large')
-        $drawMap = $variant->drawMap(false);
+        $drawMap = $Variant->drawMap(false);
     else
-        $drawMap = $variant->drawMap(true);
+        $drawMap = $Variant->drawMap(true);
 
 		
     // Draw TerrStatus
@@ -793,10 +905,10 @@ function draw_map() {
     }
 
     $drawMap->addTerritoryNames();
-    $drawMap->write(libVariant::cacheDir($variant->name) . '/mappertool.png');
+    $drawMap->write(libVariant::cacheDir($Variant->name) . '/mappertool.png');
 
     if ($zoom_x != '0' || $zoom_y != '0') {
-        $imgSrc = 'variants/' . $variant->name . '/cache/mappertool.png';
+        $imgSrc = 'variants/' . $Variant->name . '/cache/mappertool.png';
         $img = imagecreatefrompng($imgSrc);
         $zoomImg = imagecreate(600, 300);
         imagecopy($zoomImg, $img, 0, 0, $zoom_x, $zoom_y, 600, 300);
@@ -804,7 +916,7 @@ function draw_map() {
     }
 
     unset($drawMap); // $drawMap is memory intensive and should be freed as soon as no longer needed
-    libHTML::serveImage(libVariant::cacheDir($variant->name) . '/mappertool.png');
+    libHTML::serveImage(libVariant::cacheDir($Variant->name) . '/mappertool.png');
 }
 
 ?>
