@@ -24,6 +24,11 @@ class adminActionsRestrictedVDip extends adminActionsForum
 				'description' => 'Clear all cache files of all games from a given variant.',
 				'params' => array('variantID'=>'VariantID')
 			),
+			'delInactiveVariants' => array(
+				'name' => 'Remove all inactive Variants',
+				'description' => 'Remove all games from inactive variants...',
+				'params' => array(),
+			),			
 			'makeDevGold' => array(
 				'name' => 'Dev: gold',
 				'description' => 'Give gold developer marker',
@@ -66,6 +71,21 @@ class adminActionsRestrictedVDip extends adminActionsForum
 		return $this->makeDevType($params,'Bronze');
 	}
 	
+	public function delInactiveVariants(array $params)
+	{
+		global $DB;
+		$DB->sql_put("DELETE wD_Members
+						FROM wD_Members
+						INNER JOIN wD_Games ON (wD_Games.id = wD_Members.gameID)
+						WHERE wD_Games.variantID NOT IN (".implode(',',array_keys(Config::$variants)).")");		
+		$DB->sql_put("DELETE FROM wD_Games WHERE variantID NOT IN (".implode(',',array_keys(Config::$variants)).")");
+		return 'Removed all data of all inactive variants.';		
+	}
+	public function delInactiveVariantsConfirm(array $params)
+	{
+		return 'Do you really want to remove all data of all inactive variants (can\'t be undone)?';
+	}
+
 	public function delVariantGameCache(array $params)
 	{
 		global $DB;
