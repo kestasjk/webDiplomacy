@@ -23,6 +23,7 @@
 
 	Changelog:
 	1.0:   initial version
+	1.0.1: small map-fixes...
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -36,7 +37,7 @@ class PeriklesVariant extends WDVariant {
 	public $author     = 'Mister X & Michael Golbe';
 	public $adapter    = 'Oliver Auth';
 	public $version    = '1.1';
-	public $codeVersion= '1.0';
+	public $codeVersion= '1.0.2';
 	public $homepage   = 'http://www.dipwiki.com/?title=Pericles';
 
 	public $countries=array('Aetolia','Arcolia','Attica','Boeotia','Elia','Laconia','Messenia');
@@ -50,7 +51,7 @@ class PeriklesVariant extends WDVariant {
 
 	public function initialize() {
 		parent::initialize();
-		$this->supplyCenterTarget = 34;
+		$this->supplyCenterTarget = 20;
 	}
 
 	public function turnAsDate($turn) {
