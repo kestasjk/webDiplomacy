@@ -1,5 +1,4 @@
 <?php
-
 // For security reasons fileupload and all variables are ussually discarded in header.php. Save this in constants.
 $uploadname=(isset($_FILES['upload']['name']))    ? $_FILES['upload']['name']     : '' ; // The uploaded filename
 $uploadtmp =(isset($_FILES['upload']['tmp_name']))? $_FILES['upload']['tmp_name'] : '' ; // the tmp-filename from PHP
@@ -8,33 +7,52 @@ define('UPTMP',$uploadtmp);
 
 require_once('header.php');
 
-// All possible variables:
-$variantID  =(isset($_REQUEST['variantID']))  ? $_REQUEST['variantID']  : '0'; // The Variant-ID for the map
-$action     =(isset($_REQUEST['action']))     ? $_REQUEST['action']     : '' ; // What to do
-$basedir    =(isset($_REQUEST['basedir']))    ? $_REQUEST['basedir']    : '/'; // the basedir (/, /resorces or /classes)
-$file       =(isset($_REQUEST['file']))       ? $_REQUEST['file']       : '' ; // The filename
-$updatedfile=(isset($_REQUEST['updatedfile']))? $_REQUEST['updatedfile']: '' ; // Filled with the new content after editing
-$msg        =(isset($_REQUEST['msg']))        ? $_REQUEST['msg']        : '' ; // a message to diaplay.
+// Put the values back...
+$uploadtmp = UPTMP;
 
-$uploadtmp = UPTMP; // Get the 
-$uploadname = UP;
+// The Variant-ID for the map
+$variantID = isset($_REQUEST['variantID']) ? $_REQUEST['variantID'] : '0'; 
+if (!(isset(Config::$variants[$variantID]))) $variantID = 0;
+
+// What to do
+$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : '' ; 
 
 // Users can only access these 3 directories.
-$basedir = ( (strpos($basedir,'classes') > 0) ? '/classes/' : 
-	( (strpos($basedir,'resources') > 0) ? '/resources/' : '/' ) );
+$basedir = isset($_REQUEST['basedir']) ? $_REQUEST['basedir'] : '/'; 
+switch($basedir) {
+	case '/classes/'  : $basedir = '/classes/';   break;
+	case '/resources/': $basedir = '/resources/'; break;
+	default           : $basedir = '/';
+}
 
-$file = ($file != '' ? basename($file) : basename($uploadname));
-if (!(isset(Config::$variants[$variantID]))) $variantID=0;
+// The filename (only letters, numbers and "." or "-" allowed...
+$file = isset($_REQUEST['file']) ? $_REQUEST['file'] : UP; 
+$file = preg_replace('/[^A-z0-9 \-\.]/i', '', basename($file));
 
-if ($msg == 1) $msg = 'Failed to save '.$basedir.$file.' !';
-if ($msg == 2) $msg = 'File '.$basedir.$file.' saved.';
-if ($msg == 3) $msg = 'File '.$basedir.$file.' uploaded.';
-if ($msg == 4) $msg = 'File '.$basedir.$file.' deleted.';
-if ($msg == 5) $msg = 'File '.$basedir.$file.' verified.';
-if ($msg == 6) $msg = 'Editing canceled. File '.$basedir.$file.' not saved!';
+// Filled with the new content after editing
+$updatedfile = isset($_REQUEST['updatedfile'])? $_REQUEST['updatedfile']: '' ; 
 
+// a message to diaplay.
+$msg = isset($_REQUEST['msg']) ? $_REQUEST['msg'] : '' ; 
+switch($msg) {
+	case '1'  : $msg = 'Failed to save '.$basedir.$file.' !';                  break;
+	case '2'  : $msg = 'File '.$basedir.$file.' saved.';                       break;
+	case '3'  : $msg = 'File '.$basedir.$file.' uploaded.';                    break;
+	case '4'  : $msg = 'File '.$basedir.$file.' deleted.';                     break;
+	case '5'  : $msg = 'File '.$basedir.$file.' verified.';                    break;
+	case '6'  : $msg = 'Editing canceled. File '.$basedir.$file.' not saved!'; break;
+	default   : $msg = '';
+}
+
+/*
+ * Now for the different possible actions:
+ */
+
+/*
+ * View a file
+ */
 if ($action == 'view' && $variantID != 0) {
-	$filename = "variants/" . Config::$variants[$variantID] . $basedir . '/' . $file;
+	$filename = "variants/" . Config::$variants[$variantID] . $basedir.$file;
 	if (file_exists($filename))
 	{
 		header("Content-type: text/plain; charset=utf-8");
@@ -44,6 +62,9 @@ if ($action == 'view' && $variantID != 0) {
 	exit;
 }
 
+/*
+ * Download the sourcecode in a big zip-file
+ */
 if ($action == 'download' && $variantID != '0') {
 	$variant = libVariant::loadFromVariantID($variantID);
 	$version= (isset($variant->version)?'_V'.$variant->version:'');
@@ -78,6 +99,11 @@ if ($action == 'download' && $variantID != '0') {
 	exit;
 }
 
+
+/*
+ * Show the variant-files with some edit/upload/delete  possibilities for variant developers
+ */
+ 
 libHTML::starthtml();
 print '<div class="content">';
 
@@ -119,10 +145,10 @@ foreach ( Config::$variants as $id=>$name )
 		print '<option value="'.$id.'"'.($id == $variantID ? ' selected':'').'>'.$name.'</option>';
 	}
 }
-print '</select></form>';
+print '</select></form>'.($variantID == 0 ? '</li>' : '');
 
-if ($variantID != 0) {
-
+if ($variantID != 0)
+{
 	$variantbase = "variants/" . Config::$variants[$variantID];
 
 	$edit = false;
@@ -135,16 +161,13 @@ if ($variantID != 0) {
 	print '<form style="display: inline" action="'.$_SERVER['SCRIPT_NAME'].'" method="POST">
 			<input type="hidden" name="variantID" value="'.$variantID.'" />
 			<input type="hidden" name="action" value="download" />
-			<input type="submit" value="Download as zip" /></form>';
-
+			<input type="submit" value="Download as zip" /></form>
+			</li>';
 
 	if ($edit)
 	{
-		if (!is_dir($variantbase."/backup/"))
-			mkdir ($variantbase."/backup");
-		
 		if ($msg != '')
-			print '<li class="formlisttitle">'.$msg;
+			print '<li class="formlisttitle">'.$msg.'</li>';
 			
 		if (($action == 'edit') && (file_exists ($variantbase.$basedir.$file)))
 		{	
@@ -154,7 +177,7 @@ if ($variantID != 0) {
 					<input type="submit" value="Cancel">
 					</form>
 					<form  style="display: inline" action="'. $_SERVER['SCRIPT_NAME'] .'" method="post">
-					<input type="submit" value="Save Changes">
+					<input type="submit" value="Save Changes"></li>
 					<input type="hidden" name="action" value="filesave" />
 					<input type="hidden" name="variantID" value="' . $variantID . '" />
 					<input type="hidden" name="basedir" value="'.$basedir.'"/>
@@ -164,7 +187,7 @@ if ($variantID != 0) {
 			$file2open = fopen($variantbase.$basedir.$file, "r");
 			$current_data = @fread($file2open, filesize($variantbase.$basedir.$file));
 			fclose($file2open);
-			// Recplace a "</textarea>" tag so it dows not break the layout
+			// Recplace a "</textarea>" tag so it does not break the layout
 			$current_data = str_ireplace("</textarea>", "<END-TA-DO-NOT-EDIT>", $current_data);
 			echo $current_data;
 			print '</textarea></form></div>';
@@ -174,7 +197,7 @@ if ($variantID != 0) {
 		
 		if (($action == 'filesave') && (file_exists ($variantbase.$basedir.$file)))
 		{
-			rename($variantbase.$basedir.$file, $variantbase."/backup/".date("ymd-His")."-edit-".$file);
+			rename($variantbase.$basedir.$file, $variantbase."/cache/".date("ymd-His")."-edit-".$file);
 			if (stripos($file, '(wait for verify)') === false)
 				if (!stripos($file, 'php') === false)
 					$file .= ' (wait for verify)';
@@ -194,20 +217,20 @@ if ($variantID != 0) {
 		
 		if (($action == 'delete') && (file_exists ($variantbase.$basedir.$file)))
 		{
-			rename($variantbase.$basedir.$file, $variantbase."/backup/".date("ymd-His")."-del-".$file);
+			rename($variantbase.$basedir.$file, $variantbase."/cache/".date("ymd-His")."-del-".$file);
 			echo '<script type="text/javascript">top.location.replace("'.$_SERVER['SCRIPT_NAME'].'?variantID='.$variantID.'&msg=4&file='.$file.'&basedir='.$basedir.'");</script>';
 			exit;
 		}
 
 		if ($action == 'upload') {
-			if (!($file == 'install.php' && file_exists($variantbase.'/install-backup.php')))
+			if (!($file == 'install.php' && file_exists($variantbase.'/cache/install-backup.php')))
 			{
 				if ($file != '')
 				{
 					if (file_exists ($variantbase.$basedir.$file))
-						rename($variantbase.$basedir.$file, $variantbase."/backup/".date("ymd-His")."-upl-".$file);
+						rename($variantbase.$basedir.$file, $variantbase."/cache/".date("ymd-His")."-upl-".$file);
 					if (file_exists ($variantbase.$basedir.$file.' (wait for verify)'))
-						rename($variantbase.$basedir.$file.' (wait for verify)', $variantbase."/backup/".date("ymd-His")."-upl-".$file);
+						rename($variantbase.$basedir.$file.' (wait for verify)', $variantbase."/cache/".date("ymd-His")."-upl-".$file);
 					if (!stripos($file, 'php') === false)
 						$file .= ' (wait for verify)';
 					rename ($uploadtmp, $variantbase.$basedir.$file);
@@ -261,23 +284,21 @@ if ($variantID != 0) {
 		sort($files);
 		
 		foreach ($files as $file) {
-			// Rename the install-backup.php to avoid deletion by accident...
-			if ($file=='install-backup.php') $file .= ' (locked by edit tool)';
-			
 			// Call the php and html files with a wrapper to display the content...
 			if (substr($file, -3) == 'php' || substr($file, -4) == 'html' || substr($file, -4) == 'htm')
 				print('<TD><a href="'.$_SERVER['SCRIPT_NAME'].'?variantID='.$variantID.'&action=view&file='.$file.'&basedir='.$dirname.'">'.$dirname.$file.'</a></td>');
 			else
 				print("<TD><a href=\"$variantbase$dirname$file\">$dirname$file</a></td>");
 
-			// Add a delete button if we have a developer:
 			if ($edit == 'on')
+			{
+				// Add a delete button if we have a developer:
 				print('<td><a href="' . $_SERVER['SCRIPT_NAME'].'?variantID='.$variantID.'&action=delete&file='.$file.'&basedir='.$dirname.'">Delete</a></td>');
 				
-			// Superuser can edit files:
-			if ($edit == 'on')
+				// Superuser can edit files:
 				print('<td><a href="' . $_SERVER['SCRIPT_NAME'].'?variantID='.$variantID.'&action=edit&file='.$file.'&basedir='.$dirname.'">Edit</a></td>');
-				
+			}
+			
 			// Superuser can verify files:
 			if (($User->id == 5) && substr($file, -7) == "verify)")
 				print('<td><a href="' . $_SERVER['SCRIPT_NAME'].'?variantID='.$variantID.'&action=verify&file='.$file.'&basedir='.$dirname.'">Verify</a></td>');
