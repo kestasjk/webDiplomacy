@@ -498,7 +498,7 @@ function display_interface() {
     }
 
     // Territory information
-    if (($terrID != '0') && ($mode == 'units')) {
+    if (($terrID != '0') && ($mode == 'units') && ($edit != 'data')) {
 
         // Get values from database
         list($type, $supply, $countryID, $x, $y, $sx, $sy) = $DB->sql_row('SELECT type,supply,countryID,mapX,mapY,smallMapX,smallMapY FROM wD_Territories WHERE mapID=' . $mapID . ' AND id=' . $terrID);
@@ -580,7 +580,7 @@ function display_interface() {
     }
 
     // Link-list
-    if ($mode == 'links') {
+    if ($mode == 'links' && $edit != 'data') {
         if ($terrID != '0') {
             $tabl = $DB->sql_tabl('SELECT a.id,a.name, armysPass, fleetsPass FROM wD_CoastalBorders c
 				INNER JOIN wD_Territories a ON ( toTerrID=a.id ) WHERE c.fromTerrID=' . $terrID . ' AND a.mapID=' . $mapID . ' AND c.mapID=' . $mapID . ' ORDER BY a.name ASC');
