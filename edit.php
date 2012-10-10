@@ -129,7 +129,7 @@ if (isset($_REQUEST['draw'])) {
 }
 
 function write_changes() {
-    global $DB, $mapID, $terrID, $countryID, $mapsize, $map_x, $map_y, $zoom_x, $zoom_y, $type, $sc, $name, $set_link, $new_link, $del_terr, $calcxy, $variant, $calclinks;
+    global $DB, $mapID, $terrID, $countryID, $mapsize, $map_x, $map_y, $zoom_x, $zoom_y, $type, $sc, $name, $set_link, $new_link, $del_terr, $calcxy, $Variant, $calclinks;
 
     if ($map_x != '')
         $DB->sql_put('UPDATE wD_Territories SET ' . ($mapsize == "small" ? 'small' : '') . 'MapX=' . ($map_x + $zoom_x) . ' WHERE mapID=' . $mapID . ' AND id=' . $terrID);
