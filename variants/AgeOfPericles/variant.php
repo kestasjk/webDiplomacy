@@ -24,29 +24,31 @@
 	Changelog:
 	1.0:   initial version
 	1.0.1: small map-fixes...
+	1.0.5: new starting date...
+	1.0.6: NAmecahnge: Perikles -> Pericles
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class PeriklesVariant extends WDVariant {
+class AgeOfPericlesVariant extends WDVariant {
 	public $id         = 78;
 	public $mapID      = 78;
-	public $name       = 'Perikles';
+	public $name       = 'AgeOfPericles';
 	public $fullName   = 'Age of Pericles';
-	public $description= 'War in the age of Perikles';
+	public $description= 'War in the age of Pericles';
 	public $author     = 'Mister X & Michael Golbe';
 	public $adapter    = 'Oliver Auth';
 	public $version    = '1.1';
-	public $codeVersion= '1.0.2';
+	public $codeVersion= '1.0.5';
 	public $homepage   = 'http://www.dipwiki.com/?title=Pericles';
 
 	public $countries=array('Aetolia','Arcolia','Attica','Boeotia','Elia','Laconia','Messenia');
 
 	public function __construct() {
 		parent::__construct();
-		$this->variantClasses['drawMap']            = 'Perikles';
-		$this->variantClasses['adjudicatorPreGame'] = 'Perikles';
-		$this->variantClasses['OrderInterface']     = 'Perikles';
+		$this->variantClasses['drawMap']            = 'AgeOfPericles';
+		$this->variantClasses['adjudicatorPreGame'] = 'AgeOfPericles';
+		$this->variantClasses['OrderInterface']     = 'AgeOfPericles';
 	}
 
 	public function initialize() {
@@ -56,13 +58,13 @@ class PeriklesVariant extends WDVariant {
 
 	public function turnAsDate($turn) {
 		if ( $turn==-1 ) return "Pre-game";
-		else return ( $turn % 2 ? "Autumn, " : "Spring, " ).(floor($turn/2) + 1999);
+		return ( $turn % 2 ? "Autumn, " : "Spring, " ).(-1*(floor($turn/2) - 480))." BC.";
 	}
 
 	public function turnAsDateJS() {
 		return 'function(turn) {
 			if( turn==-1 ) return "Pre-game";
-			else return ( turn%2 ? "Autumn, " : "Spring, " )+(Math.floor(turn/2) + 1999);
+			return ( turn%2 ? "Autumn, " : "Spring, " )+(-1*(Math.floor(turn/2) - 480)) +" BC.";
 		};';
 	}
 }

@@ -39,4 +39,4 @@ class CustomIcons_OrderInterface extends OrderInterface
 	}
 }
 
-class PeriklesVariant_OrderInterface extends CustomIcons_OrderInterface {}
+class AgeOfPericlesVariant_OrderInterface extends CustomIcons_OrderInterface {}

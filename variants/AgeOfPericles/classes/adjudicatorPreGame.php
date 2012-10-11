@@ -23,7 +23,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class PeriklesVariant_adjudicatorPreGame extends adjudicatorPreGame
+class AgeOfPericlesVariant_adjudicatorPreGame extends adjudicatorPreGame
 {
 	protected $countryUnits = array(
 		'Aetolia'  => array('Calydon'           =>'Fleet', 'Callium'  =>'Army' , 'Thermium'=>'Army'),

@@ -23,7 +23,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class PeriklesVariant_drawMap extends drawMap {
+class AgeOfPericlesVariant_drawMap extends drawMap {
 
 	public $countries=array('Aetolia','Arcolia','Attica','Boeotia','Elia','Laconia','Messenia');
 
