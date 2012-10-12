@@ -389,8 +389,8 @@ class libHTML
 			$variantCSS[] = '<link rel="stylesheet" href="'.STATICSRV.'variants/'.$variantName.'/resources/style.css" type="text/css" />';
 		$variantCSS=implode("\n",$variantCSS);
 		*/
-
-		$CSSname = libCache::Dirname("css")."/variants-".md5(serialize(Config::$variants)).".css";
+		$CSSname = libCache::Dirname("css")."/variants-".md5(filesize('config.php')).".css";
+		
 		if (!file_exists($CSSname))
 		{
 			$variantCSS = '';
