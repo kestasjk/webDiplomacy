@@ -19,27 +19,26 @@ $mapmode = ((isset($_REQUEST['mapmode']) && $_REQUEST['mapmode'] == 'zoom') ? 'z
 $mapsize = ((isset($_REQUEST['mapsize']) && $_REQUEST['mapsize'] == 'large')) ? 'large' : 'small';  
 
 // border or territory data
-$mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : 'none';   
+$mode = (isset($_REQUEST['mode'])) ? $_REQUEST['mode'] : 'all';   
 switch($mode) {
-	case 'units': $mode = 'units'; break;
-	case 'links': $mode = 'links'; break;
 	case 'none':
-	default:      $mode = 'none';
+	case 'units':
+	case 'links': break;
+	default: $mode = 'all';
 }
 
 // view or edit data, or different confirm screens
 $edit = (isset($_REQUEST['edit'])) ? $_REQUEST['edit'] : 'newoff'; 
 switch($edit) {
-	case 'off':        $edit = 'off';        break;
-	case 'on':         $edit = 'on';         break;
-	case 'newon':      $edit = 'newon';      break;
-	case 'del_cache':  $edit = 'del_cache';  break;
-	case 'install':    $edit = 'install';    break;
-	case 'del_terr':   $edit = 'del_terr';   break;
-	case 'calc_links': $edit = 'calc_links'; break;
-	case 'data':       $edit = 'data';       break;
-	case 'newoff':
-	default:           $edit = 'newoff';
+	case 'off':
+	case 'on':
+	case 'newon':
+	case 'del_cache':
+	case 'install':
+	case 'del_terr':
+	case 'calc_links':
+	case 'data': break;
+	default: $edit = 'newoff';
 }
 
 // new XY coordinates
@@ -108,8 +107,9 @@ if ($variantID != 0)
     $mapID = $Variant->mapID;
     libVariant::setGlobals($Variant);
 	
-    if (!($User->type['Admin']))
-	{
+	if (!isset(Config::$devs)) $edit = 'off';
+	
+    if (!($User->type['Admin']) && $edit != 'off') {
         if (!(array_key_exists($User->username, Config::$devs))) {
             $edit = 'off';
         } elseif (!(in_array(Config::$variants[$variantID], Config::$devs[$User->username]))) {
@@ -451,7 +451,7 @@ function display_interface() {
 
             // Mode
             print ' - Mode: ';
-            print display_select_form('mode', array('none' => 'None', 'units' => 'Territories', 'links' => 'Borders'), $mode);
+            print display_select_form('mode', array('all' => 'All', 'units' => 'Territories', 'links' => 'Borders','none' => 'Init'), $mode);
 
             // Edit
             print ' - Edit: ';
@@ -498,7 +498,7 @@ function display_interface() {
     }
 
     // Territory information
-    if (($terrID != '0') && ($mode == 'units') && ($edit != 'data')) {
+    if (($terrID != '0') && ($mode == 'units' || $mode == 'all') && ($edit != 'data')) {
 
         // Get values from database
         list($type, $supply, $countryID, $x, $y, $sx, $sy) = $DB->sql_row('SELECT type,supply,countryID,mapX,mapY,smallMapX,smallMapY FROM wD_Territories WHERE mapID=' . $mapID . ' AND id=' . $terrID);
@@ -580,7 +580,7 @@ function display_interface() {
     }
 
     // Link-list
-    if ($mode == 'links' && $edit != 'data') {
+    if (($mode == 'links'|| $mode == 'all') && $edit != 'data') {
         if ($terrID != '0') {
             $tabl = $DB->sql_tabl('SELECT a.id,a.name, armysPass, fleetsPass FROM wD_CoastalBorders c
 				INNER JOIN wD_Territories a ON ( toTerrID=a.id ) WHERE c.fromTerrID=' . $terrID . ' AND a.mapID=' . $mapID . ' AND c.mapID=' . $mapID . ' ORDER BY a.name ASC');
@@ -865,8 +865,26 @@ function draw_map() {
             $drawMap->countryFlag($terrID, 2);
     }
 
-    // Draw units:
-    if ($mode == 'units') {
+     // Draw links
+    if ($mode == 'links' || $mode == 'all') {
+        $sql = "SELECT fromTerrID, toTerrID, fleetsPass, armysPass
+			  FROM wD_CoastalBorders
+			  WHERE mapID=" . $mapID;
+        if ($terrID != '0')
+            $sql .= " AND (fromTerrID=" . $terrID . " OR toTerrID=" . $terrID . ")";
+        $tabl = $DB->sql_tabl($sql);
+        while ($row = $DB->tabl_hash($tabl)) {
+            if ($row['fleetsPass'] == 'Yes' && $row['armysPass'] == 'Yes')
+                $drawMap->drawSupportHold($row['fromTerrID'], $row['toTerrID'], $row['toTerrID'], true);
+            else if ($row['fleetsPass'] == 'Yes')
+                $drawMap->drawSupportMove($row['fromTerrID'], $row['toTerrID'], $row['toTerrID'], true);
+            else if ($row['armysPass'] = 'Yes')
+                $drawMap->drawMove($row['fromTerrID'], $row['toTerrID'], $row['toTerrID'], true);
+        }
+    }
+
+   // Draw units:
+    if ($mode == 'units' || $mode == 'all') {
         $sql = "SELECT id, type, countryID, coast, supply, MapX, SmallMapX
 			  FROM wD_Territories
 			  WHERE mapID=" . $mapID;
@@ -886,24 +904,7 @@ function draw_map() {
         }
     }
 
-    // Draw links
-    if ($mode == 'links') {
-        $sql = "SELECT fromTerrID, toTerrID, fleetsPass, armysPass
-			  FROM wD_CoastalBorders
-			  WHERE mapID=" . $mapID;
-        if ($terrID != '0')
-            $sql .= " AND (fromTerrID=" . $terrID . " OR toTerrID=" . $terrID . ")";
-        $tabl = $DB->sql_tabl($sql);
-        while ($row = $DB->tabl_hash($tabl)) {
-            if ($row['fleetsPass'] == 'Yes' && $row['armysPass'] == 'Yes')
-                $drawMap->drawSupportHold($row['fromTerrID'], $row['toTerrID'], $row['toTerrID'], true);
-            else if ($row['fleetsPass'] == 'Yes')
-                $drawMap->drawSupportMove($row['fromTerrID'], $row['toTerrID'], $row['toTerrID'], true);
-            else if ($row['armysPass'] = 'Yes')
-                $drawMap->drawMove($row['fromTerrID'], $row['toTerrID'], $row['toTerrID'], true);
-        }
-    }
-
+	
     $drawMap->addTerritoryNames();
     $drawMap->write(libVariant::cacheDir($Variant->name) . '/mappertool.png');
 
