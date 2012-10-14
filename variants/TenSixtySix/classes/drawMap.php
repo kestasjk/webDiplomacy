@@ -31,7 +31,7 @@ class CustomIcons_drawmap extends drawmap
 	protected function loadImages()
 	{
 		global $Game;
-		for ($i=1; $i<=4; $i++)
+		for ($i=0; $i<=4; $i++)
 		{
 			$this->army_c[$i]  = $this->loadImage('variants/TenSixtySix/resources/'.($this->smallmap ? 'small' : '').'army_' .$i.'.png');
 			$this->fleet_c[$i] = $this->loadImage('variants/TenSixtySix/resources/'.($this->smallmap ? 'small' : '').'fleet_'.$i.'.png');
@@ -57,6 +57,7 @@ class CustomIcons_drawmap extends drawmap
 	// Draw the custom icons:
 	public function addUnit($terrName, $unitType)
 	{
+		if (strpos($this->territoryNames[$terrName],' (fake)')) return;
 		$this->army  = $this->army_c[$this->unit_c[$terrName]];
 		$this->fleet = $this->fleet_c[$this->unit_c[$terrName]];
 		parent::addUnit($terrName, $unitType);

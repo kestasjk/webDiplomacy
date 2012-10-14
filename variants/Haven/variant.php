@@ -29,6 +29,7 @@
 	1.1.5: fixed: border issue
 	1.1.6: fixed: missing underworld link
 	1.1.7: fixed: missing underworld link
+	1.1.11: small improvements, so the map work with the edit-tool
 
 */
 
@@ -42,7 +43,7 @@ class HavenVariant extends WDVariant {
 	public $description= 'Epic 19 player battle in a fantasy world.';
 	public $adapter    = 'Oliver Auth';
 	public $version    = '1.1';
-	public $codeVersion= '1.1.10';
+	public $codeVersion= '1.1.11';
 	public $author     = 'Michael Sims';
 	public $homepage   = 'http://www.dipwiki.com/index.php?title=Haven';
 

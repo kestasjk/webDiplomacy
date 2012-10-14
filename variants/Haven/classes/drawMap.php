@@ -108,7 +108,7 @@ class HavenVariant_drawMap extends drawMap {
 		$this->standoff = $this->loadImage('images/icons/cross.png');
 		$this->mapNames = 'variants/Haven/resources/mapNames.png';
 
-		for ($i=1; $i<count($this->countryColors); $i++)
+		for ($i=0; $i<count($this->countryColors); $i++)
 		{
 			$this->army_c[$i] = $this->loadImage('variants/Haven/resources/army_country_'.$i.'.png');
 			$this->fleet_c[$i] = $this->loadImage('variants/Haven/resources/fleet_country_'.$i.'.png');
@@ -139,6 +139,9 @@ class HavenVariant_drawMap extends drawMap {
 			$this->unit_c[array_search($terrName. " (East Coast)"  ,$this->territoryNames)]=$countryID;
 			$this->unit_c[array_search($terrName. " (South Coast)" ,$this->territoryNames)]=$countryID;
 			$this->unit_c[array_search($terrName. " (West Coast)"  ,$this->territoryNames)]=$countryID;
+			$this->unit_c[array_search($terrName. " (Underworld)"  ,$this->territoryNames)]=$countryID;
+			$this->unit_c[array_search($terrName. " (Underworld) (2)",$this->territoryNames)]=$countryID;
+			$this->unit_c[array_search($terrName. " (2)"           ,$this->territoryNames)]=$countryID;
 			list($x, $y) = $this->territoryPositions[$terrID];
 
 			$territoryColor = imagecolorat($this->map2['image'], $x, $y);

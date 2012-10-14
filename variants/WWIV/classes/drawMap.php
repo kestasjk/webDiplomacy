@@ -43,6 +43,8 @@ class CustomCountryIcons_drawMap extends MoveFlags_drawMap
 	// Load custom icons (fleet and army) for each country
 	protected function loadImages()
 	{
+		$this->army_c[0]  = $this->loadImage('variants/WWIV/resources/armyNeutral.png');
+		$this->fleet_c[0] = $this->loadImage('variants/WWIV/resources/fleetNeutral.png');
 		for ($i=1; $i<=count($GLOBALS['Variants'][VARIANTID]->countries); $i++) {
 			$this->army_c[$i]  = $this->loadImage('variants/WWIV/resources/army' .$GLOBALS['Variants'][VARIANTID]->countries[$i-1].'.png');
 			$this->fleet_c[$i] = $this->loadImage('variants/WWIV/resources/fleet'.$GLOBALS['Variants'][VARIANTID]->countries[$i-1].'.png');

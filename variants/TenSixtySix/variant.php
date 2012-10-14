@@ -32,8 +32,7 @@
 	1.1.1: fix for the OrderArchive-Display
 	1.1.2: FoW: Hadrian's Wall + used some colors twice on the small and largemap
 	1.1.3: Memberlist now sorted by alphabet and not by value
-
-
+	1.1.4:  small improvements, so the map work with the edit-tool
 
 */
 
@@ -47,7 +46,7 @@ class TenSixtySixVariant extends WDVariant {
 	public $description= 'The year that shaped British and world history.';
 	public $author     = 'Gavin Atkinson (The Ambassador) and Emmanuele Ravaioli (Tadar Es Darden)';
 	public $adapter    = 'Gavin Atkinson / Emmanuele Ravaioli / Oliver Auth';
-	public $version    = '1.1.2';
+	public $version    = '1.1.4';
 
 	public $countries=array('English', 'Normans', 'Norwegians');
 

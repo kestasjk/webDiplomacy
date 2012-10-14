@@ -827,16 +827,17 @@ function draw_map() {
 
     global $DB, $Variant, $mapID, $terrID, $mode, $mapsize, $zoom_x, $zoom_y;
 
-    if ($mapsize == 'large')
-		$picname = 'variants/'.$Variant->name.'/resources/map.png';
-	else
-		$picname = 'variants/'.$Variant->name.'/resources/smallmap.png';
-	$image = imagecreatefrompng($picname);
- 	
-	if (imageistruecolor($image))
+	$picname = 'variants/'.$Variant->name.'/resources/'.($mapsize == 'small' ? 'small' : '').'map.png';
+
+	// If image is not indexedPNG-format convert it...
+	if (file_exists($picname))
 	{
-		imagetruecolortopalette($image, false, 200);
-		imagepng($image, $picname);
+		$image = imagecreatefrompng($picname);
+		if (imageistruecolor($image))
+		{
+			imagetruecolortopalette($image, false, 200);
+			imagepng($image, $picname);
+		}
 		imagedestroy($image);		
 	}
 	
