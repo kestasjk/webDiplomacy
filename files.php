@@ -27,7 +27,7 @@ switch($basedir) {
 
 // The filename (only letters, numbers and "." or "-" allowed...
 $file = isset($_REQUEST['file']) ? $_REQUEST['file'] : UP; 
-$file = preg_replace('/[^A-z0-9 \-\.]/i', '', basename($file));
+$file = preg_replace('/[^A-z0-9 \(\)\-\.]/i', '', basename($file));
 
 // Filled with the new content after editing
 $updatedfile = isset($_REQUEST['updatedfile'])? $_REQUEST['updatedfile']: '' ; 
