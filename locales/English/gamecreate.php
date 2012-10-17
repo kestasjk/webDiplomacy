@@ -388,7 +388,7 @@ else
 		<li><strong>Turns:</strong> How many turns this action will be in effect for. Be carefull, a turn has up to three phases.
 		Example: A two will send the country in CD for the diplomacy, retreat and build phase of the first 2 turns (usually Spring and Autumn).</li>
 		<li><strong>Delay:</strong> How much time to advertise and find a replacement player (the current phase will be extended by the current phase length that many times).
-		A zero will send the country in CD, but proceed with the turn as usual.</li>
+		A zero will send the country in CD, but proceed with the turn as usual. Countries with 1 or less SCs will not hold back the game from processing.</li>
 		</ul>
 		Any value greater 90 will set the value to &infin;, a value of 0 will set this to off.
 		<br /><br /><strong>Default:</strong> <?php print $specialCDturnsTxt;?> / <?php print $specialCDcountTxt;?>

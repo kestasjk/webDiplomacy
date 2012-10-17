@@ -543,8 +543,11 @@ class Game
 				{
 					if ($Member->missedPhases > 0)
 					{
-						$foundNMR=true;
-						if ($Member->status=='Playing') {
+						if ($Member->supplyCenterNo > 1)
+							$foundNMR=true;
+							
+						if ($Member->status=='Playing')
+						{
 							$DB->sql_put(
 								"INSERT INTO wD_CivilDisorders ( gameID, userID, countryID, turn, bet, SCCount )
 									VALUES ( ".$this->id.", ".$Member->userID.", ".$Member->countryID.", ".$this->turn.", ".$Member->bet.", ".$Member->supplyCenterNo.")"
@@ -572,7 +575,7 @@ class Game
 											attempts = 0,
 											minimumBet = ".$this->minimumBet."
 											WHERE id = ".$this->id);
-							$gameMasterText = 'Missing orders for '.$this->Variant->turnAsDate($this->turn).' ('.$this->phase.'). Extending phase.';
+							$gameMasterText = 'Missing orders for '.$this->Variant->turnAsDate($this->turn).' ('.$this->phase.') from a country with 2 or more SCs. Extending phase.';
 							$repeat = $this->specialCDcount - $extCount - 1;
 							if ($this->specialCDcount > 90)
 								$gameMasterText .= 	'The phase will extend again till you find a replacement.';
