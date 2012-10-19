@@ -48,18 +48,18 @@ $map_y = isset($_REQUEST['map_y']) ? (int)$_REQUEST['map_y'] : ''; // new Y coor
 // new type (Land, Sea, Coast)
 $type = (isset($_REQUEST['type'])) ? $_REQUEST['type'] : '';
 switch($type) {
-	case 'Land':  $type = 'Land';  break;
-	case 'Coast': $type = 'Coast'; break;
-	case 'Sea':   $type = 'Sea';   break;
-	default:      $type = '';
+	case 'Land':
+	case 'Coast':
+	case 'Sea': break;
+	default: $type = '';
 }
 
 // SupportCenter (Yes, No)
 $sc = (isset($_REQUEST['sc'])) ? $_REQUEST['sc'] : ''; 
 switch($sc) {
-	case 'Yes': $sc = 'Yes'; break;
-	case 'No':  $sc = 'No';  break;
-	default:    $sc = '';
+	case 'Yes':
+	case 'No': break;
+	default: $sc = '';
 }
 
 // new name
@@ -71,9 +71,9 @@ $countryID = isset($_REQUEST['countryID']) ? (int)$_REQUEST['countryID'] : '';
 // calculate the coordinates for the largemap from the smallmap
 $calcxy = (isset($_REQUEST['calcxy'])) ? $_REQUEST['calcxy'] : '';
 switch($calcxy) {
-	case 'terr': $calcxy = 'terr'; break;
-	case 'all':  $calcxy = 'all';  break;
-	default:     $calcxy = '';
+	case 'terr':
+	case 'all': break;
+	default: $calcxy = '';
 }
 
 // calculate the links for the map
@@ -107,10 +107,10 @@ if ($variantID != 0)
     $mapID = $Variant->mapID;
     libVariant::setGlobals($Variant);
 	
-	if (!isset(Config::$devs)) $edit = 'off';
-	
-    if (!($User->type['Admin']) && $edit != 'off') {
-        if (!(array_key_exists($User->username, Config::$devs))) {
+	if (!($User->type['Admin']) && $edit != 'off') {
+		if (!isset(Config::$devs))
+			$edit = 'off';
+        elseif (!(array_key_exists($User->username, Config::$devs))) {
             $edit = 'off';
         } elseif (!(in_array(Config::$variants[$variantID], Config::$devs[$User->username]))) {
             $edit = 'off';
@@ -169,18 +169,25 @@ function write_changes() {
         }
     }
     if ($new_link != '') {
-        $toTerrID = $new_link;
-        list($toType) = $DB->sql_row('SELECT type FROM wD_Territories WHERE id=' . $toTerrID . ' AND mapID=' . $mapID);
-        list($fromType) = $DB->sql_row('SELECT type FROM wD_Territories WHERE id=' . $terrID . ' AND mapID=' . $mapID);
-        if (($toType == 'Sea') || ($fromType == 'Sea'))
-            $move = '"Yes","No"';
-        elseif (($toType == 'Land') || ($fromType == 'Land'))
-            $move = '"No" ,"Yes"';
-        else
-            $move = '"Yes","Yes"';
-        $sql = 'INSERT INTO wD_CoastalBorders (mapID,fleetsPass,armysPass,fromTerrID,toTerrID) VALUES (' . $mapID . ',' . $move . ',';
-        $DB->sql_put($sql . $terrID . ',' . $toTerrID . ')');
-        $DB->sql_put($sql . $toTerrID . ',' . $terrID . ')');
+		if ($new_link == 9999)
+		{
+            $DB->sql_put('DELETE FROM wD_CoastalBorders WHERE mapID='.$mapID.' AND (fromTerrID='.$terrID.' OR toTerrID='.$terrID.')');
+		}
+		else
+		{
+			$toTerrID = $new_link;
+			list($toType) = $DB->sql_row('SELECT type FROM wD_Territories WHERE id=' . $toTerrID . ' AND mapID=' . $mapID);
+			list($fromType) = $DB->sql_row('SELECT type FROM wD_Territories WHERE id=' . $terrID . ' AND mapID=' . $mapID);
+			if (($toType == 'Sea') || ($fromType == 'Sea'))
+				$move = '"Yes","No"';
+			elseif (($toType == 'Land') || ($fromType == 'Land'))
+				$move = '"No" ,"Yes"';
+			else
+				$move = '"Yes","Yes"';
+			$sql = 'INSERT INTO wD_CoastalBorders (mapID,fleetsPass,armysPass,fromTerrID,toTerrID) VALUES (' . $mapID . ',' . $move . ',';
+			$DB->sql_put($sql . $terrID . ',' . $toTerrID . ')');
+			$DB->sql_put($sql . $toTerrID . ',' . $terrID . ')');
+		}
     }
     if ($del_terr != '') {
         $DB->sql_put('DELETE FROM wD_CoastalBorders WHERE   toTerrID=' . $del_terr . ' AND mapID=' . $mapID);
@@ -618,6 +625,7 @@ function display_interface() {
 			if ($edit == 'on')
 			{
 				print '<li class="formlisttitle">Add Link: ';
+				$all_terr['9999']='(delete all links)';
 				print display_select_form('new_link', $all_terr, '');
 				print '</li>';
 			}
