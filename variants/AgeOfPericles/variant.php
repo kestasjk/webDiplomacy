@@ -39,7 +39,7 @@ class AgeOfPericlesVariant extends WDVariant {
 	public $author     = 'Mister X & Michael Golbe';
 	public $adapter    = 'Oliver Auth';
 	public $version    = '1.1';
-	public $codeVersion= '1.0.5';
+	public $codeVersion= '1.0.6';
 	public $homepage   = 'http://www.dipwiki.com/?title=Pericles';
 
 	public $countries=array('Aetolia','Arcolia','Attica','Boeotia','Elia','Laconia','Messenia');
