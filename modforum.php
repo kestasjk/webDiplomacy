@@ -63,13 +63,15 @@ class Message
 		$patterns = array(
 				'/gameID[:= _]?([0-9]+)/i',
 				'/userID[:= _]?([0-9]+)/i',
-				'/threadID[:= _]?([0-9]+)/i',
+				'#modforum.php.threadID[:= _]?([0-9]+)#i',
+				'#/forum.php.*threadID[:= _]?([0-9]+)#i',
 				'/((?:[^a-z0-9])|(?:^))([0-9]+) ?(?:(?:D)|(?:points))((?:[^a-z])|(?:$))/i',
 			);
 		$replacements = array(
 				'<a href="board.php?gameID=\1" class="light">gameID=\1</a>',
 				'<a href="profile.php?userID=\1" class="light">userID=\1</a>',
-				'<a href="modforum.php?threadID=\1#\1" class="light">threadID=\1</a>',
+				'modforum.php?<a href="modforum.php?threadID=\1#\1" class="light">threadID=\1</a>',
+				'/forum.php?<a href="forum.php?threadID=\1#\1" class="light">threadID=\1</a>',
 				'\1\2'.libHTML::points().'\3'
 			);
 
