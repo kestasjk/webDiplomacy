@@ -315,6 +315,7 @@ class libHome
 				$username = 'Anon';
 				$userID = 0;
 				$points = '??';
+				$userType = 'User';
 			}
 			// End anonymizer
 			

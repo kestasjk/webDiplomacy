@@ -400,6 +400,7 @@ while( $message = $DB->tabl_hash($tabl) )
 			$message['fromusername'] = 'Anon';
 			$message['fromUserID'] = 0;
 			$message['points'] = '??';
+			$message['userType'] = 'User';
 		}
 		else
 			$message['fromusername'] = $message['fromusername'].' (Anon)';
@@ -551,6 +552,7 @@ while( $message = $DB->tabl_hash($tabl) )
 					$reply['fromusername'] = 'Anon';
 					$reply['fromUserID'] = 0;
 					$reply['points'] = '??';
+					$reply['userType'] = 'User';
 				}
 				else
 					$reply['fromusername'] = $reply['fromusername'].' (Anon)';
