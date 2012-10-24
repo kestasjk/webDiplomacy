@@ -34,7 +34,8 @@ class ClassicChaoctopiVariant extends WDVariant {
 	public $description='The Chaoctopi variant is a Chaos game with Octopus moves.';
 	public $author     ='kaner406';
 	public $adapter    ='Emmanuele Ravaioli / Carey Jensen / Oliver Auth';
-	public $version    ='1.0';
+	public $version    ='1.0.1';
+	public $codeVersion='1.0.1';
 
 	public $countries=array(
 		'Ankara'       , 'Belgium', 'Berlin'  , 'Brest'    , 'Budapest', 'Bulgaria'  , 'Constantinople', 'Denmark', 'Edinburgh',

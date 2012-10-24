@@ -379,14 +379,30 @@ class Chatbox
 					$messagestxt .=  '(To: <strong>'.$this->countryName($message['toCountryID']).'</strong>'.$fromtxt.') - ';
 			}
 
+			// Display the country name in front of the text (for colorblind people)
+			if ( $User->showCountryNames == 'Yes')
+				$messagestxt .=  '<span style="color: grey;">';
+			
 			if ( $message['turn'] < $Game->turn )
 			{
 				$messagestxt .= '<strong>'.$Game->datetxt($message['turn']).'</strong>: ';
 			}
 
+			if ( $User->showCountryNames == 'Yes')
+				$messagestxt .=  '<span style="color: black;">';
+
 			if( is_object($Member) && $message['fromCountryID'] == $Member->countryID )
 				$message['message'] = '<span class="messageFromMe">'.$message['message'].'</span>';
 
+			// Display the country name in front of the text (for colorblind people)
+			if ( $User->showCountryNames == 'Yes')
+			{
+				if(isset($Member) && $Member->countryID == $message['fromCountryID'])
+					$messagestxt .=  '<strong>You:</strong> ';
+				elseif( $message['fromCountryID'] != 0 )
+					$messagestxt .=  '<strong>'.$this->countryName($message['fromCountryID']).':</strong> ';
+			}
+				
 			$messagestxt .= $message['message'].
 					'</TD>
 				</TR>';

@@ -88,6 +88,16 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		<?php if ( !$User->type['User'] ) print '<strong>(Optional)</strong>: '; ?>
 		A comment you would like to make in your profile. eg Your AIM username or ICQ number.
 	</li>
+	
+	<li class="formlisttitle">Show countryname in game chat (Useful for colorblind people.):</li>
+	<li class="formlistfield">
+		<input type="radio" name="userForm[showCountryNames]" value="Yes" <?php if($User->showCountryNames=='Yes') print "checked"; ?>>Yes
+		<input type="radio" name="userForm[showCountryNames]" value="No" <?php if($User->showCountryNames=='No') print "checked"; ?>>No
+	</li>
+	<li class="formlistdesc">
+		Instead of colored chatmessages print the countryname in front of the text and use only black text.
+	</li>
+	
 <?php
 
 if( $User->type['User'] ) {

@@ -30,7 +30,8 @@ class AlacavreVariant extends wdVariant {
 	public $fullName='Alacavre';
 	public $description='A balanced 7-player variant. Well worth a game.  If you have any questions, interests, things you want changed on the map etc, then please let us know directly rather than bringing it up on any of the forums';
 	public $author='Figlesquidge (assisted by Ghostmaker). contact figlesquidge@gmail.com';
-
+	public $codeVersion='1.0.1';
+	
 	public $countries=array('Ithsomn','Shinto','Quiom','Maroe','Oz','Namaq','Payashk');
 
 	public function __construct() {

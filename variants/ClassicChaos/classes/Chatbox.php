@@ -35,7 +35,10 @@ class ClassicChaosVariant_Chatbox extends Chatbox {
 	}
 
 	public function renderMessages($msgCountryID, $messages) {
-		global $Member;
+		global $Member, $User;
+		
+		if (isset($User->showCountryNames) && $User->showCountryNames == 'Yes')
+			return parent::renderMessages($msgCountryID, $messages);
 
 		for($i=0; $i<count($messages); $i++)
 			if( $messages[$i]['fromCountryID']!=0)
