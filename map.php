@@ -43,6 +43,19 @@ if( isset($_REQUEST['hideMoves']))
 else
 	define('HIDEMOVES',0);
 
+// Check if we need to color enhance the map
+if( isset($_REQUEST['colorCorrect']))
+{
+	switch($_REQUEST['colorCorrect']) {
+		case 'Protanope':   define('COLORCORRECT','Protanope');   break;
+		case 'Deuteranope': define('COLORCORRECT','Deuteranope'); break;
+		case 'Tritanope':   define('COLORCORRECT','Tritanope');   break;
+		default: define('COLORCORRECT',0);
+	}
+}
+else
+	define('COLORCORRECT',0);
+
 if( !IGNORECACHE )
 {
 	// We might be able to fetch the map from the cache
@@ -55,7 +68,10 @@ if( !IGNORECACHE )
 	// Map without arrows 
 	if (HIDEMOVES)
 		$filename = str_replace(".map","-hideMoves.map",$filename);
-
+	
+	if (COLORCORRECT)
+		$filename = str_replace(".map","-".COLORCORRECT.".map",$filename);
+	
 	if( file_exists($filename) )
 	{
 		header("Last-Modified: Mon, 26 Jul 1997 05:00:00 GMT");
@@ -433,6 +449,14 @@ if (HIDEMOVES)
 
 if( defined('DATC') && $mapType!='small')
 	$drawMap->saveThumbnail($filename.'-thumb');
+
+// colorCorrect Patch
+if (COLORCORRECT)
+{
+	$filename = str_replace(".map","-".COLORCORRECT.".map",$filename);
+	$drawMap->colorEnhance(COLORCORRECT);
+}
+// End colorCorrect Patch
 
 $drawMap->write($filename);
 unset($drawMap); // $drawMap is memory intensive and should be freed as soon as no longer needed

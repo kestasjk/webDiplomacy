@@ -105,6 +105,10 @@ function loadMap(gameID, currentTurn, newTurn)
 	// Add the Hide parameter if we have HideMoves activated
 	newTurn = newTurn + noMoves
 	
+	// Add the colorCorrect Prameter if set
+	if(window.colorCorrect !== undefined)
+		newTurn = newTurn + colorCorrect
+	
 	// Update the link to the large map
 	$('LargeMapLink').innerHTML = 
 			' <a href="map.php?gameID='+gameID+'&turn='+newTurn+'&mapType=large" target="blank" class="light">'+

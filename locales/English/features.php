@@ -54,6 +54,10 @@ $globalFaq = array(
 		"You can make an anonymous post in the forum (to search for players in an anon game for example) by linking to an anon game.
 		If you link to the game in the subject line all posts are labeled as anon, if you link to an anon game in the post only this post is anon.
 		Be careful, the mods still can see your real username, so don't misuse this feature.",
+	"Color enhancer for colorblind people" =>
+		"On the settings page you can select between 3 different types of colorblindnes to enhance the map of each variant.",
+	"Always show country-name in global chat" =>
+		"On the settings page you can select to always display the country name in front of each chatline.",
 		
 "Reliability-rating" => "Sub-section",
 	"What's this numbers behind my name?" =>

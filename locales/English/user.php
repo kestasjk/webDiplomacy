@@ -97,6 +97,19 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	<li class="formlistdesc">
 		Instead of colored chatmessages print the countryname in front of the text and use only black text.
 	</li>
+
+	<li class="formlisttitle">Color vision deficiency setting:</li>
+	<li class="formlistfield">
+		<select name="userForm[colorCorrect]">
+			<option value='Off'        <?php if($User->colorCorrect=='Off')         print "selected"; ?>>Off</option>
+			<option value='Protanope'  <?php if($User->colorCorrect=='Protanope')   print "selected"; ?>>Protanope</option>
+			<option value='Deuteranope'<?php if($User->colorCorrect=='Deuteranope') print "selected"; ?>>Deuteranope</option>
+			<option value='Tritanope'  <?php if($User->colorCorrect=='Tritanope')   print "selected"; ?>>Tritanope</option>
+		</select>
+	</li>
+	<li class="formlistdesc">
+		Does enhance the colors of the maps for different types of color blindness. (Does not work for the Haven variant, sorry)
+	</li>
 	
 <?php
 

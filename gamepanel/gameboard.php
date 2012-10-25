@@ -31,11 +31,22 @@ require_once('gamepanel/game.php');
 class panelGameBoard extends panelGame
 {
 	function mapHTML() {
+	
+		global $User;
+		
 		$mapTurn = (($this->phase=='Pre-game'||$this->phase=='Diplomacy') ? $this->turn-1 : $this->turn);
 		$smallmapLink = 'map.php?gameID='.$this->id.'&turn='.$mapTurn;
 		$largemapLink = $smallmapLink.'&mapType=large';
 
 		$staticFilename=Game::mapFilename($this->id, $mapTurn, 'small');
+		
+		if ($User->colorCorrect != 'Off')
+		{
+			$staticFilename = str_replace(".map","-".$User->colorCorrect.".map",$staticFilename);
+			$smallmapLink .= '&colorCorrect='.$User->colorCorrect;
+			$largemapLink .= '&colorCorrect='.$User->colorCorrect;
+		}
+		
 		if( file_exists($staticFilename) )
 			$smallmapLink = STATICSRV.$staticFilename.'?nocache='.rand(0,99999);
 
@@ -69,12 +80,17 @@ class panelGameBoard extends panelGame
 		</div>
 ';
 
+		if ($User->colorCorrect != 'Off')
+			$map .= '<script type="text/javascript">var colorCorrect="&colorCorrect='.$User->colorCorrect.'";</script>';
+
 		$this->mapJS($mapTurn);
 
 		return $map;
 	}
 
-	protected function mapJS($mapTurn) {
+	protected function mapJS($mapTurn)
+	{
+
 		libHTML::$footerScript[] = 'turnToText='.$this->Variant->turnAsDateJS()."
 		mapArrows($mapTurn,$mapTurn);
 		";

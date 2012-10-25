@@ -203,6 +203,11 @@ class User {
 	 */
 	public $showCountryNames;	
 	
+	/*
+	 * Enhance the map-colors for colorblind people...
+	 */
+	public $colorCorrect;	
+	
 	/**
 	 * 'No' if the player can submit mod reports, 'Yes' if they are muted
 	 * @var string
@@ -339,6 +344,7 @@ class User {
 
 		$available = array('username'=>'', 'password'=>'', 'passwordcheck'=>'', 'email'=>'',
 					'showCountryNames'=>'',
+					'colorCorrect'=>'',
 					'hideEmail'=>'','showEmail'=>'', 'locale'=>'','homepage'=>'','comment'=>'');
 
 		$userForm = array();
@@ -415,6 +421,18 @@ class User {
 			else
 				$SQLVars['showCountryNames'] = "No";
 		}
+		
+		if( isset($userForm['colorCorrect']) )
+		{
+			if ( $userForm['colorCorrect'] == "Protanope" )
+				$SQLVars['colorCorrect'] = "Protanope";
+			elseif ( $userForm['colorCorrect'] == "Deuteranope" )
+				$SQLVars['colorCorrect'] = "Deuteranope";
+			elseif ( $userForm['colorCorrect'] == "Tritanope" )
+				$SQLVars['colorCorrect'] = "Tritanope";
+			else
+				$SQLVars['colorCorrect'] = "Off";
+		}
 
 		if( isset($userForm['locale']) )
 		{
@@ -482,6 +500,7 @@ class User {
 			u.gamesLeft,
 			u.rlGroup,
 			u.showCountryNames,
+			u.colorCorrect,
 			u.leftBalanced,			
 			IF(s.userID IS NULL,0,1) as online
 			FROM wD_Users u
