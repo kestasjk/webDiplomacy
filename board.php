@@ -241,7 +241,7 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 	}
 }
 
-if ( 'Pre-game' != $Game->phase && $Game->pressType!='NoPress' && ( isset($Member) || $User->type['Moderator'] ) )
+if ( ('Pre-game' != $Game->phase && $Game->pressType!='NoPress' && isset($Member)) || $User->type['Moderator'] && !isset($Member) )
 {
 	$CB = $Game->Variant->Chatbox();
 
@@ -258,6 +258,18 @@ if ( 'Pre-game' != $Game->phase && $Game->pressType!='NoPress' && ( isset($Membe
 
 	libHTML::$footerScript[] = 'makeFormsSafe();';
 }
+
+/*
+ * Display the chatbox in gunboat games if there are unread system messages
+ */
+if ( isset($Member) && count($Member->newMessagesFrom) > 0 && $Game->pressType=='NoPress')
+{
+	$CB = $Game->Variant->Chatbox();
+	$forum = $CB->output(0);
+	$Member->seen(0);
+	unset($CB);
+}
+
 
 /*
  * Pregame-chat hack
