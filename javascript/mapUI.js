@@ -108,6 +108,10 @@ function loadMap(gameID, currentTurn, newTurn)
 	// Add the colorCorrect Prameter if set
 	if(window.colorCorrect !== undefined)
 		newTurn = newTurn + colorCorrect
+		
+	// Add the colorCorrect Prameter if set
+	if(window.showCountryNamesMap !== undefined)
+		newTurn = newTurn + "&countryNames"
 	
 	// Update the link to the large map
 	$('LargeMapLink').innerHTML = 

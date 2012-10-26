@@ -198,10 +198,11 @@ class User {
 	public $rlGroup;
 	
 	/*
-	 * Does the player want to display the country names in the global chatbox ('Yes' or 'No') 
+	 * Does the player want to display the country names in the global chatbox or on the map ('Yes' or 'No') 
 	 * usefull for colorblind people
 	 */
 	public $showCountryNames;	
+	public $showCountryNamesMap;	
 	
 	/*
 	 * Enhance the map-colors for colorblind people...
@@ -344,6 +345,7 @@ class User {
 
 		$available = array('username'=>'', 'password'=>'', 'passwordcheck'=>'', 'email'=>'',
 					'showCountryNames'=>'',
+					'showCountryNamesMap'=>'',
 					'colorCorrect'=>'',
 					'hideEmail'=>'','showEmail'=>'', 'locale'=>'','homepage'=>'','comment'=>'');
 
@@ -422,6 +424,14 @@ class User {
 				$SQLVars['showCountryNames'] = "No";
 		}
 		
+		if( isset($userForm['showCountryNamesMap']) )
+		{
+			if ( $userForm['showCountryNamesMap'] == "Yes" )
+				$SQLVars['showCountryNamesMap'] = "Yes";
+			else
+				$SQLVars['showCountryNamesMap'] = "No";
+		}
+			
 		if( isset($userForm['colorCorrect']) )
 		{
 			if ( $userForm['colorCorrect'] == "Protanope" )
@@ -500,6 +510,7 @@ class User {
 			u.gamesLeft,
 			u.rlGroup,
 			u.showCountryNames,
+			u.showCountryNamesMap,
 			u.colorCorrect,
 			u.leftBalanced,			
 			IF(s.userID IS NULL,0,1) as online

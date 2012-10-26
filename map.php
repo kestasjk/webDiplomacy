@@ -56,6 +56,12 @@ if( isset($_REQUEST['colorCorrect']))
 else
 	define('COLORCORRECT',0);
 
+// Check if we need to show CountryNames
+if( isset($_REQUEST['countryNames']))
+	define('COUNTRYNAMES',1);
+else
+	define('COUNTRYNAMES',0);
+
 if( !IGNORECACHE )
 {
 	// We might be able to fetch the map from the cache
@@ -69,8 +75,13 @@ if( !IGNORECACHE )
 	if (HIDEMOVES)
 		$filename = str_replace(".map","-hideMoves.map",$filename);
 	
+	// ColorEnhance for colorblind:
 	if (COLORCORRECT)
 		$filename = str_replace(".map","-".COLORCORRECT.".map",$filename);
+	
+	// Add countrynames for colorblind:
+	if (COUNTRYNAMES)
+		$filename = str_replace(".map","-names.map",$filename);
 	
 	if( file_exists($filename) )
 	{
@@ -180,6 +191,7 @@ if( $turn==-1 )
 {
 	// Pre-game; just draw country default terrstatus
 	$sql = "SELECT t.id, t.name, t.type, t.countryID, 'No' as standoff
+			, t.supply
 			FROM wD_Territories t
 			WHERE (t.coast='No' OR t.coast='Parent') AND mapID=".$Variant->mapID;
 }
@@ -187,6 +199,7 @@ else
 {
 	$sql = "SELECT t.id, t.name, t.type, ts.countryID, ts.standoff
 			/* Territories are selected first, not TerrStatus, so that unoccupied territories can be drawn neutral */
+			, t.supply
 			FROM wD_Territories t
 			LEFT JOIN wD_TerrStatusArchive ts
 				ON ( ts.gameID = ".$Game->id." AND ts.turn = ".$turn." AND ts.terrID = t.id )
@@ -197,7 +210,7 @@ else
 
 $tabl = $DB->sql_tabl($sql);
 $owners = array();
-while(list($terrID, $terrName, $terrType, $countryID, $standoff) = $DB->tabl_row($tabl))
+while(list($terrID, $terrName, $terrType, $countryID, $standoff, $supply) = $DB->tabl_row($tabl))
 {
 	if ( $terrType == 'Sea' )
 	{
@@ -211,6 +224,9 @@ while(list($terrID, $terrName, $terrType, $countryID, $standoff) = $DB->tabl_row
 		$owners[$terrID] = $countryID;
 
 		$drawMap->colorTerritory($terrID, $countryID);
+		
+		if (COUNTRYNAMES && $supply == 'Yes')
+			$drawMap->addCountryName($terrID, $countryID);
 	}
 
 	if (isset($Game) && $Game->phase == 'Retreats' or $mapType!='small' )
@@ -401,6 +417,9 @@ while(list($moveType, $terrID,
 		}
 
 		$drawMap->addUnit($drawToTerrID, $unitType);
+
+		if (COUNTRYNAMES)
+			$drawMap->addCountryName($drawToTerrID, $owners[$Game->Variant->deCoast($drawToTerrID)], $countryID, ($unitType=='Fleet'?'F':'A'));			
 	}
 }
 
@@ -457,6 +476,10 @@ if (COLORCORRECT)
 	$drawMap->colorEnhance(COLORCORRECT);
 }
 // End colorCorrect Patch
+
+// Add countrynames for colorblind:
+if (COUNTRYNAMES)
+	$filename = str_replace(".map","-names.map",$filename);
 
 $drawMap->write($filename);
 unset($drawMap); // $drawMap is memory intensive and should be freed as soon as no longer needed

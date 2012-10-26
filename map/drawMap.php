@@ -531,14 +531,14 @@ abstract class drawMap
 	 * @param int $y The y position to center it at
 	 * @param bool[optional] $large If true the text will be large, default is false
 	 */
-	protected function drawText($text, $x, $y, $large=false, $topRight=false)
+	protected function drawText($text, $x, $y, $large=false, $topRight=false, $drawBox=false)
 	{
 		$size = ( $large ? 'largeSize' : 'size' );
 
 		$boundingBox = imageftbbox($this->font[$size],
 									0, $this->font['file'], $text);
 
-		$width = $boundingBox[4];
+		$width  = $boundingBox[4];
 		$height = $boundingBox[5];
 
 		if( $topRight )
@@ -548,9 +548,25 @@ abstract class drawMap
 		}
 		else
 			list($x, $y) = $this->absolutePosition($x, $y, $width, $height);
-
-		imagefttext($this->map['image'], $this->font[$size],
+		
+		$box = array();
+		$box = imagefttext($this->map['image'], $this->font[$size],
 					0.0, $x, $y, $this->font['color'], $this->font['file'], $text);
+					
+		if ($drawBox)
+		{
+			$borderBlack = $this->color(array(  0,   0,   0));
+			$borderWhite = $this->color(array(254, 254, 254));
+
+			imagefilledrectangle($this->map['image'], $box[6] - 1, $box[7] - 2, $box[2] + 2, $box[3] + 1, $borderBlack);
+			imagefilledrectangle($this->map['image'], $box[6]    , $box[7] - 1, $box[2] + 1, $box[3]    , $borderWhite);
+			
+			imagefttext($this->map['image'], $this->font[$size],
+					0.0, $x, $y, $this->font['color'], $this->font['file'], $text);
+			
+		}
+
+					
 	}
 
 	/**
@@ -1188,6 +1204,34 @@ abstract class drawMap
  			}
 		}
  	}
+
+ 	public function addCountryName($terrID, $ownerCountryID, $unitCountryID=0, $unitName='')
+	{
+		global $Variant;
+		$ownerCountryName = ($ownerCountryID != 0 ? $Variant->countries[$ownerCountryID - 1] : '');
+		$unitCountryName  = ($unitCountryID  != 0 ? $Variant->countries[$unitCountryID  - 1] : '');
+		
+		if ($this->smallmap)
+		{
+			$ownerCountryName = substr($ownerCountryName,0,3);
+			$unitCountryName  = substr($unitCountryName, 0,3);
+		}
+		
+		if ($ownerCountryName != $unitCountryName && $unitCountryName != '' && $ownerCountryName != '')
+			$text = 'T:'.$ownerCountryName.' / U:'.$unitCountryName;
+		elseif ($ownerCountryName == $unitCountryName)
+			$text = $unitName. ($unitName==''?'':':') .$unitCountryName;
+		else
+			$text = ($unitCountryName == '' ? $ownerCountryName : $unitName.':'.$unitCountryName);
+		
+		if ($text != '')
+		{
+			list($x, $y) = $this->territoryPositions[$terrID];
+			if (!$this->smallmap)
+				$y += 3;
+			$this->drawText($text, $x, $y, false, false, true);
+		}
+	}
 	
 	public function colorEnhance($type)
 	{

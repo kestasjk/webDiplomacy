@@ -46,6 +46,13 @@ class panelGameBoard extends panelGame
 			$smallmapLink .= '&colorCorrect='.$User->colorCorrect;
 			$largemapLink .= '&colorCorrect='.$User->colorCorrect;
 		}
+
+		if ($User->showCountryNamesMap == 'Yes')
+		{
+			$staticFilename = str_replace(".map","-names.map",$staticFilename);
+			$smallmapLink .= '&countryNames';
+			$largemapLink .= '&countryNames';
+		}
 		
 		if( file_exists($staticFilename) )
 			$smallmapLink = STATICSRV.$staticFilename.'?nocache='.rand(0,99999);
@@ -83,6 +90,9 @@ class panelGameBoard extends panelGame
 		if ($User->colorCorrect != 'Off')
 			$map .= '<script type="text/javascript">var colorCorrect="&colorCorrect='.$User->colorCorrect.'";</script>';
 
+		if ($User->showCountryNamesMap != 'No')
+			$map .= '<script type="text/javascript">var showCountryNamesMap=true;</script>';
+			
 		$this->mapJS($mapTurn);
 
 		return $map;

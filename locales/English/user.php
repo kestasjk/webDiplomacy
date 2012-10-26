@@ -89,13 +89,20 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		A comment you would like to make in your profile. eg Your AIM username or ICQ number.
 	</li>
 	
-	<li class="formlisttitle">Show countryname in game chat (Useful for colorblind people.):</li>
+	<li class="formlisttitle">Show countryname (useful for colorblind people.):</li>
 	<li class="formlistfield">
+		<strong>In global chat:</strong>
 		<input type="radio" name="userForm[showCountryNames]" value="Yes" <?php if($User->showCountryNames=='Yes') print "checked"; ?>>Yes
-		<input type="radio" name="userForm[showCountryNames]" value="No" <?php if($User->showCountryNames=='No') print "checked"; ?>>No
+		<input type="radio" name="userForm[showCountryNames]" value="No"  <?php if($User->showCountryNames=='No')  print "checked"; ?>>No
+	</li>
+	<li class="formlistfield">
+		<strong>On the map:</strong>
+		<input type="radio" name="userForm[showCountryNamesMap]" value="Yes" <?php if($User->showCountryNamesMap=='Yes') print "checked"; ?>>Yes
+		<input type="radio" name="userForm[showCountryNamesMap]" value="No"  <?php if($User->showCountryNamesMap=='No')  print "checked"; ?>>No
 	</li>
 	<li class="formlistdesc">
 		Instead of colored chatmessages print the countryname in front of the text and use only black text.
+		Print the countryname on the map.
 	</li>
 
 	<li class="formlisttitle">Color vision deficiency setting:</li>
