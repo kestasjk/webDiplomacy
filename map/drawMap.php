@@ -1208,8 +1208,8 @@ abstract class drawMap
  	public function addCountryName($terrID, $ownerCountryID, $unitCountryID=0, $unitName='')
 	{
 		global $Variant;
-		$ownerCountryName = ($ownerCountryID != 0 ? $Variant->countries[$ownerCountryID - 1] : '');
-		$unitCountryName  = ($unitCountryID  != 0 ? $Variant->countries[$unitCountryID  - 1] : '');
+		$ownerCountryName = (array_key_exists(($ownerCountryID - 1), $Variant->countries) ? $Variant->countries[$ownerCountryID - 1] : '');
+		$unitCountryName  = (array_key_exists(($unitCountryID  - 1), $Variant->countries) ? $Variant->countries[$unitCountryID  - 1] : '');
 		
 		if ($this->smallmap)
 		{
