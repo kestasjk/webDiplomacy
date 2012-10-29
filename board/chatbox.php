@@ -110,7 +110,10 @@ class Chatbox
 					libGameMessage::send($msgCountryID, $Member->countryID, $newmessage);
 			}
 			elseif( $User->type['Moderator'] )
-				libGameMessage::send(0, 0, '('.$User->username.'): '.$newmessage);
+			{
+				$fromName = (($User->type['ForumModerator'] || $User->type['Admin']) ? $User->username.' (Moderator)' : 'Mod-Team');
+				libGameMessage::send(0, 0, '<strong>'.$fromName.': </strong>'.$newmessage);
+			}
 		}
 	}
 
