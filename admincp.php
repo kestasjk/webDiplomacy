@@ -107,7 +107,8 @@ function adminCPTabs()
 			'Mod notes'=>'Notes/reports left for/by the mod team',
 			'Status lists'=>'View server status lists',
 			'Control Panel Logs'=>'Log of recent admin tasks',
-			'Multi-accounts'=>'Multi-account detector'
+			'Multi-accounts'=>'Multi-account detector',
+			'Chatlogs'=>'Check the ingame chat.'
 		);
 
 	$tab = 'Control Panel';
@@ -163,6 +164,9 @@ switch($tab)
 		break;
 	case 'Multi-accounts':
 		require_once('admin/adminMultiFinder.php');
+		break;
+	case 'Chatlogs':
+		require_once('admin/adminChatAnalyser.php');
 		break;
 	default:
 		print '<p>No admin panel tab selected</p>';
