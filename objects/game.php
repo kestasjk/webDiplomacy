@@ -543,7 +543,7 @@ class Game
 				{
 					if ($Member->missedPhases > 0)
 					{
-						if ($Member->supplyCenterNo > 1)
+						if ($Member->supplyCenterNo > 1 && $Member->status=='Playing')
 							$foundNMR=true;
 							
 						if ($Member->status=='Playing')
@@ -561,8 +561,10 @@ class Game
 						}
 					}
 				}				
-				if ($foundNMR) {
-					if (time() >= $this->processTime) {
+				if ($foundNMR)
+				{
+					if (time() >= $this->processTime)
+					{
 						$search = 'Missing orders for '.$this->Variant->turnAsDate($this->turn).' ('.$this->phase.')';
 						$sql='SELECT COUNT(*) FROM wD_GameMessages WHERE message LIKE "%'.$search.'%" AND toCountryID = 0 AND fromCountryID = 0 AND gameID='.$this->id;
 						list($extCount)=$DB->sql_row($sql);
