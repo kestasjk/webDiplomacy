@@ -31,7 +31,8 @@ class ClassicCataclysmVariant extends WDVariant {
 	public $description='The standard Diplomacy map of Europe Cataclysm variant.';
 	public $author     ='CSKA';
 	public $adapter    ='Flame';
-	public $version    ='1.0.0';
+	public $version    ='1.0';
+	public $codeVersion='1.0.1';
 	public $homepage   ='http://www.diplomail.ru';
 
 	public $countries=array('England', 'France', 'Italy', 'Germany', 'Austria', 'Turkey', 'Russia');

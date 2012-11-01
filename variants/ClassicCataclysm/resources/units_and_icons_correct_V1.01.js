@@ -13,7 +13,7 @@ function IconsCorrect(SeaTerrs)
 	MyOrders.map(function(OrderObj) {
 			OrderObj.setUnitIconArea = function(newIcon) {
 				if (SeaTerrs.inArray(this.Unit.Territory.name))
-					newIcon='fleet';
+					newIcon='Fleet';
 					
 				if( newIcon == this.currentUnitIcon ) return;
 		
@@ -52,18 +52,18 @@ function NewUnitNames(SeaTerrs)
 			OrderObj.reHTML('type');
 		}, this);
 		
-	} else {	
+	}
+	else
+	{	
 
 		MyOrders.map(function(OrderObj) {
 			OrderObj.beginHTML = function () {
-				if (SeaTerrs.inArray(this.Unit.Territory.name))
-					return 'The fleet at '+this.Unit.Territory.name+' ';
-				else
-					return 'The army at '+this.Unit.Territory.name+' ';			
+				return 'The unit at '+this.Unit.Territory.name+' ';			
 			};
 			OrderObj.reHTML('orderBegin');			
 			OrderObj.setSelectsGreen();
 		}, this);
+		
 	}
 	
 }			
