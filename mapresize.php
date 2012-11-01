@@ -1,5 +1,9 @@
 <?php
 
+// For security reasons fileupload and all variables are ussually discarded in header.php. Save this in constants.
+$uploadtmp =(isset($_FILES['imgfile']['tmp_name']))? $_FILES['imgfile']['tmp_name'] : '' ; // the tmp-filename from PHP
+define('UPTMP',$uploadtmp);
+
 require_once('header.php');
 
 if ($_SERVER['REQUEST_METHOD'] != "POST") {
@@ -41,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] != "POST") {
 	if ($new_y < 100) $new_y=100;
 	if ($new_y > 2000) $new_y=2000;
 	
-	$img=imagecreatefromstring(file_get_contents($_FILES['imgfile']['tmp_name']));
+	$img=imagecreatefromstring(file_get_contents(UPTMP));
 
 	if (imageistruecolor($img))
 		imagetruecolortopalette($img, false, 200);
