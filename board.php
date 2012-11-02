@@ -282,7 +282,6 @@ class ChatMember {
 
 if ($Game->phase == 'Pre-game')
 {	
-
 	$saveCountryMembers=$Game->Members->ByCountryID;
 	for($countryID=1; $countryID<=count($Game->Variant->countries); $countryID++)
 		$Game->Members->ByCountryID[$countryID] = new ChatMember();
@@ -291,10 +290,7 @@ if ($Game->phase == 'Pre-game')
 
 	if( isset($_REQUEST['newmessage']) AND $_REQUEST['newmessage']!="")
 	{
-		if ($Game->anon == 'Yes')
-			$_REQUEST['newmessage'] = "(Anonymous): ".$_REQUEST['newmessage'];
-		else
-			$_REQUEST['newmessage'] = "(".$User->username."): ".$_REQUEST['newmessage'];
+		$_REQUEST['newmessage'] = "(".$User->username."): ".$_REQUEST['newmessage'];
 		$CB->postMessage(0);
 		$DB->sql_put("COMMIT");
 	}

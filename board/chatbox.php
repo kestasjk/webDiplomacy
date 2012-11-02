@@ -330,8 +330,16 @@ class Chatbox
 		$alternate = false;
 		for ( $i=count($messages); $i >= 1; --$i )
 		{
+		
 			$message = $messages[$i-1];
-
+			
+			if (($Game->anon == 'Yes' && $Game->phase != 'Finished' 
+					&& $message['turn']==0 
+					&& $message['fromCountryID']==0 && $message['toCountryID']==0)
+					&& (!(($User->type['Moderator']) && !($Game->Members->isJoined())))
+				)
+					$message['message'] = preg_replace ('/^\((.*): /','(Anonymous): ',$message['message']);
+		
 			$alternate = ! $alternate;
 
 			// If member info is hidden and the message isn't from me
