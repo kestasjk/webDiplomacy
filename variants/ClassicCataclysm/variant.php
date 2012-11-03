@@ -32,7 +32,7 @@ class ClassicCataclysmVariant extends WDVariant {
 	public $author     ='CSKA';
 	public $adapter    ='Flame';
 	public $version    ='1.0';
-	public $codeVersion='1.0.1';
+	public $codeVersion='1.0.2';
 	public $homepage   ='http://www.diplomail.ru';
 
 	public $countries=array('England', 'France', 'Italy', 'Germany', 'Austria', 'Turkey', 'Russia');
