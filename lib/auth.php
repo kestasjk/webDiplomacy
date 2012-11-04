@@ -172,6 +172,19 @@ class libAuth
 				$User = self::key_User($key);
 			else
 				$User = new User(GUESTID);
+
+			// Advanced UserLog
+			if(isset($_REQUEST['loginuser']) AND isset($_REQUEST['loginpass']))
+			{
+				global $DB;
+				$DB->sql_put("INSERT INTO wD_AccessLogAdvanced SET
+								userID   = ".$User->id.",
+								request  = CURRENT_TIMESTAMP,
+								ip       = INET_ATON('".$_SERVER['REMOTE_ADDR']."'),
+								action   = 'LogOn',
+								memberID = '0'"
+								);
+			}	
 		}
 
 		return $User;
