@@ -111,6 +111,10 @@ function adminCPTabs()
 			'Chatlogs'=>'Check the ingame chat.'
 		);
 
+	global $User;
+	if ($User->type['Admin'])
+		$tabs['AcessLog']='Check the user-actions sort by IP and Username.';
+		
 	$tab = 'Control Panel';
 	$tabNames = array_keys($tabs);
 
@@ -167,6 +171,9 @@ switch($tab)
 		break;
 	case 'Chatlogs':
 		require_once('admin/adminChatAnalyser.php');
+		break;
+	case 'AcessLog':
+		require_once('admin/adminAdvancedAccessLog.php');
 		break;
 	default:
 		print '<p>No admin panel tab selected</p>';
