@@ -335,7 +335,7 @@ class Chatbox
 			
 			if (($Game->anon == 'Yes' && $Game->phase != 'Finished' 
 					&& $message['turn']==0 
-					&& $message['fromCountryID']==0 && $message['toCountryID']==0)
+					&& $message['toCountryID']==0)
 					&& (!(($User->type['Moderator']) && !($Game->Members->isJoined())))
 				)
 					$message['message'] = preg_replace ('/^\((.*): /','(Anonymous): ',$message['message']);
