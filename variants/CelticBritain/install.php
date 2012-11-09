@@ -116,6 +116,7 @@ $bordersRawData=array(
 	array('Auteini','Oceanus Atlantic','Yes','No'),
 	array('Auteini','Velabri','Yes','Yes'),
 	array('Auteini','Vodiae','No','Yes'),
+	array('Auteini','West Oceanus Vercivius','Yes','No'),
 	array('Belgae','Dobunni','No','Yes'),
 	array('Belgae','Durotriges','No','Yes'),
 	array('Belgae','Durotriges (South Coast)','Yes','No'),
