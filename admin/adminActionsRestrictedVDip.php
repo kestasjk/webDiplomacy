@@ -12,7 +12,8 @@ class adminActionsRestrictedVDip extends adminActionsForum
 			'delCache' => array(
 				'name' => 'Clean the cache directory.',
 				'description' => 'Delete the cache files older than the given date.',
-				'params' => array('keep'=>'File age (in days)')
+				'params' => array('keepLarge'=>'File age (> 50 kB) (in days)',
+									'keepSmall'=>'File age (files < 50 kB) (in days)')
 			),
 			'allReady' => array(
 				'name' => 'Ready all orders.',
@@ -133,17 +134,20 @@ class adminActionsRestrictedVDip extends adminActionsForum
 	
 	public function delcache(array $params)
 	{
-		$keep = '-'.(int)$params['keep'].' days';
-		$this->del_cache('cache', $keep);
-		return 'Deleted files older than '.(int)$params['keep'].' days.';
+		$keepLarge = '-'.(int)$params['keepLarge'].' days';
+		$this->del_cache('cache', $keepLarge, 50);
+		$keepSmall = '-'.(int)$params['keepSmall'].' days';
+		$this->del_cache('cache', $keepSmall, 0);
+		return 'Deleted files bigger 50k older than '.(int)$params['keepLarge'].' days, all other '.(int)$params['keepSmall'].' days.';
 	}
 	public function delcacheConfirm(array $params)
 	{
-		$keep = (int)$params['keep'];
-		return 'Are you sure you want to delete files in the cache directory older than '.$keep.' days?';
+		$keepSmall = (int)$params['keepSmall'];
+		$keepLarge = (int)$params['keepLarge'];
+		return 'Are you sure you want to delete files <ol><li>Bigger 50k older than '.$keepLarge.' days?</li><li>All other '.$keepSmall.' days?</li></ol>';
 	}
 
-	function del_cache($dirname, $keep) 
+	function del_cache($dirname, $keep, $filesize = 0) 
 	{
 		if(is_dir($dirname))
 			$dir_handle=opendir($dirname); 
@@ -153,14 +157,17 @@ class adminActionsRestrictedVDip extends adminActionsForum
 			{ 
 				if(!is_dir($dirname."/".$file))
 				{
-					if ((filemtime($dirname."/".$file)) < (strtotime($keep)))
+					if (filesize($dirname."/".$file) > $filesize * 1024)
 					{
-						unlink ($dirname."/".$file);
+						if ((filemtime($dirname."/".$file)) < (strtotime($keep)))
+						{
+							unlink ($dirname."/".$file);
+						}
 					}
 				}
 				else
 				{
-					$this->del_cache($dirname."/".$file, $keep);
+					$this->del_cache($dirname."/".$file, $keep, $filesize);
 				}
 			} 
 			
