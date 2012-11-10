@@ -1,0 +1,20 @@
+@CHARSET "ISO-8859-1";
+
+.variantAfrica .country0 { color: #CE7800 ! important; } /* Global */
+.variantAfrica .country1 { color: #0080C0 ! important; } /* DRC */
+.variantAfrica .country2 { color: #B05500 ! important; } /* Egypt */
+.variantAfrica .country3 { color: #E02000 ! important; } /* Ethiopia */
+.variantAfrica .country4 { color: #604080 ! important; } /* Madagascar */
+.variantAfrica .country5 { color: #b8ad00 ! important; } /* Mali */
+.variantAfrica .country6 { color: #C02040 ! important; } /* Morocco */
+.variantAfrica .country7 { color: #008040 ! important; } /* Nigeria */
+.variantAfrica .country8 { color: #002080 ! important; } /* South Africa */
+
+.variantAfrica .occupationBar1 { background-color: #0080C0; } /* DRC */
+.variantAfrica .occupationBar2 { background-color: #C0A000; } /* Egypt */
+.variantAfrica .occupationBar3 { background-color: #E02000; } /* Ethiopia */
+.variantAfrica .occupationBar4 { background-color: #604080; } /* Madagascar */
+.variantAfrica .occupationBar5 { background-color: #EAEAAF; } /* Mali */
+.variantAfrica .occupationBar6 { background-color: #C02040; } /* Morocco */
+.variantAfrica .occupationBar7 { background-color: #008040; } /* Nigeria */
+.variantAfrica .occupationBar8 { background-color: #002080; } /* South Africa */
