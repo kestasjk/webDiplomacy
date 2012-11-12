@@ -425,6 +425,10 @@ class libHTML
 		<script type="text/javascript">
 		STATICSRV="'.STATICSRV.'";
 		</script>
+		
+		<script type ="text/javascript" src="contrib/cookieWarning/warnCookies.js"></script>
+		<link href="contrib/cookieWarning/cookies.css" title="Cookies\' warning" rel="stylesheet" type="text/css" />
+		
 		<title>'.$title.' - vDiplomacy</title>
 	</head>';
 	}
@@ -450,6 +454,10 @@ class libHTML
 		print libHTML::prebody($title===FALSE ? $pages[$scriptname]['name'] : $title).
 			'<body>'.libHTML::menu($pages, $scriptname);
 
+		// Cookie-check as requested by the EU-laws...
+		print '<div id="cookiesWarning"></div>
+					<script language="JavaScript" type="text/javascript">checkCookieExist();</script>';
+			
 		if( defined('FACEBOOKSCRIPT') ) {
 			?>
 			<script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php/en_US" type="text/javascript"></script>

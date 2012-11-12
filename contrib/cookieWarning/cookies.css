@@ -1,0 +1,61 @@
+#cookiesWarning {
+	
+}
+
+#cookiesWarningActive {
+	background: #FFFF69;
+	margin: 5px;
+	padding: 5px;
+	box-shadow: 8px 8px 4px #999;
+	border-radius: 7px;
+	width: 750px;
+	position: center;
+	margin-left:auto;
+	margin-right:auto;
+	overflow:auto;
+}
+
+#cookiesWarningActive small {
+	background: #FA5528;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding: 3px;
+	color: #fff;
+	border: none;
+	border-radius: 7px;
+	width: 750px;
+	box-shadow: 4px 4px 2px #233e5b;
+}
+
+#readMoreURL  a:link {
+	text-decoration: underline;
+	color: #000;
+}
+#readMoreURL  a:visited {
+	text-decoration: underline;
+	color: #000;
+}
+#readMoreURL  a:hover {
+	text-decoration: none;
+	color: #FA5528;
+}
+
+#text {
+	
+}
+
+#warning {
+	
+}
+
+#cookiesDisabled {
+	
+}
+
+.checkbox {
+	
+}
+
+.button {
+	
+}
