@@ -686,6 +686,40 @@ abstract class drawMap
 	}
 
 	/**
+	 * Draw a move arrow (but only in grey)
+	 * Usefull for the Preview-function to draw the corresponding move-arrow for convoy and support commands
+	 * @param string $fromTerrID Territory moving unit moved from
+	 * @param string $toTerrID Territory moving unit moved to
+	 * @param bool $success Move successful or not
+	 */	
+	public function drawMoveGrey($fromTerrID, $toTerrID, $success)
+	{
+		list($fromX, $fromY) = $this->territoryPositions[$fromTerrID];
+		list($toX, $toY) = $this->territoryPositions[$toTerrID];
+
+		// Rotate the arrow slightly, so that head-to-heads are more clear
+		//list($fromX, $fromY, $toX, $toY) = self::rotate(array($fromX, $fromY, $toX, $toY),
+		//	array($fromX-($fromX-$toX)/2, $fromY-($fromY-$toY)/2), M_PI/15);
+
+		$this->drawOrderArrow(array($fromX, $fromY), array($toX, $toY), 'MoveGrey');
+
+		if ( !$success ) $this->drawFailure(array($fromX, $fromY), array($toX, $toY));
+	}
+	
+	/**
+	 * Draw a red alert boy around the image...
+	 * Usefull for the Preview-function 
+	 */	
+	public function drawRedBox()
+	{
+		$red=$this->color(array(240,20,20),$this->map['image']);
+		self::imagelinethick($this->map['image'],0, 0, 0, $this->map['height'], $red, 8);
+		self::imagelinethick($this->map['image'],0, $this->map['height'], $this->map['width'], $this->map['height'], $red, 8);
+		self::imagelinethick($this->map['image'],$this->map['width'], $this->map['height'], $this->map['width'], 0, $red, 8);
+		self::imagelinethick($this->map['image'], $this->map['width'], 0, 0, 0, $red, 8);
+	}
+
+	/**
 	 * Draw a support hold arrow
 	 * @param string $fromTerrID Territory supporting unit supporting from
 	 * @param string $toTerrID Territory supporting unit supported to
@@ -857,6 +891,13 @@ abstract class drawMap
 	protected $orderArrows = array(
 		//array(0, 153, 2)
 		'Move' => array('color'=>array(196,32,0),  //0, 153, 2),//
+						'thickness'=>array(2,4),
+						'headAngle'=>7,
+						'headStart'=>.1,
+						'headLength'=>array(12,30),
+						'border'=>array(0,0)
+					),
+		'MoveGrey' => array('color'=>array(100,100,100),  // Same as move, but arrowcolor=grey
 						'thickness'=>array(2,4),
 						'headAngle'=>7,
 						'headStart'=>.1,
@@ -1154,7 +1195,7 @@ abstract class drawMap
 	}
 
 	/**
-	 * Write a caption; a large piece of text centered in the map
+	 * Write a captioncaptioncaptioncaptioncaptioncaptioncaptioncaptioncaptioncaptioncaptioncaptioncaption; a large piece of text centered in the map
 	 *
 	 * @param string $text
 	 */

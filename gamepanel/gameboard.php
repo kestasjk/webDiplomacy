@@ -60,6 +60,10 @@ class panelGameBoard extends panelGame
 				<a href="#" onClick="loadMap('.$this->id.','.$mapTurn.','.$mapTurn.'); return false;">
 					<img id="End" src="'.l_s('images/historyicons/End_disabled.png').'" alt="'.l_t('End').'" title="'.l_t('View the map from the most recent turn').'" />
 				</a>
+				<a href="#" onClick="togglePreview('.$this->id.','.$mapTurn.'); return false;">
+					<img id="Preview" src="images/historyicons/Preview.png" alt="PreviewMoves" title="Show server side stored orders on the map" />
+				</a>
+							
 			</p>
 			<p id="History" class="lightgrey"></p>
 		</div>
