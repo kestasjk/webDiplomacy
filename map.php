@@ -37,8 +37,8 @@ if( isset($_REQUEST['uncache'])||isset($_REQUEST['profile']) )
 else
 	define('DELETECACHE',0);
 
-// Check if we should hide the move arrows.
-if( isset($_REQUEST['hideMoves']))
+// Check if we should hide the move arrows. (Preview do not need the old move-arrows too...)
+if( isset($_REQUEST['hideMoves']) || isset($_REQUEST['preview']))
 	define('HIDEMOVES',1);
 else
 	define('HIDEMOVES',0);
@@ -56,13 +56,19 @@ if( isset($_REQUEST['colorCorrect']))
 else
 	define('COLORCORRECT',0);
 
+// Check if we should hide the move arrows.
+if( isset($_REQUEST['preview']))
+	define('PREVIEW',1);
+else
+	define('PREVIEW',0);
+
 // Check if we need to show CountryNames
 if( isset($_REQUEST['countryNames']))
 	define('COUNTRYNAMES',1);
 else
 	define('COUNTRYNAMES',0);
 
-if( !IGNORECACHE )
+if( !IGNORECACHE && !PREVIEW)
 {
 	// We might be able to fetch the map from the cache
 	require_once('objects/game.php');
@@ -435,6 +441,72 @@ foreach( $builtTerrs as $terrID=>$unitType )
 
 // support hold to, support move from, support move to, build/destroy fleet
 
+// Map is drawn, now add a preview of the server-side orders...
+if (PREVIEW && $Game->Members->isJoined())
+{
+	$sql = "SELECT u.type, u.terrID, o.type, o.toTerrID, o.fromTerrID, o.viaConvoy	
+				FROM wD_Orders o
+			LEFT JOIN wD_Units u ON (u.id = o.unitID)
+				WHERE o.gameID = ".$Game->id." AND o.countryID = ".$Game->Members->ByUserID[$User->id]->countryID."
+				ORDER BY FIELD(o.type, 'Move')";
+
+	$tabl = $DB->sql_tabl($sql);
+
+	while(list($unitType, $terrID, $orderType, $toTerrID, $fromTerrID, $viaConvoy) = $DB->tabl_row($tabl))
+	{
+		if ($orderType == 'Move')
+		{
+			$drawMap->drawMove($terrID, $toTerrID, true);
+		}
+		elseif ( $orderType == 'Support hold' )
+		{
+			$drawMap->drawSupportHold($terrID,
+				isset($deCoastMap['SupportHoldToTerrID'][$toTerrID]) ? $deCoastMap['SupportHoldToTerrID'][$toTerrID] : $toTerrID,
+				true);
+		}
+		elseif ( $orderType == 'Support move' )
+		{
+			$drawMap->drawMoveGrey(isset($deCoastMap['SupportMoveFromTerrID'][$fromTerrID]) ? $deCoastMap['SupportMoveFromTerrID'][$fromTerrID] : $fromTerrID,
+							isset($deCoastMap['SupportMoveToTerrID'][$fromTerrID.'-'.$toTerrID]) ? $deCoastMap['SupportMoveToTerrID'][$fromTerrID.'-'.$toTerrID] : $toTerrID,
+							true);			
+			$drawMap->drawSupportMove($terrID,
+				isset($deCoastMap['SupportMoveFromTerrID'][$fromTerrID]) ? $deCoastMap['SupportMoveFromTerrID'][$fromTerrID] : $fromTerrID,
+				isset($deCoastMap['SupportMoveToTerrID'][$fromTerrID.'-'.$toTerrID]) ? $deCoastMap['SupportMoveToTerrID'][$fromTerrID.'-'.$toTerrID] : $toTerrID,
+				true);
+		}
+		elseif ( $orderType == 'Convoy' )
+		{
+			$drawMap->drawMoveGrey(isset($deCoastMap['SupportMoveFromTerrID'][$fromTerrID]) ? $deCoastMap['SupportMoveFromTerrID'][$fromTerrID] : $fromTerrID,
+							isset($deCoastMap['SupportMoveToTerrID'][$fromTerrID.'-'.$toTerrID]) ? $deCoastMap['SupportMoveToTerrID'][$fromTerrID.'-'.$toTerrID] : $toTerrID,
+							true);					
+			$drawMap->drawConvoy($terrID, $fromTerrID, $toTerrID, true);
+		}
+		if ($orderType == 'Build Army')
+		{
+			$drawMap->drawCreatedUnit($toTerrID,'Army');
+		}
+		if ($orderType == 'Build Fleet')
+		{
+			$drawMap->drawCreatedUnit($toTerrID,'Fleet');
+		}
+		if ($orderType == 'Retreat')
+		{
+			$drawMap->countryFlag($terrID, $Game->Members->ByUserID[$User->id]->countryID);
+			$drawMap->addUnit($terrID, $unitType);			
+			$drawMap->drawRetreat($terrID, $toTerrID, true);
+		}
+		if ($orderType == 'Destroy')
+		{
+			$drawMap->drawDestroyedUnit(isset($deCoastMap['DestroyToTerrID'][$toTerrID]) ? $deCoastMap['DestroyToTerrID'][$toTerrID] : $toTerrID );
+		}
+		
+		$drawMap->caption('Preview');
+		$drawMap->drawRedBox();
+		
+	}
+	
+}
+
 /*
  * Territories colored, orders entered, units drawn on.
  * Now add territory names, and game-over caption if finished
@@ -469,6 +541,9 @@ if (HIDEMOVES)
 if( defined('DATC') && $mapType!='small')
 	$drawMap->saveThumbnail($filename.'-thumb');
 
+if (PREVIEW)
+	$filename = libCache::dirID('users',$User->id).'/preview-'. md5($User->password.Config::$secret).'.map';
+	
 // colorCorrect Patch
 if (COLORCORRECT)
 {

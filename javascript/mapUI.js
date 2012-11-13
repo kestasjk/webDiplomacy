@@ -22,6 +22,7 @@
 var turn=-2;
 
 var noMoves='';
+var preview='';
 
 // Toggle the display of the Move arrows.
 function toggleMoves(gameID, currentTurn) {
@@ -31,6 +32,28 @@ function toggleMoves(gameID, currentTurn) {
 	} else {
 		noMoves = '';
 		$('NoMoves').src = 'images/historyicons/hidemoves.png';
+	}
+	loadMapStep(gameID, currentTurn, 0)	
+	loadMap(gameID, currentTurn, turn)
+}
+
+// Toggle the display of the Move arrows.
+function togglePreview(gameID, currentTurn) {
+	turn = currentTurn
+	if (preview == '') {
+		preview = '&preview&noCache=' + Math.floor((Math.random()*10000)+1); ;
+		$('Start').style.visibility    = 'hidden';
+		$('Backward').style.visibility = 'hidden';
+		$('NoMoves').style.visibility  = 'hidden';
+		$('Forward').style.visibility  = 'hidden';
+		$('End').style.visibility      = 'hidden';
+	} else {
+		preview = '';
+		$('Start').style.visibility    = 'visible';
+		$('Backward').style.visibility = 'visible';
+		$('NoMoves').style.visibility  = 'visible';
+		$('Forward').style.visibility  = 'visible';
+		$('End').style.visibility      = 'visible';
 	}
 	loadMapStep(gameID, currentTurn, 0)	
 	loadMap(gameID, currentTurn, turn)
@@ -104,6 +127,9 @@ function loadMap(gameID, currentTurn, newTurn)
 	
 	// Add the Hide parameter if we have HideMoves activated
 	newTurn = newTurn + noMoves
+	
+	// Add the Preview parameter if we have Preview activated
+	newTurn = newTurn + preview
 	
 	// Add the colorCorrect Prameter if set
 	if(window.colorCorrect !== undefined)
