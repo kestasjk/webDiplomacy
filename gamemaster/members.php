@@ -643,6 +643,12 @@ class processMembers extends Members
 
 		if ( $this->Game->phase == 'Pre-game' )
 		{
+		
+			// Check if there is a player with no countryID => Game wants random countrydistribution.
+			foreach ($this->ByUserID as $MemberCheck)
+				if ($MemberCheck->countryID == 0)
+					$countryID = -1;
+		
 			// Creates the Member record, the member object, and records the bet
 			if( $countryID!=-1 )
 			{
