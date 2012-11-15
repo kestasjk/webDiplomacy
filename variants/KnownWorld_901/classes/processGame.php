@@ -1,6 +1,6 @@
 <?php
 /*
-	Copyright (C) 2011 Kaner406 / Oliver Auth
+	Copyright (C) 2012 Kaner406 / Oliver Auth
 
 	This file is part of the KnownWorld_901 variant for webDiplomacy
 
@@ -23,19 +23,65 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 class NeutralUnits_processGame extends processGame
 {
+
+	// Check if we might need a Build-phase for the "neutral units"
+	protected function changePhase()
+	{
+		global $DB;
+		
+		$newturn = parent::changePhase();
+		// If we switch from a retreat or a diplomacy-phase to a new turn (without a build) check if neutral units need a build.
+		if ( $newturn == true)
+		{
+			$sql = "SELECT COUNT(*) FROM wD_Terrstatus 
+						WHERE occupyingUnitID IS NULL
+							AND gameID = ".$this->id."
+							AND countryID = ".(count($this->Variant->countries) + 1);
+							
+			list($emptyNeutrals) = $DB->sql_row($sql);
+			
+			// Revert the already increased turn and set phase to Builds.
+			if ($emptyNeutrals > 0)
+			{
+				$this->turn--;
+				$DB->sql_put("UPDATE wD_Games SET turn = turn - 1 WHERE id=".$this->id);
+				$this->setPhase('Builds');
+				$newturn=false;
+			}	
+		}
+		return $newturn;
+	}
+	
 	function process()
 	{
 		global $DB;
 		parent::process();
 		
-		// If only the "neutral player has to do retreats process again.
-		if ($this->phase == 'Retreats')
+		// Add Build-commands for the "neutral units"
+		if ($this->phase == 'Builds')
+		{
+			$sql = "SELECT terrID FROM wD_Terrstatus 
+						WHERE occupyingUnitID IS NULL
+							AND gameID = ".$this->id."
+							AND countryID = ".(count($this->Variant->countries) + 1);
+			$tabl = $DB->sql_tabl($sql);
+			
+			while(list($terrID) = $DB->tabl_row($tabl))
+				$DB->sql_put("INSERT INTO wD_Orders
+								SET gameID = ".$this->id.",
+									countryID = ".(count($this->Variant->countries) + 1)." ,
+									toTerrID = ".$terrID." ,
+									type = 'Build Army'");
+		}
+		
+		// If only the "neutral player has to do retreats or builds process again.
+		if ($this->phase == 'Retreats' || $this->phase == 'Builds')
 		{	
 			list($count) = $DB->sql_row("SELECT COUNT(*)
 				FROM wD_Members 
 				WHERE orderStatus != 'None' AND gameID = ".$this->id);
 			if ($count == 0)
-				parent::process();
+				self::process();
 		}	
 	}
 }
