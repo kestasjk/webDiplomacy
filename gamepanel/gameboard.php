@@ -81,9 +81,11 @@ class panelGameBoard extends panelGame
 				</a>
 				<a href="#" onClick="loadMap('.$this->id.','.$mapTurn.','.$mapTurn.'); return false;">
 					<img id="End" src="images/historyicons/End_disabled.png" alt="End" title="View the map from the most recent turn" />
-				</a>
-				<a href="#" onClick="togglePreview('.$this->id.','.$mapTurn.'); return false;">
-					<img id="Preview" src="images/historyicons/Preview.png" alt="PreviewMoves" title="Show server side stored orders on the map" />
+				</a>'.
+					($this->Members->isJoined() ? 
+						'<a href="#" onClick="togglePreview('.$this->id.','.$mapTurn.'); return false;">
+							<img id="Preview" src="images/historyicons/Preview.png" alt="PreviewMoves" title="Show server side stored orders on the map" />'
+						: '').'
 				</a>
 							
 			</p>
