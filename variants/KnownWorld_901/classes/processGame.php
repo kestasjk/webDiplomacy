@@ -33,7 +33,7 @@ class NeutralUnits_processGame extends processGame
 		// If we switch from a retreat or a diplomacy-phase to a new turn (without a build) check if neutral units need a build.
 		if ( $newturn == true)
 		{
-			$sql = "SELECT COUNT(*) FROM wD_Terrstatus 
+			$sql = "SELECT COUNT(*) FROM wD_TerrStatus 
 						WHERE occupyingUnitID IS NULL
 							AND gameID = ".$this->id."
 							AND countryID = ".(count($this->Variant->countries) + 1);
@@ -60,7 +60,7 @@ class NeutralUnits_processGame extends processGame
 		// Add Build-commands for the "neutral units"
 		if ($this->phase == 'Builds')
 		{
-			$sql = "SELECT terrID FROM wD_Terrstatus 
+			$sql = "SELECT terrID FROM wD_TerrStatus 
 						WHERE occupyingUnitID IS NULL
 							AND gameID = ".$this->id."
 							AND countryID = ".(count($this->Variant->countries) + 1);

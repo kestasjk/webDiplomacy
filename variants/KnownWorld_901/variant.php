@@ -25,7 +25,7 @@
 	1.0.9: SCs to win: down to 55
 	1.0.10: Better handling of the largemap-names
 	1.1: Neutral units now rebuild if possible, small colorfixed on the largemap
-	
+	1.1.1: MySQL-spelling mistake fixed
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -39,7 +39,7 @@ class KnownWorld_901Variant extends WDVariant {
 	public $author     ='David E. Cohen';
 	public $adapter    ='Kaner406 & Oliver Auth';
 	public $version    ='3.0';
-	public $codeVersion='1.1';
+	public $codeVersion='1.1.1';
 	public $homepage  ='http://diplomiscellany.tripod.com/id20.html';
 	
 	public $countries=array('Arabia','Axum','Byzantinum','China','Denmark','Egypt','France','Germany','Khazaria','Russia','Spain','Turan','Srivijaya','Wagadu', 'India');	
