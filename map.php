@@ -481,11 +481,11 @@ if (PREVIEW && $Game->Members->isJoined())
 							true);					
 			$drawMap->drawConvoy($terrID, $fromTerrID, $toTerrID, true);
 		}
-		if ($orderType == 'Build Army')
+		if ($orderType == 'Build Army' && (int)$toTerrID != 0)
 		{
 			$drawMap->drawCreatedUnit($toTerrID,'Army');
 		}
-		if ($orderType == 'Build Fleet')
+		if ($orderType == 'Build Fleet' && (int)$toTerrID != 0)
 		{
 			$drawMap->drawCreatedUnit($toTerrID,'Fleet');
 		}
