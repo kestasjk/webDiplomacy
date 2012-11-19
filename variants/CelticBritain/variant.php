@@ -10,7 +10,7 @@ class CelticBritainVariant extends WDVariant {
    public $author     ='amisond';
    public $adapter    ='amisond';
    public $version    ='1.2';
-   public $codeVersion='1.0.1';
+   public $codeVersion='1.0.2';
    
    public $countries=array('Brigantes', 'Iceni', 'Caledonii', 'Picts', 'Cornovii', 'Ivernia', 'Voluntii', 'Durotriges');
 

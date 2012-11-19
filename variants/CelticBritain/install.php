@@ -302,7 +302,6 @@ $bordersRawData=array(
 	array('North Oceanus Hibernicus','Robogdii','Yes','No'),
 	array('North Oceanus Hibernicus','Skitis','Yes','No'),
 	array('North Oceanus Hibernicus','Vennicnii','Yes','No'),
-	array('North Oceanus Hibernicus','West Oceanus Caledonia','Yes','No'),
 	array('Novantae','Selgovae','No','Yes'),
 	array('Oceanus Atlantic','West Oceanus Vercivius','Yes','No'),
 	array('Oceanus Britanicus','Portus Magnus','Yes','No'),
