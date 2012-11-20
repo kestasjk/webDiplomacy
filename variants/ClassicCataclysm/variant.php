@@ -16,6 +16,10 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
+	
+	1.0:   initial release
+	1.0.3: wrong color for retreats fixed.
+	
  */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -32,7 +36,7 @@ class ClassicCataclysmVariant extends WDVariant {
 	public $author     ='CSKA';
 	public $adapter    ='Flame';
 	public $version    ='1.0';
-	public $codeVersion='1.0.2';
+	public $codeVersion='1.0.3';
 	public $homepage   ='http://www.diplomail.ru';
 
 	public $countries=array('England', 'France', 'Italy', 'Germany', 'Austria', 'Turkey', 'Russia');

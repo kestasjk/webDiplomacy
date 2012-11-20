@@ -14,6 +14,14 @@ class ClassicCataclysmVariant_drawMap extends drawMap {
 			parent::colorTerritory($terrID,$countryID);
 	}
 
+	public function countryFlag($terrID, $countryID)
+	{
+		if (in_array($this->territoryNames[$terrID],$GLOBALS['Variants'][VARIANTID]->seaTerrs))
+			$this->terr_owner[$terrID]=$countryID;
+		else
+			parent::countryFlag($terrID, $countryID);
+	}
+	
 	public function addUnit($terrID, $unitType)
 	{
 		if (isset($this->terr_owner[$terrID]))
