@@ -1,5 +1,5 @@
 <?php
-// This is file installs the map data for the Succession variant
+// This is file installs the map data for the Enlightenment variant
 defined('IN_CODE') or die('This script can not be run by itself.');
 require_once("variants/install.php");
 
@@ -47,12 +47,12 @@ $territoryRawData=array(
 	array('London', 'Coast', 'Yes', 7, 548, 676, 274, 338),
 	array('Wales', 'Coast', 'No', 7, 478, 664, 239, 332),
 	array('Ukraine', 'Land', 'Yes', 0, 1272, 776, 636, 388),
-	array('Volga', 'Land', 'No', 1, 1458, 842, 729, 421),
+	array('Volga', 'Land', 'Yes', 1, 1458, 842, 729, 421),
 	array('Hanover', 'Coast', 'Yes', 0, 722, 674, 361, 337),
 	array('Amsterdam', 'Coast', 'Yes', 7, 638, 698, 319, 349),
 	array('English Channel', 'Sea', 'No', 0, 464, 748, 232, 374),
 	array('Irish Sea', 'Sea', 'No', 0, 396, 666, 198, 333),
-	array('Hesse', 'Land', 'Yes', 0, 728, 784, 364, 392),
+	array('Hesse', 'Land', 'No', 0, 728, 784, 364, 392),
 	array('Bavaria', 'Land', 'Yes', 0, 754, 808, 377, 404),
 	array('Flanders', 'Coast', 'Yes', 10, 624, 740, 312, 370),
 	array('Rhineland', 'Land', 'Yes', 0, 696, 836, 348, 418),

@@ -10,8 +10,8 @@ class EnlightenmentVariant extends WDVariant {
 	public $description='Europe in 1700';
 	public $author     ='airborne';
 	public $adapter    ='airborne';
-	public $version    ='1.0';
-	public $codeVersion='1.0';	
+	public $version    ='1';
+	public $codeVersion='1.0.1';	
 	
 	public $countries=array('Russia', 'Venice', 'Austria', 'France', 'Prussia', 'Turkey', 'England', 'Poland', 'Sweden', 'Spain');	
 
