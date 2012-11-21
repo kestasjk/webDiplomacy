@@ -434,17 +434,17 @@ if (PREVIEW && $Game->Members->isJoined())
 
 	while(list($unitType, $terrID, $orderType, $toTerrID, $fromTerrID, $viaConvoy) = $DB->tabl_row($tabl))
 	{
-		if ($orderType == 'Move')
+		if ($orderType == 'Move' && (int)$terrID != 0 && (int)$toTerrID != 0)
 		{
 			$drawMap->drawMove($terrID, $toTerrID, true);
 		}
-		elseif ( $orderType == 'Support hold' )
+		elseif ( $orderType == 'Support hold' && (int)$terrID != 0 && (int)$toTerrID != 0)
 		{
 			$drawMap->drawSupportHold($terrID,
 				isset($deCoastMap['SupportHoldToTerrID'][$toTerrID]) ? $deCoastMap['SupportHoldToTerrID'][$toTerrID] : $toTerrID,
 				true);
 		}
-		elseif ( $orderType == 'Support move' )
+		elseif ( $orderType == 'Support move' && (int)$terrID != 0 && (int)$toTerrID != 0 && (int)$fromTerrID != 0 )
 		{
 			$drawMap->drawMoveGrey(isset($deCoastMap['SupportMoveFromTerrID'][$fromTerrID]) ? $deCoastMap['SupportMoveFromTerrID'][$fromTerrID] : $fromTerrID,
 							isset($deCoastMap['SupportMoveToTerrID'][$fromTerrID.'-'.$toTerrID]) ? $deCoastMap['SupportMoveToTerrID'][$fromTerrID.'-'.$toTerrID] : $toTerrID,
@@ -454,7 +454,7 @@ if (PREVIEW && $Game->Members->isJoined())
 				isset($deCoastMap['SupportMoveToTerrID'][$fromTerrID.'-'.$toTerrID]) ? $deCoastMap['SupportMoveToTerrID'][$fromTerrID.'-'.$toTerrID] : $toTerrID,
 				true);
 		}
-		elseif ( $orderType == 'Convoy' )
+		elseif ( $orderType == 'Convoy' && (int)$terrID != 0 && (int)$toTerrID != 0 && (int)$fromTerrID != 0  )
 		{
 			$drawMap->drawMoveGrey(isset($deCoastMap['SupportMoveFromTerrID'][$fromTerrID]) ? $deCoastMap['SupportMoveFromTerrID'][$fromTerrID] : $fromTerrID,
 							isset($deCoastMap['SupportMoveToTerrID'][$fromTerrID.'-'.$toTerrID]) ? $deCoastMap['SupportMoveToTerrID'][$fromTerrID.'-'.$toTerrID] : $toTerrID,
@@ -469,13 +469,13 @@ if (PREVIEW && $Game->Members->isJoined())
 		{
 			$drawMap->drawCreatedUnit($toTerrID,'Fleet');
 		}
-		if ($orderType == 'Retreat')
+		if ($orderType == 'Retreat' && (int)$terrID != 0 && (int)$toTerrID != 0)
 		{
 			$drawMap->countryFlag($terrID, $Game->Members->ByUserID[$User->id]->countryID);
 			$drawMap->addUnit($terrID, $unitType);			
 			$drawMap->drawRetreat($terrID, $toTerrID, true);
 		}
-		if ($orderType == 'Destroy')
+		if ($orderType == 'Destroy' && (int)$toTerrID != 0)
 		{
 			$drawMap->drawDestroyedUnit(isset($deCoastMap['DestroyToTerrID'][$toTerrID]) ? $deCoastMap['DestroyToTerrID'][$toTerrID] : $toTerrID );
 		}
