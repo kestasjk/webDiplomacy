@@ -160,7 +160,7 @@ $territoryRawData=array(
 	array('Costa Rica (South Coast)', 'Coast', 'No', 0, 961, 1305, 491, 697),
 	array('Guatemala', 'Coast', 'Yes', 0, 762, 1246, 430, 650),
 	array('Guatemala (South Coast)', 'Coast', 'No', 0, 763, 1254, 423, 675),
-	array('Guatemala (East Coast)', 'Coast', 'No', 0, 831, 1220, 444, 645),
+	array('Guatemala (East Coast)', 'Coast', 'No', 0, 831, 1220, 448, 654),
 	array('East Arctic Sea', 'Sea', 'No', 0, 526, 50, 279, 34),
 	array('Archangelsk', 'Coast', 'Yes', 1, 391, 34, 194, 22),
 	array('Siberia', 'Coast', 'No', 1, 12, 184, 9, 92),
