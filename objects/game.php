@@ -588,6 +588,7 @@ class Game
 							
 							libGameMessage::send(0, 'GameMaster', $gameMasterText, $this->id);
 							$this->Members->updateReliabilities();
+							return false;
 						}
 						else
 						{
