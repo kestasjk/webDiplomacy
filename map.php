@@ -411,7 +411,7 @@ while(list($moveType, $terrID,
 	{
 
 		// Don't add a unit if it's destroyed.
-		if (HIDEMOVES && in_array($drawToTerrID, $destroyedTerrs)) continue;
+		if (HIDEMOVES && in_array($Game->Variant->deCoast($drawToTerrID), $destroyedTerrs)) continue;
 	
 		/*
 		 * We're drawing a unit onto the board
