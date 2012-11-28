@@ -144,7 +144,7 @@ $territoryRawData=array(
 	array('Republic of the Congo', 'Land', 'Yes', 0, 746, 707, 350, 328),
 	array('Republic of the Congo (East Coast)', 'Coast', 'No', 0, 720, 773, 337, 358),
 	array('Republic of the Congo (West Coast)', 'Coast', 'No', 0, 649, 796, 302, 371),
-	array('Khartoum', 'Land', 'Yes', 0, 1097, 405, 510, 192),
+	array('Khartoum', 'Coast', 'Yes', 0, 1097, 405, 510, 192),
 	array('Khartoum (East Coast)', 'Coast', 'No', 0, 1103, 325, 515, 155),
 	array('Khartoum (West Coast)', 'Coast', 'No', 0, 1041, 480, 489, 222),
 	array('Addis Ababa', 'Land', 'Yes', 3, 1168, 587, 542, 271),
