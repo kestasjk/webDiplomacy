@@ -283,17 +283,9 @@ if ( isset($Member) && count($Member->newMessagesFrom) > 0 && $Game->pressType==
 /*
  * Pregame-chat hack
  */
-class ChatMember {
-	function memberCountryName() { return ""; }
-	function memberNameCountry() { return ""; }
-	public $online = 0;
-}
 
 if ($Game->phase == 'Pre-game')
 {	
-	$saveCountryMembers=$Game->Members->ByCountryID;
-	for($countryID=1; $countryID<=count($Game->Variant->countries); $countryID++)
-		$Game->Members->ByCountryID[$countryID] = new ChatMember();
 
 	$CB = $Game->Variant->Chatbox();
 
@@ -306,10 +298,6 @@ if ($Game->phase == 'Pre-game')
 	
 	$forum = $CB->output(0);
 	unset($CB);
-	$Game->Members->ByCountryID=$saveCountryMembers;
-	$forum = preg_replace('-<div id="chatboxtabs".*</div>-',"",$forum);
-	$forum = preg_replace('-<div class="chatboxMembersList">.*</div>-',"",$forum);
-	$forum = preg_replace('-<DIV class="chatbox ">-','<DIV class="chatbox chatboxnotabs">',$forum);
 
 	if (isset($Member))
 		$Member->seen(0);

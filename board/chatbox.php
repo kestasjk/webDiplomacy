@@ -145,16 +145,19 @@ class Chatbox
 					<TR class="barAlt2 membersList">
 					<TD>';
 
-		if ( $msgCountryID == 0 )
+		if ( $Game->phase != 'Pre-game' )
 		{
-			$memList=array();
-			for($countryID=1; $countryID<=count($Game->Variant->countries); $countryID++)
-				$memList[]=$Game->Members->ByCountryID[$countryID]->memberNameCountry();
-			$chatbox .= '<div class="chatboxMembersList">'.implode(', ',$memList).'</div>';
-		}
-		else
-		{
-			$chatbox .= $Game->Members->ByCountryID[$msgCountryID]->memberBar();
+			if ( $msgCountryID == 0 )
+			{
+				$memList=array();
+				for($countryID=1; $countryID<=count($Game->Variant->countries); $countryID++)
+					$memList[]=$Game->Members->ByCountryID[$countryID]->memberNameCountry();
+				$chatbox .= '<div class="chatboxMembersList">'.implode(', ',$memList).'</div>';
+			}
+			else
+			{
+				$chatbox .= $Game->Members->ByCountryID[$msgCountryID]->memberBar();
+			}
 		}
 
 		$chatbox .= '</TD></TR></TABLE></DIV>';
@@ -223,7 +226,10 @@ class Chatbox
 		global $Member, $Game;
 
 		$tabs = '<div id="chatboxtabs" class="gamelistings-tabs">';
-
+		
+		if ( $Game->phase == 'Pre-game' )
+			return $tabs.'</div>';
+			
 		for( $countryID=0; $countryID<=count($Game->Variant->countries); $countryID++)
 		{
 			// leave Global tab open even if its NoPress game..
