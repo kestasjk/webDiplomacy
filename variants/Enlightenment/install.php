@@ -381,7 +381,6 @@ $bordersRawData=array(
 	array('Ankara','Aegean Sea','Yes','No'),
 	array('Ankara','Constantinople','Yes','Yes'),
 	array('Adana','Syria','Yes','Yes'),
-	array('Adana','Aegean Sea','Yes','No'),
 	array('Adana','Eastern Mediterranean Sea','Yes','No'),
 	array('Adana','Constantinople','Yes','Yes'),
 	array('Syria','Arabia','No','Yes'),

@@ -11,7 +11,7 @@ class EnlightenmentVariant extends WDVariant {
 	public $author     ='airborne';
 	public $adapter    ='airborne';
 	public $version    ='1';
-	public $codeVersion='1.0.9';	
+	public $codeVersion='1.0.10';	
 	
 	public $countries=array('Russia', 'Venice', 'Austria', 'France', 'Prussia', 'Turkey', 'England', 'Poland', 'Sweden', 'Spain');	
 
