@@ -10,8 +10,8 @@ class AfricaVariant extends WDVariant {
 	public $description='Africa goes to war in 2012';
 	public $author     ='Tristan';
 	public $adapter    ='Tristan, kaner406 & Oli';
-	public $version    ='1.0.1';
-	public $codeVersion='1.0.1';
+	public $version    ='1.0.2';
+	public $codeVersion='1.0.2';
 
 	public $countries=array('DRC','Egypt','Ethiopia','Madagascar','Mali','Morocco','Nigeria','South Africa');
 
