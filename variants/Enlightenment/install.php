@@ -217,6 +217,7 @@ $bordersRawData=array(
 	array('Warsaw','Posen','No','Yes'),
 	array('Warsaw','Krakow','No','Yes'),
 	array('Warsaw','Podolia','No','Yes'),
+	array('Clyde','Edinburgh','Yes','Yes'),
 	array('Clyde','Liverpool','Yes','Yes'),
 	array('Clyde','Eire','Yes','Yes'),
 	array('Edinburgh','Yorkshire','Yes','Yes'),
