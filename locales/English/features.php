@@ -58,6 +58,9 @@ $globalFaq = array(
 		"On the settings page you can select between 3 different types of colorblindnes to enhance the map of each variant.",
 	"Always show country-name in global chat" =>
 		"On the settings page you can select to always display the country name in front of each chatline.",
+	"You can check your submitted moves on the map" => 
+		"In the board-view there is an option to turn on a preview of your orders (<img src=\"images/historyicons/Preview.png\" alt=\" \">).
+		This visualize your orders as saved on the server. If you update your orders don't forget to hit \"Save\" for a reload.",
 		
 "Reliability-rating" => "Sub-section",
 	"What's this numbers behind my name?" =>
