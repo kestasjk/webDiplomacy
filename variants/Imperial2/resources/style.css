@@ -1,0 +1,31 @@
+@CHARSET "ISO-8859-1";
+
+.variantImperial2 .country0 { color: #c9a865 ! important; } /* Global  */
+.variantImperial2 .country1 { color: #aa2b00 ! important; } /* Austria */
+.variantImperial2 .country2 { color: #55aa00 ! important; } /* Brazil  */
+.variantImperial2 .country3 { color: #002bd5 ! important; } /* Britain */
+.variantImperial2 .country4 { color: #b8ad00 ! important; } /* China   */
+.variantImperial2 .country5 { color: #99994d ! important; } /* CSA     */
+.variantImperial2 .country6 { color: #ff5555 ! important; } /* France  */
+.variantImperial2 .country7 { color: #00aaff ! important; } /* Holland */
+.variantImperial2 .country8 { color: #808000 ! important; } /* Japan   */
+.variantImperial2 .country9 { color: #d58000 ! important; } /* Mexico  */
+.variantImperial2 .country10 { color: #005580 ! important; }/* Prussia */
+.variantImperial2 .country11 { color: #8080ff ! important; }/* Russia  */
+.variantImperial2 .country12 { color: #969696 ! important; }/* Turkey  */
+.variantImperial2 .country13 { color: #008055 ! important; }/* USA     */
+
+.variantImperial2 .occupationBar1 { background-color: #aa2b00; } /* Austria */
+.variantImperial2 .occupationBar2 { background-color: #55aa00; } /* Brazil  */
+.variantImperial2 .occupationBar3 { background-color: #002bd5; } /* Britain */
+.variantImperial2 .occupationBar4 { background-color: #ffff00; } /* China   */
+.variantImperial2 .occupationBar5 { background-color: #aaaa55; } /* CSA     */
+.variantImperial2 .occupationBar6 { background-color: #ff5555; } /* France  */
+.variantImperial2 .occupationBar7 { background-color: #00aaff; } /* Holland */
+.variantImperial2 .occupationBar8 { background-color: #808000; } /* Japan   */
+.variantImperial2 .occupationBar9 { background-color: #d58000; } /* Mexico  */
+.variantImperial2 .occupationBar10 { background-color: #005580; }/* Prussia */
+.variantImperial2 .occupationBar11 { background-color: #8080ff; }/* Russia  */
+.variantImperial2 .occupationBar12 { background-color: #aaaaaa; }/* Turkey  */
+.variantImperial2 .occupationBar13 { background-color: #008055; }/* USA     */
+
