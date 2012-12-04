@@ -68,7 +68,7 @@ if( isset($_REQUEST['countryNames']))
 else
 	define('COUNTRYNAMES',0);
 
-if( !IGNORECACHE && !PREVIEW)
+if( !IGNORECACHE && !PREVIEW && !isset($_REQUEST['variantID']))
 {
 	// We might be able to fetch the map from the cache
 	require_once('objects/game.php');
@@ -166,7 +166,7 @@ else
 {
 	$Variant=libVariant::loadFromVariantID($_REQUEST['variantID']);
 	libVariant::setGlobals($Variant);
-	$mapType = 'small';
+	$mapType = Game::mapType();
 	$turn=-1;
 }
 
@@ -247,8 +247,8 @@ if( isset($_REQUEST['variantID']) )
 	$drawMap->addTerritoryNames();
 
 	$drawMap->saveThumbnail(libVariant::cacheDir($Variant->name).'/sampleMap-thumbnail.png');
-	$drawMap->write(libVariant::cacheDir($Variant->name).'/sampleMap.png');
-	libHTML::serveImage(libVariant::cacheDir($Variant->name).'/sampleMap.png');
+	$drawMap->write(libVariant::cacheDir($Variant->name).'/sampleMap'.($mapType=='small'?'':'Large').'.png');
+	libHTML::serveImage(libVariant::cacheDir($Variant->name).'/sampleMap'.($mapType=='small'?'':'Large').'.png');
 
 	die();
 }

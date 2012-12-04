@@ -116,13 +116,21 @@ else
 		foreach (array_reverse(Config::$variants,true) as $id => $name);
 	$Variant = libVariant::loadFromVariantID($id);
 	print libHTML::pageTitle($Variant->fullName . ' (' . count($Variant->countries) . ' players)',$Variant->description);
-	print '<div style="text-align:center"><img id="Image_'. $Variant->name . '" src="';
+	print '<div style="text-align:center"><span id="Image_'. $Variant->name . '"> <a href="';
+		if (file_exists(libVariant::cacheDir($Variant->name).'/sampleMapLarge.png'))
+			print libVariant::cacheDir($Variant->name).'/sampleMapLarge.png';
+		else
+			print 'map.php?variantID=' . $Variant->id. '&largemap';	
+	print '" target="_blank"> <img src="';
 	if (file_exists(libVariant::cacheDir($Variant->name).'/sampleMap.png'))
 		print libVariant::cacheDir($Variant->name).'/sampleMap.png';
 	else
 		print 'map.php?variantID=' . $Variant->id;
-	print '" alt=" " title="The map for the '. $Variant->name .' Variant" /></div><br />';
+	print '" alt="Open large map" title="The map for the '. $Variant->name .' Variant" /></a></span> </div><br />';
 
+				
+	
+	
 	print '<table>
 		<td style="text-align:left">Search for games: 		
 			<form style="display: inline" action="gamelistings.php" method="POST">
