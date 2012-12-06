@@ -70,17 +70,17 @@ class ColorUnits_drawMap extends MultiLayerMap_drawMap
 
 	protected $countryIconColors = array(
 		 0 => array(200, 170, 100), // Neutral
-		 1 => array(255,  43,   0), // Austria
-		 2 => array(  0, 255, 128), // Brazil
-		 3 => array(  0, 128, 255), // Britain
-		 4 => array(255, 170,   0), // China
-		 5 => array(170, 128,   0), // CSA
-		 6 => array(255, 128, 213), // France
-		 7 => array(  0,  85, 170), // Holland
-		 8 => array(213, 213,   0), // Japan
-		 9 => array(255, 128,  85), // Mexico
-		10 => array(213, 213, 255), // Prussia
-		11 => array( 85,   0, 255), // Russia
+		 1 => array(153,  50,  15), // Austria
+		 2 => array( 40, 205, 123), // Brazil
+		 3 => array(  1,  93, 183), // Britain
+		 4 => array(213, 206,   2), // China
+		 5 => array(150, 150,  56), // CSA
+		 6 => array(241, 121, 121), // France
+		 7 => array(  0, 123, 124), // Holland
+		 8 => array(102, 102,   2), // Japan
+		 9 => array(173, 112,  21), // Mexico
+		10 => array(159, 125,  94), // Prussia
+		11 => array(139,   3, 255), // Russia
 		12 => array(128, 128, 128), // Turkey
 		13 => array(  0,  85,  85)  // USA
 	);
@@ -233,17 +233,17 @@ class Imperial2Variant_drawMap extends WarpAround_drawMap {
 
 	protected $countryColors = array(
 		 0 => array(255, 213, 128), // Neutral
-		 1 => array(170,  43,   0), // Austria
-		 2 => array( 85, 170,   0), // Brazil
-		 3 => array(  0,  43, 213), // Britain
+		 1 => array(153,  50,  15), // Austria
+		 2 => array( 88, 170,   0), // Brazil
+		 3 => array(  0, 129, 255), // Britain
 		 4 => array(255, 255,   0), // China
 		 5 => array(170, 170,  85), // CSA
-		 6 => array(255,  85,  85), // France
-		 7 => array(  0, 170, 255), // Holland
-		 8 => array(128, 128,   0), // Japan
+		 6 => array(255,  86,  86), // France
+		 7 => array(  0, 182, 184), // Holland
+		 8 => array(129, 129,   0), // Japan
 		 9 => array(213, 128,   0), // Mexico
-		10 => array(  0,  85, 128), // Prussia
-		11 => array(128, 128, 255), // Russia
+		10 => array(127,  90,  55), // Prussia
+		11 => array(129, 129, 255), // Russia
 		12 => array(170, 170, 170), // Turkey
 		13 => array(  0, 128,  85)  // USA
 	);
