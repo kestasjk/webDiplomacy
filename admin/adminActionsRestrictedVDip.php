@@ -44,12 +44,57 @@ class adminActionsRestrictedVDip extends adminActionsForum
 				'name' => 'Dev: bronze',
 				'description' => 'Give bronze developer marker',
 				'params' => array('userID'=>'User ID'),
-			),			
+			),
+			'exportGameData' => array(
+				'name' => 'Export game data',
+				'description' => 'Save all relevant data of a given game.',
+				'params' => array('gameID'=>'Game ID'),
+			),
+			
 		);
 		
 		adminActions::$actions = array_merge(adminActions::$actions, $vDipActionsRestricted);
 	}
 
+	public function exportGameData(array $params)
+	{
+		global $DB;
+		$gameID = (int)$params['gameID'];
+ 
+		$tables = array('wD_Members','wD_Units','wD_TerrStatus', 'wD_Orders', 'wD_Games');
+
+		$return = '';
+			
+		foreach($tables as $table)
+		{
+			if ($table=='wD_Games')
+				$search=' WHERE id=';
+			else
+				$search=' WHERE gameID=';
+			
+			$result = $DB->sql_tabl('SELECT * FROM '.$table.$search.$gameID);
+			
+			while($row = $DB->tabl_row($result))
+			{
+				$return.= 'INSERT INTO '.$table.' VALUES(';
+				for($j=0; $j<count($row); $j++) 
+				{
+					$row[$j] = addslashes($row[$j]);
+					if (isset($row[$j])) { $return.= '"'.$row[$j].'"' ; } else { $return.= '""'; }
+					if ($j<(count($row)-1)) { $return.= ','; }
+				}
+				$return.= ");\n";
+			}
+			$return.="\n";
+		}
+
+		//save file
+		$handle = fopen('db-backup-'.time().'-'.(md5(implode(',',$tables))).'.sql','w+');
+		fwrite($handle,$return);
+		fclose($handle);
+		
+	}
+	
 	private function makeDevType(array $params, $type='') {
 		global $DB;
 
