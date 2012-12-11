@@ -261,7 +261,6 @@ $bordersRawData=array(
 	array('Prague','Vienna','No','Yes'),
 	array('Prague','Hesse','No','Yes'),
 	array('Prague','Bavaria','No','Yes'),
-	array('Prague','Tyrol','No','Yes'),
 	array('Prague','Budapest','No','Yes'),
 	array('Prague','Lusatia','No','Yes'),
 	array('Vienna','Bavaria','No','Yes'),
