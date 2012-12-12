@@ -24,6 +24,7 @@
 	Changelog:
 	1.0:   initial release
 	1.0.1: color improvements
+	1.0.2: territory-names improvements
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -37,7 +38,7 @@ class Imperial2Variant extends WDVariant {
 	public $author     = 'Michael David Roberts';
 	public $adapter    = 'Oliver Auth';
 	public $version    = '3.0';
-	public $codeVersion= '1.0.1';
+	public $codeVersion= '1.0.2';
 	public $homepage   = 'http://www.variantbank.org/results/rules/i/imperial2.htm';
 	
 	public $countries=array('Austria','Brazil','Britain','China','CSA','France','Holland','Japan','Mexico','Prussia','Russia','Turkey','USA');
