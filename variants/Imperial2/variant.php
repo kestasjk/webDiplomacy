@@ -36,7 +36,7 @@ class Imperial2Variant extends WDVariant {
 	public $fullName   = 'Imperial Diplomacy II';
 	public $description= 'This is a global variant set in the mid-19th Century.';
 	public $author     = 'Michael David Roberts';
-	public $adapter    = 'Oliver Auth';
+	public $adapter    = 'Oliver Auth (abbreviations by Captainmeme)';
 	public $version    = '3.0';
 	public $codeVersion= '1.0.2';
 	public $homepage   = 'http://www.variantbank.org/results/rules/i/imperial2.htm';
