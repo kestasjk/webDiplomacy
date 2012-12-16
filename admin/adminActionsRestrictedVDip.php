@@ -9,6 +9,11 @@ class adminActionsRestrictedVDip extends adminActionsForum
 		parent::__construct();
 
 		$vDipActionsRestricted = array(
+			'clearAdvancedAccessLogs' => array(
+				'name' => 'Clear advanced access logs',
+				'description' => 'Clears advanced access log table of logs older than 60 days.',
+				'params' => array(),
+			),
 			'delCache' => array(
 				'name' => 'Clean the cache directory.',
 				'description' => 'Delete the cache files older than the given date.',
@@ -56,6 +61,16 @@ class adminActionsRestrictedVDip extends adminActionsForum
 		adminActions::$actions = array_merge(adminActions::$actions, $vDipActionsRestricted);
 	}
 
+	public function clearAdvancedAccessLogs(array $params)
+	{
+		global $DB;
+
+		list($i) = $DB->sql_row("SELECT COUNT(userID) FROM wD_AccessLogAdvanced WHERE DATEDIFF(CURRENT_DATE, request) > 60");
+		$DB->sql_put("DELETE FROM wD_AccessLogAdvanced WHERE DATEDIFF(CURRENT_DATE, request) > 60");
+		$DB->sql_put("OPTIMIZE TABLE wD_AccessLogAdvanced");
+		return 'Old advanced access logs cleared; '.$i.' records deleted.';
+	}
+	
 	public function exportGameData(array $params)
 	{
 		global $DB;
