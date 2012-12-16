@@ -195,6 +195,11 @@ if ($variantID != 0)
 			exit;
 		}
 		
+		// Delete the global css if a CSS file got edited or upload
+		if (($action == 'upload' || $action == 'filesave') && !stripos($file, '.css') === false)
+			foreach (glob(libCache::Dirname('css').'/variants-*.css') as $cssfilename)
+				unlink($cssfilename);
+				
 		if (($action == 'filesave') && (file_exists ($variantbase.$basedir.$file)))
 		{
 			rename($variantbase.$basedir.$file, $variantbase."/cache/".date("ymd-His")."-edit-".$file);
@@ -208,6 +213,7 @@ if ($variantID != 0)
 			$updatedfile = stripslashes($updatedfile);
 			$ok = fwrite($file2ed,$updatedfile);
 			fclose($file2ed);
+			
 			if (!$ok)
 				echo '<script type="text/javascript">top.location.replace("'.$_SERVER['SCRIPT_NAME'].'?variantID='.$variantID.'&msg=1&file='.$file.'&basedir='.$basedir.'");</script>';
 			else
@@ -237,6 +243,7 @@ if ($variantID != 0)
 					chmod($variantbase.$basedir.$file, 0644);
 				}
 			}
+			
 			echo '<script type="text/javascript">top.location.replace("'.$_SERVER['SCRIPT_NAME'].'?variantID='.$variantID.'&msg=3&file='.$file.'&basedir='.$basedir.'");</script>';
 			exit;
 		}
