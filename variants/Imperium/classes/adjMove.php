@@ -1,6 +1,6 @@
 <?php
 /*
-	Copyright (C) 2010 Oliver Auth
+	Copyright (C) 2012 Oliver Auth
 
 	This file is part of the Imperium variant for webDiplomacy
 
@@ -41,8 +41,8 @@ class ImperiumVariant_adjMove extends adjMove
 		$prevent = parent::_preventStrength();
 		// If we're moving across a river, reduce the strength
 		if (in_array($this->id, $Game->Variant->river_moves)) {
-			$prevent['min'] = $prevent['min'] - 0.5;
-			$prevent['max'] = $prevent['max'] - 0.5;
+			$prevent['min'] = $prevent['min'] - 1;
+			$prevent['max'] = $prevent['max'] - 1;
 			if (isset($prevent['paradox'])) $prevent['paradox']--;
 		}
 		return $prevent;
@@ -54,8 +54,8 @@ class ImperiumVariant_adjMove extends adjMove
 		$attackStrength = parent::_attackStrength();
 		// Check rivers again before returning attackStrength
 		if ( in_array($this->id, $Game->Variant->river_moves) ) {
-			$attackStrength['min'] = $attackStrength['min']-0.5;
-			$attackStrength['max'] = $attackStrength['max']-0.5;
+			$attackStrength['min'] = $attackStrength['min']-1;
+			$attackStrength['max'] = $attackStrength['max']-1;
 		}
 		return $attackStrength;
 	}

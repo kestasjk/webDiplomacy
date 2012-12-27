@@ -34,6 +34,7 @@
 	1.10:  code cleanup, fixed some adjucation issues
 	2.0:   code improvments ruver rule now fully implemented.
 	2.0.1: fixed: missing standoffs
+	2.0.2: fixed: very old bug. Strength was reduced by 0.5 instead of 1.
 
 
 */
