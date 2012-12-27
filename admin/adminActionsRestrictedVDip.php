@@ -70,43 +70,118 @@ class adminActionsRestrictedVDip extends adminActionsForum
 		$DB->sql_put("OPTIMIZE TABLE wD_AccessLogAdvanced");
 		return 'Old advanced access logs cleared; '.$i.' records deleted.';
 	}
+
+	public function RowAsString(array $row)
+	{
+		global $DB;
+		
+		$return = '';
+		for($j=0; $j<count($row); $j++) 
+		{
+			$row[$j] = $DB->escape($row[$j]);
+			
+			if ($row[$j] == 'NULL' || substr($row[$j],0,1) == '@')
+				$return .= $row[$j];
+			else
+				$return.= '"'.$row[$j].'"';
+			
+			if ($j<(count($row)-1)) { $return.= ','; }
+		}
+		return $return;
+	}
 	
 	public function exportGameData(array $params)
 	{
-		global $DB;
+		global $DB, $User;
 		$gameID = (int)$params['gameID'];
- 
-		$tables = array('wD_Members','wD_Units','wD_TerrStatus', 'wD_Orders', 'wD_Games');
 
-		$return = '';
-			
-		foreach($tables as $table)
+		// Export wD_Games
+		$row = $DB->sql_row('SELECT * FROM wD_Games WHERE id='.$gameID);
+		$row[1]='NULL';
+		if ($row[4] == '') $row[4]= 'NULL';		// processTime
+		$row[6]=$row[6]." (gameid=".$gameID.")";// name
+		$row[9]= 'NULL';		                // password always empty
+		if ($row[11] == '') $row[11]= 'NULL';	// pauseTimeRemaining
+		if ($row[12] == '') $row[12]= 'NULL';	// minimumBet	
+		$row[14]= 'No';			                // never anon
+		$return = "INSERT INTO wD_Games VALUES (".$this->RowAsString($row).");\n";
+		$return.= "SET @gameID = LAST_INSERT_ID();\n";
+
+		// Export wD_Members
+		$tabl = $DB->sql_tabl('SELECT * FROM wD_Members WHERE gameID='.$gameID);
+		while($row = $DB->tabl_row($tabl))
 		{
-			if ($table=='wD_Games')
-				$search=' WHERE id=';
-			else
-				$search=' WHERE gameID=';
-			
-			$result = $DB->sql_tabl('SELECT * FROM '.$table.$search.$gameID);
-			
-			while($row = $DB->tabl_row($result))
-			{
-				$return.= 'INSERT INTO '.$table.' VALUES(';
-				for($j=0; $j<count($row); $j++) 
-				{
-					$row[$j] = addslashes($row[$j]);
-					if (isset($row[$j])) { $return.= '"'.$row[$j].'"' ; } else { $return.= '""'; }
-					if ($j<(count($row)-1)) { $return.= ','; }
-				}
-				$return.= ");\n";
-			}
-			$return.="\n";
+			$row[0] = 'NULL';
+			$row[1]= $row[3] + 4;					// use UserID 5 and up
+			$row[2]= '@gameID';						// gameID
+			if ($row[11] == '') $row[11]= 'NULL';	// votes
+			if ($row[12] == '') $row[12]= 'NULL';	// pointsWon	
+			if ($row[13] == '') $row[13]= 'NULL';	// gameMessagesSent	
+			$return .= "INSERT INTO wD_Members VALUES (".$this->RowAsString($row).");\n";
 		}
-
+		
+		// Export wD_Units
+		$tabl = $DB->sql_tabl('SELECT * FROM wD_Units WHERE gameID='.$gameID);
+		while($row = $DB->tabl_row($tabl))
+		{
+			$unitID = $row[0];
+			$row[0] = 'NULL';
+			$row[4] = '@gameID';			
+			$return .= "INSERT INTO wD_Units VALUES (".$this->RowAsString($row)."); ";
+			$return .= "SET @unit_".$unitID." = LAST_INSERT_ID();\n";
+		}
+		
+		// Export wD_Orders
+		$tabl = $DB->sql_tabl('SELECT * FROM wD_Orders WHERE gameID='.$gameID);
+		while($row = $DB->tabl_row($tabl))
+		{
+			$row[0]= 'NULL';
+			$row[1]= '@gameID';
+			$row[4]= '@unit_'.$row[4];		
+			if ($row[5] == '') $row[5]= 'NULL';				
+			if ($row[6] == '') $row[6]= 'NULL';				
+			if ($row[7] == '') $row[7]= 'NULL';				
+			$return .= "INSERT INTO wD_Orders VALUES (".$this->RowAsString($row).");\n";
+		}
+		
+		// Export wD_TerrStatus
+		$tabl = $DB->sql_tabl('SELECT * FROM wD_TerrStatus WHERE gameID='.$gameID);
+		while($row = $DB->tabl_row($tabl))
+		{
+			$row[0]= 'NULL';
+			$row[4]= '@gameID';													// gameID
+			if ($row[2] == '') $row[2]= 'NULL';									// occupiedFromTerrID
+			if ($row[5] != '') $row[5]= '@unit_'.$row[5]; else $row[5]='NULL';	// occupyingUnitID
+			if ($row[6] != '') $row[6]= '@unit_'.$row[6]; else $row[6]='NULL';	// retreatingUnitID
+			$return .= "INSERT INTO wD_TerrStatus VALUES (".$this->RowAsString($row).");\n";
+		}
+		
+		// Export wD_TerrStatusArchive
+		$tabl = $DB->sql_tabl('SELECT * FROM wD_TerrStatusArchive WHERE gameID='.$gameID);
+		while($row = $DB->tabl_row($tabl))
+		{
+			$row[3]= '@gameID';
+			$return .= "INSERT INTO wD_TerrStatusArchive VALUES (".$this->RowAsString($row).");\n";
+		}
+		
+		// Export wD_MovesArchive
+		$tabl = $DB->sql_tabl('SELECT * FROM wD_MovesArchive WHERE gameID='.$gameID);
+		while($row = $DB->tabl_row($tabl))
+		{
+			$row[0] = '@gameID';
+			if ($row[4] == '') $row[4]= 'NULL';				//
+			if ($row[8] == '') $row[8]= 'NULL';				//
+			if ($row[9] == '') $row[9]= 'NULL';				//
+			$return .= "INSERT INTO wD_MovesArchive VALUES (".$this->RowAsString($row).");\n";
+		}
+		
 		//save file
-		$handle = fopen('db-backup-'.time().'-'.(md5(implode(',',$tables))).'.sql','w+');
+		$filename = libCache::dirID('users',$User->id).'/backup-'.$gameID.'-'.time().'.sql';
+		$handle = fopen($filename,'w+');
 		fwrite($handle,$return);
 		fclose($handle);
+		
+		return "Gamedata exported. (<a href='".$filename."'>Click here for download</a>)";
 		
 	}
 	
