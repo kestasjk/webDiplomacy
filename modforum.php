@@ -93,7 +93,7 @@ class Message
 	{
 		global $DB, $User;
 
-		if( defined('AdminUserSwitch') ) $fromUserID = AdminUserSwitch;
+		if( defined('AdminUserSwitch') && AdminUserSwitch != $User->id) $fromUserID = AdminUserSwitch;
 
 		$message = self::linkify($message);
 
@@ -253,7 +253,7 @@ AND ($_REQUEST['newmessage'] != "") ) {
 
 	$new['sendtothread'] = $viewthread;
 
-		if( isset($_SESSION['lastPostText']) && $_SESSION['lastPostText'] == $new['message'] )
+		if( isset($_SESSION['lastPostText']) && $_SESSION['lastPostText'] == $new['message'] && !$User->type['Admin'])
 		{
 			$messageproblem = "You are posting the same message again, please don't post repeat messages.";
 			$postboxopen = !$new['sendtothread'];
@@ -266,6 +266,12 @@ AND ($_REQUEST['newmessage'] != "") ) {
 		}
 		else
 		{
+		
+			if( isset($_REQUEST['fromUserID']) && $User->type['Admin'] && (int)$_REQUEST['fromUserID'] > 4)
+				$fromUserID=(int)$_REQUEST['fromUserID'];
+			else
+				$fromUserID=$User->id;
+		
 			if(!$new['sendtothread']) // New thread to the forum
 			{
 				if ( 4 <= substr_count($new['message'], '<br />') )
@@ -302,8 +308,9 @@ AND ($_REQUEST['newmessage'] != "") ) {
 								throw new Exception("A word in the subject, '".$subjectWord."' is longer than 25 ".
 									"characters, please choose a subject with normal words.");
 
+						
 						$new['id'] = Message::send(0,
-							$User->id,
+							$fromUserID,
 							$new['message'],
 							$new['subject'],
 							'ThreadStart');
@@ -352,7 +359,7 @@ AND ($_REQUEST['newmessage'] != "") ) {
 					try
 					{
 						$new['id'] = Message::send( $new['sendtothread'],
-							$User->id,
+							$fromUserID,
 							$new['message'],
 								'',
 								'ThreadReply',
@@ -528,6 +535,7 @@ else
 		<br />
 
 		<input type="submit" class="form-submit" value="Post new thread" name="Post">
+		'.($User->type['Admin']?' - UserID: <input type="text" size=4 value="" name="fromUserID">':'').'
 		</p></form>
 	</div>';
 }
@@ -830,10 +838,19 @@ while( $message = $DB->tabl_hash($tabl) )
 				print 'onclick="return confirm(\'Are you sure you want post this reply visible for the thread-starter too?\');"';
 							
 			print 'class="form-submit" value="Post reply" name="Reply">';
-	
+
 			if (strpos($message['userType'],'Moderator')===false && $User->type['Moderator'])
 				print ' - <input type="submit" class="form-submit" value="Only for admins" name="ReplyAdmin">';
 
+			if ($User->type['Admin'])
+			{
+				if( isset($_REQUEST['fromUserID']) && $User->type['Admin'] && $_REQUEST['fromUserID'] != $User->id && (int)$_REQUEST['fromUserID'] != 0)
+					$fromUserIDprefill=(int)$_REQUEST['fromUserID'];
+				else
+					$fromUserIDprefill='';				
+				print ' - UserID: <input type="text" size=4 value="'.$fromUserIDprefill.'" name="fromUserID">';
+			}
+			
 			if ($message['status']!= 'New' && $User->type['Moderator'])
 				print ' - <input type="submit" class="form-submit" value="Toggle Status" name="toggleStatus">';
 			
