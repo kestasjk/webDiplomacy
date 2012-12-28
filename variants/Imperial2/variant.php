@@ -38,7 +38,7 @@ class Imperial2Variant extends WDVariant {
 	public $author     = 'Michael David Roberts';
 	public $adapter    = 'Oliver Auth (abbreviations by Captainmeme)';
 	public $version    = '3.0';
-	public $codeVersion= '1.0.2';
+	public $codeVersion= '1.0.3';
 	public $homepage   = 'http://www.variantbank.org/results/rules/i/imperial2.htm';
 	
 	public $countries=array('Austria','Brazil','Britain','China','CSA','France','Holland','Japan','Mexico','Prussia','Russia','Turkey','USA');

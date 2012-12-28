@@ -1,5 +1,5 @@
 <?php
-// This is file installs the map data for the Imperial3 variant
+// This is file installs the map data for the Imperial2 variant
 defined('IN_CODE') or die('This script can not be run by itself.');
 require_once("variants/install.php");
 
@@ -1435,7 +1435,7 @@ $bordersRawData=array(
 	array('Sonora {SON}','West Coast','Yes','No'),
 	array('South Atlantic','South Georgia Islands {SGR}','Yes','No'),
 	array('South China Sea','Sunda','Yes','No'),
-	array('South China Sea','Tonkin {TNK}','Yes','Yes'),
+	array('South China Sea','Tonkin {TNK}','Yes','No'),
 	array('South East Trades','Sumatra {SUM}','Yes','No'),
 	array('South East Trades','Timor','Yes','No'),
 	array('South East Trades','West Indian','Yes','No'),
@@ -1483,6 +1483,7 @@ InstallCache::terrJSON($this->territoriesJSONFile(),$this->mapID);
 // Copy the smallmap-sample to the cache-directory to avoid a screwed variantpage (there is no smallmap available)
 if (!file_exists('variants/'.$this->name.'/cache/sampleMap.png'))
 	copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
+
 
 
 
