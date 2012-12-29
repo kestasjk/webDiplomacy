@@ -92,7 +92,7 @@ class Chatbox
 		{
 			$newmessage = trim($_REQUEST['newmessage']);
 
-			if( isset($Member)
+			if( isset($Member) && (!defined('AdminUserSwitch') || (defined('AdminUserSwitch') && AdminUserSwitch == $User->id))
 					&& $Game->pressType != 'NoPress'
 					&& ($Game->pressType != 'PublicPressOnly' || $msgCountryID == 0) )
 			{
@@ -109,7 +109,7 @@ class Chatbox
 				else
 					libGameMessage::send($msgCountryID, $Member->countryID, $newmessage);
 			}
-			elseif( $User->type['Moderator'] )
+			elseif( $User->type['Moderator'] || defined('AdminUserSwitch'))
 			{
 				$fromName = (($User->type['ForumModerator'] || $User->type['Admin']) ? $User->username.' (Moderator)' : 'Mod-Team');
 				libGameMessage::send(0, 0, '<strong>'.$fromName.': </strong>'.$newmessage);
