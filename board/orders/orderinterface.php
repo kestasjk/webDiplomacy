@@ -53,7 +53,10 @@ class OrderInterface
 {
 	public static function newBoard() {
 		global $Game, $User, $Member;
-		return self::newContext($Game, $Member, $User);
+		$OI = self::newContext($Game, $Member, $User);
+		if( defined('AdminUserSwitch') && AdminUserSwitch != $User->id)
+			$OI->userID=AdminUserSwitch;
+		return $OI;
 	}
 	public static function newContext(Game $Game, userMember $Member, User $User) {
 		$OI = $Game->Variant->OrderInterface($Game->id, $Game->Variant->id, $User->id, $Member->id, $Game->turn, $Game->phase, $Member->countryID,
@@ -113,7 +116,7 @@ class OrderInterface
 	public function load()
 	{
 		global $DB;
-
+		
 		$DB->sql_put("SELECT * FROM wD_Members WHERE gameID = ".$this->gameID." AND countryID=".$this->countryID." ".UPDATE);
 
 		$tabl = $DB->sql_tabl("SELECT id, type, unitID, toTerrID, fromTerrID, viaConvoy
