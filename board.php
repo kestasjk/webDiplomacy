@@ -242,11 +242,18 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 
 	if ( 'Pre-game' != $Game->phase && $Game->phase!='Finished' )
 	{
-		$OI = OrderInterface::newBoard();
-		$OI->load();
+		if ($Game->adminLock == 'No' || $User->type['Admin'] || defined('AdminUserSwitch'))
+		{
+			$OI = OrderInterface::newBoard();
+			$OI->load();
 
-		$Orders = '<div id="orderDiv'.$Member->id.'">'.$OI->html().'</div>';
-		unset($OI);
+			$Orders = '<div id="orderDiv'.$Member->id.'">'.$OI->html().'</div>';
+			unset($OI);
+		}
+		else
+		{
+			$Orders = '<div id="orderDiv'.$Member->id.'">Game is currently locked by an admin (usually to fix some errors).</div>';
+		}
 	}
 }
 

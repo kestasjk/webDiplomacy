@@ -135,7 +135,15 @@ class OrderInterface
 			$this->Orders[] = $Order;
 		}
 
-		list($checkTurn, $checkPhase) = $DB->sql_row("SELECT turn, phase FROM wD_Games WHERE id=".$this->gameID);
+		list($checkTurn, $checkPhase, $adminLock) = $DB->sql_row("SELECT turn, phase, adminLock FROM wD_Games WHERE id=".$this->gameID);
+
+		if( $adminLock == 'Yes' )
+		{
+			list($usertype) = $DB->sql_row("SELECT type FROM wD_Users WHERE id=".$this->userID);
+			if (strpos($usertype,'Admin')===false)
+				throw new Exception("Game is currently locked by an admin (usually to fix some errors).");
+		}
+		
 		if( $checkTurn != $this->turn || $checkPhase != $this->phase )
 			throw new Exception("The game has moved on, you can no longer alter these orders, please refresh.");
 

@@ -25,6 +25,11 @@ class adminActionsRestrictedVDip extends adminActionsForum
 				'description' => 'Set the orderstatus of all countries to "Ready".',
 				'params' => array('gameID'=>'GameID')
 			),
+			'toggleAdminLock' => array(
+				'name' => 'Lock/unlock a game.',
+				'description' => 'Lock (or unlock) a game to prevent users to enter orders.',
+				'params' => array('gameID'=>'GameID')
+			),
 			'delVariantGameCache' => array(
 				'name' => 'Clear cache of a given variant.',
 				'description' => 'Clear all cache files of all games from a given variant.',
@@ -71,6 +76,16 @@ class adminActionsRestrictedVDip extends adminActionsForum
 		return 'Old advanced access logs cleared; '.$i.' records deleted.';
 	}
 
+	public function toggleAdminLock(array $params)
+	{
+		global $DB;
+		$gameID = (int)$params['gameID'];
+		list($status)=$DB->sql_row("SELECT adminLock FROM wD_Games WHERE id = ".$gameID);		
+		$DB->sql_put("UPDATE wD_Games SET adminLock = '".($status == 'Yes' ? 'No' : 'Yes')."' WHERE id = ".$gameID);		
+		
+		return 'This game is now '.( $status == 'No' ? 'locked' : 'unlocked').'.';
+	}
+	
 	public function RowAsString(array $row)
 	{
 		global $DB;

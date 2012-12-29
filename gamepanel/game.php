@@ -192,6 +192,9 @@ class panelGame extends Game
 		if( $this->pot > $Misc->GameFeaturedThreshold )
 			$buf .= '<img src="images/icons/star.png" alt="Featured" title="This is a featured game, one of the highest stakes games on the server!" /> ';
 
+		if( $this->adminLock == 'Yes' )
+			$buf .= '<img src="images/icons/lock.png" alt="Locked" title="Game is currently locked by an admin (usually to fix some errors)." /> ';
+			
 		if( $this->private )
 			$buf .= '<img src="images/icons/lock.png" alt="Private" title="This is a private game; password needed!" /> ';
 
