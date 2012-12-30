@@ -281,8 +281,8 @@ class libRelations {
 	{
 		global $User, $DB;
 
-		if( !$User->type['Moderator'] && $User->id != $userID)
-			return 'You can only view your own profile...';
+		if( !$User->type['Moderator'] )
+			return 'Only Mods can see/view/edit the RLgroups settings...';
 		
 		list($groupID, $username)=$DB->sql_row("SELECT rlGroup, username FROM wD_Users WHERE id=".$userID);
 

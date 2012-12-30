@@ -94,28 +94,6 @@ $globalFaq = array(
 		"If 2/3 of the active players vote Extend the the current phase will be extended by 4 days.
 		You can extend the same phase more than once to push the process-date back even further.",
 
-"rlGroups/rlPolicy" => "Sub-section",
-	"What is a rlGroup?" =>
-		"A rlGroup is a list of players on this site who know each other in real life (most likely from school or work, but could also be friends or family).",
-	"Why have rlGroups?" =>
-		"The purpose of the rlGroup is to make it easier for the Mods to track people who know each other in order to make it hard for multis and metas to work.
-		RlGroups are not meant to stop friends from playing against each other, it just is to make the other players and mods aware that you know each other in person.
-		This is esp. important if the mods need to resolve Metagaming/Multiaccount issues.<br>
-		Remember, if you know your ally in real life, it is easier to communicate verbally, than just online, this gives players an advantage that they shouldn't have in an online game.<br>
-		The rlGroups makes the other players aware of this, which should reduce peoples ability to metagame or have multiple account, reducing the amount of cheaters on the site.",
-	"What if I want to play with my friends?" =>
-		"Don't worry, friends will still be allowed to play with each other.
-		Playing with someone in your rlGroup just means that there will be a message at the start of the game informing players that you know each other.<br>
-		However during game creation, it is now possible to make it so friends cannot join the same game. In these games it is no longer possible to join with rlFriends.<br>
-		The default setting for non-anon games has this turned off, but for those players who are scared of metagaming, they can turn on this setting.",
-	"I created a game for my friends only, but other players joined before it started..." =>
-		"During gamecreation you can choose to allow only players in the same group as you to join your games,
-		however make sure you have enough friends who will join this game, otherwise the game may be canceled because not enough people joined.",
-	"How do I add/remove friends to my group?" =>
-		"You can't change the members of your group.
-		You need to contact the mods at the <a href='modforum.php'>modforum</a>.",
-	"Help! I don't know all these users in my group. How do I leave this group?" =>
-		"You need to contact the mods at the <a href='modforum.php'>modforum</a> too. ",
 );
 foreach($globalFaq as $Q=>$A)
 	$faq[$Q]=$A;

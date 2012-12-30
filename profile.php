@@ -513,8 +513,6 @@ print '<li>&nbsp;</li>';
 
 if ( $User->type['Moderator'])
 	print '<li><a href="profile.php?detail=relations&userID='.$UserProfile->id.'" class="light">View/edit relations of this user.</a></li>';
-elseif ( $UserProfile->id == $User->id)
-	print '<li><a href="profile.php?detail=relations&userID='.$UserProfile->id.'" class="light">View your relations.</a></li>';
 
 print '</li></ul></p></div><div style="clear:both"></div></div>';
 
