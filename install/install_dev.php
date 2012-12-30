@@ -1,7 +1,7 @@
 <?php
 // Current Version of install-file:
 // Webdip V1.04
-// VDip - 16
+// VDip - 24
 
 $sql[]="CREATE DATABASE ".Config::$database_name;
 $sql[]="USE ".Config::$database_name;
@@ -690,6 +690,37 @@ $sql[]="ALTER TABLE `wD_Users` CHANGE `rlGroup` `rlGroup` MEDIUMINT( 8 ) NOT NUL
 $sql[]="ALTER TABLE `wD_ForumMessages` ADD `anon` enum('Yes','No') CHARACTER SET utf8 NOT NULL DEFAULT 'No';";
 
 $sql[]="ALTER TABLE `wD_Users` MODIFY `notifications` set('PrivateMessage','GameMessage','Unfinalized','GameUpdate','ModForum');";
+
+$sql[]="ALTER TABLE `wD_Members`        ADD `chessTime` smallint(5) unsigned NOT NULL DEFAULT '0';";
+$sql[]="ALTER TABLE `wD_Backup_Members` ADD `chessTime` smallint(5) unsigned NOT NULL DEFAULT '0';";
+$sql[]="ALTER TABLE `wD_Games`          ADD `chessTime` smallint(5) unsigned NOT NULL DEFAULT '0';";
+$sql[]="ALTER TABLE `wD_Games`          ADD `lastProcessed` int(10) unsigned NOT NULL DEFAULT '0';";
+$sql[]="ALTER TABLE `wD_Backup_Games`   ADD `chessTime` smallint(5) unsigned NOT NULL DEFAULT '0';";
+$sql[]="ALTER TABLE `wD_Backup_Games`   ADD `lastProcessed` int(10) unsigned NOT NULL DEFAULT '0';";
+
+$sql[]="ALTER TABLE `wD_Users` CHANGE `type` `type` SET( 'Banned', 'Guest', 'System', 'User', 'Moderator', 'Admin', 'Donator', 'DonatorBronze', 'DonatorSilver', 'DonatorGold', 'DonatorPlatinum', 'DevBronze', 'DevSilver', 'DevGold', 'ForumModerator' ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'User';";
+
+$sql[]="ALTER TABLE `wD_ModForumMessages` ADD `adminReply` enum('Yes','No') CHARACTER SET utf8 NOT NULL DEFAULT 'No';";
+$sql[]="ALTER TABLE `wD_ModForumMessages` ADD `status` enum('New','Open','Resolved') CHARACTER SET utf8 NOT NULL DEFAULT 'New';";
+
+$sql[]="ALTER TABLE `wD_Users` ADD `showCountryNames` enum('Yes','No') CHARACTER SET utf8 NOT NULL DEFAULT 'No';";
+
+$sql[]="ALTER TABLE `wD_Users` ADD `colorCorrect` enum('Off','Protanope','Deuteranope','Tritanope') CHARACTER SET utf8 NOT NULL DEFAULT 'Off';";
+
+$sql[]="ALTER TABLE `wD_Users` ADD `showCountryNamesMap` enum('Yes','No') CHARACTER SET utf8 NOT NULL DEFAULT 'No';";
+
+$sql[]="CREATE TABLE `wD_AccessLogAdvanced` (";
+$sql[]="  `userID` mediumint(8) unsigned NOT NULL,";
+$sql[]="  `request` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',";
+$sql[]="  `ip` int(10) unsigned NOT NULL,";
+$sql[]="  `action` enum('LogOn','LogOff','Board') CHARACTER SET utf8 NOT NULL DEFAULT 'LogOn',";
+$sql[]="  `memberID` mediumint(8) unsigned NOT NULL,";
+$sql[]="  KEY `userID` (`userID`),";
+$sql[]="  KEY `ip` (`ip`)";
+$sql[]=") ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+
+$sql[]="ALTER TABLE `wD_Games` ADD `adminLock` enum('Yes','No') CHARACTER SET utf8 NOT NULL DEFAULT 'No';";
+$sql[]="ALTER TABLE `wD_Backup_Games` ADD `adminLock` enum('Yes','No') CHARACTER SET utf8 NOT NULL DEFAULT 'No';";
 
 // Create a default Admin-Account
 require_once ('lib/auth.php');

@@ -1,4 +1,22 @@
 <?php
+/*
+    Copyright (C) 2012 Oliver Auth
+
+	This file is part of webDiplomacy.
+
+    webDiplomacy is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    webDiplomacy is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 require_once('header.php');
 
@@ -8,10 +26,8 @@ print libHTML::pageTitle('Impresum','Angaben gemäß § 5 TMG');
 
 print '
 <h2>Kontakt:</h2>
-<p>Oliver Auth<br />
-Zollweg 1<br />
-36119 Neuhof<br /></p>
-<p>E-Mail: admin@vdiplomacy.com</p>
+<p>'.Config::$impresum['name'].'<br />'.Config::$impresum['street'].'<br />'.Config::$impresum['city'].'<br /></p>
+<p>E-Mail: '.Config::$impresum['email'].'</p>
 
 <h2>Haftungsausschluss:</h2>
 <p><strong>Haftung für Inhalte</strong></p>
