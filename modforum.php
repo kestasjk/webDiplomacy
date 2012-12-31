@@ -337,7 +337,7 @@ AND ($_REQUEST['newmessage'] != "") ) {
 			{
 				// To a thread
 				$threadDetails = $DB->sql_hash(
-					"SELECT f.id, f.latestReplySent, 
+					"SELECT f.id, f.latestReplySent
 					FROM wD_ModForumMessages f 
 					WHERE f.id=".$new['sendtothread']."
 						AND f.type='ThreadStart'");
