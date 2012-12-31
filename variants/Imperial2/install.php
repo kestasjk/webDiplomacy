@@ -1140,6 +1140,7 @@ $bordersRawData=array(
 	array('Java {JVA}','Timor','Yes','No'),
 	array('Kagoshima {KG}','Sea of Japan','Yes','No'),
 	array('Kagoshima {KG}','Yellow Sea','Yes','No'),
+	array('Kamchatka {KAM}','Kuril','Yes','No'),
 	array('Kamchatka {KAM}','Okhotsk','Yes','No'),
 	array('Kamchatka {KAM}','Vladivostok {VLA}','Yes','Yes'),
 	array('Kamchatka {KAM}','Yakutsk {YAK}','No','Yes'),
@@ -1483,6 +1484,7 @@ InstallCache::terrJSON($this->territoriesJSONFile(),$this->mapID);
 // Copy the smallmap-sample to the cache-directory to avoid a screwed variantpage (there is no smallmap available)
 if (!file_exists('variants/'.$this->name.'/cache/sampleMap.png'))
 	copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
+
 
 
 
