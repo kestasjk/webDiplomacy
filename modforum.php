@@ -338,16 +338,7 @@ AND ($_REQUEST['newmessage'] != "") ) {
 				// To a thread
 				$threadDetails = $DB->sql_hash(
 					"SELECT f.id, f.latestReplySent, 
-						f.silenceID,
-						silence.userID as silenceUserID,
-						silence.postID as silencePostID,
-						silence.moderatorUserID as silenceModeratorUserID,
-						silence.enabled as silenceEnabled,
-						silence.startTime as silenceStartTime,
-						silence.length as silenceLength,
-						silence.reason as silenceReason
 					FROM wD_ModForumMessages f 
-					LEFT JOIN wD_Silences silence ON ( f.silenceID = silence.id )
 					WHERE f.id=".$new['sendtothread']."
 						AND f.type='ThreadStart'");
 
@@ -575,20 +566,10 @@ if( file_exists($cacheHTML) )
 $tabl = $DB->sql_tabl("SELECT
 	f.id, f.fromUserID, f.timeSent, f.message, f.subject, f.replies,
 		u.username as fromusername, u.points as points, f.latestReplySent, IF(s.userID IS NULL,0,1) as online, u.type as userType, 
-		(SELECT COUNT(*) FROM wD_LikePost lp WHERE lp.likeMessageID = f.id) as likeCount,
-		f.status as status,
-		f.silenceID,
-		silence.userID as silenceUserID,
-		silence.postID as silencePostID,
-		silence.moderatorUserID as silenceModeratorUserID,
-		silence.enabled as silenceEnabled,
-		silence.startTime as silenceStartTime,
-		silence.length as silenceLength,
-		silence.reason as silenceReason
+		f.status as status
 	FROM wD_ModForumMessages f
 	INNER JOIN wD_Users u ON ( f.fromUserID = u.id )
 	LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
-	LEFT JOIN wD_Silences silence ON ( f.silenceID = silence.id )
 	WHERE f.type = 'ThreadStart'
 	".($User->type['Moderator'] ? '' : " AND fromUserID = '".$User->id."'")."
 	ORDER BY f.latestReplySent DESC
@@ -699,20 +680,10 @@ while( $message = $DB->tabl_hash($tabl) )
 		$replytabl = $DB->sql_tabl(
 			"SELECT f.id, fromUserID, f.timeSent, f.message, u.points as points, IF(s.userID IS NULL,0,1) as online,
 					u.username as fromusername, f.toID, u.type as userType, 
-					(SELECT COUNT(*) FROM wD_LikePost lp WHERE lp.likeMessageID = f.id) as likeCount, 
-					f.adminReply as adminReply ,
-					f.silenceID,
-					silence.userID as silenceUserID,
-					silence.postID as silencePostID,
-					silence.moderatorUserID as silenceModeratorUserID,
-					silence.enabled as silenceEnabled,
-					silence.startTime as silenceStartTime,
-					silence.length as silenceLength,
-					silence.reason as silenceReason
+					f.adminReply as adminReply
 				FROM wD_ModForumMessages f
 				INNER JOIN wD_Users u ON f.fromUserID = u.id
 				LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
-				LEFT JOIN wD_Silences silence ON ( f.silenceID = silence.id )
 				WHERE f.toID=".$message['id']." AND f.type='ThreadReply'
 				order BY f.timeSent ASC
 				".(isset($threadPager)?$threadPager->SQLLimit():''));
@@ -769,25 +740,6 @@ while( $message = $DB->tabl_hash($tabl) )
 
 			print '<em>'.libTime::text($reply['timeSent']).'</em>';
 
-			print '<br />'.$User->likeMessageToggleLink($reply['id'],$reply['fromUserID']).libHTML::likeCount($reply['likeCount']);
-			
-			
-			if( $User->type['Admin'] || $User->type['ForumModerator'] ) {
-				
-				if( Silence::isSilenced($reply) )
-					$silence = new Silence($reply);
-				else
-					unset($silence);
-				
-				print '<br />';
-				
-				if( isset($silence) && $silence->isEnabled() ) 
-					print '<a class="light" href="admincp.php?tab=Control%20Panel&amp;silenceID='.$silence->id.'#disableSilence">Disable silence</a>';
-				else
-					print '<a class="light" href="admincp.php?tab=Control%20Panel&amp;postID='.$reply['id'].'&amp;userID='.$reply['fromUserID'].'#createUserThreadSilence">Silence user</a>';
-				
-			}
-					
 			print '</div>';
 
 
