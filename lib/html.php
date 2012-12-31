@@ -987,8 +987,7 @@ class libHTML
 				this.lastMessageIDViewed='.$User->lastMessageIDViewed.';
 				this.lastModMessageIDViewed='.$User->lastModMessageIDViewed.';
 				this.timeLastSessionEnded='.$User->timeLastSessionEnded.';
-				this.type='.$User->type.';
-				this.token="'.md5(Config::$secret.$User->id.$User->type).'";
+				this.token="'.md5(Config::$secret.$User->id).'";
 			}
 			User = new UserClass();
 
