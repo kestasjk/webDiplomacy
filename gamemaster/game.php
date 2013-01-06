@@ -332,11 +332,7 @@ class processGame extends Game
 		$pTime = time() + $joinPeriod*60;
 		$pTime = $pTime - fmod($pTime, 300) + 300;	// for short game & phase timer
 		
-		// Fix the bet to 1 for 2-player games.
-		$Variant=libVariant::loadFromVariantID($variantID);
-		if (count($Variant->countries)<3)
-			$bet=1;
-		
+		$Variant = libVariant::loadFromVariantID($variantID);
 		// Check the starting SCs for each player (multiplied by 2)...
 		$sql='SELECT count(*)*2 FROM wD_Territories
 				WHERE mapID='.$Variant->mapID.' AND supply="Yes" AND countryID>0 
@@ -372,8 +368,18 @@ class processGame extends Game
 						phaseMinutes = ".$phaseMinutes);
 
 		$gameID = $DB->last_inserted();
+		
+		$Game = $Variant->processGame($gameID);
+		// Fix the bet for variants with small numbers of players.		
+		if (isset(Config::$limitBet) && isset(Config::$limitBet[(count($Game->Variant->countries))]))
+		{
+			$maxbet = Config::$limitBet[(count($Variant->countries))];
+			$bet = ( ($bet > $maxbet) ? $maxbet : $bet );
+			$DB->sql_put("UPDATE wD_Games SET minimumBet = ".$bet." WHERE id=".$gameID);
+			$Game->minimumBet = $bet;
+		}
 
-		return $Variant->processGame($gameID);
+		return $Game;
 	}
 
 	/**

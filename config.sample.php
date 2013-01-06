@@ -368,6 +368,13 @@ class Config
 	//		'myLAAN'            => array('Hussite','TreatyOfVerdun'),
 	// );
 	
+	/*
+	 * Limit the maximum bet-size based on how many players can join
+	 */
+	// public static $limitBet = array (
+	// 	2=>'1', 3=>'5', 4=>'10', 5=>'20', 6=>'30'
+	// );
+	
 	/**
 	 * EasyDevInstall
 	 * If set to an install.php it will create the database and a adminaccount automatically

@@ -185,7 +185,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		// END RELIABILITY-PATCH
 		
 		// Create first Member record & object
-		processMember::create($User->id, $input['bet'],$input['countryID']);
+		processMember::create($User->id, $Game->minimumBet, $input['countryID']);
 		
 		$Game->Members->joinedRedirect();
 	}

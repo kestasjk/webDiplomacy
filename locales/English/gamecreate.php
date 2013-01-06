@@ -83,7 +83,6 @@ Start a new game; you decide the name, how long it runs, and how much it's worth
 		The maximum number of hours allowed for players to discuss and enter orders each phase.<br />
 		Longer phase hours means more time to make careful decisions and negotiations, but makes a game take longer. Shorter
 		phase hours results in a faster game, but requires that players in the game are available to check the game frequently.<br /><br />
-
 		<strong>Default:</strong> 24 hours/1 day
 	</li>
 
@@ -103,7 +102,27 @@ Start a new game; you decide the name, how long it runs, and how much it's worth
 	</li>
 	<li class="formlistdesc">
 		The bet required to join this game. This is the amount of points that all players, including you,
-		must put into the game's "pot" (<a href="points.php" class="light">read more</a>).<br /><br />
+		must put into the game's "pot" (<a href="points.php" class="light">read more</a>).<br />
+		<?php
+			if (isset(Config::$limitBet))
+			{
+				print 'There are some restrictions how many '.libHTML::points().' are allowed based on how many players are in your game.<br />';
+				$first=true;
+				foreach (Config::$limitBet as $limit=>$bet)
+				{
+					if ($first)
+					{
+						print '('.$limit.'-player variants allow a maximum betsize of '.$bet.libHTML::points().',';
+						$first = false;
+					}
+					else
+						print $limit.'-players: '.$bet.libHTML::points().', ';
+				}
+				print 'variants with more players have no such limit.)';
+				print '<br />';
+			}
+		?>
+		<br />
 
 		<strong>Default:</strong> <?php print $defaultPoints.libHTML::points(); ?>
 	</li>
