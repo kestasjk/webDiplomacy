@@ -225,7 +225,6 @@ $bordersRawData=array(
 	array('Voronezh','Lithuania','No','Yes'),
 	array('Voronezh','Ukraine','No','Yes'),
 	array('Voronezh','Volga','No','Yes'),
-	array('Voronezh','Rostov','No','Yes'),
 	array('Lithuania','Posen','No','Yes'),
 	array('Lithuania','Podolia','No','Yes'),
 	array('Lithuania','Konigsberg','No','Yes'),
