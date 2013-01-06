@@ -32,7 +32,7 @@
 	1.0.12: converted rules.html in correct English... :-)
 	1.0.13: bug in adjudicatorPreGame fixed
 	1.0.14: bug in processOrderBuilds fixed
-
+	1.0.15: Pot limitations now handled by the webdip-code
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -44,7 +44,7 @@ class ClassicVSVariant extends WDVariant {
 	public $fullName   ='Classic - Pick your countries';
 	public $description='The standard Diplomacy map of Europe, but you can choose what countries you want to be playable.';
 	public $adapter    ='Oliver Auth';
-	public $version    ='1.0.14';
+	public $version    ='1.0.15';
 
 	public $countries=array('Player_1', 'Player_2', 'Player_3', 'Player_4', 'Player_5', 'Player_6', 'Player_7');
 
@@ -62,8 +62,6 @@ class ClassicVSVariant extends WDVariant {
 		$this->variantClasses['processOrderBuilds'] = 'ClassicVS';
 		$this->variantClasses['userOrderBuilds']    = 'ClassicVS';
 
-		// Fixed gamesetings (Only Winner Takes All / fixed bet )
-		$this->variantClasses['processMember']      = 'ClassicVS';	
 	}
 	
 	public function __call($name, $args)
