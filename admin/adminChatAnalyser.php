@@ -159,7 +159,7 @@ if (($gameID != 0) && (count($user1) > 0) && (count($user2) > 0))
 					<TD class="left time">'.libTime::text($timeSent).'</TD>
 					<TD class="right '.( $from != 0 ? 'country'.$from:'').'">
 						To: <strong>'.($to==0?'Global':$Game->Variant->countries[$to-1]).'</strong> from <strong>'.($from==0?'Global':$Game->Variant->countries[$from-1]).'</strong>
-						('.$Game->datetxt($message['turn']).'): 
+						('.$Game->datetxt($turn).'): 
 						<BR>'.$message.'
 					</TD>
 				</TR>';	
