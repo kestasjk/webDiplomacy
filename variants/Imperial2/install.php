@@ -194,8 +194,8 @@ $territoryRawData=array(
 	array('Kenya {KEN}', 'Coast', 'No', 0, 1527, 698, 0, 0),
 	array('Khiva {KHV}', 'Coast', 'Yes', 0, 1694, 358, 0, 0),
 	array('Kiel {KIE}', 'Coast', 'Yes', 0, 1335, 230, 0, 0),
-	array('Kiel {KIE} (East Coast)', 'Coast', 'No', 0, 1326, 236, 0, 0),
-	array('Kiel {KIE} (West Coast)', 'Coast', 'No', 0, 1345, 230, 0, 0),
+	array('Kiel {KIE} (East Coast)', 'Coast', 'No', 0, 1347, 229, 0, 0),
+	array('Kiel {KIE} (West Coast)', 'Coast', 'No', 0, 1330, 228, 0, 0),
 	array('Kirbati Sea', 'Sea', 'No', 0, 162, 681, 0, 0),
 	array('Kirghiz {KIR}', 'Land', 'No', 4, 1856, 303, 0, 0),
 	array('Krasnoyarsk {KRA}', 'Land', 'No', 11, 1762, 253, 0, 0),
@@ -1484,6 +1484,7 @@ InstallCache::terrJSON($this->territoriesJSONFile(),$this->mapID);
 // Copy the smallmap-sample to the cache-directory to avoid a screwed variantpage (there is no smallmap available)
 if (!file_exists('variants/'.$this->name.'/cache/sampleMap.png'))
 	copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
+
 
 
 
