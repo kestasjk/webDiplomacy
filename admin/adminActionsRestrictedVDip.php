@@ -14,6 +14,11 @@ class adminActionsRestrictedVDip extends adminActionsForum
 				'description' => 'Clears advanced access log table of logs older than 60 days.',
 				'params' => array(),
 			),
+			'recalculateElo' => array(
+				'name' => 'Recalculate Elo.',
+				'description' => 'Recalculates the EloRating for all users. CD-penalities will be lost.',
+				'params' => array(),
+			),
 			'delCache' => array(
 				'name' => 'Clean the cache directory.',
 				'description' => 'Delete the cache files older than the given date.',
@@ -64,6 +69,26 @@ class adminActionsRestrictedVDip extends adminActionsForum
 		);
 		
 		adminActions::$actions = array_merge(adminActions::$actions, $vDipActionsRestricted);
+	}
+
+	
+	public function recalculateElo(array $params)
+	{
+		include_once("lib/elo.php");
+		global $DB;
+		$tabl = $DB->sql_tabl("SELECT id FROM wD_Games WHERE phase='Finished' ORDER BY id ASC");
+		$count = 0;
+		while(list($id) = $DB->tabl_row($tabl))
+		{
+			libElo::calcEloGame($id);
+			$count++;
+		}
+		return 'Recalculated the Elo for '.$count.' games.';		
+	}
+	
+	public function recalculateEloConfirm(array $params)
+	{
+		return 'Do you really want to recalculate all Elo-ratings? CD penalities in the ratingts will be lost.';
 	}
 
 	public function clearAdvancedAccessLogs(array $params)
