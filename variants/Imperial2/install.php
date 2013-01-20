@@ -601,7 +601,7 @@ $bordersRawData=array(
 	array('Bangkok {BNK} (West Coast)','Malaysia {MLS}','Yes','No'),
 	array('Bangkok {BNK} (West Coast)','Rangoon {RNG}','Yes','No'),
 	array('Barcelone {BRC}','Bogota {BGT}','No','Yes'),
-	array('Barcelone {BRC}','Calabozo {CLB}','Yes','Yes'),
+	array('Barcelone {BRC}','Calabozo {CLB}','No','Yes'),
 	array('Barcelone {BRC}','Caledonia {CLD}','No','Yes'),
 	array('Barcelone {BRC}','Mitu {MIT}','No','Yes'),
 	array('Barents Sea','Finland {FIN} (North Coast)','Yes','No'),
@@ -1484,6 +1484,7 @@ InstallCache::terrJSON($this->territoriesJSONFile(),$this->mapID);
 // Copy the smallmap-sample to the cache-directory to avoid a screwed variantpage (there is no smallmap available)
 if (!file_exists('variants/'.$this->name.'/cache/sampleMap.png'))
 	copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
+
 
 
 
