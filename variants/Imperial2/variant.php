@@ -25,6 +25,7 @@
 	1.0:   initial release
 	1.0.1: color improvements
 	1.0.2: territory-names improvements
+	1.1:   new convoy-code (does no longer verify the javascript-path, because browsers couldn't handle the JS)
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -38,7 +39,7 @@ class Imperial2Variant extends WDVariant {
 	public $author     = 'Michael David Roberts';
 	public $adapter    = 'Oliver Auth (abbreviations by Captainmeme)';
 	public $version    = '3.0';
-	public $codeVersion= '1.0.6';
+	public $codeVersion= '1.1';
 	public $homepage   = 'http://www.variantbank.org/results/rules/i/imperial2.htm';
 	
 	public $countries=array('Austria','Brazil','Britain','China','CSA','France','Holland','Japan','Mexico','Prussia','Russia','Turkey','USA');
@@ -49,6 +50,10 @@ class Imperial2Variant extends WDVariant {
 		$this->variantClasses['adjudicatorPreGame'] = 'Imperial2';
 		$this->variantClasses['Chatbox']            = 'Imperial2';
 		$this->variantClasses['panelGameBoard']     = 'Imperial2';	
+	
+		// Convoy-Fix
+		$this->variantClasses['OrderInterface']     = 'Imperial2';
+		$this->variantClasses['userOrderDiplomacy'] = 'Imperial2'; 
 		
 		// Build anywhere at a home SC
 		$this->variantClasses['OrderInterface']     = 'Imperial2';		

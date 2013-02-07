@@ -1,6 +1,6 @@
 <?php
 /*
-	Copyright (C) 2011 Oliver Auth
+	Copyright (C) 2013 Oliver Auth
 
 	This file is part of the Imperial2 variant for webDiplomacy
 
@@ -56,5 +56,21 @@ class BuildAnyHome_OrderInterface extends StraitsRule_OrderInterface {
 		}
 	}
 }
+class ConvoyFix_OrderInterface extends BuildAnyHome_OrderInterface
+{
+	protected function jsLoadBoard()
+	{
+		global $Variant;
 
-class Imperial2Variant_OrderInterface extends BuildAnyHome_OrderInterface {}
+		parent::jsLoadBoard();
+		if( $this->phase=='Diplomacy' )
+		{
+			libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/convoyfix.js';
+			foreach(libHTML::$footerScript as $index=>$script)
+				if(strpos($script, 'loadOrdersModel();') )
+					libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();NewConvoyCode();', $script);
+		}
+	}
+}
+
+class Imperial2Variant_OrderInterface extends ConvoyFix_OrderInterface {}

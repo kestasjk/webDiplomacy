@@ -1,6 +1,6 @@
 <?php
 /*
-	Copyright (C) 2011 Oliver Auth
+	Copyright (C) 2013 Oliver Auth
 
 	This file is part of the Imperial2 variant for webDiplomacy
 
@@ -23,9 +23,18 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class StraitsRule_userOrderDiplomacy extends userOrderDiplomacy
+class ConvoyFix_userOrderDiplomacy extends userOrderDiplomacy
 {
+	protected function checkConvoyPath($startCoastTerrID, $endCoastTerrID, $mustContainTerrID=false, $mustNotContainTerrID=false)
+	{
+		return true;
+	}
+
+	protected function supportMoveFromTerrCheck()
+	{
+		return true;
+	}
 
 }
 
-class VikingVariant_userOrderDiplomacy extends StraitsRule_userOrderDiplomacy {}
+class Imperial2Variant_userOrderDiplomacy extends ConvoyFix_userOrderDiplomacy {}
