@@ -109,7 +109,7 @@ $territoryRawData=array(
 	array('Cuba {CUB}', 'Coast', 'Yes', 0, 685, 521, 0, 0),
 	array('Cyprus {CYP}', 'Coast', 'Yes', 12, 1483, 393, 0, 0),
 	array('Damaraland {DML}', 'Coast', 'No', 0, 1388, 852, 0, 0),
-	array('Dar Es Sallam {DAR}', 'Land', 'No', 0, 1474, 601, 0, 0),
+	array('Darfur {DAR}', 'Land', 'No', 0, 1474, 601, 0, 0),
 	array('Delhi {DEL}', 'Land', 'Yes', 3, 1839, 450, 0, 0),
 	array('Denkyera {DMK}', 'Coast', 'No', 0, 1308, 629, 0, 0),
 	array('Denmark {DEN}', 'Coast', 'Yes', 0, 1329, 213, 0, 0),
@@ -400,7 +400,7 @@ foreach($territoryRawData as $territoryRawRow)
 unset($territoryRawData);
 
 $bordersRawData=array(
-	array('Abyssinia {ABY}','Dar Es Sallam {DAR}','No','Yes'),
+	array('Abyssinia {ABY}','Darfur {DAR}','No','Yes'),
 	array('Abyssinia {ABY}','Gall Land {GAL}','No','Yes'),
 	array('Abyssinia {ABY}','Red Sea {RED}','Yes','No'),
 	array('Abyssinia {ABY}','Somalia {SOM}','Yes','Yes'),
@@ -541,7 +541,7 @@ $bordersRawData=array(
 	array('Assam {ASM}','Yunnan {YUN}','No','Yes'),
 	array('Aswan {ASW}','Cairo {CAI}','No','Yes'),
 	array('Aswan {ASW}','Cairo {CAI} (East Coast)','Yes','No'),
-	array('Aswan {ASW}','Dar Es Sallam {DAR}','No','Yes'),
+	array('Aswan {ASW}','Darfur {DAR}','No','Yes'),
 	array('Aswan {ASW}','Fezz {FZZ}','No','Yes'),
 	array('Aswan {ASW}','Red Sea {RED}','Yes','No'),
 	array('Aswan {ASW}','Sudan {SUD}','Yes','Yes'),
@@ -867,10 +867,10 @@ $bordersRawData=array(
 	array('Cyprus {CYP}','Syria {SYR}','No','Yes'),
 	array('Cyprus {CYP}','Syria {SYR} (West Coast)','Yes','No'),
 	array('Damaraland {DML}','South Atlantic','Yes','No'),
-	array('Dar Es Sallam {DAR}','Fezz {FZZ}','No','Yes'),
-	array('Dar Es Sallam {DAR}','Gall Land {GAL}','No','Yes'),
-	array('Dar Es Sallam {DAR}','Kenya {KEN}','No','Yes'),
-	array('Dar Es Sallam {DAR}','Sudan {SUD}','No','Yes'),
+	array('Darfur {DAR}','Fezz {FZZ}','No','Yes'),
+	array('Darfur {DAR}','Gall Land {GAL}','No','Yes'),
+	array('Darfur {DAR}','Kenya {KEN}','No','Yes'),
+	array('Darfur {DAR}','Sudan {SUD}','No','Yes'),
 	array('Delhi {DEL}','Kashmir {KAS}','No','Yes'),
 	array('Delhi {DEL}','Lucknow {LCK}','No','Yes'),
 	array('Delhi {DEL}','Mandlah {MDH}','No','Yes'),
@@ -1484,6 +1484,7 @@ InstallCache::terrJSON($this->territoriesJSONFile(),$this->mapID);
 // Copy the smallmap-sample to the cache-directory to avoid a screwed variantpage (there is no smallmap available)
 if (!file_exists('variants/'.$this->name.'/cache/sampleMap.png'))
 	copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
+
 
 
 
