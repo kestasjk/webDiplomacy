@@ -1,5 +1,23 @@
 <?php
+/*
+    Copyright (C) 20013 Oliver Auth
 
+	This file is part of vDiplomacy.
+
+    vDiplomacy is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    vDiplomacy is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with vDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
+*/
+ 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 class adminActionsRestrictedVDip extends adminActionsForum
@@ -14,9 +32,9 @@ class adminActionsRestrictedVDip extends adminActionsForum
 				'description' => 'Clears advanced access log table of logs older than 60 days.',
 				'params' => array(),
 			),
-			'recalculateElo' => array(
-				'name' => 'Recalculate Elo.',
-				'description' => 'Recalculates the EloRating for all users. CD-penalities will be lost.',
+			'recalculateRatings' => array(
+				'name' => 'Recalculate ratings',
+				'description' => 'Recalculates the ratings for all users.',
 				'params' => array(),
 			),
 			'delCache' => array(
@@ -70,25 +88,25 @@ class adminActionsRestrictedVDip extends adminActionsForum
 		
 		adminActions::$actions = array_merge(adminActions::$actions, $vDipActionsRestricted);
 	}
-
 	
-	public function recalculateElo(array $params)
+	public function recalculateRatings(array $params)
 	{
-		include_once("lib/elo.php");
+		set_time_limit(0);
+		include_once("lib/rating.php");
 		global $DB;
-		$tabl = $DB->sql_tabl("SELECT id FROM wD_Games WHERE phase='Finished' ORDER BY id ASC");
+		$tabl = $DB->sql_tabl("SELECT id FROM wD_Games WHERE phase='Finished' ORDER BY processTime ASC");
 		$count = 0;
-		while(list($id) = $DB->tabl_row($tabl))
+		while(list($gameID) = $DB->tabl_row($tabl))
 		{
-			libElo::calcEloGame($id);
+			libRating::updateRatings($gameID);
 			$count++;
 		}
-		return 'Recalculated the Elo for '.$count.' games.';		
+		return 'Recalculated the ratings for '.$count.' games.';		
 	}
 	
-	public function recalculateEloConfirm(array $params)
+	public function recalculateRatingsConfirm(array $params)
 	{
-		return 'Do you really want to recalculate all Elo-ratings? CD penalities in the ratingts will be lost.';
+		return 'Do you really want to recalculate all ratings? This might take quite some time.';
 	}
 
 	public function clearAdvancedAccessLogs(array $params)
