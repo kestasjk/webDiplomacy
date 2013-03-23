@@ -107,7 +107,7 @@ class libHTML
 	{
 		return ' <img src="images/icons/points.png" alt="D" title="webDiplomacy points" />';
 	}
-
+	
 	static function forumMessage($threadID, $messageID)
 	{
 		return '<a style="'.self::$hideStyle.'" class="messageIconForum" threadID="'.$threadID.'" messageID="'.$messageID.'" href="forum.php?threadID='.$threadID.'#'.$messageID.'">'.
@@ -1046,6 +1046,16 @@ class libHTML
 		if($url) $buf .= '</a>';
 		return $buf;
 	}
+	
+	/**
+	 * The vpoints icon
+	 * @return string
+	 */
+	static function vpoints()
+	{
+		return ' <img src="images/icons/vpoints.png" alt="D" title="vDiplomacy points" />';
+	}
+
 
 }
 

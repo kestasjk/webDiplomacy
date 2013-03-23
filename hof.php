@@ -231,16 +231,16 @@ else
 	print '<TABLE class="sortable">
 				<THEAD>
 					<TH style="border: 1px solid #000">Name</TH>
+					<TH style="border: 1px solid #000" class="sortfirstdesc">VPoints (elo style)</TH>
 					<TH style="border: 1px solid #000">DPoints</TH>
-					<TH style="border: 1px solid #000" class="sortfirstdesc">Won/Drawn/Lost</TH>
 				</THEAD>';
 				
 	foreach ($users as $user)
 		print '
 			<TR>
 				<TD style="border: 1px solid #666"><a href="hof.php?userID='.$user['id'].'">'.$user['name'].'</a></TD>
+				<TD style="border: 1px solid #666">'.(isset($user['Vr'])? $user['Vr'].' '.libHTML::vpoints().' (<b>#'.$user['Vr#'].'</b>)' : '-').'</TD>
 				<TD style="border: 1px solid #666">'.(isset($user['DPoints'])? $user['DPoints'].' '.libHTML::points().' (<b>#'.$user['DPoints#'].'</b>)' : '-').'</TD>
-				<TD style="border: 1px solid #666">'.(isset($user['Vr'])? $user['Vr'].' (<b>#'.$user['Vr#'].'</b>)' : '-').'</TD>
 			</TR>';
 
 	print '</TABLE>';
