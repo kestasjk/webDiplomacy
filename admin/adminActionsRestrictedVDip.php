@@ -94,6 +94,8 @@ class adminActionsRestrictedVDip extends adminActionsForum
 		set_time_limit(0);
 		include_once("lib/rating.php");
 		global $DB;
+		
+		$DB->sql_put("DELETE FROM wD_Ratings");
 		$tabl = $DB->sql_tabl("SELECT id FROM wD_Games WHERE phase='Finished' ORDER BY processTime ASC");
 		$count = 0;
 		while(list($gameID) = $DB->tabl_row($tabl))
