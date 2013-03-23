@@ -847,7 +847,7 @@ class processGame extends Game
 			
 			// Update the Ratings
 			include_once("lib/rating.php");
-			libRating::updateRatings($this);
+			libRating::updateRatings($this, true);
 		}
 
 		$DB->sql_put("UPDATE wD_Games SET phase='".$phase."' ".$turn.$gameOver." WHERE id=".$this->id);
