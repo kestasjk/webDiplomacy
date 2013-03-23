@@ -108,13 +108,10 @@ function adminCPTabs()
 			'Status lists'=>'View server status lists',
 			'Control Panel Logs'=>'Log of recent admin tasks',
 			'Multi-accounts'=>'Multi-account detector',
-			'Chatlogs'=>'Check the ingame chat.'
+			'Chatlogs'=>'Check the ingame chat.',
+			'AcessLog'=>'Check the user-actions sort by IP and Username.'
 		);
 
-	global $User;
-	if ($User->type['Admin'])
-		$tabs['AcessLog']='Check the user-actions sort by IP and Username.';
-		
 	$tab = 'Control Panel';
 	$tabNames = array_keys($tabs);
 

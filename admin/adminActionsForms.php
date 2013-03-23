@@ -330,7 +330,7 @@ if ( $User->type['Admin'] )
 elseif ( $User->type['ForumModerator'] )
 	$adminActions = new adminActionsForum();
 else
-	$adminActions = new adminActions();
+	$adminActions = new adminActionsVDip();
 
 
 // Create a bullet-point set of anchor shortcuts to each task
