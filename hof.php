@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 20013 Oliver Auth
+    Copyright (C) 2013 Oliver Auth
 
 	This file is part of vDiplomacy.
 
@@ -24,10 +24,9 @@ require_once("lib/rating.php");
 libHTML::starthtml();
 
 print '<script type="text/javascript" src="contrib/tablekit/tablekit.js"></script>';
-print libHTML::pageTitle('Hall of fame','The webDiplomacy hall of fame; the 150 highest ranking players on this server.');
+print libHTML::pageTitle('Hall of fame','The webDiplomacy hall of fame; the 100 highest ranking players on this server.');
 
-
-print '<p align="center"><img src="images/points/stack.png" alt=" "
+print '<p align="center"><img src="images/points/vstack.png" alt=" "
 			title="webDiplomacy ranking points; who are the most skilled at gathering them from their foes?" /></p>';
 
 print '<style type="text/css">
@@ -37,6 +36,11 @@ print '<style type="text/css">
 		.nosort { cursor: default;} 
 	</style>';
 
+print '<style type="text/css">
+		.cellg { border:1px solid #777; }
+		.cellb { border:1px solid #000; }
+	</style>';
+	
 if(isset($_REQUEST['userID']))
 {
 	$userID = (int)$_REQUEST['userID'];
@@ -45,21 +49,13 @@ if(isset($_REQUEST['userID']))
 		
 	print '<TABLE class="sortable">
 				<THEAD>
-					<TH style="border: 1px solid #000">Game</TH>
-					<TH style="border: 1px solid #000">Name</TH>
-					<TH style="border: 1px solid #000">Variant</TH>
-					<TH style="border: 1px solid #000">Status</TH>
-					<TH style="border: 1px solid #000">Change</TH>
-					<TH style="border: 1px solid #000">Total</TH>
-				</THEAD>
-			<TR>
-				<TD style="border: 1px solid #666"></TD>
-				<TD style="border: 1px solid #666"></TD>
-				<TD style="border: 1px solid #666"></TD>
-				<TD style="border: 1px solid #666"></TD>
-				<TD style="border: 1px solid #666"></TD>
-				<TD style="border: 1px solid #666">1000</TD>
-			</TR>';
+					<TH class="cellb">Game</TH>
+					<TH class="cellb">Name</TH>
+					<TH class="cellb">Variant</TH>
+					<TH class="cellb">Status</TH>
+					<TH class="cellb">Change</TH>
+					<TH class="cellb">Total</TH>
+				</THEAD>';
 			
 	$USER_TABL = $DB->sql_tabl("
 		SELECT r.rating, r.gameID, g.name, g.variantID, m.status FROM wD_Ratings r
@@ -75,12 +71,12 @@ if(isset($_REQUEST['userID']))
 	{
 		print '
 			<TR>
-				<TD style="border: 1px solid #666"><a href="hof.php?gameID='.$gameID.'">'.$gameID.'</a></TD>
-				<TD style="border: 1px solid #666"><a href="board.php?gameID='.$gameID.'">'.$gameName.'</TD>
-				<TD style="border: 1px solid #666"><a href="variants.php?variantID='.$variantID.'">'.Config::$variants[$variantID].'</TD>
-				<TD style="border: 1px solid #666">'.$status.'</TD>
-				<TD style="border: 1px solid #666">'.($rating - $rating_old).'</TD>
-				<TD style="border: 1px solid #666">'.$rating.'</TD>
+				<TD class="cellg"><a href="hof.php?gameID='.$gameID.'">'.$gameID.'</a></TD>
+				<TD class="cellg"><a href="board.php?gameID='.$gameID.'">'.$gameName.'</TD>
+				<TD class="cellg"><a href="variants.php?variantID='.$variantID.'">'.Config::$variants[$variantID].'</TD>
+				<TD class="cellg">'.$status.'</TD>
+				<TD class="cellg">'.($rating - $rating_old).'</TD>
+				<TD class="cellg">'.$rating.'</TD>
 			</TR>';
 		$rating_old = $rating;
 	}
@@ -102,13 +98,12 @@ elseif(isset($_REQUEST['gameID']))
 	
 	print '<br><TABLE class="sortable">
 				<THEAD>
-					<TH style="border: 1px solid #000">Player</TH>
-					<TH style="border: 1px solid #000">Rating</TH>
-					<TH style="border: 1px solid #000">Status</TH>
-					<TH align="right" style="border: 1px solid #000">Re &Oslash</TH>
-					<TH align="right" style="border: 1px solid #000">Rr &Oslash</TH>
-					<TH align="right" style="border: 1px solid #000">V &Oslash</TH>
-					<TH align="right" style="border: 1px solid #000">Ch</TH>						
+					<TH class="cellb">Player</TH>
+					<TH class="cellb">Rating</TH>
+					<TH class="cellb">Status</TH>
+					<TH class="cellb" align="right">Re &Oslash</TH>
+					<TH class="cellb" align="right">Rr &Oslash</TH>
+					<TH class="cellb" align="right">Ch</TH>						
 				</THEAD>';
 				
 	foreach ($Members as $userID => $Member)
@@ -118,12 +113,10 @@ elseif(isset($_REQUEST['gameID']))
 		{
 			$Re += $results['Re']; 
 			$Rr += $results['Rr'];
-			$gV += $results['mV'] * $results['gV'];			
 			$Ch += $results['Ch'];		
 		}
 		$Members[$userID]['Re'] = round ($Re / (count($Members) -1),2) * 100;
 		$Members[$userID]['Rr'] = round ($Rr / (count($Members) -1),2) * 100;
-		$Members[$userID]['gV'] = round ($gV / (count($Members) -1),2) * 100;
 		$Members[$userID]['Ch'] = round ($Ch);
 	} 
 	 
@@ -135,13 +128,12 @@ elseif(isset($_REQUEST['gameID']))
 		
 		print '
 			<TR>
-				<TD style="border: 1px solid #000">'.$Member['name'].'</TD>
-				<TD style="border: 1px solid #000">'.$Member['rating'].' -> '.($Member['rating'] + $Member['Ch']).'</TD>
-				<TD style="border: 1px solid #000">'.$Member['status'].(($Member['SCc'] > 0 && $Member['status'] != 'Resigned') ? ' ('.$Member['SCc'].' SC)' : '').'</TD>
-				<TD align="right" style="border: 1px solid #000">'.$Member['Re'].'%</TD>
-				<TD align="right" style="border: 1px solid #000">'.$Member['Rr'].'%</TD>
-				<TD align="right" style="border: 1px solid #000">'.$Member['gV'].'</TD>
-				<TD align="right" style="border: 1px solid #000"><font color="#'.$col.'"><B>'.$Member['Ch'].'</B></font></TD>
+				<TD class="cellg">'.$Member['name'].'</TD>
+				<TD class="cellg">'.$Member['rating'].' -> '.($Member['rating'] + $Member['Ch']).'</TD>
+				<TD class="cellg">'.$Member['status'].(($Member['SCc'] > 0 && $Member['status'] != 'Resigned') ? ' ('.$Member['SCc'].' SC)' : '').'</TD>
+				<TD class="cellg" align="right">'.$Member['Re'].'%</TD>
+				<TD class="cellg" align="right">'.$Member['Rr'].'%</TD>
+				<TD class="cellg" align="right"><font color="#'.$col.'"><B>'.$Member['Ch'].'</B></font></TD>
 			</TR>';
 	}
 	
@@ -152,13 +144,13 @@ elseif(isset($_REQUEST['gameID']))
 		print "<b>".$Member['name']." (".$Member['status']." / ".$Member['SCc']."SCs / ".$Member['rating']."->".round($Member['rating'] + $Member['change'])."):</b>";
 		print '<TABLE class="sortable">
 					<THEAD>
-						<TH style="border: 1px solid #000">Vs</TH>
-						<TH align="right" style="border: 1px solid #000">Re</TH>
-						<TH align="right"style="border: 1px solid #000">Rr</TH>
-						<TH align="right" style="border: 1px solid #000">Dif</TH>
-						<TH align="right" style="border: 1px solid #000">mV</TH>
-						<TH align="right" style="border: 1px solid #000">gV</TH>
-						<TH align="right" style="border: 1px solid #000">Ch</TH>						
+						<TH class="cellb">Vs</TH>
+						<TH class="cellb" align="right">Re</TH>
+						<TH class="cellb" align="right">Rr</TH>
+						<TH class="cellb" align="right">Dif</TH>
+						<TH class="cellb" align="right">mV</TH>
+						<TH class="cellb" align="right">gV</TH>
+						<TH class="cellb" align="right">Ch</TH>						
 					</THEAD>';
 		 
 		foreach ($Member['matches'] as $userID => $results)
@@ -169,16 +161,16 @@ elseif(isset($_REQUEST['gameID']))
 			
 			print '
 				<TR>
-					<TD style="border: 1px solid #000">'.$Members[$userID]['name'].' ('.
+					<TD class="cellg">'.$Members[$userID]['name'].' ('.
 						$Members[$userID]['status'].
 						(($Members[$userID]['SCc'] > 0 && $Members[$userID]['status'] != 'Resigned') ? " / ".$Members[$userID]['SCc']. " SC " : "").
 						')</TD>
-					<TD align="right" style="border: 1px solid #000">'.(round($results['Re'],2)*100).'%</TD>
-					<TD align="right" style="border: 1px solid #000">'.(round($results['Rr'],2)*100).'%</TD>
-					<TD  align="right"style="border: 1px solid #000"><font color="#'.$col.'">'.(round($results['Rr'] - $results['Re'],2)*100).'%</font></TD>
-					<TD align="right" style="border: 1px solid #000">'.(round($results['mV'],2)*100).'%</TD>
-					<TD align="right" style="border: 1px solid #000">'.round($results['gV'],2).'</TD>
-					<TD align="right" style="border: 1px solid #000"><font color="#'.$col.'">'.round($results['Ch'],2).'</font></TD>
+					<TD class="cellg" align="right">'.(round($results['Re'],2)*100).'%</TD>
+					<TD class="cellg" align="right">'.(round($results['Rr'],2)*100).'%</TD>
+					<TD class="cellg" align="right"><font color="#'.$col.'">'.(round($results['Rr'] - $results['Re'],2)*100).'%</font></TD>
+					<TD class="cellg" align="right">'.(round($results['mV'],2)*100).'%</TD>
+					<TD class="cellg" align="right">'.round($results['gV'],2).'</TD>
+					<TD class="cellg" align="right"><font color="#'.$col.'">'.round($results['Ch'],2).'</font></TD>
 				</TR>';
 		}
 		if     ( round($Member['change']) < 0) $col = '990002'; 
@@ -187,7 +179,7 @@ elseif(isset($_REQUEST['gameID']))
 		print '	<TFOOT>
 					<TR>
 						<TD colspan=6></TD>
-						<TD align="right" style="border: 1px solid #000"><font color="#'.$col.'"><b>'.round($Member['change']).'</b></font></TD>
+						<TD class="cellg" align="right"><font color="#'.$col.'"><b>'.round($Member['change']).'</b></font></TD>
 					</TR>
 				</TFOOT></TABLE><BR>';
 	}
@@ -195,8 +187,11 @@ elseif(isset($_REQUEST['gameID']))
 }
 else
 {
-	$users = array();
-	
+
+	print '<table class="credits">';
+
+	$alternate = false;
+
 	$i=1;
 	$VPOINTS_TABL = $DB->sql_tabl("
 		SELECT r.userID, u.username, r.rating FROM wD_Ratings r
@@ -207,43 +202,29 @@ else
 				(uid = r.userID && last = g.processTime)			
 		WHERE r.ratingType='vDip'
 			&& u.type <> 'Banned'
-		ORDER BY r.rating DESC LIMIT 150");
+		ORDER BY r.rating DESC LIMIT 100");
 		
-	while ( list($id, $username, $vR) = $DB->tabl_row($VPOINTS_TABL) )
+	while ( list($id, $username, $vPoints) = $DB->tabl_row($VPOINTS_TABL) )
 	{
 		$users[$id]['id']   = $id;
 		$users[$id]['name'] = $username;
-		$users[$id]['Vr']   = $vR;
-		$users[$id]['Vr#']  = $i++;
-	}
-
-	$i=1;
-	$DPOINTS_TABL = $DB->sql_tabl("SELECT id, username, points FROM wD_Users
-							order BY points DESC LIMIT 150 ");					
-	while ( list($id, $username, $dpoints) = $DB->tabl_row($DPOINTS_TABL) )
-	{
-		$users[$id]['id'] = $id;
-		$users[$id]['name'] = $username;
-		$users[$id]['DPoints'] = $dpoints;
-		$users[$id]['DPoints#'] = $i++;
-	}
-
-	print '<TABLE class="sortable">
-				<THEAD>
-					<TH style="border: 1px solid #000">Name</TH>
-					<TH style="border: 1px solid #000" class="sortfirstdesc">VPoints (elo style)</TH>
-					<TH style="border: 1px solid #000">DPoints</TH>
-				</THEAD>';
-				
-	foreach ($users as $user)
+		$users[$id]['Vr']   = $vPoints;
+		$users[$id]['Vr#']  = $i;
+		
+		$alternate = !$alternate;
 		print '
-			<TR>
-				<TD style="border: 1px solid #666"><a href="hof.php?userID='.$user['id'].'">'.$user['name'].'</a></TD>
-				<TD style="border: 1px solid #666">'.(isset($user['Vr'])? $user['Vr'].' '.libHTML::vpoints().' (<b>#'.$user['Vr#'].'</b>)' : '-').'</TD>
-				<TD style="border: 1px solid #666">'.(isset($user['DPoints'])? $user['DPoints'].' '.libHTML::points().' (<b>#'.$user['DPoints#'].'</b>)' : '-').'</TD>
-			</TR>';
+		<tr class="replyalternate'.($alternate ? '1' : '2' ).'">
+			<td class="left time">
+				'.$vPoints.' '.libHTML::vpoints().' - #'.$i.'
+			</td>
 
-	print '</TABLE>';
+			<td class="right message"><a href="hof.php?userID='.$id.'">'.$username.'</a></td>
+		</tr>';
+		$i++;
+	}
+
+	print '</table>';
+
 }
 		
 
