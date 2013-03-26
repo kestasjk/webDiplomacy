@@ -30,6 +30,7 @@
 	0.9:   rules updated; turns displayed as hours in the variant.php file (Emmanuele 10/01/2011)
 	0.9.1: turn display updated
 	1.0:   release
+	1.0.1: Errorfix: targetSC of 0 causes some problems with the new rating.
 
 */
 
@@ -44,7 +45,7 @@ class LepantoVariant extends WDVariant {
 	public $author     = 'Emmanuele Ravaioli (Tadar Es Darden)';
 	public $adapter    = 'Emmanuele Ravaioli / Oliver Auth';
 	public $version    = '1.0';
-	public $disabled   = true;
+	public $codeVersion= '1.0.1';
 
 	public $countries=array('Holy League', 'Ottoman Empire');
 
@@ -77,7 +78,7 @@ class LepantoVariant extends WDVariant {
 	
 	public function initialize() {
 		parent::initialize();
-		$this->supplyCenterTarget = 0;
+		$this->supplyCenterTarget = 2;
 	}
 
 	public function turnAsDate($turn) {
