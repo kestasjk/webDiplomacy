@@ -39,6 +39,7 @@ print '<style type="text/css">
 print '<style type="text/css">
 		.cellg { border:1px solid #777; }
 		.cellb { border:1px solid #000; }
+		.points { width:16% ! important; border-right: solid #aaa 1px; }
 	</style>';
 	
 if(isset($_REQUEST['userID']))
@@ -130,7 +131,7 @@ elseif(isset($_REQUEST['gameID']))
 			<TR>
 				<TD class="cellg">'.$Member['name'].'</TD>
 				<TD class="cellg">'.$Member['rating'].' -> '.($Member['rating'] + $Member['Ch']).'</TD>
-				<TD class="cellg">'.$Member['status'].(($Member['SCc'] > 0 && $Member['status'] != 'Resigned') ? ' ('.$Member['SCc'].' SC)' : '').'</TD>
+				<TD class="cellg">'.$Member['status'].(($Member['SCr'] > 0 && $Member['status'] != 'Resigned') ? ' ('.$Member['SCr'].' SC)' : '').'</TD>
 				<TD class="cellg" align="right">'.$Member['Re'].'%</TD>
 				<TD class="cellg" align="right">'.$Member['Rr'].'%</TD>
 				<TD class="cellg" align="right"><font color="#'.$col.'"><B>'.$Member['Ch'].'</B></font></TD>
@@ -141,7 +142,7 @@ elseif(isset($_REQUEST['gameID']))
 	
 	foreach ($Members as $Member)
 	{
-		print "<b>".$Member['name']." (".$Member['status']." / ".$Member['SCc']."SCs / ".$Member['rating']."->".round($Member['rating'] + $Member['change'])."):</b>";
+		print "<b>".$Member['name']." (".$Member['status']." / ".$Member['SCr']."SCs / ".$Member['rating']."->".round($Member['rating'] + $Member['change'])."):</b>";
 		print '<TABLE class="sortable">
 					<THEAD>
 						<TH class="cellb">Vs</TH>
@@ -163,8 +164,8 @@ elseif(isset($_REQUEST['gameID']))
 				<TR>
 					<TD class="cellg">'.$Members[$userID]['name'].' ('.
 						$Members[$userID]['status'].
-						(($Members[$userID]['SCc'] > 0 && $Members[$userID]['status'] != 'Resigned') ? " / ".$Members[$userID]['SCc']. " SC " : "").
-						')</TD>
+						(($Members[$userID]['SCr'] > 0 && $Members[$userID]['status'] != 'Resigned') ? " / ".$Members[$userID]['SCr']. " SC " : "").
+						') vs</TD>
 					<TD class="cellg" align="right">'.(round($results['Re'],2)*100).'%</TD>
 					<TD class="cellg" align="right">'.(round($results['Rr'],2)*100).'%</TD>
 					<TD class="cellg" align="right"><font color="#'.$col.'">'.(round($results['Rr'] - $results['Re'],2)*100).'%</font></TD>
@@ -214,7 +215,7 @@ else
 		$alternate = !$alternate;
 		print '
 		<tr class="replyalternate'.($alternate ? '1' : '2' ).'">
-			<td class="left time">
+			<td class="left points">
 				'.$vPoints.' '.libHTML::vpoints().' - #'.$i.'
 			</td>
 
@@ -227,7 +228,6 @@ else
 
 }
 		
-
 print '</div>';
 libHTML::footer();
 

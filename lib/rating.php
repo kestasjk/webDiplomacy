@@ -63,23 +63,27 @@ class libRating
 		foreach($Game->Members->ByUserID as $userID => $Member)
 		{
 			if ($Member->supplyCenterNo > $maxSCc)
-				$Game->Members->ByUserID[$userID]->supplyCenterNo = $maxSCc;
-			$tSCc += $Game->Members->ByUserID[$userID]->supplyCenterNo;
+				$Game->Members->ByUserID[$userID]->supplyCenterNoAdjusted = $maxSCc;
+			else
+				$Game->Members->ByUserID[$userID]->supplyCenterNoAdjusted = $Member->supplyCenterNo;
+			
+			$tSCc += $Game->Members->ByUserID[$userID]->supplyCenterNoAdjusted;
 		}
 		
-	foreach (array ('Won', 'Drawn', 'Survived', 'Resigned', 'Defeated') as $status)
-		foreach ($Game->Members->ByStatus[$status] AS $Member)
-			$Members[$Member->userID] = array (
-				'userID'  => $Member->userID,
-				'name'    => $Member->username,
-				'rating'  => self::getVDipRating($Member->userID, $Game->id),
-				'bet'     => $Member->bet,
-				'change'  => 0,
-				'status'  => $Member->status,
-				'SCc'     => $Member->supplyCenterNo,
-				'SCq'     => (($tSCc == 0) ? 0 : $Member->supplyCenterNo / $tSCc),
-				'matches' => array()
-			);
+		foreach (array ('Won', 'Drawn', 'Survived', 'Resigned', 'Defeated') as $status)
+			foreach ($Game->Members->ByStatus[$status] AS $Member)
+				$Members[$Member->userID] = array (
+					'userID'  => $Member->userID,
+					'name'    => $Member->username,
+					'rating'  => self::getVDipRating($Member->userID, $Game->id),
+					'bet'     => $Member->bet,
+					'change'  => 0,
+					'status'  => $Member->status,
+					'SCc'     => $Member->supplyCenterNoAdjusted,
+					'SCr'     => $Member->supplyCenterNo,
+					'SCq'     => (($tSCc == 0) ? 0 : $Member->supplyCenterNoAdjusted / $tSCc),
+					'matches' => array()
+				);
 		
 		$tabl = $DB->sql_tabl(
 			"SELECT message FROM wD_GameMessages 
@@ -162,10 +166,8 @@ class libRating
 		}		
 		elseif ($Game->potType == 'Winner-takes-all')
 		{
-			if ($St1!='Won') { $SCc1 = 0; $SCq1 = 0; }
-			if ($St2!='Won') { $SCc2 = 0; $SCq2 = 0; }
-			if ($St1=='Won') { $SCq1 = 1; }
-			if ($St2=='Won') { $SCq2 = 1; }
+			if ($St1=='Won') { $SCq1 = 1; } else  { $SCc1 = 0; $SCq1 = 0; }
+			if ($St2=='Won') { $SCq2 = 1; } else  { $SCc2 = 0; $SCq2 = 0; }
 	 	}
 		
 		// Calculate the real results.
@@ -185,7 +187,7 @@ class libRating
 		// Do not count Rinascimento games
 		if ($Game->Variant->name =='Rinascimento') $gV=0;
 		
-		// If the wininner does not reached the supplyCenterTarget adjust the importance of the game too
+		// If the winner does not reached the supplyCenterTarget adjust the importance of the game too
 		if ($Game->gameOver == 'Won')
 		{
 			foreach($Game->Members->ByStatus['Won'] as $Winner);
