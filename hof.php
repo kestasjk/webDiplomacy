@@ -41,6 +41,8 @@ print '<style type="text/css">
 		.cellb { border:1px solid #000; }
 		.points { width:16% ! important; border-right: solid #aaa 1px; }
 	</style>';
+
+$alternate = false;
 	
 if(isset($_REQUEST['userID']))
 {
@@ -66,12 +68,13 @@ if(isset($_REQUEST['userID']))
 			&& r.userID=".$userID."
 			&& g.phase = 'Finished'
 		ORDER BY g.processTime ASC");
-	
+
+		
 	$rating_old = 1000;
 	while ( list($rating, $gameID, $gameName, $variantID, $status) = $DB->tabl_row($USER_TABL) )
 	{
 		print '
-			<TR>
+			<tr class="replyalternate'.($alternate ? '1' : '2' ).'">
 				<TD class="cellg"><a href="hof.php?gameID='.$gameID.'">'.$gameID.'</a></TD>
 				<TD class="cellg"><a href="board.php?gameID='.$gameID.'">'.$gameName.'</TD>
 				<TD class="cellg"><a href="variants.php?variantID='.$variantID.'">'.Config::$variants[$variantID].'</TD>
@@ -80,6 +83,7 @@ if(isset($_REQUEST['userID']))
 				<TD class="cellg">'.$rating.'</TD>
 			</TR>';
 		$rating_old = $rating;
+		$alternate = !$alternate;
 	}
 
 	print '</TABLE>';
@@ -128,7 +132,7 @@ elseif(isset($_REQUEST['gameID']))
 		else                        $col = '000000';
 		
 		print '
-			<TR>
+			<tr class="replyalternate'.($alternate ? '1' : '2' ).'">
 				<TD class="cellg">'.$Member['name'].'</TD>
 				<TD class="cellg">'.$Member['rating'].' -> '.($Member['rating'] + $Member['Ch']).'</TD>
 				<TD class="cellg">'.$Member['status'].(($Member['SCr'] > 0 && $Member['status'] != 'Resigned') ? ' ('.$Member['SCr'].' SC)' : '').'</TD>
@@ -136,16 +140,18 @@ elseif(isset($_REQUEST['gameID']))
 				<TD class="cellg" align="right">'.$Member['Rr'].'%</TD>
 				<TD class="cellg" align="right"><font color="#'.$col.'"><B>'.$Member['Ch'].'</B></font></TD>
 			</TR>';
+		
+		$alternate = !$alternate;
+
 	}
 	
 	print '</TABLE><BR>';
 	
 	foreach ($Members as $Member)
 	{
-		print "<b>".$Member['name']." (".$Member['status']." / ".$Member['SCr']."SCs / ".$Member['rating']."->".round($Member['rating'] + $Member['change'])."):</b>";
 		print '<TABLE class="sortable">
 					<THEAD>
-						<TH class="cellb">Vs</TH>
+						<TH class="cellb">'.$Member['name'].' ('.$Member['status'].' / '.$Member['SCr'].'SCs / '.$Member['rating'].'->'.round($Member['rating'] + $Member['change']).')</TH>
 						<TH class="cellb" align="right">Re</TH>
 						<TH class="cellb" align="right">Rr</TH>
 						<TH class="cellb" align="right">Dif</TH>
@@ -156,23 +162,28 @@ elseif(isset($_REQUEST['gameID']))
 		 
 		foreach ($Member['matches'] as $userID => $results)
 		{
-			if     ( $results['Ch'] < 0) $col = '990002'; 
-			elseif ( $results['Ch'] > 0) $col = '009902';
-			else                        $col = '000000';
-			
-			print '
-				<TR>
-					<TD class="cellg">'.$Members[$userID]['name'].' ('.
-						$Members[$userID]['status'].
-						(($Members[$userID]['SCr'] > 0 && $Members[$userID]['status'] != 'Resigned') ? " / ".$Members[$userID]['SCr']. " SC " : "").
-						') vs</TD>
-					<TD class="cellg" align="right">'.(round($results['Re'],2)*100).'%</TD>
-					<TD class="cellg" align="right">'.(round($results['Rr'],2)*100).'%</TD>
-					<TD class="cellg" align="right"><font color="#'.$col.'">'.(round($results['Rr'] - $results['Re'],2)*100).'%</font></TD>
-					<TD class="cellg" align="right">'.(round($results['mV'],2)*100).'%</TD>
-					<TD class="cellg" align="right">'.round($results['gV'],2).'</TD>
-					<TD class="cellg" align="right"><font color="#'.$col.'">'.round($results['Ch'],2).'</font></TD>
-				</TR>';
+			if ($results['mV'] != 0)
+			{
+				if     ( $results['Ch'] < 0) $col = '990002'; 
+				elseif ( $results['Ch'] > 0) $col = '009902';
+				else                        $col = '000000';
+				
+				print '
+					<tr class="replyalternate'.($alternate ? '1' : '2' ).'">
+						<TD class="cellg">'.$Members[$userID]['name'].' ('.
+							$Members[$userID]['status'].
+							(($Members[$userID]['SCr'] > 0 && $Members[$userID]['status'] != 'Resigned') ? " / ".$Members[$userID]['SCr']. " SC " : "").
+							')</TD>
+						<TD class="cellg" align="right">'.(round($results['Re'],2)*100).'%</TD>
+						<TD class="cellg" align="right">'.(round($results['Rr'],2)*100).'%</TD>
+						<TD class="cellg" align="right"><font color="#'.$col.'">'.(round($results['Rr'] - $results['Re'],2)*100).'%</font></TD>
+						<TD class="cellg" align="right">'.(round($results['mV'],2)*100).'%</TD>
+						<TD class="cellg" align="right">'.round($results['gV'],2).'</TD>
+						<TD class="cellg" align="right"><font color="#'.$col.'">'.round($results['Ch'],2).'</font></TD>
+					</TR>';
+					
+				$alternate = !$alternate;
+			}
 		}
 		if     ( round($Member['change']) < 0) $col = '990002'; 
 		elseif ( round($Member['change']) > 0) $col = '009902';
@@ -180,7 +191,7 @@ elseif(isset($_REQUEST['gameID']))
 		print '	<TFOOT>
 					<TR>
 						<TD colspan=6></TD>
-						<TD class="cellg" align="right"><font color="#'.$col.'"><b>'.round($Member['change']).'</b></font></TD>
+					<td class="replyalternate'.($alternate ? '1' : '2' ).' cellg" align="right"><font color="#'.$col.'"><b>'.round($Member['change']).'</b></font></TD>
 					</TR>
 				</TFOOT></TABLE><BR>';
 	}

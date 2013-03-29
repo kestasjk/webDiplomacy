@@ -103,6 +103,7 @@ class libRating
 				'bet'     => 10,
 				'change'  => 0,
 				'SCc'     => 0,
+				'SCr'     => 0,
 				'SCq'     => 0,
 				'matches' => array()
 			);
