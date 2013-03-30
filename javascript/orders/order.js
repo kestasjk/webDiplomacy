@@ -133,7 +133,7 @@ function Order(orderData)
 		$('orderID'+this.id).addClassName(newIcon.toLowerCase());
 		this.currentUnitIcon=newIcon;
 		
-		this.unitIconArea.update('<img src="images/'+newIcon+'.png" alt="'+newIcon+'" />');
+		this.unitIconArea.update('<img src="'+l_s('images/'+newIcon+'.png')+'" alt="'+l_t(newIcon)+'" />');
 	};
 	
 	this.setMessageSpan = function(message) {
@@ -335,11 +335,11 @@ function Order(orderData)
 
 		var optionsCount = aoptions.length;
 		
-		if( optionsCount == 0 ) return '<em>[No options available!</em>]';
+		if( optionsCount == 0 ) return '<em>['+l_t('No options available!')+'</em>]';
 		
 		var options = $H(aoptions);
 		if( optionsCount == 1 && !Object.isUndefined(options.get('undefined')) )
-			 return '<em>[No options available!</em>]';
+			 return '<em>['+l_t('No options available!')+'</em>]';
 		
 		if( OrdersHTML.finalized )
 			return ' '+options.get(value)+' ';
@@ -388,7 +388,7 @@ function Order(orderData)
 		{
 			if( !this.checkComplete() )
 			{
-				message = 'Incompatibility between order and requirements, please report via the forums!';
+				message = l_t('Incompatibility between order and requirements, please report via the forums!');
 				icon = 'alert';
 			}
 			else
@@ -404,7 +404,7 @@ function Order(orderData)
 		{
 			if( this.checkComplete() )
 			{
-				message = 'Incompatibility between order and requirements, please report via the forums!';
+				message = l_t('Incompatibility between order and requirements, please report via the forums!');
 				icon = 'alert';
 			}
 			else
@@ -416,10 +416,10 @@ function Order(orderData)
 		else if ( Result.status == 'Invalid' )
 		{
 			icon = 'alert';
-			message = ' '+(Result.notice==null ? 'Undefined error' : Result.notice)+'<br />';
+			message = ' '+(Result.notice==null ? l_t('Undefined error') : l_t(Result.notice))+'<br />';
 		}
 		
-		this.setMessageSpan('<img src="images/icons/'+icon+'.png" alt="'+icon+'" /> '+message);
+		this.setMessageSpan('<img src="'+l_s('images/icons/'+icon+'.png')+'" alt="'+l_t(icon)+'" /> '+message);
 		
 	};
 	
@@ -427,7 +427,7 @@ function Order(orderData)
 		if(Object.isUndefined(arr)) arr = [ ];
 		
 		var choices = new Hash();
-		arr.map(function(c) { choices.set(c, Territories.get(c).name); });
+		arr.map(function(c) { choices.set(c, l_t(Territories.get(c).name)); });
 		
 		return choices;
 	};

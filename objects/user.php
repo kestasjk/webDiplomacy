@@ -20,7 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('objects/notice.php');
+require_once(l_r('objects/notice.php'));
 
 /**
  * Holds information on a user for display, or to manage certain user related functions such as logging
@@ -149,12 +149,6 @@ class User {
 	 * @var int
 	 */
 	public $timeJoined;
-
-	/**
-	 * Locale
-	 * @var string
-	 */
-	public $locale;
 
 	/**
 	 * UNIX timestamp from the time the last session ended
@@ -311,7 +305,7 @@ class User {
 		$SQLVars = array();
 
 		$available = array('username'=>'', 'password'=>'', 'passwordcheck'=>'', 'email'=>'',
-					'hideEmail'=>'','showEmail'=>'', 'locale'=>'','homepage'=>'','comment'=>'');
+					'hideEmail'=>'','showEmail'=>'', 'homepage'=>'','comment'=>'');
 
 		$userForm = array();
 
@@ -337,7 +331,7 @@ class User {
 			}
 			else
 			{
-				$errors[] = "The two passwords do not match";
+				$errors[] = l_t("The two passwords do not match");
 			}
 		}
 
@@ -346,7 +340,7 @@ class User {
 			$userForm['email'] = $DB->escape($userForm['email']);
 			if( !libAuth::validate_email($userForm['email']) )
 			{
-				$errors[] = "The e-mail address you entered isn't valid. Please enter a valid one";
+				$errors[] = l_t("The e-mail address you entered isn't valid. Please enter a valid one");
 			}
 			else
 			{
@@ -378,18 +372,6 @@ class User {
 			$userForm['comment'] = $DB->msg_escape($userForm['comment']);
 
 			$SQLVars['comment'] = $userForm['comment'];
-		}
-
-		if( isset($userForm['locale']) )
-		{
-			if( !in_array($userForm['locale'], Config::$availablelocales) )
-			{
-				$errors[] = "Specified locale not available";
-			}
-			else
-			{
-				$SQLVars['locale'] = $userForm['locale'];
-			}
 		}
 
 		return $SQLVars;
@@ -433,7 +415,6 @@ class User {
 			u.homepage,
 			u.hideEmail,
 			u.timeJoined,
-			u.locale,
 			u.timeLastSessionEnded,
 			u.points,
 			u.lastMessageIDViewed,
@@ -446,7 +427,7 @@ class User {
 
 		if ( ! isset($row['id']) or ! $row['id'] )
 		{
-			throw new Exception("A user object has been created which doesn't represent a real user.");
+			throw new Exception(l_t("A user object has been created which doesn't represent a real user."));
 		}
 
 		foreach( $row as $name=>$value )
@@ -515,11 +496,10 @@ class User {
 
 		$buf='';
 
-		//if( strstr($type,'Moderator') )
-		//	$buf .= ' <img src="images/icons/mod.png" alt="Mod" title="Moderator" />';
-		//else
-		if(strstr($type,'Banned') )
-			$buf .= ' <img src="images/icons/cross.png" alt="X" title="Banned" />';
+		if( strstr($type,'Moderator') )
+			$buf .= ' <img src="'.l_s('images/icons/mod.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
+		elseif(strstr($type,'Banned') )
+			$buf .= ' <img src="'.l_s('images/icons/cross.png').'" alt="X" title="'.l_t('Banned').'" />';
 
 		if( strstr($type,'DonatorPlatinum') )
 			$buf .= libHTML::platinum();
@@ -547,13 +527,13 @@ class User {
 		global $DB;
 
 		$message = htmlentities( $message, ENT_NOQUOTES, 'UTF-8');
-		require_once('lib/message.php');
+		require_once(l_r('lib/message.php'));
 		$message = message::linkify($message);
 
 		if( $this->isUserMuted($FromUser->id) )
 		{
 			notice::send($FromUser->id, $this->id, 'PM', 'No', 'Yes',
-				'Could not deliver message, user has muted you.', 'To: '.$this->username,
+				l_t('Could not deliver message, user has muted you.'), l_t('To:').' '.$this->username,
 				$this->id);
 		}
 		else
@@ -562,7 +542,7 @@ class User {
 				$message, $FromUser->username, $FromUser->id);
 
 			notice::send($FromUser->id, $this->id, 'PM', 'No', 'Yes',
-				'You sent: <em>'.$message.'</em>', 'To: '.$this->username,
+				l_t('You sent:').' <em>'.$message.'</em>', l_t('To:').' '.$this->username,
 				$this->id);
 		}
 	}
@@ -612,8 +592,7 @@ class User {
 		}
 
 		if($this->type['Banned'])
-			libHTML::notice('Banned', 'You have been banned from this server. If you think there has been
-					a mistake contact '.Config::$adminEMail.' .');
+			libHTML::notice(l_t('Banned'), l_t('You have been banned from this server. If you think there has been a mistake contact the moderator team at %s , and if you still aren\'t satisfied contact the admin at %s (with details of what happened).',Config::$modEMail, Config::$adminEMail));
 
 		/*
 		$bans=array();
@@ -745,7 +724,7 @@ class User {
 		{
 			if ( $rankingDetails['percentile'] <= $limit )
 			{
-				$rankingDetails['rank'] = $name;
+				$rankingDetails['rank'] = l_t($name);
 				break;
 			}
 		}
@@ -836,7 +815,7 @@ class User {
 		
 		if( $this->type['User'] && $this->id != $fromUserID && !in_array($messageID, $this->getLikeMessages()))
 			return '<a id="likeMessageToggleLink'.$messageID.'" 
-			href="#" title="Give a mark of approval for this post" class="light likeMessageToggleLink" '.
+			href="#" title="'.l_t('Give a mark of approval for this post').'" class="light likeMessageToggleLink" '.
 			'onclick="likeMessageToggle('.$this->id.','.$messageID.',\''.libAuth::likeToggleToken($this->id, $messageID).'\'); '.
 			'return false;">'.
 			'+1</a>';

@@ -20,7 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('board/orders/base/territory.php');
+require_once(l_r('board/orders/base/territory.php'));
 /**
  * Holds unit data for orders, including the territory which the unit is staying at.
  *

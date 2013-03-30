@@ -73,7 +73,7 @@ window.onbeforeunload = function (e) {
 	if( $$("textarea").all(function (t) { return ( t.value.length <= 10 ); }) )
 		return;
 
-	var str="You seem to have an unsubmitted message.";
+	var str=l_t("You seem to have an unsubmitted message.");
 	var e = e || window.event;
 	
 	// For IE and Firefox

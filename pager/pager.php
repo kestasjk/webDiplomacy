@@ -103,32 +103,32 @@ abstract class Pager
 		<div style="float:right; text-align:right">'.
 			// The start, to the left, is page 1
 			'<a href="'.$this->URL.'?'.$args.'page-'.$this->type.'=1#'.$anchor.'">'.
-				'<img src="images/historyicons/Start'.( $this->currentPage == 1 ?'_disabled':'').'.png"
-					alt="First" title="First page" />'.
+				'<img src="'.l_s('images/historyicons/Start'.( $this->currentPage == 1 ?'_disabled':'').'.png').'"
+					alt="'.l_t('First').'" title="'.l_t('First page').'" />'.
 			'</a> '.
 			// If we're at the start the next page along is the same page, otherwise the previousone
 			'<a href="'.$this->URL.'?'.$args.'page-'.$this->type.'='.($this->currentPage>1?$this->currentPage-1:1).'#'.$anchor.'">'
-				.'<img src="images/historyicons/Backward'.( $this->currentPage == 1 ?'_disabled':'').'.png"
-					alt="Previous" title="Previous page" />'.
+				.'<img src="'.l_s('images/historyicons/Backward'.( $this->currentPage == 1 ?'_disabled':'').'.png').'"
+					alt="'.l_t('Previous').'" title="'.l_t('Previous page').'" />'.
 			'</a>
 			';
 
 		// If we don't know the page-count the next pageis always active, and there is no last page
 		if ( !isset($this->pageCount) )
 			$buf .= '<a href="'.$this->URL.'?'.$args.'page-'.$this->type.'='.($this->currentPage+1).'#'.$anchor.'">'.
-						'<img src="images/historyicons/Forward.png"
-							alt="Next" title="Next page" />'.
+						'<img src="'.l_s('images/historyicons/Forward.png').'"
+							alt="'.l_t('Next').'" title="'.l_t('Next page').'" />'.
 					'</a>
-					<img src="images/historyicons/End_disabled.png"
-					alt="Last" title="Last page (disabled when last page number unknown)" />';
+					<img src="'.l_s('images/historyicons/End_disabled.png').'"
+					alt="'.l_t('Last').'" title="'.l_t('Last page (disabled when last page number unknown)').'" />';
 		else
 			$buf .= '<a href="'.$this->URL.'?'.$args.'page-'.$this->type.'='.( !$this->currentPage == $this->pageCount? $this->currentPage:($this->currentPage+1)).'#'.$anchor.'">'.
-				'<img src="images/historyicons/Forward'.( $this->currentPage == $this->pageCount ?'_disabled':'').'.png"
-					alt="Next" title="Next page" />'.
+				'<img src="'.l_s('images/historyicons/Forward'.( $this->currentPage == $this->pageCount ?'_disabled':'').'.png').'"
+					alt="'.l_t('Next').'" title="'.l_t('Next page').'" />'.
 			'</a>
 			<a href="'.$this->URL.'?'.$args.'page-'.$this->type.'='.$this->pageCount.'#'.$anchor.'">'.
-				'<img src="images/historyicons/End'.( $this->currentPage == $this->pageCount ?'_disabled':'').'.png"
-					alt="Last" title="Last page" />'.
+				'<img src="'.l_s('images/historyicons/End'.( $this->currentPage == $this->pageCount ?'_disabled':'').'.png').'"
+					alt="'.l_t('Last').'" title="'.l_t('Last page').'" />'.
 			'</a>';
 
 
@@ -142,9 +142,10 @@ abstract class Pager
 	function currentPageNumber()
 	{
 		return '<div style="padding:3px; padding-bottom:0; margin-top:5px; border-top: solid 1px #aaa;">
-					<em>Page <strong>'.$this->currentPage.'</strong>'.
-						(isset($this->pageCount)?' of <strong>'.$this->pageCount.'</strong> ':'').
-					'</em>
+					<em>'.(isset($this->pageCount)?
+					l_t('Page <strong>%s</strong> of <strong>%s</strong>',$this->currentPage,$this->pageCount):
+					l_t('Page <strong>%s</strong>',$this->currentPage)
+					).'</em>
 				</div>';
 	}
 }

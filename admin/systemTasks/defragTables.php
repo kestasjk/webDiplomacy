@@ -33,7 +33,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  */
 
 if ( !$User->type['Admin'] )
-	die('Admins only');
+	die(l_t('Admins only'));
 	
 ini_set('memory_limit',"12M");
 ini_set('max_execution_time','60');
@@ -42,14 +42,14 @@ header('Content-Type: text/plain');
 
 ob_end_flush();
 
-print 'Defragmenting'."\n"; flush();
+print l_t('Defragmenting')."\n"; flush();
 
 $tableNames = array('Moves','Orders','TerrStatus','Units');
 
 
 foreach($tableNames as $tableName)
 {
-	print 'Defragmenting '.$tableName."\n"; flush();
+	print l_t('Defragmenting %s',$tableName)."\n"; flush();
 	
 	$DB->sql_put("BEGIN");
 	
@@ -91,6 +91,6 @@ foreach($tableNames as $tableName)
 
 $DB->sql_put("COMMIT");
 
-print "Done\n";
+print l_t("Done")."\n";
 
 ?>

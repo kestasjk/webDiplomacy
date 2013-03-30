@@ -95,6 +95,12 @@ $credits = array(
 		The <a href="http://www.prototypejs.org/">Prototype</a> JavaScript framework team
 	','
 		Our JavaScript utility library
+	'),
+
+	array('
+		Alex Lebedev
+	','
+		Sponsored the localization support.
 	')
 	);
 

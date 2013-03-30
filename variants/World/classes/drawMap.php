@@ -46,21 +46,21 @@ class WorldVariant_drawMap extends drawMap {
 		if( $this->smallmap )
 		{
 			return array(
-				'map'=>'variants/World/resources/smallmap.png',
-				'army'=>'contrib/smallarmy.png',
-				'fleet'=>'contrib/smallfleet.png',
-				'names'=>'variants/World/resources/smallmapNames.png',
-				'standoff'=>'images/icons/cross.png'
+				'map'=>l_s('variants/World/resources/smallmap.png'),
+				'army'=>l_s('contrib/smallarmy.png'),
+				'fleet'=>l_s('contrib/smallfleet.png'),
+				'names'=>l_s('variants/World/resources/smallmapNames.png'),
+				'standoff'=>l_s('images/icons/cross.png')
 			);
 		}
 		else
 		{
 			return array(
-				'map'=>'variants/World/resources/map.png',
-				'army'=>'contrib/smallarmy.png',
-				'fleet'=>'contrib/smallfleet.png',
-				'names'=>'variants/World/resources/mapNames.png',
-				'standoff'=>'images/icons/cross.png'
+				'map'=>l_s('variants/World/resources/map.png'),
+				'army'=>l_s('contrib/smallarmy.png'),
+				'fleet'=>l_s('contrib/smallfleet.png'),
+				'names'=>l_s('variants/World/resources/mapNames.png'),
+				'standoff'=>l_s('images/icons/cross.png')
 			);
 		}
 	}

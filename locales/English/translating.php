@@ -25,8 +25,6 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @subpackage Static
  */
 
-libHTML::notice('Placeholder','This is a placeholder, translations currently not supported.');
-
 print libHTML::pageTitle('Translating webDiplomacy','A guide to translating webDiplomacy into other languages.');
 
  ?>

@@ -27,7 +27,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  */
 
 
-print '<h4>Chat archive</h4>';
+print '<h4>'.l_t('Chat archive').'</h4>';
 
 print '<div class="variant'.$Game->Variant->name.'">';
 

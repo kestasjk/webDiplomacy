@@ -20,7 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('board/orders/base/unit.php');
+require_once(l_r('board/orders/base/unit.php'));
 
 /**
  * The root order function; mostly just holds information and loads objects for
@@ -141,9 +141,9 @@ abstract class order
 					$this->Unit = libVariant::$Variant->Unit($this->unitID);
 					$this->Unit->Territory = libVariant::$Variant->Territory($this->Unit->terrID);
 					if( $this->Unit->gameID != $this->gameID )
-						throw new Exception("Invalid unitID given; does not belong in this game.");
+						throw new Exception(l_t("Invalid unitID given; does not belong in this game."));
 					if( $this->Unit->countryID != $this->countryID )
-						throw new Exception("Invalid unitID given; does not belong to this country.");
+						throw new Exception(l_t("Invalid unitID given; does not belong to this country."));
 					return true;
 				}
 			case 'toTerrID':

@@ -20,7 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('gamemaster/member.php');
+require_once(l_r('gamemaster/member.php'));
 
 /**
  * A class to handle manipulating a game's members, sending messages out to them,
@@ -46,7 +46,7 @@ class processMembers extends Members
 	 */
 	function notifyGameProgressed()
 	{
-		$this->sendToPlaying('No',"Game progressed to ".$this->Game->phase.", ".$this->Game->datetxt($this->Game->turn));
+		$this->sendToPlaying('No',l_t("Game progressed to %s, %s",$this->Game->phase,$this->Game->datetxt($this->Game->turn)));
 	}
 
 	/**
@@ -54,7 +54,7 @@ class processMembers extends Members
 	 */
 	function notifyPaused()
 	{
-		$this->sendToPlaying('No',"Game has been paused.");
+		$this->sendToPlaying('No',l_t("Game has been paused."));
 	}
 
 	/**
@@ -62,7 +62,7 @@ class processMembers extends Members
 	 */
 	function notifyUnpaused()
 	{
-		$this->sendToPlaying('No',"Game has been unpaused.");
+		$this->sendToPlaying('No',l_t("Game has been unpaused."));
 	}
 
 	/**
@@ -410,7 +410,7 @@ class processMembers extends Members
 			elseif($Member->status == 'Left')
 				$Member->setResigned();
 			else
-				trigger_error("Invalid member status type for points distribution.");
+				trigger_error(l_t("Invalid member status type for points distribution."));
 		}
 
 		$this->writeLog();
@@ -532,10 +532,10 @@ class processMembers extends Members
 		assert('$this->Game->lockMode == UPDATE');
 
 		if ( $this->Game->private and md5($password) != $this->Game->password and $password != $this->Game->password )
-			throw new Exception("The password you supplied is incorrect, please try again.");
+			throw new Exception(l_t("The password you supplied is incorrect, please try again."));
 
 		if ( !$this->Game->isJoinable() )
-			throw new Exception("You cannot join this game.");
+			throw new Exception(l_t("You cannot join this game."));
 
 		// We can join, the only question is how?
 
@@ -546,10 +546,10 @@ class processMembers extends Members
 
 			$M = $this->ByUserID[$User->id];
 			if ($this->Game->isMemberInfoHidden() )
-				$this->sendExcept($M,'No', 'Someone has joined the game.');
+				$this->sendExcept($M,'No', l_t('Someone has joined the game.'));
 			else
-				$this->sendExcept($M,'No',$User->username.' has joined the game.');
-			$M->send('No','No','You have joined! Good luck');
+				$this->sendExcept($M,'No',l_t('%s has joined the game.',$User->username));
+			$M->send('No','No',l_t('You have joined! Good luck'));
 
 			if( count($this->ByUserID) == count($this->Game->Variant->countries) )
 			{
@@ -561,16 +561,16 @@ class processMembers extends Members
 		{
 			// Taking over from CD: Valid countryID to take over? Got enough points?
 			if ( 0>=$countryID || count($this->Game->Variant->countries)<$countryID )
-				throw new Exception("You haven't specified which countryID you want to take over.");
+				throw new Exception(l_t("You haven't specified which countryID you want to take over."));
 
 			$CD = $this->ByCountryID[$countryID];
 
 			if ( $CD->status != 'Left' )
-				throw new Exception('The player selected is not in civil disorder.');
+				throw new Exception(l_t('The player selected is not in civil disorder.'));
 
 			$bet = $CD->pointsValue();
 			if ( $User->points < $bet )
-				throw new Exception("You do not have enough points to take over that countryID.");
+				throw new Exception(l_t("You do not have enough points to take over that countryID."));
 
 			$CD->setTakenOver(); // Refund its points if required, and send it a message
 
@@ -602,13 +602,13 @@ class processMembers extends Members
 			$CDCountryName=$this->Game->Variant->countries[$CD->countryID-1];
 
 			if ( $this->Game->isMemberInfoHidden() )
-				$this->sendExcept($CD,'No','Someone has taken over '.$CDCountryName.'.');
+				$this->sendExcept($CD,'No',l_t('Someone has taken over %s.',$CDCountryName));
 			else
-				$this->sendExcept($CD,'No',$User->username.' has taken over '.$CDCountryName.'.');
-			$CD->send('No','No','You took over '.$CDCountryName.'! Good luck');
+				$this->sendExcept($CD,'No',l_t('%s has taken over %s.',$User->username,$CDCountryName));
+			$CD->send('No','No',l_t('You took over %s! Good luck',$CDCountryName));
 		}
 
-		$this->Game->gamelog('New member joined');
+		$this->Game->gamelog(l_t('New member joined'));
 
 		$this->joinedRedirect();
 	}
@@ -621,9 +621,9 @@ class processMembers extends Members
 		// We have successfully joined, now give a message to tell the user so
 		header('refresh: 4; url=board.php?gameID='.$this->Game->id);
 
-		$message = '<p class="notice">You are being redirected to <a href="board.php?gameID='.$this->Game->id.'">'.$this->Game->name.'</a>. Good luck!</p>';
+		$message = '<p class="notice">'.l_t('You are being redirected to %s. Good luck!','<a href="board.php?gameID='.$this->Game->id.'">'.$this->Game->name.'</a>').'</p>';
 
-		libHTML::notice("Joined ".$this->Game->name, $message);
+		libHTML::notice(l_t("Joined %s",$this->Game->name), $message);
 	}
 
 	function processSummary()

@@ -123,7 +123,7 @@ class userOrderBuilds extends userOrder
 		}
 		else
 		{
-			throw new Exception("Checking the territory when not required.");
+			throw new Exception(l_t("Checking the territory when not required."));
 		}
 	}
 }
