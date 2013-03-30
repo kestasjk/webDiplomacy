@@ -23,6 +23,7 @@
 	1.0: first install
 	1.0.5: many combat issues fixed...
 	1.0.6: No more hurricanes on deleted territories...
+	1.0.7: 1 terrotory missed for transform
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -36,7 +37,7 @@ class PiratesVariant extends WDVariant {
 	public $author     ='Gavin Atkinson';
 	public $adapter    ='Gavin Atkinson, Oliver Auth';
 	public $version    ='I';
-	public $codeVersion='1.0.6';	
+	public $codeVersion='1.0.7';	
 	
 	public $countries=array('Spain','England','France','Holland','Dunkirkers','Henry Morgan','Francois l Olonnais','Isaac Rochussen','The Infamous El Guapo','Daniel "The Exterminator" Montbars','Roche "The Rock" Braziliano','Bartolomeu "The Portuguese" de la Cueva','Daniel "The Terror" Johnson');	
 
