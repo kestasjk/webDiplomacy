@@ -154,9 +154,12 @@ class libRating
 		$Re2= 1 - $Re1;
 		
 		// Adjust the restults based on pot-type and game-status
+		
+		// Resigned is the same as Defeated. SCc=0 and SCq=0
 		if ($St1=='Resigned') {$St1='Defeated'; $SCc1=0; $SCq1=0;}
 		if ($St2=='Resigned') {$St2='Defeated'; $SCc2=0; $SCq2=0;}
 
+		// CD-players loose 0:100 against everybody else but another CD. CDvsCD is 0 for both
 		if ($St1=='CD') { $SCc2=($St2=='CD' ? 0 : 1); $SCq2=($St2=='CD' ? 0 : 1 / count($Game->Members->ByID));	}
 		if ($St2=='CD') { $SCc1=($St1=='CD' ? 0 : 1); $SCq1=($St1=='CD' ? 0 : 1 / count($Game->Members->ByID)); }
 		
@@ -170,17 +173,23 @@ class libRating
 			if ($St1=='Won') { $SCq1 = 1; } else  { $SCc1 = 0; $SCq1 = 0; }
 			if ($St2=='Won') { $SCq2 = 1; } else  { $SCc2 = 0; $SCq2 = 0; }
 	 	}
+		else
+		{
+			if     ($SCc1 > $SCc2) { $SCc1 = 1; $SCc2 = 0; }
+			elseif ($SCc1 < $SCc2) { $SCc2 = 1; $SCc1 = 0; }
+			elseif ($SCc1 != 0 )   { $SCc2 = 1; $SCc1 = 1; }
+	 	}
 		
 		// Calculate the real results.
 		$Rr1 = ( ($SCc1 + $SCc2) > 0 ) ? ($SCc1 / ($SCc1 + $SCc2)) : 0;
 		$Rr2 = ( ($SCc1 + $SCc2) > 0 ) ? ($SCc2 / ($SCc1 + $SCc2)) : 0;
-		$mV  = 1 * abs($SCq1 - $SCq2); 
+		$mV  = abs($SCq1 - $SCq2); 
 
 		// Value the importance of take-overs. (If a player bet only the half the whole match is worth only half.
 		$mV = $mV * (1 - abs($Member1['bet'] - $Member2['bet']) / max($Member1['bet'], $Member2['bet']));		
 		
-		// Set K-factor to 30
-		$K = 30;
+		// Set K-factor to 50
+		$K = 50;
 		
 		// The more people the more important a game...
 		$gV = $K * pow(((count($Game->Variant->countries) -1) / count($Game->Variant->countries)),3) * (100- (count($Game->Variant->countries)))/100;
@@ -202,8 +211,8 @@ class libRating
 		}
 		
 		// Calculate Points-change
-		$Ch1 = round(($Rr1 - $Re1) * $mV * $gV, 2);
-		$Ch2 = round(($Rr2 - $Re2) * $mV * $gV, 2);
+		$Ch1 = round(($Rr1 - $Re1) * $mV * $gV,2);
+		$Ch2 = round(($Rr2 - $Re2) * $mV * $gV,2);
 		
 		// Save the results in the match-arrays
 		$Member1['matches'][$Member2['userID']] = array (
