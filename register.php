@@ -29,8 +29,6 @@ require_once(l_r('objects/mailer.php'));
 global $Mailer;
 $Mailer = new Mailer();
 
-die(libAuth::email_validateURL('jimmccarthy@sympatico.ca'));
-
 if ( $Misc->Panic )
 {
 	libHTML::notice(l_t('Registration disabled'),

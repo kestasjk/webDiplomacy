@@ -115,7 +115,8 @@ class Database {
 			 * committed data, but /all selects/ get the latest data (having the latest data is a pretty useful
 			 * transaction-mode)
 			 */
-		$this->sql_put("SET AUTOCOMMIT=0, NAMES utf8, TRANSACTION ISOLATION LEVEL READ COMMITTED, time_zone = '+0:00'");
+		$this->sql_put("SET AUTOCOMMIT=0, NAMES utf8, time_zone = '+0:00'");
+		$this->sql_put("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
 	}
 
 	/**

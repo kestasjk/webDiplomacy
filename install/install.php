@@ -51,13 +51,7 @@ if ( $Misc->Version == 98 || $Misc->Version == 99 )
 	$Misc->write();
 	libHTML::notice('Updated','Updated version number, please refresh.');
 }
-elseif ( $Misc->Version == 104 )
-{
-	$Misc->Version = 130;
-	$Misc->write();
-	libHTML::notice('Updated','Updated version number, please refresh.');
-}
-elseif ( $Misc->Version == 130 )
+elseif ( $Misc->Version == 104 || $Misc->Version == 130 )
 {
 	$Misc->Version = 131;
 	$Misc->write();

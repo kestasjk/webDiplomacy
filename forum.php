@@ -362,7 +362,7 @@ if( file_exists($cacheHTML) )
 $tabl = $DB->sql_tabl("SELECT
 	f.id, f.fromUserID, f.timeSent, f.message, f.subject, f.replies,
 		u.username as fromusername, u.points as points, f.latestReplySent, IF(s.userID IS NULL,0,1) as online, u.type as userType, 
-		(SELECT COUNT(*) FROM wD_LikePost lp WHERE lp.likeMessageID = f.id) as likeCount, 
+		f.likeCount as likeCount, 
 		f.silenceID,
 		silence.userID as silenceUserID,
 		silence.postID as silencePostID,
@@ -507,7 +507,7 @@ while( $message = $DB->tabl_hash($tabl) )
 		$replytabl = $DB->sql_tabl(
 			"SELECT f.id, fromUserID, f.timeSent, f.message, u.points as points, IF(s.userID IS NULL,0,1) as online,
 					u.username as fromusername, f.toID, u.type as userType, 
-					(SELECT COUNT(*) FROM wD_LikePost lp WHERE lp.likeMessageID = f.id) as likeCount, 
+					f.likeCount, 
 					f.silenceID,
 					silence.userID as silenceUserID,
 					silence.postID as silencePostID,

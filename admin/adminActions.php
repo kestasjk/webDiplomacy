@@ -174,6 +174,11 @@ class adminActions extends adminActionsForms
 				'name' => 'Toggle mod-report mute',
 				'description' => 'Toggles whether the given userID can submit reports, to prevent annoying users from abusing the report feature.',
 				'params' => array('userID'=>'User ID'),
+			),
+			'syncForumLikes' => array(
+				'name' => 'Sync forum likes',
+				'description' => 'Synchronizes the cached forum post like counts with the user-tracked like records, in case they somehow get out of sync.',
+				'params' => array(),
 			)
 		);
 
@@ -181,7 +186,22 @@ class adminActions extends adminActionsForms
 	{
 		global $Misc;
 	}
-
+	public function syncForumLikes(array $params)
+	{
+		global $DB;
+		
+		$DB->sql_put("UPDATE wD_ForumMessages fm
+			INNER JOIN (
+			SELECT f.id, COUNT(*) as likeCount
+			FROM wD_ForumMessages f
+			INNER JOIN wD_LikePost lp ON f.id = lp.likeMessageID
+			GROUP BY f.id
+			) l ON l.id = fm.id
+			SET fm.likeCount = l.likeCount");
+		
+		return l_t("All forum like counts have been synced, %s posts affected.", $DB->last_affected());
+	}
+	
 	public function unCrashGames(array $params)
 	{
 		global $DB;
@@ -667,16 +687,104 @@ class adminActions extends adminActionsForms
 		$Variant=libVariant::loadFromGameID($gameID);
 		$Game = $Variant->processGame($gameID);
 
-		if( $Game->phase != 'Diplomacy' and $Game->phase != 'Retreats' and $Game->phase != 'Builds' )
+		if( $Game->phase == 'Diplomacy' or $Game->phase == 'Retreats' or $Game->phase == 'Builds' )
+		{
+			$Game->setCancelled(); // This throws an exception, since it expects to be run from within the
+			// main gamemaster loop, and wants to stop the loop from continuing to use this game after
+			// it has been cancelled. But it also contains its own commit, so the exception does not prevent
+			// the game from being cancelled (it is messy though).
+			
+			// This point after $Game->setCancelled(); shouldn't actually be reached.
+		}
+		elseif( $Game->phase == 'Finished' )
+		{
+			/* 
+			 * Some special action is needed; this game has already finished.
+			 * 
+			 * We need to get back all winnings that have been distributed first, then we need to 
+			 * return all starting bets.
+			 */
+			$transactions = array();
+			$sumPoints = 0; // Used to ensure the total points transactions add up roughly to 0
+			$tabl = $DB->sql_tabl("SELECT type, points, userID, memberID FROM wD_PointsTransactions WHERE gameID = ".$Game->id
+				." FOR UPDATE"); // Lock it for update, so other transactions can't interfere with these ones
+			while(list($type, $points, $userID, $memberID) = $DB->tabl_row($tabl))
+			{
+				if( !isset($transactions[$userID])) $transactions[$userID] = array();
+				if( !isset($transactions[$userID][$type])) $transactions[$userID][$type] = 0;
+				
+				if( $type != 'Bet' ) $points = $points * -1; // Bets are to be credited back, everything else is to be debited
+				
+				if( $type != 'Supplement') $sumPoints += $points;
+				
+				$transactions[$userID][$type] += $points;
+			}
+			
+			
+			// Check that the total points transactions within this game make sense (i.e. they add up to roughly 0 accounting for rounding errors)
+			if( $sumPoints < (count($transactions)*-1) or count($transactions) < $sumPoints )
+				throw new Exception(l_t("The total points transactions (in a finished game) add up to %s, but there are %s members; ".
+					"cannot cancel game with an unusual points transaction log.", $sumPoints, count($transactions)), 274);
+			
+			// The points transactions make sense; we can now try and reverse them.
+			
+			// Get the current points each user has
+			$tabl = $DB->sql_tabl("SELECT u.id, u.points FROM wD_Users u INNER JOIN wD_PointsTransactions pt ON pt.userID = u.id WHERE pt.gameID = ".$Game->id
+			." GROUP BY u.id, u.points "
+			." FOR UPDATE"); // Lock it for update, so other transactions can't interfere with these ones
+			$pointsInAccount = array();
+			$pointsInPlay = array();
+			while(list($userID, $points) = $DB->tabl_row($tabl))
+			{
+				$sumPoints = 0;
+				foreach($transactions[$userID] as $type=>$typePoints)
+					$sumPoints += $typePoints;
+				
+				
+				if( ( $points + $sumPoints) < 0 )
+				{
+					// If the user doesn't have enough points on hand to pay back the points transactions for this game we will need to supplement him the points to do it:
+					$supplementPoints = -($points + $sumPoints);
+					$points += $supplementPoints;
+					$DB->sql_put("INSERT INTO wD_PointsTransactions ( type, points, userID, gameID ) VALUES ( 'Supplement', ".$supplementPoints.", ".$userID.", ".$Game->id.")");
+					$DB->sql_put("UPDATE wD_Users SET points = ".$points." WHERE id = ".$userID);
+				}
+				
+				// Now we have given the user enough points so their points transactions for this game can definitely be undone:
+				$DB->sql_put("INSERT INTO wD_PointsTransactions ( type, points, userID, gameID ) VALUES ( 'Correction', ".$sumPoints.", ".$userID.", ".$Game->id.")");
+				$points += $sumPoints;
+				$DB->sql_put("UPDATE wD_Users SET points = ".$points." WHERE id = ".$userID);
+				
+				// Now check that they don't need a supplement to bring their total points in play back up to 100:
+				$pointsInPlay = User::pointsInPlay($userID);
+				if( ($points + $pointsInPlay) < 100 )
+				{
+					$supplementPoints = 100 - ($points + $pointsInPlay);
+					$points += $supplementPoints;
+					$DB->sql_put("INSERT INTO wD_PointsTransactions ( type, points, userID, gameID ) VALUES ( 'Supplement', ".$supplementPoints.", ".$userID.", ".$Game->id.")");
+					$DB->sql_put("UPDATE wD_Users SET points = ".$points." WHERE id = ".$userID);
+				}
+				
+				notice::send(
+					$userID, $Game->id, 'Game',
+					'No', 'No', 
+					l_t("This game has been cancelled after having finished (usually to undo the effects of cheating). ".
+						"%s points had to be added/taken from your account to undo the effects of the game. ".
+					"Please contact the mod team with any queries.", $sumPoints, $points), 
+					$Game->name, $Game->id);
+			}
+			
+			// Now backup and erase the game from existence, then commit:
+			processGame::eraseGame($Game->id);
+		}
+		else
 		{
 			throw new Exception(l_t('This game is in phase %s, so it can\'t be cancelled',$Game->phase), 987);
 		}
+		
+		// $DB->sql_put("COMMIT"); // $
 
-		$Game->setCancelled();
-
-		$DB->sql_put("COMMIT");
-
-		return l_t('This game was cancelled.');
+		return l_t('This game was cancelled.'); 
 	}
 	public function togglePause(array $params)
 	{

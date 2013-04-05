@@ -53,12 +53,22 @@ if( isset($_GET['likeMessageToggleToken']) ) {
 		$userID = (int) $token[0];
 		$likeMessageID = (int) $token[1];
 		
+		$DB->sql_put("BEGIN");
+		
 		list($likeExists) = $DB->sql_row("SELECT COUNT(*) FROM wD_LikePost WHERE userID = ".$userID." AND likeMessageID = ".$likeMessageID);
 		
 		if( $likeExists == 0  )
+		{
+			$DB->sql_put("UPDATE wD_ForumMessages SET likeCount = likeCount + 1 WHERE id = ".$likeMessageID);
 			$DB->sql_put("INSERT INTO wD_LikePost ( userID, likeMessageID ) VALUES ( ".$userID.", ".$likeMessageID." )");
+		}
 		else
+		{
+			$DB->sql_put("UPDATE wD_ForumMessages SET likeCount = likeCount - 1 WHERE id = ".$likeMessageID);
 			$DB->sql_put("DELETE FROM wD_LikePost WHERE userID = ".$userID." AND likeMessageID = ".$likeMessageID);
+		}
+		
+		$DB->sql_put("COMMIT");
 	}
 }
 elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($_REQUEST['orderUpdates']) )

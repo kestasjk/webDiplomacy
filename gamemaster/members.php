@@ -94,7 +94,7 @@ class processMembers extends Members
 		$tabl = $DB->sql_tabl("SELECT COUNT(ts.terrID), ts.countryID
 						FROM wD_TerrStatus ts
 						INNER JOIN wD_Territories t ON ( ts.terrID = t.id )
-						WHERE t.supply='Yes' AND ( NOT ts.countryID = 'Neutral' )
+						WHERE t.supply='Yes' AND ( NOT ts.countryID = 0 )
 							AND ts.gameID = ".$this->Game->id."
 							AND t.mapID=".$this->Game->Variant->mapID."
 						GROUP BY ts.countryID

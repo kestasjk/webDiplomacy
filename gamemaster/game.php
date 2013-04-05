@@ -682,7 +682,7 @@ class processGame extends Game
 			 * It is spring, no supply centers can change owner, and if it isn't
 			 * yet owned by anyone it's owned by Neutral
 			 */
-			$countryID = "IF(t.supply='No',u.countryID,'Neutral')";
+			$countryID = "IF(t.supply='No',u.countryID,0)";
 			$updateCountryID = '';
 
 			/*
