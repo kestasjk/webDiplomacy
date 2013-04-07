@@ -572,7 +572,7 @@ class User {
 		return $buffer;
 	}
 
-	static function typeIcon($type) {
+	static function typeIcon($type, $showMod=true) {
 		// This must take either a list as it comes from a SQL query, or a built-in $this->type['Admin'] style array
 		if( is_array($type) ) {
 			$types=array();
@@ -585,7 +585,7 @@ class User {
 
 		$buf='';
 
-		if( strstr($type,'ForumModerator') )
+		if( strstr($type,'ForumModerator') && $showMod==true)
 			$buf .= ' <img src="'.l_s('images/icons/mod.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
 		elseif(strstr($type,'Banned') )
 			$buf .= ' <img src="'.l_s('images/icons/cross.png').'" alt="X" title="'.l_t('Banned').'" />';

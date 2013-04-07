@@ -168,7 +168,7 @@ class panelMember extends Member
 		else
 			return '<a href="profile.php?userID='.$this->userID.'">'.$this->username.'</a>
 				'.libHTML::loggedOn($this->userID).'
-				<span class="points">('.$this->points.libHTML::points().User::typeIcon($this->userType).' / <b>'.$this->getGrade().'</b>'.
+				<span class="points">('.$this->points.libHTML::points().User::typeIcon($this->userType,false).' / <b>'.$this->getGrade().'</b>'.
 				(($User->type['Moderator'] && $this->rlGroup != 0 && count($this->Game->Members->ByRlGroup[$this->rlGroup])>1) ? 
 				' / <img src="'.libRelations::statusIcon($this->rlGroup).'">:<b>'.abs($this->rlGroup).'/'.count($this->Game->Members->ByRlGroup[$this->rlGroup]).'</b>'
 				: '')
