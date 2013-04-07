@@ -20,7 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('gamepanel/member.php');
+require_once(l_r('gamepanel/member.php'));
 /**
  * This class displays the members subsection of a game panel.
  *
@@ -121,7 +121,7 @@ class panelMembers extends Members
 		}
 		else
 		{
-			$buf .= '<label>Take over:</label> <select name="countryID">';
+			$buf .= '<label>'.l_t('Take over:').'</label> <select name="countryID">';
 			foreach($this->ByStatus['Left'] as $Member)
 			{
 				$pointsValue = $Member->pointsValue();

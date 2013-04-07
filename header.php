@@ -118,6 +118,8 @@ if (ini_get('register_globals') or get_magic_quotes_gpc())
 				break;
 			case "_SERVER":
 				break; // Don't strip slashes on _SERVER variables, slashes aren't added to these
+			case "_FILES":
+				break; // Don't strip slashes on _FILES (file uploads, currently only used for locale text lookup changes)
 			default:
 				unset( ${$var_name} ); // Remove register_globals variables
 				break;
@@ -149,27 +151,33 @@ require_once('lib/cache.php');
 require_once('lib/time.php');
 require_once('lib/html.php');
 
-require_once('objects/silence.php');
-require_once('objects/user.php');
-require_once('objects/game.php');
+require_once('locales/layer.php');
 
-require_once('global/error.php');
+global $Locale;
+require_once('locales/'.Config::$locale.'/layer.php'); // This will set $Locale
+$Locale->initialize();
+
+require_once(l_r('objects/silence.php'));
+require_once(l_r('objects/user.php'));
+require_once(l_r('objects/game.php'));
+
+require_once(l_r('global/error.php'));
 // Set up the error handler
 
 date_default_timezone_set('UTC');
 
 // Create database object
-require_once('objects/database.php');
+require_once(l_r('objects/database.php'));
 $DB = new Database();
 
 // Set up the misc values object
-require_once('objects/misc.php');
+require_once(l_r('objects/misc.php'));
 global $Misc;
 $Misc = new Misc();
 
 if ( $Misc->Version != VERSION )
 {
-	require_once('install/install.php');
+	require_once(l_r('install/install.php'));
 }
 
 // Taken from the php manual to disable cacheing.
@@ -178,7 +186,7 @@ header("Cache-Control: no-store, no-cache, must-revalidate");
 header("Cache-Control: post-check=0, pre-check=0", false);
 
 if( defined('FACEBOOKSCRIPT') ) {
-	require_once('facebook/facebook-platform/php/facebook.php');
+	require_once(l_r('facebook/facebook-platform/php/facebook.php'));
 	$facebook=new Facebook(Config::$facebookAPIKey,Config::$facebookSecret);
 	$facebook->require_frame();
 
@@ -186,16 +194,16 @@ if( defined('FACEBOOKSCRIPT') ) {
 
 	if( !$fb_user ) {
 		if( !isset($_REQUEST['wD_FB_AuthNow'])) {
-			libHTML::notice('Not authorized','To play in webDiplomacy games you need to authorize this application, so that
-				it can send you notifications informing you when a game you\'re playing in needs your attention.
-				Please <a href="index.php?wD_FB_AuthNow=on">authorize this application</a> to continue.');
+			libHTML::notice(l_t('Not authorized'),l_t('To play in webDiplomacy games you need to authorize this application, so that '.
+				'it can send you notifications informing you when a game you\'re playing in needs your attention. '.
+				'Please <a href="index.php?wD_FB_AuthNow=on">authorize this application</a> to continue.'));
 		} else {
 			$fb_user=$facebook->require_login();
 		}
 	}
 }
 
-require_once('lib/auth.php');
+require_once(l_r('lib/auth.php'));
 
 if( !defined('AJAX') )
 {
@@ -215,7 +223,7 @@ if( !defined('AJAX') )
 		$success=libAuth::keyWipe();
 		$User = new User(GUESTID); // Give him a guest $User
 		header('refresh: 4; url=logon.php?noRefresh=on');
-		libHTML::notice("Logged out","You have been logged out, and are being redirected to the logon page.");
+		libHTML::notice(l_t("Logged out"),l_t("You have been logged out, and are being redirected to the logon page."));
 	}
 
 	global $User;

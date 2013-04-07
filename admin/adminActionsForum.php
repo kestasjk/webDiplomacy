@@ -141,13 +141,13 @@ class adminActionsForum extends adminActionsVDip
 		self::setNextActiveUserSilence($silence->id);
 		self::setNextActivePostSilence($silence->id);
 		
-		return $silence->toString().' disabled.';
+		return l_t('%s disabled.',$silence->toString());
 	}
 	public function disableSilenceConfirm(array $params) {
 
 		$silence = new Silence($params['silenceID']);
 		
-		return 'Are you sure you want to disable this silence: <b>'.$silence->toString().'</b>?';
+		return l_t('Are you sure you want to disable this silence:').' <b>'.$silence->toString().'</b>?';
 	}
 	
 	public function changeSilenceLength(array $params) {
@@ -164,40 +164,37 @@ class adminActionsForum extends adminActionsVDip
 			self::setNextActiveUserSilence($silence->id);
 		}
 		
-		return $silence->toString().' changed from <i>'.
-			Silence::printLength($previousLength).'</i> to <i>'.
-			Silence::printLength($silence->length).'</i>.';
+		return l_t('%s changed from <i>%s</i> to <i>%s</i>.',$silence->toString(),Silence::printLength($previousLength),Silence::printLength($silence->length));
 	}
 	public function changeSilenceLengthConfirm(array $params) {
 
 		$silence = new Silence($params['silenceID']);
 		
 		if( $params['length'] < 0 ) 
-			throw new Exception("Silence length must be non-negative.");
+			throw new Exception(l_t("Silence length must be non-negative."));
 		
-		return 'Are you sure you want to change the silence length from <i>'.
-			Silence::printLength($silence->length).'</i> to <i>'.
-			Silence::printLength($params['length']).'</i>, 
-			for <b>'.$silence->toString().'</b>?';
+		return l_t('Are you sure you want to change the silence length from <i>%s</i> to <i>%s</i>, for <b>%s</b>?',
+			Silence::printLength($silence->length),
+			Silence::printLength($params['length']),$silence->toString());
 	}
 	
 	private static function checkSilenceParams(array $params) {
 		global $DB;
 		
 		if( strlen($params['reason']) < 10 )
-			throw new Exception("Please give a reason.");
+			throw new Exception(l_t("Please give a reason."));
 		
 		if( isset($params['userID']) ) {
 			$SilencedUser = new User((int)$params['userID']);
 			
 			if( $params['length'] < 0 )
-				throw new Exception("Length in days must be greater than 0.");
+				throw new Exception(l_t("Length in days must be greater than 0."));
 		}
 		
 		if( isset($params['postID']) ) {
 			list($threadsFound) = $DB->sql_row("SELECT COUNT(*) FROM wD_ForumMessages WHERE id = ".$params['postID']);
 			if( $threadsFound == 0 )
-				throw new Exception("Thread ID # ".$params['postID']." does not exist.");
+				throw new Exception(l_t("Thread ID # %s does not exist.",$params['postID']));
 		}
 	}
 	
@@ -216,7 +213,7 @@ class adminActionsForum extends adminActionsVDip
 		);
 		
 		$silence = new Silence($silenceID);
-		return 'User silenced: <br/>' .$silence->toString();
+		return l_t('User silenced:').' <br/>' .$silence->toString();
 	}
 	public function createUserSilenceConfirm(array $params)
 	{
@@ -224,9 +221,9 @@ class adminActionsForum extends adminActionsVDip
 		
 		$UserSilence = new User($params['userID']);
 		
-		return 'Are you sure you want to silence this user '.
-			Silence::printLength($params['length']).' because <i>'.
-			$params['reason'].'</i> ?';
+		return l_t('Are you sure you want to silence this user %s because <i>%s</i> ?',
+			Silence::printLength($params['length']),
+			$params['reason']);
 	}
 	
 	public function createThreadSilence(array $params)
@@ -242,15 +239,13 @@ class adminActionsForum extends adminActionsVDip
 		);
 		
 		$silence = new Silence($silenceID);
-		return 'Thread silenced: <br/>' .$silence->toString();
+		return l_t('Thread silenced:').' <br/>' .$silence->toString();
 	}
 	public function createThreadSilenceConfirm(array $params)
 	{
 		self::checkSilenceParams($params);
 		
-		return 'Are you sure you want to silence the thread containing post ID # '.
-		$params['postID'].' indefinitely because <i>'.
-		$params['reason'].'</i> ?';
+		return l_t('Are you sure you want to silence the thread containing post ID # %s indefinitely because <i>%s</i> ?',$params['postID'],$params['reason']);
 	}
 	
 	public function createUserThreadSilence(array $params)
@@ -268,15 +263,14 @@ class adminActionsForum extends adminActionsVDip
 		);
 		
 		$silence = new Silence($silenceID);
-		return 'User and thread silenced: <br/>' .$silence->toString();
+		return l_t('User and thread silenced:').' <br/>' .$silence->toString();
 	}
 	public function createUserThreadSilenceConfirm(array $params)
 	{
 		self::checkSilenceParams($params);
 		
-		return 'Are you sure you want to silence this user '.
-			Silence::printLength($params['length']).', and silence the thread they were posting in, 
-			because <i>'.$params['reason'].'</i> ?';
+		return l_t('Are you sure you want to silence this user %s, and silence the thread they were posting in, because <i>%s</i> ?',
+			Silence::printLength($params['length']),$params['reason']);
 	}
 }
 

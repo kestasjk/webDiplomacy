@@ -99,12 +99,12 @@ class panelMember extends Member
 		if ( count($this->newMessagesFrom) )
 		{
 			if ( count($this->newMessagesFrom) == 1 && in_array('0',$this->newMessagesFrom) )
-				return libHTML::maybeReadMessages('board.php?gameID='.$this->gameID.'#chatbox').' - Unread global messages';
+				return libHTML::maybeReadMessages('board.php?gameID='.$this->gameID.'#chatbox').' - '.l_t('Unread global messages');
 			else
-				return libHTML::unreadMessages('board.php?gameID='.$this->gameID.'#chatbox').' - Unread messages';
+				return libHTML::unreadMessages('board.php?gameID='.$this->gameID.'#chatbox').' - '.l_t('Unread messages');
 		}
 		else
-			return 'No unread messages';
+			return l_t('No unread messages');
 	}
 
 	/**
@@ -121,7 +121,7 @@ class panelMember extends Member
 				return libHTML::unreadMessages('board.php?gameID='.$this->gameID.'#chatbox');
 		}
 		else
-			return 'No unread messages';
+			return l_t('No unread messages');
 	}
 
 	/**
@@ -134,7 +134,7 @@ class panelMember extends Member
 
 		if( $this->countryID != 0 )
 			return '<span class="country'.$this->countryID.' '.($User->id==$this->userID?'memberYourCountry':'').' memberStatus'.$this->status.'">'.
-				$this->country.'</span>';
+				l_t($this->country).'</span>';
 		else
 			return '';
 	}
@@ -164,7 +164,7 @@ class panelMember extends Member
 		global $User;
 		
 		if ($this->isNameHidden())
-			return '(Anonymous)';
+			return '('.l_t('Anonymous').')';
 		else
 			return '<a href="profile.php?userID='.$this->userID.'">'.$this->username.'</a>
 				'.libHTML::loggedOn($this->userID).'
@@ -188,7 +188,7 @@ class panelMember extends Member
 			$buf .= '<span class="memberStatus'.$this->status.'">';
 
 		if ( $this->isNameHidden() )
-			$buf .= '<span class="country'.$this->countryID.'">'.$this->country.'</span>';
+			$buf .= '<span class="country'.$this->countryID.'">'.l_t($this->country).'</span>';
 		else
 			$buf .= '<a class="country'.$this->countryID.'" href="profile.php?userID='.$this->userID.'">'.$this->username.'</a>';
 
@@ -210,9 +210,9 @@ class panelMember extends Member
 		else
 			$unitStyle = "neutral";
 
-		return '<span class="memberSCCount"><em>'.$this->supplyCenterNo.'</em> supply-centers,
-			<em class="'.$unitStyle.'">'.$this->unitNo.'</em> units</span>
-				';
+		return '<span class="memberSCCount">'.l_t('%s supply-centers, %s units',
+			'<em>'.$this->supplyCenterNo.'</em>',
+			'<em class="'.$unitStyle.'">'.$this->unitNo.'</em>').'</span>';
 	}
 
 	/**
@@ -221,14 +221,14 @@ class panelMember extends Member
 	 */
 	function memberBetWon()
 	{
-		$buf = 'Bet: <em>'.$this->bet.libHTML::points().'</em>, ';
+		$buf = l_t('Bet:').' <em>'.$this->bet.libHTML::points().'</em>, ';
 
 		if ( $this->Game->phase == 'Pre-game' )
-			return 'Bet: <em>'.$this->bet.libHTML::points().'</em>';
+			return l_t('Bet:').' <em>'.$this->bet.libHTML::points().'</em>';
 
 		if( $this->status == 'Playing' || $this->status == 'Left' )
 		{
-			$buf .= 'worth: <em';
+			$buf .= l_t('worth:').' <em';
 			$value = $this->pointsValue();
 			if ( $value > $this->bet )
 				$buf .= ' class="good"';
@@ -242,7 +242,7 @@ class panelMember extends Member
 			($this->Game->potType == 'Points-per-supply-center' && ( $this->status == 'Survived' || $this->status == 'Drawn' ) )
 			)
 		{
-			$buf .= 'won: <em';
+			$buf .= l_t('won:').' <em';
 			$value = $this->pointsWon;
 			if ( $value > $this->bet )
 				$buf .= ' class="good"';
@@ -254,7 +254,7 @@ class panelMember extends Member
 		}
 		else
 		{
-			return 'Bet: <em class="bad">'.$this->bet.libHTML::points().'</em>';
+			return l_t('Bet:').' <em class="bad">'.$this->bet.libHTML::points().'</em>';
 		}
 	}
 
@@ -346,7 +346,7 @@ class panelMember extends Member
 	{
 		$buf = '';
 		if ( $this->status != 'Playing')
-			$buf .= '<span class="memberStatus"><em>'.$this->status.'</em>. </span>';
+			$buf .= '<span class="memberStatus"><em>'.l_t($this->status).'</em>. </span>';
 
 		if ( $this->Game instanceof panelGameBoard || $this->status == 'Defeated' )
 			$buf .= '<span class="memberPointsCount">'.$this->memberBetWon().'</span><br />';
@@ -368,11 +368,11 @@ class panelMember extends Member
 		{
 			if ( $voteName == 'Pause' && $this->Game->processStatus=='Paused' )
 				$voteName = 'Unpause';
-			$buf[]=$voteName;
+			$buf[]=l_t($voteName);
 		}
 
 		if( count($buf) )
-			return 'Votes: <span class="memberVotes">'.implode(', ',$buf).'</span>';
+			return l_t('Votes:').' <span class="memberVotes">'.implode(', ',$buf).'</span>';
 		else
 			return false;
 	}
@@ -390,14 +390,14 @@ class panelMember extends Member
 		{
 			if ( !$this->isNameHidden() )
 				$buf .= '<br /><span class="memberLastSeen">
-						Last seen: <strong>'.$this->lastLoggedInTxt().'</strong>';
+						'.l_t('Last seen:').' <strong>'.$this->lastLoggedInTxt().'</strong>';
 
 			$voteList = $this->memberVotes();
 			if($voteList)
 				$buf .= '<br />'.$voteList;
 
 			if ( $this->missedPhases == 2 )
-				$buf .= '<br /><span class="missedPhases">Missed the last phase</span>';
+				$buf .= '<br /><span class="missedPhases">'.l_t('Missed the last phase').'</span>';
 
 			$buf .= '</span>';
 		}
@@ -492,20 +492,20 @@ class panelMember extends Member
 
 		if ( $this->Game->phase != 'Pre-game' )
 		{
-			$output .= ' as '.$this->countryID;
+			$output .= l_t(' as %s',$this->countryID);
 
 			switch($this->status)
 			{
 				case 'Resigned':
 				case 'Left':
-					$output .= '<strong>, in civil disorder</strong>';
+					$output .= '<strong>'.l_t(', in civil disorder').'</strong>';
 					break;
 				case 'Playing':
 					$output .= $this->memberFinalized();
 			}
 
 			if($this->status != 'Defeated')
-				$output .= ': <strong>'.$this->supplyCenterNo.'</strong> supply centers';
+				$output .= ': '.l_t('%s supply centers','<strong>'.$this->supplyCenterNo.'</strong>');
 		}
 
 		return $output;

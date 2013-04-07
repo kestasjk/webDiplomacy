@@ -80,7 +80,7 @@ class libTime
                 $secondsRemaining = $givenTime - $timeFrom;
 
                 if ( $secondsRemaining <= 0 )
-                        return 'Now';
+                        return l_t('Now');
 
                 $seconds = floor( $secondsRemaining % 60);
                 $minutes = floor(( $secondsRemaining % (60*60) )/60);
@@ -106,9 +106,9 @@ class libTime
                         $minutes = 0;
 
                         if ( $hours > 0 )
-                                return $days.' days, '.$hours.' hours';
+                                return l_t('%s days, %s hours',$days,$hours);
                         else
-                                return $days.' days';
+                                return l_t('%s days', $days);
                 }
                 elseif ( $hours > 0 )
                 {
@@ -117,17 +117,17 @@ class libTime
                         $seconds = 0;
 
                         if ( $minutes > 0 )
-                        	return $hours.' hours, '.$minutes.' minutes';
-						else
-							return $hours.' hours';
+                        	return l_t('%s hours, %s minutes',$hours,$minutes);
+						else 
+							return l_t('%s hours',$hours);
                 }
                 else
                 {
                         // M, S
                         if ( $seconds > 0 )
-							return $minutes.' minutes, '.$seconds.' seconds';
+							return l_t('%s minutes, %s seconds',$minutes,$seconds);
 						else
-							return $minutes.' minutes';
+							return l_t('%s minutes',$minutes);
                 }
         }
 

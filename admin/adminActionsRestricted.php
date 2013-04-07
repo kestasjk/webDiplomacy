@@ -130,7 +130,17 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 						invalid values, but it shouldn\'t be used unless errors are occurring since it may alter
 						unaffected games.',
 				'params' => array(),
-			)
+			),
+			'recreateUnitDestroyIndex' => array(
+				'name' => 'Recreate the destroy unit indexes',
+				'description' => 'Refreshes the unit destroy indexes for a certain map ID. This will generally only
+					be run if there has been a bug found in the unit destroy index generation code which requires 
+					the indexes to be recreated.<br />
+					Note that this uses the generic installation code, so if there are any variant-specific modifications
+					running this may give unpredictable results. Please confirm with the variant maintainer before
+					using this admin action.',
+				'params' => array('mapID'=>'Map ID'),
+			)		
 		);
 
 		adminActions::$actions = array_merge(adminActions::$actions, $restrictedActions);
@@ -140,23 +150,23 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 		foreach(Config::$variants as $variantID=>$variantName)
 			libVariant::wipe($variantName);
 
-		return 'All variants wiped.';
+		return l_t('All variants wiped.');
 	}
 	public function backupGameConfirm(array $params)
 	{
 		global $DB;
 
-		require_once('objects/game.php');
+		require_once(l_r('objects/game.php'));
 		$Variant=libVariant::loadFromGameID($params['gameID']);
 		$Game = $Variant->Game($params['gameID']);
 
-		return 'Are you sure you want to backup this game?';
+		return l_t('Are you sure you want to backup this game?');
 	}
 	public function backupGame(array $params)
 	{
 		global $DB;
-
-		require_once('gamemaster/game.php');
+		
+		require_once(l_r('objects/game.php'));
 
 		$gameID = (int)$params['gameID'];
 
@@ -164,23 +174,23 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 
 		processGame::backupGame($gameID);
 
-		return 'Game backed up';
+		return l_t('Game backed up');
 	}
 	public function restoreGameConfirm(array $params)
 	{
 		global $DB;
-
-		require_once('objects/game.php');
+		
+		require_once(l_r('objects/game.php'));
 		$Variant=libVariant::loadFromGameID($params['gameID']);
 		$Game = $Variant->Game($params['gameID']);
 
-		return 'Are you sure you want to restore this game?';
+		return l_t('Are you sure you want to restore this game?');
 	}
 	public function restoreGame(array $params)
 	{
 		global $DB;
-
-		require_once('gamemaster/game.php');
+		
+		require_once(l_r('gamemaster/game.php'));
 
 		$gameID = (int)$params['gameID'];
 
@@ -188,21 +198,21 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 
 		processGame::restoreGame($gameID);
 
-		return 'Game restored';
+		return l_t('Game restored');
 	}
 	public function wipeBackupsConfirm(array $params)
 	{
-		return 'Are you sure you want to wipe backups?';
+		return l_t('Are you sure you want to wipe backups?');
 	}
 	public function wipeBackups(array $params)
 	{
 		global $DB;
-
-		require_once('gamemaster/game.php');
+		
+		require_once(l_r('gamemaster/game.php'));
 
 		processGame::wipeBackups();
 
-		return 'Backups wiped';
+		return l_t('Backups wiped');
 	}
 
 	public function globalAddTime(array $params)
@@ -253,9 +263,9 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 		//}
 
 		if($timeHours==0)
-			return 'All game process times have been set to their phase time';
+			return l_t('All game process times have been set to their phase time');
 		else
-			return 'All games have had '.$timeHours.' hours added to them';
+			return l_t('All games have had %s hours added to them',$timeHours);
 	}
 
 	public function maintenance(array $params)
@@ -265,7 +275,7 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 		$Misc->Maintenance = 1-$Misc->Maintenance;
 		$Misc->write();
 
-		return 'Maintenance mode '.($Misc->Maintenance?'turned on':'turned off');
+		return l_t('Maintenance mode '.($Misc->Maintenance?'turned on':'turned off'));
 	}
 
 	public function notice(array $params)
@@ -275,7 +285,7 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 		$Misc->Notice = 1-$Misc->Notice;
 		$Misc->write();
 
-		return 'Site-wide notice '.($Misc->Notice?'turned on':'turned off');
+		return l_t('Site-wide notice '.($Misc->Notice?'turned on':'turned off'));
 	}
 
 	public function clearErrorLogs(array $params)
@@ -286,7 +296,7 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 
 		libError::clear();
 
-		return 'The error logs were cleared, '.$oldCount.' files deleted.';
+		return l_t('The error logs were cleared, %s files deleted.',$oldCount);
 	}
 
 	public function clearOrderLogs(array $params)
@@ -295,7 +305,7 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 
 		if ( ! is_dir($logDir) or ! ( $handle = opendir($logDir) ) )
 		{
-			throw new Exception("Could not open log directory");
+			throw new Exception(l_t("Could not open log directory"));
 		}
 
 		$logs = array();
@@ -315,7 +325,7 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 			$i++;
 		}
 
-		return 'The order logs were cleared, '.$i.' files deleted.';
+		return l_t('The order logs were cleared, %s files deleted.',$i);
 	}
 
 	public function wipeDATCTestGame(array $params)
@@ -329,7 +339,7 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 		processGame::eraseGame($gameID);
 		$DB->sql_put("COMMIT");
 
-		return "DATC test game and associated data removed.";
+		return l_t("DATC test game and associated data removed.");
 	}
 	public function clearAccessLogs(array $params)
 	{
@@ -341,7 +351,7 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 
 		$DB->sql_put("OPTIMIZE TABLE wD_AccessLog");
 
-		return 'Old access logs cleared; '.$i.' records deleted.';
+		return l_t('Old access logs cleared; %s records deleted.',$i);
 	}
 
 	public function clearAdminLogs(array $params)
@@ -356,7 +366,7 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 
 		$DB->sql_put("COMMIT");
 
-		return 'The admin log was cleared; '.$i.' records deleted.';
+		return l_t('The admin log was cleared; %s records deleted.',$i);
 	}
 
 	public function giveModerator(array $params)
@@ -368,13 +378,13 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 		$modUser = new User($userID);
 
 		if( $modUser->type['Moderator'] )
-			throw new Exception("This user is already a moderator");
+			throw new Exception(l_t("This user is already a moderator"));
 
 		$DB->sql_put(
 			"UPDATE wD_Users SET type = CONCAT_WS(',',type,'Moderator') WHERE id = ".$userID
 		);
 
-		return 'This user was given moderator status.';
+		return l_t('This user was given moderator status.');
 	}
 
 	public function takeModerator(array $params)
@@ -386,13 +396,13 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 		$modUser = new User($userID);
 
 		if( ! $modUser->type['Moderator'] )
-			throw new Exception("This user isn't a moderator");
+			throw new Exception(l_t("This user isn't a moderator"));
 
 		$DB->sql_put(
 			"UPDATE wD_Users SET type = REPLACE(type,'Moderator','') WHERE id = ".$userID
 		);
 
-		return 'This user had their moderator status taken.';
+		return l_t('This user had their moderator status taken.');
 	}
 
 	public function giveForumModerator(array $params)
@@ -404,13 +414,13 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 		$modUser = new User($userID);
 
 		if( $modUser->type['ForumModerator'] )
-			throw new Exception("This user is already a moderator");
+			throw new Exception(l_t("This user is already a moderator"));
 
 		$DB->sql_put(
 			"UPDATE wD_Users SET type = CONCAT_WS(',',type,'ForumModerator') WHERE id = ".$userID
 		);
 
-		return 'This user was given forum moderator status.';
+		return l_t('This user was given forum moderator status.');
 	}
 
 	public function takeForumModerator(array $params)
@@ -422,13 +432,13 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 		$modUser = new User($userID);
 
 		if( ! $modUser->type['ForumModerator'] )
-			throw new Exception("This user isn't a forum moderator");
+			throw new Exception(l_t("This user isn't a forum moderator"));
 
 		$DB->sql_put(
 			"UPDATE wD_Users SET type = REPLACE(type,'ForumModerator','') WHERE id = ".$userID
 		);
 
-		return 'This user had their forum moderator status taken.';
+		return l_t('This user had their forum moderator status taken.');
 	}
 
 	public function checkPausedGames(array $params)
@@ -458,7 +468,7 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 		);
 		$affected += $DB->last_affected();
 
-		return 'Any invalid next-process/pause-length times have been reset; '.$affected.' game(s) affected.';
+		return l_t('Any invalid next-process/pause-length times have been reset; %s game(s) affected.',$affected);
 	}
 
 	public function reprocessGame(array $params)
@@ -483,8 +493,8 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 		 * - Remove the invalid maps in the mapstore
 		 */
 		$DB->sql_put("BEGIN");
-
-		require_once('gamemaster/game.php');
+		
+		require_once(l_r('gamemaster/game.php'));
 		$Variant=libVariant::loadFromGameID($gameID);
 		$Game = $Variant->processGame($gameID);
 
@@ -494,7 +504,7 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 		// - Check that the game is still active and can be turned back
 		if ( $Game->turn < 1 )
 		{
-			throw new Exception('This game cannot be turned back; it is new or is finished.');
+			throw new Exception(l_t('This game cannot be turned back; it is new or is finished.'));
 		}
 
 		// - Delete current turn values
@@ -556,12 +566,38 @@ class adminActionsRestricted extends adminActionsRestrictedVDip
 		$Game->load();
 		Game::wipeCache($Game->id);
 
-		libGameMessage::send(0, 'GameMaster', 'This game has been moved back to '.$Game->datetxt($lastTurn), $Game->id);
+		libGameMessage::send(0, 'GameMaster', l_t('This game has been moved back to %s',$Game->datetxt($lastTurn)), $Game->id);
 
-
-
-		return 'This game was moved from '.$oldPhase.', '.$Game->datetxt($oldTurn).
-				' back to Diplomacy, '.$Game->datetxt($lastTurn).', and is ready to be reprocessed.';
+		return l_t('This game was moved from %s, %s back to Diplomacy, %s, and is ready to be reprocessed.',
+			$oldPhase,$Game->datetxt($oldTurn),$Game->datetxt($lastTurn));
+	}
+	
+	public function recreateUnitDestroyIndex(array $params)
+	{
+		global $DB;
+		
+		$mapID = (int)$params['mapID'];
+		
+		require_once("variants/install.php");
+		
+		InstallTerritory::loadExistingTerritories($mapID);
+		
+		// Generate the SQL before wiping & reinserting it
+		$unitDestroyIndexRecreateSQL = InstallTerritory::unitDestroyIndexSQL($mapID);
+		
+		$DB->sql_put("BEGIN");
+		
+		list($entriesBefore) = $DB->sql_row("SELECT COUNT(*) FROM wD_UnitDestroyIndex WHERE mapID = ".$mapID);
+		
+ 		$DB->sql_put("DELETE FROM wD_UnitDestroyIndex WHERE mapID = ".$mapID);
+ 		
+ 		$DB->sql_put($unitDestroyIndexRecreateSQL);
+ 		
+ 		list($entriesAfter) = $DB->sql_row("SELECT COUNT(*) FROM wD_UnitDestroyIndex WHERE mapID = ".$mapID);
+ 		
+		$DB->sql_put("COMMIT");
+		
+		return l_t('The unit destroy indexes were recreated for map ID #%s ; there were %s entries before and there are currently %s entries.', $mapID, $entriesBefore, $entriesAfter);
 	}
 	public function reprocessGameConfirm(array $params)
 	{

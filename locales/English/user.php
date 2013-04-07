@@ -67,8 +67,6 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		Re-enter your webDiplomacy password, to make sure there are no typos.
 	</li>
 
-	<input type="hidden" name="locale" value="English" />
-
 	<li class="formlisttitle">Home page:</li>
 	<li class="formlistfield">
 		<input type="text" size=50 name="userForm[homepage]" value="<?php print $User->homepage; ?>" maxlength=150>
@@ -218,7 +216,7 @@ if( $User->type['User'] ) {
 		print '</ul></li>';
 	}
 	// Include the code for the countryswitch...
-	require_once('locales/'.$User->locale.'/countryswitch.php');
+	require_once('locales/English/countryswitch.php');
 }
 
 /*

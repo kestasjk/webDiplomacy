@@ -25,10 +25,10 @@
 
 require_once('header.php');
 
-require_once('gamesearch/search.php');
-require_once('pager/pagergame.php');
-require_once('objects/game.php');
-require_once('gamepanel/game.php');
+require_once(l_r('gamesearch/search.php'));
+require_once(l_r('pager/pagergame.php'));
+require_once(l_r('objects/game.php'));
+require_once(l_r('gamepanel/game.php'));
 
 libHTML::starthtml();
 
@@ -78,13 +78,13 @@ function printAndFindTab()
 	$tabs = array();
 
 	if($User->type['User'])
-		$tabs['My games']="Active games which you have joined";
+		$tabs['My games']=l_t("Active games which you have joined");
 
-	$tabs['New']="Games which haven't yet started";
-	$tabs['Open']="Games which have open spaces";
-	$tabs['Active']="Games which are going on now";
-	$tabs['Finished']="Games which have ended";
-	$tabs['Search']="The full game listing search panel";
+	$tabs['New']=l_t("Games which haven't yet started");
+	$tabs['Joinable']=l_t("Games which have open spaces");
+	$tabs['Active']=l_t("Games which are going on now");
+	$tabs['Finished']=l_t("Games which have ended");
+	$tabs['Search']=l_t("The full game listing search panel");
 
 
 	$tab = 'Active';
@@ -115,12 +115,12 @@ function printAndFindTab()
 		else
 			print '"';
 
-		print '>'.$tabChoice;
+		print '>'.l_t($tabChoice);
 
 		switch($tabChoice)
 		{
 			case 'New':
-			case 'Open':
+			case 'Joinable':
 			case 'Active':
 			case 'Finished':
 				print ' (~'.$Misc->{'Games'.$tabChoice}.')';
@@ -176,7 +176,7 @@ if ( $tab=='Search' or isset($_REQUEST['searchOn']) or isset($_REQUEST['search']
 		libHTML::pagebreak();
 		print $Pager->pagerBar('top');
 	}
-	
+
 	print '<div class="hr"></div>';
 
 	$gameCount = $search->printGamesList($Pager);
@@ -186,9 +186,9 @@ if ( $tab=='Search' or isset($_REQUEST['searchOn']) or isset($_REQUEST['search']
 		print '<p class="notice">';
 
 		if( $Pager->currentPage > 1 )
-			print 'The set of returned games has finished; use the search tab to find specific games.';
+			print l_t('The set of returned games has finished; use the search tab to find specific games.');
 		else
-			print 'No games found for the given search parameters, try broadening your search.';
+			print l_t('No games found for the given search parameters, try broadening your search.');
 
 		print '</p>';
 	}
@@ -209,37 +209,37 @@ else
 
 		if( $Pager->currentPage > 1 )
 		{
-			print 'The set of returned games has finished; use the search tab to find specific games.';
+			print l_t('The set of returned games has finished; use the search tab to find specific games.');
 		}
 		else
 		{
 			switch($tab)
 			{
 				case 'My games':
-					print 'You are not in any active games, select the "New" tab
-						to view games that you can join, or if you can\'t find a game you want
-						to join select "New game" in the menu to create your own.';
+					print l_t('You are not in any active games, select the "New" tab '.
+						'to view games that you can join, or if you can\'t find a game you want '.
+						'to join select "New game" in the menu to create your own.');
 					break;
 				case 'New':
-					print 'No new games on the server. ';
+					print l_t('No new games on the server.').' ';
 					if($User->type['User'])
-						print 'Select "New game" in the menu to create your own.';
+						print l_t('Select "New game" in the menu to create your own.');
 					break;
-				case 'Open':
-					print 'No active games with open slots on the server.';
+				case 'Joinable':
+					print l_t('No active games with open slots on the server.');
 					break;
 				case 'Active':
-					print 'No active games on the server. ';
+					print l_t('No active games on the server.').' ';
 					if($User->type['User'])
-						print 'Click the "New" tab to look for new games,
-							or select "New game" in the menu to create your own.';
+						print l_t('Click the "New" tab to look for new games, '.
+							'or select "New game" in the menu to create your own.');
 					break;
 				case 'Finished':
-					print 'No finished games on the server.';
+					print l_t('No finished games on the server.');
 					break;
 
 				default:
-					print 'No games were found.';
+					print l_t('No games were found.');
 			}
 		}
 
@@ -248,7 +248,7 @@ else
 }
 
 if ( $gameCount > 1 )
-	print $Pager->pagerBar('bottom','<a href="#top">Back to top</a>');
+	print $Pager->pagerBar('bottom','<a href="#top">'.l_t('Back to top').'</a>');
 else
 	print '<a name="bottom"></a>';
 

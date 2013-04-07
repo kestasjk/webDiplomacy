@@ -58,7 +58,7 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 		
 		if ( ! $m->bUserIDs )
 		{
-			print '<p>This account has no links with other accounts</p>';
+			print '<p>'.l_t('This account has no links with other accounts').'</p>';
 		}
 		else
 		{
@@ -75,7 +75,7 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 					try {
 						$bUser = new User($bUserID);
 					} catch(Exception $e) {
-						print '<p><strong>'.$bUserID.' is an invalid user ID.</strong></p>';
+						print '<p><strong>'.l_t('%s is an invalid user ID.',$bUserID).'</strong></p>';
 						continue;
 					}
 
@@ -86,7 +86,7 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 	}
 	catch(Exception $e)
 	{
-		print '<p><strong>Error:</strong> '.$e->getMessage().'</p>';
+		print '<p><strong>'.l_t('Error').':</strong> '.$e->getMessage().'</p>';
 	}
 }
 
@@ -106,30 +106,30 @@ class adminMultiCheck
 	{
 		print '<form method="get" action="admincp.php#viewMultiFinder">';
 
-		print '<p><strong>User ID:</strong><br />The user ID to check<br />
+		print '<p><strong>'.l_t('User ID:').'</strong><br />'.l_t('The user ID to check').'<br />
 				<input type="text" name="aUserID" value="" length="50" /></p>';
 
-		print '<p><strong>*Check against user IDs:</strong><br />An optional comma-separated list
-				of user-IDs to compare the above user ID to. If this is not specified the user ID
-				above will be checked against accounts which have matching IP/cookie-code data.<br />
+		print '<p><strong>*'.l_t('Check against user IDs:').'</strong><br />'.l_t('An optional comma-separated list '.
+				'of user-IDs to compare the above user ID to. If this is not specified the user ID '.
+				'above will be checked against accounts which have matching IP/cookie-code data.').'<br />
 				<input type="text" name="bUserIDs" value="" length="300" /></p>';
 
-		print '<p><strong>Show complete history for the user and links found:</strong>
+		print '<p><strong>'.l_t('Show complete history for the user and links found:').'</strong>
 				<input type="checkbox" name="showHistory" /><br />
-				With this checked the complete access log data for all the matching accounts will be displayed,
-				instead of displaying the list of linked accounts.
-				This makes it easy to check whether people are accessing the site during the same time periods,
-				and gives a more detailed picture of what is happening.
+				'.l_t('With this checked the complete access log data for all the matching accounts will be displayed, '.
+				'instead of displaying the list of linked accounts. '.
+				'This makes it easy to check whether people are accessing the site during the same time periods, '.
+				'and gives a more detailed picture of what is happening.').'
 				</p>';
 
-		print '<p><strong>Links between user accounts have to share active games:</strong>
+		print '<p><strong>'.l_t('Links between user accounts have to share active games:').'</strong>
 				<input type="checkbox" name="activeLinks" /><br />
-				With this checked links between users will be ignored if they aren\'t currently playing in
-				the same games. This helps ensure that the data being checked is relevant and cuts out the
-				clutter.
+				'.l_t('With this checked links between users will be ignored if they aren\'t currently playing in '.
+				'the same games. This helps ensure that the data being checked is relevant and cuts out the '.
+				'clutter.').'
 				</p>';
 
-		print '<input type="submit" name="Submit" class="form-submit" value="Check" />
+		print '<input type="submit" name="Submit" class="form-submit" value="'.l_t('Check').'" />
 				</form>';
 	}
 
@@ -159,7 +159,7 @@ class adminMultiCheck
 			{
 				if ( $name == 'lastRequest' )
 				{
-					$timeComparison = '('.libTime::remainingText($lastRow['lastRequest'],$part).' earlier)';
+					$timeComparison = l_t('(%s earlier)',libTime::remainingText($lastRow['lastRequest'],$part));
 
 					if ( ( $lastRow['lastRequest'] - $part ) < 15*60 )
 						print '<span class="Austria">'.$timeComparison.'</span>';
@@ -199,7 +199,7 @@ class adminMultiCheck
 		$userIDs = $this->bUserIDs;
 		array_push($userIDs, $this->aUserID);
 
-		print '<p>Outputting access log history for the users being checked</p>';
+		print '<p>'.l_t('Outputting access log history for the users being checked').'</p>';
 
 		if ( isset($_REQUEST['activeLinks']) and count($this->aLogsData['activeGameIDs']) )
 		{
@@ -264,7 +264,7 @@ class adminMultiCheck
 
 		if ( $gap > 0 )
 		{
-			print '<tr><td>'.$gap.' rows from the same user.</td></tr>';
+			print '<tr><td>'.l_t('%s rows from the same user.',$gap).'</td></tr>';
 			$this->printTimeDataRow($lastRow);
 		}
 
@@ -382,11 +382,11 @@ class adminMultiCheck
 
 		if( is_array($this->bUserIDs) )
 		{
-			print '<p>Checking against specified user accounts: '.implode(', ',$this->bUserIDs).'.</p>';
+			print '<p>'.l_t('Checking against specified user accounts:').' '.implode(', ',$this->bUserIDs).'.</p>';
 		}
 		else
 		{
-			print '<p>Checking against IP/cookie-code linked users.</p>';
+			print '<p>'.l_t('Checking against IP/cookie-code linked users.').'</p>';
 		}
 	}
 
@@ -464,7 +464,7 @@ class adminMultiCheck
 		{
 			if ( ! is_array($data) or ! count($data) )
 			{
-				throw new Exception($name.' does not have enough data; this account cannot be checked.');
+				throw new Exception(l_t('%s does not have enough data; this account cannot be checked.',$name));
 			}
 		}
 
@@ -850,23 +850,23 @@ class adminMultiCheck
 		}
 		</style>';
 		
-		print '<div class="timeprintData" style="font-size:80%"><h3>Timeprint data:</h3>';
+		print '<div class="timeprintData" style="font-size:80%"><h3>'.l_t('Timeprint data:').'</h3>';
 		
 		$timeprints = array();
 		
 		$timeprint = $this->timeprintLoad($this->aUserID);
 		$timeprints[] = $timeprint;
 		
-		print '<h4>User # '.$this->aUserID.':</h4>'.$this->printTimeprint($timeprint);
+		print '<h4>'.l_t('User # '.$this->aUserID.':').'</h4>'.$this->printTimeprint($timeprint);
 		
 		if(count($this->bUserIDs) > 0 ) {
 			foreach($this->bUserIDs as $bUserID) {
 				$timeprint = $this->timeprintLoad($bUserID);
 				$timeprints[] = $timeprint;
-				print '<h4>User # '.$bUserID.':</h4>'.$this->printTimeprint($timeprint);
+				print '<h4>'.l_t('User # '.$bUserID.':').'</h4>'.$this->printTimeprint($timeprint);
 			}
 			
-			print '<h4>Comparison timeprint:</h4>';
+			print '<h4>'.l_t('Comparison timeprint:').'</h4>';
 			$timeprintComparison = $this->timeprintBlank();
 			foreach($timeprints as $timeprint)
 				$timeprintComparison = $this->timeprintMerge($timeprintComparison, $timeprint);
@@ -882,7 +882,7 @@ class adminMultiCheck
 	private function printTimeprint(array $weekData) {
 		$buf = '<table>';
 		
-		$buf .= '<tr><th><strong>Hour:</strong></th>';
+		$buf .= '<tr><th><strong>'.l_t('Hour:').'</strong></th>';
 		for($i=0;$i<24;$i++)
 			$buf .= '<th>'.$i.'</th>';
 		$buf .= '</tr>';

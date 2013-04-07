@@ -60,7 +60,7 @@ class libGameMessage
 
 		if( 65000 < strlen($message) )
 		{
-			throw new Exception("Message too long");
+			throw new Exception(l_t("Message too long"));
 		}
 
 		$DB->sql_put("INSERT INTO wD_GameMessages

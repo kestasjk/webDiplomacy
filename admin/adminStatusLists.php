@@ -30,7 +30,7 @@ if( $User->type['Admin'] )
 {
 	//There may be sensitive info that would allow privilege escalation in these error logs
 
-	print '<p><strong>Error logs:</strong> '.libError::stats().' ('.libHTML::admincp('clearErrorLogs',null,'Clear').')</p>';
+	print '<p><strong>'.l_t('Error logs:').'</strong> '.libError::stats().' ('.libHTML::admincp('clearErrorLogs',null,'Clear').')</p>';
 
 	$dir =  libError::directory();
 	$errorlogs = libError::errorTimes();
@@ -111,16 +111,16 @@ if( $User->type['Admin'] ) {
 
 		$orderlogDirectory = Config::orderlogDirectory();
 		if ( false === $orderlogDirectory ) {
-			print '<p class="notice">Order logging not enabled; check config.php</p>';
+			print '<p class="notice">'.l_t('Order logging not enabled; check config.php').'</p>';
 		}
 		else
 		{
-			require_once('objects/game.php');
+			require_once(l_r('objects/game.php'));
 
 			$logfile = libCache::dirID($orderlogDirectory, $viewOrderLogGameID, true).'/'.$viewOrderLogCountryID.'.txt';
 
 			if( ! file_exists($logfile) ) {
-				print '<p class="notice">No log file found for this gameID/countryID.</p>';
+				print '<p class="notice">'.l_t('No log file found for this gameID/countryID.').'</p>';
 			} else {
 				print '<pre>'.file_get_contents($logfile).'</pre>';
 			}
@@ -132,10 +132,10 @@ if( $User->type['Admin'] ) {
 		$viewOrderLogCountryID='';
 	}
 
-	print '<p><strong>Order logs:</strong><form action="admincp.php" method="get">
-		Game ID: <input type="text" name="viewOrderLogGameID" value="'.$viewOrderLogGameID.'" />
-		CountryID: <input type="text" name="viewOrderLogCountryID" value="'.$viewOrderLogCountryID.'" />
-		<input type="submit" name="Submit" /></form></p>';
+	print '<p><strong>'.l_t('Order logs:').'</strong><form action="admincp.php" method="get">
+		'.l_t('Game ID').': <input type="text" name="viewOrderLogGameID" value="'.$viewOrderLogGameID.'" />
+		'.l_t('CountryID').': <input type="text" name="viewOrderLogCountryID" value="'.$viewOrderLogCountryID.'" />
+		<input type="submit" name="'.l_t('Submit').'" /></form></p>';
 }
 
 /*
@@ -149,23 +149,23 @@ if( $User->type['Admin'] ) {
 	UNION SELECT 'Units',CONCAT(MAX(id),' / ',POW(2,31)-1,' = ',MAX(id)/(POW(2,31)-1)*100,'%') FROM wD_Units ");
 	*/
 
-adminStatusList('Crashed games',"SELECT CONCAT('<a href=\"board.php?gameID=',id,'\" class=\"light\">',name,'</a>')
+adminStatusList(l_t('Crashed games'),"SELECT CONCAT('<a href=\"board.php?gameID=',id,'\" class=\"light\">',name,'</a>')
 	FROM wD_Games WHERE processStatus = 'Crashed'");
-adminStatusList('Processing games',"SELECT CONCAT('<a href=\"board.php?gameID=',id,'\" class=\"light\">',name,'</a>')
+adminStatusList(l_t('Processing games'),"SELECT CONCAT('<a href=\"board.php?gameID=',id,'\" class=\"light\">',name,'</a>')
 	FROM wD_Games WHERE processStatus = 'Processing'");
-adminStatusList('Paused games',"SELECT CONCAT('<a href=\"board.php?gameID=',id,'\" class=\"light\">',name,'</a>')
+adminStatusList(l_t('Paused games'),"SELECT CONCAT('<a href=\"board.php?gameID=',id,'\" class=\"light\">',name,'</a>')
 	FROM wD_Games WHERE processStatus = 'Paused'");
 
 //require_once('gamemaster/game.php');
 //adminStatusTable('Backed up games',processGame::backedUpGames());
 
-adminStatusList('Banned users',"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
+adminStatusList(l_t('Banned users'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 	FROM wD_Users WHERE type LIKE '%Banned%'");
-adminStatusList('Mods',"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
+adminStatusList(l_t('Mods'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 	FROM wD_Users WHERE type LIKE '%Moderator%'");
-adminStatusList('Admins',"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
+adminStatusList(l_t('Admins'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 	FROM wD_Users WHERE type LIKE '%Admin%'");
-adminStatusList('Donors',"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
+adminStatusList(l_t('Donors'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 	FROM wD_Users WHERE type LIKE '%Donator%'");
 
 ?>

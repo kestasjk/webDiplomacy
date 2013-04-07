@@ -20,10 +20,10 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('gamemaster/gamemaster.php');
+require_once(l_r('gamemaster/gamemaster.php'));
 
-require_once('objects/game.php');
-require_once('gamemaster/members.php');
+require_once(l_r('objects/game.php'));
+require_once(l_r('gamemaster/members.php'));
 
 /**
  * This class creates games, joins players up to games, manages the passing of games
@@ -43,7 +43,7 @@ class processGame extends Game
 			"\n\t".print_r($this->processSummary(),true)."\n\n-----------------\n\n";
 
 		if( !($fh = fopen(self::gameFolder($this->id).'/gamelog.txt', 'a')) )
-			trigger_error("Couldn't open gamelog.txt");
+			trigger_error(l_t("Couldn't open gamelog.txt"));
 
 		fwrite($fh, $message);
 
@@ -78,7 +78,7 @@ class processGame extends Game
 
 		$votes = $this->Members->votesPassed();
 
-		$this->gamelog('Applying votes');
+		$this->gamelog(l_t('Applying votes'));
 
 		// Only act on one vote at a time ..
 		if ( in_array('Draw', $votes) )
@@ -207,7 +207,7 @@ class processGame extends Game
 		list($countBackup) = $DB->sql_row("SELECT COUNT(id) FROM wD_Backup_Games WHERE id = ".$gameID);
 
 		if ( $countBackup == 0 )
-			throw new Exception("Game does not exist in backups, cannot restore.");
+			throw new Exception(l_t("Game does not exist in backups, cannot restore."));
 
 		if ( $countLive > 0 )
 			self::eraseGame($gameID);
@@ -308,8 +308,7 @@ class processGame extends Game
 
 		if ( $name == 'DATC-Adjudicator-Test' and ! defined('DATC') )
 		{
-			throw new Exception("The game name 'DATC-Adjudicator-Test'
-								is reserved for the automated DATC tester.");
+			throw new Exception(l_t("The game name 'DATC-Adjudicator-Test' is reserved for the automated DATC tester."));
 		}
 
 		// Find a unique game name
@@ -395,9 +394,9 @@ class processGame extends Game
 		$this->gamelog('Game crashed');
 
 		// The game has crashed
-		$this->Members->sendToPlaying('No','The game has not completed a process cycle, due to either a
-		software problem (e.g. a bug) or a hardware failure (e.g. overloading). It has been stopped until
-		an admin checks on it.');
+		$this->Members->sendToPlaying('No',l_t('The game has not completed a process cycle, due to either a '.
+		'software problem (e.g. a bug) or a hardware failure (e.g. overloading). It has been stopped until '.
+		'an admin checks on it.'));
 
 		$DB->sql_put(
 			"UPDATE wD_Games
@@ -466,14 +465,14 @@ class processGame extends Game
 
 		$this->gamelog('Beginning process');
 
-		require_once('gamemaster/orders/order.php');
-		require_once('gamemaster/orders/diplomacy.php');
-		require_once('gamemaster/orders/retreats.php');
-		require_once('gamemaster/orders/builds.php');
-		require_once('gamemaster/adjudicator/pregame.php');
-		require_once('gamemaster/adjudicator/diplomacy.php');
-		require_once('gamemaster/adjudicator/retreats.php');
-		require_once('gamemaster/adjudicator/builds.php');
+		require_once(l_r('gamemaster/orders/order.php'));
+		require_once(l_r('gamemaster/orders/diplomacy.php'));
+		require_once(l_r('gamemaster/orders/retreats.php'));
+		require_once(l_r('gamemaster/orders/builds.php'));
+		require_once(l_r('gamemaster/adjudicator/pregame.php'));
+		require_once(l_r('gamemaster/adjudicator/diplomacy.php'));
+		require_once(l_r('gamemaster/adjudicator/retreats.php'));
+		require_once(l_r('gamemaster/adjudicator/builds.php'));
 
 
 		/*
@@ -741,7 +740,7 @@ class processGame extends Game
 			 * It is spring, no supply centers can change owner, and if it isn't
 			 * yet owned by anyone it's owned by Neutral
 			 */
-			$countryID = "IF(t.supply='No',u.countryID,'Neutral')";
+			$countryID = "IF(t.supply='No',u.countryID,0)";
 			$updateCountryID = '';
 
 			/*
@@ -991,10 +990,10 @@ class processGame extends Game
 		global $DB;
 
 		if( $this->phase == 'Pre-game' )
-			throw new Exception("This game hasn't started");
+			throw new Exception(l_t("This game hasn't started"));
 
 		if( $this->phase == 'Finished' )
-			throw new Exception("This game is finished");
+			throw new Exception(l_t("This game is finished"));
 
 		if( $this->processStatus == 'Paused' )
 		{
@@ -1025,7 +1024,7 @@ class processGame extends Game
 		}
 		else
 		{
-			throw new Exception("This game has crashed");
+			throw new Exception(l_t("This game has crashed"));
 		}
 
 		$DB->sql_put(

@@ -18,7 +18,7 @@
     along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once('objects/basic/set.php');
+require_once(l_r('objects/basic/set.php'));
 require_once('lib/reliability.php');
 
 /**

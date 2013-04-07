@@ -131,10 +131,10 @@ class Silence {
 		$length = (int) $length;
 		
 		if( $length < 0 ) 
-			throw new Exception("The silence length must be non-negative");
+			throw new Exception(l_t("The silence length must be non-negative"));
 		
 		if( $this->userID == null || !$this->userID )
-			throw new Exception("Cannot apply a silence length to a post silence; post silences are indefinite.");
+			throw new Exception(l_t("Cannot apply a silence length to a post silence; post silences are indefinite."));
 		
 		$DB->sql_put("UPDATE wD_Silences SET length=".$length." WHERE id=".$this->id);
 		
@@ -210,7 +210,7 @@ class Silence {
 			// Validation is done within create(), so these values can be passed straight through
 			
 			
-			return "Silence created successfully";
+			return l_t("Silence created successfully");
 		}
 		
 		if( isset($_REQUEST['disableSilenceID']) ) {
@@ -218,7 +218,7 @@ class Silence {
 			$silence->load($_REQUEST['disableSilenceID']);
 			$silence->disable();
 			
-			return "Silence disabled successfully";
+			return l_t("Silence disabled successfully");
 		}
 		
 		return "";
@@ -229,10 +229,10 @@ class Silence {
 		$Moderator = new User($this->moderatorUserID);
 		
 		$startTime = libTime::text($this->startTime);
-		$endTime = ( $this->length == 0 ? "Indefinite" : libTime::text($this->startTime + $this->length * 60 * 60 * 24));
+		$endTime = ( $this->length == 0 ? l_t("Indefinite") : libTime::text($this->startTime + $this->length * 60 * 60 * 24));
 		
 		$silenceData = array(
-			'Status' => '<b>'.($this->enabled ? ( $this->isExpired() ? 'Ended' : 'Active' ) : 'Disabled' ).'</b>',
+			'Status' => '<b>'.($this->enabled ? ( $this->isExpired() ? l_t('Ended') : l_t('Active') ) : l_t('Disabled') ).'</b>',
 			'Mod' => $Moderator->profile_link(),
 			'Started' => $startTime,
 			'Ends' => $endTime,
@@ -249,13 +249,13 @@ class Silence {
 		
 		$strArr = array('<ul class="formlist"><li>');
 		foreach($silenceData as $k=>$v)
-			$strArr[] = $k.": <i>".$v."</i>";
+			$strArr[] = l_t($k).": <i>".$v."</i>";
 		$strArr[]='</li></ul>';
 		return implode("</li><li>",$strArr);
 	}
 	
 	public static function printLength($length) {
-		return ($length==0 ? "indefinitely" : "for ".$length." days" );
+		return ($length==0 ? l_t("indefinitely") : l_t("for %s days",$length) );
 		
 	}
 }

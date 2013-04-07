@@ -80,15 +80,15 @@ class Database {
 				Config::$database_username, Config::$database_password);
 
 		if( ! $this->link )
-			trigger_error("Couldn't connect to the MySQL server, if this problem persists please inform the admin.");
+			trigger_error(l_t("Couldn't connect to the MySQL server, if this problem persists please inform the admin."));
 
 		if( ! mysql_select_db(Config::$database_name, $this->link) )
 		{
 			if (file_exists ('install/'.Config::$easyDevInstall))
 				require('install/'.Config::$easyDevInstall);
 			else
-				trigger_error("Connected to the MySQL server, but couldn't access the specified database.
-							If this problem persists please inform the admin.");
+				trigger_error(l_t("Connected to the MySQL server, but couldn't access the specified database. ".
+						"If this problem persists please inform the admin."));
 		}
 		
 			/*
@@ -120,7 +120,8 @@ class Database {
 			 * committed data, but /all selects/ get the latest data (having the latest data is a pretty useful
 			 * transaction-mode)
 			 */
-		$this->sql_put("SET AUTOCOMMIT=0, NAMES utf8, TRANSACTION ISOLATION LEVEL READ COMMITTED, time_zone = '+0:00'");
+		$this->sql_put("SET AUTOCOMMIT=0, NAMES utf8, time_zone = '+0:00'");
+		$this->sql_put("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
 	}
 
 	/**
@@ -131,7 +132,7 @@ class Database {
 		if ( ! mysql_close($this->link) )
 		{
 			// This function may be called after/before the other objects are around.
-			die("Could not successfully close connection to database.");
+			die(l_t("Could not successfully close connection to database."));
 		}
 	}
 
@@ -253,10 +254,10 @@ class Database {
 
 		$buf .= '<table>';
 		foreach($stats as $name=>$val)
-			$buf .= '<tr><td>'.$name.':</td><td>'.$val.' sec</td></tr>';
+			$buf .= '<tr><td>'.l_t($name).':</td><td>'.$val.' sec</td></tr>';
 		$buf .= '</table>';
 
-		$buf .= '<p><strong>Bad queries:</strong></p>';
+		$buf .= '<p><strong>'.l_t('Bad queries:').'</strong></p>';
 		$buf .= '<table>';
 		foreach($this->badQueries as $pair)
 			$buf .= '<tr><td style="width:5%">'.$pair[0].' sec</td><td>'.$pair[1].'</td></tr>';
@@ -407,10 +408,10 @@ class Database {
 
 		if ( $success != 1 )
 		{
-			libHTML::error("A database lock (".$name.") is required to complete this page safely, but it could not be ".
+			libHTML::error(l_t("A database lock (%s) is required to complete this page safely, but it could not be ".
 				"acquired (it's being used by someone else). This usually means the server is running slowly, and ".
-				"taking unusually long to complete tasks.<br /><br />".
-				"Please wait a few moments and try again. Sorry for the inconvenience.");
+				"taking unusually long to complete tasks.",$name)."<br /><br />".
+				l_t("Please wait a few moments and try again. Sorry for the inconvenience."));
 		}
 	}
 

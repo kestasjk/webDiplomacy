@@ -24,10 +24,10 @@
 
 require_once('header.php');
 
-require_once('gamesearch/search.php');
-require_once('pager/pagergame.php');
-require_once('objects/game.php');
-require_once('gamepanel/game.php');
+require_once(l_r('gamesearch/search.php'));
+require_once(l_r('pager/pagergame.php'));
+require_once(l_r('objects/game.php'));
+require_once(l_r('gamepanel/game.php'));
 
 if ( isset($_REQUEST['userID']) && intval($_REQUEST['userID'])>0 )
 {
@@ -38,7 +38,7 @@ elseif( isset($_REQUEST['searchUser']) )
 	libAuth::resourceLimiter('user search',5);
 
 	if( !is_array($_REQUEST['searchUser']) )
-		throw new Exception("Invalid search data submitted.");
+		throw new Exception(l_t("Invalid search data submitted."));
 
 	$searchUser = $_REQUEST['searchUser'];
 
@@ -70,11 +70,11 @@ elseif( isset($_REQUEST['searchUser']) )
 		list($foundUserID) = $DB->sql_row("SELECT id FROM wD_Users WHERE ".implode(' OR ', $whereSQL)." LIMIT 1");
 		if( !isset($foundUserID) || !$foundUserID )
 		{
-			$searchReturn = 'No users found matching the given search parameters.';
+			$searchReturn = l_t('No users found matching the given search parameters.');
 		}
 		else
 		{
-			$searchReturn = 'Matching user found!';
+			$searchReturn = l_t('Matching user found!');
 			$userID=$foundUserID;
 		}
 	}
@@ -86,9 +86,9 @@ else
 
 if ( !$userID )
 {
-	libHTML::starthtml('Search for user');
+	libHTML::starthtml(l_t('Search for user'));
 
-	print libHTML::pageTitle('Search for user','Search for a user using either their ID, username, e-mail address, or any combination of the three.');
+	print libHTML::pageTitle(l_t('Search for user'),l_t('Search for a user using either their ID, username, e-mail address, or any combination of the three.'));
 	?>
 
 	<?php if( isset($searchReturn) ) print '<p class="notice">'.$searchReturn.'</p>'; ?>
@@ -96,35 +96,35 @@ if ( !$userID )
 	<form action="profile.php" method="post">
 	<ul class="formlist">
 
-		<li class="formlisttitle">ID number:</li>
+		<li class="formlisttitle"><?php print l_t('ID number:'); ?></li>
 		<li class="formlistfield">
 			<input type="text" name="searchUser[id]" value="" size="10">
 		</li>
 		<li class="formlistdesc">
-			The user's ID number.
+			<?php print l_t('The user\'s ID number.'); ?>
 		</li>
 
-		<li class="formlisttitle">Username:</li>
+		<li class="formlisttitle"><?php print l_t('Username:'); ?></li>
 		<li class="formlistfield">
 			<input type="text" name="searchUser[username]" value="" size="30">
 		</li>
 		<li class="formlistdesc">
-			The user's username (This isn't case sensitive, but otherwise it must match exactly.)
+			<?php print l_t('The user\'s username (This isn\'t case sensitive, but otherwise it must match exactly.)'); ?>
 		</li>
 
-		<li class="formlisttitle">E-mail address:</li>
+		<li class="formlisttitle"><?php print l_t('E-mail address:'); ?></li>
 		<li class="formlistfield">
 			<input type="text" name="searchUser[email]" value="" size="50">
 		</li>
 		<li class="formlistdesc">
-			The user's e-mail address (This also isn't case sensitive, but otherwise it must match exactly.)
+			<?php print l_t('The user\'s e-mail address (This also isn\'t case sensitive, but otherwise it must match exactly.)'); ?>
 		</li>
 	</ul>
 
 	<div class="hr"></div>
 
 	<p class="notice">
-		<input type="submit" class="form-submit" value="Search">
+		<input type="submit" class="form-submit" value="<?php print l_t('Search'); ?>">
 	</p>
 	</form>
 
@@ -140,25 +140,25 @@ else
 	}
 	catch (Exception $e)
 	{
-		libHTML::error("Invalid user ID given.");
+		libHTML::error(l_t("Invalid user ID given."));
 	}
 }
 
 if ( ! $UserProfile->type['User'] && !$UserProfile->type['Banned'] )
 {
-	$message = 'Cannot display profile: The specified account #'.$userID.' is not an active user; ';
+	$message = l_t('Cannot display profile: The specified account #%s is not an active user;',$userID).' ';
 	if( $UserProfile->type['Guest'] )
-		$message .= 'it\'s a guest account, used by unregistered people to
-			view the server without interacting.';
+		$message .= l_t('it\'s a guest account, used by unregistered people to '.
+			'view the server without interacting.');
 	elseif( $UserProfile->type['System'] )
-		$message .= 'it\'s a system account, without a real human using it.';
+		$message .= l_t('it\'s a system account, without a real human using it.');
 	else
-		$message .= 'in fact I\'m not sure what this account is...';
+		$message .= l_t('in fact I\'m not sure what this account is...');
 
 	foreach($UserProfile->type as $name=>$on)
 	{
 		if ( $on )
-			$message .= $name.', ';
+			$message .= l_t($name).', ';
 	}
 	libHTML::error($message);
 }
@@ -173,7 +173,7 @@ if( isset($searchReturn) )
 
 if ( isset($_REQUEST['detail']) )
 {
-	print '<p>(<a href="profile.php?userID='.$UserProfile->id.'">Back</a>)</p>';
+	print '<p>(<a href="profile.php?userID='.$UserProfile->id.'">'.l_t('Back').'</a>)</p>';
 
 	switch($_REQUEST['detail'])
 	{
@@ -189,7 +189,7 @@ if ( isset($_REQUEST['detail']) )
 					WHERE fromUserID = ".$UserProfile->id." AND type='ThreadStart'
 					ORDER BY timeSent DESC");
 
-				$buf = '<h4>Threads posted:</h4>
+				$buf = '<h4>'.l_t('Threads posted:').'</h4>
 					<ul>';
 				while(list($id,$subject,$message, $timeSent)=$DB->tabl_row($tabl))
 				{
@@ -217,7 +217,7 @@ if ( isset($_REQUEST['detail']) )
 					WHERE f.fromUserID = ".$UserProfile->id." AND f.type='ThreadReply'
 					ORDER BY f.timeSent DESC");
 
-				$buf = '<h4>Replies:</h4>
+				$buf = '<h4>'.l_t('Replies:').'</h4>
 					<ul>';
 				while(list($id,$threadID,$subject, $message, $timeSent)=$DB->tabl_row($tabl))
 				{
@@ -238,16 +238,16 @@ if ( isset($_REQUEST['detail']) )
 				FROM wD_CivilDisorders c INNER JOIN wD_Games g ON ( c.gameID = g.id )
 				WHERE c.userID = ".$UserProfile->id);
 
-			print '<h4>Civil disorders:</h4>
+			print '<h4>'.l_t('Civil disorders:').'</h4>
 				<ul>';
 			while(list($name, $countryID, $turn, $bet, $SCCount)=$DB->tabl_row($tabl))
 			{
 				print '<li>
-					Game: <strong>'.$name.'</strong>,
-					countryID: <strong>'.$countryID.'</strong>,
-					turn: <strong>'.$turn.'</strong>,
-					bet: <strong>'.$bet.'</strong>,
-					supply centers: <strong>'.$SCCount.'</strong>
+					'.l_t('Game:').' <strong>'.$name.'</strong>,
+					'.l_t('country #:').' <strong>'.$countryID.'</strong>,
+					'.l_t('turn:').' <strong>'.$turn.'</strong>,
+					'.l_t('bet:').' <strong>'.$bet.'</strong>,
+					'.l_t('supply centers:').' <strong>'.$SCCount.'</strong>
 					</li>';
 			}
 			print '</ul>';
@@ -256,7 +256,7 @@ if ( isset($_REQUEST['detail']) )
 		case 'reports':
 			if ( $User->type['Moderator'] )
 			{
-				require_once('lib/modnotes.php');
+				require_once(l_r('lib/modnotes.php'));
 				libModNotes::checkDeleteNote();
 				libModNotes::checkInsertNote();
 				print libModNotes::reportBoxHTML('User', $UserProfile->id);
@@ -284,7 +284,7 @@ $showAnon = ($UserProfile->id == $User->id || $User->type['Moderator']);
 
 print '<ul class="formlist">';
 
-print '<li><strong>Rank:</strong> '.$rankingDetails['rank'].'</li>';
+print '<li><strong>'.l_t('Rank:').'</strong> '.$rankingDetails['rank'].'</li>';
 
 /**
  * Add reliability-rating to the profile-page
@@ -299,28 +299,28 @@ print ' - ('.
 // End Relibility-Hack
 
 if ( $rankingDetails['position'] < $rankingDetails['rankingPlayers'] )
-	print '<li><strong>Position:</strong> '.$rankingDetails['position'].' / '.
-		$rankingDetails['rankingPlayers'].' (top '.$rankingDetails['percentile'].'%)</li>';
+	print '<li><strong>'.l_t('Position:').'</strong> '.$rankingDetails['position'].' / '.
+		$rankingDetails['rankingPlayers'].' '.l_t('(top %s%%)',$rankingDetails['percentile']).'</li>';
 
-print '<li><strong>Available points:</strong> '.$UserProfile->points.' '.libHTML::points().'</li>';
+print '<li><strong>'.l_t('Available points:').'</strong> '.$UserProfile->points.' '.libHTML::points().'</li>';
 
-print '<li><strong>Points in play:</strong> '.($rankingDetails['worth']-$UserProfile->points-($showAnon ? 0 : $rankingDetails['anon']['points'])).' '.libHTML::points().'</li>';
+print '<li><strong>'.l_t('Points in play:').'</strong> '.($rankingDetails['worth']-$UserProfile->points-($showAnon ? 0 : $rankingDetails['anon']['points'])).' '.libHTML::points().'</li>';
 
-print '<li><strong>Total points:</strong> '.$rankingDetails['worth'].' '.libHTML::points().'</li>';
+print '<li><strong>'.l_t('Total points:').'</strong> '.$rankingDetails['worth'].' '.libHTML::points().'</li>';
 
 if( $UserProfile->type['DonatorPlatinum'] )
-	$donatorMarker = libHTML::platinum().' - <strong>Platinum</strong>';
+	$donatorMarker = libHTML::platinum().' - <strong>'.l_t('Platinum').'</strong>';
 elseif( $UserProfile->type['DonatorGold'] )
-	$donatorMarker = libHTML::gold().' - <strong>Gold</strong>';
+	$donatorMarker = libHTML::gold().' - <strong>'.l_t('Gold').'</strong>';
 elseif( $UserProfile->type['DonatorSilver'] )
-	$donatorMarker = libHTML::silver().' - Silver';
+	$donatorMarker = libHTML::silver().' - '.l_t('Silver');
 elseif( $UserProfile->type['DonatorBronze'] )
-	$donatorMarker = libHTML::bronze().' - Bronze';
+	$donatorMarker = libHTML::bronze().' - '.l_t('Bronze');
 else
 	$donatorMarker = false;
 
 if( $donatorMarker )
-	print '<li>&nbsp;</li><li><strong>Donator:</strong> '.$donatorMarker.'</li>';
+	print '<li>&nbsp;</li><li><strong>'.l_t('Donator:').'</strong> '.$donatorMarker.'</li>';
 
 if( $UserProfile->type['DevGold'] )
 	$donatorMarker = libHTML::devgold().' - <strong>Gold</strong>';
@@ -341,7 +341,7 @@ list($posts) = $DB->sql_row(
 	"SELECT SUM(gameMessagesSent) FROM wD_Members m
 	WHERE m.userID = ".$UserProfile->id);
 if( is_null($posts) ) $posts=0;
-print '<li><strong>Game messages:</strong> '.$posts.'</li>';
+print '<li><strong>'.l_t('Game messages:').'</strong> '.$posts.'</li>';
 
 print '<li>&nbsp;</li>';
 $total = 0;
@@ -357,18 +357,18 @@ foreach($rankingDetails['stats'] as $name => $status)
 
 if( $total )
 {
-	print '<li><strong>Game stats:</strong> <ul class="gamesublist">';
+	print '<li><strong>'.l_t('Game stats:').'</strong> <ul class="gamesublist">';
 
 	foreach($rankingDetails['stats'] as $name => $status)
 	{
 		if ( !in_array($name, $includeStatus) ) continue;
 
-		print '<li>'.$name.': <strong>'.$status.'</strong>';
+		print '<li>'.l_t($name.': <strong>%s</strong>',$status);
 		print ' ( '.round(($status/$total)*100).'% )';
 		print '</li>';
 	}
 
-	print '<li>Total (finished): <strong>'.$total.'</strong></li>';
+	print '<li>'.l_t('Total (finished): <strong>%s</strong>',$total).'</li>';
 
 	foreach($rankingDetails['stats'] as $name => $status)
 	{
@@ -376,12 +376,12 @@ if( $total )
 
 		if (!$showAnon && isset($rankingDetails['anon'][$name]))
 			$status -= $rankingDetails['anon'][$name];
-		print '<li>'.$name.': <strong>'.$status.'</strong></li>';
+		print '<li>'.l_t($name.': <strong>%s</strong>',$status).'</li>';
 	}
 
 	if ( $rankingDetails['takenOver'] )
-		print '<li>Left and taken over: <strong>'.$rankingDetails['takenOver'].'</strong>
-			(View: <a href="profile.php?detail=civilDisorders&userID='.$UserProfile->id.'">Details</a>)</li>';
+		print '<li>'.l_t('Left and taken over: <strong>%s</strong>',$rankingDetails['takenOver']).
+			'(<a href="profile.php?detail=civilDisorders&userID='.$UserProfile->id.'">'.l_t('View details').'</a>)</li>';
 
 	print '</ul></li>';
 }
@@ -425,7 +425,7 @@ print '<div class="leftHalf" style="width:50%">';
 
 
 if( $UserProfile->type['Banned'] )
-	print '<p><strong>Banned</strong></p>';
+	print '<p><strong>'.l_t('Banned').'</strong></p>';
 
 if ( $UserProfile->comment )
 	print '<p class="profileComment">"'.$UserProfile->comment.'"</p>';
@@ -434,14 +434,14 @@ print '<p><ul class="formlist">';
 
 if ( $UserProfile->type['ForumModerator'] || $UserProfile->type['Admin'] )
 {
-	print '<li><strong>Mod/Admin team</strong></li>';
+	print '<li><strong>'.l_t('Mod/Admin team').'</strong></li>';
 	print '<li>&nbsp;</li>';
 }
 
 if ( $UserProfile->online )
-	print '<li><strong>Currently logged in.</strong> ('.libHTML::loggedOn($UserProfile->id).')</li>';
+	print '<li><strong>'.l_t('Currently logged in.').'</strong> ('.libHTML::loggedOn($UserProfile->id).')</li>';
 else
-	print '<li><strong>Last visited:</strong> '.libTime::text($UserProfile->timeLastSessionEnded).'</li>';
+	print '<li><strong>'.l_t('Last visited:').'</strong> '.libTime::text($UserProfile->timeLastSessionEnded).'</li>';
 
 list($posts) = $DB->sql_row(
 	"SELECT (
@@ -454,23 +454,23 @@ list($likes) = $DB->sql_row("SELECT COUNT(*) FROM wD_LikePost WHERE userID=".$Us
 list($liked) = $DB->sql_row("SELECT COUNT(*) FROM wD_ForumMessages fm 
 	INNER JOIN wD_LikePost lp ON lp.likeMessageID = fm.id 
 	WHERE fm.fromUserID=".$UserProfile->id);
-$likes = ($likes ? '<strong>Likes:</strong> '.$likes : '');
-$liked = ($liked ? '<strong>Liked:</strong> '.$liked : '');
+$likes = ($likes ? '<strong>'.l_t('Likes:').'</strong> '.$likes : '');
+$liked = ($liked ? '<strong>'.l_t('Liked:').'</strong> '.$liked : '');
 
-print '<li><strong>Forum posts:</strong> '.$posts.'<br />
-	<strong>View:</strong> <a class="light" href="profile.php?detail=threads&userID='.$UserProfile->id.'">Threads</a>,
-		<a class="light" href="profile.php?detail=replies&userID='.$UserProfile->id.'">replies</a><br />
+print '<li><strong>'.l_t('Forum posts:').'</strong> '.$posts.'<br />
+	<strong>'.l_t('View:').'</strong> <a class="light" href="profile.php?detail=threads&userID='.$UserProfile->id.'">'.l_t('Threads').'</a>,
+		<a class="light" href="profile.php?detail=replies&userID='.$UserProfile->id.'">'.l_t('replies').'</a><br />
 		'.implode(' / ',array($likes,$liked)).'
 	</li>';
 unset($likes,$liked);
 
 print '<li>&nbsp;</li>';
-print '<li><strong>Joined:</strong> '.$UserProfile->timeJoinedtxt().'</li>';
-print '<li><strong>User ID#:</strong> '.$UserProfile->id.'</li>';
+print '<li><strong>'.l_t('Joined:').'</strong> '.$UserProfile->timeJoinedtxt().'</li>';
+print '<li><strong>'.l_t('User ID#:').'</strong> '.$UserProfile->id.'</li>';
 if( $User->type['Moderator'] )
 {
-	print '<li><strong>E-mail:</strong>
-			'.$UserProfile->email.($UserProfile->hideEmail == 'No' ? '' : ' <em>(hidden for non-mods)</em>').'
+	print '<li><strong>'.l_t('E-mail:').'</strong>
+			'.$UserProfile->email.($UserProfile->hideEmail == 'No' ? '' : ' <em>'.l_t('(hidden for non-mods)').'</em>').'
 		</li>';
 }
 elseif ( $UserProfile->hideEmail == 'No' )
@@ -487,8 +487,8 @@ elseif ( $UserProfile->hideEmail == 'No' )
 		imagepng($image, $emailCacheFilename);
 	}
 
-	print '<li><strong>E-mail:</strong>
-			<img src="'.STATICSRV.$emailCacheFilename.'" alt="[E-mail address image]" title="To protect e-mails from spambots they are embedded in an image" >
+	print '<li><strong>'.l_t('E-mail:').'</strong>
+			<img src="'.STATICSRV.$emailCacheFilename.'" alt="'.l_t('[E-mail address image]').'" title="'.l_t('To protect e-mails from spambots they are embedded in an image').'" >
 		</li>';
 }
 
@@ -502,7 +502,7 @@ if ( $UserProfile->hideEmail != 'No' )
 
 if ( $UserProfile->homepage )
 {
-	print '<li><strong>Home page:</strong> '.$UserProfile->homepage.'</li>';
+	print '<li><strong>'.l_t('Home page:').'</strong> '.$UserProfile->homepage.'</li>';
 }
 
 print '<li>&nbsp;</li>';
@@ -524,32 +524,32 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 	$modActions=array();
 
 	if ( $User->type['Admin'] )
-		$modActions[] = '<a href="index.php?auid='.$UserProfile->id.'">Enter this user\'s account</a>';
+		$modActions[] = '<a href="index.php?auid='.$UserProfile->id.'">'.l_t('Enter this user\'s account').'</a>';
 
 	$modActions[] = libHTML::admincpType('User',$UserProfile->id);
 
 	if( !$UserProfile->type['Admin'] && ( $User->type['Admin'] || !$UserProfile->type['Moderator'] ) )
-		$modActions[] = libHTML::admincp('banUser',array('userID'=>$UserProfile->id), 'Ban user');
+		$modActions[] = libHTML::admincp('banUser',array('userID'=>$UserProfile->id), l_t('Ban user'));
 	
 	if( !$UserProfile->type['Donator'])
-		$modActions[] = libHTML::admincp('makeDonator',array('userID'=>$UserProfile->id), 'Give donator benefits');
+		$modActions[] = libHTML::admincp('makeDonator',array('userID'=>$UserProfile->id), l_t('Give donator benefits'));
 
 	if( $User->type['Admin'] && !$UserProfile->type['Moderator'] )
-		$modActions[] = libHTML::admincp('giveModerator',array('userID'=>$UserProfile->id), 'Make moderator');
+		$modActions[] = libHTML::admincp('giveModerator',array('userID'=>$UserProfile->id), l_t('Make moderator'));
 
 	if( $User->type['Admin'] && ($UserProfile->type['Moderator'] && !$UserProfile->type['Admin']) )
-		$modActions[] = libHTML::admincp('takeModerator',array('userID'=>$UserProfile->id), 'Remove moderator');
+		$modActions[] = libHTML::admincp('takeModerator',array('userID'=>$UserProfile->id), l_t('Remove moderator'));
 	
 	if( $User->type['Admin'] && $UserProfile->type['ForumModerator'] )
-		$modActions[] = libHTML::admincp('giveForumModerator',array('userID'=>$UserProfile->id), 'Make forum moderator');
+		$modActions[] = libHTML::admincp('giveForumModerator',array('userID'=>$UserProfile->id), l_t('Make forum moderator'));
 	
 	if( $User->type['Admin'] && ($UserProfile->type['ForumModerator'] && !$UserProfile->type['Admin']) )
-		$modActions[] = libHTML::admincp('takeForumModerator',array('userID'=>$UserProfile->id), 'Remove forum moderator');
+		$modActions[] = libHTML::admincp('takeForumModerator',array('userID'=>$UserProfile->id), l_t('Remove forum moderator'));
 	
-	$modActions[] = libHTML::admincp('reportMuteToggle',array('userID'=>$UserProfile->id), ($UserProfile->muteReports=='No'?'Mute':'Unmute').' mod reports');
+	$modActions[] = libHTML::admincp('reportMuteToggle',array('userID'=>$UserProfile->id), l_t(($UserProfile->muteReports=='No'?'Mute':'Unmute').' mod reports'));
 
 	$modActions[] = '<a href="admincp.php?tab=Multi-accounts&aUserID='.$UserProfile->id.'" class="light">'.
-		'Enter multi-account finder</a>';
+		l_t('Enter multi-account finder').'</a>';
 
 	if($modActions)
 	{
@@ -565,10 +565,10 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 	{
 		$silences = $UserProfile->getSilences();
 		
-		print '<p><ul class="formlist"><li><strong>Silences:</strong></li><li>';
+		print '<p><ul class="formlist"><li><strong>'.l_t('Silences:').'</strong></li><li>';
 		
 		if( count($silences) == 0 )
-			print 'No silences against this user.</p>';
+			print l_t('No silences against this user.').'</p>';
 		else
 		{
 			print '<ul class="formlist">';
@@ -581,7 +581,7 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 		}
 		
 		print '</li><li>';
-		print libHTML::admincp('createUserSilence',array('userID'=>$UserProfile->id,'reason'=>''),'Silence user');
+		print libHTML::admincp('createUserSilence',array('userID'=>$UserProfile->id,'reason'=>''),l_t('Silence user'));
 		print '</li></ul></p>';
 	}
 }
@@ -596,25 +596,25 @@ if ( $User->type['User'] && $User->id != $UserProfile->id)
 	{
 		if ( ! libHTML::checkTicket() )
 		{
-			print '<p class="notice">You seem to be sending the same message again, this may happen if you refresh
-				the page after sending a message.</p>';
+			print '<p class="notice">'.l_t('You seem to be sending the same message again, this may happen if you refresh '.
+				'the page after sending a message.').'</p>';
 		}
 		else
 		{
 			$UserProfile->sendPM($User, $_REQUEST['message']);
 
-			print '<p class="notice">Private message sent successfully.</p>';
+			print '<p class="notice">'.l_t('Private message sent successfully.').'</p>';
 		}
 	}
 
 	print '<div style="margin-left:20px"><ul class="formlist">';
-	print '<li class="formlisttitle">Send private-message:</li>
-		<li class="formlistdesc">Send a message to this user.</li>';
+	print '<li class="formlisttitle">'.l_t('Send private-message:').'</li>
+		<li class="formlistdesc">'.l_t('Send a message to this user.').'</li>';
 
 	print '<form action="profile.php?userID='.$UserProfile->id.'#messagebox" method="post">
 		<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
 		<textarea name="message" style="width:80%" rows="4"></textarea></li>
-		<li class="formlistfield"><input type="submit" class="form-submit" value="Send" /></li>
+		<li class="formlistfield"><input type="submit" class="form-submit" value="'.l_t('Send').'" /></li>
 		</form>
 		</ul>
 		</div>';
@@ -630,7 +630,7 @@ $profilePager->addArgs('userID='.$UserProfile->id);
 if ( isset($_REQUEST['advanced']) && $User->type['User'] )
 {
 	print '<a name="search"></a>';
-	print '<h3>Search '.$UserProfile->username.'\'s games: (<a href="profile.php?page=1&amp;userID='.$UserProfile->id.'#top" class="light">Close</a>)</h3>';
+	print '<h3>'.l_t('Search %s\'s games:',$UserProfile->username).' (<a href="profile.php?page=1&amp;userID='.$UserProfile->id.'#top" class="light">'.l_t('Close').'</a>)</h3>';
 
 	$profilePager->addArgs('advanced=on');
 
@@ -655,13 +655,13 @@ if ( isset($_REQUEST['advanced']) && $User->type['User'] )
 	print '<input type="hidden" name="page" value="1" />';
 	$search->formHTML();
 	print '</form>';
-	print '<p><a href="profile.php?page=1&amp;userID='.$UserProfile->id.'#top" class="light">Close search</a></p>';
+	print '<p><a href="profile.php?page=1&amp;userID='.$UserProfile->id.'#top" class="light">'.l_t('Close search').'</a></p>';
 	print '</div>';
 
 	if( $searched )
 	{
 		print '<div class="hr"></div>';
-		print $profilePager->pagerBar('top','<h3>Results:</h3>');
+		print $profilePager->pagerBar('top','<h3>'.l_t('Results:').'</h3>');
 
 		$gameCount = $search->printGamesList($profilePager);
 
@@ -670,9 +670,9 @@ if ( isset($_REQUEST['advanced']) && $User->type['User'] )
 			print '<p class="notice">';
 
 			if( $profilePager->currentPage > 1 )
-				print 'No more games found for the given search parameters.';
+				print l_t('No more games found for the given search parameters.');
 			else
-				print 'No games found for the given search parameters, try broadening your search.';
+				print l_t('No games found for the given search parameters, try broadening your search.');
 
 			print '</p>';
 			print '<div class="hr"></div>';
@@ -686,8 +686,8 @@ else
 	if(isset($_SESSION['search-profile.php']))
 		unset($_SESSION['search-profile.php']);
 
-	$leftSide = '<h3>'.$UserProfile->username.'\'s games '.
-			( $User->type['User'] ? '(<a href="profile.php?userID='.$UserProfile->id.'&advanced=on#search">Search</a>)' : '' ).
+	$leftSide = '<h3>'.l_t('%s\'s games',$UserProfile->username).' '.
+			( $User->type['User'] ? '(<a href="profile.php?userID='.$UserProfile->id.'&advanced=on#search">'.l_t('Search').'</a>)' : '' ).
 			'</h3>';
 	print $profilePager->pagerBar('top', $leftSide);
 
@@ -697,9 +697,9 @@ else
 	{
 		print '<p class="notice">';
 		if( $profilePager->currentPage > 1 )
-			print 'No more games found for this profile.';
+			print l_t('No more games found for this profile.');
 		else
-			print 'No games found for this user.';
+			print l_t('No games found for this user.');
 		print '</p>';
 
 		print '<div class="hr"></div>';
@@ -707,7 +707,7 @@ else
 }
 
 if ( $searched && $gameCount > 1 )
-	print $profilePager->pagerBar('bottom','<a href="#top">Back to top</a>');
+	print $profilePager->pagerBar('bottom','<a href="#top">'.l_t('Back to top').'</a>');
 else
 	print '<a name="bottom"></a>';
 

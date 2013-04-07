@@ -80,7 +80,7 @@ $scRatiosByTurn=$scCountsByTurn;
 unset($scCountsByTurn);
 
 if( count($scRatiosByTurn)<3 ) {
-	print 'Game too new to graph.';
+	print l_t('Game too new to graph.');
 	return;
 }
 

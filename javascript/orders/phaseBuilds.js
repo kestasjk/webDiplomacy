@@ -41,12 +41,12 @@ function loadOrdersPhase() {
 					case 'Build Army':
 					case 'Build Fleet':
 					case 'Wait':
-						this.typeChoices = $H({'Build Army':'Build an army',
-									'Build Fleet':'Build a fleet',
-									'Wait':'Wait/Postpone build.'});
+						this.typeChoices = $H({'Build Army':l_t('Build an army'),
+									'Build Fleet':l_t('Build a fleet'),
+									'Wait':l_t('Wait/Postpone build.')});
 						break;
 					case 'Destroy':
-						this.typeChoices = $H({'Destroy':'Destroy a unit'});
+						this.typeChoices = $H({'Destroy':l_t('Destroy a unit')});
 				}
 				
 				return this.typeChoices;

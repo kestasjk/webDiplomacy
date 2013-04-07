@@ -24,7 +24,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @package Base
  * @subpackage Pager
  */
-require_once('pager/pager.php');
+require_once(l_r('pager/pager.php'));
 class PagerGames extends Pager
 {
 	private $approxPageCount;

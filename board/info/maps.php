@@ -31,7 +31,7 @@ class Maps
 	}
 }
  
-print '<h3>Maps</h3>';
+print '<h3>'.l_t('Maps').'</h3>';
 
 $MA=$Game->Variant->Maps();
 print '<table>'.$MA->OutputHTML().'</table>';

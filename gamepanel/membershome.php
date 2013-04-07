@@ -20,7 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('gamepanel/memberhome.php');
+require_once(l_r('gamepanel/memberhome.php'));
 /**
  * This class displays the members subsection of a game panel in a homepage context.
  *
@@ -52,7 +52,7 @@ class panelMembersHome extends panelMembers
 		{
 			$count=count($this->ByID);
 			for($i=0;$i<$count;$i++)
-				$membersList[]=array(($i+1),'<img src="images/icons/tick.png" alt=" " title="Player joined, spot filled" />');
+				$membersList[]=array(($i+1),'<img src="'.l_s('images/icons/tick.png').'" alt=" " title="'.l_t('Player joined, spot filled').'" />');
 			for($i=$count;$i<=count($this->Game->Variant->countries);$i++)
 				$membersList[]=array(($i+1), '');
 		}
