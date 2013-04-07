@@ -39,7 +39,7 @@ class searchAmMember extends searchItemRadio
 			'Profile'=>'Yes',
 			'My games'=>'Yes',
 			'New'=>'No',
-			'Open'=>'No',
+			'Joinable'=>'No',
 			'Active'=>'No'
 		);
 
@@ -67,7 +67,7 @@ class searchAmMember extends searchItemRadio
 	function formHTML()
 	{
 		print '<li>
-			<strong>'.$this->label.'</strong>:
+			<strong>'.l_t($this->label).'</strong>:
 			<ul>
 				<li>'.$this->options['-']->formHTML().'</li>
 				<li>'.$this->options['Yes']->formHTML().'
@@ -173,7 +173,7 @@ class searchIsJoinable extends searchItemRadio
 
 	protected $defaults=array(
 			'New'=>'Yes',
-			'Open'=>'Yes'
+			'Joinable'=>'Yes'
 		);
 
 	function sql(&$TABLES,&$WHERE,&$ORDER)
@@ -236,7 +236,7 @@ class searchChooseVariant extends searchItemRadio
 		foreach(Config::$variants as $variantID=>$variantName)
 		{
 			//$Variant = libVariant::loadFromVariantName($variantName);
-			$this->options[$variantID]=$variantName;//$Variant->fullName;
+			$this->options[$variantID]=l_t($variantName);//$Variant->fullName;
 		}
 
 		parent::__construct($searchType);
@@ -304,9 +304,9 @@ class searchPhase extends searchItemRadio
 	protected $options=array('-'=>'All','Active'=>'Active','Finished'=>'Finished');
 	protected $subItems=array('ActivePhases','ProcessStatus','GameOver');
 
-	protected $locks=array('New','Open','Active','Finished');
+	protected $locks=array('New','Joinable','Active','Finished');
 
-	protected $defaults=array('My games'=>'Active','New'=>'Active','Open'=>'Active','Active'=>'Active','Finished'=>'Finished');
+	protected $defaults=array('My games'=>'Active','New'=>'Active','Joinable'=>'Active','Active'=>'Active','Finished'=>'Finished');
 
 	function filterInput($input)
 	{
@@ -318,7 +318,7 @@ class searchPhase extends searchItemRadio
 	function formHTML()
 	{
 		print '<li>
-			<strong>'.$this->label.'</strong>:
+			<strong>'.l_t($this->label).'</strong>:
 			<ul>
 				<li>'.$this->options['-']->formHTML().'</li>
 				<li>'.$this->options['Active']->formHTML().'
@@ -370,12 +370,12 @@ class searchActivePhases extends searchItemRadio
 	protected $label='Phase';
 	protected $options=array('-'=>'All','Pre-game'=>'Pre-game','Diplomacy,Retreats,Builds'=>'Diplomacy,Retreats,Builds');
 
-	protected $locks=array('New','Open','Active','Finished');
+	protected $locks=array('New','Joinable','Active','Finished');
 
 	protected $defaults=array(
 			'My games'=>'Diplomacy,Retreats,Builds',
 			'New'=>'Pre-game',
-			'Open'=>'Diplomacy,Retreats,Builds',
+			'Joinable'=>'Diplomacy,Retreats,Builds',
 			'Active'=>'Diplomacy,Retreats,Builds'
 		);
 
@@ -425,7 +425,7 @@ class searchGameOver extends searchItemRadio
 	protected $label='Finish type';
 	protected $options=array('-'=>'All','Won'=>'Won','Drawn'=>'Drawn');
 
-	protected $locks=array('New','Open','Active');
+	protected $locks=array('New','Joinable','Active');
 
 	function sql(&$TABLES,&$WHERE,&$ORDER)
 	{
@@ -487,7 +487,7 @@ class searchOrderBy extends searchItemSelect
 	protected $defaults=array(
 			'My games'=>'processTime-ASC',
 			'New'=>'processTime-ASC',
-			'Open'=>'turn-ASC',
+			'Joinable'=>'turn-ASC',
 			'Active'=>'pot-DESC',
 			'Finished'=>'id-DESC',
 			'Profile'=>'id-DESC'

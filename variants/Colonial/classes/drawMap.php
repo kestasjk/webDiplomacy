@@ -38,21 +38,21 @@ class ColonialVariant_drawMap extends drawMap {
 		if( $this->smallmap )
 		{
 			return array(
-				'army'     =>'contrib/smallarmy.png'                        ,
-				'fleet'    =>'contrib/smallfleet.png'                       ,
-				'names'    =>'variants/Colonial/resources/smallmapNames.png',
-				'standoff' =>'images/icons/cross.png'                       ,
-				'map'      =>'variants/Colonial/resources/smallmap.png'     ,
+				'army'     =>l_s('contrib/smallarmy.png')                        ,
+				'fleet'    =>l_s('contrib/smallfleet.png')                       ,
+				'names'    =>l_s('variants/Colonial/resources/smallmapNames.png'),
+				'standoff' =>l_s('images/icons/cross.png')                       ,
+				'map'      =>l_s('variants/Colonial/resources/smallmap.png')     ,
 			);
 		}
 		else
 		{
 			return array(
-				'army'     =>'contrib/army.png',
-				'fleet'    =>'contrib/fleet.png',
-				'names'    =>'variants/Colonial/resources/mapNames.png',
-				'standoff' =>'images/icons/cross.png',
-				'map'      =>'variants/Colonial/resources/map.png',
+				'army'     =>l_s('contrib/army.png'),
+				'fleet'    =>l_s('contrib/fleet.png'),
+				'names'    =>l_s('variants/Colonial/resources/mapNames.png'),
+				'standoff' =>l_s('images/icons/cross.png'),
+				'map'      =>l_s('variants/Colonial/resources/map.png'),
 			);
 		}
 	}
@@ -75,9 +75,9 @@ class ColonialVariant_drawMap extends drawMap {
 		parent::loadImages();
 
 		if( $this->smallmap )
-			$this->sc = $this->loadImage('variants/Colonial/resources/sc_small.png');
+			$this->sc = $this->loadImage(l_s('variants/Colonial/resources/sc_small.png'));
 		else
-			$this->sc = $this->loadImage('variants/Colonial/resources/sc_large.png');
+			$this->sc = $this->loadImage(l_s('variants/Colonial/resources/sc_large.png'));
 	}
 
 	protected function setTransparancies()

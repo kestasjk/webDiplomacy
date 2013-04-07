@@ -30,7 +30,7 @@ abstract class set
 	public function __get($name)
 	{
 		if( !isset($this->set[$name]) )
-			throw new Exception("Unknown set entry ".$name." for set (only ".implode(', ',array_keys($this->set))." allowed).");
+			throw new Exception(l_t("Unknown set entry %s for set (only %s allowed).",$name,implode(', ',array_keys($this->set))));
 		else
 			return $this->set[$name];
 	}
@@ -56,25 +56,25 @@ class setMemberOrderStatus extends set {
 		if( $this->None )
 			return '- ';
 		elseif( $this->Ready )
-			return '<img src="images/icons/tick.png" alt="Ready" title="Ready to move to the next turn" /> ';
+			return '<img src="'.l_s('images/icons/tick.png').'" alt="'.l_t('Ready').'" title="'.l_t('Ready to move to the next turn').'" /> ';
 		elseif( $this->Completed )
-			return '<img src="images/icons/tick_faded.png" alt="Completed" title="Orders completed, but not ready for next turn" /> ';
+			return '<img src="'.l_s('images/icons/tick_faded.png').'" alt="'.l_t('Completed').'" title="'.l_t('Orders completed, but not ready for next turn').'" /> ';
 		elseif( $this->Saved )
-			return '<img src="images/icons/alert_minor.png" alt="Saved" title="Orders saved, but not completed!" /> ';
+			return '<img src="'.l_s('images/icons/alert_minor.png').'" alt="'.l_t('Saved').'" title="'.l_t('Orders saved, but not completed!').'" /> ';
 		else
-			return '<img src="images/icons/alert.png" alt="Not received" title="No orders submitted!" /> ';
+			return '<img src="'.l_s('images/icons/alert.png').'" alt="'.l_t('Not received').'" title="'.l_t('No orders submitted!').'" /> ';
 	}
 	function iconText() {
 		if( $this->None )
-			return 'No orders to submit';
+			return l_t('No orders to submit');
 		elseif( $this->Ready )
-			return 'Ready to move to the next turn';
+			return l_t('Ready to move to the next turn');
 		elseif( $this->Completed )
-			return 'Orders completed, but not ready for next turn';
+			return l_t('Orders completed, but not ready for next turn');
 		elseif( $this->Saved )
-			return 'Orders saved, but not completed!';
+			return l_t('Orders saved, but not completed!');
 		else
-			return 'No orders submitted!';
+			return l_t('No orders submitted!');
 	}
 }
 class setMemberVotes extends set {
@@ -85,9 +85,6 @@ class setMemberNewMessagesFrom extends set {
 }
 class setVariantStatus extends set {
 	protected $allowed=array('Installed','Allowed','Enabled');
-}
-class setUserNotifications extends set {
-	protected $allowed=array('PrivateMessage', 'GameMessage', 'Unfinalized', 'GameUpdate');
 }
 
 ?>

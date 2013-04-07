@@ -95,8 +95,7 @@ elseif ( !isset($testID) or !$testID )
 		processGame::eraseGame($gameID);
 	$DB->sql_put("COMMIT");
 
-	print '<p class="notice">There appear to be no more tests left!
-			All tests have passed! <a href="datc.php?reset=on">Reset tests</a></p>';
+	print '<p class="notice">'.l_t('There appear to be no more tests left! All tests have passed!').' <a href="datc.php?reset=on">'.l_t('Reset tests').'</a></p>';
 	print '</div>';
 	print '<div class="content">';
 	return;
@@ -104,11 +103,11 @@ elseif ( !isset($testID) or !$testID )
 
 print '<div class="gamelistings-tabs">
 		<a href="datc.php?next=on">Next</a>
-		<a href="datc.php?testID='.$testID.'&verySlowStep=on&rand='.rand(0,99999).'">Run first third</a>
-		<a href="datc.php?testID='.$testID.'&slowStep=on&rand='.rand(0,99999).'">Run first two thirds</a>
-		<a href="datc.php?testID='.$testID.'&rand='.rand(0,99999).'">Run full</a>
-		<a href="datc.php?testID='.$testID.'&batchTest='.rand(0,99999).'#map">Batch-test</a>
-		<a href="datc.php?reset=on">Reset all</a>
+		<a href="datc.php?testID='.$testID.'&verySlowStep=on&rand='.rand(0,99999).'">'.l_t('Run first third').'</a>
+		<a href="datc.php?testID='.$testID.'&slowStep=on&rand='.rand(0,99999).'">'.l_t('Run first two thirds').'</a>
+		<a href="datc.php?testID='.$testID.'&rand='.rand(0,99999).'">'.l_t('Run full').'</a>
+		<a href="datc.php?testID='.$testID.'&batchTest='.rand(0,99999).'#map">'.l_t('Batch-test').'</a>
+		<a href="datc.php?reset=on">'.l_t('Reset all').'</a>
 		</div>';
 
 
@@ -153,7 +152,7 @@ list($testName, $variantID, $testDesc) = $DB->sql_row(
  * Non-Diplomacy phase DATC tests are currently unsupported.
  */
 
-print 'Loading test <strong><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#'.$testName.'">'.
+print l_t('Loading test').' <strong><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#'.$testName.'">'.
 		$testName.'</a></strong>: '.$testDesc.'<br /><br />';
 
 global $Variant;
@@ -162,16 +161,16 @@ $testCase = new datcGame($testID);
 
 $testCase->outputTest();
 
-print 'Initialized test';
+print l_t('Initialized test');
 if( !isset($_REQUEST['DATCResults']) )
 {
 	// We're loading a new test: Set the game up
 	$testCase->initialize();
 
-	print ', generating orders<br /><br />';
+	print ', '.l_t('generating orders').'<br /><br />';
 	$testCase->submitOrders();
 
-	print 'Orders being generated and sumbitted...<br /><br />';
+	print l_t('Orders being generated and sumbitted').'...<br /><br />';
 
 	// submitOrders() has code that will submit the results of all countryID's ajax JSON orders updates once finished.
 }
@@ -186,7 +185,7 @@ else // In this space a bunch of ajax.php requests update wD_Orders.
 	{
 		$testCase->checkInvalidOrders(); // Check DATCResults.
 
-		print 'New adjudication<br /><br />';
+		print l_t('New adjudication').'<br /><br />';
 
 		$DB->sql_put("DELETE FROM wD_Moves WHERE gameID=".$GLOBALS['GAMEID']);
 
@@ -200,7 +199,7 @@ else // In this space a bunch of ajax.php requests update wD_Orders.
 
 		$testCase->checkResults(); // Check the adjudication results, saved to wD_Moves
 
-		print $testName.' has passed!';
+		print l_t('%s has passed!',$testName);
 		$passed = true;
 
 		$DB->sql_put("UPDATE wD_DATC SET status = 'Passed' WHERE testID = ".$testID);
@@ -226,11 +225,11 @@ else // In this space a bunch of ajax.php requests update wD_Orders.
 		libHTML::starthtml('Batch testing');
 
 		print '<div class="content datc">
-			<p class="notice">Passed test '.$testName.'. Rendering, saving maps, moving onto next test.</p>';
+			<p class="notice">'.l_t('Passed test %s. Rendering, saving maps, moving onto next test.',$testName).'</p>';
 	}
 
 	print '<div class="hr"></div>
-		<p class="notice"><a href="map.php?gameID='.$testCase->id.'&turn='.$testID.'&DATC=1&nocache='.rand(0,99999).'"><img alt="Drawing map..." src="map.php?gameID='.$testCase->id.'&turn='.$testID.'&DATC=1&nocache='.rand(0,99999).'" /></a></p>';
+		<p class="notice"><a href="map.php?gameID='.$testCase->id.'&turn='.$testID.'&DATC=1&nocache='.rand(0,99999).'"><img alt="'.l_t('Drawing map').'..." src="map.php?gameID='.$testCase->id.'&turn='.$testID.'&DATC=1&nocache='.rand(0,99999).'" /></a></p>';
 }
 
 print '</div>';

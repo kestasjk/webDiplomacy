@@ -20,7 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('board/orders/base/order.php');
+require_once(l_r('board/orders/base/order.php'));
 
 /**
  * @package Board
@@ -327,7 +327,7 @@ abstract class userOrder extends order
 				return true;
 			else
 			{
-				$this->error = "Parameter '".$paramName."' set to invalid value '".$this->{$paramName}."'.";
+				$this->error = l_t("Parameter '%s' set to invalid value '%s'",$paramName,$this->{$paramName});
 				$this->setStatus('Invalid');
 				$this->followingAreInvalid=true;
 
@@ -336,7 +336,7 @@ abstract class userOrder extends order
 		}
 		catch(Exception $e)
 		{
-			$this->error = "Parameter '".$paramName."' set to invalid value '".$this->{$paramName}."': ".$e->getMessage();
+			$this->error = l_t("Parameter '%s' set to invalid value '%s': %s",$paramName,$this->{$paramName},$e->getMessage());
 			$this->setStatus('Invalid');
 			$this->followingAreInvalid=true;
 			return false;

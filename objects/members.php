@@ -18,7 +18,7 @@
     along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once('objects/member.php');
+require_once(l_r('objects/member.php'));
 /**
  * An object which manages the relationship with a game and its members. Often when
  * dealing with a certain game you're actually only dealing with the members of the
@@ -271,15 +271,15 @@ class Members
 		global $Misc;
 
 		if ( !$this->isJoined() )
-			return "not a member";
+			return l_t("not a member");
 		elseif($this->Game->phase != 'Pre-game')
-			return "game started";
+			return l_t("game started");
 		elseif(count($this->ByID)==count($this->Game->Variant->countries))
-			return "game starting";
+			return l_t("game starting");
 		elseif(time()>$this->Game->processTime)
-			return "game starting";
+			return l_t("game starting");
 		elseif ( $Misc->Panic )
-			return "joining/leaving games disabled while a problem is resolved";
+			return l_t("joining/leaving games disabled while a problem is resolved");
 		else
 			return false;
 	}

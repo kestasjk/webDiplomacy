@@ -109,7 +109,7 @@ class userMember extends panelMember
 			$voteName = 'Pause';
 
 		if(!in_array($voteName, Members::$votes))
-			throw new Exception("Invalid vote");
+			throw new Exception(l_t("Invalid vote"));
 
 		if(in_array($voteName, $this->votes))
 			unset($this->votes[array_search($voteName, $this->votes)]);

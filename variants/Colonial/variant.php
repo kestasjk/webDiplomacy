@@ -76,14 +76,14 @@ class ColonialVariant extends WDVariant {
 	}
 
 	public function turnAsDate($turn) {
-		if ( $turn==-1 ) return "Pre-game";
-		else return ( $turn % 2 ? "Autumn, " : "Spring, " ).(floor($turn/2) + 1870);
+		if ( $turn==-1 ) return l_t("Pre-game");
+		else return ( $turn % 2 ? l_t("Autumn").", " : l_t("Spring").", " ).(floor($turn/2) + 1870);
 	}
 
 	public function turnAsDateJS() {
 		return 'function(turn) {
-			if( turn==-1 ) return "Pre-game";
-			else return ( turn%2 ? "Autumn, " : "Spring, " )+(Math.floor(turn/2) + 1870);
+			if( turn==-1 ) return l_t("Pre-game");
+			else return ( turn%2 ? l_t("Autumn")+", " : l_t("Spring")+", " )+(Math.floor(turn/2) + 1870);
 		};';
 	}
 }

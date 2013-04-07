@@ -27,15 +27,15 @@ require_once('header.php');
 
 if ( $Misc->Panic )
 {
-	libHTML::notice('Game creation disabled',
-		"Game creation has been temporarily disabled while we take care of an
-		unexpected problem. Please try again later, sorry for the inconvenience.");
+	libHTML::notice(l_t('Game creation disabled'),
+		l_t("Game creation has been temporarily disabled while we take care of an ".
+		"unexpected problem. Please try again later, sorry for the inconvenience."));
 }
 
 if( !$User->type['User'] )
 {
-	libHTML::notice('Not logged on',"Only a logged on user can create games, guests can't.
-		Please <a href='logon.php' class='light'>log on</a> to create your own games.");
+	libHTML::notice(l_t('Not logged on'),l_t("Only a logged on user can create games, guests can't. ".
+		"Please <a href='logon.php' class='light'>log on</a> to create your own games."));
 }
 
 libHTML::starthtml();
@@ -59,47 +59,47 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			}
 			else
 			{
-				throw new Exception('The variable "'.$requiredName.'" is needed to create a game, but was not entered.');
+				throw new Exception(l_t('The variable "%s" is needed to create a game, but was not entered.',$requiredName));
 			}
 		}
 		unset($required, $form);
 
 		$input['variantID']=(int)$input['variantID'];
 		if( !isset(Config::$variants[$input['variantID']]) )
-			throw new Exception("Variant ID given (".$input['variantID'].") doesn't represent a real variant.");
+			throw new Exception(l_t("Variant ID given (%s) doesn't represent a real variant.",$input['variantID']));
 
 		// If the name isn't unique or is too long the database will stop it
 		$input['name'] = $DB->escape($input['name']);
 		if ( !$input['name'] )
-			throw new Exception("No name entered.");
+			throw new Exception(l_t("No name entered."));
 
 		// This is hashed, so doesn't need validation
 		if ( $input['password'] != $input['passwordcheck'] )
 		{
-			throw new Exception("The two passwords entered don't match.");
+			throw new Exception(l_t("The two passwords entered don't match."));
 		}
 
 		$input['bet'] = (int) $input['bet'];
 		if ( $input['bet'] < 5 or $input['bet'] > $User->points )
 		{
-			throw new Exception((string)$input['bet']." is an invalid bet size.");
+			throw new Exception(l_t("%s is an invalid bet size.",(string)$input['bet']));
 		}
 
 		if ( $input['potType'] != 'Winner-takes-all' and $input['potType'] != 'Points-per-supply-center' )
 		{
-			throw new Exception('Invalid potType input given.');
+			throw new Exception(l_t('Invalid potType input given.'));
 		}
 
 		$input['phaseMinutes'] = (int)$input['phaseMinutes'];
 		if ( $input['phaseMinutes'] < 5 or $input['phaseMinutes'] > 1440*10 )
 		{
-			throw new Exception("The phase value is too large or small; it must be between 5 minutes and 10 days.");
+			throw new Exception(l_t("The phase value is too large or small; it must be between 5 minutes and 10 days."));
 		}
 
 		$input['joinPeriod'] = (int)$input['joinPeriod'];
 		if ( $input['joinPeriod'] < 5 or $input['joinPeriod'] > 1440*10 )
 		{
-			throw new Exception("Joining period value out of range.");
+			throw new Exception(l_t("Joining period value out of range."));
 		}
 		
 		$input['anon'] = ( (strtolower($input['anon']) == 'yes') ? 'Yes' : 'No' );
@@ -117,7 +117,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		}
 
 		// Create Game record & object
-		require_once('gamemaster/game.php');
+		require_once(l_r('gamemaster/game.php'));
 		$Game = processGame::create($input['variantID'], $input['name'], $input['password'], $input['bet'], $input['potType'], $input['phaseMinutes'], $input['joinPeriod'], $input['anon'], $input['pressType']);
 
 		// Create first Member record & object
@@ -128,9 +128,8 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 	{
 		print '<div class="content">';
 		print '<p class="notice">'.$e->getMessage().'</p>';
-		print '</div">';
+		print '</div>';
 
-		libHTML::pagebreak();
 	}
 }
 
@@ -145,9 +144,9 @@ if ( $User->points >= 5 )
 }
 else
 {
-	print "You can't create a new game; you have fewer than 5".libHTML::points().", you only have ".$User->points.libHTML::points().".
-		You will always have at least 100 points, including the points that you have bet into active games, so if you want
-		to start a new game just wait until your other games have finished (<a href='points.php#minpoints' class='light'>read more</a>).";
+	print l_t("You can't create a new game; you have fewer than 5%s, you only have %s%s. ".
+		"You will always have at least 100 points, including the points that you have bet into active games, so if you want ".
+		"to start a new game just wait until your other games have finished (<a href='points.php#minpoints' class='light'>read more</a>).",libHTML::points(),$User->points,libHTML::points());
 
 	print '</div>';
 	libHTML::footer();
@@ -159,7 +158,7 @@ else
 	$formPoints = $defaultPoints;
 
 
-require_once('locales/'.$User->locale.'/gamecreate.php');
+require_once(l_r('locales/English/gamecreate.php'));
 
 print '</div>';
 libHTML::footer();

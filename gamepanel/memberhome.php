@@ -108,7 +108,7 @@ class panelMemberHome extends panelMember
 			$unitStyle = "neutral";
 
 		return '
-			<span class="'.$unitStyle.'"><em>'.$this->unitNo.'</em> units</span></span>
+			<span class="'.$unitStyle.'">'.l_t('%s units','<em>'.$this->unitNo.'</em>').'</span></span>
 				';
 	}
 

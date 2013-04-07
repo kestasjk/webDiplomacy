@@ -42,7 +42,7 @@ function OrdersHTMLFormClass() {
 		
 		if(MyOrders.length==0)
 		{
-			this.orderDiv.update('<p class="notice">You have no orders to fill for this phase.</p>');
+			this.orderDiv.update('<p class="notice">'+l_t('You have no orders to fill for this phase.')+'</p>');
 		}
 		else
 		{
@@ -92,12 +92,12 @@ function OrdersHTMLFormClass() {
 		this.finalized=true;
 		this.buttonOn('FinalizeButton');
 		MyOrders.map(function(o){ o.setSelects(function(e){e.disable(); }); });
-		this.FinalizeButton.value='Not ready';
+		this.FinalizeButton.value=l_t('Not ready');
 	}
 	this.setUnfinalized = function() {
 		this.finalized=false;
 		MyOrders.map(function(o){ o.setSelects(function(e){if( !e.hasClassName('orderDisabled') ) e.enable();}); });
-		this.FinalizeButton.value='Ready';
+		this.FinalizeButton.value=l_t('Ready');
 	}
 	
 	this.onSuccess = function(response) {

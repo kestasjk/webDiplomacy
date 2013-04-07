@@ -287,7 +287,7 @@ class adjDependencyNode
 			}
 			else
 			{
-				trigger_error("Invalid arguments passed: ".implode(',',$args));
+				trigger_error(l_t("Invalid arguments passed: ").implode(',',$args));
 			}
 		}
 		catch( adjParadoxException $paradox )
@@ -428,7 +428,7 @@ class adjDependencyNode
 		}
 		else
 		{
-			trigger_error("Comparison paradox code reached, without a paradox.");
+			trigger_error(l_t("Comparison paradox code reached, without a paradox."));
 		}
 
 		throw $p; // The comparison failed

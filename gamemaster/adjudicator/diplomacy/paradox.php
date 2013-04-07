@@ -306,9 +306,9 @@ class adjParadoxException extends Exception
 			 * The only valid types of paradoxes are move chains or convoy dislodgement paradoxes. 
 			 * This paradox doesn't seem to be either, so there is a problem. 
 			 */
-			if( defined('DATC') ) die("Paradox caught which could not be dealt with");
+			if( defined('DATC') ) die(l_t("Paradox caught which could not be dealt with"));
 			
-			trigger_error("Paradox caught which could not be dealt with");
+			trigger_error(l_t("Paradox caught which could not be dealt with"));
 		}
 	}
 }

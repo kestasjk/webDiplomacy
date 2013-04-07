@@ -76,7 +76,7 @@ class libCache
 		if( is_null($name) ) return $dir;
 
 		if( !is_dir($dir.'/'.$name) && !mkdir($dir.'/'.$name, 0775, true) )
-			throw new Exception("Couldn't make cache directory '".$dir.'/'.$name."'.");
+			throw new Exception(l_t("Couldn't make cache directory '%s'.",$dir.'/'.$name));
 
 		return self::dir($dir.'/'.$name, $dirParts);
 	}

@@ -20,7 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('objects/game.php');
+require_once(l_r('objects/game.php'));
 
 /**
  * Recalculates and resets the chances each user has of being each country,
@@ -30,8 +30,8 @@ require_once('objects/game.php');
  * @package Admin
  */
 
-print "Country-balance chance generation script, to be run on 0.82-0.90 update.
-	Creating table<br />";flush();
+print l_t("Country-balance chance generation script, to be run on 0.82-0.90 update.").
+	l_t("Creating table")."<br />";flush();
 
 $DB->sql_put("CREATE TABLE IF NOT EXISTS `Chances` (
 	`id` mediumint(8) unsigned NOT NULL default '0',
@@ -143,10 +143,10 @@ while(strlen($lastLine) || ( list($userID) = $DB->tabl_row($tabl)) )
 }
 print "<br />";flush();
 
-print "Indexing<br />";flush();
+print l_t("Indexing")."<br />";flush();
 $DB->sql_put("ALTER TABLE `Chances` ADD INDEX ( `id` )");
 
-print "Putting chances table data into users table<br />";flush();
+print l_t("Putting chances table data into users table")."<br />";flush();
 
 $sqlBuf= "UPDATE wD_Users u INNER JOIN Chances c SET ";
 $first=true;
@@ -160,11 +160,11 @@ foreach($Game->Variant->countries as $c)
 $sqlBuf.= " WHERE u.id = c.id";
 $DB->sql_put($sqlBuf);
 
-print "Deleting chances table";flush();
+print l_t("Deleting chances table");flush();
 $DB->sql_put("DROP TABLE Chances");
 
 $DB->sql_put("COMMIT");
 
-print "Done";flush();
+print l_t("Done");flush();
 
 ?>
