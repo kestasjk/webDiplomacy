@@ -375,7 +375,7 @@ abstract class drawMap
 		while ( list($terrID, $terrName, $x, $y) = $DB->tabl_row($tabl) )
 		{
 			$this->territoryPositions[$terrID] = array($x,$y);
-			$this->territoryNames[$terrID]=$terrName;
+			$this->territoryNames[$terrID]=l_t($terrName);
 		}
 	}
 

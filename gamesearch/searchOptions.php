@@ -46,7 +46,7 @@ class searchOptionSelect extends searchOption
 {
 	function formHTML()
 	{
-		return '<option value="'.$this->value.'" '.($this->checked?'selected ':'').'>'.$this->label.'</option>';
+		return '<option value="'.$this->value.'" '.($this->checked?'selected ':'').'>'.l_t($this->label).'</option>';
 	}
 }
 class searchOptionCheckbox extends searchOption
@@ -69,7 +69,7 @@ class searchOptionCheckbox extends searchOption
 			'.($this->locked?'':'name="'.$this->htmlName.'"').' 
 			'.($this->checked?'checked ':'').'
 			'.($this->locked?'disabled ':'').'/> 
-			'.$this->label;
+			'.l_t($this->label);
 		
 		if($this->locked)
 			$output .= ' <input type="hidden" name="'.$this->htmlName.'" value="'.$this->value.'" />';
@@ -87,7 +87,7 @@ class searchOptionRadio extends searchOption
 			'.($this->locked?'':'name="'.$this->htmlName.'"').' 
 			'.($this->checked?'checked ':'').'
 			'.($this->locked?'disabled ':'').'/> 
-			'.$this->label;
+			'.l_t($this->label);
 		
 		if($this->locked)
 			$output .= ' <input type="hidden" name="'.$this->htmlName.'" value="'.$this->value.'" />';

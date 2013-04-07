@@ -29,10 +29,10 @@ require_once('header.php');
 
 libHTML::starthtml();
 
-print libHTML::pageTitle('Hall of fame','The webDiplomacy hall of fame; the 100 highest ranking players on this server.');
+print libHTML::pageTitle(l_t('Hall of fame'),l_t('The webDiplomacy hall of fame; the 100 highest ranking players on this server.'));
 
-print '<p align="center"><img src="images/points/stack.png" alt=" "
-			title="webDiplomacy ranking points; who are the most skilled at gathering them from their foes?" /></p>';
+print '<p align="center"><img src="'.l_s('images/points/stack.png').'" alt=" "
+			title="'.l_t('webDiplomacy ranking points; who are the most skilled at gathering them from their foes?').'" /></p>';
 
 print '<p></p>';
 
@@ -43,10 +43,8 @@ if ( $User->type['User'] && $User->points > 100 )
 
 	$players = $Misc->RankingPlayers;
 
-	print '<p>You are ranked <a href="#me" class="light">#'.$position.'</a>
-		out of '.$players.' ranking players (players with >100'.libHTML::points().').
-		For more stats on your ranking visit
-		<a class="light" href="profile.php?userID='.$User->id.'">your profile</a>,</p>';
+	print '<p>'.l_t('You are ranked %s out of %s ranking players (players with >100%s)','<a href="#me" class="light">#'.$position.'</a>',$players,libHTML::points()).
+		l_t('For more stats on your ranking visit <a class="light" href="profile.php?userID='.$User->id.'">your profile</a>.').'</p>';
 }
 
 print '<table class="credits">';

@@ -28,7 +28,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 
 if( !isset($_REQUEST['full']) )
-	print '<a href="admincp.php?tab=Control Panel Logs&full=on">View all logs</a>';
+	print '<a href="admincp.php?tab=Control Panel Logs&full=on">'.l_t('View all logs').'</a>';
 
 print '<table class="credits">';
 

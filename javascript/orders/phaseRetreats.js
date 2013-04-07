@@ -35,7 +35,7 @@ function loadOrdersPhase() {
 			};
 			
 			OrderObj.updateTypeChoices = function () {
-				this.typeChoices = $H({'Retreat':'retreat','Disband':'disband'});
+				this.typeChoices = $H({'Retreat':l_t('retreat'),'Disband':l_t('disband')});
 				return this.typeChoices;
 			};
 			
@@ -64,7 +64,7 @@ function loadOrdersPhase() {
 			};
 			
 			OrderObj.beginHTML = function () {
-				return 'The '+this.Unit.type.toLowerCase()+' at '+this.Unit.Territory.name+' ';
+				return l_t('The %s at %s ',l_t(this.Unit.type.toLowerCase()),l_t(this.Unit.Territory.name));
 			};
 			OrderObj.typeHTML = function () {
 				return this.formDropDown('type',this.typeChoices,this.type);
@@ -73,7 +73,7 @@ function loadOrdersPhase() {
 				var toTerrID=this.formDropDown('toTerrID',this.toTerrChoices,this.toTerrID);
 				
 				if( toTerrID == '' ) return '';
-				else return ' to '+toTerrID;
+				else return l_t(' to %s ',toTerrID); // toTerrID comes from the already translated choices.
 			};
 			
 			OrderObj.updateFromTerrChoices = OrderObj.fNothing;

@@ -76,7 +76,7 @@ class notice
 
 		if ( $this->type != 'PM' ) return false;
 
-		if ( substr($this->linkName,0,3) == "To:" ) return false;
+		if ( substr($this->linkName,0,3) == l_t("To:") ) return false;
 
 		return true;
 	}
@@ -90,13 +90,13 @@ class notice
 
 			if( $UserPMTo->isUserMuted($User->id) )
 			{
-				return $UserPMTo->username." has muted you; could not sent message.";
+				return l_t("%s has muted you; could not sent message.",$UserPMTo->username);
 			}
 			else
 			{
 				$UserPMTo->sendPM($User, $_REQUEST['message']);
 
-				return "Message sent to ".$UserPMTo->username." successfully.";
+				return l_t("Message sent to %s successfully.",$UserPMTo->username);
 			}
 		}
 		return false;
@@ -107,7 +107,7 @@ class notice
 		<form action="index.php?toUserID='.$this->fromID.'&notices=on" method="post">
 			<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
 			<textarea name="message" style="width:90%" rows="3"></textarea></li>
-			<input type="submit" class="form-submit" value="Reply" /></li>
+			<input type="submit" class="form-submit" value="'.l_t('Reply').'" /></li>
 		</form>
 		</div>';
 	}

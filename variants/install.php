@@ -64,6 +64,8 @@ class InstallCache {
 			$row['Borders']=array();
 			$row['CoastalBorders']=array();
 
+			$row['name'] = l_t($row['name']);
+			
 			$territories[$row['id']] = $row;
 		}
 
@@ -191,7 +193,7 @@ class InstallTerritory {
 		$HomeSCs=array();
 		foreach(self::$Territories as $Territory)
 		{
-			if( $Territory->countryID>0 && $Territory->supply=='Yes' )
+			if( $Territory->countryID>0 && ($Territory->supply=='Yes' || ( isset($Territory->coastParent) && $Territory->coastParent->supply=='Yes' ) ) ) 
 			{
 				if( !isset($HomeSCs[$Territory->countryID]) )
 					$HomeSCs[$Territory->countryID]=array();
@@ -207,39 +209,101 @@ class InstallTerritory {
 			$sortBuffer=array(); // Territory keys collected for sorting here
 			$terrBuffer=array(); // Territory ids with unittype collected, indexed by sortBuffer keys, here
 
+			// Find the depths of all territories for each unit type
+			$maxDepth=-1; // The max depth is needed to invert the sort, so that the deepest territories come first and are destroyed first
+			$depths = array(); // Store the depths for each unit type, for each territory, in this array
 			foreach($unitTypes as $unitType)
 			{
+				$depths[$unitType] = array();
+				
 				// When switching from army to fleet for a certain countryID the depths must be recalculated,
 				// since the definition of distance is different for fleets than armies
 				foreach(self::$Territories as $Territory)
 					$Territory->depth=-1;
 
-
+				// Start the recursive depth search at the home supply centers with a depth of 0
 				foreach($countryHomeSCs as $HomeSC)
 					$HomeSC->findDepth(0, ($unitType=='Fleet'));
 
+				// Find the max depth, so we can invert the depth so that e.g. a depth of 15 becomes 0 and a depth of 0 becomes 15, so that the 0-depth comes last:
+				foreach(self::$Territories as $Territory)
+				{
+					$depth=$Territory->depth; // Since $Territory->depth is temporary, only for calculation, we need to save it to the $depths array 
+				
+					if( $depth==-1 ) continue; // Unreachable territory
+					
+					if( $maxDepth < $depth ) $maxDepth = $depth;
+					
+					$depths[$unitType][$Territory->id] = $depth;
+				}
+			}
+			
+			// The depths need to be reversed, converted from $depth=0 means home supply center to $depth=0 means furthest possible distance:
+			foreach($depths as $unitType=>$unitTypeDepths)
+				foreach($unitTypeDepths as $terrID=>$depth)
+					$depths[$unitType][$terrID] = $maxDepth - $depths[$unitType][$terrID]; 
+			
+			// Now that all the depths have been generated for all territories, enter them into the sort buffer so they can be sorted correctly:
+			foreach($unitTypes as $unitType)
+			{
 				// Put new results into a buffer using a string so they can be easily sorted by depth
 				foreach(self::$Territories as $Territory)
 				{
-					$depth=$Territory->depth;
-
-					if( $depth==-1 ) continue; // Unreachable territory
-
-					// Pad the depth
+					if( !isset($depths[$unitType][$Territory->id]) ) continue; // Territory was unreachable
+					
+					$depth = $depths[$unitType][$Territory->id];
+						
+					// Pad the depth so 9 won't come after 10
 					$sortTerritory=($depth<1000?'0':'').($depth<100?'0':'').($depth<10?'0':'').$depth;
-					// Make fleet come first (-> destroyed first) in alphabetical ordering
-					$sortTerritory.=($unitType=='Fleet'?'A':'Z');
-					// Australia is destroyed before Zimbabwe, all else being equal
+					// Make fleet come last (-> destroyed last) in alphabetical ordering (fleet comes after army in alphabetical ordering)
+					$sortTerritory.=($unitType=='Fleet'?' Fleet ':' Army ');
+					// Australia is destroyed before Zimbabwe, all else being equal; adding the territory name ensures sorting by name
 					$sortTerritory.=$Territory->name;
-
+					
 					$sortBuffer[]=$sortTerritory;
-					$terrBuffer[$sortTerritory]=array($Territory->id,$unitType);
+					$terrBuffer[$sortTerritory]=array($Territory->id,$unitType); // Keep a reference to which sort string refers to which territory
 				}
 			}
 
+			/*
+			 * Sort the array of strings into numeric / alphabetical order. This gives an array which lists the locations and unit types which should be destroyed first
+			 * e.g here are the last two inverted levels for Russia:
+			 * 
+			0006 Army Armenia
+			0006 Army Barents Sea
+			0006 Army Black Sea
+			0006 Army Finland
+			0006 Army Galicia
+			0006 Army Gulf of Bothnia
+			0006 Army Livonia
+			0006 Army Norway
+			0006 Army Prussia
+			0006 Army Rumania
+			0006 Army Silesia
+			0006 Army Ukraine
+			0006 Fleet Armenia
+			0006 Fleet Barents Sea
+			0006 Fleet Black Sea
+			0006 Fleet Finland
+			0006 Fleet Gulf of Bothnia
+			0006 Fleet Livonia
+			0006 Fleet Norway
+			0006 Fleet Rumania
+			0007 Army Moscow
+			0007 Army Sevastopol
+			0007 Army St. Petersburg
+			0007 Army Warsaw
+			0007 Fleet Moscow
+			0007 Fleet Sevastopol
+			0007 Fleet St. Petersburg (North Coast)
+			0007 Fleet St. Petersburg (South Coast)
+			0007 Fleet Warsaw
+				
+				Because of this for Russia a fleet in Warsaw is the last unit which will get destroyed (this doesn't exist, so in practice a fleet at St Petersburg South coast is the first
+			 */
 			sort($sortBuffer);
-			$sortBuffer=array_reverse($sortBuffer);
-
+			//if( $countryID == 7 ) die(implode('<br />',$sortBuffer)); // For debugging
+			
 			$destroyIndex=1; // First means first chosen to disband
 			foreach($sortBuffer as $sortKey)
 			{
@@ -250,6 +314,39 @@ class InstallTerritory {
 		}
 
 		return 'INSERT INTO wD_UnitDestroyIndex (mapID, countryID, terrID, unitType, destroyIndex) VALUES '.implode(',',$UnitDestroyIndexRows);
+	}
+	
+	/**
+	* Assumes the map is already present in the database, and loads up the $Territories array from that map. Used for using the install routines to modify
+	* installed variants (e.g. to re-run the unit destroy index generator).
+	* 
+	* There is a function in the restricted admin actions section which uses this to regenerate the unit destory indexes for existing maps
+	*/
+	public static function loadExistingTerritories($mapID)
+	{
+		global $DB;
+		
+		InstallTerritory::$Territories=array();
+		$TerritoriesByID = array();
+		
+		$tabl = $DB->sql_tabl("SELECT id, name, type, supply, countryID, mapX, mapY, smallMapX, smallMapY FROM wD_Territories WHERE mapID = ".$mapID);
+		while($row = $DB->tabl_hash($tabl))
+		{
+			$terr = new InstallTerritory($row['name'], $row['type'], $row['supply'], $row['countryID'], $row['mapX'], $row['mapY'], $row['smallMapX'], $row['smallMapY']);
+			$terr->id = $row['id'];
+			$terr->mapID = $mapID;
+			
+			$TerritoriesByID[$row['id']] = $terr; // Used to hook up borders
+		}
+		
+		// fleetsPass & armysPass is 'Yes'/'No'
+		$tabl = $DB->sql_tabl("SELECT fromTerrID, toTerrID, fleetsPass, armysPass FROM wD_Borders WHERE mapID = ".$mapID);
+		while($row = $DB->tabl_hash($tabl))
+		{
+			$fromTerr = $TerritoriesByID[$row['fromTerrID']];
+			$toTerr = $TerritoriesByID[$row['toTerrID']];
+			InstallTerritory::$Territories[$fromTerr->name]->addBorder($toTerr, $row['fleetsPass'], $row['armysPass']);
+		}
 	}
 
 	/**

@@ -123,8 +123,8 @@ abstract class WDVariant {
 	 * @return string The game turn in text format
 	 */
 	public function turnAsDate($turn) {
-		if ( $turn==-1 ) return "Pre-game";
-		else return "Turn #"+$turn;
+		if ( $turn==-1 ) return l_t("Pre-game");
+		else return l_t("Turn #%s",$turn);
 	}
 
 	/**
@@ -134,8 +134,8 @@ abstract class WDVariant {
 	 */
 	public function turnAsDateJS() {
 		return 'function(turn) {
-			if( turn==-1 ) return "Pre-game";
-			else return "Turn #"+turn;
+			if( turn==-1 ) return "'.l_t("Pre-game").'";
+			else return "'.l_t('Turn').' #"+turn;
 		};';
 	}
 
@@ -151,6 +151,8 @@ abstract class WDVariant {
 	 */
 	public function __call($name, $args) {
 
+		$name = l_vc($name);
+		
 		if( isset($this->variantClasses[$name]) )
 			$classname=$this->variantClasses[$name].'Variant_'.$name;
 		else
@@ -172,7 +174,7 @@ abstract class WDVariant {
 			case 10: return new $classname($args[0], $args[1], $args[2], $args[3], $args[4], $args[5], $args[6], $args[7], $args[8], $args[9]);
 			case 11: return new $classname($args[0], $args[1], $args[2], $args[3], $args[4], $args[5], $args[6], $args[7], $args[8], $args[9], $args[10]);
 			case 12: return new $classname($args[0], $args[1], $args[2], $args[3], $args[4], $args[5], $args[6], $args[7], $args[8], $args[9], $args[10], $args[11]);
-			default: trigger_error("Too many variant object constructor arguments.");
+			default: trigger_error(l_t("Too many variant object constructor arguments."));
 		}
 	}
 
@@ -216,7 +218,7 @@ abstract class WDVariant {
 		$countryID = array_search($countryName, $this->countries);
 
 		if( false===$countryID )
-			throw new Exception("Given country name '".$countryName."' does not exist in this variant.");
+			throw new Exception(l_t("Given country name '%s' does not exist in this variant.",$countryName));
 		else
 			return ($countryID+1);
 	}
@@ -230,7 +232,7 @@ abstract class WDVariant {
 		global $DB;
 
 		// This will wipe the variant if it is already present and install it
-		require_once('variants/'.$this->name.'/install.php');
+		require_once(l_r('variants/'.$this->name.'/install.php'));
 
 		// This only gets called when there's no serialized variant cache available for this
 		// variant, so prepare the data to be serialized & saved now.
@@ -362,11 +364,11 @@ abstract class WDVariant {
 	 * @return string
 	 */
 	public function territoriesJSONFile() {
-		return libVariant::cacheDir($this->name).'/territories.js';
+		return l_j(libVariant::cacheDir($this->name).'/territories.js');
 	}
 
 	public function link() {
-		return '<a class="light" href="variants.php#'.$this->name.'">'.$this->fullName.'</a>';
+		return '<a class="light" href="variants.php#'.$this->name.'">'.l_t($this->fullName).'</a>';
 	}
 }
 
@@ -391,9 +393,9 @@ function __autoload($classname) {
 	$variantName=substr($classname, 0, $pos);
 
 	if( $classname==$variantName.'Variant' )
-		require_once('variants/'.$variantName.'/variant.php');
+		require_once(l_r('variants/'.$variantName.'/variant.php'));
 	else
-		require_once('variants/'.$variantName.'/classes/'.substr($classname, ($pos+8)).'.php');
+		require_once(l_r('variants/'.$variantName.'/classes/'.substr($classname, ($pos+8)).'.php'));
 }
 
 ?>

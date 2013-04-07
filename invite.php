@@ -32,13 +32,13 @@ action=""
 method="POST"
 invite="true"
 type="Diplomacy"
-content="webDiplomacy is based on the popular turn-based-strategy game of international relations. '.
-	'Play with your friends and see if you can conquer Europe. '.
-	'<fb:req-choice url=\''.DYNAMICSRV.'\' label=\'Add webDiplomacy\' />">
+content="'.l_t('webDiplomacy is based on the popular turn-based-strategy game of international relations. '.
+	'Play with your friends and see if you can conquer Europe.').' '.
+	'<fb:req-choice url=\''.DYNAMICSRV.'\' label=\''.l_t('Add webDiplomacy').'\' />">
 
 <fb:multi-friend-selector
 showborder="false"
-actiontext="Invite more friends to play webDiplomacy with you:">
+actiontext="'.l_t('Invite more friends to play webDiplomacy with you:').'">
 
 </fb:request-form>';
 

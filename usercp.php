@@ -25,13 +25,13 @@
 
 require_once('header.php');
 
-require_once('objects/mailer.php');
+require_once(l_r('objects/mailer.php'));
 global $Mailer;
 $Mailer = new Mailer();
 
 if(!$User->type['User'])
 {
-	libHTML::error("You can't use the user control panel, you're using a guest account.");
+	libHTML::error(l_t("You can't use the user control panel, you're using a guest account."));
 }
 
 libHTML::starthtml();
@@ -40,25 +40,25 @@ if ( isset($_REQUEST['optout']) )
 {
 	if ( $_REQUEST['optout'] == 'on' && !$User->type['Donator'] )
 	{
-		libHTML::notice("Opt-out", "Are you sure you want to opt-out of Plura? It helps keep this place running and on
-			most modern computers is barely noticable.<br />
-			<form><input type='submit' class='form-submit' name='optout' value='Opt-out' /></form>");
+		libHTML::notice(l_t("Opt-out"), l_t("Are you sure you want to opt-out of Plura? It helps keep this place running and on ".
+			"most modern computers is barely noticable.")."<br />
+			<form><input type='submit' class='form-submit' name='optout' value='".l_t("Opt-out")."' /></form>");
 	}
-	elseif( $_REQUEST['optout'] == 'Opt-out' && !$User->type['Donator'] )
+	elseif( $_REQUEST['optout'] == l_t('Opt-out') && !$User->type['Donator'] )
 	{
 		$DB->sql_put("UPDATE wD_Users SET type = CONCAT_WS(',',type,'Donator') WHERE id = ".$User->id);
 
 		$User->type['Donator'] = true;
 
-		libHTML::notice("Opt-out", "You've opted-out of running the Plura applet. If you decide to re-enable it
-			later the <a href='faq.php' class='light'>FAQ</a> has a link to do so.");
+		libHTML::notice(l_t("Opt-out"), l_t("You've opted-out of running the Plura applet. If you decide to re-enable it ".
+			"later the <a href='faq.php' class='light'>FAQ</a> has a link to do so."));
 	}
 	elseif( $_REQUEST['optout'] == 'off' && $User->type['Donator'] )
 	{
-		libHTML::notice("Opt-out", "Would you like to opt back into running the Plura Java applet?<br />
-			<form><input type='submit' class='form-submit' name='optout' value='Opt-in' /></form>");
+		libHTML::notice(l_t("Opt-out"), l_t("Would you like to opt back into running the Plura Java applet?")."<br />
+			<form><input type='submit' class='form-submit' name='optout' value='".l_t('Opt-in')."' /></form>");
 	}
-	elseif( $_REQUEST['optout'] == 'Opt-in' && $User->type['Donator'] )
+	elseif( $_REQUEST['optout'] == l_t('Opt-in') && $User->type['Donator'] )
 	{
 		$types = array();
 		foreach($User->type as $type=>$isMember)
@@ -71,28 +71,28 @@ if ( isset($_REQUEST['optout']) )
 
 		$User->type['Donator'] = false;
 
-		libHTML::notice("Opt-out", "You've decided to re-add the Plura applet, thanks! By running the Plura applet you
-			help keep this server running.");
+		libHTML::notice(l_t("Opt-out"), l_t("You've decided to re-add the Plura applet, thanks! By running the Plura applet you ".
+			"help keep this server running."));
 	}
 }
 
 if ( isset($_REQUEST['emailToken']))
 {
 	if( !($email = libAuth::emailToken_email($_REQUEST['emailToken'])) )
-		libHTML::notice("E-mail change validation",
-			"A bad e-mail token was given, please check the validation link try again");
+		libHTML::notice(l_t("E-mail change validation"),
+			l_t("A bad e-mail token was given, please check the validation link try again"));
 
 	$email = $DB->escape($email);
 
 	if( User::findEmail($email) )
-		libHTML::notice("E-mail change validation",
-			"The given e-mail address is already in use, please use a unique e-mail address");
+		libHTML::notice(l_t("E-mail change validation"),
+			l_t("The given e-mail address is already in use, please use a unique e-mail address"));
 
 	$DB->sql_put("UPDATE wD_Users SET email='".$email."' WHERE id = ".$User->id);
 
 	$User->email = $email;
 
-	print '<div class="content"><p class="notice">Your e-mail address has been succesfully changed</p></div>';
+	print '<div class="content"><p class="notice">'.l_t('Your e-mail address has been succesfully changed').'</p></div>';
 }
 
 if ( isset($_REQUEST['userForm']) )
@@ -110,7 +110,7 @@ if ( isset($_REQUEST['userForm']) )
 		unset($errors);
 
 		$allowed = array('E-mail'=>'email','E-mail hiding'=>'hideEmail',
-				'Locale'=>'locale','Homepage'=>'homepage','Comment'=>'comment');
+				'Homepage'=>'homepage','Comment'=>'comment');
 
 		$set = '';
 		foreach( $allowed as $name=>$SQLName )
@@ -121,22 +121,20 @@ if ( isset($_REQUEST['userForm']) )
 			if ( $SQLName == 'email' )
 			{
 				if( User::findEmail($SQLVars['email']) )
-					throw new Exception("The e-mail address '".$SQLVars['email'].
-								"', is already in use. Please choose another.");
+					throw new Exception(l_t("The e-mail address '%s', is already in use. Please choose another.",$SQLVars['email']));
 
-				$Mailer->Send(array($SQLVars['email']=>$User->username), 'Changing your e-mail address',
-"Hello ".$User->username.",<br><br>
+				$Mailer->Send(array($SQLVars['email']=>$User->username), l_t('Changing your e-mail address'),
+l_t("Hello %s",$User->username).",<br><br>
 
-You can use this link to change your account's e-mail address to this one:<br>
+".l_t("You can use this link to change your account's e-mail address to this one:")."<br>
 ".libAuth::email_validateURL($SQLVars['email'])."<br><br>
 
-If you have any further problems contact the server's admin at ".Config::$adminEMail.".<br>
-Regards,<br>
-The webDiplomacy Gamemaster<br>
+".l_t("If you have any further problems contact the server's admin at %s.",Config::$adminEMail)."<br>
+".l_t("Regards,<br>The webDiplomacy Gamemaster")."<br>
 ");
 
-				$formOutput .= 'A validation e-mail was sent to the new address, containing a link which will confirm '.
-					'the e-mail change. If you don\'t see it after a few minutes check your spam folder.';
+				$formOutput .= l_t('A validation e-mail was sent to the new address, containing a link which will confirm '.
+					'the e-mail change. If you don\'t see it after a few minutes check your spam folder.');
 
 				unset($SQLVars['email']);
 				continue;
@@ -151,7 +149,7 @@ The webDiplomacy Gamemaster<br>
 
 			$set .= $SQLName." = '".$SQLVars[$SQLName]."'";
 
-			$formOutput .= $name.' updated successfully. ';
+			$formOutput .= l_t('%s updated successfully.',$name).' ';
 		}
 
 		if ( $set != '' )
@@ -166,8 +164,8 @@ The webDiplomacy Gamemaster<br>
 			libAuth::keyWipe();
 			header('refresh: 3; url=logon.php');
 
-			$formOutput .= 'Password updated successfully; you have been logged out and '.
-							'will need to logon with the new password. ';
+			$formOutput .= l_t('Password updated successfully; you have been logged out and '.
+							'will need to logon with the new password.').' ';
 		}
 	}
 	catch(Exception $e)
@@ -185,12 +183,12 @@ The webDiplomacy Gamemaster<br>
 }
 
 
-print libHTML::pageTitle('User account settings','Alter the settings for your webDiplomacy user account; e.g. change your password/e-mail.');
+print libHTML::pageTitle(l_t('User account settings'),l_t('Alter the settings for your webDiplomacy user account; e.g. change your password/e-mail.'));
 
 print '<form method="post">
 <ul class="formlist">';
 
-require_once('locales/'.$User->locale.'/user.php');
+require_once(l_r('locales/English/user.php'));
 
 print '</div>';
 libHTML::footer();

@@ -20,7 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('gamepanel/game.php');
+require_once(l_r('gamepanel/game.php'));
 
 /**
  * This class displays the game panel within a board context. It displays more info
@@ -41,24 +41,24 @@ class panelGameBoard extends panelGame
 
 		$map = '
 		<div id="mapstore">
-			<img id="mapImage" src="'.$smallmapLink.'" alt=" " title="The small map for the current phase. If you are starting a new turn this will show the last turn\'s orders" />
+			<img id="mapImage" src="'.$smallmapLink.'" alt=" " title="'.l_t('The small map for the current phase. If you are starting a new turn this will show the last turn\'s orders').'" />
 			<p class="lightgrey" style="text-align:center">
 				<a href="#" onClick="loadMap('.$this->id.','.$mapTurn.',-1); return false;">
-					<img id="Start" src="images/historyicons/Start_disabled.png" alt="Start" title="View the map from the first turn" />
+					<img id="Start" src="'.l_s('images/historyicons/Start_disabled.png').'" alt="'.l_t('Start').'" title="'.l_t('View the map from the first turn').'" />
 				</a>
 				<a href="#" onClick="loadMapStep('.$this->id.','.$mapTurn.',-1); return false;">
-					<img id="Backward" src="images/historyicons/Backward_disabled.png" alt="Backward" title="View the map from the previous turn" />
+					<img id="Backward" src="'.l_s('images/historyicons/Backward_disabled.png').'" alt="'.l_t('Backward').'" title="'.l_t('View the map from the previous turn').'" />
 				</a>
 
 				<span id="LargeMapLink" class="lightgrey" style="width:150px"><a href="'.$largemapLink.'" target="_blank" class="light">
-					<img src="images/historyicons/external.png" alt="Open large map" title="This button will open the large map in a new window. The large map shows all the moves, and is useful when the small map isn\'t clear enough." />
+					<img src="'.l_s('images/historyicons/external.png').'" alt="'.l_t('Open large map').'" title="'.l_t('This button will open the large map in a new window. The large map shows all the moves, and is useful when the small map isn\'t clear enough.').'" />
 				</a></span>
 
 				<a href="#" onClick="loadMapStep('.$this->id.','.$mapTurn.',1); return false;">
-					<img id="Forward" src="images/historyicons/Forward_disabled.png" alt="Forward" title="View the map from the next turn" />
+					<img id="Forward" src="'.l_s('images/historyicons/Forward_disabled.png').'" alt="'.l_t('Forward').'" title="'.l_t('View the map from the next turn').'" />
 				</a>
 				<a href="#" onClick="loadMap('.$this->id.','.$mapTurn.','.$mapTurn.'); return false;">
-					<img id="End" src="images/historyicons/End_disabled.png" alt="End" title="View the map from the most recent turn" />
+					<img id="End" src="'.l_s('images/historyicons/End_disabled.png').'" alt="'.l_t('End').'" title="'.l_t('View the map from the most recent turn').'" />
 				</a>
 			</p>
 			<p id="History" class="lightgrey"></p>
@@ -74,7 +74,7 @@ class panelGameBoard extends panelGame
 		libHTML::$footerScript[] = 'turnToText='.$this->Variant->turnAsDateJS()."
 		mapArrows($mapTurn,$mapTurn);
 		";
-		libHTML::$footerIncludes[] = 'mapUI.js';
+		libHTML::$footerIncludes[] = l_j('mapUI.js');
 	}
 
 	function links()
@@ -102,7 +102,7 @@ class panelGameBoard extends panelGame
 		else
 			$remaining = $this->pauseTimeRemaining;
 
-		return $buf.' ('.libTime::timeLengthText($remaining).' left on unpause)';
+		return $buf.' ('.l_t('%s left on unpause',libTime::timeLengthText($remaining)).')';
 	}
 
 	/**
@@ -137,7 +137,7 @@ class panelGameBoard extends panelGame
 		$buf = '<div class="bar membersList memberVotePanel"><a name="votebar"></a>
 				<table><tr class="member">
 			<td class="memberLeftSide">
-				<strong>Votes:</strong>
+				<strong>'.l_t('Votes:').'</strong>
 			</td>
 			<td class="memberRightSide">
 				'.$this->showVoteForm($vVote, $vCancel).'
@@ -167,19 +167,19 @@ class panelGameBoard extends panelGame
 			if ( $vote == 'Pause' && $this->processStatus == 'Paused' )
 				$vote = 'Unpause';
 
-			$buf .= '<input type="submit" class="form-submit" name="vote" value="'.$vote.'" /> ';
+			$buf .= '<input type="submit" class="form-submit" name="'.$vote.'" value="'.l_t($vote).'" /> ';
 		}
 		$buf .= '</div>';
 
 		if( $vCancel )
 		{
-			$buf .= '<div class="memberGameDetail">Cancel: ';
+			$buf .= '<div class="memberGameDetail">'.l_t('Cancel:').' ';
 			foreach($vCancel as $vote)
 			{
 				if ( $vote == 'Pause' && $this->processStatus == 'Paused' )
 					$vote = 'Unpause';
 
-				$buf .= '<input type="submit" class="form-submit" name="vote" value="'.$vote.'" /> ';
+				$buf .= '<input type="submit" class="form-submit" name="'.$vote.'" value="'.l_t($vote).'" /> ';
 			}
 
 			$buf .= '</div>';

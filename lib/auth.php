@@ -32,14 +32,19 @@ class libAuth
 		global $User;
 
 		if( !$User->type['User'] )
-			libHTML::notice('Denied',"Please <a href='register.php' class='light'>register</a>
-				or <a href='logon.php' class='light'>log in</a> to ".$name.".");
+			libHTML::notice(
+				l_t('Denied'),
+				l_t("Please <a href='register.php' class='light'>register</a> or ".
+					"<a href='logon.php' class='light'>log in</a> to %s.",l_t($name))
+			);
 
 		if( !isset($_SESSION['resources']) )
 			$_SESSION['resources']=array();
 
 		if( isset($_SESSION['resources'][$name]) && (time()-$_SESSION['resources'][$name]) < $seconds )
-			libHTML::notice('Denied',"One ".$name." per ".$seconds." seconds, please wait and try again.");
+			libHTML::notice(
+				l_t('Denied'),l_t("One %s per %s seconds, please wait and try again.",$name,$seconds)
+			);
 
 		$_SESSION['resources'][$name]=time();
 	}
@@ -48,14 +53,14 @@ class libAuth
 	{
 		$token = explode('_',$gameMasterToken);
 		if( count($token) != 3 )
-			throw new Exception('Corrupt token '.$gameMasterToken);
+			throw new Exception(l_t('Corrupt token %s',$gameMasterToken));
 
 		list($gameID, $time, $hash) = $token;
 		if ( self::gamemasterToken_Key($gameID,$time) != $hash )
-			throw new Exception('Invalid token '.$gameMasterToken);
+			throw new Exception(l_t('Invalid token %s',$gameMasterToken));
 
 		if ( (time()-$time)>5*60 )
-			throw new Exception('Token '.$gameMasterToken.' expired ('.time().')');
+			throw new Exception(l_t('Token %s expired (%s)',$gameMasterToken,time()));
 	}
 
 	private static function gamemasterToken_Key($gameID, $time)
@@ -75,14 +80,14 @@ class libAuth
 		$token = explode('_',$token);
 		
 		if( count($token) != 3 )
-			throw new Exception('Corrupt token '.$token);
+			throw new Exception(l_t('Corrupt token %s',$token));
 		
 		$userID = (int)$token[0];
 		$messageID = (int)$token[1];
 		$key = $token[2];
 		
 		if( $key !== self::likeToggleToken_Key($userID, $messageID))
-			throw new Exception('Invalid token '.$token);
+			throw new Exception(l_t('Invalid token %s',$token));
 		
 		return true;
 	}
@@ -244,7 +249,7 @@ class libAuth
 		}
 		catch(Exception $e)
 		{
-			libHTML::error("The username you entered doesn't seem to exist.");
+			libHTML::error(l_t("The username you entered doesn't seem to exist."));
 		}
 
 		if( 0==strcasecmp($TRYUser->password, self::pass_Hash($password)) )
@@ -253,7 +258,7 @@ class libAuth
 		}
 		else
 		{
-			libHTML::error('The password you entered is incorrect.');
+			libHTML::error(l_t('The password you entered is incorrect.'));
 		}
 	}
 
@@ -357,16 +362,16 @@ class libAuth
 				$success=self::keyWipe();
 
 				// Make sure there's no refresh loop
-				trigger_error("An invalid log-on cookie was given, but it seems an attempt to remove it has failed.<br /><br />
-					This error has been logged, please e-mail ".Config::$adminEMail." if the problem persists, or you can't log on.");
+				trigger_error(l_t("An invalid log-on cookie was given, but it seems an attempt to remove it has failed.")."<br /><br />".
+					l_t("This error has been logged, please e-mail %s if the problem persists, or you can't log on.",Config::$adminEMail));
 			}
 			else
 			{
 				self::keyWipe();
 				header('refresh: 3; url=logon.php?logoff=on');
-				libHTML::error("An invalid log-on cookie was given, and it has been removed.
-					You are being redirected to the log-on page.<br /><br />
-					Inform an admin at ".Config::$adminEMail." if the problem persists, or you can't log on.");
+				libHTML::error(l_t("An invalid log-on cookie was given, and it has been removed. ".
+					"You are being redirected to the log-on page.")."<br /><br />".
+					l_t("Inform an admin at %s if the problem persists, or you can't log on.",Config::$adminEMail));
 			}
 
 		}
@@ -383,7 +388,7 @@ class libAuth
 		{
 			self::keyWipe();
 			header('refresh: 3; url=logon.php?logoff=on');
-			libHTML::error("You are using an invalid log on cookie, which has been wiped. Please try logging on again.");
+			libHTML::error(l_t("You are using an invalid log on cookie, which has been wiped. Please try logging on again."));
 		}
 
 		$User->logon();

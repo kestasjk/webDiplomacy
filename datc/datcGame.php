@@ -57,7 +57,7 @@ class datcGame extends processGame
 		}
 		else
 		{
-			$Game = processGame::create(1, 'DATC-Adjudicator-Test', '', 5,'Winner-takes-all', 30,30,'No','Normal');
+			$Game = processGame::create(1, 'DATC-Adjudicator-Test', '', 5,'Winner-takes-all', 30,30,'No','Regular');
 			$id = $Game->id;
 			$DB->sql_put("UPDATE wD_Games SET phase = 'Diplomacy', turn = ".$testID." WHERE id = ".$id);
 		}
@@ -131,17 +131,20 @@ class datcGame extends processGame
 				$first=false;
 			}
 
-			$hash['countryID'] .= ' ('.$this->Variant->countries[$hash['countryID']-1].')';
+			$hash['countryID'] .= ' ('.l_t($this->Variant->countries[$hash['countryID']-1]).')';
 
 			if( $hash['terrID'] )
-				$hash['terrID'] .= ' ('.$this->terrNameByID($hash['terrID']).')';
+				$hash['terrID'] .= ' ('.l_t($this->terrNameByID($hash['terrID'])).')';
 
 			if( $hash['toTerrID'] )
-				$hash['toTerrID'] .= ' ('.$this->terrNameByID($hash['toTerrID']).')';
+				$hash['toTerrID'] .= ' ('.l_t($this->terrNameByID($hash['toTerrID'])).')';
 
 			if( $hash['fromTerrID'] )
-				$hash['fromTerrID'] .= ' ('.$this->terrNameByID($hash['fromTerrID']).')';
+				$hash['fromTerrID'] .= ' ('.l_t($this->terrNameByID($hash['fromTerrID'])).')';
 
+			foreach(array('unitType','viaConvoy','criteria','legal') as $localizeColumn)
+				$hash[$localizeColumn] = l_t($hash[$localizeColumn]);
+			
 			print '<tr class="replyalternate'.$alternate.'"><td>'.implode('</td><td>', $hash).'</td></tr>';
 
 			$alternate = 3-$alternate;
@@ -221,7 +224,7 @@ class datcGame extends processGame
 			$OI = $this->loadOI($memberID, $countryID);
 			$OI->load();
 
-			print '<p><strong>'.$this->Variant->countries[$countryID-1].'</strong></p>';
+			print '<p><strong>'.l_t($this->Variant->countries[$countryID-1]).'</strong></p>';
 
 			print '<div id="orderDiv'.$memberID.'">'.$OI->html().'</div>';
 
@@ -330,8 +333,8 @@ class datcGame extends processGame
 			{
 				$failed = true;
 
-				print 'Failed on the following order, failed criteria = legal='.$hash['legal'].' result not given '.
-						':<br />'.nl2br(print_r($hash,true)).'<br /><br />';
+				print l_t('Failed on the following order, failed criteria = legal=%s result not given '.
+						':<br />%s<br /><br />',$hash['legal'],nl2br(print_r($hash,true)));
 			}
 			elseif( $_REQUEST['DATCResults'][$hash['id']] != 'Complete' )
 			{
@@ -339,8 +342,8 @@ class datcGame extends processGame
 				{
 					$failed = true;
 
-					print 'Failed on the following order, failed criteria = legal='.$hash['legal'].' result was not complete '.
-							':<br />'.nl2br(print_r($hash,true)).'<br /><br />';
+					print l_t('Failed on the following order, failed criteria = legal=%s result was not complete'.
+						':<br />%s<br /><br />',$hash['legal'],nl2br(print_r($hash,true)));
 				}
 			}
 			elseif( $_REQUEST['DATCResults'][$hash['id']] == 'Complete' )
@@ -358,18 +361,18 @@ class datcGame extends processGame
 				if( (!$invalid && $hash['legal']!='Yes') || ( $invalid && $hash['legal']=='Yes' ))
 				{
 					$failed = true;
-
-					print 'Failed on the following order, failed criteria = legal='.$hash['legal'].
+					
+					print l_t('Failed on the following order, failed criteria = legal=%s'.
 						($invalid?' given order doesnt match received':'result was complete ').
-							':<br />'.nl2br(print_r($hash,true)).'<br /><br />';
+						':<br />%s<br /><br />',$hash['legal'],nl2br(print_r($hash,true)));
 				}
 			}
 		}
 
 		if ( $failed )
-			throw new Exception('Failed invalid orders check. <a href="datc.php">Re-run</a></div>');
+			throw new Exception(l_t('Failed results test. <a href="datc.php">Re-run</a>').'</div>');
 		else
-			print 'Passed invalid orders test<br /><br />';
+			print l_t('Passed invalid orders test').'<br /><br />';
 	}
 
 	/**
@@ -404,18 +407,18 @@ class datcGame extends processGame
 		while ( $hash = $DB->tabl_hash($tabl) )
 		{
 			$failed = true;
-			print 'Failed on the following order, failed criteria = '.$hash['criteria'].
-					':<br />'.nl2br(print_r($hash,true)).'<br /><br />';
+				print l_t('Failed on the following order, failed criteria =%s '.
+						':<br />%s<br /><br />',$hash['criteria'],nl2br(print_r($hash,true)));
 		}
 
 		if ( $failed )
 		{
 			// Even if this fails we still want to draw a map to visualize it, so don't die
-			throw new Exception('<h4>Failed results test. <a href="datc.php">Re-run</a></h4>');
+			throw new Exception('<h4>'.l_t('Failed results test. <a href="datc.php">Re-run</a>').'</h4>');
 		}
 		else
 		{
-			print 'Passed results test<br /><br />';
+			print l_t('Passed results test').'<br /><br />';
 		}
 	}
 

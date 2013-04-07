@@ -119,7 +119,7 @@ abstract class searchItem
 	
 	/**
 	 * An array of default values indexed by search-template. 
-	 * (e.g. array( 'Notifications'=>'Yes', 'Profile'=>'Yes', 'My games'=>'Yes', 'New'=>'No', 'Open'=>'No', 'Active'=>'No' ) )
+	 * (e.g. array( 'Notifications'=>'Yes', 'Profile'=>'Yes', 'My games'=>'Yes', 'New'=>'No', 'Joinable'=>'No', 'Active'=>'No' ) )
 	 * @var unknown_type
 	 */
 	protected $defaults=array();
@@ -206,7 +206,7 @@ abstract class searchItem
 		$formHTML='<li>';
 		
 		if($this->label)
-			$formHTML .= '<strong>'.$this->label.':</strong>';
+			$formHTML .= '<strong>'.l_t($this->label).':</strong>';
 		
 		foreach($this->options as $option)
 			$formHTML .= $option->formHTML().' ';
@@ -235,7 +235,7 @@ abstract class searchItemSelect extends searchItem
 			$formHTML .= $option->formHTML().' ';
 			
 		return '<li><strong>'.
-			$this->label.':</strong> 
+			l_t($this->label).':</strong> 
 			<select name="search['.$this->name.']">'.
 			$formHTML.
 			'</select>

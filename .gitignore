@@ -18,4 +18,5 @@ pointlog.txt
 /.project
 /datc/maps/
 !.htaccess
+variants/*/cache/
 
