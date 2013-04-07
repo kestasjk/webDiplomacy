@@ -32,8 +32,7 @@ class BuildAnywhere_OrderInterface extends OrderInterface {
 			global $Game;
 			libHTML::$footerIncludes[] = '../variants/'.$Game->Variant->name.'/resources/buildanywhere.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadBoard();') )
-					libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
 		}
 	}
 }

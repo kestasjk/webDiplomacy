@@ -31,8 +31,7 @@ class Transform_OrderInterface extends OrderInterface
 		{
 			libHTML::$footerIncludes[] = '../variants/Karibik/resources/transform.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadOrdersPhase();') )
-					libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();loadTransform();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();loadTransform();', $script);
 		}
 	}
 }

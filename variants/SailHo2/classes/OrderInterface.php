@@ -39,8 +39,7 @@ class SailHo2Variant_OrderInterface extends OrderInterface {
 		// Unit-Icons in javascript-code
 		libHTML::$footerIncludes[] = '../variants/SailHo2/resources/iconscorrect.js';
 		foreach(libHTML::$footerScript as $index=>$script)
-			if(strpos($script, 'loadOrdersModel();') )
-				libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect();', $script);
+			libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect();', $script);
 	}
 
 

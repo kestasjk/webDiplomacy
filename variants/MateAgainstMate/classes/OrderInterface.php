@@ -29,8 +29,7 @@ class MateAgainstMateVariant_OrderInterface extends OrderInterface {
 		if( ($this->phase=='Builds') && ($this->countryID == 1) ) {
 			libHTML::$footerIncludes[] = '../variants/MateAgainstMate/resources/build_indonesia.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadOrdersPhase();'))
-					libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); CustomBuild_Indonesia();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); CustomBuild_Indonesia();', $script);
 		}
 		
 	}

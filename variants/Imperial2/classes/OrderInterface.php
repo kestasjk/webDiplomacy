@@ -34,8 +34,7 @@ class StraitsRule_OrderInterface extends OrderInterface {
 		{
 			libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/straitsRule.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadBoardTurnData();') )
-					libHTML::$footerScript[$index]=str_replace('loadBoardTurnData();','loadBoardTurnData();AddStraitsBorders();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadBoardTurnData();','loadBoardTurnData();AddStraitsBorders();', $script);
 		}
 	}
 }
@@ -51,8 +50,7 @@ class BuildAnyHome_OrderInterface extends StraitsRule_OrderInterface {
 		{
 			libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/buildanyhome.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadBoard();') )
-					libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
 		}
 	}
 }
@@ -67,8 +65,7 @@ class ConvoyFix_OrderInterface extends BuildAnyHome_OrderInterface
 		{
 			libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/convoyfix.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadOrdersModel();') )
-					libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();NewConvoyCode();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();NewConvoyCode();', $script);
 		}
 	}
 }

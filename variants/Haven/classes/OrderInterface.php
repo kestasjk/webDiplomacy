@@ -29,16 +29,14 @@ class HavenVariant_OrderInterface extends OrderInterface {
 		// Unit-Icons in javascript-code
 		libHTML::$footerIncludes[] = '../variants/Haven/resources/iconscorrect.js';
 		foreach(libHTML::$footerScript as $index=>$script)
-			if(strpos($script, 'loadOrdersModel();') )
-				libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect('.$this->countryID.');', $script);
+			libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect('.$this->countryID.');', $script);
 				
 		if( $this->phase=='Builds' )
 		{
 			global $Game;
 			libHTML::$footerIncludes[] = '../variants/Haven/resources/special_sc.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadBoard();') )
-					libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect(Array('.$Game->Variant->eternal.'));', $script);
+				libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect(Array('.$Game->Variant->eternal.'));', $script);
 		}
 				
 	}

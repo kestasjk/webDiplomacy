@@ -31,9 +31,7 @@ class Hurricane_OrderInterface extends OrderInterface
 		if( $this->phase!='Builds' ) {
 			libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/removeHurrican.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadBoardTurnData();') )
-					libHTML::$footerScript[$index]=str_replace('loadBoardTurnData();','loadBoardTurnData();
-					removeHurrican();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadBoardTurnData();','loadBoardTurnData();removeHurrican();', $script);
 		}
 	}
 }
@@ -47,8 +45,7 @@ class CustomIcons_OrderInterface extends Hurricane_OrderInterface
 		if( $this->phase!='Builds' ) {
 			libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/iconscorrect.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadOrdersPhase();') )
-					libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();IconsCorrect("'.$Variant->name.'");', $script);
+				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();IconsCorrect("'.$Variant->name.'");', $script);
 		}
 	}
 }
@@ -62,8 +59,7 @@ class CustomIconNames_OrderInterface extends CustomIcons_OrderInterface
 
 		libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/unitnames.js';
 		foreach(libHTML::$footerScript as $index=>$script)
-			if(strpos($script, 'loadOrdersModel();') )
-				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); NewUnitNames();', $script);			
+			libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); NewUnitNames();', $script);			
 	}
 }
 
@@ -81,8 +77,7 @@ class BuildAnywhere_OrderInterface extends CustomIconNames_OrderInterface {
 			else
 				libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/buildanywhere.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadBoard();') )
-					libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
 		}
 	}
 }
@@ -100,8 +95,7 @@ class Transform_OrderInterface extends BuildAnywhere_OrderInterface
 		{
 			libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/transform.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadOrdersPhase();') )
-					libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();loadTransform(Array("7","102","69","80","52"));', $script);
+				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();loadTransform(Array("7","102","69","80","52"));', $script);
 		}
 	}
 }

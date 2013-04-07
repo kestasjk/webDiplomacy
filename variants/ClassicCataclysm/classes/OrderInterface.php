@@ -14,10 +14,8 @@ class ClassicCataclysmVariant_OrderInterface extends OrderInterface
 
 		libHTML::$footerIncludes[] = '../variants/ClassicCataclysm/resources/units_and_icons_correct_V1.01.js';
 		foreach(libHTML::$footerScript as $index=>$script)
-			if(strpos($script, 'loadOrdersPhase();') )
-				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); NewUnitNames('.$seaTerrs.');', $script);			
+			libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); NewUnitNames('.$seaTerrs.');', $script);			
 		foreach(libHTML::$footerScript as $index=>$script)
-			if(strpos($script, 'loadOrdersModel();') )
-				libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect('.$seaTerrs.');', $script);
+			libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect('.$seaTerrs.');', $script);
 	}
 }

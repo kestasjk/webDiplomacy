@@ -54,8 +54,7 @@ class CustomCountries_OrderInterface extends OrderInterface
 			
 			libHTML::$footerIncludes[] = '../variants/'.$Game->Variant->name.'/resources/scLock.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadBoard();') )
-					libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect(Array('.$scids.'));', $script);
+				libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect(Array('.$scids.'));', $script);
 		}		
 	}
 }

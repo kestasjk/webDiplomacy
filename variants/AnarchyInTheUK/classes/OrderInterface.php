@@ -31,8 +31,7 @@ class CustomIcons_OrderInterface extends OrderInterface
 		if( $this->phase!='Builds' ) {
 			libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/iconscorrect.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadOrdersPhase();') )
-					libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();IconsCorrect("'.$Variant->name.'");', $script);
+				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();IconsCorrect("'.$Variant->name.'");', $script);
 		}
 	}
 }

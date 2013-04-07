@@ -51,8 +51,7 @@ class Fog_OrderInterface extends OrderInterface {
 		if( $this->phase=='Diplomacy') {
 			libHTML::$footerIncludes[] = '../variants/RatWars/resources/supportfog.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadModel();') )
-					libHTML::$footerScript[$index]=str_replace('loadModel();','loadModel();SupportFog();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadModel();','loadModel();SupportFog();', $script);
 		}
 	}
 
@@ -66,8 +65,7 @@ class CustomIconNames_OrderInterface extends Fog_OrderInterface
 
 		libHTML::$footerIncludes[] = '../variants/RatWars/resources/unitnames.js';
 		foreach(libHTML::$footerScript as $index=>$script)
-			if(strpos($script, 'loadOrdersModel();') )
-				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); NewUnitNames();', $script);			
+			libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); NewUnitNames();', $script);			
 	}
 }
 
@@ -79,8 +77,7 @@ class CustomIcons_OrderInterface extends CustomIconNames_OrderInterface
 		
 		libHTML::$footerIncludes[] = '../variants/RatWars/resources/iconscorrect.js';
 		foreach(libHTML::$footerScript as $index=>$script)
-			if(strpos($script, 'loadOrdersModel();') )
-				libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect();', $script);
+			libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect();', $script);
 	}
 }
 
@@ -94,8 +91,7 @@ class BuildAnywhere_OrderInterface extends CustomIcons_OrderInterface {
 		{
 			libHTML::$footerIncludes[] = '../variants/RatWars/resources/buildanywhere.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadBoard();') )
-					libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
 		}
 	}
 }

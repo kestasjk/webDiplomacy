@@ -28,8 +28,7 @@ class CustomIcons_OrderInterface extends OrderInterface
 		
 		libHTML::$footerIncludes[] = '../variants/Hussite/resources/iconscorrect.js';
 		foreach(libHTML::$footerScript as $index=>$script)
-			if(strpos($script, 'loadOrdersModel();') )
-				libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect();', $script);
+			libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect();', $script);
 	}
 }
 
@@ -43,8 +42,7 @@ class BuildAnywhere_OrderInterface extends CustomIcons_OrderInterface
 		{
 			libHTML::$footerIncludes[] = '../variants/Hussite/resources/buildanywhere.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadBoard();') )
-					libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
 		}
 	}
 }

@@ -51,8 +51,7 @@ class Fog_OrderInterface extends OrderInterface {
 		if( $this->phase=='Diplomacy') {
 			libHTML::$footerIncludes[] = '../variants/TenSixtySix/resources/supportfog.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadModel();') )
-					libHTML::$footerScript[$index]=str_replace('loadModel();','loadModel();SupportFog();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadModel();','loadModel();SupportFog();', $script);
 		}
 	}
 
@@ -69,8 +68,7 @@ class BuildAnywhere_OrderInterface extends Fog_OrderInterface {
 			// Expand the allowed SupplyCenters array to include non-home SCs.
 			libHTML::$footerIncludes[] = '../variants/TenSixtySix/resources/supplycenterscorrect.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadBoard();') )
-					libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
 		}
 	}
 }
@@ -83,8 +81,7 @@ class CustomIcons_OrderInterface extends BuildAnywhere_OrderInterface
 
 		libHTML::$footerIncludes[] = '../variants/TenSixtySix/resources/iconscorrect.js';
 		foreach(libHTML::$footerScript as $index=>$script)
-			if(strpos($script, 'loadOrdersModel();') )
-				libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect('.$this->countryID.');', $script);
+			libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect('.$this->countryID.');', $script);
 	}
 }
 

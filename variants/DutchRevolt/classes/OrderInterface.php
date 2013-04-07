@@ -25,26 +25,22 @@ class DutchRevoltVariant_OrderInterface extends OrderInterface {
 			// Change the build-territories in the first Build phase:
 			libHTML::$footerIncludes[] = '../variants/DutchRevolt/resources/englandcustomstart.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadOrdersModel();') )
-					libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();CustomBuild(Array("1","4","5"));', $script);
+				libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();CustomBuild(Array("1","4","5"));', $script);
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadOrdersPhase();') )
-					libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); EnglandStartSC();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); EnglandStartSC();', $script);
 
 		}
 		if( ($this->phase=='Builds') && ($this->countryID == 3) ) {
 			// Only Fleets for Spain in the Spain territory
 			libHTML::$footerIncludes[] = '../variants/DutchRevolt/resources/onlyfleets.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadOrdersPhase();'))
-					libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); OnlyFleets(Array("9"));', $script);
+				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); OnlyFleets(Array("9"));', $script);
 		}
 		if ($this->phase=='Diplomacy') {
 			// Fix an error in the webdip convoy-order generation
 			libHTML::$footerIncludes[] = '../variants/DutchRevolt/resources/convoydisplayfix.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadOrdersPhase();'))
-					libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); ConvoyDisplayFix();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); ConvoyDisplayFix();', $script);
 		}
 
 		

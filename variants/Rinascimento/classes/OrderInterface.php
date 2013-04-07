@@ -29,8 +29,7 @@ class BuildAnywhere_OrderInterface extends OrderInterface
 		if( $this->phase=='Builds' ) {
 			libHTML::$footerIncludes[] = '../variants/Rinascimento/resources/supplycenterscorrect.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadBoard();') )
-					libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
 		}
 	}
 }		
@@ -45,9 +44,7 @@ class NoMove_OrderInterface extends BuildAnywhere_OrderInterface
 			list($nomove)=$DB->sql_row("SELECT text FROM wD_Notices WHERE toUserID=3 AND timeSent=0 AND fromID=".$Game->id);
 			libHTML::$footerIncludes[] = '../variants/Rinascimento/resources/nomove.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadOrdersPhase();') )
-					libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();NoMove('.$nomove.');', $script);
-
+				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();NoMove('.$nomove.');', $script);
 		}
 	}
 }		
@@ -60,8 +57,7 @@ class CustomIcons_OrderInterface extends NoMove_OrderInterface
 
 		libHTML::$footerIncludes[] = '../variants/Rinascimento/resources/iconscorrect.js';
 		foreach(libHTML::$footerScript as $index=>$script)
-			if(strpos($script, 'loadOrdersModel();'))
-				libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect();', $script);
+			libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect();', $script);
 	}
 }
 

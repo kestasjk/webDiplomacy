@@ -33,8 +33,7 @@ class Transform_OrderInterface extends OrderInterface
 		{
 			libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/transform_2.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadOrdersPhase();') )
-					libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();loadTransform();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();loadTransform();', $script);
 		}
 	}
 }

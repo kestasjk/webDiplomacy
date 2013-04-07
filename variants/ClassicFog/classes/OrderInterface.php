@@ -30,8 +30,7 @@ class ClassicFogVariant_OrderInterface extends OrderInterface {
 		if( $this->phase=='Diplomacy') {
 			libHTML::$footerIncludes[] = '../variants/ClassicFog/resources/supportfog.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadModel();') )
-					libHTML::$footerScript[$index]=str_replace('loadModel();','loadModel();SupportFog();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadModel();','loadModel();SupportFog();', $script);
 		}
 	}
 	

@@ -29,8 +29,7 @@ class NewIcons_OrderInterface extends OrderInterface
 
 		libHTML::$footerIncludes[] = '../variants/GreekDip/resources/iconscorrect.js';
 		foreach(libHTML::$footerScript as $index=>$script)
-			if(strpos($script, 'loadOrdersModel();') )
-				libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect();', $script);
+			libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect();', $script);
 	}
 }
 
@@ -44,8 +43,7 @@ class BiddingStart_OrderInterface extends NewIcons_OrderInterface
 		{
 			libHTML::$footerIncludes[] = '../variants/GreekDip/resources/phaseBet.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadBoard();') )
-					libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();Bidding();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();Bidding();', $script);
 		}
 		
 		if( $this->phase=='Builds' )
@@ -74,8 +72,7 @@ class BiddingStart_OrderInterface extends NewIcons_OrderInterface
 			
 			libHTML::$footerIncludes[] = '../variants/GreekDip/resources/supplycenterscorrect_BiddingStart.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadBoard();') )
-					libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect(Array('.$scids.'));', $script);
+				libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect(Array('.$scids.'));', $script);
 		}		
 	}
 }

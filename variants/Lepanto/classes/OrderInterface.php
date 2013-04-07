@@ -31,29 +31,25 @@ class LepantoVariant_OrderInterface extends OrderInterface {
 			// Expand the allowed SupplyCenters array to include non-home SCs.
 			libHTML::$footerIncludes[] = '../variants/Lepanto/resources/supplycenterscorrect.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadBoard();') )
-					libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
 		}
 		
 		// Remove the Move command for the 4 main battle-ships
 		if( $this->phase=='Diplomacy') {
 			libHTML::$footerIncludes[] = '../variants/Lepanto/resources/nomovefromterr.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadModel();') )
-					libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();NoMoveFromTerrID();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();NoMoveFromTerrID();', $script);
 		}
 
 		// Unit-Icons in javascript-code
 		libHTML::$footerIncludes[] = '../variants/Lepanto/resources/iconscorrect.js';
 		foreach(libHTML::$footerScript as $index=>$script)
-			if(strpos($script, 'loadOrdersModel();') )
-				libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect();', $script);
+			libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect();', $script);
 
 		// New Unit-names in javascript-code
 		libHTML::$footerIncludes[] = '../variants/Lepanto/resources/neworders.js';
 		foreach(libHTML::$footerScript as $index=>$script)
-			if(strpos($script, 'loadOrdersModel();') )
-				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); NewNamesNoDestroy();', $script);
+			libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); NewNamesNoDestroy();', $script);
 			
 	}
 

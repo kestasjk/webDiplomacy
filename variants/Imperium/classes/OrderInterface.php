@@ -36,21 +36,18 @@ class ImperiumVariant_OrderInterface extends OrderInterface {
 			// Expand the allowed SupplyCenters array to include non-home SCs.
 			libHTML::$footerIncludes[] = '../variants/Imperium/resources/supplycenterscorrect.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadBoard();') )
-					libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
 		}
 		
 		// Load the custom icons in the Java-Order-Interface
 		libHTML::$footerIncludes[] = '../variants/Imperium/resources/iconscorrect.js';
 		foreach(libHTML::$footerScript as $index=>$script)
-			if(strpos($script, 'loadOrdersModel();') )
-				libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect();', $script);
+			libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect();', $script);
 
 		// No retreats/supports across a river, no retreats across a river
 		libHTML::$footerIncludes[] = '../variants/Imperium/resources/diplomacycorrect.js';
 		foreach(libHTML::$footerScript as $index=>$script)
-			if(strpos($script, 'loadOrdersModel();') )
-				libHTML::$footerScript[$index]=str_replace('loadModel();','loadModel();DiplomacyCorrect();', $script);
+			libHTML::$footerScript[$index]=str_replace('loadModel();','loadModel();DiplomacyCorrect();', $script);
 		
 	}
 

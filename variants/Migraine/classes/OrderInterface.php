@@ -40,8 +40,7 @@ class MigraineVariant_OrderInterface extends OrderInterface {
 		// Unit-Icons in javascript-code
 		libHTML::$footerIncludes[] = '../variants/Migraine/resources/iconscorrect.js';
 		foreach(libHTML::$footerScript as $index=>$script)
-			if(strpos($script, 'loadOrdersModel();') )
-				libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect();', $script);
+			libHTML::$footerScript[$index]=str_replace('loadOrdersModel();','loadOrdersModel();IconsCorrect();', $script);
 	}
 
 

@@ -32,8 +32,7 @@ class BuildAnywhere_OrderInterface extends OrderInterface
 			// Expand the allowed SupplyCenters array to include non-home SCs.
 			libHTML::$footerIncludes[] = '../variants/Germany1648/resources/supplycenterscorrect.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadBoard();') )
-					libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadBoard();','loadBoard();SupplyCentersCorrect();', $script);
 		}
 	}
 }
@@ -49,8 +48,7 @@ class CustomIcons_OrderInterface extends BuildAnywhere_OrderInterface
 		if( $this->phase!='Builds' ) {
 			libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/iconscorrect.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadOrdersPhase();') )
-					libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();IconsCorrect("'.$Variant->name.'");', $script);
+				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase();IconsCorrect("'.$Variant->name.'");', $script);
 		}
 	}
 }
@@ -63,8 +61,7 @@ class CustomIconNames_OrderInterface extends CustomIcons_OrderInterface
 
 		libHTML::$footerIncludes[] = '../variants/Germany1648/resources/unitnames.js';
 		foreach(libHTML::$footerScript as $index=>$script)
-			if(strpos($script, 'loadOrdersModel();') )
-				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); NewUnitNames();', $script);			
+			libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); NewUnitNames();', $script);			
 	}
 }
 

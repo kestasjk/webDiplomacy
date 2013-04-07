@@ -11,8 +11,7 @@ class ClassicOctopusVariant_OrderInterface extends OrderInterface {
 			// Fix an error in the webdip convoy-order generation
 			libHTML::$footerIncludes[] = '../variants/ClassicOctopus/resources/convoydisplayfix.js';
 			foreach(libHTML::$footerScript as $index=>$script)
-				if(strpos($script, 'loadOrdersPhase();'))
-					libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); ConvoyDisplayFix();', $script);
+				libHTML::$footerScript[$index]=str_replace('loadOrdersPhase();','loadOrdersPhase(); ConvoyDisplayFix();', $script);
 		}		
 	}
 
