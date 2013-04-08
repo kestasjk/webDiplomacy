@@ -377,7 +377,11 @@ class processGame extends Game
 			$DB->sql_put("UPDATE wD_Games SET minimumBet = ".$bet." WHERE id=".$gameID);
 			$Game->minimumBet = $bet;
 		}
-
+		
+		// 2-player games are all PublicPressOnly und WTA.
+		if (count($Game->Variant->countries) == 2)
+			$DB->sql_put("UPDATE wD_Games SET pressType='PublicPressOnly', potType='Winner-takes-all' WHERE id=".$gameID);
+		
 		return $Game;
 	}
 
