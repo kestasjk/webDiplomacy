@@ -182,7 +182,12 @@ class adjudicatorPreGame {
 			assert('count($userCountries) == count($Game->Variant->countries) && count($userCountries) == count($Game->Members->ByID)');
 			$this->assignCountries($userCountries);
 		}
-
+		else
+		{
+			require_once "lib/gamemessage.php";
+			libGameMessage::send(0, 'Info', 'This is a choose your country game.', $Game->id);		
+		}
+		
 		// Create starting board conditions, typically based on $countryUnits
 		$this->assignTerritories(); // TerrStatus
 		$this->assignUnits(); // Units
