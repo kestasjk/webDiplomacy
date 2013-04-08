@@ -843,10 +843,6 @@ class processGame extends Game
 		{
 			$gameOver = ", gameOver = '".$gameOver."'";
 			$this->gameOver = $gameOver;
-			
-			// Update the Ratings
-			include_once("lib/rating.php");
-			libRating::updateRatings($this, true);
 		}
 
 		$DB->sql_put("UPDATE wD_Games SET phase='".$phase."' ".$turn.$gameOver." WHERE id=".$this->id);
@@ -876,6 +872,11 @@ class processGame extends Game
 
 		// Then the game is set to finished
 		$this->setPhase('Finished', 'Won');
+		
+		// Update the VDip-Ratings
+		include_once("lib/rating.php");
+		libRating::updateRatings($this, true);
+		
 	}
 
 	/**
@@ -1064,6 +1065,10 @@ class processGame extends Game
 		// Sets the Members statuses to Drawn as needed, gives refunds, sends messages
 		$this->Members->setDrawn();
 		$this->setPhase('Finished', 'Drawn');
+		
+		// Update the VDip-Ratings
+		include_once("lib/rating.php");
+		libRating::updateRatings($this, true);
 
 		$DB->sql_put("DELETE FROM wD_Orders WHERE gameID = ".$this->id);
 		$DB->sql_put("DELETE FROM wD_Units WHERE gameID = ".$this->id);
