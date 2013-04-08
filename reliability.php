@@ -29,7 +29,7 @@ libHTML::starthtml();
 
 print libHTML::pageTitle('What is the reliability rating?','A quick guide explaining the reliability rating, and why it\'s important to keep a good rating.');
 
-require_once('locales/English/reliability.php');
+require_once(l_r('locales/English/reliability.php'));
 
 print '</div>';
 libHTML::footer();
