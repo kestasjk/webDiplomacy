@@ -146,20 +146,17 @@ function setMinimumTimerInterval(newInterval) {
 function remainingText(secondsRemaining)
 {
 	if ( secondsRemaining <= 0 ) return l_t('Now');
-		
-	var seconds = Math.floor( secondsRemaining % 60); 
+
+	var seconds = Math.floor( secondsRemaining % 60);
 	var minutes = Math.floor(( secondsRemaining % (60*60) )/60);
 	var hours = Math.floor( secondsRemaining % (24*60*60)/(60*60) );
 	var days = Math.floor( secondsRemaining /(24*60*60) );
-		
+
 	if ( days > 0 ) // D, H
 	{
 		minutes += Math.round(seconds/60); // Add a minute if the seconds almost give a minute
-		seconds = 0;
-			
 		hours += Math.round(minutes/60); // Add an hour if the minutes almost gives an hour
-		minutes = 0;
-		
+
 		if ( days < 2 )
 		{
 			setMinimumTimerInterval(60*minutes);
@@ -200,10 +197,12 @@ function remainingText(secondsRemaining)
 		{
 			setMinimumTimerInterval(1);
 			
-			if( minutes < 0 )
-				return l_t('%s secs',seconds);
-			else if ( minutes < 5 )
+			if( minutes > 1 )
 				return l_t('%s mins, %s secs',minutes,seconds);
+			else if ( minutes > 0 )
+				return l_t('%s min, %s secs',minutes,seconds);
+			else
+				return l_t('%s secs',seconds);
 		}
 	}
 }

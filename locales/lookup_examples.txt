@@ -556,6 +556,7 @@
 ' to %s ' => ' in %s ',
 '%s has passed!' => '%s è passato!',
 '%s is an invalid bet size.' => '%s è una scommessa non valida.',
+'%s min, %s secs' => '%s minuto, %s secondi',
 '%s mins' => '%s minuti',
 '%s mins, %s secs' => '%s minuti, %s secondi',
 '%s updated successfully.' => '%s aggiornata correttamente.',
