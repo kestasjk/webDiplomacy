@@ -986,11 +986,13 @@ class User {
 		$gameID = (int)$gameID;
 		$muteCountryID = (int)$muteCountryID;
 
-		if( $this->isCountryMuted($gameID,$muteCountryID) )
-			$DB->sql_put("DELETE FROM wD_MuteCountry WHERE userID=".$this->id." AND gameID=".$gameID." AND muteCountryID=".$muteCountryID);
-		else
-			$DB->sql_put("INSERT INTO wD_MuteCountry (userID, gameID, muteCountryID) VALUES (".$this->id.",".$gameID.",".$muteCountryID.")");
-
+		if ($muteCountryID != 0)
+		{
+			if( $this->isCountryMuted($gameID,$muteCountryID) )
+				$DB->sql_put("DELETE FROM wD_MuteCountry WHERE userID=".$this->id." AND gameID=".$gameID." AND muteCountryID=".$muteCountryID);
+			else
+				$DB->sql_put("INSERT INTO wD_MuteCountry (userID, gameID, muteCountryID) VALUES (".$this->id.",".$gameID.",".$muteCountryID.")");
+		}
 	}
 	
 	/**
