@@ -24,16 +24,16 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @package Search
  */
 
-require_once('searchItems.php');
-require_once('searchItemSettings.php');
-require_once('searchOptions.php');
+require_once(l_r('searchItems.php'));
+require_once(l_r('searchItemSettings.php'));
+require_once(l_r('searchOptions.php'));
 
 class search
 {
 	protected $searchItems = array('AmMember','IsPublic','PotType','ChooseVariant','PhaseHours','Phase','IsAnonymous','PressType','OrderBy');
 
 
-	protected $searchTypes = array('My games','New','Open','Active','Finished','Search','Profile');
+	protected $searchTypes = array('My games','New','Joinable','Active','Finished','Search','Profile');
 
 	public function __construct($searchType)
 	{
@@ -44,7 +44,7 @@ class search
 			unset($this->searchItems[array_search('AmMember', $this->searchItems)]);
 
 		if ( !in_array($searchType, $this->searchTypes))
-			throw new Exception("Invalid game list type: ".$searchType);
+			throw new Exception(l_t('Invalid game list type:').' '.$searchType);
 
 		$searchItems=array();
 		foreach($this->searchItems as $searchItem)
@@ -78,7 +78,7 @@ class search
 		{
 			print $item->formHTML();
 		}
-		print '<br /><input type="submit" class="form-submit" value="Search" />';
+		print '<br /><input type="submit" class="form-submit" value="'.l_t('Search').'" />';
 		print '</form>';
 	}
 

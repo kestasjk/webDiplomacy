@@ -20,11 +20,11 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('board/orders/order.php');
+require_once(l_r('board/orders/order.php'));
 
-require_once('board/orders/diplomacy.php');
-require_once('board/orders/retreats.php');
-require_once('board/orders/builds.php');
+require_once(l_r('board/orders/diplomacy.php'));
+require_once(l_r('board/orders/retreats.php'));
+require_once(l_r('board/orders/builds.php'));
 
 /**
  * A class for submission/retrieval of orders; usable internally or externally
@@ -70,11 +70,11 @@ class OrderInterface
 		if( $authContext['key'] != $key )
 			throw new Exception("JSON token given is invalid");
 
-		require_once('lib/variant.php');
+		require_once(l_r('lib/variant.php'));
 		$Variant=libVariant::loadFromVariantID($inContext['variantID']);
 		libVariant::setGlobals($Variant);
 
-		require_once('objects/basic/set.php');
+		require_once(l_r('objects/basic/set.php'));
 		$OI = $Variant->OrderInterface($inContext['gameID'],$inContext['variantID'],$inContext['userID'],$inContext['memberID'],
 			$inContext['turn'],$inContext['phase'],$inContext['countryID'],
 			new setMemberOrderStatus($inContext['orderStatus']), $inContext['tokenExpireTime'], $inContext['maxOrderID']);
@@ -134,7 +134,7 @@ class OrderInterface
 
 		list($checkTurn, $checkPhase) = $DB->sql_row("SELECT turn, phase FROM wD_Games WHERE id=".$this->gameID);
 		if( $checkTurn != $this->turn || $checkPhase != $this->phase )
-			throw new Exception("The game has moved on, you can no longer alter these orders, please refresh.");
+			throw new Exception(l_t("The game has moved on, you can no longer alter these orders, please refresh."));
 
 		if( $this->maxOrderID == false ) $this->maxOrderID = $maxOrderID;
 		//elseif( $this->maxOrderID < $maxOrderID )
@@ -164,18 +164,18 @@ class OrderInterface
 		$orderlogDirectory = Config::orderlogDirectory();
 		if ( false === $orderlogDirectory ) return;
 
-		require_once('objects/game.php');
+		require_once(l_r('objects/game.php'));
 		$directory = libCache::dirID($orderlogDirectory, $this->gameID, true);
 
 		$file = $this->countryID.'.txt';
 
 		if ( ! ($orderLog = fopen($directory.'/'.$file, 'a')) )
-			trigger_error("Couldn't open order log file.");
+			trigger_error(l_t("Couldn't open order log file."));
 
 		if( !fwrite($orderLog, 'Time: '.gmdate("M d Y H:i:s")." (UTC+0)\n".$logData."\n\n") )
-			trigger_error("Couldn't write to order log file.");
+			trigger_error(l_t("Couldn't write to order log file."));
 
-		fflush($orderLog) or trigger_error("Couldn't write to order log file.");
+		fflush($orderLog) or trigger_error(l_t("Couldn't write to order log file."));
 		fclose($orderLog);
 	}
 
@@ -213,7 +213,7 @@ class OrderInterface
 		if( !$this->orderStatus->Ready )
 		{
 			if( !$this->orderStatus->Completed )
-				$this->results['notice'] .= ' Could not set to ready, orders not complete and valid.';
+				$this->results['notice'] .= l_t(' Could not set to ready, orders not complete and valid.');
 			else
 				$this->orderStatus->Ready=true;
 		}
@@ -287,28 +287,19 @@ class OrderInterface
 	}
 
 	protected function jsLoadBoard() {
-		libHTML::$footerIncludes[] = 'board/model.js';
-		libHTML::$footerIncludes[] = 'board/load.js';
-		libHTML::$footerIncludes[] = 'orders/order.js';
-		libHTML::$footerIncludes[] = 'orders/phase'.$this->phase.'.js';
-		libHTML::$footerIncludes[] = '../'.libVariant::$Variant->territoriesJSONFile();
+		libHTML::$footerIncludes[] = l_j('board/model.js');
+		libHTML::$footerIncludes[] = l_j('board/load.js');
+		libHTML::$footerIncludes[] = l_j('orders/order.js');
+		libHTML::$footerIncludes[] = l_j('orders/phase'.$this->phase.'.js');
+		libHTML::$footerIncludes[] = l_s('../'.libVariant::$Variant->territoriesJSONFile());
 
-		libHTML::$footerScript[] = '
-		loadTerritories();
-		loadBoardTurnData();
-		loadModel();
-		loadBoard();
-		loadOrdersModel();
-		loadOrdersForm();
-		loadOrdersPhase();
-		';
+		foreach(array('loadTerritories','loadBoardTurnData','loadModel','loadBoard','loadOrdersModel','loadOrdersForm','loadOrdersPhase') as $jf)
+			libHTML::$footerScript[] = l_jf($jf).'();';
 	}
 
 	protected function jsInitForm() {
-		libHTML::$footerIncludes[] = 'orders/form.js';
-		libHTML::$footerScript[] = '
-	OrdersHTML.formInit(context, contextKey);
-	';
+		libHTML::$footerIncludes[] = l_j('orders/form.js');
+		libHTML::$footerScript[] = l_jf('OrdersHTML.formInit').'(context, contextKey);';
 	}
 
 	protected function jsLiveBoardData() {
@@ -345,16 +336,16 @@ class OrderInterface
 			$alternate = ! $alternate;
 			$html .= '<tr class="barAlt'.($alternate ? '1' : '2').'">
 				<td class="uniticon"><span id="orderID'.$Order->id.'UnitIconArea"></span></td>
-				<td class="order"><div id="orderID'.$Order->id.'">Loading order...</div></td>
+				<td class="order"><div id="orderID'.$Order->id.'">'.l_t('Loading order').'...</div></td>
 				</tr>';
 		}
 
 		$html .= "</table>".'
 		<div style="text-align:center;"><span id="ordersNoticeArea'.$this->memberID.'"></span>
 			<input id="UpdateButton'.$this->memberID.'" type="Submit" class="form-submit" name="'.
-				'Update" value="Save" disabled />
+				l_t('Update').'" value="'.l_t('Save').'" disabled />
 			<input id="FinalizeButton'.$this->memberID.'" type="Submit" class="form-submit" name="'.
-				($this->orderStatus->Ready?'Not ready':'Ready').'" value="'.($this->orderStatus->Ready?'Not ready':'Ready').'" disabled />
+				l_t($this->orderStatus->Ready?'Not ready':'Ready').'" value="'.l_t($this->orderStatus->Ready?'Not ready':'Ready').'" disabled />
 		</div>
 	</form>';
 

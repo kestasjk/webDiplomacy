@@ -26,7 +26,7 @@ require_once('header.php');
 
 libHTML::starthtml();
 
-require_once('locales/English/developers.php');
+require_once(l_r('locales/English/developers.php'));
 
 
 print '</div>';

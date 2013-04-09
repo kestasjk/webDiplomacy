@@ -44,7 +44,7 @@ try
 	{
 		if ( ! isset($SQLVars[$SQLName]) )
 		{
-			$errors[] = $name.' required, but not given';
+			$errors[] = l_t('%s required, but not given',$name);
 		}
 
 		if ( $set != '' ) $set .= ', ';
@@ -61,7 +61,7 @@ try
 	}
 	else
 	{
-		$errors[] = 'Password required, but not given';
+		$errors[] = l_t('Password required, but not given');
 	}
 
 	foreach( $allowed as $name=>$SQLName )
@@ -81,11 +81,9 @@ try
 	$set .= ', timeJoined = '.time().', timeLastSessionEnded = '.time();
 
 	if( User::findUsername($SQLVars['username']) )
-		throw new Exception("The username '".$SQLVars['username']."', or the e-mail address '".
-							$SQLVars['email']."', is already in use. Please choose another.");
+		throw new Exception(l_t("The username '%s' is already in use. Please choose another.",$SQLVars['username']));
 	elseif( User::findEmail($SQLVars['email']) )
-		throw new Exception("The email '".$SQLVars['email']."', or the e-mail address '".
-							$SQLVars['email']."', is already in use. Please choose another.");
+		throw new Exception(l_t("The e-mail address '%s', is already in use. Please choose another.",$SQLVars['email']));
 
 	$DB->sql_put("INSERT INTO wD_Users SET ".$set);
 	$DB->sql_put("COMMIT");
@@ -93,27 +91,27 @@ try
 	// Re-authenticate with the new password, to create a new session ID
 	$key = libAuth::userPass_Key($SQLVars['username'], $_REQUEST['userForm']['password']);
 	$NewUser = libAuth::key_User($key);
-	$NewUser->sendNotice('No','No',"Welcome! This area displays your notices, which let you catch "
-		."up with what has happened since you were last here");
+	$NewUser->sendNotice('No','No',l_t("Welcome! This area displays your notices, which let you catch "
+		."up with what has happened since you were last here"));
 
 	// libHTML does not like letting registered users access the registration page
 	$User = new User(GUESTID);
 
-	print libHTML::pageTitle('Register a webDiplomacy account','Validate your e-mail address -&gt; Enter your account settings -&gt; <strong>Play webDiplomacy!</strong>');
+	print libHTML::pageTitle(l_t('Register a webDiplomacy account'),l_t('Validate your e-mail address -&gt; Enter your account settings -&gt; <strong>Play webDiplomacy!</strong>'));
 
-	print "<h3>Welcome to webDiplomacy!</h3>
-			<p>Welcome, ".$SQLVars['username']."!<br /><br />
+	print "<h3>".l_t("Welcome to webDiplomacy!")."</h3>
+			<p>".l_t("Welcome, %s!",$SQLVars['username'])."<br /><br />
 
-				You can now post in the <a href='forum.php' class='light'>forum</a>,
-				look for <a href='gamelistings.php' class='light'>a game to join</a>,
-				create a <a href='gamecreate.php' class='light'>new game</a>,
-				or get some <a href='help.php' class='light'>help/info</a>.<br />
-				Be sure to bookmark the <a href='index.php' class='light'>home page</a>,
-				which displays a summary of your games and forum activity.<br /><br />
+				".l_t("You can now post in the <a href='forum.php' class='light'>forum</a>, ".
+				"look for <a href='gamelistings.php' class='light'>a game to join</a>, ".
+				"create a <a href='gamecreate.php' class='light'>new game</a>, ".
+				"or get some <a href='help.php' class='light'>help/info</a>.")."<br /> ".
+				l_t("Be sure to bookmark the <a href='index.php' class='light'>home page</a>, ".
+				"which displays a summary of your games and forum activity.")."<br /><br />
 
-				If you don't know what Diplomacy is about yet check out the quick
+				".l_t("If you don't know what Diplomacy is about yet check out the quick
 				<a href='intro.php' light='class'>graphical intro to webDiplomacy</a>,
-				so you can get going faster.
+				so you can get going faster.")."
 			</p>";
 	print '</div>';
 

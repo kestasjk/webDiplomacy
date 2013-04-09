@@ -21,7 +21,7 @@
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 /**
- * The configuration object. This is the only file that will require_once modification by
+ * The configuration object. This is the only file that will require modification by
  * end users.
  *
  * @package Base
@@ -110,6 +110,14 @@ class Config
 	 * @var string
 	 */
 	public static $adminEMail='webmaster@yourdiplomacyserver.com';
+
+	/**
+	 * The moderators e-mail; if users have been banned etc they will be directed to contact this e-mail 
+	 * to contest it.
+	 * 
+	 * @var string
+	 */
+	public static $modEMail='moderators@yourdiplomacyserver.com';
 
 	/**
 	 * The moderator e-mail
@@ -248,37 +256,11 @@ class Config
 	public static $debug=false;
 
 	/**
-	 * The default locale for guest users.
+	 * The locale for this site.
 	 *
 	 * @var string
 	 */
 	public static $locale = 'English';
-
-	/**
-	 * Array of available locales
-	 *
-	 * @var string[]
-	 */
-	public static $availablelocales = array(
-			'English' => 'English'
-			);
-
-	/**
-	 * Different names given to the same locales, to allow automatic
-	 * recognition of which locale to use.
-	 *
-	 * @var string[][]
-	 */
-	public static $localealiases = array(
-		'English' => array('eng',
-			'en_us',
-			'en_US',
-			'English',
-			'en_US.ISO8859-1',
-			'en_US.ISO8859-15',
-			'en_US.US-ASCII',
-			'en_US.UTF-8')
-		);
 
 	/**
 	 * The number of minutes that gamemaster.php will detect that it hasn't been run for before it will

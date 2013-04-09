@@ -25,7 +25,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @subpackage Pager
  */
  
-require_once('pager/pagerthread.php');
+require_once(l_r('pager/pagerthread.php'));
 class PagerForum extends Pager
 {
 	public static $defaultPostsPerPage=30;

@@ -46,8 +46,8 @@ class processMember extends Member
 
 		$Game = $this->Game;
 
-		$leftMessage="You've left <strong>".$Game->name."</strong> before it started, and
-			have been returned your bet of <strong>".$Game->Members->ByUserID[$User->id]->bet.libHTML::points().'</strong>.';
+		$leftMessage=l_t("You've left <strong>%s</strong> before it started, and have been returned your bet of <strong>%s</strong>.",
+			$Game->name,$Game->Members->ByUserID[$User->id]->bet.libHTML::points());
 
 		$this->cancelBet();
 
@@ -61,7 +61,7 @@ class processMember extends Member
 		else
 		{
 			// Notify the remaining players
-			$Game->Members->sendExcept($this,'No',"<strong>".$this->username."</strong> left the game.");
+			$Game->Members->sendExcept($this,'No',l_t("<strong>%s</strong> left the game.",$this->username));
 		}
 
 		header('refresh: 4; url=index.php');
@@ -105,8 +105,7 @@ class processMember extends Member
 	{
 		if ( $bet > $this->points )
 		{
-			throw new Exception('You do not have enough points to
-				join this game. You need to bet '.$bet.' '.libHTML::points().'.');
+			throw new Exception(l_t('You do not have enough points to join this game. You need to bet %s.',$bet.' '.libHTML::points()));
 		}
 
 		User::pointsTransfer($this->userID, 'Bet', $bet, $this->gameID, $this->id);
@@ -211,8 +210,7 @@ class processMember extends Member
 			list($position) = $DB->sql_row("SELECT COUNT(id)+1 FROM wD_Users WHERE points > ".$this->points);
 
 			if ( $position > $oldPosition )
-				$this->send('No','No',"Your winnings from this game moved your global ranking from #".
-					$oldPosition." to #".$position."!");
+				$this->send('No','No',l_t("Your winnings from this game moved your global ranking from #%s to #%s!",$oldPosition,$position));
 		}
 
 		return $pointsGiven;
@@ -280,14 +278,13 @@ class processMember extends Member
 		{
 			$but="";
 			if($winnings)
-				$but = " (but you did get ".$winnings." back, to make up your starting 100)";
+				$but = l_t(" (but you did get %s back, to make up your starting 100)",$winnings);
 
-			$this->send('No','No',"The game has ended: You survived until the end, but because this is a winner takes
-					all game you got no points returned".$but.". Better luck next time!");
+			$this->send('No','No',l_t("The game has ended: You survived until the end, but because this is a winner takes all game you got no points returned%s. Better luck next time!",$but));
 		}
 		else
 		{
-			$this->send('No','No',"The game has ended: You survived and got ".$winnings.' '.libHTML::points()."!");
+			$this->send('No','No',l_t("The game has ended: You survived and got %s!",$winnings.' '.libHTML::points()));
 		}
 	}
 
@@ -314,9 +311,9 @@ class processMember extends Member
 		 * If they don't rejoin they they'll get addWinnings(0) at the end via setResigned.
 		 */
 
-		$this->send('No','No',"Your empire has gone inactive, and fallen into civil disorder. It can now be ".
-			"taken over by anyone, unless you take it back!");
-		$this->Game->Members->sendExcept($this,'No',$this->Game->Variant->countries[$this->countryID-1].' has gone into civil disorder.');
+		$this->send('No','No',l_t("Your empire has gone inactive, and fallen into civil disorder. It can now be ".
+			"taken over by anyone, unless you take it back!"));
+		$this->Game->Members->sendExcept($this,'No',l_t('%s has gone into civil disorder.',$this->Game->Variant->countries[$this->countryID-1]));
 	}
 
 	/**
@@ -329,11 +326,9 @@ class processMember extends Member
 		// No need to set status, we're about to be deleted
 		$but="";
 		if($refundedPoints)
-			$but="You received ".$refundedPoints.' '.libHTML::points().
-				" to bring your total points back to the 100 minimum. ";
+			$but=l_t("You received %s to bring your total points back to the 100 minimum. ",$refundedPoints.' '.libHTML::points());
 
-		$this->send('No','No',"Due to inactivity the game was abandoned and removed.
-			".$but."Better luck next time!");
+		$this->send('No','No',l_t("Due to inactivity the game was abandoned and removed. %sBetter luck next time!",$but));
 	}
 
 	/**
@@ -345,9 +340,10 @@ class processMember extends Member
 
 		// No need to set status, we're about to be deleted
 		$this->send('No','No',
-				"This game has been cancelled, and you got your bet of ".$refundedPoints.libHTML::points()." back:
-				The game didn't reach the ".count($this->Game->Variant->countries)." required players; try finding players to join before creating a game,
-				create a game with a longer phase, or join an existing game.");
+				l_t("This game has been cancelled, and you got your bet of %s back: ".
+				"The game didn't reach the %s required players; try finding players to join before ".
+				"creating a game, create a game with a longer phase, or join an existing game.",
+			$refundedPoints.libHTML::points(),count($this->Game->Variant->countries)));
 	}
 
 	/**
@@ -359,7 +355,7 @@ class processMember extends Member
 
 		$this->setStatus('Survived');
 		$this->send('No', 'No',
-				"This game has been cancelled, and you got your bet of ".$refundedPoints.libHTML::points()." back.");
+				l_t("This game has been cancelled, and you got your bet of %s back.",$refundedPoints.libHTML::points()));
 	}
 
 	/**
@@ -371,10 +367,10 @@ class processMember extends Member
 
 		$but="";
 		if($refundedPoints)
-			$but=", but you have been refunded ".$refundedPoints." to make up your starting 100";
+			$but=l_t(", but you have been refunded %s to make up your starting 100",$refundedPoints);
 
-		$this->send('No','No',"Your empire in civil disorder was taken over, so you have lost your ".
-			"bet in this game".$but.". Better luck next time!");
+		$this->send('No','No',l_t("Your empire in civil disorder was taken over, so you have lost your ".
+			"bet in this game%s. Better luck next time!",$but));
 	}
 
 	/**
@@ -388,10 +384,10 @@ class processMember extends Member
 
 		$but="";
 		if($refundedPoints)
-			$but="You have been refunded ".$refundedPoints." to make up your starting 100. ";
+			$but=l_t("You have been refunded %s to make up your starting 100. ",$refundedPoints);
 
-		$this->send('No','No',"The game ended and your empire survived, but it was in civil disorder. ".$but.
-			"Better luck next time!");
+		$this->send('No','No',l_t("The game ended and your empire survived, but it was in civil disorder. %s".
+			"Better luck next time!",$but));
 	}
 
 	/**
@@ -405,10 +401,10 @@ class processMember extends Member
 
 		$but="";
 		if($refundedPoints)
-			$but=", but you have been refunded ".$refundedPoints." to make up your starting 100";
+			$but=l_t(", but you have been refunded %s to make up your starting 100",$refundedPoints);
 
-		$this->send('No','No',"You were defeated, and lost your bet".$but."; better luck next time!");
-		$this->Game->Members->sendExcept($this,'No',$this->Game->Variant->countries[$this->countryID-1].' was defeated.');
+		$this->send('No','No',l_t("You were defeated, and lost your bet%s; better luck next time!",$but));
+		$this->Game->Members->sendExcept($this,'No',l_t('%s was defeated.',$this->Game->Variant->countries[$this->countryID-1]));
 	}
 
 	/**
@@ -424,8 +420,8 @@ class processMember extends Member
 
 		$this->setStatus('Drawn');
 
-		$this->send('No','No',"You have drawn with your rivals, and survived! ".
-			"You win ".$winnings." ".libHTML::points().", an equal share of the pot!");
+		$this->send('No','No',l_t("You have drawn with your rivals, and survived! ".
+			"You win %s, an equal share of the pot!",$winnings." ".libHTML::points()));
 	}
 
 	/**
@@ -441,8 +437,8 @@ class processMember extends Member
 
 		$this->setStatus('Won');
 
-		$this->send('No','No',"Congrats, you have won the game, and get ".$winnings." ".libHTML::points()."!");
-		$this->Game->Members->sendExcept($this,'No',$this->Game->Variant->countries[$this->countryID-1].' won the game, and got '.$winnings." ".libHTML::points()."!");
+		$this->send('No','No',l_t("Congrats, you have won the game, and get %s!",$winnings." ".libHTML::points()));
+		$this->Game->Members->sendExcept($this,'No',l_t('%s won the game, and got %s!',$this->Game->Variant->countries[$this->countryID-1],$winnings." ".libHTML::points()));
 	}
 
 	private static $processStatusFields=array('countryID','bet','missedPhases','status');

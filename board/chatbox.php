@@ -20,7 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('lib/gamemessage.php');
+require_once(l_r('lib/gamemessage.php'));
 
 /**
  * The chat-box for the board. From the tabs to the messages to the send-box, also
@@ -105,7 +105,7 @@ class Chatbox
 				}
 
 				if( $sendingToMuted )
-					libGameMessage::send($Member->countryID, $msgCountryID, "Cannot send message; this country has muted you.");
+					libGameMessage::send($Member->countryID, $msgCountryID, l_t("Cannot send message; this country has muted you."));
 				else
 					libGameMessage::send($msgCountryID, $Member->countryID, $newmessage);
 			}
@@ -164,8 +164,8 @@ class Chatbox
 		if ( $messages == "" )
 		{
 			$chatbox .= '<TR class="barAlt1"><td class="notice">
-					No messages yet posted.
-					</td></TR>';
+					'.l_t('No messages yet posted.').
+					'</td></TR>';
 		}
 		else
 		{
@@ -181,7 +181,7 @@ class Chatbox
 					<form method="post" class="safeForm" action="board.php?gameID='.$Game->id.'&amp;msgCountryID='.$msgCountryID.'">
 						<TD class="left send">
 							<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
-							<input type="submit" tabindex="2" class="form-submit" value="Send" name="Send" />
+							<input type="submit" tabindex="2" class="form-submit" value="'.l_t('Send').'" name="Send" />
 						</TD>
 						<TD class="right">
 							<TEXTAREA id="sendbox" tabindex="1" NAME="newmessage" style="width:98% !important" width="100%" ROWS="3"></TEXTAREA>
@@ -229,12 +229,12 @@ class Chatbox
 
 			$tabs .= ' <a href="./board.php?gameID='.$Game->id.'&amp;msgCountryID='.$countryID.'&amp;rand='.rand(1,100000).'#chatboxanchor" '.
 				'class="country'.$countryID.' '.( $msgCountryID == $countryID ? 'current"'
-					: '" title="Open '.( $countryID == 0 ? 'the global' : $this->countryName($countryID)."'s" ).' chatbox tab"' ).'>';
+					: '" title="'.l_t('Open %s chatbox tab"',( $countryID == 0 ? 'the global' : $this->countryName($countryID)."'s" )) ).'>';
 
 			if(isset($Game->Members->ByCountryID[$countryID]))
 				$tabs .= $Game->Members->ByCountryID[$countryID]->memberCountryName();
 			else
-				$tabs .= 'Global';
+				$tabs .= l_t('Global');
 
 			if(isset($Game->Members->ByCountryID[$countryID]))
 
@@ -367,16 +367,16 @@ class Chatbox
 			if ( $msgCountryID == -1 && isset($Member) ) // -1 = All
 			{
 				if($Member->countryID == $message['fromCountryID'])
-					$fromtxt = ', from <strong>you</strong>';
+					$fromtxt = l_t(', from <strong>you</strong>');
 				elseif( 0==$message['fromCountryID'] )
-					$fromtxt = ', from <strong>Gamemaster</strong>';
+					$fromtxt = l_t(', from <strong>Gamemaster</strong>');
 				else
-					$fromtxt = ', from <strong>'.$this->countryName($message['fromCountryID']).'</strong>';
+					$fromtxt = l_t(', from <strong>%s</strong>',l_t($this->countryName($message['fromCountryID'])));
 
 				if($Member->countryID == $message['toCountryID'])
-					$messagestxt .=  '(To: <strong>You</strong>'.$fromtxt.') - ';
+					$messagestxt .=  '('.l_t('To: <strong>You</strong>').$fromtxt.') - ';
 				else
-					$messagestxt .=  '(To: <strong>'.$this->countryName($message['toCountryID']).'</strong>'.$fromtxt.') - ';
+					$messagestxt .=  '('.l_t('To: <strong>%s</strong>',l_t($this->countryName($message['toCountryID']))).$fromtxt.') - ';
 			}
 
 			if ( $message['turn'] < $Game->turn )

@@ -87,7 +87,7 @@ class Message
 
 		if( 65000 < strlen($message) )
 		{
-			throw new Exception("Message too long");
+			throw new Exception(l_t("Message too long"));
 		}
 
 		libCache::wipeDir(libCache::dirName('forum'));

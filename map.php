@@ -40,6 +40,8 @@ else
 if( !IGNORECACHE )
 {
 	// We might be able to fetch the map from the cache
+	
+	require_once('locales/layer.php'); // Load the localization layer; by itself it will do no localization
 	require_once('objects/game.php');
 	require_once('lib/html.php');
 	require_once('lib/cache.php');
@@ -63,14 +65,14 @@ if( !IGNORECACHE )
 require_once('header.php');
 
 if( DELETECACHE && !$User->type['Admin'] )
-	die('Disable-cacheing flags set, but you are not an admin.');
+	die(l_t('Disable-cacheing flags set, but you are not an admin.'));
 
 if ( isset($_REQUEST['DATC']) )
 {
 	if( $Misc->Maintenance )
 		define('DATC', 1);
 	else
-		die('Cannot render DATC maps outside of maintenance mode.');
+		die(l_t('Cannot render DATC maps outside of maintenance mode.'));
 }
 
 /*
@@ -131,19 +133,19 @@ else
 // Load the drawMap object for the given map type
 if ( $mapType == 'xml' )
 {
-	require_once('map/drawMapXML.php');
+	require_once(l_r('map/drawMapXML.php'));
 	$drawMap = $Variant->drawMapXML();
 }
 elseif ( $mapType == 'json' )
 {
-	require_once('board/orders/jsonBoardData.php');
+	require_once(l_r('board/orders/jsonBoardData.php'));
 	$filename=Game::mapFilename($Game->id, $turn, 'json');
 	file_put_contents($filename, jsonBoardData::getBoardTurnData($Game->id) );
 	libHTML::serveImage($filename, 'text/plain');
 }
 else
 {
-	require_once('map/drawMap.php');
+	require_once(l_r('map/drawMap.php'));
 	$drawMap = $Variant->drawMap($mapType=='small');
 }
 

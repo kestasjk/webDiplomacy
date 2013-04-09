@@ -23,8 +23,8 @@
  * @package Base
  */
 require_once('header.php');
-require_once('pager/pagerforum.php');
-require_once('lib/message.php');
+require_once(l_r('pager/pagerforum.php'));
+require_once(l_r('lib/message.php'));
 
 /*
  * The forum page, unfortunately one of the oldest pieces of code and gradually hacked on
@@ -77,7 +77,7 @@ if( !isset($_REQUEST['page']) && isset($_REQUEST['viewthread']) && $viewthread )
 	unset($orderIndex);
 	list($orderIndex) = $DB->sql_row("SELECT b.latestReplySent FROM wD_ForumMessages b WHERE b.id = ".$viewthread);
 	if(!isset($orderIndex) || !$orderIndex)
-		libHTML::notice('Thread not found', "The thread you requested wasn't found.");
+		libHTML::notice(l_t('Thread not found'), l_t("The thread you requested wasn't found."));
 
 	list($position) = $DB->sql_row(
 			"SELECT COUNT(*)-1 FROM wD_ForumMessages a WHERE a.latestReplySent >= ".$orderIndex." AND a.type='ThreadStart'"
@@ -87,15 +87,12 @@ if( !isset($_REQUEST['page']) && isset($_REQUEST['viewthread']) && $viewthread )
 }
 
 
-if( !isset($_REQUEST['newmessage']) ) $_REQUEST['newmessage'] = '';
+if( !isset($_REQUEST['newmessage']) ) $_REQUEST['newmessage']  = '';
 if( !isset($_REQUEST['newsubject']) ) $_REQUEST['newsubject'] = '';
-if( !isset($_REQUEST['newmessagereply']) ) $_REQUEST['newmessagereply'] = '';
 
 $new = array('message' => "", 'subject' => "", 'id' => -1);
-if( $User->type['User'] AND
-    ((isset($_REQUEST['newmessage']) AND ($_REQUEST['newmessage'] != "")) OR
-     (isset($_REQUEST['newmessagereply']) AND ($_REQUEST['newmessagereply'] != ""))) )
-{
+if(isset($_REQUEST['newmessage']) AND $User->type['User']
+AND ($_REQUEST['newmessage'] != "") ) {
 	// We're being asked to send a message.
 
 	$new['message'] = $DB->msg_escape($_REQUEST['newmessage']);
@@ -107,173 +104,148 @@ if( $User->type['User'] AND
 
 	$new['sendtothread'] = $viewthread;
 
-	$doreplymessage = 0;
-	if( isset($_SESSION['lastPostText']) && $_SESSION['lastPostText'] == $new['message'] )
-	{
-		$messageproblem = "You are posting the same message again, please don't post repeat messages.";
-		$postboxopen = !$new['sendtothread'];
-	}
-	elseif( isset($_SESSION['lastPostTime']) && $_SESSION['lastPostTime'] > (time()-20)
-		&& ! ( $new['sendtothread'] && isset($_SESSION['lastPostType']) && $_SESSION['lastPostType']=='ThreadStart' ) )
-	{
-		$messageproblem = "You are posting too frequently, please slow down.";
-		$postboxopen = !$new['sendtothread'];
-	}
-	elseif(!$new['sendtothread']) // New thread to the forum
-	{
-		if ( 4 <= substr_count($new['message'], '<br />') )
+		if( isset($_SESSION['lastPostText']) && $_SESSION['lastPostText'] == $new['message'] )
 		{
-			$messageproblem = "Too many lines in the summary; ".
-				"please write a summary of the message in 4 lines or less  ".
-				"and write the rest of the message in the message box.";
-			$postboxopen = true;
+			$messageproblem = l_t("You are posting the same message again, please don't post repeat messages.");
+			$postboxopen = !$new['sendtothread'];
 		}
-		elseif( 500 < strlen($new['message']) )
+		elseif( isset($_SESSION['lastPostTime']) && $_SESSION['lastPostTime'] > (time()-20)
+			&& ! ( $new['sendtothread'] && isset($_SESSION['lastPostType']) && $_SESSION['lastPostType']=='ThreadStart' ) )
 		{
-			$messageproblem = "Too many characters in the summary; ".
-				"please write a summary of the message in 500 characters or less ".
-				"and write the rest of the message in the message box";
-			$postboxopen = true;
-		}
-		elseif( empty($new['message']) )
-		{
-			$messageproblem = "You haven't given a summary.";
-			$postboxopen = true;
-		}
-		elseif( empty($new['subject']) )
-		{
-			$messageproblem = "You haven't given a subject.";
-			$postboxopen = true;
-		}
-		elseif( strlen($new['subject'])>=90 )
-		{
-			$messageproblem = "Subject is too long, please keep it within 90 characters.";
-			$postboxopen = true;
+			$messageproblem = l_t("You are posting too frequently, please slow down.");
+			$postboxopen = !$new['sendtothread'];
 		}
 		else
 		{
-			try
+			if(!$new['sendtothread']) // New thread to the forum
 			{
-				$subjectWords = explode(' ', $new['subject']);
-				foreach( $subjectWords as $subjectWord )
-					if( strlen($subjectWord)> 25 )
-						throw new Exception("A word in the subject, '".$subjectWord."' is longer than 25 ".
-							"characters, please choose a subject with normal words.");
-
-				$new['id'] = Message::send(0,
-					$User->id,
-					$new['message'],
-					$new['subject'],
-					'ThreadStart');
-
-				$_SESSION['lastPostText']=$new['message'];
-				$_SESSION['lastPostTime']=time();
-				$_SESSION['lastPostType']='ThreadStart';
-
-				$messageproblem = "Thread posted sucessfully.";
-				$new['message'] = "";
-				$new['subject'] = "";
-				$postboxopen = false;
-
-				$viewthread = $new['id'];
-
-				if ( isset($_REQUEST['newmessagereply']) && $_REQUEST['newmessagereply'] != '')
+				if ( 4 <= substr_count($new['message'], '<br />') )
 				{
-					$doreplymessage = 2;
-					$new['message'] = $DB->msg_escape($_REQUEST['newmessagereply']);
-					$new['sendtothread'] = $viewthread;
+					$messageproblem = l_t("Too many lines in this message; ".
+						"please write a summary of the message in less than 4 ".
+						"lines and write the rest of the message as a response.");
+					$postboxopen = true;
 				}
-			}
-			catch(Exception $e)
-			{
-				$messageproblem=$e->getMessage();
-				$postboxopen = true;
-			}
-		}
-	}
-	else
-	{
-		$doreplymessage = 1;
-	}
-
-	if ($doreplymessage > 0)
-	{
-		// To a thread
-		$threadDetails = $DB->sql_hash(
-			"SELECT f.id, f.latestReplySent,
-				f.silenceID,
-				silence.userID as silenceUserID,
-				silence.postID as silencePostID,
-				silence.moderatorUserID as silenceModeratorUserID,
-				silence.enabled as silenceEnabled,
-				silence.startTime as silenceStartTime,
-				silence.length as silenceLength,
-				silence.reason as silenceReason
-			FROM wD_ForumMessages f
-			LEFT JOIN wD_Silences silence ON ( f.silenceID = silence.id )
-			WHERE f.id=".$new['sendtothread']."
-				AND f.type='ThreadStart'");
-
-		unset($messageproblem);
-		if( $threadDetails['latestReplySent'] < $Misc->ThreadAliveThreshold )
-		{
-			$messageproblem="The thread you are attempting to reply to is too old, and has expired.";
-		}
-		elseif( Silence::isSilenced($threadDetails) ) {
-			$silence = new Silence($threadDetails);
-
-			if( $silence->isEnabled() ) {
-				$messageproblem="The thread you are attempting to reply to has been silenced; ".$silence->reason;
-			}
-
-			unset($silence);
-		}
-
-		if( isset($threadDetails['id']) && !isset($messageproblem) )
-		{
-			// It's being sent to an existing, non-silenced / dated thread.
-			try
-			{
-				$new['id'] = Message::send( $new['sendtothread'],
-					$User->id,
-					$new['message'],
-						'',
-						'ThreadReply');
-
-				$_SESSION['lastPostText']=$new['message'];
-				$_SESSION['lastPostTime']=time();
-				$_SESSION['lastPostType']='ThreadReply';
-
-				if ($doreplymessage == 1)
+				elseif( 500 < strlen($new['message']) )
 				{
-					$messageproblem="Reply posted sucessfully.";
+					$messageproblem = l_t("Too many characters in this message; ".
+						"please write a summary of the message in less than 500 ".
+						"characters and write the rest of the message as a response.");
+					$postboxopen = true;
+				}
+				elseif( empty($new['subject']) )
+				{
+					$messageproblem = l_t("You haven't given a subject.");
+					$postboxopen = true;
+				}
+				elseif( strlen($new['subject'])>=90 )
+				{
+					$messageproblem = l_t("Subject is too long, please keep it within 90 characters.");
+					$postboxopen = true;
 				}
 				else
 				{
-					$messageproblem="Thread with reply posted sucessfully.";
-					$new['sendtothread'] = 0;
+					try
+					{
+						$subjectWords = explode(' ', $new['subject']);
+						foreach( $subjectWords as $subjectWord )
+							if( strlen($subjectWord)> 25 )
+								throw new Exception(l_t("A word in the subject, '%s' is longer than 25 ".
+									"characters, please choose a subject with normal words.",$subjectWord));
+
+						$new['id'] = Message::send(0,
+							$User->id,
+							$new['message'],
+							$new['subject'],
+							'ThreadStart');
+
+						$_SESSION['lastPostText']=$new['message'];
+						$_SESSION['lastPostTime']=time();
+						$_SESSION['lastPostType']='ThreadStart';
+
+						$messageproblem = l_t("Thread posted sucessfully.");
+						$new['message'] = "";
+						$new['subject'] = "";
+						$postboxopen = false;
+
+						$viewthread = $new['id'];
+					}
+					catch(Exception $e)
+					{
+						$messageproblem=$e->getMessage();
+						$postboxopen = true;
+					}
 				}
-
-				$new['message']=""; $new['subject']="";
 			}
-			catch(Exception $e)
+			else
 			{
-				$messageproblem=$e->getMessage();
+				// To a thread
+				$threadDetails = $DB->sql_hash(
+					"SELECT f.id, f.latestReplySent, 
+						f.silenceID,
+						silence.userID as silenceUserID,
+						silence.postID as silencePostID,
+						silence.moderatorUserID as silenceModeratorUserID,
+						silence.enabled as silenceEnabled,
+						silence.startTime as silenceStartTime,
+						silence.length as silenceLength,
+						silence.reason as silenceReason
+					FROM wD_ForumMessages f 
+					LEFT JOIN wD_Silences silence ON ( f.silenceID = silence.id )
+					WHERE f.id=".$new['sendtothread']."
+						AND f.type='ThreadStart'");
+
+				unset($messageproblem);
+				if( $threadDetails['latestReplySent'] < $Misc->ThreadAliveThreshold )
+				{
+					$messageproblem=l_t("The thread you are attempting to reply to is too old, and has expired.");
+				}
+				elseif( Silence::isSilenced($threadDetails) ) {
+					$silence = new Silence($threadDetails);
+					
+					if( $silence->isEnabled() ) {
+						$messageproblem=l_t("The thread you are attempting to reply to has been silenced; ").$silence->reason;
+					}
+					
+					unset($silence);
+				}
+				
+				if( isset($threadDetails['id']) && !isset($messageproblem) )
+				{
+					// It's being sent to an existing, non-silenced / dated thread.
+					try
+					{
+						$new['id'] = Message::send( $new['sendtothread'],
+							$User->id,
+							$new['message'],
+								'',
+								'ThreadReply');
+
+						$_SESSION['lastPostText']=$new['message'];
+						$_SESSION['lastPostTime']=time();
+						$_SESSION['lastPostType']='ThreadReply';
+
+						$messageproblem=l_t("Reply posted sucessfully.");
+						$new['message']=""; $new['subject']="";
+					}
+					catch(Exception $e)
+					{
+						$messageproblem=$e->getMessage();
+					}
+				}
+				else
+				{
+					$messageproblem=l_t("The thread you attempted to reply to doesn't exist.");
+				}
+				
+				unset($threadDetails);
 			}
 		}
-		else
-		{
-			$messageproblem="The thread you attempted to reply to doesn't exist.";
-		}
-
-		unset($threadDetails);
-	}
 
 	if ( isset($messageproblem) and $new['id'] != -1 )
 	{
 		$_REQUEST['newmessage'] = '';
 		$_REQUEST['newsubject'] = '';
-		$_REQUEST['newmessagereply'] = '';
 	}
 }
 else
@@ -285,7 +257,6 @@ else
 	 */
 	$_REQUEST['newmessage'] = '';
 	$_REQUEST['newsubject'] = '';
-	$_REQUEST['newmessagereply'] = '';
 }
 
 $_SESSION['viewthread'] = $viewthread;
@@ -293,7 +264,7 @@ $_SESSION['viewthread'] = $viewthread;
 libHTML::starthtml();
 
 if( $User->type['Guest'] )
-	print libHTML::pageTitle('Forum', 'A place to discuss topics/games with other webDiplomacy players.');
+	print libHTML::pageTitle(l_t('Forum'), l_t('A place to discuss topics/games with other webDiplomacy players.'));
 else
 	print '<div class="content">';
 
@@ -308,9 +279,9 @@ print '
 	<div id="forumPostbox" style="'.($postboxopen?'':libHTML::$hideStyle).'" class="thread threadalternate1 threadborder1">
 	<div style="margin:0;padding:0">
 	<div class="message-head">
-		<strong>Start a new discussion in the public forum</strong>
+		<strong>'.l_t('Start a new discussion in the public forum').'</strong>
 		</div>
-	<div class="message-subject"><strong>Post a new thread</strong></div>
+	<div class="message-subject"><strong>'.l_t('Post a new thread').'</strong></div>
 	<div style="clear:both;"></div>
 	</div>
 	<div class="hr"></div>
@@ -318,10 +289,10 @@ print '
 	if( $User->isSilenced() ) {
 		print '<div class="message-body postbox" style="padding-top:0; padding-left:auto; padding-right:auto">';
 		
-		print '<p>Cannot post due to a temporary silence:'.$User->getActiveSilence()->toString().'</p>
+		print '<p>'.l_t('Cannot post due to a temporary silence:').$User->getActiveSilence()->toString().'</p>
 				<div class="hr"></div>
-				<p>Please see <a class="light" href="rules.php#silenceInfo">our silenced section</a>
-				for info on how to dispute it or get the length reduced.</p>';
+				<p>'.l_t('Please see <a class="light" href="rules.php#silenceInfo">our silenced section</a> '.
+				'for info on how to dispute it or get the length reduced.').'</p>';
 		
 		print '</div>';
 	}
@@ -329,12 +300,12 @@ print '
 	{
 		print '
 		<div class="message-body threadalternate1 postboxadvice">
-				If your post relates to a particular game please include the <strong>URL or ID#</strong>
-				of the game.<br />
-				If you are posting a <strong>feature request</strong> please check that it isn\'t mentioned in the
-				<a href="http://forum.webdiplomacy.net">todo list</a>.<br />
-				If you are posting a question please <strong>check the <a href="faq.php">FAQ</a></strong> before posting.<br />
-				If your message is long you may need to write a summary message, and add the full message as a reply.
+				'.l_t('If your post relates to a particular game please include the <strong>URL or ID#</strong>
+				of the game.').'<br />
+				'.l_t('If you are posting a <strong>feature request</strong> please check that it isn\'t mentioned in the '.
+				'<a href="http://forum.webdiplomacy.net">todo list</a>.').'<br />
+				'.l_t('If you are posting a question please <strong>check the <a href="faq.php">FAQ</a></strong> before posting.').'<br />
+				'.l_t('If your message is long you may need to write a summary message, and add the full message as a reply.').'
 	
 		</div>
 		<div class="hr" ></div>
@@ -343,18 +314,15 @@ print '
 	
 			<form class="safeForm" action="forum.php#postbox" method="post"><p>
 			<div style="text-align:left; width:80%; margin-left:auto; margin-right:auto; float:middle">
-			<strong>Subject:</strong><br />
+			<strong>'.l_t('Subject:').'</strong><br />
 			<input style="width:100%" maxLength=2000 size=60 name="newsubject" value="'.$_REQUEST['newsubject'].'"><br /><br />
-			<strong>Summary:</strong> (Up to 4 lines and 500 characters)<br />
-			<TEXTAREA NAME="newmessage" ROWS="4" style="width:100%">'.$_REQUEST['newmessage'].'</TEXTAREA><br />
-			<br />
-			<strong>Message:</strong><br />
-			<TEXTAREA NAME="newmessagereply" ROWS="6" style="width:100%">'.$_REQUEST['newmessagereply'].'</TEXTAREA>
+			<strong>'.l_t('Message:').'</strong><br />
+			<TEXTAREA NAME="newmessage" ROWS="6" style="width:100%">'.$_REQUEST['newmessage'].'</TEXTAREA>
 			<input type="hidden" name="viewthread" value="0" />
 			</div>
 			<br />
 	
-			<input type="submit" class="form-submit" value="Post new thread" name="Post">
+			<input type="submit" class="form-submit" value="'.l_t('Post new thread').'" name="'.l_t('Post').'">
 			</p></form>
 		</div>';
 	}
@@ -363,7 +331,7 @@ print '
 	<div class="message-foot threadalternate1">
 		<form action="forum.php" method="get" onsubmit="$(\'forumPostbox\').hide(); $(\'forumOpenPostbox\').show(); return false;">
 			<input type="hidden" name="postboxopen" value="0" />
-			<input type="submit" class="form-submit" value="Cancel" />
+			<input type="submit" class="form-submit" value="'.l_t('Cancel').'" />
 		</form>
 	</div>
 	</div>';
@@ -378,7 +346,7 @@ print '
 			<p style="padding:5px;">
 				<input type="hidden" name="postboxopen" value="1" />
 				<input type="hidden" name="page" value="'.$forumPager->pageCount.'" />
-				<input type="submit" class="form-submit" value="New thread" />
+				<input type="submit" class="form-submit" value="'.l_t('New thread').'" />
 			</p>
 		</form>
 		</div>';
@@ -394,7 +362,7 @@ if( file_exists($cacheHTML) )
 $tabl = $DB->sql_tabl("SELECT
 	f.id, f.fromUserID, f.timeSent, f.message, f.subject, f.replies,
 		u.username as fromusername, u.points as points, f.latestReplySent, IF(s.userID IS NULL,0,1) as online, u.type as userType, 
-		(SELECT COUNT(*) FROM wD_LikePost lp WHERE lp.likeMessageID = f.id) as likeCount, 
+		f.likeCount as likeCount, 
 		f.silenceID,
 		silence.userID as silenceUserID,
 		silence.postID as silencePostID,
@@ -435,20 +403,20 @@ while( $message = $DB->tabl_hash($tabl) )
 		if( $isThreadMuted ) continue;
 		
 		$toggleMuteURL = 'forum.php?toggleMuteThreadID='.$message['id'].'&rand='.rand(1,99999).'#'.$message['id'];
-		$muteLink = ' <br /><a title="Mute this thread, hiding it from your forum and home page" class="light likeMessageToggleLink" href="'.$toggleMuteURL.'">'.($isThreadMuted ? 'Un-mute' : 'Mute' ).' thread</a>';
+		$muteLink = ' <br /><a title="'.l_t('Mute this thread, hiding it from your forum and home page').'" class="light likeMessageToggleLink" href="'.$toggleMuteURL.'">'.l_t(($isThreadMuted ? 'Un-mute' : 'Mute' ).' thread').'</a>';
 		
 		if( $User->type['Admin'] || $User->type['ForumModerator'] ) {
 			
-			$muteLink .= '<br /><span class="likeMessageToggleLink">Silence: ';
+			$muteLink .= '<br /><span class="likeMessageToggleLink">'.l_t('Silence:').' ';
 			
 			if( isset($silence) && $silence->isEnabled() ) {
-				$muteLink .= '<a class="light" href="admincp.php?tab=Control%20Panel&amp;silenceID='.$silence->id.'#disableSilence">Disable silence</a>';
+				$muteLink .= '<a class="light" href="admincp.php?tab=Control%20Panel&amp;silenceID='.$silence->id.'#disableSilence">'.l_t('Disable silence').'</a>';
 			}
 			else
 			{
-				$muteLink .= '<a class="light" href="admincp.php?tab=Control%20Panel&amp;postID='.$message['id'].'#createThreadSilence">thread</a>, ';
+				$muteLink .= '<a class="light" href="admincp.php?tab=Control%20Panel&amp;postID='.$message['id'].'#createThreadSilence">'.l_t('thread').'</a>, ';
 				
-				$muteLink .= '<a class="light" href="admincp.php?tab=Control%20Panel&amp;postID='.$message['id'].'&amp;userID='.$message['fromUserID'].'#createUserThreadSilence">user</a>';
+				$muteLink .= '<a class="light" href="admincp.php?tab=Control%20Panel&amp;postID='.$message['id'].'&amp;userID='.$message['fromUserID'].'#createUserThreadSilence">'.l_t('user').'</a>';
 			}
 			
 			$muteLink .= '</span>';
@@ -493,15 +461,15 @@ while( $message = $DB->tabl_hash($tabl) )
 
 	
 	if ( $message['latestReplySent'] < $Misc->ThreadAliveThreshold ) {
-		$postLockedReason = "Thread is too old to reply to";
+		$postLockedReason = l_t("Thread is too old to reply to");
 	}
 	elseif(isset($silence) && $silence->isEnabled())
 	{
-		$postLockedReason = "This thread has been locked; ".$silence->reason;
+		$postLockedReason = l_t("This thread has been locked; ").$silence->reason;
 	}
 	elseif( $User->isSilenced() )
 	{
-		$postLockedReason = "This account has been silenced; ".$User->getActiveSilence()->reason;
+		$postLockedReason = l_t("This account has been silenced; ").$User->getActiveSilence()->reason;
 	}
 	else
 	{
@@ -509,7 +477,7 @@ while( $message = $DB->tabl_hash($tabl) )
 	}
 	
 	if( isset($postLockedReason) ) {
-		print '<img src="images/icons/lock.png" title="'.$postLockedReason.'" /> ';
+		print '<img src="'.l_s('images/icons/lock.png').'" title="'.$postLockedReason.'" /> ';
 	}
 	
 	
@@ -539,7 +507,7 @@ while( $message = $DB->tabl_hash($tabl) )
 		$replytabl = $DB->sql_tabl(
 			"SELECT f.id, fromUserID, f.timeSent, f.message, u.points as points, IF(s.userID IS NULL,0,1) as online,
 					u.username as fromusername, f.toID, u.type as userType, 
-					(SELECT COUNT(*) FROM wD_LikePost lp WHERE lp.likeMessageID = f.id) as likeCount, 
+					f.likeCount, 
 					f.silenceID,
 					silence.userID as silenceUserID,
 					silence.postID as silencePostID,
@@ -611,9 +579,9 @@ while( $message = $DB->tabl_hash($tabl) )
 				print '<br />';
 				
 				if( isset($silence) && $silence->isEnabled() ) 
-					print '<a class="light likeMessageToggleLink" href="admincp.php?tab=Control%20Panel&amp;silenceID='.$silence->id.'#disableSilence">Disable silence</a>';
+					print '<a class="light likeMessageToggleLink" href="admincp.php?tab=Control%20Panel&amp;silenceID='.$silence->id.'#disableSilence">'.l_t('Disable silence').'</a>';
 				else
-					print '<a class="light likeMessageToggleLink" href="admincp.php?tab=Control%20Panel&amp;postID='.$reply['id'].'&amp;userID='.$reply['fromUserID'].'#createUserThreadSilence">Silence user</a>';
+					print '<a class="light likeMessageToggleLink" href="admincp.php?tab=Control%20Panel&amp;postID='.$reply['id'].'&amp;userID='.$reply['fromUserID'].'#createUserThreadSilence">'.l_t('Silence user').'</a>';
 				
 			}
 					
@@ -657,7 +625,7 @@ while( $message = $DB->tabl_hash($tabl) )
 			print '<TEXTAREA NAME="newmessage" style="margin-bottom:5px;" ROWS="4">'.$_REQUEST['newmessage'].'</TEXTAREA><br />
 					<input type="hidden" value="'.libHTML::formTicket().'" name="formTicket">
 					<input type="hidden" name="page" value="'.$forumPager->pageCount.'" />
-					<input type="submit" class="form-submit" value="Post reply" name="Reply"></p></form>
+					<input type="submit" class="form-submit" value="'.l_t('Post reply').'" name="'.l_t('Reply').'"></p></form>
 					</div>
 					<div class="hrthin"></div>';
 		} else {
@@ -666,20 +634,20 @@ while( $message = $DB->tabl_hash($tabl) )
 	}
 
 	print '<div class="message-foot-notification threadalternate'.$switch.'">
-			<em><strong>'.$message['replies'].'</strong> '.($message['replies']==1?'reply':'replies').'</em>
+			<em><strong>'.$message['replies'].'</strong> '.($message['replies']==1?l_t('reply'):l_t('replies')).'</em>
 			</div>';
 
 	if ( $message['id'] == $viewthread )
 	{
 		print '<form action="forum.php#'.$message['id'].'" method="get">
 						<input type="hidden" name="viewthread" value="0" />
-						<input type="submit" class="form-submit" value="Close" />
+						<input type="submit" class="form-submit" value="'.l_t('Close').'" />
 				</form>';
 	}
 	else
 	{
 		print '<a href="forum.php?viewthread='.$message['id'].'#'.$message['id'].'" '.
-			'title="Open this thread to view the replies, or post your own reply">Open</a>';
+			'title="'.l_t('Open this thread to view the replies, or post your own reply').'">'.l_t('Open').'</a>';
 		/*
 		print '<form action="forum.php#'.$message['id'].'" method="get">
 						<input type="hidden" name="viewthread" value="'.$message['id'].'" />
@@ -699,7 +667,7 @@ print '<div class="hr"></div>';
 print '<div>';
 print $forumPager->html('bottom');
 
-print '<div><a href="#forum">Back to top</a><a name="bottom"></a></div>';
+print '<div><a href="#forum">'.l_t('Back to top').'</a><a name="bottom"></a></div>';
 
 print '<div style="clear:both;"> </div>
 		</div>';
