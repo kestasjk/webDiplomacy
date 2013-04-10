@@ -311,7 +311,7 @@ print '
 		<div class="hr" ></div>
 	
 		<div class="message-body postbox" style="padding-top:0; padding-left:auto; padding-right:auto">
-	
+
 			<form class="safeForm" action="forum.php#postbox" method="post"><p>
 			<div style="text-align:left; width:80%; margin-left:auto; margin-right:auto; float:middle">
 			<strong>'.l_t('Subject:').'</strong><br />
@@ -321,7 +321,7 @@ print '
 			<input type="hidden" name="viewthread" value="0" />
 			</div>
 			<br />
-	
+
 			<input type="submit" class="form-submit" value="'.l_t('Post new thread').'" name="'.l_t('Post').'">
 			</p></form>
 		</div>';
@@ -599,6 +599,21 @@ while( $message = $DB->tabl_hash($tabl) )
 				</div>';
 		}
 		unset($replytabl, $replyfirst, $replyswitch);
+
+		print '<br />';
+		if (isset($threadPager) && $threadPager->currentPage < $threadPager->pageCount)
+		{
+			$threadPager->pagerBar('threadPager');
+		}
+		else
+		{
+			print '<form action="forum.php#'.$replyID.'" method="get">
+							<input type="hidden" name="viewthread" value="'.$message['id'].'" />
+							<input type="hidden" name="rand" value="'.rand(0,99999).'" />
+							<input type="submit" class="form-submit" value="'.l_t('Refresh').'"
+								title="'.l_t('Refresh your view of this thread to see if there are any new replies').'" />
+					</form>';
+		}
 	}
 
 	// Replies done, now print the footer

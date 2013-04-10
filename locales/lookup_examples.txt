@@ -338,6 +338,8 @@
 'Reallocations list (e.g \"<em>R,T,A,G,U,F,E</em>\")' => 'Lista di riassegnazione (ad es. \"<em>R,T,A,G,U,F,E</em>\")',
 'Reason' => 'Motivo',
 'Recent message' => 'Messaggio recente',
+'Refresh' => 'Rinfrescare',
+'Refresh your view of this thread to see if there are any new replies' => 'Aggiornare la vista di questo thread per vedere se ci sono nuove risposte',
 'Regards,' => 'Cordialmente,',
 'Register a webDiplomacy account' => 'Crea un account di Diplomacy',
 'Registered' => 'Registrato',
