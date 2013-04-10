@@ -85,7 +85,12 @@ class panelGame extends Game
 		if( $this->phase == 'Finished' )
 			return $this->gameGameOverDetails();
 		elseif( $this->phase == 'Pre-game' && count($this->Members->ByID)==count($this->Variant->countries) )
-			return l_t('%s players joined; game will start on next process cycle',count($this->Variant->countries));
+		{
+			if ( $this->isLiveGame() )
+				return l_t('%s players joined; game will start at the scheduled time', count($this->Variant->countries));
+			else
+				return l_t('%s players joined; game will start on next process cycle', count($this->Variant->countries));
+		}
 		elseif( $this->missingPlayerPolicy=='Strict'&&!$this->Members->isComplete() && time()>=$this->processTime )
 			return l_t("One or more players need to complete their orders before this strict/tournament game can go on");
 	}
@@ -311,15 +316,15 @@ class panelGame extends Game
 		$buf = l_t('<strong>%s</strong> /phase',libTime::timeLengthText($this->phaseMinutes*60)).
 			' <span class="gameTimeHoursPerPhaseText">(';
 
-		if ( $this->phaseMinutes < 60 )
+		if ( $this->isLiveGame() )
 			$buf .= l_t('live');
 		elseif ( $this->phaseMinutes < 6*60 )
 			$buf .= l_t('very fast');
 		elseif ( $this->phaseMinutes < 16*60 )
 			$buf .= l_t('fast');
-		elseif( $this->phaseMinutes < 36*60 )
+		elseif ( $this->phaseMinutes < 36*60 )
 			$buf .= l_t('normal');
-		elseif( $this->phaseMinutes < 3*24*60 )
+		elseif ( $this->phaseMinutes < 3*24*60 )
 			$buf .= l_t('slow');
 		else
 			$buf .= l_t('very slow');
@@ -463,20 +468,27 @@ class panelGame extends Game
 			return l_t('A newly registered account can join this game; '.
 				'<a href="register.php" class="light">register now</a> to join.');
 
-		$buf = l_t('<form onsubmit="return confirm(\'Are you sure you want to join this game?');
-		
-		if ($this->phaseMinutes > 30)
+		if ( $this->isLiveGame() )
 		{
+			$question = l_t('This is a live game.').'\n'.l_t('The game will start at the scheduled time even if all %s players have joined.', count($this->Variant->countries));
+		}
+		else
+		{
+			$question = l_t('The game will start when all %s players have joined.', count($this->Variant->countries));
+			
 			list($turns,$games) = $DB->sql_row('SELECT SUM(turn), COUNT(*) FROM wD_Games WHERE variantID='.$this->Variant->id.' AND phase = "Finished"');
 			if ($games > 3)
 			{
 				$avgDur = libTime::timeLengthText((($turns / $games) - $this->turn) * 2.5 * $this->phaseMinutes * 60 );
 				if ($avgDur > 0)
-					$buf .= '\nLooking at our stats this game might take (roughly) '.$avgDur.' to complete.';
+					$question .= '\n'.l_t('Looking at our stats this game might take (roughly) %s to complete.',$avgDur) ;
 			}
+			
 		}
 		
-		$buf .= '\');" method="post" action="board.php?gameID='.$this->id.'"><div>
+		$question .= '\n\n'.l_t('Are you sure you want to join this game?').'\n';		
+
+		$buf = '<form onsubmit="return confirm(\''.$question.'\');" method="post" action="board.php?gameID='.$this->id.'"><div>
 			<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />';
 			
 		// Show join requirements:
@@ -505,22 +517,16 @@ class panelGame extends Game
 		elseif( $this->phase == 'Pre-game' )
 		{
 			$buf .= 'Bet to join: <em>'.$this->minimumBet.libHTML::points().'</em>: ';
-
-			if ( $this->private )
-				$buf .= '<br />'.self::passwordBox();
-
-			$buf .= '<input type="submit" name="join" value="'.l_t('Join').'" class="form-submit" />';
-
 		}
 		else
 		{
 			$buf .= $this->Members->selectCivilDisorder();
-
-			if ( $this->private )
-				$buf .= '<br />'.self::passwordBox();
-
-			$buf .= ' <input type="submit" name="join" value="'.l_t('Join').'" class="form-submit" />';
 		}
+
+		if ( $this->private )
+			$buf .= '<br />'.self::passwordBox();
+
+		$buf .= ' <input type="submit" name="join" value="'.l_t('Join').'" class="form-submit" />';
 
 		$buf .= '</div></form>';
 		return $buf;
