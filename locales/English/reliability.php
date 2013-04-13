@@ -38,6 +38,38 @@ countries gain really big unearned advantages.
 </p>
 
 <p class="intro">
+<style>
+div.fraction-inline { display: inline-block; position: relative; vertical-align: middle; }
+.fraction-inline > span { display: block; padding: 0; }
+.fraction-inline span.divider{ position: absolute; top: 0em; display: none;	letter-spacing: -0.1em;	 }
+.fraction-inline span.denominator{ border-top: thin solid black; text-align:center;}
+</style>
+The exact calculation is: 
+<div>
+	100 &minus; (100 *
+	<div class="fraction-inline">
+		<span class="numerator">2 * MissedPhases</span>
+		<span class="divider">________________</span>
+		<span class="denominator">TotalPhases</span>
+	</div>
+	) &minus; 10 * UnbalancedCDs
+</div>
+<br>The calculation for your rating is:
+<span>
+	100 &minus; (100 *
+	<div class="fraction-inline">
+		<span class="numerator">2 * <b><?php print $User->missedMoves;?></b></span>
+		<span class="divider">________________</span>
+		<span class="denominator"><b><?php print $User->phasesPlayed;?></b></span>
+	</div>
+	) &minus; 10 * <b><?php print ($User->gamesLeft - $User->leftBalanced);?></b> = 
+	100 &minus; <?php print ($User->phasesPlayed == 0 ? '0' : (200 * $User->missedMoves / $User->phasesPlayed))?> &minus; <?php print (10 * ($User->gamesLeft - $User->leftBalanced))?> =
+	<b><?php print abs($User->getReliability());?></b>
+</span>
+
+</p>
+
+<p class="intro">
 When someone creates a game they can select a minimum rating for the people able to enter their games, 
 and if you rating is too low you might not be able to join all the games as you like.<br>
 Also for each 10% of reliability you can join 1 game. If your reliability is <b>91% or better</b> you can join as many games as you want.</p>
