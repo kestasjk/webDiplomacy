@@ -86,5 +86,8 @@ class setMemberNewMessagesFrom extends set {
 class setVariantStatus extends set {
 	protected $allowed=array('Installed','Allowed','Enabled');
 }
+class setUserNotifications extends set {
+	protected $allowed=array('PrivateMessage', 'GameMessage', 'Unfinalized', 'GameUpdate');
+}
 
 ?>
