@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2004-2010 Kestas J. Kuliukas
+    Copyright (C) 2004-2009 Kestas J. Kuliukas
 
 	This file is part of webDiplomacy.
 
@@ -30,6 +30,7 @@ class ClassicVariant extends WDVariant {
 	public $fullName='Classic';
 	public $description='The standard Diplomacy map of Europe.';
 	public $author='Avalon Hill';
+	public $codeVersion = '1.1.1';
 
 	public $countries=array('England', 'France', 'Italy', 'Germany', 'Austria', 'Turkey', 'Russia');
 
