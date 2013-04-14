@@ -417,12 +417,12 @@ class libHome
 if( !$User->type['User'] )
 {
 	print '<div class="content-notice" style="text-align:center">'.libHome::globalInfo().'</div>';
-	print libHTML::pageTitle(l_t('Welcome to webDiplomacy!'),l_t('A multiplayer web implementation of the popular turn-based strategy game Diplomacy.'));
+	print libHTML::pageTitle(l_t('Welcome to vDiplomacy!'),l_t('A multiplayer web implementation of the popular turn-based strategy game Diplomacy.'));
 	//print '<div class="content">';
 	?>
 	<p style="text-align: center;"><img
-	src="<?php print l_s('images/startmap.png'); ?>" alt="<?php print l_t('The map'); ?>"
-	title="<?php print l_t('A webDiplomacy map'); ?>" /></p>
+	src="<?php print l_s('images/vmap.png'); ?>" alt="<?php print l_t('The map'); ?>"
+	title="<?php print l_t('A vDiplomacy map'); ?>" /></p>
 <p class="welcome"><?php print l_t('<em> "Luck plays no part in Diplomacy. Cunning and
 cleverness, honesty and perfectly-timed betrayal are the tools needed to
 outwit your fellow players. The most skillful negotiator will climb to
