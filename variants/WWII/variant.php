@@ -10,7 +10,7 @@ class WWIIVariant extends WDVariant {
 	public $description= 'World War II variant by Synapse';
 	public $adapter    = 'Synapse';
 	public $version    = '1';
-	public $codeVersion= '1.0';
+	public $codeVersion= '1.0.1';
 
 	public $countries=array('France','Germany', 'Britain', 'Italy', 'Soviet Russia');
 
