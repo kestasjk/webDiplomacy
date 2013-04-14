@@ -437,7 +437,6 @@ class libHTML
 		<script type ="text/javascript" src="contrib/cookieWarning/warnCookies.js"></script>
 		<link href="contrib/cookieWarning/cookies.css" title="Cookies\' warning" rel="stylesheet" type="text/css" />
 		
-		<title>'.$title.' - vDiplomacy</title>
 	</head>';
 	}
 
@@ -462,10 +461,6 @@ class libHTML
 		print libHTML::prebody($title===FALSE ? l_t($pages[$scriptname]['name']) : $title).
 			'<body>'.libHTML::menu($pages, $scriptname);
 
-		// Cookie-check as requested by the EU-laws...
-		print '<div id="cookiesWarning"></div>
-					<script language="JavaScript" type="text/javascript">checkCookieExist();</script>';
-			
 		if( defined('FACEBOOKSCRIPT') ) {
 			?>
 			<script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php/en_US" type="text/javascript"></script>
@@ -921,8 +916,11 @@ class libHTML
 	}
 
 	static private function footerCopyright() {
+		// Cookie-check as requested by the EU-laws...
+		$cookiesWarning='<div id="cookiesWarning"></div><script language="JavaScript" type="text/javascript">checkCookieExist();</script>';
+	
 		// Version, sourceforge and HTML compliance logos
-		return l_t('based on webDiplomacy version <strong>%s</strong>',number_format(VERSION/100,2).'<br />');
+		return $cookiesWarning.l_t('based on webDiplomacy version <strong>%s</strong>',number_format(VERSION/100,2).'<br />');
 //			<a href="http://sourceforge.net/projects/phpdiplomacy">
 //				<img alt="webDiplomacy @ Sourceforge"
 //					src="http://sourceforge.net/sflogo.php?group_id=125692" />
