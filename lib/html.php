@@ -527,6 +527,13 @@ class libHTML
 
 		$gameNotifyBlock = '';
 
+		if ( $User->notifications->PrivateMessage and ! isset($_REQUEST['notices']))
+		{
+			$gameNotifyBlock .= '<span class=""><a href="index.php?notices=on">'.
+				l_t('PM').' <img src="'.l_s('images/icons/mail.png').'" alt="'.l_t('New private messages').'" title="'.l_t('New private messages!').'" />'.
+				'</a></span> ';
+		}
+
 		foreach ( $gameIDs as $gameID )
 		{
 			$notifyGame = $notifyGames[$gameID];
