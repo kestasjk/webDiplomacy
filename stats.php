@@ -52,6 +52,7 @@ if ($variantID != 0)
 		$c_info[$i]['Resigned'] = 0;
 		$c_info[$i]['Defeated'] = 0;
 		$g_info[$i.'-way']      = 0;	
+		$c_info[$i]['SC']       = 0;
 	}
 
 	$tabl = $DB->sql_tabl('SELECT m.countryID, m.status, COUNT(*) FROM wD_Members m
@@ -85,9 +86,18 @@ if ($variantID != 0)
 		$g_info['All']   += $count;
 		$g_info[$pot]    += $count;
 	}
+
+	$tabl = $DB->sql_tabl(
+		'SELECT m.countryID, SUM(m.supplyCenterNo) FROM wD_Members m
+			LEFT JOIN wD_Games g ON (m.gameID = g.id) 
+			WHERE g.variantID='. $variant->id .' AND g.phase = "Finished"
+			GROUP BY m.countryID');
+			
+	while(list($countryID,$SC) = $DB->tabl_row($tabl))
+		$c_info[$countryID]['SC'] = $SC;
 	
 	list($turns) = $DB->sql_row('SELECT SUM(turn) FROM wD_Games WHERE variantID='.$variant->id.' AND phase = "Finished"');
-
+	
 	print '<ul><li><b>Number of games finished:</b> '.$g_info['All'].'</li>';
 
 	if ($g_info['All'] > 0)
@@ -144,25 +154,38 @@ if ($variantID != 0)
 		print '<li><b>Results by country:</b></li>';	
 		print '<table border="1" rules="groups">
 				<thead>
-					<tr><th>Country</th><th>Solos</th><th>Draws</th><th>Survivals</th><th>Eliminated</th><th>Performance*</th></tr>
+					<tr>
+					<th align="left">Country</th>
+					<th align="center">Solos</th>
+					<th align="center">Draws</th>
+					<th align="center">Survivals</th>
+					<th align="center">Eliminated</th>
+					<th align="center">SCs &Oslash</th>
+					<th align="center">Performance*</th></tr>
 				</thead>
 				<tfoot>
 					<tr><td colspan=6><b>*Performance</b> = (15 x Solos + 5 x Draws + 1 x Survivals) / Games</td></tr>
 				</tfoot>
 				<tbody>';
 				
+		$alternate = false;
+				
 		for ($i=1; $i<=count($variant->countries); $i++)		
 		{
 			$c_info[$i]['Eliminated'] = $c_info[$i]['Resigned'] + $c_info[$i]['Defeated'];
 			$c_info[$i]['Performance'] = round(($c_info[$i]['Won']*15 + $c_info[$i]['Drawn']*5 + $c_info[$i]['Survived']) / $g_info['All'],2);
+			$c_info[$i]['SC'] = round($c_info[$i]['SC'] / $g_info['All'],2);
 			
-			print '<tr>
+			$alternate = !$alternate;
+			
+			print '<tr class="replyalternate'.($alternate ? '1' : '2' ).'">
 					<td>'.$variant->countries[$i-1].'</td>
-					<td>'.$c_info[$i]['Won'].'</td>
-					<td>'.$c_info[$i]['Drawn'].'</td>
-					<td>'.$c_info[$i]['Survived'].'</td>
-					<td>'.$c_info[$i]['Eliminated'].'</td>
-					<td>'.$c_info[$i]['Performance'].'</td>			
+					<td align="center">'.$c_info[$i]['Won'].'</td>
+					<td align="center">'.$c_info[$i]['Drawn'].'</td>
+					<td align="center">'.$c_info[$i]['Survived'].'</td>
+					<td align="center">'.$c_info[$i]['Eliminated'].'</td>
+					<td align="center">'.$c_info[$i]['SC'].'</td>			
+					<td align="center">'.$c_info[$i]['Performance'].'</td>			
 					</tr>';
 		}
 		print'</table><br>';
