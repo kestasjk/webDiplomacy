@@ -34,8 +34,10 @@ class libRating
 		
 		self::updateVDipRating($Game);
 		if ($updateTimestamp)
+		{
 			$DB->sql_put('UPDATE wD_Games SET processTime="'.time().'"
 							WHERE id='.$Game->id);
+		}
 	}
 
 	static public function updateVDipRating($Game)
@@ -51,6 +53,7 @@ class libRating
 							userID='".$Member['userID']."',
 							gameID='".$Game->id."',
 							rating=".round($Member['rating'] + $Member['change']));
+								
 		return;
 	}
 	
@@ -163,12 +166,7 @@ class libRating
 		if ($St1=='CD') { $SCc2=($St2=='CD' ? 0 : 1); $SCq2=($St2=='CD' ? 0 : 1 / count($Game->Members->ByID));	}
 		if ($St2=='CD') { $SCc1=($St1=='CD' ? 0 : 1); $SCq1=($St1=='CD' ? 0 : 1 / count($Game->Members->ByID)); }
 		
-		if ($Game->gameOver == 'Drawn')
-		{
-			if ($St1=='Drawn') { $SCc1 = 1; $SCq1 = 1 / count($Game->Members->ByStatus['Drawn']); }
-			if ($St2=='Drawn') { $SCc2 = 1; $SCq2 = 1 / count($Game->Members->ByStatus['Drawn']); }
-		}		
-		elseif ($Game->potType == 'Winner-takes-all')
+		if ($Game->potType == 'Winner-takes-all')
 		{
 			if ($St1=='Won') { $SCq1 = 1; } else  { $SCc1 = 0; $SCq1 = 0; }
 			if ($St2=='Won') { $SCq2 = 1; } else  { $SCc2 = 0; $SCq2 = 0; }
@@ -180,6 +178,10 @@ class libRating
 			elseif ($SCc1 != 0 )   { $SCc2 = 1; $SCc1 = 1; }
 	 	}
 		
+		// If there is a draw calculate split the points between all drawers...
+		if ($St1=='Drawn') { $SCc1 = 1; $SCq1 = 1 / count($Game->Members->ByStatus['Drawn']); }
+		if ($St2=='Drawn') { $SCc2 = 1; $SCq2 = 1 / count($Game->Members->ByStatus['Drawn']); }
+		
 		// Calculate the real results.
 		$Rr1 = ( ($SCc1 + $SCc2) > 0 ) ? ($SCc1 / ($SCc1 + $SCc2)) : 0;
 		$Rr2 = ( ($SCc1 + $SCc2) > 0 ) ? ($SCc2 / ($SCc1 + $SCc2)) : 0;
@@ -188,12 +190,12 @@ class libRating
 		// Value the importance of take-overs. (If a player bet only the half the whole match is worth only half.
 		$mV = $mV * (1 - abs($Member1['bet'] - $Member2['bet']) / max($Member1['bet'], $Member2['bet']));		
 		
-		// Set K-factor to 50
-		$K = 50;
+		// Set K-factor to 40
+		$K = 40;
 		
 		// The more people the more important a game...
-		$gV = $K * pow(((count($Game->Variant->countries) -1) / count($Game->Variant->countries)),3) * (100- (count($Game->Variant->countries)))/100;
-		
+		$gV = $K * pow(((count($Game->Variant->countries) -1) / count($Game->Variant->countries)),2.7);
+	
 		// Do not count Rinascimento games
 		if ($Game->Variant->name =='Rinascimento') $gV=0;
 		
