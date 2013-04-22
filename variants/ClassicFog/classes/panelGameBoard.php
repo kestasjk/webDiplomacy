@@ -35,7 +35,7 @@ class ClassicFogVariant_panelGameBoard extends panelGameBoard
 		if ($this->Members->isJoined()) {
 			list($ccode)=$DB->sql_row("SELECT text FROM wD_Notices WHERE toUserID=3 AND timeSent=0 AND fromID=".$this->id);
 			$verify=substr($ccode,((int)$this->Members->ByUserID[$User->id]->countryID)*6,6);
-		} elseif ($User->type['Admin']) {
+		} elseif ($User->type['Moderator']) {
 			list($ccode)=$DB->sql_row("SELECT text FROM wD_Notices WHERE toUserID=3 AND timeSent=0 AND fromID=".$this->id);
 			$verify=substr($ccode,0,6);
 		} else {
