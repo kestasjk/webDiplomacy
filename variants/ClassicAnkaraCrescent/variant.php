@@ -14,7 +14,7 @@ class ClassicAnkaraCrescentVariant extends WDVariant {
 	public $author='Captainmeme';
 	public $adapter    = 'Captainmeme';
 	public $version    = '1';
-	public $codeVersion= '1.0';
+	public $codeVersion= '1.0.1';
 
 	public $countries=array('England', 'France', 'Italy', 'Germany', 'Austria', 'Turkey', 'Russia');
 
