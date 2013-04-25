@@ -562,25 +562,13 @@ class libHTML
 		sort($gameIDs);
 
 		$gameNotifyBlock = '';
-/*******************************
-*INPUT FROM FIGLESQUIDGE HACK: *
-********************************/            
-//		if( !isset($_SESSION['lastSeenHome']) || $_SESSION['lastSeenHome'] < $User->timeLastSessionEnded )
-//			$_SESSION['lastSeenHome']=$User->timeLastSessionEnded;
-//			
-//		$newMsg = $DB->sql_row("SELECT timeSent FROM wD_Notices WHERE toUserID=".$User->id."
-//								AND type='PM' AND SUBSTRING(linkName,1,3)!='To:'
-//								AND timeSent>'".$_SESSION['lastSeenHome']."' LIMIT 1;");
-//		if ($newMsg)
-//			$gameNotifyBlock .=  '<span class="variantClassic"><a class="country5" href="index.php?notices=on"><img title="Unread" alt="Not received" src="images/icons/alert.png"> New PM <img src="images/icons/mail.png" alt="New messages" title="New messages!"></a></span>';
-// END HACK
 
-	if ( $User->notifications->PrivateMessage and ! isset($_REQUEST['notices']))
-	{
-		$gameNotifyBlock .= '<span class=""><a href="index.php?notices=on">'.
-			'New PM <img src="images/icons/mail.png" alt="New private messages" title="New private messages!" />'.
-			'</a></span> ';
-	}
+		if ( $User->notifications->PrivateMessage and ! isset($_REQUEST['notices']))
+		{
+			$gameNotifyBlock .= '<span class=""><a href="index.php?notices=on">'.
+				l_t('PM').' <img src="'.l_s('images/icons/mail.png').'" alt="'.l_t('New private messages').'" title="'.l_t('New private messages!').'" />'.
+				'</a></span> ';
+		}
 
 /*****************************************************
 *  Alert the mods about a new Mesage in the ModForum *

@@ -541,6 +541,8 @@ class User {
 		
 		$this->notifications=new setUserNotifications($this->notifications);
 
+		$this->notifications=new setUserNotifications($this->notifications);
+
 		$this->online = (bool) $this->online;
 	}
 
@@ -620,7 +622,6 @@ class User {
 
 	function sendPM(User $FromUser, $message)
 	{
-
 		$message = htmlentities( $message, ENT_NOQUOTES, 'UTF-8');
 		require_once(l_r('lib/message.php'));
 		$message = message::linkify($message);
@@ -637,7 +638,7 @@ class User {
 				$message, $FromUser->username, $FromUser->id);
 
 			$this->setNotification('PrivateMessage');
-			
+
 			notice::send($FromUser->id, $this->id, 'PM', 'No', 'Yes',
 				l_t('You sent:').' <em>'.$message.'</em>', l_t('To:').' '.$this->username,
 				$this->id);
@@ -650,17 +651,17 @@ class User {
 	 **/
 	function setNotification($notification)
 	{
-	global $DB;
+		global $DB;
 
 		$this->notifications->$notification = true;
 		if ($this->notifications->updated)
 		{
-		$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications,'".$notification."') WHERE id = ".$this->id);
-		$this->notifications->updated = false;
+			$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications,'".$notification."') WHERE id = ".$this->id);
+			$this->notifications->updated = false;
 		}
 	}
 
-	/**
+        /**
 	 * This will clear a notification value in both the object and the wd_users table if not already cleared.
 	 * @param notification notification value to clear, must be 'PrivateMessage', 'GameMessage', 'Unfinalized', or 'GameUpdate'.
 	 **/
@@ -675,7 +676,7 @@ class User {
 			$this->notifications->updated = false;
 		}
 	}
-	
+
 	/**
 	 * The time this user joined
 	 * @return string Date joined

@@ -444,7 +444,7 @@ Who do you trust?"<br />
 elseif( isset($_REQUEST['notices']) )
 {
 	$User->clearNotification('PrivateMessage');
-	
+
 	print '<div class="content"><a href="index.php" class="light">&lt; '.l_t('Back').'</a></div>';
 
 	print '<div class="content-bare content-home-header">';
