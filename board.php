@@ -233,7 +233,7 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 	}
 }
 
-if ( 'Pre-game' != $Game->phase && $Game->pressType!='NoPress' && ( isset($Member) || $User->type['Moderator'] ) )
+if ( 'Pre-game' != $Game->phase && ( isset($Member) || $User->type['Moderator'] ) )
 {
 	$CB = $Game->Variant->Chatbox();
 
