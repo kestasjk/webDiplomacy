@@ -157,14 +157,10 @@ class Chatbox
 					$memList[]=$Game->Members->ByCountryID[$countryID]->memberNameCountry();
 				$chatbox .= '<div class="chatboxMembersList">'.implode(', ',$memList).'</div>';
 			}
-			else
+			else if (!isset($Member) || $Member->countryID != $msgCountryID)
 			{
 				$chatbox .= $Game->Members->ByCountryID[$msgCountryID]->memberBar();
 			}
-		}
-		else if (!isset($Member) || $Member->countryID != $msgCountryID)
-		{
-			$chatbox .= $Game->Members->ByCountryID[$msgCountryID]->memberBar();
 		}
 
 		$chatbox .= '</TD></TR></TABLE></DIV>';
@@ -187,7 +183,7 @@ class Chatbox
 
 		$chatbox .= '</TABLE></DIV>';
 
-		if ( ( $User->type['Moderator'] && $msgCountryID == 0 ) ||
+		if ( ( $User->type['Moderator'] && $msgCountryID == 0 && !isset($Member)) ||
 		     ( isset($Member) &&
 		       ( $Game->pressType == 'Regular' ||                                         // All tabs allowed for Regular
 		         $Member->countryID == $msgCountryID ||                                   // Notes tab always allowed
