@@ -152,7 +152,7 @@ class libRating
 		$SCc2 = $Member2['SCc']; $SCq2 = $Member2['SCq']; $St2=$Member2['status'];
 		
 		// Calculate the expected result for Member1
-		$Re1= 1 / ( 1 + ( pow( 10 , (($Member2['rating'] - $Member1['rating']) / 400) ) ) );
+		$Re1= 1 / ( 1 + ( pow( 10 , (($Member2['rating'] - $Member1['rating']) / 1000) ) ) );
 		$Re2= 1 - $Re1;
 		
 		// Adjust the restults based on pot-type and game-status
@@ -190,7 +190,7 @@ class libRating
 		$mV = $mV * (1 - abs($Member1['bet'] - $Member2['bet']) / max($Member1['bet'], $Member2['bet']));		
 		
 		// Set K-factor to 40
-		$K = 40;
+		$K = 100;
 		
 		// The more people the more important a game...
 		$gV = $K * pow(((count($Game->Variant->countries) -1) / count($Game->Variant->countries)),2.7);
