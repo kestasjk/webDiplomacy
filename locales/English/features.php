@@ -33,8 +33,6 @@ $globalFaq = array(
 	"You can turn off the move-arrows" => 
 		"In the board-view there is an option to turn off the move-arrows (<img src=\"images/historyicons/hidemoves.png\" alt=\" \">),
 		so you can get a plain board with just the units.",
-	"PM notification" =>
-		"If you receive a new PM you get an alert.",
 	"Block user" =>
 		"If you encounter an unpleasant user to play agains you can choose to \"block\" him.
 		To do this enter his profile and click on the smilyface behind it's name.
