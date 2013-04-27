@@ -58,7 +58,7 @@ if ( isset($_REQUEST['AcceptSwitch']) )
 		}
 		else
 		{
-			print "<b>ERROR.</b>You can't switch this country, you are already a member of that game.<hr>";
+			$error = "You can't switch this country, you are already a member of that game.";
 		}
 	}
 }
@@ -84,15 +84,15 @@ if ( isset($_REQUEST['newSwitch']) )
 								
 		// Check for additional requirements:
 		if ( $Game->minPhases > $SendUser->phasesPlayed)
-			print '<b>ERROR.</b>The User you selected did not play enough phases to join this game.<hr>';
+			$error = 'The User you selected did not play enough phases to join this game.';
 		elseif ( $Game->minRating > abs($SendUser->getReliability()))
-			print '<b>ERROR.</b>The reliability of User you selected is not high enough to join this game.<hr>';
+			$error = 'The reliability of User you selected is not high enough to join this game.';
 		elseif ( count($Variant->countries)>2 && $message = $SendUser->isReliable())
-			print '<b>ERROR.</b>The User you selected can not join new games at the moment.<hr>';
+			$error = 'The User you selected can not join new games at the moment.';
 		elseif ( array_key_exists ( $toID , $Game->Members->ByUserID))
-			print '<b>ERROR.</b>The User you selected is already a member of this game.<hr>';
+			$error = 'The User you selected is already a member of this game.';
 		elseif ( $muted > 0)
-			print "<b>ERROR.</b>The User you selected can't join. A player in this game has him muted or he muted a player in this game<hr>";
+			$error = "The User you selected can't join. A player in this game has him muted or he muted a player in this game.";
 		else
 			$DB->sql_put('INSERT INTO wD_CountrySwitch (fromID, toID, gameID, status) VALUES ('.
 				$fromID.','.$toID.','.$gameID.', "Send")');
@@ -101,6 +101,7 @@ if ( isset($_REQUEST['newSwitch']) )
 
 ?>
 	<br><hr>
+	<a name="Switch"></a>
 	<form method="post"><ul class="formlist">
 	<li class="formlisttitle">Countries given away (BETA, use at your own risk):</li>
 	<li class="formlistfield">
@@ -136,7 +137,12 @@ if ( isset($_REQUEST['newSwitch']) )
 	</TABLE>
 	</li>
 	<li class="formlistdesc">All active switches.</li>
-	
+
+	<?php if (isset($error)) {?>
+		<li class="formlisttitle">ERROR:</li>
+		<li class="formlistfield"><?php print $error;?></li>
+		<br>
+	<?php }?>
 	<li class="formlisttitle">Create new Country Switch (BETA, use at your own risk):</li>
 	<li class="formlistfield">
 	<TABLE> <THEAD><TH>GameName / ID</TH><TH>Send to UserID</TH><TH> </TH></THEAD><TR>
