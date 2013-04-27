@@ -25,6 +25,10 @@ class libRating
 	static public function updateRatings($Game, $updateTimestamp=false)
 	{
 		global $DB;
+		
+		if ($updateTimestamp)
+			$DB->sql_put('UPDATE wD_Games SET processTime="'.time().'" WHERE id='.$Game->id);
+		
 		// If Game is a gameID load the 
 		if (is_numeric($Game))
 		{
@@ -33,11 +37,6 @@ class libRating
 		}
 		
 		self::updateVDipRating($Game);
-		if ($updateTimestamp)
-		{
-			$DB->sql_put('UPDATE wD_Games SET processTime="'.time().'"
-							WHERE id='.$Game->id);
-		}
 	}
 
 	static public function updateVDipRating($Game)
