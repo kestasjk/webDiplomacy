@@ -78,12 +78,12 @@ Also for each 10% of reliability you can join 1 game. If your reliability is <b>
 	<p class="intro">
 		To improve your rating you need 
 			<?php if (($User->gamesLeft - $User->leftBalanced) > 0) { ?>
-				to take over some "open" spots from ongoing games. You can find them in the "Joinable" Section of the games-tab. Every country you "save from CD" will improve your reliability by 10%. After <b><?php print ($User->gamesLeft - $User->leftBalanced)?></b> game<?php print ((($User->gamesLeft - $User->leftBalanced) > 1) ? 's' : '')?> your reliability will be <b><?php print ($User->phasesPlayed == 0 ? '0' : (100 - 200 * $User->missedMoves / $User->phasesPlayed))?>%</b>.<br>After this you need
+				to take over some "open" spots from ongoing games. You can find them in the "Joinable" Section of the games-tab. Every country you "save from CD" will improve your reliability by 10%. After <b><?php print ($User->gamesLeft - $User->leftBalanced)?></b> game<?php print ((($User->gamesLeft - $User->leftBalanced) > 1) ? 's' : '')?> your reliability will be <b><?php print round($User->phasesPlayed == 0 ? '0' : (100 - 200 * $User->missedMoves / $User->phasesPlayed))?>%</b>.<br>After this you need
 			<?php } ?>
 			to play some more phases without missing to enter orders. 
 			<?php if ((200 * $User->missedMoves / $User->phasesPlayed) > 10) { ?>
 				With <b><?php print $User->missedMoves;?></b> missed moves and <b><?php print $User->phasesPlayed;?></b> phases played you need to play 
-				<b><?php print ((100 - floor((200 * $User->missedMoves / $User->phasesPlayed) / 10 ) *10) * $User->phasesPlayed / 200)?></b> 
+				<b><?php print round((100 - floor((200 * $User->missedMoves / $User->phasesPlayed) / 10 ) *10) * $User->phasesPlayed / 200)?></b> 
 				more phases to gain a <b><?php print 100 - floor((200 * $User->missedMoves / $User->phasesPlayed) / 10 ) *10 ?>+</b> rating.
 			<?php } ?>
 				
