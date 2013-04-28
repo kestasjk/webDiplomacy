@@ -573,7 +573,7 @@ class libHTML
 /*****************************************************
 *  Alert the mods about a new Mesage in the ModForum *
 *****************************************************/
-	if ( $User->notifications->ModForum )
+	if ( $User->notifications->ModForum && (strpos($_SERVER["REQUEST_URI"], 'modforum.php') === false) )
 	{
 		$gameNotifyBlock .= '<span class=""><a href="modforum.php">'.
 			'New Post in Modforum <img src="images/icons/mail.png" alt="New private messages" title="New private messages!" />'.
