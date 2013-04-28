@@ -61,23 +61,30 @@ The exact calculation is:
 		$UserProfile = new User((int)$_REQUEST['userID']);
 	else
 		$UserProfile = $User;
-?>
 
-<?php if ($UserProfile->getReliability() < 0) { ?>
-	For the first 20 phases all players are called "Rookies" and have no reliability-rating.
-<?php } else { ?>
-	The calculation for <?php print ($UserProfile == $User ? 'your' : $UserProfile->username.'s')?> rating is:
-	100 &minus; (100 *
-	<div class="fraction-inline">
-		<span class="numerator">2 * <b><?php print $UserProfile->missedMoves;?></b></span>
-		<span class="divider">________________</span>
-		<span class="denominator"><b><?php print $UserProfile->phasesPlayed;?></b></span>
-	</div>
-	) &minus; 10 * <b><?php print ($UserProfile->gamesLeft - $UserProfile->leftBalanced);?></b> = 
-	100 &minus; <?php print ($UserProfile->phasesPlayed == 0 ? '0' : round(200 * $UserProfile->missedMoves / $UserProfile->phasesPlayed))?> &minus; <?php print (10 * ($UserProfile->gamesLeft - $UserProfile->leftBalanced))?> =
-	<b><?php print abs($UserProfile->getReliability());?></b>
-<?php } ?>
+	if ($UserProfile->getReliability() < 0)
+	{
+		print 'For the first 20 phases all players are called "Rookies" and have no reliability-rating.';
+	}
+	else
+	{
+		print 'The calculation for '.($UserProfile == $User ? 'your' : $UserProfile->username.'s').' rating is:
+					100 &minus; (100 *
+					<div class="fraction-inline">
+						<span class="numerator">2 * <b>'.$UserProfile->missedMoves.'</b></span>
+						<span class="divider">________________</span>
+						<span class="denominator"><b>'.$UserProfile->phasesPlayed.'</b></span>
+					</div>
+					) &minus; 10 * <b>'.($UserProfile->gamesLeft - $UserProfile->leftBalanced).'</b>
+					= 100 &minus; '.($UserProfile->phasesPlayed == 0 ? '0' : round(200 * $UserProfile->missedMoves / $UserProfile->phasesPlayed)).
+					' &minus; '.(10 * ($UserProfile->gamesLeft - $UserProfile->leftBalanced)).' = <b>'.abs($UserProfile->getReliability()).'</b>';
+	}
+?>
 </span>
+</p>
+
+<p class="intro">
+<b>Live</b> games do <u>not</u> affect your rating.
 </p>
 
 <p class="intro">
@@ -85,21 +92,27 @@ When someone creates a game they can select a minimum rating for the people able
 and if you rating is too low you might not be able to join all the games as you like.<br>
 Also for each 10% of reliability you can join 1 game. If your reliability is <b>91% or better</b> you can join as many games as you want.</p>
 
-<?php if (abs($User->getReliability()) < 100) { ?>
-	<p class="intro">
-		To improve your rating you need 
-			<?php if (($User->gamesLeft - $User->leftBalanced) > 0) { ?>
-				to take over some "open" spots from ongoing games. You can find them in the "Joinable" Section of the games-tab. Every country you "save from CD" will improve your reliability by 10%. After <b><?php print ($User->gamesLeft - $User->leftBalanced)?></b> game<?php print ((($User->gamesLeft - $User->leftBalanced) > 1) ? 's' : '')?> your reliability will be <b><?php print round($User->phasesPlayed == 0 ? '0' : (100 - 200 * $User->missedMoves / $User->phasesPlayed))?>%</b>.<br>After this you need
-			<?php } ?>
-			to play some more phases without missing to enter orders. 
-			<?php if ((200 * $User->missedMoves / $User->phasesPlayed) > 10) { ?>
-				With <b><?php print $User->missedMoves;?></b> missed moves and <b><?php print $User->phasesPlayed;?></b> phases played you need to play 
-				<b><?php print round((100 - floor((200 * $User->missedMoves / $User->phasesPlayed) / 10 ) *10) * $User->phasesPlayed / 200)?></b> 
-				more phases to gain a <b><?php print 100 - floor((200 * $User->missedMoves / $User->phasesPlayed) / 10 ) *10 ?>+</b> rating.
-			<?php } ?>
+<?php
+	if (abs($UserProfile->getReliability()) < 100)
+	{
+		print '<p class="intro">
+			How to improve '.($UserProfile == $User ? 'your' : $UserProfile->username.'s').' rating:<ul>';
+		
+		if (($UserProfile->gamesLeft - $UserProfile->leftBalanced) > 0)
+		{
+			print '<li class="intro"> Take some "open" spots from ongoing games. They are in the "Joinable" Section of the games-tab. Every country "saved from CD" will improve the reliability by 10%. After <b>'.($UserProfile->gamesLeft - $UserProfile->leftBalanced).'</b> game'.((($UserProfile->gamesLeft - $UserProfile->leftBalanced) > 1) ? 's' : '').' '.($UserProfile == $User ? 'your' : $UserProfile->username.'s').' reliability will be <b>'.round($UserProfile->phasesPlayed == 0 ? '0' : (100 - 200 * $UserProfile->missedMoves / $UserProfile->phasesPlayed)).'</b>.</li>';
+		}
+		
+		print '<li class="intro">Play some more phases without missing to enter orders.';
+		
+		if ((200 * $UserProfile->missedMoves / $UserProfile->phasesPlayed) > 10)
+		{
+			print 'With <b>'.$UserProfile->missedMoves.'</b> missed moves and <b>'.$UserProfile->phasesPlayed.'</b> phases played '.($UserProfile == $User ? 'you' : $UserProfile->username).' need to play <b>'.round((100 - floor((200 * $UserProfile->missedMoves / $UserProfile->phasesPlayed) / 10 ) *10) * $UserProfile->phasesPlayed / 200).'</b> more phases to gain a <b>'.(100 - floor((200 * $UserProfile->missedMoves / $UserProfile->phasesPlayed) / 10 ) * 10).'+</b> rating.</li>';
+		}
 				
-	</p>	
-<?php } ?>
+		print '</ul></p>';
+	}
+?>
 
 <p class="intro">
 On the games-pages your rating is displayed as a grade after your name.
