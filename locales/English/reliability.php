@@ -45,7 +45,7 @@ div.fraction-inline { display: inline-block; position: relative; vertical-align:
 .fraction-inline span.denominator{ border-top: thin solid black; text-align:center;}
 </style>
 The exact calculation is: 
-<div>
+<div class="intro">
 	100 &minus; (100 *
 	<div class="fraction-inline">
 		<span class="numerator">2 * MissedPhases</span>
@@ -53,20 +53,31 @@ The exact calculation is:
 		<span class="denominator">TotalPhases</span>
 	</div>
 	) &minus; 10 * UnbalancedCDs
-</div>
-<br>The calculation for your rating is:
-<span>
+</div><br>
+<span class="intro">
+
+<?php
+	if ( isset($_REQUEST['userID']) && intval($_REQUEST['userID'])>0 )
+		$UserProfile = new User((int)$_REQUEST['userID']);
+	else
+		$UserProfile = $User;
+?>
+
+<?php if ($UserProfile->getReliability() < 0) { ?>
+	For the first 20 phases all players are called "Rookies" and have no reliability-rating.
+<?php } else { ?>
+	The calculation for <?php print ($UserProfile == $User ? 'your' : $UserProfile->username.'s')?> rating is:
 	100 &minus; (100 *
 	<div class="fraction-inline">
-		<span class="numerator">2 * <b><?php print $User->missedMoves;?></b></span>
+		<span class="numerator">2 * <b><?php print $UserProfile->missedMoves;?></b></span>
 		<span class="divider">________________</span>
-		<span class="denominator"><b><?php print $User->phasesPlayed;?></b></span>
+		<span class="denominator"><b><?php print $UserProfile->phasesPlayed;?></b></span>
 	</div>
-	) &minus; 10 * <b><?php print ($User->gamesLeft - $User->leftBalanced);?></b> = 
-	100 &minus; <?php print ($User->phasesPlayed == 0 ? '0' : (200 * $User->missedMoves / $User->phasesPlayed))?> &minus; <?php print (10 * ($User->gamesLeft - $User->leftBalanced))?> =
-	<b><?php print abs($User->getReliability());?></b>
+	) &minus; 10 * <b><?php print ($UserProfile->gamesLeft - $UserProfile->leftBalanced);?></b> = 
+	100 &minus; <?php print ($UserProfile->phasesPlayed == 0 ? '0' : round(200 * $UserProfile->missedMoves / $UserProfile->phasesPlayed))?> &minus; <?php print (10 * ($UserProfile->gamesLeft - $UserProfile->leftBalanced))?> =
+	<b><?php print abs($UserProfile->getReliability());?></b>
+<?php } ?>
 </span>
-
 </p>
 
 <p class="intro">
@@ -90,18 +101,13 @@ Also for each 10% of reliability you can join 1 game. If your reliability is <b>
 	</p>	
 <?php } ?>
 
-<div class="hr" ></div>
 <p class="intro">
 On the games-pages your rating is displayed as a grade after your name.
 The current grades are:<br>
-<?php
-	require_once ("lib/reliability.php");
-	foreach (libReliability::$grades as $limit=>$grade)
-		print $grade." = ".$limit." or better.<br>";
-?>
-This grading-system might change in the future.
-<div class="hr" ></div>
+98+, 90+, 80+, 60+, 40+, 10+, 0 and Rookie
+</p>
 
+<div class="hr" ></div>
 <p class="intro">
 <b>Why should I continue a game if my country can't win?</b><br>
 If you can't win a game or are on a losing position you might choose to hurt the country that sealed 
