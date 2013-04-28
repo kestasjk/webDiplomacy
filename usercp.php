@@ -185,13 +185,52 @@ l_t("Hello %s",$User->username).",<br><br>
 	}
 }
 
+function printAndFindTab()
+{
+	global $User, $Misc;
+
+	$tabs = array();
+
+	$tabs['General']=l_t("General settings");
+	$tabs['Accessability']=l_t("Special features for colorblind people");
+	$tabs['CountrySwitch']=l_t("Send your games to other players");
+
+	$tab = 'General';
+	$tabNames = array_keys($tabs);
+
+	if( isset($_REQUEST['tab']) && in_array($_REQUEST['tab'], $tabNames) )
+		$tab = $_REQUEST['tab'];
+
+	print '<div class="gamelistings-tabs">';
+	foreach($tabs as $tabChoice=>$tabTitle)
+	{
+		print '<a title="'.$tabTitle.'" href="usercp.php?tab='.$tabChoice;
+		print ( ( $tab == $tabChoice ) ?  '" class="current"' : '"');
+		print '>'.l_t($tabChoice).'</a>';
+	}
+	print '</div>';
+	return $tab;
+}
 
 print libHTML::pageTitle(l_t('User account settings'),l_t('Alter the settings for your webDiplomacy user account; e.g. change your password/e-mail.'));
 
 print '<form method="post">
 <ul class="formlist">';
 
-require_once(l_r('locales/English/user.php'));
+$tab = printAndFindTab();
+print '<br>';
+
+switch($tab)
+{
+	case 'Accessability':
+		require_once(l_r('locales/English/accessability.php'));
+		break;
+	case 'CountrySwitch':
+		require_once(l_r('locales/English/countryswitch.php'));
+		break;
+	default:
+		require_once(l_r('locales/English/user.php'));
+}
 
 print '</div>';
 libHTML::footer();

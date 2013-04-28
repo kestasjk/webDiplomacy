@@ -87,35 +87,6 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		A comment you would like to make in your profile. eg Your AIM username or ICQ number.
 	</li>
 	
-	<li class="formlisttitle">Show countryname (useful for colorblind people.):</li>
-	<li class="formlistfield">
-		<strong>In global chat:</strong>
-		<input type="radio" name="userForm[showCountryNames]" value="Yes" <?php if($User->showCountryNames=='Yes') print "checked"; ?>>Yes
-		<input type="radio" name="userForm[showCountryNames]" value="No"  <?php if($User->showCountryNames=='No')  print "checked"; ?>>No
-	</li>
-	<li class="formlistfield">
-		<strong>On the map:</strong>
-		<input type="radio" name="userForm[showCountryNamesMap]" value="Yes" <?php if($User->showCountryNamesMap=='Yes') print "checked"; ?>>Yes
-		<input type="radio" name="userForm[showCountryNamesMap]" value="No"  <?php if($User->showCountryNamesMap=='No')  print "checked"; ?>>No
-	</li>
-	<li class="formlistdesc">
-		Instead of colored chatmessages print the countryname in front of the text and use only black text.
-		Print the countryname on the map.
-	</li>
-
-	<li class="formlisttitle">Color vision deficiency setting:</li>
-	<li class="formlistfield">
-		<select name="userForm[colorCorrect]">
-			<option value='Off'        <?php if($User->colorCorrect=='Off')         print "selected"; ?>>Off</option>
-			<option value='Protanope'  <?php if($User->colorCorrect=='Protanope')   print "selected"; ?>>Protanope</option>
-			<option value='Deuteranope'<?php if($User->colorCorrect=='Deuteranope') print "selected"; ?>>Deuteranope</option>
-			<option value='Tritanope'  <?php if($User->colorCorrect=='Tritanope')   print "selected"; ?>>Tritanope</option>
-		</select>
-	</li>
-	<li class="formlistdesc">
-		Does enhance the colors of the maps for different types of color blindness. (Does not work for the Haven variant, sorry)
-	</li>
-	
 <?php
 
 if( $User->type['User'] ) {
@@ -215,8 +186,6 @@ if( $User->type['User'] ) {
 		}
 		print '</ul></li>';
 	}
-	// Include the code for the countryswitch...
-	require_once('locales/English/countryswitch.php');
 }
 
 /*

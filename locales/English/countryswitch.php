@@ -1,6 +1,26 @@
 <?php
+/*
+    Copyright (C) 2013 Oliver Auth
+
+	This file is part of vDiplomacy.
+
+    vDiplomacy is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    vDiplomacy is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
+
+$User->clearNotification('CountrySwitch');
 
 if ( isset($_REQUEST['CancelSwitch']) )
 {
@@ -19,6 +39,7 @@ if ( isset($_REQUEST['RejectSwitch']) )
 	if ($status == 'Send' && $toID == $User->id)
 	{
 		$DB->sql_put('UPDATE wD_CountrySwitch SET status="Rejected" WHERE id='.$switchID);
+		$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications, 'CountrySwitch') WHERE id = ".$fromID);
 	}
 }
 
@@ -30,6 +51,7 @@ if ( isset($_REQUEST['ClaimBackSwitch']) )
 	{
 		$DB->sql_put('UPDATE wD_CountrySwitch SET status="ClaimedBack" WHERE id='.$switchID);
 		$DB->sql_put('UPDATE wD_Members SET userID='.$fromID.' WHERE gameID='.$gameID.' AND userID='.$toID);			
+		$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications, 'CountrySwitch') WHERE id = ".$toID);
 	}
 }
 
@@ -41,6 +63,7 @@ if ( isset($_REQUEST['ReturnSwitch']) )
 	{
 		$DB->sql_put('UPDATE wD_CountrySwitch SET status="Returned" WHERE id='.$switchID);
 		$DB->sql_put('UPDATE wD_Members SET userID='.$fromID.' WHERE gameID='.$gameID.' AND userID='.$toID);			
+		$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications, 'CountrySwitch') WHERE id = ".$fromID);
 	}
 }
 
@@ -55,6 +78,7 @@ if ( isset($_REQUEST['AcceptSwitch']) )
 		{
 			$DB->sql_put('UPDATE wD_CountrySwitch SET status="Active" WHERE id='.$switchID);
 			$DB->sql_put('UPDATE wD_Members SET userID='.$toID.' WHERE gameID='.$gameID.' AND userID='.$fromID);			
+			$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications, 'CountrySwitch') WHERE id = ".$fromID);
 		}
 		else
 		{
@@ -62,7 +86,6 @@ if ( isset($_REQUEST['AcceptSwitch']) )
 		}
 	}
 }
-
 
 if ( isset($_REQUEST['newSwitch']) )
 {
@@ -74,36 +97,49 @@ if ( isset($_REQUEST['newSwitch']) )
 		$gameID = (int)$form['gameID'];
 		$Variant=libVariant::loadFromGameID($gameID);
 		$Game = $Variant->Game($gameID);
-		$SendUser = new User($toID);
 		
-		// Check if there is a mute against a player
-		list($muted) = $DB->sql_row("SELECT count(*) FROM wD_Members AS m
-									LEFT JOIN wD_BlockUser AS f ON ( m.userID = f.userID )
-									LEFT JOIN wD_BlockUser AS t ON ( m.userID = t.blockUserID )
-								WHERE m.gameID = ".$Game->id." AND (f.blockUserID =".$SendUser->id." OR t.userID =".$SendUser->id.")");
-								
-		// Check for additional requirements:
-		if ( $Game->minPhases > $SendUser->phasesPlayed)
-			$error = 'The User you selected did not play enough phases to join this game.';
-		elseif ( $Game->minRating > abs($SendUser->getReliability()))
-			$error = 'The reliability of User you selected is not high enough to join this game.';
-		elseif ( count($Variant->countries)>2 && $message = $SendUser->isReliable())
-			$error = 'The User you selected can not join new games at the moment.';
-		elseif ( array_key_exists ( $toID , $Game->Members->ByUserID))
-			$error = 'The User you selected is already a member of this game.';
-		elseif ( $muted > 0)
-			$error = "The User you selected can't join. A player in this game has him muted or he muted a player in this game.";
-		else
-			$DB->sql_put('INSERT INTO wD_CountrySwitch (fromID, toID, gameID, status) VALUES ('.
-				$fromID.','.$toID.','.$gameID.', "Send")');
+		try
+		{
+			$SendUser = new User($toID);
+		}
+		catch (Exception $e)
+		{
+			$error = l_t("Invalid user ID given.");
+		}
+		
+		if (!isset($error))
+		{
+			// Check if there is a mute against a player
+			list($muted) = $DB->sql_row("SELECT count(*) FROM wD_Members AS m
+										LEFT JOIN wD_BlockUser AS f ON ( m.userID = f.userID )
+										LEFT JOIN wD_BlockUser AS t ON ( m.userID = t.blockUserID )
+									WHERE m.gameID = ".$Game->id." AND (f.blockUserID =".$SendUser->id." OR t.userID =".$SendUser->id.")");
+									
+			// Check for additional requirements:
+			if ( $Game->minPhases > $SendUser->phasesPlayed)
+				$error = 'The User you selected did not play enough phases to join this game.';
+			elseif ( $Game->minRating > abs($SendUser->getReliability()))
+				$error = 'The reliability of User you selected is not high enough to join this game.';
+			elseif ( count($Variant->countries)>2 && $message = $SendUser->isReliable())
+				$error = 'The User you selected can not join new games at the moment.';
+			elseif ( array_key_exists ( $toID , $Game->Members->ByUserID))
+				$error = 'The User you selected is already a member of this game.';
+			elseif ( $muted > 0)
+				$error = "The User you selected can't join. A player in this game has him muted or he muted a player in this game.";
+			else
+			{
+				$DB->sql_put('INSERT INTO wD_CountrySwitch (fromID, toID, gameID, status) VALUES ('.
+					$fromID.','.$toID.','.$gameID.', "Send")');
+				$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications, 'CountrySwitch') WHERE id = ".$toID);
+			}
+		}
 	}
 }
 
 ?>
-	<br><hr>
 	<a name="Switch"></a>
 	<form method="post"><ul class="formlist">
-	<li class="formlisttitle">Countries given away (BETA, use at your own risk):</li>
+	<li class="formlisttitle">Countries given away:</li>
 	<li class="formlistfield">
 	<TABLE> <THEAD><TH>GameName</TH><TH>Send to</TH><TH>Send from</TH><TH>Status</TH><TH></TH></THEAD>
 		<?php
@@ -116,9 +152,9 @@ if ( isset($_REQUEST['newSwitch']) )
 		{
 			print '<TR><TD><a href="board.php?gameID='.$gameID.'">'.$gameName.'</a></TD><TD><a href="profile.php?userID='.$toID.'">'.$toName.'</a></TD><TD>You</TD>';
 			if ($status == "Send")
-				print '<TD>Send</TD><TD><a href="usercp.php?CancelSwitch='.$id.'"><img src="images/icons/cross.png"> (Cancel)</a></TD></TR>';
+				print '<TD>Send</TD><TD><a href="usercp.php?tab=CountrySwitch&CancelSwitch='.$id.'"><img src="images/icons/cross.png"> (Cancel)</a></TD></TR>';
 			elseif ($status == "Active")
-				print '<TD><b>Active</b></TD><TD><a href="usercp.php?ClaimBackSwitch='.$id.'"><img src="images/icons/cross.png"> (Claim back)</a></TD></TR>';
+				print '<TD><b>Active</b></TD><TD><a href="usercp.php?tab=CountrySwitch&ClaimBackSwitch='.$id.'"><img src="images/icons/cross.png"> (Claim back)</a></TD></TR>';
 		}		
 		$sql='SELECT cs.id, g.name, g.id, cs.status, tu.username, tu.id FROM wD_Games g
 				INNER JOIN wD_CountrySwitch cs ON (g.id = cs.gameID)
@@ -129,9 +165,9 @@ if ( isset($_REQUEST['newSwitch']) )
 		{
 			print '<TR><TD><a href="board.php?gameID='.$gameID.'">'.$gameName.'</a></TD><TD>You</TD><TD><a href="profile.php?userID='.$toID.'">'.$toName.'</a></TD>';
 			if ($status == "Send")
-				print '<TD>Send</TD><TD><a href="usercp.php?AcceptSwitch='.$id.'"><img src="images/icons/tick.png"> (Accept)</a> - <a href="usercp.php?RejectSwitch='.$id.'"><img src="images/icons/cross.png"> (Cancel)</a></TD></TR>';
+				print '<TD>Send</TD><TD><a href="usercp.php?tab=CountrySwitch&AcceptSwitch='.$id.'"><img src="images/icons/tick.png"> (Accept)</a> - <a href="usercp.php?tab=CountrySwitch&RejectSwitch='.$id.'"><img src="images/icons/cross.png"> (Cancel)</a></TD></TR>';
 			elseif ($status == "Active")
-				print '<TD><b>Active</b></TD><TD><a href="usercp.php?ReturnSwitch='.$id.'"><img src="images/icons/cross.png"> (Pass back)</a></TD></TR>';
+				print '<TD><b>Active</b></TD><TD><a href="usercp.php?tab=CountrySwitch&ReturnSwitch='.$id.'"><img src="images/icons/cross.png"> (Pass back)</a></TD></TR>';
 		}
 		?>
 	</TABLE>
@@ -143,7 +179,7 @@ if ( isset($_REQUEST['newSwitch']) )
 		<li class="formlistfield"><?php print $error;?></li>
 		<br>
 	<?php }?>
-	<li class="formlisttitle">Create new Country Switch (BETA, use at your own risk):</li>
+	<li class="formlisttitle">Create new Country Switch:</li>
 	<li class="formlistfield">
 	<TABLE> <THEAD><TH>GameName / ID</TH><TH>Send to UserID</TH><TH> </TH></THEAD><TR>
 	<TD><select name="newSwitch[gameID]">

@@ -580,6 +580,17 @@ class libHTML
 			'</a></span> ';
 	}
 // END ModMessage
+
+/*****************************************************
+* Alter a player about a change in the CountrySwitch *
+*****************************************************/
+	if ( $User->notifications->CountrySwitch && (strpos($_SERVER["REQUEST_URI"], 'tab=CountrySwitch') === false) )
+	{
+		$gameNotifyBlock .= '<span class=""><a href="usercp.php?tab=CountrySwitch">'.
+			'Country Switch <img src="images/icons/alert.png" alt="Change in country-switch settings" title="Change in country-switch settings!" />'.
+			'</a></span> ';
+	}
+// END CountrySwitch
 			
 		foreach ( $gameIDs as $gameID )
 		{
