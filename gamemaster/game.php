@@ -872,6 +872,11 @@ class processGame extends Game
 		 * 'Playing'/'Left' -> 'Won'/'Survived'/'Resigned'
 		 * ('Defeated' status members are already set by now)
 		 */
+
+		// Return any switched countries...
+		include_once("lib/countryswitch.php");
+		libSwitch::clearAllSwitches($this);
+		
 		$this->Members->setWon($Winner);
 
 		// Then the game is set to finished
@@ -1066,6 +1071,10 @@ class processGame extends Game
 				FROM wD_MovesArchive WHERE gameID = ".$this->id." AND turn = ".($this->turn-1));
 		}
 
+		// Return any switched countries...
+		include_once("lib/countryswitch.php");
+		libSwitch::clearAllSwitches($this);
+		
 		// Sets the Members statuses to Drawn as needed, gives refunds, sends messages
 		$this->Members->setDrawn();
 		$this->setPhase('Finished', 'Drawn');

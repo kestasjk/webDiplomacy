@@ -237,6 +237,16 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 		}
 	}
 
+	/* This is a bit ugly. BEcause of the countrySwitch-code it might be possible that a Member
+	 * is no longer in the game, once it's processed.
+	 * Skip the next few lines if so.
+	 */
+	if (!(isset($Game->Members->ByUserID[$User->id])))
+	{
+		unset($Member);
+		goto NoMoreMember;
+	}
+	
 	if( $Game instanceof processGame )
 	{
 		$Game = $Game->Variant->panelGameBoard($Game->id);
@@ -260,6 +270,9 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 		}
 	}
 }
+
+// Skip-target for the CountrySwitch-exit.
+NoMoreMember:
 
 if ( 'Pre-game' != $Game->phase && ( isset($Member) || $User->type['Moderator'] ) )
 {
