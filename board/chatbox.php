@@ -118,6 +118,13 @@ class Chatbox
 				libGameMessage::send(0, 0, '<strong>'.$fromName.': </strong>'.$newmessage);
 			}
 		}
+		
+		if( isset($_REQUEST['MarkAsUnread']) )
+		{
+			$DB->sql_put("UPDATE wD_Members SET newMessagesFrom = IF( (newMessagesFrom+0) = 0,'".$msgCountryID."', CONCAT_WS(',',newMessagesFrom,'".$msgCountryID."') )
+						WHERE gameID = ".$Game->id." AND countryID=".$Member->countryID);
+			$Member->newMessagesFrom[]=$msgCountryID;
+		}
 	}
 
 	/**
@@ -203,6 +210,15 @@ class Chatbox
 						</TD>
 					</form>
 					</TR>
+					'. // Mark as unread Patch:
+					(($msgCountryID == 0) ? '' : '
+					<TR>
+						<TD colspan=2 class="right">
+							<form method="post" class="safeForm" action="board.php?gameID='.$Game->id.'&amp;msgCountryID='.$msgCountryID.'#chatboxanchor">
+								<input style="float:right; clear:both;" type="submit" tabindex="2" class="form-submit" value="'.l_t('Mark as unread / reply later').'" name="MarkAsUnread" />
+							</form>
+						</TD>
+					</TR>').'
 				</TABLE></DIV>';
 		}
 
@@ -268,6 +284,10 @@ class Chatbox
 				// This isn't the tab I am currently viewing, and it has sent me new messages
 				$tabs .= ' '.libHTML::unreadMessages();
 			}
+			
+			// Mark as unread patch! 
+			if ( $msgCountryID == $countryID and isset($_REQUEST['MarkAsUnread']))
+				$tabs .= ' '.libHTML::unreadMessages();
 
 			$tabs .= '</a>';
 		}
