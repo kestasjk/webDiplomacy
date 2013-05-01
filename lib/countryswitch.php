@@ -17,10 +17,6 @@
     You should have received a copy of the GNU Affero General Public License
     along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
 	
-SELECT * FROM `wD_CountrySwitch` cs
-JOIN wD_Games g ON (g.id=cs.gameID)
-WHERE g.phase='Finished' && cs.status='Active'
-	
  */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -148,12 +144,13 @@ class libSwitch
 										WHERE m.gameID = ".$Game->id." AND (f.blockUserID =".$SendUser->id." OR t.userID =".$SendUser->id.")");
 										
 				// Check for additional requirements:
-				if ( $Game->minPhases > $SendUser->phasesPlayed)
-					$error = 'The User you selected did not play enough phases to join this game.';
-				elseif ( $Game->minRating > abs($SendUser->getReliability()))
-					$error = 'The reliability of User you selected is not high enough to join this game.';
-				elseif ( count($Variant->countries)>2 && $message = $SendUser->isReliable())
+				require_once(l_r('lib/reliability.php'));		 
+				if ( count($Variant->countries)>2 && $message = libReliability::isReliable($SendUser))
 					$error = 'The User you selected can not join new games at the moment.';
+				elseif ( $Game->minPhases > $SendUser->phasesPlayed)
+					$error = 'The User you selected did not play enough phases to join this game.';
+				elseif ( $Game->minRating > libReliability::getReliability($SendUser) )
+					$error = 'The reliability of User you selected is not high enough to join this game.';
 				elseif ( array_key_exists ( $toID , $Game->Members->ByUserID))
 					$error = 'The User you selected is already a member of this game.';
 				elseif ( $muted > 0)

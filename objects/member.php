@@ -248,29 +248,5 @@ class Member
 			$keep, $private, $text, $this->Game->name, $this->gameID);
 	}
 	
-	/**
-	 * Update a members reliability-stats
-	 */
-	function updateReliability($type, $calc)
-	{
-		global $DB;
-		
-		if ($type == 'leftBalanced' && ($this->leftBalanced >= $this->gamesLeft))
-			return;
-			
-		if ( (count($this->Game->Variant->countries) > 2) && ($this->Game->phaseMinutes > 30) )
-			$DB->sql_put("UPDATE wD_Users SET ".$type." = ".$type." ".$calc." WHERE id=".$this->userID);		
-	}
-
-	/**
-	 * Get a user's Grade... 
-	 * @return grade as string...
-	 */
-	public function getGrade()
-	{
-		$reliability = libReliability::calcReliability($this->missedMoves, $this->phasesPlayed, $this->gamesLeft, $this->leftBalanced);
-		return libReliability::Grade($reliability);
-	}
-	
 }
 ?>

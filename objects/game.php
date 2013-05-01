@@ -558,7 +558,7 @@ class Game
 				
 				foreach($this->Members->ByID as $Member)
 				{
-					if ($Member->missedPhases > 0)
+					if ($Member->orderStatus == '')
 					{
 						if ($Member->supplyCenterNo > 1 && $Member->status=='Playing')
 							$foundNMR=true;
@@ -572,7 +572,10 @@ class Game
 							$DB->sql_put("UPDATE wD_Members SET status='Left' WHERE id = ".$Member->id);
 							unset($this->Members->ByStatus['Playing'][$Member->id]);
 							$Member->status = 'Left';
-							$Member->updateReliability('gamesLeft', '+ 1');
+							
+							require_once(l_r('lib/reliability.php'));		 
+							libReliability::updateReliability($Member, 'gamesLeft', '+ 1');
+							
 							$this->Members->ByStatus['Left'][$Member->id] = $Member;
 							libGameMessage::send(0, 'GameMaster', 'NMR from '.$Member->country.'. Send the country in CD.', $this->id);
 						}
@@ -604,7 +607,11 @@ class Game
 								$gameMasterText .= 	'The game will continue after this phase even if you do not find a replacement.';
 							
 							libGameMessage::send(0, 'GameMaster', $gameMasterText, $this->id);
-							$this->Members->updateReliabilities();
+							
+							// Check for missed turns and adjust the counter in the user-data
+							require_once(l_r('lib/reliability.php'));		 
+							libReliability::updateReliabilities($this->Members);
+							
 							return false;
 						}
 						else

@@ -62,9 +62,8 @@ $globalFaq = array(
 		
 "Reliability-rating" => "Sub-section",
 	"What's this numbers behind my name?" =>
-		"Playing on this site you get an reliability rating (more info needed)",
-	"Why is the RR needed?" =>
-		"Players can cosse to play only reliable players and the better your rating, the more games you can join (more info needed)",
+		"The reliable rating is an easy calculation that represents how reliable you enter your commands and how reliable you play your games till the end.
+		You can read more about this <a href=\"reliability.php\">on the explaination-page</a>.",
 		
 "Game options" => "Sub-section",
 	"Select your country" =>

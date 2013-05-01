@@ -30,27 +30,6 @@ require_once(l_r('objects/member.php'));
 class Members
 {
 
-	/**
-	 * Adjust the missed turns of each member and update the phase counter
-	 * for games with more then 2 players and not live games...
-	 * "Left" users are included (for civil disorder to total phases ratio calculating)
-	 */
-	function updateReliabilities()
-	{
-		foreach($this->ByStatus['Playing'] as $Member)
-		{
-			$Member->updateReliability('phasesPlayed', '+ 1');
-			if ($Member->missedPhases > 0)
-				$Member->updateReliability('missedMoves', '+ 1');
-		}
-		
-		foreach($this->ByStatus['Left'] as $Member)
-		{
-			$Member->updateReliability('phasesPlayed', '+ 1');
-			$Member->updateReliability('missedMoves' , '+ 1');
-		}
-	}
-
 	protected $Game;
 
 	public $ByOrder;

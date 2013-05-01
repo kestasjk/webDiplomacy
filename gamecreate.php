@@ -126,16 +126,17 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 				$input['pressType'] = 'Regular';
 		}
 	
-		$input['minRating'] = (int)$input['minRating'];		
-		if ( $input['minRating'] > abs($User->getReliability()) )
-		{
-			throw new Exception("Your reliability-rating is to low (".$User->getReliability().") for your own requirement (".$input['minRating'].").");
-		}
-		
 		$input['minPhases'] = (int)$input['minPhases'];
 		if ( $input['minPhases'] > $User->phasesPlayed )
 		{
 			throw new Exception("You didn't play enough phases (".$User->phasesPlayed.") for your own requirement (".$input['minPhases'].")");
+		}
+		
+		require_once(l_r('lib/reliability.php'));		 
+		$input['minRating'] = (int)$input['minRating'];		
+		if ( $input['minRating'] > abs(libReliability::getReliability($User)) )
+		{
+			throw new Exception("Your reliability-rating is to low (".abs(libReliability::getReliability($User)).") for your own requirement (".$input['minRating'].").");
 		}
 		
 		$input['maxTurns'] = (int)$input['maxTurns'];		
@@ -177,7 +178,8 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		/**
 		 * Check for reliability, bevore a user can create a new game...
 		 */
-		if( (count($Game->Variant->countries)>2) && ($message = $User->isReliable($Game)) )
+		require_once(l_r('lib/reliability.php'));		 
+		if( (count($Game->Variant->countries)>2) && ($message = libReliability::isReliable($User)) )
 		{
 			processGame::eraseGame($Game->id);
 			libHTML::notice('Reliable rating not high enough', $message);

@@ -25,7 +25,7 @@ you enter your commands and how reliable you play your games till the end.
 <p class="intro">
 Your rating is dependent on 2 important factors. How many phases you missed 
 to enter orders in comparison to your total phases played, and how many games 
-you left before the end, because you didn't check the game page for 2 turns in a row.<br>
+you left before the end.<br>
 <b>Example</b>: If a user misses 5% of their games, rating would be 90, 15% would be 70, etc.
 </p>
 
@@ -48,7 +48,7 @@ The exact calculation is:
 <div class="intro">
 	100 &minus; (100 *
 	<div class="fraction-inline">
-		<span class="numerator">2 * MissedPhases</span>
+		<span class="numerator">2 * NoMoveReceived</span>
 		<span class="divider">________________</span>
 		<span class="denominator">TotalPhases</span>
 	</div>
@@ -57,12 +57,18 @@ The exact calculation is:
 <span class="intro">
 
 <?php
+	require_once(l_r('lib/reliability.php'));		 
+
 	if ( isset($_REQUEST['userID']) && intval($_REQUEST['userID'])>0 )
 		$UserProfile = new User((int)$_REQUEST['userID']);
 	else
 		$UserProfile = $User;
 
-	if ($UserProfile->getReliability() < 0)
+	$mm = $UserProfile->missedMoves;
+	$pp = $UserProfile->phasesPlayed;
+	$cd = $UserProfile->gamesLeft - $UserProfile->leftBalanced;
+	
+	if (libReliability::getReliability($UserProfile) < 0)
 	{
 		print 'For the first 20 phases all players are called "Rookies" and have no reliability-rating.';
 	}
@@ -71,13 +77,13 @@ The exact calculation is:
 		print 'The calculation for '.($UserProfile == $User ? 'your' : $UserProfile->username.'s').' rating is:
 					100 &minus; (100 *
 					<div class="fraction-inline">
-						<span class="numerator">2 * <b>'.$UserProfile->missedMoves.'</b></span>
+						<span class="numerator">2 * <b>'.$mm.'</b></span>
 						<span class="divider">________________</span>
-						<span class="denominator"><b>'.$UserProfile->phasesPlayed.'</b></span>
+						<span class="denominator"><b>'.$pp.'</b></span>
 					</div>
-					) &minus; 10 * <b>'.($UserProfile->gamesLeft - $UserProfile->leftBalanced).'</b>
-					= 100 &minus; '.($UserProfile->phasesPlayed == 0 ? '0' : round(200 * $UserProfile->missedMoves / $UserProfile->phasesPlayed)).
-					' &minus; '.(10 * ($UserProfile->gamesLeft - $UserProfile->leftBalanced)).' = <b>'.abs($UserProfile->getReliability()).'</b>';
+					) &minus; 10 * <b>'.$cd.'</b>
+					= 100 &minus; '.($pp == 0 ? '0' : round(200 * $mm / $pp)).
+					' &minus; '.(10 * $cd).' = <b>'.libReliability::getReliability($UserProfile).'</b>';
 	}
 ?>
 </span>
@@ -93,21 +99,21 @@ and if you rating is too low you might not be able to join all the games as you 
 Also for each 10% of reliability you can join 1 game. If your reliability is <b>91% or better</b> you can join as many games as you want.</p>
 
 <?php
-	if (abs($UserProfile->getReliability()) < 100)
+	if (abs(libReliability::getReliability($UserProfile)) < 100)
 	{
 		print '<p class="intro">
 			How to improve '.($UserProfile == $User ? 'your' : $UserProfile->username.'s').' rating:<ul>';
 		
-		if (($UserProfile->gamesLeft - $UserProfile->leftBalanced) > 0)
+		if ($cd > 0)
 		{
-			print '<li class="intro"> Take some "open" spots from ongoing games. They are in the "Joinable" Section of the games-tab. Every country "saved from CD" will improve the reliability by 10%. After <b>'.($UserProfile->gamesLeft - $UserProfile->leftBalanced).'</b> game'.((($UserProfile->gamesLeft - $UserProfile->leftBalanced) > 1) ? 's' : '').' '.($UserProfile == $User ? 'your' : $UserProfile->username.'s').' reliability will be <b>'.round($UserProfile->phasesPlayed == 0 ? '0' : (100 - 200 * $UserProfile->missedMoves / $UserProfile->phasesPlayed)).'</b>.</li>';
+			print '<li class="intro"> Take some "open" spots from ongoing games. They are in the "Joinable" Section of the games-tab. Every country "saved from CD" will improve the reliability by 10%. After <b>'.$cd.'</b> game'.(($cd > 1) ? 's' : '').' '.($UserProfile == $User ? 'your' : $UserProfile->username.'s').' reliability will be <b>'.round($pp == 0 ? '0' : (100 - 200 * $mm / $pp)).'</b>.</li>';
 		}
 		
 		print '<li class="intro">Play some more phases without missing to enter orders.';
 		
-		if ((200 * $UserProfile->missedMoves / $UserProfile->phasesPlayed) > 10)
+		if ((200 * $mm / $pp) > 10)
 		{
-			print 'With <b>'.$UserProfile->missedMoves.'</b> missed moves and <b>'.$UserProfile->phasesPlayed.'</b> phases played '.($UserProfile == $User ? 'you' : $UserProfile->username).' need to play <b>'.round((100 - floor((200 * $UserProfile->missedMoves / $UserProfile->phasesPlayed) / 10 ) *10) * $UserProfile->phasesPlayed / 200).'</b> more phases to gain a <b>'.(100 - floor((200 * $UserProfile->missedMoves / $UserProfile->phasesPlayed) / 10 ) * 10).'+</b> rating.</li>';
+			print 'With <b>'.$mm.'</b> missed moves and <b>'.$pp.'</b> phases played '.($UserProfile == $User ? 'you' : $UserProfile->username).' need to play <b>'.round((100 - floor((200 * $mm / $pp) / 10 ) *10) * $pp / 200).'</b> more phases to gain a <b>'.(100 - floor((200 * $mm / $pp) / 10 ) * 10).'+</b> rating.</li>';
 		}
 				
 		print '</ul></p>';

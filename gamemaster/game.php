@@ -914,10 +914,9 @@ class processGame extends Game
 			return false; // No TerrStatus to cache -> no need for a new year
 		}
 
-		/*
-		 * Check for missed turns and adjust the counter in the user-data
-		 */
-		$this->Members->updateReliabilities();
+		// Check for missed turns and adjust the counter in the user-data
+		require_once(l_r('lib/reliability.php'));		 
+		libReliability::updateReliabilities($this->Members);
 		
 		/*
 		 * In the functions below only 'Playing' and 'Left' status members are dealt with:

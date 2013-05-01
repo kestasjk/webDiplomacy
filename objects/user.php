@@ -995,54 +995,7 @@ class User {
 				$DB->sql_put("INSERT INTO wD_MuteCountry (userID, gameID, muteCountryID) VALUES (".$this->id.",".$gameID.",".$muteCountryID.")");
 		}
 	}
-	
-	/**
-	 * Get a user's reliability rating.	 
-	 * @return reliability
-	 */
-	public function getReliability()
-	{
-		return libReliability::calcReliability($this->missedMoves, $this->phasesPlayed, $this->gamesLeft, $this->leftBalanced);
-	}
-	
-	/**
-	 * Count how many uncompleted games a user has...
-	 */
-	function getUncompletedGames()
-	{
-		global $DB;		
-		list($number) = $DB->sql_row("SELECT COUNT(*) FROM wD_Members m, wD_Games g WHERE m.userID=".$this->id." and m.gameID=g.id and g.phase!='Finished' and m.bet>1");
-		return $number;
-	}
-	
-	/**
-	 * Check if the users reliability is high enough to join/create more games
-	 * @return true or error message	 
-	 */
-	function isReliable()
-	{
-		global $DB;
 		
-		// A player can't join new games, as long as he has active CountrySwiches.
-		list($openSwitches)=$DB->sql_row('SELECT COUNT(*) FROM wD_CountrySwitch WHERE (status = "Send" OR status = "Active") AND fromID='.$this->id);
-		if ($openSwitches > 0)
-			return "<p><b>NOTICE:</b></p><p>You can't join or create new games, as you have active CountrySwitches at the moment.</p>";
-
-		$reliability = $this->getReliability();
-		$maxGames = ceil($reliability / 10);
-		$totalGames = $this->getUncompletedGames();
-		
-		if ( $totalGames > 4 && $this->phasesPlayed < 20 ) // This will prevent newbies from joining 10 games and then leaving right away.  Everyone can join 2 without any restrictions, then they can join more after they've played them for 3 phases.  
-			return "<p>You're taking on too many games at once for a new member.<br>Please relax and enjoy the game or games that you are currently in before joining/creating a new one.<br>You need to play at least <strong>20 phases</strong>, bevore you can join more than 4 games. Once you played 20 phases your reliability-rating will affect how many games you can play at once. You can than join 1 game for each 10% RR. If your RR if better than 90% you can join as many games as you want.<br>2-player variants are not affected by this restriction.</p>";
-		
-		if ($maxGames < 10 && $this->phasesPlayed >= 20) { // If the rating is 90 or above, there is no game limit restriction
-			if ( $reliability == 0 )
-				return "<p>NOTICE: You are not allowed to join or create any games given your reliability rating of ZERO (meaning you have missed more than 50% of your orders across all of your games)</p><p>You can improve your reliability rating by not missing any orders, even if it's just saving the default 'Hold' for everything.</p><p>If you are not currently in a game and cannot join one because of this restriction, then you may contact an <a href=\"modforum.php\">admin</a> and briefly explain your extremely low rating.  The admin, at his or her discretion, may set your reliability rating high enough to allow you 1 game at a time. By consistently putting in orders every turn in that new game, your reliability rating will improve enough to allow you more simultaneous games. 2-player variants are not affected by this restriction.</p>";
-			elseif ( $totalGames >= $maxGames ) // Can't have more than reliability rating / 10 games up
-				return "<p>NOTICE: You cannot join or create a new game, because you seem to be having trouble keeping up with the orders in the ones you already have</p><p>You can improve your reliability rating by not missing any orders, even if it's just saving the default 'Hold' for everything.</p><p>Please note that if you are marked as 'Left' for a game, your rating will continue to take hits until someone takes over for you.</p><p>Your current rating of <strong>".$reliability."</strong> allows you to have no more than <strong>".$maxGames."</strong> concurrent games before you see this message.  Every 10 reliability points will allow you an additional game. 2-player variants are not affected by this restriction. Any you can join as many 'open' spots in ongoing games as you like if there are no additional restrictions for the game.</p>";
-		}
-	}
-
 	/*
 	 * The functions to check if a user is Blocked
 	 * Basicalle it's the same as the Mute feature, but only to block a user from joining your games

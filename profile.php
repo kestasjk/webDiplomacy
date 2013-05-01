@@ -28,6 +28,7 @@ require_once(l_r('gamesearch/search.php'));
 require_once(l_r('pager/pagergame.php'));
 require_once(l_r('objects/game.php'));
 require_once(l_r('gamepanel/game.php'));
+require_once(l_r('lib/reliability.php'));		 
 
 if ( isset($_REQUEST['userID']) && intval($_REQUEST['userID'])>0 )
 {
@@ -289,9 +290,9 @@ print '<li><strong>'.l_t('Rank:').'</strong> '.$rankingDetails['rank'].'</li>';
 /**
  * Add reliability-rating to the profile-page
  */
-print '<li><strong>Reliabilty Rating:</strong> <b>'.libReliability::Grade($UserProfile->getReliability()).'</b>';
+print '<li><strong>Reliabilty Rating:</strong> <b>'.libReliability::getGrade($UserProfile).'</b>';
 print ' - ('.
-	abs($UserProfile->getReliability()).'%) <a class="light" href="reliability.php?userID='.$UserProfile->id.'">(what\'s this?)</a><br>(missed '.
+	abs(libReliability::getReliability($UserProfile)).'%) <a class="light" href="reliability.php?userID='.$UserProfile->id.'">(what\'s this?)</a><br>(missed '.
 	$UserProfile->missedMoves.' of '.
 	$UserProfile->phasesPlayed.
 	' phases, unbalanced CDs: '.($UserProfile->gamesLeft - $UserProfile->leftBalanced).

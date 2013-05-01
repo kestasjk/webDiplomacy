@@ -615,10 +615,11 @@ class processMembers extends Members
 			throw new Exception(l_t("You cannot join this game."));
 
 		// Check for additional requirements:
+		require_once(l_r('lib/reliability.php'));		 
 		if ( $this->Game->minPhases > $User->phasesPlayed)
 			throw new Exception("You did not play enough phases to join this game. (Required:".$this->Game->minPhases." / You:".$User->phasesPlayed.")");
-		if ( $this->Game->minRating > abs($User->getReliability()))
-			throw new Exception("You reliable-rating is too low to join this game. (Required:".$this->Game->minRating."% / You:".$User->getReliability()."%)");
+		if ( $this->Game->minRating > abs(libReliability::getReliability($User)) )
+			throw new Exception("You reliable-rating is too low to join this game. (Required:".$this->Game->minRating."% / You:".libReliability::getReliability($User)."%)");
 		if ( $this->Game->maxLeft < $User->gamesLeft )
 			throw new Exception("You went CD in too many games. (Required: not more than ".$this->Game->maxLeft." / You:".$User->gamesLeft.")");
 
@@ -628,7 +629,8 @@ class processMembers extends Members
 			throw new Exception($message);
 
 		// Check for reliability-rating:
-		if ( count($this->Game->Variant->countries)>2 && $this->Game->phase == 'Pre-game' && $message = $User->isReliable())
+		require_once(l_r('lib/reliability.php'));		 
+		if ( count($this->Game->Variant->countries)>2 && $this->Game->phase == 'Pre-game' && $message = libReliability::isReliable($User))
 			libHTML::notice('Reliable rating not high enough', $message);
 
 		// Check if there is a block against a player

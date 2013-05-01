@@ -91,8 +91,9 @@ class userMember extends panelMember
 				WHERE id = ".$this->id
 			);
 			
-		// Ballanc his reliability
-		$this->updateReliability('leftBalanced', '+ 1');
+		// Ballance his reliability
+		require_once(l_r('lib/reliability.php'));		 
+		libReliability::updateReliability($this, 'leftBalanced', '+ 1');
 
 	}
 
