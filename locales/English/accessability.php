@@ -21,6 +21,24 @@
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 ?>
+	<li class="formlisttitle">Sort order for units:</li>
+	<li class="formlistfield">
+		Unit type:<select name="userForm[unitOrder]">
+			<option value='Mixed'<?php if($User->unitOrder=='Mixed') print "selected"; ?>>Mixed</option>
+			<option value='FA'   <?php if($User->unitOrder=='FA')    print "selected"; ?>>Fleets -> Armies</option>
+			<option value='AF'   <?php if($User->unitOrder=='AF')    print "selected"; ?>>Armies -> Fleets</option>
+		</select> - 
+		Sort by: <select name="userForm[sortOrder]">
+			<option value='BuildOrder'<?php if($User->sortOrder=='BuildOrder') print "selected"; ?>>Build Order</option>
+			<option value='TerrName'  <?php if($User->sortOrder=='TerrName')   print "selected"; ?>>Territory Name</option>
+			<option value='NorthSouth'<?php if($User->sortOrder=='NorthSouth') print "selected"; ?>>North -> South</option>
+			<option value='EastWest'  <?php if($User->sortOrder=='EastWest')   print "selected"; ?>>East -> West</option>
+		</select>
+	</li>
+	<li class="formlistdesc">
+		How should the units be sorted in the command overview.
+	</li>
+	
 	<li class="formlisttitle">Show countryname:</li>
 	<li class="formlistfield">
 		<strong>In global chat:</strong>
@@ -49,7 +67,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	<li class="formlistdesc">
 		Does enhance the colors of the maps for different types of color blindness. (Does not work for the Haven variant, sorry)
 	</li>
-	
+
 <?php
 /*
  * This is done in PHP because Eclipse complains about HTML syntax errors otherwise

@@ -112,7 +112,9 @@ if ( isset($_REQUEST['userForm']) )
 		$allowed = array('E-mail'=>'email','E-mail hiding'=>'hideEmail',
 				'showCountryNames'=>'showCountryNames',
 				'showCountryNamesMap'=>'showCountryNamesMap',
-				'colorCorrect'=>'colorCorrect',
+				'color Correct'=>'colorCorrect',
+				'SortOrder'=>'sortOrder',
+				'UnitOrder'=>'unitOrder',
 				'Homepage'=>'homepage','Comment'=>'comment');
 
 		$set = '';
@@ -154,7 +156,7 @@ l_t("Hello %s",$User->username).",<br><br>
 
 			$formOutput .= l_t('%s updated successfully.',$name).' ';
 		}
-
+		
 		if ( $set != '' )
 		{
 			$DB->sql_put("UPDATE wD_Users SET ".$set." WHERE id = ".$User->id);
@@ -192,7 +194,7 @@ function printAndFindTab()
 	$tabs = array();
 
 	$tabs['General']=l_t("General settings");
-	$tabs['Accessability']=l_t("Special features for colorblind people");
+	$tabs['Features']=l_t("Special features");
 	$tabs['CountrySwitch']=l_t("Send your games to other players");
 
 	$tab = 'General';
@@ -222,7 +224,7 @@ print '<br>';
 
 switch($tab)
 {
-	case 'Accessability':
+	case 'Features':
 		require_once(l_r('locales/English/accessability.php'));
 		break;
 	case 'CountrySwitch':

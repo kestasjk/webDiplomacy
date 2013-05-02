@@ -201,7 +201,13 @@ class User {
 	/*
 	 * Enhance the map-colors for colorblind people...
 	 */
-	public $colorCorrect;	
+	public $colorCorrect;
+	
+	/*
+	 * How to sort the units in the javascript
+	 */
+	public $unitOrder;
+	public $sortOrder;
 	
 	/**
 	 * 'No' if the player can submit mod reports, 'Yes' if they are muted
@@ -341,7 +347,9 @@ class User {
 					'showCountryNames'=>'',
 					'showCountryNamesMap'=>'',
 					'colorCorrect'=>'',
-					'hideEmail'=>'','showEmail'=>'', 'homepage'=>'','comment'=>'');
+					'sortOrder'=>'',
+					'unitOrder'=>'',
+				'hideEmail'=>'','showEmail'=>'', 'homepage'=>'','comment'=>'');
 
 		$userForm = array();
 
@@ -437,6 +445,28 @@ class User {
 			else
 				$SQLVars['colorCorrect'] = "Off";
 		}
+		
+		if( isset($userForm['sortOrder']) )
+		{
+			if ( $userForm['sortOrder'] == "TerrName" )
+				$SQLVars['sortOrder'] = "TerrName";
+			elseif ( $userForm['sortOrder'] == "NorthSouth" )
+				$SQLVars['sortOrder'] = "NorthSouth";
+			elseif ( $userForm['sortOrder'] == "EastWest" )
+				$SQLVars['sortOrder'] = "EastWest";
+			else
+				$SQLVars['sortOrder'] = "BuildOrder";
+		}
+		
+		if( isset($userForm['unitOrder']) )
+		{
+			if ( $userForm['unitOrder'] == "FA" )
+				$SQLVars['unitOrder'] = "FA";
+			elseif ( $userForm['unitOrder'] == "AF" )
+				$SQLVars['unitOrder'] = "AF";
+			else
+				$SQLVars['unitOrder'] = "Mixed";
+		}
 
 		if( isset($userForm['locale']) )
 		{
@@ -505,6 +535,8 @@ class User {
 			u.showCountryNames,
 			u.showCountryNamesMap,
 			u.colorCorrect,
+			u.unitOrder,
+			u.sortOrder,			
 			u.leftBalanced,			
 			IF(s.userID IS NULL,0,1) as online
 			FROM wD_Users u
