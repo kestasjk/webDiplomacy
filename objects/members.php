@@ -223,7 +223,8 @@ class Members
 			INNER JOIN wD_Users u ON ( m.userID = u.id )
 			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
 			WHERE m.gameID = ".$this->Game->id."
-			ORDER BY m.status ASC, m.supplyCenterNo DESC, u.points DESC".
+			ORDER BY m.status ASC, m.supplyCenterNo DESC, ".
+			($this->Game->anon=='Yes' ? "m.countryID ASC" : "u.points DESC" ).
 			$this->Game->lockMode
 			);
 
