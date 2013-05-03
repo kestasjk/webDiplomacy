@@ -597,6 +597,11 @@ class Game
 											attempts = 0,
 											minimumBet = ".$this->minimumBet."
 											WHERE id = ".$this->id);
+							foreach ($this->Members->ByID as $id => $Member)
+							{
+								$this->Members->ByID[$id]->orderStatus->Ready=false;
+								$DB->sql_put("UPDATE wD_Members SET orderStatus = '".$this->Members->ByID[$id]->orderStatus."' WHERE id = ".$Member->id);
+							}
 							$gameMasterText = 'Missing orders for '.$this->Variant->turnAsDate($this->turn).' ('.$this->phase.') from a country with 2 or more SCs. Extending phase.';
 							$repeat = $this->specialCDcount - $extCount - 1;
 							if ($this->specialCDcount > 90)
