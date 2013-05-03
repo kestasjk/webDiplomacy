@@ -115,32 +115,31 @@ class OrderInterface
 
 	public function load()
 	{
-		global $DB;
+		global $DB, $Game, $User;
 		
 		$DB->sql_put("SELECT * FROM wD_Members WHERE gameID = ".$this->gameID." AND countryID=".$this->countryID." ".UPDATE);
-		
-		list($sortOrder, $unitOrder) = $DB->sql_row("SELECT sortOrder, unitOrder FROM wD_Users WHERE id = ".$this->userID);
 
-		if ($this->phase=="Diplomacy" || $this->phase=="Retreats")
+		if ( isset($Game) && isset($User) && ($this->phase=="Diplomacy" || $this->phase=="Retreats") )
 		{
 			$sql="SELECT o.id, o.type, o.unitID, o.toTerrID, o.fromTerrID, o.viaConvoy FROM wD_Orders o
 					INNER JOIN wD_Units u ON (u.id = o.unitID) 
 					INNER JOIN wD_Games g ON (g.id = o.gameID) 
-					INNER JOIN wD_Territories t ON (t.mapID=g.variantID && t.id=u.terrID) 
+					INNER JOIN wD_Territories t ON (t.mapID=".$Game->Variant->mapID." && t.id=u.terrID) 
 				WHERE o.gameID = ".$this->gameID." AND o.countryID=".$this->countryID."
 				ORDER BY ";
 				
-			if ($unitOrder == 'FA') $sql .= "u.type DESC, ";
-			if ($unitOrder == 'AF') $sql .= "u.type ASC, ";
+			if ($User->unitOrder == 'FA') $sql .= "u.type DESC, ";
+			if ($User->unitOrder == 'AF') $sql .= "u.type ASC, ";
 			
-			if ($sortOrder == 'BuildOrder') $sql .= "o.unitID";
-			if ($sortOrder == 'TerrName')   $sql .= "t.name";
-			if ($sortOrder == 'NorthSouth') $sql .= "t.mapY";
-			if ($sortOrder == 'EastWest')   $sql .= "t.mapX";
+			if ($User->sortOrder == 'BuildOrder') $sql .= "o.unitID";
+			if ($User->sortOrder == 'TerrName')   $sql .= "t.name";
+			if ($User->sortOrder == 'NorthSouth') $sql .= "t.mapY";
+			if ($User->sortOrder == 'EastWest')   $sql .= "t.mapX";
 		}
 		else
 		{
-			$sql = "SELECT id, type, unitID, toTerrID, fromTerrID, viaConvoy FROM wD_Orders WHERE gameID = ".$this->gameID." AND countryID=".$this->countryID;
+			$sql = "SELECT id, type, unitID, toTerrID, fromTerrID, viaConvoy FROM wD_Orders 
+						WHERE gameID = ".$this->gameID." AND countryID=".$this->countryID;
 		}
 		
 		$tabl = $DB->sql_tabl($sql);
