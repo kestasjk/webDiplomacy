@@ -515,6 +515,7 @@ $bordersRawData=array(
 	array('Sakhalin','Karafuto','Yes','Yes'),
 	array('Sakhalin','Sea of Japan','Yes','No'),
 	array('Sakhalin','Sea of Okhotsk','Yes','No'),
+	array('Leningrad','Norway','No','Yes'),
 	array('Leningrad','Finland','No','Yes'),
 	array('Leningrad','Estonia','No','Yes'),
 	array('Leningrad','Latvia','No','Yes'),
@@ -776,4 +777,5 @@ if (!file_exists('variants/'.$this->name.'/cache/sampleMap.png'))
 	copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
 
 ?>
+
 
