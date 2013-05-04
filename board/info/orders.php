@@ -239,6 +239,8 @@ class OrderArchiv {
 print '<h3>Order history</h3>';
 print '<div class="variant'.$Game->Variant->name.'">';
 
+ini_set('memory_limit',"16M");
+
 $OA=$Game->Variant->OrderArchiv();
 print '<table>'.$OA->OutputHTML().'</table>';
 print '</div>';

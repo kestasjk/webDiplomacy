@@ -31,7 +31,7 @@ print '<h4>'.l_t('Chat archive').'</h4>';
 
 print '<div class="variant'.$Game->Variant->name.'">';
 
-ini_set('memory_limit',"14M");
+ini_set('memory_limit',"16M");
 $CB = $Game->Variant->Chatbox();
 print '<table>'.$CB->getMessages( -1, false).'</table>';
 
