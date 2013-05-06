@@ -66,9 +66,9 @@ Inizia una nuova partita. Sei tu a deciderne il nome, la variante, la durata dei
 		</select>
 	</li>
 	<li class="formlistdesc">
-	  Il tempo massimo a disposizione dei giocatori per la diplomazia e l'inserimento degli ordini di cisacun turno.<br />
-      Tempi più lunghi significano decisioni più accurate e diplomazia più attenta, ma fanno durare di più le partite. <br />
-      Tempi più corti rendono le partite più veloci, ma i giocatori devono controllare la partita frequentemente se non si volgiono ritrovare in sommossa.<br />
+	  Il tempo a disposizione dei giocatori per la diplomazia e l'inserimento degli ordini.<br />
+      Tempi più lunghi permettono decisioni più accurate e diplomazia più attenta, ma fanno durare di più la partita. <br />
+      Tempi più corti rendono la partita più veloce, ma i giocatori devono controllare la partita frequentemente se non volgiono perdere turni o ritrovarsi in sommossa.<br />
 
 		<strong>Standard:</strong> 1 giorno
 	</li>
@@ -81,7 +81,7 @@ Inizia una nuova partita. Sei tu a deciderne il nome, la variante, la durata dei
 		<input type="text" name="newGame[bet]" size="7" value="<?php print $formPoints ?>" />
 	</li>
 	<li class="formlistdesc">
-		La puntata necessaria per iscriversi a questa partita. Questa è la quantità di punti che tutti i giocatori, te incluso, metterete sul "piatto" (<a href="points.php" class="light">Cosa soo i punti?</a>).<br /><br />
+		La puntata necessaria per iscriversi a questa partita. Questa è la quantità di punti che tutti i giocatori, te incluso, metterete sul "piatto" (<a href="points.php" class="light">Cosa sono i punti?</a>).<br /><br />
 
 		<strong>Standard:</strong> <?php print $StandardPoints.libHTML::points(); ?>
 	</li>
