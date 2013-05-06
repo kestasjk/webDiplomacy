@@ -31,70 +31,82 @@ $credits = array(
 	array('
 		<a href="http://www.wizards.com/default.asp?x=ah/prod/diplomacy">Avalon Hill</a>
 	','
-		Diplomacy the board game<br />
-		If you like webDiplomacy get the board game
+		Il gioco in scatola di Diplomacy.<br />
+		Se vi piace webDiplomacy, provate anche il gioco da tavolo
 	')
 
 	,array('<a href="http://kestas.kuliukas.com/">Kestas Kuliukas</a>
-	','Creator &amp; developer')
+	','Creatore &amp; sviluppatore')
 
-	,array('Unknown
-	','Tank + Battleship icons<br />
-	Released under the <a href="http://www.opensource.org/licenses/gpl-license.php" class="light">GNU Public License</a>')
+	,array('Sconosciuto
+	','Le icone del carro armato e della corazzata<br />
+	Rilasciate sotto la licenza <a href="http://www.opensource.org/licenses/gpl-license.php" class="light">GNU General Public License</a>')
 
-	,array('Unknown
-	','Fullscreen diplomacy map image')
+	,array('Sconosciuto
+	','Mappa di gioco a tutto schermo')
 
 	,array('Algis Kuliukas
-	','SQL guru')
+	','guru dell\'SQL')
 
 	,array('<a href="https://sourceforge.net/sendmessage.php?touser=1295433">paranoidjpn</a>
-	','Japanese translation, testing, UTF-8 support, developing the small PNG map')
+	','Traduzione giapponese, test vari, supporto UTF-8, sviluppo mappa piccola')
 
 	,array('Bitstream
-	','Font used in the fullscreen map.<br />
-	Released under the <a href="contrib/BVFL.txt" class="light">Bitsream Vera Fonts License</a>')
+	','Font usati nella mappa grande.<br />
+	Rilasciati sotto la <a href="contrib/BVFL.txt" class="light">Bitsream Vera Fonts License</a>')
 
 	,array('<a href="http://www.xcelco.on.ca/~ravgames/dipmaps/">Rob Addison</a>
-	','Small diplomacy map image')
+	','Immagine della mappa piccola')
 
 	,array('mrlachette, Magilla, arning
-	','Pre-0.72 debugging + testing')
+	','Debig e test delle versioni prima della 0.72')
 
-	,array('The regulars, the donators
-	','Making suggestions, reporting bugs, helping people in the forums, donating')
+	,array('Gli utenti, i donatori
+	','Proposte, suggerimenti, report dei bug, aiuto sui forum e donazioni')
 
 	,array('Lucas Kruijswijk
-	','Authoring the DATC adjudicator tests')
+	','Adattamento test DATC')
 
 	,array('figlesquidge
-	','SVG map developer, coast fix patch')
+	','sviluppatore mappa SVG, patch coste differenti')
 
 	,array('<a href="http://sourceforge.net/users/fallingrock/">Chris Hughes</a>
-	','webDiplomacy Facebook dev, variable game phase lengths, gamelistings pagination')
+	','sviluppo di webDiplomacy su Facebook, turni di gioco variabili, impaginazione liste partite')
 
 	,array('<a href="http://www.webdiplomacy.net/profile.php?userID=3013">thewonderllama</a>
-	','Unit placement orders fix, designing and running the GFDT tournaments')
+	','Fix degli ordini di piazzamento delle unità, tornei GFDT')
 
 	,array('Chrispminis, figlesquidge, dangermouse, thewonderllama, TheGhostMaker
-	','Tireless webdiplomacy.net moderators, wrote the list of rules')
+	','moderatori del sito webdiplomacy.net , sviluppo delle regole del sito')
 
 	,array('TheGhostMaker
-	','Designing and running the Ghost-rating system, helping with the GFDT, home page mock-up')
+	','Sviluppo e manutenzione del Ghost-rating, aiuto con il GFDT, abbellimento della home page')
 
 	,array('jayp
-	','Many new features for 0.91, regarding extra game settings. Multi-variant code developer')
+	','Tante caratteristiche nuove per la Versione 0.91. Sviluppatore del codice per le varianti')
 
 	,array('Carey Jensen (gilgatex)
-	','Variant developer, goondip.com developer')
+	','Sviluppatore varianti, sviluppatore sito goondip.com')
 
 	,array('Oliver Auth (Sleepcap)
-	','Variant creator'),
+	','Creatore di varianti'),
 
 	array('
-		The <a href="http://www.prototypejs.org/">Prototype</a> JavaScript framework team
+		La libreria JavasCript <a href="http://www.prototypejs.org/">Prototype</a>
 	','
-		Our JavaScript utility library
+		La libreria JavaScript utilizzata dal sito
+	'),
+	
+	array('
+		Traduzione italiana: <a href="http://webdiplomacy.it">WebDiplomacy.it</a>
+	','
+		La traduzione di tutto il sito in lingua italiana
+	'),
+
+	array('
+		Alex Lebedev
+	','
+		Sponsor sviluppo traduzione.
 	')
 	);
 
