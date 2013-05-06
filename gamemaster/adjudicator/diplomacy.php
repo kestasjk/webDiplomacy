@@ -38,17 +38,17 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  */
 
 // The move types
-require_once('gamemaster/adjudicator/diplomacy/dependencyNode.php');
-require_once('gamemaster/adjudicator/diplomacy/hold.php');
-require_once('gamemaster/adjudicator/diplomacy/support.php');
-require_once('gamemaster/adjudicator/diplomacy/move.php');
-require_once('gamemaster/adjudicator/diplomacy/convoyMove.php');
+require_once(l_r('gamemaster/adjudicator/diplomacy/dependencyNode.php'));
+require_once(l_r('gamemaster/adjudicator/diplomacy/hold.php'));
+require_once(l_r('gamemaster/adjudicator/diplomacy/support.php'));
+require_once(l_r('gamemaster/adjudicator/diplomacy/move.php'));
+require_once(l_r('gamemaster/adjudicator/diplomacy/convoyMove.php'));
 
 // Load convoy chains ready for processing
-require_once('gamemaster/adjudicator/diplomacy/loadConvoyChains.php');
+require_once(l_r('gamemaster/adjudicator/diplomacy/loadConvoyChains.php'));
 
 // Paradox detection and resolution exception code
-require_once('gamemaster/adjudicator/diplomacy/paradox.php');
+require_once(l_r('gamemaster/adjudicator/diplomacy/paradox.php'));
 
 class adjudicatorDiplomacy {
 	/**

@@ -84,7 +84,7 @@ class userOrderDiplomacy extends userOrder
 			case 'Convoy':
 				return $this->convoyToTerrCheck();
 			default:
-				throw new Exception("Unrequired to-territory check for this order type '".$this->type."'");
+				throw new Exception(l_t("Unrequired to-territory check for this order type '%s'",$this->type));
 		}
 	}
 
@@ -99,7 +99,7 @@ class userOrderDiplomacy extends userOrder
 			case 'Convoy':
 				return $this->convoyFromTerrCheck();
 			default:
-				throw new Exception("Unrequired from-territory check for this order type '".$this->type."'");
+				throw new Exception(l_t("Unrequired from-territory check for this order type '%s'",$this->type));
 		}
 	}
 
@@ -368,7 +368,7 @@ class userOrderDiplomacy extends userOrder
 	protected function convoyToTerrCheck()
 	{
 		if( !isset($this->fromTerrID) )
-			throw new Exception("Please submit only full convoys: Fleet at ".$this->Unit->terrID." convoy to ".$this->toTerrID." from ____.");
+			throw new Exception(l_t("Please submit only full convoys: Fleet at %s convoy to %s from ____.",$this->Unit->terrID,$this->toTerrID));
 		else
 			return true;
 	}

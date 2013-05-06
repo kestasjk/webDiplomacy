@@ -20,8 +20,8 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('gamepanel/gameboard.php');
-require_once('gamepanel/membershome.php');
+require_once(l_r('gamepanel/gameboard.php'));
+require_once(l_r('gamepanel/membershome.php'));
 
 /**
  * This class displays the game panel within a home context. Output is trimmed down to size,
@@ -68,9 +68,9 @@ class panelGameHome extends panelGameBoard
 	function gameTimeRemaining()
 	{
 		if( $this->processStatus == 'Paused' )
-			return 'Paused <img src="images/icons/pause.png" title="Paused" />';
+			return l_t('Paused').' <img src="'.l_s('images/icons/pause.png').'" title="'.l_t('Paused').'" />';
 		elseif( $this->processStatus == 'Crashed' )
-			return 'Crashed';
+			return l_t('Crashed');
 
 		if (!isset($timerCount))
 			static $timerCount=0;
@@ -110,18 +110,18 @@ class panelGameHome extends panelGameBoard
 
 			<div class="titleBarRightSide">
 				<span class="gameDate">'.$this->datetxt().'</span>,
-				<span class="gamePhase">'.$this->phase.'</span>
+				<span class="gamePhase">'.l_t($this->phase).'</span>
 			</div>
 			<div class="titleBarLeftSide">
 				Pot: <span class="gamePot">'.$this->pot().'</span>';
 
 		$alternatives=array();
 		if( $this->pressType=='NoPress')
-			$alternatives[]='No chat';
+			$alternatives[]=l_t('No chat');
 		elseif( $this->pressType=='PublicPressOnly' )
-			$alternatives[]='Public chat';
+			$alternatives[]=l_t('Public chat');
 		if( $this->anon=='Yes' )
-			$alternatives[]='Anon';
+			$alternatives[]=l_t('Anon');
 
 		if ( $alternatives )
 			$buf .= '
@@ -152,15 +152,15 @@ class panelGameHome extends panelGameBoard
 		if( $this->phase == 'Pre-game')
 		{
 			return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
-				<a href="board.php?gameID='.$this->id.'">Open</a>
+				<a href="board.php?gameID='.$this->id.'">'.l_t('Open').'</a>
 				</div>';
 		}
 		else
 			return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
-				<a href="board.php?gameID='.$this->id.'#gamePanel">Open</a> -
-				<a href="board.php?gameID='.$this->id.'#chatbox">Chatbox</a> -
-				<a href="board.php?gameID='.$this->id.'#orders">Orders</a> -
-				<a href="board.php?gameID='.$this->id.'#details">Details</a>
+				<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t('Open').'</a> -
+				<a href="board.php?gameID='.$this->id.'#chatbox">'.l_t('Chatbox').'</a> -
+				<a href="board.php?gameID='.$this->id.'#orders">'.l_t('Orders').'</a> -
+				<a href="board.php?gameID='.$this->id.'#details">'.l_t('Details').'</a>
 				</div>';
 	}
 

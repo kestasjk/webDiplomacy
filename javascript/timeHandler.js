@@ -38,7 +38,7 @@ function dateToText(date) {
 	var secondDifference = ((date - (new Date()))/1000);
 	if( secondDifference < 0 ) secondDifference *= -1;
 
-	var a = dayNames[date.getDay()];
+	var a = l_t(dayNames[date.getDay()]);
 	
 	if ( secondDifference < 4*24*60*60 )
 	{
@@ -50,13 +50,14 @@ function dateToText(date) {
 		if( I >= 12 ) {
 			I -= 12;
 			p = "PM";
-			if( I==0 ) I="12";
-			else if( I<10 ) I="0"+I.toString();
 		}
-		else if ( I == 0 )
-			I="12";
+		
+		if( I==0 ) I="12";
+		
+		// apply leading zero to single digit hour
+		if( I<10 ) I="0"+I.toString();
 
-		if ( secondDifference < 22*60*60 )
+		if ( secondDifference < 22*60*60 ) // within 22 hours
 			return I+":"+M+" "+p; // HH:MM AM/PM
 		else
 			return a+" "+I+" "+p; // Day HH AM/PM
@@ -64,11 +65,11 @@ function dateToText(date) {
 	else
 	{
 		var d = date.getDate();
-		var b = monthNames[date.getMonth()];
+		var b = l_t(monthNames[date.getMonth()]);
 		var y = date.getYear();
 		if ( y < 1900 ) y+=1900;
 		
-		if ( secondDifference < 3*7*22*60*60 )
+		if ( secondDifference < 3*7*22*60*60 ) // within 19 days, 6 hours
 			return a+" "+d+" "+b; // Day Day# Month
 		else
 			return d+" "+b+" "+y; // Day# Month Year
@@ -144,30 +145,27 @@ function setMinimumTimerInterval(newInterval) {
 // Textual time remaining for a given number of seconds to pass. Also sets the minimum timer interval
 function remainingText(secondsRemaining)
 {
-	if ( secondsRemaining <= 0 ) return 'Now';
-		
-	var seconds = Math.floor( secondsRemaining % 60); 
+	if ( secondsRemaining <= 0 ) return l_t('Now');
+
+	var seconds = Math.floor( secondsRemaining % 60);
 	var minutes = Math.floor(( secondsRemaining % (60*60) )/60);
 	var hours = Math.floor( secondsRemaining % (24*60*60)/(60*60) );
 	var days = Math.floor( secondsRemaining /(24*60*60) );
-		
+
 	if ( days > 0 ) // D, H
 	{
 		minutes += Math.round(seconds/60); // Add a minute if the seconds almost give a minute
-		seconds = 0;
-			
 		hours += Math.round(minutes/60); // Add an hour if the minutes almost gives an hour
-		minutes = 0;
-		
+
 		if ( days < 2 )
 		{
 			setMinimumTimerInterval(60*minutes);
-			return days+' day, '+hours+' hours';
+			return l_t('1 day, %s hours', hours);
 		}
 		else
 		{
 			setMinimumTimerInterval(60*60*hours);
-			return days+' days';
+			return l_t('%s days', days);
 		}
 	}
 	else if ( hours > 0 ) // H, M
@@ -177,7 +175,7 @@ function remainingText(secondsRemaining)
 		if ( hours < 4 )
 		{
 			setMinimumTimerInterval(seconds);
-			return hours+' hours, '+minutes+' mins';
+			return l_t('%s hours, %s mins', hours, minutes);
 		}
 		else
 		{
@@ -185,7 +183,7 @@ function remainingText(secondsRemaining)
 			
 			hours += Math.round(minutes/60); // Add an hour if the minutes almost gives an hour
 			
-			return hours+' hours';
+			return l_t('%s hours', hours);
 		}
 	}
 	else // M, S
@@ -193,16 +191,18 @@ function remainingText(secondsRemaining)
 		if( minutes >= 5 )
 		{
 			setMinimumTimerInterval(seconds);
-			return minutes+' mins';
+			return l_t('%s mins',minutes);
 		}
 		else
 		{
 			setMinimumTimerInterval(1);
 			
-			if( minutes < 0 )
-				return seconds+' secs';
-			else if ( minutes < 5 )
-				return minutes+' mins, '+seconds+' secs';
+			if( minutes > 1 )
+				return l_t('%s mins, %s secs',minutes,seconds);
+			else if ( minutes > 0 )
+				return l_t('%s min, %s secs',minutes,seconds);
+			else
+				return l_t('%s secs',seconds);
 		}
 	}
 }

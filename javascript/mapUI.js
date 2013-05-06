@@ -46,25 +46,25 @@ function mapArrows(currentTurn, newTurn)
 {
 	if ( newTurn == -1 )
 	{
-		$('Start').src = "images/historyicons/Start_disabled.png";
-		$('Backward').src = "images/historyicons/Backward_disabled.png";
+		$('Start').src = l_s("images/historyicons/Start_disabled.png");
+		$('Backward').src = l_s("images/historyicons/Backward_disabled.png");
 	}
 	else
 	{
-		$('Start').src = "images/historyicons/Start.png";
-		$('Backward').src = "images/historyicons/Backward.png";
+		$('Start').src = l_s("images/historyicons/Start.png");
+		$('Backward').src = l_s("images/historyicons/Backward.png");
 	}
 	
 	// Draw the greyed icons if the user can go no further forward
 	if ( newTurn == currentTurn )
 	{
-		$('Forward').src = "images/historyicons/Forward_disabled.png";
-		$('End').src = "images/historyicons/End_disabled.png";
+		$('Forward').src = l_s("images/historyicons/Forward_disabled.png");
+		$('End').src = l_s("images/historyicons/End_disabled.png");
 	}
 	else
 	{
-		$('Forward').src = "images/historyicons/Forward.png";
-		$('End').src = "images/historyicons/End.png";
+		$('Forward').src = l_s("images/historyicons/Forward.png");
+		$('End').src = l_s("images/historyicons/End.png");
 	}
 }
 turnToText='';//() { return ''; }
@@ -90,9 +90,9 @@ function loadMap(gameID, currentTurn, newTurn)
 	// Update the link to the large map
 	$('LargeMapLink').innerHTML = 
 			' <a href="map.php?gameID='+gameID+'&turn='+newTurn+'&mapType=large" target="blank" class="light">'+
-			'<img src="images/historyicons/external.png" alt="Open large map" ' +
-			'title="This button will open the large map in a new window. The large ' +
-			'map shows all the moves, and is useful when the small map isn\'t clear enough." /><\/a>';
+			'<img src="'+l_s('images/historyicons/external.png')+'" alt="'+l_t('Open large map')+'" ' +
+			'title="'+l_t('This button will open the large map in a new window. The large ' +
+			'map shows all the moves, and is useful when the small map isn\'t clear enough.')+'" /><\/a>';
 	
 	// Update the source for the map image
 	$('mapImage').src = 'map.php?gameID='+gameID+'&turn='+newTurn;

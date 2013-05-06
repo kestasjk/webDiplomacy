@@ -92,60 +92,88 @@ abstract class Pager
 
 	function html($anchor='')
 	{
+		// If only one page, then do not display the page or buttons.
 		if(isset($this->pageCount) && $this->pageCount<=1) return '';
 
+		// Check for any extra arguments to include in the links.
 		if($this->extraArgs)
 			$args = $this->extraArgs.'&amp;';
 		else
 			$args = '';
 
-		$buf = '
-		<div style="float:right; text-align:right">'.
-			// The start, to the left, is page 1
-			'<a href="'.$this->URL.'?'.$args.'page-'.$this->type.'=1#'.$anchor.'">'.
-				'<img src="images/historyicons/Start'.( $this->currentPage == 1 ?'_disabled':'').'.png"
-					alt="First" title="First page" />'.
-			'</a> '.
-			// If we're at the start the next page along is the same page, otherwise the previousone
-			'<a href="'.$this->URL.'?'.$args.'page-'.$this->type.'='.($this->currentPage>1?$this->currentPage-1:1).'#'.$anchor.'">'
-				.'<img src="images/historyicons/Backward'.( $this->currentPage == 1 ?'_disabled':'').'.png"
-					alt="Previous" title="Previous page" />'.
-			'</a>
-			';
+		// Determine what to do with start/prev page buttons based on if we are on the first page.
+		$prevDisabled = '';
+		$prevPage = $this->currentPage - 1;
+		if ($this->currentPage == 1)
+		{
+			$prevDisabled = '_disabled';
+			$prevPage = 1;
+		}
 
-		// If we don't know the page-count the next pageis always active, and there is no last page
-		if ( !isset($this->pageCount) )
-			$buf .= '<a href="'.$this->URL.'?'.$args.'page-'.$this->type.'='.($this->currentPage+1).'#'.$anchor.'">'.
-						'<img src="images/historyicons/Forward.png"
-							alt="Next" title="Next page" />'.
-					'</a>
-					<img src="images/historyicons/End_disabled.png"
-					alt="Last" title="Last page (disabled when last page number unknown)" />';
+		// Determine what to do with next/last page buttons based if there is not a last page.
+		if (! isset($this->pageCount))
+		{
+			$lastPage = '';
+			$extra = ' (disabled when last page number unknown)';
+			$nextDisabled = '';
+			$lastDisabled = '_disabled';
+			$nextPage = $this->currentPage + 1;
+		}
 		else
-			$buf .= '<a href="'.$this->URL.'?'.$args.'page-'.$this->type.'='.( !$this->currentPage == $this->pageCount? $this->currentPage:($this->currentPage+1)).'#'.$anchor.'">'.
-				'<img src="images/historyicons/Forward'.( $this->currentPage == $this->pageCount ?'_disabled':'').'.png"
-					alt="Next" title="Next page" />'.
-			'</a>
-			<a href="'.$this->URL.'?'.$args.'page-'.$this->type.'='.$this->pageCount.'#'.$anchor.'">'.
-				'<img src="images/historyicons/End'.( $this->currentPage == $this->pageCount ?'_disabled':'').'.png"
-					alt="Last" title="Last page" />'.
-			'</a>';
+		{
+			$lastPage = $this->pageCount;
+			$extra = '';
+			$nextDisabled = '';
+			$lastDisabled = '';
+			$nextPage = $this->currentPage + 1;
 
+			// Determine what to do with next/last page buttons based on if we are on the last page.
+			if ($this->pageCount == $this->currentPage)
+			{
+				$nextDisabled = '_disabled';
+				$lastDisabled = '_disabled';
+				$nextPage = $this->currentPage;
+			}
+		}
+ 
+		// Okay, let's put it all together now.
+		$buf = '<div style="float:right; text-align:right; padding:5px">';
 
+		$buf .= '<div style="float:left">';
 		$buf .= $this->currentPageNumber();
+		$buf .= '</div>';
+
+		$buf .= '<div style="float:right; padding-left:10px">';
+		$buf .= $this->button($args, $anchor, '1',       'Start'.   $prevDisabled.'.png', 'First');
+		$buf .= $this->button($args, $anchor, $prevPage, 'Backward'.$prevDisabled.'.png', 'Previous');
+		$buf .= $this->button($args, $anchor, $nextPage, 'Forward'. $nextDisabled.'.png', 'Next');
+		$buf .= $this->button($args, $anchor, $lastPage, 'End'.     $lastDisabled.'.png', 'Last', $extra);
+		$buf .= '</div>';
 
 		$buf .= '</div>';
 
 		return $buf;
 	}
 
+	function button($args, $anchor, $number, $icon, $which, $extra='')
+	{
+		$image = '<img src="'.l_s('images/historyicons/'.$icon).'" alt="'.l_t($which).'" title="'.l_t($which.' page'.$extra).'" />';
+		if ($number == '')
+		{
+			return $image;
+		}
+		return '<a href="'.$this->URL.'?'.$args.'page-'.$this->type.'='.$number.'#'.$anchor.'">'.$image.'</a>';
+	}
+
 	function currentPageNumber()
 	{
-		return '<div style="padding:3px; padding-bottom:0; margin-top:5px; border-top: solid 1px #aaa;">
-					<em>Page <strong>'.$this->currentPage.'</strong>'.
-						(isset($this->pageCount)?' of <strong>'.$this->pageCount.'</strong> ':'').
-					'</em>
-				</div>';
+		return '<div style="padding-right:10px; border-right: solid 1px #aaa;">'.
+					'<em>'.
+						(isset($this->pageCount) ?
+						 l_t('Page <strong>%s</strong> of <strong>%s</strong>',$this->currentPage,$this->pageCount) :
+						 l_t('Page <strong>%s</strong>',$this->currentPage)).
+					'</em>'.
+				'</div>';
 	}
 }
 

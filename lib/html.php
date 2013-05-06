@@ -61,27 +61,28 @@ class libHTML
 	 */
 	static function loggedOn($userID)
 	{
-		return '<img style="'.self::$hideStyle.'" class="userOnlineImg" userID="'.$userID.'" src="images/icons/online.png" alt="Online" title="User currently logged on" />';
+		return '<img style="'.self::$hideStyle.'" class="userOnlineImg" userID="'.$userID.'" src="'.l_s('images/icons/online.png').'" alt="'.
+			l_t('Online').'" title="'.l_t('User currently logged on').'" />';
 	}
 
 	static function platinum()
 	{
-		return ' <img src="images/icons/platinum.png" alt="(S)" title="Donator - platinum" />';
+		return ' <img src="'.l_s('images/icons/platinum.png').'" alt="(P)" title="'.l_t('Donator - platinum').'" />';
 	}
 
 	static function gold()
 	{
-		return ' <img src="images/icons/gold.png" alt="(S)" title="Donator - gold" />';
+		return ' <img src="'.l_s('images/icons/gold.png').'" alt="(G)" title="'.l_t('Donator - gold').'" />';
 	}
 
 	static function silver()
 	{
-		return ' <img src="images/icons/silver.png" alt="(S)" title="Donator - silver" />';
+		return ' <img src="'.l_s('images/icons/silver.png').'" alt="(S)" title="'.l_t('Donator - silver').'" />';
 	}
 
 	static function bronze()
 	{
-		return ' <img src="images/icons/bronze.png" alt="(B)" title="Donator - bronze" />';
+		return ' <img src="'.l_s('images/icons/bronze.png').'" alt="(B)" title="'.l_t('Donator - bronze').'" />';
 	}
 
 	/**
@@ -90,13 +91,13 @@ class libHTML
 	 */
 	static function points()
 	{
-		return ' <img src="images/icons/points.png" alt="D" title="webDiplomacy points" />';
+		return ' <img src="'.l_s('images/icons/points.png').'" alt="D" title="'.l_t('webDiplomacy points').'" />';
 	}
 
 	static function forumMessage($threadID, $messageID)
 	{
 		return '<a style="'.self::$hideStyle.'" class="messageIconForum" threadID="'.$threadID.'" messageID="'.$messageID.'" href="forum.php?threadID='.$threadID.'#'.$messageID.'">'.
-		'<img src="images/icons/mail.png" alt="New" title="Unread messages!" />'.
+		'<img src="'.l_s('images/icons/mail.png').'" alt="'.l_t('New').'" title="'.l_t('Unread messages!').'" />'.
 		'</a> ';
 
 	}
@@ -104,7 +105,7 @@ class libHTML
 	static function forumParticipated($threadID)
 	{
 		return '<a style="'.self::$hideStyle.'" class="participatedIconForum" threadID="'.$threadID.'" href="forum.php?threadID='.$threadID.'#'.$threadID.'">'.
-			'<img src="images/icons/star.png" alt="Participated" title="You have participated in this thread." />'.
+			'<img src="'.l_s('images/icons/star.png').'" alt="'.l_t('Participated').'" title="'.l_t('You have participated in this thread.').'" />'.
 			'</a> ';
 	}
 
@@ -117,7 +118,7 @@ class libHTML
 	{
 		$buf = '';
 		if($url) $buf .= '<a href="'.$url.'">';
-		$buf .= '<img src="images/icons/unmute.png" alt="Mute player" title="Mute player" />';
+		$buf .= '<img src="'.l_s('images/icons/unmute.png').'" alt="'.l_t('Mute player').'" title="'.l_t('Mute player').'" />';
 		if($url) $buf .= '</a>';
 		return $buf;
 	}
@@ -131,7 +132,7 @@ class libHTML
 	{
 		$buf = '';
 		if($url) $buf .= '<a href="'.$url.'">';
-		$buf .= '<img src="images/icons/mute.png" alt="Muted. Click to un-mute." title="Muted. Click to un-mute." />';
+		$buf .= '<img src="'.l_s('images/icons/mute.png').'" alt="'.l_t('Muted. Click to un-mute.').'" title="'.l_t('Muted. Click to un-mute.').'" />';
 		if($url) $buf .= '</a>';
 		return $buf;
 	}
@@ -145,7 +146,7 @@ class libHTML
 	{
 		$buf = '';
 		if($url) $buf .= '<a href="'.$url.'">';
-		$buf .= '<img src="images/icons/mail.png" alt="Unread message" title="Unread message" />';
+		$buf .= '<img src="'.l_s('images/icons/mail.png').'" alt="'.l_t('Unread message').'" title="'.l_t('Unread message').'" />';
 		if($url) $buf .= '</a>';
 		return $buf;
 	}
@@ -159,7 +160,7 @@ class libHTML
 	{
 		$buf = '';
 		if($url) $buf .= '<a href="'.$url.'">';
-		$buf .= '<img src="images/icons/mail_faded.png" alt="Recent message" title="Recent message" />';
+		$buf .= '<img src="'.l_s('images/icons/mail_faded.png').'" alt="'.l_t('Recent message').'" title="'.l_t('Recent message').'" />';
 		if($url) $buf .= '</a>';
 		return $buf;
 	}
@@ -186,7 +187,7 @@ class libHTML
 	 */
 	static function link()
 	{
-		return '<img src="images/historyicons/external.png" alt="Link" title="Click this to follow the link" />';
+		return '<img src="'.l_s('images/historyicons/external.png').'" alt="'.l_t('Link').'" title="'.l_t('Click this to follow the link').'" />';
 	}
 
 	/**
@@ -280,6 +281,8 @@ class libHTML
 					$output .= '&amp;globalGameID='.$val;
 				elseif ( $name == 'userID' )
 					$output .= '&amp;globalUserID='.$val;
+				elseif ( $name == 'postID' )
+					$output .= '&amp;globalPostID='.$val;
 
 				$output .= '&amp;'.$name.'='.$val;
 			}
@@ -291,11 +294,24 @@ class libHTML
 		else
 			return $output;
 	}
-
+	
+	
+	public static function threadLink($postID) {
+		global $DB;
+	
+		$postID = (int)$postID;
+	
+		list($toID) = $DB->sql_row("SELECT toID FROM wD_ForumMessages WHERE id=".$postID);
+	
+		if( $toID == null || $toID == 0 )
+		$toID = $postID;
+	
+		return '<a href="forum.php?threadID='.$toID.'#'.$postID.'">'.l_t('Go to thread').'</a>';
+	}
 	static function admincpType($actionType, $id)
 	{
 		return '<a href="admincp.php?tab=Control%20Panel&amp;global'.$actionType.'ID='.$id.'#'.strtolower($actionType).'Actions">
-			View '.strtolower($actionType).' admin-actions</a>';
+			'.l_t('View %s admin-actions',l_t(strtolower($actionType))).'</a>';
 	}
 
 	/**
@@ -328,15 +344,15 @@ class libHTML
 
 		if ( !isset($Misc) )
 		{
-			die('<html><head><title>webDiplomacy fatal error</title></head>
-				<body><p>Error occurred during script startup, usually a result of inability to connect to the database:</p>
+			die('<html><head><title>'.l_t('webDiplomacy fatal error').'</title></head>
+				<body><p>'.l_t('Error occurred during script startup, usually a result of inability to connect to the database:').'</p>
 				<p>'.$message.'</p></body></html>');
 		}
 
 		if(!defined('ERROR'))
 			define('ERROR',true);
 
-		self::notice('Error', $message);
+		self::notice(l_t('Error'), $message);
 	}
 
 	/**
@@ -355,31 +371,36 @@ class libHTML
 	{
 		$variantCSS=array();
 		foreach(Config::$variants as $variantName)
-			$variantCSS[] = '<link rel="stylesheet" href="'.STATICSRV.'variants/'.$variantName.'/resources/style.css" type="text/css" />';
+			$variantCSS[] = '<link rel="stylesheet" href="'.STATICSRV.l_s('variants/'.$variantName.'/resources/style.css').'" type="text/css" />';
 		$variantCSS=implode("\n",$variantCSS);
 
+		/*
+		 * This line when included in the header caused certain translated hyphenated letters to come out as black diamonds with question marks.
+		 * 
+		
+		*/
 		return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 		<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">
 	<head>
-		<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 		<meta http-equiv="Content-Style-Type" content="text/css" />
 		<meta name="robots" content="index,follow" />
-		<meta name="description" content="webDiplomacy is an online, multiplayer, turn-based strategy game that lets you play Diplomacy online." />
-		<meta name="keywords" content="diplomacy,diplomacy game,online diplomacy,classic diplomacy,web diplomacy,diplomacy board game,play diplomacy,php diplomacy" />
-		<link rel="shortcut icon" href="'.STATICSRV.'favicon.ico" />
-		<link rel="icon" href="'.STATICSRV.'favicon.ico" />
-		<link rel="stylesheet" href="'.CSSDIR.'/global.css" type="text/css" />
-		<link rel="stylesheet" href="'.CSSDIR.'/gamepanel.css" type="text/css" />
-		<link rel="stylesheet" href="'.CSSDIR.'/home.css" type="text/css" />
+		<meta name="description" content="'.l_t('webDiplomacy is an online, multiplayer, turn-based strategy game that lets you play Diplomacy online.').'" />
+		<meta name="keywords" content="'.l_t('diplomacy,diplomacy game,online diplomacy,classic diplomacy,web diplomacy,diplomacy board game,play diplomacy,php diplomacy').'" />
+		<link rel="shortcut icon" href="'.STATICSRV.l_s('favicon.ico').'" />
+		<link rel="icon" href="'.STATICSRV.l_s('favicon.ico').'" />
+		<link rel="stylesheet" href="'.CSSDIR.l_s('/global.css').'" type="text/css" />
+		<link rel="stylesheet" href="'.CSSDIR.l_s('/gamepanel.css').'" type="text/css" />
+		<link rel="stylesheet" href="'.CSSDIR.l_s('/home.css').'" type="text/css" />
 		'.$variantCSS.'
-		<script type="text/javascript" src="'.STATICSRV.'contrib/js/prototype.js"></script>
-		<script type="text/javascript" src="'.STATICSRV.'contrib/js/scriptaculous.js"></script>
-		<link rel="stylesheet" type="text/css" href="'.STATICSRV.'contrib/js/pushup/src/css/pushup.css" />
-		<script type="text/javascript" src="'.STATICSRV.'contrib/js/pushup/src/js/pushup.js"></script>
+		<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/prototype.js').'"></script>
+		<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/scriptaculous.js').'"></script>
+		<link rel="stylesheet" type="text/css" href="'.STATICSRV.l_s('contrib/js/pushup/src/css/pushup.css').'" />
+		<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/pushup/src/js/pushup.js').'"></script>
 		<script type="text/javascript">
 		STATICSRV="'.STATICSRV.'";
 		</script>
-		<title>'.$title.' - webDiplomacy</title>
+		<title>'.l_t('%s - webDiplomacy',$title).'</title>
 	</head>';
 	}
 
@@ -398,10 +419,10 @@ class libHTML
 
 		if ( isset($User) and ! isset($pages[$scriptname]) )
 		{
-			die('Access to this page denied for your account type.');
+			die(l_t('Access to this page denied for your account type.'));
 		}
 
-		print libHTML::prebody($title===FALSE ? $pages[$scriptname]['name'] : $title).
+		print libHTML::prebody($title===FALSE ? l_t($pages[$scriptname]['name']) : $title).
 			'<body>'.libHTML::menu($pages, $scriptname);
 
 		if( defined('FACEBOOKSCRIPT') ) {
@@ -419,7 +440,7 @@ class libHTML
 		}
 
 		print '<noscript><div class="content-notice">
-					<p class="notice">You do not have JavaScript enabled. It is required to use webDiplomacy fully.</p>
+					<p class="notice">'.l_t('You do not have JavaScript enabled. It is required to use webDiplomacy fully.').'</p>
 				</div></noscript>';
 
 		print self::globalNotices();
@@ -463,9 +484,10 @@ class libHTML
 			$notice[] = Config::$serverMessages['Notice'];
 
 		if ( ( time() - $Misc->LastProcessTime ) > Config::$downtimeTriggerMinutes*60 )
-			$notice[] = "The last process time was over ".Config::$downtimeTriggerMinutes." minutes
-				ago (at ".libTime::text($Misc->LastProcessTime)."); the server
-				is not processing games until the cause is found and games are given extra time.";
+			$notice[] = l_t("The last process time was over %s minutes ".
+				"ago (at %s); the server ".
+				"is not processing games until the cause is found and games are given extra time.",
+				Config::$downtimeTriggerMinutes,libTime::text($Misc->LastProcessTime));
 
 		if ( $notice )
 			return '<div class="content-notice"><p class="notice">'.
@@ -505,10 +527,17 @@ class libHTML
 
 		$gameNotifyBlock = '';
 
+		if ( $User->notifications->PrivateMessage and ! isset($_REQUEST['notices']))
+		{
+			$gameNotifyBlock .= '<span class=""><a href="index.php?notices=on">'.
+				l_t('PM').' <img src="'.l_s('images/icons/mail.png').'" alt="'.l_t('New private messages').'" title="'.l_t('New private messages!').'" />'.
+				'</a></span> ';
+		}
+
 		foreach ( $gameIDs as $gameID )
 		{
 			$notifyGame = $notifyGames[$gameID];
-			require_once('objects/basic/set.php');
+			require_once(l_r('objects/basic/set.php'));
 			$notifyGame['orderStatus'] = new setMemberOrderStatus($notifyGame['orderStatus']);
 
 			// Don't print the game if we're looking at it.
@@ -520,14 +549,14 @@ class libHTML
 				$notifyGame['name'];
 
 			if ( $notifyGame['processStatus'] == 'Paused' )
-				$gameNotifyBlock .= '-<img src="images/icons/pause.png" alt="Paused" title="Game paused" />';
+				$gameNotifyBlock .= '-<img src="'.l_s('images/icons/pause.png').'" alt="'.l_t('Paused').'" title="'.l_t('Game paused').'" />';
 
 			$gameNotifyBlock .= ' ';
 
 			$gameNotifyBlock .= $notifyGame['orderStatus']->icon();
 
 			if ( $notifyGame['newMessagesFrom'] )
-				$gameNotifyBlock .= '<img src="images/icons/mail.png" alt="New messages" title="New messages!" />';
+				$gameNotifyBlock .= '<img src="'.l_s('images/icons/mail.png').'" alt="'.l_t('New messages').'" title="'.l_t('New messages!').'" />';
 
 			$gameNotifyBlock .= '</a></span> ';
 		}
@@ -619,7 +648,7 @@ class libHTML
 				<div id="header">
 					<div id="header-container">
 						<a href="./">
-							<img id="logo" src="images/logo.png" alt="webDiplomacy" />
+							<img id="logo" src="'.l_s('images/logo.png').'" alt="'.l_t('webDiplomacy').'" />
 						</a>';
 
 		if ( is_object( $User ) )
@@ -632,22 +661,22 @@ class libHTML
 			$menu .= '
 				<div style="float:right; text-align:right; width:100%">
 					<div id="header-welcome">
-						'.(is_object($User)?'Welcome, '.$User->profile_link(TRUE).' -
+						'.(is_object($User)?l_t('Welcome, %s',$User->profile_link(TRUE)).' -
 						<span class="logon">('.
 							($User->type['User'] ?
-							'<a href="logon.php?logoff=on" class="light">Log off</a>)'.
-								( defined('AdminUserSwitch') ? ' (<a href="index.php?auid=0" class="light">Switch back</a>)' : '' )
-							:'<a href="logon.php" class="light">Log on</a>)').
+							'<a href="logon.php?logoff=on" class="light">'.l_t('Log off').'</a>)'.
+								( defined('AdminUserSwitch') ? ' (<a href="index.php?auid=0" class="light">'.l_t('Switch back').'</a>)' : '' )
+							:'<a href="logon.php" class="light">'.l_t('Log on').'</a>)').
 						'</span>'
-						:'Welcome, Guest').'
+						:l_t('Welcome, Guest')).'
 					</div>';
 
 			$menu .= '<div id="header-goto">';
 
 			if( isset($pages[$scriptname]) and ! $pages[$scriptname]['inmenu'] )
 			{
-				$menu .= '<a href="'.$scriptname.'?'.$arguments.'" title="The current page; click to refresh" class="current">'
-					.$pages[$scriptname]['name'].'</a>';
+				$menu .= '<a href="'.$scriptname.'?'.$arguments.'" title="'.l_t('The current page; click to refresh').'" class="current">'
+					.l_t($pages[$scriptname]['name']).'</a>';
 			}
 
 			foreach($pages as $page=>$script)
@@ -656,9 +685,9 @@ class libHTML
 				{
 					$menu .= '<a href="'.$page.
 						( $page==$scriptname ? '?'.$arguments.'" class="current"' : '"').' '.
-						( isset($script['title']) ? 'title="'.$script['title'].'"' :'').' '.
+						( isset($script['title']) ? 'title="'.l_t($script['title']).'"' :'').' '.
 						'>'.
-						$script['name'].'</a>';
+						l_t($script['name']).'</a>';
 				}
 			}
 
@@ -668,8 +697,8 @@ class libHTML
 		{
 			$menu .= '<div id="header-welcome">&nbsp;</div>
 				<div id="header-goto">
-					<a href="index.php">Home</a>
-					<a href="'.$scriptname.'">Reload current page</a>
+					<a href="index.php">'.l_t('Home').'</a>
+					<a href="'.$scriptname.'">'.l_t('Reload current page').'</a>
 				</div>';
 		}
 		$menu .= '</div>
@@ -699,13 +728,15 @@ class libHTML
 
 			print self::footerCopyright();
 
-			print '<br />Times are <strong id="UTCOffset">UTC+0:00</strong>';
+			print '<br />'.l_t('Times are <strong id="UTCOffset">UTC+0:00</strong>');
 
 			print Config::customFooter();
 
 			if( Config::$debug )
-				print $DB->profilerPrint();
-
+			{
+				print self::footerDebugData();
+			}
+			
 			print self::footerScripts();
 		}
 		else
@@ -718,6 +749,23 @@ class libHTML
 
 		close();
 	}
+	
+	private static function footerDebugData() {
+		global $Locale, $DB;
+		
+		$buf = '';
+		if( is_object($DB) )
+			$buf .= $DB->profilerPrint();
+		
+		if( is_object($Locale) )
+		{
+			$buf .= '<br /><strong>Missed localization lookups:</strong><br />';
+			foreach($Locale->failedLookups as $failedText)
+				$buf .= htmlentities($failedText).'<br />';
+		}
+		
+		return $buf;
+	}
 
 	private static function footerStats() {
 		global $DB, $Misc, $User;
@@ -725,12 +773,15 @@ class libHTML
 		$buf = '';
 
 		// Run time, select queries, insert queries
-		$buf .= 'Rendered in: <strong>'.round((microtime(true)-$GLOBALS['scriptStartTime']),2).'sec</strong> - '.
-			'Data retrievals: <strong>'.$DB->getqueries.'</strong> - '.
-			'Data insertions: <strong>'.$DB->putqueries.'</strong> ';
+		$buf .= l_t('Rendered in: <strong>%ssec</strong> - '.
+			'Data retrievals: <strong>%s</strong> - '.
+			'Data insertions: <strong>%s</strong>',
+				round((microtime(true)-$GLOBALS['scriptStartTime']),2),
+				$DB->getqueries,
+				$DB->putqueries).' ';
 
 		if( function_exists('memory_get_usage') )
-			$buf .= ' - Memory used: <strong>'.round((memory_get_usage()/1024)/1024, 3).'MB</strong> ';
+			$buf .= ' - '.l_t('Memory used: <strong>%sMB</strong>',round((memory_get_usage()/1024)/1024, 3)).' ';
 
 		$buf .= '<br /><br />';
 
@@ -746,13 +797,13 @@ class libHTML
 			if ( $first ) $first=false;
 			else $buf .= ' - ';
 
-			$buf .= $name.': <strong>'.$stat.'</strong> ';
+			$buf .= l_t($name).': <strong>'.$stat.'</strong> ';
 		}
-		$buf .= ' - Pages served: <strong>'.$Misc->Hits.'</strong>';
+		$buf .= ' - '.l_t('Pages served: <strong>%s</strong>',$Misc->Hits);
 		$buf .= '<br />';
 
 		$stats=array('Starting games'=>$Misc->GamesNew,
-			'Open games'=>$Misc->GamesOpen,
+			'Joinable games'=>$Misc->GamesOpen,
 			'Active games'=>$Misc->GamesActive,
 			'Finished games'=>$Misc->GamesFinished);
 		$first=true;
@@ -761,7 +812,7 @@ class libHTML
 			if ( $first ) $first=false;
 			else $buf .= ' - ';
 
-			$buf .= $name.': <strong>'.$stat.'</strong> ';
+			$buf .= l_t($name).': <strong>'.$stat.'</strong> ';
 		}
 
 		if ( !isset($User) || !$User->type['Moderator'] ) return $buf;
@@ -770,11 +821,11 @@ class libHTML
 		$buf .= '<br /><br />';
 
 		$stats=array(
-			'<a href="gamemaster.php" class="light">Last process</a>'=>($Misc->LastProcessTime?libTime::text($Misc->LastProcessTime):'Never'),
-			'<a href="admincp.php?tab=Control%20Panel%20Logs" class="light">Last mod action</a>'=>($Misc->LastModAction?libTime::text($Misc->LastModAction):'Never'),
-			'<a href="admincp.php?tab=Status%20lists" class="light">Error logs</a>'=>$Misc->ErrorLogs,
-			'Paused games'=>$Misc->GamesPaused,
-			'<a href="admincp.php?tab=Status%20lists" class="light">Crashed games</a>'=>$Misc->GamesCrashed,
+			'<a href="gamemaster.php" class="light">'.l_t('Last process').'</a>'=>($Misc->LastProcessTime?libTime::text($Misc->LastProcessTime):l_t('Never')),
+			'<a href="admincp.php?tab=Control%20Panel%20Logs" class="light">'.l_t('Last mod action').'</a>'=>($Misc->LastModAction?libTime::text($Misc->LastModAction):l_t('Never')),
+			'<a href="admincp.php?tab=Status%20lists" class="light">'.l_t('Error logs').'</a>'=>$Misc->ErrorLogs,
+			l_t('Paused games')=>$Misc->GamesPaused,
+			'<a href="admincp.php?tab=Status%20lists" class="light">'.l_t('Crashed games').'</a>'=>$Misc->GamesCrashed,
 		);
 
 		$first=true;
@@ -791,7 +842,7 @@ class libHTML
 
 	static private function footerCopyright() {
 		// Version, sourceforge and HTML compliance logos
-		return 'webDiplomacy version <strong>'.number_format(VERSION/100,2).'</strong><br />
+		return l_t('webDiplomacy version <strong>%s</strong>',number_format(VERSION/100,2)).'<br />
 			<a href="http://sourceforge.net/projects/phpdiplomacy">
 				<img alt="webDiplomacy @ Sourceforge"
 					src="http://sourceforge.net/sflogo.php?group_id=125692" />
@@ -823,7 +874,7 @@ class libHTML
 	}*/
 
 	public static $footerScript=array();
-	public static $footerIncludes=array('utility.js','cacheUpdate.js','timeHandler.js','forum.js');
+	public static $footerIncludes=array();
 	
 	public static function likeCount($likeCount) {
 		if($likeCount==0) return '';
@@ -832,13 +883,13 @@ class libHTML
 	}
 	
 	static private function footerScripts() {
-		global $User;
+		global $User, $Locale;
 
 		$buf = '';
 
 		// onlineUsers, for the online icons
 		$statsDir = libCache::dirName('stats');
-		$onlineFile = $statsDir.'/onlineUsers.json';
+		$onlineFile = l_s($statsDir.'/onlineUsers.json');
 		if( file_exists($onlineFile) )
 			$buf .= '<script type="text/javascript" src="'.STATICSRV.$onlineFile.'"></script>';
 		else
@@ -859,8 +910,8 @@ class libHTML
 			muteThreads = $A(['.implode(',',$User->getMuteThreads()).']);
 			</script>';
 			unset($gameMutePairs);
-			self::$footerIncludes[] = 'mute.js';
-			self::$footerScript[] = 'muteAll();';
+			self::$footerIncludes[] = l_j('mute.js');
+			self::$footerScript[] = l_jf('muteAll').'();';
 
 			// Participated threads
 			$cacheUserParticipatedThreadIDsFilename = libCache::dirID('users',$User->id).'/readThreads.js';
@@ -868,11 +919,25 @@ class libHTML
 			if( file_exists($cacheUserParticipatedThreadIDsFilename) )
 			{
 				$buf .= '<script type="text/javascript" src="'.STATICSRV.$cacheUserParticipatedThreadIDsFilename.'?nocache='.rand(0,999999).'"></script>';
-				libHTML::$footerScript[]='setForumParticipatedIcons();';
+				libHTML::$footerScript[]=l_jf('setForumParticipatedIcons').'();';
 			}
 		}
-
-		foreach( self::$footerIncludes as $includeJS )
+		
+		if( is_object($Locale) )
+			$Locale->onFinish();
+		
+		// Add the javascript includes:
+		$footerIncludes = array();
+		$footerIncludes[] = l_j('../locales/layer.js');
+		$footerIncludes[] = l_j('../locales/English/layer.js');
+		$footerIncludes[] = l_j('contrib/sprintf.js');
+		$footerIncludes[] = l_j('utility.js');
+		$footerIncludes[] = l_j('cacheUpdate.js');
+		$footerIncludes[] = l_j('timeHandler.js');
+		$footerIncludes[] = l_j('forum.js');
+		
+		// Don't localize all the footer includes here, as some of them may be dynamically generated
+		foreach( array_merge($footerIncludes,self::$footerIncludes) as $includeJS ) // Add on the dynamically added includes
 			$buf .= '<script type="text/javascript" src="'.STATICSRV.JSDIR.'/'.$includeJS.'"></script>';
 
 		// Utility (error detection, message protection), HTML post-processing,
@@ -885,25 +950,39 @@ class libHTML
 				this.points='.$User->points.'
 				this.lastMessageIDViewed='.$User->lastMessageIDViewed.';
 				this.timeLastSessionEnded='.$User->timeLastSessionEnded.';
-				this.type='.$User->type.';
-				this.token="'.md5(Config::$secret.$User->id.$User->type).'";
+				this.token="'.md5(Config::$secret.$User->id.'Array').'";
 			}
 			User = new UserClass();
+			
+			WEBDIP_DEBUG='.(Config::$debug ? 'true':'false').';
 
 			document.observe("dom:loaded", function() {
-				onlineUsers.push(User.id);
-
-				setUserOnlineIcons();
-				setForumMessageIcons();
-				setPostsItalicized();
-				updateTimestamps();
-				updateUTCOffset();
-				updateTimers();
-
-				'.implode("\n", self::$footerScript).'
+			
+				try {
+					'.l_jf('Locale.onLoad').'();
+					
+					'.l_jf('onlineUsers.push').'(User.id);
+	
+					'.l_jf('setUserOnlineIcons').'();
+					'.l_jf('setForumMessageIcons').'();
+					'.l_jf('setPostsItalicized').'();
+					'.l_jf('updateTimestamps').'();
+					'.l_jf('updateUTCOffset').'();
+					'.l_jf('updateTimers').'();
+	
+					'.implode("\n", self::$footerScript).'
+					
+					'.l_jf('Locale.afterLoad').'();
+				}
+				catch( e ) {
+				'.(Config::$debug ? 'alert(e);':'').'
+				}
 			}, this);
 		</script>
 		';
+		
+		if( Config::$debug )
+			$buf .= '<br /><strong>JavaScript localization lookup failures:</strong><br /><span id="jsLocalizationDebug"></span>';
 
 		return $buf;
 	}

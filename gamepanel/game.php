@@ -20,7 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('gamepanel/members.php');
+require_once(l_r('gamepanel/members.php'));
 
 /**
  * The game panel class; it extends the Game class, which contains the information, with a set
@@ -84,9 +84,14 @@ class panelGame extends Game
 		if( $this->phase == 'Finished' )
 			return $this->gameGameOverDetails();
 		elseif( $this->phase == 'Pre-game' && count($this->Members->ByID)==count($this->Variant->countries) )
-			return count($this->Variant->countries).' players joined; game will start on next process cycle';
+		{
+			if ( $this->isLiveGame() )
+				return l_t('%s players joined; game will start at the scheduled time', count($this->Variant->countries));
+			else
+				return l_t('%s players joined; game will start on next process cycle', count($this->Variant->countries));
+		}
 		elseif( $this->missingPlayerPolicy=='Strict'&&!$this->Members->isComplete() && time()>=$this->processTime )
-			return "One or more players need to complete their orders before this strict/tournament game can go on";
+			return l_t("One or more players need to complete their orders before this strict/tournament game can go on");
 	}
 
 	/*
@@ -113,7 +118,7 @@ class panelGame extends Game
 	*/
 
 	function pausedInfo() {
-		return 'Paused <img src="images/icons/pause.png" title="Game paused" />';
+		return l_t('Paused').' <img src="'.l_s('images/icons/pause.png').'" title="'.l_t('Game paused').'" />';
 	}
 
 	/**
@@ -125,24 +130,24 @@ class panelGame extends Game
 	{
 
 		if( $this->phase == 'Finished' )
-			return '<span class="gameTimeRemainingNextPhase">Finished:</span> '.
+			return '<span class="gameTimeRemainingNextPhase">'.l_t('Finished:').'</span> '.
 				libTime::text($this->processTime);
 
 		if( $this->processStatus == 'Paused' )
 			return $this->pausedInfo();
 		elseif( $this->processStatus == 'Crashed' )
-			return 'Crashed';
+			return l_t('Crashed');
 
 		if (!isset($timerCount))
 			static $timerCount=0;
 		$timerCount++;
 
 		if( $this->phase == 'Pre-game' )
-			$buf = '<span class="gameTimeRemainingNextPhase">Start:</span> '.
+			$buf = '<span class="gameTimeRemainingNextPhase">'.l_t('Start:').'</span> '.
 				$this->processTimetxt().' ('.libTime::text($this->processTime).')';
 		else
 		{
-			$buf = '<span class="gameTimeRemainingNextPhase">Next:</span> '.
+			$buf = '<span class="gameTimeRemainingNextPhase">'.l_t('Next:').'</span> '.
 				$this->processTimetxt().' ('.libTime::text($this->processTime).')';
 
 			//if ( $this->Members->isJoined() )
@@ -162,11 +167,11 @@ class panelGame extends Game
 		if( $this->gameOver == 'Won' )
 		{
 			foreach($this->Members->ByStatus['Won'] as $Winner);
-			return 'Game won by '.$Winner->memberName();
+			return l_t('Game won by %s',$Winner->memberName());
 		}
 		elseif( $this->gameOver == 'Drawn' )
 		{
-			return 'Game drawn';
+			return l_t('Game drawn');
 		}
 	}
 
@@ -189,10 +194,10 @@ class panelGame extends Game
 
 		$buf = '';
 		if( $this->pot > $Misc->GameFeaturedThreshold )
-			$buf .= '<img src="images/icons/star.png" alt="Featured" title="This is a featured game, one of the highest stakes games on the server!" /> ';
+			$buf .= '<img src="'.l_s('images/icons/star.png').'" alt="'.l_t('Featured').'" title="'.l_t('This is a featured game, one of the highest stakes games on the server!').'" /> ';
 
 		if( $this->private )
-			$buf .= '<img src="images/icons/lock.png" alt="Private" title="This is a private game; password needed!" /> ';
+			$buf .= '<img src="'.l_s('images/icons/lock.png').'" alt="'.l_t('Private').'" title="'.l_t('This is a private game; password needed!').'" /> ';
 
 		return $buf;
 	}
@@ -216,14 +221,14 @@ class panelGame extends Game
 				</span>
 			</div>';
 
-		$date=' - <span class="gameDate">'.$this->datetxt().'</span>, <span class="gamePhase">'.$this->phase.'</span>';
+		$date=' - <span class="gameDate">'.$this->datetxt().'</span>, <span class="gamePhase">'.l_t($this->phase).'</span>';
 
 		$leftTop = '<div class="titleBarLeftSide">
 				'.$this->gameIcons().
 				'<span class="gameName">'.$this->titleBarName().'</span>';
 
 		$leftBottom = '<div class="titleBarLeftSide">
-				Pot: <span class="gamePot">'.$this->pot.' '.libHTML::points().'</span>';
+				'.l_t('Pot:').' <span class="gamePot">'.$this->pot.' '.libHTML::points().'</span>';
 			//<span class="gamePotType" title="'.$this->potType.'">('.($this->potType=='Points-per-supply-center'?'PPSC':'WTA').')</span>';
 
 		$leftBottom .= $date;
@@ -250,13 +255,13 @@ class panelGame extends Game
 		if( $this->variantID!=1 )
 			$alternatives[]=$this->Variant->link();
 		if( $this->pressType=='NoPress')
-			$alternatives[]='No in-game messaging';
+			$alternatives[]=l_t('No in-game messaging');
 		elseif( $this->pressType=='PublicPressOnly' )
-			$alternatives[]='Public messaging only';
+			$alternatives[]=l_t('Public messaging only');
 		if( $this->anon=='Yes' )
-			$alternatives[]='Anonymous players';
+			$alternatives[]=l_t('Anonymous players');
 		if( $this->potType=='Winner-takes-all' )
-			$alternatives[]=$this->potType;
+			$alternatives[]=l_t($this->potType);
 
 		if ( $alternatives )
 			return '<div class="titleBarLeftSide" style="float:left">
@@ -274,21 +279,21 @@ class panelGame extends Game
 	 */
 	function gameHoursPerPhase()
 	{
-		$buf = '<strong>'.libTime::timeLengthText($this->phaseMinutes*60).'</strong>
-			/phase <span class="gameTimeHoursPerPhaseText">(';
+		$buf = l_t('<strong>%s</strong> /phase',libTime::timeLengthText($this->phaseMinutes*60)).
+			' <span class="gameTimeHoursPerPhaseText">(';
 
-		if ( $this->phaseMinutes < 60 )
-			$buf .= 'live';
+		if ( $this->isLiveGame() )
+			$buf .= l_t('live');
 		elseif ( $this->phaseMinutes < 6*60 )
-			$buf .= 'very fast';
+			$buf .= l_t('very fast');
 		elseif ( $this->phaseMinutes < 16*60 )
-			$buf .= 'fast';
-		elseif( $this->phaseMinutes < 36*60 )
-			$buf .= 'normal';
-		elseif( $this->phaseMinutes < 3*24*60 )
-			$buf .= 'slow';
+			$buf .= l_t('fast');
+		elseif ( $this->phaseMinutes < 36*60 )
+			$buf .= l_t('normal');
+		elseif ( $this->phaseMinutes < 3*24*60 )
+			$buf .= l_t('slow');
 		else
-			$buf .= 'very slow';
+			$buf .= l_t('very slow');
 
 		return $buf .')</span>';
 	}
@@ -381,10 +386,10 @@ class panelGame extends Game
 	 */
 	function archiveBar()
 	{
-		return '<strong>Archive:</strong> '.
-			'<a href="board.php?gameID='.$this->id.'&amp;viewArchive=Orders">Orders</a>
-			- <a href="board.php?gameID='.$this->id.'&amp;viewArchive=Maps">Maps</a>
-			- <a href="board.php?gameID='.$this->id.'&amp;viewArchive=Messages">Messages</a>';
+		return '<strong>'.l_t('Archive:').'</strong> '.
+			'<a href="board.php?gameID='.$this->id.'&amp;viewArchive=Orders">'.l_t('Orders').'</a>
+			- <a href="board.php?gameID='.$this->id.'&amp;viewArchive=Maps">'.l_t('Maps').'</a>
+			- <a href="board.php?gameID='.$this->id.'&amp;viewArchive=Messages">'.l_t('Messages').'</a>';
 //			- <a href="board.php?gameID='.$this->id.'&amp;viewArchive=Reports">Reports</a>';
 	}
 
@@ -394,7 +399,7 @@ class panelGame extends Game
 	 */
 	private static function passwordBox()
 	{
-		return ' <span class="gamePasswordBox"><label>Password:</label> <input type="password" name="gamepass" size="10" /></span> ';
+		return ' <span class="gamePasswordBox"><label>'.l_t('Password:').'</label> <input type="password" name="gamepass" size="10" /></span> ';
 	}
 
 	/**
@@ -412,11 +417,11 @@ class panelGame extends Game
 				$reason=$this->Members->cantLeaveReason();
 
 				if($reason)
-					return "(Can't leave game; ".$reason.".)";
+					return l_t("(Can't leave game; %s.)",$reason);
 				else
-					return '<form onsubmit="return confirm(\'Are you sure you want to leave this game?\');" method="post" action="board.php?gameID='.$this->id.'"><div>
+					return '<form onsubmit="return confirm(\''.l_t('Are you sure you want to leave this game?').'\');" method="post" action="board.php?gameID='.$this->id.'"><div>
 					<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
-					<input type="submit" name="leave" value="Leave game" class="form-submit" />
+					<input type="submit" name="leave" value="'.l_t('Leave game').'" class="form-submit" />
 					</div></form>';
 			}
 			else
@@ -426,31 +431,35 @@ class panelGame extends Game
 			return '';
 
 		if( $this->minimumBet <= 100 && !$User->type['User'] && !$this->private )
-			return 'A newly registered account can join this game;
-				<a href="register.php" class="light">register now</a> to join.';
+			return l_t('A newly registered account can join this game; '.
+				'<a href="register.php" class="light">register now</a> to join.');
 
-		$buf = '<form onsubmit="return confirm(\'Are you sure you want to join this game?\');" method="post" action="board.php?gameID='.$this->id.'"><div>
+		$question = l_t('Are you sure you want to join this game?').'\n\n';
+		if ( $this->isLiveGame() )
+		{
+			$question .= l_t('The game will start at the scheduled time even if all %s players have joined.', count($this->Variant->countries));
+		}
+		else
+		{
+			$question .= l_t('The game will start when all %s players have joined.', count($this->Variant->countries));
+		}
+
+		$buf = '<form onsubmit="return confirm(\''.$question.'\');" method="post" action="board.php?gameID='.$this->id.'"><div>
 			<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />';
 
 		if( $this->phase == 'Pre-game' )
 		{
-			$buf .= 'Bet to join: <em>'.$this->minimumBet.libHTML::points().'</em>: ';
-
-			if ( $this->private )
-				$buf .= '<br />'.self::passwordBox();
-
-			$buf .= '<input type="submit" name="join" value="Join" class="form-submit" />';
-
+			$buf .= l_t('Bet to join: %s: ','<em>'.$this->minimumBet.libHTML::points().'</em>');
 		}
 		else
 		{
 			$buf .= $this->Members->selectCivilDisorder();
-
-			if ( $this->private )
-				$buf .= '<br />'.self::passwordBox();
-
-			$buf .= ' <input type="submit" name="join" value="Join" class="form-submit" />';
 		}
+
+		if ( $this->private )
+			$buf .= '<br />'.self::passwordBox();
+
+		$buf .= ' <input type="submit" name="join" value="'.l_t('Join').'" class="form-submit" />';
 
 		$buf .= '</div></form>';
 		return $buf;
@@ -468,7 +477,7 @@ class panelGame extends Game
 			return '';
 
 		return '<a href="board.php?gameID='.$this->id.'#gamePanel">'.
-			($this->Members->isJoined()?'Open':'View').'</a>';
+			l_t($this->Members->isJoined()?'Open':'View').'</a>';
 
 		return '<form method="get" action="board.php#gamePanel"><div>
 			<input type="hidden" name="gameID" value="'.$this->id.'" />

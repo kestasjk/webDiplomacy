@@ -22,6 +22,10 @@ define('AJAX', true); // Makes header.php ignore some of the unneeded stuff, mai
 
 require_once('header.php');
 
+/*
+ * This function logs a huge amount of javascript errors, sent from javascript/utility.js on error,
+ * but it seems to log trivial errors in lots of different languages, and isn't very useful except
+ * perhaps for development.
 function logJavaScriptError() {
 	$errorVars=array('Location','Message','URL','Line');
 	$errorVals=array();
@@ -38,7 +42,7 @@ function logJavaScriptError() {
 	trigger_error('JavaScript error logged');
 }
 logJavaScriptError();
-
+*/
 
 $results = array('status'=>'Invalid', 'notice'=>'No valid action specified');
 
@@ -49,17 +53,27 @@ if( isset($_GET['likeMessageToggleToken']) ) {
 		$userID = (int) $token[0];
 		$likeMessageID = (int) $token[1];
 		
+		$DB->sql_put("BEGIN");
+		
 		list($likeExists) = $DB->sql_row("SELECT COUNT(*) FROM wD_LikePost WHERE userID = ".$userID." AND likeMessageID = ".$likeMessageID);
 		
 		if( $likeExists == 0  )
+		{
+			$DB->sql_put("UPDATE wD_ForumMessages SET likeCount = likeCount + 1 WHERE id = ".$likeMessageID);
 			$DB->sql_put("INSERT INTO wD_LikePost ( userID, likeMessageID ) VALUES ( ".$userID.", ".$likeMessageID." )");
+		}
 		else
+		{
+			$DB->sql_put("UPDATE wD_ForumMessages SET likeCount = likeCount - 1 WHERE id = ".$likeMessageID);
 			$DB->sql_put("DELETE FROM wD_LikePost WHERE userID = ".$userID." AND likeMessageID = ".$likeMessageID);
+		}
+		
+		$DB->sql_put("COMMIT");
 	}
 }
 elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($_REQUEST['orderUpdates']) )
 {
-	require_once('board/orders/orderinterface.php');
+	require_once(l_r('board/orders/orderinterface.php'));
 
 	try
 	{
@@ -92,7 +106,7 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 			if( $Game->processStatus!='Crashed' && $Game->attempts > count($Game->Members->ByID)*2 )
 			{
 				$DB->sql_put("COMMIT");
-				require_once('gamemaster/game.php');
+				require_once(l_r('gamemaster/game.php'));
 				$Game =libVariant::$Variant->processGame($Game->id);
 				$Game->crashed();
 				$DB->sql_put("COMMIT");
@@ -104,7 +118,7 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 
 				$results['process']='Attempted';
 
-				require_once('gamemaster/game.php');
+				require_once(l_r('gamemaster/game.php'));
 				$Game = libVariant::$Variant->processGame($O->gameID);
 				if( $Game->needsProcess() )
 				{
@@ -112,7 +126,7 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 					$DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$Game->id);
 					$DB->sql_put("COMMIT");
 					$results['process']='Success';
-					$results['notice']='Game processed, click <a href="board.php?gameID='.$Game->id.'&nocache='.rand(0,1000).'">here</a> to refresh..';
+					$results['notice']=l_t('Game processed, click <a href="%s">here</a> to refresh..','board.php?gameID='.$Game->id.'&nocache='.rand(0,1000));
 				}
 			}
 		}
@@ -124,8 +138,8 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 		else
 			$DB->sql_put("ROLLBACK");
 
-		$results = array('invalid'=>true, 'statusIcon'=>'<img src="images/icons/alert.png" alt="Error" title="Error alert" />',
-			'statusText'=>'', 'notice'=>'Exception: '.$e->getMessage(), 'orders'=>array());
+		$results = array('invalid'=>true, 'statusIcon'=>'<img src="'.l_s('images/icons/alert.png').'" alt="'.l_t('Error').'" title="'.l_t('Error alert').'" />',
+			'statusText'=>'', 'notice'=>l_t('Exception: ').$e->getMessage(), 'orders'=>array());
 	}
 }
 

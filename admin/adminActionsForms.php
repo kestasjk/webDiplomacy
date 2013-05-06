@@ -20,8 +20,10 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('admin/adminActions.php');
-require_once('admin/adminActionsRestricted.php');
+require_once(l_r('admin/adminActions.php'));
+require_once(l_r('admin/adminActionsForum.php'));
+require_once(l_r('admin/adminActionsRestricted.php'));
+require_once(l_r('admin/adminActionsTD.php'));
 
 /**
  * This class uses data about admin tasks, provided by child classes, to
@@ -44,6 +46,7 @@ class adminActionsForms
 
 	public static $globalGameID;
 	public static $globalUserID;
+	public static $globalPostID;
 
 	/**
 	 * Output the form which needs to be filled out to perform some action
@@ -53,16 +56,18 @@ class adminActionsForms
 	 */
 	private static function form($actionName, array $params, $description="")
 	{
-		print '<form action="admincp.php#'.$actionName.'" method="post">
+		print '<form action="'.self::$target.'#'.$actionName.'" method="post">
 			<input type="hidden" name="actionName" value="'.$actionName.'" />';
 
 		if ( isset($_REQUEST['globalGameID']) )
 			print '<input type="hidden" name="globalGameID" value="'.intval($_REQUEST['globalGameID']).'" />';
 		if ( isset($_REQUEST['globalUserID']) )
 			print '<input type="hidden" name="globalUserID" value="'.intval($_REQUEST['globalUserID']).'" />';
-
+		if ( isset($_REQUEST['globalPostID']) )
+			print '<input type="hidden" name="globalPostID" value="'.intval($_REQUEST['globalPostID']).'" />';
+		
 		if ($description)
-			print '<li class="formlistdesc" style="margin-bottom:10px">'.$description.'</li>';
+			print '<li class="formlistdesc" style="margin-bottom:10px">'.l_t($description).'</li>';
 
 		foreach( $params as $paramCode=>$paramName )
 		{
@@ -73,18 +78,20 @@ class adminActionsForms
 				$defaultValue = self::$globalGameID;
 			elseif ( $paramCode == 'userID' && self::$globalUserID )
 				$defaultValue = self::$globalUserID;
+			elseif ( $paramCode == 'postID' && self::$globalPostID )
+				$defaultValue = self::$globalPostID;
 			else
 				$defaultValue = '';
 
 			print '<li class="formlistfield">
-					<label for="'.$paramCode.'">'.$paramName.'</label>:
+					<label for="'.$paramCode.'">'.l_t($paramName).'</label>:
 					<input type="text" name="'.$paramCode.'" value="'.$defaultValue.'" length="50" />
 					</li>';
 		}
 
 		print '<li class="formlistfield" style="margin-bottom:20px">
-			<input class="form-submit" type="submit" name="Submit" value="Submit" /> '.
-			( self::isActionDangerous($actionName) ? '<em>(Careful; not confirmed!)</em>' : '').'
+			<input class="form-submit" type="submit" name="Submit" value="'.l_t('Submit').'" /> '.
+			( self::isActionDangerous($actionName) ? '<em>('.l_t('Careful; not confirmed!').')</em>' : '').'
 			</li>';
 
 		print '</form>';
@@ -118,7 +125,19 @@ class adminActionsForms
 		$DB->sql_put("INSERT INTO wD_AdminLog ( name, userID, time, details, params )
 					VALUES ( '".$name."', ".$User->id.", ".time().", '".$details."', '".$paramValues."' )");
 	}
-
+	
+	/**
+	 * Defines the PHP script which the forms will target; will either be board.php or admincp.php
+	 * @var string
+	 */
+	public static $target;
+	
+	/**
+	 * A reference to the static array of actions
+	 * @var array
+	 */
+	public $actionsList;
+	
 	/**
 	 * For the given task display the form, and run the task if data entered from the corresponding form
 	 *
@@ -128,10 +147,11 @@ class adminActionsForms
 	{
 		global $Misc;
 
-		extract(adminActions::$actions[$actionName]);
+		// TODO: Use late static binding for this instead of INBOARD detection
+		extract($this->actionsList[$actionName]);
 
 		print '<li class="formlisttitle">
-			<a name="'.$actionName.'"></a>'.$name.'</li>';
+			<a name="'.$actionName.'"></a>'.l_t($name).'</li>';
 
 		try
 		{
@@ -148,16 +168,21 @@ class adminActionsForms
 
 				if ( isset($paramValues['gameID']) )
 				{
-					require_once('objects/game.php');
+					require_once(l_r('objects/game.php'));
 					$Variant=libVariant::loadFromGameID((int)$paramValues['gameID']);
 					$Game = $Variant->Game((int)$paramValues['gameID']);
-					print '<p>Game link: <a href="board.php?gameID='.$Game->id.'">'.$Game->name.'</a></p>';
+					print '<p>'.l_t('Game link').': <a href="board.php?gameID='.$Game->id.'">'.$Game->name.'</a></p>';
 				}
 
 				if( isset($paramValues['userID']) )
 				{
 					$User = new User((int)$paramValues['userID']);
-					print '<p>User link: '.$User->profile_link().'</p>';
+					print '<p>'.l_t('User link').': '.$User->profile_link().'</p>';
+				}
+
+				if( isset($paramValues['postID']) )
+				{
+					print '<p>'.l_t('Post link').': '.libHTML::threadLink($paramValues['postID']).'</p>';
 				}
 
 				// If it needs confirming but ( hasn't been confirmed or is being resubmitted ):
@@ -165,7 +190,7 @@ class adminActionsForms
 				{
 					print '<strong>'.$this->{$actionName.'Confirm'}($paramValues).'</strong>';
 
-					print '<form action="admincp.php#'.$actionName.'" method="post">
+					print '<form action="'.self::$target.'#'.$actionName.'" method="post">
 						<input type="hidden" name="actionName" value="'.$actionName.'" />
 						<input type="hidden" name="actionConfirm" value="on" />
 						<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />';
@@ -185,7 +210,7 @@ class adminActionsForms
 					self::save($name, $paramValues, $details);
 
 					$description = '<p class="notice">'.$details.'</p>
-									<p>'.$description.'</p>';
+									<p>'.l_t($description).'</p>';
 
 					$Misc->LastModAction = time();
 				}
@@ -195,8 +220,8 @@ class adminActionsForms
 		}
 		catch(Exception $e)
 		{
-			$description = '<p><strong>Error:</strong> '.$e->getMessage().'</p>
-							<p>'.$description.'</p>';
+			$description = '<p><strong>'.l_t('Error').':</strong> '.$e->getMessage().'</p>
+							<p>'.l_t($description).'</p>';
 		}
 
 		self::form($actionName, $params, $description);
@@ -210,18 +235,18 @@ class adminActionsLayout
 		global $User;
 
 		$modActions=array();
-		$modActions[] = '<a href="gamemaster.php" class="light">Run gamemaster</a><br />';
-		$modActions[] = libHTML::admincp('panic', null, 'Toggle panic-mode');
+		$modActions[] = '<a href="gamemaster.php" class="light">'.l_t('Run gamemaster').'</a><br />';
+		$modActions[] = libHTML::admincp('panic', null, l_t('Toggle panic-mode'));
 
 		if($User->type['Admin'])
 		{
-			$modActions[] = libHTML::admincp('notice', null, 'Toggle the site-wide notice');
-			$modActions[] = libHTML::admincp('maintenance', null, 'Toggle maintenance-mode').'<br />';
-			$modActions[] = libHTML::admincp('clearErrorLogs', null, 'Clear error-logs');
-			$modActions[] = libHTML::admincp('clearOrderLogs', null, 'Clear order-logs');
-			$modActions[] = libHTML::admincp('clearAccessLogs', null, 'Clear access-logs');
-			$modActions[] = libHTML::admincp('clearAdminLogs', null, 'Clear admin-logs').'<br />';
-			$modActions[] = libHTML::admincp('unCrashGames', array('excludeGameIDs'=>''), 'Un-crash any crashed games');
+			$modActions[] = libHTML::admincp('notice', null, l_t('Toggle the site-wide notice'));
+			$modActions[] = libHTML::admincp('maintenance', null, l_t('Toggle maintenance-mode')).'<br />';
+			$modActions[] = libHTML::admincp('clearErrorLogs', null, l_t('Clear error-logs'));
+			$modActions[] = libHTML::admincp('clearOrderLogs', null, l_t('Clear order-logs'));
+			$modActions[] = libHTML::admincp('clearAccessLogs', null, l_t('Clear access-logs'));
+			$modActions[] = libHTML::admincp('clearAdminLogs', null, l_t('Clear admin-logs')).'<br />';
+			$modActions[] = libHTML::admincp('unCrashGames', array('excludeGameIDs'=>''), l_t('Un-crash any crashed games'));
 		}
 
 		if($modActions)
@@ -281,14 +306,14 @@ class adminActionsLayout
 		print '<div style="float:right; width:50%; text-align:left">';
 		for($i=$actionMidPoint; $i<$actionCount; $i++)
 		{
-			print '<a href="#'.$actionCodes[$i].'">'.adminActions::$actions[$actionCodes[$i]]['name'].'</a><br />';
+			print '<a href="#'.$actionCodes[$i].'">'.l_t(adminActions::$actions[$actionCodes[$i]]['name']).'</a><br />';
 		}
 		print '</div>';
 
 		print '<div style="width:45%">';
 		for($i=0; $i<$actionMidPoint; $i++)
 		{
-			print '<a href="#'.$actionCodes[$i].'">'.adminActions::$actions[$actionCodes[$i]]['name'].'</a><br />';
+			print '<a href="#'.$actionCodes[$i].'">'.l_t(adminActions::$actions[$actionCodes[$i]]['name']).'</a><br />';
 		}
 		print '</div>';
 		print '<div style="clear:both"></div>';
@@ -301,44 +326,68 @@ if ( isset($_REQUEST['globalGameID']) )
 	adminActionsForms::$globalGameID = (int)$_REQUEST['globalGameID'];
 if ( isset($_REQUEST['globalUserID']) )
 	adminActionsForms::$globalUserID = (int)$_REQUEST['globalUserID'];
+if ( isset($_REQUEST['globalPostID']) )
+	adminActionsForms::$globalPostID = (int)$_REQUEST['globalPostID'];
 
-print '<div class="hr"></div>';
 
 // A shortcut command area
-adminActionsLayout::printActionShortcuts();
-
-require_once('lib/gamemessage.php');
+require_once(l_r('lib/gamemessage.php'));
 
 // Include the admin-only tasks?
-if ( $User->type['Admin'] )
-	$adminActions = new adminActionsRestricted();
-else
-	$adminActions = new adminActions();
-
-
-// Create a bullet-point set of anchor shortcuts to each task
-
-$actionCodesByType = adminActionsLayout::actionCodesByType();
-
-print '<h3>Admin actions</h3>';
-foreach($actionCodesByType as $type=>$actionCodes)
+if( defined("INBOARD") )
 {
-	print '<a name="'.strtolower($type).'Actions"></a><h4>'.$type.' actions</h4>';
-	adminActionsLayout::printActionLinks($actionCodes);
-}
-
-print '<div class="hr"></div>';
-
-print '<h3>Forms</h3>';
-// For each task display the form, and run the task if data entered from the corresponding form
-print '<ul class="formlist">';
-foreach($actionCodesByType as $type=>$actionCodes)
-{
-	print '<h4>'.$type.' actions</h4>';
-
-	foreach($actionCodes as $actionCode)
+	// We're running in Director mode from within board.php
+	
+	$adminActions = new adminActionsTD();
+	adminActionsForms::$target = "board.php?gameID=".$Game->id;
+	$adminActions->actionsList = adminActionsTD::$actions;
+	
+	print '<h3>'.l_t('Director action forms').'</h3>';
+	// For each task display the form, and run the task if data entered from the corresponding form
+	print '<ul class="formlist">';
+	foreach($adminActions->actionsList as $actionCode=>$action)
+	{
 		$adminActions->process($actionCode);
+	}
+	print '</ul>';
 }
-print '</ul>';
-
-?>
+else
+{
+	print '<div class="hr"></div>';
+	adminActionsLayout::printActionShortcuts();
+	
+	if ( $User->type['Admin'] )
+		$adminActions = new adminActionsRestricted();
+	elseif ( $User->type['ForumModerator'] )
+		$adminActions = new adminActionsForum();
+	else
+		$adminActions = new adminActions();
+	
+	adminActionsForms::$target = "admincp.php";
+	$adminActions->actionsList = adminActions::$actions;
+	
+	// Create a bullet-point set of anchor shortcuts to each task
+	
+	$actionCodesByType = adminActionsLayout::actionCodesByType();
+	
+	print '<h3>'.l_t('Admin actions').'</h3>';
+	foreach($actionCodesByType as $type=>$actionCodes)
+	{
+		print '<a name="'.strtolower($type).'Actions"></a><h4>'.l_t($type.' actions').'</h4>';
+		adminActionsLayout::printActionLinks($actionCodes);
+	}
+	
+	print '<div class="hr"></div>';
+	
+	print '<h3>'.l_t('Forms').'</h3>';
+	// For each task display the form, and run the task if data entered from the corresponding form
+	print '<ul class="formlist">';
+	foreach($actionCodesByType as $type=>$actionCodes)
+	{
+		print '<h4>'.l_t($type.' actions').'</h4>';
+	
+		foreach($actionCodes as $actionCode)
+			$adminActions->process($actionCode);
+	}
+	print '</ul>';
+}

@@ -375,7 +375,7 @@ abstract class drawMap
 		while ( list($terrID, $terrName, $x, $y) = $DB->tabl_row($tabl) )
 		{
 			$this->territoryPositions[$terrID] = array($x,$y);
-			$this->territoryNames[$terrID]=$terrName;
+			$this->territoryNames[$terrID]=l_t($terrName);
 		}
 	}
 
@@ -822,9 +822,21 @@ abstract class drawMap
 		}
 
 		list($r, $g, $b) = $color;
-
-		$colorRes = imageColorAllocate($image['image'], $r, $g, $b);
-
+		
+		// Try to allocate the color from the palette .. 
+		$colorRes = imagecolorexact($image['image'], $r, $g, $b);
+		if ($colorRes == -1)
+		{
+			// .. if the color doesn't exist within the palette add it to the palette (which can hit a limit if the palette gets full) .. 
+			$colorRes = imageColorAllocate($image['image'], $r, $g, $b);
+			
+			if (!$colorRes)
+			{
+				// .. and failing that get the best available thing.
+				$colorRes = imageColorClosest($image['image'], $r, $g, $b);
+			}
+		}
+		
 		return $colorRes;
 	}
 

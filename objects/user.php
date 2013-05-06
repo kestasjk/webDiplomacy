@@ -20,7 +20,8 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('objects/notice.php');
+require_once(l_r('objects/notice.php'));
+require_once(l_r('objects/basic/set.php'));
 
 /**
  * Holds information on a user for display, or to manage certain user related functions such as logging
@@ -42,7 +43,58 @@ class User {
 		libCache::wipeDir($dir, $glob);
 		file_put_contents($dir.'/index.html', '');
 	}
-
+	
+	public function getSilences() {
+		global $DB;
+		
+		$tabl = $DB->sql_tabl("SELECT 
+			silence.id as silenceID,
+			silence.userID as silenceUserID,
+			silence.postID as silencePostID,
+			silence.moderatorUserID as silenceModeratorUserID,
+			silence.enabled as silenceEnabled,
+			silence.startTime as silenceStartTime,
+			silence.length as silenceLength,
+			silence.reason as silenceReason
+		FROM wD_Silences silence
+		WHERE silence.userID = ".$this->id."
+		ORDER BY silence.startTime DESC");
+		
+		$silences = array();
+		while( $record = $DB->tabl_hash($tabl) )
+			$silences[] = new Silence($record);
+		
+		return $silences;
+	}
+	
+	private $ActiveSilence;
+	
+	public function isSilenced() {
+		if( !$this->silenceID ) 
+			return false;
+		
+		$ActiveSilence = new Silence($this->silenceID);
+		
+		if( $ActiveSilence->isEnabled() ) {
+			$this->ActiveSilence = $ActiveSilence;
+			return true;
+		}
+		else
+			return false;
+	}
+	public function getActiveSilence() {
+		
+		if( !$this->isSilenced() ) return null;
+		else return $this->ActiveSilence;
+		
+	}
+	
+	/**
+	* Silence ID; the ID of the last silence set to this user (may be expired / disabled since)
+	* @var int/null
+	*/
+	public $silenceID;
+	
 	/**
 	 * User ID
 	 * @var int
@@ -74,6 +126,12 @@ class User {
 	public $type;
 
 	/**
+	 * Notification flags; an array of notification flags, each set to true if notification should be done.
+	 * @var array
+	 */
+	public $notifications;
+
+	/**
 	 * The user-profile comment
 	 * @var string
 	 */
@@ -98,12 +156,6 @@ class User {
 	 * @var int
 	 */
 	public $timeJoined;
-
-	/**
-	 * Locale
-	 * @var string
-	 */
-	public $locale;
 
 	/**
 	 * UNIX timestamp from the time the last session ended
@@ -260,7 +312,7 @@ class User {
 		$SQLVars = array();
 
 		$available = array('username'=>'', 'password'=>'', 'passwordcheck'=>'', 'email'=>'',
-					'hideEmail'=>'','showEmail'=>'', 'locale'=>'','homepage'=>'','comment'=>'');
+					'hideEmail'=>'','showEmail'=>'', 'homepage'=>'','comment'=>'');
 
 		$userForm = array();
 
@@ -286,7 +338,7 @@ class User {
 			}
 			else
 			{
-				$errors[] = "The two passwords do not match";
+				$errors[] = l_t("The two passwords do not match");
 			}
 		}
 
@@ -295,7 +347,7 @@ class User {
 			$userForm['email'] = $DB->escape($userForm['email']);
 			if( !libAuth::validate_email($userForm['email']) )
 			{
-				$errors[] = "The e-mail address you entered isn't valid. Please enter a valid one";
+				$errors[] = l_t("The e-mail address you entered isn't valid. Please enter a valid one");
 			}
 			else
 			{
@@ -327,18 +379,6 @@ class User {
 			$userForm['comment'] = $DB->msg_escape($userForm['comment']);
 
 			$SQLVars['comment'] = $userForm['comment'];
-		}
-
-		if( isset($userForm['locale']) )
-		{
-			if( !in_array($userForm['locale'], Config::$availablelocales) )
-			{
-				$errors[] = "Specified locale not available";
-			}
-			else
-			{
-				$SQLVars['locale'] = $userForm['locale'];
-			}
 		}
 
 		return $SQLVars;
@@ -382,11 +422,12 @@ class User {
 			u.homepage,
 			u.hideEmail,
 			u.timeJoined,
-			u.locale,
 			u.timeLastSessionEnded,
 			u.points,
 			u.lastMessageIDViewed,
 			u.muteReports,
+			u.silenceID,
+			u.notifications,
 			IF(s.userID IS NULL,0,1) as online
 			FROM wD_Users u
 			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
@@ -394,7 +435,7 @@ class User {
 
 		if ( ! isset($row['id']) or ! $row['id'] )
 		{
-			throw new Exception("A user object has been created which doesn't represent a real user.");
+			throw new Exception(l_t("A user object has been created which doesn't represent a real user."));
 		}
 
 		foreach( $row as $name=>$value )
@@ -404,7 +445,7 @@ class User {
 
 		// Convert an array of types this user has into an array of true/false indexed by type
 		$this->type = explode(',', $this->type);
-		$validTypes = array('System','Banned','User','Moderator','Guest','Admin','Donator','DonatorBronze','DonatorSilver','DonatorGold','DonatorPlatinum');
+		$validTypes = array('System','Banned','User','Moderator','Guest','Admin','Donator','DonatorBronze','DonatorSilver','DonatorGold','DonatorPlatinum','ForumModerator');
 		$types = array();
 		foreach($validTypes as $type)
 		{
@@ -418,6 +459,8 @@ class User {
 			}
 		}
 		$this->type = $types;
+
+		$this->notifications=new setUserNotifications($this->notifications);
 
 		$this->online = (bool) $this->online;
 	}
@@ -463,11 +506,10 @@ class User {
 
 		$buf='';
 
-		//if( strstr($type,'Moderator') )
-		//	$buf .= ' <img src="images/icons/mod.png" alt="Mod" title="Moderator" />';
-		//else
-		if(strstr($type,'Banned') )
-			$buf .= ' <img src="images/icons/cross.png" alt="X" title="Banned" />';
+		if( strstr($type,'Moderator') )
+			$buf .= ' <img src="'.l_s('images/icons/mod.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
+		elseif(strstr($type,'Banned') )
+			$buf .= ' <img src="'.l_s('images/icons/cross.png').'" alt="X" title="'.l_t('Banned').'" />';
 
 		if( strstr($type,'DonatorPlatinum') )
 			$buf .= libHTML::platinum();
@@ -492,16 +534,14 @@ class User {
 
 	function sendPM(User $FromUser, $message)
 	{
-		global $DB;
-
 		$message = htmlentities( $message, ENT_NOQUOTES, 'UTF-8');
-		require_once('lib/message.php');
+		require_once(l_r('lib/message.php'));
 		$message = message::linkify($message);
 
 		if( $this->isUserMuted($FromUser->id) )
 		{
 			notice::send($FromUser->id, $this->id, 'PM', 'No', 'Yes',
-				'Could not deliver message, user has muted you.', 'To: '.$this->username,
+				l_t('Could not deliver message, user has muted you.'), l_t('To:').' '.$this->username,
 				$this->id);
 		}
 		else
@@ -509,9 +549,43 @@ class User {
 			notice::send($this->id, $FromUser->id, 'PM', 'Yes', 'Yes',
 				$message, $FromUser->username, $FromUser->id);
 
+			$this->setNotification('PrivateMessage');
+
 			notice::send($FromUser->id, $this->id, 'PM', 'No', 'Yes',
-				'You sent: <em>'.$message.'</em>', 'To: '.$this->username,
+				l_t('You sent:').' <em>'.$message.'</em>', l_t('To:').' '.$this->username,
 				$this->id);
+		}
+	}
+
+	/**
+	 * This will set a notification value in both the object and wd_users table if not already set.
+	 * @param notification notification value to set, must be 'PrivateMessage', 'GameMessage', 'Unfinalized', or 'GameUpdate'.
+	 **/
+	function setNotification($notification)
+	{
+		global $DB;
+
+		$this->notifications->$notification = true;
+		if ($this->notifications->updated)
+		{
+			$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications,'".$notification."') WHERE id = ".$this->id);
+			$this->notifications->updated = false;
+		}
+	}
+
+        /**
+	 * This will clear a notification value in both the object and the wd_users table if not already cleared.
+	 * @param notification notification value to clear, must be 'PrivateMessage', 'GameMessage', 'Unfinalized', or 'GameUpdate'.
+	 **/
+	function clearNotification($notification)
+	{
+		global $DB;
+
+		$this->notifications->$notification = false;
+		if ($this->notifications->updated)
+		{
+			$DB->sql_put("UPDATE wD_Users SET notifications = REPLACE(notifications,'".$notification."','') WHERE id = ".$this->id);
+			$this->notifications->updated = false;
 		}
 	}
 
@@ -560,8 +634,7 @@ class User {
 		}
 
 		if($this->type['Banned'])
-			libHTML::notice('Banned', 'You have been banned from this server. If you think there has been
-					a mistake contact '.Config::$adminEMail.' .');
+			libHTML::notice(l_t('Banned'), l_t('You have been banned from this server. If you think there has been a mistake contact the moderator team at %s , and if you still aren\'t satisfied contact the admin at %s (with details of what happened).',Config::$modEMail, Config::$adminEMail));
 
 		/*
 		$bans=array();
@@ -693,7 +766,7 @@ class User {
 		{
 			if ( $rankingDetails['percentile'] <= $limit )
 			{
-				$rankingDetails['rank'] = $name;
+				$rankingDetails['rank'] = l_t($name);
 				break;
 			}
 		}
@@ -752,7 +825,9 @@ class User {
 		if( isset($muteCountries[$gameID]) ) return $muteCountries[$gameID];
 
 		$muteCountries[$gameID] = array();
-		$tabl = $DB->sql_tabl("SELECT gameID, muteCountryID FROM wD_MuteCountry WHERE userID=".$this->id.($gameID>0?" AND gameID=".$gameID:''));
+		$tabl = $DB->sql_tabl("SELECT m.gameID, m.muteCountryID 
+			FROM wD_MuteCountry m INNER JOIN wD_Games g ON g.id = m.gameID
+			WHERE m.userID=".$this->id.($gameID>0?" AND m.gameID=".$gameID:''));
 
 		while(list($muteGameID,$muteCountryID) = $DB->tabl_row($tabl))
 		{
@@ -782,7 +857,7 @@ class User {
 		
 		if( $this->type['User'] && $this->id != $fromUserID && !in_array($messageID, $this->getLikeMessages()))
 			return '<a id="likeMessageToggleLink'.$messageID.'" 
-			href="#" title="Give a mark of approval for this post" class="light likeMessageToggleLink" '.
+			href="#" title="'.l_t('Give a mark of approval for this post').'" class="light likeMessageToggleLink" '.
 			'onclick="likeMessageToggle('.$this->id.','.$messageID.',\''.libAuth::likeToggleToken($this->id, $messageID).'\'); '.
 			'return false;">'.
 			'+1</a>';

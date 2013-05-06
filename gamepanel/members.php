@@ -20,7 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('gamepanel/member.php');
+require_once(l_r('gamepanel/member.php'));
 /**
  * This class displays the members subsection of a game panel.
  *
@@ -114,11 +114,11 @@ class panelMembers extends Members
 			foreach($this->ByStatus['Left'] as $Member);
 
 			$buf .= '<input type="hidden" name="countryID" value="'.$Member->countryID.'" />
-				<label>Take over:</label> '.$Member->countryColored().', for <em>'.$Member->pointsValue().libHTML::points().'</em>.';
+				'.l_t('<label>Take over:</label> %s, for %s.',$Member->countryColored(),'<em>'.$Member->pointsValue().libHTML::points().'</em>');
 		}
 		else
 		{
-			$buf .= '<label>Take over:</label> <select name="countryID">';
+			$buf .= '<label>'.l_t('Take over:').'</label> <select name="countryID">';
 			foreach($this->ByStatus['Left'] as $Member)
 			{
 				$pointsValue = $Member->pointsValue();
@@ -126,7 +126,7 @@ class panelMembers extends Members
 				if ( $User->points >= $pointsValue )
 				{
 					$buf .= '<option value="'.$Member->countryID.'" />
-						'.$Member->country.', for '.$pointsValue.'
+						'.l_t('%s, for %s',$Member->country,$pointsValue).'
 						</option>';
 				}
 			}

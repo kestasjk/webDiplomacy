@@ -24,14 +24,14 @@
 
 require_once('header.php');
 
-require_once('gamemaster/game.php');
-require_once('gamemaster/misc.php');
+require_once(l_r('gamemaster/game.php'));
+require_once(l_r('gamemaster/misc.php'));
 
 if ( $Misc->Panic )
 {
-	libHTML::notice('Game processing disabled',
-		"Game processing has been temporarily disabled while we take care of an
-		unexpected problem. Please try again later, sorry for the inconvenience.");
+	libHTML::notice(l_t('Game processing disabled'),
+		l_t("Game processing has been temporarily disabled while we take care of an ".
+		"unexpected problem. Please try again later, sorry for the inconvenience."));
 }
 
 if ( !( $User->type['Moderator']
@@ -39,7 +39,7 @@ if ( !( $User->type['Moderator']
 	or ( isset($_REQUEST['gameMasterToken']) and libAuth::gamemasterToken_Valid($_REQUEST['gameMasterToken']) )
 	) )
 {
-	libHTML::notice('Denied', 'Only the cron script and moderators can run the gamemaster script.');
+	libHTML::notice(l_t('Denied'), l_t('Only the cron script and moderators can run the gamemaster script.'));
 }
 
 if ( isset($_REQUEST['gameMasterSecret']) && $User->type['User'] && !$User->type['Moderator'] && $Misc->LastProcessTime == 0 )
@@ -49,10 +49,10 @@ if ( isset($_REQUEST['gameMasterSecret']) && $User->type['User'] && !$User->type
 	$User->type['Moderator']=$User->type['Admin']=true;
 	$Misc->LastProcessTime = time();
 	$Misc->write();
-	libHTML::notice('Admin',"You have been made admin. Please continue with the install instructions in README.txt.");
+	libHTML::notice(l_t('Admin'),l_t("You have been made admin. Please continue with the install instructions in README.txt."));
 }
 
-libHTML::starthtml('GameMaster');
+libHTML::starthtml(l_t('GameMaster'));
 
 print '<div class="content">';
 
@@ -69,7 +69,7 @@ ini_set('max_execution_time','40');
  * - Check last process time, pause processing/save current process time
  * - Check queue and games table for games to process, votes to enact, and system functions to perform
  */
-print 'Updating session table<br />';
+print l_t('Updating session table').'<br />';
 libGameMaster::updateSessionTable();
 
 $statsDir=libCache::dirName('stats');
@@ -84,7 +84,7 @@ file_put_contents($onlineFile, 'onlineUsers=$A(['.implode(',',$onlineUsers).']);
 //- Update misc values (if running as admin/mod)
 if( !$User->type['System'] || (time()%(15*60)<=5*60) )
 {
-	print 'Updating Misc values<br />';
+	print l_t('Updating Misc values').'<br />';
 	miscUpdate::errorLog();
 	miscUpdate::forum();
 	miscUpdate::game();
@@ -94,7 +94,7 @@ if( !$User->type['System'] || (time()%(15*60)<=5*60) )
 //- Check last process time, pause processing/save current process time
 if ( ( time() - $Misc->LastProcessTime ) > Config::$downtimeTriggerMinutes*60 )
 {
-	libHTML::notice('Games not processing',libHTML::admincp('resetLastProcessTime',null,'Continue processing now'));
+	libHTML::notice(l_t('Games not processing'),libHTML::admincp('resetLastProcessTime',null,l_t('Continue processing now')));
 }
 
 $Misc->LastProcessTime = time();
@@ -131,11 +131,11 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 			$Game = $Variant->processGame($Game->id);
 			if( $Game->needsProcess() )
 			{
-				print 'Processing.. ';
+				print l_t('Processing..').' ';
 				$Game->process();
 				$DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$Game->id);
 				$DB->sql_put("COMMIT");
-				print 'Processed.';
+				print l_t('Processed.');
 			}
 		}
 	}
@@ -144,12 +144,12 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 		if( $e->getMessage() == "Abandoned" || $e->getMessage() == "Cancelled" )
 		{
 			$DB->sql_put("COMMIT");
-			print 'Abandoned.';
+			print l_t('Abandoned.');
 		}
 		else
 		{
 			$DB->sql_put("ROLLBACK");
-			print 'Crashed: "'.$e->getMessage().'".';
+			print l_t('Crashed: "%s".',$e->getMessage());
 		}
 	}
 
@@ -165,7 +165,7 @@ if( (time() - $startTime)>=30 )
 	 * to process
 	 */
 	header('refresh: 4; url=gamemaster.php');
-	print '<p class="notice">Timed-out; re-running</p>';
+	print '<p class="notice">'.l_t('Timed-out; re-running').'</p>';
 }
 
 print '</div>';

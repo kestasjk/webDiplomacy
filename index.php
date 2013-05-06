@@ -23,11 +23,11 @@
  */
 require_once('header.php');
 
-require_once('lib/message.php');
+require_once(l_r('lib/message.php'));
 
-require_once('objects/game.php');
+require_once(l_r('objects/game.php'));
 
-require_once('gamepanel/gamehome.php');
+require_once(l_r('gamepanel/gamehome.php'));
 
 /*
  * A field
@@ -36,7 +36,7 @@ require_once('gamepanel/gamehome.php');
  * compare(field1, field2) -> 1 if aligned, 0 if not
  *
  */
-libHTML::starthtml('Home');
+libHTML::starthtml(l_t('Home'));
 
 if( !isset($_SESSION['lastSeenHome']) || $_SESSION['lastSeenHome'] < $User->timeLastSessionEnded )
 {
@@ -80,7 +80,7 @@ class libHome
 		if(!count($pms))
 		{
 			print '<div class="hr"></div>';
-			print '<p class="notice">No game notices found.</p>';
+			print '<p class="notice">'.l_t('No game notices found.').'</p>';
 			return;
 		}
 
@@ -114,7 +114,7 @@ class libHome
 		if(!count($pms))
 		{
 			print '<div class="hr"></div>';
-			print '<p class="notice">No private messages found; you can send them to other people on their profile page.</p>';
+			print '<p class="notice">'.l_t('No private messages found; you can send them to other people on their profile page.').'</p>';
 			return;
 		}
 
@@ -136,8 +136,8 @@ class libHome
 		if(!count($pms))
 		{
 			print '<div class="hr"></div>';
-			print '<p class="notice">No game notices found; try browsing the <a href="gamelistings.php">game listings</a>,
-				or <a href="gamecreate.php">create your own</a> game.</p>';
+			print '<p class="notice">'.l_t('No game notices found; try browsing the <a href="gamelistings.php">game listings</a>, '.
+				'or <a href="gamecreate.php">create your own</a> game.').'</p>';
 			return;
 		}
 
@@ -159,7 +159,7 @@ class libHome
 		if(!count($pms))
 		{
 			print '<div class="hr"></div>';
-			print '<p class="notice">No notices found.</p>';
+			print '<p class="notice">'.l_t('No notices found.').'</p>';
 			return;
 		}
 
@@ -191,7 +191,7 @@ class libHome
 		global $Misc;
 		$stats=array(
 			'Starting'=>$Misc->GamesNew,
-			'Open'=>$Misc->GamesOpen,
+			'Joinable'=>$Misc->GamesOpen,
 			'Active'=>$Misc->GamesActive,
 			'Finished'=>$Misc->GamesFinished
 		);
@@ -219,20 +219,20 @@ class libHome
 		//$topUsers = self::topUsers();
 
 		//$buf='<div class="content" style="text-align:center;"><strong>Users:</strong> ';
-		$buf='<strong>Users:</strong> ';
+		$buf='<strong>'.l_t('Users:').'</strong> ';
 		$first=true;
 		foreach($userStats as $name => $val)
 		{
 			if( $first ) $first=false; else $buf .= ' - ';
-			$buf .= $name.':<strong>'.$val.'</strong>';
+			$buf .= l_t($name).':<strong>'.$val.'</strong>';
 		}
 
-		$buf .= '<br /><strong>Games:</strong> ';
+		$buf .= '<br /><strong>'.l_t('Games:').'</strong> ';
 		$first=true;
 		foreach($gameStats as $name => $val)
 		{
 			if( $first ) $first=false; else $buf .= ' - ';
-			$buf .= $name.':<strong>'.$val.'</strong>';
+			$buf .= l_t($name).':<strong>'.$val.'</strong>';
 		}
 
 		//$buf .= '</div>';
@@ -266,16 +266,16 @@ class libHome
 		if($count==0)
 		{
 			$buf .= '<div class="hr"></div>';
-			$buf .= '<div><p class="notice">You\'re not joined to any games!<br />
-				Access the <a href="gamelistings.php?tab=">Games</a>
-				link above to find games you can join, or start a
-				<a href="gamecreate.php">New game</a> yourself.</a></p></div>';
+			$buf .= '<div><p class="notice">'.l_t('You\'re not joined to any games!').'<br />
+				'.l_t('Access the <a href="gamelistings.php?tab=">Games</a> '.
+				'link above to find games you can join, or start a '.
+				'<a href="gamecreate.php">New game</a> yourself.</a>').'</p></div>';
 		}
 		elseif ( $count == 1 && $User->points > 5 )
 		{
 			$buf .= '<div class="hr"></div>';
-			$buf .= '<div><p class="notice">You can join as many games as you
-			have the points to join. </a></p></div>';
+			$buf .= '<div><p class="notice">'.l_t('You can join as many games as you '.
+			'have the points to join.').' </a></p></div>';
 		}
 		return $buf;
 	}
@@ -373,8 +373,8 @@ class libHome
 			}
 
 			$buf .= '<div class="homeForumLink">
-					<div class="homeForumReplies"><strong>'.$data['replies'].'</strong> replies</div>
-					<a href="forum.php?threadID='.$threadID.'#'.$threadID.'">Open</a>
+					<div class="homeForumReplies">'.l_t('%s replies','<strong>'.$data['replies'].'</strong>').'</div>
+					<a href="forum.php?threadID='.$threadID.'#'.$threadID.'">'.l_t('Open').'</a>
 					</div>
 					</div>';
 		}
@@ -385,15 +385,15 @@ class libHome
 		}
 		else
 		{
-			return '<div class="homeNoActivity">No forum posts found, why not
-				<a href="forum.php?postboxopen=1#postbox" class="light">start one</a>?';
+			return '<div class="homeNoActivity">'.l_t('No forum posts found, why not '.
+				'<a href="forum.php?postboxopen=1#postbox" class="light">start one</a>?');
 		}
 	}
 
 
 	static function forumBlock()
 	{
-		$buf = '<div class="homeHeader">Forum</div>';
+		$buf = '<div class="homeHeader">'.l_t('Forum').'</div>';
 
 		$forumNew=libHome::forumNew();
 		$buf .=  '<table><tr><td>'.implode('</td></tr><tr><td>',$forumNew).'</td></tr></table>';
@@ -404,13 +404,13 @@ class libHome
 if( !$User->type['User'] )
 {
 	print '<div class="content-notice" style="text-align:center">'.libHome::globalInfo().'</div>';
-	print libHTML::pageTitle('Welcome to webDiplomacy!','A multiplayer web implementation of the popular turn-based strategy game Diplomacy.');
+	print libHTML::pageTitle(l_t('Welcome to webDiplomacy!'),l_t('A multiplayer web implementation of the popular turn-based strategy game Diplomacy.'));
 	//print '<div class="content">';
 	?>
 	<p style="text-align: center;"><img
-	src="images/startmap.png" alt="The map"
-	title="A webDiplomacy map" /></p>
-<p class="welcome"><em> "Luck plays no part in Diplomacy. Cunning and
+	src="<?php print l_s('images/startmap.png'); ?>" alt="<?php print l_t('The map'); ?>"
+	title="<?php print l_t('A webDiplomacy map'); ?>" /></p>
+<p class="welcome"><?php print l_t('<em> "Luck plays no part in Diplomacy. Cunning and
 cleverness, honesty and perfectly-timed betrayal are the tools needed to
 outwit your fellow players. The most skillful negotiator will climb to
 victory over the backs of both enemies and friends.<br />
@@ -418,19 +418,21 @@ victory over the backs of both enemies and friends.<br />
 
 Who do you trust?"<br />
 (<a href="http://www.wizards.com/default.asp?x=ah/prod/diplomacy"
-	class="light">Avalon Hill</a>)</em></p>
+	class="light">Avalon Hill</a>)</em>'); ?></p>
 	<?php
 	print '</div>';
 	/*print '<div class="homeInfoList">
 		'.libHome::globalInfo()
 		.'</div>';*/
 
-	require_once('locales/'.$User->locale.'/intro.php');
+	require_once(l_r('locales/English/intro.php'));
 	print '</div>';
 }
 elseif( isset($_REQUEST['notices']) )
 {
-	print '<div class="content"><a href="index.php" class="light">&lt; Back</a></div>';
+	$User->clearNotification('PrivateMessage');
+
+	print '<div class="content"><a href="index.php" class="light">&lt; '.l_t('Back').'</a></div>';
 
 	print '<div class="content-bare content-home-header">';
 	print '<table class="homeTable"><tr>';
@@ -438,14 +440,14 @@ elseif( isset($_REQUEST['notices']) )
 	notice::$noticesPage=true;
 
 	print '<td class="homeNoticesPMs">';
-	print '<div class="homeHeader">Private messages</a></div>';
+	print '<div class="homeHeader">'.l_t('Private messages').'</a></div>';
 	print libHome::NoticePMs();
 	print '</td>';
 
 	print '<td class="homeSplit"></td>';
 
 	print '<td class="homeNoticesGame">';
-	print '<div class="homeHeader">Game messages</a></div>';
+	print '<div class="homeHeader">'.l_t('Game messages').'</a></div>';
 	print libHome::NoticeGame();
 	print '</td>';
 
@@ -466,7 +468,7 @@ else
 
 	print '<td class="homeMessages">';
 
-	print '<div class="homeHeader">Forum <a href="forum.php">'.libHTML::link().'</a></div>';
+	print '<div class="homeHeader">'.l_t('Forum').' <a href="forum.php">'.libHTML::link().'</a></div>';
 	if( file_exists(libCache::dirName('forum').'/home-forum.html') )
 		print file_get_contents(libCache::dirName('forum').'/home-forum.html');
 	else
@@ -486,14 +488,14 @@ else
 		print '<div class="homeHeader">Private messages</div>'.$buf;
 	*/
 
-	print '<div class="homeHeader">Notices <a href="index.php?notices=on">'.libHTML::link().'</a></div>';
+	print '<div class="homeHeader">'.l_t('Notices').' <a href="index.php?notices=on">'.libHTML::link().'</a></div>';
 	print libHome::Notice();
 	print '</td>';
 
 	print '<td class="homeSplit"></td>';
 
 	print '<td class="homeGamesStats">';
-	print '<div class="homeHeader">My games <a href="gamelistings.php?page=1&gamelistType=My games">'.libHTML::link().'</a></div>';
+	print '<div class="homeHeader">'.l_t('My games').' <a href="gamelistings.php?page=1&gamelistType=My games">'.libHTML::link().'</a></div>';
 	print libHome::gameNotifyBlock();
 
 	print '</td>
@@ -503,8 +505,8 @@ else
 	print '</div>';
 }
 
-libHTML::$footerIncludes[] = 'home.js';
-libHTML::$footerScript[] = 'homeGameHighlighter();';
+libHTML::$footerIncludes[] = l_j('home.js');
+libHTML::$footerScript[] = l_jf('homeGameHighlighter').'();';
 
 $_SESSION['lastSeenHome']=time();
 

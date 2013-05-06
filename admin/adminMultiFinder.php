@@ -46,20 +46,22 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 		}
 
 		$m->printCheckSummary();
-
+		
 		$m->aLogsDataCollect();
 
 		if ( !is_array($m->bUserIDs) )
 			$m->findbUserIDs();
-
+		
 		if ( ! $m->bUserIDs )
 		{
-			print '<p>This account has no links with other accounts</p>';
+			print '<p>'.l_t('This account has no links with other accounts').'</p>';
 		}
 		else
 		{
 			if( isset($_REQUEST['showHistory']) )
 			{
+				$m->printUserTimeprint();
+				
 				$m->timeData();
 			}
 			else
@@ -69,7 +71,7 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 					try {
 						$bUser = new User($bUserID);
 					} catch(Exception $e) {
-						print '<p><strong>'.$bUserID.' is an invalid user ID.</strong></p>';
+						print '<p><strong>'.l_t('%s is an invalid user ID.',$bUserID).'</strong></p>';
 						continue;
 					}
 
@@ -80,7 +82,7 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 	}
 	catch(Exception $e)
 	{
-		print '<p><strong>Error:</strong> '.$e->getMessage().'</p>';
+		print '<p><strong>'.l_t('Error').':</strong> '.$e->getMessage().'</p>';
 	}
 }
 
@@ -100,30 +102,30 @@ class adminMultiCheck
 	{
 		print '<form method="get" action="admincp.php#viewMultiFinder">';
 
-		print '<p><strong>User ID:</strong><br />The user ID to check<br />
+		print '<p><strong>'.l_t('User ID:').'</strong><br />'.l_t('The user ID to check').'<br />
 				<input type="text" name="aUserID" value="" length="50" /></p>';
 
-		print '<p><strong>*Check against user IDs:</strong><br />An optional comma-separated list
-				of user-IDs to compare the above user ID to. If this is not specified the user ID
-				above will be checked against accounts which have matching IP/cookie-code data.<br />
+		print '<p><strong>*'.l_t('Check against user IDs:').'</strong><br />'.l_t('An optional comma-separated list '.
+				'of user-IDs to compare the above user ID to. If this is not specified the user ID '.
+				'above will be checked against accounts which have matching IP/cookie-code data.').'<br />
 				<input type="text" name="bUserIDs" value="" length="300" /></p>';
 
-		print '<p><strong>Show complete history for the user and links found:</strong>
+		print '<p><strong>'.l_t('Show complete history for the user and links found:').'</strong>
 				<input type="checkbox" name="showHistory" /><br />
-				With this checked the complete access log data for all the matching accounts will be displayed,
-				instead of displaying the list of linked accounts.
-				This makes it easy to check whether people are accessing the site during the same time periods,
-				and gives a more detailed picture of what is happening.
+				'.l_t('With this checked the complete access log data for all the matching accounts will be displayed, '.
+				'instead of displaying the list of linked accounts. '.
+				'This makes it easy to check whether people are accessing the site during the same time periods, '.
+				'and gives a more detailed picture of what is happening.').'
 				</p>';
 
-		print '<p><strong>Links between user accounts have to share active games:</strong>
+		print '<p><strong>'.l_t('Links between user accounts have to share active games:').'</strong>
 				<input type="checkbox" name="activeLinks" /><br />
-				With this checked links between users will be ignored if they aren\'t currently playing in
-				the same games. This helps ensure that the data being checked is relevant and cuts out the
-				clutter.
+				'.l_t('With this checked links between users will be ignored if they aren\'t currently playing in '.
+				'the same games. This helps ensure that the data being checked is relevant and cuts out the '.
+				'clutter.').'
 				</p>';
 
-		print '<input type="submit" name="Submit" class="form-submit" value="Check" />
+		print '<input type="submit" name="Submit" class="form-submit" value="'.l_t('Check').'" />
 				</form>';
 	}
 
@@ -153,7 +155,7 @@ class adminMultiCheck
 			{
 				if ( $name == 'lastRequest' )
 				{
-					$timeComparison = '('.libTime::remainingText($lastRow['lastRequest'],$part).' earlier)';
+					$timeComparison = l_t('(%s earlier)',libTime::remainingText($lastRow['lastRequest'],$part));
 
 					if ( ( $lastRow['lastRequest'] - $part ) < 15*60 )
 						print '<span class="Austria">'.$timeComparison.'</span>';
@@ -193,7 +195,7 @@ class adminMultiCheck
 		$userIDs = $this->bUserIDs;
 		array_push($userIDs, $this->aUserID);
 
-		print '<p>Outputting access log history for the users being checked</p>';
+		print '<p>'.l_t('Outputting access log history for the users being checked').'</p>';
 
 		if ( isset($_REQUEST['activeLinks']) and count($this->aLogsData['activeGameIDs']) )
 		{
@@ -258,7 +260,7 @@ class adminMultiCheck
 
 		if ( $gap > 0 )
 		{
-			print '<tr><td>'.$gap.' rows from the same user.</td></tr>';
+			print '<tr><td>'.l_t('%s rows from the same user.',$gap).'</td></tr>';
 			$this->printTimeDataRow($lastRow);
 		}
 
@@ -367,17 +369,15 @@ class adminMultiCheck
 	 */
 	public function printCheckSummary()
 	{
-		print '<p>Checking <a href="profile.php?userID='.$this->aUserID.'">'.$this->aUser->username.'</a>'.
-			' ('.$this->aUser->points.' '.libHTML::points().')
-			(#'.$this->aUserID.')</p>';
+		print '<p>'.l_t('Checking %s %s (userID=%s)','<a href="profile.php?userID='.$this->aUserID.'">'.$this->aUser->username.'</a>',' ('.$this->aUser->points.' '.libHTML::points().')',$this->aUserID).'</p>';
 
 		if( is_array($this->bUserIDs) )
 		{
-			print '<p>Checking against specified user accounts: '.implode(', ',$this->bUserIDs).'.</p>';
+			print '<p>'.l_t('Checking against specified user accounts:').' '.implode(', ',$this->bUserIDs).'.</p>';
 		}
 		else
 		{
-			print '<p>Checking against IP/cookie-code linked users.</p>';
+			print '<p>'.l_t('Checking against IP/cookie-code linked users.').'</p>';
 		}
 	}
 
@@ -455,7 +455,7 @@ class adminMultiCheck
 		{
 			if ( ! is_array($data) or ! count($data) )
 			{
-				throw new Exception($name.' does not have enough data; this account cannot be checked.');
+				throw new Exception(l_t('%s does not have enough data; this account cannot be checked.',$name));
 			}
 		}
 
@@ -670,7 +670,7 @@ class adminMultiCheck
 
 		print '<ul>';
 		print '<li><a href="profile.php?userID='.$bUser->id.'">'.$bUser->username.'</a> ('.$bUser->points.' '.libHTML::points().')
-					(<a href="?aUserID='.$bUser->id.'#viewMultiFinder" class="light">check userID='.$bUser->id.'</a>)
+					(<a href="?aUserID='.$bUser->id.'#viewMultiFinder" class="light">'.l_t('check userID=%s',$bUser->id).'</a>)
 				<ul>';
 
 		list($bUserTotal) = $DB->sql_row("SELECT COUNT(ip) FROM wD_AccessLog WHERE userID = ".$bUser->id);
@@ -686,6 +686,195 @@ class adminMultiCheck
 			$this->compareGames('Active games', $bUser->id, $this->aLogsData['activeGameIDs']);
 
 		print '</ul></li></ul>';
+	}
+	
+	/**
+	 * Get the time data for a userID
+	 * 
+	 * @param int $userID The userID to load data for
+	 * @return array[int][int] $array[$day][$hour] = % of hits in that time period, from 0 to 1. $day is 1 to 7, $hour is 0 to 23
+	 */
+	private function timeprintLoad($userID) {
+		global $DB;
+	
+		$userID = (int)$userID;
+	
+		$tabl = $DB->sql_tabl("SELECT day, hour, SUM(hits) as hits FROM (SELECT userID, hits, DAYOFWEEK(lastRequest) as day, HOUR(lastRequest) as hour FROM wD_AccessLog WHERE userID=".$userID.") as a GROUP BY day, hour");
+	
+		$result = $this->timeprintBlank();
+		
+		while ( list($day, $hour, $hits) = $DB->tabl_row($tabl) )
+			$result[$day][$hour] = $hits;
+	
+		return $this->timeprintReduce($result);
+	}
+	
+	/**
+	 * Get a blank timeprint array
+	 * @return array[int][int] $array[$day][$hour] = An array of 0s. $day is 1 to 7, $hour is 0 to 23
+	 */
+	private function timeprintBlank() {
+		
+		$result = array();
+		
+		for($day=1; $day<=7; $day++) {
+			$result[$day] = array();
+			for($hour=0; $hour<24; $hour++)
+				$result[$day][$hour] = 0;
+		}
+		
+		return $result;
+	}
+	
+	private function timeprintSum(array $weekData) {
+		
+		// Sum it all up
+		$sum=0;
+		foreach($weekData as $day=>$dayData)
+			foreach($dayData as $hour=>$value)
+				$sum += $value;
+		
+		return $sum;
+	}
+	
+	/**
+	 * For each cell in the timeprint array get the % of that cell that is the total, so that the whole contents of the array adds up to 1.
+	 * 
+	 * @return array[int][int] $array[$day][$hour] = An array of 0-1 values which adds up to 1, (or 0 if it was 0 before). $day is 1 to 7, $hour is 0 to 23
+	 */
+	private function timeprintReduce(array $weekData) {
+		
+		$result = $this->timeprintBlank();
+		
+		// Sum it all up
+		$sum=$this->timeprintSum($weekData);
+		
+		// Divide it all by the sum
+		if( $sum > 0 )
+			foreach($weekData as $day=>$dayData)
+				foreach($dayData as $hour=>$value)
+					$result[$day][$hour] = $value / $sum;
+		
+		return $result;
+	}
+	
+	/**
+	 * Multiply two timeData arrays together, getting a result which gives an indication of time overlaps.
+	 * 
+	 * If one of the two weeks has no data the one which does have data will be returned.
+	 * 
+	 * @param array $weekDataA
+	 * @param array $weekDataB
+	 * 
+	 * @return array[int][int] $array[$day][$hour] = An array of 0-1 values which adds up to 1, (or 0 if it was 0 before). $day is 1 to 7, $hour is 0 to 23
+	 */
+	private function timeprintMerge(array $weekDataA, array $weekDataB) {
+		$weekDataA = $this->timeprintReduce($weekDataA);
+		$weekDataB = $this->timeprintReduce($weekDataB);
+		
+		if( $this->timeprintSum($weekDataA) == 0 )
+			return $weekDataB;
+		elseif( $this->timeprintSum($weekDataB) == 0 )
+			return $weekDataA;
+		else
+		{
+			$weekDataC = $this->timeprintBlank();
+			
+			foreach($weekDataA as $day=>$hourDataA)
+				foreach($hourDataA as $hour=>$valueA)
+					$weekDataC[$day][$hour] = $valueA * $weekDataB[$day][$hour];
+			
+			return $this->timeprintReduce($weekDataC);
+		}
+	}
+	
+	public function printUserTimeprint() {
+		print '<style>
+		.timeprintData table {
+			border-top: 1px solid #aaa;
+			border-left: 1px solid #aaa;
+		}
+		.timeprintData td {
+			border-bottom: 1px solid #aaa;
+			border-right: 1px solid #aaa;
+			margin:0;
+			font-size:90%;
+			padding:0;
+			text-align:center;
+			background:#eee;
+			font-weight:bold;
+			color: #666;
+		}
+		.timeprintData th {
+			font-weight:normal;
+			border-bottom: 1px solid #aaa;
+			border-right: 1px solid #aaa;
+			background:#ddd;
+			text-align:center;
+		}
+		</style>';
+		
+		print '<div class="timeprintData" style="font-size:80%"><h3>'.l_t('Timeprint data:').'</h3>';
+		
+		$timeprints = array();
+		
+		$timeprint = $this->timeprintLoad($this->aUserID);
+		$timeprints[] = $timeprint;
+		
+		print '<h4>'.l_t('User # '.$this->aUserID.':').'</h4>'.$this->printTimeprint($timeprint);
+		
+		if(count($this->bUserIDs) > 0 ) {
+			foreach($this->bUserIDs as $bUserID) {
+				$timeprint = $this->timeprintLoad($bUserID);
+				$timeprints[] = $timeprint;
+				print '<h4>'.l_t('User # '.$bUserID.':').'</h4>'.$this->printTimeprint($timeprint);
+			}
+			
+			print '<h4>'.l_t('Comparison timeprint:').'</h4>';
+			$timeprintComparison = $this->timeprintBlank();
+			foreach($timeprints as $timeprint)
+				$timeprintComparison = $this->timeprintMerge($timeprintComparison, $timeprint);
+			
+			print $this->printTimeprint($timeprintComparison);
+		}
+		
+		print '<div class="hr"></div>';
+		
+		print '</div>';
+	}
+	
+	private function printTimeprint(array $weekData) {
+		$buf = '<table>';
+		
+		$buf .= '<tr><th><strong>'.l_t('Hour:').'</strong></th>';
+		for($i=0;$i<24;$i++)
+			$buf .= '<th>'.$i.'</th>';
+		$buf .= '</tr>';
+		
+		foreach( $weekData as $day=>$hourData) {
+			switch($day) {
+				case 1: $day = 'Mon'; break;
+				case 2: $day = 'Tue'; break;
+				case 3: $day = 'Wed'; break;
+				case 4: $day = 'Thu'; break;
+				case 5: $day = 'Fri'; break;
+				case 6: $day = 'Sat'; break;
+				case 7: $day = 'Sun'; break;
+			}
+			$buf .= '<tr><th>'.$day.'</th>';
+			foreach($hourData as $hour=>$value) {
+				$value = round($value * 100).'%';
+				if( $value == 0 )
+					$value = '&nbsp;';
+				
+				$buf .= '<td>'.$value.'</td>';
+			}
+			$buf .= '</tr>';
+		}
+		
+		$buf .= '</table>';
+		
+		return $buf;
 	}
 }
 

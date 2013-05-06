@@ -29,7 +29,7 @@ libHTML::starthtml(isset($_REQUEST['viewArchive'])?$_REQUEST['viewArchive']:fals
 
 if ( ! isset($_REQUEST['gameID']) )
 {
-	libHTML::error("You haven't specified a game to view, please go back to the game listings and choose one.");
+	libHTML::error(l_t("You haven't specified a game to view, please go back to the game listings and choose one."));
 }
 
 $gameID = (int)$_REQUEST['gameID'];
@@ -39,7 +39,7 @@ if ( $User->type['User'] && ( isset($_REQUEST['join']) || isset($_REQUEST['leave
 {
 	try
 	{
-		require_once('gamemaster/game.php');
+		require_once(l_r('gamemaster/game.php'));
 
 		$Variant=libVariant::loadFromGameID($gameID);
 		libVariant::setGlobals($Variant);
@@ -57,7 +57,7 @@ if ( $User->type['User'] && ( isset($_REQUEST['join']) || isset($_REQUEST['leave
 			$reason=$Game->Members->cantLeaveReason();
 
 			if($reason)
-				throw new Exception("Can't leave game; ".$reason.".");
+				throw new Exception(l_t("Can't leave game; %s.",$reason));
 			else
 				$Game->Members->ByUserID[$User->id]->leave();
 		}
@@ -72,9 +72,9 @@ else
 {
 	try
 	{
-		require_once('objects/game.php');
-		require_once('board/chatbox.php');
-		require_once('gamepanel/gameboard.php');
+		require_once(l_r('objects/game.php'));
+		require_once(l_r('board/chatbox.php'));
+		require_once(l_r('gamepanel/gameboard.php'));
 
 		$Variant=libVariant::loadFromGameID($gameID);
 		libVariant::setGlobals($Variant);
@@ -83,9 +83,9 @@ else
 		if ( $Game->Members->isJoined() )
 		{
 			// We are a member, load the extra code that we might need
-			require_once('gamemaster/gamemaster.php');
-			require_once('board/member.php');
-			require_once('board/orders/orderinterface.php');
+			require_once(l_r('gamemaster/gamemaster.php'));
+			require_once(l_r('board/member.php'));
+			require_once(l_r('board/orders/orderinterface.php'));
 
 			global $Member;
 			$Game->Members->makeUserMember($User->id);
@@ -95,8 +95,8 @@ else
 	catch(Exception $e)
 	{
 		// Couldn't load game
-		libHTML::error("Couldn't load specified game; this probably means this game was cancelled or abandoned.
-			".($User->type['User'] ? "Check your <a href='index.php' class='light'>notices</a> for messages regarding this game.":''));
+		libHTML::error(l_t("Couldn't load specified game; this probably means this game was cancelled or abandoned.")." ".
+			($User->type['User'] ? l_t("Check your <a href='index.php' class='light'>notices</a> for messages regarding this game."):''));
 	}
 }
 
@@ -110,22 +110,22 @@ if ( isset($_REQUEST['viewArchive']) )
 	print '</div>';
 	print '<div class="content content-follow-on">';
 
-	print '<p><a href="board.php?gameID='.$Game->id.'" class="light">&lt; Return</a></p>';
+	print '<p><a href="board.php?gameID='.$Game->id.'" class="light">'.l_t('&lt; Return').'</a></p>';
 
 	switch($_REQUEST['viewArchive'])
 	{
-		case 'Orders': require_once('board/info/orders.php'); break;
-		case 'Messages': require_once('board/info/messages.php'); break;
-		case 'Graph': require_once('board/info/graph.php'); break;
-		case 'Maps': require_once('board/info/maps.php'); break;
+		case 'Orders': require_once(l_r('board/info/orders.php')); break;
+		case 'Messages': require_once(l_r('board/info/messages.php')); break;
+		case 'Graph': require_once(l_r('board/info/graph.php')); break;
+		case 'Maps': require_once(l_r('board/info/maps.php')); break;
 		case 'Reports':
-			require_once('lib/modnotes.php');
+			require_once(l_r('lib/modnotes.php'));
 			libModNotes::checkDeleteNote();
 			libModNotes::checkInsertNote();
 			print libModNotes::reportBoxHTML('Game',$Game->id);
 			print libModNotes::reportsDisplay('Game', $Game->id);
 			break;
-		default: libHTML::error("Invalid info parameter given.");
+		default: libHTML::error(l_t("Invalid info parameter given."));
 	}
 
 	print '</div>';
@@ -138,15 +138,19 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 {
 	if( $Game->phase != 'Pre-game' )
 	{
-		if( isset($_REQUEST['vote']) && isset($Member) && libHTML::checkTicket() )
-			$Member->toggleVote($_REQUEST['vote']);
+		if(isset($_REQUEST['Unpause'])) $_REQUEST['Pause']='on'; // Hack because Unpause = toggle Pause
+		
+		foreach(Members::$votes as $possibleVoteType) {
+			if( isset($_REQUEST[$possibleVoteType]) && isset($Member) && libHTML::checkTicket() )
+				$Member->toggleVote($possibleVoteType);
+		}
 	}
 
 	$DB->sql_put("COMMIT");
 
 	if( $Game->processStatus!='Crashed' && $Game->processStatus!='Paused' && $Game->attempts > count($Game->Members->ByID)/2+4  )
 	{
-		require_once('gamemaster/game.php');
+		require_once(l_r('gamemaster/game.php'));
 		$Game = $Game->Variant->processGame($Game->id);
 		$Game->crashed();
 		$DB->sql_put("COMMIT");
@@ -158,7 +162,7 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 			$DB->sql_put("UPDATE wD_Games SET attempts=attempts+1 WHERE id=".$Game->id);
 			$DB->sql_put("COMMIT");
 
-			require_once('gamemaster/game.php');
+			require_once(l_r('gamemaster/game.php'));
 			$Game = $Game->Variant->processGame($Game->id);
 			try
 			{
@@ -172,7 +176,7 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 				{
 					assert('$Game->phase=="Pre-game" || $e->getMessage() == "Cancelled"');
 					$DB->sql_put("COMMIT");
-					libHTML::notice('Cancelled', "Game was cancelled or didn't have enough players to start.");
+					libHTML::notice(l_t('Cancelled'), l_t("Game was cancelled or didn't have enough players to start."));
 				}
 				else
 					$DB->sql_put("ROLLBACK");
@@ -185,7 +189,7 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 			$DB->sql_put("UPDATE wD_Games SET attempts=attempts+1 WHERE id=".$Game->id);
 			$DB->sql_put("COMMIT");
 
-			require_once('gamemaster/game.php');
+			require_once(l_r('gamemaster/game.php'));
 			$Game = $Game->Variant->processGame($Game->id);
 			if( $Game->needsProcess() )
 			{
@@ -201,7 +205,7 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 					{
 						assert('$Game->phase=="Pre-game" || $e->getMessage() == "Cancelled"');
 						$DB->sql_put("COMMIT");
-						libHTML::notice('Cancelled', "Game was cancelled or didn't have enough players to start.");
+						libHTML::notice(l_t('Cancelled'), l_t("Game was cancelled or didn't have enough players to start."));
 					}
 					else
 						$DB->sql_put("ROLLBACK");
@@ -229,7 +233,7 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 	}
 }
 
-if ( 'Pre-game' != $Game->phase && $Game->pressType!='NoPress' && ( isset($Member) || $User->type['Moderator'] ) )
+if ( 'Pre-game' != $Game->phase && ( isset($Member) || $User->type['Moderator'] ) )
 {
 	$CB = $Game->Variant->Chatbox();
 
@@ -253,7 +257,7 @@ $map = $Game->mapHTML();
 {
 	$DB->sql_put("UPDATE wD_Games SET processTime=1 WHERE id=".$Game->id);
 }//*/
-/*require_once('gamemaster/game.php');
+/*require_once(l_r('gamemaster/game.php'));
 $Game = $Variant->processGame($Game->id);
 $tabl=$DB->sql_tabl("SELECT id FROM wD_Users WHERE points>150 LIMIT 4");
 while(list($id)=$DB->tabl_row($tabl))
@@ -295,26 +299,26 @@ if($User->type['Moderator'])
 	{
 		$modActions[] = libHTML::admincpType('Game',$Game->id);
 
-		$modActions[] = libHTML::admincp('drawGame',array('gameID'=>$Game->id), 'Draw game');
-		$modActions[] = libHTML::admincp('togglePause',array('gameID'=>$Game->id), 'Toggle pause');
+		$modActions[] = libHTML::admincp('drawGame',array('gameID'=>$Game->id), l_t('Draw game'));
+		$modActions[] = libHTML::admincp('togglePause',array('gameID'=>$Game->id), l_t('Toggle pause'));
 		if($Game->processStatus=='Not-processing')
 		{
-			$modActions[] = libHTML::admincp('setProcessTimeToNow',array('gameID'=>$Game->id), 'Process now');
-			$modActions[] = libHTML::admincp('setProcessTimeToPhase',array('gameID'=>$Game->id), 'Process one phase length from now');
+			$modActions[] = libHTML::admincp('setProcessTimeToNow',array('gameID'=>$Game->id), l_t('Process now'));
+			$modActions[] = libHTML::admincp('setProcessTimeToPhase',array('gameID'=>$Game->id), l_t('Process one phase length from now'));
 		}
 
 		if($User->type['Admin'])
 		{
 			if($Game->processStatus == 'Crashed')
-				$modActions[] = libHTML::admincp('unCrashGames',array('excludeGameIDs'=>''), 'Un-crash all crashed games');
+				$modActions[] = libHTML::admincp('unCrashGames',array('excludeGameIDs'=>''), l_t('Un-crash all crashed games'));
 
-			$modActions[] = libHTML::admincp('reprocessGame',array('gameID'=>$Game->id), 'Reprocess game');
+			$modActions[] = libHTML::admincp('reprocessGame',array('gameID'=>$Game->id), l_t('Reprocess game'));
 		}
 
 		if( $Game->phase!='Pre-game' && !$Game->isMemberInfoHidden() )
 		{
 			$userIDs=implode('%2C',array_keys($Game->Members->ByUserID));
-			$modActions[] = '<br />Multi-check:';
+			$modActions[] = '<br />'.l_t('Multi-check:');
 			foreach($Game->Members->ByCountryID as $countryID=>$Member)
 			{
 				$modActions[] = '<a href="admincp.php?tab=Multi-accounts&aUserID='.$Member->userID.'&bUserIDs='.$userIDs.'" class="light">'.
@@ -332,6 +336,17 @@ if($User->type['Moderator'])
 		print '<div class="hr"></div>';
 	}
 }
+
+// TODO: Have this loaded up when the game object is loaded up
+list($directorUserID) = $DB->sql_row("SELECT directorUserID FROM wD_Games WHERE id = ".$Game->id);
+if( isset($directorUserID) && $directorUserID == $User->id)
+{
+	// This guy is the game director
+	define("INBOARD", true);
+	
+	require_once(l_r("admin/adminActionsForms.php"));
+}
+
 print '</div>';
 
 libHTML::footer();

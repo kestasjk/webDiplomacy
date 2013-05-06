@@ -18,8 +18,8 @@
     along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once('lib/variant.php');
-require_once('objects/members.php');
+require_once(l_r('lib/variant.php'));
+require_once(l_r('objects/members.php'));
 
 /**
  * Prints data on a game, and loads and manages the collections of members which this game contains.
@@ -250,12 +250,12 @@ class Game
 		{
 			if( (isset($this->processTime)||!is_null($this->processTime))
 				|| (!isset($this->pauseTimeRemaining) || is_null($this->pauseTimeRemaining) ))
-				trigger_error("Paused game timeout values incorrectly set.");
+				trigger_error(l_t("Paused game timeout values incorrectly set."));
 		}
 		elseif( $this->processStatus!='Crashed' && (
 			( isset($this->pauseTimeRemaining)||!is_null($this->pauseTimeRemaining) )
 			|| ( !isset($this->processTime)||is_null($this->processTime) ) ) )
-			trigger_error("Not-paused game process-time values incorrectly set.");
+			trigger_error(l_t("Not-paused game process-time values incorrectly set."));
 	}
 
 	private $isMemberInfoHidden;
@@ -332,7 +332,7 @@ class Game
 
 		if ( ! isset($row['id']) or ! $row['id'] )
 		{
-			libHTML::error("Game not found; ensure a valid game ID has been given. Check that this game hasn't been canceled, you may have received a message about it on your <a href='index.php' class='light'>home page</a>.");
+			libHTML::error(l_t("Game not found; ensure a valid game ID has been given. Check that this game hasn't been canceled, you may have received a message about it on your <a href='index.php' class='light'>home page</a>."));
 		}
 
 		$this->loadRow($row);
@@ -389,10 +389,10 @@ class Game
 		{
 			case 'Won':
 				foreach($this->Members->ByStatus['Won'] as $Winner);
-				return 'Game won by '.($map ? $Winner->username : $Winner->profile_link() );
+				return l_t('Game won by %s',($map ? $Winner->username : $Winner->profile_link() ));
 
 			case 'Drawn':
-				return 'Game drawn';
+				return l_t('Game drawn');
 		}
 	}
 
@@ -423,6 +423,15 @@ class Game
 	}
 
 	/**
+	 * Check whether this game will be considered a "live" game.
+	 * @return true if phase minutes are less than 60.
+	 **/
+	function isLiveGame()
+	{
+		return $this->phaseMinutes < 60;
+	}
+
+	/**
 	 * Return the next process time in textual format, in terms of time remaining
 	 *
 	 * @return string
@@ -430,7 +439,7 @@ class Game
 	function processTimetxt()
 	{
 		if ( $this->processTime < time() )
-			return "Now";
+			return l_t("Now");
 		else
 			return libTime::remainingText($this->processTime);
 	}
@@ -482,7 +491,7 @@ class Game
 			!( $this->missingPlayerPolicy=='Strict'&&!$this->Members->isComplete() ) && (
 				time() >= $this->processTime
 				|| ( ($this->phase!='Pre-game' && $this->Members->isReady() )
-					|| ($this->phase=='Pre-game' && count($this->Members->ByID)==count($this->Variant->countries) && $this->phaseMinutes>30 ) )
+					|| ($this->phase=='Pre-game' && count($this->Members->ByID)==count($this->Variant->countries) && !($this->isLiveGame()) ) )
 				)
 			)
 			return true;

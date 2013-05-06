@@ -31,21 +31,21 @@ libHTML::starthtml();
 
 if( isset($_REQUEST['forgotPassword']) and $User->type['Guest'] )
 {
-	print libHTML::pageTitle('Reset your password','Resetting passwords using your e-mail account, in-case you forgot your password.');
+	print libHTML::pageTitle(l_t('Reset your password'),l_t('Resetting passwords using your e-mail account, in-case you forgot your password.'));
 
 	try
 	{
 		if ( $_REQUEST['forgotPassword'] == 1 )
 		{
-			print '<p>Enter your username here, and an e-mail will be sent to the address you registered with, with an
-			activation link that will set a new password.</p>
+			print '<p>'.l_t('Enter your username here, and an e-mail will be sent to the address you registered with, with an '.
+			'activation link that will set a new password.').'</p>
 
 			<form action="./logon.php?forgotPassword=2" method="post">
 				<ul class="formlist">
-				<li class="formlisttitle">Username</li>
+				<li class="formlisttitle">'.l_t('Username').'</li>
 				<li class="formlistfield"><input type="text" tabindex="1" maxlength=30 size=15 name="forgotUsername"></li>
-				<li class="formlistdesc">The webDiplomacy username of the account which you can\'t log in to.</li>
-				<li><input type="submit" class="form-submit" value="Send code"></li>
+				<li class="formlistdesc">'.l_t('The webDiplomacy username of the account which you can\'t log in to.').'</li>
+				<li><input type="submit" class="form-submit" value="'.l_t('Send code').'"></li>
 				</ul>
 			</form>';
 		}
@@ -54,25 +54,20 @@ if( isset($_REQUEST['forgotPassword']) and $User->type['Guest'] )
 			try {
 				$forgottenUser = new User(0,$DB->escape($_REQUEST['forgotUsername']));
 			} catch(Exception $e) {
-				throw new Exception("Cannot find an account for the given username, please
-					<a href='logon.php?forgotPassword=1' class='light'>go back</a> and check your spelling.");
+				throw new Exception(l_t("Cannot find an account for the given username, please ".
+					"<a href='logon.php?forgotPassword=1' class='light'>go back</a> and check your spelling."));
 			}
 
-			require_once('objects/mailer.php');
+			require_once(l_r('objects/mailer.php'));
 			$Mailer = new Mailer();
-			$Mailer->Send(array($forgottenUser->email=>$forgottenUser->username), 'webDiplomacy forgotten password verification link',
-"Hello ".$forgottenUser->username.",<br><br>
-
-You can use this link to get a new password generated:<br>
+			$Mailer->Send(array($forgottenUser->email=>$forgottenUser->username), l_t('webDiplomacy forgotten password verification link'),
+l_t("You can use this link to get a new password generated:")."<br>
 ".libAuth::email_validateURL($forgottenUser->email)."&forgotPassword=3<br><br>
 
-If you have any further problems contact the server's admin at ".Config::$adminEMail.".<br>
-Regards,<br>
-The webDiplomacy Gamemaster<br>
-");
+".l_t("If you have any further problems contact the server's admin at %s.",Config::$adminEMail)."<br>");
 
-			print '<p>An e-mail has been sent with a verification link, which will allow you to have your password reset.
-				If you can\'t find the e-mail in your inbox try your junk folder/spam-box.</p>';
+			print '<p>'.l_t('An e-mail has been sent with a verification link, which will allow you to have your password reset. '.
+				'If you can\'t find the e-mail in your inbox try your junk folder/spam-box.').'</p>';
 		}
 		elseif ( $_REQUEST['forgotPassword'] == 3 && isset($_REQUEST['emailToken']) )
 		{
@@ -86,12 +81,12 @@ The webDiplomacy Gamemaster<br>
 				SET password=UNHEX('".libAuth::pass_Hash($newPassword)."')
 				WHERE id=".$userID." LIMIT 1");
 
-			print '<p>Thanks for verifying your address, this is your new password, which you can
-					change once you have logged back on:<br /><br />
+			print '<p>'.l_t('Thanks for verifying your address, this is your new password, which you can '.
+					'change once you have logged back on:').'<br /><br />
 
 				<strong>'.$newPassword.'</strong></p>
 
-				<p><a href="logon.php" class="light">Back to log-on prompt</a></p>';
+				<p><a href="logon.php" class="light">'.l_t('Back to log-on prompt').'</a></p>';
 		}
 	}
 	catch(Exception $e)
@@ -106,35 +101,35 @@ The webDiplomacy Gamemaster<br>
 
 
 if( ! $User->type['User'] ) {
-	print libHTML::pageTitle('Log on','Enter your webDiplomacy account username and password to log into your account.');
+	print libHTML::pageTitle(l_t('Log on'),l_t('Enter your webDiplomacy account username and password to log into your account.'));
 	print '
 		<form action="./index.php" method="post">
 
 		<ul class="formlist">
 
-		<li class="formlisttitle">Username</li>
+		<li class="formlisttitle">'.l_t('Username').'</li>
 		<li class="formlistfield"><input type="text" tabindex="1" maxlength=30 size=15 name="loginuser"></li>
-		<li class="formlistdesc">Your webDiplomacy username. If you don\'t have one please
-			<a href="register.php" class="light">register</a>.</li>
+		<li class="formlistdesc">'.l_t('Your webDiplomacy username. If you don\'t have one please '.
+			'<a href="register.php" class="light">register</a>.').'</li>
 
-		<li class="formlisttitle">Password</li>
+		<li class="formlisttitle">'.l_t('Password').'</li>
 		<li class="formlistfield"><input type="password" tabindex="2" maxlength=30 size=15 name="loginpass"></li>
-		<li class="formlistdesc">Your webDiplomacy password.</li>
+		<li class="formlistdesc">'.l_t('Your webDiplomacy password.').'</li>
 
-		<li class="formlisttitle">Remember me</li>
+		<li class="formlisttitle">'.l_t('Remember me').'</li>
 		<li class="formlistfield"><input type="checkbox" /></li>
-		<li class="formlistdesc">Do you want to stay logged in permanently?
-			If you are on a public computer you should not stay logged on permanently!</li>
+		<li class="formlistdesc">'.l_t('Do you want to stay logged in permanently? '.
+			'If you are on a public computer you should not stay logged on permanently!').'</li>
 
-		<li><input type="submit" class="form-submit" value="Log on"></li>
+		<li><input type="submit" class="form-submit" value="'.l_t('Log on').'"></li>
 		</ul>
 		</form>
-		<p><a href="logon.php?forgotPassword=1" class="light">Forgot your password?</a></p>';
+		<p><a href="logon.php?forgotPassword=1" class="light">'.l_t('Forgot your password?').'</a></p>';
 } else {
 	print libHTML::pageTitle('Log off','Log out of your webDiplomacy account, to prevent other users of this computer accessing it.');
 	print '<form action="./logon.php" method="get">
 		<p class="notice"><input type="hidden" name="logoff" value="on">
-		<input type="submit" class="form-submit" value="Log off"></p>
+		<input type="submit" class="form-submit" value="'.l_t('Log off').'"></p>
 		</form>';
 }
 

@@ -20,7 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('variants/variant.php');
+require_once(l_r('variants/variant.php'));
 
 /**
  * This class performs variant related functions, most importantly loading the right Variant class
@@ -58,7 +58,7 @@ class libVariant {
 			if( libVariant::$Variant->id == $Variant->id )
 				return;
 			else
-				trigger_error("Alternate variant being set as global");
+				trigger_error(l_t("Alternate variant being set as global"));
 		}
 		else
 		{
@@ -132,7 +132,7 @@ class libVariant {
 				self::installLock();
 
 				if( file_exists($variantCache) )
-					libHTML::notice("Installed variant", "Variant '".$variantName." installed, please refresh.");
+					libHTML::notice(l_t("Installed variant"), l_t("Variant '%s' installed, please refresh.",$variantName));
 
 				$classname = $variantName.'Variant';
 				$Variant = new $classname(); // variants/variant.php __autoload() will find the class for this
@@ -184,7 +184,7 @@ class libVariant {
 
 			if( !isset($variantID) || !$variantID )
 			{
-				libHTML::error("Game not found, or has an invalid variant set; ensure a valid game ID has been given. Check that this game hasn't been canceled, you may have received a message about it on your <a href='index.php' class='light'>home page</a>.");
+				libHTML::error(l_t("Game not found, or has an invalid variant set; ensure a valid game ID has been given. Check that this game hasn't been canceled, you may have received a message about it on your <a href='index.php' class='light'>home page</a>."));
 			}
 
 			self::$variantIDsByGameID[$gameID]=$variantID;;

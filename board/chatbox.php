@@ -20,7 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('lib/gamemessage.php');
+require_once(l_r('lib/gamemessage.php'));
 
 /**
  * The chat-box for the board. From the tabs to the messages to the send-box, also
@@ -61,8 +61,8 @@ class Chatbox
 		if ( $msgCountryID<=0 || $msgCountryID>count($Game->Variant->countries) )
 			$msgCountryID = 0;
 
-		// enforce Global tab when its not Regular press game.
-		if ( $Game->pressType != 'Regular' )
+		// Enforce Global and Notes tabs when its not Regular press game.
+		if ( $Game->pressType != 'Regular' && !(isset($Member) && $Member->countryID == $msgCountryID) )
 			$msgCountryID = 0;
 
 		$_SESSION[$Game->id.'_msgCountryID'] = $msgCountryID;
@@ -92,9 +92,12 @@ class Chatbox
 		{
 			$newmessage = trim($_REQUEST['newmessage']);
 
-			if( isset($Member)
-					&& $Game->pressType != 'NoPress'
-					&& ($Game->pressType != 'PublicPressOnly' || $msgCountryID == 0) )
+			if ( isset($Member) &&
+			     ( $Game->pressType == 'Regular' ||                                        // All tabs allowed for Regular
+			       $Member->countryID == $msgCountryID ||                                  // Notes tab always allowed
+			       ( $msgCountryID == 0 &&                                                 // Global tab allowed for...
+			         ( $Game->pressType == 'PublicPressOnly' ||                            // public press and
+			           ( $Game->pressType == 'NoPress' && $Game->phase == 'Finished' ))))) // finished nopress.
 			{
 				$sendingToMuted = false;
 
@@ -105,7 +108,7 @@ class Chatbox
 				}
 
 				if( $sendingToMuted )
-					libGameMessage::send($Member->countryID, $msgCountryID, "Cannot send message; this country has muted you.");
+					libGameMessage::send($Member->countryID, $msgCountryID, l_t("Cannot send message; this country has muted you."));
 				else
 					libGameMessage::send($msgCountryID, $Member->countryID, $newmessage);
 			}
@@ -149,7 +152,7 @@ class Chatbox
 				$memList[]=$Game->Members->ByCountryID[$countryID]->memberNameCountry();
 			$chatbox .= '<div class="chatboxMembersList">'.implode(', ',$memList).'</div>';
 		}
-		else
+		else if (!isset($Member) || $Member->countryID != $msgCountryID)
 		{
 			$chatbox .= $Game->Members->ByCountryID[$msgCountryID]->memberBar();
 		}
@@ -164,8 +167,8 @@ class Chatbox
 		if ( $messages == "" )
 		{
 			$chatbox .= '<TR class="barAlt1"><td class="notice">
-					No messages yet posted.
-					</td></TR>';
+					'.l_t('No messages yet posted.').
+					'</td></TR>';
 		}
 		else
 		{
@@ -174,14 +177,20 @@ class Chatbox
 
 		$chatbox .= '</TABLE></DIV>';
 
-		if ( ( isset($Member) && $Game->pressType != 'NoPress' ) || $User->type['Moderator'] )
+		if ( ( $User->type['Moderator'] && $msgCountryID == 0 ) ||
+		     ( isset($Member) &&
+		       ( $Game->pressType == 'Regular' ||                                         // All tabs allowed for Regular
+		         $Member->countryID == $msgCountryID ||                                   // Notes tab always allowed
+		         ( $msgCountryID == 0 &&                                                  // Global tab allowed for...
+		           ( $Game->pressType == 'PublicPressOnly' ||                             // public press and
+		             ( $Game->pressType == 'NoPress' && $Game->phase == 'Finished' )))))) // finished nopress.
 		{
 			$chatbox .= '<DIV class="chatbox"><TABLE>
 					<TR class="barAlt2">
 					<form method="post" class="safeForm" action="board.php?gameID='.$Game->id.'&amp;msgCountryID='.$msgCountryID.'">
 						<TD class="left send">
 							<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
-							<input type="submit" tabindex="2" class="form-submit" value="Send" name="Send" />
+							<input type="submit" tabindex="2" class="form-submit" value="'.l_t('Send').'" name="Send" />
 						</TD>
 						<TD class="right">
 							<TEXTAREA id="sendbox" tabindex="1" NAME="newmessage" style="width:98% !important" width="100%" ROWS="3"></TEXTAREA>
@@ -201,7 +210,7 @@ class Chatbox
 		if ( isset($_REQUEST['msgCountryID']) )
 			libHTML::$footerScript[] = '
 				var sb = $("sendbox");
-				if( !Object.isUndefined(sb) ) {
+				if( sb != null && !Object.isUndefined(sb) ) {
 					$("sendbox").focus();
 				}
 			';
@@ -223,25 +232,26 @@ class Chatbox
 
 		for( $countryID=0; $countryID<=count($Game->Variant->countries); $countryID++)
 		{
-			// leave Global tab open even if its NoPress game..
-			if ($Game->pressType != 'Regular' && $countryID != 0 ) continue;
-			if ( $countryID == $Member->countryID ) continue;
+			// Do not allow country specific tabs for restricted press games.
+			if ($Game->pressType != 'Regular' && $countryID != 0 && $countryID != $Member->countryID ) continue;
 
 			$tabs .= ' <a href="./board.php?gameID='.$Game->id.'&amp;msgCountryID='.$countryID.'&amp;rand='.rand(1,100000).'#chatboxanchor" '.
 				'class="country'.$countryID.' '.( $msgCountryID == $countryID ? 'current"'
-					: '" title="Open '.( $countryID == 0 ? 'the global' : $this->countryName($countryID)."'s" ).' chatbox tab"' ).'>';
+					: '" title="'.l_t('Open %s chatbox tab"',( $countryID == 0 ? 'the global' : $this->countryName($countryID)."'s" )) ).'>';
 
-			if(isset($Game->Members->ByCountryID[$countryID]))
-				$tabs .= $Game->Members->ByCountryID[$countryID]->memberCountryName();
-			else
-				$tabs .= 'Global';
-
-			if(isset($Game->Members->ByCountryID[$countryID]))
-
-			if ( isset($Game->Members->ByCountryID[$countryID]) )
+			if ( $countryID == $Member->countryID )
 			{
+				$tabs .= l_t('Notes');
+			}
+			elseif(isset($Game->Members->ByCountryID[$countryID]))
+			{
+				$tabs .= $Game->Members->ByCountryID[$countryID]->memberCountryName();
 				if ( $Game->Members->ByCountryID[$countryID]->online && !$Game->Members->ByCountryID[$countryID]->isNameHidden() )
 					$tabs .= ' '.libHTML::loggedOn($Game->Members->ByCountryID[$countryID]->userID);
+			}
+			else
+			{
+				$tabs .= l_t('Global');
 			}
 
 			if ( $msgCountryID != $countryID and in_array($countryID, $Member->newMessagesFrom) )
@@ -367,16 +377,16 @@ class Chatbox
 			if ( $msgCountryID == -1 && isset($Member) ) // -1 = All
 			{
 				if($Member->countryID == $message['fromCountryID'])
-					$fromtxt = ', from <strong>you</strong>';
+					$fromtxt = l_t(', from <strong>you</strong>');
 				elseif( 0==$message['fromCountryID'] )
-					$fromtxt = ', from <strong>Gamemaster</strong>';
+					$fromtxt = l_t(', from <strong>Gamemaster</strong>');
 				else
-					$fromtxt = ', from <strong>'.$this->countryName($message['fromCountryID']).'</strong>';
+					$fromtxt = l_t(', from <strong>%s</strong>',l_t($this->countryName($message['fromCountryID'])));
 
 				if($Member->countryID == $message['toCountryID'])
-					$messagestxt .=  '(To: <strong>You</strong>'.$fromtxt.') - ';
+					$messagestxt .=  '('.l_t('To: <strong>You</strong>').$fromtxt.') - ';
 				else
-					$messagestxt .=  '(To: <strong>'.$this->countryName($message['toCountryID']).'</strong>'.$fromtxt.') - ';
+					$messagestxt .=  '('.l_t('To: <strong>%s</strong>',l_t($this->countryName($message['toCountryID']))).$fromtxt.') - ';
 			}
 
 			if ( $message['turn'] < $Game->turn )
