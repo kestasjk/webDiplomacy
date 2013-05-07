@@ -83,7 +83,7 @@ Inizia una nuova partita. Sei tu a deciderne il nome, la variante, la durata dei
 	<li class="formlistdesc">
 		La puntata necessaria per iscriversi a questa partita. Questa è la quantità di punti che tutti i giocatori, te incluso, metterete sul "piatto" (<a href="points.php" class="light">Cosa sono i punti?</a>).<br /><br />
 
-		<strong>Standard:</strong> <?php print $StandardPoints.libHTML::points(); ?>
+		<strong>Standard:</strong> <?php print $defaultPoints.libHTML::points(); ?>
 	</li>
 </ul>
 
