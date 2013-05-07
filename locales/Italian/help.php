@@ -25,16 +25,16 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @subpackage Static
  */
 
-print libHTML::pageTitle('webDiplomacy Help and Links','Links to pages with more information about webDiplomacy and this installation.');
+print libHTML::pageTitle('webDiplomacy Informazioni aiuto e collegamenti','Classifica, informazioni regole, collegamenti e tutto quello che c\'è da sapere su webDiplomacy.');
 ?>
 <ul class="formlist">
 
 <li><a href="intro.php">Regole del gioco Diplomacy - introduzione grafica</a></li>
-<li class="formlistdesc">Introduzione alle regole del gioco per giocare su webDiplomacy; dettagli sui tipi di Unità e movimenti.<br /> Le regole usate per giocare online, sono uguali al regolamento del gioco in scatola.</li>
+<li class="formlistdesc">Introduzione grafica alle regole del gioco per giocare su webDiplomacy; dettagli sui tipi di Unità e movimenti.<br /> Le regole usate per giocare online, sono al 99% uguali al regolamento del gioco in scatola.</li>
 
 
 <li><a href="faq.php">Domande frequenti</a></li>
-<li class="formlistdesc">Domande degli utenti sul sito di webDiplomacy e su come usarlo.</li>
+<li class="formlistdesc">Domande frequenti che ci vengono poste sul sito webDiplomacy e su come usarlo.</li>
 
 <li><a href="rules.php">Regole del sito</a></li>
 <li class="formlistdesc">Regole di comportamento da osservare per giocare su webDiplomacy.it </li>
@@ -45,14 +45,14 @@ print libHTML::pageTitle('webDiplomacy Help and Links','Links to pages with more
 <li><a href="points.php">I punti di webDiplomacy</a></li>
 <li class="formlistdesc">A cosa servono i punti, come vincerli e come scalare la classifica.</li>
 
-<li><a href="eventi.php">Eventi e tornei dal vivo</a></li>
-<li class="formlistdesc">Tutte le informazioni per giocare a Diplomacy dal vivo.</li>
+/*<li><a href="eventi.php">Eventi e tornei dal vivo</a></li>
+<li class="formlistdesc">Tutte le informazioni per giocare a Diplomacy dal vivo.</li>*/
 
 <li><a href="profile.php">Trova un utente</a></li>
-<li class="formlistdesc">Scopri chi dei tuoi amici è già registrato su webDiplomacy.it</li>
+<li class="formlistdesc">Scopri se i tuoi amici sono già registrati su webDiplomacy.it e sfidali!</li>
 
-<li><a href="variants.php">Varianti </a></li>
-<li class="formlistdesc">Tutte le varianti disponibili su questo server con informazioni, mappe e regole.</li>
+<li><a href="variants.php">Diplomacy - Varianti </a></li>
+<li class="formlistdesc">Tutte le varianti che puoi provare su questo server con informazioni, mappe e regole.</li>
 
 <li><a href="credits.php">Riconoscimenti</a></li>
 <li class="formlistdesc">Riconoscimenti e ringraziamenti</li>
@@ -60,7 +60,7 @@ print libHTML::pageTitle('webDiplomacy Help and Links','Links to pages with more
 <li><a href="datc.php">Test DATC</a></li>
 <li class="formlistdesc">Per esperti; i test per controllare se webDiplomacy rispetta tutte le regole del gioco in scatola</li>
 
-<li><a href="http://github.com/kestasjk/webDiplomacy">Progetto GitHub</a></li>
+<li><a href="https://github.com/kestasjk/webDiplomacy">Progetto GitHub</a></li>
 <li class="formlistdesc">Il progetto webDiplomacy sul sito github.com Qui è possibile trovare l'ultima release del programma e contribuire al suo miglioramento.</li>
 
 <li><a href="http://webdiplomacy.it/developers.php">Informazioni per sviluppatori</a></li>
