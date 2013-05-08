@@ -37,7 +37,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			print $User->email;
 		}
 		?>" <?php if ( isset($_REQUEST['emailToken']) ) print 'readonly '; ?> /></li>
-	<li class="formlistdesc">Il tuo indirizzo di posta elettronica. <strong>Non</strong> verrà comunicato a terzi o usato per inviare spam.</li>
+	<li class="formlistdesc">Il tuo indirizzo di posta elettronica.<strong>Non</strong> verrà dato a terzi o usato per inviare spam.</li>
 
 	<li class="formlisttitle">Nascondi l'indirizzo E-mail:</li>
 	<li class="formlistfield">

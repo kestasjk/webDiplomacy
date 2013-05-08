@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2004-2009 Kestas J. Kuliukas
+    Copyright (C) 2004-2010 Kestas J. Kuliukas
 
 	This file is part of webDiplomacy.
 
@@ -30,7 +30,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	Crea una nuova partita
 </div>
 <div class="pageDescription barAlt2">
-Inizia una nuova partita. Sei tu a deciderne il nome, la variante, quando durano i turni e quanto vale in termini di punti.
+Inizia una nuova partita. Sei tu a deciderne il nome, la variante, la durata dei turni e il valore.
 </div>
 </div>
 <div class="content content-follow-on">
@@ -38,17 +38,17 @@ Inizia una nuova partita. Sei tu a deciderne il nome, la variante, quando durano
 <ul class="formlist">
 
 	<li class="formlisttitle">
-	 Nome:
+		Nome:
 	</li>
 	<li class="formlistfield">
 		<input type="text" name="newGame[name]" value="" size="30">
 	</li>
 	<li class="formlistdesc">
-		Il nome della tua partita
+		Scegli il nome da dare alla tua partita
 	</li>
 
 	<li class="formlisttitle">
-		Durata turno: (5 minuti - 10 giorni)
+		Durata del turno: (5 minuti - 10 giorni)
 	</li>
 	<li class="formlistfield">
 		<select name="newGame[phaseMinutes]" onChange="document.getElementById('wait').selectedIndex = this.selectedIndex">
@@ -66,23 +66,22 @@ Inizia una nuova partita. Sei tu a deciderne il nome, la variante, quando durano
 		</select>
 	</li>
 	<li class="formlistdesc">
-		Il numero massimo di ore, dato ai giocatori per la diplomazia e l'inserimento degli ordini di cisacun turno.<br />
-		Tempi più lunghi significano decisioni più accurate e diplomazia più attenta, ma fanno durare di più le partite. 
-    Tempi più corti rendono le partite più veloci, ma i giocatori devono controllare la partita frequentemente se non si volgiono ritrovare in sommossa.<br /><br />
+	  Il tempo a disposizione dei giocatori per la diplomazia e l'inserimento degli ordini.<br />
+      Tempi più lunghi permettono decisioni più accurate e diplomazia più attenta, ma fanno durare di più la partita. <br />
+      Tempi più corti rendono la partita più veloce, ma i giocatori devono controllare la partita frequentemente se non volgiono perdere turni o ritrovarsi in sommossa.<br />
 
-		<strong>Standard:</strong> 24 ore/1 giorno
+		<strong>Standard:</strong> 1 giorno
 	</li>
 
 	<li class="formlisttitle">
-		Puntata: (5<?php print libHTML::points(); ?>-
+		Valore puntata: (5<?php print libHTML::points(); ?>-
 			<?php print $User->points.libHTML::points(); ?>)
 	</li>
 	<li class="formlistfield">
 		<input type="text" name="newGame[bet]" size="7" value="<?php print $formPoints ?>" />
 	</li>
 	<li class="formlistdesc">
-		La puntata necessaria per iscriversi a questa partita. Questa è la quantità di punti che tutti i giocatori, te incluso, metterete sul "piatto"
-		 (<a href="points.php" class="light">Cosa sono i punti?</a>).<br /><br />
+		La puntata necessaria per iscriversi a questa partita. Questa è la quantità di punti che tutti i giocatori, te incluso, metterete sul "piatto" (<a href="points.php" class="light">Cosa sono i punti?</a>).<br /><br />
 
 		<strong>Standard:</strong> <?php print $defaultPoints.libHTML::points(); ?>
 	</li>
@@ -94,21 +93,19 @@ Inizia una nuova partita. Sei tu a deciderne il nome, la variante, quando durano
 <ul class="formlist">
 	<li class="formlisttitle">
 		<a href="#" onclick="$('AdvancedSettings').show(); $('AdvancedSettingsButton').hide(); return false;">
-		Apri le opzioni avanzate
+		Impostazioni avanzate
 		</a>
 	</li>
 	<li class="formlistdesc">
-	 Le opzioni avanzate permettono maggiori impostazioni della partita.
-		<br /><br />
-
-		Le impostazioni Standard sono consigliate ai <strong>giocatori nuovi</strong>.
+		Impostazioni avanzate che permettono ai giocatori più esperti di personalizzare meglio le partite.
+              
 	</li>
 </ul>
 </div>
 
 <div id="AdvancedSettings" style="<?php print libHTML::$hideStyle; ?>">
 
-<h3>Impostazioni Avanzate</h3>
+<h3>Impostazioni avanzate</h3>
 
 <ul class="formlist">
 <?php
@@ -116,7 +113,7 @@ if( count(Config::$variants)==1 )
 {
 	foreach(Config::$variants as $variantID=>$variantName) ;
 
-	$defaultVariantName=$variantName;
+	$StandardVariantName=$variantName;
 
 	print '<input type="hidden" name="newGame[variantID]" value="'.$variantID.'" />';
 }
@@ -131,7 +128,7 @@ else
 	foreach(Config::$variants as $variantID=>$variantName)
 	{
 		if( $first )
-			$defaultVariantName=$variantName;
+			$StandardVariantName=$variantName;
 		$Variant = libVariant::loadFromVariantName($variantName);
 		$checkboxes[] = '<input type="radio" '.($first?'checked="on" ':'').'name="newGame[variantID]" value="'.$variantID.'"> '.$Variant->link();
 		$first=false;
@@ -140,11 +137,11 @@ else
 	?>
 	</li>
 	<li class="formlistdesc">
-		Scegli la variante, tra quelle disponibili su questo server.<br /><br />
+		Scegli la variante della mappa, tra quelle disponibili.<br /><br />
 
-		Oppure clicca il nome della variante, per maggiori informazioni sulla stessa.<br /><br />
+		Oppure clicca sul nome della variante, per avere maggiori informazioni sulla stessa.<br /><br />
 
-		<strong>Standard:</strong> <?php print $defaultVariantName; ?>
+		<strong>Standard:</strong> <?php print $StandardVariantName; ?>
 	</li>
 <?php
 }
@@ -152,41 +149,39 @@ else
 
 	<li class="formlisttitle">Divisione dei punti:</li>
 	<li class="formlistfield">
-		<input type="radio" name="newGame[potType]" value="Points-per-supply-center" checked > Per Numero di Centri<br />
-		<input type="radio" name="newGame[potType]" value="Winner-takes-all"> Vincitore Intasca la Posta (VIP)
+		<input type="radio" name="newGame[potType]" value="Points-per-supply-center" checked > Per numero di centri<br />
+		<input type="radio" name="newGame[potType]" value="Winner-takes-all"> Vincitore intasca tutto
 	</li>
 	<li class="formlistdesc">
-		Decidi se la posta in gioco verrà divisa tra tutti i sopravissuti in base al numero di centri posseduti, o se il vincitore della partita si intasca l'intero ammontare.
-     (<a href="points.php#ppscwta" class="light">per saperne di più</a>).<br /><br />
+		Decidi se, in caso di vittoria, la posta in gioco verrà suddivisa tra tutti i sopravissuti in base al numero dei centri posseduti o se sarà il vincitore ad intascare l'intera posta in gioco (<a href="points.php#ppscwta" class="light">per saperne di più</a>).<br />
+		In caso di patta, la posta viene divisa equamente tra tutti i sopravissuti indipendentemente dal numero di centri posseduti.<br /><br />
 
-		<strong>Standard:</strong> Per Numero di Centri
+		<strong>Standard:</strong> Per numero di centri
 	</li>
 
 	<li class="formlisttitle">
-		Giocatori Anonimi:
+		Giocatori anonimi:
 	</li>
 	<li class="formlistfield">
 		<input type="radio" name="newGame[anon]" value="No" checked>No
 		<input type="radio" name="newGame[anon]" value="Yes">Sì
 	</li>
 	<li class="formlistdesc">
-		Se scegli sì, i nomi dei giocatori della partita non saranno visibili fino a che la partita non finisce.<br /><br />
+		Se scegli sì, i nomi degli altri giocatori non saranno visibili fino alla fine della partita.<br /><br />
 
 		<strong>Standard:</strong> No, i giocatori non sono anonimi
 	</li>
 
 	<li class="formlisttitle">
-		Diplomazia della partita:
+		Diplomazia:
 	</li>
 	<li class="formlistfield">
-		<input type="radio" name="newGame[pressType]" value="Regular" checked>Permetti tutto
-		<input type="radio" name="newGame[pressType]" value="PublicPressOnly">Solo messaggi Globali. Niente comunicazioni personali
-		<input type="radio" name="newGame[pressType]" value="NoPress">Nessuna diplomazia
+		<input type="radio" name="newGame[pressType]" value="Regular" checked><strong>Permetti tutto</strong> - possibilità di inviare messaggi privati ai singoli giocatori e globali a tutti i giocatori contemporaneamente. <br />
+		<input type="radio" name="newGame[pressType]" value="PublicPressOnly"><strong>Solo messaggi globali</strong> - nessun messaggio privato: solo comunicazioni che possono essere lette da tutti i giocatori. <br />
+		<input type="radio" name="newGame[pressType]" value="NoPress"><strong>Nessuna diplomazia</strong> - nessuna possibilità di interagire con gli altri giocatori.<br />
 	</li>
 	<li class="formlistdesc">
-		Proibisci solo i messaggi personali tra giocatori, oppure ogni forma di diplomazia (Militare).
-
-		<br /><br /><strong>Default:</strong> Permetti tutte le comunicazioni
+		<br /><br /><strong>Standard:</strong> Permetti tutto
 	</li>
 
 	<li class="formlisttitle">
@@ -204,22 +199,24 @@ else
 		</select>
 	</li>
 	<li class="formlistdesc">
-		Tempo utile agli altri giocatori per iscriversi a questa partita. Se entro questa scadenza la partita non avrà raccolto un numero sufficiente di giocatori, sarà cancellata e bisognerà crearne una nuova. Per turni brevi (5 minuti), è consigliabile dare una scadenza maggiore a questo valore.
-
+		Le partite, che allo scadere del tempo di attesa, non hanno raccolto un numero sufficiente di giocatori, vengono cancellate.<br />
+      	Per partite con turni brevi (5 minuti), è opportuno impostare una scadenza superiore. <br />
+		<strong> Nota bene:</strong> In caso di turni lunghi (12+ ore) la partita inizia non appena viene raggiunto il numero di giocatori richiesto.<br /> In caso di turni brevi (5-10 minuti) la partita inizia esattamente alla scadenza del tempo di attesa; così è possibile programmare l'inizio delle partite <em>live</em> per una determinata ora.
+		
 		<br /><br /><strong>Standard:</strong> Stesso tempo di un turno
 	</li>
 
 	<li class="formlisttitle">
-		<img src="images/icons/lock.png" alt="Private" /> Password (optionale):
+		<img src="images/icons/lock.png" alt="Private" /> Password (facoltativa):
 	</li>
 	<li class="formlistfield">
 		<ul>
 			<li>Password: <input type="password" name="newGame[password]" value="" size="30" /></li>
-			<li>Confirm: <input type="password" name="newGame[passwordcheck]" value="" size="30" /></li>
+			<li>Conferma: <input type="password" name="newGame[passwordcheck]" value="" size="30" /></li>
 		</ul>
 	</li>
 	<li class="formlistdesc">
-		<strong>Questa opzione non è obbligatoria.</strong> Solo le persone che conoscono la password saranno in grado di iscriversi alla partita.<br /><br />
+		<strong>Questa opzione non è obbligatoria.</strong> Se impostate una password, solo le persone che la conoscono saranno in grado di iscriversi alla partita.<br /><br />
 
 		<strong>Standard:</strong> Nessuna password
 	</li>
@@ -230,6 +227,6 @@ else
 <div class="hr"></div>
 
 <p class="notice">
-	<input type="submit" class="form-submit" value="Create">
+	<input type="submit" class="form-submit" value="Crea partita">
 </p>
 </form>
