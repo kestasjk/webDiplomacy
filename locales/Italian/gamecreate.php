@@ -176,9 +176,9 @@ else
 		Diplomazia:
 	</li>
 	<li class="formlistfield">
-		<input type="radio" name="newGame[pressType]" value="Regular" checked>Permetti tutto - possibilità di inviare messaggi privati ai singoli giocatori e globali a tutti i giocatori contemporaneamente. <br />
-		<input type="radio" name="newGame[pressType]" value="PublicPressOnly">Solo messaggi globali - nessun messaggio privato: solo comunicazioni che possono essere lette da tutti i giocatori. <br />
-		<input type="radio" name="newGame[pressType]" value="NoPress">Nessuna diplomazia - nessuna possibilità di interagire con gli altri giocatori.<br />
+		<input type="radio" name="newGame[pressType]" value="Regular" checked><strong>Permetti tutto</strong> - possibilità di inviare messaggi privati ai singoli giocatori e globali a tutti i giocatori contemporaneamente. <br />
+		<input type="radio" name="newGame[pressType]" value="PublicPressOnly"><strong>Solo messaggi globali</strong> - nessun messaggio privato: solo comunicazioni che possono essere lette da tutti i giocatori. <br />
+		<input type="radio" name="newGame[pressType]" value="NoPress"><strong>Nessuna diplomazia</strong> - nessuna possibilità di interagire con gli altri giocatori.<br />
 	</li>
 	<li class="formlistdesc">
 		<br /><br /><strong>Standard:</strong> Permetti tutto
@@ -201,13 +201,13 @@ else
 	<li class="formlistdesc">
 		Le partite, che allo scadere del tempo di attesa, non hanno raccolto un numero sufficiente di giocatori, vengono cancellate.<br />
       	Per partite con turni brevi (5 minuti), è opportuno impostare una scadenza superiore. <br />
-		<strong> Nota bene:</strong> In caso di turni brevi (5-10 minuti) la partita inizia esattamente alla scadenza del tempo di attesa; in caso di turni lunghi (12+ ore) la partita inizia non appena viene raggiunto il numero di giocatori richiesto.
+		<strong> Nota bene:</strong> In caso di turni lunghi (12+ ore) la partita inizia non appena viene raggiunto il numero di giocatori richiesto.<br /> In caso di turni brevi (5-10 minuti) la partita inizia esattamente alla scadenza del tempo di attesa; così è possibile programmare l'inizio delle partite <em>live</em> per una determinata ora.
 		
 		<br /><br /><strong>Standard:</strong> Stesso tempo di un turno
 	</li>
 
 	<li class="formlisttitle">
-		<img src="images/icons/lock.png" alt="Private" /> Password (opzionale):
+		<img src="images/icons/lock.png" alt="Private" /> Password (facoltativa):
 	</li>
 	<li class="formlistfield">
 		<ul>

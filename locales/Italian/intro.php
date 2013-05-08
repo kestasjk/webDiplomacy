@@ -25,13 +25,13 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @subpackage Static
  */
 
-print libHTML::pageTitle('Diplomacy : Introduzione alle regole del gioco da tavolo ','Impara a giocare a Diplomacy con questo facile e veloce regolamento.');
+print libHTML::pageTitle('Introduzione alle regole del gioco da tavolo Diplomacy','Impara a giocare a Diplomacy con questo facile e veloce regolamento.');
 
 ?>
 <p>
 Diplomacy è un gioco da tavolo facile da imparare, ma difficilissimo da padroneggiare maniera eccelsa. 
-Le regole somo semplici ed intuitive, e molti giocatori le imparano giocando (online oppure dal vivo); 
-questo documento vi aiuterà ad ambientarvi più velocemente per poter giocare online sul sito.
+Le regole somo semplici ed intuitive, e molti giocatori le imparano giocando (partite online oppure dal vivo).
+<br />Questa breve introduzione grafica vi aiuterà ad ambientarvi più velocemente per poter subito giocare online.
 </p>
 
 <div class="hr"></div>
@@ -44,12 +44,11 @@ questo documento vi aiuterà ad ambientarvi più velocemente per poter giocare o
 
 <a name="Obiettivo"></a>
 <h3>Obiettivo del Gioco</h3>
-<p>
-L'obiettivo del Diplomacy è di arrivare a conquistare 18 centri di approvigionamento. 
-Per ogni centro guadagnato, il giocatore può mettere in campo una nuova unità,
-perdendone una se il centro viene perso a favore di un altro giocatore.
+<p>L'obiettivo del Diplomacy è di arrivare a conquistare 18 centri di approvigionamento. 
+<br />Il numero di unità (Armate o Flotte) che possiede ciascun giocatore corrisponde al numero di centri posseduti.
+<br />Per ogni nuovo centro guadagnato, il giocatore può mettere in campo una nuova unità, perdendone una se il centro viene conquistato da un altro giocatore.
 <br /><br />
-I centri di approvigionamento hanno dei segni, che li distinguono dalle semplici regioni.</p>
+I centri di approvigionamento si distinguono dalle semplici regioni mediante dei segni circolari.</p>
 <p style="text-align:center;">
 	<img src="images/intro/supply.png" alt=" " title="I centri sono segnati così (Mappa grande)" />
 	<img src="images/intro/supply2.png" alt=" " title="I centri sono segnati così (Mappa piccola)" />
@@ -63,14 +62,14 @@ I centri di approvigionamento hanno dei segni, che li distinguono dalle semplici
 	<li class="formlisttitle">Armata <img src="<?php print STATICSRV; ?>contrib/army.png"
 		alt="Diplomacy - Armata "  title="L'icona di un'Armata" /></li>
 	<li class="formlistdesc">
-	Questa unità può muoversi solo sulla terraferma.
+	Le Armate possono muoversi solo sulla terraferma.
 	</li>
 
 	<li class="formlisttitle">Flotta <img src="<?php print STATICSRV; ?>contrib/fleet.png"
 		alt="Diplomacy - Flotta " title="L'icona di una Flotta" /></li>
 	<li class="formlistdesc">
-	 Questa unità può muoversi solo sui mari e sulle regioni con delle coste.
-	 <br />Può anche trasportare armate attraverso il mare aperto.
+	 Le Flotte possono muoversi solo sui mari e sulle regioni con delle coste.
+	 <br />Possono anche trasportare le armate attraverso il mare aperto.
 	</li>
 </ul>
 
@@ -81,7 +80,7 @@ I centri di approvigionamento hanno dei segni, che li distinguono dalle semplici
 <ul class="formlist">
 	<li class="formlisttitle">Primavera</li>
 	<li class="formlistdesc">
-	Ogni partita inizia dal turno di Primavera. Durante questo turno i giocatori hanno a loro disposizione il tempo per conoscere i loro compagni di gioco, fare diplomazia, raggiungere accordi e stipulare alleanze che presumibilmente porteranno alla gloria il proprio paese. 
+	Durante il turno di Primavera i giocatori hanno a loro disposizione il tempo per conoscere i loro compagni di gioco, fare diplomazia, raggiungere accordi e stipulare alleanze che presumibilmente porteranno alla gloria il proprio paese. 
 	Prima della scadenza del tempo bisogna inserire anche gli ordini di movimento delle proprie truppe. 
 	</li>
 	<li class="formlisttitle">Ritirate dopo il turno di primavera</li>
@@ -91,7 +90,7 @@ I centri di approvigionamento hanno dei segni, che li distinguono dalle semplici
 	</li>
 	<li class="formlisttitle">Autunno</li>
 	<li class="formlistdesc">
-	L'Autunno si svolge esattamente come il turno di primavera. L'unica differenza è che dopo l'autunno avviene il conteggio dei centri di approviggionamento. Tutte le armate o le flotte che finiscono questo turno in una provincia che contiene un centro, lo conquistano. Se un giocatore entra in un centro di approviggionamento non suo durante il turno di primavera e nel turno di autunno ne esce, quel centro non viene conquistato.
+	L'Autunno si svolge esattamente come il turno di primavera. L'unica differenza è che dopo l'autunno avviene il conteggio dei centri di approvigionamento. Tutte le armate o le flotte che finiscono questo turno in una provincia che contiene un centro, lo conquistano. Se un giocatore entra in un centro di approvigionamento non suo durante il turno di primavera e nel turno di autunno ne esce, quel centro non viene conquistato.
 	</li>
 	<li class="formlisttitle">Ritirate dopo il turno dell'Autunno</li>
 	<li class="formlistdesc">
@@ -100,9 +99,9 @@ I centri di approvigionamento hanno dei segni, che li distinguono dalle semplici
 	</li>
 	<li class="formlisttitle">Inverno</li>
 	<li class="formlistdesc">
-	Durante il turno invernale, se hanno più centri di produzione rispetto alle unità in campo, i giocatori possono costruire nuove armate o flotte. Se i centri di produzione sono infriori al numero delle unità presenti sulla mappa, allora il giocatore deve rimuovere.<br/>
+	Durante il turno invernale, se hanno più centri di produzione rispetto alle unità in campo, i giocatori possono costruire nuove armate o flotte. Se il numero dei centri di produzione è inferiore al numero delle unità presenti sulla mappa, allora il giocatore deve rimuovere.<br/>
 	<em>Esempio:</em> La Francia durante la Primavera muove l'armata dalla Marsiglia in Spagna. Durante l'Autunno muove l'armata dalla Spagna in Portogallo, finendo il turno in Portogallo. La Spagna non è conquistata, perchè alla fine dell'autunno non c'è nessuna armata in quel centro. Mentre è conquistato il Portogallo. La Francia durante il turno di inverno può costruire un'altra unità. 
-	<em>Nota Bene</em> Ai fini di possedere un determinato centro non è necessario finire ogni turno di Autunno su quel centro. Basta una volta sola. Una volta conquistato, il centro rimane di proprietà di un giocatore, finchè l'unità di un altro giocatore non termina il turno di Autunno in quel centro.
+	<br /><em>Nota Bene</em> Ai fini di possedere un determinato centro non è necessario finire ogni turno di Autunno su quel centro. Basta una volta sola. Una volta conquistato, il centro rimane di proprietà di un giocatore, finchè l'unità di un altro giocatore non termina il turno di Autunno in quel centro.
 	</li>
 
 
