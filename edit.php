@@ -141,7 +141,7 @@ function write_changes() {
         $DB->sql_put('UPDATE wD_Territories SET supply="' . $sc . '" WHERE mapID=' . $mapID . ' AND id=' . $terrID);
     if (($name != '') && ($terrID != '0'))
         $DB->sql_put('UPDATE wD_Territories SET name="' . $name . '" WHERE mapID=' . $mapID . ' AND id=' . $terrID);
-    if (($countryID != '') && ($terrID != '0'))
+    if (($countryID != '' || $countryID == 0 ) && ($terrID != '0'))
         $DB->sql_put('UPDATE wD_Territories SET countryID="' . $countryID . '" WHERE mapID=' . $mapID . ' AND id=' . $terrID);
     if (($name != '') && ($terrID == '0')) {
         list($terrID) = $DB->sql_row('SELECT id FROM wD_Territories WHERE mapID=' . $mapID . ' ORDER BY id DESC LIMIT 1;');
