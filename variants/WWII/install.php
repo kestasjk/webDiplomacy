@@ -2,7 +2,7 @@
 // This is file installs the map data for the WWII variant
 defined('IN_CODE') or die('This script can not be run by itself.');
 require_once("variants/install.php");
- 
+
 InstallTerritory::$Territories=array();
 $countries=$this->countries;
 $territoryRawData=array(
@@ -687,6 +687,7 @@ $bordersRawData=array(
 	array('Tuscany (West Coast)','Rome (South Coast)','Yes','No'),
 	array('Rome (North Coast)','Naples (North Coast)','Yes','No'),
 	array('Naples (North Coast)','Messina (East Coast)','Yes','No'),
+	array('Messina (East Coast)','Messina (West Coast)','Yes','No'),
 	array('Messina (West Coast)','Naples (South Coast)','Yes','No'),
 	array('Thessalonica (East Coast)','Athens (East Coast)','Yes','No'),
 	array('Thessalonica (West Coast)','Athens (West Coast)','Yes','No'),
