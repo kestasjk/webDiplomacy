@@ -543,6 +543,7 @@ $bordersRawData=array(
 	array('Ionian Sea','Crete','Yes','No'),
 	array('Ionian Sea','Aegean Sea','Yes','No'),
 	array('Ionian Sea','Messina (East Coast)','Yes','No'),
+	array('Ionian Sea','Messina (West Coast)','Yes','No'),
 	array('Ionian Sea','Thessalonica (West Coast)','Yes','No'),
 	array('Ionian Sea','Athens (West Coast)','Yes','No'),
 	array('Sea of Sicily','Libyan Sea','Yes','No'),
