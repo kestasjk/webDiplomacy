@@ -9,6 +9,8 @@
 '%s hours, %s minutes' => '%s ore, %s minuti',
 '%s minutes' => '%s minuti',
 '%s minutes, %s seconds' => '%s minuti, %s secondi',
+'%s players joined; game will start at the scheduled time' => '%s giocatori entrato; partita inizierà al tempo previsto'
+'%s players joined; game will start on next process cycle' => '%s giocatori entrato; gioco avrà inizio di lavorazione successiva il ciclo'
 '%s replies' => '%s risposte',
 '%s supply-centers, %s units' => '%s centri, %s unitÃ ',
 '%s units' => '%s unitÃ ',
@@ -293,6 +295,7 @@
 'Okay, now that we know you\'re a human we need to check that you have a real e-mail address.' => 'Bene, ora che sappiamo che sei un umano dobbiamo controllare che tu abbia un indirizzo e-mail valido.',
 'Once the reason for the period of no processing is known, and it\'s safe to reenable
 					game processing, the last process time can be reset here' => 'Una volta che il motivo dello stop alla risoluzione degli ordini sia chiaro e che far ripartire l\'aggiornamento delle partite sia considerato sicuro, da qui si puÃ² resettare l\'ultima fase di aggiornamento',
+'One or more players need to complete their orders before this strict/tournament game can go on' => 'Uno o più giocatori devono completare i loro ordini prima questo gioco rigida / torneo può continuare'
 'Online' => 'Connesso',
 'Open' => 'Aperte',
 'Open %s chatbox tab\"' => 'Open %s chatbox tab\"',
@@ -338,6 +341,8 @@
 'Reallocations list (e.g \"<em>R,T,A,G,U,F,E</em>\")' => 'Lista di riassegnazione (ad es. \"<em>R,T,A,G,U,F,E</em>\")',
 'Reason' => 'Motivo',
 'Recent message' => 'Messaggio recente',
+'Refresh' => 'Rinfrescare',
+'Refresh your view of this thread to see if there are any new replies' => 'Aggiornare la vista di questo thread per vedere se ci sono nuove risposte',
 'Regards,' => 'Cordialmente,',
 'Register a webDiplomacy account' => 'Crea un account di Diplomacy',
 'Registered' => 'Registrato',
@@ -426,6 +431,8 @@
 'The current page; click to refresh' => 'La pagina corrente; clicca per aggiornare',
 'The e-mail may take a couple of minutes to arrive; if it doesn\'t appear check your spam inbox.' => 'L\'invio dell\'email potrebbe impiegare un paio di minuti; se non appare nella vostra casella di posta, controllate la vostra sezione di spam.',
 'The full game listing search panel' => 'Il pannello di ricerca con la lista di tutte le partite',
+'The game will start at the scheduled time even if all %s players have joined.' => 'Il gioco inizierà al tempo previsto, anche quando tutti e %s i giocatori si sono uniti.'
+'The game will start when all %s players have joined.' => 'Il gioco inizierà quando tutti e %s i giocatori si sono uniti.'
 'The map for the %s Variant' => 'La mappa della variante %s',
 'The password you entered is incorrect.' => 'La password inserita Ã¨ errata.',
 'The results of a set of automated tests which show the webDiplomacy\'s compliance with the official Diplomacy rules.' => 'Il risultato di un set di test automatici che mostra la conformitÃ  di webDiplomacy con le regole ufficiali di Diplomacy.',
@@ -527,9 +534,13 @@
 'fail' => 'fallito',
 'fast' => 'veloce',
 'game' => 'partita',
+'game started' => 'partita iniziata',
+'game starting' => 'gioco di partenza'
+'game starting soon' => 'gioco di partenza presto'
 'it\'s a guest account, used by unregistered people to view the server without interacting.' => 'Ã¨ un account \"ospite\", usato da persone non registrate per accedere al server senza interagire.',
 'live' => 'live',
 'normal' => 'normale',
+'not a member' => 'non un membro',
 'replies' => 'risposte',
 'reply' => 'rispondi',
 'slow' => 'lenta',
@@ -556,6 +567,7 @@
 ' to %s ' => ' in %s ',
 '%s has passed!' => '%s Ã¨ passato!',
 '%s is an invalid bet size.' => '%s Ã¨ una scommessa non valida.',
+'%s min, %s secs' => '%s minuto, %s secondi',
 '%s mins' => '%s minuti',
 '%s mins, %s secs' => '%s minuti, %s secondi',
 '%s updated successfully.' => '%s aggiornata correttamente.',
@@ -777,6 +789,8 @@
 'New game' => 'Nuova partita',
 'New messages' => 'Nuovi messaggi',
 'New messages!' => 'Messaggi non letti!',
+'New private messages' => 'Nuovi messaggi privati',
+'New private messages!' => 'Messaggi non letti!',
 'Newfoundland' => 'Newfoundland',
 'Nigeria' => 'Nigeria',
 'No' => 'No',
@@ -830,6 +844,7 @@
 'Picardy' => 'Piccardia',
 'Piedmont' => 'Piemonte',
 'Please <a href=\'register.php\' class=\'light\'>register</a> or <a href=\'logon.php\' class=\'light\'>log in</a> to %s.' => '<a href=\'Iscriviti.php\' class=\'light\'>register</a> o <a href=\'logon.php\' class=\'light\'>accedi</a> a %s.',
+'PM' => 'MP',
 'Points distribution type' => 'Distribuzione dei punti',
 'Points-per-supply-center' => 'Punti per centro di produzione',
 'Poland' => 'Polonia',

@@ -200,7 +200,8 @@ class Members
 			INNER JOIN wD_Users u ON ( m.userID = u.id )
 			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
 			WHERE m.gameID = ".$this->Game->id."
-			ORDER BY m.status ASC, m.supplyCenterNo DESC, u.points DESC".
+			ORDER BY m.status ASC, m.supplyCenterNo DESC, ".
+			($this->Game->anon=='Yes' ? "m.countryID ASC" : "u.points DESC" ).
 			$this->Game->lockMode
 			);
 
@@ -274,8 +275,9 @@ class Members
 			return l_t("not a member");
 		elseif($this->Game->phase != 'Pre-game')
 			return l_t("game started");
-		elseif(count($this->ByID)==count($this->Game->Variant->countries))
-			return l_t("game starting");
+		elseif(count($this->ByID)==count($this->Game->Variant->countries) &&
+		       time() + 30*60 > $this->Game->processTime)
+			return l_t("game starting soon");
 		elseif(time()>$this->Game->processTime)
 			return l_t("game starting");
 		elseif ( $Misc->Panic )

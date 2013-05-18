@@ -21,116 +21,53 @@
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 /**
- * This class gives the static information for moderator tasks, and the code
- * which runs each task. The adminActionsForms class can use the static data
- * to present forms for each task, and correctly pass the submitted form data
- * to the right task code here.
+ * This class is run from adminActionsForms, when run from within board.php, which limits the
+ * actions which can be performed to those which TDs need to be able to run, and ensures that the gameID
+ * parameter is always for the correct game.
  *
  * @package Admin
  */
-class adminActions extends adminActionsForms
+class adminActionsTD extends adminActionsForms
 {
 	public static $actions = array(
 			'drawGame' => array(
 				'name' => 'Draw game',
 				'description' => 'Splits points among all the surviving players in a game equally, and ends the game.',
-				'params' => array('gameID'=>'Game ID'),
+				'params' => array(),
 			),
 			'cancelGame' => array(
 				'name' => 'Cancel game',
 				'description' => 'Splits points among all players in a game equally, and deletes the game.',
-				'params' => array('gameID'=>'Game ID'),
+				'params' => array(),
 			),
 			'togglePause' => array(
 				'name' => 'Toggle-pause game',
 				'description' => 'Flips a game\'s paused status; if it\'s paused it\'s unpaused, otherwise it\'s paused.',
-				'params' => array('gameID'=>'Game ID'),
+				'params' => array(),
 			),
 			'makePublic' => array(
 				'name' => 'Make public a private game',
 				'description' => 'Removes a private game\'s password.',
-				'params' => array('gameID'=>'Game ID'),
+				'params' => array(),
 			),
 			'makePrivate' => array(
 				'name' => 'Make a public game private',
 				'description' => 'Add a password to a private game.',
-				'params' => array('gameID'=>'Game ID','password'=>'Password'),
+				'params' => array('password'=>'Password'),
 			),
 			'cdUser' => array(
 				'name' => 'Force a user into CD',
-				'description' => 'Force a user into CD in all his games, or in one game specifically if non-zero gameID given.',
-				'params' => array('userID'=>'User ID','gameID'=>'Game ID'),
-			),
-			'banIP' => array(
-				'name' => 'Ban an IP',
-				'description' => 'Bans a certain IP address',
-				'params' => array('IP'=>'IP address (xxx.xxx.xxx.xxx)'),
-			),
-			'banUser' => array(
-				'name' => 'Ban a user',
-				'description' => 'Bans a user, setting his games to civil disorder, and removing his points.',
-				'params' => array('userID'=>'User ID','reason'=>'Reason'),
-			),
-			'unbanUser' => array(
-				'name' => 'Unban a user',
-				'description' => 'Unbans a user; does not return the player from civil disorder or return the points taken.',
-				'params' => array('userID'=>'Banned User ID'),
-			),
-			'givePoints' => array(
-				'name' => 'Give or take points',
-				'description' => 'Enter a positive number of points to give, or a negative number of points to take.',
-				'params' => array('userID'=>'User ID', 'points'=>'Points')
-			),
-			'resetPass' => array(
-				'name' => 'Reset password',
-				'description' => 'Resets a users password',
-				'params' => array('userID'=>'User ID'),
-			),
-			'makeDonator' => array(
-				'name' => 'Give donator benefits',
-				'description' => 'Give donator benefits (in practical terms this just means opt-out of the distributed processing)',
-				'params' => array('userID'=>'User ID'),
-			),
-			'makeDonatorPlatinum' => array(
-				'name' => 'Donator: platinum',
-				'description' => 'Give platinum donator marker',
-				'params' => array('userID'=>'User ID'),
-			),
-			'makeDonatorGold' => array(
-				'name' => 'Donator: gold',
-				'description' => 'Give gold donator marker',
-				'params' => array('userID'=>'User ID'),
-			),
-			'makeDonatorSilver' => array(
-				'name' => 'Donator: silver',
-				'description' => 'Give silver donator marker',
-				'params' => array('userID'=>'User ID'),
-			),
-			'makeDonatorBronze' => array(
-				'name' => 'Donator: bronze',
-				'description' => 'Give bronze donator marker',
+				'description' => 'Force a user into CD in this game.',
 				'params' => array('userID'=>'User ID'),
 			),
 			'setProcessTimeToPhase' => array(
 				'name' => 'Reset process time',
 				'description' => 'Set a game process time to now + the phase length, resetting the turn length',
-				'params' => array('gameID'=>'Game ID'),
+				'params' => array(),
 			),
 			'setProcessTimeToNow' => array(
 				'name' => 'Process game now',
 				'description' => 'Set a game process time to now, resulting in it being processed now',
-				'params' => array('gameID'=>'Game ID'),
-			),
-			'panic' => array(
-				'name' => 'Toggle panic button',
-				'description' => 'Toggle the panic button; turning it on prevents games from being processed, users joining games,
-						users registering. It is intended to limit the damage a problem can do',
-				'params' => array(),
-			),
-			'resetLastProcessTime' => array(
-				'name' => 'Reset last process time',
-				'description' => 'Once the reason for the period of no processing is known, and it\'s safe to reenable
-					game processing, the last process time can be reset here',
 				'params' => array(),
 			),
 			'changePhaseLength' => array(
@@ -138,7 +75,7 @@ class adminActions extends adminActionsForms
 				'description' => 'Change the maximum number of minutes that a phase lasts.
 					The time must be given in minutes (5 minutes to 10 days = 5-14400).<br />
 					Also the next process time is reset to the new phase length.',
-				'params' => array('gameID'=>'Game ID','phaseMinutes'=>'Minutes per phase'),
+				'params' => array('phaseMinutes'=>'Minutes per phase'),
 			),
 			'countryReallocate' => array(
 				'name' => 'Reallocate countries',
@@ -153,7 +90,6 @@ class adminActions extends adminActionsForms
 					(If changing the countries of a variant for which the first letter of the countries are not distinct countryID numbers must be used instead.)<br />
 					(Alternatively you can enter [userID1]=[countryLetter1],[userID2]=[countryLetter2],etc)',
 				'params' => array(
-					'gameID'=>'Game ID',
 					'reallocations'=>'Reallocations list (e.g "<em>R,T,A,G,U,F,E</em>")'
 					)
 			),
@@ -161,126 +97,23 @@ class adminActions extends adminActionsForms
 				'name' => 'Alter game messaging',
 				'description' => 'Change a game\'s messaging settings, e.g. to convert from gunboat to public-only or all messages allowed.',
 				'params' => array(
-					'gameID'=>'Game ID',
 					'newSetting'=>'Enter a number for the desired setting: 1=Regular, 2=PublicPressOnly, 3=NoPress'
 					),
-			),
-			'unCrashGames' => array(
-				'name' => 'Uncrash games',
-				'description' => 'Uncrashes all crashed games except the games specified (if any).',
-				'params' => array('excludeGameIDs'=>'Except Game ID list'),
-			),
-			'reportMuteToggle' => array(
-				'name' => 'Toggle mod-report mute',
-				'description' => 'Toggles whether the given userID can submit reports, to prevent annoying users from abusing the report feature.',
-				'params' => array('userID'=>'User ID'),
-			),
-			'syncForumLikes' => array(
-				'name' => 'Sync forum likes',
-				'description' => 'Synchronizes the cached forum post like counts with the user-tracked like records, in case they somehow get out of sync.',
-				'params' => array(),
-			),
-			'setDirector' => array(
-				'name' => 'Set a user as a game director',
-				'description' => 'Sets the given user ID to be the director of the given game ID (set to 0 to remove someone as game director). This will give them mod capabilities for this game.',
-				'params' => array('gameID'=>'Game ID','userID'=>'User ID'),
 			)
 		);
 
+	private $fixedGameID;
 	public function __construct()
 	{
-		global $Misc;
-	}
-	public function syncForumLikes(array $params)
-	{
-		global $DB;
+		global $Game;
 		
-		$DB->sql_put("UPDATE wD_ForumMessages fm
-			INNER JOIN (
-			SELECT f.id, COUNT(*) as likeCount
-			FROM wD_ForumMessages f
-			INNER JOIN wD_LikePost lp ON f.id = lp.likeMessageID
-			GROUP BY f.id
-			) l ON l.id = fm.id
-			SET fm.likeCount = l.likeCount");
-		
-		return l_t("All forum like counts have been synced, %s posts affected.", $DB->last_affected());
+		$this->fixedGameID = $Game->id;
 	}
-	
-	public function unCrashGames(array $params)
-	{
-		global $DB;
-
-		require_once(l_r('gamemaster/game.php'));
-
-		$excludeGameIDs = explode(',', $params['excludeGameIDs']);
-
-		foreach($excludeGameIDs as $index=>$gameID)
-		{
-			$gameID = (int)$gameID;
-			$excludeGameIDs[$index] = $gameID;
-		}
-		$excludeGameIDs = implode(',', $excludeGameIDs);
-
-		$tabl = $DB->sql_tabl(
-			"SELECT * FROM wD_Games WHERE processStatus = 'Crashed' ".( $excludeGameIDs ? "AND id NOT IN (".$excludeGameIDs.")" : "" )." FOR UPDATE"
-		);
-		$count=0;
-		while($row=$DB->tabl_hash($tabl))
-		{
-			$count++;
-
-			$Variant=libVariant::loadFromVariantID($row['variantID']);
-			$Game = $Variant->processGame($row);
-
-			if( $Game->phase == 'Finished' )
-			{
-				$DB->sql_put("UPDATE wD_Games SET processStatus = 'Not-processing', pauseTimeRemaining=NULL, processTime = ".time()." WHERE id = ".$Game->id);
-				continue;
-			}
-
-			if ( $Game->phaseMinutes < 12*60 )
-			{
-				if( $Game->phase == 'Pre-game' )
-				{
-					$newTimeDetails = "";
-					$DB->sql_put("UPDATE wD_Games SET processStatus = IF(pauseTimeRemaining IS NULL,'Not-processing','Paused') WHERE id = ".$Game->id);
-				}
-				else
-				{
-					$newTimeDetails = l_t(", and the game has been paused, since it's a fast game, to give players a chance to regroup");
-					$Game->processStatus = 'Not-processing';
-					$Game->togglePause();
-				}
-			}
-			else
-			{
-				$newTimeDetails = l_t(", and the game's next process time has been reset");
-				$DB->sql_put("UPDATE wD_Games SET processStatus = 'Not-processing', processTime = ".time()." + 60*phaseMinutes, pauseTimeRemaining=NULL WHERE id = ".$Game->id);
-			}
-
-			$Game->Members->send('No',l_t("This game has been uncrashed%s. Thanks for your patience.",$newTimeDetails));
-		}
-
-		/* Simpler, but doesn't accomodate live games well
-		$DB->sql_put(
-			"UPDATE wD_Games SET processStatus = 'Not-processing', processTime = ".time()." + 60*phaseMinutes
-			WHERE AND processStatus = 'Crashed' ".( $excludeGameIDs ? "AND id NOT IN (".$excludeGameIDs.")" : "" )
-		);*/
-
-		$details = l_t('All crashed games were un-crashed');
-		if ( $excludeGameIDs )
-			$details .= l_t(', except: %s',$excludeGameIDs);
-		$details .= l_t('. %s games in total.',$count);
-
-		return $details;
-	}
-
 	public function countryReallocate(array $params)
 	{
 		global $DB;
 
-		$gameID=(int)$params['gameID'];
+		$gameID=$this->fixedGameID;
 
 		$Variant=libVariant::loadFromGameID($gameID);
 		$Game = $Variant->Game($gameID);
@@ -395,19 +228,11 @@ class adminActions extends adminActionsForms
 		return l_t('In this game these countries were successfully swapped:').'<br />'.implode(',<br />', $changes).'.<br />
 			'.l_t('These changes can be reversed with "%s"',$changeBackStr);
 	}
-
-	public function reportMuteToggle(array $params) {
-		global $DB;
-
-		$userID=(int)$params['userID'];
-		$DB->sql_put("UPDATE wD_Users SET muteReports=IF(muteReports='Yes','No','Yes') WHERE id=".$userID);
-		return l_t("User's reporting ability has been toggled.");
-	}
 	public function alterMessaging(array $params)
 	{
 		global $DB;
 
-		$gameID=(int)$params['gameID'];
+		$gameID=(int)$this->fixedGameID;
 		$newSetting=(int)$params['newSetting'];
 
 		switch($newSetting)
@@ -422,7 +247,6 @@ class adminActions extends adminActionsForms
 
 		return l_t('Game changed to pressType=%s.',$newSettingName);
 	}
-
 	public function changePhaseLength(array $params)
 	{
 		global $DB;
@@ -434,8 +258,8 @@ class adminActions extends adminActionsForms
 		if ( $newPhaseMinutes < 5 || $newPhaseMinutes > 10*24*60 )
 			throw new Exception(l_t("Given phase minutes out of bounds (5 minutes to 10 days)"));
 
-		$Variant=libVariant::loadFromGameID($params['gameID']);
-		$Game = $Variant->Game($params['gameID']);
+		$Variant=libVariant::loadFromGameID($this->fixedGameID);
+		$Game = $Variant->Game($this->fixedGameID);
 
 		if( $Game->processStatus != 'Not-processing' || $Game->phase == 'Finished' )
 			throw new Exception(l_t("Game is either crashed/paused/finished/processing, and so the next-process time cannot be altered."));
@@ -453,24 +277,13 @@ class adminActions extends adminActionsForms
 		return l_t('Process time changed from %s to %s. Next process time is %s.',
 			libTime::timeLengthText($oldPhaseMinutes*60),libTime::timeLengthText($Game->phaseMinutes*60),libTime::text($Game->processTime));
 	}
-
-	public function resetLastProcessTime(array $params)
-	{
-		global $Misc;
-
-		$Misc->LastProcessTime = time();
-		$Misc->write();
-
-		return l_t('Last process time reset');
-	}
-
 	public function setProcessTimeToPhaseConfirm(array $params)
 	{
 		global $DB;
 
 		require_once(l_r('objects/game.php'));
 
-		$gameID = intval($params['gameID']);
+		$gameID = intval($this->fixedGameID);
 
 		$Variant=libVariant::loadFromGameID($gameID);
 		$Game = $Variant->Game($gameID);
@@ -481,7 +294,7 @@ class adminActions extends adminActionsForms
 	{
 		global $DB;
 
-		$gameID = intval($params['gameID']);
+		$gameID = intval($this->fixedGameID);
 
 		$Variant=libVariant::loadFromGameID($gameID);
 		$Game = $Variant->Game($gameID);
@@ -497,23 +310,11 @@ class adminActions extends adminActionsForms
 
 		return l_t('Process time reset successfully');
 	}
-
-	public function setProcessTimeToNowConfirm(array $params)
-	{
-		global $DB;
-
-		require_once(l_r('objects/game.php'));
-
-		$Variant=libVariant::loadFromGameID($params['gameID']);
-		$Game = $Variant->Game($params['gameID']);
-
-		return l_t('Are you sure you want to start processing this game now?');
-	}
 	public function makePublic(array $params)
 	{
 		global $DB;
 
-		$gameID = intval($params['gameID']);
+		$gameID = intval($this->fixedGameID);
 
 		$DB->sql_put(
 			"UPDATE wD_Games
@@ -527,7 +328,7 @@ class adminActions extends adminActionsForms
 	{
 		global $DB;
 
-		$gameID = intval($params['gameID']);
+		$gameID = intval($this->fixedGameID);
 		$password=$params['password'];
 
 		$DB->sql_put(
@@ -542,7 +343,7 @@ class adminActions extends adminActionsForms
 	{
 		global $DB;
 
-		$gameID = intval($params['gameID']);
+		$gameID = intval($this->fixedGameID);
 
 		$Variant=libVariant::loadFromGameID($gameID);
 		$Game = $Variant->Game($gameID);
@@ -558,90 +359,25 @@ class adminActions extends adminActionsForms
 
 		return 'Process time set to now successfully';
 	}
-
-	public function panicConfirm(array $params)
-	{
-		return l_t('Are you sure? This should only be used if something is damaging the server');
-	}
-	public function panic(array $params)
-	{
-		global $Misc;
-
-		$Misc->Panic = 1-$Misc->Panic;
-		$Misc->write();
-
-		return l_t('Panic button '.($Misc->Panic?'turned on':'turned off'));
-	}
-
-	private function makeDonatorType(array $params, $type='') {
-		global $DB;
-
-		$userID = (int)$params['userID'];
-
-		$DB->sql_put("UPDATE wD_Users SET type = CONCAT_WS(',',type,'Donator".$type."') WHERE id = ".$userID);
-
-		return l_t('User ID %s given donator status.',$userID);
-	}
-
-	public function makeDonator(array $params)
-	{
-		return $this->makeDonatorType($params);
-	}
-	public function makeDonatorPlatinum(array $params)
-	{
-		return $this->makeDonatorType($params,'Platinum');
-	}
-	public function makeDonatorGold(array $params)
-	{
-		return $this->makeDonatorType($params,'Gold');
-	}
-	public function makeDonatorSilver(array $params)
-	{
-		return $this->makeDonatorType($params,'Silver');
-	}
-	public function makeDonatorBronze(array $params)
-	{
-		return $this->makeDonatorType($params,'Bronze');
-	}
-
-	public function resetPassConfirm(array $params)
+	public function setProcessTimeToNowConfirm(array $params)
 	{
 		global $DB;
 
-		$User= new User($params['userID']);
+		require_once(l_r('objects/game.php'));
 
-		return l_t('Are you sure you want to reset the password of this user?');
+		$Variant=libVariant::loadFromGameID($this->fixedGameID);
+		$Game = $Variant->Game($this->fixedGameID);
+
+		return l_t('Are you sure you want to start processing this game now?');
 	}
-	public function resetPass(array $params)
-	{
-		global $DB,$User;
-
-		$ChangeUser= new User($params['userID']);
-		if( $ChangeUser->type['Admin'] || ( $ChangeUser->type['Moderator'] && !$User->type['Admin'] ) )
-		{
-			throw new Exception(l_t("Cannot reset an admin/moderator's password if you aren't admin."));
-		}
-
-		$password = base64_encode(rand(1000000,2000000));
-
-		$DB->sql_put(
-			"UPDATE wD_Users
-			SET password = UNHEX('".libAuth::pass_Hash($password)."')
-			WHERE id = ".$ChangeUser->id
-		);
-
-		return l_t('Users password reset to %s',$password);
-	}
-
-
 	public function drawGameConfirm(array $params)
 	{
 		global $DB;
 
 		require_once(l_r('objects/game.php'));
 
-		$Variant=libVariant::loadFromGameID($params['gameID']);
-		$Game = $Variant->Game($params['gameID']);
+		$Variant=libVariant::loadFromGameID($this->fixedGameID);
+		$Game = $Variant->Game($this->fixedGameID);
 
 		return l_t('Are you sure you want to draw this game? This is really hard to undo, so be sure this is correct!');
 	}
@@ -649,7 +385,7 @@ class adminActions extends adminActionsForms
 	{
 		global $DB, $Game;
 
-		$gameID = (int)$params['gameID'];
+		$gameID = (int)$this->fixedGameID;
 
 		$DB->sql_put("BEGIN");
 
@@ -675,8 +411,8 @@ class adminActions extends adminActionsForms
 
 		require_once('objects/game.php');
 
-		$Variant=libVariant::loadFromGameID($params['gameID']);
-		$Game = $Variant->Game($params['gameID']);
+		$Variant=libVariant::loadFromGameID($this->fixedGameID);
+		$Game = $Variant->Game($this->fixedGameID);
 
 		return l_t('Are you sure you want to cancel this game? This is really hard to undo, so be sure this is correct!');
 	}
@@ -684,7 +420,7 @@ class adminActions extends adminActionsForms
 	{
 		global $DB, $Game;
 
-		$gameID = (int)$params['gameID'];
+		$gameID = (int)$this->fixedGameID;
 
 		$DB->sql_put("BEGIN");
 
@@ -795,7 +531,7 @@ class adminActions extends adminActionsForms
 	{
 		global $DB, $Game;
 
-		$gameID = (int)$params['gameID'];
+		$gameID = (int)$this->fixedGameID;
 
 		$DB->sql_put("BEGIN");
 
@@ -809,7 +545,6 @@ class adminActions extends adminActionsForms
 
 		return l_t('This game is now '.( $Game->processStatus == 'Paused' ? 'paused':'unpaused').'.');
 	}
-
 	public function cdUserConfirm(array $params)
 	{
 		global $DB;
@@ -817,10 +552,10 @@ class adminActions extends adminActionsForms
 		require_once('objects/game.php');
 
 		$User = new User($params['userID']);
-		if ( isset($params['gameID']) && $params['gameID'] )
+		if ( isset($this->fixedGameID) && $this->fixedGameID )
 		{
-			$Variant=libVariant::loadFromGameID($params['gameID']);
-			$Game = $Variant->Game($params['gameID']);
+			$Variant=libVariant::loadFromGameID($this->fixedGameID);
+			$Game = $Variant->Game($this->fixedGameID);
 		}
 
 		return l_t('Are you sure you want to put this user into civil-disorder'.(isset($Game)?', in this game':', in all his games').'?');
@@ -832,172 +567,17 @@ class adminActions extends adminActionsForms
 		require_once(l_r('gamemaster/game.php'));
 
 		$User = new User($params['userID']);
-		if ( isset($params['gameID']) && $params['gameID'] )
-		{
-			$Variant=libVariant::loadFromGameID($params['gameID']);
-			$Game = $Variant->processGame($params['gameID']);
+		
+			$Variant=libVariant::loadFromGameID($this->fixedGameID);
+			$Game = $Variant->processGame($this->fixedGameID);
 
 			if( $Game->phase == 'Pre-game' || $Game->phase == 'Finished' )
 				throw new Exception(l_t("Invalid phase to set CD"));
 
 			$Game->Members->ByUserID[$User->id]->setLeft();
-		}
-		else
-		{
-			$tabl = $DB->sql_tabl("SELECT gameID, status FROM wD_Members
-						WHERE userID = ".$userID);
-			while( list($gameID, $status) = $DB->tabl_row($tabl) )
-			{
-				if ( $status != 'Playing' ) continue;
 
-				$Variant=libVariant::loadFromGameID($gameID);
-				$Game = $Variant->processGame($gameID);
-				$Game->Members->ByUserID[$User->id]->setLeft();
-			}
-		}
-
-		return l_t('This user put into civil-disorder'.
-			((isset($params['gameID']) && $params['gameID'])?', in this game':', in all his games').'?');
+		return l_t('This user put into civil-disorder in this game');
 	}
-
-	public function banUserConfirm(array $params)
-	{
-		global $DB;
-
-		$User = new User($params['userID']);
-
-		if( !isset($params['reason']) || strlen($params['reason'])==0 )
-			return l_t('Couldn\'t ban user; no reason was given.');
-
-		return l_t('Are you sure you want to ban %s (Reason: "%s")? Restoring mistakenly removed points takes a long time, so be sure this is correct!',
-			$User->username,$DB->msg_escape($params['reason']));
-	}
-	public function banIP(array $params)
-	{
-		User::banIP(ip2long($ip));
-	}
-	public function banUser(array $params)
-	{
-		global $User, $DB, $Game;
-
-		$userID = (int)$params['userID'];
-
-		if( !isset($params['reason']) || strlen($params['reason'])==0 )
-			return l_t('Couldn\'t ban user; no reason was given.');
-
-		$banReason = $DB->msg_escape($params['reason']);
-
-		$banUser = new User($userID);
-
-		if( $banUser->type['Banned'] )
-			throw new Exception(l_t("The user is already banned"));
-
-		if( $banUser->type['Admin'] )
-			throw new Exception(l_t("Admins can't be banned"));
-
-		if( $banUser->type['Moderator'] and ! $User->type['Admin'] )
-			throw new Exception(l_t("Moderators can't be banned by non-admins"));
-
-		User::banUser($userID, l_t("Banned by a moderator:").' '.$params['reason']);
-
-		require_once(l_r('gamemaster/game.php'));
-
-		/*
-		 * Explain what has happened to the games the banned user was in, and extend the
-		 * turn
-		 */
-		$tabl = $DB->sql_tabl("SELECT gameID, status FROM wD_Members
-					WHERE userID = ".$userID);
-		while( list($gameID, $status) = $DB->tabl_row($tabl) )
-		{
-			if ( $status != 'Playing' ) continue;
-
-			$Variant=libVariant::loadFromGameID($gameID);
-			$Game = $Variant->Game($gameID);
-
-			$banMessage = l_t('%s was banned: %s. ',$banUser->username,$banReason);
-
-			if( $Game->phase == 'Pre-game' )
-			{
-				if(count($Game->Members->ByID)==1)
-					processGame::eraseGame($Game->id);
-				else
-					$DB->sql_put("DELETE FROM wD_Members WHERE gameID = ".$Game->id." AND userID = ".$userID);
-			}
-			elseif( $Game->processStatus != 'Paused' and $Game->phase != 'Finished' )
-			{
-				// The game may need a time extension to allow for a new player to be added
-
-				// Would the time extension would give a difference of more than ten minutes? If not don't bother
-				if ( (time() + $Game->phaseMinutes*60) - $Game->processTime > 10*60 ) {
-
-					// It is worth adding an extension
-					$DB->sql_put(
-						"UPDATE wD_Games
-						SET processTime = ".time()." + phaseMinutes*60
-						WHERE id = ".$Game->id
-					);
-					$Game->processTime = time() + $Game->phaseMinutes*60;
-
-					$banMessage .= l_t('The time until the next phase has been extended by one phase length '.
-						'to give an opportunity to replace the player.')."\n".
-						l_t('Remember to finalize your orders if you don\'t want '.
-						'to wait, so the game isn\'t held up unnecessarily!');
-				}
-			}
-
-			libGameMessage::send('Global','GameMaster', $banMessage);
-
-			$Game->Members->sendToPlaying('No', l_t('%s was banned, see in-game for details.',$banUser->username));
-		}
-
-		$DB->sql_put("UPDATE wD_Members SET status = 'Left', orderStatus=CONCAT(orderStatus,',Ready')
-					WHERE userID = ".$userID." AND status = 'Playing'");
-		$DB->sql_put("UPDATE wD_Orders o INNER JOIN wD_Members m ON ( m.gameID = o.gameID AND m.countryID = o.countryID )
-					SET o.toTerrID = NULL, o.fromTerrID = NULL
-					WHERE m.userID = ".$userID);
-
-		unset($Game);
-
-		return l_t('This user was banned, and had their %s points removed and their games set to civil disorder.',$banUser->points);
-	}
-	public function givePoints(array $params)
-	{
-		global $DB;
-
-		$userID = (int)$params['userID'];
-		$points = (int)$params['points'];
-
-		$giveUser = new User($userID);
-
-		if( $points > 0 )
-			User::pointsTransfer($giveUser->id, 'Supplement', $points);
-		else
-		{
-			$points = (-1)*$points;
-			$DB->sql_put("UPDATE wD_Users SET points = points - ".$points." WHERE id=".$userID);
-		}
-
-		return l_t('This user was transferred %s %s.',$points,libHTML::points());
-	}
-	public function unbanUser(array $params)
-	{
-		global $DB;
-
-		$userID = (int)$params['userID'];
-
-		$unbanUser = new User($userID);
-
-		if( ! $unbanUser->type['Banned'] )
-			throw new Exception(l_t("Can't unban a user which isn't banned"));
-
-		$DB->sql_put(
-			"UPDATE wD_Users SET type = 'User' WHERE id = ".$userID
-		);
-
-		return l_t('This user was unbanned.');
-	}
-
 	public function setCivilDisorderConfirm(array $params)
 	{
 		global $DB;
@@ -1005,8 +585,8 @@ class adminActions extends adminActionsForms
 		$User = new User($params['userID']);
 
 		require_once(l_r('objects/game.php'));
-		$Variant=libVariant::loadFromGameID($params['gameID']);
-		$Game = $Variant->Game($params['gameID']);
+		$Variant=libVariant::loadFromGameID($this->fixedGameID);
+		$Game = $Variant->Game($this->fixedGameID);
 
 		return l_t('Are you sure you want to set this user to civil disorder in this game?');
 	}
@@ -1017,8 +597,8 @@ class adminActions extends adminActionsForms
 		$User = new User($params['userID']);
 
 		require_once(l_r('gamemaster/game.php'));
-		$Variant=libVariant::loadFromGameID($params['gameID']);
-		$Game = $Variant->processGame($params['gameID']);
+		$Variant=libVariant::loadFromGameID($this->fixedGameID);
+		$Game = $Variant->processGame($this->fixedGameID);
 
 		foreach($Game->Members->ByID as $Member)
 		{
@@ -1036,17 +616,4 @@ class adminActions extends adminActionsForms
 
 		throw new Exception(l_t("User not in specified game"));
 	}
-	public function setDirector(array $params)
-	{
-		global $DB;
-
-		$userID = (int)$params['userID'];
-		$gameID = (int)$params['gameID'];
-		
-		$DB->sql_put("UPDATE wD_Games SET directorUserID = ".$userID." WHERE id = ".$gameID);
-		
-		return l_t("The specified user ID has been assigned as the director for this game.");
-	}
 }
-
-?>

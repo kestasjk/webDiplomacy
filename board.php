@@ -233,7 +233,7 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 	}
 }
 
-if ( 'Pre-game' != $Game->phase && $Game->pressType!='NoPress' && ( isset($Member) || $User->type['Moderator'] ) )
+if ( 'Pre-game' != $Game->phase && ( isset($Member) || $User->type['Moderator'] ) )
 {
 	$CB = $Game->Variant->Chatbox();
 
@@ -336,6 +336,17 @@ if($User->type['Moderator'])
 		print '<div class="hr"></div>';
 	}
 }
+
+// TODO: Have this loaded up when the game object is loaded up
+list($directorUserID) = $DB->sql_row("SELECT directorUserID FROM wD_Games WHERE id = ".$Game->id);
+if( isset($directorUserID) && $directorUserID == $User->id)
+{
+	// This guy is the game director
+	define("INBOARD", true);
+	
+	require_once(l_r("admin/adminActionsForms.php"));
+}
+
 print '</div>';
 
 libHTML::footer();
