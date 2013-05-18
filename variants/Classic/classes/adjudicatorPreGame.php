@@ -201,7 +201,7 @@ class ClassicVariant_adjudicatorPreGame extends adjudicatorPreGame {
 			foreach($userChances[$userID] as $countryID=>$chance)
 			{
 				$countryName=$Game->Variant->countries[$countryID-1];
-				$chancesSQL[] = 'Chance'.$countryName.' = '.round($chance,3);
+				$chancesSQL[] = 'Chance'.$countryName.' = '.number_format(round($chance,3),3);
 			}
 
 			$DB->sql_put("UPDATE wD_Users SET ".implode(',',$chancesSQL)." WHERE id=".$userID);
