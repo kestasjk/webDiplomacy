@@ -25,7 +25,7 @@ require_once(l_r('admin/adminActionsVDip.php'));
 require_once(l_r('admin/adminActionsForum.php'));
 require_once(l_r('admin/adminActionsRestrictedVDip.php'));
 require_once(l_r('admin/adminActionsRestricted.php'));
-require_once(l_r('admin/adminActionsRestricted.php'));
+require_once(l_r('admin/adminActionsTD.php'));
 
 /**
  * This class uses data about admin tasks, provided by child classes, to
@@ -58,7 +58,7 @@ class adminActionsForms
 	 */
 	private static function form($actionName, array $params, $description="")
 	{
-		print '<form action="admincp.php#'.$actionName.'" method="post">
+		print '<form action="'.self::$target.'#'.$actionName.'" method="post">
 			<input type="hidden" name="actionName" value="'.$actionName.'" />';
 
 		if ( isset($_REQUEST['globalGameID']) )
@@ -129,6 +129,18 @@ class adminActionsForms
 	}
 	
 	/**
+	 * Defines the PHP script which the forms will target; will either be board.php or admincp.php
+	 * @var string
+	 */
+	public static $target;
+	
+	/**
+	 * A reference to the static array of actions
+	 * @var array
+	 */
+	public $actionsList;
+	
+	/**
 	 * For the given task display the form, and run the task if data entered from the corresponding form
 	 *
 	 * @param string $actionName The code-name for the desired task
@@ -137,7 +149,8 @@ class adminActionsForms
 	{
 		global $Misc;
 
-		extract(adminActions::$actions[$actionName]);
+		// TODO: Use late static binding for this instead of INBOARD detection
+		extract($this->actionsList[$actionName]);
 
 		print '<li class="formlisttitle">
 			<a name="'.$actionName.'"></a>'.l_t($name).'</li>';
@@ -179,7 +192,7 @@ class adminActionsForms
 				{
 					print '<strong>'.$this->{$actionName.'Confirm'}($paramValues).'</strong>';
 
-					print '<form action="admincp.php#'.$actionName.'" method="post">
+					print '<form action="'.self::$target.'#'.$actionName.'" method="post">
 						<input type="hidden" name="actionName" value="'.$actionName.'" />
 						<input type="hidden" name="actionConfirm" value="on" />
 						<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />';
@@ -318,45 +331,65 @@ if ( isset($_REQUEST['globalUserID']) )
 if ( isset($_REQUEST['globalPostID']) )
 	adminActionsForms::$globalPostID = (int)$_REQUEST['globalPostID'];
 
-print '<div class="hr"></div>';
 
 // A shortcut command area
-adminActionsLayout::printActionShortcuts();
-
 require_once(l_r('lib/gamemessage.php'));
 
 // Include the admin-only tasks?
-if ( $User->type['Admin'] )
-	$adminActions = new adminActionsRestricted();
-elseif ( $User->type['ForumModerator'] )
-	$adminActions = new adminActionsForum();
-else
-	$adminActions = new adminActionsVDip();
-
-
-// Create a bullet-point set of anchor shortcuts to each task
-
-$actionCodesByType = adminActionsLayout::actionCodesByType();
-
-print '<h3>'.l_t('Admin actions').'</h3>';
-foreach($actionCodesByType as $type=>$actionCodes)
+if( defined("INBOARD") )
 {
-	print '<a name="'.strtolower($type).'Actions"></a><h4>'.l_t($type.' actions').'</h4>';
-	adminActionsLayout::printActionLinks($actionCodes);
-}
-
-print '<div class="hr"></div>';
-
-print '<h3>'.l_t('Forms').'</h3>';
-// For each task display the form, and run the task if data entered from the corresponding form
-print '<ul class="formlist">';
-foreach($actionCodesByType as $type=>$actionCodes)
-{
-	print '<h4>'.l_t($type.' actions').'</h4>';
-
-	foreach($actionCodes as $actionCode)
+	// We're running in Director mode from within board.php
+	
+	$adminActions = new adminActionsTD();
+	adminActionsForms::$target = "board.php?gameID=".$Game->id;
+	$adminActions->actionsList = adminActionsTD::$actions;
+	
+	print '<h3>'.l_t('Director action forms').'</h3>';
+	// For each task display the form, and run the task if data entered from the corresponding form
+	print '<ul class="formlist">';
+	foreach($adminActions->actionsList as $actionCode=>$action)
+	{
 		$adminActions->process($actionCode);
+	}
+	print '</ul>';
 }
-print '</ul>';
-
-?>
+else
+{
+	print '<div class="hr"></div>';
+	adminActionsLayout::printActionShortcuts();
+	
+	if ( $User->type['Admin'] )
+		$adminActions = new adminActionsRestricted();
+	elseif ( $User->type['ForumModerator'] )
+		$adminActions = new adminActionsForum();
+	else
+		$adminActions = new adminActionsVDip();
+	
+	adminActionsForms::$target = "admincp.php";
+	$adminActions->actionsList = adminActions::$actions;
+	
+	// Create a bullet-point set of anchor shortcuts to each task
+	
+	$actionCodesByType = adminActionsLayout::actionCodesByType();
+	
+	print '<h3>'.l_t('Admin actions').'</h3>';
+	foreach($actionCodesByType as $type=>$actionCodes)
+	{
+		print '<a name="'.strtolower($type).'Actions"></a><h4>'.l_t($type.' actions').'</h4>';
+		adminActionsLayout::printActionLinks($actionCodes);
+	}
+	
+	print '<div class="hr"></div>';
+	
+	print '<h3>'.l_t('Forms').'</h3>';
+	// For each task display the form, and run the task if data entered from the corresponding form
+	print '<ul class="formlist">';
+	foreach($actionCodesByType as $type=>$actionCodes)
+	{
+		print '<h4>'.l_t($type.' actions').'</h4>';
+	
+		foreach($actionCodes as $actionCode)
+			$adminActions->process($actionCode);
+	}
+	print '</ul>';
+}

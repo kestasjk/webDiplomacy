@@ -133,7 +133,7 @@ while(strlen($lastLine) || ( list($userID) = $DB->tabl_row($tabl)) )
 		$sql=array($userID);
 		foreach($chances as $countryID=>$chance)
 		{
-			$sql[] = round($chance,3);
+			$sql[] = number_format(round($chance,3),3);
 		}
 
 		$lastLine="(".implode(",",$sql).")";
