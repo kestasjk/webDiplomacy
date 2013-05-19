@@ -76,10 +76,19 @@ still win something. If you get defeated, or have to leave the game, then all th
 		title="The winner takes all the points: Winner-takes-all" />
 </div>
 <p class="intro">
-For more experienced players who have over 100 points there is a "Winner-takes-all" mode, which can be chosen
-instead of the default "Points-per-supply-center" mode. In winner-takes-all games the winner gets all the points
-from the game, and the runners up get nothing.<br />
-This mode is for expert players who think that winner-takes-all is more true to the board game; there's no honor
+For more experienced players there is a "Winner-takes-all" mode, which can be chosen instead of the default 
+"Points-per-supply-center" mode. In winner-takes-all games the winner gets all the points from the game, and
+the runners up get nothing.<br /><br />
+
+While the objetive of the game (reach the target cupply-centers and win the game) stays the same in both gametypes
+there is a difference in how to play if you can't win. In order to get as many points as possible in a WTA-game you
+need to prevent the one player from winning the game and draw with your allies. In a PPSC-setting you try to get as
+many SCs as you can, and to stop a player from winning and draw can be unfavourable if you just take care of your points.<br />
+
+Because of this you need more diplomatic skill to achieve a good score at a WTA-game. You have to outplay all your
+opponents or coordinate with all other players to stop the one player winning (without getting left behind).<br />
+
+The WTA setting is for players who think that winner-takes-all is more true to the board game; there's no honor
 in second place, and playing for second place makes the game worse!<br /><br />
 
 But remember that you are less likely to get any points back in a winner-takes-all game; even if you play
