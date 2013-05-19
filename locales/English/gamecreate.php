@@ -208,14 +208,14 @@ else
 	
 	<li class="formlisttitle">Pot type:</li>
 	<li class="formlistfield">
-		<input type="radio" name="newGame[potType]" value="Points-per-supply-center" checked > Points-per-supply-center<br />
-		<input type="radio" name="newGame[potType]" value="Winner-takes-all"> Winner-takes-all
+		<input type="radio" name="newGame[potType]" value="Points-per-supply-center" checked > Points-per-supply-center (PPSC)<br />
+		<input type="radio" name="newGame[potType]" value="Winner-takes-all"> Winner-takes-all (WTA)
 	</li>
 	<li class="formlistdesc">
-		An expert setting: Should the winnings be split up according to who has the most supply centers, or should the winner
+		Should the winnings be split up according to who has the most supply centers, or should the winner
 		get everything (<a href="points.php#ppscwta" class="light">read more</a>).<br /><br />
 
-		<strong>Default:</strong> Points-per-supply-center
+		<strong>Default:</strong> Points-per-supply-center (PPSC)
 	</li>
 
 	<li class="formlisttitle">
@@ -236,8 +236,8 @@ else
 	</li>
 	<li class="formlistfield">
 		<input type="radio" name="newGame[pressType]" value="Regular" checked>Allow all
-		<input type="radio" name="newGame[pressType]" value="PublicPressOnly">Global messages only, no private chat/press
-		<input type="radio" name="newGame[pressType]" value="NoPress">No in-game messaging
+		<input type="radio" name="newGame[pressType]" value="PublicPressOnly">Global messages only, no private chat/press (Public Press)
+		<input type="radio" name="newGame[pressType]" value="NoPress">No in-game messaging (Gunboat)
 	</li>
 	<li class="formlistdesc">
 		Disable some types of messaging; allow only global in-game messages, or allow no in-game messages.
