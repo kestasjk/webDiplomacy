@@ -919,7 +919,7 @@ class libHTML
 		$cookiesWarning='<div id="cookiesWarning"></div><script language="JavaScript" type="text/javascript">checkCookieExist();</script>';
 	
 		// Version, sourceforge and HTML compliance logos
-		return $cookiesWarning.l_t('based on webDiplomacy version <strong>%s</strong>',number_format(VERSION/100,2).'<br />');
+		return $cookiesWarning.l_t('based on webDiplomacy version <strong>%s</strong> vDip.%s',number_format(VERSION/100,2),VDIPVERSION.'<br />');
 //			<a href="http://sourceforge.net/projects/phpdiplomacy">
 //				<img alt="webDiplomacy @ Sourceforge"
 //					src="http://sourceforge.net/sflogo.php?group_id=125692" />

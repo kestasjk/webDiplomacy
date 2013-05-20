@@ -180,6 +180,10 @@ if ( $Misc->Version != VERSION )
 	require_once(l_r('install/install.php'));
 }
 
+// Check the vDip-DatabaseVersion too...
+if ( $Misc->vDipVersion != VDIPVERSION )
+	require_once(l_r('install/vDipInstall.php'));
+
 // Taken from the php manual to disable cacheing.
 header("Last-Modified: Mon, 26 Jul 1997 05:00:00 GMT");
 header("Cache-Control: no-store, no-cache, must-revalidate");
