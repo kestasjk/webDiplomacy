@@ -35,7 +35,8 @@ class BalkanWarsVIVariant extends WDVariant {
 	public $description='A crowded map for 6 players for a very fast diplomacy experience.';
 	public $author     ='Brad Wilson based on earlier designs by Fred Davis and others...';
 	public $adapter    ='Oliver Auth';
-	public $version    ='1.0.2';
+	public $version    ='6';
+	public $codeVersion='1.0.2';
 	public $homepage   ='http://members.cox.net/boris_spider/hrules/BW6.html';
 	
 	public $countries=array('Albania','Bulgaria','Greece','Rumania','Serbia','Turkey');
