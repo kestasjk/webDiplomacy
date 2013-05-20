@@ -319,7 +319,7 @@ class panelMember extends Member
 				$dividers[$this->unitNo] = 'UnitSurplus';
 		}
 
-		$SCTarget = $this->Game->Variant->supplyCenterTarget;
+		$SCTarget = ( ($this->Game->targetSCs > 0) ? $this->Game->targetSCs : $SCTarget = $this->Game->Variant->supplyCenterTarget);
 
 		$buf = '';
 		$lastNumber = 0;
