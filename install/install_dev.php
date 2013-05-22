@@ -5,7 +5,8 @@
 
 $sql[]="CREATE DATABASE ".Config::$database_name;
 $sql[]="USE ".Config::$database_name;
-				
+
+// WebDip: 1.00
 $sql[]="/*!40101 SET @saved_cs_client = @@character_set_client */;";
 $sql[]="/*!40101 SET character_set_client = utf8 */;";
 $sql[]="CREATE TABLE `wD_AccessLog` (
@@ -548,38 +549,47 @@ $sql[]="CREATE TABLE `wD_Users` (
 $sql[]="/*!40101 SET character_set_client = @saved_cs_client */;";
 $sql[]="INSERT INTO `wD_Users` VALUES (1,'Guest','guest@nomail.com',0,'','','Yes',1154508107,'English',1154508107,0,'\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0','Guest,System','',0.142857,0.142857,0.142857,0.142857,0.142857,0.142857,0.142857,'Yes'),(2,'GameMaster','gamemaster@nomail.com',140,'','','Yes',1154508107,'English',1154508107,0,'\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0','System','',0.142857,0.142857,0.142857,0.142857,0.142857,0.142857,0.142857,'No'),(3,'Civil Disorder Germany','civil1@nomail.com',50,'','','Yes',1154508107,'English',1154508107,0,'\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0','System','',0.122,0.244,0.012,0.01,0.122,0.244,0.244,'No'),(4,'Civil Disorder Italy','civil2@nomail.com',0,'','','Yes',1154508107,'English',1154508107,0,'\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0','System','',0.196,0.196,0.01,0.01,0.196,0.196,0.196,'No');";
 
+// WebDip: 1.01
 $sql[]="CREATE TABLE `wD_MuteUser` (
 			`userID` mediumint(8) unsigned NOT NULL,
 			`muteUserID` mediumint(8) unsigned NOT NULL,
 			PRIMARY KEY (`userID`,`muteUserID`)
 		) ENGINE=MyISAM;";
-
 $sql[]="CREATE TABLE `wD_MuteCountry` (
 			`userID` MEDIUMINT UNSIGNED NOT NULL ,
 			`gameID` MEDIUMINT UNSIGNED NOT NULL ,
 			`muteCountryID` TINYINT UNSIGNED NOT NULL,
 			PRIMARY KEY ( `userID` , `gameID` , `muteCountryID` )
 		) ENGINE=MYISAM;";
-
+		
+// WebDip: 1.02
 $sql[]="ALTER TABLE `wD_Users` CHANGE `type` `type` SET( 'Banned', 'Guest', 'System', 'User', 'Moderator', 'Admin', 'Donator', 'DonatorBronze', 'DonatorSilver', 'DonatorGold', 'DonatorPlatinum' ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'User';";
 
+// WebDip: 1.03
 $sql[]="CREATE TABLE IF NOT EXISTS `wD_LikePost` (
 			`userID` mediumint(8) unsigned NOT NULL,
 			`likeMessageID` int(10) unsigned NOT NULL,
 			PRIMARY KEY (`userID`,`likeMessageID`)
 			) ENGINE=MyISAM;";
-
 $sql[]="CREATE TABLE IF NOT EXISTS `wD_MuteThread` (
 			`userID` mediumint(8) unsigned NOT NULL,
 			`muteThreadID` int(10) unsigned NOT NULL,
 			PRIMARY KEY (`userID`,`muteThreadID`)
 			) ENGINE=MyISAM;";
-
 $sql[]="ALTER TABLE `wD_LikePost` ADD `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;";
 $sql[]="ALTER TABLE `wD_MuteThread` ADD `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;";
 $sql[]="ALTER TABLE `wD_MuteUser` ADD `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ;";
 $sql[]="ALTER TABLE `wD_MuteCountry` ADD `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;";
 
+// VDip: 1
+$sql[]="ALTER TABLE `wD_Games` ADD `maxTurns` SMALLINT( 5 ) UNSIGNED NOT NULL DEFAULT '0';";
+$sql[]="ALTER TABLE `wD_Backup_Games` ADD `maxTurns` SMALLINT( 5 ) UNSIGNED NOT NULL DEFAULT '0';";
+
+// VDip: 2
+$sql[]="ALTER TABLE `wD_Users` ADD `missedMoves` int(11) NOT NULL default '0';";
+$sql[]="ALTER TABLE `wD_Users` ADD `phasesPlayed` int(11) NOT NULL default '0';";
+
+// WebDip: 1.04
 $sql[]="CREATE TABLE `wD_Silences` (
 			`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 			`userID` INT UNSIGNED NULL ,
@@ -593,11 +603,8 @@ $sql[]="CREATE TABLE `wD_Silences` (
 			INDEX ( `userID` ) ,
 			INDEX ( `postID` )
 		) ENGINE = InnoDB;";
-
 $sql[]="ALTER TABLE `wD_ForumMessages` ADD `silenceID` INT UNSIGNED NULL DEFAULT NULL ;";
-
 $sql[]="ALTER TABLE `wD_Users` ADD `silenceID` INT UNSIGNED NULL DEFAULT NULL ;";
-
 $sql[]="ALTER TABLE `wD_Users`
 			CHANGE `type` `type` SET( 
 				'Banned', 'Guest', 'System', 'User', 'Moderator', 
@@ -605,14 +612,8 @@ $sql[]="ALTER TABLE `wD_Users`
 				'DonatorGold', 'DonatorPlatinum', 'ForumModerator' 
 			) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'User';";
 
-$sql[]="UPDATE `wD_Misc` SET `value` = '104' WHERE `name` = 'Version';";
 
-$sql[]="ALTER TABLE `wD_Games` ADD `maxTurns` SMALLINT( 5 ) UNSIGNED NOT NULL DEFAULT '0';";
-$sql[]="ALTER TABLE `wD_Backup_Games` ADD `maxTurns` SMALLINT( 5 ) UNSIGNED NOT NULL DEFAULT '0';";
-
-$sql[]="ALTER TABLE `wD_Users` ADD `missedMoves` int(11) NOT NULL default '0';";
-$sql[]="ALTER TABLE `wD_Users` ADD `phasesPlayed` int(11) NOT NULL default '0';";
-
+// VDip: 3
 $sql[]="CREATE TABLE `wD_ModForumMessages` (
 			`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`toID` int(10) unsigned NOT NULL,
@@ -632,8 +633,10 @@ $sql[]="CREATE TABLE `wD_ModForumMessages` (
 			KEY `type` (`type`,`latestReplySent`)
 			) ENGINE=MyISAMDEFAULT CHARSET=utf8;";
 
+// VDip: 4
 $sql[]="ALTER TABLE `wD_Users` ADD `gamesLeft` int(11) NOT NULL default '0';";
 
+// VDip: 5
 $sql[]="ALTER TABLE `wD_Games` ADD `minRating` SMALLINT( 5 ) UNSIGNED NOT NULL DEFAULT '0';";
 $sql[]="ALTER TABLE `wD_Games` ADD `minPhases` SMALLINT( 5 ) UNSIGNED NOT NULL DEFAULT '0';";
 $sql[]="ALTER TABLE `wD_Games` ADD `maxLeft` SMALLINT( 5 ) UNSIGNED NOT NULL DEFAULT '99';";
@@ -641,15 +644,20 @@ $sql[]="ALTER TABLE `wD_Backup_Games` ADD `minRating` SMALLINT( 5 ) UNSIGNED NOT
 $sql[]="ALTER TABLE `wD_Backup_Games` ADD `minPhases` SMALLINT( 5 ) UNSIGNED NOT NULL DEFAULT '0';";
 $sql[]="ALTER TABLE `wD_Backup_Games` ADD `maxLeft` SMALLINT( 5 ) UNSIGNED NOT NULL DEFAULT '99';";
 
+// VDip: 6
 $sql[]="ALTER TABLE `wD_Games` ADD `targetSCs` SMALLINT( 5 ) UNSIGNED NOT NULL DEFAULT '0';";
 $sql[]="ALTER TABLE `wD_Backup_Games` ADD `targetSCs` SMALLINT( 5 ) UNSIGNED NOT NULL DEFAULT '0';";
 
+// VDip: 7
 $sql[]="ALTER TABLE `wD_Members` MODIFY `votes` set('Draw','Pause','Cancel','Extend');";
 
+// VDip: 8
 $sql[]="ALTER TABLE `wD_Users` ADD `leftBalanced` int(11) NOT NULL default '0';";
 
+// VDip: 9
 $sql[]="ALTER TABLE `wD_Members` MODIFY `votes` set('Draw','Pause','Cancel','Extend','Concede');";
 
+// VDip: 10
 $sql[]="CREATE TABLE `wD_CountrySwitch` (
 			`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 			`gameID` INT UNSIGNED NULL ,
@@ -659,14 +667,17 @@ $sql[]="CREATE TABLE `wD_CountrySwitch` (
 			PRIMARY KEY ( `id` )
 		) ENGINE = MyISAM DEFAULT CHARSET=latin1;";
 
+// VDip: 11
 $sql[]="ALTER TABLE `wD_Users` ADD `lastModMessageIDViewed` int(10) unsigned NOT NULL DEFAULT '0';";
 $sql[]="UPDATE wD_Users SET lastModMessageIDViewed=(SELECT MAX(id) FROM wD_ModForumMessages);";
 
+// VDip: 12
 $sql[]="ALTER TABLE `wD_Games` ADD `specialCDcount` SMALLINT( 5 ) UNSIGNED NOT NULL DEFAULT '1';";
 $sql[]="ALTER TABLE `wD_Games` ADD `specialCDturn` SMALLINT( 5 ) UNSIGNED NOT NULL DEFAULT '1';";
 $sql[]="ALTER TABLE `wD_Backup_Games` ADD `specialCDcount` SMALLINT( 5 ) UNSIGNED NOT NULL DEFAULT '1';";
 $sql[]="ALTER TABLE `wD_Backup_Games` ADD `specialCDturn` SMALLINT( 5 ) UNSIGNED NOT NULL DEFAULT '1';";
 
+// VDip: 13
 $sql[]="CREATE TABLE `wD_BlockUser` (
 			`userID` mediumint(8) unsigned NOT NULL,
 			`blockUserID` mediumint(8) unsigned NOT NULL,
@@ -674,23 +685,30 @@ $sql[]="CREATE TABLE `wD_BlockUser` (
 			PRIMARY KEY (`userID`,`blockUserID`)
 		) ENGINE=MyISAM;";
 
+// VDip: 14
 $sql[]="ALTER TABLE `wD_Users` ADD `RLGroup` mediumint(8) unsigned default '0';";
 $sql[]="ALTER TABLE `wD_ModeratorNotes` MODIFY `linkIDType` ENUM( 'Game', 'User', 'RLGroup' );";
 
+// VDip: 15
 $sql[]="ALTER TABLE `wD_Users` CHANGE `RLGroup` `rlGroup` MEDIUMINT( 8 );";
 $sql[]="ALTER TABLE `wD_ModeratorNotes` CHANGE `linkIDType` `linkIDType` ENUM( 'Game', 'User', 'rlGroup' ) ;";
 
+// VDip: 16
 $sql[]="ALTER TABLE `wD_Games` ADD `rlPolicy` enum('None','Strict','Friends') CHARACTER SET utf8 NOT NULL DEFAULT 'None';";
 $sql[]="ALTER TABLE `wD_Backup_Games` ADD `rlPolicy` enum('None','Strict','Friends') CHARACTER SET utf8 NOT NULL DEFAULT 'None';";
 $sql[]="UPDATE wD_Games SET rlPolicy = 'Strict' WHERE anon = 'Yes' AND phase = 'Pre-game';";
 
+// VDip: 17
 $sql[]="UPDATE wD_Users SET rlGroup = '0' WHERE rlGroup = NULL;";
 $sql[]="ALTER TABLE `wD_Users` CHANGE `rlGroup` `rlGroup` MEDIUMINT( 8 ) NOT NULL default '0';";
 
+// VDip: 18
 $sql[]="ALTER TABLE `wD_ForumMessages` ADD `anon` enum('Yes','No') CHARACTER SET utf8 NOT NULL DEFAULT 'No';";
 
+// VDip: 19
 $sql[]="ALTER TABLE `wD_Users` MODIFY `notifications` set('PrivateMessage','GameMessage','Unfinalized','GameUpdate','ModForum');";
 
+// VDip: 20
 $sql[]="ALTER TABLE `wD_Members`        ADD `chessTime` smallint(5) unsigned NOT NULL DEFAULT '0';";
 $sql[]="ALTER TABLE `wD_Backup_Members` ADD `chessTime` smallint(5) unsigned NOT NULL DEFAULT '0';";
 $sql[]="ALTER TABLE `wD_Games`          ADD `chessTime` smallint(5) unsigned NOT NULL DEFAULT '0';";
@@ -698,29 +716,89 @@ $sql[]="ALTER TABLE `wD_Games`          ADD `lastProcessed` int(10) unsigned NOT
 $sql[]="ALTER TABLE `wD_Backup_Games`   ADD `chessTime` smallint(5) unsigned NOT NULL DEFAULT '0';";
 $sql[]="ALTER TABLE `wD_Backup_Games`   ADD `lastProcessed` int(10) unsigned NOT NULL DEFAULT '0';";
 
+// VDip: 21
 $sql[]="ALTER TABLE `wD_Users` CHANGE `type` `type` SET( 'Banned', 'Guest', 'System', 'User', 'Moderator', 'Admin', 'Donator', 'DonatorBronze', 'DonatorSilver', 'DonatorGold', 'DonatorPlatinum', 'DevBronze', 'DevSilver', 'DevGold', 'ForumModerator' ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'User';";
 
+// VDip: 22
 $sql[]="ALTER TABLE `wD_ModForumMessages` ADD `adminReply` enum('Yes','No') CHARACTER SET utf8 NOT NULL DEFAULT 'No';";
 $sql[]="ALTER TABLE `wD_ModForumMessages` ADD `status` enum('New','Open','Resolved') CHARACTER SET utf8 NOT NULL DEFAULT 'New';";
 
+// VDip: 23
 $sql[]="ALTER TABLE `wD_Users` ADD `showCountryNames` enum('Yes','No') CHARACTER SET utf8 NOT NULL DEFAULT 'No';";
 
+// VDip: 24
 $sql[]="ALTER TABLE `wD_Users` ADD `colorCorrect` enum('Off','Protanope','Deuteranope','Tritanope') CHARACTER SET utf8 NOT NULL DEFAULT 'Off';";
 
+// VDip: 25
 $sql[]="ALTER TABLE `wD_Users` ADD `showCountryNamesMap` enum('Yes','No') CHARACTER SET utf8 NOT NULL DEFAULT 'No';";
 
-$sql[]="CREATE TABLE `wD_AccessLogAdvanced` (";
-$sql[]="  `userID` mediumint(8) unsigned NOT NULL,";
-$sql[]="  `request` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',";
-$sql[]="  `ip` int(10) unsigned NOT NULL,";
-$sql[]="  `action` enum('LogOn','LogOff','Board') CHARACTER SET utf8 NOT NULL DEFAULT 'LogOn',";
-$sql[]="  `memberID` mediumint(8) unsigned NOT NULL,";
-$sql[]="  KEY `userID` (`userID`),";
-$sql[]="  KEY `ip` (`ip`)";
-$sql[]=") ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+// VDip: 26
+$sql[]="CREATE TABLE `wD_AccessLogAdvanced` (
+		`userID` mediumint(8) unsigned NOT NULL,
+		`request` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+		`ip` int(10) unsigned NOT NULL,
+		`action` enum('LogOn','LogOff','Board') CHARACTER SET utf8 NOT NULL DEFAULT 'LogOn',
+		`memberID` mediumint(8) unsigned NOT NULL,
+		KEY `userID` (`userID`),
+		KEY `ip` (`ip`)
+	) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 
+// VDip: 27
 $sql[]="ALTER TABLE `wD_Games` ADD `adminLock` enum('Yes','No') CHARACTER SET utf8 NOT NULL DEFAULT 'No';";
 $sql[]="ALTER TABLE `wD_Backup_Games` ADD `adminLock` enum('Yes','No') CHARACTER SET utf8 NOT NULL DEFAULT 'No';";
+
+// VDip: 28
+$sql[]="CREATE TABLE `wD_Ratings` (";
+$sql[]="  `userID` mediumint(8) unsigned NOT NULL,";
+$sql[]="  `ratingType` enum('VDip') CHARACTER SET utf8 NOT NULL DEFAULT 'VDip',";
+$sql[]="  `gameID` smallint(5) unsigned NOT NULL DEFAULT '0',";
+$sql[]="  `rating` smallint(5) unsigned NOT NULL DEFAULT '1500',";
+$sql[]="  `fixed` enum('variantID', 'potType', 'pressType') CHARACTER SET utf8 DEFAULT NULL,";
+$sql[]="  KEY `userID` (`userID`),";
+$sql[]="  KEY `ratingType` (`ratingType`),";
+$sql[]="  KEY `gameID` (`gameID`)";
+$sql[]=") ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+
+// Webdip 1.32
+$sql[]="ALTER TABLE `wD_PointsTransactions` CHANGE `type` `type` ENUM( 'Supplement', 'Bet', 'Won', 'Returned', 'Trigger', 'Correction' ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;";
+$sql[]="ALTER TABLE `wD_ForumMessages`  ADD `likeCount` MEDIUMINT UNSIGNED NOT NULL DEFAULT '0';";
+$sql[]="UPDATE wD_ForumMessages fm 
+	INNER JOIN (
+		SELECT f.id, COUNT(*) as likeCount
+		FROM wD_ForumMessages f
+		INNER JOIN wD_LikePost lp ON f.id = lp.likeMessageID
+		GROUP BY f.id
+	) l ON l.id = fm.id
+	SET fm.likeCount = l.likeCount;";
+$sql[]="ALTER TABLE `wD_Members` CHANGE `newMessagesFrom` `newMessagesFrom` SET( '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63' ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '';";
+$sql[]="ALTER TABLE `wD_Members` CHANGE `votes` `votes` set('Draw','Pause','Cancel') NOT NULL DEFAULT '';";
+$sql[]="ALTER TABLE `wD_Members` CHANGE `countryID` `countryID` TINYINT( 3 ) UNSIGNED NOT NULL DEFAULT 0;";
+
+// VDip: 29
+$sql[]="ALTER TABLE `wD_Members` CHANGE `votes` `votes` set('Draw','Pause','Cancel','Extend','Concede') NOT NULL DEFAULT '';";
+
+// VDip: 30
+$sql[]="ALTER TABLE `wD_Users` MODIFY `notifications` set('PrivateMessage','GameMessage','Unfinalized','GameUpdate','ModForum','CountrySwitch');";
+
+// VDip: 31
+$sql[]="ALTER TABLE `wD_Users` ADD `sortOrder` enum('BuildOrder','TerrName','NorthSouth','EastWest') CHARACTER SET utf8 NOT NULL DEFAULT 'BuildOrder';";
+$sql[]="ALTER TABLE `wD_Users` ADD `unitOrder` enum('Mixed','AF','FA') CHARACTER SET utf8 NOT NULL DEFAULT 'Mixed';";
+
+// Webdip 1.33
+$sql[]="ALTER TABLE `wD_Games`  ADD `directorUserID` MEDIUMINT UNSIGNED NOT NULL DEFAULT '0';";
+$sql[]="ALTER TABLE `wD_Backup_Games`  ADD `directorUserID` MEDIUMINT UNSIGNED NOT NULL DEFAULT '0';";
+
+// VDip: 32
+$sql[]="CREATE TABLE `wD_vDipMisc` (
+	`name` enum('Version') NOT NULL,
+		`value` int(10) unsigned NOT NULL,
+		PRIMARY KEY (`name`)
+	) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+$sql[]="INSERT INTO `wD_vDipMisc` VALUES ('Version',32)";
+	
+// Set the correct version-information in the database	
+$sql[]="UPDATE `wD_Misc`     SET `value` = '133' WHERE `name` = 'Version';";
+$sql[]="UPDATE `wD_vDipMisc` SET `value` = '32'  WHERE `name` = 'Version';";
 
 // Create a default Admin-Account
 require_once ('lib/auth.php');
