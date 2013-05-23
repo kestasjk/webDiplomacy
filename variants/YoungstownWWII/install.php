@@ -235,6 +235,7 @@ $bordersRawData=array(
 	array('Tirane','Bosnia','Yes','Yes'),
 	array('Tirane','Macedonia','No','Yes'),
 	array('Tirane','Greece','Yes','Yes'),
+	array('Tirane','Ionian Sea','Yes','No'),
 	array('Tirane','Adriatic Sea','Yes','No'),
 	array('Tripoli','Cyrene','Yes','Yes'),
 	array('Tripoli','Fezzan','No','Yes'),
@@ -641,6 +642,7 @@ $bordersRawData=array(
 	array('Burma','Tibet','No','Yes'),
 	array('Burma','Bay of Bengal','Yes','No'),
 	array('Burma','Andaman Sea','Yes','No'),
+	array('Thailand','Ionian Sea','Yes','No'),
 	array('Thailand (West Coast)','Andaman Sea','Yes','No'),
 	array('Thailand (East Coast)','Gulf of Thailand','Yes','No'),
 	array('Yunnan','Tibet','No','Yes'),
@@ -777,5 +779,6 @@ if (!file_exists('variants/'.$this->name.'/cache/sampleMap.png'))
 	copy ('variants/'.$this->name.'/resources/sampleMap.png','variants/'.$this->name.'/cache/sampleMap.png');
 
 ?>
+
 
 
