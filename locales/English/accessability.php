@@ -68,6 +68,15 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		Does enhance the colors of the maps for different types of color blindness. (Does not work for the Haven variant, sorry)
 	</li>
 
+	<li class="formlisttitle">ALPHA opt in: Point'n Click map. (Beware totally ALPHA feature!)</li>
+	<li class="formlistfield">
+		<input type="radio" name="userForm[pointNClick]" value="Yes" <?php if($User->pointNClick=='Yes') print "checked"; ?>>Yes
+		<input type="radio" name="userForm[pointNClick]" value="No"  <?php if($User->pointNClick=='No')  print "checked"; ?>>No
+	</li>
+	<li class="formlistdesc">
+		Opt in for the Alpha-version of a point 'n click orderinterface. High aplha quality. Use at your own risk. Does not work on every map.
+	</li>
+	
 <?php
 /*
  * This is done in PHP because Eclipse complains about HTML syntax errors otherwise

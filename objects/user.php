@@ -209,6 +209,11 @@ class User {
 	public $unitOrder;
 	public $sortOrder;
 	
+	/*
+	 * OptIn for the point'nClick Map-code
+	 */
+	public $pointNClick;
+	
 	/**
 	 * 'No' if the player can submit mod reports, 'Yes' if they are muted
 	 * @var string
@@ -349,6 +354,7 @@ class User {
 					'colorCorrect'=>'',
 					'sortOrder'=>'',
 					'unitOrder'=>'',
+					'pointNClick'=>'',
 				'hideEmail'=>'','showEmail'=>'', 'homepage'=>'','comment'=>'');
 
 		$userForm = array();
@@ -467,6 +473,14 @@ class User {
 			else
 				$SQLVars['unitOrder'] = "Mixed";
 		}
+		
+		if( isset($userForm['pointNClick']) )
+		{
+			if ( $userForm['pointNClick'] == "Yes" )
+				$SQLVars['pointNClick'] = "Yes";
+			else
+				$SQLVars['pointNClick'] = "No";
+		}
 
 		if( isset($userForm['locale']) )
 		{
@@ -537,7 +551,8 @@ class User {
 			u.colorCorrect,
 			u.unitOrder,
 			u.sortOrder,			
-			u.leftBalanced,			
+			u.leftBalanced,
+			u.pointNClick,
 			IF(s.userID IS NULL,0,1) as online
 			FROM wD_Users u
 			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )

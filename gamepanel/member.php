@@ -570,8 +570,6 @@ class panelMember extends Member
 		// Still no winner found:
 		if (count($wta) > 1)
 			return round($this->Game->pot / count($wta)); 
-		elseif ($wta[0] != $this->countryID)
-			return "0";
 		else		
 			return $this->Game->pot;
 	}

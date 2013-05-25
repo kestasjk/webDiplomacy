@@ -320,6 +320,9 @@ class OrderInterface
 	}
 
 	protected function jsLoadBoard() {
+	
+		global $User, $Game;
+		
 		libHTML::$footerIncludes[] = l_j('board/model_vDipV2.js');
 		libHTML::$footerIncludes[] = l_j('board/load.js');
 		libHTML::$footerIncludes[] = l_j('orders/order.js');
@@ -331,6 +334,15 @@ class OrderInterface
 
 		foreach(array('loadTerritories','loadBoardTurnData','loadModel','loadBoard','loadOrdersModel','loadOrdersForm','loadOrdersPhase') as $jf)
 			libHTML::$footerScript[] = l_jf($jf).'();';
+			
+		if ($User->pointNClick=='Yes' && file_exists('variants/'.$Game->Variant->name.'/resources/IA_smallmap.png'))
+		{
+			libHTML::$footerIncludes[] = 'interactive_0.2/interactiveMap.js';
+			libHTML::$footerIncludes[] = 'interactive_0.2/interactiveMapDraw.js';
+			libHTML::$footerIncludes[] = 'interactive_0.2/interactiveMapOrders.js';
+			libHTML::$footerIncludes[] = 'interactive_0.2/interactiveMapButtons.js';	
+			libHTML::$footerScript[]   = 'loadIA("variants/'.$Game->Variant->name.'/resources/IA_smallmap.png");';
+		}
 	}
 
 	protected function jsInitForm() {

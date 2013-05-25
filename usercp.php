@@ -115,6 +115,7 @@ if ( isset($_REQUEST['userForm']) )
 				'color Correct'=>'colorCorrect',
 				'SortOrder'=>'sortOrder',
 				'UnitOrder'=>'unitOrder',
+				'pointNClick opt in'=>'pointNClick',
 				'Homepage'=>'homepage','Comment'=>'comment');
 
 		$set = '';
