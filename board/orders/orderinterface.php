@@ -337,10 +337,10 @@ class OrderInterface
 			
 		if ($User->pointNClick=='Yes' && file_exists('variants/'.$Game->Variant->name.'/resources/IA_smallmap.png'))
 		{
-			libHTML::$footerIncludes[] = 'interactive_0.2/interactiveMap.js';
-			libHTML::$footerIncludes[] = 'interactive_0.2/interactiveMapDraw.js';
-			libHTML::$footerIncludes[] = 'interactive_0.2/interactiveMapOrders.js';
-			libHTML::$footerIncludes[] = 'interactive_0.2/interactiveMapButtons.js';	
+			libHTML::$footerIncludes[] = 'interactive_0.3/interactiveMap.js';
+			libHTML::$footerIncludes[] = 'interactive_0.3/interactiveMapDraw.js';
+			libHTML::$footerIncludes[] = 'interactive_0.3/interactiveMapOrders.js';
+			libHTML::$footerIncludes[] = 'interactive_0.3/interactiveMapButtons.js';	
 			libHTML::$footerScript[]   = 'loadIA("variants/'.$Game->Variant->name.'/resources/IA_smallmap.png");';
 		}
 	}

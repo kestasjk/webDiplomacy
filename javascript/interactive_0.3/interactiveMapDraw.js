@@ -10,7 +10,7 @@ var img;
 function IAmap() {
     if(IAactivated) {
         if(mapCanvas == null) {
-            mapCanvas = new Element("canvas", {'id':'mapCanvas', 'width':mapImg.getWidth(), 'height':mapImg.getHeight(), 'onClick':'selectTerritory(event)'}).insert("<p>Your Browser does not support HTML 5! You can not use InteractiveMap! Please Reload the page!</p>");
+            mapCanvas = new Element("canvas", {'id':'mapCanvas', 'width':mapImg.getWidth(), 'height':mapImg.getHeight(), 'onClick':'selectTerritory(event)'}).insert("<p>Your Browser does not support Canvas! You can not use InteractiveMap! Please Reload the page!</p>");
             mapImg.replace(mapCanvas);
             mapCanvas = $("mapCanvas");
         
@@ -52,9 +52,31 @@ function drawImage() {      //draws the image with entered orders
                 case "Convoy": drawConvoy(MyOrders[i].Unit.terrID,MyOrders[i].fromTerrID,MyOrders[i].toTerrID); break; 
                 case "Destroy": drawDestroyedUnit(MyOrders[i].toTerrID); break;
                 case "Build Fleet": case "Build Army": drawCreateUnit(MyOrders[i].toTerrID, MyOrders[i].type); break;
+                case "Disband": drawDislodgedUnit(MyOrders[i].Unit.terrID); break;
+                case "Retreat": drawRetreat(MyOrders[i].Unit.terrID,MyOrders[i].toTerrID); break;
             }
         }
+        if(context.phase == "Retreats"){
+            drawRetreatUnit(MyOrders[i].Unit.terrID,MyOrders[i].Unit.type);
+        }
     }      
+}
+
+function drawRetreatUnit(terrID, type){
+    var terrTabl = Territories.toObject();
+    
+    var position = {x: terrTabl[terrID].smallMapX, y: terrTabl[terrID].smallMapY};
+    
+    //canvasCtx.rect(position.x-5,position.y+10,5,5);
+    canvasCtx.fillStyle = "rgb(255,255,255)";
+    canvasCtx.fillRect(position.x-5,position.y-8,7,8);
+    
+    canvasCtx.fillStyle = "rgb(255,0,0)";
+    if(type == "Fleet"){
+        canvasCtx.fillText("F",position.x-5,position.y);
+    }else{
+        canvasCtx.fillText("A",position.x-5,position.y);
+    }
 }
 
 function drawMove(fromTerrID,toTerrID) {
@@ -85,6 +107,15 @@ function drawSupportHold(fromTerrID, toTerrID) {
     drawOrderArrow(start, end,'Support hold');
 }
 
+function drawRetreat(fromTerrID,toTerrID) {
+    var terrTabl = Territories.toObject();
+    
+    var start = {x: terrTabl[fromTerrID].smallMapX, y: terrTabl[fromTerrID].smallMapY};
+    var end = {x: terrTabl[toTerrID].smallMapX, y: terrTabl[toTerrID].smallMapY};
+    drawOrderArrow(start, end,'Retreat');
+    
+}
+
 
 
 //The following is translated (partly) from drawMap.php
@@ -111,11 +142,11 @@ function drawSupportMove(terrID, fromTerrID, toTerrID){
     
     var suppUnit = terrTabl[fromTerrID].Unit;    //the supported Unit
     fromTerrID = suppUnit.terrID;   //for units on coasts
-    if(suppUnit.countryID == context.countryID){     //the following code would cause problems with foreign units as their Order is not known
+    if((suppUnit.countryID == context.countryID)&&((suppUnit.Order.type == 'Move')&&suppUnit.Order.isComplete)){     //the following code would cause problems with foreign units as their Order is not known
         var toTerrIDnew = suppUnit.Order.toTerrID;   //for units on coasts
         //alert(toTerrIDnew);
         //alert(toTerrID);
-        if((toTerrIDnew==toTerrID)||(terrTabl[toTerrIDnew].coastParentID==toTerrID)){        //checks, if different ID isn't only caused by a coast
+        if((toTerrIDnew==toTerrID)||(terrTabl[toTerrIDnew].coastParentID==toTerrID)){        //checks, if different ID is only caused by a coast
             //alert("I'm here");
             toTerrID = toTerrIDnew;
         }
@@ -548,10 +579,10 @@ function drawDestroyedUnit(terrID){
     
     var position = {x: terrTabl[terrID].smallMapX, y: terrTabl[terrID].smallMapY};
     
-    drawPolygon(position, new Array(0,0,0), destroyedPolygon['blackInner']);
-    drawPolygon(position, new Array(0,0,0), destroyedPolygon['blackOuter']);
-    drawPolygon(position, new Array(255,100,0), destroyedPolygon['inner']); 
-    drawPolygon(position, new Array(255,0,0), destroyedPolygon['outer']);
+    drawPolygon(position, new Array(0,0,0), Object.create(destroyedPolygon['blackInner']));
+    drawPolygon(position, new Array(0,0,0), Object.create(destroyedPolygon['blackOuter']));
+    drawPolygon(position, new Array(255,100,0), Object.create(destroyedPolygon['inner'])); 
+    drawPolygon(position, new Array(255,0,0), Object.create(destroyedPolygon['outer']));
 }
 
 
@@ -596,8 +627,35 @@ function drawDestroyedUnit(terrID){
 	}
 	private $dislodgedPolygon;*/
 
+var dislodgedPolygon;
 function drawDislodgedUnit(terrID){
+    var terrTabl = Territories.toObject();
     
+    var size = 4.5;    //army hight (9) / 2
+    
+    if(typeof dislodgedPolygon === 'undefined'){
+        var blackInner = polygonMap(10, size, (size/2));
+        var blackOuter = polygonMap(10, (size-2), ((size-2)/2));
+        
+        var inner = polygonMap(10, (size-3), ((size-3)/2));
+        var outer = polygonMap(10, (size-4), ((size-4)/2));
+        
+        outer = rotate(outer, new Array(0,0), (Math.PI/5));
+        blackOuter = rotate(blackOuter, new Array(0,0), (Math.PI/5));
+        
+        dislodgedPolygon = {
+            'blackInner':blackInner,
+            'blackOuter':blackOuter,
+            'inner':inner,
+            'outer':outer};
+    }
+    
+    var position = {x: terrTabl[terrID].smallMapX, y: terrTabl[terrID].smallMapY};
+    
+    drawPolygon(position, new Array(0,0,0), Object.create(dislodgedPolygon['blackInner']),true);
+    drawPolygon(position, new Array(0,0,0), Object.create(dislodgedPolygon['blackOuter']),true);
+    drawPolygon(position, new Array(255,150,0), Object.create(dislodgedPolygon['inner']),true); 
+    drawPolygon(position, new Array(255,80,0), Object.create(dislodgedPolygon['outer']),true);
 }
 
 	/**
@@ -630,7 +688,6 @@ function drawDislodgedUnit(terrID){
 	}*/
 
 function drawPolygon(position, color, polygon, small){
-
     small = (typeof small !== 'undefined') ? small : false;
     
     var x = new Number(position.x); //position.x was String, which caused problems later
@@ -656,7 +713,6 @@ function drawPolygon(position, color, polygon, small){
     canvasCtx.closePath();
     canvasCtx.fillStyle = "rgb("+color[0]+","+color[1]+","+color[2]+")";
     canvasCtx.fill();
-    
 }
 
 	/**

@@ -46,6 +46,13 @@ function orderButtons(){
                                 orderButtons.appendChild(new Element('button',{'id':'buildFleet', 'onclick':'buildFleet()', 'disabled':'true'}).update("BUILD FLEET"));
                                 orderButtons.appendChild(new Element('button',{'id':'wait', 'onclick':'wait()', 'disabled':'true'}).update("WAIT"));
                             }
+                            break;
+        case "Retreats":    if(MyOrders.length == 0){
+                                orderButtons.appendChild(new Element('p').update("No orders this phase!"));
+                            }else{
+                                orderButtons.appendChild(new Element('button',{'id':'retreat', 'onclick':'retreat()', 'disabled':'true'}).update("RETREAT"));
+                                orderButtons.appendChild(new Element('button',{'id':'disband', 'onclick':'disband()', 'disabled':'true'}).update("DISBAND")); 
+                            }
     }
     return orderButtons;
 }
@@ -66,6 +73,10 @@ function IAswitch() {
         $("ResetOrder").disabled = false;
         orderLine.show();
         $("IAswitch").innerHTML = "deactivate IA";
+        
+        if(context.phase == "Builds"){
+            setWait();
+        }
     } else {
         for(var i=0; i<buttons.length; i++){
             buttons[i].disabled = true;
