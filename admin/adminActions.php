@@ -121,6 +121,11 @@ class adminActions extends adminActionsForms
 				'description' => 'Set a game process time to now, resulting in it being processed now',
 				'params' => array('gameID'=>'Game ID'),
 			),
+			'toggleWaitForOrders' => array(
+				'name' => 'Toggle Wait for orders mode',
+				'description' => 'Will toggle this game between normal NMR rules and wait-for-orders mode',
+				'params' => array('gameID'=>'Game ID'),
+			),
 			'panic' => array(
 				'name' => 'Toggle panic button',
 				'description' => 'Toggle the panic button; turning it on prevents games from being processed, users joining games,
@@ -452,6 +457,28 @@ class adminActions extends adminActionsForms
 
 		return l_t('Process time changed from %s to %s. Next process time is %s.',
 			libTime::timeLengthText($oldPhaseMinutes*60),libTime::timeLengthText($Game->phaseMinutes*60),libTime::text($Game->processTime));
+	}
+	public function toggleWaitForOrders(array $params)
+	{
+		global $DB;
+
+		require_once(l_r('objects/game.php'));
+
+		$Variant=libVariant::loadFromGameID($params['gameID']);
+		$Game = $Variant->Game($params['gameID']);
+
+		if( $Game->missingPlayerPolicy == 'Wait' )
+		{
+			$msg = "Set game to normal mode.";
+			$setting = 'Normal';
+		}
+		else
+		{
+			$msg = "Set game to wait-for-orders mode.";
+			$setting = 'Wait';
+		}
+		$DB->sql_put("UPDATE wD_Games SET missingPlayerPolicy = '".$setting."' WHERE id = ".$Game->id);
+		return l_t($msg);
 	}
 
 	public function resetLastProcessTime(array $params)

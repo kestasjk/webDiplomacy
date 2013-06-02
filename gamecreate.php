@@ -49,8 +49,11 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$form = $_REQUEST['newGame']; // This makes $form look harmless when it is unsanitized; the parameters must all be sanitized
 
 		$input = array();
-		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType');
+		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy');
 
+		if ( !isset($form['missingPlayerPolicy']) )
+			$form['missingPlayerPolicy'] = 'Normal';
+		
 		foreach($required as $requiredName)
 		{
 			if ( isset($form[$requiredName]) )
@@ -115,10 +118,28 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			default:
 				$input['pressType'] = 'Regular';
 		}
+		
+		switch($input['missingPlayerPolicy']) {
+			case 'Wait':
+				$input['missingPlayerPolicy'] = 'Wait';
+				break;
+			default:
+				$input['missingPlayerPolicy'] = 'Normal';
+		}
 
 		// Create Game record & object
 		require_once(l_r('gamemaster/game.php'));
-		$Game = processGame::create($input['variantID'], $input['name'], $input['password'], $input['bet'], $input['potType'], $input['phaseMinutes'], $input['joinPeriod'], $input['anon'], $input['pressType']);
+		$Game = processGame::create(
+			$input['variantID'], 
+			$input['name'], 
+			$input['password'], 
+			$input['bet'], 
+			$input['potType'], 
+			$input['phaseMinutes'], 
+			$input['joinPeriod'], 
+			$input['anon'], 
+			$input['pressType'], 
+			$input['missingPlayerPolicy']);
 
 		// Create first Member record & object
 		processMember::create($User->id, $input['bet']);

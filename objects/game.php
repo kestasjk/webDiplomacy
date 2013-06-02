@@ -360,14 +360,14 @@ class Game
 			case 'Pre-game':
 				if(count($this->Members->ByID)==count($this->Variant->countries))
 					return false;
-				elseif($User->points < $this->minimumBet )
+				elseif(is_null($this->minimumBet) || $User->points < $this->minimumBet )
 					return false;
 				else
 					return true;
 			default:
 				if(count($this->Members->ByStatus['Left'])==0)
 					return false;
-				elseif($User->points < $this->minimumBet )
+				elseif(is_null($this->minimumBet) || $User->points < $this->minimumBet )
 					return false;
 				else
 					return true;
@@ -480,7 +480,7 @@ class Game
 		 * - Games are processing as normal
 		 * - The game isn't finished
 		 * - The game isn't crashed or paused
-		 * - The game isn't in strict mode and missing a players completed moves
+		 * - The game isn't in wait mode and missing a players completed moves
 		 * - The game is either:
 		 * 		- Out of time for the phase
 		 * 		- Or either:
@@ -488,7 +488,7 @@ class Game
 		 * 			- Or it's a pre-game phase and enough people have joined, and it's not a live game
 		 */
 		if( self::gamesCanProcess() && $this->phase!='Finished' && $this->processStatus=='Not-processing' &&
-			!( $this->missingPlayerPolicy=='Strict'&&!$this->Members->isComplete() ) && (
+			( $this->Members->isCompleted() || $this->missingPlayerPolicy!='Wait' ) && (
 				time() >= $this->processTime
 				|| ( ($this->phase!='Pre-game' && $this->Members->isReady() )
 					|| ($this->phase=='Pre-game' && count($this->Members->ByID)==count($this->Variant->countries) && !($this->isLiveGame()) ) )
