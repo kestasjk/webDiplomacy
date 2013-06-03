@@ -940,7 +940,7 @@ class adminActions extends adminActionsForms
 			if ( $status != 'Playing' ) continue;
 
 			$Variant=libVariant::loadFromGameID($gameID);
-			$Game = $Variant->Game($gameID);
+			$Game = $Variant->processGame($gameID);
 
 			$banMessage = l_t('%s was banned: %s. ',$banUser->username,$banReason);
 
