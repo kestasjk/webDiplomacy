@@ -955,6 +955,8 @@ class adminActions extends adminActionsForms
 			{
 				// The game may need a time extension to allow for a new player to be added
 
+				$Game->resetMinimumBet();
+				
 				// Would the time extension would give a difference of more than ten minutes? If not don't bother
 				if ( (time() + $Game->phaseMinutes*60) - $Game->processTime > 10*60 ) {
 
