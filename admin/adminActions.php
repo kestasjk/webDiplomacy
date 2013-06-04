@@ -126,6 +126,11 @@ class adminActions extends adminActionsForms
 				'description' => 'Will toggle this game between normal NMR rules and wait-for-orders mode',
 				'params' => array('gameID'=>'Game ID'),
 			),
+			'resetMinimumBet' => array(
+				'name' => 'Reset the minimum bet',
+				'description' => 'If there is no join button on a game and the minimum bet hasn\'t been set correctly you can use this to reset it.',
+				'params' => array('gameID'=>'Game ID'),
+			),
 			'panic' => array(
 				'name' => 'Toggle panic button',
 				'description' => 'Toggle the panic button; turning it on prevents games from being processed, users joining games,
@@ -195,6 +200,15 @@ class adminActions extends adminActionsForms
 	public function __construct()
 	{
 		global $Misc;
+	}
+	public function resetMinimumBet(array $params)
+	{
+		require_once(l_r('gamemaster/game.php'));
+		$Variant=libVariant::loadFromGameID($params['gameID']);
+		$Game = $Variant->processGame($params['gameID']);
+		$Game->resetMinimumBet();
+		return l_t("The minimum bet has been reset.");
+		
 	}
 	public function syncForumLikes(array $params)
 	{
