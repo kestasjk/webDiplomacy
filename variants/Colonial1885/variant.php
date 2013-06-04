@@ -26,10 +26,10 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class CoperialVariant extends WDVariant {
+class Colonial1885Variant extends WDVariant {
 	public $id         = 71;
 	public $mapID      = 71;
-	public $name       ='Coperial';
+	public $name       ='Colonial1885';
 	public $fullName   = 'Colonial 1885';
 	public $description= 'The powers of the Colonial age battle it out in the late 19th century';
 	public $adapter    = 'Firehawk';
@@ -40,9 +40,9 @@ class CoperialVariant extends WDVariant {
 
 	public function __construct() {
 		parent::__construct();
-		$this->variantClasses['drawMap']            = 'Coperial';
-		$this->variantClasses['adjudicatorPreGame'] = 'Coperial';
-		$this->variantClasses['panelGameBoard']     = 'Coperial';
+		$this->variantClasses['drawMap']            = 'Colonial1885';
+		$this->variantClasses['adjudicatorPreGame'] = 'Colonial1885';
+		$this->variantClasses['panelGameBoard']     = 'Colonial1885';
 	}
 	
 	public function initialize() {

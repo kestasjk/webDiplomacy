@@ -2,14 +2,14 @@
 /*
 	Copyright (C) 2013 Firehawk
 
-	This file is part of the Coperial variant for webDiplomacy
+	This file is part of the Colonial1885 variant for webDiplomacy
 
-	The Coperial variant for webDiplomacy is free software: you can redistribute
+	The Colonial1885 variant for webDiplomacy is free software: you can redistribute
 	it and/or modify it under the terms of the GNU Affero General Public License 
 	as published by the Free Software Foundation, either version 3 of the License,
 	or (at your option) any later version.
 
-	The Coperial variant for webDiplomacy is distributed in the hope that it will be
+	The Colonial1885 variant for webDiplomacy is distributed in the hope that it will be
 	useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
 	See the GNU General Public License for more details.
@@ -21,7 +21,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class CoperialVariant_adjudicatorPreGame extends adjudicatorPreGame
+class Colonial1885Variant_adjudicatorPreGame extends adjudicatorPreGame
 {
 	protected $countryUnits = array(
 		'Britain'  => array('Edinburgh'=>'Fleet','London'=>'Fleet','Liverpool'=>'Army','Gibraltar'=>'Fleet','Gold Coast'=>'Army','Singapore'=>'Fleet','Aden'=>'Fleet','Cape Town'=>'Fleet','Hong Kong'=>'Fleet','Bombay'=>'Fleet','Delhi'=>'Army','New South Wales'=>'Army'),

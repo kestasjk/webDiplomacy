@@ -2,14 +2,14 @@
 /*
 	Copyright (C) 2013 Firehawk
 
-	This file is part of the Coperial variant for webDiplomacy
+	This file is part of the Colonial1885 variant for webDiplomacy
 
-	The Coperial variant for webDiplomacy is free software: you can redistribute
+	The Colonial1885 variant for webDiplomacy is free software: you can redistribute
 	it and/or modify it under the terms of the GNU Affero General Public License 
 	as published by the Free Software Foundation, either version 3 of the License,
 	or (at your option) any later version.
 
-	The Coperial variant for webDiplomacy is distributed in the hope that it will be
+	The Colonial1885 variant for webDiplomacy is distributed in the hope that it will be
 	useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
 	See the GNU General Public License for more details.
@@ -67,7 +67,7 @@ class ColorUnits_drawMap extends drawMap
 
 }
 
-class CoperialVariant_drawMap extends ColorUnits_drawMap {
+class Colonial1885Variant_drawMap extends ColorUnits_drawMap {
 
 	protected $countryColors = array(
 		0 => array(255, 213, 128), // Neutral
@@ -92,10 +92,10 @@ class CoperialVariant_drawMap extends ColorUnits_drawMap {
 
 	protected function resources() {
 		return array(
-			'map'=>'variants/Coperial/resources/map.png',
-			'army'=>'variants/Coperial/resources/army.png',
-			'fleet'=>'variants/Coperial/resources/fleet.png',
-			'names'=>'variants/Coperial/resources/mapNames.png',
+			'map'=>'variants/Colonial1885/resources/map.png',
+			'army'=>'variants/Colonial1885/resources/army.png',
+			'fleet'=>'variants/Colonial1885/resources/fleet.png',
+			'names'=>'variants/Colonial1885/resources/mapNames.png',
 			'standoff'=>'images/icons/cross.png'
 		);
 	}
