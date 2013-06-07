@@ -45,7 +45,7 @@ class Modern2Variant extends WDVariant {
 	public $author     = 'Vincent Mous';
 	public $adapter    = 'Carey Jensen / Oliver Auth';
 	public $version    = 'II';
-	public $codeVersion= '1.7.4';
+	public $codeVersion= '1.7.5';
 	public $homepage   = 'http://www.variantbank.org/results/rules/m/modern2.htm';
 
 	public $countries=array('Britain', 'Egypt', 'France', 'Germany', 'Italy', 'Poland', 'Russia', 'Spain', 'Turkey', 'Ukraine');
