@@ -224,7 +224,7 @@ else
 
 		<strong>Default:</strong> No password set
 	</li>
-
+<!-- 
 	<li class="formlisttitle">
 		No moves received options:
 	</li>
@@ -245,6 +245,7 @@ else
 
 		<strong>Default:</strong> Normal
 	</li>
+	 -->
 </ul>
 
 </div>
