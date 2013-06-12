@@ -66,7 +66,7 @@ switch($sc) {
 $name = isset($_REQUEST['name']) ? $DB->escape($_REQUEST['name']) : '';
 
 // new countryID
-$countryID = isset($_REQUEST['countryID']) ? (int)$_REQUEST['countryID'] : '';
+$countryID = isset($_REQUEST['countryID']) ? (int)$_REQUEST['countryID'] : '-1';
 
 // calculate the coordinates for the largemap from the smallmap
 $calcxy = (isset($_REQUEST['calcxy'])) ? $_REQUEST['calcxy'] : '';
@@ -141,8 +141,10 @@ function write_changes() {
         $DB->sql_put('UPDATE wD_Territories SET supply="' . $sc . '" WHERE mapID=' . $mapID . ' AND id=' . $terrID);
     if (($name != '') && ($terrID != '0'))
         $DB->sql_put('UPDATE wD_Territories SET name="' . $name . '" WHERE mapID=' . $mapID . ' AND id=' . $terrID);
-    if (($countryID != '' || $countryID == 0 ) && ($terrID != '0'))
+    if ($countryID >= 0 && $terrID != '0')
         $DB->sql_put('UPDATE wD_Territories SET countryID="' . $countryID . '" WHERE mapID=' . $mapID . ' AND id=' . $terrID);
+//    if ($countryID == 0 && $terrID != '0')
+//        $DB->sql_put('UPDATE wD_Territories SET countryID="0" WHERE mapID=' . $mapID . ' AND id=' . $terrID);
     if (($name != '') && ($terrID == '0')) {
         list($terrID) = $DB->sql_row('SELECT id FROM wD_Territories WHERE mapID=' . $mapID . ' ORDER BY id DESC LIMIT 1;');
         $terrID++;
