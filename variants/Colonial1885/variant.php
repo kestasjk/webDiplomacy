@@ -34,7 +34,7 @@ class Colonial1885Variant extends WDVariant {
 	public $description= 'The powers of the Colonial age battle it out in the late 19th century';
 	public $adapter    = 'Firehawk';
 	public $version    = '1';
-	public $codeVersion= '1.0';
+	public $codeVersion= '1.0.1';
 
 	public $countries=array('Britain','France','Germany','Italy','Austria','Holland','Russia','Turkey','China','Japan',);
 

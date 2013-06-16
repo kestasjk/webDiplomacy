@@ -1,5 +1,5 @@
 <?php
-// This is file installs the map data for the Coperial variant
+// This is file installs the map data for the Colonial1885 variant
 defined('IN_CODE') or die('This script can not be run by itself.');
 require_once("variants/install.php");
 
@@ -635,7 +635,6 @@ $bordersRawData=array(
 	array('Delhi','Assam','No','Yes'),
 	array('Algiers','Morocco','Yes','Yes'),
 	array('Algiers','Tunis','Yes','Yes'),
-	array('Algiers','Tripoli','Yes','Yes'),
 	array('Algiers','Tamanrasset','No','Yes'),
 	array('Algiers','West Mediterranean','Yes','No'),
 	array('Morocco','Tamanrasset','No','Yes'),
