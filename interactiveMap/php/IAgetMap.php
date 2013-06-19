@@ -26,8 +26,8 @@ define('DELETECACHE', 0);
 
 require_once('lib/html.php');
 
-if (file_exists('variants/' . $Variant->name . '/resources/IA_smallMap.png'))
-    libHTML::serveImage('variants/' . $Variant->name . '/resources/IA_smallMap.png');
+if (file_exists('variants/' . $Variant->name . '/resources/IA_smallmap.png'))
+    libHTML::serveImage('variants/' . $Variant->name . '/resources/IA_smallmap.png');
 else if (file_exists('variants/' . $Variant->name . '/resources/IA_map.png'))
     libHTML::serveImage('variants/' . $Variant->name . '/resources/IA_map.png');
 
@@ -35,10 +35,10 @@ else if (file_exists('variants/' . $Variant->name . '/resources/IA_map.png'))
 function drawIAmap() {
     global $Variant;
 
-    if (!file_exists('variants/' . $Variant->name . '/resources/IA_smallMap.png')) {
+    if (!file_exists('variants/' . $Variant->name . '/resources/IA_smallmap.png')) {
 
-        if (file_exists('variants/' . $Variant->name . '/resources/smallMap.png')) {
-            $map = imagecreatefrompng('variants/' . $Variant->name . '/resources/smallMap.png');
+        if (file_exists('variants/' . $Variant->name . '/resources/smallmap.png')) {
+            $map = imagecreatefrompng('variants/' . $Variant->name . '/resources/smallmap.png');
         } elseif (file_exists('variants/' . $Variant->name . '/resources/map.png')) {
             $map = imagecreatefrompng('variants/' . $Variant->name . '/resources/map.png');
         } elseif (file_exists('variants/' . $Variant->name . '/resources/map_1.png')) {
@@ -77,7 +77,7 @@ function drawIAmap() {
         if ($cC != null)
             die($cC);
 
-        imagepng($map2, 'variants/' . $Variant->name . '/resources/IA_smallMap.png');
+        imagepng($map2, 'variants/' . $Variant->name . '/resources/IA_smallmap.png');
         imagedestroy($map);
         imagedestroy($map2);
     }

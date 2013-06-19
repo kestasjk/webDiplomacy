@@ -33,7 +33,7 @@ function createIAmapData() {
 
         $colors = array();
 
-        $map = imagecreatefrompng('variants/' . $Variant->name . '/resources/IA_smallMap.png');
+        $map = imagecreatefrompng('variants/' . $Variant->name . '/resources/IA_smallmap.png');
 
         $territoryPositions = getTerrPos();
 
