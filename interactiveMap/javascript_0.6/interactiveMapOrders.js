@@ -1,9 +1,23 @@
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-var terrSel;
-var terrName;
+/*
+	Copyright (C) 2013 Tobias Florin
+
+	This file is part of the InterActive-Map mod for webDiplomacy
+
+	The InterActive-Map mod for webDiplomacy is free software: you can
+	redistribute it and/or modify it under the terms of the GNU Affero General
+	Public License as published by the Free Software Foundation, either version
+	3 of the License, or (at your option) any later version.
+
+	The InterActive-Map mod for webDiplomacy is distributed in the hope
+	that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU Affero General Public License
+	along with webDiplomacy. If not, see <http://www.gnu.org/licenses/>.
+*/
+var SelectedTerr;
+var SelectedTerrName;
 var orderInProgress;
 var needOwnUnit; //stores if the next territorySelcetion has to be an own Unit
 var needUnit;
@@ -22,31 +36,43 @@ function orderData(oInd, fromTerr) {  //saves TerrIDs for one order
 function resetOrder() {
     iM(" -NEXT ORDER- ");
     orderInProgress = null;
-    terrName = null;
-    terrSel = false;
+    SelectedTerr = null;
+    SelectedTerrName = null;
     needOwnUnit = true;
     needUnit = true;
     SMcoords = null;
     order = null;
     drawImage();
+    if((context.phase=="Builds")&&(MyOrders.length!=0)&&(MyOrders[0].type != "Destroy"))
+        greyOutTerritories(MyOrders[0].arrayToChoices(SupplyCenters.select(function(n){return MyOrders.pluck("ToTerritory").indexOf(n)==-1}).pluck("id")));
+    else if((context.phase=="Retreats")&&(MyOrders.length != 0))
+        greyOutTerritories(MyOrders[0].arrayToChoices(MyOrders.pluck("Unit").pluck("terrID")));
+    else
+        greyOutTerritories();
 }
 
 function selectTerritory(event) {
     if (IAready && IAactivated) {
+        orderMenu.hide();
         var coor = getCoor(event);
         if (orderInProgress != "sMove") { //for sMove, decisions about if the unit is moving to coast or not are not posible at this moment
-            terrName = getTerritoryName(coor.x, coor.y);
-            if (terrName != null) {
-                terrSel = true;
-                //iM(terrName);
-            } else {
-                terrSel = false;
+            SelectedTerr = getTerritory(coor.x, coor.y);
+            if(SelectedTerr != null) {
+                SelectedTerrName = Territories.toObject()[SelectedTerr].name;
+            }else{
+                SelectedTerrName = null;
             }
             if (orderInProgress != null) {               //an order will be completed
                 selectionValid(orderInProgress);
             } else {
-                if (terrName != null)
-                    iM(terrName);
+                if (SelectedTerr != null){
+                    iM(SelectedTerrName);
+                    
+                    //v BUILD PHASE
+                    //if(ownUnit(SelectedTerr)||(unit(SelectedTerr)&&(Territories.get(SelectedTerr).type=="Coast")&&(Territories.get(SelectedTerr).Unit.type=="Army"))){
+                        showOrderMenu(coor);
+                    //}
+                }
             }
             if (context.phase == "Builds") {   //saves coordinates for builds on coasts to detect the right coast
                 SMcoords = coor;
@@ -76,43 +102,47 @@ function getCoor(event) {
 //Coor Cursor on Map
 //alert($("mapImage").cumulativeOffset().toArray()[0]);
 //alert(xMap);
-    var imgOffset = $("mapCanvas").cumulativeOffset().toArray();
-    var x = event.pointerX() - imgOffset[0];
-    var y = event.pointerY() - imgOffset[1];
+    var imgOffset = mapCanvas.cumulativeOffset().toArray();
+    var x = event.pointerX() - imgOffset[0] + mapCanDiv.scrollLeft;
+    var y = event.pointerY() - imgOffset[1] + mapCanDiv.scrollTop;
+                    //$("mapCanDiv").appendChild(new Element('div',{'style':'top:'+y+'px;left:'+x+'px;position:absolute;background-color:white;width:100px;z-index:2;'}).appendChild(new Element('p')).update("Hey! I'm a test").parentNode);
+
     return{x: x, y: y};
 }
 
-function getTerritoryName(x, y) {
-    var terrTabl = Territories.toObject();
+function getTerritory(x, y) {
+    var terrTable = Territories.toObject();
     //var ImageColors = jsonData[1];
-
+    
     var color = getColor(x, y); //color -> color of clicked pixel
-
-    for (var terrID in terrTabl) {
-        if ((sameColor(color, getColor(terrTabl[terrID].smallMapX, terrTabl[terrID].smallMapY))) && ((terrTabl[terrID].coast == "No"))) {//||(terrTabl[terrID].coast == "Parent"))) {
-            return terrTabl[terrID].name;
-        } else if ((sameColor(color, getColor(terrTabl[terrID].smallMapX, terrTabl[terrID].smallMapY))) && ((terrTabl[terrID].coast == "Parent"))) {
-            return checkCoast(terrID, terrTabl, x, y);
-        }
+    
+    for (var terrID in terrTable) {
+        //if(terrTable[terrID].type == "Sea"){
+            if ((sameColor(color, getColor(terrTable[terrID].smallMapX, terrTable[terrID].smallMapY))) && (terrTable[terrID].coast == "No")) {//||(terrTable[terrID].coast == "Parent"))) {
+                return terrID;
+            } else if ((sameColor(color, getColor(terrTable[terrID].smallMapX, terrTable[terrID].smallMapY))) && (terrTable[terrID].coast == "Parent")) {
+                return checkCoast(terrID, terrTable, x, y);
+            }
+        //}
     }
     return null;
 }
 
-function checkCoast(terrID, terrTabl, x, y) {
+function checkCoast(terrID, terrTable, x, y) {
     //alert("HeW");
     if ((orderInProgress == null) || (orderInProgress == "sMove1")) { //sMove1 -> supported unit's origin
         if (context.phase == "Retreats") {
             for (var i = 0; i < RetreatingUnits.length; i++) {
-                var retreatTerrName = checkRetreatingUnitCoast(RetreatingUnits[i], terrID);
-                if (retreatTerrName != null) {
-                    return retreatTerrName;
+                var retreatTerrID = checkRetreatingUnitCoast(RetreatingUnits[i], terrID);
+                if (retreatTerrID != null) {
+                    return retreatTerrID;
                 }
             }
-            return terrTabl[terrID].name;
+            return terrID;
         } else if (!coastUnit(terrID) || ((context.phase == "Builds") && !(MyOrders[0].type == "Destroy"))) {
-            return terrTabl[terrID].name;
+            return terrID;
         } else {
-            return terrTabl[terrID].Unit.Territory.name;
+            return terrTable[terrID].Unit.Territory.id;
         }
     } else {
         //alert("behind else");
@@ -120,27 +150,27 @@ function checkCoast(terrID, terrTabl, x, y) {
             case "move":
             case "sMove2":
                 //alert("I'm here");
-                var territory = terrTabl[order.fromTerr];
+                var territory = terrTable[order.fromTerr];
                 if (territory.coast != "Child") {
                     if (territory.Unit != null) {       //if something went wrong ...
                         if (territory.Unit.type == "Fleet") {
                             //alert("fleet");
 
                             //multipleOptions//
-                            return getCoast(terrID, order.fromTerr, terrTabl, x, y);
+                            return getCoast(terrID, order.fromTerr, terrTable, x, y);
                         }
                     }
-                    return terrTabl[terrID].name;
+                    return terrID;
                 } else {
                     //alert("fleet");
                     //multipleOptions - unit from coast -> only fleet possible
-                    return getCoast(terrID, order.fromTerr, terrTabl, x, y);
+                    return getCoast(terrID, order.fromTerr, terrTable, x, y);
                 }
                 /*if (Units.toObject()[getTerrStatus(order.fromTerr).unitID].type == "army") {
-                 return terrTabl[terrID].name;
+                 return terrTable[terrID].name;
                  } else {
                  //if (multipleOptions()) {
-                 return terrTabl[terrID].name;
+                 return terrTable[terrID].name;
                  //}
                  }*/
                 break;
@@ -152,17 +182,17 @@ function checkCoast(terrID, terrTabl, x, y) {
                         //alert("fleet");
 
                         //multipleOptions//
-                        return getCoast(terrID, order.fromTerr, terrTabl, x, y);
+                        return getCoast(terrID, order.fromTerr, terrTable, x, y);
                     }
-                    return terrTabl[terrID].name;
+                    return terrID;
                 } else {
                     //alert("fleet");
                     //multipleOptions - unit from coast -> only fleet possible
-                    return getCoast(terrID, order.fromTerr, terrTabl, x, y);
+                    return getCoast(terrID, order.fromTerr, terrTable, x, y);
                 }
                 break;
             default:    //e.g. sHold, sMove
-                return terrTabl[terrID].name;
+                return terrID;
                 break;
         }
     }
@@ -170,7 +200,7 @@ function checkCoast(terrID, terrTabl, x, y) {
 
 function checkRetreatingUnitCoast(unit, terrID) {
     if (unit.Territory.id == terrID) {
-        return unit.Territory.name;
+        return unit.Territory.id;
         /*} else {
          var coasts = getChildren(terrID);
          for (var i = 0; i < coasts.length; i++) {
@@ -180,7 +210,7 @@ function checkRetreatingUnitCoast(unit, terrID) {
          }
          return null;*/
     } else if (unit.Territory.coastParentID == terrID) {
-        return unit.Territory.name;
+        return unit.Territory.id;
     }
     return null;
     /*if(unit.Territory.coast == "No"){
@@ -200,11 +230,11 @@ function checkRetreatingUnitCoast(unit, terrID) {
  * If more coasts of the territory are possible, the selected coast is detected by the coords of the click and the terr.coords.
  */
 
-function getCoast(terrID, fromTerrID, terrTabl, x, y) {      //get all coasts of the clicked Territory, that can be reached by the moving fleet
+function getCoast(terrID, fromTerrID, terrTable, x, y) {      //get all coasts of the clicked Territory, that can be reached by the moving fleet
     var coasts = new Array();
-    var fromTerrBorders = terrTabl[fromTerrID].CoastalBorders;
+    var fromTerrBorders = terrTable[fromTerrID].CoastalBorders;
     for (var i = 0; i < fromTerrBorders.length; i++) {
-        var checkedTerr = terrTabl[fromTerrBorders[i].id];  //the Territory, which is inspected
+        var checkedTerr = terrTable[fromTerrBorders[i].id];  //the Territory, which is inspected
         if (checkedTerr.coast == "Child") {
             if (checkedTerr.coastParentID == terrID) {
                 coasts.push(checkedTerr);
@@ -212,12 +242,12 @@ function getCoast(terrID, fromTerrID, terrTabl, x, y) {      //get all coasts of
         }
     }
     if (coasts == null) { //if something went wrong :(
-        return terrTabl[terrID].name;
+        return terrID;
     } else if (coasts.length == 1) {   //only one coast can be selected
-        return coasts[0].name;
+        return coasts[0].id;
     } else {  //more coasts are possible
         //alert("more possible");
-        return getCoastByCoords(coasts, x, y).name;
+        return getCoastByCoords(coasts, x, y).id;
     }
 }
 
@@ -260,14 +290,14 @@ function coastUnit(terrID) {
  return null;
  }*/
 
-function getTerritoryID(name) {
-    var terrTabl = Territories.toObject();
-    for (var terrID in terrTabl) {
-        if (name == terrTabl[terrID].name)
+/*function getTerritoryID(name) {
+    var terrTable = Territories.toObject();
+    for (var terrID in terrTable) {
+        if (name == terrTable[terrID].name)
             return terrID;
     }
     return null;
-}
+}*/
 
 function getUnitType(terrID) {
     var units = Units.toObject();
@@ -280,17 +310,19 @@ function getUnitType(terrID) {
 
 function sameColor(c1, c2) {
     for (var i = 0; (i < c1.length) && (i < c2.length); i++) {
-        if (c1[i] != c2[i])
+        if (c1[i] !== c2[i])
             return false;
     }
     return true;
+    //return (c1.toString()===c2.toString());
 }
 
 function getColor(x, y) {
-    return IAmapCtx.getImageData(x, y, 1, 1).data;
+    var pixelPos = (y*IAmapDat.width*4+x*4);
+    return [IAmapDat.data[pixelPos], IAmapDat.data[pixelPos+1], IAmapDat.data[pixelPos+2], IAmapDat.data[pixelPos+3]];//getImageData(x, y, 1, 1).data;
 }
 
-function unit(terrName) {
+function unit(terrID) {
     /*var units = Units.toObject();
      var terrStat = getTerrStatus(getTerritoryID(terrName));
      if (terrStat!=null){
@@ -302,7 +334,7 @@ function unit(terrName) {
      if (units[unitID].terrID == getTerritoryID(terrName))
      return true;
      }*/
-    var territory = Territories.toObject()[getTerritoryID(terrName)];
+    var territory = Territories.toObject()[terrID];
     if (territory.coast != "Child") {
         if (territory.unitID != null) {
             return true;
@@ -313,8 +345,8 @@ function unit(terrName) {
     return false;
 }
 
-function ownUnit(terrName) {
-    var territory = Territories.toObject()[getTerritoryID(terrName)];
+function ownUnit(terrID) {
+    var territory = Territories.toObject()[terrID];
     if (territory.coast != "Child") {
         if (territory.unitID != null) {
             if (territory.Unit.countryID == context.countryID) {
@@ -329,9 +361,9 @@ function ownUnit(terrName) {
     return false;
 }
 
-function ownRetreatUnit(terrName) {
-    var territory = Territories.toObject()[getTerritoryID(terrName)];
-    if (getUnits().indexOf(territory.name) != -1) {
+function ownRetreatUnit(terrID) {
+    var territory = Territories.toObject()[terrID];
+    if (getUnits().indexOf(terrID) != -1) {
         return true;
     }/*else{ 
      var coasts = getChildren(getTerritoryID(terrName));
@@ -370,7 +402,7 @@ function getUnits() {
      }*/
     var orderUnits = new Array();
     for (var i = 0; i < MyOrders.length; i++) {
-        orderUnits.push(MyOrders[i].Unit.Territory.name);
+        orderUnits.push(MyOrders[i].Unit.Territory.id);
         //alert(MyOrders[i].Unit.Territory.name);
     }
     return orderUnits;
@@ -425,17 +457,17 @@ function setOrder(index, name, value) {
 ///*if(orderSeg[3]!=null)*/ orderSeg[3].removeChild(orderSeg[3].innerHTML); orderSeg[3].removeChild(orderSeg[3].getelementsByTagName("select")[0]);
 
 function selectionValid(order) {
-    if (terrName == null || !terrSel) {
+    if (SelectedTerr == null) {
         alert("No Territory selected!");
         return false;
-    } else if (!unit(terrName) && needUnit) {
-        alert("No unit selected (" + terrName + ")!");
+    } else if (!unit(SelectedTerr) && needUnit) {
+        alert("No unit selected (" + SelectedTerrName + ")!");
         return false;
-    } else if (!ownUnit(terrName) && needOwnUnit && (order != 'convoy')) {      //for convoys, foreign units as a start unit has to be allowed, because convoys can be only setted this way!
-        alert("No own unit selected (" + terrName + ")!");
+    } else if (!ownUnit(SelectedTerr) && needOwnUnit && (order != 'convoy')) {      //for convoys, foreign units as a start unit has to be allowed, because convoys can be only setted this way!
+        alert("No own unit selected (" + SelectedTerrName + ")!");
         return false;
-    } else if (((order == 'disband') || ((order == 'retreat') && (orderInProgress == null))) && !ownRetreatUnit(terrName)) {
-        alert("No own unit selected, that has to retreat (" + terrName + ")!");
+    } else if (((order == 'disband') || ((order == 'retreat') && (orderInProgress == null))) && !ownRetreatUnit(SelectedTerr)) {
+        alert("No own unit selected, that has to retreat (" + SelectedTerrName + ")!");
         return false;
     } else if (orderInProgress != null) {
         if (orderInProgress != order) {
@@ -467,7 +499,7 @@ function selectionValid(order) {
             }
             return false;
         }
-    } else if ((order == "convoy") && (getUnitType(getTerritoryID(terrName)) != "Army")) {
+    } else if ((order == "convoy") && (getUnitType(SelectedTerr) != "Army")) {
         alert("No army selected!");
         return false;
     } else {
@@ -477,7 +509,7 @@ function selectionValid(order) {
 
 function hold() {
     if (selectionValid('hold')) {
-        var oInd = getUnits().indexOf(terrName);
+        var oInd = getUnits().indexOf(SelectedTerr);
         var orderPart = 'type';
         var orderValue = 'Hold';
         if (setOrder(oInd, orderPart, orderValue)) {
@@ -509,7 +541,7 @@ function hold() {
 
 function move() {
     if (selectionValid('move')) {
-        var oInd = getUnits().indexOf(terrName);
+        var oInd = getUnits().indexOf(SelectedTerr);
         var orderPart = 'type';
         var orderValue = 'Move';
         if (setOrder(oInd, orderPart, orderValue)) {
@@ -520,10 +552,11 @@ function move() {
             var DropDown = getDropDown(oInd, orderPart);
             DropDown.setStyle({backgroundColor: '#ffd4c9'});
             MyOrder.inputValue(orderPart, DropDown.getValue());
-            order = new orderData(oInd, getTerritoryID(terrName));
+            order = new orderData(oInd, SelectedTerr);
             needOwnUnit = false;
             needUnit = false;
             iM(" moves to ");
+            greyOutTerritories(MyOrder.arrayToChoices(MyOrder.Unit.getMovableTerritories().pluck("id")));
         } else {
             alert("'" + orderValue + "' as '" + orderPart + "' could not be selected! Order reset!");
             resetOrder();
@@ -564,10 +597,10 @@ function movePossible(fromID, toID, coastTreatment) { //could be make shorter to
 
 function move2() {
     var oInd = order.orderIndex;
-    if (!isNeighbor(order.fromTerr, getTerritoryID(terrName))) {
-        alert(terrName + " not neighbor of " + Territories.toObject()[order.fromTerr].name + " (use CONVOY instead of MOVE for moves via convoy)!");
-    } else if (!movePossible(order.fromTerr, getTerritoryID(terrName))) {
-        alert("Selected unit can not move to " + terrName + " (wrong type)!");
+    if (!isNeighbor(order.fromTerr, SelectedTerr)) {
+        alert(SelectedTerrName + " not neighbor of " + Territories.toObject()[order.fromTerr].name + " (use CONVOY instead of MOVE for moves via convoy)!");
+    } else if (!movePossible(order.fromTerr, SelectedTerr)) {
+        alert("Selected unit can not move to " + SelectedTerrName + " (wrong type)!");
     } else {
         var orderPart = 'toTerrID';
         /*if (getUnitType(getTerritoryID(terrName)) == "Fleet") {     //check for fleets if Territory has Coasts
@@ -575,7 +608,7 @@ function move2() {
          } else {
          var orderValue = getTerritoryID(terrName);
          }*/
-        var orderValue = getTerritoryID(terrName);
+        var orderValue = SelectedTerr;
         if (setOrder(oInd, orderPart, orderValue)) {
             orderInProgress = 'move2';
             var MyOrder = MyOrders[oInd];
@@ -594,10 +627,10 @@ function move2() {
             }
 
             order.toTerr = orderValue;
-            iM(terrName);
+            iM(SelectedTerrName);
             resetOrder();
         } else {
-            alert("'" + terrName + "' as '" + orderPart + "' could not be selected! Order reset!");
+            alert("'" + SelectedTerrName + "' as '" + orderPart + "' could not be selected! Order reset!");
             resetOrder();
         }
     }
@@ -605,7 +638,7 @@ function move2() {
 
 function sHold() {
     if (selectionValid('move')) {
-        var oInd = getUnits().indexOf(terrName);
+        var oInd = getUnits().indexOf(SelectedTerr);
         var orderPart = 'type';
         var orderValue = 'Support hold';
         if (setOrder(oInd, orderPart, orderValue)) {
@@ -616,10 +649,11 @@ function sHold() {
             var DropDown = getDropDown(oInd, orderPart);
             DropDown.setStyle({backgroundColor: '#ffd4c9'});
             MyOrder.inputValue(orderPart, DropDown.getValue());
-            order = new orderData(oInd, getTerritoryID(terrName));
+            order = new orderData(oInd, SelectedTerr);
             needOwnUnit = false;
             needUnit = true;
             iM(" supports the holding unit in ");
+            greyOutTerritories(MyOrder.toTerrChoices);
         } else {
             alert("'" + orderValue + "' as '" + orderPart + "' could not be selected! Order reset!");
             resetOrder();
@@ -628,14 +662,14 @@ function sHold() {
 }
 
 function sHold2() {
-    if (!isNeighbor(order.fromTerr, getTerritoryID(terrName))) {
-        alert(terrName + " not neighbor of " + Territories.toObject()[order.fromTerr].name + "!");
-    } else if (!movePossible(order.fromTerr, getTerritoryID(terrName))) {
-        alert("Selected unit can not support unit in " + terrName + " (wrong type)!");
+    if (!isNeighbor(order.fromTerr, SelectedTerr)) {
+        alert(SelectedTerrName + " not neighbor of " + Territories.toObject()[order.fromTerr].name + "!");
+    } else if (!movePossible(order.fromTerr, SelectedTerr)) {
+        alert("Selected unit can not support unit in " + SelectedTerrName + " (wrong type)!");
     } else {
         var oInd = order.orderIndex;
         var orderPart = 'toTerrID';
-        var orderValue = getTerritoryID(terrName);
+        var orderValue = SelectedTerr;
         if (setOrder(oInd, orderPart, orderValue)) {
             orderInProgress = 'sHold2';
             var MyOrder = MyOrders[oInd];
@@ -643,10 +677,10 @@ function sHold2() {
             DropDown.setStyle({backgroundColor: '#ffd4c9'});
             MyOrder.inputValue(orderPart, DropDown.getValue());
             order.toTerr = orderValue;
-            iM(terrName);
+            iM(SelectedTerrName);
             resetOrder();
         } else {
-            alert("'" + terrName + "' as '" + orderPart + "' could not be selected! Order reset!");
+            alert("'" + SelectedTerrName + "' as '" + orderPart + "' could not be selected! Order reset!");
             resetOrder();
         }
     }
@@ -654,7 +688,7 @@ function sHold2() {
 
 function sMove() {
     if (selectionValid('sMove')) {
-        var oInd = getUnits().indexOf(terrName);
+        var oInd = getUnits().indexOf(SelectedTerr);
         var orderPart = 'type';
         var orderValue = 'Support move';
         if (setOrder(oInd, orderPart, orderValue)) {
@@ -665,11 +699,12 @@ function sMove() {
             var DropDown = getDropDown(oInd, orderPart);
             DropDown.setStyle({backgroundColor: '#ffd4c9'});
             MyOrder.inputValue(orderPart, DropDown.getValue());
-            order = new orderData(oInd, getTerritoryID(terrName));
-            order.terr = getTerritoryID(terrName);
+            order = new orderData(oInd, SelectedTerr);
+            order.terr = SelectedTerr;
             needOwnUnit = false;
             needUnit = false;
             iM(" supports the moving unit to ");
+            greyOutTerritories(MyOrder.toTerrChoices);
         } else {
             alert("'" + orderValue + "' as '" + orderPart + "' could not be selected! Order reset!");
             resetOrder();
@@ -678,13 +713,18 @@ function sMove() {
 }
 
 function sMove1(coor) {
-    terrName = getTerritoryName(coor.x, coor.y);
-    if (!isNeighbor(order.terr, getTerritoryID(terrName))) {
-        alert(terrName + " not neighbor of " + Territories.toObject()[order.terr].name + "!");
-    } else if (!movePossible(order.terr, getTerritoryID(terrName), "ignoreCoasts")) {
-        alert("Selected unit can not support move to " + terrName + " (wrong type)!");
+    SelectedTerr = getTerritory(coor.x, coor.y);
+    SelectedTerrName = Territories.toObject()[SelectedTerr].name
+    if (!isNeighbor(order.terr, SelectedTerr)) {
+        alert(SelectedTerrName + " not neighbor of " + Territories.toObject()[order.terr].name + "!");
+    } else if (!movePossible(order.terr, SelectedTerr, "ignoreCoasts")) {
+        alert("Selected unit can not support move to " + SelectedTerrName + " (wrong type)!");
     } else {
-        iM(terrName + " from ");
+        iM(SelectedTerrName + " from ");
+        //greyOutTerritories(MyOrders[order.oInd].fromTerrChoices);NotThatEasy
+        var MyOrder = MyOrders[order.orderIndex];
+        var fromTerr = Units.get(MyOrder.unitID).getSupportMoveFromChoices(Territories.get(SelectedTerr));
+        greyOutTerritories(MyOrder.arrayToChoices(fromTerr));
         SMcoords = coor;
         orderInProgress = "sMove1";
         needUnit = true;
@@ -724,22 +764,22 @@ function convoyPossible(fromID, toID) {
 function sMove2() {
     //alert("I'm here");
     var oInd = order.orderIndex;
-    var fromTerrName = terrName;
-    var fromTerrID = getTerritoryID(fromTerrName);    //last selected Terr is toTerr, because Coordinates for fromTerr are only saved in SMcoords
+    var fromTerrID = SelectedTerr;    //last selected Terr is toTerr, because Coordinates for fromTerr are only saved in SMcoords
+    var fromTerrName = SelectedTerrName;
     order.fromTerr = fromTerrID;        //saved in order.fromTerr for coastTerritory-Movements
 
     orderInProgress = 'sMove2';         //needed to detect the rigth coast-treatment in checkCoast()
-    var toTerrName = getTerritoryName(SMcoords.x, SMcoords.y);
-    var toTerrID = getTerritoryID(toTerrName);    //gets fromTerrID with saved SMCoords
+    var toTerrID = getTerritory(SMcoords.x, SMcoords.y);
+    var toTerrName = Territories.toObject()[toTerrID].name;    //gets fromTerrID with saved SMCoords
     order.toTerr = toTerrID;
 
     var cp = convoyPossible(order.fromTerr, order.toTerr);
     if ((!isNeighbor(order.fromTerr, order.toTerr)) && !cp) {
         orderInProgress = 'sMove1';
-        alert("Unit in " + terrName + " can not move to " + Territories.toObject()[order.toTerr].name + "!");
+        alert("Unit in " + SelectedTerrName + " can not move to " + Territories.toObject()[order.toTerr].name + "!");
     } else if (!movePossible(order.fromTerr, order.toTerr) && !cp) {
         orderInProgress = 'sMove1';
-        alert("Unit in " + terrName + " can not move to " + Territories.toObject()[order.toTerr].name + " (wrong type)!");
+        alert("Unit in " + SelectedTerrName + " can not move to " + Territories.toObject()[order.toTerr].name + " (wrong type)!");
     } else {
 
         //sMove to:
@@ -765,11 +805,11 @@ function sMove2() {
                 //drawSupportHold();
                 //resetOrder();
 
-                moveSupport(fromTerrName, toTerrID);
-                iM(terrName);
+                moveSupport(fromTerrID, toTerrID);
+                iM(SelectedTerrName);
                 resetOrder();
             } else {
-                alert("'" + terrName + "' as '" + orderPart + "' could not be selected! Order reset!");
+                alert("'" + SelectedTerrName + "' as '" + orderPart + "' could not be selected! Order reset!");
                 resetOrder();
             }
         } else {
@@ -819,12 +859,12 @@ function orderAlreadySet(fromID, toID, type) {
     }
 }
 
-function moveSupport(fromTerrName, toTerrID) {  //sets a move with Data from sMove2()
+function moveSupport(fromTerrID, toTerrID) {  //sets a move with Data from sMove2()
 
     //if (selectionValid('move')) {
-    if (ownUnit(fromTerrName)) {  //only enters order to move for own units
-        if (!orderAlreadySet(getTerritoryID(fromTerrName), toTerrID, 'Move')) {
-            var oInd = getUnits().indexOf(fromTerrName);
+    if (ownUnit(fromTerrID)) {  //only enters order to move for own units
+        if (!orderAlreadySet(fromTerrID, toTerrID, 'Move')) {
+            var oInd = getUnits().indexOf(fromTerrID);
             var orderPart = 'type';
             var orderValue = 'Move';
             if (setOrder(oInd, orderPart, orderValue)) {
@@ -835,7 +875,7 @@ function moveSupport(fromTerrName, toTerrID) {  //sets a move with Data from sMo
                 var DropDown = getDropDown(oInd, orderPart);
                 DropDown.setStyle({backgroundColor: '#ffd4c9'});
                 MyOrder.inputValue(orderPart, DropDown.getValue());
-                order = new orderData(oInd, getTerritoryID(terrName));
+                order = new orderData(oInd, SelectedTerr);
                 needOwnUnit = false;
                 needUnit = false;
                 //iM(" moves to ");
@@ -879,15 +919,15 @@ function moveSupport2(toTerrID) {
         //drawMove();
         //resetOrder();
     } else {
-        alert("'" + terrName + "' as '" + orderPart + "' could not be selected! Order reset!");
+        alert("'" + SelectedTerrName + "' as '" + orderPart + "' could not be selected! Order reset!");
         resetOrder();
     }
 }
 
 function convoy() {
     if (selectionValid('convoy')) {
-        if (ownUnit(terrName)) {  //only sets order to move for own units
-            var oInd = getUnits().indexOf(terrName);
+        if (ownUnit(SelectedTerr)) {  //only sets order to move for own units
+            var oInd = getUnits().indexOf(SelectedTerr);
             var orderPart = 'type';
             var orderValue = 'Move';
             if (setOrder(oInd, orderPart, orderValue)) {
@@ -898,7 +938,7 @@ function convoy() {
                 var DropDown = getDropDown(oInd, orderPart);
                 DropDown.setStyle({backgroundColor: '#ffd4c9'});
                 MyOrder.inputValue(orderPart, DropDown.getValue());
-                order = new orderData(oInd, getTerritoryID(terrName));
+                order = new orderData(oInd, SelectedTerr);
                 order.terr = new Array();   //stores the convoyPath
                 order.terr.push(order.fromTerr);
                 needOwnUnit = false;
@@ -907,48 +947,56 @@ function convoy() {
             } else {
                 alert("'" + orderValue + "' as '" + orderPart + "' could not be selected! Order reset!");
                 resetOrder();
+                return;
             }
         } else {
             orderInProgress = 'convoy';
-            order = new orderData(null, getTerritoryID(terrName));
+            order = new orderData(null, SelectedTerr);
             order.terr = new Array();   //stores the convoyPath
             order.terr.push(order.fromTerr);
             needOwnUnit = false;
             needUnit = false;
             iM(" moves via ");
         }
+        var convoyTerritories = Territories.get(SelectedTerr).getBorderUnits().select(function(n) {return n.Territory.type == "Sea"}).pluck("terrID");
+        greyOutTerritories(MyOrders[0].arrayToChoices(convoyTerritories));
     }
 }
 
 function convoy2() {
-    var terrTabl = Territories.toObject();
-    var terrID = getTerritoryID(terrName);
+    var terrTable = Territories.toObject();
+    var terrID = SelectedTerr;
     var unitType = getUnitType(terrID);
-    if (terrTabl[terrID].type != "Sea") {
+    if (terrTable[terrID].type != "Sea") {
         if (!isNeighbor(order.terr[order.terr.length - 1], terrID)) {
-            alert(terrName + " not neighbor of " + terrTabl[order.terr[order.terr.length - 1]].name + "!");
+            alert(SelectedTerrName + " not neighbor of " + terrTable[order.terr[order.terr.length - 1]].name + "!");
         } else {
             if (order.terr.length > 1) {
                 convoy3(terrID);  //handles the final building of Convoy
             } else {
-                alert("No fleet selected (" + terrName + ")!");
+                alert("No fleet selected (" + SelectedTerrName + ")!");
             }
         }
     } else {  //unit type has to be fleet (unit() tested with selectionValid()
-        if (!unit(terrName)) {
-            alert("No Unit selected (" + terrName + ")!");
+        if (!unit(SelectedTerr)) {
+            alert("No Unit selected (" + SelectedTerrName + ")!");
         } else {
             if (!isNeighbor(order.terr[order.terr.length - 1], terrID)) {
-                alert("Fleet (" + terrName + ") not neighbor of " + terrTabl[order.terr[order.terr.length - 1]].name + "!");
+                alert("Fleet (" + SelectedTerrName + ") not neighbor of " + terrTable[order.terr[order.terr.length - 1]].name + "!");
             } else {
-                if (terrTabl[terrID].type != "Sea") {
+                if (terrTable[terrID].type != "Sea") {
                     alert("Convoying fleet not in Sea-Territory");
                 } else {
                     if (order.terr.length > 1) {
                         iM(", ")
                     }
-                    iM(terrName);
+                    iM(SelectedTerrName);
                     order.terr.push(terrID);
+                    
+                    var convoyTerritories = Territories.get(SelectedTerr).getBorderUnits().select(function(n) {return n.Territory.type == "Sea"}).pluck("terrID");
+                    convoyTerritories = convoyTerritories.concat(Territories.get(SelectedTerr).getBorderTerritories().select(function(n) {return n.type == "Coast"}).pluck("id"));
+                    convoyTerritories = convoyTerritories.select(function(n) {return order.terr.indexOf(n)==-1});
+                    greyOutTerritories(MyOrders[0].arrayToChoices(convoyTerritories));
                 }
             }
         }
@@ -1005,17 +1053,17 @@ function convoy3(terrID) {
                 }
             }
 
-            iM(" to " + terrName);
+            iM(" to " + SelectedTerrName);
             order.toTerr = orderValue;
             setConvoy();
             resetOrder();
         } else {
-            alert("'" + terrName + "' as '" + orderPart + "' could not be selected! Order reset!");
+            alert("'" + SelectedTerrName + "' as '" + orderPart + "' could not be selected! Order reset!");
             resetOrder();
         }
     } else {
         orderInProgress = 'convoy2';
-        iM(" to " + terrName);
+        iM(" to " + SelectedTerrName);
         order.toTerr = terrID;
         setConvoy();
         resetOrder();
@@ -1023,11 +1071,11 @@ function convoy3(terrID) {
 }
 
 function setConvoy() {
-    var terrTabl = Territories.toObject();
+    var terrTable = Territories.toObject();
     for (var i = 1; i < order.terr.length; i++) { //set convoy-order for every fleet in convoy-path (order.terr[0] -> moving army)
-        var terrName = terrTabl[order.terr[i]].name;
-        if (ownUnit(terrName)) {    //only set convoys for own units
-            var oInd = getUnits().indexOf(terrName);
+        var terrID = order.terr[i];
+        if (ownUnit(terrID)) {    //only set convoys for own units
+            var oInd = getUnits().indexOf(terrID);
             var orderPart = 'type';
             var orderValue = 'Convoy';
             if (setOrder(oInd, orderPart, orderValue)) {
@@ -1050,11 +1098,11 @@ function setConvoy() {
                         DropDown.setStyle({backgroundColor: '#ffd4c9'});
                         MyOrder.inputValue(orderPart, DropDown.getValue());
                     } else {
-                        alert("'" + terrTabl[orderValue].name + "' as '" + orderPart + "' could not be selected! Order reset!");
+                        alert("'" + terrTable[orderValue].name + "' as '" + orderPart + "' could not be selected! Order reset!");
                         resetOrder();
                     }
                 } else {
-                    alert("'" + terrTabl[orderValue].name + "' as '" + orderPart + "' could not be selected! Order reset!");
+                    alert("'" + terrTable[orderValue].name + "' as '" + orderPart + "' could not be selected! Order reset!");
                     resetOrder();
                 }
             } else {
@@ -1076,7 +1124,7 @@ function destroy() {
         }
         var oInd = orderCounter % MyOrders.length;
         var orderPart = 'toTerrID';
-        var orderValue = Territories.toObject()[getTerritoryID(terrName)].coastParentID;
+        var orderValue = Territories.toObject()[SelectedTerr].coastParentID;
         if (setOrder(oInd, orderPart, orderValue)) {
             orderInProgress = 'destroy';
             var MyOrder = MyOrders[oInd];
@@ -1098,7 +1146,7 @@ function destroy() {
 
 function getSCtype(terrID) {
     var territory = Territories.toObject()[terrID];
-    if ((territory.countryID == context.countryID) && territory.supply) {
+    if(SupplyCenters.indexOf(territory)!=-1){//if ((territory.countryID == context.countryID) && territory.supply) {
         return territory.type;
     } else {
         return null;
@@ -1126,13 +1174,13 @@ function buildArmy() {
     needUnit = false;
     needOwnUnit = false;
     if (selectionValid('build army')) {
-        var SCtype = getSCtype(getTerritoryID(terrName));
+        var SCtype = getSCtype(SelectedTerr);
         if (SCtype == null) {
-            alert("No own supply center selected (" + terrName + ")!");
-        } else if (unit(terrName)) {
-            alert("Supply Center (" + terrName + ") is occupied by anohter unit!");
+            alert("No own supply center selected (" + SelectedTerrName + ")!");
+        } else if (unit(SelectedTerr)) {
+            alert("Supply Center (" + SelectedTerrName + ") is occupied by anohter unit!");
         } else {
-            var oInd = getOrderIndexBuilds(getTerritoryID(terrName));//orderCounter % MyOrders.length;
+            var oInd = getOrderIndexBuilds(SelectedTerr);//orderCounter % MyOrders.length;
             var orderPart = 'type';
             var orderValue = 'Build Army';
             if (setOrder(oInd, orderPart, orderValue)) {
@@ -1147,7 +1195,7 @@ function buildArmy() {
                 MyOrder.inputValue(orderPart, DropDown.getValue());
 
                 orderPart = 'toTerrID';
-                orderValue = getTerritoryID(terrName);
+                orderValue = SelectedTerr;
                 if (setOrder(oInd, orderPart, orderValue)) {
                     var MyOrder = MyOrders[oInd];
                     var DropDown = getDropDown(oInd, orderPart);
@@ -1172,11 +1220,11 @@ function buildArmy() {
 }
 
 function getChildren(terrID) {
-    var terrTabl = Territories.toObject();
+    var terrTable = Territories.toObject();
     var coasts = new Array();
-    for (var terrIndex in terrTabl) {
-        if ((terrTabl[terrIndex].coastParentID == terrID) && (terrTabl[terrIndex].coastParentID != terrTabl[terrIndex].id)) {
-            coasts.push(terrTabl[terrIndex]);
+    for (var terrIndex in terrTable) {
+        if ((terrTable[terrIndex].coastParentID == terrID) && (terrTable[terrIndex].coastParentID != terrTable[terrIndex].id)) {
+            coasts.push(terrTable[terrIndex]);
         }
     }
     return coasts;
@@ -1186,15 +1234,15 @@ function buildFleet() {
     needUnit = false;
     needOwnUnit = false;
     if (selectionValid('build fleet')) {
-        var SCtype = getSCtype(getTerritoryID(terrName));
+        var SCtype = getSCtype(SelectedTerr);
         if (SCtype == null) {
-            alert("No own supply center selected (" + terrName + ")!");
+            alert("No own supply center selected (" + SelectedTerrName + ")!");
         } else if (SCtype != "Coast") {
-            alert("No coastal supply center selected (" + terrName + ")!");
-        } else if (unit(terrName)) {
-            alert("Supply Center (" + terrName + ") is occupied by anohter unit!");
+            alert("No coastal supply center selected (" + SelectedTerrName + ")!");
+        } else if (unit(SelectedTerr)) {
+            alert("Supply Center (" + SelectedTerrName + ") is occupied by anohter unit!");
         } else {
-            var oInd = getOrderIndexBuilds(getTerritoryID(terrName));//orderCounter % MyOrders.length;
+            var oInd = getOrderIndexBuilds(SelectedTerr);//orderCounter % MyOrders.length;
             var orderPart = 'type';
             var orderValue = 'Build Fleet';
             if (setOrder(oInd, orderPart, orderValue)) {
@@ -1209,7 +1257,7 @@ function buildFleet() {
                 MyOrder.inputValue(orderPart, DropDown.getValue());
 
                 orderPart = 'toTerrID';
-                var toTerrID = getTerritoryID(terrName);
+                var toTerrID = SelectedTerr;
                 if (Territories.toObject()[toTerrID].coast == "Parent") {
                     var toTerr = getCoastByCoords(getChildren(toTerrID), SMcoords.x, SMcoords.y);
                     iM(toTerr.name.sub(Territories.toObject()[toTerrID].name, ''));
@@ -1240,7 +1288,7 @@ function buildFleet() {
 }
 
 function wait() {
-    var oInd = getOrderIndexBuilds(getTerritoryID(terrName));//orderCounter % MyOrders.length;
+    var oInd = getOrderIndexBuilds(SelectedTerr);//orderCounter % MyOrders.length;
     var orderPart = 'type';
     var orderValue = 'Wait';
     if (setOrder(oInd, orderPart, orderValue)) {
@@ -1277,7 +1325,7 @@ function setWait() {
 function disband() {
     needOwnUnit = false;    //territory occupied by other country at this point
     if (selectionValid('disband')) {
-        var oInd = getUnits().indexOf(terrName);
+        var oInd = getUnits().indexOf(SelectedTerr);
         var orderPart = 'type';
         var orderValue = 'Disband';
         if (setOrder(oInd, orderPart, orderValue)) {
@@ -1302,7 +1350,7 @@ function disband() {
 function retreat() {
     needOwnUnit = false;
     if (selectionValid('retreat')) {
-        var oInd = getUnits().indexOf(terrName);
+        var oInd = getUnits().indexOf(SelectedTerr);
         var orderPart = 'type';
         var orderValue = 'Retreat';
         if (setOrder(oInd, orderPart, orderValue)) {
@@ -1313,10 +1361,11 @@ function retreat() {
             var DropDown = getDropDown(oInd, orderPart);
             DropDown.setStyle({backgroundColor: '#ffd4c9'});
             MyOrder.inputValue(orderPart, DropDown.getValue());
-            order = new orderData(oInd, getTerritoryID(terrName));
+            order = new orderData(oInd, SelectedTerr);
             needOwnUnit = false;
             needUnit = false;
             iM(" retreats to ");
+            greyOutTerritories(MyOrder.toTerrChoices)
         } else {
             alert("'" + orderValue + "' as '" + orderPart + "' could not be selected! Order reset!");
             resetOrder();
@@ -1379,10 +1428,10 @@ function retreatPossible(fromID, toID) {    //getMovableCache can be also used f
 
 function retreat2() {
     var oInd = order.orderIndex;
-    if (!isNeighbor(order.fromTerr, getTerritoryID(terrName))) {
-        alert(terrName + " not neighbor of " + Territories.toObject()[order.fromTerr].name + " (use CONVOY instead of MOVE for moves via convoy)!");
-    } else if (!retreatPossible(order.fromTerr, getTerritoryID(terrName))) {
-        alert("Selected unit can not move to " + terrName + "!");
+    if (!isNeighbor(order.fromTerr, SelectedTerr)) {
+        alert(SelectedTerrName + " not neighbor of " + Territories.toObject()[order.fromTerr].name + " (use CONVOY instead of MOVE for moves via convoy)!");
+    } else if (!retreatPossible(order.fromTerr, SelectedTerr)) {
+        alert("Selected unit can not move to " + SelectedTerrName + "!");
     } else {
         var orderPart = 'toTerrID';
         /*if (getUnitType(getTerritoryID(terrName)) == "Fleet") {     //check for fleets if Territory has Coasts
@@ -1390,7 +1439,7 @@ function retreat2() {
          } else {
          var orderValue = getTerritoryID(terrName);
          }*/
-        var orderValue = getTerritoryID(terrName);
+        var orderValue = SelectedTerr;
         if (setOrder(oInd, orderPart, orderValue)) {
             orderInProgress = 'retreat2';
             var MyOrder = MyOrders[oInd];
@@ -1399,10 +1448,10 @@ function retreat2() {
             MyOrder.inputValue(orderPart, DropDown.getValue());
 
             order.toTerr = orderValue;
-            iM(terrName);
+            iM(SelectedTerrName);
             resetOrder();
         } else {
-            alert("'" + terrName + "' as '" + orderPart + "' could not be selected! Order reset!");
+            alert("'" + SelectedTerrName + "' as '" + orderPart + "' could not be selected! Order reset!");
             resetOrder();
         }
     }

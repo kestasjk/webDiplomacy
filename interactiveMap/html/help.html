@@ -1,0 +1,93 @@
+<!--
+	Copyright (C) 2013 Tobias Florin
+
+	This file is part of the InterActive-Map mod for webDiplomacy
+
+	The InterActive-Map mod for webDiplomacy is free software: you can
+	redistribute it and/or modify it under the terms of the GNU Affero General
+	Public License as published by the Free Software Foundation, either version
+	3 of the License, or (at your option) any later version.
+
+	The InterActive-Map mod for webDiplomacy is distributed in the hope
+	that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+	warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+	See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU Affero General Public License
+	along with webDiplomacy. If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=windows-1257">
+    </head>
+    <body>
+        <h1>Help: InteractiveMap</h1>
+        <table border="1">
+            <tr><td>Requirements:</td><td>A browser that supports HTML5 and the Canvas (<a href="http://caniuse.com/#feat=canvas">Check it out!</a>).</td></tr>
+            <tr><td>How to:</td><td>To use the InteractiveMap-Interface you first have to activate it via the "activate IA"-Button above the map.</br>
+                    Then simply select a unit by clicking on it's occupied territory. Next select the order you want to give with one 
+                    of the buttons next to the "activate IA"-/"deactivate IA"-Button or alternatively with the buttons that appeare next to your cursor on the map. 
+                    Depending on the order type you selected you probably have to select one or more other territories to complete your order. You will find detailed information 
+                    below this text.</br>
+                    If you want to start a new order, but have not finished the order before, click on the "Reset-Order"-Button before you start the new order. 
+                    In the "Order-Line" there should appear "-NEXT ORDER-".</br>
+                    You can deactivate the InteractiveMap-Interface at any time.</br>
+                    After you have set your orders, you have to save them as normal. ALWAYS check if there are incomplete orders which won't be saved!</br>
+                    You can enter orders via the drop-down lists at any time. To let them appear on the map, make sure the InteractiveMap-Interface is activated
+                    and click on "Reset-Order"-Button. The "Reset-Order"-Button will always redraw the order-arrows with the information set in the drop-down lists.</br>
+                    Some additional features like greyed-out territories or a large map without scrollbars can be set in the options. The options can be entered by
+                    pressing the "Opt."-Button beneath the "?"-HELP-Button.
+                </td></tr>
+            <tr><td>HOLD:</td><td>Select the unit that should hold and press the "HOLD"-Button.</td></tr>
+            <tr><td>MOVE:</td><td>Select the unit that should move, press the "MOVE"-Button and select the territory the unit should move to.</br>
+                    If you have selected a fleet that should move to a territory with two or more coasts that can be reached by the fleet, try to click on the coast
+                    the fleet should move to. Perhaps you have to try different points until you get the move you wanted. You could also set it via the drop-down list.
+                    Note that the selected coast is detected by the distance to the coast-coordinates (the positions of the map where fleets at coasts are placed).</br>
+                    If an army could reach the target territory "via convoy" or "via land", "via land" is set.</br>
+                    The normal movement-rules still apply!
+                </td></tr>
+            <tr><td>SUPPORT HOLD:</td><td>Select the unit that should support another unit holding, press the "SUPPORT HOLD"-Button and select the supported unit.</td></tr>
+            <tr><td>SUPPORT MOVE:</td><td>Select the unit that should support another unit moving, press the "SUPPORT MOVE"-Button, select the target territory and THEN the origin territory.</br>
+                    IMPORTANT: Not that the order for the supported unit will be changed as well, if it was different before and if it is one of your own units. This is unlike the normal way to set the orders!</br>
+                    If the supported unit could move "via convoy" or "via land", "via land" is set. If "via convoy" is set before, it will stay "via convoy" as the MOVE-Order has not been different before.</br> 
+                    Note that the same rules for fleets moving to coasts apply as with the MOVE-Order.
+                </td></tr>
+            <tr><td>CONVOY:</td><td>The way to set the CONVOY-order via InteractiveMap-Interface differs most from the normal way:</br>
+                    First select the army that should be convoyed, press the "CONVOY"-Button, then select the convoying fleets in the correct order and finally select the target territory of the army.
+                    The orders for the army and every fleet involved in the convoy will be set automatically, if they are your units.</br>
+                    This is the only time, you can select a foreign unit before you give an order via a button (necessary if you want to order your fleets to convoy a foreign unit from X to Y).
+                </td></tr>
+            <tr><td>REATREAT / DISBAND:</td><td>Units that have to retreat are drawn by a red "F" or "A" on a white rectangle. Perhaps you have to deactivate the interface to see the occupying unit 
+                    as the letters are drawn on it.</br>
+                    The "DISBAND"- and "RETREAT"-Buttons act similar to the "HOLD"- and "MOVE"-Buttons. A DISBAND-Order appears as a small explosion next to the unit-sign on the map.</br>
+                    The normal movement-rules for the retreat phase still apply.</td></tr>
+            <tr><td>BUILD</td><td>Select an own, unoccupied Supply Center and press the "BUILD FLEET"- or "BUILD ARMY"-Button. A red "F" or "A" should appear next to a star on the selected territory.</br>
+                    To reset a BUILD-Order for a Supply Center, simply select the Supply center and press the "WAIT"-BUTTON. If you try to set more builds than you are allowed, the order at the top of the drop-down lists
+                    will be overwritten with the new order.
+                </td></tr>
+            <tr><td>DESTROY</td><td>Select an own unit and press the "DESTROY"-Button. A big explosion should appear on the the unit.</br>
+                    To reset a DESTROY-Order, simply select a different unit. The "oldest" order will be overwritten if there is no free order left.  
+                </td></tr>
+        </table>
+        </br>
+        </br>
+        <table border="1">
+            <caption>OPTIONS</caption>
+            <tr><td>"Toggle scrollbars on map"</td><td>Adds or removes scrollbars, so large maps can be displayed on the whole screen or only in a small frame.</td></tr>
+            <tr><td>"Activate territory-grey-out"</td><td>If activated, territories which can not be accessed for a selected unit with a selected order will be greyed-out.</td></tr>   
+        </table>
+        </br>
+        </br>
+        <table border="1">
+            <caption>TROUBLESHOOTING</caption>
+            <tr><td>Interface not visible (no buttons etc)</td><td>The interface is probably not activated for this variant. Please contact an admin of this webdip-site.</td></tr>
+            <tr><td>During the loading of the page another window opens, which display some error messages.</td><td>The map of the variant can not be modified for the interface. Please report the error messages to an admin.</td></tr>
+            <tr><td>After activation of the interface, you are not able to select any territories.</td><td>Perhaps you clicked on a point on the map, which is not assigned to a territory. Try again, please!</br>
+                    If the problem still exists, please report this bug <a href='http://forum.webdiplomacy.net/viewtopic.php?f=27&t=1147'>here</a> or in the forum of this site.
+                </td></tr>
+            <tr><td>Something else</td><td>As the project is in alpha-phase, many issues could appear. Please report bugs <a href='http://forum.webdiplomacy.net/viewtopic.php?f=27&t=1147'>here</a> or in the forum of this site!</td></tr>
+        </table>
+    </body>
+</html>
