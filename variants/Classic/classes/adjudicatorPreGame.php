@@ -58,12 +58,7 @@ class ClassicVariant_adjudicatorPreGame extends adjudicatorPreGame {
 		$sum = 0.0;
 
 		foreach($chances as $countryID=>$chance)
-		{
-			if ( $chance < 0.001 )
-				$chance = ($chances[$countryID] = 0.01);
-
 			$sum += $chance;
-		}
 
 		foreach($chances as $countryID=>$chance)
 			$chances[$countryID] *= 1.0/$sum;
