@@ -44,7 +44,7 @@ print libHTML::pageTitle('webDiplomacy Aiuto e Collegamenti','Collegamenti alle 
 <li><a href="points.php">I Punti di webDiplomacy</a></li>
 <li class="formlistdesc">A cosa servono i punti, come vincerli e come scalare la classifica.</li>
 
-<li><a href="eventi.php">Eventi e tornei dal vivo</a></li>
+<li><a href="tornei.php">Eventi e tornei dal vivo</a></li>
 <li class="formlistdesc">Tutte le informazioni per giocare a Diplomacy dal vivo.</li>
 
 <li><a href="profile.php">Trova un utente</a></li>
