@@ -1133,5 +1133,4 @@ Di chi ti fiderai?"<br />\
 	'<strong>%s</strong> left the game.': '<strong>%s</strong> ha abbandonato la partita.',
 	'Pot': 'Scommessa',
 	'Sets the given user ID to be the director of the given game ID (set to 0 to remove someone as game director). This will give them mod capabilities for this game.': 'Concede all\'ID utente specificato la carica di direttore di una partita specifica (impostare a 0 per rimuovere la carica). Un direttore ha facoltà di moderazione limitatamente a quella partita.',
-	'webDiplomacy logo': 'webDiplomacy - Pagina principale',
 });

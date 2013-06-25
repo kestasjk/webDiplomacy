@@ -27,37 +27,31 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 ?>
 <div class="datc">
 <p>
-This is the output from webDiplomacy's <a href="http://web.inter.nl.net/users/L.B.Kruijswijk/">DATC</a>
-test script, which loads certain tricky scenarios and runs the adjudicator on them, checking to see that
-the end result is correct. It checks the adjudicator and the client-side order generation code, as all
-orders have to also be correctly generated in the client-side Javascript.<br />
-At the moment only Diplomacy-phase tests are run, and the Retreats and Unit-placement
-phase tests have not been attempted. (Though these are also expected to pass on the current
-adjudicator)
+Questi sono i risultati del test <a href="http://web.inter.nl.net/users/L.B.Kruijswijk/">DATC</a> di webDiplomacy, che ipotizza un certo numero di scenari più o meno complicati
+e li fa eseguire dal motore del sito, per verificarne il corretto funzionamento in fase di aggiornamento delle mappe.
+<br />
+Al momento sono stati eseguiti test solo sugli ordini di movimento (Primavera-Autunno). Le fasi delle ritirate e delle costruzioni, anche se pienamente funzionanti, non sono state sottoposte a nessun test. 
 </p>
 <p>
-'Passed' means that the test passed, matching the DATC rules, 'NotPassed' means the test hasn't been attempted
-or doesn't pass when attempted (which you shouldn't see on a live server) and 'Invalid' means that the test does not
-apply to webDiplomacy.<br />
-'Invalid' may seem like a cop-out, but many of the DATC tests are designed to test the software's handling of
-text-based rules. Asking what webDiplomacy does when the user enters a textual order in an odd way makes no sense
-since webDiplomacy shows the valid orders to the user to be selected from.
+'Corretto' significa che il test svolto ha avuto successo. 'Non Corretto' significa che il test non è stato eseguito o che ha generato un risultao inaspettato 
+(non ci dovrebbe essere nessun risultato del genere sui siti funzionanti) e 'Invalido', che significa che il test non è applicabile a webdiplomacy.<br />
+La presenza di test 'Invalidi' influenza il buon funzionamento del sito, perchè certi test si riferiscono alla possibilità di inserire volontariamente ordini errati: opzione totalmente assente su webDiplomacy.
 </p>
 
-<a name="sections"></a><h4>Sections</h4>
+<a name="sections"></a><h4>Sezioni</h4>
 <p>
-The tests are split into the following sections:
+I test sono suddivisi nelle seguenti sezioni:
 <?php
 $sections=array(
-	1=>array('6.A.','TEST CASES, BASIC CHECKS'),
-	2=>array('6.B.','TEST CASES, COASTAL ISSUES'),
-	3=>array('6.C.','TEST CASES, CIRCULAR MOVEMENT'),
-	4=>array('6.D.','TEST CASES, SUPPORTS AND DISLODGES'),
-	5=>array('6.E.','TEST CASES, HEAD TO HEAD BATTLES AND BELEAGUERED GARRISON'),
-	6=>array('6.F.','TEST CASES, CONVOYS'),
-	7=>array('6.G.','TEST CASES, CONVOYING TO ADJACENT PLACES'),
-	8=>array('webDip intro',l_t('webDiplomacy introduction image generating tests')),
-	9=>array('webDip tests',l_t('webDiplomacy specific test cases'))
+	1=>array('6.A.','TEST, CONTROLLI BASE'),
+	2=>array('6.B.','TEST, CONTROLLI SULLE COSTE'),
+	3=>array('6.C.','TEST, MOVIMENTI CIRCOLARI'),
+	4=>array('6.D.','TEST, SUPPORTI E RITIRATE'),
+	5=>array('6.E.','TEST, BATTAGLIE TESTA A TESTA E GUARNIGIONE ASSEDIATA'),
+	6=>array('6.F.','TEST, TRASPORTO'),
+	7=>array('6.G.','TEST, TRASPORTO NEI TERRITORI ADIACENTI'),
+	8=>array('webDip intro',l_t('webDiplomacy: immagini introduzione al gioco')),
+	9=>array('webDip tests',l_t('webDiplomacy: casi di test specifici'))
 );
 print '<ul>';
 foreach( $sections as $sectionID=>$section )
@@ -66,40 +60,38 @@ print '</ul>';
 ?>
 </p>
 
-<a name="choices"></a><h4>Choices</h4>
+<a name="choices"></a><h4>Opzioni</h4>
 <div id="showchoices">
-<p>Some DATC tests may have multiple correct outcomes depending on certain choices made. <a class="light" href="#" onclick="$('choices').show(); $('showchoices').hide(); return false;">Show DATC choice details</a></p>
+<p>Alcuni test DATC possono avere più di un risultato corretto in base alle scelte effettuate. <a class="light" href="#" onclick="$('choices').show(); $('showchoices').hide(); return false;">Mostra i dettagli delle opzioni DATC</a></p>
 </div>
 <div id="choices" style="<?php print libHTML::$hideStyle; ?>">
 <p>
-Wherever there was an option the recommended one was taken, giving these results:<br />
+Ciascun test è stato effettuato scegliendo l'opzione raccomandata. Risultati:<br />
 <ul>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.1">4.A.1</a> - B - A convoy is disrupted when all routes are disrupted</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.2">4.A.2</a> - D - Szykman convoy paradox rule</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.3">4.A.3</a> - D - Via convoy can be specified (and is always explicit)</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.4">4.A.4</a> - A - Attacking a unit supporting a move against you will not cut the support, even when you are attacking the support via convoy</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.5">4.A.5</a> - B - If dislodged by an adjacent unit which attacked via convoy the dislodged unit can retreat to the territory which the attacking convoyed move came from</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.6">4.A.6</a> - A - Convoy path specifications cannot be made</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.7">4.A.7</a> - B - A dislodged unit can affect the territory which dislodged it, if it was dislodged by a unit moving via convoy</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.B">4.B</a> - Invalid</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.C">4.C</a> - Invalid</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.1">4.D.1</a> - Invalid</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.2">4.D.2</a> - Invalid</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.3">4.D.3</a> - Invalid</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.4">4.D.4</a> - Invalid</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.5">4.D.5</a> - B - If many build orders are specified for the same place the first order will be used, and the rest discarded.</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.6">4.D.6</a> - B - If many destroy orders are specified for the same place the first order will be used, and the rest discarded.</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.7">4.D.7</a> - A - You can wait and build units at a later turn</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.8">4.D.8</a> - D - In civil disorder units will be removed by distance from the nearest supply center, allowing armies to move
-	over any territory, and fleets to only move over places where fleets may move. If two units are at equal distance alphabetical order of the territories is used.</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.9">4.D.9</a> - B - Players can support hold civil disorder players</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.E.1">4.E.1</a> - D - Only orders which are valid in the current situation are legal.</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.E.2">4.E.2</a> - Invalid</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.E.3">4.E.3</a> - B - Implicit orders are not allowed. Making certain orders does imply and set other orders, but
-	those orders are not implicit, because they are displayed as normal, and are not fixed. This gives the convenience of implicit orders without the ambiguity and other issues.</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.E.4">4.E.4</a> - B - Perpetual orders are not allowed</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.E.5">4.E.5</a> - C - Proxy orders are not allowed</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.E.6">4.E.6</a> - Invalid</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.1">4.A.1</a> - B - Il trasporto fallisce quando tutte le rotte sono interrotte</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.2">4.A.2</a> - D - Il paradosso di Szykman della regola dei trasporti</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.3">4.A.3</a> - D - "Via mare" può essere specificato (ed è sempre esplicito)</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.4">4.A.4</a> - A - Attaccare l'unità che supporta un movimento contro di te non taglia il supporto, anche se attacchi il supporto tramite un trasporto</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.5">4.A.5</a> - B - Se un'unità attacca con successo il territorio adiacente mediante trasporto, l'unità sloggiata può ritirarsi nel territorio dal quale proviene l'attacco</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.6">4.A.6</a> - A - La rotta del trasporto non può essere esplicita</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.7">4.A.7</a> - B - L'unità sloggiata può influenzare il territorio dal quale è partito l'attacco se detto attacco è effettuato mediante trasporto.</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.B">4.B</a> - Non valido</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.C">4.C</a> - Non valido</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.1">4.D.1</a> - Non valido</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.2">4.D.2</a> - Non valido</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.3">4.D.3</a> - Non valido</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.4">4.D.4</a> - Non valido</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.5">4.D.5</a> - B - Se sono presenti più ordini di costruzione per una sola provincia, il primo ordine verrà usato, mentre i seguenti saranno ignorati.</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.6">4.D.6</a> - B - Se sono presenti più ordini di distruzione per un solo territorio, il primo ordine è quello valido, mentre gli altri saranno scartati.</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.7">4.D.7</a> - A - Si può rimandare la costruzione ad un altro anno</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.8">4.D.8</a> - D - Durante la sommossa, le unità sono rimosse calcolando la loro distanza dai centri di produzione patri. Per le armate i territori terrestri o marini hanno la stessa valenza, mentre per le flotte si consideranno solo i territori di mare e quelli costieri. In caso di uguale distanza, verrà preso in considerazione l'ordine alfabetico del nome della provincia.</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.9">4.D.9</a> - B - I giocatori possono appoggiare in difesa le unità di nazioni in sommossa</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.E.1">4.E.1</a> - D - Solo gli ordini validi nella situazione attuale sono validi</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.E.2">4.E.2</a> - Non valido</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.E.3">4.E.3</a> - B - Ordini impliciti non permessi</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.E.4">4.E.4</a> - B - Ordini perpetui non permessi</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.E.5">4.E.5</a> - C - Ordini proxy non permessi</li>
+<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.E.6">4.E.6</a> - Non valido</li>
 </ul>
 </p>
 </div>

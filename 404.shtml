@@ -1,0 +1,38 @@
+<html>
+<head>
+<title>Webdiplomacy.it - Errore 404 - Documento non trovato</title>
+</head>
+
+<body>
+
+<h1>WebDdiplomacy - Documento non trovato</h1>
+
+
+<img src="mod/img/diplomacy-tradimento.jpg" alt=".."><img src="mod/img/diplomacy-tradimento-pugnalata.jpg" alt=".">
+
+<p> Uh, pare che uno di questi simpatici personaggi (oppure qualcun altro) ti abbia appena tradito!</p>
+
+<br />
+<br />
+
+
+
+<blockquote>
+
+<h3> --- www.webdiplomacy.it ---  <h3>
+
+Il seguente oggetto o indirizzo, &nbsp; <b><!--#echo var="REDIRECT_URL"--></b>   non è stato trovato sul server.
+
+<P>Il link non è più attuale, inesatto oppure non possiedi i privilegi per accedervi.</P>
+
+
+
+Per favore ritorna al <a href="http://www.webdiplomacy.it">sito</a> o al <a href="http://forum.webdiplomacy.it">forum</a> ed informa gli amministratori dell'errore. 
+
+
+Grazie.
+</blockquote>
+
+                                                                 
+</body>
+</html>                     

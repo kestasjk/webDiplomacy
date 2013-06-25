@@ -68,7 +68,7 @@ Locale.textLookup = $H({
 	'A variant with a map which has territories over the whole globe.': 'Una variante con una mappa dei territori di tutto il globo',
 	'A webDiplomacy map': 'Una mappa di WebDiplomacy',
 	'Abandoned.': 'Abbandonato.',
-	'Access the <a href="gamelistings.php?tab=">Games</a> link above to find games you can join, or start a <a href="gamecreate.php">New game</a> yourself.</a>': '<br /><a href="gamelistings.php?tab=">Iscriviti</a> ad una partita in attesa di giocatori. <br /> <a href="gamelistings.php?gamelistType=Joinable">Controlla</a> se c\'è una potenza in sommossa. <br /><a href="gamecreate.php">Crea</a> una partita tutta tua.',
+	'Access the <a href="gamelistings.php?tab=">Games</a> link above to find games you can join, or start a <a href="gamecreate.php">New game</a> yourself.</a>': 'Iscriviti a qualche <a href="gamelistings.php?tab=">Partita</a> in attesa di giocatori, oppure <a href="gamecreate.php">Crea</a> una partita tutta tua.',
 	'Access to this page denied for your account type.': 'Non possiedi le autorizzazioni sufficienti per accedere a questa pagina',
 	'Access type': 'Tipo di accesso',
 	'Active': 'Attive',
@@ -1045,7 +1045,7 @@ Locale.textLookup = $H({
 	'You took over %s! Good luck': 'Hai preso la guida di %s! Buona fortuna!',
 	'You were defeated, and lost your bet%s; better luck next time!': 'Sei stato sconfitto, ed hai perso la tua scommessa%s; la prossima volta andrà  meglio!',
 	'You\'re attempting to create a new user account when you already have one. Please use your existing user account.': 'Stai cercando di creare un nuovo account utente quando ne hai già  uno. Utilizza quello già  esistente, grazie.',
-	'You\'re not joined to any games!': '<br />Nessuna partita in corso!<br />',
+	'You\'re not joined to any games!': 'Non stai partecipando ad alcuna partita!',
 	'You\'ve left <strong>%s</strong> before it started, and have been returned your bet of <strong>%s</strong>.': 'Hai lasciato la partita <strong>%s</strong> prima che iniziasse: ti sono stati restituiti <strong>%s</strong>.',
 	'Your empire has gone inactive, and fallen into civil disorder. It can now be taken over by anyone, unless you take it back!': 'Il tuo impero è stato inattivo troppo a lungo, ed è caduto in dsommossa. Adesso chiunque può assumerne la guida, a meno che non lo faccia prima tu!',
 	'Your empire in civil disorder was taken over, so you have lost your bet in this game%s. Better luck next time!': 'Il tuo impero, lasciato in dsommossa, è adesso sotto la guida di un altro giocatore; hai perso la tua scommessa%s. La prossima volta andrà  meglio!',
@@ -1133,5 +1133,4 @@ Di chi ti fiderai?"<br />\
 	'<strong>%s</strong> left the game.': '<strong>%s</strong> ha abbandonato la partita.',
 	'Pot': 'Scommessa',
 	'Sets the given user ID to be the director of the given game ID (set to 0 to remove someone as game director). This will give them mod capabilities for this game.': 'Concede all\'ID utente specificato la carica di direttore di una partita specifica (impostare a 0 per rimuovere la carica). Un direttore ha facoltà di moderazione limitatamente a quella partita.',
-	'webDiplomacy logo': 'webDiplomacy - Pagina principale',
 });

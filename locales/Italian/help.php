@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2004-2009 Kestas J. Kuliukas
+    Copyright (C) 2004-2010 Kestas J. Kuliukas
 
 	This file is part of webDiplomacy.
 
@@ -25,49 +25,49 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @subpackage Static
  */
 
-print libHTML::pageTitle('webDiplomacy Aiuto e Collegamenti','Collegamenti alle informazioni, regole, classifica e altro su webDiplomacy.');
+print libHTML::pageTitle('webDiplomacy Informazioni aiuto e collegamenti','Classifica, informazioni regole, collegamenti e tutto quello che c\'è da sapere su webDiplomacy.');
 ?>
 <ul class="formlist">
 
-<li><a href="intro.php">Impara a giocare a Diplomacy</a></li>
-<li class="formlistdesc">Introduzione per cominciare a giocare su webDiplomacy; dettagli sui tipi di Unità, movimenti e regole.<br /> Le regole usate per giocare online, sono uguali al regolamento del gioco in scatola.</li>
+<li><a href="intro.php">Regole del gioco Diplomacy - introduzione grafica</a></li>
+<li class="formlistdesc">Introduzione grafica alle regole del gioco per giocare su webDiplomacy; dettagli sui tipi di Unità e movimenti.<br /> Le regole usate per giocare online, sono al 99% uguali al regolamento del gioco in scatola.</li>
+
 
 <li><a href="faq.php">Domande frequenti</a></li>
-<li class="formlistdesc">Domande degli utenti su webDiplomacy e su come usarlo.</li>
+<li class="formlistdesc">Domande frequenti che ci vengono poste sul sito webDiplomacy e su come usarlo.</li>
 
 <li><a href="rules.php">Regole del sito</a></li>
-<li class="formlistdesc">Regole di comportamento da osservare per giocare su webDiplomacy .</li>
+<li class="formlistdesc">Regole di comportamento da osservare per giocare su webDiplomacy.it </li>
 
 <li><a href="halloffame.php">Classifica</a></li>
-<li class="formlistdesc">I migliori 100 del sito.</li>
+<li class="formlistdesc">La lista dei 100 migliori giocatori del sito!</li>
 
-<li><a href="points.php">I Punti di webDiplomacy</a></li>
+<li><a href="points.php">I punti di webDiplomacy</a></li>
 <li class="formlistdesc">A cosa servono i punti, come vincerli e come scalare la classifica.</li>
 
-<li><a href="eventi.php">Eventi e tornei dal vivo</a></li>
-<li class="formlistdesc">Tutte le informazioni per giocare a Diplomacy dal vivo.</li>
+<li><a href="tornei.php">Eventi e tornei dal vivo</a></li>
+<li class="formlistdesc">Tutte le informazioni per giocare a Diplomacy dal vivo.</li
 
 <li><a href="profile.php">Trova un utente</a></li>
-<li class="formlistdesc">Cerca tra tutti gli utenti registrati, se conosci il nome o l'indirizzo di posta elettronica.</li>
+<li class="formlistdesc">Scopri se i tuoi amici sono già registrati su webDiplomacy.it e sfidali!</li>
 
-<li><a href="variants.php">Varianti di gioco</a></li>
-<li class="formlistdesc">Una lista di varianti disponibili su questo server con le informazioni e le regole, se diverse dalle regole classiche.</li>
+<li><a href="variants.php">Diplomacy - Varianti </a></li>
+<li class="formlistdesc">Tutte le varianti che puoi provare su questo server con informazioni, mappe e regole.</li>
 
-<li><a href="credits.php">Credits</a></li>
-<li class="formlistdesc">The credits.</li>
+<li><a href="credits.php">Riconoscimenti</a></li>
+<li class="formlistdesc">Riconoscimenti e ringraziamenti</li>
 
-<li><a href="datc.php">DATC Adjudicator Tests</a></li>
-<li class="formlistdesc">For experts; the adjudicator tests which show that webDiplomacy is true to the proper rules</li>
+<li><a href="datc.php">Test DATC</a></li>
+<li class="formlistdesc">Per esperti; i test per controllare se webDiplomacy rispetta tutte le regole del gioco in scatola</li>
 
-<li><a href="http://sourceforge.net/projects/phpdiplomacy">Sourceforge.net project page</a></li>
-<li class="formlistdesc">Our sourceforge.net project page. From here you can make feature requests, ask for support,
-	inform us about bugs, or help out.</li>
+<li><a href="https://github.com/kestasjk/webDiplomacy">Progetto GitHub</a></li>
+<li class="formlistdesc">Il progetto webDiplomacy sul sito github.com Qui è possibile trovare l'ultima release del programma e contribuire al suo miglioramento.</li>
 
-<li><a href="http://webdiplomacy.net/developers.php">Developer info</a></li>
-<li class="formlistdesc">If you want to fix/improve/install webDiplomacy all the info you need to make it happen is here.</li>
+<li><a href="http://webdiplomacy.it/developers.php">Informazioni per sviluppatori</a></li>
+<li class="formlistdesc">Se vuoi migliorare/sistemare/installare webDiplomacy, qui troverai tutte le informazioni necessarie.</li>
 
 <li><a href="AGPL.txt">GNU Affero General License</a></li>
-<li class="formlistdesc">The OSI approved license which applies to the vast majority of webDiplomacy.</li>
+<li class="formlistdesc">La licenza applicabile alla maggior parte del codice di webDiplomacy.</li>
 </ul>
 
-<p>non hai trovato l'aiuto/informazioni che cercavi? Scrivici sul <a href="http://forum.webdiplomacy.it/index.php" class="light"> forum </a>.</p>
+<p>Non hai trovato quello che cercavi? Scrivici sul nostro <a href="http://forum.webdiplomacy.it" class="light">forum</a>.</p>
