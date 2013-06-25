@@ -39,7 +39,7 @@
 	         </div>
 	      </div>
 	       <div class="hr"></div><?php include_once('mod/social.php');?>
-	    <p> <img src="mod/img/w3c.png" width="91" height="36" title="questa pagina di web-diplomacy ha passato la validazione w3c" alt="Valid XHTML 1.0 Strict" height="31" width="88" /></p>
+	    <p> <img src="mod/img/w3c.png" width="91" height="36" title="questa pagina di web-diplomacy ha passato la validazione w3c" alt="Valid XHTML 1.0 Strict" /></p>
                      
 	    <div style="clear:both"></div>		      
 	   </div>
@@ -108,4 +108,4 @@ printImage();
   </div>
 	
 	<div class="hr"></div>
-	<div>Per informazioni, domande o per giocare online, scriveteci:  <img src="mod/img/mail.png" width="157" height="20" title="indirizzo posta elettronica diplomacy" alt="posta elettronica per informazioni sul diplomacy" /></div>
+	<div>Per informazioni, domande o per giocare online, scriveteci:  <img src="mod/img/mail.png" width="157" height="20" title="indirizzo posta elettronica diplomacy" alt="posta elettronica per informazioni sul diplomacy" />  //il div non è chiuso perchè viene chiuso più avanti
