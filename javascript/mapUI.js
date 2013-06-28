@@ -96,4 +96,6 @@ function loadMap(gameID, currentTurn, newTurn)
 	
 	// Update the source for the map image
 	$('mapImage').src = 'map.php?gameID='+gameID+'&turn='+newTurn;
+	    jQuery(document) .ready(function($) {$("#ex1").zoom({ url:'map.php?gameID='+gameID+'&turn='+newTurn+'&mapType=large'});
+        }) ;
 }

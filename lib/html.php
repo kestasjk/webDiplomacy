@@ -391,6 +391,7 @@ class libHTML
         <link rel="icon" href="'.STATICSRV.l_s('mod/img/favicon.ico').'" />
         <link rel="stylesheet" href="mod/webdiploit.css" type="text/css" />
         <script type="text/javascript" src="'.STATICSRV.l_j('mod/jquery-1.8.3.min.js').'"></script>
+        <script type="text/javascript" src="'.STATICSRV.'mod/jquery.zoom.js"></script>
         <script type="text/javascript">var jq = jQuery.noConflict();</script>
         <script type="text/javascript" src="mod/webdiploit.js"></script>
 		<link rel="stylesheet" href="'.CSSDIR.l_s('/global.css').'" type="text/css" />
