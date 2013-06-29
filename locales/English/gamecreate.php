@@ -475,6 +475,28 @@ else
 
 		<strong>Default:</strong> No password set
 	</li>
+<!-- 
+	<li class="formlisttitle">
+		No moves received options:
+	</li>
+	<li class="formlistfield">
+		<input type="radio" name="newGame[missingPlayerPolicy]" value="Normal" checked > Normal<br />
+		<input type="radio" name="newGame[missingPlayerPolicy]" value="Wait"> Wait for all players
+	</li>
+	<li class="formlistdesc">
+		What should happen if the end of the turn comes and a player has not submitted any orders?<br /><br />
+		
+		If set to <strong>Normal</strong> the game will proceed, and after 
+		a couple of turns they will go into civil disorder and their country can be taken over by another player.<br /><br />
+		
+		If set to <strong>Wait for all players</strong> the game will not continue until all players have submitted their orders.<br />
+		This avoids any issues caused by 
+		someone not submitting their orders on time, but it means that if someone becomes unavailable the game will not continue until they either
+		return, or a moderator manually sets them to civil disorder.<br /><br />
+
+		<strong>Default:</strong> Normal
+	</li>
+	 -->
 </ul>
 
 </div>

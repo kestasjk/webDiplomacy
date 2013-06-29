@@ -294,7 +294,8 @@ class processGame extends Game
 	 *
 	 * @return Game The object corresponding to the new game
 	 */
-	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $joinPeriod, $anon, $press
+	 
+	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $joinPeriod, $anon, $press, $missingPlayerPolicy='Normal'
 		,$maxTurns 
 		,$targetSCs 
 		,$minRating 
@@ -356,6 +357,8 @@ class processGame extends Game
 						pressType = '".$press."',
 						".( $password ? "password = UNHEX('".md5($password)."')," : "").
 						"processTime = ".$pTime.",
+						phaseMinutes = ".$phaseMinutes.",
+						missingPlayerPolicy = '".$missingPlayerPolicy."',
 						maxTurns = ".$maxTurns.", 
 						targetSCs = ".$targetSCs.", 
 						minRating = ".$minRating.", 
@@ -363,8 +366,7 @@ class processGame extends Game
 						specialCDturn = ".$specialCDturn.", 
 						specialCDcount = ".$specialCDcount.", 
 						chessTime = ".$chessTime.", 
-						rlPolicy = '".($anon == 'Yes' ? 'Strict' : 'None' )."', 
-						phaseMinutes = ".$phaseMinutes);
+						rlPolicy = '".($anon == 'Yes' ? 'Strict' : 'None' )."'");
 
 		$gameID = $DB->last_inserted();
 		

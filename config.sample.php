@@ -412,7 +412,7 @@ class Config
 	 * The number of minutes that gamemaster.php will detect that it hasn't been run for before it will
 	 * mark itself in downtime mode.
 	 */
-	public static $downtimeTriggerMinutes=30;
+	public static $downtimeTriggerMinutes=12;
 
 
 	// ---

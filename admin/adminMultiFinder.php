@@ -654,15 +654,24 @@ class adminMultiCheck
 
 	private function compareGames($name, $bUserID, $gameIDs)
 	{
+		global $DB;
+		
 		$matches = self::sql_list(
 			"SELECT DISTINCT gameID
 			FROM wD_Members
 			WHERE userID = ".$bUserID." AND gameID IN ( ".implode(',',$gameIDs)." )"
 		);
-
+		
+		$privateMatches = array();
+		if(count($matches) > 0)
+		{
+			$tabl = $DB->sql_tabl("SELECT id FROM wD_Games WHERE NOT password IS NULL AND id IN (".implode(',',$matches).")");
+			while(list($id)=$DB->tabl_row($tabl)) $privateMatches[] = $id;
+		}
+		
 		$linkMatches = array();
 		foreach($matches as $match)
-			$linkMatches[] = '<a href="board.php?gameID='.$match.'" class="light">'.$match.'</a>';
+			$linkMatches[] = '<a href="board.php?gameID='.$match.'" class="light">'.$match.(in_array($match,$privateMatches)?' (Private)':'').'</a>';
 		$matches = $linkMatches;
 		unset($linkMatches);
 

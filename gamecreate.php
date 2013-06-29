@@ -50,7 +50,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$form = $_REQUEST['newGame']; // This makes $form look harmless when it is unsanitized; the parameters must all be sanitized
 
 		$input = array();
-		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType'
+		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy'
 						,'countryID'
 						,'minRating' 
 						,'minPhases'
@@ -61,6 +61,9 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 						,'targetSCs'
 					);
 
+		if ( !isset($form['missingPlayerPolicy']) )
+			$form['missingPlayerPolicy'] = 'Normal';
+		
 		foreach($required as $requiredName)
 		{
 			if ( isset($form[$requiredName]) )
@@ -125,6 +128,14 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			default:
 				$input['pressType'] = 'Regular';
 		}
+		
+		switch($input['missingPlayerPolicy']) {
+			case 'Wait':
+				$input['missingPlayerPolicy'] = 'Wait';
+				break;
+			default:
+				$input['missingPlayerPolicy'] = 'Normal';
+		}
 	
 		$input['minPhases'] = (int)$input['minPhases'];
 		if ( $input['minPhases'] > $User->phasesPlayed )
@@ -164,16 +175,25 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		
 		// Create Game record & object
 		require_once(l_r('gamemaster/game.php'));
-		$Game = processGame::create($input['variantID'], $input['name'], $input['password'], $input['bet'], $input['potType'], $input['phaseMinutes'], 
-										$input['joinPeriod'], $input['anon'], $input['pressType']
-										,$input['maxTurns']
-										,$input['targetSCs']
-										,$input['minRating']
-										,$input['minPhases']
-										,$input['specialCDturn']
-										,$input['specialCDcount']
-										,$input['chessTime']
-									);
+		$Game = processGame::create(
+			$input['variantID'], 
+			$input['name'], 
+			$input['password'], 
+			$input['bet'], 
+			$input['potType'], 
+			$input['phaseMinutes'], 
+			$input['joinPeriod'], 
+			$input['anon'], 
+			$input['pressType'], 
+			$input['missingPlayerPolicy'],
+			$input['maxTurns'],
+			$input['targetSCs'],
+			$input['minRating'],
+			$input['minPhases'],
+			$input['specialCDturn'],
+			$input['specialCDcount'],
+			$input['chessTime']
+		);
 
 		/**
 		 * Check for reliability, bevore a user can create a new game...

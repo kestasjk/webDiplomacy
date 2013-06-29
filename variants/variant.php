@@ -20,6 +20,8 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
+require_once('variants/variantData.php');
+
 /**
  * The class which all variants inherit. It represents the layer between requests for game-related
  * objects in the main code and responses which may come from the main code or may come from a

@@ -91,8 +91,8 @@ class panelGame extends Game
 			else
 				return l_t('%s players joined; game will start on next process cycle', count($this->Variant->countries));
 		}
-		elseif( $this->missingPlayerPolicy=='Strict'&&!$this->Members->isComplete() && time()>=$this->processTime )
-			return l_t("One or more players need to complete their orders before this strict/tournament game can go on");
+		elseif( $this->missingPlayerPolicy=='Wait'&&!$this->Members->isCompleted() && time()>=$this->processTime )
+			return l_t("One or more players need to complete their orders before this wait-mode game can go on");
 	}
 
 	/*
@@ -306,6 +306,8 @@ class panelGame extends Game
 			
 		if( $this->rlPolicy=='Friends')
 			$alternatives[]=l_t('OnlyFriends');
+		if( $this->missingPlayerPolicy=='Wait' )
+			$alternatives[]=l_t('Wait for orders');
 
 		if ( $alternatives )
 			return '<div class="titleBarLeftSide" style="float:left">

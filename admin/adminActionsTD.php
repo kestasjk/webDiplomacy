@@ -575,6 +575,8 @@ class adminActionsTD extends adminActionsForms
 				throw new Exception(l_t("Invalid phase to set CD"));
 
 			$Game->Members->ByUserID[$User->id]->setLeft();
+			
+			$Game->resetMinimumBet();
 
 		return l_t('This user put into civil-disorder in this game');
 	}
@@ -610,6 +612,8 @@ class adminActionsTD extends adminActionsForms
 				$DB->sql_put("INSERT INTO wD_CivilDisorders ( gameID, userID, countryID, turn, bet, SCCount )
 					VALUES ( ".$Game->id.", ".$User->id.", ".$Member->countryID.", ".$Game->turn.", ".$Member->bet.", ".$Member->SCCount.")");
 
+				$Game->resetMinimumBet();
+				
 				return l_t('User set to civil disorder in game');
 			}
 		}

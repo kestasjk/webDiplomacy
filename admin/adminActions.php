@@ -121,6 +121,16 @@ class adminActions extends adminActionsForms
 				'description' => 'Set a game process time to now, resulting in it being processed now',
 				'params' => array('gameID'=>'Game ID'),
 			),
+			'toggleWaitForOrders' => array(
+				'name' => 'Toggle Wait for orders mode',
+				'description' => 'Will toggle this game between normal NMR rules and wait-for-orders mode',
+				'params' => array('gameID'=>'Game ID'),
+			),
+			'resetMinimumBet' => array(
+				'name' => 'Reset the minimum bet',
+				'description' => 'If there is no join button on a game and the minimum bet hasn\'t been set correctly you can use this to reset it.',
+				'params' => array('gameID'=>'Game ID'),
+			),
 			'panic' => array(
 				'name' => 'Toggle panic button',
 				'description' => 'Toggle the panic button; turning it on prevents games from being processed, users joining games,
@@ -190,6 +200,15 @@ class adminActions extends adminActionsForms
 	public function __construct()
 	{
 		global $Misc;
+	}
+	public function resetMinimumBet(array $params)
+	{
+		require_once(l_r('gamemaster/game.php'));
+		$Variant=libVariant::loadFromGameID($params['gameID']);
+		$Game = $Variant->processGame($params['gameID']);
+		$Game->resetMinimumBet();
+		return l_t("The minimum bet has been reset.");
+		
 	}
 	public function syncForumLikes(array $params)
 	{
@@ -452,6 +471,28 @@ class adminActions extends adminActionsForms
 
 		return l_t('Process time changed from %s to %s. Next process time is %s.',
 			libTime::timeLengthText($oldPhaseMinutes*60),libTime::timeLengthText($Game->phaseMinutes*60),libTime::text($Game->processTime));
+	}
+	public function toggleWaitForOrders(array $params)
+	{
+		global $DB;
+
+		require_once(l_r('objects/game.php'));
+
+		$Variant=libVariant::loadFromGameID($params['gameID']);
+		$Game = $Variant->Game($params['gameID']);
+
+		if( $Game->missingPlayerPolicy == 'Wait' )
+		{
+			$msg = "Set game to normal mode.";
+			$setting = 'Normal';
+		}
+		else
+		{
+			$msg = "Set game to wait-for-orders mode.";
+			$setting = 'Wait';
+		}
+		$DB->sql_put("UPDATE wD_Games SET missingPlayerPolicy = '".$setting."' WHERE id = ".$Game->id);
+		return l_t($msg);
 	}
 
 	public function resetLastProcessTime(array $params)
@@ -913,7 +954,7 @@ class adminActions extends adminActionsForms
 			if ( $status != 'Playing' ) continue;
 
 			$Variant=libVariant::loadFromGameID($gameID);
-			$Game = $Variant->Game($gameID);
+			$Game = $Variant->processGame($gameID);
 
 			$banMessage = l_t('%s was banned: %s. ',$banUser->username,$banReason);
 
@@ -928,6 +969,8 @@ class adminActions extends adminActionsForms
 			{
 				// The game may need a time extension to allow for a new player to be added
 
+				$Game->resetMinimumBet();
+				
 				// Would the time extension would give a difference of more than ten minutes? If not don't bother
 				if ( (time() + $Game->phaseMinutes*60) - $Game->processTime > 10*60 ) {
 
