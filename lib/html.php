@@ -369,14 +369,25 @@ class libHTML
 	 */
 	static public function prebody ( $title )
 	{
-		/* Instead of many small files only load one big file:
+		/* Instead of many small css files only load one big file:
 		$variantCSS=array();
 		foreach(Config::$variants as $variantName)
 			$variantCSS[] = '<link rel="stylesheet" href="'.STATICSRV.l_s('variants/'.$variantName.'/resources/style.css').'" type="text/css" />';
 		$variantCSS=implode("\n",$variantCSS);
-        */
-        $variantCSS = '<link rel="stylesheet" href="'.CSSDIR.'/variants-'.md5(serialize(Config::$variants)).'.css" type="text/css" />';
+		*/
+		$CSSname = libCache::Dirname("css")."/variants-".md5(filesize('config.php')).".css";
 		
+		if (!file_exists($CSSname))
+		{
+			$variantCSS = '';
+			foreach(Config::$variants as $variantName)
+				$variantCSS .= file_get_contents('variants/'.$variantName.'/resources/style.css')."\n";
+			$handle = fopen($CSSname, 'w');
+			fwrite($handle, $variantCSS);
+			fclose($handle);
+		}
+		$variantCSS = '<link rel="stylesheet" href="'.$CSSname.'" type="text/css" />';
+		// End alternate CSS file patch
 		/*
 		 * This line when included in the header caused certain translated hyphenated letters to come out as black diamonds with question marks.
 		 * 
