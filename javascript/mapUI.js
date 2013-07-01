@@ -21,6 +21,21 @@
 // Current turn, -2 is undefined, -1 is pre-game
 var turn=-2;
 
+var noMoves='';
+
+// Toggle the display of the Move arrows.
+function toggleMoves(gameID, currentTurn) {
+  if (noMoves == '') {
+    noMoves = '&hideMoves';
+    $('NoMoves').src = 'images/historyicons/showmoves.png';
+  } else {
+    noMoves = '';
+    $('NoMoves').src = 'images/historyicons/hidemoves.png';
+  }
+  loadMapStep(gameID, currentTurn, 0)  
+  loadMap(gameID, currentTurn, turn)
+}
+
 // Increment or decrement the turn safely, factoring in the limits, then load the new turn
 function loadMapStep(gameID, currentTurn, step)
 {
@@ -86,6 +101,9 @@ function loadMap(gameID, currentTurn, newTurn)
 		
 		$('History').show();
 	}
+	
+	// Add the Hide parameter if we have HideMoves activated
+        newTurn = newTurn + noMoves
 	
 	// Update the link to the large map
 	$('LargeMapLink').innerHTML = 
