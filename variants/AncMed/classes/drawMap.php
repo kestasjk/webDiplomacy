@@ -1,6 +1,6 @@
 <?php
 /*
-	Copyright (C) 2010 Oliver Auth
+	Copyright (C) 2011 Oliver Auth
 
 	This file is part of the the Ancient Mediterranean variant for webDiplomacy
 
@@ -21,8 +21,8 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-class AncMedVariant_drawMap extends drawMap {
-
+class AncMedVariant_drawMap extends drawMap
+{
 	protected $countryColors = array(
 		0 =>  array(226, 198, 158), // Neutral
 		1 =>  array(121, 175, 198), // Carthage
@@ -32,44 +32,30 @@ class AncMedVariant_drawMap extends drawMap {
 		5 =>  array(196, 143, 133)  // Rome
 	);
 
-	protected function resources() {
-		if( $this->smallmap )
-		{
+	// No need to set the transparency for our custom icons and mapnames.
+	protected function setTransparancy(array $image, array $color=array(255,255,255)) {}
+	
+	protected function resources()
+	{
+		global $Variant;
+		
+		if( $this->smallmap ) {
 			return array(
-				'map'     =>l_s('variants/AncMed/resources/smallmap.png'),
-				'army'    =>l_s('contrib/smallarmy.png'),
-				'fleet'   =>l_s('contrib/smallfleet.png'),
-				'names'   =>l_s('variants/AncMed/resources/smallmapNames.png'),
+				'map'     =>l_s('variants/'.$Variant->name.'/resources/smallmap.png'),
+				'army'    =>l_s('variants/'.$Variant->name.'/resources/smallarmy.png'),
+				'fleet'   =>l_s('variants/'.$Variant->name.'/resources/smallfleet.png'),
+				'names'   =>l_s('variants/'.$Variant->name.'/resources/smallmapNames.png'),
 				'standoff'=>l_s('images/icons/cross.png')
 			);
-		}
-		else
-		{
+		} else {
 			return array(
-				'map'     =>l_s('variants/AncMed/resources/map.png'),
-				'army'    =>l_s('contrib/army.png'),
-				'fleet'   =>l_s('contrib/fleet.png'),
-				'names'   =>l_s('variants/AncMed/resources/mapNames.png'),
+				'map'     =>l_s('variants/'.$Variant->name.'/resources/map.png'),
+				'army'    =>l_s('variants/'.$Variant->name.'/resources/army.png'),
+				'fleet'   =>l_s('variants/'.$Variant->name.'/resources/fleet.png'),
+				'names'   =>l_s('variants/'.$Variant->name.'/resources/mapNames.png'),
 				'standoff'=>l_s('images/icons/cross.png')
 			);
 		}
 	}
-	
-	protected function color(array $color, $image=false)
-	{
-
-		if ( ! is_array($image) )
-			$image = $this->map;
-
-		list($r, $g, $b) = $color;
-
-		$colorRes = imagecolorexact($image['image'], $r, $g, $b);
-		if ($colorRes == -1)
-			$colorRes = imageColorAllocate($image['image'], $r, $g, $b);
-
- 		return $colorRes;
- 	}
-	
 }
 
-?>

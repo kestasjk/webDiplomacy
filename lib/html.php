@@ -31,10 +31,10 @@ class libHTML
 	public static function pageTitle($title, $description=false) {
 		return '<div class="content-bare content-board-header content-title-header">
 <div class="pageTitle barAlt1">
-	'.$title.'
+	<h1 class="titolo">'.$title.'</h1>
 </div>
 <div class="pageDescription barAlt2">
-	'.$description.'
+	<h2 class="titolo">'.$description.'</h2>
 </div>
 </div>
 <div class="content content-follow-on">';
@@ -369,11 +369,25 @@ class libHTML
 	 */
 	static public function prebody ( $title )
 	{
+		/* Instead of many small css files only load one big file:
 		$variantCSS=array();
 		foreach(Config::$variants as $variantName)
 			$variantCSS[] = '<link rel="stylesheet" href="'.STATICSRV.l_s('variants/'.$variantName.'/resources/style.css').'" type="text/css" />';
 		$variantCSS=implode("\n",$variantCSS);
-
+		*/
+		$CSSname = libCache::Dirname("css")."/variants-".md5(filesize('config.php')).".css";
+		
+		if (!file_exists($CSSname))
+		{
+			$variantCSS = '';
+			foreach(Config::$variants as $variantName)
+				$variantCSS .= file_get_contents('variants/'.$variantName.'/resources/style.css')."\n";
+			$handle = fopen($CSSname, 'w');
+			fwrite($handle, $variantCSS);
+			fclose($handle);
+		}
+		$variantCSS = '<link rel="stylesheet" href="'.$CSSname.'" type="text/css" />';
+		// End alternate CSS file patch
 		/*
 		 * This line when included in the header caused certain translated hyphenated letters to come out as black diamonds with question marks.
 		 * 
@@ -387,8 +401,13 @@ class libHTML
 		<meta name="robots" content="index,follow" />
 		<meta name="description" content="'.l_t('webDiplomacy is an online, multiplayer, turn-based strategy game that lets you play Diplomacy online.').'" />
 		<meta name="keywords" content="'.l_t('diplomacy,diplomacy game,online diplomacy,classic diplomacy,web diplomacy,diplomacy board game,play diplomacy,php diplomacy').'" />
-		<link rel="shortcut icon" href="'.STATICSRV.l_s('favicon.ico').'" />
-		<link rel="icon" href="'.STATICSRV.l_s('favicon.ico').'" />
+		<link rel="shortcut icon" href="'.STATICSRV.l_s('mod/img/favicon.ico').'" />
+        <link rel="icon" href="'.STATICSRV.l_s('mod/img/favicon.ico').'" />
+        <link rel="stylesheet" href="mod/webdiploit.css" type="text/css" />
+        <script type="text/javascript" src="'.STATICSRV.l_j('mod/jquery-1.8.3.min.js').'"></script>
+        <script type="text/javascript" src="'.STATICSRV.'mod/jquery.zoom.js"></script>
+        <script type="text/javascript">var jq = jQuery.noConflict();</script>
+        <script type="text/javascript" src="mod/webdiploit.js"></script>
 		<link rel="stylesheet" href="'.CSSDIR.l_s('/global.css').'" type="text/css" />
 		<link rel="stylesheet" href="'.CSSDIR.l_s('/gamepanel.css').'" type="text/css" />
 		<link rel="stylesheet" href="'.CSSDIR.l_s('/home.css').'" type="text/css" />
@@ -605,6 +624,7 @@ class libHTML
 		$links['rules.php']=array('name'=>'Rules', 'inmenu'=>FALSE);
 		$links['intro.php']=array('name'=>'Intro', 'inmenu'=>FALSE);
 		$links['credits.php']=array('name'=>'Credits', 'inmenu'=>FALSE);
+		$links['tornei.php']=array('name'=>'Tornei', 'inmenu'=>FALSE);
 		$links['board.php']=array('name'=>'Board', 'inmenu'=>FALSE);
 		$links['profile.php']=array('name'=>'Profile', 'inmenu'=>FALSE);
 		$links['translating.php']=array('name'=>'Translating', 'inmenu'=>FALSE);
@@ -648,7 +668,7 @@ class libHTML
 				<div id="header">
 					<div id="header-container">
 						<a href="./">
-							<img id="logo" src="'.l_s('images/logo.png').'" alt="'.l_t('webDiplomacy').'" />
+							<img id="logo" src="'.l_s('images/logo.png').'" width="207" height="48" title="'.l_t('webDiplomacy logo').'" alt="'.l_t('webDiplomacy').'" />
 						</a>';
 
 		if ( is_object( $User ) )
@@ -843,10 +863,7 @@ class libHTML
 	static private function footerCopyright() {
 		// Version, sourceforge and HTML compliance logos
 		return l_t('webDiplomacy version <strong>%s</strong>',number_format(VERSION/100,2)).'<br />
-			<a href="http://sourceforge.net/projects/phpdiplomacy">
-				<img alt="webDiplomacy @ Sourceforge"
-					src="http://sourceforge.net/sflogo.php?group_id=125692" />
-			</a>';
+			';
 	}
 
 	/*

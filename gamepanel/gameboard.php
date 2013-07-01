@@ -41,7 +41,14 @@ class panelGameBoard extends panelGame
 
 		$map = '
 		<div id="mapstore">
+		  <script>   
+            jQuery(document) .ready(function($) {
+              $("#ex1").zoom({ url:" '.$largemapLink.'" });
+                                                }) ;
+          </script> 
+                    <span class = \'zoom\' id= \'ex1\'>
 			<img id="mapImage" src="'.$smallmapLink.'" alt=" " title="'.l_t('The small map for the current phase. If you are starting a new turn this will show the last turn\'s orders').'" />
+			         <p class="lens">Click</p></span>
 			<p class="lightgrey" style="text-align:center">
 				<a href="#" onClick="loadMap('.$this->id.','.$mapTurn.',-1); return false;">
 					<img id="Start" src="'.l_s('images/historyicons/Start_disabled.png').'" alt="'.l_t('Start').'" title="'.l_t('View the map from the first turn').'" />

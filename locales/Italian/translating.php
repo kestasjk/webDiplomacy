@@ -16,6 +16,8 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
+ 
+    Traduzione italiana a cura di webdiplomacy.it
  */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -29,34 +31,28 @@ print libHTML::pageTitle('Translating webDiplomacy','A guide to translating webD
 
  ?>
 
-<h4>One-language translation</h4>
+<h4>tTraduzione webDiplomacy - Giocare a diplomacy nella propria lingua</h4>
 
 <p>
-Unfortunately webDiplomacy doesn't yet have built-in translation support; so the easiest way to translate webDiplomacy is
-to download the source from <a class="light" href="http://webdiplomacy.net/developers.php">here</a>, and replace all the English
-text with translated text.
+A partire dalla verisone 1.3 è possibile interamente tradurre WebDiplomacy nella propria lingua. 
+<br /> Per iniziare è sufficiente scaricare e installare il codice di webDiplomacy 
 </p>
 
 <p>
-After doing this your new version of webDiplomacy will provide a great web-Diplomacy experience in the language you
-translated to; you can use your code to start up a new webDiplomacy site for speakers of your language, or send the code
-to me at kestas.j.k@gmail.com and I will host it for you!
+Una volta installato, nella cartella LOCALES saranno disponibili due lingue inglese e italiano. 
+Basandosi su quelle è possibile tradurre completamente il sito nella propria lingua. <br /> Nota bene: il supporto alla traduzione prevede l'utilizzo di una sola lingua per sito.
 </p>
 
-<h4>Multi-langauge translation</h4>
+<h4>Traduzione multilingua</h4>
 
 <p>
-Alternatively, if you're up for a challenge and know some PHP you can help code built-in translation support; this will
-allow English speakers to view a site in English, while at the same time allowing French speakers to view the same server
-in French. However despite there being some code in place to make built-in translations possible this would be quite a
-lot of work to do well!<br />
-But if you're not deterred by that, and want to bring your favorite webDiplomacy community to more people, you can get
-the code and the help you need <a class="light" href="http://webdiplomacy.net/developers.php">here</a>.
+In alternativa, se possiedi le conoscenze PHP necessarie e tanta buona volontà è possibile adattare il sito affinchè possa essere visualizzato 
+in lungue differenti a seconda dell'utente. Al momento non è mai stato effettuato nessun lavoro in questa direzione, ma tecnicamente è possibile.
 </p>
 
-<h4>Help, questions</h4>
+<h4>Domande, aiuto</h4>
 
 <p>
-If you have questions or need help feel free to contact other developers in <a href="http://forum.webdiplomacy.net/" class="light">
-the developer forums</a>, or contact me personally at kestas.j.k@gmail.com
+Per qualsiasi domanda o problema, è possibile visitare il <a href="http://forum.webdiplomacy.net/" class="light">
+forum degli sviluppatori</a>, oppure contattare direttamente il creatore di webDiplomacy all'indirizzo mail: kestas.j.k@gmail.com
 </p>

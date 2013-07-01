@@ -92,9 +92,13 @@ class Locale_Italian extends Locale_Abstract {
 		
 		// If loading up the classic map name overlays include instead the Italian names:
 		if( $resource == 'variants/Classic/resources/smallmapNames.png' )
-			return 'locales/Italian/SmallMapNames.png';
+			return 'locales/Italian/maps/Classic/smallmapNames.png';
 		else if ( $resource == 'variants/Classic/resources/mapNames.png')
-			return 'locales/Italian/LargeMapNames.png';
+			return 'locales/Italian/maps/Classic/mapNames.png';
+		else if( $resource == 'variants/AncMed/resources/smallmapNames.png' )
+			return 'locales/Italian/maps/AncMed/smallmapNames.png';
+		else if ( $resource == 'variants/AncMed/resources/mapNames.png')
+			return 'locales/Italian/maps/AncMed/mapNames.png';
 		else
 			return $resource;
 	}

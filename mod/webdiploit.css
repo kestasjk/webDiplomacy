@@ -1,0 +1,129 @@
+/* stili generici */
+h1.titolo {
+	font-size:16pt;
+	display: inline;
+}
+h2.titolo {
+	font-size:12pt;
+	font-style:italic;
+	color: #000;
+}
+
+/* FINE stili generici */
+
+/*  INIZIO barra social network */
+.social {
+padding-top:5px;
+margin-left:10px;
+margin-right:10px;
+width: 80px;
+float: left;
+}
+.socialcontainer {
+width: 95%;
+background-color:#f0f0f0;
+}
+
+.socialtwitter {
+width: 170px;
+float: left;
+}
+
+.socialclear {
+clear: left;
+}
+
+/*  FINE barra social network */
+
+
+
+/* INIZIO tabs index.php */
+
+#tabs {
+	/*font-size: 150%;*/
+	
+}
+#tabs ul {
+	float: left;
+	/*width: 94%;*/
+	background: #f0f0f0;
+	padding-top: 4px;  
+	margin-bottom: 0px !important;	
+	margin-top: 2px !important;
+}
+#tabs li {
+	margin-left: 8px;
+	list-style: none;
+}
+* html #tabs li {
+	display: inline;
+}
+#tabs li, #tabs li a {
+	float: left;
+}
+#tabs ul li.active {
+	border:2px #cecece solid;
+	background: #e5e5e5;
+}
+#tabs ul li.active a {
+	color: #333333;
+}
+#tabs div {
+	background: #e5e5e5;
+	clear: both;
+	padding: 15px;
+	min-height: 385px;
+}
+#tabs div h3 {
+	margin-bottom: 0px;  
+}
+#tabs div p {
+	line-height: 150%;
+	text-align: justify;
+}
+#tabs ul li a {
+	text-decoration: none;
+	padding: 8px;
+	color: #000;
+	font-weight: bold;
+}
+.thumbs {
+	float:left;
+	border:#000 solid 1px;
+	margin-bottom:20px;
+	margin-right:20px;
+}
+
+/* FINE tabs index.php */
+
+/* css for the zoom MOD */
+        p.lens { position:absolute; top:0px; right:28px; color:#555; font:bold 13px/1 sans-serif;}
+
+		.zoom {
+			display:inline-block;
+			position: relative;
+			border:3px solid #eee;
+			-moz-box-shadow:0 0 10px#555;
+            -webkit-box-shadow:0 0 10px #555;
+            box-shadow:0 0 10px #555;
+		}
+		
+		/* magnifying glass icon */
+		.zoom:after {
+			content:'';
+			display:block; 
+			width:33px; 
+			height:33px; 
+			position:absolute; 
+			top:0;
+			right:0;
+			background:url(img/zoom.png);
+		}
+
+		.zoom img {
+			display: block;
+		}
+
+		.zoom img::selection { background-color: transparent; }
+
+/* end zoom MOD css  */
