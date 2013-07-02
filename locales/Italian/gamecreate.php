@@ -87,7 +87,91 @@ Inizia una nuova partita. Sei tu a deciderne il nome, la variante, la durata dei
 
 		<strong>Standard:</strong> <?php print $defaultPoints.libHTML::points(); ?>
 	</li>
+	
+		<?php
+if( count(Config::$variants)==1 )
+{
+	foreach(Config::$variants as $variantID=>$variantName) ;
+
+	$defaultVariantName=$variantName;
+
+	print '<input type="hidden" name="newGame[variantID]" value="'.$variantID.'" />';
+}
+else
+{
+?>
+	<li class="formlisttitle">Variante:</li>
+	<li class="formlistfield">
+	
+	<script type="text/javascript">
+	function setExtOptions(i){
+		document.getElementById('countryID').options.length=0;
+		switch(i)
+		{
+			<?php
+			$checkboxes=array();
+			$first='';
+			foreach(Config::$variants as $variantID=>$variantName)
+			{
+				$Variant = libVariant::loadFromVariantName($variantName);
+				$checkboxes[$variantName] = '<option value="'.$variantID.'"'.(($first=='')?' selected':'').'>'.l_t($variantName).'</option>';
+				if($first=='') {
+					$first='"'.$variantID.'"';
+					$defaultName=l_t($variantName);
+				}
+				print "case \"".$variantID."\":\n";
+				print 'document.getElementById(\'desc\').innerHTML = "<a class=\'light\'  href=\'variants.php?variantID='.$variantID.'\'>'.l_t($Variant->fullName).'</a><hr style=\'color: #aaa\'>'.l_t($Variant->description).'";'."\n";		
+				print "document.getElementById('countryID').options[0]=new Option ('Random','0');";
+				for ($i=1; $i<=count($Variant->countries); $i++)
+					print "document.getElementById('countryID').options[".$i."]=new Option ('".$Variant->countries[($i -1)]."', '".$i."');";
+				print "break;\n";		
+			}	
+			ksort($checkboxes);	
+			?>	
+		}
+	}
+	</script>
+	
+	<table><tr>
+		<td	align="left" width="0%">
+			<select name="newGame[variantID]" onChange="setExtOptions(this.value)">
+			<?php print implode($checkboxes); ?>
+			</select> </td>
+		<td align="left" width="100%">
+			<div id="desc" style="border-left: 1px solid #aaa; padding: 5px;"></div></td>
+	</tr></table>
+	</li>
+	<li class="formlistdesc">
+		Scegli la variante della mappa, tra quelle disponibili.<br /><br />
+
+        Oppure clicca sul nome della variante, per avere maggiori informazioni sulla stessa.<br />
+		
+        <strong>Standard:</strong> <?php print $defaultName;?>
+	</li>
+<?php
+}
+?>
+	<div style="display: none;">
+	<li class="formlisttitle">Country assignment:</li>
+	<li class="formlistfield">
+		<select id="countryID" name="newGame[countryID]">
+		</select>
+	</li>
+
+	<ul class="formlist">
+		
+	<li class="formlistdesc">
+		Random distribution of each country, or players pick their country (gamecreator get's the selected country).<br /><br />
+		<strong>Default:</strong> Random
+	</li>
+	</div>
+	
+		<script type="text/javascript">
+	setExtOptions(<?php print $first;?>);
+	</script>
+
 </ul>
+
 
 <div class="hr"></div>
 
@@ -110,7 +194,7 @@ Inizia una nuova partita. Sei tu a deciderne il nome, la variante, la durata dei
 <h3>Impostazioni avanzate</h3>
 
 <ul class="formlist">
-<?php
+<?php /*
 if( count(Config::$variants)==1 )
 {
 	foreach(Config::$variants as $variantID=>$variantName) ;
@@ -147,7 +231,7 @@ else
 	</li>
 <?php
 }
-?>
+*/?>
 
 	<li class="formlisttitle">Divisione dei punti:</li>
 	<li class="formlistfield">

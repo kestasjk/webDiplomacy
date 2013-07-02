@@ -370,7 +370,8 @@ abstract class WDVariant {
 	}
 
 	public function link() {
-		return '<a class="light" href="variants.php#'.$this->name.'">'.l_t($this->fullName).'</a>';
+		// return '<a class="light" href="variants.php#'.$this->name.'">'.l_t($this->fullName).'</a>';
+		return '<a class="light" href="variants.php?variantID='.$this->id.'">'.l_t($this->fullName).'</a>';
 	}
 }
 
