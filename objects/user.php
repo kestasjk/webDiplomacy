@@ -150,6 +150,13 @@ class User {
 	 */
 	public $hideEmail;
 
+    /**
+    * Send-email? 'Yes'/'No'
+    *
+    * @var string
+    */
+   public $sendEmail;
+   
 	/**
 	 * UNIX timestamp of join-date
 	 *
@@ -312,7 +319,7 @@ class User {
 		$SQLVars = array();
 
 		$available = array('username'=>'', 'password'=>'', 'passwordcheck'=>'', 'email'=>'',
-					'hideEmail'=>'','showEmail'=>'', 'homepage'=>'','comment'=>'');
+					'hideEmail'=>'','sendEmail'=>'','showEmail'=>'', 'homepage'=>'','comment'=>'');
 
 		$userForm = array();
 
@@ -366,6 +373,18 @@ class User {
 				$SQLVars['hideEmail'] = "No";
 			}
 		}
+		
+		if( isset($userForm['sendEmail']) )
+      {
+         if ( $userForm['sendEmail'] == "Yes" )
+         {
+            $SQLVars['sendEmail'] = "Yes";
+         }
+         else
+         {
+            $SQLVars['sendEmail'] = "No";
+         }
+      }
 
 		if( isset($userForm['homepage']) AND $userForm['homepage'] )
 		{
@@ -421,6 +440,7 @@ class User {
 			u.comment,
 			u.homepage,
 			u.hideEmail,
+			u.sendEmail,
 			u.timeJoined,
 			u.timeLastSessionEnded,
 			u.points,

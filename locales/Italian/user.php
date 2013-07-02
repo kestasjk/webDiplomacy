@@ -49,6 +49,15 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	<li class="formlistdesc">
 		Scegli se rendere visibile il tuo indirizzo di posta agli altri giocatori. Se decidi di renderlo visibile, sarà visualizzato come immagine per evitare che sia preda dei bot automatici.
 	</li>
+	
+	<li class="formlisttitle">Ricevi notifiche delle partite via mail:</li>
+   <li class="formlistfield">
+      <input type="radio" name="userForm[sendEmail]" value="Yes" <?php if($User->sendEmail=='Yes') print "checked"; ?>>Sì
+      <input type="radio" name="userForm[sendEmail]" value="No" <?php if($User->sendEmail=='No') print "checked"; ?>>No
+   </li>
+   <li class="formlistdesc">
+     Scegli se ricevere o meno notifiche email ad ogni cambio turno, pausa o ripresa delle tue partite in corso.
+   </li>
 
 	<li class="formlisttitle">Password:</li>
 	<li class="formlistfield">

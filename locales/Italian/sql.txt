@@ -1,0 +1,10 @@
+!!!  Alterazioni al Database di webdiplomacy !!!
+
+
+// -> Funzione di invio automatico delle mail ai giocatori:
+
+ALTER TABLE  `wD_Users` ADD  `sendEmail` ENUM(  'No',  'Yes' ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL AFTER  `hideEmail`
+
+nel file config.php impostare tipo di spedizione mail SMTP!
+
+<-\\   FINE     
