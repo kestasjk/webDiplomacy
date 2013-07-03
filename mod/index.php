@@ -1,6 +1,7 @@
 <div class="hr"></div>
 	<div class="rightHalf">	
-	<p style="text-align: center;"><img src="mod/img/diplomacy.png" width="350" height="385" title="Associazione Italiana Diploamacy: gioca online al gioco da tavolo di strategia e diplomazia" alt="logo web-diplomacy-it gioco da tavolo online Diplomacy" /></p>
+    <div class="hr"></div>
+	<div class="img" ><img src="mod/img/diplomacy.png" height="385" width="350" title="diplomacy logo gioco web-diplomacy online" alt="web diplomacy gioco online logo"></div>
         </div>
     
     <div class="leftHalf">

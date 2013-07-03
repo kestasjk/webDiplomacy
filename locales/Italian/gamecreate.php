@@ -26,16 +26,10 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @package Base
  * @subpackage Forms
  */
+ print libHTML::pageTitle('Crea una nuova partita','Inizia una nuova partita. Sei tu a deciderne il nome, la variante, la durata dei turni e il valore.');
 ?>
-<div class="content-bare content-board-header content-title-header">
-<div class="pageTitle barAlt1">
-	Crea una nuova partita
-</div>
-<div class="pageDescription barAlt2">
-Inizia una nuova partita. Sei tu a deciderne il nome, la variante, la durata dei turni e il valore.
-</div>
-</div>
-<div class="content content-follow-on">
+
+
 <form method="post">
 <ul class="formlist">
 
