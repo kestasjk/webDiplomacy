@@ -160,7 +160,7 @@ if( $User->type['User'] ) {
 			$unmuteThreadID = (int)$_GET['unmuteThreadID'];
 			$User->toggleThreadMute($unmuteThreadID);
 			
-			print '<li class="formlistfield"><strong>Thread <a class="light" href="forum.php?threadID='.$unmuteThreadID.'#'.$unmuteThreadID.
+			print '<li class="formlistfield"><strong>Thread <a class="light" href="blog.php?threadID='.$unmuteThreadID.'#'.$unmuteThreadID.
 				'">#'.$unmuteThreadID.'</a> unmuted.</strong></li>';
 		}
 		
@@ -169,7 +169,7 @@ if( $User->type['User'] ) {
 		foreach ($mutedThreads as $mutedThread) {
 			if( $unmuteThreadID == $mutedThread['muteThreadID']) continue;
 			print '<li>'.
-				'<a class="light" href="forum.php?threadID='.$mutedThread['muteThreadID'].'#'.$mutedThread['muteThreadID'].'">'.
+				'<a class="light" href="blog.php?threadID='.$mutedThread['muteThreadID'].'#'.$mutedThread['muteThreadID'].'">'.
 				$mutedThread['subject'].'</a> '.
 				libHTML::muted('usercp.php?unmuteThreadID='.$mutedThread['muteThreadID'].'#threadmutes').'<br />'.
 				$mutedThread['username'].' ('.$mutedThread['replies'].' replies)<br />'.

@@ -1,10 +1,4 @@
-<div class="hr"></div>
-	<div class="rightHalf">	
-    <div class="hr"></div>
-	<div class="img" ><img src="mod/img/diplomacy.png" height="385" width="350" title="diplomacy logo gioco web-diplomacy online" alt="web diplomacy gioco online logo"></div>
-        </div>
-    
-    <div class="leftHalf">
+<div class="rightHalf">	
 	<div class="homeHeader">Risorse principali: </div>
 	   <div class="homeNotice" >
 	      <div class="homeForumGroup homeForumAlt2">
@@ -42,8 +36,15 @@
 	       <div class="hr"></div><?php include_once('mod/social.php');?>
 	    <p> <img src="mod/img/w3c.png" width="91" height="36" title="questa pagina di web-diplomacy ha passato la validazione w3c" alt="Valid XHTML 1.0 Strict" /></p>
                      
-	    <div style="clear:both"></div>		      
+	    		      
 	   </div>
+        </div>
+         
+    <div class="leftHalf">
+		
+	<?php include_once('mod/blog.php');?>
+	<div class="img" ><img src="mod/img/diplomacy.png" height="180" width="180" title="diplomacy logo gioco web-diplomacy online" alt="web diplomacy gioco online logo" /></div>
+	
 	
 	</div>
 	<div style="clear:both"></div><div class="hr"></div>
@@ -69,22 +70,15 @@ printImage();
 <br />Per chi non conosce questo gioco da tavolo, Diplomacy è ambientato in Europa nei primi anni del '900. Ci sono 7 grandi nazioni a contendersi il dominio del continente: <b>Impero Austro-Ungarico</b>, <b>Germania</b>, <b>Francia</b>, <b>Inghilterra</b>, <b>Russia</b>, <b>Italia</b> e <b>Turchia</b>. Ad ogni giocatore viene assegnata una potenza (con il relativo esercito e marina) e avrà come obiettivo quello di far diventare la sua nazione la più forte d'Europa. Ma per farlo avrà bisogno di allearsi con altre potenze perchè a questo gioco da soli si fa poca strada. <br />Se ti interessa provare a <b>giocare a Diplomacy</b> online, leggi le istruzioni che troverai su questo sito, iscriviti ad una partita e attendi l’inizio del gioco.
 <br />Saprai convincere gli altri a giocare con te?
 <br /><br /><i>Luca Pazzaglia  </i>
-<br /><strong>Presidente dell'Associazione Italiana Diplomacy</strong>
-      
-      </p>
-    
-      
-     
+<br /><strong>Presidente dell'Associazione Italiana Diplomacy</strong>     
+      </p>     
       </div>
-      
-      
+     
     <div id="diplomacy-giocare"> <img style="float: right" src="mod/img/fare.gif" width="108" height="127" title="cose da fare per giocare online" alt="giocare a diplomacy online in 5 minuti" />
     
       <h3>Giocare online in 5 minuti</h3><br /> 
       
       Iniziare a giocare è facilissimo. <br />
-      
-      
       <br /><br /><br />
       
       <img style="float: left" src="mod/img/check.gif" width="28" height="28" title="check option" alt="lista per giocare" />  Per prima cosa è fondamentale dare un'occhiata <a href="intro.php">alle regole del gioco</a>.<br /><br /><br />

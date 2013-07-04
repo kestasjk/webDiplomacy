@@ -281,7 +281,71 @@ class libHome
 	}
 
 	static function forumNew() {
-		// Select by id, prints replies and new threads
+		// Function to display only thread names for blog option
+		global $DB, $Misc;
+
+		$tabl = $DB->sql_tabl   (" SELECT m.id as postID, m.type, m.timeSent, m.replies as replies, m.subject as subject, m.latestReplySent 
+		FROM wD_ForumMessages m WHERE 	type ='ThreadStart'
+		ORDER BY m.latestReplySent DESC
+		LIMIT 5
+		");
+		$oldThreads=0;
+		$threadCount=0;
+
+		$threadIDs = array();
+		$threads = array();
+
+		while(list(
+				$postID, $type, $timeSent,  $replies, $subject, $latestReplySent
+			) = $DB->tabl_row($tabl))
+		{
+			$threadCount++;
+		if ( $type == 'ThreadStart' ) $threadID = $postID;
+
+			if( !isset($threads[$threadID]) )
+			{
+				if(strlen($subject)>40) $subject = substr($subject,0,40).'...';
+				$threadIDs[] = $threadID;
+				$threads[$threadID] = array('subject'=>$subject, 'replies'=>$replies, 'posts'=>array() );
+			}
+			
+		}
+
+		$buf = '';
+		$threadCount=0;
+		foreach($threadIDs as $threadID)
+		{
+			$data = $threads[$threadID];
+
+			$buf .= ''; 
+
+			$buf .= '<div class="homeForumGroup homeForumAlt'.($threadCount%2 + 1).'">
+				<div class="homeForumSubject homeForumTopBorder">'.libHTML::forumParticipated($threadID).' '.$data['subject'].'</div> ';
+
+			if( count($data['posts']) < $data['replies'])
+			{
+				$buf .= '';
+			}
+	$buf .= '<div class="homeForumLink">
+					<div class="homeForumReplies">'.l_t('%s replies','<strong>'.$data['replies'].'</strong>').'</div>
+					<a href="blog.php?threadID='.$threadID.'#'.$threadID.'">'.l_t('Open').'</a>
+					</div>
+					</div>';
+		}
+
+		if( $buf )
+		{
+			return $buf;
+		}
+		else
+		{
+			return '<div class="homeNoActivity">'.l_t('No forum posts found, why not '.
+				'<a href="blog.php?postboxopen=1#postbox" class="light">start one</a>?');
+		}			
+		
+		
+		
+	/*	// Select by id, prints replies and new threads
 		global $DB, $Misc;
 
 		$tabl = $DB->sql_tabl("
@@ -374,7 +438,7 @@ class libHome
 
 			$buf .= '<div class="homeForumLink">
 					<div class="homeForumReplies">'.l_t('%s replies','<strong>'.$data['replies'].'</strong>').'</div>
-					<a href="forum.php?threadID='.$threadID.'#'.$threadID.'">'.l_t('Open').'</a>
+					<a href="blog.php?threadID='.$threadID.'#'.$threadID.'">'.l_t('Open').'</a>
 					</div>
 					</div>';
 		}
@@ -386,14 +450,14 @@ class libHome
 		else
 		{
 			return '<div class="homeNoActivity">'.l_t('No forum posts found, why not '.
-				'<a href="forum.php?postboxopen=1#postbox" class="light">start one</a>?');
+				'<a href="blog.php?postboxopen=1#postbox" class="light">start one</a>?');
 		}
-	}
+	*/}
 
 
 	static function forumBlock()
 	{
-		$buf = '<div class="homeHeader">'.l_t('Forum').'</div>';
+		$buf = '<div class="homeHeader">'.l_t('Blog').'</div>';
 
 		$forumNew=libHome::forumNew();
 		$buf .=  '<table><tr><td>'.implode('</td></tr><tr><td>',$forumNew).'</td></tr></table>';
@@ -456,13 +520,13 @@ else
 
 	print '<td class="homeMessages">';
 
-	print '<div class="homeHeader">'.l_t('Forum').' <a href="forum.php">'.libHTML::link().'</a></div>';
-	if( file_exists(libCache::dirName('forum').'/home-forum.html') )
-		print file_get_contents(libCache::dirName('forum').'/home-forum.html');
+	print '<div class="homeHeader">'.l_t('Blog').' <a href="blog.php">'.libHTML::link().'</a></div>';
+	if( file_exists(libCache::dirName('forum').'/home-blog.html') )
+		print file_get_contents(libCache::dirName('forum').'/home-blog.html');
 	else
 	{
 		$buf_home_forum=libHome::forumNew();
-		file_put_contents(libCache::dirName('forum').'/home-forum.html', $buf_home_forum);
+		file_put_contents(libCache::dirName('forum').'/home-blog.html', $buf_home_forum);
 		print $buf_home_forum;
 	}
 	print '</td>';

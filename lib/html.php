@@ -96,7 +96,7 @@ class libHTML
 
 	static function forumMessage($threadID, $messageID)
 	{
-		return '<a style="'.self::$hideStyle.'" class="messageIconForum" threadID="'.$threadID.'" messageID="'.$messageID.'" href="forum.php?threadID='.$threadID.'#'.$messageID.'">'.
+		return '<a style="'.self::$hideStyle.'" class="messageIconForum" threadID="'.$threadID.'" messageID="'.$messageID.'" href="blog.php?threadID='.$threadID.'#'.$messageID.'">'.
 		'<img src="'.l_s('images/icons/mail.png').'" alt="'.l_t('New').'" title="'.l_t('Unread messages!').'" />'.
 		'</a> ';
 
@@ -104,7 +104,7 @@ class libHTML
 
 	static function forumParticipated($threadID)
 	{
-		return '<a style="'.self::$hideStyle.'" class="participatedIconForum" threadID="'.$threadID.'" href="forum.php?threadID='.$threadID.'#'.$threadID.'">'.
+		return '<a style="'.self::$hideStyle.'" class="participatedIconForum" threadID="'.$threadID.'" href="blog.php?threadID='.$threadID.'#'.$threadID.'">'.
 			'<img src="'.l_s('images/icons/star.png').'" alt="'.l_t('Participated').'" title="'.l_t('You have participated in this thread.').'" />'.
 			'</a> ';
 	}
@@ -306,7 +306,7 @@ class libHTML
 		if( $toID == null || $toID == 0 )
 		$toID = $postID;
 	
-		return '<a href="forum.php?threadID='.$toID.'#'.$postID.'">'.l_t('Go to thread').'</a>';
+		return '<a href="blog.php?threadID='.$toID.'#'.$postID.'">'.l_t('Go to thread').'</a>';
 	}
 	static function admincpType($actionType, $id)
 	{
@@ -598,8 +598,9 @@ class libHTML
 		$links=array();
 
 		// Items displayed in the menu
-		$links['index.php']=array('name'=>'Home', 'inmenu'=>TRUE, 'title'=>"See what's happening");
-		$links['forum.php']=array('name'=>'Forum', 'inmenu'=>TRUE, 'title'=>"The forum; chat, get help, help others, arrange games, discuss strategies");
+		$links['blog.php']=array('name'=>'Blog', 'inmenu'=>TRUE, 'title'=>"A small blog with latest news and announcements.");
+		$links['index.php']=array('name'=>'Home', 'inmenu'=>FALSE, 'title'=>"See what's happening");
+		//$links['forum.php']=array('name'=>'Forum', 'inmenu'=>TRUE, 'title'=>"The forum; chat, get help, help others, arrange games, discuss strategies");
 		$links['gamelistings.php']=array('name'=>'Games', 'inmenu'=>TRUE, 'title'=>"Game listings; a searchable list of the games on this server");
 
 		if (is_object($User))
