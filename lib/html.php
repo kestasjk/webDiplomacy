@@ -668,7 +668,7 @@ class libHTML
 				<div id="header">
 					<div id="header-container">
 						<a href="./">
-							<img id="logo" src="'.l_s('images/logo.png').'" width="207" height="48" title="'.l_t('webDiplomacy logo').'" alt="'.l_t('webDiplomacy').'" />
+							<img id="logo" src="'.l_s('mod/img/webDiplomacy.png').'" width="209" height="48" title="'.l_t('webDiplomacy logo').'" alt="'.l_t('webDiplomacy').'" />
 						</a>';
 
 		if ( is_object( $User ) )
