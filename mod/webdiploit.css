@@ -22,6 +22,18 @@ h2.titolo {
 text-align: center;
 }
 
+.answer {
+float:right;
+background:url('img/answer.png') ;
+/*background-repeat:no-repeat;*/
+text-align:center;
+font-weight:bold;
+line-height: 19px;
+height:20px;
+width:30px;
+margin-left:2px;
+}
+
 /* FINE stili immagini*/
 
 /*  INIZIO barra social network */
