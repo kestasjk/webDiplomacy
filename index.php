@@ -281,14 +281,20 @@ class libHome
 	}
 
 	static function forumNew() {
-		// Function to display only thread names for blog option
+		// Select by id, prints replies and new threads
 		global $DB, $Misc;
 
-		$tabl = $DB->sql_tabl   (" SELECT m.id as postID, m.type, m.timeSent, m.replies as replies, m.subject as subject, m.latestReplySent 
-		FROM wD_ForumMessages m WHERE 	type ='ThreadStart'
-		ORDER BY m.latestReplySent DESC
-		LIMIT 5
-		");
+		$tabl = $DB->sql_tabl("
+			SELECT m.id as postID, t.id as threadID, m.type, m.timeSent, IF(t.replies IS NULL,m.replies,t.replies) as replies,
+				IF(t.subject IS NULL,m.subject,t.subject) as subject,
+				u.id as userID, u.username, u.points, IF(s.userID IS NULL,0,1) as online, u.type as userType,
+				SUBSTRING(m.message,1,100) as message, m.latestReplySent, t.fromUserID as threadStarterUserID
+			FROM wD_ForumMessages m
+			INNER JOIN wD_Users u ON ( m.fromUserID = u.id )
+			LEFT JOIN wD_Sessions s ON ( m.fromUserID = s.userID )
+			LEFT JOIN wD_ForumMessages t ON ( m.toID = t.id AND t.type = 'ThreadStart' AND m.type = 'ThreadReply' )
+			ORDER BY t.type, m.latestReplySent DESC
+			LIMIT 5");
 		$oldThreads=0;
 		$threadCount=0;
 
@@ -296,19 +302,37 @@ class libHome
 		$threads = array();
 
 		while(list(
-				$postID, $type, $timeSent,  $replies, $subject, $latestReplySent
+				$postID, $threadID, $type, $timeSent, $replies, $subject,
+				$userID, $username, $points, $online, $userType, $message, $latestReplySent,$threadStarterUserID
 			) = $DB->tabl_row($tabl))
 		{
 			$threadCount++;
-		if ( $type == 'ThreadStart' ) $threadID = $postID;
+
+			if( $threadID )
+				$iconMessage=libHTML::forumMessage($threadID, $postID);
+			else
+				$iconMessage=libHTML::forumMessage($postID, $postID);
+
+			if ( $type == 'ThreadStart' ) $threadID = $postID;
 
 			if( !isset($threads[$threadID]) )
 			{
-				if(strlen($subject)>40) $subject = substr($subject,0,40).'...';
+				if(strlen($subject)>40) $subject = substr($subject,0,33).'...';
 				$threadIDs[] = $threadID;
-				$threads[$threadID] = array('subject'=>$subject, 'replies'=>$replies, 'posts'=>array() );
+				$threads[$threadID] = array('subject'=>$subject, 'replies'=>$replies,
+					'posts'=>array(),'threadStarterUserID'=>$threadStarterUserID);
 			}
-			
+
+			$message=Message::refilterHTML($message);
+
+			if( strlen($message) >= 100 ) $message = substr($message,0,95).'...';
+
+			$message = '<div class="message-contents threadID'.$threadID.'" fromUserID="'.$userID.'">'.$message.'</div>';
+
+			$threads[$threadID]['posts'][] = array(
+				'iconMessage'=>$iconMessage,'userID'=>$userID, 'username'=>$username,
+				'message'=>$message,'points'=>$points, 'online'=>$online, 'userType'=>$userType, 'timeSent'=>$timeSent
+			);
 		}
 
 		$buf = '';
@@ -317,20 +341,34 @@ class libHome
 		{
 			$data = $threads[$threadID];
 
-			$buf .= ''; 
+			$buf .= '';
 
-			$buf .= '<div class="homeForumGroup homeForumAlt'.($threadCount%2 + 1).'">
-				<div class="homeForumSubject homeForumTopBorder">'.libHTML::forumParticipated($threadID).' '.$data['subject'].'</div> ';
+			$buf .= '<div class="homeForumGroup homeForumAlt'.($threadCount%2 + 1).
+				' userID'.$threads[$threadID]['threadStarterUserID'].' threadID'.$threadID.'">
+				<div class="homeForumSubject homeForumTopBorder">'.libHTML::forumParticipated($threadID).' <a title="test titolo" href="blog.php?threadID='.$threadID.'#'.$threadID.'">'.$data['subject'].'</a></div>';
 
 			if( count($data['posts']) < $data['replies'])
 			{
 				$buf .= '';
 			}
-	$buf .= '<div class="homeForumLink">
-					<div class="homeForumReplies">'.l_t('%s replies','<strong>'.$data['replies'].'</strong>').'</div>
-					<a href="blog.php?threadID='.$threadID.'#'.$threadID.'">'.l_t('Open').'</a>
-					</div>
+
+
+			$data['posts'] = array_reverse($data['posts']);
+			foreach($data['posts'] as $post)
+			{
+				$buf .= '<div class="homeForumPost homeForumPostAlt'.libHTML::alternate().' userID'.$post['userID'].'">
+                      <div class="answer">'.l_t('%s',''.$data['replies'].'').'</div> <div class="homeForumPostTime">'.$post['iconMessage'].'</div>
+					
+						
+
+					
+					<div class="homeForumMessage">'.$post['message'].'</div>
 					</div>';
+
+			}
+
+			$buf .= '<div class="homeForumLink">
+					</div></div>';
 		}
 
 		if( $buf )
@@ -341,9 +379,8 @@ class libHome
 		{
 			return '<div class="homeNoActivity">'.l_t('No forum posts found, why not '.
 				'<a href="blog.php?postboxopen=1#postbox" class="light">start one</a>?');
-		}			
-		
-		
+		}
+	}
 		
 	/*	// Select by id, prints replies and new threads
 		global $DB, $Misc;
@@ -397,7 +434,7 @@ class libHome
 				'iconMessage'=>$iconMessage,'userID'=>$userID, 'username'=>$username,
 				'message'=>$message,'points'=>$points, 'online'=>$online, 'userType'=>$userType, 'timeSent'=>$timeSent
 			);
-		}
+		
 
 		$buf = '';
 		$threadCount=0;
@@ -452,8 +489,7 @@ class libHome
 			return '<div class="homeNoActivity">'.l_t('No forum posts found, why not '.
 				'<a href="blog.php?postboxopen=1#postbox" class="light">start one</a>?');
 		}
-	*/}
-
+	*/ 
 
 	static function forumBlock()
 	{
