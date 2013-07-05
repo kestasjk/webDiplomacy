@@ -36,7 +36,7 @@ if(!(isset($_REQUEST['variantID'])))
 
 	foreach(glob('variants/*') as $variantDir)
 	{
-		if( file_exists($variantDir.'/variant.php') )
+		if( is_dir($variantDir) && file_exists($variantDir.'/variant.php') )
 		{
 			$variantDir=substr($variantDir,9);
 			if( in_array($variantDir, Config::$variants) )
