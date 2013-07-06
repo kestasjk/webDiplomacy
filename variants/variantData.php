@@ -23,10 +23,30 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 class VariantData
 {
+	/**
+	 * The variant ID; the only mandatory field
+	 * @var int
+	 */
 	public $variantID;
+	/**
+	 * Game ID, or 0 if game ID not relevant (e.g. user specific or global variant data)
+	 * @var int
+	 */
 	public $gameID = 0;
+	/**
+	 * An extra token to prevent conflict with any other unknown code using the same system for data storage. Should be a random number from 1 to 2^31-1
+	 * @var int
+	 */
 	public $systemToken = 0;
+	/**
+	 * User ID, or 0 if not user specific
+	 * @var int
+	 */
 	public $userID = 0;
+	/**
+	 * Data type ID, basically another way to distinguish between the sorts of data stored. Default is 0, which is fine for most use.
+	 * @var int
+	 */
 	public $typeID = 0;
 	
 	public function VariantData($variantID)
@@ -34,6 +54,11 @@ class VariantData
 		$this->variantID = $variantID;
 	}
 	
+	/**
+	 * Create where clause to select this variant data
+	 * @param int $offset
+	 * @return string
+	 */
 	public function where($offset=0)
 	{
 		$params = array(
@@ -50,6 +75,12 @@ class VariantData
 		
 		return implode(' AND ', $arr);
 	}
+	/**
+	 * Generic get data column
+	 * @param string $col Name of the column to extract
+	 * @param int $offset The variable offset to extract
+	 * @return int/float The data in that record
+	 */
 	private function getCol($col, $offset=0)
 	{
 		global $DB;
