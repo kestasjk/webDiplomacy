@@ -2,7 +2,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-$userIDs = $gameIDs = $checkIPs = $checkIPsLong = '';
+$userIDs = $days = $gameIDs = $checkIPs = $checkIPsLong = '';
 
 if ( isset($_REQUEST['userIDs']))
 {
@@ -28,6 +28,11 @@ if ( isset($_REQUEST['gameIDs']))
 		$gameIDs = implode (',',$allGameIDs);	
 }	
 	
+if ( isset($_REQUEST['days']))
+{
+	$days=(int)$_REQUEST['days'];
+}
+
 if ( isset($_REQUEST['checkIPs']))
 {
 	foreach (explode(',',$_REQUEST['checkIPs']) as $checkIP)
@@ -51,12 +56,75 @@ if ( isset($_REQUEST['checkIPs']))
  */
 print '<FORM method="get" action="admincp.php">
 		<INPUT type="hidden" name="tab" value="AcessLog" />
-		<P><STRONG>User IDs: </STRONG><INPUT type="text" name="userIDs"  value="'.$userIDs .'" length="50" />
-		<BR><STRONG>IPs:     </STRONG><INPUT type="text" name="checkIPs" value="'.$checkIPs.'" length="50" />
-		<BR><STRONG>GameIDs: </STRONG><INPUT type="text" name="gameIDs"  value="'.$gameIDs .'" length="50" />
-		<BR><input type="submit" name="Submit" class="form-submit" value="Check" /></form></P>';
+		<TABLE>
+		<TR><TD>User IDs:</TD><TD></STRONG><INPUT type="text" name="userIDs"  value="'.$userIDs .'" size="50" /></TD></TR>
+		<TR><TD>IPs:</TD><TD></STRONG><INPUT type="text" name="checkIPs" value="'.$checkIPs.'" size="50" /></TD></TR>
+		<TR><TD>GameIDs:</TD><TD></STRONG><INPUT type="text" name="gameIDs"  value="'.$gameIDs .'" size="50" /></TD></TR>
+		<TR><TD><input type="submit" name="Submit" class="form-submit" value="Check" /></TD></TR>		
+		</TABLE>
+		<HR><STRONG>New users from the last </STRONG><INPUT type="text" name="days"  value="'. $days .'" size="5" /> days.
+		<input type="submit" name="Submit" class="form-submit" value="Check" /><HR></form></P>';
 
-if ($userIDs.$checkIPsLong.$gameIDs != '')
+if ($days != '')
+{
+	$sTime = time() - $days * (60*60*24);
+	$sql = 'SELECT id, username, email, timeJoined
+				FROM wD_Users
+				WHERE timeJoined > '. $sTime .'
+				ORDER BY id ASC';
+	
+	$tabl = $DB->sql_tabl($sql);
+	
+	print "<TABLE>";
+	while ( list($userID, $username, $email, $timeJoined) = $DB->tabl_row($tabl) )
+	{
+		print '<TR><TD><a href="profile.php?userID='.$userID.'">'.$username.'</a></TD>';
+		print '<TD>'.$email.'</TD>';
+		print '<TD>'.gmstrftime("%a %d %b / %I:%M %p",$timeJoined).'</TD>';
+		
+		$sql_IPs = "SELECT ip FROM wD_AccessLog WHERE userID = ".$userID." GROUP BY ip";
+		$tabl_IPs = $DB->sql_tabl($sql_IPs);
+		$IPs=array();
+		while ( list($IP) = $DB->tabl_row($tabl_IPs) )
+			$IPs[]=$IP;
+		print '<TD>';
+		if (count($IPs) > 0)
+		{
+			list($IPcount) = $DB->sql_row("
+				SELECT COUNT(*) FROM 
+					(SELECT userID
+						FROM wD_AccessLog
+						WHERE ip IN ( ".implode(',',$IPs)." ) AND userID <> ".$userID."
+					GROUP BY userID) AS IPmatch");
+			print  ($IPcount > 0 ? 'IP:'.$IPcount:'');
+		}
+		print '</TD>';
+		
+		$sql_CCs = "SELECT cookieCode FROM wD_AccessLog WHERE userID = ".$userID." GROUP BY cookieCode";
+		$tabl_CCs = $DB->sql_tabl($sql_CCs);
+		$CCs=array();
+		while ( list($CC) = $DB->tabl_row($tabl_CCs) )
+			$CCs[]=$CC;
+		print '<TD>';
+		if (count($CCs) > 0)
+		{
+			list($CCcount) = $DB->sql_row("
+				SELECT COUNT(*) FROM 
+					(SELECT userID
+						FROM wD_AccessLog
+						WHERE cookieCode IN ( ".implode(',',$CCs)." ) AND userID <> ".$userID."
+					GROUP BY userID) AS IPmatch");
+			print  ($CCcount > 0 ? 'CC:'.$CCcount:'');
+		}
+		print '</TD>';
+		
+		print "<TD> <a href='admincp.php?tab=Multi-accounts&aUserID=".$userID."'>Check</a> </TD></TR>";
+	}
+
+	print "</TABLE>";
+
+}
+elseif ($userIDs.$checkIPsLong.$gameIDs != '')
 {
 	global $DB;
 	/*
