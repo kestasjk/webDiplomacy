@@ -192,11 +192,12 @@ class Chatbox
 
 		if ( ( $User->type['Moderator'] && $msgCountryID == 0 && !isset($Member)) ||
 		     ( isset($Member) &&
-		       ( $Game->pressType == 'Regular' ||                                         // All tabs allowed for Regular
+		       ( ($Game->pressType == 'Regular' && $Game->phase != 'Finished' ) ||        // All tabs allowed for Regular (but not after game is completed)
 		         $Member->countryID == $msgCountryID ||                                   // Notes tab always allowed
 		         ( $msgCountryID == 0 &&                                                  // Global tab allowed for...
 		           ( $Game->pressType == 'PublicPressOnly' ||                             // public press and
-		             ( $Game->pressType == 'NoPress' && $Game->phase == 'Finished' )))))) // finished nopress.
+		             ( $Game->pressType == 'NoPress' && $Game->phase == 'Finished' ) ||   // finished nopress.
+					 ( $Game->pressType == 'Regular' && $Game->phase == 'Finished' )))))) // finished regular games only allow global chat.
 		{
 			$chatbox .= '<DIV class="chatbox"><TABLE>
 					<TR class="barAlt2">

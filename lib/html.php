@@ -544,10 +544,10 @@ class libHTML
 		global $User, $DB;
 
 		$tabl = $DB->sql_tabl(
-			"SELECT g.id, g.variantID, g.name, m.orderStatus, m.countryID, (m.newMessagesFrom+0) as newMessagesFrom, g.processStatus
+			"SELECT g.id, g.variantID, g.name, m.orderStatus, m.countryID, (m.newMessagesFrom+0) as newMessagesFrom, g.processStatus, g.phase
 			FROM wD_Members m
 			INNER JOIN wD_Games g ON ( m.gameID = g.id )
-			WHERE m.userID = ".$User->id." AND ( m.status='Playing' OR m.status='Left' )
+			WHERE m.userID = ".$User->id." AND (  ( m.status='Playing' OR m.status='Left' ) OR NOT (m.newMessagesFrom+0) = 0 )
 				AND ( ( NOT m.orderStatus LIKE '%Ready%' AND NOT m.orderStatus LIKE '%None%' ) OR NOT ( (m.newMessagesFrom+0) = 0 ) )");
 
 		$gameIDs = array();
@@ -611,7 +611,8 @@ class libHTML
 
 			$gameNotifyBlock .= ' ';
 
-			$gameNotifyBlock .= $notifyGame['orderStatus']->icon();
+			if ( $notifyGame['phase'] != 'Pre-game' && $notifyGame['phase'] != 'Finished' )
+				$gameNotifyBlock .= $notifyGame['orderStatus']->icon();
 
 			if ( $notifyGame['newMessagesFrom'] )
 				$gameNotifyBlock .= '<img src="'.l_s('images/icons/mail.png').'" alt="'.l_t('New messages').'" title="'.l_t('New messages!').'" />';
