@@ -193,6 +193,14 @@ class HavenVariant_drawMap extends drawMap {
 			
 	}
 
+	public function drawDestroyedUnit($terrID)
+	{
+		parent::drawDestroyedUnit($terrID);
+		
+		// Add 2nd destroyed-icon for the underworld gateways:
+		if (in_array($this->territoryNames[$terrID].' (Underworld)' ,$this->territoryNames))
+			parent::drawDestroyedUnit(array_search($this->territoryNames[$terrID].' (Underworld)',$this->territoryNames));
+	}
 
 	// All order arrows needs adjustment for the underworld-map and for the warparound
 	public function drawMove($fromTerrID, $toTerrID, $success)
@@ -305,23 +313,5 @@ class HavenVariant_drawMap extends drawMap {
 		return array($fromID, $toID, $fromID2, $toID2);
 	}
 
-	protected function color(array $color, $image=false)
-	{
-		if ( ! is_array($image) )
-			$image = $this->map;
-		
-		list($r, $g, $b) = $color;
-		
-		$colorRes = imagecolorexact($image['image'], $r, $g, $b);
-		if ($colorRes == -1)
-		{
-			$colorRes = imageColorAllocate($image['image'], $r, $g, $b);
-			if (!$colorRes)
-				$colorRes = imageColorClosest($image['image'], $r, $g, $b);
-		}
-		
-		return $colorRes; 
-	}
-	
 }
 ?>
