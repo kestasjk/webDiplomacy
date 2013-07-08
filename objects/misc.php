@@ -59,7 +59,10 @@ class Misc
 		
 		foreach($this->updated as $name)
 		{
-			$DB->sql_put("UPDATE wD_Misc SET value = ".$this->data[$name]." WHERE name = '".$name."'");
+			if (substr($name,0,4)=='vDip')
+				$DB->sql_put("UPDATE wD_vDipMisc SET value = ".$this->data[$name]." WHERE name = '".substr($name,4)."'");
+			else
+				$DB->sql_put("UPDATE wD_Misc SET value = ".$this->data[$name]." WHERE name = '".$name."'");
 			unset($this->updated[$name]);
 		}
 	}
@@ -73,6 +76,11 @@ class Misc
 		{
 			$this->data[$name] = $value;
 		}
+		
+		$tabl = $DB->sql_tabl("SELECT name, value FROM wD_vDipMisc");
+		while ( list($name, $value) = $DB->tabl_row($tabl) )
+			$this->data['vDip'.$name] = $value;
+		
 		$this->updated=array();
 	}
 }

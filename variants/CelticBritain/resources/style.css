@@ -1,0 +1,20 @@
+@CHARSET "ISO-8859-1";
+	
+.variantCelticBritain .country0 { color: #000000 ! important; } /* Global      */
+.variantCelticBritain .country1 { color: #FF7E00 ! important; } /* Brigantes   */
+.variantCelticBritain .country2 { color: #6F3198 ! important; } /* Iceni       */
+.variantCelticBritain .country3 { color: #00B7EF ! important; } /* Caledonii   */
+.variantCelticBritain .country4 { color: #4C52FF ! important; } /* Picts       */
+.variantCelticBritain .country5 { color: #006400 ! important; } /* Cornovii    */
+.variantCelticBritain .country6 { color: #7CCF00 ! important; } /* Ivernia     */
+.variantCelticBritain .country7 { color: #FA8072 ! important; } /* Voluntii    */
+.variantCelticBritain .country8 { color: #990030 ! important; } /* Durotriges  */
+
+.variantCelticBritain .occupationBar1 { background-color: #FF7E00; } /* Brigantes   */
+.variantCelticBritain .occupationBar2 { background-color: #6F3198; } /* Iceni       */
+.variantCelticBritain .occupationBar3 { background-color: #00B7EF; } /* Caledonii   */
+.variantCelticBritain .occupationBar4 { background-color: #4C52FF; } /* Picts       */
+.variantCelticBritain .occupationBar5 { background-color: #006400; } /* Cornovii    */
+.variantCelticBritain .occupationBar6 { background-color: #7CCF00; } /* Ivernia     */
+.variantCelticBritain .occupationBar7 { background-color: #FA8072; } /* Voluntii    */
+.variantCelticBritain .occupationBar8 { background-color: #990030; } /* Durotriges  */

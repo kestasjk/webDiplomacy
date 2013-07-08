@@ -180,6 +180,10 @@ if ( $Misc->Version != VERSION )
 	require_once(l_r('install/install.php'));
 }
 
+// Check the vDip-DatabaseVersion too...
+if ( $Misc->vDipVersion < VDIPVERSION )
+	require_once(l_r('install/vDipInstall.php'));
+
 // Taken from the php manual to disable cacheing.
 header("Last-Modified: Mon, 26 Jul 1997 05:00:00 GMT");
 header("Cache-Control: no-store, no-cache, must-revalidate");
@@ -208,7 +212,18 @@ require_once(l_r('lib/auth.php'));
 if( !defined('AJAX') )
 {
 	if( isset($_REQUEST['logoff']) )
-	{
+	{	
+		// Advanced UserLog
+		global $DB, $User;
+		$User = libAuth::auth();
+		$DB->sql_put("INSERT INTO wD_AccessLogAdvanced SET
+						userID   = ".$User->id.",
+						request  = CURRENT_TIMESTAMP,
+						ip       = INET_ATON('".$_SERVER['REMOTE_ADDR']."'),
+						action   = 'LogOff',
+						memberID = '0'"
+						);
+		
 		$success=libAuth::keyWipe();
 		$User = new User(GUESTID); // Give him a guest $User
 		header('refresh: 4; url=logon.php?noRefresh=on');

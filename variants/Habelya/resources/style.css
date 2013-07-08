@@ -1,0 +1,21 @@
+@CHARSET "ISO-8859-1";
+	
+
+.variantHabelya .country0 { color: #CE7800 ! important; } /* Global  */
+.variantHabelya .country1 { color: #b8ad00 ! important; } /* Turkey  */
+.variantHabelya .country2 { color: #007BA5 ! important; } /* France  */
+.variantHabelya .country3 { color: #514f4f ! important; } /* Spain  */
+.variantHabelya .country4 { color: #b05500 ! important; } /* Lowland */
+.variantHabelya .country5 { color: #1a6600 ! important; } /* Norway */
+.variantHabelya .country6 { color: #D62929 ! important; } /* Austria */
+.variantHabelya .country7 { color: #08374d ! important; } /* Balkan  */
+.variantHabelya .country8 { color: #6F005D ! important; } /* Russia  */
+
+.variantHabelya .occupationBar1 { background-color: #eaeaaf; }  /* Socialist Glock */
+.variantHabelya .occupationBar2 { background-color: #79afc6; }  /* Kingdom of Saltz   */
+.variantHabelya .occupationBar3 { background-color: #787878; }  /* The Hacklers  */
+.variantHabelya .occupationBar4 { background-color: #ce9967; }  /* Trylikia */
+.variantHabelya .occupationBar5 { background-color: #729267; }  /* Ruins of Holgii   */
+.variantHabelya .occupationBar6 { background-color: #c48f85; }  /* Gernavia  */
+.variantHabelya .occupationBar7 { background-color: #406c80; }  /* Old Bramia  */
+.variantHabelya .occupationBar8 { background-color: #a87e9f; }  /* Elenian Empire   */

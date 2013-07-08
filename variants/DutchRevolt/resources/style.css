@@ -1,0 +1,14 @@
+@CHARSET "ISO-8859-1";
+	
+.variantDutchRevolt .country0 { color: #CE7800 ! important; } /* Global   */
+.variantDutchRevolt .country1 { color: #DD51BD! important; } /* England  */
+.variantDutchRevolt .country2 { color: #007FFF ! important; } /* France   */
+.variantDutchRevolt .country3 { color: #b8ad00! important; } /* Spain    */
+.variantDutchRevolt .country4 { color: #8B481A! important; } /* Muenster */
+.variantDutchRevolt .country5 { color: #FF7E00 ! important; } /* Holland  */
+
+.variantDutchRevolt .occupationBar1 { background-color: #EFC4E4! important; } /* England  */
+.variantDutchRevolt .occupationBar2 { background-color: #0059B2 ! important; } /* France   */
+.variantDutchRevolt .occupationBar3 { background-color: #EAEAAF! important; } /* Spain    */
+.variantDutchRevolt .occupationBar4 { background-color: #A08A75! important; } /* Muenster */
+.variantDutchRevolt .occupationBar5 { background-color: #B25800 ! important; } /* Holland  */

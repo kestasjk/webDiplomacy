@@ -93,6 +93,14 @@ class processGame extends Game
 		{
 			$this->togglePause();
 		}
+		elseif( in_array('Extend', $votes) && $this->processStatus != 'Paused')
+		{
+			$this->extendPhase();
+		}
+		elseif( in_array('Concede', $votes) )
+		{
+			$this->setConcede();
+		}
 	}
 
 	/**
@@ -286,7 +294,16 @@ class processGame extends Game
 	 *
 	 * @return Game The object corresponding to the new game
 	 */
-	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $joinPeriod, $anon, $press, $missingPlayerPolicy='Normal')
+	 
+	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $joinPeriod, $anon, $press, $missingPlayerPolicy='Normal'
+		,$maxTurns 
+		,$targetSCs 
+		,$minRating 
+		,$minPhases
+		,$specialCDturn 
+		,$specialCDcount
+		,$chessTime
+		)
 	{
 		global $DB;
 
@@ -307,13 +324,29 @@ class processGame extends Game
 			else
 				$i++;
 		}
-
+		
 		/*
 		 * The password is not salted, because it's given out to several people anyway and it
 		 * isn't worth changing the existing behaviour.
 		 */
 		$pTime = time() + $joinPeriod*60;
 		$pTime = $pTime - fmod($pTime, 300) + 300;	// for short game & phase timer
+		
+		$Variant = libVariant::loadFromVariantID($variantID);
+		// Check the starting SCs for each player (multiplied by 2)...
+		$sql='SELECT count(*)*2 FROM wD_Territories
+				WHERE mapID='.$Variant->mapID.' AND supply="Yes" AND countryID>0 
+				GROUP BY countryID ASC LIMIT 1';
+		list($minSC) = $DB->sql_row($sql);
+		
+		// TargetSCs greater than any starting SCs
+		if ($targetSCs != 0 && $minSC > $targetSCs)
+			$targetSCs = $minSC;
+			
+		// Set the target SCs maximum to the available SCs
+		if ($Variant->supplyCenterCount < $targetSCs)
+			$targetSCs = $Variant->supplyCenterCount;
+										
 		$DB->sql_put("INSERT INTO wD_Games
 					SET variantID=".$variantID.",
 						name = '".$name.($i > 1 ? '-'.$i : '')."',
@@ -325,12 +358,33 @@ class processGame extends Game
 						".( $password ? "password = UNHEX('".md5($password)."')," : "").
 						"processTime = ".$pTime.",
 						phaseMinutes = ".$phaseMinutes.",
-						missingPlayerPolicy = '".$missingPlayerPolicy."'");
+						missingPlayerPolicy = '".$missingPlayerPolicy."',
+						maxTurns = ".$maxTurns.", 
+						targetSCs = ".$targetSCs.", 
+						minRating = ".$minRating.", 
+						minPhases = ".$minPhases.", 
+						specialCDturn = ".$specialCDturn.", 
+						specialCDcount = ".$specialCDcount.", 
+						chessTime = ".$chessTime.", 
+						rlPolicy = '".($anon == 'Yes' ? 'Strict' : 'None' )."'");
 
 		$gameID = $DB->last_inserted();
-
-		$Variant=libVariant::loadFromVariantID($variantID);
-		return $Variant->processGame($gameID);
+		
+		$Game = $Variant->processGame($gameID);
+		// Fix the bet for variants with small numbers of players.		
+		if (isset(Config::$limitBet) && isset(Config::$limitBet[(count($Game->Variant->countries))]))
+		{
+			$maxbet = Config::$limitBet[(count($Variant->countries))];
+			$bet = ( ($bet > $maxbet) ? $maxbet : $bet );
+			$DB->sql_put("UPDATE wD_Games SET minimumBet = ".$bet." WHERE id=".$gameID);
+			$Game->minimumBet = $bet;
+		}
+		
+		// 2-player games are all PublicPressOnly und WTA.
+		if (count($Game->Variant->countries) == 2)
+			$DB->sql_put("UPDATE wD_Games SET pressType='PublicPressOnly', potType='Winner-takes-all' WHERE id=".$gameID);
+		
+		return $Game;
 	}
 
 	/**
@@ -454,7 +508,7 @@ class processGame extends Game
 		 * have been taken now only Games and Members need to be updated, and new orders added
 		 */
 		$this->Members->countUnitsSCs();
-
+		
 		if( $this->turn<1 )
 		{
 			Game::wipeCache($this->id);
@@ -483,6 +537,11 @@ class processGame extends Game
 
 		if ( $newTurn )
 		{
+			/*
+			 * Clear all extend-votes for the current phase
+			 */
+			 $this->Members->clearExtendVotes();
+		
 			/*
 			 * We have entered a new turn; clean the TerrStatus records of the previous turn's
 			 * retreatingUnitID, occupiedFromTerrID, standoff data, which is no longer valid.
@@ -545,6 +604,10 @@ class processGame extends Game
 			$this->processTime = time() + $this->phaseMinutes*60;
 
 			$DB->sql_put("UPDATE wD_Games SET processTime = ".$this->processTime." WHERE id = ".$this->id);
+			
+			// Set the "lastProcessed"-time for the chessClock
+			$this->lastProcessed = time();
+			$DB->sql_put("UPDATE wD_Games SET lastProcessed = ".$this->lastProcessed." WHERE id = ".$this->id);
 		}
 	}
 
@@ -811,10 +874,20 @@ class processGame extends Game
 		 * 'Playing'/'Left' -> 'Won'/'Survived'/'Resigned'
 		 * ('Defeated' status members are already set by now)
 		 */
+
+		// Return any switched countries...
+		include_once("lib/countryswitch.php");
+		libSwitch::clearAllSwitches($this);
+		
 		$this->Members->setWon($Winner);
 
 		// Then the game is set to finished
 		$this->setPhase('Finished', 'Won');
+		
+		// Update the VDip-Ratings
+		include_once("lib/rating.php");
+		libRating::updateRatings($this, true);
+		
 	}
 
 	/**
@@ -843,6 +916,10 @@ class processGame extends Game
 			return false; // No TerrStatus to cache -> no need for a new year
 		}
 
+		// Check for missed turns and adjust the counter in the user-data
+		require_once(l_r('lib/reliability.php'));		 
+		libReliability::updateReliabilities($this->Members);
+		
 		/*
 		 * In the functions below only 'Playing' and 'Left' status members are dealt with:
 		 * 'Defeated' players have no bearing, and the other statuses cannot exist at this stage.
@@ -995,9 +1072,17 @@ class processGame extends Game
 				FROM wD_MovesArchive WHERE gameID = ".$this->id." AND turn = ".($this->turn-1));
 		}
 
+		// Return any switched countries...
+		include_once("lib/countryswitch.php");
+		libSwitch::clearAllSwitches($this);
+		
 		// Sets the Members statuses to Drawn as needed, gives refunds, sends messages
 		$this->Members->setDrawn();
 		$this->setPhase('Finished', 'Drawn');
+		
+		// Update the VDip-Ratings
+		include_once("lib/rating.php");
+		libRating::updateRatings($this, true);
 
 		$DB->sql_put("DELETE FROM wD_Orders WHERE gameID = ".$this->id);
 		$DB->sql_put("DELETE FROM wD_Units WHERE gameID = ".$this->id);
@@ -1005,6 +1090,68 @@ class processGame extends Game
 
 		Game::wipeCache($this->id,$this->turn);
 	}
+	
+	public function extendPhase()
+	{
+		global $DB;
+
+		if( $this->phase == 'Pre-game' )
+			throw new Exception("This game hasn't started");
+
+		if( $this->phase == 'Finished' )
+			throw new Exception("This game is finished");
+
+		if( $this->processStatus == 'Paused' )
+			throw new Exception("This game is paused");
+			
+		$this->Members->notifyExtended();
+		
+		$DB->sql_put(
+			"UPDATE wD_Games
+			SET processTime = ".($this->processTime + 345600)."
+			WHERE id = ".$this->id);
+
+		// Any extend votes are now void
+		$DB->sql_put("UPDATE wD_Members SET votes = REPLACE(votes,'Extend','') WHERE gameID = ".$this->id);
+	}
+	
+	/**
+	 * All players but one choosed to concede.
+	 * End the game; archive the terrstatus and moves, delete active data, set members to defeated
+	 * and set the Winner. Also delete the current map to display the finished
+	 * message on the map
+	 */
+	public function setConcede()
+	{
+		global $DB;
+
+		// Unpause the game so that the processTime data isn't finalized as NULL
+		if( $this->processStatus == 'Paused' )
+			$this->togglePause();
+
+		$this->archiveTerrStatus();
+
+		if ( $this->phase == 'Diplomacy' and $this->turn > 0 )
+		{
+			$DB->sql_put("INSERT INTO wD_MovesArchive
+				( gameID, turn, terrID, countryID, unitType, success, dislodged, type, toTerrID, fromTerrID, viaConvoy )
+				SELECT gameID, turn+1, terrID, countryID, unitType, success, dislodged, type, toTerrID, fromTerrID, viaConvoy
+				FROM wD_MovesArchive WHERE gameID = ".$this->id." AND turn = ".($this->turn-1));
+		}
+
+		// Sets the Members statuses to Drawn as needed, gives refunds, sends messages
+		$this->Members->setConcede();
+		foreach($this->Members->ByStatus['Playing'] as $Member)
+			$Winner = $Member;
+		$this->setWon($Winner);
+
+		$DB->sql_put("DELETE FROM wD_Orders WHERE gameID = ".$this->id);
+		$DB->sql_put("DELETE FROM wD_Units WHERE gameID = ".$this->id);
+		$DB->sql_put("DELETE FROM wD_TerrStatus WHERE gameID = ".$this->id);
+
+		Game::wipeCache($this->id,$this->turn);
+	}
+	
 }
 
 ?>

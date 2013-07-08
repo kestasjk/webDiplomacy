@@ -61,7 +61,12 @@ class processMember extends Member
 		else
 		{
 			// Notify the remaining players
-			$Game->Members->sendExcept($this,'No',l_t("<strong>%s</strong> left the game.",$this->username));
+			if ( $this->Game->isMemberInfoHidden() )
+				$name = 'Someone';
+			else
+				$name = "<strong>".$this->username."</strong>";
+				
+			$Game->Members->sendExcept($this,'No',l_t("<strong>%s</strong> left the game.",$name));
 		}
 
 		header('refresh: 4; url=index.php');
@@ -75,16 +80,23 @@ class processMember extends Member
 	 * @param $userID The userID
 	 * @param $bet The bet, will throw an exception if the user doesn't have enough
 	 */
-	static function create($userID, $bet)
+	static function create($userID, $bet, $countryID=0)
 	{
 		global $DB, $Game;
 
 		assert('$Game instanceof processGame');
 
+		// Fixed bet of 1 for 2-player games
+		if (count($Game->Variant->countries) < 3)
+			$bet=1;
+			
 		// It is assumed this is being run within a transaction
 
+		if ($countryID > count($Game->Variant->countries))
+			$countryID = 0;
+			
 		$DB->sql_put("INSERT INTO wD_Members SET
-			userID = ".$userID.", gameID = ".$Game->id.", orderStatus='None,Completed,Ready', bet = 0, timeLoggedIn = ".time());
+			userID = ".$userID.", gameID = ".$Game->id.", countryID=".$countryID.", orderStatus='Ready', bet = 0, timeLoggedIn = ".time());
 
 		$Game->Members->load();
 
@@ -297,7 +309,11 @@ class processMember extends Member
 		global $DB;
 
 		$this->setStatus('Left');
-
+		
+		// Increase the "Left" counter for the player...
+		require_once(l_r('lib/reliability.php'));		 
+		libReliability::updateReliability($this, 'gamesLeft', '+ 1');
+		 
 		// Register the civil disorder
 		$DB->sql_put(
 			"INSERT INTO wD_CivilDisorders ( gameID, userID, countryID, turn, bet, SCCount )
@@ -363,11 +379,12 @@ class processMember extends Member
 	 */
 	function setTakenOver()
 	{
-		$refundedPoints = $this->awardSupplement();
+// No refunds if your country was taken over...	
+//		$refundedPoints = $this->awardSupplement();
 
 		$but="";
-		if($refundedPoints)
-			$but=l_t(", but you have been refunded %s to make up your starting 100",$refundedPoints);
+//		if($refundedPoints)
+//			$but=l_t(", but you have been refunded %s to make up your starting 100",$refundedPoints);
 
 		$this->send('No','No',l_t("Your empire in civil disorder was taken over, so you have lost your ".
 			"bet in this game%s. Better luck next time!",$but));
@@ -454,6 +471,7 @@ class processMember extends Member
 
 		return $a;
 	}
+
 }
 
 ?>

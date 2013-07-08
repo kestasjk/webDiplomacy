@@ -1,0 +1,72 @@
+.variantWWIV .country0  { color: #CE7800 ! important; }  /* Global         */
+.variantWWIV .country1  { color: #0a23c0 ! important; }  /* Amazon-Empire  */
+.variantWWIV .country2  { color: #c49612 ! important; }  /* Argentina      */
+.variantWWIV .country3  { color: #0a31ff ! important; }  /* Australia      */
+.variantWWIV .country4  { color: #6f0d03 ! important; }  /* Brazil         */
+.variantWWIV .country5  { color: #6d1367 ! important; }  /* California     */
+.variantWWIV .country6  { color: #515100 ! important; }  /* Canada         */
+.variantWWIV .country7  { color: #00c81c ! important; }  /* Catholica      */
+.variantWWIV .country8  { color: #00fa2c ! important; }  /* Central-Asia   */
+.variantWWIV .country9  { color: #b9b9b9 ! important; }  /* Colombia       */
+.variantWWIV .country10 { color: #d73911 ! important; }  /* Congo          */
+.variantWWIV .country11 { color: #ff9c00 ! important; }  /* Cuba           */
+.variantWWIV .country12 { color: #fffd33 ! important; }  /* Egypt          */
+.variantWWIV .country13 { color: #eb53e9 ! important; }  /* Germany        */
+.variantWWIV .country14 { color: #101010 ! important; }  /* Illinois       */
+.variantWWIV .country15 { color: #fb3383 ! important; }  /* Inca-Empire    */
+.variantWWIV .country16 { color: #73710e ! important; }  /* India          */
+.variantWWIV .country17 { color: #47fb97 ! important; }  /* Indonesia      */
+.variantWWIV .country18 { color: #ff91d6 ! important; }  /* Iran           */
+.variantWWIV .country19 { color: #4797fb ! important; }  /* Japan          */
+.variantWWIV .country20 { color: #00b6b8 ! important; }  /* Kenya          */
+.variantWWIV .country21 { color: #007a7c ! important; }  /* Manchuria      */
+.variantWWIV .country22 { color: #8cba1c ! important; }  /* Mexico         */
+.variantWWIV .country23 { color: #686868 ! important; }  /* Nigeria        */
+.variantWWIV .country24 { color: #c5fb43 ! important; }  /* Oceania        */
+.variantWWIV .country25 { color: #ff0000 ! important; }  /* Philippines    */
+.variantWWIV .country26 { color: #00650b ! important; }  /* Quebec         */
+.variantWWIV .country27 { color: #a2a6fe ! important; }  /* Russia         */
+.variantWWIV .country28 { color: #ff6a6d ! important; }  /* Sichuan-Empire */
+.variantWWIV .country29 { color: #b7600a ! important; }  /* Song-Empire    */
+.variantWWIV .country20 { color: #00b56b ! important; }  /* South-Africa   */
+.variantWWIV .country31 { color: #5a60ad ! important; }  /* Texas          */
+.variantWWIV .country32 { color: #c32368 ! important; }  /* Thailand       */
+.variantWWIV .country33 { color: #1414a2 ! important; }  /* Turkey         */
+.variantWWIV .country34 { color: #ffd84e ! important; }  /* United-Kingdom */
+.variantWWIV .country35 { color: #bab76c ! important; }  /* United-States  */
+
+.variantWWIV .occupationBar1  { background-color: #0a23c0; } /* Amazon-Empire  */
+.variantWWIV .occupationBar2  { background-color: #c49612; } /* Argentina      */
+.variantWWIV .occupationBar3  { background-color: #0a31ff; } /* Australia      */
+.variantWWIV .occupationBar4  { background-color: #6f0d03; } /* Brazil         */
+.variantWWIV .occupationBar5  { background-color: #6d1367; } /* California     */
+.variantWWIV .occupationBar6  { background-color: #515100; } /* Canada         */
+.variantWWIV .occupationBar7  { background-color: #00c81c; } /* Catholica      */
+.variantWWIV .occupationBar8  { background-color: #00fa2c; } /* Central-Asia   */
+.variantWWIV .occupationBar9  { background-color: #b9b9b9; } /* Colombia       */
+.variantWWIV .occupationBar10 { background-color: #d73911; } /* Congo          */
+.variantWWIV .occupationBar11 { background-color: #ff9c00; } /* Cuba           */
+.variantWWIV .occupationBar12 { background-color: #fffd33; } /* Egypt          */
+.variantWWIV .occupationBar13 { background-color: #eb53e9; } /* Germany        */
+.variantWWIV .occupationBar14 { background-color: #fefefe; } /* Illinois       */
+.variantWWIV .occupationBar15 { background-color: #fb3383; } /* Inca-Empire    */
+.variantWWIV .occupationBar16 { background-color: #73710e; } /* India          */
+.variantWWIV .occupationBar17 { background-color: #47fb97; } /* Indonesia      */
+.variantWWIV .occupationBar18 { background-color: #ff91d6; } /* Iran           */
+.variantWWIV .occupationBar19 { background-color: #4797fb; } /* Japan          */
+.variantWWIV .occupationBar20 { background-color: #00b6b8; } /* Kenya          */
+.variantWWIV .occupationBar21 { background-color: #007a7c; } /* Manchuria      */
+.variantWWIV .occupationBar22 { background-color: #8cba1c; } /* Mexico         */
+.variantWWIV .occupationBar23 { background-color: #686868; } /* Nigeria        */
+.variantWWIV .occupationBar24 { background-color: #c5fb43; } /* Oceania        */
+.variantWWIV .occupationBar25 { background-color: #ff0000; } /* Philippines    */
+.variantWWIV .occupationBar26 { background-color: #00650b; } /* Quebec         */
+.variantWWIV .occupationBar27 { background-color: #a2a6fe; } /* Russia         */
+.variantWWIV .occupationBar28 { background-color: #ff6a6d; } /* Sichuan-Empire */
+.variantWWIV .occupationBar29 { background-color: #b7600a; } /* Song-Empire    */
+.variantWWIV .occupationBar30 { background-color: #00b56b; } /* South-Africa   */
+.variantWWIV .occupationBar31 { background-color: #5a60ad; } /* Texas          */
+.variantWWIV .occupationBar32 { background-color: #c32368; } /* Thailand       */
+.variantWWIV .occupationBar33 { background-color: #1414a2; } /* Turkey         */
+.variantWWIV .occupationBar34 { background-color: #ffd84e; } /* United-Kingdom */
+.variantWWIV .occupationBar35 { background-color: #bab76c; } /* United-States  */

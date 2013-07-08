@@ -66,6 +66,51 @@ class processMembers extends Members
 	}
 
 	/**
+	 * Send message about the game phase being extended
+	 */
+	function notifyExtended()
+	{
+		require_once "lib/gamemessage.php";
+		$msg= "Per 2/3 majority vote the gamephase got extended by 4 days.\n(Voters: ";
+		foreach($this->ByStatus['Playing'] as $Member)
+			if (in_array('Extend',$Member->votes))
+				$msg.= $Member->country . ' / ';
+		$msg=rtrim($msg,' /') . ")"; 
+		libGameMessage::send(0, 'GameMaster', $msg , $this->Game->id);		
+		$this->sendToPlaying('No',"The gamephase got extended by 4 days.");
+	}
+	
+	/**
+	 * Clear all extend votes from each Member for the next phase
+	 */
+	function clearExtendVotes()
+	{
+		global $DB;
+		list($clearTurn) = $DB->sql_row('
+			SELECT turn + 2 FROM wD_GameMessages WHERE
+				message LIKE "%voted for a Extend%" AND fromCountryID = 0 AND gameID = '.$this->Game->id.'
+				ORDER BY turn DESC LIMIT 1');
+		
+		if ($clearTurn != $this->Game->turn) return;
+			
+		$extVoteSet=false;
+		foreach($this->ByStatus['Playing'] as $Member)
+		{
+			if (in_array('Extend',$Member->votes))
+			{
+				$extVoteSet=true;
+				unset($Member->votes[array_search('Extend', $Member->votes)]);
+				$DB->sql_put("UPDATE wD_Members SET votes='".implode(',',$Member->votes)."' WHERE id=".$Member->id);	
+			}
+		}
+		if ($extVoteSet)
+		{
+			require_once "lib/gamemessage.php";
+			libGameMessage::send(0, 'GameMaster', 'Extend-request didn\'t reach 2/3 majority. All extend-votes cleared.' , $this->Game->id);
+		}
+	}
+	
+	/**
 	 * Count the units and supply centers of the members in this game, and refresh the
 	 * Member objects and update the member records.
 	 */
@@ -243,12 +288,25 @@ class processMembers extends Members
 			// If more than one is left over see if any of them have supplyCenterTarget or more supply centers
 			foreach($this->ByStatus['Playing'] as $Member)
 			{
-				if ( $this->Game->Variant->supplyCenterTarget <= $Member->supplyCenterNo )
-					return $Member;
+				if ( $this->Game->targetSCs > 0 )
+				{
+					if ( $this->Game->targetSCs <= $Member->supplyCenterNo )
+					{
+						return $this->check_for_Winner_that_works_with_same_SC_count();
+					}
+				}
+				elseif ( $this->Game->Variant->supplyCenterTarget <= $Member->supplyCenterNo )
+				{
+					return $this->check_for_Winner_that_works_with_same_SC_count();
+				}
 				// The players which have lost go into 'Survived' mode when the other player is set to Won
 			}
 		}
-
+		
+		// Do an additional check if we reached maxTurns:
+		if (($this->Game->turn == ($this->Game->maxTurns - 1)) && ($this->Game->maxTurns > 0))
+			return $this->check_for_Winner_that_works_with_same_SC_count();
+		
 		return false;
 	}
 
@@ -267,6 +325,25 @@ class processMembers extends Members
 
 		foreach($this->ByStatus['Playing'] as $Member)
 			$Member->setDrawn( $winnings );
+		$this->writeLog();
+	}
+	
+	/**
+	 * Set all but one members to defeated. 
+	 */
+	function setConcede()
+	{
+		$this->prepareLog();
+		assert('count($this->ByStatus[\'Playing\']) > 0');
+
+		foreach($this->ByStatus['Left'] as $Member)
+			$Member->setResigned();
+
+		foreach($this->ByStatus['Playing'] as $Member)
+		{
+			if (in_array('Concede',$Member->votes))
+				$Member->setDefeated();
+		}
 		$this->writeLog();
 	}
 
@@ -537,12 +614,52 @@ class processMembers extends Members
 		if ( !$this->Game->isJoinable() )
 			throw new Exception(l_t("You cannot join this game."));
 
+		// Check for additional requirements:
+		require_once(l_r('lib/reliability.php'));		 
+		if ( $this->Game->minPhases > $User->phasesPlayed)
+			throw new Exception("You did not play enough phases to join this game. (Required:".$this->Game->minPhases." / You:".$User->phasesPlayed.")");
+		if ( $this->Game->minRating > abs(libReliability::getReliability($User)) )
+			throw new Exception("You reliable-rating is too low to join this game. (Required:".$this->Game->minRating."% / You:".libReliability::getReliability($User)."%)");
+		if ( $this->Game->maxLeft < $User->gamesLeft )
+			throw new Exception("You went CD in too many games. (Required: not more than ".$this->Game->maxLeft." / You:".$User->gamesLeft.")");
+
+		// Handle RL-relations
+		require_once ("lib/relations.php");			
+		if ($message = libRelations::checkRelationsGame($User, $this->Game))
+			throw new Exception($message);
+
+		// Check for reliability-rating:
+		require_once(l_r('lib/reliability.php'));		 
+		if ( count($this->Game->Variant->countries)>2 && $this->Game->phase == 'Pre-game' && $message = libReliability::isReliable($User))
+			libHTML::notice('Reliable rating not high enough', $message);
+
+		// Check if there is a block against a player
+		list($muted) = $DB->sql_row("SELECT count(*) FROM wD_Members AS m
+									LEFT JOIN wD_BlockUser AS f ON ( m.userID = f.userID )
+									LEFT JOIN wD_BlockUser AS t ON ( m.userID = t.blockUserID )
+								WHERE m.gameID = ".$this->Game->id." AND (f.blockUserID =".$User->id." OR t.userID =".$User->id.")");
+		if ($muted > 0)
+			throw new Exception("You can't join. A player in this game has you blocked or you blocked a player in this game");
+				
 		// We can join, the only question is how?
 
 		if ( $this->Game->phase == 'Pre-game' )
 		{
+		
+			// Check if there is a player with no countryID => Game wants random countrydistribution.
+			foreach ($this->ByUserID as $MemberCheck)
+				if ($MemberCheck->countryID == 0)
+					$countryID = -1;
+		
 			// Creates the Member record, the member object, and records the bet
-			processMember::create($User->id, $this->Game->minimumBet);
+			if( $countryID!=-1 )
+			{
+				if (isset($this->ByCountryID[$countryID]))
+					throw new Exception("You cannot join this game as ".$this->Game->Variant->countries[$countryID -1]." someone else was faster.");
+				processMember::create($User->id, $this->Game->minimumBet,$countryID);
+			}
+			else
+				processMember::create($User->id, $this->Game->minimumBet);
 
 			$M = $this->ByUserID[$User->id];
 			if ($this->Game->isMemberInfoHidden() )
@@ -556,6 +673,7 @@ class processMembers extends Members
 				// Ready to start
 				$this->Game->resetMinimumBet();
 			}
+			
 		}
 		else
 		{
@@ -568,7 +686,7 @@ class processMembers extends Members
 			if ( $CD->status != 'Left' )
 				throw new Exception(l_t('The player selected is not in civil disorder.'));
 
-			$bet = $CD->pointsValue();
+			$bet = ( method_exists ('Config','adjustCD') ? Config::adjustCD($CD->pointsValue()) : $CD->pointsValue() );
 			if ( $User->points < $bet )
 				throw new Exception(l_t("You do not have enough points to take over that countryID."));
 
@@ -587,12 +705,19 @@ class processMembers extends Members
 			unset($this->ByUserID[$CD->userID]);
 			unset($this->ByStatus['Left'][$CD->id]);
 
+			$playerLeftID=$CD->userID;
 			$CD->userID = $User->id;
 			$CD->status = 'Playing';
 			$CD->missedPhases = 0;
 			$CD->orderStatus->Ready=false;
 			$CD->points = $User->points;
+			$CD->missedMoves = $User->missedMoves;
+			$CD->phasesPlayed = $User->phasesPlayed;
+			$CD->gamesLeft = $User->gamesLeft;
 
+			if (($User->leftBalanced < $User->gamesLeft) && (count($this->Game->Variant->countries) > 2) && ($this->Game->phaseMinutes > 30) )
+				$DB->sql_put("UPDATE wD_Users SET leftBalanced = leftBalanced +1 WHERE id=".$User->id);		
+			
 			$this->ByUserID[$CD->userID] = $CD;
 			$this->ByStatus['Playing'][$CD->id] = $CD;
 
@@ -602,12 +727,23 @@ class processMembers extends Members
 			$CDCountryName=$this->Game->Variant->countries[$CD->countryID-1];
 
 			if ( $this->Game->isMemberInfoHidden() )
-				$this->sendExcept($CD,'No',l_t('Someone has taken over %s.',$CDCountryName));
+//				$this->sendExcept($CD,'No',l_t('Someone has taken over %s.',$CDCountryName));
+			{
+				require_once "lib/gamemessage.php";
+				$msg = 'Someone has taken over '.$CDCountryName.' replacing "<a href="profile.php?userID='.$playerLeftID.'">'.$CD->username.'</a>". Reconsider your alliances.';
+				libGameMessage::send(0, 'GameMaster', $msg , $this->Game->id);
+				$this->sendExcept($CD,'No','Someone has taken over '.$CDCountryName.'.');
+			}
 			else
-				$this->sendExcept($CD,'No',l_t('%s has taken over %s.',$User->username,$CDCountryName));
-			$CD->send('No','No',l_t('You took over %s! Good luck',$CDCountryName));
+			{
+				require_once "lib/gamemessage.php";
+				$msg = $User->username.' has taken over '.$CDCountryName.' replacing "<a href="profile.php?userID='.$playerLeftID.'">'.$CD->username.'</a>". Reconsider your alliances.';
+				libGameMessage::send(0, 'GameMaster', $msg, $this->Game->id);
+				$this->sendExcept($CD,'No',$User->username.' has taken over '.$CDCountryName.'.');
+			}
+			$CD->send('No','No','You took over '.$CDCountryName.'! Good luck');
 		}
-
+			
 		$this->Game->gamelog(l_t('New member joined'));
 
 		$this->joinedRedirect();
@@ -638,6 +774,57 @@ class processMembers extends Members
 			$a['members'][] = $Member->processStatus();
 
 		return $a;
+	}
+	
+	/**
+	 * Check the previous turns if more than one players reach the target SCs at the same turn.
+	 *
+	 * @return processMember The winning Member.
+	 */
+	function check_for_Winner_that_works_with_same_SC_count()
+	{
+		$winners=array();
+		$maxSC=0;
+		foreach($this->ByStatus['Playing'] as $Member)
+		{
+			if ( $Member->supplyCenterNo > $maxSC )
+			{
+				$maxSC=$Member->supplyCenterNo;
+				$winners=array();
+			}	
+			if ( (count($winners)==0) or ($Member->supplyCenterNo == $maxSC) )
+				$winners[]=$Member->countryID;
+		}
+		if (count($winners) > 1)
+		{
+			global $DB;
+			for ($turn=$this->Game->turn; $turn>-1; $turn--)
+			{
+				$sql='SELECT ts.countryID, COUNT(*) AS ct FROM wD_TerrStatusArchive ts 
+						JOIN wD_Territories as t ON (t.id = ts.terrID AND t.mapID='.$this->Game->Variant->mapID.')
+					WHERE t.supply="Yes" AND ts.turn='.$turn.' AND ts.gameID='.$this->Game->id.'
+						AND ts.countryID IN ('.implode(', ', $winners).')
+					GROUP BY ts.countryID 
+					HAVING ct = (
+						SELECT COUNT(*) AS ct2 FROM wD_TerrStatusArchive ts2
+							JOIN wD_Territories as t2 ON (t2.id = ts2.terrID AND t2.mapID='.$this->Game->Variant->mapID.')
+						WHERE t2.supply="Yes" AND ts2.turn='.$turn.' AND ts2.gameID='.$this->Game->id.'
+							AND ts2.countryID IN ('.implode(', ', $winners).')
+						GROUP BY ts2.countryID ORDER BY ct2 DESC LIMIT 1)';
+				$tabl = $DB->sql_tabl($sql);
+				$winners=array();
+				while( list($countryID, $sc) = $DB->tabl_row($tabl) )
+					$winners[]=$countryID;
+				// Exit loop if only one winner is left...
+				if (count($winners) == 1)
+					$turn=0;
+			}
+		}
+		// Still no winner found:
+		if (count($winners) > 1)
+			$winners[0]=$winners[rand(0,count($winners)-1)];
+			
+		return $this->ByCountryID[$winners[0]];		
 	}
 }
 ?>

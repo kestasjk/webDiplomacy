@@ -36,11 +36,17 @@ and the rules of webDiplomacy.</li>
 <li><a href="faq.php">FAQ</a></li>
 <li class="formlistdesc">The webDiplomacy FAQ.</li>
 
-<li><a href="rules.php">Rulebook</a></li>
-<li class="formlistdesc">The webDiplomacy rulebook.</li>
+<li><a href="features.php">VDiplomacy features</a></li>
+<li class="formlistdesc">Features you should be aware of (not available at webdiplomacy.net).</li>
+
+<li><a href="rules.php">Etiquette</a></li>
+<li class="formlistdesc">The webDiplomacy etiquette.</li>
+
+<li><a href="hof.php">vDip Hall of fame</a></li>
+<li class="formlistdesc">The pros of this server; the top 100! based on an Elo-like algorithm</li>
 
 <li><a href="halloffame.php">Hall of fame</a></li>
-<li class="formlistdesc">The pros of this server; the top 100!</li>
+<li class="formlistdesc">The pros of this server; the top 100! based on total DPoints.</li>
 
 <li><a href="points.php">webDiplomacy points</a></li>
 <li class="formlistdesc">What points are for, how to win them, and how to get into the hall of fame.</li>

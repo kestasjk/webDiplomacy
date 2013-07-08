@@ -85,6 +85,21 @@ class libHTML
 		return ' <img src="'.l_s('images/icons/bronze.png').'" alt="(B)" title="'.l_t('Donator - bronze').'" />';
 	}
 
+	static function devbronze()
+	{
+		return ' <img src="images/icons/dev_bronze.png" alt="(B)" title="Developer - bronze" />';
+	}
+
+	static function devsilver()
+	{
+		return ' <img src="images/icons/dev_silver.png" alt="(B)" title="Developer - silver" />';
+	}
+
+	static function devgold()
+	{
+		return ' <img src="images/icons/dev_gold.png" alt="(B)" title="Developer - gold" />';
+	}
+
 	/**
 	 * The points icon
 	 * @return string
@@ -93,7 +108,7 @@ class libHTML
 	{
 		return ' <img src="'.l_s('images/icons/points.png').'" alt="D" title="'.l_t('webDiplomacy points').'" />';
 	}
-
+	
 	static function forumMessage($threadID, $messageID)
 	{
 		return '<a style="'.self::$hideStyle.'" class="messageIconForum" threadID="'.$threadID.'" messageID="'.$messageID.'" href="forum.php?threadID='.$threadID.'#'.$messageID.'">'.
@@ -369,11 +384,26 @@ class libHTML
 	 */
 	static public function prebody ( $title )
 	{
+		/* Instead of many small css files only load one big file:
 		$variantCSS=array();
 		foreach(Config::$variants as $variantName)
 			$variantCSS[] = '<link rel="stylesheet" href="'.STATICSRV.l_s('variants/'.$variantName.'/resources/style.css').'" type="text/css" />';
 		$variantCSS=implode("\n",$variantCSS);
-
+		*/
+		$CSSname = libCache::Dirname("css")."/variants-".md5(filesize('config.php')).".css";
+		
+		if (!file_exists($CSSname))
+		{
+			$variantCSS = '';
+			foreach(Config::$variants as $variantName)
+				$variantCSS .= file_get_contents('variants/'.$variantName.'/resources/style.css')."\n";
+			$handle = fopen($CSSname, 'w');
+			fwrite($handle, $variantCSS);
+			fclose($handle);
+		}
+		$variantCSS = '<link rel="stylesheet" href="'.$CSSname.'" type="text/css" />';
+		// End alternate CSS file patch
+		
 		/*
 		 * This line when included in the header caused certain translated hyphenated letters to come out as black diamonds with question marks.
 		 * 
@@ -385,13 +415,15 @@ class libHTML
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 		<meta http-equiv="Content-Style-Type" content="text/css" />
 		<meta name="robots" content="index,follow" />
-		<meta name="description" content="'.l_t('webDiplomacy is an online, multiplayer, turn-based strategy game that lets you play Diplomacy online.').'" />
+		<meta name="description" content="'.l_t('vDiplomacy is an online, multiplayer, turn-based strategy game that lets you play Diplomacy online.').'" />
 		<meta name="keywords" content="'.l_t('diplomacy,diplomacy game,online diplomacy,classic diplomacy,web diplomacy,diplomacy board game,play diplomacy,php diplomacy').'" />
 		<link rel="shortcut icon" href="'.STATICSRV.l_s('favicon.ico').'" />
 		<link rel="icon" href="'.STATICSRV.l_s('favicon.ico').'" />
 		<link rel="stylesheet" href="'.CSSDIR.l_s('/global.css').'" type="text/css" />
 		<link rel="stylesheet" href="'.CSSDIR.l_s('/gamepanel.css').'" type="text/css" />
 		<link rel="stylesheet" href="'.CSSDIR.l_s('/home.css').'" type="text/css" />
+
+		<link rel="apple-touch-icon-precomposed" href="'.STATICSRV.'apple-touch-icon.png" />
 		'.$variantCSS.'
 		<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/prototype.js').'"></script>
 		<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/scriptaculous.js').'"></script>
@@ -400,7 +432,11 @@ class libHTML
 		<script type="text/javascript">
 		STATICSRV="'.STATICSRV.'";
 		</script>
-		<title>'.l_t('%s - webDiplomacy',$title).'</title>
+		<title>'.l_t('%s - vDiplomacy',$title).'</title>
+		
+		<script type ="text/javascript" src="contrib/cookieWarning/warnCookies.js"></script>
+		<link href="contrib/cookieWarning/cookies.css" title="Cookies\' warning" rel="stylesheet" type="text/css" />
+		
 	</head>';
 	}
 
@@ -508,10 +544,10 @@ class libHTML
 		global $User, $DB;
 
 		$tabl = $DB->sql_tabl(
-			"SELECT g.id, g.variantID, g.name, m.orderStatus, m.countryID, (m.newMessagesFrom+0) as newMessagesFrom, g.processStatus
+			"SELECT g.id, g.variantID, g.name, m.orderStatus, m.countryID, (m.newMessagesFrom+0) as newMessagesFrom, g.processStatus, g.phase
 			FROM wD_Members m
 			INNER JOIN wD_Games g ON ( m.gameID = g.id )
-			WHERE m.userID = ".$User->id." AND ( m.status='Playing' OR m.status='Left' )
+			WHERE m.userID = ".$User->id." AND (  ( m.status='Playing' OR m.status='Left' ) OR NOT (m.newMessagesFrom+0) = 0 )
 				AND ( ( NOT m.orderStatus LIKE '%Ready%' AND NOT m.orderStatus LIKE '%None%' ) OR NOT ( (m.newMessagesFrom+0) = 0 ) )");
 
 		$gameIDs = array();
@@ -534,6 +570,28 @@ class libHTML
 				'</a></span> ';
 		}
 
+/*****************************************************
+*  Alert the mods about a new Mesage in the ModForum *
+*****************************************************/
+	if ( $User->notifications->ModForum && (strpos($_SERVER["REQUEST_URI"], 'modforum.php') === false) )
+	{
+		$gameNotifyBlock .= '<span class=""><a href="modforum.php">'.
+			'New Post in Modforum <img src="images/icons/mail.png" alt="New private messages" title="New private messages!" />'.
+			'</a></span> ';
+	}
+// END ModMessage
+
+/*****************************************************
+* Alter a player about a change in the CountrySwitch *
+*****************************************************/
+	if ( $User->notifications->CountrySwitch && (strpos($_SERVER["REQUEST_URI"], 'tab=CountrySwitch') === false) )
+	{
+		$gameNotifyBlock .= '<span class=""><a href="usercp.php?tab=CountrySwitch">'.
+			'Country Switch <img src="images/icons/alert.png" alt="Change in country-switch settings" title="Change in country-switch settings!" />'.
+			'</a></span> ';
+	}
+// END CountrySwitch
+			
 		foreach ( $gameIDs as $gameID )
 		{
 			$notifyGame = $notifyGames[$gameID];
@@ -553,7 +611,8 @@ class libHTML
 
 			$gameNotifyBlock .= ' ';
 
-			$gameNotifyBlock .= $notifyGame['orderStatus']->icon();
+			if ( $notifyGame['phase'] != 'Pre-game' && $notifyGame['phase'] != 'Finished' )
+				$gameNotifyBlock .= $notifyGame['orderStatus']->icon();
 
 			if ( $notifyGame['newMessagesFrom'] )
 				$gameNotifyBlock .= '<img src="'.l_s('images/icons/mail.png').'" alt="'.l_t('New messages').'" title="'.l_t('New messages!').'" />';
@@ -610,6 +669,7 @@ class libHTML
 		$links['translating.php']=array('name'=>'Translating', 'inmenu'=>FALSE);
 		$links['points.php']=array('name'=>'Points', 'inmenu'=>FALSE);
 		$links['halloffame.php']=array('name'=>'Hall of fame', 'inmenu'=>FALSE);
+		$links['hof.php']=array('name'=>'Hall of fame', 'inmenu'=>FALSE);
 		$links['developers.php']=array('name'=>'Developer info', 'inmenu'=>FALSE);
 		$links['datc.php']=array('name'=>'DATC', 'inmenu'=>FALSE);
 		$links['variants.php']=array('name'=>'Variants', 'inmenu'=>FALSE);
@@ -628,7 +688,23 @@ class libHTML
 			$links['logon.php']['inmenu']=false;
 			$links['register.php']['inmenu']=false;
 		}
-
+/************************
+*INPUT FROM MENUE HACK: *
+*************************/            
+		if (isset(Config::$top_menue))
+		{
+			if (array_key_exists('all',Config::$top_menue))
+				$links = array_merge($links,Config::$top_menue['all']);
+				
+			if ( is_object($User) )
+			{
+				if (array_key_exists('user',Config::$top_menue))
+					$links = array_merge($links,Config::$top_menue['user']);
+				if (( $User->type['Admin'] or $User->type['Moderator'] ) && array_key_exists('admin',Config::$top_menue))
+					$links = array_merge($links,Config::$top_menue['admin']);
+			}
+		}
+// END HACK
 		return $links;
 	}
 
@@ -648,7 +724,7 @@ class libHTML
 				<div id="header">
 					<div id="header-container">
 						<a href="./">
-							<img id="logo" src="'.l_s('images/logo.png').'" alt="'.l_t('webDiplomacy').'" />
+							<img id="logo" src="'.l_s('images/vlogo.png').'" alt="'.l_t('vDiplomacy').'" />
 						</a>';
 
 		if ( is_object( $User ) )
@@ -841,12 +917,15 @@ class libHTML
 	}
 
 	static private function footerCopyright() {
+		// Cookie-check as requested by the EU-laws...
+		$cookiesWarning='<div id="cookiesWarning"></div><script language="JavaScript" type="text/javascript">checkCookieExist();</script>';
+	
 		// Version, sourceforge and HTML compliance logos
-		return l_t('webDiplomacy version <strong>%s</strong>',number_format(VERSION/100,2)).'<br />
-			<a href="http://sourceforge.net/projects/phpdiplomacy">
-				<img alt="webDiplomacy @ Sourceforge"
-					src="http://sourceforge.net/sflogo.php?group_id=125692" />
-			</a>';
+		return $cookiesWarning.l_t('based on webDiplomacy version <strong>%s</strong> vDip.%s',number_format(VERSION/100,2),VDIPVERSION.'<br />');
+//			<a href="http://sourceforge.net/projects/phpdiplomacy">
+//				<img alt="webDiplomacy @ Sourceforge"
+//					src="http://sourceforge.net/sflogo.php?group_id=125692" />
+//			</a>';
 	}
 
 	/*
@@ -949,6 +1028,7 @@ class libHTML
 				this.username="'.htmlentities($User->username).'";
 				this.points='.$User->points.'
 				this.lastMessageIDViewed='.$User->lastMessageIDViewed.';
+				this.lastModMessageIDViewed='.$User->lastModMessageIDViewed.';
 				this.timeLastSessionEnded='.$User->timeLastSessionEnded.';
 				this.token="'.md5(Config::$secret.$User->id.'Array').'";
 			}
@@ -983,9 +1063,58 @@ class libHTML
 		
 		if( Config::$debug )
 			$buf .= '<br /><strong>JavaScript localization lookup failures:</strong><br /><span id="jsLocalizationDebug"></span>';
+		if (isset(Config::$piwik))
+			$buf .= '<script type="text/javascript" src="'.Config::$piwik.'piwik.js"></script>
+			<script type="text/javascript">
+				try {
+					var piwikTracker = Piwik.getTracker("'.Config::$piwik.'piwik.php", 1);
+					piwikTracker.setCustomVariable(1, "User", "'.htmlentities($User->username).'", "visit");
+					piwikTracker.trackPageView();
+					piwikTracker.enableLinkTracking();
+				} catch( err ) {}
+			</script><noscript><p><img src="'.Config::$piwik.'piwik.php?idsite=1" style="border:0" alt="" /></p></noscript>';
 
 		return $buf;
 	}
+	
+	/**
+	 * The icon to block an unblocked player, optionally with link
+	 * @param $url URL to link to
+	 * @return string
+	 */
+	static function unblocked($url=false)
+	{
+		$buf = '';
+		if($url) $buf .= '<a href="'.$url.'">';
+		$buf .= '<img src="images/icons/good.png" alt="Block player" title="Block player" />';
+		if($url) $buf .= '</a>';
+		return $buf;
+	}
+
+	/**
+	 * The icon to unblocked an block player, optionally with link
+	 * @param $url URL to link to
+	 * @return string
+	 */
+	static function blocked($url=false)
+	{
+		$buf = '';
+		if($url) $buf .= '<a href="'.$url.'">';
+		$buf .= '<img src="images/icons/bad.png" alt="Blocked. Click to un-block." title="Blocked. Click to un-block." />';
+		if($url) $buf .= '</a>';
+		return $buf;
+	}
+	
+	/**
+	 * The vpoints icon
+	 * @return string
+	 */
+	static function vpoints()
+	{
+		return ' <img src="images/icons/vpoints.png" alt="D" title="vDiplomacy points" />';
+	}
+
+
 }
 
 ?>

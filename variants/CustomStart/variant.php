@@ -4,7 +4,7 @@ class CustomStartVariant extends FleetRomeVariant {
 	public $id=4;
 	//public $mapID=1;
 	public $name='CustomStart';
-	public $fullName='Classic with a custom start';
+	public $fullName='Classic - With a custom start';
 	public $description='The same as the standard map, except the first phase is Builds, allowing a customized start.';
 	//public $author='Avalon Hill';
 

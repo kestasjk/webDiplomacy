@@ -1,0 +1,59 @@
+@CHARSET "ISO-8859-1";
+
+/*
+All variant HTML will be stored within an element with a classname variant[variantName]. Using this all variant CSS 
+can be loaded at the same time, and will apply itself appropriately. 
+
+This is convenient and efficient, but does make it one of the only things that can't be inherited. Each variant 
+needs to define these CSS values even if they're the same as another variant using the same map.
+
+Occupation bars and country text colors need to be defined here.
+*/
+
+/* Order: ('Global'), 'England', 'France', 'Italy', 'Germany', 'Austria', 'Turkey', 'Russia' */
+.variantClassicNoNeutrals .country0 {
+	color: #CE7800 ! important;
+}
+.variantClassicNoNeutrals .country1 {
+	color: #DD51BD ! important;
+}
+.variantClassicNoNeutrals .country2 {
+	color: #007BA5 ! important;
+}
+.variantClassicNoNeutrals .country3 {
+	color: #259901 ! important;
+}
+.variantClassicNoNeutrals .country4 {
+	color: #8B481A ! important;
+}
+.variantClassicNoNeutrals .country5 {
+	color: #D62929 ! important;
+}
+.variantClassicNoNeutrals .country6 {
+	color: #b8ad00 ! important;
+}
+.variantClassicNoNeutrals .country7 {
+	color: #6F005D ! important;
+}
+
+.variantClassicNoNeutrals .occupationBar1 {
+	background-color: #EFC4E4;
+}
+.variantClassicNoNeutrals .occupationBar2 {
+	background-color: #79AFC6;
+}
+.variantClassicNoNeutrals .occupationBar3 {
+	background-color: #A4C499;
+}
+.variantClassicNoNeutrals .occupationBar4 {
+	background-color: #A08A75;
+}
+.variantClassicNoNeutrals .occupationBar5 {
+	background-color: #C48F85;
+}
+.variantClassicNoNeutrals .occupationBar6 {
+	background-color: #EAEAAF;
+}
+.variantClassicNoNeutrals .occupationBar7 {
+	background-color: #A87E9F;
+}

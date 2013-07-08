@@ -21,7 +21,8 @@
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 require_once(l_r('objects/notice.php'));
-require_once(l_r('objects/basic/set.php'));
+require_once('objects/basic/set.php');
+require_once('lib/reliability.php');
 
 /**
  * Holds information on a user for display, or to manage certain user related functions such as logging
@@ -124,8 +125,8 @@ class User {
 	 * @var array
 	 */
 	public $type;
-
-	/**
+	
+ 	/**
 	 * Notification flags; an array of notification flags, each set to true if notification should be done.
 	 * @var array
 	 */
@@ -175,8 +176,44 @@ class User {
 	 */
 	public $points;
 
+	/**
+	 * Number of Missed moves and phases played by the user...
+	 * @var int
+	 */
+	public $missedMoves;
+	public $phasesPlayed;
+	public $gamesLeft;
+	public $leftBalanced;
+	
 	public $lastMessageIDViewed;
+	public $lastModMessageIDViewed;
 
+	// Tag if he knows other people on this site in RL...
+	public $rlGroup;
+	
+	/*
+	 * Does the player want to display the country names in the global chatbox or on the map ('Yes' or 'No') 
+	 * usefull for colorblind people
+	 */
+	public $showCountryNames;	
+	public $showCountryNamesMap;	
+	
+	/*
+	 * Enhance the map-colors for colorblind people...
+	 */
+	public $colorCorrect;
+	
+	/*
+	 * How to sort the units in the javascript
+	 */
+	public $unitOrder;
+	public $sortOrder;
+	
+	/*
+	 * OptIn for the point'nClick Map-code
+	 */
+	public $pointNClick;
+	
 	/**
 	 * 'No' if the player can submit mod reports, 'Yes' if they are muted
 	 * @var string
@@ -312,7 +349,13 @@ class User {
 		$SQLVars = array();
 
 		$available = array('username'=>'', 'password'=>'', 'passwordcheck'=>'', 'email'=>'',
-					'hideEmail'=>'','showEmail'=>'', 'homepage'=>'','comment'=>'');
+					'showCountryNames'=>'',
+					'showCountryNamesMap'=>'',
+					'colorCorrect'=>'',
+					'sortOrder'=>'',
+					'unitOrder'=>'',
+					'pointNClick'=>'',
+				'hideEmail'=>'','showEmail'=>'', 'homepage'=>'','comment'=>'');
 
 		$userForm = array();
 
@@ -380,6 +423,76 @@ class User {
 
 			$SQLVars['comment'] = $userForm['comment'];
 		}
+		
+		if( isset($userForm['showCountryNames']) )
+		{
+			if ( $userForm['showCountryNames'] == "Yes" )
+				$SQLVars['showCountryNames'] = "Yes";
+			else
+				$SQLVars['showCountryNames'] = "No";
+		}
+		
+		if( isset($userForm['showCountryNamesMap']) )
+		{
+			if ( $userForm['showCountryNamesMap'] == "Yes" )
+				$SQLVars['showCountryNamesMap'] = "Yes";
+			else
+				$SQLVars['showCountryNamesMap'] = "No";
+		}
+			
+		if( isset($userForm['colorCorrect']) )
+		{
+			if ( $userForm['colorCorrect'] == "Protanope" )
+				$SQLVars['colorCorrect'] = "Protanope";
+			elseif ( $userForm['colorCorrect'] == "Deuteranope" )
+				$SQLVars['colorCorrect'] = "Deuteranope";
+			elseif ( $userForm['colorCorrect'] == "Tritanope" )
+				$SQLVars['colorCorrect'] = "Tritanope";
+			else
+				$SQLVars['colorCorrect'] = "Off";
+		}
+		
+		if( isset($userForm['sortOrder']) )
+		{
+			if ( $userForm['sortOrder'] == "TerrName" )
+				$SQLVars['sortOrder'] = "TerrName";
+			elseif ( $userForm['sortOrder'] == "NorthSouth" )
+				$SQLVars['sortOrder'] = "NorthSouth";
+			elseif ( $userForm['sortOrder'] == "EastWest" )
+				$SQLVars['sortOrder'] = "EastWest";
+			else
+				$SQLVars['sortOrder'] = "BuildOrder";
+		}
+		
+		if( isset($userForm['unitOrder']) )
+		{
+			if ( $userForm['unitOrder'] == "FA" )
+				$SQLVars['unitOrder'] = "FA";
+			elseif ( $userForm['unitOrder'] == "AF" )
+				$SQLVars['unitOrder'] = "AF";
+			else
+				$SQLVars['unitOrder'] = "Mixed";
+		}
+		
+		if( isset($userForm['pointNClick']) )
+		{
+			if ( $userForm['pointNClick'] == "Yes" )
+				$SQLVars['pointNClick'] = "Yes";
+			else
+				$SQLVars['pointNClick'] = "No";
+		}
+
+		if( isset($userForm['locale']) )
+		{
+			if( !in_array($userForm['locale'], Config::$availablelocales) )
+			{
+				$errors[] = "Specified locale not available";
+			}
+			else
+			{
+				$SQLVars['locale'] = $userForm['locale'];
+			}
+		}
 
 		return $SQLVars;
 	}
@@ -424,10 +537,22 @@ class User {
 			u.timeJoined,
 			u.timeLastSessionEnded,
 			u.points,
+			u.lastModMessageIDViewed,
 			u.lastMessageIDViewed,
 			u.muteReports,
 			u.silenceID,
 			u.notifications,
+			u.missedMoves,
+			u.phasesPlayed,			
+			u.gamesLeft,
+			u.rlGroup,
+			u.showCountryNames,
+			u.showCountryNamesMap,
+			u.colorCorrect,
+			u.unitOrder,
+			u.sortOrder,			
+			u.leftBalanced,
+			u.pointNClick,
 			IF(s.userID IS NULL,0,1) as online
 			FROM wD_Users u
 			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
@@ -445,7 +570,8 @@ class User {
 
 		// Convert an array of types this user has into an array of true/false indexed by type
 		$this->type = explode(',', $this->type);
-		$validTypes = array('System','Banned','User','Moderator','Guest','Admin','Donator','DonatorBronze','DonatorSilver','DonatorGold','DonatorPlatinum','ForumModerator');
+		$validTypes = array('System','Banned','User','Moderator','Guest','Admin','Donator','DonatorBronze','DonatorSilver','DonatorGold','DonatorPlatinum','ForumModerator'
+								,'DevBronze','DevSilver','DevGold');
 		$types = array();
 		foreach($validTypes as $type)
 		{
@@ -459,6 +585,8 @@ class User {
 			}
 		}
 		$this->type = $types;
+		
+		$this->notifications=new setUserNotifications($this->notifications);
 
 		$this->notifications=new setUserNotifications($this->notifications);
 
@@ -493,7 +621,7 @@ class User {
 		return $buffer;
 	}
 
-	static function typeIcon($type) {
+	static function typeIcon($type, $showMod=true) {
 		// This must take either a list as it comes from a SQL query, or a built-in $this->type['Admin'] style array
 		if( is_array($type) ) {
 			$types=array();
@@ -506,7 +634,7 @@ class User {
 
 		$buf='';
 
-		if( strstr($type,'Moderator') )
+		if( strstr($type,'ForumModerator') && $showMod==true)
 			$buf .= ' <img src="'.l_s('images/icons/mod.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
 		elseif(strstr($type,'Banned') )
 			$buf .= ' <img src="'.l_s('images/icons/cross.png').'" alt="X" title="'.l_t('Banned').'" />';
@@ -519,6 +647,13 @@ class User {
 			$buf .= libHTML::silver();
 		elseif( strstr($type,'DonatorBronze') )
 			$buf .= libHTML::bronze();
+			
+		if( strstr($type,'DevGold') )
+			$buf .= libHTML::devgold();
+		elseif( strstr($type,'DevSilver') )
+			$buf .= libHTML::devsilver();
+		elseif( strstr($type,'DevBronze') )
+			$buf .= libHTML::devbronze();
 
 		return $buf;
 	}
@@ -899,11 +1034,43 @@ class User {
 		$gameID = (int)$gameID;
 		$muteCountryID = (int)$muteCountryID;
 
-		if( $this->isCountryMuted($gameID,$muteCountryID) )
-			$DB->sql_put("DELETE FROM wD_MuteCountry WHERE userID=".$this->id." AND gameID=".$gameID." AND muteCountryID=".$muteCountryID);
-		else
-			$DB->sql_put("INSERT INTO wD_MuteCountry (userID, gameID, muteCountryID) VALUES (".$this->id.",".$gameID.",".$muteCountryID.")");
-
+		if ($muteCountryID != 0)
+		{
+			if( $this->isCountryMuted($gameID,$muteCountryID) )
+				$DB->sql_put("DELETE FROM wD_MuteCountry WHERE userID=".$this->id." AND gameID=".$gameID." AND muteCountryID=".$muteCountryID);
+			else
+				$DB->sql_put("INSERT INTO wD_MuteCountry (userID, gameID, muteCountryID) VALUES (".$this->id.",".$gameID.",".$muteCountryID.")");
+		}
 	}
+		
+	/*
+	 * The functions to check if a user is Blocked
+	 * Basicalle it's the same as the Mute feature, but only to block a user from joining your games
+	 */
+	public function getBlockUsers() {
+		global $DB;
+
+		static $blockUsers;
+		if( isset($blockUsers) ) return $blockUsers;
+		$blockUsers = array();
+
+		$tabl = $DB->sql_tabl("SELECT blockUserID FROM wD_BlockUser WHERE userID=".$this->id);
+		while(list($blockUserID) = $DB->tabl_row($tabl))
+			$blockUsers[] = $blockUserID;
+
+		return $blockUsers;
+	}
+	public function isUserBlocked($blockUserID) {
+		return in_array($blockUserID,$this->getBlockUsers());
+	}
+	public function toggleUserBlock($blockUserID) {
+		global $DB;
+		$blockUserID = (int)$blockUserID;
+		if( $this->isUserBlocked($blockUserID) )
+			$DB->sql_put("DELETE FROM wD_BlockUser WHERE userID=".$this->id." AND blockUserID=".$blockUserID);
+		else
+			$DB->sql_put("INSERT INTO wD_BlockUser (userID, blockUserID) VALUES (".$this->id.",".$blockUserID.")");
+	}
+
 }
 ?>

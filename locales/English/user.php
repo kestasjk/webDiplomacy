@@ -86,11 +86,28 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		<?php if ( !$User->type['User'] ) print '<strong>(Optional)</strong>: '; ?>
 		A comment you would like to make in your profile. eg Your AIM username or ICQ number.
 	</li>
+	
 <?php
 
 if( $User->type['User'] ) {
 	// If the user is registered show the list of muted users/countries:
 
+// Patch to block Users	
+	$BlockedUsers = array();
+	foreach($User->getBlockUsers() as $blockUserID) {
+		$BlockedUsers[] = new User($blockUserID);
+	}
+	if( count($BlockedUsers) > 0 ) {
+		print '<li class="formlisttitle">Blocked users:</li>';
+		print '<li class="formlistdesc">The users which you blocked are unable to join your games and you can\'t join their games.</li>';
+		print '<li class="formlistfield"><ul>';
+		foreach ($BlockedUsers as $BlockedUser) {
+			print '<li>'.$BlockedUser->profile_link().' '.libHTML::blocked("profile.php?userID=".$BlockedUser->id.'&toggleBlock=on&rand='.rand(0,99999).'#block').'</li>';
+		}
+		print '</ul></li>';
+	}
+	
+// End Patch
 	$MutedUsers = array();
 	foreach($User->getMuteUsers() as $muteUserID) {
 		$MutedUsers[] = new User($muteUserID);
@@ -100,7 +117,7 @@ if( $User->type['User'] ) {
 		print '<li class="formlistdesc">The users which you muted, and are unable to send you messages.</li>';
 		print '<li class="formlistfield"><ul>';
 		foreach ($MutedUsers as $MutedUser) {
-			print '<li>'.$MutedUser->username.' '.libHTML::muted("profile.php?userID=".$MutedUser->id.'&toggleMute=on&rand='.rand(0,99999).'#mute').'</li>';
+			print '<li>'.$MutedUser->profile_link().' '.libHTML::muted("profile.php?userID=".$MutedUser->id.'&toggleMute=on&rand='.rand(0,99999).'#mute').'</li>';
 		}
 		print '</ul></li>';
 	}
@@ -170,6 +187,7 @@ if( $User->type['User'] ) {
 		print '</ul></li>';
 	}
 }
+
 /*
  * This is done in PHP because Eclipse complains about HTML syntax errors otherwise
  * because the starting <form><ul> is elsewhere
@@ -180,5 +198,6 @@ print '</ul>
 
 <input type="submit" class="form-submit notice" value="Update">
 </form>';
+
 
 ?>

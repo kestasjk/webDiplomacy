@@ -24,6 +24,7 @@
  */
 
 require_once('header.php');
+require_once('lib/reliability.php');
 
 if ( $Misc->Panic )
 {
@@ -49,7 +50,16 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$form = $_REQUEST['newGame']; // This makes $form look harmless when it is unsanitized; the parameters must all be sanitized
 
 		$input = array();
-		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy');
+		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy'
+						,'countryID'
+						,'minRating' 
+						,'minPhases'
+						,'maxTurns'
+						,'specialCDturn'
+						,'specialCDcount'
+						,'chessTime'
+						,'targetSCs'
+					);
 
 		if ( !isset($form['missingPlayerPolicy']) )
 			$form['missingPlayerPolicy'] = 'Normal';
@@ -83,7 +93,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		}
 
 		$input['bet'] = (int) $input['bet'];
-		if ( $input['bet'] < 5 or $input['bet'] > $User->points )
+		if ( $input['bet'] < 2 or $input['bet'] > $User->points )
 		{
 			throw new Exception(l_t("%s is an invalid bet size.",(string)$input['bet']));
 		}
@@ -126,7 +136,43 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			default:
 				$input['missingPlayerPolicy'] = 'Normal';
 		}
+	
+		$input['minPhases'] = (int)$input['minPhases'];
+		if ( $input['minPhases'] > $User->phasesPlayed )
+		{
+			throw new Exception("You didn't play enough phases (".$User->phasesPlayed.") for your own requirement (".$input['minPhases'].")");
+		}
+		
+		require_once(l_r('lib/reliability.php'));		 
+		$input['minRating'] = (int)$input['minRating'];		
+		if ( $input['minRating'] > abs(libReliability::getReliability($User)) )
+		{
+			throw new Exception("Your reliability-rating is to low (".abs(libReliability::getReliability($User)).") for your own requirement (".$input['minRating'].").");
+		}
+		
+		$input['maxTurns'] = (int)$input['maxTurns'];		
+		if ( $input['maxTurns'] < 4 )
+			$input['maxTurns'] = 0;
+		if ( $input['maxTurns'] > 200 )
+			$input['maxTurns'] = 200;
 
+		$input['targetSCs'] = (int)$input['targetSCs'];		
+		$input['countryID'] = (int)$input['countryID'];
+		
+		$input['specialCDturn'] = (int)$input['specialCDturn'];
+		if ( $input['specialCDturn'] <  0 ) $input['specialCDturn'] = 0;
+		if ( $input['specialCDturn'] > 99 ) $input['specialCDturn'] = 99;
+		
+		$input['specialCDcount'] = (int)$input['specialCDcount'];
+		if ( $input['specialCDcount'] <  0 ) $input['specialCDcount'] = 0;
+		if ( $input['specialCDcount'] > 99 ) $input['specialCDcount'] = 99;
+		
+		$input['chessTime'] = (int)$input['chessTime'];
+		if ( $input['chessTime'] < 0 or $input['chessTime'] > 1440*100 )
+		{
+			throw new Exception("The chessTime value is too large or small; it must be between 0 minutes and 100 days.");
+		}
+		
 		// Create Game record & object
 		require_once(l_r('gamemaster/game.php'));
 		$Game = processGame::create(
@@ -139,10 +185,30 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input['joinPeriod'], 
 			$input['anon'], 
 			$input['pressType'], 
-			$input['missingPlayerPolicy']);
+			$input['missingPlayerPolicy'],
+			$input['maxTurns'],
+			$input['targetSCs'],
+			$input['minRating'],
+			$input['minPhases'],
+			$input['specialCDturn'],
+			$input['specialCDcount'],
+			$input['chessTime']
+		);
 
+		/**
+		 * Check for reliability, bevore a user can create a new game...
+		 */
+		require_once(l_r('lib/reliability.php'));		 
+		if( (count($Game->Variant->countries)>2) && ($message = libReliability::isReliable($User)) )
+		{
+			processGame::eraseGame($Game->id);
+			libHTML::notice('Reliable rating not high enough', $message);
+		}
+		// END RELIABILITY-PATCH
+		
 		// Create first Member record & object
-		processMember::create($User->id, $input['bet']);
+		processMember::create($User->id, $Game->minimumBet, $input['countryID']);
+		
 		$Game->Members->joinedRedirect();
 	}
 	catch(Exception $e)
@@ -154,13 +220,13 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 	}
 }
 
-if ( $User->points >= 5 )
+if ( $User->points >= 3 )
 {
 	$roundedDefault = round(($User->points/7)/10)*10;
-	if ($roundedDefault > 5 )
+	if ($roundedDefault > 3 )
 		$defaultPoints = $roundedDefault;
 	else
-		$defaultPoints = 5;
+		$defaultPoints = 3;
 
 }
 else

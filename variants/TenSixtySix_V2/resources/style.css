@@ -1,0 +1,12 @@
+@CHARSET "ISO-8859-1";
+
+.variantTenSixtySix_V2 .country0 { color: #CE7800 ! important; } /* Global        */
+.variantTenSixtySix_V2 .country1 { color: #D62929 ! important; } /* English       */
+.variantTenSixtySix_V2 .country2 { color: #007BA5 ! important; } /* Normans       */
+.variantTenSixtySix_V2 .country3 { color: #259901 ! important; } /* Norwegians    */
+.variantTenSixtySix_V2 .country4 { color: #888888 ! important; } /* Neutral units */
+
+.variantTenSixtySix_V2 .occupationBar1 { background-color: #C48F85; } /* English       */
+.variantTenSixtySix_V2 .occupationBar2 { background-color: #79afc6; } /* Normans       */
+.variantTenSixtySix_V2 .occupationBar3 { background-color: #A4C499; } /* Norwegians    */
+.variantTenSixtySix_V2 .occupationBar4 { background-color: #888888; } /* Neutral units */

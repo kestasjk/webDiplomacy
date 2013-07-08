@@ -160,13 +160,22 @@ class panelMember extends Member
 	 */
 	function memberName()
 	{
+		require_once('lib/relations.php');
+		require_once(l_r('lib/reliability.php'));		 
+		
+		global $User;
+		
 		if ($this->isNameHidden())
 			return '('.l_t('Anonymous').')';
 		else
 			return '<a href="profile.php?userID='.$this->userID.'">'.$this->username.'</a>
 				'.libHTML::loggedOn($this->userID).'
-				<span class="points">('.$this->points.libHTML::points().User::typeIcon($this->userType).')</span>'
-				.(defined('AdminUserSwitch') ? ' (<a href="board.php?gameID='.$this->gameID.'&auid='.$this->userID.'" class="light">+</a>)':'');
+				<span class="points">('.$this->points.libHTML::points().User::typeIcon($this->userType,false).' / <b>'.libReliability::getGrade($this).'</b>'.
+				(($User->type['Moderator'] && $this->rlGroup != 0 && count($this->Game->Members->ByRlGroup[$this->rlGroup])>1) ? 
+				' / <img src="'.libRelations::statusIcon($this->rlGroup).'">:<b>'.abs($this->rlGroup).'/'.count($this->Game->Members->ByRlGroup[$this->rlGroup]).'</b>'
+				: '')
+				.')</span>'
+				.((defined('AdminUserSwitch') || $User->type['Admin']) ? ' (<a href="board.php?gameID='.$this->gameID.'&auid='.$this->userID.'" class="light">+</a>)':'');
 	}
 
 	/**
@@ -222,13 +231,27 @@ class panelMember extends Member
 		if( $this->status == 'Playing' || $this->status == 'Left' )
 		{
 			$buf .= l_t('worth:').' <em';
-			$value = $this->pointsValue();
+			$value = $this->AdjustedPointsValue();
 			if ( $value > $this->bet )
 				$buf .= ' class="good"';
 			elseif ( $value < $this->bet )
 				$buf .= ' class="bad"';
 
-			$buf .= '>'.$value.libHTML::points().'</em>';
+			$buf .= '>'.$value.'</em>';
+			
+			if (count($this->Game->Members->ByStatus['Playing']) < count($this->Game->Members->ByID))
+			{
+				$buf .= ' /  <em';
+				$draw_value = $this->DrawPointsValue();
+				if ( $draw_value > $value )
+					$buf .= ' class="good"';
+				elseif ( $draw_value < $value )
+					$buf .= ' class="bad"';
+
+				$buf .= '>'.$draw_value.'</em>';
+			}
+			
+			$buf .=  libHTML::points();
 			return $buf;
 		}
 		elseif ( $this->status == 'Won' ||
@@ -296,7 +319,7 @@ class panelMember extends Member
 				$dividers[$this->unitNo] = 'UnitSurplus';
 		}
 
-		$SCTarget = $this->Game->Variant->supplyCenterTarget;
+		$SCTarget = ( ($this->Game->targetSCs > 0) ? $this->Game->targetSCs : $SCTarget = $this->Game->Variant->supplyCenterTarget);
 
 		$buf = '';
 		$lastNumber = 0;
@@ -503,5 +526,58 @@ class panelMember extends Member
 
 		return $output;
 	}
+	
+	function AdjustedPointsValue()
+	{
+		if ($this->Game->potType == 'Points-per-supply-center') return $this->pointsValue();
+
+		$wta=array();
+		
+		foreach ($this->Game->Members->ByStatus['Playing'] as $Member)
+			if ($Member->supplyCenterNo > $this->supplyCenterNo) 
+				return "0";
+			elseif ($Member->supplyCenterNo == $this->supplyCenterNo) 
+				$wta[]=$Member->countryID;
+				
+		if (count($wta) > 1)
+		{
+			global $DB;
+			for ($turn=($this->Game->turn - 1); $turn>-1; $turn--)
+			{
+				$sql='SELECT ts.countryID, COUNT(*) AS ct FROM wD_TerrStatusArchive ts 
+						JOIN wD_Territories as t ON (t.id = ts.terrID AND t.mapID='.$this->Game->Variant->mapID.')
+					WHERE t.supply="Yes" AND ts.turn='.$turn.' AND ts.gameID='.$this->Game->id.'
+						AND ts.countryID IN ('.implode(', ', $wta).')
+					GROUP BY ts.countryID 
+					HAVING ct = (
+						SELECT COUNT(*) AS ct2 FROM wD_TerrStatusArchive ts2
+							JOIN wD_Territories as t2 ON (t2.id = ts2.terrID AND t2.mapID='.$this->Game->Variant->mapID.')
+						WHERE t2.supply="Yes" AND ts2.turn='.$turn.' AND ts2.gameID='.$this->Game->id.'
+							AND ts2.countryID IN ('.implode(', ', $wta).')
+						GROUP BY ts2.countryID ORDER BY ct2 DESC LIMIT 1)';
+				$tabl = $DB->sql_tabl($sql);
+				$wta=array();
+				while( list($countryID, $sc) = $DB->tabl_row($tabl) )
+					$wta[]=$countryID;
+				// Exit loop if only one winner is left...
+				if (count($wta) == 1)
+					$turn=0;
+				if (array_search($this->countryID, $wta) === false)
+					return 0;
+			}
+		}
+		
+		// Still no winner found:
+		if (count($wta) > 1)
+			return round($this->Game->pot / count($wta)); 
+		else		
+			return $this->Game->pot;
+	}
+	
+	function DrawPointsValue()
+	{
+		return round($this->Game->pot / count($this->Game->Members->ByStatus['Playing']));
+	}
+
 }
 ?>

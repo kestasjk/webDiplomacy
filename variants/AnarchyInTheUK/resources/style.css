@@ -1,0 +1,16 @@
+@CHARSET "ISO-8859-1";
+	
+.variantAnarchyInTheUK .country0 { color: #000000 ! important; } /* Global      */
+.variantAnarchyInTheUK .country1 { color: #FF0AC8 ! important; } /* Merseyside  */
+.variantAnarchyInTheUK .country2 { color: #1E90FF ! important; } /* Up North    */
+.variantAnarchyInTheUK .country3 { color: #FF0000 ! important; } /* London      */
+.variantAnarchyInTheUK .country4 { color: #b8ad00 ! important; } /* Bristol     */
+.variantAnarchyInTheUK .country5 { color: #32CD32 ! important; } /* Wales       */
+.variantAnarchyInTheUK .country6 { color: #9370DB ! important; } /* East-Anglia */
+
+.variantAnarchyInTheUK .occupationBar1 { background-color: #FF0AC8; } /* Merseyside  */
+.variantAnarchyInTheUK .occupationBar2 { background-color: #1E90FF; } /* Up North    */
+.variantAnarchyInTheUK .occupationBar3 { background-color: #FF0000; } /* London      */
+.variantAnarchyInTheUK .occupationBar4 { background-color: #b8ad00; } /* Bristol     */
+.variantAnarchyInTheUK .occupationBar5 { background-color: #32CD32; } /* Wales       */
+.variantAnarchyInTheUK .occupationBar6 { background-color: #6A5ACD; } /* East-Anglia */

@@ -364,6 +364,7 @@ $tabl = $DB->sql_tabl("SELECT
 		u.username as fromusername, u.points as points, f.latestReplySent, IF(s.userID IS NULL,0,1) as online, u.type as userType, 
 		f.likeCount as likeCount, 
 		f.silenceID,
+		f.anon,
 		silence.userID as silenceUserID,
 		silence.postID as silencePostID,
 		silence.moderatorUserID as silenceModeratorUserID,
@@ -390,6 +391,20 @@ while( $message = $DB->tabl_hash($tabl) )
 		$silence = new Silence($message);
 	else
 		unset($silence);
+		
+	// Check for Anon posting:
+	if ($message['anon'] == 'Yes')
+	{
+		if (!$User->type['Moderator'] && $message['fromUserID'] != $User->id)
+		{
+			$message['fromusername'] = 'Anon';
+			$message['fromUserID'] = 0;
+			$message['points'] = '??';
+			$message['userType'] = 'User';
+		}
+		else
+			$message['fromusername'] = $message['fromusername'].' (Anon)';
+	}
 	
 	// Check for mutes first, before continuing
 	$muteLink='';
@@ -399,7 +414,7 @@ while( $message = $DB->tabl_hash($tabl) )
 			$User->toggleThreadMute($message['id']);
 			$isThreadMuted = !$isThreadMuted;
 		}
-		
+				
 		if( $isThreadMuted ) continue;
 		
 		$toggleMuteURL = 'forum.php?toggleMuteThreadID='.$message['id'].'&rand='.rand(1,99999).'#'.$message['id'];
@@ -509,6 +524,7 @@ while( $message = $DB->tabl_hash($tabl) )
 					u.username as fromusername, f.toID, u.type as userType, 
 					f.likeCount, 
 					f.silenceID,
+					f.anon,
 					silence.userID as silenceUserID,
 					silence.postID as silencePostID,
 					silence.moderatorUserID as silenceModeratorUserID,
@@ -528,6 +544,20 @@ while( $message = $DB->tabl_hash($tabl) )
 		list($maxReplyID) = $DB->sql_row("SELECT MAX(id) FROM wD_ForumMessages WHERE toID=".$message['id']." AND type='ThreadReply'");
 		while($reply = $DB->tabl_hash($replytabl) )
 		{
+			// Check for Anon posting:
+			if ($reply['anon'] == 'Yes')
+			{
+				if (!$User->type['Moderator'] && $reply['fromUserID'] != $User->id)
+				{
+					$reply['fromusername'] = 'Anon';
+					$reply['fromUserID'] = 0;
+					$reply['points'] = '??';
+					$reply['userType'] = 'User';
+				}
+				else
+					$reply['fromusername'] = $reply['fromusername'].' (Anon)';
+			}
+		
 			$replyToID = $reply['toID'];
 			$replyID = $reply['id'];
 

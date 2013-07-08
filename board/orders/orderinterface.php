@@ -53,7 +53,10 @@ class OrderInterface
 {
 	public static function newBoard() {
 		global $Game, $User, $Member;
-		return self::newContext($Game, $Member, $User);
+		$OI = self::newContext($Game, $Member, $User);
+		if( defined('AdminUserSwitch') && AdminUserSwitch != $User->id)
+			$OI->userID=AdminUserSwitch;
+		return $OI;
 	}
 	public static function newContext(Game $Game, userMember $Member, User $User) {
 		$OI = $Game->Variant->OrderInterface($Game->id, $Game->Variant->id, $User->id, $Member->id, $Game->turn, $Game->phase, $Member->countryID,
@@ -112,12 +115,34 @@ class OrderInterface
 
 	public function load()
 	{
-		global $DB;
-
+		global $DB, $Game, $User;
+		
 		$DB->sql_put("SELECT * FROM wD_Members WHERE gameID = ".$this->gameID." AND countryID=".$this->countryID." ".UPDATE);
 
-		$tabl = $DB->sql_tabl("SELECT id, type, unitID, toTerrID, fromTerrID, viaConvoy
-			FROM wD_Orders WHERE gameID = ".$this->gameID." AND countryID=".$this->countryID);
+		if ( isset($Game) && isset($User) && ($this->phase=="Diplomacy" || $this->phase=="Retreats") )
+		{
+			$sql="SELECT o.id, o.type, o.unitID, o.toTerrID, o.fromTerrID, o.viaConvoy FROM wD_Orders o
+					INNER JOIN wD_Units u ON (u.id = o.unitID) 
+					INNER JOIN wD_Games g ON (g.id = o.gameID) 
+					INNER JOIN wD_Territories t ON (t.mapID=".$Game->Variant->mapID." && t.id=u.terrID) 
+				WHERE o.gameID = ".$this->gameID." AND o.countryID=".$this->countryID."
+				ORDER BY ";
+				
+			if ($User->unitOrder == 'FA') $sql .= "u.type DESC, ";
+			if ($User->unitOrder == 'AF') $sql .= "u.type ASC, ";
+			
+			if ($User->sortOrder == 'BuildOrder') $sql .= "o.unitID";
+			if ($User->sortOrder == 'TerrName')   $sql .= "t.name";
+			if ($User->sortOrder == 'NorthSouth') $sql .= "t.mapY";
+			if ($User->sortOrder == 'EastWest')   $sql .= "t.mapX";
+		}
+		else
+		{
+			$sql = "SELECT id, type, unitID, toTerrID, fromTerrID, viaConvoy FROM wD_Orders 
+						WHERE gameID = ".$this->gameID." AND countryID=".$this->countryID;
+		}
+		
+		$tabl = $DB->sql_tabl($sql);
 
 		$this->Orders = array();
 		$maxOrderID=0;
@@ -132,7 +157,15 @@ class OrderInterface
 			$this->Orders[] = $Order;
 		}
 
-		list($checkTurn, $checkPhase) = $DB->sql_row("SELECT turn, phase FROM wD_Games WHERE id=".$this->gameID);
+		list($checkTurn, $checkPhase, $adminLock) = $DB->sql_row("SELECT turn, phase, adminLock FROM wD_Games WHERE id=".$this->gameID);
+
+		if( $adminLock == 'Yes' )
+		{
+			list($usertype) = $DB->sql_row("SELECT type FROM wD_Users WHERE id=".$this->userID);
+			if (strpos($usertype,'Admin')===false)
+				throw new Exception("Game is currently locked by an admin (usually to fix some errors).");
+		}
+		
 		if( $checkTurn != $this->turn || $checkPhase != $this->phase )
 			throw new Exception(l_t("The game has moved on, you can no longer alter these orders, please refresh."));
 
@@ -287,14 +320,29 @@ class OrderInterface
 	}
 
 	protected function jsLoadBoard() {
-		libHTML::$footerIncludes[] = l_j('board/model.js');
+	
+		global $User, $Game;
+		
+		libHTML::$footerIncludes[] = l_j('board/model_vDipV2.js');
 		libHTML::$footerIncludes[] = l_j('board/load.js');
 		libHTML::$footerIncludes[] = l_j('orders/order.js');
-		libHTML::$footerIncludes[] = l_j('orders/phase'.$this->phase.'.js');
+		if ($this->phase == 'Diplomacy')
+			libHTML::$footerIncludes[] = l_j('orders/phaseDiplomacy_vDip.js');
+		else
+			libHTML::$footerIncludes[] = l_j('orders/phase'.$this->phase.'.js');
 		libHTML::$footerIncludes[] = l_s('../'.libVariant::$Variant->territoriesJSONFile());
 
 		foreach(array('loadTerritories','loadBoardTurnData','loadModel','loadBoard','loadOrdersModel','loadOrdersForm','loadOrdersPhase') as $jf)
 			libHTML::$footerScript[] = l_jf($jf).'();';
+			
+		if ($User->pointNClick=='Yes' && file_exists('variants/'.$Game->Variant->name.'/resources/IA_smallmap.png'))
+		{
+			libHTML::$footerIncludes[] = '../interactiveMap/javascript_0.6/interactiveMap.js';
+			libHTML::$footerIncludes[] = '../interactiveMap/javascript_0.6/interactiveMapDraw.js';
+			libHTML::$footerIncludes[] = '../interactiveMap/javascript_0.6/interactiveMapOrders.js';
+			libHTML::$footerIncludes[] = '../interactiveMap/javascript_0.6/interactiveMapButtons.js';	
+			libHTML::$footerScript[]   = 'loadIA();';
+		}
 	}
 
 	protected function jsInitForm() {

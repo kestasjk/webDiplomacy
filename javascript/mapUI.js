@@ -21,6 +21,44 @@
 // Current turn, -2 is undefined, -1 is pre-game
 var turn=-2;
 
+var noMoves='';
+var preview='';
+
+// Toggle the display of the Move arrows.
+function toggleMoves(gameID, currentTurn) {
+	if (noMoves == '') {
+		noMoves = '&hideMoves';
+		$('NoMoves').src = 'images/historyicons/showmoves.png';
+	} else {
+		noMoves = '';
+		$('NoMoves').src = 'images/historyicons/hidemoves.png';
+	}
+	loadMapStep(gameID, currentTurn, 0)	
+	loadMap(gameID, currentTurn, turn)
+}
+
+// Toggle the display of the Move arrows.
+function togglePreview(gameID, currentTurn) {
+	turn = currentTurn
+	if (preview == '') {
+		preview = '&preview&noCache=' + Math.floor((Math.random()*10000)+1); ;
+		$('Start').style.visibility    = 'hidden';
+		$('Backward').style.visibility = 'hidden';
+		$('NoMoves').style.visibility  = 'hidden';
+		$('Forward').style.visibility  = 'hidden';
+		$('End').style.visibility      = 'hidden';
+	} else {
+		preview = '';
+		$('Start').style.visibility    = 'visible';
+		$('Backward').style.visibility = 'visible';
+		$('NoMoves').style.visibility  = 'visible';
+		$('Forward').style.visibility  = 'visible';
+		$('End').style.visibility      = 'visible';
+	}
+	loadMapStep(gameID, currentTurn, 0)	
+	loadMap(gameID, currentTurn, turn)
+}
+
 // Increment or decrement the turn safely, factoring in the limits, then load the new turn
 function loadMapStep(gameID, currentTurn, step)
 {
@@ -86,6 +124,20 @@ function loadMap(gameID, currentTurn, newTurn)
 		
 		$('History').show();
 	}
+	
+	// Add the Hide parameter if we have HideMoves activated
+	newTurn = newTurn + noMoves
+	
+	// Add the Preview parameter if we have Preview activated
+	newTurn = newTurn + preview
+	
+	// Add the colorCorrect Prameter if set
+	if(window.colorCorrect !== undefined)
+		newTurn = newTurn + colorCorrect
+		
+	// Add the colorCorrect Prameter if set
+	if(window.showCountryNamesMap !== undefined)
+		newTurn = newTurn + "&countryNames"
 	
 	// Update the link to the large map
 	$('LargeMapLink').innerHTML = 

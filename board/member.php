@@ -90,6 +90,11 @@ class userMember extends panelMember
 					missedPhases=0, timeLoggedIn = ".time()."
 				WHERE id = ".$this->id
 			);
+			
+		// Ballance his reliability
+		require_once(l_r('lib/reliability.php'));		 
+		libReliability::updateReliability($this, 'leftBalanced', '+ 1');
+
 	}
 
 	/**
@@ -104,6 +109,8 @@ class userMember extends panelMember
 	{
 		global $DB;
 
+		$voteText = $voteName;
+		
 		// Unpause is stored as Pause in the database
 		if ( $voteName == 'Unpause' )
 			$voteName = 'Pause';
@@ -114,8 +121,32 @@ class userMember extends panelMember
 		if(in_array($voteName, $this->votes))
 			unset($this->votes[array_search($voteName, $this->votes)]);
 		else
+		{
 			$this->votes[] = $voteName;
-
+			
+			$count=0;
+			foreach($this->Game->Members->ByStatus['Playing'] as $Member)
+				if (in_array($voteName ,$Member->votes))
+					$count++;
+			if ($count == 1)
+			{
+				require_once "lib/gamemessage.php";
+				$msg = $this->country.' voted for a '.$voteText.'. ';
+				if ($voteText == 'Draw')
+					$msg .= 'If everyone votes Draw the game will end and the points are split equally among all the surviving players, regardless of how many supply centers each player has.';
+				if ($voteText == 'Pause')
+					$msg .= 'If everyone votes Pause the game stop and wait till everybody votes Unpause. Please consider backing this.';
+				if ($voteText == 'Unpause')
+					$msg .= 'If everyone votes Unpause the game will continoue. Please consider backing this.';
+				if ($voteText == 'Cancel')
+					$msg .= 'If everyone votes Cancel all points will be refunded and the game will be deleted from the database.';
+				if ($voteText == 'Extend')
+					$msg .= 'If 2/3 of the active players vote Extend the the current phase will be extend by 4 days. Please consider backing this. If the majority is not reached by "'.$this->Game->Variant->turnAsDate($this->Game->turn + 2).'" the votes will be cleared.';
+				if ($voteText == 'Concede')
+					$msg .= 'If everyone (but one) votes Concede the game will end and the player _not_ voting Conceede will get all the points. Everybody else will get a defeat.';			
+				libGameMessage::send(0, 'GameMaster', $msg , $this->Game->id);
+			}
+		}
 		$DB->sql_put("UPDATE wD_Members SET votes='".implode(',',$this->votes)."' WHERE id=".$this->id);
 	}
 

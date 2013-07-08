@@ -87,6 +87,14 @@ class InstallCache {
 		$javascript = "function loadTerritories() {\n".'Territories = $H('.json_encode($territories).');'."\n}\n";
 
 		file_put_contents($jsonFileLocation, $javascript);
+		
+		// Small patch for global variant-css (delete the file so it's created new after installation of a variant)
+		$dir_handle=opendir(libCache::Dirname("css")); 
+		while (false !== ($file=readdir($dir_handle)))
+			if($file!="." && $file!="..") 
+				unlink (libCache::Dirname("css")."/".$file);
+		closedir($dir_handle); 
+		// End patch
 	}
 }
 

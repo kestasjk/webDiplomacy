@@ -29,6 +29,7 @@ require_once(l_r('objects/member.php'));
  */
 class Members
 {
+
 	protected $Game;
 
 	public $ByOrder;
@@ -36,6 +37,7 @@ class Members
 	public $ByUserID;
 	public $ByCountryID;
 	public $ByStatus;
+	public $ByRlGroup;
 
 	function SCPercents()
 	{
@@ -84,16 +86,25 @@ class Members
 		return ((float)$this->Game->pot / (float)$this->supplyCenterCount('Playing'));
 	}
 
-	static $votes = array('Draw','Pause','Cancel');
+	static $votes = array('Draw','Pause','Cancel','Extend','Concede');
 
 	function votesPassed()
 	{
 		$votes=self::$votes;
+		$ext=0; $concede=0;
 		foreach($this->ByStatus['Playing'] as $Member)
 		{
 			$votes = array_intersect($votes, $Member->votes);
-			if(count($votes)==0) break;
+			if (in_array('Extend' ,$Member->votes))
+				$ext++;
+			if (in_array('Concede',$Member->votes))
+				$concede++;
 		}
+		if ($ext >= 2/3*count($this->ByStatus['Playing']))
+			$votes[]='Extend';
+		if ($concede >= (count($this->ByStatus['Playing']) - 1) && ($concede > 0))
+			$votes[]='Concede';
+			
 		return $votes;
 	}
 
@@ -152,22 +163,28 @@ class Members
 	function indexMembers()
 	{
 		$this->ByID=array();
+		$this->ByRlGroup=array();
 		$this->ByUserID=array();
 		$this->ByStatus=array(
 			'Playing'=>array(),'Defeated'=>array(),'Left'=>array(),
 			'Won'=>array(),'Drawn'=>array(),'Survived'=>array(),'Resigned'=>array()
 		);
 
-		if($this->Game->phase == 'Pre-game')
-			$this->ByCountryID=null;
-		else
-			$this->ByCountryID=array();
+//CountrySelect-Patch:
+//  Init the ByCountryID even if in PreGame.
+//		if($this->Game->phase == 'Pre-game')
+//			$this->ByCountryID=null;
+//		else
+//			$this->ByCountryID=array();
+ 
+		$this->ByCountryID=array();
 
 		foreach($this->ByOrder as $Member)
 		{
 			$this->ByID[$Member->id] = $Member;
 			$this->ByStatus[$Member->status][$Member->id] = $Member;
 			$this->ByUserID[$Member->userID] = $Member;
+			$this->ByRlGroup[$Member->rlGroup][] = $Member;
 
 			// If pre-game all countries are 'Unassigned', so members cannot be indexed by countryID.
 			if ( $Member->countryID != 0 )
@@ -191,8 +208,14 @@ class Members
 				m.votes AS votes,
 				m.supplyCenterNo as supplyCenterNo,
 				m.unitNo as unitNo,
+				m.chessTime AS chessTime,
 				u.username AS username,
 				u.points AS points,
+				u.rlGroup AS rlGroup,
+				u.missedMoves AS missedMoves,
+				u.phasesPlayed AS phasesPlayed,			
+				u.gamesLeft AS gamesLeft,
+				u.leftBalanced AS leftBalanced,				
 				m.pointsWon as pointsWon,
 				IF(s.userID IS NULL,0,1) as online,
 				u.type as userType

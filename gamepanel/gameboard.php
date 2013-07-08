@@ -31,11 +31,29 @@ require_once(l_r('gamepanel/game.php'));
 class panelGameBoard extends panelGame
 {
 	function mapHTML() {
+	
+		global $User;
+		
 		$mapTurn = (($this->phase=='Pre-game'||$this->phase=='Diplomacy') ? $this->turn-1 : $this->turn);
 		$smallmapLink = 'map.php?gameID='.$this->id.'&turn='.$mapTurn;
 		$largemapLink = $smallmapLink.'&mapType=large';
 
 		$staticFilename=Game::mapFilename($this->id, $mapTurn, 'small');
+		
+		if ($User->colorCorrect != 'Off')
+		{
+			$staticFilename = str_replace(".map","-".$User->colorCorrect.".map",$staticFilename);
+			$smallmapLink .= '&colorCorrect='.$User->colorCorrect;
+			$largemapLink .= '&colorCorrect='.$User->colorCorrect;
+		}
+
+		if ($User->showCountryNamesMap == 'Yes')
+		{
+			$staticFilename = str_replace(".map","-names.map",$staticFilename);
+			$smallmapLink .= '&countryNames';
+			$largemapLink .= '&countryNames';
+		}
+		
 		if( file_exists($staticFilename) )
 			$smallmapLink = STATICSRV.$staticFilename.'?nocache='.rand(0,99999);
 
@@ -50,6 +68,10 @@ class panelGameBoard extends panelGame
 					<img id="Backward" src="'.l_s('images/historyicons/Backward_disabled.png').'" alt="'.l_t('Backward').'" title="'.l_t('View the map from the previous turn').'" />
 				</a>
 
+				<a href="#" onClick="toggleMoves('.$this->id.','.$mapTurn.'); return false;">
+					<img id="NoMoves" src="images/historyicons/hidemoves.png" alt="NoMoves" title="Toggle movement lines" />
+				</a>
+				
 				<span id="LargeMapLink" class="lightgrey" style="width:150px"><a href="'.$largemapLink.'" target="_blank" class="light">
 					<img src="'.l_s('images/historyicons/external.png').'" alt="'.l_t('Open large map').'" title="'.l_t('This button will open the large map in a new window. The large map shows all the moves, and is useful when the small map isn\'t clear enough.').'" />
 				</a></span>
@@ -59,18 +81,32 @@ class panelGameBoard extends panelGame
 				</a>
 				<a href="#" onClick="loadMap('.$this->id.','.$mapTurn.','.$mapTurn.'); return false;">
 					<img id="End" src="'.l_s('images/historyicons/End_disabled.png').'" alt="'.l_t('End').'" title="'.l_t('View the map from the most recent turn').'" />
+				</a>'.
+					($this->Members->isJoined() ? 
+						'<a href="#" onClick="togglePreview('.$this->id.','.$mapTurn.'); return false;">
+							<img id="Preview" src="images/historyicons/Preview.png" alt="PreviewMoves" title="Show server side stored orders on the map" />'
+						: '').'
 				</a>
+							
 			</p>
 			<p id="History" class="lightgrey"></p>
 		</div>
 ';
 
+		if ($User->colorCorrect != 'Off')
+			$map .= '<script type="text/javascript">var colorCorrect="&colorCorrect='.$User->colorCorrect.'";</script>';
+
+		if ($User->showCountryNamesMap != 'No')
+			$map .= '<script type="text/javascript">var showCountryNamesMap=true;</script>';
+			
 		$this->mapJS($mapTurn);
 
 		return $map;
 	}
 
-	protected function mapJS($mapTurn) {
+	protected function mapJS($mapTurn)
+	{
+
 		libHTML::$footerScript[] = 'turnToText='.$this->Variant->turnAsDateJS()."
 		mapArrows($mapTurn,$mapTurn);
 		";
@@ -81,7 +117,7 @@ class panelGameBoard extends panelGame
 	{
 		$buf = '';
 
-		if ( $this->turn > 0 || !( $this->phase == 'Pre-game' || $this->phase == 'Diplomacy' ) )
+		if ($this->phase != 'Pre-game')
 			$buf .= '
 				<div class="bar archiveBar">
 					'.$this->archiveBar().'
@@ -171,6 +207,9 @@ class panelGameBoard extends panelGame
 		}
 		$buf .= '</div>';
 
+		if (count($this->Variant->countries) < 4)
+			$buf = str_replace('Concede','Concede" onClick="return confirm(\'Are you sure you want to vote for Concede?\\nIn a '.count($this->Variant->countries).' player game it usually takes effect immediately.\');',$buf);
+		
 		if( $vCancel )
 		{
 			$buf .= '<div class="memberGameDetail">'.l_t('Cancel:').' ';

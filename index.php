@@ -282,11 +282,12 @@ class libHome
 
 	static function forumNew() {
 		// Select by id, prints replies and new threads
-		global $DB, $Misc;
+		global $DB, $Misc, $User;
 
 		$tabl = $DB->sql_tabl("
 			SELECT m.id as postID, t.id as threadID, m.type, m.timeSent, IF(t.replies IS NULL,m.replies,t.replies) as replies,
 				IF(t.subject IS NULL,m.subject,t.subject) as subject,
+				m.anon,
 				u.id as userID, u.username, u.points, IF(s.userID IS NULL,0,1) as online, u.type as userType,
 				SUBSTRING(m.message,1,100) as message, m.latestReplySent, t.fromUserID as threadStarterUserID
 			FROM wD_ForumMessages m
@@ -303,9 +304,21 @@ class libHome
 
 		while(list(
 				$postID, $threadID, $type, $timeSent, $replies, $subject,
+				$anon,
 				$userID, $username, $points, $online, $userType, $message, $latestReplySent,$threadStarterUserID
 			) = $DB->tabl_row($tabl))
 		{
+		
+			// Anonymize the forum posts on the home-screen too
+			if ($anon == 'Yes')
+			{
+				$username = 'Anon';
+				$userID = 0;
+				$points = '??';
+				$userType = 'User';
+			}
+			// End anonymizer
+			
 			$threadCount++;
 
 			if( $threadID )
@@ -404,12 +417,12 @@ class libHome
 if( !$User->type['User'] )
 {
 	print '<div class="content-notice" style="text-align:center">'.libHome::globalInfo().'</div>';
-	print libHTML::pageTitle(l_t('Welcome to webDiplomacy!'),l_t('A multiplayer web implementation of the popular turn-based strategy game Diplomacy.'));
+	print libHTML::pageTitle(l_t('Welcome to vDiplomacy!'),l_t('A multiplayer web implementation of the popular turn-based strategy game Diplomacy.'));
 	//print '<div class="content">';
 	?>
 	<p style="text-align: center;"><img
-	src="<?php print l_s('images/startmap.png'); ?>" alt="<?php print l_t('The map'); ?>"
-	title="<?php print l_t('A webDiplomacy map'); ?>" /></p>
+	src="<?php print l_s('images/vmap.png'); ?>" alt="<?php print l_t('The map'); ?>"
+	title="<?php print l_t('A vDiplomacy map'); ?>" /></p>
 <p class="welcome"><?php print l_t('<em> "Luck plays no part in Diplomacy. Cunning and
 cleverness, honesty and perfectly-timed betrayal are the tools needed to
 outwit your fellow players. The most skillful negotiator will climb to

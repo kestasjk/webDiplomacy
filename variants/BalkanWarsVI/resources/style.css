@@ -1,0 +1,18 @@
+@CHARSET "ISO-8859-1";
+
+.variantBalkanWarsVI .country0 { color: #CE7800 ! important; } /* Global  */
+.variantBalkanWarsVI .country1 { color: #6F005D ! important; } /* Albania  */
+.variantBalkanWarsVI .country2 { color: #DD51BD ! important; } /* Bulgaria */
+.variantBalkanWarsVI .country3 { color: #259901 ! important; } /* Greece   */
+.variantBalkanWarsVI .country4 { color: #b05500 ! important; } /* Rumania */
+.variantBalkanWarsVI .country5 { color: #514f4f ! important; } /* Serbia  */
+.variantBalkanWarsVI .country6 { color: #b8ad00 ! important; } /* Turkey  */
+
+.variantBalkanWarsVI .occupationBar1 { background-color: #A87E9F; } /* Albania  */
+.variantBalkanWarsVI .occupationBar2 { background-color: #EFC4E4; } /* Bulgaria */
+.variantBalkanWarsVI .occupationBar3 { background-color: #A4C499; } /* Greece   */
+.variantBalkanWarsVI .occupationBar4 { background-color: #ce9967; } /* Rumania */
+.variantBalkanWarsVI .occupationBar5 { background-color: #6a6868; } /* Serbia  */
+.variantBalkanWarsVI .occupationBar6 { background-color: #EAEAAF; } /* Turkey  */
+
+

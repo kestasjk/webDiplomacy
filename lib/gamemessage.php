@@ -47,8 +47,8 @@ class libGameMessage
 			$Game = $Variant->Game($gameID);
 		}
 
-		$message = $DB->msg_escape($message);
-
+		$message = $DB->msg_escape($message,($fromCountryID == 0));
+		
 		if ( !is_numeric($toCountryID) )
 			$toCountryID=0;
 
@@ -72,7 +72,7 @@ class libGameMessage
 						'".$message."',
 						".time().")");
 
-		if ($toCountryID != $fromCountryID)
+		if ( ($toCountryID != $fromCountryID) || ($toCountryID == 0 && $fromCountryID == 0) )
 		{
 			libGameMessage::notify($toCountryID, $fromCountryID);
 		}
@@ -91,7 +91,15 @@ class libGameMessage
 
 		$DB->sql_put("COMMIT"); // Prevent deadlocks
 
-		if ( $toCountryID == 0 )
+		if ( $toCountryID == 0 && $fromCountryID == 0)
+		{
+			$DB->sql_put("UPDATE wD_Members
+						SET newMessagesFrom = IF( (newMessagesFrom+0) = 0,
+												'0',
+												CONCAT_WS(',',newMessagesFrom,'0') )
+						WHERE gameID = ".$Game->id);
+		}
+		elseif ( $toCountryID == 0 )
 		{
 			$DB->sql_put("UPDATE wD_Members
 						SET newMessagesFrom = IF( (newMessagesFrom+0) = 0,

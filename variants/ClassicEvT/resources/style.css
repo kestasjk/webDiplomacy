@@ -1,0 +1,9 @@
+@CHARSET "ISO-8859-1";
+
+.variantClassicEvT .country0 { color: #CE7800 ! important; } /* Global  */
+.variantClassicEvT .country1 { color: #DD51BD ! important; } /* England */
+.variantClassicEvT .country2 { color: #b8ad00 ! important; } /* Turkey  */
+
+.variantClassicEvT .occupationBar1 { background-color: #EFC4E4; } /* England */
+.variantClassicEvT .occupationBar2 { background-color: #EAEAAF; } /* Turkey  */
+

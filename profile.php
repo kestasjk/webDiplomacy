@@ -28,6 +28,7 @@ require_once(l_r('gamesearch/search.php'));
 require_once(l_r('pager/pagergame.php'));
 require_once(l_r('objects/game.php'));
 require_once(l_r('gamepanel/game.php'));
+require_once(l_r('lib/reliability.php'));		 
 
 if ( isset($_REQUEST['userID']) && intval($_REQUEST['userID'])>0 )
 {
@@ -263,6 +264,12 @@ if ( isset($_REQUEST['detail']) )
 				print libModNotes::reportsDisplay('User', $UserProfile->id);
 			}
 		break;
+
+		case 'relations':
+			require_once('lib/relations.php');
+			libRelations::checkRelationsChange();
+			print libRelations::reportsDisplay($UserProfile->id);
+		break;
 	}
 
 	print '</div>';
@@ -279,6 +286,18 @@ $showAnon = ($UserProfile->id == $User->id || $User->type['Moderator']);
 print '<ul class="formlist">';
 
 print '<li><strong>'.l_t('Rank:').'</strong> '.$rankingDetails['rank'].'</li>';
+
+/**
+ * Add reliability-rating to the profile-page
+ */
+print '<li><strong>Reliabilty Rating:</strong> <b>'.libReliability::getGrade($UserProfile).'</b>';
+print ' - ('.
+	abs(libReliability::getReliability($UserProfile)).'%) <a class="light" href="reliability.php?userID='.$UserProfile->id.'">(what\'s this?)</a><br>(missed '.
+	$UserProfile->missedMoves.' of '.
+	$UserProfile->phasesPlayed.
+	' phases, unbalanced CDs: '.($UserProfile->gamesLeft - $UserProfile->leftBalanced).
+	')</li>';
+// End Relibility-Hack
 
 if ( $rankingDetails['position'] < $rankingDetails['rankingPlayers'] )
 	print '<li><strong>'.l_t('Position:').'</strong> '.$rankingDetails['position'].' / '.
@@ -304,6 +323,18 @@ else
 if( $donatorMarker )
 	print '<li>&nbsp;</li><li><strong>'.l_t('Donator:').'</strong> '.$donatorMarker.'</li>';
 
+if( $UserProfile->type['DevGold'] )
+	$donatorMarker = libHTML::devgold().' - <strong>Gold</strong>';
+elseif( $UserProfile->type['DevSilver'] )
+	$donatorMarker = libHTML::devsilver().' - Silver';
+elseif( $UserProfile->type['DevBronze'] )
+	$donatorMarker = libHTML::devbronze().' - Bronze';
+else
+	$donatorMarker = false;
+
+if( $donatorMarker )
+	print '<li>&nbsp;</li><li><strong>Developer:</strong> '.$donatorMarker.'</li>';
+	
 print '<li>&nbsp;</li>';
 
 
@@ -315,7 +346,7 @@ print '<li><strong>'.l_t('Game messages:').'</strong> '.$posts.'</li>';
 
 print '<li>&nbsp;</li>';
 $total = 0;
-$includeStatus=array('Won','Drawn','Survived','Defeated','Resigned');
+$includeStatus=array('Won','Drawn','Survived','Defeated','Resigned','Left');
 foreach($rankingDetails['stats'] as $name => $status)
 {
 	if ( !in_array($name, $includeStatus) ) continue;
@@ -371,6 +402,21 @@ if ( $User->type['User'] && $UserProfile->type['User'] && ! ( $User->id == $User
 	$muteURL = 'profile.php?userID='.$UserProfile->id.'&toggleMute=on&rand='.rand(0,99999).'#mute';
 	print ' '.($userMuted ? libHTML::muted($muteURL) : libHTML::unmuted($muteURL));
 }
+	
+// Start BlockUser-feature (Same as mute, but he can't join your games. (Works on admins too)
+if ( $User->type['User'] && $UserProfile->type['User'] && ! ( $User->id == $UserProfile->id || $UserProfile->type['Guest'] || $UserProfile->type['Admin'] ) )
+{
+	$userBlocked = $User->isUserBlocked($UserProfile->id);
+
+	print '<a name="block"></a>';
+	if( isset($_REQUEST['toggleBlock'])) {
+		$User->toggleUserBlock($UserProfile->id);
+		$userBlocked = !$userBlocked;
+	}
+	$blockURL = 'profile.php?userID='.$UserProfile->id.'&toggleBlock=on&rand='.rand(0,99999).'#block';
+	print ' '.($userBlocked ? libHTML::blocked($blockURL) : libHTML::unblocked($blockURL));
+// End BlockUserFeature	
+}
 print '</h2>';
 
 // Regular user info starts here:
@@ -387,7 +433,7 @@ if ( $UserProfile->comment )
 
 print '<p><ul class="formlist">';
 
-if ( $UserProfile->type['Moderator'] ||  $UserProfile->type['ForumModerator'] || $UserProfile->type['Admin'] )
+if ( $UserProfile->type['ForumModerator'] || $UserProfile->type['Admin'] )
 {
 	print '<li><strong>'.l_t('Mod/Admin team').'</strong></li>';
 	print '<li>&nbsp;</li>';
@@ -465,6 +511,9 @@ print '<li>&nbsp;</li>';
 //print '<li><a href="profile.php?detail=reports&userID='.$UserProfile->id.'" class="light">View/post a moderator report</a></li>';
 
 //print '<li>&nbsp;</li>';
+
+if ( $User->type['Moderator'])
+	print '<li><a href="profile.php?detail=relations&userID='.$UserProfile->id.'" class="light">View/edit relations of this user.</a></li>';
 
 print '</li></ul></p></div><div style="clear:both"></div></div>';
 

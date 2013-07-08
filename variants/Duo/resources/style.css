@@ -1,0 +1,10 @@
+@CHARSET "ISO-8859-1";
+
+.variantDuo .country0 { color: #CE7800 ! important; } /* Neutral */
+.variantDuo .country1 { color: #D62929 ! important; } /* Austria */
+.variantDuo .country2 { color: #259901 ! important; } /* Italy   */
+.variantDuo .country3 { color: #666666 ! important; } /* Germany */
+
+.variantDuo .occupationBar1 { background-color: #C48F85; } /* Austria */
+.variantDuo .occupationBar2 { background-color: #A4C499; } /* Italy   */
+.variantDuo .occupationBar3 { background-color: #666666; } /* Germany */

@@ -27,8 +27,6 @@
 	 - the transsibirian railroad
 	If you have some time and programming knowledge feel free to contact me.
 
-	This is Version: 1.7.5
-
 	Changelog:
 	1.0: initial release
 	1.1: corrected some spelling mistake
@@ -44,6 +42,9 @@
 	1.7.2: New places for some units on the smallmap to improve readability
 	1.7.3: New places for some units on the smallmap to improve readability
 	1.7.5: Adjustments for the new variant.php code
+	1.7.6: Fixed absolute-link in rules.html
+	1.7.7: missing Borders added, land bridges allow movement for fleets too
+	1.7.8: missing Borders added
 
 */
 
@@ -57,9 +58,8 @@ class ColonialVariant extends WDVariant {
 	public $description='Diplomacy with the colonial countries sparring over the lands and riches of the Far East.';
 	public $author='Peter Hawes';
 	public $adapter='Oliver Auth';
-	public $version='1.7.5';
+	public $version='1.7.9';
 	public $homepage='http://www.dipwiki.com/index.php?title=Colonial';
-	public $supplyCenterTarget=30;
 
 	public $countries=array('Britain','China','France','Holland','Japan','Russia','Turkey');
 
@@ -76,14 +76,14 @@ class ColonialVariant extends WDVariant {
 	}
 
 	public function turnAsDate($turn) {
-		if ( $turn==-1 ) return l_t("Pre-game");
-		else return ( $turn % 2 ? l_t("Autumn").", " : l_t("Spring").", " ).(floor($turn/2) + 1870);
+		if ( $turn==-1 ) return "Pre-game";
+		else return ( $turn % 2 ? "Autumn, " : "Spring, " ).(floor($turn/2) + 1870);
 	}
 
 	public function turnAsDateJS() {
 		return 'function(turn) {
-			if( turn==-1 ) return l_t("Pre-game");
-			else return ( turn%2 ? l_t("Autumn")+", " : l_t("Spring")+", " )+(Math.floor(turn/2) + 1870);
+			if( turn==-1 ) return "Pre-game";
+			else return ( turn%2 ? "Autumn, " : "Spring, " )+(Math.floor(turn/2) + 1870);
 		};';
 	}
 }

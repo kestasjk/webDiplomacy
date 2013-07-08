@@ -1,6 +1,6 @@
 <?php
 /*
-    Copyright (C) 2004-2010 Kestas J. Kuliukas
+    Copyright (C) 2004-2009 Kestas J. Kuliukas
 
 	This file is part of webDiplomacy.
 
@@ -40,8 +40,13 @@ print '<h4>'.l_t('Chat archive').'</h4>';
 
 print '<div class="variant'.$Game->Variant->name.'">';
 
+ini_set('memory_limit',"16M");
 $CB = $Game->Variant->Chatbox();
 print '<table>'.$CB->getMessages( -1, $pager->SQLLimit()).'</table>';
+
+// Set the global messages as seen (usefull in Nopress games to remove the newmessage-icon after a Gamemaster post)
+if( is_object($Member) )
+	$Member->seen(0);
 
 print '</div>';
 

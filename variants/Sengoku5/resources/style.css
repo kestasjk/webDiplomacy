@@ -1,0 +1,24 @@
+@CHARSET "ISO-8859-1";
+
+.variantSengoku5 .country0 { color: #CE7800 ! important; } /* Global    */
+.variantSengoku5 .country1 { color: #259901 ! important; } /* Shimazu   */
+.variantSengoku5 .country2 { color: #007BA5 ! important; } /* Mori      */
+.variantSengoku5 .country3 { color: #DD51BD ! important; } /* Chosokabe */
+.variantSengoku5 .country4 { color: #b05500 ! important; } /* Asakura   */
+.variantSengoku5 .country5 { color: #D62929 ! important; } /* Oda       */
+.variantSengoku5 .country6 { color: #b8ad00 ! important; } /* Uesugi    */
+.variantSengoku5 .country7 { color: #08374d ! important; } /* Takeda    */
+.variantSengoku5 .country8 { color: #6F005D ! important; } /* Hojo      */
+.variantSengoku5 .country9 { color: #514f4f ! important; } /* Impartial */
+
+.variantSengoku5 .occupationBar1 { background-color: #A4C499; } /* Shimazu   */
+.variantSengoku5 .occupationBar2 { background-color: #79AFC6; } /* Mori      */
+.variantSengoku5 .occupationBar3 { background-color: #EFC4E4; } /* Chosokabe */
+.variantSengoku5 .occupationBar4 { background-color: #ce9967; } /* Asakura   */
+.variantSengoku5 .occupationBar5 { background-color: #C48F85; } /* Oda       */
+.variantSengoku5 .occupationBar6 { background-color: #EAEAAF; } /* Uesugi    */
+.variantSengoku5 .occupationBar7 { background-color: #406c80; } /* Takeda    */
+.variantSengoku5 .occupationBar8 { background-color: #A87E9F; } /* Hojo      */
+.variantSengoku5 .occupationBar9 { background-color: #6a6868; } /* Impartial */
+
+

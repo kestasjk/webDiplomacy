@@ -1,0 +1,26 @@
+@CHARSET "ISO-8859-1";
+	
+.variantYoungstownRedux .country0 { color: #CE7800 ! important; } /* Global  */
+.variantYoungstownRedux .country1 { color: #FFA500 ! important; } /* India   */ 
+.variantYoungstownRedux .country2 { color: #254117 ! important; } /* Japan  */
+.variantYoungstownRedux .country3 { color: #800000 ! important; } /* Austria */
+.variantYoungstownRedux .country4 { color: #41A317 ! important; } /* Italy   */
+.variantYoungstownRedux .country5 { color: #990099 ! important; } /* China   */
+.variantYoungstownRedux .country6 { color: #FF0000 ! important; } /* Britain */
+.variantYoungstownRedux .country7 { color: #330099 ! important; } /* France  */
+.variantYoungstownRedux .country8 { color: #808080 ! important; } /* Germany */
+.variantYoungstownRedux .country9 { color: #C7A317 ! important; } /* Turkey  */
+.variantYoungstownRedux .country10 { color: #000000 ! important; } /* Russia  */
+
+
+.variantYoungstownRedux .occupationBar1 { background-color: #FFA500; } /* India   */
+.variantYoungstownRedux .occupationBar2 { background-color: #008000; } /* Japan   */
+.variantYoungstownRedux .occupationBar3 { background-color: #800000; } /* Austria */
+.variantYoungstownRedux .occupationBar4 { background-color: #4AA02C; } /* Italy   */
+.variantYoungstownRedux .occupationBar5 { background-color: #B93B8F; } /* China   */
+.variantYoungstownRedux .occupationBar6 { background-color: #F62217; } /* Britain */
+.variantYoungstownRedux .occupationBar7 { background-color: #488AC7; } /* France  */
+.variantYoungstownRedux .occupationBar8 { background-color: #C0C0C0; } /* Germany */
+.variantYoungstownRedux .occupationBar9 { background-color: #FFFF00; } /* Turkey  */
+.variantYoungstownRedux .occupationBar10 { background-color: #FFFFFF; } /* Russia  */
+

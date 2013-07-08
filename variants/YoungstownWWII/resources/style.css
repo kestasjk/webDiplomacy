@@ -1,0 +1,16 @@
+@CHARSET "ISO-8859-1";
+'','','','','',''
+.variantYoungstownWWII .country0 { color: #CE7800 ! important; } /* Global */
+.variantYoungstownWWII .country1 { color: #DD51BD! important; } /* British Empire */
+.variantYoungstownWWII .country2 { color: #007BA5 ! important; } /* French Empire */
+.variantYoungstownWWII .country3 { color: #259901 ! important; } /* Italian Empire */
+.variantYoungstownWWII .country4 { color: #254117 ! important; } /* Japanese Empire */
+.variantYoungstownWWII .country5 { color: #8B481A ! important; } /* Germany */
+.variantYoungstownWWII .country6 { color: #6F005D ! important; } /* Soviet Union */
+
+.variantYoungstownWWII .occupationBar1 { background-color: #EFC4E4; } /* British Empire */
+.variantYoungstownWWII .occupationBar2 { background-color: #79AFC6; } /* French Empire */
+.variantYoungstownWWII .occupationBar3 { background-color: #A4C499; } /* Italian Empire */
+.variantYoungstownWWII .occupationBar4 { background-color: #008000; } /* Japanese Empire */
+.variantYoungstownWWII .occupationBar5 { background-color: #A08A75; } /* Germany */
+.variantYoungstownWWII .occupationBar6 { background-color: #A87E9F; } /* Soviet Union */

@@ -112,8 +112,18 @@ class Chatbox
 				else
 					libGameMessage::send($msgCountryID, $Member->countryID, $newmessage);
 			}
-			elseif( $User->type['Moderator'] )
-				libGameMessage::send(0, 0, '('.$User->username.'): '.$newmessage);
+			elseif( $User->type['Moderator'] || defined('AdminUserSwitch'))
+			{
+				$fromName = (($User->type['ForumModerator'] || $User->type['Admin']) ? $User->username.' (Moderator)' : 'Mod-Team');
+				libGameMessage::send(0, 0, '<strong>'.$fromName.': </strong>'.$newmessage);
+			}
+		}
+		
+		if( isset($_REQUEST['MarkAsUnread']) )
+		{
+			$DB->sql_put("UPDATE wD_Members SET newMessagesFrom = IF( (newMessagesFrom+0) = 0,'".$msgCountryID."', CONCAT_WS(',',newMessagesFrom,'".$msgCountryID."') )
+						WHERE gameID = ".$Game->id." AND countryID=".$Member->countryID);
+			$Member->newMessagesFrom[]=$msgCountryID;
 		}
 	}
 
@@ -145,16 +155,19 @@ class Chatbox
 					<TR class="barAlt2 membersList">
 					<TD>';
 
-		if ( $msgCountryID == 0 )
+		if ( $Game->phase != 'Pre-game' )
 		{
-			$memList=array();
-			for($countryID=1; $countryID<=count($Game->Variant->countries); $countryID++)
-				$memList[]=$Game->Members->ByCountryID[$countryID]->memberNameCountry();
-			$chatbox .= '<div class="chatboxMembersList">'.implode(', ',$memList).'</div>';
-		}
-		else if (!isset($Member) || $Member->countryID != $msgCountryID)
-		{
-			$chatbox .= $Game->Members->ByCountryID[$msgCountryID]->memberBar();
+			if ( $msgCountryID == 0 )
+			{
+				$memList=array();
+				for($countryID=1; $countryID<=count($Game->Variant->countries); $countryID++)
+					$memList[]=$Game->Members->ByCountryID[$countryID]->memberNameCountry();
+				$chatbox .= '<div class="chatboxMembersList">'.implode(', ',$memList).'</div>';
+			}
+			else if (!isset($Member) || $Member->countryID != $msgCountryID)
+			{
+				$chatbox .= $Game->Members->ByCountryID[$msgCountryID]->memberBar();
+			}
 		}
 
 		$chatbox .= '</TD></TR></TABLE></DIV>';
@@ -177,13 +190,14 @@ class Chatbox
 
 		$chatbox .= '</TABLE></DIV>';
 
-		if ( ( $User->type['Moderator'] && $msgCountryID == 0 ) ||
+		if ( ( $User->type['Moderator'] && $msgCountryID == 0 && !isset($Member)) ||
 		     ( isset($Member) &&
-		       ( $Game->pressType == 'Regular' ||                                         // All tabs allowed for Regular
+		       ( ($Game->pressType == 'Regular' && $Game->phase != 'Finished' ) ||        // All tabs allowed for Regular (but not after game is completed)
 		         $Member->countryID == $msgCountryID ||                                   // Notes tab always allowed
 		         ( $msgCountryID == 0 &&                                                  // Global tab allowed for...
 		           ( $Game->pressType == 'PublicPressOnly' ||                             // public press and
-		             ( $Game->pressType == 'NoPress' && $Game->phase == 'Finished' )))))) // finished nopress.
+		             ( $Game->pressType == 'NoPress' && $Game->phase == 'Finished' ) ||   // finished nopress.
+					 ( $Game->pressType == 'Regular' && $Game->phase == 'Finished' )))))) // finished regular games only allow global chat.
 		{
 			$chatbox .= '<DIV class="chatbox"><TABLE>
 					<TR class="barAlt2">
@@ -197,6 +211,15 @@ class Chatbox
 						</TD>
 					</form>
 					</TR>
+					'. // Mark as unread Patch:
+					(($msgCountryID == 0) ? '' : '
+					<TR>
+						<TD colspan=2 class="right">
+							<form method="post" class="safeForm" action="board.php?gameID='.$Game->id.'&amp;msgCountryID='.$msgCountryID.'#chatboxanchor">
+								<input style="float:right; clear:both;" type="submit" tabindex="2" class="form-submit" value="'.l_t('Mark as unread / reply later').'" name="MarkAsUnread" />
+							</form>
+						</TD>
+					</TR>').'
 				</TABLE></DIV>';
 		}
 
@@ -229,7 +252,10 @@ class Chatbox
 		global $Member, $Game;
 
 		$tabs = '<div id="chatboxtabs" class="gamelistings-tabs">';
-
+		
+		if ( $Game->phase == 'Pre-game' )
+			return $tabs.'</div>';
+			
 		for( $countryID=0; $countryID<=count($Game->Variant->countries); $countryID++)
 		{
 			// Do not allow country specific tabs for restricted press games.
@@ -259,6 +285,10 @@ class Chatbox
 				// This isn't the tab I am currently viewing, and it has sent me new messages
 				$tabs .= ' '.libHTML::unreadMessages();
 			}
+			
+			// Mark as unread patch! 
+			if ( $msgCountryID == $countryID and isset($_REQUEST['MarkAsUnread']))
+				$tabs .= ' '.libHTML::unreadMessages();
 
 			$tabs .= '</a>';
 		}
@@ -337,8 +367,16 @@ class Chatbox
 		$alternate = false;
 		for ( $i=count($messages); $i >= 1; --$i )
 		{
+		
 			$message = $messages[$i-1];
-
+			
+			if (($Game->anon == 'Yes' && $Game->phase != 'Finished' 
+					&& $message['turn']==0 
+					&& $message['toCountryID']==0)
+					&& (!(($User->type['Moderator']) && !($Game->Members->isJoined())))
+				)
+					$message['message'] = preg_replace ('/^\((.*): /','(Anonymous): ',$message['message']);
+		
 			$alternate = ! $alternate;
 
 			// If member info is hidden and the message isn't from me
@@ -389,14 +427,30 @@ class Chatbox
 					$messagestxt .=  '('.l_t('To: <strong>%s</strong>',l_t($this->countryName($message['toCountryID']))).$fromtxt.') - ';
 			}
 
+			// Display the country name in front of the text (for colorblind people)
+			if ( $User->showCountryNames == 'Yes')
+				$messagestxt .=  '<span style="color: grey;">';
+			
 			if ( $message['turn'] < $Game->turn )
 			{
 				$messagestxt .= '<strong>'.$Game->datetxt($message['turn']).'</strong>: ';
 			}
 
+			if ( $User->showCountryNames == 'Yes')
+				$messagestxt .=  '<span style="color: black;">';
+
 			if( is_object($Member) && $message['fromCountryID'] == $Member->countryID )
 				$message['message'] = '<span class="messageFromMe">'.$message['message'].'</span>';
 
+			// Display the country name in front of the text (for colorblind people)
+			if ( $User->showCountryNames == 'Yes')
+			{
+				if(isset($Member) && $Member->countryID == $message['fromCountryID'])
+					$messagestxt .=  '<strong>You:</strong> ';
+				elseif( $message['fromCountryID'] != 0 )
+					$messagestxt .=  '<strong>'.$this->countryName($message['fromCountryID']).':</strong> ';
+			}
+				
 			$messagestxt .= $message['message'].
 					'</TD>
 				</TR>';

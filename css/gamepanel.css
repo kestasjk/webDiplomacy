@@ -14,7 +14,7 @@
 	}
 .gamePanelHome {
 	width:100%;
-	border-top: 1px solid #cecece;
+	border-top: 1px solid #6898A1;
 }
 .boardHeader {
 	color: #000;
@@ -22,22 +22,22 @@
 
 .bar {
 	padding:5px 2%;
-	background-color:#f5f5f5;
+	/*background-color:#f5f5f5;*/
 }
 .gamePanel .bar {
 	margin-left:2%;
 	margin-right:2%;
 	border:0;
 }
-.gamePanel .bar {
+/*.gamePanel .bar {
 	border-left: 1px solid #cecece;
 	border-right: 1px solid #cecece;
-	}
+	}*/
 .barAlt1, .barAltLight1 {
-	background-color:#f5f5f5 !important;
+	background-color:transparent;/*#f5f5f5 !important;*/
 	}
 .barAlt2, .barAltLight2 {
-	background-color:#f0f0f0 !important;
+	background-color:transparent;/*#f5f5f5 !important;*/
 	}
 .homeMembersTable .barAlt1 {
 	background-color:#eaeaea !important;
@@ -95,7 +95,7 @@
 
 .gameName {
 	font-weight:bold;
-	color: #009902;
+	color: #524234;
 }
 .gamePanel .gameName {
 	font-size:16px;
@@ -230,7 +230,7 @@ div.memberBoardHeader {
 	width:auto;
 }
 .membersFullTable .memberLeftSide {
-	border-right: 1px solid #c1c1c1;
+	border-right: 1px solid #CECECE;
 	}
 .memberYourCountry {
 	font-weight:bold;

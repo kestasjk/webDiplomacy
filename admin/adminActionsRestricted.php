@@ -29,7 +29,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  *
  * @package Admin
  */
-class adminActionsRestricted extends adminActionsForum
+class adminActionsRestricted extends adminActionsRestrictedVDip
 {
 	public function __construct()
 	{
@@ -515,7 +515,6 @@ class adminActionsRestricted extends adminActionsForum
 		// - Calculate the turn being moved back to
 		$lastTurn = ( ( $Game->phase == 'Diplomacy' ) ? $Game->turn-1 : $Game->turn );
 
-
 		// Begin moving the archives back
 		{
 			// - Move the old MovesArchive back to Units
@@ -535,10 +534,12 @@ class adminActionsRestricted extends adminActionsForum
 
 			// - Move the old TerrStatusArchive back to TerrStatus
 			$DB->sql_put("INSERT INTO wD_TerrStatus ( terrID, standoff, gameID, countryID, occupyingUnitID )
-						SELECT t.terrID, t.standoff, t.gameID, t.countryID, u.id
+						SELECT t.terrID, t.standoff, t.gameID, t2.countryID, u.id
 						FROM wD_TerrStatusArchive t
 							LEFT JOIN wD_Units u
 							ON ( ".$Game->Variant->deCoastCompare('t.terrID','u.terrID')." AND u.gameID = t.gameID )
+							LEFT JOIN wD_TerrStatusArchive t2
+							ON ( t2.gameID = t.gameID AND t2.terrID = t.terrID AND t2.turn = ".( ( $lastTurn == 0 ) ? 0 : $lastTurn-1 ).")
 						WHERE t.gameID = ".$Game->id." AND t.turn = ".$lastTurn);
 		}
 
@@ -597,6 +598,11 @@ class adminActionsRestricted extends adminActionsForum
 		$DB->sql_put("COMMIT");
 		
 		return l_t('The unit destroy indexes were recreated for map ID #%s ; there were %s entries before and there are currently %s entries.', $mapID, $entriesBefore, $entriesAfter);
+	}
+	public function reprocessGameConfirm(array $params)
+	{
+		$gameID = (int)$params['gameID'];
+		return 'Are you sure you want to reprocess this game?';
 	}
 }
 

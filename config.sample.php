@@ -132,6 +132,82 @@ class Config
 	 * @var array
 	 */
 	public static $variants=array(1=>'Classic', 2=>'World', 9=>'AncMed',19=>'Modern2',20=>'Empire4');//3=>'FleetRome', 4=>'CustomStart', 5=>'BuildAnywhere');
+	public static $variants=array(
+		 1=>'Classic',
+//		 2=>'World',
+//		 3=>'FleetRome',
+//		 4=>'CustomStart',
+//		 5=>'BuildAnywhere',
+//		 6=>'SouthAmerica5',
+//		 7=>'SouthAmerica4',
+//		 8=>'Hundred',
+//		 9=>'AncMed',
+//		10=>'ClassicMilan',
+//		11=>'Pure',
+//		12=>'Colonial',
+//		13=>'Imperium',
+//		14=>'ClassicCrowded',
+//		15=>'ClassicFvA',
+//		16=>'SailHo2',
+//		17=>'ClassicChaos',
+//		18=>'ClassicSevenIslands',
+//		19=>'Modern2',
+//		20=>'Empire4',
+//		21=>'Migraine',
+//		22=>'Duo',
+//		23=>'ClassicGvI',
+//		24=>'SouthAmerica8',
+//		25=>'ClassicGvR',
+//		26=>'ClassicFGvsRT',
+//		27=>'Sengoku5',
+//		28=>'Classic1897',
+//		29=>'Rinascimento',
+//		30=>'ClassicFog',
+//		31=>'Alacavre',
+//		32=>'DutchRevolt',
+//		33=>'Empire1on1',
+//		34=>'Classic1880',
+//		35=>'GreekDip',
+//		36=>'Germany1648',
+//		37=>'MateAgainstMate',
+//		38=>'ClassicNoNeutrals',
+//		39=>'Fubar',
+//		40=>'ClassicOctopus',
+//		41=>'Lepanto',
+//		42=>'ClassicVS',
+//		43=>'WhoControlsAmerica',
+//		44=>'FantasyWorld',
+//		45=>'Karibik',
+//		46=>'BalkanWarsVI',
+//		47=>'Hussite',
+//		48=>'ClassicFGA',
+//		49=>'ClassicIER',
+//		50=>'ClassicGreyPress',
+//		51=>'Haven',
+//		52=>'WWIV',
+//		53=>'ClassicEconomic',
+//		54=>'ClassicChaoctopi',
+//		55=>'TenSixtySix',
+//		56=>'USofA',
+//		57=>'KnownWorld_901',
+//		58=>'TreatyOfVerdun',
+//		59=>'YoungstownRedux',
+//		60=>'ClassicPilot',
+//		61=>'War2020',
+//		62=>'ClassicEvT',
+//		63=>'Viking',
+//		64=>'ClassicTouchy',
+//		65=>'RatWars',
+//		66=>'Pirates',
+//		67=>'Abstraction3',
+//		68=>'Habelya',
+//		69=>'AmericanConflict',
+//		70=>'Zeus5',
+//		72=>'Europe1939',
+//		73=>'NorthSeaWars',
+//		74=>'Maharajah',
+//		77=>'GreatLakes',
+	);
 
 	/**
 	 * Messages to display when different flags are set via the admin control panel.
@@ -243,6 +319,76 @@ class Config
 		return 'Default custom server message / google analytics code.';
 	}
 
+	// ---
+	// --- Now the vdiplomacy additions to the config-file:
+	// ---
+	
+	/**
+	 * Alter the top menue and add additional pages to your website.
+	 */
+	public static $top_menue=array(
+		'admin'=> array(
+			'edit.php'     => array('name'=>'Edit map', 'inmenu'=>TRUE,  'title'=>"Edit your maps"),
+			'help.php'     => array('name'=>'Help',     'inmenu'=>FALSE, 'title'=>"Help")
+		),
+		'user' => array(
+			'variants.php' => array('name'=>'Variants', 'inmenu'=>TRUE,  'title'=>"Variants")
+		),
+		'all'  => array(
+			'impresum.php' => array('name'=>'Impresum', 'inmenu'=>FALSE, 'title'=>"Impresum"),
+			'download.php' => array('name'=>'Download', 'inmenu'=>FALSE, 'title'=>"Download"),
+			'stats.php'    => array('name'=>'Stats',    'inmenu'=>TRUE,  'title'=>"Statistics")
+		)
+	);
+	
+	/**
+	 * If you use the piwik-webanalyser define his path here. If not comment this out.
+	 */		
+	// public static $piwik='piwik/';
+
+	/**
+	 * If set to any value > 0 the game will not progress for the given turns if a country misses it's orders.
+	 * It will send the country in CD and extend the game for another phase for as many turns as in $specialCDturnsDefault.
+	 * (These are the defaults that can be changed during gamecreate
+	 * @var int.
+	 */
+	public static $specialCDcountDefault = 0;
+	public static $specialCDturnsDefault = 0;
+
+	/**
+	 * If set to any value it wil display this mail adress in the rules section instead of the admin-mail.
+	 */
+	//public static $modEMail = 'admin@vDiplomacy.com';
+
+	/*
+	 * Make CD-takeovers cheaper (1/2 bet for example)
+	 */
+	// public static function adjustCD($bet)
+	// {
+	//	return ceil($bet / 2);
+	// }
+	
+	/*
+	 * Give edit access to these users for some variants without admin-access needed.
+	 */
+	// public static $devs=array(
+	//		'Firdrak'           => array('Oceamania'),
+	//		'Ninjanrd'          => array('FiveArmies'),
+	//		'myLAAN'            => array('Hussite','TreatyOfVerdun'),
+	// );
+	
+	/*
+	 * Limit the maximum bet-size based on how many players can join
+	 */
+	// public static $limitBet = array (
+	// 	2=>'1', 3=>'5', 4=>'10', 5=>'20', 6=>'30'
+	// );
+	
+	/**
+	 * EasyDevInstall
+	 * If set to an install.php it will create the database and a adminaccount automatically
+	 */
+	// public static $easyDevInstall = 'install_dev.php';
 
 	// ---
 	// --- From here on down the default settings will probably be fine.

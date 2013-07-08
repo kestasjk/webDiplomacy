@@ -289,6 +289,35 @@ class adjudicatorPreGame {
 			WHERE u.gameID = ".$Game->id
 		);
 	}
+	
+	/**
+	 * Give each member the same time-limit on his chessTimer
+	 */
+	protected function assignTime()
+	{
+		global $DB, $Game;
+
+		$DB->sql_put(
+			"UPDATE wD_Members
+			SET chessTime='".$Game->chessTime."'
+			WHERE gameID = ".$Game->id
+		);
+	}
+	
+	function checkForRelations()
+	{
+		require_once "lib/relations.php";
+		global $DB, $Game;
+
+		$sql = "SELECT u.rlGroup FROM wD_Users u
+					LEFT JOIN wD_Members m ON ( u.id = m.userID )
+					WHERE m.gameID=".$Game->id." AND rlGroup != 0
+					GROUP BY rlGroup
+					HAVING count(u.rlGroup) > 1";
+		$tabl= $DB->sql_tabl($sql);
+		while (list ($groupID) = $DB->tabl_row($tabl))
+			libRelations::sendGameMessage($groupID);
+	}
 
 	/**
 	 * Initialize the game (more of a phase change than adjudication). Will throw an exception
@@ -304,18 +333,25 @@ class adjudicatorPreGame {
 		// Will give back bets, send messages, delete the game, and throw an exception to get back to gamemaster.php
 		if( !$this->isEnoughPlayers() ) $Game->setNotEnoughPlayers();
 
-
-		// Determine which countryID is given to which userID
-		$userCountries = $this->userCountries();// $userCountries[$userID]=$countryID
-
-		assert('count($userCountries) == count($Game->Variant->countries) && count($userCountries) == count($Game->Members->ByID)');
-
-		$this->assignCountries($userCountries);
-
+		// Determine which countryID is given to which userID if not already set during gamecreate.
+		if (count($Game->Members->ByCountryID)==0)
+		{
+			$userCountries = $this->userCountries();// $userCountries[$userID]=$countryID
+			assert('count($userCountries) == count($Game->Variant->countries) && count($userCountries) == count($Game->Members->ByID)');
+			$this->assignCountries($userCountries);
+		}
+		else
+		{
+			require_once "lib/gamemessage.php";
+			libGameMessage::send(0, 'Info', 'This is a choose your country game.', $Game->id);		
+		}
+		
 		// Create starting board conditions, typically based on $countryUnits
 		$this->assignTerritories(); // TerrStatus
 		$this->assignUnits(); // Units
 		$this->assignUnitOccupations(); // TerrStatus occupyingUnitID
+		$this->assignTime();
+		$this->checkForRelations();
 	}
 }
 

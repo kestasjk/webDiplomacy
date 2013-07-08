@@ -34,7 +34,7 @@ $territoryRawData=array(
 	array('Bielorussia', 'Land', 'Yes', 0, 726, 372, 397, 186),
 	array('Bordeaux', 'Coast', 'Yes', 3, 244, 504, 140, 285),
 	array('Bosnia', 'Land', 'No', 0, 584, 546, 309, 317),
-	array('Brittany', 'Coast', 'No', 3, 268, 424, 142, 260),
+	array('Brittany', 'Coast', 'No', 0, 269, 394, 142, 260),
 	array('Bulgaria', 'Coast', 'Yes', 0, 752, 546, 381, 347),
 	array('Cairo', 'Coast', 'Yes', 2, 864, 836, 475, 488),
 	array('Caspian Sea', 'Sea', 'No', 0, 1154, 524, 591, 266),

@@ -21,6 +21,7 @@
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 require_once(l_r('gamepanel/members.php'));
+require_once('lib/reliability.php');
 
 /**
  * The game panel class; it extends the Game class, which contains the information, with a set
@@ -196,6 +197,9 @@ class panelGame extends Game
 		if( $this->pot > $Misc->GameFeaturedThreshold )
 			$buf .= '<img src="'.l_s('images/icons/star.png').'" alt="'.l_t('Featured').'" title="'.l_t('This is a featured game, one of the highest stakes games on the server!').'" /> ';
 
+		if( $this->adminLock == 'Yes' )
+			$buf .= '<img src="images/icons/lock.png" alt="Locked" title="Game is currently locked by an admin (usually to fix some errors)." /> ';
+			
 		if( $this->private )
 			$buf .= '<img src="'.l_s('images/icons/lock.png').'" alt="'.l_t('Private').'" title="'.l_t('This is a private game; password needed!').'" /> ';
 
@@ -220,8 +224,16 @@ class panelGame extends Game
 					'.$this->gameHoursPerPhase().'
 				</span>
 			</div>';
-
-		$date=' - <span class="gameDate">'.$this->datetxt().'</span>, <span class="gamePhase">'.l_t($this->phase).'</span>';
+			
+		$date=' - <span class="gameDate">'.$this->datetxt().'</span>, <span class="gamePhase">';
+		
+		if ($this->phase == 'Pre-game')
+		{
+			$needed = count($this->Variant->countries) - count($this->Members->ByID);
+			$date .= '<b>'.$needed.'</b> player'.($needed == 1 ? '' : 's').' (of '.count($this->Variant->countries).') missing</span>';
+		}
+		else
+			$date .= l_t($this->phase).'</span>';
 
 		$leftTop = '<div class="titleBarLeftSide">
 				'.$this->gameIcons().
@@ -232,7 +244,7 @@ class panelGame extends Game
 			//<span class="gamePotType" title="'.$this->potType.'">('.($this->potType=='Points-per-supply-center'?'PPSC':'WTA').')</span>';
 
 		$leftBottom .= $date;
-
+		
 		$leftTop .= '</div>';
 		$leftBottom .= '</div>';
 
@@ -251,17 +263,49 @@ class panelGame extends Game
 	}
 
 	function gameVariants() {
+	
+		global $User;
+		
 		$alternatives=array();
 		if( $this->variantID!=1 )
 			$alternatives[]=$this->Variant->link();
-		if( $this->pressType=='NoPress')
-			$alternatives[]=l_t('No in-game messaging');
-		elseif( $this->pressType=='PublicPressOnly' )
-			$alternatives[]=l_t('Public messaging only');
-		if( $this->anon=='Yes' )
-			$alternatives[]=l_t('Anonymous players');
 		if( $this->potType=='Winner-takes-all' )
-			$alternatives[]=l_t($this->potType);
+			$alternatives[]='<b><a href="points.php#ppscwta">'.l_t('WTA').'</a></b>';
+		else
+			$alternatives[]='<b><a href="points.php#ppscwta">'.l_t('PPSC').'</a></b>';
+		if( $this->pressType=='NoPress')
+			$alternatives[]=l_t('Gunboat');
+		elseif( $this->pressType=='PublicPressOnly' )
+			$alternatives[]=l_t('Public Press');
+		if( $this->anon=='Yes' )
+			$alternatives[]=l_t('Anon');
+		if( $this->chessTime > 0)
+			$alternatives[]=l_t('Chess:'.$this->chessTime." min.");
+			
+		// The NMR-policy defaults
+		if( ($this->specialCDturn != Config::$specialCDturnsDefault || $this->specialCDcount != Config::$specialCDcountDefault) && $this->specialCDturn >= $this->turn)
+		{
+			if ( $this->specialCDturn == 0 )
+				$alternatives[]=l_t('NMR: Off');
+			elseif( $this->specialCDturn == 5  && $this->specialCDcount == 2 )
+				$alternatives[]=l_t('NMR: Committed');
+			elseif( $this->specialCDturn > 90 && $this->specialCDcount > 90 )
+				$alternatives[]=l_t('NMR: Serious');
+			else
+			
+				$alternatives[]='NMR:'.($this->specialCDturn > 90 ? '&infin;' : $this->specialCDturn).'/'.($this->specialCDcount > 90 ? '&infin;' : ($this->specialCDcount == 0 ? 'off' : $this->specialCDcount));
+		}
+		
+		//	Show the end of the game in the options if set.
+		if(( $this->targetSCs > 0) && ($this->maxTurns > 0))
+			$alternatives[]='EoG: '.$this->targetSCs.' SCs or "'.$this->Variant->turnAsDate($this->maxTurns -1).'"';
+		elseif( $this->maxTurns > 0)
+			$alternatives[]='EoG: "'.$this->Variant->turnAsDate($this->maxTurns -1).'"';
+		elseif( $this->targetSCs > 0)
+			$alternatives[]='EoG: '.$this->targetSCs.' SCs';
+			
+		if( $this->rlPolicy=='Friends')
+			$alternatives[]=l_t('OnlyFriends');
 		if( $this->missingPlayerPolicy=='Wait' )
 			$alternatives[]=l_t('Wait for orders');
 
@@ -410,7 +454,7 @@ class panelGame extends Game
 	 */
 	function joinBar()
 	{
-		global $User;
+		global $DB,$User;
 
 		if ( $this->Members->isJoined() )
 		{
@@ -436,22 +480,55 @@ class panelGame extends Game
 			return l_t('A newly registered account can join this game; '.
 				'<a href="register.php" class="light">register now</a> to join.');
 
-		$question = l_t('Are you sure you want to join this game?').'\n\n';
 		if ( $this->isLiveGame() )
 		{
-			$question .= l_t('The game will start at the scheduled time even if all %s players have joined.', count($this->Variant->countries));
+			$question = l_t('This is a live game.').'\n'.l_t('The game will start at the scheduled time even if all %s players have joined.', count($this->Variant->countries));
 		}
 		else
 		{
-			$question .= l_t('The game will start when all %s players have joined.', count($this->Variant->countries));
+			$question = l_t('The game will start when all %s players have joined.', count($this->Variant->countries));
+			
+			list($turns,$games) = $DB->sql_row('SELECT SUM(turn), COUNT(*) FROM wD_Games WHERE variantID='.$this->Variant->id.' AND phase = "Finished"');
+			if ($games > 3)
+			{
+				$avgDur = libTime::timeLengthText((($turns / $games) - $this->turn) * 2.5 * $this->phaseMinutes * 60 );
+				if ($avgDur > 0)
+					$question .= '\n'.l_t('Looking at our stats this game might take (roughly) %s to complete.',$avgDur) ;
+			}
+			
 		}
+		
+		$question .= '\n\n'.l_t('Are you sure you want to join this game?').'\n';		
 
 		$buf = '<form onsubmit="return confirm(\''.$question.'\');" method="post" action="board.php?gameID='.$this->id.'"><div>
 			<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />';
-
-		if( $this->phase == 'Pre-game' )
+			
+		// Show join requirements:
+		if (($this->minRating > 0) || ($this->minPhases > 0))
 		{
-			$buf .= l_t('Bet to join: %s: ','<em>'.$this->minimumBet.libHTML::points().'</em>');
+			$buf .= '<em>Requirements:</em> ';
+			if( $this->minRating > 0)
+				$buf .= 'RR >= <em>'.libReliability::Grade($this->minRating).'</em> / ';
+			if( $this->minPhases > 0)
+				$buf .= 'MinPhases > <em>'.(int)($this->minPhases - 1) .'</em> / ';
+		}
+		
+		if( $this->phase == 'Pre-game'&& count($this->Members->ByCountryID)>0 )
+		{
+			$buf .= '<label>Join for</label> <em>'.$this->minimumBet.libHTML::points().'</em> as: <select name="countryID">';
+			foreach($this->Variant->countries as $id=>$name)
+				if (!isset($this->Members->ByCountryID[($id +1)]))
+					$buf .= '<option value="'.($id +1).'" />'.$name.'</option>';
+			$buf .= '</select>';
+			
+			if ( $this->private )
+				$buf .= '<br />'.self::passwordBox();
+				
+			$buf .= '<input type="submit" name="join" value="Join" class="form-submit" />';			
+		}
+		elseif( $this->phase == 'Pre-game' )
+		{
+			$buf .= 'Bet to join: <em>'.$this->minimumBet.libHTML::points().'</em>: ';
 		}
 		else
 		{
@@ -475,9 +552,11 @@ class panelGame extends Game
 	{
 		global $User;
 
+/*		I've put the following code in remarks to isplay the view Button, even if it's the PreGame-Phase 
+		(to view the chat for example).
 		if( !$this->Members->isJoined() && $this->phase == 'Pre-game' )
 			return '';
-
+*/
 		return '<a href="board.php?gameID='.$this->id.'#gamePanel">'.
 			l_t($this->Members->isJoined()?'Open':'View').'</a>';
 

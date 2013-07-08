@@ -4,7 +4,7 @@ class FleetRomeVariant extends ClassicVariant {
 	public $id=3;
 	//public $mapID=1;
 	public $name='FleetRome';
-	public $fullName='Classic, with fleet in Rome';
+	public $fullName='Classic - With fleet in Rome';
 	public $description='The same as the standard map, except initially Rome has a fleet instead of an army.';
 	//public $author='Avalon Hill';
 

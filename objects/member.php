@@ -19,6 +19,7 @@
  */
 
 require_once(l_r('objects/basic/set.php'));
+require_once('lib/reliability.php');
 
 /**
  * An object representing a relationship between a user and a game. Mostly contains
@@ -145,7 +146,27 @@ class Member
 	 * @var string
 	 */
 	var $userType;
+	
+	/**
+	 * Number of Missed moves and phases played by the member...
+	 * @var int
+	 */
+	public $missedMoves;
+	public $phasesPlayed;
+	public $gamesLeft;
+	public $leftBalanced;
 
+	/**
+	 * rlGroup of the player
+	 * @var int
+	 */
+	public $rlGroup;
+	
+	/**
+	 * ChessTimer (Countdown timer)
+	 */
+	public $chessTime;
+	
 	/**
 	 * Create a Member object from a database Member record row
 	 * @param array $row Member record
@@ -204,7 +225,7 @@ class Member
 
 			$output .= 'href="profile.php?userID='.$this->userID.'">'.$this->username;
 		}
-		return $output.' ('.$this->points.User::typeIcon($this->userType).')</a>';
+		return $output.' ('.$this->points.User::typeIcon($this->userType).'/'.$this->missedMoves.')</a>';
 	}
 
 	function pointsValue()
@@ -226,5 +247,6 @@ class Member
 			$this->userID, $this->gameID, 'Game',
 			$keep, $private, $text, $this->Game->name, $this->gameID);
 	}
+	
 }
 ?>

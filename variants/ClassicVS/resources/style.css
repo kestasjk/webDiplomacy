@@ -1,0 +1,19 @@
+@CHARSET "ISO-8859-1";
+
+/* Order: ('Global'), 'England', 'France', 'Italy', 'Germany', 'Austria', 'Turkey', 'Russia' */
+.variantClassicVS .country0 { color: #CE7800 ! important; }
+.variantClassicVS .countryEngland { color: #DD51BD ! important; }
+.variantClassicVS .countryFrance { color: #007BA5 ! important; }
+.variantClassicVS .countryItaly { color: #259901 ! important; }
+.variantClassicVS .countryGermany { color: #8B481A ! important; }
+.variantClassicVS .countryAustria { color: #D62929 ! important; }
+.variantClassicVS .countryTurkey { color: #b8ad00 ! important; }
+.variantClassicVS .countryRussia { color: #6F005D ! important; }
+
+.variantClassicVS .occupationBarEngland { background-color: #EFC4E4; }
+.variantClassicVS .occupationBarFrance { background-color: #79AFC6; }
+.variantClassicVS .occupationBarItaly { background-color: #A4C499; }
+.variantClassicVS .occupationBarGermany { background-color: #A08A75; }
+.variantClassicVS .occupationBarAustria { background-color: #C48F85; }
+.variantClassicVS .occupationBarTurkey { background-color: #EAEAAF; }
+.variantClassicVS .occupationBarRussia { background-color: #A87E9F; }

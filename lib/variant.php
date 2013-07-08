@@ -113,6 +113,14 @@ class libVariant {
 
 		if( file_exists(self::cacheDir($variantName).'/data.php') )
 			unlink(self::cacheDir($variantName).'/data.php');
+		
+		// Delete the javascript-cache too
+		foreach (glob(self::cacheDir($variantName).'/*.js') as $jsfilename)
+			unlink($jsfilename);			
+
+		// Delete the css-cache too
+		foreach (glob(libCache::Dirname('css').'/variants-*.css') as $cssfilename)
+			unlink($cssfilename);			
 	}
 
 	/**

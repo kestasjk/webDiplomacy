@@ -86,9 +86,18 @@ class libTime
                 $minutes = floor(( $secondsRemaining % (60*60) )/60);
                 $hours = floor( $secondsRemaining % (24*60*60)/(60*60) );
                 $days = floor( $secondsRemaining /(24*60*60) );
+                $month = floor( $secondsRemaining /(24*60*60*30) );
 
-                if ( $days > 0 )
+                if ( $month > 0 )
                 {
+                    $days -= $month*30;
+                    if ( $days > 0 )
+                        return $month.' month'.($month>1?'s':'').', '.$days.' day'.($days>1?'s':'');
+                    else
+                        return $month.' month'.($month>1?'s':'');
+                }
+                elseif ( $days > 0 )
+                 {
                         // D, H
                         $minutes += round($seconds/60); // Add a minute if the seconds almost give a minute
                         $seconds = 0;

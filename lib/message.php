@@ -64,6 +64,40 @@ class Message
 		return preg_replace($patterns, $replacements, $message);
 	}
 
+	static public function check_anon($toID, $fromUserID, $message, $subject)
+	{
+	
+		global $DB;
+		
+		$anon = 'No';
+		
+		$search = $message . $subject;
+		
+		// Check if there is a link to an anon game in the message or the subject.
+		$gameID=preg_replace('/.*gameID[:= _]?([0-9]+).*/i' , '\1' , $search);
+		if ($gameID != $search)
+			list($anon)=$DB->sql_row('SELECT anon FROM wD_Games WHERE phase != "Finished" AND id = '.$gameID);
+
+		// If there is nothing in the message-body test the subject of the thread-start
+		if ($anon != 'Yes' && $toID != 0)
+		{
+			list($subject)=$DB->sql_row('SELECT subject FROM wD_ForumMessages WHERE id = '.$toID);
+			$gameID=preg_replace('/.*gameID[:= _]?([0-9]+).*/i' , '\1' , $subject);
+			if ($gameID != $subject)
+				list($anon)=$DB->sql_row('SELECT anon FROM wD_Games WHERE phase != "Finished" AND id = '.$gameID);
+		}
+		
+		// IF the game is anon, check if the user in question is a member of this game...
+		if ($anon == 'Yes')
+		{		
+			list($id)=$DB->sql_row('SELECT id FROM wD_Members WHERE gameID = '.$gameID.' AND userID = '.$fromUserID);		
+			if ($id < 1)
+				$anon = 'No';
+		}
+		
+		return ($anon=='Yes'?'Yes':'No');
+	}
+	
 	/**
 	 * Send a message to the public forum. The variables passed are assumed to be already sanitized
 	 *
@@ -95,6 +129,7 @@ class Message
 		$DB->sql_put("INSERT INTO wD_ForumMessages
 						SET toID = ".$toID.", fromUserID = ".$fromUserID.", timeSent = ".$sentTime.",
 						message = '".$message."', subject = '".$subject."', replies = 0,
+						anon = '".self::check_anon($toID, $fromUserID, $message, $subject)."',
 						type = '".$type."', latestReplySent = 0");
 
 		$id = $DB->last_inserted();

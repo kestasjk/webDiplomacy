@@ -209,7 +209,49 @@ class Game
 	 */
 	public $missingPlayerPolicy;
 
+	/**
+	 * Any value > 0 ends the game after the given turn. Winner is the one with the most SC at this time.
+	 * @var int
+	 */
+	 public $maxTurns;
+	 
+	/**
+	 * Any value > 0 ends the game after a player reaches the given SC count. Winner is the one with the most SC at this time.
+	 * @var int
+	 */
+	 public $targetSCs;
+	 
+	/**
+	 * Some special settings to restrict acces to players baed on their rating
+	 * @var int
+	 */
+	 public $minRating;
+	 public $minPhases;
+	 public $maxLeft;
 
+	/**
+	 * Some settings to force a CD on early NMRs
+	 */
+	 public $specialCDcount;
+	 public $specialCDturns;
+	 
+	/**
+	 * How to handle RL-friends (None, Strict, Only)
+	 */
+	 public $rlPolicy;
+	 
+	/**
+	 * ChessTimer (Countdown timer)
+	 */
+	public $chessTime;
+	 
+	/**
+	 * adminLock, Yes or No (Admins can lock a game for interaction for bugfixing)
+	 *
+	 * @var string
+	 */
+	public $adminLock;
+	
 	/**
 	 * @param int/array $gameData The game ID of the game to load, or the array of its database row
 	 * @param string[optional] $lockMode The database locking phase to use; no locking by default
@@ -326,6 +368,16 @@ class Game
 			g.minimumBet,
 			g.anon,
 			g.pressType,
+			g.maxTurns,
+			g.targetSCs,
+			g.minRating,
+			g.minPhases,
+			g.maxLeft,
+			g.specialCDcount,
+			g.specialCDturn,
+			g.rlPolicy,
+			g.chessTime,
+			g.adminLock,
 			g.missingPlayerPolicy
 			FROM wD_Games g
 			WHERE g.id=".$this->id.' '.$this->lockMode);
@@ -474,7 +526,7 @@ class Game
 	 */
 	function needsProcess()
 	{
-		global $Misc;
+		global $Misc, $DB;
 
 		/*
 		 * - Games are processing as normal
@@ -494,9 +546,91 @@ class Game
 					|| ($this->phase=='Pre-game' && count($this->Members->ByID)==count($this->Variant->countries) && !($this->isLiveGame()) ) )
 				)
 			)
+		{
+			/**
+			 * Special CD for the first turns
+			 * In the first turns extend the gamephase and CD all users who failed to enter an order.
+			 */
+			if (($this->turn < $this->specialCDturn) && (count($this->Variant->countries) > 2))
+			{
+				require_once "lib/gamemessage.php";
+				$foundNMR=false;
+				
+				foreach($this->Members->ByID as $Member)
+				{
+					if ($Member->orderStatus == '')
+					{
+						if ($Member->supplyCenterNo > 1 && $Member->status=='Playing')
+							$foundNMR=true;
+							
+						if ($Member->status=='Playing')
+						{
+							$DB->sql_put(
+								"INSERT INTO wD_CivilDisorders ( gameID, userID, countryID, turn, bet, SCCount )
+									VALUES ( ".$this->id.", ".$Member->userID.", ".$Member->countryID.", ".$this->turn.", ".$Member->bet.", ".$Member->supplyCenterNo.")"
+								);
+							$DB->sql_put("UPDATE wD_Members SET status='Left' WHERE id = ".$Member->id);
+							unset($this->Members->ByStatus['Playing'][$Member->id]);
+							$Member->status = 'Left';
+							
+							require_once(l_r('lib/reliability.php'));		 
+							libReliability::updateReliability($Member, 'gamesLeft', '+ 1');
+							
+							$this->Members->ByStatus['Left'][$Member->id] = $Member;
+							libGameMessage::send(0, 'GameMaster', 'NMR from '.$Member->country.'. Send the country in CD.', $this->id);
+						}
+					}
+				}				
+				if ($foundNMR)
+				{
+					if (time() >= $this->processTime)
+					{
+						$search = 'Missing orders for '.$this->Variant->turnAsDate($this->turn).' ('.$this->phase.')';
+						$sql='SELECT COUNT(*) FROM wD_GameMessages WHERE message LIKE "%'.$search.'%" AND toCountryID = 0 AND fromCountryID = 0 AND gameID='.$this->id;
+						list($extCount)=$DB->sql_row($sql);
+						if ($extCount < $this->specialCDcount || $this->specialCDcount > 90)
+						{
+							$this->processTime = time() + $this->phaseMinutes*60;
+							$this->minimumBet = $this->Members->pointsLowestCD();
+							$DB->sql_put("UPDATE wD_Games 
+											SET processTime = ".$this->processTime.",
+											attempts = 0,
+											minimumBet = ".$this->minimumBet."
+											WHERE id = ".$this->id);
+							foreach ($this->Members->ByID as $id => $Member)
+							{
+								$this->Members->ByID[$id]->orderStatus->Ready=false;
+								$DB->sql_put("UPDATE wD_Members SET orderStatus = '".$this->Members->ByID[$id]->orderStatus."' WHERE id = ".$Member->id);
+							}
+							$gameMasterText = 'Missing orders for '.$this->Variant->turnAsDate($this->turn).' ('.$this->phase.') from a country with 2 or more SCs. Extending phase.';
+							$repeat = $this->specialCDcount - $extCount - 1;
+							if ($this->specialCDcount > 90)
+								$gameMasterText .= 	'The phase will extend again till you find a replacement.';
+							elseif ($repeat > 0)
+								$gameMasterText .= 	'The phase will extend '.$repeat.' time'.($repeat > 1 ? 's':'').' again if you do not find a replacement.';
+							else
+								$gameMasterText .= 	'The game will continue after this phase even if you do not find a replacement.';
+							
+							libGameMessage::send(0, 'GameMaster', $gameMasterText, $this->id);
+							
+							// Check for missed turns and adjust the counter in the user-data
+							require_once(l_r('lib/reliability.php'));		 
+							libReliability::updateReliabilities($this->Members);
+							
+							return false;
+						}
+						else
+						{
+							return true;
+						}
+					}
+					return false;
+				}
+			}
 			return true;
+		}	
 		else
-			return false;
+			return false;			
 	}
 }
 

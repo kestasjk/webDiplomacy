@@ -37,6 +37,7 @@ $gameID = (int)$_REQUEST['gameID'];
 // If we are trying to join the game lock it for update, so it won't get changed while we are joining it.
 if ( $User->type['User'] && ( isset($_REQUEST['join']) || isset($_REQUEST['leave']) ) && libHTML::checkTicket() )
 {
+
 	try
 	{
 		require_once(l_r('gamemaster/game.php'));
@@ -44,7 +45,7 @@ if ( $User->type['User'] && ( isset($_REQUEST['join']) || isset($_REQUEST['leave
 		$Variant=libVariant::loadFromGameID($gameID);
 		libVariant::setGlobals($Variant);
 		$Game = $Variant->processGame($gameID);
-
+		
 		if ( isset($_REQUEST['join']) )
 		{
 			// They will be stopped here if they're not allowed.
@@ -80,8 +81,19 @@ else
 		libVariant::setGlobals($Variant);
 		$Game = $Variant->panelGameBoard($gameID);
 
+		// In an game with strict rlPolicy don't allow users to join from a Left if they know someone else in this game
+		// Usually after a Mod set them to CD.
+		if ( $Game->Members->isJoined() && $Game->rlPolicy == 'Strict' && $User->rlGroup < 0 && $Game->Members->ByUserID[$User->id]->status == 'Left')
+		{
+			require_once ("lib/relations.php");			
+			if ($message = libRelations::checkRelationsGame($User, $Game))
+				print "<b>Notice:</b> ".$message;
+				unset($Game->Members->ByUserID[$User->id]);
+		}
+		
 		if ( $Game->Members->isJoined() )
 		{
+		
 			// We are a member, load the extra code that we might need
 			require_once(l_r('gamemaster/gamemaster.php'));
 			require_once(l_r('board/member.php'));
@@ -90,6 +102,16 @@ else
 			global $Member;
 			$Game->Members->makeUserMember($User->id);
 			$Member = $Game->Members->ByUserID[$User->id];
+			
+			// Advanced-Log
+			$DB->sql_put("INSERT INTO wD_AccessLogAdvanced SET
+							userID   = ".$User->id.",
+							request  = CURRENT_TIMESTAMP,
+							ip       = INET_ATON('".$_SERVER['REMOTE_ADDR']."'),
+							action   = 'Board',
+							memberID = '".$Member->id."'"
+							);
+			
 		}
 	}
 	catch(Exception $e)
@@ -99,7 +121,6 @@ else
 			($User->type['User'] ? l_t("Check your <a href='index.php' class='light'>notices</a> for messages regarding this game."):''));
 	}
 }
-
 
 if ( isset($_REQUEST['viewArchive']) )
 {
@@ -216,6 +237,16 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 		}
 	}
 
+	/* This is a bit ugly. BEcause of the countrySwitch-code it might be possible that a Member
+	 * is no longer in the game, once it's processed.
+	 * Skip the next few lines if so.
+	 */
+	if (!(isset($Game->Members->ByUserID[$User->id])))
+	{
+		unset($Member);
+		goto NoMoreMember;
+	}
+	
 	if( $Game instanceof processGame )
 	{
 		$Game = $Game->Variant->panelGameBoard($Game->id);
@@ -225,13 +256,23 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 
 	if ( 'Pre-game' != $Game->phase && $Game->phase!='Finished' )
 	{
-		$OI = OrderInterface::newBoard();
-		$OI->load();
+		if ($Game->adminLock == 'No' || $User->type['Admin'] || defined('AdminUserSwitch'))
+		{
+			$OI = OrderInterface::newBoard();
+			$OI->load();
 
-		$Orders = '<div id="orderDiv'.$Member->id.'">'.$OI->html().'</div>';
-		unset($OI);
+			$Orders = '<div id="orderDiv'.$Member->id.'">'.$OI->html().'</div>';
+			unset($OI);
+		}
+		else
+		{
+			$Orders = '<div id="orderDiv'.$Member->id.'">Game is currently locked by an admin (usually to fix some errors).</div>';
+		}
 	}
 }
+
+// Skip-target for the CountrySwitch-exit.
+NoMoreMember:
 
 if ( 'Pre-game' != $Game->phase && ( isset($Member) || $User->type['Moderator'] ) )
 {
@@ -250,6 +291,44 @@ if ( 'Pre-game' != $Game->phase && ( isset($Member) || $User->type['Moderator'] 
 
 	libHTML::$footerScript[] = 'makeFormsSafe();';
 }
+
+/*
+ * Display the chatbox in gunboat games if there are unread system messages
+ */
+if ( isset($Member) && count($Member->newMessagesFrom) > 0 && $Game->pressType=='NoPress')
+{
+	$CB = $Game->Variant->Chatbox();
+	$forum = $CB->output(0);
+	$Member->seen(0);
+	unset($CB);
+}
+
+
+/*
+ * Pregame-chat hack
+ */
+
+if ($Game->phase == 'Pre-game')
+{	
+
+	$CB = $Game->Variant->Chatbox();
+
+	if( isset($_REQUEST['newmessage']) AND $_REQUEST['newmessage']!="")
+	{
+		$_REQUEST['newmessage'] = "(".$User->username."): ".$_REQUEST['newmessage'];
+		$CB->postMessage(0);
+		$DB->sql_put("COMMIT");
+	}
+	
+	$forum = $CB->output(0);
+	unset($CB);
+
+	if (isset($Member))
+		$Member->seen(0);
+
+	libHTML::$footerScript[] = 'makeFormsSafe();';
+}	
+// END PREGAME-CHAT
 
 $map = $Game->mapHTML();
 
@@ -290,7 +369,6 @@ if (isset($Orders))
 
 print $Game->summary(true);
 
-
 if($User->type['Moderator'])
 {
 	$modActions=array();
@@ -313,6 +391,7 @@ if($User->type['Moderator'])
 				$modActions[] = libHTML::admincp('unCrashGames',array('excludeGameIDs'=>''), l_t('Un-crash all crashed games'));
 
 			$modActions[] = libHTML::admincp('reprocessGame',array('gameID'=>$Game->id), l_t('Reprocess game'));
+			$modActions[] = libHTML::admincp('allReady',array('gameID'=>$Game->id), 'Set Ready');
 		}
 
 		if( $Game->phase!='Pre-game' && !$Game->isMemberInfoHidden() )

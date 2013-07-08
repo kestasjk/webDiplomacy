@@ -1,0 +1,20 @@
+@CHARSET "ISO-8859-1";
+
+.variantGermany1648 .country0 { color: #CE7800 ! important; } /* Global  */
+.variantGermany1648 .country1 { color: #D62929 ! important; } /* Austrian Habsburg */
+.variantGermany1648 .country2 { color: #b8ad00 ! important; } /* Spanish Habsburg */
+.variantGermany1648 .country3 { color: #DD51BD ! important; } /* Wettin */
+.variantGermany1648 .country4 { color: #259901 ! important; } /* Bavarian Wittelsbach */
+.variantGermany1648 .country5 { color: #b05500 ! important; } /* Palatinate Wittelsbach */
+.variantGermany1648 .country6 { color: #08374d ! important; } /* Hohenzollern */
+.variantGermany1648 .country7 { color: #007BA5 ! important; } /* Ecclesiastic Lands */
+.variantGermany1648 .country8 { color: #888888 ! important; } /* Free Imperial Cities */
+
+.variantGermany1648 .occupationBar1 { background-color: #C48F85; } /* Austrian Habsburg */
+.variantGermany1648 .occupationBar2 { background-color: #EAEAAF; } /* Spanish Habsburg */
+.variantGermany1648 .occupationBar3 { background-color: #EFC4E4; } /* Wettin */
+.variantGermany1648 .occupationBar4 { background-color: #A4C499; } /* Bavarian Wittelsbach */
+.variantGermany1648 .occupationBar5 { background-color: #ce9967; } /* Palatinate Wittelsbach */
+.variantGermany1648 .occupationBar6 { background-color: #406c80; } /* Hohenzollern */
+.variantGermany1648 .occupationBar7 { background-color: #79afc6; } /* Ecclesiastic Lands */
+.variantGermany1648 .occupationBar8 { background-color: #888888; } /* Free Imperial Cities */
