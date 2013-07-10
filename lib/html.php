@@ -666,7 +666,7 @@ class libHTML
 		global $User;
 
 	 	$menu = '<!-- Menu begin. -->
-				<div id="header">
+				<div id="fix"><div id="header">
 					<div id="header-container">
 						<a href="./">
 							<img id="logo" src="'.l_s('mod/img/webDiplomacy.png').'" width="209" height="48" title="'.l_t('webDiplomacy logo').'" alt="'.l_t('webDiplomacy').'" />
@@ -726,6 +726,7 @@ class libHTML
 		</div>
 		<div id="seperator"></div>
 		<div id="seperator-fixed"></div>
+		</div><div id=fix2></div>
 		<!-- Menu end. -->';
 
 		return $menu;
