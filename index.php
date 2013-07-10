@@ -357,7 +357,7 @@ class libHome
 			foreach($data['posts'] as $post)
 			{
 				$buf .= '<div class="homeForumPost homeForumPostAlt'.libHTML::alternate().' userID'.$post['userID'].'">
-                      <div class="answer">'.l_t('%s',''.$data['replies'].'').'</div> <div class="homeForumPostTime">'.$post['iconMessage'].'</div>
+                       <p class="numComment"><a><span>'.l_t('%s',''.$data['replies'].'').'</span><i class="pike"></i></a></p><div class="homeForumPostTime">'.$post['iconMessage'].'</div>
 					
 						
 
