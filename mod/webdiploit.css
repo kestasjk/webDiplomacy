@@ -1,3 +1,45 @@
+/* stili BLOG */
+.numComment {
+	float: right;
+	margin-bottom: 4px;
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
+}
+
+.numComment a {
+	font-size: 12px;
+	font-family: 'Cuprum', sans-serif;
+	color: #fff !important;
+	display: block;
+	float: right;
+	text-decoration: none;
+	text-transform: uppercase;
+}
+
+.numComment a span {
+	width: 30px;
+	display: block;	
+	background: #195fa0;
+	padding: 3px 0 1px 0;
+	text-align: center;
+	margin-left: 5px;
+	position: relative;
+	text-shadow: 0 1px 0 rgba(0,0,0,0.2);
+	border-radius: 5px;
+}
+
+.numComment .pike {
+	background: url('img/pin.png');
+	background-repeat:no-repeat;
+	display: block;
+	height: 5px;
+	position: relative;
+	left: 14px;
+	
+}
+/* FINE stili BLOG */
+
+
 /* stili generici */
 h1.titolo {
 	font-size:15pt;
@@ -15,26 +57,6 @@ h2.titolo {
 }
 
 /* FINE stili generici */
-
-/* INIZIO stili immagini */
-
-.img {
-text-align: center;
-}
-
-.answer {
-float:right;
-background:url('img/answer.png') ;
-/*background-repeat:no-repeat;*/
-text-align:center;
-font-weight:bold;
-line-height: 19px;
-height:20px;
-width:30px;
-margin-left:2px;
-}
-
-/* FINE stili immagini*/
 
 /*  INIZIO barra social network */
 .social {
