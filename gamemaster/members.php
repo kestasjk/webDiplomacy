@@ -46,7 +46,7 @@ class processMembers extends Members
 	 */
 	function notifyGameProgressed()
 	{
-		$this->sendToPlaying('No',l_t("Game progressed to %s, %s",$this->Game->phase,$this->Game->datetxt($this->Game->turn)));
+		$this->sendToPlaying('No',l_t("Game progressed to %s, %s",l_t($this->Game->phase),$this->Game->datetxt($this->Game->turn)));
 	}
 
 	/**
