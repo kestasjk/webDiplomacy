@@ -14,6 +14,22 @@ h2.titolo {
     margin: 0 0 0 0;
 }
 
+#fix2 { padding-top: 67px;
+        position:relative;
+}
+
+#fix {position: fixed;
+        width:100%;
+        margin:auto;
+	z-index:100;
+        top: 0px;
+     
+    box-shadow: 0 0 20px black; /* Параметры тени */
+    box-shadow: 0 0 20px rgba(0,0,0,0,); /* Параметры тени */
+    -moz-box-shadow: 0 0 20px rgba(0,0,0,0,); /* Для Firefox */
+    -webkit-box-shadow: 0 0 20px rgba(0,0,0,0,); /* Для Safari и Chrome */
+}
+
 /* FINE stili generici */
 
 /* INIZIO stili immagini */
