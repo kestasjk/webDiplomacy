@@ -52,7 +52,7 @@ $globalFaq = array(
 
 "L'interfaccia" => "Sub-section",
 "Cosa sono quei cerchi verdi accanto al nome della persona?" => "L'icona verde appare quando un giocatore è on-line sul server. Questo significa che se il giocatore ha avuto accesso al server negli ultimi ~10-15 minuti questi avranno l'icona verde accanto al loro nome.",
-"E questo cosa sarebbe? (<img src='images/icons/online.png' />, <img src='images/icons/mail.png' />, ecc)" => "Se vedi un/una icona/bottone/immagine che non sai cosa significhi prova a passarci sopra il mouse, potrebbe uscire una nota con una breve spiegazione. Se non dovesse succedere, sentiti libero di chiedere sul <a href='http://forum.webdiplomacy.it' class='light'>forum</a>.",
+"E questo cosa sarebbe? (<img src='images/icons/online.png' alt='icona giocatore online'/>, <img src='images/icons/mail.png' alt='icona nuovo messaggio webDiplomacy'/>, ecc)" => "Se vedi un/una icona/bottone/immagine che non sai cosa significhi prova a passarci sopra il mouse, potrebbe uscire una nota con una breve spiegazione. Se non dovesse succedere, sentiti libero di chiedere sul <a href='http://forum.webdiplomacy.it' class='light'>forum</a>.",
 "Perchè i miei ordini cambiano colore da verde a rosso?" => "Gli ordini in rosso sono ancora da salvare; se vedi molti ordini in rosso dovresti salvare, altrimenti potresti dimenticartene e perderli chiudendo la finstra del browser o chattando con qualcuno.",
 "Cosa significano 'Salva' e 'Pronto'?" => "Il pulsante 'Salva' permette di salvare i propri ordini; Gli ordini in rosso, cioè quelli non ancora salvati, diventeranno verdi non appena schiacci 'Salva'. <br />
 Il pulsante 'Pronto' è disponibile una volta salvati i propri ordini e, se schiacciato, significa che hai finito di inserire i tuoi ordini e che sei pronto per continuare con il turno successivo senza aspettare la scadenza del turno. Se tutti i giocatori di una partita sono 'Pronti' la partita avanza di turno immediatamente.",
@@ -178,8 +178,7 @@ foreach( $faq as $q => $a )
 		$question++;
 	}
 }
-print '</ul></div>
-</div>';
+print '</ul></div>';
 
 ?>
 <script type="text/javascript">

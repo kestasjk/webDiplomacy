@@ -313,7 +313,7 @@ class processMember extends Member
 
 		$this->send('No','No',l_t("Your empire has gone inactive, and fallen into civil disorder. It can now be ".
 			"taken over by anyone, unless you take it back!"));
-		$this->Game->Members->sendExcept($this,'No',l_t('%s has gone into civil disorder.',$this->Game->Variant->countries[$this->countryID-1]));
+		$this->Game->Members->sendExcept($this,'No',l_t('%s has gone into civil disorder.',l_t($this->Game->Variant->countries[$this->countryID-1])));
 	}
 
 	/**
