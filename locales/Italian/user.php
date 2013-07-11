@@ -49,6 +49,15 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	<li class="formlistdesc">
 		Scegli se rendere visibile il tuo indirizzo di posta agli altri giocatori. Se decidi di renderlo visibile, sarà visualizzato come immagine per evitare che sia preda dei bot automatici.
 	</li>
+	
+	<li class="formlisttitle">Ricevi notifiche delle partite via mail:</li>
+   <li class="formlistfield">
+      <input type="radio" name="userForm[sendEmail]" value="Yes" <?php if($User->sendEmail=='Yes') print "checked"; ?>>Sì
+      <input type="radio" name="userForm[sendEmail]" value="No" <?php if($User->sendEmail=='No') print "checked"; ?>>No
+   </li>
+   <li class="formlistdesc">
+     Scegli se ricevere o meno notifiche email ad ogni cambio turno, pausa o ripresa delle tue partite in corso.
+   </li>
 
 	<li class="formlisttitle">Password:</li>
 	<li class="formlistfield">
@@ -151,7 +160,7 @@ if( $User->type['User'] ) {
 			$unmuteThreadID = (int)$_GET['unmuteThreadID'];
 			$User->toggleThreadMute($unmuteThreadID);
 			
-			print '<li class="formlistfield"><strong>Thread <a class="light" href="forum.php?threadID='.$unmuteThreadID.'#'.$unmuteThreadID.
+			print '<li class="formlistfield"><strong>Thread <a class="light" href="blog.php?threadID='.$unmuteThreadID.'#'.$unmuteThreadID.
 				'">#'.$unmuteThreadID.'</a> unmuted.</strong></li>';
 		}
 		
@@ -160,7 +169,7 @@ if( $User->type['User'] ) {
 		foreach ($mutedThreads as $mutedThread) {
 			if( $unmuteThreadID == $mutedThread['muteThreadID']) continue;
 			print '<li>'.
-				'<a class="light" href="forum.php?threadID='.$mutedThread['muteThreadID'].'#'.$mutedThread['muteThreadID'].'">'.
+				'<a class="light" href="blog.php?threadID='.$mutedThread['muteThreadID'].'#'.$mutedThread['muteThreadID'].'">'.
 				$mutedThread['subject'].'</a> '.
 				libHTML::muted('usercp.php?unmuteThreadID='.$mutedThread['muteThreadID'].'#threadmutes').'<br />'.
 				$mutedThread['username'].' ('.$mutedThread['replies'].' replies)<br />'.

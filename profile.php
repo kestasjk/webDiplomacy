@@ -194,7 +194,7 @@ if ( isset($_REQUEST['detail']) )
 				while(list($id,$subject,$message, $timeSent)=$DB->tabl_row($tabl))
 				{
 					$buf .= '<li><em>'.libTime::text($timeSent).'</em>:
-						<a href="forum.php?threadID='.$id.'">'.$subject.'</a><br />'.
+						<a href="blog.php?threadID='.$id.'">'.$subject.'</a><br />'.
 						$message.'</li>';
 				}
 				$buf .= '</ul>';
@@ -221,7 +221,7 @@ if ( isset($_REQUEST['detail']) )
 					<ul>';
 				while(list($id,$threadID,$subject, $message, $timeSent)=$DB->tabl_row($tabl))
 				{
-					$buf .= '<li><em>'.libTime::text($timeSent).'</em>: <a href="forum.php?threadID='.$threadID.'#'.$id.'">Re: '.$subject.'</a><br />'.
+					$buf .= '<li><em>'.libTime::text($timeSent).'</em>: <a href="blog.php?threadID='.$threadID.'#'.$id.'">Re: '.$subject.'</a><br />'.
 						$message.'</li>';
 				}
 				$buf .= '</ul>';

@@ -46,7 +46,8 @@ class processMembers extends Members
 	 */
 	function notifyGameProgressed()
 	{
-		$this->sendToPlaying('No',l_t("Game progressed to %s, %s",l_t($this->Game->phase),$this->Game->datetxt($this->Game->turn)));
+		$this->sendToPlaying('No',l_t("Game progressed to %s, %s",$this->Game->phase,$this->Game->datetxt($this->Game->turn)));
+		$this->mailToPlaying('posta'," partita ".$this->Game->name." aggiornata !","La partita ".$this->Game->name." e' stata aggiornata. Turno attuale: ".$this->Game->phase.", ".$this->Game->datetxt($this->Game->turn).".    Scopri subito cosa e' successo su webdiplomacy.it",'from');
 	}
 
 	/**
@@ -55,6 +56,7 @@ class processMembers extends Members
 	function notifyPaused()
 	{
 		$this->sendToPlaying('No',l_t("Game has been paused."));
+		$this->mailtoPlaying('posta', " partita ".$this->Game->name." in Pausa !","La partita ".$this->Game->name." e' stata messa in pausa. Aspettiamo un giocatore ritardatario o la risoluzione di un problema. Controlla che gli ordini mancanti non siano proprio i tuoi. Sarai avvertito appena la partita ricomincia.");
 	}
 
 	/**
@@ -63,6 +65,7 @@ class processMembers extends Members
 	function notifyUnpaused()
 	{
 		$this->sendToPlaying('No',l_t("Game has been unpaused."));
+		$this->mailtoPlaying('posta', " partita ".$this->Game->name." in Pausa !","La partita ".$this->Game->name." e' stata messa in pausa. Aspettiamo un giocatore ritardatario o la risoluzione di un problema. Controlla che gli ordini mancanti non siano proprio i tuoi. Sarai avvertito appena la partita ricomincia.");
 	}
 
 	/**
