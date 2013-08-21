@@ -77,7 +77,7 @@ added in once it has been checked.</p>
 
 <h4>Misc notes</h4>
 
-<p><a href="http://webdiplomacy.net/doc/gotchas.txt" class="light">javascript.txt</a> - JavaScript info</p>
+<p><a href="http://webdiplomacy.net/doc/javascript.txt" class="light">javascript.txt</a> - JavaScript info</p>
 
 <p><a href="http://webdiplomacy.net/doc/gotchas.txt" class="light">gotchas.txt</a> - Annoying quirks</p>
 
