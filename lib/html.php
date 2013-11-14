@@ -599,7 +599,7 @@ class libHTML
 
 		// Items displayed in the menu
 		$links['blog.php']=array('name'=>'Blog', 'inmenu'=>TRUE, 'title'=>"A small blog with latest news and announcements.");
-		$links['index.php']=array('name'=>'Home', 'inmenu'=>FALSE, 'title'=>"See what's happening");
+		$links['http://forum.webdiplomacy.it']=array('name'=>'Forum', 'inmenu'=>TRUE, 'title'=>"Il forum di webDiplomacy");
 		//$links['forum.php']=array('name'=>'Forum', 'inmenu'=>TRUE, 'title'=>"The forum; chat, get help, help others, arrange games, discuss strategies");
 		$links['gamelistings.php']=array('name'=>'Games', 'inmenu'=>TRUE, 'title'=>"Game listings; a searchable list of the games on this server");
 
@@ -620,6 +620,7 @@ class libHTML
 		$links['help.php']=array('name'=>'Help', 'inmenu'=>TRUE, 'title'=>'Get help and information; guides, intros, FAQs, stats, links');
 
 		// Items not displayed on the menu
+		$links['index.php']=array('name'=>'Diplomacy', 'inmenu'=>FALSE, 'title'=>"See what's happening");
 		$links['map.php']=array('name'=>'Map', 'inmenu'=>FALSE);
 		$links['faq.php']=array('name'=>'FAQ', 'inmenu'=>FALSE);
 		$links['rules.php']=array('name'=>'Rules', 'inmenu'=>FALSE);

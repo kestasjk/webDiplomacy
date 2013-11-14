@@ -59,7 +59,7 @@ print libHTML::pageTitle('Sviluppatori/Webmaster - Informazioni utili','Per colo
 
 <h4>Varie ed eventuali</h4>
 
-<p><a href="http://webdiplomacy.it/doc/gotchas.txt" class="light">javascript.txt</a> - Informazioni su JavaScript utilizzati</p>
+<p><a href="http://webdiplomacy.it/doc/javascript.txt" class="light">javascript.txt</a> - Informazioni su JavaScript utilizzati</p>
 
 <p><a href="http://webdiplomacy.it/doc/gotchas.txt" class="light">gotchas.txt</a> - Bug strani</p>
 
