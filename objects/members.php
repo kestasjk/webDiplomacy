@@ -192,6 +192,8 @@ class Members
 				m.supplyCenterNo as supplyCenterNo,
 				m.unitNo as unitNo,
 				u.username AS username,
+				u.email AS email,
+				u.sendEmail as sendEmail,
 				u.points AS points,
 				m.pointsWon as pointsWon,
 				IF(s.userID IS NULL,0,1) as online,
@@ -265,6 +267,45 @@ class Members
 	{
 		foreach($this->ByStatus['Playing'] as $Member)
 			$Member->send($keep, 'No', $text);
+	}
+	
+	/*function mailToPlaying($email, $object, $text)
+	{
+		foreach($this->ByStatus['Playing'] as $Member)
+		{	
+		         if ($Member->sendEmail == 'Yes') {
+			    $posta = $Member->email;
+                      	    mail($posta, $object, $text, 'From: <noreply@webdiplomacy.it>');
+	              }
+	        }
+	}*/
+	
+	function mailToPlaying($email, $object, $text)
+	
+	{ /*  $Mailer->IsSMTP();
+	    $Mailer->Host       = "smtp-out.kpnqwest.it";
+	    $Mailer->Port       = 25;
+	    $Mailer->SMTPAuth   = true;                 
+        $Mailer->Username   = "noreply@webdiplomacy.it"; 
+        $Mailer->Password   = "diploweb2010";  */
+        
+		foreach($this->ByStatus['Playing'] as $Member)
+		{	
+		         if ($Member->sendEmail == 'Yes') {
+			    $posta = $Member->email;
+			  /*  "SMTPSettings"=> array(
+					"Host"=>"smtp-out",
+					"Port"=>"25",
+					"SMTPAuth"=>true,
+					"Username"=>"noreply@webdiplomacy",
+					"Password"=>"psw"
+				),*/
+require_once('objects/mailer.php');
+global $Mailer;
+$Mailer = new Mailer();
+$Mailer->Send(array($posta=>$posta), $object, $text );
+	              }
+	        }
 	}
 
 	function cantLeaveReason()

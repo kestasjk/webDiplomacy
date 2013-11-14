@@ -109,7 +109,7 @@ if ( isset($_REQUEST['userForm']) )
 
 		unset($errors);
 
-		$allowed = array('E-mail'=>'email','E-mail hiding'=>'hideEmail',
+		$allowed = array('E-mail'=>'email','E-mail hiding'=>'hideEmail','E-Mail Notifications'=>'sendEmail',
 				'Homepage'=>'homepage','Comment'=>'comment');
 
 		$set = '';
