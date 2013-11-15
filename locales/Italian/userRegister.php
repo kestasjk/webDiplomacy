@@ -1,6 +1,6 @@
-﻿<?php
+<?php
 /*
-    Copyright (C) 2004-2009 Kestas J. Kuliukas
+    Copyright (C) 2004-2010 Kestas J. Kuliukas
 	
 	This file is part of webDiplomacy.
 
@@ -16,6 +16,8 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
+ 
+    Traduzione italiana a cura di webdiplomacy.it
  */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -31,4 +33,4 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		print $_REQUEST['userForm']['username'];
 	}
 	?>"></li>
-<li class="formlistdesc">Il tuo nome utente su webDiplomacy.</li>
+<li class="formlistdesc">Scegli il nome utente che userai su WebDiplomacy</li>

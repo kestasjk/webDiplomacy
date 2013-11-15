@@ -18,22 +18,22 @@ Locale.text = function(text, args) {
 			
 			switch(text) {
 			case 'The %s at %s %s':
-				text='L\'%s nel %s %s';
+				text='L\'%s in %s %s';
 				break;
 			case 'The %s at %s disband':
-				text='L\'%s nel %s viene distrutta';
+				text='L\'%s in %s distrutta';
 				break;
 			case 'The %s at %s retreat to %s':
-				text='L\'%s nel %s ritira in %s';
+				text='L\'%s da %s ritira in %s';
 				break;
 			case ' the %s in %s ':
 				text=' l\'%s in %s ';
 				break;
 			case 'The %s at %s':
-				text='L\'%s nel %s';
+				text='L\'%s in %s';
 				break;
 			case 'The %s at %s ':
-				text='L\'%s nel %s ';
+				text='L\'%s in %s ';
 				break;
 			}
 		}
@@ -43,35 +43,35 @@ Locale.text = function(text, args) {
 			
 			switch(text) {
 			case 'The %s at %s %s':
-				text='La %s nella %s %s';
+				text='La %s in %s %s';
 				break;
 			case 'The %s at %s disband':
-				text='La %s nella %s viene distrutta';
+				text='La %s in %s distrutta';
 				break;
 			case 'The %s at %s retreat to %s':
-				text='La %s nella %s ritira in %s';
+				text='La %s da %s ritira in %s';
 				break;
 			case ' the %s in %s ':
 				text=' la %s in %s ';
 				break;
 			case 'The %s at %s':
-				text='La %s nella %s';
+				text='La %s in %s';
 				break;
 			case 'The %s at %s ':
-				text='La %s nella %s ';
+				text='La %s in %s ';
 				break;
 			}
 		}
 		else if ( text == ' to %s ' )
 		{
-			text = ' %s';
+			text = ' verso %s';
 
 			Territories.each(function(p){
 				var t=p[1];
 				if( t.supply )
-					args[0] = args[0].replace(t.name, ' a '+t.name);
+					args[0] = args[0].replace(t.name, ''+t.name);  /*   ' a '   */
 				else
-					args[0] = args[0].replace(t.name, ' in '+t.name);
+					args[0] = args[0].replace(t.name, ''+t.name);  /*   ' in '  */
 			},this);
 		}
 	}

@@ -293,6 +293,107 @@ class libHome
 			INNER JOIN wD_Users u ON ( m.fromUserID = u.id )
 			LEFT JOIN wD_Sessions s ON ( m.fromUserID = s.userID )
 			LEFT JOIN wD_ForumMessages t ON ( m.toID = t.id AND t.type = 'ThreadStart' AND m.type = 'ThreadReply' )
+			ORDER BY t.type, m.latestReplySent DESC
+			LIMIT 5");
+		$oldThreads=0;
+		$threadCount=0;
+
+		$threadIDs = array();
+		$threads = array();
+
+		while(list(
+				$postID, $threadID, $type, $timeSent, $replies, $subject,
+				$userID, $username, $points, $online, $userType, $message, $latestReplySent,$threadStarterUserID
+			) = $DB->tabl_row($tabl))
+		{
+			$threadCount++;
+
+			if( $threadID )
+				$iconMessage=libHTML::forumMessage($threadID, $postID);
+			else
+				$iconMessage=libHTML::forumMessage($postID, $postID);
+
+			if ( $type == 'ThreadStart' ) $threadID = $postID;
+
+			if( !isset($threads[$threadID]) )
+			{
+				if(strlen($subject)>40) $subject = substr($subject,0,33).'...';
+				$threadIDs[] = $threadID;
+				$threads[$threadID] = array('subject'=>$subject, 'replies'=>$replies,
+					'posts'=>array(),'threadStarterUserID'=>$threadStarterUserID);
+			}
+
+			$message=Message::refilterHTML($message);
+
+			if( strlen($message) >= 100 ) $message = substr($message,0,95).'...';
+
+			$message = '<div class="message-contents threadID'.$threadID.'" fromUserID="'.$userID.'">'.$message.'</div>';
+
+			$threads[$threadID]['posts'][] = array(
+				'iconMessage'=>$iconMessage,'userID'=>$userID, 'username'=>$username,
+				'message'=>$message,'points'=>$points, 'online'=>$online, 'userType'=>$userType, 'timeSent'=>$timeSent
+			);
+		}
+
+		$buf = '';
+		$threadCount=0;
+		foreach($threadIDs as $threadID)
+		{
+			$data = $threads[$threadID];
+
+			$buf .= '';
+
+			$buf .= '<div class="homeForumGroup homeForumAlt'.($threadCount%2 + 1).
+				' userID'.$threads[$threadID]['threadStarterUserID'].' threadID'.$threadID.'">
+				<div class="homeForumSubject homeForumTopBorder">'.libHTML::forumParticipated($threadID).' <a title="test titolo" href="blog.php?threadID='.$threadID.'#'.$threadID.'">'.$data['subject'].'</a></div>';
+
+			if( count($data['posts']) < $data['replies'])
+			{
+				$buf .= '';
+			}
+
+
+			$data['posts'] = array_reverse($data['posts']);
+			foreach($data['posts'] as $post)
+			{
+				$buf .= '<div class="homeForumPost homeForumPostAlt'.libHTML::alternate().' userID'.$post['userID'].'">
+                       <p class="numComment"><a><span>'.l_t('%s',''.$data['replies'].'').'</span><i class="pike"></i></a></p><div class="homeForumPostTime">'.$post['iconMessage'].'</div>
+					
+						
+
+					
+					<div class="homeForumMessage">'.$post['message'].'</div>
+					</div>';
+
+			}
+
+			$buf .= '<div class="homeForumLink">
+					</div></div>';
+		}
+
+		if( $buf )
+		{
+			return $buf;
+		}
+		else
+		{
+			return '<div class="homeNoActivity">'.l_t('No forum posts found, why not '.
+				'<a href="blog.php?postboxopen=1#postbox" class="light">start one</a>?');
+		}
+	}
+		
+	/*	// Select by id, prints replies and new threads
+		global $DB, $Misc;
+
+		$tabl = $DB->sql_tabl("
+			SELECT m.id as postID, t.id as threadID, m.type, m.timeSent, IF(t.replies IS NULL,m.replies,t.replies) as replies,
+				IF(t.subject IS NULL,m.subject,t.subject) as subject,
+				u.id as userID, u.username, u.points, IF(s.userID IS NULL,0,1) as online, u.type as userType,
+				SUBSTRING(m.message,1,100) as message, m.latestReplySent, t.fromUserID as threadStarterUserID
+			FROM wD_ForumMessages m
+			INNER JOIN wD_Users u ON ( m.fromUserID = u.id )
+			LEFT JOIN wD_Sessions s ON ( m.fromUserID = s.userID )
+			LEFT JOIN wD_ForumMessages t ON ( m.toID = t.id AND t.type = 'ThreadStart' AND m.type = 'ThreadReply' )
 			ORDER BY m.timeSent DESC
 			LIMIT 50");
 		$oldThreads=0;
@@ -333,7 +434,7 @@ class libHome
 				'iconMessage'=>$iconMessage,'userID'=>$userID, 'username'=>$username,
 				'message'=>$message,'points'=>$points, 'online'=>$online, 'userType'=>$userType, 'timeSent'=>$timeSent
 			);
-		}
+		
 
 		$buf = '';
 		$threadCount=0;
@@ -374,7 +475,7 @@ class libHome
 
 			$buf .= '<div class="homeForumLink">
 					<div class="homeForumReplies">'.l_t('%s replies','<strong>'.$data['replies'].'</strong>').'</div>
-					<a href="forum.php?threadID='.$threadID.'#'.$threadID.'">'.l_t('Open').'</a>
+					<a href="blog.php?threadID='.$threadID.'#'.$threadID.'">'.l_t('Open').'</a>
 					</div>
 					</div>';
 		}
@@ -386,14 +487,13 @@ class libHome
 		else
 		{
 			return '<div class="homeNoActivity">'.l_t('No forum posts found, why not '.
-				'<a href="forum.php?postboxopen=1#postbox" class="light">start one</a>?');
+				'<a href="blog.php?postboxopen=1#postbox" class="light">start one</a>?');
 		}
-	}
-
+	*/ 
 
 	static function forumBlock()
 	{
-		$buf = '<div class="homeHeader">'.l_t('Forum').'</div>';
+		$buf = '<div class="homeHeader">'.l_t('Blog').'</div>';
 
 		$forumNew=libHome::forumNew();
 		$buf .=  '<table><tr><td>'.implode('</td></tr><tr><td>',$forumNew).'</td></tr></table>';
@@ -406,26 +506,14 @@ if( !$User->type['User'] )
 	print '<div class="content-notice" style="text-align:center">'.libHome::globalInfo().'</div>';
 	print libHTML::pageTitle(l_t('Welcome to webDiplomacy!'),l_t('A multiplayer web implementation of the popular turn-based strategy game Diplomacy.'));
 	//print '<div class="content">';
-	?>
-	<p style="text-align: center;"><img
-	src="<?php print l_s('images/startmap.png'); ?>" alt="<?php print l_t('The map'); ?>"
-	title="<?php print l_t('A webDiplomacy map'); ?>" /></p>
-<p class="welcome"><?php print l_t('<em> "Luck plays no part in Diplomacy. Cunning and
-cleverness, honesty and perfectly-timed betrayal are the tools needed to
-outwit your fellow players. The most skillful negotiator will climb to
-victory over the backs of both enemies and friends.<br />
-<br />
-
-Who do you trust?"<br />
-(<a href="http://www.wizards.com/default.asp?x=ah/prod/diplomacy"
-	class="light">Avalon Hill</a>)</em>'); ?></p>
-	<?php
+	require_once(l_r('mod/index.php'));
+	
 	print '</div>';
 	/*print '<div class="homeInfoList">
 		'.libHome::globalInfo()
 		.'</div>';*/
 
-	require_once(l_r('locales/English/intro.php'));
+	/*require_once(l_r('locales/English/intro.php'));*/
 	print '</div>';
 }
 elseif( isset($_REQUEST['notices']) )
@@ -468,13 +556,13 @@ else
 
 	print '<td class="homeMessages">';
 
-	print '<div class="homeHeader">'.l_t('Forum').' <a href="forum.php">'.libHTML::link().'</a></div>';
-	if( file_exists(libCache::dirName('forum').'/home-forum.html') )
-		print file_get_contents(libCache::dirName('forum').'/home-forum.html');
+	print '<div class="homeHeader">'.l_t('Blog').' <a href="blog.php">'.libHTML::link().'</a></div>';
+	if( file_exists(libCache::dirName('forum').'/home-blog.html') )
+		print file_get_contents(libCache::dirName('forum').'/home-blog.html');
 	else
 	{
 		$buf_home_forum=libHome::forumNew();
-		file_put_contents(libCache::dirName('forum').'/home-forum.html', $buf_home_forum);
+		file_put_contents(libCache::dirName('forum').'/home-blog.html', $buf_home_forum);
 		print $buf_home_forum;
 	}
 	print '</td>';

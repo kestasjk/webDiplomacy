@@ -31,10 +31,10 @@ class libHTML
 	public static function pageTitle($title, $description=false) {
 		return '<div class="content-bare content-board-header content-title-header">
 <div class="pageTitle barAlt1">
-	'.$title.'
+	<h1 class="titolo">'.$title.'</h1>
 </div>
 <div class="pageDescription barAlt2">
-	'.$description.'
+	<h2 class="titolo">'.$description.'</h2>
 </div>
 </div>
 <div class="content content-follow-on">';
@@ -96,7 +96,7 @@ class libHTML
 
 	static function forumMessage($threadID, $messageID)
 	{
-		return '<a style="'.self::$hideStyle.'" class="messageIconForum" threadID="'.$threadID.'" messageID="'.$messageID.'" href="forum.php?threadID='.$threadID.'#'.$messageID.'">'.
+		return '<a style="'.self::$hideStyle.'" class="messageIconForum" threadID="'.$threadID.'" messageID="'.$messageID.'" href="blog.php?threadID='.$threadID.'#'.$messageID.'">'.
 		'<img src="'.l_s('images/icons/mail.png').'" alt="'.l_t('New').'" title="'.l_t('Unread messages!').'" />'.
 		'</a> ';
 
@@ -104,7 +104,7 @@ class libHTML
 
 	static function forumParticipated($threadID)
 	{
-		return '<a style="'.self::$hideStyle.'" class="participatedIconForum" threadID="'.$threadID.'" href="forum.php?threadID='.$threadID.'#'.$threadID.'">'.
+		return '<a style="'.self::$hideStyle.'" class="participatedIconForum" threadID="'.$threadID.'" href="blog.php?threadID='.$threadID.'#'.$threadID.'">'.
 			'<img src="'.l_s('images/icons/star.png').'" alt="'.l_t('Participated').'" title="'.l_t('You have participated in this thread.').'" />'.
 			'</a> ';
 	}
@@ -306,7 +306,7 @@ class libHTML
 		if( $toID == null || $toID == 0 )
 		$toID = $postID;
 	
-		return '<a href="forum.php?threadID='.$toID.'#'.$postID.'">'.l_t('Go to thread').'</a>';
+		return '<a href="blog.php?threadID='.$toID.'#'.$postID.'">'.l_t('Go to thread').'</a>';
 	}
 	static function admincpType($actionType, $id)
 	{
@@ -369,11 +369,25 @@ class libHTML
 	 */
 	static public function prebody ( $title )
 	{
+		/* Instead of many small css files only load one big file:
 		$variantCSS=array();
 		foreach(Config::$variants as $variantName)
 			$variantCSS[] = '<link rel="stylesheet" href="'.STATICSRV.l_s('variants/'.$variantName.'/resources/style.css').'" type="text/css" />';
 		$variantCSS=implode("\n",$variantCSS);
-
+		*/
+		$CSSname = libCache::Dirname("css")."/variants-".md5(filesize('config.php')).".css";
+		
+		if (!file_exists($CSSname))
+		{
+			$variantCSS = '';
+			foreach(Config::$variants as $variantName)
+				$variantCSS .= file_get_contents('variants/'.$variantName.'/resources/style.css')."\n";
+			$handle = fopen($CSSname, 'w');
+			fwrite($handle, $variantCSS);
+			fclose($handle);
+		}
+		$variantCSS = '<link rel="stylesheet" href="'.$CSSname.'" type="text/css" />';
+		// End alternate CSS file patch
 		/*
 		 * This line when included in the header caused certain translated hyphenated letters to come out as black diamonds with question marks.
 		 * 
@@ -387,8 +401,13 @@ class libHTML
 		<meta name="robots" content="index,follow" />
 		<meta name="description" content="'.l_t('webDiplomacy is an online, multiplayer, turn-based strategy game that lets you play Diplomacy online.').'" />
 		<meta name="keywords" content="'.l_t('diplomacy,diplomacy game,online diplomacy,classic diplomacy,web diplomacy,diplomacy board game,play diplomacy,php diplomacy').'" />
-		<link rel="shortcut icon" href="'.STATICSRV.l_s('favicon.ico').'" />
-		<link rel="icon" href="'.STATICSRV.l_s('favicon.ico').'" />
+		<link rel="shortcut icon" href="'.STATICSRV.l_s('mod/img/favicon.ico').'" />
+        <link rel="icon" href="'.STATICSRV.l_s('mod/img/favicon.ico').'" />
+        <link rel="stylesheet" href="mod/webdiploit.css" type="text/css" />
+        <script type="text/javascript" src="'.STATICSRV.l_j('mod/jquery-1.8.3.min.js').'"></script>
+        <script type="text/javascript" src="'.STATICSRV.'mod/jquery.zoom.js"></script>
+        <script type="text/javascript">var jq = jQuery.noConflict();</script>
+        <script type="text/javascript" src="mod/webdiploit.js"></script>
 		<link rel="stylesheet" href="'.CSSDIR.l_s('/global.css').'" type="text/css" />
 		<link rel="stylesheet" href="'.CSSDIR.l_s('/gamepanel.css').'" type="text/css" />
 		<link rel="stylesheet" href="'.CSSDIR.l_s('/home.css').'" type="text/css" />
@@ -579,8 +598,9 @@ class libHTML
 		$links=array();
 
 		// Items displayed in the menu
-		$links['index.php']=array('name'=>'Home', 'inmenu'=>TRUE, 'title'=>"See what's happening");
-		$links['forum.php']=array('name'=>'Forum', 'inmenu'=>TRUE, 'title'=>"The forum; chat, get help, help others, arrange games, discuss strategies");
+		$links['blog.php']=array('name'=>'Blog', 'inmenu'=>TRUE, 'title'=>"A small blog with latest news and announcements.");
+		$links['http://forum.webdiplomacy.it']=array('name'=>'Forum', 'inmenu'=>TRUE, 'title'=>"Il forum di webDiplomacy");
+		//$links['forum.php']=array('name'=>'Forum', 'inmenu'=>TRUE, 'title'=>"The forum; chat, get help, help others, arrange games, discuss strategies");
 		$links['gamelistings.php']=array('name'=>'Games', 'inmenu'=>TRUE, 'title'=>"Game listings; a searchable list of the games on this server");
 
 		if (is_object($User))
@@ -600,11 +620,13 @@ class libHTML
 		$links['help.php']=array('name'=>'Help', 'inmenu'=>TRUE, 'title'=>'Get help and information; guides, intros, FAQs, stats, links');
 
 		// Items not displayed on the menu
+		$links['index.php']=array('name'=>'Diplomacy', 'inmenu'=>FALSE, 'title'=>"See what's happening");
 		$links['map.php']=array('name'=>'Map', 'inmenu'=>FALSE);
 		$links['faq.php']=array('name'=>'FAQ', 'inmenu'=>FALSE);
 		$links['rules.php']=array('name'=>'Rules', 'inmenu'=>FALSE);
 		$links['intro.php']=array('name'=>'Intro', 'inmenu'=>FALSE);
 		$links['credits.php']=array('name'=>'Credits', 'inmenu'=>FALSE);
+		$links['tornei.php']=array('name'=>'Tornei', 'inmenu'=>FALSE);
 		$links['board.php']=array('name'=>'Board', 'inmenu'=>FALSE);
 		$links['profile.php']=array('name'=>'Profile', 'inmenu'=>FALSE);
 		$links['translating.php']=array('name'=>'Translating', 'inmenu'=>FALSE);
@@ -645,10 +667,10 @@ class libHTML
 		global $User;
 
 	 	$menu = '<!-- Menu begin. -->
-				<div id="header">
+				<div id="fix"><div id="header">
 					<div id="header-container">
 						<a href="./">
-							<img id="logo" src="'.l_s('images/logo.png').'" alt="'.l_t('webDiplomacy').'" />
+							<img id="logo" src="'.l_s('mod/img/webDiplomacy.png').'" width="209" height="48" title="'.l_t('webDiplomacy logo').'" alt="'.l_t('webDiplomacy').'" />
 						</a>';
 
 		if ( is_object( $User ) )
@@ -705,6 +727,7 @@ class libHTML
 		</div>
 		<div id="seperator"></div>
 		<div id="seperator-fixed"></div>
+		</div><div id=fix2></div>
 		<!-- Menu end. -->';
 
 		return $menu;
@@ -843,10 +866,7 @@ class libHTML
 	static private function footerCopyright() {
 		// Version, sourceforge and HTML compliance logos
 		return l_t('webDiplomacy version <strong>%s</strong>',number_format(VERSION/100,2)).'<br />
-			<a href="http://sourceforge.net/projects/phpdiplomacy">
-				<img alt="webDiplomacy @ Sourceforge"
-					src="http://sourceforge.net/sflogo.php?group_id=125692" />
-			</a>';
+			';
 	}
 
 	/*

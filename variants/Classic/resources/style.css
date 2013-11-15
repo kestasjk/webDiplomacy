@@ -1,4 +1,4 @@
-@CHARSET "ISO-8859-1";
+@CHARSET "UTF-8";
 
 /*
 All variant HTML will be stored within an element with a classname variant[variantName]. Using this all variant CSS 
