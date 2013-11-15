@@ -126,7 +126,7 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 					$DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$Game->id);
 					$DB->sql_put("COMMIT");
 					$results['process']='Success';
-					$results['notice']=l_t('Game processed, click <a href="%s">here</a> to refresh..','board.php?gameID='.$Game->id.'&nocache='.rand(0,1000));
+					$results['notice']=l_t('Partita aggiornata. Clicca <a href="%s">qui</a> per procedere..','board.php?gameID='.$Game->id.'&nocache='.rand(0,1000));
 				}
 			}
 		}
