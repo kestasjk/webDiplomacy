@@ -326,10 +326,17 @@ abstract class userOrder extends order
 			if( $this->{$paramName.'Check'}() )
 				return true;
 			else
-			{
-				$this->error = l_t("Parameter '%s' set to invalid value '%s'",$paramName,$this->{$paramName});
-				$this->setStatus('Invalid');
-				$this->followingAreInvalid=true;
+            {
+                if( $paramName == "fromTerrID" ) 
+                {
+                    $this->error = l_t("Invalid order. Did you mean convoy instead of support move?");
+                } 
+                else 
+                {
+                    $this->error = l_t("Parameter '%s' set to invalid value '%s'",$paramName,$this->{$paramName});
+                }
+                $this->setStatus('Invalid');
+                $this->followingAreInvalid=true;
 
 				return false;
 			}
