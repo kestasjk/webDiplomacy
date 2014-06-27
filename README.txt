@@ -41,7 +41,9 @@ Installing
 ----------
 => Database scripts
 Run install/install.sql to set up the initial data-set, you can run this in 
-phpMyAdmin's "Import" tab, if you don't have shell access.
+phpMyAdmin's "Import" tab, if you don't have shell access. Currently, you will also need
+to run all database update scripts, found in install/1.00-1.01/update.sql through to 
+install/1.34-1.35/update.sql.
 
 => Config
 Edit config.sample.php to work with your setup, being very careful to read the warnings 
