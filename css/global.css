@@ -140,6 +140,11 @@ li.formlisttitle {
 	font-weight: bold;
 }
 
+.spaced-button {
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
 .form-submit {
 	font-weight: bold ! important;
 	color: #006699 ! important;
