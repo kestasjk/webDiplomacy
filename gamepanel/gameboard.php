@@ -158,7 +158,7 @@ class panelGameBoard extends panelGame
 	 */
 	function showVoteForm($vVote, $vCancel)
 	{
-		$buf = '<form onsubmit="return confirm(\''. l_t("Are you sure you want to cast this vote?").';\')" action="board.php?gameID='.$this->id.'#votebar" method="post">';
+		$buf = '<form onsubmit="return confirm(\''. l_t("Are you sure you want to cast this vote?").'\');" action="board.php?gameID='.$this->id.'#votebar" method="post">';
 		$buf .= '<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />';
 
         $buf .= '<div class="memberUserDetail">';
@@ -171,7 +171,7 @@ class panelGameBoard extends panelGame
 			$buf .= '<input type="submit" class="form-submit" name="'.$vote.'" value="'.l_t($vote).'" /> ';
 		}
 		$buf .= '</div></form>';
-		$buf .= '<form onsubmit="return confirm(\''. l_t("Are you sure you want to withdraw this vote?").';\')" action="board.php?gameID='.$this->id.'#votebar" method="post">';
+		$buf .= '<form onsubmit="return confirm(\''. l_t("Are you sure you want to withdraw this vote?").'\');" action="board.php?gameID='.$this->id.'#votebar" method="post">';
 		$buf .= '<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />';
 
 		if( $vCancel )
