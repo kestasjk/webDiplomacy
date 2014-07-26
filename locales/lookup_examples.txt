@@ -1006,4 +1006,4 @@
 'via land' => 'via terra',
 'Are you sure you want to cast this vote?' => 'Confermi di voler dare questo voto?',
 'Are you sure you want to withdraw this vote?' => 'Confermi di voler ritirare il tuo voto?',
-'Are you sure you want to mute this player's messages?' => 'Confermi di voler bloccare i messaggi da questo giocatore?',
+'Are you sure you want to mute the messages from this player?' => 'Confermi di voler bloccare i messaggi da questo giocatore?',
