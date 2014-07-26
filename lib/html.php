@@ -117,7 +117,7 @@ class libHTML
 	static function unmuted($url=false)
 	{
 		$buf = '';
-		if($url) $buf .= '<a href="'.$url.'">';
+		if($url) $buf .= '<a onclick="return confirm(\''.l_t("Are you sure you want to mute the messages from this player?").'\');" href="'.$url.'">';
 		$buf .= '<img src="'.l_s('images/icons/unmute.png').'" alt="'.l_t('Mute player').'" title="'.l_t('Mute player').'" />';
 		if($url) $buf .= '</a>';
 		return $buf;
