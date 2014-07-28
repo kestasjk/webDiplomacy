@@ -1005,4 +1005,5 @@
 'via convoy' => 'mediante trasporto',
 'via land' => 'via terra',
 'Could not deliver message, you are currently silenced.' => 'Could not deliver message, you are currently silenced.',
-'Private message could not be sent. You may be silenced or muted.' => 'Private message could not be sent. You may be silenced or muted.',  
+'Private message could not be sent. You may be silenced or muted.' => 'Private message could not be sent. You may be silenced or muted.',
+'Please give a reason longer than 10 characters.' => 'Please give a reason longer than 10 characters.'
