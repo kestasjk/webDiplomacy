@@ -94,9 +94,14 @@ class notice
 			}
 			else
 			{
-				$UserPMTo->sendPM($User, $_REQUEST['message']);
-
-				return l_t("Message sent to %s successfully.",$UserPMTo->username);
+              if ( $UserPMTo->sendPM($User, $_REQUEST['message']) )
+              {
+                  return l_t("Message sent to %s successfully.",$UserPMTo->username);
+              } 
+              else 
+              {
+                  return l_t("Private message could not be sent. You may be silenced or muted.");
+              }
 			}
 		}
 		return false;
