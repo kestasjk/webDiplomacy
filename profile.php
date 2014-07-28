@@ -553,9 +553,14 @@ if ( $User->type['User'] && $User->id != $UserProfile->id)
 		}
 		else
 		{
-			$UserProfile->sendPM($User, $_REQUEST['message']);
-
-			print '<p class="notice">'.l_t('Private message sent successfully.').'</p>';
+            if ( $UserProfile->sendPM($User, $_REQUEST['message']) )
+            {
+                print '<p class="notice">'.l_t('Private message sent successfully.').'</p>';
+            }                                                   
+            else 
+            {
+                print '<p class="notice">'.l_t('Private message could not be sent. You may be silenced or muted.').'</p>';
+            }
 		}
 	}
 
