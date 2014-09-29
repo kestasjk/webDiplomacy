@@ -1195,7 +1195,7 @@ abstract class drawMap
 	}
 
 	/**
-	 * Write a captioncaptioncaptioncaptioncaptioncaptioncaptioncaptioncaptioncaptioncaptioncaptioncaption; a large piece of text centered in the map
+	 * Write a caption; a large piece of text centered in the map
 	 *
 	 * @param string $text
 	 */
