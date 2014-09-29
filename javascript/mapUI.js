@@ -42,22 +42,22 @@ function togglePreview(gameID, currentTurn) {
 	turn = currentTurn
 	if (preview == '') {
 		preview = '&preview&noCache=' + Math.floor((Math.random()*10000)+1); ;
-		$('Start').style.visibility    = 'hidden';
-		$('Backward').style.visibility = 'hidden';
-      if($('NoMoves')) { // NoMoves might not exist on the map
-        $('NoMoves').style.visibility  = 'hidden';
+		$('Start').up().style.visibility    = 'hidden';
+		$('Backward').up().style.visibility = 'hidden';
+        if($('NoMoves')) { // NoMoves might not exist on the map
+          $('NoMoves').up().style.visibility  = 'hidden';
         }
-		$('Forward').style.visibility  = 'hidden';
-		$('End').style.visibility      = 'hidden';
+		$('Forward').up().style.visibility  = 'hidden';
+		$('End').up().style.visibility      = 'hidden';
 	} else {
 		preview = '';
-		$('Start').style.visibility    = 'visible';
-		$('Backward').style.visibility = 'visible';
+		$('Start').up().style.visibility    = 'visible';
+		$('Backward').up().style.visibility = 'visible';
 		if($('NoMoves')) {
-          $('NoMoves').style.visibility  = 'visible';
+          $('NoMoves').up().style.visibility  = 'visible';
 		}
-        $('Forward').style.visibility  = 'visible';
-		$('End').style.visibility      = 'visible';
+        $('Forward').up().style.visibility  = 'visible';
+		$('End').up().style.visibility      = 'visible';
 	}
 	loadMapStep(gameID, currentTurn, 0)	
 	loadMap(gameID, currentTurn, turn)
