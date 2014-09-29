@@ -44,15 +44,19 @@ function togglePreview(gameID, currentTurn) {
 		preview = '&preview&noCache=' + Math.floor((Math.random()*10000)+1); ;
 		$('Start').style.visibility    = 'hidden';
 		$('Backward').style.visibility = 'hidden';
-		$('NoMoves').style.visibility  = 'hidden';
+      if($('NoMoves')) { // NoMoves might not exist on the map
+        $('NoMoves').style.visibility  = 'hidden';
+        }
 		$('Forward').style.visibility  = 'hidden';
 		$('End').style.visibility      = 'hidden';
 	} else {
 		preview = '';
 		$('Start').style.visibility    = 'visible';
 		$('Backward').style.visibility = 'visible';
-		$('NoMoves').style.visibility  = 'visible';
-		$('Forward').style.visibility  = 'visible';
+		if($('NoMoves')) {
+          $('NoMoves').style.visibility  = 'visible';
+		}
+        $('Forward').style.visibility  = 'visible';
 		$('End').style.visibility      = 'visible';
 	}
 	loadMapStep(gameID, currentTurn, 0)	
