@@ -20,7 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-// TODO: Use MySQLi instead of the PHP4 mysql API used here
+// TODO: Use MySQLi prepared statements rather than the old MySQL style functions
 
 /**
  * A MySQL DB interaction object.
@@ -29,8 +29,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  */
 class Database {
 
-	public static function affected() {
-		return mysql_affected_rows();
+	public function affected() {
+		return mysqli_affected_rows($this->link);
 	}
 
 	/**
@@ -75,14 +75,14 @@ class Database {
 	 * Initialize the database connection
 	 */
 	public function __construct()
-	{
-		$this->link = mysql_connect(Config::$database_socket,
+    {
+      $this->link = mysqli_connect(Config::$database_socket,
 				Config::$database_username, Config::$database_password);
 
 		if( ! $this->link )
 			trigger_error(l_t("Couldn't connect to the MySQL server, if this problem persists please inform the admin."));
 
-		if( ! mysql_select_db(Config::$database_name, $this->link) )
+		if( ! mysqli_select_db($this->link,Config::$database_name) )
 			trigger_error(l_t("Connected to the MySQL server, but couldn't access the specified database. ".
 						"If this problem persists please inform the admin."));
 
@@ -124,7 +124,7 @@ class Database {
 	 */
 	public function __destruct()
 	{
-		if ( ! mysql_close($this->link) )
+		if ( ! mysqli_close($this->link) )
 		{
 			// This function may be called after/before the other objects are around.
 			die(l_t("Could not successfully close connection to database."));
@@ -185,7 +185,7 @@ class Database {
 	public function escape($text, $htmlAllowed=false)
 	{
 		$text = (string) $text;
-		$text = mysql_real_escape_string($text, $this->link);
+		$text = mysqli_real_escape_string($this->link,$text);
 		if ( !$htmlAllowed )
 			$text = htmlentities( $text , ENT_NOQUOTES, 'UTF-8');
 		return $text;
@@ -207,9 +207,9 @@ class Database {
 		if( Config::$debug )
 			$timeStart=microtime(true);
 
-		if ( ! ( $resource = mysql_query($sql, $this->link) ) )
+		if ( ! ( $resource = mysqli_query($this->link, $sql ) ) )
 		{
-			trigger_error(mysql_error($this->link));
+			trigger_error(mysqli_error($this->link));
 		}
 
 		if( Config::$debug )
@@ -277,11 +277,11 @@ class Database {
 		}
 		else
 		{
-			$row = mysql_fetch_row($tabl);
+			$row = mysqli_fetch_row($tabl);
 
 			if ( ! $row )
 			{
-				mysql_free_result($tabl);
+				mysqli_free_result($tabl);
 				return false;
 			}
 			else
@@ -307,10 +307,10 @@ class Database {
 		}
 		else
 		{
-			$row = mysql_fetch_assoc($tabl);
+			$row = mysqli_fetch_assoc($tabl);
 			if ( ! $row )
 			{
-				mysql_free_result($tabl);
+				mysqli_free_result($tabl);
 				return false;
 			}
 			else
@@ -333,7 +333,7 @@ class Database {
 		$row = $this->tabl_row($tabl);
 
 		// Free the table resource from memory, if it hasn't already been freed by tabl_row
-		if ( $row ) mysql_free_result($tabl);
+		if ( $row ) mysqli_free_result($tabl);
 
 		return $row;
 	}
@@ -351,7 +351,7 @@ class Database {
 		$row = $this->tabl_hash($tabl);
 
 		// Free the table resource from memory, if it hasn't already been freed by tabl_row
-		if ( $row ) mysql_free_result($tabl);
+		if ( $row ) mysqli_free_result($tabl);
 
 		return $row;
 	}
@@ -372,9 +372,9 @@ class Database {
 		if( Config::$debug )
 			$timeStart=microtime(true);
 
-		if(! mysql_query($sql, $this->link) )
+		if(! mysqli_query($this->link,$sql) )
 		{
-			trigger_error(mysql_error($this->link));
+			trigger_error(mysqli_error($this->link));
 		}
 
 		if( Config::$debug )
@@ -383,12 +383,12 @@ class Database {
 
 	public function last_affected()
 	{
-		return mysql_affected_rows($this->link);
+		return mysqli_affected_rows($this->link);
 	}
 
 	public function last_inserted()
 	{
-		return mysql_insert_id($this->link);
+		return mysqli_insert_id($this->link);
 	}
 
 	/**
