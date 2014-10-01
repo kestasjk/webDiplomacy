@@ -255,8 +255,8 @@ class InstallTerritory {
 						
 					// Pad the depth so 9 won't come after 10
 					$sortTerritory=($depth<1000?'0':'').($depth<100?'0':'').($depth<10?'0':'').$depth;
-					// Make fleet come last (-> destroyed last) in alphabetical ordering (fleet comes after army in alphabetical ordering)
-					$sortTerritory.=($unitType=='Fleet'?' Fleet ':' Army ');
+					// Make fleet come first (-> destroyed first) in alphabetical ordering by adding a number before the name
+					$sortTerritory.=($unitType=='Fleet'?' 1Fleet ':' 2Army ');
 					// Australia is destroyed before Zimbabwe, all else being equal; adding the territory name ensures sorting by name
 					$sortTerritory.=$Territory->name;
 					
