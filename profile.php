@@ -492,7 +492,7 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 	if( $User->type['Admin'] && ($UserProfile->type['Moderator'] && !$UserProfile->type['Admin']) )
 		$modActions[] = libHTML::admincp('takeModerator',array('userID'=>$UserProfile->id), l_t('Remove moderator'),true);
 	
-	if( $User->type['Admin'] && $UserProfile->type['ForumModerator'] )
+	if( $User->type['Admin'] && !$UserProfile->type['ForumModerator'] )
 		$modActions[] = libHTML::admincp('giveForumModerator',array('userID'=>$UserProfile->id), l_t('Make forum moderator'),true);
 	
 	if( $User->type['Admin'] && ($UserProfile->type['ForumModerator'] && !$UserProfile->type['Admin']) )
