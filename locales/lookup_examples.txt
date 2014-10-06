@@ -1007,3 +1007,4 @@
 'Are you sure you want to cast this vote?' => 'Confermi di voler dare questo voto?',
 'Are you sure you want to withdraw this vote?' => 'Confermi di voler ritirare il tuo voto?',
 'Are you sure you want to mute the messages from this player?' => 'Confermi di voler bloccare i messaggi da questo giocatore?',
+'Please confirm this action' => 'Please confirm this action',
