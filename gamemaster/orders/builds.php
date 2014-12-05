@@ -131,7 +131,7 @@ class processOrderBuilds extends processOrder
 				WHERE o.gameID = ".$Game->id." AND o.type = 'Destroy'
 					AND m.success='Yes'");
 
-		// Remove units at random for any destory orders that weren't successful
+		// Remove units as per the destroyindex table for any destory orders that weren't successful
 		$tabl = $DB->sql_tabl(
 					"SELECT o.id, o.countryID FROM wD_Orders o
 					INNER JOIN wD_Moves m ON ( m.orderID = o.id AND m.gameID=".$GLOBALS['GAMEID']." )
