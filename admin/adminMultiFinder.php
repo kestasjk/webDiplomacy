@@ -30,6 +30,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @package Admin
  */
 
+$DB->get_lock('gamemaster');
+
 adminMultiCheck::form();
 
 if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
