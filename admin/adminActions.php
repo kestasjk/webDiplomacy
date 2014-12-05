@@ -600,10 +600,6 @@ class adminActions extends adminActionsForms
 		return 'Process time set to now successfully';
 	}
 
-	public function panicConfirm(array $params)
-	{
-		return l_t('Are you sure? This should only be used if something is damaging the server');
-	}
 	public function panic(array $params)
 	{
 		global $Misc;
