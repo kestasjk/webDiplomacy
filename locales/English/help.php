@@ -36,23 +36,26 @@ and the rules of webDiplomacy.</li>
 <li><a href="faq.php">FAQ</a></li>
 <li class="formlistdesc">The webDiplomacy FAQ.</li>
 
-<li><a href="rules.php">Rulebook</a></li>
+<li><a href="rules.php">Rulebook/Contacting the Mods</a></li>
 <li class="formlistdesc">The webDiplomacy rulebook.</li>
 
 <li><a href="halloffame.php">Hall of fame</a></li>
 <li class="formlistdesc">The pros of this server; the top 100!</li>
 
+<li><a href="profile.php">Find a user</a></li>
+<li class="formlistdesc">Search for a user account registered on this server, if you know their ID number, username, or e-mail address.</li>
+
 <li><a href="points.php">webDiplomacy points</a></li>
 <li class="formlistdesc">What points are for, how to win them, and how to get into the hall of fame.</li>
 
-<li><a href="profile.php">Find a user</a></li>
-<li class="formlistdesc">Search for a user account registered on this server, if you know their ID number, username, or e-mail address.</li>
+<li><a href="http://tournaments.webdiplomacy.net/theghost-ratingslist">GhostRatings (External Site)</a></li>
+<li class="formlistdesc">An external rating system often used as a judgement scale for player skill.</li>
 
 <li><a href="variants.php">Variant information</a></li>
 <li class="formlistdesc">A list of the variants available on this server, with credits and information on variant-specific rules.</li>
 
 <li><a href="credits.php">Credits</a></li>
-<li class="formlistdesc">The credits.</li>
+<li class="formlistdesc">The credits, includes a list of active moderators.</li>
 
 <li><a href="datc.php">DATC Adjudicator Tests</a></li>
 <li class="formlistdesc">For experts; the adjudicator tests which show that webDiplomacy is true to the proper rules</li>
@@ -66,6 +69,8 @@ and the rules of webDiplomacy.</li>
 
 <li><a href="AGPL.txt">GNU Affero General License</a></li>
 <li class="formlistdesc">The OSI approved license which applies to the vast majority of webDiplomacy.</li>
+
+
 </ul>
 
 <p>Didn't find the help/info you were after here? Post a message in the <a href="forum.php" class="light">public forum</a>, or in the
