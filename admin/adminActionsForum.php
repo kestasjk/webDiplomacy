@@ -182,7 +182,7 @@ class adminActionsForum extends adminActions
 		global $DB;
 		
 		if( strlen($params['reason']) < 10 )
-			throw new Exception(l_t("Please give a reason."));
+			throw new Exception(l_t("Please give a reason longer than 10 characters."));
 		
 		if( isset($params['userID']) ) {
 			$SilencedUser = new User((int)$params['userID']);
