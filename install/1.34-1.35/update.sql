@@ -10,7 +10,7 @@ CREATE TABLE `wD_VariantData` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 ALTER TABLE `wD_VariantData` ADD PRIMARY KEY ( `variantID` , `gameID`, `systemToken` , `typeID` , `userID` , `offset` ) ;
-
+   
 INSERT INTO wD_VariantData (variantID, systemToken, userID, offset, val_float )
 SELECT 1, 948379409, u.id, 1, ChanceEngland
 FROM wD_Users u
@@ -32,7 +32,7 @@ FROM wD_Users u
 WHERE NOT ChanceRussia = 0.142857
 UNION SELECT 1, 948379409, u.id, 7, ChanceTurkey
 FROM wD_Users u
-WHERE NOT ChanceTurkey = 0.142857
+WHERE NOT ChanceTurkey = 0.142857;
 
 
 UPDATE `wD_Misc` SET `value` = '135' WHERE `name` = 'Version';
