@@ -104,7 +104,12 @@ AND ($_REQUEST['newmessage'] != "") ) {
 
 	$new['sendtothread'] = $viewthread;
 
-		if( isset($_SESSION['lastPostText']) && $_SESSION['lastPostText'] == $new['message'] )
+		if( $User->isSilenced() )
+		{
+			$messageproblem = l_t("You have been silenced, if you think this is a mistake please contact the administrator.");
+			$postboxopen = !$new['sendtothread'];
+		}
+		elseif( isset($_SESSION['lastPostText']) && $_SESSION['lastPostText'] == $new['message'] )
 		{
 			$messageproblem = l_t("You are posting the same message again, please don't post repeat messages.");
 			$postboxopen = !$new['sendtothread'];
