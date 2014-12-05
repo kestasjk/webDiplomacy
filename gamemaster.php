@@ -167,6 +167,11 @@ if( (time() - $startTime)>=30 )
 	header('refresh: 4; url=gamemaster.php');
 	print '<p class="notice">'.l_t('Timed-out; re-running').'</p>';
 }
+else
+{
+	// Finished all remaining games with time to spare; update the civil disorder and NMR counts
+	//libGameMaster::updateCDNMRCounts();
+}
 
 print '</div>';
 libHTML::footer();

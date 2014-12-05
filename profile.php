@@ -338,8 +338,6 @@ if( $total )
 		print '</li>';
 	}
 
-	print '<li>'.l_t('Total (finished): <strong>%s</strong>',$total).'</li>';
-
 	foreach($rankingDetails['stats'] as $name => $status)
 	{
 		if ( in_array($name, $includeStatus) ) continue;
@@ -348,6 +346,11 @@ if( $total )
 			$status -= $rankingDetails['anon'][$name];
 		print '<li>'.l_t($name.': <strong>%s</strong>',$status).'</li>';
 	}
+
+	print '<li>'.l_t('No moves received / received:').' <strong>'.$UserProfile->nmrCount.'/'.$UserProfile->phaseCount.'</strong></li>';
+	print '<li>'.l_t('Reliability rating:').' <strong>'.round(100*$UserProfile->reliabilityRating).'%</strong></li>';
+	
+	print '<li>'.l_t('Total (finished): <strong>%s</strong>',$total).'</li>';
 
 	if ( $rankingDetails['takenOver'] )
 		print '<li>'.l_t('Left and taken over: <strong>%s</strong>',$rankingDetails['takenOver']).
@@ -553,14 +556,15 @@ if ( $User->type['User'] && $User->id != $UserProfile->id)
 		}
 		else
 		{
-            if ( $UserProfile->sendPM($User, $_REQUEST['message']) )
+			if ( $UserProfile->sendPM($User, $_REQUEST['message']) )
             {
                 print '<p class="notice">'.l_t('Private message sent successfully.').'</p>';
-            }                                                   
-            else 
+            }
+			else 
             {
                 print '<p class="notice">'.l_t('Private message could not be sent. You may be silenced or muted.').'</p>';
             }
+
 		}
 	}
 
