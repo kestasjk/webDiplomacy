@@ -142,6 +142,14 @@ function OrdersHTMLFormClass() {
 			},this);
 			
 			this.updateFormButtons();
+			
+			// Small addition for the preview-window to update on Save or Ready.
+			if (preview != '')
+			{
+				preview = '';
+				togglePreview(this.context.gameID, this.context.turn);
+			}
+			
 		}
 	};
 	
