@@ -37,7 +37,6 @@ if( isset($_REQUEST['uncache'])||isset($_REQUEST['profile']) )
 else
 	define('DELETECACHE',0);
     
-if( !IGNORECACHE )
 // Check if we should hide the move arrows. (Preview do not need the old move-arrows too...)
 if( isset($_REQUEST['hideMoves']) || isset($_REQUEST['preview']))
 	define('HIDEMOVES',1);
@@ -523,7 +522,7 @@ if( defined('DATC') && $mapType!='small')
 	$drawMap->saveThumbnail($filename.'-thumb');
 
 if (PREVIEW)
-	$filename = libCache::dirID('users',$User->id).'/preview-'. md5($User->password.Config::$secret).'.map';
+	$filename = libCache::dirID('users',$User->id).'/last-preview.map';
 	
 // colorCorrect Patch
 if (COLORCORRECT)
