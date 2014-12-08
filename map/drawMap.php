@@ -889,6 +889,7 @@ abstract class drawMap
      	*/
 	public function writeToBrowser() 
 	{
+		header('Content-Type: image/png');
 		imagepng($this->map['image']);
     	}
 
