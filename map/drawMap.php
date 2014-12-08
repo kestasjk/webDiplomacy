@@ -882,7 +882,15 @@ abstract class drawMap
 	public function write($filename)
 	{
 		imagepng($this->map['image'], $filename);
-	}
+    	}
+
+    	/**
+     	* Write the finished image to the browser. Used to prevent preview from being cached.
+     	*/
+	public function writeToBrowser() 
+	{
+		imagepng($this->map['image']);
+    	}
 
 	/**
 	 * An array of different arrow parameters; colors, thicknesses etc, for arrows representing different orders

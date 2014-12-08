@@ -521,8 +521,6 @@ if (HIDEMOVES)
 if( defined('DATC') && $mapType!='small')
 	$drawMap->saveThumbnail($filename.'-thumb');
 
-if (PREVIEW)
-	$filename = libCache::dirID('users',$User->id).'/last-preview.map';
 	
 // colorCorrect Patch
 if (COLORCORRECT)
@@ -536,9 +534,15 @@ if (COLORCORRECT)
 if (COUNTRYNAMES)
 	$filename = str_replace(".map","-names.map",$filename);
 
-$drawMap->write($filename);
+if (PREVIEW)
+{
+	$drawMap->writeToBrowser();
+}
+else 
+{
+	$drawMap->write($filename);
+	libHTML::serveImage($filename);
+}
 unset($drawMap); // $drawMap is memory intensive and should be freed as soon as no longer needed
-
-libHTML::serveImage($filename);
 
 ?>
