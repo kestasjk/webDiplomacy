@@ -399,7 +399,7 @@ while(list($moveType, $terrID,
 		and ( isset($drawToTerrID) and ! isset($fullTerrID[$drawToTerrID]) ) )
 	{
 		// Do not display destroyed units in previews 
-		if (PREVIEW && in_array($terrID,$destroyedTerrs)) continue;
+		if (PREVIEW && in_array($drawToTerrID,$destroyedTerrs)) continue;
 
 		/*
 		 * We're drawing a unit onto the board
