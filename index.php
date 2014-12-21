@@ -249,7 +249,7 @@ class libHome
 		$tabl=$DB->sql_tabl("SELECT g.* FROM wD_Games g
 			INNER JOIN wD_Members m ON ( m.userID = ".$User->id." AND m.gameID = g.id )
 			WHERE NOT g.phase = 'Finished'
-			ORDER BY g.processTime ASC");
+			ORDER BY g.processStatus ASC, g.processTime ASC");
 		$buf = '';
 
 		$count=0;
