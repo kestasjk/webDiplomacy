@@ -619,8 +619,10 @@ class libHTML
 		if ( is_object($User) )
 		{
 			if ( $User->type['Admin'] or $User->type['Moderator'] )
+			{
+				$links['profile.php']=array('name'=>'Find user', 'inmenu'=>true);  // Overrides the previous one with one that appears in the menu
 				$links['admincp.php']=array('name'=>'Admin CP', 'inmenu'=>true);
-
+			}
 			$links['gamemaster.php']=array('name'=>'GameMaster', 'inmenu'=>FALSE);
 		}
 
