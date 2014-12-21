@@ -39,6 +39,9 @@ and the rules of webDiplomacy.</li>
 <li><a href="rules.php">Rulebook/Contacting the Mods</a></li>
 <li class="formlistdesc">The webDiplomacy rulebook.</li>
 
+<li><a href="recentchanges.php">Recent changes</a></li>
+<li class="formlistdesc">Recent changes to the webDiplomacy software.</li>
+
 <li><a href="halloffame.php">Hall of fame</a></li>
 <li class="formlistdesc">The pros of this server; the top 100!</li>
 
