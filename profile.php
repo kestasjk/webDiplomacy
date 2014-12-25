@@ -240,6 +240,11 @@ if ( isset($_REQUEST['detail']) )
 
 			print '<h4>'.l_t('Civil disorders:').'</h4>
 				<ul>';
+				
+			if ($tabl->num_rows == 0) {
+                        	print 'No civil disorders found for this profile.';
+			}
+
 			while(list($name, $countryID, $turn, $bet, $SCCount)=$DB->tabl_row($tabl))
 			{
 				print '<li>
@@ -417,8 +422,13 @@ $liked = ($liked ? '<strong>'.l_t('Liked:').'</strong> '.$liked : '');
 
 print '<li><strong>'.l_t('Forum posts:').'</strong> '.$posts.'<br />
 	<strong>'.l_t('View:').'</strong> <a class="light" href="profile.php?detail=threads&userID='.$UserProfile->id.'">'.l_t('Threads').'</a>,
-		<a class="light" href="profile.php?detail=replies&userID='.$UserProfile->id.'">'.l_t('replies').'</a><br />
-		'.implode(' / ',array($likes,$liked)).'
+		<a class="light" href="profile.php?detail=replies&userID='.$UserProfile->id.'">'.l_t('replies').'</a>';
+if( $User->type['Moderator'] )
+{
+	print ', <a class="light" href="profile.php?detail=civilDisorders&userID='.$UserProfile->id.'">'.l_t('civil disorders').'</a>';
+}                                                                                                         
+
+print '<br/>'.implode(' / ',array($likes,$liked)).'
 	</li>';
 unset($likes,$liked);
 

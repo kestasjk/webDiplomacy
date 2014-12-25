@@ -1014,3 +1014,4 @@
 'Recent changes' => 'Recent changes',
 "Lists and explains the most recent changes to the webdiplomacy software, from a user's perspective" => "Lists and explains the most recent changes to the webdiplomacy software, from a user's perspective",
 'locales/English/recentchanges.php' => 'locales/English/recentchanges.php',
+'civil disorders' => 'civil disorders',
