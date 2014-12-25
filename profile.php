@@ -241,7 +241,7 @@ if ( isset($_REQUEST['detail']) )
 			print '<h4>'.l_t('Civil disorders:').'</h4>
 				<ul>';
 				
-			if ($tabl->num_rows == 0) {
+			if ($DB->last_affected() == 0) {
                         	print 'No civil disorders found for this profile.';
 			}
 
