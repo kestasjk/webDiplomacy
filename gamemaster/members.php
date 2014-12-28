@@ -632,27 +632,8 @@ class processMembers extends Members
 	function updateReliabilityStats()
 	{
 		global $DB;
-		$DB->sql_put("UPDATE wD_Users u
-			SET u.cdCount = (SELECT COUNT(c.userID) FROM wD_CivilDisorders c WHERE c.userID = u.id AND c.forcedByMod=0),
-				u.nmrCount = (SELECT COUNT(n.userID) FROM wD_NMRs n WHERE n.userID = u.id),
-				u.gameCount = (
-					SELECT COUNT(*)
-					FROM wD_Members m
-					WHERE m.userID = u.id) + (
-					SELECT COUNT(*)
-					FROM wD_CivilDisorders c LEFT JOIN wD_Members m ON c.gameID = m.gameID AND c.userID = m.userID AND c.countryID = m.countryID
-					WHERE m.id IS NULL AND c.userID = u.id),
-				u.cdTakenCount = (
-					SELECT COUNT(*)
-					FROM wD_Members ct
-					INNER JOIN wD_CivilDisorders c ON c.gameID = ct.gameID AND c.countryID = ct.countryID AND NOT c.userID = ct.userID
-					WHERE ct.userID = u.id AND c.turn = (
-						SELECT MAX(sc.turn)
-						FROM wD_CivilDisorders sc
-						WHERE sc.gameID = c.gameID AND sc.countryID = c.countryID
-					)
-				),
-				u.reliabilityRating = ( 1.0 - (u.cdCount + u.deletedCDs / (u.gameCount+1) )) where u.id IN (".implode(",",array_keys($this->ByUserID)) . ')');
+ 		require_once(l_r('gamemaster/gamemaster.php'));      	
+		$DB->sql_put(libGameMaster::RELIABILITY_QUERY . "WHERE u.id IN (".implode(",",array_keys($this->ByUserID)) . ')');
 	}
 
 	function processSummary()
