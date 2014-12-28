@@ -234,7 +234,7 @@ if ( isset($_REQUEST['detail']) )
 		case 'civilDisorders':
 			libAuth::resourceLimiter('view civil disorders',5);
 
-			$tabl = $DB->sql_tabl("SELECT g.name, c.countryID, c.turn, c.bet, c.SCCount, c.gameId
+			$tabl = $DB->sql_tabl("SELECT g.name, c.countryID, c.turn, c.bet, c.SCCount, c.gameId, c.forcedByMod
 				FROM wD_CivilDisorders c INNER JOIN wD_Games g ON ( c.gameID = g.id )
 				WHERE c.userID = ".$UserProfile->id);
 
@@ -245,14 +245,15 @@ if ( isset($_REQUEST['detail']) )
                         	print 'No civil disorders found for this profile.';
 			}
 
-			while(list($name, $countryID, $turn, $bet, $SCCount,$gameID)=$DB->tabl_row($tabl))
+			while(list($name, $countryID, $turn, $bet, $SCCount,$gameID,$forcedByMod)=$DB->tabl_row($tabl))
 			{
 				print '<li>
 				'.l_t('Game:').' <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong>,
 					'.l_t('country #:').' <strong>'.$countryID.'</strong>,
 					'.l_t('turn:').' <strong>'.$turn.'</strong>,
 					'.l_t('bet:').' <strong>'.$bet.'</strong>,
-					'.l_t('supply centers:').' <strong>'.$SCCount.'</strong>
+					'.l_t('supply centers:').' <strong>'.$SCCount.'</strong>,
+					'.l_t('ignored:').' <strong>'.$forcedByMod.'</strong>
 					</li>';
 			}
 			print '</ul>';
