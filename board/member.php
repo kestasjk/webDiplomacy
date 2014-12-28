@@ -80,7 +80,12 @@ class userMember extends panelMember
 				WHERE gameID = ".$this->gameID."
 					AND userID = ".$this->userID."
 					AND countryID = ".$this->countryID
-			);
+				);
+		if($DB->affected() != 0)
+		{
+                        $DB->sql_put("UPDATE wD_Users SET deletedCDs = deletedCDs + ". $DB->affected()." where userID=" .$this->userID);
+		}
+				
 
 		$this->orderStatus->Ready=false;
 

@@ -135,7 +135,7 @@ class libGameMaster
 						WHERE sc.gameID = c.gameID AND sc.countryID = c.countryID
 					)
 				),
-				u.reliabilityRating = ( 1.0 - (u.cdCount / (u.gameCount+1) ))
+				u.reliabilityRating = ( 1.0 - (u.cdCount + u.deletedCDs / (u.gameCount+1) ))
 			".($recalculateAll ? "" : "WHERE u.timeLastSessionEnded+(14*24*60*60) > ".$Misc->LastProcessTime));
 		
 		$DB->sql_put("COMMIT");

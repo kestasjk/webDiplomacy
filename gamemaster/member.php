@@ -300,8 +300,8 @@ class processMember extends Member
 
 		// Register the civil disorder
 		$DB->sql_put(
-			"INSERT INTO wD_CivilDisorders ( gameID, userID, countryID, turn, bet, SCCount )
-			VALUES ( ".$this->gameID.", ".$this->userID.", ".$this->countryID.", ".$this->Game->turn.", ".$this->bet.", ".$this->supplyCenterNo.")"
+			"INSERT INTO wD_CivilDisorders ( gameID, userID, countryID, turn, bet, SCCount ,forcedByMod)
+			VALUES ( ".$this->gameID.", ".$this->userID.", ".$this->countryID.", ".$this->Game->turn.", ".$this->bet.", ".$this->supplyCenterNo.", 0)"
 		);
 
 		/*

@@ -652,7 +652,7 @@ class processMembers extends Members
 						WHERE sc.gameID = c.gameID AND sc.countryID = c.countryID
 					)
 				),
-				u.reliabilityRating = ( 1.0 - (u.cdCount / (u.gameCount+1) )) where u.id IN (".implode(",",array_keys($this->ByUserID)) . ')');
+				u.reliabilityRating = ( 1.0 - (u.cdCount + u.deletedCDs / (u.gameCount+1) )) where u.id IN (".implode(",",array_keys($this->ByUserID)) . ')');
 	}
 
 	function processSummary()

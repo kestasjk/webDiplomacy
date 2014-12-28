@@ -443,7 +443,8 @@ class User {
 			u.phaseCount,
 			u.gameCount,
 			u.reliabilityRating,
-			IF(s.userID IS NULL,0,1) as online
+			IF(s.userID IS NULL,0,1) as online,
+			u.deletedCDs
 			FROM wD_Users u
 			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
 			WHERE ".( $username ? "u.username='".$username."'" : "u.id=".$this->id ));
@@ -457,6 +458,8 @@ class User {
 		{
 			$this->{$name} = $value;
 		}
+		// For display, cdCount should include deletedCDs
+		$this->{'cdCount'} = $this->{'cdCount'} + $this->{'deletedCDs'};
 
 		// Convert an array of types this user has into an array of true/false indexed by type
 		$this->type = explode(',', $this->type);
