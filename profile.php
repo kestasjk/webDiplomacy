@@ -277,6 +277,9 @@ if ( isset($_REQUEST['detail']) )
 					}
 					print "</ul>";
 				}
+				if ($UserProfile->deletedCDs != 0) {
+					print 'Additionally, there are ' . $UserProfile->deletedCDs . ' deleted CDs for this account (eg, self CD positions retaken by this user).';
+				}
 			}
 
 			break;
