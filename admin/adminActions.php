@@ -194,6 +194,11 @@ class adminActions extends adminActionsForms
 				'name' => 'Set a user as a game director',
 				'description' => 'Sets the given user ID to be the director of the given game ID (set to 0 to remove someone as game director). This will give them mod capabilities for this game.',
 				'params' => array('gameID'=>'Game ID','userID'=>'User ID'),
+			),
+			'recalculateRR' => array(
+				'name' => 'Recalculate reliability ratings',
+				'description' => 'Updates the reliability ratings for all users. This is quite DB intensive, so it should only be run in extreme situations.',
+				'params' => array()
 			)
 		);
 
@@ -1085,6 +1090,12 @@ class adminActions extends adminActionsForms
 		$DB->sql_put("UPDATE wD_Games SET directorUserID = ".$userID." WHERE id = ".$gameID);
 		
 		return l_t("The specified user ID has been assigned as the director for this game.");
+	}
+	public function recalculateRR(array $params)
+	{
+		require_once(l_r('gamemaster/gamemaster.php'));
+		libGameMaster::updateReliabilityRating(true);
+		return l_t("Reliability Ratings have been recalculated");
 	}
 }
 
