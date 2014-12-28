@@ -574,50 +574,10 @@ class adminActionsTD extends adminActionsForms
 			if( $Game->phase == 'Pre-game' || $Game->phase == 'Finished' )
 				throw new Exception(l_t("Invalid phase to set CD"));
 
-			$Game->Members->ByUserID[$User->id]->setLeft();
+			$Game->Members->ByUserID[$User->id]->setLeft(1);
 			
 			$Game->resetMinimumBet();
 
 		return l_t('This user put into civil-disorder in this game');
-	}
-	public function setCivilDisorderConfirm(array $params)
-	{
-		global $DB;
-
-		$User = new User($params['userID']);
-
-		require_once(l_r('objects/game.php'));
-		$Variant=libVariant::loadFromGameID($this->fixedGameID);
-		$Game = $Variant->Game($this->fixedGameID);
-
-		return l_t('Are you sure you want to set this user to civil disorder in this game?');
-	}
-	public function setCivilDisorder(array $params)
-	{
-		global $DB;
-
-		$User = new User($params['userID']);
-
-		require_once(l_r('gamemaster/game.php'));
-		$Variant=libVariant::loadFromGameID($this->fixedGameID);
-		$Game = $Variant->processGame($this->fixedGameID);
-
-		foreach($Game->Members->ByID as $Member)
-		{
-			if ( $User->id != $Member->userID ) continue;
-
-			if ( $Member->status == 'Playing' )
-			{
-				$DB->sql_put("UPDATE wD_Members SET status = 'Left' WHERE id=".$Member->id);
-				$DB->sql_put("INSERT INTO wD_CivilDisorders ( gameID, userID, countryID, turn, bet, SCCount , forcedByMod)
-					VALUES ( ".$Game->id.", ".$User->id.", ".$Member->countryID.", ".$Game->turn.", ".$Member->bet.", ".$Member->SCCount.",1)");
-
-				$Game->resetMinimumBet();
-				
-				return l_t('User set to civil disorder in game');
-			}
-		}
-
-		throw new Exception(l_t("User not in specified game"));
 	}
 }
