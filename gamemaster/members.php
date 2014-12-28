@@ -626,6 +626,35 @@ class processMembers extends Members
 		libHTML::notice(l_t("Joined %s",$this->Game->name), $message);
 	}
 
+	/**
+	 * Updates the reliability stats for the users in this game.
+	 */
+	function updateReliabilityStats()
+	{
+		global $DB;
+		$DB->sql_put("UPDATE wD_Users u
+			SET u.cdCount = (SELECT COUNT(c.userID) FROM wD_CivilDisorders c WHERE c.userID = u.id),
+				u.nmrCount = (SELECT COUNT(n.userID) FROM wD_NMRs n WHERE n.userID = u.id),
+				u.gameCount = (
+					SELECT COUNT(*)
+					FROM wD_Members m
+					WHERE m.userID = u.id) + (
+					SELECT COUNT(*)
+					FROM wD_CivilDisorders c LEFT JOIN wD_Members m ON c.gameID = m.gameID AND c.userID = m.userID AND c.countryID = m.countryID
+					WHERE m.id IS NULL AND c.userID = u.id),
+				u.cdTakenCount = (
+					SELECT COUNT(*)
+					FROM wD_Members ct
+					INNER JOIN wD_CivilDisorders c ON c.gameID = ct.gameID AND c.countryID = ct.countryID AND NOT c.userID = ct.userID
+					WHERE ct.userID = u.id AND c.turn = (
+						SELECT MAX(sc.turn)
+						FROM wD_CivilDisorders sc
+						WHERE sc.gameID = c.gameID AND sc.countryID = c.countryID
+					)
+				),
+				u.reliabilityRating = ( 1.0 - (u.cdCount / (u.gameCount+1) )) where u.id IN (".implode(",",array_keys($this->ByUserID)) . ')');
+	}
+
 	function processSummary()
 	{
 		$a=array(

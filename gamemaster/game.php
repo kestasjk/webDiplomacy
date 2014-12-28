@@ -581,6 +581,7 @@ class processGame extends Game
 
 			$DB->sql_put("UPDATE wD_Games SET processTime = ".$this->processTime." WHERE id = ".$this->id);
 		}
+		$this->Members->updateReliabilityStats();
 	}
 
 	/**
