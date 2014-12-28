@@ -1,0 +1,2 @@
+
+ALTER TABLE wD_CivilDisorders ADD COLUMN forcedByMod BOOLEAN DEFAULT 0;
