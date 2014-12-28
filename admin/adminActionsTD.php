@@ -609,8 +609,8 @@ class adminActionsTD extends adminActionsForms
 			if ( $Member->status == 'Playing' )
 			{
 				$DB->sql_put("UPDATE wD_Members SET status = 'Left' WHERE id=".$Member->id);
-				$DB->sql_put("INSERT INTO wD_CivilDisorders ( gameID, userID, countryID, turn, bet, SCCount )
-					VALUES ( ".$Game->id.", ".$User->id.", ".$Member->countryID.", ".$Game->turn.", ".$Member->bet.", ".$Member->SCCount.")");
+				$DB->sql_put("INSERT INTO wD_CivilDisorders ( gameID, userID, countryID, turn, bet, SCCount , forcedByMod)
+					VALUES ( ".$Game->id.", ".$User->id.", ".$Member->countryID.", ".$Game->turn.", ".$Member->bet.", ".$Member->SCCount.",1)");
 
 				$Game->resetMinimumBet();
 				

@@ -116,7 +116,7 @@ class libGameMaster
 		 * Then the reliabilityRating is calculated based on the formula considered most appropriate. However the 
 		 */
 		$DB->sql_put("UPDATE wD_Users u 
-			SET u.cdCount = (SELECT COUNT(c.userID) FROM wD_CivilDisorders c WHERE c.userID = u.id),
+			SET u.cdCount = (SELECT COUNT(c.userID) FROM wD_CivilDisorders c WHERE c.userID = u.id AND c.forcedByMod=0),
 				u.nmrCount = (SELECT COUNT(n.userID) FROM wD_NMRs n WHERE n.userID = u.id),
 				u.gameCount = (
 					SELECT COUNT(*) 
