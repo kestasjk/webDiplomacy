@@ -257,6 +257,27 @@ if ( isset($_REQUEST['detail']) )
 					</li>';
 			}
 			print '</ul>';
+
+			$tabl = $DB->sql_tabl("SELECT c.countryID, c.turn, c.bet, c.SCCount, c.gameId, c.forcedByMod
+				FROM wD_CivilDisorders c 
+				WHERE c.userID = ".$UserProfile->id . " AND c.gameId NOT IN (SELECT id from wD_Games)");
+				
+			if ($DB->last_affected() != 0) {
+				print '<h4>'.l_t('Cancelled civil disorders:').'</h4><ul>';
+				while(list($countryID, $turn, $bet, $SCCount,$gameID,$forcedByMod)=$DB->tabl_row($tabl))
+				{
+					print '<li>
+					'.l_t('Game:').' <strong>'.$gameID.'</strong>,
+						'.l_t('country #:').' <strong>'.$countryID.'</strong>,
+						'.l_t('turn:').' <strong>'.$turn.'</strong>,
+						'.l_t('bet:').' <strong>'.$bet.'</strong>,
+						'.l_t('supply centers:').' <strong>'.$SCCount.'</strong>,
+						'.l_t('ignored:').' <strong>'.$forcedByMod.'</strong>
+						</li>';
+				}
+				print "</ul>";
+			}
+
 			break;
 
 		case 'reports':
