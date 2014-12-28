@@ -33,16 +33,15 @@ font-style:normal;
 December 21, 2014:
 <ul>
 <li>The game status bar is now sorted by time to next process rather than game ID. Games with the most imminent deadline are on the left.</li>
-<li>Paused games now appear at the bottom of the My Games tab</li>                                             
+<li>Paused games now appear at the bottom of the My Games tab.</li>                                             
 <li>This page was added!
 </ul>
 <div class="hr"></div>
-
-
 December 6th, 2014:
 <ul>
 <li>Move previews now available for saved orders. Press the move preview button
- (<img id="Preview" src="images/historyicons/Preview.png" alt="PreviewMoves" title="Show server side stored orders on the map">) located below the map to display a preview of your orders. Some users may need to refresh the page in their browser for the preview to work</li>
+ (<img id="Preview" src="images/historyicons/Preview.png" alt="PreviewMoves" title="Show server side stored orders on the map">) located below the map to display a preview of your orders. Some users may need to refresh the page in their browser for the preview to work.</li>
+<li>DATC disband ordering corrected (when no destroy orders are received, and two units are equidistant from home centres, fleets disband before armies, then by alphabetical province name).</li>
 </ul>
 <div class="hr"></div>
 

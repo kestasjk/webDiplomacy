@@ -86,8 +86,8 @@ $globalFaq = array(
 "If someone has to destroy a unit, but doesn't enter destroy orders, what unit is destroyed?" => "It's done as the DATC recommends:
 	It's the furthest from your home supply centers. Distance is defined as the smallest number of moves to get from the unit's position
 	to a home supply center. When calculating the smallest number of moves armies can move across seas, but fleets can only move across
-	seas and coasts. If there are two units both the same distance from a home supply center the territory which is first alphabetically
-	is removed first.",
+	seas and coasts. If there are two units both the same distance from a home supply center then fleets disband before armies. If there's still a tie, 
+	the territory which is first alphabetically is removed first.",
 "If a convoy is attacked does the convoy fail?" => "No; for a convoy to fail it has to be dislodged, and there must be no other convoys
 	the the army being convoyed can go through instead.",
 "What happens if I order to build/destroy two units in the same territory?" => "The first build order will be accepted, the second won't",
