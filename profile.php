@@ -379,7 +379,7 @@ if( $total )
 	}
 
 	print '<li>'.l_t('No moves received / received:').' <strong>'.$UserProfile->nmrCount.'/'.$UserProfile->phaseCount.'</strong></li>';
-	print '<li>'.l_t('Reliability rating:').' <strong>'.round(100*$UserProfile->reliabilityRating).'%</strong></li>';
+	print '<li>'.l_t('Reliability rating:').' <strong>'.round($UserProfile->reliabilityRating).'%</strong></li>';
 	
 	print '<li>'.l_t('Total (finished): <strong>%s</strong>',$total).'</li>';
 
