@@ -349,10 +349,15 @@ class panelGame extends Game
 	function members()
 	{
 		$occupationBar = $this->Members->occupationBar();
-		$buf = '<div class="panelBarGraph occupationBar">
+		$buf = '';
+		if ($this->moderatorSeesMemberInfo()) 
+		{                                                
+                	$buf .= '<div class="bar titleBar modEyes">Anonymous</div>';
+		}
+		$buf .= '<div class="panelBarGraph occupationBar">
 				'.$occupationBar.'
 			</div>
-			<div class="membersList membersFullTable">
+			<div class="membersList membersFullTable'.($this->moderatorSeesMemberInfo() ? ' modEyes': '').'">
 				'.$this->Members->membersList().'
 			</div>
 			<div class="panelBarGraph occupationBar">

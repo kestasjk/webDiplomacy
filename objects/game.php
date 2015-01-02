@@ -278,14 +278,29 @@ class Game
 			 * - The user is a moderator who isn't in the game
 			 */
 			if ( $this->anon == 'No' || $this->phase == 'Finished' || ($User->type['Moderator'] && !isset($this->Members->ByUserID[$User->id])) )
+			{
 				$this->isMemberInfoHidden = false;
+			}
 			else
+			{
 				$this->isMemberInfoHidden = true;
+			}
 		}
 
 		return $this->isMemberInfoHidden;
-
 	}
+
+	/**
+	 * This is a special case of isMemberInfoHidden that returns true if a moderator is seeing the member info (and a normal user wouldn't)
+	 *
+	 * @return boolean
+	 */                                                                                                                                    
+	public function moderatorSeesMemberInfo() {                                                                                            
+		global $User;
+
+		return (!($this->anon == 'No' || $this->phase == 'Finished') && $User->type['Moderator'] && !isset($this->Members->ByUserID[$User->id]));
+	}
+
 
 	function loadRow(array $row)
 	{
