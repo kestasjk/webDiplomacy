@@ -30,6 +30,12 @@ font-style:normal;
 }
 </style>
 
+
+January 2nd, 2015:
+<ul>
+<li>Winner Take All is now the default choice for game creation. Points per supply center games now state that they are PPSC on the game page.</li>
+</ul>
+<div class="hr"></div>
 December 21, 2014:
 <ul>
 <li>The game status bar is now sorted by time to next process rather than game ID. Games with the most imminent deadline are on the left.</li>

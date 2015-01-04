@@ -153,14 +153,14 @@ else
 
 	<li class="formlisttitle">Pot type:</li>
 	<li class="formlistfield">
-		<input type="radio" name="newGame[potType]" value="Points-per-supply-center" checked > Points-per-supply-center<br />
-		<input type="radio" name="newGame[potType]" value="Winner-takes-all"> Winner-takes-all
+		<input type="radio" name="newGame[potType]" value="Points-per-supply-center"> Points-per-supply-center<br />
+		<input type="radio" name="newGame[potType]" value="Winner-takes-all" checked > Winner-takes-all
 	</li>
 	<li class="formlistdesc">
 		An expert setting: Should the winnings be split up according to who has the most supply centers, or should the winner
 		get everything (<a href="points.php#ppscwta" class="light">read more</a>).<br /><br />
 
-		<strong>Default:</strong> Points-per-supply-center
+		<strong>Default:</strong> Winner-takes-all
 	</li>
 
 	<li class="formlisttitle">

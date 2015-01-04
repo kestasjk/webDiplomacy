@@ -260,8 +260,7 @@ class panelGame extends Game
 			$alternatives[]=l_t('Public messaging only');
 		if( $this->anon=='Yes' )
 			$alternatives[]=l_t('Anonymous players');
-		if( $this->potType=='Winner-takes-all' )
-			$alternatives[]=l_t($this->potType);
+		$alternatives[]=l_t($this->potType);
 		if( $this->missingPlayerPolicy=='Wait' )
 			$alternatives[]=l_t('Wait for orders');
 
