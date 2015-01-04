@@ -45,8 +45,8 @@ $credits = array(
 	<a href="http://www.webdiplomacy.net/profile.php?userID=37127">2ndWhiteLine</a>,
 	<a href="http://www.webdiplomacy.net/profile.php?userID=48609">TheMinisterOfWar</a>,
 	<a href="http://www.webdiplomacy.net/profile.php?userID=8938">damian</a>,
-	<a href="http://www.webdiplomacy.net/profile.php?userID=25958">President Eden</a>,
-	<a href="http://www.webdiplomacy.net/profile.php?userID=23172">Hellenic Riot</a>
+	<a href="http://www.webdiplomacy.net/profile.php?userID=23172">Hellenic Riot</a>,
+	<a href="http://www.webdiplomacy.net/profile.php?userID=37168">ghug</a>,
 	','The Current WebDiplomacy Moderators, reachable at webdipmod@gmail.com')
 	
 	,array('<a href="http://www.webdiplomacy.net/profile.php?userID=54909">A_Tin_Can</a>
