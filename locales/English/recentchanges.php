@@ -30,7 +30,12 @@ font-style:normal;
 }
 </style>
 
+January 4th, 2015:
+<ul>
+ <li>Fixed a bug where the messages archive links didn't show up during Spring 1901</li>
+</ul>
 
+<div class="hr"></div>
 January 2nd, 2015:
 <ul>
 <li>Winner Take All is now the default choice for game creation. Points per supply center games now state that they are PPSC on the game page.</li>

@@ -76,7 +76,7 @@ class panelGameBoard extends panelGame
 	{
 		$buf = '';
 
-		if ( $this->turn > 0 || !( $this->phase == 'Pre-game' || $this->phase == 'Diplomacy' ) )
+		if ( $this->phase != 'Pre-game') 
 			$buf .= '
 				<div class="bar archiveBar">
 					'.$this->archiveBar().'
