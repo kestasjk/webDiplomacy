@@ -259,8 +259,8 @@ if ( isset($_REQUEST['detail']) )
 				print '</ul>';
 
 				$tabl = $DB->sql_tabl("SELECT c.countryID, c.turn, c.bet, c.SCCount, c.gameId, c.forcedByMod
-					FROM wD_CivilDisorders c 
-					WHERE c.userID = ".$UserProfile->id . " AND c.gameId NOT IN (SELECT id from wD_Games)");
+					FROM wD_CivilDisorders c LEFT JOIN wD_Games g ON c.gameID = g.id
+					WHERE c.userID = ".$UserProfile->id . " AND g.id is NULL");
 					
 				if ($DB->last_affected() != 0) {
 					print '<h4>'.l_t('Cancelled civil disorders:').'</h4><ul>';
