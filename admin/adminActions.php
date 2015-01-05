@@ -877,7 +877,7 @@ class adminActions extends adminActionsForms
 			if( $Game->phase == 'Pre-game' || $Game->phase == 'Finished' )
 				throw new Exception(l_t("Invalid phase to set CD"));
 
-			$Game->Members->ByUserID[$User->id]->setLeft();
+			$Game->Members->ByUserID[$User->id]->setLeft(1);
 		}
 		else
 		{
@@ -889,12 +889,12 @@ class adminActions extends adminActionsForms
 
 				$Variant=libVariant::loadFromGameID($gameID);
 				$Game = $Variant->processGame($gameID);
-				$Game->Members->ByUserID[$User->id]->setLeft();
+				$Game->Members->ByUserID[$User->id]->setLeft(1);
 			}
 		}
 
 		return l_t('This user put into civil-disorder'.
-			((isset($params['gameID']) && $params['gameID'])?', in this game':', in all his games').'?');
+			((isset($params['gameID']) && $params['gameID'])?', in this game':', in all his games'));
 	}
 
 	public function banUserConfirm(array $params)
@@ -1037,44 +1037,6 @@ class adminActions extends adminActionsForms
 		return l_t('This user was unbanned.');
 	}
 
-	public function setCivilDisorderConfirm(array $params)
-	{
-		global $DB;
-
-		$User = new User($params['userID']);
-
-		require_once(l_r('objects/game.php'));
-		$Variant=libVariant::loadFromGameID($params['gameID']);
-		$Game = $Variant->Game($params['gameID']);
-
-		return l_t('Are you sure you want to set this user to civil disorder in this game?');
-	}
-	public function setCivilDisorder(array $params)
-	{
-		global $DB;
-
-		$User = new User($params['userID']);
-
-		require_once(l_r('gamemaster/game.php'));
-		$Variant=libVariant::loadFromGameID($params['gameID']);
-		$Game = $Variant->processGame($params['gameID']);
-
-		foreach($Game->Members->ByID as $Member)
-		{
-			if ( $User->id != $Member->userID ) continue;
-
-			if ( $Member->status == 'Playing' )
-			{
-				$DB->sql_put("UPDATE wD_Members SET status = 'Left' WHERE id=".$Member->id);
-				$DB->sql_put("INSERT INTO wD_CivilDisorders ( gameID, userID, countryID, turn, bet, SCCount )
-					VALUES ( ".$Game->id.", ".$User->id.", ".$Member->countryID.", ".$Game->turn.", ".$Member->bet.", ".$Member->SCCount.")");
-
-				return l_t('User set to civil disorder in game');
-			}
-		}
-
-		throw new Exception(l_t("User not in specified game"));
-	}
 	public function setDirector(array $params)
 	{
 		global $DB;

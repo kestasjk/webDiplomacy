@@ -86,6 +86,33 @@ class libGameMaster
 		$DB->sql_put("COMMIT");
 	}
 
+	
+
+	const RELIABILITY_QUERY = "UPDATE wD_Users u 
+			SET u.cdCount = (SELECT COUNT(1) FROM wD_CivilDisorders c WHERE c.userID = u.id AND c.forcedByMod=0),
+				u.nmrCount = (SELECT COUNT(1) FROM wD_NMRs n WHERE n.userID = u.id),
+				u.gameCount = (
+					SELECT COUNT(1) 
+					FROM wD_Members m
+					WHERE m.userID = u.id) + (
+					SELECT COUNT(1) 
+					FROM wD_CivilDisorders c LEFT JOIN wD_Members m ON c.gameID = m.gameID AND c.userID = m.userID AND c.countryID = m.countryID
+					WHERE m.id IS NULL AND c.userID = u.id),
+				u.cdTakenCount = (
+					SELECT COUNT(1)
+					FROM wD_Members ct
+					INNER JOIN wD_CivilDisorders c ON c.gameID = ct.gameID AND c.countryID = ct.countryID AND NOT c.userID = ct.userID
+					WHERE ct.userID = u.id AND c.turn = (
+						SELECT MAX(sc.turn) 
+						FROM wD_CivilDisorders sc 
+						WHERE sc.gameID = c.gameID AND sc.countryID = c.countryID
+					)
+				),
+				u.reliabilityRating = (POW( (
+					(100 * ( 1.0 - ((u.cdCount + u.deletedCDs) / (u.gameCount+1)) ))
+				    +  (100 * (1.0 -   ((u.nmrCount)/(u.phaseCount+1))))
+			    )/2 , 3)/10000)";
+
 	/**
 	 * Update the reliability ratings by taking count of the number of civil disorders, NMRs, and civil disorders taken over for each 
 	 * user. Uses the wD_CivilDisorders and wD_NMRs tables and recalculates for all users that have logged in the last two weeks.
@@ -115,28 +142,7 @@ class libGameMaster
 		 * 
 		 * Then the reliabilityRating is calculated based on the formula considered most appropriate. However the 
 		 */
-		$DB->sql_put("UPDATE wD_Users u 
-			SET u.cdCount = (SELECT COUNT(c.userID) FROM wD_CivilDisorders c WHERE c.userID = u.id),
-				u.nmrCount = (SELECT COUNT(n.userID) FROM wD_NMRs n WHERE n.userID = u.id),
-				u.gameCount = (
-					SELECT COUNT(*) 
-					FROM wD_Members m
-					WHERE m.userID = u.id) + (
-					SELECT COUNT(*) 
-					FROM wD_CivilDisorders c LEFT JOIN wD_Members m ON c.gameID = m.gameID AND c.userID = m.userID AND c.countryID = m.countryID
-					WHERE m.id IS NULL AND c.userID = u.id),
-				u.cdTakenCount = (
-					SELECT COUNT(*)
-					FROM wD_Members ct
-					INNER JOIN wD_CivilDisorders c ON c.gameID = ct.gameID AND c.countryID = ct.countryID AND NOT c.userID = ct.userID
-					WHERE ct.userID = u.id AND c.turn = (
-						SELECT MAX(sc.turn) 
-						FROM wD_CivilDisorders sc 
-						WHERE sc.gameID = c.gameID AND sc.countryID = c.countryID
-					)
-				),
-				u.reliabilityRating = ( 1.0 - (u.cdCount / (u.gameCount+1) ))
-			".($recalculateAll ? "" : "WHERE u.timeLastSessionEnded+(14*24*60*60) > ".$Misc->LastProcessTime));
+		 $DB->sql_put(libGameMaster::RELIABILITY_QUERY. ($recalculateAll ? "" : "WHERE u.timeLastSessionEnded+(14*24*60*60) > ".$Misc->LastProcessTime));
 		
 		$DB->sql_put("COMMIT");
 	}

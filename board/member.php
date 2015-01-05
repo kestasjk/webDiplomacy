@@ -75,12 +75,22 @@ class userMember extends panelMember
 		 * Remove the CD mark from this person's record
 		 * Someone could possible go into CD, be taken over, join another country, go CD again, then rejoin, so country has to be specified
 		 */
-		$DB->sql_put(
-				"DELETE FROM wD_CivilDisorders
-				WHERE gameID = ".$this->gameID."
+		 // Was this a mod forced CD?
+		$DB->sql_tabl("SELECT * FROM wD_CivilDisorders
+					WHERE forcedByMod=0 
+					AND gameID = ".$this->gameID."
+					AND userID = ".$this->userID."
+					AND countryID = ".$this->countryID);
+		if ($DB->affected() != 0) {
+                        $DB->sql_put("UPDATE wD_Users SET deletedCDs = deletedCDs + 1 where id=" .$this->userID);
+		}
+		 
+		$DB->sql_put("DELETE FROM wD_CivilDisorders
+					WHERE gameID = ".$this->gameID."
 					AND userID = ".$this->userID."
 					AND countryID = ".$this->countryID
-			);
+				);
+				
 
 		$this->orderStatus->Ready=false;
 

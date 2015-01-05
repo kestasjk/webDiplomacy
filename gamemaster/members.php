@@ -626,6 +626,16 @@ class processMembers extends Members
 		libHTML::notice(l_t("Joined %s",$this->Game->name), $message);
 	}
 
+	/**
+	 * Updates the reliability stats for the users in this game.
+	 */
+	function updateReliabilityStats()
+	{
+		global $DB;
+ 		require_once(l_r('gamemaster/gamemaster.php'));      	
+		$DB->sql_put(libGameMaster::RELIABILITY_QUERY . "WHERE u.id IN (".implode(",",array_keys($this->ByUserID)) . ')');
+	}
+
 	function processSummary()
 	{
 		$a=array(

@@ -232,30 +232,56 @@ if ( isset($_REQUEST['detail']) )
 			break;
 
 		case 'civilDisorders':
-			libAuth::resourceLimiter('view civil disorders',5);
+			if ( $User->type['Moderator'] ) {
 
-			$tabl = $DB->sql_tabl("SELECT g.name, c.countryID, c.turn, c.bet, c.SCCount, c.gameId
-				FROM wD_CivilDisorders c INNER JOIN wD_Games g ON ( c.gameID = g.id )
-				WHERE c.userID = ".$UserProfile->id);
+				$tabl = $DB->sql_tabl("SELECT g.name, c.countryID, c.turn, c.bet, c.SCCount, c.gameId, c.forcedByMod
+					FROM wD_CivilDisorders c INNER JOIN wD_Games g ON ( c.gameID = g.id )
+					WHERE c.userID = ".$UserProfile->id);
+	
+				print '<h4>'.l_t('Civil disorders:').'</h4>
+					<ul>';
+					
+				if ($DB->last_affected() == 0) {
+					print 'No civil disorders found for this profile.';
+				}
 
-			print '<h4>'.l_t('Civil disorders:').'</h4>
-				<ul>';
-				
-			if ($DB->last_affected() == 0) {
-                        	print 'No civil disorders found for this profile.';
+				while(list($name, $countryID, $turn, $bet, $SCCount,$gameID,$forcedByMod)=$DB->tabl_row($tabl))
+				{
+					print '<li>
+					'.l_t('Game:').' <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong>,
+						'.l_t('country #:').' <strong>'.$countryID.'</strong>,
+						'.l_t('turn:').' <strong>'.$turn.'</strong>,
+						'.l_t('bet:').' <strong>'.$bet.'</strong>,
+						'.l_t('supply centers:').' <strong>'.$SCCount.'</strong>,
+						'.l_t('ignored:').' <strong>'.$forcedByMod.'</strong>
+						</li>';
+				}
+				print '</ul>';
+
+				$tabl = $DB->sql_tabl("SELECT c.countryID, c.turn, c.bet, c.SCCount, c.gameId, c.forcedByMod
+					FROM wD_CivilDisorders c LEFT JOIN wD_Games g ON c.gameID = g.id
+					WHERE c.userID = ".$UserProfile->id . " AND g.id is NULL");
+					
+				if ($DB->last_affected() != 0) {
+					print '<h4>'.l_t('Cancelled civil disorders:').'</h4><ul>';
+					while(list($countryID, $turn, $bet, $SCCount,$gameID,$forcedByMod)=$DB->tabl_row($tabl))
+					{
+						print '<li>
+						'.l_t('Game:').' <strong>'.$gameID.'</strong>,
+							'.l_t('country #:').' <strong>'.$countryID.'</strong>,
+							'.l_t('turn:').' <strong>'.$turn.'</strong>,
+							'.l_t('bet:').' <strong>'.$bet.'</strong>,
+							'.l_t('supply centers:').' <strong>'.$SCCount.'</strong>,
+							'.l_t('ignored:').' <strong>'.$forcedByMod.'</strong>
+							</li>';
+					}
+					print "</ul>";
+				}
+				if ($UserProfile->deletedCDs != 0) {
+					print 'Additionally, there are ' . $UserProfile->deletedCDs . ' deleted CDs for this account (eg, self CD positions retaken by this user).';
+				}
 			}
 
-			while(list($name, $countryID, $turn, $bet, $SCCount,$gameID)=$DB->tabl_row($tabl))
-			{
-				print '<li>
-				'.l_t('Game:').' <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong>,
-					'.l_t('country #:').' <strong>'.$countryID.'</strong>,
-					'.l_t('turn:').' <strong>'.$turn.'</strong>,
-					'.l_t('bet:').' <strong>'.$bet.'</strong>,
-					'.l_t('supply centers:').' <strong>'.$SCCount.'</strong>
-					</li>';
-			}
-			print '</ul>';
 			break;
 
 		case 'reports':
@@ -353,7 +379,7 @@ if( $total )
 	}
 
 	print '<li>'.l_t('No moves received / received:').' <strong>'.$UserProfile->nmrCount.'/'.$UserProfile->phaseCount.'</strong></li>';
-	print '<li>'.l_t('Reliability rating:').' <strong>'.round(100*$UserProfile->reliabilityRating).'%</strong></li>';
+	print '<li>'.l_t('Reliability rating:').' <strong>'.round($UserProfile->reliabilityRating).'%</strong></li>';
 	
 	print '<li>'.l_t('Total (finished): <strong>%s</strong>',$total).'</li>';
 
