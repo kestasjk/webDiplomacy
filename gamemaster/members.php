@@ -568,7 +568,7 @@ class processMembers extends Members
 			if ( $CD->status != 'Left' )
 				throw new Exception(l_t('The player selected is not in civil disorder.'));
 
-			$bet = $CD->pointsValue();
+			$bet = $CD->pointsValueInTakeover();
 			if ( $User->points < $bet )
 				throw new Exception(l_t("You do not have enough points to take over that countryID."));
 

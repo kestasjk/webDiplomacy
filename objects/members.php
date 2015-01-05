@@ -225,7 +225,7 @@ class Members
 		$pointsLowestCD = false;
 		foreach($this->ByStatus['Left'] as $Member)
 		{
-			$pointsValue = $Member->pointsValue();
+			$pointsValue = $Member->pointsValueInTakeover();
 			if( $pointsLowestCD===false or $pointsLowestCD > $pointsValue )
 				$pointsLowestCD = $pointsValue;
 		}

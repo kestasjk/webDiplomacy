@@ -114,14 +114,14 @@ class panelMembers extends Members
 			foreach($this->ByStatus['Left'] as $Member);
 
 			$buf .= '<input type="hidden" name="countryID" value="'.$Member->countryID.'" />
-				'.l_t('<label>Take over:</label> %s, for %s.',$Member->countryColored(),'<em>'.$Member->pointsValue().libHTML::points().'</em>');
+				'.l_t('<label>Take over:</label> %s, for %s.',$Member->countryColored(),'<em>'.$Member->pointsValueInTakeover().libHTML::points().'</em>');
 		}
 		else
 		{
 			$buf .= '<label>'.l_t('Take over:').'</label> <select name="countryID">';
 			foreach($this->ByStatus['Left'] as $Member)
 			{
-				$pointsValue = $Member->pointsValue();
+				$pointsValue = $Member->pointsValueInTakeover();
 
 				if ( $User->points >= $pointsValue )
 				{

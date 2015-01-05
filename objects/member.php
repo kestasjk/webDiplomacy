@@ -207,10 +207,23 @@ class Member
 		return $output.' ('.$this->points.User::typeIcon($this->userType).')</a>';
 	}
 
+	/**
+	 * How much is this position worth if this game were PPSC?
+	 * @return int
+	 */
 	function pointsValue()
 	{
 		return round($this->supplyCenterNo * $this->Game->Members->pointsPerSupplyCenter());
 	}
+
+	/**
+	 * CD takeovers cost a different amount to in game positions. How much is this position worth in takeover?
+	 * @return int
+	 */
+	function pointsValueInTakeover() {
+                return round($this->pointsValue() /2);
+	}	
+
 	/**
 	 * A textual display of this user's last log-in time
 	 * @return string Last log-in time
