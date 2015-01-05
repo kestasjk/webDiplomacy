@@ -140,7 +140,12 @@ class adminActionsRestricted extends adminActionsForum
 					running this may give unpredictable results. Please confirm with the variant maintainer before
 					using this admin action.',
 				'params' => array('mapID'=>'Map ID'),
-			)		
+			),		
+			'recalculateRR' => array(
+				'name' => 'Recalculate reliability ratings',
+				'description' => 'Updates the reliability ratings for all users. This is quite DB intensive, so it should only be run in extreme situations.',
+				'params' => array()
+			)
 		);
 
 		adminActions::$actions = array_merge(adminActions::$actions, $restrictedActions);
@@ -597,6 +602,12 @@ class adminActionsRestricted extends adminActionsForum
 		$DB->sql_put("COMMIT");
 		
 		return l_t('The unit destroy indexes were recreated for map ID #%s ; there were %s entries before and there are currently %s entries.', $mapID, $entriesBefore, $entriesAfter);
+	}
+	public function recalculateRR(array $params)
+	{
+		require_once(l_r('gamemaster/gamemaster.php'));
+		libGameMaster::updateReliabilityRating(true);
+		return l_t("Reliability Ratings have been recalculated");
 	}
 }
 
