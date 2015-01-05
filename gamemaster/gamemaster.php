@@ -89,17 +89,17 @@ class libGameMaster
 	
 
 	const RELIABILITY_QUERY = "UPDATE wD_Users u 
-			SET u.cdCount = (SELECT COUNT(c.userID) FROM wD_CivilDisorders c WHERE c.userID = u.id AND c.forcedByMod=0),
-				u.nmrCount = (SELECT COUNT(n.userID) FROM wD_NMRs n WHERE n.userID = u.id),
+			SET u.cdCount = (SELECT COUNT(1) FROM wD_CivilDisorders c WHERE c.userID = u.id AND c.forcedByMod=0),
+				u.nmrCount = (SELECT COUNT(1) FROM wD_NMRs n WHERE n.userID = u.id),
 				u.gameCount = (
-					SELECT COUNT(*) 
+					SELECT COUNT(1) 
 					FROM wD_Members m
 					WHERE m.userID = u.id) + (
-					SELECT COUNT(*) 
+					SELECT COUNT(1) 
 					FROM wD_CivilDisorders c LEFT JOIN wD_Members m ON c.gameID = m.gameID AND c.userID = m.userID AND c.countryID = m.countryID
 					WHERE m.id IS NULL AND c.userID = u.id),
 				u.cdTakenCount = (
-					SELECT COUNT(*)
+					SELECT COUNT(1)
 					FROM wD_Members ct
 					INNER JOIN wD_CivilDisorders c ON c.gameID = ct.gameID AND c.countryID = ct.countryID AND NOT c.userID = ct.userID
 					WHERE ct.userID = u.id AND c.turn = (
