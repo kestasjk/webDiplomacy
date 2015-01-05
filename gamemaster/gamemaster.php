@@ -109,7 +109,7 @@ class libGameMaster
 					)
 				),
 				u.reliabilityRating = (POW( (
-					(100 * ( 1.0 - ((u.cdCount + u.deletedCDs) / (u.gameCount+1)) ))
+					(100 * ( 1.0 - ((cast(u.cdCount as signed) + u.deletedCDs) / (u.gameCount+1)) ))
 				    +  (100 * (1.0 -   ((u.nmrCount)/(u.phaseCount+1))))
 			    )/2 , 3)/10000)";
 
