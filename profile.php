@@ -260,7 +260,7 @@ if ( isset($_REQUEST['detail']) )
 
 				$tabl = $DB->sql_tabl("SELECT c.countryID, c.turn, c.bet, c.SCCount, c.gameId, c.forcedByMod
 					FROM wD_CivilDisorders c LEFT JOIN wD_Games g ON c.gameID = g.id
-					WHERE c.userID = ".$UserProfile->id . ($User->type['Moderator'] ? '' : ' AND c.forcedByMod = 0'));
+					WHERE g.id is null AND c.userID = ".$UserProfile->id . ($User->type['Moderator'] ? '' : ' AND c.forcedByMod = 0'));
 					
 				if ($DB->last_affected() != 0) {
 					print '<h4>'.l_t('Cancelled civil disorders:').'</h4><ul>';
