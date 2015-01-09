@@ -84,7 +84,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	</li>
 	<li class="formlistdesc">
 		<?php if ( !$User->type['User'] ) print '<strong>(Optional)</strong>: '; ?>
-		A comment you would like to make in your profile. eg Your AIM username or ICQ number.
+		A comment that you would like to be visible to other members on your profile. For example: favourite quotes, links to games you're proud of, favourite threads, etc.
 	</li>
 <?php
 
