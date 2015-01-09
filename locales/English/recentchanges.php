@@ -29,6 +29,14 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+January 9th, 2015:
+<ul>
+<li>Fixed a bug that caused an inappropriately high CD count</li>
+<li>Members can now view their own reliability informaiton (button next to the reliability rating)
+</li>
+</ul>
+<div class="hr"></div>
+January 5th, 2015:
 <ul>
 <li>Reliability ratings are now live: CDs forced by mods as part of seating players in the right places for tournaments should no longer be counted. RR is calculated as a combination of CD and NMR ratios. The best way to improve your rating is to play more games and don't CD or NMR. CDs from cancelled games are included. So, players no longer need to draw games to ensure that an early CD is recorded.
 </li>
