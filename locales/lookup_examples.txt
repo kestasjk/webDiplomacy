@@ -1019,4 +1019,5 @@
 'No civil disorders found for this profile.' => 'No civil disorders found for this profile.',
 'No NMRs found for this profile.' => 'No NMRs found for this profile.',
 '(Cancelled)' => '(Cancelled)',
-'reliability breakdown' => 'reliability breakdown',
+'breakdown' => 'breakdown',
+'You do not have permission to view this page.' => 'You do not have permission to view this page.',
