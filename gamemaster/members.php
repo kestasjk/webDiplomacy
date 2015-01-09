@@ -145,18 +145,10 @@ class processMembers extends Members
 		{
 			assert('$Member->missedPhases >= 0 and $Member->missedPhases <= 2');
 
-			switch($Member->missedPhases)
+			if($Member->missedPhases == 2)
 			{
-				case 1:
-					/*
-					 * Players can be set to civil disorder with only one missed
-					 * phase if it looks like they're about to be defeated
-					 */
-					if( 1 < $Member->supplyCenterNo or 1 < $Member->unitNo )
-						break;
-				case 2:
-					$left=true;
-					$Member->setLeft();
+				$left=true;
+				$Member->setLeft();
 			}
 		}
 
