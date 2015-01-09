@@ -242,7 +242,7 @@ if ( isset($_REQUEST['detail']) )
 					<ul>';
 					
 				if ($DB->last_affected() == 0) {
-					print 'No civil disorders found for this profile.';
+					print l_t('No civil disorders found for this profile.');
 				}
 
 				while(list($name, $countryID, $turn, $bet, $SCCount,$gameID,$forcedByMod)=$DB->tabl_row($tabl))
@@ -280,6 +280,28 @@ if ( isset($_REQUEST['detail']) )
 				if ($UserProfile->deletedCDs != 0) {
 					print 'Additionally, there are ' . $UserProfile->deletedCDs . ' deleted CDs for this account (eg, self CD positions retaken by this user).';
 				}
+				print '<h4>'.l_t('NMRs:').'</h4><ul>';
+				$tabl = $DB->sql_tabl("SELECT n.gameID, n.countryID, n.turn, n.bet, n.SCCount, g.name FROM wD_NMRs n LEFT JOIN wD_Games g ON n.gameID = g.id WHERE n.userID = ".$UserProfile->id);
+				if ($DB->last_affected() != 0) {
+					while(list($gameID, $countryID, $turn, $bet, $SCCount, $name)=$DB->tabl_row($tabl))
+					{                                          
+						print '<li>';
+						if ($name != '') {
+							print l_t('Game:').' <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong> ';
+						} else {	
+							print l_t('Game:').' <strong>'.$gameID.' '.l_t('(Cancelled)').'</strong> ';
+						}
+						print l_t('country #:').' <strong>'.$countryID.'</strong>,
+							'.l_t('turn:').' <strong>'.$turn.'</strong>,
+							'.l_t('bet:').' <strong>'.$bet.'</strong>,
+							'.l_t('supply centers:').' <strong>'.$SCCount.'</strong>,
+                                                 	</li>';
+					}
+				} else {
+					print l_t('No NMRs found for this profile.');
+				}
+				print '</ul>';
+
 			}
 
 			break;
@@ -451,7 +473,7 @@ print '<li><strong>'.l_t('Forum posts:').'</strong> '.$posts.'<br />
 		<a class="light" href="profile.php?detail=replies&userID='.$UserProfile->id.'">'.l_t('replies').'</a>';
 if( $User->type['Moderator'] )
 {
-	print ', <a class="light" href="profile.php?detail=civilDisorders&userID='.$UserProfile->id.'">'.l_t('civil disorders').'</a>';
+	print ', <a class="light" href="profile.php?detail=civilDisorders&userID='.$UserProfile->id.'">'.l_t('reliability breakdown').'</a>';
 }                                                                                                         
 
 print '<br/>'.implode(' / ',array($likes,$liked)).'
