@@ -143,7 +143,7 @@ class adminActionsRestricted extends adminActionsForum
 			),		
 			'recalculateRR' => array(
 				'name' => 'Recalculate reliability ratings',
-				'description' => 'Updates the reliability ratings for all users. This is quite DB intensive, so it should only be run in extreme situations.',
+				'description' => 'Updates the reliability ratings for all users.',
 				'params' => array()
 			)
 		);
