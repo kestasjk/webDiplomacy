@@ -1,4 +1,4 @@
-ALTER TABLE `wD_Users` ADD COLUMN cdCount` mediumint(8) unsigned NOT NULL DEFAULT '0',
+ALTER TABLE `wD_Users` ADD COLUMN `cdCount` mediumint(8) unsigned NOT NULL DEFAULT '0',
   ADD COLUMN `nmrCount` mediumint(8) unsigned NOT NULL DEFAULT '0',
   ADD COLUMN `cdTakenCount` mediumint(8) unsigned NOT NULL DEFAULT '0',
   ADD COLUMN `phaseCount` int(10) unsigned NOT NULL DEFAULT '0',
