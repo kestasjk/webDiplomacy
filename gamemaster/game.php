@@ -422,7 +422,7 @@ class processGame extends Game
 				SELECT m.gameID, m.userID, m.countryID, ".$this->turn." as turn, m.bet, m.supplyCenterNo
 				FROM wD_Members m
 				WHERE m.gameID = ".$this->id." 
-					AND m.status='Playing' 
+					AND ( m.status='Playing' OR m.status='Left' ) 
 					AND EXISTS(SELECT o.id FROM wD_Orders o WHERE o.gameID = m.gameID AND o.countryID = m.countryID)
 					AND NOT m.orderStatus LIKE '%Saved%' AND NOT m.orderStatus LIKE '%Ready%'");
 		
