@@ -193,26 +193,30 @@ class Chatbox
 		             ( $Game->pressType == 'NoPress' && $Game->phase == 'Finished' )))))) // finished nopress.
 		{
 			$chatbox .= '<DIV class="chatbox"><TABLE>
-					<TR class="barAlt2">
 					<form method="post" class="safeForm" action="board.php?gameID='.$Game->id.'&amp;msgCountryID='.$msgCountryID.'">
+					<TR class="barAlt2">
+						<TD class="left">
+						'.(($msgCountryID == 0) ? '' : '
+							<a href="#" onclick="document.markUnread.submit(); return false;" tabindex="2">Mark unread</a>
+						').'
+						</TD>
+						<TD class="right" rowspan="2">
+							<TEXTAREA id="sendbox" tabindex="1" NAME="newmessage" style="width:98% !important" width="100%" ROWS="5"></TEXTAREA>
+						</TD>
+					</TR>
+					<TR class="barAlt2">
 						<TD class="left send">
 							<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
-							<input type="submit" tabindex="2" class="form-submit" value="'.l_t('Send').'" name="Send" />
+							<input type="submit" tabindex="2" class="form-submit" value="'.l_t('Send').'" name="Send" /><br/>
 						</TD>
-						<TD class="right">
-							<TEXTAREA id="sendbox" tabindex="1" NAME="newmessage" style="width:98% !important" width="100%" ROWS="3"></TEXTAREA>
-						</TD>
-					</form>
 					</TR>
+					</form>
 					'. // Mark as unread Patch:
 					(($msgCountryID == 0) ? '' : '
-					<TR>
-						<TD colspan=2 class="right">
-							<form method="post" class="safeForm" action="board.php?gameID='.$Game->id.'&amp;msgCountryID='.$msgCountryID.'#chatboxanchor">
-								<input style="float:right; clear:both;" type="submit" tabindex="2" class="form-submit" value="'.l_t('Mark as unread / reply later').'" name="MarkAsUnread" />
-							</form>
-						</TD>
-					</TR>').'
+						<form method="post" name="markUnread" class="safeForm" action="board.php?gameID='.$Game->id.'&amp;msgCountryID='.$msgCountryID.'#chatboxanchor">
+							<input type="hidden" tabindex="2" value="" name="MarkAsUnread" />
+						</form>
+					').'
 				</TABLE></DIV>';
 		}
 
