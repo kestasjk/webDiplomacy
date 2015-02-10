@@ -29,6 +29,18 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+Feb 11th, 2015
+<ul>
+<li>Game messages now have a "mark as unread" button on the chat box</li>
+</ul>
+<div class="hr"></div>
+Feb 2nd, 2015
+<ul>
+<li>RR bugfixes - all holds no longer counted as an NMR, CDs now save NMRs correctly.</li>
+<li>Fixed incorrectly named province on the Modern2 large map</li>
+<li>Updated footer to link to github rather than sourceforge</li>
+</ul>
+<div class="hr"></div>
 January 9th, 2015:
 <ul>
 <li>Fixed a bug that caused an inappropriately high CD count</li>
