@@ -197,7 +197,7 @@ class Chatbox
 					<TR class="barAlt2">
 						<TD class="left">
 						'.(($msgCountryID == 0) ? '' : '
-							<a href="#" onclick="document.markUnread.submit(); return false;" tabindex="2">Mark unread</a>
+							<a href="#" onclick="document.markUnread.submit(); return false;" tabindex="3">Mark unread</a>
 						').'
 						</TD>
 						<TD class="right" rowspan="2">
