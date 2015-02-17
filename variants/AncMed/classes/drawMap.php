@@ -1,6 +1,6 @@
 <?php
 /*
-	Copyright (C) 2010 Oliver Auth
+	Copyright (C) 2015 Oliver Auth
 
 	This file is part of the the Ancient Mediterranean variant for webDiplomacy
 
@@ -54,22 +54,7 @@ class AncMedVariant_drawMap extends drawMap {
 			);
 		}
 	}
-	
-	protected function color(array $color, $image=false)
-	{
 
-		if ( ! is_array($image) )
-			$image = $this->map;
-
-		list($r, $g, $b) = $color;
-
-		$colorRes = imagecolorexact($image['image'], $r, $g, $b);
-		if ($colorRes == -1)
-			$colorRes = imageColorAllocate($image['image'], $r, $g, $b);
-
- 		return $colorRes;
- 	}
-	
 }
 
 ?>
