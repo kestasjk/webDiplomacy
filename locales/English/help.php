@@ -63,9 +63,12 @@ and the rules of webDiplomacy.</li>
 <li><a href="datc.php">DATC Adjudicator Tests</a></li>
 <li class="formlistdesc">For experts; the adjudicator tests which show that webDiplomacy is true to the proper rules</li>
 
-<li><a href="http://sourceforge.net/projects/phpdiplomacy">Sourceforge.net project page</a></li>
-<li class="formlistdesc">Our sourceforge.net project page. From here you can make feature requests, ask for support,
+<li><a href="https://github.com/kestasjk/webDiplomacy">GitHub project page</a></li>
+<li class="formlistdesc">Our github.com project page. From here you can make feature requests, ask for support,
 	inform us about bugs, or help out.</li>
+    
+<li><a href="http://sourceforge.net/projects/phpdiplomacy">Sourceforge.net project page</a></li>
+<li class="formlistdesc">Last Updated: 2013-04-25.  Our old sourceforge.net project page.</li>
 
 <li><a href="http://webdiplomacy.net/developers.php">Developer info</a></li>
 <li class="formlistdesc">If you want to fix/improve/install webDiplomacy all the info you need to make it happen is here.</li>
