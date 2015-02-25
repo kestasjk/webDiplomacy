@@ -88,7 +88,7 @@ $credits = array(
 	','SVG map developer, coast fix patch')
 
 	,array('<a href="http://sourceforge.net/users/fallingrock/">Chris Hughes</a>
-	','webDiplomacy Facebook dev, variable game phase lengths, gamelistings pagination')
+	','webDiplomacy Facebook dev, variable game phase lengths, game listings pagination')
 
 	,array('<a href="http://www.webdiplomacy.net/profile.php?userID=3013">thewonderllama</a>
 	','Unit placement orders fix, designing and running the GFDT tournaments')
