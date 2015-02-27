@@ -1,6 +1,6 @@
 <?php
 /*
-	Copyright (C) 2010 Oliver Auth
+	Copyright (C) 2015 Oliver Auth
 
 	This file is part of the Ancient Mediterranean variant for webDiplomacy
 
@@ -31,6 +31,9 @@
 	1.6: minor fixes
 	1.6.1: Added color-function to avoid black flags and stars
 	1.6.2: some adjustments to the new variant.php funtionality
+	1.6.3: borderfix
+	1.6.4: smallmap color-fix
+	1.7:   new: rules.html added to explain the rule-change for the Baleares.
 */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
@@ -43,7 +46,7 @@ class AncMedVariant extends WDVariant {
 	public $description='A variant with a map of the Ancient Mediterranean.';
 	public $author='Don Hessong';
 	public $adapter='Oliver Auth';
-	public $version='1.6.2';
+	public $version='1.7';
 	public $homepage='http://www.variantbank.org/results/rules/a/ancient_med.htm';
 
 	public $countries=array('Carthage','Egypt','Greece','Persia','Rome');
