@@ -29,9 +29,14 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+Feb 27th, 2015
+<ul>
+<li>Fixed a graphics glitch and a few border issues on the Anc. Med variant.</li>
+</ul>
+<div class="hr"></div>
 Feb 11th, 2015
 <ul>
-<li>Game messages now have a "mark as unread" button on the chat box</li>
+<li>Game messages now have a "mark as unread" button on the chat box.</li>
 </ul>
 <div class="hr"></div>
 Feb 2nd, 2015
