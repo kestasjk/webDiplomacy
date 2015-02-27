@@ -434,7 +434,7 @@ class processGame extends Game
 				INNER JOIN wD_Members m ON m.userID = u.id
 				SET u.phaseCount = u.phaseCount + 1
 				WHERE m.gameID = ".$this->id." 
-					AND m.status='Playing' 
+					AND ( m.status='Playing' OR m.status='Left' )
 					AND EXISTS(SELECT o.id FROM wD_Orders o WHERE o.gameID = m.gameID AND o.countryID = m.countryID)");
 		}
 	
