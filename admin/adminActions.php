@@ -878,6 +878,7 @@ class adminActions extends adminActionsForms
 				throw new Exception(l_t("Invalid phase to set CD"));
 
 			$Game->Members->ByUserID[$User->id]->setLeft(1);
+			$Game->resetMinimumBet();
 		}
 		else
 		{
@@ -890,6 +891,7 @@ class adminActions extends adminActionsForms
 				$Variant=libVariant::loadFromGameID($gameID);
 				$Game = $Variant->processGame($gameID);
 				$Game->Members->ByUserID[$User->id]->setLeft(1);
+				$Game->resetMinimumBet();
 			}
 		}
 
