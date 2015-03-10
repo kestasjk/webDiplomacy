@@ -29,6 +29,11 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+March 10th, 2015
+<ul>
+<li>Fixed a bug where games wouldn't be joinable after a user was banned.</li>
+</ul>
+<div class="hr"></div>
 Feb 27th, 2015
 <ul>
 <li>Fixed a graphics glitch and a few border issues on the Anc. Med variant.</li>
