@@ -225,7 +225,7 @@ function loadModel() {
 				
 				// Return names, excluding the current territory
 				return PossibleUnits.pluck('Territory').pluck('coastParent').pluck('id').uniq().reject(
-						function(n){return (n==this.Territory.id||n==AgainstTerritory.id);
+						function(n){return (n==this.Territory.coastParent.id||n==AgainstTerritory.id);
 					},this);
 			},
 			
