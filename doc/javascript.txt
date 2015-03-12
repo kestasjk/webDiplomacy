@@ -16,6 +16,9 @@ JavaScript is used in webDiplomacy for three things mainly:
 	- The FAQ and "New thread" button in the forum
 	- Allowing the map image history of a game to be scrolled through
 
+If you change the JS code, then you can increment $jsVersion in lib/html.php to force clients
+to reload their javascript.
+
 Prototype framework
 -------------------
 The Prototype framework is used to make this functionality possible as 

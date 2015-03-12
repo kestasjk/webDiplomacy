@@ -887,6 +887,8 @@ class libHTML
 	static private function footerScripts() {
 		global $User, $Locale;
 
+		$jsVersion = 1;  // increment this to force clients to reload their JS files
+
 		$buf = '';
 
 		// onlineUsers, for the online icons
@@ -940,7 +942,7 @@ class libHTML
 		
 		// Don't localize all the footer includes here, as some of them may be dynamically generated
 		foreach( array_merge($footerIncludes,self::$footerIncludes) as $includeJS ) // Add on the dynamically added includes
-			$buf .= '<script type="text/javascript" src="'.STATICSRV.JSDIR.'/'.$includeJS.'"></script>';
+			$buf .= '<script type="text/javascript" src="'.STATICSRV.JSDIR.'/'.$includeJS.'?ver='.$jsVersion.'"></script>';
 
 		// Utility (error detection, message protection), HTML post-processing,
 		// time handling functions. Only logged-in users need to run these
