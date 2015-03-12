@@ -243,7 +243,7 @@ function loadOrdersPhase() {
 					this.viaConvoyChoices=new Hash({'Yes': l_t('via convoy'), 'No': l_t('via land')});
 				else
 					this.viaConvoyChoices=new Hash({'Yes': l_t('via convoy')});
-				
+			    	if (this.viaConvoy == '') this.viaConvoy = 'No';
 				return this.viaConvoyChoices;
 			};
 			
