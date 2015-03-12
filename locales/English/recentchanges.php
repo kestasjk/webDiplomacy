@@ -29,6 +29,12 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+March 13th, 2015
+<ul>
+<li>Fixed a bug where units on a coast were incorrectly able to order a support move to their own province (this bug affected display only).</li>
+<li>"Via land" is now automatically selected as the default order for units able to move via land or via convoy</li>
+</ul>
+<div class="hr"></div>
 March 10th, 2015
 <ul>
 <li>Fixed a bug where games wouldn't be joinable after a user was banned.</li>
