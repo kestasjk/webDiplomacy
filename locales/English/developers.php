@@ -29,15 +29,46 @@ print libHTML::pageTitle('Developer/webmaster info','If you want to fix/improve/
 
 ?>
 
-<h4>Links</h4>
+<p>Webdiplomacy is open source, and we welcome contributions! You can find our todo list <a href="https://github.com/kestasjk/webDiplomacy/issues">here</a>, and our code <a href="https://github.com/kestasjk/webDiplomacy">here</a></p>
 
-<p><a href="http://forum.webdiplomacy.net" class="light">forum.webdiplomacy.net</a> - The forum for developers.</p>
+<div class="hr"></div>                                                                                                                                                                                                         
 
-<p><a href="http://sourceforge.net/projects/phpdiplomacy" class="light">forum.webdiplomacy.net</a> - The sourceforge.net project page.</p>
+<h4>Feature requests</h4>
 
-<p><a href="https://github.com/kestasjk/webDiplomacy" class="light">github.com/kestasjk/webDiplomacy</a> - The github .</p>
+<p>We get a lot of feature requests. If your feature request isn't already on our issue tracker, then the best place to ask is the forum. This will help us gauge support for your ideas, before we add it to the todo list. </p>
 
-<div class="hr"></div>
+<div class="hr"></div>                                                                                                                                                                                                         
+<h4>Bug reports</h4> 
+
+<p>If you're familiar with github, you're welcome to submit a bug report in our issue tracker. Please be as detailed as possible, and include steps to reproduce the bug, what happens, and what you expect to happen instead. If you don't want to use github, you can also email bug reports to webdipmod@gmail.com.</p>
+<div class="hr"></div>                                                                                                                                                                                                         
+
+<h4>Code contributions</h4> 
+
+<p>We welcome code contributions for any of the issues on the "soon" milestone. Simply fork the project, and develop a fix in a branch. We accept pull requests that:</p>
+
+<ul>
+<li>are well tested</li>
+<li>only include one fix per pull request</li>
+<li>keep the code clean and maintainable</li>
+<li>use the same style as the rest of webdip</li>
+<li>keep whitespace changes to a minimum</li>
+</ul>
+
+<p>When writing the text of your pull request, please include:</p>
+
+<ul>
+<li>The details of the testing that you've performed</li>
+<li>The github issue number that this pull request is a fix for</li>
+</ul>
+
+<p>Any questions, please email webdipmod@gmail.com, and a member of the dev team will answer.</p>
+
+
+<div class="hr"></div>                                                                                                                                                                                                         
+<h4>Code links</h4> 
+<p><a href="https://github.com/kestasjk/webDiplomacy" class="light">github.com/kestasjk/webDiplomacy</a> - the code</p>
+<p><a href="https://github.com/kestasjk/webDiplomacy/issues" class="light">github.com/kestasjk/webDiplomacy</a> - the issues</p>
 
 <h4>Webmasters</h4>
 
@@ -45,10 +76,6 @@ print libHTML::pageTitle('Developer/webmaster info','If you want to fix/improve/
 
 <p><a href="http://webdiplomacy.net/AGPL.txt" class="light">AGPL.txt</a> - The license protecting this code, if you make
 	changes to the code you've got to share those changes.</p>
-
-<div class="hr"></div>
-
-<p>Some of the data below may apply mainly to 0.8x, and not be up to date for 0.9x, but the differences are mostly minor.</p>
 
 <div class="hr"></div>
 
@@ -66,15 +93,6 @@ for where everything is and how webDip is structured, so you know where to go to
 
 <div class="hr"></div>
 
-<h4>Guidelines</h4>
-<p>To get a patch submitted first check that the idea is okay. If it's not in the todo-list at forum.webdiplomacy.net post
-it to the ideas section.</p>
-
-<p>Once the patch is done post a link to a demo site where it's working, along with the code, and it'll get
-added in once it has been checked.</p>
-
-<div class="hr"></div>
-
 <h4>Misc notes</h4>
 
 <p><a href="http://webdiplomacy.net/doc/javascript.txt" class="light">javascript.txt</a> - JavaScript info</p>
@@ -84,3 +102,6 @@ added in once it has been checked.</p>
 <p><a href="http://webdiplomacy.net/doc/archive.txt" class="light">archive.txt</a> - Info on the archive tables</p>
 
 <p><a href="http://webdiplomacy.net/doc/coasts.txt" class="light">coasts.txt</a> - Info on how coasts are handled</p>
+
+<p>We used to have a forum for developers, but it was closed due to inactivity and spammers. Some of the content there is still useful:
+<a href="http://forum.webdiplomacy.net" class="light">forum.webdiplomacy.net</a>                                                    </p>
