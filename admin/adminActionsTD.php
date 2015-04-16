@@ -37,7 +37,7 @@ class adminActionsTD extends adminActionsForms
 			),
 			'cancelGame' => array(
 				'name' => 'Cancel game',
-				'description' => 'Splits points among all players in a game equally, and deletes the game.',
+				'description' => 'Refunds points each player has bet, and deletes the game.',
 				'params' => array(),
 			),
 			'togglePause' => array(
