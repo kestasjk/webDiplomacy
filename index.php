@@ -242,6 +242,38 @@ class libHome
 		return $buf;
 	}
 
+
+	static public function gameWatchBlock ()
+	{
+		global $User, $DB;
+
+		$tabl=$DB->sql_tabl("SELECT g.* FROM wD_Games g
+			INNER JOIN wD_WatchedGames w ON ( w.userID = ".$User->id." AND w.gameID = g.id )
+			WHERE NOT g.phase = 'Finished'
+			ORDER BY g.processStatus ASC, g.processTime ASC");
+		$buf = '';
+
+		$count=0;
+		while($game=$DB->tabl_hash($tabl))
+		{
+			$count++;
+			$Variant=libVariant::loadFromVariantID($game['variantID']);
+			$Game=$Variant->panelGameHome($game);
+
+			$buf .= '<div class="hr"></div>';
+			$buf .= $Game->summary();
+		}
+
+		if($count==0)
+		{
+			$buf .= '<div class="hr"></div>';
+			$buf .= '<div><p class="notice">'.l_t('You\'re not watching any games').'<br />
+				'.l_t('Click the \'spectate\' button on an existing game to add games to your watch list').
+			      	'</p></div>';
+		}
+		return $buf;
+	}
+
 	static public function gameNotifyBlock ()
 	{
 		global $User, $DB;
@@ -497,6 +529,8 @@ else
 	print '<td class="homeGamesStats">';
 	print '<div class="homeHeader">'.l_t('My games').' <a href="gamelistings.php?page=1&gamelistType=My games">'.libHTML::link().'</a></div>';
 	print libHome::gameNotifyBlock();
+	print '<div class="homeHeader">'.l_t('Watched games').'</div>';
+	print libHome::gameWatchBlock();
 
 	print '</td>
 	</tr></table>';
