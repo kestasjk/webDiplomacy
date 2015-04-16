@@ -20,9 +20,7 @@
 
 require_once('header.php');
 
-print_r($_POST);
-
-if (isset($_POST['gameID'])) {
+if ((isset($_POST['watch']) || isset($_POST['unwatch'])) && isset($_POST['gameID'])) {
 	require_once(l_r('objects/game.php'));
 	require_once(l_r('gamepanel/gameboard.php'));
 
@@ -44,3 +42,5 @@ if (isset($_POST['gameID'])) {
 		print "Watched";
 	}
 }
+
+header('Location: index.php');

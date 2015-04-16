@@ -472,19 +472,16 @@ class panelGame extends Game
 
 				$buf .= '</div></form>';
 			}
+			$buf .= '<form method="post" action="redirect.php">'
+				       .'<input type="hidden" name="gameID" value="'.$this->id.'">';
 			if( ! $this->watched() ) {
-				$buf .= '<form method="post" action="watchGame.php">'
-				               .'<input type="hidden" name="gameID" value="'.$this->id.'">'                                                                                 
-					       .'<input type="submit" title="'.l_t('Adds this game to the watched games list on your home page, and subscribes you to game notifications').'" '
-					       .'class="form-submit" name="watch" value="'.l_t('Spectate game').'">'
-					       .'</form>';
+				$buf .= '<input type="submit" title="'.l_t('Adds this game to the watched games list on your home page, and subscribes you to game notifications').'" '
+					       .'class="form-submit" name="watch" value="'.l_t('Spectate game').'">';
 			} else {
-				$buf .= '<form method="post" action="watchGame.php">'
-				               .'<input type="hidden" name="gameID" value="'.$this->id.'">'
-					       .'<input type="submit" title="'.l_t('Removes this game from the watch list on your home page, and unsubscribes you from game notifications').'" '
-					       .'class="form-submit" name="unwatch" value="'.l_t('Stop spectating game').'">'
-					       .'</form>';
+				$buf .= '<input type="submit" title="'.l_t('Removes this game from the watch list on your home page, and unsubscribes you from game notifications').'" '
+					       .'class="form-submit" name="unwatch" value="'.l_t('Stop spectating game').'">';
 			}
+			$buf .= '</form>';
 
 		}
 		return $buf;
