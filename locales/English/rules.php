@@ -71,7 +71,7 @@ font-style:normal;
 
 <a name="MetaGaming"></a><h4>2. No Meta-gaming</h4>
 <p>
-  You cannot play a public game with players that you know outside of the site. In doing so, you create an unfair environment for other players by giving yourself the opportunity to form alliances for reasons outside the game. This includes playing public games with family, friends, relatives, coworkers, or even joining a game with any player of a previous game with a predetermined intent to ally with or attack certain players. Additionally, you cannot make deals based on any factors outside of the game.^M
+  You cannot play a public game with players that you know outside of the site. In doing so, you create an unfair environment for other players by giving yourself the opportunity to form alliances for reasons outside the game. This includes playing public games with family, friends, relatives, coworkers, or even joining a game with any player of a previous game with a predetermined intent to ally with or attack certain players. Additionally, you cannot make deals based on any factors outside of the game.
 <br /><br />
 Because Diplomacy is a social game, we always encourage playing with friends. However, you should always do so in a private, password-protected game and make sure that every player knows about any real life connections before the game begins.
 </p>
