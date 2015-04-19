@@ -221,7 +221,7 @@ In order to maintain a positive user experience please follow the forum rules be
 <li>Do not make personal threats toward members or their families. This is a Diplomacy 
 site and no members should have to worry about actions taken against them in real life.</li>
 <li>Do not post or make reference to personal information about another member without their specific consent.</li>
-<li>Do not make targeted threads that are abusive toward another member, group of members, or social group. 
+<li>Do not make targeted threads that are abusive or degrading toward another member, group of members, or social group. 
 This includes but is not limited to posts regarding sexuality, race, and religion.</li>
 <li>Creating an account for the sole purpose of advertising goods or services is not allowed, 
 but a member can post an advertisement as long as he/she does not spam the forum by posting the same message repeatedly.</li>
