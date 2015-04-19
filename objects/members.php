@@ -36,6 +36,7 @@ class Members
 	public $ByUserID;
 	public $ByCountryID;
 	public $ByStatus;
+        public $Watchers;
 
 	function SCPercents()
 	{
@@ -252,6 +253,7 @@ class Members
 	{
 		foreach($this->ByID as $Member)
 			$Member->send($keep, 'No', $text);
+		$this->sendToWatchers($keep,$text);
 	}
 
 	function sendExcept(Member $notMember, $keep, $text)
@@ -259,12 +261,36 @@ class Members
 		foreach($this->ByID as $id=>$Member)
 			if($id != $notMember->id)
 				$Member->send($keep, 'No', $text);
+		$this->sendToWatchers($keep,$text);
 	}
 
 	function sendToPlaying($keep, $text)
 	{
 		foreach($this->ByStatus['Playing'] as $Member)
 			$Member->send($keep, 'No', $text);
+		$this->sendToWatchers($keep,$text);
+	}
+
+	function sendToWatchers($keep,$text) {
+		global $DB;
+                if ($this->Watchers == null)
+		{
+			// If we haven't built the watchers array, then build it now
+			$tempWatchers = array();
+			$tabl = $DB->sql_tabl('SELECT * FROM wD_WatchedGames WHERE gameID='.$this->Game->id);
+			while($watch=$DB->tabl_hash($tabl))
+			{
+				$tempWatchers[] = $watch['userID'];
+
+			}
+			$this->Watchers = $tempWatchers;
+		}
+		foreach($this->Watchers as $uid)
+		{
+			notice::send(
+				$uid, $this->Game->id, 'Game',
+				$keep, 'No', $text, $this->Game->name, $this->Game->id);
+		}
 	}
 
 	function cantLeaveReason()
