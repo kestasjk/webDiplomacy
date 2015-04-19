@@ -29,6 +29,11 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+April 19th, 2015
+<ul>
+<li>Fixed a bug where destroyed units on coasts would incorrectly appear in move previews.</li>
+</ul>
+<div class="hr"></div>
 March 13th, 2015
 <ul>
 <li>Fixed a bug where units on a coast were incorrectly able to order a support move to their own province (this bug affected display only).</li>
