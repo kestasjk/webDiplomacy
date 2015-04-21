@@ -167,7 +167,15 @@ class adminActions extends adminActionsForms
 					'reallocations'=>'Reallocations list (e.g "<em>R,T,A,G,U,F,E</em>")'
 					)
 			),
-			'alterMessaging' => array(
+	        	'drawType' => array(
+				'name' => 'Change the draw type',
+				'description' => 'Change a game\'s draw type (public or hidden).',
+				'params' => array(
+					'gameID'=>'Game ID',
+					'newSetting'=>'Enter a number for the desired setting: 1=Public, 2=Hidden'
+				),
+			),
+	        	'alterMessaging' => array(
 				'name' => 'Alter game messaging',
 				'description' => 'Change a game\'s messaging settings, e.g. to convert from gunboat to public-only or all messages allowed.',
 				'params' => array(
@@ -422,6 +430,25 @@ class adminActions extends adminActionsForms
 		$DB->sql_put("UPDATE wD_Users SET muteReports=IF(muteReports='Yes','No','Yes') WHERE id=".$userID);
 		return l_t("User's reporting ability has been toggled.");
 	}
+	public function drawType(array $params)
+	{
+		global $DB;
+
+		$gameID=(int)$params['gameID'];
+		$newSetting=(int)$params['newSetting'];
+
+		switch($newSetting)
+		{
+			case 1: $newSettingName='draw-votes-public'; break;
+			case 2: $newSettingName='draw-votes-hidden'; break;
+			default: throw new Exception(l_t("Invalid draw vote setting - enter 1 (public) or 2 (hidden)"));
+		}
+
+		$DB->sql_put("UPDATE wD_Games SET drawType = '".$newSettingName."' WHERE id = ".$gameID);
+
+		return l_t('Game changed to drawType=%s.',$newSettingName);
+	}
+
 	public function alterMessaging(array $params)
 	{
 		global $DB;
