@@ -200,6 +200,8 @@ class searchIsPublic extends searchItemRadio
 	public $name='isPublic';
 	protected $label='Access type';
 	protected $options=array('-'=>'All','Yes'=>'Public','No'=>'Private');
+	
+	protected $defaults=array('Joinable'=>'Yes');
 
 	function sql(&$TABLES,&$WHERE,&$ORDER)
 	{

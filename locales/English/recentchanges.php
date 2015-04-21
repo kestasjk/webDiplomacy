@@ -32,6 +32,7 @@ font-style:normal;
 April 21st, 2015
 <ul>
 <li>New game mode: Hidden draw votes. This allows players to play games where you don't know who has voted for a draw or not.</li>
+<li>Joinable games now defaults to showing public games only.</li>
 </ul>
 <div class="hr"></div>
 April 19th, 2015
