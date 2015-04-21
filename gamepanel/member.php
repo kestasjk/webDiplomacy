@@ -356,13 +356,21 @@ class panelMember extends Member
 	 */
 	function memberVotes()
 	{
+        	global $User;
+
 		$buf=array();
 		foreach($this->votes as $voteName)
 		{
 			if ( $voteName == 'Pause' && $this->Game->processStatus=='Paused' )
 				$voteName = 'Unpause';
+			if ( $voteName == 'Draw' && $this->Game->drawType == 'draw-votes-hidden' 
+			       && $User->id != $this->userID )
+                        	continue;
 			$buf[]=l_t($voteName);
 		}
+		if ( $this->Game->drawType == 'draw-votes-hidden'
+			       && $User->id != $this->userID )
+			$buf[]=l_t("(any draw votes are hidden)");
 
 		if( count($buf) )
 			return l_t('Votes:').' <span class="memberVotes">'.implode(', ',$buf).'</span>';

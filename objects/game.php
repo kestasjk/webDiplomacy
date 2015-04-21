@@ -168,6 +168,12 @@ class Game
 	public $potType;
 
 	/**
+	 * draw-votes-public/draw-votes-hidden
+	 * @var string
+	 */
+	public $drawType;
+
+	/**
 	 * Not-processing/Processing/Crashed/Paused
 	 * @var string
 	 */
@@ -341,7 +347,8 @@ class Game
 			g.minimumBet,
 			g.anon,
 			g.pressType,
-			g.missingPlayerPolicy
+			g.missingPlayerPolicy,
+			g.drawType
 			FROM wD_Games g
 			WHERE g.id=".$this->id.' '.$this->lockMode);
 

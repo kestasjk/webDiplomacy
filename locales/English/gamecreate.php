@@ -189,6 +189,18 @@ else
 
 		<br /><br /><strong>Default:</strong> Allow all
 	</li>
+	<li class="formlisttitle">
+		Draw votes:
+	</li>
+	<li class="formlistfield">
+		<input type="radio" name="newGame[drawType]" value="draw-votes-public" checked>Public draw votes
+		<input type="radio" name="newGame[drawType]" value="draw-votes-hidden">Hidden draw votes
+	</li>
+	<li class="formlistdesc">
+		Whether or not draw votes can be seen by the other players. In both modes, the game will be drawn when all players have voted draw. However, if draw votes are 
+		hidden then you are the only one who knows whether you have voted to draw or not. 
+		<br /><br /><strong>Default:</strong>Public draw votes
+	</li>
 
 	<li class="formlisttitle">
 		Joining pre-game period length: (5 minutes - 10 days)

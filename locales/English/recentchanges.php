@@ -29,6 +29,11 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+April 21st, 2015
+<ul>
+<li>New game mode: Hidden draw votes. This allows players to play games where you don't know who has voted for a draw or not.</li>
+</ul>
+<div class="hr"></div>
 April 19th, 2015
 <ul>
 <li>Fixed a bug where destroyed units on coasts would incorrectly appear in move previews.</li>

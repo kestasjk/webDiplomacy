@@ -261,6 +261,8 @@ class panelGame extends Game
 		if( $this->anon=='Yes' )
 			$alternatives[]=l_t('Anonymous players');
 		$alternatives[]=l_t($this->potType);
+		if( $this->drawType=='draw-votes-hidden') 
+			$alternatives[]=l_t('Hidden draw votes');
 		if( $this->missingPlayerPolicy=='Wait' )
 			$alternatives[]=l_t('Wait for orders');
 
