@@ -363,13 +363,24 @@ class panelMember extends Member
 		{
 			if ( $voteName == 'Pause' && $this->Game->processStatus=='Paused' )
 				$voteName = 'Unpause';
+			// Do we hide draws?
 			if ( $voteName == 'Draw' && $this->Game->drawType == 'draw-votes-hidden' 
-			       && $User->id != $this->userID )
-                        	continue;
+				&& $User->id != $this->userID ) 
+			{
+				// Moderators can see draws in games they're not in
+				if (($User->type['Moderator']) && (! $this->Game->Members->isJoined())) 
+				{
+					$buf[]=l_t("(Hidden Draw)");
+				}
+				continue;
+			}
 			$buf[]=l_t($voteName);
 		}
+
+		// Display hidden draw votes message if appropriate
 		if ( $this->Game->drawType == 'draw-votes-hidden'
-			       && $User->id != $this->userID )
+			&& $User->id != $this->userID 
+			&& !(($User->type['Moderator']) && (! $this->Game->Members->isJoined()))) 
 			$buf[]=l_t("(any draw votes are hidden)");
 
 		if( count($buf) )
