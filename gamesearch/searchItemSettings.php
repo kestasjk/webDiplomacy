@@ -211,6 +211,21 @@ class searchIsPublic extends searchItemRadio
 			$WHERE[] = $expr;
 	}
 }
+class searchDrawType extends searchItemRadio
+{
+	public $name='drawType';
+	protected $label='Draw votes';
+	protected $options=array('-'=>'All','draw-votes-public'=>'Public draw votes','draw-votes-hidden'=>'Hidden draw votes');
+
+	function sql(&$TABLES,&$WHERE,&$ORDER)
+	{
+		if($this->value != '-')
+		{
+			$WHERE[] = "drawType = '".$this->value."'";
+		}
+	}
+}
+
 class searchPotType extends searchItemRadio
 {
 	public $name='potType';

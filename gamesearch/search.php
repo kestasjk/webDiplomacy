@@ -30,7 +30,7 @@ require_once(l_r('searchOptions.php'));
 
 class search
 {
-	protected $searchItems = array('AmMember','IsPublic','PotType','ChooseVariant','PhaseHours','Phase','IsAnonymous','PressType','OrderBy');
+	protected $searchItems = array('AmMember','IsPublic','PotType','DrawType','ChooseVariant','PhaseHours','Phase','IsAnonymous','PressType','OrderBy');
 
 
 	protected $searchTypes = array('My games','New','Joinable','Active','Finished','Search','Profile');
