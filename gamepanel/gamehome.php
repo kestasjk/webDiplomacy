@@ -122,6 +122,8 @@ class panelGameHome extends panelGameBoard
 			$alternatives[]=l_t('Public chat');
 		if( $this->anon=='Yes' )
 			$alternatives[]=l_t('Anon');
+		if( $this->drawType=='draw-votes-hidden')
+			$alternatives[]=l_t('Hidden draw votes');
 
 		if ( $alternatives )
 			$buf .= '
