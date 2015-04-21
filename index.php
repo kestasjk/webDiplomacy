@@ -242,6 +242,29 @@ class libHome
 		return $buf;
 	}
 
+	static public function upcomingLiveGames ()
+	{
+		global $User, $DB;
+
+		$tabl=$DB->sql_tabl("SELECT g.* FROM wD_Games g
+			WHERE g.phase = 'Pre-game' AND g.phaseMinutes < 60 AND g.password IS NULL
+			ORDER BY g.processStatus ASC, g.processTime ASC");
+		$buf = '';
+
+		$count=0;
+		while($game=$DB->tabl_hash($tabl))
+		{
+			$count++;
+			$Variant=libVariant::loadFromVariantID($game['variantID']);
+			$Game=$Variant->panelGameHome($game);
+
+			$buf .= '<div class="hr"></div>';
+			$buf .= $Game->summary();
+		}
+
+		return $buf;
+	}
+
 	static public function gameNotifyBlock ()
 	{
 		global $User, $DB;
@@ -468,6 +491,11 @@ else
 
 	print '<td class="homeMessages">';
 
+	$liveGames = libHome::upcomingLiveGames();
+	if ($liveGames != '') {
+		print '<div class="homeHeader">'.l_t('Upcoming live games').' <a href="gamelistings.php?page-games=1&gamelistType=New">'.libHTML::link().'</a></div>';
+		print $liveGames;
+	}
 	print '<div class="homeHeader">'.l_t('Forum').' <a href="forum.php">'.libHTML::link().'</a></div>';
 	if( file_exists(libCache::dirName('forum').'/home-forum.html') )
 		print file_get_contents(libCache::dirName('forum').'/home-forum.html');
