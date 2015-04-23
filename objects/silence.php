@@ -184,7 +184,7 @@ class Silence {
 	public function Silence($id) {
 		$this->load($id);
 	}
-	
+
 	public static function isSilenced(array $forumRecord) {
 		return ( isset($forumRecord['silenceID']) && is_numeric($forumRecord['silenceID']));
 	}
@@ -257,5 +257,14 @@ class Silence {
 	public static function printLength($length) {
 		return ($length==0 ? l_t("indefinitely") : l_t("for %s days",$length) );
 		
+	}
+}
+
+class DummySilence extends Silence {
+	public function DummySilence ($reason) {
+         	$this->reason = $reason;
+	}
+	public function toString() {
+         	return '<ul class="formlist"><li>'.$this->reason . '</li></ul>';
 	}
 }

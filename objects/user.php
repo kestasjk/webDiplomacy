@@ -70,6 +70,9 @@ class User {
 	private $ActiveSilence;
 	
 	public function isSilenced() {
+		if( $this->gameCount == 0 && ! array_key_exists('Playing',$this->rankingDetails()['stats'] ) )
+			return true;
+
 		if( !$this->silenceID ) 
 			return false;
 		
@@ -85,7 +88,11 @@ class User {
 	public function getActiveSilence() {
 		
 		if( !$this->isSilenced() ) return null;
-		else return $this->ActiveSilence;
+
+		else if ( $this->ActiveSilence == null ) {
+			return new DummySilence('New users are unable to post for a short period. Please email '.Config::$modEMail.' if you have any concerns');
+		}
+		return $this->ActiveSilence;
 		
 	}
 	
