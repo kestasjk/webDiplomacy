@@ -137,11 +137,11 @@ function loadMap(gameID, currentTurn, newTurn)
 	
 	// Update the link to the large map
 	$('LargeMapLink').innerHTML = 
-			' <a href="map.php?gameID='+gameID+'&turn='+newTurn+'&mapType=large" target="blank" class="light">'+
+			' <a href="map.php?gameID='+gameID+'&turn='+newTurn+'&mapType=large'+(useroptions.showMoves =='No'?'&hideMoves':'')+'" target="blank" class="light">'+
 			'<img src="'+l_s('images/historyicons/external.png')+'" alt="'+l_t('Open large map')+'" ' +
 			'title="'+l_t('This button will open the large map in a new window. The large ' +
 			'map shows all the moves, and is useful when the small map isn\'t clear enough.')+'" /><\/a>';
 	
 	// Update the source for the map image
-	$('mapImage').src = 'map.php?gameID='+gameID+'&turn='+newTurn;
+	$('mapImage').src = 'map.php?gameID='+gameID+'&turn='+newTurn + (useroptions.showMoves=='No'?'&hideMoves':'');
 }
