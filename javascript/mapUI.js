@@ -145,3 +145,15 @@ function loadMap(gameID, currentTurn, newTurn)
 	// Update the source for the map image
 	$('mapImage').src = 'map.php?gameID='+gameID+'&turn='+newTurn + (useroptions.showMoves=='No'?'&hideMoves':'');
 }
+
+function recolorMap() 
+{
+	if ($('mapImage') && useroptions.colourblind != 'No' && $('mapImage').src.substring(0,4) == 'http' ) {
+	        Color.Vision.Daltonize($('mapImage'),
+				{'type':useroptions.colourblind,
+				'callback': function (c) {$('mapImage').src = c.toDataURL();}
+				});
+	}
+}
+Event.observe(window, "load", function() { Event.observe($('mapImage'),'load',recolorMap)} );
+recolorMap();

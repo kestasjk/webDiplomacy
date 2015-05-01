@@ -35,19 +35,19 @@ class UserOptions {
 	public $id;
 
 	public static $defaults = array(
- //       	'colourblind' => 'No',
+        	'colourblind' => 'No',
 		'displayUpcomingLive' => 'Yes',
 		'showMoves' => 'Yes'
 	);
 
 	public static $titles = array(
-//		'colourblind' => 'Colourblindness',
+		'colourblind' => 'Colourblindness',
 		'displayUpcomingLive' => 'Display upcoming live games',
 		'showMoves' => 'Show move arrows on the game map'
 	);
 
 	public static $possibleValues = array( 
-//		'colourblind' => array('No','Protanope','Deuteranope','Tritanope'),
+		'colourblind' => array('No','Protanope','Deuteranope','Tritanope'),
 		'displayUpcomingLive' => array('Yes','No'),
 		'showMoves' => array('Yes','No')
 	);
