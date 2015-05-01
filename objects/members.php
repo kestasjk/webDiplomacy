@@ -36,7 +36,6 @@ class Members
 	public $ByUserID;
 	public $ByCountryID;
 	public $ByStatus;
-        public $Watchers;
 
 	function SCPercents()
 	{
@@ -273,23 +272,14 @@ class Members
 
 	function sendToWatchers($keep,$text) {
 		global $DB;
-                if ($this->Watchers == null)
-		{
-			// If we haven't built the watchers array, then build it now
-			$tempWatchers = array();
-			$tabl = $DB->sql_tabl('SELECT * FROM wD_WatchedGames WHERE gameID='.$this->Game->id);
-			while($watch=$DB->tabl_hash($tabl))
-			{
-				$tempWatchers[] = $watch['userID'];
 
-			}
-			$this->Watchers = $tempWatchers;
-		}
-		foreach($this->Watchers as $uid)
+		$tabl = $DB->sql_tabl('SELECT userID FROM wD_WatchedGames WHERE gameID='.$this->Game->id);
+		while($watch=$DB->tabl_hash($tabl))
 		{
 			notice::send(
-				$uid, $this->Game->id, 'Game',
+				$watch['userID'], $this->Game->id, 'Game',
 				$keep, 'No', $text, $this->Game->name, $this->Game->id);
+
 		}
 	}
 
