@@ -21,6 +21,9 @@ div.pageTitle {
     font-weight:bold;
     padding:4px 20px;
 }
+.bottomborder {
+    border-bottom:#ccc 1px solid;
+}
 div.pageDescription {
     padding:4px 20px;
     color:#666;
