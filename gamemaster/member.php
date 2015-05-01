@@ -85,6 +85,7 @@ class processMember extends Member
 
 		$DB->sql_put("INSERT INTO wD_Members SET
 			userID = ".$userID.", gameID = ".$Game->id.", orderStatus='None,Completed,Ready', bet = 0, timeLoggedIn = ".time());
+                $DB->sql_put('DELETE FROM wD_WatchedGames WHERE gameID='.$Game->id.' AND userID='.$userID);
 
 		$Game->Members->load();
 

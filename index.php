@@ -241,14 +241,16 @@ class libHome
 
 		return $buf;
 	}
+	
 
-	static public function upcomingLiveGames ()
+	static public function gameWatchBlock ()
 	{
 		global $User, $DB;
 
 		$tabl=$DB->sql_tabl("SELECT g.* FROM wD_Games g
-			WHERE g.phase = 'Pre-game' AND g.phaseMinutes < 60 AND g.password IS NULL
-			ORDER BY g.processStatus ASC, g.processTime ASC LIMIT 3");
+			INNER JOIN wD_WatchedGames w ON ( w.userID = ".$User->id." AND w.gameID = g.id )
+			WHERE NOT g.phase = 'Finished'
+			ORDER BY g.processStatus ASC, g.processTime ASC");
 		$buf = '';
 
 		$count=0;
@@ -262,8 +264,34 @@ class libHome
 			$buf .= $Game->summary();
 		}
 
+		if($count==0)
+		{
+			$buf .= '<div class="hr"></div>';
+			$buf .= '<div><p class="notice">'.l_t('You\'re not spectating any games.').'<br />
+				'.l_t('Click the \'spectate\' button on an existing game to add games to your list of spectated games.').
+			      	'</p></div>';
+		}
 		return $buf;
 	}
+	static public function upcomingLiveGames ()
+	{
+		global $User, $DB;
+		$tabl=$DB->sql_tabl("SELECT g.* FROM wD_Games g
+			WHERE g.phase = 'Pre-game' AND g.phaseMinutes < 60 AND g.password IS NULL
+			ORDER BY g.processStatus ASC, g.processTime ASC LIMIT 3");
+		$buf = '';
+		$count=0;
+		while($game=$DB->tabl_hash($tabl))
+		{
+			$count++;
+			$Variant=libVariant::loadFromVariantID($game['variantID']);
+			$Game=$Variant->panelGameHome($game);
+			$buf .= '<div class="hr"></div>';
+			$buf .= $Game->summary();
+		}
+		return $buf;
+	}
+
 
 	static public function gameNotifyBlock ()
 	{
@@ -289,7 +317,7 @@ class libHome
 		if($count==0)
 		{
 			$buf .= '<div class="hr"></div>';
-			$buf .= '<div><p class="notice">'.l_t('You\'re not joined to any games!').'<br />
+			$buf .= '<div class="bottomborder"><p class="notice">'.l_t('You\'re not joined to any games!').'<br />
 				'.l_t('Access the <a href="gamelistings.php?tab=">Games</a> '.
 				'link above to find games you can join, or start a '.
 				'<a href="gamecreate.php">New game</a> yourself.</a>').'</p></div>';
@@ -297,7 +325,7 @@ class libHome
 		elseif ( $count == 1 && $User->points > 5 )
 		{
 			$buf .= '<div class="hr"></div>';
-			$buf .= '<div><p class="notice">'.l_t('You can join as many games as you '.
+			$buf .= '<div class="bottomborder"><p class="notice">'.l_t('You can join as many games as you '.
 			'have the points to join.').' </a></p></div>';
 		}
 		return $buf;
@@ -525,6 +553,8 @@ else
 	print '<td class="homeGamesStats">';
 	print '<div class="homeHeader">'.l_t('My games').' <a href="gamelistings.php?page=1&gamelistType=My games">'.libHTML::link().'</a></div>';
 	print libHome::gameNotifyBlock();
+	print '<div class="homeHeader">'.l_t('Spectated games').'</div>';
+	print libHome::gameWatchBlock();
 
 	print '</td>
 	</tr></table>';

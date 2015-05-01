@@ -319,6 +319,35 @@ class Game
 		$this->private = isset($this->password);
 
 		$this->Variant = $GLOBALS['Variants'][$this->variantID];
+	}                         
+
+	function watched() 
+	{
+        	global $DB, $User;
+
+		$row = $DB->sql_row('SELECT * from wD_WatchedGames WHERE gameID='.$this->id.' AND userID=' . $User->id);
+		return $row != false;
+	}
+	function watch() 
+	{
+        	global $DB, $User;
+
+		if (! $this->watched())
+		{
+		        $DB->sql_put('INSERT INTO wD_WatchedGames (gameID, userID) VALUES ('.$this->id. ','.$User->id.')');
+		        $DB->sql_put('COMMIT');
+		}
+	}
+
+	function unwatch() 
+	{
+                global $DB, $User;
+
+	        if ($this->watched())
+		{
+			$DB->sql_put('DELETE from wD_WatchedGames WHERE gameID='. $this->id . ' AND userID='. $User->id);// . $this->id . ' AND userID=' . $User->id);
+			$DB->sql_put('COMMIT');
+		} 
 	}
 
 	/**
