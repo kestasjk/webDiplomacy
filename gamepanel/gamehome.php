@@ -150,20 +150,23 @@ class panelGameHome extends panelGameBoard
 	 * @return string
 	 */
 	function links()
-	{
+	{	
+		$watchString= '';	
+		if ($this->watched())
+		{
+			$watchString = '- <a href="board.php?gameID='.$this->id.'&unwatch">'.l_t('Stop spectating').'</a>';
+		}		
+				
 		if( $this->phase == 'Pre-game')
 		{
 			return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
 				<a href="board.php?gameID='.$this->id.'">'.l_t('Open').'</a>
-				</div>';
+				'.$watchString.'</div>';
 		}
 		else
 			return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
-				<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t('Open').'</a> -
-				<a href="board.php?gameID='.$this->id.'#chatbox">'.l_t('Chatbox').'</a> -
-				<a href="board.php?gameID='.$this->id.'#orders">'.l_t('Orders').'</a> -
-				<a href="board.php?gameID='.$this->id.'#details">'.l_t('Details').'</a>
-				</div>';
+				<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t('Open').'</a> 
+				'.$watchString.'</div>';
 	}
 
 }

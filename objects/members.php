@@ -252,6 +252,7 @@ class Members
 	{
 		foreach($this->ByID as $Member)
 			$Member->send($keep, 'No', $text);
+		$this->sendToWatchers($keep,$text);
 	}
 
 	function sendExcept(Member $notMember, $keep, $text)
@@ -259,12 +260,27 @@ class Members
 		foreach($this->ByID as $id=>$Member)
 			if($id != $notMember->id)
 				$Member->send($keep, 'No', $text);
+		$this->sendToWatchers($keep,$text);
 	}
 
 	function sendToPlaying($keep, $text)
 	{
 		foreach($this->ByStatus['Playing'] as $Member)
 			$Member->send($keep, 'No', $text);
+		$this->sendToWatchers($keep,$text);
+	}
+
+	function sendToWatchers($keep,$text) {
+		global $DB;
+
+		$tabl = $DB->sql_tabl('SELECT userID FROM wD_WatchedGames WHERE gameID='.$this->Game->id);
+		while($watch=$DB->tabl_hash($tabl))
+		{
+			notice::send(
+				$watch['userID'], $this->Game->id, 'Game',
+				$keep, 'No', $text, $this->Game->name, $this->Game->id);
+
+		}
 	}
 
 	function cantLeaveReason()
