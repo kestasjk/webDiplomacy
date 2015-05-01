@@ -267,8 +267,8 @@ class libHome
 		if($count==0)
 		{
 			$buf .= '<div class="hr"></div>';
-			$buf .= '<div><p class="notice">'.l_t('You\'re not watching any games.').'<br />
-				'.l_t('Click the \'spectate\' button on an existing game to add games to your watch list').
+			$buf .= '<div><p class="notice">'.l_t('You\'re not spectating any games.').'<br />
+				'.l_t('Click the \'spectate\' button on an existing game to add games to your list of spectated games.').
 			      	'</p></div>';
 		}
 		return $buf;
@@ -529,7 +529,7 @@ else
 	print '<td class="homeGamesStats">';
 	print '<div class="homeHeader">'.l_t('My games').' <a href="gamelistings.php?page=1&gamelistType=My games">'.libHTML::link().'</a></div>';
 	print libHome::gameNotifyBlock();
-	print '<div class="homeHeader">'.l_t('Watched games').'</div>';
+	print '<div class="homeHeader">'.l_t('Spectated games').'</div>';
 	print libHome::gameWatchBlock();
 
 	print '</td>

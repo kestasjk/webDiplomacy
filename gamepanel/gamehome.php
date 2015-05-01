@@ -152,7 +152,7 @@ class panelGameHome extends panelGameBoard
 		$watchString= '';	
 		if ($this->watched())
 		{
-			$watchString = '- <a href="board.php?gameID='.$this->id.'&unwatch">'.l_t('Unwatch').'</a>';
+			$watchString = '- <a href="board.php?gameID='.$this->id.'&unwatch">'.l_t('Stop spectating').'</a>';
 		}		
 				
 		if( $this->phase == 'Pre-game')

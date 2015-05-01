@@ -136,7 +136,7 @@ if ( isset($_REQUEST['viewArchive']) )
 if ( ! $Game->Members->isJoined() && $Game->watched() && isset($_REQUEST['unwatch'])) {
 	print '<div class="content-notice gameTimeRemaining">'
 		.'<form method="post" action="redirect.php">'
-		.'Are you sure you wish to remove this game from your watch list? '
+		.'Are you sure you wish to remove this game from your spectated games list? '
 		.'<input type="hidden" name="gameID" value="'.$Game->id.'">'
 		.'<input type="submit" class="form-submit" name="unwatch" value="Confirm">
 		</form></div>';
