@@ -474,17 +474,19 @@ class panelGame extends Game
 
 				$buf .= '</div></form>';
 			}
-			$buf .= '<form method="post" action="redirect.php">'
+			if( $User->type['User'] )
+			{
+				$buf .= '<form method="post" action="redirect.php">'
 				       .'<input type="hidden" name="gameID" value="'.$this->id.'">';
-			if( ! $this->watched() ) {
-				$buf .= '<input style="margin-top: 0.5em;" type="submit" title="'.l_t('Adds this game to the watched games list on your home page, and subscribes you to game notifications').'" '
+				if( ! $this->watched() ) {
+					$buf .= '<input style="margin-top: 0.5em;" type="submit" title="'.l_t('Adds this game to the watched games list on your home page, and subscribes you to game notifications').'" '
 					       .'class="form-submit" name="watch" value="'.l_t('Spectate game').'">';
-			} else {
-				$buf .= '<input type="submit" title="'.l_t('Removes this game from the watch list on your home page, and unsubscribes you from game notifications').'" '
-					       .'class="form-submit" name="unwatch" value="'.l_t('Stop spectating game').'">';
+				} else {
+					$buf .= '<input type="submit" title="'.l_t('Removes this game from the watch list on your home page, and unsubscribes you from game notifications').'" '
+						       .'class="form-submit" name="unwatch" value="'.l_t('Stop spectating game').'">';
+				}
+				$buf .= '</form>';
 			}
-			$buf .= '</form>';
-
 		}
 		return $buf;
 	}
