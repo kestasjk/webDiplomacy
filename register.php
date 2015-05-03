@@ -72,7 +72,7 @@ if ( isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText']) && isset($_R
 
 
 		// The user's imageText is validated; he's not a robot. But does he have a real e-mail address?
-		$email = $DB->escape($_REQUEST['emailValidate']);
+		$email = trim($DB->escape($_REQUEST['emailValidate']));
 
 		if( User::findEmail($email) )
 			throw new Exception(
@@ -126,7 +126,7 @@ elseif ( isset($_REQUEST['emailToken']) )
 		if( !($email = libAuth::emailToken_email($_REQUEST['emailToken'])) )
 			throw new Exception(l_t("A bad e-mail token was given, please try again"));
 
-		$email = $DB->escape($email);
+		$email = trim($DB->escape($email));
 
 		$page = 'userForm';
 

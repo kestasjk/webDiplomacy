@@ -335,7 +335,7 @@ class User {
 
 		if( isset($userForm['username']) )
 		{
-			$SQLVars['username'] = $DB->escape($userForm['username']);
+			$SQLVars['username'] = trim($DB->escape($userForm['username']));
 		}
 
 		if( isset($userForm['password']) and $userForm['password'] )
@@ -353,7 +353,7 @@ class User {
 
 		if(isset($userForm['email']) and $userForm['email'] )
 		{
-			$userForm['email'] = $DB->escape($userForm['email']);
+			$userForm['email'] = trim($DB->escape($userForm['email']));
 			if( !libAuth::validate_email($userForm['email']) )
 			{
 				$errors[] = l_t("The e-mail address you entered isn't valid. Please enter a valid one");
