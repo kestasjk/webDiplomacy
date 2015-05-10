@@ -29,6 +29,16 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+May 1st, 2015
+<ul>
+<li>Spectated games; users can now spectate games that they're not in (so that games appear on their home page and notifications).</li>
+</ul>
+<div class="hr"></div>
+April 21st, 2015
+<ul>
+<li>Spectated games; users can now spectate games that they're not in (so that games appear on their home page and notifications).</li>
+</ul>
+<div class="hr"></div>
 April 21st, 2015
 <ul>
 <li>New game mode: Hidden draw votes. This allows players to play games where you don't know who has voted for a draw or not.</li>
