@@ -396,6 +396,7 @@ class libHTML
 		<link rel="stylesheet" href="'.CSSDIR.l_s('/gamepanel.css').'" type="text/css" />
 		<link rel="stylesheet" href="'.CSSDIR.l_s('/home.css').'" type="text/css" />
 		'.$variantCSS.'
+		<script type="text/javascript" src="useroptions.php"></script>
 		<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/prototype.js').'"></script>
 		<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/scriptaculous.js').'"></script>
 		<link rel="stylesheet" type="text/css" href="'.STATICSRV.l_s('contrib/js/pushup/src/css/pushup.css').'" />
@@ -938,7 +939,8 @@ class libHTML
 		$footerIncludes[] = l_j('utility.js');
 		$footerIncludes[] = l_j('cacheUpdate.js');
 		$footerIncludes[] = l_j('timeHandler.js');
-		$footerIncludes[] = l_j('forum.js');
+		$footerIncludes[] = l_j('forum.js');          
+		$footerIncludes[] = l_j('Color.Vision.Daltonize.js');
 		
 		// Don't localize all the footer includes here, as some of them may be dynamically generated
 		foreach( array_merge($footerIncludes,self::$footerIncludes) as $includeJS ) // Add on the dynamically added includes

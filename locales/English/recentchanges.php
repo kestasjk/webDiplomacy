@@ -29,6 +29,11 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+April 27th, 2015
+<ul>
+<li>Added a mechanism for a variety of user options; the first options using the new mechanism are to hide the live games tab and to hide the move arrows on the board.</li>
+</ul>
+<div class="hr"></div>
 April 21st, 2015
 <ul>
 <li>New game mode: Hidden draw votes. This allows players to play games where you don't know who has voted for a draw or not.</li>

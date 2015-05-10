@@ -86,7 +86,19 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		<?php if ( !$User->type['User'] ) print '<strong>(Optional)</strong>: '; ?>
 		A comment that you would like to be visible to other members on your profile. For example: favourite quotes, links to games you're proud of, favourite threads, etc.
 	</li>
-<?php
+
+<?php 
+	foreach ($User->options->value as $name=>$val) 
+	{
+		print '<li class="formlisttitle">'.UserOptions::$titles[$name].':</li>';
+		print '<li class="formlistdesc">';
+		foreach (UserOptions::$possibleValues[$name] as $possible) 
+		{
+			print ' <input type="radio" name="userForm['.$name.']" value="'.$possible.'" '. ($val == $possible ? 'checked' :'') . ' > '. $possible;
+		}
+		print '</li>';
+	}
+ 	                               
 
 if( $User->type['User'] ) {
 	// If the user is registered show the list of muted users/countries:
