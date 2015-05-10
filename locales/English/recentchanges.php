@@ -29,6 +29,11 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+May 10th, 2015
+<ul>
+<li>Bugfix: Moderator posts to global press now correctly trigger the new message icon.</li>
+</ul>
+<div class="hr"></div>
 May 1st, 2015
 <ul>
 <li>Spectated games; users can now spectate games that they're not in (so that games appear on their home page and notifications).</li>

@@ -72,7 +72,7 @@ class libGameMessage
 						'".$message."',
 						".time().")");
 
-		if ($toCountryID != $fromCountryID)
+		if ($toCountryID != $fromCountryID || $fromCountryID == 0)
 		{
 			libGameMessage::notify($toCountryID, $fromCountryID);
 		}
