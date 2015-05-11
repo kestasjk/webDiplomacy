@@ -32,6 +32,7 @@ font-style:normal;
 May 11th, 2015
 <ul>
 <li>Now games can be restricted to a minimum reliability rating at game creation time.</li>
+<li>Bugfix: Spectate option no longer appears on finished games.</li>
 </ul>
 <div class="hr"></div>
 May 10th, 2015

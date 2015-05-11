@@ -484,7 +484,7 @@ class panelGame extends Game
 					$buf .= '</div></form>';
 				}
 			}
-			if( $User->type['User'] )
+			if( $User->type['User'] && $this->phase != 'Finished')
 			{
 				$buf .= '<form method="post" action="redirect.php">'
 				       .'<input type="hidden" name="gameID" value="'.$this->id.'">';
