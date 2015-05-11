@@ -455,24 +455,34 @@ class panelGame extends Game
 					$question .= l_t('The game will start when all %s players have joined.', count($this->Variant->countries));
 				}
 
-				$buf .= '<form onsubmit="return confirm(\''.$question.'\');" method="post" action="board.php?gameID='.$this->id.'"><div>
-					<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />';
-
-				if( $this->phase == 'Pre-game' )
+				if ($this->minimumReliabilityRating > 0)
 				{
-					$buf .= l_t('Bet to join: %s: ','<em>'.$this->minimumBet.libHTML::points().'</em>');
+					$buf .= l_t('Minimum Reliability Rating: <span class="%s">%s%%</span>.',
+						($User->reliabilityRating < $this->minimumReliabilityRating ? 'Austria' :'Italy'), 
+						($this->minimumReliabilityRating));
 				}
-				else
+				if ($User->reliabilityRating >= $this->minimumReliabilityRating) 
 				{
-					$buf .= $this->Members->selectCivilDisorder();
+
+					$buf .= '<form onsubmit="return confirm(\''.$question.'\');" method="post" action="board.php?gameID='.$this->id.'"><div>
+						<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />';
+
+					if( $this->phase == 'Pre-game' )
+					{
+						$buf .= l_t('Bet to join: %s: ','<em>'.$this->minimumBet.libHTML::points().'</em>');
+					}
+					else
+					{
+						$buf .= $this->Members->selectCivilDisorder();
+					}
+
+					if ( $this->private )
+						$buf .= '<br />'.self::passwordBox();
+
+					$buf .= ' <input type="submit" name="join" value="'.l_t('Join').'" class="form-submit" />';
+
+					$buf .= '</div></form>';
 				}
-
-				if ( $this->private )
-					$buf .= '<br />'.self::passwordBox();
-
-				$buf .= ' <input type="submit" name="join" value="'.l_t('Join').'" class="form-submit" />';
-
-				$buf .= '</div></form>';
 			}
 			if( $User->type['User'] )
 			{

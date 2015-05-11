@@ -215,6 +215,11 @@ class Game
 	 */
 	public $missingPlayerPolicy;
 
+	/**
+	 * The minimum value for Reliability Rating before a player can join this game
+	 */
+	public $minimumReliabilityRating;
+
 
 	/**
 	 * @param int/array $gameData The game ID of the game to load, or the array of its database row
@@ -377,7 +382,8 @@ class Game
 			g.anon,
 			g.pressType,
 			g.missingPlayerPolicy,
-			g.drawType
+			g.drawType,
+			g.minimumReliabilityRating
 			FROM wD_Games g
 			WHERE g.id=".$this->id.' '.$this->lockMode);
 

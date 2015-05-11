@@ -98,6 +98,7 @@ class panelGameHome extends panelGameBoard
 	 */
 	function titleBar()
 	{
+		global $User;
 		$buf = '
 			<div class="titleBarRightSide">
 				<span class="gameTimeRemaining">'.$this->gameTimeRemaining().'</span>
@@ -124,6 +125,13 @@ class panelGameHome extends panelGameBoard
 			$alternatives[]=l_t('Anon');
 		if( $this->drawType=='draw-votes-hidden')
 			$alternatives[]=l_t('Hidden draw votes');
+
+		if( $this->minimumReliabilityRating > 0) 
+		{
+			$alternatives[]= l_t('<span class="%s">RR%s%%</span>',
+			($User->reliabilityRating < $this->minimumReliabilityRating ? 'Austria' :''), 
+			($this->minimumReliabilityRating));
+		}
 
 		if ( $alternatives )
 			$buf .= '

@@ -221,7 +221,26 @@ else
 
 		<br /><br /><strong>Default:</strong> The same as phase length
 	</li>
-
+	<li class="formlisttitle">
+		Reliability Requirements
+	</li>
+	<li class="formlistfield">
+		Reliability rating: <input id="minRating" type="text" name="newGame[minimumReliabilityRating]" size="2" value="0"
+			style="text-align:right;"
+			onkeypress="if (event.keyCode==13) this.blur(); return event.keyCode!=13"
+			onChange="
+				this.value = parseInt(this.value);
+				if (this.value == 'NaN' ) this.value = 0;
+				if (this.value < 0 ) this.value = 0;
+				if (this.value > 100 ) this.value = 100;
+				"/>% or better.  
+	</li>
+	<li class="formlistdesc">
+		The minimum reliability rating that a player must have before they can join your game. If players miss turns or go in to Civil Disorder (by not checking the game), then
+		their reliability rating will go down. If you have a low reliability rating, then you can improve it by playing games and not missing turns.
+		<br /><br /><strong>Default:</strong> 0 (No restrictions)
+	</li>
+	   
 	<li class="formlisttitle">
 		<img src="images/icons/lock.png" alt="Private" /> Password protect (optional):
 	</li>

@@ -49,7 +49,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$form = $_REQUEST['newGame']; // This makes $form look harmless when it is unsanitized; the parameters must all be sanitized
 
 		$input = array();
-		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy','drawType');
+		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy','drawType','minimumReliabilityRating');
 
 		if ( !isset($form['missingPlayerPolicy']) )
 			$form['missingPlayerPolicy'] = 'Normal';
@@ -134,7 +134,15 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 				$input['drawType'] = 'draw-votes-public';
 				break;
 		}
-
+		$input['minimumReliabilityRating'] = (int)$input['minimumReliabilityRating'];
+		if ( $input['minimumReliabilityRating'] < 0 or $input['minimumReliabilityRating'] > 100 )
+		{
+                 	throw new Exception(l_t("The reliability rating threshold must range from 0-100"));
+		}
+		if ( $input['minimumReliabilityRating'] > $User->reliabilityRating )
+		{
+                 	throw new Exception(l_t("Your reliability rating is %s%%, so you can't create a game which requires players to have a RR of %s%% or greater.",floor($User->reliabilityRating),$input['minimumReliabilityRating']));
+		}
 		// Create Game record & object
 		require_once(l_r('gamemaster/game.php'));
 		$Game = processGame::create(
@@ -148,7 +156,8 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input['anon'], 
 			$input['pressType'], 
 			$input['missingPlayerPolicy'],
-			$input['drawType']);
+			$input['drawType'],
+			$input['minimumReliabilityRating']);
 
 		// Create first Member record & object
 		processMember::create($User->id, $input['bet']);
