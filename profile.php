@@ -403,7 +403,7 @@ if( $total )
 	}
 
 	print '<li>'.l_t('No moves received / received:').' <strong>'.$UserProfile->nmrCount.'/'.$UserProfile->phaseCount.'</strong></li>';
-	print '<li>'.l_t('Reliability rating:').' <strong>'.round($UserProfile->reliabilityRating).'%</strong>';
+	print '<li>'.l_t('Reliability rating:').' <strong>'.($UserProfile->reliabilityRating).'%</strong>';
 	if( $User->type['Moderator'] || $User->id == $UserProfile->id )
 	{
 		print ' <a class="light" href="profile.php?detail=civilDisorders&userID='.$UserProfile->id.'">'.l_t('breakdown').'</a>';

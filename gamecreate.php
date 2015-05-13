@@ -141,7 +141,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		}
 		if ( $input['minimumReliabilityRating'] > $User->reliabilityRating )
 		{
-                 	throw new Exception(l_t("Your reliability rating is %s%%, so you can't create a game which requires players to have a RR of %s%% or greater.",floor($User->reliabilityRating),$input['minimumReliabilityRating']));
+                 	throw new Exception(l_t("Your reliability rating is %s%%, so you can't create a game which requires players to have a RR of %s%% or greater.",($User->reliabilityRating),$input['minimumReliabilityRating']));
 		}
 		// Create Game record & object
 		require_once(l_r('gamemaster/game.php'));

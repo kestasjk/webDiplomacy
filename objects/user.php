@@ -460,6 +460,8 @@ class User {
 		}
 		// For display, cdCount should include deletedCDs
 		$this->{'cdCount'} = $this->{'cdCount'} + $this->{'deletedCDs'};
+		// RR should be rounded
+		$this->reliabilityRating = round($this->reliabilityRating);
 
 		// Convert an array of types this user has into an array of true/false indexed by type
 		$this->type = explode(',', $this->type);
