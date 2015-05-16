@@ -31,12 +31,14 @@ require_once(l_r('gamepanel/game.php'));
 class panelGameBoard extends panelGame
 {
 	function mapHTML() {
+		global $User;
+
 		$mapTurn = (($this->phase=='Pre-game'||$this->phase=='Diplomacy') ? $this->turn-1 : $this->turn);
-		$smallmapLink = 'map.php?gameID='.$this->id.'&turn='.$mapTurn;
-		$largemapLink = $smallmapLink.'&mapType=large';
+		$smallmapLink = 'map.php?gameID='.$this->id.'&turn='.$mapTurn .($User->options->value['showMoves'] == 'No'? '&hideMoves':'');
+		$largemapLink = $smallmapLink.'&mapType=large'.($User->options->value['showMoves']=='No'?'&hideMoves':'');
 
 		$staticFilename=Game::mapFilename($this->id, $mapTurn, 'small');
-		if( file_exists($staticFilename) )
+		if( file_exists($staticFilename) && $User->options->value['showMoves'] == 'Yes' )
 			$smallmapLink = STATICSRV.$staticFilename.'?nocache='.rand(0,99999);
 
 		$map = '

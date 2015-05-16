@@ -21,6 +21,7 @@
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 require_once(l_r('objects/notice.php'));
+require_once(l_r('objects/useroptions.php'));
 require_once(l_r('objects/basic/set.php'));
 
 /**
@@ -168,6 +169,12 @@ class User {
 	 * @var bool
 	 */
 	public $online;
+
+	/**
+	 * The user's options
+	 * @var UserOptions
+	 */
+	public $options;
 
 	/**
 	 * Number of available points
@@ -483,6 +490,8 @@ class User {
 		$this->notifications=new setUserNotifications($this->notifications);
 
 		$this->online = (bool) $this->online;
+
+		$this->options = new UserOptions($this->id);
 	}
 
 	/**
