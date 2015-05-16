@@ -29,6 +29,11 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+May 16th, 2015
+<ul>
+<li>Added a mechanism for a variety of user options; the first options using the new mechanism are to hide the live games tab and to hide the move arrows on the board.</li>
+</ul>
+<div class="hr"></div>
 May 11th, 2015
 <ul>
 <li>Now games can be restricted to a minimum reliability rating at game creation time.</li>
