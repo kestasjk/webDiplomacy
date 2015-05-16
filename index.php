@@ -276,6 +276,9 @@ class libHome
 	static public function upcomingLiveGames ()
 	{
 		global $User, $DB;
+
+                if ($User->options->value['displayUpcomingLive'] == 'No') return ''; 
+
 		$tabl=$DB->sql_tabl("SELECT g.* FROM wD_Games g
 			WHERE g.phase = 'Pre-game' AND g.phaseMinutes < 60 AND g.password IS NULL
 			ORDER BY g.processStatus ASC, g.processTime ASC LIMIT 3");
