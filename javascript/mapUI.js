@@ -148,7 +148,7 @@ function loadMap(gameID, currentTurn, newTurn)
 
 function recolorMap() 
 {
-	if ($('mapImage') && useroptions.colourblind != 'No' && $('mapImage').src.substring(0,4) == 'http' ) {
+	if ($('mapImage').complete && useroptions.colourblind != 'No' && $('mapImage').src.substring(0,4) == 'http' ) {
 	        Color.Vision.Daltonize($('mapImage'),
 				{'type':useroptions.colourblind,
 				'callback': function (c) {$('mapImage').src = c.toDataURL();}
