@@ -529,9 +529,9 @@ class processMembers extends Members
 		if ( !$this->Game->isJoinable() )
 			throw new Exception(l_t("You cannot join this game."));
 
-		if ( !($this->Game->minimumReliabilityRating < $User->reliabilityRating) )
-			throw new Exception(l_t("Your Reliability Rating of %s%% is not high enough to join this game, which is restricted to %s%% RR and above."),
-				$User->reliabilityRating, $this->Game->minimumReliabilityRating);
+		if ( !($this->Game->minimumReliabilityRating <= $User->reliabilityRating) )
+			throw new Exception(l_t("Your Reliability Rating of %s%% is not high enough to join this game, which is restricted to %s%% RR and above.",
+				$User->reliabilityRating, $this->Game->minimumReliabilityRating));
 
 		// We can join, the only question is how?
 
