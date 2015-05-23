@@ -29,6 +29,11 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+May 23rd, 2015
+<ul>
+<li>Bugfix: CD/NMR disband ordering now works correctly on maps with 128 territories or more.</li>
+</ul>
+<div class="hr"></div>
 May 16th, 2015
 <ul>
 <li>Added a mechanism for a variety of user options; the first options using the new mechanism are to hide the live games tab and to hide the move arrows on the board.</li>
