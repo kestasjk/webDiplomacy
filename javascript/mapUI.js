@@ -155,5 +155,6 @@ function recolorMap()
 				});
 	}
 }
-Event.observe(window, "load", function() { Event.observe($('mapImage'),'load',recolorMap)} );
+
 recolorMap();
+Event.observe($('mapImage'),'load',recolorMap);

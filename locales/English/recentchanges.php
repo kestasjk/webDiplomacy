@@ -32,6 +32,7 @@ font-style:normal;
 May 23rd, 2015
 <ul>
 <li>Bugfix: CD/NMR disband ordering now works correctly on maps with 128 territories or more.</li>
+<li>Bugfix: Colourblind map is no longer sometimes blank on page load.</li> 
 </ul>
 <div class="hr"></div>
 May 16th, 2015
