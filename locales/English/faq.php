@@ -124,7 +124,7 @@ $globalFaq = array(
 
 	If your game has been crashed for a long time try asking about it in the forum.",
 "The phase ends \"Now\"? \"Processing has been paused\"?" => "When the server detects that no games have processed for a while
-	(over 30 minutes or so), or a moderator/admin sees a problem and his the panic button, all game processing is disabled until
+	(over 30 minutes or so), or a moderator/admin sees a problem and hits the panic button, all game processing is disabled until
 	the problem is resolved.<br />
 	After the all-clear is given games will usually be given time to make up for any during which orders couldn't be entered, and
 	processing will resume. Until that point if a game says it will be processed 'Now' that means it would process now, except
