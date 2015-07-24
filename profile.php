@@ -475,9 +475,9 @@ list($liked) = $DB->sql_row("SELECT COUNT(*) FROM wD_ForumMessages fm
 $likes = ($likes ? '<strong>'.l_t('Likes:').'</strong> '.$likes : '');
 $liked = ($liked ? '<strong>'.l_t('Liked:').'</strong> '.$liked : '');
 
-print '<li><strong>'.l_t('Forum posts:').'</strong> '.$posts.'<br />
-	<strong>'.l_t('View:').'</strong> <a class="light" href="profile.php?detail=threads&userID='.$UserProfile->id.'">'.l_t('Threads').'</a>,
-		<a class="light" href="profile.php?detail=replies&userID='.$UserProfile->id.'">'.l_t('replies').'</a>';
+print '<li><strong>'.l_t('Forum posts:').'</strong> '.$posts.'<br />';
+	//<strong>'.l_t('View:').'</strong> <a class="light" href="profile.php?detail=threads&userID='.$UserProfile->id.'">'.l_t('Threads').'</a>,
+	//	<a class="light" href="profile.php?detail=replies&userID='.$UserProfile->id.'">'.l_t('replies').'</a>';
 
 print '<br/>'.implode(' / ',array($likes,$liked)).'
 	</li>';
