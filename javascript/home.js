@@ -24,7 +24,7 @@
  */
 function homeGameHighlighter() {
 	
-	$$("span[gameID].homeGameTitleBar").map(function (gameTitleBar) {
+	$$(".homeGamesStats span[gameID].homeGameTitleBar").map(function (gameTitleBar) {
 		var gameID = gameTitleBar.getAttribute("gameID");
 		
 		// A function to determine if a given element is of the same game

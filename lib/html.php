@@ -888,7 +888,7 @@ class libHTML
 	static private function footerScripts() {
 		global $User, $Locale;
 
-		$jsVersion = 3;  // increment this to force clients to reload their JS files
+		$jsVersion = 4;  // increment this to force clients to reload their JS files
 
 		$buf = '';
 

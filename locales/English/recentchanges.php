@@ -32,6 +32,7 @@ font-style:normal;
 July 25th, 2015
 <ul>
 <li>Made moderator posts clearly labelled "<strong>moderator</strong>" in global chat. This is important for the larger variants, where some countries have similar text to moderator posts.</li>
+<li>Mousing over the upcoming live games no longer hides game notices.</li>
 </ul>
 <div class="hr"></div>
 May 23rd, 2015
