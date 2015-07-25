@@ -113,7 +113,7 @@ class Chatbox
 					libGameMessage::send($msgCountryID, $Member->countryID, $newmessage);
 			}
 			elseif( $User->type['Moderator'] )
-				libGameMessage::send(0, 0, '('.$User->username.'): '.$newmessage);
+				libGameMessage::send(0, 'Moderator', '('.$User->username.'): '.$newmessage);
 		}
 		
 		if( isset($_REQUEST['MarkAsUnread']) )

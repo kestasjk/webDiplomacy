@@ -29,6 +29,11 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+July 25th, 2015
+<ul>
+<li>Made moderator posts clearly labelled "<strong>moderator</strong>" in global chat. This is important for the larger variants, where some countries have similar text to moderator posts.</li>
+</ul>
+<div class="hr"></div>
 May 23rd, 2015
 <ul>
 <li>Bugfix: CD/NMR disband ordering now works correctly on maps with 128 territories or more.</li>
