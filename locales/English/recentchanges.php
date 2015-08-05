@@ -31,6 +31,7 @@ font-style:normal;
 </style>
 August 5th, 2015
 <ul>
+<li>Number of PMs displayed on the <a href="index.php?notices=on">notices</a> page increased to 50 from 35.</li>
 <li>Guests are now allowed to use the user search feature, allowing members who have forgotten their username to find it.</li>
 </ul>
 <div class="hr"></div>

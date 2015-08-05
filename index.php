@@ -109,7 +109,7 @@ class libHome
 		if ( $message )
 			print '<p class="notice">'.$message.'</p>';
 
-		$pms = self::getType('PM');
+		$pms = self::getType('PM',50);
 
 		if(!count($pms))
 		{
