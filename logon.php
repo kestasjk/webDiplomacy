@@ -124,7 +124,8 @@ if( ! $User->type['User'] ) {
 		<li><input type="submit" class="form-submit" value="'.l_t('Log on').'"></li>
 		</ul>
 		</form>
-		<p><a href="logon.php?forgotPassword=1" class="light">'.l_t('Forgot your password?').'</a></p>';
+		<p><a href="logon.php?forgotPassword=1" class="light">'.l_t('Forgot your password?').'</a></p>
+		<p><a href="profile.php" class="light">'.l_t('Forgot your username?').'</a></p>';
 } else {
 	print libHTML::pageTitle('Log off','Log out of your webDiplomacy account, to prevent other users of this computer accessing it.');
 	print '<form action="./logon.php" method="get">

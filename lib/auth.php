@@ -31,12 +31,18 @@ class libAuth
 	{
 		global $User;
 
+		/* 
+				Disabled while fixing https://github.com/kestasjk/webDiplomacy/issues/159
+				At the time of writing (5 Aug 2015), no code that calls this function
+				needs users to be logged in, so disabling this seems safe.
+
 		if( !$User->type['User'] )
 			libHTML::notice(
 				l_t('Denied'),
 				l_t("Please <a href='register.php' class='light'>register</a> or ".
 					"<a href='logon.php' class='light'>log in</a> to %s.",l_t($name))
 			);
+		 */
 
 		if( !isset($_SESSION['resources']) )
 			$_SESSION['resources']=array();
