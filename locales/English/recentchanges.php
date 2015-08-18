@@ -29,6 +29,11 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+August 18th, 2015
+<ul>
+<li>Anonymous defeats no longer increment the 'defeats' count on a profile page until the game is over.</li>
+</ul>
+<div class="hr"></div>
 August 5th, 2015
 <ul>
 <li>Number of PMs displayed on the <a href="index.php?notices=on">notices</a> page increased to 50 from 35.</li>

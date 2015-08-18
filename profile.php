@@ -388,6 +388,9 @@ if( $total )
 	{
 		if ( !in_array($name, $includeStatus) ) continue;
 
+		if (!$showAnon && isset($rankingDetails['anon'][$name]))
+			$status -= $rankingDetails['anon'][$name];
+
 		print '<li>'.l_t($name.': <strong>%s</strong>',$status);
 		print ' ( '.round(($status/$total)*100).'% )';
 		print '</li>';
