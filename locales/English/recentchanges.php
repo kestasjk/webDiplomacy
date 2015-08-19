@@ -29,9 +29,14 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+August 19th, 2015
+<ul>
+<li>Bugfix: Destroyed units are no longer drawn when the "show move arrows" profile setting is set.</li>
+</ul>
+<div class="hr"></div>
 August 18th, 2015
 <ul>
-<li>Anonymous defeats no longer increment the 'defeats' count on a profile page until the game is over.</li>
+<li>Bugfix: Anonymous defeats no longer increment the 'defeats' count on a profile page until the game is over.</li>
 </ul>
 <div class="hr"></div>
 August 5th, 2015

@@ -398,8 +398,8 @@ while(list($moveType, $terrID,
 		and !isset($fullTerrID[$terrID])
 		and ( isset($drawToTerrID) and ! isset($fullTerrID[$drawToTerrID]) ) )
 	{
-		// Do not display destroyed units in previews 
-		if (PREVIEW && in_array($Game->Variant->deCoast($drawToTerrID),$destroyedTerrs)) continue;
+		// Do not display destroyed units in previews or when no moves are shown 
+		if ((PREVIEW || HIDEMOVES) && in_array($Game->Variant->deCoast($drawToTerrID),$destroyedTerrs)) continue;
 
 		/*
 		 * We're drawing a unit onto the board
