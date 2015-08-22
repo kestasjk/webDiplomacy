@@ -172,7 +172,6 @@ class searchIsJoinable extends searchItemRadio
 	protected $locks=array();
 
 	protected $defaults=array(
-			'New'=>'Yes',
 			'Joinable'=>'Yes'
 		);
 
