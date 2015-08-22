@@ -150,7 +150,7 @@ class panelGameHome extends panelGameBoard
 	 */
 	function pot()
 	{
-		return $this->pot.' '.libHTML::points();
+		return $this->pot.' '.libHTML::points().' '.$this->potTypeAbbr;
 	}
 
 	/**
