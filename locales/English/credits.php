@@ -27,6 +27,18 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 ?>
 <div>
 <?php
+
+// Get moderator list
+global $DB;
+$query = "SELECT CONCAT('<a href=\"profile.php?userID=',id,'\">',username,'</a>,')
+FROM wD_Users WHERE type LIKE '%Moderator%'";
+$tabl = $DB->sql_tabl($query);
+$moderators = '';
+while( list($row) = $DB->tabl_row($tabl) )
+{
+	$moderators .= $row;
+}
+
 $credits = array(
 	array('
 		<a href="http://www.wizards.com/default.asp?x=ah/prod/diplomacy">Avalon Hill</a>
@@ -41,14 +53,7 @@ $credits = array(
 	,array('<a href="http://www.webdiplomacy.net/profile.php?userID=33599">Zultar</a>
 	','Co-Owner')
 	
-	,array('<a href="http://www.webdiplomacy.net/profile.php?userID=15658">jmo1121109</a>,
-	<a href="http://www.webdiplomacy.net/profile.php?userID=37127">2ndWhiteLine</a>,
-	<a href="http://www.webdiplomacy.net/profile.php?userID=48609">TheMinisterOfWar</a>,
-	<a href="http://www.webdiplomacy.net/profile.php?userID=8938">damian</a>,
-	<a href="http://www.webdiplomacy.net/profile.php?userID=23172">Hellenic Riot</a>,
-       <a href="http://www.webdiplomacy.net/profile.php?userID=37168">ghug</a>,^M
-       <a href="http://www.webdiplomacy.net/profile.php?userID=41379">captainmeme</a>,
-	','The Current WebDiplomacy Moderators, reachable at webdipmod@gmail.com')
+	,array($moderators,'The Current WebDiplomacy Moderators, reachable at webdipmod@gmail.com')
 	
 	,array('<a href="http://www.webdiplomacy.net/profile.php?userID=54909">A_Tin_Can</a>
 	','Coding Updates and Site Improvements')
