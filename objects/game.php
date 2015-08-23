@@ -168,12 +168,6 @@ class Game
 	public $potType;
 
 	/**
-	 * Abbreviation for pot type
-	 * @var string
-	 */
-	public $potTypeAbbr;
-
-	/**
 	 * draw-votes-public/draw-votes-hidden
 	 * @var string
 	 */
@@ -328,18 +322,6 @@ class Game
 
 		// If there is a password the game is private
 		$this->private = isset($this->password);
-
-		// pot type abbreviations
-		switch($this->potType) {
-			case 'Points-per-supply-center':
-				$this->potTypeAbbr = 'PPSC';
-				break;
-			case 'Winner-takes-all':
-				$this->potTypeAbbr = 'WTA';
-				break;
-			default:
-				$this->potTypeAbbr = '';
-		}
 
 		$this->Variant = $GLOBALS['Variants'][$this->variantID];
 	}                         
