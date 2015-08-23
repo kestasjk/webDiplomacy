@@ -53,7 +53,7 @@ $credits = array(
 	,array('<a href="http://www.webdiplomacy.net/profile.php?userID=33599">Zultar</a>
 	','Co-Owner')
 	
-	,array($moderators,'The Current WebDiplomacy Moderators, reachable at webdipmod@gmail.com')
+	,array($moderators,'The Current WebDiplomacy Moderators, reachable at ' . Config::$modEMail)
 	
 	,array('<a href="http://www.webdiplomacy.net/profile.php?userID=54909">A_Tin_Can</a>
 	','Coding Updates and Site Improvements')
