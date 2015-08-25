@@ -32,6 +32,8 @@ font-style:normal;
 August 25th, 2015
 <ul>
 <li>Added a cue to the game search page so that it is clear that clicking the current tab brings out additional search options.</li>
+<li>The New game tab now shows all new games, not just the ones that you can afford.</li>
+<li>Pot type is now shown on the small game panels on the home page.</li>
 </ul>
 <div class="hr"></div>
 August 19th, 2015
