@@ -124,6 +124,9 @@ function printAndFindTab()
 			case 'Active':
 			case 'Finished':
 				print ' (~'.$Misc->{'Games'.$tabChoice}.')';
+				if ( $tab == $tabChoice ) {
+					print (isset($_REQUEST['searchOn']) ? ' [click for default]' : ' [click for search]');
+				}
 		}
 
 		print '</a> ';
