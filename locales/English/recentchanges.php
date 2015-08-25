@@ -29,6 +29,11 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+August 25th, 2015
+<ul>
+<li>Added a cue to the game search page so that it is clear that clicking the current tab brings out additional search options.</li>
+</ul>
+<div class="hr"></div>
 August 19th, 2015
 <ul>
 <li>Bugfix: Destroyed units are no longer drawn when the "show move arrows" profile setting is set.</li>
