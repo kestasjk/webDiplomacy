@@ -512,11 +512,11 @@ class libHTML
 		global $User, $DB;
 
 		$tabl = $DB->sql_tabl(
-			"SELECT g.id, g.variantID, g.name, m.orderStatus, m.countryID, (m.newMessagesFrom+0) as newMessagesFrom, g.processStatus
+			"SELECT g.id, g.variantID, g.name, g.phase, m.orderStatus, m.countryID, (m.newMessagesFrom+0) as newMessagesFrom, g.processStatus
 			FROM wD_Members m
 			INNER JOIN wD_Games g ON ( m.gameID = g.id )
-			WHERE m.userID = ".$User->id." AND ( m.status='Playing' OR m.status='Left' )
-				AND ( ( NOT m.orderStatus LIKE '%Ready%' AND NOT m.orderStatus LIKE '%None%' ) OR NOT ( (m.newMessagesFrom+0) = 0 ) ) ORDER BY  g.processStatus ASC, g.processTime ASC");
+			WHERE m.userID = ".$User->id."
+				AND ( ( NOT m.orderStatus LIKE '%Ready%' AND NOT m.orderStatus LIKE '%None%' AND g.phase != 'Finished' ) OR NOT ( (m.newMessagesFrom+0) = 0 ) ) ORDER BY  g.processStatus ASC, g.processTime ASC");
 
 		$gameIDs = array();
 		$notifyGames = array();
@@ -540,7 +540,13 @@ class libHTML
 		{
 			$notifyGame = $notifyGames[$gameID];
 			require_once(l_r('objects/basic/set.php'));
-			$notifyGame['orderStatus'] = new setMemberOrderStatus($notifyGame['orderStatus']);
+
+			// Games that are finished should show as 'no orders'
+			if ( $notifyGame['phase'] != 'Finished') {
+					$notifyGame['orderStatus'] = new setMemberOrderStatus($notifyGame['orderStatus']);
+			} else {
+					$notifyGame['orderStatus'] = new setMemberOrderStatus('None');
+			}
 
 			// Don't print the game if we're looking at it.
 			if ( isset($_REQUEST['gameID']) and $_REQUEST['gameID'] == $gameID )
@@ -556,7 +562,6 @@ class libHTML
 			$gameNotifyBlock .= ' ';
 
 			$gameNotifyBlock .= $notifyGame['orderStatus']->icon();
-
 			if ( $notifyGame['newMessagesFrom'] )
 				$gameNotifyBlock .= '<img src="'.l_s('images/icons/mail.png').'" alt="'.l_t('New messages').'" title="'.l_t('New messages!').'" />';
 
