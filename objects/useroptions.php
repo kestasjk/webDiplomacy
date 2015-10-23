@@ -87,7 +87,7 @@ class UserOptions {
 		{
 			if ( ! isset($newValues[$name]) )
 			{
-				$newValues[$name] = $defaults[$name];
+				$newValues[$name] = UserOptions::$defaults[$name];
 			}
 			if( in_array($newValues[$name], UserOptions::$possibleValues[$name], true )) 
 			{
