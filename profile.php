@@ -550,8 +550,6 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 	if( !$UserProfile->type['Admin'] && ( $User->type['Admin'] || !$UserProfile->type['Moderator'] ) )
 		$modActions[] = libHTML::admincp('banUser',array('userID'=>$UserProfile->id), l_t('Ban user'));
 	
-	if( !$UserProfile->type['Donator'])
-		$modActions[] = libHTML::admincp('makeDonator',array('userID'=>$UserProfile->id), l_t('Give donator benefits'));
 
 	if( $User->type['Admin'] && !$UserProfile->type['Moderator'] )
 		$modActions[] = libHTML::admincp('giveModerator',array('userID'=>$UserProfile->id), l_t('Make moderator'),true);
