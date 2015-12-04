@@ -371,7 +371,13 @@ class adminMultiCheck
 	 */
 	public function printCheckSummary()
 	{
-		print '<p>'.l_t('Checking %s %s (userID=%s)','<a href="profile.php?userID='.$this->aUserID.'">'.$this->aUser->username.'</a>',' ('.$this->aUser->points.' '.libHTML::points().')',$this->aUserID).'</p>';
+			print '<p>'.l_t('Checking %s %s %s (userID=%s)','<a href="profile.php?userID='.$this->aUserID.'">'.$this->aUser->username.'</a>',
+					'('.$this->aUser->points.' '.libHTML::points().')',
+				'RR: '.$this->aUser->reliabilityRating,$this->aUserID)
+				.($this->aUser->type['Banned'] ? '<img src="'.l_s('images/icons/cross.png').'" alt="X" title="'.l_t('Banned').'" />' : '').'
+				<ul>
+				<li><strong>email:</strong> ' .$this->aUser->email.'</li>
+				</ul></p>';
 
 		if( is_array($this->bUserIDs) )
 		{
@@ -681,9 +687,10 @@ class adminMultiCheck
 
 		print '<ul>';
 		print '<li><a href="profile.php?userID='.$bUser->id.'">'.$bUser->username.'</a> ('.$bUser->points.' '.libHTML::points().')
-			'.($bUser->type['Banned'] ? '<img src="'.l_s('images/icons/cross.png').'" alt="X" title="'.l_t('Banned').'" />' : '').'
+				'.($bUser->type['Banned'] ? '<img src="'.l_s('images/icons/cross.png').'" alt="X" title="'.l_t('Banned').'" />' : '').'
+				RR: '.$bUser->reliabilityRating.'
 			(<a href="?aUserID='.$bUser->id.'#viewMultiFinder" class="light">'.l_t('check userID=%s',$bUser->id).'</a>)
-				<ul>';
+				<ul><li><strong>email:</strong> ' .$bUser->email.'</li>';
 
 		list($bUserTotal) = $DB->sql_row("SELECT COUNT(ip) FROM wD_AccessLog WHERE userID = ".$bUser->id);
 
