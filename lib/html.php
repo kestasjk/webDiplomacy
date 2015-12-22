@@ -854,7 +854,7 @@ class libHTML
 		// Version, sourceforge and HTML compliance logos
 		return l_t('webDiplomacy version <strong>%s</strong>',number_format(VERSION/100,2)).'<br />
 			<a href="http://github.com/kestasjk/webDiplomacy" class="light">GitHub Project</a> | 
-			<a href="http://github.com/kestasjk/webDiplomacy/issues" class="light">Bug reports</a>';
+			<a href="http://github.com/kestasjk/webDiplomacy/issues" class="light">Bug Reports</a> | <a href="mailto:'.Config::$modEMail.'" class="light">Contact Moderator</a>';
 	}
 
 	/*
