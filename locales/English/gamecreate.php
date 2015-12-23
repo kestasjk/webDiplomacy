@@ -159,7 +159,7 @@ else
 	</li>
 	<li class="formlistdesc">
 		This setting determines how points are split up if/when the game draws. <br/><br/>
-		In draw-size scoring, the pot is split equally between the remaining players when the game draws (this setting used to be called WTA). 
+		In Draw-Size Scoring, the pot is split equally between the remaining players when the game draws (this setting used to be called WTA). 
 		<br/><br/>
 		In Sum-of-Squares scoring, the pot is divided depending on how many centers you control when the game draws.
 		<br/>
