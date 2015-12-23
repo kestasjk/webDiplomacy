@@ -150,23 +150,7 @@ class panelGameHome extends panelGameBoard
 	 */
 	function pot()
 	{
-		return $this->pot.' '.libHTML::points().' '.$this->potTypeAbbr();
-	}
-
-	/**
-	* Pot type abbreviation
-	* @return string
-	*/
-	function potTypeAbbr()
-	{
-		switch($this->potType) {
-			case 'Winner-takes-all':
-				return 'WTA';
-			case 'Points-per-supply-center':
-				return 'PPSC';
-			default:
-				return '';
-		}
+		return $this->pot.' '.libHTML::points().'<span title="'.$this->Scoring->longName().'"> '.$this->Scoring->Abbr().'</span>';
 	}
 
 	/**

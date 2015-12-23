@@ -151,16 +151,26 @@ else
 }
 ?>
 
-	<li class="formlisttitle">Pot type:</li>
+	<li class="formlisttitle">Scoring:</li>
 	<li class="formlistfield">
-		<input type="radio" name="newGame[potType]" value="Points-per-supply-center"> Points-per-supply-center<br />
-		<input type="radio" name="newGame[potType]" value="Winner-takes-all" checked > Winner-takes-all
+		<input type="radio" name="newGame[potType]" value="Winner-takes-all" checked > Draw-Size Scoring (previously called WTA)<br />
+		<input type="radio" name="newGame[potType]" value="Sum-of-squares" > Sum-of-Squares Scoring (<a href="points.php#SoS">more information</a>)<br />
+		<input type="radio" name="newGame[potType]" value="Unranked" > Unranked (your bet is refunded at the end of the game)
 	</li>
 	<li class="formlistdesc">
-		An expert setting: Should the winnings be split up according to who has the most supply centers, or should the winner
-		get everything (<a href="points.php#ppscwta" class="light">read more</a>).<br /><br />
+		This setting determines how points are split up if/when the game draws. <br/><br/>
+		In draw-size scoring, the pot is split equally between the remaining players when the game draws (this setting used to be called WTA). 
+		<br/><br/>
+		In Sum-of-Squares scoring, the pot is divided depending on how many centers you control when the game draws.
+		<br/>
+		<br/>
+		In both Draw-Size Scoring and Sum-of-Squares, any solo winner receieves the whole pot.
+		<br/>
+		<br/>
+		Unranked games have no effect on your points at the end of the game; your bet is refunded whether you won, drew or lost.
+		<br /><br />
 
-		<strong>Default:</strong> Winner-takes-all
+		<strong>Default:</strong> Draw-Size Scoring
 	</li>
 
 	<li class="formlisttitle">

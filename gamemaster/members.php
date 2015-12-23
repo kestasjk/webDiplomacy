@@ -178,7 +178,7 @@ class processMembers extends Members
 			if( 0 == $Member->supplyCenterNo and 0 == $Member->unitNo )
 			{
 				$defeated=true;
-				$Member->setDefeated();
+				$Member->setDefeated($this->Game->Scoring->pointsForDefeat($Member));
 			}
 		}
 
@@ -252,13 +252,20 @@ class processMembers extends Members
 		$this->prepareLog();
 		assert('count($this->ByStatus[\'Playing\']) > 0');
 
-		$winnings = round($this->Game->pot / count($this->ByStatus['Playing']));
+		// Calculate the points each player gets.
+		// These are pre-calculated because if they aren't the pot has to be decreased, and active
+		// supply-centers recalculated as each member gets their winnings. This was the final pot of the
+		// game can be preserved in the game record
+        $points = array();
+
+		foreach($this->ByStatus['Playing'] as $Member)
+			$points[$Member->countryID] = $this->Game->Scoring->pointsForDraw($Member);
 
 		foreach($this->ByStatus['Left'] as $Member)
 			$Member->setResigned( );
 
 		foreach($this->ByStatus['Playing'] as $Member)
-			$Member->setDrawn( $winnings );
+			$Member->setDrawn( $points[$Member->countryID] );
 		$this->writeLog();
 	}
 
@@ -376,23 +383,21 @@ class processMembers extends Members
 	{
 		$this->prepareLog();
 
-		// Calculate the percent of the pot each player gets, based on SCs and the type of game (WTA/PPSC),
-		// and whether they're 'Left'
-		$potShareRatios = $this->potShareRatios($Winner);
-
+		// Calculate the points each player gets.
 		// These are pre-calculated because if they aren't the pot has to be decreased, and active
 		// supply-centers recalculated as each member gets their winnings. This was the final pot of the
 		// game can be preserved in the game record
-		foreach($potShareRatios as $countryID=>$ratio)
+        $points = array();
+
+		foreach($this->ByStatus['Left'] as $Member)
+			$points[$Member->countryID] = $this->Game->Scoring->pointsForSurvive($Member);
+		foreach($this->ByStatus['Playing'] as $Member)
+				$points[$Member->countryID] = $this->Game->Scoring->pointsForSurvive($Member);
+        $points[$Winner->countryID] = $this->Game->Scoring->pointsForWin($Winner);
+
+		foreach($points as $countryID=>$pointsWon)
 		{
 			$Member = $this->ByCountryID[$countryID];
-
-			// Only Left/Playing countries will be included here
-			// status=Left -> shareRatio=0
-			$pointsWon = ceil($ratio * $this->Game->pot);
-
-			// $pointsPaid is given to the set* functions, so that a message about actual points returned
-			// is given (including supplement), rather than only the number of points won
 
 			// Now the actual status is set 'Playing'->'Survived'/'Won', 'Left'->'Resigned'
 			if($Member->id == $Winner->id)
@@ -433,73 +438,7 @@ class processMembers extends Members
 		else
 			return false;
 	}
-
-	/**
-	 * Calculate the share of the pot everyone in this game will get, given that $Winner is the
-	 * winner, return as a countryID indexed array of share ratios.
-	 *
-	 * @param Member $Winner The winner
-	 * @return array $ratios[$countryID]=$shareOfThePotDue;
-	 */
-	private function potShareRatios(Member $Winner)
-	{
-		$ratios=array();
-
-		// We need a number for all 'Playing' or 'Left' countries, even a 0.0 may trigger required supplement points
-		foreach($this->ByStatus['Left'] as $Member)
-			$ratios[$Member->countryID] = 0.0;
-		foreach($this->ByStatus['Playing'] as $Member)
-			$ratios[$Member->countryID] = 0.0;
-
-		if( $this->Game->potType == 'Winner-takes-all' )
-		{
-			// WTA; easy
-			$ratios[$Winner->countryID] = 1.0;
-		}
-		else
-		{
-			/*
-			 * PPSC; calculate based on active-player-owned supply-centers, but
-			 * things are complicated because players with over $SCTarget SCs are limited
-			 * to the winnings they would get from $SCTarget, and the remainder is
-			 * distributed among the survivors according to their winnings.
-			 */
-			$SCsInPlayCount = (float)$this->supplyCenterCount('Playing');
-
-			assert('$SCsInPlayCount > 0');
-
-			$SCTarget = $this->Game->Variant->supplyCenterTarget;
-
-			if( $Winner->supplyCenterNo > $SCTarget )
-			{
-				/*
-				 * Winner is greedy and got more SCs than he needed:
-				 * - Get the number of extra SCs he has
-				 * - Reduce his total to $SCTarget
-				 * - Subtract the extra amount from the total SCs so they scale down
-				 */
-
-				/*
-				 * Subtracting the over-the-limit extra SCs from the winner and
-				 * from the total SC count effectively makes the algorithm behave
-				 * as if they didn't exist
-				 */
-				$SCsInPlayCount -= ( $Winner->supplyCenterNo - $SCTarget );
-				$ratios[$Winner->countryID] = $SCTarget/$SCsInPlayCount;
-			}
-			else
-				$ratios[$Winner->countryID] = $Winner->supplyCenterNo/$SCsInPlayCount;
-
-			foreach($this->ByStatus['Playing'] as $Member)
-			{
-				if( $Member->id == $Winner->id ) continue;
-
-				$ratios[$Member->countryID] = $Member->supplyCenterNo/$SCsInPlayCount;
-			}
-		}
-
-		return $ratios;
-	}
+	
 
 	/**
 	 * Allow the user to join a game. The User must have enough points, the Game must be

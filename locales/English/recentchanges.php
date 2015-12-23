@@ -29,6 +29,17 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+<div class="hr"></div>
+December 22nd, 2015
+<ul>
+<li>Unranked games now available. Unranked games return the player's bet at the end of the game.</li>
+<li>Sum-of-Squares scoring now available as "Center-Count Scoring".</li>
+<li>WTA has been renamed "Draw-Size Scoring".</li>
+<li>PPSC has been renamed "Survivors-Win Scoring".</li>
+<li>The 'worth' section at the bottom of the game panel now tells you what your score would be if the game drew.</li>
+<li>PPSC/SWS has been temporarily disabled for new games.</li>
+<li>All takeovers are now free.</li>
+</ul>
 August 27th, 2015
 <ul>
 <li>Finished games now show up in the notifications bar if you have new messages.</li>

@@ -229,7 +229,6 @@ class panelGame extends Game
 
 		$leftBottom = '<div class="titleBarLeftSide">
 				'.l_t('Pot:').' <span class="gamePot">'.$this->pot.' '.libHTML::points().'</span>';
-			//<span class="gamePotType" title="'.$this->potType.'">('.($this->potType=='Points-per-supply-center'?'PPSC':'WTA').')</span>';
 
 		$leftBottom .= $date;
 
@@ -260,7 +259,7 @@ class panelGame extends Game
 			$alternatives[]=l_t('Public messaging only');
 		if( $this->anon=='Yes' )
 			$alternatives[]=l_t('Anonymous players');
-		$alternatives[]=l_t($this->potType);
+		$alternatives[]=$this->Scoring->longName();
 		if( $this->drawType=='draw-votes-hidden') 
 			$alternatives[]=l_t('Hidden draw votes');
 		if( $this->missingPlayerPolicy=='Wait' )

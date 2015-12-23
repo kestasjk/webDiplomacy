@@ -20,6 +20,7 @@
 
 require_once(l_r('lib/variant.php'));
 require_once(l_r('objects/members.php'));
+require_once(l_r('objects/scoringsystem.php'));
 
 /**
  * Prints data on a game, and loads and manages the collections of members which this game contains.
@@ -162,6 +163,12 @@ class Game
 	public $Members;
 
 	/**
+	 * An object of type ScoringSystem that provides the information needed to calculate game scores
+	 * @var ScoringSystem
+	 */
+	public $Scoring;
+
+	/**
 	 * Winner-takes-all/Points-per-supply-center
 	 * @var string
 	 */
@@ -252,7 +259,24 @@ class Game
 		}
 
 		$this->loadMembers();
+		switch ($this->potType) {
+		case 'Points-per-supply-center':
+				$this->Scoring = new ScoringPPSC($this);
+				break;
+		case 'Winner-takes-all':
+				$this->Scoring = new ScoringWTA($this);
+				break;             
+		case 'Unranked':
+				$this->Scoring = new ScoringUnranked($this);
+				break;             
+		case 'Sum-of-squares':
+				$this->Scoring = new ScoringSoS($this);
+				break;             
+		default:
+			trigger_error("Unknown pot type '".$this->potType."'");
+				break;
 
+		}
 		// TODO: Make this check work with variants properly
 		//if( !( defined("DATC") or $this->phase != "Diplomacy" or count($this->Members->ByID) == count($this->Variant->countries) ) )
 		//	trigger_error("Game loaded incorrectly");

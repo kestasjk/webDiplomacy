@@ -208,20 +208,11 @@ class Member
 	}
 
 	/**
-	 * How much is this position worth if this game were PPSC?
-	 * @return int
-	 */
-	function pointsValue()
-	{
-		return round($this->supplyCenterNo * $this->Game->Members->pointsPerSupplyCenter());
-	}
-
-	/**
-	 * CD takeovers cost a different amount to in game positions. How much is this position worth in takeover?
+	 * CD takeovers cost 0. This is a function because they weren't always free, and keeping the function means we can always change it later.
 	 * @return int
 	 */
 	function pointsValueInTakeover() {
-                return round($this->pointsValue() /2);
+		return 0;
 	}	
 
 	/**

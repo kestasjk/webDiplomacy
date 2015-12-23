@@ -275,7 +275,7 @@ class processMember extends Member
 
 		$this->setStatus('Survived');
 
-		if ( $Game->potType == 'Winner-takes-all' )
+		if ( $Game->potType != 'Points-per-supply-center')
 		{
 			$but="";
 			if($winnings)
@@ -396,17 +396,20 @@ class processMember extends Member
 	/**
 	 * Set the player as defeated, send a message and give a refund if necessary.
 	 */
-	function setDefeated()
+	function setDefeated($points)
 	{
-		$refundedPoints = $this->awardSupplement();
-
+		if ($points != 0) {
+				$winnings = $this->awardPoints($points);
+			    $this->send('No','No',l_t("You were defeated and returned %s; better luck next time!",$winnings));
+		} else {
+				$refundedPoints = $this->awardSupplement();
+				$but="";
+				if($refundedPoints)
+				  $but=l_t(", but you have been refunded %s to make up your starting 100",$refundedPoints);
+			    $this->send('No','No',l_t("You were defeated, and lost your bet%s; better luck next time!",$but));
+		}
 		$this->setStatus('Defeated');
 
-		$but="";
-		if($refundedPoints)
-			$but=l_t(", but you have been refunded %s to make up your starting 100",$refundedPoints);
-
-		$this->send('No','No',l_t("You were defeated, and lost your bet%s; better luck next time!",$but));
 		$this->Game->Members->sendExcept($this,'No',l_t('%s was defeated.',$this->Game->Variant->countries[$this->countryID-1]));
 	}
 
@@ -424,7 +427,7 @@ class processMember extends Member
 		$this->setStatus('Drawn');
 
 		$this->send('No','No',l_t("You have drawn with your rivals, and survived! ".
-			"You win %s, an equal share of the pot!",$winnings." ".libHTML::points()));
+			"You win %s, your share of the pot!",$winnings." ".libHTML::points()));
 	}
 
 	/**

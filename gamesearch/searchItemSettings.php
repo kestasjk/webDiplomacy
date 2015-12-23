@@ -231,7 +231,7 @@ class searchPotType extends searchItemRadio
 {
 	public $name='potType';
 	protected $label='Points distribution type';
-	protected $options=array('-'=>'All','Points-per-supply-center'=>'Points-per-supply-center','Winner-takes-all'=>'Winner-takes-all');
+	protected $options=array('-'=>'All','Winner-takes-all'=>'Draw-Size Scoring', 'Sum-of-squares'=>'Sum of Squares','Unranked'=>'Unranked');
 
 	function sql(&$TABLES,&$WHERE,&$ORDER)
 	{
