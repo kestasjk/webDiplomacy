@@ -36,7 +36,7 @@ $tabl = $DB->sql_tabl($query);
 $moderators = '';
 while( list($row) = $DB->tabl_row($tabl) )
 {
-	$moderators .= $row;
+	$moderators .= $row . '<br/>';
 }
 
 $credits = array(
