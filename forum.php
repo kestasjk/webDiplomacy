@@ -230,8 +230,7 @@ AND ($_REQUEST['newmessage'] != "") ) {
 						$_SESSION['lastPostTime']=time();
 						$_SESSION['lastPostType']='ThreadReply';
 
-						$messageproblem=l_t("Reply posted sucessfully.");
-						$new['message']=""; $new['subject']="";
+						header("Location: " . $_SERVER['REQUEST_URI'] . '&reply=success');
 					}
 					catch(Exception $e)
 					{
@@ -265,6 +264,11 @@ else
 }
 
 $_SESSION['viewthread'] = $viewthread;
+
+if (isset($_REQUEST['reply']) && $_REQUEST['reply'] == 'success') {
+	$messageproblem=l_t("Reply posted sucessfully.");
+	$new['message']=""; $new['subject']=""; $new['sendtothread']=$viewthread;
+}
 
 libHTML::starthtml();
 
