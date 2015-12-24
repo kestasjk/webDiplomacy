@@ -307,8 +307,8 @@ print '
 		<div class="message-body threadalternate1 postboxadvice">
 				'.l_t('If your post relates to a particular game please include the <strong>URL or ID#</strong>
 				of the game.').'<br />
-				'.l_t('If you are posting a <strong>feature request</strong> please check that it isn\'t mentioned in the '.
-				'<a href="http://forum.webdiplomacy.net">todo list</a>.').'<br />
+				'.l_t('We get a lot of feature requests. If your feature request isn\'t already on our <a href="https://github.com/kestasjk/webDiplomacy/issues">issue tracker</a>, 
+				then the best place to ask is the forum. This will help us gauge support for your ideas, before we add it to the todo list.').'<br />
 				'.l_t('If you are posting a question please <strong>check the <a href="faq.php">FAQ</a></strong> before posting.').'<br />
 				'.l_t('If your message is long you may need to write a summary message, and add the full message as a reply.').'
 	
