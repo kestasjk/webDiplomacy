@@ -579,6 +579,14 @@ class Game
 		else
 			return false;
 	}
+    /**
+     * Game name
+     * @return string
+     */
+    function titleBarName()
+    {
+        return $this->name;
+    }
 }
 
 

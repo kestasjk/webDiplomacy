@@ -175,14 +175,6 @@ class panelGame extends Game
 		}
 	}
 
-	/**
-	 * Game name
-	 * @return string
-	 */
-	function titleBarName()
-	{
-		return $this->name;
-	}
 
 	/**
 	 * Icons for the game, e.g. private padlock and featured star
