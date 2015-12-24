@@ -29,11 +29,18 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+December 24th, 2015
+<ul>
+<li>Game title now visible as the page title on the game board (instead of 'board').</li>
+<li>Forum posts no longer repost when a page is refreshed.</li>
+<li>Improved text on new thread post.</li>
+<li>Credits page now automatically lists the moderators.</li>
+</ul>
 <div class="hr"></div>
 December 22nd, 2015
 <ul>
 <li>Unranked games now available. Unranked games return the player's bet at the end of the game.</li>
-<li>Sum-of-Squares scoring now available as "Center-Count Scoring".</li>
+<li>Sum-of-Squares scoring now available.</li>
 <li>WTA has been renamed "Draw-Size Scoring".</li>
 <li>PPSC has been renamed "Survivors-Win Scoring".</li>
 <li>The 'worth' section at the bottom of the game panel now tells you what your score would be if the game drew.</li>
