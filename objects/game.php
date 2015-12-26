@@ -453,6 +453,8 @@ class Game
 
 		if( $this->Members->isJoined() ) return false;
 
+        if ( array_key_exists($User->id,$this->civilDisorderInfo) ) return false;
+
 		if( !$User->type['User'] ) return false;
 
 		switch($this->phase)
