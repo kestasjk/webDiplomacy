@@ -97,7 +97,28 @@ class panelMembers extends Members
 			}
 		}
 
-		return '<table>'.implode('',$membersList).'</table>';
+		$extras ='';
+		if ($this->Game->moderatorSeesMemberInfo() && count($this->Game->civilDisorderInfo) != 0) 
+		{ 
+				$extras = '<div class="bar titleBar modEyes">Civil Disorders</div><table><tbody>';
+				foreach ($this->Game->civilDisorderInfo as $userID => $CD) 
+				{
+						$cdUser = new User($userID);
+						$extras .= '<tr class="member memberAlternate0"><td class="memberLeftSide"><a href="profile.php?userID='.$userID .'">'.$cdUser->username.'</a></td><td class="memberRightSide">';
+						$extras .= '<span class="country' .$CD['countryID']. '">';
+						if( $CD['countryID']==0 )
+							 $extras .= 'Unassigned';
+						else
+								$extras .= $this->Game->Variant->countries[$CD['countryID']-1];
+						$extras .= '</span> (' .$this->Game->datetxt($CD['turn']). ') with ' .$CD['SCCount']. ' centres.';
+
+						$extras .= '</td></tr>';
+				}
+				$extras .= "</tbody></table>";
+               	
+		}				
+
+		return '<table>'.implode('',$membersList).'</table>'.$extras;
 	}
 
 	/**

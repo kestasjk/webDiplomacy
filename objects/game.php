@@ -227,6 +227,7 @@ class Game
 	 */
 	public $minimumReliabilityRating;
 
+	public $civilDisorderInfo;
 
 	/**
 	 * @param int/array $gameData The game ID of the game to load, or the array of its database row
@@ -259,6 +260,7 @@ class Game
 		}
 
 		$this->loadMembers();
+		$this->loadCDs();
 		switch ($this->potType) {
 		case 'Points-per-supply-center':
 				$this->Scoring = new ScoringPPSC($this);
@@ -377,6 +379,18 @@ class Game
 			$DB->sql_put('DELETE from wD_WatchedGames WHERE gameID='. $this->id . ' AND userID='. $User->id);// . $this->id . ' AND userID=' . $User->id);
 			$DB->sql_put('COMMIT');
 		} 
+	}
+
+	function loadCDs() {
+		global $DB;
+
+        $this->civilDisorderInfo = array();
+
+		$tabl = $DB->sql_tabl('SELECT userID, countryID, turn, SCCount from wD_CivilDisorders where gameID='. $this->id);
+		while ( $row = $DB->tabl_hash($tabl) )
+		{
+			$this->civilDisorderInfo[$row['userID']] = $row;
+		}
 	}
 
 	/**
