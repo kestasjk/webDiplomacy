@@ -335,7 +335,13 @@ class Game
 	public function moderatorSeesMemberInfo() {                                                                                            
 		global $User;
 
-		return (!($this->anon == 'No' || $this->phase == 'Finished') && $User->type['Moderator'] && !isset($this->Members->ByUserID[$User->id]));
+		return (!($this->anon == 'No' || $this->phase == 'Finished') && $this->hasModeratorPowers());
+	}
+
+	public function hasModeratorPowers() {
+            global $User;
+
+			return ($User->type['Moderator'] && !isset($this->Members->ByUserID[$User->id]));
 	}
 
 

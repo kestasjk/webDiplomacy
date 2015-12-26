@@ -98,13 +98,13 @@ class panelMembers extends Members
 		}
 
 		$extras ='';
-		if ($this->Game->moderatorSeesMemberInfo() && count($this->Game->civilDisorderInfo) != 0) 
+		if ($this->Game->hasModeratorPowers() && count($this->Game->civilDisorderInfo) != 0) 
 		{ 
 				$extras = '<div class="bar titleBar modEyes">Civil Disorders</div><table><tbody>';
 				foreach ($this->Game->civilDisorderInfo as $userID => $CD) 
 				{
 						$cdUser = new User($userID);
-						$extras .= '<tr class="member memberAlternate0"><td class="memberLeftSide"><a href="profile.php?userID='.$userID .'">'.$cdUser->username.'</a></td><td class="memberRightSide">';
+						$extras .= '<tr class="member memberAlternate1"><td class="memberLeftSide"><a href="profile.php?userID='.$userID .'">'.$cdUser->username.'</a></td><td class="memberRightSide">';
 						$extras .= '<span class="country' .$CD['countryID']. '">';
 						if( $CD['countryID']==0 )
 							 $extras .= 'Unassigned';
