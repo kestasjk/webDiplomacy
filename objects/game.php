@@ -314,8 +314,8 @@ class Game
 			 * - The game is finished
 			 * - The user is a moderator who isn't in the game
 			 */
-			if ( $this->anon == 'No' || $this->phase == 'Finished' || ($User->type['Moderator'] && !isset($this->Members->ByUserID[$User->id])) )
-			{
+			if ( $this->anon == 'No' || $this->phase == 'Finished' || $this->hasModeratorPowers())
+			{                                                        
 				$this->isMemberInfoHidden = false;
 			}
 			else
