@@ -29,6 +29,11 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+December 27th, 2015
+<ul>
+<li>It is no longer possible to rejoin a game with multiple CDs as a different country.</li>
+</ul>
+<div class="hr"></div>
 December 24th, 2015
 <ul>
 <li>Game title now visible as the page title on the game board (instead of 'board').</li>
@@ -47,6 +52,7 @@ December 22nd, 2015
 <li>PPSC/SWS has been temporarily disabled for new games.</li>
 <li>All takeovers are now free.</li>
 </ul>
+<div class="hr"></div>
 August 27th, 2015
 <ul>
 <li>Finished games now show up in the notifications bar if you have new messages.</li>
