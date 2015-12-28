@@ -35,6 +35,7 @@
 	1.1.6: Movment fix for some borders
 	1.1.7: Movment fix for some borders
 	1.1.7.1: Movment fix for some borders
+	1.1.7.3: Movment fix for some borders
 		   
 */
 
@@ -46,7 +47,7 @@ class WorldVariant extends WDVariant {
 	public $description= 'A variant with a map which has territories over the whole globe.';
 	public $author     = 'David Norman';
 	public $adapter    = 'Carey Jensen / Kestas J. Kuliukas / Oliver Auth';
-	public $version    = '1.1.7.1';
+	public $version    = '1.1.7.3';
 	public $homepage   = 'http://www.variantbank.org/results/rules/w/worlddip9.htm';
 
 	public $countries=array( 'Argentina','Brazil','China','Europe','Frozen-Antarctica',
