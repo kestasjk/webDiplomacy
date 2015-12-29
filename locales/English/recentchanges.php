@@ -29,6 +29,11 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+December 29th, 2015
+<ul>
+<li>Several corrections to the borders in the World variant</li>
+</ul>
+<div class="hr"></div>
 December 27th, 2015
 <ul>
 <li>It is no longer possible to rejoin a game with multiple CDs as a different country.</li>
