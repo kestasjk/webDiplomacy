@@ -29,9 +29,14 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+December 30th, 2015
+<ul>
+<li>Seven minute phases now available.</li>
+</ul>
+<div class="hr"></div>
 December 29th, 2015
 <ul>
-<li>Several corrections to the borders in the World variant</li>
+<li>Several corrections to the borders in the World variant.</li>
 </ul>
 <div class="hr"></div>
 December 27th, 2015

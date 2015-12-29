@@ -53,7 +53,7 @@ Start a new game; you decide the name, how long it runs, and how much it's worth
 	<li class="formlistfield">
 		<select name="newGame[phaseMinutes]" onChange="document.getElementById('wait').selectedIndex = this.selectedIndex">
 		<?php
-			$phaseList = array(5, 10, 15, 20, 30,
+			$phaseList = array(5,7, 10, 15, 20, 30,
 				60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
 				1440, 2160, 2880, 4320, 5760, 7200, 8640, 10080, 14400, 1440+60, 2880+60*2);
 
