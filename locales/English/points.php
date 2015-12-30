@@ -87,7 +87,7 @@ However, there are different opinions on how to score games where there is no so
 <p class="intro">WebDiplomacy has three scoring systems enabled: Draw-Size Scoring, Sum of Squares and Unranked.</p>
 
 <p class="intro">
-In the first two, systems, if you win this game by capturing the required supply centres (18, on the Classic map), you win the entire pot for the game, and receive all those points.
+In the first two systems, if you win this game by capturing the required supply centres (18 on the Classic map) then you win the entire pot for the game, and receive all those points.
 </p>
 <div align="center">
 	<img src="images/points/wta.png" alt=" "
