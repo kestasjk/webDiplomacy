@@ -84,17 +84,10 @@ Scoring a game of Diplomacy has been a big topic of discussion among Diplomacy p
 Most players agree that a winner of a game of Diplomacy (who takes more than half of the centers) is the solo winner of the game.
 However, there are different opinions on how to score games where there is no sole winner.</p>
 
-<p class="intro">WebDiplomacy has three scoring systems enabled (Draw-Size Scoring, Sum of Squares and Unranked), 
-and one currently disabled legacy scoring system (Survivors-Win Scoring)</p>
-
-<h4>Draw-Size Scoring (DSS)</h4>
-<p class="intro">
-<em>Previously called Winner-Takes-All (WTA).</em>
-This is the default scoring system on webDiplomacy, and is a draw-based scoring system. This has the following outcomes:
-</p>
+<p class="intro">WebDiplomacy has three scoring systems enabled: Draw-Size Scoring, Sum of Squares and Unranked.</p>
 
 <p class="intro">
-If you win this game by capturing the required supply centres (18, on the Classic map), you win the entire pot for the game, and receive all those points.
+In the first two, systems, if you win this game by capturing the required supply centres (18, on the Classic map), you win the entire pot for the game, and receive all those points.
 </p>
 <div align="center">
 	<img src="images/points/wta.png" alt=" "
@@ -102,33 +95,26 @@ If you win this game by capturing the required supply centres (18, on the Classi
 </div>
 
 <p class="intro">
-If nobody is able to win the game, then the surviving players may vote to draw. This can be done at any time. Once every living player has voted to draw, the game will end, and points will be distributed equally between every surviving player, regardless of how many supply centres they own. So if the pot is 210D, and 3 people are alive when the game draws, each of those living players will receive 70D.
+If nobody is able to win the game, then the surviving players may vote to draw. This can be done at any time. Once every living player has voted to draw, the game will end, and points will be distributed according to the scoring system.
+</p>
+
+<h4>Draw-Size Scoring (DSS)</h4>
+<p class="intro">
+<em>Previously called Winner-Takes-All (WTA).</em>
+This is the default scoring system on webDiplomacy, and is a draw-based scoring system. This means that if there is a draw, then the points will be shared equally between every surviving player, regardless of how many supply centres they own. So if the pot is 210D, and 3 people are alive when the game draws, each of those living players will receive 70D.
 </p>
 <div align="center"><img src="images/points/draw.png" alt=" "
 		title="When all surviving players vote for a draw an equal share of the points are given to each surviving player" /></div>
 
 <p class="intro">
-If you "Survive" (somebody else wins the game whilst you are still alive), or if you are defeated, then you will not receive any points.
-</p>
-
-<p class="intro">
-WTA encourages you to "narrow" a draw down by cutting small players out to get a better result.
+DSS encourages you to "narrow" a draw down by cutting small players out to get a better result.
 </p>
 
 <h4>Sum-Of-Squares (SoS)</h4>
 <a name="SoS>"></a>
 <p class="intro">
-This is a centre-based scoring system. Just like in DSS, if there is a solo winner in SoS then the 
-winner takes all the points. 
-</p>
-<div align="center">
-	<img src="images/points/wta.png" alt=" "
-		title="The winner takes all the points: Winner-takes-all" />
-</div>
-
-<p class="intro">
-However, in a draw, each player gets a proportion 
-of the pot scaled by their centre count:                              
+This is a centre-based scoring system. In a draw, each player gets a proportion 
+of the pot scaled by their centre count:               
 </p>
 
 <p class="intro">
@@ -148,35 +134,12 @@ than cutting out surviving players, and doesn't drag games on just to get that
 last elimination.
 </p>
 
-<p class="intro">
-You still receive no points for a survive or a defeat in this scoring system.
-</p>
-
-<h4>
-Survivors-Win Scoring (SWS)</h4>
-<p class="intro">
-<em>Previously - and somewhat misleadingly - named Points-Per-Supply-Centre (PPSC).</em>
-This is a legacy scoring system that is not currently available on the site, but 
-can be seen in old games. It is unique to webDiplomacy. 
-</p>
-<p class="intro">
-In this scoring 
-system, draws are shared equally, but if somebody else wins the game you also 
-receive points based on the number of centres you hold. This scoring system 
-encourages "strong seconds", which 
-was the source of some controversy. Defeated 
-players still received no points. 
-</p>
-<p class="intro">
-It is intended that SoS and Unranked games will replace PPSC/SWS, though we may 
-enable it again if there is enough interest.
-</p>
-
 <h4>Unranked Games</h4>
 <p class="intro">
 These games require a bet to join, but you are simply refunded your bet at the 
 end of the game, as long as you don't enter Civil Disorder by not inputting 
-moves. These games can be used for special rules games organised on the forums, 
+moves. You don't get any more points than you put in, even if you win the game. 
+These games can be used for special rules games organised on the forums, 
 tournaments, crazy strategic practising, or anything else that tickles your 
 fancy.
 </p>
