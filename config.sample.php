@@ -112,14 +112,6 @@ class Config
 	public static $adminEMail='webmaster@yourdiplomacyserver.com';
 
 	/**
-	 * The moderators e-mail; if users have been banned etc they will be directed to contact this e-mail 
-	 * to contest it.
-	 * 
-	 * @var string
-	 */
-	public static $modEMail='moderators@yourdiplomacyserver.com';
-
-	/**
 	 * The moderator e-mail
 	 * This mail-adress will be diplayed in the rules-section of the FAQ
 	 *
@@ -226,7 +218,7 @@ class Config
 					"SMTPAuth"=>false,
 					/* If this is FALSE the two variables below are ignored */
 					"Username"=>"webmaster",
-					"Password"=>"password123",
+					"Password"=>"password123"
 					/* Uncomment the line below to use SSL to connect (e.g. for gmail) */
 					// , 'SMTPSecure'=>'ssl'
 				),
