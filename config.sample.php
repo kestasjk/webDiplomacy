@@ -120,14 +120,6 @@ class Config
 	public static $modEMail='moderators@yourdiplomacyserver.com';
 
 	/**
-	 * The moderator e-mail
-	 * This mail-adress will be diplayed in the rules-section of the FAQ
-	 *
-	 * @var string
-	 */
-	public static $modEMail='webdipmod@gmail.com';
-	
-	/**
 	 * An array of variants available on the server (for future releases, not yet enabled)
 	 * @var array
 	 */
@@ -226,7 +218,7 @@ class Config
 					"SMTPAuth"=>false,
 					/* If this is FALSE the two variables below are ignored */
 					"Username"=>"webmaster",
-					"Password"=>"password123",
+					"Password"=>"password123"
 					/* Uncomment the line below to use SSL to connect (e.g. for gmail) */
 					// , 'SMTPSecure'=>'ssl'
 				),
