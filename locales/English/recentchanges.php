@@ -29,6 +29,11 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+January 21st, 2016
+<ul>
+<li>Now all members can see global press above the map without going to the chat archive</li>
+</ul>
+<div class="hr"></div>
 December 30th, 2015
 <ul>
 <li>Seven minute phases now available.</li>
