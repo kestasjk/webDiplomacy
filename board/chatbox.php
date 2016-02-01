@@ -62,7 +62,7 @@ class Chatbox
 			$msgCountryID = 0;
 
 		// Enforce Global and Notes tabs when its not Regular press game.
-		if ( $Game->pressType != 'Regular' && !(isset($Member) && $Member->countryID == $msgCountryID) )
+		if ( ($Game->pressType != 'Regular' && $Game->pressType != 'RulebookPress') && !(isset($Member) && $Member->countryID == $msgCountryID) )
 			$msgCountryID = 0;
 
 		$_SESSION[$Game->id.'_msgCountryID'] = $msgCountryID;
@@ -94,7 +94,9 @@ class Chatbox
 
 			if ( isset($Member) &&
 			     ( $Game->pressType == 'Regular' ||                                        // All tabs allowed for Regular
-			       $Member->countryID == $msgCountryID ||                                  // Notes tab always allowed
+				   $Member->countryID == $msgCountryID ||                                  // Notes tab always allowed
+				   ($Game->pressType == 'RulebookPress' && 								   // In rulebook press... allow
+				   			($Game->phase == 'Diplomacy' || $Game->phase == 'Finished')) ||// press only in diplomacy or after the game
 			       ( $msgCountryID == 0 &&                                                 // Global tab allowed for...
 			         ( $Game->pressType == 'PublicPressOnly' ||                            // public press and
 			           ( $Game->pressType == 'NoPress' && $Game->phase == 'Finished' ))))) // finished nopress.
@@ -188,6 +190,8 @@ class Chatbox
 		     ( isset($Member) &&
 		       ( $Game->pressType == 'Regular' ||                                         // All tabs allowed for Regular
 		         $Member->countryID == $msgCountryID ||                                   // Notes tab always allowed
+				   ($Game->pressType == 'RulebookPress' && 								   // In rulebook press... allow
+				   			($Game->phase == 'Diplomacy' || $Game->phase == 'Finished')) ||// press only in diplomacy or after the game
 		         ( $msgCountryID == 0 &&                                                  // Global tab allowed for...
 		           ( $Game->pressType == 'PublicPressOnly' ||                             // public press and
 		             ( $Game->pressType == 'NoPress' && $Game->phase == 'Finished' )))))) // finished nopress.
@@ -218,6 +222,15 @@ class Chatbox
 						</form>
 					').'
 				</TABLE></DIV>';
+		}
+		else if ($Game->pressType == 'RulebookPress' && $Game->phase != 'Diplomacy' && $msgCountryID != 0)  {
+				$chatbox .= '<div class="chatbox"><TABLE><TR class="barAlt2"><TD class="center">
+						<form method="post" name="markUnread" class="safeForm" action="board.php?gameID='.$Game->id.'&amp;msgCountryID='.$msgCountryID.'#chatboxanchor">
+							<input type="hidden" tabindex="2" value="" name="MarkAsUnread" />
+							</form>
+							<a href="#" onclick="document.markUnread.submit(); return false;" tabindex="3">Mark unread</a>
+							</TD></TR></TABLE></div>';
+
 		}
 
 		libHTML::$footerScript[] = '
@@ -253,7 +266,7 @@ class Chatbox
 		for( $countryID=0; $countryID<=count($Game->Variant->countries); $countryID++)
 		{
 			// Do not allow country specific tabs for restricted press games.
-			if ($Game->pressType != 'Regular' && $countryID != 0 && $countryID != $Member->countryID ) continue;
+			if (($Game->pressType != 'Regular' && $Game->pressType != 'RulebookPress') && $countryID != 0 && $countryID != $Member->countryID ) continue;
 
 			$tabs .= ' <a href="./board.php?gameID='.$Game->id.'&amp;msgCountryID='.$countryID.'&amp;rand='.rand(1,100000).'#chatboxanchor" '.
 				'class="country'.$countryID.' '.( $msgCountryID == $countryID ? 'current"'

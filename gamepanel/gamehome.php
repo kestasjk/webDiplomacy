@@ -119,6 +119,8 @@ class panelGameHome extends panelGameBoard
 		$alternatives=array();
 		if( $this->pressType=='NoPress')
 			$alternatives[]=l_t('No chat');
+		elseif( $this->pressType=='RulebookPress' )
+			$alternatives[]=l_t('Rulebook chat');
 		elseif( $this->pressType=='PublicPressOnly' )
 			$alternatives[]=l_t('Public chat');
 		if( $this->anon=='Yes' )

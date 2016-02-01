@@ -29,9 +29,14 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+February 1st, 2016
+<ul>
+<li>New press mode: "Rulebook Press", where there is no discussion during builds and retreats, and builds/retreats are automatically readied.</li>
+</ul>
+<div class="hr"></div>
 January 21st, 2016
 <ul>
-<li>Now all members can see global press above the map without going to the chat archive</li>
+<li>Now all members can see global press above the map without going to the chat archive.</li>
 </ul>
 <div class="hr"></div>
 December 30th, 2015

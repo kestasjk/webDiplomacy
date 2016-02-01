@@ -247,6 +247,8 @@ class panelGame extends Game
 			$alternatives[]=$this->Variant->link();
 		if( $this->pressType=='NoPress')
 			$alternatives[]=l_t('No in-game messaging');
+		elseif( $this->pressType=='RulebookPress')
+			$alternatives[]=l_t('Rulebook press');
 		elseif( $this->pressType=='PublicPressOnly' )
 			$alternatives[]=l_t('Public messaging only');
 		if( $this->anon=='Yes' )

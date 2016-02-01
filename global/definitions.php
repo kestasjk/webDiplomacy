@@ -24,7 +24,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-define("VERSION", 141);
+define("VERSION", 142);
 
 // Some integer values which are named for clarity.
 

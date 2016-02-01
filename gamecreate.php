@@ -115,6 +115,9 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			case 'NoPress':
 				$input['pressType'] = 'NoPress';
 				break;
+			case 'RulebookPress':
+				$input['pressType'] = 'RulebookPress';
+				break;
 			case 'Regular': // Regular is the default
 			default:
 				$input['pressType'] = 'Regular';

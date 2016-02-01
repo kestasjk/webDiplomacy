@@ -323,6 +323,7 @@ class OrderInterface
 
 	public function html()
 	{
+			global $Game;
 		//method="post" action="board.php?gameID='.$this->gameID.'#orders"
 		$html = $this->jsHTML();
 
@@ -341,9 +342,11 @@ class OrderInterface
 		}
 
 		$html .= "</table>".'
-		<div style="text-align:center;"><span id="ordersNoticeArea'.$this->memberID.'"></span>
-			<input id="UpdateButton'.$this->memberID.'" type="Submit" class="form-submit spaced-button" name="'.
-				l_t('Update').'" value="'.l_t('Save').'" disabled />
+				<div style="text-align:center;"><span id="ordersNoticeArea'.$this->memberID.'"></span>
+				'.
+				($Game->pressType == 'RulebookPress' && $Game->phase != 'Diplomacy' ? ''  : 
+			'<input id="UpdateButton'.$this->memberID.'" type="Submit" class="form-submit spaced-button" name="'.
+				l_t('Update').'" value="'.l_t('Save').'" disabled />' ) .'
 			<input id="FinalizeButton'.$this->memberID.'" type="Submit" class="form-submit spaced-button" name="'.
 				l_t($this->orderStatus->Ready?'Not ready':'Ready').'" value="'.l_t($this->orderStatus->Ready?'Not ready':'Ready').'" disabled />
 		</div>
