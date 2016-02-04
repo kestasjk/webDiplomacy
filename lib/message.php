@@ -52,7 +52,7 @@ class Message
 				'/gameID[:= _]?([0-9]+)/i',
 				'/userID[:= _]?([0-9]+)/i',
 				'/threadID[:= _]?([0-9]+)/i',
-				'/((?:[^a-z0-9])|(?:^))([0-9]+) ?(?:(?:D)|(?:points))((?:[^a-z])|(?:$))/i',
+				'/((?:[^a-z0-9])|(?:^))([0-9]+) ?(?:\(D\))((?:[^a-z])|(?:$))/i',
 			);
 		$replacements = array(
 				'<a href="board.php?gameID=\1" class="light">gameID=\1</a>',
