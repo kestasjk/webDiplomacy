@@ -205,7 +205,7 @@ if ( isset($_REQUEST['detail']) )
 			break;
 
 		case 'replies':
-			$dir=User::cacheDir($UserProfile->id);
+/*			$dir=User::cacheDir($UserProfile->id);
 			if( file_exists($dir.'/profile_replies.html') )
 				print file_get_contents($dir.'/profile_replies.html');
 			else
@@ -228,7 +228,7 @@ if ( isset($_REQUEST['detail']) )
 
 				file_put_contents($dir.'/profile_replies.html', $buf);
 				print $buf;
-			}
+			}*/
 			break;
 
 		case 'civilDisorders':
