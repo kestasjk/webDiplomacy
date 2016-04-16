@@ -60,12 +60,22 @@ var inErrorCode=0;
 };
 */
 
+// Attach the method to the unbeforeunload event
+if(window.addEventListener){
+	window.addEventListener('beforeunload',onbeforeunload_unsubmittedtext,false);
+	console.log("Added onbeforeunload_unsubmittedtext listener via addEventListener");
+}else{
+	window.attachEvent('onbeforeunload',onbeforeunload_unsubmittedtext);
+	console.log("Added onbeforeunload_unsubmittedtext listener via attachEvent");
+}
+
 // If false it's okay to leave the page. makeFormsSafe sets this to true, and runs code which makes only
 // certain forms safe.
 window.leavepagedanger=false;
 
 // When the window is about to change make sure there are no unsubmitted messages around
-window.onbeforeunload = function (e) {
+function onbeforeunload_unsubmittedtext(e) {
+	
 	// Don't give a warning dialog if we are submitting the text
 	if( !window.leavepagedanger ) return;
 
