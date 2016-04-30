@@ -409,6 +409,32 @@ class Database {
 				l_t("Please wait a few moments and try again. Sorry for the inconvenience."));
 		}
 	}
+	
+	/**
+	* Exectues any given sql statement but won't return anything. Needs some handling otherwise it will just blow up :-(
+	*/
+	public function exec($sql)
+	{
+		if (is_object($User) && $User->type['Admin'])
+		{
+			if(!mysqli_multi_query($this->link, $sql))
+			{
+				print('Something went wrong <br>');
+				print(mysqli_error($this->link));
+			} else
+			{
+				do
+				{
+					/* store first result set */
+					if ($result = mysqli_use_result($this->link)) {
+						mysqli_free_result($result);
+					}
+				} while (mysqli_more_results($this->link)&& mysqli_next_result($this->link));
+			}
+		} else {
+			libHTML::error("You do not have enough rights to execute this sql statement.");
+		}
+	}
 
 }
 ?>
