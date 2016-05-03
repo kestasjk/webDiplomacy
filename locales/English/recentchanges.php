@@ -29,6 +29,12 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+May 3rd, 2016
+<ul>
+<li>Now the conversion of (d) to the points symbol in the forum is less aggressive.</li>
+<li>Now there's a warning if a user tries to leave a page with unsaved orders.</li>
+</ul>
+<div class="hr"></div>
 February 1st, 2016
 <ul>
 <li>New press mode: "Rulebook Press", where there is no discussion during builds and retreats, and builds/retreats are automatically readied.</li>
