@@ -177,11 +177,13 @@ function OrdersHTMLFormClass() {
 			if( MyOrders.pluck('isChanged').any(function(c){return c;}) )
 			{
 				this.ordersChanged=true;
+				window.ordersChanged = true;
 				this.buttonOn('UpdateButton');
 			}
 			else
 			{
 				this.ordersChanged=false;
+				window.ordersChanged=false;
 				this.buttonOff('UpdateButton');
 			}
 	
@@ -195,3 +197,29 @@ function OrdersHTMLFormClass() {
 function loadOrdersForm() {
 	OrdersHTML = new OrdersHTMLFormClass();
 }
+
+if(window.addEventListener){
+	window.addEventListener('beforeunload',onbeforeunload_unsavedorders,false);
+	console.log("Added onbeforeunload_unsavedorders listener via addEventListener");
+}else{
+	window.attachEvent('onbeforeunload',onbeforeunload_unsavedorders);
+	console.log("Added onbeforeunload_unsavedorders listener via attachEvent");
+}
+
+window.ordersChanged = false;
+
+// When the window is about to change make sure there are no unsubmitted messages around
+function onbeforeunload_unsavedorders(e) {
+
+	// Don't give a warning dialog if no orders were changed
+	if( !window.ordersChanged ) return;
+
+	var str=l_t("You seem to have unsubmitted orders.");
+	var e = e || window.event;
+	
+	// For IE and Firefox
+	if (e) e.returnValue = str;
+	
+	//For Safari
+	return str;
+};
