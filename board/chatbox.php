@@ -88,7 +88,7 @@ class Chatbox
 	{
 		global $Member, $Game, $User, $DB;
 
-		if( isset($_REQUEST['newmessage']) AND $_REQUEST['newmessage']!="" )
+		if( isset($_POST['newmessage']) AND $_POST['newmessage']!="" )
 		{
 			$newmessage = trim($_REQUEST['newmessage']);
 
