@@ -524,7 +524,7 @@ if ( $UserProfile->hideEmail != 'No' )
 
 if ( $UserProfile->homepage )
 {
-	print '<li><strong>'.l_t('Home page:').'</strong> '.$UserProfile->homepage.'</li>';
+	print '<li style="word-wrap:break-word"><strong>'.l_t('Home page:').'</strong> '.$UserProfile->homepage.'</li>';
 }
 
 print '<li>&nbsp;</li>';
