@@ -86,6 +86,21 @@ Inizia una nuova partita. Sei tu a deciderne il nome, la variante, quando durano
 
 		<strong>Standard:</strong> <?php print $defaultPoints.libHTML::points(); ?>
 	</li>
+
+	<li class="formlisttitle">
+		<img src="images/icons/lock.png" alt="Private" /> Password (optionale):
+	</li>
+	<li class="formlistfield">
+		<ul>
+			<li>Password: <input type="password" name="newGame[password]" value="" size="30" /></li>
+			<li>Confirm: <input type="password" name="newGame[passwordcheck]" value="" size="30" /></li>
+		</ul>
+	</li>
+	<li class="formlistdesc">
+		<strong>Questa opzione non è obbligatoria.</strong> Solo le persone che conoscono la password saranno in grado di iscriversi alla partita.<br /><br />
+
+		<strong>Standard:</strong> Nessuna password
+	</li>
 </ul>
 
 <div class="hr"></div>
@@ -207,21 +222,6 @@ else
 		Tempo utile agli altri giocatori per iscriversi a questa partita. Se entro questa scadenza la partita non avrà raccolto un numero sufficiente di giocatori, sarà cancellata e bisognerà crearne una nuova. Per turni brevi (5 minuti), è consigliabile dare una scadenza maggiore a questo valore.
 
 		<br /><br /><strong>Standard:</strong> Stesso tempo di un turno
-	</li>
-
-	<li class="formlisttitle">
-		<img src="images/icons/lock.png" alt="Private" /> Password (optionale):
-	</li>
-	<li class="formlistfield">
-		<ul>
-			<li>Password: <input type="password" name="newGame[password]" value="" size="30" /></li>
-			<li>Confirm: <input type="password" name="newGame[passwordcheck]" value="" size="30" /></li>
-		</ul>
-	</li>
-	<li class="formlistdesc">
-		<strong>Questa opzione non è obbligatoria.</strong> Solo le persone che conoscono la password saranno in grado di iscriversi alla partita.<br /><br />
-
-		<strong>Standard:</strong> Nessuna password
 	</li>
 </ul>
 
