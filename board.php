@@ -93,6 +93,16 @@ else
 			global $Member;
 			$Game->Members->makeUserMember($User->id);
 			$Member = $Game->Members->ByUserID[$User->id];
+			
+			// Advanced-Log
+			$DB->sql_put("INSERT INTO wD_AccessLogAdvanced SET
+							userID   = ".$User->id.",
+							request  = CURRENT_TIMESTAMP,
+							ip       = INET_ATON('".$_SERVER['REMOTE_ADDR']."'),
+							action   = 'Board',
+							memberID = '".$Member->id."'"
+							);
+			
 		}
 	}
 	catch(Exception $e)
@@ -102,7 +112,6 @@ else
 			($User->type['User'] ? l_t("Check your <a href='index.php' class='light'>notices</a> for messages regarding this game."):''));
 	}
 }
-
 
 if ( isset($_REQUEST['viewArchive']) )
 {

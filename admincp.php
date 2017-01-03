@@ -113,6 +113,10 @@ function adminCPTabs()
 			'Locales'=>l_t('Locale management')
 		);
 
+	global $User;
+	if ($User->type['Admin'])
+		$tabs['AcessLog']='Check the user-actions sort by IP and Username.';
+		
 	$tab = 'Control Panel';
 	$tabNames = array_keys($tabs);
 
@@ -169,6 +173,9 @@ switch($tab)
 		break;
 	case 'Locales':
 		require_once(l_r('admin/adminLocales.php'));
+		break;
+	case 'AcessLog':
+		require_once('admin/adminAdvancedAccessLog.php');
 		break;
 	default:
 		print '<p>'.l_t('No admin panel tab selected').'</p>';

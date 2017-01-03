@@ -208,7 +208,18 @@ require_once(l_r('lib/auth.php'));
 if( !defined('AJAX') )
 {
 	if( isset($_REQUEST['logoff']) )
-	{
+	{	
+		// Advanced UserLog
+		global $DB, $User;
+		$User = libAuth::auth();
+		$DB->sql_put("INSERT INTO wD_AccessLogAdvanced SET
+						userID   = ".$User->id.",
+						request  = CURRENT_TIMESTAMP,
+						ip       = INET_ATON('".$_SERVER['REMOTE_ADDR']."'),
+						action   = 'LogOff',
+						memberID = '0'"
+						);
+		
 		$success=libAuth::keyWipe();
 		$User = new User(GUESTID); // Give him a guest $User
 		header('refresh: 4; url=logon.php?noRefresh=on');
