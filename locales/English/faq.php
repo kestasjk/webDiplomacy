@@ -75,6 +75,9 @@ $globalFaq = array(
 	a link to the appropriate game/thread/profile substituted into the message.</li></ul>",
 "Why do some things appear to change just after the page has loaded?" => "After a page is loaded JavaScript runs, making a few changes
 	(e.g. putting GMT/UTC times into your computer's timezone, making your posts bold, etc) which enhance the page.",
+"How do I resign a game?" => "There is no way to resign a game manually; instead, any player who does not view the game
+	for two turns is automatically considered to have resigned.  Please note that leaving a game should be avoided,
+	as it messes up the game for the other players.",
 
 "Game rules" => "Sub-section",
 "I want to learn the basic rules" => "See the <a href='intro.php' class='light'>intro page</a>.",
