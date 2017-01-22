@@ -29,6 +29,11 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+December 29th, 2016
+<ul>
+<li>Added ClassicFvA, ClassicGvI and KnownWorld901 as playable variants to the site. 1v1 games are only playable as unranked games with 5 point bets.</li>
+</ul>
+<div class="hr"></div>
 May 3rd, 2016
 <ul>
 <li>Now the conversion of (d) to the points symbol in the forum is less aggressive.</li>
