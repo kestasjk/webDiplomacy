@@ -130,11 +130,14 @@ else
 	$first=true;
 	foreach(Config::$variants as $variantID=>$variantName)
 	{
-		if( $first )
-			$defaultVariantName=$variantName;
-		$Variant = libVariant::loadFromVariantName($variantName);
-		$checkboxes[] = '<input type="radio" '.($first?'checked="on" ':'').'name="newGame[variantID]" value="'.$variantID.'"> '.$Variant->link();
-		$first=false;
+		if($variantID != 57)
+		{
+			if( $first )
+				$defaultVariantName=$variantName;
+			$Variant = libVariant::loadFromVariantName($variantName);
+			$checkboxes[] = '<input type="radio" '.($first?'checked="on" ':'').'name="newGame[variantID]" value="'.$variantID.'"> '.$Variant->link();
+			$first=false;
+		}
 	}
 	print '<p>'.implode('</p><p>', $checkboxes).'</p>';
 	?>
@@ -144,6 +147,9 @@ else
 		available on this server.<br /><br />
 
 		Click any of the variant names to view the details on the variants page.<br /><br />
+		
+		<strong>*Please note that 1 vs 1 games will default to a 5 point bet as an unranked game no matter what bet/game type are selected</strong>
+		<br /><br />
 
 		<strong>Default:</strong> <?php print $defaultVariantName; ?>
 	</li>
