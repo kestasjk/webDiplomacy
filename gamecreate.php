@@ -108,6 +108,18 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		
 		$input['anon'] = ( (strtolower($input['anon']) == 'yes') ? 'Yes' : 'No' );
 		
+		if ( $input['variantID'] == 15 )
+		{
+			$input['bet'] = 5; 
+			$input['potType'] = 'Unranked';
+		}
+		
+		if ( $input['variantID'] == 23 )
+		{
+			$input['bet'] = 5; 
+			$input['potType'] = 'Unranked';
+		}
+		
 		switch($input['pressType']) {
 			case 'PublicPressOnly':
 				$input['pressType'] = 'PublicPressOnly';

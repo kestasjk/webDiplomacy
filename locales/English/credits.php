@@ -58,6 +58,9 @@ $credits = array(
 	,array('<a href="http://www.webdiplomacy.net/profile.php?userID=54909">A_Tin_Can</a>
 	','Coding Updates and Site Improvements')
 	
+	,array('<a href="http://www.webdiplomacy.net/profile.php?userID=15658">jmo1121109</a>
+	','Coding Updates and Site Improvements')
+	
 	,array('<a href="http://www.webdiplomacy.net/profile.php?userID=4946">abgemacht</a>
 	','Maintaining the <a href="https://www.google.com/maps/d/u/0/viewer?mid=zkz1OHicklqk.ky67Va8gNVi0">webDiplomacy Player Map (external link)</a>, pm him your city to get your location added to the map.')
 
