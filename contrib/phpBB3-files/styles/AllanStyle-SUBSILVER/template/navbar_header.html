@@ -1,0 +1,106 @@
+<div class="navbar-top" role="navigation">
+	<div class="inner">
+
+	<div style="float:right">
+			<!-- EVENT overall_header_searchbox_before -->
+			<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH -->
+			<div id="search-box" class="search-box search-header" role="search">
+				<form action="{U_SEARCH}" method="get" id="search">
+				<fieldset>
+					<input name="keywords" id="keywords" type="search" maxlength="128" title="{L_SEARCH_KEYWORDS}" class="inputbox search tiny" size="20" value="{SEARCH_WORDS}" placeholder="{L_SEARCH_MINI}" />
+					<button class="button button-search" type="submit" title="{L_SEARCH}">
+						<i class="icon fa-search fa-fw" aria-hidden="true"></i><span class="sr-only">{L_SEARCH}</span>
+					</button>
+					<a href="{U_SEARCH}" class="button button-search-end" title="{L_SEARCH_ADV}">
+						<i class="icon fa-cog fa-fw" aria-hidden="true"></i><span class="sr-only">{L_SEARCH_ADV}</span>
+					</a>
+					{S_SEARCH_HIDDEN_FIELDS}
+				</fieldset>
+				</form>
+			</div>
+			<!-- ENDIF -->
+			<!-- EVENT overall_header_searchbox_after -->
+			</div>
+	<ul id="nav-main" class="nav-main linklist" role="menubar">
+
+		<li id="quick-links" style="padding: 7px 0px" class="quick-links dropdown-container responsive-menu<!-- IF not S_DISPLAY_QUICK_LINKS and not S_DISPLAY_SEARCH --> hidden<!-- ENDIF -->" data-skip-responsive="true">
+			<a href="#" class="dropdown-trigger">
+				<i class="icon fa-bars fa-fw" aria-hidden="true"></i><span>{L_QUICK_LINKS}</span>
+			</a>
+			<div class="dropdown">
+				<div class="pointer"><div class="pointer-inner"></div></div>
+				<ul class="dropdown-contents" role="menu">
+					<!-- EVENT navbar_header_quick_links_before -->
+
+					<!-- IF S_DISPLAY_SEARCH -->
+						<li class="separator"></li>
+						<!-- IF S_REGISTERED_USER -->
+							<li>
+								<a href="{U_SEARCH_SELF}" role="menuitem">
+									<i class="icon fa-file-o fa-fw icon-gray" aria-hidden="true"></i><span>{L_SEARCH_SELF}</span>
+								</a>
+							</li>
+						<!-- ENDIF -->
+						<!-- IF S_USER_LOGGED_IN -->
+							<li>
+								<a href="{U_SEARCH_NEW}" role="menuitem">
+									<i class="icon fa-file-o fa-fw icon-red" aria-hidden="true"></i><span>{L_SEARCH_NEW}</span>
+								</a>
+							</li>
+						<!-- ENDIF -->
+						<!-- IF S_LOAD_UNREADS -->
+							<li>
+								<a href="{U_SEARCH_UNREAD}" role="menuitem">
+									<i class="icon fa-file-o fa-fw icon-red" aria-hidden="true"></i><span>{L_SEARCH_UNREAD}</span>
+								</a>
+							</li>
+						<!-- ENDIF -->
+							<li>
+								<a href="{U_SEARCH_UNANSWERED}" role="menuitem">
+									<i class="icon fa-file-o fa-fw icon-gray" aria-hidden="true"></i><span>{L_SEARCH_UNANSWERED}</span>
+								</a>
+							</li>
+							<li>
+								<a href="{U_SEARCH_ACTIVE_TOPICS}" role="menuitem">
+									<i class="icon fa-file-o fa-fw icon-blue" aria-hidden="true"></i><span>{L_SEARCH_ACTIVE_TOPICS}</span>
+								</a>
+							</li>
+							<li class="separator"></li>
+							<li>
+								<a href="{U_SEARCH}" role="menuitem">
+									<i class="icon fa-search fa-fw" aria-hidden="true"></i><span>{L_SEARCH}</span>
+								</a>
+							</li>
+					<!-- ENDIF -->
+
+					<!-- IF not S_IS_BOT and (S_DISPLAY_MEMBERLIST or U_TEAM) -->
+						<li class="separator"></li>
+						<!-- IF S_DISPLAY_MEMBERLIST -->
+							<li>
+								<a href="{U_MEMBERLIST}" role="menuitem">
+									<i class="icon fa-group fa-fw" aria-hidden="true"></i><span>{L_MEMBERLIST}</span>
+								</a>
+							</li>
+						<!-- ENDIF -->
+						<!-- IF U_TEAM -->
+							<li>
+								<a href="{U_TEAM}" role="menuitem">
+									<i class="icon fa-shield fa-fw" aria-hidden="true"></i><span>{L_THE_TEAM}</span>
+								</a>
+							</li>
+						<!-- ENDIF -->
+					<!-- ENDIF -->
+					<li class="separator"></li>
+
+					<!-- EVENT navbar_header_quick_links_after -->
+				</ul>
+			</div>
+		</li>
+
+		<!-- EVENT overall_header_navigation_prepend -->
+		<!-- EVENT overall_header_navigation_append -->
+
+	</ul>
+	</div>
+</div>
+
