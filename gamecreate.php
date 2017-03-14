@@ -144,7 +144,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		}
 		switch($input['drawType']) {
 			case 'draw-votes-hidden':
-				$input['drawType'] = 'draw-votes-hidden';
+				$input['drawType'] = 'draw-votes-hidden'; 
 				break;
 			default:
 				$input['drawType'] = 'draw-votes-public';

@@ -63,7 +63,7 @@ class adjConvoyChains
 		{
 			if ( $nodeID == 'End' )
 			{
-				$paths= array(array());
+				$paths[] = array();
 				break;
 			}
 

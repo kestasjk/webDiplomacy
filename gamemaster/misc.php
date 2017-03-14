@@ -107,7 +107,7 @@ class miscUpdate
 	{
 		global $Misc;
 
-		list($Misc->ErrorLogCount) = libError::stats();
+		libError::errorTimes(); // Within this code an update is performed
 	}
 
 	/**
