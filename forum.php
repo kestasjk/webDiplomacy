@@ -23,6 +23,11 @@
  * @package Base
  */
 require_once('header.php');
+
+if( isset(Config::$customForumURL) ) {
+	libHTML::notice("Forum moved", "Please visit <a href='".Config::$customForumURL."'>here</a> for the forum.");
+}
+
 require_once(l_r('pager/pagerforum.php'));
 require_once(l_r('lib/message.php'));
 

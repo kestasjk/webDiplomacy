@@ -527,14 +527,17 @@ else
 		print '<div class="homeHeader">'.l_t('Upcoming live games').' <a href="gamelistings.php?page-games=1&gamelistType=New">'.libHTML::link().'</a></div>';
 		print $liveGames;
 	}
-	print '<div class="homeHeader">'.l_t('Forum').' <a href="forum.php">'.libHTML::link().'</a></div>';
-	if( file_exists(libCache::dirName('forum').'/home-forum.html') )
-		print file_get_contents(libCache::dirName('forum').'/home-forum.html');
-	else
-	{
-		$buf_home_forum=libHome::forumNew();
-		file_put_contents(libCache::dirName('forum').'/home-forum.html', $buf_home_forum);
-		print $buf_home_forum;
+	
+	if( !isset(Config::$customForumURL)) {
+		print '<div class="homeHeader">'.l_t('Forum').' <a href="forum.php">'.libHTML::link().'</a></div>';
+		if( file_exists(libCache::dirName('forum').'/home-forum.html') )
+			print file_get_contents(libCache::dirName('forum').'/home-forum.html');
+		else
+		{
+			$buf_home_forum=libHome::forumNew();
+			file_put_contents(libCache::dirName('forum').'/home-forum.html', $buf_home_forum);
+			print $buf_home_forum;
+		}
 	}
 	print '</td>';
 

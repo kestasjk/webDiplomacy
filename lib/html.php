@@ -587,7 +587,12 @@ class libHTML
 
 		// Items displayed in the menu
 		$links['index.php']=array('name'=>'Home', 'inmenu'=>TRUE, 'title'=>"See what's happening");
-		$links['forum.php']=array('name'=>'Forum', 'inmenu'=>TRUE, 'title'=>"The forum; chat, get help, help others, arrange games, discuss strategies");
+		if( isset(Config::$customForumURL) ) {
+			$links[Config::$customForumURL]=array('name'=>'Forum', 'inmenu'=>TRUE, 'title'=>"The forum; chat, get help, help others, arrange games, discuss strategies");
+		} else {
+			$links['forum.php']=array('name'=>'Forum', 'inmenu'=>TRUE, 'title'=>"The forum; chat, get help, help others, arrange games, discuss strategies");
+		}
+		
 		$links['gamelistings.php']=array('name'=>'Games', 'inmenu'=>TRUE, 'title'=>"Game listings; a searchable list of the games on this server");
 
 		if (is_object($User))

@@ -150,6 +150,12 @@ class Config
 	public static $faq=array('Have any extra questions been added?'=>'No, not yet.');
 
 	/**
+	 * If this is set it is used as a link to a custom forum, instead of the built-in forum
+	 * @var string
+	 */
+	//public static $customForumURL = 'contrib/phpBB3/';
+	
+	/**
 	 * The directory in which error logs are stored. If this returns false errors will not be logged.
 	 * *Must not be accessible to the web server, as sensitive info is stored in this folder.*
 	 *
