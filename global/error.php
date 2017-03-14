@@ -37,7 +37,7 @@ function assert_handler ($file, $line, $expr)
 	trigger_error("An assertion, ".$expr.", was not met as required.");
 }
 
-function exception_handler(Exception $exception)
+function exception_handler(Throwable $exception)
 {
 	$file = $exception->getFile();
 	$trace = $exception->getTraceAsString();
