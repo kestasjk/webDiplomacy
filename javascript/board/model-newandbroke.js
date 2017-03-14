@@ -491,7 +491,7 @@ function loadModel() {
 				StartTerr.getBorderTerritories().pluck('id').intersect(this.Fleets.pluck('Territory').pluck('id')).map(
 					function(fleetID) {
 						if( !FleetPaths.keys().any(function(id) { return ( id == fleetID ); }) ) {
-							FleetPaths.
+							//FleetPaths.
 						}
 					}
 				);

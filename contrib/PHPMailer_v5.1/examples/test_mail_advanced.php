@@ -5,7 +5,7 @@
 <body>
 
 <?php
-require_once('../class.phpmailer.php';
+require_once('../class.phpmailer.php');
 
 $mail = new PHPMailer(true); //defaults to using php "mail()"; the true param means it will throw exceptions on errors, which we need to catch
 
