@@ -87,7 +87,7 @@ class webdip extends \phpbb\auth\provider\base
 					'username'=>$wD_Data['username'], 
 					'group_id'=>2, 
 					'user_email'=>$wD_Data['email'], 
-					'user_type'=>3,
+					'user_type'=>0, // Regular user; 3 = forum founder, with admin access
 					'webdip_user_id'=>$userId
 			);
 			
