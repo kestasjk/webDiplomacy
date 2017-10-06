@@ -4,8 +4,12 @@
    Please note that this is for issues with the software
    Including new features and bug reports
 
-   It is not for problems with games on webdiplomacy.net
-   If you're having a non-software problem, please email webdipmod@gmail.com
+   It is not for problems that require moderator attention to games 
+   on webdiplomacy.net. If you're having a non-software problem, 
+   please email webdipmod@gmail.com
+
+   It is also not for bugs with vdiplomacy.net, unless those bugs
+   are also present in this code.
 
    If you are reporting a bug, please use the template below.
    If you're not reporting a bug, feel free to remove the template.
