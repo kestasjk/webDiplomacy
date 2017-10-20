@@ -4,6 +4,10 @@
  * @subpackage EasyCaptcha
  */
 
+// Workaround a bug in some versions of GD
+// See http://php.net/manual/en/function.imagefttext.php for details
+putenv('GDFONTPATH=' . realpath('.'));
+
 /***************************************************************/
    /* PhpCaptcha - A visual and audio CAPTCHA generation library
    
