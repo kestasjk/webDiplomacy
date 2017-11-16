@@ -560,6 +560,7 @@ div.gamelistings-tabs a:hover {
 	margin-left:10px;
 	margin-right:10px;
 	font-size:15px;
+	word-wrap: break-word;
 }
 .message-foot-notification {
 	font-size:14px;
@@ -714,7 +715,10 @@ span.orderNotice {
 }
 
 tr[class^="replyalternate"]{
-	word-break: break-all;
+	word-wrap: break-word;
+}
+#chatboxscroll > TABLE.chatbox{
+	table-layout: fixed;
 }
 input[id^="UpdateButton"]{
 	margin-top: 10px;
