@@ -725,6 +725,22 @@ input[id^="FinalizeButton"]{
 	margin-top: 10px;
 	width: auto !important;
 }
+@media only screen and (max-width: 500px){
+	#logo{
+		position: relative;
+		width: 60%;
+		display: block;
+		margin: 0 auto;
+	}
+}
+@media only screen and (max-width: 800px) and (min-width: 500px){
+	#logo{
+		position: relative;
+		width: 40%;
+		display: block;
+		margin: 0 auto;
+	}
+}
 
 @media only screen and (max-width: 800px) {
 	body {
@@ -754,12 +770,6 @@ input[id^="FinalizeButton"]{
 	#header-goto a{
 		display: inline-block;
 		margin-top: 5px;
-	}
-	#logo{
-		position: relative;
-		width: 60%;
-		display: block;
-		margin: 0 auto;
 	}
 	#seperator{
 		margin: 0 -10px;
