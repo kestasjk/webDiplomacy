@@ -763,7 +763,7 @@ input[id^="FinalizeButton"]{
 		text-align: center;
 	}
 	#header-welcome a:first-child {
-		word-break: break-all;
+		word-wrap: break-word;
 	}
 	#header-goto {
 		margin-top: 10px;
@@ -814,6 +814,8 @@ input[id^="FinalizeButton"]{
 	.reply > .message-head{
 		text-align: right;
 		float: right;
+		word-wrap: break-word;
+		max-width: 100%;
 	}
 	.thread > .message-subject{
 		text-align: inherit;
@@ -821,6 +823,8 @@ input[id^="FinalizeButton"]{
 	.thread > .message-head{
 		text-align: right;
 		float: right;
+		word-wrap: break-word;
+		max-width: 100%;
 	}
 	div.hr, div.hrthin {
 		width:100%;
@@ -835,5 +839,8 @@ input[id^="FinalizeButton"]{
 	#chatboxtabs {
 		font-size: 16px !important;
 		padding-bottom: 10px;
+	}
+	.message-contents{
+		word-wrap: break-word;
 	}
 }

@@ -171,6 +171,9 @@ td.homeGameNotices .homeForumSubject {
 }
 
 @media only screen and (max-width: 800px) {
+	table.homeTable {
+		table-layout: fixed;
+	}
 	table.homeTable td {
 		display: block;
 	}
