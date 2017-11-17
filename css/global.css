@@ -728,6 +728,9 @@ input[id^="FinalizeButton"]{
 	margin-top: 10px;
 	width: auto !important;
 }
+.archive-messages-table{
+	table-layout: fixed;
+}
 @media only screen and (max-width: 500px){
 	#logo{
 		position: relative;
