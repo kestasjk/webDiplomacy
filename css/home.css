@@ -178,8 +178,19 @@ td.homeGameNotices .homeForumSubject {
 		display: block;
 	}
 	table.homeTable tr {
-		display: block;
+		display: flex;
+		flex-direction: column;
 	}
+	table.homeTable .homeMessages{
+		order: 3;
+	}
+	table.homeTable .homeGameNotices{
+		order: 2;
+	}
+	table.homeTable .homeGamesStats{
+		order: 1;
+	}
+
 	td.homeMessages {
 		width:100%;
 		max-width: 100%;
