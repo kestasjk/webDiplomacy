@@ -495,4 +495,7 @@ div.memberBoardHeader {
 	.orderEnd{
 		display: none;
 	}
+	#mapImage{
+		width: 100%;
+	}
 }
