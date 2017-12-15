@@ -36,7 +36,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		</li>
 
 		<li class="formlisttitle">E-mail address</li>
-		<li class="formlistfield"><input type="text" name="emailValidate" size="50" value="<?php
+		<li class="formlistfield"><input type="text" name="emailValidate" value="<?php
 		        if ( isset($_REQUEST['emailValidate'] ) )
 					print $_REQUEST['emailValidate'];
 		        ?>"></li>
