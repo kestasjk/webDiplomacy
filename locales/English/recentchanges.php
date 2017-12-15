@@ -29,6 +29,11 @@ font-style:normal;
 	margin-left:30px;
 }
 </style>
+February 9th, 2017
+<ul>
+<li>Updated forum rules and reformatted rules page.</li>
+</ul>
+<div class="hr"></div>
 December 29th, 2016
 <ul>
 <li>Added ClassicFvA, ClassicGvI and KnownWorld901 as playable variants to the site. 1v1 games are only playable as unranked games with 5 point bets.</li>
