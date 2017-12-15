@@ -31,8 +31,8 @@ class webdip extends \phpbb\auth\provider\base
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		
-		require_once($this->phpbb_root_path . '..\..\config.php');
-		require_once($this->phpbb_root_path . '..\..\lib\auth.php');
+		require_once($this->phpbb_root_path . '../../config.php');
+		require_once($this->phpbb_root_path . '../../lib/auth.php');
 	}
 
 	// Ignore usernames and passwords but allow a successful login with credentials to allow for "reauthentication" for the admin CP
@@ -87,7 +87,7 @@ class webdip extends \phpbb\auth\provider\base
 					'username'=>$wD_Data['username'], 
 					'group_id'=>2, 
 					'user_email'=>$wD_Data['email'], 
-					'user_type'=>0, // Regular user; 3 = forum founder, with admin access
+					'user_type'=>0, // Normal user. 3 = founder
 					'webdip_user_id'=>$userId
 			);
 			
