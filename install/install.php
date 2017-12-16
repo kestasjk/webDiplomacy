@@ -59,13 +59,19 @@ elseif ( $Misc->Version == 104 || $Misc->Version == 130 )
 }
 else
 {
-	unset($DB); // Prevent libHTML from trying to do anything fancy if the database is out of sync with the code
-	libHTML::error(
-			"Database version ".($Misc->Version/100)." and code
-			version ".(VERSION/100)." don't match, and no
-			auto-update script is available for this version.
-			Please wait while the admin runs update.sql"
-		);
+	libHTML::starthtml();
+	if (is_object($User) && $User->type['Admin'])
+	{
+		print '<div class="content-notice"><p>'."Database version ".($Misc->Version/100)." and code
+				version ".(VERSION/100)." don't match. Auto-update script is called.".'</p>';
+		require_once('update.php');
+		print '<br>Please refresh your browser.';
+	} else
+	{
+		print '<div class="content-notice"><p>'."Database version ".($Misc->Version/100)." and code
+				version ".(VERSION/100)." don't match. Please wait until an administrator has run the update script.".'</p>';
+	}
+	print '</div>';
 }
 
 print '</div>';

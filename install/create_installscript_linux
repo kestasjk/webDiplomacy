@@ -1,0 +1,8 @@
+#!/bin/sh
+#When editing this file please make sure to also update create_installscript_windows.cmd
+cp install.sql install_full.sql
+for VAR in $(find . -name 'update.sql' | sort); do
+   echo Appending $VAR
+   cat $VAR >> install_full.sql
+done
+echo Installscript successfully generated.
