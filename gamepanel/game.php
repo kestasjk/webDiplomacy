@@ -260,7 +260,7 @@ class panelGame extends Game
 			$alternatives[]=l_t('Wait for orders');
 
 		if ( $alternatives )
-			return '<div class="titleBarLeftSide" style="float:left">
+			return '<div class="titleBarLeftSide">
 				<span class="gamePotType">'.implode(', ',$alternatives).'</span>
 				</div>
 			<div style="clear:both"></div>

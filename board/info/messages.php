@@ -41,7 +41,7 @@ print '<h4>'.l_t('Chat archive').'</h4>';
 print '<div class="variant'.$Game->Variant->name.'">';
 
 $CB = $Game->Variant->Chatbox();
-print '<table>'.$CB->getMessages( -1, $pager->SQLLimit()).'</table>';
+print '<table class="archive-messages-table">'.$CB->getMessages( -1, $pager->SQLLimit()).'</table>';
 
 print '</div>';
 

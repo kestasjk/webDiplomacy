@@ -412,3 +412,90 @@ div.memberBoardHeader {
 	border-top: 1px solid #cecece!important;
 	padding:0 5%;
 }
+
+@media only screen and (max-width: 800px) {
+	.titleBarRightSide {
+		float: none;
+		text-align: center;
+	}
+	.titleBarLeftSide {
+		float: none;
+		text-align: center;
+	}
+	.gamePanelHome{
+		font-size: 16px;
+	}
+	.gamePanelHome .titleBar{
+		font-size: 14px;
+	}
+	.gamePanelHome .homeMembersTable td {
+		display: table-cell;
+	}
+	.gamePanelHome .homeMembersTable tr {
+		display: table-row;
+	}
+	.gamePanelHome .homeMembersTable td {
+		display: table-cell;
+	}
+	.gamePanelHome .homeMembersTable tr {
+		display: table-row;
+	}
+	.gamePanelHome .occupationBarTable td {
+		display: table-cell;
+	}
+	.gamePanelHome .occupationBarTable tr {
+		display: table-row;
+	}
+	.gamePanelHome .memberBoardHeader td {
+		display: table-cell;
+	}
+	.gamePanelHome .memberBoardHeader tr {
+		display: table-row;
+	}
+	.gamePanel {
+		width:100%;
+	}
+	.homeGameLinks{
+		font-size: 16px;
+	}
+	.memberUserDetail {
+		float:none;
+		text-align: right;
+		overflow: hidden;
+	}
+	.memberUserDetail > input{
+		margin-top: 10px;
+	}
+	.archiveBar{
+		text-align: center;
+	}
+	.memberName{
+		white-space: normal;
+		word-break: break-all;
+	}
+	.memberLeftSide{
+		text-align: center;
+	}
+	span[class*="StatusIcon"] > img{
+		margin: 0 auto;
+		display: block;
+	}
+	.memberBoardHeader img{
+		display: inherit !important;
+		margin: inherit !important;
+	}
+	img[title="Mute player"]{
+		margin: 0 auto;
+		display: block;
+	}
+	img[title="Unread message"]{
+		margin: 0 auto 5px;
+		display: block;
+	}
+	.orderEnd{
+		display: none;
+	}
+	#mapImage{
+		width: 100%;
+	}
+}

@@ -169,3 +169,46 @@ td.homeGameNotices .homeForumSubject {
 	color: #39383A;
 	/*color:#666;*/
 }
+
+@media only screen and (max-width: 800px) {
+	table.homeTable {
+		table-layout: fixed;
+	}
+	table.homeTable td {
+		display: block;
+	}
+	table.homeTable tr {
+		display: flex;
+		flex-direction: column;
+	}
+	table.homeTable .homeMessages{
+		order: 3;
+	}
+	table.homeTable .homeGameNotices{
+		order: 2;
+	}
+	table.homeTable .homeGamesStats{
+		order: 1;
+	}
+
+	td.homeMessages {
+		width:100%;
+		max-width: 100%;
+	}
+
+	td.homeGameNotices {
+		width:100%;
+		max-width: 100%;
+		margin-top: 5px;
+	}
+
+	td.homeGamesStats {
+		width:100%;
+		max-width: 100%;
+		margin-top: 5px;
+	}
+	.homeForumGroup {
+		font-size:16px;
+	}
+
+}
