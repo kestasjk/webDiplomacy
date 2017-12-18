@@ -287,7 +287,7 @@ a.light {
 	margin-right: auto;
 	margin-top:0;
 	margin-bottom:0;
-	max-width: 800px;
+	width: 800px;
 }
 #logo {
 	padding:0;
@@ -339,7 +339,7 @@ a.light {
 			because IE doesn't support min-width.. */
 	margin: 0;
 	padding: 0;
-	max-width: 800px;
+	width: 800px;
 	background-color: #006699;
 	font-size: 0;
 	height: 5px;
@@ -352,7 +352,7 @@ div.content {
 	margin-left: auto;
 	margin-right: auto;
 	margin-top: 5px;
-	max-width: 750px;
+	width: 750px;
 	background-color: #fff;
 	border: 1px solid #aaa;
 	padding: 15px 24px;	
@@ -362,7 +362,7 @@ div.content-bare {
 	position: relative;
 	margin-left: auto;
 	margin-right: auto;
-	max-width: 798px; /* 800-2x1px border*/
+	width: 798px; /* 800-2x1px border*/
 }
 div.content-notice {
 	text-align: left;
@@ -370,7 +370,7 @@ div.content-notice {
 	margin-left: auto;
 	margin-right: auto;
 	margin-top: 5px;
-	max-width: 768px;
+	width: 768px;
 	background-color: #fff;
 	border: 1px solid #aaa;
 	padding: 8px 15px;	
@@ -399,8 +399,8 @@ div.content-home-updates {
 	margin-left: auto;
 	margin-right: auto;
 	margin-top: 5px;
-	padding:0;
-	max-width: 750px;
+	padding:0;	
+	width: 750px;
 	padding-left: 24px;
 	padding-right: 24px;
 	border: 1px solid #aaa;
@@ -410,13 +410,13 @@ div.content-home-updates {
 	margin-top:0;
 	}
 #content-publicforum {
-	max-width: 710px;
+	width: 710px;
 	height: auto;
 	margin-left:auto;
 	margin-right:auto;
 }
 div.forum {
-	max-width: 710px;
+	width: 710px;
 	margin-left:auto;
 	margin-right:auto;
 	overflow:auto;
@@ -560,7 +560,6 @@ div.gamelistings-tabs a:hover {
 	margin-left:10px;
 	margin-right:10px;
 	font-size:15px;
-	word-wrap: break-word;
 }
 .message-foot-notification {
 	font-size:14px;
@@ -576,7 +575,7 @@ form {
 }
 
 .reply {
-	max-width: 630px;
+	width: 630px;
 	margin-left: auto;
 	margin-right: auto;
 	padding-top:10px;
@@ -712,22 +711,4 @@ span.orderNotice {
 .likeMessageToggleLink, .likeCount {
 	font-size:8pt;
 	font-style:italic;
-}
-
-tr[class^="replyalternate"]{
-	word-wrap: break-word;
-}
-#chatboxscroll > TABLE.chatbox{
-	table-layout: fixed;
-}
-input[id^="UpdateButton"]{
-	margin-top: 10px;
-	width: auto !important;
-}
-input[id^="FinalizeButton"]{
-	margin-top: 10px;
-	width: auto !important;
-}
-.archive-messages-table{
-	table-layout: fixed;
 }
