@@ -160,6 +160,8 @@ function changeCSS(toggle) {
         newlinkGamePanel.setAttribute("id", "game-panel-css");
         newlinkGamePanel.setAttribute("href", cssDirectory + "/desktopOnly/gamepanel.css");
         document.getElementsByTagName("head").item(0).replaceChild(newlinkGamePanel, oldlinkGamePanel);
+
+        document.getElementById("viewport-tag").remove();
     }else{
         var oldlinkGlobal = document.getElementById("global-css");
         var newlinkGlobal = document.createElement("link");
@@ -184,5 +186,11 @@ function changeCSS(toggle) {
         newlinkGamePanel.setAttribute("id", "game-panel-css");
         newlinkGamePanel.setAttribute("href", cssDirectory + "/gamepanel.css");
         document.getElementsByTagName("head").item(0).replaceChild(newlinkGamePanel, oldlinkGamePanel);
+
+        var viewPortTag = document.createElement("meta");
+        viewPortTag.setAttribute("id", "viewport-tag");
+        viewPortTag.setAttribute("name", "viewport");
+        viewPortTag.setAttribute("content", "width=device-width, initial-scale=1");
+        document.getElementsByTagName("head").item(0).appendChild(viewPortTag);
     }
 }
