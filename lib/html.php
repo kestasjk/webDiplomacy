@@ -408,9 +408,9 @@ class libHTML
 		<meta name="keywords" content="'.l_t('diplomacy,diplomacy game,online diplomacy,classic diplomacy,web diplomacy,diplomacy board game,play diplomacy,php diplomacy').'" />
 		<link rel="shortcut icon" href="'.STATICSRV.l_s('favicon.ico').'" />
 		<link rel="icon" href="'.STATICSRV.l_s('favicon.ico').'" />
-		<link rel="stylesheet" href="'.CSSDIR.l_s('/global.css?ver=1').'" type="text/css" />
-		<link rel="stylesheet" href="'.CSSDIR.l_s('/gamepanel.css').'" type="text/css" />
-		<link rel="stylesheet" href="'.CSSDIR.l_s('/home.css').'" type="text/css" />
+		<link rel="stylesheet" id="global-css" href="'.CSSDIR.l_s('/global.css?ver=1').'" type="text/css" />
+		<link rel="stylesheet" id="game-panel-css" href="'.CSSDIR.l_s('/gamepanel.css').'" type="text/css" />
+		<link rel="stylesheet" id="home-css" href="'.CSSDIR.l_s('/home.css').'" type="text/css" />
 		'.$variantCSS.'
 		<script type="text/javascript" src="useroptions.php"></script>
 		<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/prototype.js').'"></script>
@@ -873,6 +873,7 @@ class libHTML
 	static private function footerCopyright() {
 		// Version, sourceforge and HTML compliance logos
 		return l_t('webDiplomacy version <strong>%s</strong>',number_format(VERSION/100,2)).'<br />
+            <a class="light" id="js-desktop-mode" style="cursor: pointer; color: #006699;" onclick="toggleDesktopMode()">Enable Desktop Mode</a> <br />
 			<a href="http://github.com/kestasjk/webDiplomacy" class="light">GitHub Project</a> | 
 			<a href="http://github.com/kestasjk/webDiplomacy/issues" class="light">Bug Reports</a> | <a href="mailto:'.Config::$modEMail.'" class="light">Contact Moderator</a>';
 	}
@@ -955,7 +956,11 @@ class libHTML
 		
 		if( is_object($Locale) )
 			$Locale->onFinish();
-		
+
+		//Place to put php variables into javascript so they are accessible from utility files
+		$buf .= '
+		<script type="text/javascript">var cssDirectory = "'.CSSDIR.'"</script>';
+
 		// Add the javascript includes:
 		$footerIncludes = array();
 		$footerIncludes[] = l_j('../locales/layer.js');
