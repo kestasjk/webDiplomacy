@@ -387,6 +387,7 @@ class libHTML
 	 */
 	static public function prebody ( $title )
 	{
+		$jsVersion = 7;  // increment this to force clients to reload their JS files
 		$variantCSS=array();
 		foreach(Config::$variants as $variantName)
 			$variantCSS[] = '<link rel="stylesheet" href="'.STATICSRV.l_s('variants/'.$variantName.'/resources/style.css').'" type="text/css" />';
@@ -400,7 +401,6 @@ class libHTML
 		return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 		<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">
 	<head>
-	<meta id="viewport-tag" name="viewport" content="width=device-width, initial-scale=1">
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 		<meta http-equiv="Content-Style-Type" content="text/css" />
 		<meta name="robots" content="index,follow" />
@@ -408,7 +408,7 @@ class libHTML
 		<meta name="keywords" content="'.l_t('diplomacy,diplomacy game,online diplomacy,classic diplomacy,web diplomacy,diplomacy board game,play diplomacy,php diplomacy').'" />
 		<link rel="shortcut icon" href="'.STATICSRV.l_s('favicon.ico').'" />
 		<link rel="icon" href="'.STATICSRV.l_s('favicon.ico').'" />
-		<link rel="stylesheet" id="global-css" href="'.CSSDIR.l_s('/global.css?ver=1').'" type="text/css" />
+		<link rel="stylesheet" id="global-css" href="'.CSSDIR.l_s('/global.css').'" type="text/css" />
 		<link rel="stylesheet" id="game-panel-css" href="'.CSSDIR.l_s('/gamepanel.css').'" type="text/css" />
 		<link rel="stylesheet" id="home-css" href="'.CSSDIR.l_s('/home.css').'" type="text/css" />
 		'.$variantCSS.'
@@ -418,8 +418,10 @@ class libHTML
 		<link rel="stylesheet" type="text/css" href="'.STATICSRV.l_s('contrib/js/pushup/src/css/pushup.css').'" />
 		<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/pushup/src/js/pushup.js').'"></script>
 		<script type="text/javascript">
-		STATICSRV="'.STATICSRV.'";
+		    STATICSRV="'.STATICSRV.'";
+		    var cssDirectory = "'.CSSDIR.'";
 		</script>
+		<script type="text/javascript" src="'.l_j('javascript/desktopMode.js').'?ver='.$jsVersion.'"></script>
 		<title>'.l_t('%s - webDiplomacy',$title).'</title>
 	</head>';
 	}
@@ -914,7 +916,8 @@ class libHTML
 	static private function footerScripts() {
 		global $User, $Locale;
 
-		$jsVersion = 6;  // increment this to force clients to reload their JS files
+
+		$jsVersion = 7;  // increment this to force clients to reload their JS files
 
 		$buf = '';
 
@@ -956,10 +959,6 @@ class libHTML
 		
 		if( is_object($Locale) )
 			$Locale->onFinish();
-
-		//Place to put php variables into javascript so they are accessible from utility files
-		$buf .= '
-		<script type="text/javascript">var cssDirectory = "'.CSSDIR.'"</script>';
 
 		// Add the javascript includes:
 		$footerIncludes = array();
@@ -1014,6 +1013,17 @@ class libHTML
 				'.(Config::$debug ? 'alert(e);':'').'
 				}
 			}, this);
+			var toggle = localStorage.getItem("desktopEnabled");
+			var toggleElem = document.getElementById(\'js-desktop-mode\');
+            if (toggle == "true") {
+                if(toggleElem !== null) {
+                    toggleElem.innerHTML = "Disable Desktop Mode";
+                }
+            } else {
+                if(toggleElem !== null) {
+                    toggleElem.innerHTML = "Enable Desktop Mode";
+                }
+            }
 		</script>
 		';
 		
