@@ -76,7 +76,7 @@ $territoryRawData=array(
 	array('Istanbul', 'Coast', 'Yes', 9, 770, 598, 432, 365),
 	array('Izmir', 'Coast', 'Yes', 9, 808, 674, 425, 416),
 	array('Jordan', 'Coast', 'No', 0, 952, 792, 523, 452),
-	array('Kazakhstan', 'Land', 'No', 0, 1192, 456, 655, 212),
+	array('Kazakhstan', 'Coast', 'No', 0, 1192, 456, 655, 212),
 	array('Kharkov', 'Land', 'Yes', 10, 868, 400, 471, 240),
 	array('Kiev', 'Land', 'Yes', 10, 832, 418, 447, 243),
 	array('Krakow', 'Land', 'Yes', 6, 642, 414, 349, 231),
