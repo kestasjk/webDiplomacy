@@ -453,6 +453,102 @@ class libHome
 		$buf .=  '<table><tr><td>'.implode('</td></tr><tr><td>',$forumNew).'</td></tr></table>';
 		return $buf;
 	}
+
+
+	static function forumBlockExtern()
+	{
+		$buf = '<div class="homeHeader">'.l_t('Forum').'</div>';
+
+		$forumNew=libHome::forumNewExtern();
+		$buf .=  '<table><tr><td>'.implode('</td></tr><tr><td>',$forumNew).'</td></tr></table>';
+		return $buf;
+	}
+
+	static function forumNewExtern()
+	{
+		// Select by id, prints replies and new threads
+		global $DB, $Misc;
+		
+		$tabl = $DB->sql_tabl("SELECT t.forum_id, f.forum_name,
+				
+				t.topic_id, t.topic_title, t.topic_time,
+				t.topic_views, t.topic_posts_approved,
+				
+				u1.webdip_user_id as topic_poster_webdip, t.topic_poster, t.topic_first_poster_name, t.topic_first_poster_colour,
+				
+				t.topic_last_post_id, t.topic_last_post_time,
+				u2.webdip_user_id as topic_last_poster_webdip, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_poster_colour
+				
+				FROM phpbb_topics t
+				INNER JOIN phpbb_forums f ON f.forum_id = t.forum_id
+				INNER JOIN phpbb_users u1 ON u1.user_id = t.topic_poster
+				INNER JOIN phpbb_users u2 ON u2.user_id = t.topic_last_poster_id
+				WHERE t.topic_visibility = 1
+				ORDER BY t.topic_last_post_time DESC
+				LIMIT 20");
+
+		$buf = '';
+		while($t = $DB->tabl_hash($tabl))
+		{
+			$buf .= '<div class="hr"></div>';
+
+			$alt = libHTML::alternate();
+			$buf .= '<div class="homeForumGroup homeForumAlt'.$alt.'">';
+
+				$buf .= '
+				<div class="homeForumSubject" >';
+				//$buf .= '<div style="float:right"><img src="http://127.0.0.1/images/historyicons/external.png" width="10" height="10"></div>';
+				
+				$buf .= '<span style=\'color:black; font-size:90%\'>'.($t['topic_posts_approved']>1?'Re: ':'').'</span>'
+					.'<a href="" style=\'font-size:110%\'>'.$t['topic_title'].'</a><div style="clear:both"></div></div>';
+				$buf .= '<div class="homeForumPost homeForumPostAlt'.$alt.'">';
+
+				
+				if( $t['topic_posts_approved']>1 ) {
+
+					$buf .= '<div class="" style="margin-bottom:5px;margin-left:3px; margin-right:3px;">';
+					$buf .= '<div class="homeForumPostTime" style="float:right"><em>'.libTime::text($t['topic_last_post_time']).'</em></div>';
+					$buf .= '<span style=\'color:black; font-size:90%\'>';
+					$buf .= 'Latest:</span> <a href="profile.php?userID='.$t['topic_last_poster_webdip'].'" class="light">'.$t['topic_last_poster_name'].'</a> '.libHTML::loggedOn($t['topic_last_poster_webdip'])
+					.'</div>';
+					
+
+				}
+
+					$buf .= '<div class="" style="margin-bottom:5px;margin-left:3px; margin-right:3px;">';
+					$buf .= '<div class="homeForumPostTime" style="float:right"><em>'.libTime::text($t['topic_time']).'</em></div>';
+					$buf .= '<span style=\'color:black; font-size:90%\'>';
+					$buf .= 'By:</span> <a href="profile.php?userID='.$t['topic_poster_webdip'].'" class="light">'.$t['topic_first_poster_name'].'</a> '.libHTML::loggedOn($t['topic_poster_webdip'])
+					.'</div>';
+				
+				
+					$buf .= '<div style="margin-left:3px; margin-right:3px; font-size:90%">';
+			$buf .= '<div style="float:right">';
+			$buf .= l_t('%s replies','<strong>'.($t['topic_posts_approved']-1).'</strong>');
+			$buf .= ', '.l_t('%s views','<strong style=\'content: "\f14c"\'>'.($t['topic_views']-1).'</strong>');
+			$buf .= '</div>';
+			$buf .= '&raquo; 
+					<a href="forum.php?threadID=">'.$t['forum_name'].'</a>
+					
+					</div>';
+				$buf .= '</div>';
+
+			$buf .= '<div class="">';
+				
+				
+			
+			$buf .= '</div>';
+		}
+
+		if( $buf )
+		{
+			return $buf;
+		}
+		else
+		{
+			return '<div class="homeNoActivity">'.l_t('No forum posts found, why not start one?');
+		}
+	}
 }
 
 if( !$User->type['User'] )
@@ -528,7 +624,21 @@ else
 		print $liveGames;
 	}
 	
-	if( !isset(Config::$customForumURL)) {
+	if( isset($_REQUEST['HomeForumTest']) ) {
+
+		print '<div class="homeHeader">'.l_t('Forum').' <a href="'.'">'.libHTML::link().'</a></div>';
+		if( false && file_exists(libCache::dirName('forum').'/home-forum.html') )
+			print file_get_contents(libCache::dirName('forum').'/home-forum.html');
+			else
+			{
+				$buf_home_forum=libHome::forumNewExtern();
+				//file_put_contents(libCache::dirName('forum').'/home-forum.html', $buf_home_forum);
+				print $buf_home_forum;
+			}
+			
+		
+	}
+	else { //if( !isset(Config::$customForumURL)) {
 		print '<div class="homeHeader">'.l_t('Forum').' <a href="forum.php">'.libHTML::link().'</a></div>';
 		if( file_exists(libCache::dirName('forum').'/home-forum.html') )
 			print file_get_contents(libCache::dirName('forum').'/home-forum.html');

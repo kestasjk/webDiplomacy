@@ -32,41 +32,19 @@ font-style:normal;
 
 <div id="rulebook">
 <p class="notice notext">
-<img src="images/icons/tick.png" alt=" " /> <a href="#Rights">Rights</a>
-- <img src="images/icons/alert_minor.png" alt=" " /> <a href="#Responsibilities">Responsibilities</a>
-- <img src="images/icons/alert.png" alt=" " /> <a href="#Rules">Rules</a>
-- <img src="images/icons/mod.png" alt=" " /> <a href="#ModPolicies">Mod policies</a>
-<br />
-<img src="images/icons/platinum.png" alt=" " /> <a href="#Tournaments">Tournaments</a>
-- <img src="images/icons/unmute.png" alt=" " /> <a href="#silenceInfo">Forum moderation</a>
-- <img src="images/icons/mail.png" alt=" " /> <a href="#Reporting">Contacting a mod/admin</a>
+<a href="#Site Rules">Site Rules</a>
+- <a href="#Forum Rules">Forum Rules</a>
+- <a href="#ModPolicies">Moderator Policies</a>
+- <a href="#Tournaments">Tournaments</a>
+- <a href="#Reporting">Contacting a mod/admin</a>
 </p>
 
 <div class="hr"></div>
 
-<a name="Rights"></a><h3><img src="images/icons/tick.png" alt=" " /> Rights:</h3>
-<ul><li>Mods &amp; admins take a relaxed approach to rule enforcement based on mutual respect for other players.</li>
-<li>Mods &amp; admins keep an objective view when they have to enforce rules.</li>
-<li>Mods &amp; admins give the benefit of the doubt to a reasonable degree.</li>
-<li>Mod &amp; admin actions are logged, and can be checked over if requested.</li>
-</ul>
-
-<div class="hr"></div>
-
-<a name="Responsibilities"></a><h3><img src="images/icons/alert_minor.png" alt=" " /> Responsibilities:</h3>
-<ul><li>Use common sense and respect other players.</li>
-<li>Help the mods &amp; admins keep our server fun.</li>
-<li>Don't abuse the software to gain an edge in online games that isn't possible in a real-life.</li>
-<li>Keep up to date with the rules and <a href="faq.php" class="light">FAQ</a> to make things easier for us.</li>
-<li>Protect your account with a strong password and a secure account e-mail address.</li>
-</ul>
-
-<div class="hr"></div>
-
-<a name="Rules"></a><h3><img src="images/icons/alert.png" alt=" " /> Rules:</h3>
+<a name="Site Rules"></a><h3> Site Rules</h3>
 <a name="MultiAccounting"></a><h4>1. No Multi-Accounting</h4>
 <p>
-  You may only have <em>one account</em>, second accounts are not allowed under <em>any circumstances</em>, and will be banned. This may also lead to your first account also being banned.&nbsp; If you forget your password, use the lost password finder <a class="light" href="logon.php?forgotPassword=1">here</a>. If you are still unable to log in, contact the mods.
+  You may only have one account, second accounts are not allowed under any circumstances, and will be banned. This may also lead to your first account also being banned.&nbsp; If you forget your password, use the lost password finder <a class="light" href="logon.php?forgotPassword=1">here</a>. If you are still unable to log in, contact the mods.
 </p>
 
 <a name="MetaGaming"></a><h4>2. No Meta-gaming</h4>
@@ -78,7 +56,7 @@ Because Diplomacy is a social game, we always encourage playing with friends. Ho
 
 <a name="Press"></a><h4>3. Don't work around game messaging/press rules.</h4>
 <p>
-  If you enter a game with limited press/messaging (such as global-only) then <em>you can't use other methods</em> such as the forum, email, or PM to bypass this.
+  If you enter a game with limited press/messaging (such as global-only) then you can't use other methods such as the forum, email, or PM to bypass this.
 <br /><br />
   If you are playing in a gunboat (no press/anon game) do not post anything about your game in the forum and refrain from posting in any threads you feel might be referencing your game. 
 <br /><br />
@@ -89,17 +67,17 @@ Posting in the forum about an ongoing gunboat (no press) game or a limited press
 
 <a name="Mods"></a><h4>4. Do not use the software or moderators as a diplomacy tactic</h4>
 <p>
-  Lying is fine in Diplomacy <em>except when it gives mods/admins unnecessary work to do!</em><br /><br />
+  Lying is fine in Diplomacy except when it gives mods/admins unnecessary work to do!<br /><br />
   Falsely accusing someone of being a multi-accounter/meta-gaming to rally others against them in a game, or claiming that your orders didn't
   come out the way you entered them to cover up your motives, means mods/admins spend time looking for cheaters/bugs which were made up.<br /><br />
 
-  All accusations against other players must be made directly to the mod/admin team directly as specified below, <em>in private</em>, for this reason, and software bug claims
-  <em>must be genuine</em>, even if only told to another player. Avoid making cheating accusations in game, via pm, or on the forum. 
+  All accusations against other players must be made directly to the mod/admin team directly as specified below, in private, for this reason, and software bug claims
+  must be genuine, even if only told to another player. Avoid making cheating accusations in game, via pm, or on the forum. 
 </p>
 
 <a name="Pause"></a><h4>5. The Pause/Unpause feature is not a diplomatic tool</h4>
 <p>
-  The pause is there to stop players from missing their orders, but is <em>not part of the game</em>.&nbsp; As such pausing or unpausing should not be used for diplomatic gain, such as refusing to unpause unless other players will draw the game.&nbsp; If it is being abused staff may step in to sort it out.
+  The pause is there to stop players from missing their orders, but is not part of the game.&nbsp; As such pausing or unpausing should not be used for diplomatic gain, such as refusing to unpause unless other players will draw the game.&nbsp; If it is being abused staff may step in to sort it out.
   <Br /><br />
 The pause button cannot be used as a diplomatic tool and should not be used for anything other than indicating the need for a pause. If you need a pause in a gunboat game that was not agreed upon before the game, email the moderators before voting to pause. The moderators will post in the global press asking for a pause. The other players are not obligated to pause in this situation, and force pauses will not be granted except in emergency situations until the moderators can find someone to watch your account. Please try to plan ahead and avoid the need for pauses if possible.
 </p>
@@ -107,7 +85,7 @@ The pause button cannot be used as a diplomatic tool and should not be used for 
 <a name="Account"></a><h4>6. You may not access another player's account without permission</h4>
 <p>
   In general, account sitting (getting someone you trust to log on as you and issue orders when you are unable to) is encouraged.&nbsp; However, you must not get a sitter or sit for somebody you share games with. Also, anything done by the sitter whilst on your account is your responsibility, so make sure you're happy with that before you give them your password.<br />
-  It is also <em>your responsibility</em> to change your password after allowing someone to use your account.
+  It is also your responsibility to change your password after allowing someone to use your account.
 </p>
 
 <h4><a name="Spam"></a>7. Do not spam the forum or private messaging system</h4>
@@ -117,7 +95,7 @@ The pause button cannot be used as a diplomatic tool and should not be used for 
 
 <a name="Answer"></a><h4>8. You must answer communication from site staff</h4>
 <p>
-  You must answer any warnings or other messages sent to you by the moderators, because if you don't reply it will be assumed you have something to hide, and your account may be closed.&nbsp; As part of this, you <em>must make sure</em> that the email address provided is one you still check, because this normally how staff will communicate with you.
+  You must answer any warnings or other messages sent to you by the moderators, because if you don't reply it will be assumed you have something to hide, and your account may be closed.&nbsp; As part of this, you must make sure that the email address provided is one you still check, because this normally how staff will communicate with you.
 </p>
 
 <a name="CommonSense"></a><h4>9. Follow common sense</h4>
@@ -128,20 +106,115 @@ The pause button cannot be used as a diplomatic tool and should not be used for 
 
 <div class="hr"></div>
 
-<a name="ModPolicies"></a><h3><img src="images/icons/mod.png" alt=" " /> Mod Policies:</h3>
+<a name="Forum Rules"></a><h3> Forum Rules</h3>
+<a name="Personal Threats"></a><h4>1. Do not make personal threats on the forum</h4>
+<p>
+ This is a Diplomacy site, and no members should ever have to worry about actions being taken against them in real life. The forum will always remain a fun and welcoming part of webDiplomacy where discussion is encouraged, and it should always be safe for members who participate and post in it.
+</p>
+<a name="Harassment"></a><h4>2. Do not make threads or posts that are abusive or degrading toward another member, group of members, or other groups of people.</h4>
+<p>
+  Creating threads or posting replies that target a member, group of members, or group of people is prohibited. While some discussions on our forum can become heated, attacking another member is not permitted on the forum. Players who post a reply in a discussion attacking another player may be warned and/or silenced depending on the severity of the offence. Consistently harassing another player or going out of one’s way to attack another player, instead of contributing to discussion, may also classify as grounds for a silence or further action depending on the surrounding circumstances. 
+<br></br>
+Likewise, bigotry toward another member or a group of people is not permitted. Our site hosts players from around the world and is intended to be a welcoming and open place for all. Sexism, racism, homophobia, and other forms of bigotry both hamper discussion and also threaten our reputation; as a result, they carry only negative consequences for our site. We will take a zero tolerance approach to any examples of such behaviour. 
+</p>
+
+<a name="Doxxing"></a><h4>3. Do not post or make reference to another member’s personal information</h4>
+<p>
+  Each and every member has a right to privacy and to remain as anonymous as they wish. As such, posting any personal information of another member, including but not limited to: their name, address, picture, phone number, email, social media information, etc., or making reference to their personal information is prohibited. 
+<br></br>
+Of course, you are welcome to post as much or as little of your own personal information on our forum. Please be aware that our forum is public and can be viewed even by those who do not own an account and are not logged in. Once you hit “post,” your post will not be deleted.
+</p>
+
+<a name="Forum Spam"></a><h4>4. Do not spam the forum</h4>
+<p>
+  Posting multiple threads on the same topic, advertising an irrelevant product or service, posting threads in order to help another user bypass a forum silence, reposting threads that have been silenced, and posting appeals of moderator decisions on behalf of oneself or on behalf of other players on the forum all classify as spam. Please try to keep replies to a thread relevant to the intended topic of discussion and please do not start too many threads at once. Using self-restraint is critical. 
+<br></br>
+Please consult the <a href="faq.php" class="light">FAQ</a> before posting a question relating to the site’s software. 
+
+</p>
+
+<a name="Circumventing Press Restrictions"></a><h4>5. Do not attempt to circumvent press restrictions</h4>
+<p>
+  Because press in gunboat games, rulebook press games, and public press games is restricted, discussing them on the forum while they are being played can jeopardise the fairness of the game and, if done by a player in the game, can classify as working around press restrictions. Even in an effort to draw or cancel a game, posting about an ongoing gunboat game is prohibited. If a player is stalemated and refuses to draw or refuses to unpause a paused game, please email the moderators at <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">
+  <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a>. 
+</p>
+
+<a name="Cheating Accusations"></a><h4>6. Do not make public cheating accusations</h4>
+<p>
+  Cheating accusations should not be made publicly on the forums, in games, or via PM. Instead, reports of potential cheating should be sent directly to the moderators at <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">
+  <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a> with a specific summary of the situation and the players you believe are working around the rules. 
+</p>
+
+<a name="Self Moderation"></a><h4>7. Exercise self-moderation and use your common sense</h4>
+<p>
+While the moderators reserve the right to take an active role in forum moderation, we are not babysitters, and our priorities are catching cheaters and making webDiplomacy the best Diplomacy site around. As such, a user-driven approach is generally recommended to forum moderation:
+</p>
+<ul>
+<li>You can mute any other user that you do not want to see in the forum or receive PMs from.</li>
+<li>You can mute any forum thread that you aren’t interested in or do not wish to contribute to.</li>
+<li>You can participate on our forum constructively instead of aggressively.</li>
+<li>You can be as open or restrictive about the content that you see as you like.</li>
+</ul>
+<p>
+While a user-driven approach to moderation is generally sufficient, the moderators will step in as they believe is necessary in accordance with these rules.
+</p>
+
+<a name="Evading Silences"></a><h4>8. Do not evade silences</h4>
+<p>
+  Silences are a last resort for forum moderation and should not be worked around. If a thread has been silenced, do not create a new one to follow on from where it left off. If a thread had gone off topic before the silence, you may request permission from a moderator to start a new one with the original topic. 
+<br></br>
+If another user has been silenced then you may not work around their silence by posting messages for them. Silences are designed to force users to cool off; allowing them to post via proxy negates that. 
+<br></br>
+If you have been silenced, you must wait out your silence. Evading a silence via creating a new account would be a violation of the multi-accounting rule and would likely result in your ban from the site.
+</p>
+
+<a name="Grey Areas"></a><h4>9. These rules are not exhaustive</h4>
+<p>
+  The moderators reserve the right to lock or silence any thread or user that is consistently breaking any of these rules or otherwise disrupting the regular flow of the site on the forum. The webDiplomacy community at large is always our utmost concern and we may have to take action in certain scenarios that are not covered by these rules. Furthermore, all forum rules also apply to PM's or any other form of communication on the site.
+  <br></br>
+  The forum is intended to be fun and open, but that ultimately depends on what you make of it. By following these rules, the forum should operate smoothly, but in the end, that responsibility falls to all of the members of webDiplomacy.
+</p>
+
+<a name="Forum Moderation"></a><h3> Forum Moderation:</h3>
+
+
+<p>
+While the moderators always exercise appropriate discretion and discuss various options with one another prior to acting, there are sometimes no other options than to take immediate action on the forum. The moderators retain the right to issue varying penalties including shorter or longer silences based on the severity of the offence. 
+<br></br>
+Upon a first offence, a user will either receive an official warning OR a 48 hour silence. Subsequent offences may result in further and lengthier silences. Constant or more severe rule infractions could result in harsher penalties at the discretion of the site moderators and the site owners. The moderators will record each action taken on the forum with an email to the offending user’s registered email. As usual, any moderator action taken against you can be appealed by emailing <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">
+  <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a> and the results of that appeal are final. 
+</p>
+
+<a name="Silences"></a><h4> Silences</h4>
+<ul>
+<li>Silences can apply to a user or a thread.</li>
+<li>The details can be viewed on the forum page, when the "New thread" button is pressed.</li>
+<li>Thread silences last indefinitely, but user silences expire after a brief cool-off period.</li>
+<li>Silenced threads / users can still be viewed, however no more messages may be posted.</li>
+<li>Silenced users can still play in games; a silence only affects the forum and pm's.</li>
+</ul>
+<p>
+When in doubt about whether posting something is allowed, remember your first responsibility is to use common sense and respect other players.
+</p>
+
+<div class="hr"></div>
+
+<a name="ModPolicies"></a><h3> Moderator Policies:</h3>
 <h4>Cancelling games</h4>
 <p>
-  We will consider cancelling games when there are 2 or more multis in the same game and they had a considerable effect on the game as a whole. We will encourage the remaining players to cancel on their own. If they do not, we will ask for an explanation. We will determine if the explanation is warranted and either leave it alone or force cancel with an explanation. If no players have been eliminated the remaining players may choose to draw the game before it is cancelled.
+  We will consider cancelling games when there are two or more cheaters in the same game. We will encourage the remaining players to cancel on their own at the conclusion of an investigation; and give them 24 hours to do so before doing it ourselves.
 </p>
-<h4>Pausing/Unpausing</h4>
+<h4>Pausing/Unpausing Games</h4>
 <p>
 The players should take care of this themselves as much as they can. If they have agreed to pause, then they should have agreed when to unpause. If the unpause doesn't happen by said date, then they can email us and we will look into it. 
+<br></br>
+If a player has to leave at short notice then they may email us and we will pause the game for them - however, if anyone objects to such a pause then we will unpause the game, and let the requester know. This is also how pauses should be requested in limited press games where they cannot be otherwise arranged.
 </p>
-<h4>Cheating Accusations/Repercussions</h4>
+<h4>Drawing Games</h4>
 <p>
-If you make cheating accusations in the forum, we will give you a stern warning and/or "small" point dock (10% of your total points or 20 to 100 <img src="images/icons/points.png" alt="D" />, whichever is smaller) for the first offense depending on the severity of the accusation and how well-acquainted you are with the site. For the second offence, we will levy a heavier fine, which will be at least 10% of your total points, and we will consider more serious actions depending on the specifics of the offence.
+We do not draw any games due to cheating. We will only force games to draw if they have been at a stalemate for at least two years with no SC's changing hands and no possible sign of a breakthrough. If alerted to such a scenario; we will email the player(s) holding the game up and ask them how they plan to break through. If we deem their plan to be unrealistic, or it includes hoping for misorders or for players to miss phases, then we may force a game to draw.
 </p>
-<h4>Moderator Responsibilities and Appealing decisions</h4>
+<h4>Appealing decisions</h4>
 <p>
 As users have their own set of responsibilities, so does the moderator staff. As representatives of the 
 WebDiplomacy users, the moderators will be held accountable for disciplinary decisions. While judgement 
@@ -150,7 +223,7 @@ with a clear warning regarding rules violations in either a forum post or privat
 any moderator's decision by sending an email to <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">
   <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a> specifying the grounds for the appeal. 
 The appeal will be dealt with by one of the admins who was not involved in the original decision or by the 
-site owner. Appeals made on behalf of other members will <em>not</em> be considered. The outcome of an appeal is final. 
+site owner. Appeals made on behalf of other members will not be considered. The outcome of an appeal is final. 
 <br><br>
 Please keep all appeals to email. When multiple forum threads are made about a moderation decision the resulting confusion becomes a frustration for members and moderators alike.
 There may be a formal explanation and discussion on moderator decisions in the forum, but the moderator staff will never disclose information that may contain personal information about members or about the methods used to enforce the rules.
@@ -162,7 +235,7 @@ See below for more on mod and admin contact details.
 
 <div class="hr"></div>
 
-<a name="Tournaments"></a><h3><img src="images/icons/platinum.png" alt=" " /> Tournaments &amp; Feature games:</h3>
+<a name="Tournaments"></a><h3> Tournaments &amp; Feature games:</h3>
 <p>There are two types of special games on the site. If you're interested in starting or running either type please email the mod team (see the contact details below) and explain your idea to the moderator team. </p>
 
 <h4>1. Feature Games</h4>
@@ -172,7 +245,8 @@ These are special rule games like Chainsaw diplomacy, Pacifist diplomacy, or Sch
 <ul>
 <li>No more than 14 players (exception being a world game)</li>
 <li>May require shuffling players by the moderator team</li>
-<li>Must email webdipmod@gmail.com for quick approval, this email should include participants, pause agreements (if any), end game requirements (if any), and alteration to press rules (if any).</li> 
+<li>Must email <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">
+  <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a> for quick approval, this email should include participants, pause agreements (if any), end game requirements (if any), and alteration to press rules (if any).</li> 
 </ul>
 
 <h4>2. Tournaments</h4>
@@ -180,85 +254,22 @@ These are special rule games like Chainsaw diplomacy, Pacifist diplomacy, or Sch
 These are larger series of games with unique scoring rules to determine a winner. These games will have a Tournament Director (TD), who will oversee all aspects of the tournament. This person will be responsible for making decisions relating to the scoring, pauses, and anything affecting game play. 
 </p>
 <ul>
-<li>Must request approval *before* advertising. The moderator team reserves the right to deny tournaments or tournament directors. </li>
-<li>Must include a set of rules for potential participants to agree upon, that all participants must agree too.</li>
-<li>In the case of cheating less severe than multi accounting the Tournament Director will be informed and given the choice of removing this player from the tournament. Participants agree to honor the TD's decision in these matters and send all complaints privately to the TD or moderator team.</li> 
+<li>Potential TD's must request approval *before* advertising. The moderator team reserves the right to deny tournaments or tournament directors.</li>
+<li>TD's must include a set of rules for potential participants to agree upon, that all participants must agree too. Mid-Tournament rule changes are discouraged and require new permission from the moderator team.</li>
 <li>The moderator team will enforce site-wide rules in tournaments as they do other games.</li>
-<li>Players within tournaments have to accept that the TD moderates their own tournament decisions. Please choose which tournaments to join carefully!</li>
-<li>TD's may request the list and position of players in their tournament even in anonymous games expect for games they are participating in.</li> 
+<li>Players within tournaments must accept that the TD moderates their own tournament decisions. Please choose which tournaments to join carefully.</li>
+<li>TD's may not play in their own tournaments.</li>
+<li>TD's may request the list and position of players in their tournament even in anonymous games.</li> 
 <li>TD's may request the moderator team pm or email any player with questions or warnings regarding the tournament. </li>
 <li>TD's may request a message be posted in every games public messaging, including anon games, to remind participants of tournament rules or for tournament scoring updates.</li>
-<li>If a TD is given control of country assignments, force pause, draw, and so forth, he/she cannot moderate their own game. Either a second designated TD or a mod may moderate the game instead, but the TD will still have final say on any decisions.</li>
 <li>As with all mod / admin decisions if you disagree with a decision you can appeal it. See below for the mod / admin contact details.</li>
 </ul>
-<p>Please e-mail the mod / admin team if you want to start a tournament (see the contact details below), and you will be asked some queries that will help us set the tournament up.</p>
+<p>Please e-mail the mod / admin team at <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">
+  <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a> if you want to start a tournament (see the contact details below), and you will be asked to fill out an application form that will help us set the tournament up.</p>
 
 <div class="hr"></div>
 
-<a name="silenceInfo"></a><h3><img src="images/icons/unmute.png" alt=" " title="An icon indicating someone isn't muted; use this to mute people" /> Forum moderation:</h3>
-
-<h4><img src="images/icons/mute.png" alt=" " title="An icon indicating someone is muted; use this to unmute people" /> Self-moderation:</h4>
-<p>
-A user-driven approach is generally taken to forum moderation;
-</p>
-<ul>
-<li>You can <em>mute any other user</em> which you don't want to see in the forum or get PMs from.</li>
-<li>You can <em>mute any forum thread</em> you aren't interested in.</li>
-<li>You can <em>mute any country</em> playing in a game with you.</li>
-</ul>
-<p>
-This allows you to block out anyone or any discussion you find offensive, and be as open or
-restrictive in what you see as you like!
-</p>
-
-<h4><img src="images/icons/lock.png" alt=" " /> Site-moderation:</h4>
-<p>
-In order to maintain a positive user experience please follow the forum rules below!
-</p>
-
-<p>
-<ol>
-<li>Do not make personal threats toward members or their families. This is a Diplomacy 
-site and no members should have to worry about actions taken against them in real life.</li>
-<li>Do not post or make reference to personal information about another member without their specific consent.</li>
-<li>Do not make targeted threads that are abusive or degrading toward another member, group of members, or social group. 
-This includes but is not limited to posts regarding sexuality, race, and religion.</li>
-<li>Creating an account for the sole purpose of advertising goods or services is not allowed, 
-but a member can post an advertisement as long as he/she does not spam the forum by posting the same message repeatedly.</li>
-<li>Punishment for infractions may range from a warning, a temporary silence of 48 hours each time to a ban at the 
-discretion of the site owner. The moderator staff retains sole discretion in taking punitive measures. 
-Silences will prevent forum posts as well as private messages. Bans are an instrument of last resort and the moderator 
-staff will seek to avoid issuing them where reasonably possible.</li>
-</ol>
-</p>
-
-<p>
-Additionally, threads which share information on a 
-<em>private / anonymous / gunboat game</em>, or threads about 
-<em>suspected multi-accounters / meta-gamers / bugs</em> have a negative impact on games which self-moderation can't prevent, so the 
-mod team can <em>lock/silence</em> these threads:
-</p>
-<ul>
-<li>Silences can apply to a <em>user or a thread</em>.</li>
-<li>The details can be viewed on the forum page, when the "New thread" button is pressed.</li>
-<li>Thread silences last indefinitely, but user silences expire after a brief <em>cool-off period</em>.</li>
-<li>Silenced threads / users can <em>still be viewed</em>, however no more messages may be posted.</li>
-<li>Silenced users can <em>still play in games</em>; a silence only affects the forum and pm's.</li>
-</ul>
-
-<p>
-Don't create new accounts to work around user silences, or post threads to continue on from 
-ones which have been silenced! Do not post messages on the forum for users who have been silenced.
-This may result in bans etc, which would be worse than simply keeping off the forum for a few days.
-</p>
-
-<p>
-When in doubt about whether posting something is allowed, remember your first responsibility: use common sense and respect other players!"
-</p>
-
-<div class="hr"></div>
-
-<a name="Reporting"></a><h3><img src="images/icons/mail.png" alt=" " /> Contacting a mod/admin:</h3>
+<a name="Reporting"></a><h3> Contacting a mod/admin:</h3>
 
 <h4>Why contact a mod/admin:</h4>
 <p>
@@ -277,8 +288,8 @@ developer forum</a>).</p>
 <ul>
 <li>
   Email the moderators at <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">
-  <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a>, <em>not their personal addresses</em>.<br />
-  A Co-Owner can be contacted at <a href="mailto:<?php print Config::$adminEMail; ?>" class="light"><?php print Config::$adminEMail; ?>, if you want to appeal an admin or mod decision.</a>
+  <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a>, not their personal addresses.<br />
+  A Co-Owner can be contacted at <a href="mailto:<?php print Config::$adminEMail; ?>" class="light"><?php print Config::$adminEMail; ?></a>, if you want to appeal an admin or mod decision.</a>
 </li>
 </ul>
 
@@ -288,13 +299,13 @@ developer forum</a>).</p>
 	<li>If making a general request (e.g for an unpause):</li>
 	<ul><li>
 	Ensure that you make the subject line useful (e.g. "Unpausing help" or "Phaselength change") so we know we can quickly deal with it in a spare moment - if you don't it might not be solved for some time.</li>
-	<li>In cases such as drawing/pausing a game standard practice is to check the global chat of the game before acting, so please get other players to post their agreement.<br />
+	<li>In cases such as drawing/pausing a game, standard practice is to check the global chat of the game before acting, so please get other players to post their agreement.<br />
 	You don't necessarily need everyone to agree, and we will post back into the global chat when we change these settings letting you know.</li>
 	</ul>
 	<li>If reporting a multi-accounter:
 	<ul>
     <li>
-      Links to the accounts of the players who you suspect. <i>(If reporting via email)</i>
+      Links to the accounts of the players who you suspect.
     </li>
     <li>
       Link(s) to any specific game(s) that raised your suspicions.
@@ -302,19 +313,16 @@ developer forum</a>).</p>
     <li>
       Any relevant information that you have noticed.
     </li>
-    <li>
-      You do not have to tell us who you are, but it can be helpful. <i>(If reporting via email)</i>
-    </li>
-    <li>If reporting via email please make the subject line more useful than "<i>multis?</i>" Something like "<i>Multis: Username1 and Username2?</i>" is more helpful for the moderators!</li>
+    <li>If reporting via email please make the subject line more useful than "<i>multis?</i>" Something like "<i>Multis: Username1 and Username2?</i>" is more helpful for the moderators</li>
     </ul></li>
 </ul>
-<p>We will try to reply to you quickly, but be patient: investigations can take quite some time. If a week or two after we still haven't got back to you then feel free to follow it up.</p>
+<p>We will try to reply to you quickly, but be patient: investigations can take quite some time. If a week or two after we still haven't got back to you then please feel free to follow it up.</p>
 
 
 
 <div class="hr"></div>
 
 <p>Thanks for reading,<br />
-- The mod/admin team</p>
+- The Mod/Admin Team</p>
 
 </div>

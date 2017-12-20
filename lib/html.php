@@ -67,7 +67,7 @@ class libHTML
 
 	static function platinum()
 	{
-		return ' <img src="'.l_s('images/icons/platinum.png').'" alt="(P)" title="'.l_t('Co - Site Owner').'" />';
+		return ' <img src="'.l_s('images/icons/platinum.png').'" alt="(P)" title="'.l_t('Donator - platinum').'" />';
 	}
 
 	static function gold()
@@ -83,6 +83,21 @@ class libHTML
 	static function bronze()
 	{
 		return ' <img src="'.l_s('images/icons/bronze.png').'" alt="(B)" title="'.l_t('Donator - bronze').'" />';
+	}
+	
+	static function service()
+	{
+		return ' <img src="'.l_s('images/icons/service.png').'" alt="(P)" title="'.l_t('Service Award').'" />';
+	}
+	
+	static function owner()
+	{
+		return ' <img src="'.l_s('images/icons/owner.png').'" alt="(P)" title="'.l_t('Site Co-Owner').'" />';
+	}
+	
+	static function adamantium()
+	{
+		return ' <img src="'.l_s('images/icons/adamantium.png').'" alt="(P)" title="'.l_t('Donator - adamantium').'" />';
 	}
 
 	/**
@@ -589,13 +604,12 @@ class libHTML
 		$links=array();
 
 		// Items displayed in the menu
-		$links['index.php']=array('name'=>'Home', 'inmenu'=>TRUE, 'title'=>"See what's happening");
-		if( isset(Config::$customForumURL) ) {
+		$links['index.php']=array('name'=>'Home', 'inmenu'=>TRUE, 'title'=>"See what's happening");  
+	    if( isset(Config::$customForumURL) ) {
 			$links[Config::$customForumURL]=array('name'=>'Forum', 'inmenu'=>TRUE, 'title'=>"The forum; chat, get help, help others, arrange games, discuss strategies");
-		} else {
+        } else {
 			$links['forum.php']=array('name'=>'Forum', 'inmenu'=>TRUE, 'title'=>"The forum; chat, get help, help others, arrange games, discuss strategies");
-		}
-		
+        }
 		$links['gamelistings.php']=array('name'=>'Games', 'inmenu'=>TRUE, 'title'=>"Game listings; a searchable list of the games on this server");
 
 		if (is_object($User))
@@ -612,7 +626,7 @@ class libHTML
 				$links['usercp.php']=array('name'=>'Settings', 'inmenu'=>TRUE, 'title'=>"Change your user specific settings");
 			}
 		}
-		$links['help.php']=array('name'=>'Help', 'inmenu'=>TRUE, 'title'=>'Get help and information; guides, intros, FAQs, stats, links');
+		$links['help.php']=array('name'=>'Help/Donate', 'inmenu'=>TRUE, 'title'=>'Get help and information; guides, intros, FAQs, stats, links');
 
 		// Items not displayed on the menu
 		$links['map.php']=array('name'=>'Map', 'inmenu'=>FALSE);
@@ -901,6 +915,7 @@ class libHTML
 	
 	static private function footerScripts() {
 		global $User, $Locale;
+
 
 		$jsVersion = 7;  // increment this to force clients to reload their JS files
 
