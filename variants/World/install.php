@@ -454,7 +454,7 @@ $bordersRawData=array(
 	array('Southeast Pacific','Marie Byrd Land','Yes','No'),
 	array('Southeast Pacific','Antarctic Penninsula','Yes','No'),
 	array('Southeast Pacific','British Antarctic Territory (West Coast)','Yes','No'),
-	array('Ross Ice Shelf','Marie Byrd Land','Yes','No'),
+	array('Ross Ice Shelf','Marie Byrd Land','Yes','Yes'),
 	array('Ross Ice Shelf','South Pole','No','Yes'),
 	array('Ross Ice Shelf','Leningradskaya','Yes','Yes'),
 	array('Ross Ice Shelf','Southwest Pacific','Yes','No'),
