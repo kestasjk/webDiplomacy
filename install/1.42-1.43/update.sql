@@ -1,0 +1,1 @@
+UPDATE `wD_Misc` SET `value` = '143' WHERE `name` = 'Version';
