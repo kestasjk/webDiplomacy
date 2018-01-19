@@ -75,6 +75,25 @@ class VariantData
 		
 		return implode(' AND ', $arr);
 	}
+	
+	/**
+	 * Create a comma separated string of values up to and including offset
+	 * @param int $offset
+	 * @return string
+	 */
+	public function commaSeparatedValueString($offset=0)
+	{
+		$vals = array(
+				$this->variantID,
+				$this->gameID,
+				$this->systemToken,
+				$this->typeID,
+				$this->userID,
+				$offset);
+				
+		return implode(', ', $vals);
+	}
+	
 	/**
 	 * Generic get data column
 	 * @param string $col Name of the column to extract
@@ -116,5 +135,32 @@ class VariantData
 	public function setInt($val, $offset=0)
 	{
 		$this->setCol('int',$val,$offset);
+	}
+	
+	private function updateCol($updateInt, $val, $offset=0)
+	{
+		global $DB;
+		
+		if($updateInt)
+		{
+			$intAndFloatParamsString = ",".$val.", 0";
+		}
+		else
+		{
+			$intAndFloatParamsString = ", 0, ".$val;
+		}
+			
+		
+		return $DB->sql_put("REPLACE INTO wD_VariantData VALUES(".$this->commaSeparatedValueString($offset).$intAndFloatParamsString.");");
+	}
+	
+	public function updateFloat($val, $offset=0)
+	{
+		return $this->updateCol(false,$val,$offset);
+	}
+	
+	public function updateInt($val, $offset=0)
+	{
+		return $this->updateCol(true,$val,$offset);
 	}
 }
