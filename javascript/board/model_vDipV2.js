@@ -198,7 +198,7 @@ function loadModel() {
 					 * means when an invalid support move is selected as a fleet the choice is undone once 
 					 * it is selected and put through the check below.
 					 * 
-					 * var ConvoyArmies;
+					 */ var ConvoyArmies;
 					
 					if( this.convoyLink && this.type=='Fleet' && 
 						this.ConvoyGroup.Coasts.pluck('id').member(AgainstTerritory.id) )
@@ -216,11 +216,11 @@ function loadModel() {
 					else
 					{
 						ConvoyArmies = AgainstTerritory.ConvoyGroup.Armies;
-					}*/
+					}//*/
 					
 					this.convoyOptions=AgainstTerritory.ConvoyGroup.Armies.pluck('Territory').pluck('id');
 					
-					PossibleUnits=snapTogether(PossibleUnits,AgainstTerritory.ConvoyGroup.Armies);
+					PossibleUnits=snapTogether(PossibleUnits,ConvoyArmies);
 				}
 				
 				// Return names, excluding the current territory
