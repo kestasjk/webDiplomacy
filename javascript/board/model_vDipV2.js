@@ -250,107 +250,218 @@ function loadModel() {
 		});
 		
 		TerritoryClass.addMethods({
-			nodeInit: function() {
-				this.BlockIDs = $H({});
-				this.blockCount = 0;
+			nodeInit: function () {
+				this.convoyNode = true;
+				this.convoyPaths = new Array();
 			},
-			isBlocked: function() { return ( Object.isUndefined(this.blockCount)||this.blockCount>0 ); },
-			block: function(blockID) {
-				var blockSet = this.BlockIDs.get(blockID);
-				if( Object.isUndefined(blockSet)||!blockSet )
-				{
-					this.BlockIDs.set(blockID, true);
-					this.blockCount++;
-				}	
+			addPath: function (path) {
+				this.convoyPaths.push(path);
 			},
-			unblock: function(blockID) {
-				var blockSet = this.BlockIDs.get(blockID);
-				if( !Object.isUndefined(blockSet)&&blockSet )
-				{
-					this.BlockIDs.set(blockID, false);
-					this.blockCount--;
-				}
+			clearPaths: function () {
+				this.convoyPaths = new Array();
+			},
+			isConvoyNode: function () {
+				return !Object.isUndefined(this.convoyNode) && this.convoyNode;
 			}
 		});
-		
+
+		var PathClass = Class.create({
+			initialize: function (node, pathToNode) {
+				this.node = node
+				this.pathToNode = pathToNode;
+				this.length = (pathToNode != null) ? pathToNode.length + 1 : 1;
+			},
+			includes: function (node) {
+				if (this.node == node)
+					return true;
+
+				if (this.pathToNode == null)
+					return false;
+
+				return this.pathToNode.includes(node);
+			},
+			/*
+			 * Creates a new path identical to this one apart from the fact, that a new
+			 * node was added at the end.
+			 */
+			addNode: function (node) {
+				return new PathClass(node, this);
+			},
+			/*
+			 * Checks if this path can be appended to path so a simple path is preserved.
+			 * So this basically checks if both paths share any common nodes apart from
+			 * path.lastNode and this.firstNode. 
+			 * 
+			 * Implemented recursivly.
+			 */
+			canBeAppendedTo: function (path) {
+				if (this.pathToNode == null)
+					// -> reached start of path
+					return true;
+
+				if (path.includes(this.node))
+					return false;
+
+				return this.pathToNode.canBeAppendedTo(path);
+			},
+			toArray: function (array) {
+				if (Object.isUndefined(array))
+					array = new Array();
+				else
+					//do not include last element of path in array representation
+					array.push(this.node.id);
+
+				if (this.pathToNode != null)
+					return this.pathToNode.toArray(array);
+				else
+					// final array has to be reversed since we moved backwards
+					return array.reverse();
+			}
+		});
+
 		var NodeSetClass = Class.create({
-			initialize: function() {
-				this.Nodes = $H({ });
-				this.NodeIDChain=$A([ ]);
+			initialize: function () {
+				this.Nodes = $H({});
 			},
-			addNodes: function(Nodes) {
-				Nodes.map(function(n){ this.addNode(n); }, this);
+			addNodes: function (Nodes) {
+				Nodes.map(function (n) {
+					this.addNode(n);
+				}, this);
 			},
-			addNode: function(Node) {
+			addNode: function (Node) {
 				Node.nodeInit();
 				this.Nodes.set(Node.id, Node);
 			},
-			block: function(blockID, blockFunc) {
-				this.Nodes.findAll( blockFunc ).map( n.block(blockID) );
+			resetNodePaths: function () {
+				this.Nodes.values().map(function (n) {
+					n.convoyPaths = new Array();
+				});
 			},
-			unblock: function(blockID) {
-				this.Nodes.map(function(n) { n.unblock(blockID); });
+			routeSetLoad: function (ConvoyGroup) {
+				ConvoyGroup.Fleets.pluck('Territory').map(function (t) {
+					this.addNode(t);
+				}, this);
+				ConvoyGroup.Armies.pluck('Territory').map(function (t) {
+					this.addNode(t);
+				}, this);
+				ConvoyGroup.Coasts.map(function (t) {
+					this.addNode(t);
+				}, this);
 			},
-			setActive: function(Node) {
-				Node.block('Searching');
-				this.NodeIDChain.push(Node.id);
-				return Node.getBorderTerritories().findAll(function(n){return !n.isBlocked();});
-			},
-			unsetActive: function(Node) {
-				Node.unblock('Searching');
-				this.NodeIDChain.pop();
-			},
-			
-			routeSetLoad: function(ConvoyGroup) {
-				ConvoyGroup.Fleets.pluck('Territory').map(function(t){this.addNode(t);},this);
-				ConvoyGroup.Armies.pluck('Territory').map(function(t){this.addNode(t);},this);
-				ConvoyGroup.Coasts.map(function(t){this.addNode(t);},this);
-			},
-			routeSetStart: function(StartTerr, fEndNode, fAllNode, fAnyNode) {
-				this.AnyNodeMatched=false;
-				
-				this.temp = $H({});
-				
-				var StartNode = this.Nodes.get(StartTerr.id);
-				
-				var NextNodes = this.setActive(StartNode);
-				var pathFound = NextNodes.map(function(n) { this.findPaths(n, fEndNode, fAllNode, fAnyNode); },this);
-				this.unsetActive(StartNode);
-				
-				return pathFound;
-			},
-			findPaths: function( Node, fEndNode, fAllNode, fAnyNode ) {
-				//if(this.temp.get(Node.id)) return;
-				//else this.temp.set(Node.id,true);
-				
-				if( fEndNode(Node) )
-				{
-					if( this.AnyNodeMatched )
-					{
-						this.Path=this.NodeIDChain.clone();
-						return true;
-					}
-				}
-				else if( fAllNode(Node) )
-				{
-					var clearAnyNodeMatched=false;
-					if( !this.AnyNodeMatched && fAnyNode(Node) )
-					{
-						clearAnyNodeMatched=true;
-						this.AnyNodeMatched=true;
-					}
-					
-					var NextNodes = this.setActive(Node);
-					var pathFound = NextNodes.any(function(n) { this.findPaths(n, fEndNode, fAllNode, fAnyNode); },this);
-					this.unsetActive(Node);
-					
-					if( clearAnyNodeMatched )
-						this.AnyNodeMatched=false;
+			routeSetStart: function (StartTerr, fEndNode, fAllNode, fAnyNode) {
+				// if fAnyNode describes one specific node -> split problem into two by searching
+				// paths from StartTerr to AnyNode and AnyNode to EndNode and check if paths
+				// exist with no shared nodes
 
-					if( pathFound ) return true;
+				var AnyNodes = this.Nodes.values().select(fAnyNode);
+
+				if (AnyNodes.length == 1) {
+					// collect all minimal valid paths from startNode to anyNode and from anyNode to endNode
+					var paths1 = this.findAllPaths(StartTerr, function (node) {
+						return (node.id == AnyNodes[0].id);
+					}, fAllNode);
+					var paths2 = this.findAllPaths(AnyNodes[0], fEndNode, fAllNode);
+
+					// check if there exists a combination of paths that form a simple path
+					// (no shared nodes apart from anyNode)
+					for(var i=0; i<paths1.length; i++)
+						for(var j=0; j<paths2.length; j++)
+							if (paths2[j].canBeAppendedTo(paths1[i])) {
+								this.Path = paths1[i].toArray().concat(paths2[j].toArray());
+								return true;
+							}
+
+					return false;
+
+				} else if (AnyNodes.length == this.Nodes.keys().length) {
+					var path = this.findPath(StartTerr, fEndNode, fAllNode);
+
+					if (path == null)
+						return false;
+
+					this.Path = path.toArray();
+
+					return true;
+
+				} else
+					return false;
+
+			},
+			/*
+			 * This method find all paths from startNode to endNode that can not be reduced
+			 * to shorter valid paths by removing nodes (so basically no unnecessary loops).
+			 * 
+			 * This is done in breadth-first search since this guarantees that tested nodes
+			 * in search can only have already been reached via different paths that are 
+			 * shorter or of equal length. So it just has to be tested if the current path
+			 * with the new node can be reduced to the existing one and not vice versa.
+			 * 
+			 * if onePath==true, then just search for one path in simple breadth-first search
+			 */
+			findAllPaths: function (StartTerr, fEndNode, fAllNode, onePath) {
+				if (Object.isUndefined(onePath))
+					onePath = false;
+
+				// first make sure, that no paths are stored for nodes from previous searches
+				this.resetNodePaths();
+
+				// start with initial path only containing StartTerr
+				var testPaths = new Array(new PathClass(StartTerr, null));
+
+				testPathLoop:
+				while (testPaths.length > 0) {
+
+					var testPath = testPaths.shift();
+
+					// check if node was already visited by a shorter path that is a subpath of this one
+					// (-> this path gets obsolete as additional loop)
+					if (testPath.node.convoyPaths.length != 0) {
+
+						//onePath: node already reached -> do not continue this path
+						if (onePath)
+							continue testPathLoop;
+
+						for(var i=0; i<testPath.node.convoyPaths.length; i++){
+							var pathAgainst = testPath.node.convoyPaths[i];
+						
+							if (pathAgainst.length < testPath.length && testPath.includes(pathAgainst.pathToNode.node))
+								//pathAgainst reduced version of testPath
+								continue testPathLoop;
+						}
+					}
+
+					// add this path to the paths that contain node
+					testPath.node.addPath(testPath);
+
+					if (!fEndNode(testPath.node)) {
+						// create new branches of the path, that reach to neighbored valid territories
+						var NextNodes = testPath.node.getBorderTerritories().findAll(function (n) {
+							return n.isConvoyNode() && n.id != StartTerr.id && (fAllNode(n) || fEndNode(n));
+						});
+						;
+
+						// add new paths to testPaths	
+						NextNodes.each(function(nextNode){
+							testPaths.push(testPath.addNode(nextNode));
+						});
+					}else if(onePath){
+						// one path is found
+						break;
+					}
 				}
-				
-				return false;
+
+
+
+				// all paths that are not superpath of other paths that reach EndNode are found
+				// return all paths that reached EndNode
+				return this.Nodes.values().find(fEndNode).convoyPaths;
+			},
+			/*
+			 * Find a path to endNode with simple breadth-first search (uses algorithm of findAllPaths)
+			 */
+			findPath: function (StartTerr, fEndNode, fAllNode) {
+				var paths = this.findAllPaths(StartTerr, fEndNode, fAllNode, true)
+				return (paths.length == 0) ? null : paths[0];
 			}
 		});
 		
