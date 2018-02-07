@@ -195,16 +195,38 @@ class assignmentSolver
         $this->augment($timeThrough+1);
     }
     
+    function makeWeights0Indexed($weights)
+    {
+    	$newWeights = array();
+    	for ($userIndex = 0; $userIndex < $this->n; $userIndex++)
+    	{
+    		$newWeights[$userIndex] = array();
+    		for ($newCountryIndex = 0; $newCountryIndex < $this->n; $newCountryIndex++)
+    			$newWeights[$userIndex][$newCountryIndex] = $weights[$userIndex][$newCountryIndex + 1];
+    	}
+    	
+    	return $newWeights;
+    }
+    
+    function makeXY1Indexed($xy)
+    {
+    	for ($userIndex = 0; $userIndex < $this->n; $userIndex++)
+    		$xy[$userIndex]++;
+    		
+    	return $xy;
+    }
+    
     function hungarian($weights, $isMaxAssignmentProblem)
     {
         $this->n = count($weights);
-        $this->weights = $isMaxAssignmentProblem ? $weights : $this->makeMinAssignmentProblemMatrix($weights);
+        $this->weights = $this->makeWeights0Indexed($weights);
+        $this->weights = $isMaxAssignmentProblem ? $this->weights : $this->makeMinAssignmentProblemMatrix($this->weights);
         $this->matchedCountries = 0;
         $this->xy = array_fill(0,$this->n,-1);
         $this->yx = array_fill(0,$this->n,-1);
         $this->setInitialLabeling();
         $this->augment(1);
-        return $this->xy;
+        return $this->makeXY1Indexed($this->xy);
     }
 }
 

@@ -59,14 +59,10 @@ class adjudicatorPreGame {
 		$assignment = $solver->hungarian($weights, false);
 		
 		$userCountries = array();
-		/*
-		 * Here translate from 0-index to 1-index, and zipping together the userIDs and 
-		 * the assignments.
-		 */
 		for($i = 0; $i < count($userIDs); $i++)
 		{
 			$userID = $userIDs[$i];
-			$userCountries[$userID] = $assignment[$i] + 1;
+			$userCountries[$userID] = $assignment[$i];
 		}
 			
 		/**
@@ -87,7 +83,7 @@ class adjudicatorPreGame {
 			$vd->userID = $userIDs[$userIndex];
 			$countryIndex = $assignment[$userIndex];
 			$oldPlayCount = $initialWeights[$userIndex][$countryIndex];
-			$vd->updateInt($oldPlayCount + 1, $countryIndex + 1);
+			$vd->updateInt($oldPlayCount + 1, $countryIndex);
 		}
 	}
 	
@@ -105,14 +101,9 @@ class adjudicatorPreGame {
 			$userCountryCounts[$i] = array();
 			$vd->userID = $userIDs[$i];
 			
-			/**
-			 * Note that the first country ID is 1 not 0.
-			 * assignmentSolver requires that the indexes start at 0, so we need to 
-			 * translate both here and before we return them from userCountries.
-			 */
 			for($countryID=1;$countryID<=$countryCount;$countryID++)
 			{
-				$userCountryCounts[$i][$countryID-1] = $vd->getInt($countryID, 0);
+				$userCountryCounts[$i][$countryID] = $vd->getInt($countryID, 0);
 			}
 		}
 		
