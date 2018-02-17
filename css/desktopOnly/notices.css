@@ -1,0 +1,33 @@
+/* ---- Left hand info list ---- */
+.homeInfoList {
+	float:right;
+	text-align:left;
+	width:25%;
+	border-left: 1px solid #aaa;
+	margin:0;
+	padding-left: 10px;
+	font-size:12px;
+}
+/* ---- Right hand content ---- */
+.homeUserContent {
+	float:left;
+	width:70%;
+}
+
+.homeNotices {
+}
+.homeNotice {
+}
+
+.homeNoticeFrom {
+	font-size:12px;
+}
+.homeNoticeLink {
+}
+.homeNoticeTime {
+	color: #666;
+	font-style:italic;
+	font-size:11px;
+}
+.homeNoticeText {
+}

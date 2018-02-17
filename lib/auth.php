@@ -268,6 +268,10 @@ class libAuth
 		}
 	}
 
+	public static function generateKey($userId, $userKey) {
+		return $userId.'_'.md5(md5(Config::$secret).$userId.$userKey.sha1(Config::$secret));
+	}
+	
 	/**
 	 * Generate a session key for a given user ID using the config secret
 	 * @param int $userID The user ID to generate for
@@ -277,13 +281,14 @@ class libAuth
 	{
 		try
 		{
+			// TODO: Is there any way to recycle this user record request to ensure it isn't requested twice?
 			$TRYUser = new User($userID); // The user object associated with this key
 		}
 		catch(Exception $e)
 		{
 			libHTML::error(l_t("The userID provided does not exist."));
 		}
-		return $userID.'_'.md5(md5(Config::$secret).$userID.$TRYUser->password.sha1(Config::$secret));
+		return self::generateKey($userID, $TRYUser->password);
 	}
 
 	/**

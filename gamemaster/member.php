@@ -275,11 +275,15 @@ class processMember extends Member
 
 		$this->setStatus('Survived');
 
-		if ( $Game->potType != 'Points-per-supply-center')
+		if ( $Game->potType == 'Unranked')
+		{
+		$this->send('No','No',l_t("The game has ended: You survived and were returned %s",$winnings.' '.libHTML::points()));
+		}
+		else if ( $Game->potType != 'Points-per-supply-center')
 		{
 			$but="";
 			if($winnings)
-				$but = l_t(" (but you did get %s back, to make up your starting 100)",$winnings);
+				$but = l_t(" (but you did get %s back, to make up your starting 100)",$winnings.' '.libHTML::points());
 
 			$this->send('No','No',l_t("The game has ended: You survived until the end, but because this is a winner takes all game you got no points returned%s. Better luck next time!",$but));
 		}

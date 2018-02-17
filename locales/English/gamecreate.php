@@ -86,6 +86,21 @@ Start a new game; you decide the name, how long it runs, and how much it's worth
 
 		<strong>Default:</strong> <?php print $defaultPoints.libHTML::points(); ?>
 	</li>
+
+	<li class="formlisttitle">
+		<img src="images/icons/lock.png" alt="Private" /> Password protect (optional):
+	</li>
+	<li class="formlistfield">
+		<ul>
+			<li>Password: <input type="password" name="newGame[password]" value="" size="30" /></li>
+			<li>Confirm: <input type="password" name="newGame[passwordcheck]" value="" size="30" /></li>
+		</ul>
+	</li>
+	<li class="formlistdesc">
+		<strong>This is optional.</strong> If you set this only people who know the password will be able to join.<br /><br />
+
+		<strong>Default:</strong> No password set
+	</li>
 </ul>
 
 <div class="hr"></div>
@@ -130,11 +145,14 @@ else
 	$first=true;
 	foreach(Config::$variants as $variantID=>$variantName)
 	{
-		if( $first )
-			$defaultVariantName=$variantName;
-		$Variant = libVariant::loadFromVariantName($variantName);
-		$checkboxes[] = '<input type="radio" '.($first?'checked="on" ':'').'name="newGame[variantID]" value="'.$variantID.'"> '.$Variant->link();
-		$first=false;
+		if($variantID != 57)
+		{
+			if( $first )
+				$defaultVariantName=$variantName;
+			$Variant = libVariant::loadFromVariantName($variantName);
+			$checkboxes[] = '<input type="radio" '.($first?'checked="on" ':'').'name="newGame[variantID]" value="'.$variantID.'"> '.$Variant->link();
+			$first=false;
+		}
 	}
 	print '<p>'.implode('</p><p>', $checkboxes).'</p>';
 	?>
@@ -144,6 +162,9 @@ else
 		available on this server.<br /><br />
 
 		Click any of the variant names to view the details on the variants page.<br /><br />
+		
+		<strong>*Please note that 1 vs 1 games will default to a 5 point bet as an unranked game no matter what bet/game type are selected</strong>
+		<br /><br />
 
 		<strong>Default:</strong> <?php print $defaultVariantName; ?>
 	</li>
@@ -253,20 +274,6 @@ else
 		<br /><br /><strong>Default:</strong> 0 (No restrictions)
 	</li>
 	   
-	<li class="formlisttitle">
-		<img src="images/icons/lock.png" alt="Private" /> Password protect (optional):
-	</li>
-	<li class="formlistfield">
-		<ul>
-			<li>Password: <input type="password" name="newGame[password]" value="" size="30" /></li>
-			<li>Confirm: <input type="password" name="newGame[passwordcheck]" value="" size="30" /></li>
-		</ul>
-	</li>
-	<li class="formlistdesc">
-		<strong>This is optional.</strong> If you set this only people who know the password will be able to join.<br /><br />
-
-		<strong>Default:</strong> No password set
-	</li>
 <!-- 
 	<li class="formlisttitle">
 		No moves received options:

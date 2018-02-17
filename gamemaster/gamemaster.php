@@ -69,7 +69,7 @@ class libGameMaster
 			$Misc->write();
 
 			// Save access logs, to detect multi-accounters
-			$DB->sql_put("INSERT DELAYED INTO wD_AccessLog
+			$DB->sql_put("INSERT INTO wD_AccessLog
 				( userID, lastRequest, hits, ip, userAgent, cookieCode )
 				SELECT userID, lastRequest, hits, ip, userAgent, cookieCode
 				FROM wD_Sessions

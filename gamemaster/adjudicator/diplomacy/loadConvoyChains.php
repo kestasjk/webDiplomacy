@@ -47,7 +47,12 @@ class adjConvoyChains
 	{
 		$this->convoys = &$convoys;
 	}
-
+	public function resetChain()
+	{
+		foreach($this->convoys as $c) {
+			$c->used = false;
+		}
+	}
 	public function getChain()
 	{
 		if ( $this->used ) return false;
@@ -259,8 +264,10 @@ class adjConvoyChains
 		foreach($convoyStarts as $moveID=>$convoyStart)
 		{
 			$convoyChains[$moveID] = array();
+			
 			foreach($convoyStart as $startNode)
 			{
+				$startNode->resetChain();
 				$chain = $startNode->getChain();
 
 				if ( $chain === false )

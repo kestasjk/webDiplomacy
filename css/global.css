@@ -287,7 +287,7 @@ a.light {
 	margin-right: auto;
 	margin-top:0;
 	margin-bottom:0;
-	width: 800px;
+	max-width: 800px;
 }
 #logo {
 	padding:0;
@@ -339,7 +339,7 @@ a.light {
 			because IE doesn't support min-width.. */
 	margin: 0;
 	padding: 0;
-	width: 800px;
+	max-width: 800px;
 	background-color: #006699;
 	font-size: 0;
 	height: 5px;
@@ -352,7 +352,7 @@ div.content {
 	margin-left: auto;
 	margin-right: auto;
 	margin-top: 5px;
-	width: 750px;
+	max-width: 750px;
 	background-color: #fff;
 	border: 1px solid #aaa;
 	padding: 15px 24px;	
@@ -362,7 +362,7 @@ div.content-bare {
 	position: relative;
 	margin-left: auto;
 	margin-right: auto;
-	width: 798px; /* 800-2x1px border*/
+	max-width: 798px; /* 800-2x1px border*/
 }
 div.content-notice {
 	text-align: left;
@@ -370,7 +370,7 @@ div.content-notice {
 	margin-left: auto;
 	margin-right: auto;
 	margin-top: 5px;
-	width: 768px;
+	max-width: 768px;
 	background-color: #fff;
 	border: 1px solid #aaa;
 	padding: 8px 15px;	
@@ -399,8 +399,8 @@ div.content-home-updates {
 	margin-left: auto;
 	margin-right: auto;
 	margin-top: 5px;
-	padding:0;	
-	width: 750px;
+	padding:0;
+	max-width: 750px;
 	padding-left: 24px;
 	padding-right: 24px;
 	border: 1px solid #aaa;
@@ -410,13 +410,13 @@ div.content-home-updates {
 	margin-top:0;
 	}
 #content-publicforum {
-	width: 710px;
+	max-width: 710px;
 	height: auto;
 	margin-left:auto;
 	margin-right:auto;
 }
 div.forum {
-	width: 710px;
+	max-width: 710px;
 	margin-left:auto;
 	margin-right:auto;
 	overflow:auto;
@@ -560,6 +560,7 @@ div.gamelistings-tabs a:hover {
 	margin-left:10px;
 	margin-right:10px;
 	font-size:15px;
+	word-wrap: break-word;
 }
 .message-foot-notification {
 	font-size:14px;
@@ -575,7 +576,7 @@ form {
 }
 
 .reply {
-	width: 630px;
+	max-width: 630px;
 	margin-left: auto;
 	margin-right: auto;
 	padding-top:10px;
@@ -711,4 +712,138 @@ span.orderNotice {
 .likeMessageToggleLink, .likeCount {
 	font-size:8pt;
 	font-style:italic;
+}
+
+tr[class^="replyalternate"]{
+	word-wrap: break-word;
+}
+#chatboxscroll > TABLE.chatbox{
+	table-layout: fixed;
+}
+input[id^="UpdateButton"]{
+	margin-top: 10px;
+	width: auto !important;
+}
+input[id^="FinalizeButton"]{
+	margin-top: 10px;
+	width: auto !important;
+}
+.archive-messages-table{
+	table-layout: fixed;
+}
+@media only screen and (max-width: 500px){
+	#logo{
+		position: relative;
+		width: 60%;
+		display: block;
+		margin: 0 auto;
+	}
+}
+@media only screen and (max-width: 800px) and (min-width: 500px){
+	#logo{
+		position: relative;
+		width: 40%;
+		display: block;
+		margin: 0 auto;
+	}
+}
+
+@media only screen and (max-width: 800px) {
+	body {
+		font-size: 16px;
+		padding: 10px;
+	}
+	span.logon {
+		font-size:14px;
+	}
+	#header-container {
+		height: auto;
+		padding: 10px;
+		margin: -10px -10px 0;
+	}
+	#header-welcome{
+		margin-top: 15px;
+		text-align: center;
+	}
+	#header-welcome a:first-child {
+		word-wrap: break-word;
+	}
+	#header-goto {
+		margin-top: 10px;
+		text-align: center;
+		clear: inherit;
+	}
+	#header-goto a{
+		display: inline-block;
+		margin-top: 5px;
+	}
+	#seperator{
+		margin: 0 -10px;
+	}
+	#seperator-fixed{
+		display: none;
+	}
+	div.content{
+		padding: 15px 10px;
+	}
+	img {
+		max-width: 100%;
+		height: auto;
+	}
+	div.gamelistings-tabs {
+		font-size: 16px;
+	}
+	div.gamelistings-tabs a{
+		display: block;
+		margin-top: 10px;
+	}
+	ul.formlist{
+		margin: 0;
+	}
+	input[type="text"], input[type="submit"], input[type="password"], textarea, select{
+		font-size: 16px;
+		width: 100%;
+	}
+	textarea{
+		resize: vertical;
+	}
+	.message-subject{
+		text-align: center;
+	}
+	.message-head{
+		text-align: center;
+		float: none;
+	}
+	.reply > .message-head{
+		text-align: right;
+		float: right;
+		word-wrap: break-word;
+		max-width: 100%;
+	}
+	.thread > .message-subject{
+		text-align: inherit;
+	}
+	.thread > .message-head{
+		text-align: right;
+		float: right;
+		word-wrap: break-word;
+		max-width: 100%;
+	}
+	div.hr, div.hrthin {
+		width:100%;
+	}
+	TD.uniticon {
+		width:15%;
+		text-align:right;
+	}
+	TD.time {
+		width:20% !important;
+	}
+	#chatboxtabs {
+		font-size: 16px !important;
+		padding-bottom: 10px;
+	}
+	.message-contents{
+		word-wrap: break-word;
+	}
 }

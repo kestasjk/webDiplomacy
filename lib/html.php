@@ -67,7 +67,7 @@ class libHTML
 
 	static function platinum()
 	{
-		return ' <img src="'.l_s('images/icons/platinum.png').'" alt="(P)" title="'.l_t('Co - Site Owner').'" />';
+		return ' <img src="'.l_s('images/icons/platinum.png').'" alt="(P)" title="'.l_t('Donator - platinum').'" />';
 	}
 
 	static function gold()
@@ -83,6 +83,21 @@ class libHTML
 	static function bronze()
 	{
 		return ' <img src="'.l_s('images/icons/bronze.png').'" alt="(B)" title="'.l_t('Donator - bronze').'" />';
+	}
+	
+	static function service()
+	{
+		return ' <img src="'.l_s('images/icons/service.png').'" alt="(P)" title="'.l_t('Service Award').'" />';
+	}
+	
+	static function owner()
+	{
+		return ' <img src="'.l_s('images/icons/owner.png').'" alt="(P)" title="'.l_t('Site Co-Owner').'" />';
+	}
+	
+	static function adamantium()
+	{
+		return ' <img src="'.l_s('images/icons/adamantium.png').'" alt="(P)" title="'.l_t('Donator - adamantium').'" />';
 	}
 
 	/**
@@ -372,6 +387,7 @@ class libHTML
 	 */
 	static public function prebody ( $title )
 	{
+		$jsVersion = 7;  // increment this to force clients to reload their JS files
 		$variantCSS=array();
 		foreach(Config::$variants as $variantName)
 			$variantCSS[] = '<link rel="stylesheet" href="'.STATICSRV.l_s('variants/'.$variantName.'/resources/style.css').'" type="text/css" />';
@@ -392,9 +408,9 @@ class libHTML
 		<meta name="keywords" content="'.l_t('diplomacy,diplomacy game,online diplomacy,classic diplomacy,web diplomacy,diplomacy board game,play diplomacy,php diplomacy').'" />
 		<link rel="shortcut icon" href="'.STATICSRV.l_s('favicon.ico').'" />
 		<link rel="icon" href="'.STATICSRV.l_s('favicon.ico').'" />
-		<link rel="stylesheet" href="'.CSSDIR.l_s('/global.css?ver=1').'" type="text/css" />
-		<link rel="stylesheet" href="'.CSSDIR.l_s('/gamepanel.css').'" type="text/css" />
-		<link rel="stylesheet" href="'.CSSDIR.l_s('/home.css').'" type="text/css" />
+		<link rel="stylesheet" id="global-css" href="'.CSSDIR.l_s('/global.css').'" type="text/css" />
+		<link rel="stylesheet" id="game-panel-css" href="'.CSSDIR.l_s('/gamepanel.css').'" type="text/css" />
+		<link rel="stylesheet" id="home-css" href="'.CSSDIR.l_s('/home.css').'" type="text/css" />
 		'.$variantCSS.'
 		<script type="text/javascript" src="useroptions.php"></script>
 		<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/prototype.js').'"></script>
@@ -402,8 +418,10 @@ class libHTML
 		<link rel="stylesheet" type="text/css" href="'.STATICSRV.l_s('contrib/js/pushup/src/css/pushup.css').'" />
 		<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/pushup/src/js/pushup.js').'"></script>
 		<script type="text/javascript">
-		STATICSRV="'.STATICSRV.'";
+		    STATICSRV="'.STATICSRV.'";
+		    var cssDirectory = "'.CSSDIR.'";
 		</script>
+		<script type="text/javascript" src="'.l_j('javascript/desktopMode.js').'?ver='.$jsVersion.'"></script>
 		<title>'.l_t('%s - webDiplomacy',$title).'</title>
 	</head>';
 	}
@@ -586,8 +604,12 @@ class libHTML
 		$links=array();
 
 		// Items displayed in the menu
-		$links['index.php']=array('name'=>'Home', 'inmenu'=>TRUE, 'title'=>"See what's happening");
-		$links['forum.php']=array('name'=>'Forum', 'inmenu'=>TRUE, 'title'=>"The forum; chat, get help, help others, arrange games, discuss strategies");
+		$links['index.php']=array('name'=>'Home', 'inmenu'=>TRUE, 'title'=>"See what's happening");  
+	    if( isset(Config::$customForumURL) ) {
+			$links[Config::$customForumURL]=array('name'=>'Forum', 'inmenu'=>TRUE, 'title'=>"The forum; chat, get help, help others, arrange games, discuss strategies");
+        } else {
+			$links['forum.php']=array('name'=>'Forum', 'inmenu'=>TRUE, 'title'=>"The forum; chat, get help, help others, arrange games, discuss strategies");
+        }
 		$links['gamelistings.php']=array('name'=>'Games', 'inmenu'=>TRUE, 'title'=>"Game listings; a searchable list of the games on this server");
 
 		if (is_object($User))
@@ -604,7 +626,7 @@ class libHTML
 				$links['usercp.php']=array('name'=>'Settings', 'inmenu'=>TRUE, 'title'=>"Change your user specific settings");
 			}
 		}
-		$links['help.php']=array('name'=>'Help', 'inmenu'=>TRUE, 'title'=>'Get help and information; guides, intros, FAQs, stats, links');
+		$links['help.php']=array('name'=>'Help/Donate', 'inmenu'=>TRUE, 'title'=>'Get help and information; guides, intros, FAQs, stats, links');
 
 		// Items not displayed on the menu
 		$links['map.php']=array('name'=>'Map', 'inmenu'=>FALSE);
@@ -669,7 +691,7 @@ class libHTML
 				$arguments = '';
 
 			$menu .= '
-				<div style="float:right; text-align:right; width:100%">
+				<div>
 					<div id="header-welcome">
 						'.(is_object($User)?l_t('Welcome, %s',$User->profile_link(TRUE)).' -
 						<span class="logon">('.
@@ -853,6 +875,7 @@ class libHTML
 	static private function footerCopyright() {
 		// Version, sourceforge and HTML compliance logos
 		return l_t('webDiplomacy version <strong>%s</strong>',number_format(VERSION/100,2)).'<br />
+            <a class="light" id="js-desktop-mode" style="cursor: pointer; color: #006699;" onclick="toggleDesktopMode()">Enable Desktop Mode</a> <br />
 			<a href="http://github.com/kestasjk/webDiplomacy" class="light">GitHub Project</a> | 
 			<a href="http://github.com/kestasjk/webDiplomacy/issues" class="light">Bug Reports</a> | <a href="mailto:'.Config::$modEMail.'" class="light">Contact Moderator</a>';
 	}
@@ -893,7 +916,8 @@ class libHTML
 	static private function footerScripts() {
 		global $User, $Locale;
 
-		$jsVersion = 5;  // increment this to force clients to reload their JS files
+
+		$jsVersion = 7;  // increment this to force clients to reload their JS files
 
 		$buf = '';
 
@@ -935,7 +959,7 @@ class libHTML
 		
 		if( is_object($Locale) )
 			$Locale->onFinish();
-		
+
 		// Add the javascript includes:
 		$footerIncludes = array();
 		$footerIncludes[] = l_j('../locales/layer.js');
@@ -989,6 +1013,17 @@ class libHTML
 				'.(Config::$debug ? 'alert(e);':'').'
 				}
 			}, this);
+			var toggle = localStorage.getItem("desktopEnabled");
+			var toggleElem = document.getElementById(\'js-desktop-mode\');
+            if (toggle == "true") {
+                if(toggleElem !== null) {
+                    toggleElem.innerHTML = "Disable Desktop Mode";
+                }
+            } else {
+                if(toggleElem !== null) {
+                    toggleElem.innerHTML = "Enable Desktop Mode";
+                }
+            }
 		</script>
 		';
 		
