@@ -216,7 +216,7 @@ class datcGame extends processGame
 		// For each countryID with orders output the blank orders, then add the extra code to enter and submit those orders via JS.
 		$tabl=$DB->sql_tabl("SELECT m.countryID, m.id FROM wD_Members m
 			INNER JOIN wD_Orders o ON ( o.gameID = m.gameID AND o.countryID = m.countryID )
-			WHERE m.gameID = ".$this->id." GROUP BY o.countryID ORDER BY o.countryID");
+			WHERE m.gameID = ".$this->id." GROUP BY m.countryID, m.id ORDER BY m.countryID, m.id");
 		while( list($countryID, $memberID) = $DB->tabl_row($tabl) )
 		{
 			libHTML::$footerScript[] = '(function() {';
