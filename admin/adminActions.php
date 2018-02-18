@@ -153,7 +153,7 @@ class adminActions extends adminActionsForms
 			'countryReallocate' => array(
 				'name' => 'Reallocate countries',
 				'description' => 'Alter which player has which country. Enter a list like so:
-					"<em>R,T,A,G,U,F,E</em>".<br />
+					"<em>R,T,A,G,I,F,E</em>".<br />
 					The result will be that England will be set to Russia, France to Turkey, etc.<br /><br />
 					If you aren\'t sure about the order of each country just enter the gameID without anything else and the list of
 					countries in the order will be output.<br /><br />
@@ -164,7 +164,7 @@ class adminActions extends adminActionsForms
 					(Alternatively you can enter [userID1]=[countryLetter1],[userID2]=[countryLetter2],etc)',
 				'params' => array(
 					'gameID'=>'Game ID',
-					'reallocations'=>'Reallocations list (e.g "<em>R,T,A,G,U,F,E</em>")'
+					'reallocations'=>'Reallocations list (e.g "<em>R,T,A,G,I,F,E</em>")'
 					)
 			),
 	        	'drawType' => array(
@@ -180,7 +180,7 @@ class adminActions extends adminActionsForms
 				'description' => 'Change a game\'s messaging settings, e.g. to convert from gunboat to public-only or all messages allowed.',
 				'params' => array(
 					'gameID'=>'Game ID',
-					'newSetting'=>'Enter a number for the desired setting: 1=Regular, 2=PublicPressOnly, 3=NoPress'
+					'newSetting'=>'Enter a number for the desired setting: 1=Regular, 2=PublicPressOnly, 3=NoPress, 4=RuleBookPress'
 					),
 			),
 			'unCrashGames' => array(
@@ -461,7 +461,8 @@ class adminActions extends adminActionsForms
 			case 1: $newSettingName='Regular'; break;
 			case 2: $newSettingName='PublicPressOnly'; break;
 			case 3: $newSettingName='NoPress'; break;
-			default: throw new Exception(l_t("Invalid messaging setting; enter 1, 2, or 3."));
+			case 4: $newSettingName='RuleBookPress'; break;
+			default: throw new Exception(l_t("Invalid messaging setting; enter 1, 2, 3, or 4."));
 		}
 
 		$DB->sql_put("UPDATE wD_Games SET pressType = '".$newSettingName."' WHERE id = ".$gameID);
