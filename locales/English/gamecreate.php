@@ -88,18 +88,18 @@ Start a new game; you decide the name, how long it runs, and how much it's worth
 	</li>
 
 	<li class="formlisttitle">
-		<img src="images/icons/lock.png" alt="Private" /> Password protect (optional):
+		<img src="images/icons/lock.png" alt="Private" /> Add Invite Code (optional):
 	</li>
 	<li class="formlistfield">
 		<ul>
-			<li>Password: <input type="password" name="newGame[password]" value="" size="30" /></li>
+			<li>Invite Code: <input type="password" name="newGame[password]" value="" size="30" /></li>
 			<li>Confirm: <input type="password" name="newGame[passwordcheck]" value="" size="30" /></li>
 		</ul>
 	</li>
 	<li class="formlistdesc">
-		<strong>This is optional.</strong> If you set this only people who know the password will be able to join.<br /><br />
+		<strong>This is optional.</strong> If you set this only people who know the invite code will be able to join.<br /><br />
 
-		<strong>Default:</strong> No password set
+		<strong>Default:</strong> No invite code set
 	</li>
 </ul>
 
