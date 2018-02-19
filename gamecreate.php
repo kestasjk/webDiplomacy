@@ -79,7 +79,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		// This is hashed, so doesn't need validation
 		if ( $input['password'] != $input['passwordcheck'] )
 		{
-			throw new Exception(l_t("The two passwords entered don't match."));
+			throw new Exception(l_t("The two invite codes entered don't match."));
 		}
 
 		$input['bet'] = (int) $input['bet'];

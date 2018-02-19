@@ -295,9 +295,10 @@ div.memberBoardHeader {
 	}
 .panelBarGraph {
 	padding:0;
-	margin:0;
 	overflow:hidden;
 	height:6px;
+	margin-left:2%;
+	margin-right:2%;
 }
 .panelBarGraph  {
 }
