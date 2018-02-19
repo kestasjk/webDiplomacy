@@ -19,6 +19,9 @@
  */
 
 defined('IN_CODE') or die('This script can not be run by itself.');
+
+require_once('assignmentSolver.php');
+
 /**
  * @package GameMaster
  * @subpackage Adjudicator
@@ -31,182 +34,80 @@ class adjudicatorPreGame {
 		return ( count($Game->Members->ByID) == count($Game->Variant->countries) );
 	}
 
-	/**
-	 * Takes an array of chances indexed by countryID which add up to less than one and
-	 * increases them in proportion so they end up adding up to 1.
-	 *
-	 * @param $chances array[$countryID]=$chance
-	 * @return array[$countryID]=$chance
-	 */
-	private function balanceChances(array $chances)
-	{
-		$sum = 0.0;
-
-		foreach($chances as $countryID=>$chance)
-		{
-			if ( $chance < 0.001 )
-				$chance = ($chances[$countryID] = 0.01);
-
-			$sum += $chance;
-		}
-
-		foreach($chances as $countryID=>$chance)
-			$chances[$countryID] *= 1.0/$sum;
-
-		return $chances;
-	}
-
 	protected function userCountries() {
-		global $DB, $Game;
+		global $Game;
 		/*
 		 * Find out who gets which countryID;
-		 * - Get the chances for each player of getting each countryID (stored in wD_Users)
-		 *
-		 * - Order the players so that the player which has the most difference in their
-		 * 	 chances from countryID to countryID gets to draw first. (i.e. order by std.deviation)
-		 * 	(So that large inequalities are reduced quickly)
-		 *
-		 * - For each player:
-		 * 		- Scale the chances up to add up to 1
-		 * 		- Choose a random number from 0 to 1
-		 * 		- For each countryID subtract its probability from the random number. When
-		 * 		  the next countryID has a probability higher than the random number that is
-		 * 		  the countryID that player gets.
-		 * 		- For each player which hasn't been processed yet: Set the chance of being
-		 * 		  the countryID the current player was given to 0.
-		 *
-		 * - Factor the new game's countryID selection into each member's countryID-chances
+		 * - Get the number of times each player has played as each countryID (stored in wD_Users)
+		 * - Assign players to countries so that they play as a country that they have played
+		 *   as as few times as possible.
 		 */
 
 		$userIDs = array();
 		foreach($Game->Members->ByID as $M) $userIDs[]=$M->userID;
 		
-		$chanceGrid = $this->getUserCountryChances($userIDs);
-		$userChances = $chanceGrid;
+		/**
+		 * The hungarian solver expects a multidimensional array, all 0-indexed. Therefore
+		 * we need to store the userIDs seperately to the weights, so that they can be 
+		 * zipped together at the end.
+		 */
+		$weights = $this->getWeightsAsCountryCounts($userIDs);
+
+		$solver = new assignmentSolver;
 		
-		/*
-		 * - Order the players so that the player which has the most difference in their
-		 * 	 chances from countryID to countryID gets to draw first. (So that large differences
-		 * 	 are reduced quickly)
-		 */
-		$selectionOrder = array();
-		$standardDevs = array();
-		foreach($chanceGrid as $userID=>$chances)
-		{
-			// Balance chances
-			$chanceGrid[$userID] = ($chances = $this->balanceChances($chances));
-
-			$sum=0.0;
-			foreach($chances as $chance)
-				$sum += pow(abs($chance - 1.0/count($Game->Variant->countries)), 2.0);
-
-			$selectionOrder[] = $userID;
-			$standardDevs[] = pow($sum, 0.5);
-		}
-
-		/*
-		 * We have an array of standard deviations and associated user-IDs, both using the
-		 * same numeric index. This makes it easy to sort the user-IDs based on the std-devs.
-		 * (An inefficient bubble-sort, but good enough)
-		 */
-		$memberCount = count($selectionOrder);
-		for($i=0; $i<$memberCount-1; $i++)
-			for($j=0; $j<$memberCount-1; $j++)
-				if ( $standardDevs[$j] < $standardDevs[$j+1])
-				{
-					$tmp = $standardDevs[$j+1];
-					$standardDevs[$j+1] = $standardDevs[$j];
-					$standardDevs[$j] = $tmp;
-
-					$tmp = $selectionOrder[$j+1];
-					$selectionOrder[$j+1] = $selectionOrder[$j];
-					$selectionOrder[$j] = $tmp;
-				}
-
-		/*
-		 * - For each player:
-		 * 		- Scale the chances up to add up to 1
-		 * 		- Choose a random number from 0 to 1
-		 * 		- For each countryID subtract its probability from the random number. When
-		 * 		  the next countryID has a probability higher than the random number that is
-		 * 		  the countryID that player gets.
-		 * 		- For each player which hasn't been processed yet: Set the chance of being
-		 * 		  the countryID the current player was given to 0.
-		 */
+		// We are minimising the weights, so we pass in "false".
+		$assignment = $solver->hungarian($weights, false);
+		
 		$userCountries = array();
-		$memberCount = count($selectionOrder);
-		foreach($selectionOrder as $playerNo=>$userID)
+		for($i = 0; $i < count($userIDs); $i++)
 		{
-			// - Scale the chances up to add up to 1
-			if ( $playerNo != 0 )
-				$chanceGrid[$userID] = $this->balanceChances($chanceGrid[$userID]);
-
-			// - Choose a random number from 0 to 1
-			$rand = rand(0,100)/100;
-
-			/*	- For each countryID subtract its probability from the random number. When
-			 *	  the next countryID has a probability higher than the random number that is
-			 * 	  the countryID that player gets.
-			 */
-			foreach($chanceGrid[$userID] as $countryID=>$chance)
-			{
-				if ( $rand <= $chance ) break;
-				else $rand -= $chance;
-			}
-
-			$userCountries[$userID] = $countryID;
-
-			/* 	- For each player which hasn't been processed yet: Set the chance of being
-		 	 * 	  the countryID the current player was given to 0.
-		 	 */
-			for($i=$playerNo+1; $i<$memberCount; $i++)
-				unset($chanceGrid[$selectionOrder[$i]][$countryID]);
+			$userID = $userIDs[$i];
+			$userCountries[$userID] = $assignment[$i];
 		}
-
-		foreach( $userCountries as $userID=>$countryID )
-		{
-			$userChances[$userID][$countryID] /= 2.0;
-			$userChances[$userID]=$this->balanceChances($userChances[$userID]);
-		}
-		
-		$this->setUserCountryChances($userChances);
+			
+		/**
+		 * Update the play count for the associated countries
+		 */
+		$this->updateCountryPlayCounts($assignment, $userIDs, $weights);			
 
 		return $userCountries;
 	}
 	
-	protected function setUserCountryChances($countryChances)
+	protected function updateCountryPlayCounts($assignment, $userIDs, $initialWeights)
 	{
 		global $Game;
 		$vd = new VariantData($Game->variantID);
 		$vd->systemToken = 948379409;
-		
-		foreach($countryChances as $userID=>$chances)
+		for ($userIndex = 0; $userIndex < count($userIDs); $userIndex++)
 		{
-			$vd->userID = $userID;
-			foreach($chances as $countryID=>$chance)
-				$vd->setFloat($chance, $countryID);
+			$vd->userID = $userIDs[$userIndex];
+			$countryIndex = $assignment[$userIndex];
+			$oldPlayCount = $initialWeights[$userIndex][$countryIndex];
+			$vd->updateInt($oldPlayCount + 1, $countryIndex);
 		}
 	}
 	
-	protected function getUserCountryChances($userIDs)
+	protected function getWeightsAsCountryCounts($userIDs)
 	{
 		global $Game;
 		$vd = new VariantData($Game->variantID);
 		$vd->systemToken = 948379409;
 		
-		$countryChances = array();
+		$userCountryCounts = array();
 		
 		$countryCount = count($Game->Variant->countries);
-		foreach($userIDs as $userID)
+		for($i = 0; $i < count($userIDs); $i++)
 		{
-			$countryChances[$userID] = array();
+			$userCountryCounts[$i] = array();
+			$vd->userID = $userIDs[$i];
 			
-			$vd->userID = $userID;
 			for($countryID=1;$countryID<=$countryCount;$countryID++)
-				$countryChances[$userID][$countryID] = $vd->getFloat($countryID, 1.0/$countryCount);
+			{
+				$userCountryCounts[$i][$countryID] = $vd->getInt($countryID, 0);
+			}
 		}
 		
-		return $countryChances;
+		return $userCountryCounts;
 	}
 
 	protected function assignCountries(array $userCountries) {
@@ -298,12 +199,11 @@ class adjudicatorPreGame {
 	 * Deletes game and throws exception if game cannot start
 	 */
 	function adjudicate()
-	{
+	{		
 		global $Game;
 
 		// Will give back bets, send messages, delete the game, and throw an exception to get back to gamemaster.php
 		if( !$this->isEnoughPlayers() ) $Game->setNotEnoughPlayers();
-
 
 		// Determine which countryID is given to which userID
 		$userCountries = $this->userCountries();// $userCountries[$userID]=$countryID
