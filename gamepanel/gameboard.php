@@ -218,7 +218,7 @@ class panelGameBoard extends panelGame
 		$buf = '<a name="gamePanel"></a>';
 		$buf .= $this->header();
 
-		$buf .= '<div class="panelBarGraph occupationBar">'.$this->Members->occupationBar().'</div>';
+		$buf .= '<div class="panelBarGraphTop occupationBar">'.$this->Members->occupationBar().'</div>';
 
 		return '<div class="variant'.$this->Variant->name.'">'.$buf.'</div>';
 	}
