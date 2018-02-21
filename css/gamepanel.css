@@ -300,6 +300,27 @@ div.memberBoardHeader {
 	margin-left:2%;
 	margin-right:2%;
 }
+.panelBarGraphMember {
+	padding:0;
+	overflow:hidden;
+	height:6px;
+	margin-left:0%;
+	margin-right:0%;
+}
+.panelBarGraphCountry {
+	padding:0;
+	overflow:hidden;
+	height:6px;
+	margin-left:0%;
+	margin-right:0%;
+}
+.panelBarGraphTop {
+	padding:0;
+	overflow:hidden;
+	height:6px;
+	margin-left:0%;
+	margin-right:0%;
+}
 .panelBarGraph  {
 }
 .panelBarGraph td.first {
@@ -326,6 +347,8 @@ div.memberBoardHeader {
 .gamePanelHome .panelBarGraph {
 	margin-top:0;
 	height:4px;
+	margin-left: 0%;
+	margin-right: 0%;
 }
 .memberPointsCount {
 	font-style:italic;
