@@ -463,7 +463,7 @@ class libHome
 		$buf .=  '<table><tr><td>'.implode('</td></tr><tr><td>',$forumNew).'</td></tr></table>';
 		return $buf;
 	}
-
+	
 	static function forumNewExtern()
 	{
 		// Select by id, prints replies and new threads
@@ -477,69 +477,86 @@ class libHome
 				u1.webdip_user_id as topic_poster_webdip, t.topic_poster, t.topic_first_poster_name, t.topic_first_poster_colour,
 				
 				t.topic_last_post_id, t.topic_last_post_time,
-				u2.webdip_user_id as topic_last_poster_webdip, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_poster_colour
+				u2.webdip_user_id as topic_last_poster_webdip, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_poster_colour,
+				p.post_id, p.post_text
 				
 				FROM phpbb_topics t
+				INNER JOIN phpbb_posts p ON p.post_id = t.topic_last_post_id
 				INNER JOIN phpbb_forums f ON f.forum_id = t.forum_id
 				INNER JOIN phpbb_users u1 ON u1.user_id = t.topic_poster
 				INNER JOIN phpbb_users u2 ON u2.user_id = t.topic_last_poster_id
 				WHERE t.topic_visibility = 1
 				ORDER BY t.topic_last_post_time DESC
 				LIMIT 20");
-
+		
 		$buf = '';
 		while($t = $DB->tabl_hash($tabl))
 		{
 			$buf .= '<div class="hr"></div>';
-
+			
+			$urlForum = '/contrib/phpBB3/viewforum.php?f='.$t['forum_id'];
+			$urlThread = '/contrib/phpBB3/viewtopic.php?f='.$t['forum_id'].'&t='.$t['topic_id'];
+			$urlPost = '/contrib/phpBB3/viewtopic.php?f='.$t['forum_id'].'&p='.$t['post_id'].'#p'.$t['post_id'];
+			
+			//topic_poster_webdip // ID
+			//topic_last_poster_webdip // ID
+			
 			$alt = libHTML::alternate();
 			$buf .= '<div class="homeForumGroup homeForumAlt'.$alt.'">';
-
-				$buf .= '
-				<div class="homeForumSubject" >';
-				//$buf .= '<div style="float:right"><img src="http://127.0.0.1/images/historyicons/external.png" width="10" height="10"></div>';
-				
-				$buf .= '<span style=\'color:black; font-size:90%\'>'.($t['topic_posts_approved']>1?'Re: ':'').'</span>'
-					.'<a href="" style=\'font-size:110%\'>'.$t['topic_title'].'</a><div style="clear:both"></div></div>';
-				$buf .= '<div class="homeForumPost homeForumPostAlt'.$alt.'">';
-
-				
-				if( $t['topic_posts_approved']>1 ) {
-
-					$buf .= '<div class="" style="margin-bottom:5px;margin-left:3px; margin-right:3px;">';
-					$buf .= '<div class="homeForumPostTime" style="float:right"><em>'.libTime::text($t['topic_last_post_time']).'</em></div>';
-					$buf .= '<span style=\'color:black; font-size:90%\'>';
-					$buf .= 'Latest:</span> <a href="profile.php?userID='.$t['topic_last_poster_webdip'].'" class="light">'.$t['topic_last_poster_name'].'</a> '.libHTML::loggedOn($t['topic_last_poster_webdip'])
-					.'</div>';
-					
-
-				}
-
-					$buf .= '<div class="" style="margin-bottom:5px;margin-left:3px; margin-right:3px;">';
-					$buf .= '<div class="homeForumPostTime" style="float:right"><em>'.libTime::text($t['topic_time']).'</em></div>';
-					$buf .= '<span style=\'color:black; font-size:90%\'>';
-					$buf .= 'By:</span> <a href="profile.php?userID='.$t['topic_poster_webdip'].'" class="light">'.$t['topic_first_poster_name'].'</a> '.libHTML::loggedOn($t['topic_poster_webdip'])
-					.'</div>';
-				
-				
-					$buf .= '<div style="margin-left:3px; margin-right:3px; font-size:90%">';
-			$buf .= '<div style="float:right">';
-			$buf .= l_t('%s replies','<strong>'.($t['topic_posts_approved']-1).'</strong>');
-			$buf .= ', '.l_t('%s views','<strong style=\'content: "\f14c"\'>'.($t['topic_views']-1).'</strong>');
-			$buf .= '</div>';
-			$buf .= '&raquo; 
-					<a href="forum.php?threadID=">'.$t['forum_name'].'</a>
-					
-					</div>';
-				$buf .= '</div>';
-
-			$buf .= '<div class="">';
-				
-				
 			
-			$buf .= '</div>';
+			$buf .= '
+				<div class="homeForumSubject" >';
+			//$buf .= '<div style="float:right"><img src="http://127.0.0.1/images/historyicons/external.png" width="10" height="10"></div>';
+			
+			$buf .= '<span style=\'font-size:90%\'>'.($t['topic_posts_approved']>1?'Re: ':'New: ').'</span>'
+					.'<a href="'.$urlThread.'" style=\'font-size:110%\'>'.$t['topic_title'].'</a>';
+					$buf .= '<div style="clear:both"></div>';
+					$buf .= '<div class="homeForumPostTime" style="float:right"><em>'.libTime::text($t['topic_time']).'</em></div>';
+					$buf .= '<span style=\'font-size:90%\'>';
+					$buf .= 'Thread:</span> <a href="profile.php?userID='.$t['topic_poster_webdip'].'" class="light">'.$t['topic_first_poster_name'].'</a> '.libHTML::loggedOn($t['topic_poster_webdip']);
+					$buf .= '<div style="clear:both"></div></div>';
+					$buf .= '<div class="homeForumPost homeForumPostAlt'.$alt.'">';
+					
+					
+					if( $t['topic_posts_approved']>1 ) {
+						
+						$buf .= '<div class="" style="margin-bottom:5px;margin-left:3px; margin-right:3px;">';
+						$buf .= '<div class="homeForumPostTime" style="float:right;font-weight:bold"><em>'.libTime::text($t['topic_last_post_time']).'</em></div>';
+						$buf .= '<span style=\'color:#009902;font-size:90%\'>';
+						$buf .= 'Latest:</span> <a href="profile.php?userID='.$t['topic_last_poster_webdip'].'" class="light">'.$t['topic_last_poster_name'].'</a> '.libHTML::loggedOn($t['topic_last_poster_webdip'])
+						.'</div>';
+					}
+					
+					$post = $DB->msg_escape(preg_replace("/\[[^\]]+\]/","",preg_replace("/<[^>]+>/","",$t['post_text'])));
+					$post = str_replace("\\'","'", $post);
+					$post = substr($post, 0, 75);
+					if(strlen($post) > 45) $post .= '...';
+					
+					$buf .= '<div><span style="font-style:italic">&quot;'.$post.'&quot;</span>';
+					
+					$buf .= '<div style="float:right"><a href="'.$urlPost.'">Open</a></div>';
+					$buf .= '<div style="clear:both"></div>';
+					
+					$buf .= '</div>';
+					$buf .= '</div>';
+					
+					$buf .= '<div class="" style="margin-bottom:5px;margin-left:3px; margin-right:3px;">';
+					
+					
+					$buf .= '<div style="margin-left:3px; margin-right:3px; font-size:90%">';
+					$buf .= '<div style="float:right">';
+					$buf .= l_t('<span style="color:black">%s</span> replies','<strong>'.($t['topic_posts_approved']-1).'</strong>');
+					$buf .= ', '.l_t('<span style="color:black">%s</span> views','<strong style=\'content: "\f14c"\'>'.($t['topic_views']-1).'</strong>');
+					$buf .= '</div>';
+					$buf .= '&raquo;
+					<a href="'.$urlForum.'">'.$t['forum_name'].'</a>
+							
+					</div>';
+					$buf .= '</div>';
+					$buf .= '</div>';
+					
 		}
-
+		
 		if( $buf )
 		{
 			return $buf;
@@ -624,18 +641,24 @@ else
 		print $liveGames;
 	}
 	
-	if( isset($_REQUEST['HomeForumTest']) ) {
-
-		print '<div class="homeHeader">'.l_t('Forum').' <a href="'.'">'.libHTML::link().'</a></div>';
-		if( false && file_exists(libCache::dirName('forum').'/home-forum.html') )
+	if( isset(Config::$customForumURL) ) { // isset($_REQUEST['HomeForumTest']) ) {
+		
+		print '<div class="homeHeader">'.l_t('Forum').' <a href="/contrib/phpBB3/">'.libHTML::link().'</a></div>';
+		if( file_exists(libCache::dirName('forum').'/home-forum.html') )
+		{
 			print file_get_contents(libCache::dirName('forum').'/home-forum.html');
-			else
-			{
-				$buf_home_forum=libHome::forumNewExtern();
-				//file_put_contents(libCache::dirName('forum').'/home-forum.html', $buf_home_forum);
-				print $buf_home_forum;
+			$diff = (time() - filemtime(libCache::dirName('forum').'/home-forum.html'));
+			if( $diff > 60*15 ) {
+				unlink(libCache::dirName('forum').'/home-forum.html');
 			}
-			
+		}
+		else
+		{
+			$buf_home_forum=libHome::forumNewExtern();
+			file_put_contents(libCache::dirName('forum').'/home-forum.html', $buf_home_forum);
+			print $buf_home_forum;
+		}
+		
 		
 	}
 	else { //if( !isset(Config::$customForumURL)) {

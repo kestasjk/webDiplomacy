@@ -607,6 +607,7 @@ class libHTML
 		$links['index.php']=array('name'=>'Home', 'inmenu'=>TRUE, 'title'=>"See what's happening");  
 	    if( isset(Config::$customForumURL) ) {
 			$links[Config::$customForumURL]=array('name'=>'Forum', 'inmenu'=>TRUE, 'title'=>"The forum; chat, get help, help others, arrange games, discuss strategies");
+			$links['forum.php']=array('name'=>'Old Forum', 'inmenu'=>false, 'title'=>"The old forum; chat, get help, help others, arrange games, discuss strategies");
         } else {
 			$links['forum.php']=array('name'=>'Forum', 'inmenu'=>TRUE, 'title'=>"The forum; chat, get help, help others, arrange games, discuss strategies");
         }
