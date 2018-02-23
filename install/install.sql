@@ -2,7 +2,7 @@
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wD_AccessLog` (
   `userID` mediumint(8) unsigned NOT NULL,
-  `lastRequest` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `lastRequest` timestamp NOT NULL DEFAULT '1970-01-02 00:00:01',
   `hits` smallint(5) unsigned NOT NULL,
   `cookieCode` int(10) unsigned NOT NULL,
   `ip` int(10) unsigned NOT NULL,
