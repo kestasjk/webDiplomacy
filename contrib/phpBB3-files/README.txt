@@ -50,3 +50,8 @@ installation.
 
 Note that admin permissions will not automatically carry over; any extra permissions 
 required for moderators will have to be set up separately.
+
+
+
+If you would like to preserve webDiplomacy's basic karma system for giving posts points in the 
+forum please see https://github.com/kestasjk/postlove
