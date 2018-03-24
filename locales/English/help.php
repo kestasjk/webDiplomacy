@@ -29,7 +29,8 @@ print libHTML::pageTitle('webDiplomacy Help and Links','Links to pages with more
 ?>
 <ul class="formlist">
 <li> <strong><u>How to Donate</u></strong> </br>
-If you decide to donate by clicking the button below please let me know your username so we can add a donator marker to your profile.
+webDiplomacy.net is run off of user donations. Because of this, we pledge never to show ads, or charge for webDiplomacy features. </br>
+If you would like to support the site, click the button below. After submitting a donation, please send an email to a Co-owner at <a href="mailto:<?php print Config::$adminEMail; ?>" class="light"><?php print Config::$adminEMail; ?></a> with your username to receive a donator marker. </br>
 <div style='text-align:left'>
 <form action='https://www.paypal.com/cgi-bin/webscr' method='post'>
 <input type='hidden' name='cmd' value='_s-xclick'>
@@ -41,61 +42,58 @@ If you decide to donate by clicking the button below please let me know your use
 </li>
 
 <li><a href="https://docs.google.com/document/d/1dSq6zlizecb90F3OKSqyFUWGI32Or87ZNmkFmhCVz-c/edit">Mentor-Apprentice Program (External Site)</a></li>
-<li class="formlistdesc">This is a program to allow new members to receive advice and guideance on the game from our more experienced members. </br>
-If you are a new member and want to be mentored <a href="https://goo.gl/forms/tHxJMZQ7mKgjAtEO2">click here</a> to sign up.</br>
+<li class="formlistdesc">This is a program to allow new members to receive advice and guidance on the game from our more experienced members. </br>
+If you are a new member and want a mentor <a href="https://goo.gl/forms/tHxJMZQ7mKgjAtEO2">click here</a> to sign up. </br>
 If you would like to mentor a new member please <a href="https://goo.gl/forms/XdMDvxfxdQQQJjDI3">click here</a> to sign up. </br>
 Any questions on this program can be directed to webdipmentors@gmail.com.
 </li>
 
+<li><a href="rules.php">Rulebook/Contacting the Mods</a></li>
+<li class="formlistdesc">The webDiplomacy rulebook. Moderator and Co-owner emails.</li>
+ 
 <li><a href="intro.php">The intro to Diplomacy</a></li>
-<li class="formlistdesc">An introduction to playing webDiplomacy; gives details on unit types, move types,
-and the rules of webDiplomacy.</li>
+<li class="formlistdesc">An introduction to playing webDiplomacy. Gives details on unit types, move types, and the basic rules of webDiplomacy.</li>
 
 <li><a href="faq.php">FAQ</a></li>
-<li class="formlistdesc">The webDiplomacy FAQ and how to Donate.</li>
+<li class="formlistdesc">The webDiplomacy FAQ (Frequently asked questions) and information on donating.</li>
 
-<li><a href="rules.php">Rulebook/Contacting the Mods</a></li>
-<li class="formlistdesc">The webDiplomacy rulebook.</li>
+<li><a href="profile.php">Find a user</a></li>
+<li class="formlistdesc">Search for a user account registered on this server if you know their user ID number, username, or e-mail address.</li>
 
 <li><a href="recentchanges.php">Recent changes</a></li>
 <li class="formlistdesc">Recent changes to the webDiplomacy software.</li>
 
 <li><a href="halloffame.php">Hall of fame</a></li>
-<li class="formlistdesc">The pros of this server; the top 100!</li>
-
-<li><a href="profile.php">Find a user</a></li>
-<li class="formlistdesc">Search for a user account registered on this server, if you know their ID number, username, or e-mail address.</li>
+<li class="formlistdesc">The pros of this server; the top 100 by points!</li>
 
 <li><a href="points.php">webDiplomacy points</a></li>
 <li class="formlistdesc">What points are for, how to win them, and how to get into the hall of fame.</li>
 
 <li><a href="http://tournaments.webdiplomacy.net/theghost-ratingslist">GhostRatings (External Site)</a></li>
-<li class="formlistdesc">An external rating system often used as a judgement scale for player skill.</li>
+<li class="formlistdesc">An external rating system often used as an alternate measure of player skill.</li>
 
 <li><a href="variants.php">Variant information</a></li>
-<li class="formlistdesc">A list of the variants available on this server, with credits and information on variant-specific rules.</li>
+<li class="formlistdesc">A list of the variants available on this server, credits, and information on variant-specific rules.</li>
 
 <li><a href="credits.php">Credits</a></li>
-<li class="formlistdesc">The credits, includes a list of active moderators.</li>
+<li class="formlistdesc">The credits. Includes a list of active moderators.</li>
 
 <li><a href="datc.php">DATC Adjudicator Tests</a></li>
 <li class="formlistdesc">For experts; the adjudicator tests which show that webDiplomacy is true to the proper rules</li>
 
 <li><a href="https://github.com/kestasjk/webDiplomacy">GitHub project page</a></li>
-<li class="formlistdesc">Our github.com project page. From here you can make feature requests, ask for support,
-	inform us about bugs, or help out.</li>
-    
-<li><a href="http://sourceforge.net/projects/phpdiplomacy">Sourceforge.net project page</a></li>
-<li class="formlistdesc">Last Updated: 2013-04-25.  Our old sourceforge.net project page.</li>
+<li class="formlistdesc">Our github.com project page. From here you can make feature requests, inform us about bugs, or help improve the code.</li>
 
 <li><a href="http://webdiplomacy.net/developers.php">Developer info</a></li>
 <li class="formlistdesc">If you want to fix/improve/install webDiplomacy all the info you need to make it happen is here.</li>
 
+<li><a href="http://sourceforge.net/projects/phpdiplomacy">Sourceforge.net project page</a></li>
+<li class="formlistdesc">Last Updated: 2013-04-25.  Our old sourceforge.net project page.</li>
+
 <li><a href="AGPL.txt">GNU Affero General License</a></li>
 <li class="formlistdesc">The OSI approved license which applies to the vast majority of webDiplomacy.</li>
 
-
 </ul>
 
-<p>Didn't find the help/info you were after here? Post a message in the <a href="forum.php" class="light">public forum</a>, or in the
-<a href="http://sourceforge.net/forum/forum.php?forum_id=427606" class="light">sourceforge.net</a> forum.</p>
+<p>Didn't find the help or information you were looking for? Post a message in the <a href="contrib/phpBB3/" class="light">public forum</a>, or or contact the moderators at <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">
+<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a>.</p>
