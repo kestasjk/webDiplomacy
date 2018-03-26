@@ -405,7 +405,10 @@ if( $total )
 		print '<li>'.l_t($name.': <strong>%s</strong>',$status).'</li>';
 	}
 
-	print '<li>'.l_t('No moves received / received:').' <strong>'.$UserProfile->nmrCount.'/'.$UserProfile->phaseCount.'</strong></li>';
+	if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
+	{
+		print '<li>'.l_t('No moves received / received:').' <strong>'.$UserProfile->nmrCount.'/'.$UserProfile->phaseCount.'</strong></li>';
+	}
 	print '<li>'.l_t('Reliability rating:').' <strong>'.($UserProfile->reliabilityRating).'%</strong>';
 	if( $User->type['Moderator'] || $User->id == $UserProfile->id )
 	{
@@ -466,8 +469,8 @@ if ( $UserProfile->type['Moderator'] ||  $UserProfile->type['ForumModerator'] ||
 	}
 }
 
-if ( $UserProfile->online )
-	print '<li><strong>'.l_t('Currently logged in.').'</strong> ('.libHTML::loggedOn($UserProfile->id).')</li>';
+if ( $UserProfile->online || time() - (24*60*60) < $UserProfile->timeLastSessionEnded)
+	print '<li><strong>'.l_t('Visited in last 24 hours').'</strong></li>';
 else
 	print '<li><strong>'.l_t('Last visited:').'</strong> '.libTime::text($UserProfile->timeLastSessionEnded).'</li>';
 

@@ -279,8 +279,6 @@ class Chatbox
 			elseif(isset($Game->Members->ByCountryID[$countryID]))
 			{
 				$tabs .= $Game->Members->ByCountryID[$countryID]->memberCountryName();
-				if ( $Game->Members->ByCountryID[$countryID]->online && !$Game->Members->ByCountryID[$countryID]->isNameHidden() )
-					$tabs .= ' '.libHTML::loggedOn($Game->Members->ByCountryID[$countryID]->userID);
 			}
 			else
 			{

@@ -431,6 +431,10 @@ div.memberBoardHeader {
 	font-size:11px;
 }
 
+.panelAnonOnlyFlag {
+	background-color:#f5f5f5  !important;
+	text-align: center !important;
+	}
 
 .memberVotePanel {
 	border-top: 1px solid #cecece!important;

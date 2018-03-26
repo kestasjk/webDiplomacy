@@ -315,7 +315,7 @@ class libHome
 
 			$buf .= '<div class="hr"></div>';
 			$buf .= $Game->summary();
-		}
+		} 
 
 		if($count==0)
 		{
@@ -341,7 +341,7 @@ class libHome
 		$tabl = $DB->sql_tabl("
 			SELECT m.id as postID, t.id as threadID, m.type, m.timeSent, IF(t.replies IS NULL,m.replies,t.replies) as replies,
 				IF(t.subject IS NULL,m.subject,t.subject) as subject,
-				u.id as userID, u.username, u.points, IF(s.userID IS NULL,0,1) as online, u.type as userType,
+				u.id as userID, u.username, u.points, IF(s.userID IS NULL,0,0) as online, u.type as userType,
 				SUBSTRING(m.message,1,100) as message, m.latestReplySent, t.fromUserID as threadStarterUserID
 			FROM wD_ForumMessages m
 			INNER JOIN wD_Users u ON ( m.fromUserID = u.id )
@@ -417,7 +417,7 @@ class libHome
 
 					<div class="homeForumPostTime">'.libTime::text($post['timeSent']).' '.$post['iconMessage'].'</div>
 					<a href="profile.php?userID='.$post['userID'].'" class="light">'.$post['username'].'</a>
-						'.libHTML::loggedOn($post['userID']) . ' ('.$post['points'].libHTML::points().
+						'.' ('.$post['points'].libHTML::points().
 						User::typeIcon($post['userType']).')
 
 					<div style="clear:both"></div>
@@ -513,7 +513,7 @@ class libHome
 					$buf .= '<div style="clear:both"></div>';
 					$buf .= '<div class="homeForumPostTime" style="float:right"><em>'.libTime::text($t['topic_time']).'</em></div>';
 					$buf .= '<span style=\'font-size:90%\'>';
-					$buf .= 'Thread:</span> <a href="profile.php?userID='.$t['topic_poster_webdip'].'" class="light">'.$t['topic_first_poster_name'].'</a> '.libHTML::loggedOn($t['topic_poster_webdip']);
+					$buf .= 'Thread:</span> <a href="profile.php?userID='.$t['topic_poster_webdip'].'" class="light">'.$t['topic_first_poster_name'].'</a> ';
 					$buf .= '<div style="clear:both"></div></div>';
 					$buf .= '<div class="homeForumPost homeForumPostAlt'.$alt.'">';
 					
@@ -523,7 +523,7 @@ class libHome
 						$buf .= '<div class="" style="margin-bottom:5px;margin-left:3px; margin-right:3px;">';
 						$buf .= '<div class="homeForumPostTime" style="float:right;font-weight:bold"><em>'.libTime::text($t['topic_last_post_time']).'</em></div>';
 						$buf .= '<span style=\'color:#009902;font-size:90%\'>';
-						$buf .= 'Latest:</span> <a href="profile.php?userID='.$t['topic_last_poster_webdip'].'" class="light">'.$t['topic_last_poster_name'].'</a> '.libHTML::loggedOn($t['topic_last_poster_webdip'])
+						$buf .= 'Latest:</span> <a href="profile.php?userID='.$t['topic_last_poster_webdip'].'" class="light">'.$t['topic_last_poster_name'].'</a> '
 						.'</div>';
 					}
 					
