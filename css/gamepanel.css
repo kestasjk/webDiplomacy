@@ -456,6 +456,9 @@ div.memberBoardHeader {
 	.gamePanelHome .titleBar{
 		font-size: 14px;
 	}
+	.gamePanelHome .gameName{
+		font-size: 16px;
+	}
 	.gamePanelHome .homeMembersTable td {
 		display: table-cell;
 	}
