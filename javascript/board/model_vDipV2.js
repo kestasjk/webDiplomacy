@@ -252,17 +252,33 @@ function loadModel() {
 		TerritoryClass.addMethods({
 			nodeInit: function () {
 				this.convoyNode = true;
+				/*
+				 * this.convoyPaths includes all paths that have reached a node.
+				 * For each new path that reaches a node it has to be checked,
+				 * if the node is already reached by a shorter path, that includes
+				 * all the nodes of the current path (I call the new path a reducible
+				 * path in this case; further explanations at the findAllPaths 
+				 * function). As a consequence of the bridth first search, the
+				 * convoyPaths are in ascending order of path length.
+				 */
 				this.convoyPaths = new Array();
+				this.validBorderTerritoriesCache = null;
 			},
 			addPath: function (path) {
 				this.convoyPaths.push(path);
 			},
-			clearPaths: function () {
-				this.convoyPaths = new Array();
-			},
 			isConvoyNode: function () {
 				return !Object.isUndefined(this.convoyNode) && this.convoyNode;
-			}
+			},
+			//add function to cache valid border territories with specific search params for efficiency
+			getValidBorderTerritories: function(StartTerr, fAllNode, fEndNode){
+				if( this.validBorderTerritoriesCache == null )
+					this.validBorderTerritoriesCache = this.getBorderTerritories().findAll(function (n) {
+							return n.isConvoyNode() && n.id != StartTerr.id && (fAllNode(n) || fEndNode(n));
+					});
+				
+				return this.validBorderTerritoriesCache;
+			}			
 		});
 
 		var PathClass = Class.create({
@@ -316,6 +332,34 @@ function loadModel() {
 				else
 					// final array has to be reversed since we moved backwards
 					return array.reverse();
+			},
+			/*
+			 * Check for each convoyPath, if it is a subpath of this
+			 * path (includes only elements of this path). 
+			 * For this it has to be checked, if the pathToNode of any convoyPath 
+			 * identical to the predecessor path of the same length of this path.
+			 * For efficiency reasons, the lengthiest paths (last in order convoyPath)
+			 * are tested first because predecessor paths can only be checked in
+			 * descending length via pathToNode
+			 */
+			hasSubpathInConvoyPaths: function(){
+				var predPath = this.pathToNode;
+				
+				for(var i=this.node.convoyPaths.length-1; i>=0; i--){
+					var pathAgainst = this.node.convoyPaths[i].pathToNode;
+					
+					// get the predecessor, that is of pathAgainst.length
+					while(pathAgainst.length < predPath.length)
+						predPath = predPath.pathToNode;
+					
+					// check if pathAgainst and predecessor are identical
+					if (predPath === pathAgainst){
+						//pathAgainst reduced version of testPath
+						return true;
+					}
+				}
+				
+				return false;
 			}
 		});
 
@@ -334,7 +378,7 @@ function loadModel() {
 			},
 			resetNodePaths: function () {
 				this.Nodes.values().map(function (n) {
-					n.convoyPaths = new Array();
+					n.nodeInit(); //reset node
 				});
 			},
 			routeSetLoad: function (ConvoyGroup) {
@@ -408,7 +452,6 @@ function loadModel() {
 				// start with initial path only containing StartTerr
 				var testPaths = new Array(new PathClass(StartTerr, null));
 
-				testPathLoop:
 				while (testPaths.length > 0) {
 
 					var testPath = testPaths.shift();
@@ -419,15 +462,10 @@ function loadModel() {
 
 						//onePath: node already reached -> do not continue this path
 						if (onePath)
-							continue testPathLoop;
-
-						for(var i=0; i<testPath.node.convoyPaths.length; i++){
-							var pathAgainst = testPath.node.convoyPaths[i];
+							continue;
 						
-							if (pathAgainst.length < testPath.length && testPath.includes(pathAgainst.pathToNode.node))
-								//pathAgainst reduced version of testPath
-								continue testPathLoop;
-						}
+						if(testPath.hasSubpathInConvoyPaths())
+							continue;
 					}
 
 					// add this path to the paths that contain node
@@ -435,11 +473,8 @@ function loadModel() {
 
 					if (!fEndNode(testPath.node)) {
 						// create new branches of the path, that reach to neighbored valid territories
-						var NextNodes = testPath.node.getBorderTerritories().findAll(function (n) {
-							return n.isConvoyNode() && n.id != StartTerr.id && (fAllNode(n) || fEndNode(n));
-						});
-						;
-
+						var NextNodes = testPath.node.getValidBorderTerritories(StartTerr, fAllNode, fEndNode);
+						
 						// add new paths to testPaths	
 						NextNodes.each(function(nextNode){
 							testPaths.push(testPath.addNode(nextNode));
