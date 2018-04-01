@@ -121,7 +121,7 @@
  * simply Classic except Rome starts with a fleet instead of an army.
  * It doesn't define its own map, and makes no changes to it, so it doesn't need its own install.php data, 
  * or its own drawMap extension. It uses the same mapID as Classic, and extends the Classic variant object 
- * which means it immidiately behaves just like Classic and only modifications need to be layered on.
+ * which means it immediately behaves just like Classic and only modifications need to be layered on.
  * 
  * variants/FleetRome/classes/adjudicatorPreGame.php is the only object modified. It extends 
  * variants/Classic/classes/adjudicatorPreGame.php, so without any code it inherits Classic's fair-balancing
