@@ -79,7 +79,7 @@ board/territories.js
 	- Loads the basic data which represents territories and borders.
 board/model.js
 	- Loads the classes into which the raw territory and unit data will be loaded.
-	- These classes manage things like finding adjacant units/territories, used to 
+	- These classes manage things like finding adjacent units/territories, used to 
 		generate orders.
 	- If in Diplomacy phase loads the class which will allow convoy groups to be enumerated.
 board/load.js
@@ -122,9 +122,9 @@ orders/form.js
 	- Handles order submission:
 	- Manages the complete, loaded list of the user's orders.
 	- Keeps tabs on whether orders are completed and ready for finalization, whether 
-		the player is currently finalzied, whether new, unsaved order data is present, etc. 
+		the player is currently finalized, whether new, unsaved order data is present, etc. 
 		This data is used to show the correct Save/Ready buttons beneath the order form, and 
-		to respond correctly whent they are clicked.
+		to respond correctly when they are clicked.
 	- On submission it will send a request to ajax.php, wait for a response, and display that 
 		response appropriately; updating whether currently finalized/saved, displaying moves 
 		which had errors occur, and updating the order-status icon throughout the board page.

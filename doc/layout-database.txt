@@ -19,7 +19,7 @@ Misc, OrdersArchive, Territories, TerrStatusArchive, UnitsArchive.
 
 The following tables are archive tables, and may get large:
 AccessLog, OrdersArchive, TerrStatusArchive, UnitsArchive
-AccessLog can be cleaned out whenever desired, but doing so will destory data about possible multi-accounters
+AccessLog can be cleaned out whenever desired, but doing so will destroy data about possible multi-accounters
 
 The following tables contain full text, and may also get large:
 ForumMessages, GameMessages, 
