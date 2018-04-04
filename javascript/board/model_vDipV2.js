@@ -722,7 +722,7 @@ function loadModel() {
 			 * Implemented recursivly
 			 */
 			canBeAppendedTo: function (path) {
-				path.markPath();
+				path.markPath(path);
 				
 				var retValue = true;
 				
@@ -733,13 +733,13 @@ function loadModel() {
 				
 				return retValue;
 			},
-			markPath: function(){
-				if(this.node.inPath === this) return;
+			markPath: function(path){
+				if(this.node.inPath === path) return;
 				
-				this.node.inPath = this;
+				this.node.inPath = path;
 				
 				if(this.pathToNode !== null)
-					this.pathToNode.markPath();
+					this.pathToNode.markPath(path);
 			},
 			toArray: function (array) {
 				if (Object.isUndefined(array))
