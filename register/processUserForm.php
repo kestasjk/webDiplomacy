@@ -83,7 +83,7 @@ try
 	if( User::findUsername($SQLVars['username']) )
 		throw new Exception(l_t("The username '%s' is already in use. Please choose another.",$SQLVars['username']));
 	elseif( User::findEmail($SQLVars['email']) )
-		throw new Exception(l_t("The e-mail address '%s', is already in use. Please choose another.",$SQLVars['email']));
+		throw new Exception(l_t("The e-mail address '%s', is already in use. If this is your e-mail, please use the Forgot your username and password features to recover your account or contact the moderators at %s for assistance. Making a second account for any reason is against the site rules.",$SQLVars['email'], Config::$modEMail));
 
 	$DB->sql_put("INSERT INTO wD_Users SET ".$set);
 	$DB->sql_put("COMMIT");

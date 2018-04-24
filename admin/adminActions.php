@@ -33,7 +33,7 @@ class adminActions extends adminActionsForms
 	public static $actions = array(
 			'drawGame' => array(
 				'name' => 'Draw game',
-				'description' => 'Splits points among all the surviving players in a game equally, and ends the game.',
+				'description' => 'Splits points among all the surviving players in a game according to 	its scoring system, and ends the game.',
 				'params' => array('gameID'=>'Game ID'),
 			),
 			'cancelGame' => array(
@@ -47,23 +47,25 @@ class adminActions extends adminActionsForms
 				'params' => array('gameID'=>'Game ID'),
 			),
 			'makePublic' => array(
-				'name' => 'Make public a private game',
-				'description' => 'Removes a private game\'s password.',
+				'name' => 'Make a private game public',
+				'description' => 'Removes a private game\'s password. This allows anyone to join.',
 				'params' => array('gameID'=>'Game ID'),
 			),
 			'makePrivate' => array(
 				'name' => 'Make a public game private',
-				'description' => 'Add a password to a private game.',
+				'description' => 'Add a password to a private game. Only people with this password can join.',
 				'params' => array('gameID'=>'Game ID','password'=>'Password'),
 			),
 			'cdUser' => array(
 				'name' => 'Force a user into CD',
-				'description' => 'Force a user into CD in all his games, or in one game specifically if non-zero gameID given.',
+				'description' => 'Force a user into CD in all his games, or in one game specifically if non-zero gameID given.<br />
+					Forced CDs do not count against the player\'s RR.',
 				'params' => array('userID'=>'User ID','gameID'=>'Game ID'),
 			),
 			'banIP' => array(
 				'name' => 'Ban an IP',
-				'description' => 'Bans a certain IP address',
+				'description' => 'Bans a certain IP address.<br />
+					Note: Doesn\'t work.',
 				'params' => array('IP'=>'IP address (xxx.xxx.xxx.xxx)'),
 			),
 			'banUser' => array(
@@ -88,27 +90,32 @@ class adminActions extends adminActionsForms
 			),
 			'makeDonator' => array(
 				'name' => 'Give donator benefits',
-				'description' => 'Give donator benefits (in practical terms this just means opt-out of the distributed processing)',
+				'description' => 'Give donator benefits (in practical terms this just means opt-out of the distributed processing).<br />
+					<em>Only for owner use.</em>',
 				'params' => array('userID'=>'User ID'),
 			),
 			'makeDonatorPlatinum' => array(
 				'name' => 'Donator: platinum',
-				'description' => 'Give platinum donator marker',
+				'description' => 'Give platinum donator marker<br />
+					<em>Only for owner use.</em>',
 				'params' => array('userID'=>'User ID'),
 			),
 			'makeDonatorGold' => array(
 				'name' => 'Donator: gold',
-				'description' => 'Give gold donator marker',
+				'description' => 'Give gold donator marker<br />
+					<em>Only for owner use.</em>',
 				'params' => array('userID'=>'User ID'),
 			),
 			'makeDonatorSilver' => array(
 				'name' => 'Donator: silver',
-				'description' => 'Give silver donator marker',
+				'description' => 'Give silver donator marker<br />
+					<em>Only for owner use.</em>',
 				'params' => array('userID'=>'User ID'),
 			),
 			'makeDonatorBronze' => array(
 				'name' => 'Donator: bronze',
-				'description' => 'Give bronze donator marker',
+				'description' => 'Give bronze donator marker<br />
+					<em>Only for owner use.</em>',
 				'params' => array('userID'=>'User ID'),
 			),
 			'setProcessTimeToPhase' => array(
@@ -118,12 +125,14 @@ class adminActions extends adminActionsForms
 			),
 			'setProcessTimeToNow' => array(
 				'name' => 'Process game now',
-				'description' => 'Set a game process time to now, resulting in it being processed now',
+				'description' => 'Set a game process time to now, resulting in it being processed now.<br />
+					<em>Be careful:</em> this will cause any players without submitted moves to NMR.',
 				'params' => array('gameID'=>'Game ID'),
 			),
 			'toggleWaitForOrders' => array(
 				'name' => 'Toggle Wait for orders mode',
-				'description' => 'Will toggle this game between normal NMR rules and wait-for-orders mode',
+				'description' => 'Will toggle this game between normal NMR rules and wait-for-orders mode.<br />
+					<em>Be careful:</em> flipping from on to off while the game is in wait mode will cause any players without submitted moves to NMR.',
 				'params' => array('gameID'=>'Game ID'),
 			),
 			'resetMinimumBet' => array(
@@ -134,13 +143,15 @@ class adminActions extends adminActionsForms
 			'panic' => array(
 				'name' => 'Toggle panic button',
 				'description' => 'Toggle the panic button; turning it on prevents games from being processed, users joining games,
-						users registering. It is intended to limit the damage a problem can do',
+						users registering. It is intended to limit the damage a problem can do.
+						<em>This effectively shuts down the site, so be sure before pressing this.</em>',
 				'params' => array(),
 			),
 			'resetLastProcessTime' => array(
 				'name' => 'Reset last process time',
 				'description' => 'Once the reason for the period of no processing is known, and it\'s safe to reenable
-					game processing, the last process time can be reset here',
+					game processing, the last process time can be reset here.<br />
+					<em>Only a dev</em> should run this function after they ensure the issue has been fixed.',
 				'params' => array(),
 			),
 			'changePhaseLength' => array(
@@ -167,15 +178,15 @@ class adminActions extends adminActionsForms
 					'reallocations'=>'Reallocations list (e.g "<em>R,T,A,G,I,F,E</em>")'
 					)
 			),
-	        	'drawType' => array(
-				'name' => 'Change the draw type',
-				'description' => 'Change a game\'s draw type (public or hidden).',
+	        'drawType' => array(
+				'name' => 'Change the draw visibility',
+				'description' => 'Change a game\'s draw visibility (public or hidden).',
 				'params' => array(
 					'gameID'=>'Game ID',
 					'newSetting'=>'Enter a number for the desired setting: 1=Public, 2=Hidden'
 				),
 			),
-	        	'alterMessaging' => array(
+	        'alterMessaging' => array(
 				'name' => 'Alter game messaging',
 				'description' => 'Change a game\'s messaging settings, e.g. to convert from gunboat to public-only or all messages allowed.',
 				'params' => array(
@@ -185,12 +196,14 @@ class adminActions extends adminActionsForms
 			),
 			'unCrashGames' => array(
 				'name' => 'Uncrash games',
-				'description' => 'Uncrashes all crashed games except the games specified (if any).',
+				'description' => 'Uncrashes all crashed games except the games specified (if any).<br />
+					<em>ONLY A DEV</em> should run this function. The reason for the crash needs to be found out before the games are uncrashed.',
 				'params' => array('excludeGameIDs'=>'Except Game ID list'),
 			),
 			'reportMuteToggle' => array(
 				'name' => 'Toggle mod-report mute',
-				'description' => 'Toggles whether the given userID can submit reports, to prevent annoying users from abusing the report feature.',
+				'description' => 'Toggles whether the given userID can submit reports, to prevent annoying users from abusing the report feature.</br>
+					Note: Doesn\'t work.',
 				'params' => array('userID'=>'User ID'),
 			),
 			'syncForumLikes' => array(
@@ -200,7 +213,8 @@ class adminActions extends adminActionsForms
 			),
 			'setDirector' => array(
 				'name' => 'Set a user as a game director',
-				'description' => 'Sets the given user ID to be the director of the given game ID (set to 0 to remove someone as game director). This will give them mod capabilities for this game.',
+				'description' => 'Sets the given user ID to be the director of the given game ID (set to 0 to remove someone as game director). 
+					This will give them mod capabilities for this game.',
 				'params' => array('gameID'=>'Game ID','userID'=>'User ID'),
 			)
 		);

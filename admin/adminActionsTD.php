@@ -32,7 +32,7 @@ class adminActionsTD extends adminActionsForms
 	public static $actions = array(
 			'drawGame' => array(
 				'name' => 'Draw game',
-				'description' => 'Splits points among all the surviving players in a game equally, and ends the game.',
+				'description' => 'Splits points among all the surviving players in a game according to its scoring system, and ends the game.',
 				'params' => array(),
 			),
 			'cancelGame' => array(
@@ -46,18 +46,19 @@ class adminActionsTD extends adminActionsForms
 				'params' => array(),
 			),
 			'makePublic' => array(
-				'name' => 'Make public a private game',
-				'description' => 'Removes a private game\'s password.',
+				'name' => 'Make a private game public',
+				'description' => 'Removes a private game\'s password. This allows anyone to join.',
 				'params' => array(),
 			),
 			'makePrivate' => array(
 				'name' => 'Make a public game private',
-				'description' => 'Add a password to a private game.',
+				'description' => 'Add a password to a private game. Only people with this password can join.',
 				'params' => array('password'=>'Password'),
 			),
 			'cdUser' => array(
 				'name' => 'Force a user into CD',
-				'description' => 'Force a user into CD in this game.',
+				'description' => 'Force a user into CD in this game.<br />
+					Forced CDs do not count against the player\'s RR.',
 				'params' => array('userID'=>'User ID'),
 			),
 			'setProcessTimeToPhase' => array(
@@ -80,7 +81,7 @@ class adminActionsTD extends adminActionsForms
 			'countryReallocate' => array(
 				'name' => 'Reallocate countries',
 				'description' => 'Alter which player has which country. Enter a list like so:
-					"<em>R,T,A,G,U,F,E</em>".<br />
+					"<em>R,T,A,G,I,F,E</em>".<br />
 					The result will be that England will be set to Russia, France to Turkey, etc.<br /><br />
 					If you aren\'t sure about the order of each country just enter the gameID without anything else and the list of
 					countries in the order will be output.<br /><br />
@@ -90,14 +91,14 @@ class adminActionsTD extends adminActionsForms
 					(If changing the countries of a variant for which the first letter of the countries are not distinct countryID numbers must be used instead.)<br />
 					(Alternatively you can enter [userID1]=[countryLetter1],[userID2]=[countryLetter2],etc)',
 				'params' => array(
-					'reallocations'=>'Reallocations list (e.g "<em>R,T,A,G,U,F,E</em>")'
+					'reallocations'=>'Reallocations list (e.g "<em>R,T,A,G,I,F,E</em>")'
 					)
 			),
 			'alterMessaging' => array(
 				'name' => 'Alter game messaging',
 				'description' => 'Change a game\'s messaging settings, e.g. to convert from gunboat to public-only or all messages allowed.',
 				'params' => array(
-					'newSetting'=>'Enter a number for the desired setting: 1=Regular, 2=PublicPressOnly, 3=NoPress'
+					'newSetting'=>'Enter a number for the desired setting: 1=Regular, 2=PublicPressOnly, 3=NoPress, 4=RuleBookPress'
 					),
 			)
 		);
@@ -240,7 +241,8 @@ class adminActionsTD extends adminActionsForms
 			case 1: $newSettingName='Regular'; break;
 			case 2: $newSettingName='PublicPressOnly'; break;
 			case 3: $newSettingName='NoPress'; break;
-			default: throw new Exception(l_t("Invalid messaging setting; enter 1, 2, or 3."));
+			case 4: $newSettingName='RuleBookPress'; break;
+			default: throw new Exception(l_t("Invalid messaging setting; enter 1, 2, 3, or 4."));
 		}
 
 		$DB->sql_put("UPDATE wD_Games SET pressType = '".$newSettingName."' WHERE id = ".$gameID);
