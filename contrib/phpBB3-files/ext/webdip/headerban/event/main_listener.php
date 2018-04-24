@@ -127,7 +127,7 @@ class main_listener implements EventSubscriberInterface
 			$this->fetchGameNotices($wdId);
 			
 			$this->template->assign_vars(array(
-				'U_WD_WEBDIPPOINTS' => $this->points . '<img src="' . $this->WEBDIPPATH . 'images/icons/points.png" alt="D" />',
+				'U_WD_WEBDIPPOINTS' => '(' . $this->points . ' <img src="' . $this->WEBDIPPATH . 'images/icons/points.png" alt="D" />)',
 				'U_WD_GAMENOTIFYBLOCK' => $this->gameNotifyBlock(),
 				'U_WD_NOTICEBLOCK' => $this->noticeBlock() . $this->variantCSS()
 			));
@@ -193,15 +193,22 @@ class main_listener implements EventSubscriberInterface
 		{
 			// Games that are finished should show as 'no orders'
 			if ( $notifyGame['phase'] != 'Finished') {
-				if( strpos($this->notifications,'Completed')===false ) {
-					$notifyGame['orderStatus']='alert.png';
-				} elseif( strpos($this->notifications,'Ready')===false ) {
-					$notifyGame['orderStatus']='alert_minor.png';
+				if( $notifyGame['orderStatus'] == 'None' ) {
+					$orderIcon = '';
 				} else {
-					$notifyGame['orderStatus'] = '';
+					$orderIcon = 'alert.png';
+					if( strpos($notifyGame['orderStatus'],'Saved')!==false ) {
+						$orderIcon = 'alert_minor.png';
+					}
+					if( strpos($notifyGame['orderStatus'],'Completed')!==false ) {
+						$orderIcon = 'tick_faded.png';
+					}
+					if( strpos($notifyGame['orderStatus'],'Ready')!==false ) {
+						$orderIcon = '';
+					}
 				}
 			} else {
-					$notifyGame['orderStatus'] = '';
+					$orderIcon = '';
 			}
 
 			$gameNotifyBlock .= '<span class="variant'.\Config::$variants[$notifyGame['variantID']].'">'.
@@ -213,8 +220,8 @@ class main_listener implements EventSubscriberInterface
 
 			$gameNotifyBlock .= ' ';
 
-			if( strlen($notifyGame['orderStatus']) > 0 ) {
-				$gameNotifyBlock .= '<img src="' . $this->WEBDIPPATH . ''.'images/icons/' . $notifyGame['orderStatus'] . '" />';
+			if( strlen($orderIcon) > 0 ) {
+				$gameNotifyBlock .= '<img src="' . $this->WEBDIPPATH . ''.'images/icons/' . $orderIcon . '" />';
 			}
 				
 			if ( $notifyGame['newMessagesFrom'] )
@@ -224,7 +231,12 @@ class main_listener implements EventSubscriberInterface
 		}
 		
 		if( strlen($gameNotifyBlock) > 0 )
-			$gameNotifyBlock = '<div class="content-notice" style="margin-bottom:4px"><div class="gamelistings-tabs" style="padding-bottom:0">'.$gameNotifyBlock.'</div></div>';
+			$gameNotifyBlock = '<style>
+		.gamelistings-tabs img {
+			padding-bottom: 3px !important;
+		}
+		</style>
+		<div class="content-notice" style="margin-bottom:4px"><div class="gamelistings-tabs" style="padding-bottom:0">'.$gameNotifyBlock.'</div></div>';
 			
 		return $gameNotifyBlock;
 	}
