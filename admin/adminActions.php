@@ -178,7 +178,7 @@ class adminActions extends adminActionsForms
 					'reallocations'=>'Reallocations list (e.g "<em>R,T,A,G,I,F,E</em>")'
 					)
 			),
-	        'drawType' => array(
+	        	'drawType' => array(
 				'name' => 'Change the draw visibility',
 				'description' => 'Change a game\'s draw visibility (public or hidden).',
 				'params' => array(
@@ -186,7 +186,7 @@ class adminActions extends adminActionsForms
 					'newSetting'=>'Enter a number for the desired setting: 1=Public, 2=Hidden'
 				),
 			),
-	        'alterMessaging' => array(
+	        	'alterMessaging' => array(
 				'name' => 'Alter game messaging',
 				'description' => 'Change a game\'s messaging settings, e.g. to convert from gunboat to public-only or all messages allowed.',
 				'params' => array(
