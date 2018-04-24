@@ -124,7 +124,7 @@ best to keep an eye on these.
 => Cleaning up
 The mapstore folder can be deleted every so often if it's getting too large, however if 
 space isn't a concern the directory structure is tree like and will scale to any reasonable 
-number of games, and cacheing maps saves lots of CPU-time.
+number of games, and caching maps saves lots of CPU-time.
 
 Access logs in the database also need to be cleaned periodically, the admin CP will wipe all 
 but the last 30 days of logs.
@@ -141,7 +141,7 @@ occasionally (especially gamemaster auto-messages which also make a large part o
 GameMessages table)
 
 TerrStatusArchive and MovesArchive are the other two large tables; they contain data used to 
-draw old maps, and can be periodically wiped for old games if achived game history isn't 
+draw old maps, and can be periodically wiped for old games if archived game history isn't 
 needed.
 
 Other than that check the admin CP status lists every so often which should highlight any problems 

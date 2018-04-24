@@ -4,7 +4,7 @@ Changelog
 - Moved wD_Users country allocation chances for Classic variant into new table
 - Added new class for the manipulating wD_VariantData table
 - Made Classic weighted random country allocation code use new data store
-- Replaced pre-game adjudicators purely random allocater with weighted random country allocation from Classic
+- Replaced pre-game adjudicators purely random allocator with weighted random country allocation from Classic
 
 Updating
 --------

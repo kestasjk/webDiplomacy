@@ -11,7 +11,7 @@ See locales/readme.txt for information on the new localization layer. This infor
 relevant only to: 
 - Admins of webDiplomacy installations who want to translate webDiplomacy into their own language.
 - Variant developers who want their variants to be translatable.
-- webDiplomacy developers who want thier modifications to be translatable.
+- webDiplomacy developers who want their modifications to be translatable.
 
 Note that this does not allow users within a certain installation to choose a localization; this
 modification is intended to allow an installation to be localized. We are aiming to encourage 

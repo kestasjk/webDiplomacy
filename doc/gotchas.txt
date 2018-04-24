@@ -4,7 +4,7 @@ Gotchas
 Quirks of phpDip that could be troublesome:
 
 It is assumed that once a game is over no players will remain as 'Playing',
-all should be 'Won','Survived', 'Drawn', 'Left', or 'Defeated'. A member that is
+all should be 'Won', 'Survived', 'Drawn', 'Left', or 'Defeated'. A member that is
 defeated will be set to defeated, even if they had already left. *However* a 
 member that has left, but then Survived or Drew, will remain set to 'Left'. The "priority"
 goes: "Defeated", "Left", 'Survived'/'Drawn'/'Won'
