@@ -1,0 +1,8 @@
+<div style="float: right; margin-top: 5px; margin-bottom: 5px;" class="postlove">
+	<!-- IF DISABLE != 1 --><!-- IF !postrow.DISABLE --><a href="{postrow.POST_LIKE_URL}" data-ajax="toggle_love"><!-- ENDIF --><!-- ENDIF --><span class="{postrow.POST_LIKE_CLASS}" id="likeimg_{postrow.POST_ID}"></span><!-- IF !postrow.DISABLE --><!-- IF DISABLE != 1 --></a><!-- ENDIF --><!-- ENDIF --><span title="{postrow.POST_LIKERS}" style="font-size: 1.3em; font-weight:bold" id="like_{postrow.POST_ID}">
+<!-- IF postrow.POST_LIKERS_COUNT == 0 -->
+<!-- ELSE -->
+ {postrow.POST_LIKERS_COUNT}
+<!-- ENDIF -->
+</span>
+</div>

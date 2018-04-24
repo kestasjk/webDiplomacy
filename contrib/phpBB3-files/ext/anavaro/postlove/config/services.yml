@@ -1,0 +1,58 @@
+parameters:
+    tables.anavaro.postlove: %core.table_prefix%posts_likes
+services:
+    anavaro.postlove.listener:
+        class: anavaro\postlove\event\main_listener
+        arguments:
+            - @auth
+            - @config
+            - @dbal.conn
+            - @template
+            - @user
+            - @controller.helper
+            - %tables.anavaro.postlove%
+        tags:
+            - { name: event.listener }
+    anavaro.postlove.ajaxify:
+        class: anavaro\postlove\controller\ajaxify
+        arguments:
+            - @config
+            - @dbal.conn
+            - @user
+            - @anavaro.postlove.notifyhelper
+            - %tables.anavaro.postlove%
+    anavaro.postlove.lovelist:
+        class: anavaro\postlove\controller\lovelist
+        arguments:
+            - @user
+            - @language
+            - @controller.helper
+            - @dbal.conn
+            - @auth
+            - @user_loader
+            - @template
+            - @pagination
+            - @request
+            - %tables.anavaro.postlove%
+            - %core.root_path%
+    anavaro.postlove.notifyhelper:
+        class: anavaro\postlove\controller\notifyhelper
+        arguments:
+            - @config
+            - @dbal.conn
+            - @request
+            - @template
+            - @user
+            - @service_container
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.anavaro.postlove%
+    notification.type.postlove:
+        class: anavaro\postlove\notification\postlove
+        shared: false
+        parent: notification.type.base
+        calls:
+            - [set_user_loader, ['@user_loader']]
+            - [set_config, ['@config']]
+        tags:
+            - { name: notification.type }
