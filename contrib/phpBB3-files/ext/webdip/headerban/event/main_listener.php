@@ -91,7 +91,17 @@ class main_listener implements EventSubscriberInterface
             'core.user_setup' => 'load_webdip' // Event fires on every page, including ACP
         );
     }
-
+	
+    /**
+     * @param \phpbb\event\data $event The variant CSS
+     */
+	public function variantCSS()
+	{
+		$variantCSS=array();
+		foreach(\Config::$variants as $variantName)
+			$variantCSS[] = '<link rel="stylesheet" href="'.$this->WEBDIPPATH.('variants/'.$variantName.'/resources/style.css').'" type="text/css" />';
+		return implode("\n",$variantCSS);
+	}
     /**
      * @param \phpbb\event\data $event The event object
      */
@@ -119,7 +129,7 @@ class main_listener implements EventSubscriberInterface
 			$this->template->assign_vars(array(
 				'U_WD_WEBDIPPOINTS' => $this->points . '<img src="' . $this->WEBDIPPATH . 'images/icons/points.png" alt="D" />',
 				'U_WD_GAMENOTIFYBLOCK' => $this->gameNotifyBlock(),
-				'U_WD_NOTICEBLOCK' => $this->noticeBlock()
+				'U_WD_NOTICEBLOCK' => $this->noticeBlock() . $this->variantCSS()
 			));
 		}
 		else
@@ -204,7 +214,7 @@ class main_listener implements EventSubscriberInterface
 			$gameNotifyBlock .= ' ';
 
 			if( strlen($notifyGame['orderStatus']) > 0 ) {
-				$gameNotifyBlock .= '<img src="' . $this->WEBDIPPATH . ''.'images/icons/' . $notifyGame['orderStatus'] . '</img>';
+				$gameNotifyBlock .= '<img src="' . $this->WEBDIPPATH . ''.'images/icons/' . $notifyGame['orderStatus'] . '" />';
 			}
 				
 			if ( $notifyGame['newMessagesFrom'] )
