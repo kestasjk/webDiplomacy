@@ -47,6 +47,14 @@ installation.
 	This will cause the forum links to instead direct to the phpBB3 installation.
 
 
+13. To enable the notice bar, banning users from webDip, and webDip points, an webdip extension 
+	for phpBB 3.2.1+ is provided under ext. Simply copy the ext/webdip folder to your 
+	phpBB3/ext/ folder, then go to the phpBB3 admin control panel, customization tab,
+	and enable the webdip headerban extension.
+	If anything does not work correctly e.g. icons it may be because your phpBB3 install is
+	in an unusual place. You may need to alter the static paths in 
+	ext/webdip/headerban/event/main_listener.php
+
 
 Note that admin permissions will not automatically carry over; any extra permissions 
 required for moderators will have to be set up separately.

@@ -1,0 +1,31 @@
+{
+    "name": "webdip/headerban",
+    "type": "phpbb-extension",
+    "description": "webDiplomacy game header and ban extension for phpBB 3.2",
+    "homepage": "https://github.com/kestasjk/webDiplomacy",
+    "version": "1.0.0",
+    "time": "2018-04-24",
+    "keywords": ["phpbb", "extension", "webdiplomcy", "diplomacy", "header"],
+    "license": "AGPL",
+    "authors": [
+        {
+            "name": "Kestas Kuliukas",
+            "email": "kestas@kuliukas.com",
+            "homepage": "https://github.com/kestasjk/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "composer/installers": "~1.0"
+    },
+    "require-dev": {
+        "phpbb/epv": "dev-master"
+    },
+    "extra": {
+        "display-name": "webDiplomacy Header and Ban Extension",
+        "soft-require": {
+            "phpbb/phpbb": "~3.2"
+        }
+    }
+}

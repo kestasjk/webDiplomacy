@@ -1,0 +1,10 @@
+services:
+    webdip.headerban.listener:
+        class: webdip\headerban\event\main_listener
+        arguments:
+            - '@dbal.conn'
+            - '@controller.helper'
+            - '@template'
+            - '@user'
+        tags:
+            - { name: event.listener }
