@@ -1,0 +1,69 @@
+dist: precise
+sudo: required
+
+language: php
+
+matrix:
+  include:
+    - php: 5.4
+      env: DB=mysqli
+    - php: 5.4
+      env: DB=mysql
+    - php: 5.4
+      env: DB=mariadb
+    - php: 5.4
+      env: DB=postgres
+    - php: 5.4
+      env: DB=sqlite3
+    - php: 5.5
+      env: DB=mysqli
+    - php: 5.5
+      env: DB=none;NOTESTS=1
+    - php: 5.6
+      env: DB=mysqli
+    - php: 7
+      env: DB=mysqli
+    - php: 7.1
+      env: DB=mysqli
+  allow_failures:
+    - php: hhvm
+  fast_finish: true
+
+env:
+  global:
+    - EXTNAME="anavaro/postlove"  # CHANGE name of the extension HERE
+    - SNIFF="1"            # Should we run code sniffer on your code?
+    - IMAGE_ICC="1"        # Should we run icc profile sniffer on your images?
+    - EPV="1"              # Should we run EPV (Extension Pre Validator) on your code?
+    - PHPBB_BRANCH="3.2.x"
+    - COVERAGE="1"
+
+branches:
+  only:
+    - master
+    - 1.2.x
+    - /^[0-9].*$/
+
+install:
+  - composer install --dev --no-interaction --prefer-source
+  - travis/prepare-phpbb.sh $EXTNAME $PHPBB_BRANCH
+  - cd ../../phpBB3
+  - travis/prepare-extension.sh $EXTNAME $PHPBB_BRANCH
+  - travis/setup-phpbb.sh $DB $TRAVIS_PHP_VERSION
+  - sh -c "if [ '$EPV' != '0' ] && [ '$NOTESTS' = '1' ]; then phpBB/ext/$EXTNAME/travis/prepare-epv.sh $EPV $NOTESTS; fi"
+
+before_script:
+  - travis/setup-database.sh $DB $TRAVIS_PHP_VERSION
+  - mkdir phpBB/ext/$EXTNAME/logs
+
+script:
+  - sh -c "if [ '$SNIFF' != '0' ]; then travis/ext-sniff.sh $DB $TRAVIS_PHP_VERSION $EXTNAME; fi"
+  - sh -c "if [ '$IMAGE_ICC' != '0' ]; then travis/check-image-icc-profiles.sh $DB $TRAVIS_PHP_VERSION; fi"
+  - mkdir phpBB/ext/$EXTNAME/build
+  - mkdir phpBB/ext/$EXTNAME/build/logs
+  - sh -c "if [ '$DB' != 'none' ]; then phpBB/vendor/bin/phpunit --configuration phpBB/ext/$EXTNAME/travis/phpunit-$DB-travis.xml --bootstrap ./tests/bootstrap.php --coverage-clover phpBB/ext/$EXTNAME/build/logs/clover.xml; fi"
+  - sh -c "if [ '$EPV' != '0' -a '$NOTESTS' = '1' ]; then phpBB/vendor/bin/EPV.php run --dir='phpBB/ext/$EXTNAME/'; fi"
+
+after_script:
+  - ls -la phpBB/ext/$EXTNAME/build/logs/
+  - sh -c "if [ '$COVERAGE' != '0' ] && [ '$TRAVIS_PHP_VERSION' = '5.6' ] && [ '$DB' = 'mysqli' ]; then php phpBB/ext/$EXTNAME/vendor/bin/coveralls -v -x build/logs/clover.xml -r phpBB/ext/$EXTNAME/; fi"
