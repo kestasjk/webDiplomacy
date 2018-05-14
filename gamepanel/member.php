@@ -47,11 +47,39 @@ class panelMember extends Member
 	{
 		$buf = '';
 		libHTML::alternate();
+		
+		global $checkMissingOrders;
+		
+		if ( $this->Game->phase != 'Pre-game' && $this->Game->phase != 'Finished')
+		{
+			global $DB;
+			
+			$row = $DB->sql_hash("select count(1) from wD_Members where gameID = ".$this->gameID." and (orderStatus not like '%Saved%' && orderStatus not like '%Completed%' && orderStatus not like '%Ready%')");
+			foreach ( $row as $name=>$value )
+			{
+				$checkMissingOrders = $value;
+			}
+			
+			if ($checkMissingOrders >= 1)
+			{
+				$buf .= '<div class="panelAnonOnlyFlag"><b>At least 1 country still needs to enter orders!</b></div>';
+			}
+			else
+			{
+				$buf .= '<div class="panelAnonOnlyFlag"><b>All countries have entered orders.</b></div>';
+			}
+		}
+		
 		if ( $this->Game->phase != 'Pre-game' )
-			$buf .= '<div class="panelBarGraphMember memberProgressBar barAlt'.libHTML::$alternate.'">'.$this->memberProgressBar().'</div>';
+		{
+			$buf .= '
+			<div class="panelBarGraphMember memberProgressBar barAlt'.libHTML::$alternate.'">'.$this->memberProgressBar().'</div>';
+		}
 		else
+		{
 			$buf .= '<div class="panelBarGraphMember memberProgressBarBlank"> </div>';
-
+		}
+		
 		$buf .= '<div class="memberBoardHeader barAlt'.libHTML::$alternate.' barDivBorderTop ">
 			<table><tr class="member">';
 
@@ -107,6 +135,8 @@ class panelMember extends Member
 			return l_t('No unread messages');
 	}
 
+	
+	
 	/**
 	 * The messages icon
 	 * @return string
@@ -154,6 +184,19 @@ class panelMember extends Member
 
 		return $this->isNameHidden;
 	}
+	
+	private $isLastSeenHidden;
+	function isLastSeenHidden()
+	{
+		global $User;
+		$this->isLastSeenHidden = true;
+		if (($User->type['Moderator']) && (! $this->Game->Members->isJoined())) 
+		{
+			$this->isLastSeenHidden = false;
+		}
+
+		return $this->isLastSeenHidden;
+	}
 	/**
 	 * The name of the user playing as this member, his points, and whether he's logged on
 	 * @return string
@@ -164,7 +207,7 @@ class panelMember extends Member
 			return '('.l_t('Anonymous').')';
 		else
 			return '<a href="profile.php?userID='.$this->userID.'">'.$this->username.'</a>
-				'.libHTML::loggedOn($this->userID).'
+				'.'
 				<span class="points">('.$this->points.libHTML::points().User::typeIcon($this->userType).')</span>'
 				.(defined('AdminUserSwitch') ? ' (<a href="board.php?gameID='.$this->gameID.'&auid='.$this->userID.'" class="light">+</a>)':'');
 	}
@@ -399,7 +442,7 @@ class panelMember extends Member
 		if( $this->Game instanceof panelGameBoard
 			&& $this->status == 'Playing' && $this->Game->phase != 'Finished' )
 		{
-			if ( !$this->isNameHidden() )
+			if ( !$this->isLastSeenHidden() )
 				$buf .= '<br /><span class="memberLastSeen">
 						'.l_t('Last seen:').' <strong>'.$this->lastLoggedInTxt().'</strong>';
 
@@ -464,9 +507,18 @@ class panelMember extends Member
 	 */
 	function memberBar()
 	{
-		$buf = '
-			<td class="memberLeftSide">
-				<span class="memberCountryName">'.$this->memberSentMessages().' '.$this->memberFinalized().$this->memberCountryName().'</span>';
+		global $User;
+		if ((($User->type['Moderator']) && (! $this->Game->Members->isJoined())) || $this->Game->anon == 'No') 
+		{
+			$buf = '<td class="memberLeftSide">
+			<span class="memberCountryName">'.$this->memberSentMessages().' '.$this->memberFinalized().$this->memberCountryName().'</span>';
+		}
+		else
+		{
+			$buf = '<td class="memberLeftSide">
+			<span class="memberCountryName">'.$this->memberSentMessages().$this->memberCountryName().' '.'</span>';
+
+		}
 
 		$buf .= $this->muteIcon();
 

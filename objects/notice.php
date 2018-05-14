@@ -163,9 +163,6 @@ class notice
 		else
 			$buf = $linkName;
 
-		if( ( $this->type=='PM' || $this->type=='User' ) && isset($this->linkID) && $this->linkID )
-			$buf .= ' '.libHTML::loggedOn($this->linkID);
-
 		return $buf;
 	}
 	public function timeSent()

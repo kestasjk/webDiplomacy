@@ -509,9 +509,6 @@ class User {
 
 			$buffer.='>'.$this->username;
 
-			if ( !$welcome and $this->online )
-				$buffer.= libHTML::loggedOn($this->id);
-
 			$buffer.=' ('.$this->points.libHTML::points().$this->typeIcon($this->type).')</a>';
 		}
 		else
