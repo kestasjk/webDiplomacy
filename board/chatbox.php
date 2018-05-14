@@ -87,6 +87,7 @@ class Chatbox
 	public function postMessage($msgCountryID)
 	{
 		global $Member, $Game, $User, $DB;
+		list($directorUserID) = $DB->sql_row("SELECT directorUserID FROM wD_Games WHERE id = ".$Game->id);
 
 		if( isset($_POST['newmessage']) AND $_POST['newmessage']!="" )
 		{
@@ -115,7 +116,13 @@ class Chatbox
 					libGameMessage::send($msgCountryID, $Member->countryID, $newmessage);
 			}
 			elseif( $User->type['Moderator'] )
+			{
 				libGameMessage::send(0, 'Moderator', '('.$User->username.'): '.$newmessage);
+			}
+			elseif(isset($directorUserID) && $directorUserID == $User->id)
+			{
+				libGameMessage::send(0, 'Game Director', '('.$User->username.'): '.$newmessage);
+			}
 		}
 		
 		if( isset($_REQUEST['MarkAsUnread']) )
@@ -137,6 +144,7 @@ class Chatbox
 	public function output ($msgCountryID)
 	{
 		global $DB, $Game, $User, $Member;
+		list($directorUserID) = $DB->sql_row("SELECT directorUserID FROM wD_Games WHERE id = ".$Game->id);
 
 		$chatbox = '<a name="chatboxanchor"></a><a name="chatbox"></a>';
 
@@ -186,7 +194,7 @@ class Chatbox
 
 		$chatbox .= '</TABLE></DIV>';
 
-		if ( ( $User->type['Moderator'] && $msgCountryID == 0 ) ||
+		if ( ( $User->type['Moderator'] && $msgCountryID == 0 ) ||((isset($directorUserID) && $directorUserID == $User->id && $msgCountryID == 0 ))||
 		     ( isset($Member) &&
 		       ( $Game->pressType == 'Regular' ||                                         // All tabs allowed for Regular
 		         $Member->countryID == $msgCountryID ||                                   // Notes tab always allowed
