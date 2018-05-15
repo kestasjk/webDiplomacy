@@ -485,7 +485,7 @@ class libHome
 				INNER JOIN phpbb_forums f ON f.forum_id = t.forum_id
 				INNER JOIN phpbb_users u1 ON u1.user_id = t.topic_poster
 				INNER JOIN phpbb_users u2 ON u2.user_id = t.topic_last_poster_id
-				WHERE t.topic_visibility = 1
+				WHERE t.topic_visibility = 1 and f.forum_name <> 'Politics' and t.topic_title not like '%HIDDEN%'
 				ORDER BY t.topic_last_post_time DESC
 				LIMIT 20");
 		
