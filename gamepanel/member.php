@@ -172,11 +172,12 @@ class panelMember extends Member
 	private $isNameHidden;
 	function isNameHidden()
 	{
-		global $User;
+		global $User, $DB;
+		list($directorUserID) = $DB->sql_row("SELECT directorUserID FROM wD_Games WHERE id = ".$this->Game->id);
 
 		if ( !isset($this->isNameHidden) )
 		{
-			if ( $this->Game->isMemberInfoHidden() && $User->id!=$this->userID )
+			if ( ($this->Game->isMemberInfoHidden() && $User->id!=$this->userID) && !(isset($directorUserID) && $directorUserID == $User->id))
 				$this->isNameHidden = true;
 			else
 				$this->isNameHidden = false;
