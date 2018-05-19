@@ -35,7 +35,7 @@ if ( isset($_REQUEST['userID']) && intval($_REQUEST['userID'])>0 )
 }
 elseif( isset($_REQUEST['searchUser']) )
 {
-	libAuth::resourceLimiter('user search',5);
+	libAuth::resourceLimiter('user search',1);
 
 	if( !is_array($_REQUEST['searchUser']) )
 		throw new Exception(l_t("Invalid search data submitted."));
