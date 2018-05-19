@@ -54,7 +54,7 @@ class panelMember extends Member
 		{
 			global $DB;
 			
-			$row = $DB->sql_hash("select count(1) from wD_Members where gameID = ".$this->gameID." and (orderStatus not like '%Saved%' && orderStatus not like '%Completed%' && orderStatus not like '%Ready%')");
+			$row = $DB->sql_hash("select count(1) from wD_Members where gameID = ".$this->gameID." and (orderStatus not like '%Saved%' and orderStatus not like '%Defeated%' and orderStatus not like '%Completed%' and orderStatus not like '%Ready%')");
 			foreach ( $row as $name=>$value )
 			{
 				$checkMissingOrders = $value;
