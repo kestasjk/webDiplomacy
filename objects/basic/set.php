@@ -76,6 +76,21 @@ class setMemberOrderStatus extends set {
 		else
 			return l_t('No orders submitted!');
 	}
+	/*
+		Leaving all possible phases in place for clarity on the possible options to make future changes easier. 
+	*/
+	function iconAnon() {
+		if( $this->None )
+			return '- ';
+		elseif( $this->Ready )
+			return '<img src="'.l_s('images/icons/lock.png').'" alt="'.l_t('Anon').'" title="'.l_t('This country has options this turn').'" /> ';
+		elseif( $this->Completed )
+			return '<img src="'.l_s('images/icons/lock.png').'" alt="'.l_t('Anon').'" title="'.l_t('This country has options this turn').'" /> ';
+		elseif( $this->Saved )
+			return '<img src="'.l_s('images/icons/lock.png').'" alt="'.l_t('Anon').'" title="'.l_t('This country has options this turn').'" /> ';
+		else
+			return '<img src="'.l_s('images/icons/lock.png').'" alt="'.l_t('Anon').'" title="'.l_t('This country has options this turn').'" /> ';
+	}
 }
 class setMemberVotes extends set {
 	protected $allowed=array('Pause','Draw','Cancel');

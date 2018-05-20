@@ -471,6 +471,13 @@ class panelMember extends Member
 
 		return '<span class="member'.$this->id.'StatusIcon">'.$this->orderStatus->icon().'</span>';
 	}
+	
+	function memberFinalizedAnon()
+	{
+		if( $this->status!='Playing' ) return '';
+
+		return '<span class="member'.$this->id.'StatusIcon">'.$this->orderStatus->iconAnon().'</span>';
+	}
 
 	private function muteMember() {
 		global $User;
@@ -509,7 +516,7 @@ class panelMember extends Member
 	function memberBar()
 	{
 		global $User;
-		if ((($User->type['Moderator']) && (! $this->Game->Members->isJoined())) || $this->Game->anon == 'No') 
+		if ($this->Game->anon == 'No' || !$this->isNameHidden) 
 		{
 			$buf = '<td class="memberLeftSide">
 			<span class="memberCountryName">'.$this->memberSentMessages().' '.$this->memberFinalized().$this->memberCountryName().'</span>';
@@ -517,8 +524,7 @@ class panelMember extends Member
 		else
 		{
 			$buf = '<td class="memberLeftSide">
-			<span class="memberCountryName">'.$this->memberSentMessages().$this->memberCountryName().' '.'</span>';
-
+			<span class="memberCountryName">'.$this->memberSentMessages().' '.$this->memberFinalizedAnon().$this->memberCountryName().'</span>';
 		}
 
 		$buf .= $this->muteIcon();
