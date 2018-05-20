@@ -54,12 +54,12 @@ class panelMember extends Member
 		{
 			global $DB;
 			
-			$row = $DB->sql_hash("select count(1) from wD_Members where gameID = ".$this->gameID." and status not like '%Defeated%' and (orderStatus not like '%Saved%' and orderStatus not like '%Completed%' and orderStatus not like '%Ready%')");
+			$row = $DB->sql_hash("select count(1) from wD_Members where gameID = ".$this->gameID." and status not like '%Defeated%' and status not like '%Left%' and (orderStatus not like '%Saved%' and orderStatus not like '%Completed%' and orderStatus not like '%Ready%' and orderStatus not like '%None%')");
 			foreach ( $row as $name=>$value )
 			{
 				$checkMissingOrders = $value;
 			}
-			
+				
 			if ($checkMissingOrders >= 1)
 			{
 				$buf .= '<div class="panelAnonOnlyFlag"><b>At least 1 country still needs to enter orders!</b></div>';
