@@ -193,6 +193,8 @@ class processMembers extends Members
 	 */
 	function checkForWinner()
 	{
+		global $DB;
+		
 		/*
 		 * See if only one person is left over
 		 * If more than one is left over see if any of them have the winning number of more supply centers
@@ -232,6 +234,14 @@ class processMembers extends Members
 		}
 		else
 		{
+			// If there is a diplpmacy-phase check for a retreating-phase and wait another round for the retreats to finish.
+			if ($this->Game->phase == 'Diplomacy')
+			{
+				list($retreating) = $DB->sql_row("SELECT COUNT(retreatingUnitID) FROM wD_TerrStatus WHERE gameID=".$this->Game->id);
+				if($retreating)
+					return false;
+			}
+			
 			// If more than one is left over see if any of them have supplyCenterTarget or more supply centers
 			foreach($this->ByStatus['Playing'] as $Member)
 			{
