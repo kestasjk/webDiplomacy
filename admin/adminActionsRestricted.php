@@ -45,7 +45,8 @@ class adminActionsRestricted extends adminActionsForum
 			),
 			'clearErrorLogs' => array(
 				'name' => 'Clear error logs',
-				'description' => 'Clears error log text files.',
+				'description' => 'Clears error log text files.</br>
+					<em>ONLY A DEV</em> should run this function, to make sure those logs aren\'t needed for debugging.',
 				'params' => array(),
 			),
 			'clearOrderLogs' => array(
@@ -55,12 +56,17 @@ class adminActionsRestricted extends adminActionsForum
 			),
 			'clearAccessLogs' => array(
 				'name' => 'Clear access logs',
-				'description' => 'Clears access log table of logs older than 30 days.',
+				'description' => 'Clears access log table of logs older than 30 days.</br>
+					<em>WARNING:</em> Doing this will make catching cheaters difficult or impossible. 
+					If possible, please take a backup if possible before clearing this table.',
 				'params' => array(),
 			),
 			'clearAdminLogs' => array(
 				'name' => 'Clear admin logs',
-				'description' => 'Clears admin log table.',
+				'description' => 'Clears admin log table.</br>
+					<em>WARNING:</em> Doing this removes the record of Moderator actions from the site.
+					This makes referencing past actions impossible, and damages moderator ability to function. 
+					If possible, please take a backup if possible before clearing this table.',
 				'params' => array(),
 			),
 			'giveModerator' => array(

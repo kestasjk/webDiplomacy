@@ -60,9 +60,12 @@ class panelMemberHome extends panelMember
 		$buf =array();
 		$buf[] = '<span class="country'.$this->countryID.' '.($User->id==$this->userID?'memberYourCountry':'').
 			' memberStatus'.$this->status.'">'.substr($this->country,0,3).(
-				($this->online &&!$this->isNameHidden()) ? ' '.libHTML::loggedOn($this->userID) : '').'</span>';
+				 '').'</span>';
 
-		$buf[] = $this->memberFinalized();
+		if ($this->Game->anon == 'No')
+		{
+			$buf[] = $this->memberFinalized();
+		}
 		$buf[] = $this->memberSentMessages();
 
 		return $buf;

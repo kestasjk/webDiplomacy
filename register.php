@@ -76,7 +76,7 @@ if ( isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText']) && isset($_R
 
 		if( User::findEmail($email) )
 			throw new Exception(
-				l_t("The e-mail address '%s', is already in use. Please choose another.",$email));
+				l_t("The e-mail address '%s', is already in use. If this is your e-mail, please use the Forgot your username and password features to recover your account or contact the moderators at %s for assistance. Making a second account for any reason is against the site rules.",$email, Config::$modEMail));
 
 		if ( !libAuth::validate_email($email) )
 			throw new Exception(l_t("A first check of this e-mail is finding it invalid. Remember you need one to ".

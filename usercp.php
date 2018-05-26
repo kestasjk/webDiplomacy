@@ -86,7 +86,7 @@ if ( isset($_REQUEST['emailToken']))
 
 	if( User::findEmail($email) )
 		libHTML::notice(l_t("E-mail change validation"),
-			l_t("The given e-mail address is already in use, please use a unique e-mail address"));
+			l_t("The e-mail address '%s', is already in use. If this is your e-mail, please contact the moderators at %s for assistance.",$email, Config::$modEMail));
 
 	$DB->sql_put("UPDATE wD_Users SET email='".$email."' WHERE id = ".$User->id);
 
