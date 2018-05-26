@@ -553,7 +553,28 @@ class libHTML
 				l_t('PM').' <img src="'.l_s('images/icons/mail.png').'" alt="'.l_t('New private messages').'" title="'.l_t('New private messages!').'" />'.
 				'</a></span> ';
 		}
-
+		
+		if( isset(Config::$customForumURL) ) {
+			// We are using a PHPBB install; pull private messages from the phpBB install for this user
+			$tabl = $DB->sql_tabl(
+			"SELECT p.msg_id, p.pm_new, p.pm_unread, fromm.webdip_user_id, fromU.username, fromU.points, fromU.type
+				FROM phpbb_privmsgs_to p
+				INNER JOIN phpbb_users toU ON p.user_id = toU.user_id
+				INNER JOIN phpbb_users fromm ON fromm.user_id = p.author_id
+				INNER JOIN wD_Users fromU ON fromU.Id = fromm.webdip_user_id
+				WHERE (pm_new = 1 OR pm_unread = 1) AND toU.webdip_user_id = ".$User->id);
+			while($row_hash = $DB->tabl_hash($tabl)) {
+				
+				$profile_link = $row_hash['username'];
+				$profile_link.= libHTML::loggedOn($row_hash['webdip_user_id']);
+				$profile_link.=' ('.$row_hash['points'].libHTML::points().User::typeIcon($row_hash['type']).')';
+				
+				$gameNotifyBlock .= '<span class=""><a href="'.Config::$customForumURL.'/ucp.php?i=pm&mode=view&p='.$row_hash['msg_id'].'">'.
+						l_t('PM from %s',$profile_link).' <img src="'.l_s('images/icons/mail.png').'" alt="'.l_t('New private message').'" title="'.l_t('New private message!').'" />'.
+						'</a></span> ';
+			}
+		}
+		
 		foreach ( $gameIDs as $gameID )
 		{
 			$notifyGame = $notifyGames[$gameID];
