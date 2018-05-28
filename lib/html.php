@@ -566,10 +566,9 @@ class libHTML
 			while($row_hash = $DB->tabl_hash($tabl)) {
 				
 				$profile_link = $row_hash['username'];
-				$profile_link.= libHTML::loggedOn($row_hash['webdip_user_id']);
 				$profile_link.=' ('.$row_hash['points'].libHTML::points().User::typeIcon($row_hash['type']).')';
 				
-				$gameNotifyBlock .= '<span class=""><a href="'.Config::$customForumURL.'/ucp.php?i=pm&mode=view&p='.$row_hash['msg_id'].'">'.
+				$gameNotifyBlock .= '<span class=""><a href="'.Config::$customForumURL.'ucp.php?i=pm&mode=view&p='.$row_hash['msg_id'].'">'.
 						l_t('PM from %s',$profile_link).' <img src="'.l_s('images/icons/mail.png').'" alt="'.l_t('New private message').'" title="'.l_t('New private message!').'" />'.
 						'</a></span> ';
 			}
