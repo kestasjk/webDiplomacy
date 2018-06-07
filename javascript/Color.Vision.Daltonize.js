@@ -38,8 +38,8 @@ Color.Vision.Daltonize = function(image, options) {
 		amount = typeof options.amount == "number" ? options.amount : 1.0,
 		canvas = document.createElement("canvas"),
 		ctx = canvas.getContext("2d");
-	canvas.width = image.width;
-	canvas.height = image.height;
+	canvas.width = image.naturalWidth;
+	canvas.height = image.naturalHeight;
 	ctx.drawImage(image, 0, 0);
 	try {
 		var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height),
