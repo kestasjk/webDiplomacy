@@ -1,5 +1,5 @@
 document.observe("dom:loaded", function() {
-    Event.observe('chatForm', 'submit', function(event) {
+    Event.observe('message-send', 'click', function(event) {
         $('chatForm').request({
             onFailure: function() { },
             onSuccess: function(t) {

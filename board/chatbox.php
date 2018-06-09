@@ -220,7 +220,7 @@ class Chatbox
 					<TR class="barAlt2">
 						<TD class="left send">
 							<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
-							<input type="submit" tabindex="2" class="form-submit" value="'.l_t('Send').'" name="Send" /><br/>
+							<input type="submit" tabindex="2" class="form-submit" value="'.l_t('Send').'" name="Send" onclick="return false;" id="message-send"/><br/>
 						
 					
 					'.'
