@@ -991,7 +991,7 @@ class libHTML
 		$footerIncludes[] = l_j('cacheUpdate.js');
 		$footerIncludes[] = l_j('timeHandler.js');
 		$footerIncludes[] = l_j('forum.js');
-        $footerIncludes[] = l_j('message.js');
+		$footerIncludes[] = l_j('message.js');
 		$footerIncludes[] = l_j('Color.Vision.Daltonize.js');
 		
 		// Don't localize all the footer includes here, as some of them may be dynamically generated
