@@ -10,35 +10,45 @@ if ( ! isset($_REQUEST['gameID']) )
 
 $gameID = (int)$_REQUEST['gameID'];
 
-require_once(l_r('objects/game.php'));
-require_once(l_r('board/chatbox.php'));
-require_once(l_r('gamepanel/gameboard.php'));
+try {
 
-$Variant=libVariant::loadFromGameID($gameID);
-libVariant::setGlobals($Variant);
-$Game = $Variant->panelGameBoard($gameID);
+    require_once(l_r('objects/game.php'));
+    require_once(l_r('board/chatbox.php'));
+    require_once(l_r('gamepanel/gameboard.php'));
 
-if ( $Game->Members->isJoined() )
-{
-    // We are a member, load the extra code that we might need
-    require_once(l_r('gamemaster/gamemaster.php'));
-    require_once(l_r('board/member.php'));
-    require_once(l_r('board/orders/orderinterface.php'));
+    $Variant = libVariant::loadFromGameID($gameID);
+    libVariant::setGlobals($Variant);
+    $Game = $Variant->panelGameBoard($gameID);
 
-    global $Member;
-    $Game->Members->makeUserMember($User->id);
-    $Member = $Game->Members->ByUserID[$User->id];
+    if ($Game->Members->isJoined()) {
+        // We are a member, load the extra code that we might need
+        require_once(l_r('gamemaster/gamemaster.php'));
+        require_once(l_r('board/member.php'));
+        require_once(l_r('board/orders/orderinterface.php'));
+
+        global $Member;
+        $Game->Members->makeUserMember($User->id);
+        $Member = $Game->Members->ByUserID[$User->id];
+    }
+
+} catch (Exception $e){
+    header('HTTP/1.1 500 Internal Server Error');
+    die("Error loading Game");
 }
 
-$CB = $Game->Variant->Chatbox();
+if ( 'Pre-game' != $Game->phase ) {
+
+    $CB = $Game->Variant->Chatbox();
 
 // Now that we have retrieved the latest messages we can update the time we last viewed the messages
 // Post messages we sent, and get the user we're speaking to
-$msgCountryID = $CB->findTab();
+    $msgCountryID = $CB->findTab();
 
-$CB->postMessage($msgCountryID);
+    $CB->postMessage($msgCountryID);
 
-$DB->sql_put("COMMIT");
+    $DB->sql_put("COMMIT");
+
+}
 
 //RE-generate chat box
 
