@@ -2,6 +2,12 @@
 
 require_once('header.php');
 
+if ( ! isset($_REQUEST['gameID']) )
+{
+    header('HTTP/1.1 400 Bad Request');
+    die("No Game Specified");
+}
+
 $gameID = (int)$_REQUEST['gameID'];
 
 require_once(l_r('objects/game.php'));
