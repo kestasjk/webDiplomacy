@@ -38,13 +38,18 @@ Color.Vision.Daltonize = function(image, options) {
 		amount = typeof options.amount == "number" ? options.amount : 1.0,
 		canvas = document.createElement("canvas"),
 		ctx = canvas.getContext("2d");
-	if (image.naturalWidth != undefined){
-        canvas.width = image.naturalWidth;
-        canvas.height = image.naturalHeight;
-	}else {
-        canvas.width = image.width;
-        canvas.height = image.height;
-    }
+	
+	if (typeof image.naturalWidth !== 'undefined' && image.naturalWith !== 0) {
+                canvas.width = image.naturalWidth;
+        } else {
+                canvas.width = image.width;
+        }
+	if (typeof image.naturalHeight !== 'undefined' && image.naturalHeight !== 0) {
+	        canvas.height = image.naturalHeight;
+	} else {
+	        canvas.height = image.height;
+	}
+        
 	ctx.drawImage(image, 0, 0);
 	try {
 		var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height),
