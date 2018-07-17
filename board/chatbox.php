@@ -204,8 +204,9 @@ class Chatbox
 		           ( $Game->pressType == 'PublicPressOnly' ||                             // public press and
 		             ( $Game->pressType == 'NoPress' && $Game->phase == 'Finished' )))))) // finished nopress.
 		{
-			$chatbox .= '<DIV class="chatbox"><TABLE>
-					<form method="post" class="safeForm" action="board.php?gameID='.$Game->id.'&amp;msgCountryID='.$msgCountryID.'">
+            $chatbox .= '<DIV class="chatbox">
+					<form method="post" class="safeForm" action="message.php?gameID='.$Game->id.'&amp;msgCountryID='.$msgCountryID.'" id="chatForm">
+					<TABLE>
 					<TR class="barAlt2">
 						<TD class="left">
 						'.(($msgCountryID == 0) ? '' : '
@@ -219,17 +220,20 @@ class Chatbox
 					<TR class="barAlt2">
 						<TD class="left send">
 							<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
-							<input type="submit" tabindex="2" class="form-submit" value="'.l_t('Send').'" name="Send" /><br/>
+							<input type="submit" tabindex="2" class="form-submit" value="'.l_t('Send').'" name="Send" onclick="return false;" id="message-send"/><br/>
+						
+					
+					'.'
 						</TD>
 					</TR>
-					</form>
-					'. // Mark as unread Patch:
-					(($msgCountryID == 0) ? '' : '
+				</TABLE>
+				</form>
+				</DIV>'.
+                (($msgCountryID == 0) ? '' : '
 						<form method="post" name="markUnread" class="safeForm" action="board.php?gameID='.$Game->id.'&amp;msgCountryID='.$msgCountryID.'#chatboxanchor">
 							<input type="hidden" tabindex="2" value="" name="MarkAsUnread" />
 						</form>
-					').'
-				</TABLE></DIV>';
+					');
 		}
 		else if ($Game->pressType == 'RulebookPress' && $Game->phase != 'Diplomacy' && $msgCountryID != 0)  {
 				$chatbox .= '<div class="chatbox"><TABLE><TR class="barAlt2"><TD class="center">
