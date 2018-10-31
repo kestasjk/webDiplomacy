@@ -204,6 +204,7 @@ class Chatbox
 		           ( $Game->pressType == 'PublicPressOnly' ||                             // public press and
 		             ( $Game->pressType == 'NoPress' && $Game->phase == 'Finished' )))))) // finished nopress.
 		{
+            libHTML::$footerIncludes[] = l_j('message.js');
             $chatbox .= '<DIV class="chatbox">
 					<form method="post" class="safeForm" action="message.php?gameID='.$Game->id.'&amp;msgCountryID='.$msgCountryID.'" id="chatForm">
 					<TABLE>
