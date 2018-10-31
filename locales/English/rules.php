@@ -65,7 +65,20 @@ Using the Pause or Cancel buttons as signals to other players is violating the p
 Posting in the forum about an ongoing gunboat (no press) game or a limited press game is not allowed for anyone. This includes offering advice to game participants or predicting the outcome of a game. All questions about a gunboat game must wait until the game is completed.  
 </p>
 
-<a name="Mods"></a><h4>4. Do not use the software or moderators as a diplomacy tactic</h4>
+<a name="Press Rules"></a><h4>4. Keep press appropriate.</h4>
+<p>
+Diplomacy is a game of many strategies and your discussions with other players can sometimes be hostile, impolite, and even uncivilized. These press strategies are all permissible on webDiplomacy and in Diplomacy in general. However, your press with other players should never include the following:
+</br></br>
+-Messages of sexual nature</br>
+-Overt racism or sexism of any kind</br>
+-Doxxing (revealing any real life information) of another player</br>
+</br>
+This rule also applies to game titles.
+</br></br>
+First offenses will result in a warning in some circumstances but may result in a severe point dock and removal from the game in question if the offense necessitates such action. Second offenses may result in a temporary or permanent ban from webDiplomacy.
+</p>
+
+<a name="Mods"></a><h4>5. Do not use the software or moderators as a diplomacy tactic</h4>
 <p>
   Lying is fine in Diplomacy except when it gives mods/admins unnecessary work to do!<br /><br />
   Falsely accusing someone of being a multi-accounter/meta-gaming to rally others against them in a game, or claiming that your orders didn't
@@ -75,30 +88,30 @@ Posting in the forum about an ongoing gunboat (no press) game or a limited press
   must be genuine, even if only told to another player. Avoid making cheating accusations in game, via pm, or on the forum. 
 </p>
 
-<a name="Pause"></a><h4>5. The Pause/Unpause feature is not a diplomatic tool</h4>
+<a name="Pause"></a><h4>6. The Pause/Unpause feature is not a diplomatic tool</h4>
 <p>
   The pause is there to stop players from missing their orders, but is not part of the game.&nbsp; As such pausing or unpausing should not be used for diplomatic gain, such as refusing to unpause unless other players will draw the game.&nbsp; If it is being abused staff may step in to sort it out.
   <Br /><br />
 The pause button cannot be used as a diplomatic tool and should not be used for anything other than indicating the need for a pause. If you need a pause in a gunboat game that was not agreed upon before the game, email the moderators before voting to pause. The moderators will post in the global press asking for a pause. The other players are not obligated to pause in this situation, and force pauses will not be granted except in emergency situations until the moderators can find someone to watch your account. Please try to plan ahead and avoid the need for pauses if possible.
 </p>
 
-<a name="Account"></a><h4>6. You may not access another player's account without permission</h4>
+<a name="Account"></a><h4>7. You may not access another player's account without permission</h4>
 <p>
   In general, account sitting (getting someone you trust to log on as you and issue orders when you are unable to) is encouraged.&nbsp; However, you must not get a sitter or sit for somebody you share games with. Also, anything done by the sitter whilst on your account is your responsibility, so make sure you're happy with that before you give them your password.<br />
   It is also your responsibility to change your password after allowing someone to use your account.
 </p>
 
-<h4><a name="Spam"></a>7. Do not spam the forum or private messaging system</h4>
+<h4><a name="Spam"></a>8. Do not spam the forum or private messaging system</h4>
 <p>
   You are welcome and indeed encouraged to join in with the community but be sensible.&nbsp; Try to keep replies relevant to the conversation and don't start too many threads at once. Before posting a question relating to the software please read the <a href="faq.php" class="light">FAQ</a>.
 </p>
 
-<a name="Answer"></a><h4>8. You must answer communication from site staff</h4>
+<a name="Answer"></a><h4>9. You must answer communication from site staff</h4>
 <p>
   You must answer any warnings or other messages sent to you by the moderators, because if you don't reply it will be assumed you have something to hide, and your account may be closed.&nbsp; As part of this, you must make sure that the email address provided is one you still check, because this normally how staff will communicate with you.
 </p>
 
-<a name="CommonSense"></a><h4>9. Follow common sense</h4>
+<a name="CommonSense"></a><h4>10. Follow common sense</h4>
 <p>
   The rules above are mainly ones which might not be obvious; just because a specific rule isn't given here doesn't mean
   moderators can't stop people ruining the server for others!
