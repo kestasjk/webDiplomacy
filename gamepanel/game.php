@@ -432,6 +432,11 @@ class panelGame extends Game
 		{
 			$buf = '';
 			
+			if ($User->tempBan > time()) 
+			{
+				$tempBanned = 1;
+			}
+			
 			if ( $this->isJoinable() )
 			{
 				if( $this->minimumBet <= 100 && !$User->type['User'] && !$this->private )
@@ -454,30 +459,33 @@ class panelGame extends Game
 						($User->reliabilityRating < $this->minimumReliabilityRating ? 'Austria' :'Italy'), 
 						($this->minimumReliabilityRating));
 				}
+				
 				if ($User->reliabilityRating >= $this->minimumReliabilityRating) 
 				{
-
-					$buf .= '<form onsubmit="return confirm(\''.$question.'\');" method="post" action="board.php?gameID='.$this->id.'"><div>
-						<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />';
-
-					if( $this->phase == 'Pre-game' )
+					if (time() >= $User->tempBan)
 					{
-						$buf .= l_t('Bet to join: %s: ','<em>'.$this->minimumBet.libHTML::points().'</em>');
+						$buf .= '<form onsubmit="return confirm(\''.$question.'\');" method="post" action="board.php?gameID='.$this->id.'"><div>
+							<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />';
+
+						if( $this->phase == 'Pre-game' )
+						{
+							$buf .= l_t('Bet to join: %s: ','<em>'.$this->minimumBet.libHTML::points().'</em>');
+						}
+						else
+						{
+							$buf .= $this->Members->selectCivilDisorder();
+						}
+
+						if ( $this->private )
+							$buf .= '<br />'.self::passwordBox();
+
+						$buf .= ' <input type="submit" name="join" value="'.l_t('Join').'" class="form-submit" />';
+
+						$buf .= '</div></form>';
 					}
-					else
-					{
-						$buf .= $this->Members->selectCivilDisorder();
-					}
-
-					if ( $this->private )
-						$buf .= '<br />'.self::passwordBox();
-
-					$buf .= ' <input type="submit" name="join" value="'.l_t('Join').'" class="form-submit" />';
-
-					$buf .= '</div></form>';
 				}
 			}
-			if( $User->type['User'] && $this->phase != 'Finished')
+			if( $User->type['User'] && $this->phase != 'Finished')
 			{
 				$buf .= '<form method="post" action="redirect.php">'
 				       .'<input type="hidden" name="gameID" value="'.$this->id.'">';
@@ -491,6 +499,7 @@ class panelGame extends Game
 				$buf .= '</form>';
 			}
 		}
+		
 		return $buf;
 	}
 

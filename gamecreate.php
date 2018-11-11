@@ -175,6 +175,14 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input['drawType'],
 			$input['minimumReliabilityRating']);
 
+		// Prevent temp banned players from making new games.
+		if ($User->tempBan > time())
+		{
+			processGame::eraseGame($Game->id);
+			libHTML::notice('You are blocked from creating new games.', 'You are blocked from creating new games.');
+		}
+		// END TempBan
+		
 		// Create first Member record & object
 		processMember::create($User->id, $input['bet']);
 		$Game->Members->joinedRedirect();

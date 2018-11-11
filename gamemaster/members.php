@@ -481,6 +481,9 @@ class processMembers extends Members
 		if ( !($this->Game->minimumReliabilityRating <= $User->reliabilityRating) )
 			throw new Exception(l_t("Your Reliability Rating of %s%% is not high enough to join this game, which is restricted to %s%% RR and above.",
 				$User->reliabilityRating, $this->Game->minimumReliabilityRating));
+				
+		if ( $User->tempBan > time() )
+			throw new Exception("You are blocked from joining new games.");
 
 		// We can join, the only question is how?
 

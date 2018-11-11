@@ -176,6 +176,12 @@ class User {
 	 */
 	public $options;
 
+	/*
+	 * The user is blocked from joining or creating new games till the given time
+	 * @var timestamp
+	 */
+	public $tempBan;
+	
 	/**
 	 * Number of available points
 	 * @var int
@@ -450,6 +456,7 @@ class User {
 			u.phaseCount,
 			u.gameCount,
 			u.reliabilityRating,
+			u.tempBan,
 			IF(s.userID IS NULL,0,1) as online,
 			u.deletedCDs
 			FROM wD_Users u
