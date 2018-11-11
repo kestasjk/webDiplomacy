@@ -62,6 +62,11 @@ class adminActions extends adminActionsForms
 					Forced CDs do not count against the player\'s RR.',
 				'params' => array('userID'=>'User ID','gameID'=>'Game ID'),
 			),
+			'replaceCoutries' => array(
+				'name' => 'Replace country-player.',
+				'description' => 'Replace one player in a given game with another one. This does not impact points. If the replacing player does not meet the RR requirements for the game or is already in the game, that game replacement will not occur.',
+				'params' => array('userID'=>'UserID to be replaced','replaceID'=>'UserID replacing','gameIDs'=>'GameID (all active if empty)', )
+			),
 			'banIP' => array(
 				'name' => 'Ban an IP',
 				'description' => 'Bans a certain IP address.<br />
@@ -944,6 +949,86 @@ class adminActions extends adminActionsForms
 
 		return l_t('This user put into civil-disorder'.
 			((isset($params['gameID']) && $params['gameID'])?', in this game':', in all his games'));
+	}
+	
+	public function replaceCoutries(array $params)
+	{
+		global $DB;
+		
+		$gameIDs   = (int)$params['gameIDs'];
+		$userID    = (int)$params['userID'];
+		$replaceID = (int)$params['replaceID'];
+		$games = array();
+		$tabl = $DB->sql_tabl(
+			'SELECT gameID FROM wD_Members
+				WHERE status = "Playing" AND userID = "'.$userID.'"'.($gameIDs != 0 ? ' AND gameID = "'.$gameIDs.'"':'') );
+		while(list($gameID) = $DB->tabl_row($tabl))
+			$games[] = $gameID;
+		
+		// Load the two users as Userobjects.
+		try
+		{
+			$SendToUser = new User($replaceID);
+		}
+		catch (Exception $e)
+		{
+			$error = l_t("Invalid user ID given.");
+		}
+		
+		try
+		{
+			$SendFromUser = new User($userID);
+		}
+		catch (Exception $e)
+		{
+			$error = l_t("Invalid user ID given.");
+		}
+		$ret = '';
+		
+		foreach ($games AS $gameID)
+		{
+			$Variant=libVariant::loadFromGameID($gameID);
+			$Game = $Variant->Game($gameID);
+		
+			list($blocked) = $DB->sql_row("SELECT count(*) FROM wD_Members AS m WHERE m.gameID = ".$Game->id);
+			
+			// Check for additional requirements:	 
+			if ( $Game->minimumReliabilityRating > $SendToUser->reliabilityRating)
+			{
+				$ret .= '<b>Error:</b> The reliability of '.$SendToUser->username.' is not high enough to join the game <a href="board.php?gameID='.$Game->id.'">'.$Game->name.'</a>.<br>';
+			}
+			
+			elseif ( array_key_exists ( $SendToUser->id , $Game->Members->ByUserID))
+			{
+				$ret .= '<b>Error:</b> '.$SendToUser->username.' is already a member of the game <a href="board.php?gameID='.$Game->id.'">'.$Game->name.'</a>.<br>';
+			}
+			
+			else
+			{
+				$DB->sql_put("UPDATE wD_Members SET userID = ".$SendToUser->id." WHERE userID=".$SendFromUser->id." AND gameID=".$Game->id);
+				$ret.= 'In game <a href="board.php?gameID='.$Game->id.'">'.$Game->name.'</a> the user '.$SendFromUser->username.' was removed and replaced by '.$SendToUser->username.'.<br>';
+			}
+		}
+		return $ret;
+	}
+	public function replaceCoutriesConfirm(array $params)
+	{
+		global $DB;
+		
+		$userID    = (int)$params['userID'];
+		$replaceID = (int)$params['replaceID'];
+		$gameIDs   = (int)$params['gameIDs'];
+		
+		list($userName)    = $DB->sql_row("SELECT username FROM wD_Users WHERE id=".$userID);
+		list($replaceName) = $DB->sql_row("SELECT username FROM wD_Users WHERE id=".$replaceID);
+		
+		if ($gameIDs == 0)
+		{
+			return 'The user '.$userName.' will be removed and replaced by '.$replaceName.' in all his active games.';
+		}
+		
+		list($gameName) = $DB->sql_row("SELECT name FROM wD_Games WHERE id=".$gameIDs);
+		return 'In game '.$gameName.' (id='.$gameIDs.') the user '.$userName.' will be removed and replaced by '.$replaceName.'.';
 	}
 
 	public function banUserConfirm(array $params)
