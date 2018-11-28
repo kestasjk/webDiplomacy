@@ -466,6 +466,13 @@ class libHTML
 				</div></noscript>';
 
 		print self::globalNotices();
+		
+		if (isset($User) && $User->tempBan > time())
+		{
+			print '<div class="content-notice">
+					<p class="notice"><br>'.l_t('You are blocked from joining or creating new games for %s.',libTime::remainingText($User->tempBan)).'<br><br><hr></p>
+				</div>';			
+		}
 
 		if ( is_object($User) && $User->type['User'] )
 		{

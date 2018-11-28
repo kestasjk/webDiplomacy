@@ -68,6 +68,11 @@ class adminActions extends adminActionsForms
 					Note: Doesn\'t work.',
 				'params' => array('IP'=>'IP address (xxx.xxx.xxx.xxx)'),
 			),
+			'tempBan' => array(
+				'name' => 'Temporary ban a player',
+				'description' => 'Stops a player from joining or creating new games for that many days. To remove a temp ban, enter 0 days',
+				'params' => array('userID'=>'User ID', 'ban'=>'Days')
+			),
 			'banUser' => array(
 				'name' => 'Ban a user',
 				'description' => 'Bans a user, setting his games to civil disorder, and removing his points.',
@@ -1046,6 +1051,18 @@ class adminActions extends adminActionsForms
 		unset($Game);
 
 		return l_t('This user was banned, and had their %s points removed and their games set to civil disorder.',$banUser->points);
+	}
+	public function tempBan(array $params)
+	{
+		global $DB;
+		
+		$userID = (int)$params['userID'];
+		$days   = (int)$params['ban'];
+ 		$DB->sql_put("UPDATE wD_Users SET tempBan = ". ( time() + ($days * 86400) )." WHERE id=".$userID);
+ 		if ($days == 0)
+			return 'This user is now unblocked and can join and create games again.';
+			
+		return 'This user is now blocked from joining and creating games for <b>'.$days.'</b> days.';
 	}
 	public function givePoints(array $params)
 	{
