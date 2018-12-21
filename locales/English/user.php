@@ -117,14 +117,16 @@ if( $User->type['User'] ) {
 		print '</ul></li>';
 	}
 
+	/*
 	$MutedGames = array();
 	foreach($User->getMuteCountries() as $muteGamePair) {
 		list($gameID, $muteCountryID) = $muteGamePair;
 		if( !isset($MutedGames[$gameID])) $MutedGames[$gameID] = array();
 		$MutedGames[$gameID][] = $muteCountryID;
 	}
+	
 	if( count($MutedGames) > 0 ) {
-		print '<li class="formlisttitle">Muted countries:</li>';
+		print '<li class="formlisttitle">Muted countries:</li>'; 
 		print '<li class="formlistdesc">The countries which you muted, and are unable to send you messages.</li>';
 		print '<li class="formlistfield"><ul>';
 		$LoadedVariants = array();
@@ -134,14 +136,15 @@ if( $User->type['User'] ) {
 				$LoadedVariants[$variantID] = libVariant::loadFromVariantID($variantID);
 			$Game = $LoadedVariants[$variantID]->Game($gameID);
 			print '<li>'.$Game->name.'<ul>';
+			
 			foreach($mutedCountries as $mutedCountryID) {
 				print '<li>'.$Game->Members->ByCountryID[$mutedCountryID]->country.' '.
 				libHTML::muted("board.php?gameID=".$Game->id."&msgCountryID=".$mutedCountryID."&toggleMute=".$mutedCountryID."&rand=".rand(0,99999).'#chatboxanchor').'</li>';
-			}
-			print '</ul></li>';
-		}
+			} 
+			print '</ul></li>'; 
+		} 
 		print '</ul></li>';
-	}
+	} */
 	
 	$tablMutedThreads = $DB->sql_tabl(
 		"SELECT mt.muteThreadID, f.subject, f.replies, fu.username ".
