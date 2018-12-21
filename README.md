@@ -27,6 +27,10 @@ Any questions, please email webdipmod@gmail.com, and a member of the dev team wi
 
 ---
 
+If you get errors for files within /javascript/ it is because some default Apache configurations use this as a shared folder by default. Disable this alias to resolve.
+
+---
+
 http://webdiplomacy.net/ - The official webDiplomacy server.
 
 http://forum.webdiplomacy.net/ - The official webDiplomacy developer forum.
