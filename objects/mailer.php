@@ -20,7 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once("contrib/PHPMailer_v5.1/class.phpmailer.php");
+require_once("contrib/PHPMailer_v5.1/PHPMailerAutoload.php");
 
 /**
  * A PHPMailer interface object, currently only used for validation e-mails but
@@ -41,10 +41,10 @@ class Mailer
 
 		$this->PHPMailer = new PHPMailer();
 
-		$this->PHPMailer->SetFrom(Config::$mailerConfig['From'], Config::$mailerConfig['FromName']);
-		$this->PHPMailer->AddReplyTo(Config::$mailerConfig['From'], Config::$mailerConfig['FromName']);
-		$this->PHPMailer->WordWrap = 50;
-		$this->PHPMailer->IsHTML(true);
+		$this->PHPMailer->setFrom(Config::$mailerConfig['From'], Config::$mailerConfig['FromName']);
+		$this->PHPMailer->addReplyTo(Config::$mailerConfig['From'], Config::$mailerConfig['FromName']);
+		$this->PHPMailer->wordWrap = 50;
+		$this->PHPMailer->isHTML(true);
 
 		if ( Config::$mailerConfig["UseSendmail"] )
 		{
@@ -56,7 +56,7 @@ class Mailer
 		{
 			$this->PHPMailer->IsSMTP();
 
-			$SMTPSettings = array('Host','Port','SMTPAuth','Username','Password','SMTPSecure');
+			$SMTPSettings = array('Host','Port','SMTPAuth','Username','Password','SMTPSecure', 'SMTPOptions');
 			foreach($SMTPSettings as $SMTPSetting)
 			{
 				if ( isset(Config::$mailerConfig['SMTPSettings'][$SMTPSetting]) )
@@ -74,10 +74,10 @@ class Mailer
 		$this->PHPMailer->Subject = '';
 		$this->PHPMailer->Body = '';
 		$this->PHPMailer->AltBody = '';
-		$this->PHPMailer->IsHTML(false);
-		$this->PHPMailer->ClearAllRecipients();
-		$this->PHPMailer->ClearAttachments();
-		$this->PHPMailer->ClearReplyTos();
+		$this->PHPMailer->isHTML(false);
+		$this->PHPMailer->clearAllRecipients();
+		$this->PHPMailer->clearAttachments();
+		$this->PHPMailer->clearReplyTos();
 	}
 
 	public function Send(array $to, $title, $message)
@@ -129,13 +129,13 @@ class Mailer
 				preg_replace("/\n/","", // Get rid of newlines
 				$wrappedmessage))));
 
-			$this->PHPMailer->AddAddress($email, $name);
+			$this->PHPMailer->addAddress($email, $name);
 
-			$this->PHPMailer->Send();
-			$this->PHPMailer->ClearAddresses();
+			$this->PHPMailer->send();
+			$this->PHPMailer->clearAddresses();
 		}
 
-		if ( $this->PHPMailer->IsError() )
+		if ( $this->PHPMailer->isError() )
 		{
 			throw new Exception(l_t("Mailer error: %s",$this->PHPMailer->ErrorInfo));
 		}
