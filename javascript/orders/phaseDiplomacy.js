@@ -42,7 +42,7 @@ function loadOrdersPhase() {
 									this.FromTerritory, this.ToTerritory, this.Unit.Territory
 								);
 						}
-						else
+						else if( this.ToTerritory.convoyLink )
 						{
 							convoyPath = this.ToTerritory.ConvoyGroup.pathArmyToCoast(this.FromTerritory, this.ToTerritory);
 						}
