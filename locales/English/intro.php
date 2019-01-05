@@ -36,8 +36,34 @@ lots of people pick them up just by playing, but this document will familiarize 
 <div class="hr"></div>';
 
 ?>
-<p style="text-align:center"><a href="#Objective">Objective</a> - <a href="#Units">Units</a> -
+<p style="text-align:center"><a href="#RR">RR</a> - <a href="#Points">Points</a> - <a href="#Objective">Objective</a> - <a href="#Units">Units</a> -
 	<a href="#Moves">Moves</a> - <a href="#Rules">Rules</a> - <a href="#Play">Play</a></p>
+
+<div class="hr"></div>
+
+<p>webDiplomacy, as a community, is a competitive and fun place to play. Currently we have two site supported ranking systems. </p>
+
+<a name="RR"></a>
+<h3>RR</h3>
+<p>
+The first is our “Reliability Rating” (RR); this ranking is determined based on how often you fail to enter
+ moves in a turn (NMR/No Moves Received) or leave a game before it’s conclusion (CD/Civil Disorder). Most tournaments, special rules games, 
+ or high stakes games have RR restrictions; meaning if you leave games often or irresponsibly forget to enter 
+ moves frequently you may find it hard to join competitive games. 
+<br /><br />
+
+<div class="hr"></div>
+
+<a name="Points"></a>
+<h3>Points</h3>
+<p>
+The second system is our point system (<img src="images/icons/points.png" alt="D" title="webDiplomacy points">), which is used to determine how many 
+games you can join and what stakes the game will be. You start with 100 <img src="images/icons/points.png" alt="D" title="webDiplomacy points"> and are 
+reimbursed whenever a loss of points results in you having less than 100 <img src="images/icons/points.png" alt="D" title="webDiplomacy points">. 
+Points are fun and provide a tangible reward for winning but are far less important to your 
+ability to play fun and enthralling games on webDiplomacy. Many of our tournaments are unranked, 
+and those that aren’t are usually willing to play at lower <img src="images/icons/points.png" alt="D" title="webDiplomacy points"> levels for players with very high Reliability Ratings.
+<br /><br />
 
 <div class="hr"></div>
 
