@@ -180,7 +180,7 @@ switch($page)
 
 		print '<h2>'.l_t('Site User Agreement (We aren’t Apple™, so please read this.)').'</h2>';
 		print '<p>'.l_t('I agree not to create more than one account.<br /> '.
-		'I agree not to subvert game communication rules.<br /> '.
+		'I agree not to work around game communication rules.<br /> '.
 		'I agree not to make alliances based on out of game relationships.<br /> '.
 		'I agree not to play public games with family, or friends.<br /> '.
 		'I agree to treat all members with respect regardless of race, religion, gender, or creed.<br /><br /> '.
