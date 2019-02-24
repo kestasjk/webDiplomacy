@@ -69,7 +69,7 @@ Any questions on this program can be directed to webdipmentors@gmail.com.
 <li><a href="points.php">webDiplomacy points</a></li>
 <li class="formlistdesc">What points are for, how to win them, and how to get into the hall of fame.</li>
 
-<li><a href="http://tournaments.webdiplomacy.net/theghost-ratingslist">GhostRatings (External Site)</a></li>
+<li><a href="https://sites.google.com/view/webdipinfo/ghost-ratings">Ghost Ratings (External Site)</a></li>
 <li class="formlistdesc">An external rating system often used as an alternate measure of player skill.</li>
 
 <li><a href="variants.php">Variant information</a></li>
