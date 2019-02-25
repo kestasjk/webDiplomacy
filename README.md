@@ -33,8 +33,6 @@ If you get errors for files within /javascript/ it is because some default Apach
 
 http://webdiplomacy.net/ - The official webDiplomacy server.
 
-http://forum.webdiplomacy.net/ - The official webDiplomacy developer forum.
-
 https://github.com/kestasjk/webDiplomacy - The webDiplomacy github source repository.
 
 http://sourceforge.net/projects/phpdiplomacy - The webDiplomacy Sourceforge project page.
