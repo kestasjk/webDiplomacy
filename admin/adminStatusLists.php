@@ -25,27 +25,34 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  *
  * @package Admin
  */
+if( !isset($_REQUEST['full']) )
+	print '<p class = "modTools"> <a class="modTools" href="admincp.php?tab=Status Info&full=on">'.l_t('View all logs').'</a> 
+	</br> Error logs, banned users, and donator lists are limited to 50 items, use this link to see full result set.</p>';
 
 if( $User->type['Admin'] )
 {
 	//There may be sensitive info that would allow privilege escalation in these error logs
 
-	print '<p><strong>'.l_t('Error logs:').'</strong> '.libError::stats().' ('.libHTML::admincp('clearErrorLogs',null,'Clear').')</p>';
+	print '<p class="modTools"><strong>'.l_t('Error logs:').'</strong> '.libError::stats().' ('.libHTML::admincp('clearErrorLogs',null,'Clear').')</p>';
 
 	$dir =  libError::directory();
 	$errorlogs = libError::errorTimes();
 
-	$alternate = false;
-	print '<TABLE class="credits">';
+	print '<TABLE class="modTools">';
+	print "<tr>";
+    print '<th class= "modTools">Time</th>';
+	print '<th class= "modTools">Details</th>';
+	print "</tr>";
 
+	$loopCounter = 0;
 	foreach ( $errorlogs as $errorlog )
 	{
-		$alternate = ! $alternate;
+		if((!isset($_REQUEST['full'])) and ($loopCounter > 49 ))
+			break;
 
-		print '<tr class="replyalternate'.($alternate ? '1' : '2' ).'">';
-		print '<td class="left time">'.libTime::text($errorlog).'</td>';
-		print '<td class="right message"><a class="light" href="admincp.php?viewErrorLog='.$errorlog.'">Open</a></td>';
-		print '</tr>';
+		print '<tr><td class="modTools">'.libTime::text($errorlog).'</td>';
+		print '<td class="modTools"><a class="modTools" href="admincp.php?viewErrorLog='.$errorlog.'">Open</a></td></tr>';
+		$loopCounter = $loopCounter + 1;
 	}
 
 	print '</TABLE>';
@@ -61,7 +68,7 @@ function adminStatusTable($name, $query)
 {
 	global $DB;
 
-	print '<p><strong>'.$name.'</strong></p>';
+	print '<p class="modTools"><strong>'.$name.'</strong></p>';
 	if( is_array($query) )
 		$result = $query;
 	else
@@ -72,19 +79,18 @@ function adminStatusTable($name, $query)
 			$result[]=array($col1,$col2);
 	}
 
-	$alternate = false;
-	print '<TABLE class="credits">';
+	print '<TABLE class="modTools">';
+	print "<tr>";
+    print '<th class= "modTools">Orders</th>';
+	print '<th class= "modTools">Info</th>';
+	print "</tr>";
 
 	foreach($result as $row)
 	{
 		list($col1,$col2)=$row;
 
-		$alternate = ! $alternate;
-
-		print '<tr class="replyalternate'.($alternate ? '1' : '2' ).'">';
-		print '<td class="left time">'.$col1.'</td>';
-		print '<td class="right message">'.$col2.'</td>';
-		print '</tr>';
+		print '<tr><td class= "modTools">'.$col1.'</td>';
+		print '<td class= "modTools">'.$col2.'</td></tr>';
 	}
 
 	print '</TABLE>';
@@ -94,7 +100,7 @@ function adminStatusList($name, $query)
 {
 	global $DB;
 
-	print '<p><strong>'.$name.':</strong> ';
+	print '<p class="modTools"><strong>'.$name.':</strong> ';
 
 	$tabl = $DB->sql_tabl($query);
 	while( list($row) = $DB->tabl_row($tabl) )
@@ -132,10 +138,10 @@ if( $User->type['Admin'] ) {
 		$viewOrderLogCountryID='';
 	}
 
-	print '<p><strong>'.l_t('Order logs:').'</strong><form action="admincp.php" method="get">
+	print '<p class="modTools"><strong>'.l_t('Order logs:').'</strong><form class="modTools" action="admincp.php" method="get">
 		'.l_t('Game ID').': <input type="text" name="viewOrderLogGameID" value="'.$viewOrderLogGameID.'" />
 		'.l_t('CountryID').': <input type="text" name="viewOrderLogCountryID" value="'.$viewOrderLogCountryID.'" />
-		<input type="submit" name="'.l_t('Submit').'" /></form></p>';
+		<input class="modTools" type="submit" name="'.l_t('Submit').'" /></form></p>';
 }
 
 /*
@@ -159,13 +165,13 @@ adminStatusList(l_t('Paused games'),"SELECT CONCAT('<a href=\"board.php?gameID='
 //require_once('gamemaster/game.php');
 //adminStatusTable('Backed up games',processGame::backedUpGames());
 
-adminStatusList(l_t('Banned users'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
-	FROM wD_Users WHERE type LIKE '%Banned%'");
 adminStatusList(l_t('Mods'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 	FROM wD_Users WHERE type LIKE '%Moderator%'");
 adminStatusList(l_t('Admins'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 	FROM wD_Users WHERE type LIKE '%Admin%'");
 adminStatusList(l_t('Donors'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
-	FROM wD_Users WHERE type LIKE '%Donator%'");
+	FROM wD_Users WHERE type LIKE '%Donator%'".(isset($_REQUEST['full'])?'':"LIMIT 50"));
+adminStatusList(l_t('Banned users'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
+FROM wD_Users WHERE type LIKE '%Banned%'".(isset($_REQUEST['full'])?'':"LIMIT 50"));
 
 ?>

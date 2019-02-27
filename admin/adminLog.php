@@ -28,9 +28,11 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 
 if( !isset($_REQUEST['full']) )
-	print '<a href="admincp.php?tab=Control Panel Logs&full=on">'.l_t('View all logs').'</a>';
+	print '<a class="modTools" href="admincp.php?tab=Logs&full=on">'.l_t('View all logs').'</a>';
 
-print '<table class="credits">';
+print '<table class= "modTools">';
+print '<th class= "modTools">Time</th>';
+print '<th class= "modTools">Action</th>';
 
 $alternate = 1;
 $tabl = $DB->sql_tabl(
@@ -43,34 +45,9 @@ while ( $row = $DB->tabl_hash($tabl) )
 	$row['time'] = libTime::text($row['time']);
 
 	$params = $row['params'];
-	/*
-	$params = @unserialize($row['params']);
-	if( count($params) )
-	{
-		$p=array();
-		foreach($params as $name=>$value) {
-			if( $name=='userID' )
-				$value = '<a href="profile.php?userID='.$value.'" class="light">'.$value.'</a>';
-			elseif( $name=='gameID' )
-				$value = '<a href="board.php?gameID='.$value.'" class="light">'.$value.'</a>';
 
-			$p[]=$name.'='.$value;
-		}
-		$params='<br />Params: '.implode(', ',$p);
-		unset($p);
-	}
-	else
-		$params='';
-	*/
-
-	$alternate = ( $alternate ? 0 : 1 );
-
-	print '<tr class="replyalternate'.($alternate+1).'">';
-
-	print '<td class="left time">'.$row['time'].'</td>';
-
-	print '<td class="right message">'.$row['username'].': <strong>'.$row['name'].'</strong>: '.$row['details'].$params.'</td>';
-	print '</tr>';
+	print '<tr><td class= "modTools">'.$row['time'].'</td>';
+	print '<td class= "modTools">'.$row['username'].': <strong>'.$row['name'].'</strong>: '.$row['details'].$params.'</td></tr>';
 }
 
 print '</table>';
