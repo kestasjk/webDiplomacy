@@ -176,10 +176,17 @@ switch($page)
 	case 'firstValidationForm':
 
 		print '<h2>'.l_t('Welcome to webDiplomacy!').'</h2>';
-		print '<p>'.l_t('So that we can all enjoy fun, fair games we need to quickly double check that '.
-				'you\'re a human and that you have an e-mail address. It only takes a moment '.
-				'and it keeps the server free of spam and cheaters! :-)').'</p>';
+		print '<p>'.l_t('We are a competitive community looking for fair and fun games; to ensure you are a human with a working email address please fill out the registration form below. Help us keep the server free of spam and cheaters!').'</p>';
 
+		print '<h2>'.l_t('Site User Agreement (We aren’t Apple™, so please read this.)').'</h2>';
+		print '<p>'.l_t('I agree not to create more than one account.<br /> '.
+		'I agree not to work around game communication rules.<br /> '.
+		'I agree not to make alliances based on out of game relationships.<br /> '.
+		'I agree not to play public games with family, or friends.<br /> '.
+		'I agree to treat all members with respect regardless of race, religion, gender, or creed.<br /><br /> '.
+
+		'If you can agree to these values and adhere to our site rules, you are welcome here!').'</p>';
+		
 	case 'validationForm':
 
 		require_once(l_r('locales/English/validationForm.php'));

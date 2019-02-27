@@ -111,7 +111,6 @@ function adminCPTabs()
 			'Logs'=>l_t('Log of recent admin tasks'),
 			'Multi-accounts'=>l_t('Multi-account detector'),
 			'Chatlogs'=>l_t('Check the ingame chat.'),
-			//'AccessLog'=>l_t('Check the user-actions sort by IP and Username.'),
 			'Locales'=>l_t('Locale management')
 		);
 
@@ -173,9 +172,6 @@ switch($tab)
 	case 'Chatlogs':
 		require_once(l_r('admin/adminChatAnalyser.php'));
 		break;
-	// case 'AccessLog':
-	// 	require_once(l_r('admin/adminAdvancedAccessLog.php'));
-	// 	break;
 	default:
 		print '<p>'.l_t('No admin panel tab selected').'</p>';
 }

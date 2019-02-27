@@ -451,6 +451,18 @@ print '<div class="leftHalf" style="width:50%">';
 if( $UserProfile->type['Banned'] )
 	print '<p><strong>'.l_t('Banned').'</strong></p>';
 
+
+list($serverHasPHPBB) = $DB->sql_row("SELECT count(1) FROM information_schema.tables WHERE table_name = 'phpbb_users'");
+
+if ($serverHasPHPBB == 1)
+{
+	list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
+	if ($newForumId > 0)
+	{
+		print '<p class="profileCommentURL"><strong><a href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumId.'">New Forum Profile</a></strong></p>';
+	}
+}
+
 if ( $UserProfile->comment )
 	print '<p class="profileComment">"'.$UserProfile->comment.'"</p>';
 

@@ -41,8 +41,9 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					print $_REQUEST['emailValidate'];
 		        ?>"></li>
 		<li class="formlistdesc">
-			By making sure every user has a real e-mail address we stop cheaters from creating many users for themselves.
-			This will <strong>not</strong> be spammed or released, it is only used to validate you
+			By making sure every user has a real e-mail address we stop cheaters from creating many users for themselves. 
+			This will not be spammed, shared, or released. <strong>Please make sure your email 
+			address is current so that the moderators can contact you if needed!</strong>
 		</li>
 </ul>
 
