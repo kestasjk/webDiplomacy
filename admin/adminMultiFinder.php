@@ -120,10 +120,10 @@ class adminMultiCheck
 				'and gives a more detailed picture of what is happening.').'
 				</p>';
 
-		print '<p><strong>'.l_t('Links between user accounts have to share active games:').'</strong>
+		print '<p><strong>'.l_t('Links between users share active public games:').'</strong>
 				<input type="checkbox" name="activeLinks" /><br />
 				'.l_t('With this checked links between users will be ignored if they aren\'t currently playing in '.
-				'the same games. This helps ensure that the data being checked is relevant and cuts out the '.
+				'the same public games. This helps ensure that the data being checked is relevant and cuts out the '.
 				'clutter.').'
 				</p>';
 
@@ -480,7 +480,7 @@ class adminMultiCheck
 		$this->aLogsData['activeGameIDs'] = self::sql_list(
 			"SELECT DISTINCT m.gameID
 			FROM wD_Members m INNER JOIN wD_Games g ON ( g.id = m.gameID )
-			WHERE m.userID = ".$this->aUserID." AND NOT g.phase = 'Finished'"
+			WHERE m.userID = ".$this->aUserID." AND NOT g.phase = 'Finished' and g.password is null"
 		);
 	}
 
