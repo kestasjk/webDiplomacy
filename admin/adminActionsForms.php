@@ -56,6 +56,7 @@ class adminActionsForms
 	 */
 	private static function form($actionName, array $params, $description="")
 	{
+		//print '<div class = "modTools">';
 		print '<form action="'.self::$target.'#'.$actionName.'" method="post">
 			<input type="hidden" name="actionName" value="'.$actionName.'" />';
 
@@ -67,7 +68,7 @@ class adminActionsForms
 			print '<input type="hidden" name="globalPostID" value="'.intval($_REQUEST['globalPostID']).'" />';
 		
 		if ($description)
-			print '<li class="formlistdesc" style="margin-bottom:10px">'.l_t($description).'</li>';
+			print '<li class="modToolsformlistdesc" style="margin-bottom:10px">'.l_t($description).'</li>';
 
 		foreach( $params as $paramCode=>$paramName )
 		{
@@ -83,18 +84,19 @@ class adminActionsForms
 			else
 				$defaultValue = '';
 
-			print '<li class="formlistfield">
+			print '<li class="modToolsformlistfield">
 					<label for="'.$paramCode.'">'.l_t($paramName).'</label>:
-					<input type="text" name="'.$paramCode.'" value="'.$defaultValue.'" length="50" />
+					<input class = "modTools" type="text" name="'.$paramCode.'" value="'.$defaultValue.'" length="50" />
 					</li>';
 		}
 
-		print '<li class="formlistfield" style="margin-bottom:20px">
-			<input class="form-submit" type="submit" name="Submit" value="'.l_t('Submit').'" /> '.
+		print '<li class="modToolsformlistfield" style="margin-bottom:20px">
+			<input class="modToolsform-submit" type="submit" name="Submit" value="'.l_t('Submit').'" /> '.
 			( self::isActionDangerous($actionName) ? '<em>('.l_t('Careful; not confirmed!').')</em>' : '').'
 			</li>';
 
 		print '</form>';
+		print '</div></br>';
 	}
 
 	private static function isActionDangerous($actionCode)
@@ -150,14 +152,15 @@ class adminActionsForms
 		// TODO: Use late static binding for this instead of INBOARD detection
 		extract($this->actionsList[$actionName]);
 
-		print '<li class="formlisttitle">
+		print '<div class = "modToolsCP">';
+		print '<li class="modToolsformlisttitle">
 			<a name="'.$actionName.'"></a>'.l_t($name).'</li>';
 
 		try
 		{
 			if ( isset($_REQUEST['actionName']) and $_REQUEST['actionName'] == $actionName )
 			{
-				print '<li class="formlistfield">';
+				print '<li class="modToolsformlistfield">';
 
 				$paramValues = array();
 				foreach($params as $paramName=>$paramFullName)
@@ -199,7 +202,7 @@ class adminActionsForms
 						print '<input type="hidden" name="'.$name.'" value="'.$value.'" />';
 
 					print '</li><li class="formlistfield" style="margin-bottom:20px">
-						<input type="submit" class="form-submit" value="Confirm" />
+						<input type="submit" class="modToolsform-submit" value="Confirm" />
 
 						</form>';
 				}
@@ -301,23 +304,22 @@ class adminActionsLayout
 		$actionCount = count($actionCodes);
 		$actionMidPoint = ceil($actionCount/2);
 
-		print '<div style="width:90%; margin-left:auto; margin-right:auto">';
+		print '<div class="modTools" style="width:90%; margin-left:auto; margin-right:auto">';
 
-		print '<div style="float:right; width:50%; text-align:left">';
+		print '<div class="modTools" style="float:right; width:50%; text-align:left">';
 		for($i=$actionMidPoint; $i<$actionCount; $i++)
 		{
-			print '<a href="#'.$actionCodes[$i].'">'.l_t(adminActions::$actions[$actionCodes[$i]]['name']).'</a><br />';
+			print '<a class="modTools" href="#'.$actionCodes[$i].'">'.l_t(adminActions::$actions[$actionCodes[$i]]['name']).'</a><br />';
 		}
 		print '</div>';
 
 		print '<div style="width:45%">';
 		for($i=0; $i<$actionMidPoint; $i++)
 		{
-			print '<a href="#'.$actionCodes[$i].'">'.l_t(adminActions::$actions[$actionCodes[$i]]['name']).'</a><br />';
+			print '<a class="modTools" href="#'.$actionCodes[$i].'">'.l_t(adminActions::$actions[$actionCodes[$i]]['name']).'</a><br />';
 		}
 		print '</div>';
-		print '<div style="clear:both"></div>';
-
+		print '<div class="modTools" style="clear:both"></div>';
 		print '</div>';
 	}
 }
@@ -328,7 +330,6 @@ if ( isset($_REQUEST['globalUserID']) )
 	adminActionsForms::$globalUserID = (int)$_REQUEST['globalUserID'];
 if ( isset($_REQUEST['globalPostID']) )
 	adminActionsForms::$globalPostID = (int)$_REQUEST['globalPostID'];
-
 
 // A shortcut command area
 require_once(l_r('lib/gamemessage.php'));
@@ -370,21 +371,21 @@ else
 	
 	$actionCodesByType = adminActionsLayout::actionCodesByType();
 	
-	print '<h3>'.l_t('Admin actions').'</h3>';
+	print '<h2 class="modToolsHeadings">'.l_t('Menu').'</h2>';
 	foreach($actionCodesByType as $type=>$actionCodes)
 	{
-		print '<a name="'.strtolower($type).'Actions"></a><h4>'.l_t($type.' actions').'</h4>';
+		print '<a name="'.strtolower($type).'Actions"></a><h3 class = "modToolsHeadings">'.l_t($type.' actions').'</h3>';
 		adminActionsLayout::printActionLinks($actionCodes);
 	}
 	
 	print '<div class="hr"></div>';
 	
-	print '<h3>'.l_t('Forms').'</h3>';
+	print '<h2 class="modToolsHeadings">'.l_t('All Actions').'</h2>';
 	// For each task display the form, and run the task if data entered from the corresponding form
 	print '<ul class="formlist">';
 	foreach($actionCodesByType as $type=>$actionCodes)
 	{
-		print '<h4>'.l_t($type.' actions').'</h4>';
+		print '<h3 class="modToolsHeadings">'.l_t($type.' actions').'</h3>';
 	
 		foreach($actionCodes as $actionCode)
 			$adminActions->process($actionCode);

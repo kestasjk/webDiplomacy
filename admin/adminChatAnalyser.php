@@ -111,8 +111,9 @@ if ($gameID != 0)
 	libVariant::setGlobals($Variant);
 	$Game = $Variant->panelGameBoard($gameID);
     
-    // Because moderators cannot break anon for their own games do not load the page at all if they are in the game. Die and log attempted access.
-    list($modInGame) = $DB->sql_row("SELECT count(1) FROM wD_Members WHERE userID = ".$User->id." and gameID =".$gameID);
+    // Because moderators cannot break anon for their own games do not load the page at all if the mod is in the game which is unfinished. Die and log attempted access.
+	list($modInGame) = $DB->sql_row("SELECT count(1) FROM wD_Members m INNER JOIN wD_Games g ON ( g.id = m.gameID ) WHERE m.userID = ".$User->id." and m.gameID =".$gameID." AND NOT g.phase = 'Finished'");
+	
     if ($modInGame == 1)
     {
         $reason = "Press was not checked on gameID:". $gameID. " because the moderator was in the game.";

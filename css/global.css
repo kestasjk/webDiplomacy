@@ -708,7 +708,15 @@ TD.army, div.army {
 .modTools {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	border-collapse: collapse;
-  }
+}
+
+input[type="text"].modTools, input[type="password"].modTools, textarea.modTools, select.modTools {
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #ffffff !important;
+	border: 1px solid #c1c1c1;
+	color:#000000;
+}
   
 .modTools td, .modTools th {
 	border: 1px solid #ddd;
@@ -724,6 +732,60 @@ TD.army, div.army {
 	text-align: left;
 	background-color: #009902;
 	color: white;
+}
+
+.modToolsCP {
+	border-radius: 25px;
+	background: rgb(222, 224, 222);
+	padding: 8px; 
+}
+
+.modToolsHeadings {
+    color: #000000 !important;
+	margin-bottom: 5px;
+	font-weight: bold;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-decoration: underline;
+}
+
+li.modToolsformlistfield {
+	list-style: none;
+	margin-bottom:10px;
+	margin-left:20px;
+	margin-right:20px;
+	margin-top:5px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+li.modToolsformlistdesc {
+	font-weight: normal;
+	color: #000000b2 !important;
+	list-style: none;
+	margin-left:20px;
+	margin-right:20px;
+	border-left: 1px solid #aaa;
+	padding-left: 10px;
+	margin-bottom: 30px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+li.modToolsformlisttitle {
+	font-weight: bold;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-decoration: underline;
+}
+.modToolsform-submit {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #fff !important;
+	text-transform: uppercase;
+	background: #60a3bc !important;
+	padding: 5px;
+	border-radius: 50px;
+	display: inline-block;
+	border: none;
+}
+.modToolsform-submit:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-shadow: 0px 0px 6px rgba(255, 255, 255, 1);
+	transition: all 0.4s ease 0s;
 }
 
 .topnav {
