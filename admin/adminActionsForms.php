@@ -237,28 +237,19 @@ class adminActionsLayout
 	{
 		global $User;
 
-		$modActions=array();
-		$modActions[] = '<a href="gamemaster.php" class="light">'.l_t('Run gamemaster').'</a><br />';
-		$modActions[] = libHTML::admincp('panic', null, l_t('Toggle panic-mode'));
+		print '<div class = "modTools">';
+		print '<ul class = "modTools">';
+		print '<li><a href="gamemaster.php" class="modTools">'.l_t('Run gamemaster').'</a></li>';
+		print '<li><a href="admincp.php?tab=Control%20Panel&actionName=panic#panic" class="modTools">'.l_t('Toggle Panic Mode').'</a></li>';
 
 		if($User->type['Admin'])
 		{
-			$modActions[] = libHTML::admincp('notice', null, l_t('Toggle the site-wide notice'));
-			$modActions[] = libHTML::admincp('maintenance', null, l_t('Toggle maintenance-mode')).'<br />';
-			$modActions[] = libHTML::admincp('clearErrorLogs', null, l_t('Clear error-logs'));
-			$modActions[] = libHTML::admincp('clearOrderLogs', null, l_t('Clear order-logs'));
-			$modActions[] = libHTML::admincp('clearAccessLogs', null, l_t('Clear access-logs'));
-			$modActions[] = libHTML::admincp('clearAdminLogs', null, l_t('Clear admin-logs')).'<br />';
-			$modActions[] = libHTML::admincp('unCrashGames', array('excludeGameIDs'=>''), l_t('Un-crash any crashed games'));
+			print '<li><a href="admincp.php?tab=Control%20Panel&actionName=notice#notice" class="modTools">'.l_t('Toggle Site Notice').'</a></li>';
+			print '<li><a href="admincp.php?tab=Control%20Panel&actionName=maintenance#maintenance" class="modTools">'.l_t('Toggle Maintenance Mode').'</a></li>';
 		}
 
-		if($modActions)
-		{
-			print '<p class="notice">';
-			print implode(' - ', $modActions);
-			print '</p>';
-			print '<div class="hr"></div>';
-		}
+		print '<li><a href="admincp.php?tab=Control%20Panel&actionName=unCrashGames&excludeGameIDs=#unCrashGames" class="modTools">'.l_t('Un-Crash Games').'</a></li>';
+		print '</div>';
 	}
 
 	private static function sortedActionCodes()
@@ -354,7 +345,7 @@ if( defined("INBOARD") )
 }
 else
 {
-	print '<div class="hr"></div>';
+	print '<h2 class="modToolsHeadings">'.l_t('Emergency Actions').'</h2>';
 	adminActionsLayout::printActionShortcuts();
 	
 	if ( $User->type['Admin'] )

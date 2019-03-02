@@ -100,36 +100,6 @@ class adminActions extends adminActionsForms
 				'description' => 'Resets a users password',
 				'params' => array('userID'=>'User ID'),
 			),
-			'makeDonator' => array(
-				'name' => 'Give donator benefits',
-				'description' => 'Give donator benefits (in practical terms this just means opt-out of the distributed processing).<br />
-					<em>Only for owner use.</em>',
-				'params' => array('userID'=>'User ID'),
-			),
-			'makeDonatorPlatinum' => array(
-				'name' => 'Donator: platinum',
-				'description' => 'Give platinum donator marker<br />
-					<em>Only for owner use.</em>',
-				'params' => array('userID'=>'User ID'),
-			),
-			'makeDonatorGold' => array(
-				'name' => 'Donator: gold',
-				'description' => 'Give gold donator marker<br />
-					<em>Only for owner use.</em>',
-				'params' => array('userID'=>'User ID'),
-			),
-			'makeDonatorSilver' => array(
-				'name' => 'Donator: silver',
-				'description' => 'Give silver donator marker<br />
-					<em>Only for owner use.</em>',
-				'params' => array('userID'=>'User ID'),
-			),
-			'makeDonatorBronze' => array(
-				'name' => 'Donator: bronze',
-				'description' => 'Give bronze donator marker<br />
-					<em>Only for owner use.</em>',
-				'params' => array('userID'=>'User ID'),
-			),
 			'setProcessTimeToPhase' => array(
 				'name' => 'Reset process time',
 				'description' => 'Set a game process time to now + the phase length, resetting the turn length',
@@ -218,11 +188,6 @@ class adminActions extends adminActionsForms
 					Note: Doesn\'t work.',
 				'params' => array('userID'=>'User ID'),
 			),
-			'syncForumLikes' => array(
-				'name' => 'Sync forum likes',
-				'description' => 'Synchronizes the cached forum post like counts with the user-tracked like records, in case they somehow get out of sync.',
-				'params' => array(),
-			),
 			'setDirector' => array(
 				'name' => 'Set a user as a game director',
 				'description' => 'Sets the given user ID to be the director of the given game ID (set to 0 to remove someone as game director). 
@@ -242,22 +207,6 @@ class adminActions extends adminActionsForms
 		$Game = $Variant->processGame($params['gameID']);
 		$Game->resetMinimumBet();
 		return l_t("The minimum bet has been reset.");
-		
-	}
-	public function syncForumLikes(array $params)
-	{
-		global $DB;
-		
-		$DB->sql_put("UPDATE wD_ForumMessages fm
-			INNER JOIN (
-			SELECT f.id, COUNT(*) as likeCount
-			FROM wD_ForumMessages f
-			INNER JOIN wD_LikePost lp ON f.id = lp.likeMessageID
-			GROUP BY f.id
-			) l ON l.id = fm.id
-			SET fm.likeCount = l.likeCount");
-		
-		return l_t("All forum like counts have been synced, %s posts affected.", $DB->last_affected());
 	}
 	
 	public function unCrashGames(array $params)
@@ -664,36 +613,7 @@ class adminActions extends adminActionsForms
 		return l_t('Panic button '.($Misc->Panic?'turned on':'turned off'));
 	}
 
-	private function makeDonatorType(array $params, $type='') {
-		global $DB;
-
-		$userID = (int)$params['userID'];
-
-		$DB->sql_put("UPDATE wD_Users SET type = CONCAT_WS(',',type,'Donator".$type."') WHERE id = ".$userID);
-
-		return l_t('User ID %s given donator status.',$userID);
-	}
-
-	public function makeDonator(array $params)
-	{
-		return $this->makeDonatorType($params);
-	}
-	public function makeDonatorPlatinum(array $params)
-	{
-		return $this->makeDonatorType($params,'Platinum');
-	}
-	public function makeDonatorGold(array $params)
-	{
-		return $this->makeDonatorType($params,'Gold');
-	}
-	public function makeDonatorSilver(array $params)
-	{
-		return $this->makeDonatorType($params,'Silver');
-	}
-	public function makeDonatorBronze(array $params)
-	{
-		return $this->makeDonatorType($params,'Bronze');
-	}
+	
 
 	public function resetPassConfirm(array $params)
 	{

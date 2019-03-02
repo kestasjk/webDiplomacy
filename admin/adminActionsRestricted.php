@@ -89,6 +89,36 @@ class adminActionsRestricted extends adminActionsForum
 				'description' => 'Takes forum moderator status from the specified user ID.',
 				'params' => array('userID'=>'Mod User ID'),
 			),
+			'makeDonator' => array(
+				'name' => 'Give donator benefits',
+				'description' => 'Give donator benefits (in practical terms this just means opt-out of the distributed processing).<br />
+					<em>Only for owner use.</em>',
+				'params' => array('userID'=>'User ID'),
+			),
+			'makeDonatorPlatinum' => array(
+				'name' => 'Donator: platinum',
+				'description' => 'Give platinum donator marker<br />
+					<em>Only for owner use.</em>',
+				'params' => array('userID'=>'User ID'),
+			),
+			'makeDonatorGold' => array(
+				'name' => 'Donator: gold',
+				'description' => 'Give gold donator marker<br />
+					<em>Only for owner use.</em>',
+				'params' => array('userID'=>'User ID'),
+			),
+			'makeDonatorSilver' => array(
+				'name' => 'Donator: silver',
+				'description' => 'Give silver donator marker<br />
+					<em>Only for owner use.</em>',
+				'params' => array('userID'=>'User ID'),
+			),
+			'makeDonatorBronze' => array(
+				'name' => 'Donator: bronze',
+				'description' => 'Give bronze donator marker<br />
+					<em>Only for owner use.</em>',
+				'params' => array('userID'=>'User ID'),
+			),
 			'reprocessGame' => array(
 				'name' => 'Reprocess game',
 				'description' => 'Returns an active game to the last Diplomacy phase,
@@ -614,6 +644,36 @@ class adminActionsRestricted extends adminActionsForum
 		require_once(l_r('gamemaster/gamemaster.php'));
 		libGameMaster::updateReliabilityRating(true);
 		return l_t("Reliability Ratings have been recalculated");
+	}
+	private function makeDonatorType(array $params, $type='') {
+		global $DB;
+
+		$userID = (int)$params['userID'];
+
+		$DB->sql_put("UPDATE wD_Users SET type = CONCAT_WS(',',type,'Donator".$type."') WHERE id = ".$userID);
+
+		return l_t('User ID %s given donator status.',$userID);
+	}
+
+	public function makeDonator(array $params)
+	{
+		return $this->makeDonatorType($params);
+	}
+	public function makeDonatorPlatinum(array $params)
+	{
+		return $this->makeDonatorType($params,'Platinum');
+	}
+	public function makeDonatorGold(array $params)
+	{
+		return $this->makeDonatorType($params,'Gold');
+	}
+	public function makeDonatorSilver(array $params)
+	{
+		return $this->makeDonatorType($params,'Silver');
+	}
+	public function makeDonatorBronze(array $params)
+	{
+		return $this->makeDonatorType($params,'Bronze');
 	}
 }
 

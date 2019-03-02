@@ -26,7 +26,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @package Admin
  */
 
-
+print '<br />';
 if( !isset($_REQUEST['full']) )
 	print '<a class="modTools" href="admincp.php?tab=Logs&full=on">'.l_t('View all logs').'</a>';
 
