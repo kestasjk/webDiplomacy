@@ -723,8 +723,8 @@ input[type="text"].modTools, input[type="password"].modTools, textarea.modTools,
 	padding: 6px;
 }
 
-.modTools tr:nth-child(even){background-color: #f2f2f2;}
-.modTools tr:nth-child(odd){background-color: #ffffff;}
+.modTools tr:nth-child(even){background-color: #f2f2f2; word-break: break-word;}
+.modTools tr:nth-child(odd){background-color: #ffffff; word-break: break-word;}
 
 .modTools th {
 	padding-top: 12px;
@@ -732,6 +732,7 @@ input[type="text"].modTools, input[type="password"].modTools, textarea.modTools,
 	text-align: left;
 	background-color: #009902;
 	color: white;
+	min-width:70px
 }
 
 .modToolsCP {

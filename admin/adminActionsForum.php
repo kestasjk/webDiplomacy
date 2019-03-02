@@ -58,6 +58,10 @@ class adminActionsForum extends adminActions
 				'name' => 'Silence thread and user',
 				'description' => 'Silence a thread/post and user, with the user silence acting for the given length of time (0 is indefinite). Thread silences are always indefinite.',
 				'params' => array('userID'=>'User ID','postID'=>'Post ID','reason'=>'Reason','length'=>'Length (days)')
+			),'syncForumLikes' => array(
+				'name' => 'Sync forum likes',
+				'description' => 'Synchronizes the cached forum post like counts with the user-tracked like records, in case they somehow get out of sync.',
+				'params' => array(),
 			)
 		);
 
@@ -271,6 +275,21 @@ class adminActionsForum extends adminActions
 		
 		return l_t('Are you sure you want to silence this user %s, and silence the thread they were posting in, because <i>%s</i> ?',
 			Silence::printLength($params['length']),$params['reason']);
+	}
+	public function syncForumLikes(array $params)
+	{
+		global $DB;
+		
+		$DB->sql_put("UPDATE wD_ForumMessages fm
+			INNER JOIN (
+			SELECT f.id, COUNT(*) as likeCount
+			FROM wD_ForumMessages f
+			INNER JOIN wD_LikePost lp ON f.id = lp.likeMessageID
+			GROUP BY f.id
+			) l ON l.id = fm.id
+			SET fm.likeCount = l.likeCount");
+		
+		return l_t("All forum like counts have been synced, %s posts affected.", $DB->last_affected());
 	}
 }
 
