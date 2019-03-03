@@ -72,13 +72,13 @@ if ((is_int($days)) && ($days > 0) && ($days < 366))
             $sql = "SELECT u.id, u.username, u.email, u.timeJoined, c.countMatchedIPUsers, c.countMatchedCookieUsers, c.matchesLastUpdatedOn
                     FROM wD_Users u
                     LEFT JOIN wD_UserConnections c on c.userID = u.id
-                    WHERE u.timeJoined > ". $sTime ." and c.matchesLastUpdatedOn is not null 
+                    WHERE u.timeJoined > ". $sTime ." and c.matchesLastUpdatedOn is not null and u.type not like 'banned'
                     ORDER BY u.id ASC";
         } else{
             $sql = "SELECT u.id, u.username, u.email, u.timeJoined, c.countMatchedIPUsers, c.countMatchedCookieUsers, c.matchesLastUpdatedOn
                     FROM wD_Users u
                     LEFT JOIN wD_UserConnections c on c.userID = u.id
-                    WHERE u.timeJoined > ". $sTime ." and c.matchesLastUpdatedOn is not null and c.modLastCheckedOn is null
+                    WHERE u.timeJoined > ". $sTime ." and c.matchesLastUpdatedOn is not null and c.modLastCheckedOn is null and u.type not like 'banned'
                     ORDER BY u.id ASC";
         }
         
@@ -104,13 +104,13 @@ if ((is_int($days)) && ($days > 0) && ($days < 366))
     if ($chReCheckAll == 'checked') {
         $sql = 'SELECT u.id, u.username, u.email, u.timeJoined
                 FROM wD_Users u
-                WHERE u.timeJoined > '. $sTime .' 
+                WHERE u.timeJoined > '. $sTime .' and u.type not like "banned"
                 ORDER BY u.id ASC';
     } else {
         $sql = 'SELECT u.id, u.username, u.email, u.timeJoined
                 FROM wD_Users u
                 LEFT JOIN wD_UserConnections c on c.userID = u.id
-                WHERE u.timeJoined > '. $sTime .' and c.matchesLastUpdatedOn is null
+                WHERE u.timeJoined > '. $sTime .' and c.matchesLastUpdatedOn is null and u.type not like "banned"
                 ORDER BY u.id ASC';
     }
 
