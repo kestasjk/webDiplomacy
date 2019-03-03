@@ -751,12 +751,10 @@ input[type="text"].modTools, input[type="password"].modTools, textarea.modTools,
 
 li.modToolsformlistfield {
 	list-style: none;
-	margin-bottom:10px;
-	margin-left:20px;
-	margin-right:20px;
-	margin-top:5px;
+	margin: 10px 0 0 0;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 }
+
 li.modToolsformlistdesc {
 	font-weight: normal;
 	color: #000000b2 !important;
@@ -790,9 +788,25 @@ li.modToolsformlisttitle {
 }
 
 .topnav {
+	display: flex;
+	justify-content: space-around;
 	overflow: hidden;
 	background-color: #333;
   }
+
+.content h3.modTools, h2.modToolsHeadings, ul.modTools {
+	text-align: center;
+} 
+
+ul.modTools {
+	padding: 0;
+	margin-bottom: 40px;
+	list-style: none;
+}
+
+.modToolsCP {
+	padding: 15px;
+}
   
 .topnav a {
 	float: left;
