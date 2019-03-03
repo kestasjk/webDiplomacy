@@ -435,7 +435,7 @@ class adminMultiCheck
 	public function aLogsDataCollect()
 	{
 		global $DB;
-
+		global $User;
 		$this->aLogsData = array();
 
 		$this->aLogsData['IPs'] = self::sql_list(
@@ -465,6 +465,11 @@ class adminMultiCheck
 				throw new Exception(l_t('%s does not have enough data; this account cannot be checked.',$name));
 			}
 		}
+
+		// Insert or update the wD_UserConnections record here with the mod who checked it and when it was checked.  
+        $DB->sql_put("INSERT INTO wD_UserConnections (userID, modLastCheckedBy, modLastCheckedOn, matchesLastUpdatedOn, countMatchedIPUsers, countMatchedCookieUsers) 
+        VALUES (".$this->aUserID.", ".$User->id.", ".time().", null, 0, 0) ON DUPLICATE KEY UPDATE modLastCheckedBy=VALUES(modLastCheckedBy), 
+        modLastCheckedOn=VALUES(modLastCheckedOn)");
 
 		$this->aLogsData['fullGameIDs'] = self::sql_list(
 			"SELECT DISTINCT gameID

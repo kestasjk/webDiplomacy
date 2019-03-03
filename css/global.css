@@ -789,6 +789,31 @@ li.modToolsformlisttitle {
 	transition: all 0.4s ease 0s;
 }
 
+.modToolsCollapsible {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #777;
+	color: white;
+	cursor: pointer;
+	padding: 10px;
+	width: 100%;
+	border: none;
+	text-align: left;
+	outline: none;
+  }
+
+  .active, .modToolsCollapsible:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #555;
+  }
+  
+  .modToolsContent {
+	padding: 0 10px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	background-color: #f1f1f1;
+  }
+
 .topnav {
 	overflow: hidden;
 	background-color: #333;
