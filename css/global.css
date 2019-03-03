@@ -820,10 +820,6 @@ li.modToolsformlisttitle {
 	background-color: #333;
   }
 
-.content h3.modTools, h2.modToolsHeadings, ul.modTools {
-	text-align: center;
-} 
-
 ul.modTools {
 	padding: 0;
 	margin-bottom: 40px;
