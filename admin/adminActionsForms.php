@@ -90,7 +90,7 @@ class adminActionsForms
 					</li>';
 		}
 
-		print '<li class="modToolsformlistfield" style="margin-bottom:20px">
+		print '<li class="modToolsformlistfield">
 			<input class="modToolsform-submit" type="submit" name="Submit" value="'.l_t('Submit').'" /> '.
 			( self::isActionDangerous($actionName) ? '<em>('.l_t('Careful; not confirmed!').')</em>' : '').'
 			</li>';
@@ -201,7 +201,7 @@ class adminActionsForms
 					foreach($paramValues as $name=>$value)
 						print '<input type="hidden" name="'.$name.'" value="'.$value.'" />';
 
-					print '</li><li class="formlistfield" style="margin-bottom:20px">
+					print '</li><li class="formlistfield">
 						<input type="submit" class="modToolsform-submit" value="Confirm" />
 
 						</form>';

@@ -732,7 +732,7 @@ input[type="text"].modTools, input[type="password"].modTools, textarea.modTools,
 	text-align: left;
 	background-color: #009902;
 	color: white;
-	min-width:70px
+	min-width:70px;
 }
 
 .modToolsCP {
@@ -751,12 +751,10 @@ input[type="text"].modTools, input[type="password"].modTools, textarea.modTools,
 
 li.modToolsformlistfield {
 	list-style: none;
-	margin-bottom:10px;
-	margin-left:20px;
-	margin-right:20px;
-	margin-top:5px;
+	margin: 10px 0 0 0;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 }
+
 li.modToolsformlistdesc {
 	font-weight: normal;
 	color: #000000b2 !important;
@@ -815,9 +813,22 @@ li.modToolsformlisttitle {
   }
 
 .topnav {
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
 	overflow: hidden;
 	background-color: #333;
   }
+
+ul.modTools {
+	padding: 0;
+	margin-bottom: 40px;
+	list-style: none;
+}
+
+.modToolsCP {
+	padding: 15px;
+}
   
 .topnav a {
 	float: left;
@@ -986,5 +997,8 @@ input[id^="FinalizeButton"]{
 	}
 	.message-contents{
 		word-wrap: break-word;
+	}
+	.top-nav {
+		justify-content: left;
 	}
 }
