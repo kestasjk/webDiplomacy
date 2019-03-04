@@ -36,7 +36,7 @@ print '<button class="modToolsCollapsible">See Page Details</button>';
 print '<div class="modToolsContent">';
 print '<p class="modTools">This tool checks a new Connections table to see if users have a record in it. If the user has a record in the table
 it then checks to see if that record has been updated since the user joined the site because users who are first joining do not always have 
-reliable access information. If a user has a records in the new table it will pull that information and display it. <br /> <br /> It is important to note
+reliable access information. If a user has a record in the new table it will pull that information and display it. <br /> <br /> It is important to note
 that this information will be old, and the number of days old will be displayed in the days column in the results table. If you want to see
 updated information then check the "Rerun all checks" option. <br /> <br /> It is also important to note that this tool will check both the ip and cookie
 data of all the new users regardless of if cookie or ip are checked. It is only the display that will be impacted. <br .> If this tool is being run for the first 
@@ -56,14 +56,14 @@ print '</div>';
 print '<FORM class="modTools" method="get" action="admincp.php">
 		<INPUT type="hidden" name="tab" value="AccessLog" />
 		<HR><STRONG>New users from the last </STRONG><INPUT class="modTools" type="text" name="days"  value="'. $days .'" size="3" /> days.
-         <p>Valid from 1-365 days.</p>
+         <p>Valid from 1-1,000 days.</p>
         <input class="modTools" type="checkbox" name="checkIPs" value="checkIPs">Check IP Matches</br>
         <input class="modTools" type="checkbox" name="chCookies" value="chCookies" checked="checked">Check Cookie Matches</br>
         <input class="modTools" type="checkbox" name="chShowPrevious" value="chShowPrevious">Show Mod Checked Matches</br>
         <input class="modTools" type="checkbox" name="chReCheckAll" value="chReCheckAll">Rerun all Checks all</br></br>
         <input class="modToolsform-submit" type="submit" name="Submit" class="form-submit" value="Check" /><HR></form>';
 
-if ((is_int($days)) && ($days > 0) && ($days < 366))
+if ((is_int($days)) && ($days > 0) && ($days < 1001))
 {
     $sTime = time() - $days * (86400); // 60*60*24 to get seconds per day, save 3 calcs on each user checked.
 
@@ -73,13 +73,13 @@ if ((is_int($days)) && ($days > 0) && ($days < 366))
                     FROM wD_Users u
                     LEFT JOIN wD_UserConnections c on c.userID = u.id
                     WHERE u.timeJoined > ". $sTime ." and c.matchesLastUpdatedOn is not null and u.type not like 'banned'
-                    ORDER BY u.id ASC";
+                    ORDER BY u.id DESC";
         } else{
             $sql = "SELECT u.id, u.username, u.email, u.timeJoined, c.countMatchedIPUsers, c.countMatchedCookieUsers, c.matchesLastUpdatedOn
                     FROM wD_Users u
                     LEFT JOIN wD_UserConnections c on c.userID = u.id
                     WHERE u.timeJoined > ". $sTime ." and c.matchesLastUpdatedOn is not null and c.modLastCheckedOn is null and u.type not like 'banned'
-                    ORDER BY u.id ASC";
+                    ORDER BY u.id DESC";
         }
         
         $tablChecked = $DB->sql_tabl($sql);
@@ -105,13 +105,13 @@ if ((is_int($days)) && ($days > 0) && ($days < 366))
         $sql = 'SELECT u.id, u.username, u.email, u.timeJoined
                 FROM wD_Users u
                 WHERE u.timeJoined > '. $sTime .' and u.type not like "banned"
-                ORDER BY u.id ASC';
+                ORDER BY u.id DESC';
     } else {
         $sql = 'SELECT u.id, u.username, u.email, u.timeJoined
                 FROM wD_Users u
                 LEFT JOIN wD_UserConnections c on c.userID = u.id
                 WHERE u.timeJoined > '. $sTime .' and c.matchesLastUpdatedOn is null and u.type not like "banned"
-                ORDER BY u.id ASC';
+                ORDER BY u.id DESC';
     }
 
     // Get all the users who need to be checked against wD_AccessLog
@@ -205,7 +205,7 @@ if ((is_int($days)) && ($days > 0) && ($days < 366))
     }
     print "</TABLE>";
 } 
-else { if ($days != '') { print '<p class = "modTools">'.$days.' is not valid. Please enter a number between 1 and 365.</p>'; } }
+else { if ($days != '') { print '<p class = "modTools">'.$days.' is not valid. Please enter a number between 1 and 1,000.</p>'; } }
 ?>
 
 <script>

@@ -327,14 +327,14 @@ class adminMultiCheck
 	{
 		global $DB;
 
-		if ( isset($_REQUEST['activeLinks']) and count($this->aLogsData['activeGameIDs']) )
+		if ( isset($_REQUEST['activeLinks']) and count($this->aLogsData['PublicGameIDs']) )
 		{
 			$tabl = $DB->sql_tabl(
 				"SELECT DISTINCT a.userID
 				FROM wD_AccessLog a
 				INNER JOIN wD_Members m ON ( a.userID = m.userID )
 				WHERE
-					m.gameID IN (".implode(',', $this->aLogsData['activeGameIDs']).")
+					m.gameID IN (".implode(',', $this->aLogsData['PublicGameIDs']).")
 					AND NOT a.userID = ".$this->aUserID."
 					AND (
 						a.cookieCode IN ( ".implode(',',$this->aLogsData['cookieCodes'])." )
@@ -482,6 +482,12 @@ class adminMultiCheck
 			);
 
 		$this->aLogsData['activeGameIDs'] = self::sql_list(
+			"SELECT DISTINCT m.gameID
+			FROM wD_Members m INNER JOIN wD_Games g ON ( g.id = m.gameID )
+			WHERE m.userID = ".$this->aUserID." AND NOT g.phase = 'Finished'"
+		);
+
+		$this->aLogsData['PublicGameIDs'] = self::sql_list(
 			"SELECT DISTINCT m.gameID
 			FROM wD_Members m INNER JOIN wD_Games g ON ( g.id = m.gameID )
 			WHERE m.userID = ".$this->aUserID." and g.password is null"
