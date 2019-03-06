@@ -861,13 +861,13 @@ class adminActions extends adminActionsForms
 			// If the game hasn't started check if there's just 1 person in it. If there is then delete the game, otherwise remove that 1 user.  
 			else if( $Game->phase == 'Pre-game' )
 			{
-				if(count($Game->Members->ByID)==1)
-				{
+				if(count($Game->Members->ByID)==1) {
 					processGame::eraseGame($Game->id);
 				}
-				else
-				{
+				else{
 					$DB->sql_put("DELETE FROM wD_Members WHERE gameID = ".$Game->id." AND userID = ".$params['userID']);
+					
+					// If there are still people in the game reset the min bet in case the game was full to readd the join button.
 					$Game->resetMinimumBet();
 				}
 			}
@@ -1065,6 +1065,11 @@ class adminActions extends adminActionsForms
 			if( $Game->phase != 'Finished' && $Game->phase != 'Pre-game')
 			{
 				$Game->Members->ByUserID[$userID]->setLeft(1);
+				$Game->resetMinimumBet();
+			}
+			else if($Game->phase == 'Pre-game')
+			{
+				// If there are still people in the game reset the min bet in case the game was full to readd the join button.
 				$Game->resetMinimumBet();
 			}
 
