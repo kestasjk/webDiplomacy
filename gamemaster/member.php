@@ -62,6 +62,9 @@ class processMember extends Member
 		{
 			// Notify the remaining players
 			$Game->Members->sendExcept($this,'No',l_t("<strong>%s</strong> left the game.",$this->username));
+
+			// If there are still people in the game reset the min bet in case the game was full to readd the join button.
+			$Game->resetMinimumBet();
 		}
 
 		header('refresh: 4; url=index.php');
