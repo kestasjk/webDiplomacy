@@ -60,11 +60,15 @@ class processMember extends Member
 		}
 		else
 		{
+			// If there are still people in the game reset the min bet in case the game was full to readd the join button.
+			$Variant=libVariant::loadFromGameID($Game->id);
+			$Game = $Variant->processGame($Game->id);
+			$Game->resetMinimumBet();			
+
 			// Notify the remaining players
 			$Game->Members->sendExcept($this,'No',l_t("<strong>%s</strong> left the game.",$this->username));
 
-			// If there are still people in the game reset the min bet in case the game was full to readd the join button.
-			$Game->resetMinimumBet();
+			$Game = $this->Game;
 		}
 
 		header('refresh: 4; url=index.php');
