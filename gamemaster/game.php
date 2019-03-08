@@ -392,7 +392,13 @@ class processGame extends Game
 		if ( $this->phase == 'Pre-game' )
 		{
 			if ( count($this->Members->ByID)<count($this->Variant->countries) )
-				$minimumBet = ceil($this->pot / count($this->Members->ByID));
+				{
+				// The old logic here did not work in many cases, pre game everyone should be entering the game with the same bet,
+				// there is no need to do anything fancy to figure it out. 
+				// $minimumBet = ceil($this->pot / count($this->Members->ByID));
+				list($getMinBet) = $DB->sql_row("select min(bet) from wD_Members where gameID = ".$this->id);
+				$minimumBet = $getMinBet;
+			}
 		}
 		elseif ( $this->phase != 'Finished' )
 		{
