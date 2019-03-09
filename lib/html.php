@@ -671,6 +671,7 @@ class libHTML
 		$links['developers.php']=array('name'=>'Developer info', 'inmenu'=>FALSE);
 		$links['datc.php']=array('name'=>'DATC', 'inmenu'=>FALSE);
 		$links['variants.php']=array('name'=>'Variants', 'inmenu'=>FALSE);
+		$links['detailedSearch.php']=array('name'=>'detailedSearch', 'inmenu'=>FALSE);
 
 		if ( is_object($User) )
 		{
