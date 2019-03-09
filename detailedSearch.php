@@ -130,7 +130,7 @@ if ( isset($_REQUEST['seeAll']))
 
 if ( isset($_REQUEST['type']) && $_REQUEST['type'] && strlen($_REQUEST['type']) )
 {
-	if ($_REQUEST['type'] == 'banned') {$type = 'Banned';}
+	if ($_REQUEST['type'] == 'Banned') {$type = 'Banned';}
 	else if ($_REQUEST['type'] == 'Donators') {$type = 'Donator';}
 	else if ($_REQUEST['type'] == 'Bronze') {$type = 'DonatorBronze';}
 	else if ($_REQUEST['type'] == 'Silver') {$type = 'DonatorSilver';}
@@ -451,6 +451,7 @@ if ($tab == 'UserSearch')
 		$sql = $sql . " ORDER BY u.".$sortCol." ".$sortType." ";
 		$sql = $sql . " Limit ". $limit .";";
 
+		print $sql;
 		$tablChecked = $DB->sql_tabl($sql);
 
 		/* 
@@ -579,7 +580,7 @@ if ($tab == 'UserSearch')
 		}
 		print "</TABLE>";
 	} 
-	else { if ($username != '') { print '<p class = "advancedSearch">'.$username.' is not valid. Please enter a number between 1 and 1,000.</p>'; } }
+	else { print '<p class = "advancedSearch">Please fill out username or type.</p>'; }
 }
 
 else if ($tab == 'GameSearch')
@@ -658,8 +659,8 @@ else if ($tab == 'GameSearch')
 
 		if ($showOnlyJoinable == 'checked')
 		{
-			$sql = $sql." and g.minimumBet is not null and g.password is null ";
-			$sqlCounter = $sqlCounter." and g.minimumBet is not null and g.password is null ";
+			$sql = $sql." and g.minimumBet is not null and g.password is null and g.gameOver = 'No' ";
+			$sqlCounter = $sqlCounter." and g.minimumBet is not null and g.password is null and g.gameOver = 'No' ";
 		}
 
 		$sql = $sql . " ORDER BY g.".$sortColg." ".$sortType." ";
@@ -692,7 +693,7 @@ else if ($tab == 'GameSearch')
 		print '<p class = "modTools"> Showing a max of '.$limit.' results from '.$totalResults.' total results</p>';
 		print "<TABLE class='advancedSearch'>";
 		print "<tr>";
-		print '<th class= "advancedSearch">GameId:</th>';
+		print '<th class= "advancedSearch">GameId</th>';
 
 		if ($seeVariant=='checked') { print '<th class= "advancedSearch">Variant</th>'; }
 		if ($seeGamename=='checked') { print '<th class= "advancedSearch">Name</th>'; }
@@ -746,6 +747,7 @@ else if ($tab == 'GameSearch')
 		}
 		print "</TABLE>";
 	}
+	else { print '<p class = advancedSearch> Please enter a value in the first Game search option or check show only joinable games</p>';}
 }
 
 else if ($tab == 'GamesByUser')
