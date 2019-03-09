@@ -490,6 +490,13 @@ if ($tab == 'UserSearch')
 		
 		// Adjust table columns based on user selection. 
 		if ($seeUsername=='checked') { print '<th class= "advancedSearch">Username</th>'; }
+		if ($serverHasPHPBB == 1)
+		{
+			if ($seeNewForumLink)
+			{
+				print '<th class= "advancedSearch">New Forum</th>';
+			}
+		}
 		if ($seeJoined=='checked') { print '<th class= "advancedSearch">Joined On</th>'; }
 		if ($seeGameCount=='checked') { print '<th class= "advancedSearch">Games</th>'; }
 		if ($seePoints=='checked') { print '<th class= "advancedSearch">Points</th>'; }
@@ -533,7 +540,7 @@ if ($tab == 'UserSearch')
 					{
 						print '<TD class= "advancedSearch"><a href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumId.'">New Forum</a></TD>';
 					}
-					else { '<TD class= "advancedSearch">N/A</TD>'; }
+					else { print '<TD class= "advancedSearch">N/A</TD>'; }
 				}
 			}
 			
