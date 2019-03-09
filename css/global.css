@@ -858,9 +858,7 @@ ul.modTools {
 	color: white;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 }
-
 /* Mod Tools section ends here */
-
 
 /* This section is for the new advanced search page. */
   .userSearchCollapsible {
@@ -897,7 +895,6 @@ ul.modTools {
 	background-color: #555;
   }
 
- 
   .advancedSearch {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	border-collapse: collapse;
@@ -957,8 +954,6 @@ ul.advancedSearch {
 	margin-bottom: 40px;
 	list-style: none;
 }
-
-  
 /* advanced search page section ends */
 
 

@@ -169,19 +169,24 @@ $searchTypeg1 = 'Starts';
 $searchTypeg2 = 'Starts';
 $searchTypeg3 = 'Starts';
 $sortColg = 'id';
+$seeGamename='unchecked';
+$seePot='unchecked';
+$seeInviteCode='unchecked';
+$seePotType='unchecked';
+$seeJoinable='unchecked';
+$seePhaseLength='unchecked';
+$seeAnon='unchecked';
+$seePressType='unchecked';
+$seeDirector='unchecked';
+$seeMinRR='unchecked';
+$seeDrawType='unchecked';
+$seeVariant = 'unchecked';
+$showOnlyJoinable = 'unchecked';
+$gameOver = 'unchecked';
 
-if ( isset($_REQUEST['gamename']) && $_REQUEST['gamename'] && strlen($_REQUEST['gamename']) )
-{
-	$gamename = $DB->escape($_REQUEST['gamename']);
-}
-if ( isset($_REQUEST['gamename2']) && $_REQUEST['gamename2'] && strlen($_REQUEST['gamename2']) )
-{
-	$gamename2 = $DB->escape($_REQUEST['gamename2']);
-}
-if ( isset($_REQUEST['gamename3']) && $_REQUEST['gamename3'] && strlen($_REQUEST['gamename3']) )
-{
-	$gamename3 = $DB->escape($_REQUEST['gamename3']);
-}
+if ( isset($_REQUEST['gamename']) && $_REQUEST['gamename'] && strlen($_REQUEST['gamename']) ) { $gamename = $DB->escape($_REQUEST['gamename']); }
+if ( isset($_REQUEST['gamename2']) && $_REQUEST['gamename2'] && strlen($_REQUEST['gamename2']) ) { $gamename2 = $DB->escape($_REQUEST['gamename2']); }
+if ( isset($_REQUEST['gamename3']) && $_REQUEST['gamename3'] && strlen($_REQUEST['gamename3']) ) { $gamename3 = $DB->escape($_REQUEST['gamename3']); }
 
 if ( isset($_REQUEST['searchTypeg1'])) 
 { 
@@ -193,17 +198,51 @@ if ( isset($_REQUEST['searchTypeg2']))
 	if ($_REQUEST['searchTypeg2'] == 'Contains') { $searchTypeg2='Contains'; }
 	else if ($_REQUEST['searchTypeg2'] == 'Ends') { $searchTypeg2='Ends'; }
 }
+
 if ( isset($_REQUEST['searchTypeg3'])) 
 { 
 	if ($_REQUEST['searchTypeg3'] == 'Contains') { $searchTypeg3='Contains'; }
 	else if ($_REQUEST['searchTypeg3'] == 'Ends') { $searchTypeg3='Ends'; }
 }
-
 if ( isset($_REQUEST['sortColg'])) 
 { 
 	if ($_REQUEST['sortColg'] == 'gameName') { $sortColg='gameName'; }
 	else if ($_REQUEST['sortColg'] == 'pot') { $sortColg='pot'; }
 	else if ($_REQUEST['sortColg'] == 'phaseMinutes') { $sortColg='phaseMinutes'; }
+}
+
+if ( isset($_REQUEST['seeGamename'])) { $seeGamename='checked'; }
+if ( isset($_REQUEST['seePot'])) { $seePot='checked'; }
+if ( isset($_REQUEST['seeInviteCode'])) { $seeInviteCode='checked'; }
+if ( isset($_REQUEST['seePotType'])) { $seePotType='checked'; }
+if ( isset($_REQUEST['seeJoinable'])) { $seeJoinable='checked'; }
+if ( isset($_REQUEST['seePhaseLength'])) { $seePhaseLength='checked'; }
+if ( isset($_REQUEST['seeAnon'])) { $seeAnon='checked'; }
+if ( isset($_REQUEST['seePressType'])) { $seePressType='checked'; }
+if ( isset($_REQUEST['seeDirector'])) { $seeDirector='checked'; }
+if ( isset($_REQUEST['seeMinRR'])) { $seeMinRR='checked'; }
+if ( isset($_REQUEST['seeDrawType'])) { $seeDrawType='checked'; }
+if ( isset($_REQUEST['seeVariant'])) { $seeVariant='checked'; }
+if ( isset($_REQUEST['seeGameOver'])) { $seeGameOver='checked'; }
+
+if ( isset($_REQUEST['showOnlyJoinable'])) { $showOnlyJoinable='checked'; }
+
+// If this is checked we want to show all columns. 
+if ( isset($_REQUEST['seeAll'])) 
+{ 
+	$seeGamename='checked';
+	$seePot='checked';
+	$seeInviteCode='checked';
+	$seePotType='checked';
+	$seeJoinable='checked';
+	$seePhaseLength='checked';
+	$seeAnon='checked';
+	$seePressType='checked';
+	$seeDirector='checked';
+	$seeMinRR='checked';
+	$seeDrawType='checked';
+	$seeVariant = 'checked';
+	$seeGameOver = 'checked';
 }
 
 libHTML::starthtml();
@@ -286,7 +325,7 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
         <input class="advancedSearchform-submit" type="submit" name="Submit" class="form-submit" value="Check" /></form>';
 print '</div>';
 
-print '</br>';
+print '</br></br>';
 
 print '<button class="gameSearchCollapsible">Game Search Options</button>';
 print '<div class="advancedSearchContent">';
@@ -322,8 +361,29 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
 			<option value="Ends">Ends with</option>
 		</select>
 		<INPUT class="advancedSearch" type="text" name="gamename3"  value="'. $gamename3 .'" size="20" />
+		</br></br>
+		<input class="advancedSearch" type="checkbox" name="showOnlyJoinable" value="showOnlyJoinable" >Show only joinable public games? 
 		</p>
 
+		<p>
+		<strong>Columns in Result:</strong></br>
+		<input class="advancedSearch" type="checkbox" name="seeGamename" value="seeGamename" checked="checked">Game Name 
+		<input class="advancedSearch" type="checkbox" name="seeGameOver" value="seeGameOver" checked="checked">Game Over 
+		<input class="advancedSearch" type="checkbox" name="seePot" value="seePot"  checked="checked">Pot
+		<input class="advancedSearch" type="checkbox" name="seeInviteCode" value="seeInviteCode">Invite Code
+		<input class="advancedSearch" type="checkbox" name="seePotType" value="seePotType">Pot Type
+		<input class="advancedSearch" type="checkbox" name="seeJoinable" value="seeJoinable" checked="checked">Joinable
+		<input class="advancedSearch" type="checkbox" name="seePhaseLength" value="seePhaseLength">Phase Length
+		<input class="advancedSearch" type="checkbox" name="seeAnon" value="seeAnon">Anon
+		<input class="advancedSearch" type="checkbox" name="seePressType" value="seePressType">Press Type
+		<input class="advancedSearch" type="checkbox" name="seeDirector" value="seeDirector">Director
+		<input class="advancedSearch" type="checkbox" name="seeMinRR" value="seeMinRR">Min RR 
+		<input class="advancedSearch" type="checkbox" name="seeDrawType" value="seeDrawType">Draw Type 
+		<input class="advancedSearch" type="checkbox" name="seeVariant" value="seeVariant" checked="checked">Variant 
+		
+		</br></br>
+		<input class="advancedSearch" type="checkbox" name="seeAll" value="seeAll">See All (pulls all columns)
+		</p>
 		<p>
 		<strong>Sorting:</strong>
 		</br>
@@ -355,15 +415,12 @@ print '</div>';
 
 if ($tab == 'UserSearch')
 {
-	// ADD SEARCH BY USERS IN GAMES
 	if ($type != 'none' || $username != '')
 	{
 		$sql = "SELECT u.id, u.username, u.email, u.timeJoined, u.gameCount, u.reliabilityRating, u.points, u.type 
-				FROM wD_Users u
-				WHERE u.type not like '%System%' and u.type not like '%Guest%'";
-		$sqlCounter = "SELECT count(1)  
-						FROM wD_Users u
-						WHERE u.type not like '%System%' and u.type not like '%Guest%'";
+				FROM wD_Users u WHERE u.type not like '%System%' and u.type not like '%Guest%'";
+		
+		$sqlCounter = "SELECT count(1)  FROM wD_Users u WHERE u.type not like '%System%' and u.type not like '%Guest%'";
 		
 		if ($username)
 		{
@@ -520,17 +577,13 @@ if ($tab == 'UserSearch')
 
 else if ($tab == 'GameSearch')
 {
-	if ($gamename != '')
+	if ($gamename != '' || $showOnlyJoinable == 'checked')
 	{
-		// Allow a sort by and ASC vs desc dropdowns
-		// change password here to a case to say true or false so we don't expose the password to the client. 
-		$sql = "SELECT g.id, g.name, g.pot,g.phase, g.gameOver, g.processStatus, g.password, g.potType, g.minimumBet,g.phaseMinutes,g.anon, 
-				g.pressType, g.directorUserID, g.minimumReliabilityRating, g.drawType
-				FROM wD_Games g
-				WHERE 1 = 1";
-		$sqlCounter = "SELECT count(1)
-						FROM wD_Games g
-						WHERE 1 = 1";
+		$sql = "SELECT g.id, g.name, g.pot,g.phase, g.gameOver, g.processStatus, ( CASE WHEN g.password IS NULL THEN 'False' ELSE 'True' END ) AS password,
+				g.potType, g.minimumBet, g.phaseMinutes, g.anon, g.pressType, g.directorUserID, g.minimumReliabilityRating, g.drawType
+				FROM wD_Games g WHERE 1 = 1";
+
+		$sqlCounter = "SELECT count(1) FROM wD_Games g WHERE 1 = 1";
 
 		if ($gamename)
 		{
@@ -551,7 +604,7 @@ else if ($tab == 'GameSearch')
 				$sqlCounter = $sqlCounter." and ( g.name like '".$gamename."%'";
 			}
 		}
-		if ($gamename2)
+		if ($gamename2 && $gamename != '')
 		{
 			$gamename2 = strip_tags(html_entity_decode(trim($gamename2)));
 			if ($searchTypeg2 == 'Ends')
@@ -570,7 +623,7 @@ else if ($tab == 'GameSearch')
 				$sqlCounter = $sqlCounter." or g.name like '".$gamename2."%'";
 			}
 		}
-		if ($gamename3)
+		if ($gamename3 && $gamename != '')
 		{
 			$gamename3 = strip_tags(html_entity_decode(trim($gamename3)));
 			if ($searchTypeg3 == 'Ends')
@@ -590,15 +643,22 @@ else if ($tab == 'GameSearch')
 			}
 		}
 
-		$sql = $sql." ) ";
-		$sqlCounter = $sqlCounter." ) ";
+		if ($gamename != '')
+		{
+			$sql = $sql." ) ";
+			$sqlCounter = $sqlCounter." ) ";
+		}
+
+		if ($showOnlyJoinable == 'checked')
+		{
+			$sql = $sql." and g.minimumBet is not null and g.password is null ";
+			$sqlCounter = $sqlCounter." and g.minimumBet is not null and g.password is null ";
+		}
 
 		$sql = $sql . " ORDER BY g.".$sortColg." ".$sortType." ";
 		$sql = $sql . " Limit ". $limit .";";
 		
 		$tablChecked = $DB->sql_tabl($sql);
-
-		print $sql;
 
 		while (list($gameID, $gameName, $pot, $phase, $gameOver, $processStatus, $password, $potType, $minimumBet, $phaseMinutes, $anon, 
 		$pressType, $directorUserID, $minimumRR, $drawType) = $DB->tabl_row($tablChecked))
@@ -609,7 +669,7 @@ else if ($tab == 'GameSearch')
 			$myGame->pot = $pot;
 			$myGame->phase = $phase;
 			$myGame->gameOver = $gameOver;
-			if (strlen($password) > 0 ) {$myGame->password = true; } else {$myGame->password = false; };
+			if ($password == 'True' ) {$myGame->password = true; } else {$myGame->password = false; };
 			$myGame->potType = $potType;
 			$myGame->minimumBet = $minimumBet;
 			$myGame->phaseMinutes = $phaseMinutes;
@@ -626,16 +686,55 @@ else if ($tab == 'GameSearch')
 		print "<TABLE class='advancedSearch'>";
 		print "<tr>";
 		print '<th class= "advancedSearch">GameId:</th>';
-		print '<th class= "advancedSearch">Name:</th>';
+
+		if ($seeVariant=='checked') { print '<th class= "advancedSearch">Variant</th>'; }
+		if ($seeGamename=='checked') { print '<th class= "advancedSearch">Name</th>'; }
+		if ($seeGameOver=='checked') { print '<th class= "advancedSearch">Game Over?</th>'; }
+		if ($seePot=='checked') { print '<th class= "advancedSearch">Pot</th>'; }
+		if ($seeInviteCode=='checked') { print '<th class= "advancedSearch">Invite Only</th>'; }
+		if ($seePotType=='checked') { print '<th class= "advancedSearch">Pot Type</th>'; }
+		if ($seeJoinable=='checked') { print '<th class= "advancedSearch">Open?</th>'; }
+		if ($seePhaseLength=='checked') { print '<th class= "advancedSearch">Length</th>'; }
+		if ($seeAnon=='checked') { print '<th class= "advancedSearch">Anon</th>'; }
+		if ($seePressType=='checked') { print '<th class= "advancedSearch">Press Type</th>'; }
+		if ($seeDirector=='checked') { print '<th class= "advancedSearch">Game Director</th>'; }
+		if ($seeMinRR=='checked') { print '<th class= "advancedSearch">Min RR</th>'; }
+		if ($seeDrawType=='checked') { print '<th class= "advancedSearch">Draw Type</th>'; }
 
 		print "</tr>";
 	
 		foreach ($GamesData as $values)
 		{   
-			print '<TR><TD class= "advancedSearch"><a href="board.php?gameID='.$values->gameID.'">'.$values->gameID.'</a>';
-			print '<TD class= "advancedSearch">'.$values->gameName.'</TD>';
+			$Variant=libVariant::loadFromGameID($values->gameID);
 
-			print '</TD>';		
+			print '<TR><TD class= "advancedSearch"><a href="board.php?gameID='.$values->gameID.'">'.$values->gameID.'</a></TD>';
+			if ($seeVariant=='checked') {print '<TD class= "advancedSearch">'.$Variant->link().'</a></TD>'; }
+			if ($seeGamename=='checked') { print '<TD class= "advancedSearch">'.$values->gameName.'</TD>'; }
+			if ($seeGameOver=='checked') { print '<TD class= "advancedSearch">'.$values->gameOver.'</TD>'; }
+			if ($seePot=='checked') { print '<TD class= "advancedSearch">'.$values->pot.libHTML::points().'</TD>'; }
+			if ($seeInviteCode=='checked') 
+			{ 
+				print '<TD class= "advancedSearch">';
+				$values->password ? print 'Yes</TD>' : print 'No</TD>';
+			}
+			if ($seePotType=='checked') { print '<TD class= "advancedSearch">'.$values->potType.'</TD>'; }
+			if ($seeJoinable=='checked') 
+			{ 
+				if ($values->minimumBet > 0) { print '<TD class= "advancedSearch">'.$values->minimumBet.' '.libHTML::points().'</TD>'; }
+				else { print '<TD class= "advancedSearch">No</TD>'; }
+			}
+			if ($seePhaseLength=='checked') { print '<TD class= "advancedSearch">'.libTime::timeLengthText($values->phaseMinutes*60).'</TD>'; }
+			if ($seeAnon=='checked') { print '<TD class= "advancedSearch">'.$values->anon.'</TD>'; }
+			if ($seePressType=='checked') { print '<TD class= "advancedSearch">'.$values->pressType.'</TD>'; }
+
+			if ($seeDirector=='checked')
+			{
+				if ($values->directorUserID) { print '<TD class= "advancedSearch"><a href="profile.php?userID='.$values->directorUserID.'">'.$values->directorUserID.'</a></TD>'; }
+				else { print '<TD class= "advancedSearch">N/A</TD>'; }
+			}
+			if ($seeMinRR=='checked') { print '<TD class= "advancedSearch">'.$values->minimumRR.'</TD>'; }
+			if ($seeDrawType=='checked') { print '<TD class= "advancedSearch">'.$values->drawType.'</TD>'; }
+
 			print "</TR>";
 		}
 		print "</TABLE>";
@@ -645,10 +744,6 @@ else if ($tab == 'GameSearch')
 else if ($tab == 'GamesByUser')
 {
 
-}
-
-else{
-	
 }
 
 print '</div>';
