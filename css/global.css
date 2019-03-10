@@ -898,6 +898,7 @@ ul.modTools {
   .advancedSearch {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	border-collapse: collapse;
+	font-size: 12px;
 }
 
 input[type="text"].advancedSearch, input[type="password"].advancedSearch, textarea.advancedSearch, select.advancedSearch {
@@ -922,7 +923,7 @@ input[type="text"].advancedSearch, input[type="password"].advancedSearch, textar
 	text-align: left;
 	background-color: #009902;
 	color: white;
-	min-width:40px;
+	min-width:35px;
 }
 
 .advancedSearchform-submit {
