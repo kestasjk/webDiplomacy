@@ -651,9 +651,11 @@ class libHTML
 			{
 				$links['logon.php']=array('name'=>'Log off', 'inmenu'=>false, 'title'=>"Log onto webDiplomacy using an existing user account");
 				$links['gamecreate.php']=array('name'=>'New game', 'inmenu'=>TRUE, 'title'=>"Start up a new game");
+				$links['detailedSearch.php']=array('name'=>'Search', 'inmenu'=>TRUE, 'title'=>"advanced search of users and games");
 				$links['usercp.php']=array('name'=>'Settings', 'inmenu'=>TRUE, 'title'=>"Change your user specific settings");
 			}
 		}
+
 		$links['help.php']=array('name'=>'Help/Donate', 'inmenu'=>TRUE, 'title'=>'Get help and information; guides, intros, FAQs, stats, links');
 
 		// Items not displayed on the menu
@@ -671,7 +673,6 @@ class libHTML
 		$links['developers.php']=array('name'=>'Developer info', 'inmenu'=>FALSE);
 		$links['datc.php']=array('name'=>'DATC', 'inmenu'=>FALSE);
 		$links['variants.php']=array('name'=>'Variants', 'inmenu'=>FALSE);
-		$links['detailedSearch.php']=array('name'=>'detailedSearch', 'inmenu'=>FALSE);
 
 		if ( is_object($User) )
 		{
