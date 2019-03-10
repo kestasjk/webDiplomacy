@@ -431,18 +431,18 @@ if ($tab == 'UserSearch')
 			$username = strip_tags(html_entity_decode(trim($username)));
 			if ($searchType1 == 'Ends')
 			{
-				$sql = $sql." and u.username like '%".$username."'";
-				$sqlCounter = $sqlCounter." and u.username like '%".$username."'";
+				$sql = $sql." and trim(u.username) like '%".$username."'";
+				$sqlCounter = $sqlCounter." and trim(u.username) like '%".$username."'";
 			}
 			else if ($searchType1 == 'Contains')
 			{
-				$sql = $sql." and u.username like '%".$username."%'";
-				$sqlCounter = $sqlCounter." and u.username like '%".$username."%'";
+				$sql = $sql." and trim(u.username) like '%".$username."%'";
+				$sqlCounter = $sqlCounter." and trim(u.username) like '%".$username."%'";
 			}
 			else
 			{
-				$sql = $sql." and u.username like '".$username."%'";
-				$sqlCounter = $sqlCounter." and u.username like '".$username."%'";
+				$sql = $sql." and trim(u.username) like '".$username."%'";
+				$sqlCounter = $sqlCounter." and trim(u.username) like '".$username."%'";
 			}
 		}
 
@@ -582,7 +582,7 @@ if ($tab == 'UserSearch')
 				}
 			}
 			
-			if ($seeJoined=='checked') { print '<TD class= "advancedSearch">'.gmstrftime("%d %b / %I:%M %p",$values->timeJoined).'</TD>'; }
+			if ($seeJoined=='checked') { print '<TD class= "advancedSearch">'.gmstrftime("%b %d %Y",$values->timeJoined).'</TD>'; }
 			if ($seeGameCount=='checked') { print '<TD class= "advancedSearch">'.$values->gameCount.'</TD>'; }
 			if ($seePoints=='checked') { print '<TD class= "advancedSearch">'.$values->points.libHTML::points().'</TD>'; }
 			if ($seeRR=='checked') { print '<TD class= "advancedSearch">'.round($values->reliabilityRating,2).'%</TD>'; }
@@ -636,18 +636,18 @@ else if ($tab == 'GameSearch')
 			$gamename = strip_tags(html_entity_decode(trim($gamename)));
 			if ($searchTypeg1 == 'Ends')
 			{
-				$sql = $sql." and ( g.name like '%".$gamename."'";
-				$sqlCounter = $sqlCounter." and ( g.name like '%".$gamename."'";
+				$sql = $sql." and ( trim(g.name) like '%".$gamename."'";
+				$sqlCounter = $sqlCounter." and ( trim(g.name) like '%".$gamename."'";
 			}
 			else if ($searchTypeg1 == 'Contains')
 			{
-				$sql = $sql." and ( g.name like '%".$gamename."%'";
-				$sqlCounter = $sqlCounter." and ( g.name like '%".$gamename."%'";
+				$sql = $sql." and ( trim(g.name) like '%".$gamename."%'";
+				$sqlCounter = $sqlCounter." and ( trim(g.name) like '%".$gamename."%'";
 			}
 			else
 			{
-				$sql = $sql." and ( g.name like '".$gamename."%'";
-				$sqlCounter = $sqlCounter." and ( g.name like '".$gamename."%'";
+				$sql = $sql." and ( trim(g.name) like '".$gamename."%'";
+				$sqlCounter = $sqlCounter." and ( trim(g.name) like '".$gamename."%'";
 			}
 		}
 		if ($gamename2 && $gamename != '')
@@ -655,18 +655,18 @@ else if ($tab == 'GameSearch')
 			$gamename2 = strip_tags(html_entity_decode(trim($gamename2)));
 			if ($searchTypeg2 == 'Ends')
 			{
-				$sql = $sql." or g.name like '%".$gamename2."'";
-				$sqlCounter = $sqlCounter." or g.name like '%".$gamename2."'";
+				$sql = $sql." or trim(g.name) like '%".$gamename2."'";
+				$sqlCounter = $sqlCounter." or trim(g.name) like '%".$gamename2."'";
 			}
 			else if ($searchTypeg2 == 'Contains')
 			{
-				$sql = $sql." or g.name like '%".$gamename2."%'";
-				$sqlCounter = $sqlCounter." or g.name like '%".$gamename2."%'";
+				$sql = $sql." or trim(g.name) like '%".$gamename2."%'";
+				$sqlCounter = $sqlCounter." or trim(g.name) like '%".$gamename2."%'";
 			}
 			else
 			{
-				$sql = $sql." or g.name like '".$gamename2."%'";
-				$sqlCounter = $sqlCounter." or g.name like '".$gamename2."%'";
+				$sql = $sql." or trim(g.name) like '".$gamename2."%'";
+				$sqlCounter = $sqlCounter." or trim(g.name) like '".$gamename2."%'";
 			}
 		}
 		if ($gamename3 && $gamename != '')
@@ -674,18 +674,18 @@ else if ($tab == 'GameSearch')
 			$gamename3 = strip_tags(html_entity_decode(trim($gamename3)));
 			if ($searchTypeg3 == 'Ends')
 			{
-				$sql = $sql." or g.name like '%".$gamename3."'";
-				$sqlCounter = $sqlCounter." or g.name like '%".$gamename3."'";
+				$sql = $sql." or trim(g.name) like '%".$gamename3."'";
+				$sqlCounter = $sqlCounter." or trim(g.name) like '%".$gamename3."'";
 			}
 			else if ($searchTypeg3 == 'Contains')
 			{
-				$sql = $sql." or g.name like '%".$gamename3."%'";
-				$sqlCounter = $sqlCounter." or g.name like '%".$gamename3."%'";
+				$sql = $sql." or trim(g.name) like '%".$gamename3."%'";
+				$sqlCounter = $sqlCounter." or trim(g.name) like '%".$gamename3."%'";
 			}
 			else
 			{
-				$sql = $sql." or g.name like '".$gamename3."%'";
-				$sqlCounter = $sqlCounter." or g.name like '".$gamename3."%'";
+				$sql = $sql." or trim(g.name) like '".$gamename3."%'";
+				$sqlCounter = $sqlCounter." or trim(g.name) like '".$gamename3."%'";
 			}
 		}
 
