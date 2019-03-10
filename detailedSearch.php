@@ -93,7 +93,7 @@ if ( isset($_REQUEST['limit']))
 	if ($_REQUEST['limit'] == '100') { $limit=100; }
 	else if ($_REQUEST['limit'] == '200') { $limit=200; }
 	else if ($_REQUEST['limit'] == '500') { $limit=500; }
-	else if ($_REQUEST['limit'] == '1000') { $limit=5; }
+	else if ($_REQUEST['limit'] == '1000') { $limit=1000; }
 }
 if ( isset($_REQUEST['sortCol'])) 
 { 
@@ -444,14 +444,26 @@ if ($tab == 'UserSearch')
 
 		if ($type && $type != 'none')
 		{
-			$sql = $sql." and u.type like '%". $type."%'";
-			$sqlCounter = $sqlCounter." and u.type like '%". $type."%'";
+			if ($type == 'DonatorBronze')
+			{
+				$sql = $sql." and u.type like '%". $type."%' and u.type not like '%DonatorSilver%' and u.type not like '%DonatorGold%'";
+				$sqlCounter = $sqlCounter." and u.type like '%". $type."%' and u.type not like '%DonatorSilver%' and u.type not like '%DonatorGold%'";
+			}
+			else if ($type == 'DonatorSilver')
+			{
+				$sql = $sql." and u.type like '%". $type."%' and u.type not like '%DonatorGold%'";
+				$sqlCounter = $sqlCounter." and u.type like '%". $type."%' and u.type not like '%DonatorGold%'";
+			}
+			else 
+			{
+				$sql = $sql." and u.type like '%". $type."%'";
+				$sqlCounter = $sqlCounter." and u.type like '%". $type."%'";	
+			}
 		}
 
 		$sql = $sql . " ORDER BY u.".$sortCol." ".$sortType." ";
 		$sql = $sql . " Limit ". $limit .";";
 
-		print $sql;
 		$tablChecked = $DB->sql_tabl($sql);
 
 		/* 
@@ -475,9 +487,30 @@ if ($tab == 'UserSearch')
 			// Check for various types possible based on the enum in wD_Users.
 			if (strpos($userType, 'Moderator') !== false) { $myUser->mod = true; } else { $myUser->mod = false;}
 			if (strpos($userType, 'Banned') !== false) { $myUser->banned = true; } else { $myUser->banned = false;}
-			if (strpos($userType, 'DonatorGold') !== false) { $myUser->gold = true; } else { $myUser->gold = false;}
-			if (strpos($userType, 'DonatorSilver') !== false) { $myUser->silver = true; } else { $myUser->silver = false;}
-			if (strpos($userType, 'DonatorBronze') !== false) { $myUser->bronze = true; } else { $myUser->bronze = false;}
+			if (strpos($userType, 'DonatorGold') !== false) 
+			{ 
+				$myUser->gold = true; 
+				$myUser->silver = false;
+				$myUser->bronze = false;
+			} 
+			else if (strpos($userType, 'DonatorSilver') !== false) 
+			{ 
+				$myUser->gold = false; 
+				$myUser->silver = true;
+				$myUser->bronze = false;
+			}
+			else if (strpos($userType, 'DonatorBronze') !== false)
+			{
+				$myUser->gold = false; 
+				$myUser->silver = false;
+				$myUser->bronze = true;
+			}
+			else
+			{
+				$myUser->gold = false; 
+				$myUser->silver = false;
+				$myUser->bronze = false;
+			}
 			if (strpos($userType, 'DonatorPlatinum') !== false) { $myUser->platinum = true; } else { $myUser->platinum = false;}
 			$myUser->reliabilityRating = $reliabilityRating;
 			array_push($UsersData,$myUser);
