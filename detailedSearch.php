@@ -158,6 +158,7 @@ class GameResultData
 	public $minimumRR;
 	public $minimumNMRScore;
 	public $drawType;			//enum('draw-votes-public','draw-votes-hidden')  
+	public $watchedCount;
 }
 
 // Game Search Variables
@@ -181,6 +182,7 @@ $seeDirector='unchecked';
 $seeMinRR='unchecked';
 $seeDrawType='unchecked';
 $seeVariant = 'unchecked';
+$seeWatchedCount = 'unchecked';
 $showOnlyJoinable = 'unchecked';
 $gameOver = 'unchecked';
 
@@ -209,6 +211,7 @@ if ( isset($_REQUEST['sortColg']))
 	if ($_REQUEST['sortColg'] == 'gameName') { $sortColg='gameName'; }
 	else if ($_REQUEST['sortColg'] == 'pot') { $sortColg='pot'; }
 	else if ($_REQUEST['sortColg'] == 'phaseMinutes') { $sortColg='phaseMinutes'; }
+	else if ($_REQUEST['sortColg'] == 'watchedGames') { $sortColg='watchedGames'; }
 }
 
 if ( isset($_REQUEST['seeGamename'])) { $seeGamename='checked'; }
@@ -224,6 +227,7 @@ if ( isset($_REQUEST['seeMinRR'])) { $seeMinRR='checked'; }
 if ( isset($_REQUEST['seeDrawType'])) { $seeDrawType='checked'; }
 if ( isset($_REQUEST['seeVariant'])) { $seeVariant='checked'; }
 if ( isset($_REQUEST['seeGameOver'])) { $seeGameOver='checked'; }
+if ( isset($_REQUEST['seeWatchedCount'])) { $seeWatchedCount='checked'; }
 
 if ( isset($_REQUEST['showOnlyJoinable'])) { $showOnlyJoinable='checked'; }
 
@@ -243,6 +247,7 @@ if ( isset($_REQUEST['seeAll']))
 	$seeDrawType='checked';
 	$seeVariant = 'checked';
 	$seeGameOver = 'checked';
+	$seeWatchedCount = 'checked';
 }
 
 libHTML::starthtml();
@@ -380,6 +385,7 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
 		<input class="advancedSearch" type="checkbox" name="seeMinRR" value="seeMinRR">Min RR 
 		<input class="advancedSearch" type="checkbox" name="seeDrawType" value="seeDrawType">Draw Type 
 		<input class="advancedSearch" type="checkbox" name="seeVariant" value="seeVariant" checked="checked">Variant 
+		<input class="advancedSearch" type="checkbox" name="seeWatchedCount" value="seeWatchedCount" checked="checked">Spectator Count
 		
 		</br></br>
 		<input class="advancedSearch" type="checkbox" name="seeAll" value="seeAll">See All (pulls all columns)
@@ -392,6 +398,7 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
 			<option value="username">Game Name</option>
 			<option value="pot">Pot</option>
 			<option value="phaseMinutes">Phase Length</option>
+			<option value="watchedGames">Number of Spectators</option>
 		</select>
 
 		<select  class = "advancedSearch" name="sortType">
@@ -621,7 +628,8 @@ else if ($tab == 'GameSearch')
 	if ($gamename != '' || $showOnlyJoinable == 'checked')
 	{
 		$sql = "SELECT g.id, g.name, g.pot,g.phase, g.gameOver, g.processStatus, ( CASE WHEN g.password IS NULL THEN 'False' ELSE 'True' END ) AS password,
-				g.potType, g.minimumBet, g.phaseMinutes, g.anon, g.pressType, g.directorUserID, g.minimumReliabilityRating, g.drawType
+				g.potType, g.minimumBet, g.phaseMinutes, g.anon, g.pressType, g.directorUserID, g.minimumReliabilityRating, g.drawType, 
+				(select count(1) from wD_WatchedGames w where w.gameID = g.id) AS watchedGames
 				FROM wD_Games g WHERE 1 = 1";
 
 		$sqlCounter = "SELECT count(1) FROM wD_Games g WHERE 1 = 1";
@@ -696,13 +704,22 @@ else if ($tab == 'GameSearch')
 			$sqlCounter = $sqlCounter." and g.minimumBet is not null and g.password is null and g.gameOver = 'No' ";
 		}
 
-		$sql = $sql . " ORDER BY g.".$sortColg." ".$sortType." ";
-		$sql = $sql . " Limit ". $limit .";";
+		if ($sortColg == 'watchedGames')
+		{
+			$sql = $sql . " ORDER BY watchedGames ".$sortType." ";
+			$sql = $sql . " Limit ". $limit .";";
+
+		}
+		else
+		{
+			$sql = $sql . " ORDER BY g.".$sortColg." ".$sortType." ";
+			$sql = $sql . " Limit ". $limit .";";
+		}
 		
 		$tablChecked = $DB->sql_tabl($sql);
 
 		while (list($gameID, $gameName, $pot, $phase, $gameOver, $processStatus, $password, $potType, $minimumBet, $phaseMinutes, $anon, 
-		$pressType, $directorUserID, $minimumRR, $drawType) = $DB->tabl_row($tablChecked))
+		$pressType, $directorUserID, $minimumRR, $drawType, $watchedCount) = $DB->tabl_row($tablChecked))
 		{   
 			$myGame = new GameResultData();
 			$myGame->gameID = $gameID;
@@ -719,6 +736,7 @@ else if ($tab == 'GameSearch')
 			$myGame->directorUserID = $directorUserID;
 			$myGame->minimumRR = $minimumRR;
 			$myGame->drawType = $drawType;
+			$myGame->watchedCount = $watchedCount;
 			array_push($GamesData,$myGame);
 		}
 
@@ -741,6 +759,7 @@ else if ($tab == 'GameSearch')
 		if ($seeDirector=='checked') { print '<th class= "advancedSearch">Game Director</th>'; }
 		if ($seeMinRR=='checked') { print '<th class= "advancedSearch">Min RR</th>'; }
 		if ($seeDrawType=='checked') { print '<th class= "advancedSearch">Draw Type</th>'; }
+		if ($seeWatchedCount=='checked') { print '<th class= "advancedSearch">Spectators</th>'; }
 
 		print "</tr>";
 	
@@ -775,6 +794,7 @@ else if ($tab == 'GameSearch')
 			}
 			if ($seeMinRR=='checked') { print '<TD class= "advancedSearch">'.$values->minimumRR.'</TD>'; }
 			if ($seeDrawType=='checked') { print '<TD class= "advancedSearch">'.$values->drawType.'</TD>'; }
+			if ($seeWatchedCount=='checked') { print '<TD class= "advancedSearch">'.$values->watchedCount.'</TD>'; }
 
 			print "</TR>";
 		}
