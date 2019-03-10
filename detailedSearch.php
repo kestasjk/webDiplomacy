@@ -5,9 +5,6 @@
  */
 
 require_once('header.php');
-
-if (!$User->type['Moderator']) { die ('Only admins or mods can run this script'); }
-
 require_once(l_r('gamesearch/search.php'));
 require_once(l_r('pager/pagergame.php'));
 require_once(l_r('objects/game.php'));
