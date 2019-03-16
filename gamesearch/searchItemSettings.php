@@ -499,8 +499,8 @@ class searchOrderBy extends searchItemSelect
 	protected $options=array(
 			'-'=>'None',
 			'processTime-ASC'=>'Time until next process (Closest-&gt;furthest)',
-			'phaseMinutes-DESC'=>'Hours per phase (Longest-&gt;shortest)',
-			'phaseMinutes-ASC'=>'Hours per phase (Shortest-&gt;longest)',
+			'phaseMinutes-DESC'=>'Time per phase (Longest-&gt;shortest)',
+			'phaseMinutes-ASC'=>'Time per phase (Shortest-&gt;longest)',
 			'pot-DESC'=>'Pot size (Largest-&gt;smallest)',
 			'pot-ASC'=>'Pot size (Smallest-&gt;largest)',
 			'minimumBet-DESC'=>'Bet size (Largest-&gt;smallest)',

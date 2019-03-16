@@ -82,7 +82,7 @@ class miscUpdate
 		list($Misc->GamesFinished) = $DB->sql_row("SELECT COUNT(phase) FROM wD_Games WHERE phase = 'Finished'");
 		list($Misc->GamesCrashed) = $DB->sql_row("SELECT COUNT(processStatus) FROM wD_Games WHERE processStatus = 'Crashed'");
 		list($Misc->GamesPaused) = $DB->sql_row("SELECT COUNT(processStatus) FROM wD_Games WHERE processStatus = 'Paused'");
-		list($Misc->GamesOpen) = $DB->sql_row("SELECT COUNT(DISTINCT gameID) FROM wD_Members WHERE status='Left'");
+		list($Misc->GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g WHERE g.minimumBet is not null and g.password is null and g.gameOver = 'No' and g.phase <> 'Pre-game'");
 
 		if( $Misc->GamesActive >= 16 )
 		{
