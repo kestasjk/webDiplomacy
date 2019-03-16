@@ -387,7 +387,7 @@ class libHTML
 	 */
 	static public function prebody ( $title )
 	{
-		$jsVersion = 7;  // increment this to force clients to reload their JS files
+		$jsVersion = 8;  // increment this to force clients to reload their JS files
 		$variantCSS=array();
 		foreach(Config::$variants as $variantName)
 			$variantCSS[] = '<link rel="stylesheet" href="'.STATICSRV.l_s('variants/'.$variantName.'/resources/style.css').'" type="text/css" />';
