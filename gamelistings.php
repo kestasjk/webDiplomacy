@@ -81,7 +81,7 @@ function printAndFindTab()
 		$tabs['My games']=l_t("Active games which you have joined");
 
 	$tabs['New']=l_t("Games which haven't yet started");
-	$tabs['Joinable']=l_t("Public Games which have open spaces");
+	$tabs['Joinable']=l_t("Public games which have open spaces");
 	$tabs['Active']=l_t("Games which are going on now");
 	$tabs['Finished']=l_t("Games which have ended");
 	$tabs['Search']=l_t("The full game listing search panel");
