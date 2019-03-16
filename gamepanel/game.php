@@ -131,7 +131,7 @@ class panelGame extends Game
 
 		if( $this->phase == 'Finished' )
 			return '<span class="gameTimeRemainingNextPhase">'.l_t('Finished:').'</span> '.
-				libTime::text($this->processTime);
+				libTime::detailedText($this->processTime);
 
 		if( $this->processStatus == 'Paused' )
 			return $this->pausedInfo();
@@ -144,11 +144,11 @@ class panelGame extends Game
 
 		if( $this->phase == 'Pre-game' )
 			$buf = '<span class="gameTimeRemainingNextPhase">'.l_t('Start:').'</span> '.
-				$this->processTimetxt().' ('.libTime::text($this->processTime).')';
+				$this->processTimetxt().' ('.libTime::detailedText($this->processTime).')';
 		else
 		{
 			$buf = '<span class="gameTimeRemainingNextPhase">'.l_t('Next:').'</span> '.
-				$this->processTimetxt().' ('.libTime::text($this->processTime).')';
+				$this->processTimetxt().' ('.libTime::detailedText($this->processTime).')';
 
 			//if ( $this->Members->isJoined() )
 				//$buf .= ' <span class="gameTimeRemainingFixed">('.libTime::text($this->processTime).')</span>';

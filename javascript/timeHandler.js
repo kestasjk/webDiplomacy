@@ -22,11 +22,19 @@
  * Original timer.js written by jayp
  */
 
-// Update timestamps to be in the local time, taking the unixtime attribute and converting it via dateToText()
-function updateTimestamps() {
-	$$(".timestamp").map(function(c) {
+// Update class timestamps to be in the local time, taking the unixtime attribute and converting it via dateToText()
+const updateTimestamps = () => {
+	$$('.timestamp').map(function(c) {
 		var cDate = new Date( parseInt(c.getAttribute("unixtime"))*1000 );
 		c.update( dateToText(cDate) );
+	},this);
+}
+
+// update class timestampGames to be in the local time, taking the unixtime attribute and converting it via dateToText()
+const updateTimestampGames = () => {
+	$$('.timestampGames').map(function(c) {
+		const cDate = new Date( parseInt(c.getAttribute("unixtime"))*1000 );
+		c.update( dateToTextTimestampGames(cDate) );
 	},this);
 }
 
@@ -34,7 +42,7 @@ var dayNames=["Sun","Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 var monthNames=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 // Convert a JavaScript (new Date()) into text
-function dateToText(date) {
+const dateToText = (date) => {
 	var secondDifference = ((date - (new Date()))/1000);
 	if( secondDifference < 0 ) secondDifference *= -1;
 
@@ -74,6 +82,40 @@ function dateToText(date) {
 		else
 			return d+" "+b+" "+y; // Day# Month Year
 	} 
+}
+
+const dateToTextTimestampGames = (date) => {
+    var secondDifference = ((date - (new Date()))/1000);
+    if( secondDifference < 0 ) secondDifference *= -1;
+
+    var a = l_t(dayNames[date.getDay()]);
+    var d = date.getDate();
+    var b = l_t(monthNames[date.getMonth()]);
+    var y = date.getYear();
+    if ( y < 1900 ) y+=1900;
+    var I = date.getHours();
+    var M = date.getMinutes();
+    if( M<10 ) M="0"+M;
+
+    var p = "AM";
+    if( I >= 12 ) {
+        I -= 12;
+        p = "PM";
+    }
+    
+    if( I==0 ) I="12";
+    if( I<10 ) I="0"+I.toString();
+    
+    // If the difference is more than a month then show the year 
+    if ( secondDifference > 3*7*30*60*60 ) {
+    	return a+", "+I+":"+M+" "+p +", "+d+" "+b +" " + y; 
+    	// dayOfWeek HH:MM AM/PM, day# month year
+
+    // Otherwise show everything except the year 
+    } else {
+    	return a+", "+I+":"+M+" "+p +", "+d+" "+b; 
+    	// dayOfWeek HH:MM AM/PM, day# month
+    } 
 }
 
 // Update the timezone offset info in the footer, which tells the user which timezone the page's times are in
