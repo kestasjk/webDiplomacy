@@ -1032,6 +1032,7 @@ class libHTML
 					'.l_jf('setForumMessageIcons').'();
 					'.l_jf('setPostsItalicized').'();
 					'.l_jf('updateTimestamps').'();
+					'.l_jf('updateTimestampGames').'();
 					'.l_jf('updateUTCOffset').'();
 					'.l_jf('updateTimers').'();
 	

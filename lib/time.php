@@ -34,10 +34,10 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  */
 class libTime
 {
-		static public function timeLengthText($timeLength)
-		{
-			return self::remainingTextString($timeLength+time(), time());
-		}
+        static public function timeLengthText($timeLength)
+        {
+            return self::remainingTextString($timeLength+time(), time());
+        }
 
         /**
          * Print the time remaining
@@ -47,12 +47,12 @@ class libTime
          */
         static public function remainingText($givenTime, $timeFrom=false)
         {
-			if ( $timeFrom===false ) $timeFrom = time();
+            if ( $timeFrom===false ) $timeFrom = time();
 
-			$secondsRemaining = $givenTime - $timeFrom;
+            $secondsRemaining = $givenTime - $timeFrom;
 
-			return '<span class="timeremaining" unixtime="'.$givenTime.'" unixtimefrom="'.$timeFrom.'">'.
-				self::remainingTextString($givenTime, $timeFrom).'</span>';
+            return '<span class="timeremaining" unixtime="'.$givenTime.'" unixtimefrom="'.$timeFrom.'">'.
+                self::remainingTextString($givenTime, $timeFrom).'</span>';
         }
 
         /**
@@ -64,15 +64,30 @@ class libTime
          */
         static public function text($givenTime=0)
         {
-			if( $givenTime == 0 )
-				$givenTime = time(); // GMT+0 time
+            if( $givenTime == 0 )
+                $givenTime = time(); // GMT+0 time
 
-			return '<span class="timestamp" unixtime="'.$givenTime.'">'.self::textString($givenTime).' UTC</span>';
+            return '<span class="timestamp" unixtime="'.$givenTime.'">'.self::textString($givenTime).' UTC</span>';
+        }
+
+        /**
+         * Print the time in the viewing $User's timezone ensuring hour and minute is displayed for game start and next turn planning. 
+         *
+         * @param int[optional] $givenTime GMT+0 UNIX timestamp, set to the current time if none given
+         *
+         * @return string Text-formatted time
+         */
+        static public function detailedText($givenTime=0)
+        {
+            if( $givenTime == 0 )
+                $givenTime = time(); // GMT+0 time
+
+            return '<span class="timestampGames" unixtime="'.$givenTime.'">'.self::textStringDetailed($givenTime).' UTC</span>';
         }
 
         static public function stamp()
         {
-        	return gmstrftime("%c");
+            return gmstrftime("%c");
         }
 
         static private function remainingTextString($givenTime, $timeFrom)
@@ -108,17 +123,17 @@ class libTime
                         $seconds = 0;
 
                         if ( $minutes > 0 )
-                        	return l_t('%s hours, %s minutes',$hours,$minutes);
-						else 
-							return l_t('%s hours',$hours);
+                            return l_t('%s hours, %s minutes',$hours,$minutes);
+                        else 
+                            return l_t('%s hours',$hours);
                 }
                 else
                 {
                         // M, S
                         if ( $seconds > 0 )
-							return l_t('%s minutes, %s seconds',$minutes,$seconds);
-						else
-							return l_t('%s minutes',$minutes);
+                            return l_t('%s minutes, %s seconds',$minutes,$seconds);
+                        else
+                            return l_t('%s minutes',$minutes);
                 }
         }
 
@@ -127,13 +142,27 @@ class libTime
                 $timeDifference = abs(time() - $givenTime);
 
                 if ( $timeDifference < 22*60*60 )
-					return gmstrftime("%I:%M %p", $givenTime); // HH:MM AM/PM
+                    return gmstrftime("%I:%M %p", $givenTime); // HH:MM AM/PM
                 elseif ( $timeDifference < 4*24*60*60 )
-                	return gmstrftime("%a %I %p", $givenTime); // Day HH AM/PM
+                    return gmstrftime("%a %I %p", $givenTime); // Day HH AM/PM
                 elseif ( $timeDifference < 3*7*22*60*60 )
-                	return gmstrftime("%a %d %b", $givenTime); // Day Day# Month
+                    return gmstrftime("%a %d %b", $givenTime); // Day Day# Month
                 else
-                	return gmstrftime("%d %b %y", $givenTime); // Day# Month Year
+                    return gmstrftime("%d %b %y", $givenTime); // Day# Month Year
+        }
+
+        static private function textStringDetailed($givenTime)
+        {
+                $timeDifference = abs(time() - $givenTime);
+
+                if ( $timeDifference < 22*60*60 )
+                    return gmstrftime("%I:%M %p", $givenTime); // HH:MM AM/PM
+                elseif ( $timeDifference < 4*24*60*60 )
+                    return gmstrftime("%a %I %p", $givenTime); // Day HH AM/PM
+                elseif ( $timeDifference < 3*7*22*60*60 )
+                    return gmstrftime("%I %p %a %d %b", $givenTime); // Day Day# Month
+                else
+                    return gmstrftime("%I %p %a %d %b %y", $givenTime); // Day# Month Year
         }
 }
 ?>
