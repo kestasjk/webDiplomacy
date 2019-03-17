@@ -26,9 +26,9 @@ if (isset($_REQUEST['tab']))
 // User Search Objects
 class UserResultData
 {
-    public $userID;
-    public $username;
-    public $email;
+	public $userID;
+	public $username;
+	public $email;
 	public $timeJoined;
 	public $gameCount;
 	public $reliabilityRating;
@@ -61,7 +61,6 @@ $seeNewForumLink = 'unchecked';
 $limit = 50;
 $sortCol = 'id';
 $sortType = 'asc';
-
 
 // Use db escape to guard against special characters. 
 if ( isset($_REQUEST['username']) && $_REQUEST['username'] && strlen($_REQUEST['username']) )
@@ -101,13 +100,9 @@ if ( isset($_REQUEST['sortCol']))
 	else if ($_REQUEST['sortCol'] == 'points') { $sortCol='points'; }
 }
 
-if ( isset($_REQUEST['sortType'])) 
-{ 
-	if ($_REQUEST['sortType'] == 'desc') { $sortType='desc'; }
-}
+if ( isset($_REQUEST['sortType'])) { if ($_REQUEST['sortType'] == 'desc') { $sortType='desc'; } }
 
-if ($serverHasPHPBB == 1) 
-	if ( isset($_REQUEST['seeNewForumLink'])) { $seeNewForumLink='checked'; }
+if ($serverHasPHPBB == 1) {	if ( isset($_REQUEST['seeNewForumLink'])) { $seeNewForumLink='checked'; } }
 
 // If this is checked we want to show all columns. 
 if ( isset($_REQUEST['seeAll'])) 
@@ -139,22 +134,22 @@ if ( isset($_REQUEST['type']) && $_REQUEST['type'] && strlen($_REQUEST['type']) 
 // Game Search Objects
 class GameResultData
 {
-    public $gameID;
-    public $gameName;
-    public $pot;
-	public $phase; 				//enum('Finished','Pre-game','Diplomacy','Retreats','Builds')   
-	public $gameOver; 			// enum('No','Won','Drawn')  
+	public $gameID;
+	public $gameName;
+	public $pot;
+	public $phase; 						//enum('Finished','Pre-game','Diplomacy','Retreats','Builds')   
+	public $gameOver; 				// enum('No','Won','Drawn')  
 	public $processStatus; 		// enum('Not-processing','Processing','Crashed','Paused')  
-	public $hasPassword; 		// is password set?
-	public $potType; 			//enum('Winner-takes-all','Points-per-supply-center','Unranked','Sum-of-squares')
+	public $hasPassword; 			// is password set?
+	public $potType; 					//enum('Winner-takes-all','Points-per-supply-center','Unranked','Sum-of-squares')
 	public $minimumBet;
 	public $phaseMinutes;
-	public $anon; 				// yes/no 
-	public $pressType; 			//enum('Regular','PublicPressOnly','NoPress','RulebookPress')
+	public $anon; 						// yes/no 
+	public $pressType; 				//enum('Regular','PublicPressOnly','NoPress','RulebookPress')
 	public $directorUserID;
 	public $minimumRR;
 	public $minimumNMRScore;
-	public $drawType;			//enum('draw-votes-public','draw-votes-hidden')  
+	public $drawType;					//enum('draw-votes-public','draw-votes-hidden')  
 	public $watchedCount;
 }
 
@@ -181,7 +176,7 @@ $seeDrawType='unchecked';
 $seeVariant = 'unchecked';
 $seeWatchedCount = 'unchecked';
 $showOnlyJoinable = 'unchecked';
-$gameOver = 'unchecked';
+$seeGameOver = 'unchecked';
 
 if ( isset($_REQUEST['gamename']) && $_REQUEST['gamename'] && strlen($_REQUEST['gamename']) ) { $gamename = $DB->escape($_REQUEST['gamename']); }
 if ( isset($_REQUEST['gamename2']) && $_REQUEST['gamename2'] && strlen($_REQUEST['gamename2']) ) { $gamename2 = $DB->escape($_REQUEST['gamename2']); }
@@ -247,14 +242,21 @@ if ( isset($_REQUEST['seeAll']))
 	$seeWatchedCount = 'checked';
 }
 
+// Game by User variables
+$paramUserID = 0;
+$checkAgainstMe = 'unchecked';
+
+if ( isset($_REQUEST['paramUserID']) ) {	$paramUserID=(int)$_REQUEST['paramUserID']; }	
+if ( isset($_REQUEST['checkAgainstMe'])) { $checkAgainstMe='checked'; }
+
+// Print the header and standard php for the site that is required on every page. 
 libHTML::starthtml();
 print libHTML::pageTitle(l_t('Advanced Search'),l_t('Advanced search options for users or games.'));
 ?>
 
 <?php
-
 // Collapsible search criteria for user search keeps page readable based on search type user wants. 
-print '<button class="userSearchCollapsible">User Search Options</button>';
+print '<button class="SearchCollapsible">User Search Options (expand)</button>';
 print '<div class="advancedSearchContent">';
 
 // Print a form for selecting which users to check
@@ -280,8 +282,8 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
 		</select></p>
 
 		<p><strong>Columns in Result:</strong></br>
-		<input class="advancedSearch" type="checkbox" name="seeUsername" value="seeUsername"  checked="checked">Username 
-		<input class="advancedSearch" type="checkbox" name="seePoints" value="seePoints"  checked="checked">Points
+		<input class="advancedSearch" type="checkbox" name="seeUsername" value="seeUsername" checked="checked">Username 
+		<input class="advancedSearch" type="checkbox" name="seePoints" value="seePoints" checked="checked">Points
 		<input class="advancedSearch" type="checkbox" name="seeJoined" value="seeJoined">Time Joined
 		<input class="advancedSearch" type="checkbox" name="seeGameCount" value="seeGameCount">Game Count
 		<input class="advancedSearch" type="checkbox" name="seeRR" value="seeRR" checked="checked">RR';
@@ -324,15 +326,15 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
 		</select>
 		</p>
 		
-        <input class="advancedSearchform-submit" type="submit" name="Submit" class="form-submit" value="Check" /></form>';
+		<input class="advancedSearchform-submit" type="submit" name="Submit" class="form-submit" value="Check" /></form>
+		</br>';
 print '</div>';
 
 print '</br></br>';
 
-print '<button class="gameSearchCollapsible">Game Search Options</button>';
-print '<div class="advancedSearchContent">';
-
 // Collapsible search criteria for game search keeps page readable based on search type user wants. 
+print '<button class="SearchCollapsible">Game Search Options (expand)</button>';
+print '<div class="advancedSearchContent">';
 print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
 		<INPUT type="hidden" name="tab" value="GameSearch" />
 		
@@ -414,7 +416,72 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
 		</select>
 		</p>
 		
-        <input class="advancedSearchform-submit" type="submit" name="Submit" class="form-submit" value="Check" /></form>';
+		<input class="advancedSearchform-submit" type="submit" name="Submit" class="form-submit" value="Check" /></form>
+		</br>';
+print '</div>';
+
+print '</br></br>';
+
+// Collapsible search criteria for searching games by user keeps page readable based on search type user wants. 
+print '<button class="SearchCollapsible">Search Games by User (expand)</button>';
+print '<div class="advancedSearchContent">';
+print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
+		<INPUT type="hidden" name="tab" value="GamesByUser" />
+		
+		<p>User ID: 
+		<INPUT class="advancedSearch" type="text" name="paramUserID"  value="'. $paramUserID .'" size="20" /></br>
+		<input class="advancedSearch" type="checkbox" name="checkAgainstMe" value="checkAgainstMe">Show games the user and I have in common 
+		</p>
+
+		<p>
+		<strong>Columns in Result:</strong></br>
+		<input class="advancedSearch" type="checkbox" name="seeGamename" value="seeGamename" checked="checked">Game Name 
+		<input class="advancedSearch" type="checkbox" name="seeGameOver" value="seeGameOver" checked="checked">Game Over 
+		<input class="advancedSearch" type="checkbox" name="seePot" value="seePot"  checked="checked">Pot
+		<input class="advancedSearch" type="checkbox" name="seeInviteCode" value="seeInviteCode">Invite Code
+		<input class="advancedSearch" type="checkbox" name="seePotType" value="seePotType">Pot Type
+		<input class="advancedSearch" type="checkbox" name="seeJoinable" value="seeJoinable" checked="checked">Joinable
+		<input class="advancedSearch" type="checkbox" name="seePhaseLength" value="seePhaseLength">Phase Length
+		<input class="advancedSearch" type="checkbox" name="seeAnon" value="seeAnon">Anon
+		<input class="advancedSearch" type="checkbox" name="seePressType" value="seePressType">Press Type
+		<input class="advancedSearch" type="checkbox" name="seeDirector" value="seeDirector">Director
+		<input class="advancedSearch" type="checkbox" name="seeMinRR" value="seeMinRR">Min RR 
+		<input class="advancedSearch" type="checkbox" name="seeDrawType" value="seeDrawType">Draw Type 
+		<input class="advancedSearch" type="checkbox" name="seeVariant" value="seeVariant" checked="checked">Variant 
+		<input class="advancedSearch" type="checkbox" name="seeWatchedCount" value="seeWatchedCount" checked="checked">Spectator Count
+		
+		</br></br>
+		<input class="advancedSearch" type="checkbox" name="seeAll" value="seeAll">See All (pulls all columns)
+		</p>
+		<p>
+		<strong>Sorting:</strong>
+		</br>
+		<select  class = "advancedSearch" name="sortColg">
+			<option selected="selected" value="id">id</option>
+			<option value="username">Game Name</option>
+			<option value="pot">Pot</option>
+			<option value="phaseMinutes">Phase Length</option>
+			<option value="watchedGames">Number of Spectators</option>
+		</select>
+
+		<select  class = "advancedSearch" name="sortType">
+			<option selected="selected" value="asc">Ascending</option>
+			<option value="desc">Descending</option>
+		</select>
+		</br></br>
+		<strong># of results to show (do not pick more then 100 on a phone or tablet)</strong>
+		</br>
+		<select  class = "advancedSearch" name="limit">
+			<option selected="selected" value="50">50</option>
+			<option value="100">100</option>
+			<option value="200">200</option>
+			<option value="500">500</option>
+			<option value="1000">1,000</option>
+		</select>
+		</p>
+		
+		<input class="advancedSearchform-submit" type="submit" name="Submit" class="form-submit" value="Check" /></form>
+		</br>';
 print '</div>';
 
 if ($tab == 'UserSearch')
@@ -491,6 +558,7 @@ if ($tab == 'UserSearch')
 			// Check for various types possible based on the enum in wD_Users.
 			if (strpos($userType, 'Moderator') !== false) { $myUser->mod = true; } else { $myUser->mod = false;}
 			if (strpos($userType, 'Banned') !== false) { $myUser->banned = true; } else { $myUser->banned = false;}
+
 			if (strpos($userType, 'DonatorGold') !== false) 
 			{ 
 				$myUser->gold = true; 
@@ -515,6 +583,7 @@ if ($tab == 'UserSearch')
 				$myUser->silver = false;
 				$myUser->bronze = false;
 			}
+
 			if (strpos($userType, 'DonatorPlatinum') !== false) { $myUser->platinum = true; } else { $myUser->platinum = false;}
 			$myUser->reliabilityRating = $reliabilityRating;
 			array_push($UsersData,$myUser);
@@ -522,19 +591,14 @@ if ($tab == 'UserSearch')
 
 		list($totalResults) = $DB->sql_row($sqlCounter);
 		print '<p class = "modTools"> Showing a max of '.$limit.' results from '.$totalResults.' total results</p>';
+
 		print "<TABLE class='advancedSearch'>";
 		print "<tr>";
 		print '<th class= "advancedSearch">UserId:</th>';
 		
 		// Adjust table columns based on user selection. 
 		if ($seeUsername=='checked') { print '<th class= "advancedSearch">Username</th>'; }
-		if ($serverHasPHPBB == 1)
-		{
-			if ($seeNewForumLink)
-			{
-				print '<th class= "advancedSearch">New Forum</th>';
-			}
-		}
+		if ($serverHasPHPBB == 1) { if ($seeNewForumLink) { print '<th class= "advancedSearch">New Forum</th>'; } }
 		if ($seeJoined=='checked') { print '<th class= "advancedSearch">Joined On</th>'; }
 		if ($seeGameCount=='checked') { print '<th class= "advancedSearch">Games</th>'; }
 		if ($seePoints=='checked') { print '<th class= "advancedSearch">Points</th>'; }
@@ -574,10 +638,7 @@ if ($tab == 'UserSearch')
 				if ($seeNewForumLink)
 				{
 					list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$values->userID);
-					if ($newForumId > 0)
-					{
-						print '<TD class= "advancedSearch"><a href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumId.'">New Forum</a></TD>';
-					}
+					if ($newForumId > 0) { print '<TD class= "advancedSearch"><a href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumId.'">New Forum</a></TD>'; }
 					else { print '<TD class= "advancedSearch">N/A</TD>'; }
 				}
 			}
@@ -697,8 +758,8 @@ else if ($tab == 'GameSearch')
 
 		if ($showOnlyJoinable == 'checked')
 		{
-			$sql = $sql." and g.minimumBet is not null and g.password is null and g.gameOver = 'No' ";
-			$sqlCounter = $sqlCounter." and g.minimumBet is not null and g.password is null and g.gameOver = 'No' ";
+			$sql = $sql." and g.minimumBet is not null and g.password is null and g.gameOver = 'No' and g.phase <> 'Pre-game' ";
+			$sqlCounter = $sqlCounter." and g.minimumBet is not null and g.password is null and g.gameOver = 'No' and g.phase <> 'Pre-game' ";
 		}
 
 		if ($sortColg == 'watchedGames')
@@ -739,7 +800,104 @@ else if ($tab == 'GameSearch')
 
 		list($totalResults) = $DB->sql_row($sqlCounter);
 		print '<p class = "modTools"> Showing a max of '.$limit.' results from '.$totalResults.' total results</p>';
-		print "<TABLE class='advancedSearch'>";
+
+		printGameResults($seeVariant, $seeGamename, $seeGameOver, $seePot, $seeGameOver, $seeInviteCode, $seePotType, $seeJoinable, $seePhaseLength, 
+		$seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount, $GamesData);
+	}
+	else { print '<p class = advancedSearch> Please enter a value in the first Game search option or check show only joinable games</p>';}
+}
+
+else if ($tab == 'GamesByUser')
+{
+	$IsUserValid = 0;
+
+	if ($paramUserID == 0) 
+	{
+		list($IsUserValid) = $DB->sql_row("SELECT count(1) FROM wD_Users WHERE id = ".$User->id);
+		$paramUserID = $User->id;
+	} 
+	else { list($IsUserValid) = $DB->sql_row("SELECT count(1) FROM wD_Users WHERE id = ".$paramUserID); }
+	
+	//User Check here if user is not blank
+	if ($IsUserValid == 1)
+	{
+		$sql = "SELECT g.id, g.name, g.pot,g.phase, g.gameOver, g.processStatus, ( CASE WHEN g.password IS NULL THEN 'False' ELSE 'True' END ) AS password,
+				g.potType, g.minimumBet, g.phaseMinutes, g.anon, g.pressType, g.directorUserID, g.minimumReliabilityRating, g.drawType, 
+				(select count(1) from wD_WatchedGames w where w.gameID = g.id) AS watchedGames
+				FROM wD_Games g WHERE g.gameOver <> 'No' and ((select count(1) from wD_Members m where m.userID = ".$paramUserID." and m.gameID = g.id) > 0 ) ";
+
+		$sqlCounter = "SELECT count(1) FROM wD_Games g WHERE g.gameOver <> 'No' and ((select count(1) from wD_Members m where m.userID = ".$paramUserID." and m.gameID = g.id) > 0) ";
+		list($checkedUsername) = $DB->sql_row("SELECT username FROM wD_Users WHERE id = ".$paramUserID);
+
+		if ($paramUserID == $User->id ) { $userMessage =  "Showing my completed games.</p>";}
+		else if ($checkAgainstMe == 'checked')
+		{
+			$sql = $sql." and ((select count(1) from wD_Members m where m.userID = ".$User->id." and m.gameID = g.id ) > 0) ";
+			$sqlCounter = $sqlCounter." and ((select count(1) from wD_Members m where m.userID = ".$User->id." and m.gameID = g.id ) > 0) ";
+			$userMessage = "Showing <a href='profile.php?userID=".$paramUserID."'>".$checkedUsername."'s</a> completed games against me.</p>";
+		} 
+		else { $userMessage =  "Showing <a href='profile.php?userID=".$paramUserID."'>".$checkedUsername."'s</a> completed games.</p>";}
+
+		if ($showOnlyJoinable == 'checked')
+		{
+			$sql = $sql." and g.minimumBet is not null and g.password is null and g.gameOver = 'No' ";
+			$sqlCounter = $sqlCounter." and g.minimumBet is not null and g.password is null and g.gameOver = 'No' ";
+		}
+
+		if ($sortColg == 'watchedGames')
+		{
+			$sql = $sql . " ORDER BY watchedGames ".$sortType." ";
+			$sql = $sql . " Limit ". $limit .";";
+		}
+		else
+		{
+			$sql = $sql . " ORDER BY g.".$sortColg." ".$sortType." ";
+			$sql = $sql . " Limit ". $limit .";";
+		}
+		
+		$tablChecked = $DB->sql_tabl($sql);
+
+		while (list($gameID, $gameName, $pot, $phase, $gameOver, $processStatus, $password, $potType, $minimumBet, $phaseMinutes, $anon, 
+		$pressType, $directorUserID, $minimumRR, $drawType, $watchedCount) = $DB->tabl_row($tablChecked))
+		{   
+			$myGame = new GameResultData();
+			$myGame->gameID = $gameID;
+			$myGame->gameName = $gameName;
+			$myGame->pot = $pot;
+			$myGame->phase = $phase;
+			$myGame->gameOver = $gameOver;
+			if ($password == 'True' ) {$myGame->password = true; } else {$myGame->password = false; };
+			$myGame->potType = $potType;
+			$myGame->minimumBet = $minimumBet;
+			$myGame->phaseMinutes = $phaseMinutes;
+			$myGame->anon = $anon;
+			$myGame->pressType = $pressType;
+			$myGame->directorUserID = $directorUserID;
+			$myGame->minimumRR = $minimumRR;
+			$myGame->drawType = $drawType;
+			$myGame->watchedCount = $watchedCount;
+			array_push($GamesData,$myGame);
+		}
+
+		list($totalResults) = $DB->sql_row($sqlCounter);
+		print '<p class = "modTools"> Showing a max of '.$limit.' results from '.$totalResults.' total results. </br>';
+		print $userMessage; 
+
+		printGameResults($seeVariant, $seeGamename, $seeGameOver, $seePot, $seeGameOver, $seeInviteCode, $seePotType, $seeJoinable, $seePhaseLength, 
+		$seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount, $GamesData);
+	}
+	else { print '<p class = advancedSearch> The user you entered is not valid. Please enter a valid user or 0 to see your own games.</p>';}
+}
+
+/*
+ * This function will take in all the variables related to user choice on seeing columns in output, and the $GamesData 
+ * variable holding all the games in the result set and print them out to an html table. This is used by both the game
+ * search and the search games by user search. 
+ */ 
+function printGameResults($seeVariant, $seeGamename, $seeGameOver, $seePot, $seeGameOver, $seeInviteCode, $seePotType, $seeJoinable, $seePhaseLength, 
+$seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount, $GamesData) 
+{
+	print "<TABLE class='advancedSearch'>";
 		print "<tr>";
 		print '<th class= "advancedSearch">GameId</th>';
 
@@ -796,46 +954,20 @@ else if ($tab == 'GameSearch')
 			print "</TR>";
 		}
 		print "</TABLE>";
-	}
-	else { print '<p class = advancedSearch> Please enter a value in the first Game search option or check show only joinable games</p>';}
 }
-
-else if ($tab == 'GamesByUser')
-{
-
-}
-
 print '</div>';
 ?>
 
 <script>
-var coll = document.getElementsByClassName("userSearchCollapsible");
-var userCounter;
+var coll = document.getElementsByClassName("SearchCollapsible");
+var searchCounter;
 
-for (userCounter = 0; userCounter < coll.length; userCounter++) {
-  coll[userCounter].addEventListener("click", function() {
+for (searchCounter = 0; searchCounter < coll.length; searchCounter++) {
+  coll[searchCounter].addEventListener("click", function() {
     this.classList.toggle("active");
     var content = this.nextElementSibling;
-    if (content.style.display === "block") {
-      content.style.display = "none";
-    } else {
-      content.style.display = "block";
-    }
-  });
-}
-
-var coll = document.getElementsByClassName("gameSearchCollapsible");
-var gameCounter;
-
-for (gameCounter = 0; gameCounter < coll.length; gameCounter++) {
-  coll[gameCounter].addEventListener("click", function() {
-    this.classList.toggle("active");
-    var content = this.nextElementSibling;
-    if (content.style.display === "block") {
-      content.style.display = "none";
-    } else {
-      content.style.display = "block";
-    }
+		if (content.style.display === "block") { content.style.display = "none"; } 
+		else { content.style.display = "block"; }
   });
 }
 </script>

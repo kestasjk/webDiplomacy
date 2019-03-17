@@ -861,7 +861,7 @@ ul.modTools {
 /* Mod Tools section ends here */
 
 /* This section is for the new advanced search page. */
-  .userSearchCollapsible {
+  .SearchCollapsible {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #777;
 	color: white;
@@ -871,26 +871,10 @@ ul.modTools {
 	border: none;
 	text-align: left;
 	outline: none;
+	border-radius: 7px;
   }
 
-  .active, .userSearchCollapsible:hover {
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	background-color: #555;
-  }
-
-  .gameSearchCollapsible {
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	background-color: #777;
-	color: white;
-	cursor: pointer;
-	padding: 10px;
-	width: 100%;
-	border: none;
-	text-align: left;
-	outline: none;
-  }
-
-  .active, .gameSearchCollapsible:hover {
+  .active, .SearchCollapsible:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #555;
   }
