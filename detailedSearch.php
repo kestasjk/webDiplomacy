@@ -801,7 +801,7 @@ else if ($tab == 'GameSearch')
 		list($totalResults) = $DB->sql_row($sqlCounter);
 		print '<p class = "modTools"> Showing a max of '.$limit.' results from '.$totalResults.' total results</p>';
 
-		printGameResults($seeVariant, $seeGamename, $seeGameOver, $seePot, $seeGameOver, $seeInviteCode, $seePotType, $seeJoinable, $seePhaseLength, 
+		printGameResults($seeVariant, $seeGamename, $seeGameOver, $seePot, $seeInviteCode, $seePotType, $seeJoinable, $seePhaseLength, 
 		$seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount, $GamesData);
 	}
 	else { print '<p class = advancedSearch> Please enter a value in the first Game search option or check show only joinable games</p>';}
@@ -883,7 +883,7 @@ else if ($tab == 'GamesByUser')
 		print '<p class = "modTools"> Showing a max of '.$limit.' results from '.$totalResults.' total results. </br>';
 		print $userMessage; 
 
-		printGameResults($seeVariant, $seeGamename, $seeGameOver, $seePot, $seeGameOver, $seeInviteCode, $seePotType, $seeJoinable, $seePhaseLength, 
+		printGameResults($seeVariant, $seeGamename, $seeGameOver, $seePot, $seeInviteCode, $seePotType, $seeJoinable, $seePhaseLength, 
 		$seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount, $GamesData);
 	}
 	else { print '<p class = advancedSearch> The user you entered is not valid. Please enter a valid user or 0 to see your own games.</p>';}
@@ -894,7 +894,7 @@ else if ($tab == 'GamesByUser')
  * variable holding all the games in the result set and print them out to an html table. This is used by both the game
  * search and the search games by user search. 
  */ 
-function printGameResults($seeVariant, $seeGamename, $seeGameOver, $seePot, $seeGameOver, $seeInviteCode, $seePotType, $seeJoinable, $seePhaseLength, 
+function printGameResults($seeVariant, $seeGamename, $seeGameOver, $seePot, $seeInviteCode, $seePotType, $seeJoinable, $seePhaseLength, 
 $seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount, $GamesData) 
 {
 	print "<TABLE class='advancedSearch'>";
