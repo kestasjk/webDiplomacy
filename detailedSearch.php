@@ -889,6 +889,11 @@ else if ($tab == 'GamesByUser')
 	else { print '<p class = advancedSearch> The user you entered is not valid. Please enter a valid user or 0 to see your own games.</p>';}
 }
 
+/*
+ * This function will take in all the variables related to user choice on seeing columns in output, and the $GamesData 
+ * variable holding all the games in the result set and print them out to an html table. This is used by both the game
+ * search and the search games by user search. 
+ */ 
 function printGameResults($seeVariant, $seeGamename, $seeGameOver, $seePot, $seeGameOver, $seeInviteCode, $seePotType, $seeJoinable, $seePhaseLength, 
 $seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount, $GamesData) 
 {

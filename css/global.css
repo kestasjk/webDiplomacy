@@ -871,7 +871,7 @@ ul.modTools {
 	border: none;
 	text-align: left;
 	outline: none;
-	border-radius: 10px;
+	border-radius: 7px;
   }
 
   .active, .SearchCollapsible:hover {
