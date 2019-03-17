@@ -26,9 +26,9 @@ if (isset($_REQUEST['tab']))
 // User Search Objects
 class UserResultData
 {
-    public $userID;
-    public $username;
-    public $email;
+	public $userID;
+	public $username;
+	public $email;
 	public $timeJoined;
 	public $gameCount;
 	public $reliabilityRating;
@@ -61,7 +61,6 @@ $seeNewForumLink = 'unchecked';
 $limit = 50;
 $sortCol = 'id';
 $sortType = 'asc';
-
 
 // Use db escape to guard against special characters. 
 if ( isset($_REQUEST['username']) && $_REQUEST['username'] && strlen($_REQUEST['username']) )
@@ -101,13 +100,9 @@ if ( isset($_REQUEST['sortCol']))
 	else if ($_REQUEST['sortCol'] == 'points') { $sortCol='points'; }
 }
 
-if ( isset($_REQUEST['sortType'])) 
-{ 
-	if ($_REQUEST['sortType'] == 'desc') { $sortType='desc'; }
-}
+if ( isset($_REQUEST['sortType'])) { if ($_REQUEST['sortType'] == 'desc') { $sortType='desc'; } }
 
-if ($serverHasPHPBB == 1) 
-	if ( isset($_REQUEST['seeNewForumLink'])) { $seeNewForumLink='checked'; }
+if ($serverHasPHPBB == 1) {	if ( isset($_REQUEST['seeNewForumLink'])) { $seeNewForumLink='checked'; } }
 
 // If this is checked we want to show all columns. 
 if ( isset($_REQUEST['seeAll'])) 
@@ -139,22 +134,22 @@ if ( isset($_REQUEST['type']) && $_REQUEST['type'] && strlen($_REQUEST['type']) 
 // Game Search Objects
 class GameResultData
 {
-    public $gameID;
-    public $gameName;
-    public $pot;
-	public $phase; 				//enum('Finished','Pre-game','Diplomacy','Retreats','Builds')   
-	public $gameOver; 			// enum('No','Won','Drawn')  
+	public $gameID;
+	public $gameName;
+	public $pot;
+	public $phase; 						//enum('Finished','Pre-game','Diplomacy','Retreats','Builds')   
+	public $gameOver; 				// enum('No','Won','Drawn')  
 	public $processStatus; 		// enum('Not-processing','Processing','Crashed','Paused')  
-	public $hasPassword; 		// is password set?
-	public $potType; 			//enum('Winner-takes-all','Points-per-supply-center','Unranked','Sum-of-squares')
+	public $hasPassword; 			// is password set?
+	public $potType; 					//enum('Winner-takes-all','Points-per-supply-center','Unranked','Sum-of-squares')
 	public $minimumBet;
 	public $phaseMinutes;
-	public $anon; 				// yes/no 
-	public $pressType; 			//enum('Regular','PublicPressOnly','NoPress','RulebookPress')
+	public $anon; 						// yes/no 
+	public $pressType; 				//enum('Regular','PublicPressOnly','NoPress','RulebookPress')
 	public $directorUserID;
 	public $minimumRR;
 	public $minimumNMRScore;
-	public $drawType;			//enum('draw-votes-public','draw-votes-hidden')  
+	public $drawType;					//enum('draw-votes-public','draw-votes-hidden')  
 	public $watchedCount;
 }
 
@@ -254,12 +249,12 @@ $checkAgainstMe = 'unchecked';
 if ( isset($_REQUEST['paramUserID']) ) {	$paramUserID=(int)$_REQUEST['paramUserID']; }	
 if ( isset($_REQUEST['checkAgainstMe'])) { $checkAgainstMe='checked'; }
 
+// Print the header and standard php for the site that is required on every page. 
 libHTML::starthtml();
 print libHTML::pageTitle(l_t('Advanced Search'),l_t('Advanced search options for users or games.'));
 ?>
 
 <?php
-
 // Collapsible search criteria for user search keeps page readable based on search type user wants. 
 print '<button class="SearchCollapsible">User Search Options (expand)</button>';
 print '<div class="advancedSearchContent">';
@@ -331,7 +326,8 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
 		</select>
 		</p>
 		
-        <input class="advancedSearchform-submit" type="submit" name="Submit" class="form-submit" value="Check" /></form></br>';
+		<input class="advancedSearchform-submit" type="submit" name="Submit" class="form-submit" value="Check" /></form>
+		</br>';
 print '</div>';
 
 print '</br></br>';
@@ -420,7 +416,8 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
 		</select>
 		</p>
 		
-        <input class="advancedSearchform-submit" type="submit" name="Submit" class="form-submit" value="Check" /></form></br>';
+		<input class="advancedSearchform-submit" type="submit" name="Submit" class="form-submit" value="Check" /></form>
+		</br>';
 print '</div>';
 
 print '</br></br>';
@@ -483,7 +480,8 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
 		</select>
 		</p>
 		
-		<input class="advancedSearchform-submit" type="submit" name="Submit" class="form-submit" value="Check" /></form></br>';
+		<input class="advancedSearchform-submit" type="submit" name="Submit" class="form-submit" value="Check" /></form>
+		</br>';
 print '</div>';
 
 if ($tab == 'UserSearch')
@@ -560,6 +558,7 @@ if ($tab == 'UserSearch')
 			// Check for various types possible based on the enum in wD_Users.
 			if (strpos($userType, 'Moderator') !== false) { $myUser->mod = true; } else { $myUser->mod = false;}
 			if (strpos($userType, 'Banned') !== false) { $myUser->banned = true; } else { $myUser->banned = false;}
+
 			if (strpos($userType, 'DonatorGold') !== false) 
 			{ 
 				$myUser->gold = true; 
@@ -584,6 +583,7 @@ if ($tab == 'UserSearch')
 				$myUser->silver = false;
 				$myUser->bronze = false;
 			}
+
 			if (strpos($userType, 'DonatorPlatinum') !== false) { $myUser->platinum = true; } else { $myUser->platinum = false;}
 			$myUser->reliabilityRating = $reliabilityRating;
 			array_push($UsersData,$myUser);
@@ -591,19 +591,14 @@ if ($tab == 'UserSearch')
 
 		list($totalResults) = $DB->sql_row($sqlCounter);
 		print '<p class = "modTools"> Showing a max of '.$limit.' results from '.$totalResults.' total results</p>';
+
 		print "<TABLE class='advancedSearch'>";
 		print "<tr>";
 		print '<th class= "advancedSearch">UserId:</th>';
 		
 		// Adjust table columns based on user selection. 
 		if ($seeUsername=='checked') { print '<th class= "advancedSearch">Username</th>'; }
-		if ($serverHasPHPBB == 1)
-		{
-			if ($seeNewForumLink)
-			{
-				print '<th class= "advancedSearch">New Forum</th>';
-			}
-		}
+		if ($serverHasPHPBB == 1) { if ($seeNewForumLink) { print '<th class= "advancedSearch">New Forum</th>'; } }
 		if ($seeJoined=='checked') { print '<th class= "advancedSearch">Joined On</th>'; }
 		if ($seeGameCount=='checked') { print '<th class= "advancedSearch">Games</th>'; }
 		if ($seePoints=='checked') { print '<th class= "advancedSearch">Points</th>'; }
@@ -643,10 +638,7 @@ if ($tab == 'UserSearch')
 				if ($seeNewForumLink)
 				{
 					list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$values->userID);
-					if ($newForumId > 0)
-					{
-						print '<TD class= "advancedSearch"><a href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumId.'">New Forum</a></TD>';
-					}
+					if ($newForumId > 0) { print '<TD class= "advancedSearch"><a href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumId.'">New Forum</a></TD>'; }
 					else { print '<TD class= "advancedSearch">N/A</TD>'; }
 				}
 			}
@@ -818,13 +810,13 @@ else if ($tab == 'GameSearch')
 else if ($tab == 'GamesByUser')
 {
 	$IsUserValid = 0;
-	if ($paramUserID == 0) {
+
+	if ($paramUserID == 0) 
+	{
 		list($IsUserValid) = $DB->sql_row("SELECT count(1) FROM wD_Users WHERE id = ".$User->id);
 		$paramUserID = $User->id;
 	} 
-	else {
-		list($IsUserValid) = $DB->sql_row("SELECT count(1) FROM wD_Users WHERE id = ".$paramUserID); 
-	}
+	else { list($IsUserValid) = $DB->sql_row("SELECT count(1) FROM wD_Users WHERE id = ".$paramUserID); }
 	
 	//User Check here if user is not blank
 	if ($IsUserValid == 1)
@@ -856,7 +848,6 @@ else if ($tab == 'GamesByUser')
 		{
 			$sql = $sql . " ORDER BY watchedGames ".$sortType." ";
 			$sql = $sql . " Limit ". $limit .";";
-
 		}
 		else
 		{
@@ -959,7 +950,6 @@ $seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount
 		}
 		print "</TABLE>";
 }
-
 print '</div>';
 ?>
 
@@ -971,14 +961,10 @@ for (searchCounter = 0; searchCounter < coll.length; searchCounter++) {
   coll[searchCounter].addEventListener("click", function() {
     this.classList.toggle("active");
     var content = this.nextElementSibling;
-    if (content.style.display === "block") {
-      content.style.display = "none";
-    } else {
-      content.style.display = "block";
-    }
+		if (content.style.display === "block") { content.style.display = "none"; } 
+		else { content.style.display = "block"; }
   });
 }
-
 </script>
 
 <?php
