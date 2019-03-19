@@ -451,6 +451,18 @@ print '<div class="leftHalf" style="width:50%">';
 if( $UserProfile->type['Banned'] )
 	print '<p><strong>'.l_t('Banned').'</strong></p>';
 
+if( $User->type['Moderator'] )
+{
+	if($UserProfile->modLastCheckedOn > 0 && $UserProfile->modLastCheckedBy > 0)
+	{
+		list($modUsername) = $DB->sql_row("SELECT username FROM `wD_Users` WHERE id = ".$UserProfile->modLastCheckedBy);
+		print '<p class="profileCommentURL">Investigated: '.$UserProfile->timeModLastCheckedtxt().', by: <a href="/profile.php?userID='.$UserProfile->modLastCheckedBy.'">'.$modUsername.'</a></p>';
+	}
+	else
+	{
+		print '<p>Investigated: Never</p>';
+	}
+}
 
 list($serverHasPHPBB) = $DB->sql_row("SELECT count(1) FROM information_schema.tables WHERE table_name = 'phpbb_users'");
 

@@ -181,6 +181,18 @@ class User {
 	 * @var timestamp
 	 */
 	public $tempBan;
+
+	/**
+	 * UNIX timestamp of when a mod last checked this user
+	 * @var int
+	 */
+	public $modLastCheckedOn;
+
+	/**
+	 * userID of the last mod to check this user
+	 * @var int
+	 */
+	public $modLastCheckedBy;
 	
 	/**
 	 * Number of available points
@@ -458,9 +470,12 @@ class User {
 			u.reliabilityRating,
 			u.tempBan,
 			IF(s.userID IS NULL,0,1) as online,
-			u.deletedCDs
+			u.deletedCDs, 
+			c.modLastCheckedOn,
+			c.modLastCheckedBy
 			FROM wD_Users u
 			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
+			LEFT JOIN wD_UserConnections c on ( u.id = c.userID )
 			WHERE ".( $username ? "u.username='".$username."'" : "u.id=".$this->id ));
 
 		if ( ! isset($row['id']) or ! $row['id'] )
@@ -638,6 +653,11 @@ class User {
 	function timeJoinedtxt()
 	{
 		return libTime::text($this->timeJoined);
+	}
+
+	function timeModLastCheckedtxt()
+	{
+		return libTime::text($this->modLastCheckedOn);
 	}
 
 	/**
