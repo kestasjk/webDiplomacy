@@ -1,211 +1,279 @@
 @CHARSET "ISO-8859-1";
 
-
+/* Global */
 .variantChaosClassic .country0 {
     color: #CE7800 ! important;
 }
+/* Edinburgh */
 .variantChaosClassic .country1  {
     color:#EFC4E4 ! important; 
 }
+/* Liverpool */
 .variantChaosClassic .country2  {
     color:#FF00FF ! important;
 }
+/* London */
 .variantChaosClassic .country3  {
     color:#E60078 ! important; 
 }
+/* Portugal */
 .variantChaosClassic .country4  {
     color:#FF4C00  ! important;
 }
+/* Spain */
 .variantChaosClassic .country5  {
     color:#FF9000  ! important;
 }
+/* Tunis */
 .variantChaosClassic .country6  {
     color:#00FFA9  ! important;
 }
+/* Naples */
 .variantChaosClassic .country7  {
     color:#A4C499  ! important;
 }
+/* Rome */
 .variantChaosClassic .country8  {
     color:#69C14B  ! important;
 }
+/* Venice */
 .variantChaosClassic .country9  {
     color:#6DBF73  ! important;
 }
+/* Greece */
 .variantChaosClassic .country10 {
     color:#00E2C4 ! important;
 }
+/* Serbia */
 .variantChaosClassic .country11 {
     color:#4B92CC ! important;
 }
+/* Bulgaria */
 .variantChaosClassic .country12 {
     color:#9BA060 ! important;
 }
+/* Rumania */
 .variantChaosClassic .country13 {
     color:#AD3E95 ! important;
 }
+/* Constantinople */
 .variantChaosClassic .country14 {
     color:#EAEAAF ! important;
 }
+/* Smyrna */
 .variantChaosClassic .country15 {
     color:#E5E559 ! important;
 }
+/* Ankara */
 .variantChaosClassic .country16 {
     color:#A5A50E ! important;
 }
+/* Sevastopol */
 .variantChaosClassic .country17 {
     color:#891470 ! important;
 }
+/* Warsaw */
 .variantChaosClassic .country18 {
     color:#702A61 ! important;
 }
+/* Moscow */
 .variantChaosClassic .country19 {
     color:#A87E9F ! important;
 }
+/* St. Petersburg */
 .variantChaosClassic .country20 {
     color:#9875A5 ! important;
 }
+/* Sweden */
 .variantChaosClassic .country21 {
     color:#5E0125 ! important;
 }
+/* Norway */
 .variantChaosClassic .country22 {
     color:#E5AEA0 ! important;
 }
+/* Denmark */
 .variantChaosClassic .country23 {
     color:#CE3B16 ! important;
 }
+/* Kiel */
 .variantChaosClassic .country24 {
     color:#EDC9A8 ! important;
 }
+/* Berlin */
 .variantChaosClassic .country25 {
     color:#A08A75 ! important;
 }
+/* Munich */
 .variantChaosClassic .country26 {
     color:#684F38 ! important;
 }
+/* Holland */
 .variantChaosClassic .country27 {
     color:#FF7B00 ! important;
 }
+/* Belgium */
 .variantChaosClassic .country28 {
     color:#69B5E5 ! important;
 }
+/* Brest */
 .variantChaosClassic .country29 {
     color:#2F97D8 ! important;
 }
+/* Paris */
 .variantChaosClassic .country30 {
     color:#9B0F78 ! important;
 }
+/* Marseilles */
 .variantChaosClassic .country31 {
     color:#14BAA6 ! important;
 }
+/* Vienna */
 .variantChaosClassic .country32 {
     color:#C48F85 ! important;
 }
+/* Trieste */
 .variantChaosClassic .country33 {
     color:#C16959 ! important;
 }
+/* Budapest */
 .variantChaosClassic .country34 {
     color:#A02009 ! important;
 }
 
+/* Edinburgh */
 .variantChaosClassic .occupationBar1  {
     color:#EFC4E4 ! important; 
 }
+/* Liverpool */
 .variantChaosClassic .occupationBar2  {
     color:#FF00FF ! important;
 }
+/* London */
 .variantChaosClassic .occupationBar3  {
     color:#E60078 ! important; 
 }
+/* Portugal */
 .variantChaosClassic .occupationBar4  {
     color:#FF4C00  ! important;
 }
+/* Spain */
 .variantChaosClassic .occupationBar5  {
     color:#FF9000  ! important;
 }
+/* Tunis */
 .variantChaosClassic .occupationBar6  {
     color:#00FFA9  ! important;
 }
+/* Naples */
 .variantChaosClassic .occupationBar7  {
     color:#A4C499  ! important;
 }
+/* Rome */
 .variantChaosClassic .occupationBar8  {
     color:#69C14B  ! important;
 }
+/* Venice */
 .variantChaosClassic .occupationBar9  {
     color:#6DBF73  ! important;
 }
+/* Greece */
 .variantChaosClassic .occupationBar10 {
     color:#00E2C4 ! important;
 }
+/* Serbia */
 .variantChaosClassic .occupationBar11 {
     color:#4B92CC ! important;
 }
+/* Bulgaria */
 .variantChaosClassic .occupationBar12 {
     color:#9BA060 ! important;
 }
+/* Rumania */
 .variantChaosClassic .occupationBar13 {
     color:#AD3E95 ! important;
 }
+/* Constantinople */
 .variantChaosClassic .occupationBar14 {
     color:#EAEAAF ! important;
 }
+/* Smyrna */
 .variantChaosClassic .occupationBar15 {
     color:#E5E559 ! important;
 }
+/* Ankara */
 .variantChaosClassic .occupationBar16 {
     color:#A5A50E ! important;
 }
+/* Sevastopol */
 .variantChaosClassic .occupationBar17 {
     color:#891470 ! important;
 }
+/* Warsaw */
 .variantChaosClassic .occupationBar18 {
     color:#702A61 ! important;
 }
+/* Moscow */
 .variantChaosClassic .occupationBar19 {
     color:#A87E9F ! important;
 }
+/* St. Petersburg */
 .variantChaosClassic .occupationBar20 {
     color:#9875A5 ! important;
 }
+/* Sweden */
 .variantChaosClassic .occupationBar21 {
     color:#5E0125 ! important;
 }
+/* Norway */
 .variantChaosClassic .occupationBar22 {
     color:#E5AEA0 ! important;
 }
+/* Denmark */
 .variantChaosClassic .occupationBar23 {
     color:#CE3B16 ! important;
 }
+/* Kiel */
 .variantChaosClassic .occupationBar24 {
     color:#EDC9A8 ! important;
 }
+/* Berlin */
 .variantChaosClassic .occupationBar25 {
     color:#A08A75 ! important;
 }
+/* Munich */
 .variantChaosClassic .occupationBar26 {
     color:#684F38 ! important;
 }
+/* Holland */
 .variantChaosClassic .occupationBar27 {
     color:#FF7B00 ! important;
 }
+/* Belgium */
 .variantChaosClassic .occupationBar28 {
     color:#69B5E5 ! important;
 }
+/* Brest */
 .variantChaosClassic .occupationBar29 {
     color:#2F97D8 ! important;
 }
+/* Paris */
 .variantChaosClassic .occupationBar30 {
     color:#9B0F78 ! important;
 }
+/* Marseilles */
 .variantChaosClassic .occupationBar31 {
     color:#14BAA6 ! important;
 }
+/* Vienna */
 .variantChaosClassic .occupationBar32 {
     color:#C48F85 ! important;
 }
+/* Trieste */
 .variantChaosClassic .occupationBar33 {
     color:#C16959 ! important;
 }
+/* Budapest */
 .variantChaosClassic .occupationBar34 {
     color:#A02009 ! important;
 }
