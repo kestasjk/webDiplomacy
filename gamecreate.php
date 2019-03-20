@@ -108,13 +108,8 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		
 		$input['anon'] = ( (strtolower($input['anon']) == 'yes') ? 'Yes' : 'No' );
 		
-		if ( $input['variantID'] == 15 )
-		{
-			$input['bet'] = 5; 
-			$input['potType'] = 'Unranked';
-		}
-		
-		if ( $input['variantID'] == 23 )
+		$unrankedVariants = array(15, 23, 24)
+		if ( in_array($input['variantID'], $unrankedVariants )
 		{
 			$input['bet'] = 5; 
 			$input['potType'] = 'Unranked';
