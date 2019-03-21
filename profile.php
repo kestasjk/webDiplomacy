@@ -433,8 +433,8 @@ if( $total )
 			print '<li>'.l_t($name.': <strong>%s</strong>',$status);
 			print ' ( '.round(($status/$totalClassic)*100).'% )';
 			print '</li>';
-			print '<li>'.l_t('Total (finished): <strong>%s</strong>',$totalClassic).'</li>';
 		}
+		print '<li>'.l_t('Total (finished): <strong>%s</strong>',$totalClassic).'</li>';
 		print '</ul></li>';
 	}
 
@@ -460,8 +460,8 @@ if( $total )
 			print '<li>'.l_t($name.': <strong>%s</strong>',$status);
 			print ' ( '.round(($status/$totalVariants)*100).'% )';
 			print '</li>';
-			print '<li>'.l_t('Total (finished): <strong>%s</strong>',$totalVariants).'</li>';
 		}
+		print '<li>'.l_t('Total (finished): <strong>%s</strong>',$totalVariants).'</li>';
 		print '</ul></li>';
 	}
 
