@@ -111,6 +111,28 @@ class ScoringWTA extends ScoringSystem {
 	public function abbr() { return 'DSS'; }
 	public function longName() {return 'Draw-Size Scoring';} 
 }
+// Fibonacci scoring, based on https://webdiplomacy.net/contrib/phpBB3/viewtopic.php?f=16&t=1286&p=60801&hilit=fibonacci#p60801
+class ScoringFibonacci extends ScoringSystem {
+
+    public function pointsForDraw($Member) {
+        $total_pot = $this->Game->pot;
+        private function rank_compare($a, $b){
+            return ($a->supplyCenterNo - $b->supplyCenterNo);
+        }
+        $rankedMembers = usort($this->$Game->ByID, "rank_compare")
+        foreach($rankedMembers as $Member)
+            $this->scoreTotal += $Member->supplyCenterNo * $Member->supplyCenterNo;
+        foreach($this->Game->Members->ByStatus['Playing'] as $Member)
+            $this->scoreTotal += $Member->supplyCenterNo * $Member->supplyCenterNo;
+
+
+        return round($this->Game->pot / count($this->Game->Members->ByStatus['Playing']));
+    }
+	public function pointsForWin($Member) {return $this->Game->pot;}
+	public function pointsForSurvive($Member) {return 0;}
+	public function abbr() { return 'FIB'; }
+	public function longName() {return 'Fibonacci Scoring';} 
+}
 class ScoringUnranked extends ScoringSystem {
 	public function pointsForDraw($Member) { return $Member->bet;}
 	public function pointsForWin($Member) {return $Member->bet;}
