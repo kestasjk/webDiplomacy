@@ -1085,4 +1085,14 @@ input[id^="FinalizeButton"]{
 	.top-nav {
 		justify-content: left;
 	}
+	h1, h2, h3, h4 {
+		color: #009902;
+		margin-bottom:5px;
+		word-wrap: break-word;
+	}
+	a {
+		font-weight: bold;
+		text-decoration:underline;
+		word-wrap: break-word;
+	}
 }

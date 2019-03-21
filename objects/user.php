@@ -838,6 +838,54 @@ class User {
 		return $rankingDetails;
 	}
 
+	/*
+	 * A lighter version of rankingDetails with just the game % stats for variant games. 
+	 */
+	public function rankingDetailsVariants()
+	{
+		global $DB;
+
+		$rankingDetailsVariants = array();
+
+		$tabl = $DB->sql_tabl(
+			"SELECT COUNT(m.id), m.status FROM wD_Members m 
+			 inner join wD_Games g on g.id = m.gameID WHERE m.userID = ".$this->id." AND g.variantID <> 1 and g.gameOver <> 'No' 
+			 GROUP BY m.status"
+		);
+
+		$rankingDetailsVariants['stats'] = array();
+		while ( list($number, $status) = $DB->tabl_row($tabl) )
+		{
+			if ($status != "Playing") {	$rankingDetailsVariants['stats'][$status] = $number; }
+		}
+
+		return $rankingDetailsVariants;
+	}
+
+	/*
+	 * A lighter version of rankingDetails with just the game % stats for classic games. 
+	 */
+	public function rankingDetailsClassic()
+	{
+		global $DB;
+
+		$rankingDetailsClassic = array();
+
+		$tabl = $DB->sql_tabl(
+				"SELECT COUNT(m.id), m.status FROM wD_Members m 
+				 inner join wD_Games g on g.id = m.gameID WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' 
+				 GROUP BY m.status"
+			);
+
+		$rankingDetailsClassic['stats'] = array();
+		while ( list($number, $status) = $DB->tabl_row($tabl) )
+		{
+			if ($status != "Playing") {	$rankingDetailsClassic['stats'][$status] = $number; }
+		}
+
+		return $rankingDetailsClassic;
+	}
+
 	static function pointsInPlay($userID, $excludeGameID=false)
 	{
 		global $DB;

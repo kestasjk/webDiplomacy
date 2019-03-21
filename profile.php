@@ -328,12 +328,14 @@ print '<div><div class="rightHalf">
 		';
 
 $rankingDetails = $UserProfile->rankingDetails();
+$rankingDetailsClassic = $UserProfile->rankingDetailsClassic();
+$rankingDetailsVariants = $UserProfile->rankingDetailsVariants();
 
 $showAnon = ($UserProfile->id == $User->id || $User->type['Moderator']);
 
 print '<ul class="formlist">';
 
-print '<li><strong>'.l_t('Rank:').'</strong> '.$rankingDetails['rank'].'</li>';
+print '<li title="Diplomat/Mastermind/Pro/Experienced/Member/Casual/Puppet (top 5/10/20/50/90/100%/not ranked)"><strong>'.l_t('Rank:').'</strong> '.$rankingDetails['rank'].'</li>';
 
 if ( $rankingDetails['position'] < $rankingDetails['rankingPlayers'] )
 	print '<li><strong>'.l_t('Position:').'</strong> '.$rankingDetails['position'].' / '.
@@ -382,8 +384,9 @@ foreach($rankingDetails['stats'] as $name => $status)
 
 if( $total )
 {
-	print '<li><strong>'.l_t('Game stats:').'</strong> <ul class="gamesublist">';
+	print '<li><strong>'.l_t('All Game stats:').'</strong> <ul class="gamesublist">';
 
+	// Shows each of the game details
 	foreach($rankingDetails['stats'] as $name => $status)
 	{
 		if ( !in_array($name, $includeStatus) ) continue;
@@ -396,6 +399,7 @@ if( $total )
 		print '</li>';
 	}
 
+	// This shows the Playing/Civil Disorder and CD takeover stats. 
 	foreach($rankingDetails['stats'] as $name => $status)
 	{
 		if ( in_array($name, $includeStatus) ) continue;
@@ -404,7 +408,65 @@ if( $total )
 			$status -= $rankingDetails['anon'][$name];
 		print '<li>'.l_t($name.': <strong>%s</strong>',$status).'</li>';
 	}
+	print '<li>'.l_t('Total (finished): <strong>%s</strong>',$total).'</li>';
+	print '</ul></li>';
 
+	// Get a count of the number of classic games that have been played. 
+	$totalClassic = 0;
+	foreach($rankingDetailsClassic['stats'] as $name => $status)
+	{
+		if ( !in_array($name, $includeStatus) ) continue;
+
+		$totalClassic += $status;
+	}
+	
+	// Print out Classic stats if any classic games have been finished. 
+	if( $totalClassic )
+	{
+		print '</br>';
+		print '<li><strong>'.l_t('Classic stats:').'</strong> <ul class="gamesublist">';
+
+		foreach($rankingDetailsClassic['stats'] as $name => $status)
+		{
+			if ( !in_array($name, $includeStatus) ) continue;
+
+			print '<li>'.l_t($name.': <strong>%s</strong>',$status);
+			print ' ( '.round(($status/$totalClassic)*100).'% )';
+			print '</li>';
+			print '<li>'.l_t('Total (finished): <strong>%s</strong>',$totalClassic).'</li>';
+		}
+		print '</ul></li>';
+	}
+
+	// Get a count of the number of classic games that have been played. 
+	$totalVariants = 0;
+	foreach($rankingDetailsVariants['stats'] as $name => $status)
+	{
+		if ( !in_array($name, $includeStatus) ) continue;
+
+		$totalVariants += $status;
+	}
+	
+	// Print out Classic stats if any variant games have been finished. 
+	if( $totalVariants )
+	{
+		print '</br>';
+		print '<li><strong>'.l_t('Variant stats:').'</strong> <ul class="gamesublist">';
+
+		foreach($rankingDetailsVariants['stats'] as $name => $status)
+		{
+			if ( !in_array($name, $includeStatus) ) continue;
+
+			print '<li>'.l_t($name.': <strong>%s</strong>',$status);
+			print ' ( '.round(($status/$totalVariants)*100).'% )';
+			print '</li>';
+			print '<li>'.l_t('Total (finished): <strong>%s</strong>',$totalVariants).'</li>';
+		}
+		print '</ul></li>';
+	}
+
+	print '</br>';
+	print '<li><strong>'.l_t('Reliability:').'</strong> <ul class="gamesublist">';
 	if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 	{
 		print '<li>'.l_t('No moves received / received:').' <strong>'.$UserProfile->nmrCount.'/'.$UserProfile->phaseCount.'</strong></li>';
@@ -416,7 +478,7 @@ if( $total )
 	}                                                                                                         
 	print '</li>';
 	
-	print '<li>'.l_t('Total (finished): <strong>%s</strong>',$total).'</li>';
+	
 
 	if ( $rankingDetails['takenOver'] )
 		print '<li>'.l_t('Left and taken over: <strong>%s</strong>',$rankingDetails['takenOver']).
@@ -424,6 +486,7 @@ if( $total )
 
 	print '</ul></li>';
 }
+
 print '</ul></div>';
 
 
