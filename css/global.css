@@ -705,6 +705,69 @@ TD.army, div.army {
 	color:#34870b;
 }
 
+/* Section for FAQ styling */
+.faq {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+	/* font-size: 14px; */
+}
+
+ .faq_question {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #777;
+	color: white;
+	cursor: pointer;
+	padding: 10px;
+	width: 100%;
+	border: none;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+  .faq_question:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #555;
+  }
+
+  .faq_answer {
+		padding: 0;
+		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+		display: none;
+		overflow: hidden;
+		background-color: #f1f1f1;
+		margin-top: 0px !important;
+		font-size: 14px;
+  } 
+/* End of section for FAQ styling */
+
+/* Section for Hall of Fame styling */
+.hof {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+}
+
+.hof td, .hof th {
+	border: 1px solid #ddd;
+	padding: 6px;
+}
+
+.hof tr:nth-child(even){background-color: #f2f2f2; word-break: break-word;}
+.hof tr:nth-child(odd){background-color: #ffffff; word-break: break-word;}
+
+.hof th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+	text-align: left;
+	background-color: #009902;
+	color: white;
+	min-width:70px;
+}
+
+/* End of section for Hall of Fame styling */
+
 /* This section is for the new AdminCP and Mod tools */
 .modTools {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -877,7 +940,7 @@ ul.modTools {
   .active, .SearchCollapsible:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #555;
-  }
+}
 
   .advancedSearch {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;

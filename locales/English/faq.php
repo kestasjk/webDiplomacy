@@ -25,14 +25,15 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @subpackage Static
  */
 
-
 $faq = array();
 
 if( isset(Config::$faq) && is_array(Config::$faq) && count(Config::$faq) )
 {
 	$faq["Server-specific"]="Sub-section";
 	foreach(Config::$faq as $Q=>$A)
+	{
 		$faq[$Q]=$A;
+	}
 }
 
 $globalFaq = array(
@@ -42,7 +43,7 @@ $globalFaq = array(
 	read <a href='intro.php' class='light'>the intro to webDiplomacy</a>.",
 "How do I play?" => "The gameplay is quite self explanatory, but if you're unsure about something read
 	<a href='intro.php' class='light'>the intro to webDiplomacy</a>, and feel free
-	to ask for help or clarification in <a href='forum.php' class='light'>the public forum</a>.",
+	to ask for help or clarification in <a href='/contrib/phpBB3/viewforum.php?f=6' class='light'>the public forum</a>.",
 "What's the software license?" => "The <a href='AGPL.txt' class='light'>GNU Affero General License</a>
 	(<a href='http://www.opensource.org/licenses/agpl-v3.html' class='light'>Open Source Initiative</a> approved),
 	which basically says you can download and change the code as you like, and put it up on your
@@ -51,28 +52,14 @@ $globalFaq = array(
 	See <a href='credits.php' class='light'>the credits</a> for information about the
 	small elements which are under different licenses.",
 
-"Is this software related to phpDiplomacy?" => "This software used to be called phpDiplomacy until version 0.9.
-	Sorry for the confusion, we hate name changes too, but for our user-base the old 'php' prefix wasn't
-	the immediately recognizable label that it was intended to be.",
-
-
 "The interface" => "Sub-section",
-"What are those green circles next to peoples names?" => "The green icon appears when a player is logged into the server. This
-	means that if the player has accessed the server in the last ~10-15 minutes they will have the green icon next to their name.",
 "What the hell is that thing? (<img src='images/icons/online.png' />, <img src='images/icons/mail.png' />, etc)" => "If you see an icon/button/image and don't understand what it means try hovering your mouse over it,
-	it may give you a tool-tip helping explain it. If it doesn't feel free to ask on the <a href='forum.php' class='light'>forum</a>.",
+	it may give you a tool-tip helping explain it. If it doesn't feel free to ask on the <a href='/contrib/phpBB3/' class='light'>forum</a>.",
 "Why do my order choices turn from green to red?" => "Red order choices are unsaved; if you see a lot of red in your orders you should
 	save, or you might forget and lose them by closing the browser window or chatting to someone.",
 "What do 'Save' and 'Ready' mean?" => "'Save' saves your order; your red, unsaved order choices will turn green once they're successfully
 	saved. 'Ready' means you have finished entering your orders, and are ready to continue to the next turn. If everyone is 'Ready' the
 	game continues right away, speeding up the game.",
-"What are the codes which can add HTML into forum messages? (icons, game links, etc)" => "Often in the forum people discuss points, or
-	want to link others to games/user accounts/other forum threads. To make this easier certain forum-codes are recognized and replaced
-	with proper links/icons:
-	<ul><li><strong>'<em>[number]</em> points'</strong>/<strong>'<em>[number]</em> D'</strong> will result in
-	<strong>'points'</strong> / <strong>'D'</strong> being replaced with the points icon (".libHTML::points().").</li>
-	<li><strong>'gameID=<em>[number]</em>'</strong> / <strong>'threadID=<em>[number]</em>'</strong> / <strong>'userID=<em>[number]</em>'</strong> will have
-	a link to the appropriate game/thread/profile substituted into the message.</li></ul>",
 "Why do some things appear to change just after the page has loaded?" => "After a page is loaded JavaScript runs, making a few changes
 	(e.g. putting GMT/UTC times into your computer's time zone, making your posts bold, etc) which enhance the page.",
 
@@ -102,18 +89,10 @@ $globalFaq = array(
 	you're given your points back.<br /><br />
 	To put it another way; any player who isn't currently playing in any games will always have at least 100 points, so
 	you won't run out!",
-"How are the points split in a draw?" => "In a draw the points are split evenly among all the survivors still in the game,
-	regardless of the number of supply centers each player has.<br/>
+"How are the points split in a draw?" => "This depends on the scoring system of the game in question.<br/>
 	Read <a href='points.php' class='light'>the points guide</a> for more info about the points system.",
-"I have an idea for a better system" => "We constantly get new ideas for the points system, but usually they're either missing
-	out in some aspect (the points system serves multiple functions), or they improve in one area but are worse in another.<br /><br />
-	The points system does the job fine, so it's unlikely to be replaced.
-	(See <a href='http://forum.webdiplomacy.net/viewtopic.php?p=288#p288' class='light'>this page</a> for an
-	explanation regarding the role of the existing system, and what a replacement would have to do.)<br /><br />
-	There's no real way to express how good a player really is in a single number, the points system as it is is
-	probably good enough for now, and there's definitely no agreement on what would replace it.",
-"Can you draw the game, but give 2/3rds of the points to this player and ..." => "Draws can only be given one way; an even split to
-	all survivors.",
+"Can you draw the game, but give 2/3rds of the points to this player and ..." => "The way draws split points depends on the scoring system. 
+Read <a href='points.php' class='light'>the points guide</a> for more info about the points system.",
 
 "Bugs" => "Sub-section",
 "My game has crashed!" => "Sometimes (usually only shortly after code updates) a software bug or server error may occur while a
@@ -149,106 +128,101 @@ $globalFaq = array(
 	single report.
 ",
 "My orders gave the wrong results!" => "Before reporting this as a bug double check that you entered your orders correctly and you're
-	not misunderstanding the rules. 99.999% of the time \"adjudicator bugs\" turn out to be a misunderstanding.<br />
-	If you're still positive there's a problem let us know in the <a class='light' href='forum.php'>forum</a>.",
+	not misunderstanding the rules. 99.999% of the time \"adjudicator bugs\" turn out to be a misunderstanding.<br />",
 "A part of the site looks wrong in an alternative browser" => "webDiplomacy isn't currently completely web standards compliant,
 	so there may be glitches. We would like to get webDiplomacy working on everything (within reason) but we need users
 	of alternative browsers to let us know what's wrong and tell us how to make it look right in that browser.",
-"This site seems to slow my computer down" => "See Help > What is Plura? for a likely cause and fix.",
 
 "Feature Requests" => "Sub-section",
-"Better forum" => "A better forum would be good, but getting it to fit in and appear as part of webDiplomacy, rather than just
-	a separate site, is difficult, and would likely use more server resources than our efficient but lightweight built-in forum.<br />
-	At the moment we are trying to improve our existing forum in small increments.",
-"A point and click interactive map" => "This is being worked on, but progress is slow. If you know JavaScript and SVG/Canvas why not
-	carry on the work on the <a href='http://forum.webdiplomacy.net/' class='light'>development forum</a>?",
-"Translations" => "Eventually translations will be supported, but it is a long process and not a top priority.",
+"A point and click interactive map" => "This is being worked on, but progress is slow.",
+"Translations" => "A translation system is built into our site and several people have created websites to play this game in Russian and Italian. Ask on the forum for links to these sites.",
 "New variants" => "If a variant has lasting appeal, is well balanced, isn't gimmicky, has been tried and tested on another server, and was
 	created by a reputable developer, then it's up for consideration to be included in the standard release.<br />
-	You can discuss this in the variants section of the webDiplomacy
-	<a href='http://forum.webdiplomacy.net/' class='light'>developers forum</a>.<br /><br />
-
+	<br />
 	Also creating your own variants or porting
 	existing variants to the webDiplomacy variants system is easier than ever, from simple map-change variants all the
-	way to strange rule-changing variants, the system is flexible enough to accommodate your variant ideas.
-	",
-"Can I suggest a feature?" => "Feature suggestions are best made in the <a class='light' href='http://forum.webdiplomacy.net/'>developer forums</a>,
-	elsewhere they're likely to be missed. Remember that unless you can back-up your suggestion with code even good ideas may not get far.",
+	way to strange rule-changing variants, the system is flexible enough to accommodate your variant ideas.	",
 
 "Helping out" => "Sub-section",
 "Can I help develop the software?" => "You sure can: if you're an HTML/CSS/JavaScript/PHP 5/MySQL/SVG/Canvas developer,
-	graphics/icon artist, or want to learn, check out the <a class='light' href='http://webdiplomacy.net/developers.php'>dev info</a>,
-	and if you get lost you can get help/discuss ideas in the <a class='light' href='http://forum.webdiplomacy.net/'>developer forums</a>.",
-"Can I donate?" => "See the server-specific section for a donate link, thanks!",
+	graphics/icon artist, or want to learn, check out the <a class='light' href='/developers.php'>dev info</a>,
+	and if you get lost you can get help/discuss ideas in the <a class='light' href='/contrib/phpBB3/viewforum.php?f=16'>developer forums</a>.",
 "Do I get anything for being a donator?" => "Markers are given for donators based on total donated to date; this lets everyone
-see who is helping keep the site online and who has put value in their webDiplomacy account, but no extra
-functionality is available to donators.",
-/*"How much do you need to donate to get a silver/gold mark?" => "
-We'd rather people donate whatever/whenever they feel is appropriate, rather than aiming for a certain mark.
-",*/
+see who is helping keep the site online and who has put value in their webDiplomacy account, but no extra functionality is available to donators.",
+
 "How else can I help?" => "Tell your friends about webDiplomacy, put links on your website, help new players out in the forums,
-	and give helpful feedback to developers. Thanks!",
+	and give helpful feedback to developers. If you enjoy the game please consider buying a physical version of the board game. Thanks!",
 
 "Map" => "Sub-section",
 "Why are some orders missing from the map?" => "Not all orders are drawn on the small map. Below the small map there is a set of icons;
 	the one in the middle (<img src='images/historyicons/external.png' alt='example' />) opens up the large map, which contains all orders.<br/>
 	Also at the bottom of the board page is a link to open up a textual list of all the orders entered in the game, if you can't see
 	something in the large map.",
-"I can't tell the difference between Germany and Austria" => "Color-blind people may have trouble distinguishing Germany and Austria's
-	colors. We hope to fix this problem in the future."
+"Do you have colorblind friendly maps?" => "We have several colorblind options available in the settings page of your profile. These settings
+only work on the small map in games currently. Currently we have support for Protanope, Deuteranope, and Tritanope."
 );
 
 foreach($globalFaq as $Q=>$A)
+{
 	$faq[$Q]=$A;
+}
 
 $i=1;
 
 print libHTML::pageTitle('Frequently Asked Questions','Answers to the questions people often ask in the forums; click on a question to expand the answer.');
 
-
 $sections = array();
 $section=0;
-foreach( $faq as $q => $a )
-	if ( $a == "Sub-section" )
-		$sections[] = '<a href="#faq_'.$section++.'" class="light">'.$q.'</a>';
-print '<div style="text-align:center; font-weight:bold"><strong>Sections:</strong> '.implode(' - ', $sections).'</div>
-	<div class="hr"></div>';
 
-$section=0;
 foreach( $faq as $q => $a )
 {
 	if ( $a == "Sub-section" )
 	{
-		if( $section ) print '</ul></div>';
+		$sections[] = '<a href="#faq_'.$section++.'" class="faq">'.$q.'</a>';
+	}
+}
 
-		print '<div><p><a name="faq_'.$section.'"></a><strong>'.$q.'</strong></p><ul>';
+print '<div class = "faq" style="text-align:center;"><strong>Sections:</strong></br> '.implode(' - ', $sections).'</div> <div class="hr"></div>';
+
+$section=0;
+
+foreach( $faq as $q => $a )
+{
+	if ( $a == "Sub-section" )
+	{
+		if( $section ) { print '</div>'; }
+
+		print '<div class = "faq"><h2 class = "faq"><a name="faq_'.$section.'"></a><strong>'.$q.'</strong></h2>';
 
 		$question=1;
 		$section++;
 	}
 	else
 	{
-		print '<li><div id="faq_answer_'.$section.'_'.$question.'">
-			<a class="faq_question" name="faq_'.$section.'_'.$question.'"
-			onclick="FAQShow('.$section.', '.$question.'); return false;" href="#">'.$q.'</a>
-			<div class="faq_answer" style="margin-top:5px; margin-bottom:15px;"><ul><li>'.$a.'</li></ul></div>
-			</div></li>';
+		print '<button class="faq_question" name="faq_'.$section.'_'.$question.'" onclick="FAQShow('.$section.', '.$question.'); return false;">'.$q.'</button>';
+		print '<div class="faq_answer" style="margin-top:5px; margin-bottom:15px;"><p class = "faq">'.$a.'</p></div>';
 		$question++;
 	}
 }
+
 print '</ul></div>
 </div>';
 
 ?>
 <script type="text/javascript">
-function FAQHide() {
-	$$('.faq_question').map( function (e) {e.setStyle({fontWeight:'normal'});} );
-	$$('.faq_answer').map( function (e) {e.hide();} );
-}
-function FAQShow(section, question) {
-	FAQHide();
-	$$('#faq_answer_'+section+'_'+question+' .faq_answer').map(function (e) {e.show();});
-	$$('#faq_answer_'+section+'_'+question+' .faq_question').map(function (e) {e.setStyle({fontWeight:'bold'});});
+var coll = document.getElementsByClassName("faq_question");
+var searchCounter;
+
+for (searchCounter = 0; searchCounter < coll.length; searchCounter++) {
+  coll[searchCounter].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+		if (content.style.display === "block") { content.style.display = "none"; } 
+		else { content.style.display = "block"; }
+  });
 }
 </script>
-<?php libHTML::$footerScript[] = 'FAQHide();'; ?>
+
+<?php
+libHTML::footer();
+?>
