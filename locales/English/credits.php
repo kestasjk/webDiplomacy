@@ -107,22 +107,6 @@ $credits = array(
 		Our JavaScript utility library - the <a href="http://www.prototypejs.org/">Prototype</a> JavaScript framework team'
 	));
 
-	// $leftColumn=array();
-	// $rightColumn=array();
-
-	// $half=ceil(count($credits)/2);
-	// for($i=0;$i<$half;$i++)
-	// {
-	// 	$leftColumn[]=$credits[$i];
-	// 	if ( isset($credits[$i+$half]) )
-	// 		$rightColumn[]=$credits[$i+$half];
-	// }
-
-	// print '<div class="rightHalf"><ul class="formlist">';
-	// foreach($rightColumn as $credit)
-	// 	print '<li class="formlisttitle">'.$credit[0].'</li><li class="formlistdesc">'.$credit[1].'</li>';
-	// print '</ul></div>';
-
 	print '<div class="credits">';
 	foreach($credits as $credit)
 		print '<div class="credits-title">'.$credit[0].'</div><div class="credits-info">'.$credit[1].'</div>';
