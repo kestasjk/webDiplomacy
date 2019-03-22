@@ -789,6 +789,10 @@ TD.army, div.army {
 	margin: 0 0 15px 0 !important;
 }
 
+.credits-title, .credits-info {
+	padding: 10px;
+}
+
 /* end of credits page styling */
 
 /* This section is for the new AdminCP and Mod tools */
