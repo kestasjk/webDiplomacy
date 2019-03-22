@@ -113,20 +113,76 @@ class ScoringWTA extends ScoringSystem {
 }
 // Fibonacci scoring, based on https://webdiplomacy.net/contrib/phpBB3/viewtopic.php?f=16&t=1286&p=60801&hilit=fibonacci#p60801
 class ScoringFibonacci extends ScoringSystem {
+    private $isSet = false;
+    private $shareOfValue = array();
 
-    public function pointsForDraw($Member) {
+    private function initFib() {
+        if ($this.isSet){
+            return;
+        }
         $total_pot = $this->Game->pot;
+
+        // TODO: Account for surrenders, year eliminated
         private function rank_compare($a, $b){
             return ($a->supplyCenterNo - $b->supplyCenterNo);
         }
-        $rankedMembers = usort($this->$Game->ByID, "rank_compare")
-        foreach($rankedMembers as $Member)
-            $this->scoreTotal += $Member->supplyCenterNo * $Member->supplyCenterNo;
-        foreach($this->Game->Members->ByStatus['Playing'] as $Member)
-            $this->scoreTotal += $Member->supplyCenterNo * $Member->supplyCenterNo;
 
+        $this.$rankedMembers = usort($this->$Game->ByID, "rank_compare")
+        $count_members = count($rankedMembers);
+        // $ranks is a an array of (lowest, highest) tied-score index for each member.
+        $ranks = array()
+        foreach($rankedMembers as $idx=>$member){
+            $lowest = $idx;
+            $highest = $idx;
+            foreach($rankedMembers as $idxCompare->$memberToCompare){
+                if ($member->supplyCenterNo == $memberToCompare->supplyCenterNo){
+                    if ($idxCompare < $lowest){
+                        $lowest = $idxCompare;
+                    }
+                    elseif ($idxCompare > $highest){
+                        $highest = $idxCompare;
+                    }
+                }
+            }
+            $ranks[$idx] = array($lowest, $highest)
+        }
+        // Produce fibonacci sequence
+        $fibonacciSequence = array()
+        $fibonacciSum = 0;
+        for ($i = 0; $i < $count_members; $i++{
+            if ($i == 0){
+                $fibonacciSequence[$i] = 0;
+            }
+            elseif ($i == 2 or $i == 3){
+                $fibonacciSequence[$i] = 1;
+            }
+            else{
+                $fibonacciSequence[$i] = $fibonacciSequence[$i-1] + $fibonacciSequence[$i-2];
+            }
+            $fibonacciSum += $fibonacciSequence[$i];
 
-        return round($this->Game->pot / count($this->Game->Members->ByStatus['Playing']));
+        }
+        // Get each member's share of the pot.
+        foreach($rankedMembers as $idx=>$member){
+            $memberLowestRank = $ranks[$idx][0]
+            $memberHighestRank = $ranks[$idx][1]
+
+            $numberTied = $memberHighestRank - $memberLowestRank + 1;
+            $totalSumInRange = 0;
+            for ($k = $memberLowestRank; $k <= $memberHighestRank; $k++){
+                $totalSumInRange += $fibonacciSequence[$k]
+            }
+            $averageFibValue = $totalSumInRange / $numberTied;
+            $shareOfTotalValue = $averageFibValue / $fibonacciSum;
+            $this->$shareOfValue[$member] = $shareOfTotalValue 
+        }
+        )
+        
+    }
+
+    public function pointsForDraw($Member) {
+        $this.initFib();
+        return ceil($this->Game->pot * $this->$shareOfValue[$Member]);
     }
 	public function pointsForWin($Member) {return $this->Game->pot;}
 	public function pointsForSurvive($Member) {return 0;}
