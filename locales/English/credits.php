@@ -36,7 +36,7 @@ $tabl = $DB->sql_tabl($query);
 $moderators = '';
 while( list($row) = $DB->tabl_row($tabl) )
 {
-	$moderators .= $row . '<br/>';
+	$moderators .= $row . ' ';
 }
 
 $credits = array(
@@ -68,12 +68,11 @@ $credits = array(
 	array(
 		'Past Developers',
 		'<a href="https://www.webdiplomacy.net/profile.php?userID=54909">A_Tin_Can</a><br />
-		<a href="https://www.webdiplomacy.net/profile.php?userID=37168">ghug</a><br />
 		<a href="https://www.webdiplomacy.net/profile.php?userID=382">figlesquidge</a><br />
 		<a href="http://www.webdiplomacy.net/profile.php?userID=3013">thewonderllama</a><br />'
 	),
 	array(
-		'Overseer of the <a href="https://www.google.com/maps/d/u/0/viewer?mid=zkz1OHicklqk.ky67Va8gNVi0">webDiplomacy Player Map (external link)</a>',
+		'Overseer of the <a id="credits-player-map-a" href="https://www.google.com/maps/d/u/0/viewer?mid=zkz1OHicklqk.ky67Va8gNVi0">webDiplomacy Player Map (external link)</a>',
 		'<a href="http://www.webdiplomacy.net/profile.php?userID=74492">Claesar</a>'
 	),
 	array(

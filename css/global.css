@@ -733,14 +733,13 @@ TD.army, div.army {
   }
 
   .faq_answer {
-		padding: 0 0 0 10px;
+		padding: 0;
 		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 		display: none;
 		overflow: hidden;
 		background-color: #f1f1f1;
 		margin-top: 0px !important;
 		font-size: 14px;
-		border-radius: 7px;
   } 
 /* End of section for FAQ styling */
 
@@ -776,7 +775,6 @@ TD.army, div.army {
 }
 
 .credits-title {
-	width: 100%;
 	background-color: #555;
 	border-radius: 7px;
 	color: white;
@@ -791,6 +789,11 @@ TD.army, div.army {
 
 .credits-title, .credits-info {
 	padding: 10px;
+}
+
+#credits-player-map-a, #credits-player-map-a:active {
+	color: white;
+	cursor: pointer;
 }
 
 /* end of credits page styling */
