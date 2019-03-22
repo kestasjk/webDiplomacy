@@ -40,117 +40,95 @@ while( list($row) = $DB->tabl_row($tabl) )
 }
 
 $credits = array(
-	array('
-		<a href="http://www.wizards.com/default.asp?x=ah/prod/diplomacy">Avalon Hill</a>
-	','
-		Diplomacy the board game<br />
-		If you like webDiplomacy get the board game
-	')
+	array(
+		'The Diplomacy Board Game',
+		'If you like webDiplomacy, you can purchase the board game! <br />
+		<a href="http://www.wizards.com/default.asp?x=ah/prod/diplomacy">Available for Purchase from Avalon Hill</a>'
+	),
+	array(
+		'Co-owners of webDiplomacy',
+		'<a href="http://kestas.kuliukas.com/">Kestas Kuliukas</a>, original creator of webDiplomacy<br />
+		<a href="http://www.webdiplomacy.net/profile.php?userID=33599">Zultar</a>'
+	),	
+	array(
+		'The webDiplomacy Moderators, reachable at ' . Config::$modEMail,
+		$moderators
+	),
+	array(
+		'The webDiplomacy Developers',
+		'<a href="http://www.webdiplomacy.net/profile.php?userID=15658">jmo1121109</a>, current lead developer<br />
+		<a href="https://www.webdiplomacy.net/profile.php?userID=10">kestasjk</a>'
+	),
+	array(
+		'Lifetime Site Contributors',
+		'<a href="https://www.webdiplomacy.net/profile.php?userID=51170">Peregrine Falcon</a>, for his time as a moderator, code contributor, and esteemed member<br />
+		<a href="https://www.webdiplomacy.net/profile.php?userID=4946">abgemacht</a>, for his time as a moderator, administrator, ombudsman, and overseer of the webDip Player Map<br />
+		<a href="https://www.webdiplomacy.net/profile.php?userID=54909">A_Tin_Can</a>, for his time as a moderator and as a leader of site development'
+	),
+	array(
+		'Past Developers',
+		'<a href="https://www.webdiplomacy.net/profile.php?userID=54909">A_Tin_Can</a><br />
+		<a href="https://www.webdiplomacy.net/profile.php?userID=37168">ghug</a><br />
+		<a href="https://www.webdiplomacy.net/profile.php?userID=382">figlesquidge</a><br />
+		<a href="http://www.webdiplomacy.net/profile.php?userID=3013">thewonderllama</a><br />'
+	),
+	array(
+		'Overseer of the <a href="https://www.google.com/maps/d/u/0/viewer?mid=zkz1OHicklqk.ky67Va8gNVi0">webDiplomacy Player Map (external link)</a>',
+		'<a href="http://www.webdiplomacy.net/profile.php?userID=74492">Claesar</a>'
+	),
+	array(
+		'Creation of the Original Ghost Ratings',
+		'<a href="https://www.webdiplomacy.net/profile.php?userID=2188">TheGhostMaker</a><br />
+		<a href="https://www.webdiplomacy.net/profile.php?userID=13677">Alderian</a>'
+	),
+	array(
+		'Maintenance of the Ghost Ratings List',
+		'<a href="https://www.webdiplomacy.net/profile.php?userID=2188">TheGhostMaker</a><br />
+		<a href="https://www.webdiplomacy.net/profile.php?userID=13677">Alderian</a><br />
+		<a href="https://www.webdiplomacy.net/profile.php?userID=23172">Hellenic Riot</a><br />
+		<a href="https://www.webdiplomacy.net/profile.php?userID=37168">ghug</a>'
+	),
+	array(
+		'Past Contributors',
+		'Algis Kuliukas - original database design and maintenance <br />
+		<a href="http://www.xcelco.on.ca/~ravgames/dipmaps/">Rob Addison</a> - creator of small diplomacy map image <br />
+		Lucas Kruijswijk - authored the DATC adjudicator tests <br />
+		mrlachette, Magilla, arning - pre-0.72 debugging and testing <br />
+		jayp - development of multi-variant code <br />
+		<a href="http://sourceforge.net/users/fallingrock/">Chris Hughes</a> - webDiplomacy Facebook development, variable phase lengths, game listings pagination <br />
+		Carey Jensen - variant developer, goondip.com developer <br />
+		Alex Lebedev - sponsored the localization support <br />
+		<a href="https://sourceforge.net/sendmessage.php?touser=1295433">paranoidjpn</a> - Japanese translation, testing, UTF-8 support, developing the small PNG map <br />
+		Oliver Auth - variant creator, owner of vDiplomacy' 
+	),
+	array(
+		'Miscellaneous',
+		'Tank and Battleship Icons - released under the <a href="http://www.opensource.org/licenses/gpl-license.php" class="light">GNU Public License</a><br />
+		Font used in the fullscreen map - released under the <a href="contrib/BVFL.txt" class="light">Bitsream Vera Fonts License</a><br />
+		Our JavaScript utility library - the <a href="http://www.prototypejs.org/">Prototype</a> JavaScript framework team'
+	));
 
-	,array('<a href="http://kestas.kuliukas.com/">Kestas Kuliukas</a>
-	','Creator &amp; developer, and Co-Owner')
-	
-	,array('<a href="http://www.webdiplomacy.net/profile.php?userID=33599">Zultar</a>
-	','Co-Owner')
-	
-	,array($moderators,'The Current WebDiplomacy Moderators, reachable at ' . Config::$modEMail)
-	
-	,array('<a href="http://www.webdiplomacy.net/profile.php?userID=54909">A_Tin_Can</a>
-	','Coding Updates and Site Improvements')
-	
-	,array('<a href="http://www.webdiplomacy.net/profile.php?userID=15658">jmo1121109</a>
-	','Coding Updates and Site Improvements')
-	
-	,array('<a href="http://www.webdiplomacy.net/profile.php?userID=4946">abgemacht</a>
-	','Maintaining the <a href="https://www.google.com/maps/d/u/0/viewer?mid=zkz1OHicklqk.ky67Va8gNVi0">webDiplomacy Player Map (external link)</a>, pm him your city to get your location added to the map.')
+	// $leftColumn=array();
+	// $rightColumn=array();
 
-	,array('Unknown
-	','Tank + Battleship icons<br />
-	Released under the <a href="http://www.opensource.org/licenses/gpl-license.php" class="light">GNU Public License</a>')
+	// $half=ceil(count($credits)/2);
+	// for($i=0;$i<$half;$i++)
+	// {
+	// 	$leftColumn[]=$credits[$i];
+	// 	if ( isset($credits[$i+$half]) )
+	// 		$rightColumn[]=$credits[$i+$half];
+	// }
 
-	,array('Unknown
-	','Fullscreen diplomacy map image')
+	// print '<div class="rightHalf"><ul class="formlist">';
+	// foreach($rightColumn as $credit)
+	// 	print '<li class="formlisttitle">'.$credit[0].'</li><li class="formlistdesc">'.$credit[1].'</li>';
+	// print '</ul></div>';
 
-	,array('Algis Kuliukas
-	','SQL guru')
-
-	,array('<a href="https://sourceforge.net/sendmessage.php?touser=1295433">paranoidjpn</a>
-	','Japanese translation, testing, UTF-8 support, developing the small PNG map')
-
-	,array('Bitstream
-	','Font used in the fullscreen map.<br />
-	Released under the <a href="contrib/BVFL.txt" class="light">Bitsream Vera Fonts License</a>')
-
-	,array('<a href="http://www.xcelco.on.ca/~ravgames/dipmaps/">Rob Addison</a>
-	','Small diplomacy map image')
-
-	,array('mrlachette, Magilla, arning
-	','Pre-0.72 debugging + testing')
-
-	,array('The regulars, the donators
-	','Making suggestions, reporting bugs, helping people in the forums, donating')
-
-	,array('Lucas Kruijswijk
-	','Authoring the DATC adjudicator tests')
-
-	,array('figlesquidge
-	','SVG map developer, coast fix patch')
-
-	,array('<a href="http://sourceforge.net/users/fallingrock/">Chris Hughes</a>
-	','webDiplomacy Facebook dev, variable game phase lengths, game listings pagination')
-
-	,array('<a href="http://www.webdiplomacy.net/profile.php?userID=3013">thewonderllama</a>
-	','Unit placement orders fix, designing and running the GFDT tournaments')
-
-	,array('Chrispminis, figlesquidge, dangermouse, thewonderllama, TheGhostMaker
-	','Retired webdiplomacy.net moderators, wrote the list of rules')
-
-	,array('TheGhostMaker and Alderian
-	','Designing and running the <a href="http://tournaments.webdiplomacy.net/theghost-ratingslist">ghostrating</a> system, helping with the GFDT, home page mock-up')
-
-	,array('jayp
-	','Many new features for 0.91, regarding extra game settings. Multi-variant code developer')
-
-	,array('Carey Jensen (gilgatex)
-	','Variant developer, goondip.com developer')
-
-	,array('Oliver Auth (Sleepcap)
-	','Variant creator'),
-
-	array('
-		The <a href="http://www.prototypejs.org/">Prototype</a> JavaScript framework team
-	','
-		Our JavaScript utility library
-	'),
-
-	array('
-		Alex Lebedev
-	','
-		Sponsored the localization support.
-	')
-	);
-
-	$leftColumn=array();
-	$rightColumn=array();
-
-	$half=ceil(count($credits)/2);
-	for($i=0;$i<$half;$i++)
-	{
-		$leftColumn[]=$credits[$i];
-		if ( isset($credits[$i+$half]) )
-			$rightColumn[]=$credits[$i+$half];
-	}
-
-	print '<div class="rightHalf"><ul class="formlist">';
-	foreach($rightColumn as $credit)
-		print '<li class="formlisttitle">'.$credit[0].'</li><li class="formlistdesc">'.$credit[1].'</li>';
-	print '</ul></div>';
-
-	print '<div class="leftHalf"><ul class="formlist">';
-	foreach($leftColumn as $credit)
-		print '<li class="formlisttitle">'.$credit[0].'</li><li class="formlistdesc">'.$credit[1].'</li>';
-	print '</ul></div>';
+	print '<div class="credits">';
+	foreach($credits as $credit)
+		print '<div class="credits-title">'.$credit[0].'</div><div class="credits-info">'.$credit[1].'</div>';
+	print '</div>';
 
 ?>
-<div style="clear:both"></div>
+
 </div>

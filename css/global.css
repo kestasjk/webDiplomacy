@@ -733,13 +733,14 @@ TD.army, div.army {
   }
 
   .faq_answer {
-		padding: 0;
+		padding: 0 0 0 10px;
 		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 		display: none;
 		overflow: hidden;
 		background-color: #f1f1f1;
 		margin-top: 0px !important;
 		font-size: 14px;
+		border-radius: 7px;
   } 
 /* End of section for FAQ styling */
 
@@ -767,6 +768,28 @@ TD.army, div.army {
 }
 
 /* End of section for Hall of Fame styling */
+
+/* Section for credits page styling */
+
+.credits {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.credits-title {
+	width: 100%;
+	background-color: #555;
+	border-radius: 7px;
+	color: white;
+}
+
+.credits-info {
+	background-color: #f1f1f1;
+	overflow: hidden;
+	border-radius: 7px;
+	margin: 0 0 15px 0 !important;
+}
+
+/* end of credits page styling */
 
 /* This section is for the new AdminCP and Mod tools */
 .modTools {
