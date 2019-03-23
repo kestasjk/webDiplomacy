@@ -29,7 +29,7 @@ print libHTML::pageTitle('webDiplomacy Help and Links','Links to pages with more
 ?>
 <ul class="formlist">
 <li> <strong><u>How to Donate</u></strong> </br>
-webDiplomacy.net is run off of user donations. Because of this, we pledge never to show ads, or charge for webDiplomacy features. </br>
+webDiplomacy.net is run off of user donations. Because of this, we pledge never to show ads, or charge for features.
 If you would like to support the site, click the button below. After submitting a donation, please send an email to a Co-owner at <a href="mailto:<?php print Config::$adminEMail; ?>" class="light"><?php print Config::$adminEMail; ?></a> with your username to receive a donator marker. </br>
 <div style='text-align:left'>
 <form action='https://www.paypal.com/cgi-bin/webscr' method='post'>
@@ -48,8 +48,11 @@ If you would like to mentor a new member please <a href="https://goo.gl/forms/Xd
 Any questions on this program can be directed to webdipmentors@gmail.com.
 </li>
 
-<li><a href="rules.php">Rulebook/Contacting the Mods</a></li>
-<li class="formlistdesc">The webDiplomacy rulebook. Moderator and Co-owner emails.</li>
+<li><a href="rules.php">Rulebook/Moderator Policies</a></li>
+<li class="formlistdesc">The webDiplomacy rulebook. Moderator policies.</li>
+
+<li><a href="contactUs.php">Contacting the Mods</a></li>
+<li class="formlistdesc">Need help? Moderator and Owner emails.</li>
  
 <li><a href="intro.php">The intro to Diplomacy</a></li>
 <li class="formlistdesc">An introduction to playing webDiplomacy. Gives details on unit types, move types, and the basic rules of webDiplomacy.</li>
@@ -60,8 +63,8 @@ Any questions on this program can be directed to webdipmentors@gmail.com.
 <li><a href="profile.php">Find a user</a></li>
 <li class="formlistdesc">Search for a user account registered on this server if you know their user ID number, username, or e-mail address.</li>
 
-<li><a href="recentchanges.php">Recent changes</a></li>
-<li class="formlistdesc">Recent changes to the webDiplomacy software.</li>
+<li><a href="tournaments.php">Tournaments</a></li>
+<li class="formlistdesc">Tournament and Special Game rules and how to start one.</li>
 
 <li><a href="halloffame.php">Hall of fame</a></li>
 <li class="formlistdesc">The pros of this server; the top 100 by points!</li>
@@ -92,6 +95,9 @@ Any questions on this program can be directed to webdipmentors@gmail.com.
 
 <li><a href="AGPL.txt">GNU Affero General License</a></li>
 <li class="formlistdesc">The OSI approved license which applies to the vast majority of webDiplomacy.</li>
+
+<li><a href="recentchanges.php">Recent changes</a></li>
+<li class="formlistdesc">Recent changes to the webDiplomacy software.</li>
 
 </ul>
 

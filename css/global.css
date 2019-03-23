@@ -740,6 +740,8 @@ TD.army, div.army {
 		background-color: #f1f1f1;
 		margin-top: 0px !important;
 		font-size: 14px;
+		border-radius: 7px;
+		padding: 0 0 0 10px;
   } 
 /* End of section for FAQ styling */
 
@@ -769,34 +771,103 @@ TD.army, div.army {
 /* End of section for Hall of Fame styling */
 
 /* Section for credits page styling */
-
 .credits {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 }
 
 .credits-title {
-	background-color: #555;
-	border-radius: 7px;
+	background-color: #777;
 	color: white;
+	cursor: pointer;
+	padding: 10px;
+	border: none;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
 }
 
 .credits-info {
-	background-color: #f1f1f1;
-	overflow: hidden;
 	border-radius: 7px;
+	padding: 10px;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 14px;
 	margin: 0 0 15px 0 !important;
 }
 
-.credits-title, .credits-info {
-	padding: 10px;
-}
-
 #credits-player-map-a, #credits-player-map-a:active {
-	color: white;
+	color: rgb(84, 228, 238);
 	cursor: pointer;
 }
-
 /* end of credits page styling */
+
+/* Section for Rules styling */
+.helpPage em {
+	text-decoration:underline;
+	font-style:normal;
+}
+.helpPage h3 {
+	margin-left: 0px !important;
+}
+.helpPage ul {
+	color:#666;
+}
+.helpPage ol {
+	color:#666;
+}
+
+.rules {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+	/* font-size: 14px; */
+}
+.rules h3{
+	margin-left: 0px !important;
+}
+
+ .rules_title {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #777;
+	color: white;
+	cursor: pointer;
+	padding: 10px;
+	border: none;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+  .rules_title:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #555;
+  }
+
+  .rules_content {
+		padding: 0;
+		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+		display: none;
+		overflow: hidden;
+		padding: 0 0 0 10px;
+		background-color: #f1f1f1;
+		font-size: 14px;
+		margin-top:0px !important; 
+		border-radius: 7px;
+	} 
+	
+	.rules_content_show {
+		border-radius: 7px;
+		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+		overflow: hidden;
+		background-color: #f1f1f1;
+		font-size: 14px;
+		padding: 0 0 0 10px;
+		margin-top:0px !important; 
+  } 
+/* End of section for Rules styling */
 
 /* This section is for the new AdminCP and Mod tools */
 .modTools {
