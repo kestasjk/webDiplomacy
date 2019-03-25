@@ -217,20 +217,17 @@ if ($submitted == true)
     try
 	{
         $Mailer->Send(array($email=>$email), $subject,
-        "Hello Mods, </br></br>
-
+        "
         This request is from <a href='https://www.webdiplomacy.net/profile.php?userID=".$User->id."' class = 'contactUs'>".$User->username. "</a>
-        , and their registered email is: ".$User->email."</br></br>
+        , and their registered email is: ".$User->email."<br><br>
 
-        <strong>The user called out ".$userPickedGame. ".</strong></br></br>
-        The ".$actualProblem." and their games are: </br></br>".$allGames. "
+        <strong>The user called out ".$userPickedGame. ".</strong><br><br>
+        The ".$actualProblem." and their games are: <br><br>".$allGames. "
         
-        </br></br>
-        <strong>Additional Information:</strong> </br></br>
+        <br><br>
+        <strong>Additional Information:</strong> <br><br>
         ".$postedAdditionalInfo."</br></br>
 
-        Thanks, </br>
-        Your friendly Neighborhood Gaming Site
         ");
     }
     catch(Exception $e)
@@ -328,6 +325,7 @@ else
     print '<p><input type="submit" class = "contactUs-submit" name="submit"/></p>';
     print '</form>';
 }
+print '</div>';
 print '</div>';
 ?>
 
