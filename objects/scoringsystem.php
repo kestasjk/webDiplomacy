@@ -153,7 +153,7 @@ class ScoringFibonacci extends ScoringSystem {
             if ($i == 0){
                 $fibonacciSequence[$i] = 0;
             }
-            elseif ($i == 2 or $i == 3){
+            elseif ($i == 1 or $i == 2){
                 $fibonacciSequence[$i] = 1;
             }
             else{
