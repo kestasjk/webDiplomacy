@@ -910,8 +910,8 @@ class libHTML
 		return l_t('webDiplomacy version <strong>%s</strong>',number_format(VERSION/100,2)).'<br />
             <a class="light" id="js-desktop-mode" style="cursor: pointer; color: #006699;" onclick="toggleDesktopMode()">Enable Desktop Mode</a> <br />
 			<a href="http://github.com/kestasjk/webDiplomacy" class="light">GitHub Project</a> | 
-			<a href="http://github.com/kestasjk/webDiplomacy/issues" class="light">Bug Reports</a> | <a href="mailto:'.Config::$modEMail.'" class="light">Contact Moderator</a>';
-	}
+			<a href="http://github.com/kestasjk/webDiplomacy/issues" class="light">Bug Reports</a> | <a href="mailto:'.Config::$modEMail.'" class="light">Moderator Email</a> |
+			<a href="contactUsDirect.php" class="light">Contact Us Directly</a>';	}
 
 	/*
 	 * By jayp, saved for future cacheing improvements

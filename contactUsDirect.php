@@ -188,7 +188,7 @@ while (list($gameID, $gameName, $gameOver, $processStatus, $password, $phaseMinu
     array_push($GamesData,$myGame);
 
     if ($phaseMinutes < 61) { $gameLive = true; }
-    $allGames = $allGames.'https://www.webdiplomacy.net/board.php?gameID='.$gameID.'</br>';
+    $allGames = $allGames.'https://www.webdiplomacy.net/board.php?gameID='.$gameID.'<br>';
     if ($gamesValid == false && $games == $gameID)
     {     
         $gamesValid = true;
@@ -216,7 +216,7 @@ if ($submitted == true)
     $worked = true;
     try
 	{
-        $Mailer->Send(array($email=>$email), $subject,
+        $Mailer->Send(array($email=>$email), $subject.' '.$User->username,
         "
         This request is from <a href='https://www.webdiplomacy.net/profile.php?userID=".$User->id."' class = 'contactUs'>".$User->username. "</a>
         , and their registered email is: ".$User->email."<br><br>
@@ -270,8 +270,11 @@ else
     best to get to your problem as soon as possible. </br></br>
 
     If you have a question about how the game works please read the <a href="faq.php" class="contactUs">FAQ</a> 
-    and the <a href="intro.php" class="contactUs"> intro to webDiplomacy</a> before using this form. 
-    </p>
+    and the <a href="intro.php" class="contactUs"> intro to webDiplomacy</a> before using this form. </p>
+
+    <p> Need something else? Take a look at our <a href="contactUs.php" class="contactUs">Contact Info</a> 
+    page to learn how to contact an owner and see all the problems moderators can help with!</p>
+    
     </div>';
     print '<div class = "contactUsShow">';
     

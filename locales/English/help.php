@@ -51,8 +51,11 @@ Any questions on this program can be directed to webdipmentors@gmail.com.
 <li><a href="rules.php">Rulebook/Moderator Policies</a></li>
 <li class="formlistdesc">The webDiplomacy rulebook. Moderator policies.</li>
 
-<li><a href="contactUs.php">Contacting the Mods</a></li>
-<li class="formlistdesc">Need help? Moderator and Owner emails.</li>
+<li><a href="contactUsDirect.php">Contact Us Directly</a></li>
+<li class="formlistdesc">The fastest way to get help from the moderator team!</li>
+
+<li><a href="contactUs.php">Contact Information</a></li>
+<li class="formlistdesc"> Moderator and Owner emails.</li>
  
 <li><a href="intro.php">The intro to Diplomacy</a></li>
 <li class="formlistdesc">An introduction to playing webDiplomacy. Gives details on unit types, move types, and the basic rules of webDiplomacy.</li>
