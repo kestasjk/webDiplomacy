@@ -26,7 +26,8 @@
             </li>
         </ul>
         <h4>What to send</h4>
-        <p>Always try to have some clear reasons when contacting and do not mention it on the forum. In your report/email text you should include:</p>
+        <p>The best way to contact us is at <a href="contactUsDirect.php" class="contactUs">Contact Us Directly!</a> If you want to email us direction then always try to have some clear 
+        reasons when contacting and do not mention it on the forum. In your report/email text you should include:</p>
         <ul>
             <li>If making a game request (e.g for a pause or unpause):</li>
             <ul>
