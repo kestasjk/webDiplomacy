@@ -117,20 +117,16 @@ print '
 <a name="tests"></a><h4>Tests</h4>
 <table>
 	';
-$alternate=2;
 $lastSectionID=-1;
 while ( list($id, $name, $status, $description) = $DB->tabl_row($tabl) )
 {
-	$alternate = 3-$alternate;
-
 	$sectionID = floor($id/100);
 	if( $sectionID != $lastSectionID )
 	{
-		print '<tr class="replyalternate'.$alternate.'">
+		print '<tr class="datc">
 <th>'.$sections[$sectionID][0].'</th>
 <th><a name="section'.$sectionID.'"></a>'.$sections[$sectionID][1].'</th>
 </tr>';
-		$alternate = 3-$alternate;
 	}
 	$lastSectionID = $sectionID;
 
@@ -149,7 +145,7 @@ while ( list($id, $name, $status, $description) = $DB->tabl_row($tabl) )
 			$name.'</a> - '.$status.'<br />'.$description;
 
 	print '
-<tr class="threadalternate'.$alternate.'">
+<tr class="datc">
 <td><p class="notice">'.$image.'</p></td>
 <td><p>'.$details.'</p></td>
 </tr>
