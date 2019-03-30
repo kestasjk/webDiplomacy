@@ -25,25 +25,26 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @subpackage Static
  */
 
-print libHTML::pageTitle('Developer/webmaster info','If you want to fix/improve/install webDiplomacy all the info you need to make it happen is here.');
-
+print libHTML::pageTitle('Developer/webmaster info','All the info you need to help improve or install webDiplomacy.');
 ?>
 
-<p>Webdiplomacy is open source, and we welcome contributions! You can find our todo list <a href="https://github.com/kestasjk/webDiplomacy/issues">here</a>, and our code <a href="https://github.com/kestasjk/webDiplomacy">here</a></p>
+<div class = "developerInfo-show">
+<p>Webdiplomacy is open source, and we welcome contributions! You can find our todo list <a href="https://github.com/kestasjk/webDiplomacy/issues">here</a>, 
+and our code <a href="https://github.com/kestasjk/webDiplomacy">here</a></p>                                                                                                                                                                                                       
 
-<div class="hr"></div>                                                                                                                                                                                                         
+<h3>Feature requests</h3>
 
-<h4>Feature requests</h4>
+<p>We get a lot of feature requests. If your feature request isn't already on our issue tracker, then the best place to ask is the forum. 
+    This will help us gauge support for your ideas, before we add it to the todo list. </p>
+                                                                                                                                                                                                       
+<h3>Bug reports</h3> 
 
-<p>We get a lot of feature requests. If your feature request isn't already on our issue tracker, then the best place to ask is the forum. This will help us gauge support for your ideas, before we add it to the todo list. </p>
+<p>If you're familiar with github, you're welcome to submit a bug report in our issue tracker. Please be as detailed as possible, 
+    and include steps to reproduce the bug, what happens, and what you expect to happen instead. If you don't want to use github, 
+    you can also email bug reports to <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>">
+         <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a>.</p>                                                                                                                                                                                                     
 
-<div class="hr"></div>                                                                                                                                                                                                         
-<h4>Bug reports</h4> 
-
-<p>If you're familiar with github, you're welcome to submit a bug report in our issue tracker. Please be as detailed as possible, and include steps to reproduce the bug, what happens, and what you expect to happen instead. If you don't want to use github, you can also email bug reports to webdipmod@gmail.com.</p>
-<div class="hr"></div>                                                                                                                                                                                                         
-
-<h4>Code contributions</h4> 
+<h3>Code contributions</h3> 
 
 <p>We welcome code contributions for any of the issues on the "soon" milestone. Simply fork the project, and develop a fix in a branch. We accept pull requests that:</p>
 
@@ -59,27 +60,24 @@ print libHTML::pageTitle('Developer/webmaster info','If you want to fix/improve/
 
 <ul>
 <li>The details of the testing that you've performed</li>
-<li>The github issue number that this pull request is a fix for</li>
+<li>The github issue number that this pull request is a fix for if applicable</li>
 </ul>
 
-<p>Any questions, please email webdipmod@gmail.com, and a member of the dev team will answer.</p>
+<p>Any questions, please email <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" >
+         <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a>, and a member of the dev team will answer.</p>
 
-
-<div class="hr"></div>                                                                                                                                                                                                         
-<h4>Code links</h4> 
+<h3>Code links</h3> 
 <p><a href="https://github.com/kestasjk/webDiplomacy" class="light">github.com/kestasjk/webDiplomacy</a> - the code</p>
 <p><a href="https://github.com/kestasjk/webDiplomacy/issues" class="light">github.com/kestasjk/webDiplomacy</a> - the issues</p>
 
-<h4>Webmasters</h4>
+<h3>Webmasters</h3>
 
 <p><a href="http://webdiplomacy.net/README.txt" class="light">README.txt</a> - Installation data for webmasters</p>
 
 <p><a href="http://webdiplomacy.net/AGPL.txt" class="light">AGPL.txt</a> - The license protecting this code, if you make
 	changes to the code you've got to share those changes.</p>
 
-<div class="hr"></div>
-
-<h4>Layout</h4>
+<h3>Layout</h3>
 
 <p>If you want to make a change this is where you should start. The two images and text files below will give you a feel
 for where everything is and how webDip is structured, so you know where to go to find whatever you need to change.</p>
@@ -91,9 +89,7 @@ for where everything is and how webDip is structured, so you know where to go to
 <a href="http://webdiplomacy.net/doc/layout-database.txt" class="light">layout-database.txt</a>
  - The database layout image and text file; how the database is structured and what different tables do</p>
 
-<div class="hr"></div>
-
-<h4>Misc notes</h4>
+<h3>Misc notes</h3>
 
 <p><a href="http://webdiplomacy.net/doc/javascript.txt" class="light">javascript.txt</a> - JavaScript info</p>
 
@@ -104,4 +100,6 @@ for where everything is and how webDip is structured, so you know where to go to
 <p><a href="http://webdiplomacy.net/doc/coasts.txt" class="light">coasts.txt</a> - Info on how coasts are handled</p>
 
 <p>We used to have a forum for developers, but it was closed due to inactivity and spammers. Some of the content there is still useful:
-<a href="http://forum.webdiplomacy.net" class="light">forum.webdiplomacy.net</a>                                                    </p>
+<a href="http://forum.webdiplomacy.net" class="light">forum.webdiplomacy.net</a> 
+</p>
+</div>

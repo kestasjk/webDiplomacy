@@ -26,8 +26,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  */
 
 ?>
-	<li class="formlisttitle">E-mail address</li>
-	<li class="formlistfield"><input type="text" name="userForm[email]" size="50" value="<?php
+	<p><strong>E-mail address:</strong></br>
+	<input type="text" class = "settings" name="userForm[email]" size="40" value="<?php
 		if ( isset($_REQUEST['userForm']['email'] ) )
 		{
 			print $_REQUEST['userForm']['email'];
@@ -36,70 +36,58 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		{
 			print $User->email;
 		}
-		?>" <?php if ( isset($_REQUEST['emailToken']) ) print 'readonly '; ?> /></li>
-	<li class="formlistdesc">Your e-mail address; this will <strong>not</strong> be spammed or given out to anyone.</li>
+		?>" <?php if ( isset($_REQUEST['emailToken']) ) print 'readonly '; ?> />
+		</br>*Will not be spammed or given out. 
+	</p>
 
-	<li class="formlisttitle">Hide e-mail address:</li>
-	<li class="formlistfield">
+	<p><strong>Hide e-mail address?</strong></br>
 		<input type="radio" name="userForm[hideEmail]" value="Yes" <?php if($User->hideEmail=='Yes') print "checked"; ?>>Yes
 		<input type="radio" name="userForm[hideEmail]" value="No" <?php if($User->hideEmail=='No') print "checked"; ?>>No
-	</li>
-	<li class="formlistdesc">
-		Select whether or not you would like other users to be able
-		to see your e-mail address. If you choose to show your e-mail it
-		will be embedded into an image to prevent spam bots from picking it up,
-		so only humans can see it even if you choose to show it.
-	</li>
+	</p>
 
-	<li class="formlisttitle">Password:</li>
-	<li class="formlistfield">
-		<input type="password" name="userForm[password]" maxlength=30>
-	</li>
-	<li class="formlistdesc">
-		Your webDiplomacy password.
-	</li>
+	<p><strong>Password:</strong></br>
+		<input type="password" name="userForm[password]" maxlength=30 autocomplete="new-password" class = "settings">
+	</p>
 
-	<li class="formlisttitle">Password again:</li>
-	<li class="formlistfield">
-		<input type="password" name="userForm[passwordcheck]" maxlength=30>
-	</li>
-	<li class="formlistdesc">
-		Re-enter your webDiplomacy password, to make sure there are no typos.
-	</li>
+	<p><strong>Confirm Password:</strong></br>
+		<input type="password" name="userForm[passwordcheck]" maxlength=30 autocomplete="new-password" class = "settings">
+	</p>
 
-	<li class="formlisttitle">Home page:</li>
-	<li class="formlistfield">
-		<input type="text" size=50 name="userForm[homepage]" value="<?php print $User->homepage; ?>" maxlength=150>
-	</li>
-	<li class="formlistdesc">
-		<?php if ( !$User->type['User'] ) print '<strong>(Optional)</strong>: '; ?>
-		Your blog, personal website or favourite website.
-	</li>
+	<p><strong>Home page:</strong></br>
+		<input type="text" class = "settings" size=50 name="userForm[homepage]" value="<?php print $User->homepage; ?>" maxlength=150>
+		</br><?php if ( !$User->type['User'] ) print '<strong>(Optional)</strong>: '; ?>
+			Your blog or personal/favorite website.
+	</p>
 
-	<li class="formlisttitle">Comment:</li>
-	<li class="formlistfield">
-		<TEXTAREA NAME="userForm[comment]" ROWS="3" COLS="50"><?php
+	<p><strong>Comment:</strong></br>
+		<TEXTAREA NAME="userForm[comment]" ROWS="3" COLS="50" class = "settings"><?php
 			print str_replace('<br />', "\n", $User->comment);
 		?></textarea>
-	</li>
-	<li class="formlistdesc">
+	</br>
 		<?php if ( !$User->type['User'] ) print '<strong>(Optional)</strong>: '; ?>
-		A comment that you would like to be visible to other members on your profile. For example: favourite quotes, links to games you're proud of, favourite threads, etc.
-	</li>
+		Profile quote visible to others. Consider favorite quotes or links to games.
+	</p>
 
 <?php 
+	if (isset(Config::$customForumURL))
+	{
+		list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$User->id);
+		if ($newForumId > 0)
+		{
+			print '<p class="profileCommentURL"><strong><a href="/contrib/phpBB3/ucp.php?i=179">Forum User Settings</a></strong></p>';
+		}
+	}
+
 	foreach ($User->options->value as $name=>$val) 
 	{
-		print '<li class="formlisttitle">'.UserOptions::$titles[$name].':</li>';
-		print '<li class="formlistdesc">';
+		print '<div><li class="settings"><strong>'.UserOptions::$titles[$name].':</strong></li>';
 		foreach (UserOptions::$possibleValues[$name] as $possible) 
 		{
 			print ' <input type="radio" name="userForm['.$name.']" value="'.$possible.'" '. ($val == $possible ? 'checked' :'') . ' > '. $possible;
 		}
-		print '</li>';
+		print '</div></br>';
 	}
  	                               
-
 if( $User->type['User'] ) {
 	// If the user is registered show the list of muted users/countries:
 
@@ -146,43 +134,46 @@ if( $User->type['User'] ) {
 		print '</ul></li>';
 	} */
 	
-	$tablMutedThreads = $DB->sql_tabl(
-		"SELECT mt.muteThreadID, f.subject, f.replies, fu.username ".
-		"FROM wD_MuteThread mt ".
-		"INNER JOIN wD_ForumMessages f ON f.id = mt.muteThreadID ".
-		"INNER JOIN wD_Users fu ON fu.id = f.fromUserID ".
-		"WHERE mt.userID = ".$User->id);
-	$mutedThreads = array();
-	while( $mutedThread = $DB->tabl_hash($tablMutedThreads))
-		$mutedThreads[] = $mutedThread;
-	unset($tablMutedThreads);
-	
-	if( count($mutedThreads) > 0 ) {
-		print '<li class="formlisttitle"><a name="threadmutes"></a>Muted threads:</li>';
-		print '<li class="formlistdesc">The threads which you muted.</li>';
+	if (!isset(Config::$customForumURL))
+	{
+		$tablMutedThreads = $DB->sql_tabl(
+			"SELECT mt.muteThreadID, f.subject, f.replies, fu.username ".
+			"FROM wD_MuteThread mt ".
+			"INNER JOIN wD_ForumMessages f ON f.id = mt.muteThreadID ".
+			"INNER JOIN wD_Users fu ON fu.id = f.fromUserID ".
+			"WHERE mt.userID = ".$User->id);
+		$mutedThreads = array();
+		while( $mutedThread = $DB->tabl_hash($tablMutedThreads))
+			$mutedThreads[] = $mutedThread;
+		unset($tablMutedThreads);
 		
-		$unmuteThreadID=0;
-		if( isset($_GET['unmuteThreadID']) ) {
+		if( count($mutedThreads) > 0 ) {
+			print '<li class="formlisttitle"><a name="threadmutes"></a>Muted threads:</li>';
+			print '<li class="formlistdesc">The threads which you muted.</li>';
 			
-			$unmuteThreadID = (int)$_GET['unmuteThreadID'];
-			$User->toggleThreadMute($unmuteThreadID);
+			$unmuteThreadID=0;
+			if( isset($_GET['unmuteThreadID']) ) {
+				
+				$unmuteThreadID = (int)$_GET['unmuteThreadID'];
+				$User->toggleThreadMute($unmuteThreadID);
+				
+				print '<li class="formlistfield"><strong>Thread <a class="light" href="forum.php?threadID='.$unmuteThreadID.'#'.$unmuteThreadID.
+					'">#'.$unmuteThreadID.'</a> unmuted.</strong></li>';
+			}
 			
-			print '<li class="formlistfield"><strong>Thread <a class="light" href="forum.php?threadID='.$unmuteThreadID.'#'.$unmuteThreadID.
-				'">#'.$unmuteThreadID.'</a> unmuted.</strong></li>';
+			print '<li class="formlistfield"><ul>';
+			
+			foreach ($mutedThreads as $mutedThread) {
+				if( $unmuteThreadID == $mutedThread['muteThreadID']) continue;
+				print '<li>'.
+					'<a class="light" href="forum.php?threadID='.$mutedThread['muteThreadID'].'#'.$mutedThread['muteThreadID'].'">'.
+					$mutedThread['subject'].'</a> '.
+					libHTML::muted('usercp.php?unmuteThreadID='.$mutedThread['muteThreadID'].'#threadmutes').'<br />'.
+					$mutedThread['username'].' ('.$mutedThread['replies'].' replies)<br />'.
+					'</li>';
+			}
+			print '</ul></li>';
 		}
-		
-		print '<li class="formlistfield"><ul>';
-		
-		foreach ($mutedThreads as $mutedThread) {
-			if( $unmuteThreadID == $mutedThread['muteThreadID']) continue;
-			print '<li>'.
-				'<a class="light" href="forum.php?threadID='.$mutedThread['muteThreadID'].'#'.$mutedThread['muteThreadID'].'">'.
-				$mutedThread['subject'].'</a> '.
-				libHTML::muted('usercp.php?unmuteThreadID='.$mutedThread['muteThreadID'].'#threadmutes').'<br />'.
-				$mutedThread['username'].' ('.$mutedThread['replies'].' replies)<br />'.
-				'</li>';
-		}
-		print '</ul></li>';
 	}
 }
 /*
@@ -191,9 +182,8 @@ if( $User->type['User'] ) {
  */
 print '</ul>
 
-<div class="hr"></div>
-
-<input type="submit" class="form-submit notice" value="Update">
-</form>';
+<p><input type="submit" class="settings-submit notice" value="Update"></p>
+</form>
+</div>';
 
 ?>

@@ -25,9 +25,9 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @subpackage Static
  */
 
-print libHTML::pageTitle('Intro to webDiplomacy','A quick &amp; easy guide to get newcomers to webDiplomacy playing the game.');
+print libHTML::pageTitle('Intro to webDiplomacy','A quick guide to get newcomers playing the game.');
 
-print '
+print ' <div class = "introToDiplomacy_show">
 <p>
 Diplomacy is a game which is easy to learn but impossible to master. The rules are all very intuitive,
 lots of people pick them up just by playing, but this document will familiarize you more quickly.
@@ -213,10 +213,11 @@ You can recognize the supply centers with the markers which are placed on them.<
 	With these rules you know everything you need to start playing Diplomacy online! After you
 	<a href="register.php" class="light">register</a> a user account you can
 	<a href="gamecreate.php" class="light">create a game</a>
-	and <a href="gamelistings.php" class="light">join existing games</a>.
+	and <a href="gamelistings.php?page-games=1&gamelistType=New" class="light">join existing games</a>.
 	<p style="text-align:center;">
 		<img src="<?php print STATICSRV; ?>datc/maps/812-large.map-thumb" alt=" "
 				title="Because Prussia is support-holding the fleet in the Baltic Sea the equally supported move to the Baltic Sea from Livonia fails: This allows the fleet in the Baltic Sea to successfully convoy an army from Berlin to Sweden"  />
 	</p>
 	</li>
 </ul>
+</div>

@@ -26,7 +26,7 @@ require_once('header.php');
 
 libHTML::starthtml(l_t('DATC Tests'));
 
-print libHTML::pageTitle(l_t('Diplomacy Adjudicator Test Cases'),l_t('The results of a set of automated tests which show the webDiplomacy\'s compliance with the official Diplomacy rules.'));
+print libHTML::pageTitle(l_t('Diplomacy Adjudicator Test Cases'),l_t('The results of a set of automated tests which show webDiplomacy\'s compliance with the official Diplomacy rules.'));
 
 if ( $Misc->Maintenance )
 {
