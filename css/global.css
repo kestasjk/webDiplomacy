@@ -900,7 +900,7 @@ input[type="text"].contactUs, input[type="password"].contactUs, textarea.contact
 }
 
 input[type="text"].settings, input[type="password"].settings, textarea.settings, select.settings {
-	font-size: 14px;
+	font-size: 14px !important;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #ffffff !important;
 	border: 1px solid #c1c1c1;

@@ -37,7 +37,6 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			print $User->email;
 		}
 		?>" <?php if ( isset($_REQUEST['emailToken']) ) print 'readonly '; ?> />
-		</br>*Will not be spammed or given out. 
 	</p>
 
 	<p><strong>Hide e-mail address?</strong></br>
