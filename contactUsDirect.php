@@ -25,7 +25,6 @@ if( !$User->type['User'] )
 $submitted = false;
 $issueType = '';
 $gamesValid = false;
-$gameLive = false;
 $games = -1;
 $postedGameName = '';
 $postedGameIssue = '';
@@ -173,7 +172,7 @@ $sql = "SELECT g.id, g.name, g.pot, g.gameOver, g.processStatus, ( CASE WHEN g.p
 
 $tablChecked = $DB->sql_tabl($sql);
 $allGames = '';
-$gameLive = false;
+
 while (list($gameID, $gameName, $gameOver, $processStatus, $password, $phaseMinutes, $anon, $pressType, $directorUserID) = $DB->tabl_row($tablChecked))
 {   
     $myGame = new GameResultData();
@@ -187,7 +186,6 @@ while (list($gameID, $gameName, $gameOver, $processStatus, $password, $phaseMinu
     $myGame->directorUserID = $directorUserID;
     array_push($GamesData,$myGame);
 
-    if ($phaseMinutes < 61) { $gameLive = true; }
     $allGames = $allGames.'https://www.webdiplomacy.net/board.php?gameID='.$gameID.'<br>';
     if ($gamesValid == false && $games == $gameID)
     {     
@@ -203,7 +201,6 @@ if ($submitted == true)
     $userPickedGame = 'no specific game';
     
     if ($issueType=='gameIssue' && $postedGameIssue == 'pause') { $subject = $subject.' URGENT-Pause';}
-    if ($issueType=='gameIssue' && $gameLive == true) { $subject = $subject.' URGENT-Live Game';}
     
     if ($gamesValid == true && $games == 1) 
     { 
