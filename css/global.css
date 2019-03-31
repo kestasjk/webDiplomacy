@@ -785,6 +785,29 @@ TD.army, div.army {
 }
 /* End of section for Developer styling */
 
+/* Section for rrInfo styling */
+.rrInfo {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+}
+
+.rrInfo td, .rrInfo th {
+	border: 1px solid #ddd;
+	padding: 6px;
+}
+
+.rrInfo tr:nth-child(even){background-color: #f2f2f2; word-break: break-word;}
+.rrInfo tr:nth-child(odd){background-color: #ffffff; word-break: break-word;}
+
+.rrInfo th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+	text-align: left;
+	background-color: #009902;
+	color: white;
+	min-width:70px;
+}
+/* End of section for rrInfo styling */
 
 /* Section for Hall of Fame styling */
 .hof {
@@ -866,6 +889,47 @@ input[type="text"].contactUs, input[type="password"].contactUs, textarea.contact
 	margin-top:0px !important; 
 } 
 /* End of section for intro page */
+
+/* Section for user search page */
+.userSearch {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.userSearch_show {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	padding: 0 0 0 10px;
+	margin-top:0px !important; 
+} 
+
+.userSearch-submit {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #fff !important;
+	text-transform: uppercase;
+	background: #60a3bc !important;
+	padding: 5px;
+	border-radius: 50px;
+	display: inline-block;
+	border: none;
+}
+
+.userSearch-submit:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-shadow: 0px 0px 6px rgba(255, 255, 255, 1);
+	transition: all 0.4s ease 0s;
+}
+
+input[type="text"].userSearch, input[type="password"].userSearch, textarea.userSearch, select.userSearch {
+	font-size: 14px !important;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #ffffff !important;
+	border: 1px solid #c1c1c1;
+	color:#000000;
+}
+/* End of section for user search page */
 
 /* Section for settings page */
 .settings {
@@ -1401,6 +1465,9 @@ input[id^="FinalizeButton"]{
 		width: 80%;
 	}
 	textarea.settings, input[type="text"].settings, input[type="password"].settings, select.settings{
+		width: 80%;
+	}
+	textarea.userSearch, input[type="text"].userSearch, input[type="password"].userSearch, select.userSearch{
 		width: 80%;
 	}
 }

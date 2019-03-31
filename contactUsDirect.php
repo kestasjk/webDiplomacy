@@ -202,7 +202,8 @@ if ($submitted == true)
     $email = Config::$modEMail;
     $userPickedGame = 'no specific game';
     
-    if ($issueType=='gameIssue' && ($postedGameIssue == 'pause' || $gameLive) ) { $subject = $subject.' URGENT';}
+    if ($issueType=='gameIssue' && $postedGameIssue == 'pause') { $subject = $subject.' URGENT-Pause';}
+    if ($issueType=='gameIssue' && $gameLive == true) { $subject = $subject.' URGENT-Live Game';}
     
     if ($gamesValid == true && $games == 1) 
     { 
