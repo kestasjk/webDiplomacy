@@ -173,7 +173,7 @@ $sql = "SELECT g.id, g.name, g.pot, g.gameOver, g.processStatus, ( CASE WHEN g.p
 
 $tablChecked = $DB->sql_tabl($sql);
 $allGames = '';
-
+$gameLive = false;
 while (list($gameID, $gameName, $gameOver, $processStatus, $password, $phaseMinutes, $anon, $pressType, $directorUserID) = $DB->tabl_row($tablChecked))
 {   
     $myGame = new GameResultData();
