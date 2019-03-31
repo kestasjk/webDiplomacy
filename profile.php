@@ -88,46 +88,38 @@ if ( !$userID )
 {
 	libHTML::starthtml(l_t('Search for user'));
 
-	print libHTML::pageTitle(l_t('Search for user'),l_t('Search for a user using either their ID, username, e-mail address, or any combination of the three.'));
+	print libHTML::pageTitle(l_t('Search for user'),l_t('Search for a user using either their ID, username, or e-mail address.'));
 	?>
 
 	<?php if( isset($searchReturn) ) print '<p class="notice">'.$searchReturn.'</p>'; ?>
+	<div class = "userSearch_show">
+		<form action="profile.php" method="post">
+		<ul class="formlist">
+			<p>
+				<strong><?php print l_t('User ID:'); ?></strong> </br>
+				<input class = "userSearch" type="text" name="searchUser[id]" value="" size="10">
+			</p>
 
-	<form action="profile.php" method="post">
-	<ul class="formlist">
+			<p>
+				<strong><?php print l_t('Username:'); ?></strong> </br>
+				<input class = "userSearch" type="text" name="searchUser[username]" value="" size="40">
+				</br>
+				<?php print l_t('(Not case sensitive, but otherwise must match exactly.)'); ?>
+			</p>
 
-		<li class="formlisttitle"><?php print l_t('ID number:'); ?></li>
-		<li class="formlistfield">
-			<input type="text" name="searchUser[id]" value="" size="10">
-		</li>
-		<li class="formlistdesc">
-			<?php print l_t('The user\'s ID number.'); ?>
-		</li>
+			<p>
+				<strong><?php print l_t('Email address:'); ?></strong> </br>
+				<input class = "userSearch" type="text" name="searchUser[email]" value="" size="40">
+				</br>
+				<?php print l_t('Not case sensitive, but otherwise must match exactly.)'); ?>
+			</p>
+			<p>
+				<input type="submit" class="userSearch-submit" value="<?php print l_t('Search'); ?>">
+			</p>
+		</ul>
 
-		<li class="formlisttitle"><?php print l_t('Username:'); ?></li>
-		<li class="formlistfield">
-			<input type="text" name="searchUser[username]" value="" size="30">
-		</li>
-		<li class="formlistdesc">
-			<?php print l_t('The user\'s username (This isn\'t case sensitive, but otherwise it must match exactly.)'); ?>
-		</li>
-
-		<li class="formlisttitle"><?php print l_t('E-mail address:'); ?></li>
-		<li class="formlistfield">
-			<input type="text" name="searchUser[email]" value="" size="50">
-		</li>
-		<li class="formlistdesc">
-			<?php print l_t('The user\'s e-mail address (This also isn\'t case sensitive, but otherwise it must match exactly.)'); ?>
-		</li>
-	</ul>
-
-	<div class="hr"></div>
-
-	<p class="notice">
-		<input type="submit" class="form-submit" value="<?php print l_t('Search'); ?>">
-	</p>
-	</form>
-
+		</form>
+	</div>
 	</div>
 	<?php
 	libHTML::footer();
@@ -162,7 +154,6 @@ if ( ! $UserProfile->type['User'] && !$UserProfile->type['Banned'] )
 	}
 	libHTML::error($message);
 }
-
 
 libHTML::starthtml();
 
@@ -205,7 +196,8 @@ if ( isset($_REQUEST['detail']) )
 			break;
 
 		case 'replies':
-/*			$dir=User::cacheDir($UserProfile->id);
+			/*	This had to be removed due to placing too heavy of a load on the server. 	
+			$dir=User::cacheDir($UserProfile->id);
 			if( file_exists($dir.'/profile_replies.html') )
 				print file_get_contents($dir.'/profile_replies.html');
 			else
@@ -232,80 +224,130 @@ if ( isset($_REQUEST['detail']) )
 			break;
 
 		case 'civilDisorders':
-			if ( $User->type['Moderator'] || $User->id == $UserProfile->id ) {
-
+			print '<div class = "rrInfo">';
+			if ( $User->type['Moderator'] || $User->id == $UserProfile->id ) 
+			{
 				$tabl = $DB->sql_tabl("SELECT g.name, c.countryID, c.turn, c.bet, c.SCCount, c.gameId, c.forcedByMod
-					FROM wD_CivilDisorders c INNER JOIN wD_Games g ON ( c.gameID = g.id )
+					FROM wD_CivilDisorders c 
+					INNER JOIN wD_Games g ON ( c.gameID = g.id )
 					WHERE c.userID = ".$UserProfile->id . ($User->type['Moderator'] ? '' : ' AND c.forcedByMod = 0'));
 	
-				print '<h4>'.l_t('Civil disorders:').'</h4>
-					<ul>';
+				print '<h4>'.l_t('Civil disorders:').'</h4>';
 					
-				if ($DB->last_affected() == 0) {
+				if ($DB->last_affected() == 0) 
+				{
 					print l_t('No civil disorders found for this profile.');
 				}
-
-				while(list($name, $countryID, $turn, $bet, $SCCount,$gameID,$forcedByMod)=$DB->tabl_row($tabl))
+				else
 				{
-					print '<li>
-					'.l_t('Game:').' <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong>,
-						'.l_t('country #:').' <strong>'.$countryID.'</strong>,
-						'.l_t('turn:').' <strong>'.$turn.'</strong>,
-						'.l_t('bet:').' <strong>'.$bet.'</strong>,
-						'.l_t('supply centers:').' <strong>'.$SCCount.'</strong>';
-						if ( $User->type['Moderator'] ) print ','.l_t('ignored:').' <strong>'.$forcedByMod.'</strong>';
-						print '</li>';
+					print '<TABLE class="rrInfo">';
+					print '<tr>';
+					print '<th class= "rrInfo">Game:</th>';
+					print '<th class= "rrInfo">Country:</th>';
+					print '<th class= "rrInfo">Turn:</th>';
+					print '<th class= "rrInfo">Bet:</th>';
+					print '<th class= "rrInfo">Supply Centers:</th>';
+					if ( $User->type['Moderator'] ) print '<th class= "rrInfo">Ignored:</th>';
+					print '</tr>';
+
+					while(list($name, $countryID, $turn, $bet, $SCCount,$gameID,$forcedByMod)=$DB->tabl_row($tabl))
+					{
+						print '<tr>';
+						print '<td> <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong></td>';
+						print '<td> <strong>'.$countryID.'</strong></td>';
+						print '<td> <strong>'.$turn.'</strong></td>';
+						print '<td> <strong>'.$bet.'</strong></td>';
+						print '<td> <strong>'.$SCCount.'</strong></td>';
+						if ( $User->type['Moderator'] ) print '<td> <strong>'.$forcedByMod.'</strong></td>';
+						print '</tr>';
+					}
+					print '</table>';
 				}
-				print '</ul>';
 
 				$tabl = $DB->sql_tabl("SELECT c.countryID, c.turn, c.bet, c.SCCount, c.gameId, c.forcedByMod
-					FROM wD_CivilDisorders c LEFT JOIN wD_Games g ON c.gameID = g.id
+					FROM wD_CivilDisorders c 
+					LEFT JOIN wD_Games g ON c.gameID = g.id
 					WHERE g.id is null AND c.userID = ".$UserProfile->id . ($User->type['Moderator'] ? '' : ' AND c.forcedByMod = 0'));
 					
-				if ($DB->last_affected() != 0) {
-					print '<h4>'.l_t('Cancelled civil disorders:').'</h4><ul>';
+				if ($DB->last_affected() != 0) 
+				{
+					print '<h4>'.l_t('Cancelled civil disorders:').'</h4>';
+					print '<TABLE class="rrInfo">';
+					print '<tr>';
+					print '<th class= "rrInfo">Game ID:</th>';
+					print '<th class= "rrInfo">Country:</th>';
+					print '<th class= "rrInfo">Turn:</th>';
+					print '<th class= "rrInfo">Bet:</th>';
+					print '<th class= "rrInfo">Supply Centers:</th>';
+					if ( $User->type['Moderator'] ) print '<th class= "rrInfo">Ignored:</th>';
+					print '</tr>';
+
 					while(list($countryID, $turn, $bet, $SCCount,$gameID,$forcedByMod)=$DB->tabl_row($tabl))
 					{
-						print '<li>
-						'.l_t('Game:').' <strong>'.$gameID.'</strong>,
-							'.l_t('country #:').' <strong>'.$countryID.'</strong>,
-							'.l_t('turn:').' <strong>'.$turn.'</strong>,
-							'.l_t('bet:').' <strong>'.$bet.'</strong>,
-							'.l_t('supply centers:').' <strong>'.$SCCount.'</strong>';
-							if ( $User->type['Moderator'] ) print ','.l_t('ignored:').' <strong>'.$forcedByMod.'</strong>';
-							print '</li>';
+						print '<tr>';
+						print '<td> <strong>'.$gameID.'</strong></td>';
+						print '<td> <strong>'.$countryID.'</strong></td>';
+						print '<td> <strong>'.$turn.'</strong></td>';
+						print '<td> <strong>'.$bet.'</strong></td>';
+						print '<td> <strong>'.$SCCount.'</strong></td>';
+						if ( $User->type['Moderator'] ) print '<td> <strong>'.$forcedByMod.'</strong></td>';
+						print '</tr>';
 					}
-					print "</ul>";
+					print '</table>';
 				}
-				if ($UserProfile->deletedCDs != 0) {
+
+				if ($UserProfile->deletedCDs != 0) 
+				{
 					print 'Additionally, there are ' . $UserProfile->deletedCDs . ' deleted CDs for this account (eg, self CD positions retaken by this user).';
 				}
-				print '<h4>'.l_t('NMRs:').'</h4><ul>';
-				$tabl = $DB->sql_tabl("SELECT n.gameID, n.countryID, n.turn, n.bet, n.SCCount, g.name FROM wD_NMRs n LEFT JOIN wD_Games g ON n.gameID = g.id WHERE n.userID = ".$UserProfile->id);
-				if ($DB->last_affected() != 0) {
+
+				print '<h4>'.l_t('NMRs:').'</h4>';
+				$tabl = $DB->sql_tabl("SELECT n.gameID, n.countryID, n.turn, n.bet, n.SCCount, g.name 
+				FROM wD_NMRs n 
+				LEFT JOIN wD_Games g ON n.gameID = g.id 
+				WHERE n.userID = ".$UserProfile->id);
+
+				if ($DB->last_affected() != 0) 
+				{
+					print '<TABLE class="rrInfo">';
+					print '<tr>';
+					print '<th class= "rrInfo">Game:</th>';
+					print '<th class= "rrInfo">Country:</th>';
+					print '<th class= "rrInfo">Turn:</th>';
+					print '<th class= "rrInfo">Bet:</th>';
+					print '<th class= "rrInfo">Supply Centers:</th>';
+					print '</tr>';
+
 					while(list($gameID, $countryID, $turn, $bet, $SCCount, $name)=$DB->tabl_row($tabl))
-					{                                          
-						print '<li>';
-						if ($name != '') {
-							print l_t('Game:').' <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong> ';
-						} else {	
-							print l_t('Game:').' <strong>'.$gameID.' '.l_t('(Cancelled)').'</strong> ';
+					{
+						print '<tr>';
+						
+						if ($name != '') 
+						{
+							print '<td> <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong></td>';
+						} 
+						else 
+						{	
+							print '<td> <strong>Cancelled Game</strong></td>';
 						}
-						print l_t('country #:').' <strong>'.$countryID.'</strong>,
-							'.l_t('turn:').' <strong>'.$turn.'</strong>,
-							'.l_t('bet:').' <strong>'.$bet.'</strong>,
-							'.l_t('supply centers:').' <strong>'.$SCCount.'</strong>
-                                                 	</li>';
+						print '<td> <strong>'.$countryID.'</strong></td>';
+						print '<td> <strong>'.$turn.'</strong></td>';
+						print '<td> <strong>'.$bet.'</strong></td>';
+						print '<td> <strong>'.$SCCount.'</strong></td>';
+						print '</tr>';
 					}
-				} else {
+					print '</table>';
+				} 
+				else 
+				{
 					print l_t('No NMRs found for this profile.');
 				}
-				print '</ul>';
-
-			} else {
-                         	print l_t('You do not have permission to view this page.');
+			} 
+			else 
+			{
+                print l_t('You do not have permission to view this page.');
 			}
-
+			print '</div>';
 			break;
 
 		case 'reports':
@@ -324,8 +366,7 @@ if ( isset($_REQUEST['detail']) )
 	libHTML::footer();
 }
 
-print '<div><div class="rightHalf">
-		';
+print '<div><div class="rightHalf">';
 
 $rankingDetails = $UserProfile->rankingDetails();
 $rankingDetailsClassic = $UserProfile->rankingDetailsClassic();
@@ -341,11 +382,11 @@ if ( $rankingDetails['position'] < $rankingDetails['rankingPlayers'] )
 	print '<li><strong>'.l_t('Position:').'</strong> '.$rankingDetails['position'].' / '.
 		$rankingDetails['rankingPlayers'].' '.l_t('(top %s%%)',$rankingDetails['percentile']).'</li>';
 
-print '<li><strong>'.l_t('Available points:').'</strong> '.$UserProfile->points.' '.libHTML::points().'</li>';
+print '<li><strong>'.l_t('Available points:').'</strong> '.number_format($UserProfile->points).' '.libHTML::points().'</li>';
 
-print '<li><strong>'.l_t('Points in play:').'</strong> '.($rankingDetails['worth']-$UserProfile->points-($showAnon ? 0 : $rankingDetails['anon']['points'])).' '.libHTML::points().'</li>';
+print '<li><strong>'.l_t('Points in play:').'</strong> '.number_format(($rankingDetails['worth']-$UserProfile->points-($showAnon ? 0 : $rankingDetails['anon']['points']))).' '.libHTML::points().'</li>';
 
-print '<li><strong>'.l_t('Total points:').'</strong> '.$rankingDetails['worth'].' '.libHTML::points().'</li>';
+print '<li><strong>'.l_t('Total points:').'</strong> '.number_format($rankingDetails['worth']).' '.libHTML::points().'</li>';
 
 if( $UserProfile->type['DonatorPlatinum'] )
 	$donatorMarker = libHTML::platinum().' - <strong>'.l_t('Platinum').'</strong>';
@@ -363,12 +404,11 @@ if( $donatorMarker )
 
 print '<li>&nbsp;</li>';
 
-
 list($posts) = $DB->sql_row(
 	"SELECT SUM(gameMessagesSent) FROM wD_Members m
 	WHERE m.userID = ".$UserProfile->id);
 if( is_null($posts) ) $posts=0;
-print '<li><strong>'.l_t('Game messages:').'</strong> '.$posts.'</li>';
+print '<li><strong>'.l_t('Game messages:').'</strong> '.number_format($posts).'</li>';
 
 print '<li>&nbsp;</li>';
 $total = 0;
@@ -478,8 +518,6 @@ if( $total )
 	}                                                                                                         
 	print '</li>';
 	
-	
-
 	if ( $rankingDetails['takenOver'] )
 		print '<li>'.l_t('Left and taken over: <strong>%s</strong>',$rankingDetails['takenOver']).
 			'(<a href="profile.php?detail=civilDisorders&userID='.$UserProfile->id.'">'.l_t('View details').'</a>)</li>';
@@ -488,7 +526,6 @@ if( $total )
 }
 
 print '</ul></div>';
-
 
 print "<h2>".$UserProfile->username;
 if ( $User->type['User'] && $UserProfile->type['User'] && ! ( $User->id == $UserProfile->id || $UserProfile->type['Moderator'] || $UserProfile->type['Guest'] || $UserProfile->type['Admin'] ) )
@@ -507,9 +544,6 @@ print '</h2>';
 
 // Regular user info starts here:
 print '<div class="leftHalf" style="width:50%">';
-
-
-
 
 if( $UserProfile->type['Banned'] )
 	print '<p><strong>'.l_t('Banned').'</strong></p>';
@@ -561,27 +595,29 @@ if ( $UserProfile->online || time() - (24*60*60) < $UserProfile->timeLastSession
 else
 	print '<li><strong>'.l_t('Last visited:').'</strong> '.libTime::text($UserProfile->timeLastSessionEnded).'</li>';
 
-list($posts) = $DB->sql_row(
-	"SELECT (
-		SELECT COUNT(fromUserID) FROM `wD_ForumMessages` WHERE type='ThreadStart' AND fromUserID = ".$UserProfile->id."
-		) + (
-		SELECT COUNT(fromUserID) FROM `wD_ForumMessages` WHERE type='ThreadReply' AND fromUserID = ".$UserProfile->id."
-		)"); // Doing the query this way makes MySQL use the type, fromUserID index
-if( is_null($posts) ) $posts=0;
-list($likes) = $DB->sql_row("SELECT COUNT(*) FROM wD_LikePost WHERE userID=".$UserProfile->id);
-list($liked) = $DB->sql_row("SELECT COUNT(*) FROM wD_ForumMessages fm 
-	INNER JOIN wD_LikePost lp ON lp.likeMessageID = fm.id 
-	WHERE fm.fromUserID=".$UserProfile->id);
-$likes = ($likes ? '<strong>'.l_t('Likes:').'</strong> '.$likes : '');
-$liked = ($liked ? '<strong>'.l_t('Liked:').'</strong> '.$liked : '');
+if (!isset(Config::$customForumURL))
+{
+	// Doing the query this way makes MySQL use the type, fromUserID index
+	list($posts) = $DB->sql_row(
+		"SELECT (
+			SELECT COUNT(fromUserID) FROM `wD_ForumMessages` WHERE type='ThreadStart' AND fromUserID = ".$UserProfile->id."
+			) + (
+			SELECT COUNT(fromUserID) FROM `wD_ForumMessages` WHERE type='ThreadReply' AND fromUserID = ".$UserProfile->id."
+			)"); 
 
-print '<li><strong>'.l_t('Forum posts:').'</strong> '.$posts.'<br />';
-	//<strong>'.l_t('View:').'</strong> <a class="light" href="profile.php?detail=threads&userID='.$UserProfile->id.'">'.l_t('Threads').'</a>,
-	//	<a class="light" href="profile.php?detail=replies&userID='.$UserProfile->id.'">'.l_t('replies').'</a>';
+	if( is_null($posts) ) $posts=0;
+	list($likes) = $DB->sql_row("SELECT COUNT(*) FROM wD_LikePost WHERE userID=".$UserProfile->id);
+	list($liked) = $DB->sql_row("SELECT COUNT(*) FROM wD_ForumMessages fm 
+		INNER JOIN wD_LikePost lp ON lp.likeMessageID = fm.id 
+		WHERE fm.fromUserID=".$UserProfile->id);
+	$likes = ($likes ? '<strong>'.l_t('Likes:').'</strong> '.$likes : '');
+	$liked = ($liked ? '<strong>'.l_t('Liked:').'</strong> '.$liked : '');
 
-print '<br/>'.implode(' / ',array($likes,$liked)).'
-	</li>';
-unset($likes,$liked);
+	print '<li><strong>'.l_t('Forum posts:').'</strong> '.$posts.'<br />';
+
+	print '<br/>'.implode(' / ',array($likes,$liked)).'</li>';
+	unset($likes,$liked);
+}
 
 print '<li>&nbsp;</li>';
 print '<li><strong>'.l_t('Joined:').'</strong> '.$UserProfile->timeJoinedtxt().'</li>';
@@ -589,10 +625,9 @@ print '<li><strong>'.l_t('User ID#:').'</strong> '.$UserProfile->id.'</li>';
 if( $User->type['Moderator'] )
 {
 	print '<li><strong>'.l_t('E-mail:').'</strong>
-			'.$UserProfile->email.($UserProfile->hideEmail == 'No' ? '' : ' <em>'.l_t('(hidden for non-mods)').'</em>').'
-		</li>';
+			'.$UserProfile->email.($UserProfile->hideEmail == 'No' ? '' : ' <em>'.l_t('(hidden for non-mods)').'</em>').'</li>';
 }
-elseif ( $UserProfile->hideEmail == 'No' )
+else if ( $UserProfile->hideEmail == 'No' )
 {
 	$emailCacheFilename = libCache::dirID('users',$UserProfile->id).'/email.png';
 	if( !file_exists($emailCacheFilename) )
@@ -632,7 +667,6 @@ print '<li>&nbsp;</li>';
 
 print '</li></ul></p></div><div style="clear:both"></div></div>';
 
-
 // Start interactive area:
 
 if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
@@ -658,9 +692,7 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 		print '</p>';
 	}
 	
-	
-	if( !$UserProfile->type['Admin'] 
-		&& ( $User->type['Admin'] || $User->type['ForumModerator'] ) )
+	if( !$UserProfile->type['Admin'] && ( $User->type['Admin'] || $User->type['ForumModerator'] ) )
 	{
 		$silences = $UserProfile->getSilences();
 		
@@ -818,5 +850,4 @@ else
 
 print '</div>';
 libHTML::footer();
-
 ?>

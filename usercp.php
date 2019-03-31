@@ -192,7 +192,7 @@ print libHTML::pageTitle(l_t('User account settings'),l_t('Control settings for 
 print '
 <div class = "settings">
 <div class = "settings">This page allows you to update your profile settings. Your email address will never be spammed or given out, and is only used 
-by the moderator team to contact you. PLease ensure your email is updated so that the moderators can contact you. </br></br> 
+by the moderator team to contact you. Please ensure your email is updated so that the moderators can contact you. </br></br> 
 If you select "no" for "Hide email address" your email will be displayed to other site users in an image file to protect you from bots. 
 If you leave the default of "yes" it is only visible to moderators.</div></br>
 <form method="post" class = "settings_show" autocomplete="off">
