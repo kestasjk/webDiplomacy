@@ -119,8 +119,9 @@ class notice
 	public function html()
 	{
 		global $User;
+		$aprilFools = mt_rand(1, 6);
 
-		$buf = '<div class="homeNotice '.($this->type=='Game'?'" gameID="'.$this->fromID.'"':'userID'.$this->fromID.'"').'>
+		$buf = '<div class="homeNotice'.$aprilFools.' '.($this->type=='Game'?'" gameID="'.$this->fromID.'"':'userID'.$this->fromID.'"').'>
 			<div class="homeForumGroup homeForumAlt'.libHTML::alternate().'">
 				<div class="homeForumSubject homeForumTopBorder">'.$this->fromLink().'</div>
 				<div class="homeForumPostAlt'.libHTML::alternate().' homeForumPost">
@@ -149,7 +150,7 @@ class notice
 					</div>
 					</div>';*/
 
-		$buf .= '<div class="hr"></div></div>';
+		$buf .= '</div>';
 
 		return $buf;
 	}

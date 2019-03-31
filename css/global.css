@@ -890,6 +890,98 @@ input[type="text"].contactUs, input[type="password"].contactUs, textarea.contact
 } 
 /* End of section for intro page */
 
+/* Section for homeNotice page */
+.homeNotice1 {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: rgb(231, 141, 210);
+	font-size: 14px;
+	padding: 0 0 0 10px !important;
+	margin-top:5px !important; 
+} 
+
+.homeNotice2 {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #a0d8e2;
+	font-size: 14px;
+	padding: 0 0 0 10px !important;
+	margin-top:5px !important; 
+} 
+
+.homeNotice3 {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	/* background-color: #f1f1f1; */
+	background-color: orange;
+	font-size: 14px;
+	padding: 0 0 0 10px !important;
+	margin-top:5px !important; 
+} 
+
+.homeNotice4 {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #d5f060;
+	font-size: 14px;
+	padding: 0 0 0 10px !important;
+	margin-top:5px !important; 
+} 
+
+.homeNotice5 {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #95f35f;
+	font-size: 14px;
+	padding: 0 0 0 10px !important;
+	margin-top:5px !important; 
+} 
+
+.homeNotice6 {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f17575;
+	font-size: 14px;
+	padding: 0 0 0 10px !important;
+	margin-top:5px !important; 
+} 
+
+.homeForumGroupNew {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	padding: 0 0 0 10px !important;
+	margin-top:5px !important; 
+}
+
+.home-submit {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #fff !important;
+	text-transform: uppercase;
+	background: #60a3bc !important;
+	padding: 1px !important;
+	border-radius: 50px;
+	display: inline-block;
+	border: none;
+}
+
+.home-submit:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-shadow: 0px 0px 6px rgba(255, 255, 255, 1);
+	transition: all 0.4s ease 0s;
+}
+
+
+/* End of section for homeNotice page */
+
 /* Section for user search page */
 .userSearch {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -1469,5 +1561,9 @@ input[id^="FinalizeButton"]{
 	}
 	textarea.userSearch, input[type="text"].userSearch, input[type="password"].userSearch, select.userSearch{
 		width: 80%;
+	}
+	input[type="submit"].home-submit{
+		width: 40% !important;
+		font-size: 14px !important;
 	}
 }

@@ -388,6 +388,7 @@ class libHTML
 	static public function prebody ( $title )
 	{
 		$jsVersion = 8;  // increment this to force clients to reload their JS files
+		$cssVersion = 8;  // increment this to force clients to reload their JS files
 		$variantCSS=array();
 		foreach(Config::$variants as $variantName)
 			$variantCSS[] = '<link rel="stylesheet" href="'.STATICSRV.l_s('variants/'.$variantName.'/resources/style.css').'" type="text/css" />';
@@ -408,9 +409,9 @@ class libHTML
 		<meta name="keywords" content="'.l_t('diplomacy,diplomacy game,online diplomacy,classic diplomacy,web diplomacy,diplomacy board game,play diplomacy,php diplomacy').'" />
 		<link rel="shortcut icon" href="'.STATICSRV.l_s('favicon.ico').'" />
 		<link rel="icon" href="'.STATICSRV.l_s('favicon.ico').'" />
-		<link rel="stylesheet" id="global-css" href="'.CSSDIR.l_s('/global.css').'" type="text/css" />
+		<link rel="stylesheet" id="global-css" href="'.CSSDIR.l_s('/global.css').'?ver='.$cssVersion.'" type="text/css" />
 		<link rel="stylesheet" id="game-panel-css" href="'.CSSDIR.l_s('/gamepanel.css').'" type="text/css" />
-		<link rel="stylesheet" id="home-css" href="'.CSSDIR.l_s('/home.css').'" type="text/css" />
+		<link rel="stylesheet" id="home-css" href="'.CSSDIR.l_s('/home.css').'?ver='.$cssVersion.'" type="text/css" />
 		'.$variantCSS.'
 		<script type="text/javascript" src="useroptions.php"></script>
 		<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/prototype.js').'"></script>
@@ -950,7 +951,7 @@ class libHTML
 		global $User, $Locale;
 
 
-		$jsVersion = 7;  // increment this to force clients to reload their JS files
+		$jsVersion = 8;  // increment this to force clients to reload their JS files
 
 		$buf = '';
 

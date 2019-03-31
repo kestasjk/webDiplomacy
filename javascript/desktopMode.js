@@ -41,7 +41,7 @@ function changeCSS(toggle) {
         newlinkGlobal.setAttribute("rel", "stylesheet");
         newlinkGlobal.setAttribute("type", "text/css");
         newlinkGlobal.setAttribute("id", "global-css");
-        newlinkGlobal.setAttribute("href", cssDirectory + "/desktopOnly/global.css");
+        newlinkGlobal.setAttribute("href", cssDirectory + "/desktopOnly/global.css?ver=8");
         document.getElementsByTagName("head").item(0).appendChild(newlinkGlobal);
 
         var oldlinkHome = document.getElementById("home-css");
@@ -49,7 +49,7 @@ function changeCSS(toggle) {
         newlinkHome.setAttribute("rel", "stylesheet");
         newlinkHome.setAttribute("type", "text/css");
         newlinkHome.setAttribute("id", "home-css");
-        newlinkHome.setAttribute("href", cssDirectory + "/desktopOnly/home.css");
+        newlinkHome.setAttribute("href", cssDirectory + "/desktopOnly/home.css?ver=8");
         document.getElementsByTagName("head").item(0).appendChild(newlinkHome);
 
         var oldlinkGamePanel = document.getElementById("game-panel-css");
@@ -77,12 +77,12 @@ function changeCSS(toggle) {
         document.getElementsByTagName("head").item(0).appendChild(viewPortTag);
 
         var oldlinkGlobal = document.getElementById("global-css");
-        if(oldlinkGlobal.getAttribute("href") !== cssDirectory + "/global.css") {
+        if(oldlinkGlobal.getAttribute("href") !== cssDirectory + "/global.css?ver=8") {
             var newlinkGlobal = document.createElement("link");
             newlinkGlobal.setAttribute("rel", "stylesheet");
             newlinkGlobal.setAttribute("type", "text/css");
             newlinkGlobal.setAttribute("id", "global-css");
-            newlinkGlobal.setAttribute("href", cssDirectory + "/global.css");
+            newlinkGlobal.setAttribute("href", cssDirectory + "/global.css?ver=8");
             document.getElementsByTagName("head").item(0).appendChild(newlinkGlobal);
             newlinkGlobal.onload = function(){
                 oldlinkGlobal.remove();
@@ -90,12 +90,12 @@ function changeCSS(toggle) {
         }
 
         var oldlinkHome = document.getElementById("home-css");
-        if(oldlinkHome.getAttribute("href") !== cssDirectory + "/home.css") {
+        if(oldlinkHome.getAttribute("href") !== cssDirectory + "/home.css?ver=8") {
             var newlinkHome = document.createElement("link");
             newlinkHome.setAttribute("rel", "stylesheet");
             newlinkHome.setAttribute("type", "text/css");
             newlinkHome.setAttribute("id", "home-css");
-            newlinkHome.setAttribute("href", cssDirectory + "/home.css");
+            newlinkHome.setAttribute("href", cssDirectory + "/home.css?ver=8");
             document.getElementsByTagName("head").item(0).appendChild(newlinkHome);
             newlinkHome.onload = function(){
                 oldlinkHome.remove();
