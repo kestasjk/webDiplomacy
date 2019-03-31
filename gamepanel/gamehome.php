@@ -160,24 +160,61 @@ class panelGameHome extends panelGameBoard
 	 * @return string
 	 */
 	function links()
-	{	
+	{
+		global $DB, $User;
+		$userInGame = 0;
+		list($userInGame) = $DB->sql_row("SELECT count(1) FROM wD_Members WHERE userID =".$User->id." and gameID =".$this->id);
 		$watchString= '';	
-		if ($this->watched())
+
+		if ($this->watched() || $userInGame == 0)
 		{
 			$watchString = '- <a href="board.php?gameID='.$this->id.'&unwatch">'.l_t('Stop spectating').'</a>';
-		}		
-				
-		if( $this->phase == 'Pre-game')
-		{
-			return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
-				<a href="board.php?gameID='.$this->id.'">'.l_t('Open').'</a>
-				'.$watchString.'</div>';
+			if( $this->phase == 'Pre-game')
+			{
+				return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
+					<a href="board.php?gameID='.$this->id.'">'.l_t('Open').'</a>
+					'.$watchString.'
+					</div>';
+			}
+			else
+			{
+				return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
+					<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t('Open').'</a> 
+					'.$watchString.'
+					</div>';
+			}
 		}
 		else
-			return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
-				<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t('Open').'</a> 
-				'.$watchString.'</div>';
-	}
+		{
+			$noticesStatus = 5;
+			$SubmitName = 'Toggle Notices';
+			list($noticesStatus) = $DB->sql_row("SELECT hideNotifications FROM wD_Members WHERE userID =".$User->id." and gameID =".$this->id);
+			if ($noticesStatus == 1) { $SubmitName = 'Enable Notices'; }
+			else if ($noticesStatus == 0) { $SubmitName = 'Disable Notices'; }
 
+			if( $this->phase == 'Pre-game')
+			{
+				return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
+				<form action="#" method="post">
+					<a href="board.php?gameID='.$this->id.'">'.l_t('Open').'</a>
+					<input type="hidden" value="'.$this->id.'" name="gameToggleName" />
+					<input type="submit" title="Turn on/off the notifications for this game." style="float: right;" class = "home-submit" name="submit" value="'.$SubmitName.'"/>
+					</form>
+					</div>';
+			}
+			else
+			{
+				return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
+					
+					<form action="#" method="post">
+					<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t('Open').'</a> 
+					<input type="hidden" value="'.$this->id.'" name="gameToggleName" />
+					<input type="submit" title="Turn on/off the notifications for this game." style="float: right;" class = "home-submit" name="submit" value="'.$SubmitName.'"/>
+					</form>
+					
+					</div>';
+			}
+		}	
+	}
 }
 ?>

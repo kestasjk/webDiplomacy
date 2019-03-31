@@ -43,6 +43,32 @@ if( !isset($_SESSION['lastSeenHome']) || $_SESSION['lastSeenHome'] < $User->time
 	$_SESSION['lastSeenHome']=$User->timeLastSessionEnded;
 }
 
+global $DB;
+$gameToggleID = 0;
+
+if(isset($_POST['submit'])) 
+{
+	if(isset($_POST['gameToggleName'])) 
+	{
+		$gameToggleID = $_POST['gameToggleName'];
+	}
+
+	if ($User->type['User'] and $gameToggleID > 0)
+	{
+		$noticesStatus = 5;
+		list($noticesStatus) = $DB->sql_row("SELECT hideNotifications FROM wD_Members WHERE userID =".$User->id." and gameID =".$gameToggleID);
+
+		if ($noticesStatus == 0)
+		{
+			$DB->sql_put("UPDATE wD_Members SET hideNotifications = 1 WHERE userID =".$User->id." and gameID =".$gameToggleID);
+		}
+		else if ($noticesStatus == 1)
+		{
+			$DB->sql_put("UPDATE wD_Members SET hideNotifications = 0 WHERE userID =".$User->id." and gameID =".$gameToggleID);
+		}
+	}
+}
+
 class libHome
 {
 	static public function getType($type=false, $limit=35)
@@ -51,9 +77,12 @@ class libHome
 
 		$notices=array();
 
-		$tabl=$DB->sql_tabl("SELECT *
-			FROM wD_Notices WHERE toUserID=".$User->id.($type ? " AND type='".$type."'" : '')."
-			ORDER BY timeSent DESC ".($limit?'LIMIT '.$limit:''));
+		$tabl=$DB->sql_tabl("SELECT n.*
+			FROM wD_Notices n
+			LEFT JOIN wD_Games g on g.name = n.linkName and n.type = 'Game'
+			LEFT JOIN wD_Members m on m.gameID = g.id and n.type = 'Game' and m.userID = ".$User->id."
+			WHERE (m.hideNotifications is null or m.hideNotifications = 0) and n.toUserID=".$User->id.($type ? " AND n.type='".$type."'" : '')."
+			ORDER BY n.timeSent DESC ".($limit?'LIMIT '.$limit:''));
 		while($hash=$DB->tabl_hash($tabl))
 		{
 			$notices[] = new notice($hash);
@@ -280,7 +309,7 @@ class libHome
                 if ($User->options->value['displayUpcomingLive'] == 'No') return ''; 
 
 		$tabl=$DB->sql_tabl("SELECT g.* FROM wD_Games g
-			WHERE g.phase = 'Pre-game' AND g.phaseMinutes < 60 AND g.password IS NULL
+			WHERE (g.phase = 'Pre-game' OR (g.minimumBet is not null and g.gameOver = 'No')) AND g.phaseMinutes < 60 AND g.password IS NULL
 			ORDER BY g.processStatus ASC, g.processTime ASC LIMIT 3");
 		$buf = '';
 		$count=0;
@@ -295,14 +324,13 @@ class libHome
 		return $buf;
 	}
 
-
 	static public function gameNotifyBlock ()
 	{
 		global $User, $DB;
 
 		$tabl=$DB->sql_tabl("SELECT g.* FROM wD_Games g
 			INNER JOIN wD_Members m ON ( m.userID = ".$User->id." AND m.gameID = g.id )
-			WHERE NOT g.phase = 'Finished'
+			WHERE NOT g.phase = 'Finished' and m.status <> 'Defeated'
 			ORDER BY g.processStatus ASC, g.processTime ASC");
 		$buf = '';
 
@@ -324,6 +352,42 @@ class libHome
 				'.l_t('Access the <a href="gamelistings.php?tab=">Games</a> '.
 				'link above to find games you can join, or start a '.
 				'<a href="gamecreate.php">New game</a> yourself.</a>').'</p></div>';
+		}
+		elseif ( $count == 1 && $User->points > 5 )
+		{
+			$buf .= '<div class="hr"></div>';
+			$buf .= '<div class="bottomborder"><p class="notice">'.l_t('You can join as many games as you '.
+			'have the points to join.').' </a></p></div>';
+		}
+		return $buf;
+	}
+
+	static public function gameDefeatedNotifyBlock ()
+	{
+		global $User, $DB;
+
+		$tabl=$DB->sql_tabl("SELECT g.* FROM wD_Games g
+			INNER JOIN wD_Members m ON ( m.userID = ".$User->id." AND m.gameID = g.id )
+			WHERE NOT g.phase = 'Finished' and m.status = 'Defeated'
+			ORDER BY g.processStatus ASC, g.processTime ASC");
+		$buf = '';
+
+		$count=0;
+		while($game=$DB->tabl_hash($tabl))
+		{
+			$count++;
+			$Variant=libVariant::loadFromVariantID($game['variantID']);
+			$Game=$Variant->panelGameHome($game);
+
+			$buf .= '<div class="hr"></div>';
+			$buf .= $Game->summary();
+		} 
+
+		if($count==0)
+		{
+			$buf .= '<div class="hr"></div>';
+			$buf .= '<div class="bottomborder"><p class="notice"> You are not defeated in any active games, good job!<br />
+				</p></div>';
 		}
 		elseif ( $count == 1 && $User->points > 5 )
 		{
@@ -397,7 +461,7 @@ class libHome
 
 			$buf .= '<div class="hr userID'.$threads[$threadID]['threadStarterUserID'].' threadID'.$threadID.'"></div>';
 
-			$buf .= '<div class="homeForumGroup homeForumAlt'.($threadCount%2 + 1).
+			$buf .= '<div class="homeForumGroupNew homeForumAlt'.($threadCount%2 + 1).
 				' userID'.$threads[$threadID]['threadStarterUserID'].' threadID'.$threadID.'">
 				<div class="homeForumSubject homeForumTopBorder">'.libHTML::forumParticipated($threadID).' '.$data['subject'].'</div> ';
 
@@ -444,7 +508,6 @@ class libHome
 		}
 	}
 
-
 	static function forumBlock()
 	{
 		$buf = '<div class="homeHeader">'.l_t('Forum').'</div>';
@@ -453,7 +516,6 @@ class libHome
 		$buf .=  '<table><tr><td>'.implode('</td></tr><tr><td>',$forumNew).'</td></tr></table>';
 		return $buf;
 	}
-
 
 	static function forumBlockExtern()
 	{
@@ -502,7 +564,7 @@ class libHome
 			//topic_last_poster_webdip // ID
 			
 			$alt = libHTML::alternate();
-			$buf .= '<div class="homeForumGroup homeForumAlt'.$alt.'">';
+			$buf .= '<div class="homeForumGroupNew homeForumAlt'.$alt.'">';
 			
 			$buf .= '
 				<div class="homeForumSubject" >';
@@ -637,7 +699,7 @@ else
 
 	$liveGames = libHome::upcomingLiveGames();
 	if ($liveGames != '') {
-		print '<div class="homeHeader">'.l_t('Upcoming live games').' <a href="gamelistings.php?page-games=1&gamelistType=New">'.libHTML::link().'</a></div>';
+		print '<div class="homeHeader">'.l_t('Joinable live games').' <a href="gamelistings.php?page-games=1&gamelistType=New">'.libHTML::link().'</a></div>';
 		print $liveGames;
 	}
 	
@@ -648,7 +710,7 @@ else
 		{
 			print file_get_contents(libCache::dirName('forum').'/home-forum.html');
 			$diff = (time() - filemtime(libCache::dirName('forum').'/home-forum.html'));
-			if( $diff > 60*15 ) {
+			if( $diff > 60*5 ) {
 				unlink(libCache::dirName('forum').'/home-forum.html');
 			}
 		}
@@ -658,8 +720,6 @@ else
 			file_put_contents(libCache::dirName('forum').'/home-forum.html', $buf_home_forum);
 			print $buf_home_forum;
 		}
-		
-		
 	}
 	else { //if( !isset(Config::$customForumURL)) {
 		print '<div class="homeHeader">'.l_t('Forum').' <a href="forum.php">'.libHTML::link().'</a></div>';
@@ -692,6 +752,8 @@ else
 	print '<td class="homeGamesStats">';
 	print '<div class="homeHeader">'.l_t('My games').' <a href="gamelistings.php?page=1&gamelistType=My games">'.libHTML::link().'</a></div>';
 	print libHome::gameNotifyBlock();
+	print '<div class="homeHeader">'.l_t('Defeated games').' <a href="gamelistings.php?page=1&gamelistType=My games">'.libHTML::link().'</a></div>';
+	print libHome::gameDefeatedNotifyBlock();
 	print '<div class="homeHeader">'.l_t('Spectated games').'</div>';
 	print libHome::gameWatchBlock();
 

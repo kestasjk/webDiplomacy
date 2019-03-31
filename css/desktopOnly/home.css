@@ -98,6 +98,7 @@ div.homeHeader {
 	text-align: center;
 	color: #009902;
 	padding-top: 3px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 }
 
 
@@ -109,24 +110,24 @@ div.homeHeader {
 	padding:4px 2%;
 	}
 .homeForumTopBorder {
-	border-top: 1px solid #cecece;
+	/* border-top: 1px solid #cecece; */
 }
 .homeForumSubject {
 	color: #009902;
 	/*overflow:hidden;*/
 	font-weight:bold;
-	white-space: nowrap;
+	/* white-space: nowrap; */
 }
 td.homeGameNotices .homeForumSubject {
 	width:250px;
 }
 .homeForumAlt1 {
-	background-color:#f5f5f5;
-	border-bottom: 1px solid #d1d1d1;
+	/* background-color:#f5f5f5; */
+	/* border-bottom: 1px solid #d1d1d1; */
 }
 .homeForumAlt2 {
-	background-color:#f0f0f0;
-	border-bottom: 1px solid #cecece;
+	/* background-color:#f0f0f0; */
+	/* border-bottom: 1px solid #cecece; */
 }
  
 .homeForumPost {
@@ -134,10 +135,10 @@ td.homeGameNotices .homeForumSubject {
 	
 }
 .homeForumPostAlt1 {
-	background-color:#eaeaea;
+	/* background-color:#eaeaea; */
 }
 .homeForumPostAlt2 {
-	background-color:#e5e5e5;
+	/* background-color:#e5e5e5; */
 }
 .homeForumPostTime {
 	float:right;
