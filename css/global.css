@@ -964,19 +964,20 @@ input[type="text"].contactUs, input[type="password"].contactUs, textarea.contact
 
 .home-submit {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	color: #fff !important;
-	text-transform: uppercase;
-	background: #60a3bc !important;
-	padding: 1px !important;
-	border-radius: 50px;
+	color: #006699 !important;
+	text-decoration: underline;
+	font-size: 12px !important;
+	font-weight: bold;
+	cursor: pointer;
+	background-color: transparent !important;
+	padding: 0px;
+	border: 0px !important;
 	display: inline-block;
-	border: none;
 }
 
 .home-submit:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	text-shadow: 0px 0px 6px rgba(255, 255, 255, 1);
-	transition: all 0.4s ease 0s;
+	color: #009902 ! important;
 }
 
 
