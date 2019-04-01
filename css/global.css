@@ -1567,4 +1567,7 @@ input[id^="FinalizeButton"]{
 		width: 40% !important;
 		font-size: 14px !important;
 	}
+	.homeForumGroupNew {
+		font-size: 14px !important;
+	}
 }
