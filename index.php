@@ -50,7 +50,7 @@ if(isset($_POST['submit']))
 {
 	if(isset($_POST['gameToggleName'])) 
 	{
-		$gameToggleID = $_POST['gameToggleName'];
+		$gameToggleID = (int)$_POST['gameToggleName'];
 	}
 
 	if ($User->type['User'] and $gameToggleID > 0)
@@ -341,7 +341,6 @@ class libHome
 			$Variant=libVariant::loadFromVariantID($game['variantID']);
 			$Game=$Variant->panelGameHome($game);
 
-			$buf .= '<div class="hr"></div>';
 			$buf .= $Game->summary();
 		} 
 
