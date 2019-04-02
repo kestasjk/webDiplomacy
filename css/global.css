@@ -891,66 +891,23 @@ input[type="text"].contactUs, input[type="password"].contactUs, textarea.contact
 /* End of section for intro page */
 
 /* Section for homeNotice page */
-.homeNotice1 {
+.homeNotice {
 	border-radius: 7px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	overflow: hidden;
-	background-color: rgb(231, 141, 210);
+	background-color: #f1f1f1;
 	font-size: 14px;
 	padding: 0 0 0 10px !important;
 	margin-top:5px !important; 
 } 
 
-.homeNotice2 {
+.gamePanelHome {
 	border-radius: 7px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	overflow: hidden;
-	background-color: #a0d8e2;
-	font-size: 14px;
-	padding: 0 0 0 10px !important;
-	margin-top:5px !important; 
-} 
-
-.homeNotice3 {
-	border-radius: 7px;
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	overflow: hidden;
-	/* background-color: #f1f1f1; */
-	background-color: orange;
-	font-size: 14px;
-	padding: 0 0 0 10px !important;
-	margin-top:5px !important; 
-} 
-
-.homeNotice4 {
-	border-radius: 7px;
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	overflow: hidden;
-	background-color: #d5f060;
-	font-size: 14px;
-	padding: 0 0 0 10px !important;
-	margin-top:5px !important; 
-} 
-
-.homeNotice5 {
-	border-radius: 7px;
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	overflow: hidden;
-	background-color: #95f35f;
-	font-size: 14px;
-	padding: 0 0 0 10px !important;
-	margin-top:5px !important; 
-} 
-
-.homeNotice6 {
-	border-radius: 7px;
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	overflow: hidden;
-	background-color: #f17575;
-	font-size: 14px;
-	padding: 0 0 0 10px !important;
-	margin-top:5px !important; 
-} 
+	background-color: #f1f1f1;
+	margin-top:10px !important; 
+}
 
 .homeForumGroupNew {
 	border-radius: 7px;

@@ -211,5 +211,8 @@ td.homeGameNotices .homeForumSubject {
 	.homeForumGroup {
 		font-size:16px;
 	}
+	.homeNoticesPMs {
+		width:100%;
+	}
 
 }
