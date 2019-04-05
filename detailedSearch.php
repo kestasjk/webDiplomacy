@@ -259,7 +259,7 @@ if ( isset($_REQUEST['paramUserID']) ) {	$paramUserID=(int)$_REQUEST['paramUserI
 if ( isset($_REQUEST['checkAgainstMe'])) { $checkAgainstMe='checked'; }
 
 // Game by Username variables
-$paramUserID2 = 0;
+$paramUserID2 = -1;
 
 // Print the header and standard php for the site that is required on every page.
 libHTML::starthtml();
@@ -967,11 +967,6 @@ else if ($tab == 'GamesByUser')
 
 else if ($tab == 'GamesByUsername')
 {
-
-
-
-
-
 	if ($username2 != '')
 	{
 		$sql = "SELECT u.id, u.username, u.email, u.timeJoined, u.gameCount, u.reliabilityRating, u.points, u.type
@@ -1001,22 +996,8 @@ else if ($tab == 'GamesByUsername')
 			$paramUserID2 = $userID;
 		}
 	}
-	else { print '<p class = "advancedSearch">Please fill out username or type.</p>'; }
-
-
-
-
-
-
-
-
-
-
-
 
 	$IsUserValid = 0;
-
-
 
 	if ($paramUserID2 == 0)
 	{
@@ -1093,7 +1074,7 @@ else if ($tab == 'GamesByUsername')
 		printGameResults($seeVariant, $seeGamename, $seeGameOver, $seePot, $seeInviteCode, $seePotType, $seeJoinable, $seePhaseLength,
 		$seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount, $GamesData);
 	}
-	else { print '<p class = advancedSearch> The user you entered is not valid. Please enter a valid user or 0 to see your own games.</p>';}
+	else { print '<p class = advancedSearch> The user you entered is not valid. Please enter a valid user.</p>';}
 }
 
 /*
