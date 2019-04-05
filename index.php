@@ -631,27 +631,24 @@ class libHome
 
 if( !$User->type['User'] )
 {
-	print '<div class="content-notice" style="text-align:center">'.libHome::globalInfo().'</div>';
+
+	print '<div class = "introToDiplomacy"><div class="content-notice" style="text-align:center">'.libHome::globalInfo().'</div></div>';
 	print libHTML::pageTitle(l_t('Welcome to webDiplomacy!'),l_t('A multiplayer web implementation of the popular turn-based strategy game Diplomacy.'));
 	//print '<div class="content">';
 	?>
 	<p style="text-align: center;"><img
 	src="<?php print l_s('images/startmap.png'); ?>" alt="<?php print l_t('The map'); ?>"
 	title="<?php print l_t('A webDiplomacy map'); ?>" /></p>
-<p class="welcome"><?php print l_t('<em> "Luck plays no part in Diplomacy. Cunning and
+<div class = "introToDiplomacy_show"><p class="welcome"><?php print l_t('<em> "Luck plays no part in Diplomacy. Cunning and
 cleverness, honesty and perfectly-timed betrayal are the tools needed to
 outwit your fellow players. The most skillful negotiator will climb to
 victory over the backs of both enemies and friends.<br />
 <br />
 
 Who do you trust?"<br />
-(<a href="http://www.wizards.com/default.asp?x=ah/prod/diplomacy"
-	class="light">Avalon Hill</a>)</em>'); ?></p>
+(<a href="https://avalonhill.wizards.com/games/diplomacy">Avalon Hill</a>)</em>'); ?></p>
 	<?php
-	print '</div>';
-	/*print '<div class="homeInfoList">
-		'.libHome::globalInfo()
-		.'</div>';*/
+	print '</div></div>';
 
 	require_once(l_r('locales/English/intro.php'));
 	print '</div>';

@@ -73,13 +73,13 @@ print l_t('Updating session table').'<br />';
 libGameMaster::updateSessionTable();
 
 $statsDir=libCache::dirName('stats');
-$onlineFile=$statsDir.'/onlineUsers.json';
-$tabl=$DB->sql_tabl("SELECT userID FROM wD_Sessions");
-$onlineUsers=array();
-while(list($userID)=$DB->tabl_row($tabl))
-	$onlineUsers[]=$userID;
+// $onlineFile=$statsDir.'/onlineUsers.json';
+// $tabl=$DB->sql_tabl("SELECT userID FROM wD_Sessions");
+// $onlineUsers=array();
+// while(list($userID)=$DB->tabl_row($tabl))
+// 	$onlineUsers[]=$userID;
 
-file_put_contents($onlineFile, 'onlineUsers=$A(['.implode(',',$onlineUsers).']);');
+// file_put_contents($onlineFile, 'onlineUsers=$A(['.implode(',',$onlineUsers).']);');
 
 //- Update misc values (if running as admin/mod)
 if( !$User->type['System'] || (time()%(15*60)<=5*60) )

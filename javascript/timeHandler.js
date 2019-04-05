@@ -23,7 +23,7 @@
  */
 
 // Update class timestamps to be in the local time, taking the unixtime attribute and converting it via dateToText()
-const updateTimestamps = () => {
+var updateTimestamps = function () {
 	$$('.timestamp').map(function(c) {
 		var cDate = new Date( parseInt(c.getAttribute("unixtime"))*1000 );
 		c.update( dateToText(cDate) );
@@ -31,7 +31,7 @@ const updateTimestamps = () => {
 }
 
 // update class timestampGames to be in the local time, taking the unixtime attribute and converting it via dateToText()
-const updateTimestampGames = () => {
+var updateTimestampGames = function () {
 	$$('.timestampGames').map(function(c) {
 		const cDate = new Date( parseInt(c.getAttribute("unixtime"))*1000 );
 		c.update( dateToTextTimestampGames(cDate) );
@@ -42,7 +42,7 @@ var dayNames=["Sun","Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 var monthNames=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 // Convert a JavaScript (new Date()) into text
-const dateToText = (date) => {
+const dateToText = function (date) {
 	var secondDifference = ((date - (new Date()))/1000);
 	if( secondDifference < 0 ) secondDifference *= -1;
 
@@ -84,7 +84,7 @@ const dateToText = (date) => {
 	} 
 }
 
-const dateToTextTimestampGames = (date) => {
+const dateToTextTimestampGames = function (date)  {
     var secondDifference = ((date - (new Date()))/1000);
     if( secondDifference < 0 ) secondDifference *= -1;
 

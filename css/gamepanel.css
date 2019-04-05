@@ -8,16 +8,20 @@
 }
 
 .gamePanel {
-	width:90%;
 	color: #333;
-	margin:0 auto;
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	/* padding: 0 0 0 10px; */
+	margin-top:10px !important; 
 }
 .memberVotes {
 	font-weight:bold;
 	}
 .gamePanelHome {
 	width:100%;
-	border-top: 1px solid #cecece;
+	/* border-top: 1px solid #cecece; */
 }
 .boardHeader {
 	color: #000;
@@ -25,16 +29,16 @@
 
 .bar {
 	padding:5px 2%;
-	background-color:#f5f5f5;
+	/* background-color:#f5f5f5; */
 }
 .gamePanel .bar {
-	margin-left:2%;
-	margin-right:2%;
+	/* margin-left:2%;
+	margin-right:2%; */
 	border:0;
 }
 .gamePanel .bar {
-	border-left: 1px solid #cecece;
-	border-right: 1px solid #cecece;
+	/* border-left: 1px solid #cecece;
+	border-right: 1px solid #cecece; */
 	}
 .barAlt1, .barAltLight1 {
 	background-color:#f5f5f5 !important;
@@ -56,10 +60,10 @@
 	
 	}
 .gamePanel .lastBar {
-	border-bottom: 1px solid #cecece;
+	/* border-bottom: 1px solid #cecece; */
 }
 .gamePanelHome .lastBar {
-	border-bottom: 1px solid #cecece;
+	/* border-bottom: 1px solid #cecece; */
 }
 
 /* ---- titleBar ---- */
@@ -73,7 +77,7 @@
 	text-align:center;
 }
 .gamePanel .titleBar {
-	border-top: 1px solid #cecece;
+	/* border-top: 1px solid #cecece; */
 }
 .boardHeader .titleBar {
 	padding: 8px 16px;	
@@ -150,7 +154,7 @@ div.memberBoardHeader {
 
 /* ---- noticeBar ---- */
 .gameNoticeBar {
-	border-top:solid 1px #c9c9c9 !important;
+	/* border-top:solid 1px #c9c9c9 !important; */
 	text-align:center;
 	
 	font-weight:bold;
@@ -188,11 +192,11 @@ div.memberBoardHeader {
 
 /* ---- membersList ---- */
 .membersList {
-	margin-left:2%;
-	margin-right:2%;
+	/* margin-left:2%;
+	margin-right:2%; */
 	color: #444;
-	border-left: 1px solid #c1c1c1;
-	border-right: 1px solid #c1c1c1;
+	/* border-left: 1px solid #c1c1c1;
+	border-right: 1px solid #c1c1c1; */
 }
 .boardHeader .membersList, .gamePanelHome .membersList {
 	margin:0;
@@ -297,8 +301,8 @@ div.memberBoardHeader {
 	padding:0;
 	overflow:hidden;
 	height:6px;
-	margin-left:2%;
-	margin-right:2%;
+	/* margin-left:2%;
+	margin-right:2%; */
 }
 .panelBarGraphMember {
 	padding:0;
