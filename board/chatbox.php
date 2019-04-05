@@ -157,7 +157,7 @@ class Chatbox
 		// Print info on the user we're messaging
 		// Are we viewing another user, or the global chatbox?
 
-		$chatbox .= '<DIV class="chatbox '.(!isset($Member)?'chatboxnotabs':'').'">
+		$chatbox .= '<div class = "chatWrapper"><DIV class="chatbox '.(!isset($Member)?'chatboxnotabs':'').'"> 
 					<TABLE class="chatbox">
 					<TR class="barAlt2 membersList">
 					<TD>';
@@ -229,7 +229,7 @@ class Chatbox
 					</TR>
 				</TABLE>
 				</form>
-				</DIV>'.
+				</DIV></div>'.
                 (($msgCountryID == 0) ? '' : '
 						<form method="post" name="markUnread" class="safeForm" action="board.php?gameID='.$Game->id.'&amp;msgCountryID='.$msgCountryID.'#chatboxanchor">
 							<input type="hidden" tabindex="2" value="" name="MarkAsUnread" />

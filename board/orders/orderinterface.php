@@ -329,7 +329,7 @@ class OrderInterface
 
 		$html .= '
 	<form id="orderFormElement" onsubmit="return false;">
-		<a name="orders"></a><table class="orders">';
+		<a name="orders"></a><div class = "chatWrapper"><table class="orders">';
 
 		$alternate = false;
 		foreach($this->Orders as $Order)
@@ -341,7 +341,7 @@ class OrderInterface
 				</tr>';
 		}
 
-		$html .= "</table>".'
+		$html .= "</table></div>".'
 				<div style="text-align:center;"><span id="ordersNoticeArea'.$this->memberID.'"></span>
 				'.
 				($Game->pressType == 'RulebookPress' && $Game->phase != 'Diplomacy' ? ''  : 

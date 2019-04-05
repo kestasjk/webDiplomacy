@@ -29,7 +29,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 <div class="pageTitle barAlt1">
 	Create a new game
 </div>
-<div class="pageDescription barAlt2">
+<div class="pageDescription">
 Start a new game; you decide the name, how long it runs, and how much it's worth.
 </div>
 </div>

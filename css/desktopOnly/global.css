@@ -1,19 +1,21 @@
 body {
 	font-size: 14px;
-	font-family: sans-serif;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	margin: 0;
 	padding: 0;
 	background-color: #d9d9d9;
 	text-align: center;
-	color: #39383A;
+	height: 100%;
 }
+html, body { min-height: 100%; }
 div.content-title-header {
     border-bottom:#bbb 1px solid !important;
 }
 div.pageTitle, .boardHeader .gameName { 
     text-shadow: #999999 1px 1px 1px;
     font-size:22px !important;
-    font-weight:normal !important;
+		font-weight:normal !important;
+		border-radius: 7px;
 }
 div.pageTitle {
     font-size:18pt;
@@ -42,12 +44,51 @@ span.points {
 		only (1234D) */
 	white-space: nowrap;
 }
-input[type="text"], input[type="submit"], input[type="password"], textarea, select {
+input[type="text"], input[type="password"], textarea, select {
 	font-size: 14px;
-	background-color: #eaffea;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #ffffff !important;
 	border: 1px solid #c1c1c1;
-	color:#009902;
+	color:#000000;
 }
+
+.form-submit {
+  background-color: #8c9cbf;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #8c9cbf), color-stop(50%, #546a9e), color-stop(50%, #36518f), color-stop(100%, #3d5691));
+  background-image: -webkit-linear-gradient(top, #8c9cbf 0%, #546a9e 50%, #36518f 50%, #3d5691 100%);
+  background-image: -moz-linear-gradient(top, #8c9cbf 0%, #546a9e 50%, #36518f 50%, #3d5691 100%);
+  background-image: -ms-linear-gradient(top, #8c9cbf 0%, #546a9e 50%, #36518f 50%, #3d5691 100%);
+  background-image: -o-linear-gradient(top, #8c9cbf 0%, #546a9e 50%, #36518f 50%, #3d5691 100%);
+  background-image: linear-gradient(top, #8c9cbf 0%, #546a9e 50%, #36518f 50%, #3d5691 100%);
+  border: .5px solid #172d6e;
+  border-radius: 5px;
+  -webkit-box-shadow: inset 0 1px 0 0 #b1b9cb;
+  box-shadow: inset 0 1px 0 0 #b1b9cb;
+  color: #fff;
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;  padding: 7px 0 8px 0;
+  text-decoration: none;
+  text-align: center;
+	text-shadow: 0 -1px 1px #000f4d;
+  padding-right: 7px;
+  padding-left: 7px;
+}
+	.form-submit:hover {
+    background-color: #7f8dad;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #7f8dad), color-stop(50%, #4a5e8c), color-stop(50%, #2f477d), color-stop(100%, #364c80));
+    background-image: -webkit-linear-gradient(top, #7f8dad 0%, #4a5e8c 50%, #2f477d 50%, #364c80 100%);
+    background-image: -moz-linear-gradient(top, #7f8dad 0%, #4a5e8c 50%, #2f477d 50%, #364c80 100%);
+    background-image: -ms-linear-gradient(top, #7f8dad 0%, #4a5e8c 50%, #2f477d 50%, #364c80 100%);
+    background-image: -o-linear-gradient(top, #7f8dad 0%, #4a5e8c 50%, #2f477d 50%, #364c80 100%);
+    background-image: linear-gradient(top, #7f8dad 0%, #4a5e8c 50%, #2f477d 50%, #364c80 100%);
+		cursor: pointer; 
+	}
+	.form-submit:active 
+		{
+    -webkit-box-shadow: inset 0 0 20px 0 #1d2845, 0 1px 0 white;
+		box-shadow: inset 0 0 20px 0 #1d2845, 0 1px 0 white; 
+	}
+
 textarea {
 	font-size: 16px ! important; 
 	width:90%;
@@ -69,8 +110,7 @@ div.postboxadvice {
 	font-style: italic;
 	color:#777
 	}
-div.hr {
-}
+
 div.clear {
 	border-bottom: 0;
 }
@@ -111,7 +151,6 @@ ul.gamesublist {
 	font-weight: normal;
 	font-size:13px;
 	color: #777;
-	/*list-style: none;*/
 }
 div.rightHalf {
 	float:right;
@@ -148,10 +187,6 @@ li.formlisttitle {
     margin-right: 1em;
 }
 
-.form-submit {
-	font-weight: bold ! important;
-	color: #006699 ! important;
-}
 li.formlistfield {
 	list-style: none;
 	margin-bottom:10px;
@@ -269,6 +304,139 @@ a.light {
 	text-align:center;
 	margin:0 auto;
 }
+
+/* #header {
+	background-color: #fff;
+	width: auto;
+	padding:0;
+	margin:0;
+	text-align: left;
+}
+#header-container {
+	padding-left:0;
+	background-color: #fff;
+	padding-right:0;
+	padding-top:6px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top:0;
+	margin-bottom:0;
+	max-width: 800px;
+}
+#logo {
+	padding:0;
+	margin:0;
+	position:absolute;
+	vertical-align:bottom;
+	border: 0;                
+}
+#header-welcome {
+	padding:0;
+	margin:0;
+	text-align:right;
+	font-style: italic;
+}
+#header-welcome a {
+	font-weight:normal !important;
+	text-decoration:none !important;
+}
+
+.nav-wrap{
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
+	overflow: hidden;
+	border-radius: 7px;
+	background-color: #777;
+	margin: 30px 0 0 auto;
+	width: 70%;
+}
+
+#navSubMenu{
+	float: left;
+	color: #f2f2f2 !important;
+	font-weight: bold;
+	text-align: center;
+	padding: 10px 12px;
+	text-decoration: none;
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.nav-tab {
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
+	overflow: hidden;
+	background-color: #777;
+	}
+	
+.nav-tab a {
+	float: left;
+	color: #f2f2f2;
+	text-align: center;
+	padding: 10px 12px;
+	text-decoration: none;
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+  
+.nav-tab a:hover {
+	background-color: #ddd;
+	color: black;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.nav-tabActive {
+	background-color: #4CAF50;
+	color: white;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.nav-tabActive a {
+	background-color: #4CAF50;
+	color: white;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+#navSubMenu div#nav-drop {
+	visibility: hidden;
+	display: flex;
+	flex-direction: column;
+	position: absolute;
+	overflow : auto;
+}
+
+#nav-drop {
+	margin: 5px auto;
+	color: rgb(129, 196, 98);
+}
+
+#nav-text div:hover {
+	color:#009902;
+}
+
+#navSubMenu:hover div#nav-drop {
+	position: absolute;
+	margin-top: 25px;
+	width: 100px;
+	z-index: 999;
+	background-color: #555;
+	visibility: visible;
+	border-radius: 7px;
+}
+
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+	#navSubMenu:hover div#nav-drop {
+		margin-top: 5px !important;
+	}
+}
+
+#header-goto a:hover {
+	background-color: rgba(255, 255, 255, 0.75);
+	border-radius: 15px 0 15px 0;
+} */
+
 #header {
 	background-color: #fff;
 	width: auto;
@@ -279,7 +447,7 @@ a.light {
 #header-container {
 	padding-left:0;
 	background-color: #fff;
-	height:50px;
+	height:70px;
 	padding-right:0;
 	padding-top:6px;
 	padding-bottom:4px;
@@ -287,7 +455,7 @@ a.light {
 	margin-right: auto;
 	margin-top:0;
 	margin-bottom:0;
-	width: 800px;
+	max-width: 800px;
 }
 #logo {
 	padding:0;
@@ -309,7 +477,7 @@ a.light {
 #header-goto {
 	padding:0;
 	margin:0;
-	margin-top: 18px;
+	margin-top: 38px;
 	text-align:right;
 	clear:right;
 }
@@ -322,6 +490,7 @@ a.light {
 #header-goto a.current:hover {
 	color:#009902;
 }
+
 #seperator {
 	margin: 0;
 	padding: 0;
@@ -339,7 +508,7 @@ a.light {
 			because IE doesn't support min-width.. */
 	margin: 0;
 	padding: 0;
-	width: 800px;
+	max-width: 800px;
 	background-color: #006699;
 	font-size: 0;
 	height: 5px;
@@ -352,17 +521,18 @@ div.content {
 	margin-left: auto;
 	margin-right: auto;
 	margin-top: 5px;
-	width: 750px;
+	max-width: 750px;
 	background-color: #fff;
 	border: 1px solid #aaa;
 	padding: 15px 24px;	
+	border-radius: 7px;
 }
 div.content-bare {
 	text-align: left;
 	position: relative;
 	margin-left: auto;
 	margin-right: auto;
-	width: 798px; /* 800-2x1px border*/
+	max-width: 798px; /* 800-2x1px border*/
 }
 div.content-notice {
 	text-align: left;
@@ -370,15 +540,18 @@ div.content-notice {
 	margin-left: auto;
 	margin-right: auto;
 	margin-top: 5px;
-	width: 768px;
+	max-width: 768px;
 	background-color: #fff;
 	border: 1px solid #aaa;
 	padding: 8px 15px;	
+	border-radius: 7px;
 	
 }
 div.content-board-header, div.content-home-header {
 	margin-top:6px;
 	border-bottom:0;
+	border-radius: 7px;
+
 	}
 div.content-board-header {
 	border: 1px solid #aaa;
@@ -399,8 +572,8 @@ div.content-home-updates {
 	margin-left: auto;
 	margin-right: auto;
 	margin-top: 5px;
-	padding:0;	
-	width: 750px;
+	padding:0;
+	max-width: 750px;
 	padding-left: 24px;
 	padding-right: 24px;
 	border: 1px solid #aaa;
@@ -410,13 +583,13 @@ div.content-home-updates {
 	margin-top:0;
 	}
 #content-publicforum {
-	width: 710px;
+	max-width: 710px;
 	height: auto;
 	margin-left:auto;
 	margin-right:auto;
 }
 div.forum {
-	width: 710px;
+	max-width: 710px;
 	margin-left:auto;
 	margin-right:auto;
 	overflow:auto;
@@ -425,26 +598,25 @@ div.forum {
 	margin-top: 5px;
 	font-size: 11px;
 	text-align: center;
-	color: #777;
+	color: rgb(87, 87, 87);
 }
+
 #chatboxtabs {
 	font-size: 14px !important;
 	}
+
 div.gamelistings-tabs {
 	width: auto;
 	padding-top:3px;
 	padding-bottom:3px;
-	/*padding-left:20px;
-	padding-right:20px;*/
+	padding-right:20px;
 	height:auto;
 	margin:0;
 	margin-left:auto;
 	margin-right:auto;
 	border:0;
 	text-align:center;
-	font-size: 13px;
-	border-bottom:1px solid #aaa;
-	
+	font-size: 13px;	
 }
 div.gamelistings-tabs a.current {
 	text-decoration:none;
@@ -455,7 +627,7 @@ div.gamelistings-tabs a.current {
 	border-right:1px solid #888;
 	border-bottom:2px solid #000 ! important;
 }
-div.gamelistings-tabs a.current:hover {
+ div.gamelistings-tabs a.current:hover {
 	text-decoration:none;
 	background-color: #e5e5e5;
 	border-bottom:2px solid #009902 ! important;
@@ -496,6 +668,46 @@ div.gamelistings-tabs a:hover {
 	border-left:1px solid #009902 ! important;
 	border-right:1px solid #009902 ! important;
 }
+
+
+.gamelistings-tabsNew {
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
+	overflow: hidden;
+	border-radius: 7px;
+	background-color: #333;
+	}
+	
+.gamelistings-tabsNew a {
+	float: left;
+	color: #f2f2f2;
+	text-align: center;
+	padding: 10px 12px;
+	text-decoration: none;
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+  
+.gamelistings-tabsNew a:hover {
+	background-color: #ddd;
+	color: black;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.gamelistings-tabsNewActive {
+	background-color: #4CAF50;
+	color: white;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.gamelistings-tabsNewActive a {
+	background-color: #4CAF50;
+	color: white;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+
 .postbox {
 	text-align:center;
 }
@@ -560,6 +772,7 @@ div.gamelistings-tabs a:hover {
 	margin-left:10px;
 	margin-right:10px;
 	font-size:15px;
+	word-wrap: break-word;
 }
 .message-foot-notification {
 	font-size:14px;
@@ -575,7 +788,7 @@ form {
 }
 
 .reply {
-	width: 630px;
+	max-width: 630px;
 	margin-left: auto;
 	margin-right: auto;
 	padding-top:10px;
@@ -615,13 +828,19 @@ form {
 .Russia {
 	color: #6F005D ! important;
 }
+.chatWrapper {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	margin-top:0px !important; 
+}
 div.chatbox {
 	max-height: 180px;
 	overflow-x:hidden;
 	overflow-y:auto;
-	border-left: solid #c1c1c1 1px;
-	border-right: solid #c1c1c1 1px;
-	border-bottom: solid #c1c1c1 1px;
+	border: 1px;
 }
 div.chatbox td {
 	overflow:hidden;
@@ -637,20 +856,6 @@ TABLE {
 	border-collapse: collapse;
 	width:100%;
 }
-div.datc table {
-	border: solid #aaa 1px;
-}
-div.datc th, .datc td {
-	border-right: solid #aaa 1px;
-}
-div.datc th {
-	border-top: solid #aaa 1px;
-	text-align:center;
-	text-decoration:underline;
-	border-bottom: solid #aaa 1px;
-	padding: 3px 5px;
-	font-size:16px;
-}
 TABLE.credits {
 	border: solid #aaa 1px;
 	width:85%;
@@ -658,9 +863,7 @@ TABLE.credits {
 	margin-right:auto;
 }
 TABLE.orders {
-	border: solid #c1c1c1 1px;
 	width:95%;
-	margin-top:10px;
 	margin-left:auto;
 	margin-right:auto;
 	font-size:13px;
@@ -704,6 +907,658 @@ TD.army, div.army {
 	color:#34870b;
 }
 
+/* Section for FAQ styling */
+.faq {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+}
+
+ .faq_question {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #777;
+	color: white;
+	cursor: pointer;
+	padding: 10px;
+	width: 100%;
+	border: none;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+  .faq_question:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #555;
+  }
+
+  .faq_answer {
+		padding: 0;
+		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+		display: none;
+		overflow: hidden;
+		background-color: #f1f1f1;
+		margin-top: 0px !important;
+		font-size: 14px;
+		border-radius: 7px;
+		padding: 0 0 0 10px;
+  } 
+/* End of section for FAQ styling */
+
+/* Section for datc styling */
+.datc {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+}
+
+.datc td, .datc th {
+	border: 1px solid #ddd;
+	padding: 6px;
+}
+
+.datc tr:nth-child(even){background-color: #f2f2f2; word-break: break-word;}
+.datc tr:nth-child(odd){background-color: #ffffff; word-break: break-word;}
+
+.datc th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+	text-align: left;
+	background-color: #009902;
+	color: white;
+	min-width:70px;
+}
+/* End of section for Hall of Fame styling */
+
+/* Section for Developer styling */
+.developerInfo-show {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	padding: 0 0 0 10px;
+	margin-top:0px !important; 
+} 
+
+.developerInfo-show h3 {
+	margin-left: 0px !important;
+}
+/* End of section for Developer styling */
+
+/* Section for rrInfo styling */
+.rrInfo {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+}
+
+.rrInfo td, .rrInfo th {
+	border: 1px solid #ddd;
+	padding: 6px;
+}
+
+.rrInfo tr:nth-child(even){background-color: #f2f2f2; word-break: break-word;}
+.rrInfo tr:nth-child(odd){background-color: #ffffff; word-break: break-word;}
+
+.rrInfo th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+	text-align: left;
+	background-color: #009902;
+	color: white;
+	min-width:70px;
+}
+/* End of section for rrInfo styling */
+
+/* Section for Hall of Fame styling */
+.hof {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+}
+
+.hof td, .hof th {
+	border: 1px solid #ddd;
+	padding: 6px;
+}
+
+.hof tr:nth-child(even){background-color: #f2f2f2; word-break: break-word;}
+.hof tr:nth-child(odd){background-color: #ffffff; word-break: break-word;}
+
+.hof th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+	text-align: left;
+	background-color: #009902;
+	color: white;
+	min-width:70px;
+}
+/* End of section for Hall of Fame styling */
+
+/* Section for contactUsDirect page styling */
+.contactUs {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+}
+
+.contactUsShow {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	padding: 0 0 0 10px;
+	margin-top:0px !important; 
+} 
+
+input[type="text"].contactUs, input[type="password"].contactUs, textarea.contactUs, select.contactUs {
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #ffffff !important;
+	border: 1px solid #c1c1c1;
+	color:#000000;
+}
+
+.contactUs-submit {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #fff !important;
+	text-transform: uppercase;
+	background: #60a3bc !important;
+	padding: 5px;
+	border-radius: 50px;
+	display: inline-block;
+	border: none;
+}
+.contactUs-submit:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-shadow: 0px 0px 6px rgba(255, 255, 255, 1);
+	transition: all 0.4s ease 0s;
+}
+/* End of section for contactUsDirect page styling */
+
+/* Section for intro page */
+.introToDiplomacy {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.introToDiplomacy_show {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	padding: 0 0 0 10px;
+	margin-top:0px !important; 
+} 
+/* End of section for intro page */
+
+/* Section for homeNotice page */
+.homeNotice {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	padding: 0 0 0 10px !important;
+	margin-top:5px !important; 
+} 
+
+.gamePanelHome {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	margin-top:10px !important; 
+}
+
+.homeForumGroupNew {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 12px;
+	padding: 0 0 0 10px !important;
+	margin-top:5px !important; 
+}
+
+.home-submit {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #006699 !important;
+	text-decoration: underline;
+	font-size: 12px !important;
+	font-weight: bold;
+	cursor: pointer;
+	background-color: transparent !important;
+	padding: 0px;
+	border: 0px !important;
+	display: inline-block;
+}
+
+.home-submit:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #009902 ! important;
+}
+
+
+/* End of section for homeNotice page */
+
+/* Section for user search page */
+.userSearch {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.userSearch_show {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	padding: 0 0 0 10px;
+	margin-top:0px !important; 
+} 
+
+.userSearch-submit {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #fff !important;
+	text-transform: uppercase;
+	background: #60a3bc !important;
+	padding: 5px;
+	border-radius: 50px;
+	display: inline-block;
+	border: none;
+}
+
+.userSearch-submit:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-shadow: 0px 0px 6px rgba(255, 255, 255, 1);
+	transition: all 0.4s ease 0s;
+}
+
+input[type="text"].userSearch, input[type="password"].userSearch, textarea.userSearch, select.userSearch {
+	font-size: 14px !important;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #ffffff !important;
+	border: 1px solid #c1c1c1;
+	color:#000000;
+}
+/* End of section for user search page */
+
+/* Section for settings page */
+.settings {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.settings_show {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	padding: 0 0 0 10px;
+	margin-top:0px !important; 
+} 
+
+.settings-submit {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #fff !important;
+	text-transform: uppercase;
+	background: #60a3bc !important;
+	padding: 5px;
+	border-radius: 50px;
+	display: inline-block;
+	border: none;
+}
+
+.settings-submit:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-shadow: 0px 0px 6px rgba(255, 255, 255, 1);
+	transition: all 0.4s ease 0s;
+}
+
+input[type="text"].settings, input[type="password"].settings, textarea.settings, select.settings {
+	font-size: 14px !important;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #ffffff !important;
+	border: 1px solid #c1c1c1;
+	color:#000000;
+}
+/* End of section for settings page */
+
+
+/* Section for credits page styling */
+.credits {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.credits-title {
+	background-color: #777;
+	color: white;
+	padding: 10px;
+	border: none;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+.credits-info {
+	border-radius: 7px;
+	padding: 10px;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	margin: 0 0 15px 0 !important;
+}
+
+#credits-player-map-a, #credits-player-map-a:active {
+	color: rgb(84, 228, 238);
+	cursor: pointer;
+}
+/* end of credits page styling */
+
+/* Section for Rules styling */
+.helpPage em {
+	text-decoration:underline;
+	font-style:normal;
+}
+.helpPage h3 {
+	margin-left: 0px !important;
+}
+.helpPage ul {
+	color:#666;
+}
+.helpPage ol {
+	color:#666;
+}
+
+.rules {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+	/* font-size: 14px; */
+}
+.rules h3{
+	margin-left: 0px !important;
+}
+
+ .rules_title {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #777;
+	color: white;
+	cursor: pointer;
+	padding: 10px;
+	border: none;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+  .rules_title:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #555;
+  }
+
+  .rules_content {
+		padding: 0;
+		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+		display: none;
+		overflow: hidden;
+		padding: 0 0 0 10px;
+		background-color: #f1f1f1;
+		font-size: 14px;
+		margin-top:0px !important; 
+		border-radius: 7px;
+	} 
+	
+	.rules_content_show {
+		border-radius: 7px;
+		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+		overflow: hidden;
+		background-color: #f1f1f1;
+		font-size: 14px;
+		padding: 0 0 0 10px;
+		margin-top:0px !important; 
+  } 
+/* End of section for Rules styling */
+
+/* This section is for the new AdminCP and Mod tools */
+.modTools {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+}
+
+input[type="text"].modTools, input[type="password"].modTools, textarea.modTools, select.modTools {
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #ffffff !important;
+	border: 1px solid #c1c1c1;
+	color:#000000;
+}
+  
+.modTools td, .modTools th {
+	border: 1px solid #ddd;
+	padding: 6px;
+}
+
+.modTools tr:nth-child(even){background-color: #f2f2f2; word-break: break-word;}
+.modTools tr:nth-child(odd){background-color: #ffffff; word-break: break-word;}
+
+.modTools th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+	text-align: left;
+	background-color: #009902;
+	color: white;
+	min-width:70px;
+}
+
+.modToolsCP {
+	border-radius: 25px;
+	background: rgb(222, 224, 222);
+	padding: 8px; 
+}
+
+.modToolsHeadings {
+    color: #000000 !important;
+	margin-bottom: 5px;
+	font-weight: bold;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-decoration: underline;
+}
+
+li.modToolsformlistfield {
+	list-style: none;
+	margin: 10px 0 0 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+li.modToolsformlistdesc {
+	font-weight: normal;
+	color: #000000b2 !important;
+	list-style: none;
+	margin-left:20px;
+	margin-right:20px;
+	border-left: 1px solid #aaa;
+	padding-left: 10px;
+	margin-bottom: 30px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+li.modToolsformlisttitle {
+	font-weight: bold;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-decoration: underline;
+}
+.modToolsform-submit {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #fff !important;
+	text-transform: uppercase;
+	background: #60a3bc !important;
+	padding: 5px;
+	border-radius: 50px;
+	display: inline-block;
+	border: none;
+}
+.modToolsform-submit:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-shadow: 0px 0px 6px rgba(255, 255, 255, 1);
+	transition: all 0.4s ease 0s;
+}
+
+.modToolsCollapsible {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #777;
+	color: white;
+	cursor: pointer;
+	padding: 10px;
+	width: 100%;
+	border: none;
+	text-align: left;
+	outline: none;
+  }
+
+  .active, .modToolsCollapsible:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #555;
+  }
+
+  .modToolsContent {
+	padding: 0 10px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	background-color: #f1f1f1;
+  }
+
+ul.modTools {
+	padding: 0;
+	margin-bottom: 40px;
+	list-style: none;
+}
+
+.modToolsCP {
+	padding: 15px;
+}
+
+.topnav {
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
+	overflow: hidden;
+	background-color: #333;
+	border-radius: 7px;
+	}
+	
+.topnav a {
+	float: left;
+	color: #f2f2f2;
+	text-align: center;
+	padding: 10px 12px;
+	text-decoration: none;
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+  
+.topnav a:hover {
+	background-color: #ddd;
+	color: black;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.topnavActive {
+	background-color: #4CAF50;
+	color: white;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.topnavActive a {
+	background-color: #4CAF50;
+	color: white;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+/* Mod Tools section ends here */
+
+/* This section is for the new advanced search page. */
+  .SearchCollapsible {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #777;
+	color: white;
+	cursor: pointer;
+	padding: 10px;
+	width: 100%;
+	border: none;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+  }
+
+  .active, .SearchCollapsible:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #555;
+}
+
+  .advancedSearch {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+	font-size: 12px;
+}
+
+input[type="text"].advancedSearch, input[type="password"].advancedSearch, textarea.advancedSearch, select.advancedSearch {
+	font-size: 12px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #ffffff !important;
+	border: 1px solid #c1c1c1;
+	color:#000000;
+}
+  
+.advancedSearch td, .advancedSearch th {
+	border: 1px solid #ddd;
+	padding: 6px;
+}
+
+.advancedSearch tr:nth-child(even){background-color: #f2f2f2; word-break: break-word;}
+.advancedSearch tr:nth-child(odd){background-color: #ffffff; word-break: break-word;}
+
+.advancedSearch th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+	text-align: left;
+	background-color: #009902;
+	color: white;
+	min-width:35px;
+}
+
+.advancedSearchform-submit {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #fff !important;
+	text-transform: uppercase;
+	background: #60a3bc !important;
+	padding: 5px;
+	border-radius: 50px;
+	display: inline-block;
+	border: none;
+}
+.advancedSearchform-submit:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-shadow: 0px 0px 6px rgba(255, 255, 255, 1);
+	transition: all 0.4s ease 0s;
+}
+
+  .advancedSearchContent {
+	padding: 0 10px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	background-color: #f1f1f1;
+  }
+
+ul.advancedSearch {
+	padding: 0;
+	margin-bottom: 40px;
+	list-style: none;
+}
+/* advanced search page section ends */
+
 
 span.orderNotice {
 	font-weight:bold;
@@ -711,4 +1566,22 @@ span.orderNotice {
 .likeMessageToggleLink, .likeCount {
 	font-size:8pt;
 	font-style:italic;
+}
+
+tr[class^="replyalternate"]{
+	word-wrap: break-word;
+}
+#chatboxscroll > TABLE.chatbox{
+	table-layout: fixed;
+}
+input[id^="UpdateButton"]{
+	margin-top: 10px;
+	width: auto !important;
+}
+input[id^="FinalizeButton"]{
+	margin-top: 10px;
+	width: auto !important;
+}
+.archive-messages-table{
+	table-layout: fixed;
 }

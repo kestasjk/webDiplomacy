@@ -233,7 +233,7 @@ class panelGameBoard extends panelGame
 	{
 		global $User;
 		libHTML::$alternate=2;
-		$buf = '<div class="titleBar barAlt'.libHTML::alternate().'">
+		$buf = '<div class="titleBar">
 				'.$this->titleBar().'
 			</div>';
 

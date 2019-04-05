@@ -1,19 +1,21 @@
 body {
 	font-size: 14px;
-	font-family: sans-serif;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	margin: 0;
 	padding: 0;
 	background-color: #d9d9d9;
 	text-align: center;
-	color: #39383A;
+	height: 100%;
 }
+html, body { min-height: 100%; }
 div.content-title-header {
     border-bottom:#bbb 1px solid !important;
 }
 div.pageTitle, .boardHeader .gameName { 
     text-shadow: #999999 1px 1px 1px;
     font-size:22px !important;
-    font-weight:normal !important;
+		font-weight:normal !important;
+		border-radius: 7px;
 }
 div.pageTitle {
     font-size:18pt;
@@ -42,12 +44,51 @@ span.points {
 		only (1234D) */
 	white-space: nowrap;
 }
-input[type="text"], input[type="submit"], input[type="password"], textarea, select {
+input[type="text"], input[type="password"], textarea, select {
 	font-size: 14px;
-	background-color: #eaffea;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #ffffff !important;
 	border: 1px solid #c1c1c1;
-	color:#009902;
+	color:#000000;
 }
+
+.form-submit {
+  background-color: #8c9cbf;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #8c9cbf), color-stop(50%, #546a9e), color-stop(50%, #36518f), color-stop(100%, #3d5691));
+  background-image: -webkit-linear-gradient(top, #8c9cbf 0%, #546a9e 50%, #36518f 50%, #3d5691 100%);
+  background-image: -moz-linear-gradient(top, #8c9cbf 0%, #546a9e 50%, #36518f 50%, #3d5691 100%);
+  background-image: -ms-linear-gradient(top, #8c9cbf 0%, #546a9e 50%, #36518f 50%, #3d5691 100%);
+  background-image: -o-linear-gradient(top, #8c9cbf 0%, #546a9e 50%, #36518f 50%, #3d5691 100%);
+  background-image: linear-gradient(top, #8c9cbf 0%, #546a9e 50%, #36518f 50%, #3d5691 100%);
+  border: .5px solid #172d6e;
+  border-radius: 5px;
+  -webkit-box-shadow: inset 0 1px 0 0 #b1b9cb;
+  box-shadow: inset 0 1px 0 0 #b1b9cb;
+  color: #fff;
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;  padding: 7px 0 8px 0;
+  text-decoration: none;
+  text-align: center;
+	text-shadow: 0 -1px 1px #000f4d;
+  padding-right: 7px;
+  padding-left: 7px;
+}
+	.form-submit:hover {
+    background-color: #7f8dad;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #7f8dad), color-stop(50%, #4a5e8c), color-stop(50%, #2f477d), color-stop(100%, #364c80));
+    background-image: -webkit-linear-gradient(top, #7f8dad 0%, #4a5e8c 50%, #2f477d 50%, #364c80 100%);
+    background-image: -moz-linear-gradient(top, #7f8dad 0%, #4a5e8c 50%, #2f477d 50%, #364c80 100%);
+    background-image: -ms-linear-gradient(top, #7f8dad 0%, #4a5e8c 50%, #2f477d 50%, #364c80 100%);
+    background-image: -o-linear-gradient(top, #7f8dad 0%, #4a5e8c 50%, #2f477d 50%, #364c80 100%);
+    background-image: linear-gradient(top, #7f8dad 0%, #4a5e8c 50%, #2f477d 50%, #364c80 100%);
+		cursor: pointer; 
+	}
+	.form-submit:active 
+		{
+    -webkit-box-shadow: inset 0 0 20px 0 #1d2845, 0 1px 0 white;
+		box-shadow: inset 0 0 20px 0 #1d2845, 0 1px 0 white; 
+	}
+
 textarea {
 	font-size: 16px ! important; 
 	width:90%;
@@ -69,8 +110,7 @@ div.postboxadvice {
 	font-style: italic;
 	color:#777
 	}
-div.hr {
-}
+
 div.clear {
 	border-bottom: 0;
 }
@@ -111,7 +151,6 @@ ul.gamesublist {
 	font-weight: normal;
 	font-size:13px;
 	color: #777;
-	/*list-style: none;*/
 }
 div.rightHalf {
 	float:right;
@@ -148,10 +187,6 @@ li.formlisttitle {
     margin-right: 1em;
 }
 
-.form-submit {
-	font-weight: bold ! important;
-	color: #006699 ! important;
-}
 li.formlistfield {
 	list-style: none;
 	margin-bottom:10px;
@@ -269,6 +304,139 @@ a.light {
 	text-align:center;
 	margin:0 auto;
 }
+
+/* #header {
+	background-color: #fff;
+	width: auto;
+	padding:0;
+	margin:0;
+	text-align: left;
+}
+#header-container {
+	padding-left:0;
+	background-color: #fff;
+	padding-right:0;
+	padding-top:6px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top:0;
+	margin-bottom:0;
+	max-width: 800px;
+}
+#logo {
+	padding:0;
+	margin:0;
+	position:absolute;
+	vertical-align:bottom;
+	border: 0;                
+}
+#header-welcome {
+	padding:0;
+	margin:0;
+	text-align:right;
+	font-style: italic;
+}
+#header-welcome a {
+	font-weight:normal !important;
+	text-decoration:none !important;
+}
+
+.nav-wrap{
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
+	overflow: hidden;
+	border-radius: 7px;
+	background-color: #777;
+	margin: 30px 0 0 auto;
+	width: 70%;
+}
+
+#navSubMenu{
+	float: left;
+	color: #f2f2f2 !important;
+	font-weight: bold;
+	text-align: center;
+	padding: 10px 12px;
+	text-decoration: none;
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.nav-tab {
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
+	overflow: hidden;
+	background-color: #777;
+	}
+	
+.nav-tab a {
+	float: left;
+	color: #f2f2f2;
+	text-align: center;
+	padding: 10px 12px;
+	text-decoration: none;
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+  
+.nav-tab a:hover {
+	background-color: #ddd;
+	color: black;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.nav-tabActive {
+	background-color: #4CAF50;
+	color: white;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.nav-tabActive a {
+	background-color: #4CAF50;
+	color: white;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+#navSubMenu div#nav-drop {
+	visibility: hidden;
+	display: flex;
+	flex-direction: column;
+	position: absolute;
+	overflow : auto;
+}
+
+#nav-drop {
+	margin: 5px auto;
+	color: rgb(129, 196, 98);
+}
+
+#nav-text div:hover {
+	color:#009902;
+}
+
+#navSubMenu:hover div#nav-drop {
+	position: absolute;
+	margin-top: 25px;
+	width: 100px;
+	z-index: 999;
+	background-color: #555;
+	visibility: visible;
+	border-radius: 7px;
+}
+
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+	#navSubMenu:hover div#nav-drop {
+		margin-top: 5px !important;
+	}
+}
+
+#header-goto a:hover {
+	background-color: rgba(255, 255, 255, 0.75);
+	border-radius: 15px 0 15px 0;
+} */
+
 #header {
 	background-color: #fff;
 	width: auto;
@@ -322,6 +490,7 @@ a.light {
 #header-goto a.current:hover {
 	color:#009902;
 }
+
 #seperator {
 	margin: 0;
 	padding: 0;
@@ -356,6 +525,7 @@ div.content {
 	background-color: #fff;
 	border: 1px solid #aaa;
 	padding: 15px 24px;	
+	border-radius: 7px;
 }
 div.content-bare {
 	text-align: left;
@@ -374,11 +544,14 @@ div.content-notice {
 	background-color: #fff;
 	border: 1px solid #aaa;
 	padding: 8px 15px;	
+	border-radius: 7px;
 	
 }
 div.content-board-header, div.content-home-header {
 	margin-top:6px;
 	border-bottom:0;
+	border-radius: 7px;
+
 	}
 div.content-board-header {
 	border: 1px solid #aaa;
@@ -425,26 +598,25 @@ div.forum {
 	margin-top: 5px;
 	font-size: 11px;
 	text-align: center;
-	color: #777;
+	color: rgb(87, 87, 87);
 }
+
 #chatboxtabs {
 	font-size: 14px !important;
 	}
+
 div.gamelistings-tabs {
 	width: auto;
 	padding-top:3px;
 	padding-bottom:3px;
-	/*padding-left:20px;
-	padding-right:20px;*/
+	padding-right:20px;
 	height:auto;
 	margin:0;
 	margin-left:auto;
 	margin-right:auto;
 	border:0;
 	text-align:center;
-	font-size: 13px;
-	border-bottom:1px solid #aaa;
-	
+	font-size: 13px;	
 }
 div.gamelistings-tabs a.current {
 	text-decoration:none;
@@ -455,7 +627,7 @@ div.gamelistings-tabs a.current {
 	border-right:1px solid #888;
 	border-bottom:2px solid #000 ! important;
 }
-div.gamelistings-tabs a.current:hover {
+ div.gamelistings-tabs a.current:hover {
 	text-decoration:none;
 	background-color: #e5e5e5;
 	border-bottom:2px solid #009902 ! important;
@@ -496,6 +668,46 @@ div.gamelistings-tabs a:hover {
 	border-left:1px solid #009902 ! important;
 	border-right:1px solid #009902 ! important;
 }
+
+
+.gamelistings-tabsNew {
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
+	overflow: hidden;
+	border-radius: 7px;
+	background-color: #333;
+	}
+	
+.gamelistings-tabsNew a {
+	float: left;
+	color: #f2f2f2;
+	text-align: center;
+	padding: 10px 12px;
+	text-decoration: none;
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+  
+.gamelistings-tabsNew a:hover {
+	background-color: #ddd;
+	color: black;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.gamelistings-tabsNewActive {
+	background-color: #4CAF50;
+	color: white;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.gamelistings-tabsNewActive a {
+	background-color: #4CAF50;
+	color: white;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+
 .postbox {
 	text-align:center;
 }
@@ -616,13 +828,19 @@ form {
 .Russia {
 	color: #6F005D ! important;
 }
+.chatWrapper {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	margin-top:0px !important; 
+}
 div.chatbox {
 	max-height: 180px;
 	overflow-x:hidden;
 	overflow-y:auto;
-	border-left: solid #c1c1c1 1px;
-	border-right: solid #c1c1c1 1px;
-	border-bottom: solid #c1c1c1 1px;
+	border: 1px;
 }
 div.chatbox td {
 	overflow:hidden;
@@ -638,20 +856,6 @@ TABLE {
 	border-collapse: collapse;
 	width:100%;
 }
-/* div.datc table {
-	border: solid #aaa 1px;
-}
-div.datc th, .datc td {
-	border-right: solid #aaa 1px;
-}
-div.datc th {
-	border-top: solid #aaa 1px;
-	text-align:center;
-	text-decoration:underline;
-	border-bottom: solid #aaa 1px;
-	padding: 3px 5px;
-	font-size:16px;
-} */
 TABLE.credits {
 	border: solid #aaa 1px;
 	width:85%;
@@ -659,9 +863,7 @@ TABLE.credits {
 	margin-right:auto;
 }
 TABLE.orders {
-	border: solid #c1c1c1 1px;
 	width:95%;
-	margin-top:10px;
 	margin-left:auto;
 	margin-right:auto;
 	font-size:13px;
@@ -709,7 +911,6 @@ TD.army, div.army {
 .faq {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	border-collapse: collapse;
-	/* font-size: 14px; */
 }
 
  .faq_question {
@@ -1229,14 +1430,6 @@ li.modToolsformlisttitle {
 	background-color: #f1f1f1;
   }
 
-.topnav {
-	display: flex;
-	justify-content: space-around;
-	flex-wrap: wrap;
-	overflow: hidden;
-	background-color: #333;
-  }
-
 ul.modTools {
 	padding: 0;
 	margin-bottom: 40px;
@@ -1246,7 +1439,16 @@ ul.modTools {
 .modToolsCP {
 	padding: 15px;
 }
-  
+
+.topnav {
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
+	overflow: hidden;
+	background-color: #333;
+	border-radius: 7px;
+	}
+	
 .topnav a {
 	float: left;
 	color: #f2f2f2;
@@ -1410,7 +1612,10 @@ input[id^="FinalizeButton"]{
 	}
 	#header-container {
 		height: auto;
-		padding: 10px;
+		padding-right: 10px;
+		padding-left: 10px;
+		padding-top: 10px;
+		padding-bottom: 0px !important;
 		margin: -10px -10px 0;
 	}
 	#header-welcome{
@@ -1526,5 +1731,11 @@ input[id^="FinalizeButton"]{
 	}
 	.homeForumGroupNew {
 		font-size: 14px !important;
+	}
+	.nav-wrap {
+		width: 100% !important;
+		flex-wrap: wrap;
+		justify-content: left;
+		margin-top: 5px;
 	}
 }
