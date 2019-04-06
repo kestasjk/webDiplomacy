@@ -857,8 +857,13 @@ if ( $User->type['User'] && $User->id != $UserProfile->id)
      coll[searchCounter].addEventListener("click", function() {
        this.classList.toggle("active");
        var content = this.nextElementSibling;
-   		if (content.style.display === "block") { content.style.display = "none"; } 
-   		else { content.style.display = "block"; }
+   		if (content.style.visibility === "visible") {
+   		 	content.style.visibility = "hidden";
+   		 	content.style.opacity = 0; 
+   		} else {
+   			content.style.visibility = "visible";
+   			content.style.opacity = 1; 
+   		}
      });
    }
 </script>
