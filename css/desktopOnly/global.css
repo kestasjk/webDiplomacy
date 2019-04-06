@@ -144,7 +144,53 @@ p.profileComment {
 	width:80%;
 	margin-left:auto;
 	margin-right:auto;
+	word-break: break-word;
 	}
+.profileUsername {
+	text-align: left;
+}
+.profile_title {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #777;
+	color: white;
+	cursor: pointer;
+	padding: 5px;
+	border: none;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+  .profile_title:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #555;
+  }
+
+  .profile_content {
+		padding: 0;
+		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+		display: none;
+		overflow: hidden;
+		padding: 0 0 0 10px;
+		background-color: #f1f1f1;
+		font-size: 13px;
+		margin-top:3px !important; 
+		border-radius: 7px;
+	} 
+		
+	.profile_content_show {
+		border-radius: 7px;
+		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+		overflow: hidden;
+		background-color: #f1f1f1;
+		font-size: 13px;
+		display: show;
+		padding: 0 0 0 10px;
+		margin-top: 3px !important; 
+  } 
+
 img.center {
 	text-align:center;
 }
@@ -166,6 +212,11 @@ ul.gamesublist {
 	font-size:13px;
 	color: #777;
 }
+div.profile-show {
+	border-radius: 7px;
+	background-color: #f1f1f1;
+	padding: 5px;
+}
 div.rightHalf {
 	float:right;
 	width:50%;
@@ -177,6 +228,7 @@ div.rightHalf {
 div.leftHalf {
 	width:50%;
 }
+
 ul.todolist {
 	margin-left: 20px;
 	color: #777;

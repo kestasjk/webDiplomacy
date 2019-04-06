@@ -886,6 +886,81 @@ class User {
 		return $rankingDetailsClassic;
 	}
 
+	/*
+	 * A lighter version of rankingDetails with just the game % stats for classic gunboat games. 
+	 */
+	public function rankingDetailsClassicGunboat()
+	{
+		global $DB;
+
+		$rankingDetailsClassicGunboat = array();
+
+		$tabl = $DB->sql_tabl(
+				"SELECT COUNT(m.id), m.status FROM wD_Members m 
+				 inner join wD_Games g on g.id = m.gameID 
+				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.pressType = 'NoPress' 
+				 GROUP BY m.status"
+			);
+
+		$rankingDetailsClassicGunboat['stats'] = array();
+		while ( list($number, $status) = $DB->tabl_row($tabl) )
+		{
+			if ($status != "Playing") {	$rankingDetailsClassicGunboat['stats'][$status] = $number; }
+		}
+
+		return $rankingDetailsClassicGunboat;
+	}
+
+	/*
+	 * A lighter version of rankingDetails with just the game % stats for classic press games. 
+	 */
+	public function rankingDetailsClassicPress()
+	{
+		global $DB;
+
+		$rankingDetailsClassicPress = array();
+
+		$tabl = $DB->sql_tabl(
+				"SELECT COUNT(m.id), m.status FROM wD_Members m 
+				 inner join wD_Games g on g.id = m.gameID 
+				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.pressType in ('Regular', 'RulebookPress')
+				 GROUP BY m.status"
+			);
+
+		$rankingDetailsClassicPress['stats'] = array();
+		while ( list($number, $status) = $DB->tabl_row($tabl) )
+		{
+			if ($status != "Playing") {	$rankingDetailsClassicPress['stats'][$status] = $number; }
+		}
+
+		return $rankingDetailsClassicPress;
+	}
+
+	/*
+	 * A lighter version of rankingDetails with just the game % stats for classic ranked games. 
+	 */
+	public function rankingDetailsClassicRanked()
+	{
+		global $DB;
+
+		$rankingDetailsClassicRanked = array();
+
+		$tabl = $DB->sql_tabl(
+				"SELECT COUNT(m.id), m.status FROM wD_Members m 
+				 inner join wD_Games g on g.id = m.gameID 
+				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.potType <> 'Unranked'
+				 GROUP BY m.status"
+			);
+
+		$rankingDetailsClassicRanked['stats'] = array();
+		while ( list($number, $status) = $DB->tabl_row($tabl) )
+		{
+			if ($status != "Playing") {	$rankingDetailsClassicRanked['stats'][$status] = $number; }
+		}
+
+		return $rankingDetailsClassicRanked;
+	}
+
 	static function pointsInPlay($userID, $excludeGameID=false)
 	{
 		global $DB;

@@ -366,10 +366,29 @@ if ( isset($_REQUEST['detail']) )
 	libHTML::footer();
 }
 
-print '<div><div class="rightHalf">';
+print '<div>';
+print '<h2 class = "profileUsername">'.$UserProfile->username;
+if ( $User->type['User'] && $UserProfile->type['User'] && ! ( $User->id == $UserProfile->id || $UserProfile->type['Moderator'] || $UserProfile->type['Guest'] || $UserProfile->type['Admin'] ) )
+{
+	$userMuted = $User->isUserMuted($UserProfile->id);
+
+	print '<a name="mute"></a>';
+	if( isset($_REQUEST['toggleMute'])) {
+		$User->toggleUserMute($UserProfile->id);
+		$userMuted = !$userMuted;
+	}
+	$muteURL = 'profile.php?userID='.$UserProfile->id.'&toggleMute=on&rand='.rand(0,99999).'#mute';
+	print ' '.($userMuted ? libHTML::muted($muteURL) : libHTML::unmuted($muteURL));
+}
+print '</h2>';
+print '<div class = "profile-show">';
+print '<div class="rightHalf">';
 
 $rankingDetails = $UserProfile->rankingDetails();
 $rankingDetailsClassic = $UserProfile->rankingDetailsClassic();
+$rankingDetailsClassicPress = $UserProfile->rankingDetailsClassicPress();
+$rankingDetailsClassicGunboat = $UserProfile->rankingDetailsClassicGunboat();
+$rankingDetailsClassicRanked = $UserProfile->rankingDetailsClassicRanked();
 $rankingDetailsVariants = $UserProfile->rankingDetailsVariants();
 
 $showAnon = ($UserProfile->id == $User->id || $User->type['Moderator']);
@@ -379,7 +398,7 @@ print '<ul class="formlist">';
 print '<li title="Diplomat/Mastermind/Pro/Experienced/Member/Casual/Puppet (top 5/10/20/50/90/100%/not ranked)"><strong>'.l_t('Rank:').'</strong> '.$rankingDetails['rank'].'</li>';
 
 if ( $rankingDetails['position'] < $rankingDetails['rankingPlayers'] )
-	print '<li><strong>'.l_t('Position:').'</strong> '.$rankingDetails['position'].' / '.
+	print '<li><strong>'.l_t('Position:').'</strong> '.$rankingDetails['position'].'/'.
 		$rankingDetails['rankingPlayers'].' '.l_t('(top %s%%)',$rankingDetails['percentile']).'</li>';
 
 print '<li><strong>'.l_t('Available points:').'</strong> '.number_format($UserProfile->points).' '.libHTML::points().'</li>';
@@ -424,7 +443,8 @@ foreach($rankingDetails['stats'] as $name => $status)
 
 if( $total )
 {
-	print '<li><strong>'.l_t('All Game stats:').'</strong> <ul class="gamesublist">';
+	print '<div class = "profile_title">';
+	print '<li><strong>'.l_t('All Game stats:').'</strong> </div><div class = "profile_content_show">';
 
 	// Shows each of the game details
 	foreach($rankingDetails['stats'] as $name => $status)
@@ -449,7 +469,7 @@ if( $total )
 		print '<li>'.l_t($name.': <strong>%s</strong>',$status).'</li>';
 	}
 	print '<li>'.l_t('Total (finished): <strong>%s</strong>',$total).'</li>';
-	print '</ul></li>';
+	print '</li>';
 
 	// Get a count of the number of classic games that have been played. 
 	$totalClassic = 0;
@@ -459,13 +479,13 @@ if( $total )
 
 		$totalClassic += $status;
 	}
+	print '</div>';
 	
 	// Print out Classic stats if any classic games have been finished. 
 	if( $totalClassic )
 	{
-		print '</br>';
-		print '<li><strong>'.l_t('Classic stats:').'</strong> <ul class="gamesublist">';
-
+		print '<div class = "profile_title">';
+		print '<li><strong>'.l_t('Classic:').'</strong></div><div class = "profile_content">';
 		foreach($rankingDetailsClassic['stats'] as $name => $status)
 		{
 			if ( !in_array($name, $includeStatus) ) continue;
@@ -475,7 +495,93 @@ if( $total )
 			print '</li>';
 		}
 		print '<li>'.l_t('Total (finished): <strong>%s</strong>',$totalClassic).'</li>';
-		print '</ul></li>';
+		print '</li>';
+		print '</div>';
+		// print '</div>';
+	}
+	
+	// Get a count of the number of classic press games that have been played. 
+	$totalClassicPress = 0;
+	foreach($rankingDetailsClassicPress['stats'] as $name => $status)
+	{
+		if ( !in_array($name, $includeStatus) ) continue;
+
+		$totalClassicPress += $status;
+	}
+
+	// Print out Classic Press stats if any classic press games have been finished. 
+	if( $totalClassicPress )
+	{
+		print '<div class = "profile_title">';
+		print '<li><strong>'.l_t('Classic Press:').'</strong> </div><div class = "profile_content">';
+
+		foreach($rankingDetailsClassicPress['stats'] as $name => $status)
+		{
+			if ( !in_array($name, $includeStatus) ) continue;
+
+			print '<li>'.l_t($name.': <strong>%s</strong>',$status);
+			print ' ( '.round(($status/$totalClassicPress)*100).'% )';
+			print '</li>';
+		}
+		print '<li>'.l_t('Total (finished): <strong>%s</strong>',$totalClassicPress).'</li>';
+		print '</li>';
+		print '</div>';
+	}
+
+	// Get a count of the number of classic gunboat games that have been played. 
+	$totalClassicGunboat = 0;
+	foreach($rankingDetailsClassicGunboat['stats'] as $name => $status)
+	{
+		if ( !in_array($name, $includeStatus) ) continue;
+
+		$totalClassicGunboat += $status;
+	}
+
+	// Print out Classic Gunboat stats if any classic gunboat games have been finished. 
+	if( $totalClassicGunboat )
+	{
+		print '<div class = "profile_title">';
+		print '<li><strong>'.l_t('Classic Gunboat:').'</strong> </div><div class = "profile_content">';
+
+		foreach($rankingDetailsClassicGunboat['stats'] as $name => $status)
+		{
+			if ( !in_array($name, $includeStatus) ) continue;
+
+			print '<li>'.l_t($name.': <strong>%s</strong>',$status);
+			print ' ( '.round(($status/$totalClassicGunboat)*100).'% )';
+			print '</li>';
+		}
+		print '<li>'.l_t('Total (finished): <strong>%s</strong>',$totalClassicGunboat).'</li>';
+		print '</li>';
+		print '</div>';
+	}
+
+	// Get a count of the number of classic ranked games that have been played. 
+	$totalClassicRanked = 0;
+	foreach($rankingDetailsClassicRanked['stats'] as $name => $status)
+	{
+		if ( !in_array($name, $includeStatus) ) continue;
+
+		$totalClassicRanked += $status;
+	}
+
+	// Print out Classic Ranked stats if any classic ranked games have been finished. 
+	if( $totalClassicRanked )
+	{
+		print '<div class = "profile_title">';
+		print '<li><strong>'.l_t('Classic Ranked:').'</strong> </div><div class = "profile_content">';
+
+		foreach($rankingDetailsClassicRanked['stats'] as $name => $status)
+		{
+			if ( !in_array($name, $includeStatus) ) continue;
+
+			print '<li>'.l_t($name.': <strong>%s</strong>',$status);
+			print ' ( '.round(($status/$totalClassicRanked)*100).'% )';
+			print '</li>';
+		}
+		print '<li>'.l_t('Total (finished): <strong>%s</strong>',$totalClassicRanked).'</li>';
+		print '</li>';
+		print '</div>';
 	}
 
 	// Get a count of the number of classic games that have been played. 
@@ -486,12 +592,12 @@ if( $total )
 
 		$totalVariants += $status;
 	}
-	
-	// Print out Classic stats if any variant games have been finished. 
+
+	// Print out Variant stats if any variant games have been finished. 
 	if( $totalVariants )
 	{
-		print '</br>';
-		print '<li><strong>'.l_t('Variant stats:').'</strong> <ul class="gamesublist">';
+		print '<div class = "profile_title">';
+		print '<li><strong>'.l_t('Variant stats:').'</strong> </div>';
 
 		foreach($rankingDetailsVariants['stats'] as $name => $status)
 		{
@@ -502,16 +608,17 @@ if( $total )
 			print '</li>';
 		}
 		print '<li>'.l_t('Total (finished): <strong>%s</strong>',$totalVariants).'</li>';
-		print '</ul></li>';
+		print '</li>';
+		print '</div>';
 	}
 
 	print '</br>';
-	print '<li><strong>'.l_t('Reliability:').'</strong> <ul class="gamesublist">';
+	print '<li><strong>'.l_t('Reliability:').'</strong>';
 	if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 	{
-		print '<li>'.l_t('No moves received / received:').' <strong>'.$UserProfile->nmrCount.'/'.$UserProfile->phaseCount.'</strong></li>';
+		print '<li style="font-size:13px">'.l_t('No moves received/received:').' <strong>'.$UserProfile->nmrCount.'/'.$UserProfile->phaseCount.'</strong></li>';
 	}
-	print '<li>'.l_t('Reliability rating:').' <strong>'.($UserProfile->reliabilityRating).'%</strong>';
+	print '<li style="font-size:13px">'.l_t('Reliability rating:').' <strong>'.($UserProfile->reliabilityRating).'%</strong>';
 	if( $User->type['Moderator'] || $User->id == $UserProfile->id )
 	{
 		print ' <a class="light" href="profile.php?detail=civilDisorders&userID='.$UserProfile->id.'">'.l_t('breakdown').'</a>';
@@ -519,28 +626,13 @@ if( $total )
 	print '</li>';
 	
 	if ( $rankingDetails['takenOver'] )
-		print '<li>'.l_t('Left and taken over: <strong>%s</strong>',$rankingDetails['takenOver']).
+		print '<li style="font-size:13px">'.l_t('Left and taken over: <strong>%s</strong>',$rankingDetails['takenOver']).
 			'(<a href="profile.php?detail=civilDisorders&userID='.$UserProfile->id.'">'.l_t('View details').'</a>)</li>';
 
-	print '</ul></li>';
+	print '</li>';
 }
 
 print '</ul></div>';
-
-print "<h2>".$UserProfile->username;
-if ( $User->type['User'] && $UserProfile->type['User'] && ! ( $User->id == $UserProfile->id || $UserProfile->type['Moderator'] || $UserProfile->type['Guest'] || $UserProfile->type['Admin'] ) )
-{
-	$userMuted = $User->isUserMuted($UserProfile->id);
-
-	print '<a name="mute"></a>';
-	if( isset($_REQUEST['toggleMute'])) {
-		$User->toggleUserMute($UserProfile->id);
-		$userMuted = !$userMuted;
-	}
-	$muteURL = 'profile.php?userID='.$UserProfile->id.'&toggleMute=on&rand='.rand(0,99999).'#mute';
-	print ' '.($userMuted ? libHTML::muted($muteURL) : libHTML::unmuted($muteURL));
-}
-print '</h2>';
 
 // Regular user info starts here:
 print '<div class="leftHalf" style="width:50%">';
@@ -619,7 +711,6 @@ if (!isset(Config::$customForumURL))
 	unset($likes,$liked);
 }
 
-print '<li>&nbsp;</li>';
 print '<li><strong>'.l_t('Joined:').'</strong> '.$UserProfile->timeJoinedtxt().'</li>';
 print '<li><strong>'.l_t('User ID#:').'</strong> '.$UserProfile->id.'</li>';
 if( $User->type['Moderator'] )
@@ -716,7 +807,7 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 		print '</li></ul></p>';
 	}
 }
-
+print '</div>';
 if ( $User->type['User'] && $User->id != $UserProfile->id)
 {
 	print '<div class="hr"></div>';
@@ -756,6 +847,22 @@ if ( $User->type['User'] && $User->id != $UserProfile->id)
 		</ul>
 		</div>';
 }
+
+?>
+<script type="text/javascript">
+   var coll = document.getElementsByClassName("profile_title");
+   var searchCounter;
+   
+   for (searchCounter = 0; searchCounter < coll.length; searchCounter++) {
+     coll[searchCounter].addEventListener("click", function() {
+       this.classList.toggle("active");
+       var content = this.nextElementSibling;
+   		if (content.style.display === "block") { content.style.display = "none"; } 
+   		else { content.style.display = "block"; }
+     });
+   }
+</script>
+<?php
 
 libHTML::pagebreak();
 
@@ -849,5 +956,6 @@ else
 	print '<a name="bottom"></a>';
 
 print '</div>';
+
 libHTML::footer();
 ?>
