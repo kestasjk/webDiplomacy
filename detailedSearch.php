@@ -21,7 +21,6 @@ if (isset($_REQUEST['tab']))
 	if ($_REQUEST['tab'] == 'UserSearch') { $tab = 'UserSearch'; }
 	else if ($_REQUEST['tab'] == 'GameSearch') { $tab = 'GameSearch'; }
 	else if ($_REQUEST['tab'] == 'GamesByUser') { $tab = 'GamesByUser'; }
-	else if ($_REQUEST['tab'] == 'GamesByUsername') { $tab = 'GamesByUsername'; }
 }
 
 // User Search Objects
@@ -29,7 +28,6 @@ class UserResultData
 {
 	public $userID;
 	public $username;
-	public $userID2;
 	public $username2;
 	public $email;
 	public $timeJoined;
@@ -63,6 +61,10 @@ $seeBronze = 'unchecked';
 $seeAll = 'unchecked';
 $seeNewForumLink = 'unchecked';
 $limit = 50;
+$nameOrId = 'Username';
+$username_select = '';
+$userId_select = '';
+$found_user = False;
 $sortCol = 'id';
 $sortType = 'asc';
 
@@ -99,6 +101,11 @@ if ( isset($_REQUEST['limit']))
 	else if ($_REQUEST['limit'] == '200') { $limit=200; }
 	else if ($_REQUEST['limit'] == '500') { $limit=500; }
 	else if ($_REQUEST['limit'] == '1000') { $limit=1000; }
+}
+if ( isset($_REQUEST['nameOrId']))
+{
+	if ($_REQUEST['nameOrId'] == 'Username') { $nameOrId='Username'; $username_select='selected="selected"'; $userId_select=''; }
+	else if ($_REQUEST['nameOrId'] == 'UserId') { $nameOrId='UserId'; $userId_select ='selected="selected"'; $username_select=''; }
 }
 if ( isset($_REQUEST['sortCol']))
 {
@@ -258,8 +265,6 @@ $checkAgainstMe = 'unchecked';
 if ( isset($_REQUEST['paramUserID']) ) {	$paramUserID=(int)$_REQUEST['paramUserID']; }
 if ( isset($_REQUEST['checkAgainstMe'])) { $checkAgainstMe='checked'; }
 
-// Game by Username variables
-$paramUserID2 = -1;
 
 // Print the header and standard php for the site that is required on every page.
 libHTML::starthtml();
@@ -440,8 +445,17 @@ print '<div class="advancedSearchContent">';
 print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
 		<INPUT type="hidden" name="tab" value="GamesByUser" />
 
-		<p>User ID:
-		<INPUT class="advancedSearch" type="text" name="paramUserID"  value="'. $paramUserID .'" size="20" /></br>
+		<p>Username:
+		<INPUT class="advancedSearch" type="text" name="username2"  value="'. $username2 .'" size="20"/>
+		User ID:
+		<INPUT class="advancedSearch" type="text" name="paramUserID"  value="'. $paramUserID .'" size="20"/>
+		</br></br>
+		Search by:
+		<select  class = "advancedSearch" name="nameOrId">
+			<option '. $username_select .'" value="Username">Username</option>
+			<option '. $userId_select   .'" value="UserId">UserID</option>
+		</select>
+		</br>
 		<input class="advancedSearch" type="checkbox" name="checkAgainstMe" value="checkAgainstMe">Show games the user and I have in common
 		</p>
 
@@ -498,67 +512,6 @@ print '</div>';
 
 print '</br></br>';
 
-// Collapsible search criteria for searching games by username keeps page readable based on search type user wants.
-print '<button class="SearchCollapsible">Search Games by Username (expand)</button>';
-print '<div class="advancedSearchContent">';
-print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
-		<INPUT type="hidden" name="tab" value="GamesByUsername" />
-
-		<p>Username:
-		<INPUT class="advancedSearch" type="text" name="username2"  value="'. $username2 .'" size="20" /></br>
-		<input class="advancedSearch" type="checkbox" name="checkAgainstMe" value="checkAgainstMe">Show games the user and I have in common
-		</p>
-
-		<p>
-		<strong>Columns in Result:</strong></br>
-		<input class="advancedSearch" type="checkbox" name="seeGamename" value="seeGamename" checked="checked">Game Name
-		<input class="advancedSearch" type="checkbox" name="seeGameOver" value="seeGameOver" checked="checked">Game Over
-		<input class="advancedSearch" type="checkbox" name="seePot" value="seePot"  checked="checked">Pot
-		<input class="advancedSearch" type="checkbox" name="seeInviteCode" value="seeInviteCode">Invite Code
-		<input class="advancedSearch" type="checkbox" name="seePotType" value="seePotType">Pot Type
-		<input class="advancedSearch" type="checkbox" name="seeJoinable" value="seeJoinable" checked="checked">Joinable
-		<input class="advancedSearch" type="checkbox" name="seePhaseLength" value="seePhaseLength">Phase Length
-		<input class="advancedSearch" type="checkbox" name="seeAnon" value="seeAnon">Anon
-		<input class="advancedSearch" type="checkbox" name="seePressType" value="seePressType">Press Type
-		<input class="advancedSearch" type="checkbox" name="seeDirector" value="seeDirector">Director
-		<input class="advancedSearch" type="checkbox" name="seeMinRR" value="seeMinRR">Min RR
-		<input class="advancedSearch" type="checkbox" name="seeDrawType" value="seeDrawType">Draw Type
-		<input class="advancedSearch" type="checkbox" name="seeVariant" value="seeVariant" checked="checked">Variant
-		<input class="advancedSearch" type="checkbox" name="seeWatchedCount" value="seeWatchedCount" checked="checked">Spectator Count
-
-		</br></br>
-		<input class="advancedSearch" type="checkbox" name="seeAll" value="seeAll">See All (pulls all columns)
-		</p>
-		<p>
-		<strong>Sorting:</strong>
-		</br>
-		<select  class = "advancedSearch" name="sortColg">
-			<option selected="selected" value="id">id</option>
-			<option value="username">Game Name</option>
-			<option value="pot">Pot</option>
-			<option value="phaseMinutes">Phase Length</option>
-			<option value="watchedGames">Number of Spectators</option>
-		</select>
-
-		<select  class = "advancedSearch" name="sortType">
-			<option selected="selected" value="asc">Ascending</option>
-			<option value="desc">Descending</option>
-		</select>
-		</br></br>
-		<strong># of results to show (do not pick more then 100 on a phone or tablet)</strong>
-		</br>
-		<select  class = "advancedSearch" name="limit">
-			<option selected="selected" value="50">50</option>
-			<option value="100">100</option>
-			<option value="200">200</option>
-			<option value="500">500</option>
-			<option value="1000">1,000</option>
-		</select>
-		</p>
-
-		<input class="advancedSearchform-submit" type="submit" name="Submit" class="form-submit" value="Check" /></form>
-		</br>';
-print '</div>';
 
 if ($tab == 'UserSearch')
 {
@@ -885,6 +838,42 @@ else if ($tab == 'GameSearch')
 
 else if ($tab == 'GamesByUser')
 {
+	if ($nameOrId == 'Username'){
+		if ($username2 != '')
+		{
+			$sql = "SELECT u.id, u.username, u.email, u.timeJoined, u.gameCount, u.reliabilityRating, u.points, u.type
+					FROM wD_Users u WHERE u.type not like '%System%' and u.type not like '%Guest%'";
+
+			$sqlCounter = "SELECT count(1)  FROM wD_Users u WHERE u.type not like '%System%' and u.type not like '%Guest%'";
+
+			if ($username2)
+			{
+				$username2 = strip_tags(html_entity_decode(trim($username2)));
+			}
+
+			$sql = $sql." and u.username like '".$username2."'";
+			$sqlCounter = $sqlCounter." and u.username like '".$username2."'";
+
+			$sql = $sql . " ORDER BY u.".$sortCol." ".$sortType." ";
+			$sql = $sql . " Limit ". $limit .";";
+
+			$tablChecked = $DB->sql_tabl($sql);
+
+			/*
+			 * Loop through all the users gathered from the query above who joined in the last X days and have already been checked.
+			 * If the option to recheck is on, this list will be ignored.
+			 */
+			while (list($userID, $username, $email, $timeJoined, $gameCount, $reliabilityRating, $points, $userType) = $DB->tabl_row($tablChecked))
+			{
+				$paramUserID = $userID;
+				$found_user = True;
+			}
+		}
+	}
+	else{
+		$found_user = True;
+	}
+
 	$IsUserValid = 0;
 
 	if ($paramUserID == 0)
@@ -893,6 +882,10 @@ else if ($tab == 'GamesByUser')
 		$paramUserID = $User->id;
 	}
 	else { list($IsUserValid) = $DB->sql_row("SELECT count(1) FROM wD_Users WHERE id = ".$paramUserID); }
+
+	if(!$found_user){
+		$IsUserValid = 0;
+	}
 
 	//User Check here if user is not blank
 	if ($IsUserValid == 1)
@@ -962,119 +955,7 @@ else if ($tab == 'GamesByUser')
 		printGameResults($seeVariant, $seeGamename, $seeGameOver, $seePot, $seeInviteCode, $seePotType, $seeJoinable, $seePhaseLength,
 		$seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount, $GamesData);
 	}
-	else { print '<p class = advancedSearch> The user you entered is not valid. Please enter a valid user or 0 to see your own games.</p>';}
-}
-
-else if ($tab == 'GamesByUsername')
-{
-	if ($username2 != '')
-	{
-		$sql = "SELECT u.id, u.username, u.email, u.timeJoined, u.gameCount, u.reliabilityRating, u.points, u.type
-				FROM wD_Users u WHERE u.type not like '%System%' and u.type not like '%Guest%'";
-
-		$sqlCounter = "SELECT count(1)  FROM wD_Users u WHERE u.type not like '%System%' and u.type not like '%Guest%'";
-
-		if ($username2)
-		{
-			$username2 = strip_tags(html_entity_decode(trim($username2)));
-		}
-
-		$sql = $sql." and u.username like '".$username2."'";
-		$sqlCounter = $sqlCounter." and u.username like '".$username2."'";
-
-		$sql = $sql . " ORDER BY u.".$sortCol." ".$sortType." ";
-		$sql = $sql . " Limit ". $limit .";";
-
-		$tablChecked = $DB->sql_tabl($sql);
-
-		/*
-		 * Loop through all the users gathered from the query above who joined in the last X days and have already been checked.
-		 * If the option to recheck is on, this list will be ignored.
-		 */
-		while (list($userID, $username, $email, $timeJoined, $gameCount, $reliabilityRating, $points, $userType) = $DB->tabl_row($tablChecked))
-		{
-			$paramUserID2 = $userID;
-		}
-	}
-
-	$IsUserValid = 0;
-
-	if ($paramUserID2 == 0)
-	{
-		list($IsUserValid) = $DB->sql_row("SELECT count(1) FROM wD_Users WHERE id = ".$User->id);
-		$paramUserID2 = $User->id;
-	}
-	else { list($IsUserValid) = $DB->sql_row("SELECT count(1) FROM wD_Users WHERE id = ".$paramUserID2); }
-
-	//User Check here if user is not blank
-	if ($IsUserValid == 1)
-	{
-		$sql = "SELECT g.id, g.name, g.pot,g.phase, g.gameOver, g.processStatus, ( CASE WHEN g.password IS NULL THEN 'False' ELSE 'True' END ) AS password,
-				g.potType, g.minimumBet, g.phaseMinutes, g.anon, g.pressType, g.directorUserID, g.minimumReliabilityRating, g.drawType,
-				(select count(1) from wD_WatchedGames w where w.gameID = g.id) AS watchedGames
-				FROM wD_Games g WHERE g.gameOver <> 'No' and ((select count(1) from wD_Members m where m.userID = ".$paramUserID2." and m.gameID = g.id) > 0 ) ";
-
-		$sqlCounter = "SELECT count(1) FROM wD_Games g WHERE g.gameOver <> 'No' and ((select count(1) from wD_Members m where m.userID = ".$paramUserID2." and m.gameID = g.id) > 0) ";
-		list($checkedUsername) = $DB->sql_row("SELECT username FROM wD_Users WHERE id = ".$paramUserID2);
-
-		if ($paramUserID2 == $User->id ) { $userMessage =  "Showing my completed games.</p>";}
-		else if ($checkAgainstMe == 'checked')
-		{
-			$sql = $sql." and ((select count(1) from wD_Members m where m.userID = ".$User->id." and m.gameID = g.id ) > 0) ";
-			$sqlCounter = $sqlCounter." and ((select count(1) from wD_Members m where m.userID = ".$User->id." and m.gameID = g.id ) > 0) ";
-			$userMessage = "Showing <a href='profile.php?userID=".$paramUserID2."'>".$checkedUsername."'s</a> completed games against me.</p>";
-		}
-		else { $userMessage =  "Showing <a href='profile.php?userID=".$paramUserID2."'>".$checkedUsername."'s</a> completed games.</p>";}
-
-		if ($showOnlyJoinable == 'checked')
-		{
-			$sql = $sql." and g.minimumBet is not null and g.password is null and g.gameOver = 'No' ";
-			$sqlCounter = $sqlCounter." and g.minimumBet is not null and g.password is null and g.gameOver = 'No' ";
-		}
-
-		if ($sortColg == 'watchedGames')
-		{
-			$sql = $sql . " ORDER BY watchedGames ".$sortType." ";
-			$sql = $sql . " Limit ". $limit .";";
-		}
-		else
-		{
-			$sql = $sql . " ORDER BY g.".$sortColg." ".$sortType." ";
-			$sql = $sql . " Limit ". $limit .";";
-		}
-
-		$tablChecked = $DB->sql_tabl($sql);
-
-		while (list($gameID, $gameName, $pot, $phase, $gameOver, $processStatus, $password, $potType, $minimumBet, $phaseMinutes, $anon,
-		$pressType, $directorUserID, $minimumRR, $drawType, $watchedCount) = $DB->tabl_row($tablChecked))
-		{
-			$myGame = new GameResultData();
-			$myGame->gameID = $gameID;
-			$myGame->gameName = $gameName;
-			$myGame->pot = $pot;
-			$myGame->phase = $phase;
-			$myGame->gameOver = $gameOver;
-			if ($password == 'True' ) {$myGame->password = true; } else {$myGame->password = false; };
-			$myGame->potType = $potType;
-			$myGame->minimumBet = $minimumBet;
-			$myGame->phaseMinutes = $phaseMinutes;
-			$myGame->anon = $anon;
-			$myGame->pressType = $pressType;
-			$myGame->directorUserID = $directorUserID;
-			$myGame->minimumRR = $minimumRR;
-			$myGame->drawType = $drawType;
-			$myGame->watchedCount = $watchedCount;
-			array_push($GamesData,$myGame);
-		}
-
-		list($totalResults) = $DB->sql_row($sqlCounter);
-		print '<p class = "modTools"> Showing a max of '.$limit.' results from '.$totalResults.' total results. </br>';
-		print $userMessage;
-
-		printGameResults($seeVariant, $seeGamename, $seeGameOver, $seePot, $seeInviteCode, $seePotType, $seeJoinable, $seePhaseLength,
-		$seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount, $GamesData);
-	}
-	else { print '<p class = advancedSearch> The user you entered is not valid. Please enter a valid user.</p>';}
+	else { print '<p class = advancedSearch> The user you entered is not valid. Please enter a valid user or a User ID of 0 to see your own games.</p>';}
 }
 
 /*
