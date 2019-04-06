@@ -597,7 +597,7 @@ if( $total )
 	if( $totalVariants )
 	{
 		print '<div class = "profile_title">';
-		print '<li><strong>'.l_t('Variant stats:').'</strong> </div>';
+		print '<li><strong>'.l_t('Variant stats:').'</strong> </div> <div class = "profile_content">';
 
 		foreach($rankingDetailsVariants['stats'] as $name => $status)
 		{
