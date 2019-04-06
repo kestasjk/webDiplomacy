@@ -83,6 +83,20 @@ input[type="text"], input[type="password"], textarea, select {
     background-image: linear-gradient(top, #7f8dad 0%, #4a5e8c 50%, #2f477d 50%, #364c80 100%);
 		cursor: pointer; 
 	}
+	.spaced-button:disabled {
+    background-color: #777;
+		border: .5px solid #555;
+		border-radius: 5px;
+		-webkit-box-shadow: inset 0 1px 0 0 #b1b9cb;
+		box-shadow: inset 0 1px 0 0 #b1b9cb;
+		color: #fff;
+		font-size: 14px;
+		padding: 7px 0 8px 0;
+		text-decoration: none;
+		text-align: center;
+		padding-right: 7px;
+		padding-left: 7px;
+	}
 	.form-submit:active 
 		{
     -webkit-box-shadow: inset 0 0 20px 0 #1d2845, 0 1px 0 white;
