@@ -41,7 +41,7 @@ function changeCSS(toggle) {
         newlinkGlobal.setAttribute("rel", "stylesheet");
         newlinkGlobal.setAttribute("type", "text/css");
         newlinkGlobal.setAttribute("id", "global-css");
-        newlinkGlobal.setAttribute("href", cssDirectory + "/desktopOnly/global.css?ver=8");
+        newlinkGlobal.setAttribute("href", cssDirectory + "/desktopOnly/global.css?ver=10");
         document.getElementsByTagName("head").item(0).appendChild(newlinkGlobal);
 
         var oldlinkHome = document.getElementById("home-css");
@@ -77,12 +77,12 @@ function changeCSS(toggle) {
         document.getElementsByTagName("head").item(0).appendChild(viewPortTag);
 
         var oldlinkGlobal = document.getElementById("global-css");
-        if(oldlinkGlobal.getAttribute("href") !== cssDirectory + "/global.css?ver=8") {
+        if(oldlinkGlobal.getAttribute("href") !== cssDirectory + "/global.css?ver=10") {
             var newlinkGlobal = document.createElement("link");
             newlinkGlobal.setAttribute("rel", "stylesheet");
             newlinkGlobal.setAttribute("type", "text/css");
             newlinkGlobal.setAttribute("id", "global-css");
-            newlinkGlobal.setAttribute("href", cssDirectory + "/global.css?ver=8");
+            newlinkGlobal.setAttribute("href", cssDirectory + "/global.css?ver=10");
             document.getElementsByTagName("head").item(0).appendChild(newlinkGlobal);
             newlinkGlobal.onload = function(){
                 oldlinkGlobal.remove();
