@@ -181,6 +181,14 @@ p.profileComment {
 	transition: all 0.3s ease;
 }
 
+.profile_content {
+	height: 0;
+}
+
+.profile_content_show {
+	height: auto;
+}
+
 img.center {
 	text-align:center;
 }

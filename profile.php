@@ -859,10 +859,12 @@ if ( $User->type['User'] && $User->id != $UserProfile->id)
        var content = this.nextElementSibling;
    		if (content.style.visibility === "visible") {
    		 	content.style.visibility = "hidden";
-   		 	content.style.opacity = 0; 
+   		 	content.style.opacity = 0;
+   		 	content.style.height = 0; 
    		} else {
    			content.style.visibility = "visible";
-   			content.style.opacity = 1; 
+   			content.style.opacity = 1;
+   			content.style.height = "auto";
    		}
      });
    }
