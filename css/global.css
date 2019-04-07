@@ -170,8 +170,6 @@ p.profileComment {
 
 .profile_content, .profile_content_show {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	visibility: hidden;
-	opacity: 0;
 	overflow: hidden;
 	padding: 0 0 0 10px;
 	background-color: #f1f1f1;
@@ -183,10 +181,14 @@ p.profileComment {
 
 .profile_content {
 	height: 0;
+	visibility: hidden;
+	opacity: 0;
 }
 
 .profile_content_show {
 	height: auto;
+	visibility: visible;
+	opacity: 1;
 }
 
 img.center {
