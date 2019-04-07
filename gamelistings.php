@@ -66,14 +66,12 @@ if ( isset($_REQUEST['find']) )
 		$Game = $Variant->Game($id);
 		print $Game->summary();
 
-		print '<div class="hr"></div>';
 	}
 }
 
-
 function printAndFindTab()
 {
-	global $User, $Misc;
+	global $User, $Misc, $DB;
 
 	$tabs = array();
 
@@ -85,7 +83,6 @@ function printAndFindTab()
 	$tabs['Active']=l_t("Games which are going on now");
 	$tabs['Finished']=l_t("Games which have ended");
 	$tabs['Search']=l_t("The full game listing search panel");
-
 
 	$tab = 'Active';
 	$tabNames = array_keys($tabs);
@@ -99,7 +96,20 @@ function printAndFindTab()
 		$tab = $_SESSION['gamelistType'];
 	}
 
-	print '<div class="gamelistings-tabs">';
+	print '<div class="gamelistings-tabsNew">';
+
+	if($User->type['User'] )
+	{
+		list($GamesNew) = $DB->sql_row("SELECT COUNT(phase) FROM wD_Games WHERE phase = 'Pre-game'");
+		list($GamesActive) = $DB->sql_row("SELECT COUNT(phase) FROM wD_Games WHERE phase = 'Diplomacy' OR phase = 'Retreats' OR phase = 'Builds'");
+		list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g WHERE g.minimumBet is not null and g.password is null and g.gameOver = 'No' and g.phase <> 'Pre-game'");
+	}
+	else
+	{
+		list($GamesNew) = $DB->sql_row("SELECT COUNT(phase) FROM wD_Games WHERE phase = 'Pre-game'");
+		list($GamesActive) = $DB->sql_row("SELECT COUNT(phase) FROM wD_Games WHERE phase = 'Diplomacy' OR phase = 'Retreats' OR phase = 'Builds'");
+		list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g WHERE g.minimumBet is not null and g.password is null and g.gameOver = 'No' and g.phase <> 'Pre-game'");
+	}
 
 	foreach($tabs as $tabChoice=>$tabTitle)
 	{
@@ -110,7 +120,7 @@ function printAndFindTab()
 			if ( !isset($_REQUEST['searchOn']) )
 				print '&amp;searchOn=on';
 
-			print '" class="current"';
+			print '" class="gamelistings-tabsNewActive"';
 		}
 		else
 			print '"';
@@ -120,13 +130,31 @@ function printAndFindTab()
 		switch($tabChoice)
 		{
 			case 'New':
-			case 'Joinable':
-			case 'Active':
-			case 'Finished':
-				print ' (~'.$Misc->{'Games'.$tabChoice}.')';
+			print ' ('.$GamesNew.')';
 				if ( $tab == $tabChoice ) {
 					print (isset($_REQUEST['searchOn']) ? ' [click for default]' : ' [click for search]');
 				}
+
+			break;
+			case 'Joinable':
+			print ' ('.$GamesOpen.')';
+				if ( $tab == $tabChoice ) {
+					print (isset($_REQUEST['searchOn']) ? ' [click for default]' : ' [click for search]');
+				}
+
+			break;
+			case 'Active':
+			print ' ('.$GamesActive.')';
+				if ( $tab == $tabChoice ) {
+					print (isset($_REQUEST['searchOn']) ? ' [click for default]' : ' [click for search]');
+				}
+
+			break;
+			case 'Finished':
+				if ( $tab == $tabChoice ) {
+					print (isset($_REQUEST['searchOn']) ? ' [click for default]' : ' [click for search]');
+				}
+			break;
 		}
 
 		print '</a> ';
@@ -172,7 +200,6 @@ if ( $tab=='Search' or isset($_REQUEST['searchOn']) or isset($_REQUEST['search']
 	libHTML::pagebreak();
 
 	print $Pager->pagerBar('top', '<h4>'.l_t('Results:').'</h4>');
-	print '<div class="hr"></div>';
 
 	$gameCount = $search->printGamesList($Pager);
 
@@ -190,11 +217,9 @@ if ( $tab=='Search' or isset($_REQUEST['searchOn']) or isset($_REQUEST['search']
 }
 else
 {
-
 	libHTML::pagebreak();
 
 	print $Pager->pagerBar('top');
-	print '<div class="hr"></div>';
 
 	$gameCount = $search->printGamesList($Pager);
 

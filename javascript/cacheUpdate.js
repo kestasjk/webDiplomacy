@@ -19,12 +19,12 @@
 // See doc/javascript.txt for information on JavaScript in webDiplomacy
 
 // Set user online green/blue icons to actual values, via "onlineUsers" array of online user IDs  
-function setUserOnlineIcons() {
-	if( !Object.isUndefined(onlineUsers) )
-		onlineUsers.map(function(userID) {
-			$$('img[userID="'+userID+'"].userOnlineImg').invoke('show');
-		});
-}
+// function setUserOnlineIcons() {
+// 	if( !Object.isUndefined(onlineUsers) )
+// 		onlineUsers.map(function(userID) {
+// 			$$('img[userID="'+userID+'"].userOnlineImg').invoke('show');
+// 		});
+// }
 
 // Update new message icon for forum posts depending on stored cookie values
 function setForumMessageIcons() {
