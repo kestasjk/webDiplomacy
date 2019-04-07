@@ -61,10 +61,6 @@ $seeBronze = 'unchecked';
 $seeAll = 'unchecked';
 $seeNewForumLink = 'unchecked';
 $limit = 50;
-$nameOrId = 'Username';
-$username_select = '';
-$userId_select = '';
-$found_user = False;
 $sortCol = 'id';
 $sortType = 'asc';
 
@@ -101,11 +97,6 @@ if ( isset($_REQUEST['limit']))
 	else if ($_REQUEST['limit'] == '200') { $limit=200; }
 	else if ($_REQUEST['limit'] == '500') { $limit=500; }
 	else if ($_REQUEST['limit'] == '1000') { $limit=1000; }
-}
-if ( isset($_REQUEST['nameOrId']))
-{
-	if ($_REQUEST['nameOrId'] == 'Username') { $nameOrId='Username'; $username_select='selected="selected"'; $userId_select=''; }
-	else if ($_REQUEST['nameOrId'] == 'UserId') { $nameOrId='UserId'; $userId_select ='selected="selected"'; $username_select=''; }
 }
 if ( isset($_REQUEST['sortCol']))
 {
@@ -450,12 +441,6 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
 		User ID:
 		<INPUT class="advancedSearch" type="text" name="paramUserID"  value="'. $paramUserID .'" size="20"/>
 		</br></br>
-		Search by:
-		<select  class = "advancedSearch" name="nameOrId">
-			<option '. $username_select .'" value="Username">Username</option>
-			<option '. $userId_select   .'" value="UserId">UserID</option>
-		</select>
-		</br>
 		<input class="advancedSearch" type="checkbox" name="checkAgainstMe" value="checkAgainstMe">Show games the user and I have in common
 		</p>
 
@@ -838,54 +823,25 @@ else if ($tab == 'GameSearch')
 
 else if ($tab == 'GamesByUser')
 {
-	if ($nameOrId == 'Username'){
-		if ($username2 != '')
+	$IsUserValid = 0;
+	if ($username2 != '')
+	{
+		$username2 = strip_tags(html_entity_decode(trim($username2)));
+
+		list($userIDResult) = $DB->sql_row("SELECT id FROM wD_Users WHERE username = '".$username2."'");
+		if ($userIDResult > 0)
 		{
-			$sql = "SELECT u.id, u.username, u.email, u.timeJoined, u.gameCount, u.reliabilityRating, u.points, u.type
-					FROM wD_Users u WHERE u.type not like '%System%' and u.type not like '%Guest%'";
-
-			$sqlCounter = "SELECT count(1)  FROM wD_Users u WHERE u.type not like '%System%' and u.type not like '%Guest%'";
-
-			if ($username2)
-			{
-				$username2 = strip_tags(html_entity_decode(trim($username2)));
-			}
-
-			$sql = $sql." and u.username like '".$username2."'";
-			$sqlCounter = $sqlCounter." and u.username like '".$username2."'";
-
-			$sql = $sql . " ORDER BY u.".$sortCol." ".$sortType." ";
-			$sql = $sql . " Limit ". $limit .";";
-
-			$tablChecked = $DB->sql_tabl($sql);
-
-			/*
-			 * Loop through all the users gathered from the query above who joined in the last X days and have already been checked.
-			 * If the option to recheck is on, this list will be ignored.
-			 */
-			while (list($userID, $username, $email, $timeJoined, $gameCount, $reliabilityRating, $points, $userType) = $DB->tabl_row($tablChecked))
-			{
-				$paramUserID = $userID;
-				$found_user = True;
-			}
+			$paramUserID = $userIDResult;
+			$IsUserValid = 1;
 		}
 	}
-	else{
-		$found_user = True;
-	}
 
-	$IsUserValid = 0;
-
-	if ($paramUserID == 0)
+	else if ($paramUserID == 0)
 	{
 		list($IsUserValid) = $DB->sql_row("SELECT count(1) FROM wD_Users WHERE id = ".$User->id);
 		$paramUserID = $User->id;
 	}
 	else { list($IsUserValid) = $DB->sql_row("SELECT count(1) FROM wD_Users WHERE id = ".$paramUserID); }
-
-	if(!$found_user){
-		$IsUserValid = 0;
-	}
 
 	//User Check here if user is not blank
 	if ($IsUserValid == 1)
