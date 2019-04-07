@@ -849,9 +849,9 @@ else if ($tab == 'GamesByUser')
 		$sql = "SELECT g.id, g.name, g.pot,g.phase, g.gameOver, g.processStatus, ( CASE WHEN g.password IS NULL THEN 'False' ELSE 'True' END ) AS password,
 				g.potType, g.minimumBet, g.phaseMinutes, g.anon, g.pressType, g.directorUserID, g.minimumReliabilityRating, g.drawType,
 				(select count(1) from wD_WatchedGames w where w.gameID = g.id) AS watchedGames
-				FROM wD_Games g WHERE g.gameOver <> 'No' and ((select count(1) from wD_Members m where m.userID = ".$paramUserID." and m.gameID = g.id) > 0 ) ";
+				FROM wD_Games g inner join wD_Members m on m.gameID = g.id WHERE g.phase = 'Finished' and  m.userID = ".$paramUserID." ";
 
-		$sqlCounter = "SELECT count(1) FROM wD_Games g WHERE g.gameOver <> 'No' and ((select count(1) from wD_Members m where m.userID = ".$paramUserID." and m.gameID = g.id) > 0) ";
+		$sqlCounter = "SELECT count(1) FROM wD_Games g inner join wD_Members m on m.gameID = g.id WHERE g.phase = 'Finished' and m.userID = ".$paramUserID." ";
 		list($checkedUsername) = $DB->sql_row("SELECT username FROM wD_Users WHERE id = ".$paramUserID);
 
 		if ($paramUserID == $User->id ) { $userMessage =  "Showing my completed games.</p>";}
