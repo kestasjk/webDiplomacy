@@ -102,13 +102,15 @@ function printAndFindTab()
 	{
 		list($GamesNew) = $DB->sql_row("SELECT COUNT(phase) FROM wD_Games WHERE phase = 'Pre-game'");
 		list($GamesActive) = $DB->sql_row("SELECT COUNT(phase) FROM wD_Games WHERE phase = 'Diplomacy' OR phase = 'Retreats' OR phase = 'Builds'");
-		list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g WHERE g.minimumBet is not null and g.password is null and g.gameOver = 'No' and g.phase <> 'Pre-game'");
+		list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g WHERE g.minimumBet is not null and g.password is null and g.gameOver = 'No' 
+		and g.phase in ('Diplomacy','Retreats','Builds')");
 	}
 	else
 	{
 		list($GamesNew) = $DB->sql_row("SELECT COUNT(phase) FROM wD_Games WHERE phase = 'Pre-game'");
 		list($GamesActive) = $DB->sql_row("SELECT COUNT(phase) FROM wD_Games WHERE phase = 'Diplomacy' OR phase = 'Retreats' OR phase = 'Builds'");
-		list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g WHERE g.minimumBet is not null and g.password is null and g.gameOver = 'No' and g.phase <> 'Pre-game'");
+		list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g WHERE g.minimumBet is not null and g.password is null and g.gameOver = 'No' 
+		and g.phase in ('Diplomacy','Retreats','Builds')");
 	}
 
 	foreach($tabs as $tabChoice=>$tabTitle)
