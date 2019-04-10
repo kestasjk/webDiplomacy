@@ -28,7 +28,6 @@ class UserResultData
 {
 	public $userID;
 	public $username;
-	public $username2;
 	public $email;
 	public $timeJoined;
 	public $gameCount;
@@ -45,7 +44,6 @@ class UserResultData
 // User Search Variables
 $UsersData = array();
 $username = '';
-$username2 = '';
 $searchType1 = 'Starts';
 $type = 'none';
 $seeUsername = 'unchecked';
@@ -60,7 +58,6 @@ $seeSilver = 'unchecked';
 $seeBronze = 'unchecked';
 $seeAll = 'unchecked';
 $seeNewForumLink = 'unchecked';
-$limit = 50;
 $sortCol = 'id';
 $sortType = 'asc';
 
@@ -68,11 +65,6 @@ $sortType = 'asc';
 if ( isset($_REQUEST['username']) && $_REQUEST['username'] && strlen($_REQUEST['username']) )
 {
 	$username = $DB->escape($_REQUEST['username']);
-}
-
-if ( isset($_REQUEST['username2']) && $_REQUEST['username2'] && strlen($_REQUEST['username2']) )
-{
-	$username2 = $DB->escape($_REQUEST['username2']);
 }
 
 if ( isset($_REQUEST['searchType1']))
@@ -91,16 +83,9 @@ if ( isset($_REQUEST['seeBanned'])) { $seeBanned='checked'; }
 if ( isset($_REQUEST['seeGold'])) { $seeGold='checked'; }
 if ( isset($_REQUEST['seeSilver'])) { $seeSilver='checked'; }
 if ( isset($_REQUEST['seeBronze'])) { $seeBronze='checked'; }
-if ( isset($_REQUEST['limit']))
-{
-	if ($_REQUEST['limit'] == '100') { $limit=100; }
-	else if ($_REQUEST['limit'] == '200') { $limit=200; }
-	else if ($_REQUEST['limit'] == '500') { $limit=500; }
-	else if ($_REQUEST['limit'] == '1000') { $limit=1000; }
-}
 if ( isset($_REQUEST['sortCol']))
 {
-	if ($_REQUEST['sortCol'] == 'username') { $sortCol='username'; }
+	if ($_REQUEST['sortCol'] == 'Username') { $sortCol='Username'; }
 	else if ($_REQUEST['sortCol'] == 'timeJoined') { $sortCol='timeJoined'; }
 	else if ($_REQUEST['sortCol'] == 'RR') { $sortCol='reliabilityRating'; }
 	else if ($_REQUEST['sortCol'] == 'gameCount') { $sortCol='gameCount'; }
@@ -251,11 +236,29 @@ if ( isset($_REQUEST['seeAll']))
 
 // Game by User variables
 $paramUserID = 0;
+$username2 = '';
 $checkAgainstMe = 'unchecked';
+$pagenum = 1;
 
 if ( isset($_REQUEST['paramUserID']) ) {	$paramUserID=(int)$_REQUEST['paramUserID']; }
+if ( isset($_REQUEST['username2']) && $_REQUEST['username2'] && strlen($_REQUEST['username2']) )
+{
+	$username2 = $DB->escape($_REQUEST['username2']);
+}
 if ( isset($_REQUEST['checkAgainstMe'])) { $checkAgainstMe='checked'; }
 
+// Paging variables
+$maxPage = 0;
+$resultsPerPage = 50;
+
+if ( isset($_REQUEST['pagenum'])) { $pagenum=$_REQUEST['pagenum']; }
+if ( isset($_REQUEST['resultsPerPage']))
+{
+	if ($_REQUEST['resultsPerPage'] == '25') { $resultsPerPage=25; }
+	else if ($_REQUEST['resultsPerPage'] == '100') { $resultsPerPage=100; }
+	else if ($_REQUEST['resultsPerPage'] == '200') { $resultsPerPage=200; }
+	else if ($_REQUEST['resultsPerPage'] == '1000') { $resultsPerPage=1000; }
+}
 
 // Print the header and standard php for the site that is required on every page.
 libHTML::starthtml();
@@ -311,8 +314,8 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
 		<strong>Sorting:</strong>
 		</br>
 		<select  class = "advancedSearch" name="sortCol">
-			<option selected="selected" value="id">id</option>
-			<option value="username">username</option>
+			<option selected="selected" value="id">User ID</option>
+			<option value="Username">Username</option>
 			<option value="timeJoined">Time Joined</option>
 			<option value="RR">RR</option>
 			<option value="gameCount">Game Count</option>
@@ -323,14 +326,14 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
 			<option value="desc">Descending</option>
 		</select>
 		</br></br>
-		<strong># of results to show (do not pick more then 100 on a phone or tablet)</strong>
+		<strong># of results to show per page</strong>
 		</br>
-		<select  class = "advancedSearch" name="limit">
+		<select  class = "advancedSearch" name="resultsPerPage">
+			<option value="25">25</option>
 			<option selected="selected" value="50">50</option>
 			<option value="100">100</option>
 			<option value="200">200</option>
-			<option value="500">500</option>
-			<option value="1000">1,000</option>
+			<option value="1000">1000</option>
 		</select>
 		</p>
 
@@ -401,8 +404,8 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
 		<strong>Sorting:</strong>
 		</br>
 		<select  class = "advancedSearch" name="sortColg">
-			<option selected="selected" value="id">id</option>
-			<option value="username">Game Name</option>
+			<option selected="selected" value="id">Game ID</option>
+			<option value="gameName">Game Name</option>
 			<option value="pot">Pot</option>
 			<option value="phaseMinutes">Phase Length</option>
 			<option value="watchedGames">Number of Spectators</option>
@@ -413,14 +416,14 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
 			<option value="desc">Descending</option>
 		</select>
 		</br></br>
-		<strong># of results to show (do not pick more then 100 on a phone or tablet)</strong>
+		<strong># of results to show per page</strong>
 		</br>
-		<select  class = "advancedSearch" name="limit">
+		<select  class = "advancedSearch" name="resultsPerPage">
+			<option value="25">25</option>
 			<option selected="selected" value="50">50</option>
 			<option value="100">100</option>
 			<option value="200">200</option>
-			<option value="500">500</option>
-			<option value="1000">1,000</option>
+			<option value="1000">1000</option>
 		</select>
 		</p>
 
@@ -468,8 +471,8 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
 		<strong>Sorting:</strong>
 		</br>
 		<select  class = "advancedSearch" name="sortColg">
-			<option selected="selected" value="id">id</option>
-			<option value="username">Game Name</option>
+			<option selected="selected" value="id">Game ID</option>
+			<option value="gameName">Game Name</option>
 			<option value="pot">Pot</option>
 			<option value="phaseMinutes">Phase Length</option>
 			<option value="watchedGames">Number of Spectators</option>
@@ -480,14 +483,14 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
 			<option value="desc">Descending</option>
 		</select>
 		</br></br>
-		<strong># of results to show (do not pick more then 100 on a phone or tablet)</strong>
+		<strong># of results to show per page</strong>
 		</br>
-		<select  class = "advancedSearch" name="limit">
+		<select  class = "advancedSearch" name="resultsPerPage">
+			<option value="25">25</option>
 			<option selected="selected" value="50">50</option>
 			<option value="100">100</option>
 			<option value="200">200</option>
-			<option value="500">500</option>
-			<option value="1000">1,000</option>
+			<option value="1000">1000</option>
 		</select>
 		</p>
 
@@ -547,7 +550,7 @@ if ($tab == 'UserSearch')
 		}
 
 		$sql = $sql . " ORDER BY u.".$sortCol." ".$sortType." ";
-		$sql = $sql . " Limit ". $limit .";";
+		$sql = $sql . " Limit ". ($resultsPerPage * ($pagenum - 1)) . "," . $resultsPerPage .";";
 
 		$tablChecked = $DB->sql_tabl($sql);
 
@@ -604,19 +607,46 @@ if ($tab == 'UserSearch')
 		}
 
 		list($totalResults) = $DB->sql_row($sqlCounter);
-		print '<p class = "modTools"> Showing a max of '.$limit.' results from '.$totalResults.' total results</p>';
+		$maxPage = ceil($totalResults / $resultsPerPage);
+		print '<p class = "modTools"> Showing results '.min(((($pagenum - 1) * $resultsPerPage)+1),$totalResults).' to '.min(($pagenum * $resultsPerPage),$totalResults).' of '.$totalResults.' total results. </br>';
 
 		print "<TABLE class='advancedSearch'>";
 		print "<tr>";
-		print '<th class= "advancedSearch">UserId:</th>';
+		print '<th class= "advancedSearch">';
+		printHeaderLink('UserID', $tab, $sortCol, $sortType, $sortColg);
+		print '</th>';
 
 		// Adjust table columns based on user selection.
-		if ($seeUsername=='checked') { print '<th class= "advancedSearch">Username</th>'; }
+		if ($seeUsername=='checked')
+		{
+			print '<th class= "advancedSearch">';
+			printHeaderLink('Username', $tab, $sortCol, $sortType, $sortColg);
+			print '</th>';
+		}
 		if ($serverHasPHPBB == 1) { if ($seeNewForumLink) { print '<th class= "advancedSearch">New Forum</th>'; } }
-		if ($seeJoined=='checked') { print '<th class= "advancedSearch">Joined On</th>'; }
-		if ($seeGameCount=='checked') { print '<th class= "advancedSearch">Games</th>'; }
-		if ($seePoints=='checked') { print '<th class= "advancedSearch">Points</th>'; }
-		if ($seeRR=='checked') { print '<th class= "advancedSearch">RR</th>'; }
+		if ($seeJoined=='checked')
+		{
+			print '<th class= "advancedSearch">';
+			printHeaderLink('Joined On', $tab, $sortCol, $sortType, $sortColg);
+			print '</th>';
+		}
+		if ($seeGameCount=='checked')
+		{
+			print '<th class= "advancedSearch">';
+			printHeaderLink('Games', $tab, $sortCol, $sortType, $sortColg);
+			print '</th>';
+		}
+		if ($seePoints=='checked')
+		{
+			print '<th class= "advancedSearch">';
+			printHeaderLink('Points', $tab, $sortCol, $sortType, $sortColg);
+			print '</th>';
+		}
+		if ($seeRR=='checked') {
+			print '<th class= "advancedSearch">';
+			printHeaderLink('RR', $tab, $sortCol, $sortType, $sortColg);
+			print '</th>';
+		}
 		if ($seeMod=='checked') { print '<th class= "advancedSearch">IsMod</th>'; }
 		if ($seeBanned=='checked') { print '<th class= "advancedSearch">IsBanned</th>'; }
 		if ($seeGold=='checked') { print '<th class= "advancedSearch">IsGold</th>'; }
@@ -779,13 +809,18 @@ else if ($tab == 'GameSearch')
 		if ($sortColg == 'watchedGames')
 		{
 			$sql = $sql . " ORDER BY watchedGames ".$sortType." ";
-			$sql = $sql . " Limit ". $limit .";";
+			$sql = $sql . " Limit ". ($resultsPerPage * ($pagenum - 1)) . "," . $resultsPerPage .";";
 
+		}
+		elseif ($sortColg == 'gameName')
+		{
+			$sql = $sql . " ORDER BY g.name ".$sortType." ";
+			$sql = $sql . " LIMIT ". ($resultsPerPage * ($pagenum - 1)) . "," . $resultsPerPage .";";
 		}
 		else
 		{
 			$sql = $sql . " ORDER BY g.".$sortColg." ".$sortType." ";
-			$sql = $sql . " Limit ". $limit .";";
+			$sql = $sql . " Limit ". ($resultsPerPage * ($pagenum - 1)) . "," . $resultsPerPage .";";
 		}
 
 		$tablChecked = $DB->sql_tabl($sql);
@@ -813,10 +848,11 @@ else if ($tab == 'GameSearch')
 		}
 
 		list($totalResults) = $DB->sql_row($sqlCounter);
-		print '<p class = "modTools"> Showing a max of '.$limit.' results from '.$totalResults.' total results</p>';
+		$maxPage = ceil($totalResults / $resultsPerPage);
+		print '<p class = "modTools"> Showing results '.min(((($pagenum - 1) * $resultsPerPage)+1),$totalResults).' to '.min(($pagenum * $resultsPerPage),$totalResults).' of '.$totalResults.' total results. </br>';
 
 		printGameResults($seeVariant, $seeGamename, $seeGameOver, $seePot, $seeInviteCode, $seePotType, $seeJoinable, $seePhaseLength,
-		$seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount, $GamesData);
+		$seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount, $GamesData, $tab, $sortCol, $sortType, $sortColg);
 	}
 	else { print '<p class = advancedSearch> Please enter a value in the first Game search option or check show only joinable games</p>';}
 }
@@ -872,12 +908,17 @@ else if ($tab == 'GamesByUser')
 		if ($sortColg == 'watchedGames')
 		{
 			$sql = $sql . " ORDER BY watchedGames ".$sortType." ";
-			$sql = $sql . " Limit ". $limit .";";
+			$sql = $sql . " Limit ". ($resultsPerPage * ($pagenum - 1)) . "," . $resultsPerPage .";";
+		}
+		elseif ($sortColg == 'gameName')
+		{
+			$sql = $sql . " ORDER BY g.name ".$sortType." ";
+			$sql = $sql . " LIMIT ". ($resultsPerPage * ($pagenum - 1)) . "," . $resultsPerPage .";";
 		}
 		else
 		{
 			$sql = $sql . " ORDER BY g.".$sortColg." ".$sortType." ";
-			$sql = $sql . " Limit ". $limit .";";
+			$sql = $sql . " Limit ". ($resultsPerPage * ($pagenum - 1)) . "," . $resultsPerPage .";";
 		}
 
 		$tablChecked = $DB->sql_tabl($sql);
@@ -905,13 +946,57 @@ else if ($tab == 'GamesByUser')
 		}
 
 		list($totalResults) = $DB->sql_row($sqlCounter);
-		print '<p class = "modTools"> Showing a max of '.$limit.' results from '.$totalResults.' total results. </br>';
+		$maxPage = ceil($totalResults / $resultsPerPage);
+		print '<p class = "modTools"> Showing results '.min(((($pagenum - 1) * $resultsPerPage)+1),$totalResults).' to '.min(($pagenum * $resultsPerPage),$totalResults).' of '.$totalResults.' total results. </br>';
 		print $userMessage;
 
 		printGameResults($seeVariant, $seeGamename, $seeGameOver, $seePot, $seeInviteCode, $seePotType, $seeJoinable, $seePhaseLength,
-		$seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount, $GamesData);
+		$seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount, $GamesData, $tab, $sortCol, $sortType, $sortColg);
+
 	}
 	else { print '<p class = advancedSearch> The user you entered is not valid. Please enter a valid user or a User ID of 0 to see your own games.</p>';}
+}
+
+if (isset($_REQUEST['tab'])){
+
+	print '</br>';
+
+	if ($pagenum > 3)
+	{
+		printPageButton(1,False);
+	}
+	if ($pagenum > 4)
+	{
+		print "...";
+	}
+	if ($pagenum > 2)
+	{
+		printPageButton($pagenum-2, False);
+	}
+	if ($pagenum > 1)
+	{
+		printPageButton($pagenum-1, False);
+	}
+	if ($maxPage > 1)
+	{
+		printPageButton($pagenum, True);
+	}
+	if ($pagenum < $maxPage)
+	{
+		printPageButton($pagenum+1, False);
+	}
+	if ($pagenum < $maxPage-1)
+	{
+		printPageButton($pagenum+2, False);
+	}
+	if ($pagenum < $maxPage-3)
+	{
+		print "...";
+	}
+	if ($pagenum < $maxPage-2)
+	{
+		printPageButton($maxPage, False);
+	}
 }
 
 /*
@@ -920,26 +1005,44 @@ else if ($tab == 'GamesByUser')
  * search and the search games by user search.
  */
 function printGameResults($seeVariant, $seeGamename, $seeGameOver, $seePot, $seeInviteCode, $seePotType, $seeJoinable, $seePhaseLength,
-$seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount, $GamesData)
+$seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount, $GamesData, $tab, $sortCol, $sortType, $sortColg)
 {
 	print "<TABLE class='advancedSearch'>";
 		print "<tr>";
-		print '<th class= "advancedSearch">GameId</th>';
+		print '<th class= "advancedSearch">';
+		printHeaderLink('Game ID', $tab, $sortCol, $sortType, $sortColg);
+		print '</th>';
 
 		if ($seeVariant=='checked') { print '<th class= "advancedSearch">Variant</th>'; }
-		if ($seeGamename=='checked') { print '<th class= "advancedSearch">Name</th>'; }
+		if ($seeGamename=='checked') {
+			print '<th class= "advancedSearch">';
+			printHeaderLink('Name', $tab, $sortCol, $sortType, $sortColg);
+			print '</th>';
+		}
 		if ($seeGameOver=='checked') { print '<th class= "advancedSearch">Game Over?</th>'; }
-		if ($seePot=='checked') { print '<th class= "advancedSearch">Pot</th>'; }
+		if ($seePot=='checked') {
+			print '<th class= "advancedSearch">';
+			printHeaderLink('Pot', $tab, $sortCol, $sortType, $sortColg);
+			print '</th>';
+		}
 		if ($seeInviteCode=='checked') { print '<th class= "advancedSearch">Invite Only</th>'; }
 		if ($seePotType=='checked') { print '<th class= "advancedSearch">Pot Type</th>'; }
 		if ($seeJoinable=='checked') { print '<th class= "advancedSearch">Open?</th>'; }
-		if ($seePhaseLength=='checked') { print '<th class= "advancedSearch">Length</th>'; }
+		if ($seePhaseLength=='checked') {
+			print '<th class= "advancedSearch">';
+			printHeaderLink('Length', $tab, $sortCol, $sortType, $sortColg);
+			print '</th>';
+		}
 		if ($seeAnon=='checked') { print '<th class= "advancedSearch">Anon</th>'; }
 		if ($seePressType=='checked') { print '<th class= "advancedSearch">Press Type</th>'; }
 		if ($seeDirector=='checked') { print '<th class= "advancedSearch">Game Director</th>'; }
 		if ($seeMinRR=='checked') { print '<th class= "advancedSearch">Min RR</th>'; }
 		if ($seeDrawType=='checked') { print '<th class= "advancedSearch">Draw Type</th>'; }
-		if ($seeWatchedCount=='checked') { print '<th class= "advancedSearch">Spectators</th>'; }
+		if ($seeWatchedCount=='checked') {
+			print '<th class= "advancedSearch">';
+			printHeaderLink('Spectators', $tab, $sortCol, $sortType, $sortColg);
+			print '</th>';
+		}
 
 		print "</tr>";
 
@@ -980,6 +1083,67 @@ $seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount
 		}
 		print "</TABLE>";
 }
+
+//This function prints out a button that will take you to the page of the number you feed into it. It will look white is $currPage is set to True.
+function printPageButton($pagenum, $currPage){
+	print '<div style="display:inline-block; margin:3px;">';
+	print '<FORM method="get" action=detailedSearch.php>';
+	foreach($_REQUEST as $key => $value)
+	{
+		if(strpos('x'.$key,'wD') == false && $key!="pagenum"){
+			print '<input type="hidden" name="'.$key.'" value='.$value.'>';
+		}
+	}
+	if ($currPage)
+	{
+		print '<input type="submit" name="pagenum" class="form-submit curr-page" value='.$pagenum.' /></form>';
+	} else {
+		print '<input type="submit" name="pagenum" class="form-submit" value='.$pagenum.' /></form>';
+	}
+	print '</div>';
+}
+
+function printHeaderLink($header, $tab, $sortCol, $sortType, $sortColg){
+	print '<FORM method="get" action=detailedSearch.php>';
+	foreach($_REQUEST as $key => $value)
+	{
+		if(strpos('x'.$key,'wD') == false && $key!="sortCol" && $key!="sortColg" && $key!="sortType" && $key!="pagenum"){
+			print '<input type="hidden" name="'.$key.'" value='.$value.'>';
+		}
+	}
+	$convert = array("UserID"=>"id","Username"=>"Username","Joined On"=>"timeJoined","RR"=>"reliabilityRating","Games"=>"gameCount","Points"=>"points", "Game ID"=>"id", "Name"=>"gameName", "Pot"=>"pot", "Length"=>"phaseMinutes", "Spectators"=>"watchedGames");
+	if($tab == 'UserSearch'){
+		if ($convert[$header] == $sortCol){
+			if ($sortType == 'asc') {
+				print '<input type="hidden" name="sortType" value=desc>';
+			}
+			else{
+				print '<input type="hidden" name="sortType" value=asc>';
+			}
+		}
+		else{
+			print '<input type="hidden" name="sortType" value=asc>';
+		}
+		print '<button type="submit" name="sortCol" value='.$convert[$header].' class="advancedSearchHeader"';
+		print '>'.$header.'</button></form>';
+	}
+	else{
+		if ($convert[$header] == $sortColg){
+			if ($sortType == 'asc') {
+				print '<input type="hidden" name="sortType" value=desc>';
+			}
+			else{
+				print '<input type="hidden" name="sortType" value=asc>';
+			}
+		}
+		else{
+			print '<input type="hidden" name="sortType" value=asc>';
+		}
+		print '<button type="submit" name="sortColg" value='.$convert[$header].' class="advancedSearchHeader"';
+		print '>'.$header.'</button></form>';
+	}
+}
+
 print '</div>';
 ?>
 
