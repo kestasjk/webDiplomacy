@@ -59,7 +59,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	</p>
 
 	<h3 class="scoring-h" name="DSS">Draw-Size Scoring (DSS)</h3>
-	<h4>Previously known as Winner-Takes-All (WTA).</h4>			
+	<p class="scoring-text"><strong>Previously known as Winner-Takes-All (WTA).</strong></p>			
 	<p class="scoring-text">
 		Draw-Size Scoring is the default scoring system on webDiplomacy and is a draw-based scoring system. In games created with Draw-Size Scoring, you win the entire pot if you solo. In a draw, the points are split equally between every surviving player, regardless of how many supply centers they own or what position they are in the game. For example, if the pot is 210 points (7 players betting 30 points) and 3 people are alive when the game is drawn, each of those players receives 70 points. They gain 40 points more than they put into the pot.
 		<br><br>
