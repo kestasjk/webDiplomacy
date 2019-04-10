@@ -1625,6 +1625,20 @@ ul.advancedSearch {
 }
 /* advanced search page section ends */
 
+/* points and scoring systems page styling */
+
+#points-scoring {
+	border-radius: 7px;
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    overflow: hidden;
+    background-color: #f1f1f1;
+    /*font-size: 14px;*/
+    padding: 0 0 0 10px;
+    margin-top: 0px !important;
+}
+
+/* end of points and scoring systems page styling */
+
 
 span.orderNotice {
 	font-weight:bold;
@@ -1751,9 +1765,6 @@ input[id^="FinalizeButton"]{
 		float: right;
 		word-wrap: break-word;
 		max-width: 100%;
-	}
-	div.hr, div.hrthin {
-		width:100%;
 	}
 	TD.uniticon {
 		width:15%;
