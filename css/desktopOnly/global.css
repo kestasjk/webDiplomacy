@@ -1640,8 +1640,8 @@ ul.advancedSearch {
 	font-size: 14px;
 }
 
-.scoring-h, .scoring-title {
-	margin: auto auto auto 0 !important;
+.scoring-h {
+	margin-left: 0 !important;
 }
 
 /* end of points and scoring systems page styling */
