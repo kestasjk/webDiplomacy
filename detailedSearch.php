@@ -251,7 +251,7 @@ if ( isset($_REQUEST['checkAgainstMe'])) { $checkAgainstMe='checked'; }
 $maxPage = 0;
 $resultsPerPage = 50;
 
-if ( isset($_REQUEST['pagenum'])) { $pagenum=$_REQUEST['pagenum']; }
+if ( isset($_REQUEST['pagenum'])) { $pagenum=(int)$_REQUEST['pagenum']; }
 if ( isset($_REQUEST['resultsPerPage']))
 {
 	if ($_REQUEST['resultsPerPage'] == '25') { $resultsPerPage=25; }
@@ -271,7 +271,7 @@ print '<button class="SearchCollapsible">User Search Options (expand)</button>';
 print '<div class="advancedSearchContent">';
 
 // Print a form for selecting which users to check
-print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
+print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tableLocation">
 		<INPUT type="hidden" name="tab" value="UserSearch" />
 
 		<p>Username: <INPUT class="advancedSearch" type="text" name="username"  value="'. $username .'" size="20" />
@@ -346,7 +346,7 @@ print '</br></br>';
 // Collapsible search criteria for game search keeps page readable based on search type user wants.
 print '<button class="SearchCollapsible">Game Search Options (expand)</button>';
 print '<div class="advancedSearchContent">';
-print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
+print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tableLocation">
 		<INPUT type="hidden" name="tab" value="GameSearch" />
 
 		<p>Game Name:
@@ -436,7 +436,7 @@ print '</br></br>';
 // Collapsible search criteria for searching games by user keeps page readable based on search type user wants.
 print '<button class="SearchCollapsible">Search Games by User (expand)</button>';
 print '<div class="advancedSearchContent">';
-print '<FORM class="advancedSearch" method="get" action="detailedSearch.php">
+print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tableLocation">
 		<INPUT type="hidden" name="tab" value="GamesByUser" />
 
 		<p>Username:
@@ -609,7 +609,7 @@ if ($tab == 'UserSearch')
 		list($totalResults) = $DB->sql_row($sqlCounter);
 		$maxPage = ceil($totalResults / $resultsPerPage);
 		print '<p class = "modTools"> Showing results '.min(((($pagenum - 1) * $resultsPerPage)+1),$totalResults).' to '.min(($pagenum * $resultsPerPage),$totalResults).' of '.$totalResults.' total results. </br>';
-
+		print "<a name='tableLocation'></a>";
 		print "<TABLE class='advancedSearch'>";
 		print "<tr>";
 		print '<th class= "advancedSearch"';
@@ -978,7 +978,7 @@ else if ($tab == 'GamesByUser')
 
 		list($totalResults) = $DB->sql_row($sqlCounter);
 		$maxPage = ceil($totalResults / $resultsPerPage);
-		print '<p class = "modTools"> Showing results '.min(((($pagenum - 1) * $resultsPerPage)+1),$totalResults).' to '.min(($pagenum * $resultsPerPage),$totalResults).' of '.$totalResults.' total results. </br>';
+		print '<p class = "modTools">Showing results '.min(((($pagenum - 1) * $resultsPerPage)+1),$totalResults).' to '.min(($pagenum * $resultsPerPage),$totalResults).' of '.$totalResults.' total results.</br>';
 		print $userMessage;
 
 		printGameResults($seeVariant, $seeGamename, $seeGameOver, $seePot, $seeInviteCode, $seePotType, $seeJoinable, $seePhaseLength,
@@ -1038,6 +1038,7 @@ if (isset($_REQUEST['tab'])){
 function printGameResults($seeVariant, $seeGamename, $seeGameOver, $seePot, $seeInviteCode, $seePotType, $seeJoinable, $seePhaseLength,
 $seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount, $GamesData, $tab, $sortCol, $sortType, $sortColg)
 {
+	print "<a name='tableLocation'></a>";
 	print "<TABLE class='advancedSearch'>";
 		print "<tr>";
 		print '<th class= "advancedSearch"';
@@ -1153,7 +1154,7 @@ function printPageButton($pagenum, $currPage){
 	else
 	{
 		print '<div style="display:inline-block; margin:3px;">';
-		print '<FORM method="get" action=detailedSearch.php>';
+		print '<FORM method="get" action=detailedSearch.php#tableLocation>';
 		foreach($_REQUEST as $key => $value)
 		{
 			if(strpos('x'.$key,'wD') == false && $key!="pagenum"){
@@ -1165,7 +1166,7 @@ function printPageButton($pagenum, $currPage){
 }
 
 function printHeaderLink($header, $tab, $sortCol, $sortType, $sortColg){
-	print '<FORM method="get" action=detailedSearch.php>';
+	print '<FORM method="get" action=detailedSearch.php#tableLocation>';
 	foreach($_REQUEST as $key => $value)
 	{
 		if(strpos('x'.$key,'wD') == false && $key!="sortCol" && $key!="sortColg" && $key!="sortType" && $key!="pagenum"){

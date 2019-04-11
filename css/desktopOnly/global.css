@@ -1625,23 +1625,19 @@ ul.advancedSearch {
 }
 
 .curr-page {
-	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ffff00), color-stop(50%, #546a9e), color-stop(50%, #36518f), color-stop(100%, #3d5691));
-	background-image: -webkit-linear-gradient(top, #ffffff 0%, #dfdfdf 50%, #bfbfbf 50%, #9f9f9f 100%);
-	background-image: -moz-linear-gradient(top, #ffffff 0%, #dfdfdf 50%, #bfbfbf 50%, #9f9f9f 100%);
-	background-image: -ms-linear-gradient(top, #ffffff 0%, #dfdfdf 50%, #bfbfbf 50%, #9f9f9f 100%);
-	background-image: -o-linear-gradient(top, #ffffff 0%, #dfdfdf 50%, #bfbfbf 50%, #9f9f9f 100%);
-	background-image: linear-gradient(top, #ffffff 0%, #dfdfdf 50%, #bfbfbf 50%, #9f9f9f 100%);
-	color: #46619f
-}
-
-.curr-page:hover {
-	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #efefff), color-stop(50%, #cfcfdf), color-stop(50%, #afafbf), color-stop(100%, #8f8f9f));
-	background-image: -webkit-linear-gradient(top, #efefff 0%, #cfcfdf 50%, #afafbf 50%, #8f8f9f 100%);
-	background-image: -moz-linear-gradient(top, #efefff 0%, #cfcfdf 50%, #afafbf 50%, #8f8f9f 100%);
-	background-image: -ms-linear-gradient(top, #efefff 0%, #cfcfdf 50%, #afafbf 50%, #8f8f9f 100%);
-	background-image: -o-linear-gradient(top, #efefff 0%, #cfcfdf 50%, #afafbf 50%, #8f8f9f 100%);
-	background-image: linear-gradient(top, #efefff 0%, #cfcfdf 50%, #afafbf 50%, #8f8f9f 100%);
-	cursor: pointer;
+	display:inline-block;
+	margin:3px;
+	background-color: #777;
+	border: .5px solid #555;
+	border-radius: 5px;
+	-webkit-box-shadow: inset 0 1px 0 0 #b1b9cb;
+	box-shadow: inset 0 1px 0 0 #b1b9cb;
+	color: #fff;
+	font-size: 14px;
+	padding: 7px 0 8px 0;
+	text-decoration: none;
+	padding-right: 7px;
+	padding-left: 7px;
 }
 
 .advancedSearchHeader {
@@ -1651,6 +1647,7 @@ ul.advancedSearch {
 	padding:0!important;
 	font:inherit;
 	cursor:pointer;
+	text-decoration:underline;
 }
 /* advanced search page section ends */
 
