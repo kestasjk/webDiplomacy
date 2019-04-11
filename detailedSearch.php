@@ -87,7 +87,7 @@ if ( isset($_REQUEST['sortCol']))
 {
 	if ($_REQUEST['sortCol'] == 'Username') { $sortCol='Username'; }
 	else if ($_REQUEST['sortCol'] == 'timeJoined') { $sortCol='timeJoined'; }
-	else if ($_REQUEST['sortCol'] == 'RR') { $sortCol='reliabilityRating'; }
+	else if ($_REQUEST['sortCol'] == 'reliabilityRating') { $sortCol='reliabilityRating'; }
 	else if ($_REQUEST['sortCol'] == 'gameCount') { $sortCol='gameCount'; }
 	else if ($_REQUEST['sortCol'] == 'points') { $sortCol='points'; }
 }
@@ -612,38 +612,69 @@ if ($tab == 'UserSearch')
 
 		print "<TABLE class='advancedSearch'>";
 		print "<tr>";
-		print '<th class= "advancedSearch">';
+		print '<th class= "advancedSearch"';
+		if ($sortCol == 'id')
+		{
+			print 'style="background-color: #006699;"';
+		}
+		print '>';
 		printHeaderLink('UserID', $tab, $sortCol, $sortType, $sortColg);
 		print '</th>';
 
 		// Adjust table columns based on user selection.
 		if ($seeUsername=='checked')
 		{
-			print '<th class= "advancedSearch">';
+			print '<th class= "advancedSearch"';
+			if ($sortCol == 'Username')
+			{
+				print 'style="background-color: #006699;"';
+			}
+			print '>';
 			printHeaderLink('Username', $tab, $sortCol, $sortType, $sortColg);
 			print '</th>';
 		}
 		if ($serverHasPHPBB == 1) { if ($seeNewForumLink) { print '<th class= "advancedSearch">New Forum</th>'; } }
 		if ($seeJoined=='checked')
 		{
-			print '<th class= "advancedSearch">';
+			print '<th class= "advancedSearch"';
+			if ($sortCol == 'timeJoined')
+			{
+				print 'style="background-color: #006699;"';
+			}
+			print '>';
 			printHeaderLink('Joined On', $tab, $sortCol, $sortType, $sortColg);
 			print '</th>';
 		}
 		if ($seeGameCount=='checked')
 		{
-			print '<th class= "advancedSearch">';
+			print '<th class= "advancedSearch"';
+			if ($sortCol == 'gameCount')
+			{
+				print 'style="background-color: #006699;"';
+			}
+			print '>';
 			printHeaderLink('Games', $tab, $sortCol, $sortType, $sortColg);
 			print '</th>';
 		}
 		if ($seePoints=='checked')
 		{
-			print '<th class= "advancedSearch">';
+			print '<th class= "advancedSearch"';
+			if ($sortCol == 'points')
+			{
+				print 'style="background-color: #006699;"';
+			}
+			print '>';
 			printHeaderLink('Points', $tab, $sortCol, $sortType, $sortColg);
 			print '</th>';
 		}
-		if ($seeRR=='checked') {
-			print '<th class= "advancedSearch">';
+		if ($seeRR=='checked')
+		{
+			print '<th class= "advancedSearch"';
+			if ($sortCol == 'reliabilityRating')
+			{
+				print 'style="background-color: #006699;"';
+			}
+			print '>';
 			printHeaderLink('RR', $tab, $sortCol, $sortType, $sortColg);
 			print '</th>';
 		}
@@ -1009,27 +1040,50 @@ $seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount
 {
 	print "<TABLE class='advancedSearch'>";
 		print "<tr>";
-		print '<th class= "advancedSearch">';
+		print '<th class= "advancedSearch"';
+		if ($sortColg == 'id')
+		{
+			print 'style="background-color: #006699;"';
+		}
+		print '>';
 		printHeaderLink('Game ID', $tab, $sortCol, $sortType, $sortColg);
 		print '</th>';
 
 		if ($seeVariant=='checked') { print '<th class= "advancedSearch">Variant</th>'; }
-		if ($seeGamename=='checked') {
-			print '<th class= "advancedSearch">';
+		if ($seeGamename=='checked')
+		{
+			print '<th class= "advancedSearch"';
+			if ($sortColg == 'gameName')
+			{
+				print 'style="background-color: #006699;"';
+			}
+			print '>';
 			printHeaderLink('Name', $tab, $sortCol, $sortType, $sortColg);
 			print '</th>';
 		}
 		if ($seeGameOver=='checked') { print '<th class= "advancedSearch">Game Over?</th>'; }
-		if ($seePot=='checked') {
-			print '<th class= "advancedSearch">';
+		if ($seePot=='checked')
+		{
+			print '<th class= "advancedSearch"';
+			if ($sortColg == 'pot')
+			{
+				print 'style="background-color: #006699;"';
+			}
+			print '>';
 			printHeaderLink('Pot', $tab, $sortCol, $sortType, $sortColg);
 			print '</th>';
 		}
 		if ($seeInviteCode=='checked') { print '<th class= "advancedSearch">Invite Only</th>'; }
 		if ($seePotType=='checked') { print '<th class= "advancedSearch">Pot Type</th>'; }
 		if ($seeJoinable=='checked') { print '<th class= "advancedSearch">Open?</th>'; }
-		if ($seePhaseLength=='checked') {
-			print '<th class= "advancedSearch">';
+		if ($seePhaseLength=='checked')
+		{
+			print '<th class= "advancedSearch"';
+			if ($sortColg == 'phaseMinutes')
+			{
+				print 'style="background-color: #006699;"';
+			}
+			print '>';
 			printHeaderLink('Length', $tab, $sortCol, $sortType, $sortColg);
 			print '</th>';
 		}
@@ -1038,8 +1092,14 @@ $seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount
 		if ($seeDirector=='checked') { print '<th class= "advancedSearch">Game Director</th>'; }
 		if ($seeMinRR=='checked') { print '<th class= "advancedSearch">Min RR</th>'; }
 		if ($seeDrawType=='checked') { print '<th class= "advancedSearch">Draw Type</th>'; }
-		if ($seeWatchedCount=='checked') {
-			print '<th class= "advancedSearch">';
+		if ($seeWatchedCount=='checked')
+		{
+			print '<th class= "advancedSearch"';
+			if ($sortColg == 'watchedGames')
+			{
+				print 'style="background-color: #006699;"';
+			}
+			print '>';
 			printHeaderLink('Spectators', $tab, $sortCol, $sortType, $sortColg);
 			print '</th>';
 		}
@@ -1086,21 +1146,22 @@ $seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount
 
 //This function prints out a button that will take you to the page of the number you feed into it. It will look white is $currPage is set to True.
 function printPageButton($pagenum, $currPage){
-	print '<div style="display:inline-block; margin:3px;">';
-	print '<FORM method="get" action=detailedSearch.php>';
-	foreach($_REQUEST as $key => $value)
-	{
-		if(strpos('x'.$key,'wD') == false && $key!="pagenum"){
-			print '<input type="hidden" name="'.$key.'" value='.$value.'>';
-		}
-	}
 	if ($currPage)
 	{
-		print '<input type="submit" name="pagenum" class="form-submit curr-page" value='.$pagenum.' /></form>';
-	} else {
-		print '<input type="submit" name="pagenum" class="form-submit" value='.$pagenum.' /></form>';
+		print '<div class="curr-page">'.$pagenum.'</div>';
 	}
-	print '</div>';
+	else
+	{
+		print '<div style="display:inline-block; margin:3px;">';
+		print '<FORM method="get" action=detailedSearch.php>';
+		foreach($_REQUEST as $key => $value)
+		{
+			if(strpos('x'.$key,'wD') == false && $key!="pagenum"){
+				print '<input type="hidden" name="'.$key.'" value='.$value.'>';
+			}
+		}
+		print '<input type="submit" name="pagenum" class="form-submit" value='.$pagenum.' /></form></div>';
+	}
 }
 
 function printHeaderLink($header, $tab, $sortCol, $sortType, $sortColg){
@@ -1114,33 +1175,43 @@ function printHeaderLink($header, $tab, $sortCol, $sortType, $sortColg){
 	$convert = array("UserID"=>"id","Username"=>"Username","Joined On"=>"timeJoined","RR"=>"reliabilityRating","Games"=>"gameCount","Points"=>"points", "Game ID"=>"id", "Name"=>"gameName", "Pot"=>"pot", "Length"=>"phaseMinutes", "Spectators"=>"watchedGames");
 	if($tab == 'UserSearch'){
 		if ($convert[$header] == $sortCol){
-			if ($sortType == 'asc') {
+			if ($sortType == 'asc')
+			{
 				print '<input type="hidden" name="sortType" value=desc>';
+				print '<button type="submit" name="sortCol" value='.$convert[$header].' class="advancedSearchHeader"';
+				print '>'.$header.' &#9652</button></form>';
 			}
 			else{
 				print '<input type="hidden" name="sortType" value=asc>';
+				print '<button type="submit" name="sortCol" value='.$convert[$header].' class="advancedSearchHeader"';
+				print '>'.$header.' &#9662</button></form>';
 			}
 		}
 		else{
 			print '<input type="hidden" name="sortType" value=asc>';
+			print '<button type="submit" name="sortCol" value='.$convert[$header].' class="advancedSearchHeader"';
+			print '>'.$header.'</button></form>';
 		}
-		print '<button type="submit" name="sortCol" value='.$convert[$header].' class="advancedSearchHeader"';
-		print '>'.$header.'</button></form>';
 	}
 	else{
 		if ($convert[$header] == $sortColg){
-			if ($sortType == 'asc') {
+			if ($sortType == 'asc')
+			{
 				print '<input type="hidden" name="sortType" value=desc>';
+				print '<button type="submit" name="sortColg" value='.$convert[$header].' class="advancedSearchHeader"';
+				print '>'.$header.' &#9652</button></form>';
 			}
 			else{
 				print '<input type="hidden" name="sortType" value=asc>';
+				print '<button type="submit" name="sortColg" value='.$convert[$header].' class="advancedSearchHeader"';
+				print '>'.$header.' &#9662</button></form>';
 			}
 		}
 		else{
 			print '<input type="hidden" name="sortType" value=asc>';
+			print '<button type="submit" name="sortColg" value='.$convert[$header].' class="advancedSearchHeader"';
+			print '>'.$header.'</button></form>';
 		}
-		print '<button type="submit" name="sortColg" value='.$convert[$header].' class="advancedSearchHeader"';
-		print '>'.$header.'</button></form>';
 	}
 }
 
