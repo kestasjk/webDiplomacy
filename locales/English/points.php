@@ -26,123 +26,66 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  */
 ?>
 
-<h4>What are Points?</h4>
-<div align="center"><img src="images/points/stack.png" alt=" "
-	title="A stack of webDiplomacy points. Points are a lot like casino chips in poker; tokens to bet with" /></div>
-
-<p class="intro">
-Points are what allow you to join games on webDiplomacy, measured in D. To join a game, you "bet" a number of points, and at the end of the game, you may receive more or less, depending on the outcome. Your points can be found on your profile, and two numbers of points are shown: 
-available points and total points.
+<p style="text-align: center; margin-bottom: 5px">
+	<a href="#points">Points System</a>
+	-
+	<a href="#DSS">DSS</a>
+	-
+	<a href="#SoS">SoS</a>
+	-
+	<a href="#unranked">Unranked</a>
+	-
+	<a href="#ppsc">PPSC</a>
 </p>
 
+<div id="points-scoring">
 
-<h4>Available Points</h4> 
-<p class="intro">
-This is how many points you have that are not tied up in ongoing games; and 
-thus you can use to join new games.
-</p>
-<h4>Total Points</h4> 
-<p class="intro">
-This is how many points you have including the points you have already bet to 
-join games. You start with 100 points, and you will be automatically topped 
-back up to 100 if you lose your games, so you will always have the ability to 
-join new games. 
-</p>
-<div align="center"><img src="images/points/bet.png" alt=" "
-	title="All players who want to join the game bet the same amount of points when the game begins" /></div>
-<p class="intro">
+	<h2 class="points-title" name="points">Points on webDiplomacy</h2>
 
+	<p class="scoring-text">
+		In order to play games on webDiplomacy, you must bet a certain amount of points determined by the game creator. The lowest bet to enter a game is 5 points. Depending on the scoring system of the game, you may receive more points than you bet at the end of the game if you win or survive in a draw. If you do not win or survive in a draw, you will lose the points that you bet. In unranked games, you must still make a bet, but your points will be returned to you at the end of the game.
+		<br><br>
+		On your profile, you will see your available points and total points. Your available points is the number of points that you have to spend. Your available points are shown in the toolbar at the top of your screen. Your total points is how many points you have to spend plus the amount of points you have already bet on games.
+		<br><br>
+		Players cannot drop below 100 total points. If you lose a game and drop below 100 total points, you will be automatically topped up to 100 points again so that you will always have the ability to join new games. Your points are not refreshed until a game concludes, so if you are defeated but the other players continue to play you will have to wait until the game is finished.
+	</p>
 
-<p class="intro">
-It is recommended that you always keep a reasonable amount of points available, 
-as in high-stakes games you can lose a lot of points very quickly.
-</p>
+	<h2 class="points-title">webDiplomacy's Scoring Systems</h2>
 
+	<p class="scoring-text">
+		Every game of Diplomacy is created with a scoring system. Each scoring system has its own unique traits. webDiplomacy has three supported scoring systems, which are explained in detail below.
+		<br><br>
+		In order to win, or solo, a Diplomacy game, you must acquire the required number of supply centers. On the classic map, 18 supply centers is a solo. If nobody is able to win the game, then the surviving players may vote to draw. This can be done at any time. Once every living player has voted to draw, the game will end, and the points will be distributed according to the scoring system.
+	</p>
 
+	<h3 class="scoring-h" name="DSS">Draw-Size Scoring (DSS)</h3>
+	<p class="scoring-text"><strong>Previously known as Winner-Takes-All (WTA).</strong></p>			
+	<p class="scoring-text">
+		Draw-Size Scoring is the default scoring system on webDiplomacy and is a draw-based scoring system. In games created with Draw-Size Scoring, you win the entire pot if you solo. In a draw, the points are split equally between every surviving player, regardless of how many supply centers they own or what position they are in the game. For example, if the pot is 210 points (7 players betting 30 points) and 3 people are alive when the game is drawn, each of those players receives 70 points. They gain 40 points more than they put into the pot.
+		<br><br>
+		Draw-Size Scoring encourages players to play for a solo, but if they cannot achieve a solo, it encourages players to "narrow" down a draw by eliminating smaller powers in order to get a better result. With fewer players remaining in the draw, each remaining player receives more points of the pot.
+	</p>
 
-<p class="intro">
-When someone creates a game they can select how many of their points they want to "bet" on the game. Only people who can bet the same number of points can join the game.
-More experienced players will usually have more points, and as a result, they will be able to join higher stakes games.
-</p>
+	<h3 class="scoring-h" name="SoS">Sum-of-Squares Scoring (SoS)</h3>
+	<p class="scoring-text">
+		Sum-of-Squares is a supply-center-based scoring system. In games created using Sum-of-Squares, you win the entire pot if you solo, just like DSS. In a draw, each surviving player gets a proportion of the pot scaled by their supply center count at the time of the draw. The equation for determining their share of the pot is as follows:
+		<br><br>
+		(SC_count^2) / (sum of all players (SC_count^2))
+		<br><br>
+		In a game with a pot of 210 points (7 players betting 30 points) and 4 people alive when the game is drawn, each player receives a portion of the pot based on the number of supply centers they have. If you have 12 supply centers and the other three players have 10, 8, and 4 respectively, then you will receive 93 points. We know this because 12^2 / (12^2 + 10^2 + 8^2 + 4^2) * 210 = 93.
+		<br><br>
+		Sum-of-Squares Scoring encourages players to play for a solo, but if they cannot achieve a solo, it does not drag on games longer and longer just to get that last elimination because the number of players in the draw is less critical than the number of supply centers each player in the draw owns. Sum-of-Squares is often used in face-to-face Diplomacy tournaments where games may be time sensitive.
+	</p>
 
+	<h3 class="scoring-h" name="unranked">Unranked Games</h3>
+	<p class="scoring-text">
+		Unranked games require a bet to join, but instead of distributing the pot between players based on a scoring system, you are simply refunded your bet at the end of the game, so long as you have not been removed from the game due to entering Civil Disorder. These games are not included in any off-site ranking system like the Ghost Ratings.
+		<br><br>
+		Unranked games are often used for special rules games organized on our forum, tournament games, practice or school games, or any other instance where point distribution is not a priority. All 1v1 games are also unranked to prevent point farming.
+	</p>
 
-<p class="intro">
-Once everyone who wants to join has joined the game has a large "pot" of points. If there are seven players, the pot size will be seven times the size that each player bet. 
-</p>
-<div align="center"><img src="images/points/play.png" alt=" "
-	title="The game begins; all players are now fighting for the 'pot' of points which they have all bet" /></div>
-
-<p class="intro">
-Once the game is over the pot is paid back to the players depending on how well they did, as explained below.
-</p>
-
-<div class="hr" ></div>
-
-<h4>Scoring Systems</h4>
-<p class="intro">
-Scoring a game of Diplomacy has been a big topic of discussion among Diplomacy players for many years. 
-Most players agree that a winner of a game of Diplomacy (who takes more than half of the centers) is the solo winner of the game.
-However, there are different opinions on how to score games where there is no sole winner.</p>
-
-<p class="intro">WebDiplomacy has three scoring systems enabled: Draw-Size Scoring, Sum of Squares and Unranked.</p>
-
-<p class="intro">
-In the first two systems, if you win this game by capturing the required supply centres (18 on the Classic map) then you win the entire pot for the game, and receive all those points.
-</p>
-<div align="center">
-	<img src="images/points/wta.png" alt=" "
-		title="The winner takes all the points: Winner-takes-all" />
+	<h3 class="scoring-h" name="ppsc">Points-Per-Supply-Center</h3>
+	<p class="scoring-text">
+		webDiplomacy used to support a scoring system called Points-Per-Supply-Center, which was a supply-center-based scoring system that distributed the pot based on a ratio of the number of supply centers each player owned. This scoring system was discontinued because of the prevalence of "strong seconds," which is when one player solos because another player is promised more supply centers, and thus more points, if they help the other player solo. While webDiplomacy does not judge the individual strategies of players in their games, we do not condone this strategy and removed the scoring system that encouraged it.
+	</p>
 </div>
-
-<p class="intro">
-If nobody is able to win the game, then the surviving players may vote to draw. This can be done at any time. Once every living player has voted to draw, the game will end, and points will be distributed according to the scoring system.
-</p>
-
-<h4>Draw-Size Scoring (DSS)</h4>
-<p class="intro">
-<em>Previously called Winner-Takes-All (WTA).</em>
-This is the default scoring system on webDiplomacy, and is a draw-based scoring system. This means that if there is a draw, then the points will be shared equally between every surviving player, regardless of how many supply centres they own. So if the pot is 210D, and 3 people are alive when the game draws, each of those living players will receive 70D.
-</p>
-<div align="center"><img src="images/points/draw.png" alt=" "
-		title="When all surviving players vote for a draw an equal share of the points are given to each surviving player" /></div>
-
-<p class="intro">
-DSS encourages you to "narrow" a draw down by cutting small players out to get a better result.
-</p>
-
-<h4>Sum-Of-Squares (SoS)</h4>
-<a name="SoS>"></a>
-<p class="intro">
-This is a centre-based scoring system. In a draw, each player gets a proportion 
-of the pot scaled by their centre count:               
-</p>
-
-<p class="intro">
-(SC_count^2) / (sum of all players (SC_count^2))
-</p>
-
-<p class="intro">
-So with a pot of 210 points in SoS, then the points are divided up by the amount of centres you own. So if there are four people alive, with you having 12 SC's, and the others having 10, 8, and 4 SC's respectively, then you can work out how many points you will receive by following that formula, so 12^2 / (12^2 + 10^2 + 8^2 + 4^2) * 210 = 93 points.
-</p>
-<div align="center"><img src="images/points/win.png" alt=" "
-	title="Centre-based scoring divides the pot depending on the players' success at taking centers in the game" /></div>
-
-<p class="intro">
-This kind of scoring is often used by face-to-face tournaments, because it 
-allows for more distinction between players, encourages going for solos rather 
-than cutting out surviving players, and doesn't drag games on just to get that 
-last elimination.
-</p>
-
-<h4>Unranked Games</h4>
-<p class="intro">
-These games require a bet to join, but you are simply refunded your bet at the 
-end of the game, as long as you don't enter Civil Disorder by not inputting 
-moves. You don't get any more points than you put in, even if you win the game. 
-These games can be used for special rules games organised on the forums, 
-tournaments, crazy strategic practising, or anything else that tickles your 
-fancy.
-</p>
-<p class="intro">These games will never be included in any off-site ranking system, such as the Ghost-Rating ranking system.</p>
-
-<div class="hr" ></div>

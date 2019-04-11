@@ -90,9 +90,9 @@ $globalFaq = array(
 	To put it another way; any player who isn't currently playing in any games will always have at least 100 points, so
 	you won't run out!",
 "How are the points split in a draw?" => "This depends on the scoring system of the game in question.<br/>
-	Read <a href='points.php' class='light'>the points guide</a> for more info about the points system.",
+	Read <a href='points.php' class='light'>the scoring system and points guide</a> for more info about how games our scored and how the points system works on webDiplomacy.",
 "Can you draw the game, but give 2/3rds of the points to this player and ..." => "The way draws split points depends on the scoring system. 
-Read <a href='points.php' class='light'>the points guide</a> for more info about the points system.",
+Read <a href='points.php' class='light'>the scoring system and points guide</a> for more info about how points are split up depending on the result of each game.",
 
 "Bugs" => "Sub-section",
 "My game has crashed!" => "Sometimes (usually only shortly after code updates) a software bug or server error may occur while a

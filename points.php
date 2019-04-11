@@ -27,7 +27,7 @@ require_once('header.php');
 
 libHTML::starthtml();
 
-print libHTML::pageTitle(l_t('Intro to webDiplomacy Points'),l_t('A quick &amp; easy guide explaining what points are and what they\'re for in webDiplomacy.'));
+print libHTML::pageTitle(l_t('A Guide to webDiplomacy\'s Scoring Systems and Points'),l_t('How our scoring systems work and how you can use your points on webDiplomacy.'));
 
 require_once(l_r('locales/English/points.php'));
 
