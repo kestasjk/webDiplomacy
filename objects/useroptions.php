@@ -38,7 +38,7 @@ class UserOptions {
         	'colourblind' => 'No',
 		'displayUpcomingLive' => 'Yes',
 		'showMoves' => 'Yes',
-		'orderSort' => 'Alphabetical'
+		'orderSort' => 'Convoys Last'
 	);
 
 	public static $titles = array(
