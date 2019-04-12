@@ -23,7 +23,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 /**
  * Holds user options and defaults.
- * 
+ *
  *
  * @package Base
  */
@@ -37,19 +37,22 @@ class UserOptions {
 	public static $defaults = array(
         	'colourblind' => 'No',
 		'displayUpcomingLive' => 'Yes',
-		'showMoves' => 'Yes'
+		'showMoves' => 'Yes',
+		'orderSort' => 'Alphabetical'
 	);
 
 	public static $titles = array(
 		'colourblind' => 'Colourblindness',
 		'displayUpcomingLive' => 'Display upcoming live games',
-		'showMoves' => 'Show move arrows on the game map'
+		'showMoves' => 'Show move arrows on the game map',
+		'orderSort' => 'Sort possible orders'
 	);
 
-	public static $possibleValues = array( 
+	public static $possibleValues = array(
 		'colourblind' => array('No','Protanope','Deuteranope','Tritanope'),
 		'displayUpcomingLive' => array('Yes','No'),
-		'showMoves' => array('Yes','No')
+		'showMoves' => array('Yes','No'),
+		'orderSort' => array('No Sort','Alphabetical','Convoys Last')
 	);
 
 	public $value;
@@ -64,13 +67,13 @@ class UserOptions {
 
 		$row = $DB->sql_hash("SELECT * FROM wD_UserOptions WHERE userID=".$this->id );
 
-		if ( ! isset($row['userID']) or ! $row['userID'] ) 
+		if ( ! isset($row['userID']) or ! $row['userID'] )
 		{
 			// No object was loaded
 		} else {
 			foreach( $row as $name=>$value )
 			{
-				if (isset(UserOptions::$defaults[$name])) 
+				if (isset(UserOptions::$defaults[$name]))
 					$this->value[$name] = $value;
 			}
 		}
@@ -79,7 +82,7 @@ class UserOptions {
 	function set($newValues)
 	{
 		global $DB;
-		
+
 		$updates = array();
 
 		// Sanitise array
@@ -89,20 +92,20 @@ class UserOptions {
 			{
 				$newValues[$name] = UserOptions::$defaults[$name];
 			}
-			if( in_array($newValues[$name], UserOptions::$possibleValues[$name], true )) 
+			if( in_array($newValues[$name], UserOptions::$possibleValues[$name], true ))
 			{
-			     $updates[] = $name .'='.'"'.$newValues[$name].'"';   
+			     $updates[] = $name .'='.'"'.$newValues[$name].'"';
 			}
 		}
-		
-		$update = implode(',',$updates);		
+
+		$update = implode(',',$updates);
 
 		$row = $DB->sql_hash("SELECT * FROM wD_UserOptions WHERE userID=".$this->id );
 		if ( ! isset($row['userID']) or ! $row['userID'] ) {
 			// create
 			$DB->sql_put("INSERT INTO wD_UserOptions (userID) VALUES (".$this->id.")");
-		} 
-		
+		}
+
 		$DB->sql_put("UPDATE wD_UserOptions SET $update WHERE userID=".$this->id);
 	}
 
@@ -114,7 +117,7 @@ class UserOptions {
 	{
 		return 'var useroptions='. json_encode(UserOptions::$defaults).';';
 	}
-	
+
 	/**
 	 * Initialize a useroptions object
 	 *
@@ -124,6 +127,6 @@ class UserOptions {
 	{
 		$this->id = intval($id);
 		$this->load();
-	}                  
+	}
 
 }
