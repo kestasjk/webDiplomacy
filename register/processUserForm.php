@@ -94,6 +94,8 @@ try
 	$NewUser->sendNotice('No','No',l_t("Welcome! This area displays your notices, which let you catch "
 		."up with what has happened since you were last here"));
 
+	$NewUser->options->set($_REQUEST['userForm']);
+	$NewUser->options->load();
 	// libHTML does not like letting registered users access the registration page
 	$User = new User(GUESTID);
 

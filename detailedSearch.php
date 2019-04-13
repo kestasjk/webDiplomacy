@@ -337,7 +337,7 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tabl
 		</select>
 		</p>
 
-		<input class="advancedSearchform-submit" type="submit" name="Submit" class="form-submit" value="Check" /></form>
+		<input type="submit" name="Submit" class="form-submit" value="Check" /></form>
 		</br>';
 print '</div>';
 
@@ -427,7 +427,7 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tabl
 		</select>
 		</p>
 
-		<input class="advancedSearchform-submit" type="submit" name="Submit" class="form-submit" value="Check" /></form>
+		<input type="submit" name="Submit" class="form-submit" value="Check" /></form>
 		</br>';
 print '</div>';
 
@@ -494,7 +494,7 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tabl
 		</select>
 		</p>
 
-		<input class="advancedSearchform-submit" type="submit" name="Submit" class="form-submit" value="Check" /></form>
+		<input type="submit" name="Submit" class="form-submit" value="Check" /></form>
 		</br>';
 print '</div>';
 

@@ -204,7 +204,7 @@ switch($page)
 			"with a link that you can click on to confirm that it's your real e-mail address, and then you're ".
 			"ready to go!",htmlentities($_REQUEST['emailValidate']))."</p>";
 
-		print "<p>".l_t("The e-mail may take a couple of minutes to arrive; if it doesn't appear check your spam inbox.")."</p>";
+		print "<p>".l_t("The e-mail may take a couple of minutes to arrive; if it doesn't appear check your spam folder.")."</p>";
 
 		print '<p>'.l_t('If you have problems e-mail this server\'s admin at %s',Config::$adminEMail).'</p>';
 
@@ -221,18 +221,21 @@ switch($page)
 
 	case 'firstUserForm':
 
-		print '<h3>'.l_t('E-mail address confirmed!').'</h3>';
+		print '<h3 style = "margin-left: 0px;">'.l_t('E-mail address confirmed!').'</h3>';
 
-		print "<p>".l_t("Alright; you're a human with an e-mail address!</p>
-			<p>Enter the username and password you want, and any of the optional details/settings, into the screen below to
-			complete the registration process.")."</p>";
+		print "<p>".l_t("Thank you for verifying your e-mail address!</p>
+			<p>Enter the username, password, and any of the optional settings you want into the screen below to
+			complete the registration process.")." </br></br><font color='red'>Your username is visible to other members so please keep it appropiate and 
+			and avoid using your full name if you are concerned about privacy.</font></p>";
 
 	case 'userForm':
-		print '<form method="post"><ul class="formlist">';
+		print '<form method="post" class = "settings_show" autocomplete="off"><ul class="formlist">';
 		print '<input type="hidden" name="emailToken" value="'.$_REQUEST['emailToken'].'" />';
 
 		require_once(l_r('locales/English/userRegister.php'));
 		require_once(l_r('locales/English/user.php'));
+
+		print '</div>';
 
 		break;
 }
