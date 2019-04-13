@@ -79,6 +79,7 @@ td.homeGameNotices {
 td.homeGamesStats {
 	width:284px; /* 800px = 250+250+(300-6[borders]-10[table dividers])*/
 	/*width:auto;*/
+	max-width:250px !important;
 }
 
 td.homeSplit {
