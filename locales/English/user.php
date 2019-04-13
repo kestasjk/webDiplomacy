@@ -36,7 +36,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		{
 			print $User->email;
 		}
-		?>" <?php if ( isset($_REQUEST['emailToken']) ) print 'readonly '; ?> />
+		?>" <?php if ( isset($_REQUEST['emailToken']) ) print 'readonly '; ?> >
 	</p>
 
 	<p><strong>Hide e-mail address?</strong></br>
@@ -181,7 +181,7 @@ if( $User->type['User'] ) {
  */
 print '</ul>
 
-<p><input type="submit" class="settings-submit notice" value="Update"></p>
+<p><input type="submit" class="form-submit" value="Update"></p>
 </form>
 </div>';
 

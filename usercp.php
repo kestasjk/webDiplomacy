@@ -113,8 +113,8 @@ if ( isset($_REQUEST['userForm']) )
 		$allowed = array('E-mail'=>'email','E-mail hiding'=>'hideEmail',
 				'Homepage'=>'homepage','Comment'=>'comment');
 
-                $User->options->set($_REQUEST['userForm']);
-                $User->options->load();
+		$User->options->set($_REQUEST['userForm']);
+		$User->options->load();
 
 		$set = '';
 		foreach( $allowed as $name=>$SQLName )
