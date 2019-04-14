@@ -387,7 +387,7 @@ class libHTML
 	 */
 	static public function prebody ( $title )
 	{
-		$jsVersion = 9;  // increment this to force clients to reload their JS files
+		$jsVersion = 10;  // increment this to force clients to reload their JS files
 		$cssVersion = 10;  // increment this to force clients to reload their JS files
 		$variantCSS=array();
 		foreach(Config::$variants as $variantName)
@@ -998,7 +998,7 @@ class libHTML
 	static private function footerScripts() {
 		global $User, $Locale;
 
-		$jsVersion = 9;  // increment this to force clients to reload their JS files
+		$jsVersion = 10;  // increment this to force clients to reload their JS files
 
 		$buf = '';
 

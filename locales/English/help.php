@@ -72,8 +72,8 @@ Any questions on this program can be directed to webdipmentors@gmail.com.
 <li><a href="halloffame.php">Hall of fame</a></li>
 <li class="formlistdesc">The pros of this server; the top 100 by points!</li>
 
-<li><a href="points.php">webDiplomacy points</a></li>
-<li class="formlistdesc">What points are for, how to win them, and how to get into the hall of fame.</li>
+<li><a href="points.php">webDiplomacy Scoring Systems and Points</a></li>
+<li class="formlistdesc">How games on webDiplomacy are scored, what points are for, and how to win them.</li>
 
 <li><a href="https://sites.google.com/view/webdipinfo/ghost-ratings">Ghost Ratings (External Site)</a></li>
 <li class="formlistdesc">An external rating system often used as an alternate measure of player skill.</li>

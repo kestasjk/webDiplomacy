@@ -24,11 +24,13 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @package Base
  * @subpackage Forms
  */
-?><li class="formlisttitle">Username</li>
-<li class="formlistfield"><input type="text" name="userForm[username]" value="<?php
+?>
+
+<p><strong>Username:</strong></br>
+    <input type="text" name="userForm[username]" value="<?php
 	if ( isset($_REQUEST['userForm']['username'] ) )
 	{
 		print $_REQUEST['userForm']['username'];
 	}
-	?>"></li>
-<li class="formlistdesc">Your webDiplomacy username.</li>
+	?>">
+</p>
