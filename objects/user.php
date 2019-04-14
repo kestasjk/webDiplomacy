@@ -193,6 +193,12 @@ class User {
 	 * @var int
 	 */
 	public $modLastCheckedBy;
+
+	/**
+	 * date the user last used an emergency pause
+	 * @var int
+	 */
+	public $emergencyPauseDate;
 	
 	/**
 	 * Number of available points
@@ -472,7 +478,8 @@ class User {
 			IF(s.userID IS NULL,0,1) as online,
 			u.deletedCDs, 
 			c.modLastCheckedOn,
-			c.modLastCheckedBy
+			c.modLastCheckedBy,
+			u.emergencyPauseDate
 			FROM wD_Users u
 			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
 			LEFT JOIN wD_UserConnections c on ( u.id = c.userID )
@@ -1092,5 +1099,34 @@ class User {
 			$DB->sql_put("INSERT INTO wD_MuteCountry (userID, gameID, muteCountryID) VALUES (".$this->id.",".$gameID.",".$muteCountryID.")");
 
 	}
+
+	/*
+	 * Check if the user has used an emergency pause on their games in the last 6 months, and if they have completed at least 10 games. 
+	 */
+	public function qualifiesForEmergency() 
+	{
+		global $DB;
+		// If a mod has set this field to 1 this user is banned from emergency pauses. 
+		if ($this->emergencyPauseDate == 1) { return false; }
+
+		// Get count of users finished games that they did not resign or leave. 
+		list($finishedGames) = $DB->sql_row("
+			SELECT COUNT(1) FROM wD_Games g inner join wD_Members m on g.id = m.gameID 
+			WHERE m.userID = ".$this->id." AND g.gameOver in ('Won', 'Drawn') and m.status in ('Won','Drawn','Survived','Defeated')");
+
+		// If the user has not used an emergency pause in 6 months and has finished at least 10 games they qualify for a pause
+		if ( ($this->emergencyPauseDate + 86400*30*6 < time()) && $finishedGames > 9) { return true; }
+		else { return false; }
+	}
+
+	/*
+	 * Update the emergencyPauseDate for a user.
+	 */
+	public function updateEmergencyPauseDate($updateDate) 
+	{
+		global $DB;
+		$DB->sql_put("update wD_Users set emergencyPauseDate = ".$updateDate." where id =".$this->id);
+	}
+
 }
 ?>

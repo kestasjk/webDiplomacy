@@ -100,6 +100,11 @@ class adminActions extends adminActionsForms
 				'description' => 'Resets a users password',
 				'params' => array('userID'=>'User ID'),
 			),
+			'updateEmergencyDate' => array(
+				'name' => 'Adjust Emergency Date',
+				'description' => 'Enter 0 to grant the user another emergency pause, enter 1 to stop this user from having emergency pauses.',
+				'params' => array('userID'=>'User ID','setting'=>'Setting'),
+			),
 			'setProcessTimeToPhase' => array(
 				'name' => 'Reset process time',
 				'description' => 'Set a game process time to now + the phase length, resetting the turn length',
@@ -1116,6 +1121,18 @@ class adminActions extends adminActionsForms
 		}
 
 		return l_t('This user was transferred %s %s.',$points,libHTML::points());
+	}
+	public function updateEmergencyDate(array $params)
+	{
+		global $DB;
+
+		$userID = (int)$params['userID'];
+		$setting = (int)$params['setting'];
+		$targetUser = new User($userID);
+		
+		if( $setting >= 0 ) { $targetUser->updateEmergencyPauseDate($setting); }
+		
+		return 'This users emergency pause date was set to '.$setting;
 	}
 	public function unbanUser(array $params)
 	{
