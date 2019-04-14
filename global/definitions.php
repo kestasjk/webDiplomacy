@@ -45,6 +45,10 @@ define("STATICSRV", Config::$facebookStaticURL);
 define("JSDIR", 'javascript');
 define("CSSDIR", 'css');
 
+//Increment these versions whenever you update any js or css files for cachebusting
+define("JSVERSION",1);
+define("CSSVERSION",1);
+
 if( !defined('FACEBOOK') )
 	define('FACEBOOK',false);
 ?>
