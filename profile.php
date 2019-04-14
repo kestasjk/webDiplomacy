@@ -651,6 +651,19 @@ if( $User->type['Moderator'] )
 	{
 		print '<p>Investigated: Never</p>';
 	}
+
+	if($UserProfile->qualifiesForEmergency() )
+	{
+		print '<p class="profileCommentURL">User qualifies for emergency pause</p>';
+	} 
+	else if ($UserProfile->emergencyPauseDate == 1)
+	{
+		print '<p class="profileCommentURL">User is mod banned from emergency pause</p>';
+	}
+	else
+	{
+		print '<p class="profileCommentURL">User does not qualify for emergency pause</p>';
+	}
 }
 
 list($serverHasPHPBB) = $DB->sql_row("SELECT count(1) FROM information_schema.tables WHERE table_name = 'phpbb_users'");
@@ -671,15 +684,12 @@ print '<p><ul class="formlist">';
 
 if ( $UserProfile->type['Moderator'] ||  $UserProfile->type['ForumModerator'] || $UserProfile->type['Admin'] )
 {
-	if ($UserProfile->id !=15658)
-	{
-		print '<li><strong>'.l_t('Mod/Admin team').'</strong></li>';
-		print '<li>'.l_t('The best way to get moderator assistance is to contact a moderator at 
-		<a href="mailto:'.(isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail).'">'
-		.(isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail).'</a>. Please do not pm 
-		moderators directly as moderators are not required to regularly check their messages').'</li>';
-		print '<li>&nbsp;</li>';
-	}
+	print '<li><strong>'.l_t('Mod/Admin team').'</strong></li>';
+	print '<li>'.l_t('The best way to get moderator assistance is to contact a moderator at 
+	<a href="mailto:'.(isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail).'">'
+	.(isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail).'</a>. Please do not pm 
+	moderators directly as moderators are not required to regularly check their messages').'</li>';
+	print '<li>&nbsp;</li>';
 }
 
 if ( $UserProfile->online || time() - (24*60*60) < $UserProfile->timeLastSessionEnded)
