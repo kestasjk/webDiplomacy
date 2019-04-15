@@ -141,7 +141,7 @@ if( $User->type['Admin'] ) {
 	print '<p class="modTools"><strong>'.l_t('Order logs:').'</strong><form class="modTools" action="admincp.php" method="get">
 		'.l_t('Game ID').': <input class="modTools" type="text" name="viewOrderLogGameID" value="'.$viewOrderLogGameID.'" />
 		'.l_t('CountryID').': <input class="modTools" type="text" name="viewOrderLogCountryID" value="'.$viewOrderLogCountryID.'" />
-		<input class="modToolsform-submit" type="submit" name="'.l_t('Submit').'" /></form></p>';
+		<input class="form-submit" type="submit" name="'.l_t('Submit').'" /></form></p>';
 }
 
 /*

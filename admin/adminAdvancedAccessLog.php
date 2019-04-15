@@ -61,7 +61,7 @@ print '<FORM class="modTools" method="get" action="admincp.php">
         <input class="modTools" type="checkbox" name="chCookies" value="chCookies" checked="checked">Check Cookie Matches</br>
         <input class="modTools" type="checkbox" name="chShowPrevious" value="chShowPrevious">Show Mod Checked Matches</br>
         <input class="modTools" type="checkbox" name="chReCheckAll" value="chReCheckAll">Rerun all Checks all</br></br>
-        <input class="modToolsform-submit" type="submit" name="Submit" class="form-submit" value="Check" /><HR></form>';
+        <input type="submit" name="Submit" class="form-submit" value="Check" /><HR></form>';
 
 if ((is_int($days)) && ($days > 0) && ($days < 1001))
 {
