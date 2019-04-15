@@ -414,6 +414,7 @@ class libHTML
 		<link rel="stylesheet" id="home-css" href="'.CSSDIR.l_s('/home.css').'?ver='.CSSVERSION.'" type="text/css" />
 		'.$variantCSS.'
 		<script type="text/javascript" src="useroptions.php"></script>
+		<script type="text/javascript" src="javascript/clickhandler.js"></script>
 		<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/prototype.js').'"></script>
 		<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/scriptaculous.js').'"></script>
 		<link rel="stylesheet" type="text/css" href="'.STATICSRV.l_s('contrib/js/pushup/src/css/pushup.css').'" />
@@ -718,6 +719,13 @@ class libHTML
 							<img id="logo" src="'.l_s('images/logo.png').'" alt="'.l_t('webDiplomacy').'" />
 						</a>';
 
+		// $menu .= "<script type='text/javascript'>
+		// 			const headerClickable = document.getElementsByClassName('clickable');
+		// 			function click() {
+		// 				headerClickable.display == 'none'
+		// 			}
+		// 		</script>"
+
 		if ( is_object( $User ) )
 		{
 			if ( ! $pages[$scriptname]['inmenu'] )
@@ -740,98 +748,97 @@ class libHTML
 
 			$menu .= '<div id="header-goto">';
 
-			if( isset($pages[$scriptname]) and ! $pages[$scriptname]['inmenu'] )
+			// if( isset($pages[$scriptname]) and ! $pages[$scriptname]['inmenu'] )
+			// {
+			// 	$menu .= '<a href="'.$scriptname.'?'.$arguments.'" title="'.l_t('The current page; click to refresh').'" class="current">'
+			// 		.l_t($pages[$scriptname]['name']).'</a>';
+			// }
+
+			// foreach($pages as $page=>$script)
+			// {
+			// 	if($script['inmenu'])
+			// 	{
+			// 		$menu .= '<a href="'.$page.
+			// 			( $page==$scriptname ? '?'.$arguments.'" class="current"' : '"').' '.
+			// 			( isset($script['title']) ? 'title="'.l_t($script['title']).'"' :'').' '.
+			// 			'>'.
+			// 			l_t($script['name']).'</a>';
+			// 	}
+			// }
+
+			$menu .= '
+            <div class ="nav-wrap">
+
+				<div class = "nav-tab"> <a href="index.php?" title="See what\'s happening">Home</a> </div>';
+			if( isset(Config::$customForumURL) )
 			{
-				$menu .= '<a href="'.$scriptname.'?'.$arguments.'" title="'.l_t('The current page; click to refresh').'" class="current">'
-					.l_t($pages[$scriptname]['name']).'</a>';
+				$menu.='<div class = "nav-tab"> <a href="'.Config::$customForumURL.'" title="The forum; chat, get help, help others, arrange games, discuss strategies">Forum</a> </div>';
+			}
+			else
+			{
+				$menu.='<div class = "nav-tab"> <a href="forum.php" title="The forum; chat, get help, help others, arrange games, discuss strategies">Forum</a> </div>';
 			}
 
-			foreach($pages as $page=>$script)
+			if (is_object($User))
 			{
-				if($script['inmenu'])
+				if( !$User->type['User'] )
 				{
-					$menu .= '<a href="'.$page.
-						( $page==$scriptname ? '?'.$arguments.'" class="current"' : '"').' '.
-						( isset($script['title']) ? 'title="'.l_t($script['title']).'"' :'').' '.
-						'>'.
-						l_t($script['name']).'</a>';
+					$menu.='<div class = "nav-tab"> <a href="logon.php" title="Log onto webDiplomacy using an existing user account">Log on</a> </div>';
+					$menu.='<div class = "nav-tab"> <a href="register.php" title="Make a new user account">Register</a> </div>';
+				}
+				else
+				{
+					$menu.='
+					<div id="navSubMenu" class = "clickable nav-tab">Games ▼
+                        <div id="nav-drop">
+							<a href="gamelistings.php" title="Game listings; a searchable list of the games on this server">Game Listings</a>
+							<a href="gamecreate.php" title="Start up a new game">New Game</a>
+                        </div>
+                    </div>
+					<div class = "nav-tab"> <a href="detailedSearch.php" title="advanced search of users and games">Search</a> </div>';
+
+					if( isset(Config::$customForumURL) )
+					{
+						$menu.='
+						<div id="navSubMenu" class = "clickable nav-tab">Settings ▼
+							<div id="nav-drop">
+								<a href="usercp.php" title="Change your user specific settings">Site Settings</a>
+								<a href="/contrib/phpBB3/ucp.php?i=179" title="Change your forum user settings">Forum User Settings</a>
+							</div>
+                    	</div>';
+					}
+					else
+					{
+						$menu.='<div class = "nav-tab"> <a href="usercp.php" title="Change your user specific settings">Settings</a> </div>';
+					}
 				}
 			}
 
-			// $menu .= '
-            // <div class ="nav-wrap">
+			$menu.=' <div id="navSubMenu" class = "clickable nav-tab">Help ▼
+                        <div id="nav-drop">
+							<a href="help.php" title="Get help and information; guides, intros, FAQs, stats, links">Help/Donate</a>
+							<a href="faq.php" title="Frequently Asked Questions">FAQ</a>
+							<a href="contactUsDirect.php">Contact Us Directly</a>
+							<a href="contactUs.php">Contact Information</a>
+							<a href="rules.php">Site Rules</a>
+                        </div>
+                    </div>';
 
-			// 	<div class = "nav-tab"> <a href="index.php?" title="See what\'s happening">Home</a> </div>';
-			// if( isset(Config::$customForumURL) )
-			// {
-			// 	$menu.='<div class = "nav-tab"> <a href="'.Config::$customForumURL.'" title="The forum; chat, get help, help others, arrange games, discuss strategies">Forum</a> </div>';
-			// }
-			// else
-			// {
-			// 	$menu.='<div class = "nav-tab"> <a href="forum.php" title="The forum; chat, get help, help others, arrange games, discuss strategies">Forum</a> </div>';
-			// }
+			if ( is_object($User) )
+			{
+				if ( $User->type['Admin'] or $User->type['Moderator'] )
+				{
+					$menu.=' <div id="navSubMenu" class = "clickable nav-tab">Mods ▼
+                        <div id="nav-drop">
+							<a href="admincp.php">Admin CP</a>
+							<a href="profile.php">Find User</a>
+							<a href="admincp.php?tab=AccessLog">Access Log</a>
 
-			// if (is_object($User))
-			// {
-			// 	if( !$User->type['User'] )
-			// 	{
-			// 		$menu.='<div class = "nav-tab"> <a href="logon.php" title="Log onto webDiplomacy using an existing user account">Log on</a> </div>';
-			// 		$menu.='<div class = "nav-tab"> <a href="register.php" title="Make a new user account">Register</a> </div>';
-			// 	}
-			// 	else
-			// 	{
-			// 		$menu.='
-			// 		<div id="navSubMenu" class = "nav-tab">Games ▼
-            //             <div id="nav-drop">
-			// 				<a href="gamelistings.php" title="Game listings; a searchable list of the games on this server">Game Listings</a>
-			// 				<a href="gamecreate.php" title="Start up a new game">New Game</a>
-            //             </div>
-            //         </div>
-			// 		<div class = "nav-tab"> <a href="detailedSearch.php" title="advanced search of users and games">Search</a> </div>';
-
-			// 		if( isset(Config::$customForumURL) )
-			// 		{
-			// 			$menu.='
-			// 			<div id="navSubMenu" class = "nav-tab">Settings ▼
-			// 				<div id="nav-drop">
-			// 					<a href="usercp.php" title="Change your user specific settings">Site Settings</a>
-			// 					<a href="/contrib/phpBB3/ucp.php?i=179" title="Change your forum user settings">Forum User Settings</a>
-			// 				</div>
-            //         	</div>';
-			// 		}
-			// 		else
-			// 		{
-			// 			$menu.='<div class = "nav-tab"> <a href="usercp.php" title="Change your user specific settings">Settings</a> </div>';
-			// 		}
-			// 	}
-			// }
-
-			// $menu.=' <div id="navSubMenu" class = "nav-tab">Help ▼
-            //             <div id="nav-drop">
-			// 				<a href="help.php" title="Get help and information; guides, intros, FAQs, stats, links">Help/Donate</a>
-			// 				<a href="faq.php" title="Frequently Asked Questions">FAQ</a>
-			// 				<a href="contactUsDirect.php">Contact Us Directly</a>
-			// 				<a href="contactUs.php">Contact Information</a>
-			// 				<a href="rules.php">Site Rules</a>
-            //             </div>
-            //         </div>';
-
-			// if ( is_object($User) )
-			// {
-			// 	if ( $User->type['Admin'] or $User->type['Moderator'] )
-			// 	{
-			// 		$menu.=' <div id="navSubMenu" class = "nav-tab">Mods ▼
-            //             <div id="nav-drop">
-			// 				<a href="admincp.php">Admin CP</a>
-			// 				<a href="profile.php">Find User</a>
-			// 				<a href="admincp.php?tab=AccessLog">Access Log</a>
-
-            //             </div>
-			// 		</div>';
-			// 	}
-			// }
-			// $menu.='</div>';</div>
-			$menu.='</div></div>';
+                        </div>
+					</div>';
+				}
+			}
+			$menu.='</div></div></div>';
 		}
 		else
 		{
@@ -1069,6 +1076,7 @@ class libHTML
 				this.token="'.md5(Config::$secret.$User->id.'Array').'";
 			}
 			User = new UserClass();
+			var headerClickThing = document.getElementsByClassName("clickable");
 
 			WEBDIP_DEBUG='.(Config::$debug ? 'true':'false').';
 
@@ -1076,7 +1084,6 @@ class libHTML
 
 				try {
 					'.l_jf('Locale.onLoad').'();
-
 
 					'.l_jf('setForumMessageIcons').'();
 					'.l_jf('setPostsItalicized').'();
@@ -1093,6 +1100,15 @@ class libHTML
 				'.(Config::$debug ? 'alert(e);':'').'
 				}
 			}, this);
+			for (let i = 0; i < headerClickThing.length; i++) {
+				headerClickThing[i].addEventListener("click", function(e){
+					try {
+						'.l_jf('click').'(e);
+					} catch ( e ){
+						'.(Config::$debug ? 'alert(e);':'').'
+					}
+				}, this);
+			}
 			var toggle = localStorage.getItem("desktopEnabled");
 			var toggleElem = document.getElementById(\'js-desktop-mode\');
             if (toggle == "true") {
