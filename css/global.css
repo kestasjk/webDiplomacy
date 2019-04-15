@@ -422,8 +422,7 @@ a.light {
 }
 
 #navSubMenu{
-	float: left;
-	color: #f2f2f2 !important;
+	color: #f2f2f2;
 	font-weight: bold;
 	text-align: center;
 	padding: 10px 12px;
@@ -450,9 +449,14 @@ a.light {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 }
 
-.nav-tab a:hover {
-	background-color: #ddd;
-	color: black;
+#navSubMenu:hover {
+	cursor: pointer;
+}
+
+.nav-tab a:hover, #navSubMenu:hover {
+	background-color: rgba(255, 255, 255, 0.75);
+	border-radius: 15px 0 15px 0;
+	color: #009902 !important;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 }
 
@@ -490,16 +494,6 @@ a.light {
 	color:#009902;
 }
 
-/*#navSubMenu:hover div#nav-drop {
-	position: absolute;
-	margin-top: 25px;
-	width: 100px;
-	z-index: 999;
-	background-color: #555;
-	visibility: visible;
-	border-radius: 7px;
-}*/
-
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
 	#navSubMenu:hover div#nav-drop {
 		margin-top: 5px !important;
@@ -510,60 +504,6 @@ a.light {
 	background-color: rgba(255, 255, 255, 0.75);
 	border-radius: 15px 0 15px 0;
 } 
-
-/*#header {
-	background-color: #fff;
-	width: auto;
-	padding:0;
-	margin:0;
-	text-align: left;
-}
-#header-container {
-	padding-left:0;
-	background-color: #fff;
-	height:70px;
-	padding-right:0;
-	padding-top:6px;
-	padding-bottom:4px;
-	margin-left: auto;
-	margin-right: auto;
-	margin-top:0;
-	margin-bottom:0;
-	max-width: 800px;
-}
-#logo {
-	padding:0;
-	margin:0;
-	position:absolute;
-	vertical-align:middle;
-	border: 0;
-}
-#header-welcome {
-	padding:0;
-	margin:0;
-	text-align:right;
-	font-style: italic;
-}
-#header-welcome a {
-	font-weight:normal !important;
-	text-decoration:none !important;
-}
-#header-goto {
-	padding:0;
-	margin:0;
-	margin-top: 38px;
-	text-align:right;
-	clear:right;
-}
-#header-goto a {
-	margin-left: 14px;
-}
-#header-goto a.current {
-	color:#000;
-}
-#header-goto a.current:hover {
-	color:#009902;
-}*/
 
 #seperator {
 	margin: 0;
@@ -1707,6 +1647,9 @@ input[id^="FinalizeButton"]{
 		display: inline-block;
 		margin-top: 5px;
 	}
+	#navSubMenu {
+		margin-top: 5px;
+	}
 	#seperator{
 		margin: 0 -10px;
 	}
@@ -1805,8 +1748,9 @@ input[id^="FinalizeButton"]{
 	.nav-wrap {
 		width: 100% !important;
 		flex-wrap: wrap;
-		justify-content: left;
+		align-items: stretch;
 		margin-top: 5px;
+
 	}
 	.profileUsername {
 		text-align: center !important;
