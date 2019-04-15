@@ -126,7 +126,7 @@ div.postboxadvice {
 	text-align:center;
 	font-style: italic;
 	color:#777
-	}
+}
 
 div.clear {
 	border-bottom: 0;
@@ -148,7 +148,7 @@ p.profileComment {
 	margin-left:auto;
 	margin-right:auto;
 	word-break: break-word;
-	}
+}
 .profileUsername {
 	text-align: left;
 }
@@ -166,33 +166,33 @@ p.profileComment {
 	font-size: 14px;
 }
 
-  .profile_title:hover {
+.profile_title:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #555;
-  }
+}
 
-  .profile_content {
-		padding: 0;
-		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-		display: none;
-		overflow: hidden;
-		padding: 0 0 0 10px;
-		background-color: #f1f1f1;
-		font-size: 13px;
-		margin-top:3px !important;
-		border-radius: 7px;
-	}
+.profile_content {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	padding: 0 0 0 10px;
+	background-color: #f1f1f1;
+	font-size: 13px;
+	margin-top:3px !important;
+	border-radius: 7px;
+}
 
-	.profile_content_show {
-		border-radius: 7px;
-		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-		overflow: hidden;
-		background-color: #f1f1f1;
-		font-size: 13px;
-		display: show;
-		padding: 0 0 0 10px;
-		margin-top: 3px !important;
-  }
+.profile_content_show {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 13px;
+	display: show;
+	padding: 0 0 0 10px;
+	margin-top: 3px !important;
+}
 
 img.center {
 	text-align:center;
@@ -614,28 +614,22 @@ div.content-notice {
 	border: 1px solid #aaa;
 	padding: 8px 15px;
 	border-radius: 7px;
-
 }
 div.content-board-header, div.content-home-header {
 	margin-top:6px;
 	border-bottom:0;
 	border-radius: 7px;
-
-	}
+}
 div.content-board-header {
 	border: 1px solid #aaa;
 	background-color:#f5f5f5;
 	border-bottom:0;
-	}
+}
 div.content-follow-on {
 	margin-top:0 !important;
 	border-top:0 !important;
-	}
-div.content-home-header {
 }
-div.content-home-updates {
 
-}
 .content-slotBottom {
 	position: relative;
 	margin-left: auto;
@@ -646,11 +640,11 @@ div.content-home-updates {
 	padding-left: 24px;
 	padding-right: 24px;
 	border: 1px solid #aaa;
-	}
+}
 .content-slot {
 	border-top:0;
 	margin-top:0;
-	}
+}
 #content-publicforum {
 	max-width: 710px;
 	height: auto;
@@ -672,7 +666,7 @@ div.forum {
 
 #chatboxtabs {
 	font-size: 14px !important;
-	}
+}
 
 div.gamelistings-tabs {
 	width: auto;
@@ -717,7 +711,6 @@ div.gamelistings-tabs a {
 	border-top:1px solid #aaa;
 	border-left:1px solid #aaa;
 	border-right:1px solid #aaa;
-
 	border-bottom:2px solid #006699 ! important;
 }
 div#chatboxtabs a {
@@ -737,8 +730,6 @@ div.gamelistings-tabs a:hover {
 	border-left:1px solid #009902 ! important;
 	border-right:1px solid #009902 ! important;
 }
-
-
 .gamelistings-tabsNew {
 	display: flex;
 	justify-content: space-around;
@@ -746,7 +737,7 @@ div.gamelistings-tabs a:hover {
 	overflow: hidden;
 	border-radius: 7px;
 	background-color: #333;
-	}
+}
 
 .gamelistings-tabsNew a {
 	float: left;
@@ -776,7 +767,6 @@ div.gamelistings-tabs a:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 }
 
-
 .postbox {
 	text-align:center;
 }
@@ -790,7 +780,6 @@ div.gamelistings-tabs a:hover {
 }
 .threadborder1 {
 	border: 1px solid #d1d1d1;
-	/* border color is background color subtract #393939 */
 }
 .threadborder2 {
 	border: 1px solid #cecece;
@@ -828,8 +817,6 @@ div.gamelistings-tabs a:hover {
 .leftRule {
 	border-left: 1px solid #aaa;
 }
-.bottomRule {
-}
 .message-subject {
 	font-size:15px;
 	color: #009902;
@@ -848,10 +835,6 @@ div.gamelistings-tabs a:hover {
 	float:right;
 	text-align:right;
 }
-.message-foot {
-}
-
-
 form {
 	margin:0;
 }
@@ -914,9 +897,6 @@ div.chatbox {
 div.chatbox td {
 	overflow:hidden;
 }
-div.chatboxnotabs {
-	border-top:1px solid #aaa;
-	}
 .chatboxMembersList {
 	font-size:12px;
 	text-align:center;
@@ -997,22 +977,22 @@ TD.army, div.army {
 	font-size: 14px;
 }
 
-  .faq_question:hover {
+.faq_question:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #555;
-  }
+}
 
-  .faq_answer {
-		padding: 0;
-		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-		display: none;
-		overflow: hidden;
-		background-color: #f1f1f1;
-		margin-top: 0px !important;
-		font-size: 14px;
-		border-radius: 7px;
-		padding: 0 0 0 10px;
-  }
+.faq_answer {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	margin-top: 0px !important;
+	font-size: 14px;
+	border-radius: 7px;
+	padding: 0 0 0 10px;
+}
 /* End of section for FAQ styling */
 
 /* Section for datc styling */
@@ -1126,7 +1106,6 @@ input[type="text"].contactUs, input[type="password"].contactUs, textarea.contact
 	border: 1px solid #c1c1c1;
 	color:#000000;
 }
-
 /* End of section for contactUsDirect page styling */
 
 /* Section for intro page */
@@ -1191,8 +1170,6 @@ input[type="text"].contactUs, input[type="password"].contactUs, textarea.contact
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	color: #009902 ! important;
 }
-
-
 /* End of section for homeNotice page */
 
 /* Section for user search page */
@@ -1208,23 +1185,6 @@ input[type="text"].contactUs, input[type="password"].contactUs, textarea.contact
 	font-size: 14px;
 	padding: 0 0 0 10px;
 	margin-top:0px !important;
-}
-
-.userSearch-submit {
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	color: #fff !important;
-	text-transform: uppercase;
-	background: #60a3bc !important;
-	padding: 5px;
-	border-radius: 50px;
-	display: inline-block;
-	border: none;
-}
-
-.userSearch-submit:hover {
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	text-shadow: 0px 0px 6px rgba(255, 255, 255, 1);
-	transition: all 0.4s ease 0s;
 }
 
 input[type="text"].userSearch, input[type="password"].userSearch, textarea.userSearch, select.userSearch {
@@ -1259,7 +1219,6 @@ input[type="text"].settings, input[type="password"].settings, textarea.settings,
 	color:#000000;
 }
 /* End of section for settings page */
-
 
 /* Section for credits page styling */
 .credits {
@@ -1331,32 +1290,32 @@ input[type="text"].settings, input[type="password"].settings, textarea.settings,
 	font-size: 14px;
 }
 
-  .rules_title:hover {
+.rules_title:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #555;
-  }
+}
 
-  .rules_content {
-		padding: 0;
-		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-		display: none;
-		overflow: hidden;
-		padding: 0 0 0 10px;
-		background-color: #f1f1f1;
-		font-size: 14px;
-		margin-top:0px !important;
-		border-radius: 7px;
-	}
+.rules_content {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	padding: 0 0 0 10px;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	margin-top:0px !important;
+	border-radius: 7px;
+}
 
-	.rules_content_show {
-		border-radius: 7px;
-		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-		overflow: hidden;
-		background-color: #f1f1f1;
-		font-size: 14px;
-		padding: 0 0 0 10px;
-		margin-top:0px !important;
-  }
+.rules_content_show {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	padding: 0 0 0 10px;
+	margin-top:0px !important;
+}
 /* End of section for Rules styling */
 
 /* This section is for the new AdminCP and Mod tools */
@@ -1426,21 +1385,6 @@ li.modToolsformlisttitle {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	text-decoration: underline;
 }
-.modToolsform-submit {
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	color: #fff !important;
-	text-transform: uppercase;
-	background: #60a3bc !important;
-	padding: 5px;
-	border-radius: 50px;
-	display: inline-block;
-	border: none;
-}
-.modToolsform-submit:hover {
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	text-shadow: 0px 0px 6px rgba(255, 255, 255, 1);
-	transition: all 0.4s ease 0s;
-}
 
 .modToolsCollapsible {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -1452,20 +1396,20 @@ li.modToolsformlisttitle {
 	border: none;
 	text-align: left;
 	outline: none;
-  }
+}
 
-  .active, .modToolsCollapsible:hover {
+.active, .modToolsCollapsible:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #555;
-  }
+}
 
-  .modToolsContent {
+.modToolsContent {
 	padding: 0 10px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	display: none;
 	overflow: hidden;
 	background-color: #f1f1f1;
-  }
+}
 
 ul.modTools {
 	padding: 0;
@@ -1484,7 +1428,7 @@ ul.modTools {
 	overflow: hidden;
 	background-color: #333;
 	border-radius: 7px;
-	}
+}
 
 .topnav a {
 	float: left;
@@ -1517,24 +1461,24 @@ ul.modTools {
 
 /* This section is for the new advanced search page. */
   .SearchCollapsible {
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	background-color: #777;
-	color: white;
-	cursor: pointer;
-	padding: 10px;
-	width: 100%;
-	border: none;
-	text-align: left;
-	outline: none;
-	border-radius: 7px;
+		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+		background-color: #777;
+		color: white;
+		cursor: pointer;
+		padding: 10px;
+		width: 100%;
+		border: none;
+		text-align: left;
+		outline: none;
+		border-radius: 7px;
   }
 
-  .active, .SearchCollapsible:hover {
+.active, .SearchCollapsible:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #555;
 }
 
-  .advancedSearch {
+.advancedSearch {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	border-collapse: collapse;
 	font-size: 12px;
@@ -1565,13 +1509,13 @@ input[type="text"].advancedSearch, input[type="password"].advancedSearch, textar
 	min-width:35px;
 }
 
-  .advancedSearchContent {
+.advancedSearchContent {
 	padding: 0 10px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	display: none;
 	overflow: hidden;
 	background-color: #f1f1f1;
-  }
+}
 
 ul.advancedSearch {
 	padding: 0;
@@ -1610,11 +1554,11 @@ ul.advancedSearch {
 
 #points-scoring {
 	border-radius: 7px;
-    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-    overflow: hidden;
-    background-color: #f1f1f1;
-    padding: 0 0 0 10px;
-    margin-top: 0px !important;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	padding: 0 0 0 10px;
+	margin-top: 0px !important;
 }
 
 .scoring-text {
@@ -1624,9 +1568,7 @@ ul.advancedSearch {
 .scoring-h {
 	margin-left: 0 !important;
 }
-
 /* end of points and scoring systems page styling */
-
 
 span.orderNotice {
 	font-weight:bold;
