@@ -1076,7 +1076,7 @@ class libHTML
 				this.token="'.md5(Config::$secret.$User->id.'Array').'";
 			}
 			User = new UserClass();
-			var headerClickThing = document.getElementsByClassName("clickable");
+			var headerEvent = document.getElementsByClassName("clickable");
 
 			WEBDIP_DEBUG='.(Config::$debug ? 'true':'false').';
 
@@ -1097,11 +1097,18 @@ class libHTML
 					'.l_jf('Locale.afterLoad').'();
 				}
 				catch( e ) {
-				'.(Config::$debug ? 'alert(e);':'').'
+					'.(Config::$debug ? 'alert(e);':'').'
 				}
 			}, this);
-			for (let i = 0; i < headerClickThing.length; i++) {
-				headerClickThing[i].addEventListener("click", function(e){
+			document.observe("click", function(e) {
+				try {
+					'.l_jf('clickOut').'(e);
+				} catch (e) {
+					'.(Config::$debug ? 'alert(e);':'').'
+				}
+			}, this)
+			for (var i = 0; i < headerEvent.length; i++) {
+				headerEvent[i].addEventListener("click", function(e){
 					try {
 						'.l_jf('click').'(e);
 					} catch ( e ){

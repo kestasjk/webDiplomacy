@@ -13,3 +13,11 @@ function click(e) {
 		}
 	}
 }
+
+function clickOut(e) {
+	if (e.target.id != 'navSubMenu') {
+		for (var i = 0; i < headerClick.length; i++) {
+			headerClick[i].children[0].style.visibility = 'hidden'
+		}
+	}
+}
