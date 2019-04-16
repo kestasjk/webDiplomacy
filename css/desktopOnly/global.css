@@ -436,8 +436,7 @@ a.light {
 	justify-content: space-around;
 	flex-wrap: wrap;
 	overflow: hidden;
-	background-color: #777;
-	}
+}
 
 .nav-tab a {
 	float: left;
@@ -496,7 +495,11 @@ a.light {
 
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
 	#navSubMenu:hover div#nav-drop {
-		margin-top: 5px !important;
+        margin-top: 10px !important;
+    }
+
+    #navSubMenu div#nav-drop {
+        margin-top: 10px !important;
 	}
 }
 
