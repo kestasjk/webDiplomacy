@@ -410,6 +410,10 @@ a.light {
 	text-decoration:none !important;
 }
 
+#header-goto {
+	margin: 40px 0 0 auto;
+}
+
 .nav-wrap{
 	display: flex;
 	justify-content: space-around;
@@ -417,8 +421,7 @@ a.light {
 	overflow: hidden;
 	border-radius: 7px;
 	background-color: #777;
-	margin: 30px 0 0 auto;
-	width: 70%;
+	width: auto;
 }
 
 #navSubMenu{
@@ -478,7 +481,7 @@ a.light {
 	position: absolute;
 	overflow: auto;
 	margin-top: 25px;
-	width: 100px;
+	width: auto;
 	z-index: 999;
 	background-color: #555;
 	border-radius: 7px;
@@ -497,7 +500,6 @@ a.light {
 	#navSubMenu:hover div#nav-drop {
         margin-top: 10px !important;
     }
-
     #navSubMenu div#nav-drop {
         margin-top: 10px !important;
 	}
