@@ -719,6 +719,7 @@ class libHTML
 							<img id="logo" src="'.l_s('images/logo.png').'" alt="'.l_t('webDiplomacy').'" />
 						</a>';
 
+
 		if ( is_object( $User ) )
 		{
 			if ( ! $pages[$scriptname]['inmenu'] )
@@ -739,7 +740,7 @@ class libHTML
 						'</span>'
 						:l_t('Welcome, Guest')).'
 					</div>';
-
+			/* begin dropdown menu */
 			$menu .= '
 			<div id="header-goto">
             <div class="nav-wrap">
@@ -780,8 +781,8 @@ class libHTML
 							<a href="gamecreate.php" title="Start up a new game">
 								Create a New Game
 							</a>
-							<a href="variants.php" title="Active webDiplomacy variants">
-								Variants
+							<a href="https://sites.google.com/view/webdipinfo/ghost-ratings" target=_blank title="Ghost Ratings (external site)">
+								Ghost Ratings
 							</a>
 							<a href="tournaments.php" title="Information about tournaments on webDiplomacy">
 								Tournaments
@@ -813,6 +814,9 @@ class libHTML
 							</a>
 							<a href="points.php" title="Points and Scoring Systems">
 								Points and Scoring Systems
+							</a>
+							<a href="variants.php" title="Active webDiplomacy variants">
+								Variants
 							</a>
 							<a href="help.php" title="Get help and information; guides, intros, FAQs, stats, links">
 								Help/Donate
@@ -866,6 +870,8 @@ class libHTML
 		<div id="seperator"></div>
 		<div id="seperator-fixed"></div>
 		<!-- Menu end. -->';
+
+		/* end dropdown menu */
 
 		return $menu;
 	}
