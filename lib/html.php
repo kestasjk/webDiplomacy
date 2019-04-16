@@ -719,13 +719,6 @@ class libHTML
 							<img id="logo" src="'.l_s('images/logo.png').'" alt="'.l_t('webDiplomacy').'" />
 						</a>';
 
-		// $menu .= "<script type='text/javascript'>
-		// 			const headerClickable = document.getElementsByClassName('clickable');
-		// 			function click() {
-		// 				headerClickable.display == 'none'
-		// 			}
-		// 		</script>"
-
 		if ( is_object( $User ) )
 		{
 			if ( ! $pages[$scriptname]['inmenu'] )
@@ -739,34 +732,16 @@ class libHTML
 						'.(is_object($User)?l_t('Welcome, %s',$User->profile_link(TRUE)).' -
 						<span class="logon">('.
 							($User->type['User'] ?
-							'<a href="logon.php?logoff=on" class="light">'.l_t('Log off').'</a>)'.
+							'<a href="logon.php?logoff=on" class="light">'.l_t('Log off').'</a>)
+							(<a href="contrib/phpBB3/ucp.php?i=pm" class="light">'.l_t('Private Messages').'</a>)'.
 								( defined('AdminUserSwitch') ? ' (<a href="index.php?auid=0" class="light">'.l_t('Switch back').'</a>)' : '' )
 							:'<a href="logon.php" class="light">'.l_t('Log on').'</a>)').
 						'</span>'
 						:l_t('Welcome, Guest')).'
 					</div>';
 
-			$menu .= '<div id="header-goto">';
-
-			// if( isset($pages[$scriptname]) and ! $pages[$scriptname]['inmenu'] )
-			// {
-			// 	$menu .= '<a href="'.$scriptname.'?'.$arguments.'" title="'.l_t('The current page; click to refresh').'" class="current">'
-			// 		.l_t($pages[$scriptname]['name']).'</a>';
-			// }
-
-			// foreach($pages as $page=>$script)
-			// {
-			// 	if($script['inmenu'])
-			// 	{
-			// 		$menu .= '<a href="'.$page.
-			// 			( $page==$scriptname ? '?'.$arguments.'" class="current"' : '"').' '.
-			// 			( isset($script['title']) ? 'title="'.l_t($script['title']).'"' :'').' '.
-			// 			'>'.
-			// 			l_t($script['name']).'</a>';
-			// 	}
-			// }
-
 			$menu .= '
+			<div id="header-goto">
             <div class ="nav-wrap">
 
 				<div class = "nav-tab"> <a href="index.php?" title="See what\'s happening">Home</a> </div>';
