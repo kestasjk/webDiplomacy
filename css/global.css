@@ -482,7 +482,7 @@ a.light {
 	position: absolute;
 	overflow: auto;
 	margin-top: 25px;
-	width: 100px;
+	width: auto;
 	z-index: 999;
 	background-color: #555;
 	border-radius: 7px;

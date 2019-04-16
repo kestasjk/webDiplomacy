@@ -732,8 +732,8 @@ class libHTML
 						'.(is_object($User)?l_t('Welcome, %s',$User->profile_link(TRUE)).' -
 						<span class="logon">('.
 							($User->type['User'] ?
-							'<a href="logon.php?logoff=on" class="light">'.l_t('Log off').'</a>)
-							(<a href="contrib/phpBB3/ucp.php?i=pm" class="light">'.l_t('Private Messages').'</a>)'.
+							'<a href="contrib/phpBB3/ucp.php?i=pm" class="light">'.l_t('Private Messages').'</a>)
+							(<a href="logon.php?logoff=on" class="light">'.l_t('Log off').'</a>)'.
 								( defined('AdminUserSwitch') ? ' (<a href="index.php?auid=0" class="light">'.l_t('Switch back').'</a>)' : '' )
 							:'<a href="logon.php" class="light">'.l_t('Log on').'</a>)').
 						'</span>'
@@ -742,7 +742,7 @@ class libHTML
 
 			$menu .= '
 			<div id="header-goto">
-            <div class ="nav-wrap">
+            <div class="nav-wrap">
 
 				<div class = "nav-tab"> <a href="index.php?" title="See what\'s happening">Home</a> </div>';
 			if( isset(Config::$customForumURL) )
@@ -764,38 +764,62 @@ class libHTML
 				else
 				{
 					$menu.='
-					<div id="navSubMenu" class = "clickable nav-tab">Games ▼
+					<div class="nav-tab"> 
+						<a href="detailedSearch.php" title="advanced search of users and games">
+							Search
+						</a> 
+					</div>
+					<div id="navSubMenu" class="clickable nav-tab">Games ▼
                         <div id="nav-drop">
-							<a href="gamelistings.php" title="Game listings; a searchable list of the games on this server">Game Listings</a>
-							<a href="gamecreate.php" title="Start up a new game">New Game</a>
+							<a href="/gamelistings.php?page-games=1&gamelistType=New" title="Game listings; a searchable list of the games on this server">
+								Game Listings
+							</a>
+							<a href="/gamelistings.php?page-games=1&gamelistType=Joinable" title="Open positions dropped by other players, free to claim">
+								Open CD Positions
+							</a>
+							<a href="gamecreate.php" title="Start up a new game">
+								Create a New Game
+							</a>
+							<a href="variants.php" title="Active webDiplomacy variants">
+								Variants
+							</a>
+							<a href="tournaments.php" title="Information about tournaments on webDiplomacy">
+								Tournaments
+							</a>
                         </div>
                     </div>
-					<div class = "nav-tab"> <a href="detailedSearch.php" title="advanced search of users and games">Search</a> </div>';
-
-					if( isset(Config::$customForumURL) )
-					{
-						$menu.='
-						<div id="navSubMenu" class = "clickable nav-tab">Settings ▼
-							<div id="nav-drop">
-								<a href="usercp.php" title="Change your user specific settings">Site Settings</a>
-								<a href="/contrib/phpBB3/ucp.php?i=179" title="Change your forum user settings">Forum User Settings</a>
-							</div>
-                    	</div>';
-					}
-					else
-					{
-						$menu.='<div class = "nav-tab"> <a href="usercp.php" title="Change your user specific settings">Settings</a> </div>';
-					}
+					<div id="navSubMenu" class="clickable nav-tab">Settings ▼
+						<div id="nav-drop">
+							<a href="usercp.php" title="Change your user specific settings">
+								Site Settings
+							</a>
+							<a href="/contrib/phpBB3/ucp.php?i=179" title="Change your forum user settings">
+								Forum Settings
+							</a>
+						</div>
+                	</div>';
 				}
 			}
-
 			$menu.=' <div id="navSubMenu" class = "clickable nav-tab">Help ▼
                         <div id="nav-drop">
-							<a href="help.php" title="Get help and information; guides, intros, FAQs, stats, links">Help/Donate</a>
-							<a href="faq.php" title="Frequently Asked Questions">FAQ</a>
-							<a href="contactUsDirect.php">Contact Us Directly</a>
-							<a href="contactUs.php">Contact Information</a>
-							<a href="rules.php">Site Rules</a>
+                        	<a href="rules.php">
+								Site Rules
+							</a>
+							<a href="faq.php" title="Frequently Asked Questions">
+								FAQ
+							</a>
+							<a href="intro.php" title="Intro to Diplomacy">
+								Intro to Diplomacy
+							</a>
+							<a href="points.php" title="Points and Scoring Systems">
+								Points and Scoring Systems
+							</a>
+							<a href="help.php" title="Get help and information; guides, intros, FAQs, stats, links">
+								Help/Donate
+							</a>
+							<a href="contactUsDirect.php">
+								Contact Us Directly
+							</a>
                         </div>
                     </div>';
 
@@ -805,10 +829,24 @@ class libHTML
 				{
 					$menu.=' <div id="navSubMenu" class = "clickable nav-tab">Mods ▼
                         <div id="nav-drop">
-							<a href="admincp.php">Admin CP</a>
-							<a href="profile.php">Find User</a>
-							<a href="admincp.php?tab=AccessLog">Access Log</a>
-
+							<a href="admincp.php">
+								Admin CP
+							</a>
+							<a href="/contrib/phpBB3/mcp.php">
+								Forum CP
+							</a>
+							<a href="/admincp.php?tab=Multi-accounts">
+								Multi Finder
+							</a>
+							<a href="/admincp.php?tab=Chatlogs">
+								Pull Press
+							</a>
+							<a href="admincp.php?tab=AccessLog">
+								Access Log
+							</a>
+							<a href="profile.php">
+								Find User
+							</a>
                         </div>
 					</div>';
 				}
