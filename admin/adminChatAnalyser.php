@@ -167,7 +167,7 @@ if ($gameID != 0)
 	print '</TABLE></DIV>';
 }
 
-print '<br><input type="submit" name="Submit" class="modToolsform-submit" value="Check" /></form>';
+print '<br><input type="submit" name="Submit" class="form-submit" value="Check" /></form>';
 
 if (($gameID != 0) && (count($countryID1) > 0) && (count($countryID2) > 0))
 {
@@ -224,8 +224,8 @@ if (($gameID != 0) && (count($countryID1) > 0) && (count($countryID2) > 0))
         }
 			
 		print  '<input type="hidden" name="gameID" value="'.$gameID.'">
-				<input class = "modToolsform-submit" type="submit" name="CSV" value="Download as .csv (Excel)">
-				<input class = "modToolsform-submit" type="submit" name="TXT" value="Download as .txt">
+				<input class = "form-submit" type="submit" name="CSV" value="Download as .csv (Excel)">
+				<input class = "form-submit" type="submit" name="TXT" value="Download as .txt">
 				</FORM>';
     }
     else { print '<br>No sent messages to display.'; }

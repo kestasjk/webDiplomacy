@@ -29,7 +29,8 @@
 
 class libHTML
 {
-	public static function pageTitle($title, $description=false) {
+	public static function pageTitle($title, $description=false) 
+	{
 		return '<div class="content-bare content-board-header content-title-header">
 <div class="pageTitle barAlt1">
 	'.$title.'
@@ -314,8 +315,8 @@ class libHTML
 			return $output;
 	}
 
-
-	public static function threadLink($postID) {
+	public static function threadLink($postID) 
+	{
 		global $DB;
 
 		$postID = (int)$postID;
@@ -396,9 +397,7 @@ class libHTML
 
 		/*
 		 * This line when included in the header caused certain translated hyphenated letters to come out as black diamonds with question marks.
-		 *
-
-		*/
+		 */
 		return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 		<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">
 	<head>
@@ -963,7 +962,8 @@ class libHTML
 		close();
 	}
 
-	private static function footerDebugData() {
+	private static function footerDebugData() 
+	{
 		global $Locale, $DB;
 
 		$buf = '';
@@ -980,7 +980,8 @@ class libHTML
 		return $buf;
 	}
 
-	private static function footerStats() {
+	private static function footerStats() 
+	{
 		global $DB, $Misc, $User;
 		require_once(l_r('global/definitions.php'));
 
@@ -1054,23 +1055,27 @@ class libHTML
 		return $buf;
 	}
 
-	static private function footerCopyright() {
+	static private function footerCopyright() 
+	{
 		// Version, sourceforge and HTML compliance logos
 		return l_t('webDiplomacy version <strong>%s</strong>',number_format(VERSION/100,2)).'<br />
 			<a class="light" id="js-desktop-mode" style="cursor: pointer; color: #006699;" onclick="toggleDesktopMode()">Enable Desktop Mode</a> <br />
 			<a href="http://github.com/kestasjk/webDiplomacy" class="light">GitHub Project</a> |
 			<a href="http://github.com/kestasjk/webDiplomacy/issues" class="light">Bug Reports</a> | <a href="mailto:'.Config::$modEMail.'" class="light">Moderator Email</a> |
-			<a href="contactUsDirect.php" class="light">Contact Us Directly</a>';	}
+			<a href="contactUsDirect.php" class="light">Contact Us Directly</a>';	
+	}
 
 	public static $footerScript=array();
 	public static $footerIncludes=array();
 
-	public static function likeCount($likeCount) {
+	public static function likeCount($likeCount) 
+	{
 		if($likeCount==0) return '';
 		return ' <span class="likeCount">(+'.$likeCount.')</span>';
 	}
 
-	static private function footerScripts() {
+	static private function footerScripts() 
+	{
 		global $User, $Locale;
 
 		$buf = '';

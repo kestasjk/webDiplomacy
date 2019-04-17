@@ -114,7 +114,7 @@ if ( !$userID )
 				<?php print l_t('Not case sensitive, but otherwise must match exactly.)'); ?>
 			</p>
 			<p>
-				<input type="submit" class="userSearch-submit" value="<?php print l_t('Search'); ?>">
+				<input type="submit" class="form-submit" value="<?php print l_t('Search'); ?>">
 			</p>
 		</ul>
 
