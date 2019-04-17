@@ -740,7 +740,9 @@ class libHTML
 						'</span>'
 						:l_t('Welcome, Guest')).'
 					</div>';
+
 			/* begin dropdown menu */
+
 			$menu .= '
 			<div id="header-goto">
             <div class="nav-wrap">
@@ -759,24 +761,62 @@ class libHTML
 			{
 				if( !$User->type['User'] )
 				{
-					$menu.='<div class = "nav-tab"> <a href="logon.php" title="Log onto webDiplomacy using an existing user account">Log on</a> </div>';
-					$menu.='<div class = "nav-tab"> <a href="register.php" title="Make a new user account">Register</a> </div>';
+					$menu.='
+					<div class="nav-tab">
+						<a href="logon.php" title="Log onto webDiplomacy using an existing user account">
+							Log on
+						</a>
+					</div>';
+					$menu.='
+					<div class="nav-tab">
+						<a href="register.php" title="Make a new user account">
+							Register
+						</a>
+					</div>';
+					$menu.='
+					<div id="navSubMenu" class = "clickable nav-tab">Help ▼
+                        <div id="nav-drop">
+                        	<a href="rules.php">
+								Site Rules
+							</a>
+							<a href="faq.php" title="Frequently Asked Questions">
+								FAQ
+							</a>
+							<a href="intro.php" title="Intro to Diplomacy">
+								Intro to Diplomacy
+							</a>
+							<a href="points.php" title="Points and Scoring Systems">
+								Points/Scoring
+							</a>
+							<a href="variants.php" title="Active webDiplomacy variants">
+								Variants
+							</a>
+							<a href="help.php" title="Get help and information; guides, intros, FAQs, stats, links">
+								Help/Donate
+							</a>
+                        </div>
+                    </div>';
 				}
 				else
 				{
 					$menu.='
-					<div class="nav-tab"> 
-						<a href="detailedSearch.php" title="advanced search of users and games">
-							Search
-						</a> 
+					<div id="navSubMenu" class="clickable nav-tab">Search ▼
+                        <div id="nav-drop">
+                       		<a href="profile.php">
+								Find User
+							</a>
+							<a href="detailedSearch.php" title="advanced search of users and games">
+								Search Games
+							</a> 
+						</div>
 					</div>
 					<div id="navSubMenu" class="clickable nav-tab">Games ▼
                         <div id="nav-drop">
-							<a href="/gamelistings.php?page-games=1&gamelistType=New" title="Game listings; a searchable list of the games on this server">
+							<a href="gamelistings.php?page-games=1&gamelistType=New" title="Game listings; a searchable list of the games on this server">
 								Game Listings
 							</a>
-							<a href="/gamelistings.php?page-games=1&gamelistType=Joinable" title="Open positions dropped by other players, free to claim">
-								Open CD Positions
+							<a href="gamelistings.php?page-games=1&gamelistType=Joinable" title="Open positions dropped by other players, free to claim">
+								Open Positions
 							</a>
 							<a href="gamecreate.php" title="Start up a new game">
 								Create a New Game
@@ -794,14 +834,12 @@ class libHTML
 							<a href="usercp.php" title="Change your user specific settings">
 								Site Settings
 							</a>
-							<a href="/contrib/phpBB3/ucp.php?i=179" title="Change your forum user settings">
+							<a href="contrib/phpBB3/ucp.php?i=179" title="Change your forum user settings">
 								Forum Settings
 							</a>
 						</div>
-                	</div>';
-				}
-			}
-			$menu.=' <div id="navSubMenu" class = "clickable nav-tab">Help ▼
+                	</div>
+                	<div id="navSubMenu" class = "clickable nav-tab">Help ▼
                         <div id="nav-drop">
                         	<a href="rules.php">
 								Site Rules
@@ -813,7 +851,7 @@ class libHTML
 								Intro to Diplomacy
 							</a>
 							<a href="points.php" title="Points and Scoring Systems">
-								Points and Scoring Systems
+								Points/Scoring
 							</a>
 							<a href="variants.php" title="Active webDiplomacy variants">
 								Variants
@@ -822,10 +860,12 @@ class libHTML
 								Help/Donate
 							</a>
 							<a href="contactUsDirect.php">
-								Contact Us Directly
+								Contact Us
 							</a>
                         </div>
                     </div>';
+				}
+			}
 
 			if ( is_object($User) )
 			{
@@ -836,13 +876,13 @@ class libHTML
 							<a href="admincp.php">
 								Admin CP
 							</a>
-							<a href="/contrib/phpBB3/mcp.php">
+							<a href="contrib/phpBB3/mcp.php">
 								Forum CP
 							</a>
-							<a href="/admincp.php?tab=Multi-accounts">
+							<a href="admincp.php?tab=Multi-accounts">
 								Multi Finder
 							</a>
-							<a href="/admincp.php?tab=Chatlogs">
+							<a href="admincp.php?tab=Chatlogs">
 								Pull Press
 							</a>
 							<a href="admincp.php?tab=AccessLog">
@@ -859,17 +899,24 @@ class libHTML
 		}
 		else
 		{
-			$menu .= '<div id="header-welcome">&nbsp;</div>
-				<div id="header-goto">
-					<a href="index.php">'.l_t('Home').'</a>
-					<a href="'.$scriptname.'">'.l_t('Reload current page').'</a>
-				</div>';
+			$menu .= '
+				<div id="header-welcome">&nbsp;</div>
+					<div id="header-goto">
+						<div class="nav-wrap">
+							<div class="nav-tab">
+								<a style="color:white" href="index.php">'.l_t('Home').'</a>
+							</div>
+							<div class="nav-tab">
+							<a style="color:white" href="'.$scriptname.'">'.l_t('Reload current page').'</a>
+							</div>
+						</div>
+					</div>';
 		}
-		$menu .= '</div>
-		</div>
-		<div id="seperator"></div>
-		<div id="seperator-fixed"></div>
-		<!-- Menu end. -->';
+		$menu .= '
+			</div></div>
+			<div id="seperator"></div>
+			<div id="seperator-fixed"></div>
+			<!-- Menu end. -->';
 
 		/* end dropdown menu */
 
