@@ -832,11 +832,15 @@ class libHTML
 						<div id="nav-drop">
 							<a href="usercp.php" title="Change your user specific settings">
 								Site Settings
-							</a>
+							</a>'
+					if( isset(Config::$customForumURL) ) {
+						$menu.='
 							<a href="contrib/phpBB3/ucp.php?i=179" title="Change your forum user settings">
 								Forum Settings
 							</a>
-						</div>
+						</div>'
+					}
+					$menu.='
                 	</div>
                 	<div id="navSubMenu" class = "clickable nav-tab">Help ▼
                         <div id="nav-drop">
@@ -874,10 +878,14 @@ class libHTML
                         <div id="nav-drop">
 							<a href="admincp.php">
 								Admin CP
-							</a>
-							<a href="contrib/phpBB3/mcp.php">
-								Forum CP
-							</a>
+							</a>'
+						if( isset(Config::$customForumURL) ) {
+							$menu.='
+								<a href="contrib/phpBB3/mcp.php">
+									Forum CP
+								</a>'
+						}
+						$menu.='
 							<a href="admincp.php?tab=Multi-accounts">
 								Multi Finder
 							</a>
