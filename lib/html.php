@@ -732,8 +732,7 @@ class libHTML
 						'.(is_object($User)?l_t('Welcome, %s',$User->profile_link(TRUE)).' -
 						<span class="logon">('.
 							($User->type['User'] ?
-							'<a href="contrib/phpBB3/ucp.php?i=pm" class="light">'.l_t('Private Messages').'</a>)
-							(<a href="logon.php?logoff=on" class="light">'.l_t('Log off').'</a>)'.
+							'<a href="logon.php?logoff=on" class="light">'.l_t('Log off').'</a>)'.
 								( defined('AdminUserSwitch') ? ' (<a href="index.php?auid=0" class="light">'.l_t('Switch back').'</a>)' : '' )
 							:'<a href="logon.php" class="light">'.l_t('Log on').'</a>)').
 						'</span>'
@@ -828,18 +827,21 @@ class libHTML
 							</a>
                         </div>
                     </div>
-					<div id="navSubMenu" class="clickable nav-tab">Settings ▼
-						<div id="nav-drop">
+					<div id="navSubMenu" class="clickable nav-tab">Account ▼
+						<div id="nav-drop">';
+						if( isset(Config::$customForumURL) ) {
+							$menu.='
+								<a href="contrib/phpBB3/ucp.php?i=pm" title="Read your messages">
+									Private Messages
+								</a>
+								<a href="contrib/phpBB3/ucp.php?i=179" title="Change your forum user settings">
+									Forum Settings
+								</a>';
+						}
+						$menu.='
 							<a href="usercp.php" title="Change your user specific settings">
 								Site Settings
-							</a>';
-					if( isset(Config::$customForumURL) ) {
-						$menu.='
-							<a href="contrib/phpBB3/ucp.php?i=179" title="Change your forum user settings">
-								Forum Settings
-							</a>';
-					}
-					$menu.='
+							</a>
 						</div>
                 	</div>
                 	<div id="navSubMenu" class = "clickable nav-tab">Help ▼
