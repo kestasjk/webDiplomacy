@@ -204,6 +204,21 @@ class adminActions extends adminActionsForms
 				'name' => 'Excused Missed Turns - Remove',
 				'description' => 'Removes 1 excused missed turn for a specific user in a game. If the user(s) do not have excused turns left nothing will happen.',
 				'params' => array('gameID'=>'Game ID','userID'=>'User ID'),
+			),
+			'addApiKey' => array(
+				'name' => 'API - Add an API key for a user',
+				'description' => 'Associate an API key to a user.',
+				'params' => array('userID'=>'User ID'),
+			),
+			'deleteApiKey' => array(
+				'name' => 'API - Delete all API keys for a user',
+				'description' => 'Remove all API keys assiociated with a user.',
+				'params' => array('userID'=>'User ID'),
+			),
+			'setApiPermission' => array(
+				'name' => 'API - Set API key permission',
+				'description' => 'Set an API permission for a user. (getStateOfAllGames, submitOrdersForUserInCD, listGamesWithPlayersInCD)',
+				'params' => array('userID'=>'User ID', 'permissionName' => 'Permission name', 'permissionValue' => 'Permission value ("Yes" or "No").'),
 			)
 		);
 
@@ -1166,6 +1181,65 @@ class adminActions extends adminActionsForms
 			$DB->sql_put("UPDATE wD_Members SET excusedMissedTurns = excusedMissedTurns - 1 WHERE gameID = ".$gameID." and userID = ".$userIDtoUpdate." and excusedMissedTurns > 0");
 			return l_t("UserID: ".$userIDtoUpdate." has had an excused missed turn removed in this game.");
 		}
+	}
+
+	public function addApiKey($params) {
+		global $DB;
+
+		// Generating API Key
+		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$randomString = '';
+		for ($i = 0; $i < 80; $i++) {
+			$randomString .= $characters[rand(0, strlen($characters) - 1)];
+		}
+
+		$userID = intval($params['userID']);
+		$apiKey = strval($randomString);
+		$row = $DB->sql_hash('SELECT COUNT(userID) AS hasUserID FROM wD_ApiKeys WHERE userID = '.$userID);
+		if ($row['hasUserID'])
+			throw new Exception(l_t('An API key is already associated to user ID '.$userID.'.'));
+		$row = $DB->sql_hash('SELECT COUNT(apiKey) AS hasApiKey FROM wD_ApiKeys WHERE apiKey = '.$userID);
+		if ($row['hasApiKey'])
+			throw new Exception(l_t('This API key is already associated with a user ID.'));
+		$DB->sql_put('INSERT INTO wD_ApiKeys (userID, apiKey) VALUES ('.$userID.', "'.$apiKey.'")');
+		$DB->sql_put("COMMIT");
+		return l_t('API key "'.$randomString.'" successfully added for user ID '.$userID.'.');
+	}
+
+	public function deleteApiKey($params) {
+		global $DB;
+		$userID = intval($params['userID']);
+		$DB->sql_put('DELETE FROM wD_ApiPermissions WHERE userID = '.$userID);
+		$DB->sql_put('DELETE FROM wD_ApiKeys WHERE userID = '.$userID);
+		$DB->sql_put("COMMIT");
+		return l_t('API key(s) removed for user ID '.$userID.'.');
+	}
+
+	public function setApiPermission($params) {
+		global $DB;
+		$userID = intval($params['userID']);
+		$permissionName = strval($params['permissionName']);
+		$permissionValue = strval($params['permissionValue']);
+		$currentPermissions = array(
+			'getStateOfAllGames',
+			'submitOrdersForUserInCD',
+			'listGamesWithPlayersInCD',
+		);
+		if (!in_array($permissionName, $currentPermissions))
+			throw new Exception('Unknown permission "'.$permissionName.'". Should be one of: ['.implode(', ', $currentPermissions).'].');
+		if (!in_array($permissionValue, array('Yes', 'No')))
+			throw new Exception('Invalid permission value "'.$permissionValue.'". Should be either "Yes" or "No".');
+		$row = $DB->sql_hash('SELECT COUNT(userID) AS hasUserID FROM wD_ApiKeys WHERE userID = '.$userID);
+		if (!$row['hasUserID'])
+			throw new Exception(l_t('No API key for user '.$userID.'. You should create an API key for this user before setting permissions for him.'));
+		$row = $DB->sql_hash('SELECT COUNT(userID) AS hasPermissionsEntry FROM wD_ApiPermissions WHERE userID = '.$userID);
+		if ($row['hasPermissionsEntry']) {
+			$DB->sql_put("UPDATE wD_ApiPermissions SET $permissionName = '$permissionValue' WHERE userID = $userID;");
+		} else {
+			$DB->sql_put("INSERT INTO wD_ApiPermissions (userID, $permissionName) VALUES ($userID, '$permissionValue');");
+		};
+		$DB->sql_put("COMMIT");
+		return l_t('Permissions successfully set.');
 	}
 
 	public function recalculateUserRR(array $params)
