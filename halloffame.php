@@ -35,6 +35,10 @@ print '<p align="center"><img src="'.l_s('images/points/stack.png').'" alt=" " t
 
 print '<p></p>';
 
+print '<button class="SearchCollapsible">All Time</button>';
+
+print'<div class="advancedSearchContent">';
+
 if ( $User->type['User'] && $User->points > 100 )
 {
 	list($position) = $DB->sql_row("SELECT COUNT(id)+1 FROM wD_Users WHERE points > ".$User->points);
@@ -58,14 +62,14 @@ $showMe = 1;
 while ( list($id, $username, $points) = $DB->tabl_row($crashed) )
 {
 
-	print ' <tr class="hof"> 
+	print ' <tr class="hof">
 			<td class="hof"> '.number_format($points).' '.libHTML::points().' - #'.$i.' </td>';
 	if ($User->username == $username)
-	{		
+	{
 		print '<td class="hof"><a href="profile.php?userID='.$id.'" style="color:red;">'.$username.'</a></td> ';
 		$showMe = 0;
 	}
-	else 
+	else
 	{
 		print '<td class="hof"><a href="profile.php?userID='.$id.'">'.$username.'</a></td> ';
 	}
@@ -75,7 +79,7 @@ while ( list($id, $username, $points) = $DB->tabl_row($crashed) )
 
 if ( $User->type['User'] && $User->points > 100 and $showMe == 1 )
 {
-	print ' <tr class="hof"> 
+	print ' <tr class="hof">
 			<td class="hof">...</td>
 			<td class="hof">...</td>
 			</tr>';
@@ -88,6 +92,63 @@ if ( $User->type['User'] && $User->points > 100 and $showMe == 1 )
 print '</table>';
 
 print '</div>';
-libHTML::footer();
+print '</br></br>';
 
+print '<button class="SearchCollapsible">Active</button>';
+
+print'<div class="advancedSearchContent"></br>';
+
+print'Showing the top 100 users who have been active in the last 6 months. </br></br>';
+
+$i=1;
+
+$sixMonths = time() - 15552000;
+$crashed = $DB->sql_tabl("SELECT id, username, points FROM wD_Users where timeLastSessionEnded > ".$sixMonths." order BY points DESC LIMIT 100 ");
+
+print "<TABLE class='hof'>";
+print "<tr>";
+print '<th class= "hof">Points/Rank</th>';
+print '<th class= "hof">User</th>';
+print "</tr>";
+
+$showMe = 1;
+while ( list($id, $username, $points) = $DB->tabl_row($crashed) )
+{
+
+	print ' <tr class="hof">
+			<td class="hof"> '.number_format($points).' '.libHTML::points().' - #'.$i.' </td>';
+	if ($User->username == $username)
+	{
+		print '<td class="hof"><a href="profile.php?userID='.$id.'" style="color:red;">'.$username.'</a></td> ';
+		$showMe = 0;
+	}
+	else
+	{
+		print '<td class="hof"><a href="profile.php?userID='.$id.'">'.$username.'</a></td> ';
+	}
+	print'	</tr>';
+	$i++;
+}
+
+print '</table>';
+print '</div>';
+print '</div>';
+?>
+
+<script>
+var coll = document.getElementsByClassName("SearchCollapsible");
+var searchCounter;
+
+for (searchCounter = 0; searchCounter < coll.length; searchCounter++) {
+  coll[searchCounter].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+		if (content.style.display === "block") { content.style.display = "none"; }
+		else { content.style.display = "block"; }
+  });
+}
+</script>
+
+<?php
+libHTML::footer();
 ?>
