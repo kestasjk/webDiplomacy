@@ -420,7 +420,7 @@ a.light {
 	flex-wrap: wrap;
 	overflow: hidden;
 	border-radius: 7px;
-	background-color: #777;
+	background-color: #0e8805;
 	width: auto;
 }
 
@@ -456,10 +456,11 @@ a.light {
 }
 
 .nav-tab a:hover, #navSubMenu:hover {
-	background-color: rgba(255, 255, 255, 0.75);
+	background-color: rgba(255, 255, 255, 0.8);
 	border-radius: 15px 0 15px 0;
-	color: #009902 !important;
+	color: rgb(0, 83, 115) !important;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-decoration: none;
 }
 
 .nav-tabActive {
@@ -483,8 +484,9 @@ a.light {
 	margin-top: 25px;
 	width: auto;
 	z-index: 999;
-	background-color: #555;
+	background-color: #0e8805;
 	border-radius: 7px;
+	border: 1px solid black;
 }
 
 #nav-drop {
