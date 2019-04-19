@@ -4,6 +4,7 @@
     <a href="#Site Rules">Site Rules</a>
       - <a href="#Forum Rules">Forum Rules</a>
       - <a href="#ModPolicies">Moderator Policies</a>
+      - <a href="#SchoolGroups">Teacher/Student Guidelines</a>
    </p>
 
    <!-- Site Rules -->
@@ -107,7 +108,7 @@
    <div name="Harassment" class = "rules_title">2. No abusive, bigoted, or degrading content</div>
    <div class = "rules_content">
       <p>
-         Creating threads or posting replies that target a member, group of members, or group of people is prohibited. While some discussions on our forum can become heated, attacking another member is not permitted on the forum. Players who post a reply in a discussion attacking another player may be warned and/or silenced depending on the severity of the offence. Consistently harassing another player or going out of one’s way to attack another player, instead of contributing to discussion, may also classify as grounds for a silence or further action depending on the surrounding circumstances. 
+         Creating threads or posting replies that target a member, group of members, or group of people is prohibited. While some discussions on our forum can become heated, attacking another member is not permitted on the forum. Players who post a reply in a discussion attacking another player may be warned and/or silenced depending on the severity of the offense. Consistently harassing another player or going out of one’s way to attack another player, instead of contributing to discussion, may also classify as grounds for a silence or further action depending on the surrounding circumstances. 
          <br></br>
          Likewise, bigotry toward another member or a group of people is not permitted. Our site hosts players from around the world and is intended to be a welcoming and open place for all. Sexism, racism, homophobia, and other forms of bigotry both hamper discussion and also threaten our reputation; as a result, they carry only negative consequences for our site. We will take a zero tolerance approach to any examples of such behaviour. 
       </p>
@@ -177,29 +178,6 @@
    </div>
    <!-- End Forum Rules -->
 
-   <a name="Forum Moderation"></a>
-   <h3 class = "rules"> Forum Moderation:</h3>
-   <div class = "rules_content_show">
-      <p>
-         While the moderators always exercise appropriate discretion and discuss various options with one another prior to acting, there are sometimes no other options than to take immediate action on the forum. The moderators retain the right to issue varying penalties including shorter or longer silences based on the severity of the offence. 
-         <br></br>
-         Upon a first offence, a user will either receive an official warning OR a 48 hour silence. Subsequent offences may result in further and lengthier silences. Constant or more severe rule infractions could result in harsher penalties at the discretion of the site moderators and the site owners. The moderators will record each action taken on the forum with an email to the offending user’s registered email. As usual, any moderator action taken against you can be appealed by emailing <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">
-         <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a> and the results of that appeal are final. 
-      </p>
-      <a name="Silences"></a>
-      <h4> Silences</h4>
-      <ul>
-         <li>Silences can apply to a user or a thread.</li>
-         <li>The details can be viewed on the forum page, when the "New thread" button is pressed.</li>
-         <li>Thread silences last indefinitely, but user silences expire after a brief cool-off period.</li>
-         <li>Silenced threads / users can still be viewed, however no more messages may be posted.</li>
-         <li>Silenced users can still play in games; a silence only affects the forum and pm's.</li>
-      </ul>
-      <p>
-         When in doubt about whether posting something is allowed, remember your first responsibility is to use common sense and respect other players.
-      </p>
-   </div>
-
    <a name="ModPolicies"></a>
    <h3 class = "rules"> Moderator Policies (Click a policy to expand)</h3>
    <div class = "rules_title">Cancelling games</div>
@@ -220,6 +198,27 @@
    <div class = "rules_content">
       <p>
          We do not draw any games due to cheating. We will only force games to draw if they have been at a stalemate for at least two years with no SC's changing hands and no possible sign of a breakthrough. If alerted to such a scenario; we will email the player(s) holding the game up and ask them how they plan to break through. If we deem their plan to be unrealistic, or it includes hoping for misorders or for players to miss phases, then we may force a game to draw.
+      </p>
+   </div>
+   <div class = "rules_title">Forum Moderation</div>
+   <div class = "rules_content">
+      <p>
+         While the moderators always exercise appropriate discretion and discuss various options with one another prior to acting, there are sometimes no other options than to take immediate action on the forum. The moderators retain the right to issue varying penalties including shorter or longer silences based on the severity of the offense. The moderators also retain the right to lock forum threads, remove forum posts, or remove enter forum threads with or without penalty to offending users.
+         <br></br>
+         Upon a first offense, a user will either receive an official warning OR a 48 hour forum ban. Subsequent offenses may result in further and lengthier forum bans. Constant or more severe rule infractions could result in harsher penalties at the discretion of the site moderators and the site owners. The moderators will record each action taken on the forum with an email to the offending user’s registered email. You are always welcome to appeal any moderator decision by emailing <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">
+         <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a>, which will prompt a different moderator or administrator to handle your case. The results of that appeal are final.
+         <br><br>
+         Some details regarding forum bans can be found below:
+      </p>
+      <ul>
+         <li>A forum ban prohibits a user from posting on the forum or sending private messages as well as viewing the forum while logged in.</li>
+         <li>The details of a forum ban, including the reason and length, are always sent to your registered email.</li>
+         <li>Locked threads or deleted posts are indefinite. Most forum bans expire. Only the most severe are indefinite.</li>
+         <li>Locked threads can still be viewed. Removed threads cannot be viewed.</li>
+         <li>Forum bans do not prevent a user from playing in games.</li>
+      </ul>
+      <p>
+         When in doubt about whether posting something is allowed, remember your first responsibility is to use common sense and respect other players. Please <a href='contactUs.php' class='light'>contact us</a> with questions if you have any. 
       </p>
    </div>
    <div class = "rules_title">Appealing decisions</div>
