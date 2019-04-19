@@ -99,11 +99,13 @@ print '<button class="SearchCollapsible">Active (Last 6 Months)</button>';
 print'<div class="advancedSearchContent"></br>';
 $sixMonths = time() - 15552000;
 
-if ( $User->type['User'] && $User->points > 100 )
+if ( $User->type['User'] && $User->points > 100 && $User->timeLastSessionEnded > $sixMonths)
 {
-	list($position) = $DB->sql_row("SELECT COUNT(id)+1 FROM wD_Users WHERE points > ".$User->points." AND timeLastSessionEnded >".$sixMonths);
+	list($position) = $DB->sql_row("SELECT COUNT(id)+1 FROM wD_Users WHERE points > ".$User->points." AND timeLastSessionEnded > ".$sixMonths);
 
-	print '<p class = "hof">'.l_t('You are ranked %s out of all players with over 100%s who have been active in the last six months.','<a href="#me" class="light">#'.$position.'</a>',libHTML::points()).
+	list($playersSixMonths) = $DB->sql_row("SELECT COUNT(1) FROM wD_Users WHERE points > 100  AND timeLastSessionEnded > ".$sixMonths);
+
+	print '<p class = "hof">'.l_t('You are ranked %s out of %s players with over 100%s who have been active in the last six months','<a href="#me" class="light">#'.$position.'</a>',$playersSixMonths,libHTML::points()).
 		l_t('. For more stats on your ranking visit <a class="light" href="profile.php?userID='.$User->id.'">your profile</a>.').'</p>';
 }
 
@@ -134,6 +136,17 @@ while ( list($id, $username, $points) = $DB->tabl_row($crashed) )
 	}
 	print'	</tr>';
 	$i++;
+}
+if ( $User->type['User'] && $User->points > 100 &&  $User->timeLastSessionEnded > $sixMonths and $showMe == 1 )
+{
+	print ' <tr class="hof">
+			<td class="hof">...</td>
+			<td class="hof">...</td>
+			</tr>';
+	print ' <tr class="hof">
+			<td class="hof"> '.number_format($User->points).' '.libHTML::points().' - <a name="me"></a>#'.$position.' </td>
+			<td class="hof" style="color:red;"><strong><em>'.$User->username.'</em></strong></td>
+			</tr>';
 }
 
 print '</table>';
