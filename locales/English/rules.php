@@ -243,6 +243,55 @@
       </p>
    </div>
 
+   <a name="SchoolGroups"></a>
+   <h3 class = "rules">Guidelines for Teachers/School Groups (Click a guideline to expand)</h3>
+   <div class = "rules_title">For Teachers</div>
+   <div class = "rules_content">
+      <p>
+         webDiplomacy is more than happy to host school groups to play games as part of the regular curriculum, a club, or just for fun. Many of our most frequent users, including some of the site moderator team, got their start on webDiplomacy as students. Diplomacy is a wonderful tool for learning history, geography, logic, philosophy, rhetoric, strategy, and many other skills that are often hard to come by. As teachers, you are doing your students a wonderful favor by showing them Diplomacy, and we are more than happy to accomodate you and your students. 
+         <br><br>
+         Using webDiplomacy in a classroom setting, however, comes with some stipulations that teachers should be aware of when using our site: 
+      </p>
+      <ul>
+         <li>
+            <strong>Please let us know when you sign up.</strong>
+            <br>
+            <p>
+               We are happy to host you and want to know when you arrive. Send us a quick email at <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light"><?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a> so that we can make sure you are properly set up. 
+            </p>
+         </li>
+         <li>
+            <strong>Students should only play private, password-protected games with classmates.</strong>
+            <br>
+            <p>
+               webDiplomacy prohibits our players from playing in public games with people they know outside of our site, including students. While not everyone cheats or leverages outside relationships to their advantage, students are very susceptible to this when playing with classmates. When creating a new game, it is very easy to add an invite code, which prevents other players on our site from unknowingly joining your school game and allows your students to play freely among each other without concerning themselves about crossing that line. When they are not playing with their classmates, students are free to play any games.
+            </p>
+         </li>
+         <li>
+            <strong>Students only need one account.</strong>
+            <br>
+            <p>
+               There is never a scenario where anyone needs more than one account to enjoy webDiplomacy. All new accounts are given 100 points, which is enough to enter up to 20 games if the bets are low. If a player loses a game and falls under 100 points, our site automatically tops off their points when the game is concluded, so our players never fall beneath 100 points. Likewise, we have multiple map options, or variants, so that games can start with as few as 2 players and as many as 17. If a student ever needs help recovering their account, they should <a href='contactUs.php' class='light'>contact us</a>.
+            </p>
+         </li>
+         <li>
+            <strong>Students need to register with an email they actually check regularly.</strong>
+            <br>
+            <p>
+               webDiplomacy moderators are very active to ensure that our site remains free of cheating and fun for everyone. That means that we take on a lot of work and expect prompt replies when we contact players. If we need to reach out to a player, we will do so via their registered email. We require prompt replies to our communications within 72 hours. Failing to do so will result in a ban.
+            </p>
+         </li>
+         <li>
+            <strong>Monitor your students' gameplay and habits on webDiplomacy.</strong>
+            <br>
+            <p>
+               We understand that students, especially teenagers, are often not at the peak level of maturity. On the internet, where the things they say are anonymous, students may say or do things that are not becoming of them. Keeping an eye on your students' games, messages with one another, and posts on our forum will help ensure that they are respectful and not acting in ways that you would not expect or welcome in your classroom.
+            </p>
+         </li>
+      </ul>
+   </div>
+   
+
    <p class = "rules">Thanks for reading,<br />
       - The Mod/Admin Team
    </p>
