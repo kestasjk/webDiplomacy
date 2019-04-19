@@ -256,41 +256,89 @@
          <li>
             <strong>Please let us know when you sign up.</strong>
             <br>
-            <p>
+            <p style="padding-right: 30px">
                We are happy to host you and want to know when you arrive. Send us a quick email at <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light"><?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a> so that we can make sure you are properly set up. 
             </p>
          </li>
          <li>
             <strong>Students should only play private, password-protected games with classmates.</strong>
             <br>
-            <p>
+            <p style="padding-right: 30px">
                webDiplomacy prohibits our players from playing in public games with people they know outside of our site, including students. While not everyone cheats or leverages outside relationships to their advantage, students are very susceptible to this when playing with classmates. When creating a new game, it is very easy to add an invite code, which prevents other players on our site from unknowingly joining your school game and allows your students to play freely among each other without concerning themselves about crossing that line. When they are not playing with their classmates, students are free to play any games.
             </p>
          </li>
          <li>
             <strong>Students only need one account.</strong>
             <br>
-            <p>
+            <p style="padding-right: 30px">
                There is never a scenario where anyone needs more than one account to enjoy webDiplomacy. All new accounts are given 100 points, which is enough to enter up to 20 games if the bets are low. If a player loses a game and falls under 100 points, our site automatically tops off their points when the game is concluded, so our players never fall beneath 100 points. Likewise, we have multiple map options, or variants, so that games can start with as few as 2 players and as many as 17. If a student ever needs help recovering their account, they should <a href='contactUs.php' class='light'>contact us</a>.
             </p>
          </li>
          <li>
             <strong>Students need to register with an email they actually check regularly.</strong>
             <br>
-            <p>
+            <p style="padding-right: 30px">
                webDiplomacy moderators are very active to ensure that our site remains free of cheating and fun for everyone. That means that we take on a lot of work and expect prompt replies when we contact players. If we need to reach out to a player, we will do so via their registered email. We require prompt replies to our communications within 72 hours. Failing to do so will result in a ban.
             </p>
          </li>
          <li>
             <strong>Monitor your students' gameplay and habits on webDiplomacy.</strong>
             <br>
-            <p>
+            <p style="padding-right: 30px">
                We understand that students, especially teenagers, are often not at the peak level of maturity. On the internet, where the things they say are anonymous, students may say or do things that are not becoming of them. Keeping an eye on your students' games, messages with one another, and posts on our forum will help ensure that they are respectful and not acting in ways that you would not expect or welcome in your classroom.
             </p>
          </li>
       </ul>
+      <p>
+         Keeping these guidelines in mind is critical in order to ensure that playing Diplomacy online is a good experience for you and your students. If you have any questions or concerns, feel free to <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">send us an email any time</a>.
+      </p>
    </div>
-   
+   <div class = "rules_title">For Students</div>
+   <div class = "rules_content">
+      <p>
+         Diplomacy is a fun game that both students and teachers love. Whether you are playing for class, in a club or extracurricular, or just with your friends, webDiplomacy is the best place for students to play Diplomacy online. There are, however, some things that students need to know and be aware of pertaining to the <a href="#Site Rules">site rules</a>:
+      </p>
+      <ul>
+         <li>
+            <strong>Your games with friends and classmates should be password protected.</strong>
+            <br>
+            <p style="padding-right: 30px">
+               Our rules prohibit our players from playing with people they know outside of our site in games that are not password protected in order to prevent cheating. We don't think that you will cheat, but in order to make sure that the site is fun for everyone and games are not tainted by cheating and poor sportsmanship, only create games to play with your classmates with an invite code. This way, you can simply share the code with one another and ensure that you can play without concern. Likewise, if you are invited to a game by one of your classmates that doesn't have an invite code, simply tell them that they need one in order to play within the rules.
+            </p>
+         </li>
+         <li>
+            <strong>You will never need more than one account.</strong>
+            <br>
+            <p style="padding-right: 30px">
+               webDiplomacy has games you can play with as few as 2 players and as many as 34. You can always find a way to play on our site regardless of how many of your classmates or friends can play. Likewise, you're given 100 points when you register your account, and you will never fall below 100 points. That is enough for 20 games playing with the minimum 5 point bet. If you bet more, you may win more, and as long as you have enough points to enter a game, you can play as many as you want. As such, there is no reason for you to ever create more than one account. Doing so will result in a permanent ban from webDiplomacy. If you ever forget your password and need help recovering your account, you should <a href='contactUs.php' class='light'>contact us</a> and we will help you.
+            </p>
+         </li>
+         <li>
+            <strong>Please register with an email you actually use!</strong>
+            <br>
+            <p style="padding-right: 30px">
+               If the moderators ever need to contact you, we will do so by emailing your registered email address. This should not be a throwaway or spam email because if we email you and do not hear back within 72 hours, your account will be banned. Having registered an email that you actually check every few days at a minimum will help you in the event that we need to contact you. You will never receive spam emails from us, nor will your email address ever be sold or added to any list anywhere. 
+            </p>
+         </li>
+         <li>
+            <strong>If the moderators email you and ask questions, tell the truth.</strong>
+            <br>
+            <p style="padding-right: 30px">
+               In the event of an investigation, the moderators will email you. The webDiplomacy moderators are very good at spotting instances of cheating and our members are very diligent in reporting anything they find suspicious to us. If you or your friends are breaking rules, we already know by the time we've emailed you. Telling the truth and being calm with us makes things go much more smoothly and may allow us to find a resolution without banning your account.
+            </p>
+         </li>
+         <li>
+            <strong>Please be respectful of our community.</strong>
+            <br>
+            <p style="padding-right: 30px">
+               webDiplomacy is big with well over 100,000 registered players, but we are also a tight-knit community. If you are respectful of the community, you are more than welcome to join it and stay in it. Many of our most esteemed members and even some of the moderator team got their start on webDiplomacy as students, but the common denominator between all of us is that we all respect each other and expect the same in return. Follow our rules, be kind, and enjoy our site. 
+            </p>
+         </li>
+      </ul>
+       <p>
+         Keeping these guidelines in mind is critical in order to ensure that playing Diplomacy online is a good experience for you, your friends, and your classmates. If you have any questions or concerns, feel free to <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">send us an email any time</a>.
+      </p>
+   </div>
 
    <p class = "rules">Thanks for reading,<br />
       - The Mod/Admin Team
