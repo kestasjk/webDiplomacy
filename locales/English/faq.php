@@ -27,15 +27,6 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 $faq = array();
 
-if( isset(Config::$faq) && is_array(Config::$faq) && count(Config::$faq) )
-{
-	$faq["Server-specific"]="Sub-section";
-	foreach(Config::$faq as $Q=>$A)
-	{
-		$faq[$Q]=$A;
-	}
-}
-
 $globalFaq = array(
 "I'm new here" => "Sub-section",
 "What is this site about?" => "The easiest way to understand is to look at
@@ -44,6 +35,7 @@ $globalFaq = array(
 "How do I play?" => "The gameplay is quite self explanatory, but if you're unsure about something read
 	<a href='intro.php' class='light'>the intro to webDiplomacy</a>, and feel free
 	to ask for help or clarification in <a href='/contrib/phpBB3/viewforum.php?f=6' class='light'>the public forum</a>.",
+"How do I donate?" => "Check out our <a href='donations.php'>Donations page</a> which explains why we need donations and how to contribute!",
 "What's the software license?" => "The <a href='AGPL.txt' class='light'>GNU Affero General License</a>
 	(<a href='http://www.opensource.org/licenses/agpl-v3.html' class='light'>Open Source Initiative</a> approved),
 	which basically says you can download and change the code as you like, and put it up on your
@@ -147,9 +139,6 @@ Read <a href='points.php' class='light'>the scoring system and points guide</a> 
 "Can I help develop the software?" => "You sure can: if you're an HTML/CSS/JavaScript/PHP 5/MySQL/SVG/Canvas developer,
 	graphics/icon artist, or want to learn, check out the <a class='light' href='/developers.php'>dev info</a>,
 	and if you get lost you can get help/discuss ideas in the <a class='light' href='/contrib/phpBB3/viewforum.php?f=16'>developer forums</a>.",
-"Do I get anything for being a donator?" => "Markers are given for donators based on total donated to date; this lets everyone
-see who is helping keep the site online and who has put value in their webDiplomacy account, but no extra functionality is available to donators.",
-
 "How else can I help?" => "Tell your friends about webDiplomacy, put links on your website, help new players out in the forums,
 	and give helpful feedback to developers. If you enjoy the game please consider buying a physical version of the board game. Thanks!",
 
