@@ -71,7 +71,7 @@ print "
     </div>
 
     <div class = 'donations_title'>How do I donate?</div>
-    <div class = 'donations_content_show'>
+    <div class = 'donations_content_show' style='display:block'>
         <p>
             If you would like to support the site, click the button below. After submitting a donation, please send an email to a Co-owner at <a href='mailto:".Config::$adminEMail."' class='light'>".Config::$adminEMail."</a> with your username to receive a donator marker. </br>
             <form action='https://www.paypal.com/cgi-bin/webscr' method='post'>
