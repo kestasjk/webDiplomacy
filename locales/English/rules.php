@@ -281,6 +281,13 @@
             </p>
          </li>
          <li>
+            <strong>Ask the moderators to be made a game director for your class games.</strong>
+            <br>
+            <p style="padding-right: 30px">
+               webDiplomacy has a feature that allows a teacher to be set as the game director over all of the games your class or club is playing. As a game director, you can pause the game, replace players that have given up or are not submitting orders, and keep the game on track. Simply email <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light"><?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a> with your username and the full URL to each of your class games to be set as the game director, and if you need any help as a game director, we will always be there to assist.
+            </p>
+         </li>
+         <li>
             <strong>Monitor your students' gameplay and habits on webDiplomacy.</strong>
             <br>
             <p style="padding-right: 30px">
