@@ -46,7 +46,7 @@ print "
         </p>
     </div>
 
-    <div class = 'donations_title'>What do get for donating?</div>
+    <div class = 'donations_title'>What do you get for donating?</div>
     <div class = 'donations_content'>
         <p>
            We will give you a marker on your profile and on the forum to signifiy your support for the site. 
