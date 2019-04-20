@@ -21,7 +21,7 @@
       <p>
          You cannot play a public game with players that you know outside of the site. In doing so, you create an unfair environment for other players by giving yourself the opportunity to form alliances for reasons outside the game. This includes playing public games with family, friends, relatives, coworkers, or even joining a game with any player of a previous game with a predetermined intent to ally with or attack certain players. Additionally, you cannot make deals based on any factors outside of the game.
          <br /><br />
-         Because Diplomacy is a social game, we always encourage playing with friends. However, you should always do so in a private, password-protected game and make sure that every player knows about any real life connections before the game begins.
+         Because Diplomacy is a social game, we always encourage playing with friends. However, you should always do so in a private game with an invite code and make sure that every player knows about any real life connections before the game begins.
       </p>
    </div>
    <div name="Press" class = "rules_title">3. Don't break game messaging/press rules.</div>
@@ -260,7 +260,7 @@
             </p>
          </li>
          <li>
-            <strong>Students should only play private, password-protected games with classmates.</strong>
+            <strong>Students should only play private games with invite codes with classmates.</strong>
             <br>
             <p style="padding-right: 30px">
                webDiplomacy prohibits our players from playing in public games with people they know outside of our site, including students. While not everyone cheats or leverages outside relationships to their advantage, students are very susceptible to this when playing with classmates. When creating a new game, it is very easy to add an invite code, which prevents other players on our site from unknowingly joining your school game and allows your students to play freely among each other without concerning themselves about crossing that line. When they are not playing with their classmates, students are free to play any games.
@@ -299,10 +299,10 @@
       </p>
       <ul>
          <li>
-            <strong>Your games with friends and classmates should be password protected.</strong>
+            <strong>Your games with friends and classmates should have an invite code.</strong>
             <br>
             <p style="padding-right: 30px">
-               Our rules prohibit our players from playing with people they know outside of our site in games that are not password protected in order to prevent cheating. We don't think that you will cheat, but in order to make sure that the site is fun for everyone and games are not tainted by cheating and poor sportsmanship, only create games to play with your classmates with an invite code. This way, you can simply share the code with one another and ensure that you can play without concern. Likewise, if you are invited to a game by one of your classmates that doesn't have an invite code, simply tell them that they need one in order to play within the rules.
+               Our rules prohibit our players from playing with people they know outside of our site in games that do not have an invite code in order to prevent cheating. We don't think that you will cheat, but in order to make sure that the site is fun for everyone and games are not tainted by cheating and poor sportsmanship, only create games to play with your classmates with an invite code. This way, you can simply share the code with one another and ensure that you can play without concern. Likewise, if you are invited to a game by one of your classmates that doesn't have an invite code, simply tell them that they need one in order to play within the rules.
             </p>
          </li>
          <li>
