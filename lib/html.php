@@ -665,6 +665,7 @@ class libHTML
 		$links['faq.php']=array('name'=>'FAQ', 'inmenu'=>FALSE);
 		$links['contactUs.php']=array('name'=>'Contact Info', 'inmenu'=>FALSE);
 		$links['contactUsDirect.php']=array('name'=>'Contact Us', 'inmenu'=>FALSE);
+		$links['donations.php']=array('name'=>'Donations', 'inmenu'=>FALSE);
 		$links['tournaments.php']=array('name'=>'Tournaments', 'inmenu'=>FALSE);
 		$links['rules.php']=array('name'=>'Rules', 'inmenu'=>FALSE);
 		$links['recentchanges.php']=array('name'=>'Recent changes', 'inmenu'=>FALSE);
@@ -744,8 +745,7 @@ class libHTML
 			$menu .= '
 			<div id="header-goto">
             <div class="nav-wrap">
-
-				<div class = "nav-tab"> <a href="index.php?" title="See what\'s happening">Home</a> </div>';
+			<div class = "nav-tab"> <a href="index.php?" title="See what\'s happening">Home</a> </div>';
 			if( isset(Config::$customForumURL) )
 			{
 				$menu.='<div class = "nav-tab"> <a href="'.Config::$customForumURL.'" title="The forum; chat, get help, help others, arrange games, discuss strategies">Forum</a> </div>';
@@ -761,37 +761,22 @@ class libHTML
 				{
 					$menu.='
 					<div class="nav-tab">
-						<a href="logon.php" title="Log onto webDiplomacy using an existing user account">
-							Log on
-						</a>
+						<a href="logon.php" title="Log onto webDiplomacy using an existing user account">Log on</a>
 					</div>';
 					$menu.='
 					<div class="nav-tab">
-						<a href="register.php" title="Make a new user account">
-							Register
-						</a>
+						<a href="register.php" title="Make a new user account">Register</a>
 					</div>';
 					$menu.='
 					<div id="navSubMenu" class = "clickable nav-tab">Help ▼
                         <div id="nav-drop">
-                        	<a href="rules.php">
-								Site Rules
-							</a>
-							<a href="faq.php" title="Frequently Asked Questions">
-								FAQ
-							</a>
-							<a href="intro.php" title="Intro to Diplomacy">
-								Intro to Diplomacy
-							</a>
-							<a href="points.php" title="Points and Scoring Systems">
-								Points/Scoring
-							</a>
-							<a href="variants.php" title="Active webDiplomacy variants">
-								Variants
-							</a>
-							<a href="help.php" title="Get help and information; guides, intros, FAQs, stats, links">
-								Help/Donate
-							</a>
+                        	<a href="rules.php">Site Rules</a>
+							<a href="faq.php" title="Frequently Asked Questions">FAQ</a>
+							<a href="intro.php" title="Intro to Diplomacy">Diplomacy Intro</a>
+							<a href="points.php" title="Points and Scoring Systems">Points/Scoring</a>
+							<a href="variants.php" title="Active webDiplomacy variants">Variants</a>
+							<a href="help.php" title="Site information, guides, stats, links">More Info</a>
+							<a href="donations.php">Donate</a>
                         </div>
                     </div>';
 				}
@@ -800,73 +785,40 @@ class libHTML
 					$menu.='
 					<div id="navSubMenu" class="clickable nav-tab">Search ▼
                         <div id="nav-drop">
-                       		<a href="profile.php">
-								Find User
-							</a>
-							<a href="detailedSearch.php" title="advanced search of users and games">
-								Search Games
-							</a> 
+                       		<a href="profile.php">Find User</a>
+							<a href="detailedSearch.php" title="advanced search of users and games">Search Games</a> 
 						</div>
 					</div>
 					<div id="navSubMenu" class="clickable nav-tab">Games ▼
                         <div id="nav-drop">
-							<a href="gamelistings.php?page-games=1&gamelistType=New" title="Game listings; a searchable list of the games on this server">
-								Game Listings
-							</a>
-							<a href="gamelistings.php?page-games=1&gamelistType=Joinable" title="Open positions dropped by other players, free to claim">
-								Open Positions
-							</a>
-							<a href="gamecreate.php" title="Start up a new game">
-								Create a New Game
-							</a>
-							<a href="https://sites.google.com/view/webdipinfo/ghost-ratings" target=_blank title="Ghost Ratings (external site)">
-								Ghost Ratings
-							</a>
-							<a href="tournaments.php" title="Information about tournaments on webDiplomacy">
-								Tournaments
-							</a>
+							<a href="gamelistings.php?page-games=1&gamelistType=New" title="Game listings; a searchable list of the games on this server">Game Listings</a>
+							<a href="gamelistings.php?page-games=1&gamelistType=Joinable" title="Open positions dropped by other players, free to claim">Open Positions</a>
+							<a href="gamecreate.php" title="Start up a new game">Create a New Game</a>
+							<a href="https://sites.google.com/view/webdipinfo/ghost-ratings" target=_blank title="Ghost Ratings (external site)">Ghost Ratings</a>
+							<a href="tournaments.php" title="Information about tournaments on webDiplomacy">Tournaments</a>
                         </div>
                     </div>
 					<div id="navSubMenu" class="clickable nav-tab">Account ▼
 						<div id="nav-drop">';
 						if( isset(Config::$customForumURL) ) {
 							$menu.='
-								<a href="contrib/phpBB3/ucp.php?i=pm" title="Read your messages">
-									Private Messages
-								</a>
-								<a href="contrib/phpBB3/ucp.php?i=179" title="Change your forum user settings">
-									Forum Settings
-								</a>';
+								<a href="contrib/phpBB3/ucp.php?i=pm" title="Read your messages">Private Messages</a>
+								<a href="contrib/phpBB3/ucp.php?i=179" title="Change your forum user settings">Forum Settings</a>';
 						}
 						$menu.='
-							<a href="usercp.php" title="Change your user specific settings">
-								Site Settings
-							</a>
+							<a href="usercp.php" title="Change your user specific settings">Site Settings</a>
 						</div>
                 	</div>
                 	<div id="navSubMenu" class = "clickable nav-tab">Help ▼
                         <div id="nav-drop">
-                        	<a href="rules.php">
-								Site Rules
-							</a>
-							<a href="faq.php" title="Frequently Asked Questions">
-								FAQ
-							</a>
-							<a href="intro.php" title="Intro to Diplomacy">
-								Intro to Diplomacy
-							</a>
-							<a href="points.php" title="Points and Scoring Systems">
-								Points/Scoring
-							</a>
-							<a href="variants.php" title="Active webDiplomacy variants">
-								Variants
-							</a>
-							<a href="help.php" title="Get help and information; guides, intros, FAQs, stats, links">
-								Help/Donate
-							</a>
-							<a href="contactUsDirect.php">
-								Contact Us
-							</a>
+                        	<a href="rules.php">Site Rules</a>
+							<a href="faq.php" title="Frequently Asked Questions">FAQ</a>
+							<a href="intro.php" title="Intro to Diplomacy">Diplomacy Intro</a>
+							<a href="points.php" title="Points and Scoring Systems">Points/Scoring</a>
+							<a href="variants.php" title="Active webDiplomacy variants">Variants</a>
+							<a href="help.php" title="Site information; guides, stats, links">More Info</a>
+							<a href="contactUsDirect.php">Contact Us</a>
+							<a href="donations.php">Donate</a>
                         </div>
                     </div>';
 				}
@@ -878,28 +830,14 @@ class libHTML
 				{
 					$menu.=' <div id="navSubMenu" class = "clickable nav-tab">Mods ▼
                         <div id="nav-drop">
-							<a href="admincp.php">
-								Admin CP
-							</a>';
-						if( isset(Config::$customForumURL) ) {
-							$menu.='
-								<a href="contrib/phpBB3/mcp.php">
-									Forum CP
-								</a>';
-						}
+							<a href="admincp.php">Admin CP</a>';
+						
+					if( isset(Config::$customForumURL) ) { $menu.='<a href="contrib/phpBB3/mcp.php">Forum CP</a>'; }
 						$menu.='
-							<a href="admincp.php?tab=Multi-accounts">
-								Multi Finder
-							</a>
-							<a href="admincp.php?tab=Chatlogs">
-								Pull Press
-							</a>
-							<a href="admincp.php?tab=AccessLog">
-								Access Log
-							</a>
-							<a href="profile.php">
-								Find User
-							</a>
+							<a href="admincp.php?tab=Multi-accounts">Multi Finder</a>
+							<a href="admincp.php?tab=Chatlogs">Pull Press</a>
+							<a href="admincp.php?tab=AccessLog">Access Log</a>
+							<a href="profile.php">Find User</a>
                         </div>
 					</div>';
 				}
