@@ -4,6 +4,7 @@
     <a href="#Site Rules">Site Rules</a>
       - <a href="#Forum Rules">Forum Rules</a>
       - <a href="#ModPolicies">Moderator Policies</a>
+      - <a href="#SchoolGroups">Teacher/Student Guidelines</a>
    </p>
 
    <!-- Site Rules -->
@@ -20,7 +21,7 @@
       <p>
          You cannot play a public game with players that you know outside of the site. In doing so, you create an unfair environment for other players by giving yourself the opportunity to form alliances for reasons outside the game. This includes playing public games with family, friends, relatives, coworkers, or even joining a game with any player of a previous game with a predetermined intent to ally with or attack certain players. Additionally, you cannot make deals based on any factors outside of the game.
          <br /><br />
-         Because Diplomacy is a social game, we always encourage playing with friends. However, you should always do so in a private, password-protected game and make sure that every player knows about any real life connections before the game begins.
+         Because Diplomacy is a social game, we always encourage playing with friends. However, you should always do so in a private game with an invite code and make sure that every player knows about any real life connections before the game begins.
       </p>
    </div>
    <div name="Press" class = "rules_title">3. Don't break game messaging/press rules.</div>
@@ -107,7 +108,7 @@
    <div name="Harassment" class = "rules_title">2. No abusive, bigoted, or degrading content</div>
    <div class = "rules_content">
       <p>
-         Creating threads or posting replies that target a member, group of members, or group of people is prohibited. While some discussions on our forum can become heated, attacking another member is not permitted on the forum. Players who post a reply in a discussion attacking another player may be warned and/or silenced depending on the severity of the offence. Consistently harassing another player or going out of one’s way to attack another player, instead of contributing to discussion, may also classify as grounds for a silence or further action depending on the surrounding circumstances. 
+         Creating threads or posting replies that target a member, group of members, or group of people is prohibited. While some discussions on our forum can become heated, attacking another member is not permitted on the forum. Players who post a reply in a discussion attacking another player may be warned and/or silenced depending on the severity of the offense. Consistently harassing another player or going out of one’s way to attack another player, instead of contributing to discussion, may also classify as grounds for a silence or further action depending on the surrounding circumstances. 
          <br></br>
          Likewise, bigotry toward another member or a group of people is not permitted. Our site hosts players from around the world and is intended to be a welcoming and open place for all. Sexism, racism, homophobia, and other forms of bigotry both hamper discussion and also threaten our reputation; as a result, they carry only negative consequences for our site. We will take a zero tolerance approach to any examples of such behaviour. 
       </p>
@@ -177,29 +178,6 @@
    </div>
    <!-- End Forum Rules -->
 
-   <a name="Forum Moderation"></a>
-   <h3 class = "rules"> Forum Moderation:</h3>
-   <div class = "rules_content_show">
-      <p>
-         While the moderators always exercise appropriate discretion and discuss various options with one another prior to acting, there are sometimes no other options than to take immediate action on the forum. The moderators retain the right to issue varying penalties including shorter or longer silences based on the severity of the offence. 
-         <br></br>
-         Upon a first offence, a user will either receive an official warning OR a 48 hour silence. Subsequent offences may result in further and lengthier silences. Constant or more severe rule infractions could result in harsher penalties at the discretion of the site moderators and the site owners. The moderators will record each action taken on the forum with an email to the offending user’s registered email. As usual, any moderator action taken against you can be appealed by emailing <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">
-         <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a> and the results of that appeal are final. 
-      </p>
-      <a name="Silences"></a>
-      <h4> Silences</h4>
-      <ul>
-         <li>Silences can apply to a user or a thread.</li>
-         <li>The details can be viewed on the forum page, when the "New thread" button is pressed.</li>
-         <li>Thread silences last indefinitely, but user silences expire after a brief cool-off period.</li>
-         <li>Silenced threads / users can still be viewed, however no more messages may be posted.</li>
-         <li>Silenced users can still play in games; a silence only affects the forum and pm's.</li>
-      </ul>
-      <p>
-         When in doubt about whether posting something is allowed, remember your first responsibility is to use common sense and respect other players.
-      </p>
-   </div>
-
    <a name="ModPolicies"></a>
    <h3 class = "rules"> Moderator Policies (Click a policy to expand)</h3>
    <div class = "rules_title">Cancelling games</div>
@@ -222,6 +200,27 @@
          We do not draw any games due to cheating. We will only force games to draw if they have been at a stalemate for at least two years with no SC's changing hands and no possible sign of a breakthrough. If alerted to such a scenario; we will email the player(s) holding the game up and ask them how they plan to break through. If we deem their plan to be unrealistic, or it includes hoping for misorders or for players to miss phases, then we may force a game to draw.
       </p>
    </div>
+   <div class = "rules_title">Forum Moderation</div>
+   <div class = "rules_content">
+      <p>
+         While the moderators always exercise appropriate discretion and discuss various options with one another prior to acting, there are sometimes no other options than to take immediate action on the forum. The moderators retain the right to issue varying penalties including shorter or longer silences based on the severity of the offense. The moderators also retain the right to lock forum threads, remove forum posts, or remove enter forum threads with or without penalty to offending users.
+         <br></br>
+         Upon a first offense, a user will either receive an official warning OR a 48 hour forum ban. Subsequent offenses may result in further and lengthier forum bans. Constant or more severe rule infractions could result in harsher penalties at the discretion of the site moderators and the site owners. The moderators will record each action taken on the forum with an email to the offending user’s registered email. You are always welcome to appeal any moderator decision by emailing <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">
+         <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a>, which will prompt a different moderator or administrator to handle your case. The results of that appeal are final.
+         <br><br>
+         Some details regarding forum bans can be found below:
+      </p>
+      <ul>
+         <li>A forum ban prohibits a user from posting on the forum or sending private messages as well as viewing the forum while logged in.</li>
+         <li>The details of a forum ban, including the reason and length, are always sent to your registered email.</li>
+         <li>Locked threads or deleted posts are indefinite. Most forum bans expire. Only the most severe are indefinite.</li>
+         <li>Locked threads can still be viewed. Removed threads cannot be viewed.</li>
+         <li>Forum bans do not prevent a user from playing in games.</li>
+      </ul>
+      <p>
+         When in doubt about whether posting something is allowed, remember your first responsibility is to use common sense and respect other players. Please <a href='contactUs.php' class='light'>contact us</a> with questions if you have any. 
+      </p>
+   </div>
    <div class = "rules_title">Appealing decisions</div>
    <div class = "rules_content">
       <p>
@@ -240,6 +239,110 @@
          explain the issue and give the final determination on the appeal.
          <br><br>
          See our <a href='contactUs.php' class='light'>contact us</a> page for more on mod and admin contact details.
+      </p>
+   </div>
+
+   <a name="SchoolGroups"></a>
+   <h3 class = "rules">Guidelines for Teachers/School Groups (Click a guideline to expand)</h3>
+   <div class = "rules_title">For Teachers</div>
+   <div class = "rules_content">
+      <p>
+         webDiplomacy is more than happy to host school groups to play games as part of the regular curriculum, a club, or just for fun. Many of our most frequent users, including some of the site moderator team, got their start on webDiplomacy as students. Diplomacy is a wonderful tool for learning history, geography, logic, philosophy, rhetoric, strategy, and many other skills that are often hard to come by. As teachers, you are doing your students a wonderful favor by showing them Diplomacy, and we are more than happy to accomodate you and your students. 
+         <br><br>
+         Using webDiplomacy in a classroom setting, however, comes with some stipulations that teachers should be aware of when using our site: 
+      </p>
+      <ul>
+         <li>
+            <strong>Please let us know when you sign up.</strong>
+            <br>
+            <p style="padding-right: 30px">
+               We are happy to host you and want to know when you arrive. Send us a quick email at <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light"><?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a> so that we can make sure you are properly set up. 
+            </p>
+         </li>
+         <li>
+            <strong>Students should only play private games with invite codes with classmates.</strong>
+            <br>
+            <p style="padding-right: 30px">
+               webDiplomacy prohibits our players from playing in public games with people they know outside of our site, including students. While not everyone cheats or leverages outside relationships to their advantage, students are very susceptible to this when playing with classmates. When creating a new game, it is very easy to add an invite code, which prevents other players on our site from unknowingly joining your school game and allows your students to play freely among each other without concerning themselves about crossing that line. When they are not playing with their classmates, students are free to play any games.
+            </p>
+         </li>
+         <li>
+            <strong>Students only need one account.</strong>
+            <br>
+            <p style="padding-right: 30px">
+               There is never a scenario where anyone needs more than one account to enjoy webDiplomacy. All new accounts are given 100 points, which is enough to enter up to 20 games if the bets are low. If a player loses a game and falls under 100 points, our site automatically tops off their points when the game is concluded, so our players never fall beneath 100 points. Likewise, we have multiple map options, or variants, so that games can start with as few as 2 players and as many as 17. If a student ever needs help recovering their account, they should <a href='contactUs.php' class='light'>contact us</a>.
+            </p>
+         </li>
+         <li>
+            <strong>Students need to register with an email they actually check regularly.</strong>
+            <br>
+            <p style="padding-right: 30px">
+               webDiplomacy moderators are very active to ensure that our site remains free of cheating and fun for everyone. That means that we take on a lot of work and expect prompt replies when we contact players. If we need to reach out to a player, we will do so via their registered email. We require prompt replies to our communications within 72 hours. Failing to do so will result in a ban.
+            </p>
+         </li>
+         <li>
+            <strong>Ask the moderators to be made a game director for your class games.</strong>
+            <br>
+            <p style="padding-right: 30px">
+               webDiplomacy has a feature that allows a teacher to be set as the game director over all of the games your class or club is playing. As a game director, you can pause the game, replace players that have given up or are not submitting orders, and keep the game on track. Simply email <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light"><?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a> with your username and the full URL to each of your class games to be set as the game director, and if you need any help as a game director, we will always be there to assist.
+            </p>
+         </li>
+         <li>
+            <strong>Monitor your students' gameplay and habits on webDiplomacy.</strong>
+            <br>
+            <p style="padding-right: 30px">
+               We understand that students, especially teenagers, are often not at the peak level of maturity. On the internet, where the things they say are anonymous, students may say or do things that are not becoming of them. Keeping an eye on your students' games, messages with one another, and posts on our forum will help ensure that they are respectful and not acting in ways that you would not expect or welcome in your classroom.
+            </p>
+         </li>
+      </ul>
+      <p>
+         Keeping these guidelines in mind is critical in order to ensure that playing Diplomacy online is a good experience for you and your students. If you have any questions or concerns, feel free to <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">send us an email any time</a>.
+      </p>
+   </div>
+   <div class = "rules_title">For Students</div>
+   <div class = "rules_content">
+      <p>
+         Diplomacy is a fun game that both students and teachers love. Whether you are playing for class, in a club or extracurricular, or just with your friends, webDiplomacy is the best place for students to play Diplomacy online. There are, however, some things that students need to know and be aware of pertaining to the <a href="#Site Rules">site rules</a>:
+      </p>
+      <ul>
+         <li>
+            <strong>Your games with friends and classmates should have an invite code.</strong>
+            <br>
+            <p style="padding-right: 30px">
+               Our rules prohibit our players from playing with people they know outside of our site in games that do not have an invite code in order to prevent cheating. We don't think that you will cheat, but in order to make sure that the site is fun for everyone and games are not tainted by cheating and poor sportsmanship, only create games to play with your classmates with an invite code. This way, you can simply share the code with one another and ensure that you can play without concern. Likewise, if you are invited to a game by one of your classmates that doesn't have an invite code, simply tell them that they need one in order to play within the rules.
+            </p>
+         </li>
+         <li>
+            <strong>You will never need more than one account.</strong>
+            <br>
+            <p style="padding-right: 30px">
+               webDiplomacy has games you can play with as few as 2 players and as many as 34. You can always find a way to play on our site regardless of how many of your classmates or friends can play. Likewise, you're given 100 points when you register your account, and you will never fall below 100 points. That is enough for 20 games playing with the minimum 5 point bet. If you bet more, you may win more, and as long as you have enough points to enter a game, you can play as many as you want. As such, there is no reason for you to ever create more than one account. Doing so will result in a permanent ban from webDiplomacy. If you ever forget your password and need help recovering your account, you should <a href='contactUs.php' class='light'>contact us</a> and we will help you.
+            </p>
+         </li>
+         <li>
+            <strong>Please register with an email you actually use!</strong>
+            <br>
+            <p style="padding-right: 30px">
+               If the moderators ever need to contact you, we will do so by emailing your registered email address. This should not be a throwaway or spam email because if we email you and do not hear back within 72 hours, your account will be banned. Having registered an email that you actually check every few days at a minimum will help you in the event that we need to contact you. You will never receive spam emails from us, nor will your email address ever be sold or added to any list anywhere. 
+            </p>
+         </li>
+         <li>
+            <strong>If the moderators email you and ask questions, tell the truth.</strong>
+            <br>
+            <p style="padding-right: 30px">
+               In the event of an investigation, the moderators will email you. The webDiplomacy moderators are very good at spotting instances of cheating and our members are very diligent in reporting anything they find suspicious to us. If you or your friends are breaking rules, we already know by the time we've emailed you. Telling the truth and being calm with us makes things go much more smoothly and may allow us to find a resolution without banning your account.
+            </p>
+         </li>
+         <li>
+            <strong>Please be respectful of our community.</strong>
+            <br>
+            <p style="padding-right: 30px">
+               webDiplomacy is big with well over 100,000 registered players, but we are also a tight-knit community. If you are respectful of the community, you are more than welcome to join it and stay in it. Many of our most esteemed members and even some of the moderator team got their start on webDiplomacy as students, but the common denominator between all of us is that we all respect each other and expect the same in return. Follow our rules, be kind, and enjoy our site. 
+            </p>
+         </li>
+      </ul>
+       <p>
+         Keeping these guidelines in mind is critical in order to ensure that playing Diplomacy online is a good experience for you, your friends, and your classmates. If you have any questions or concerns, feel free to <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">send us an email any time</a>.
       </p>
    </div>
 
