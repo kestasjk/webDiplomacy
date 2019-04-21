@@ -1042,7 +1042,12 @@ class adminActions extends adminActionsForms
 				if(count($Game->Members->ByID)==1)
 					processGame::eraseGame($Game->id);
 				else
+				{
 					$DB->sql_put("DELETE FROM wD_Members WHERE gameID = ".$Game->id." AND userID = ".$userID);
+					
+					// If there are still people in the game reset the min bet in case the game was full to readd the join button.
+					$Game->resetMinimumBet();
+				}
 			}
 			elseif( $Game->processStatus != 'Paused' and $Game->phase != 'Finished' )
 			{
@@ -1053,7 +1058,7 @@ class adminActions extends adminActionsForms
 
 					// It is worth adding an extension
 					$DB->sql_put(
-						"UPDATE wD_Games
+						"UPDATE wD_Games 
 						SET processTime = ".time()." + phaseMinutes*60
 						WHERE id = ".$Game->id
 					);
@@ -1066,15 +1071,10 @@ class adminActions extends adminActionsForms
 				}
 			}
 
-			// IF the game is still running first remove the player from the game and reset the minimum bet so other can join.
+			// If the game is still running first remove the player from the game and reset the minimum bet so other can join.
 			if( $Game->phase != 'Finished' && $Game->phase != 'Pre-game')
 			{
 				$Game->Members->ByUserID[$userID]->setLeft(1);
-				$Game->resetMinimumBet();
-			}
-			else if($Game->phase == 'Pre-game')
-			{
-				// If there are still people in the game reset the min bet in case the game was full to readd the join button.
 				$Game->resetMinimumBet();
 			}
 
