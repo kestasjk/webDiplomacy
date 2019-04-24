@@ -818,45 +818,45 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 	}
 }
 print '</div>';
-if ( $User->type['User'] && $User->id != $UserProfile->id)
-{
-	print '<div class="hr"></div>';
+// if ( $User->type['User'] && $User->id != $UserProfile->id)
+// {
+// 	print '<div class="hr"></div>';
 
-	print '<a name="messagebox"></a>';
+// 	print '<a name="messagebox"></a>';
 
-	if ( isset($_REQUEST['message']) && $_REQUEST['message'] )
-	{
-		if ( ! libHTML::checkTicket() )
-		{
-			print '<p class="notice">'.l_t('You seem to be sending the same message again, this may happen if you refresh '.
-				'the page after sending a message.').'</p>';
-		}
-		else
-		{
-			if ( $UserProfile->sendPM($User, $_REQUEST['message']) )
-            {
-                print '<p class="notice">'.l_t('Private message sent successfully.').'</p>';
-            }
-			else 
-            {
-                print '<p class="notice">'.l_t('Private message could not be sent. You may be silenced or muted.').'</p>';
-            }
+// 	if ( isset($_REQUEST['message']) && $_REQUEST['message'] )
+// 	{
+// 		if ( ! libHTML::checkTicket() )
+// 		{
+// 			print '<p class="notice">'.l_t('You seem to be sending the same message again, this may happen if you refresh '.
+// 				'the page after sending a message.').'</p>';
+// 		}
+// 		else
+// 		{
+// 			if ( $UserProfile->sendPM($User, $_REQUEST['message']) )
+//             {
+//                 print '<p class="notice">'.l_t('Private message sent successfully.').'</p>';
+//             }
+// 			else 
+//             {
+//                 print '<p class="notice">'.l_t('Private message could not be sent. You may be silenced or muted.').'</p>';
+//             }
 
-		}
-	}
+// 		}
+// 	}
 
-	print '<div style="margin-left:20px"><ul class="formlist">';
-	print '<li class="formlisttitle">'.l_t('Send private-message:').'</li>
-		<li class="formlistdesc">'.l_t('Send a message to this user.').'</li>';
+// 	print '<div style="margin-left:20px"><ul class="formlist">';
+// 	print '<li class="formlisttitle">'.l_t('Send private-message:').'</li>
+// 		<li class="formlistdesc">'.l_t('Send a message to this user.').'</li>';
 
-	print '<form action="profile.php?userID='.$UserProfile->id.'#messagebox" method="post">
-		<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
-		<textarea name="message" style="width:80%" rows="4"></textarea></li>
-		<li class="formlistfield"><input type="submit" class="form-submit" value="'.l_t('Send').'" /></li>
-		</form>
-		</ul>
-		</div>';
-}
+// 	print '<form action="profile.php?userID='.$UserProfile->id.'#messagebox" method="post">
+// 		<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
+// 		<textarea name="message" style="width:80%" rows="4"></textarea></li>
+// 		<li class="formlistfield"><input type="submit" class="form-submit" value="'.l_t('Send').'" /></li>
+// 		</form>
+// 		</ul>
+// 		</div>';
+// }
 
 ?>
 <script type="text/javascript">
