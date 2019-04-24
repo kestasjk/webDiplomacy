@@ -436,7 +436,7 @@ class processGame extends Game
 				WHERE m.gameID = ".$this->id."
 					AND ( m.status='Playing' OR m.status='Left' )
 					AND EXISTS(SELECT o.id FROM wD_Orders o WHERE o.gameID = m.gameID AND o.countryID = m.countryID)
-					AND NOT m.orderStatus LIKE '%Saved%' AND NOT m.orderStatus LIKE '%Ready%'");
+					AND NOT m.orderStatus LIKE '%Saved%' AND NOT m.orderStatus LIKE '%Completed%'");
 
 		/*
 		 * Increment the moves received counter for users who could have submitted moves. This is a counter because it's a large number
