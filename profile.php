@@ -666,16 +666,7 @@ if( $User->type['Moderator'] )
 	}
 }
 
-list($serverHasPHPBB) = $DB->sql_row("SELECT count(1) FROM information_schema.tables WHERE table_name = 'phpbb_users'");
 
-if ($serverHasPHPBB == 1)
-{
-	list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
-	if ($newForumId > 0)
-	{
-		print '<p class="profileCommentURL"><strong><a href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumId.'">New Forum Profile</a></strong></p>';
-	}
-}
 
 if ( $UserProfile->comment )
 	print '<p class="profileComment">"'.$UserProfile->comment.'"</p>';
@@ -767,6 +758,7 @@ print '<li>&nbsp;</li>';
 //print '<li>&nbsp;</li>';
 
 print '</li></ul></p></div><div style="clear:both"></div></div>';
+print '<div class="hr"></div>';
 
 // Start interactive area:
 
@@ -787,7 +779,7 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 
 	if($modActions)
 	{
-		print '<div class="hr"></div>';
+		
 		print '<p class="notice">';
 		print implode(' - ', $modActions);
 		print '</p>';
@@ -815,21 +807,31 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 		print '</li><li>';
 		print libHTML::admincp('createUserSilence',array('userID'=>$UserProfile->id,'reason'=>''),l_t('Silence user'));
 		print '</li></ul></p>';
+		print '<div class="hr"></div>';
 	}
 }
 print '</div>';
-if( !isset(Config::$customForumURL) ) {
-	if ( $User->type['User'] && $User->id != $UserProfile->id) {
+if( isset(Config::$customForumURL) ) 
+{
+	if ( $User->type['User'] && $User->id != $UserProfile->id) 
+	{
 		print '<div class="hr"></div>';
 		print '<a name="messagebox"></a>';
-		if ( isset($_REQUEST['message']) && $_REQUEST['message'] ) {
-			if ( ! libHTML::checkTicket() ) {
+		if ( isset($_REQUEST['message']) && $_REQUEST['message'] ) 
+		{
+			if ( ! libHTML::checkTicket() ) 
+			{
 				print '<p class="notice">'.l_t('You seem to be sending the same message again, this may happen if you refresh '.
 					'the page after sending a message.').'</p>';
-			} else {
-				if ( $UserProfile->sendPM($User, $_REQUEST['message']) ) {
+			} 
+			else 
+			{
+				if ( $UserProfile->sendPM($User, $_REQUEST['message']) ) 
+				{
 	                print '<p class="notice">'.l_t('Private message sent successfully.').'</p>';
-	            } else {
+	            } 
+	            else 
+	            {
 	                print '<p class="notice">'.l_t('Private message could not be sent. You may be silenced or muted.').'</p>';
 	            }
 			}
@@ -844,6 +846,22 @@ if( !isset(Config::$customForumURL) ) {
 			</form>
 			</ul>
 			</div>';
+	}
+}
+else
+{
+	if ( $User->type['User'] && $User->id != $UserProfile->id)
+	{
+		list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
+		if ($newForumId > 0)
+		{
+			print '<div class="profile-forum-links"><button class="profile-links-button"><a href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumId.'">New Forum Profile</a></strong></button>';
+			print '<button class="profile-links-button"><strong><a href="/contrib/phpBB3/ucp.php?i=pm&mode=compose&u='.$newForumId.'">Send a message to this user</a></strong></button></div>';
+		} 
+		else 
+		{
+			print '<p class="profileCommentURL">This user cannot currently receive messages.</p>';
+		}
 	}
 }
 

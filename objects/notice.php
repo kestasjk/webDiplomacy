@@ -108,7 +108,8 @@ class notice
 	}
 	private function replyBox()
 	{
-		if( !isset(Config::$customForumURL) ) {
+		if( !isset(Config::$customForumURL) ) 
+		{
 			return '<a name="messagebox"></a>
 			<form action="index.php?toUserID='.$this->fromID.'&notices=on" method="post">
 				<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
@@ -116,7 +117,9 @@ class notice
 				<input type="submit" class="form-submit" value="'.l_t('Reply').'" /></li>
 			</form>
 			</div>';
-		} else {
+		} 
+		else 
+		{
 			return '<a name="messagebox"></a>
 			</div>';
 		}
