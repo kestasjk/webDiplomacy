@@ -811,7 +811,7 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 	}
 }
 print '</div>';
-if( isset(Config::$customForumURL) ) 
+if( !isset(Config::$customForumURL) ) 
 {
 	if ( $User->type['User'] && $User->id != $UserProfile->id) 
 	{
