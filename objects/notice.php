@@ -108,13 +108,18 @@ class notice
 	}
 	private function replyBox()
 	{
-		return '<a name="messagebox"></a>
-		<form action="index.php?toUserID='.$this->fromID.'&notices=on" method="post">
-			<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
-			<textarea name="message" style="width:90%" rows="3"></textarea></li>
-			<input type="submit" class="form-submit" value="'.l_t('Reply').'" /></li>
-		</form>
-		</div>';
+		if( !isset(Config::$customForumURL) ) {
+			return '<a name="messagebox"></a>
+			<form action="index.php?toUserID='.$this->fromID.'&notices=on" method="post">
+				<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
+				<textarea name="message" style="width:90%" rows="3"></textarea></li>
+				<input type="submit" class="form-submit" value="'.l_t('Reply').'" /></li>
+			</form>
+			</div>';
+		} else {
+			return '<a name="messagebox"></a>
+			</div>';
+		}
 	}
 	public function html()
 	{

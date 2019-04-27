@@ -663,12 +663,19 @@ elseif( isset($_REQUEST['notices']) )
 	print '<table class="homeTable"><tr>';
 
 	notice::$noticesPage=true;
-
-	print '<td class="homeNoticesPMs">';
-	print '<div class="homeHeader">'.l_t('Private messages').'</a></div>';
-	print libHome::NoticePMs();
-	print '</td>';
-
+	if( !isset(Config::$customForumURL) ) {
+		print '<td class="homeNoticesPMs">';
+		print '<div class="homeHeader">'.l_t('Private messages').'</a></div>';
+		print libHome::NoticePMs();
+		print '</td>';
+	} else {
+		// system will be disabled on webDip on June 1
+		print '<td class="homeNoticesPMs">';
+		print '<div class="homeHeader">'.l_t('Private messages').'</a></div>';
+		print '<div class="homeDisableNotice"><h4 style="text-align:center; font-size:10px;">'.l_t('This system will be disabled on June 1. Click ').'<a href="https://webdiplomacy.net/contrib/phpBB3/viewtopic.php?f=5&p=72670" style="text-decoration:none;">'.l_t('here').'</a>'.l_t(' for more information.').'</h4></div>';
+		print libHome::NoticePMs();
+		print '</td>';
+	}
 	print '<td class="homeSplit"></td>';
 
 	print '<td class="homeNoticesGame">';
