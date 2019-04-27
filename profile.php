@@ -758,7 +758,7 @@ print '<li>&nbsp;</li>';
 //print '<li>&nbsp;</li>';
 
 print '</li></ul></p></div><div style="clear:both"></div></div>';
-print '<div class="hr"></div>';
+print '<div id="profile-separator"></div>';
 
 // Start interactive area:
 
@@ -855,8 +855,24 @@ else
 		list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
 		if ($newForumId > 0)
 		{
-			print '<div class="profile-forum-links"><button class="profile-links-button"><a href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumId.'">New Forum Profile</a></strong></button>';
-			print '<button class="profile-links-button"><strong><a href="/contrib/phpBB3/ucp.php?i=pm&mode=compose&u='.$newForumId.'">Send a message to this user</a></strong></button></div>';
+			print '
+			<div id="profile-forum-link-container">
+				<div class="profile-forum-links">
+					<a class="profile-link" href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumId.'">
+						<button class="profile-links-button" id="view-forum-profile">
+							New Forum Profile
+						</button>
+					</a>
+				</div>';
+			print '
+				<div class="profile-forum-links">
+					<a class="profile-link" href="/contrib/phpBB3/ucp.php?i=pm&mode=compose&u='.$newForumId.'">
+						<button class="profile-links-button" id="send-pm">
+							Send a message to this user
+						</button>
+					</a>
+				</div>
+			</div>';
 		} 
 		else 
 		{
