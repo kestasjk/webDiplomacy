@@ -100,6 +100,9 @@ for where everything is and how webDip is structured, so you know where to go to
 <p><a href="http://webdiplomacy.net/doc/coasts.txt" class="light">coasts.txt</a> - Info on how coasts are handled</p>
 
 <p>We used to have a forum for developers, but it was closed due to inactivity and spammers. Some of the content there is still useful:
-<a href="http://forum.webdiplomacy.net" class="light">forum.webdiplomacy.net</a> 
+<a href="http://forum.webdiplomacy.net" class="light">forum.webdiplomacy.net</a> </br></br>
+
+<a href="http://sourceforge.net/projects/phpdiplomacy">Archived Sourceforge.net project page</a> </br>
+Last Updated: 2013-04-25.  Our old sourceforge.net project page.
 </p>
 </div>

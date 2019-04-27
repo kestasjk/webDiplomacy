@@ -13,7 +13,6 @@
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	overflow: hidden;
 	background-color: #f1f1f1;
-	/* padding: 0 0 0 10px; */
 	margin-top:10px !important; 
 }
 .memberVotes {
@@ -21,7 +20,6 @@
 	}
 .gamePanelHome {
 	width:100%;
-	/* border-top: 1px solid #cecece; */
 }
 .boardHeader {
 	color: #000;
@@ -29,17 +27,10 @@
 
 .bar {
 	padding:5px 2%;
-	/* background-color:#f5f5f5; */
 }
 .gamePanel .bar {
-	/* margin-left:2%;
-	margin-right:2%; */
 	border:0;
 }
-.gamePanel .bar {
-	/* border-left: 1px solid #cecece;
-	border-right: 1px solid #cecece; */
-	}
 .barAlt1, .barAltLight1 {
 	background-color:#f5f5f5 !important;
 	}
@@ -59,25 +50,14 @@
 	padding:0;
 	
 	}
-.gamePanel .lastBar {
-	/* border-bottom: 1px solid #cecece; */
-}
-.gamePanelHome .lastBar {
-	/* border-bottom: 1px solid #cecece; */
-}
 
 /* ---- titleBar ---- */
-.titleBar {
-}
 .titleBarHomeGameName {
 	white-space:nowrap;
 	overflow:hidden;
 }
 .titleBarHomeGameName .game{
 	text-align:center;
-}
-.gamePanel .titleBar {
-	/* border-top: 1px solid #cecece; */
 }
 .boardHeader .titleBar {
 	padding: 8px 16px;	
@@ -92,13 +72,10 @@
 	float:right;
 	text-align:right;
 }
-.gamePanelHome .titleBarRightSide {
-	}
+
 .titleBarLeftSide {
 	float:left;
 }
-.gamePanelHome .titleBarLeftSide {
-	}
 
 .gameName {
 	font-weight:bold;
@@ -113,8 +90,6 @@
 .gamePanelHome .gameName {
 	font-size:12px;
 }
-.gameDate, .gamePhase {
-	} 
 .gameDate {
 	font-style:italic;
 	}
@@ -130,8 +105,6 @@
 }
 .gameTimeRemainingNextPhase {
 	font-weight:normal;
-}
-.gameHoursPerPhase {
 }
 .gameTimeHoursPerPhaseText {
 	font-style:italic;
@@ -154,9 +127,7 @@ div.memberBoardHeader {
 
 /* ---- noticeBar ---- */
 .gameNoticeBar {
-	/* border-top:solid 1px #c9c9c9 !important; */
 	text-align:center;
-	
 	font-weight:bold;
 }
 
@@ -192,11 +163,7 @@ div.memberBoardHeader {
 
 /* ---- membersList ---- */
 .membersList {
-	/* margin-left:2%;
-	margin-right:2%; */
 	color: #444;
-	/* border-left: 1px solid #c1c1c1;
-	border-right: 1px solid #c1c1c1; */
 }
 .boardHeader .membersList, .gamePanelHome .membersList {
 	margin:0;
@@ -301,8 +268,6 @@ div.memberBoardHeader {
 	padding:0;
 	overflow:hidden;
 	height:6px;
-	/* margin-left:2%;
-	margin-right:2%; */
 }
 .panelBarGraphMember {
 	padding:0;
@@ -324,8 +289,6 @@ div.memberBoardHeader {
 	height:6px;
 	margin-left:0%;
 	margin-right:0%;
-}
-.panelBarGraph  {
 }
 .panelBarGraph td.first {
 	border-left:solid 0px #fff !important;
@@ -375,16 +338,6 @@ div.memberBoardHeader {
 .memberProgressBarUnitSurplus {
 	background-color: #C48F85;
 }
-.memberProgressBarRemaining, .memberProgressBarBlank {
-	/*background-color: #c1c1c1*/
-}
-.memberAlternate1 .memberProgressBarRemaining, .memberAlternate1 .memberProgressBarBlank,
-.memberAlternate2 .memberProgressBarRemaining, .memberAlternate2 .memberProgressBarBlank,
-.memberProgressBarBlank, .memberProgressBarRemaining {
-}
-.gamePanelHome .membersList {
-
-}
 .gamePanelHome table.homeMembersTable  {
 	text-align:center;
 	table-layout:fixed;
@@ -398,8 +351,6 @@ div.memberBoardHeader {
 
 /* ---- .archiveBar, .joinBar, .openBar ---- */
 
-.enterBar {
-}
 .enterBar em {
 	font-style:normal;
 	font-weight:bold;
@@ -414,16 +365,13 @@ div.memberBoardHeader {
 	float:left;
 }
 
-.archiveBar {
-	/*text-align:center;&*/
-	}
+
 .archiveBar a {
 	
 	font-weight:normal !important;
 }
 
 .homeGameLinks {
-	/*text-align:center;&*/
 	font-size:12px;
 	}
 .homeGameLinks a {

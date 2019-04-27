@@ -10,6 +10,7 @@ require_once(l_r('pager/pagergame.php'));
 require_once(l_r('objects/game.php'));
 require_once(l_r('gamepanel/game.php'));
 require_once(l_r('objects/mailer.php'));
+require_once(l_r('gamemaster/game.php'));
 
 global $Mailer;
 $Mailer = new Mailer();
@@ -30,6 +31,7 @@ $postedGameName = '';
 $postedGameIssue = '';
 $postedOtherIssue = '';
 $postedAdditionalInfo = '';
+$postedEmergencyIssue = '';
 
 $subject = '';
 $actualProblem = '';
@@ -45,7 +47,9 @@ class GameResultData
 	public $phaseMinutes;
 	public $anon; 						// yes/no 
 	public $pressType; 				//enum('Regular','PublicPressOnly','NoPress','RulebookPress')
-	public $directorUserID;
+    public $directorUserID;
+    public $processTime;
+    public $phase;
 }
 
 // Game Search Variables
@@ -59,6 +63,7 @@ if(isset($_POST['submit']))
     {
         if ($_POST['issueType'] == 'gameIssue') { $issueType='gameIssue'; }
         else if ($_POST['issueType'] == 'otherIssue') { $issueType='otherIssue'; }
+        else if ($_POST['issueType'] == 'emergencyIssue') { $issueType='emergencyIssue'; }
     }
     if ($issueType=='gameIssue')
     {
@@ -150,6 +155,29 @@ if(isset($_POST['submit']))
         }
     }
 
+    else if ($issueType =='emergencyIssue')
+    {
+        $subject = 'WebDip Generated Emergency Pause';
+        if(isset($_POST['emergencyIssue'])) 
+        {
+            if ($_POST['emergencyIssue'] == 'naturalDisaster') 
+            { 
+                $postedEmergencyIssue='naturalDisaster'; 
+                $actualProblem = 'user paused all games for a natural disaster impacting them';
+            }
+            else if ($_POST['emergencyIssue'] == 'medical') 
+            { 
+                $postedEmergencyIssue='medical'; 
+                $actualProblem = 'user paused all games for a medical emergency';
+            }
+            else if ($_POST['emergencyIssue'] == 'powerOutage') 
+            { 
+                $postedEmergencyIssue='powerOutage'; 
+                $actualProblem = 'user paused all games due to a power outage';
+            }
+        }
+    }
+
     // Use db escape to guard against special characters. 
     if(isset($_POST['additionalInfo']) && strlen($_POST['additionalInfo'])) 
     {
@@ -164,16 +192,19 @@ print libHTML::pageTitle(l_t('Contact Us'),l_t('Directly submit a support reques
 ?>
 
 <?php
-$sql = "SELECT g.id, g.name, g.pot, g.gameOver, g.processStatus, ( CASE WHEN g.password IS NULL THEN 'False' ELSE 'True' END ) AS password,
-				g.phaseMinutes, g.anon, g.pressType, g.directorUserID 
+$sql = "SELECT g.id, g.name, g.gameOver, g.processStatus, ( CASE WHEN g.password IS NULL THEN 'False' ELSE 'True' END ) AS password,
+				g.phaseMinutes, g.anon, g.pressType, g.directorUserID, g.processTime, g.phase
                 FROM wD_Games g 
                 inner join wD_Members m on m.gameID = g.id
-                WHERE g.gameOver = 'No' and m.status <> 'Defeated' and m.userID = ". $User->id;
+                WHERE g.gameOver = 'No' and g.phase <> 'Pre-Game' and m.status = 'Playing' and m.userID = ". $User->id;
 
 $tablChecked = $DB->sql_tabl($sql);
 $allGames = '';
+$allRunningGames = '';
 
-while (list($gameID, $gameName, $gameOver, $processStatus, $password, $phaseMinutes, $anon, $pressType, $directorUserID) = $DB->tabl_row($tablChecked))
+$numberOfGames = 0;
+
+while (list($gameID, $gameName, $gameOver, $processStatus, $password, $phaseMinutes, $anon, $pressType, $directorUserID, $processTime, $phase) = $DB->tabl_row($tablChecked))
 {   
     $myGame = new GameResultData();
     $myGame->gameID = $gameID;
@@ -184,9 +215,19 @@ while (list($gameID, $gameName, $gameOver, $processStatus, $password, $phaseMinu
     $myGame->anon = $anon;
     $myGame->pressType = $pressType;
     $myGame->directorUserID = $directorUserID;
+    $myGame->processStatus = $processStatus;
+    $myGame->processTime = $processTime;
+    $myGame->phase = $phase;
     array_push($GamesData,$myGame);
 
     $allGames = $allGames.'https://www.webdiplomacy.net/board.php?gameID='.$gameID.'<br>';
+
+    if($processStatus != 'Paused' )
+    {
+        $allRunningGames = $allRunningGames.'https://www.webdiplomacy.net/board.php?gameID='.$gameID.'<br>';
+        $numberOfGames = $numberOfGames+1;
+    }
+    
     if ($gamesValid == false && $games == $gameID)
     {     
         $gamesValid = true;
@@ -212,29 +253,104 @@ if ($submitted == true)
     }
 
     $worked = true;
-    try
-	{
-        $Mailer->Send(array($email=>$email), $subject.' '.$User->username,
-        "
-        This request is from <a href='https://www.webdiplomacy.net/profile.php?userID=".$User->id."' class = 'contactUs'>".$User->username. "</a>
-        , and their registered email is: ".$User->email."<br><br>
+    $pausedGames = '';
 
-        <strong>The user called out ".$userPickedGame. ".</strong><br><br>
-        The ".$actualProblem." and their games are: <br><br>".$allGames. "
-        
-        <br><br>
-        <strong>Additional Information:</strong> <br><br>
-        ".$postedAdditionalInfo."</br></br>
+    if ($issueType=='emergencyIssue')
+    {
+        if ($User->qualifiesForEmergency())
+        {
+            foreach ($GamesData as $values)
+            {      
+                // This is a reduced version of the toggle Pause function, altered so that it can only impact non-paused games. 
+                if ($values->processStatus != 'Paused')
+                {
+                    if($values->phase != 'Pre-game' && $values->phase != 'Finished' && $values->processStatus == 'Not-processing')
+                    {
+                        // Use processTime to find pauseTimeRemaining
+                        $pauseTimeRemaining = $values->processTime - time();
+                        $processTime=false;
+                        
+                        $DB->sql_put(
+                            "UPDATE wD_Games 
+                            SET processStatus = 'Paused',
+                                pauseTimeRemaining = ".(false===$pauseTimeRemaining ? "NULL" : $pauseTimeRemaining).",
+                                processTime = ".(false===$processTime ? "NULL" : $processTime)."
+                            WHERE id = ".$values->gameID);
 
-        ");
+                        // Any votes to toggle the pause are now void
+                        $DB->sql_put("UPDATE wD_Members SET votes = REPLACE(votes,'Pause','') WHERE gameID = ".$values->gameID);
+                    }
+                }
+            }
+
+            // Update the users emergency pause time to now.
+            $User->updateEmergencyPauseDate(time());
+
+            // Add a record to the admin log just in case the email fails.
+            $DB->sql_put("
+            INSERT INTO wD_AdminLog ( name, userID, time, details, params )
+            VALUES ( 'Emergency Pause', ".$User->id.", ".time().", 'The following games were paused due to a player emergency ', '".$allRunningGames."' )");
+
+            try
+            {
+                $Mailer->Send(array($email=>$email), $subject.' '.$User->username,
+                "
+                This request is from <a href='https://www.webdiplomacy.net/profile.php?userID=".$User->id."' class = 'contactUs'>".$User->username."</a>, 
+                and their registered email is: ".$User->email."<br><br>
+
+                <strong>An emergency pause was used because of ".$actualProblem."</strong>
+                
+                <br><br>
+                All the games impacted will need a moderator to post in the global chat explaining why the game was paused. Simply say 'A user in this game
+                needed an emergency pause', do <strong>not</strong> give the reason.
+                The games that were paused as a result of this are: <br><br>".$allRunningGames. "
+                
+                <br><br>
+                Please note that any games they are in that were already paused will NOT show up in the above list. Please check all this users games to make sure none are 
+                about to be unpaused and then follow up with the user to see how long they need this pause for and determine if the reason was acceptable.
+
+                <br><br>
+                <strong>Additional Information:</strong> <br><br>
+                ".$postedAdditionalInfo."</br></br>
+
+                ");
+            }
+            catch(Exception $e)
+            {
+                print '<div class="contactUs"> Sorry, but there was a problem sending this message, contact the moderator team directly at '.Config::$modEMail;
+                print '<p class="contactUs">'.$e->getMessage().'</p>';
+                print '</div>';
+                $worked = false;
+            }
+        }
     }
-    catch(Exception $e)
-	{
-		print '<div class="contactUs"> Sorry, but there was a problem sending this message, if this is an emergency contact the moderator team directly at '.Config::$modEMail;
-		print '<p class="contactUs">'.$e->getMessage().'</p>';
-		print '</div>';
-        $worked = false;
-	}
+
+    else
+    {
+        try
+        {
+            $Mailer->Send(array($email=>$email), $subject.' '.$User->username,
+            "
+            This request is from <a href='https://www.webdiplomacy.net/profile.php?userID=".$User->id."' class = 'contactUs'>".$User->username."</a>, 
+            and their registered email is: ".$User->email."<br><br>
+
+            <strong>The user called out ".$userPickedGame. ".</strong><br><br>
+            The ".$actualProblem." and their games are: <br><br>".$allGames. "
+            
+            <br><br>
+            <strong>Additional Information:</strong> <br><br>
+            ".$postedAdditionalInfo."</br></br>
+
+            ");
+        }
+        catch(Exception $e)
+        {
+            print '<div class="contactUs"> Sorry, but there was a problem sending this message, if this is an emergency contact the moderator team directly at '.Config::$modEMail;
+            print '<p class="contactUs">'.$e->getMessage().'</p>';
+            print '</div>';
+            $worked = false;
+        }
+    }
 
     if ($worked == true)
     {
@@ -279,7 +395,16 @@ else
     print '<form action="#" method="post">';
     print   '<p><strong>What do you need to contact us about?</strong></p>
             Issue with game(s) <input type="radio" value="gameIssue" onclick="javascript:gameIssueCheck();" name="issueType" id="gameIssue" required> 
-            </br>Other issue <input type="radio" value="otherIssue" onclick="javascript:gameIssueCheck();" name="issueType" id="otherIssue"><br>';
+            </br>Other issue <input type="radio" value="otherIssue" onclick="javascript:gameIssueCheck();" name="issueType" id="otherIssue">';
+    if ($numberOfGames > 0 && $User->qualifiesForEmergency() )
+    {
+        print   '</br>Personal Emergency (Automatic Pause)
+                <input type="radio" value="emergencyIssue" onclick="javascript:gameIssueCheck();" name="issueType" id="emergencyIssue"><br>';
+    }
+    else
+    {
+        print   '<input type="radio" value="emergencyIssue" style="display:none" name="issueType" id="emergencyIssue">';
+    }
             
     print '<div id="ifGames" style="display:none">
             <p>Which game(s): </br>
@@ -287,8 +412,9 @@ else
                 <option selected="selected" value="0">None</option>
                 <option value="1">All</option>';
 
+    
     foreach ($GamesData as $values)
-    {      
+    {   
         print '<option value="'.$values->gameID.'">'.$values->gameName.'</option>';	
     }
 
@@ -320,6 +446,31 @@ else
                 <option value="other">Other</option>
             </select></p>';
     print '</div>';
+
+    print '<div id="ifEmergency" style="display:none">';
+    print '<p> <font color="red">This is for personal emergencies only and will instantly pause all of your running games that you are not defeated in. The
+    moderator team will give you 7 days to let us know when you expect to be back. If we do not hear back in 7 days we will look for a replacement. <br><br>
+    Abuse will be punished with a 50% point dock at minimum. <strong>Vacations do not count as a personal emergency.</strong></font></br></br>
+    Using your emergency pause will instantly pause the following games: ';
+    
+    $counter = 1;
+    foreach ($GamesData as $values)
+    {      
+        if ($values->processStatus != 'Paused')
+        {
+            print $values->gameName;	
+            if ($counter < $numberOfGames) print ', ';
+            $counter++;
+        }
+    }
+    print'</br></br>To prevent abuse we need to know the reason for the emergency pause. We will follow up with this request later at '.$User->email.' to find 
+    out how long you need your games to be paused.</br></br>
+            <select class="contactUs" name="emergencyIssue">
+                <option value="medical" selected="selected">Illness or injury to yourself/family</option>
+                <option value="naturalDisaster">Natural Disaster</option>
+                <option value="powerOutage">Power Outage</option>
+            </select></p>';
+    print '</div>';
     
     print ' <p>Please give us any additional details
             <textarea name="additionalInfo" class = "contactUs"  rows="5"></textarea></p>';
@@ -328,6 +479,7 @@ else
 }
 print '</div>';
 print '</div>';
+
 ?>
 
 <script type="text/javascript">
@@ -337,11 +489,19 @@ function gameIssueCheck()
     {
         document.getElementById('ifGames').style.display = 'block';
         document.getElementById('ifOther').style.display = 'none';
+        document.getElementById('ifEmergency').style.display = 'none';
+    }
+    else if (document.getElementById('emergencyIssue').checked)
+    {
+        document.getElementById('ifGames').style.display = 'none';
+        document.getElementById('ifOther').style.display = 'none';
+        document.getElementById('ifEmergency').style.display = 'block';
     }
     else 
     {
         document.getElementById('ifGames').style.display = 'none';
         document.getElementById('ifOther').style.display = 'block';
+        document.getElementById('ifEmergency').style.display = 'none';
     }
 }
 </script>

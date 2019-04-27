@@ -126,7 +126,7 @@ div.postboxadvice {
 	text-align:center;
 	font-style: italic;
 	color:#777
-	}
+}
 
 div.clear {
 	border-bottom: 0;
@@ -148,7 +148,7 @@ p.profileComment {
 	margin-left:auto;
 	margin-right:auto;
 	word-break: break-word;
-	}
+}
 .profileUsername {
 	text-align: left;
 }
@@ -166,33 +166,33 @@ p.profileComment {
 	font-size: 14px;
 }
 
-  .profile_title:hover {
+.profile_title:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #555;
-  }
+}
 
-  .profile_content {
-		padding: 0;
-		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-		display: none;
-		overflow: hidden;
-		padding: 0 0 0 10px;
-		background-color: #f1f1f1;
-		font-size: 13px;
-		margin-top:3px !important;
-		border-radius: 7px;
-	}
+.profile_content {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	padding: 0 0 0 10px;
+	background-color: #f1f1f1;
+	font-size: 13px;
+	margin-top:3px !important;
+	border-radius: 7px;
+}
 
-	.profile_content_show {
-		border-radius: 7px;
-		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-		overflow: hidden;
-		background-color: #f1f1f1;
-		font-size: 13px;
-		display: show;
-		padding: 0 0 0 10px;
-		margin-top: 3px !important;
-  }
+.profile_content_show {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 13px;
+	display: show;
+	padding: 0 0 0 10px;
+	margin-top: 3px !important;
+}
 
 img.center {
 	text-align:center;
@@ -374,7 +374,7 @@ a.light {
 	margin:0 auto;
 }
 
-/* #header {
+ #header {
 	background-color: #fff;
 	width: auto;
 	padding:0;
@@ -410,20 +410,22 @@ a.light {
 	text-decoration:none !important;
 }
 
+#header-goto {
+	margin: 40px 0 0 auto;
+}
+
 .nav-wrap{
 	display: flex;
 	justify-content: space-around;
 	flex-wrap: wrap;
 	overflow: hidden;
 	border-radius: 7px;
-	background-color: #777;
-	margin: 30px 0 0 auto;
-	width: 70%;
+	background-color: #0e8805;
+	width: auto;
 }
 
 #navSubMenu{
-	float: left;
-	color: #f2f2f2 !important;
+	color: #f2f2f2;
 	font-weight: bold;
 	text-align: center;
 	padding: 10px 12px;
@@ -437,8 +439,7 @@ a.light {
 	justify-content: space-around;
 	flex-wrap: wrap;
 	overflow: hidden;
-	background-color: #777;
-	}
+}
 
 .nav-tab a {
 	float: left;
@@ -450,10 +451,16 @@ a.light {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 }
 
-.nav-tab a:hover {
-	background-color: #ddd;
-	color: black;
+#navSubMenu:hover {
+	cursor: pointer;
+}
+
+.nav-tab a:hover, #navSubMenu:hover {
+	background-color: rgba(255, 255, 255, 0.8);
+	border-radius: 15px 0 15px 0;
+	color: rgb(0, 83, 115) !important;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-decoration: none;
 }
 
 .nav-tabActive {
@@ -473,7 +480,13 @@ a.light {
 	display: flex;
 	flex-direction: column;
 	position: absolute;
-	overflow : auto;
+	overflow: auto;
+	margin-top: 25px;
+	width: auto;
+	z-index: 999;
+	background-color: #0e8805;
+	border-radius: 7px;
+	border: 1px solid black;
 }
 
 #nav-drop {
@@ -485,80 +498,19 @@ a.light {
 	color:#009902;
 }
 
-#navSubMenu:hover div#nav-drop {
-	position: absolute;
-	margin-top: 25px;
-	width: 100px;
-	z-index: 999;
-	background-color: #555;
-	visibility: visible;
-	border-radius: 7px;
-}
-
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
 	#navSubMenu:hover div#nav-drop {
-		margin-top: 5px !important;
+        margin-top: 10px !important;
+    }
+    #navSubMenu div#nav-drop {
+        margin-top: 10px !important;
 	}
 }
 
 #header-goto a:hover {
 	background-color: rgba(255, 255, 255, 0.75);
 	border-radius: 15px 0 15px 0;
-} */
-
-#header {
-	background-color: #fff;
-	width: auto;
-	padding:0;
-	margin:0;
-	text-align: left;
-}
-#header-container {
-	padding-left:0;
-	background-color: #fff;
-	height:70px;
-	padding-right:0;
-	padding-top:6px;
-	padding-bottom:4px;
-	margin-left: auto;
-	margin-right: auto;
-	margin-top:0;
-	margin-bottom:0;
-	max-width: 800px;
-}
-#logo {
-	padding:0;
-	margin:0;
-	position:absolute;
-	vertical-align:middle;
-	border: 0;
-}
-#header-welcome {
-	padding:0;
-	margin:0;
-	text-align:right;
-	font-style: italic;
-}
-#header-welcome a {
-	font-weight:normal !important;
-	text-decoration:none !important;
-}
-#header-goto {
-	padding:0;
-	margin:0;
-	margin-top: 38px;
-	text-align:right;
-	clear:right;
-}
-#header-goto a {
-	margin-left: 14px;
-}
-#header-goto a.current {
-	color:#000;
-}
-#header-goto a.current:hover {
-	color:#009902;
-}
+} 
 
 #seperator {
 	margin: 0;
@@ -614,28 +566,22 @@ div.content-notice {
 	border: 1px solid #aaa;
 	padding: 8px 15px;
 	border-radius: 7px;
-
 }
 div.content-board-header, div.content-home-header {
 	margin-top:6px;
 	border-bottom:0;
 	border-radius: 7px;
-
-	}
+}
 div.content-board-header {
 	border: 1px solid #aaa;
 	background-color:#f5f5f5;
 	border-bottom:0;
-	}
+}
 div.content-follow-on {
 	margin-top:0 !important;
 	border-top:0 !important;
-	}
-div.content-home-header {
 }
-div.content-home-updates {
 
-}
 .content-slotBottom {
 	position: relative;
 	margin-left: auto;
@@ -646,11 +592,11 @@ div.content-home-updates {
 	padding-left: 24px;
 	padding-right: 24px;
 	border: 1px solid #aaa;
-	}
+}
 .content-slot {
 	border-top:0;
 	margin-top:0;
-	}
+}
 #content-publicforum {
 	max-width: 710px;
 	height: auto;
@@ -672,7 +618,7 @@ div.forum {
 
 #chatboxtabs {
 	font-size: 14px !important;
-	}
+}
 
 div.gamelistings-tabs {
 	width: auto;
@@ -717,7 +663,6 @@ div.gamelistings-tabs a {
 	border-top:1px solid #aaa;
 	border-left:1px solid #aaa;
 	border-right:1px solid #aaa;
-
 	border-bottom:2px solid #006699 ! important;
 }
 div#chatboxtabs a {
@@ -737,8 +682,6 @@ div.gamelistings-tabs a:hover {
 	border-left:1px solid #009902 ! important;
 	border-right:1px solid #009902 ! important;
 }
-
-
 .gamelistings-tabsNew {
 	display: flex;
 	justify-content: space-around;
@@ -746,7 +689,7 @@ div.gamelistings-tabs a:hover {
 	overflow: hidden;
 	border-radius: 7px;
 	background-color: #333;
-	}
+}
 
 .gamelistings-tabsNew a {
 	float: left;
@@ -776,7 +719,6 @@ div.gamelistings-tabs a:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 }
 
-
 .postbox {
 	text-align:center;
 }
@@ -790,7 +732,6 @@ div.gamelistings-tabs a:hover {
 }
 .threadborder1 {
 	border: 1px solid #d1d1d1;
-	/* border color is background color subtract #393939 */
 }
 .threadborder2 {
 	border: 1px solid #cecece;
@@ -828,8 +769,6 @@ div.gamelistings-tabs a:hover {
 .leftRule {
 	border-left: 1px solid #aaa;
 }
-.bottomRule {
-}
 .message-subject {
 	font-size:15px;
 	color: #009902;
@@ -848,10 +787,6 @@ div.gamelistings-tabs a:hover {
 	float:right;
 	text-align:right;
 }
-.message-foot {
-}
-
-
 form {
 	margin:0;
 }
@@ -914,9 +849,6 @@ div.chatbox {
 div.chatbox td {
 	overflow:hidden;
 }
-div.chatboxnotabs {
-	border-top:1px solid #aaa;
-	}
 .chatboxMembersList {
 	font-size:12px;
 	text-align:center;
@@ -997,22 +929,22 @@ TD.army, div.army {
 	font-size: 14px;
 }
 
-  .faq_question:hover {
+.faq_question:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #555;
-  }
+}
 
-  .faq_answer {
-		padding: 0;
-		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-		display: none;
-		overflow: hidden;
-		background-color: #f1f1f1;
-		margin-top: 0px !important;
-		font-size: 14px;
-		border-radius: 7px;
-		padding: 0 0 0 10px;
-  }
+.faq_answer {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	margin-top: 0px !important;
+	font-size: 14px;
+	border-radius: 7px;
+	padding: 0 0 0 10px;
+}
 /* End of section for FAQ styling */
 
 /* Section for datc styling */
@@ -1103,6 +1035,92 @@ TD.army, div.army {
 }
 /* End of section for Hall of Fame styling */
 
+/* Section for donations page styling */
+.donations_title {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #777;
+	color: white;
+	cursor: pointer;
+	padding: 10px;
+	border: none;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+.donations_title:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #555;
+}
+
+.donations_content {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	padding: 0 0 0 10px;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	margin-top:0px !important;
+	border-radius: 7px;
+}
+
+.donations_content_show {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	padding: 0 0 0 10px;
+	margin-top:0px !important;
+}
+/* End of section for donations page styling */
+
+/* Section for help page styling */
+.help_title {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #777;
+	color: white;
+	cursor: pointer;
+	padding: 10px;
+	border: none;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+.help_title:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #555;
+}
+
+.help_content {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	padding: 0 0 0 10px;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	margin-top:0px !important;
+	border-radius: 7px;
+}
+
+.help_content_show {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	padding: 0 0 0 10px;
+	margin-top:0px !important;
+}
+/* End of section for help page styling */
+
 /* Section for contactUsDirect page styling */
 .contactUs {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -1126,7 +1144,6 @@ input[type="text"].contactUs, input[type="password"].contactUs, textarea.contact
 	border: 1px solid #c1c1c1;
 	color:#000000;
 }
-
 /* End of section for contactUsDirect page styling */
 
 /* Section for intro page */
@@ -1191,8 +1208,6 @@ input[type="text"].contactUs, input[type="password"].contactUs, textarea.contact
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	color: #009902 ! important;
 }
-
-
 /* End of section for homeNotice page */
 
 /* Section for user search page */
@@ -1208,23 +1223,6 @@ input[type="text"].contactUs, input[type="password"].contactUs, textarea.contact
 	font-size: 14px;
 	padding: 0 0 0 10px;
 	margin-top:0px !important;
-}
-
-.userSearch-submit {
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	color: #fff !important;
-	text-transform: uppercase;
-	background: #60a3bc !important;
-	padding: 5px;
-	border-radius: 50px;
-	display: inline-block;
-	border: none;
-}
-
-.userSearch-submit:hover {
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	text-shadow: 0px 0px 6px rgba(255, 255, 255, 1);
-	transition: all 0.4s ease 0s;
 }
 
 input[type="text"].userSearch, input[type="password"].userSearch, textarea.userSearch, select.userSearch {
@@ -1259,7 +1257,6 @@ input[type="text"].settings, input[type="password"].settings, textarea.settings,
 	color:#000000;
 }
 /* End of section for settings page */
-
 
 /* Section for credits page styling */
 .credits {
@@ -1331,32 +1328,22 @@ input[type="text"].settings, input[type="password"].settings, textarea.settings,
 	font-size: 14px;
 }
 
-  .rules_title:hover {
+.rules_title:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #555;
-  }
+}
 
-  .rules_content {
-		padding: 0;
-		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-		display: none;
-		overflow: hidden;
-		padding: 0 0 0 10px;
-		background-color: #f1f1f1;
-		font-size: 14px;
-		margin-top:0px !important;
-		border-radius: 7px;
-	}
-
-	.rules_content_show {
-		border-radius: 7px;
-		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-		overflow: hidden;
-		background-color: #f1f1f1;
-		font-size: 14px;
-		padding: 0 0 0 10px;
-		margin-top:0px !important;
-  }
+.rules_content {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	padding: 0 10px;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	margin-top:0px !important;
+	border-radius: 7px;
+}
 /* End of section for Rules styling */
 
 /* This section is for the new AdminCP and Mod tools */
@@ -1426,21 +1413,6 @@ li.modToolsformlisttitle {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	text-decoration: underline;
 }
-.modToolsform-submit {
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	color: #fff !important;
-	text-transform: uppercase;
-	background: #60a3bc !important;
-	padding: 5px;
-	border-radius: 50px;
-	display: inline-block;
-	border: none;
-}
-.modToolsform-submit:hover {
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	text-shadow: 0px 0px 6px rgba(255, 255, 255, 1);
-	transition: all 0.4s ease 0s;
-}
 
 .modToolsCollapsible {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -1452,20 +1424,20 @@ li.modToolsformlisttitle {
 	border: none;
 	text-align: left;
 	outline: none;
-  }
+}
 
-  .active, .modToolsCollapsible:hover {
+.active, .modToolsCollapsible:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #555;
-  }
+}
 
-  .modToolsContent {
+.modToolsContent {
 	padding: 0 10px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	display: none;
 	overflow: hidden;
 	background-color: #f1f1f1;
-  }
+}
 
 ul.modTools {
 	padding: 0;
@@ -1484,7 +1456,7 @@ ul.modTools {
 	overflow: hidden;
 	background-color: #333;
 	border-radius: 7px;
-	}
+}
 
 .topnav a {
 	float: left;
@@ -1517,24 +1489,24 @@ ul.modTools {
 
 /* This section is for the new advanced search page. */
   .SearchCollapsible {
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	background-color: #777;
-	color: white;
-	cursor: pointer;
-	padding: 10px;
-	width: 100%;
-	border: none;
-	text-align: left;
-	outline: none;
-	border-radius: 7px;
+		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+		background-color: #777;
+		color: white;
+		cursor: pointer;
+		padding: 10px;
+		width: 100%;
+		border: none;
+		text-align: left;
+		outline: none;
+		border-radius: 7px;
   }
 
-  .active, .SearchCollapsible:hover {
+.active, .SearchCollapsible:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #555;
 }
 
-  .advancedSearch {
+.advancedSearch {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	border-collapse: collapse;
 	font-size: 12px;
@@ -1565,13 +1537,13 @@ input[type="text"].advancedSearch, input[type="password"].advancedSearch, textar
 	min-width:35px;
 }
 
-  .advancedSearchContent {
+.advancedSearchContent {
 	padding: 0 10px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	display: none;
 	overflow: hidden;
 	background-color: #f1f1f1;
-  }
+}
 
 ul.advancedSearch {
 	padding: 0;
@@ -1610,11 +1582,11 @@ ul.advancedSearch {
 
 #points-scoring {
 	border-radius: 7px;
-    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-    overflow: hidden;
-    background-color: #f1f1f1;
-    padding: 0 0 0 10px;
-    margin-top: 0px !important;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	padding: 0 0 0 10px;
+	margin-top: 0px !important;
 }
 
 .scoring-text {
@@ -1624,9 +1596,7 @@ ul.advancedSearch {
 .scoring-h {
 	margin-left: 0 !important;
 }
-
 /* end of points and scoring systems page styling */
-
 
 span.orderNotice {
 	font-weight:bold;
@@ -1700,6 +1670,9 @@ input[id^="FinalizeButton"]{
 	}
 	#header-goto a{
 		display: inline-block;
+		margin-top: 5px;
+	}
+	#navSubMenu {
 		margin-top: 5px;
 	}
 	#seperator{
@@ -1800,8 +1773,9 @@ input[id^="FinalizeButton"]{
 	.nav-wrap {
 		width: 100% !important;
 		flex-wrap: wrap;
-		justify-content: left;
+		align-items: stretch;
 		margin-top: 5px;
+
 	}
 	.profileUsername {
 		text-align: center !important;

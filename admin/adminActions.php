@@ -100,6 +100,11 @@ class adminActions extends adminActionsForms
 				'description' => 'Resets a users password',
 				'params' => array('userID'=>'User ID'),
 			),
+			'updateEmergencyDate' => array(
+				'name' => 'Adjust Emergency Date',
+				'description' => 'Enter 0 to grant the user another emergency pause, enter 1 to stop this user from having emergency pauses.',
+				'params' => array('userID'=>'User ID','setting'=>'Setting'),
+			),
 			'setProcessTimeToPhase' => array(
 				'name' => 'Reset process time',
 				'description' => 'Set a game process time to now + the phase length, resetting the turn length',
@@ -1037,7 +1042,12 @@ class adminActions extends adminActionsForms
 				if(count($Game->Members->ByID)==1)
 					processGame::eraseGame($Game->id);
 				else
+				{
 					$DB->sql_put("DELETE FROM wD_Members WHERE gameID = ".$Game->id." AND userID = ".$userID);
+					
+					// If there are still people in the game reset the min bet in case the game was full to readd the join button.
+					$Game->resetMinimumBet();
+				}
 			}
 			elseif( $Game->processStatus != 'Paused' and $Game->phase != 'Finished' )
 			{
@@ -1048,7 +1058,7 @@ class adminActions extends adminActionsForms
 
 					// It is worth adding an extension
 					$DB->sql_put(
-						"UPDATE wD_Games
+						"UPDATE wD_Games 
 						SET processTime = ".time()." + phaseMinutes*60
 						WHERE id = ".$Game->id
 					);
@@ -1061,15 +1071,10 @@ class adminActions extends adminActionsForms
 				}
 			}
 
-			// IF the game is still running first remove the player from the game and reset the minimum bet so other can join.
+			// If the game is still running first remove the player from the game and reset the minimum bet so other can join.
 			if( $Game->phase != 'Finished' && $Game->phase != 'Pre-game')
 			{
 				$Game->Members->ByUserID[$userID]->setLeft(1);
-				$Game->resetMinimumBet();
-			}
-			else if($Game->phase == 'Pre-game')
-			{
-				// If there are still people in the game reset the min bet in case the game was full to readd the join button.
 				$Game->resetMinimumBet();
 			}
 
@@ -1116,6 +1121,18 @@ class adminActions extends adminActionsForms
 		}
 
 		return l_t('This user was transferred %s %s.',$points,libHTML::points());
+	}
+	public function updateEmergencyDate(array $params)
+	{
+		global $DB;
+
+		$userID = (int)$params['userID'];
+		$setting = (int)$params['setting'];
+		$targetUser = new User($userID);
+		
+		if( $setting >= 0 ) { $targetUser->updateEmergencyPauseDate($setting); }
+		
+		return 'This users emergency pause date was set to '.$setting;
 	}
 	public function unbanUser(array $params)
 	{
