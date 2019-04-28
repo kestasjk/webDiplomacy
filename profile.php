@@ -666,16 +666,7 @@ if( $User->type['Moderator'] )
 	}
 }
 
-list($serverHasPHPBB) = $DB->sql_row("SELECT count(1) FROM information_schema.tables WHERE table_name = 'phpbb_users'");
 
-if ($serverHasPHPBB == 1)
-{
-	list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
-	if ($newForumId > 0)
-	{
-		print '<p class="profileCommentURL"><strong><a href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumId.'">New Forum Profile</a></strong></p>';
-	}
-}
 
 if ( $UserProfile->comment )
 	print '<p class="profileComment">"'.$UserProfile->comment.'"</p>';
@@ -767,11 +758,83 @@ print '<li>&nbsp;</li>';
 //print '<li>&nbsp;</li>';
 
 print '</li></ul></p></div><div style="clear:both"></div></div>';
+print '<div id="profile-separator"></div>';
+
+if( !isset(Config::$customForumURL) ) 
+{
+	if ( $User->type['User'] && $User->id != $UserProfile->id) 
+	{
+		print '<div class="hr"></div>';
+		print '<a name="messagebox"></a>';
+		if ( isset($_REQUEST['message']) && $_REQUEST['message'] ) 
+		{
+			if ( ! libHTML::checkTicket() ) 
+			{
+				print '<p class="notice">'.l_t('You seem to be sending the same message again, this may happen if you refresh '.
+					'the page after sending a message.').'</p>';
+			} 
+			else 
+			{
+				if ( $UserProfile->sendPM($User, $_REQUEST['message']) ) 
+				{
+	                print '<p class="notice">'.l_t('Private message sent successfully.').'</p>';
+	            } 
+	            else 
+	            {
+	                print '<p class="notice">'.l_t('Private message could not be sent. You may be silenced or muted.').'</p>';
+	            }
+			}
+		}
+		print '<div style="margin-left:20px"><ul class="formlist">';
+		print '<li class="formlisttitle">'.l_t('Send private-message:').'</li>
+			<li class="formlistdesc">'.l_t('Send a message to this user.').'</li>';
+		print '<form action="profile.php?userID='.$UserProfile->id.'#messagebox" method="post">
+			<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
+			<textarea name="message" style="width:80%" rows="4"></textarea></li>
+			<li class="formlistfield"><input type="submit" class="form-submit" value="'.l_t('Send').'" /></li>
+			</form>
+			</ul>
+			</div>';
+	}
+}
+else
+{
+	if ( $User->type['User'] && $User->id != $UserProfile->id)
+	{
+		list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
+		if ($newForumId > 0)
+		{
+			print '
+			<div id="profile-forum-link-container">
+				<div class="profile-forum-links">
+					<a class="profile-link" href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumId.'">
+						<button class="form-submit" id="view-forum-profile">
+							New Forum Profile
+						</button>
+					</a>
+				</div>';
+			print '
+				<div class="profile-forum-links">
+					<a class="profile-link" href="/contrib/phpBB3/ucp.php?i=pm&mode=compose&u='.$newForumId.'">
+						<button class="form-submit" id="send-pm">
+							Send a message to this user
+						</button>
+					</a>
+				</div>
+			</div>';
+		} 
+		else 
+		{
+			print '<p class="profileCommentURL">This user cannot currently receive messages.</p>';
+		}
+	}
+}
 
 // Start interactive area:
 
 if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 {
+	print '<div id="profile-separator" style="margin-top: 20px;"></div>';
 	$modActions=array();
 
 	if ( $User->type['Admin'] )
@@ -787,7 +850,7 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 
 	if($modActions)
 	{
-		print '<div class="hr"></div>';
+		
 		print '<p class="notice">';
 		print implode(' - ', $modActions);
 		print '</p>';
@@ -817,46 +880,9 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 		print '</li></ul></p>';
 	}
 }
+
 print '</div>';
-if ( $User->type['User'] && $User->id != $UserProfile->id)
-{
-	print '<div class="hr"></div>';
 
-	print '<a name="messagebox"></a>';
-
-	if ( isset($_REQUEST['message']) && $_REQUEST['message'] )
-	{
-		if ( ! libHTML::checkTicket() )
-		{
-			print '<p class="notice">'.l_t('You seem to be sending the same message again, this may happen if you refresh '.
-				'the page after sending a message.').'</p>';
-		}
-		else
-		{
-			if ( $UserProfile->sendPM($User, $_REQUEST['message']) )
-            {
-                print '<p class="notice">'.l_t('Private message sent successfully.').'</p>';
-            }
-			else 
-            {
-                print '<p class="notice">'.l_t('Private message could not be sent. You may be silenced or muted.').'</p>';
-            }
-
-		}
-	}
-
-	print '<div style="margin-left:20px"><ul class="formlist">';
-	print '<li class="formlisttitle">'.l_t('Send private-message:').'</li>
-		<li class="formlistdesc">'.l_t('Send a message to this user.').'</li>';
-
-	print '<form action="profile.php?userID='.$UserProfile->id.'#messagebox" method="post">
-		<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
-		<textarea name="message" style="width:80%" rows="4"></textarea></li>
-		<li class="formlistfield"><input type="submit" class="form-submit" value="'.l_t('Send').'" /></li>
-		</form>
-		</ul>
-		</div>';
-}
 
 ?>
 <script type="text/javascript">
