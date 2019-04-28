@@ -760,7 +760,7 @@ print '<li>&nbsp;</li>';
 print '</li></ul></p></div><div style="clear:both"></div></div>';
 print '<div id="profile-separator"></div>';
 
-if( isset(Config::$customForumURL) ) 
+if( !isset(Config::$customForumURL) ) 
 {
 	if ( $User->type['User'] && $User->id != $UserProfile->id) 
 	{
@@ -801,8 +801,7 @@ else
 {
 	if ( $User->type['User'] && $User->id != $UserProfile->id)
 	{
-		$newForumId = 1;
-		// list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
+		list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
 		if ($newForumId > 0)
 		{
 			print '
