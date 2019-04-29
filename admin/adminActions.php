@@ -219,6 +219,11 @@ class adminActions extends adminActionsForms
 				'name' => 'API - Set API key permission',
 				'description' => 'Set an API permission for a user. (getStateOfAllGames, submitOrdersForUserInCD, listGamesWithPlayersInCD)',
 				'params' => array('userID'=>'User ID', 'permissionName' => 'Permission name', 'permissionValue' => 'Permission value ("Yes" or "No").'),
+			),
+			'showApiKeys' => array(
+				'name' => 'API - Show API key and permissions for a user',
+				'description' => 'Display API key and permissions for a user.',
+				'params' => array('userID'=>'User ID'),
 			)
 		);
 
@@ -1241,6 +1246,29 @@ class adminActions extends adminActionsForms
 		$DB->sql_put("COMMIT");
 		return l_t('Permissions successfully set.');
 	}
+
+	public function showApiKeys($params) {
+		global $DB;
+		$userID = intval($params['userID']);
+		$row = $DB->sql_hash("
+		SELECT
+		       k.apiKey,
+		       p.getStateOfAllGames,
+		       p.listGamesWithPlayersInCD,
+		       p.submitOrdersForUserInCD
+		FROM wD_ApiKeys AS k
+		JOIN wD_ApiPermissions AS p ON (k.userID = p.userID)
+		WHERE k.userID = ".$userID."
+		");
+		if (!$row)
+			return l_t('No api Key for user '.$userID.'.');
+		return l_t("
+		<div><strong>User ID</strong>: ".$userID."</div>
+		<div><strong>API key</strong>: ".$row['apiKey']."</div>
+		<div><strong>getStateOfAllGames</strong>: ".$row['getStateOfAllGames']."</div>
+		<div><strong>listGamesWithPlayersInCD</strong>: ".$row['listGamesWithPlayersInCD']."</div>
+		<div><strong>submitOrdersForUserInCD</strong>: ".$row['submitOrdersForUserInCD']."</div>
+		");
 
 	public function recalculateUserRR(array $params)
 	{
