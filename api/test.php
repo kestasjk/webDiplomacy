@@ -33,7 +33,7 @@ class ApiCall {
 		'players/cd' => 'GET',
 		'players/missing_orders' => 'GET',
 		'game/status' => 'GET',
-		'game/orders' => 'POST'
+		'game/orders' => 'JSON'
 	);
 
 	/**
@@ -84,11 +84,15 @@ class ApiCall {
 			return $this->errorToJson('Unknown route.', 500);
 		$method = ApiCall::$routes[$route];
 		$authorization = "Authorization: Bearer ".$this->apiKey;
+		$headers = array($authorization);
 		$curl = curl_init();
-		curl_setopt($curl, CURLOPT_HTTPHEADER, array($authorization));
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		$url = $this->siteUrl.'/api.php?route='.$route;
-		if ($method == 'POST') {
+		if ($method == 'JSON') {
+			$json_string = json_encode($params);
+			curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
+			curl_setopt($curl, CURLOPT_POSTFIELDS, $json_string);
+			$headers[] = 'Content-Type: application/json';
+		} else if ($method == 'POST') {
 			curl_setopt($curl, CURLOPT_POST, 1);
 			curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
 		} else if (!empty($params)) {
@@ -97,6 +101,8 @@ class ApiCall {
 				$paramsArray[] = urlencode($key).'='.urlencode($value);
 			$url .= '&'.implode('&', $paramsArray);
 		}
+		curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curl, CURLOPT_URL, $url);
 		$response = curl_exec($curl);
 		$httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -130,8 +136,17 @@ class ApiCall {
 	/**
 	 * Make an API call to entry `game/orders`.
 	 */
-	public function setOrders($gameID, $turn, $phase, $countryID, $body) {
-		return $this->call('game/orders', array('gameID' => $gameID, 'turn' => $turn, 'phase' => $phase, 'countryID' => $countryID, 'body' => $body));
+	public function setOrders($gameID, $turn, $phase, $countryID, $orders, $ready = null) {
+		return $this->call(
+			'game/orders',
+			array(
+				'gameID' => $gameID,
+				'turn' => $turn,
+				'phase' => $phase,
+				'countryID' => $countryID,
+				'orders' => $orders,
+				'ready' => $ready
+			));
 	}
 }
 
@@ -144,18 +159,20 @@ $apiCall = new ApiCall('http://127.0.0.1/www/private-webDiplomacy', 'xispFJujBFN
 $output['players/cd'] = json_decode($apiCall->listGamesWithPlayersInCD());
 $output['players/missing_orders'] = json_decode($apiCall->listGamesWithMissingOrders());
 $output['game/status'] = json_decode($apiCall->getGamesStates(1, 2));
-$output['game/orders'] = json_decode($apiCall->setOrders(1, 1, 'Builds', 2,
-	json_encode(array(
-		'orders' => array(
-			array(
-				'terrID' => 46,
-				'type' => 'Build Fleet',
-				'fromTerrID' => null,
-				'toTerrID' => 46,
-				'viaConvoy' => null
-			)
-		),
-	))));
+$output['game/orders'] = json_decode($apiCall->setOrders(
+	1,
+	1,
+	'Builds',
+	2,
+	array(
+		array(
+			'terrID' => 46,
+			'type' => 'Build army',
+			'fromTerrID' => null,
+			'toTerrID' => 46,
+			'viaConvoy' => null
+		)
+	), 'No'));
 header('Content-Type: application/json');
 print json_encode($output);
 ?>

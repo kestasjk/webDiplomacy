@@ -145,7 +145,8 @@ abstract class ApiEntry {
 	private $route;
 
 	/**
-	 * API entry type: either 'GET' or 'POST'.
+	 * API entry type: either 'GET', 'POST' or 'JSON'.
+	 * If 'JSON', then entry data should be a JSON-encoded string in raw HTTP body (retrievable from 'php://input').
 	 * @var string
 	 */
 	private $type;
@@ -171,7 +172,7 @@ abstract class ApiEntry {
 	 * @throws Exception - if invalid type or if requirements is not an array.
 	 */
 	public function __construct($route, $type, $databasePermissionField, $requirements) {
-		if (!in_array($type, array('GET', 'POST')))
+		if (!in_array($type, array('GET', 'POST', 'JSON')))
 			throw new ServerInternalException('Invalid API entry type');
 		if (!is_array($requirements))
 			throw new ServerInternalException('API entry field names must be an array.');
@@ -200,9 +201,19 @@ abstract class ApiEntry {
 	/**
 	 * Return an array of actual API parameters values, retrieved from $_GET or $_POST, depending on API entry type.
 	 * @return array
+	 * @throws RequestException
 	 */
 	public function getArgs() {
-		$rawArgs = $this->type == 'GET' ? $_GET : $_POST;
+		$rawArgs = array();
+		if ($this->type == 'GET')
+			$rawArgs = $_GET;
+		else if ($this->type == 'POST')
+			$rawArgs = $_POST;
+		else if ($this->type == 'JSON') {
+			$rawArgs = json_decode(file_get_contents("php://input"), true);
+			if (!$rawArgs)
+				throw new RequestException('Invalid JSON request data.');
+		}
 		$selectedArgs = array();
 		foreach ($this->requirements as $fieldName) {
 			$selectedArgs[$fieldName] = isset($rawArgs[$fieldName]) ? $rawArgs[$fieldName] : null;
@@ -229,7 +240,7 @@ abstract class ApiEntry {
 			throw new RequestException('No game ID available for this request.');
 		$args = $this->getArgs();
 		$gameID = $args['gameID'];
-		if ($gameID == null || !ctype_digit($gameID))
+		if ($gameID == null)
 			throw new RequestException('Game ID not provided.');
 		$gameID = intval($gameID);
 		$variant = libVariant::loadFromGameID($gameID);
@@ -301,7 +312,12 @@ class GetGamesStates extends ApiEntry {
  */
 class SetOrders extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/orders', 'POST', 'submitOrdersForUserInCD', array('gameID', 'turn', 'phase', 'countryID', 'body'));
+		parent::__construct(
+			'game/orders',
+			'JSON',
+			'submitOrdersForUserInCD',
+			array('gameID', 'turn', 'phase', 'countryID', 'orders', 'ready'));
+			// 'ready' is optional.
 	}
 	/**
 	 * @throws Exception
@@ -315,20 +331,13 @@ class SetOrders extends ApiEntry {
 		$turn = $args['turn'];
 		$phase = $args['phase'];
 		$countryID = $args['countryID'];
-		$body = $args['body'];
-		if (!$body)
-			throw new RequestException('No body given.');
-		$body = json_decode($body);
-		if (!property_exists($body, 'orders'))
-			throw new RequestException('Missing body orders.');
-		if (!is_array($body->orders))
+		$orders = $args['orders'];
+		$ready = $args['ready'];
+		if (!is_array($orders))
 			throw new RequestException('Body field `orders` is not an array.');
-		if (property_exists($body, 'ready')
-			&& (!is_string($body->ready) || !in_array($body->ready, array('Yes', 'No'))))
+		if ($ready && (!is_string($ready) || !in_array($ready, array('Yes', 'No'))))
 			throw new RequestException('Body field `ready` is not either `Yes` or `No`.');
 		if ($countryID != null) {
-			if (!ctype_digit($countryID))
-				throw new RequestException('Country ID not provided.');
 			$countryID = intval($countryID);
 		}
 		$game = $this->getAssociatedGame();
@@ -363,16 +372,16 @@ class SetOrders extends ApiEntry {
 			if ($terrID !== null)
 				$territoryToOrder[$terrID] = $orderID;
 		}
-		foreach ($body->orders as $order) {
+		foreach ($orders as $order) {
 			$newOrder = array();
 			foreach (array('terrID', 'type', 'fromTerrID', 'toTerrID', 'viaConvoy') as $bodyField) {
-				if (!property_exists($order, $bodyField))
+				if (!array_key_exists($bodyField, $order))
 					throw new RequestException('Missing order info: ' . $bodyField);
-				$newOrder[$bodyField] = $order->$bodyField;
+				$newOrder[$bodyField] = $order[$bodyField];
 			}
-			if (array_key_exists($order->terrID, $territoryToOrder)) {
+			if (array_key_exists($order['terrID'], $territoryToOrder)) {
 				// There is an order associated to this territory. Get this order ID.
-				$newOrder['id'] = $territoryToOrder[$order->terrID];
+				$newOrder['id'] = $territoryToOrder[$order['terrID']];
 			} else {
 				// No order yet associated to this territory.
 				// Check if there a free (non-associated) orders.
@@ -387,15 +396,15 @@ class SetOrders extends ApiEntry {
 				}
 				// If no free orders, raise an exception.
 				if ($freeOrderID === null)
-					throw new RequestException('Unknown territory ID `'.$order->terrID.'` for country `'.$countryID.'`.');
+					throw new RequestException('Unknown territory ID `'.$order['terrID'].'` for country `'.$countryID.'`.');
 				// Free order. Use it and update related dictionaries.
 				$newOrder['id'] = $freeOrderID;
-				$orderToTerritory[$freeOrderID] = $order->terrID;
-				$territoryToOrder[$order->terrID] = $freeOrderID;
+				$orderToTerritory[$freeOrderID] = $order['terrID'];
+				$territoryToOrder[$order['terrID']] = $freeOrderID;
 			}
-			if (!array_key_exists($order->terrID, $territoryToOrder))
-				throw new RequestException('Unknown territory ID `'.$order->terrID.'` for country `'.$countryID.'`.');
-			$newOrder['id'] = $territoryToOrder[$order->terrID];
+			if (!array_key_exists($order['terrID'], $territoryToOrder))
+				throw new RequestException('Unknown territory ID `'.$order['terrID'].'` for country `'.$countryID.'`.');
+			$newOrder['id'] = $territoryToOrder[$order['terrID']];
 			$updatedOrders[] = $newOrder;
 		}
 
@@ -414,9 +423,13 @@ class SetOrders extends ApiEntry {
 		$orderInterface->load();
 		$orderInterface->set(json_encode($updatedOrders));
 		$results = $orderInterface->validate();
+
+		if ($results['invalid'])
+			throw new RequestException('Found some invalid orders.');
+
 		$orderInterface->writeOrders();
-		if (property_exists($body, 'ready'))
-			$orderInterface->orderStatus->Ready = ($body->ready == 'Yes');
+		if ($ready)
+			$orderInterface->orderStatus->Ready = ($ready == 'Yes');
 
 		$orderInterface->writeOrderStatus();
 		$DB->sql_put("COMMIT");
