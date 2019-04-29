@@ -21,8 +21,8 @@
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 /**
- * This class will enable adminActions and adminActionsForum moderator 
- * tasks to be performed, but also allow tasks which only admins should 
+ * This class will enable adminActions and adminActionsForum moderator
+ * tasks to be performed, but also allow tasks which only admins should
  * be able to perform.
  * This will be included anyway, but the class will only be initialized if
  * the user is an admin.
@@ -57,7 +57,7 @@ class adminActionsRestricted extends adminActionsForum
 			'clearAccessLogs' => array(
 				'name' => 'Clear access logs',
 				'description' => 'Clears access log table of logs older than 30 days.</br>
-					<em>WARNING:</em> Doing this will make catching cheaters difficult or impossible. 
+					<em>WARNING:</em> Doing this will make catching cheaters difficult or impossible.
 					If possible, please take a backup if possible before clearing this table.',
 				'params' => array(),
 			),
@@ -65,7 +65,7 @@ class adminActionsRestricted extends adminActionsForum
 				'name' => 'Clear admin logs',
 				'description' => 'Clears admin log table.</br>
 					<em>WARNING:</em> Doing this removes the record of Moderator actions from the site.
-					This makes referencing past actions impossible, and damages moderator ability to function. 
+					This makes referencing past actions impossible, and damages moderator ability to function.
 					If possible, please take a backup if possible before clearing this table.',
 				'params' => array(),
 			),
@@ -127,15 +127,29 @@ class adminActionsRestricted extends adminActionsForum
 			),
 			'notice' => array(
 				'name' => 'Toggle site-wide notice',
-				'description' => 'Toggle the notice which is displayed in a noticebar across the whole site. The
-					notice itself can be set in config.php',
+				'description' => 'Toggle the notice which is displayed in a noticebar across the whole site.',
 				'params' => array(),
+			),
+			'noticeMessage' => array(
+				'name' => 'Change site-wide notice message',
+				'description' => 'Sets the notice which is displayed in a noticebar across the whole site.',
+				'params' => array('message'=>'Message'),
 			),
 			'maintenance' => array(
 				'name' => 'Toggle maintenance',
 				'description' => 'Toggle maintenance mode, which makes the server inaccessible except to admins
 					so changes can be made.',
 				'params' => array(),
+			),
+			'maintenanceMessage' => array(
+				'name' => 'Change maintenance message',
+				'description' => 'Change the message that is displayed while the site is undergoing maintenance.',
+				'params' => array('message'=>'Message'),
+			),
+			'panicMessage' => array(
+				'name' => 'Change panic message',
+				'description' => 'Change the message that is displayed while the site is in panic mode.',
+				'params' => array('message'=>'Message'),
 			),
 			'globalAddTime' => array(
 				'name' => 'Add time to all games',
@@ -170,13 +184,13 @@ class adminActionsRestricted extends adminActionsForum
 			'recreateUnitDestroyIndex' => array(
 				'name' => 'Recreate the destroy unit indexes',
 				'description' => 'Refreshes the unit destroy indexes for a certain map ID. This will generally only
-					be run if there has been a bug found in the unit destroy index generation code which requires 
+					be run if there has been a bug found in the unit destroy index generation code which requires
 					the indexes to be recreated.<br />
 					Note that this uses the generic installation code, so if there are any variant-specific modifications
 					running this may give unpredictable results. Please confirm with the variant maintainer before
 					using this admin action.',
 				'params' => array('mapID'=>'Map ID'),
-			),		
+			),
 			'recalculateRR' => array(
 				'name' => 'Recalculate reliability ratings',
 				'description' => 'Updates the reliability ratings for all users.',
@@ -206,7 +220,7 @@ class adminActionsRestricted extends adminActionsForum
 	public function backupGame(array $params)
 	{
 		global $DB;
-		
+
 		require_once(l_r('objects/game.php'));
 
 		$gameID = (int)$params['gameID'];
@@ -220,7 +234,7 @@ class adminActionsRestricted extends adminActionsForum
 	public function restoreGameConfirm(array $params)
 	{
 		global $DB;
-		
+
 		require_once(l_r('objects/game.php'));
 		$Variant=libVariant::loadFromGameID($params['gameID']);
 		$Game = $Variant->Game($params['gameID']);
@@ -230,7 +244,7 @@ class adminActionsRestricted extends adminActionsForum
 	public function restoreGame(array $params)
 	{
 		global $DB;
-		
+
 		require_once(l_r('gamemaster/game.php'));
 
 		$gameID = (int)$params['gameID'];
@@ -248,7 +262,7 @@ class adminActionsRestricted extends adminActionsForum
 	public function wipeBackups(array $params)
 	{
 		global $DB;
-		
+
 		require_once(l_r('gamemaster/game.php'));
 
 		processGame::wipeBackups();
@@ -319,6 +333,15 @@ class adminActionsRestricted extends adminActionsForum
 		return l_t('Maintenance mode '.($Misc->Maintenance?'turned on':'turned off'));
 	}
 
+	public function maintenanceMessage(array $params)
+	{
+		global $DB;
+		$message = $params['message'];
+		$message = $DB->escape($message, $htmlAllowed=true);
+		$DB->sql_put("UPDATE wD_Config SET message='".$message."' WHERE name = 'Maintenance'");
+		return l_t('The maintenance message has been updated.');
+	}
+
 	public function notice(array $params)
 	{
 		global $Misc;
@@ -327,6 +350,24 @@ class adminActionsRestricted extends adminActionsForum
 		$Misc->write();
 
 		return l_t('Site-wide notice '.($Misc->Notice?'turned on':'turned off'));
+	}
+
+	public function noticeMessage(array $params)
+	{
+		global $DB;
+		$message = $params['message'];
+		$message = $DB->escape($message, $htmlAllowed=true);
+		$DB->sql_put("UPDATE wD_Config SET message='".$message."' WHERE name = 'Notice'");
+		return l_t('The site-wide notice message has been updated.');
+	}
+
+	public function panicMessage(array $params)
+	{
+		global $DB;
+		$message = $params['message'];
+		$message = $DB->escape($message);
+		$DB->sql_put("UPDATE wD_Config SET message='".$message."' WHERE name = 'Panic'");
+		return l_t('The panic message has been updated.');
 	}
 
 	public function clearErrorLogs(array $params)
@@ -534,7 +575,7 @@ class adminActionsRestricted extends adminActionsForum
 		 * - Remove the invalid maps in the mapstore
 		 */
 		$DB->sql_put("BEGIN");
-		
+
 		require_once(l_r('gamemaster/game.php'));
 		$Variant=libVariant::loadFromGameID($gameID);
 		$Game = $Variant->processGame($gameID);
@@ -611,32 +652,32 @@ class adminActionsRestricted extends adminActionsForum
 		return l_t('This game was moved from %s, %s back to Diplomacy, %s, and is ready to be reprocessed.',
 			$oldPhase,$Game->datetxt($oldTurn),$Game->datetxt($lastTurn));
 	}
-	
+
 	public function recreateUnitDestroyIndex(array $params)
 	{
 		global $DB;
-		
+
 		$mapID = (int)$params['mapID'];
-		
+
 		require_once("variants/install.php");
-		
+
 		InstallTerritory::loadExistingTerritories($mapID);
-		
+
 		// Generate the SQL before wiping & reinserting it
 		$unitDestroyIndexRecreateSQL = InstallTerritory::unitDestroyIndexSQL($mapID);
-		
+
 		$DB->sql_put("BEGIN");
-		
+
 		list($entriesBefore) = $DB->sql_row("SELECT COUNT(*) FROM wD_UnitDestroyIndex WHERE mapID = ".$mapID);
-		
+
  		$DB->sql_put("DELETE FROM wD_UnitDestroyIndex WHERE mapID = ".$mapID);
- 		
+
  		$DB->sql_put($unitDestroyIndexRecreateSQL);
- 		
+
  		list($entriesAfter) = $DB->sql_row("SELECT COUNT(*) FROM wD_UnitDestroyIndex WHERE mapID = ".$mapID);
- 		
+
 		$DB->sql_put("COMMIT");
-		
+
 		return l_t('The unit destroy indexes were recreated for map ID #%s ; there were %s entries before and there are currently %s entries.', $mapID, $entriesBefore, $entriesAfter);
 	}
 	public function recalculateRR(array $params)

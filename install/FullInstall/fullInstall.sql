@@ -594,19 +594,19 @@ CREATE TABLE `wD_Silences` (
 ) ENGINE = InnoDB ;
 
 
-ALTER TABLE `wD_ForumMessages` 
+ALTER TABLE `wD_ForumMessages`
 ADD `silenceID` INT UNSIGNED NULL DEFAULT NULL ;
 
 
-ALTER TABLE `wD_Users` 
+ALTER TABLE `wD_Users`
 ADD `silenceID` INT UNSIGNED NULL DEFAULT NULL ;
 
 
-ALTER TABLE `wD_Users` 
-CHANGE `type` `type` SET( 
-	'Banned', 'Guest', 'System', 'User', 'Moderator', 
-	'Admin', 'Donator', 'DonatorBronze', 'DonatorSilver', 
-	'DonatorGold', 'DonatorPlatinum', 'ForumModerator' 
+ALTER TABLE `wD_Users`
+CHANGE `type` `type` SET(
+	'Banned', 'Guest', 'System', 'User', 'Moderator',
+	'Admin', 'Donator', 'DonatorBronze', 'DonatorSilver',
+	'DonatorGold', 'DonatorPlatinum', 'ForumModerator'
 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'User';
 
 
@@ -616,7 +616,7 @@ ALTER TABLE `wD_PointsTransactions` CHANGE `type` `type` ENUM( 'Supplement', 'Be
 
 ALTER TABLE `wD_ForumMessages`  ADD `likeCount` MEDIUMINT UNSIGNED NOT NULL DEFAULT '0';
 
-UPDATE wD_ForumMessages fm 
+UPDATE wD_ForumMessages fm
 INNER JOIN (
 	SELECT f.id, COUNT(*) as likeCount
 	FROM wD_ForumMessages f
@@ -627,7 +627,7 @@ SET fm.likeCount = l.likeCount;
 
 ALTER TABLE `wD_Members` CHANGE `newMessagesFrom` `newMessagesFrom` SET( '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59', '60', '61', '62', '63' ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '';
 ALTER TABLE `wD_Members` CHANGE `votes` `votes` set('Draw','Pause','Cancel') NOT NULL DEFAULT '';
-ALTER TABLE `wD_Members` CHANGE `countryID` `countryID` TINYINT( 3 ) UNSIGNED NOT NULL DEFAULT 0;  
+ALTER TABLE `wD_Members` CHANGE `countryID` `countryID` TINYINT( 3 ) UNSIGNED NOT NULL DEFAULT 0;
 
 UPDATE `wD_Misc` SET `value` = '132' WHERE `name` = 'Version';
 
@@ -653,7 +653,7 @@ CREATE TABLE `wD_VariantData` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 ALTER TABLE `wD_VariantData` ADD PRIMARY KEY ( `variantID` , `gameID`, `systemToken` , `typeID` , `userID` , `offset` ) ;
-   
+
 INSERT INTO wD_VariantData (variantID, systemToken, userID, offset, val_float )
 SELECT 1, 948379409, u.id, 1, ChanceEngland
 FROM wD_Users u
@@ -773,3 +773,13 @@ ALTER TABLE `wD_UserOptions` ADD `orderSort` enum('No Sort','Alphabetical','Conv
 UPDATE `wD_Misc` SET `value` = '148' WHERE `name` = 'Version';
 
 ALTER TABLE `wD_Users` ADD `emergencyPauseDate` int(10) unsigned Default 0;
+
+UPDATE 'wD_Misc' SET 'value' = '149' WHERE 'name' = 'Version';
+
+CREATE TABLE `wD_Config` (
+  `name` enum('Notice','Panic','Maintenance','ServerOffline') NOT NULL,
+  `message` text NOT NULL,
+  PRIMARY KEY (`name`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+INSERT INTO `wD_Config` VALUES ('Notice','Default server-wide notice message.'),('Panic','Game processing has been paused and user registration has been disabled while a problem is resolved.'),('Maintenance',"Server is in maintenance mode; only admins can fully interact with the server."),('ServerOffline','');
