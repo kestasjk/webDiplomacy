@@ -321,11 +321,10 @@ class SetOrders extends ApiEntry {
 		$body = json_decode($body);
 		if (!property_exists($body, 'orders'))
 			throw new RequestException('Missing body orders.');
-		if (!property_exists($body, 'ready'))
-			throw new RequestException('Missing body ready.');
 		if (!is_array($body->orders))
 			throw new RequestException('Body field `orders` is not an array.');
-		if (!is_string($body->ready) || !in_array($body->ready, array('Yes', 'No')))
+		if (property_exists($body, 'ready')
+			&& (!is_string($body->ready) || !in_array($body->ready, array('Yes', 'No'))))
 			throw new RequestException('Body field `ready` is not either `Yes` or `No`.');
 		if ($countryID != null) {
 			if (!ctype_digit($countryID))
@@ -408,7 +407,7 @@ class SetOrders extends ApiEntry {
 			$turn,
 			$phase,
 			$countryID,
-			new setMemberOrderStatus(''),
+			$member->orderStatus,
 			null,
 			false
 		);
@@ -416,7 +415,8 @@ class SetOrders extends ApiEntry {
 		$orderInterface->set(json_encode($updatedOrders));
 		$results = $orderInterface->validate();
 		$orderInterface->writeOrders();
-		$orderInterface->orderStatus->Ready = ($body->ready == 'Yes');
+		if (property_exists($body, 'ready'))
+			$orderInterface->orderStatus->Ready = ($body->ready == 'Yes');
 
 		$orderInterface->writeOrderStatus();
 		$DB->sql_put("COMMIT");

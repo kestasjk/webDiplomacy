@@ -155,7 +155,6 @@ $output['game/orders'] = json_decode($apiCall->setOrders(1, 1, 'Builds', 2,
 				'viaConvoy' => null
 			)
 		),
-		'ready' => 'Yes'
 	))));
 header('Content-Type: application/json');
 print json_encode($output);
