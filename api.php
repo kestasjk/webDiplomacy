@@ -510,22 +510,28 @@ class ApiKey {
 	 */
 	public function assertHasPermissionFor(ApiEntry $apiEntry) {
 		$permissionField = $apiEntry->getPermissionField();
-		if ($permissionField != '' and !in_array($permissionField, ApiKey::$permissionFields))
-			throw new ServerInternalException('Unknown database permission name');
 
-		// Can only access if the permission field is '' (any user can call this function)
-        // Or if the required permission field is set
-        if (!$apiEntry->requiresGameID()) {
-             if ($permissionField != '' and !$this->permissions[$permissionField]) {
-                 throw new ClientForbiddenException("API entry denied for this user.");
-             }
+		if ($permissionField == '') {
+			// No permission field.
+			// If game ID is required, then user must be member of this game.
+			// Otherwise, any user can call this function.
+			if ($apiEntry->requiresGameID() && !isset($apiEntry->getAssociatedGame()->Members->ByUserID[$this->userID]))
+				throw new ClientForbiddenException('Access denied. User is not member of associated game.');
+		} else {
+			// Permission field available.
+			if (!in_array($permissionField, ApiKey::$permissionFields))
+				throw new ServerInternalException('Unknown permission name');
 
-        // If the permission field is false, checking if the user is linked to the requested game id
-        } elseif (!$this->permissions[$permissionField]) {
-            $game = $apiEntry->getAssociatedGame();
-            if (!isset($game->Members->ByUserID[$this->userID]))
-                throw new ClientForbiddenException('No permission for user and user is not member of associated game.');
-        }
+			// Permission field must be set for this user.
+			// Otherwise, game ID must be required and user must be member of this game.
+			if (!$this->permissions[$permissionField]) {
+				if (!$apiEntry->requiresGameID())
+					throw new ClientForbiddenException("Permission denied.");
+
+				if (!isset($apiEntry->getAssociatedGame()->Members->ByUserID[$this->userID]))
+					throw new ClientForbiddenException('Permission denied, and user is not member of associated game.');
+			}
+		}
 	}
 
 	/**
