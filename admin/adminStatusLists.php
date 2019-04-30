@@ -26,7 +26,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @package Admin
  */
 if( !isset($_REQUEST['full']) )
-	print '<p class = "modTools"> <a class="modTools" href="admincp.php?tab=Status Info&full=on">'.l_t('View all logs').'</a> 
+	print '<p class = "modTools"> <a class="modTools" href="admincp.php?tab=Status Info&full=on">'.l_t('View all logs').'</a>
 	</br> Error logs, banned users, and donator lists are limited to 50 items, use this link to see full result set.</p>';
 
 if( $User->type['Admin'] )
@@ -173,5 +173,13 @@ adminStatusList(l_t('Donors'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,
 	FROM wD_Users WHERE type LIKE '%Donator%'".(isset($_REQUEST['full'])?'':"LIMIT 50"));
 adminStatusList(l_t('Banned users'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 FROM wD_Users WHERE type LIKE '%Banned%'".(isset($_REQUEST['full'])?'':"LIMIT 50"));
+
+list($notice) = $DB->sql_row("SELECT message FROM wD_Config WHERE name = 'Notice'");
+list($panic) = $DB->sql_row("SELECT message FROM wD_Config WHERE name = 'Panic'");
+list($maintenance) = $DB->sql_row("SELECT message FROM wD_Config WHERE name = 'Maintenance'");
+print '<br/><br/>';
+print '<b>Site-Wide Notice: '.$notice.'</b><br/><br/>';
+print '<b>Panic Message: '.$panic.'</b><br/><br/>';
+print '<b>Maintenance Message: '.$maintenance.'</b><br/><br/>';
 
 ?>
