@@ -49,7 +49,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$form = $_REQUEST['newGame']; // This makes $form look harmless when it is unsanitized; the parameters must all be sanitized
 
 		$input = array();
-		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy','drawType','minimumReliabilityRating');
+		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy','drawType','minimumReliabilityRating','excusedMissedTurns');
 
 		if ( !isset($form['missingPlayerPolicy']) )
 			$form['missingPlayerPolicy'] = 'Normal';
@@ -159,6 +159,11 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		{
                  	throw new Exception(l_t("Your reliability rating is %s%%, so you can't create a game which requires players to have a RR of %s%% or greater.",($User->reliabilityRating),$input['minimumReliabilityRating']));
 		}
+		$input['excusedMissedTurns'] = (int) $input['excusedMissedTurns'];
+		if ( $input['excusedMissedTurns'] < 0 || $input['excusedMissedTurns'] > 4 )
+		{
+			throw new Exception(l_t("The excused missed turn number is too large or small; it must be between 0 and 4."));
+		}
 		// Create Game record & object
 		require_once(l_r('gamemaster/game.php'));
 		$Game = processGame::create(
@@ -173,7 +178,8 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input['pressType'], 
 			$input['missingPlayerPolicy'],
 			$input['drawType'],
-			$input['minimumReliabilityRating']);
+			$input['minimumReliabilityRating'],
+			$input['excusedMissedTurns']);
 
 		// Prevent temp banned players from making new games.
 		if ($User->tempBan > time())

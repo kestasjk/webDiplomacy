@@ -80,6 +80,11 @@ class adminActions extends adminActionsForms
 				'description' => 'Stops a player from joining or creating new games for that many days. To remove a temp ban, enter 0 days',
 				'params' => array('userID'=>'User ID', 'ban'=>'Days')
 			),
+			'modExcuseDelay' => array(
+				'name' => 'Mod Excuse Missed Turn',
+				'description' => 'Enter the user to excuse and the ID of the missed turn to excuse (found on RR breakdown page)',
+				'params' => array('userID'=>'User ID', 'excuseID'=>'Excuse ID','reason'=>'Reason')
+			),
 			'banUser' => array(
 				'name' => 'Ban a user',
 				'description' => 'Bans a user, setting his games to civil disorder, and removing his points.',
@@ -197,6 +202,26 @@ class adminActions extends adminActionsForms
 				'name' => 'Set a user as a game director',
 				'description' => 'Sets the given user ID to be the director of the given game ID (set to 0 to remove someone as game director). 
 					This will give them mod capabilities for this game.',
+				'params' => array('gameID'=>'Game ID','userID'=>'User ID'),
+			),
+			'excusedMissedTurnsIncreaseAll' => array(
+				'name' => 'Excused Missed Turns - Add for All',
+				'description' => 'Adds 1 excused missed turn to all members in the game.',
+				'params' => array('gameID'=>'Game ID'),
+			),
+			'excusedMissedTurnsDecreaseAll' => array(
+				'name' => 'Excused Missed Turns - Remove for All',
+				'description' => 'Removes 1 excused missed turn for all members in the game. If the user(s) do not have excused turns left nothing will happen.',
+				'params' => array('gameID'=>'Game ID'),
+			),
+			'excusedMissedTurnsIncrease' => array(
+				'name' => 'Excused Missed Turns - Add',
+				'description' => 'Adds 1 excused missed turn to a specific user in a game.',
+				'params' => array('gameID'=>'Game ID','userID'=>'User ID'),
+			),
+			'excusedMissedTurnsDecrease' => array(
+				'name' => 'Excused Missed Turns - Remove',
+				'description' => 'Removes 1 excused missed turn for a specific user in a game. If the user(s) do not have excused turns left nothing will happen.',
 				'params' => array('gameID'=>'Game ID','userID'=>'User ID'),
 			)
 		);
@@ -1097,11 +1122,27 @@ class adminActions extends adminActionsForms
 		
 		$userID = (int)$params['userID'];
 		$days   = (int)$params['ban'];
- 		$DB->sql_put("UPDATE wD_Users SET tempBan = ". ( time() + ($days * 86400) )." WHERE id=".$userID);
- 		if ($days == 0)
+		User::tempBanUser($userID, $days);
+		if ($days == 0)
 			return 'This user is now unblocked and can join and create games again.';
 			
-		return 'This user is now blocked from joining and creating games for <b>'.$days.'</b> days.';
+		return 'This user is now blocked from joining, rejoining, and creating games for <b>'.$days.'</b> days.';
+	}
+	public function modExcuseDelay(array $params)
+	{
+		global $DB;
+		
+		$userID = (int)$params['userID'];
+		$excuseID   = (int)$params['excuseID'];
+
+		if( !isset($params['reason']) || strlen($params['reason'])==0 )
+			return l_t('Couldn\'t ban user; no reason was given.');
+
+		$modReason = $DB->msg_escape($params['reason']);
+		
+		$DB->sql_put("UPDATE wD_MissedTurns SET modExcused = 1, modExcusedReason = '".$modReason."' WHERE id=".$excuseID);
+			
+		return 'This user\'s missed turn has been excused.';
 	}
 	public function givePoints(array $params)
 	{
@@ -1162,6 +1203,54 @@ class adminActions extends adminActionsForms
 		$DB->sql_put("UPDATE wD_Games SET directorUserID = ".$userID." WHERE id = ".$gameID);
 		
 		return l_t("The specified user ID has been assigned as the director for this game.");
+	}
+
+	public function excusedMissedTurnsIncreaseAll(array $params)
+	{
+		global $DB;
+
+		$gameID = (int)$params['gameID'];
+		
+		$DB->sql_put("UPDATE wD_Members SET excusedMissedTurns = excusedMissedTurns + 1 WHERE gameID = ".$gameID);
+		return l_t("All users in this game have been given an extra excused missed turn.");	
+	}
+
+	public function excusedMissedTurnsDecreaseAll(array $params)
+	{
+		global $DB;
+
+		$gameID = (int)$params['gameID'];
+		
+		$DB->sql_put("UPDATE wD_Members SET excusedMissedTurns = excusedMissedTurns - 1 WHERE gameID = ".$gameID." and excusedMissedTurns > 0");
+		return l_t("All users in this game have had an extra excused missed turn removed.");
+	}
+
+	public function excusedMissedTurnsIncrease(array $params)
+	{
+		global $DB;
+
+		$userIDtoUpdate = (int)$params['userID'];
+		$gameID = (int)$params['gameID'];
+		
+		if ($userIDtoUpdate > 0)
+		{
+			$DB->sql_put("UPDATE wD_Members SET excusedMissedTurns = excusedMissedTurns + 1 WHERE gameID = ".$gameID." and userID = ".$userIDtoUpdate);
+			return l_t("UserID: ".$userIDtoUpdate." has been given an extra excused missed turn in this game.");
+		}	
+	}
+
+	public function excusedMissedTurnsDecrease(array $params)
+	{
+		global $DB;
+
+		$userIDtoUpdate = (int)$params['userID'];
+		$gameID = (int)$params['gameID'];
+		
+		if ($userIDtoUpdate > 0)
+		{
+			$DB->sql_put("UPDATE wD_Members SET excusedMissedTurns = excusedMissedTurns - 1 WHERE gameID = ".$gameID." and userID = ".$userIDtoUpdate." and excusedMissedTurns > 0");
+			return l_t("UserID: ".$userIDtoUpdate." has had an extra excused missed turn removed in this game.");
+		}
 	}
 }
 

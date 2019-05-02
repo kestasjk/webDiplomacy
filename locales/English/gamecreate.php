@@ -273,6 +273,30 @@ else
 		their reliability rating will go down. If you have a low reliability rating, then you can improve it by playing games and not missing turns.
 		<br /><br /><strong>Default:</strong> 0 (No restrictions)
 	</li>
+
+	<li class="formlisttitle">
+		NMR excuses:
+	</li>
+	<li class="formlistfield">
+		Number of excused missed turns per player: 
+		 <select id="NMR" name="newGame[excusedMissedTurns]">
+		<?php
+			for ($i=0; $i<=4; $i++) {
+				print '<option value="'.$i.'"'.($i==1 ? ' selected' : '').'>'.$i.(($i==0)?' (strict)':'').'</option>';
+			}
+		?>
+		</select>
+	</li>
+	<li class="formlistdesc">
+		The number of excused missed turns before a player goes into Civil Disorder and can be replaced. 
+		If a player is missing a deadline without entering orders, the phase will not progress and the player will be 
+		charged 1 excused turn and the deadline will be reset. If there are no excuses left for the player, they will go into Civil Disorder.
+		The game will only progress with missing orders if no replacement is found within one phase of a player being forced into Civil Disorder. 
+		Set this value low to prevent delays to your game, set it higher to be more forgiving to people who might need occasional delays.
+
+ 		<br /><br /><strong>Default:</strong> 1 excused missed turn 
+
+ 	</li>
 	   
 <!-- 
 	<li class="formlisttitle">

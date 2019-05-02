@@ -66,7 +66,7 @@ class adminActionsForms
 			print '<input type="hidden" name="globalUserID" value="'.intval($_REQUEST['globalUserID']).'" />';
 		if ( isset($_REQUEST['globalPostID']) )
 			print '<input type="hidden" name="globalPostID" value="'.intval($_REQUEST['globalPostID']).'" />';
-		
+
 		if ($description)
 			print '<li class="modToolsformlistdesc" style="margin-bottom:10px">'.l_t($description).'</li>';
 
@@ -84,10 +84,20 @@ class adminActionsForms
 			else
 				$defaultValue = '';
 
-			print '<li class="modToolsformlistfield">
-					<label for="'.$paramCode.'">'.l_t($paramName).'</label>:
-					<input class = "modTools" type="text" name="'.$paramCode.'" value="'.$defaultValue.'" length="50" />
-					</li>';
+			if ($paramCode == 'message')
+			{
+				print '<li class="modToolsformlistfield">
+						<label for="'.$paramCode.'">'.l_t($paramName).'</label>:
+						<textarea rows = "5" cols = "50" class="modTools" name="'.$paramCode.'"></textarea>
+						</li>';
+			}
+			else
+			{
+				print '<li class="modToolsformlistfield">
+						<label for="'.$paramCode.'">'.l_t($paramName).'</label>:
+						<input class = "modTools" type="text" name="'.$paramCode.'" value="'.$defaultValue.'"/>
+						</li>';
+			}
 		}
 
 		print '<li class="modToolsformlistfield">
@@ -127,19 +137,19 @@ class adminActionsForms
 		$DB->sql_put("INSERT INTO wD_AdminLog ( name, userID, time, details, params )
 					VALUES ( '".$name."', ".$User->id.", ".time().", '".$details."', '".$paramValues."' )");
 	}
-	
+
 	/**
 	 * Defines the PHP script which the forms will target; will either be board.php or admincp.php
 	 * @var string
 	 */
 	public static $target;
-	
+
 	/**
 	 * A reference to the static array of actions
 	 * @var array
 	 */
 	public $actionsList;
-	
+
 	/**
 	 * For the given task display the form, and run the task if data entered from the corresponding form
 	 *
@@ -329,11 +339,11 @@ require_once(l_r('lib/gamemessage.php'));
 if( defined("INBOARD") )
 {
 	// We're running in Director mode from within board.php
-	
+
 	$adminActions = new adminActionsTD();
 	adminActionsForms::$target = "board.php?gameID=".$Game->id;
 	$adminActions->actionsList = adminActionsTD::$actions;
-	
+
 	print '<h3>'.l_t('Director action forms').'</h3>';
 	// For each task display the form, and run the task if data entered from the corresponding form
 	print '<ul class="formlist">';
@@ -347,37 +357,37 @@ else
 {
 	print '<h2 class="modToolsHeadings">'.l_t('Emergency Actions').'</h2>';
 	adminActionsLayout::printActionShortcuts();
-	
+
 	if ( $User->type['Admin'] )
 		$adminActions = new adminActionsRestricted();
 	elseif ( $User->type['ForumModerator'] )
 		$adminActions = new adminActionsForum();
 	else
 		$adminActions = new adminActions();
-	
+
 	adminActionsForms::$target = "admincp.php";
 	$adminActions->actionsList = adminActions::$actions;
-	
+
 	// Create a bullet-point set of anchor shortcuts to each task
-	
+
 	$actionCodesByType = adminActionsLayout::actionCodesByType();
-	
+
 	print '<h2 class="modToolsHeadings">'.l_t('Menu').'</h2>';
 	foreach($actionCodesByType as $type=>$actionCodes)
 	{
 		print '<a name="'.strtolower($type).'Actions"></a><h3 class = "modToolsHeadings">'.l_t($type.' actions').'</h3>';
 		adminActionsLayout::printActionLinks($actionCodes);
 	}
-	
+
 	print '<div class="hr"></div>';
-	
+
 	print '<h2 class="modToolsHeadings">'.l_t('All Actions').'</h2>';
 	// For each task display the form, and run the task if data entered from the corresponding form
 	print '<ul class="formlist">';
 	foreach($actionCodesByType as $type=>$actionCodes)
 	{
 		print '<h3 class="modToolsHeadings">'.l_t($type.' actions').'</h3>';
-	
+
 		foreach($actionCodes as $actionCode)
 			$adminActions->process($actionCode);
 	}

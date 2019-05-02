@@ -83,7 +83,7 @@ else
 		// If viewing an archive page make that the title, otherwise us the name of the game
 		libHTML::starthtml(isset($_REQUEST['viewArchive'])?$_REQUEST['viewArchive']:$Game->titleBarName());
 		
-		if ( $Game->Members->isJoined() )
+		if ( $Game->Members->isJoined() && !$Game->Members->isTempBanned() )
 		{
 			// We are a member, load the extra code that we might need
 			require_once(l_r('gamemaster/gamemaster.php'));

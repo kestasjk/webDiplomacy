@@ -226,102 +226,70 @@ if ( isset($_REQUEST['detail']) )
 		case 'civilDisorders':
 			print '<div class = "rrInfo">';
 			if ( $User->type['Moderator'] || $User->id == $UserProfile->id ) 
-			{
-				$tabl = $DB->sql_tabl("SELECT g.name, c.countryID, c.turn, c.bet, c.SCCount, c.gameId, c.forcedByMod
-					FROM wD_CivilDisorders c 
-					INNER JOIN wD_Games g ON ( c.gameID = g.id )
-					WHERE c.userID = ".$UserProfile->id . ($User->type['Moderator'] ? '' : ' AND c.forcedByMod = 0'));
-	
-				print '<h4>'.l_t('Civil disorders:').'</h4>';
-					
-				if ($DB->last_affected() == 0) 
-				{
-					print l_t('No civil disorders found for this profile.');
-				}
-				else
-				{
-					print '<TABLE class="rrInfo">';
-					print '<tr>';
-					print '<th class= "rrInfo">Game:</th>';
-					print '<th class= "rrInfo">Country:</th>';
-					print '<th class= "rrInfo">Turn:</th>';
-					print '<th class= "rrInfo">Bet:</th>';
-					print '<th class= "rrInfo">Supply Centers:</th>';
-					if ( $User->type['Moderator'] ) print '<th class= "rrInfo">Ignored:</th>';
-					print '</tr>';
+			{	
+				print '<h4>'.l_t('Reliability Explained:').'</h4>';
 
-					while(list($name, $countryID, $turn, $bet, $SCCount,$gameID,$forcedByMod)=$DB->tabl_row($tabl))
-					{
-						print '<tr>';
-						print '<td> <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong></td>';
-						print '<td> <strong>'.$countryID.'</strong></td>';
-						print '<td> <strong>'.$turn.'</strong></td>';
-						print '<td> <strong>'.$bet.'</strong></td>';
-						print '<td> <strong>'.$SCCount.'</strong></td>';
-						if ( $User->type['Moderator'] ) print '<td> <strong>'.$forcedByMod.'</strong></td>';
-						print '</tr>';
-					}
-					print '</table>';
-				}
+				print '<div class = "profile_title">What is Reliability?</div>';
+				print '<div class = "profile_content">';
+				print '<p>Reliability is how consistently you avoid interrupting games. Any un-excused missed turns hurt your rating. If you have any un-excused
+				missed turns in the last 4 weeks you will receive an 11% penalty to your RR for <strong>each</strong> of those delays. It is very important 
+				to everyone you are playing with to be reliable but we understand mistakes happen so this extra penality will go away after 28 days. All of the un-excused
+				missed turns that negatively impact your rating are highlighed in yellow below.
+				</br>
+				</br>
+				<strong>System Excused:</strong> If you had an "excused missed turn" left this will be yes and will not count against your rating. </br>
+				<strong>Mod Excused:</strong> If a moderator excused the missed turn this field will be yes and will not count against your rating.</br>
+				<strong>Same Period Excused:</strong> If you have multiple un-excused missed turns in a 72 hour period you are only penalized once, if this field is yes it does not count against your rating.
+				</p></div>';
+				print '<div class = "profile_title">What happens if my rating is low?</div>';
+				print '<div class = "profile_content">';
+				print '<p>
+				Many games are made with a minimum rating requirement so this may impact the quality of games you can enter. If you have more then 3 un-excused missed turns in a year
+				you will begin getting temporarily banned from making new games, joining existing games, or rejoining your own games. </br>
+				</br>
+				 <li>1-3 un-excused delays: warnings</li>
+				 <li>4 un-excused delays: 1-day temp ban</li>
+				 <li>5 un-excused delays: 3-day temp ban</li>
+				 <li>6 un-excused delays: 7-day temp ban</li>
+				 <li>7 un-excused delays: 14-day temp ban</li>
+				 <li>8 un-excused delays: 30-days temp ban</li>
+				 <li>9 or more un-excused delays: infinite, must contact mods for removal</li>
+				</p></div>';
 
-				$tabl = $DB->sql_tabl("SELECT c.countryID, c.turn, c.bet, c.SCCount, c.gameId, c.forcedByMod
-					FROM wD_CivilDisorders c 
-					LEFT JOIN wD_Games g ON c.gameID = g.id
-					WHERE g.id is null AND c.userID = ".$UserProfile->id . ($User->type['Moderator'] ? '' : ' AND c.forcedByMod = 0'));
-					
-				if ($DB->last_affected() != 0) 
-				{
-					print '<h4>'.l_t('Cancelled civil disorders:').'</h4>';
-					print '<TABLE class="rrInfo">';
-					print '<tr>';
-					print '<th class= "rrInfo">Game ID:</th>';
-					print '<th class= "rrInfo">Country:</th>';
-					print '<th class= "rrInfo">Turn:</th>';
-					print '<th class= "rrInfo">Bet:</th>';
-					print '<th class= "rrInfo">Supply Centers:</th>';
-					if ( $User->type['Moderator'] ) print '<th class= "rrInfo">Ignored:</th>';
-					print '</tr>';
-
-					while(list($countryID, $turn, $bet, $SCCount,$gameID,$forcedByMod)=$DB->tabl_row($tabl))
-					{
-						print '<tr>';
-						print '<td> <strong>'.$gameID.'</strong></td>';
-						print '<td> <strong>'.$countryID.'</strong></td>';
-						print '<td> <strong>'.$turn.'</strong></td>';
-						print '<td> <strong>'.$bet.'</strong></td>';
-						print '<td> <strong>'.$SCCount.'</strong></td>';
-						if ( $User->type['Moderator'] ) print '<td> <strong>'.$forcedByMod.'</strong></td>';
-						print '</tr>';
-					}
-					print '</table>';
-				}
-
-				if ($UserProfile->deletedCDs != 0) 
-				{
-					print 'Additionally, there are ' . $UserProfile->deletedCDs . ' deleted CDs for this account (eg, self CD positions retaken by this user).';
-				}
-
-				print '<h4>'.l_t('NMRs:').'</h4>';
-				$tabl = $DB->sql_tabl("SELECT n.gameID, n.countryID, n.turn, n.bet, n.SCCount, g.name 
-				FROM wD_NMRs n 
+				print '<h4>'.l_t('Missed Turns:').'</h4>';
+				$tabl = $DB->sql_tabl("SELECT n.gameID, n.countryID, n.turn, g.name, 
+				( CASE WHEN n.systemExcused = 1 THEN 'Yes' ELSE 'No' END ),
+				( CASE WHEN n.modExcused = 1 THEN 'Yes' ELSE 'No' END ),
+				( CASE WHEN n.samePeriodExcused = 1 THEN 'Yes' ELSE 'No' END ), 
+				n.id, 
+				n.turnDateTime
+				FROM wD_MissedTurns n
 				LEFT JOIN wD_Games g ON n.gameID = g.id 
-				WHERE n.userID = ".$UserProfile->id);
+				WHERE n.userID = ".$UserProfile->id. " and n.turnDateTime > ".(time() - 31536000));
 
 				if ($DB->last_affected() != 0) 
 				{
 					print '<TABLE class="rrInfo">';
 					print '<tr>';
+					print '<th class= "rrInfo">ID:</th>';
 					print '<th class= "rrInfo">Game:</th>';
-					print '<th class= "rrInfo">Country:</th>';
+					print '<th class= "rrInfo">Country</th>';
 					print '<th class= "rrInfo">Turn:</th>';
-					print '<th class= "rrInfo">Bet:</th>';
-					print '<th class= "rrInfo">Supply Centers:</th>';
+					print '<th class= "rrInfo">System Excused:</th>';
+					print '<th class= "rrInfo">Mod Excused:</th>';
+					print '<th class= "rrInfo">Same Period Excused:</th>';
+					print '<th class= "rrInfo">Turn Date:</th>';
 					print '</tr>';
 
-					while(list($gameID, $countryID, $turn, $bet, $SCCount, $name)=$DB->tabl_row($tabl))
+					while(list($gameID, $countryID, $turn, $name, $systemExcused, $modExcused, $samePeriodExcused, $id, $turnDateTime)=$DB->tabl_row($tabl))
 					{
-						print '<tr>';
+						$Variant=libVariant::loadFromGameID($gameID);
+
+						if ($systemExcused == 'No' && $modExcused == 'No' && $samePeriodExcused == 'No') { print '<tr style="background-color:#ff3300;">'; }
+						else if ($systemExcused == 'No' && $modExcused == 'No' && $samePeriodExcused == 'Yes') { print '<tr style="background-color:yellow;">'; }
+						else { print '<tr>'; }
 						
+						print '<td> <strong>'.$id.'</strong></td>';
 						if ($name != '') 
 						{
 							print '<td> <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong></td>';
@@ -330,17 +298,20 @@ if ( isset($_REQUEST['detail']) )
 						{	
 							print '<td> <strong>Cancelled Game</strong></td>';
 						}
-						print '<td> <strong>'.$countryID.'</strong></td>';
-						print '<td> <strong>'.$turn.'</strong></td>';
-						print '<td> <strong>'.$bet.'</strong></td>';
-						print '<td> <strong>'.$SCCount.'</strong></td>';
+						print '<td> <strong>'.$Variant->countries[$countryID-1].'</strong></td>';
+						print '<td> <strong>'.$Variant->turnAsDate($turn).'</strong></td>';
+						print '<td> <strong>'.$systemExcused.'</strong></td>';
+						print '<td> <strong>'.$modExcused.'</strong></td>';
+						print '<td> <strong>'.$samePeriodExcused.'</strong></td>';
+						print '<td> <strong>'.libTime::detailedText($turnDateTime).'</strong></td>';
+						
 						print '</tr>';
 					}
 					print '</table>';
 				} 
 				else 
 				{
-					print l_t('No NMRs found for this profile.');
+					print l_t('No missed turns found for this profile.');
 				}
 			} 
 			else 
@@ -363,6 +334,22 @@ if ( isset($_REQUEST['detail']) )
 	}
 
 	print '</div>';
+?>
+<script type="text/javascript">
+   var coll = document.getElementsByClassName("profile_title");
+   var searchCounter;
+   
+   for (searchCounter = 0; searchCounter < coll.length; searchCounter++) {
+     coll[searchCounter].addEventListener("click", function() {
+       this.classList.toggle("active");
+       var content = this.nextElementSibling;
+   		if (content.style.display === "block") { content.style.display = "none"; } 
+   		else { content.style.display = "block"; }
+     });
+   }
+</script>
+<?php
+
 	libHTML::footer();
 }
 
@@ -613,21 +600,28 @@ if( $total )
 	}
 
 	print '</br>';
-	print '<li><strong>'.l_t('Reliability:').'</strong>';
-	if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
-	{
-		print '<li style="font-size:13px">'.l_t('No moves received/received:').' <strong>'.$UserProfile->nmrCount.'/'.$UserProfile->phaseCount.'</strong></li>';
-	}
-	print '<li style="font-size:13px">'.l_t('Reliability rating:').' <strong>'.($UserProfile->reliabilityRating).'%</strong>';
 	if( $User->type['Moderator'] || $User->id == $UserProfile->id )
 	{
-		print ' <a class="light" href="profile.php?detail=civilDisorders&userID='.$UserProfile->id.'">'.l_t('breakdown').'</a>';
-	}                                                                                                         
-	print '</li>';
+		print '<li><strong>'.l_t('Reliability:').' (<a href="profile.php?detail=civilDisorders&userID='.$UserProfile->id.'">'.l_t('Reliability Explained').'</a>) </strong>';
+	}   
+	else
+	{
+		print '<li><strong>'.l_t('Reliability:').'</strong>';
+	}
 	
-	if ( $rankingDetails['takenOver'] )
-		print '<li style="font-size:13px">'.l_t('Left and taken over: <strong>%s</strong>',$rankingDetails['takenOver']).
-			'(<a href="profile.php?detail=civilDisorders&userID='.$UserProfile->id.'">'.l_t('View details').'</a>)</li>';
+	if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
+	{
+		$recentMissedTurns = $UserProfile->getRecentUnExcusedMissedTurns();
+		If ($recentMissedTurns > 0) 
+		{ 
+			print '<li style="font-size:13px"><font color="red"> Recent Un-excused Delays: ' . $recentMissedTurns.'</font></li>'; 
+			print '<li style="font-size:13px"><font color="red"> Recenty Delay RR Penalty: ' . ($recentMissedTurns*11).'%</font></li>'; 
+		}
+		print '<li style="font-size:13px">'.l_t('Un-excused delays/phases:').' <strong>'.$UserProfile->getYearlyUnExcusedMissedTurns().'/'.$UserProfile->yearlyPhaseCount.'</strong></li>';
+	}
+	print '<li style="font-size:13px">'.l_t('Reliability rating:').' <strong>'.($UserProfile->reliabilityRating).'%</strong>';
+	                                                                                                      
+	print '</li>';
 
 	print '</li>';
 }
