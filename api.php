@@ -332,10 +332,10 @@ class SetOrders extends ApiEntry {
 		$phase = $args['phase'];
 		$countryID = $args['countryID'];
 		$orders = $args['orders'];
-		$ready = $args['ready'];
+		$readyArg = $args['ready'];
 		if (!is_array($orders))
 			throw new RequestException('Body field `orders` is not an array.');
-		if ($ready && (!is_string($ready) || !in_array($ready, array('Yes', 'No'))))
+		if ($readyArg && (!is_string($readyArg) || !in_array($readyArg, array('Yes', 'No'))))
 			throw new RequestException('Body field `ready` is not either `Yes` or `No`.');
 		if ($countryID != null) {
 			$countryID = intval($countryID);
@@ -360,9 +360,9 @@ class SetOrders extends ApiEntry {
 		$territoryToOrder = array();
 		$orderToTerritory = array();
 		$updatedOrders = array();
-		$sql = 'SELECT wD_orders.id AS orderID, wD_units.terrID AS terrID FROM wD_orders
-				LEFT JOIN wD_units ON (wD_orders.gameID = wD_units.gameID AND wD_orders.countryID = wD_units.countryID AND wD_orders.unitID = wD_units.id) 
-				WHERE wD_orders.gameID = '.$gameID.' AND wD_orders.countryID = '.$countryID;
+		$sql = 'SELECT wD_Orders.id AS orderID, wD_Units.terrID AS terrID FROM wD_Orders
+				LEFT JOIN wD_Units ON (wD_Orders.gameID = wD_Units.gameID AND wD_Orders.countryID = wD_Units.countryID AND wD_Orders.unitID = wD_Units.id) 
+				WHERE wD_Orders.gameID = '.$gameID.' AND wD_Orders.countryID = '.$countryID;
 		$res = $DB->sql_tabl($sql);
 		while ($row = $DB->tabl_hash($res)) {
 			$orderID = $row['orderID'];
@@ -420,31 +420,50 @@ class SetOrders extends ApiEntry {
 			null,
 			false
 		);
+
+		$previousReadyValue = $orderInterface->orderStatus->Ready;
+		$orderInterface->orderStatus->Ready = false;
+
 		$orderInterface->load();
 		$orderInterface->set(json_encode($updatedOrders));
 		$results = $orderInterface->validate();
+		// If invalid order is submitted, we cannot write orders (otherwise an fatal database error may be raised).
+		if (!$results['invalid']) {
+			$orderInterface->writeOrders();
+		}
 
-		if ($results['invalid'])
-			throw new RequestException('Found some invalid orders.');
-
-		$orderInterface->writeOrders();
-		if ($ready)
-			$orderInterface->orderStatus->Ready = ($ready == 'Yes');
-
+		$orderInterface->orderStatus->Ready = ($readyArg ? $readyArg == 'Yes' : $previousReadyValue);
 		$orderInterface->writeOrderStatus();
+
 		$DB->sql_put("COMMIT");
-		$territoryResults = array();
-		foreach ($results['orders'] as $orderID => $info) {
-			$territoryResults[] = array(
-				'terrID' => $orderToTerritory[$orderID],
-				'status' => $info['status'],
-				'changed' => $info['changed']
+
+		// Return current orders.
+		$currentOrders = array();
+		$currentOrdersTabl = $DB->sql_tabl(
+		'SELECT
+			wD_Orders.id AS orderID,
+			wD_Orders.type AS type,
+			wD_Orders.fromTerrID AS fromTerrID,
+			wD_Orders.toTerrID AS toTerrID,
+			wD_Orders.viaConvoy AS viaConvoy,
+            wD_Units.type as unitType,
+			wD_Units.terrID AS terrID
+			FROM wD_Orders
+			LEFT JOIN wD_Units
+			ON (wD_Orders.gameID = wD_Units.gameID AND wD_Orders.countryID = wD_Units.countryID AND wD_Orders.unitID = wD_Units.id)
+			WHERE wD_Orders.gameID = '.$gameID.' AND wD_Orders.countryID = '.$countryID
+		);
+		while ($row = $DB->tabl_hash($currentOrdersTabl)) {
+			$currentOrders[] = array(
+			    'unitType' => $row['unitType'],
+				'terrID' => ctype_digit($row['terrID']) ? intval($row['terrID']) : $row['terrID'],
+				'type' => $row['type'],
+				'fromTerrID' => ctype_digit($row['fromTerrID']) ? intval($row['fromTerrID']) : $row['fromTerrID'],
+				'toTerrID' => ctype_digit($row['toTerrID']) ? intval($row['toTerrID']) : $row['toTerrID'],
+				'viaConvoy' => $row['viaConvoy']
 			);
 		}
-		return json_encode(array(
-			'results' => $territoryResults,
-			'status' => ''.$orderInterface->orderStatus
-		));
+		return json_encode($currentOrders);
 	}
 }
 
