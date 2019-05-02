@@ -159,7 +159,6 @@ class GameState {
 		$this->phase = $gameRow['phase'];
 		$this->gameOver = $gameRow['gameOver'];
 
-		$standoffs = array();
 		$units = array();
 		$orders = array();
 		$preGameCenters = array();
@@ -184,31 +183,22 @@ class GameState {
 		{
 			if ($row['regType']) {
 				$units[$this->turn][$this->phase][] = new Unit($row['regType'], $row['regTerrID'], $row['regCountryID'], 'No');
-				if ($row['standoff'] == 'Yes') {
-					$standoffs[$this->turn][] = array(
-						'terrID' => intval($row['regTerrID']),
-						'countryID' => intval($row['regCountryID'])
-					);
-				}
+                if ($row['standoff'] == 'Yes') {
+                    $this->standoffs[] = array(
+                        'terrID' => intval($row['regTerrID']),
+                        'countryID' => intval($row['regCountryID'])
+                    );
+                }
 			}
 			if ($row['disType']) {
 				$units[$this->turn][$this->phase][] = new Unit($row['disType'], $row['disTerrID'], $row['disCountryID'], 'Yes');
-				if ($row['standoff'] == 'Yes') {
-					$standoffs[$this->turn][] = array(
-						'terrID' => intval($row['disTerrID']),
-						'countryID' => intval($row['disCountryID'])
-					);
-				}
+                if ($row['standoff'] == 'Yes') {
+                    $this->standoffs[] = array(
+                        'terrID' => intval($row['disTerrID']),
+                        'countryID' => intval($row['disCountryID'])
+                    );
+                }
 			}
-		}
-
-		// Loading standoffs from all game turns.
-		$standoffTabl = $DB->sql_tabl("SELECT terrID, turn, countryID FROM wD_TerrStatusArchive WHERE standoff = 'Yes' AND gameID = ".$this->gameID);
-		while ($row = $DB->tabl_hash($standoffTabl)) {
-			$standoffs[$row['turn']][] = array(
-				'terrID' => intval($row['terrID']),
-				'countryID' => intval($row['countryID'])
-			);
 		}
 
 		$Variant=libVariant::loadFromVariantID($this->variantID);
@@ -289,12 +279,6 @@ class GameState {
 			$phase['orders'][] = $order;
 			$gameSteps->set($order->turn, $order->phase, $phase);
 		}
-		foreach ($standoffs as $turn => $turnStandoffs) {
-			$this->standoffs[] = array(
-				'turn' => $turn,
-				'standoff' => $turnStandoffs
-			);
-		}
 		foreach ($gameSteps->toArray() as $step) {
 			list($turn, $phaseName, $data) = $step;
 			$centerTurn = $turn;
@@ -309,7 +293,6 @@ class GameState {
 			$data['phase'] = $phaseName;
 			if (!isset($data['units'])) $data['units'] = array();
 			if (!isset($data['orders'])) $data['orders'] = array();
-			if (!isset($data['standoffs'])) $data['standoffs'] = array();
 			$finalPhases[] = $data;
 		}
 		$this->phases = $finalPhases;
