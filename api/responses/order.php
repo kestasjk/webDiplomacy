@@ -101,6 +101,16 @@ class Order {
 	}
 
 	/**
+	 * Get unit ordered by this order, if available.
+	 */
+	function getOrderedUnit() {
+		if ($this->type == 'Build Army' || $this->type == 'Build Fleet')
+			return null;
+		$retreating = ($this->type == 'Retreat' && $this->success == 'Yes');
+		return new Unit($this->unitType, $this->terrID, $this->countryID, $retreating);
+	}
+
+	/**
 	 * Initialize a order (move) object
      * @param int $turn - The turn where the order/move was issued.
      * @param string $phase - The phase within the turn
