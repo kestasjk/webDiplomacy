@@ -295,6 +295,30 @@ class GameState {
 			if (!isset($data['orders'])) $data['orders'] = array();
 			$finalPhases[] = $data;
 		}
+		// Deduce units for Builds phases.
+		$nbFinalPhases = count($finalPhases);
+		for ($i = 0; $i < $nbFinalPhases; ++$i) {
+			if ($finalPhases[$i]['phase'] == 'Builds') {
+				// Deduce units from orders of previous phase.
+				// We keep only non-dislodged units ordered in previous phase.
+				$units = array();
+				foreach ($finalPhases[$i-1]['orders'] as $previousOrder) {
+					/** @var Order $previousOrder */
+					if ($previousOrder->dislodged == 'No') {
+						$unit = $previousOrder->getOrderedUnit();
+						$units[$unit->terrID] = $unit;
+					}
+				};
+				// If there are already units known in current phase, keep them.
+				foreach ($finalPhases[$i]['units'] as $unit) {
+				    if ($unit->unitType != '') {
+                        $units[$unit->terrID] = $unit;
+                    }
+				}
+				// Update units.
+				$finalPhases[$i]['units'] = array_values($units);
+			}
+		}
 		$this->phases = $finalPhases;
 	}
 
