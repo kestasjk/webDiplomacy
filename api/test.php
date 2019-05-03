@@ -161,16 +161,16 @@ $output['players/missing_orders'] = json_decode($apiCall->listGamesWithMissingOr
 $output['game/status'] = json_decode($apiCall->getGamesStates(1, 2));
 $output['game/orders'] = json_decode($apiCall->setOrders(
 	1,
-	1,
-	'Builds',
+	2,
+	'Diplomacy',
 	2,
 	array(
 		array(
-			'terrID' => 46,
-			'type' => 'Build army',
-			'fromTerrID' => null,
-			'toTerrID' => 46,
-			'viaConvoy' => null
+			'terrID' => 8,
+			'type' => 'Move',
+			'fromTerrID' => 8,
+			'toTerrID' => 50,
+			'viaConvoy' => 'Yes'
 		)
 	), 'No'));
 header('Content-Type: application/json');

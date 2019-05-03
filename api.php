@@ -405,33 +405,48 @@ class SetOrders extends ApiEntry {
 			if (!array_key_exists($order['terrID'], $territoryToOrder))
 				throw new RequestException('Unknown territory ID `'.$order['terrID'].'` for country `'.$countryID.'`.');
 			$newOrder['id'] = $territoryToOrder[$order['terrID']];
-			$updatedOrders[] = $newOrder;
+			$updatedOrders[$newOrder['id']] = $newOrder;
 		}
 
-		$orderInterface = new OrderInterface(
-			$gameID,
-			$game->variantID,
-			$userID,
-			$memberID,
-			$turn,
-			$phase,
-			$countryID,
-			$member->orderStatus,
-			null,
-			false
-		);
+		$orderInterface = null;
+		$previousReadyValue = $member->orderStatus->Ready;
+		while (true) {
+			// Create order interface in any case.
+			$orderInterface = new OrderInterface(
+				$gameID,
+				$game->variantID,
+				$userID,
+				$memberID,
+				$turn,
+				$phase,
+				$countryID,
+				$member->orderStatus,
+				null,
+				false
+			);
+			$orderInterface->orderStatus->Ready = false;
+			// If there are no (or no more) updated orders, stop.
+			if (empty($updatedOrders))
+				break;
+			// Load updated orders.
+			$orderInterface->load();
+			$orderInterface->set(json_encode(array_values($updatedOrders)));
+			$results = $orderInterface->validate();
+			if ($results['invalid']) {
+				// Remove invalid updated orders and re-try.
+				foreach ($results['orders'] as $orderID => $orderObject) {
+					if ($orderObject['status'] == 'Invalid') {
+						unset($updatedOrders[$orderID]);
+					}
+				}
+			} else {
+				// No invalid results. No need to retry.
+				break;
+			}
+		}
 
-		$previousReadyValue = $orderInterface->orderStatus->Ready;
-		$orderInterface->orderStatus->Ready = false;
-
-		$orderInterface->load();
-		$orderInterface->set(json_encode($updatedOrders));
-		$results = $orderInterface->validate();
-		// If invalid order is submitted, we cannot write orders (otherwise an fatal database error may be raised).
-		if (!$results['invalid']) {
+		if (!empty($updatedOrders))
 			$orderInterface->writeOrders();
-		}
-
 		$orderInterface->orderStatus->Ready = ($readyArg ? $readyArg == 'Yes' : $previousReadyValue);
 		$orderInterface->writeOrderStatus();
 
