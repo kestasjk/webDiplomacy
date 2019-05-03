@@ -379,6 +379,9 @@ class SetOrders extends ApiEntry {
 					throw new RequestException('Missing order info: ' . $bodyField);
 				$newOrder[$bodyField] = $order[$bodyField];
 			}
+            if (array_key_exists('convoyPath', $order)) {
+                $newOrder['convoyPath'] = $order['convoyPath'];
+            }
 			if (array_key_exists($order['terrID'], $territoryToOrder)) {
 				// There is an order associated to this territory. Get this order ID.
 				$newOrder['id'] = $territoryToOrder[$order['terrID']];
