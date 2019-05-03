@@ -285,7 +285,7 @@ if ( isset($_REQUEST['detail']) )
 					{
 						$Variant=libVariant::loadFromGameID($gameID);
 
-						if ($systemExcused == 'No' && $modExcused == 'No' && $samePeriodExcused == 'No') { print '<tr style="background-color:#ff3300;">'; }
+						if ($systemExcused == 'No' && $modExcused == 'No' && $samePeriodExcused == 'No') { print '<tr style="background-color:#F08080;">'; }
 						else if ($systemExcused == 'No' && $modExcused == 'No' && $samePeriodExcused == 'Yes') { print '<tr style="background-color:yellow;">'; }
 						else { print '<tr>'; }
 						

@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS `wD_MissedTurns` (
 ALTER TABLE `wD_Members` ADD `excusedMissedTurns` int(10) unsigned DEFAULT 1;
 ALTER TABLE `wD_Games` ADD `excusedMissedTurns` int(10) unsigned DEFAULT 1;
 ALTER TABLE `wD_Users` ADD `yearlyPhaseCount` mediumint(8) unsigned DEFAULT 0;     
+ALTER TABLE `wD_Backup_Members` ADD `excusedMissedTurns` int(10) unsigned DEFAULT 1;
+ALTER TABLE `wD_Backup_Games` ADD `excusedMissedTurns` int(10) unsigned DEFAULT 1;
 
  CREATE TABLE IF NOT EXISTS `wD_TurnDate` (
 	  `id` mediumint(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
