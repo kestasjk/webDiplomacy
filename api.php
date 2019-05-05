@@ -30,6 +30,8 @@ require_once('api/responses/members_in_cd.php');
 require_once('api/responses/unordered_countries.php');
 require_once('api/responses/game_state.php');
 require_once('objects/game.php');
+require_once('lib/cache.php');
+require_once('lib/time.php');
 $DB = new Database();
 
 /**
@@ -243,8 +245,8 @@ abstract class ApiEntry {
 		if ($gameID == null)
 			throw new RequestException('Game ID not provided.');
 		$gameID = intval($gameID);
-		$variant = libVariant::loadFromGameID($gameID);
-		libVariant::setGlobals($variant);
+		$Variant = libVariant::loadFromGameID($gameID);
+		libVariant::setGlobals($Variant);
 		$gameRow = $DB->sql_hash('SELECT * from wD_Games WHERE id = '.$gameID);
 		if (!$gameRow)
 			throw new RequestException('Invalid game ID');
@@ -481,6 +483,42 @@ class SetOrders extends ApiEntry {
 				'viaConvoy' => $row['viaConvoy']
 			);
 		}
+
+		// Processing game
+        if ($orderInterface->orderStatus->Ready && !$previousReadyValue) {
+            require_once(l_r('objects/misc.php'));
+            require_once(l_r('objects/notice.php'));
+            require_once(l_r('objects/user.php'));
+            global $Misc;
+            $Misc = new Misc();
+            $game = $this->getAssociatedGame();
+
+            if( $game->processStatus!='Crashed' && $game->attempts > count($game->Members->ByID)*2 )
+            {
+                $DB->sql_put("COMMIT");
+                require_once(l_r('gamemaster/game.php'));
+
+                $game = libVariant::$Variant->processGame($game->id);
+                $game->crashed();
+                $DB->sql_put("COMMIT");
+            }
+            elseif( $game->needsProcess() )
+            {
+                $DB->sql_put("UPDATE wD_Games SET attempts=attempts+1 WHERE id=".$game->id);
+                $DB->sql_put("COMMIT");
+
+                require_once(l_r('gamemaster/game.php'));
+                $game = libVariant::$Variant->processGame($gameID);
+                if( $game->needsProcess() )
+                {
+                    $game->process();
+                    $DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$game->id);
+                    $DB->sql_put("COMMIT");
+                }
+            }
+        }
+
+        // Returning current orders
 		return json_encode($currentOrders);
 	}
 }
