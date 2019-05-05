@@ -345,8 +345,18 @@ class SetOrders extends ApiEntry {
 		$game = $this->getAssociatedGame();
 		if (!isset($game->Members->ByUserID[$userID]))
 			throw new ClientForbiddenException('User is not member of this game.');
-		$member = $game->Members->ByUserID[$userID]; /** @var Member $member */
-		$memberID = $member->id;
+
+        // Setting the status as Active
+        $member = $game->Members->ByUserID[$userID];            /** @var Member $member */
+        $DB->sql_put("UPDATE wD_Members SET userID = ".$userID.", status='Playing', missedPhases = 0, timeLoggedIn = ".time()." WHERE id = ".$member->id);
+        unset($game->Members->ByUserID[$member->userID]);
+        unset($game->Members->ByStatus['Playing'][$member->id]);
+        $member->status='Playing';
+        $member->missedPhases=0;
+        $member->timeLoggedIn=time();
+        $game->Members->ByUserID[$member->userID] = $member;
+        $game->Members->ByStatus['Playing'][$member->id] = $member;
+
 		if ($countryID == null)
 			$countryID = $member->countryID;
 		else if ($countryID != $member->countryID)
@@ -421,7 +431,7 @@ class SetOrders extends ApiEntry {
 				$gameID,
 				$game->variantID,
 				$userID,
-				$memberID,
+                $member->id,
 				$turn,
 				$phase,
 				$countryID,
@@ -454,8 +464,7 @@ class SetOrders extends ApiEntry {
 			$orderInterface->writeOrders();
 		$orderInterface->orderStatus->Ready = ($readyArg ? $readyArg == 'Yes' : $previousReadyValue);
 		$orderInterface->writeOrderStatus();
-
-		$DB->sql_put("COMMIT");
+        $DB->sql_put("COMMIT");
 
 		// Return current orders.
 		$currentOrders = array();
