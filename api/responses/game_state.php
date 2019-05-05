@@ -143,6 +143,12 @@ class GameState {
 	public $standoffs = array();
 
 	/**
+     * List of occupiedFrom territories
+     * @var array
+     */
+    public $occupiedFrom = array();
+
+	/**
 	 * Load the UserOptions object. It is assumed that username is already escaped.
 	 * @throws \Exception
 	 */
@@ -166,8 +172,9 @@ class GameState {
 		$gameSteps = new GameSteps();
 
 		// Loading current units and standoffs
-		$unitTabl = $DB->sql_tabl("SELECT wD_TerrStatus.id,
+		$unitTabl = $DB->sql_tabl("SELECT wD_TerrStatus.terrID,
 										  wD_TerrStatus.standoff,
+                                          wD_TerrStatus.occupiedFromTerrID,
 										  regular.type AS regType,
 										  regular.terrID AS regTerrID,
 										  regular.countryID AS regCountryID,
@@ -181,22 +188,20 @@ class GameState {
 
 		while( $row = $DB->tabl_hash($unitTabl) )
 		{
+            if ($row['standoff'] == 'Yes') {
+                $this->standoffs[] = array('terrID' => intval($row['terrID']), 'countryID' => 0);
+            }
 			if ($row['regType']) {
 				$units[$this->turn][$this->phase][] = new Unit($row['regType'], $row['regTerrID'], $row['regCountryID'], 'No');
-                if ($row['standoff'] == 'Yes') {
-                    $this->standoffs[] = array(
-                        'terrID' => intval($row['regTerrID']),
-                        'countryID' => intval($row['regCountryID'])
-                    );
-                }
 			}
 			if ($row['disType']) {
-				$units[$this->turn][$this->phase][] = new Unit($row['disType'], $row['disTerrID'], $row['disCountryID'], 'Yes');
-                if ($row['standoff'] == 'Yes') {
-                    $this->standoffs[] = array(
-                        'terrID' => intval($row['disTerrID']),
-                        'countryID' => intval($row['disCountryID'])
-                    );
+			    if ($this->phase == 'Retreats') {
+                    $units[$this->turn][$this->phase][] = new Unit($row['disType'], $row['disTerrID'], $row['disCountryID'], 'Yes');
+                    if ($row['occupiedFromTerrID']) {
+                        $this->occupiedFrom[intval($row['terrID'])] = $row['occupiedFromTerrID'];
+                    }
+                } else {
+                    $units[$this->turn][$this->phase][] = new Unit($row['disType'], $row['disTerrID'], $row['disCountryID'], 'No');
                 }
 			}
 		}
