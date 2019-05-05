@@ -962,7 +962,7 @@ class processGame extends Game
 		 * The findSet* functions affect the Members arrays and Member objects and records,
 		 * and will send messages, but they will not affect the rest of the game.
 		 */
-		$this->Members->findSetLeft(); // This will not give points to the left, since they may come back
+		// $this->Members->findSetLeft(); // This will not give points to the left, since they may come back
 		$this->Members->findSetDefeated(); // This will give points to the defeated
 
 		/*
