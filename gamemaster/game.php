@@ -534,7 +534,7 @@ class processGame extends Game
 		
 		if( $this->Members->withActiveNMRs() )
 		{
-			
+			require_once(l_r('lib/gamemessage.php'));
 			/*
 			 * There are NMRs by active members. The game will not be processed, but instead
 			 * the phase will be extended.
