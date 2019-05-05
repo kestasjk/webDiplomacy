@@ -229,9 +229,8 @@ if( !defined('AJAX') )
 	}
 	elseif ( $Misc->Maintenance )
 	{
-		list($contents) = $DB->sql_row("SELECT message FROM wD_Config WHERE name = 'Maintenance'");
 		unset($DB); // This lets libHTML know there's a problem
-		libHTML::error($contents);
+		libHTML::error(Config::$serverMessages['Maintenance']);
 
 	}
 }
