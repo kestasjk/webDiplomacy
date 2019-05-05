@@ -282,8 +282,10 @@ class GameState {
 		foreach ($gameSteps->toArray() as $step) {
 			list($turn, $phaseName, $data) = $step;
 			$centerTurn = $turn;
-			if ($phaseName == 'Diplomacy')
+			if (($centerTurn % 2 == 1) && ($phaseName != 'Builds'))
 				$centerTurn -= 1;
+			elseif ($phaseName == 'Diplomacy')
+                $centerTurn -= 1;
 			if ($centerTurn == -1)
 				$centers = $preGameCenters;
 			else
