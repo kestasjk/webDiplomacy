@@ -37,148 +37,44 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				<input class = "gameCreate" type="text" name="newGame[name]" value="" size="30">
 			</p>
 
-			<p>
-				<strong>Phase length: (5 minutes - 10 days)</strong>
-				<img id = "modBtnPhaseLength" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-				<div id="phaseLengthModal" class="modal">
-					<!-- Modal content -->
-					<div class="modal-content">
-						<span class="close4">&times;</span>
-						<p><strong>Phase Length: (default is 24 hours)</strong></br>
-							How long each phase of the game will last in hours.Longer phase hours means a slow game with more time to talk. 
-							Shorter phases require players be available to check the game frequently.
-						</p>
-					</div>
+			<strong>Bet size: (5-<?php print $User->points.libHTML::points(); ?>)</strong>
+			<img id = "modBtnBet" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+			<div id="betModal" class="modal">
+				<!-- Modal content -->
+				<div class="modal-content">
+					<span class="close5">&times;</span>
+					<p><strong>Bet:</strong> </br>
+						The bet required to join this game. This is the amount of points that all players, including you,
+						must put into the game's "pot" (<a href="points.php" class="light">read more</a>).<br /><br />
+					</p>
 				</div>
-				<select class = "gameCreate" name="newGame[phaseMinutes]">
-				<?php
-					$phaseList = array(5,7, 10, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
-						1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400);
-
-					foreach ($phaseList as $i) { print '<option value="'.$i.'"'.($i==1440 ? ' selected' : '').'>'.libTime::timeLengthText($i*60).'</option>'; }
-				?>
-				</select>
-			</p>
-
-			<p>
-				<strong>Bet size: (5<?php print libHTML::points(); ?>-<?php print $User->points.libHTML::points(); ?>)</strong>
-				<img id = "modBtnBet" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-				<div id="betModal" class="modal">
-					<!-- Modal content -->
-					<div class="modal-content">
-						<span class="close5">&times;</span>
-						<p><strong>Bet:</strong> </br>
-							The bet required to join this game. This is the amount of points that all players, including you,
-							must put into the game's "pot" (<a href="points.php" class="light">read more</a>).<br /><br />
-						</p>
-					</div>
+			</div>
+			<input class = "gameCreate" type="text" name="newGame[bet]" size="7" value="<?php print $formPoints ?>" />
+			
+			</br></br>
+			<strong>Phase length: (5 min - 10 days)</strong>
+			<img id = "modBtnPhaseLength" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+			<div id="phaseLengthModal" class="modal">
+				<!-- Modal content -->
+				<div class="modal-content">
+					<span class="close4">&times;</span>
+					<p><strong>Phase Length: </strong></br>
+						How long each phase of the game will last in hours. Longer phase hours means a slow game with more time to talk. 
+						Shorter phases require players be available to check the game frequently.
+					</p>
 				</div>
-				<input class = "gameCreate" type="text" name="newGame[bet]" size="7" value="<?php print $formPoints ?>" />
-			</p>
+			</div>
+			<select class = "gameCreate" name="newGame[phaseMinutes]">
+			<?php
+				$phaseList = array(5,7, 10, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
+					1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400);
+
+				foreach ($phaseList as $i) { print '<option value="'.$i.'"'.($i==1440 ? ' selected' : '').'>'.libTime::timeLengthText($i*60).'</option>'; }
+			?>
+			</select>
 
 			<p>
-				<img src="images/icons/lock.png" alt="Private" /> <strong>Add Invite Code (optional):</strong></br>
-				Invite Code: <input class = "gameCreate" type="password" name="newGame[password]" value="" size="20" /></br>
-				Confirm: <input class = "gameCreate" type="password" name="newGame[passwordcheck]" value="" size="20" /></br>
-			</p>
-
-			<p>
-				<strong>Variant map/rules:</strong>
-				<img id = "modBtnVariant" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-				<div id="variantModal" class="modal">
-					<!-- Modal content -->
-					<div class="modal-content">
-						<span class="close3">&times;</span>
-						<p><strong>Variant:</strong> </br>
-							Type of Diplomacy game from a selection of maps and alternate rule settings available. Click any of the variant names to view the details on the variants page.
-							<br /><br />
-							Available variants: </br>
-							<?php
-							foreach(Config::$variants as $variantID=>$variantName)
-							{
-								if($variantID != 57)
-								{
-									$Variant = libVariant::loadFromVariantName($variantName);
-									print $Variant->link().'</br>';
-								}
-							}
-							?>
-
-							*Please note that 1 vs 1 games will default to a 5 point bet as an unranked game no matter what bet/game type are selected.
-						</p>
-					</div>
-				</div>
-				<select id="variantID" class = "gameCreate" name="newGame[variantID]">
-				<?php
-				$first=true;
-				foreach(Config::$variants as $variantID=>$variantName)
-				{
-					if($variantID != 57)
-					{
-						$Variant = libVariant::loadFromVariantName($variantName);
-						if($first) { print '<option name="newGame[variantID]" selected value="'.$variantID.'">'.$variantName.'</option>'; }
-						else { print '<option name="newGame[variantID]" value="'.$variantID.'">'.$variantName.'</option>'; }			
-						$first=false;
-					}
-				}
-				print '</select>';
-				?>
-			</p>
-
-			<p>
-				<strong>Scoring:(<a href="points.php#DSS">See scoring types here</a>)</strong>
-				<img id = "modBtnScoring" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-				<div id="scoringModal" class="modal">
-					<!-- Modal content -->
-					<div class="modal-content">
-						<span class="close2">&times;</span>
-						<p><strong>Scoring:</strong> </br>
-							This setting determines how points are split up if/when the game draws. <br/><br/>
-							In Draw-Size Scoring, the pot is split equally between the remaining players when the game draws (this setting used to be called WTA). 
-							<br/><br/>
-							In Sum-of-Squares scoring, the pot is divided depending on how many centers you control when the game draws.
-							<br/><br/>
-							In both Draw-Size Scoring and Sum-of-Squares, any solo winner receieves the whole pot.
-							<br/><br/>
-							Unranked games have no effect on your points at the end of the game; your bet is refunded whether you won, drew or lost.
-						</p>
-					</div>
-				</div>
-				<select class = "gameCreate" name="newGame[potType]">
-					<option name="newGame[potType]" value="Winner-takes-all" selected> DSS (Equal split for draws)</option>
-					<option name="newGame[potType]" value="Sum-of-squares"> SoS (Weighted split on draw)</option>
-					<option name="newGame[potType]" value="Unranked"> Unranked (Bet returned after game)</option>
-				</select>
-			</p>
-
-			<p>
-				<strong>Anonymous players: </strong></br>
-				<select class = "gameCreate" name="newGame[anon]">
-					<option name="newGame[anon]" value="No" selected>No</option>
-					<option name="newGame[anon]" value="Yes">Yes</option>
-				</select>
-			</p>
-
-			<p>
-				<strong>Game Messaging:</strong></br>
-				<select class = "gameCreate" name="newGame[pressType]">
-					<option name="newGame[pressType]" value="Regular" selected>All </option>
-					<option name="newGame[pressType]" value="PublicPressOnly">Global only</option>
-					<option name="newGame[pressType]" value="NoPress">No messaging</option>
-					<option name="newGame[pressType]" value="RulebookPress">Per rulebook</option>
-				</select>
-			</p>
-
-			<p>
-				<strong>Draw votes:</strong></br>
-				<select class = "gameCreate" name="newGame[drawType]">
-					<option name="newGame[drawType]" value="draw-votes-public" checked>Show draw votes</option>
-					<option name="newGame[drawType]" value="draw-votes-hidden">Hide draw votes</option>
-				</select>
-			</p>
-
-			<p>
-				<strong>Time to Fill Game: (5 minutes - 14 days)</strong></br>
+				<strong>Time to Fill Game: (5 min - 14 days)</strong></br>
 				<select class = "gameCreate" id="wait" name="newGame[joinPeriod]">
 				<?php
 				$phaseList = array(5,7, 10, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
@@ -191,60 +87,143 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				?>
 				</select>
 			</p>
+			
+			<p>
+				<strong>Game Messaging:</strong></br>
+				<select class = "gameCreate" name="newGame[pressType]">
+					<option name="newGame[pressType]" value="Regular" selected>All </option>
+					<option name="newGame[pressType]" value="PublicPressOnly">Global only</option>
+					<option name="newGame[pressType]" value="NoPress">No messaging</option>
+					<option name="newGame[pressType]" value="RulebookPress">Per rulebook</option>
+				</select>
+			</p>
+
+			<strong>Variant type (map choices):</strong>
+			<img id = "modBtnVariant" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+			<div id="variantModal" class="modal">
+				<!-- Modal content -->
+				<div class="modal-content">
+					<span class="close3">&times;</span>
+					<p><strong>Variant:</strong> </br>
+						Type of Diplomacy game from a selection of maps and alternate rule settings available. Click any of the variant names to view the details on the variants page.
+						<br /><br />
+						<strong>Available variants:</strong> </br>
+						<?php
+						foreach(Config::$variants as $variantID=>$variantName)
+						{
+							if($variantID != 57)
+							{
+								$Variant = libVariant::loadFromVariantName($variantName);
+								print $Variant->link().'</br>';
+							}
+						}
+						?>
+						<br/>
+						*Please note that 1 vs 1 games will default to a 5 point bet as an unranked game no matter what bet/game type are selected.
+					</p>
+				</div>
+			</div>
+			<select id="variantID" class = "gameCreate" name="newGame[variantID]">
+			<?php
+			$first=true;
+			foreach(Config::$variants as $variantID=>$variantName)
+			{
+				if($variantID != 57)
+				{
+					$Variant = libVariant::loadFromVariantName($variantName);
+					if($first) { print '<option name="newGame[variantID]" selected value="'.$variantID.'">'.$variantName.'</option>'; }
+					else { print '<option name="newGame[variantID]" value="'.$variantID.'">'.$variantName.'</option>'; }			
+					$first=false;
+				}
+			}
+			print '</select>';
+			?>
+			
+			</br></br>
+			<strong>Scoring:(<a href="points.php#DSS">See scoring types here</a>)</strong>
+			<img id = "modBtnScoring" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+			<div id="scoringModal" class="modal">
+				<!-- Modal content -->
+				<div class="modal-content">
+					<span class="close2">&times;</span>
+					<p><strong>Scoring:</strong> </br>
+						This setting determines how points are split up if/when the game draws. <br/><br/>
+						In Draw-Size Scoring, the pot is split equally between the remaining players when the game draws (this setting used to be called WTA). 
+						<br/><br/>
+						In Sum-of-Squares scoring, the pot is divided depending on how many centers you control when the game draws.
+						<br/><br/>
+						In both Draw-Size Scoring and Sum-of-Squares, any solo winner receieves the whole pot.
+						<br/><br/>
+						Unranked games have no effect on your points at the end of the game; your bet is refunded whether you won, drew or lost.
+					</p>
+				</div>
+			</div>
+			<select class = "gameCreate" name="newGame[potType]">
+				<option name="newGame[potType]" value="Winner-takes-all" selected>DSS (Equal split for draws)</option>
+				<option name="newGame[potType]" value="Sum-of-squares">SoS (Weighted split on draw)</option>
+				<option name="newGame[potType]" value="Unranked">Unranked</option>
+			</select>
 
 			<p>
-				<strong>Required reliability rating</strong></br>
-				<input id="minRating" class = "gameCreate" type="text" name="newGame[minimumReliabilityRating]" size="2" value="80"
+				<strong>Anonymous players: </strong></br>
+				<select class = "gameCreate" name="newGame[anon]">
+					<option name="newGame[anon]" value="No" selected>No</option>
+					<option name="newGame[anon]" value="Yes">Yes</option>
+				</select>
+			</p>
+
+			<p>
+				<strong>Draw votes:</strong></br>
+				<select class = "gameCreate" name="newGame[drawType]">
+					<option name="newGame[drawType]" value="draw-votes-public" checked>Show draw votes</option>
+					<option name="newGame[drawType]" value="draw-votes-hidden">Hide draw votes</option>
+				</select>
+			</p>
+
+			<p>
+				<strong>Required reliability rating:</strong></br>
+				<input id="minRating" class = "gameCreate" type="text" name="newGame[minimumReliabilityRating]" size="2" value="<?php print $defaultRR ?>"
 					onkeypress="if (event.keyCode==13) this.blur(); return event.keyCode!=13"
 					onChange="
 						this.value = parseInt(this.value);
 						if (this.value == 'NaN' ) this.value = 0;
 						if (this.value < 0 ) this.value = 0;
-						if (this.value > 100 ) this.value = 100;"/>
+						if (this.value > <?php print $maxRR ?> ) this.value = <?php print $User->reliabilityRating ?>;"/>
 			</p>
 
-			<p>
-				<strong>Excused delays per player:</strong>
-				<img id = "modBtnDelays" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-				<div id="delayModal" class="modal">
-					<!-- Modal content -->
-					<div class="modal-content">
-						<span class="close1">&times;</span>
-						<p><strong>Excused delays per player:</strong></br>
-							The number of excused delays before a player is removed from the game and can be replaced. 
-							If a player is missing orders at a deadline, the deadline will reset and the player will be 
-							charged 1 excused delay. If they are out of excuses they will go into Civil Disorder.
-							The game will only progress with missing orders if no replacement is found within one phase of a player being forced into Civil Disorder. 
-							Set this value low to prevent delays to your game, set it higher to be more forgiving to people who might need occasional delays.
-						</p>
-					</div>
+			<strong>Excused delays per player:</strong>
+			<img id = "modBtnDelays" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+			<div id="delayModal" class="modal">
+				<!-- Modal content -->
+				<div class="modal-content">
+					<span class="close1">&times;</span>
+					<p><strong>Excused delays per player:</strong></br>
+						The number of excused delays before a player is removed from the game and can be replaced. 
+						If a player is missing orders at a deadline, the deadline will reset and the player will be 
+						charged 1 excused delay. If they are out of excuses they will go into Civil Disorder.
+						The game will only progress with missing orders if no replacement is found within one phase of a player being forced into Civil Disorder. 
+						Set this value low to prevent delays to your game, set it higher to be more forgiving to people who might need occasional delays.
+					</p>
 				</div>
-				<select class = "gameCreate" id="NMR" name="newGame[excusedMissedTurns]">
-				<?php
-					for ($i=0; $i<=4; $i++) { print '<option value="'.$i.'"'.($i==1 ? ' selected' : '').'>'.$i.(($i==0)?' (strict)':'').'</option>'; }
-				?>
-				</select>
+			</div>
+			<select class = "gameCreate" id="NMR" name="newGame[excusedMissedTurns]">
+			<?php
+				for ($i=0; $i<=4; $i++) { print '<option value="'.$i.'"'.($i==1 ? ' selected' : '').'>'.$i.(($i==0)?' (strict)':'').'</option>'; }
+			?>
+			</select>
+
+			<p>
+				<img src="images/icons/lock.png" alt="Private" /> <strong>Add Invite Code (optional):</strong></br>
+				<input class = "gameCreate" type="password"autocomplete="new-password" name="newGame[password]" value="" size="20" /></br>
+				Confirm: <input class = "gameCreate" autocomplete="new-password" type="password" name="newGame[passwordcheck]" value="" size="20" /></br>
 			</p>
 
 			<p class="notice">
 				<input class = "gameCreate" type="submit"  value="Create">
-			</p></br>
+			</p>
+			</br>
 		</form>
 	</div>
-
-<script type="text/javascript">
-var coll = document.getElementsByClassName("gameCreateTitle");
-var searchCounter;
-
-for (searchCounter = 0; searchCounter < coll.length; searchCounter++) {
-  coll[searchCounter].addEventListener("click", function() {
-    this.classList.toggle("active");
-    var content = this.nextElementSibling;
-		if (content.style.display === "block") { content.style.display = "none"; } 
-		else { content.style.display = "block"; }
-  });
-}
-</script>
 
 <script>
 // Get the modal

@@ -1187,7 +1187,6 @@ class User {
 	public function getYearlyUnExcusedMissedTurns() 
 	{
 		global $DB;
-		// Get count of users finished games that they did not resign or leave. 
 		list($totalMissedTurns) = $DB->sql_row("
 		SELECT COUNT(1) FROM wD_MissedTurns t  
 		WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".(time() - 31536000));
@@ -1203,6 +1202,18 @@ class User {
 		global $DB;
 		list($totalMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
 			WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".(time() - 2419200));
+		
+		return $totalMissedTurns;
+	}
+
+	/*
+	 * Get the number of missed turns in the past year. 
+	 */
+	public function getMissedTurns() 
+	{
+		global $DB;
+		list($totalMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
+			WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.turnDateTime > ".(time() - 2419200));
 		
 		return $totalMissedTurns;
 	}

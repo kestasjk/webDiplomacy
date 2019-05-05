@@ -233,13 +233,15 @@ if ( isset($_REQUEST['detail']) )
 				print '<div class = "profile_content">';
 				print '<p>Reliability is how consistently you avoid interrupting games. Any un-excused missed turns hurt your rating. If you have any un-excused
 				missed turns in the last 4 weeks you will receive an 11% penalty to your RR for <strong>each</strong> of those delays. It is very important 
-				to everyone you are playing with to be reliable but we understand mistakes happen so this extra penality will go away after 28 days. All of the un-excused
-				missed turns that negatively impact your rating are highlighed in yellow below.
+				to everyone you are playing with to be reliable but we understand mistakes happen so this extra penality will drop to 5% after 28 days. All of the un-excused
+				missed turns that negatively impact your rating are highlighed in red below. Excused delays will only negatively impact your base score, seen below. Mod excused
+				delays do not hurt your score in any way. 
 				</br>
 				</br>
-				<strong>System Excused:</strong> If you had an "excused missed turn" left this will be yes and will not count against your rating. </br>
-				<strong>Mod Excused:</strong> If a moderator excused the missed turn this field will be yes and will not count against your rating.</br>
-				<strong>Same Period Excused:</strong> If you have multiple un-excused missed turns in a 72 hour period you are only penalized once, if this field is yes it does not count against your rating.
+				<strong>System Excused:</strong> If you had an "excused missed turn" left this will be yes and will not cause additional penalties against your rating.</br>
+				<strong>Mod Excused:</strong> If a moderator excused the missed turn this field will be yes and will not cause additional penalties against your rating.</br>
+				<strong>Same Period Excused:</strong> If you have multiple un-excused missed turns in a 72 hour period you are only penalized once, if this field is yes it 
+				will not cause additional penalties against your rating.
 				</p></div>';
 				print '<div class = "profile_title">What happens if my rating is low?</div>';
 				print '<div class = "profile_content">';
@@ -256,7 +258,30 @@ if ( isset($_REQUEST['detail']) )
 				 <li>9 or more un-excused delays: infinite, must contact mods for removal</li>
 				</p></div>';
 
-				print '<h4>'.l_t('Missed Turns:').'</h4>';
+				$recentUnExcusedMissedTurns = $UserProfile->getRecentUnExcusedMissedTurns();
+				$allUnExcusedMissedTurns = $UserProfile->getYearlyUnExcusedMissedTurns();
+				$allMissedTurns = $UserProfile->getMissedTurns();
+
+				$basePercentage = (100*(1- ($allMissedTurns/max($UserProfile->yearlyPhaseCount,1))));
+				$yearlyPenalty = ($allUnExcusedMissedTurns*5);
+				$recentPenalty = ($recentUnExcusedMissedTurns*6);
+
+				print '<h4>Factors Impacting RR:</h4>';
+				print '<p>
+				<Strong>Yearly Turns:</Strong> '.$UserProfile->yearlyPhaseCount.'</br>
+				<Strong>Yearly Missed Turns:</Strong> '.$allMissedTurns.'</br>
+				<strong>Base Percentage (100* (1 - Missed Turns/Yearly Turns)):</strong> '.$basePercentage.'%</br>
+
+				<h4>Added Penalties:</h4>
+				<Strong>Yearly Unexcused Missed Turns:</Strong> '.$allUnExcusedMissedTurns.' for a penalty of '.$yearlyPenalty.'%</br>
+				<Strong>Recent Unexcused Missed Turns:</Strong> '.$recentUnExcusedMissedTurns.' for a penalty of '.$recentPenalty.'%</br>
+
+				<h4>Total:</h4>
+				<Strong>Reliability Rating:</Strong> '.max(($basePercentage - $recentPenalty - $yearlyPenalty),0) .'
+				</p>';
+
+				print '<h4>Missed Turns:</h4> 
+				<p>Red = Unexcused</p>';
 				$tabl = $DB->sql_tabl("SELECT n.gameID, n.countryID, n.turn, g.name, 
 				( CASE WHEN n.systemExcused = 1 THEN 'Yes' ELSE 'No' END ),
 				( CASE WHEN n.modExcused = 1 THEN 'Yes' ELSE 'No' END ),
@@ -286,7 +311,6 @@ if ( isset($_REQUEST['detail']) )
 						$Variant=libVariant::loadFromGameID($gameID);
 
 						if ($systemExcused == 'No' && $modExcused == 'No' && $samePeriodExcused == 'No') { print '<tr style="background-color:#F08080;">'; }
-						else if ($systemExcused == 'No' && $modExcused == 'No' && $samePeriodExcused == 'Yes') { print '<tr style="background-color:yellow;">'; }
 						else { print '<tr>'; }
 						
 						print '<td> <strong>'.$id.'</strong></td>';
@@ -612,12 +636,14 @@ if( $total )
 	if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 	{
 		$recentMissedTurns = $UserProfile->getRecentUnExcusedMissedTurns();
+		$allMissedTurns = $UserProfile->getYearlyUnExcusedMissedTurns();
 		If ($recentMissedTurns > 0) 
 		{ 
 			print '<li style="font-size:13px"><font color="red"> Recent Un-excused Delays: ' . $recentMissedTurns.'</font></li>'; 
-			print '<li style="font-size:13px"><font color="red"> Recenty Delay RR Penalty: ' . ($recentMissedTurns*11).'%</font></li>'; 
+			print '<li style="font-size:13px"><font color="red"> Recent Delay RR Penalty: ' . ($recentMissedTurns*6).'%</font></li>';
+			print '<li style="font-size:13px"><font color="red"> Yearly Delay RR Penalty: ' . ($allMissedTurns*5).'%</font></li>';  
 		}
-		print '<li style="font-size:13px">'.l_t('Un-excused delays/phases:').' <strong>'.$UserProfile->getYearlyUnExcusedMissedTurns().'/'.$UserProfile->yearlyPhaseCount.'</strong></li>';
+		print '<li style="font-size:13px">'.l_t('Un-excused delays/phases:').' <strong>'.$allMissedTurns.'/'.$UserProfile->yearlyPhaseCount.'</strong></li>';
 	}
 	print '<li style="font-size:13px">'.l_t('Reliability rating:').' <strong>'.($UserProfile->reliabilityRating).'%</strong>';
 	                                                                                                      
@@ -657,17 +683,6 @@ if( $User->type['Moderator'] )
 	else
 	{
 		print '<p class="profileCommentURL">User does not qualify for emergency pause</p>';
-	}
-}
-
-list($serverHasPHPBB) = $DB->sql_row("SELECT count(1) FROM information_schema.tables WHERE table_name = 'phpbb_users'");
-
-if ($serverHasPHPBB == 1)
-{
-	list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
-	if ($newForumId > 0)
-	{
-		print '<p class="profileCommentURL"><strong><a href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumId.'">New Forum Profile</a></strong></p>';
 	}
 }
 
@@ -762,6 +777,9 @@ print '<li>&nbsp;</li>';
 
 print '</li></ul></p></div><div style="clear:both"></div></div>';
 
+print '<div id="profile-separator"></div>';
+
+
 // Start interactive area:
 
 if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
@@ -781,78 +799,108 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 
 	if($modActions)
 	{
-		print '<div class="hr"></div>';
 		print '<p class="notice">';
 		print implode(' - ', $modActions);
 		print '</p>';
 	}
+}
+
+if( !$UserProfile->type['Admin'] && ( $User->type['Admin'] || $User->type['ForumModerator'] ) )
+{
+	$silences = $UserProfile->getSilences();
 	
-	if( !$UserProfile->type['Admin'] && ( $User->type['Admin'] || $User->type['ForumModerator'] ) )
+	print '<p><ul class="formlist"><li><strong>'.l_t('Silences:').'</strong></li><li>';
+	
+	if( count($silences) == 0 )
+		print l_t('No silences against this user.').'</p>';
+	else
 	{
-		$silences = $UserProfile->getSilences();
-		
-		print '<p><ul class="formlist"><li><strong>'.l_t('Silences:').'</strong></li><li>';
-		
-		if( count($silences) == 0 )
-			print l_t('No silences against this user.').'</p>';
-		else
-		{
-			print '<ul class="formlist">';
-			foreach($silences as $silence) {
-				// There should only be one active silence displayed; other active silences could be misleading
-				if( !$silence->isEnabled() || $silence->id == $UserProfile->silenceID )
-					print '<li>'.$silence->toString().'</li>';
-			}
-			print '</ul>';
+		print '<ul class="formlist">';
+		foreach($silences as $silence) {
+			// There should only be one active silence displayed; other active silences could be misleading
+			if( !$silence->isEnabled() || $silence->id == $UserProfile->silenceID )
+				print '<li>'.$silence->toString().'</li>';
 		}
-		
-		print '</li><li>';
-		print libHTML::admincp('createUserSilence',array('userID'=>$UserProfile->id,'reason'=>''),l_t('Silence user'));
-		print '</li></ul></p>';
+		print '</ul>';
+	}
+	
+	print '</li><li>';
+	print libHTML::admincp('createUserSilence',array('userID'=>$UserProfile->id,'reason'=>''),l_t('Silence user'));
+	print '</li></ul></p>';
+}
+
+if( !isset(Config::$customForumURL) ) 
+{
+	if ( $User->type['User'] && $User->id != $UserProfile->id) 
+	{
+		print '<div class="hr"></div>';
+		print '<a name="messagebox"></a>';
+		if ( isset($_REQUEST['message']) && $_REQUEST['message'] ) 
+		{
+			if ( ! libHTML::checkTicket() ) 
+			{
+				print '<p class="notice">'.l_t('You seem to be sending the same message again, this may happen if you refresh '.
+					'the page after sending a message.').'</p>';
+			} 
+			else 
+			{
+				if ( $UserProfile->sendPM($User, $_REQUEST['message']) ) 
+				{
+	                print '<p class="notice">'.l_t('Private message sent successfully.').'</p>';
+	            } 
+	            else 
+	            {
+	                print '<p class="notice">'.l_t('Private message could not be sent. You may be silenced or muted.').'</p>';
+	            }
+			}
+		}
+		print '<div style="margin-left:20px"><ul class="formlist">';
+		print '<li class="formlisttitle">'.l_t('Send private-message:').'</li>
+			<li class="formlistdesc">'.l_t('Send a message to this user.').'</li>';
+		print '<form action="profile.php?userID='.$UserProfile->id.'#messagebox" method="post">
+			<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
+			<textarea name="message" style="width:80%" rows="4"></textarea></li>
+			<li class="formlistfield"><input type="submit" class="form-submit" value="'.l_t('Send').'" /></li>
+			</form>
+			</ul>
+			</div>';
+	}
+}
+else
+{
+	if ( $User->type['User'] && $User->id != $UserProfile->id)
+	{
+		list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
+		if ($newForumId > 0)
+		{
+			print '
+			<div id="profile-forum-link-container">
+				<div class="profile-forum-links">
+					<a class="profile-link" href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumId.'">
+						<button class="form-submit" id="view-forum-profile">
+							New Forum Profile
+						</button>
+					</a>
+				</div>';
+			print '
+				<div class="profile-forum-links">
+					<a class="profile-link" href="/contrib/phpBB3/ucp.php?i=pm&mode=compose&u='.$newForumId.'">
+						<button class="form-submit" id="send-pm">
+							Send a message to this user
+						</button>
+					</a>
+				</div>
+			</div>';
+		} 
+		else 
+		{
+			print '<p class="profileCommentURL">This user cannot currently receive messages.</p>';
+		}
 	}
 }
 print '</div>';
-if ( $User->type['User'] && $User->id != $UserProfile->id)
-{
-	print '<div class="hr"></div>';
-
-	print '<a name="messagebox"></a>';
-
-	if ( isset($_REQUEST['message']) && $_REQUEST['message'] )
-	{
-		if ( ! libHTML::checkTicket() )
-		{
-			print '<p class="notice">'.l_t('You seem to be sending the same message again, this may happen if you refresh '.
-				'the page after sending a message.').'</p>';
-		}
-		else
-		{
-			if ( $UserProfile->sendPM($User, $_REQUEST['message']) )
-            {
-                print '<p class="notice">'.l_t('Private message sent successfully.').'</p>';
-            }
-			else 
-            {
-                print '<p class="notice">'.l_t('Private message could not be sent. You may be silenced or muted.').'</p>';
-            }
-
-		}
-	}
-
-	print '<div style="margin-left:20px"><ul class="formlist">';
-	print '<li class="formlisttitle">'.l_t('Send private-message:').'</li>
-		<li class="formlistdesc">'.l_t('Send a message to this user.').'</li>';
-
-	print '<form action="profile.php?userID='.$UserProfile->id.'#messagebox" method="post">
-		<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
-		<textarea name="message" style="width:80%" rows="4"></textarea></li>
-		<li class="formlistfield"><input type="submit" class="form-submit" value="'.l_t('Send').'" /></li>
-		</form>
-		</ul>
-		</div>';
-}
-
 ?>
+
 <script type="text/javascript">
    var coll = document.getElementsByClassName("profile_title");
    var searchCounter;

@@ -193,6 +193,44 @@ p.profileComment {
 	margin-top: 3px !important;
 }
 
+#profile-forum-link-container {
+	display: flex;
+	justify-content: space-around;
+}
+
+ .profile-forum-links {
+	width: 50%;
+	margin: 0;
+	text-align: center;
+}
+
+ #send-pm {
+	margin-left: -10px;
+}
+
+ .profile-links-button {
+	background-color: #d9d9d9;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	cursor: pointer;
+	border-radius: 10px;
+	padding: 5px 10px;
+	font-weight: 800;
+}
+
+ .profile-links-button:hover {
+    background: #009902;
+    color: #f2f2f2;
+    transition: 0.4s all ease;
+    -webkit-transition: 0.4s all ease;
+}
+
+ #profile-separator {
+	margin: 10px auto 20px auto;
+	height: 1px;
+	background-color: #aaa;
+}
+
 img.center {
 	text-align:center;
 }
@@ -1784,6 +1822,12 @@ input[id^="FinalizeButton"]{
 	}
 	#seperator-fixed{
 		display: none;
+	}
+	#profile-forum-link-container {
+		display: block;
+	}
+	.profile-forum-links {
+		margin: 10px auto;
 	}
 	div.content{
 		padding: 15px 10px;
