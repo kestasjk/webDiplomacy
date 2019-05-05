@@ -31,7 +31,8 @@ require_once(l_r('objects/scoringsystem.php'));
  */
 class Game
 {
-	public static function mapType() {
+	public static function mapType() 
+	{
 		if ( isset($_REQUEST['largemap'] ) )
 			return 'large';
 		elseif ( isset($_REQUEST['mapType']) )
@@ -230,6 +231,11 @@ class Game
 	public $civilDisorderInfo;
 
 	/**
+	 * The number of allowed NMRs per player before they are set in Civil Disorder.
+	 */
+	public $excusedMissedTurns;
+
+	/**
 	 * @param int/array $gameData The game ID of the game to load, or the array of its database row
 	 * @param string[optional] $lockMode The database locking phase to use; no locking by default
 	 */
@@ -332,18 +338,19 @@ class Game
 	 *
 	 * @return boolean
 	 */                                                                                                                                    
-	public function moderatorSeesMemberInfo() {                                                                                            
+	public function moderatorSeesMemberInfo() 
+	{                                                                                            
 		global $User;
 
 		return (!($this->anon == 'No' || $this->phase == 'Finished') && $this->hasModeratorPowers());
 	}
 
-	public function hasModeratorPowers() {
-            global $User;
+	public function hasModeratorPowers() 
+	{
+		global $User;
 
-			return ($User->type['Moderator'] && !isset($this->Members->ByUserID[$User->id]));
+		return ($User->type['Moderator'] && !isset($this->Members->ByUserID[$User->id]));
 	}
-
 
 	function loadRow(array $row)
 	{
@@ -360,14 +367,14 @@ class Game
 
 	function watched() 
 	{
-        	global $DB, $User;
+        global $DB, $User;
 
 		$row = $DB->sql_row('SELECT * from wD_WatchedGames WHERE gameID='.$this->id.' AND userID=' . $User->id);
 		return $row != false;
 	}
 	function watch() 
 	{
-        	global $DB, $User;
+        global $DB, $User;
 
 		if (! $this->watched())
 		{
@@ -378,16 +385,17 @@ class Game
 
 	function unwatch() 
 	{
-                global $DB, $User;
+        global $DB, $User;
 
-	        if ($this->watched())
+	    if ($this->watched())
 		{
 			$DB->sql_put('DELETE from wD_WatchedGames WHERE gameID='. $this->id . ' AND userID='. $User->id);// . $this->id . ' AND userID=' . $User->id);
 			$DB->sql_put('COMMIT');
 		} 
 	}
 
-	function loadCDs() {
+	function loadCDs() 
+	{
 		global $DB;
 
         $this->civilDisorderInfo = array();
@@ -427,7 +435,8 @@ class Game
 			g.pressType,
 			g.missingPlayerPolicy,
 			g.drawType,
-			g.minimumReliabilityRating
+			g.minimumReliabilityRating,
+			g.excusedMissedTurns
 			FROM wD_Games g
 			WHERE g.id=".$this->id.' '.$this->lockMode);
 

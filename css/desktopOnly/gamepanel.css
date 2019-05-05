@@ -1,12 +1,9 @@
-
 .gamesList {
 	margin-top:10px;	
 }
-
 .mapnav {
   margin: 0.5em;
 }
-
 .gamePanel {
 	color: #333;
 	border-radius: 7px;
@@ -17,13 +14,13 @@
 }
 .memberVotes {
 	font-weight:bold;
-	}
+}
 .gamePanelHome {
 	width:100%;
 }
 .boardHeader {
 	color: #000;
-	}
+}
 
 .bar {
 	padding:5px 2%;
@@ -33,23 +30,21 @@
 }
 .barAlt1, .barAltLight1 {
 	background-color:#f5f5f5 !important;
-	}
+}
 .barAlt2, .barAltLight2 {
 	background-color:#f0f0f0 !important;
-	}
+}
 .homeMembersTable .barAlt1 {
 	background-color:#eaeaea !important;
-	}
+}
 .homeMembersTable .barAlt2 {
 	background-color:#e5e5e5 !important;
-	}
-	
+}
 	
 .lastBar {
 	height:0;
 	padding:0;
-	
-	}
+}
 
 /* ---- titleBar ---- */
 .titleBarHomeGameName {
@@ -92,7 +87,7 @@
 }
 .gameDate {
 	font-style:italic;
-	}
+}
 .gamePanelHome .gameDate {
 	font-size:11px;
 }
@@ -108,12 +103,12 @@
 }
 .gameTimeHoursPerPhaseText {
 	font-style:italic;
-	}
+}
 .gameTimeRemainingFixed {
 	font-style:italic;
 	font-weight:normal;
 }
-.gamePot {
+.gamePot, excusedNMRs {
 	font-weight:bold;
 }
 .gamePotType {
@@ -132,7 +127,6 @@ div.memberBoardHeader {
 }
 
 /* ---- occupationBar ---- */
-
 .occupationBarJoined {
 	background-color: #A4C499;
 }
@@ -168,8 +162,7 @@ div.memberBoardHeader {
 .boardHeader .membersList, .gamePanelHome .membersList {
 	margin:0;
 	border:0;
-	}
-
+}
 .chatbox .membersList {
 	border:0;
 }
@@ -179,13 +172,13 @@ div.memberBoardHeader {
 .membersList em {
 	font-weight:bold;
 	font-style:italic;
-	}
+}
 .membersList em.bad {
 	color: #D36161 !important;
-	}
+}
 .membersList em.good {
 	color: #7CCE5F !important;
-	}
+}
 .memberRightSide {
 	width:85%;
 	padding-right:3px;
@@ -208,10 +201,10 @@ div.memberBoardHeader {
 }
 .memberYourCountry {
 	font-weight:bold;
-	}
+}
 .memberName {
 	white-space: nowrap;
-	}
+}
 .memberStatus {
 	font-style:italic;
 }
@@ -219,22 +212,22 @@ div.memberBoardHeader {
 	font-weight:bold;
 	font-style:italic;
 	color:#444;
-	}
+}
 .memberStatusFade {
 	color:#777;
-	}
+}
 .memberStatusWon, .memberStatusDrawn {
 	text-decoration: underline
-	}
+}
 .memberStatusLeft, .memberStatusResigned {
 	font-style:italic;
 }
 .memberStatusDefeated, .memberStatusResigned {
 	text-decoration: line-through
-	}
+}
 .memberStatusHeader {
 	border-top: 1px solid #cecece;
-	}
+}
 .modEyes.bar {
 	text-align: center;
 	font-weight: bold;
@@ -263,7 +256,7 @@ div.memberBoardHeader {
 .memberPreGameList {
 	text-align:center;
 	font-weight:normal !important;
-	}
+}
 .panelBarGraph {
 	padding:0;
 	overflow:hidden;
@@ -299,10 +292,10 @@ div.memberBoardHeader {
 }
 .barDivBorderTop {
 	border-top:solid 1px #c1c1c1;
-	}
+}
 .barDivBorderBottom{
 	border-bottom:solid 1px #c1c1c1;
-	}
+}
 .memberProgressBar, .memberProgressBarBlank {
 	border-bottom:solid 1px #cecece;
 	margin-top:3px;
@@ -319,10 +312,10 @@ div.memberBoardHeader {
 }
 .memberPointsCount {
 	font-style:italic;
-	}
+}
 .memberUnitCount {
 	font-style:italic;
-	}
+}
 .memberLastSeen {
 	font-style:italic;
 }
@@ -350,7 +343,6 @@ div.memberBoardHeader {
 }
 
 /* ---- .archiveBar, .joinBar, .openBar ---- */
-
 .enterBar em {
 	font-style:normal;
 	font-weight:bold;
@@ -365,28 +357,26 @@ div.memberBoardHeader {
 	float:left;
 }
 
-
 .archiveBar a {
-	
 	font-weight:normal !important;
 }
 
 .homeGameLinks {
 	font-size:12px;
-	}
+}
 .homeGameLinks a {
 	margin:0 4px;
-	}
+}
 
 /* --- Home game panel --- */
 .gamePanelHome {
 	font-size:11px;
 }
 
-.panelAnonOnlyFlag {
+.panelAnonOnlyFlag, .panelTempBanned{
 	background-color:#f5f5f5  !important;
 	text-align: center !important;
-	}
+}
 
 .memberVotePanel {
 	border-top: 1px solid #cecece!important;

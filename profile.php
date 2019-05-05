@@ -226,102 +226,94 @@ if ( isset($_REQUEST['detail']) )
 		case 'civilDisorders':
 			print '<div class = "rrInfo">';
 			if ( $User->type['Moderator'] || $User->id == $UserProfile->id ) 
-			{
-				$tabl = $DB->sql_tabl("SELECT g.name, c.countryID, c.turn, c.bet, c.SCCount, c.gameId, c.forcedByMod
-					FROM wD_CivilDisorders c 
-					INNER JOIN wD_Games g ON ( c.gameID = g.id )
-					WHERE c.userID = ".$UserProfile->id . ($User->type['Moderator'] ? '' : ' AND c.forcedByMod = 0'));
-	
-				print '<h4>'.l_t('Civil disorders:').'</h4>';
-					
-				if ($DB->last_affected() == 0) 
-				{
-					print l_t('No civil disorders found for this profile.');
-				}
-				else
-				{
-					print '<TABLE class="rrInfo">';
-					print '<tr>';
-					print '<th class= "rrInfo">Game:</th>';
-					print '<th class= "rrInfo">Country:</th>';
-					print '<th class= "rrInfo">Turn:</th>';
-					print '<th class= "rrInfo">Bet:</th>';
-					print '<th class= "rrInfo">Supply Centers:</th>';
-					if ( $User->type['Moderator'] ) print '<th class= "rrInfo">Ignored:</th>';
-					print '</tr>';
+			{	
+				print '<h4>'.l_t('Reliability Explained:').'</h4>';
 
-					while(list($name, $countryID, $turn, $bet, $SCCount,$gameID,$forcedByMod)=$DB->tabl_row($tabl))
-					{
-						print '<tr>';
-						print '<td> <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong></td>';
-						print '<td> <strong>'.$countryID.'</strong></td>';
-						print '<td> <strong>'.$turn.'</strong></td>';
-						print '<td> <strong>'.$bet.'</strong></td>';
-						print '<td> <strong>'.$SCCount.'</strong></td>';
-						if ( $User->type['Moderator'] ) print '<td> <strong>'.$forcedByMod.'</strong></td>';
-						print '</tr>';
-					}
-					print '</table>';
-				}
+				print '<div class = "profile_title">What is Reliability?</div>';
+				print '<div class = "profile_content">';
+				print '<p>Reliability is how consistently you avoid interrupting games. Any un-excused missed turns hurt your rating. If you have any un-excused
+				missed turns in the last 4 weeks you will receive an 11% penalty to your RR for <strong>each</strong> of those delays. It is very important 
+				to everyone you are playing with to be reliable but we understand mistakes happen so this extra penality will drop to 5% after 28 days. All of the un-excused
+				missed turns that negatively impact your rating are highlighed in red below. Excused delays will only negatively impact your base score, seen below. Mod excused
+				delays do not hurt your score in any way. 
+				</br>
+				</br>
+				<strong>System Excused:</strong> If you had an "excused missed turn" left this will be yes and will not cause additional penalties against your rating.</br>
+				<strong>Mod Excused:</strong> If a moderator excused the missed turn this field will be yes and will not cause additional penalties against your rating.</br>
+				<strong>Same Period Excused:</strong> If you have multiple un-excused missed turns in a 72 hour period you are only penalized once, if this field is yes it 
+				will not cause additional penalties against your rating.
+				</p></div>';
+				print '<div class = "profile_title">What happens if my rating is low?</div>';
+				print '<div class = "profile_content">';
+				print '<p>
+				Many games are made with a minimum rating requirement so this may impact the quality of games you can enter. If you have more then 3 un-excused missed turns in a year
+				you will begin getting temporarily banned from making new games, joining existing games, or rejoining your own games. </br>
+				</br>
+				 <li>1-3 un-excused delays: warnings</li>
+				 <li>4 un-excused delays: 1-day temp ban</li>
+				 <li>5 un-excused delays: 3-day temp ban</li>
+				 <li>6 un-excused delays: 7-day temp ban</li>
+				 <li>7 un-excused delays: 14-day temp ban</li>
+				 <li>8 un-excused delays: 30-days temp ban</li>
+				 <li>9 or more un-excused delays: infinite, must contact mods for removal</li>
+				</p></div>';
 
-				$tabl = $DB->sql_tabl("SELECT c.countryID, c.turn, c.bet, c.SCCount, c.gameId, c.forcedByMod
-					FROM wD_CivilDisorders c 
-					LEFT JOIN wD_Games g ON c.gameID = g.id
-					WHERE g.id is null AND c.userID = ".$UserProfile->id . ($User->type['Moderator'] ? '' : ' AND c.forcedByMod = 0'));
-					
-				if ($DB->last_affected() != 0) 
-				{
-					print '<h4>'.l_t('Cancelled civil disorders:').'</h4>';
-					print '<TABLE class="rrInfo">';
-					print '<tr>';
-					print '<th class= "rrInfo">Game ID:</th>';
-					print '<th class= "rrInfo">Country:</th>';
-					print '<th class= "rrInfo">Turn:</th>';
-					print '<th class= "rrInfo">Bet:</th>';
-					print '<th class= "rrInfo">Supply Centers:</th>';
-					if ( $User->type['Moderator'] ) print '<th class= "rrInfo">Ignored:</th>';
-					print '</tr>';
+				$recentUnExcusedMissedTurns = $UserProfile->getRecentUnExcusedMissedTurns();
+				$allUnExcusedMissedTurns = $UserProfile->getYearlyUnExcusedMissedTurns();
+				$allMissedTurns = $UserProfile->getMissedTurns();
 
-					while(list($countryID, $turn, $bet, $SCCount,$gameID,$forcedByMod)=$DB->tabl_row($tabl))
-					{
-						print '<tr>';
-						print '<td> <strong>'.$gameID.'</strong></td>';
-						print '<td> <strong>'.$countryID.'</strong></td>';
-						print '<td> <strong>'.$turn.'</strong></td>';
-						print '<td> <strong>'.$bet.'</strong></td>';
-						print '<td> <strong>'.$SCCount.'</strong></td>';
-						if ( $User->type['Moderator'] ) print '<td> <strong>'.$forcedByMod.'</strong></td>';
-						print '</tr>';
-					}
-					print '</table>';
-				}
+				$basePercentage = (100*(1- ($allMissedTurns/max($UserProfile->yearlyPhaseCount,1))));
+				$yearlyPenalty = ($allUnExcusedMissedTurns*5);
+				$recentPenalty = ($recentUnExcusedMissedTurns*6);
 
-				if ($UserProfile->deletedCDs != 0) 
-				{
-					print 'Additionally, there are ' . $UserProfile->deletedCDs . ' deleted CDs for this account (eg, self CD positions retaken by this user).';
-				}
+				print '<h4>Factors Impacting RR:</h4>';
+				print '<p>
+				<Strong>Yearly Turns:</Strong> '.$UserProfile->yearlyPhaseCount.'</br>
+				<Strong>Yearly Missed Turns:</Strong> '.$allMissedTurns.'</br>
+				<strong>Base Percentage (100* (1 - Missed Turns/Yearly Turns)):</strong> '.$basePercentage.'%</br>
 
-				print '<h4>'.l_t('NMRs:').'</h4>';
-				$tabl = $DB->sql_tabl("SELECT n.gameID, n.countryID, n.turn, n.bet, n.SCCount, g.name 
-				FROM wD_NMRs n 
+				<h4>Added Penalties:</h4>
+				<Strong>Yearly Unexcused Missed Turns:</Strong> '.$allUnExcusedMissedTurns.' for a penalty of '.$yearlyPenalty.'%</br>
+				<Strong>Recent Unexcused Missed Turns:</Strong> '.$recentUnExcusedMissedTurns.' for a penalty of '.$recentPenalty.'%</br>
+
+				<h4>Total:</h4>
+				<Strong>Reliability Rating:</Strong> '.max(($basePercentage - $recentPenalty - $yearlyPenalty),0) .'
+				</p>';
+
+				print '<h4>Missed Turns:</h4> 
+				<p>Red = Unexcused</p>';
+				$tabl = $DB->sql_tabl("SELECT n.gameID, n.countryID, n.turn, g.name, 
+				( CASE WHEN n.systemExcused = 1 THEN 'Yes' ELSE 'No' END ),
+				( CASE WHEN n.modExcused = 1 THEN 'Yes' ELSE 'No' END ),
+				( CASE WHEN n.samePeriodExcused = 1 THEN 'Yes' ELSE 'No' END ), 
+				n.id, 
+				n.turnDateTime
+				FROM wD_MissedTurns n
 				LEFT JOIN wD_Games g ON n.gameID = g.id 
-				WHERE n.userID = ".$UserProfile->id);
+				WHERE n.userID = ".$UserProfile->id. " and n.turnDateTime > ".(time() - 31536000));
 
 				if ($DB->last_affected() != 0) 
 				{
 					print '<TABLE class="rrInfo">';
 					print '<tr>';
+					print '<th class= "rrInfo">ID:</th>';
 					print '<th class= "rrInfo">Game:</th>';
-					print '<th class= "rrInfo">Country:</th>';
+					print '<th class= "rrInfo">Country</th>';
 					print '<th class= "rrInfo">Turn:</th>';
-					print '<th class= "rrInfo">Bet:</th>';
-					print '<th class= "rrInfo">Supply Centers:</th>';
+					print '<th class= "rrInfo">System Excused:</th>';
+					print '<th class= "rrInfo">Mod Excused:</th>';
+					print '<th class= "rrInfo">Same Period Excused:</th>';
+					print '<th class= "rrInfo">Turn Date:</th>';
 					print '</tr>';
 
-					while(list($gameID, $countryID, $turn, $bet, $SCCount, $name)=$DB->tabl_row($tabl))
+					while(list($gameID, $countryID, $turn, $name, $systemExcused, $modExcused, $samePeriodExcused, $id, $turnDateTime)=$DB->tabl_row($tabl))
 					{
-						print '<tr>';
+						$Variant=libVariant::loadFromGameID($gameID);
+
+						if ($systemExcused == 'No' && $modExcused == 'No' && $samePeriodExcused == 'No') { print '<tr style="background-color:#F08080;">'; }
+						else { print '<tr>'; }
 						
+						print '<td> <strong>'.$id.'</strong></td>';
 						if ($name != '') 
 						{
 							print '<td> <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong></td>';
@@ -330,17 +322,20 @@ if ( isset($_REQUEST['detail']) )
 						{	
 							print '<td> <strong>Cancelled Game</strong></td>';
 						}
-						print '<td> <strong>'.$countryID.'</strong></td>';
-						print '<td> <strong>'.$turn.'</strong></td>';
-						print '<td> <strong>'.$bet.'</strong></td>';
-						print '<td> <strong>'.$SCCount.'</strong></td>';
+						print '<td> <strong>'.$Variant->countries[$countryID-1].'</strong></td>';
+						print '<td> <strong>'.$Variant->turnAsDate($turn).'</strong></td>';
+						print '<td> <strong>'.$systemExcused.'</strong></td>';
+						print '<td> <strong>'.$modExcused.'</strong></td>';
+						print '<td> <strong>'.$samePeriodExcused.'</strong></td>';
+						print '<td> <strong>'.libTime::detailedText($turnDateTime).'</strong></td>';
+						
 						print '</tr>';
 					}
 					print '</table>';
 				} 
 				else 
 				{
-					print l_t('No NMRs found for this profile.');
+					print l_t('No missed turns found for this profile.');
 				}
 			} 
 			else 
@@ -363,6 +358,22 @@ if ( isset($_REQUEST['detail']) )
 	}
 
 	print '</div>';
+?>
+<script type="text/javascript">
+   var coll = document.getElementsByClassName("profile_title");
+   var searchCounter;
+   
+   for (searchCounter = 0; searchCounter < coll.length; searchCounter++) {
+     coll[searchCounter].addEventListener("click", function() {
+       this.classList.toggle("active");
+       var content = this.nextElementSibling;
+   		if (content.style.display === "block") { content.style.display = "none"; } 
+   		else { content.style.display = "block"; }
+     });
+   }
+</script>
+<?php
+
 	libHTML::footer();
 }
 
@@ -613,21 +624,30 @@ if( $total )
 	}
 
 	print '</br>';
-	print '<li><strong>'.l_t('Reliability:').'</strong>';
-	if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
-	{
-		print '<li style="font-size:13px">'.l_t('No moves received/received:').' <strong>'.$UserProfile->nmrCount.'/'.$UserProfile->phaseCount.'</strong></li>';
-	}
-	print '<li style="font-size:13px">'.l_t('Reliability rating:').' <strong>'.($UserProfile->reliabilityRating).'%</strong>';
 	if( $User->type['Moderator'] || $User->id == $UserProfile->id )
 	{
-		print ' <a class="light" href="profile.php?detail=civilDisorders&userID='.$UserProfile->id.'">'.l_t('breakdown').'</a>';
-	}                                                                                                         
-	print '</li>';
+		print '<li><strong>'.l_t('Reliability:').' (<a href="profile.php?detail=civilDisorders&userID='.$UserProfile->id.'">'.l_t('Reliability Explained').'</a>) </strong>';
+	}   
+	else
+	{
+		print '<li><strong>'.l_t('Reliability:').'</strong>';
+	}
 	
-	if ( $rankingDetails['takenOver'] )
-		print '<li style="font-size:13px">'.l_t('Left and taken over: <strong>%s</strong>',$rankingDetails['takenOver']).
-			'(<a href="profile.php?detail=civilDisorders&userID='.$UserProfile->id.'">'.l_t('View details').'</a>)</li>';
+	if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
+	{
+		$recentMissedTurns = $UserProfile->getRecentUnExcusedMissedTurns();
+		$allMissedTurns = $UserProfile->getYearlyUnExcusedMissedTurns();
+		If ($recentMissedTurns > 0) 
+		{ 
+			print '<li style="font-size:13px"><font color="red"> Recent Un-excused Delays: ' . $recentMissedTurns.'</font></li>'; 
+			print '<li style="font-size:13px"><font color="red"> Recent Delay RR Penalty: ' . ($recentMissedTurns*6).'%</font></li>';
+			print '<li style="font-size:13px"><font color="red"> Yearly Delay RR Penalty: ' . ($allMissedTurns*5).'%</font></li>';  
+		}
+		print '<li style="font-size:13px">'.l_t('Un-excused delays/phases:').' <strong>'.$allMissedTurns.'/'.$UserProfile->yearlyPhaseCount.'</strong></li>';
+	}
+	print '<li style="font-size:13px">'.l_t('Reliability rating:').' <strong>'.($UserProfile->reliabilityRating).'%</strong>';
+	                                                                                                      
+	print '</li>';
 
 	print '</li>';
 }
@@ -665,8 +685,6 @@ if( $User->type['Moderator'] )
 		print '<p class="profileCommentURL">User does not qualify for emergency pause</p>';
 	}
 }
-
-
 
 if ( $UserProfile->comment )
 	print '<p class="profileComment">"'.$UserProfile->comment.'"</p>';
@@ -758,7 +776,58 @@ print '<li>&nbsp;</li>';
 //print '<li>&nbsp;</li>';
 
 print '</li></ul></p></div><div style="clear:both"></div></div>';
+
 print '<div id="profile-separator"></div>';
+
+
+// Start interactive area:
+
+if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
+{
+	$modActions=array();
+
+	if ( $User->type['Admin'] )
+		$modActions[] = '<a href="index.php?auid='.$UserProfile->id.'">'.l_t('Enter this user\'s account').'</a>';
+
+	$modActions[] = libHTML::admincpType('User',$UserProfile->id);
+
+	if( !$UserProfile->type['Admin'] && ( $User->type['Admin'] || !$UserProfile->type['Moderator'] ) )
+		$modActions[] = libHTML::admincp('banUser',array('userID'=>$UserProfile->id), l_t('Ban user'));
+	
+	$modActions[] = '<a href="admincp.php?tab=Multi-accounts&aUserID='.$UserProfile->id.'" class="light">'.
+		l_t('Enter multi-account finder').'</a>';
+
+	if($modActions)
+	{
+		print '<p class="notice">';
+		print implode(' - ', $modActions);
+		print '</p>';
+	}
+}
+
+if( !$UserProfile->type['Admin'] && ( $User->type['Admin'] || $User->type['ForumModerator'] ) )
+{
+	$silences = $UserProfile->getSilences();
+	
+	print '<p><ul class="formlist"><li><strong>'.l_t('Silences:').'</strong></li><li>';
+	
+	if( count($silences) == 0 )
+		print l_t('No silences against this user.').'</p>';
+	else
+	{
+		print '<ul class="formlist">';
+		foreach($silences as $silence) {
+			// There should only be one active silence displayed; other active silences could be misleading
+			if( !$silence->isEnabled() || $silence->id == $UserProfile->silenceID )
+				print '<li>'.$silence->toString().'</li>';
+		}
+		print '</ul>';
+	}
+	
+	print '</li><li>';
+	print libHTML::admincp('createUserSilence',array('userID'=>$UserProfile->id,'reason'=>''),l_t('Silence user'));
+	print '</li></ul></p>';
+}
 
 if( !isset(Config::$customForumURL) ) 
 {
@@ -829,62 +898,9 @@ else
 		}
 	}
 }
-
-// Start interactive area:
-
-if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
-{
-	print '<div id="profile-separator" style="margin-top: 20px;"></div>';
-	$modActions=array();
-
-	if ( $User->type['Admin'] )
-		$modActions[] = '<a href="index.php?auid='.$UserProfile->id.'">'.l_t('Enter this user\'s account').'</a>';
-
-	$modActions[] = libHTML::admincpType('User',$UserProfile->id);
-
-	if( !$UserProfile->type['Admin'] && ( $User->type['Admin'] || !$UserProfile->type['Moderator'] ) )
-		$modActions[] = libHTML::admincp('banUser',array('userID'=>$UserProfile->id), l_t('Ban user'));
-	
-	$modActions[] = '<a href="admincp.php?tab=Multi-accounts&aUserID='.$UserProfile->id.'" class="light">'.
-		l_t('Enter multi-account finder').'</a>';
-
-	if($modActions)
-	{
-		
-		print '<p class="notice">';
-		print implode(' - ', $modActions);
-		print '</p>';
-	}
-	
-	if( !$UserProfile->type['Admin'] && ( $User->type['Admin'] || $User->type['ForumModerator'] ) )
-	{
-		$silences = $UserProfile->getSilences();
-		
-		print '<p><ul class="formlist"><li><strong>'.l_t('Silences:').'</strong></li><li>';
-		
-		if( count($silences) == 0 )
-			print l_t('No silences against this user.').'</p>';
-		else
-		{
-			print '<ul class="formlist">';
-			foreach($silences as $silence) {
-				// There should only be one active silence displayed; other active silences could be misleading
-				if( !$silence->isEnabled() || $silence->id == $UserProfile->silenceID )
-					print '<li>'.$silence->toString().'</li>';
-			}
-			print '</ul>';
-		}
-		
-		print '</li><li>';
-		print libHTML::admincp('createUserSilence',array('userID'=>$UserProfile->id,'reason'=>''),l_t('Silence user'));
-		print '</li></ul></p>';
-	}
-}
-
 print '</div>';
-
-
 ?>
+
 <script type="text/javascript">
    var coll = document.getElementsByClassName("profile_title");
    var searchCounter;

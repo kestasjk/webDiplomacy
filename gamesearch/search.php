@@ -30,8 +30,7 @@ require_once(l_r('searchOptions.php'));
 
 class search
 {
-	protected $searchItems = array('AmMember','IsPublic','PotType','DrawType','ChooseVariant','PhaseHours','Phase','IsAnonymous','PressType','OrderBy');
-
+	protected $searchItems = array('AmMember','IsPublic','PotType','DrawType','ChooseVariant','PhaseHours','ExcusedNMRs','Phase','IsAnonymous','PressType','OrderBy');
 
 	protected $searchTypes = array('My games','New','Joinable','Active','Finished','Search','Profile');
 
@@ -62,7 +61,7 @@ class search
 
 		foreach($items as $itemName=>$item)
 		{
-			if ( !isset($formInput[$itemName]) ) continue;//$formInput[$itemName]=null;
+			if ( !isset($formInput[$itemName]) ) continue; //$formInput[$itemName]=null;
 
 			$subItems = $item->filterInput($formInput[$itemName]);
 

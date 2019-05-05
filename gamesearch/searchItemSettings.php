@@ -531,4 +531,17 @@ class searchOrderBy extends searchItemSelect
 		}
 	}
 }
+class searchExcusedNMRs extends searchItemCheckbox
+{
+	public $name='excusedNRMs';
+	protected $label='Excused missing turns';
+	protected $options=array('0'=>'no excuses','1'=>'1 excuse','2'=>'2 excuses','3'=>'3 excuses','4'=>'4 excuses');
+ 	function sql(&$TABLES,&$WHERE,&$ORDER)
+	{
+		$unchecked = $this->invertedChecks();
+		foreach($unchecked as $uncheck)
+			$WHERE[] = "NOT excusedMissedTurns='".$uncheck."'";
+	}
+}
+
 ?>
