@@ -540,7 +540,7 @@ class searchExcusedNMRs extends searchItemCheckbox
 	{
 		$unchecked = $this->invertedChecks();
 		foreach($unchecked as $uncheck)
-			$WHERE[] = "NOT excusedMissedTurns='".$uncheck."'";
+			$WHERE[] = "NOT g.excusedMissedTurns='".$uncheck."'";
 	}
 }
 
