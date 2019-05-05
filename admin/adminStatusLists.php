@@ -26,7 +26,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @package Admin
  */
 if( !isset($_REQUEST['full']) )
-	print '<p class = "modTools"> <a class="modTools" href="admincp.php?tab=Status Info&full=on">'.l_t('View all logs').'</a> 
+	print '<p class = "modTools"> <a class="modTools" href="admincp.php?tab=Status Info&full=on">'.l_t('View all logs').'</a>
 	</br> Error logs, banned users, and donator lists are limited to 50 items, use this link to see full result set.</p>';
 
 if( $User->type['Admin'] )
@@ -169,6 +169,8 @@ adminStatusList(l_t('Mods'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\
 	FROM wD_Users WHERE type LIKE '%Moderator%'");
 adminStatusList(l_t('Admins'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 	FROM wD_Users WHERE type LIKE '%Admin%'");
+adminStatusList(l_t('Temp Banned'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
+FROM wD_Users WHERE tempBan > ".time());
 adminStatusList(l_t('Donors'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 	FROM wD_Users WHERE type LIKE '%Donator%'".(isset($_REQUEST['full'])?'':"LIMIT 50"));
 adminStatusList(l_t('Banned users'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')

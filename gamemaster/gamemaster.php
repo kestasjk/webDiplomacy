@@ -86,40 +86,11 @@ class libGameMaster
 		$DB->sql_put("COMMIT");
 	}
 
-	
-
-	const RELIABILITY_QUERY = "UPDATE wD_Users u 
-			SET u.cdCount = (SELECT COUNT(1) FROM wD_CivilDisorders c WHERE c.userID = u.id AND c.forcedByMod=0),
-				u.nmrCount = (SELECT COUNT(1) FROM wD_NMRs n WHERE n.userID = u.id),
-				u.gameCount = (
-					SELECT COUNT(1) 
-					FROM wD_Members m
-					WHERE m.userID = u.id) + (
-					SELECT COUNT(1) 
-					FROM wD_CivilDisorders c LEFT JOIN wD_Members m ON c.gameID = m.gameID AND c.userID = m.userID AND c.countryID = m.countryID
-					WHERE m.id IS NULL AND c.userID = u.id),
-				u.cdTakenCount = (
-					SELECT COUNT(1)
-					FROM wD_Members ct
-					INNER JOIN wD_CivilDisorders c ON c.gameID = ct.gameID AND c.countryID = ct.countryID AND NOT c.userID = ct.userID
-					WHERE ct.userID = u.id AND c.turn = (
-						SELECT MAX(sc.turn) 
-						FROM wD_CivilDisorders sc 
-						WHERE sc.gameID = c.gameID AND sc.countryID = c.countryID
-					)
-				),
-				u.reliabilityRating = (POW( (
-					(100 * ( 1.0 - ((cast(u.cdCount as signed) + u.deletedCDs) / (u.gameCount+1)) ))
-				    +  (100 * (1.0 -   ((u.nmrCount)/(u.phaseCount+1))))
-			    )/2 , 3)/10000)";
-
 	/**
-	 * Update the reliability ratings by taking count of the number of civil disorders, NMRs, and civil disorders taken over for each 
-	 * user. Uses the wD_CivilDisorders and wD_NMRs tables and recalculates for all users that have logged in the last two weeks.
+	 * Recalculates for all users that have logged in the last 30 days.
 	 * 
-	 * This is a relatively DB intensive query since it needs to check over three tables for all the users it includes, but it does 
-	 * ensure the way the numbers are calculated can be tracked back to the specific games involved and tweaked down the or by other 
-	 * installations (e.g. whether games just joined should be counted, etc).
+	 * This is a relatively DB intensive query since it needs to check over 2 tables for all the users it includes, but it does 
+	 * ensure the way the numbers are calculated can be tracked back to the specific games involved.
 	 * 
 	 * This could be optimized by making it recalculate only for users who are members / who were members in games that have just been
 	 * processed.
@@ -129,20 +100,19 @@ class libGameMaster
 	static public function updateReliabilityRating($recalculateAll = false)
 	{
 		global $DB, $Misc;
-		
-		/*
-		 * CDs and NMRs are straightforward counts.
-		 * 
-		 * GameCount is the number of memberships the user has, plus the number of civil disorders which the user didn't rejoin
-		 * 
-		 * CTTakenCount is calculated by taking all of a user's memberships to games, linking them
-		 * to civil disorders in that game (other than the user's civil disorders), and making sure that only the latest civil disorder
-		 * is counted (so that the user isn't said to have taken over from two civil disorders if a certain country went into civil 
-		 * disorder twice)
-		 * 
-		 * Then the reliabilityRating is calculated based on the formula considered most appropriate. However the 
-		 */
-		 $DB->sql_put(libGameMaster::RELIABILITY_QUERY. ($recalculateAll ? "" : "WHERE u.timeLastSessionEnded+(14*24*60*60) > ".$Misc->LastProcessTime));
+
+		$year = time() - 31536000;
+		$lastMonth = time() - 2419200;
+
+		$RELIABILITY_QUERY = "
+		UPDATE wD_Users u 
+		set u.reliabilityRating = greatest(0, 
+		(100 *(1 - ((SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.modExcused = 0 and t.turnDateTime > ".$year.") / greatest(1,u.yearlyPhaseCount))))
+		-(6*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastMonth."))
+		-(5*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$year.")))";
+			
+		// Calculates the RR for members. 
+		$DB->sql_put($RELIABILITY_QUERY. ($recalculateAll ? "" : " WHERE u.timeLastSessionEnded+(30*86400) > ".$Misc->LastProcessTime));
 		
 		$DB->sql_put("COMMIT");
 	}

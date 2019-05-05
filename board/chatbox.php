@@ -62,7 +62,8 @@ class Chatbox
 			$msgCountryID = 0;
 
 		// Enforce Global and Notes tabs when its not Regular press game.
-		if ( ($Game->pressType != 'Regular' && $Game->pressType != 'RulebookPress') && !(isset($Member) && $Member->countryID == $msgCountryID) )
+		if ( (($Game->pressType != 'Regular' && $Game->pressType != 'RulebookPress') || (isset($Game) && $Game->Members->isTempBanned())) 
+		&& !(isset($Member) && $Member->countryID == $msgCountryID) )
 			$msgCountryID = 0;
 
 		$_SESSION[$Game->id.'_msgCountryID'] = $msgCountryID;
@@ -244,6 +245,10 @@ class Chatbox
 							<a href="#" onclick="document.markUnread.submit(); return false;" tabindex="3">Mark unread</a>
 							</TD></TR></TABLE></div>';
 
+		}
+		else
+		{
+			$chatbox .= '</div>';
 		}
 
 		libHTML::$footerScript[] = '
