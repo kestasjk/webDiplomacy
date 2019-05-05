@@ -136,7 +136,6 @@ class adminActionsRestricted extends adminActionsForum
 					so changes can be made.',
 				'params' => array(),
 			),
-			),
 			'globalAddTime' => array(
 				'name' => 'Add time to all games',
 				'description' => 'Add extra time (in hours) to all games, or 0 for the game\'s phase time.',
