@@ -672,7 +672,7 @@ class processMembers extends Members
 			// Check if the NMR got an excuse and count the number of unexcused NMRs during the last year for the member to decide what to do.
 			list( $systemExcused, $modExcused, $samePeriodExcused ) = 
 					$DB->sql_row("SELECT systemExcused, modExcused, samePeriodExcused
-						FROM wD_missedTurns
+						FROM wD_MissedTurns
 						WHERE gameID = ".$this->Game->id."
 							AND userID = ".$Member->userID."
 						ORDER BY turnDateTime DESC LIMIT 1");
