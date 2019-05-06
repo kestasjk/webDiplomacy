@@ -155,6 +155,11 @@ class userOrderDiplomacy extends userOrder
 	protected function checkConvoyPath($startCoastTerrID, $endCoastTerrID, $mustContainTerrID=false, $mustNotContainTerrID=false) {
 		global $DB;
 
+        if ($this->convoyPath == [-1]) { // API - We are offloading computing the convoy path to the server
+            $validConvoyPaths[]=$startCoastTerrID.'-'.$endCoastTerrID;
+            return true;
+        }
+
 		if( count($this->convoyPath)<2 ) // First, plus one fleet, then $endCoastTerrID makes the minimum 3
 			return false; // Not enough units in the convoyPath to be valid
 
