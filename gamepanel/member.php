@@ -99,7 +99,6 @@ class panelMember extends Member
 				<div>'.
 				( $this->Game->Members->isTempBanned() ? '':
 				'<div class="memberUserDetail">
-				<div class="memberUserDetail">
 					'.$this->memberFinalizedFull().'<br />
 					'.$this->memberMessagesFull().'
 				</div>').
