@@ -245,19 +245,34 @@ class main_listener implements EventSubscriberInterface
 	{
 		if ( $this->misc['Maintenance'] )
 		{
-			$maintenance = $this->db->sql_query("SELECT message FROM wD_Config WHERE name = 'Maintenance'");
+			$result = $this->db->sql_query("SELECT message FROM wD_Config WHERE name = 'Maintenance'");
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$maintenance = $row['message'];
+			}
+			$this->db->sql_freeresult($result);
 			$this->noticeBar[]= $maintenance;
 		}
 
 		if ( $this->misc['Panic'] )
 		{
-			$panic = $this->db->sql_query("SELECT message FROM wD_Config WHERE name = 'Panic'");
+			$result = $this->db->sql_query("SELECT message FROM wD_Config WHERE name = 'Panic'");
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$panic = $row['message'];
+			}
+			$this->db->sql_freeresult($result);
 			$this->noticeBar[] = $panic;
 		}
 
 		if ( $this->misc['Notice'] )
 		{
-			$notice = $this->db->sql_query("SELECT message FROM wD_Config WHERE name = 'Notice'");
+			$result = $this->db->sql_query("SELECT message FROM wD_Config WHERE name = 'Notice'");
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$notice = $row['message'];
+			}
+			$this->db->sql_freeresult($result);
 			$this->noticeBar[] = $notice;
 		}
 
