@@ -243,19 +243,23 @@ class main_listener implements EventSubscriberInterface
 	
 	private function noticeBlock()
 	{
-	
 		if ( $this->misc['Maintenance'] )
 		{
-			$this->noticeBar[]=\Config::$serverMessages['Maintenance'];
+			$maintenance = $this->db->sql_query("SELECT message FROM wD_Config WHERE name = 'Maintenance'");
+			$this->noticeBar[]= $maintenance;
 		}
 
 		if ( $this->misc['Panic'] )
 		{
-			$this->noticeBar[] = \Config::$serverMessages['Panic'];
+			$panic = $this->db->sql_query("SELECT message FROM wD_Config WHERE name = 'Panic'");
+			$this->noticeBar[] = $panic;
 		}
 
 		if ( $this->misc['Notice'] )
-			$this->noticeBar[] = \Config::$serverMessages['Notice'];
+		{
+			$notice = $this->db->sql_query("SELECT message FROM wD_Config WHERE name = 'Notice'");
+			$this->noticeBar[] = $notice;
+		}
 
 		if ( ( time() - $this->misc['LastProcessTime'] ) > \Config::$downtimeTriggerMinutes*60 )
 			$this->noticeBar[] = ("The last process time was over ".\Config::$downtimeTriggerMinutes." minutes ".
