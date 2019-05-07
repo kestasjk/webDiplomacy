@@ -97,24 +97,24 @@ if ( !$userID )
 		<ul class="formlist">
 			<p>
 				<strong><?php print l_t('User ID:'); ?></strong> </br>
-				<input class = "userSearch" type="text" name="searchUser[id]" value="" size="10">
+				<input class="gameCreate" type="text" name="searchUser[id]" value="" size="10">
 			</p>
 
 			<p>
 				<strong><?php print l_t('Username:'); ?></strong> </br>
-				<input class = "userSearch" type="text" name="searchUser[username]" value="" size="40">
+				<input class="gameCreate" type="text" name="searchUser[username]" value="" size="40">
 				</br>
 				<?php print l_t('(Not case sensitive, but otherwise must match exactly.)'); ?>
 			</p>
 
 			<p>
 				<strong><?php print l_t('Email address:'); ?></strong> </br>
-				<input class = "userSearch" type="text" name="searchUser[email]" value="" size="40">
+				<input class="gameCreate" type="text" name="searchUser[email]" value="" size="40">
 				</br>
 				<?php print l_t('Not case sensitive, but otherwise must match exactly.)'); ?>
 			</p>
 			<p>
-				<input type="submit" class="form-submit" value="<?php print l_t('Search'); ?>">
+				<input type="submit" class="gameCreate" value="<?php print l_t('Search'); ?>">
 			</p>
 		</ul>
 

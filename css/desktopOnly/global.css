@@ -1391,13 +1391,29 @@ input[type="text"].userSearch, input[type="password"].userSearch, textarea.userS
 	margin-top:0px !important;
 }
 
-input[type="text"].settings, input[type="password"].settings, textarea.settings, select.settings {
-	font-size: 14px !important;
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	background-color: #ffffff;
-	border: 1px solid #c1c1c1;
-	color:#000000;
+input[type=text].settings, input[type=password].settings, textarea.settings, select.settings {
+  width: 100%;
+	padding: 10px 5px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
+
+input[type=submit].settings {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit].settings:hover {
+  background-color: #45a049;
+}
+
 /* End of section for settings page */
 
 /* Section for credits page styling */
