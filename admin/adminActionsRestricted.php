@@ -132,7 +132,7 @@ class adminActionsRestricted extends adminActionsForum
 			),
 			'noticeMessage' => array(
 				'name' => 'Change notice message',
-				'description' => 'Sets the notice which is displayed in a noticebar across the whole site.',
+				'description' => 'Sets the notice which is displayed in a noticebar across the whole site. Sample is: Excused missed turns have been added to all games. See more (<)a href="/contrib/phpBB3/viewtopic.php?f=5&t=1551">here(<)/a(>)(<)/br(>) (<)font color="red"(>)If you are seeing an error on games please clear your browsers cache.(<)/font(>)',
 				'params' => array('message'=>'Message'),
 			),
 			'maintenance' => array(
