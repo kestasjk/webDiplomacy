@@ -109,7 +109,6 @@ input:read-only {
 textarea {
 	font-size: 16px ! important;
 	width:90%;
-	font-family: sans-serif;
 }
 div.hr, div.hrthin {
 	height:0;
@@ -192,6 +191,44 @@ p.profileComment {
 	display: show;
 	padding: 0 0 0 10px;
 	margin-top: 3px !important;
+}
+
+#profile-forum-link-container {
+	display: flex;
+	justify-content: space-around;
+}
+
+ .profile-forum-links {
+	width: 50%;
+	margin: 0;
+	text-align: center;
+}
+
+ #send-pm {
+	margin-left: -10px;
+}
+
+ .profile-links-button {
+	background-color: #d9d9d9;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	cursor: pointer;
+	border-radius: 10px;
+	padding: 5px 10px;
+	font-weight: 800;
+}
+
+ .profile-links-button:hover {
+    background: #009902;
+    color: #f2f2f2;
+    transition: 0.4s all ease;
+    -webkit-transition: 0.4s all ease;
+}
+
+ #profile-separator {
+	margin: 10px auto 20px auto;
+	height: 1px;
+	background-color: #aaa;
 }
 
 img.center {
@@ -908,6 +945,111 @@ TD.army, div.army {
 	color:#34870b;
 }
 
+/* Section for Game Create styling */
+.gameCreateShow {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	padding: 0 10px 0 10px;
+	margin-top:0px !important;
+}
+.gameCreateTitle {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #777;
+	color: white;
+	cursor: pointer;
+	padding: 10px;
+	border: none;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+.gameCreateTitle:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #555;
+}
+
+.gameCreateContent {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	margin-top: 0px !important;
+	font-size: 14px;
+	border-radius: 7px;
+	padding: 0 0 0 10px;
+}
+
+input[type=text].gameCreate, input[type=password].gameCreate, select.gameCreate {
+  width: 100%;
+	padding: 10px 5px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type=submit].gameCreate {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit].gameCreate:hover {
+  background-color: #45a049;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 10px;
+  border: 1px solid #888;
+	width: 80%;
+	max-width: 760px;
+}
+
+/* The Close Button */
+.close1, .close2, .close3, .close4, .close5 {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close1:hover, .close1:focus, .close2:hover, .close2:focus, .close3:hover, .close3:focus,
+.close4:hover, .close4:focus, .close5:hover, .close5:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+/* End section for Game Create styling */
+
 /* Section for FAQ styling */
 .faq {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -1249,13 +1391,29 @@ input[type="text"].userSearch, input[type="password"].userSearch, textarea.userS
 	margin-top:0px !important;
 }
 
-input[type="text"].settings, input[type="password"].settings, textarea.settings, select.settings {
-	font-size: 14px !important;
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	background-color: #ffffff;
-	border: 1px solid #c1c1c1;
-	color:#000000;
+input[type=text].settings, input[type=password].settings, textarea.settings, select.settings {
+  width: 100%;
+	padding: 10px 5px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
+
+input[type=submit].settings {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit].settings:hover {
+  background-color: #45a049;
+}
+
 /* End of section for settings page */
 
 /* Section for credits page styling */
@@ -1681,6 +1839,12 @@ input[id^="FinalizeButton"]{
 	#seperator-fixed{
 		display: none;
 	}
+	#profile-forum-link-container {
+		display: block;
+	}
+	.profile-forum-links {
+		margin: 10px auto;
+	}
 	div.content{
 		padding: 15px 10px;
 	}
@@ -1700,7 +1864,7 @@ input[id^="FinalizeButton"]{
 	}
 	input[type="text"], input[type="submit"], input[type="password"], textarea, select{
 		font-size: 16px;
-		width: 100%;
+		width: 95%;
 	}
 	textarea{
 		resize: vertical;

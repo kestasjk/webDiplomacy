@@ -104,7 +104,7 @@
 	font-style:italic;
 	font-weight:normal;
 }
-.gamePot {
+.gamePot, .excusedNMRs {
 	font-weight:bold;
 }
 .gamePotType {
@@ -250,7 +250,7 @@ div.memberBoardHeader {
 .memberPreGameList {
 	text-align:center;
 	font-weight:normal !important;
-	}
+}
 .panelBarGraph {
 	padding:0;
 	overflow:hidden;
@@ -362,7 +362,7 @@ div.memberBoardHeader {
 .gamePanelHome {
 	font-size:11px;
 }
-.panelAnonOnlyFlag {
+.panelAnonOnlyFlag, .panelTempBanned {
 	background-color:#f5f5f5  !important;
 	text-align: center !important;
 }

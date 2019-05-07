@@ -10,8 +10,8 @@ if ( ! isset($_REQUEST['gameID']) )
 
 $gameID = (int)$_REQUEST['gameID'];
 
-try {
-
+try 
+{
     require_once(l_r('objects/game.php'));
     require_once(l_r('board/chatbox.php'));
     require_once(l_r('gamepanel/gameboard.php'));
@@ -20,7 +20,8 @@ try {
     libVariant::setGlobals($Variant);
     $Game = $Variant->panelGameBoard($gameID);
 
-    if ($Game->Members->isJoined()) {
+    if ($Game->Members->isJoined() && !$Game->Members->isTempBanned()) 
+    {
         // We are a member, load the extra code that we might need
         require_once(l_r('gamemaster/gamemaster.php'));
         require_once(l_r('board/member.php'));
@@ -30,24 +31,24 @@ try {
         $Game->Members->makeUserMember($User->id);
         $Member = $Game->Members->ByUserID[$User->id];
     }
-
-} catch (Exception $e){
+} 
+catch (Exception $e)
+{
     header('HTTP/1.1 500 Internal Server Error');
     die("Error loading Game");
 }
 
-if ( 'Pre-game' != $Game->phase ) {
-
+if ( 'Pre-game' != $Game->phase ) 
+{
     $CB = $Game->Variant->Chatbox();
 
-// Now that we have retrieved the latest messages we can update the time we last viewed the messages
-// Post messages we sent, and get the user we're speaking to
+    // Now that we have retrieved the latest messages we can update the time we last viewed the messages
+    // Post messages we sent, and get the user we're speaking to
     $msgCountryID = $CB->findTab();
 
     $CB->postMessage($msgCountryID);
 
     $DB->sql_put("COMMIT");
-
 }
 
 //RE-generate chat box

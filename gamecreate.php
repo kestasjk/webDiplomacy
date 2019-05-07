@@ -34,7 +34,7 @@ if ( $Misc->Panic )
 
 if( !$User->type['User'] )
 {
-	libHTML::notice(l_t('Not logged on'),l_t("Only a logged on user can create games, guests can't. ".
+	libHTML::notice(l_t('Not logged on'),l_t("Only a logged on user can create games. ".
 		"Please <a href='logon.php' class='light'>log on</a> to create your own games."));
 }
 
@@ -49,7 +49,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$form = $_REQUEST['newGame']; // This makes $form look harmless when it is unsanitized; the parameters must all be sanitized
 
 		$input = array();
-		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy','drawType','minimumReliabilityRating');
+		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy','drawType','minimumReliabilityRating','excusedMissedTurns');
 
 		if ( !isset($form['missingPlayerPolicy']) )
 			$form['missingPlayerPolicy'] = 'Normal';
@@ -101,7 +101,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		}
 
 		$input['joinPeriod'] = (int)$input['joinPeriod'];
-		if ( $input['joinPeriod'] < 5 or $input['joinPeriod'] > 1440*10 )
+		if ( $input['joinPeriod'] < 5 or $input['joinPeriod'] > 1440*14 )
 		{
 			throw new Exception(l_t("Joining period value out of range."));
 		}
@@ -159,6 +159,11 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		{
                  	throw new Exception(l_t("Your reliability rating is %s%%, so you can't create a game which requires players to have a RR of %s%% or greater.",($User->reliabilityRating),$input['minimumReliabilityRating']));
 		}
+		$input['excusedMissedTurns'] = (int) $input['excusedMissedTurns'];
+		if ( $input['excusedMissedTurns'] < 0 || $input['excusedMissedTurns'] > 4 )
+		{
+			throw new Exception(l_t("The excused missed turn number is too large or small; it must be between 0 and 4."));
+		}
 		// Create Game record & object
 		require_once(l_r('gamemaster/game.php'));
 		$Game = processGame::create(
@@ -173,7 +178,8 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input['pressType'], 
 			$input['missingPlayerPolicy'],
 			$input['drawType'],
-			$input['minimumReliabilityRating']);
+			$input['minimumReliabilityRating'],
+			$input['excusedMissedTurns']);
 
 		// Prevent temp banned players from making new games.
 		if ($User->tempBan > time())
@@ -192,22 +198,31 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		print '<div class="content">';
 		print '<p class="notice">'.$e->getMessage().'</p>';
 		print '</div>';
-
 	}
+}
+
+if ($User->reliabilityRating < 100)
+{
+	$maxRR = max(0, (floor($User->reliabilityRating - 1)));
+	$defaultRR = min(80,$maxRR);
+}
+else
+{
+	$maxRR = 100;
+	$defaultRR = 80;
 }
 
 if ( $User->points >= 5 )
 {
-	$roundedDefault = round(($User->points/7)/10)*10;
-	if ($roundedDefault > 5 )
-		$defaultPoints = $roundedDefault;
-	else
-		$defaultPoints = 5;
-
+	// $roundedDefault = round(($User->points/7)/10)*10;
+	// if ($roundedDefault > 5 )
+	// 	$defaultPoints = $roundedDefault;
+	// else
+	$defaultPoints = 5;
 }
 else
 {
-	print l_t("You can't create a new game; you have fewer than 5%s, you only have %s%s. ".
+	print l_t("You cannot create a new game because you have less than 5%s, you only have %s%s. ".
 		"You will always have at least 100 points, including the points that you have bet into active games, so if you want ".
 		"to start a new game just wait until your other games have finished (<a href='points.php#minpoints' class='light'>read more</a>).",libHTML::points(),$User->points,libHTML::points());
 
@@ -219,7 +234,6 @@ if( isset($input) && isset($input['points']) )
 	$formPoints = $input['points'];
 else
 	$formPoints = $defaultPoints;
-
 
 require_once(l_r('locales/English/gamecreate.php'));
 

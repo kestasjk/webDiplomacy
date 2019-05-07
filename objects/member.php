@@ -98,11 +98,16 @@ class Member
 	var $Game;
 
 	/**
-	 * The number of phases this Member has missed
+	 * The number of phases this Member has missed in a row
 	 *
 	 * @var int
 	 */
 	var $missedPhases;
+
+	/**
+	 * The number of excused misses the member has left
+	 */
+	var $excusedMissedTurns;
 
 	/**
 	 * The number of units this member owns
@@ -181,8 +186,6 @@ class Member
 		}
 	}
 
-
-
 	/**
 	 * Generate a profile link
 	 * @return string
@@ -211,7 +214,8 @@ class Member
 	 * CD takeovers cost 0. This is a function because they weren't always free, and keeping the function means we can always change it later.
 	 * @return int
 	 */
-	function pointsValueInTakeover() {
+	function pointsValueInTakeover() 
+	{
 		return 0;
 	}	
 
