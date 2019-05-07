@@ -176,4 +176,12 @@ adminStatusList(l_t('Donors'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,
 adminStatusList(l_t('Banned users'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 FROM wD_Users WHERE type LIKE '%Banned%'".(isset($_REQUEST['full'])?'':"LIMIT 50"));
 
+list($notice) = $DB->sql_row("SELECT message FROM wD_Config WHERE name = 'Notice'");
+list($panic) = $DB->sql_row("SELECT message FROM wD_Config WHERE name = 'Panic'");
+list($maintenance) = $DB->sql_row("SELECT message FROM wD_Config WHERE name = 'Maintenance'");
+print '<br/><br/>';
+print '<b>Site-Wide Notice: '.$notice.'</b><br/><br/>';
+print '<b>Panic Message: '.$panic.'</b><br/><br/>';
+print '<b>Maintenance Message: '.$maintenance.'</b><br/><br/>';
+
 ?>
