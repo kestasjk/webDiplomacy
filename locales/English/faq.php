@@ -169,6 +169,9 @@ Instead of simply removing the tab for the country that you are playing from you
 You can send notes to yourself just like you would send press to other players, but nobody can see your notes except for you! Feel free to use your notes 
 tab as much or as little as you like in all of your games.",
 
+"Why are some orders missing from the small map?" => "Not all orders are drawn on the small map. Below the small map there is a set of icons - 
+the one in the middle (<img src='images/historyicons/external.png' alt='example' />) opens up the large map, which contains all orders.",
+
 "Why is it saying that I can't send someone a message?" => "Some players utilize the mute function, which allows them to prevent someone they don't like from sending 
 them any more messages in that game. If you are muted by another player, the game is not broken and you are not in trouble, but you cannot send them any more messages unless they 
 decide to unmute you again.",
@@ -182,17 +185,37 @@ misorders in the future is to double check all of your orders, and even if you d
 That button will direct you to a form that you can send to the moderators and they will help you.",
 
 
-"Other Aspects of webDiplomacy" => "Sub-section",
-
-"Where can I send and check my private messages?" => "You can send, read, and manage your private messages <a href='/contrib/phpBB3/ucp.php?i=pm'>here</a>. 
-Currently, you must visit our forum before you will be able to send or receive private messages. Once you visit our forum, you will have access to your 
-private message inbox and will get notifications when you receive new messages from other players.",
+"The webDiplomacy Forum " => "Sub-section",
 
 "Didn't the forum look different before?" => "Yes, it did! webDiplomacy used to have a very basic forum that slowly became more and more problematic 
 as webDiplomacy grew. When the site was small, the server load the forum caused was fairly small as well, but as the site got bigger and bigger and 
 the forum became more popular, it was nearly impossible for the server to operate efficiently without erasing significant amounts of site data, 
 including most of the old forum. Instead of continuously erasing the forum over and over again as time went on, we decided that it was best 
 to change the forum entirely. The current forum is much more user friendly than the old one and very easy to navigate, plus it does not overload our server.",
+
+"I'm looking for something on the forum. Where do I find it?" => "The forum is broken up into categories. If you are looking to start or join a new 
+private game on the forum, or you're looking for some good Diplomacy strategy to read about, you may find it under the 'Diplomacy' category. 
+You'll also find information about webDiplomacy's tournaments and the face-to-face community's tournaments and meetups there. 
+If you're looking for some general off topic banter or politics, you'll find it under the 'miscellaneous' category. You will also find 
+some players playing mafia, a popular game that some Diplomacy players have made a staple on webDiplomacy, in the 'forum games' section. 
+You can also find webDiplomacy's news and announcements, as well as a place to leave feedback on features or development, at the top of the forum.",
+
+"Where can I send and check my private messages?" => "You can send, read, and manage your private messages <a href='/contrib/phpBB3/ucp.php?i=pm'>here</a>. 
+Currently, you must visit our forum before you will be able to send or receive private messages. Once you visit our forum, you will have access to your 
+private message inbox and will get notifications when you receive new messages from other players.",
+
+"Where can I find the rules for the forum?" => "You can find the forum rules <a href='rules.php#Forum%20Rules' class='light'>here</a>, 
+as well as information on how the moderators manage the forum further down the page.",
+
+"I can't see the forum. What's going on?" => "If a player breaks the <a href='rules.php#Forum%20Rules' class='light'>forum rules</a>, 
+they will be unable to visit the forum for a certain amount of time. If this happens to you, you will have received an email to your site registered address 
+from the moderators explaining what happened, how long it will persist, and what you can do to prevent it from happening again in the future.",
+
+
+"Miscellaneous" => "Sub-section",
+
+"Do you have colorblind friendly maps?" => "We have several colorblind options available in the <a href='settings.php' class='light'>account settings page</a>. These settings
+only work on the small map in games currently. Currently we have support for Protanope, Deuteranope, and Tritanope.",
 
 "What are the Ghost Ratings?" => "The Ghost Ratings were developed by TheGhostmaker as an alternative scoring system to points on webDiplomacy. 
 The purpose of the ratings is to more accurately measure the true skill and ability of players by weighting games not by the size of the pot but 
@@ -236,13 +259,7 @@ must be reviewed thoroughly before being added.",
 and change the code as you like and put it up on your own website, but you can't claim that you wrote it. Likewise, any changes that you make to webDiplomacy's code base must be 
 made available to the webDiplomacy community.",
 
-"Map" => "Sub-section",
-"Why are some orders missing from the map?" => "Not all orders are drawn on the small map. Below the small map there is a set of icons;
-	the one in the middle (<img src='images/historyicons/external.png' alt='example' />) opens up the large map, which contains all orders.<br/>
-	Also at the bottom of the board page is a link to open up a textual list of all the orders entered in the game, if you can't see
-	something in the large map.",
-"Do you have colorblind friendly maps?" => "We have several colorblind options available in the settings page of your profile. These settings
-only work on the small map in games currently. Currently we have support for Protanope, Deuteranope, and Tritanope."
+
 );
 
 foreach($globalFaq as $Q=>$A)
