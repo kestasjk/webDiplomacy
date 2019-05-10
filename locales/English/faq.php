@@ -28,21 +28,53 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 $faq = array();
 
 $globalFaq = array(
-"I'm new here" => "Sub-section",
-"What is this site about?" => "The easiest way to understand is to look at
-	<a href='http://webdiplomacy.net/doc/0.90-screenshot.png' class='light'>an in-game screenshot</a>. If the concept is still strange
-	read <a href='intro.php' class='light'>the intro to webDiplomacy</a>.",
-"How do I play?" => "The gameplay is quite self explanatory, but if you're unsure about something read
-	<a href='intro.php' class='light'>the intro to webDiplomacy</a>, and feel free
-	to ask for help or clarification in <a href='/contrib/phpBB3/viewforum.php?f=6' class='light'>the public forum</a>.",
-"How do I donate?" => "Check out our <a href='donations.php'>Donations page</a> which explains why we need donations and how to contribute!",
-"What's the software license?" => "The <a href='AGPL.txt' class='light'>GNU Affero General License</a>
-	(<a href='http://www.opensource.org/licenses/agpl-v3.html' class='light'>Open Source Initiative</a> approved),
-	which basically says you can download and change the code as you like, and put it up on your
-	own website, but you can't claim you wrote it, and you have to give any changes
-	you make back to the community.<br /><br />
-	See <a href='credits.php' class='light'>the credits</a> for information about the
-	small elements which are under different licenses.",
+
+"The Basics of webDiplomacy" => "Sub-section",
+
+"What is Diplomacy?" => "Diplomacy is a strategy game currently published by Avalon Hill and created by Allan Calhamer in 1954. 
+In Diplomacy, players practice wartime tactics, employ powerful rhetoric in their negotiations, and make friends and enemies while competing to dominate the board. 
+Unlike other war games, players submit their orders simultaneously and the entire board is adjudicated at once, 
+meaning that everyone sees the moves that their competitors made at the same time each and every phase. 
+Diplomacy is known as a favorite game for many powerful historical figures, including President John F. Kennedy, Henry Kissinger, Ray Bradbury, and Walter Cronkite, 
+and it is a great game for learning and teaching history, negotiation, patience, and strategy.
+<br><br>
+For a more in depth explanation of the mechanics and gameplay of Diplomacy, visit our <a href='intro.php' class='light'>intro to webDiplomacy</a> 
+page, where you can begin to learn how to play Diplomacy. You can also visit <a href='/contrib/phpBB3/viewforum.php?f=6' class='light'>our forum</a> 
+if you have questions or seek clarification.",
+
+"What is webDiplomacy?" => "webDiplomacy is an online platform for playing the popular board game Diplomacy. 
+webDiplomacy was created in 2004 as a completely ad-free and nonprofit site, and is one of the first web-based platforms for playing Diplomacy. 
+webDiplomacy maintains a modernized gameplay setup, a large community of some of the world's best Diplomacy players, and a variety of extra unique features. 
+Our goal is to allow players from around the world to play a fun, challenging game without having to commit tons of time and money, but still supporting 
+the high quality, world class gameplay that is necessary to get the best Diplomacy experience.
+<br><br>
+To get an in depth look at how webDiplomacy works and how you can play Diplomacy on our site, check out our <a href='intro.php' class='light'>intro to webDiplomacy</a> 
+as well as <a href='variants.php' class='light'>our variant Diplomacy boards</a> and how we <a href='points.php' class='light'>score our games and rank players</a>.",
+
+"Do I have to pay to use webDiplomacy?" => "No! webDiplomacy is a completely free place to play Diplomacy without any intrusive advertisements or paywalls. 
+We will never charge you for extra features or require you to give any payment information in order to play.
+<br><br>
+However, webDiplomacy still needs money for operating costs and regular server maintenance and as such we accept and appreciate donations, small or large. 
+You are not required to donate and will never be pressured to donate to webDiplomacy, but if you would like to donate, you can check out our 
+<a href='donations.php' class='light'>donations page</a>, which explains in further detail why we need donations and makes it easy for you to contribute.",
+
+"I like webDiplomacy and want to give back. How can I help?" => "There are a number of ways that you can help webDiplomacy. The simplest way to help is by 
+<a href='donations.php' class='light'>donating.</a> Your donations are used to maintain our server and handle generic, everyday operating costs. 
+Without donations, webDiplomacy would be unable to continue operating.
+<br><br>
+However, donating is not the only way you can help. If you have time and a fair amount of experience playing Diplomacy online, 
+we are always looking for skilled, patient, and experienced moderators. webDiplomacy's moderators are the best trained and most effective 
+of any Diplomacy site online at keeping games free of cheating and ensuring that gameplay is as smooth as possible at all times. 
+Moderators are also responsible for welcome and assisting new players, assisting with tournaments and special games, and managing any player emergencies. 
+If you are an experienced, patient Diplomacy player with an aptitude for spotting suspicious behaviior and a desire to help out on webDiplomacy, 
+send us an email at <a href='mailto:".Config::$adminEMail."' class='light'>".Config::$adminEMail."</a> with your username and a brief bit about why 
+you think you would make a good moderator. Even if we don't need new moderators right this second, we will keep your application on file and you will be 
+at the top of our list whenever we need new moderators down the road.
+<br><br>
+If moderating just doesn't sound like your cup of tea but you are a skilled developer, webDiplomacy could always use your help. 
+Skilled developers with experience in PHP, JavaScript, or SQL, as well as HTML or CSS, can check out <a href='developers.php' class='light'>our developers' page</a> 
+or <a href='mailto:".Config::$adminEMail."' class='light'>contact the moderators</a> to see if you would be able to help us. 
+webDiplomacy can also use help from graphic designers and icon artists to keep our site looking fresh and updated.",
 
 "The interface" => "Sub-section",
 "What the hell is that thing? (<img src='images/icons/online.png' />, <img src='images/icons/mail.png' />, etc)" => "If you see an icon/button/image and don't understand what it means try hovering your mouse over it,
@@ -141,6 +173,14 @@ Read <a href='points.php' class='light'>the scoring system and points guide</a> 
 	and if you get lost you can get help/discuss ideas in the <a class='light' href='/contrib/phpBB3/viewforum.php?f=16'>developer forums</a>.",
 "How else can I help?" => "Tell your friends about webDiplomacy, put links on your website, help new players out in the forums,
 	and give helpful feedback to developers. If you enjoy the game please consider buying a physical version of the board game. Thanks!",
+
+	"What's the software license?" => "The <a href='AGPL.txt' class='light'>GNU Affero General License</a>
+	(<a href='http://www.opensource.org/licenses/agpl-v3.html' class='light'>Open Source Initiative</a> approved),
+	which basically says you can download and change the code as you like, and put it up on your
+	own website, but you can't claim you wrote it, and you have to give any changes
+	you make back to the community.<br /><br />
+	See <a href='credits.php' class='light'>the credits</a> for information about the
+	small elements which are under different licenses.",
 
 "Map" => "Sub-section",
 "Why are some orders missing from the map?" => "Not all orders are drawn on the small map. Below the small map there is a set of icons;
