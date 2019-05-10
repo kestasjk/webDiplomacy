@@ -79,7 +79,7 @@ webDiplomacy can also use help from graphic designers and icon artists to keep o
 "Can I play on my phone?" => "Yes! webDiplomacy is compatible with your mobile device.",
 
 "Where can I find the rules that I need to follow?" => "You can find a complete list of our site rules <a href='rules.php' class='light'>here</a>. 
-If you have questions about a rule or need help, you can always <a href='mailto:".Config::$adminEMail."' class='light'>contact the moderators</a>.",
+Each rule is explained in detail there. If you have questions about a rule or need help, you can always <a href='mailto:".Config::$adminEMail."' class='light'>contact the moderators</a>.",
 
 
 "Playing on webDiplomacy" => "Sub-section",
@@ -102,6 +102,22 @@ and are always welcome to ask your own questions as well.",
 
 "I already know how to play. But where do I start?" => "If you already know what you're doing, <a href='gamelistings.php' class='light'>start playing</a>! 
 You can join games that other people have created, take over open positions in ongoing games left vacant, or create your own game and allow others to join it.",
+
+"What level of skill should I expect in my games?" => "Generally, the players that you play with can be similar to your skill level. 
+As a new player, you will often find yourself playing with other new players, during which time you will be able to help each other learn and get better. 
+As you get more comfortable, you will probably find yourself in some games with players more experienced than you are. You will notice these players 
+and hopefully take the opportunity to learn from their tactics and diplomacy to make yourself a better player at the same time. Eventually, you may 
+become a highly skilled, elite Diplomacy player, and perhaps will end up playing in site sponsored tournaments with other highly skilled, elite Diplomacy players.
+<br><br>
+Generally speaking, lower pot games, such as games where each player only bets 5 points, may have more players who are new or inexperienced. 
+If you are more experienced and play in those games, we encourage you to be patient with new players. We were all new players once. 
+The best way to welcome a newer player to the site is to play fairly and patiently, and perhaps offer constructive criticism that could help 
+make them better in the long run.
+<br><br>
+If you find that you would like additional help with your Diplomacy strategy and tactics from a more experienced player on webDiplomacy, consider 
+signing up for the <a href='https://docs.google.com/document/d/1dSq6zlizecb90F3OKSqyFUWGI32Or87ZNmkFmhCVz-c/edit' class='light'>
+webDiplomacy Mentor Program</a>. In this program, you will be paired up with a more experienced player who will be available for you to ask questions, 
+get constructive feedback, and receive advice and guidance.",
 
 "What are all these settings on the game creation page?" => "When you create a game on webDiplomacy, you have to specify some settings. 
 First and foremost, every game has a name, bet size, and phase length. The name is up to you, so long as it abides by our <a href='rules.php' class='light'>site rules</a>. 
@@ -138,6 +154,13 @@ failing to enter orders if the deadline passes.",
 However, it is very difficult to solo the board and thus most Diplomacy games do not end in a solo. That is why there are other positive results, such as draws. 
 Depending on the <a href='points.php#DSS' class='light'>scoring system</a> of the game, a draw will distribute a certain number of points to each surviving player.",
 
+"What happens when I run out of points?" => "Every player has a certain amount of available points and total points. These numbers might be different. 
+Your total number of points include the number of points which you have 'bet' into games you're currently playing in as well as the points you have in your account. 
+Your available number of points includes only those that you could use to continue joining new games. While your available points may reach 0 if you have 
+spent all of your points on ongoing games, your total number of points never falls below 100. When it does, you will automatically be topped off so that you have 100 total points again. 
+Thus, while all your points might be tied up in games you're still playing right now, you will never truly run out of points, and once those games are finished, you will 
+have more points to spend again even if you don't get points back from those games.",
+
 "What do those icons mean? ( <img src='images/icons/tick.png' />, <img src='images/icons/alert.png' /> , <img src='images/icons/mail.png' /> , etc.)" => "If you see an icon 
 and don't understand what it means, try hovering your mouse over it. It may give you a hint as to what it means.",
 
@@ -158,100 +181,60 @@ misorders in the future is to double check all of your orders, and even if you d
 "I need to talk to a moderator in a game I'm playing!" => "You can contact the moderators at any time by using the 'Need help?' button located just below the order entry on the screen. 
 That button will direct you to a form that you can send to the moderators and they will help you.",
 
-"Game rules" => "Sub-section",
-"I want to learn the basic rules" => "See the <a href='intro.php' class='light'>intro page</a>.",
-"I want to learn the complete rules" => "See Avalon Hill's <a href='http://www.wizards.com/avalonhill/rules/diplomacy.pdf' class='light'>rulebook</a>.",
-"I want to learn the exact specifics of the rules" => "We use the DATC to lay out exactly how all sorts of tricky
-	situations are processed, in the cases where there is ambiguity in the rules. (This sort of stuff doesn't come up
-	in usual play though.)<br />
-	See our DATC page <a href='datc.php' class='light'>here</a>.",
-"If someone has to destroy a unit, but doesn't enter destroy orders, what unit is destroyed?" => "It's done as the DATC recommends:
-	It's the furthest from your home supply centers. Distance is defined as the smallest number of moves to get from the unit's position
-	to a home supply center. When calculating the smallest number of moves armies can move across seas, but fleets can only move across
-	seas and coasts. If there are two units both the same distance from a home supply center then fleets disband before armies. If there's still a tie, 
-	the territory which is first alphabetically is removed first.",
-"If a convoy is attacked does the convoy fail?" => "No; for a convoy to fail it has to be dislodged, and there must be no other convoys
-	the the army being convoyed can go through instead.",
-"What happens if I order to build/destroy two units in the same territory?" => "The first build order will be accepted, the second won't",
-"What happens if two units retreat to the same place?" => "They will both be disbanded",
-"Can I dislodge my own units?" => "No; you cannot dislodge your own units, or support the dislodgement of your own units",
-"Any other rules I should bear in mind?" => "There is a full list of rules on the <a href='rules.php' class='light'>rules</a> page,
-	listing a few extra non-game rules you have to follow to help keep the site fun for everyone.",
 
-"Points" => "Sub-section",
-"What happens when I run out?" => "You can't run out: Your total number of points include the number of points which you have 'bet' into games you're currently playing in,
-	as well as the points you have in your account. Your total number of points never falls below 100; whenever it does
-	you're given your points back.<br /><br />
-	To put it another way; any player who isn't currently playing in any games will always have at least 100 points, so
-	you won't run out!",
-"How are the points split in a draw?" => "This depends on the scoring system of the game in question.<br/>
-	Read <a href='points.php' class='light'>the scoring system and points guide</a> for more info about how games our scored and how the points system works on webDiplomacy.",
-"Can you draw the game, but give 2/3rds of the points to this player and ..." => "The way draws split points depends on the scoring system. 
-Read <a href='points.php' class='light'>the scoring system and points guide</a> for more info about how points are split up depending on the result of each game.",
+"Other Aspects of webDiplomacy" => "Sub-section",
 
-"Bugs" => "Sub-section",
-"My game has crashed!" => "Sometimes (usually only shortly after code updates) a software bug or server error may occur while a
-	game is being processed.
-	When this happens the problem is detected, all changes are undone, and the game is marked as crashed.<br /><br />
-	Admins will see a message whenever a game crashes, and information about the crash is saved so that the problem that caused it can be fixed quickly.
-	Once a mod or admin has marked the game as OK the game will continue where it left off again.<br /><br />
+"Where can I send and check my private messages?" => "You can send, read, and manage your private messages <a href='/contrib/phpBB3/ucp.php?i=pm'>here</a>. 
+Currently, you must visit our forum before you will be able to send or receive private messages. Once you visit our forum, you will have access to your 
+private message inbox and will get notifications when you receive new messages from other players.",
 
-	If your game has been crashed for a long time try asking about it in the forum.",
-"The phase ends \"Now\"? \"Processing has been paused\"?" => "When the server detects that no games have processed for a while
-	(over 30 minutes or so), or a moderator/admin sees a problem and hits the panic button, all game processing is disabled until
-	the problem is resolved.<br />
-	After the all-clear is given games will usually be given time to make up for any during which orders couldn't be entered, and
-	processing will resume. Until that point if a game says it will be processed 'Now' that means it would process now, except
-	processing is disabled.<br /><br />
+"Didn't the forum look different before?" => "Yes, it did! webDiplomacy used to have a very basic forum that slowly became more and more problematic 
+as webDiplomacy grew. When the site was small, the server load the forum caused was fairly small as well, but as the site got bigger and bigger and 
+the forum became more popular, it was nearly impossible for the server to operate efficiently without erasing significant amounts of site data, 
+including most of the old forum. Instead of continuously erasing the forum over and over again as time went on, we decided that it was best 
+to change the forum entirely. The current forum is much more user friendly than the old one and very easy to navigate, plus it does not overload our server.",
 
-	You may also see it if you a games timer counted down to 0 while you were viewing the page, in which
-	case you should refresh the page to view the newly processed game.",
-"I didn't enter those orders!" => "Occasionally we get this complaint, but every time we have checked the
-	input logs to see what order was actually entered it turns out to be the mistaken order.
-	Also the mistaken orders are often the 'Bulgaria'/'Budapest' sort of mistake which are easier to
-	imagine human error than a bug.<br /><br />
-	Try finalizing your orders and then checking them over, so you can be sure of what you entered.",
-"Someone says their orders messed up, and I'm paying the price!" => "
-	Unfortunately it does seem that sometimes people will claim that their orders came out wrong to cover up the intention of
-	their actions. (e.g. \"I was going to stab you, then read your message and changed my orders so I wasn't going to stab you,
-	but my old orders came out instead of the new ones! Oh so sorry about that!\")<br /><br />
+"What are the Ghost Ratings?" => "The Ghost Ratings were developed by TheGhostmaker as an alternative scoring system to points on webDiplomacy. 
+The purpose of the ratings is to more accurately measure the true skill and ability of players by weighting games not by the size of the pot but 
+by the the type of game they are playing and the ability and skill of the other players in that game. It also allows an accurate measurement depicting 
+either improvement or regression over time, whereas once players have gained a significant amount of points, they generally do not lose all of them again. 
+The Ghost Ratings were initially developed in 2008 as a single scoring system but have since been expanded on to include various categorizations, 
+including individual ratings for full press, gunboat, live, and 1v1 games, as well as to weight variants on webDiplomacy differently than the classic board.
+<br><br>
+For more information on the Ghost Ratings, visit our external <a href='https://sites.google.com/view/webdipinfo/ghost-ratings' class='light'>webDiplomacy tournaments site</a>.",
 
-	This is against <a href='rules.php' class='light'>the rules</a>, as it makes work for admins over made up bugs. When someone
-	tells you a bug caused a mistake in their orders you should reserve some skepticism, and remember that the official server alone
-	receives and processes over 20,000 orders per day (as of Feb 2010) without mistake every minute of every day for years on
-	end, so sudden bugs which change whole order-sets around simply don't seem to genuinely happen ever, despite checking every
-	single report.
-",
-"My orders gave the wrong results!" => "Before reporting this as a bug double check that you entered your orders correctly and you're
-	not misunderstanding the rules. 99.999% of the time \"adjudicator bugs\" turn out to be a misunderstanding.<br />",
-"A part of the site looks wrong in an alternative browser" => "webDiplomacy isn't currently completely web standards compliant,
-	so there may be glitches. We would like to get webDiplomacy working on everything (within reason) but we need users
-	of alternative browsers to let us know what's wrong and tell us how to make it look right in that browser.",
+"How does webDiplomacy's adjudicator work and what is it based on?" => "webDiplomacy's adjudication software is based on the official Diplomacy rules. 
+However, in order to adapt to online gameplay where it would be extremely impractical to require players to adjudicate games manually, 
+webDiplomacy developed a series of scripted tests called the Diplomacy Adjudicator Test Cases, or DATC, to lay out exactly how all sorts of tricky situations are processed, 
+particularly in the cases where there is ambiguity in the rules. 
+<br><br>
+While examining the outputted results of the DATC is not useful or practical for most players, you can see the results <a href='datc.php' class='light'>here</a>. 
+If you have a question about how a certain scenario would be processed, feel free to ask a question on our forum.",
 
-"Feature Requests" => "Sub-section",
-"A point and click interactive map" => "This is being worked on, but progress is slow.",
-"Translations" => "A translation system is built into our site and several people have created websites to play this game in Russian and Italian. Ask on the forum for links to these sites.",
-"New variants" => "If a variant has lasting appeal, is well balanced, isn't gimmicky, has been tried and tested on another server, and was
-	created by a reputable developer, then it's up for consideration to be included in the standard release.<br />
-	<br />
-	Also creating your own variants or porting
-	existing variants to the webDiplomacy variants system is easier than ever, from simple map-change variants all the
-	way to strange rule-changing variants, the system is flexible enough to accommodate your variant ideas.	",
+"Someone says their orders got messed up, and now I'm paying the price!" => "Unfortunately, it does seem that sometimes people will claim that their orders 
+came out wrong to cover up the intention of their actions. For example, they may say \"I was going to stab you, then read your message and changed 
+my orders so I wasn't going to stab you, but my old orders came out instead of the new ones! Oh so sorry about that!\"
+This is not allowed under <a href='rules.php' class='light'>the site rules</a> as it puts an unnecessary load on the site moderators by 
+falsely claiming that a bug has been introduced on the site. If you are told that a bug caused a mistake in their orders, you should reserve some skepticism, 
+and remember that the official server alone receives and processes tens of thousands of orders every single day yet has never made a mistake processing orders. 
+Misorders can and do happen, but they have always been found to be the result of human error, not a software error.",
 
-"Helping out" => "Sub-section",
-"Can I help develop the software?" => "You sure can: if you're an HTML/CSS/JavaScript/PHP 5/MySQL/SVG/Canvas developer,
-	graphics/icon artist, or want to learn, check out the <a class='light' href='/developers.php'>dev info</a>,
-	and if you get lost you can get help/discuss ideas in the <a class='light' href='/contrib/phpBB3/viewforum.php?f=16'>developer forums</a>.",
-"How else can I help?" => "Tell your friends about webDiplomacy, put links on your website, help new players out in the forums,
-	and give helpful feedback to developers. If you enjoy the game please consider buying a physical version of the board game. Thanks!",
+"Can I submit a new feature request?" => "webDiplomacy is always in constant development. We have a group of developers that have put in countless hours of work 
+for the site without any expectation of pay, and because of their help we have an extremely well put together site, are constantly adding new features, 
+and have the ability to change the site we have now for the better. If you have a feature request, you are more than welcome to post in our 
+<a href='/contrib/phpBB3/viewforum.php?f=16' class='light'>developer forum</a>. However, you should know that we have a significant amount of development work 
+- both fixes and improvements - that are in the works, some of which will take up a massive amount of time. As such, new feature requests should be 
+limited to things that are feasible and ultimately necessary. Likewise, your feature request should be well thought out. You should be prepared to answer 
+any questions that our developers or other players have about your feature request, and you should expect some constructive criticism as well.",
 
-	"What's the software license?" => "The <a href='AGPL.txt' class='light'>GNU Affero General License</a>
-	(<a href='http://www.opensource.org/licenses/agpl-v3.html' class='light'>Open Source Initiative</a> approved),
-	which basically says you can download and change the code as you like, and put it up on your
-	own website, but you can't claim you wrote it, and you have to give any changes
-	you make back to the community.<br /><br />
-	See <a href='credits.php' class='light'>the credits</a> for information about the
-	small elements which are under different licenses.",
+"When are you going to add new variants?" => "Every once in awhile, webDiplomacy will import another variant map. 
+However, there is no set time period for this as many variants, even those that are already programmed on other Diplomacy sites, 
+must be reviewed thoroughly before being added.",
+
+"What is webDiplomacy's the software license?" => "webDiplomacy is licensed under the <a href='AGPL.txt' class='light'>GNU Affero General License</a> 
+(<a href='http://www.opensource.org/licenses/agpl-v3.html' class='light'>Open Source Initiative</a> approved). Open source means that you can download 
+and change the code as you like and put it up on your own website, but you can't claim that you wrote it. Likewise, any changes that you make to webDiplomacy's code base must be 
+made available to the webDiplomacy community.",
 
 "Map" => "Sub-section",
 "Why are some orders missing from the map?" => "Not all orders are drawn on the small map. Below the small map there is a set of icons;
