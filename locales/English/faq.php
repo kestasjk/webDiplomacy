@@ -76,16 +76,87 @@ Skilled developers with experience in PHP, JavaScript, or SQL, as well as HTML o
 or <a href='mailto:".Config::$adminEMail."' class='light'>contact the moderators</a> to see if you would be able to help us. 
 webDiplomacy can also use help from graphic designers and icon artists to keep our site looking fresh and updated.",
 
-"The interface" => "Sub-section",
-"What the hell is that thing? (<img src='images/icons/online.png' />, <img src='images/icons/mail.png' />, etc)" => "If you see an icon/button/image and don't understand what it means try hovering your mouse over it,
-	it may give you a tool-tip helping explain it. If it doesn't feel free to ask on the <a href='/contrib/phpBB3/' class='light'>forum</a>.",
-"Why do my order choices turn from green to red?" => "Red order choices are unsaved; if you see a lot of red in your orders you should
-	save, or you might forget and lose them by closing the browser window or chatting to someone.",
-"What do 'Save' and 'Ready' mean?" => "'Save' saves your order; your red, unsaved order choices will turn green once they're successfully
-	saved. 'Ready' means you have finished entering your orders, and are ready to continue to the next turn. If everyone is 'Ready' the
-	game continues right away, speeding up the game.",
-"Why do some things appear to change just after the page has loaded?" => "After a page is loaded JavaScript runs, making a few changes
-	(e.g. putting GMT/UTC times into your computer's time zone, making your posts bold, etc) which enhance the page.",
+"Can I play on my phone?" => "Yes! webDiplomacy is compatible with your mobile device.",
+
+"Where can I find the rules that I need to follow?" => "You can find a complete list of our site rules <a href='rules.php' class='light'>here</a>. 
+If you have questions about a rule or need help, you can always <a href='mailto:".Config::$adminEMail."' class='light'>contact the moderators</a>.",
+
+
+"Playing on webDiplomacy" => "Sub-section",
+
+"I want to learn how to play Diplomacy!" => "While it is impossible to master the art of Diplomacy, the game itself is an easy game to begin to learn. 
+The <a href='intro.php' class='light'>intro page</a> is a good starting point for learning the basic mechanics of the game of Diplomacy online. 
+Once you have a good command of how the game works, <a href='gamelistings.php' class='light'>start playing</a>! There is no better way to learn 
+beyond the basics than by actually playing the game.
+<br><br>
+If you really want to dive into the more advanced guide of how Diplomacy works, check out 
+<a href='http://www.wizards.com/avalonhill/rules/diplomacy.pdf' class='light'>Avalon Hill's rulebook</a> on Diplomacy. 
+Be mindful that Avalon Hill's rulebook is written for those who purchased the board game itself, not for those who are playing online, so there are some inconsistencies. 
+For example, webDiplomacy does not offer an alternative for six players on the classic board. Instead, we offer different Diplomacy boards called 
+<a href='variants.php' class='light'>variants</a> where you can play on a different map with different amounts of players. 
+Using our variaint boards, you can play with as many as 34 players or as few as 2.
+<br><br>
+If you have questions about the game of Diplomacy or want to talk strategy with the rest of our online Diplomacy community, 
+check out <a href='/contrib/phpBB3/viewforum.php?f=6' class='light'>our forum</a>. You will find all sorts of insightful discussions there 
+and are always welcome to ask your own questions as well.",
+
+"I already know how to play. But where do I start?" => "If you already know what you're doing, <a href='gamelistings.php' class='light'>start playing</a>! 
+You can join games that other people have created, take over open positions in ongoing games left vacant, or create your own game and allow others to join it.",
+
+"What are all these settings on the game creation page?" => "When you create a game on webDiplomacy, you have to specify some settings. 
+First and foremost, every game has a name, bet size, and phase length. The name is up to you, so long as it abides by our <a href='rules.php' class='light'>site rules</a>. 
+You can bet as few as 5 or as many points as you have to your account. Every other player that joins will have to match your bet, 
+and then when the game is over the points will be distributed according to the <a href='points.php#DSS' class='light'>scoring system</a> 
+that you choose. Finally, the phase length is how long you have to enter your orders in each phase. Since everyone enters their orders simultaneously and in secret, 
+pick a deadline that makes sense for how long you want to play. If you want to play an entire game today, try a live game with 5-30 minute phase lengths. 
+If you only want to check the site every few days, play a game with a longer phase length so you have more time.
+<br><br>
+Next, you'll choose the type of game messaging you want to play. By default, your game will be set to 'all,' or full press, messaging, which means everyone 
+can speak with everyone else at all times. If you choose 'global only,' or public press, you can only send messages globally where everyone can see them. 
+If you choose 'no messaging,' or gunboat, you cannot send any messages at all. You can also play 'per rulebook,' which is full press during moves phases 
+and no press at all during retreat and build phases. Face-to-face Diplomacy is generally played this way.
+<br><br>
+You can then choose which one of webDiplomacy's <a href='variants.php' class='light'>variants</a> you want to play, which <a href='points.php#DSS' class='light'>scoring system</a> 
+you want to use to distribute the points at the end of the game, and whether or not other players in your game should be anonymous, which hides their display names. 
+You can also set your game to show or hide all draw votes that other players cast and set the minimum <a href='intro.php#RR' class='light'>reliability rating</a> 
+and set the number of phases in which a player can fail to enter orders before they are automatically removed from the game.
+<br><br>
+Lastly, you can make your game private by adding an invite code, which is like a password for your game. If you are playing a game with anyone that you know 
+outside of webDiplomacy, our <a href='rules.php' class='light'>site rules</a> mandate that you add an invite code to your game to make it private. 
+You can share the invite code with your friends, family, or colleagues so that you can all play your game within our rules.",
+
+"What do the 'save' and 'ready' buttons do?" => "When you are playing a game, you can either save your orders, which means that the game will remember them 
+and store them for you to change later if you decide to alter them again before the deadline, or ready your orders, which means that you do not intend to 
+change your orders again. If every player has readied their orders, the game will process to the next phase regardless of when the deadline is, 
+so if you ready your orders, make sure that you don't want to change them again!",
+
+"Why are my order choices red?" => "Red order choices are unsaved, so if you decide to close your browser or tab, the game will not remember 
+the orders that you put in. You should save or ready your orders in order to make sure that the game knows what you entered and that you don't end up 
+failing to enter orders if the deadline passes.",
+
+"How do I win?" => "The goal of every game is to 'solo' the board, or hold the majority of the supply centers available. This is how you win in Diplomacy. 
+However, it is very difficult to solo the board and thus most Diplomacy games do not end in a solo. That is why there are other positive results, such as draws. 
+Depending on the <a href='points.php#DSS' class='light'>scoring system</a> of the game, a draw will distribute a certain number of points to each surviving player.",
+
+"What do those icons mean? ( <img src='images/icons/tick.png' />, <img src='images/icons/alert.png' /> , <img src='images/icons/mail.png' /> , etc.)" => "If you see an icon 
+and don't understand what it means, try hovering your mouse over it. It may give you a hint as to what it means.",
+
+"What is the 'notes' tab and why is it different colors in different games?" => "In a full press game, every country has tabs to message other players. 
+Instead of simply removing the tab for the country that you are playing from your press toolbar, there is a section for you to take notes on the game. 
+You can send notes to yourself just like you would send press to other players, but nobody can see your notes except for you! Feel free to use your notes 
+tab as much or as little as you like in all of your games.",
+
+"Why is it saying that I can't send someone a message?" => "Some players utilize the mute function, which allows them to prevent someone they don't like from sending 
+them any more messages in that game. If you are muted by another player, the game is not broken and you are not in trouble, but you cannot send them any more messages unless they 
+decide to unmute you again.",
+
+"I entered an order but the game made me do something else!" => "It is not all that unusual for players to make mistakes when entering their orders. 
+The site administrators have received complaints about orders not being adjudicated properly many times. However, since webDiplomacy was founded in 2004, 
+there has not been a single instance where there was any evidence that our game adjudicator made an error. The best thing that you can do to minimize 
+misorders in the future is to double check all of your orders, and even if you do, know that they do still occasionally happen as we are all humans and make mistakes.",
+
+"I need to talk to a moderator in a game I'm playing!" => "You can contact the moderators at any time by using the 'Need help?' button located just below the order entry on the screen. 
+That button will direct you to a form that you can send to the moderators and they will help you.",
 
 "Game rules" => "Sub-section",
 "I want to learn the basic rules" => "See the <a href='intro.php' class='light'>intro page</a>.",
