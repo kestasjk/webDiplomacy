@@ -25,7 +25,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @subpackage Static
  */
 
-print libHTML::pageTitle('Informtion and Links','Links to pages with more information about webDiplomacy.');
+print libHTML::pageTitle('Information and Links','Links to pages with more information about webDiplomacy.');
 ?>
 
 <div class='help'>
