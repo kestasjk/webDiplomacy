@@ -200,7 +200,7 @@ If you're looking for some general off topic banter or politics, you'll find it 
 some players playing mafia, a popular game that some Diplomacy players have made a staple on webDiplomacy, in the 'forum games' section. 
 You can also find webDiplomacy's news and announcements, as well as a place to leave feedback on features or development, at the top of the forum.",
 
-"Where can I send and check my private messages?" => "You can send, read, and manage your private messages <a href='/contrib/phpBB3/ucp.php?i=pm'>here</a>. 
+"Where can I send and check my private messages?" => "You can send, read, and manage your private messages <a href='/contrib/phpBB3/ucp.php?i=pm' class='light'>here</a>. 
 Currently, you must visit our forum before you will be able to send or receive private messages. Once you visit our forum, you will have access to your 
 private message inbox and will get notifications when you receive new messages from other players.",
 
@@ -269,7 +269,7 @@ foreach($globalFaq as $Q=>$A)
 
 $i=1;
 
-print libHTML::pageTitle('Frequently Asked Questions','Answers to the questions people often ask in the forums; click on a question to expand the answer.');
+print libHTML::pageTitle('Frequently Asked Questions','Answers to the questions people often ask in the forums; click on a question to show the answer.');
 
 $sections = array();
 $section=0;
