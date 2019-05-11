@@ -30,5 +30,7 @@ print '<div class="content">';
 print 'Tools for admins can be placed in this file.';
 print '</div>';
 
+
+
 libHTML::footer();
 ?>
