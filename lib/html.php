@@ -684,6 +684,7 @@ class libHTML
 		$links['developers.php']=array('name'=>'Developer info', 'inmenu'=>FALSE);
 		$links['datc.php']=array('name'=>'DATC', 'inmenu'=>FALSE);
 		$links['variants.php']=array('name'=>'Variants', 'inmenu'=>FALSE);
+		$links['adminInfo.php']=array('name'=>'Admin Info', 'inmenu'=>FALSE);
 
 		if ( is_object($User) )
 		{
@@ -838,12 +839,19 @@ class libHTML
 							<a href="admincp.php">Admin CP</a>';
 
 					if( isset(Config::$customForumURL) ) { $menu.='<a href="contrib/phpBB3/mcp.php">Forum CP</a>'; }
-						$menu.='
-							<a href="admincp.php?tab=Multi-accounts">Multi Finder</a>
-							<a href="admincp.php?tab=Chatlogs">Pull Press</a>
-							<a href="admincp.php?tab=AccessLog">Access Log</a>
-							<a href="profile.php">Find User</a>
-                        </div>
+
+					$menu.='
+						<a href="admincp.php?tab=Multi-accounts">Multi Finder</a>
+						<a href="admincp.php?tab=Chatlogs">Pull Press</a>
+						<a href="admincp.php?tab=AccessLog">Access Log</a>
+						<a href="profile.php">Find User</a>';
+
+					if ( $User->type['Admin'] && isset(Config::$customForumURL))
+					{
+						$menu.='<a href="adminInfo.php">Admin Info</a>';
+					}
+					
+					$menu.=' </div>
 					</div>';
 				}
 			}
