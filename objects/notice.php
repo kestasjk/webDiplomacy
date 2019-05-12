@@ -128,11 +128,25 @@ class notice
 	{
 		global $User;
 
-		$buf = '<div class="homeNotice '.($this->type=='Game'?'" gameID="'.$this->fromID.'"':'userID'.$this->fromID.'"').'>
+		// If the alert is to inform the user they have missed a deadline then highlight it in red to grab their attention. Doing this inline
+		// instead of changing css class to avoid impacting the js that highlights game alerts on hover over. 
+		if (strpos($this->text, 'You have missed a deadline') !== false)
+		{
+			$buf = '<div style="background-color: #F08080;" class="homeNotice '.($this->type=='Game'?'" gameID="'.$this->fromID.'"':'userID'.$this->fromID.'"').'>
 			<div class="homeForumGroup homeForumAlt'.libHTML::alternate().'">
 				<div class="homeForumSubject homeForumTopBorder">'.$this->fromLink().'</div>
 				<div class="homeForumPostAlt'.libHTML::alternate().' homeForumPost">
 					<div class="homeForumPostTime">'.libTime::text($this->timeSent).' ';
+		}
+
+		else
+		{
+			$buf = '<div class="homeNotice '.($this->type=='Game'?'" gameID="'.$this->fromID.'"':'userID'.$this->fromID.'"').'>
+			<div class="homeForumGroup homeForumAlt'.libHTML::alternate().'">
+				<div class="homeForumSubject homeForumTopBorder">'.$this->fromLink().'</div>
+				<div class="homeForumPostAlt'.libHTML::alternate().' homeForumPost">
+					<div class="homeForumPostTime">'.libTime::text($this->timeSent).' ';
+		}
 
 		if ( self::$recent )
 			$buf .= libHTML::unreadMessages();

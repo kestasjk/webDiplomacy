@@ -474,7 +474,7 @@ else
     
     print ' <p>Please give us any additional details
             <textarea name="additionalInfo" class = "contactUs"  rows="5"></textarea></p>';
-    print '<p><input type="submit" class = "form-submit" name="submit"/></p>';
+    print '<p><input type="submit" class = "contactUs" name="submit"/></p>';
     print '</form>';
 }
 print '</div>';
