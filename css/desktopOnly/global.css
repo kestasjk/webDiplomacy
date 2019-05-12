@@ -1275,16 +1275,31 @@ input[type=submit].gameCreate:hover {
 	overflow: hidden;
 	background-color: #f1f1f1;
 	font-size: 14px;
-	padding: 0 0 0 10px;
+	padding: 0 10px 0 10px;
 	margin-top:0px !important;
 }
 
-input[type="text"].contactUs, input[type="password"].contactUs, textarea.contactUs, select.contactUs {
-	font-size: 14px;
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	background-color: #ffffff !important;
-	border: 1px solid #c1c1c1;
-	color:#000000;
+input[type=text].contactUs, input[type=password].contactUs, textarea.contactUs, select.contactUs {
+  width: 100%;
+	padding: 10px 5px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type=submit].contactUs {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit].contactUs:hover {
+  background-color: #45a049;
 }
 /* End of section for contactUsDirect page styling */
 
@@ -1363,7 +1378,7 @@ input[type="text"].contactUs, input[type="password"].contactUs, textarea.contact
 	overflow: hidden;
 	background-color: #f1f1f1;
 	font-size: 14px;
-	padding: 0 0 0 10px;
+	padding: 0 10px 0 10px;
 	margin-top:0px !important;
 }
 
@@ -1387,7 +1402,7 @@ input[type="text"].userSearch, input[type="password"].userSearch, textarea.userS
 	overflow: hidden;
 	background-color: #f1f1f1;
 	font-size: 14px;
-	padding: 0 0 0 10px;
+	padding: 0 10px 0 10px;
 	margin-top:0px !important;
 }
 
@@ -1413,7 +1428,6 @@ input[type=submit].settings {
 input[type=submit].settings:hover {
   background-color: #45a049;
 }
-
 /* End of section for settings page */
 
 /* Section for credits page styling */
@@ -1677,6 +1691,22 @@ input[type="text"].advancedSearch, input[type="password"].advancedSearch, textar
 	border: 1px solid #c1c1c1;
 	color:#000000;
 }
+
+
+input[type=submit].advancedSearch {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit].advancedSearch:hover {
+  background-color: #45a049;
+}
+
 
 .advancedSearch td, .advancedSearch th {
 	border: 1px solid #ddd;

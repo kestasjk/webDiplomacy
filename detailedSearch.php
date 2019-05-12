@@ -337,7 +337,7 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tabl
 		</select>
 		</p>
 
-		<input type="submit" name="Submit" class="form-submit" value="Check" /></form>
+		<input type="submit" name="Submit" class="advancedSearch" value="Check" /></form>
 		</br>';
 print '</div>';
 
@@ -427,7 +427,7 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tabl
 		</select>
 		</p>
 
-		<input type="submit" name="Submit" class="form-submit" value="Check" /></form>
+		<input type="submit" name="Submit" class="advancedSearch" value="Check" /></form>
 		</br>';
 print '</div>';
 
@@ -494,7 +494,7 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tabl
 		</select>
 		</p>
 
-		<input type="submit" name="Submit" class="form-submit" value="Check" /></form>
+		<input type="submit" name="Submit" class="advancedSearch" value="Check" /></form>
 		</br>';
 print '</div>';
 
@@ -1161,7 +1161,7 @@ function printPageButton($pagenum, $currPage){
 				print '<input type="hidden" name="'.$key.'" value='.$value.'>';
 			}
 		}
-		print '<input type="submit" name="pagenum" class="form-submit" value='.$pagenum.' /></form></div>';
+		print '<input type="submit" name="pagenum" class="advancedSearch" value='.$pagenum.' /></form></div>';
 	}
 }
 
