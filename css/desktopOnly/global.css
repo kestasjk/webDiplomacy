@@ -55,6 +55,20 @@ input:read-only {
   background-color:#999 !important;
 }
 
+.green-Submit {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.green-Submit:hover {
+  background-color: #45a049;
+}
+
 .form-submit {
   background-color: #8c9cbf;
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #8c9cbf), color-stop(50%, #546a9e), color-stop(50%, #36518f), color-stop(100%, #3d5691));
@@ -1414,20 +1428,6 @@ input[type=text].settings, input[type=password].settings, textarea.settings, sel
   border-radius: 4px;
   box-sizing: border-box;
 }
-
-input[type=submit].settings {
-  width: 100%;
-  background-color: #4CAF50;
-  color: white;
-  padding: 14px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-input[type=submit].settings:hover {
-  background-color: #45a049;
-}
 /* End of section for settings page */
 
 /* Section for credits page styling */
@@ -1691,22 +1691,6 @@ input[type="text"].advancedSearch, input[type="password"].advancedSearch, textar
 	border: 1px solid #c1c1c1;
 	color:#000000;
 }
-
-
-input[type=submit].advancedSearch {
-  width: 100%;
-  background-color: #4CAF50;
-  color: white;
-  padding: 14px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-input[type=submit].advancedSearch:hover {
-  background-color: #45a049;
-}
-
 
 .advancedSearch td, .advancedSearch th {
 	border: 1px solid #ddd;

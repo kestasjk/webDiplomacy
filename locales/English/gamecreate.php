@@ -219,7 +219,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			</p>
 
 			<p class="notice">
-				<input class = "gameCreate" type="submit"  value="Create">
+				<input class = "green-Submit" type="submit"  value="Create">
 			</p>
 			</br>
 		</form>
