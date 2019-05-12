@@ -23,7 +23,7 @@
 .variantClassicChaos .country20 { color: #87A96B ! important; } /* Paris          */
 .variantClassicChaos .country21 { color: #5CFF9B ! important; } /* Portugal       */
 .variantClassicChaos .country22 { color: #FA9DA6 ! important; } /* Rome           */
-.variantClassicChaos .country23 { color: #FFF9E0 ! important; } /* Rumania        */
+.variantClassicChaos .country23 { color: #000000 ! important; } /* Rumania        */
 .variantClassicChaos .country24 { color: #CFEB1E ! important; } /* Serbia         */
 .variantClassicChaos .country25 { color: #46B300 ! important; } /* Sevastopol     */
 .variantClassicChaos .country26 { color: #FFBF00 ! important; } /* Smyrna         */
@@ -58,7 +58,7 @@
 .variantClassicChaos .occupationBar20 { background-color: #87A96B ! important; } /* Paris          */
 .variantClassicChaos .occupationBar21 { background-color: #5CFF9B ! important; } /* Portugal       */
 .variantClassicChaos .occupationBar22 { background-color: #FA9DA6 ! important; } /* Rome           */
-.variantClassicChaos .occupationBar23 { background-color: #FFF9E0 ! important; } /* Rumania        */
+.variantClassicChaos .occupationBar23 { background-color: #000000 ! important; } /* Rumania        */
 .variantClassicChaos .occupationBar24 { background-color: #CFEB1E ! important; } /* Serbia         */
 .variantClassicChaos .occupationBar25 { background-color: #46B300 ! important; } /* Sevastopol     */
 .variantClassicChaos .occupationBar26 { background-color: #FFBF00 ! important; } /* Smyrna         */
