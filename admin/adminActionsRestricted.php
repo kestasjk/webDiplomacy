@@ -130,11 +130,26 @@ class adminActionsRestricted extends adminActionsForum
 				'description' => 'Toggle the notice which is displayed in a noticebar across the whole site.',
 				'params' => array(),
 			),
+			'noticeMessage' => array(
+				'name' => 'Change notice message',
+				'description' => 'Sets the notice which is displayed in a noticebar across the whole site. Sample is: Excused missed turns have been added to all games. See more (<)a href="/contrib/phpBB3/viewtopic.php?f=5&t=1551">here(<)/a(>)(<)/br(>) (<)font color="red"(>)If you are seeing an error on games please clear your browsers cache.(<)/font(>)',
+				'params' => array('message'=>'Message'),
+			),
 			'maintenance' => array(
 				'name' => 'Toggle maintenance',
 				'description' => 'Toggle maintenance mode, which makes the server inaccessible except to admins
 					so changes can be made.',
 				'params' => array(),
+			),
+			'maintenanceMessage' => array(
+				'name' => 'Change maintenance message',
+				'description' => 'Change the message that is displayed while the site is undergoing maintenance.',
+				'params' => array('message'=>'Message'),
+			),
+			'panicMessage' => array(
+				'name' => 'Change panic message',
+				'description' => 'Changes the message that is displayed while the site is in panic mode.',
+				'params' => array('message'=>'Message'),
 			),
 			'globalAddTime' => array(
 				'name' => 'Add time to all games',
@@ -318,6 +333,15 @@ class adminActionsRestricted extends adminActionsForum
 		return l_t('Maintenance mode '.($Misc->Maintenance?'turned on':'turned off'));
 	}
 
+	public function maintenanceMessage(array $params)
+	{
+		global $DB;
+		$message = $params['message'];
+		$message = $DB->escape($message, $htmlAllowed=true);
+		$DB->sql_put("UPDATE wD_Config SET message='".$message."' WHERE name = 'Maintenance'");
+		return l_t('The maintenance message has been updated.');
+	}
+
 	public function notice(array $params)
 	{
 		global $Misc;
@@ -326,6 +350,24 @@ class adminActionsRestricted extends adminActionsForum
 		$Misc->write();
 
 		return l_t('Site-wide notice '.($Misc->Notice?'turned on':'turned off'));
+	}
+
+	public function noticeMessage(array $params)
+	{
+		global $DB;
+		$message = $params['message'];
+		$message = $DB->escape($message, $htmlAllowed=true);
+		$DB->sql_put("UPDATE wD_Config SET message='".$message."' WHERE name = 'Notice'");
+		return l_t('The site-wide notice message has been updated.');
+	}
+
+	public function panicMessage(array $params)
+	{
+		global $DB;
+		$message = $params['message'];
+		$message = $DB->escape($message, $htmlAllowed=true);
+		$DB->sql_put("UPDATE wD_Config SET message='".$message."' WHERE name = 'Panic'");
+		return l_t('The panic message has been updated.');
 	}
 
 	public function clearErrorLogs(array $params)

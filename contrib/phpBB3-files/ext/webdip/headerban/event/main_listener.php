@@ -243,19 +243,38 @@ class main_listener implements EventSubscriberInterface
 	
 	private function noticeBlock()
 	{
-	
 		if ( $this->misc['Maintenance'] )
 		{
-			$this->noticeBar[]=\Config::$serverMessages['Maintenance'];
+			$result = $this->db->sql_query("SELECT message FROM wD_Config WHERE name = 'Maintenance'");
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$maintenance = $row['message'];
+			}
+			$this->db->sql_freeresult($result);
+			$this->noticeBar[]= $maintenance;
 		}
 
 		if ( $this->misc['Panic'] )
 		{
-			$this->noticeBar[] = \Config::$serverMessages['Panic'];
+			$result = $this->db->sql_query("SELECT message FROM wD_Config WHERE name = 'Panic'");
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$panic = $row['message'];
+			}
+			$this->db->sql_freeresult($result);
+			$this->noticeBar[] = $panic;
 		}
 
 		if ( $this->misc['Notice'] )
-			$this->noticeBar[] = \Config::$serverMessages['Notice'];
+		{
+			$result = $this->db->sql_query("SELECT message FROM wD_Config WHERE name = 'Notice'");
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$notice = $row['message'];
+			}
+			$this->db->sql_freeresult($result);
+			$this->noticeBar[] = $notice;
+		}
 
 		if ( ( time() - $this->misc['LastProcessTime'] ) > \Config::$downtimeTriggerMinutes*60 )
 			$this->noticeBar[] = ("The last process time was over ".\Config::$downtimeTriggerMinutes." minutes ".

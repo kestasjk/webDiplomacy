@@ -55,6 +55,20 @@ input:read-only {
   background-color:#999 !important;
 }
 
+.green-Submit {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.green-Submit:hover {
+  background-color: #45a049;
+}
+
 .form-submit {
   background-color: #8c9cbf;
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #8c9cbf), color-stop(50%, #546a9e), color-stop(50%, #36518f), color-stop(100%, #3d5691));
@@ -1085,7 +1099,7 @@ input[type=submit].gameCreate:hover {
 	margin-top: 0px !important;
 	font-size: 14px;
 	border-radius: 7px;
-	padding: 0 0 0 10px;
+	padding: 0 10px;
 }
 /* End of section for FAQ styling */
 
@@ -1275,16 +1289,31 @@ input[type=submit].gameCreate:hover {
 	overflow: hidden;
 	background-color: #f1f1f1;
 	font-size: 14px;
-	padding: 0 0 0 10px;
+	padding: 0 10px 0 10px;
 	margin-top:0px !important;
 }
 
-input[type="text"].contactUs, input[type="password"].contactUs, textarea.contactUs, select.contactUs {
-	font-size: 14px;
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	background-color: #ffffff !important;
-	border: 1px solid #c1c1c1;
-	color:#000000;
+input[type=text].contactUs, input[type=password].contactUs, textarea.contactUs, select.contactUs {
+  width: 100%;
+	padding: 10px 5px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type=submit].contactUs {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit].contactUs:hover {
+  background-color: #45a049;
 }
 /* End of section for contactUsDirect page styling */
 
@@ -1363,7 +1392,7 @@ input[type="text"].contactUs, input[type="password"].contactUs, textarea.contact
 	overflow: hidden;
 	background-color: #f1f1f1;
 	font-size: 14px;
-	padding: 0 0 0 10px;
+	padding: 0 10px 0 10px;
 	margin-top:0px !important;
 }
 
@@ -1387,7 +1416,7 @@ input[type="text"].userSearch, input[type="password"].userSearch, textarea.userS
 	overflow: hidden;
 	background-color: #f1f1f1;
 	font-size: 14px;
-	padding: 0 0 0 10px;
+	padding: 0 10px 0 10px;
 	margin-top:0px !important;
 }
 
@@ -1399,21 +1428,6 @@ input[type=text].settings, input[type=password].settings, textarea.settings, sel
   border-radius: 4px;
   box-sizing: border-box;
 }
-
-input[type=submit].settings {
-  width: 100%;
-  background-color: #4CAF50;
-  color: white;
-  padding: 14px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-input[type=submit].settings:hover {
-  background-color: #45a049;
-}
-
 /* End of section for settings page */
 
 /* Section for credits page styling */
@@ -1917,12 +1931,6 @@ input[id^="FinalizeButton"]{
 		font-weight: bold;
 		text-decoration:underline;
 		word-wrap: break-word;
-	}
-	textarea.contactUs, input[type="text"].contactUs, select.contactUs{
-		width: 80%;
-	}
-	textarea.settings, input[type="text"].settings, input[type="password"].settings, select.settings{
-		width: 80%;
 	}
 	textarea.userSearch, input[type="text"].userSearch, input[type="password"].userSearch, select.userSearch{
 		width: 80%;

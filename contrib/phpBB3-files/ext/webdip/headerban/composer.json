@@ -3,7 +3,7 @@
     "type": "phpbb-extension",
     "description": "webDiplomacy game header and ban extension for phpBB 3.2",
     "homepage": "https://github.com/kestasjk/webDiplomacy",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "time": "2018-04-24",
     "keywords": ["phpbb", "extension", "webdiplomcy", "diplomacy", "header"],
     "license": "AGPL",

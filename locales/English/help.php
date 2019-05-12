@@ -25,7 +25,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @subpackage Static
  */
 
-print libHTML::pageTitle('Informtion and Links','Links to pages with more information about webDiplomacy.');
+print libHTML::pageTitle('Information and Links','Links to pages with more information about webDiplomacy.');
 ?>
 
 <div class='help'>
@@ -80,7 +80,7 @@ print libHTML::pageTitle('Informtion and Links','Links to pages with more inform
     <div class = 'help_title'>Credits</div>
     <div class = 'help_content'>
         <p>
-        <a href="credits.php">The Credits</a>. All the people who made this site possibe. Includes a list of active moderators.
+        <a href="credits.php">The Credits</a>. All the people who made this site possible. Includes a list of active moderators.
         </p>
     </div>
 
