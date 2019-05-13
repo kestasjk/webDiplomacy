@@ -61,8 +61,12 @@ input:read-only {
   border: none;
 	border-radius: 4px;
 	padding: 14px 20px;
-	width: 99%;
+	width: 100%;
 	-webkit-appearance: none;
+}
+
+.green-Submit, .green-Submit:active, .green-Submit:default {
+  background-color: #4CAF50 !important;
 }
 
 .green-Submit:hover {
