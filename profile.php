@@ -114,7 +114,7 @@ if ( !$userID )
 				<?php print l_t('Not case sensitive, but otherwise must match exactly.)'); ?>
 			</p>
 			<p>
-				<input type="submit" class="gameCreate" value="<?php print l_t('Search'); ?>">
+				<input type="submit" class="green-Submit" value="<?php print l_t('Search'); ?>">
 			</p>
 		</ul>
 

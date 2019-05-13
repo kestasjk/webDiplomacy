@@ -56,17 +56,17 @@ input:read-only {
 }
 
 .green-Submit {
-  background-color: #4CAF50;
+  background-color: #4CAF50 !important;
   color: white;
   border: none;
 	border-radius: 4px;
 	padding: 14px 20px;
-	width: 100%;
+	width: 99%;
 	-webkit-appearance: none;
 }
 
 .green-Submit:hover {
-	background-color: #45a049;
+	background-color: #45a049 !important;
 	cursor: pointer;
 }
 
