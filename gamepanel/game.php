@@ -494,22 +494,15 @@ class panelGame extends Game
 			{
 				if ($User->tempBan > time())
 				{
-					$buf .= '<span style="font-size:85%;">(You are temporarily banned, and cannot join games.)</span>';
+					$buf .= '<span style="font-size:75%;">(Due to a temporary ban you cannot join games.)</span>';
 				}
 				elseif ($User->reliabilityRating < $this->minimumReliabilityRating)
 				{
-					if ($User->points < $this->minimumBet)
-					{
-						$buf .= '<span style="font-size:85%;">(You are not reliable enough and you do not have enough points to join this game.)</span>';
-					}
-					else
-					{
-						$buf .= '<span style="font-size:85%;">(You are not reliable enough to join this game.)</span>';
-					}
+					$buf .= '<span style="font-size:80%;">(You are not reliable enough to join this game.)</span>';
 				}
 				elseif ($User->points < $this->minimumBet)
 				{
-					$buf .= '<span style="font-size:85%;">(You do not have enough points to join this game.)</span>';
+					$buf .= '<span style="font-size:80%;">(You have too few points to join this game.)</span>';
 				}
 			}
 			if( $User->type['User'] && $this->phase != 'Finished')
