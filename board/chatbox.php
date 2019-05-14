@@ -62,7 +62,7 @@ class Chatbox
 			$msgCountryID = 0;
 
 		// Enforce Global and Notes tabs when its not Regular press game.
-		if ( (($Game->pressType != 'Regular' && $Game->pressType != 'RulebookPress') || (isset($Game) && $Game->Members->isTempBanned())) 
+		if ( (($Game->pressType != 'Regular' && $Game->pressType != 'RulebookPress') || (isset($Game) && $Game->Members->isTempBanned()))
 		&& !(isset($Member) && $Member->countryID == $msgCountryID) )
 			$msgCountryID = 0;
 
@@ -125,7 +125,7 @@ class Chatbox
 				libGameMessage::send(0, 'Game Director', '('.$User->username.'): '.$newmessage);
 			}
 		}
-		
+
 		if( isset($_REQUEST['MarkAsUnread']) )
 		{
 			$DB->sql_put("UPDATE wD_Members SET newMessagesFrom = IF( (newMessagesFrom+0) = 0,'".$msgCountryID."', CONCAT_WS(',',newMessagesFrom,'".$msgCountryID."') )
@@ -158,7 +158,7 @@ class Chatbox
 		// Print info on the user we're messaging
 		// Are we viewing another user, or the global chatbox?
 
-		$chatbox .= '<div class = "chatWrapper"><DIV class="chatbox '.(!isset($Member)?'chatboxnotabs':'').'"> 
+		$chatbox .= '<div class = "chatWrapper"><DIV class="chatbox '.(!isset($Member)?'chatboxnotabs':'').'">
 					<TABLE class="chatbox">
 					<TR class="barAlt2 membersList">
 					<TD>';
@@ -223,8 +223,8 @@ class Chatbox
 						<TD class="left send">
 							<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
 							<input type="submit" tabindex="2" class="form-submit" value="'.l_t('Send').'" name="Send" onclick="return false;" id="message-send"/><br/>
-						
-					
+
+
 					'.'
 						</TD>
 					</TR>
@@ -308,8 +308,8 @@ class Chatbox
 				// This isn't the tab I am currently viewing, and it has sent me new messages
 				$tabs .= ' '.libHTML::unreadMessages();
 			}
-			
-			// Mark as unread patch! 
+
+			// Mark as unread patch!
 			if ( $msgCountryID == $countryID and isset($_REQUEST['MarkAsUnread']))
 				$tabs .= ' '.libHTML::unreadMessages();
 
@@ -336,7 +336,7 @@ class Chatbox
 	 * @param string $msgCountryID The name of the countryID/tab which we have open
 	 * @return string The HTML for the messages we have sent/recieved
 	 */
-	function getMessages ( $msgCountryID, $limit=20 )
+	function getMessages ( $msgCountryID, $limit=50 )
 	{
 		global $DB, $User, $Member, $Game;
 
