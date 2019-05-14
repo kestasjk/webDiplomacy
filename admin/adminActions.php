@@ -737,10 +737,10 @@ class adminActions extends adminActionsForms
 		{
 			list($gameName, $pot, $potType, $varID) = $DB->sql_row("SELECT name, pot, potType, variantID FROM wD_Games WHERE id=".$gameID);
 			$logInfo = 'Game ID: '.$gameID.' was cancelled. Name: '.$gameName.', Pot: '.$pot.', Pot Type: '.$potType.', VariantID: '.$varID;
-			$tabl = $DB->sql_tabl("SELECT countryID, userID, bet FROM wD_Members WHERE gameID=".$gameID);
-			while(list($curCountryID,$curUserID,$curBet) = $DB->tabl_row($tabl))
+			$tabl = $DB->sql_tabl("SELECT countryID, userID, bet, status FROM wD_Members WHERE gameID=".$gameID);
+			while(list($curCountryID,$curUserID,$curBet,$curStatus) = $DB->tabl_row($tabl))
 			{
-				$logInfo = $logInfo . ', {CountryID: '.$curCountryID.', UserID: '.$curUserID.', Bet: '.$curBet.'}';
+				$logInfo = $logInfo . ', {CountryID: '.$curCountryID.', UserID: '.$curUserID.', Bet: '.$curBet.', Status: '.$curStatus.'}';
 			}
 			$DB->sql_put("INSERT INTO wD_AdminLog ( name, userID, time, details, params )
 									VALUES ( 'Game Cancelled', ".$User->id.", ".time().", '".$logInfo."', '' )");
@@ -836,10 +836,10 @@ class adminActions extends adminActionsForms
 			// Now backup and erase the game from existence, then commit:
 			list($gameName, $pot, $potType, $varID) = $DB->sql_row("SELECT name, pot, potType, variantID FROM wD_Games WHERE id=".$gameID);
 			$logInfo = 'Game ID: '.$gameID.' was cancelled. Name: '.$gameName.', Pot: '.$pot.', Pot Type: '.$potType.', VariantID: '.$varID;
-			$tabl = $DB->sql_tabl("SELECT countryID, userID, bet FROM wD_Members WHERE gameID=".$gameID);
-			while(list($curCountryID,$curUserID,$curBet) = $DB->tabl_row($tabl))
+			$tabl = $DB->sql_tabl("SELECT countryID, userID, bet, status FROM wD_Members WHERE gameID=".$gameID);
+			while(list($curCountryID,$curUserID,$curBet,$curStatus) = $DB->tabl_row($tabl))
 			{
-				$logInfo = $logInfo . ', {CountryID: '.$curCountryID.', UserID: '.$curUserID.', Bet: '.$curBet.'}';
+				$logInfo = $logInfo . ', {CountryID: '.$curCountryID.', UserID: '.$curUserID.', Bet: '.$curBet.', Status: '.$curStatus.'}';
 			}
 			$DB->sql_put("INSERT INTO wD_AdminLog ( name, userID, time, details, params )
 									VALUES ( 'Game Cancelled', ".$User->id.", ".time().", '".$logInfo."', '' )");
