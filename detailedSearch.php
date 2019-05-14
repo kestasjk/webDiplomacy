@@ -767,6 +767,8 @@ else if ($tab == 'GameSearch')
 
 		$sqlCounter = "SELECT count(1) FROM wD_Games g WHERE 1 = 1";
 
+		$parenAdd = False;
+
 		if ($gamename)
 		{
 			$gamename = strip_tags(html_entity_decode(trim($gamename)));
@@ -785,6 +787,7 @@ else if ($tab == 'GameSearch')
 				$sql = $sql." and ( trim(g.name) like '".$gamename."%'";
 				$sqlCounter = $sqlCounter." and ( trim(g.name) like '".$gamename."%'";
 			}
+			$parenAdd = True;
 		}
 		if ($gamename2 && $gamename != '')
 		{
@@ -825,7 +828,7 @@ else if ($tab == 'GameSearch')
 			}
 		}
 
-		if ($gamename != '')
+		if ($parenAdd)
 		{
 			$sql = $sql." ) ";
 			$sqlCounter = $sqlCounter." ) ";
