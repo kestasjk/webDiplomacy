@@ -443,7 +443,7 @@ class processGame extends Game
 
 		if( count($nmrs) > 0 )
 		{
-			if ($this->phaseMinutes < 60)
+			if ($this->phaseMinutes > 60)
 			{
 				// Insert a Missed Turn for anyone who missed the turn, accounting for systemExcused and samePeriodExcused
 				$DB->sql_put("INSERT INTO wD_MissedTurns (gameID, userID, countryID, turn, bet, SCCount, forcedByMod, systemExcused, modExcused, turnDateTime, modExcusedReason, samePeriodExcused)
@@ -465,7 +465,7 @@ class processGame extends Game
 			{
 				// Insert a Missed Turn for anyone who missed the turn, accounting for systemExcused and samePeriodExcused
 				$DB->sql_put("INSERT INTO wD_MissedTurns (gameID, userID, countryID, turn, bet, SCCount, forcedByMod, systemExcused, modExcused, turnDateTime, modExcusedReason, samePeriodExcused)
-						SELECT m.gameID, m.userID, m.countryID, ".$this->turn." as turn, m.bet, m.supplyCenterNo, 0, CASE WHEN excusedMissedTurns > 0 THEN 1 ELSE 0 END, 0,".time().",'', 1
+						SELECT m.gameID, m.userID, m.countryID, ".$this->turn." as turn, m.bet, m.supplyCenterNo, 0, CASE WHEN excusedMissedTurns > 0 THEN 1 ELSE 0 END, 0,".time().",'', 0
 						FROM wD_Members m
 						WHERE m.id IN ( ".implode(',',$nmrs).")");
 			}
