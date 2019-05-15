@@ -355,8 +355,11 @@ if( defined("INBOARD") )
 }
 else
 {
-	print '<h2 class="modToolsHeadings">'.l_t('Emergency Actions').'</h2>';
-	adminActionsLayout::printActionShortcuts();
+	if($User->type['Admin'])
+	{
+		print '<h2 class="modToolsHeadings">'.l_t('Emergency Actions').'</h2>';
+		adminActionsLayout::printActionShortcuts();
+	}
 
 	if ( $User->type['Admin'] )
 		$adminActions = new adminActionsRestricted();

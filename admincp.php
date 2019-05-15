@@ -104,7 +104,11 @@ print '<div class="content">';
 
 function adminCPTabs()
 {
-	$tabs = array(
+	global $User;
+	
+	if ($User->type['Admin'])
+	{
+		$tabs = array(
 			'Control Panel'=>l_t('Perform admin tasks'),
 			// 'Mod notes'=>l_t('Notes/reports left for/by the mod team'),
 			'Status Info'=>l_t('View server status lists'),
@@ -114,6 +118,19 @@ function adminCPTabs()
 			'AccessLog'=>l_t('Check the user-actions sort by IP and Username.'),
 			'Locales'=>l_t('Locale management')
 		);
+	}
+	else
+	{
+		$tabs = array(
+			'Control Panel'=>l_t('Perform admin tasks'),
+			// 'Mod notes'=>l_t('Notes/reports left for/by the mod team'),
+			'Status Info'=>l_t('View server status lists'),
+			'Logs'=>l_t('Log of recent admin tasks'),
+			'Multi-accounts'=>l_t('Multi-account detector'),
+			'Chatlogs'=>l_t('Check the ingame chat.'),
+			'AccessLog'=>l_t('Check the user-actions sort by IP and Username.')
+		);
+	}
 
 	$tab = 'Control Panel';
 	$tabNames = array_keys($tabs);
