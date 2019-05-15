@@ -247,21 +247,27 @@ class panelGame extends Game
 		return $buf;
 	}
 
-	function gameVariants() {
+	function gameVariants() 
+	{
 		$alternatives=array();
 		if( $this->variantID!=1 )
 			$alternatives[]=$this->Variant->link();
+
 		if( $this->pressType=='NoPress')
-			$alternatives[]=l_t('No in-game messaging');
+			$alternatives[]=l_t('No messaging');
 		elseif( $this->pressType=='RulebookPress')
 			$alternatives[]=l_t('Rulebook press');
 		elseif( $this->pressType=='PublicPressOnly' )
 			$alternatives[]=l_t('Public messaging only');
+
 		if( $this->anon=='Yes' )
 			$alternatives[]=l_t('Anonymous players');
+
 		$alternatives[]=$this->Scoring->longName();
+
 		if( $this->drawType=='draw-votes-hidden')
 			$alternatives[]=l_t('Hidden draw votes');
+			
 		if( $this->missingPlayerPolicy=='Wait' )
 			$alternatives[]=l_t('Wait for orders');
 
@@ -280,23 +286,24 @@ class panelGame extends Game
 	 */
 	function gameHoursPerPhase()
 	{
-		$buf = l_t('<strong>%s</strong> /phase',libTime::timeLengthText($this->phaseMinutes*60)).
-			' <span class="gameTimeHoursPerPhaseText">(';
+		$buf = l_t('<strong>%s</strong> /phase',libTime::timeLengthText($this->phaseMinutes*60));
+			// <span class="gameTimeHoursPerPhaseText">(';
 
-		if ( $this->isLiveGame() )
-			$buf .= l_t('live');
-		elseif ( $this->phaseMinutes < 6*60 )
-			$buf .= l_t('very fast');
-		elseif ( $this->phaseMinutes < 16*60 )
-			$buf .= l_t('fast');
-		elseif ( $this->phaseMinutes < 36*60 )
-			$buf .= l_t('normal');
-		elseif ( $this->phaseMinutes < 3*24*60 )
-			$buf .= l_t('slow');
-		else
-			$buf .= l_t('very slow');
+		// if ( $this->isLiveGame() )
+		// 	$buf .= l_t('live');
+		// elseif ( $this->phaseMinutes < 6*60 )
+		// 	$buf .= l_t('very fast');
+		// elseif ( $this->phaseMinutes < 16*60 )
+		// 	$buf .= l_t('fast');
+		// elseif ( $this->phaseMinutes < 36*60 )
+		// 	$buf .= l_t('normal');
+		// elseif ( $this->phaseMinutes < 3*24*60 )
+		// 	$buf .= l_t('slow');
+		// else
+		// 	$buf .= l_t('very slow');
 
-		return $buf .')</span>';
+		return $buf ;
+		// .')</span>';
 	}
 
 	/**
@@ -444,7 +451,7 @@ class panelGame extends Game
 
 			if ($this->minimumReliabilityRating > 0 && $User->type['User'])
 			{
-				$buf .= l_t('Minimum Reliability Rating: <span class="%s">%s%%</span>.<br/>',
+				$buf .= l_t('Required Reliability: <span class="%s">%s%%</span><br/>',
 					($User->reliabilityRating < $this->minimumReliabilityRating ? 'Austria' :'Italy'),
 					($this->minimumReliabilityRating));
 			}

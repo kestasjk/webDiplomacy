@@ -68,7 +68,8 @@ class adminActionsForum extends adminActions
 		adminActions::$actions = array_merge(adminActions::$actions, $forumActions);
 	}
 	
-	private static function setNextActivePostSilence($silenceID) {
+	private static function setNextActivePostSilence($silenceID) 
+	{
 		global $DB;
 		
 		/*
@@ -83,10 +84,13 @@ class adminActionsForum extends adminActions
 			SELECT silence.id 
 			FROM wD_Silences silence 
 			WHERE silence.postID = ".$silence->postID." AND NOT silence.id = ".$silence->id);
-		while(list($potentialSilenceID) = $DB->tabl_row($tabl)) {
+
+		while(list($potentialSilenceID) = $DB->tabl_row($tabl)) 
+		{
 			$potentialSilence = new Silence($potentialSilenceID);
 			
-			if( $potentialSilence->isEnabled() ) {
+			if( $potentialSilence->isEnabled() ) 
+			{
 				$DB->sql_put("
 					UPDATE wD_ForumMessages 
 					SET silenceID = ".$silenceID."
@@ -95,7 +99,6 @@ class adminActionsForum extends adminActions
 			}
 		}
 		
-		
 		// Find replacement silences for the thread
 		$tabl = $DB->sql_tabl("
 			SELECT thread.id, silence.id 
@@ -103,10 +106,13 @@ class adminActionsForum extends adminActions
 			INNER JOIN wD_ForumMessages response ON response.toID = thread.id
 			INNER JOIN wD_Silences silence ON silence.id = response.silenceID
 			WHERE thread.silenceID = ".$silenceID." AND silence.id = ".$silenceID);
-		while(list($threadID, $potentialSilenceID) = $DB->tabl_row($tabl)) {
+
+		while(list($threadID, $potentialSilenceID) = $DB->tabl_row($tabl)) 
+		{
 			$potentialSilence = new Silence($potentialSilenceID);
 			
-			if( $potentialSilence->isEnabled() ) {
+			if( $potentialSilence->isEnabled() ) 
+			{
 				$DB->sql_put("
 					UPDATE wD_ForumMessages 
 					SET silenceID = ".$silenceID."
@@ -115,25 +121,27 @@ class adminActionsForum extends adminActions
 			}
 		}
 	}
-	private static function setNextActiveUserSilence($silenceID) {
+	private static function setNextActiveUserSilence($silenceID) 
+	{
 		global $DB;
 		$silence = new Silence($silenceID);
 		if( !$silence->userID ) return;
 		
 		$SilencedUser = new User($silence->userID);
-		foreach($SilencedUser->getSilences() as $potentialSilence) {
-			
+		foreach($SilencedUser->getSilences() as $potentialSilence) 
+		{
 			if( $potentialSilence->id == $silenceID ) continue;
 			
-			if( $potentialSilence->isEnabled() ) {
+			if( $potentialSilence->isEnabled() ) 
+			{
 				$SilencedUser->silenceID = $potentialSilence->id;
 				$DB->sql_put("UPDATE wD_Users SET silenceID = ".$potentialSilence->id." WHERE id = ".$SilencedUser->id);
 				break; // Only one active silence is needed
 			}
 		}
 	}
-	public function disableSilence(array $params) {
-		
+	public function disableSilence(array $params) 
+	{
 		$silence = new Silence($params['silenceID']);
 		$silence->disable();
 		
@@ -147,15 +155,15 @@ class adminActionsForum extends adminActions
 		
 		return l_t('%s disabled.',$silence->toString());
 	}
-	public function disableSilenceConfirm(array $params) {
-
+	public function disableSilenceConfirm(array $params) 
+	{
 		$silence = new Silence($params['silenceID']);
 		
 		return l_t('Are you sure you want to disable this silence:').' <b>'.$silence->toString().'</b>?';
 	}
 	
-	public function changeSilenceLength(array $params) {
-		
+	public function changeSilenceLength(array $params) 
+	{
 		$silence = new Silence($params['silenceID']);
 		
 		$previousLength = $silence->length;
@@ -163,15 +171,16 @@ class adminActionsForum extends adminActions
 		// This function will validate the given length and check that it's not a post silence
 		$silence->changeLength($params['length']);
 		
-		if( !$silence->isEnabled() ) {
+		if( !$silence->isEnabled() ) 
+		{
 			// Don't look for changes to posts, because they will not be affected by length changes
 			self::setNextActiveUserSilence($silence->id);
 		}
 		
 		return l_t('%s changed from <i>%s</i> to <i>%s</i>.',$silence->toString(),Silence::printLength($previousLength),Silence::printLength($silence->length));
 	}
-	public function changeSilenceLengthConfirm(array $params) {
-
+	public function changeSilenceLengthConfirm(array $params) 
+	{
 		$silence = new Silence($params['silenceID']);
 		
 		if( $params['length'] < 0 ) 
@@ -182,20 +191,23 @@ class adminActionsForum extends adminActions
 			Silence::printLength($params['length']),$silence->toString());
 	}
 	
-	private static function checkSilenceParams(array $params) {
+	private static function checkSilenceParams(array $params) 
+	{
 		global $DB;
 		
-		if( strlen($params['reason']) < 10 )
-			throw new Exception(l_t("Please give a reason longer than 10 characters."));
+		if( strlen($params['reason']) < 5 )
+			throw new Exception(l_t("Please give a reason longer than 5 characters."));
 		
-		if( isset($params['userID']) ) {
+		if( isset($params['userID']) ) 
+		{
 			$SilencedUser = new User((int)$params['userID']);
 			
 			if( $params['length'] < 0 )
 				throw new Exception(l_t("Length in days must be greater than 0."));
 		}
 		
-		if( isset($params['postID']) ) {
+		if( isset($params['postID']) ) 
+		{
 			list($threadsFound) = $DB->sql_row("SELECT COUNT(*) FROM wD_ForumMessages WHERE id = ".$params['postID']);
 			if( $threadsFound == 0 )
 				throw new Exception(l_t("Thread ID # %s does not exist.",$params['postID']));
