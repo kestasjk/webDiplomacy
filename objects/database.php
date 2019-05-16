@@ -247,13 +247,13 @@ class Database {
 			'Slowest query'=>$this->slowestQuery
 		);
 
-		$buf .= '<table>';
+		$buf .= '<table class = "footerMax">';
 		foreach($stats as $name=>$val)
 			$buf .= '<tr><td>'.l_t($name).':</td><td>'.$val.' sec</td></tr>';
 		$buf .= '</table>';
 
-		$buf .= '<p><strong>'.l_t('Bad queries:').'</strong></p>';
-		$buf .= '<table>';
+		$buf .= '<p class = "footerMax"><strong>'.l_t('Bad queries:').'</strong></p>';
+		$buf .= '<table class = "footerMax">';
 		foreach($this->badQueries as $pair)
 			$buf .= '<tr><td style="width:5%">'.$pair[0].' sec</td><td>'.$pair[1].'</td></tr>';
 		$buf .= '</table>';

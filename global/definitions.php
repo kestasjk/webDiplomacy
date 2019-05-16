@@ -24,7 +24,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-define("VERSION", 151);
+define("VERSION", 152);
 
 // Some integer values which are named for clarity.
 
@@ -47,7 +47,7 @@ define("CSSDIR", 'css');
 
 //Increment these versions whenever you update any js or css files for cachebusting
 define("JSVERSION",1.2);
-define("CSSVERSION",1.10);
+define("CSSVERSION",1.15);
 
 if( !defined('FACEBOOK') )
 	define('FACEBOOK',false);

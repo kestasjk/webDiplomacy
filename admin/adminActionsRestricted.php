@@ -195,6 +195,25 @@ class adminActionsRestricted extends adminActionsForum
 				'name' => 'Recalculate reliability ratings',
 				'description' => 'Updates the reliability ratings for all users.',
 				'params' => array()
+			),
+			'resetLastProcessTime' => array(
+				'name' => 'Reset last process time',
+				'description' => 'Once the reason for the period of no processing is known, and it\'s safe to reenable
+					game processing, the last process time can be reset here.<br />
+					<em>Only a dev</em> should run this function after they ensure the issue has been fixed.',
+				'params' => array(),
+			),
+			'banIP' => array(
+				'name' => 'Ban an IP',
+				'description' => 'Bans a certain IP address.<br />
+					Note: Doesn\'t work.',
+				'params' => array('IP'=>'IP address (xxx.xxx.xxx.xxx)'),
+			),
+			'unCrashGames' => array(
+				'name' => 'Uncrash games',
+				'description' => 'Uncrashes all crashed games except the games specified (if any).<br />
+					<em>ONLY A DEV</em> should run this function. The reason for the crash needs to be found out before the games are uncrashed.',
+				'params' => array('excludeGameIDs'=>'Except Game ID list'),
 			)
 		);
 
@@ -686,7 +705,8 @@ class adminActionsRestricted extends adminActionsForum
 		libGameMaster::updateReliabilityRating(true);
 		return l_t("Reliability Ratings have been recalculated");
 	}
-	private function makeDonatorType(array $params, $type='') {
+	private function makeDonatorType(array $params, $type='') 
+	{
 		global $DB;
 
 		$userID = (int)$params['userID'];
@@ -715,6 +735,87 @@ class adminActionsRestricted extends adminActionsForum
 	public function makeDonatorBronze(array $params)
 	{
 		return $this->makeDonatorType($params,'Bronze');
+	}
+	public function banIP(array $params)
+	{
+		User::banIP(ip2long($ip));
+	}
+	public function resetLastProcessTime(array $params)
+	{
+		global $Misc;
+
+		$Misc->LastProcessTime = time();
+		$Misc->write();
+
+		return l_t('Last process time reset');
+	}
+	public function unCrashGames(array $params)
+	{
+		global $DB;
+
+		require_once(l_r('gamemaster/game.php'));
+
+		$excludeGameIDs = explode(',', $params['excludeGameIDs']);
+
+		foreach($excludeGameIDs as $index=>$gameID)
+		{
+			$gameID = (int)$gameID;
+			$excludeGameIDs[$index] = $gameID;
+		}
+		$excludeGameIDs = implode(',', $excludeGameIDs);
+
+		$tabl = $DB->sql_tabl(
+			"SELECT * FROM wD_Games WHERE processStatus = 'Crashed' ".( $excludeGameIDs ? "AND id NOT IN (".$excludeGameIDs.")" : "" )." FOR UPDATE"
+		);
+		$count=0;
+		while($row=$DB->tabl_hash($tabl))
+		{
+			$count++;
+
+			$Variant=libVariant::loadFromVariantID($row['variantID']);
+			$Game = $Variant->processGame($row);
+
+			if( $Game->phase == 'Finished' )
+			{
+				$DB->sql_put("UPDATE wD_Games SET processStatus = 'Not-processing', pauseTimeRemaining=NULL, processTime = ".time()." WHERE id = ".$Game->id);
+				continue;
+			}
+
+			if ( $Game->phaseMinutes < 12*60 )
+			{
+				if( $Game->phase == 'Pre-game' )
+				{
+					$newTimeDetails = "";
+					$DB->sql_put("UPDATE wD_Games SET processStatus = IF(pauseTimeRemaining IS NULL,'Not-processing','Paused') WHERE id = ".$Game->id);
+				}
+				else
+				{
+					$newTimeDetails = l_t(", and the game has been paused, since it's a fast game, to give players a chance to regroup");
+					$Game->processStatus = 'Not-processing';
+					$Game->togglePause();
+				}
+			}
+			else
+			{
+				$newTimeDetails = l_t(", and the game's next process time has been reset");
+				$DB->sql_put("UPDATE wD_Games SET processStatus = 'Not-processing', processTime = ".time()." + 60*phaseMinutes, pauseTimeRemaining=NULL WHERE id = ".$Game->id);
+			}
+
+			$Game->Members->send('No',l_t("This game has been uncrashed%s. Thanks for your patience.",$newTimeDetails));
+		}
+
+		/* Simpler, but doesn't accomodate live games well
+		$DB->sql_put(
+			"UPDATE wD_Games SET processStatus = 'Not-processing', processTime = ".time()." + 60*phaseMinutes
+			WHERE AND processStatus = 'Crashed' ".( $excludeGameIDs ? "AND id NOT IN (".$excludeGameIDs.")" : "" )
+		);*/
+
+		$details = l_t('All crashed games were un-crashed');
+		if ( $excludeGameIDs )
+			$details .= l_t(', except: %s',$excludeGameIDs);
+		$details .= l_t('. %s games in total.',$count);
+
+		return $details;
 	}
 }
 
