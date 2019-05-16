@@ -312,30 +312,28 @@ if($User->type['Moderator'])
 	{
 		$modActions[] = libHTML::admincpType('Game',$Game->id);
 
-		$modActions[] = libHTML::admincp('drawGame',array('gameID'=>$Game->id), l_t('Draw game'));
+		$modActions[] = libHTML::admincp('resetMinimumBet',array('gameID'=>$Game->id), l_t('Reset Min Bet'));
 		$modActions[] = libHTML::admincp('togglePause',array('gameID'=>$Game->id), l_t('Toggle pause'));
 		if($Game->processStatus=='Not-processing')
 		{
 			$modActions[] = libHTML::admincp('setProcessTimeToNow',array('gameID'=>$Game->id), l_t('Process now'));
-			$modActions[] = libHTML::admincp('setProcessTimeToPhase',array('gameID'=>$Game->id), l_t('Process one phase length from now'));
+			$modActions[] = libHTML::admincp('setProcessTimeToPhase',array('gameID'=>$Game->id), l_t('Reset Phase'));
 		}
 
 		if($User->type['Admin'])
 		{
 			if($Game->processStatus == 'Crashed')
 				$modActions[] = libHTML::admincp('unCrashGames',array('excludeGameIDs'=>''), l_t('Un-crash all crashed games'));
-
-			$modActions[] = libHTML::admincp('reprocessGame',array('gameID'=>$Game->id), l_t('Reprocess game'));
 		}
 
 		if( $Game->phase!='Pre-game' && !$Game->isMemberInfoHidden() )
 		{
 			$userIDs=implode('%2C',array_keys($Game->Members->ByUserID));
-			$modActions[] = '<br />'.l_t('Multi-check:');
+			$modActions[] = '<br /></br>'.l_t('Multi-check:');
 			foreach($Game->Members->ByCountryID as $countryID=>$Member)
 			{
-				$modActions[] = '<a href="admincp.php?tab=Multi-accounts&aUserID='.$Member->userID.'&bUserIDs='.$userIDs.'" class="light">'.
-					$Member->memberCountryName().'</a>';
+				$modActions[] = '<a href="admincp.php?tab=Multi-accounts&aUserID='.$Member->userID.'" class="light">'.
+					$Member->memberCountryName().'('.$Member->username.')</a>';
 			}
 		}
 	}
