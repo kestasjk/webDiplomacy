@@ -15,7 +15,8 @@ div.content-title-header {
 	max-width: 800px;
 	text-align: center;
 	margin-left:auto; 
-  margin-right:auto;
+	margin-right:auto;
+	word-break: break-word;
 }
 div.pageTitle, .boardHeader .gameName {
     text-shadow: #999999 1px 1px 1px;
