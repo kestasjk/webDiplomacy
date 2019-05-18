@@ -149,35 +149,35 @@ if ($tab == 'My games')
 {
 	if($User->type['User'])
 	{
-		$SQL = "SELECT g.* FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
+		$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
 			WHERE g.phase <> 'Finished' AND m.userID = ".$User->id;
 		$totalResults = $GamesMine;
 	}
 	else
 	{
-		$SQL = "SELECT * FROM wD_Games WHERE phase <> 'Pre-game' AND phase <> 'Finished'";
+		$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished'";
 		$totalResults = $GamesActive;
 	}
 }
 elseif ($tab == 'New')
 {
-	$SQL = "SELECT * FROM wD_Games WHERE phase = 'Pre-game'";
+	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase = 'Pre-game'";
 	$totalResults = $GamesNew;
 }
 elseif ($tab == 'Open Positions')
 {
-	$SQL = "SELECT * FROM wD_Games WHERE phase <> 'Pre-game' AND phase <> 'Finished'
-		AND minimumBet IS NOT NULL AND password IS NULL AND gameOver = 'No'";
+	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished'
+		AND g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No'";
 	$totalResults = $GamesOpen;
 }
 elseif ($tab == 'Active')
 {
-	$SQL = "SELECT * FROM wD_Games WHERE phase <> 'Pre-game' AND phase <> 'Finished'";
+	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished'";
 	$totalResults = $GamesActive;
 }
 elseif ($tab == 'Finished')
 {
-	$SQL = "SELECT * FROM wD_Games WHERE phase = 'Finished'";
+	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase = 'Finished'";
 	$totalResults = $GamesFinished;
 }
 else
@@ -415,8 +415,8 @@ else
 	{
 		if($_REQUEST['seeJoinable'] == 'yes')
 		{
-			$SQL .= " AND g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No' AND g.phase <> 'Pre-game' AND id NOT IN (SELECT m1.gameID FROM wD_Members m1 WHERE m1.userID = ". $User->id .")";
-			$SQLCounter .= " AND g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No' AND g.phase <> 'Pre-game' AND id NOT IN (SELECT m1.gameID FROM wD_Members m1 WHERE m1.userID = ". $User->id .")";
+			$SQL .= " AND g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No' AND g.phase <> 'Pre-game' AND g.id NOT IN (SELECT m1.gameID FROM wD_Members m1 WHERE m1.userID = ". $User->id .")";
+			$SQLCounter .= " AND g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No' AND g.phase <> 'Pre-game' AND g.id NOT IN (SELECT m1.gameID FROM wD_Members m1 WHERE m1.userID = ". $User->id .")";
 		}
 	}
 	if(isset($_REQUEST['privacy']))
@@ -923,8 +923,8 @@ else
 	{
 		if((int)$_REQUEST['betMax'] <> 0)
 		{
-			$SQL .= " AND (SELECT m2.bet FROM wD_Members m2 WHERE m2.gameID = g.id AND m2.bet > 0 LIMIT 1) <= ". (int)$_REQUEST['betMax'];
-			$SQLCounter .= " AND (SELECT m2.bet FROM wD_Members m2 WHERE m2.gameID = g.id AND m2.bet > 0 LIMIT 1) <= ". (int)$_REQUEST['betMax'];
+			$SQL .= " AND (SELECT m3.bet FROM wD_Members m3 WHERE m3.gameID = g.id AND m3.bet > 0 LIMIT 1) <= ". (int)$_REQUEST['betMax'];
+			$SQLCounter .= " AND (SELECT m3.bet FROM wD_Members m3 WHERE m3.gameID = g.id AND m3.bet > 0 LIMIT 1) <= ". (int)$_REQUEST['betMax'];
 		}
 	}
 	if(isset($_REQUEST['messageNorm']))
@@ -963,14 +963,14 @@ else
 
 if($User->type['User'] && $tab <> 'My games' && $tab <> 'Search' && $tab <> 'Finished' && $tab <> 'Active')
 {
-	$SQL = $SQL . " AND id NOT IN (SELECT m1.gameID FROM wD_Members m1 WHERE m1.userID = ". $User->id .")";
+	$SQL = $SQL . " AND g.id NOT IN (SELECT m1.gameID FROM wD_Members m1 WHERE m1.userID = ". $User->id .")";
 }
 
 $SQL = $SQL . " ORDER BY ";
-if (($tab == 'My Games' && $User->type['User']) || ($tab == 'Search' && $sortCol <> 'watchedGames' && $sortCol <> 'processTime' && $sortCol <> 'minimumBet')) {$SQL .= "g.";}
+if ($sortCol <> 'watchedGames' && $sortCol <> 'processTime' && $sortCol <> 'minimumBet') {$SQL .= "g.";}
 $ordering = $sortCol;
 if ($sortCol == 'processTime') {$ordering = "(CASE WHEN g.processStatus = 'Paused' THEN (g.pauseTimeRemaining + ".time().") ELSE g.processTime END)";}
-elseif ($sortCol == 'minimumBet') {$ordering = "(SELECT m2.bet FROM wD_Members m2 WHERE m2.gameID = g.id AND m2.bet > 0 LIMIT 1)";}
+elseif ($sortCol == 'minimumBet') {$ordering = "(SELECT m4.bet FROM wD_Members m4 WHERE m4.gameID = g.id AND m4.bet > 0 LIMIT 1)";}
 $SQL = $SQL . $ordering." ".$sortType." ";
 $SQL = $SQL . " Limit ". ($resultsPerPage * ($pagenum - 1)) . "," . $resultsPerPage .";";
 

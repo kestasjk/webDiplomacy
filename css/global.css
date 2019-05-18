@@ -1036,8 +1036,19 @@ input[type=submit].gameCreate:hover {
 }
 
 input[type=checkbox].gameCreate {
+	-webkit-appearance: none;
+  -moz-appearance: none;
+  -o-appearance: none;
+	background-color: white;
+	box-shadow: 0px 0px 0px 1px rgba(100,100,100,1);
 	width: 18px;
 	height: 18px;
+}
+
+input[type=checkbox].gameCreate:checked:after {
+  content: "\2714";
+	font-size: 18px;
+	position: absolute;
 }
 
 /* The Modal (background) */
