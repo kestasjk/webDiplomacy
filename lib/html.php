@@ -792,14 +792,14 @@ class libHTML
 					<div id="navSubMenu" class="clickable nav-tab">Search ▼
                         <div id="nav-drop">
 							<a href="profile.php">Find User</a>
-							<a href="gamelistings.php?page-games=1&gamelistType=Search">Game Search</a>
+							<a href="gamelistings.php?gamelistType=Search">Game Search</a>
 							<a href="detailedSearch.php" title="advanced search of users and games">Advanced Search</a>
 						</div>
 					</div>
 					<div id="navSubMenu" class="clickable nav-tab">Games ▼
                         <div id="nav-drop">
-							<a href="gamelistings.php?page-games=1&gamelistType=New" title="Game listings; a searchable list of the games on this server">New Games</a>
-							<a href="gamelistings.php?page-games=1&gamelistType=Joinable" title="Open positions dropped by other players, free to claim">Open Positions</a>
+							<a href="gamelistings.php?gamelistType=New" title="Game listings; a searchable list of the games on this server">New Games</a>
+							<a href="gamelistings.php?gamelistType=Open%20Positions" title="Open positions dropped by other players, free to claim">Open Positions</a>
 							<a href="gamecreate.php" title="Start up a new game">Create a New Game</a>
 							<a href="https://sites.google.com/view/webdipinfo/ghost-ratings" target=_blank title="Ghost Ratings (external site)">Ghost Ratings</a>
 							<a href="tournaments.php" title="Information about tournaments on webDiplomacy">Tournaments</a>
@@ -852,7 +852,7 @@ class libHTML
 					{
 						$menu.='<a href="adminInfo.php">Admin Info</a>';
 					}
-					
+
 					$menu.=' </div>
 					</div>';
 				}

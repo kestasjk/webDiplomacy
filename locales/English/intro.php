@@ -47,9 +47,9 @@ lots of people pick them up just by playing, but this document will familiarize 
 <h3>RR</h3>
 <p>
 The first is our “Reliability Rating” (RR); this ranking is determined based on how often you fail to enter
- moves in a turn (NMR/No Moves Received) or leave a game before it’s conclusion (CD/Civil Disorder). Most tournaments, special rules games, 
- or high stakes games have RR restrictions; meaning if you leave games often or irresponsibly forget to enter 
- moves frequently you may find it hard to join competitive games. 
+ moves in a turn (NMR/No Moves Received) or leave a game before it’s conclusion (CD/Civil Disorder). Most tournaments, special rules games,
+ or high stakes games have RR restrictions; meaning if you leave games often or irresponsibly forget to enter
+ moves frequently you may find it hard to join competitive games.
 <br /><br />
 
 <div class="hr"></div>
@@ -57,11 +57,11 @@ The first is our “Reliability Rating” (RR); this ranking is determined based
 <a name="Points"></a>
 <h3>Points</h3>
 <p>
-The second system is our point system (<img src="images/icons/points.png" alt="D" title="webDiplomacy points">), which is used to determine how many 
-games you can join and what stakes the game will be. You start with 100 <img src="images/icons/points.png" alt="D" title="webDiplomacy points"> and are 
-reimbursed whenever a loss of points results in you having less than 100 <img src="images/icons/points.png" alt="D" title="webDiplomacy points">. 
-Points are fun and provide a tangible reward for winning but are far less important to your 
-ability to play fun and enthralling games on webDiplomacy. Many of our tournaments are unranked, 
+The second system is our point system (<img src="images/icons/points.png" alt="D" title="webDiplomacy points">), which is used to determine how many
+games you can join and what stakes the game will be. You start with 100 <img src="images/icons/points.png" alt="D" title="webDiplomacy points"> and are
+reimbursed whenever a loss of points results in you having less than 100 <img src="images/icons/points.png" alt="D" title="webDiplomacy points">.
+Points are fun and provide a tangible reward for winning but are far less important to your
+ability to play fun and enthralling games on webDiplomacy. Many of our tournaments are unranked,
 and those that aren’t are usually willing to play at lower <img src="images/icons/points.png" alt="D" title="webDiplomacy points"> levels for players with very high Reliability Ratings.
 <br /><br />
 
@@ -213,7 +213,7 @@ You can recognize the supply centers with the markers which are placed on them.<
 	With these rules you know everything you need to start playing Diplomacy online! After you
 	<a href="register.php" class="light">register</a> a user account you can
 	<a href="gamecreate.php" class="light">create a game</a>
-	and <a href="gamelistings.php?page-games=1&gamelistType=New" class="light">join existing games</a>.
+	and <a href="gamelistings.php?gamelistType=New" class="light">join existing games</a>.
 	<p style="text-align:center;">
 		<img src="<?php print STATICSRV; ?>datc/maps/812-large.map-thumb" alt=" "
 				title="Because Prussia is support-holding the fleet in the Baltic Sea the equally supported move to the Baltic Sea from Livonia fails: This allows the fleet in the Baltic Sea to successfully convoy an army from Berlin to Sweden"  />

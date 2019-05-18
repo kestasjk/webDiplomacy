@@ -46,9 +46,9 @@ if( !isset($_SESSION['lastSeenHome']) || $_SESSION['lastSeenHome'] < $User->time
 global $DB;
 $gameToggleID = 0;
 
-if(isset($_POST['submit'])) 
+if(isset($_POST['submit']))
 {
-	if(isset($_POST['gameToggleName'])) 
+	if(isset($_POST['gameToggleName']))
 	{
 		$gameToggleID = (int)$_POST['gameToggleName'];
 	}
@@ -270,7 +270,7 @@ class libHome
 
 		return $buf;
 	}
-	
+
 
 	static public function gameWatchBlock ()
 	{
@@ -306,7 +306,7 @@ class libHome
 	{
 		global $User, $DB;
 
-                if ($User->options->value['displayUpcomingLive'] == 'No') return ''; 
+                if ($User->options->value['displayUpcomingLive'] == 'No') return '';
 
 		$tabl=$DB->sql_tabl("SELECT g.* FROM wD_Games g
 			WHERE (g.phase = 'Pre-game' OR (g.phase in ('Diplomacy','Retreats','Builds') and g.minimumBet is not null and g.gameOver = 'No')) AND g.phaseMinutes < 60 AND g.password IS NULL
@@ -342,7 +342,7 @@ class libHome
 			$Game=$Variant->panelGameHome($game);
 
 			$buf .= $Game->summary();
-		} 
+		}
 
 		if($count==0)
 		{
@@ -380,7 +380,7 @@ class libHome
 
 			$buf .= '<div class="hr"></div>';
 			$buf .= $Game->summary();
-		} 
+		}
 
 		if($count==0)
 		{
@@ -524,23 +524,23 @@ class libHome
 		$buf .=  '<table><tr><td>'.implode('</td></tr><tr><td>',$forumNew).'</td></tr></table>';
 		return $buf;
 	}
-	
+
 	static function forumNewExtern()
 	{
 		// Select by id, prints replies and new threads
 		global $DB, $Misc;
-		
+
 		$tabl = $DB->sql_tabl("SELECT t.forum_id, f.forum_name,
-				
+
 				t.topic_id, t.topic_title, t.topic_time,
 				t.topic_views, t.topic_posts_approved,
-				
+
 				u1.webdip_user_id as topic_poster_webdip, t.topic_poster, t.topic_first_poster_name, t.topic_first_poster_colour,
-				
+
 				t.topic_last_post_id, t.topic_last_post_time,
 				u2.webdip_user_id as topic_last_poster_webdip, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_poster_colour,
 				p.post_id, p.post_text
-				
+
 				FROM phpbb_topics t
 				INNER JOIN phpbb_posts p ON p.post_id = t.topic_last_post_id
 				INNER JOIN phpbb_forums f ON f.forum_id = t.forum_id
@@ -549,26 +549,26 @@ class libHome
 				WHERE t.topic_visibility = 1 and f.forum_name <> 'Politics' and t.topic_title not like '%HIDDEN%'
 				ORDER BY t.topic_last_post_time DESC
 				LIMIT 20");
-		
+
 		$buf = '';
 		while($t = $DB->tabl_hash($tabl))
 		{
 			$buf .= '<div class="hr"></div>';
-			
+
 			$urlForum = '/contrib/phpBB3/viewforum.php?f='.$t['forum_id'];
 			$urlThread = '/contrib/phpBB3/viewtopic.php?f='.$t['forum_id'].'&t='.$t['topic_id'];
 			$urlPost = '/contrib/phpBB3/viewtopic.php?f='.$t['forum_id'].'&p='.$t['post_id'].'#p'.$t['post_id'];
-			
+
 			//topic_poster_webdip // ID
 			//topic_last_poster_webdip // ID
-			
+
 			$alt = libHTML::alternate();
 			$buf .= '<div class="homeForumGroupNew homeForumAlt'.$alt.'">';
-			
+
 			$buf .= '
 				<div class="homeForumSubject" >';
 			//$buf .= '<div style="float:right"><img src="http://127.0.0.1/images/historyicons/external.png" width="10" height="10"></div>';
-			
+
 			$buf .= '<span style=\'font-size:90%\'>'.($t['topic_posts_approved']>1?'Re: ':'New: ').'</span>'
 					.'<a href="'.$urlThread.'" style=\'font-size:110%\'>'.$t['topic_title'].'</a>';
 					$buf .= '<div style="clear:both"></div>';
@@ -577,33 +577,33 @@ class libHome
 					$buf .= 'Thread:</span> <a href="profile.php?userID='.$t['topic_poster_webdip'].'" class="light">'.$t['topic_first_poster_name'].'</a> ';
 					$buf .= '<div style="clear:both"></div></div>';
 					$buf .= '<div class="homeForumPost homeForumPostAlt'.$alt.'">';
-					
-					
+
+
 					if( $t['topic_posts_approved']>1 ) {
-						
+
 						$buf .= '<div class="" style="margin-bottom:5px;margin-left:3px; margin-right:3px;">';
 						$buf .= '<div class="homeForumPostTime" style="float:right;font-weight:bold"><em>'.libTime::text($t['topic_last_post_time']).'</em></div>';
 						$buf .= '<span style=\'color:#009902;font-size:90%\'>';
 						$buf .= 'Latest:</span> <a href="profile.php?userID='.$t['topic_last_poster_webdip'].'" class="light">'.$t['topic_last_poster_name'].'</a> '
 						.'</div>';
 					}
-					
+
 					$post = $DB->msg_escape(preg_replace("/\[[^\]]+\]/","",preg_replace("/<[^>]+>/","",$t['post_text'])));
 					$post = str_replace("\\'","'", $post);
 					$post = substr($post, 0, 75);
 					if(strlen($post) > 45) $post .= '...';
-					
+
 					$buf .= '<div><span style="font-style:italic">&quot;'.$post.'&quot;</span>';
-					
+
 					$buf .= '<div style="float:right"><a href="'.$urlPost.'">Open</a></div>';
 					$buf .= '<div style="clear:both"></div>';
-					
+
 					$buf .= '</div>';
 					$buf .= '</div>';
-					
+
 					$buf .= '<div class="" style="margin-bottom:5px;margin-left:3px; margin-right:3px;">';
-					
-					
+
+
 					$buf .= '<div style="margin-left:3px; margin-right:3px; font-size:90%">';
 					$buf .= '<div style="float:right">';
 					$buf .= l_t('<span style="color:black">%s</span> replies','<strong>'.($t['topic_posts_approved']-1).'</strong>');
@@ -611,13 +611,13 @@ class libHome
 					$buf .= '</div>';
 					$buf .= '&raquo;
 					<a href="'.$urlForum.'">'.$t['forum_name'].'</a>
-							
+
 					</div>';
 					$buf .= '</div>';
 					$buf .= '</div>';
-					
+
 		}
-		
+
 		if( $buf )
 		{
 			return $buf;
@@ -702,12 +702,12 @@ else
 
 	$liveGames = libHome::upcomingLiveGames();
 	if ($liveGames != '') {
-		print '<div class="homeHeader">'.l_t('Joinable live games').' <a href="gamelistings.php?page-games=1&gamelistType=New">'.libHTML::link().'</a></div>';
+		print '<div class="homeHeader">'.l_t('Joinable live games').' <a href="gamelistings.php?gamelistType=New">'.libHTML::link().'</a></div>';
 		print $liveGames;
 	}
-	
+
 	if( isset(Config::$customForumURL) ) { // isset($_REQUEST['HomeForumTest']) ) {
-		
+
 		print '<div class="homeHeader">'.l_t('Forum').' <a href="/contrib/phpBB3/">'.libHTML::link().'</a></div>';
 		if( file_exists(libCache::dirName('forum').'/home-forum.html') )
 		{
