@@ -233,8 +233,8 @@ if ( isset($_REQUEST['detail']) )
 				print '<div class = "profile_content">';
 				print '<p>Reliability is how consistently you avoid interrupting games. Any un-excused missed turns hurt your rating. If you have any un-excused
 				missed turns in the last 4 weeks you will receive an 11% penalty to your RR for <strong>each</strong> of those delays. It is very important 
-				to everyone you are playing with to be reliable but we understand mistakes happen so this extra penality will drop to 5% after 28 days. All of the un-excused
-				missed turns that negatively impact your rating are highlighed in red below. Excused delays will only negatively impact your base score, seen below. Mod excused
+				to everyone you are playing with to be reliable but we understand mistakes happen so this extra penalty will drop to 5% after 28 days. All of the un-excused
+				missed turns that negatively impact your rating are highlighted in red below. Excused delays will only negatively impact your base score, seen below. Mod excused
 				delays do not hurt your score in any way. 
 				</br>
 				</br>
@@ -670,6 +670,10 @@ if( $User->type['Moderator'] )
 	else
 	{
 		print '<p>Investigated: Never</p>';
+	}
+	if ($UserProfile->userIsTempBanned())
+	{
+		print '<p>Temp Ban Reason: '.$UserProfile->tempBanReason.'</p>';
 	}
 
 	if($UserProfile->qualifiesForEmergency() )

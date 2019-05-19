@@ -465,7 +465,7 @@ class processMembers extends Members
 			throw new Exception(l_t("Your Reliability Rating of %s%% is not high enough to join this game, which is restricted to %s%% RR and above.",
 				$User->reliabilityRating, $this->Game->minimumReliabilityRating));
 				
-		if ( $User->tempBan > time() )
+		if ( $User->userIsTempBanned() )
 			throw new Exception("You are blocked from joining new games.");
 
 		// We can join, the only question is how?
@@ -712,7 +712,7 @@ class processMembers extends Members
 				 * 6: 7-day
 				 * 7: 14-day
 				 * 8: 30-days
-				 * 9 or more: infinite (100 years)
+				 * 9 or more: infinite (1 year)
 				 */
 				$memberMsg.=" ".l_t("You missed %s ".(($yearlyCount == 1)?"deadline":"deadlines")
 						. " without an excuse during this year.",$yearlyCount);
@@ -726,9 +726,9 @@ class processMembers extends Members
 
 				elseif( $yearlyCount >= 9)
 				{
-					User::tempBanUser($Member->userID, 365 * 100, FALSE);
+					User::tempBanUser($Member->userID, 365, 'System', FALSE);
 					$Member->send('No','No',$memberMsg." ".l_t("Due to your unreliable behaviour "
-							. "you will be infinitely prevented from joining games. "
+							. "you will be prevented from joining games for a year. "
 							. "Contact the Mods to lift the ban."));
 				} 
 
@@ -744,7 +744,7 @@ class processMembers extends Members
 						case 8: $days = 30; break;
 					}
 					
-					User::tempBanUser($Member->userID, $days, FALSE);
+					User::tempBanUser($Member->userID, $days,'System', FALSE);
 					$Member->send('No','No',$memberMsg." ".l_t("You are temporarily banned from joining, rejoining, or making games for %s "
 							. (($days==1)?"day":"days")
 							. ". Be more reliable!", $days));	

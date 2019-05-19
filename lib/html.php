@@ -469,11 +469,32 @@ class libHTML
 
 		print self::globalNotices();
 
-		if (isset($User) && $User->tempBan > time())
+		if (isset($User) && $User->userIsTempBanned() )
 		{
-			print '<div class="content-notice">
-					<p class="notice"><br>'.l_t('You are blocked from joining, rejoining, or creating new games for %s.',libTime::remainingText($User->tempBan)).'<br><br><hr></p>
+			if ( $User->tempBanReason != 'System' && $User->tempBanReason != '')
+			{
+				print '<div class="content-notice">
+					<p class="notice"><br>You are blocked from joining, rejoining, or creating new games by the moderators for '.libTime::remainingText($User->tempBan).
+					 ' for the following reason:</br> '.$User->tempBanReason.' </br>
+					Contact the moderators at '.Config::$modEMail.' for help. If you attempt to get around this temp ban 
+					by making a new account your accounts will be banned with no chance for appeal.<br><br></p>
 				</div>';
+			}
+			else if ( ($User->tempBan - time() ) > (60*60*24*180))
+			{
+				print '<div class="content-notice">
+					<p class="notice"><br>You are blocked from joining, rejoining, or creating new games for a year because you were too unreliable. 
+					Contact the moderators at '.Config::$modEMail.' for help. If you attempt to get around this temp ban 
+					by making a new account your accounts will be banned with no chance for appeal.<br><br></p>
+				</div>';
+			}
+			else
+			{
+				print '<div class="content-notice">
+						<p class="notice"><br>You are blocked from joining, rejoining, or creating new games for '.libTime::remainingText($User->tempBan).
+						' because you were too unreliable. Contact the moderators at '.Config::$modEMail.' if you need help.<br><br></p>
+					</div>';
+			}
 		}
 
 		if ( is_object($User) && $User->type['User'] )
@@ -548,7 +569,7 @@ class libHTML
 			INNER JOIN wD_Games g ON ( m.gameID = g.id )
 			WHERE m.userID = ".$User->id."
 				AND ( ( NOT m.orderStatus LIKE '%Ready%' AND NOT m.orderStatus LIKE '%None%' AND g.phase != 'Finished' ) OR NOT ( (m.newMessagesFrom+0) = 0 ) ) ".
-				( ($User->tempBan > time()) ? "AND m.status != 'Left'" : "" ) // ingore left games of temp banned user who are banned from rejoining
+				( ($User->userIsTempBanned()) ? "AND m.status != 'Left'" : "" ) // ignore left games of temp banned user who are banned from rejoining
 				." ORDER BY  g.processStatus ASC, g.processTime ASC");
 		$gameIDs = array();
 		$notifyGames = array();
