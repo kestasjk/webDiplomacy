@@ -83,14 +83,21 @@ if($User->type['User'] )
 	list($GamesNewUser) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
 		WHERE g.phase = 'Pre-game' AND m.userID = ".$User->id);
 	list($GamesOpenUser) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
-		WHERE g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No' AND g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND m.userID = ".$User->id);
+		WHERE g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No' AND g.phase <> 'Pre-game' AND g.phase <> 'Finished'
+		AND m.userID = ".$User->id." AND ".$User->points." >= g.minimumBet AND ".$User->reliabilityRating." >= g.minimumReliabilityRating".($User->userIsTempBanned() ? " AND 0=1" : " "));
 	list($GamesMine) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
 		WHERE g.phase <> 'Finished' AND m.userID = ".$User->id);
+	list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE minimumBet IS NOT NULL AND password IS NULL AND gameOver = 'No'
+		AND phase <> 'Pre-game' AND phase <> 'Finished'
+		AND ".$User->points." >= minimumBet AND ".$User->reliabilityRating." >= minimumReliabilityRating".($User->userIsTempBanned() ? " AND 0=1" : " "));
+}
+else
+{
+	list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE minimumBet IS NOT NULL AND password IS NULL AND gameOver = 'No'
+		AND phase <> 'Pre-game' AND phase <> 'Finished'");
 }
 list($GamesNew) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Pre-game'");
 list($GamesActive) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase <> 'Pre-game' AND phase <> 'Finished'");
-list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE minimumBet IS NOT NULL AND password IS NULL AND gameOver = 'No'
-	AND phase <> 'Pre-game' AND phase<> 'Finished'");
 list($GamesFinished) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Finished'");
 
 $GamesNew -= $GamesNewUser;
@@ -168,6 +175,10 @@ elseif ($tab == 'Open Positions')
 {
 	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished'
 		AND g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No'";
+		if($User->type['User'])
+		{
+			$SQL .= " AND ".$User->points." >= g.minimumBet AND ".$User->reliabilityRating." >= g.minimumReliabilityRating".($User->userIsTempBanned() ? " AND 0=1" : " ");
+		}
 	$totalResults = $GamesOpen;
 }
 elseif ($tab == 'Active')
@@ -206,8 +217,10 @@ else
 				<option'.(($_REQUEST['userGames']=='include') ? ' selected="selected"' : '').' value="include">My Games</option>
 			</select></p>
 			<p>Joinable Games: <select class="gameCreate" name="seeJoinable">
-				<option'.(($_REQUEST['seeJoinable']=='All') ? ' selected="selected"' : '').' value="All">All</option>
-				<option'.(($_REQUEST['seeJoinable']=='yes') ? ' selected="selected"' : '').' value="yes">Only Joinable Games</option>
+				<option'.(($_REQUEST['seeJoinable']=='All') ? ' selected="selected"' : '').' value="All">All Games</option>
+				<option'.(($_REQUEST['seeJoinable']=='yes') ? ' selected="selected"' : '').' value="yes">All Joinable Games</option>
+				<option'.(($_REQUEST['seeJoinable']=='active') ? ' selected="selected"' : '').' value="active">Active Joinable Games Only</option>
+				<option'.(($_REQUEST['seeJoinable']=='new') ? ' selected="selected"' : '').' value="new">New Joinable Games Only</option>
 			</select></p>
 			<p>Privacy: <select class="gameCreate" name="privacy">
 				<option'.(($_REQUEST['privacy']=='All') ? ' selected="selected"' : '').' value="All">All</option>
@@ -415,8 +428,24 @@ else
 	{
 		if($_REQUEST['seeJoinable'] == 'yes')
 		{
-			$SQL .= " AND g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No' AND g.phase <> 'Pre-game' AND g.id NOT IN (SELECT m1.gameID FROM wD_Members m1 WHERE m1.userID = ". $User->id .")";
-			$SQLCounter .= " AND g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No' AND g.phase <> 'Pre-game' AND g.id NOT IN (SELECT m1.gameID FROM wD_Members m1 WHERE m1.userID = ". $User->id .")";
+			$SQL .= " AND g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No' AND g.id NOT IN (SELECT m1.gameID FROM wD_Members m1 WHERE m1.userID = ". $User->id .")
+				AND ".$User->points." >= g.minimumBet AND ".$User->reliabilityRating." >= g.minimumReliabilityRating".($User->userIsTempBanned() ? " AND 0=1" : " ");
+			$SQLCounter .= " AND g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No' AND g.id NOT IN (SELECT m1.gameID FROM wD_Members m1 WHERE m1.userID = ". $User->id .")
+				AND ".$User->points." >= g.minimumBet AND ".$User->reliabilityRating." >= g.minimumReliabilityRating".($User->userIsTempBanned() ? " AND 0=1" : " ");
+		}
+		elseif ($_REQUEST['seeJoinable'] == 'active')
+		{
+			$SQL .= " AND g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No' AND g.phase <> 'Pre-game' AND g.id NOT IN (SELECT m1.gameID FROM wD_Members m1 WHERE m1.userID = ". $User->id .")
+				AND ".$User->points." >= g.minimumBet AND ".$User->reliabilityRating." >= g.minimumReliabilityRating".($User->userIsTempBanned() ? " AND 0=1" : " ");
+			$SQLCounter .= " AND g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No' AND g.phase <> 'Pre-game' AND g.id NOT IN (SELECT m1.gameID FROM wD_Members m1 WHERE m1.userID = ". $User->id .")
+				AND ".$User->points." >= g.minimumBet AND ".$User->reliabilityRating." >= g.minimumReliabilityRating".($User->userIsTempBanned() ? " AND 0=1" : " ");
+		}
+		elseif ($_REQUEST['seeJoinable'] == 'new')
+		{
+			$SQL .= " AND g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No' AND g.phase = 'Pre-game' AND g.id NOT IN (SELECT m1.gameID FROM wD_Members m1 WHERE m1.userID = ". $User->id .")
+				AND ".$User->points." >= g.minimumBet AND ".$User->reliabilityRating." >= g.minimumReliabilityRating".($User->userIsTempBanned() ? " AND 0=1" : " ");
+			$SQLCounter .= " AND g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No' AND g.phase = 'Pre-game' AND g.id NOT IN (SELECT m1.gameID FROM wD_Members m1 WHERE m1.userID = ". $User->id .")
+				AND ".$User->points." >= g.minimumBet AND ".$User->reliabilityRating." >= g.minimumReliabilityRating".($User->userIsTempBanned() ? " AND 0=1" : " ");
 		}
 	}
 	if(isset($_REQUEST['privacy']))
