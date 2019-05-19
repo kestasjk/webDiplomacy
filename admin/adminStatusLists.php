@@ -169,8 +169,10 @@ adminStatusList(l_t('Mods'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\
 	FROM wD_Users WHERE type LIKE '%Moderator%'");
 adminStatusList(l_t('Admins'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 	FROM wD_Users WHERE type LIKE '%Admin%'");
-adminStatusList(l_t('Temp Banned'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
-FROM wD_Users WHERE tempBan > ".time());
+adminStatusList(l_t('Temp Banned - By Mod'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
+FROM wD_Users WHERE tempBanReason is not null and tempBanReason <> 'System' and tempBan > ".time());
+adminStatusList(l_t('Temp Banned - By System'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
+FROM wD_Users WHERE (tempBanReason is null or tempBanReason = 'System') and tempBan > ".time());
 adminStatusList(l_t('Donors'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 	FROM wD_Users WHERE type LIKE '%Donator%'".(isset($_REQUEST['full'])?'':"LIMIT 50"));
 adminStatusList(l_t('Banned users'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')

@@ -444,11 +444,6 @@ class panelGame extends Game
 		{
 			$buf = '';
 
-			if ($User->tempBan > time())
-			{
-				$tempBanned = 1;
-			}
-
 			if ($this->minimumReliabilityRating > 0 && $User->type['User'])
 			{
 				$buf .= l_t('Required Reliability: <span class="%s">%s%%</span><br/>',
@@ -474,7 +469,7 @@ class panelGame extends Game
 
 				if ($User->reliabilityRating >= $this->minimumReliabilityRating)
 				{
-					if (time() >= $User->tempBan)
+					if (!($User->userIsTempBanned()))
 					{
 						$buf .= '<form onsubmit="return confirm(\''.$question.'\');" method="post" action="board.php?gameID='.$this->id.'"><div>
 							<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />';
@@ -499,7 +494,7 @@ class panelGame extends Game
 			}
 			if ($User->type['User'])
 			{
-				if ($User->tempBan > time())
+				if ($User->userIsTempBanned())
 				{
 					$buf .= '<span style="font-size:75%;">(Due to a temporary ban you cannot join games.)</span>';
 				}
