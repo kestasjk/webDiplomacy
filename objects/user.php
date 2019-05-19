@@ -145,6 +145,12 @@ class User {
 	public $homepage;
 
 	/**
+	 * The reason a user was temp banned
+	 * @var string
+	 */
+	public $tempBanReason;
+
+	/**
 	 * Hide-email? 'Yes'/'No'
 	 *
 	 * @var string
@@ -486,7 +492,8 @@ class User {
 			c.modLastCheckedOn,
 			c.modLastCheckedBy,
 			u.emergencyPauseDate, 
-			u.yearlyPhaseCount
+			u.yearlyPhaseCount,
+			u.tempBanReason
 			FROM wD_Users u
 			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
 			LEFT JOIN wD_UserConnections c on ( u.id = c.userID )
@@ -780,11 +787,12 @@ class User {
 	 * 
 	 * @param int $userID The id of the user to be temp banned.
 	 * @param int $days The time of the ban in days.
+	 * @param text $reason The reason for the temp ban.
 	 * @param boolean $overwrite True, if the temp ban value should be overwritten
 	 *		in any case. If false, an existing temp ban might be only extended (for
 	 *		automated temp bans).
 	 */
-	public static function tempBanUser($userID, $days, $overwrite = true)
+	public static function tempBanUser($userID, $days, $reason, $overwrite = true)
 	{
 		global $DB;
 		
@@ -799,7 +807,7 @@ class User {
 			if( $tempBan > time() + ($days * 86400) ) return;
 		}
 		
-		$DB->sql_put("UPDATE wD_Users SET tempBan = ". ( time() + ($days * 86400) )." WHERE id=".$userID);
+		$DB->sql_put("UPDATE wD_Users SET tempBanReason = '".$reason."', tempBan = ". ( time() + ($days * 86400) )." WHERE id=".$userID);
 	}
 
 	public function rankingDetails()
@@ -1216,6 +1224,17 @@ class User {
 			WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.turnDateTime > ".(time() - 2419200));
 		
 		return $totalMissedTurns;
+	}
+
+	/*
+	 * Return if the user is temp banned or not. 
+	 */
+	public function userIsTempBanned() 
+	{
+		global $DB;
+		list($tempBan) = $DB->sql_row("SELECT u.tempBan FROM wD_Users u  WHERE u.id = ".$this->id);
+
+		return $tempBan > time();
 	}
 }
 ?>

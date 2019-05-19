@@ -89,7 +89,7 @@ class userMember extends panelMember
 
 		if ($DB->affected() != 0) 
 		{
-                        $DB->sql_put("UPDATE wD_Users SET deletedCDs = deletedCDs + 1 where id=" .$this->userID);
+            $DB->sql_put("UPDATE wD_Users SET deletedCDs = deletedCDs + 1 where id=" .$this->userID);
 		}
 		 
 		$DB->sql_put("DELETE FROM wD_CivilDisorders
@@ -106,6 +106,12 @@ class userMember extends panelMember
 					timeLoggedIn = ".time()."
 				WHERE id = ".$this->id
 			);
+
+		// Reset the min bet so that the game no longer appears in open games searches. 
+		require_once(l_r('gamemaster/game.php'));
+		$Variant=libVariant::loadFromGameID($this->gameID);
+		$Game = $Variant->processGame($this->gameID);
+		$Game->resetMinimumBet();
 	}
 
 	/**

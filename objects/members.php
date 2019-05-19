@@ -156,7 +156,7 @@ class Members
 	{
 		global $User;
 		
-		return ( $this->isJoined() && $this->ByUserID[$User->id]->status == "Left" && $User->tempBan > time() );
+		return ( $this->isJoined() && $this->ByUserID[$User->id]->status == "Left" && $User->userIsTempBanned() );
 	}
 
 	function makeUserMember($userID)

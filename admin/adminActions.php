@@ -72,8 +72,9 @@ class adminActions extends adminActionsForms
 
 			'tempBan' => array(
 				'name' => 'Temporary ban a player',
-				'description' => 'Stops a player from joining or creating new games for that many days. To remove a temp ban, enter 0 days',
-				'params' => array('userID'=>'User ID', 'ban'=>'Days')
+				'description' => 'Stops a player from joining or creating new games for that many days. To remove a temp ban, enter 0 days. Include a reason for the temp
+				ban. <strong>The user will see the reason provided</strong>',
+				'params' => array('userID'=>'User ID', 'ban'=>'Days','reason'=>'Reason')
 			),
 			'modExcuseDelay' => array(
 				'name' => 'Mod Excuse Missed Turn',
@@ -1026,7 +1027,13 @@ class adminActions extends adminActionsForms
 
 		$userID = (int)$params['userID'];
 		$days   = (int)$params['ban'];
-		User::tempBanUser($userID, $days);
+
+		if( !isset($params['reason']) || strlen($params['reason'])==0 )
+			return 'Cannot temp ban user without a reason.';
+
+		$reason = $DB->msg_escape($params['reason']);
+
+		User::tempBanUser($userID, $days, $reason);
 		if ($days == 0)
 			return 'This user is now unblocked and can join and create games again.';
 
