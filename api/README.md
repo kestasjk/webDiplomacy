@@ -1,4 +1,4 @@
-API Proposal
+API Documentation
 
 ### HOW-TO
 
@@ -70,9 +70,11 @@ To make a call to API, you must send a request to page `api.php` with:
    "gameID":5,
    "countryID":2,
    "variantID":1,
-   "turn":"1",
+   "turn": 1,
    "phase":"Diplomacy",
-   "gameOver":"1",
+   "gameOver":"No",
+   "standoffs": [],
+   "occupiedFrom": {72: 32, 42: 28, ...},
    "units":[
       {
          "unitType":"Army",
@@ -108,19 +110,19 @@ To make a call to API, you must send a request to page `api.php` with:
 
 * Type: `POST`
 * Description: Submits orders to a game for a specific country.
-* Parameters:
+* Parameters: None
+* POST body (JSON):
   * `gameID`: ID of game.
   * `turn`: game turn number for which the orders are submitted.
   * `phase`: phase type of turn for which the orders are submitted.
   * `countryID`: ID of country in targeted game.
-  * `body`: JSON-encoded string representing a JSON object with 2 fields:
-    * `ready`: string to tell if game member a ready (`Yes`) or not (`No`) to submit orders. Wait flag.
-    * `orders`: array of JSON order objects. An order object must have following fields:
-      * `type`: order type.
-      * `terrID`: ID of territory to order. Required to identify corresponding placeholder-order in database.
-      * `fromTerrID`: required for some order types.
-      * `toTerrID`: required for some order types.
-      * `viaConvoy`: required for some order types.
+  * `ready`: string to tell if game member a ready (`Yes`) or not (`No`) to submit orders. Wait flag.
+  * `orders`: array of JSON order objects. An order object must have following fields:
+    * `type`: order type.
+    * `terrID`: ID of territory to order. Required to identify corresponding placeholder-order in database.
+    * `fromTerrID`: required for some order types.
+    * `toTerrID`: required for some order types.
+    * `viaConvoy`: required for some order types.
 * **Order object required fields per order type**:
 
 | Type           | Fields                               |
@@ -134,38 +136,25 @@ To make a call to API, you must send a request to page `api.php` with:
 | `Disband`      | `type, terrID`                       |
 | `Build Army`   | `type, terrID, toTerrID`             |
 | `Build Fleet`  | `type, terrID, toTerrID`             |
-| `Wait`         | `type, terrID`                       |
+| `Wait`         | `type`                               |
 | `Destroy`      | `type, terrID, toTerrID`             |
-
+|----------------|--------------------------------------|
 * Return:
   * On error, a non-200 status code with the error has the body.
-  * On success, a JSON object with fields:
-    * `status`: comma-separated string of order status for this member.
-    * `results`: array of results, one per ordered territory. One result has fields:
-      * `terrID`: expected ordered territory ID.
-      * `status`: order status (e.g. `Complete`).
-      * `changed`: Indicate if this territory has been ordered (`Yes`) or not (`No`).
-* URL example: `api.php?route=game/orders`. Parameters must be passed by POST.
+  * On success, a JSON object containing the list of orders on the server
 * Return example:
 ```
-{
-   "results":[
+[
       {
-         "terrID":"61",
-         "status":"Complete",
-         "changed":"No"
-      },
-      {
-         "terrID":"47",
-         "status":"Complete",
-         "changed":"No"
-      },
-      {
-         "terrID":"8",
-         "status":"Complete",
-         "changed":"No"
-      }
-   ],
-   "status":"Completed,Ready"
-}
+         "turn":0,
+         "phase":"Diplomacy",
+         "countryID":3,
+         "terrID":15,
+         "unitType":"Army",
+         "type":"Hold",
+         "toTerrID":0,
+         "fromTerrID":0,
+         "viaConvoy":"No",
+      }, ...
+   ]
 ```
