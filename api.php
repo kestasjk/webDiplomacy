@@ -254,10 +254,11 @@ abstract class ApiEntry {
 	}
 
 	/**
-	 * Process API key. To override in derived classes.
+	 * Process API call. To override in derived classes.
 	 * @param int $userID - ID of user who makes API call.
+	 * @param bool $permissionIsExplicit - boolean to indicate if permission flag was set for API caller key.
 	 */
-	abstract public function run($userID);
+	abstract public function run($userID, $permissionIsExplicit);
 }
 
 /**
@@ -267,7 +268,7 @@ class ListGamesWithPlayersInCD extends ApiEntry {
 	public function __construct() {
 		parent::__construct('players/cd', 'GET', 'listGamesWithPlayersInCD', array());
 	}
-	public function run($userID) {
+	public function run($userID, $permissionIsExplicit) {
 		$countriesInCivilDisorder = new \webdiplomacy_api\CountriesInCivilDisorder();
 		return $countriesInCivilDisorder->toJson();
 	}
@@ -280,7 +281,7 @@ class ListGamesWithMissingOrders extends ApiEntry {
 	public function __construct() {
 		parent::__construct('players/missing_orders', 'GET', '', array());
 	}
-	public function run($userID) {
+	public function run($userID, $permissionIsExplicit) {
 		$unorderedCountries = new \webdiplomacy_api\UnorderedCountries($userID);
 		return $unorderedCountries->toJson();
 	}
@@ -296,7 +297,7 @@ class GetGamesStates extends ApiEntry {
 	/**
 	 * @throws RequestException
 	 */
-	public function run($userID) {
+	public function run($userID, $permissionIsExplicit) {
 		$args = $this->getArgs();
 		$gameID = $args['gameID'];
 		$countryID = $args['countryID'];
@@ -326,49 +327,69 @@ class SetOrders extends ApiEntry {
 	 * @throws RequestException
 	 * @throws ClientForbiddenException
 	 */
-	public function run($userID) {
+	public function run($userID, $permissionIsExplicit) {
 		global $DB;
 		$args = $this->getArgs();
-		$gameID = $args['gameID'];
+		$gameID = $args['gameID'];	// checked in getAssociatedGame()
 		$turn = $args['turn'];
 		$phase = $args['phase'];
 		$countryID = $args['countryID'];
 		$orders = $args['orders'];
 		$readyArg = $args['ready'];
+
+		if ($turn === null)
+			throw new RequestException('Turn is required.');
+		if ($phase === null)
+			throw new RequestException('Phase is required.');
+		if ($countryID === null)
+			throw new RequestException('Country is required.');
 		if (!is_array($orders))
 			throw new RequestException('Body field `orders` is not an array.');
 		if ($readyArg && (!is_string($readyArg) || !in_array($readyArg, array('Yes', 'No'))))
 			throw new RequestException('Body field `ready` is not either `Yes` or `No`.');
-		if ($countryID != null) {
-			$countryID = intval($countryID);
-		}
+		$turn = intval($turn);
+		$phase = strval($phase);
+		$countryID = intval($countryID);
+
 		$game = $this->getAssociatedGame();
-		if (!isset($game->Members->ByUserID[$userID]))
-			throw new ClientForbiddenException('User is not member of this game.');
-
-        // Setting the status as Active
-        $member = $game->Members->ByUserID[$userID];            /** @var Member $member */
-        $DB->sql_put("UPDATE wD_Members SET userID = ".$userID.", status='Playing', missedPhases = 0, timeLoggedIn = ".time()." WHERE id = ".$member->id);
-        unset($game->Members->ByUserID[$member->userID]);
-        unset($game->Members->ByStatus['Playing'][$member->id]);
-        $member->status='Playing';
-        $member->missedPhases=0;
-        $member->timeLoggedIn=time();
-        $game->Members->ByUserID[$member->userID] = $member;
-        $game->Members->ByStatus['Playing'][$member->id] = $member;
-
-		if ($countryID == null)
-			$countryID = $member->countryID;
-		else if ($countryID != $member->countryID)
-			throw new ClientForbiddenException('User '.$userID.' not allowed to control country '.$countryID.'.');
-		if ($turn == null)
-			$turn = $game->turn;
-		else if ($turn != $game->turn)
+		if (!in_array($game->phase, array('Diplomacy', 'Retreats', 'Builds')))
+			throw new RequestException('Cannot submit orders in phase `'.$game->phase.'`.');
+		if ($turn != $game->turn)
 			throw new RequestException('Invalid turn, expected `'.$game->turn.'`, got `'.$turn.'`.');
-		if ($phase == null)
-			$phase = $game->phase;
-		else if ($phase != $game->phase)
+		if ($phase != $game->phase)
 			throw new RequestException('Invalid phase, expected `'.$game->phase.'`, got `'.$phase.'`.');
+		if (!isset($game->Members->ByCountryID[$countryID]))
+			throw new ClientForbiddenException('Unknown country ID `'.$countryID.'`.');
+		$member = $game->Members->ByCountryID[$countryID];            /** @var Member $member */
+
+		if (isset($game->Members->ByUserID[$userID]) && $countryID == $game->Members->ByUserID[$userID]->countryID) {
+			// API caller is the game member controlling given country ID.
+			// Setting the member status as Active
+			$DB->sql_put("UPDATE wD_Members SET userID = ".$userID.", status='Playing', missedPhases = 0, timeLoggedIn = ".time()." WHERE id = ".$member->id);
+			unset($game->Members->ByUserID[$member->userID]);
+			unset($game->Members->ByStatus['Playing'][$member->id]);
+			$member->status='Playing';
+			$member->missedPhases=0;
+			$member->timeLoggedIn=time();
+			$game->Members->ByUserID[$member->userID] = $member;
+			$game->Members->ByStatus['Playing'][$member->id] = $member;
+		} else {
+			// API caller is not a game member controlling given country ID,
+			// API caller permission must be explicitly set.
+			if (!$permissionIsExplicit)
+				throw new ClientForbiddenException('User does not have explicit permission to make this API call.');
+			// In this case, the ordered country must be in CD.
+			if ($member->missedPhases <= 0)
+				throw new ClientForbiddenException(
+					'A user not controlling a country can submit orders only for a country in CD.');
+			// We must have enough time to set orders.
+			$currentTime = time();
+			if (($currentTime + 60) < $game->processTime) {
+				throw new RequestException('Process time is not close enough (current time ' . $currentTime . ', process time ' . $game->processTime . ').');
+			}
+		}
+
+
 		$territoryToOrder = array();
 		$orderToTerritory = array();
 		$updatedOrders = array();
@@ -618,11 +639,14 @@ class ApiKey {
 	 * Check if this API key is allowed to call given API entry.
 	 * Throw an exception if any problem occurs, meaning that either API key does not have enough permissions, or we are unable to check it.
 	 * @param ApiEntry $apiEntry - instance of API entry object to check.
+	 * @return bool - a Boolean to indicate if permission is explicitly granted from API key (true)
+	 * or if, either no permission is need, or permission is granted because user is a game member (false).
 	 * @throws ServerInternalException
 	 * @throws ClientForbiddenException
 	 * @throws RequestException
 	 */
 	public function assertHasPermissionFor(ApiEntry $apiEntry) {
+		$permissionIsExplicit = false;
 		$permissionField = $apiEntry->getPermissionField();
 
 		if ($permissionField == '') {
@@ -638,7 +662,9 @@ class ApiKey {
 
 			// Permission field must be set for this user.
 			// Otherwise, game ID must be required and user must be member of this game.
-			if (!$this->permissions[$permissionField]) {
+			if ($this->permissions[$permissionField]) {
+				$permissionIsExplicit = true;
+			} else {
 				if (!$apiEntry->requiresGameID())
 					throw new ClientForbiddenException("Permission denied.");
 
@@ -646,6 +672,8 @@ class ApiKey {
 					throw new ClientForbiddenException('Permission denied, and user is not member of associated game.');
 			}
 		}
+
+		return $permissionIsExplicit;
 	}
 
 	/**
@@ -703,9 +731,9 @@ class Api {
 		$apiEntry = $this->entries[$route]; /** @var ApiEntry $apiEntry */
 		$apiKey = new ApiKey($apiKeyString);
 		// Check if request is authorized.
-		$apiKey->assertHasPermissionFor($apiEntry);
+		$permissionIsExplicit = $apiKey->assertHasPermissionFor($apiEntry);
 		// Execute request.
-		return $apiEntry->run($apiKey->getUserID());
+		return $apiEntry->run($apiKey->getUserID(), $permissionIsExplicit);
 	}
 }
 
