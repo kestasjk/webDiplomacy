@@ -14,7 +14,7 @@ div.content-title-header {
 .footerMax {
 	max-width: 800px;
 	text-align: center;
-	margin-left:auto; 
+	margin-left:auto;
 	margin-right:auto;
 	word-break: break-word;
 }
@@ -58,7 +58,7 @@ input[type="text"], input[type="password"], textarea, select {
 	border: 1px solid #c1c1c1;
 	color:#000000;
 }
-input:read-only { 
+input:read-only {
   background-color:#999 !important;
 }
 
@@ -573,7 +573,7 @@ a.light {
 #header-goto a:hover {
 	background-color: rgba(255, 255, 255, 0.75);
 	border-radius: 15px 0 15px 0;
-} 
+}
 
 #seperator {
 	margin: 0;
@@ -1046,7 +1046,7 @@ input[type=submit].login:hover {
 	padding: 0 0 0 10px;
 }
 
-input[type=text].gameCreate, input[type=password].gameCreate, select.gameCreate {
+input[type=text].gameCreate, input[type=password].gameCreate, input[type=number].gameCreate, select.gameCreate {
   width: 100%;
 	padding: 10px 5px;
   display: inline-block;

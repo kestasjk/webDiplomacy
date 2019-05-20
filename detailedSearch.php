@@ -991,8 +991,8 @@ else if ($tab == 'GamesByUser')
 	else { print '<p class = advancedSearch> The user you entered is not valid. Please enter a valid user or a User ID of 0 to see your own games.</p>';}
 }
 
-if (isset($_REQUEST['tab'])){
-
+if (isset($_REQUEST['tab']))
+{
 	print '</br>';
 
 	if ($pagenum > 3)
@@ -1149,7 +1149,8 @@ $seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount
 }
 
 //This function prints out a button that will take you to the page of the number you feed into it. It will look white is $currPage is set to True.
-function printPageButton($pagenum, $currPage){
+function printPageButton($pagenum, $currPage)
+{
 	if ($currPage)
 	{
 		print '<div class="curr-page">'.$pagenum.'</div>';
@@ -1160,7 +1161,8 @@ function printPageButton($pagenum, $currPage){
 		print '<FORM method="get" action=detailedSearch.php#tableLocation>';
 		foreach($_REQUEST as $key => $value)
 		{
-			if(strpos('x'.$key,'wD') == false && $key!="pagenum"){
+			if(strpos('x'.$key,'wD') == false && $key!="pagenum")
+			{
 				print '<input type="hidden" name="'.$key.'" value='.$value.'>';
 			}
 		}
@@ -1168,17 +1170,21 @@ function printPageButton($pagenum, $currPage){
 	}
 }
 
-function printHeaderLink($header, $tab, $sortCol, $sortType, $sortColg){
+function printHeaderLink($header, $tab, $sortCol, $sortType, $sortColg)
+{
 	print '<FORM method="get" action=detailedSearch.php#tableLocation>';
 	foreach($_REQUEST as $key => $value)
 	{
-		if(strpos('x'.$key,'wD') == false && $key!="sortCol" && $key!="sortColg" && $key!="sortType" && $key!="pagenum"){
+		if(strpos('x'.$key,'wD') == false && $key!="sortCol" && $key!="sortColg" && $key!="sortType" && $key!="pagenum")
+		{
 			print '<input type="hidden" name="'.$key.'" value='.$value.'>';
 		}
 	}
 	$convert = array("UserID"=>"id","Username"=>"Username","Joined On"=>"timeJoined","RR"=>"reliabilityRating","Games"=>"gameCount","Points"=>"points", "Game ID"=>"id", "Name"=>"gameName", "Pot"=>"pot", "Length"=>"phaseMinutes", "Spectators"=>"watchedGames");
-	if($tab == 'UserSearch'){
-		if ($convert[$header] == $sortCol){
+	if($tab == 'UserSearch')
+	{
+		if ($convert[$header] == $sortCol)
+		{
 			if ($sortType == 'asc')
 			{
 				print '<input type="hidden" name="sortType" value=desc>';
@@ -1198,7 +1204,8 @@ function printHeaderLink($header, $tab, $sortCol, $sortType, $sortColg){
 		}
 	}
 	else{
-		if ($convert[$header] == $sortColg){
+		if ($convert[$header] == $sortColg)
+		{
 			if ($sortType == 'asc')
 			{
 				print '<input type="hidden" name="sortType" value=desc>';
