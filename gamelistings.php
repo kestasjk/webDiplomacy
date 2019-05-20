@@ -151,7 +151,7 @@ $totalResults = 0;
 
 if ( isset($_REQUEST['pagenum'])) { $pagenum=(int)$_REQUEST['pagenum']; }
 
-#
+
 if ($tab == 'My games')
 {
 	if($User->type['User'])
@@ -207,7 +207,7 @@ else
 				<option'.(($_REQUEST['status']=='Pre-game') ? ' selected="selected"' : '').' value="Pre-game">Pre-Game</option>
 				<option'.(($_REQUEST['status']=='Active') ? ' selected="selected"' : '').' value="Active">All Active</option>
 				<option'.(($_REQUEST['status']=='Paused') ? ' selected="selected"' : '').' value="Paused">Paused</option>
-				<option'.(($_REQUEST['status']=='Running') ? ' selected="selected"' : '').' value="Running">Running</option>
+				<option'.(($_REQUEST['status']=='Running') ? ' selected="selected"' : '').' value="Running">Running (excludes paused games)</option>
 				<option'.(($_REQUEST['status']=='Finished') ? ' selected="selected"' : '').' value="Finished">All Finished</option>
 				<option'.(($_REQUEST['status']=='Won') ? ' selected="selected"' : '').' value="Won">Won</option>
 				<option'.(($_REQUEST['status']=='Drawn') ? ' selected="selected"' : '').' value="Drawn">Drawn</option>
@@ -227,7 +227,7 @@ else
 				<option'.(($_REQUEST['privacy']=='private') ? ' selected="selected"' : '').' value="private">Private</option>
 				<option'.(($_REQUEST['privacy']=='public') ? ' selected="selected"' : '').' value="public">Public</option>
 			</select></p>
-			<p>Point Distribution: <select class="gameCreate" name="potType">
+			<p>Scoring: <select class="gameCreate" name="potType">
 				<option'.(($_REQUEST['potType']=='All') ? ' selected="selected"' : '').' value="All">All</option>
 				<option'.(($_REQUEST['potType']=='dss') ? ' selected="selected"' : '').' value="dss">Draw Size Scoring</option>
 				<option'.(($_REQUEST['potType']=='sos') ? ' selected="selected"' : '').' value="sos">Sum of Squares</option>
@@ -347,8 +347,8 @@ else
 				<option'.(($_REQUEST['rrMax']=='90') ? ' selected="selected"' : '').' value="90">90%</option>
 				<option'.(($_REQUEST['rrMax']=='All') ? ' selected="selected"' : '').' value="All">100%</option>
 			</select></p>
-			<p>Bet Size From <input type="number" class="gameCreate" name="betMin" onkeypress="return event.charCode >= 48 && event.charCode <= 57" value="'.(int)$_REQUEST['betMin'].'" />
-			To<input type="number" class="gameCreate" name="betMax" onkeypress="return event.charCode >= 48 && event.charCode <= 57" value="'.((int)$_REQUEST['betMax'] == 0 ? $User->points : (int)$_REQUEST['betMax']).'" /></p>
+			<p>Bet Size From <input type="number" class="gameCreate" name="betMin" onkeypress="return event.charCode >= 48 && event.charCode <= 57" value="'.((int)$_REQUEST['betMin'] ? (int)$_REQUEST['betMin'] : " ").'"/>
+			To<input type="number" class="gameCreate" name="betMax" onkeypress="return event.charCode >= 48 && event.charCode <= 57" value="'.((int)$_REQUEST['betMax'] ? (int)$_REQUEST['betMax'] : " ").'" /></p>
 			<p>Messaging Type: <input type="checkbox" class="gameCreate" name="messageNorm" value="Yes"'.((isset($_REQUEST['Submit']) && $_REQUEST['messageNorm'] <> "Yes") ? '' : ' checked').'>Regular
 			<input type="checkbox" class="gameCreate" name="messagePub" value="Yes"'.((isset($_REQUEST['Submit']) && $_REQUEST['messagePub'] <> "Yes") ? '' : ' checked').'>Public Only
 			<input type="checkbox" class="gameCreate" name="messageNon" value="Yes"'.((isset($_REQUEST['Submit']) && $_REQUEST['messageNon'] <> "Yes") ? '' : ' checked').'>No Messaging
@@ -372,7 +372,7 @@ else
 			<input type="submit" name="Submit" class="green-Submit" value="Search" /></form></div>
 			</br>';
 	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g";
-	$SQLCounter = "SELECT COUNT(1), (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g";
+	$SQLCounter = "SELECT COUNT(1) FROM wD_Games g";
 	if(isset($_REQUEST['userGames']))
 	{
 		if($_REQUEST['userGames'] == 'include')
@@ -1070,7 +1070,8 @@ else
 }
 print '</div>';
 
-function printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = False){
+function printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = False)
+{
 	if ($pagenum > 3)
 	{
 		printPageButton(1,False);
@@ -1107,7 +1108,8 @@ function printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = False)
 	{
 		printPageButton($maxPage, False);
 	}
-	if ($maxPage > 1 && $sortBar){
+	if ($maxPage > 1 && $sortBar)
+	{
 		print '<span style="float:right;">
 			<FORM class="advancedSearch" method="get" action="gamelistings.php#results">
 			<b>Sort By:</b>
@@ -1128,7 +1130,8 @@ function printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = False)
 			</select>';
 			foreach($_REQUEST as $key => $value)
 			{
-				if(strpos('x'.$key,'wD') == false && $key!="pagenum" && $key!="sortCol" && $key!="sortType"){
+				if(strpos('x'.$key,'wD') == false && $key!="pagenum" && $key!="sortCol" && $key!="sortType")
+				{
 					print '<input type="hidden" name="'.$key.'" value='.$value.'>';
 				}
 			}
@@ -1138,7 +1141,8 @@ function printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = False)
 		}
 }
 
-function printPageButton($pagenum, $currPage){
+function printPageButton($pagenum, $currPage)
+{
 	if ($currPage)
 	{
 		print '<div class="curr-page">'.$pagenum.'</div>';
@@ -1149,7 +1153,8 @@ function printPageButton($pagenum, $currPage){
 		print '<FORM method="get" action=gamelistings.php#results>';
 		foreach($_REQUEST as $key => $value)
 		{
-			if(strpos('x'.$key,'wD') == false && $key!="pagenum"){
+			if(strpos('x'.$key,'wD') == false && $key!="pagenum")
+			{
 				print '<input type="hidden" name="'.$key.'" value='.$value.'>';
 			}
 		}

@@ -755,7 +755,7 @@ else
 	print '<td class="homeGamesStats">';
 	print '<div class="homeHeader">'.l_t('My games').' <a href="gamelistings.php?page=1&gamelistType=My games">'.libHTML::link().'</a></div>';
 	print libHome::gameNotifyBlock();
-	print '<div class="homeHeader">'.l_t('Defeated games').' <a href="gamelistings.php?page=1&gamelistType=My games">'.libHTML::link().'</a></div>';
+	print '<div class="homeHeader">'.l_t('Defeated games').'</div>';
 	print libHome::gameDefeatedNotifyBlock();
 	print '<div class="homeHeader">'.l_t('Spectated games').'</div>';
 	print libHome::gameWatchBlock();
