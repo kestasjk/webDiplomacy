@@ -247,11 +247,10 @@ class panelGame extends Game
 		return $buf;
 	}
 
-	function gameVariants() 
+	function gameVariants()
 	{
 		$alternatives=array();
-		if( $this->variantID!=1 )
-			$alternatives[]=$this->Variant->link();
+		$alternatives[]=$this->Variant->link();
 
 		if( $this->pressType=='NoPress')
 			$alternatives[]=l_t('No messaging');
@@ -267,7 +266,7 @@ class panelGame extends Game
 
 		if( $this->drawType=='draw-votes-hidden')
 			$alternatives[]=l_t('Hidden draw votes');
-			
+
 		if( $this->missingPlayerPolicy=='Wait' )
 			$alternatives[]=l_t('Wait for orders');
 
