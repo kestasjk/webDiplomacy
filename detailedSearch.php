@@ -1161,7 +1161,7 @@ function printPageButton($pagenum, $currPage)
 		print '<FORM method="get" action=detailedSearch.php#tableLocation>';
 		foreach($_REQUEST as $key => $value)
 		{
-			if(strpos('x'.$key,'wD') == false && $key!="pagenum")
+			if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && $key!="pagenum")
 			{
 				print '<input type="hidden" name="'.$key.'" value='.$value.'>';
 			}
@@ -1175,7 +1175,7 @@ function printHeaderLink($header, $tab, $sortCol, $sortType, $sortColg)
 	print '<FORM method="get" action=detailedSearch.php#tableLocation>';
 	foreach($_REQUEST as $key => $value)
 	{
-		if(strpos('x'.$key,'wD') == false && $key!="sortCol" && $key!="sortColg" && $key!="sortType" && $key!="pagenum")
+		if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && $key!="sortCol" && $key!="sortColg" && $key!="sortType" && $key!="pagenum")
 		{
 			print '<input type="hidden" name="'.$key.'" value='.$value.'>';
 		}

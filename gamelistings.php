@@ -35,7 +35,7 @@ global $User, $Misc, $DB;
 
 $tabs = array();
 $sortCol = 'id';
-$sortType = 'asc';
+$sortType = 'desc';
 
 if ( isset($_REQUEST['sortCol']))
 {
@@ -48,7 +48,7 @@ if ( isset($_REQUEST['sortCol']))
 	else if ($_REQUEST['sortCol'] == 'turn') {$sortCol='turn'; }
 	else if ($_REQUEST['sortCol'] == 'processTime') {$sortCol='processTime'; }
 }
-if ( isset($_REQUEST['sortType'])) { if ($_REQUEST['sortType'] == 'desc') { $sortType='desc'; } }
+if ( isset($_REQUEST['sortType'])) { if ($_REQUEST['sortType'] == 'asc') { $sortType='asc'; } }
 
 
 if($User->type['User'])
@@ -1130,7 +1130,7 @@ function printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = False)
 			</select>';
 			foreach($_REQUEST as $key => $value)
 			{
-				if(strpos('x'.$key,'wD') == false && $key!="pagenum" && $key!="sortCol" && $key!="sortType")
+				if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3') == false && strpos('x'.$key,'__utm')== false && $key!="pagenum" && $key!="sortCol" && $key!="sortType")
 				{
 					print '<input type="hidden" name="'.$key.'" value='.$value.'>';
 				}
@@ -1153,7 +1153,7 @@ function printPageButton($pagenum, $currPage)
 		print '<FORM method="get" action=gamelistings.php#results>';
 		foreach($_REQUEST as $key => $value)
 		{
-			if(strpos('x'.$key,'wD') == false && $key!="pagenum")
+			if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && $key!="pagenum")
 			{
 				print '<input type="hidden" name="'.$key.'" value='.$value.'>';
 			}
