@@ -90,6 +90,75 @@ class GameSteps {
 }
 
 /**
+ * Game Board - Board with units that can be moved to return correct unit location
+ * @package webdiplomacy_api
+ */
+class GameBoard {
+    private $board;
+
+    public function __construct()
+    {
+        $this->board = array();
+    }
+
+    /**
+     * Adds a unit to the board
+     */
+    public function add($countryID, $terrID, $unitType) {
+        if (isset($this->board[$countryID][$terrID][$unitType]))
+            ++$this->board[$countryID][$terrID][$unitType];
+        else
+            $this->board[$countryID][$terrID][$unitType] = 1;
+    }
+
+    /**
+     * Removes a unit from the board
+     */
+    public function remove($countryID, $terrID, $unitType) {
+        if (!$unitType) {
+            $this->remove($countryID, $terrID, 'Army');
+            $this->remove($countryID, $terrID, 'Fleet');
+            return;
+        }
+        if (isset($this->board[$countryID][$terrID][$unitType])) {
+            --$this->board[$countryID][$terrID][$unitType];
+            if ($this->board[$countryID][$terrID][$unitType] == 0)
+                unset($this->board[$countryID][$terrID][$unitType]);
+        }
+        if (isset($this->board[$countryID][$terrID]) && empty($this->board[$countryID][$terrID]))
+            unset($this->board[$countryID][$terrID]);
+        if (isset($this->board[$countryID]) && empty($this->board[$countryID]))
+            unset($this->board[$countryID]);
+    }
+
+    /**
+     * Moves a unit on the board
+     */
+    public function move($countryID, $unitType, $fromTerrID, $toTerrID) {
+        $this->remove($countryID, $fromTerrID, $unitType);
+        $this->add($countryID, $toTerrID, $unitType);
+    }
+
+    /**
+     * Returns the current units on the board
+     */
+    public function getUnits() {
+        $units = array();
+        foreach ($this->board as $countryID => $countryData) {
+            foreach ($countryData as $terrID => $terrData) {
+                foreach ($terrData as $unitType => $unitCount) {
+                    if ($unitCount != 1)
+                        throw new \ServerInternalException('Internal error while retrieving units.');
+                    $units[] = new Unit($unitType, $terrID, $countryID, 'No');
+                }
+            }
+        }
+        return $units;
+    }
+}
+
+
+/**
  * Game State JSON response
  * @package webdiplomacy_api
  */
@@ -302,29 +371,50 @@ class GameState {
 			if (!isset($data['orders'])) $data['orders'] = array();
 			$finalPhases[] = $data;
 		}
-		// Deduce units for Builds phases.
+		// Deduce units for Retreats and Builds phases.
 		$nbFinalPhases = count($finalPhases);
-		for ($i = 0; $i < $nbFinalPhases; ++$i) {
-			if ($finalPhases[$i]['phase'] == 'Builds') {
-				// Deduce units from orders of previous phase.
-				// We keep only non-dislodged units ordered in previous phase.
-				$units = array();
-				foreach ($finalPhases[$i-1]['orders'] as $previousOrder) {
-					/** @var Order $previousOrder */
-					if ($previousOrder->dislodged == 'No') {
-						$unit = $previousOrder->getOrderedUnit();
-						$units[$unit->terrID] = $unit;
-					}
-				};
-				// If there are already units known in current phase, keep them.
-				foreach ($finalPhases[$i]['units'] as $unit) {
-				    if ($unit->unitType != '') {
-                        $units[$unit->terrID] = $unit;
-                    }
-				}
-				// Update units.
-				$finalPhases[$i]['units'] = array_values($units);
-			}
+
+		// Updating previous units for all phases, except the last
+		for ($i = 0; $i < $nbFinalPhases - 1; ++$i) {
+
+		    // Resetting game board on movement phase
+            if ($finalPhases[$i]['phase'] == 'Diplomacy') {
+                $gameBoard = new GameBoard();
+                foreach ($finalPhases[$i]['units'] as $previousUnit) {
+                    /** @var Unit $previousUnit */
+                    $gameBoard->add($previousUnit->countryID, $previousUnit->terrID, $previousUnit->unitType);
+                }
+            }
+
+            // Retrieving units on board
+            $units = $gameBoard->getUnits();
+
+            // Setting orders for phase
+		    $retreating = array();
+            foreach ($finalPhases[$i]['orders'] as $previousOrder) {
+                /** @var Order $previousOrder */
+                if ($previousOrder->type == 'Disband'
+                    || ($previousOrder->type == 'Destroy' && $previousOrder->success == 'Yes')
+                    || ($previousOrder->type == 'Retreat' && $previousOrder->success == 'No')
+                ) {
+                    $gameBoard->remove($previousOrder->countryID, $previousOrder->terrID, $previousOrder->unitType);
+                } else if (in_array($previousOrder->type, array('Move', 'Retreat')) && $previousOrder->success == 'Yes') {
+                    // Move or retrat order succeeded, then the unit moved.
+                    $gameBoard->move($previousOrder->countryID, $previousOrder->unitType, $previousOrder->terrID, $previousOrder->toTerrID);
+                } else if (in_array($previousOrder->type, array('Build Army', 'Build Fleet')) && $previousOrder->success == 'Yes') {
+                    $gameBoard->add($previousOrder->countryID, $previousOrder->terrID, $previousOrder->type == 'Build Army' ? 'Army' : 'Fleet');
+                }
+                if (in_array($previousOrder->type, array('Retreat', 'Disband')))
+                    $retreating[$previousOrder->countryID][$previousOrder->terrID][$previousOrder->unitType] = true;
+            };
+
+            // Updating units for phase
+            $nbUnits = count($units);
+            for ($j = 0; $j < $nbUnits; ++$j) {
+                if (isset($retreating[$units[$j]->countryID][$units[$j]->terrID][$units[$j]->unitType]))
+                    $units[$j]->retreating = 'Yes';
+            }
+            $finalPhases[$i]['units'] = $units;
 		}
 		$this->phases = $finalPhases;
 	}

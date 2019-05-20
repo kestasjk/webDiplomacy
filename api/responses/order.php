@@ -106,7 +106,7 @@ class Order {
 	function getOrderedUnit() {
 		if ($this->type == 'Build Army' || $this->type == 'Build Fleet')
 			return null;
-		$retreating = ($this->type == 'Retreat' && $this->success == 'Yes' ? 'Yes' : 'No');
+		$retreating = in_array($this->type, array('Retreat', 'Disband')) ? 'Yes' : 'No';
 		return new Unit($this->unitType, $this->terrID, $this->countryID, $retreating);
 	}
 
