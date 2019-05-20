@@ -384,6 +384,7 @@ class SetOrders extends ApiEntry {
 			if ($terrID !== null)
 				$territoryToOrder[$terrID] = $orderID;
 		}
+		$waitIsSubmitted = false;
 		foreach ($orders as $order) {
 			$newOrder = array();
 			foreach (array('terrID', 'type', 'fromTerrID', 'toTerrID', 'viaConvoy') as $bodyField) {
@@ -419,8 +420,24 @@ class SetOrders extends ApiEntry {
 			}
 			if (!array_key_exists($order['terrID'], $territoryToOrder))
 				throw new RequestException('Unknown territory ID `'.$order['terrID'].'` for country `'.$countryID.'`.');
-			$newOrder['id'] = $territoryToOrder[$order['terrID']];
 			$updatedOrders[$newOrder['id']] = $newOrder;
+			if ($order['type'] == 'Wait')
+				$waitIsSubmitted = true;
+		}
+
+		// If a 'Wait' order was submitted on a Builds phase, set all free orders to 'Wait'.
+		if ($game->phase == 'Builds' && $waitIsSubmitted) {
+			foreach ($orderToTerritory as $orderID => $territoryID) {
+				if (!array_key_exists($orderID, $updatedOrders) && $territoryID === null) {
+					$updatedOrders[$orderID] = array(
+						'terrID' => null,
+						'type' => 'Wait',
+						'fromTerrID' => null,
+						'toTerrID' => null,
+						'viaConvoy' => null
+					);
+				}
+			}
 		}
 
 		$orderInterface = null;
