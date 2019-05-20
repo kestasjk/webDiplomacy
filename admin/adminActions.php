@@ -1253,11 +1253,11 @@ class adminActions extends adminActionsForms
 		$row = $DB->sql_hash("
 		SELECT
 		       k.apiKey,
-		       p.getStateOfAllGames,
-		       p.listGamesWithPlayersInCD,
-		       p.submitOrdersForUserInCD
+		       IFNULL(p.getStateOfAllGames, 'No'),
+		       IFNULL(p.listGamesWithPlayersInCD, 'No'),
+		       IFNULL(p.submitOrdersForUserInCD, 'No')
 		FROM wD_ApiKeys AS k
-		JOIN wD_ApiPermissions AS p ON (k.userID = p.userID)
+		LEFT JOIN wD_ApiPermissions AS p ON (k.userID = p.userID)
 		WHERE k.userID = ".$userID."
 		");
 		if (!$row)
