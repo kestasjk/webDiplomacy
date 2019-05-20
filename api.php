@@ -31,6 +31,7 @@ require_once('api/responses/unordered_countries.php');
 require_once('api/responses/game_state.php');
 require_once('objects/game.php');
 require_once('lib/cache.php');
+require_once('lib/html.php');
 require_once('lib/time.php');
 $DB = new Database();
 
