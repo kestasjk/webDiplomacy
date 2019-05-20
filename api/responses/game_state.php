@@ -269,8 +269,6 @@ class GameState {
                     if ($row['occupiedFromTerrID']) {
                         $this->occupiedFrom[intval($row['terrID'])] = $row['occupiedFromTerrID'];
                     }
-                } else {
-                    $units[$this->turn][$this->phase][] = new Unit($row['disType'], $row['disTerrID'], $row['disCountryID'], 'No');
                 }
 			}
 		}
