@@ -1053,7 +1053,7 @@ if ($totalResults == 0)
 }
 else
 {
-	print '<center><b> Showing results '.min(((($pagenum - 1) * $resultsPerPage)+1),$totalResults).' to '.min(($pagenum * $resultsPerPage),$totalResults).' of '.$totalResults.' total results. </b></center></br>';
+	print '<center><b> Showing results '.number_format(min(((($pagenum - 1) * $resultsPerPage)+1),$totalResults)).' to '.number_format(min(($pagenum * $resultsPerPage),$totalResults)).' of '.number_format($totalResults).' total results. </b></center></br>';
 	printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = True);
 
 	print '<div class="gamesList">';
