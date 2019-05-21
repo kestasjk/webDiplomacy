@@ -14,7 +14,7 @@ div.content-title-header {
 .footerMax {
 	max-width: 800px;
 	text-align: center;
-	margin-left:auto; 
+	margin-left:auto;
 	margin-right:auto;
 	word-break: break-word;
 }
@@ -58,7 +58,7 @@ input[type="text"], input[type="password"], textarea, select {
 	border: 1px solid #c1c1c1;
 	color:#000000;
 }
-input:read-only { 
+input:read-only {
   background-color:#999 !important;
 }
 
@@ -573,7 +573,7 @@ a.light {
 #header-goto a:hover {
 	background-color: rgba(255, 255, 255, 0.75);
 	border-radius: 15px 0 15px 0;
-} 
+}
 
 #seperator {
 	margin: 0;
@@ -971,6 +971,40 @@ TD.army, div.army {
 	color:#34870b;
 }
 
+/* Section for Login and Password Recovery styling */
+input[type=text].login, input[type=password].login, select.login {
+  width: 100%;
+	padding: 10px 5px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type=submit].login {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit].login:hover {
+  background-color: #45a049;
+}
+
+.loginDesc {
+	font-weight: normal;
+	color: #000000b2 !important;
+	margin-left:20px;
+	margin-right:20px;
+	font-size: 12px;
+}
+
+/* End section for Login and Password Recovery styling */
+
 /* Section for Game Create styling */
 .gameCreateShow {
 	border-radius: 7px;
@@ -1012,7 +1046,7 @@ TD.army, div.army {
 	padding: 0 0 0 10px;
 }
 
-input[type=text].gameCreate, input[type=password].gameCreate, select.gameCreate {
+input[type=text].gameCreate, input[type=password].gameCreate, input[type=number].gameCreate, select.gameCreate {
   width: 100%;
 	padding: 10px 5px;
   display: inline-block;

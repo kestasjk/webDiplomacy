@@ -469,11 +469,32 @@ class libHTML
 
 		print self::globalNotices();
 
-		if (isset($User) && $User->tempBan > time())
+		if (isset($User) && $User->userIsTempBanned() )
 		{
-			print '<div class="content-notice">
-					<p class="notice"><br>'.l_t('You are blocked from joining, rejoining, or creating new games for %s.',libTime::remainingText($User->tempBan)).'<br><br><hr></p>
+			if ( $User->tempBanReason != 'System' && $User->tempBanReason != '')
+			{
+				print '<div class="content-notice">
+					<p class="notice"><br>You are blocked from joining, rejoining, or creating new games by the moderators for '.libTime::remainingText($User->tempBan).
+					 ' for the following reason:</br> '.$User->tempBanReason.' </br>
+					Contact the moderators at '.Config::$modEMail.' for help. If you attempt to get around this temp ban 
+					by making a new account your accounts will be banned with no chance for appeal.<br><br></p>
 				</div>';
+			}
+			else if ( ($User->tempBan - time() ) > (60*60*24*180))
+			{
+				print '<div class="content-notice">
+					<p class="notice"><br>You are blocked from joining, rejoining, or creating new games for a year because you were too unreliable. 
+					Contact the moderators at '.Config::$modEMail.' for help. If you attempt to get around this temp ban 
+					by making a new account your accounts will be banned with no chance for appeal.<br><br></p>
+				</div>';
+			}
+			else
+			{
+				print '<div class="content-notice">
+						<p class="notice"><br>You are blocked from joining, rejoining, or creating new games for '.libTime::remainingText($User->tempBan).
+						' because you were too unreliable. Contact the moderators at '.Config::$modEMail.' if you need help.<br><br></p>
+					</div>';
+			}
 		}
 
 		if ( is_object($User) && $User->type['User'] )
@@ -548,7 +569,7 @@ class libHTML
 			INNER JOIN wD_Games g ON ( m.gameID = g.id )
 			WHERE m.userID = ".$User->id."
 				AND ( ( NOT m.orderStatus LIKE '%Ready%' AND NOT m.orderStatus LIKE '%None%' AND g.phase != 'Finished' ) OR NOT ( (m.newMessagesFrom+0) = 0 ) ) ".
-				( ($User->tempBan > time()) ? "AND m.status != 'Left'" : "" ) // ingore left games of temp banned user who are banned from rejoining
+				( ($User->userIsTempBanned()) ? "AND m.status != 'Left'" : "" ) // ignore left games of temp banned user who are banned from rejoining
 				." ORDER BY  g.processStatus ASC, g.processTime ASC");
 		$gameIDs = array();
 		$notifyGames = array();
@@ -792,14 +813,14 @@ class libHTML
 					<div id="navSubMenu" class="clickable nav-tab">Search ▼
                         <div id="nav-drop">
 							<a href="profile.php">Find User</a>
-							<a href="gamelistings.php?page-games=1&gamelistType=Search">Game Search</a>
+							<a href="gamelistings.php?gamelistType=Search">Game Search</a>
 							<a href="detailedSearch.php" title="advanced search of users and games">Advanced Search</a>
 						</div>
 					</div>
 					<div id="navSubMenu" class="clickable nav-tab">Games ▼
                         <div id="nav-drop">
-							<a href="gamelistings.php?page-games=1&gamelistType=New" title="Game listings; a searchable list of the games on this server">New Games</a>
-							<a href="gamelistings.php?page-games=1&gamelistType=Joinable" title="Open positions dropped by other players, free to claim">Open Positions</a>
+							<a href="gamelistings.php?gamelistType=New" title="Game listings; a searchable list of the games on this server">New Games</a>
+							<a href="gamelistings.php?gamelistType=Open%20Positions" title="Open positions dropped by other players, free to claim">Open Positions</a>
 							<a href="gamecreate.php" title="Start up a new game">Create a New Game</a>
 							<a href="https://sites.google.com/view/webdipinfo/ghost-ratings" target=_blank title="Ghost Ratings (external site)">Ghost Ratings</a>
 							<a href="tournaments.php" title="Information about tournaments on webDiplomacy">Tournaments</a>
@@ -852,7 +873,7 @@ class libHTML
 					{
 						$menu.='<a href="adminInfo.php">Admin Info</a>';
 					}
-					
+
 					$menu.=' </div>
 					</div>';
 				}
