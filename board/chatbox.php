@@ -394,27 +394,10 @@ class Chatbox
 
 			$alternate = ! $alternate;
 
-			// If member info is hidden and the message isn't from me
-			if ( $Game->isMemberInfoHidden() && ( !is_object($Member) || $message['fromCountryID'] != $Member->countryID ) )
-			{
-				/*
-				 * Take the last 2^12 bits off the timestamp (~70 mins), to fudge
-				 * it so players can't use it to compare to who was online/offline
-				 * at the time.
-				 */
-				// 1010-1010-1010-1010-1010-xxxx-xxxx-xxxx -> 1010-1010-1010-1010-1010-0000-0000-0000
-				$message['timeSent'] &= 0xfffff000;
-				$approxIndicator = '~';
-			}
-			else
-			{
-				$approxIndicator = '';
-			}
-
 			$messagestxt .= '<TR class="replyalternate'.($alternate ? '1' : '2' ).
 				' gameID'.$Game->id.'countryID'.$message['fromCountryID'].'">'.
 				// Add gameID####countryID### to allow muted countries to be hidden
-					'<TD class="left time">'.$approxIndicator.libTime::text($message['timeSent']);
+					'<TD class="left time">'.libTime::text($message['timeSent']);
 
 			$messagestxt .=  '</TD>
 					<TD class="right ';
