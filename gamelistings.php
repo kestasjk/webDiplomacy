@@ -272,27 +272,13 @@ else
 				<option'.(($_REQUEST['excusedTurns']=='2') ? ' selected="selected"' : '').' value="2">2</option>
 				<option'.(($_REQUEST['excusedTurns']=='3') ? ' selected="selected"' : '').' value="3">3</option>
 				<option'.(($_REQUEST['excusedTurns']=='4') ? ' selected="selected"' : '').' value="4">4</option>
-			</select></p>';
-			if (isset($_REQUEST['userID']))
-			{
-				if($User->id == $UserProfile->id || $User->type['Moderator'])
-				{
-					print '<p>Anonymity: <select class="gameCreate" name="anonymity">
+			</select></p>
+			<p>Anonymity: <select class="gameCreate" name="anonymity">
 						<option'.(($_REQUEST['anonymity']=='All') ? ' selected="selected"' : '').' value="All">All</option>
 						<option'.(($_REQUEST['anonymity']=='yes') ? ' selected="selected"' : '').' value="yes">Anonymous</option>
 						<option'.(($_REQUEST['anonymity']=='no') ? ' selected="selected"' : '').' value="no">Non-Anonymous</option>
-					</select></p>';
-				}
-			}
-			else
-			{
-				print '<p>Anonymity: <select class="gameCreate" name="anonymity">
-					<option'.(($_REQUEST['anonymity']=='All') ? ' selected="selected"' : '').' value="All">All</option>
-					<option'.(($_REQUEST['anonymity']=='yes') ? ' selected="selected"' : '').' value="yes">Anonymous</option>
-					<option'.(($_REQUEST['anonymity']=='no') ? ' selected="selected"' : '').' value="no">Non-Anonymous</option>
-				</select></p>';
-			}
-			print '<p>Phase Length From <select class="gameCreate" name="phaseLengthMin">
+					</select></p>
+			<p>Phase Length From <select class="gameCreate" name="phaseLengthMin">
 				<option'.(($_REQUEST['phaseLengthMin']=='All') ? ' selected="selected"' : '').' value="All">5 Minutes</option>
 				<option'.(($_REQUEST['phaseLengthMin']=='7m') ? ' selected="selected"' : '').' value="7m">7 Minutes</option>
 				<option'.(($_REQUEST['phaseLengthMin']=='10m') ? ' selected="selected"' : '').' value="10m">10 Minutes</option>
@@ -417,8 +403,8 @@ else
 		$SQLCounter .= " INNER JOIN wD_Members m ON m.gameID = g.id WHERE m.userID = ". $UserProfile->id;
 		if($User->id != $UserProfile->id && !$User->type['Moderator'])
 		{
-			$SQL .= " AND g.anon = 'No'";
-			$SQLCounter .= " AND g.anon = 'No'";
+			$SQL .= " AND (g.anon = 'No' OR g.phase = 'Finished')";
+			$SQLCounter .= " AND (g.anon = 'No' OR g.phase = 'Finished')";
 		}
 	}
 	else

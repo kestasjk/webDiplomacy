@@ -949,8 +949,8 @@ $SQLCounter = "SELECT count(1) FROM wD_Games g INNER JOIN wD_Members m ON m.game
 	WHERE m.userID = ".$UserProfile->id;
 if($User->id != $UserProfile->id && !$User->type['Moderator'])
 {
-	$SQL .= " AND g.anon = 'No'";
-	$SQLCounter .= " AND g.anon = 'No'";
+	$SQL .= " AND (g.anon = 'No' OR g.phase = 'Finished')";
+	$SQLCounter .= " AND (g.anon = 'No' OR g.phase = 'Finished')";
 }
 $SQL = $SQL . " ORDER BY ";
 if ($sortCol <> 'watchedGames' && $sortCol <> 'processTime' && $sortCol <> 'minimumBet') {$SQL .= "g.";}
@@ -1049,7 +1049,14 @@ function printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = False)
 			</select>';
 			foreach($_REQUEST as $key => $value)
 			{
-				if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3') == false && strpos('x'.$key,'__utm')== false && $key!="pagenum" && $key!="sortCol" && $key!="sortType")
+				if ($key == 'searchUser')
+				{
+					foreach ($value as $curKey => $curVal)
+					{
+						print '<input type="hidden" name="searchUser['.$curKey.']" value="'.$curVal.'">';
+					}
+				}
+				elseif(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3') == false && strpos('x'.$key,'__utm')== false && $key!="pagenum" && $key!="sortCol" && $key!="sortType")
 				{
 					print '<input type="hidden" name="'.$key.'" value='.$value.'>';
 				}
@@ -1072,7 +1079,14 @@ function printPageButton($pagenum, $currPage)
 		print '<FORM method="get" action=profile.php#results>';
 		foreach($_REQUEST as $key => $value)
 		{
-			if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && $key!="pagenum")
+			if ($key == 'searchUser')
+			{
+				foreach ($value as $curKey => $curVal)
+				{
+					print '<input type="hidden" name="searchUser['.$curKey.']" value="'.$curVal.'">';
+				}
+			}
+			elseif(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && $key!="pagenum")
 			{
 				print '<input type="hidden" name="'.$key.'" value='.$value.'>';
 			}
