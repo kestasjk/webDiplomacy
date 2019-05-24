@@ -671,7 +671,7 @@ if( $User->type['Moderator'] )
 	}
 	if ($UserProfile->userIsTempBanned())
 	{
-		print '<p>Temp Ban Reason: '.$UserProfile->tempBanReason.'</p>';
+		print '<p>Temp Ban Time: '.libTime::remainingText($UserProfile->tempBan).' Reason: '.$UserProfile->tempBanReason.'</p>';
 	}
 
 	if($UserProfile->qualifiesForEmergency() )
