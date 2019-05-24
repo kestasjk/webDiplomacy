@@ -199,7 +199,19 @@ else
 	{
     $_REQUEST[$m] = 'All';
 	}
-	print '<div class = "gameCreateShow">
+	if (isset($_REQUEST['userID']))
+	{
+		try
+		{
+			$UserProfile = new User($_REQUEST['userID']);
+		}
+		catch (Exception $e)
+		{
+			libHTML::error(l_t("Invalid user ID given."));
+		}
+		print l_t('<b>Showing only %s\'s games ',$UserProfile->username).'(<a href="gamelistings.php?gamelistType=Search">Clear</a>)</b></br>';
+	}
+	print '</br><div class = "gameCreateShow">
 			<FORM class="advancedSearch" method="get" action="gamelistings.php#results">
 			<INPUT type="hidden" name="gamelistType" value="Search" />
 			<p><strong>Game Status:<select class="gameCreate" name="status">
@@ -211,12 +223,19 @@ else
 				<option'.(($_REQUEST['status']=='Finished') ? ' selected="selected"' : '').' value="Finished">All Finished</option>
 				<option'.(($_REQUEST['status']=='Won') ? ' selected="selected"' : '').' value="Won">Won</option>
 				<option'.(($_REQUEST['status']=='Drawn') ? ' selected="selected"' : '').' value="Drawn">Drawn</option>
-			</select></p>
-			<p>My Games: <select class="gameCreate" name="userGames">
-				<option'.(($_REQUEST['userGames']=='All') ? ' selected="selected"' : '').' value="All">All Games</option>
-				<option'.(($_REQUEST['userGames']=='include') ? ' selected="selected"' : '').' value="include">My Games</option>
-			</select></p>
-			<p>Joinable Games: <select class="gameCreate" name="seeJoinable">
+			</select></p>';
+			if (isset($_REQUEST['userID']))
+			{
+				print '<INPUT type="hidden" name="userID" value="'.$UserProfile->id.'">';
+			}
+			else
+			{
+				print '<p>My Games: <select class="gameCreate" name="userGames">
+					<option'.(($_REQUEST['userGames']=='All') ? ' selected="selected"' : '').' value="All">All Games</option>
+					<option'.(($_REQUEST['userGames']=='include') ? ' selected="selected"' : '').' value="include">My Games</option>
+				</select></p>';
+			}
+			print '<p>Joinable Games: <select class="gameCreate" name="seeJoinable">
 				<option'.(($_REQUEST['seeJoinable']=='All') ? ' selected="selected"' : '').' value="All">All Games</option>
 				<option'.(($_REQUEST['seeJoinable']=='yes') ? ' selected="selected"' : '').' value="yes">All Joinable Games</option>
 				<option'.(($_REQUEST['seeJoinable']=='active') ? ' selected="selected"' : '').' value="active">Active Joinable Games Only</option>
@@ -255,10 +274,10 @@ else
 				<option'.(($_REQUEST['excusedTurns']=='4') ? ' selected="selected"' : '').' value="4">4</option>
 			</select></p>
 			<p>Anonymity: <select class="gameCreate" name="anonymity">
-				<option'.(($_REQUEST['anonymity']=='All') ? ' selected="selected"' : '').' value="All">All</option>
-				<option'.(($_REQUEST['anonymity']=='yes') ? ' selected="selected"' : '').' value="yes">Anonymous</option>
-				<option'.(($_REQUEST['anonymity']=='no') ? ' selected="selected"' : '').' value="no">Non-Anonymous</option>
-			</select></p>
+						<option'.(($_REQUEST['anonymity']=='All') ? ' selected="selected"' : '').' value="All">All</option>
+						<option'.(($_REQUEST['anonymity']=='yes') ? ' selected="selected"' : '').' value="yes">Anonymous</option>
+						<option'.(($_REQUEST['anonymity']=='no') ? ' selected="selected"' : '').' value="no">Non-Anonymous</option>
+					</select></p>
 			<p>Phase Length From <select class="gameCreate" name="phaseLengthMin">
 				<option'.(($_REQUEST['phaseLengthMin']=='All') ? ' selected="selected"' : '').' value="All">5 Minutes</option>
 				<option'.(($_REQUEST['phaseLengthMin']=='7m') ? ' selected="selected"' : '').' value="7m">7 Minutes</option>
@@ -373,18 +392,25 @@ else
 			</br>';
 	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g";
 	$SQLCounter = "SELECT COUNT(1) FROM wD_Games g";
-	if(isset($_REQUEST['userGames']))
+	if($_REQUEST['userGames'] == 'include')
 	{
-		if($_REQUEST['userGames'] == 'include')
+		$SQL .= " INNER JOIN wD_Members m ON m.gameID = g.id WHERE m.userID = ". $User->id;
+		$SQLCounter .= " INNER JOIN wD_Members m ON m.gameID = g.id WHERE m.userID = ". $User->id;
+	}
+	elseif(isset($_REQUEST['userID']))
+	{
+		$SQL .= " INNER JOIN wD_Members m ON m.gameID = g.id WHERE m.userID = ". $UserProfile->id;
+		$SQLCounter .= " INNER JOIN wD_Members m ON m.gameID = g.id WHERE m.userID = ". $UserProfile->id;
+		if($User->id != $UserProfile->id && !$User->type['Moderator'])
 		{
-			$SQL .= " INNER JOIN wD_Members m ON m.gameID = g.id WHERE m.userID = ". $User->id;
-			$SQLCounter .= " INNER JOIN wD_Members m ON m.gameID = g.id WHERE m.userID = ". $User->id;
+			$SQL .= " AND (g.anon = 'No' OR g.phase = 'Finished')";
+			$SQLCounter .= " AND (g.anon = 'No' OR g.phase = 'Finished')";
 		}
-		else
-		{
-			$SQL .= " WHERE 1=1";
-			$SQLCounter .= " WHERE 1=1";
-		}
+	}
+	else
+	{
+		$SQL .= " WHERE 1=1";
+		$SQLCounter .= " WHERE 1=1";
 	}
 	if(isset($_REQUEST['status']))
 	{
