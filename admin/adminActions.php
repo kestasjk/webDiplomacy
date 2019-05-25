@@ -69,12 +69,16 @@ class adminActions extends adminActionsForms
 				'description' => 'Replace one player in a given game with another one. This does not impact points. If the replacing player does not meet the RR requirements for the game or is already in the game, that game replacement will not occur.',
 				'params' => array('userID'=>'UserID to be replaced','replaceID'=>'UserID replacing','gameIDs'=>'GameID (all active if empty)', )
 			),
-
 			'tempBan' => array(
 				'name' => 'Temporary ban a player',
 				'description' => 'Stops a player from joining or creating new games for that many days. To remove a temp ban, enter 0 days. Include a reason for the temp
 				ban. <strong>The user will see the reason provided</strong>',
 				'params' => array('userID'=>'User ID', 'ban'=>'Days','reason'=>'Reason')
+			),
+			'recalculateUserRR' => array(
+				'name' => 'Recalculate RR for a User',
+				'description' => 'Reruns the RR calculation for the user provided.',
+				'params' => array('userID'=>'User ID')
 			),
 			'modExcuseDelay' => array(
 				'name' => 'Mod Excuse Missed Turn',
@@ -1162,6 +1166,30 @@ class adminActions extends adminActionsForms
 			$DB->sql_put("UPDATE wD_Members SET excusedMissedTurns = excusedMissedTurns - 1 WHERE gameID = ".$gameID." and userID = ".$userIDtoUpdate." and excusedMissedTurns > 0");
 			return l_t("UserID: ".$userIDtoUpdate." has had an excused missed turn removed in this game.");
 		}
+	}
+
+	public function recalculateUserRR(array $params)
+	{
+		global $DB;
+
+		$userIDtoUpdate = (int)$params['userID'];
+
+		require_once(l_r('gamemaster/gamemaster.php'));
+		 
+		$year = time() - 31536000;
+		$lastMonth = time() - 2419200;
+
+		$RELIABILITY_QUERY = "
+		UPDATE wD_Users u 
+		set u.reliabilityRating = greatest(0, 
+		(100 *(1 - ((SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.modExcused = 0 and t.turnDateTime > ".$year.") / greatest(1,u.yearlyPhaseCount))))
+		-(6*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastMonth."))
+		-(5*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$year.")))
+		where u.id = ".$userIDtoUpdate;
+
+		$DB->sql_put($RELIABILITY_QUERY);
+
+		return "This user's RR has been recalculated.";
 	}
 }
 

@@ -24,8 +24,6 @@
 
 require_once('header.php');
 
-require_once(l_r('gamesearch/search.php'));
-require_once(l_r('pager/pagergame.php'));
 require_once(l_r('objects/game.php'));
 require_once(l_r('gamepanel/game.php'));
 
@@ -196,7 +194,7 @@ if ( isset($_REQUEST['detail']) )
 			break;
 
 		case 'replies':
-			/*	This had to be removed due to placing too heavy of a load on the server. 	
+			/*	This had to be removed due to placing too heavy of a load on the server.
 			$dir=User::cacheDir($UserProfile->id);
 			if( file_exists($dir.'/profile_replies.html') )
 				print file_get_contents($dir.'/profile_replies.html');
@@ -225,22 +223,22 @@ if ( isset($_REQUEST['detail']) )
 
 		case 'civilDisorders':
 			print '<div class = "rrInfo">';
-			if ( $User->type['Moderator'] || $User->id == $UserProfile->id ) 
-			{	
+			if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
+			{
 				print '<h4>'.l_t('Reliability Explained:').'</h4>';
 
 				print '<div class = "profile_title">What is Reliability?</div>';
 				print '<div class = "profile_content">';
 				print '<p>Reliability is how consistently you avoid interrupting games. Any un-excused missed turns hurt your rating. If you have any un-excused
-				missed turns in the last 4 weeks you will receive an 11% penalty to your RR for <strong>each</strong> of those delays. It is very important 
+				missed turns in the last 4 weeks you will receive an 11% penalty to your RR for <strong>each</strong> of those delays. It is very important
 				to everyone you are playing with to be reliable but we understand mistakes happen so this extra penalty will drop to 5% after 28 days. All of the un-excused
 				missed turns that negatively impact your rating are highlighted in red below. Excused delays will only negatively impact your base score, seen below. Mod excused
-				delays do not hurt your score in any way. 
+				delays do not hurt your score in any way.
 				</br>
 				</br>
 				<strong>System Excused:</strong> If you had an "excused missed turn" left this will be yes and will not cause additional penalties against your rating.</br>
 				<strong>Mod Excused:</strong> If a moderator excused the missed turn this field will be yes and will not cause additional penalties against your rating.</br>
-				<strong>Same Period Excused:</strong> If you have multiple un-excused missed turns in a 72 hour period you are only penalized once, if this field is yes it 
+				<strong>Same Period Excused:</strong> If you have multiple un-excused missed turns in a 72 hour period you are only penalized once, if this field is yes it
 				will not cause additional penalties against your rating.
 				</p></div>';
 				print '<div class = "profile_title">What happens if my rating is low?</div>';
@@ -280,19 +278,19 @@ if ( isset($_REQUEST['detail']) )
 				<Strong>Reliability Rating:</Strong> '.max(($basePercentage - $recentPenalty - $yearlyPenalty),0) .'
 				</p>';
 
-				print '<h4>Missed Turns:</h4> 
+				print '<h4>Missed Turns:</h4>
 				<p>Red = Unexcused</p>';
-				$tabl = $DB->sql_tabl("SELECT n.gameID, n.countryID, n.turn, g.name, 
+				$tabl = $DB->sql_tabl("SELECT n.gameID, n.countryID, n.turn, g.name,
 				( CASE WHEN n.systemExcused = 1 THEN 'Yes' ELSE 'No' END ),
 				( CASE WHEN n.modExcused = 1 THEN 'Yes' ELSE 'No' END ),
-				( CASE WHEN n.samePeriodExcused = 1 THEN 'Yes' ELSE 'No' END ), 
-				n.id, 
+				( CASE WHEN n.samePeriodExcused = 1 THEN 'Yes' ELSE 'No' END ),
+				n.id,
 				n.turnDateTime
 				FROM wD_MissedTurns n
-				LEFT JOIN wD_Games g ON n.gameID = g.id 
+				LEFT JOIN wD_Games g ON n.gameID = g.id
 				WHERE n.userID = ".$UserProfile->id. " and n.turnDateTime > ".(time() - 31536000));
 
-				if ($DB->last_affected() != 0) 
+				if ($DB->last_affected() != 0)
 				{
 					print '<TABLE class="rrInfo">';
 					print '<tr>';
@@ -312,14 +310,14 @@ if ( isset($_REQUEST['detail']) )
 
 						if ($systemExcused == 'No' && $modExcused == 'No' && $samePeriodExcused == 'No') { print '<tr style="background-color:#F08080;">'; }
 						else { print '<tr>'; }
-						
+
 						print '<td> <strong>'.$id.'</strong></td>';
-						if ($name != '') 
+						if ($name != '')
 						{
 							print '<td> <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong></td>';
-						} 
-						else 
-						{	
+						}
+						else
+						{
 							print '<td> <strong>Cancelled Game</strong></td>';
 						}
 						print '<td> <strong>'.$Variant->countries[$countryID-1].'</strong></td>';
@@ -328,17 +326,17 @@ if ( isset($_REQUEST['detail']) )
 						print '<td> <strong>'.$modExcused.'</strong></td>';
 						print '<td> <strong>'.$samePeriodExcused.'</strong></td>';
 						print '<td> <strong>'.libTime::detailedText($turnDateTime).'</strong></td>';
-						
+
 						print '</tr>';
 					}
 					print '</table>';
-				} 
-				else 
+				}
+				else
 				{
 					print l_t('No missed turns found for this profile.');
 				}
-			} 
-			else 
+			}
+			else
 			{
                 print l_t('You do not have permission to view this page.');
 			}
@@ -362,12 +360,12 @@ if ( isset($_REQUEST['detail']) )
 <script type="text/javascript">
    var coll = document.getElementsByClassName("profile_title");
    var searchCounter;
-   
+
    for (searchCounter = 0; searchCounter < coll.length; searchCounter++) {
      coll[searchCounter].addEventListener("click", function() {
        this.classList.toggle("active");
        var content = this.nextElementSibling;
-   		if (content.style.display === "block") { content.style.display = "none"; } 
+   		if (content.style.display === "block") { content.style.display = "none"; }
    		else { content.style.display = "block"; }
      });
    }
@@ -470,7 +468,7 @@ if( $total )
 		print '</li>';
 	}
 
-	// This shows the Playing/Civil Disorder and CD takeover stats. 
+	// This shows the Playing/Civil Disorder and CD takeover stats.
 	foreach($rankingDetails['stats'] as $name => $status)
 	{
 		if ( in_array($name, $includeStatus) ) continue;
@@ -482,7 +480,7 @@ if( $total )
 	print '<li>'.l_t('Total (finished): <strong>%s</strong>',$total).'</li>';
 	print '</li>';
 
-	// Get a count of the number of classic games that have been played. 
+	// Get a count of the number of classic games that have been played.
 	$totalClassic = 0;
 	foreach($rankingDetailsClassic['stats'] as $name => $status)
 	{
@@ -491,8 +489,8 @@ if( $total )
 		$totalClassic += $status;
 	}
 	print '</div>';
-	
-	// Print out Classic stats if any classic games have been finished. 
+
+	// Print out Classic stats if any classic games have been finished.
 	if( $totalClassic )
 	{
 		print '<div class = "profile_title">';
@@ -510,8 +508,8 @@ if( $total )
 		print '</div>';
 		// print '</div>';
 	}
-	
-	// Get a count of the number of classic press games that have been played. 
+
+	// Get a count of the number of classic press games that have been played.
 	$totalClassicPress = 0;
 	foreach($rankingDetailsClassicPress['stats'] as $name => $status)
 	{
@@ -520,7 +518,7 @@ if( $total )
 		$totalClassicPress += $status;
 	}
 
-	// Print out Classic Press stats if any classic press games have been finished. 
+	// Print out Classic Press stats if any classic press games have been finished.
 	if( $totalClassicPress )
 	{
 		print '<div class = "profile_title">';
@@ -539,7 +537,7 @@ if( $total )
 		print '</div>';
 	}
 
-	// Get a count of the number of classic gunboat games that have been played. 
+	// Get a count of the number of classic gunboat games that have been played.
 	$totalClassicGunboat = 0;
 	foreach($rankingDetailsClassicGunboat['stats'] as $name => $status)
 	{
@@ -548,7 +546,7 @@ if( $total )
 		$totalClassicGunboat += $status;
 	}
 
-	// Print out Classic Gunboat stats if any classic gunboat games have been finished. 
+	// Print out Classic Gunboat stats if any classic gunboat games have been finished.
 	if( $totalClassicGunboat )
 	{
 		print '<div class = "profile_title">';
@@ -567,7 +565,7 @@ if( $total )
 		print '</div>';
 	}
 
-	// Get a count of the number of classic ranked games that have been played. 
+	// Get a count of the number of classic ranked games that have been played.
 	$totalClassicRanked = 0;
 	foreach($rankingDetailsClassicRanked['stats'] as $name => $status)
 	{
@@ -576,7 +574,7 @@ if( $total )
 		$totalClassicRanked += $status;
 	}
 
-	// Print out Classic Ranked stats if any classic ranked games have been finished. 
+	// Print out Classic Ranked stats if any classic ranked games have been finished.
 	if( $totalClassicRanked )
 	{
 		print '<div class = "profile_title">';
@@ -595,7 +593,7 @@ if( $total )
 		print '</div>';
 	}
 
-	// Get a count of the number of classic games that have been played. 
+	// Get a count of the number of classic games that have been played.
 	$totalVariants = 0;
 	foreach($rankingDetailsVariants['stats'] as $name => $status)
 	{
@@ -604,7 +602,7 @@ if( $total )
 		$totalVariants += $status;
 	}
 
-	// Print out Variant stats if any variant games have been finished. 
+	// Print out Variant stats if any variant games have been finished.
 	if( $totalVariants )
 	{
 		print '<div class = "profile_title">';
@@ -627,26 +625,26 @@ if( $total )
 	if( $User->type['Moderator'] || $User->id == $UserProfile->id )
 	{
 		print '<li><strong>'.l_t('Reliability:').' (<a href="profile.php?detail=civilDisorders&userID='.$UserProfile->id.'">'.l_t('Reliability Explained').'</a>) </strong>';
-	}   
+	}
 	else
 	{
 		print '<li><strong>'.l_t('Reliability:').'</strong>';
 	}
-	
+
 	if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 	{
 		$recentMissedTurns = $UserProfile->getRecentUnExcusedMissedTurns();
 		$allMissedTurns = $UserProfile->getYearlyUnExcusedMissedTurns();
-		If ($recentMissedTurns > 0) 
-		{ 
-			print '<li style="font-size:13px"><font color="red"> Recent Un-excused Delays: ' . $recentMissedTurns.'</font></li>'; 
+		If ($recentMissedTurns > 0)
+		{
+			print '<li style="font-size:13px"><font color="red"> Recent Un-excused Delays: ' . $recentMissedTurns.'</font></li>';
 			print '<li style="font-size:13px"><font color="red"> Recent Delay RR Penalty: ' . ($recentMissedTurns*6).'%</font></li>';
-			print '<li style="font-size:13px"><font color="red"> Yearly Delay RR Penalty: ' . ($allMissedTurns*5).'%</font></li>';  
+			print '<li style="font-size:13px"><font color="red"> Yearly Delay RR Penalty: ' . ($allMissedTurns*5).'%</font></li>';
 		}
 		print '<li style="font-size:13px">'.l_t('Un-excused delays/phases:').' <strong>'.$allMissedTurns.'/'.$UserProfile->yearlyPhaseCount.'</strong></li>';
 	}
 	print '<li style="font-size:13px">'.l_t('Reliability rating:').' <strong>'.($UserProfile->reliabilityRating).'%</strong>';
-	                                                                                                      
+
 	print '</li>';
 
 	print '</li>';
@@ -673,13 +671,13 @@ if( $User->type['Moderator'] )
 	}
 	if ($UserProfile->userIsTempBanned())
 	{
-		print '<p>Temp Ban Reason: '.$UserProfile->tempBanReason.'</p>';
+		print '<p>Temp Ban Time: '.libTime::remainingText($UserProfile->tempBan).' Reason: '.$UserProfile->tempBanReason.'</p>';
 	}
 
 	if($UserProfile->qualifiesForEmergency() )
 	{
 		print '<p class="profileCommentURL">User qualifies for emergency pause</p>';
-	} 
+	}
 	else if ($UserProfile->emergencyPauseDate == 1)
 	{
 		print '<p class="profileCommentURL">User is mod banned from emergency pause</p>';
@@ -698,9 +696,9 @@ print '<p><ul class="formlist">';
 if ( $UserProfile->type['Moderator'] ||  $UserProfile->type['ForumModerator'] || $UserProfile->type['Admin'] )
 {
 	print '<li><strong>'.l_t('Mod/Admin team').'</strong></li>';
-	print '<li>'.l_t('The best way to get moderator assistance is to contact a moderator at 
+	print '<li>'.l_t('The best way to get moderator assistance is to contact a moderator at
 	<a href="mailto:'.(isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail).'">'
-	.(isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail).'</a>. Please do not pm 
+	.(isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail).'</a>. Please do not pm
 	moderators directly as moderators are not required to regularly check their messages').'</li>';
 	print '<li>&nbsp;</li>';
 }
@@ -718,12 +716,12 @@ if (!isset(Config::$customForumURL))
 			SELECT COUNT(fromUserID) FROM `wD_ForumMessages` WHERE type='ThreadStart' AND fromUserID = ".$UserProfile->id."
 			) + (
 			SELECT COUNT(fromUserID) FROM `wD_ForumMessages` WHERE type='ThreadReply' AND fromUserID = ".$UserProfile->id."
-			)"); 
+			)");
 
 	if( is_null($posts) ) $posts=0;
 	list($likes) = $DB->sql_row("SELECT COUNT(*) FROM wD_LikePost WHERE userID=".$UserProfile->id);
-	list($liked) = $DB->sql_row("SELECT COUNT(*) FROM wD_ForumMessages fm 
-		INNER JOIN wD_LikePost lp ON lp.likeMessageID = fm.id 
+	list($liked) = $DB->sql_row("SELECT COUNT(*) FROM wD_ForumMessages fm
+		INNER JOIN wD_LikePost lp ON lp.likeMessageID = fm.id
 		WHERE fm.fromUserID=".$UserProfile->id);
 	$likes = ($likes ? '<strong>'.l_t('Likes:').'</strong> '.$likes : '');
 	$liked = ($liked ? '<strong>'.l_t('Liked:').'</strong> '.$liked : '');
@@ -797,7 +795,7 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 
 	if( !$UserProfile->type['Admin'] && ( $User->type['Admin'] || !$UserProfile->type['Moderator'] ) )
 		$modActions[] = libHTML::admincp('banUser',array('userID'=>$UserProfile->id), l_t('Ban user'));
-	
+
 	$modActions[] = '<a href="admincp.php?tab=Multi-accounts&aUserID='.$UserProfile->id.'" class="light">'.
 		l_t('Enter multi-account finder').'</a>';
 
@@ -812,9 +810,9 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 if( !$UserProfile->type['Admin'] && ( $User->type['Admin'] || $User->type['ForumModerator'] ) )
 {
 	$silences = $UserProfile->getSilences();
-	
+
 	print '<p><ul class="formlist"><li><strong>'.l_t('Silences:').'</strong></li><li>';
-	
+
 	if( count($silences) == 0 )
 		print l_t('No silences against this user.').'</p>';
 	else
@@ -827,32 +825,32 @@ if( !$UserProfile->type['Admin'] && ( $User->type['Admin'] || $User->type['Forum
 		}
 		print '</ul>';
 	}
-	
+
 	print '</li><li>';
 	print libHTML::admincp('createUserSilence',array('userID'=>$UserProfile->id,'reason'=>''),l_t('Silence user'));
 	print '</li></ul></p>';
 }
 
-if( !isset(Config::$customForumURL) ) 
+if( !isset(Config::$customForumURL) )
 {
-	if ( $User->type['User'] && $User->id != $UserProfile->id) 
+	if ( $User->type['User'] && $User->id != $UserProfile->id)
 	{
 		print '<div class="hr"></div>';
 		print '<a name="messagebox"></a>';
-		if ( isset($_REQUEST['message']) && $_REQUEST['message'] ) 
+		if ( isset($_REQUEST['message']) && $_REQUEST['message'] )
 		{
-			if ( ! libHTML::checkTicket() ) 
+			if ( ! libHTML::checkTicket() )
 			{
 				print '<p class="notice">'.l_t('You seem to be sending the same message again, this may happen if you refresh '.
 					'the page after sending a message.').'</p>';
-			} 
-			else 
+			}
+			else
 			{
-				if ( $UserProfile->sendPM($User, $_REQUEST['message']) ) 
+				if ( $UserProfile->sendPM($User, $_REQUEST['message']) )
 				{
 	                print '<p class="notice">'.l_t('Private message sent successfully.').'</p>';
-	            } 
-	            else 
+	            }
+	            else
 	            {
 	                print '<p class="notice">'.l_t('Private message could not be sent. You may be silenced or muted.').'</p>';
 	            }
@@ -895,8 +893,8 @@ else
 					</a>
 				</div>
 			</div>';
-		} 
-		else 
+		}
+		else
 		{
 			print '<p class="profileCommentURL">This user cannot currently receive messages.</p>';
 		}
@@ -908,12 +906,12 @@ print '</div>';
 <script type="text/javascript">
    var coll = document.getElementsByClassName("profile_title");
    var searchCounter;
-   
+
    for (searchCounter = 0; searchCounter < coll.length; searchCounter++) {
      coll[searchCounter].addEventListener("click", function() {
        this.classList.toggle("active");
        var content = this.nextElementSibling;
-   		if (content.style.display === "block") { content.style.display = "none"; } 
+   		if (content.style.display === "block") { content.style.display = "none"; }
    		else { content.style.display = "block"; }
      });
    }
@@ -922,96 +920,180 @@ print '</div>';
 
 libHTML::pagebreak();
 
-$search = new search('Profile');
+print '<h3>'.l_t('%s\'s games',$UserProfile->username).' '.( $User->type['User'] ? '(<a href="gamelistings.php?userID='.$UserProfile->id.'&gamelistType=Search">'.l_t('Search').'</a>)' : '' ).'</h3>';
 
-$profilePager = new PagerGames('profile.php',$total);
-$profilePager->addArgs('userID='.$UserProfile->id);
+$pagenum = 1;
+$resultsPerPage = 20;
+$maxPage = 0;
+$totalResults = 0;
+$sortCol = 'id';
+$sortType = 'desc';
 
-if ( isset($_REQUEST['advanced']) && $User->type['User'] )
+if ( isset($_REQUEST['sortCol']))
 {
-	print '<a name="search"></a>';
-	print '<h3>'.l_t('Search %s\'s games:',$UserProfile->username).' (<a href="profile.php?page=1&amp;userID='.$UserProfile->id.'#top" class="light">'.l_t('Close').'</a>)</h3>';
+	if ($_REQUEST['sortCol'] == 'name') { $sortCol='name'; }
+	else if ($_REQUEST['sortCol'] == 'pot') { $sortCol='pot'; }
+	else if ($_REQUEST['sortCol'] == 'phaseMinutes') { $sortCol='phaseMinutes'; }
+	else if ($_REQUEST['sortCol'] == 'minimumBet') {$sortCol='minimumBet'; }
+	else if ($_REQUEST['sortCol'] == 'minimumReliabilityRating') {$sortCol='minimumReliabilityRating'; }
+	else if ($_REQUEST['sortCol'] == 'watchedGames') {$sortCol='watchedGames'; }
+	else if ($_REQUEST['sortCol'] == 'turn') {$sortCol='turn'; }
+	else if ($_REQUEST['sortCol'] == 'processTime') {$sortCol='processTime'; }
+}
+if ( isset($_REQUEST['sortType'])) { if ($_REQUEST['sortType'] == 'asc') { $sortType='asc'; } }
+if ( isset($_REQUEST['pagenum'])) { $pagenum=(int)$_REQUEST['pagenum']; }
 
-	$profilePager->addArgs('advanced=on');
+$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
+	WHERE m.userID = ".$UserProfile->id;
+$SQLCounter = "SELECT count(1) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
+	WHERE m.userID = ".$UserProfile->id;
+if($User->id != $UserProfile->id && !$User->type['Moderator'])
+{
+	$SQL .= " AND (g.anon = 'No' OR g.phase = 'Finished')";
+	$SQLCounter .= " AND (g.anon = 'No' OR g.phase = 'Finished')";
+}
+$SQL = $SQL . " ORDER BY ";
+if ($sortCol <> 'watchedGames' && $sortCol <> 'processTime' && $sortCol <> 'minimumBet') {$SQL .= "g.";}
+$ordering = $sortCol;
+if ($sortCol == 'processTime') {$ordering = "(CASE WHEN g.processStatus = 'Paused' THEN (g.pauseTimeRemaining + ".time().") ELSE g.processTime END)";}
+elseif ($sortCol == 'minimumBet') {$ordering = "(SELECT m4.bet FROM wD_Members m4 WHERE m4.gameID = g.id AND m4.bet > 0 LIMIT 1)";}
+$SQL = $SQL . $ordering." ".$sortType." ";
+$SQL = $SQL . " Limit ". ($resultsPerPage * ($pagenum - 1)) . "," . $resultsPerPage .";";
 
-	$searched=false;
-	if ( isset($_REQUEST['search']) )
+$tabl = $DB->sql_tabl($SQL);
+list($totalResults) = $DB->sql_row($SQLCounter);
+$maxPage = ceil($totalResults / $resultsPerPage);
+print "<a name='results'></a>";
+
+if($totalResults == 0)
+{
+	print l_t('No games found for this profile.');
+}
+else
+{
+	print '<center><b> Showing results '.number_format(min(((($pagenum - 1) * $resultsPerPage)+1),$totalResults)).' to '.number_format(min(($pagenum * $resultsPerPage),$totalResults)).' of '.number_format($totalResults).' total results. </b></center></br>';
+	printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = True);
+
+	print '<div class="gamesList">';
+	while( $row = $DB->tabl_hash($tabl) )
 	{
-		libAuth::resourceLimiter('profile game search',5);
-
-		$searched=true;
-		$_SESSION['search-profile.php'] = $_REQUEST['search'];
-
-		$search->filterInput($_SESSION['search-profile.php']);
+		$Variant = libVariant::loadFromVariantID($row['variantID']);
+		$G = $Variant->panelGame($row);
+		print $G->summary(false);
 	}
-	elseif( isset($_REQUEST['page']) && isset($_SESSION['search-profile.php']) )
-	{
-		$searched=true;
-		$search->filterInput($_SESSION['search-profile.php']);
-	}
-
-	print '<div style="margin:30px">';
-	print '<form action="profile.php?userID='.$UserProfile->id.'&advanced=on#top" method="post">';
-	print '<input type="hidden" name="page" value="1" />';
-	$search->formHTML();
-	print '</form>';
-	print '<p><a href="profile.php?page=1&amp;userID='.$UserProfile->id.'#top" class="light">'.l_t('Close search').'</a></p>';
 	print '</div>';
 
-	if( $searched )
-	{
-		print '<div class="hr"></div>';
-		print $profilePager->pagerBar('top','<h3>'.l_t('Results:').'</h3>');
-
-		$gameCount = $search->printGamesList($profilePager);
-
-		if( $gameCount == 0 )
-		{
-			print '<p class="notice">';
-
-			if( $profilePager->currentPage > 1 )
-				print l_t('No more games found for the given search parameters.');
-			else
-				print l_t('No games found for the given search parameters, try broadening your search.');
-
-			print '</p>';
-			print '<div class="hr"></div>';
-		}
-	}
+	print '</br>';
+	printPageBar($pagenum, $maxPage, $sortCol, $sortType);
 }
-else
-{
-	$searched = true;
-
-	if(isset($_SESSION['search-profile.php']))
-		unset($_SESSION['search-profile.php']);
-
-	$leftSide = '<h3>'.l_t('%s\'s games',$UserProfile->username).' '.
-			( $User->type['User'] ? '(<a href="profile.php?userID='.$UserProfile->id.'&advanced=on#search">'.l_t('Search').'</a>)' : '' ).
-			'</h3>';
-	print $profilePager->pagerBar('top', $leftSide);
-
-	$gameCount = $search->printGamesList($profilePager);
-
-	if ( $gameCount == 0 )
-	{
-		print '<p class="notice">';
-		if( $profilePager->currentPage > 1 )
-			print l_t('No more games found for this profile.');
-		else
-			print l_t('No games found for this user.');
-		print '</p>';
-
-		print '<div class="hr"></div>';
-	}
-}
-
-if ( $searched && $gameCount > 1 )
-	print $profilePager->pagerBar('bottom','<a href="#top">'.l_t('Back to top').'</a>');
-else
-	print '<a name="bottom"></a>';
 
 print '</div>';
+
+function printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = False)
+{
+	if ($pagenum > 3)
+	{
+		printPageButton(1,False);
+	}
+	if ($pagenum > 4)
+	{
+		print "...";
+	}
+	if ($pagenum > 2)
+	{
+		printPageButton($pagenum-2, False);
+	}
+	if ($pagenum > 1)
+	{
+		printPageButton($pagenum-1, False);
+	}
+	if ($maxPage > 1)
+	{
+		printPageButton($pagenum, True);
+	}
+	if ($pagenum < $maxPage)
+	{
+		printPageButton($pagenum+1, False);
+	}
+	if ($pagenum < $maxPage-1)
+	{
+		printPageButton($pagenum+2, False);
+	}
+	if ($pagenum < $maxPage-3)
+	{
+		print "...";
+	}
+	if ($pagenum < $maxPage-2)
+	{
+		printPageButton($maxPage, False);
+	}
+	if ($maxPage > 1 && $sortBar)
+	{
+		print '<span style="float:right;">
+			<FORM class="advancedSearch" method="get" action="profile.php#results">
+			<b>Sort By:</b>
+			<select  class = "advancedSearch" name="sortCol">
+				<option'.(($sortCol=='id') ? ' selected="selected"' : '').' value="id">Game ID</option>
+				<option'.(($sortCol=='name') ? ' selected="selected"' : '').' value="name">Game Name</option>
+				<option'.(($sortCol=='pot') ? ' selected="selected"' : '').' value="pot">Pot Size</option>
+				<option'.(($sortCol=='minimumBet') ? ' selected="selected"' : '').' value="minimumBet">Bet</option>
+				<option'.(($sortCol=='phaseMinutes') ? ' selected="selected"' : '').' value="phaseMinutes">Phase Length</option>
+				<option'.(($sortCol=='minimumReliabilityRating') ? ' selected="selected"' : '').' value="minimumReliabilityRating">Reliability Rating</option>
+				<option'.(($sortCol=='watchedGames') ? ' selected="selected"' : '').' value="watchedGames">Spectator Count</option>
+				<option'.(($sortCol=='turn') ? ' selected="selected"' : '').' value="turn">Game Turn</option>
+				<option'.(($sortCol=='processTime') ? ' selected="selected"' : '').' value="processTime">Time to Next Phase</option>
+			</select>
+			<select class = "advancedSearch" name="sortType">
+				<option'.(($sortType=='asc') ? ' selected="selected"' : '').' value="asc">Ascending</option>
+				<option'.(($sortType=='desc') ? ' selected="selected"' : '').' value="desc">Descending</option>
+			</select>';
+			foreach($_REQUEST as $key => $value)
+			{
+				if ($key == 'searchUser')
+				{
+					foreach ($value as $curKey => $curVal)
+					{
+						print '<input type="hidden" name="searchUser['.$curKey.']" value="'.$curVal.'">';
+					}
+				}
+				elseif(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3') == false && strpos('x'.$key,'__utm')== false && $key!="pagenum" && $key!="sortCol" && $key!="sortType")
+				{
+					print '<input type="hidden" name="'.$key.'" value='.$value.'>';
+				}
+			}
+			print ' ';
+			print '<input type="submit" class="form-submit" name="Submit" value="Refresh" /></form>
+			</span>';
+		}
+}
+
+function printPageButton($pagenum, $currPage)
+{
+	if ($currPage)
+	{
+		print '<div class="curr-page">'.$pagenum.'</div>';
+	}
+	else
+	{
+		print '<div style="display:inline-block; margin:3px;">';
+		print '<FORM method="get" action=profile.php#results>';
+		foreach($_REQUEST as $key => $value)
+		{
+			if ($key == 'searchUser')
+			{
+				foreach ($value as $curKey => $curVal)
+				{
+					print '<input type="hidden" name="searchUser['.$curKey.']" value="'.$curVal.'">';
+				}
+			}
+			elseif(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && $key!="pagenum")
+			{
+				print '<input type="hidden" name="'.$key.'" value='.$value.'>';
+			}
+		}
+		print '<input type="submit" name="pagenum" class="form-submit" value='.$pagenum.' /></form></div>';
+	}
+}
 
 libHTML::footer();
 ?>

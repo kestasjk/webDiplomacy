@@ -429,11 +429,11 @@ class processGame extends Game
 	{
 		global $DB;
 	
-		// detect which players NMR this turn
+		// detect which players NMR this turn, exclude anyone who is left to avoid giving them unearned un-excused missed turns. 
 		$tabl = $DB->sql_tabl("SELECT m.id 
 				FROM wD_Members m 
 				WHERE m.gameID = ".$this->id." 
-					AND ( m.status='Playing' OR m.status='Left' ) 
+					AND m.status='Playing'
 					AND EXISTS(SELECT o.id FROM wD_Orders o WHERE o.gameID = m.gameID AND o.countryID = m.countryID)
 					AND NOT m.orderStatus LIKE '%Saved%' AND NOT m.orderStatus LIKE '%Ready%' AND NOT m.orderStatus LIKE '%Completed%'");
 		
