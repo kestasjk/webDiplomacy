@@ -49,7 +49,7 @@ elseif ($msgFilter == 0)
 }
 else
 {
-	$SQLCounter .= "( toCountryID = ".$Member->countryID." AND fromCountryID = ".$msgFilter." ) OR ( fromCountryID = ".$Member->countryID." AND toCountryID = ".$msgFilter." )";
+	$SQLCounter .= "(( toCountryID = ".$Member->countryID." AND fromCountryID = ".$msgFilter." ) OR ( fromCountryID = ".$Member->countryID." AND toCountryID = ".$msgFilter." ))";
 }
 
 
