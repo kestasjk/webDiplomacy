@@ -367,7 +367,7 @@ class Chatbox
 					(
 						".$where."
 					)
-				order BY id ".($msgCountryID==-1?'ASC':'DESC').' '.($limit?"LIMIT ".$limit:""));
+				order BY id DESC ".($limit?"LIMIT ".$limit:""));
 
 		unset($where);
 
@@ -388,9 +388,9 @@ class Chatbox
 		$messagestxt = "";
 
 		$alternate = false;
-		for ( $i=count($messages); $i >= 1; --$i )
+		for ( $i = count($messages)-1; $i>=0; --$i )
 		{
-			$message = $messages[$i-1];
+			$message = $messages[$i];
 
 			$alternate = ! $alternate;
 
