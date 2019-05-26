@@ -148,6 +148,7 @@ $pagenum = 1;
 $resultsPerPage = 20;
 $maxPage = 0;
 $totalResults = 0;
+$tournamentID = 0;
 
 if ( isset($_REQUEST['pagenum'])) { $pagenum=(int)$_REQUEST['pagenum']; }
 
@@ -193,7 +194,7 @@ elseif ($tab == 'Finished')
 }
 else
 {
-	$required = array('status', 'userGames', 'seeJoinable', 'privacy', 'potType', 'drawVotes', 'variant', 'excusedTurns', 'phaseLengthMin', 'phaseLengthMax', 'rrMin', 'rrMax', 'anonymity', 'messageNorm', 'messagePub', 'messageNon', 'messageRule','betMin','betMax');
+	$required = array('status', 'userGames', 'seeJoinable', 'privacy', 'potType', 'drawVotes', 'variant', 'excusedTurns', 'phaseLengthMin', 'phaseLengthMax', 'rrMin', 'rrMax', 'anonymity', 'messageNorm', 'messagePub', 'messageNon', 'messageRule','betMin','betMax', 'round');
 	$missing = array_diff($required, array_keys($_REQUEST));
 	foreach($missing as $m )
 	{
@@ -210,6 +211,19 @@ else
 			libHTML::error(l_t("Invalid user ID given."));
 		}
 		print l_t('<b>Showing only %s\'s games ',$UserProfile->username).'(<a href="gamelistings.php?gamelistType=Search">Clear</a>)</b></br>';
+	}
+	if (isset($_REQUEST['tournamentID']))
+	{
+		$tournamentID = (int)$_REQUEST['tournamentID'];
+		list($tournamentName, $tournamentRounds) = $DB->sql_row('SELECT name, totalRounds FROM wD_Tournaments WHERE id = "'.$tournamentID.'";');
+		if ($tournamentName == "")
+		{
+			unset ($_REQUEST['tournamentID']);
+		}
+		else
+		{
+			print l_t('<b>Showing only games from %s ',$tournamentName).'(<a href="gamelistings.php?gamelistType=Search">Clear</a>)</b></br>';
+		}
 	}
 	print '</br><div class = "gameCreateShow">
 			<FORM class="advancedSearch" method="get" action="gamelistings.php#results">
@@ -228,6 +242,10 @@ else
 			{
 				print '<INPUT type="hidden" name="userID" value="'.$UserProfile->id.'">';
 			}
+			elseif (isset($_REQUEST['tournamentID']))
+			{
+				print '<INPUT type="hidden" name="tournamentID" value="'.$tournamentID.'">';
+			}
 			else
 			{
 				print '<p>My Games: <select class="gameCreate" name="userGames">
@@ -235,13 +253,26 @@ else
 					<option'.(($_REQUEST['userGames']=='include') ? ' selected="selected"' : '').' value="include">My Games</option>
 				</select></p>';
 			}
-			print '<p>Joinable Games: <select class="gameCreate" name="seeJoinable">
-				<option'.(($_REQUEST['seeJoinable']=='All') ? ' selected="selected"' : '').' value="All">All Games</option>
-				<option'.(($_REQUEST['seeJoinable']=='yes') ? ' selected="selected"' : '').' value="yes">All Joinable Games</option>
-				<option'.(($_REQUEST['seeJoinable']=='active') ? ' selected="selected"' : '').' value="active">Active Joinable Games Only</option>
-				<option'.(($_REQUEST['seeJoinable']=='new') ? ' selected="selected"' : '').' value="new">New Joinable Games Only</option>
-			</select></p>
-			<p>Privacy: <select class="gameCreate" name="privacy">
+			if (isset($_REQUEST['tournamentID']))
+			{
+				print '<p>Round: <select class="gameCreate" name="round">
+					<option'.(($_REQUEST['round']=='All') ? ' selected="selected"' : '').' value="All">All</option>';
+					for($i = 1; $i <= $tournamentRounds; $i++)
+					{
+						print '<option'.(($_REQUEST['round']== $i) ? ' selected="selected"' : '').' value="'.$i.'">'.$i.'</option>';
+					}
+				print '</select></p>';
+			}
+			else
+			{
+				print '<p>Joinable Games: <select class="gameCreate" name="seeJoinable">
+					<option'.(($_REQUEST['seeJoinable']=='All') ? ' selected="selected"' : '').' value="All">All Games</option>
+					<option'.(($_REQUEST['seeJoinable']=='yes') ? ' selected="selected"' : '').' value="yes">All Joinable Games</option>
+					<option'.(($_REQUEST['seeJoinable']=='active') ? ' selected="selected"' : '').' value="active">Active Joinable Games Only</option>
+					<option'.(($_REQUEST['seeJoinable']=='new') ? ' selected="selected"' : '').' value="new">New Joinable Games Only</option>
+				</select></p>';
+			}
+			print '<p>Privacy: <select class="gameCreate" name="privacy">
 				<option'.(($_REQUEST['privacy']=='All') ? ' selected="selected"' : '').' value="All">All</option>
 				<option'.(($_REQUEST['privacy']=='private') ? ' selected="selected"' : '').' value="private">Private</option>
 				<option'.(($_REQUEST['privacy']=='public') ? ' selected="selected"' : '').' value="public">Public</option>
@@ -405,6 +436,16 @@ else
 		{
 			$SQL .= " AND (g.anon = 'No' OR g.phase = 'Finished')";
 			$SQLCounter .= " AND (g.anon = 'No' OR g.phase = 'Finished')";
+		}
+	}
+	elseif(isset($_REQUEST['tournamentID']))
+	{
+		$SQL .= " INNER JOIN wD_TournamentGames t ON t.gameID = g.id WHERE t.tournamentID = ". $tournamentID;
+		$SQLCounter .= " INNER JOIN wD_TournamentGames t ON t.gameID = g.id WHERE t.tournamentID = ". $tournamentID;
+		if ((int)$_REQUEST['round'] <> 0)
+		{
+			$SQL .= " AND t.round = ".(int)$_REQUEST['round'];
+			$SQLCounter .= " AND t.round = ".(int)$_REQUEST['round'];
 		}
 	}
 	else
