@@ -45,6 +45,6 @@ CREATE TABLE `wD_TournamentScoring` (
 `tournamentID` mediumint(8) unsigned NOT NULL,
 `userID` mediumint(8) unsigned NOT NULL,
 `round` tinyint(3) unsigned,
-`score` mediumint(8) unsigned NOT NULL,
+`score` FLOAT,
 INDEX ( `tournamentID` )
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
