@@ -44,7 +44,7 @@ if ( $User->type['User'] && ( isset($_REQUEST['join']) || isset($_REQUEST['leave
 
 		// If viewing an archive page make that the title, otherwise us the name of the game
 		libHTML::starthtml(isset($_REQUEST['viewArchive'])?$_REQUEST['viewArchive']:$Game->titleBarName());
-		
+
 		if ( isset($_REQUEST['join']) )
 		{
 			// They will be stopped here if they're not allowed.
@@ -79,10 +79,10 @@ else
 		$Variant=libVariant::loadFromGameID($gameID);
 		libVariant::setGlobals($Variant);
 		$Game = $Variant->panelGameBoard($gameID);
-		
+
 		// If viewing an archive page make that the title, otherwise us the name of the game
 		libHTML::starthtml(isset($_REQUEST['viewArchive'])?$_REQUEST['viewArchive']:$Game->titleBarName());
-		
+
 		if ( $Game->Members->isJoined() && !$Game->Members->isTempBanned() )
 		{
 			// We are a member, load the extra code that we might need
@@ -152,7 +152,7 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 	if( $Game->phase != 'Pre-game' )
 	{
 		if(isset($_REQUEST['Unpause'])) $_REQUEST['Pause']='on'; // Hack because Unpause = toggle Pause
-		
+
 		foreach(Members::$votes as $possibleVoteType) {
 			if( isset($_REQUEST[$possibleVoteType]) && isset($Member) && libHTML::checkTicket() )
 				$Member->toggleVote($possibleVoteType);
@@ -350,11 +350,12 @@ if($User->type['Moderator'])
 
 // TODO: Have this loaded up when the game object is loaded up
 list($directorUserID) = $DB->sql_row("SELECT directorUserID FROM wD_Games WHERE id = ".$Game->id);
-if( isset($directorUserID) && $directorUserID == $User->id)
+list($tournamentDirector, $tournamentCodirector) = $DB->sql_row("SELECT directorID, coDirectorID FROM wD_Tournaments t INNER JOIN wD_TournamentGames g ON t.id = g.tournamentID WHERE g.gameID = ".$Game->id);
+if( (isset($directorUserID) && $directorUserID == $User->id) || (isset($tournamentDirector) && $tournamentDirector == $User->id) || (isset($tournamentCodirector) && $tournamentCodirector == $User->id) )
 {
 	// This guy is the game director
 	define("INBOARD", true);
-	
+
 	require_once(l_r("admin/adminActionsForms.php"));
 }
 
