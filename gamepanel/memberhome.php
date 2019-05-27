@@ -57,13 +57,14 @@ class panelMemberHome extends panelMember
 	{
 		global $User, $DB;
 		list($directorUserID) = $DB->sql_row("SELECT directorUserID FROM wD_Games WHERE id = ".$this->Game->id);
+		list($tournamentDirector, $tournamentCodirector) = $DB->sql_row("SELECT directorID, coDirectorID FROM wD_Tournaments t INNER JOIN wD_TournamentGames g ON t.id = g.tournamentID WHERE g.gameID = ".$this->Game->id);
 
 		$buf =array();
 		$buf[] = '<span class="country'.$this->countryID.' '.($User->id==$this->userID?'memberYourCountry':'').
 			' memberStatus'.$this->status.'">'.substr($this->country,0,3).(
 				 '').'</span>';
 
-		if ($this->Game->anon == 'No' || (isset($directorUserID) && $directorUserID == $User->id))
+		if ($this->Game->anon == 'No' || (isset($directorUserID) && $directorUserID == $User->id) || (isset($tournamentDirector) && $tournamentDirector == $User->id) || (isset($tournamentCodirector) && $tournamentCodirector == $User->id))
 		{
 			$buf[] = $this->memberFinalized();
 		}

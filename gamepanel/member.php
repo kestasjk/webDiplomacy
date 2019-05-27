@@ -47,23 +47,23 @@ class panelMember extends Member
 	{
 		$buf = '';
 		libHTML::alternate();
-		
+
 		global $checkMissingOrders;
 
 		if( $this->Game->Members->isTempBanned() )
 		{
 			$buf .= '<div class="panelTempBanned"><b>You are blocked from rejoining this game.</b></div>';
 		}
-		elseif ( $this->Game->phase != 'Pre-game' && $this->Game->phase != 'Finished')		
+		elseif ( $this->Game->phase != 'Pre-game' && $this->Game->phase != 'Finished')
 		{
 			global $DB;
-			
+
 			$row = $DB->sql_hash("select count(1) from wD_Members where gameID = ".$this->gameID." and status not like '%Defeated%' and status not like '%Left%' and (orderStatus not like '%Saved%' and orderStatus not like '%Completed%' and orderStatus not like '%Ready%' and orderStatus not like '%None%')");
 			foreach ( $row as $name=>$value )
 			{
 				$checkMissingOrders = $value;
 			}
-				
+
 			if ($checkMissingOrders >= 1)
 			{
 				$buf .= '<div class="panelAnonOnlyFlag"><b>At least 1 country still needs to enter orders!</b></div>';
@@ -73,7 +73,7 @@ class panelMember extends Member
 				$buf .= '<div class="panelAnonOnlyFlag"><b>All countries have entered orders.</b></div>';
 			}
 		}
-		
+
 		if ( $this->Game->phase != 'Pre-game' )
 		{
 			$buf .= '
@@ -83,7 +83,7 @@ class panelMember extends Member
 		{
 			$buf .= '<div class="panelBarGraphMember memberProgressBarBlank"> </div>';
 		}
-		
+
 		$buf .= '<div class="memberBoardHeader barAlt'.libHTML::$alternate.' barDivBorderTop ">
 			<table><tr class="member">';
 
@@ -177,10 +177,11 @@ class panelMember extends Member
 	{
 		global $User, $DB;
 		list($directorUserID) = $DB->sql_row("SELECT directorUserID FROM wD_Games WHERE id = ".$this->Game->id);
+		list($tournamentDirector, $tournamentCodirector) = $DB->sql_row("SELECT directorID, coDirectorID FROM wD_Tournaments t INNER JOIN wD_TournamentGames g ON t.id = g.tournamentID WHERE g.gameID = ".$this->Game->id);
 
 		if ( !isset($this->isNameHidden) )
 		{
-			if ( ($this->Game->isMemberInfoHidden() && $User->id!=$this->userID) && !(isset($directorUserID) && $directorUserID == $User->id))
+			if ( ($this->Game->isMemberInfoHidden() && $User->id!=$this->userID) && !(isset($directorUserID) && $directorUserID == $User->id) && !(isset($tournamentDirector) && $tournamentDirector == $User->id) && !(isset($tournamentCodirector) && $tournamentCodirector == $User->id))
 				$this->isNameHidden = true;
 			else
 				$this->isNameHidden = false;
@@ -188,13 +189,13 @@ class panelMember extends Member
 
 		return $this->isNameHidden;
 	}
-	
+
 	private $isLastSeenHidden;
 	function isLastSeenHidden()
 	{
 		global $User;
 		$this->isLastSeenHidden = true;
-		if (($User->type['Moderator']) && (! $this->Game->Members->isJoined())) 
+		if (($User->type['Moderator']) && (! $this->Game->Members->isJoined()))
 		{
 			$this->isLastSeenHidden = false;
 		}
@@ -206,7 +207,7 @@ class panelMember extends Member
 	function isMissedTurnsHidden()
 	{
 		$this->isMissedTurnsHidden = $this->isNameHidden();
-		
+
 		return $this->isMissedTurnsHidden;
 	}
 
@@ -418,10 +419,10 @@ class panelMember extends Member
 			if ( $voteName == 'Pause' && $this->Game->processStatus=='Paused' )
 				$voteName = 'Unpause';
 			// Do we hide draws?
-			if ( $voteName == 'Draw' && $this->Game->drawType == 'draw-votes-hidden' && $User->id != $this->userID ) 
+			if ( $voteName == 'Draw' && $this->Game->drawType == 'draw-votes-hidden' && $User->id != $this->userID )
 			{
 				// Moderators can see draws in games they're not in
-				if (($User->type['Moderator']) && (! $this->Game->Members->isJoined())) 
+				if (($User->type['Moderator']) && (! $this->Game->Members->isJoined()))
 				{
 					$buf[]=l_t("(Hidden Draw)");
 				}
@@ -431,7 +432,7 @@ class panelMember extends Member
 		}
 
 		// Display hidden draw votes message if appropriate
-		if ( $this->Game->drawType == 'draw-votes-hidden' && $User->id != $this->userID && !(($User->type['Moderator']) && (! $this->Game->Members->isJoined()))) 
+		if ( $this->Game->drawType == 'draw-votes-hidden' && $User->id != $this->userID && !(($User->type['Moderator']) && (! $this->Game->Members->isJoined())))
 			$buf[]=l_t("(any draw votes are hidden)");
 
 		if( count($buf) )
@@ -454,7 +455,7 @@ class panelMember extends Member
 			{
 				if($this->Game->excusedMissedTurns > 0)
 					$buf .= ' - '.l_t('Delays left: %s of %s','<span class="excusedNMRs">'.$this->excusedMissedTurns.'</span>','<span class="excusedNMRs">'.$this->Game->excusedMissedTurns.'</span>');
-				
+
 				if ( $this->missedPhases >= 1 )
 					$buf .= ' - <span class="missedPhases">'.l_t('Delayed last turn').'</span>';
 			}
@@ -481,7 +482,7 @@ class panelMember extends Member
 
 		return '<span class="member'.$this->id.'StatusIcon">'.$this->orderStatus->icon().'</span>';
 	}
-	
+
 	function memberFinalizedAnon()
 	{
 		if( $this->status!='Playing' ) return '';
@@ -489,7 +490,7 @@ class panelMember extends Member
 		return '<span class="member'.$this->id.'StatusIcon">'.$this->orderStatus->iconAnon().'</span>';
 	}
 
-	private function muteMember() 
+	private function muteMember()
 	{
 		global $User;
 
@@ -501,7 +502,7 @@ class panelMember extends Member
 			$User->toggleCountryMute($this->gameID, $this->countryID);
 	}
 
-	private function muteIcon() 
+	private function muteIcon()
 	{
 		global $User;
 
@@ -510,7 +511,7 @@ class panelMember extends Member
 		{
 			$isMuted = $User->isCountryMuted($this->gameID, $this->countryID);
 
-			if( isset($_REQUEST['toggleMute']) && $_REQUEST['toggleMute']==$this->countryID) 
+			if( isset($_REQUEST['toggleMute']) && $_REQUEST['toggleMute']==$this->countryID)
 			{
 				$this->muteMember();
 				$isMuted = !$isMuted;
