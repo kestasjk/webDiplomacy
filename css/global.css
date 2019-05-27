@@ -1131,7 +1131,7 @@ input[type=submit].gameCreate:hover {
 	background-color: #4CAF50 ;
 	color: white;
 	cursor: pointer;
-	padding: 10px;
+	padding: 5px;
 	border: none;
 	text-align: left;
 	outline: none;
@@ -1722,7 +1722,7 @@ li.modToolsformlisttitle {
 	outline: none;
 }
 
-.active, .modToolsCollapsible:hover {
+.modToolsCollapsible:active, .modToolsCollapsible:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #555;
 }

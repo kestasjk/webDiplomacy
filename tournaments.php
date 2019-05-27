@@ -22,35 +22,54 @@ require_once('header.php');
 
 global $User, $Misc, $DB;
 
-// tournamentGames
-class tournamentGames 
+$tab = 'Finished';
+
+// Get values from posted form. 
+if(isset($_POST['submit'])) 
 {
-    public $fromUserID;
-    public $toUserIDList;
-    public $toBCCUserIDList;
-    public $timeSent;
-    public $subject;
-	public $message;
+    if( isset($_POST['spectateID']) )
+    {
+        if($User->type['User'] )
+        {
+            $tournamentID = (int)$_POST['spectateID'];
+
+            list($alreadySpectating) = $DB->sql_row("SELECT COUNT(1) FROM wD_TournamentSpectators s WHERE s.tournamentID = ".$tournamentID." and s.userID = ".$User->id);
+            
+            // spectate or unspecate
+            if ($alreadySpectating > 0)
+            {
+                $sql = "delete FROM wD_TournamentSpectators WHERE tournamentID = ".$tournamentID." and userID = ".$User->id;
+                $DB->sql_put($sql);
+            }
+            else
+            {
+                $sql = "insert into wD_TournamentSpectators (tournamentID, userID) values (".$tournamentID.", ".$User->id.")";
+                $DB->sql_put($sql);
+            }
+            $tab = $_POST['tabs'];
+        }
+    }
 }
 
 libHTML::starthtml();
 
 print '<div class="content">';
-$tab = 'Finished';
+
 $tabs = array();
 
 list($open) = $DB->sql_row("SELECT COUNT(1) FROM wD_Tournaments t WHERE t.status = 'Registration'");
 list($ongoing) = $DB->sql_row("SELECT COUNT(1) FROM wD_Tournaments t WHERE t.status = 'Active'");
 list($finished) = $DB->sql_row("SELECT COUNT(1) FROM wD_Tournaments t WHERE t.status = 'Finished'");
 
-if ($open > 0) { $tabs['Open']=l_t("Tournaments that are open for signup"); }
+if ($open > 0) { $tabs['Registration Open']=l_t("Tournaments that are open for signup"); }
 if ($ongoing > 0) { $tabs['Ongoing']=l_t("Tournaments that are currently running"); }
 
 
 if($User->type['User'] )
 {
 	list($participating) = $DB->sql_row("SELECT COUNT(1) FROM wD_TournamentParticipants p INNER JOIN wD_Tournaments t ON t.id = p.tournamentID 
-		WHERE t.status <> 'Finished' and p.userID = ".$User->id);
+        WHERE t.status <> 'Finished' and p.userID = ".$User->id);
+
 	list($spectating) = $DB->sql_row("SELECT COUNT(1) FROM wD_TournamentSpectators s INNER JOIN wD_Tournaments t ON t.id = s.tournamentID 
     WHERE t.status <> 'Finished' and s.userID = ".$User->id);
 
@@ -72,12 +91,10 @@ if($User->type['User'] )
         $tabs['Moderating']=l_t("Tournaments you have access to moderate."); 
         $tab = 'Moderating';
     }
-
 }
 
 $tabs['Finished']=l_t("Tournaments that have ended");
 
-// Do scoring in a different page that can be linked too and that will have a link back to the main tournament page
 // add a update time to the scoring so notifications can be sent out in the future around scoring?
 
 $tabNames = array_keys($tabs);
@@ -107,14 +124,13 @@ print '</div>';
 
 libHTML::pagebreak();
 
-
 if ($tab == 'Finished')
 {
     $sql = "select * from wD_Tournaments t where t.status = 'Finished' ";
     $sqlCounter = "select * from wD_Tournaments t where t.status = 'Finished' ";
 }
 
-else if ($tab == 'Active')
+else if ($tab == 'Ongoing')
 {
     $sql = "select * from wD_Tournaments t where t.status = 'Active' ";
     $sqlCounter = "select count(1) from wD_Tournaments t where t.status = 'Active' ";
@@ -122,16 +138,16 @@ else if ($tab == 'Active')
 
 else if ($tab == 'Spectating')
 {
-    $sql = "select * from wD_Tournaments t where t.status = 'Spectating' ";
-    $sqlCounter = "select count(1) from wD_Tournaments t where t.status = 'Spectating' ";
+    $sql = "select t.* from wD_Tournaments t inner join wD_TournamentSpectators s on s.tournamentID = t.id where t.status <> 'Finished' and s.userID =".$User->id;
+    $sqlCounter = "select count(1) from wD_Tournaments t inner join wD_TournamentSpectators s on s.tournamentID = t.id where t.status <> 'Finished' and s.userID =".$User->id;
 }
 
 else if ($tab == 'Participating')
 {
-    $sql = "select * from wD_Tournaments t where t.status = 'Participating' ";
-    $sqlCounter = "select count(1) from wD_Tournaments t where t.status = 'Participating' ";
+    $sql = "select t.* from wD_Tournaments t inner join wD_TournamentParticipants s on s.tournamentID = t.id where t.status <> 'Finished' and s.userID =".$User->id;
+    $sqlCounter = "select count(1) from wD_Tournaments t inner join wD_TournamentParticipants s on s.tournamentID = t.id where t.status <> 'Finished' and s.userID =".$User->id;
 }
-else if ($tab == 'Registration')
+else if ($tab == 'Registration Open')
 {
     $sql = "select * from wD_Tournaments t where t.status = 'Registration' ";
     $sqlCounter = "select count(1) from wD_Tournaments t where t.status = 'Registration' ";
@@ -156,12 +172,22 @@ list($results) = $DB->sql_row($sqlCounter);
 /*
 * Loop through all tournaments that are aren't finished
 */
-print 'Showing '.$results.' results';
+if ($results > 0) { print 'Showing '.$results.' results'; }
+else { print 'No tournaments meet the criteria right now.'; }
+
 while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $forumThreadLink, $externalLink, $directorID, $coDirectorID, $firstPlace, $secondPlace, $thirdPlace) = $DB->tabl_row($tablChecked))
 {
     print '<div class = "tournamentShow">';
     print '<h2 class = "tournamentCenter">'.$name.'</h2>';
     
+    if ($status != 'PreStart')
+    {
+        print '<a href="tournamentScoring.php?tournamentID='.$id.'">Scoring and Participants</a></br>';
+        if($status != 'Registration')
+        {
+            print '<a href="gamelistings.php?gamelistType=Search&tournamentID='.$id.'">Tournament Games</a></br>';
+        }
+    }
     if ($tab == 'Moderating')
     {
         print '<a href="tournamentManagement.php?tournamentID='.$id.'">Modify Tournament</a></br></br>';
@@ -203,12 +229,12 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
     {
         print '<div class = "tournament_round"> Round '.$round.'</div>';
         print '<div class = "tournament_games">';
+        print '<a href="gamelistings.php?gamelistType=Search&tournamentID='.$id.'&round='.$round.'&Submit=Search#results">Search Round '.$round.' games</a></br>';
         print '<TABLE class="tournament">';
         print '<tr>';
         print '<th class= "tournament">Game</th>';
         print '<th class= "tournament">Turn</th>';
         print '<th class= "tournament">phase</th>';
-        print '<th class= "tournament">Over?</th>';
         print '<th class= "tournament">Status</th>';
         print '<th class= "tournament">Process Time</th>';
         print '</tr>';
@@ -219,17 +245,66 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
         while (list($gameID, $gameName, $turn, $phase, $gameOver, $processStatus, $processTime) = $DB->tabl_row($tablRoundsGames))
         {
             $Variant=libVariant::loadFromGameID($gameID);
+            $Game = $Variant->Game($gameID);
+
             print '<TR><td><a href="board.php?gameID='.$gameID.'">'.$gameName.'</a></TD>';
-            print '<td> <strong>'.$Variant->turnAsDate($turn).'</strong></td>';
-            print '<td> <strong>'.$phase.'</strong></td>';
-            print '<td> <strong>'.$gameOver.'</strong></td>';
-            print '<td> <strong>'.$processStatus.'</strong></td>';
-            print '<td> <strong>'.libTime::detailedText($processTime).'</strong></td>';
+            print '<td>'.$Variant->turnAsDate($turn).'</td>';
+            print '<td>'.$phase.'</td>';
+
+            $finalStatus = $gameOver;
+            if ($finalStatus == 'No')
+            {
+                if ($Game->missingPlayerPolicy=='Wait'&&!$Game->Members->isCompleted() && time()>=$Game->processTime)
+                {
+                    print '<td style="background-color:#F08080;"> <strong>Waiting for Orders</strong></td>';
+                }
+                else if ($processStatus == 'Crashed')
+                {
+                    print '<td style="background-color:#F08080;"> <strong>Crashed</strong></td>';
+                }
+                else if ($processStatus == 'Paused')
+                {
+                    print '<td> <strong>Paused</strong></td>';
+                }
+                else
+                {
+                    print '<td>Running</td>';
+                }
+            }
+            else
+            {
+                print '<td>'.$finalStatus.'</td>';
+            }
+            
+            print '<td>'.libTime::detailedText($processTime).'</td>';
         }
         print '</table>';
 
         print'</div>';
 
+    }
+
+    list($userSpectating) = $DB->sql_row("Select count(1) from wD_TournamentSpectators s where s.tournamentID = ".$id." and s.userID = ".$User->id);
+
+    if ($userSpectating == 1 and $status != 'Finished')
+    {
+        print '</br> </br>
+        <form method="post" action="#">
+            <input type="hidden" name="spectateID" value="'.$id.'">
+            <input type="hidden" name="tabs" value="'.$tab.'">
+            <input type="submit" class="green-Submit" name="submit" value="Stop Spectating Tournament">
+        </form>
+        ';
+    }
+    else if ($status != 'Finished')
+    {
+        print '</br> </br>
+        <form method="post" action="#">
+            <input type="hidden" name="spectateID" value="'.$id.'">
+            <input type="hidden" name="tabs" value="'.$tab.'">
+            <input type="submit" class="green-Submit" name="submit" value="Spectate Tournament">
+        </form>
+        ';
     }
 
      print '</div></br>';

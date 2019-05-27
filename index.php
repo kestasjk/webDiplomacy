@@ -760,6 +760,60 @@ else
 	print '<div class="homeHeader">'.l_t('Spectated games').'</div>';
 	print libHome::gameWatchBlock();
 
+	$sql = "select t.id, t.name, t.status from wD_Tournaments t inner join wD_TournamentParticipants s on s.tournamentID = t.id 
+	where t.status <> 'Finished' and ( s.userID =".$User->id." or t.directorID = ".$User->id." or t.coDirectorID = ".$User->id.")";
+	$sqlCounter = "select count(1) from wD_Tournaments t inner join wD_TournamentSpectators s on s.tournamentID = t.id 
+	where t.status <> 'Finished' and ( s.userID =".$User->id." or t.directorID = ".$User->id." or t.coDirectorID = ".$User->id.")";
+
+	$tablChecked = $DB->sql_tabl($sql);
+	list($resultsParticipating) = $DB->sql_row($sqlCounter);
+
+	if ($resultsParticipating > 0)
+	{
+		print '<div class="homeHeader">'.l_t('My Tournaments').' <a href="tournaments.php?tab=Participating">'.libHTML::link().'</a></div>';
+
+		while (list($id, $name, $status) = $DB->tabl_row($tablChecked))
+		{
+			print '<div class = "gamePanelHome"> 
+			<h3 class = "tournamentCenter">'.$name.'</h3><div class = "tournamentCenter">';
+			if ($status != 'PreStart')
+			{
+				print '<a  class = "tournamentCenter" href="tournamentScoring.php?tournamentID='.$id.'">Scoring and Participants</a></br>';
+				if($status != 'Registration')
+				{
+					print '</br><a class = "tournamentCenter" href="gamelistings.php?gamelistType=Search&tournamentID='.$id.'">Tournament Games</a></br>';
+				}
+			}
+			print'</br></div></div>';
+		}
+	}
+
+	$sql = "select t.id, t.name, t.status from wD_Tournaments t inner join wD_TournamentSpectators s on s.tournamentID = t.id where t.status <> 'Finished' and s.userID =".$User->id;
+	$sqlCounter = "select count(1) from wD_Tournaments t inner join wD_TournamentSpectators s on s.tournamentID = t.id where t.status <> 'Finished' and s.userID =".$User->id;
+
+	$tablChecked = $DB->sql_tabl($sql);
+	list($resultsSpectating) = $DB->sql_row($sqlCounter);
+
+	if ($resultsSpectating > 0)
+	{
+		print '<div class="homeHeader">'.l_t('Spectated Tournaments').' <a href="tournaments.php?tab=Spectating">'.libHTML::link().'</a></div>';
+
+		while (list($id, $name, $status) = $DB->tabl_row($tablChecked))
+		{
+			print '<div class = "gamePanelHome"> 
+			<h3 class = "tournamentCenter">'.$name.'</h3><div class = "tournamentCenter">';
+			if ($status != 'PreStart')
+			{
+				print '<a class = "tournamentCenter" href="tournamentScoring.php?tournamentID='.$id.'">Scoring and Participants</a></br>';
+				if($status != 'Registration')
+				{
+					print '</br><a class = "tournamentCenter" href="gamelistings.php?gamelistType=Search&tournamentID='.$id.'">Tournament Games</a></br>';
+				}
+			}
+			print'</br></div></div>';
+		}
+	}
+
 	print '</td>
 	</tr></table>';
 

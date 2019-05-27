@@ -64,8 +64,7 @@ if(isset($_POST['submit']))
 
     if(isset($_POST['description']) && strlen($_POST['description'])) 
     {
-        $paramDescription = $DB->escape($_POST['description']);
-        $paramDescription = strip_tags(html_entity_decode(trim($paramDescription)));
+        $paramDescription = $DB->escape($_POST['description'], $htmlAllowed=true);
     }
 
     if ( isset($_POST['status']) && $_POST['status'] && strlen($_POST['status']) )
@@ -324,7 +323,8 @@ else
             
         if ($worked == true)
         {
-            print '<p class = "contactUs">Tournament data has been updated.';
+            print '<p class = "contactUs">Tournament data has been updated.</br>';
+            print '<a href="tournamentManagement.php?tournamentID='.$tournamentID.'">Edit Again</a></p>';
         }
     }
     else if ($makeNew)
@@ -347,7 +347,8 @@ else
             
         if ($worked == true)
         {
-            print '<p class = "contactUs">Tournament has been made.';
+            print '<p class = "contactUs">Tournament has been made.</br>';
+            print '<a href="tournamentManagement.php?tournamentID='.$tournamentID.'">Edit Again</a></p>';
         }
     }
 }
