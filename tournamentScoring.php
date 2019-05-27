@@ -35,7 +35,7 @@ $tournamentID = 0;
 
 if(isset($_REQUEST['tournamentID']))
 {
-  $tournamentID = $_REQUEST['tournamentID'];
+  $tournamentID = (int)$_REQUEST['tournamentID'];
   $sortCol = 'name';
   $sortType = 'asc';
   if (isset($_REQUEST['sortCol']))
