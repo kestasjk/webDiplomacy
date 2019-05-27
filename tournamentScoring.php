@@ -52,24 +52,33 @@ if(isset($_REQUEST['tournamentID']))
   }
   list($tournamentName, $tournamentRounds, $director, $codirector) = $DB->sql_row("SELECT name, totalRounds, directorID, coDirectorID FROM wD_Tournaments WHERE id =".$tournamentID);
 
-  foreach($_REQUEST as $key => $value)
-	{
-		if(strpos('x'.$key,'id') == 1)
-		{
-      $valArray = explode('r',substr($key,2));
-      $updateID = $valArray[0];
-      $updateRound = $valArray[1];
-      if (strpos('x'.$updateID,'new') == 1 && $value <> '')
-      {
-        $DB->sql_put("INSERT INTO wD_TournamentScoring (tournamentID, userID, round, score)
-        VALUES (".$tournamentID.", ".substr($updateID,3).", ".$updateRound.", ".$value.")");
-      }
-      elseif ($value <> '')
-      {
-        $DB->sql_put("UPDATE wD_TournamentScoring SET score=".$value." WHERE userID=".$updateID." AND tournamentID=".$tournamentID." AND round=".$updateRound);
-      }
-		}
-	}
+  $editor = False;
+  if($User->type['Moderator'] || $User->id == $director || $User->id == $codirector)
+  {
+    $editor = True;
+  }
+
+  if ($editor)
+  {
+    foreach($_REQUEST as $key => $value)
+  	{
+  		if(strpos('x'.$key,'id') == 1)
+  		{
+        $valArray = explode('r',substr($key,2));
+        $updateID = $valArray[0];
+        $updateRound = $valArray[1];
+        if (strpos('x'.$updateID,'new') == 1 && $value <> '')
+        {
+          $DB->sql_put("INSERT INTO wD_TournamentScoring (tournamentID, userID, round, score)
+          VALUES (".(int)$tournamentID.", ".(int)substr($updateID,3).", ".(int)$updateRound.", ".floatval($value).")");
+        }
+        elseif ($value <> '')
+        {
+          $DB->sql_put("UPDATE wD_TournamentScoring SET score=".floatval($value)." WHERE userID=".$updateID." AND tournamentID=".$tournamentID." AND round=".$updateRound);
+        }
+  		}
+  	}
+  }
 
   $nullRound = array();
   list($SQLExpected) = $DB->sql_row("SELECT COUNT(1) FROM wD_TournamentParticipants t
@@ -113,12 +122,6 @@ if(isset($_REQUEST['tournamentID']))
         }
       }
     }
-  }
-
-  $editor = False;
-  if($User->type['Moderator'] || $User->id == $director || $User->id == $codirector)
-  {
-    $editor = True;
   }
 
   print "<a name='tableLocation'></a>";
@@ -220,7 +223,7 @@ if(isset($_REQUEST['tournamentID']))
         list($curScore) = $DB->sql_row("SELECT score FROM wD_TournamentScoring WHERE tournamentID = ".$tournamentID." AND userID = ".$userID." AND round = ".$i);
         if ($editor)
         {
-          print '<TD class= "advancedSearch"><Input type="number" name="'.'id'.($curScore=='' ? 'new' : '').$userID.'r'.$i.'" value="'.$curScore.'"></TD>';
+          print '<TD class= "advancedSearch"><Input type="number" name="'.'id'.($curScore=='' ? 'new' : '').$userID.'r'.$i.'" value="'.$curScore.'" step="any"></TD>';
         }
         else
         {
