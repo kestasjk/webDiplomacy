@@ -18,8 +18,6 @@
     along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-ini_set("log_errors", 1);
-ini_set("error_log", "api-error.log");
 define('IN_CODE', 1);
 require_once('config.php');
 require_once('global/definitions.php');
@@ -81,11 +79,11 @@ class RequestException extends Exception {
 }
 
 /**
- * Generate an error page with given HTTP error code and given message printed as a plain text.
+ * Handles an error (user or server) in an API request.
  * @param string $message - Error message.
  * @param int $errorCode - HTTP error code for this error.
  */
-function fatalError($message, $errorCode) {
+function handleAPIError($message, $errorCode) {
 	header('Content-Type: text/plain');
 	http_response_code($errorCode);
 	print $message;
@@ -751,23 +749,30 @@ try {
 	// Print response.
 	print $jsonEncodedResponse;
 }
+
+// 4xx - User errors - No need to log
 catch (RequestException $exc) {
-	fatalError($exc->getMessage(), 400);
+	handleAPIError($exc->getMessage(), 400);
 }
 catch (ClientUnauthorizedException $exc) {
-	fatalError($exc->getMessage(), 401);
+	handleAPIError($exc->getMessage(), 401);
 }
 catch (ClientForbiddenException $exc) {
-	fatalError($exc->getMessage(), 403);
+	handleAPIError($exc->getMessage(), 403);
 }
+
+// 5xx - Server errors
 catch (ServerInternalException $exc) {
-	fatalError($exc->getMessage(), 500);
+	handleAPIError($exc->getMessage(), 500);
+	trigger_error($exc->getMessage());
 }
 catch (NotImplementedException $exc) {
-	fatalError($exc->getMessage(), 501);
+	handleAPIError($exc->getMessage(), 501);
+    trigger_error($exc->getMessage());
 }
 catch (Exception $exc) {
-	fatalError("Internal error: ".$exc->getMessage(), 501);
+	handleAPIError("Internal error: ".$exc->getMessage(), 501);
+    trigger_error($exc->getMessage());
 }
 
 ?>
