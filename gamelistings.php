@@ -1023,36 +1023,39 @@ else
 			$SQLCounter .= " AND (SELECT m3.bet FROM wD_Members m3 WHERE m3.gameID = g.id AND m3.bet > 0 LIMIT 1) <= ". (int)$_REQUEST['betMax'];
 		}
 	}
-	if(isset($_REQUEST['messageNorm']))
+	if ($_REQUEST['messageNorm'] <> 'All' || $_REQUEST['messagePub'] <> 'All' || $_REQUEST['messageNon'] <> 'All' || $_REQUEST['messageRule'] <> 'All')
 	{
-		if($_REQUEST['messageNorm'] <> 'Yes')
+		if(isset($_REQUEST['messageNorm']))
 		{
-			$SQL .= " AND g.pressType <> 'Regular'";
-			$SQLCounter .= " AND g.pressType <> 'Regular'";
+			if($_REQUEST['messageNorm'] <> 'Yes')
+			{
+				$SQL .= " AND g.pressType <> 'Regular'";
+				$SQLCounter .= " AND g.pressType <> 'Regular'";
+			}
 		}
-	}
-	if(isset($_REQUEST['messagePub']))
-	{
-		if($_REQUEST['messagePub'] <> 'Yes')
+		if(isset($_REQUEST['messagePub']))
 		{
-			$SQL .= " AND g.pressType <> 'PublicPressOnly'";
-			$SQLCounter .= " AND g.pressType <> 'PublicPressOnly'";
+			if($_REQUEST['messagePub'] <> 'Yes')
+			{
+				$SQL .= " AND g.pressType <> 'PublicPressOnly'";
+				$SQLCounter .= " AND g.pressType <> 'PublicPressOnly'";
+			}
 		}
-	}
-	if(isset($_REQUEST['messageNon']))
-	{
-		if($_REQUEST['messageNon'] <> 'Yes')
+		if(isset($_REQUEST['messageNon']))
 		{
-			$SQL .= " AND g.pressType <> 'NoPress'";
-			$SQLCounter .= " AND g.pressType <> 'NoPress'";
+			if($_REQUEST['messageNon'] <> 'Yes')
+			{
+				$SQL .= " AND g.pressType <> 'NoPress'";
+				$SQLCounter .= " AND g.pressType <> 'NoPress'";
+			}
 		}
-	}
-	if(isset($_REQUEST['messageRule']))
-	{
-		if($_REQUEST['messageRule'] <> 'Yes')
+		if(isset($_REQUEST['messageRule']))
 		{
-			$SQL .= " AND g.pressType <> 'RulebookPress'";
-			$SQLCounter .= " AND g.pressType <> 'RulebookPress'";
+			if($_REQUEST['messageRule'] <> 'Yes')
+			{
+				$SQL .= " AND g.pressType <> 'RulebookPress'";
+				$SQLCounter .= " AND g.pressType <> 'RulebookPress'";
+			}
 		}
 	}
 }
