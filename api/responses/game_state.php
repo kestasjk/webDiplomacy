@@ -218,7 +218,7 @@ class GameState {
     public $occupiedFrom = array();
 
 	/**
-	 * Load the UserOptions object. It is assumed that username is already escaped.
+	 * Load the GameState object.
 	 * @throws \Exception
 	 */
 	function load()
