@@ -1110,6 +1110,84 @@ input[type=submit].gameCreate:hover {
 }
 /* End section for Game Create styling */
 
+/* Section for Tournament styling */
+.tournament {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+}
+
+.tournamentShow {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	padding: 0 0 0 10px;
+	margin-top:0px !important;
+}
+
+ .tournament_round {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #4CAF50 ;
+	color: white;
+	cursor: pointer;
+	padding: 10px;
+	border: none;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+.tournament_round:hover {
+	background-color: #45a049;
+}
+
+.tournament_round:active {
+	background-color: #45a049;
+}
+
+.tournament_games {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	margin-top: 0px !important;
+	border-radius: 7px;
+}
+
+.tournament_info {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	/* overflow: hidden; */
+	background-color: #ddd;
+	margin-top: 0px !important;
+	border-radius: 7px;
+	padding: 0 10px 0 10px;
+}
+
+.tournamentCenter {
+	text-align: center !important;
+}
+
+.tournament td, .tournament th {
+	border: 1px solid #ddd;
+	padding: 6px;
+}
+
+.tournament tr:nth-child(even){background-color: #f2f2f2; word-break: break-word;}
+.tournament tr:nth-child(odd){background-color: #ffffff; word-break: break-word;}
+
+.tournament th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+	text-align: left;
+	background-color: #009902;
+	color: white;
+}
+/* End of section for Tournament styling */
+
 /* Section for FAQ styling */
 .faq {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -1719,7 +1797,7 @@ ul.modTools {
 		border-radius: 7px;
   }
 
-.active, .SearchCollapsible:hover {
+.SearchCollapsible:active, .SearchCollapsible:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #555;
 }
