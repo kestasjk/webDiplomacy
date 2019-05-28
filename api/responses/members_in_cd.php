@@ -53,8 +53,8 @@ class CountriesInCivilDisorder {
                                             AND m.missedPhases > 0
                                             AND g.processStatus = 'Not-processing'
                                             AND g.phase IN ('Diplomacy', 'Retreats', 'Builds')
-                                            AND g.processTime >= UNIX_TIMESTAMP()
-                                            AND g.processTime <= (UNIX_TIMESTAMP() + 60);");
+                                            AND g.processTime >= ".time()."
+                                            AND g.processTime <= ".(time() + 60).";");
 
         while( $row = $DB->tabl_hash($countryTabl) )
         {
