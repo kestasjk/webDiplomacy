@@ -21,6 +21,7 @@ namespace webdiplomacy_api;
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
+require_once ('config.php');
 require_once ('game_country.php');
 
 /**
@@ -41,12 +42,13 @@ class UnorderedCountries {
 	{
 		global $DB;
 
+        $apiVariants = implode(', ', \Config::$apiConfig['variantIDs']);
 		$countryTabl = $DB->sql_tabl("SELECT m.gameID, m.countryID
                                       FROM wD_Members AS m
                                       LEFT JOIN wD_Games AS g ON ( g.id = m.gameID )
                                       WHERE (m.orderStatus IS NULL OR m.orderStatus = '')
                                             AND m.userID = $userID
-                                            AND g.variantID in (1, 15, 23)
+                                            AND g.variantID in ($apiVariants)
                                             AND g.processStatus = 'Not-processing'
                                             AND g.phase IN ('Diplomacy', 'Retreats', 'Builds');");
 

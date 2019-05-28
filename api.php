@@ -304,6 +304,8 @@ class GetGamesStates extends ApiEntry {
 			throw new RequestException('Invalid game ID: '.$gameID);
 		if ($countryID == null || !ctype_digit($countryID))
 			throw new RequestException('Invalid country ID.');
+		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
+		    throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 		$gameState = new \webdiplomacy_api\GameState(intval($gameID), intval($countryID));
 		return $gameState->toJson();
 	}
@@ -346,6 +348,8 @@ class SetOrders extends ApiEntry {
 			throw new RequestException('Body field `orders` is not an array.');
 		if ($readyArg && (!is_string($readyArg) || !in_array($readyArg, array('Yes', 'No'))))
 			throw new RequestException('Body field `ready` is not either `Yes` or `No`.');
+        if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
+            throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 		$turn = intval($turn);
 		$phase = strval($phase);
 		$countryID = intval($countryID);
@@ -737,6 +741,11 @@ class Api {
 }
 
 try {
+    if (!property_exists('Config', 'apiConfig') || !Config::$apiConfig['enabled']) {
+        http_response_code(404);
+        die('API is not enabled.');
+    }
+
 	// Load API object, load API entries, parse API call and print response as a JSON object.
 	$api = new Api();
 	$api->load(new ListGamesWithPlayersInCD());
