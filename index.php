@@ -760,9 +760,9 @@ else
 	print '<div class="homeHeader">'.l_t('Spectated games').'</div>';
 	print libHome::gameWatchBlock();
 
-	$sql = "select t.id, t.name, t.status from wD_Tournaments t inner join wD_TournamentParticipants s on s.tournamentID = t.id 
+	$sql = "select distinct t.id, t.name, t.status from wD_Tournaments t inner join wD_TournamentParticipants s on s.tournamentID = t.id 
 	where t.status <> 'Finished' and ( s.userID =".$User->id." or t.directorID = ".$User->id." or t.coDirectorID = ".$User->id.")";
-	$sqlCounter = "select count(1) from wD_Tournaments t inner join wD_TournamentSpectators s on s.tournamentID = t.id 
+	$sqlCounter = "select count(distinct t.id) from wD_Tournaments t inner join wD_TournamentParticipants s on s.tournamentID = t.id 
 	where t.status <> 'Finished' and ( s.userID =".$User->id." or t.directorID = ".$User->id." or t.coDirectorID = ".$User->id.")";
 
 	$tablChecked = $DB->sql_tabl($sql);
