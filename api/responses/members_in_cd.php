@@ -43,14 +43,13 @@ class CountriesInCivilDisorder {
 		global $DB;
 
 		$apiVariants = implode(', ', \Config::$apiConfig['variantIDs']);
-		$countryTabl = $DB->sql_tabl("SELECT m.gameID, m.countryID
+		$countryTabl = $DB->sql_tabl("SELECT DISTINCT m.gameID, m.countryID
                                       FROM wD_Members AS m
                                       LEFT JOIN wD_Orders AS o ON ( o.gameID = m.gameID AND o.countryID = m.countryID )
                                       LEFT JOIN wD_Games AS g ON ( g.id = m.gameID )
                                       WHERE NOT o.id IS NULL
                                             AND g.variantID in ($apiVariants)
-                                            AND g.phaseMinutes >= 10
-                                            AND m.missedPhases > 0
+                                            AND (m.missedPhases > 0 OR m.status = 'Left')
                                             AND g.processStatus = 'Not-processing'
                                             AND g.phase IN ('Diplomacy', 'Retreats', 'Builds')
                                             AND g.processTime >= ".time()."
