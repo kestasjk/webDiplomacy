@@ -42,14 +42,33 @@ class CountriesInCivilDisorder {
 	{
 		global $DB;
 
+		// Filter allowed variantIDs
 		$apiVariants = implode(', ', \Config::$apiConfig['variantIDs']);
+
+		// Filter allowed gameIDs
+        $filterGameClause = '';
+        if (!empty(\Config::$apiConfig['restrictToGameIDs'])) {
+            $filterGameIDs = implode(', ', \Config::$apiConfig['restrictToGameIDs']);
+            $filterGameClause = "AND g.id IN ($filterGameIDs)";
+        }
+
+        // Finds powers (gameID, countryID) that
+        // 1) Had orders to submit for the current turn (o.id IS NOT NULL)
+        // 2) On a map (and a gameID) that is supported by the API
+        // 3) Only if the power has not logged in during the turn (missedPhases > 0) or is in CD (status = Left)
+        // 4) Only if orders have not yet been submitted (orderStatus is NULL or '')
+        // 5) Only if the game is still active (i.e. not pre-game, finished, paused, etc.)
+        // 6) And only if the next process() is within the next 60 seconds
+
 		$countryTabl = $DB->sql_tabl("SELECT DISTINCT m.gameID, m.countryID
                                       FROM wD_Members AS m
                                       LEFT JOIN wD_Orders AS o ON ( o.gameID = m.gameID AND o.countryID = m.countryID )
                                       LEFT JOIN wD_Games AS g ON ( g.id = m.gameID )
-                                      WHERE NOT o.id IS NULL
+                                      WHERE o.id IS NOT NULL
                                             AND g.variantID in ($apiVariants)
+                                            " . $filterGameClause . "
                                             AND (m.missedPhases > 0 OR m.status = 'Left')
+                                            AND (m.orderStatus IS NULL OR m.orderStatus = '')
                                             AND g.processStatus = 'Not-processing'
                                             AND g.phase IN ('Diplomacy', 'Retreats', 'Builds')
                                             AND g.processTime >= ".time()."
