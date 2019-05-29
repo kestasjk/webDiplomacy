@@ -89,6 +89,7 @@ class Chatbox
 	{
 		global $Member, $Game, $User, $DB;
 		list($directorUserID) = $DB->sql_row("SELECT directorUserID FROM wD_Games WHERE id = ".$Game->id);
+		list($tournamentDirector, $tournamentCodirector) = $DB->sql_row("SELECT directorID, coDirectorID FROM wD_Tournaments t INNER JOIN wD_TournamentGames g ON t.id = g.tournamentID WHERE g.gameID = ".$Game->id);
 
 		if( isset($_POST['newmessage']) AND $_POST['newmessage']!="" )
 		{
@@ -124,6 +125,10 @@ class Chatbox
 			{
 				libGameMessage::send(0, 'Game Director', '('.$User->username.'): '.$newmessage);
 			}
+			elseif((isset($tournamentDirector) && $tournamentDirector == $User->id) || (isset($tournamentCodirector) && $tournamentCodirector == $User->id) )
+			{
+				libGameMessage::send(0, 'Tournament Director', '('.$User->username.'): '.$newmessage);
+			}
 		}
 
 		if( isset($_REQUEST['MarkAsUnread']) )
@@ -146,6 +151,7 @@ class Chatbox
 	{
 		global $DB, $Game, $User, $Member;
 		list($directorUserID) = $DB->sql_row("SELECT directorUserID FROM wD_Games WHERE id = ".$Game->id);
+		list($tournamentDirector, $tournamentCodirector) = $DB->sql_row("SELECT directorID, coDirectorID FROM wD_Tournaments t INNER JOIN wD_TournamentGames g ON t.id = g.tournamentID WHERE g.gameID = ".$Game->id);
 
 		$chatbox = '<a name="chatboxanchor"></a><a name="chatbox"></a>';
 
@@ -196,6 +202,7 @@ class Chatbox
 		$chatbox .= '</TABLE></DIV>';
 
 		if ( ( $User->type['Moderator'] && $msgCountryID == 0 ) ||((isset($directorUserID) && $directorUserID == $User->id && $msgCountryID == 0 ))||
+				 (isset($tournamentDirector) && $tournamentDirector == $User->id && $msgCountryID == 0) || (isset($tournamentCodirector) && $tournamentCodirector == $User->id && $msgCountryID == 0) ||
 		     ( isset($Member) &&
 		       ( $Game->pressType == 'Regular' ||                                         // All tabs allowed for Regular
 		         $Member->countryID == $msgCountryID ||                                   // Notes tab always allowed
@@ -367,7 +374,7 @@ class Chatbox
 					(
 						".$where."
 					)
-				order BY id ".($msgCountryID==-1?'ASC':'DESC').' '.($limit?"LIMIT ".$limit:""));
+				order BY id DESC ".($limit?"LIMIT ".$limit:""));
 
 		unset($where);
 
@@ -388,9 +395,9 @@ class Chatbox
 		$messagestxt = "";
 
 		$alternate = false;
-		for ( $i=count($messages); $i >= 1; --$i )
+		for ( $i = count($messages)-1; $i>=0; --$i )
 		{
-			$message = $messages[$i-1];
+			$message = $messages[$i];
 
 			$alternate = ! $alternate;
 
