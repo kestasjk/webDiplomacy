@@ -238,8 +238,8 @@ if ( isset($_REQUEST['detail']) )
 				</br>
 				<strong>System Excused:</strong> If you had an "excused missed turn" left this will be yes and will not cause additional penalties against your rating.</br>
 				<strong>Mod Excused:</strong> If a moderator excused the missed turn this field will be yes and will not cause additional penalties against your rating.</br>
-				<strong>Same Period Excused:</strong> If you have multiple un-excused missed turns in a 72 hour period you are only penalized once, if this field is yes it
-				will not cause additional penalties against your rating.
+				<strong>Same Period Excused:</strong> If you have multiple un-excused missed turns in a 24 hour period you are only penalized once with the exception of live games, 
+				if this field is yes it will not cause additional penalties against your rating.
 				</p></div>';
 				print '<div class = "profile_title">What happens if my rating is low?</div>';
 				print '<div class = "profile_content">';
