@@ -180,6 +180,24 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
     print '<div class = "tournamentShow">';
     print '<h2 class = "tournamentCenter">'.$name.'</h2>';
     
+    if ($tab == 'Finished')
+    {
+        if ($firstPlace > 0)
+        {
+            list($firstUsername) = $DB->sql_row("Select u.username from wD_Users u where u.id =".$firstPlace);
+            print '<div class = "tournamentCenter">First Place: <a href="profile.php?userID='.$firstPlace.'">'.$firstUsername.'</a></div>';
+        }
+        if ($secondPlace > 0)
+        {
+            list($secondUsername) = $DB->sql_row("Select u.username from wD_Users u where u.id =".$secondPlace);
+            print '<div class = "tournamentCenter">Second Place: <a href="profile.php?userID='.$secondPlace.'">'.$secondUsername.'</a></div>';
+        }
+        if ($thirdPlace > 0)
+        {
+            list($thirdUsername) = $DB->sql_row("Select u.username from wD_Users u where u.id =".$thirdPlace);
+            print '<div class = "tournamentCenter">Third Place: <a href="profile.php?userID='.$thirdPlace.'">'.$thirdUsername.'</a></div>';
+        }  
+    }
     if ($status != 'PreStart')
     {
         print '<a href="tournamentScoring.php?tournamentID='.$id.'">Scoring and Participants</a></br>';
@@ -188,9 +206,12 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
             print '<a href="gamelistings.php?gamelistType=Search&tournamentID='.$id.'">Tournament Games</a></br>';
         }
     }
-    if ($tab == 'Moderating')
+    if ($tab == 'Moderating' || $tab == 'Finished')
     {
-        print '<a href="tournamentManagement.php?tournamentID='.$id.'">Modify Tournament</a></br></br>';
+        if ( ( $allowedTD > 0) || ($User->type['Moderator'] ))
+        {
+            print '<a href="tournamentManagement.php?tournamentID='.$id.'">Modify Tournament</a></br></br>';
+        }
     }
     print '<div class = "tournament_round">Details</div>';
     print '<div class = "tournament_info">';
