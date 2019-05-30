@@ -245,9 +245,12 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
     // list through all the games in this tournament with a status table in a collapsable element.
 
     $tablRounds = $DB->sql_tabl("select distinct round from wD_TournamentGames where tournamentID = ".$id." order by round");
+    
+    $wereRounds = false;
 
     while (list($round) = $DB->tabl_row($tablRounds))
     {
+        $wereRounds = true;
         print '<div class = "tournament_round"> Round '.$round.'</div>';
         print '<div class = "tournament_games">';
         print '<a href="gamelistings.php?gamelistType=Search&tournamentID='.$id.'&round='.$round.'&Submit=Search#results">Search Round '.$round.' games</a></br>';
@@ -302,7 +305,11 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
         print '</table>';
 
         print'</div>';
-
+    }
+    
+    if ($wereRounds == true)
+    {
+        print'</br>';
     }
 
     list($userSpectating) = $DB->sql_row("Select count(1) from wD_TournamentSpectators s where s.tournamentID = ".$id." and s.userID = ".$User->id);
