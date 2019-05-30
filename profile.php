@@ -1058,7 +1058,7 @@ function printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = False)
 				}
 				elseif(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3') == false && strpos('x'.$key,'__utm')== false && $key!="pagenum" && $key!="sortCol" && $key!="sortType")
 				{
-					print '<input type="hidden" name="'.$key.'" value='.$value.'>';
+					print '<input type="hidden" name="'.$key.'" value="'.$value.'">';
 				}
 			}
 			print ' ';
@@ -1088,7 +1088,7 @@ function printPageButton($pagenum, $currPage)
 			}
 			elseif(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && $key!="pagenum")
 			{
-				print '<input type="hidden" name="'.$key.'" value='.$value.'>';
+				print '<input type="hidden" name="'.$key.'" value="'.$value.'">';
 			}
 		}
 		print '<input type="submit" name="pagenum" class="form-submit" value='.$pagenum.' /></form></div>';
