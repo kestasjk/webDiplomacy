@@ -134,6 +134,9 @@ class Config
 		/* Whether the API is enabled or not */
 		"enabled" => true,
 
+		/* Only replace players in CD if they are in a NoPress game */
+		"noPressOnly" => true,
+
 		/* If the API should only be enabled for some game ids, set the list of game ids here */
 		"restrictToGameIDs" => array(),
 

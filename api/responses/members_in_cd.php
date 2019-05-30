@@ -45,6 +45,12 @@ class CountriesInCivilDisorder {
 		// Filter allowed variantIDs
 		$apiVariants = implode(', ', \Config::$apiConfig['variantIDs']);
 
+		// Filter noPress only
+        $filterNoPress = '';
+        if (\Config::$apiConfig['noPressOnly']) {
+            $filterNoPress = "AND g.pressType = 'NoPress'";
+        }
+
 		// Filter allowed gameIDs
         $filterGameClause = '';
         if (!empty(\Config::$apiConfig['restrictToGameIDs'])) {
@@ -66,6 +72,7 @@ class CountriesInCivilDisorder {
                                       LEFT JOIN wD_Games AS g ON ( g.id = m.gameID )
                                       WHERE o.id IS NOT NULL
                                             AND g.variantID in ($apiVariants)
+                                            " . $filterNoPress . "
                                             " . $filterGameClause . "
                                             AND (m.missedPhases > 0 OR m.status = 'Left')
                                             AND (m.orderStatus IS NULL OR m.orderStatus = '')
