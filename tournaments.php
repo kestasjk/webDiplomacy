@@ -127,7 +127,7 @@ libHTML::pagebreak();
 if ($tab == 'Finished')
 {
     $sql = "select * from wD_Tournaments t where t.status = 'Finished' ";
-    $sqlCounter = "select * from wD_Tournaments t where t.status = 'Finished' ";
+    $sqlCounter = "select count(1) from wD_Tournaments t where t.status = 'Finished' ";
 }
 
 else if ($tab == 'Ongoing')
