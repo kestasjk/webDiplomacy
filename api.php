@@ -382,7 +382,7 @@ class SetOrders extends ApiEntry {
 			if (!$permissionIsExplicit)
 				throw new ClientForbiddenException('User does not have explicit permission to make this API call.');
 			// In this case, the ordered country must be in CD.
-			if ($member->missedPhases <= 0)
+			if ($member->status != 'Left')
 				throw new ClientForbiddenException(
 					'A user not controlling a country can submit orders only for a country in CD.');
 			// We must have enough time to set orders.

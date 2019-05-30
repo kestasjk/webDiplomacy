@@ -74,7 +74,7 @@ class CountriesInCivilDisorder {
                                             AND g.variantID in ($apiVariants)
                                             " . $filterNoPress . "
                                             " . $filterGameClause . "
-                                            AND (m.missedPhases > 0 OR m.status = 'Left')
+                                            AND m.status = 'Left'
                                             AND (m.orderStatus IS NULL OR m.orderStatus = '')
                                             AND g.processStatus = 'Not-processing'
                                             AND g.phase IN ('Diplomacy', 'Retreats', 'Builds')
