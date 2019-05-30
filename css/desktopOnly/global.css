@@ -1122,7 +1122,7 @@ input[type=submit].gameCreate:hover {
 	overflow: hidden;
 	background-color: #f1f1f1;
 	font-size: 14px;
-	padding: 0 0 0 10px;
+	padding: 0 10px 0 10px;
 	margin-top:0px !important;
 }
 
