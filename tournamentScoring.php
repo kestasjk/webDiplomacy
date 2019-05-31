@@ -167,7 +167,7 @@ if(isset($_REQUEST['tournamentID']))
       {
         if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && strpos('x'.$key,'id') == false && $key <> 'submit')
         {
-          print '<input type="hidden" name="'.$key.'" value='.$value.'>';
+          print '<input type="hidden" name="'.$key.'" value="'.$value.'">';
         }
       }
     }
@@ -261,7 +261,7 @@ function printHeaderLink($header, $sortCol, $sortType, $rounds)
 	{
 		if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && $key!="sortCol" && $key!="sortType" && strpos('x'.$key,'id') == false && $key <> 'submit')
 		{
-			print '<input type="hidden" name="'.$key.'" value='.$value.'>';
+			print '<input type="hidden" name="'.$key.'" value="'.$value.'">';
 		}
 	}
 	$convert = array("Player ID"=>"id","Name"=>"name");

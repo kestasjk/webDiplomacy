@@ -127,7 +127,7 @@ libHTML::pagebreak();
 if ($tab == 'Finished')
 {
     $sql = "select * from wD_Tournaments t where t.status = 'Finished' ";
-    $sqlCounter = "select * from wD_Tournaments t where t.status = 'Finished' ";
+    $sqlCounter = "select count(1) from wD_Tournaments t where t.status = 'Finished' ";
 }
 
 else if ($tab == 'Ongoing')
@@ -180,6 +180,24 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
     print '<div class = "tournamentShow">';
     print '<h2 class = "tournamentCenter">'.$name.'</h2>';
     
+    if ($tab == 'Finished')
+    {
+        if ($firstPlace > 0)
+        {
+            list($firstUsername) = $DB->sql_row("Select u.username from wD_Users u where u.id =".$firstPlace);
+            print '<div class = "tournamentCenter">First Place: <a href="profile.php?userID='.$firstPlace.'">'.$firstUsername.'</a></div>';
+        }
+        if ($secondPlace > 0)
+        {
+            list($secondUsername) = $DB->sql_row("Select u.username from wD_Users u where u.id =".$secondPlace);
+            print '<div class = "tournamentCenter">Second Place: <a href="profile.php?userID='.$secondPlace.'">'.$secondUsername.'</a></div>';
+        }
+        if ($thirdPlace > 0)
+        {
+            list($thirdUsername) = $DB->sql_row("Select u.username from wD_Users u where u.id =".$thirdPlace);
+            print '<div class = "tournamentCenter">Third Place: <a href="profile.php?userID='.$thirdPlace.'">'.$thirdUsername.'</a></div>';
+        }  
+    }
     if ($status != 'PreStart')
     {
         print '<a href="tournamentScoring.php?tournamentID='.$id.'">Scoring and Participants</a></br>';
@@ -188,9 +206,15 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
             print '<a href="gamelistings.php?gamelistType=Search&tournamentID='.$id.'">Tournament Games</a></br>';
         }
     }
-    if ($tab == 'Moderating')
+    if ($tab == 'Moderating' || $tab == 'Finished')
     {
-        print '<a href="tournamentManagement.php?tournamentID='.$id.'">Modify Tournament</a></br></br>';
+        if($User->type['User'] )
+        {
+            if ( ( $allowedTD > 0) || ($User->type['Moderator'] ))
+            {
+                print '<a href="tournamentManagement.php?tournamentID='.$id.'">Modify Tournament</a></br></br>';
+            }
+        }
     }
     print '<div class = "tournament_round">Details</div>';
     print '<div class = "tournament_info">';
@@ -224,9 +248,12 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
     // list through all the games in this tournament with a status table in a collapsable element.
 
     $tablRounds = $DB->sql_tabl("select distinct round from wD_TournamentGames where tournamentID = ".$id." order by round");
+    
+    $wereRounds = false;
 
     while (list($round) = $DB->tabl_row($tablRounds))
     {
+        $wereRounds = true;
         print '<div class = "tournament_round"> Round '.$round.'</div>';
         print '<div class = "tournament_games">';
         print '<a href="gamelistings.php?gamelistType=Search&tournamentID='.$id.'&round='.$round.'&Submit=Search#results">Search Round '.$round.' games</a></br>';
@@ -281,7 +308,11 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
         print '</table>';
 
         print'</div>';
-
+    }
+    
+    if ($wereRounds == true)
+    {
+        print'</br>';
     }
 
     list($userSpectating) = $DB->sql_row("Select count(1) from wD_TournamentSpectators s where s.tournamentID = ".$id." and s.userID = ".$User->id);

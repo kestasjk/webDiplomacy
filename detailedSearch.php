@@ -1163,7 +1163,7 @@ function printPageButton($pagenum, $currPage)
 		{
 			if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && $key!="pagenum")
 			{
-				print '<input type="hidden" name="'.$key.'" value='.$value.'>';
+				print '<input type="hidden" name="'.$key.'" value="'.$value.'">';
 			}
 		}
 		print '<input type="submit" name="pagenum" class="form-submit" value='.$pagenum.' /></form></div>';
@@ -1177,7 +1177,7 @@ function printHeaderLink($header, $tab, $sortCol, $sortType, $sortColg)
 	{
 		if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && $key!="sortCol" && $key!="sortColg" && $key!="sortType" && $key!="pagenum")
 		{
-			print '<input type="hidden" name="'.$key.'" value='.$value.'>';
+			print '<input type="hidden" name="'.$key.'" value="'.$value.'">';
 		}
 	}
 	$convert = array("UserID"=>"id","Username"=>"Username","Joined On"=>"timeJoined","RR"=>"reliabilityRating","Games"=>"gameCount","Points"=>"points", "Game ID"=>"id", "Name"=>"gameName", "Pot"=>"pot", "Length"=>"phaseMinutes", "Spectators"=>"watchedGames");
@@ -1191,19 +1191,22 @@ function printHeaderLink($header, $tab, $sortCol, $sortType, $sortColg)
 				print '<button type="submit" name="sortCol" value='.$convert[$header].' class="advancedSearchHeader"';
 				print '>'.$header.' &#9652</button></form>';
 			}
-			else{
+			else
+			{
 				print '<input type="hidden" name="sortType" value=asc>';
 				print '<button type="submit" name="sortCol" value='.$convert[$header].' class="advancedSearchHeader"';
 				print '>'.$header.' &#9662</button></form>';
 			}
 		}
-		else{
+		else
+		{
 			print '<input type="hidden" name="sortType" value=asc>';
 			print '<button type="submit" name="sortCol" value='.$convert[$header].' class="advancedSearchHeader"';
 			print '>'.$header.'</button></form>';
 		}
 	}
-	else{
+	else
+	{
 		if ($convert[$header] == $sortColg)
 		{
 			if ($sortType == 'asc')
@@ -1212,13 +1215,15 @@ function printHeaderLink($header, $tab, $sortCol, $sortType, $sortColg)
 				print '<button type="submit" name="sortColg" value='.$convert[$header].' class="advancedSearchHeader"';
 				print '>'.$header.' &#9652</button></form>';
 			}
-			else{
+			else
+			{
 				print '<input type="hidden" name="sortType" value=asc>';
 				print '<button type="submit" name="sortColg" value='.$convert[$header].' class="advancedSearchHeader"';
 				print '>'.$header.' &#9662</button></form>';
 			}
 		}
-		else{
+		else
+		{
 			print '<input type="hidden" name="sortType" value=asc>';
 			print '<button type="submit" name="sortColg" value='.$convert[$header].' class="advancedSearchHeader"';
 			print '>'.$header.'</button></form>';
