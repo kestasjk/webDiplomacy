@@ -208,9 +208,12 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
     }
     if ($tab == 'Moderating' || $tab == 'Finished')
     {
-        if ( ( $allowedTD > 0) || ($User->type['Moderator'] ))
+        if($User->type['User'] )
         {
-            print '<a href="tournamentManagement.php?tournamentID='.$id.'">Modify Tournament</a></br></br>';
+            if ( ( $allowedTD > 0) || ($User->type['Moderator'] ))
+            {
+                print '<a href="tournamentManagement.php?tournamentID='.$id.'">Modify Tournament</a></br></br>';
+            }
         }
     }
     print '<div class = "tournament_round">Details</div>';
