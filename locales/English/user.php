@@ -89,23 +89,26 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  	                               
 if( $User->type['User'] ) 
 {
-	// If the user is registered show the list of muted users/countries:
-
-	$MutedUsers = array();
-	foreach($User->getMuteUsers() as $muteUserID) 
+	
+	if (!isset(Config::$customForumURL))
 	{
-		$MutedUsers[] = new User($muteUserID);
-	}
-	if( count($MutedUsers) > 0 ) 
-	{
-		print '<li class="formlisttitle">Muted users:</li>';
-		print '<li class="formlistdesc">The users which you muted, and are unable to send you messages.</li>';
-		print '<li class="formlistfield"><ul>';
-		foreach ($MutedUsers as $MutedUser) 
+		// If the user is registered show the list of muted users/countries:
+		$MutedUsers = array();
+		foreach($User->getMuteUsers() as $muteUserID) 
 		{
-			print '<li>'.$MutedUser->username.' '.libHTML::muted("profile.php?userID=".$MutedUser->id.'&toggleMute=on&rand='.rand(0,99999).'#mute').'</li>';
+			$MutedUsers[] = new User($muteUserID);
 		}
-		print '</ul></li>';
+		if( count($MutedUsers) > 0 ) 
+		{
+			print '<li class="formlisttitle">Muted users:</li>';
+			print '<li class="formlistdesc">The users which you muted, and are unable to send you messages.</li>';
+			print '<li class="formlistfield"><ul>';
+			foreach ($MutedUsers as $MutedUser) 
+			{
+				print '<li>'.$MutedUser->username.' '.libHTML::muted("profile.php?userID=".$MutedUser->id.'&toggleMute=on&rand='.rand(0,99999).'#mute').'</li>';
+			}
+			print '</ul></li>';
+		}
 	}
 
 	/*
@@ -150,13 +153,14 @@ if( $User->type['User'] )
 			$mutedThreads[] = $mutedThread;
 		unset($tablMutedThreads);
 		
-		if( count($mutedThreads) > 0 ) {
+		if( count($mutedThreads) > 0 ) 
+		{
 			print '<li class="formlisttitle"><a name="threadmutes"></a>Muted threads:</li>';
 			print '<li class="formlistdesc">The threads which you muted.</li>';
 			
 			$unmuteThreadID=0;
-			if( isset($_GET['unmuteThreadID']) ) {
-				
+			if( isset($_GET['unmuteThreadID']) ) 
+			{
 				$unmuteThreadID = (int)$_GET['unmuteThreadID'];
 				$User->toggleThreadMute($unmuteThreadID);
 				
@@ -166,7 +170,8 @@ if( $User->type['User'] )
 			
 			print '<li class="formlistfield"><ul>';
 			
-			foreach ($mutedThreads as $mutedThread) {
+			foreach ($mutedThreads as $mutedThread) 
+			{
 				if( $unmuteThreadID == $mutedThread['muteThreadID']) continue;
 				print '<li>'.
 					'<a class="light" href="forum.php?threadID='.$mutedThread['muteThreadID'].'#'.$mutedThread['muteThreadID'].'">'.
