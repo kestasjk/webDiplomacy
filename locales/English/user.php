@@ -89,7 +89,6 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  	                               
 if( $User->type['User'] ) 
 {
-	
 	if (!isset(Config::$customForumURL))
 	{
 		// If the user is registered show the list of muted users/countries:
@@ -111,34 +110,21 @@ if( $User->type['User'] )
 		}
 	}
 
-	/*
-	$MutedGames = array();
-	foreach($User->getMuteCountries() as $muteGamePair) {
-		list($gameID, $muteCountryID) = $muteGamePair;
-		if( !isset($MutedGames[$gameID])) $MutedGames[$gameID] = array();
-		$MutedGames[$gameID][] = $muteCountryID;
-	}
+	list($muteCountryCount) = $DB->sql_row("select count(distinct c.gameID) from wD_MuteCountry c inner join wD_Games g on g.id = c.gameID where c.userID = ".$User->id);
+	$muteCountry = $DB->sql_tabl("select distinct c.gameID, g.name from wD_MuteCountry c inner join wD_Games g on g.id = c.gameID where c.userID = ".$User->id);
 	
-	if( count($MutedGames) > 0 ) {
-		print '<li class="formlisttitle">Muted countries:</li>'; 
-		print '<li class="formlistdesc">The countries which you muted, and are unable to send you messages.</li>';
-		print '<li class="formlistfield"><ul>';
-		$LoadedVariants = array();
-		foreach ($MutedGames as $gameID=>$mutedCountries) {
-			list($variantID) = $DB->sql_row("SELECT variantID FROM wD_Games WHERE id=".$gameID);
-			if( !isset($LoadedVariants[$variantID]))
-				$LoadedVariants[$variantID] = libVariant::loadFromVariantID($variantID);
-			$Game = $LoadedVariants[$variantID]->Game($gameID);
-			print '<li>'.$Game->name.'<ul>';
-			
-			foreach($mutedCountries as $mutedCountryID) {
-				print '<li>'.$Game->Members->ByCountryID[$mutedCountryID]->country.' '.
-				libHTML::muted("board.php?gameID=".$Game->id."&msgCountryID=".$mutedCountryID."&toggleMute=".$mutedCountryID."&rand=".rand(0,99999).'#chatboxanchor').'</li>';
-			} 
-			print '</ul></li>'; 
-		} 
-		print '</ul></li>';
-	} */
+	if( $muteCountryCount > 0 ) 
+	{
+		print '<strong>Games with Muted countries:</strong></br>To unmute visit the game and click speaker icon</br></br>'; 
+
+		while (list($gameID, $name) = $DB->tabl_row($muteCountry))
+        {		
+			print '  <a href="board.php?gameID='.$gameID.'">'.$name.'</a></br>';
+		}
+		print'</br>';
+		// Due to a rather serious flaw in the variant loading system, attempting to load a variant from this page will result in a php error related to serialization as of 
+		// the php upgrade to 7.0. 
+	} 
 	
 	if (!isset(Config::$customForumURL))
 	{

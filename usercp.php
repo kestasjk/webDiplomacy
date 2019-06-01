@@ -26,6 +26,7 @@
 require_once('header.php');
 
 require_once(l_r('objects/mailer.php'));
+
 global $Mailer;
 $Mailer = new Mailer();
 
