@@ -21,6 +21,7 @@ $addGames = false;
 $removeGames = false;
 $addPlayers = false;
 $removePlayers = false;
+$sync = false;
 
 $paramName = '';
 $paramDescription = '';
@@ -82,6 +83,11 @@ if(isset($_POST['submit']))
 				{
 						$tournamentID = (int)$_POST['tournamentID'];
 						$removePlayers = true;
+				}
+				else if ($_POST['tab'] == 'sync')
+				{
+						$tournamentID = (int)$_POST['tournamentID'];
+						$sync = true;
 				}
         else { die('Sorry, but something went wrong.'); }
     }
@@ -253,7 +259,17 @@ if ($submitted == false)
 
 				if ($User->type['Moderator'] )
         {
-						print '</div></br></br>
+						print '</div></br><strong>List of Games Currently in Tournament: </strong>';
+						$gamesTabl = $DB->sql_tabl("SELECT t.gameID, g.name FROM wD_TournamentGames t INNER JOIN wD_Games g ON t.gameID = g.id WHERE t.tournamentID=".$tournamentID);
+						$gameString = '';
+						while (list($curGameID, $curGamename) = $DB->tabl_row($gamesTabl) )
+						{
+								$gameString .= '<a href=/board.php?gameID='.$curGameID.'>'.$curGamename.' ('.$curGameID.')</a> ';
+						}
+						if ($gameString == '') { $gameString = 'None'; }
+						print $gameString;
+
+						print '</br></br>
 						<div class = "contactUsShow">
 						<form action="#" method="post">
 		        <INPUT type="hidden" name="tab" value="addGames" />
@@ -277,18 +293,28 @@ if ($submitted == false)
 		        <INPUT type="hidden" name="tab" value="removeGames" />
 		        <INPUT type="hidden" name="tournamentID" value="'.$id.'" />
 						</br>
-						<strong>Remove Games through a comma separated list of gameIDs (Mod Only).</br></br>
+						<strong>Remove Games through a comma separated list of gameIDs (Mod Only).</strong></br></br>
 						<strong>List of Games to Remove:</strong>
 						<textarea name="removeGameList" class = "settings"  rows="3"></textarea></br></br>
 						<p><input type="submit" class = "green-Submit" name="submit"/></p></form>';
 
-						print '</div></br></br>
+						print '</div></br><strong>List of Players Currently in Tournament: </strong>';
+						$playersTabl = $DB->sql_tabl("SELECT t.userID, p.username FROM wD_TournamentParticipants t INNER JOIN wD_Users p ON t.userID = p.id WHERE t.tournamentID=".$tournamentID);
+						$playerString = '';
+						while (list($curPlayerID, $curPlayername) = $DB->tabl_row($playersTabl) )
+						{
+								$playerString .= '<a href=/profile.php?userID='.$curPlayerID.'>'.$curPlayername.' ('.$curPlayerID.')</a> ';
+						}
+						if ($playerString == '') { $playerString = 'None'; }
+						print $playerString;
+
+						print '</br></br>
 						<div class = "contactUsShow">
 						<form action="#" method="post">
 		        <INPUT type="hidden" name="tab" value="addPlayers" />
 		        <INPUT type="hidden" name="tournamentID" value="'.$id.'" />
 						</br>
-						<strong>Add Players through a comma separated list of userIDs (Mod Only).</br></br>
+						<strong>Add Players through a comma separated list of userIDs (Mod Only).</strong></br></br>
 						<strong>List of Players to Add:</strong>
 						<textarea name="addPlayerList" class = "settings"  rows="3"></textarea></br></br>
 						<p><input type="submit" class = "green-Submit" name="submit"/></p></form>';
@@ -299,10 +325,19 @@ if ($submitted == false)
 		        <INPUT type="hidden" name="tab" value="removePlayers" />
 		        <INPUT type="hidden" name="tournamentID" value="'.$id.'" />
 						</br>
-						<strong>Remove Players through a comma separated list of userIDs (Mod Only).</br></br>
+						<strong>Remove Players through a comma separated list of userIDs (Mod Only).</strong></br></br>
 						<strong>List of Players to Remove:</strong>
 						<textarea name="removePlayerList" class = "settings"  rows="3"></textarea></br></br>
 						<p><input type="submit" class = "green-Submit" name="submit"/></p></form>';
+
+						print '</div></br></br>
+						<div class = "contactUsShow">
+						<form action="#" method="post">
+						</br><strong>Sync Participants with Games</strong></br>
+						</br>This will delete all players from the tournament, then add in any user in any of the games in the tournament.
+						<INPUT type="hidden" name="tab" value="sync" />
+						<INPUT type="hidden" name="tournamentID" value="'.$id.'" />
+						<p><input type="submit" class = "green-Submit" name="submit" value="Sync"/></p></form>';
 				}
 
     }
@@ -457,29 +492,45 @@ else
 										$sql = "INSERT INTO wD_TournamentGames ( tournamentID, gameID, round ) ";
 										$sql .= " VALUES ( ".$tournamentID.", ".$gameID.", ".$paramRound." ) ";
 										$DB->sql_put($sql);
+										list($curGamename) = $DB->sql_row("SELECT name FROM wD_Games WHERE id=".$gameID);
 										if ($successAdd == '')
 										{
-												$successAdd = 'Succesfully Added: '.$gameID;
+												$successAdd = 'Succesfully Added: <a href=/board.php?gameID='.$gameID.'>'.$curGamename.' ('.$gameID.')</a>';
 										}
 										else
 										{
-												$successAdd .= ', '.$gameID;
+												$successAdd .= ', <a href=/board.php?gameID='.$gameID.'>'.$curGamename.' ('.$gameID.')</a>';
 										}
 								}
 								else
 								{
-									if ($failedAdd == '')
-									{
-											$failedAdd = 'Failed To Add: '.$gameValue;
-									}
-									else
-									{
-											$failedAdd .= ', '.$gameValue;
-									}
+										if ($gamecheck <> 1)
+										{
+												if ($failedAdd == '')
+												{
+														$failedAdd = 'Failed To Add: </br>'.$gameValue.' - Invalid GameID';
+												}
+												else
+												{
+														$failedAdd .= '</br>'.$gameValue.' - Invalid GameID';
+												}
+										}
+										else
+										{
+												list($curGamename) = $DB->sql_row("SELECT name FROM wD_Games WHERE id=".$gameID);
+												if ($failedAdd == '')
+												{
+														$failedAdd = 'Failed To Add: </br><a href=/board.php?gameID='.$gameID.'>'.$curGamename.' ('.$gameID.')</a> - Already in a Tournament';
+												}
+												else
+												{
+														$failedAdd .= '</br><a href=/board.php?gameID='.$gameID.'>'.$curGamename.' ('.$gameID.')</a> - Already in a Tournament';
+												}
+										}
 								}
 						}
-						print '<p class = "contactUs">'.$successAdd.'</br>';
-						print $failedAdd.'</br>';
+						print '<p class = "contactUs">'.$successAdd.'</br></br>';
+						print $failedAdd.'</br></br>';
 						print '<a href="tournamentManagement.php?tournamentID='.$tournamentID.'">Edit Again</a></p>';
 						$DB->sql_put("INSERT INTO wD_AdminLog ( name, userID, time, details, params )
 									VALUES ( 'Add Games to Tournament', ".$User->id.", ".time().", 'Tournament ".$tournamentID." Round ".$paramRound." ', '".$DB->escape(serialize($paramAddGameList))."' )");
@@ -498,34 +549,51 @@ else
 						$failedRemove = '';
 						foreach ($paramRemoveGameList as $gameValue){
 								$gameID = (int)$gameValue;
-								list($gamecheck) = $DB->sql_row("SELECT COUNT(1) FROM wD_TournamentGames WHERE tournamentID=".$tournamentID." AND gameID=".$gameID);
-								if ($gamecheck > 0)
+								list($gamecheck) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE id=".$gameID);
+								list($gamecheck2) = $DB->sql_row("SELECT COUNT(1) FROM wD_TournamentGames WHERE tournamentID=".$tournamentID." AND gameID=".$gameID);
+								if ($gamecheck2 > 0)
 								{
 										$sql = "DELETE FROM wD_TournamentGames WHERE tournamentID=".$tournamentID." AND gameID=".$gameID;
 										$DB->sql_put($sql);
+										list($curGamename) = $DB->sql_row("SELECT name FROM wD_Games WHERE id=".$gameID);
 										if ($successRemove == '')
 										{
-												$successRemove = 'Succesfully Removed: '.$gameID;
+												$successRemove = 'Succesfully Removed: <a href=/board.php?gameID='.$gameID.'>'.$curGamename.' ('.$gameID.')</a>';
 										}
 										else
 										{
-												$successRemove .= ', '.$gameID;
+												$successRemove .= ', <a href=/board.php?gameID='.$gameID.'>'.$curGamename.' ('.$gameID.')</a>';
 										}
 								}
 								else
 								{
-										if ($failedRemove == '')
+										if ($gamecheck <> 1)
 										{
-												$failedRemove = 'Failed To Remove: '.$gameValue;
+												if ($failedRemove == '')
+												{
+														$failedRemove = 'Failed To Remove: </br>'.$gameValue.' - Invalid GameID';
+												}
+												else
+												{
+														$failedRemove .= '</br>'.$gameValue.' - Invalid GameID';
+												}
 										}
 										else
 										{
-												$failedRemove .= ', '.$gameValue;
+												list($curGamename) = $DB->sql_row("SELECT name FROM wD_Games WHERE id=".$gameID);
+												if ($failedRemove == '')
+												{
+														$failedRemove = 'Failed To Remove: </br><a href=/board.php?gameID='.$gameID.'>'.$curGamename.' ('.$gameID.')</a> - Not in Tournament';
+												}
+												else
+												{
+														$failedRemove .= '</br><a href=/board.php?gameID='.$gameID.'>'.$curGamename.' ('.$gameID.')</a> - Not in Tournament';
+												}
 										}
 								}
 						}
-						print '<p class = "contactUs">'.$successRemove.'</br>';
-						print $failedRemove.'</br>';
+						print '<p class = "contactUs">'.$successRemove.'</br></br>';
+						print $failedRemove.'</br></br>';
 						print '<a href="tournamentManagement.php?tournamentID='.$tournamentID.'">Edit Again</a></p>';
 						$DB->sql_put("INSERT INTO wD_AdminLog ( name, userID, time, details, params )
 									VALUES ( 'Remove Games From Tournament', ".$User->id.", ".time().", 'Tournament ".$tournamentID." ', '".$DB->escape(serialize($paramRemoveGameList))."' )");
@@ -546,36 +614,64 @@ else
 								$playerID = (int)$playerValue;
 								list($playercheck) = $DB->sql_row("SELECT COUNT(1) FROM wD_Users WHERE id=".$playerID);
 								list($playercheck2) = $DB->sql_row("SELECT COUNT(1) FROM wD_TournamentParticipants WHERE tournamentID=".$tournamentID." AND userID=".$playerID);
-								list($directorID, $coDirectorID) = $DB->sql_row("SELECT directorID, coDirectorID FROM wD_Tournaments WHERE id=".$tournamentID);
-								$playercheck3 = (($playerID <> $directorID) && ($playerID <> $coDirectorID));
+								list($year, $directorID, $coDirectorID) = $DB->sql_row("SELECT year, directorID, coDirectorID FROM wD_Tournaments WHERE id=".$tournamentID);
+								$playercheck3 = ( ( ($playerID <> $directorID) && ($playerID <> $coDirectorID) ) || ($year < 2019) ); //hard-coded 2019 in since TD's could be in their own tournaments previously
 								if ($playercheck == 1 && $playercheck2 < 1 && $playercheck3)
 								{
 										$sql = "INSERT INTO wD_TournamentParticipants ( tournamentID, userID, status ) ";
 										$sql .= " VALUES ( ".$tournamentID.", ".$playerID.", 'Accepted' ) ";
 										$DB->sql_put($sql);
+										list($curPlayername) = $DB->sql_row("SELECT username FROM wD_Users WHERE id=".$playerID);
 										if ($successAdd == '')
 										{
-												$successAdd = 'Succesfully Added: '.$playerID;
+												$successAdd = 'Succesfully Added: <a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a>';
 										}
 										else
 										{
-												$successAdd .= ', '.$playerID;
+												$successAdd .= ', <a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a>';
 										}
 								}
 								else
 								{
-									if ($failedAdd == '')
-									{
-											$failedAdd = 'Failed To Add: '.$playerValue;
-									}
-									else
-									{
-											$failedAdd .= ', '.$playerValue;
-									}
+										if ($playercheck <> 1)
+										{
+												if ($failedAdd == '')
+												{
+														$failedAdd = 'Failed To Add: </br>'.$playerValue.' - Invalid UserID';
+												}
+												else
+												{
+														$failedAdd .= '</br>'.$playerValue.' - Invalid UserID';
+												}
+										}
+										else if ($playercheck2 > 0)
+										{
+												list($curPlayername) = $DB->sql_row("SELECT username FROM wD_Users WHERE id=".$playerID);
+												if ($failedAdd == '')
+												{
+														$failedAdd = 'Failed To Add: </br><a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a> - Already in Tournament';
+												}
+												else
+												{
+														$failedAdd .= '</br><a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a> - Already in Tournament';
+												}
+										}
+										else
+										{
+												list($curPlayername) = $DB->sql_row("SELECT username FROM wD_Users WHERE id=".$playerID);
+												if ($failedAdd == '')
+												{
+														$failedAdd = 'Failed To Add: </br><a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a> - Cannot Add Director/Codirector';
+												}
+												else
+												{
+														$failedAdd .= '</br><a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a> - Cannot Add Director/Codirector';
+												}
+										}
 								}
 						}
-						print '<p class = "contactUs">'.$successAdd.'</br>';
-						print $failedAdd.'</br>';
+						print '<p class = "contactUs">'.$successAdd.'</br></br>';
+						print $failedAdd.'</br></br>';
 						print '<a href="tournamentManagement.php?tournamentID='.$tournamentID.'">Edit Again</a></p>';
 						$DB->sql_put("INSERT INTO wD_AdminLog ( name, userID, time, details, params )
 									VALUES ( 'Add Players to Tournament', ".$User->id.", ".time().", 'Tournament ".$tournamentID." ', '".$DB->escape(serialize($paramAddPlayerList))."' )");
@@ -594,36 +690,53 @@ else
 						$failedRemove = '';
 						foreach ($paramRemovePlayerList as $playerValue){
 								$playerID = (int)$playerValue;
-								list($playercheck) = $DB->sql_row("SELECT COUNT(1) FROM wD_TournamentParticipants WHERE tournamentID=".$tournamentID." AND userID=".$playerID);
-								if ($playercheck > 0)
+								list($playercheck) = $DB->sql_row("SELECT COUNT(1) FROM wD_Users WHERE id=".$playerID);
+								list($playercheck2) = $DB->sql_row("SELECT COUNT(1) FROM wD_TournamentParticipants WHERE tournamentID=".$tournamentID." AND userID=".$playerID);
+								if ($playercheck2 > 0)
 								{
 										$sql = "DELETE FROM wD_TournamentParticipants WHERE tournamentID=".$tournamentID." AND userID=".$playerID;
 										$DB->sql_put($sql);
 										$sql2 = "DELETE FROM wD_TournamentScoring WHERE tournamentID=".$tournamentID." AND userID=".$playerID. " AND score=0";
 										$DB->sql_put($sql);
+										list($curPlayername) = $DB->sql_row("SELECT username FROM wD_Users WHERE id=".$playerID);
 										if ($successRemove == '')
 										{
-												$successRemove = 'Succesfully Removed: '.$playerID;
+												$successRemove = 'Succesfully Removed: <a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a>';
 										}
 										else
 										{
-												$successRemove .= ', '.$playerID;
+												$successRemove .= ', <a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a>';
 										}
 								}
 								else
 								{
-										if ($failedRemove == '')
+										if ($playercheck <> 1)
 										{
-												$failedRemove = 'Failed To Remove: '.$playerValue;
+												if ($failedRemove == '')
+												{
+														$failedRemove = 'Failed To Remove: </br>'.$playerValue.' - Invalid UserID';
+												}
+												else
+												{
+														$failedRemove .= '</br>'.$playerValue.' - Invalid UserID';
+												}
 										}
 										else
 										{
-												$failedRemove .= ', '.$playerValue;
+												list($curPlayername) = $DB->sql_row("SELECT username FROM wD_Users WHERE id=".$playerID);
+												if ($failedRemove == '')
+												{
+														$failedRemove = 'Failed To Remove: </br><a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a> - Not in Tournament';
+												}
+												else
+												{
+														$failedRemove .= '</br><a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a> - Not in Tournament';
+												}
 										}
 								}
 						}
-						print '<p class = "contactUs">'.$successRemove.'</br>';
-						print $failedRemove.'</br>';
+						print '<p class = "contactUs">'.$successRemove.'</br></br>';
+						print $failedRemove.'</br></br>';
 						print '<a href="tournamentManagement.php?tournamentID='.$tournamentID.'">Edit Again</a></p>';
 						$DB->sql_put("INSERT INTO wD_AdminLog ( name, userID, time, details, params )
 									VALUES ( 'Remove Players From Tournament', ".$User->id.", ".time().", 'Tournament ".$tournamentID." ', '".$DB->escape(serialize($paramRemovePlayerList))."' )");
@@ -631,6 +744,33 @@ else
 				else
 				{
 						print '<p class = "contactUs">You cannot edit a tournament you are in.</p>';
+				}
+		}
+		elseif ($sync)
+		{
+				list($directorID, $coDirectorID) = $DB->sql_row("SELECT directorID, coDirectorID FROM wD_Tournaments WHERE id=".$tournamentID);
+				$sql = "DELETE FROM wD_TournamentParticipants WHERE tournamentID=".$tournamentID.";";
+				$sql2 = "INSERT INTO wD_TournamentParticipants ( tournamentID, userID, status)
+						SELECT DISTINCT ".$tournamentID.", m.userID, 'Accepted' FROM wD_TournamentGames g INNER JOIN wD_Members m ON g.gameID = m.gameID
+						WHERE g.tournamentID=".$tournamentID." AND m.userID <> ".$directorID." AND m.userID <> ".$coDirectorID.";";
+
+				try
+				{
+						$DB->sql_put($sql);
+						$DB->sql_put($sql2);
+				}
+				catch(Exception $e)
+				{
+						print '<div class="contactUs"> Sorry, but there was a problem syncing this tournament';
+						print '<p class="contactUs">'.$e->getMessage().'</p>';
+						print '</div>';
+						$worked = false;
+				}
+
+				if ($worked == true)
+				{
+						print '<p class = "contactUs">Tournament participants have been synced.</br>';
+						print '<a href="tournamentManagement.php?tournamentID='.$tournamentID.'">Edit Again</a></p>';
 				}
 		}
 }
