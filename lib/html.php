@@ -102,6 +102,21 @@ class libHTML
 		return ' <img src="'.l_s('images/icons/adamantium.png').'" alt="(P)" title="'.l_t('Donator - adamantium').'" />';
 	}
 
+	static function goldStar()
+	{
+		return ' <img height="16" width="16" src="'.l_s('images/icons/GoldStar.png').'" alt="(G)" title="'.l_t('1st Place').'" />';
+	}
+
+	static function silverStar()
+	{
+		return ' <img height="16" width="16" src="'.l_s('images/icons/SilverStar.png').'" alt="(S)" title="'.l_t('2nd Place').'" />';
+	}
+
+	static function bronzeStar()
+	{
+		return ' <img height="16" width="16" src="'.l_s('images/icons/BronzeStar.png').'" alt="(B)" title="'.l_t('3rd Place').'" />';
+	}
+
 	/**
 	 * The points icon
 	 * @return string

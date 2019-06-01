@@ -169,17 +169,17 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
         if ($firstPlace > 0)
         {
             list($firstUsername) = $DB->sql_row("Select u.username from wD_Users u where u.id =".$firstPlace);
-            print '<div class = "tournamentCenter">First Place: <a href="profile.php?userID='.$firstPlace.'">'.$firstUsername.'</a></div>';
+            print '<div class = "tournamentCenter">'.libHTML::goldStar().'First Place: <a href="profile.php?userID='.$firstPlace.'">'.$firstUsername.'</a>'.libHTML::goldStar().'</div>';
         }
         if ($secondPlace > 0)
         {
             list($secondUsername) = $DB->sql_row("Select u.username from wD_Users u where u.id =".$secondPlace);
-            print '<div class = "tournamentCenter">Second Place: <a href="profile.php?userID='.$secondPlace.'">'.$secondUsername.'</a></div>';
+            print '<div class = "tournamentCenter">'.libHTML::silverStar().'Second Place: <a href="profile.php?userID='.$secondPlace.'">'.$secondUsername.'</a>'.libHTML::silverStar().'</div>';
         }
         if ($thirdPlace > 0)
         {
             list($thirdUsername) = $DB->sql_row("Select u.username from wD_Users u where u.id =".$thirdPlace);
-            print '<div class = "tournamentCenter">Third Place: <a href="profile.php?userID='.$thirdPlace.'">'.$thirdUsername.'</a></div>';
+            print '<div class = "tournamentCenter">'.libHTML::bronzeStar().'Third Place: <a href="profile.php?userID='.$thirdPlace.'">'.$thirdUsername.'</a>'.libHTML::bronzeStar().'</div>';
         }  
     }
     if ($status != 'PreStart')
