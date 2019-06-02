@@ -8,7 +8,7 @@
          These are special rule games like Chainsaw diplomacy, Pacifist diplomacy, or School of War games. They may involve violating some site rules so a predefined set of rules must be agreed upon by every participant. 
       </p>
       <ul>
-         <li>No more than 14 players (exception being a world game)</li>
+         <li>No more than 14 players (exceptions being variants like world and chaos)</li>
          <li>May require shuffling players by the moderator team</li>
          <li>Must email <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">
             <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a> for quick approval, this email should include participants, pause agreements (if any), end game requirements (if any), and alteration to press rules (if any).

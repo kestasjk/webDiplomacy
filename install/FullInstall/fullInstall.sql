@@ -555,7 +555,6 @@ CREATE TABLE `wD_MuteCountry` (
 
 UPDATE wD_Misc SET `value`=101 WHERE `name`='Version';
 
-
 ALTER TABLE `wD_Users` CHANGE `type` `type` SET( 'Banned', 'Guest', 'System', 'User', 'Moderator', 'Admin', 'Donator', 'DonatorBronze', 'DonatorSilver', 'DonatorGold', 'DonatorPlatinum' ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'User';
 
 UPDATE wD_Misc SET `value`=102 WHERE `name`='Version';
@@ -593,14 +592,11 @@ CREATE TABLE `wD_Silences` (
 	INDEX ( `postID` )
 ) ENGINE = InnoDB ;
 
-
 ALTER TABLE `wD_ForumMessages`
 ADD `silenceID` INT UNSIGNED NULL DEFAULT NULL ;
 
-
 ALTER TABLE `wD_Users`
 ADD `silenceID` INT UNSIGNED NULL DEFAULT NULL ;
-
 
 ALTER TABLE `wD_Users`
 CHANGE `type` `type` SET(
@@ -608,9 +604,6 @@ CHANGE `type` `type` SET(
 	'Admin', 'Donator', 'DonatorBronze', 'DonatorSilver',
 	'DonatorGold', 'DonatorPlatinum', 'ForumModerator'
 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'User';
-
-
-UPDATE `wD_Misc` SET `value` = '104' WHERE `name` = 'Version';
 
 ALTER TABLE `wD_PointsTransactions` CHANGE `type` `type` ENUM( 'Supplement', 'Bet', 'Won', 'Returned', 'Trigger', 'Correction' ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
 
@@ -629,17 +622,11 @@ ALTER TABLE `wD_Members` CHANGE `newMessagesFrom` `newMessagesFrom` SET( '0', '1
 ALTER TABLE `wD_Members` CHANGE `votes` `votes` set('Draw','Pause','Cancel') NOT NULL DEFAULT '';
 ALTER TABLE `wD_Members` CHANGE `countryID` `countryID` TINYINT( 3 ) UNSIGNED NOT NULL DEFAULT 0;
 
-UPDATE `wD_Misc` SET `value` = '132' WHERE `name` = 'Version';
-
 ALTER TABLE `wD_Games`  ADD `directorUserID` MEDIUMINT UNSIGNED NOT NULL DEFAULT '0';
 ALTER TABLE `wD_Backup_Games`  ADD `directorUserID` MEDIUMINT UNSIGNED NOT NULL DEFAULT '0';
 
-UPDATE `wD_Misc` SET `value` = '133' WHERE `name` = 'Version';
-
 ALTER TABLE `wD_Backup_Games` CHANGE `missingPlayerPolicy` `missingPlayerPolicy` ENUM( 'Normal', 'Strict', 'Wait' ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Normal';
 ALTER TABLE `wD_Games` CHANGE `missingPlayerPolicy` `missingPlayerPolicy` ENUM( 'Normal', 'Strict', 'Wait' ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'Normal';
-
-UPDATE `wD_Misc` SET `value` = '134' WHERE `name` = 'Version';
 
 CREATE TABLE `wD_VariantData` (
   `variantID` tinyint(3) unsigned NOT NULL,
@@ -677,9 +664,6 @@ UNION SELECT 1, 948379409, u.id, 7, ChanceTurkey
 FROM wD_Users u
 WHERE NOT ChanceTurkey = 0.142857;
 
-
-UPDATE `wD_Misc` SET `value` = '135' WHERE `name` = 'Version';
-
 ALTER TABLE `wD_Users` ADD COLUMN `cdCount` mediumint(8) unsigned NOT NULL DEFAULT '0',
   ADD COLUMN `nmrCount` mediumint(8) unsigned NOT NULL DEFAULT '0',
   ADD COLUMN `cdTakenCount` mediumint(8) unsigned NOT NULL DEFAULT '0',
@@ -702,12 +686,8 @@ ALTER TABLE `wD_NMRs`
 
 ALTER TABLE wD_CivilDisorders ADD COLUMN forcedByMod BOOLEAN DEFAULT 0;
 
-UPDATE `wD_Misc` SET `value` = '136' WHERE `name` = 'Version';
-
 ALTER TABLE wD_Games ADD drawType enum('draw-votes-public','draw-votes-hidden') NOT NULL DEFAULT 'draw-votes-public';
 ALTER TABLE wD_Backup_Games ADD drawType enum('draw-votes-public','draw-votes-hidden') NOT NULL DEFAULT 'draw-votes-public';
-
-UPDATE `wD_Misc` SET `value` = '137' WHERE `name` = 'Version';
 
  CREATE TABLE `wD_WatchedGames` (
 	  `userID` mediumint(8) unsigned NOT NULL,
@@ -719,8 +699,6 @@ UPDATE `wD_Misc` SET `value` = '137' WHERE `name` = 'Version';
 ALTER TABLE wD_Games ADD `minimumReliabilityRating` tinyint(3) unsigned NOT NULL DEFAULT '0';
 ALTER TABLE wD_Backup_Games ADD `minimumReliabilityRating` tinyint(3) unsigned NOT NULL DEFAULT '0';
 
-UPDATE `wD_Misc` SET `value` = '138' WHERE `name` = 'Version';
-
 CREATE TABLE `wD_UserOptions` (
 	  `userID` mediumint(8) unsigned NOT NULL,
 	  `colourblind` enum('No','Protanope','Deuteranope','Tritanope') NOT NULL DEFAULT 'No',
@@ -729,28 +707,15 @@ CREATE TABLE `wD_UserOptions` (
 	  KEY `uid` (`userID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-UPDATE `wD_Misc` SET `value` = '139' WHERE `name` = 'Version';
-
 ALTER table wD_UnitDestroyIndex MODIFY destroyIndex smallint;
-
-UPDATE `wD_Misc` SET `value` = '140' WHERE `name` = 'Version';
 
 ALTER TABLE wD_Games CHANGE `potType` `potType` enum('Winner-takes-all','Points-per-supply-center','Unranked','Sum-of-squares') NOT NULL;
 ALTER TABLE wD_Backup_Games CHANGE `potType` `potType` enum('Winner-takes-all','Points-per-supply-center','Unranked','Sum-of-squares') NOT NULL;
 
-UPDATE `wD_Misc` SET `value` = '141' WHERE `name` = 'Version';
-
 ALTER TABLE wD_Backup_Games CHANGE `pressType` `pressType` enum('Regular','PublicPressOnly','NoPress','RulebookPress') NOT NULL DEFAULT 'Regular';
 ALTER TABLE wD_Games CHANGE `pressType` `pressType` enum('Regular','PublicPressOnly','NoPress','RulebookPress') NOT NULL DEFAULT 'Regular';
 
-UPDATE `wD_Misc` SET `value` = '142' WHERE `name` = 'Version';
-
-UPDATE `wD_Misc` SET `value` = '143' WHERE `name` = 'Version';
-
-UPDATE `wD_Misc` SET `value` = '144' WHERE `name` = 'Version';
 ALTER TABLE `wD_Users` ADD `tempBan` int(10) unsigned;
-
-UPDATE `wD_Misc` SET `value` = '145' WHERE `name` = 'Version';
 
 CREATE TABLE `wD_UserConnections` (
 `userID` mediumint(8) unsigned NOT NULL UNIQUE,
@@ -761,20 +726,13 @@ CREATE TABLE `wD_UserConnections` (
 `countMatchedCookieUsers` mediumint(8) unsigned NOT NULL DEFAULT 0
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-UPDATE `wD_Misc` SET `value` = '146' WHERE `name` = 'Version';
-
 ALTER TABLE `wD_Members` ADD `hideNotifications` boolean DEFAULT false;
 ALTER TABLE `wD_Backup_Members` ADD `hideNotifications` boolean DEFAULT false;
 
-UPDATE `wD_Misc` SET `value` = '147' WHERE `name` = 'Version';
-
 ALTER TABLE `wD_UserOptions` ADD `orderSort` enum('No Sort','Alphabetical','Convoys Last') NOT NULL DEFAULT 'Convoys Last';
-
-UPDATE `wD_Misc` SET `value` = '148' WHERE `name` = 'Version';
 
 ALTER TABLE `wD_Users` ADD `emergencyPauseDate` int(10) unsigned Default 0;
 
-UPDATE `wD_Misc` SET `value` = '150' WHERE `name` = 'Version';
 CREATE TABLE IF NOT EXISTS `wD_MissedTurns` (
 	  `id` mediumint(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	  `gameID` mediumint(5) unsigned NOT NULL,
@@ -808,8 +766,6 @@ ALTER TABLE `wD_Backup_Games` ADD `excusedMissedTurns` int(10) unsigned DEFAULT 
 	  KEY `turnsByDate` (`userID`,`turnDateTime`)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-  UPDATE `wD_Misc` SET `value` = '151' WHERE `name` = 'Version';
-
 CREATE TABLE `wD_Config` (
   `name` enum('Notice','Panic','Maintenance') NOT NULL,
   `message` text NOT NULL,
@@ -817,3 +773,63 @@ CREATE TABLE `wD_Config` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8
 
 INSERT INTO wD_Config VALUES ('Notice','Default server-wide notice message.'),('Panic','Game processing has been paused and user registration has been disabled while a problem is resolved.'),('Maintenance','Server is in maintenance mode; only admins can fully interact with the server.'),('ServerOffline','');
+
+ALTER TABLE `wD_Games` MODIFY `pot` MEDIUMINT(8);
+ALTER TABLE `wD_Games` MODIFY `minimumBet` MEDIUMINT(8);
+ALTER TABLE `wD_Backup_Games` MODIFY `pot` MEDIUMINT(8);
+ALTER TABLE `wD_Backup_Games` MODIFY `minimumBet` MEDIUMINT(8);
+
+UPDATE `wD_Misc` SET `value` = '153' WHERE `name` = 'Version';
+
+ALTER TABLE `wD_Users` ADD `tempBanReason` text;   
+
+UPDATE `wD_Misc` SET `value` = '154' WHERE `name` = 'Version';
+
+CREATE TABLE `wD_Tournaments` (
+`id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+`name` VARCHAR( 150 ) NOT NULL,
+`description` TEXT,
+`status` enum('PreStart','Registration','Active', 'Finished') NOT NULL,
+`minRR` tinyint (3) unsigned, 
+`year` SMALLINT(4) unsigned,
+`totalRounds` tinyint(3) unsigned,
+`forumThreadLink` VARCHAR(150),
+`externalLink` VARCHAR(300),
+`directorID` mediumint(8) unsigned NOT NULL,
+`coDirectorID` mediumint(8) unsigned NOT NULL,
+`firstPlace` mediumint(8) unsigned NOT NULL,
+`secondPlace` mediumint(8) unsigned NOT NULL,
+`thirdPlace` mediumint(8) unsigned NOT NULL,
+PRIMARY KEY ( `id` )
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `wD_TournamentGames` (
+`tournamentID` mediumint(8) unsigned NOT NULL,
+`gameID` mediumint(8) unsigned NOT NULL,
+`round` tinyint(3) unsigned,
+INDEX ( `tournamentID` ),
+INDEX ( `gameID` )
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `wD_TournamentParticipants` (
+`tournamentID` mediumint(8) unsigned NOT NULL,
+`userID` mediumint(8) unsigned NOT NULL,
+`status` enum('Applied','Accepted','Rejected', 'Left') NOT NULL,
+INDEX ( `tournamentID` ),
+INDEX ( `userID` )
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `wD_TournamentSpectators` (
+`tournamentID` mediumint(8) unsigned NOT NULL,
+`userID` mediumint(8) unsigned NOT NULL,
+INDEX ( `tournamentID` ),
+INDEX ( `userID` )
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `wD_TournamentScoring` (
+`tournamentID` mediumint(8) unsigned NOT NULL,
+`userID` mediumint(8) unsigned NOT NULL,
+`round` tinyint(3) unsigned,
+`score` FLOAT,
+INDEX ( `tournamentID` )
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;

@@ -62,7 +62,7 @@ class Chatbox
 			$msgCountryID = 0;
 
 		// Enforce Global and Notes tabs when its not Regular press game.
-		if ( (($Game->pressType != 'Regular' && $Game->pressType != 'RulebookPress') || (isset($Game) && $Game->Members->isTempBanned())) 
+		if ( (($Game->pressType != 'Regular' && $Game->pressType != 'RulebookPress') || (isset($Game) && $Game->Members->isTempBanned()))
 		&& !(isset($Member) && $Member->countryID == $msgCountryID) )
 			$msgCountryID = 0;
 
@@ -89,6 +89,7 @@ class Chatbox
 	{
 		global $Member, $Game, $User, $DB;
 		list($directorUserID) = $DB->sql_row("SELECT directorUserID FROM wD_Games WHERE id = ".$Game->id);
+		list($tournamentDirector, $tournamentCodirector) = $DB->sql_row("SELECT directorID, coDirectorID FROM wD_Tournaments t INNER JOIN wD_TournamentGames g ON t.id = g.tournamentID WHERE g.gameID = ".$Game->id);
 
 		if( isset($_POST['newmessage']) AND $_POST['newmessage']!="" )
 		{
@@ -124,8 +125,12 @@ class Chatbox
 			{
 				libGameMessage::send(0, 'Game Director', '('.$User->username.'): '.$newmessage);
 			}
+			elseif((isset($tournamentDirector) && $tournamentDirector == $User->id) || (isset($tournamentCodirector) && $tournamentCodirector == $User->id) )
+			{
+				libGameMessage::send(0, 'Tournament Director', '('.$User->username.'): '.$newmessage);
+			}
 		}
-		
+
 		if( isset($_REQUEST['MarkAsUnread']) )
 		{
 			$DB->sql_put("UPDATE wD_Members SET newMessagesFrom = IF( (newMessagesFrom+0) = 0,'".$msgCountryID."', CONCAT_WS(',',newMessagesFrom,'".$msgCountryID."') )
@@ -146,6 +151,7 @@ class Chatbox
 	{
 		global $DB, $Game, $User, $Member;
 		list($directorUserID) = $DB->sql_row("SELECT directorUserID FROM wD_Games WHERE id = ".$Game->id);
+		list($tournamentDirector, $tournamentCodirector) = $DB->sql_row("SELECT directorID, coDirectorID FROM wD_Tournaments t INNER JOIN wD_TournamentGames g ON t.id = g.tournamentID WHERE g.gameID = ".$Game->id);
 
 		$chatbox = '<a name="chatboxanchor"></a><a name="chatbox"></a>';
 
@@ -158,7 +164,7 @@ class Chatbox
 		// Print info on the user we're messaging
 		// Are we viewing another user, or the global chatbox?
 
-		$chatbox .= '<div class = "chatWrapper"><DIV class="chatbox '.(!isset($Member)?'chatboxnotabs':'').'"> 
+		$chatbox .= '<div class = "chatWrapper"><DIV class="chatbox '.(!isset($Member)?'chatboxnotabs':'').'">
 					<TABLE class="chatbox">
 					<TR class="barAlt2 membersList">
 					<TD>';
@@ -196,6 +202,7 @@ class Chatbox
 		$chatbox .= '</TABLE></DIV>';
 
 		if ( ( $User->type['Moderator'] && $msgCountryID == 0 ) ||((isset($directorUserID) && $directorUserID == $User->id && $msgCountryID == 0 ))||
+				 (isset($tournamentDirector) && $tournamentDirector == $User->id && $msgCountryID == 0) || (isset($tournamentCodirector) && $tournamentCodirector == $User->id && $msgCountryID == 0) ||
 		     ( isset($Member) &&
 		       ( $Game->pressType == 'Regular' ||                                         // All tabs allowed for Regular
 		         $Member->countryID == $msgCountryID ||                                   // Notes tab always allowed
@@ -223,8 +230,8 @@ class Chatbox
 						<TD class="left send">
 							<input type="hidden" name="formTicket" value="'.libHTML::formTicket().'" />
 							<input type="submit" tabindex="2" class="form-submit" value="'.l_t('Send').'" name="Send" onclick="return false;" id="message-send"/><br/>
-						
-					
+
+
 					'.'
 						</TD>
 					</TR>
@@ -308,8 +315,8 @@ class Chatbox
 				// This isn't the tab I am currently viewing, and it has sent me new messages
 				$tabs .= ' '.libHTML::unreadMessages();
 			}
-			
-			// Mark as unread patch! 
+
+			// Mark as unread patch!
 			if ( $msgCountryID == $countryID and isset($_REQUEST['MarkAsUnread']))
 				$tabs .= ' '.libHTML::unreadMessages();
 
@@ -336,7 +343,7 @@ class Chatbox
 	 * @param string $msgCountryID The name of the countryID/tab which we have open
 	 * @return string The HTML for the messages we have sent/recieved
 	 */
-	function getMessages ( $msgCountryID, $limit=20 )
+	function getMessages ( $msgCountryID, $limit=50 )
 	{
 		global $DB, $User, $Member, $Game;
 
@@ -367,7 +374,7 @@ class Chatbox
 					(
 						".$where."
 					)
-				order BY id ".($msgCountryID==-1?'ASC':'DESC').' '.($limit?"LIMIT ".$limit:""));
+				order BY id DESC ".($limit?"LIMIT ".$limit:""));
 
 		unset($where);
 
@@ -388,33 +395,16 @@ class Chatbox
 		$messagestxt = "";
 
 		$alternate = false;
-		for ( $i=count($messages); $i >= 1; --$i )
+		for ( $i = count($messages)-1; $i>=0; --$i )
 		{
-			$message = $messages[$i-1];
+			$message = $messages[$i];
 
 			$alternate = ! $alternate;
-
-			// If member info is hidden and the message isn't from me
-			if ( $Game->isMemberInfoHidden() && ( !is_object($Member) || $message['fromCountryID'] != $Member->countryID ) )
-			{
-				/*
-				 * Take the last 2^12 bits off the timestamp (~70 mins), to fudge
-				 * it so players can't use it to compare to who was online/offline
-				 * at the time.
-				 */
-				// 1010-1010-1010-1010-1010-xxxx-xxxx-xxxx -> 1010-1010-1010-1010-1010-0000-0000-0000
-				$message['timeSent'] &= 0xfffff000;
-				$approxIndicator = '~';
-			}
-			else
-			{
-				$approxIndicator = '';
-			}
 
 			$messagestxt .= '<TR class="replyalternate'.($alternate ? '1' : '2' ).
 				' gameID'.$Game->id.'countryID'.$message['fromCountryID'].'">'.
 				// Add gameID####countryID### to allow muted countries to be hidden
-					'<TD class="left time">'.$approxIndicator.libTime::text($message['timeSent']);
+					'<TD class="left time">'.libTime::text($message['timeSent']);
 
 			$messagestxt .=  '</TD>
 					<TD class="right ';

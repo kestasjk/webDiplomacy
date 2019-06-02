@@ -89,53 +89,42 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  	                               
 if( $User->type['User'] ) 
 {
-	// If the user is registered show the list of muted users/countries:
-
-	$MutedUsers = array();
-	foreach($User->getMuteUsers() as $muteUserID) 
+	if (!isset(Config::$customForumURL))
 	{
-		$MutedUsers[] = new User($muteUserID);
-	}
-	if( count($MutedUsers) > 0 ) 
-	{
-		print '<li class="formlisttitle">Muted users:</li>';
-		print '<li class="formlistdesc">The users which you muted, and are unable to send you messages.</li>';
-		print '<li class="formlistfield"><ul>';
-		foreach ($MutedUsers as $MutedUser) 
+		// If the user is registered show the list of muted users/countries:
+		$MutedUsers = array();
+		foreach($User->getMuteUsers() as $muteUserID) 
 		{
-			print '<li>'.$MutedUser->username.' '.libHTML::muted("profile.php?userID=".$MutedUser->id.'&toggleMute=on&rand='.rand(0,99999).'#mute').'</li>';
+			$MutedUsers[] = new User($muteUserID);
 		}
-		print '</ul></li>';
+		if( count($MutedUsers) > 0 ) 
+		{
+			print '<li class="formlisttitle">Muted users:</li>';
+			print '<li class="formlistdesc">The users which you muted, and are unable to send you messages.</li>';
+			print '<li class="formlistfield"><ul>';
+			foreach ($MutedUsers as $MutedUser) 
+			{
+				print '<li>'.$MutedUser->username.' '.libHTML::muted("profile.php?userID=".$MutedUser->id.'&toggleMute=on&rand='.rand(0,99999).'#mute').'</li>';
+			}
+			print '</ul></li>';
+		}
 	}
 
-	/*
-	$MutedGames = array();
-	foreach($User->getMuteCountries() as $muteGamePair) {
-		list($gameID, $muteCountryID) = $muteGamePair;
-		if( !isset($MutedGames[$gameID])) $MutedGames[$gameID] = array();
-		$MutedGames[$gameID][] = $muteCountryID;
-	}
+	list($muteCountryCount) = $DB->sql_row("select count(distinct c.gameID) from wD_MuteCountry c inner join wD_Games g on g.id = c.gameID where c.userID = ".$User->id);
+	$muteCountry = $DB->sql_tabl("select distinct c.gameID, g.name from wD_MuteCountry c inner join wD_Games g on g.id = c.gameID where c.userID = ".$User->id);
 	
-	if( count($MutedGames) > 0 ) {
-		print '<li class="formlisttitle">Muted countries:</li>'; 
-		print '<li class="formlistdesc">The countries which you muted, and are unable to send you messages.</li>';
-		print '<li class="formlistfield"><ul>';
-		$LoadedVariants = array();
-		foreach ($MutedGames as $gameID=>$mutedCountries) {
-			list($variantID) = $DB->sql_row("SELECT variantID FROM wD_Games WHERE id=".$gameID);
-			if( !isset($LoadedVariants[$variantID]))
-				$LoadedVariants[$variantID] = libVariant::loadFromVariantID($variantID);
-			$Game = $LoadedVariants[$variantID]->Game($gameID);
-			print '<li>'.$Game->name.'<ul>';
-			
-			foreach($mutedCountries as $mutedCountryID) {
-				print '<li>'.$Game->Members->ByCountryID[$mutedCountryID]->country.' '.
-				libHTML::muted("board.php?gameID=".$Game->id."&msgCountryID=".$mutedCountryID."&toggleMute=".$mutedCountryID."&rand=".rand(0,99999).'#chatboxanchor').'</li>';
-			} 
-			print '</ul></li>'; 
-		} 
-		print '</ul></li>';
-	} */
+	if( $muteCountryCount > 0 ) 
+	{
+		print '<strong>Games with Muted countries:</strong></br>To unmute visit the game and click speaker icon</br></br>'; 
+
+		while (list($gameID, $name) = $DB->tabl_row($muteCountry))
+        {		
+			print '  <a href="board.php?gameID='.$gameID.'">'.$name.'</a></br>';
+		}
+		print'</br>';
+		// Due to a rather serious flaw in the variant loading system, attempting to load a variant from this page will result in a php error related to serialization as of 
+		// the php upgrade to 7.0. 
+	} 
 	
 	if (!isset(Config::$customForumURL))
 	{
@@ -150,13 +139,14 @@ if( $User->type['User'] )
 			$mutedThreads[] = $mutedThread;
 		unset($tablMutedThreads);
 		
-		if( count($mutedThreads) > 0 ) {
+		if( count($mutedThreads) > 0 ) 
+		{
 			print '<li class="formlisttitle"><a name="threadmutes"></a>Muted threads:</li>';
 			print '<li class="formlistdesc">The threads which you muted.</li>';
 			
 			$unmuteThreadID=0;
-			if( isset($_GET['unmuteThreadID']) ) {
-				
+			if( isset($_GET['unmuteThreadID']) ) 
+			{
 				$unmuteThreadID = (int)$_GET['unmuteThreadID'];
 				$User->toggleThreadMute($unmuteThreadID);
 				
@@ -166,7 +156,8 @@ if( $User->type['User'] )
 			
 			print '<li class="formlistfield"><ul>';
 			
-			foreach ($mutedThreads as $mutedThread) {
+			foreach ($mutedThreads as $mutedThread) 
+			{
 				if( $unmuteThreadID == $mutedThread['muteThreadID']) continue;
 				print '<li>'.
 					'<a class="light" href="forum.php?threadID='.$mutedThread['muteThreadID'].'#'.$mutedThread['muteThreadID'].'">'.
@@ -185,7 +176,7 @@ if( $User->type['User'] )
  */
 print '</ul>
 
-<p><input type="submit" class="settings" value="Update"></p>
+<p><input type="submit" class="green-Submit" value="Update"></p>
 </form>
 </div>';
 

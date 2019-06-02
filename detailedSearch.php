@@ -337,7 +337,7 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tabl
 		</select>
 		</p>
 
-		<input type="submit" name="Submit" class="form-submit" value="Check" /></form>
+		<input type="submit" name="Submit" class="green-Submit" value="Check" /></form>
 		</br>';
 print '</div>';
 
@@ -427,7 +427,7 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tabl
 		</select>
 		</p>
 
-		<input type="submit" name="Submit" class="form-submit" value="Check" /></form>
+		<input type="submit" name="Submit" class="green-Submit" value="Check" /></form>
 		</br>';
 print '</div>';
 
@@ -494,7 +494,7 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tabl
 		</select>
 		</p>
 
-		<input type="submit" name="Submit" class="form-submit" value="Check" /></form>
+		<input type="submit" name="Submit" class="green-Submit" value="Check" /></form>
 		</br>';
 print '</div>';
 
@@ -767,6 +767,8 @@ else if ($tab == 'GameSearch')
 
 		$sqlCounter = "SELECT count(1) FROM wD_Games g WHERE 1 = 1";
 
+		$parenAdd = False;
+
 		if ($gamename)
 		{
 			$gamename = strip_tags(html_entity_decode(trim($gamename)));
@@ -785,6 +787,7 @@ else if ($tab == 'GameSearch')
 				$sql = $sql." and ( trim(g.name) like '".$gamename."%'";
 				$sqlCounter = $sqlCounter." and ( trim(g.name) like '".$gamename."%'";
 			}
+			$parenAdd = True;
 		}
 		if ($gamename2 && $gamename != '')
 		{
@@ -825,7 +828,7 @@ else if ($tab == 'GameSearch')
 			}
 		}
 
-		if ($gamename != '')
+		if ($parenAdd)
 		{
 			$sql = $sql." ) ";
 			$sqlCounter = $sqlCounter." ) ";
@@ -988,8 +991,8 @@ else if ($tab == 'GamesByUser')
 	else { print '<p class = advancedSearch> The user you entered is not valid. Please enter a valid user or a User ID of 0 to see your own games.</p>';}
 }
 
-if (isset($_REQUEST['tab'])){
-
+if (isset($_REQUEST['tab']))
+{
 	print '</br>';
 
 	if ($pagenum > 3)
@@ -1146,7 +1149,8 @@ $seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount
 }
 
 //This function prints out a button that will take you to the page of the number you feed into it. It will look white is $currPage is set to True.
-function printPageButton($pagenum, $currPage){
+function printPageButton($pagenum, $currPage)
+{
 	if ($currPage)
 	{
 		print '<div class="curr-page">'.$pagenum.'</div>';
@@ -1157,58 +1161,69 @@ function printPageButton($pagenum, $currPage){
 		print '<FORM method="get" action=detailedSearch.php#tableLocation>';
 		foreach($_REQUEST as $key => $value)
 		{
-			if(strpos('x'.$key,'wD') == false && $key!="pagenum"){
-				print '<input type="hidden" name="'.$key.'" value='.$value.'>';
+			if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && $key!="pagenum")
+			{
+				print '<input type="hidden" name="'.$key.'" value="'.$value.'">';
 			}
 		}
 		print '<input type="submit" name="pagenum" class="form-submit" value='.$pagenum.' /></form></div>';
 	}
 }
 
-function printHeaderLink($header, $tab, $sortCol, $sortType, $sortColg){
+function printHeaderLink($header, $tab, $sortCol, $sortType, $sortColg)
+{
 	print '<FORM method="get" action=detailedSearch.php#tableLocation>';
 	foreach($_REQUEST as $key => $value)
 	{
-		if(strpos('x'.$key,'wD') == false && $key!="sortCol" && $key!="sortColg" && $key!="sortType" && $key!="pagenum"){
-			print '<input type="hidden" name="'.$key.'" value='.$value.'>';
+		if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && $key!="sortCol" && $key!="sortColg" && $key!="sortType" && $key!="pagenum")
+		{
+			print '<input type="hidden" name="'.$key.'" value="'.$value.'">';
 		}
 	}
 	$convert = array("UserID"=>"id","Username"=>"Username","Joined On"=>"timeJoined","RR"=>"reliabilityRating","Games"=>"gameCount","Points"=>"points", "Game ID"=>"id", "Name"=>"gameName", "Pot"=>"pot", "Length"=>"phaseMinutes", "Spectators"=>"watchedGames");
-	if($tab == 'UserSearch'){
-		if ($convert[$header] == $sortCol){
+	if($tab == 'UserSearch')
+	{
+		if ($convert[$header] == $sortCol)
+		{
 			if ($sortType == 'asc')
 			{
 				print '<input type="hidden" name="sortType" value=desc>';
 				print '<button type="submit" name="sortCol" value='.$convert[$header].' class="advancedSearchHeader"';
 				print '>'.$header.' &#9652</button></form>';
 			}
-			else{
+			else
+			{
 				print '<input type="hidden" name="sortType" value=asc>';
 				print '<button type="submit" name="sortCol" value='.$convert[$header].' class="advancedSearchHeader"';
 				print '>'.$header.' &#9662</button></form>';
 			}
 		}
-		else{
+		else
+		{
 			print '<input type="hidden" name="sortType" value=asc>';
 			print '<button type="submit" name="sortCol" value='.$convert[$header].' class="advancedSearchHeader"';
 			print '>'.$header.'</button></form>';
 		}
 	}
-	else{
-		if ($convert[$header] == $sortColg){
+	else
+	{
+		if ($convert[$header] == $sortColg)
+		{
 			if ($sortType == 'asc')
 			{
 				print '<input type="hidden" name="sortType" value=desc>';
 				print '<button type="submit" name="sortColg" value='.$convert[$header].' class="advancedSearchHeader"';
 				print '>'.$header.' &#9652</button></form>';
 			}
-			else{
+			else
+			{
 				print '<input type="hidden" name="sortType" value=asc>';
 				print '<button type="submit" name="sortColg" value='.$convert[$header].' class="advancedSearchHeader"';
 				print '>'.$header.' &#9662</button></form>';
 			}
 		}
-		else{
+		else
+		{
 			print '<input type="hidden" name="sortType" value=asc>';
 			print '<button type="submit" name="sortColg" value='.$convert[$header].' class="advancedSearchHeader"';
 			print '>'.$header.'</button></form>';

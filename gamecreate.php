@@ -27,20 +27,16 @@ require_once('header.php');
 
 if ( $Misc->Panic )
 {
-	libHTML::notice(l_t('Game creation disabled'),
-		l_t("Game creation has been temporarily disabled while we take care of an ".
-		"unexpected problem. Please try again later, sorry for the inconvenience."));
+	libHTML::notice(l_t('Game creation disabled'), 
+	l_t("Game creation has been temporarily disabled while we take care of an unexpected problem. Please try again later, sorry for the inconvenience."));
 }
 
 if( !$User->type['User'] )
 {
-	libHTML::notice(l_t('Not logged on'),l_t("Only a logged on user can create games. ".
-		"Please <a href='logon.php' class='light'>log on</a> to create your own games."));
+	libHTML::notice(l_t('Not logged on'),l_t("Only a logged on user can create games. Please <a href='logon.php' class='light'>log on</a> to create your own games."));
 }
 
 libHTML::starthtml();
-
-//print '<div class="content">';
 
 if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 {
@@ -51,30 +47,21 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$input = array();
 		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy','drawType','minimumReliabilityRating','excusedMissedTurns');
 
-		if ( !isset($form['missingPlayerPolicy']) )
-			$form['missingPlayerPolicy'] = 'Normal';
+		if ( !isset($form['missingPlayerPolicy']) ) {$form['missingPlayerPolicy'] = 'Normal'; }
 		
 		foreach($required as $requiredName)
 		{
-			if ( isset($form[$requiredName]) )
-			{
-				$input[$requiredName] = $form[$requiredName];
-			}
-			else
-			{
-				throw new Exception(l_t('The variable "%s" is needed to create a game, but was not entered.',$requiredName));
-			}
+			if ( isset($form[$requiredName]) ) { $input[$requiredName] = $form[$requiredName]; }
+			else{ throw new Exception(l_t('The variable "%s" is needed to create a game, but was not entered.',$requiredName)); }
 		}
 		unset($required, $form);
 
 		$input['variantID']=(int)$input['variantID'];
-		if( !isset(Config::$variants[$input['variantID']]) )
-			throw new Exception(l_t("Variant ID given (%s) doesn't represent a real variant.",$input['variantID']));
+		if( !isset(Config::$variants[$input['variantID']]) ) { throw new Exception(l_t("Variant ID given (%s) doesn't represent a real variant.",$input['variantID'])); }
 
 		// If the name isn't unique or is too long the database will stop it
 		$input['name'] = $DB->escape($input['name']);
-		if ( !$input['name'] )
-			throw new Exception(l_t("No name entered."));
+		if ( !$input['name'] ) { throw new Exception(l_t("No name entered.")); }
 
 		// This is hashed, so doesn't need validation
 		if ( $input['password'] != $input['passwordcheck'] )
@@ -88,8 +75,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			throw new Exception(l_t("%s is an invalid bet size.",(string)$input['bet']));
 		}
 
-		if ( $input['potType'] != 'Winner-takes-all' and $input['potType'] != 'Points-per-supply-center' 
-			and $input['potType'] != 'Unranked' and $input['potType'] != 'Sum-of-squares')
+		if ( $input['potType'] != 'Winner-takes-all' and $input['potType'] != 'Points-per-supply-center' and $input['potType'] != 'Unranked' and $input['potType'] != 'Sum-of-squares')
 		{
 			throw new Exception(l_t('Invalid potType input given.'));
 		}
@@ -108,6 +94,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		
 		$input['anon'] = ( (strtolower($input['anon']) == 'yes') ? 'Yes' : 'No' );
 		
+		// Force 1 vs 1 variants to be unranked to prevent point farming. 
 		if ( $input['variantID'] == 15 )
 		{
 			$input['bet'] = 5; 
@@ -120,12 +107,15 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input['potType'] = 'Unranked';
 		}
 		
-		switch($input['pressType']) {
+		// If no press is selected, force the game to anon to prevent cheating via out of game messaging.
+		switch($input['pressType']) 
+		{
 			case 'PublicPressOnly':
 				$input['pressType'] = 'PublicPressOnly';
 				break;
 			case 'NoPress':
 				$input['pressType'] = 'NoPress';
+				$input['anon'] = 'Yes';
 				break;
 			case 'RulebookPress':
 				$input['pressType'] = 'RulebookPress';
@@ -135,14 +125,16 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 				$input['pressType'] = 'Regular';
 		}
 		
-		switch($input['missingPlayerPolicy']) {
+		switch($input['missingPlayerPolicy']) 
+		{
 			case 'Wait':
 				$input['missingPlayerPolicy'] = 'Wait';
 				break;
 			default:
 				$input['missingPlayerPolicy'] = 'Normal';
 		}
-		switch($input['drawType']) {
+		switch($input['drawType']) 
+		{
 			case 'draw-votes-hidden':
 				$input['drawType'] = 'draw-votes-hidden'; 
 				break;
@@ -153,11 +145,11 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$input['minimumReliabilityRating'] = (int)$input['minimumReliabilityRating'];
 		if ( $input['minimumReliabilityRating'] < 0 or $input['minimumReliabilityRating'] > 100 )
 		{
-                 	throw new Exception(l_t("The reliability rating threshold must range from 0-100"));
+            throw new Exception(l_t("The reliability rating threshold must range from 0-100"));
 		}
 		if ( $input['minimumReliabilityRating'] > $User->reliabilityRating )
 		{
-                 	throw new Exception(l_t("Your reliability rating is %s%%, so you can't create a game which requires players to have a RR of %s%% or greater.",($User->reliabilityRating),$input['minimumReliabilityRating']));
+            throw new Exception(l_t("Your reliability rating is %s%%, so you can't create a game which requires players to have a RR of %s%% or greater.",($User->reliabilityRating),$input['minimumReliabilityRating']));
 		}
 		$input['excusedMissedTurns'] = (int) $input['excusedMissedTurns'];
 		if ( $input['excusedMissedTurns'] < 0 || $input['excusedMissedTurns'] > 4 )
@@ -182,13 +174,12 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input['excusedMissedTurns']);
 
 		// Prevent temp banned players from making new games.
-		if ($User->tempBan > time())
+		if ($User->userIsTempBanned())
 		{
 			processGame::eraseGame($Game->id);
 			libHTML::notice('You are blocked from creating new games.', 'You are blocked from creating new games.');
 		}
-		// END TempBan
-		
+
 		// Create first Member record & object
 		processMember::create($User->id, $input['bet']);
 		$Game->Members->joinedRedirect();
@@ -212,14 +203,7 @@ else
 	$defaultRR = 80;
 }
 
-if ( $User->points >= 5 )
-{
-	// $roundedDefault = round(($User->points/7)/10)*10;
-	// if ($roundedDefault > 5 )
-	// 	$defaultPoints = $roundedDefault;
-	// else
-	$defaultPoints = 5;
-}
+if ( $User->points >= 5 ) { $defaultPoints = 5; }
 else
 {
 	print l_t("You cannot create a new game because you have less than 5%s, you only have %s%s. ".
@@ -230,14 +214,11 @@ else
 	libHTML::footer();
 }
 
-if( isset($input) && isset($input['points']) )
-	$formPoints = $input['points'];
-else
-	$formPoints = $defaultPoints;
+if( isset($input) && isset($input['points']) ) { $formPoints = $input['points']; }
+else { $formPoints = $defaultPoints; }
 
 require_once(l_r('locales/English/gamecreate.php'));
 
 print '</div>';
 libHTML::footer();
-
 ?>

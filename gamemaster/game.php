@@ -429,11 +429,11 @@ class processGame extends Game
 	{
 		global $DB;
 	
-		// detect which players NMR this turn
+		// detect which players NMR this turn, exclude anyone who is left to avoid giving them unearned un-excused missed turns. 
 		$tabl = $DB->sql_tabl("SELECT m.id 
 				FROM wD_Members m 
 				WHERE m.gameID = ".$this->id." 
-					AND ( m.status='Playing' OR m.status='Left' ) 
+					AND m.status='Playing'
 					AND EXISTS(SELECT o.id FROM wD_Orders o WHERE o.gameID = m.gameID AND o.countryID = m.countryID)
 					AND NOT m.orderStatus LIKE '%Saved%' AND NOT m.orderStatus LIKE '%Ready%' AND NOT m.orderStatus LIKE '%Completed%'");
 		
@@ -443,20 +443,32 @@ class processGame extends Game
 
 		if( count($nmrs) > 0 )
 		{
-			// Insert a Missed Turn for anyone who missed the turn, accounting for systemExcused and samePeriodExcused
-			$DB->sql_put("INSERT INTO wD_MissedTurns (gameID, userID, countryID, turn, bet, SCCount, forcedByMod, systemExcused, modExcused, turnDateTime, modExcusedReason, samePeriodExcused)
-					SELECT m.gameID, m.userID, m.countryID, ".$this->turn." as turn, m.bet, m.supplyCenterNo, 0, CASE WHEN excusedMissedTurns > 0 THEN 1 ELSE 0 END, 0,".time().",'', 
-					CASE WHEN (
-						SELECT COUNT(1) 
-						FROM wD_MissedTurns 
-						WHERE userID = m.userID 
-							AND turnDateTime > ".time()." - (86400)
-							AND systemExcused = 0 
-							AND modExcused = 0 
-							AND samePeriodExcused = 0
-					) > 0 THEN 1 ELSE 0 END 
-					FROM wD_Members m
-					WHERE m.id IN ( ".implode(',',$nmrs).")");
+			if ($this->phaseMinutes > 60)
+			{
+				// Insert a Missed Turn for anyone who missed the turn, accounting for systemExcused and samePeriodExcused
+				$DB->sql_put("INSERT INTO wD_MissedTurns (gameID, userID, countryID, turn, bet, SCCount, forcedByMod, systemExcused, modExcused, turnDateTime, modExcusedReason, samePeriodExcused)
+						SELECT m.gameID, m.userID, m.countryID, ".$this->turn." as turn, m.bet, m.supplyCenterNo, 0, CASE WHEN excusedMissedTurns > 0 THEN 1 ELSE 0 END, 0,".time().",'', 
+						CASE WHEN (
+							SELECT COUNT(1) 
+							FROM wD_MissedTurns 
+							WHERE userID = m.userID 
+								AND turnDateTime > ".time()." - (86400)
+								AND systemExcused = 0 
+								AND modExcused = 0 
+								AND samePeriodExcused = 0
+						) > 0 THEN 1 ELSE 0 END 
+						FROM wD_Members m
+						WHERE m.id IN ( ".implode(',',$nmrs).")");
+			}
+			// Prevent NMR's in live games from being same period excused to prevent someone from re-taking over their position endlessly. 
+			else
+			{
+				// Insert a Missed Turn for anyone who missed the turn, accounting for systemExcused and samePeriodExcused
+				$DB->sql_put("INSERT INTO wD_MissedTurns (gameID, userID, countryID, turn, bet, SCCount, forcedByMod, systemExcused, modExcused, turnDateTime, modExcusedReason, samePeriodExcused)
+						SELECT m.gameID, m.userID, m.countryID, ".$this->turn." as turn, m.bet, m.supplyCenterNo, 0, CASE WHEN excusedMissedTurns > 0 THEN 1 ELSE 0 END, 0,".time().",'', 0
+						FROM wD_Members m
+						WHERE m.id IN ( ".implode(',',$nmrs).")");
+			}
 		}
 		 
 		// register a missed turn for each member who NMRed

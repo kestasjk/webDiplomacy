@@ -44,7 +44,7 @@ if ( $User->type['User'] && ( isset($_REQUEST['join']) || isset($_REQUEST['leave
 
 		// If viewing an archive page make that the title, otherwise us the name of the game
 		libHTML::starthtml(isset($_REQUEST['viewArchive'])?$_REQUEST['viewArchive']:$Game->titleBarName());
-		
+
 		if ( isset($_REQUEST['join']) )
 		{
 			// They will be stopped here if they're not allowed.
@@ -79,10 +79,10 @@ else
 		$Variant=libVariant::loadFromGameID($gameID);
 		libVariant::setGlobals($Variant);
 		$Game = $Variant->panelGameBoard($gameID);
-		
+
 		// If viewing an archive page make that the title, otherwise us the name of the game
 		libHTML::starthtml(isset($_REQUEST['viewArchive'])?$_REQUEST['viewArchive']:$Game->titleBarName());
-		
+
 		if ( $Game->Members->isJoined() && !$Game->Members->isTempBanned() )
 		{
 			// We are a member, load the extra code that we might need
@@ -136,7 +136,7 @@ if ( isset($_REQUEST['viewArchive']) )
 }
 
 
-if ( ! $Game->Members->isJoined() && $Game->watched() && isset($_REQUEST['unwatch'])) {
+if ( $Game->watched() && isset($_REQUEST['unwatch'])) {
 	print '<div class="content-notice gameTimeRemaining">'
 		.'<form method="post" action="redirect.php">'
 		.'Are you sure you wish to remove this game from your spectated games list? '
@@ -152,7 +152,7 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 	if( $Game->phase != 'Pre-game' )
 	{
 		if(isset($_REQUEST['Unpause'])) $_REQUEST['Pause']='on'; // Hack because Unpause = toggle Pause
-		
+
 		foreach(Members::$votes as $possibleVoteType) {
 			if( isset($_REQUEST[$possibleVoteType]) && isset($Member) && libHTML::checkTicket() )
 				$Member->toggleVote($possibleVoteType);
@@ -312,30 +312,28 @@ if($User->type['Moderator'])
 	{
 		$modActions[] = libHTML::admincpType('Game',$Game->id);
 
-		$modActions[] = libHTML::admincp('drawGame',array('gameID'=>$Game->id), l_t('Draw game'));
+		$modActions[] = libHTML::admincp('resetMinimumBet',array('gameID'=>$Game->id), l_t('Reset Min Bet'));
 		$modActions[] = libHTML::admincp('togglePause',array('gameID'=>$Game->id), l_t('Toggle pause'));
 		if($Game->processStatus=='Not-processing')
 		{
 			$modActions[] = libHTML::admincp('setProcessTimeToNow',array('gameID'=>$Game->id), l_t('Process now'));
-			$modActions[] = libHTML::admincp('setProcessTimeToPhase',array('gameID'=>$Game->id), l_t('Process one phase length from now'));
+			$modActions[] = libHTML::admincp('setProcessTimeToPhase',array('gameID'=>$Game->id), l_t('Reset Phase'));
 		}
 
 		if($User->type['Admin'])
 		{
 			if($Game->processStatus == 'Crashed')
 				$modActions[] = libHTML::admincp('unCrashGames',array('excludeGameIDs'=>''), l_t('Un-crash all crashed games'));
-
-			$modActions[] = libHTML::admincp('reprocessGame',array('gameID'=>$Game->id), l_t('Reprocess game'));
 		}
 
 		if( $Game->phase!='Pre-game' && !$Game->isMemberInfoHidden() )
 		{
 			$userIDs=implode('%2C',array_keys($Game->Members->ByUserID));
-			$modActions[] = '<br />'.l_t('Multi-check:');
+			$modActions[] = '<br /></br>'.l_t('Multi-check:');
 			foreach($Game->Members->ByCountryID as $countryID=>$Member)
 			{
-				$modActions[] = '<a href="admincp.php?tab=Multi-accounts&aUserID='.$Member->userID.'&bUserIDs='.$userIDs.'" class="light">'.
-					$Member->memberCountryName().'</a>';
+				$modActions[] = '<a href="admincp.php?tab=Multi-accounts&aUserID='.$Member->userID.'" class="light">'.
+					$Member->memberCountryName().'('.$Member->username.')</a>';
 			}
 		}
 	}
@@ -352,11 +350,12 @@ if($User->type['Moderator'])
 
 // TODO: Have this loaded up when the game object is loaded up
 list($directorUserID) = $DB->sql_row("SELECT directorUserID FROM wD_Games WHERE id = ".$Game->id);
-if( isset($directorUserID) && $directorUserID == $User->id)
+list($tournamentDirector, $tournamentCodirector) = $DB->sql_row("SELECT directorID, coDirectorID FROM wD_Tournaments t INNER JOIN wD_TournamentGames g ON t.id = g.tournamentID WHERE g.gameID = ".$Game->id);
+if( (isset($directorUserID) && $directorUserID == $User->id) || (isset($tournamentDirector) && $tournamentDirector == $User->id) || (isset($tournamentCodirector) && $tournamentCodirector == $User->id) )
 {
 	// This guy is the game director
 	define("INBOARD", true);
-	
+
 	require_once(l_r("admin/adminActionsForms.php"));
 }
 
