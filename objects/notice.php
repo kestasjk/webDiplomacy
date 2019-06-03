@@ -139,6 +139,15 @@ class notice
 					<div class="homeForumPostTime">'.libTime::text($this->timeSent).' ';
 		}
 
+		elseif (strpos($this->text, 'Your application to join') !== false || strpos($this->text, 'Congratulations! You have been accepted into') !== false || strpos($this->text, 'You have been removed from') !== false)
+		{
+			$buf = '<div style="background-color: #ddd;" class="homeNotice '.($this->type=='Game'?'" gameID="'.$this->fromID.'"':'userID'.$this->fromID.'"').'>
+			<div class="homeForumGroup homeForumAlt'.libHTML::alternate().'">
+				<div class="homeForumSubject homeForumTopBorder">'.$this->fromLink().'</div>
+				<div class="homeForumPostAlt'.libHTML::alternate().' homeForumPost">
+					<div class="homeForumPostTime">'.libTime::text($this->timeSent).' ';
+		}
+
 		else
 		{
 			$buf = '<div class="homeNotice '.($this->type=='Game'?'" gameID="'.$this->fromID.'"':'userID'.$this->fromID.'"').'>
