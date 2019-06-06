@@ -333,7 +333,7 @@ li.formlistfield {
 }
 li.formlistdesc {
 	font-weight: normal;
-	color: #777;
+	color: rgba(255, 255, 255, 0.8);
 	list-style: none;
 	margin-left:20px;
 	margin-right:20px;
@@ -1214,7 +1214,7 @@ input[type=submit].gameCreate:hover {
 	cursor: pointer;
 	padding: 10px;
 	width: 100%;
-	border: none;
+	border: 1px solid #ccc;
 	text-align: left;
 	outline: none;
 	border-radius: 7px;
@@ -1232,7 +1232,7 @@ input[type=submit].gameCreate:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	display: none;
 	overflow: hidden;
-	background-color: #f1f1f1;
+	background-color: #555;
 	margin-top: 0px !important;
 	font-size: 14px;
 	border-radius: 7px;
@@ -1335,7 +1335,7 @@ input[type=submit].gameCreate:hover {
 	color: white;
 	cursor: pointer;
 	padding: 10px;
-	border: none;
+	border: 1px solid #ccc;
 	text-align: left;
 	outline: none;
 	border-radius: 7px;
@@ -1348,27 +1348,22 @@ input[type=submit].gameCreate:hover {
 	background-color: #555;
 }
 
-.donations_content {
+.donations_content, .donations_content_show {
 	padding: 0;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	display: none;
 	overflow: hidden;
 	padding: 0 0 0 10px;
-	background-color: #f1f1f1;
+	background-color: #555;
 	font-size: 14px;
 	margin-top:0px !important;
 	border-radius: 7px;
 }
 
-.donations_content_show {
-	border-radius: 7px;
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	overflow: hidden;
-	background-color: #f1f1f1;
-	font-size: 14px;
-	padding: 0 0 0 10px;
-	margin-top:0px !important;
+.donations_content_show > form {
+	background-color: #555;
 }
+
 /* End of section for donations page styling */
 
 /* Section for help page styling */
@@ -1378,7 +1373,7 @@ input[type=submit].gameCreate:hover {
 	color: white;
 	cursor: pointer;
 	padding: 10px;
-	border: none;
+	border: 1px solid #ccc;
 	text-align: left;
 	outline: none;
 	border-radius: 7px;
@@ -1397,7 +1392,7 @@ input[type=submit].gameCreate:hover {
 	display: none;
 	overflow: hidden;
 	padding: 0 0 0 10px;
-	background-color: #f1f1f1;
+	background-color: #555;
 	font-size: 14px;
 	margin-top:0px !important;
 	border-radius: 7px;
@@ -1424,7 +1419,7 @@ input[type=submit].gameCreate:hover {
 	border-radius: 7px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	overflow: hidden;
-	background-color: #f1f1f1;
+	background-color: #5e6368;
 	font-size: 14px;
 	padding: 0 10px 0 10px;
 	margin-top:0px !important;
@@ -1437,6 +1432,8 @@ input[type=text].contactUs, input[type=password].contactUs, textarea.contactUs, 
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
+  background-color: #757b81;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 input[type=submit].contactUs {
@@ -1463,7 +1460,7 @@ input[type=submit].contactUs:hover {
 	border-radius: 7px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	overflow: hidden;
-	background-color: #f1f1f1;
+	background-color: #555;
 	font-size: 14px;
 	padding: 0 0 0 10px;
 	margin-top:0px !important;
@@ -1897,7 +1894,7 @@ ul.advancedSearch {
 	border-radius: 7px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	overflow: hidden;
-	background-color: #f1f1f1;
+	background-color: #555;
 	padding: 0 0 0 10px;
 	margin-top: 0px !important;
 }
