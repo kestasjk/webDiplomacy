@@ -189,6 +189,7 @@ div.memberBoardHeader {
 }
 .memberUserDetail {
 	float:left;
+	color: rgba(255, 255, 255, 0.8);
 }
 .memberLeftSide {
 	text-align:right;
@@ -343,6 +344,9 @@ div.memberBoardHeader {
 }
 
 /* ---- .archiveBar, .joinBar, .openBar ---- */
+.archiveBar {
+	color: rgba(255, 255, 255, 0.8);
+}
 .enterBar em {
 	font-style:normal;
 	font-weight:bold;

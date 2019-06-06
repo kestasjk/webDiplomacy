@@ -86,13 +86,13 @@ input:read-only {
 }
 
 .form-submit {
-  background-color: #8c9cbf;
-  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #8c9cbf), color-stop(50%, #546a9e), color-stop(50%, #36518f), color-stop(100%, #3d5691));
-  background-image: -webkit-linear-gradient(top, #8c9cbf 0%, #546a9e 50%, #36518f 50%, #3d5691 100%);
-  background-image: -moz-linear-gradient(top, #8c9cbf 0%, #546a9e 50%, #36518f 50%, #3d5691 100%);
-  background-image: -ms-linear-gradient(top, #8c9cbf 0%, #546a9e 50%, #36518f 50%, #3d5691 100%);
-  background-image: -o-linear-gradient(top, #8c9cbf 0%, #546a9e 50%, #36518f 50%, #3d5691 100%);
-  background-image: linear-gradient(top, #8c9cbf 0%, #546a9e 50%, #36518f 50%, #3d5691 100%);
+  background-color: #777;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #777), color-stop(50%, #666), color-stop(50%, #555), color-stop(100%, #444));
+  background-image: -webkit-linear-gradient(top, #777 0%, #666 50%, #555 50%, #444 100%);
+  background-image: -moz-linear-gradient(top, #777 0%, #666 50%, #555 50%, #444 100%);
+  background-image: -ms-linear-gradient(top, #777 0%, #666 50%, #555 50%, #444 100%);
+  background-image: -o-linear-gradient(top, #777 0%, #666 50%, #555 50%, #444 100%);
+  background-image: linear-gradient(top, #777 0%, #666 50%, #555 50%, #444 100%);
   border: .5px solid #172d6e;
   border-radius: 5px;
   -webkit-box-shadow: inset 0 1px 0 0 #b1b9cb;
@@ -825,10 +825,10 @@ div.gamelistings-tabs a:hover {
 	border-top:0;
 }
 .replyalternate1 {
-	background-color:#eaeaea;
+	background-color:#555;
 }
 .replyalternate2 {
-	background-color:#e5e5e5;
+	background-color:#777;
 }
 .message-head {
 	font-size:13px;
@@ -908,7 +908,7 @@ form {
 	border-radius: 7px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	overflow: hidden;
-	background-color: #f1f1f1;
+	background-color: #5f6368;
 	font-size: 14px;
 	margin-top:0px !important;
 }
@@ -920,6 +920,10 @@ div.chatbox {
 }
 div.chatbox td {
 	overflow:hidden;
+}
+textarea#sendbox {
+	background-color: #757b81;
+	color: rgba(255, 255, 255, 0.8);
 }
 .chatboxMembersList {
 	font-size:12px;
