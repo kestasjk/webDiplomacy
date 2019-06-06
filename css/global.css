@@ -1551,7 +1551,7 @@ input[type="text"].userSearch, input[type="password"].userSearch, textarea.userS
 	border-radius: 7px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	overflow: hidden;
-	background-color: #f1f1f1;
+	background-color: #5e6368;
 	font-size: 14px;
 	padding: 0 10px 0 10px;
 	margin-top:0px !important;
@@ -1562,6 +1562,8 @@ input[type=text].settings, input[type=password].settings, textarea.settings, sel
 	padding: 10px 5px;
   display: inline-block;
   border: 1px solid #ccc;
+  background-color: #757b81;
+  color: rgba(255, 255, 255, 0.8);
   border-radius: 4px;
   box-sizing: border-box;
 }
@@ -1629,7 +1631,7 @@ input[type=text].settings, input[type=password].settings, textarea.settings, sel
 	color: white;
 	cursor: pointer;
 	padding: 10px;
-	border: none;
+	border: 1px solid #ccc;
 	text-align: left;
 	outline: none;
 	border-radius: 7px;
@@ -1648,7 +1650,8 @@ input[type=text].settings, input[type=password].settings, textarea.settings, sel
 	display: none;
 	overflow: hidden;
 	padding: 0 10px;
-	background-color: #f1f1f1;
+	background-color: #555;
+	/*border: 1px solid #ccc;*/
 	font-size: 14px;
 	margin-top:0px !important;
 	border-radius: 7px;
@@ -1848,11 +1851,11 @@ input[type="text"].advancedSearch, input[type="password"].advancedSearch, textar
 }
 
 .advancedSearchContent {
-	padding: 0 10px;
+	padding: 5px 10px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	display: none;
 	overflow: hidden;
-	background-color: #f1f1f1;
+	background-color: #5e6368;
 }
 
 ul.advancedSearch {
