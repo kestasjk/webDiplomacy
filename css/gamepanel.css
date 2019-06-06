@@ -120,6 +120,7 @@ div.memberBoardHeader {
 .gameNoticeBar {
 	text-align:center;
 	font-weight:bold;
+	color: rgba(255, 255, 255, 0.8);
 }
 
 /* ---- occupationBar ---- */
@@ -178,11 +179,13 @@ div.memberBoardHeader {
 .memberRightSide {
 	width:85%;
 	padding-right:3px;
+	color: rgba(255, 255, 255, 0.8);
 }
 .memberGameDetail {
 	float:right;
 	font-style:italic;
 	text-align:right;
+	color: rgba(255, 255, 255, 0.8);
 }
 .memberUserDetail {
 	float:left;
@@ -190,6 +193,7 @@ div.memberBoardHeader {
 .memberLeftSide {
 	text-align:right;
 	width:auto;
+	color: rgba(255, 255, 255, 0.8);
 }
 .membersFullTable .memberLeftSide {
 	border-right: 1px solid #c1c1c1;
@@ -199,6 +203,7 @@ div.memberBoardHeader {
 }
 .memberName {
 	white-space: nowrap;
+	color: rgba(255, 255, 255, 0.8);
 }
 .memberStatus {
 	font-style:italic;
@@ -206,7 +211,6 @@ div.memberBoardHeader {
 .memberStatus em {
 	font-weight:bold;
 	font-style:italic;
-	color:#444;
 }
 .memberStatusFade {
 	color:#777;
@@ -243,10 +247,10 @@ div.memberBoardHeader {
 	background-color:#ddddee;
 }
 .memberAlternate1 {
-	background-color:#eaeaea;
+	background-color:#5e6368;
 }
 .memberAlternate2 {
-	background-color:#eaeaea;
+	background-color:#5e6368;
 }
 .memberPreGameList {
 	text-align:center;
@@ -346,6 +350,7 @@ div.memberBoardHeader {
 .enterBarJoin {
 	float:right;
 	text-align:right;
+	color: rgba(255, 255, 255, 0.8);
 }
 .enterBarOpen {
 	float:left;

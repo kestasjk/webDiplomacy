@@ -615,6 +615,7 @@ div.content {
 	margin-top: 5px;
 	max-width: 750px;
 	background-color: #3a4042;
+	color: rgba(255, 255, 255, 0.8);
 	/*border: 1px solid #aaa;*/
 	padding: 15px 24px;
 	border-radius: 7px;
@@ -1020,9 +1021,9 @@ input[type=submit].login:hover {
 	border-radius: 7px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	overflow: hidden;
-	background-color: #f1f1f1;
+	background-color: #5e6368;
 	font-size: 14px;
-	padding: 0 10px 0 10px;
+	padding: 0px 10px 10px 10px;
 	margin-top:0px !important;
 }
 .gameCreateTitle {
@@ -1818,6 +1819,7 @@ ul.modTools {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	border-collapse: collapse;
 	font-size: 12px;
+	color: rgba(255, 255, 255, 0.8);
 }
 
 input[type="text"].advancedSearch, input[type="password"].advancedSearch, textarea.advancedSearch, select.advancedSearch {
