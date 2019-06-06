@@ -11,7 +11,8 @@ html, body {
 	min-height: 100%; 
 }
 div.content-title-header {
-    border-bottom:#bbb 1px solid !important;
+    border-bottom:#5b6065 1px solid !important;
+    margin-bottom: 6px;
 }
 .footerMax {
 	max-width: 800px;
@@ -28,7 +29,7 @@ div.pageTitle, .boardHeader .gameName {
 }
 div.pageTitle {
     font-size:18pt;
-    color:#009922;
+    color:rgba(255,255,255,0.8);
     font-weight:bold;
     padding:4px 20px;
 }
@@ -37,9 +38,9 @@ div.pageTitle {
 }
 div.pageDescription {
     padding:4px 20px;
-    color:#666;
+    color:#d3d4d4;
     font-style:italic;
-    border-top:#ccc 1px solid;
+    border-top:#5f6368 1px solid;
 }
 .messageFromMe {
 	font-style: italic;
@@ -65,16 +66,17 @@ input:read-only {
 }
 
 .green-Submit {
-  background-color: #4CAF50 !important;
-  color: white;
-  border: none;
-	border-radius: 4px;
-	padding: 14px 20px;
-	width: 100%;
-	-webkit-appearance: none;
+  background-color: #384042;
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 14px 20px;
+  width: 100%;
+  -webkit-appearance: none;
+  font-weight: bold;
 }
 
-.green-Submit, .green-Submit:active, .green-Submit:default {
+.green-Submit:active {
   background-color: #4CAF50 !important;
 }
 
@@ -307,6 +309,7 @@ ul.formlist {
 	margin-left:20px;
 	margin-right:20px;
 	padding:0;
+	color: rgba(255, 255, 255, 0.8);
 }
 
 li {
@@ -611,8 +614,8 @@ div.content {
 	margin-right: auto;
 	margin-top: 5px;
 	max-width: 750px;
-	background-color: #fff;
-	border: 1px solid #aaa;
+	background-color: #3a4042;
+	/*border: 1px solid #aaa;*/
 	padding: 15px 24px;
 	border-radius: 7px;
 }
@@ -642,8 +645,8 @@ div.content-board-header, div.content-home-header {
 	border-radius: 7px;
 }
 div.content-board-header {
-	border: 1px solid #aaa;
-	background-color:#f5f5f5;
+	/*border: 1px solid #aaa;*/
+	background-color:#3a4042;
 	border-bottom:0;
 }
 div.content-follow-on {
@@ -660,7 +663,7 @@ div.content-follow-on {
 	max-width: 750px;
 	padding-left: 24px;
 	padding-right: 24px;
-	border: 1px solid #aaa;
+	/*border: 1px solid #aaa;*/
 }
 .content-slot {
 	border-top:0;
@@ -858,6 +861,7 @@ div.gamelistings-tabs a:hover {
 }
 form {
 	margin:0;
+	background-color: #5f6368;
 }
 
 .reply {
@@ -1057,6 +1061,8 @@ input[type=text].gameCreate, input[type=password].gameCreate, input[type=number]
 	padding: 10px 5px;
   display: inline-block;
   border: 1px solid #ccc;
+  background-color: #757b81;
+  color: rgba(255, 255, 255, 0.8);
   border-radius: 4px;
   box-sizing: border-box;
 }
@@ -1520,7 +1526,7 @@ input[type=submit].contactUs:hover {
 	border-radius: 7px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	overflow: hidden;
-	background-color: #f1f1f1;
+	background-color: #5f6368;
 	font-size: 14px;
 	padding: 0 10px 0 10px;
 	margin-top:0px !important;
