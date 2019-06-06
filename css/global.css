@@ -1315,8 +1315,15 @@ input[type=submit].gameCreate:hover {
 	padding: 6px;
 }
 
-.hof tr:nth-child(even){background-color: #f2f2f2; word-break: break-word;}
-.hof tr:nth-child(odd){background-color: #ffffff; word-break: break-word;}
+.hof tr:nth-child(even){
+	background-color: #555; 
+	word-break: break-word;
+}
+
+.hof tr:nth-child(odd){
+	background-color: #777; 
+	word-break: break-word;
+}
 
 .hof th {
 	padding-top: 12px;
