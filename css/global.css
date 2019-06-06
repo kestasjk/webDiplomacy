@@ -187,7 +187,7 @@ p.profileComment {
 	color: white;
 	cursor: pointer;
 	padding: 5px;
-	border: none;
+	border: 1px solid #ccc;
 	text-align: left;
 	outline: none;
 	border-radius: 7px;
@@ -206,7 +206,6 @@ p.profileComment {
 	display: none;
 	overflow: hidden;
 	padding: 0 0 0 10px;
-	background-color: #f1f1f1;
 	font-size: 13px;
 	margin-top:3px !important;
 	border-radius: 7px;
@@ -216,7 +215,6 @@ p.profileComment {
 	border-radius: 7px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	overflow: hidden;
-	background-color: #f1f1f1;
 	font-size: 13px;
 	display: show;
 	padding: 0 0 0 10px;
@@ -284,7 +282,7 @@ ul.gamesublist {
 }
 div.profile-show {
 	border-radius: 7px;
-	background-color: #f1f1f1;
+	background-color: #5f6368;
 	padding: 5px;
 }
 div.rightHalf {
