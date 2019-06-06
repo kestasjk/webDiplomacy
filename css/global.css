@@ -3,11 +3,13 @@ body {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	margin: 0;
 	padding: 0;
-	background-color: #d9d9d9;
+	background-color: #202125;
 	text-align: center;
 	height: 100%;
 }
-html, body { min-height: 100%; }
+html, body { 
+	min-height: 100%; 
+}
 div.content-title-header {
     border-bottom:#bbb 1px solid !important;
 }
@@ -21,8 +23,8 @@ div.content-title-header {
 div.pageTitle, .boardHeader .gameName {
     text-shadow: #999999 1px 1px 1px;
     font-size:22px !important;
-		font-weight:normal !important;
-		border-radius: 7px;
+	font-weight:normal !important;
+	border-radius: 7px;
 }
 div.pageTitle {
     font-size:18pt;
@@ -380,6 +382,7 @@ p.notice {
 	font-weight: bold;
 	text-align: center;
 	margin:0px;
+	color: rgba(255, 255, 255, 0.8);
 }
 p.welcome {
 	margin-left: 20px;
@@ -417,13 +420,13 @@ a {
 	text-decoration:underline;
 }
 a:link {
-	color: #006699;
+	color: rgba(255, 255, 255, 0.8)
 }
 a:visited {
-	color: #006699;
+	color: rgba(255, 255, 255, 0.8)
 }
 a:active {
-	color: #006699;
+	color: rgba(255, 255, 255, 0.8)
 }
 a:hover {
 	color: #009902 ! important;
@@ -438,7 +441,7 @@ a.light {
 }
 
  #header {
-	background-color: #fff;
+	background-color: #202125;
 	width: auto;
 	padding:0;
 	margin:0;
@@ -446,7 +449,7 @@ a.light {
 }
 #header-container {
 	padding-left:0;
-	background-color: #fff;
+	background-color: #202125;
 	padding-right:0;
 	padding-top:6px;
 	margin-left: auto;
@@ -467,6 +470,7 @@ a.light {
 	margin:0;
 	text-align:right;
 	font-style: italic;
+	color: rgba(255, 255, 255, 0.8);
 }
 #header-welcome a {
 	font-weight:normal !important;
@@ -479,16 +483,17 @@ a.light {
 
 .nav-wrap{
 	display: flex;
+	margin-bottom: 5px;
 	justify-content: space-around;
 	flex-wrap: wrap;
 	overflow: hidden;
 	border-radius: 7px;
-	background-color: #0e8805;
+	background-color: #0b6a0b;
 	width: auto;
 }
 
 #navSubMenu{
-	color: #f2f2f2;
+	color: rgba(255, 255, 255, 0.8);
 	font-weight: bold;
 	text-align: center;
 	padding: 10px 12px;
@@ -506,7 +511,7 @@ a.light {
 
 .nav-tab a {
 	float: left;
-	color: #f2f2f2;
+	color: rgba(255, 255, 255, 0.8);
 	text-align: center;
 	padding: 10px 12px;
 	text-decoration: none;
@@ -547,7 +552,7 @@ a.light {
 	margin-top: 25px;
 	width: auto;
 	z-index: 999;
-	background-color: #0e8805;
+	background-color: #0b6a0b;
 	border-radius: 7px;
 	border: 1px solid black;
 }
@@ -579,11 +584,11 @@ a.light {
 	margin: 0;
 	padding: 0;
 	width: auto;
-	background-color: #006699;
+	background-color: #0b6a0b;
 	font-size: 0;
 	height: 5px;
 	border-top: 1px solid #000;
-	border-bottom: 1px solid #f5f5f5;
+	border-bottom: 1px solid #000;
 	margin-bottom:5px;
 }
 #seperator-fixed {
@@ -623,10 +628,11 @@ div.content-notice {
 	position: relative;
 	margin-left: auto;
 	margin-right: auto;
-	margin-top: 5px;
+	/*margin-top: 5px;*/
 	max-width: 768px;
-	background-color: #fff;
-	border: 1px solid #aaa;
+	background-color: #3b4042;
+	/*border: 1px solid #aaa;*/
+	color: rgba(255, 255, 255, 0.8);
 	padding: 8px 15px;
 	border-radius: 7px;
 }
@@ -1462,7 +1468,7 @@ input[type=submit].contactUs:hover {
 	border-radius: 7px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	overflow: hidden;
-	background-color: #f1f1f1;
+	background-color: #5f6368;
 	font-size: 14px;
 	padding: 0 0 0 10px !important;
 	margin-top:5px !important;
@@ -1472,7 +1478,7 @@ input[type=submit].contactUs:hover {
 	border-radius: 7px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	overflow: hidden;
-	background-color: #f1f1f1;
+	background-color: #5f6368;
 	margin-top:10px !important;
 }
 
@@ -1480,7 +1486,7 @@ input[type=submit].contactUs:hover {
 	border-radius: 7px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	overflow: hidden;
-	background-color: #f1f1f1;
+	background-color: #5f6368;
 	font-size: 12px;
 	padding: 0 0 0 10px !important;
 	margin-top:5px !important;
@@ -1488,7 +1494,7 @@ input[type=submit].contactUs:hover {
 
 .home-submit {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	color: #006699 !important;
+	color: rgba(255, 255, 255, 0.8) !important;
 	text-decoration: underline;
 	font-size: 12px !important;
 	font-weight: bold;
