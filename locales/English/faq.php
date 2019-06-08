@@ -214,7 +214,7 @@ from the moderators explaining what happened, how long it will persist, and what
 
 "Miscellaneous" => "Sub-section",
 
-"Do you have colorblind friendly maps?" => "We have several colorblind options available in the <a href='settings.php' class='light'>account settings page</a>. These settings
+"Do you have colorblind friendly maps?" => "We have several colorblind options available in the <a href='usercp.php' class='light'>account settings page</a>. These settings
 only work on the small map in games currently. Currently we have support for Protanope, Deuteranope, and Tritanope.",
 
 "What are the Ghost Ratings?" => "The Ghost Ratings were developed by TheGhostmaker as an alternative scoring system to points on webDiplomacy. 
