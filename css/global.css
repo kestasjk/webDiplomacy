@@ -1084,6 +1084,10 @@ input[type=submit].gameCreate:hover {
   background-color: #45a049;
 }
 
+option {
+	background-color: #777 !important;
+}
+
 /* The Modal (background) */
 .modal {
   display: none; /* Hidden by default */
@@ -1271,7 +1275,7 @@ input[type=submit].gameCreate:hover {
 	border-radius: 7px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	overflow: hidden;
-	background-color: #f1f1f1;
+	background-color: #5c6368;
 	font-size: 14px;
 	padding: 0 0 0 10px;
 	margin-top:0px !important;
@@ -1615,12 +1619,12 @@ input[type=text].settings, input[type=password].settings, textarea.settings, sel
 .helpPage h3 {
 	margin-left: 0px !important;
 }
-.helpPage ul {
+/*.helpPage ul {
 	color:#666;
 }
 .helpPage ol {
 	color:#666;
-}
+}*/
 
 .rules {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
