@@ -31,6 +31,7 @@
          <li>TD's may request the moderator team pm or email any player with questions or warnings regarding the tournament. </li>
          <li>TD's may request a message be posted in every games public messaging, including anon games, to remind participants of tournament rules or for tournament scoring updates.</li>
          <li>As with all mod/admin decisions if you disagree with a TD's decision you can appeal it directly to an admin or owner. See below for the mod/admin contact details.</li>
+         <li>All tournaments will be assigned a prize payout pool by the moderator team scaled to the size and type of tournament being run.</li>
       </ul>
       <p>Please e-mail the mod/admin team at <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">
          <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a> if you want to start a tournament (see the contact details below), and you will be asked to fill out an application form that will help us set the tournament up.
