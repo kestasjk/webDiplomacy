@@ -184,9 +184,13 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
     }
     if ($status != 'PreStart')
     {
-        print '<a href="tournamentScoring.php?tournamentID='.$id.'">Scoring and Participants</a></br>';
-        if($status != 'Registration')
+        if($status == 'Registration')
         {
+            print '<a href="tournamentRegistration.php?tournamentID='.$id.'">Registration</a></br>';
+        }
+        else
+        {
+            print '<a href="tournamentScoring.php?tournamentID='.$id.'">Scoring and Participants</a></br>';
             print '<a href="gamelistings.php?gamelistType=Search&tournamentID='.$id.'">Tournament Games</a></br>';
         }
     }
