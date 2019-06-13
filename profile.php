@@ -306,7 +306,7 @@ if ( isset($_REQUEST['detail']) )
 
 					while(list($gameID, $countryID, $turn, $name, $systemExcused, $modExcused, $samePeriodExcused, $id, $turnDateTime)=$DB->tabl_row($tabl))
 					{
-						$Variant=libVariant::loadFromGameID($gameID);
+						
 
 						if ($systemExcused == 'No' && $modExcused == 'No' && $samePeriodExcused == 'No') { print '<tr style="background-color:#F08080;">'; }
 						else { print '<tr>'; }
@@ -314,19 +314,26 @@ if ( isset($_REQUEST['detail']) )
 						print '<td> <strong>'.$id.'</strong></td>';
 						if ($name != '')
 						{
+							$Variant=libVariant::loadFromGameID($gameID);
 							print '<td> <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong></td>';
+							print '<td> <strong>'.$Variant->countries[$countryID-1].'</strong></td>';
+							print '<td> <strong>'.$Variant->turnAsDate($turn).'</strong></td>';
+							print '<td> <strong>'.$systemExcused.'</strong></td>';
+							print '<td> <strong>'.$modExcused.'</strong></td>';
+							print '<td> <strong>'.$samePeriodExcused.'</strong></td>';
+							print '<td> <strong>'.libTime::detailedText($turnDateTime).'</strong></td>';
 						}
 						else
 						{
 							print '<td> <strong>Cancelled Game</strong></td>';
+							print '<td> <strong>'.$countryID.'</strong></td>';
+							print '<td> <strong>'.$turn.'</strong></td>';
+							print '<td> <strong>'.$systemExcused.'</strong></td>';
+							print '<td> <strong>'.$modExcused.'</strong></td>';
+							print '<td> <strong>'.$samePeriodExcused.'</strong></td>';
+							print '<td> <strong>'.libTime::detailedText($turnDateTime).'</strong></td>';
 						}
-						print '<td> <strong>'.$Variant->countries[$countryID-1].'</strong></td>';
-						print '<td> <strong>'.$Variant->turnAsDate($turn).'</strong></td>';
-						print '<td> <strong>'.$systemExcused.'</strong></td>';
-						print '<td> <strong>'.$modExcused.'</strong></td>';
-						print '<td> <strong>'.$samePeriodExcused.'</strong></td>';
-						print '<td> <strong>'.libTime::detailedText($turnDateTime).'</strong></td>';
-
+						
 						print '</tr>';
 					}
 					print '</table>';
