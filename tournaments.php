@@ -239,10 +239,11 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
         print '<TABLE class="tournament">';
         print '<tr>';
         print '<th class= "tournament">Game</th>';
-        print '<th class= "tournament">Turn</th>';
+        if ($tab != 'Finished') { print '<th class= "tournament">Turn</th>'; }
         print '<th class= "tournament">phase</th>';
         print '<th class= "tournament">Status</th>';
-        print '<th class= "tournament">Process Time</th>';
+        if ($tab != 'Finished') { print '<th class= "tournament">Process Time</th>'; }
+        else { print '<th class= "tournament">Finished Date</th>'; }
         print '</tr>';
         
         $tablRoundsGames = $DB->sql_tabl("select g.id, g.name, g.turn, g.phase, g.gameOver, g.processStatus, g.processTime from wD_TournamentGames t inner join 
@@ -251,12 +252,16 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
         // Loop through every game in the rounds. 
         while (list($gameID, $gameName, $turn, $phase, $gameOver, $processStatus, $processTime) = $DB->tabl_row($tablRoundsGames))
         {
-            // Load variant data so we can check game criteria to determine if it is WFO. 
-            $Variant=libVariant::loadFromGameID($gameID);
-            $Game = $Variant->Game($gameID);
+            // We only want to load the variant data if the tab isn't finished. 
+            if ($gameOver == 'No') 
+            {
+                // Load variant data so we can check game criteria to determine if it is WFO. 
+                $Variant=libVariant::loadFromGameID($gameID);
+                $Game = $Variant->Game($gameID);
+            }
 
             print '<TR><td><a href="board.php?gameID='.$gameID.'">'.$gameName.'</a></TD>';
-            print '<td>'.$Variant->turnAsDate($turn).'</td>';
+            if ($tab != 'Finished') { print '<td>'.$Variant->turnAsDate($turn).'</td>'; }
             print '<td>'.$phase.'</td>';
 
             // If the game is over show gameOver (won/draw), otherwise show if it is stuck in WFO, Paused, Crashed, or Running. 
