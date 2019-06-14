@@ -253,7 +253,7 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
         while (list($gameID, $gameName, $turn, $phase, $gameOver, $processStatus, $processTime) = $DB->tabl_row($tablRoundsGames))
         {
             // We only want to load the variant data if the tab isn't finished. 
-            if ($gameOver == 'No') 
+            if ($tab != 'Finished') 
             {
                 // Load variant data so we can check game criteria to determine if it is WFO. 
                 $Variant=libVariant::loadFromGameID($gameID);
@@ -265,7 +265,7 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
             print '<td>'.$phase.'</td>';
 
             // If the game is over show gameOver (won/draw), otherwise show if it is stuck in WFO, Paused, Crashed, or Running. 
-            if ($gameOver == 'No')
+            if ($gameOver == 'No' && $tab != 'Finished')
             {
                 if ($Game->missingPlayerPolicy=='Wait' && !$Game->Members->isCompleted() && time()>=$Game->processTime)
                 {
