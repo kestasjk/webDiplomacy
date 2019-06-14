@@ -163,6 +163,8 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
 {
     print '<div class = "tournamentShow">';
     print '<h2 class = "tournamentCenter">'.$name.'</h2>';
+
+    list($watchers) = $DB->sql_row("select count(1) from  wD_TournamentSpectators s where s.tournamentID = ".$id);
     
     if ($tab == 'Finished')
     {
@@ -181,7 +183,14 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
             list($thirdUsername) = $DB->sql_row("Select u.username from wD_Users u where u.id =".$thirdPlace);
             print '<div class = "tournamentCenter">'.libHTML::bronzeStar().'Third Place: <a href="profile.php?userID='.$thirdPlace.'">'.$thirdUsername.'</a>'.libHTML::bronzeStar().'</div>';
         }  
+        print '<br>';
     }
+    else if ($watchers > 0)
+    {
+        print '<div class = "tournamentCenter">Spectator Count: '.$watchers.'</div>';
+        print '<br>';
+    }
+
     if ($status != 'PreStart')
     {
         if($status == 'Registration')
