@@ -185,12 +185,12 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
         }  
         print '<br>';
     }
-    else 
+    else if ($watchers > 0)
     {
         print '<div class = "tournamentCenter">Spectator Count: '.$watchers.'</div>';
         print '<br>';
     }
-    
+
     if ($status != 'PreStart')
     {
         if($status == 'Registration')
