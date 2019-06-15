@@ -24,7 +24,7 @@ global $User, $Misc, $DB;
 
 $tab = 'Finished';
 
-// Get values from posted form. 
+// Get values from posted form, used to let people spectate tournaments. 
 if(isset($_POST['submit'])) 
 {
     if( isset($_POST['spectateID']) )
@@ -191,6 +191,7 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
         print '<br>';
     }
 
+    // Don't let people sign up if the tournament isn't ready. 
     if ($status != 'PreStart')
     {
         if($status == 'Registration')
@@ -241,41 +242,43 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
     // Loop through all the rounds in this tournament.
     while (list($round) = $DB->tabl_row($tablRounds))
     {
+        // See if there are ongoing and finished games in this round.
+        list($ongoingGameCount) = $DB->sql_row("Select count(1) from wD_TournamentGames t inner join wD_Games g on g.id = t.gameID where tournamentID = ".$id." and g.gameOver = 'No' and t.round = ".$round);
+        list($finishedGameCount) = $DB->sql_row("Select count(1) from wD_TournamentGames t inner join wD_Games g on g.id = t.gameID where tournamentID = ".$id." and g.gameOver != 'No' and t.round = ".$round);
+        
         $wereRounds = true;
+        
         print '<div class = "tournament_round"> Round '.$round.'</div>';
         print '<div class = "tournament_games">';
-        print '<a href="gamelistings.php?gamelistType=Search&tournamentID='.$id.'&round='.$round.'&Submit=Search#results">Search Round '.$round.' games</a></br>';
-        print '<TABLE class="tournament">';
-        print '<tr>';
-        print '<th class= "tournament">Game</th>';
-        if ($tab != 'Finished') { print '<th class= "tournament">Turn</th>'; }
-        print '<th class= "tournament">phase</th>';
-        print '<th class= "tournament">Status</th>';
-        if ($tab != 'Finished') { print '<th class= "tournament">Process Time</th>'; }
-        else { print '<th class= "tournament">Finished Date</th>'; }
-        print '</tr>';
-        
-        $tablRoundsGames = $DB->sql_tabl("select g.id, g.name, g.turn, g.phase, g.gameOver, g.processStatus, g.processTime from wD_TournamentGames t inner join 
-        wD_Games g on g.id = t.gameID where tournamentID = ".$id." and t.round = ".$round);
+        print '<a href="gamelistings.php?gamelistType=Search&tournamentID='.$id.'&round='.$round.'&Submit=Search#results">Search Round '.$round.' games</a></br></br>';
 
-        // Loop through every game in the rounds. 
-        while (list($gameID, $gameName, $turn, $phase, $gameOver, $processStatus, $processTime) = $DB->tabl_row($tablRoundsGames))
+        if ($ongoingGameCount > 0)
         {
-            // We only want to load the variant data if the tab isn't finished. 
-            if ($tab != 'Finished') 
+            print '<strong>Ongoing Games</strong>
+            <TABLE class="tournament">';
+            print '<tr>';
+            print '<th class= "tournament">Game</th>';
+            print '<th class= "tournament">Turn</th>';
+            print '<th class= "tournament">phase</th>';
+            print '<th class= "tournament">Status</th>';
+            print '<th class= "tournament">Process Time</th>';
+            print '</tr>';
+            
+            $tablRoundsOngoingGames = $DB->sql_tabl("select g.id, g.name, g.turn, g.phase, g.gameOver, g.processStatus, g.processTime from wD_TournamentGames t inner join 
+            wD_Games g on g.id = t.gameID where tournamentID = ".$id." and g.gameOver = 'No' and t.round = ".$round);
+
+            // Loop through every game in the rounds. 
+            while (list($gameID, $gameName, $turn, $phase, $gameOver, $processStatus, $processTime) = $DB->tabl_row($tablRoundsOngoingGames))
             {
                 // Load variant data so we can check game criteria to determine if it is WFO. 
                 $Variant=libVariant::loadFromGameID($gameID);
                 $Game = $Variant->Game($gameID);
-            }
+                
+                print '<TR><td><a href="board.php?gameID='.$gameID.'">'.$gameName.'</a></TD>';
+                print '<td>'.$Variant->turnAsDate($turn).'</td>';
+                print '<td>'.$phase.'</td>';
 
-            print '<TR><td><a href="board.php?gameID='.$gameID.'">'.$gameName.'</a></TD>';
-            if ($tab != 'Finished') { print '<td>'.$Variant->turnAsDate($turn).'</td>'; }
-            print '<td>'.$phase.'</td>';
-
-            // If the game is over show gameOver (won/draw), otherwise show if it is stuck in WFO, Paused, Crashed, or Running. 
-            if ($gameOver == 'No' && $tab != 'Finished')
-            {
+                // If the game is over show gameOver (won/draw), otherwise show if it is stuck in WFO, Paused, Crashed, or Running. 
                 if ($Game->missingPlayerPolicy=='Wait' && !$Game->Members->isCompleted() && time()>=$Game->processTime)
                 {
                     print '<td style="background-color:#F08080;"> <strong>Waiting for Orders</strong></td>';
@@ -283,13 +286,51 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
                 else if ($processStatus == 'Crashed') { print '<td style="background-color:#F08080;"> <strong>Crashed</strong></td>'; }
                 else if ($processStatus == 'Paused') { print '<td> <strong>Paused</strong></td>'; }
                 else { print '<td>Running</td>'; }
+                
+                print '<td>'.libTime::detailedText($processTime).'</td>';
             }
-            else { print '<td>'.$gameOver.'</td>'; }
-            
-            print '<td>'.libTime::detailedText($processTime).'</td>';
+            print '</table>';
+            if ($finishedGameCount > 0) print '<br>';
         }
-        print '</table>';
 
+        if ($finishedGameCount > 0)
+        {
+            print '<strong>Finished Games</strong>
+            <TABLE class="tournament">';
+            print '<tr>';
+            print '<th class= "tournament">Game</th>';
+            print '<th class= "tournament">Status</th>';
+            print '<th class= "tournament">Winners</th>';
+            print '<th class= "tournament">Finished Date</th>';
+            print '</tr>';
+            
+            $tablRoundsFinishedGames = $DB->sql_tabl("select g.id, g.name, g.gameOver, g.processTime from wD_TournamentGames t inner join 
+            wD_Games g on g.id = t.gameID where tournamentID = ".$id." and g.gameOver != 'No' and t.round = ".$round);
+
+            // Loop through every game in the rounds. 
+            while (list($gameID, $gameName, $gameOver, $processTime) = $DB->tabl_row($tablRoundsFinishedGames))
+            {
+                print '<TR><td><a href="board.php?gameID='.$gameID.'">'.$gameName.'</a></TD>';
+                print '<td>'.$gameOver.'</td>';
+
+                // If the game was drawn we want to show a link to each of the winners, so group concat does a pivot on the multiple rows in wD_Members into a single column to display that. 
+                if ($gameOver == 'Drawn')
+                {
+                    list($drawingMembers) = $DB->sql_row( "select GROUP_CONCAT(CONCAT('<a href=\"profile.php?userID=',m.userID ,'\">',u.username ,'</a>') SEPARATOR ' ') from wD_Members m 
+                    inner join wD_Users u on u.id = m.userID where m.gameID = ".$gameID." and m.status = 'Drawn'");
+                    print '<td>'.$drawingMembers.'</td>';
+                }
+                else if ($gameOver == 'Won')
+                {
+                    list($winningMembers) = $DB->sql_row( "select CONCAT('<a href=\"profile.php?userID=',m.userID ,'\">',u.username ,'</a>') from wD_Members m 
+                    inner join wD_Users u on u.id = m.userID where m.gameID = ".$gameID." and m.status = 'Won'");
+                    print '<td>'.$winningMembers.'</td>';
+                }
+                
+                print '<td>'.gmstrftime(" %d %b %y", $processTime).'</td>';
+            }
+            print '</table>';
+        }
         print'</div>';
     }
     
