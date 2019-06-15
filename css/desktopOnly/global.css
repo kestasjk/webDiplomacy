@@ -1174,6 +1174,7 @@ input[type=submit].gameCreate:hover {
 .tournament td, .tournament th {
 	border: 1px solid #ddd;
 	padding: 6px;
+	font-size: 12px;
 }
 
 .tournament tr:nth-child(even){background-color: #f2f2f2; word-break: break-word;}
