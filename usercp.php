@@ -26,6 +26,7 @@
 require_once('header.php');
 
 require_once(l_r('objects/mailer.php'));
+
 global $Mailer;
 $Mailer = new Mailer();
 
@@ -36,57 +37,15 @@ if(!$User->type['User'])
 
 libHTML::starthtml();
 
-if ( isset($_REQUEST['optout']) )
-{
-	if ( $_REQUEST['optout'] == 'on' && !$User->type['Donator'] )
-	{
-		libHTML::notice(l_t("Opt-out"), l_t("Are you sure you want to opt-out of Plura? It helps keep this place running and on ".
-			"most modern computers is barely noticable.")."<br />
-			<form><input type='submit' class='form-submit' name='optout' value='".l_t("Opt-out")."' /></form>");
-	}
-	elseif( $_REQUEST['optout'] == l_t('Opt-out') && !$User->type['Donator'] )
-	{
-		$DB->sql_put("UPDATE wD_Users SET type = CONCAT_WS(',',type,'Donator') WHERE id = ".$User->id);
-
-		$User->type['Donator'] = true;
-
-		libHTML::notice(l_t("Opt-out"), l_t("You've opted-out of running the Plura applet. If you decide to re-enable it ".
-			"later the <a href='faq.php' class='light'>FAQ</a> has a link to do so."));
-	}
-	elseif( $_REQUEST['optout'] == 'off' && $User->type['Donator'] )
-	{
-		libHTML::notice(l_t("Opt-out"), l_t("Would you like to opt back into running the Plura Java applet?")."<br />
-			<form><input type='submit' class='form-submit' name='optout' value='".l_t('Opt-in')."' /></form>");
-	}
-	elseif( $_REQUEST['optout'] == l_t('Opt-in') && $User->type['Donator'] )
-	{
-		$types = array();
-		foreach($User->type as $type=>$isMember)
-		{
-			if ( $isMember && $type != 'Donator' ) $types[] = $type;
-		}
-		$types = implode(',',$types);
-
-		$DB->sql_put("UPDATE wD_Users SET type = '".$types."' WHERE id = ".$User->id);
-
-		$User->type['Donator'] = false;
-
-		libHTML::notice(l_t("Opt-out"), l_t("You've decided to re-add the Plura applet, thanks! By running the Plura applet you ".
-			"help keep this server running."));
-	}
-}
-
 if ( isset($_REQUEST['emailToken']))
 {
 	if( !($email = libAuth::emailToken_email($_REQUEST['emailToken'])) )
-		libHTML::notice(l_t("E-mail change validation"),
-			l_t("A bad e-mail token was given, please check the validation link try again"));
+		libHTML::notice(l_t("Email change validation"), l_t("A bad email token was given, please check the validation link try again"));
 
 	$email = $DB->escape($email);
 
 	if( User::findEmail($email) )
-		libHTML::notice(l_t("E-mail change validation"),
-			l_t("The e-mail address '%s', is already in use. If this is your e-mail, please contact the moderators at %s for assistance.",$email, Config::$modEMail));
+		libHTML::notice(l_t("Email change validation"), l_t("The email address '%s', is already in use. Please contact the moderators at %s for assistance.",$email, Config::$modEMail));
 
 	$DB->sql_put("UPDATE wD_Users SET email='".$email."' WHERE id = ".$User->id);
 
@@ -102,7 +61,6 @@ if ( isset($_REQUEST['userForm']) )
 	try
 	{
 		$errors = array();
-
 		$SQLVars = User::processForm($_REQUEST['userForm'], $errors);
 
 		if( count($errors) )
@@ -110,8 +68,7 @@ if ( isset($_REQUEST['userForm']) )
 
 		unset($errors);
 
-		$allowed = array('E-mail'=>'email','E-mail hiding'=>'hideEmail',
-				'Homepage'=>'homepage','Comment'=>'comment');
+		$allowed = array('E-mail'=>'email','E-mail hiding'=>'hideEmail', 'Homepage'=>'homepage','Comment'=>'comment');
 
 		$User->options->set($_REQUEST['userForm']);
 		$User->options->load();
@@ -119,8 +76,7 @@ if ( isset($_REQUEST['userForm']) )
 		$set = '';
 		foreach( $allowed as $name=>$SQLName )
 		{
-			if ( ! isset($SQLVars[$SQLName]) or $User->{$SQLName} == $SQLVars[$SQLName] )
-				continue;
+			if ( ! isset($SQLVars[$SQLName]) or $User->{$SQLName} == $SQLVars[$SQLName] ) continue;
 
 			if ( $SQLName == 'email' )
 			{
@@ -128,14 +84,14 @@ if ( isset($_REQUEST['userForm']) )
 					throw new Exception(l_t("The e-mail address '%s', is already in use. Please choose another.",$SQLVars['email']));
 
 				$Mailer->Send(array($SQLVars['email']=>$User->username), l_t('Changing your e-mail address'),
-l_t("Hello %s",$User->username).",<br><br>
+					l_t("Hello %s",$User->username).",<br><br>
 
-".l_t("You can use this link to change your account's e-mail address to this one:")."<br>
-".libAuth::email_validateURL($SQLVars['email'])."<br><br>
+					".l_t("You can use this link to change your account's e-mail address to this one:")."<br>
+					".libAuth::email_validateURL($SQLVars['email'])."<br><br>
 
-".l_t("If you have any further problems contact the server's admin at %s.",Config::$adminEMail)."<br>
-".l_t("Regards,<br>The webDiplomacy Gamemaster")."<br>
-");
+					".l_t("If you have any further problems contact the server's admin at %s.",Config::$adminEMail)."<br>
+					".l_t("Regards,<br>The webDiplomacy Gamemaster")."<br>
+					");
 
 				$formOutput .= l_t('A validation e-mail was sent to the new address, containing a link which will confirm '.
 					'the e-mail change. If you don\'t see it after a few minutes check your spam folder.');
@@ -145,14 +101,12 @@ l_t("Hello %s",$User->username).",<br><br>
 			}
 			elseif( $SQLName == 'comment' )
 			{
-				if ( $User->{$SQLName} == $DB->msg_escape($SQLVars[$SQLName]) )
-					continue;
+				if ( $User->{$SQLName} == $DB->msg_escape($SQLVars[$SQLName]) ) continue;
 			}
 
 			if ( $set != '' ) $set .= ', ';
 
 			$set .= $SQLName." = '".$SQLVars[$SQLName]."'";
-
 			$formOutput .= l_t('%s updated successfully.',$name).' ';
 		}
 
@@ -168,8 +122,7 @@ l_t("Hello %s",$User->username).",<br><br>
 			libAuth::keyWipe();
 			header('refresh: 3; url=logon.php');
 
-			$formOutput .= l_t('Password updated successfully; you have been logged out and '.
-							'will need to logon with the new password.').' ';
+			$formOutput .= l_t('Password updated successfully. You have been logged out and will need to login with the new password.').' ';
 		}
 	}
 	catch(Exception $e)
@@ -185,7 +138,6 @@ l_t("Hello %s",$User->username).",<br><br>
 		print '<div class="content"><p class="notice">'.$formOutput.'</p></div>';
 	}
 }
-
 
 print libHTML::pageTitle(l_t('User account settings'),l_t('Control settings for your account.'));
 

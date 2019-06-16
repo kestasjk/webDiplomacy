@@ -306,7 +306,7 @@ if ( isset($_REQUEST['detail']) )
 
 					while(list($gameID, $countryID, $turn, $name, $systemExcused, $modExcused, $samePeriodExcused, $id, $turnDateTime)=$DB->tabl_row($tabl))
 					{
-						$Variant=libVariant::loadFromGameID($gameID);
+						
 
 						if ($systemExcused == 'No' && $modExcused == 'No' && $samePeriodExcused == 'No') { print '<tr style="background-color:#F08080;">'; }
 						else { print '<tr>'; }
@@ -314,19 +314,26 @@ if ( isset($_REQUEST['detail']) )
 						print '<td> <strong>'.$id.'</strong></td>';
 						if ($name != '')
 						{
+							$Variant=libVariant::loadFromGameID($gameID);
 							print '<td> <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong></td>';
+							print '<td> <strong>'.$Variant->countries[$countryID-1].'</strong></td>';
+							print '<td> <strong>'.$Variant->turnAsDate($turn).'</strong></td>';
+							print '<td> <strong>'.$systemExcused.'</strong></td>';
+							print '<td> <strong>'.$modExcused.'</strong></td>';
+							print '<td> <strong>'.$samePeriodExcused.'</strong></td>';
+							print '<td> <strong>'.libTime::detailedText($turnDateTime).'</strong></td>';
 						}
 						else
 						{
 							print '<td> <strong>Cancelled Game</strong></td>';
+							print '<td> <strong>'.$countryID.'</strong></td>';
+							print '<td> <strong>'.$turn.'</strong></td>';
+							print '<td> <strong>'.$systemExcused.'</strong></td>';
+							print '<td> <strong>'.$modExcused.'</strong></td>';
+							print '<td> <strong>'.$samePeriodExcused.'</strong></td>';
+							print '<td> <strong>'.libTime::detailedText($turnDateTime).'</strong></td>';
 						}
-						print '<td> <strong>'.$Variant->countries[$countryID-1].'</strong></td>';
-						print '<td> <strong>'.$Variant->turnAsDate($turn).'</strong></td>';
-						print '<td> <strong>'.$systemExcused.'</strong></td>';
-						print '<td> <strong>'.$modExcused.'</strong></td>';
-						print '<td> <strong>'.$samePeriodExcused.'</strong></td>';
-						print '<td> <strong>'.libTime::detailedText($turnDateTime).'</strong></td>';
-
+						
 						print '</tr>';
 					}
 					print '</table>';
@@ -377,17 +384,22 @@ if ( isset($_REQUEST['detail']) )
 
 print '<div>';
 print '<h2 class = "profileUsername">'.$UserProfile->username;
-if ( $User->type['User'] && $UserProfile->type['User'] && ! ( $User->id == $UserProfile->id || $UserProfile->type['Moderator'] || $UserProfile->type['Guest'] || $UserProfile->type['Admin'] ) )
-{
-	$userMuted = $User->isUserMuted($UserProfile->id);
 
-	print '<a name="mute"></a>';
-	if( isset($_REQUEST['toggleMute'])) {
-		$User->toggleUserMute($UserProfile->id);
-		$userMuted = !$userMuted;
+if (!isset(Config::$customForumURL))
+{
+	if ( $User->type['User'] && $UserProfile->type['User'] && ! ( $User->id == $UserProfile->id || $UserProfile->type['Moderator'] || $UserProfile->type['Guest'] || $UserProfile->type['Admin'] ) )
+	{
+		$userMuted = $User->isUserMuted($UserProfile->id);
+
+		print '<a name="mute"></a>';
+		if( isset($_REQUEST['toggleMute'])) 
+		{
+			$User->toggleUserMute($UserProfile->id);
+			$userMuted = !$userMuted;
+		}
+		$muteURL = 'profile.php?userID='.$UserProfile->id.'&toggleMute=on&rand='.rand(0,99999).'#mute';
+		print ' '.($userMuted ? libHTML::muted($muteURL) : libHTML::unmuted($muteURL));
 	}
-	$muteURL = 'profile.php?userID='.$UserProfile->id.'&toggleMute=on&rand='.rand(0,99999).'#mute';
-	print ' '.($userMuted ? libHTML::muted($muteURL) : libHTML::unmuted($muteURL));
 }
 print '</h2>';
 print '<div class = "profile-show">';
@@ -696,10 +708,8 @@ print '<p><ul class="formlist">';
 if ( $UserProfile->type['Moderator'] ||  $UserProfile->type['ForumModerator'] || $UserProfile->type['Admin'] )
 {
 	print '<li><strong>'.l_t('Mod/Admin team').'</strong></li>';
-	print '<li>'.l_t('The best way to get moderator assistance is to contact a moderator at
-	<a href="mailto:'.(isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail).'">'
-	.(isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail).'</a>. Please do not pm
-	moderators directly as moderators are not required to regularly check their messages').'</li>';
+	print '<li>'.l_t('The best way to get moderator assistance is using our built in <a href="contactUsDirect.php">help page</a>. Please do not message
+	moderators directly for help.').'</li>';
 	print '<li>&nbsp;</li>';
 }
 
