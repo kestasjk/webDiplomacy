@@ -838,7 +838,6 @@ class libHTML
 							<a href="gamecreate.php" title="Start up a new game">Create a New Game</a>
 							<a href="https://sites.google.com/view/webdipinfo/ghost-ratings" target=_blank title="Ghost Ratings (external site)">Ghost Ratings</a>
 							<a href="tournaments.php" title="Information about tournaments on webDiplomacy">Tournaments</a>
-							<a href="tournamentInfo.php" title="Information about tournaments on webDiplomacy">Tournament info</a>
 							<a href="halloffame.php" title="Information about tournaments on webDiplomacy">Hall of Fame</a>
                         </div>
                     </div>
