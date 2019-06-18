@@ -126,7 +126,7 @@ if(isset($_REQUEST['tournamentID']))
 
   print "<a name='tableLocation'></a>";
   print '<b><center>Scores for '.$tournamentName.'</center></b><br/>';
-	print "<TABLE class='advancedSearch'>";
+	print "<div style='overflow-x:auto; display:block; width:100%;'><TABLE class='advancedSearch'>";
 		print "<tr>";
     if ($sortCol <> 'name')
     {
@@ -233,7 +233,7 @@ if(isset($_REQUEST['tournamentID']))
 			print "</TR>";
       $previousScore = $score;
 		}
-		print "</TABLE>";
+		print "</TABLE></div>";
     if ($editor)
     {
       print "<br/><INPUT type='submit' value='Update' name='submit' class='green-Submit'></form>";
