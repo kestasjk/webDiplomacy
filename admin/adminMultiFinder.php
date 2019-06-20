@@ -159,7 +159,7 @@ class adminMultiCheck
 					$timeComparison = l_t('(%s earlier)',libTime::remainingText($lastRow['lastRequest'],$part));
 
 					if ( ( $lastRow['lastRequest'] - $part ) < 15*60 )
-						print '<span class="Austria">'.$timeComparison.'</span>';
+						print '<span class="redComparison" >'.$timeComparison.'</span>';
 					elseif ( ( $lastRow['lastRequest'] - $part ) < 30*60 )
 						print '<span class="Turkey">'.$timeComparison.'</span>';
 					elseif ( ( $lastRow['lastRequest'] - $part ) < 45*60 )
@@ -170,7 +170,7 @@ class adminMultiCheck
 				else
 				{
 					if ( $part == $lastRow[$name] )
-						print '<span class="Austria">'.$part.'</span>';
+						print '<span class="redComparison">'.$part.'</span>';
 					else
 						print $part;
 				}
@@ -202,7 +202,7 @@ class adminMultiCheck
 		{
 			$tabl = $DB->sql_tabl(
 				"SELECT UNIX_TIMESTAMP(a.lastRequest) as lastRequest, a.userID, u.username,
-					a.hits, a.cookieCode, INET_NTOA(a.ip) as ip, HEX(a.userAgent) as userAgent
+					a.hits, a.cookieCode, concat('<a href=\"https://whatismyipaddress.com/ip/',INET_NTOA(a.ip),'\">',INET_NTOA(a.ip),'</a>') as ip, HEX(a.userAgent) as userAgent
 				FROM wD_AccessLog a
  				INNER JOIN wD_Users u ON ( u.id = a.userID )
 				INNER JOIN wD_Members m ON ( a.userID = m.userID )
@@ -216,7 +216,7 @@ class adminMultiCheck
 		{
 			$tabl = $DB->sql_tabl(
 				"SELECT UNIX_TIMESTAMP(a.lastRequest) as lastRequest, a.userID, u.username,
-					a.hits, a.cookieCode, INET_NTOA(a.ip) as ip, HEX(a.userAgent) as userAgent
+					a.hits, a.cookieCode, concat('<a href=\"https://whatismyipaddress.com/ip/',INET_NTOA(a.ip),'\">',INET_NTOA(a.ip),'</a>') as ip, HEX(a.userAgent) as userAgent
 				FROM wD_AccessLog a INNER JOIN wD_Users u ON ( u.id = a.userID )
 				WHERE a.userID IN ( ".implode(',',$userIDs) .")
 				ORDER BY a.lastRequest DESC"
