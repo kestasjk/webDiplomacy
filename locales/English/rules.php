@@ -247,7 +247,7 @@
    <div class = "rules_title">For Teachers</div>
    <div class = "rules_content">
       <p>
-         webDiplomacy is more than happy to host school groups to play games as part of the regular curriculum, a club, or just for fun. Many of our most frequent users, including some of the site moderator team, got their start on webDiplomacy as students. Diplomacy is a wonderful tool for learning history, geography, logic, philosophy, rhetoric, strategy, and many other skills that are often hard to come by. As teachers, you are doing your students a wonderful favor by showing them Diplomacy, and we are more than happy to accomodate you and your students. 
+         webDiplomacy is more than happy to host school groups to play games as part of the regular curriculum, a club, or just for fun. Many of our most frequent users, including some of the site moderator team, got their start on webDiplomacy as students. Diplomacy is a wonderful tool for learning history, geography, logic, philosophy, rhetoric, strategy, and many other skills that are often hard to come by. As teachers, you are doing your students a wonderful favor by showing them Diplomacy, and we are more than happy to accommodate you and your students. 
          <br><br>
          Using webDiplomacy in a classroom setting, however, comes with some stipulations that teachers should be aware of when using our site: 
       </p>
