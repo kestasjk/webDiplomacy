@@ -254,7 +254,7 @@ any questions that our developers or other players have about your feature reque
 However, there is no set time period for this as many variants, even those that are already programmed on other Diplomacy sites, 
 must be reviewed thoroughly before being added.",
 
-"What is webDiplomacy's the software license?" => "webDiplomacy is licensed under the <a href='AGPL.txt' class='light'>GNU Affero General License</a> 
+"What is webDiplomacy's software license?" => "webDiplomacy is licensed under the <a href='AGPL.txt' class='light'>GNU Affero General License</a> 
 (<a href='http://www.opensource.org/licenses/agpl-v3.html' class='light'>Open Source Initiative</a> approved). Open source means that you can download 
 and change the code as you like and put it up on your own website, but you can't claim that you wrote it. Likewise, any changes that you make to webDiplomacy's code base must be 
 made available to the webDiplomacy community.",
