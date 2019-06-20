@@ -29,7 +29,7 @@ print libHTML::pageTitle('Intro to webDiplomacy','A quick guide to get newcomers
 
 print ' <div class = "introToDiplomacy_show">
 <p>
-Diplomacy is a game which is easy to learn but impossible to master. The rules are all very intuitive,
+Diplomacy is a game which is easy to learn but impossible to master. The rules are all very intuitive;
 lots of people pick them up just by playing, but this document will familiarize you more quickly.
 </p>
 
@@ -113,7 +113,7 @@ You can recognize the supply centers with the markers which are placed on them.<
 
 	<li class="formlisttitle">Move</li>
 	<li class="formlistdesc">
-		The unit tries to move into(/attack) an adjacent territory.
+		The unit tries to move into (or attack) an adjacent territory.
 		<p style="text-align:center;">
 			<img src="<?php print STATICSRV; ?>datc/maps/802-large.map-thumb" alt=" " title="An army in Naples moves to Rome" />
 		</p>
