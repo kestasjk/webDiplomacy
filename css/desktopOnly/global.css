@@ -81,6 +81,14 @@ input:read-only {
 	cursor: pointer;
 }
 
+.redComparison {
+	color: #D62929 ! important;
+}
+
+.redComparison a {
+	color: #D62929 ! important;
+}
+
 .form-submit {
   background-color: #8c9cbf;
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #8c9cbf), color-stop(50%, #546a9e), color-stop(50%, #36518f), color-stop(100%, #3d5691));
