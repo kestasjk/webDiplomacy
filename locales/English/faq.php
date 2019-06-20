@@ -66,7 +66,7 @@ However, donating is not the only way you can help. If you have time and a fair 
 we are always looking for skilled, patient, and experienced moderators. webDiplomacy's moderators are the best trained and most effective 
 of any Diplomacy site online at keeping games free of cheating and ensuring that gameplay is as smooth as possible at all times. 
 Moderators are also responsible for welcome and assisting new players, assisting with tournaments and special games, and managing any player emergencies. 
-If you are an experienced, patient Diplomacy player with an aptitude for spotting suspicious behaviior and a desire to help out on webDiplomacy, 
+If you are an experienced, patient Diplomacy player with an aptitude for spotting suspicious behavior and a desire to help out on webDiplomacy, 
 send us an email at <a href='mailto:".Config::$adminEMail."' class='light'>".Config::$adminEMail."</a> with your username and a brief bit about why 
 you think you would make a good moderator. Even if we don't need new moderators right this second, we will keep your application on file and you will be 
 at the top of our list whenever we need new moderators down the road.
@@ -127,7 +127,7 @@ that you choose. Finally, the phase length is how long you have to enter your or
 pick a deadline that makes sense for how long you want to play. If you want to play an entire game today, try a live game with 5-30 minute phase lengths. 
 If you only want to check the site every few days, play a game with a longer phase length so you have more time.
 <br><br>
-Next, you'll choose the type of game messaging you want to play. By default, your game will be set to 'all,' or full press, messaging, which means everyone 
+Next, you'll choose the type of game messaging you want to play. By default, your game will be set to 'all,' or full press messaging, which means everyone 
 can speak with everyone else at all times. If you choose 'global only,' or public press, you can only send messages globally where everyone can see them. 
 If you choose 'no messaging,' or gunboat, you cannot send any messages at all. You can also play 'per rulebook,' which is full press during moves phases 
 and no press at all during retreat and build phases. Face-to-face Diplomacy is generally played this way.
