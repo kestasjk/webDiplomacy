@@ -113,7 +113,7 @@ You can recognize the supply centers with the markers which are placed on them.<
 
 	<li class="formlisttitle">Move</li>
 	<li class="formlistdesc">
-		The unit tries to move into (or attack) an adjacent territory.
+		The unit tries to move into (also known as attacking) an adjacent territory.
 		<p style="text-align:center;">
 			<img src="<?php print STATICSRV; ?>datc/maps/802-large.map-thumb" alt=" " title="An army in Naples moves to Rome" />
 		</p>
