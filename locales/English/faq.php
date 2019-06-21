@@ -94,7 +94,7 @@ If you really want to dive into the more advanced guide of how Diplomacy works, 
 Be mindful that Avalon Hill's rulebook is written for those who purchased the board game itself, not for those who are playing online, so there are some inconsistencies. 
 For example, webDiplomacy does not offer an alternative for six players on the classic board. Instead, we offer different Diplomacy boards called 
 <a href='variants.php' class='light'>variants</a> where you can play on a different map with different amounts of players. 
-Using our variaint boards, you can play with as many as 34 players or as few as 2.
+Using our variant boards, you can play with as many as 34 players or as few as 2.
 <br><br>
 If you have questions about the game of Diplomacy or want to talk strategy with the rest of our online Diplomacy community, 
 check out <a href='/contrib/phpBB3/viewforum.php?f=6' class='light'>our forum</a>. You will find all sorts of insightful discussions there 
