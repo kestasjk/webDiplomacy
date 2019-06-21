@@ -13,9 +13,7 @@
     You should have received a copy of the GNU Affero General Public License
     along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
 defined('IN_CODE') or die('This script can not be run by itself.');
-
 /**
  * @package Base
  * @subpackage Static
@@ -23,17 +21,13 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 ?>
 <div>
 <?php
-
 global $DB;
-
 $tabl = $DB->sql_tabl("SELECT CONCAT('<a href=\"profile.php?userID=',id,'\">',username,'</a>') FROM wD_Users WHERE type LIKE '%Moderator%'");
 $moderators = '';
-
 while( list($row) = $DB->tabl_row($tabl) )
 {
 	$moderators .= $row . ' ';
 }
-
 $credits = array(
 	array(
 		'The Diplomacy Board Game',
