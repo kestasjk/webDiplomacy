@@ -56,7 +56,7 @@ $credits = array(
 		'The webDiplomacy Developers',
 		'<a href="profile.php?userID=15658">jmo1121109</a>, current lead developer<br />
 		<a href="profile.php?userID=10">kestasjk</a></br>
-		<a href="profile.php?userID=59641">squigs44</a>'
+		<a href="profile.php?userID=59641">Squigs44</a>'
 	),
 	array(
 		'Lifetime Site Contributors',
