@@ -383,7 +383,7 @@ else
     print '<div class = "contactUs"><p>Fill out the following form to get assistance from the moderator team. We will do our
     best to get to your problem as soon as possible. </br></br>
 
-    If you have a question about how the game works please read the <a href="faq.php" class="contactUs">FAQ</a> 
+    If you have a question about how the game works, please read the <a href="faq.php" class="contactUs">FAQ</a> 
     and the <a href="intro.php" class="contactUs"> intro to webDiplomacy</a> before using this form. </p>
 
     <p> Need something else? Take a look at our <a href="contactUs.php" class="contactUs">Contact Info</a> 
