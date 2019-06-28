@@ -126,6 +126,26 @@ class Config
 	public static $variants=array(1=>'Classic', 2=>'World', 9=>'AncMed',19=>'Modern2',20=>'Empire4');//3=>'FleetRome', 4=>'CustomStart', 5=>'BuildAnywhere');
 
 	/**
+	 * The API configuration. Whether to enable it or not, and restrict it to some variants or some gameIDs.
+	 *
+	 * @var array
+	 */
+	public static $apiConfig = array(
+		/* Whether the API is enabled or not */
+		"enabled" => true,
+
+		/* Only replace players in CD if they are in a NoPress game */
+		"noPressOnly" => true,
+
+		/* If the API should only be enabled for some game ids, set the list of game ids here */
+		"restrictToGameIDs" => array(),
+
+		/* List of variant IDs supported */
+		/* 1 = Classic, 15 = ClassicFvA, 23 = ClassicGvI */
+		"variantIDs" => array(1, 15, 23)
+	);
+
+	/**
 	 * Messages to display when different flags are set via the admin control panel.
 	 *
 	 * If ServerOffline is set it will be displayed and the script will not start.

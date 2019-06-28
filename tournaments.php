@@ -23,6 +23,10 @@ require_once('header.php');
 global $User, $Misc, $DB;
 
 $tab = 'Finished';
+$sortCol = 'year';
+$sortType = 'desc';
+if ( isset($_REQUEST['sortCol'])) { if ($_REQUEST['sortCol'] == 'name') { $sortCol='name'; } }
+if ( isset($_REQUEST['sortType'])) { if ($_REQUEST['sortType'] == 'asc') { $sortType='asc'; } }
 
 // Get values from posted form, used to let people spectate tournaments. 
 if(isset($_POST['submit'])) 
@@ -108,12 +112,22 @@ foreach($tabs as $tabChoice=>$tabTitle)
 }
 
 print '</div>';
+print '<br/><div style="text-align:center">
+    For detailed information on how tournaments work on webDiplomacy, click <a href="tournamentInfo.php">here</a>.</div>';
 
 libHTML::pagebreak();
 
+$pagenum = 1;
+$resultsPerPage = 5;
+$maxPage = 0;
+$totalResults = 0;
+if ( isset($_REQUEST['pagenum'])) { $pagenum=(int)$_REQUEST['pagenum']; }
+
 if ($tab == 'Finished')
 {
-    $sql = "select * from wD_Tournaments t where t.status = 'Finished' ";
+    $sql = "select * from wD_Tournaments t where t.status = 'Finished' ORDER BY ";
+    $sql .= "t.".$sortCol;
+    $sql.= " ".$sortType . " Limit ". ($resultsPerPage * ($pagenum - 1)) . "," . $resultsPerPage .";";
     $sqlCounter = "select count(1) from wD_Tournaments t where t.status = 'Finished' ";
 }
 else if ($tab == 'Ongoing')
@@ -152,11 +166,24 @@ else if ($tab == 'Moderating')
 
 $tablChecked = $DB->sql_tabl($sql);
 list($results) = $DB->sql_row($sqlCounter);
+$totalResults = $results;
+$maxPage = ceil($totalResults / $resultsPerPage);
 
 /*
  * Loop through all tournaments that match the tab.
  */
-if ($results > 0) { print 'Showing '.$results.' results'; }
+if ($results > 0)
+{
+  if ($tab == 'Finished')
+  {
+    print '<center><b> Showing results '.number_format(min(((($pagenum - 1) * $resultsPerPage)+1),$totalResults)).' to '.number_format(min(($pagenum * $resultsPerPage),$totalResults)).' of '.number_format($totalResults).' total results. </b></center></br>';
+  	printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = True);
+  }
+  else
+  {
+    print 'Showing '.$results.' results';
+  }
+}
 else { print 'No tournaments meet the criteria right now.'; }
 
 while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $forumThreadLink, $externalLink, $directorID, $coDirectorID, $firstPlace, $secondPlace, $thirdPlace) = $DB->tabl_row($tablChecked))
@@ -360,7 +387,93 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
      print '</div></br>';
 }
 
+printPageBar($pagenum, $maxPage, $sortCol, $sortType);
 print '</div></div>';
+
+function printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = False)
+{
+	if ($pagenum > 3)
+	{
+		printPageButton(1,False);
+	}
+	if ($pagenum > 4)
+	{
+		print "...";
+	}
+	if ($pagenum > 2)
+	{
+		printPageButton($pagenum-2, False);
+	}
+	if ($pagenum > 1)
+	{
+		printPageButton($pagenum-1, False);
+	}
+	if ($maxPage > 1)
+	{
+		printPageButton($pagenum, True);
+	}
+	if ($pagenum < $maxPage)
+	{
+		printPageButton($pagenum+1, False);
+	}
+	if ($pagenum < $maxPage-1)
+	{
+		printPageButton($pagenum+2, False);
+	}
+	if ($pagenum < $maxPage-3)
+	{
+		print "...";
+	}
+	if ($pagenum < $maxPage-2)
+	{
+		printPageButton($maxPage, False);
+	}
+	if ($maxPage > 1 && $sortBar)
+	{
+		print '<span style="float:right;">
+			<FORM class="advancedSearch" method="get" action="tournaments.php#results">
+			<b>Sort By:</b>
+			<select  class = "advancedSearch" name="sortCol">
+				<option'.(($sortCol=='year') ? ' selected="selected"' : '').' value="year">Year</option>
+				<option'.(($sortCol=='name') ? ' selected="selected"' : '').' value="name">Tournament Name</option>
+			</select>
+			<select class = "advancedSearch" name="sortType">
+				<option'.(($sortType=='asc') ? ' selected="selected"' : '').' value="asc">Ascending</option>
+				<option'.(($sortType=='desc') ? ' selected="selected"' : '').' value="desc">Descending</option>
+			</select>';
+			foreach($_REQUEST as $key => $value)
+			{
+				if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3') == false && strpos('x'.$key,'__utm')== false && $key!="pagenum" && $key!="sortCol" && $key!="sortType")
+				{
+					print '<input type="hidden" name="'.$key.'" value="'.$value.'">';
+				}
+			}
+			print ' ';
+			print '<input type="submit" class="form-submit" name="Refresh" value="Refresh" /></form>
+			</span>';
+		}
+}
+
+function printPageButton($pagenum, $currPage)
+{
+	if ($currPage)
+	{
+		print '<div class="curr-page">'.$pagenum.'</div>';
+	}
+	else
+	{
+		print '<div style="display:inline-block; margin:3px;">';
+		print '<FORM method="get" action=tournaments.php#results>';
+		foreach($_REQUEST as $key => $value)
+		{
+			if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && $key!="pagenum")
+			{
+				print '<input type="hidden" name="'.$key.'" value="'.$value.'">';
+			}
+		}
+		print '<input type="submit" name="pagenum" class="form-submit" value='.$pagenum.' /></form></div>';
+	}
+}
 ?>
 
 <script type="text/javascript">
