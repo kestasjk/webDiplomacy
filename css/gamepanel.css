@@ -375,6 +375,14 @@ div.memberBoardHeader {
 	margin:0 4px;
 }
 
+/* --- dark mode corrections --- */
+
+/*tr > td.right > span, tr > td.right > span.messageFromMe > span {
+	color: rgba(255, 255, 255, 0.8) !important;
+}*/
+
+/* */
+
 /* --- Home game panel --- */
 .gamePanelHome {
 	font-size:11px;
