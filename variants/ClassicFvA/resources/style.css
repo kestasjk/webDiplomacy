@@ -1,8 +1,8 @@
 @CHARSET "ISO-8859-1";
 
-.variantClassicFvA .country0 { color: #CE7800 ! important; } /* Global */
-.variantClassicFvA .country1 { color: #007BA5 ! important; } /* France */
-.variantClassicFvA .country2 { color: #D62929 ! important; } /* Austria */
+.variantClassicFvA .country0 { color: rgba(255, 255, 255, 0.8) ! important; } /* Global */
+.variantClassicFvA .country1 { color: rgb(117, 165, 255) ! important; } /* France */
+.variantClassicFvA .country2 { color: rgb(232, 107, 107) ! important; } /* Austria */
 
 .variantClassicFvA .occupationBar1 { background-color: #79AFC6; } /* France */
 .variantClassicFvA .occupationBar2 { background-color: #C48F85; } /* Austria */
