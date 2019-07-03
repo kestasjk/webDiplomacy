@@ -57,9 +57,9 @@ span.points {
 input[type="text"], input[type="password"], textarea, select {
 	font-size: 14px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	background-color: #ffffff ;
-	border: 1px solid #c1c1c1;
-	color:#000000;
+	background-color: #757b81;
+	border: 1px solid #ccc;
+	color:rgba(255, 255, 255, 0.8);
 }
 input:read-only {
   background-color:#999 !important;
@@ -798,20 +798,15 @@ div.gamelistings-tabs a:hover {
 	height: auto;
 	margin-left: auto;
 	margin-right: auto;
-	color: #666;
 	padding:5px 10px;
 }
-.threadborder1 {
-	border: 1px solid #d1d1d1;
-}
-.threadborder2 {
-	border: 1px solid #cecece;
-}
 .threadalternate1 {
-	background-color:#f5f5f5;
+	background-color:#5f6368;
+	border-radius: 5px;
 }
 .threadalternate2 {
-	background-color:#f0f0f0;
+	background-color:#5f6368;
+	border-radius: 5px;
 }
 .replyborder1 {
 	border: 1px solid #c1c1c1;
@@ -846,7 +841,6 @@ div.gamelistings-tabs a:hover {
 	overflow:hidden;
 }
 .message-body {
-	color: #000;
 	margin:5px;
 	margin-left:10px;
 	margin-right:10px;
@@ -860,7 +854,7 @@ div.gamelistings-tabs a:hover {
 }
 form {
 	margin:0;
-	background-color: #5f6368;
+	/*background-color: #5f6368;*/
 }
 
 .reply {
@@ -1926,6 +1920,8 @@ ul.advancedSearch {
 	margin-left: 0 !important;
 }
 /* end of points and scoring systems page styling */
+
+
 
 span.orderNotice {
 	font-weight:bold;
