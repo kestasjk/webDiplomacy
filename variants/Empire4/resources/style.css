@@ -1,16 +1,16 @@
 @CHARSET "ISO-8859-1";
 
-.variantEmpire4 .country0 { color: #CE7800 ! important; }  /* Global           */
-.variantEmpire4 .country1 { color: #b8ad00 ! important; }  /* British-Columbia */
-.variantEmpire4 .country2 { color: #D62929 ! important; }  /* California       */
-.variantEmpire4 .country3 { color: #b05500 ! important; }  /* Florida          */
-.variantEmpire4 .country4 { color: #08374d ! important; }  /* Heartland        */
-.variantEmpire4 .country5 { color: #259901 ! important; }  /* Mexico           */
-.variantEmpire4 .country6 { color: #6F005D ! important; }  /* New-York         */
-.variantEmpire4 .country7 { color: #DD51BD ! important; }  /* Peru             */
-.variantEmpire4 .country8 { color: #1a6600 ! important; }  /* Quebec           */
-.variantEmpire4 .country9 { color: #514f4f ! important; }  /* Texas            */
-.variantEmpire4 .country10 { color: #007BA5 ! important; } /* Cuba             */
+.variantEmpire4 .country0 { color: rgba(255, 255, 255, 0.8) ! important; }  /* Global           */
+.variantEmpire4 .country1 { color: rgb(235, 235, 168) ! important; }  /* British-Columbia */
+.variantEmpire4 .country2 { color: rgb(255, 40, 40) ! important; }  /* California       */
+.variantEmpire4 .country3 { color: rgb(217, 151, 93) ! important; }  /* Florida          */
+.variantEmpire4 .country4 { color: rgb(158, 224, 255) ! important; }  /* Heartland        */
+.variantEmpire4 .country5 { color: rgb(129, 255, 89) ! important; }  /* Mexico           */
+.variantEmpire4 .country6 { color: rgb(173, 108, 196) ! important; }  /* New-York         */
+.variantEmpire4 .country7 { color: rgb(249, 193, 230) ! important; }  /* Peru             */
+.variantEmpire4 .country8 { color: rgb(97, 177, 0) ! important; }  /* Quebec           */
+.variantEmpire4 .country9 { color: rgb(181, 181, 181) ! important; }  /* Texas            */
+.variantEmpire4 .country10 { color: rgb(87, 150, 171) ! important; } /* Cuba             */
 
 .variantEmpire4 .occupationBar1 { background-color: #EAEAAF; }  /* British-Columbia */
 .variantEmpire4 .occupationBar2 { background-color: #C48F85; }  /* California       */
