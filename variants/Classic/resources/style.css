@@ -12,28 +12,28 @@ Occupation bars and country text colors need to be defined here.
 
 /* Order: ('Global'), 'England', 'France', 'Italy', 'Germany', 'Austria', 'Turkey', 'Russia' */
 .variantClassic .country0 {
-	color: #CE7800 ! important;
+	color: rgba(255, 255, 255, 0.8) ! important;
 }
 .variantClassic .country1 {
-	color: #DD51BD ! important;
+	color: rgb(226, 165, 212) ! important;
 }
 .variantClassic .country2 {
-	color: #007BA5 ! important;
+	color: rgb(117, 165, 255) ! important;
 }
 .variantClassic .country3 {
-	color: #259901 ! important;
+	color: rgb(50, 168, 109) ! important;
 }
 .variantClassic .country4 {
-	color: #8B481A ! important;
+	color: rgb(216, 122, 0) ! important;
 }
 .variantClassic .country5 {
-	color: #D62929 ! important;
+	color: rgb(232, 107, 107) ! important;
 }
 .variantClassic .country6 {
-	color: #b8ad00 ! important;
+	color: rgb(212, 214, 79) ! important;
 }
 .variantClassic .country7 {
-	color: #6F005D ! important;
+	color: rgb(173, 108, 196) ! important;
 }
 
 .variantClassic .occupationBar1 {
