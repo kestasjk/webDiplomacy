@@ -1,16 +1,16 @@
 @CHARSET "ISO-8859-1";
 	
-.variantModern2 .country0 { color: #CE7800 ! important; }  /* Global  */
-.variantModern2 .country1 { color: #DD51BD ! important; }  /* Britain */
-.variantModern2 .country2 { color: #1a6600 ! important; }  /* Egypt   */
-.variantModern2 .country3 { color: #007BA5 ! important; }  /* France  */
-.variantModern2 .country4 { color: #8B481A ! important; }  /* Germany */
-.variantModern2 .country5 { color: #259901 ! important; }  /* Italy   */
-.variantModern2 .country6 { color: #D62929 ! important; }  /* Poland  */
-.variantModern2 .country7 { color: #6F005D ! important; }  /* Russia  */
-.variantModern2 .country8 { color: #b05500 ! important; }  /* Spain   */
-.variantModern2 .country9 { color: #b8ad00 ! important; }  /* Turkey  */
-.variantModern2 .country10 { color: #514f4f ! important; } /* Ukraine */
+.variantModern2 .country0 { color: rgba(255, 255, 255, 0.8) ! important; }  /* Global  */
+.variantModern2 .country1 { color: rgb(226, 165, 212) ! important; }  /* Britain */
+.variantModern2 .country2 { color: rgb(85, 214, 41) ! important; }  /* Egypt   */
+.variantModern2 .country3 { color: rgb(117, 165, 255) ! important; }  /* France  */
+.variantModern2 .country4 { color: rgb(216, 122, 0) ! important; }  /* Germany */
+.variantModern2 .country5 { color: rgb(50, 168, 109) ! important; }  /* Italy   */
+.variantModern2 .country6 { color: rgb(232, 107, 107) ! important; }  /* Poland  */
+.variantModern2 .country7 { color: rgb(173, 108, 196) ! important; }  /* Russia  */
+.variantModern2 .country8 { color: rgb(253, 192, 136) ! important; }  /* Spain   */
+.variantModern2 .country9 { color: rgb(212, 214, 79) ! important; }  /* Turkey  */
+.variantModern2 .country10 { color: rgb(181, 181, 181) ! important; } /* Ukraine */
 
 .variantModern2 .occupationBar1 { background-color: #EFC4E4; }  /* Britain */
 .variantModern2 .occupationBar2 { background-color: #729267; }  /* Egypt   */
