@@ -630,7 +630,7 @@ div.content-notice {
 	position: relative;
 	margin-left: auto;
 	margin-right: auto;
-	/*margin-top: 5px;*/
+	margin-bottom: 5px;
 	max-width: 768px;
 	background-color: #3b4042;
 	/*border: 1px solid #aaa;*/
@@ -905,10 +905,9 @@ form {
 	color: #6F005D ! important;
 }
 .chatWrapper {
-	border-radius: 7px;
+	border-radius: 0;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	overflow: hidden;
-	background-color: #5f6368;
 	font-size: 14px;
 	margin-top:0px !important;
 }
@@ -921,6 +920,9 @@ div.chatbox {
 div.chatbox td {
 	overflow:hidden;
 }
+TABLE.chatbox > tbody > tr.membersList {
+	background-color: #5f6368;
+}
 textarea#sendbox {
 	background-color: #757b81;
 	color: rgba(255, 255, 255, 0.8);
@@ -928,7 +930,11 @@ textarea#sendbox {
 .chatboxMembersList {
 	font-size:12px;
 	text-align:center;
-	}
+	padding: 5px;
+}
+#orderFormElement {
+	background-color: transparent !important;
+}
 TABLE {
 	border-collapse: collapse;
 	width:100%;
@@ -978,10 +984,10 @@ TD.center {
 	text-align:center;
 }
 TD.fleet, div.fleet {
-	color:#0b0b87;
+	color:#03a9f4;
 }
 TD.army, div.army {
-	color:#34870b;
+	color:#55c11f;
 }
 
 /* Section for Login and Password Recovery styling */
@@ -1084,8 +1090,8 @@ input[type=submit].gameCreate:hover {
   background-color: #45a049;
 }
 
-option {
-	background-color: #777 !important;
+select option {
+	background: #777 !important;
 }
 
 /* The Modal (background) */

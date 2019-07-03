@@ -27,6 +27,12 @@
 .gamePanel .bar {
 	border:0;
 }
+TABLE.orders > tbody > tr.barAlt1 {
+	background-color: #555;
+}
+TABLE.orders > tbody > tr.barAlt2 {
+	background-color: #777;
+}
 .barAlt1, .barAltLight1 {
 	/*background-color:#f5f5f5 !important;*/
 }
@@ -374,8 +380,8 @@ div.memberBoardHeader {
 	font-size:11px;
 }
 .panelAnonOnlyFlag, .panelTempBanned {
-	background-color:#f5f5f5  !important;
 	text-align: center !important;
+	color: rgba(255, 255, 255, 0.8);
 }
 .memberVotePanel {
 	border-top: 1px solid #cecece!important;
