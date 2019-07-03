@@ -384,7 +384,7 @@ div.memberBoardHeader {
 	color: rgba(255, 255, 255, 0.8);
 }
 .memberVotePanel {
-	border-top: 1px solid #cecece!important;
+	/*border-top: 1px solid #cecece!important;*/
 	padding:0 5%;
 }
 
