@@ -1670,36 +1670,43 @@ input[type=text].settings, input[type=password].settings, textarea.settings, sel
 input[type="text"].modTools, input[type="password"].modTools, textarea.modTools, select.modTools {
 	font-size: 14px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	background-color: #ffffff !important;
+	background: #757b81;
+	color: rgba(255, 255, 255, 0.8);
 	border: 1px solid #c1c1c1;
-	color:#000000;
 }
 
 .modTools td, .modTools th {
 	border: 1px solid #ddd;
 	padding: 6px;
+	background: #5f6368;
+	color: rgba(255, 255, 255, 0.8);
 }
 
-.modTools tr:nth-child(even){background-color: #f2f2f2; word-break: break-word;}
-.modTools tr:nth-child(odd){background-color: #ffffff; word-break: break-word;}
+.modTools tr:nth-child(even){
+	background-color: #f2f2f2; 
+	word-break: break-word;
+}
+
+.modTools tr:nth-child(odd){
+	background-color: #ffffff; 
+	word-break: break-word;
+}
 
 .modTools th {
 	padding-top: 12px;
 	padding-bottom: 12px;
 	text-align: left;
-	background-color: #009902;
-	color: white;
 	min-width:70px;
 }
 
 .modToolsCP {
 	border-radius: 25px;
-	background: rgb(222, 224, 222);
+	background: #5f6368;
 	padding: 8px;
 }
 
 .modToolsHeadings {
-    color: #000000 !important;
+    color: rgba(255, 255, 255, 0.8);
 	margin-bottom: 5px;
 	font-weight: bold;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -1714,7 +1721,7 @@ li.modToolsformlistfield {
 
 li.modToolsformlistdesc {
 	font-weight: normal;
-	color: #000000b2 !important;
+	color: rgba(255, 255, 255, 0.6);
 	list-style: none;
 	margin-left:20px;
 	margin-right:20px;
@@ -1731,7 +1738,7 @@ li.modToolsformlisttitle {
 
 .modToolsCollapsible {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	background-color: #777;
+	background: transparent;
 	color: white;
 	cursor: pointer;
 	padding: 10px;
@@ -1751,7 +1758,7 @@ li.modToolsformlisttitle {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	display: none;
 	overflow: hidden;
-	background-color: #f1f1f1;
+	background-color: transparent;
 }
 
 ul.modTools {
