@@ -85,6 +85,14 @@ input:read-only {
 	cursor: pointer;
 }
 
+.redComparison {
+	color: #D62929 ! important;
+}
+
+.redComparison a {
+	color: #D62929 ! important;
+}
+
 .form-submit {
   background-color: #777;
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #777), color-stop(50%, #666), color-stop(50%, #555), color-stop(100%, #444));
@@ -1186,6 +1194,7 @@ select option {
 .tournament td, .tournament th {
 	border: 1px solid #ddd;
 	padding: 6px;
+	font-size: 12px;
 }
 
 .tournament tr:nth-child(even){background-color: #f2f2f2; word-break: break-word;}
@@ -1578,7 +1587,7 @@ input[type=text].settings, input[type=password].settings, textarea.settings, sel
 }
 
 .credits-title {
-	background-color: #777;
+	background-color: #4CAF50;
 	color: white;
 	padding: 10px;
 	border: none;

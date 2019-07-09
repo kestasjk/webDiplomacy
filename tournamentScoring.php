@@ -83,13 +83,13 @@ if(isset($_REQUEST['tournamentID']))
   $nullRound = array();
   list($SQLExpected) = $DB->sql_row("SELECT COUNT(1) FROM wD_TournamentParticipants t
     INNER JOIN wD_Users u ON t.userID = u.id
-    WHERE t.tournamentID = ".$tournamentID." AND t.status <> 'Rejected'");
+    WHERE t.tournamentID = ".$tournamentID." AND t.status <> 'Rejected' AND t.status <> 'Applied'");
   for ($i = 1; $i <= $tournamentRounds; $i++)
   {
     list($SQLResults) = $DB->sql_row("SELECT COUNT(1) FROM wD_TournamentParticipants t
       INNER JOIN wD_Users u ON t.userID = u.id
       LEFT JOIN wD_TournamentScoring s ON t.userID = s.userID
-      WHERE t.tournamentID = ".$tournamentID." AND t.status <> 'Rejected'
+      WHERE t.tournamentID = ".$tournamentID." AND t.status <> 'Rejected' AND t.status <> 'Applied'
       AND s.round = ".$i." AND s.tournamentID = ".$tournamentID);
     if ($SQLResults == 0)
     {
@@ -99,12 +99,12 @@ if(isset($_REQUEST['tournamentID']))
     {
       $SQLExpectedUser = $DB->sql_tabl("SELECT t.userID FROM wD_TournamentParticipants t
         INNER JOIN wD_Users u ON t.userID = u.id
-        WHERE t.tournamentID = ".$tournamentID." AND t.status <> 'Rejected'
+        WHERE t.tournamentID = ".$tournamentID." AND t.status <> 'Rejected' AND t.status <> 'Applied'
         ORDER BY t.userID ASC;");
       $SQLResultsUser = $DB->sql_tabl("SELECT t.userID FROM wD_TournamentParticipants t
         INNER JOIN wD_Users u ON t.userID = u.id
         INNER JOIN wD_TournamentScoring s ON t.userID = s.userID
-        WHERE t.tournamentID = ".$tournamentID." AND t.status <> 'Rejected'
+        WHERE t.tournamentID = ".$tournamentID." AND t.status <> 'Rejected' AND t.status <> 'Applied'
         AND s.round = ".$i." AND s.tournamentID = ".$tournamentID.
         " ORDER BY t.userID ASC;");
       $curIDresults = $curIDexpected = 0;
@@ -126,7 +126,7 @@ if(isset($_REQUEST['tournamentID']))
 
   print "<a name='tableLocation'></a>";
   print '<b><center>Scores for '.$tournamentName.'</center></b><br/>';
-	print "<TABLE class='advancedSearch'>";
+	print "<div style='overflow-x:auto; display:block; width:100%;'><TABLE class='advancedSearch'>";
 		print "<tr>";
     if ($sortCol <> 'name')
     {
@@ -178,14 +178,14 @@ if(isset($_REQUEST['tournamentID']))
     {
       $SQL = "SELECT t.userID, u.username, 1 FROM wD_TournamentParticipants t
         INNER JOIN wD_Users u ON t.userID = u.id
-        WHERE t.tournamentID = ".$tournamentID." AND t.status <> 'Rejected' ORDER BY u.username ".$sortType;
+        WHERE t.tournamentID = ".$tournamentID." AND t.status <> 'Rejected' AND t.status <> 'Applied' ORDER BY u.username ".$sortType;
     }
     else
     {
       $SQL = "SELECT t.userID, u.username, s.score FROM wD_TournamentParticipants t
         INNER JOIN wD_Users u ON t.userID = u.id
         LEFT JOIN wD_TournamentScoring s ON t.userID = s.userID
-        WHERE t.tournamentID = ".$tournamentID." AND t.status <> 'Rejected'
+        WHERE t.tournamentID = ".$tournamentID." AND t.status <> 'Rejected' AND t.status <> 'Applied'
         AND s.round = ".(int)substr($_REQUEST['sortCol'],1)." AND s.tournamentID = ".$tournamentID.
         " ORDER BY s.score ".$sortType;
     }
@@ -233,7 +233,7 @@ if(isset($_REQUEST['tournamentID']))
 			print "</TR>";
       $previousScore = $score;
 		}
-		print "</TABLE>";
+		print "</TABLE></div>";
     if ($editor)
     {
       print "<br/><INPUT type='submit' value='Update' name='submit' class='green-Submit'></form>";

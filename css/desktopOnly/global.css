@@ -81,6 +81,14 @@ input:read-only {
 	cursor: pointer;
 }
 
+.redComparison {
+	color: #D62929 ! important;
+}
+
+.redComparison a {
+	color: #D62929 ! important;
+}
+
 .form-submit {
   background-color: #8c9cbf;
   background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #8c9cbf), color-stop(50%, #546a9e), color-stop(50%, #36518f), color-stop(100%, #3d5691));
@@ -1174,6 +1182,7 @@ input[type=submit].gameCreate:hover {
 .tournament td, .tournament th {
 	border: 1px solid #ddd;
 	padding: 6px;
+	font-size: 12px;
 }
 
 .tournament tr:nth-child(even){background-color: #f2f2f2; word-break: break-word;}
@@ -1560,7 +1569,7 @@ input[type=text].settings, input[type=password].settings, textarea.settings, sel
 }
 
 .credits-title {
-	background-color: #777;
+	background-color: #4CAF50;
 	color: white;
 	padding: 10px;
 	border: none;

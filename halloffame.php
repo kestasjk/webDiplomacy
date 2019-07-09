@@ -46,7 +46,7 @@ if ( $User->type['User'] && $User->points > 100 )
 	$players = $Misc->RankingPlayers;
 
 	print '<p class = "hof">'.l_t('You are ranked %s out of %s players with over 100%s','<a href="#me" class="light">#'.$position.'</a>',$players,libHTML::points()).
-		l_t('. For more stats on your ranking visit <a class="light" href="profile.php?userID='.$User->id.'">your profile</a>.').'</p>';
+		l_t('. For more stats on your ranking, visit <a class="light" href="profile.php?userID='.$User->id.'">your profile</a>.').'</p>';
 }
 
 $i=1;

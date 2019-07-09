@@ -16,6 +16,7 @@ pointlog.txt
 /.settings/
 /.buildpath
 /.project
+/.idea
 /datc/maps/
 !.htaccess
 variants/*/cache/
