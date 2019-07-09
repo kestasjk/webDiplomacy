@@ -66,7 +66,7 @@ input:read-only {
 }
 
 .green-Submit {
-  background-color: #384042;
+  background-color: #0b6a0b;
   color: rgba(255, 255, 255, 0.8);
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -780,7 +780,7 @@ div.gamelistings-tabs a:hover, div.gamelistings-tabs a.current:hover {
 }
 
 .gamelistings-tabsNewActive {
-	background-color: #4CAF50;
+	background-color: #0b6a0b;
 	color: white;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 }
@@ -1011,7 +1011,7 @@ input[type=submit].login:hover {
 
 .loginDesc {
 	font-weight: normal;
-	color: #000000b2 !important;
+	color: rgba(255, 255, 255, 0.8);
 	margin-left:20px;
 	margin-right:20px;
 	font-size: 12px;
@@ -1140,7 +1140,7 @@ select option {
 	border-radius: 7px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	overflow: hidden;
-	background-color: #f1f1f1;
+	background-color: #202125;
 	font-size: 14px;
 	padding: 0 10px 0 10px;
 	margin-top:0px !important;
@@ -1181,7 +1181,7 @@ select option {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	display: none;
 	/* overflow: hidden; */
-	background-color: #ddd;
+	background-color: #5e6368;
 	margin-top: 0px !important;
 	border-radius: 7px;
 	padding: 0 10px 0 10px;
@@ -1197,8 +1197,8 @@ select option {
 	font-size: 12px;
 }
 
-.tournament tr:nth-child(even){background-color: #f2f2f2; word-break: break-word;}
-.tournament tr:nth-child(odd){background-color: #ffffff; word-break: break-word;}
+.tournament tr:nth-child(even){background-color: #555; word-break: break-word;}
+.tournament tr:nth-child(odd){background-color: #5555558a; word-break: break-word;}
 
 .tournament th {
 	padding-top: 12px;
@@ -1337,7 +1337,7 @@ select option {
 	padding-top: 12px;
 	padding-bottom: 12px;
 	text-align: left;
-	background-color: #009902;
+	background-color: #0b6a0b;
 	color: white;
 	min-width:70px;
 }
@@ -1857,14 +1857,14 @@ input[type="text"].advancedSearch, input[type="password"].advancedSearch, textar
 	padding: 6px;
 }
 
-.advancedSearch tr:nth-child(even){background-color: #f2f2f2; word-break: break-word;}
-.advancedSearch tr:nth-child(odd){background-color: #ffffff; word-break: break-word;}
+.advancedSearch tr:nth-child(even){background-color: #3a4042; word-break: break-word;}
+.advancedSearch tr:nth-child(odd){background-color: #202125; word-break: break-word;}
 
 .advancedSearch th {
 	padding-top: 12px;
 	padding-bottom: 12px;
 	text-align: left;
-	background-color: #009902;
+	background-color: #0b6a0b;
 	color: white;
 	min-width:35px;
 }
