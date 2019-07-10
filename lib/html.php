@@ -401,9 +401,20 @@ class libHTML
 	static public function prebody ( $title )
 	{
 		require_once(l_r('global/definitions.php'));
+		
+		global $User;
+		global $UserOptions;
 		$variantCSS=array();
+
+		// set user's dark or light theme
+
+		if(isset($User) && ($User->options->value['darkMode'] == 'No'))
+			$darkMode = '';
+		else
+			$darkMode = 'darkMode/';
+
 		foreach(Config::$variants as $variantName)
-			$variantCSS[] = '<link rel="stylesheet" href="'.STATICSRV.l_s('variants/'.$variantName.'/resources/style.css').'?var='.CSSVERSION.'" type="text/css" />';
+			$variantCSS[] = '<link rel="stylesheet" href="'.STATICSRV.l_s('variants/'.$variantName.'/resources/'.$darkMode.'style.css').'?var='.CSSVERSION.'" type="text/css" />';
 		$variantCSS=implode("\n",$variantCSS);
 
 		/*
@@ -419,10 +430,7 @@ class libHTML
 		<meta name="keywords" content="'.l_t('diplomacy,diplomacy game,online diplomacy,classic diplomacy,web diplomacy,diplomacy board game,play diplomacy,php diplomacy').'" />
 		<link rel="shortcut icon" href="'.STATICSRV.l_s('favicon.ico').'" />
 		<link rel="icon" href="'.STATICSRV.l_s('favicon.ico').'" />
-		<link rel="stylesheet" id="global-css" href="'.CSSDIR.l_s('/global.css').'?ver='.CSSVERSION.'" type="text/css" />
-		<link rel="stylesheet" id="game-panel-css" href="'.CSSDIR.l_s('/gamepanel.css').'?ver='.CSSVERSION.'" type="text/css" />
-		<link rel="stylesheet" id="home-css" href="'.CSSDIR.l_s('/home.css').'?ver='.CSSVERSION.'" type="text/css" />
-		'.$variantCSS.'
+		
 		<script type="text/javascript" src="useroptions.php"></script>
 		<script type="text/javascript" src="javascript/clickhandler.js"></script>
 		<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/prototype.js').'"></script>
@@ -435,6 +443,12 @@ class libHTML
 				var cssVersion = "'.CSSVERSION.'";
 		</script>
 		<script type="text/javascript" src="'.l_j('javascript/desktopMode.js').'?ver='.JSVERSION.'"></script>
+
+		<link rel="stylesheet" id="global-css" href="'.CSSDIR.l_s('/'.$darkMode.'global.css').'?ver='.CSSVERSION.'" type="text/css" />
+		<link rel="stylesheet" id="game-panel-css" href="'.CSSDIR.l_s('/'.$darkMode.'gamepanel.css').'?ver='.CSSVERSION.'" type="text/css" />
+		<link rel="stylesheet" id="home-css" href="'.CSSDIR.l_s('/'.$darkMode.'home.css').'?ver='.CSSVERSION.'" type="text/css" />
+		'.$variantCSS.'
+
 		<title>'.l_t('%s - webDiplomacy',$title).'</title>
 	</head>';
 	}
