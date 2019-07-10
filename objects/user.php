@@ -236,11 +236,11 @@ class User {
 	public $cdCount, $nmrCount, $cdTakenCount, $phaseCount, $gameCount, $reliabilityRating;
 
 	/**
-	 * cssOption
+	 * darkMode
 	 * Choose css style theme
-	 * @var 'lightmode' or 'darkmode'
+	 * @var 'yes' or 'no'
 	 */
-	public $cssOption;
+	public $darkMode;
 
 	/**
 	 * Give this user a supplement of points
@@ -371,7 +371,7 @@ class User {
 		$SQLVars = array();
 
 		$available = array('username'=>'', 'password'=>'', 'passwordcheck'=>'', 'email'=>'',
-					'hideEmail'=>'','showEmail'=>'', 'homepage'=>'','comment'=>'', 'cssOption'=>'');
+					'hideEmail'=>'','showEmail'=>'', 'homepage'=>'','comment'=>'', 'darkMode'=>'');
 
 		$userForm = array();
 
@@ -440,12 +440,12 @@ class User {
 			$SQLVars['comment'] = $userForm['comment'];
 		}
 
-		if(isset($userForm['cssOption']))
+		if(isset($userForm['darkMode']))
 		{
-			if ($userForm['cssOption'] == "lightMode")
-				$SQLVars['cssOption'] = "lightMode";
+			if ($userForm['darkMode'] == "Yes")
+				$SQLVars['darkMode'] = "Yes";
 			else
-				$SQLVars['cssOption'] = "darkMode";
+				$SQLVars['darkMode'] = "No";
 		}
 
 		return $SQLVars;
