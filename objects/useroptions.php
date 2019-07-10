@@ -27,7 +27,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  *
  * @package Base
  */
-class UserOptions {
+class UserOptions 
+{
 	/**
 	 * User ID
 	 * @var int
@@ -73,7 +74,9 @@ class UserOptions {
 		if ( ! isset($row['userID']) or ! $row['userID'] )
 		{
 			// No object was loaded
-		} else {
+		} 
+		else 
+		{
 			foreach( $row as $name=>$value )
 			{
 				if (isset(UserOptions::$defaults[$name]))
@@ -104,7 +107,8 @@ class UserOptions {
 		$update = implode(',',$updates);
 
 		$row = $DB->sql_hash("SELECT * FROM wD_UserOptions WHERE userID=".$this->id );
-		if ( ! isset($row['userID']) or ! $row['userID'] ) {
+		if ( ! isset($row['userID']) or ! $row['userID'] ) 
+		{
 			// create
 			$DB->sql_put("INSERT INTO wD_UserOptions (userID) VALUES (".$this->id.")");
 		}
