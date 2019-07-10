@@ -3,37 +3,35 @@
 /*
 All variant HTML will be stored within an element with a classname variant[variantName]. Using this all variant CSS 
 can be loaded at the same time, and will apply itself appropriately. 
-
 This is convenient and efficient, but does make it one of the only things that can't be inherited. Each variant 
 needs to define these CSS values even if they're the same as another variant using the same map.
-
 Occupation bars and country text colors need to be defined here.
 */
 
 /* Order: ('Global'), 'England', 'France', 'Italy', 'Germany', 'Austria', 'Turkey', 'Russia' */
 .variantClassic .country0 {
-	color: rgba(255, 255, 255, 0.8) ! important;
+	color: #CE7800 ! important;
 }
 .variantClassic .country1 {
-	color: rgb(226, 165, 212) ! important;
+	color: #DD51BD ! important;
 }
 .variantClassic .country2 {
-	color: rgb(117, 165, 255) ! important;
+	color: #007BA5 ! important;
 }
 .variantClassic .country3 {
-	color: rgb(50, 168, 109) ! important;
+	color: #259901 ! important;
 }
 .variantClassic .country4 {
-	color: rgb(216, 122, 0) ! important;
+	color: #8B481A ! important;
 }
 .variantClassic .country5 {
-	color: rgb(232, 107, 107) ! important;
+	color: #D62929 ! important;
 }
 .variantClassic .country6 {
-	color: rgb(212, 214, 79) ! important;
+	color: #b8ad00 ! important;
 }
 .variantClassic .country7 {
-	color: rgb(173, 108, 196) ! important;
+	color: #6F005D ! important;
 }
 
 .variantClassic .occupationBar1 {

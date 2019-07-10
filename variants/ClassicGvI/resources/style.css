@@ -1,8 +1,8 @@
 @CHARSET "ISO-8859-1";
 
-.variantClassicGvI .country0 { color: rgba(255, 255, 255, 0.8) ! important; } /* Global */
-.variantClassicGvI .country1 { color: rgb(216, 122, 0) } /* Germany */
-.variantClassicGvI .country2 { color: rgb(50, 168, 109) ! important; } /* Italy */
+.variantClassicGvI .country0 { color: #CE7800 ! important; } /* Global */
+.variantClassicGvI .country1 { color: #8B481A ! important; } /* Germany */
+.variantClassicGvI .country2 { color: #259901 ! important; } /* Italy */
 
 .variantClassicGvI .occupationBar1 { background-color: #A08A75; } /* Germany */
 .variantClassicGvI .occupationBar2 { background-color: #A4C499; } /* Italy */

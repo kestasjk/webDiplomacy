@@ -1,23 +1,24 @@
+
 @CHARSET "ISO-8859-1";
 
-.variantWorld .country0 { color: rgba(255, 255, 255, 0.8) ! important; }  /*  Global             */
-.variantWorld .country1 { color: rgb(230, 28, 13) ! important; }  /*  Argentina          */
+.variantWorld .country0 { color: #CE7800 ! important; }  /*  Global             */
+.variantWorld .country1 { color: #cc0205 ! important; }  /*  Argentina          */
 .variantWorld .country2 { color: #04cc04 ! important; }  /*  Brazil             */
-.variantWorld .country3 { color: rgb(255, 10, 255) ! important; }  /*  China              */
-.variantWorld .country4 { color: rgb(35, 142, 245) ! important; }  /*  Europe             */
-.variantWorld .country5 { color: rgb(187, 220, 255) ! important; }  /*  Frozen-Antarctica  */
-.variantWorld .country6 { color: rgb(243, 147, 145) ! important; }  /*  Ghana              */
-.variantWorld .country7 { color: rgb(0, 176, 176) ! important; }  /*  India              */
-.variantWorld .country8 { color: rgb(253, 253, 163) ! important; }  /*  Kenya              */
-.variantWorld .country9 { color: rgb(156, 0, 156) ! important; }  /*  Libya              */
-.variantWorld .country10 { color: rgb(160, 160, 255) ! important; } /*  Near-East          */
-.variantWorld .country11 { color: rgb(67, 160, 115) ! important; } /*  Pacific-Russia     */
-.variantWorld .country12 { color: rgb(184, 204, 123) ! important; } /*  Quebec             */
-.variantWorld .country13 { color: rgba(255, 255, 255, 0.8) ! important; } /*  Russia             */
+.variantWorld .country3 { color: #fc02fc ! important; }  /*  China              */
+.variantWorld .country4 { color: #0482fc ! important; }  /*  Europe             */
+.variantWorld .country5 { color: #044284 ! important; }  /*  Frozen-Antarctica  */
+.variantWorld .country6 { color: #cc6a68 ! important; }  /*  Ghana              */
+.variantWorld .country7 { color: #048284 ! important; }  /*  India              */
+.variantWorld .country8 { color: #646204 ! important; }  /*  Kenya              */
+.variantWorld .country9 { color: #840284 ! important; }  /*  Libya              */
+.variantWorld .country10 { color: #625ee4 ! important; } /*  Near-East          */
+.variantWorld .country11 { color: #246244 ! important; } /*  Pacific-Russia     */
+.variantWorld .country12 { color: #A4C244 ! important; } /*  Quebec             */
+.variantWorld .country13 { color: #000000 ! important; } /*  Russia             */
 .variantWorld .country14 { color: #00ccc8 ! important; } /*  South-Africa       */
-.variantWorld .country15 { color: rgb(255, 88, 60) ! important; } /*  USA                */
-.variantWorld .country16 { color: rgb(213, 226, 59) ! important; } /*  Western-Canada     */
-.variantWorld .country17 { color: rgb(181, 181, 181) ! important; } /*  Oz                 */
+.variantWorld .country15 { color: #cc4d37 ! important; } /*  USA                */
+.variantWorld .country16 { color: #b1b300 ! important; } /*  Western-Canada     */
+.variantWorld .country17 { color: #666666 ! important; } /*  Oz                 */
 
 .variantWorld .occupationBar1 { background-color: #fc0204; }  /*  Argentina          */
 .variantWorld .occupationBar2 { background-color: #04fc04; }  /*  Brazil             */

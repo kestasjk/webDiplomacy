@@ -1,11 +1,12 @@
+
 @CHARSET "ISO-8859-1";
 
-.variantAncMed .country0 { color: rgba(255, 255, 255, 0.8) ! important; } /* Global   */
-.variantAncMed .country1 { color: rgb(102, 176, 201) ! important; } /* Carthage */
-.variantAncMed .country2 { color: rgb(234, 235, 168) ! important; } /* Egypt    */
-.variantAncMed .country3 { color: rgb(150, 193, 144) ! important; } /* Greece   */
-.variantAncMed .country4 { color: rgb(210, 66, 167) ! important; } /* Persia   */
-.variantAncMed .country5 { color: rgb(232, 107, 107) ! important; } /* Rome     */
+.variantAncMed .country0 { color: #CE7800 ! important; } /* Global   */
+.variantAncMed .country1 { color: #007BA5 ! important; } /* Carthage */
+.variantAncMed .country2 { color: #b8ad00 ! important; } /* Egypt    */
+.variantAncMed .country3 { color: #259901 ! important; } /* Greece   */
+.variantAncMed .country4 { color: #6F005D ! important; } /* Persia   */
+.variantAncMed .country5 { color: #D62929 ! important; } /* Rome     */
 
 .variantAncMed .occupationBar1 { background-color: #79AFC6; } /* Carthage */
 .variantAncMed .occupationBar2 { background-color: #EAEAAF; } /* Egypt    */
