@@ -407,11 +407,13 @@ class libHTML
 		$variantCSS=array();
 
 		// set user's dark or light theme
-
-		if(isset($User) && ($User->options->value['darkMode'] == 'No'))
-			$darkMode = '';
+		if ($User->type['Moderator'])
+			if(isset($User) && ($User->options->value['darkMode'] == 'No'))
+				$darkMode = '';
+			else
+				$darkMode = 'darkMode/';
 		else
-			$darkMode = 'darkMode/';
+			$darkMode = '';
 
 		foreach(Config::$variants as $variantName)
 			$variantCSS[] = '<link rel="stylesheet" href="'.STATICSRV.l_s('variants/'.$variantName.'/resources/'.$darkMode.'style.css').'?var='.CSSVERSION.'" type="text/css" />';
