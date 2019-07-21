@@ -1195,33 +1195,69 @@ class User {
 	public function getYearlyUnExcusedMissedTurns() 
 	{
 		global $DB;
-		list($totalMissedTurns) = $DB->sql_row("
-		SELECT COUNT(1) FROM wD_MissedTurns t  
-		WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".(time() - 31536000));
+		list($totalNonLiveMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
+		WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.liveGame = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".(time() - 31536000));
 		
-		return $totalMissedTurns;
+		return $totalNonLiveMissedTurns;
 	}
 
 	/*
-	 * Get the number of total non excused missed turns in the past 4 weeks. 
+	 * Get the number of total non excused missed turns from non live in the past 4 weeks. 
 	 */
 	public function getRecentUnExcusedMissedTurns() 
 	{
 		global $DB;
 		list($totalMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
-			WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".(time() - 2419200));
+			WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.liveGame = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".(time() - 2419200));
 		
 		return $totalMissedTurns;
 	}
 
 	/*
-	 * Get the number of missed turns in the past year. 
+	 * Get the number of non live missed turns in the past year. 
 	 */
 	public function getMissedTurns() 
 	{
 		global $DB;
 		list($totalMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
-			WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.turnDateTime > ".(time() - 2419200));
+			WHERE t.userID = ".$this->id." AND t.liveGame = 0 and t.modExcused = 0 and t.turnDateTime > ".(time() - 31536000));
+		
+		return $totalMissedTurns;
+	}
+
+	/*
+	 * Get the number of non excused live missed turns in the last month. 
+	 */
+	public function getLiveUnExcusedMissedTurns() 
+	{
+		global $DB;
+
+		list($totalLiveMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
+		WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.liveGame = 1 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".(time() - 2419200));
+		
+		return $totalLiveMissedTurns;
+	}
+
+	/*
+	 * Get the number of total non excused missed turns from live in the past week. 
+	 */
+	public function getLiveRecentUnExcusedMissedTurns() 
+	{
+		global $DB;
+		list($totalMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
+			WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.liveGame = 1 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".(time() - (86400 * 7)));
+		
+		return $totalMissedTurns;
+	}
+
+	/*
+	 * Get the number of live missed turns in the past month. For live games missed turns are completely forgiven after 1 month
+	 */
+	public function getLiveMissedTurns() 
+	{
+		global $DB;
+		list($totalMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
+			WHERE t.userID = ".$this->id." AND t.liveGame = 1 and t.modExcused = 0 and t.turnDateTime > ".(time() - 2419200));
 		
 		return $totalMissedTurns;
 	}
