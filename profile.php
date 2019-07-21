@@ -256,31 +256,57 @@ if ( isset($_REQUEST['detail']) )
 				 <li>9 or more un-excused delays: infinite, must contact mods for removal</li>
 				</p></div>';
 
+				$missedTurns = $UserProfile->getMissedTurns();
+				$liveMissedTurns = $UserProfile->getLiveMissedTurns();
+				$allMissedTurns = $missedTurns + $liveMissedTurns;
+
 				$recentUnExcusedMissedTurns = $UserProfile->getRecentUnExcusedMissedTurns();
 				$allUnExcusedMissedTurns = $UserProfile->getYearlyUnExcusedMissedTurns();
-				$allMissedTurns = $UserProfile->getMissedTurns();
+
+				$recentLiveUnExcusedMissedTurns = $UserProfile->getLiveRecentUnExcusedMissedTurns();
+				$allLiveUnExcusedMissedTurns = $UserProfile->getLiveUnExcusedMissedTurns();
 
 				$basePercentage = (100*(1- ($allMissedTurns/max($UserProfile->yearlyPhaseCount,1))));
 				$yearlyPenalty = ($allUnExcusedMissedTurns*5);
 				$recentPenalty = ($recentUnExcusedMissedTurns*6);
+				$liveLongPenalty = ($allLiveUnExcusedMissedTurns*5);
+				$liveShortPenalty = ($recentLiveUnExcusedMissedTurns*6);
 
 				print '<h4>Factors Impacting RR:</h4>';
-				print '<p>
-				<Strong>Yearly Turns:</Strong> '.$UserProfile->yearlyPhaseCount.'</br>
-				<Strong>Yearly Missed Turns:</Strong> '.$allMissedTurns.'</br>
-				<strong>Base Percentage (100* (1 - Missed Turns/Yearly Turns)):</strong> '.$basePercentage.'%</br>
+				print '<p> <Strong>Yearly Turns:</Strong> '.$UserProfile->yearlyPhaseCount.'</br>';
+				
+				if ($allLiveUnExcusedMissedTurns > 0 ) 
+				{ 
+					print '<Strong>Yearly Missed Turns:</Strong> '.$missedTurns.'</br>
+					<Strong>Past Month Live Missed Turns:</Strong> '.$liveMissedTurns.'</br>'; 
+				}
 
-				<h4>Added Penalties:</h4>
+				print'<Strong>Total Counted Missed Turns:</Strong> '.$allMissedTurns.'</br>
+
+				</br><strong>Base Percentage:</strong> '.$basePercentage.'%</br>';
+				if ($allLiveUnExcusedMissedTurns > 0 ) { print'(100* (1 - (Yearly Missed Turns + Live Missed Turns)/Yearly Turns))'; }
+				else { print'(100* (1 - Yearly Missed Turns/Yearly Turns))'; }
+
+				print'<h4>Added Penalties:</h4>
 				<Strong>Yearly Unexcused Missed Turns:</Strong> '.$allUnExcusedMissedTurns.' for a penalty of '.$yearlyPenalty.'%</br>
-				<Strong>Recent Unexcused Missed Turns:</Strong> '.$recentUnExcusedMissedTurns.' for a penalty of '.$recentPenalty.'%</br>
+				<Strong>Recent Unexcused Missed Turns:</Strong> '.$recentUnExcusedMissedTurns.' for a penalty of '.$recentPenalty.'%</br>';
 
-				<h4>Total:</h4>
-				<Strong>Reliability Rating:</Strong> '.max(($basePercentage - $recentPenalty - $yearlyPenalty),0) .'
+				if ($allLiveUnExcusedMissedTurns > 0 )
+				{
+					print' <h4>Added Live Game Penalties:</h4>
+					<Strong>Last Month Live Unexcused Missed Turns:</Strong> '.$allLiveUnExcusedMissedTurns.' for a penalty of '.$liveLongPenalty.'%</br>
+					<Strong>Last Week Live Unexcused Missed Turns:</Strong> '.$recentLiveUnExcusedMissedTurns.' for a penalty of '.$liveShortPenalty.'%</br>';
+				}
+
+				print'<h4>Total:</h4>
+				<Strong>Reliability Rating:</Strong> '.max(($basePercentage - $recentPenalty - $yearlyPenalty - $liveShortPenalty - $liveLongPenalty),0) .'
 				</p>';
 
 				print '<h4>Missed Turns:</h4>
 				<p>Red = Unexcused</p>';
-				$tabl = $DB->sql_tabl("SELECT n.gameID, n.countryID, n.turn, g.name,
+				$tabl = $DB->sql_tabl("SELECT n.gameID, n.countryID, n.turn, 
+				( CASE WHEN n.liveGame = 1 THEN 'Yes' ELSE 'No' END ), 
+				g.name,
 				( CASE WHEN n.systemExcused = 1 THEN 'Yes' ELSE 'No' END ),
 				( CASE WHEN n.modExcused = 1 THEN 'Yes' ELSE 'No' END ),
 				( CASE WHEN n.samePeriodExcused = 1 THEN 'Yes' ELSE 'No' END ),
@@ -298,16 +324,15 @@ if ( isset($_REQUEST['detail']) )
 					print '<th class= "rrInfo">Game:</th>';
 					print '<th class= "rrInfo">Country</th>';
 					print '<th class= "rrInfo">Turn:</th>';
+					print '<th class= "rrInfo">LiveGame:</th>';
 					print '<th class= "rrInfo">System Excused:</th>';
 					print '<th class= "rrInfo">Mod Excused:</th>';
 					print '<th class= "rrInfo">Same Period Excused:</th>';
 					print '<th class= "rrInfo">Turn Date:</th>';
 					print '</tr>';
 
-					while(list($gameID, $countryID, $turn, $name, $systemExcused, $modExcused, $samePeriodExcused, $id, $turnDateTime)=$DB->tabl_row($tabl))
+					while(list($gameID, $countryID, $turn, $liveGame, $name, $systemExcused, $modExcused, $samePeriodExcused, $id, $turnDateTime)=$DB->tabl_row($tabl))
 					{
-						
-
 						if ($systemExcused == 'No' && $modExcused == 'No' && $samePeriodExcused == 'No') { print '<tr style="background-color:#F08080;">'; }
 						else { print '<tr>'; }
 
@@ -318,6 +343,7 @@ if ( isset($_REQUEST['detail']) )
 							print '<td> <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong></td>';
 							print '<td> <strong>'.$Variant->countries[$countryID-1].'</strong></td>';
 							print '<td> <strong>'.$Variant->turnAsDate($turn).'</strong></td>';
+							print '<td> <strong>'.$liveGame.'</strong></td>';
 							print '<td> <strong>'.$systemExcused.'</strong></td>';
 							print '<td> <strong>'.$modExcused.'</strong></td>';
 							print '<td> <strong>'.$samePeriodExcused.'</strong></td>';
@@ -328,6 +354,7 @@ if ( isset($_REQUEST['detail']) )
 							print '<td> <strong>Cancelled Game</strong></td>';
 							print '<td> <strong>'.$countryID.'</strong></td>';
 							print '<td> <strong>'.$turn.'</strong></td>';
+							print '<td> <strong>'.$liveGame.'</strong></td>';
 							print '<td> <strong>'.$systemExcused.'</strong></td>';
 							print '<td> <strong>'.$modExcused.'</strong></td>';
 							print '<td> <strong>'.$samePeriodExcused.'</strong></td>';
