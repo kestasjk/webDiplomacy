@@ -490,6 +490,23 @@ class processGame extends Game
 	}
 
 	/**
+	 * Resets the phase timer to one phase time or 24 hours, which is shorter.
+	 */
+	protected function resetProcessTimeForMissedTurns() 
+	{
+		global $DB;
+	
+		$newProcessTime = time() + 1440*60;
+		if ($this->phaseMinutes < 1440)
+		{
+			$newProcessTime = time() + $this->phaseMinutes*60;
+		}
+
+		$this->processTime = $newProcessTime;
+		$DB->sql_put("UPDATE wD_Games SET processTime = ".$this->processTime." WHERE id = ".$this->id);
+	}
+
+	/**
 	 * Process; the main gamemaster function for managing games; processes orders, adjudicates them,
 	 * applies the results, creates new orders, updates supply center/army numbers, and moves the
 	 * game onto the next phase (or updates it as won)
@@ -571,7 +588,7 @@ class processGame extends Game
 			$extendMessage = 'Game was extended due to at least 1 member failing to enter orders and having an excused missed turn available. This has un-readied all orders.';
 			
 			$this->Members->unreadyMembers();
-			$this->resetProcessTime();
+			$this->resetProcessTimeForMissedTurns();
 			$this->Members->notifyGameExtended();
 			
 			libGameMessage::send('Global','GameMaster', $extendMessage);
