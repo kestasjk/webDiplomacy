@@ -1,6 +1,3 @@
 Changelog
 ---------
-* Adding a column to wD_UserOptions to designate a preference for light mode or dark mode themed style.
-
-Updating
---------
+* Add a check to see if the excused missed turn was from a live game.
