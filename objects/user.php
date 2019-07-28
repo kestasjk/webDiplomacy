@@ -587,11 +587,22 @@ class User {
 
 			$type = implode(',',$types);
 		}
-
 		$buf='';
 
+		global $User;
+
 		if( strstr($type,'Moderator') )
-			$buf .= ' <img src="'.l_s('images/icons/mod.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
+		{
+			if ($User->getTheme() == 'No')
+			{
+				$buf .= ' <img src="'.l_s('images/icons/mod.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
+			}
+			else
+			{
+				$buf .= ' <img src="'.l_s('images/icons/mod-darkmode.jpg').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" style="height: 12px; width: 12px; border-radius: 6px;" />';
+			}
+		}
+				
 		elseif(strstr($type,'Banned') )
 			$buf .= ' <img src="'.l_s('images/icons/cross.png').'" alt="X" title="'.l_t('Banned').'" />';
 
@@ -1286,6 +1297,17 @@ class User {
 		list($tempBan) = $DB->sql_row("SELECT u.tempBan FROM wD_Users u  WHERE u.id = ".$this->id);
 
 		return $tempBan > time();
+	}
+
+	/* 
+	 * Determine style theme user is using
+	 */
+	public function getTheme()
+	{
+		global $DB;
+
+		list($variable) = $DB->sql_row("SELECT darkMode FROM wD_UserOptions WHERE userID=".$this->id);
+		return $variable;
 	}
 }
 ?>
