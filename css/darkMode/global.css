@@ -1699,17 +1699,21 @@ input[type="text"].modTools, input[type="password"].modTools, textarea.modTools,
 .modTools td, .modTools th {
 	border: 1px solid #ddd;
 	padding: 6px;
-	background: #5f6368;
+	/*background: #5f6368;*/
 	color: rgba(255, 255, 255, 0.8);
 }
 
+.modTools tr:first-child {
+	background-color: green !important;
+}
+
 .modTools tr:nth-child(even){
-	background-color: #f2f2f2; 
+	background-color: #555; 
 	word-break: break-word;
 }
 
 .modTools tr:nth-child(odd){
-	background-color: #ffffff; 
+	background-color: #777; 
 	word-break: break-word;
 }
 

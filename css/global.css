@@ -744,10 +744,8 @@ div#chatboxtabs a {
 	padding-top:3px;
 	padding-bottom:3px;
 }
-div.gamelistings-tabs a
 div.gamelistings-tabs a:hover {
 	text-decoration:none;
-	background-color: #f5f5f5;
 	border-bottom:2px solid #009902 ! important;
 	border-top:1px solid #009902 ! important;
 	border-left:1px solid #009902 ! important;

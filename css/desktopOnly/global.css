@@ -1298,6 +1298,11 @@ input[type=submit].gameCreate:hover {
 	color: white;
 	min-width:70px;
 }
+
+.rr-profile-info {
+	color: red;
+	font-size: 13px;
+}
 /* End of section for rrInfo styling */
 
 /* Section for Hall of Fame styling */
@@ -1451,6 +1456,11 @@ input[type=submit].contactUs {
 
 input[type=submit].contactUs:hover {
   background-color: #45a049;
+}
+
+.contact-us-desc {
+	color: red;
+	font-weight: 900;
 }
 /* End of section for contactUsDirect page styling */
 
