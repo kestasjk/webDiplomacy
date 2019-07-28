@@ -1301,8 +1301,8 @@ select option {
 	padding: 6px;
 }
 
-.rrInfo tr:nth-child(even){background-color: #f2f2f2; word-break: break-word;}
-.rrInfo tr:nth-child(odd){background-color: #ffffff; word-break: break-word;}
+.rrInfo tr:nth-child(even){background-color: #555; word-break: break-word;}
+.rrInfo tr:nth-child(odd){background-color: #777; word-break: break-word;}
 
 .rrInfo th {
 	padding-top: 12px;
@@ -1311,6 +1311,11 @@ select option {
 	background-color: #009902;
 	color: white;
 	min-width:70px;
+}
+
+.rr-profile-info {
+	color: rgb(207, 140, 130);
+	font-size: 13px;
 }
 /* End of section for rrInfo styling */
 

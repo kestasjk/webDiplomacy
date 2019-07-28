@@ -680,9 +680,9 @@ if( $total )
 		$allMissedTurns = $UserProfile->getYearlyUnExcusedMissedTurns();
 		If ($recentMissedTurns > 0)
 		{
-			print '<li style="font-size:13px"><font color="red"> Recent Un-excused Delays: ' . $recentMissedTurns.'</font></li>';
-			print '<li style="font-size:13px"><font color="red"> Recent Delay RR Penalty: ' . ($recentMissedTurns*6).'%</font></li>';
-			print '<li style="font-size:13px"><font color="red"> Yearly Delay RR Penalty: ' . ($allMissedTurns*5).'%</font></li>';
+			print '<li class="rr-profile-info"> Recent Un-excused Delays: ' . $recentMissedTurns.'</font></li>';
+			print '<li class="rr-profile-info"> Recent Delay RR Penalty: ' . ($recentMissedTurns*6).'%</font></li>';
+			print '<li class="rr-profile-info"> Yearly Delay RR Penalty: ' . ($allMissedTurns*5).'%</font></li>';
 		}
 		print '<li style="font-size:13px">'.l_t('Un-excused delays/phases:').' <strong>'.$allMissedTurns.'/'.$UserProfile->yearlyPhaseCount.'</strong></li>';
 	}

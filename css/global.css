@@ -1298,6 +1298,11 @@ input[type=submit].gameCreate:hover {
 	color: white;
 	min-width:70px;
 }
+
+.rr-profile-info {
+	color: red;
+	font-size: 13px;
+}
 /* End of section for rrInfo styling */
 
 /* Section for Hall of Fame styling */
