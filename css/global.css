@@ -1322,6 +1322,10 @@ input[type=submit].gameCreate:hover {
 	color: white;
 	min-width:70px;
 }
+
+.hof-self {
+	color: red;
+}
 /* End of section for Hall of Fame styling */
 
 /* Section for donations page styling */
@@ -1447,6 +1451,11 @@ input[type=submit].contactUs {
 
 input[type=submit].contactUs:hover {
   background-color: #45a049;
+}
+
+.contact-us-desc {
+	color: red;
+	font-weight: 900;
 }
 /* End of section for contactUsDirect page styling */
 

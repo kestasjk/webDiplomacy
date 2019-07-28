@@ -66,7 +66,7 @@ class setMemberOrderStatus extends set {
 			}
 			else
 			{
-				return '<img src="'.l_s('images/icons/webdip-darkmode-tick-faded.png').'" alt="'.l_t('Completed').'" title="'.l_t('Orders completed, but not ready for next turn').'" /> ';
+				return '<img src="'.l_s('images/icons/tick_faded_dark.png').'" alt="'.l_t('Completed').'" title="'.l_t('Orders completed, but not ready for next turn').'" /> ';
 			}
 			
 		}

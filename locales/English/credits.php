@@ -45,6 +45,11 @@ $credits = array(
 		<a href="http://www.wizards.com/default.asp?x=ah/prod/diplomacy">Available for Purchase from Avalon Hill</a>'
 	),
 	array(
+		'Managing the <a href="https://discord.gg/f2ram4w">webDiplomacy Discord Server</a>',
+		'<a href="http://webdiplomacy.net/profile.php?userID=100862">Aurelin</a><br />
+		<a href="http://webdiplomacy.net/profile.php?userID=41379">captainmeme</a><br />'
+	),
+	array(
 		'Co-owners of webDiplomacy',
 		'<a href="http://kestas.kuliukas.com/">Kestas Kuliukas</a>, original creator of webDiplomacy<br />
 		<a href="profile.php?userID=33599">Zultar</a>'
@@ -55,8 +60,9 @@ $credits = array(
 	array(
 		'The webDiplomacy Developers',
 		'<a href="profile.php?userID=15658">jmo1121109</a>, current lead developer<br />
-		<a href="profile.php?userID=10">kestasjk</a></br>
-		<a href="profile.php?userID=59641">Squigs44</a>'
+		<a href="profile.php?userID=10">kestasjk</a><br />
+		<a href="profile.php?userID=59641">Squigs44</a><br />
+		<a href="profile.php?userID=38739">bo_sox48</a>'
 	),
 	array(
 		'Lifetime Site Contributors',

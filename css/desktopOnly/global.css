@@ -1322,6 +1322,10 @@ input[type=submit].gameCreate:hover {
 	color: white;
 	min-width:70px;
 }
+
+.hof-self {
+	color: red;
+}
 /* End of section for Hall of Fame styling */
 
 /* Section for donations page styling */

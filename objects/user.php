@@ -593,13 +593,13 @@ class User {
 
 		if( strstr($type,'Moderator') )
 		{
-			if ($User->getTheme() == 'No')
+			if ($User->getTheme() == 'No' || $User->getTheme() == null)
 			{
 				$buf .= ' <img src="'.l_s('images/icons/mod.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
 			}
 			else
 			{
-				$buf .= ' <img src="'.l_s('images/icons/mod-darkmode.jpg').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" style="height: 12px; width: 12px; border-radius: 6px;" />';
+				$buf .= ' <img src="'.l_s('images/icons/mod3.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
 			}
 		}
 				

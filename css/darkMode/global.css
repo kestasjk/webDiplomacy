@@ -429,13 +429,13 @@ a {
 	text-decoration:underline;
 }
 a:link {
-	color: rgba(255, 255, 255, 0.8)
+	color: rgba(175, 255, 175, 0.8)
 }
 a:visited {
-	color: rgba(255, 255, 255, 0.8)
+	color: rgba(175, 255, 175, 0.8)
 }
 a:active {
-	color: rgba(255, 255, 255, 0.8)
+	color: rgba(175, 255, 175, 0.8)
 }
 a:hover {
 	color: #009902 ! important;
@@ -484,6 +484,7 @@ a.light {
 #header-welcome a {
 	font-weight:normal !important;
 	text-decoration:none !important;
+	color: rgba(255, 255, 255, 0.8);
 }
 
 #header-goto {
@@ -596,7 +597,7 @@ a.light {
 	background-color: #0b6a0b;
 	font-size: 0;
 	height: 5px;
-	border-top: 1px solid #000;
+	border-top: 1px solid #0b6a0b;
 	border-bottom: 1px solid #000;
 	margin-bottom:5px;
 }
@@ -1106,12 +1107,13 @@ select option {
 
 /* Modal Content */
 .modal-content {
-  background-color: #fefefe;
+  background-color: #5e6368;
+  color: rgba(255, 255, 255, 0.8);
   margin: auto;
   padding: 10px;
   border: 1px solid #888;
-	width: 80%;
-	max-width: 760px;
+  width: 80%;
+  max-width: 760px;
 }
 
 /* The Close Button */
@@ -1259,8 +1261,8 @@ select option {
 	padding: 6px;
 }
 
-.datc tr:nth-child(even){background-color: #f2f2f2; word-break: break-word;}
-.datc tr:nth-child(odd){background-color: #ffffff; word-break: break-word;}
+.datc tr:nth-child(even){background-color: #555; word-break: break-word;}
+.datc tr:nth-child(odd){background-color: #777; word-break: break-word;}
 
 .datc th {
 	padding-top: 12px;
@@ -1464,6 +1466,11 @@ input[type=submit].contactUs {
 input[type=submit].contactUs:hover {
   background-color: #45a049;
 }
+
+.contact-us-desc {
+	color: rgb(255, 153, 153);
+	font-weight: 900;
+}
 /* End of section for contactUsDirect page styling */
 
 /* Section for intro page */
@@ -1587,7 +1594,7 @@ input[type=text].settings, input[type=password].settings, textarea.settings, sel
 }
 
 .credits-title {
-	background-color: #4CAF50;
+	background-color: #006c00;
 	color: white;
 	padding: 10px;
 	border: none;
@@ -1602,7 +1609,7 @@ input[type=text].settings, input[type=password].settings, textarea.settings, sel
 	border-radius: 7px;
 	padding: 10px;
 	overflow: hidden;
-	background-color: #f1f1f1;
+	background-color: #555;
 	font-size: 14px;
 	margin: 0 0 15px 0 !important;
 }
@@ -1934,6 +1941,14 @@ ul.advancedSearch {
 
 form.safeForm {
 	background-color: #5f6368;
+}
+
+.orderDropDown {
+	background-color: #757b81 !important;
+}
+
+.hof-self {
+	color: #ff7272 !important
 }
 
 /* end of dark mode corrections */

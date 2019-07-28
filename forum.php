@@ -461,8 +461,7 @@ while( $message = $DB->tabl_hash($tabl) )
 			<strong><em>'.libTime::text($message['timeSent']).'</em></strong>'.$muteLink.'<br />
 			'.$User->likeMessageToggleLink($message['id'],$message['fromUserID']).libHTML::likeCount($message['likeCount']).
 		'</div>';
-	
-	
+
 	print '<div class="message-subject">';
 
 	print libHTML::forumMessage($message['id'],$message['latestReplySent']);

@@ -15,7 +15,7 @@ Occupation bars and country text colors need to be defined here.
 	color: rgba(255, 255, 255, 0.8) ! important;
 }
 .variantClassic .country1 {
-	color: rgb(226, 165, 212) ! important;
+	color: rgb(243, 198, 232) ! important;
 }
 .variantClassic .country2 {
 	color: rgb(117, 165, 255) ! important;
@@ -24,7 +24,7 @@ Occupation bars and country text colors need to be defined here.
 	color: rgb(50, 168, 109) ! important;
 }
 .variantClassic .country4 {
-	color: rgb(216, 122, 0) ! important;
+	color: rgb(202, 172, 133) ! important;
 }
 .variantClassic .country5 {
 	color: rgb(232, 107, 107) ! important;
@@ -33,7 +33,7 @@ Occupation bars and country text colors need to be defined here.
 	color: rgb(212, 214, 79) ! important;
 }
 .variantClassic .country7 {
-	color: rgb(173, 108, 196) ! important;
+	color: rgb(213, 156, 234) ! important;
 }
 
 .variantClassic .occupationBar1 {
