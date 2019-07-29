@@ -121,6 +121,16 @@ td.homeGameNotices .homeForumSubject {
 	color: rgba(255, 255, 255, 0.8);;
 }
 
+/* dark mode only */
+
+.forum-preview-span {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.home-forum-latest {
+	color: rgba(255, 255, 255, 0.8);
+}
+
 @media only screen and (max-width: 800px) {
 	table.homeTable {
 		table-layout: fixed;

@@ -32,9 +32,9 @@ class ClassicChaosVariant_Chatbox extends Chatbox {
 		for($i=0; $i<count($messages); $i++)
 			if( $messages[$i]['fromCountryID']!=0)
 				if (!isset($Member) || $Member->countryID != $messages[$i]['fromCountryID'])
-					$messages[$i]['message'] = '[<strong>'.$this->countryName($messages[$i]['fromCountryID']).'</strong>]<span style="color: black;">:'.$messages[$i]['message'];
+					$messages[$i]['message'] = '[<strong>'.$this->countryName($messages[$i]['fromCountryID']).'</strong>]<span class="chaos-chatbox">:'.$messages[$i]['message'];
 				else
-					$messages[$i]['message'] = '[<strong>You</strong>]<span style="color: black;">:'.$messages[$i]['message'];
+					$messages[$i]['message'] = '[<strong>You</strong>]<span class="chaos-chatbox">:'.$messages[$i]['message'];
 
 		return parent::renderMessages($msgCountryID, $messages);
 	}

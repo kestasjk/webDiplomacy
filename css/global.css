@@ -918,6 +918,11 @@ div.chatbox {
 div.chatbox td {
 	overflow:hidden;
 }
+
+span.chaos-chatbox {
+	color: black;
+}
+
 .chatboxMembersList {
 	font-size:12px;
 	text-align:center;
