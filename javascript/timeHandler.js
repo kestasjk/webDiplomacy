@@ -158,7 +158,7 @@ function updateTimers() {
 		var secondsRemaining = givenTime - timeFrom;
 
 		if( secondsRemaining < 300 )
-			c.setStyle({'color': '#a00'});
+			c.setStyle({'color': '#f35f64'});
 		
 		c.update(remainingText(secondsRemaining));
 		
