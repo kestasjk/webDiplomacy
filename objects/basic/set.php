@@ -53,7 +53,6 @@ class setMemberOrderStatus extends set {
 	 * @return unknown_type
 	 */
 	function icon() {
-		global $User;
 		if( $this->None )
 			return '- ';
 		elseif( $this->Ready )

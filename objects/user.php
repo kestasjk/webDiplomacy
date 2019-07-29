@@ -1300,14 +1300,21 @@ class User {
 	}
 
 	/* 
-	 * Determine style theme user is using
+	 * Get style theme user is using, 'No' = light mode; 'Yes' = dark mode. If the user has not accessed their user settings, this will default to light mode.
 	 */
 	public function getTheme()
 	{
 		global $DB;
 
 		list($variable) = $DB->sql_row("SELECT darkMode FROM wD_UserOptions WHERE userID=".$this->id);
-		return $variable;
+		if ($variable == null) 
+		{
+			return 'No';
+		}
+		else
+		{
+			return $variable;
+		}
 	}
 }
 ?>

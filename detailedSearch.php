@@ -503,6 +503,7 @@ print '</br></br>';
 
 if ($tab == 'UserSearch')
 {
+	global $User;
 	if ($type != 'none' || $username != '')
 	{
 		$sql = "SELECT u.id, u.username, u.email, u.timeJoined, u.gameCount, u.reliabilityRating, u.points, u.type
@@ -685,7 +686,6 @@ if ($tab == 'UserSearch')
 		if ($seeBronze=='checked') { print '<th class= "advancedSearch">IsBronze</th>'; }
 
 		print "</tr>";
-		global $User;
 		foreach ($UsersData as $values)
 		{
 			print '<TR><TD class= "advancedSearch"><a href="profile.php?userID='.$values->userID.'">'.$values->userID.'</a>';
