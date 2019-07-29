@@ -921,6 +921,11 @@ div.chatbox {
 div.chatbox td {
 	overflow:hidden;
 }
+
+span.chaos-chatbox {
+	color: rgba(255, 255, 255, 0.8);
+}
+
 TABLE.chatbox > tbody > tr.membersList {
 	background-color: #5f6368;
 }
