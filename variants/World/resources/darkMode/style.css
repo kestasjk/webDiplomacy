@@ -1,7 +1,7 @@
 @CHARSET "ISO-8859-1";
 
 .variantWorld .country0 { color: rgba(255, 255, 255, 0.8) ! important; }  /*  Global             */
-.variantWorld .country1 { color: rgb(230, 28, 13) ! important; }  /*  Argentina          */
+.variantWorld .country1 { color: rgb(255, 187, 182) ! important; }  /*  Argentina          */
 .variantWorld .country2 { color: #04cc04 ! important; }  /*  Brazil             */
 .variantWorld .country3 { color: rgb(255, 10, 255) ! important; }  /*  China              */
 .variantWorld .country4 { color: rgb(35, 142, 245) ! important; }  /*  Europe             */
