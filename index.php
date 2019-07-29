@@ -477,7 +477,6 @@ class libHome
 			{
 				$buf .= '<div class="homeForumPost homeForumPostAlt'.libHTML::alternate().' userID'.$post['userID'].'">
 
-
 					<div class="homeForumPostTime">'.libTime::text($post['timeSent']).' '.$post['iconMessage'].'</div>
 					<a href="profile.php?userID='.$post['userID'].'" class="light">'.$post['username'].'</a>
 						'.' ('.$post['points'].libHTML::points().

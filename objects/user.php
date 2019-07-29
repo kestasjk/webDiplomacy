@@ -236,6 +236,13 @@ class User {
 	public $cdCount, $nmrCount, $cdTakenCount, $phaseCount, $gameCount, $reliabilityRating;
 
 	/**
+	 * darkMode
+	 * Choose css style theme
+	 * @var 'yes' or 'no'
+	 */
+	public $darkMode;
+
+	/**
 	 * Give this user a supplement of points
 	 *
 	 * @param $userID The user ID
@@ -364,7 +371,7 @@ class User {
 		$SQLVars = array();
 
 		$available = array('username'=>'', 'password'=>'', 'passwordcheck'=>'', 'email'=>'',
-					'hideEmail'=>'','showEmail'=>'', 'homepage'=>'','comment'=>'');
+					'hideEmail'=>'','showEmail'=>'', 'homepage'=>'','comment'=>'', 'darkMode'=>'');
 
 		$userForm = array();
 
@@ -431,6 +438,14 @@ class User {
 			$userForm['comment'] = $DB->msg_escape($userForm['comment']);
 
 			$SQLVars['comment'] = $userForm['comment'];
+		}
+
+		if(isset($userForm['darkMode']))
+		{
+			if ($userForm['darkMode'] == "Yes")
+				$SQLVars['darkMode'] = "Yes";
+			else
+				$SQLVars['darkMode'] = "No";
 		}
 
 		return $SQLVars;
@@ -572,11 +587,22 @@ class User {
 
 			$type = implode(',',$types);
 		}
-
 		$buf='';
 
+		global $User;
+
 		if( strstr($type,'Moderator') )
-			$buf .= ' <img src="'.l_s('images/icons/mod.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
+		{
+			if ($User->getTheme() == 'No' || $User->getTheme() == null)
+			{
+				$buf .= ' <img src="'.l_s('images/icons/mod.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
+			}
+			else
+			{
+				$buf .= ' <img src="'.l_s('images/icons/mod3.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
+			}
+		}
+				
 		elseif(strstr($type,'Banned') )
 			$buf .= ' <img src="'.l_s('images/icons/cross.png').'" alt="X" title="'.l_t('Banned').'" />';
 
@@ -1271,6 +1297,24 @@ class User {
 		list($tempBan) = $DB->sql_row("SELECT u.tempBan FROM wD_Users u  WHERE u.id = ".$this->id);
 
 		return $tempBan > time();
+	}
+
+	/* 
+	 * Get style theme user is using, 'No' = light mode; 'Yes' = dark mode. If the user has not accessed their user settings, this will default to light mode.
+	 */
+	public function getTheme()
+	{
+		global $DB;
+
+		list($variable) = $DB->sql_row("SELECT darkMode FROM wD_UserOptions WHERE userID=".$this->id);
+		if ($variable == null) 
+		{
+			return 'No';
+		}
+		else
+		{
+			return $variable;
+		}
 	}
 }
 ?>

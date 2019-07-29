@@ -1,0 +1,38 @@
+@CHARSET "ISO-8859-1";
+
+.variantWorld .country0 { color: rgba(255, 255, 255, 0.8) ! important; }  /*  Global             */
+.variantWorld .country1 { color: rgb(230, 28, 13) ! important; }  /*  Argentina          */
+.variantWorld .country2 { color: #04cc04 ! important; }  /*  Brazil             */
+.variantWorld .country3 { color: rgb(255, 10, 255) ! important; }  /*  China              */
+.variantWorld .country4 { color: rgb(35, 142, 245) ! important; }  /*  Europe             */
+.variantWorld .country5 { color: rgb(187, 220, 255) ! important; }  /*  Frozen-Antarctica  */
+.variantWorld .country6 { color: rgb(243, 147, 145) ! important; }  /*  Ghana              */
+.variantWorld .country7 { color: rgb(0, 176, 176) ! important; }  /*  India              */
+.variantWorld .country8 { color: rgb(253, 253, 163) ! important; }  /*  Kenya              */
+.variantWorld .country9 { color: rgb(156, 0, 156) ! important; }  /*  Libya              */
+.variantWorld .country10 { color: rgb(160, 160, 255) ! important; } /*  Near-East          */
+.variantWorld .country11 { color: rgb(67, 160, 115) ! important; } /*  Pacific-Russia     */
+.variantWorld .country12 { color: rgb(184, 204, 123) ! important; } /*  Quebec             */
+.variantWorld .country13 { color: rgba(255, 255, 255, 0.8) ! important; } /*  Russia             */
+.variantWorld .country14 { color: #00ccc8 ! important; } /*  South-Africa       */
+.variantWorld .country15 { color: rgb(255, 88, 60) ! important; } /*  USA                */
+.variantWorld .country16 { color: rgb(213, 226, 59) ! important; } /*  Western-Canada     */
+.variantWorld .country17 { color: rgb(181, 181, 181) ! important; } /*  Oz                 */
+
+.variantWorld .occupationBar1 { background-color: #fc0204; }  /*  Argentina          */
+.variantWorld .occupationBar2 { background-color: #04fc04; }  /*  Brazil             */
+.variantWorld .occupationBar3 { background-color: #fc02fc; }  /*  China              */
+.variantWorld .occupationBar4 { background-color: #0482fc; }  /*  Europe             */
+.variantWorld .occupationBar5 { background-color: #044284; }  /*  Frozen-Antarctica  */
+.variantWorld .occupationBar6 { background-color: #fc8284; }  /*  Ghana              */
+.variantWorld .occupationBar7 { background-color: #048284; }  /*  India              */
+.variantWorld .occupationBar8 { background-color: #646204; }  /*  Kenya              */
+.variantWorld .occupationBar9 { background-color: #840284; }  /*  Libya              */
+.variantWorld .occupationBar10 { background-color: #c4c2fc; } /*  Near-East          */
+.variantWorld .occupationBar11 { background-color: #246244; } /*  Pacific-Russia     */
+.variantWorld .occupationBar12 { background-color: #A4C244; } /*  Quebec             */
+.variantWorld .occupationBar13 { background-color: #000000; } /*  Russia             */
+.variantWorld .occupationBar14 { background-color: #04fefc; } /*  South-Africa       */
+.variantWorld .occupationBar15 { background-color: #fc6244; } /*  USA                */
+.variantWorld .occupationBar16 { background-color: #dcde04; } /*  Western-Canada     */
+.variantWorld .occupationBar17 { background-color: #6a6868; } /*  Oz                 */

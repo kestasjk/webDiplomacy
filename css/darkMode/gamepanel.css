@@ -9,7 +9,7 @@
 	border-radius: 7px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	overflow: hidden;
-	background-color: #f1f1f1;
+	background-color: #4c4d4e;
 	margin-top:10px !important; 
 }
 .memberVotes {
@@ -27,17 +27,23 @@
 .gamePanel .bar {
 	border:0;
 }
+TABLE.orders > tbody > tr.barAlt1 {
+	background-color: #555;
+}
+TABLE.orders > tbody > tr.barAlt2 {
+	background-color: #5555558a;
+}
 .barAlt1, .barAltLight1 {
-	background-color:#f5f5f5 !important;
+	/*background-color:#f5f5f5 !important;*/
 }
 .barAlt2, .barAltLight2 {
-	background-color:#f0f0f0 !important;
+	/*background-color:#f0f0f0 !important;*/
 }
 .homeMembersTable .barAlt1 {
-	background-color:#eaeaea !important;
+	/*background-color:#eaeaea !important;*/
 }
 .homeMembersTable .barAlt2 {
-	background-color:#e5e5e5 !important;
+	/*background-color:#e5e5e5 !important;*/
 }
 .lastBar {
 	height:0;
@@ -64,13 +70,14 @@
 .titleBarRightSide {
 	float:right;
 	text-align:right;
+	color: rgba(255, 255, 255, 0.8);
 }
 .titleBarLeftSide {
 	float:left;
+	color: rgba(255, 255, 255, 0.8);
 }
 .gameName {
 	font-weight:bold;
-	color: #009902;
 }
 .gamePanel .gameName {
 	font-size:16px;
@@ -119,6 +126,7 @@ div.memberBoardHeader {
 .gameNoticeBar {
 	text-align:center;
 	font-weight:bold;
+	color: rgba(255, 255, 255, 0.8);
 }
 
 /* ---- occupationBar ---- */
@@ -152,7 +160,7 @@ div.memberBoardHeader {
 
 /* ---- membersList ---- */
 .membersList {
-	color: #444;
+	/*color: #444;*/
 }
 .boardHeader .membersList, .gamePanelHome .membersList {
 	margin:0;
@@ -177,18 +185,22 @@ div.memberBoardHeader {
 .memberRightSide {
 	width:85%;
 	padding-right:3px;
+	color: rgba(255, 255, 255, 0.8);
 }
 .memberGameDetail {
 	float:right;
 	font-style:italic;
 	text-align:right;
+	color: rgba(255, 255, 255, 0.8);
 }
 .memberUserDetail {
 	float:left;
+	color: rgba(255, 255, 255, 0.8);
 }
 .memberLeftSide {
 	text-align:right;
 	width:auto;
+	color: rgba(255, 255, 255, 0.8);
 }
 .membersFullTable .memberLeftSide {
 	border-right: 1px solid #c1c1c1;
@@ -198,6 +210,7 @@ div.memberBoardHeader {
 }
 .memberName {
 	white-space: nowrap;
+	color: rgba(255, 255, 255, 0.8);
 }
 .memberStatus {
 	font-style:italic;
@@ -205,7 +218,6 @@ div.memberBoardHeader {
 .memberStatus em {
 	font-weight:bold;
 	font-style:italic;
-	color:#444;
 }
 .memberStatusFade {
 	color:#777;
@@ -242,10 +254,10 @@ div.memberBoardHeader {
 	background-color:#ddddee;
 }
 .memberAlternate1 {
-	background-color:#eaeaea;
+	background-color:#5e6368;
 }
 .memberAlternate2 {
-	background-color:#eaeaea;
+	background-color:#5e6368;
 }
 .memberPreGameList {
 	text-align:center;
@@ -330,6 +342,7 @@ div.memberBoardHeader {
 	table-layout:fixed;
 	margin:0;
 	padding:0;
+	color: rgba(255, 255, 255, 0.8);
 }
 .gamePanelHome .homeMembersTable td {
 	margin:0;
@@ -337,6 +350,9 @@ div.memberBoardHeader {
 }
 
 /* ---- .archiveBar, .joinBar, .openBar ---- */
+.archiveBar {
+	color: rgba(255, 255, 255, 0.8);
+}
 .enterBar em {
 	font-style:normal;
 	font-weight:bold;
@@ -344,6 +360,7 @@ div.memberBoardHeader {
 .enterBarJoin {
 	float:right;
 	text-align:right;
+	color: rgba(255, 255, 255, 0.8);
 }
 .enterBarOpen {
 	float:left;
@@ -363,11 +380,11 @@ div.memberBoardHeader {
 	font-size:11px;
 }
 .panelAnonOnlyFlag, .panelTempBanned {
-	background-color:#f5f5f5  !important;
 	text-align: center !important;
+	color: rgba(255, 255, 255, 0.8);
 }
 .memberVotePanel {
-	border-top: 1px solid #cecece!important;
+	/*border-top: 1px solid #cecece!important;*/
 	padding:0 5%;
 }
 
