@@ -162,7 +162,12 @@ div.postboxadvice {
 	font-size:13px;
 	text-align:center;
 	font-style: italic;
-	color:#777
+}
+
+.new-subject {
+	background-color: #757b81;
+	color: rgba(255, 255, 255, 0.8);
+	border: 1px solid #ccc;
 }
 
 div.clear {
@@ -839,7 +844,7 @@ div.gamelistings-tabs a:hover, div.gamelistings-tabs a.current:hover {
 }
 .message-subject {
 	font-size:15px;
-	color: #009902;
+	color: rgba(255, 255, 255, 0.8);
 	overflow:hidden;
 }
 .message-body {
@@ -1863,9 +1868,7 @@ ul.modTools {
 input[type="text"].advancedSearch, input[type="password"].advancedSearch, textarea.advancedSearch, select.advancedSearch {
 	font-size: 12px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	background-color: #ffffff !important;
 	border: 1px solid #c1c1c1;
-	color:#000000;
 }
 
 .advancedSearch td, .advancedSearch th {
