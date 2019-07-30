@@ -605,8 +605,8 @@ class libHome
 
 					$buf .= '<div style="margin-left:3px; margin-right:3px; font-size:90%">';
 					$buf .= '<div style="float:right">';
-					$buf .= l_t('<span class="forum-preview-span">%s</span> replies, ','<strong>'.($t['topic_posts_approved']-1).'</strong>');
-					$buf .= .l_t('<span class="forum-preview-span">%s</span>views','<strong style=\'content: "\f14c"\'>'.($t['topic_views']-1).'</strong>');
+					$buf .= l_t('<span class="forum-preview-span">%s</span> replies','<strong>'.($t['topic_posts_approved']-1).'</strong>');
+					$buf .= ', '.l_t('<span class="forum-preview-span">%s</span> views','<strong style=\'content: "\f14c"\'>'.($t['topic_views']-1).'</strong>');
 					$buf .= '</div>';
 					$buf .= '<span class="forum-preview-span">&raquo;
 					<a href="'.$urlForum.'">'.$t['forum_name'].'</a></span>
