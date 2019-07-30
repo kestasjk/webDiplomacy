@@ -698,7 +698,11 @@ div.forum {
 	margin-top: 5px;
 	font-size: 11px;
 	text-align: center;
-	color: rgb(87, 87, 87);
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.copyright {
+	color: rgba(255, 255, 255, 0.8);
 }
 
 #chatboxtabs {
@@ -2017,11 +2021,15 @@ span.crumb::before {
 	border-color: #aaa !important;
 }
 
-.fa-cog, .fa-search, p > .responsive-center, p > .time, ul.topiclist > li {
+.fa-cog, .fa-search, p.responsive-center, p.time, ul.topiclist > li {
 	color: rgba(255, 255, 255, 0.8) !important;
 }
 
-.forabg, .body-blok {
+.fa-cog:hover, .fa-search:hover {
+	color: #006c00 !important;
+}
+
+ul.forums, .body-blok {
 	background-color: #777 !important;
 }
 
@@ -2029,7 +2037,7 @@ span.crumb::before {
 	background-color: #006c00;
 }
 
-li.header > dd, .list-inner > a {
+li.header dd, li.header dt, .list-inner > a {
 	color: rgba(175, 255, 175, 0.8) !important;
 }
 
@@ -2048,6 +2056,52 @@ li.row:hover {
 
 .statistics > h3 {
 	color: rgba(175, 255, 175, 0.8);
+}
+
+/* subforum */
+
+.page-body > .rules {
+	background-color: #aaa !important;
+	color: #6f001b !important;
+}
+
+.postlink, .postlink:visited {
+	color: rgba(175, 255, 175, 0.8) !important;
+	border-bottom-color: none;
+}
+
+.action-bar > .button, .pagination > li > a, li.page-jump > a > i, .forumbg {
+	background-color: #006c00 !important;
+}
+
+.fa-pencil, .action-bar > .button, a.mark::after, li.ellipsis, .pagination > li > a, li.page-jump > a > i {
+	color: rgba(255, 255, 255, 0.8) !important;
+}
+
+#search-keywords {
+	background-color: #aaa;
+	color: rgba(0, 0, 0, 0.8);
+}
+
+.pagination > li.active > span {
+	background-color: rgba(255, 255, 255, 0.8) !important;
+	color: #006c00 !important;
+}
+
+li.bg1 {
+	background-color: #777 !important;
+}
+
+li.bg2 {
+	background-color: #555 !important;
+}
+
+.reported {
+	background-color: #6f001e !important;
+}
+
+div.stat-block > p {
+	color: rgba(255, 255, 255, 0.8);
 }
 
 /* end of dark mode corrections */
