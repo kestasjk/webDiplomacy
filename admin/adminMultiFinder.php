@@ -818,30 +818,61 @@ class adminMultiCheck
 	}
 	
 	public function printUserTimeprint() {
-		print '<style>
-		.timeprintData table {
-			border-top: 1px solid #aaa;
-			border-left: 1px solid #aaa;
+		global $User;
+		if ($User->getTheme() == 'No')
+		{
+			print '<style>
+			.timeprintData table {
+				border-top: 1px solid #aaa;
+				border-left: 1px solid #aaa;
+			}
+			.timeprintData td {
+				border-bottom: 1px solid #aaa;
+				border-right: 1px solid #aaa;
+				margin:0;
+				font-size:90%;
+				padding:0;
+				text-align:center;
+				background:#eee;
+				font-weight:bold;
+				color: #666;
+			}
+			.timeprintData th {
+				font-weight:normal;
+				border-bottom: 1px solid #aaa;
+				border-right: 1px solid #aaa;
+				background:#ddd;
+				text-align:center;
+			}
+			</style>';
 		}
-		.timeprintData td {
-			border-bottom: 1px solid #aaa;
-			border-right: 1px solid #aaa;
-			margin:0;
-			font-size:90%;
-			padding:0;
-			text-align:center;
-			background:#eee;
-			font-weight:bold;
-			color: #666;
+		else
+		{
+			print '<style>
+			.timeprintData table {
+				border-top: 1px solid rgba(255, 255, 255, 0.8);
+				border-left: 1px solid rgba(255, 255, 255, 0.8);
+			}
+			.timeprintData td {
+				border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+				border-right: 1px solid rgba(255, 255, 255, 0.8);
+				margin:0;
+				font-size:90%;
+				padding:0;
+				text-align:center;
+				background:#777;
+				font-weight:bold;
+				color: rgba(255, 255, 255, 0.8);
+			}
+			.timeprintData th {
+				font-weight:normal;
+				border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+				border-right: 1px solid rgba(255, 255, 255, 0.8);
+				background:#555;
+				text-align:center;
+			}
+			</style>';
 		}
-		.timeprintData th {
-			font-weight:normal;
-			border-bottom: 1px solid #aaa;
-			border-right: 1px solid #aaa;
-			background:#ddd;
-			text-align:center;
-		}
-		</style>';
 		
 		print '<div class="timeprintData" style="font-size:80%"><h3>'.l_t('Timeprint data:').'</h3>';
 		

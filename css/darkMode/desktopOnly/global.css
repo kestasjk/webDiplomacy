@@ -1713,9 +1713,9 @@ input[type="text"].modTools, input[type="password"].modTools, textarea.modTools,
 	color: rgba(255, 255, 255, 0.8);
 }
 
-.modTools tr:first-child {
+/*.modTools tr:first-child {
 	background-color: green !important;
-}
+}*/
 
 .modTools tr:nth-child(even){
 	background-color: #555; 
@@ -1881,6 +1881,11 @@ input[type="text"].advancedSearch, input[type="password"].advancedSearch, textar
 	padding: 6px;
 }
 
+td.advancedSearch > input {
+	background-color: #202125;
+	color: rgba(255, 255, 255, 0.8);
+}
+
 .advancedSearch tr:nth-child(even){background-color: #3a4042; word-break: break-word;}
 .advancedSearch tr:nth-child(odd){background-color: #202125; word-break: break-word;}
 
@@ -1968,8 +1973,84 @@ form.safeForm {
 	color: #ff7272 !important
 }
 
-/* end of dark mode corrections */
+/* *** new forum dark mode *** */
 
+/* forum toolbar */
+
+.navbar {
+	background-color: #3b4042;
+}
+
+span.crumb::before {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+/* main body */
+
+.wrap {
+	background-color: #3b4042;
+}
+
+.dropdown .pointer-inner {
+	border-color: #3b4042 transparent;
+}
+
+.dropdown .dropdown-contents {
+	background-color: #3b4042;
+	border-color: rgba(255, 255, 255, 0.8);
+	box-shadow: 1px 3px 5px rgba(255, 255, 255, 0.8);
+}
+
+#keywords {
+	background-color: #aaa;
+	color: rgba(0, 0, 0, 0.8);
+}
+
+.search-header {
+	border: 0px;
+}
+
+.button-search, .button-search-end {
+	background-image: none !important;
+	box-shadow: none !important;
+	background-color: #006c00;
+	border-color: #aaa !important;
+}
+
+.fa-cog, .fa-search, p > .responsive-center, p > .time, ul.topiclist > li {
+	color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.forabg, .body-blok {
+	background-color: #777 !important;
+}
+
+.forabg > .inner > ul.topiclist {
+	background-color: #006c00;
+}
+
+li.header > dd, .list-inner > a {
+	color: rgba(175, 255, 175, 0.8) !important;
+}
+
+li.row:hover {
+	background-color: #006c00 !important;
+}
+
+.body-blok-h3 > h3 {
+	background-color: #006c00 !important;
+	color: rgba(175, 255, 175, 0.8) !important;
+}
+
+.body-blok-info > div > p, .statistics > p {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.statistics > h3 {
+	color: rgba(175, 255, 175, 0.8);
+}
+
+/* end of dark mode corrections */
 
 
 span.orderNotice {
