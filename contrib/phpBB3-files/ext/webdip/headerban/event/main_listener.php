@@ -95,12 +95,24 @@ class main_listener implements EventSubscriberInterface
     /**
      * @param \phpbb\event\data $event The variant CSS
      */
-	public function variantCSS()
+	public function variantCSS($finalTheme)
 	{
-		$variantCSS=array();
-		foreach(\Config::$variants as $variantName)
-			$variantCSS[] = '<link rel="stylesheet" href="'.$this->WEBDIPPATH.('variants/'.$variantName.'/resources/style.css').'" type="text/css" />';
-		return implode("\n",$variantCSS);
+		if ($finalTheme == 'dark')
+		{
+			$variantCSS=array();
+			foreach(\Config::$variants as $variantName)
+				$variantCSS[] = '<link rel="stylesheet" href="'.$this->WEBDIPPATH.('variants/'.$variantName.'/resources/darkMode/style.css').'" type="text/css" />';
+			//$variantCSS[] = '<link rel="stylesheet" href="'.$this->WEBDIPPATH.('/css/darkMode/global.css').'" type="text/css" />';
+			return implode("\n",$variantCSS);
+		}
+		else 
+		{
+			$variantCSS=array();
+			foreach(\Config::$variants as $variantName)
+				$variantCSS[] = '<link rel="stylesheet" href="'.$this->WEBDIPPATH.('variants/'.$variantName.'/resources/style.css').'" type="text/css" />';
+			return implode("\n",$variantCSS);
+		}
+		
 	}
     /**
      * @param \phpbb\event\data $event The event object
@@ -122,15 +134,33 @@ class main_listener implements EventSubscriberInterface
 		{
 			$wdId = (int)$this->user->data['webdip_user_id'];
 			
+			$theme = $this->db->sql_query("SELECT case when darkMode is null or darkMode = 'No' then 'light' else 'dark' end as theme FROM wD_UserOptions WHERE userID =".$wdId);
+			while ($row = $this->db->sql_fetchrow($theme))
+			{
+				$finalTheme = $row['theme'];
+			}
+			$this->db->sql_freeresult($theme);
+			
 			$this->fetchMisc();
 			$this->fetchAndCheckUser($wdId);
 			$this->fetchGameNotices($wdId);
 			
-			$this->template->assign_vars(array(
+			if ($finalTheme == 'dark')
+			{
+				$this->template->assign_vars(array(
+				'U_WD_WEBDIPPOINTS' => '(' . $this->points . ' <img src="' . $this->WEBDIPPATH . 'images/icons/points.png" alt="D" />)'.'<link rel="stylesheet" href="'.$this->WEBDIPPATH.('/css/darkMode/global.css').'" type="text/css" />',
+				'U_WD_GAMENOTIFYBLOCK' => $this->gameNotifyBlock(),
+				'U_WD_NOTICEBLOCK' => $this->noticeBlock() . $this->variantCSS($finalTheme)
+				));
+			}
+			else
+			{
+				$this->template->assign_vars(array(
 				'U_WD_WEBDIPPOINTS' => '(' . $this->points . ' <img src="' . $this->WEBDIPPATH . 'images/icons/points.png" alt="D" />)',
 				'U_WD_GAMENOTIFYBLOCK' => $this->gameNotifyBlock(),
-				'U_WD_NOTICEBLOCK' => $this->noticeBlock() . $this->variantCSS()
+				'U_WD_NOTICEBLOCK' => $this->noticeBlock() . $this->variantCSS($finalTheme)
 			));
+			}			
 		}
 		else
 		{
