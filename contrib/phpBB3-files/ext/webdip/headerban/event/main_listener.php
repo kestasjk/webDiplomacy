@@ -112,7 +112,6 @@ class main_listener implements EventSubscriberInterface
 				$variantCSS[] = '<link rel="stylesheet" href="'.$this->WEBDIPPATH.('variants/'.$variantName.'/resources/style.css').'" type="text/css" />';
 			return implode("\n",$variantCSS);
 		}
-		
 	}
     /**
      * @param \phpbb\event\data $event The event object
@@ -123,8 +122,8 @@ class main_listener implements EventSubscriberInterface
 		{
 			$this->template->assign_vars(array(
 				'U_WD_WEBDIPPOINTS' => '',
-				'U_WD_GAMENOTIFYBLOCK' => '',
-				'U_WD_NOTICEBLOCK' => ''
+				'U_WD_NOTICEBLOCK' => '',
+				'U_WD_GAMENOTIFYBLOCK' => ''
 			));
 			
 			return;
@@ -149,17 +148,17 @@ class main_listener implements EventSubscriberInterface
 			{
 				$this->template->assign_vars(array(
 				'U_WD_WEBDIPPOINTS' => '(' . $this->points . ' <img src="' . $this->WEBDIPPATH . 'images/icons/points.png" alt="D" />)'.'<link rel="stylesheet" href="'.$this->WEBDIPPATH.('/css/darkMode/global.css').'" type="text/css" />',
-				'U_WD_GAMENOTIFYBLOCK' => $this->gameNotifyBlock(),
-				'U_WD_NOTICEBLOCK' => $this->noticeBlock() . $this->variantCSS($finalTheme)
+				'U_WD_NOTICEBLOCK' => $this->noticeBlock() . $this->variantCSS($finalTheme),
+				'U_WD_GAMENOTIFYBLOCK' => $this->gameNotifyBlock()
 				));
 			}
 			else
 			{
 				$this->template->assign_vars(array(
 				'U_WD_WEBDIPPOINTS' => '(' . $this->points . ' <img src="' . $this->WEBDIPPATH . 'images/icons/points.png" alt="D" />)',
-				'U_WD_GAMENOTIFYBLOCK' => $this->gameNotifyBlock(),
-				'U_WD_NOTICEBLOCK' => $this->noticeBlock() . $this->variantCSS($finalTheme)
-			));
+				'U_WD_NOTICEBLOCK' => $this->noticeBlock() . $this->variantCSS($finalTheme),
+				'U_WD_GAMENOTIFYBLOCK' => $this->gameNotifyBlock()
+				));
 			}			
 		}
 		else
@@ -222,23 +221,32 @@ class main_listener implements EventSubscriberInterface
 		foreach ( $this->gameBar as $notifyGame )
 		{
 			// Games that are finished should show as 'no orders'
-			if ( $notifyGame['phase'] != 'Finished') {
-				if( $notifyGame['orderStatus'] == 'None' ) {
+			if ( $notifyGame['phase'] != 'Finished') 
+			{
+				if( $notifyGame['orderStatus'] == 'None' ) 
+				{
 					$orderIcon = '';
-				} else {
+				} 
+				else 
+				{
 					$orderIcon = 'alert.png';
-					if( strpos($notifyGame['orderStatus'],'Saved')!==false ) {
+					if( strpos($notifyGame['orderStatus'],'Saved')!==false ) 
+					{
 						$orderIcon = 'alert_minor.png';
 					}
-					if( strpos($notifyGame['orderStatus'],'Completed')!==false ) {
+					if( strpos($notifyGame['orderStatus'],'Completed')!==false ) 
+					{
 						$orderIcon = 'tick_faded.png';
 					}
-					if( strpos($notifyGame['orderStatus'],'Ready')!==false ) {
+					if( strpos($notifyGame['orderStatus'],'Ready')!==false ) 
+					{
 						$orderIcon = '';
 					}
 				}
-			} else {
-					$orderIcon = '';
+			} 
+			else 
+			{
+				$orderIcon = '';
 			}
 
 			$gameNotifyBlock .= '<span class="variant'.\Config::$variants[$notifyGame['variantID']].'">'.
@@ -250,7 +258,8 @@ class main_listener implements EventSubscriberInterface
 
 			$gameNotifyBlock .= ' ';
 
-			if( strlen($orderIcon) > 0 ) {
+			if( strlen($orderIcon) > 0 ) 
+			{
 				$gameNotifyBlock .= '<img src="' . $this->WEBDIPPATH . ''.'images/icons/' . $orderIcon . '" />';
 			}
 				
