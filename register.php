@@ -52,7 +52,7 @@ if ( isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText']) && isset($_R
 {
 	try
 	{
-		// Validate and send e-mail
+		// Validate and send email
 		$imageToken = explode('|', $_COOKIE['imageToken'], 2);
 
 		if ( count($imageToken) != 2 )
@@ -71,7 +71,7 @@ if ( isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText']) && isset($_R
 		}
 
 
-		// The user's imageText is validated; he's not a robot. But does he have a real e-mail address?
+		// The user's imageText is validated; he's not a robot. But does he have a real email address?
 		$email = trim($DB->escape($_REQUEST['emailValidate']));
 
 		if( User::findEmail($email) )
@@ -82,7 +82,7 @@ if ( isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText']) && isset($_R
 			throw new Exception(l_t("A first check of this email is finding it invalid. Remember you need one to ".
 				"play, and it will not be spammed or released."));
 
-		// Prelim checks look okay, lets send the e-mail
+		// Prelim checks look okay, lets send the email
 		$Mailer->Send(array($email=>$email), l_t('Your new webDiplomacy account'),
 			l_t("Hello and welcome!")."<br><br>
 
@@ -123,7 +123,7 @@ elseif ( isset($_REQUEST['emailToken']) )
 
 		$page = 'userForm';
 
-		// The user's e-mail is authenticated; he's not a robot and he has a real e-mail address
+		// The user's email is authenticated; he's not a robot and he has a real email address
 		// Let him through to the form, or process his form if he has one
 		if ( isset($_REQUEST['userForm']) )
 		{
@@ -189,34 +189,34 @@ switch($page)
 	case 'emailSent':
 
 		print '<h3>'.l_t('Anti-bot Validation - Confirmed!').'</h3>';
-		print "<p>".l_t("Okay, now that we know you're a human we need to check that you have a real e-mail address.")."</p>";
+		print "<p>".l_t("Okay, now that we know you're a human we need to check that you have a real email address.")."</p>";
 
 		print '<div class="hr"></div>';
-		print '<h3>'.l_t('E-mail Validation').'</h3>';
-		print l_t("An e-mail has been sent to the address you provided (<strong>%s</strong>) ".
-			"with a link that you can click on to confirm that it's your real e-mail address, and then you're ".
+		print '<h3>'.l_t('Email Validation').'</h3>';
+		print l_t("An email has been sent to the address you provided (<strong>%s</strong>) ".
+			"with a link that you can click on to confirm that it's your real email address, and then you're ".
 			"ready to go!",htmlentities($_REQUEST['emailValidate']))."</p>";
 
-		print "<p>".l_t("The e-mail may take a couple of minutes to arrive; if it doesn't appear check your spam folder.")."</p>";
+		print "<p>".l_t("The email may take a couple of minutes to arrive; if it doesn't appear check your spam folder.")."</p>";
 
-		print '<p>'.l_t('If you have problems e-mail this server\'s admin at %s',Config::$adminEMail).'</p>';
+		print '<p>'.l_t('If you have problems email this server\'s admin at %s',Config::$adminEMail).'</p>';
 
 		break;
 
 	case 'emailTokenFailed':
-		print '<p>'.l_t('The e-mail token you provided was not accepted; please go back to the e-mail you were sent and '.
+		print '<p>'.l_t('The email token you provided was not accepted; please go back to the email you were sent and '.
 			'check that you visited the exact URL given.').'</p>';
-		print '<p>'.l_t('If the e-mail did not arrive check your spam box. If you are sure you haven\'t received it and that '.
+		print '<p>'.l_t('If the email did not arrive check your spam box. If you are sure you haven\'t received it and that '.
 			'you have waited long enough for it try going through the registration process from the start.').'<br /><br />
 
-			'.l_t('If it still fails e-mail this server\'s admin at %s',Config::$adminEMail).'</p>';
+			'.l_t('If it still fails email this server\'s admin at %s',Config::$adminEMail).'</p>';
 		break;
 
 	case 'firstUserForm':
 
-		print '<h3 style = "margin-left: 0px;">'.l_t('E-mail address confirmed!').'</h3>';
+		print '<h3 style = "margin-left: 0px;">'.l_t('Email address confirmed!').'</h3>';
 
-		print "<p>".l_t("Thank you for verifying your e-mail address!</p>
+		print "<p>".l_t("Thank you for verifying your email address!</p>
 			<p>Enter the username, password, and any of the optional settings you want into the screen below to
 			complete the registration process.")." </br></br><font color='red'>Your username is visible to other members so please keep it appropiate and 
 			and avoid using your full name if you are concerned about privacy.</font></p>";
