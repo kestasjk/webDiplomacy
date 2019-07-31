@@ -50,6 +50,6 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 <div class="hr"></div>
 
 <p class="notice">
-	<input type="submit" class="form-submit" value="Validate me">
+	<input type="submit" class="green-Submit" value="Validate me">
 </p>
 </form>
