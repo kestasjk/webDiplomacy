@@ -2005,9 +2005,13 @@ span.crumb::before {
 	box-shadow: 1px 3px 5px rgba(255, 255, 255, 0.8);
 }
 
-#keywords {
-	background-color: #aaa;
+#keywords, input.inputbox.tiny, input.button2 {
+	background-color: #aaa !important;
 	color: rgba(0, 0, 0, 0.8);
+}
+
+input.button2, .button-search, .button-search-end {
+	background-image: none !important;
 }
 
 .search-header {
@@ -2015,7 +2019,6 @@ span.crumb::before {
 }
 
 .button-search, .button-search-end {
-	background-image: none !important;
 	box-shadow: none !important;
 	background-color: #006c00;
 	border-color: #aaa !important;
@@ -2037,17 +2040,12 @@ ul.forums, .body-blok {
 	background-color: #006c00;
 }
 
-li.header dd, li.header dt, .list-inner > a {
+li.header dd, li.header dt, .list-inner > a, .body-blok-h3 > h3 {
 	color: rgba(175, 255, 175, 0.8) !important;
 }
 
-li.row:hover {
+li.row:hover, .body-blok-h3 > h3 {
 	background-color: #006c00 !important;
-}
-
-.body-blok-h3 > h3 {
-	background-color: #006c00 !important;
-	color: rgba(175, 255, 175, 0.8) !important;
 }
 
 .body-blok-info > div > p, .statistics > p {
@@ -2070,12 +2068,16 @@ li.row:hover {
 	border-bottom-color: none;
 }
 
-.action-bar > .button, .pagination > li > a, li.page-jump > a > i, .forumbg {
+.action-bar > .button, .pagination li a, li.page-jump > a > i, .forumbg {
 	background-color: #006c00 !important;
 }
 
 .fa-pencil, .action-bar > .button, a.mark::after, li.ellipsis, .pagination > li > a, li.page-jump > a > i {
 	color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.fa-pencil:hover, .action-bar > .button:hover {
+	color: #006c00 !important;
 }
 
 #search-keywords {
@@ -2102,6 +2104,49 @@ li.bg2 {
 
 div.stat-block > p {
 	color: rgba(255, 255, 255, 0.8);
+}
+
+/* posts */
+
+.postbody, .postprofile, .postprofile strong, .post:target .content {
+	color: rgba(255, 255, 255, 0.8) !important;
+}
+
+#subsilver-nav-topic, .button {
+	background-color: #006c00 !important;
+}
+
+.like-info {
+	color: rgba(175, 255, 175, 0.8) !important;
+}
+
+.button {
+	box-shadow: none !important;
+	-webkit-box-shadow: none !important;
+}
+
+.bg1, .bg2 {
+	background-color: #555 !important;
+}
+
+blockquote, blockquote blockquote, blockquote blockquote blockquote, .button {
+	background-image: none !important;
+}
+
+blockquote, blockquote blockquote blockquote {
+	background-color: #777 !important;
+}
+
+blockquote blockquote {
+	background-color: #555 !important;
+}
+
+p.author, ul.dropdown-contents li {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.dropdown li {
+	border-color: none !important;
 }
 
 /* end of dark mode corrections */
