@@ -638,6 +638,7 @@ div.content-bare {
 	margin-left: auto;
 	margin-right: auto;
 	max-width: 798px; /* 800-2x1px border*/
+	border: none !important;
 }
 div.content-notice {
 	text-align: left;
@@ -647,7 +648,7 @@ div.content-notice {
 	margin-bottom: 5px;
 	max-width: 768px;
 	background-color: #3b4042;
-	/*border: 1px solid #aaa;*/
+	border: none;
 	color: rgba(255, 255, 255, 0.8);
 	padding: 8px 15px;
 	border-radius: 7px;
@@ -658,7 +659,7 @@ div.content-board-header, div.content-home-header {
 	border-radius: 7px;
 }
 div.content-board-header {
-	/*border: 1px solid #aaa;*/
+	border: none;
 	background-color:#3a4042;
 	border-bottom:0;
 }
@@ -2005,12 +2006,14 @@ span.crumb::before {
 	box-shadow: 1px 3px 5px rgba(255, 255, 255, 0.8);
 }
 
-#keywords, input.inputbox.tiny, input.button2 {
+#keywords, input.inputbox, input.inputbox.tiny, input.button2, input.button1, .tabs .tab > a,
+.tabs .activetab > a {
 	background-color: #aaa !important;
 	color: rgba(0, 0, 0, 0.8);
 }
 
-input.button2, .button-search, .button-search-end {
+input.button2, input.button1, .tabs .tab > a, .tabs .activetab > a .button-search, 
+.button-search-end {
 	background-image: none !important;
 }
 
@@ -2024,7 +2027,8 @@ input.button2, .button-search, .button-search-end {
 	border-color: #aaa !important;
 }
 
-.fa-cog, .fa-search, p.responsive-center, p.time, ul.topiclist > li {
+.fa-cog, .fa-search, p.responsive-center, p.time, ul.topiclist > li, li.header dd, 
+li.header dt {
 	color: rgba(255, 255, 255, 0.8) !important;
 }
 
@@ -2040,7 +2044,7 @@ ul.forums, .body-blok {
 	background-color: #006c00;
 }
 
-li.header dd, li.header dt, .list-inner > a, .body-blok-h3 > h3 {
+.list-inner > a, .body-blok-h3 > h3 {
 	color: rgba(175, 255, 175, 0.8) !important;
 }
 
@@ -2072,17 +2076,23 @@ li.row:hover, .body-blok-h3 > h3 {
 	background-color: #006c00 !important;
 }
 
-.fa-pencil, .action-bar > .button, a.mark::after, li.ellipsis, .pagination > li > a, li.page-jump > a > i {
+.fa-pencil, .action-bar > .button, a.mark::after, li.ellipsis, .pagination > li > a, 
+li.page-jump > a > i {
 	color: rgba(255, 255, 255, 0.8) !important;
 }
 
 .fa-pencil:hover, .action-bar > .button:hover {
 	color: #006c00 !important;
+	background-color: rgba(255, 255, 255, 0.8) !important;
 }
 
 #search-keywords {
 	background-color: #aaa;
 	color: rgba(0, 0, 0, 0.8);
+}
+
+.pagination {
+	color: rgba(255, 255, 255, 0.8);
 }
 
 .pagination > li.active > span {
@@ -2106,9 +2116,9 @@ div.stat-block > p {
 	color: rgba(255, 255, 255, 0.8);
 }
 
-/* posts */
+/* threads */
 
-.postbody, .postprofile, .postprofile strong, .post:target .content {
+.postbody, .postprofile, .postprofile strong, .post:target .content, .post:target h3 a {
 	color: rgba(255, 255, 255, 0.8) !important;
 }
 
@@ -2116,7 +2126,7 @@ div.stat-block > p {
 	background-color: #006c00 !important;
 }
 
-.like-info {
+span.like-info {
 	color: rgba(175, 255, 175, 0.8) !important;
 }
 
@@ -2147,6 +2157,36 @@ p.author, ul.dropdown-contents li {
 
 .dropdown li {
 	border-color: none !important;
+}
+
+/* posting */
+
+.panel, .panel-container .panel, .bg3 {
+	background-color: #555 !important;
+}
+
+.panel, .panel h2, .panel-container h2, .panel-container h3, .panel-container p, 
+.message-box textarea {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+/* miscellaneous */
+
+.phpbb-alert {
+	background-color: #555 !important;
+}
+
+.alert_text > form > h3, dl.details dt, dl.details dd, .phpbb-alert label, 
+table.table1 td, .navigatiion li a, dl.mini dd {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.alert-close, .navigation li a {
+	background-color: rgba(0, 0, 0, 0.8);
+}
+
+dl.mini {
+	background-color: #777;
 }
 
 /* end of dark mode corrections */

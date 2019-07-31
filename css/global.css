@@ -58,6 +58,11 @@ input[type="text"], input[type="password"], textarea, select {
 	border: 1px solid #c1c1c1;
 	color:#000000;
 }
+
+input:read-only.toggle-notice {
+	background-color: transparent !important;
+}
+
 input:read-only {
   background-color:#999 !important;
 }
