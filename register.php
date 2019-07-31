@@ -76,37 +76,28 @@ if ( isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText']) && isset($_R
 
 		if( User::findEmail($email) )
 			throw new Exception(
-				l_t("The e-mail address '%s', is already in use. If this is your e-mail, please use the Forgot your username and password features to recover your account or contact the moderators at %s for assistance. Making a second account for any reason is against the site rules.",$email, Config::$modEMail));
+				l_t("The email address '%s', is already in use. If this is your email, please use the Forgot your username and password features to recover your account or contact the moderators at %s for assistance. Making a second account for any reason is against the site rules.",$email, Config::$modEMail));
 
 		if ( !libAuth::validate_email($email) )
-			throw new Exception(l_t("A first check of this e-mail is finding it invalid. Remember you need one to ".
+			throw new Exception(l_t("A first check of this email is finding it invalid. Remember you need one to ".
 				"play, and it will not be spammed or released."));
 
 		// Prelim checks look okay, lets send the e-mail
 		$Mailer->Send(array($email=>$email), l_t('Your new webDiplomacy account'),
-l_t("Hello and welcome!")."<br><br>
+			l_t("Hello and welcome!")."<br><br>
 
-".l_t("Thanks for validating your e-mail address; just use this link to create your new webDiplomacy account:")."<br>
-".libAuth::email_validateURL($email)."<br><br>
+			".l_t("Thanks for validating your email! Use this link to create your webDiplomacy account: ").libAuth::email_validateURL($email)."<br><br>
 
-".l_t("There are two main rules that we want you to be aware of:")."<br>
+			".l_t("There are two main rules to keep in mind:")."<br>
+			".l_t("1. You may only have one account.")."<br>
+			".l_t("2. You need to have an invitation code on any game you play with people you know from outside the site to keep games fair.")."<br>
+			".l_t("The rest of the rules can be found here: http://www.webdiplomacy.net/rules.php")."<br><br>
 
-".l_t("1. No Multi-Accounting")."<br><br>
+			".l_t("If you forgot your password, use the lost password finder here: http://www.webdiplomacy.net/logon.php?forgotPassword=1")."<br><br>
+			".l_t("If you have any further problems contact the server's admin at %s.",Config::$adminEMail)."<br><br>
 
-".l_t("You may only have one account, second accounts are not allowed under any circumstances, and will be banned. This may also lead to your first account also being banned.  If you forget your password, use the lost password finder here: http://www.webdiplomacy.net/logon.php?forgotPassword=1. If you are still unable to log in, contact the mods.")."<br><br>
-
-".l_t("2. No Meta-gaming")."<br><br>
-
-".l_t("You cannot play a public game with players that you know outside of the site. In doing so, you create an unfair environment for other players by giving yourself the opportunity to form alliances for reasons outside the game. This includes playing public games with family, friends, relatives, coworkers, or even joining a game with any player of a previous game with a predetermined intent to ally with or attack certain players.")."<br><br>
-
-".l_t("Because Diplomacy is a social game, we always encourage playing with friends. However, you should always do so in a private, password-protected game and make sure that every player knows about any real life connections before the game begins.")."<br><br>
-
-".l_t("The rest of the rules can be found here: http://www.webdiplomacy.net/rules.php")."<br><br>
-".l_t("If you have any further problems contact the server's admin at %s.",Config::$adminEMail)."<br><br>
-
-".l_t("Enjoy your new account!")."<br>
-"
-			);
+			".l_t("Enjoy your new account!")."<br>"
+		);
 
 		$page = 'emailSent';
 	}
@@ -124,7 +115,7 @@ elseif ( isset($_REQUEST['emailToken']) )
 	try
 	{
 		if( !($email = libAuth::emailToken_email($_REQUEST['emailToken'])) )
-			throw new Exception(l_t("A bad e-mail token was given, please try again"));
+			throw new Exception(l_t("A bad email token was given, please try again"));
 
 		$email = trim($DB->escape($email));
 
@@ -161,14 +152,14 @@ switch($page)
 {
 	case 'firstValidationForm':
 	case 'validationForm':
-		print libHTML::pageTitle(l_t('Register a webDiplomacy account'),l_t('<strong>Validate your e-mail address</strong> -&gt; Enter your account settings -&gt; Play webDiplomacy!'));
+		print libHTML::pageTitle(l_t('Register a webDiplomacy account'),l_t('<strong>Validate your email address</strong> -&gt; Enter your account settings -&gt; Play webDiplomacy!'));
 		break;
 
 	case 'emailSent':
 	case 'emailTokenFailed':
 	case 'firstUserForm':
 	case 'userForm':
-		print libHTML::pageTitle(l_t('Register a webDiplomacy account'),l_t('Validate your e-mail address -&gt; <strong>Enter your account settings</strong> -&gt; Play webDiplomacy!'));
+		print libHTML::pageTitle(l_t('Register a webDiplomacy account'),l_t('Validate your email address -&gt; <strong>Enter your account settings</strong> -&gt; Play webDiplomacy!'));
 }
 
 switch($page)
