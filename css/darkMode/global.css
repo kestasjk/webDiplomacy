@@ -2108,7 +2108,7 @@ div.stat-block > p {
 
 /* posts */
 
-.postbody, .postprofile, .postprofile strong {
+.postbody, .postprofile, .postprofile strong, .post:target .content {
 	color: rgba(255, 255, 255, 0.8) !important;
 }
 
