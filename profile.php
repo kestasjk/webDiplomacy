@@ -109,7 +109,7 @@ if ( !$userID )
 				<strong><?php print l_t('Email address:'); ?></strong> </br>
 				<input class="gameCreate" type="text" name="searchUser[email]" value="" size="40">
 				</br>
-				<?php print l_t('Not case sensitive, but otherwise must match exactly.)'); ?>
+				<?php print l_t('(Not case sensitive, but otherwise must match exactly.)'); ?>
 			</p>
 			<p>
 				<input type="submit" class="green-Submit" value="<?php print l_t('Search'); ?>">
