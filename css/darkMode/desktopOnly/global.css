@@ -2054,8 +2054,9 @@ li.row:hover, .body-blok-h3 > h3 {
 /* subforum */
 
 .page-body > .rules {
-	background-color: #aaa !important;
-	color: #6f001b !important;
+	background-color: #343434 !important;
+	color: rgba(255, 255, 255, 0.8) !important;
+	border: solid 1px #9caeb8;
 }
 
 .postlink, .postlink:visited {
