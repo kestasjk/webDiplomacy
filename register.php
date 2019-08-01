@@ -93,7 +93,7 @@ if ( isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText']) && isset($_R
 			".l_t("2. You need to have an invitation code on any game you play with people you know from outside the site to keep games fair.")."<br>
 			".l_t("The rest of the rules can be found here: http://www.webdiplomacy.net/rules.php")."<br><br>
 
-			".l_t("If you are interested in getting to know our community we have a discord server available at https://discord.gg/dPm4QnY")."<br><br>
+			".l_t("Join the webDiplomacy community on Discord at https://discord.gg/dPm4QnY")."<br><br>
 
 			".l_t("If you forgot your password, use the lost password finder here: http://www.webdiplomacy.net/logon.php?forgotPassword=1")."<br><br>
 			".l_t("If you have any further problems contact the server's admin at %s.",Config::$adminEMail)."<br><br>
