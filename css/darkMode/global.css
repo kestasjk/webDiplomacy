@@ -2173,6 +2173,14 @@ dl.mini dd, dl.mini dt {
 	display: none;
 }
 
+.cp-main .pm {
+	background-color: #434343;
+}
+
+a.current {
+	color: rgba(175, 255, 175, 0.8);
+}
+
 .pmlist li {
 	border-right: solid 3px transparent;
 	border-left: solid 3px transparent;
@@ -2224,6 +2232,10 @@ fieldset dl:hover dt label, .button, .icon, .button .icon, .icon:hover, .button 
 
 .pagination li.active span {
 	border-color: rgba(175, 255, 175, 0.5);
+}
+
+select.inputbox option {
+	background-color: transparent;
 }
 
 /*** end of dark mode forum ***/
