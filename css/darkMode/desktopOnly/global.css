@@ -2054,13 +2054,19 @@ li.row:hover, .body-blok-h3 > h3 {
 /* subforum */
 
 .page-body > .rules {
-	background-color: #aaa !important;
-	color: #6f001b !important;
+	background-color: #343434 !important;
+	color: rgba(255, 255, 255, 0.8) !important;
+	border: solid 1px #9caeb8;
 }
 
 .postlink, .postlink:visited {
 	color: rgba(175, 255, 175, 0.8) !important;
-	border-bottom-color: none;
+	border: 0px !important;
+}
+
+.postlink:hover {
+	background-color: transparent !important;
+	color: #006f00;
 }
 
 li.page-jump > a > i, .forumbg {
@@ -2209,8 +2215,8 @@ table.table1 td, .navigatiion li a {
 	background-color: rgba(0, 0, 0, 0.8);
 }
 
-fieldset dl:hover dt label, .button, .icon, .button .icon, .icon:hover, .button .icon:hover,
-.pagination li a, .pagination li.active span {
+fieldset dl:hover dt label, .button, .button:hover, .icon, .icon:hover, .button .icon, 
+.button .icon:hover, .pagination li a, .pagination li.active span {
 	color: rgba(255, 255, 255, 0.8) !important;
 }
 
