@@ -58,6 +58,11 @@ input[type="text"], input[type="password"], textarea, select {
 	border: 1px solid #c1c1c1;
 	color:#000000;
 }
+
+input:read-only.toggle-notice {
+	background-color: transparent !important;
+}
+
 input:read-only {
   background-color:#999 !important;
 }
@@ -744,10 +749,8 @@ div#chatboxtabs a {
 	padding-top:3px;
 	padding-bottom:3px;
 }
-div.gamelistings-tabs a
 div.gamelistings-tabs a:hover {
 	text-decoration:none;
-	background-color: #f5f5f5;
 	border-bottom:2px solid #009902 ! important;
 	border-top:1px solid #009902 ! important;
 	border-left:1px solid #009902 ! important;
@@ -920,6 +923,11 @@ div.chatbox {
 div.chatbox td {
 	overflow:hidden;
 }
+
+span.chaos-chatbox {
+	color: black;
+}
+
 .chatboxMembersList {
 	font-size:12px;
 	text-align:center;
@@ -1298,6 +1306,11 @@ input[type=submit].gameCreate:hover {
 	color: white;
 	min-width:70px;
 }
+
+.rr-profile-info {
+	color: red;
+	font-size: 13px;
+}
 /* End of section for rrInfo styling */
 
 /* Section for Hall of Fame styling */
@@ -1321,6 +1334,10 @@ input[type=submit].gameCreate:hover {
 	background-color: #009902;
 	color: white;
 	min-width:70px;
+}
+
+.hof-self {
+	color: red;
 }
 /* End of section for Hall of Fame styling */
 
@@ -1447,6 +1464,11 @@ input[type=submit].contactUs {
 
 input[type=submit].contactUs:hover {
   background-color: #45a049;
+}
+
+.contact-us-desc {
+	color: red;
+	font-weight: 900;
 }
 /* End of section for contactUsDirect page styling */
 

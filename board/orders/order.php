@@ -202,6 +202,24 @@ abstract class userOrder extends order
 		foreach($this->loaded as $paramName)
 			if( !in_array($paramName, $this->requirements) )
 				$this->paramWipe($paramName);
+
+		// Check changed parameters too.
+		$reallyChanged = array();
+		foreach ($this->changed as $paramName) {
+			if (in_array($paramName, $this->requirements)) {
+				$reallyChanged[] = $paramName;
+			} else {
+				if (in_array($paramName, $this->loaded)) {
+					// An un-required parameter was loaded from database (is that possible?)>
+					// Anyway, we wipe it.
+					$this->paramWipe($paramName);
+				} else {
+					// An un-required parameter was changed. Just keep it as unchanged.
+					unset($this->{$paramName});
+				}
+			}
+		}
+		$this->changed = $reallyChanged;
 	}
 
 	/**

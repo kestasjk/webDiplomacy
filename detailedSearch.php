@@ -503,6 +503,7 @@ print '</br></br>';
 
 if ($tab == 'UserSearch')
 {
+	global $User;
 	if ($type != 'none' || $username != '')
 	{
 		$sql = "SELECT u.id, u.username, u.email, u.timeJoined, u.gameCount, u.reliabilityRating, u.points, u.type
@@ -685,13 +686,22 @@ if ($tab == 'UserSearch')
 		if ($seeBronze=='checked') { print '<th class= "advancedSearch">IsBronze</th>'; }
 
 		print "</tr>";
-
 		foreach ($UsersData as $values)
 		{
 			print '<TR><TD class= "advancedSearch"><a href="profile.php?userID='.$values->userID.'">'.$values->userID.'</a>';
 
 			// Print the mod or banned icons if the user is one or the other.
-			if ($values->mod) { print ' <img src="images/icons/mod.png" title="Moderator/Admin" />'; }
+			if ($values->mod) 
+			{ 
+				if ($User->getTheme() == 'No') 
+				{
+					print ' <img src="images/icons/mod.png" title="Moderator/Admin" />';
+				}
+				else
+				{
+					print ' <img src="images/icons/mod3.png" title="Moderator/Admin" />';
+				}
+			}
 			if ($values->banned) { print ' <img src="images/icons/cross.png"title="Banned" />'; }
 
 			// Only show the highest level of donator status held by a user.

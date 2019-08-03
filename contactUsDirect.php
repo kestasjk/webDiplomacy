@@ -383,7 +383,7 @@ else
     print '<div class = "contactUs"><p>Fill out the following form to get assistance from the moderator team. We will do our
     best to get to your problem as soon as possible. </br></br>
 
-    If you have a question about how the game works please read the <a href="faq.php" class="contactUs">FAQ</a> 
+    If you have a question about how the game works, please read the <a href="faq.php" class="contactUs">FAQ</a> 
     and the <a href="intro.php" class="contactUs"> intro to webDiplomacy</a> before using this form. </p>
 
     <p> Need something else? Take a look at our <a href="contactUs.php" class="contactUs">Contact Info</a> 
@@ -433,7 +433,7 @@ else
                 <option value="other">Other</option>
             </select></p>';
 
-    print '<p><font color="red">If you asked for a pause tell us for how long and why or your request will <strong>not</strong> be granted.</font></p>';
+    print '<p class="contact-us-desc">If you asked for a pause tell us for how long and why or your request will <strong>not</strong> be granted.</font></p>';
     print '</div>';
 
     print '<div id="ifOther" style="display:none">';
@@ -448,9 +448,12 @@ else
     print '</div>';
 
     print '<div id="ifEmergency" style="display:none">';
-    print '<p> <font color="red">This is for personal emergencies only and will instantly pause all of your running games that you are not defeated in. The
+    print '<p class="contact-us-desc">This is for personal emergencies only and will instantly pause all of your running games that you are not defeated in. The
     moderator team will give you 7 days to let us know when you expect to be back. If we do not hear back in 7 days we will look for a replacement. <br><br>
-    <strong>Vacations, business trips, or any other absence you know of ahead of time do not count as a personal emergency.</strong> This tool is intended for unexpected absences, such as a family emergency, widespread power outage, natural disaster, or other circumstance you cannot plan for. If you can plan for your pause ahead of time, it is not an emergency. You should inform others in your game in advance that you will need a pause, and if you cannot do so instead contact the moderators at' .Config::$modEMail;'.</font></br></br>
+    <u>Vacations, business trips, or any other absence you know of ahead of time do not count as a personal emergency.</u> 
+    This tool is intended for unexpected absences, such as a family emergency, widespread power outage, natural disaster, or other circumstance you cannot plan for. 
+    If you can plan for your pause ahead of time, it is not an emergency. You should inform others in your game in advance that you will need a pause, 
+    and if you cannot do so instead contact the moderators at ' .Config::$modEMail.'.</font></br></br>
     Abuse of the emergency pause will be punished with a 50% point dock and removal of your emergency pause privilege at minimum. <br><br>
     Using your emergency pause will instantly pause the following games: ';
     
@@ -473,8 +476,8 @@ else
             </select></p>';
     print '</div>';
     
-    print ' <p>Please give us any additional details
-            <textarea name="additionalInfo" class = "contactUs"  rows="5"></textarea></p>';
+    print ' <p class="contact-us-desc">Please give us any additional details below.</p>
+            <textarea name="additionalInfo" class = "contactUs"  rows="5"></textarea>';
     print '<p><input type="submit" class = "green-Submit" name="submit"/></p>';
     print '</form>';
 }

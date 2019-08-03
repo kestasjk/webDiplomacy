@@ -58,7 +58,7 @@ print "
     <div class = 'donations_title'>What do I get for donating?</div>
     <div class = 'donations_content'>
         <p>
-           We will give you a marker on your profile and on the forum to signifiy your support for the site. However we never want our members to feel obligated to contribute so no 
+           We will give you a marker on your profile and on the forum to signify your support for the site. However we never want our members to feel obligated to contribute so no 
            functionality is locked behind a paywall, nor do we ever discriminate in any way against those who have not donated. 
         </p>
     </div>

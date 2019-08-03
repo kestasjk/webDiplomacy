@@ -236,6 +236,13 @@ class User {
 	public $cdCount, $nmrCount, $cdTakenCount, $phaseCount, $gameCount, $reliabilityRating;
 
 	/**
+	 * darkMode
+	 * Choose css style theme
+	 * @var 'yes' or 'no'
+	 */
+	public $darkMode;
+
+	/**
 	 * Give this user a supplement of points
 	 *
 	 * @param $userID The user ID
@@ -364,7 +371,7 @@ class User {
 		$SQLVars = array();
 
 		$available = array('username'=>'', 'password'=>'', 'passwordcheck'=>'', 'email'=>'',
-					'hideEmail'=>'','showEmail'=>'', 'homepage'=>'','comment'=>'');
+					'hideEmail'=>'','showEmail'=>'', 'homepage'=>'','comment'=>'', 'darkMode'=>'');
 
 		$userForm = array();
 
@@ -431,6 +438,14 @@ class User {
 			$userForm['comment'] = $DB->msg_escape($userForm['comment']);
 
 			$SQLVars['comment'] = $userForm['comment'];
+		}
+
+		if(isset($userForm['darkMode']))
+		{
+			if ($userForm['darkMode'] == "Yes")
+				$SQLVars['darkMode'] = "Yes";
+			else
+				$SQLVars['darkMode'] = "No";
 		}
 
 		return $SQLVars;
@@ -572,11 +587,22 @@ class User {
 
 			$type = implode(',',$types);
 		}
-
 		$buf='';
 
+		global $User;
+
 		if( strstr($type,'Moderator') )
-			$buf .= ' <img src="'.l_s('images/icons/mod.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
+		{
+			if ($User->getTheme() == 'No' || $User->getTheme() == null)
+			{
+				$buf .= ' <img src="'.l_s('images/icons/mod.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
+			}
+			else
+			{
+				$buf .= ' <img src="'.l_s('images/icons/mod3.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
+			}
+		}
+				
 		elseif(strstr($type,'Banned') )
 			$buf .= ' <img src="'.l_s('images/icons/cross.png').'" alt="X" title="'.l_t('Banned').'" />';
 
@@ -1195,33 +1221,69 @@ class User {
 	public function getYearlyUnExcusedMissedTurns() 
 	{
 		global $DB;
-		list($totalMissedTurns) = $DB->sql_row("
-		SELECT COUNT(1) FROM wD_MissedTurns t  
-		WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".(time() - 31536000));
+		list($totalNonLiveMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
+		WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.liveGame = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".(time() - 31536000));
 		
-		return $totalMissedTurns;
+		return $totalNonLiveMissedTurns;
 	}
 
 	/*
-	 * Get the number of total non excused missed turns in the past 4 weeks. 
+	 * Get the number of total non excused missed turns from non live in the past 4 weeks. 
 	 */
 	public function getRecentUnExcusedMissedTurns() 
 	{
 		global $DB;
 		list($totalMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
-			WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".(time() - 2419200));
+			WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.liveGame = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".(time() - 2419200));
 		
 		return $totalMissedTurns;
 	}
 
 	/*
-	 * Get the number of missed turns in the past year. 
+	 * Get the number of non live missed turns in the past year. 
 	 */
 	public function getMissedTurns() 
 	{
 		global $DB;
 		list($totalMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
-			WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.turnDateTime > ".(time() - 2419200));
+			WHERE t.userID = ".$this->id." AND t.liveGame = 0 and t.modExcused = 0 and t.turnDateTime > ".(time() - 31536000));
+		
+		return $totalMissedTurns;
+	}
+
+	/*
+	 * Get the number of non excused live missed turns in the last month. 
+	 */
+	public function getLiveUnExcusedMissedTurns() 
+	{
+		global $DB;
+
+		list($totalLiveMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
+		WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.liveGame = 1 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".(time() - 2419200));
+		
+		return $totalLiveMissedTurns;
+	}
+
+	/*
+	 * Get the number of total non excused missed turns from live in the past week. 
+	 */
+	public function getLiveRecentUnExcusedMissedTurns() 
+	{
+		global $DB;
+		list($totalMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
+			WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.liveGame = 1 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".(time() - (86400 * 7)));
+		
+		return $totalMissedTurns;
+	}
+
+	/*
+	 * Get the number of live missed turns in the past month. For live games missed turns are completely forgiven after 1 month
+	 */
+	public function getLiveMissedTurns() 
+	{
+		global $DB;
+		list($totalMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
+			WHERE t.userID = ".$this->id." AND t.liveGame = 1 and t.modExcused = 0 and t.turnDateTime > ".(time() - 2419200));
 		
 		return $totalMissedTurns;
 	}
@@ -1235,6 +1297,24 @@ class User {
 		list($tempBan) = $DB->sql_row("SELECT u.tempBan FROM wD_Users u  WHERE u.id = ".$this->id);
 
 		return $tempBan > time();
+	}
+
+	/* 
+	 * Get style theme user is using, 'No' = light mode; 'Yes' = dark mode. If the user has not accessed their user settings, this will default to light mode.
+	 */
+	public function getTheme()
+	{
+		global $DB;
+
+		list($variable) = $DB->sql_row("SELECT darkMode FROM wD_UserOptions WHERE userID=".$this->id);
+		if ($variable == null) 
+		{
+			return 'No';
+		}
+		else
+		{
+			return $variable;
+		}
 	}
 }
 ?>

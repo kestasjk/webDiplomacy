@@ -1,0 +1,2274 @@
+body {
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	margin: 0;
+	padding: 0;
+	background-color: #202125;
+	text-align: center;
+	height: 100%;
+}
+html, body { 
+	min-height: 100%; 
+}
+div.content-title-header {
+    border-bottom:#5b6065 1px solid !important;
+    margin-bottom: 6px;
+}
+.footerMax {
+	max-width: 800px;
+	text-align: center;
+	margin-left:auto;
+	margin-right:auto;
+	word-break: break-word;
+}
+div.pageTitle, .boardHeader .gameName {
+    text-shadow: #999999 1px 1px 1px;
+    font-size:22px !important;
+	font-weight:normal !important;
+	border-radius: 7px;
+}
+div.pageTitle {
+    font-size:18pt;
+    color:rgba(255,255,255,0.8);
+    font-weight:bold;
+    padding:4px 20px;
+}
+.bottomborder {
+    border-bottom:#ccc 1px solid;
+}
+div.pageDescription {
+    padding:4px 20px;
+    color:#d3d4d4;
+    font-style:italic;
+    border-top:#5f6368 1px solid;
+}
+.messageFromMe {
+	font-style: italic;
+}
+span.logon {
+	font-size:11px;
+	}
+span.points {
+	/* No (1234
+			D),
+		only (1234D) */
+	white-space: nowrap;
+}
+input[type="text"], input[type="password"], textarea, select {
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #757b81;
+	border: 1px solid #ccc;
+	color:rgba(255, 255, 255, 0.8);
+}
+input:read-only {
+  background-color:#999 !important;
+}
+
+.green-Submit {
+  background-color: #0b6a0b;
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 14px 20px;
+  width: 100%;
+  -webkit-appearance: none;
+  font-weight: bold;
+}
+
+.green-Submit:active {
+  background-color: #4CAF50 !important;
+}
+
+.green-Submit:hover {
+	background-color: #45a049 !important;
+	cursor: pointer;
+}
+
+.redComparison {
+	color: #D62929 ! important;
+}
+
+.redComparison a {
+	color: #D62929 ! important;
+}
+
+.form-submit {
+  background-color: #777;
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #777), color-stop(50%, #666), color-stop(50%, #555), color-stop(100%, #444));
+  background-image: -webkit-linear-gradient(top, #777 0%, #666 50%, #555 50%, #444 100%);
+  background-image: -moz-linear-gradient(top, #777 0%, #666 50%, #555 50%, #444 100%);
+  background-image: -ms-linear-gradient(top, #777 0%, #666 50%, #555 50%, #444 100%);
+  background-image: -o-linear-gradient(top, #777 0%, #666 50%, #555 50%, #444 100%);
+  background-image: linear-gradient(top, #777 0%, #666 50%, #555 50%, #444 100%);
+  border: .5px solid #172d6e;
+  border-radius: 5px;
+  -webkit-box-shadow: inset 0 1px 0 0 #b1b9cb;
+  box-shadow: inset 0 1px 0 0 #b1b9cb;
+  color: #fff;
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;  padding: 7px 0 8px 0;
+  text-decoration: none;
+  text-align: center;
+	text-shadow: 0 -1px 1px #000f4d;
+  padding-right: 7px;
+  padding-left: 7px;
+}
+	.form-submit:hover {
+    background-color: #7f8dad;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #7f8dad), color-stop(50%, #4a5e8c), color-stop(50%, #2f477d), color-stop(100%, #364c80));
+    background-image: -webkit-linear-gradient(top, #7f8dad 0%, #4a5e8c 50%, #2f477d 50%, #364c80 100%);
+    background-image: -moz-linear-gradient(top, #7f8dad 0%, #4a5e8c 50%, #2f477d 50%, #364c80 100%);
+    background-image: -ms-linear-gradient(top, #7f8dad 0%, #4a5e8c 50%, #2f477d 50%, #364c80 100%);
+    background-image: -o-linear-gradient(top, #7f8dad 0%, #4a5e8c 50%, #2f477d 50%, #364c80 100%);
+    background-image: linear-gradient(top, #7f8dad 0%, #4a5e8c 50%, #2f477d 50%, #364c80 100%);
+		cursor: pointer;
+	}
+	.spaced-button:disabled {
+    background-color: #777;
+		border: .5px solid #555;
+		border-radius: 5px;
+		-webkit-box-shadow: inset 0 1px 0 0 #b1b9cb;
+		box-shadow: inset 0 1px 0 0 #b1b9cb;
+		color: #fff;
+		font-size: 14px;
+		padding: 7px 0 8px 0;
+		text-decoration: none;
+		text-align: center;
+		padding-right: 7px;
+		padding-left: 7px;
+	}
+	.form-submit:active
+		{
+    -webkit-box-shadow: inset 0 0 20px 0 #1d2845, 0 1px 0 white;
+		box-shadow: inset 0 0 20px 0 #1d2845, 0 1px 0 white;
+	}
+
+textarea {
+	font-size: 16px ! important;
+	width:90%;
+}
+div.hr, div.hrthin {
+	height:0;
+	border: 0;
+	border-bottom: 1px solid #aaa;
+	margin-top:10px;
+	margin-bottom:10px;
+	width:80%;
+	margin-left:auto;
+	margin-right:auto;
+}
+div.postboxadvice {
+	font-size:13px;
+	text-align:center;
+	font-style: italic;
+}
+
+.new-subject {
+	background-color: #757b81;
+	color: rgba(255, 255, 255, 0.8);
+	border: 1px solid #ccc;
+}
+
+div.clear {
+	border-bottom: 0;
+}
+h1, h2, h3, h4 {
+	color: #009902;
+	margin-bottom:5px;
+}
+h3 {
+	margin-left:10px;
+}
+img {
+	border:0;
+}
+p.profileComment {
+	font-size:12px;
+	font-style:italic;
+	width:80%;
+	margin-left:auto;
+	margin-right:auto;
+	word-break: break-word;
+}
+.profileUsername {
+	text-align: left;
+}
+.profile_title {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #777;
+	color: white;
+	cursor: pointer;
+	padding: 5px;
+	border: 1px solid #ccc;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+.profile_title:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #555;
+}
+
+.profile_content {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	padding: 0 0 0 10px;
+	font-size: 13px;
+	margin-top:3px !important;
+	border-radius: 7px;
+}
+
+.profile_content_show {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	font-size: 13px;
+	display: show;
+	padding: 0 0 0 10px;
+	margin-top: 3px !important;
+}
+
+#profile-forum-link-container {
+	display: flex;
+	justify-content: space-around;
+}
+
+ .profile-forum-links {
+	width: 50%;
+	margin: 0;
+	text-align: center;
+}
+
+ #send-pm {
+	margin-left: -10px;
+}
+
+ .profile-links-button {
+	background-color: #d9d9d9;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	cursor: pointer;
+	border-radius: 10px;
+	padding: 5px 10px;
+	font-weight: 800;
+}
+
+ .profile-links-button:hover {
+    background: #009902;
+    color: #f2f2f2;
+    transition: 0.4s all ease;
+    -webkit-transition: 0.4s all ease;
+}
+
+ #profile-separator {
+	margin: 10px auto 20px auto;
+	height: 1px;
+	background-color: #aaa;
+}
+
+img.center {
+	text-align:center;
+}
+h2.black {
+	color: #000;
+}
+span.gamename {
+	font-size:15px;
+	color: #009902;
+	font-weight:bold;
+}
+ul.gamemain {
+	margin-left:20px;
+	margin-right:20px;
+	padding:0;
+}
+ul.gamesublist {
+	font-weight: normal;
+	font-size:13px;
+	color: #777;
+}
+div.profile-show {
+	border-radius: 7px;
+	background-color: #5f6368;
+	padding: 5px;
+}
+div.rightHalf {
+	float:right;
+	width:50%;
+	padding-top:0;
+	margin-bottom:0;
+	border-left:1px solid #aaa;
+	padding-left:10px
+}
+div.leftHalf {
+	width:50%;
+}
+
+ul.todolist {
+	margin-left: 20px;
+	color: #777;
+}
+
+ul.formlist {
+	list-style: none;
+	margin-left:20px;
+	margin-right:20px;
+	padding:0;
+	color: rgba(255, 255, 255, 0.8);
+}
+
+li {
+	margin-bottom:5px;
+}
+li.formlisttitle {
+	font-weight: bold;
+}
+
+.spaced-button {
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+li.formlistfield {
+	list-style: none;
+	margin-bottom:10px;
+	margin-left:20px;
+	margin-right:20px;
+	margin-top:5px;
+}
+li.formlistdesc {
+	font-weight: normal;
+	color: rgba(255, 255, 255, 0.8);
+	list-style: none;
+	margin-left:20px;
+	margin-right:20px;
+	border-left: 1px solid #aaa;
+	padding-left: 10px;
+	margin-bottom: 30px;
+}
+li.playerdetails {
+	margin-left:60px;
+}
+.intro {
+	font-size:16px;
+}
+li.introheader {
+	margin-top:20px;
+	font-weight: bold;
+	list-style: none;
+}
+li.introexplain {
+	font-weight: normal;
+	color: #555;
+	list-style: none;
+	margin-left:20px;
+	margin-right:20px;
+}
+li.introexplainsupport {
+	font-weight: normal;
+	color: #555;
+	list-style: none;
+	margin-top:20px;
+	margin-left:20px;
+	margin-right:20px;
+}
+li.introimages {
+	text-align:center;
+	margin-top:10px;
+	list-style: none;
+}
+strong {
+	font-weight: bold;
+}
+strong.description {
+	font-weight: bold;
+	font-style: italic;
+	color: #777;
+	margin-left:40px;
+}
+p.notice {
+	font-weight: bold;
+	text-align: center;
+	margin:0px;
+	color: rgba(255, 255, 255, 0.8);
+}
+p.welcome {
+	margin-left: 20px;
+	margin-right: 20px;
+}
+p.question {
+	font-weight: bold;
+	margin-bottom:10px;
+}
+p.answer {
+	margin:20px;
+	margin-top:0;
+}
+p.smallindent {
+	font-size:13px;
+	color: #777;
+	margin-left:40px;
+}
+p.orders {
+	margin:0 20px;
+}
+p.code {
+	font-family: courier;
+	font-size:12px;
+	margin-left:40px;
+}
+p.lightgrey {
+	font-size:13px;
+	text-align:center;
+	color:#777;
+	font-style:italic;
+}
+a {
+	font-weight: bold;
+	text-decoration:underline;
+}
+a:link {
+	color: rgba(175, 255, 175, 0.8)
+}
+a:visited {
+	color: rgba(175, 255, 175, 0.8)
+}
+a:active {
+	color: rgba(175, 255, 175, 0.8)
+}
+a:hover {
+	color: #009902 ! important;
+}
+a.light {
+	font-weight:normal;
+	text-decoration:none !important;
+}
+#mapstore {
+	text-align:center;
+	margin:0 auto;
+}
+
+ #header {
+	background-color: #202125;
+	width: auto;
+	padding:0;
+	margin:0;
+	text-align: left;
+}
+#header-container {
+	padding-left:0;
+	background-color: #202125;
+	padding-right:0;
+	padding-top:6px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top:0;
+	margin-bottom:0;
+	max-width: 800px;
+}
+#logo {
+	padding:0;
+	margin:0;
+	position:absolute;
+	vertical-align:bottom;
+	border: 0;
+}
+#header-welcome {
+	padding:0;
+	margin:0;
+	text-align:right;
+	font-style: italic;
+	color: rgba(255, 255, 255, 0.8);
+}
+#header-welcome a {
+	font-weight:normal !important;
+	text-decoration:none !important;
+	color: rgba(255, 255, 255, 0.8);
+}
+
+#header-goto {
+	margin: 40px 0 0 auto;
+}
+
+.nav-wrap{
+	display: flex;
+	margin-bottom: 5px;
+	justify-content: space-around;
+	flex-wrap: wrap;
+	overflow: hidden;
+	border-radius: 7px;
+	background-color: #0b6a0b;
+	width: auto;
+}
+
+#navSubMenu{
+	color: rgba(255, 255, 255, 0.8);
+	font-weight: bold;
+	text-align: center;
+	padding: 10px 12px;
+	text-decoration: none;
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.nav-tab {
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
+	overflow: hidden;
+}
+
+.nav-tab a {
+	float: left;
+	color: rgba(255, 255, 255, 0.8);
+	text-align: center;
+	padding: 10px 12px;
+	text-decoration: none;
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+#navSubMenu:hover {
+	cursor: pointer;
+}
+
+.nav-tab a:hover, #navSubMenu:hover {
+	background-color: rgba(255, 255, 255, 0.8);
+	border-radius: 15px 0 15px 0;
+	color: rgb(0, 83, 115) !important;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-decoration: none;
+}
+
+.nav-tabActive {
+	background-color: #4CAF50;
+	color: white;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.nav-tabActive a {
+	background-color: #4CAF50;
+	color: white;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+#navSubMenu div#nav-drop {
+	visibility: hidden;
+	display: flex;
+	flex-direction: column;
+	position: absolute;
+	overflow: auto;
+	margin-top: 25px;
+	width: auto;
+	z-index: 999;
+	background-color: #0b6a0b;
+	border-radius: 7px;
+	border: 1px solid black;
+}
+
+#nav-drop {
+	margin: 5px auto;
+	color: rgb(129, 196, 98);
+}
+
+#nav-text div:hover {
+	color:#009902;
+}
+
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+	#navSubMenu:hover div#nav-drop {
+        margin-top: 10px !important;
+    }
+    #navSubMenu div#nav-drop {
+        margin-top: 10px !important;
+	}
+}
+
+#header-goto a:hover {
+	background-color: rgba(255, 255, 255, 0.75);
+	border-radius: 15px 0 15px 0;
+}
+
+#seperator {
+	margin: 0;
+	padding: 0;
+	width: auto;
+	background-color: #0b6a0b;
+	font-size: 0;
+	height: 5px;
+	border-top: 1px solid #0b6a0b;
+	border-bottom: 1px solid #000;
+	margin-bottom:5px;
+}
+#seperator-fixed {
+	position:absolute;
+	top:60px; /* This is #header height+ its padding.
+			because IE doesn't support min-width.. */
+	margin: 0;
+	padding: 0;
+	max-width: 800px;
+	background-color: #006699;
+	font-size: 0;
+	height: 5px;
+	border-top: 1px solid #000;
+	border-bottom: 1px solid #f5f5f5;
+}
+div.content {
+	text-align: left;
+	position: relative;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 5px;
+	max-width: 750px;
+	background-color: #3a4042;
+	color: rgba(255, 255, 255, 0.8);
+	/*border: 1px solid #aaa;*/
+	padding: 15px 24px;
+	border-radius: 7px;
+}
+div.content-bare {
+	text-align: left;
+	position: relative;
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 798px; /* 800-2x1px border*/
+	border: none !important;
+}
+div.content-notice {
+	text-align: left;
+	position: relative;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 5px;
+	max-width: 768px;
+	background-color: #3b4042;
+	border: none;
+	color: rgba(255, 255, 255, 0.8);
+	padding: 8px 15px;
+	border-radius: 7px;
+}
+div.content-board-header, div.content-home-header {
+	margin-top:6px;
+	border-bottom:0;
+	border-radius: 7px;
+}
+div.content-board-header {
+	border: none;
+	background-color:#3a4042;
+	border-bottom:0;
+}
+div.content-follow-on {
+	margin-top:0 !important;
+	border-top:0 !important;
+}
+
+.content-slotBottom {
+	position: relative;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 5px;
+	padding:0;
+	max-width: 750px;
+	padding-left: 24px;
+	padding-right: 24px;
+	/*border: 1px solid #aaa;*/
+}
+.content-slot {
+	border-top:0;
+	margin-top:0;
+}
+#content-publicforum {
+	max-width: 710px;
+	height: auto;
+	margin-left:auto;
+	margin-right:auto;
+}
+div.forum {
+	max-width: 710px;
+	margin-left:auto;
+	margin-right:auto;
+	overflow:auto;
+}
+#footer {
+	margin-top: 5px;
+	font-size: 11px;
+	text-align: center;
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.copyright {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+#chatboxtabs {
+	font-size: 14px !important;
+}
+
+div.gamelistings-tabs {
+	width: auto;
+	padding-top:3px;
+	padding-bottom:3px;
+	padding-right:20px;
+	height:auto;
+	margin:0;
+	margin-left:auto;
+	margin-right:auto;
+	border:0;
+	text-align:center;
+	font-size: 13px;
+	
+}
+div.gamelistings-tabs a.current {
+	text-decoration:none;
+	background-color: #3a4042;
+	color:#000;
+	border-top:1px solid #000;
+	border-left:1px solid #000;
+	border-right:1px solid #000;
+	border-bottom:2px solid #000 ! important;
+}
+div.gamelistings-tabs a {
+	background-color: #5f6368;
+	white-space: nowrap;
+	text-decoration:none;
+	margin:0;
+	margin-left:5px;
+	margin-right:5px;
+	padding-right:6px;
+	padding-left:6px;
+	padding-top:3px;
+	padding-bottom:3px;
+	border:0;
+	border-top:1px solid #000;
+	border-left:1px solid #000;
+	border-right:1px solid #000;
+	border-bottom:2px solid #000 ! important;
+}
+div#chatboxtabs a {
+	margin-left:2px;
+	margin-right:2px;
+	padding-right:4px;
+	padding-left:4px;
+	padding-top:3px;
+	padding-bottom:3px;
+}
+div.gamelistings-tabs a:hover, div.gamelistings-tabs a.current:hover {
+	text-decoration:none;
+	border-bottom:2px solid #009902 ! important;
+	border-top:1px solid #009902 ! important;
+	border-left:1px solid #009902 ! important;
+	border-right:1px solid #009902 ! important;
+}
+.gamelistings-tabsNew {
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
+	overflow: hidden;
+	border-radius: 7px;
+	background-color: #333;
+}
+
+.gamelistings-tabsNew a {
+	float: left;
+	color: #f2f2f2;
+	text-align: center;
+	padding: 10px 12px;
+	text-decoration: none;
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.gamelistings-tabsNew a:hover {
+	background-color: #ddd;
+	color: black;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.gamelistings-tabsNewActive {
+	background-color: #0b6a0b;
+	color: white;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.gamelistings-tabsNewActive a {
+	background-color: #4CAF50;
+	color: white;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.postbox {
+	text-align:center;
+}
+.thread {
+	width: auto;
+	height: auto;
+	margin-left: auto;
+	margin-right: auto;
+	padding:5px 10px;
+}
+.threadalternate1 {
+	background-color:#5f6368;
+	border-radius: 5px;
+}
+.threadalternate2 {
+	background-color:#5f6368;
+	border-radius: 5px;
+}
+.replyborder1 {
+	border: 1px solid #c1c1c1;
+	border-top:0;
+}
+.replyborder1 .first {
+	border-top: 1px solid #c1c1c1;
+}
+.replyborder2 {
+	border: 1px solid #bebebe;
+	border-top:0;
+}
+.replyalternate1 {
+	background-color:#555;
+}
+.replyalternate2 {
+	background-color:#5555558a;
+}
+.message-head {
+	font-size:13px;
+	float:right;
+	text-align:right;
+	padding-left:5px;
+	margin-left:5px;
+}
+.leftRule {
+	border-left: 1px solid #aaa;
+}
+.message-subject {
+	font-size:15px;
+	color: rgba(255, 255, 255, 0.8);
+	overflow:hidden;
+}
+.message-body {
+	margin:5px;
+	margin-left:10px;
+	margin-right:10px;
+	font-size:15px;
+	word-wrap: break-word;
+}
+.message-foot-notification {
+	font-size:14px;
+	float:right;
+	text-align:right;
+}
+form {
+	margin:0;
+	/*background-color: #5f6368;*/
+}
+
+.reply {
+	max-width: 630px;
+	margin-left: auto;
+	margin-right: auto;
+	padding-top:10px;
+	padding-left:10px;
+	padding-right:10px;
+	font-size:15px;
+	padding-bottom:10px;
+}
+.reply-top {
+	border-top:1px solid #c1c1c1;
+	margin-top:5px;
+}
+.content-game {
+	margin-left:10px;
+}
+.Global {
+	color: #CE7800 ! important;
+}
+.Austria {
+	color: #D62929 ! important;
+}
+.Germany {
+	color: #8B481A ! important;
+}
+.England {
+	color: #DD51BD ! important;
+}
+.Italy {
+	color: #259901 ! important;
+}
+.France {
+	color: #007BA5 ! important;
+}
+.Turkey {
+	color: #b8ad00 ! important;
+}
+.Russia {
+	color: #6F005D ! important;
+}
+.chatWrapper {
+	border-radius: 5px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	font-size: 14px;
+	margin-top:0px !important;
+}
+div.chatbox {
+	max-height: 180px;
+	overflow-x:hidden;
+	overflow-y:auto;
+	border: 1px;
+}
+div.chatbox td {
+	overflow:hidden;
+}
+
+span.chaos-chatbox {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+TABLE.chatbox > tbody > tr.membersList {
+	background-color: #5f6368;
+}
+textarea#sendbox {
+	background-color: #757b81;
+	color: rgba(255, 255, 255, 0.8);
+}
+.chatboxMembersList {
+	font-size:12px;
+	text-align:center;
+	padding: 5px;
+}
+#orderFormElement {
+	background-color: transparent !important;
+}
+TABLE {
+	border-collapse: collapse;
+	width:100%;
+}
+TABLE.credits {
+	border: solid #aaa 1px;
+	width:85%;
+	margin-left:auto;
+	margin-right:auto;
+}
+TABLE.orders {
+	width:95%;
+	margin-left:auto;
+	margin-right:auto;
+	font-size:13px;
+}
+TD {
+	padding:5px;
+}
+TD.left {
+	text-align:right;
+	font-size:13px;
+	font-weight:bold;
+	width:15%;
+}
+td.notice {
+	font-weight:bold;
+	text-align:center;
+	}
+td.send {
+	vertical-align:middle;
+	width:14% ! important;
+	}
+TD.time {
+	vertical-align:bottom;
+	width:14% ! important;
+	border-right: solid #aaa 1px;
+}
+TR.header {
+	border-bottom: solid #aaa 1px;
+}
+TD.uniticon {
+	width:6%;
+	text-align:right;
+}
+TD.center {
+	text-align:center;
+}
+TD.fleet, div.fleet {
+	color:#03a9f4;
+}
+TD.army, div.army {
+	color:#55c11f;
+}
+
+/* Section for Login and Password Recovery styling */
+input[type=text].login, input[type=password].login, select.login {
+  width: 100%;
+	padding: 10px 5px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type=submit].login {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit].login:hover {
+  background-color: #45a049;
+}
+
+.loginDesc {
+	font-weight: normal;
+	color: rgba(255, 255, 255, 0.8);
+	margin-left:20px;
+	margin-right:20px;
+	font-size: 12px;
+}
+
+/* End section for Login and Password Recovery styling */
+
+/* Section for Game Create styling */
+.gameCreateShow {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #5e6368;
+	font-size: 14px;
+	padding: 0px 10px 10px 10px;
+	margin-top:0px !important;
+}
+.gameCreateTitle {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #777;
+	color: white;
+	cursor: pointer;
+	padding: 10px;
+	border: none;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+.gameCreateTitle:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #555;
+}
+
+.gameCreateContent {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	margin-top: 0px !important;
+	font-size: 14px;
+	border-radius: 7px;
+	padding: 0 0 0 10px;
+}
+
+input[type=text].gameCreate, input[type=password].gameCreate, input[type=number].gameCreate, select.gameCreate {
+  width: 100%;
+	padding: 10px 5px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  background-color: #757b81;
+  color: rgba(255, 255, 255, 0.8);
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type=submit].gameCreate {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit].gameCreate:hover {
+  background-color: #45a049;
+}
+
+select option {
+	background: #777 !important;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #5e6368;
+  color: rgba(255, 255, 255, 0.8);
+  margin: auto;
+  padding: 10px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 760px;
+}
+
+/* The Close Button */
+.close1, .close2, .close3, .close4, .close5, .close6 {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close1:hover, .close1:focus, .close2:hover, .close2:focus, .close3:hover, .close3:focus,
+.close4:hover, .close4:focus, .close5:hover, .close5:focus, .close6:hover, .close6:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+/* End section for Game Create styling */
+
+/* Section for Tournament styling */
+.tournament {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+}
+
+.tournamentShow {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #202125;
+	font-size: 14px;
+	padding: 0 10px 0 10px;
+	margin-top:0px !important;
+}
+
+ .tournament_round {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #4CAF50 ;
+	color: white;
+	cursor: pointer;
+	padding: 5px;
+	border: none;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+.tournament_round:hover {
+	background-color: #45a049;
+}
+
+.tournament_round:active {
+	background-color: #45a049;
+}
+
+.tournament_games {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	margin-top: 0px !important;
+	border-radius: 7px;
+}
+
+.tournament_info {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	/* overflow: hidden; */
+	background-color: #5e6368;
+	margin-top: 0px !important;
+	border-radius: 7px;
+	padding: 0 10px 0 10px;
+}
+
+.tournamentCenter {
+	text-align: center !important;
+}
+
+.tournament td, .tournament th {
+	border: 1px solid #ddd;
+	padding: 6px;
+	font-size: 12px;
+}
+
+.tournament tr:nth-child(even){background-color: #555; word-break: break-word;}
+.tournament tr:nth-child(odd){background-color: #5555558a; word-break: break-word;}
+
+.tournament th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+	text-align: left;
+	background-color: #009902;
+	color: white;
+}
+/* End of section for Tournament styling */
+
+/* Section for FAQ styling */
+.faq {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+}
+
+ .faq_question {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #777;
+	color: white;
+	cursor: pointer;
+	padding: 10px;
+	width: 100%;
+	border: 1px solid #ccc;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+.faq_question:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #555;
+}
+
+.faq_answer {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	background-color: #555;
+	margin-top: 0px !important;
+	font-size: 14px;
+	border-radius: 7px;
+	padding: 0 10px;
+}
+/* End of section for FAQ styling */
+
+/* Section for datc styling */
+.datc {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+}
+
+.datc td, .datc th {
+	border: 1px solid #ddd;
+	padding: 6px;
+}
+
+.datc tr:nth-child(even){background-color: #555; word-break: break-word;}
+.datc tr:nth-child(odd){background-color: #777; word-break: break-word;}
+
+.datc th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+	text-align: left;
+	background-color: #009902;
+	color: white;
+	min-width:70px;
+}
+/* End of section for Hall of Fame styling */
+
+/* Section for Developer styling */
+.developerInfo-show {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #5c6368;
+	font-size: 14px;
+	padding: 0 0 0 10px;
+	margin-top:0px !important;
+}
+
+.developerInfo-show h3 {
+	margin-left: 0px !important;
+}
+/* End of section for Developer styling */
+
+/* Section for rrInfo styling */
+.rrInfo {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+}
+
+.rrInfo td, .rrInfo th {
+	border: 1px solid #ddd;
+	padding: 6px;
+}
+
+.rrInfo tr:nth-child(even){background-color: #555; word-break: break-word;}
+.rrInfo tr:nth-child(odd){background-color: #777; word-break: break-word;}
+
+.rrInfo th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+	text-align: left;
+	background-color: #009902;
+	color: white;
+	min-width:70px;
+}
+
+.rr-profile-info {
+	color: rgb(207, 140, 130);
+	font-size: 13px;
+}
+/* End of section for rrInfo styling */
+
+/* Section for Hall of Fame styling */
+.hof {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+}
+
+.hof td, .hof th {
+	border: 1px solid #ddd;
+	padding: 6px;
+}
+
+.hof tr:nth-child(even){
+	background-color: #555; 
+	word-break: break-word;
+}
+
+.hof tr:nth-child(odd){
+	background-color: #777; 
+	word-break: break-word;
+}
+
+.hof th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+	text-align: left;
+	background-color: #0b6a0b;
+	color: white;
+	min-width:70px;
+}
+/* End of section for Hall of Fame styling */
+
+/* Section for donations page styling */
+.donations_title {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #777;
+	color: white;
+	cursor: pointer;
+	padding: 10px;
+	border: 1px solid #ccc;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+.donations_title:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #555;
+}
+
+.donations_content, .donations_content_show {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	padding: 0 0 0 10px;
+	background-color: #555;
+	font-size: 14px;
+	margin-top:0px !important;
+	border-radius: 7px;
+}
+
+.donations_content_show > form {
+	background-color: #555;
+}
+
+/* End of section for donations page styling */
+
+/* Section for help page styling */
+.help_title {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #777;
+	color: white;
+	cursor: pointer;
+	padding: 10px;
+	border: 1px solid #ccc;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+.help_title:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #555;
+}
+
+.help_content {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	padding: 0 0 0 10px;
+	background-color: #555;
+	font-size: 14px;
+	margin-top:0px !important;
+	border-radius: 7px;
+}
+
+.help_content_show {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #f1f1f1;
+	font-size: 14px;
+	padding: 0 0 0 10px;
+	margin-top:0px !important;
+}
+/* End of section for help page styling */
+
+/* Section for contactUsDirect page styling */
+.contactUs {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+}
+
+.contactUsShow {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #5e6368;
+	font-size: 14px;
+	padding: 0 10px 0 10px;
+	margin-top:0px !important;
+}
+
+input[type=text].contactUs, input[type=password].contactUs, textarea.contactUs, select.contactUs {
+  width: 100%;
+	padding: 10px 5px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: #757b81;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+input[type=submit].contactUs {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type=submit].contactUs:hover {
+  background-color: #45a049;
+}
+
+.contact-us-desc {
+	color: rgb(255, 153, 153);
+	font-weight: 900;
+}
+/* End of section for contactUsDirect page styling */
+
+/* Section for intro page */
+.introToDiplomacy {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.introToDiplomacy_show {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #555;
+	font-size: 14px;
+	padding: 0 0 0 10px;
+	margin-top:0px !important;
+}
+/* End of section for intro page */
+
+/* Section for homeNotice page */
+.homeNotice {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #5f6368;
+	font-size: 14px;
+	padding: 0 0 0 10px !important;
+	margin-top:5px !important;
+}
+
+.gamePanelHome {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #5f6368;
+	margin-top:10px !important;
+}
+
+.homeForumGroupNew {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #5f6368;
+	font-size: 12px;
+	padding: 0 0 0 10px !important;
+	margin-top:5px !important;
+}
+
+.home-submit {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: rgba(131, 222, 152, 1) !important;
+	text-decoration: underline;
+	font-size: 12px !important;
+	font-weight: bold;
+	cursor: pointer;
+	background-color: transparent !important;
+	padding: 0px;
+	border: 0px !important;
+	display: inline-block;
+}
+
+.home-submit:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #009902 ! important;
+}
+/* End of section for homeNotice page */
+
+/* Section for user search page */
+.userSearch {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.userSearch_show {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #5f6368;
+	font-size: 14px;
+	padding: 0 10px 0 10px;
+	margin-top:0px !important;
+}
+
+input[type="text"].userSearch, input[type="password"].userSearch, textarea.userSearch, select.userSearch {
+	font-size: 14px !important;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #ffffff !important;
+	border: 1px solid #c1c1c1;
+	color:#000000;
+}
+/* End of section for user search page */
+
+/* Section for settings page */
+.settings {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.settings_show {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #5e6368;
+	font-size: 14px;
+	padding: 0 10px 0 10px;
+	margin-top:0px !important;
+}
+
+input[type=text].settings, input[type=password].settings, textarea.settings, select.settings {
+  width: 100%;
+	padding: 10px 5px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  background-color: #757b81;
+  color: rgba(255, 255, 255, 0.8);
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+/* End of section for settings page */
+
+/* Section for credits page styling */
+.credits {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.credits-title {
+	background-color: #006c00;
+	color: white;
+	padding: 10px;
+	border: none;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+.credits-info {
+	border-radius: 7px;
+	padding: 10px;
+	overflow: hidden;
+	background-color: #555;
+	font-size: 14px;
+	margin: 0 0 15px 0 !important;
+}
+
+#credits-player-map-a, #credits-player-map-a:active {
+	color: rgb(84, 228, 238);
+	cursor: pointer;
+}
+/* end of credits page styling */
+
+/* Section for Rules styling */
+.helpPage em {
+	text-decoration:underline;
+	font-style:normal;
+}
+.helpPage h3 {
+	margin-left: 0px !important;
+}
+/*.helpPage ul {
+	color:#666;
+}
+.helpPage ol {
+	color:#666;
+}*/
+
+.rules {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+	/* font-size: 14px; */
+}
+.rules h3{
+	margin-left: 0px !important;
+}
+
+ .rules_title {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #777;
+	color: white;
+	cursor: pointer;
+	padding: 10px;
+	border: 1px solid #ccc;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+.rules_title:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #555;
+}
+
+.rules_content {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	padding: 0 10px;
+	background-color: #555;
+	/*border: 1px solid #ccc;*/
+	font-size: 14px;
+	margin-top:0px !important;
+	border-radius: 7px;
+}
+/* End of section for Rules styling */
+
+/* This section is for the new AdminCP and Mod tools */
+.modTools {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+}
+
+input[type="text"].modTools, input[type="password"].modTools, textarea.modTools, select.modTools {
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background: #757b81;
+	color: rgba(255, 255, 255, 0.8);
+	border: 1px solid #c1c1c1;
+}
+
+.modTools td, .modTools th {
+	border: 1px solid #ddd;
+	padding: 6px;
+	/*background: #5f6368;*/
+	color: rgba(255, 255, 255, 0.8);
+}
+
+/*.modTools tr:first-child {
+	background-color: green !important;
+}*/
+
+.modTools tr:nth-child(even){
+	background-color: #555; 
+	word-break: break-word;
+}
+
+.modTools tr:nth-child(odd){
+	background-color: #777; 
+	word-break: break-word;
+}
+
+.modTools th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+	text-align: left;
+	min-width:70px;
+}
+
+.modToolsCP {
+	border-radius: 25px;
+	background: #5f6368;
+	padding: 8px;
+}
+
+.modToolsHeadings {
+    color: rgba(255, 255, 255, 0.8);
+	margin-bottom: 5px;
+	font-weight: bold;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-decoration: underline;
+}
+
+li.modToolsformlistfield {
+	list-style: none;
+	margin: 10px 0 0 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+li.modToolsformlistdesc {
+	font-weight: normal;
+	color: rgba(255, 255, 255, 0.6);
+	list-style: none;
+	margin-left:20px;
+	margin-right:20px;
+	border-left: 1px solid #aaa;
+	padding-left: 10px;
+	margin-bottom: 30px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+li.modToolsformlisttitle {
+	font-weight: bold;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-decoration: underline;
+}
+
+.modToolsCollapsible {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background: transparent;
+	color: white;
+	cursor: pointer;
+	padding: 10px;
+	width: 100%;
+	border: none;
+	text-align: left;
+	outline: none;
+}
+
+.modToolsCollapsible:active, .modToolsCollapsible:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #555;
+}
+
+.modToolsContent {
+	padding: 0 10px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	background-color: transparent;
+}
+
+ul.modTools {
+	padding: 0;
+	margin-bottom: 40px;
+	list-style: none;
+}
+
+.modToolsCP {
+	padding: 15px;
+}
+
+.topnav {
+	display: flex;
+	justify-content: space-around;
+	flex-wrap: wrap;
+	overflow: hidden;
+	background-color: #333;
+	border-radius: 7px;
+}
+
+.topnav a {
+	float: left;
+	color: #f2f2f2;
+	text-align: center;
+	padding: 10px 12px;
+	text-decoration: none;
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.topnav a:hover {
+	background-color: #ddd;
+	color: black;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.topnavActive {
+	background-color: #4CAF50;
+	color: white;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+.topnavActive a {
+	background-color: #4CAF50;
+	color: white;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+/* Mod Tools section ends here */
+
+/* This section is for the new advanced search page. */
+  .SearchCollapsible {
+		font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+		background-color: #777;
+		color: white;
+		cursor: pointer;
+		padding: 10px;
+		width: 100%;
+		border: none;
+		text-align: left;
+		outline: none;
+		border-radius: 7px;
+  }
+
+.SearchCollapsible:active, .SearchCollapsible:hover {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #555;
+}
+
+.advancedSearch {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.8);
+}
+
+input[type="text"].advancedSearch, input[type="password"].advancedSearch, textarea.advancedSearch, select.advancedSearch {
+	font-size: 12px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border: 1px solid #c1c1c1;
+}
+
+.advancedSearch td, .advancedSearch th {
+	border: 1px solid #ddd;
+	padding: 6px;
+}
+
+td.advancedSearch > input {
+	background-color: #202125;
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.advancedSearch tr:nth-child(even){background-color: #3a4042; word-break: break-word;}
+.advancedSearch tr:nth-child(odd){background-color: #202125; word-break: break-word;}
+
+.advancedSearch th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+	text-align: left;
+	background-color: #0b6a0b;
+	color: white;
+	min-width:35px;
+}
+
+.advancedSearchContent {
+	padding: 5px 10px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	display: none;
+	overflow: hidden;
+	background-color: #5e6368;
+}
+
+ul.advancedSearch {
+	padding: 0;
+	margin-bottom: 40px;
+	list-style: none;
+}
+
+.curr-page {
+	display:inline-block;
+	margin:3px;
+	background-color: #777;
+	border: .5px solid #555;
+	border-radius: 5px;
+	-webkit-box-shadow: inset 0 1px 0 0 #b1b9cb;
+	box-shadow: inset 0 1px 0 0 #b1b9cb;
+	color: #fff;
+	font-size: 14px;
+	padding: 7px 0 8px 0;
+	text-decoration: none;
+	padding-right: 7px;
+	padding-left: 7px;
+}
+
+.advancedSearchHeader {
+	background:none!important;
+	color:inherit;
+	border:none;
+	padding:0!important;
+	font:inherit;
+	cursor:pointer;
+	text-decoration:underline;
+}
+/* advanced search page section ends */
+
+/* points and scoring systems page styling */
+
+#points-scoring {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #555;
+	padding: 0 0 0 10px;
+	margin-top: 0px !important;
+}
+
+.scoring-text {
+	font-size: 14px;
+}
+
+.scoring-h {
+	margin-left: 0 !important;
+}
+/* end of points and scoring systems page styling */
+
+/* dark mode corrections */
+
+form.safeForm {
+	background-color: #5f6368;
+}
+
+.orderDropDown {
+	background-color: #757b81 !important;
+}
+
+.hof-self {
+	color: #ff7272 !important
+}
+
+/* end of dark mode corrections */
+
+
+
+/* *** new forum dark mode *** */
+
+/* forum toolbar */
+
+.navbar {
+	background-color: #3b4042;
+}
+
+span.crumb::before {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+/* main body */
+
+.wrap {
+	background-color: #3b4042;
+}
+
+.dropdown .pointer-inner {
+	border-color: #3b4042 transparent;
+}
+
+.dropdown .dropdown-contents {
+	background-color: #3b4042;
+	border-color: rgba(255, 255, 255, 0.8);
+	box-shadow: 1px 3px 5px rgba(255, 255, 255, 0.8);
+}
+
+#keywords, input.inputbox, input.inputbox.tiny, input.button2, input.button1 {
+	background-color: #aaa !important;
+	color: rgba(0, 0, 0, 0.8);
+}
+
+input.button2, input.button1, .tabs .tab > a, .tabs .activetab > a .button-search {
+	background-image: none !important;
+}
+
+.search-header {
+	border: 0px;
+}
+
+p.responsive-center, p.time, ul.topiclist > li, li.header dd, li.header dt {
+	color: rgba(255, 255, 255, 0.8) !important;
+}
+
+ul.forums, .body-blok {
+	background-color: #434343 !important;
+}
+
+.forabg > .inner > ul.topiclist {
+	background-color: #006c00;
+}
+
+.list-inner > a, .body-blok-h3 > h3 {
+	color: rgba(175, 255, 175, 0.8) !important;
+}
+
+li.row:hover, .body-blok-h3 > h3 {
+	background-color: #006c00 !important;
+}
+
+.body-blok-info > div > p, .statistics > p {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.statistics > h3 {
+	color: rgba(175, 255, 175, 0.8);
+}
+
+/* subforum */
+
+.page-body > .rules {
+	background-color: #343434 !important;
+	color: rgba(255, 255, 255, 0.8) !important;
+	border: solid 1px #9caeb8;
+}
+
+.postlink, .postlink:visited {
+	color: rgba(175, 255, 175, 0.8) !important;
+	border: 0px !important;
+}
+
+.postlink:hover {
+	background-color: transparent !important;
+	color: #006f00;
+}
+
+li.page-jump > a > i, .forumbg {
+	background-color: #006c00 !important;
+}
+
+a.mark::after, li.ellipsis span, .pagination > li > a, li.page-jump > a > i {
+	color: rgba(255, 255, 255, 0.8) !important;
+}
+
+#search-keywords {
+	background-color: #aaa;
+	color: rgba(0, 0, 0, 0.8);
+}
+
+.pagination {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+li.bg1 {
+	background-color: #434343 !important;
+}
+
+li.bg2 {
+	background-color: #343434 !important;
+}
+
+.reported {
+	background-color: #6f001e !important;
+}
+
+div.stat-block > p {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+/* threads */
+
+.postbody, .postprofile, .postprofile strong, .post:target .content, .post:target h3 a {
+	color: rgba(255, 255, 255, 0.8) !important;
+}
+
+#subsilver-nav-topic {
+	background-color: #006c00 !important;
+}
+
+span.like-info {
+	color: rgba(175, 255, 175, 0.8) !important;
+}
+
+.bg1, .bg2, blockquote blockquote {
+	background-color: #434343 !important;
+}
+
+blockquote, blockquote blockquote, blockquote blockquote blockquote {
+	background-image: none !important;
+	border-color: transparent;
+}
+
+blockquote, blockquote blockquote blockquote {
+	background-color: #343434 !important;
+}
+
+p.author, ul.dropdown-contents li {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.dropdown li {
+	border-color: none !important;
+}
+
+.post-buttons li {
+	opacity: 0.8 !important;
+}
+
+/* posting */
+
+.panel, .panel-container .panel, .bg3 {
+	background-color: #555 !important;
+}
+
+.panel, .panel h2, .panel-container h2, .panel-container h3, .panel-container p, 
+.message-box textarea {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+/* settings and private messaging */
+
+.navigation a, .tabs .activetab > a, .tabs .activetab > a:hover {
+	background-image: none !important;
+}
+
+.navigation a, .tabs .tab > a {
+	background-color: #343434;
+}
+
+.navigation .active-subsection a, .tabs .activetab > a, .tabs .tab > a:hover {
+	background-color: #006c00;
+}
+
+.navigation a, .navigation .active-subsection a, .tabs .tab > a, .tabs .activetab > a, 
+dl.mini dd, dl.mini dt {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.tabs .activetab > a, .tabs .activetab > a:hover {
+	box-shadow: none;
+}
+
+.cp-mini {
+	display: none;
+}
+
+.cp-main .pm {
+	background-color: #434343;
+}
+
+a.current {
+	color: rgba(175, 255, 175, 0.8);
+}
+
+.pmlist li {
+	border-right: solid 3px transparent;
+	border-left: solid 3px transparent;
+	border-top: solid 3px #A9B8C2;
+	border-bottom: solid 3px #A9B8C2;
+}
+
+.pmlist li.pm_message_reported_colour, .pm_message_reported_colour, .pmlist li.pm_marked_colour, 
+.pm_marked_colour, .pmlist li.pm_replied_colour, .pm_replied_colour, .pmlist li.pm_friend_colour, 
+.pm_friend_colour, .pmlist li.pm_foe_colour, .pm_foe_colour {
+	border-color: transparent;
+}
+
+/* miscellaneous */
+
+.phpbb-alert {
+	background-color: #555 !important;
+}
+
+.alert_text > form > h3, dl.details dt, dl.details dd, label, dd label,
+table.table1 td, .navigatiion li a {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.alert-close {
+	background-color: rgba(0, 0, 0, 0.8);
+}
+
+fieldset dl:hover dt label, .button, .button:hover, .icon, .icon:hover, .button .icon, 
+.button .icon:hover, .pagination li a, .pagination li.active span {
+	color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.button .icon, .icon, .icon:hover {
+	background-color: transparent !important;
+}
+
+.button, .button:hover, .button:focus {
+	background-image: none !important;
+	background-color: #006c00 !important;
+	box-shadow: none !important;
+	-webkit-box-shadow: none !important;
+	text-shadow: none !important;
+}
+
+.button:hover, .pagination li.active span {
+	background-color: rgba(175, 255, 175, 0.5) !important;
+}
+
+.pagination li.active span {
+	border-color: rgba(175, 255, 175, 0.5);
+}
+
+select.inputbox option {
+	background-color: transparent;
+}
+
+/*** end of dark mode forum ***/
+
+
+span.orderNotice {
+	font-weight:bold;
+}
+.likeMessageToggleLink, .likeCount {
+	font-size:8pt;
+	font-style:italic;
+}
+
+tr[class^="replyalternate"]{
+	word-wrap: break-word;
+}
+#chatboxscroll > TABLE.chatbox{
+	table-layout: fixed;
+}
+input[id^="UpdateButton"]{
+	margin-top: 10px;
+	width: auto !important;
+}
+input[id^="FinalizeButton"]{
+	margin-top: 10px;
+	width: auto !important;
+}
+.archive-messages-table{
+	table-layout: fixed;
+}

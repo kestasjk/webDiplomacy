@@ -446,7 +446,7 @@ class processGame extends Game
 			if ($this->phaseMinutes > 60)
 			{
 				// Insert a Missed Turn for anyone who missed the turn, accounting for systemExcused and samePeriodExcused
-				$DB->sql_put("INSERT INTO wD_MissedTurns (gameID, userID, countryID, turn, bet, SCCount, forcedByMod, systemExcused, modExcused, turnDateTime, modExcusedReason, samePeriodExcused)
+				$DB->sql_put("INSERT INTO wD_MissedTurns (gameID, userID, countryID, turn, bet, SCCount, forcedByMod, systemExcused, modExcused, turnDateTime, modExcusedReason, samePeriodExcused, liveGame)
 						SELECT m.gameID, m.userID, m.countryID, ".$this->turn." as turn, m.bet, m.supplyCenterNo, 0, CASE WHEN excusedMissedTurns > 0 THEN 1 ELSE 0 END, 0,".time().",'', 
 						CASE WHEN (
 							SELECT COUNT(1) 
@@ -456,7 +456,8 @@ class processGame extends Game
 								AND systemExcused = 0 
 								AND modExcused = 0 
 								AND samePeriodExcused = 0
-						) > 0 THEN 1 ELSE 0 END 
+						) > 0 THEN 1 ELSE 0 END, 
+						0
 						FROM wD_Members m
 						WHERE m.id IN ( ".implode(',',$nmrs).")");
 			}
@@ -464,8 +465,8 @@ class processGame extends Game
 			else
 			{
 				// Insert a Missed Turn for anyone who missed the turn, accounting for systemExcused and samePeriodExcused
-				$DB->sql_put("INSERT INTO wD_MissedTurns (gameID, userID, countryID, turn, bet, SCCount, forcedByMod, systemExcused, modExcused, turnDateTime, modExcusedReason, samePeriodExcused)
-						SELECT m.gameID, m.userID, m.countryID, ".$this->turn." as turn, m.bet, m.supplyCenterNo, 0, CASE WHEN excusedMissedTurns > 0 THEN 1 ELSE 0 END, 0,".time().",'', 0
+				$DB->sql_put("INSERT INTO wD_MissedTurns (gameID, userID, countryID, turn, bet, SCCount, forcedByMod, systemExcused, modExcused, turnDateTime, modExcusedReason, samePeriodExcused, liveGame)
+						SELECT m.gameID, m.userID, m.countryID, ".$this->turn." as turn, m.bet, m.supplyCenterNo, 0, CASE WHEN excusedMissedTurns > 0 THEN 1 ELSE 0 END, 0,".time().",'', 0, 1
 						FROM wD_Members m
 						WHERE m.id IN ( ".implode(',',$nmrs).")");
 			}
@@ -485,6 +486,23 @@ class processGame extends Game
 		global $DB;
 		
 		$this->processTime = time() + $this->phaseMinutes*60;
+		$DB->sql_put("UPDATE wD_Games SET processTime = ".$this->processTime." WHERE id = ".$this->id);
+	}
+
+	/**
+	 * Resets the phase timer to one phase time or 24 hours, which is shorter.
+	 */
+	protected function resetProcessTimeForMissedTurns() 
+	{
+		global $DB;
+	
+		$newProcessTime = time() + 1440*60;
+		if ($this->phaseMinutes < 1440)
+		{
+			$newProcessTime = time() + $this->phaseMinutes*60;
+		}
+
+		$this->processTime = $newProcessTime;
 		$DB->sql_put("UPDATE wD_Games SET processTime = ".$this->processTime." WHERE id = ".$this->id);
 	}
 
@@ -570,7 +588,7 @@ class processGame extends Game
 			$extendMessage = 'Game was extended due to at least 1 member failing to enter orders and having an excused missed turn available. This has un-readied all orders.';
 			
 			$this->Members->unreadyMembers();
-			$this->resetProcessTime();
+			$this->resetProcessTimeForMissedTurns();
 			$this->Members->notifyGameExtended();
 			
 			libGameMessage::send('Global','GameMaster', $extendMessage);

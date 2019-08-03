@@ -324,7 +324,7 @@ print '
 			<form class="safeForm" action="forum.php#postbox" method="post"><p>
 			<div style="text-align:left; width:80%; margin-left:auto; margin-right:auto; float:middle">
 			<strong>'.l_t('Subject:').'</strong><br />
-			<input style="width:100%" maxLength=2000 size=60 name="newsubject" value="'.$_REQUEST['newsubject'].'"><br /><br />
+			<input class="new-subject" style="width:100%" maxLength=2000 size=60 name="newsubject" value="'.$_REQUEST['newsubject'].'"><br /><br />
 			<strong>'.l_t('Message:').'</strong><br />
 			<TEXTAREA NAME="newmessage" ROWS="6" style="width:100%">'.$_REQUEST['newmessage'].'</TEXTAREA>
 			<input type="hidden" name="viewthread" value="0" />
@@ -461,8 +461,7 @@ while( $message = $DB->tabl_hash($tabl) )
 			<strong><em>'.libTime::text($message['timeSent']).'</em></strong>'.$muteLink.'<br />
 			'.$User->likeMessageToggleLink($message['id'],$message['fromUserID']).libHTML::likeCount($message['likeCount']).
 		'</div>';
-	
-	
+
 	print '<div class="message-subject">';
 
 	print libHTML::forumMessage($message['id'],$message['latestReplySent']);

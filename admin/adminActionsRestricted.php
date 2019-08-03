@@ -214,6 +214,26 @@ class adminActionsRestricted extends adminActionsForum
 				'description' => 'Uncrashes all crashed games except the games specified (if any).<br />
 					<em>ONLY A DEV</em> should run this function. The reason for the crash needs to be found out before the games are uncrashed.',
 				'params' => array('excludeGameIDs'=>'Except Game ID list'),
+            ),
+			'addApiKey' => array(
+				'name' => 'API - Add an API key for a user',
+				'description' => 'Associate an API key to a user.',
+				'params' => array('userID'=>'User ID'),
+			),
+			'deleteApiKey' => array(
+				'name' => 'API - Delete all API keys for a user',
+				'description' => 'Remove all API keys assiociated with a user.',
+				'params' => array('userID'=>'User ID'),
+			),
+			'setApiPermission' => array(
+				'name' => 'API - Set API key permission',
+				'description' => 'Set an API permission for a user. (getStateOfAllGames, submitOrdersForUserInCD, listGamesWithPlayersInCD)',
+				'params' => array('userID'=>'User ID', 'permissionName' => 'Permission name', 'permissionValue' => 'Permission value ("Yes" or "No").'),
+			),
+			'showApiKeys' => array(
+				'name' => 'API - Show API key and permissions for a user',
+				'description' => 'Display API key and permissions for a user.',
+				'params' => array('userID'=>'User ID'),
 			)
 		);
 
@@ -816,6 +836,86 @@ class adminActionsRestricted extends adminActionsForum
 		$details .= l_t('. %s games in total.',$count);
 
 		return $details;
+	}
+
+	public function addApiKey($params) {
+		global $DB;
+
+		// Generating API Key
+		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$randomString = '';
+		for ($i = 0; $i < 80; $i++) {
+			$randomString .= $characters[rand(0, strlen($characters) - 1)];
+		}
+
+		$userID = intval($params['userID']);
+		$apiKey = strval($randomString);
+		$row = $DB->sql_hash('SELECT COUNT(userID) AS hasUserID FROM wD_ApiKeys WHERE userID = '.$userID);
+		if ($row['hasUserID'])
+			throw new Exception(l_t('An API key is already associated to user ID %s.', $userID));
+		$row = $DB->sql_hash('SELECT COUNT(apiKey) AS hasApiKey FROM wD_ApiKeys WHERE apiKey = '.$userID);
+		if ($row['hasApiKey'])
+			throw new Exception(l_t('This API key is already associated with a user ID.'));
+		$DB->sql_put('INSERT INTO wD_ApiKeys (userID, apiKey) VALUES ('.$userID.', "'.$apiKey.'")');
+		$DB->sql_put("COMMIT");
+		return l_t('API key %s successfully added for user ID %s.', $randomString, $userID);
+	}
+	public function deleteApiKey($params) {
+		global $DB;
+		$userID = intval($params['userID']);
+		$DB->sql_put('DELETE FROM wD_ApiPermissions WHERE userID = '.$userID);
+		$DB->sql_put('DELETE FROM wD_ApiKeys WHERE userID = '.$userID);
+		$DB->sql_put("COMMIT");
+		return l_t('API key(s) removed for user ID %s.', $userID);
+	}
+	public function setApiPermission($params) {
+		global $DB;
+		$userID = intval($params['userID']);
+		$permissionName = strval($params['permissionName']);
+		$permissionValue = strval($params['permissionValue']);
+		$currentPermissions = array(
+			'getStateOfAllGames',
+			'submitOrdersForUserInCD',
+			'listGamesWithPlayersInCD',
+		);
+		if (!in_array($permissionName, $currentPermissions))
+			throw new Exception('Unknown permission "'.$permissionName.'". Should be one of: ['.implode(', ', $currentPermissions).'].');
+		if (!in_array($permissionValue, array('Yes', 'No')))
+			throw new Exception('Invalid permission value "'.$permissionValue.'". Should be either "Yes" or "No".');
+		$row = $DB->sql_hash('SELECT COUNT(userID) AS hasUserID FROM wD_ApiKeys WHERE userID = '.$userID);
+		if (!$row['hasUserID'])
+			throw new Exception(l_t('No API key for user %s. You should create an API key for this user before setting permissions for him.', $userID));
+		$row = $DB->sql_hash('SELECT COUNT(userID) AS hasPermissionsEntry FROM wD_ApiPermissions WHERE userID = '.$userID);
+		if ($row['hasPermissionsEntry']) {
+			$DB->sql_put("UPDATE wD_ApiPermissions SET $permissionName = '$permissionValue' WHERE userID = $userID;");
+		} else {
+			$DB->sql_put("INSERT INTO wD_ApiPermissions (userID, $permissionName) VALUES ($userID, '$permissionValue');");
+		};
+		$DB->sql_put("COMMIT");
+		return l_t('Permissions successfully set.');
+	}
+	public function showApiKeys($params) {
+		global $DB;
+		$userID = intval($params['userID']);
+		$row = $DB->sql_hash("
+		SELECT
+		       k.apiKey,
+		       IFNULL(p.getStateOfAllGames, 'No') as getStateOfAllGames,
+		       IFNULL(p.listGamesWithPlayersInCD, 'No') as listGamesWithPlayersInCD,
+		       IFNULL(p.submitOrdersForUserInCD, 'No') as submitOrdersForUserInCD
+		FROM wD_ApiKeys AS k
+		LEFT JOIN wD_ApiPermissions AS p ON (k.userID = p.userID)
+		WHERE k.userID = ".$userID."
+		");
+		if (!$row)
+			return l_t('No api Key for user %s.', $userID);
+		return "
+		<div><strong>User ID</strong>: ".$userID."</div>
+		<div><strong>API key</strong>: ".$row['apiKey']."</div>
+		<div><strong>getStateOfAllGames</strong>: ".$row['getStateOfAllGames']."</div>
+		<div><strong>listGamesWithPlayersInCD</strong>: ".$row['listGamesWithPlayersInCD']."</div>
+		<div><strong>submitOrdersForUserInCD</strong>: ".$row['submitOrdersForUserInCD']."</div>
+		";
 	}
 }
 
