@@ -739,7 +739,7 @@ class adminActionsRestricted extends adminActionsForum
 		$DB->sql_put("UPDATE wD_Users SET type = CONCAT_WS(',',type,'Donator".$type."') WHERE id = ".$userID);
 
 		// If we're using the new forum then add a rank to the user. 
-		if( isset(Config::$customForumURL) && ($type = 'Gold' || $type = 'Silver' || $type = 'Bronze') ) 
+		if( isset(Config::$customForumURL) && ($type == 'Gold' || $type == 'Silver' || $type == 'Bronze') ) 
 		{
 			// Make sure the user has a new forum profile before trying an insert into the custom tables.
 			list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
