@@ -565,7 +565,6 @@ a.light {
 
 #navSubMenu div#nav-drop {
 	position: absolute;
-	transform: translateX(-22.5%);
 	width: auto;
 	visibility: hidden;
 	display: flex;
@@ -595,6 +594,15 @@ a.light {
         margin-top: 10px !important;
 	}
 }
+
+@media not all and (min-resolution:.001dpcm) { 
+    @media {
+        #navSubMenu div#nav-drop {
+       		transform: translateX(-22.5%);
+		}	
+    }
+}
+
 
 #header-goto a:hover {
 	background-color: rgba(255, 255, 255, 0.75);
@@ -2333,6 +2341,9 @@ input[id^="FinalizeButton"]{
 	}
 	#navSubMenu {
 		margin-top: 5px;
+	}
+	#navSubMenu div#nav-drop {
+       	transform: translateX(-22.5%);
 	}
 	#seperator{
 		margin: 0 -10px;
