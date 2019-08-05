@@ -745,6 +745,7 @@ class adminActionsRestricted extends adminActionsForum
 			list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
 			if ($newForumId > 0)
 			{
+				$rank = 12;
 				switch ($type) 
 				{
 					case 'Gold':
