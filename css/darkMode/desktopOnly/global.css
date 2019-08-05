@@ -179,7 +179,7 @@ div.clear {
 	border-bottom: 0;
 }
 h1, h2, h3, h4 {
-	color: #009902;
+	color: #79d58d;
 	margin-bottom:5px;
 }
 h3 {
@@ -849,7 +849,7 @@ div.gamelistings-tabs a:hover, div.gamelistings-tabs a.current:hover {
 	background-color:#555;
 }
 .replyalternate2 {
-	background-color:#5555558a;
+	background-color:#454545;
 }
 .message-head {
 	font-size:13px;
