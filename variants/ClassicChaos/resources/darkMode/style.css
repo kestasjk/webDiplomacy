@@ -1,15 +1,15 @@
 @CHARSET "ISO-8859-1";
 
 .variantClassicChaos .country0 { color: rgba(255, 255, 255, 0.8) }  /* Global         */
-.variantClassicChaos .country1 {color: #6da1c3 ! important;}  /* Ankara         */
+.variantClassicChaos .country1 { color: #6da1c3 ! important; }  /* Ankara         */
 .variantClassicChaos .country2 { color: #fd7272 ! important; }  /* Belgium        */
-.variantClassicChaos .country3 {color: #ea93c1 ! important;}  /* Berlin         */
+.variantClassicChaos .country3 { color: #ea93c1 ! important; }  /* Berlin         */
 .variantClassicChaos .country4 { color: #ED3CCA ! important; }  /* Brest          */
 .variantClassicChaos .country5 { color: #89CFF0 ! important; }  /* Budapest       */
-.variantClassicChaos .country6 {color: #d8eafb ! important;}  /* Bulgaria       */
+.variantClassicChaos .country6 { color: #d8eafb ! important; }  /* Bulgaria       */
 .variantClassicChaos .country7 { color: #A4C639 ! important; }  /* Constantinople */
 .variantClassicChaos .country8 { color: #CAB310 ! important; }  /* Denmark        */
-.variantClassicChaos .country9 {color: #f3ffb3 ! important;}  /* Edinburgh      */
+.variantClassicChaos .country9 { color: #f3ffb3 ! important; }  /* Edinburgh      */
 .variantClassicChaos .country10 { color: #FD5F00 ! important; } /* Greece         */
 .variantClassicChaos .country11 { color: #B2BEB5 ! important; } /* Holland        */
 .variantClassicChaos .country12 { color: #1ADD51 ! important; } /* Kiel           */
@@ -17,34 +17,34 @@
 .variantClassicChaos .country14 { color: #00FFFF ! important; } /* London         */
 .variantClassicChaos .country15 { color: #FDEE00 ! important; } /* Marseilles     */
 .variantClassicChaos .country16 { color: #C072C8 ! important; } /* Moscow         */
-.variantClassicChaos .country17 {color: #ecc29a ! important;} /* Munich         */
-.variantClassicChaos .country18 {color: #cdffe9 ! important;} /* Naples         */
-.variantClassicChaos .country19 {color: #8c8cfd ! important;} /* Norway         */
+.variantClassicChaos .country17 { color: #ecc29a ! important; } /* Munich         */
+.variantClassicChaos .country18 { color: #cdffe9 ! important; } /* Naples         */
+.variantClassicChaos .country19 { color: #8c8cfd ! important; } /* Norway         */
 .variantClassicChaos .country20 { color: #87A96B ! important; } /* Paris          */
 .variantClassicChaos .country21 { color: #5CFF9B ! important; } /* Portugal       */
 .variantClassicChaos .country22 { color: #FA9DA6 ! important; } /* Rome           */
-.variantClassicChaos .country23 {color: #ffffff ! important;} /* Rumania        */
+.variantClassicChaos .country23 { color: #ffffff ! important; } /* Rumania        */
 .variantClassicChaos .country24 { color: #CFEB1E ! important; } /* Serbia         */
 .variantClassicChaos .country25 { color: #46B300 ! important; } /* Sevastopol     */
 .variantClassicChaos .country26 { color: #FFBF00 ! important; } /* Smyrna         */
 .variantClassicChaos .country27 { color: #93A2D0 ! important; } /* Spain          */
-.variantClassicChaos .country28 {color: #c19090 ! important;} /* Petersburg     */
+.variantClassicChaos .country28 { color: #c19090 ! important; } /* Petersburg     */
 .variantClassicChaos .country29 { color: #ACE1AF ! important; } /* Sweden         */
 .variantClassicChaos .country30 { color: #007FFF ! important; } /* Trieste        */
 .variantClassicChaos .country31 { color: #FFB7C5 ! important; } /* Tunis          */
-.variantClassicChaos .country32 {color: #c485ff ! important;} /* Venice         */
+.variantClassicChaos .country32 { color: #c485ff ! important; } /* Venice         */
 .variantClassicChaos .country33 { color: #FF8C00 ! important; } /* Vienna         */
 .variantClassicChaos .country34 { color: #00CC99 ! important; } /* Warsaw         */
 
-.variantClassicChaos .occupationBar1 { background-color: #5D8AA8 ! important; }  /* Ankara         */
-.variantClassicChaos .occupationBar2 { background-color: #FF1717 ! important; }  /* Belgium        */
-.variantClassicChaos .occupationBar3 { background-color: #BF367E ! important; }  /* Berlin         */
+.variantClassicChaos .occupationBar1 { background-color: #6da1c3 ! important; }  /* Ankara         */
+.variantClassicChaos .occupationBar2 { background-color: #fd7272 ! important; }  /* Belgium        */
+.variantClassicChaos .occupationBar3 { background-color: #ea93c1 ! important; }  /* Berlin         */
 .variantClassicChaos .occupationBar4 { background-color: #ED3CCA ! important; }  /* Brest          */
 .variantClassicChaos .occupationBar5 { background-color: #89CFF0 ! important; }  /* Budapest       */
-.variantClassicChaos .occupationBar6 { background-color: #223241 ! important; }  /* Bulgaria       */
+.variantClassicChaos .occupationBar6 { background-color: #d8eafb ! important; }  /* Bulgaria       */
 .variantClassicChaos .occupationBar7 { background-color: #A4C639 ! important; }  /* Constantinople */
 .variantClassicChaos .occupationBar8 { background-color: #CAB310 ! important; }  /* Denmark        */
-.variantClassicChaos .occupationBar9 { background-color: #4B5320 ! important; }  /* Edinburgh      */
+.variantClassicChaos .occupationBar9 { background-color: #f3ffb3 ! important; }  /* Edinburgh      */
 .variantClassicChaos .occupationBar10 { background-color: #FD5F00 ! important; } /* Greece         */
 .variantClassicChaos .occupationBar11 { background-color: #B2BEB5 ! important; } /* Holland        */
 .variantClassicChaos .occupationBar12 { background-color: #1ADD51 ! important; } /* Kiel           */
@@ -52,21 +52,21 @@
 .variantClassicChaos .occupationBar14 { background-color: #00FFFF ! important; } /* London         */
 .variantClassicChaos .occupationBar15 { background-color: #FDEE00 ! important; } /* Marseilles     */
 .variantClassicChaos .occupationBar16 { background-color: #C072C8 ! important; } /* Moscow         */
-.variantClassicChaos .occupationBar17 { background-color: #A08A75 ! important; } /* Munich         */
-.variantClassicChaos .occupationBar18 { background-color: #004225 ! important; } /* Naples         */
-.variantClassicChaos .occupationBar19 { background-color: #4D4DB3 ! important; } /* Norway         */
+.variantClassicChaos .occupationBar17 { background-color: #ecc29a ! important; } /* Munich         */
+.variantClassicChaos .occupationBar18 { background-color: #cdffe9 ! important; } /* Naples         */
+.variantClassicChaos .occupationBar19 { background-color: #8c8cfd ! important; } /* Norway         */
 .variantClassicChaos .occupationBar20 { background-color: #87A96B ! important; } /* Paris          */
 .variantClassicChaos .occupationBar21 { background-color: #5CFF9B ! important; } /* Portugal       */
 .variantClassicChaos .occupationBar22 { background-color: #FA9DA6 ! important; } /* Rome           */
-.variantClassicChaos .occupationBar23 { background-color: #000000 ! important; } /* Rumania        */
+.variantClassicChaos .occupationBar23 { background-color: #ffffff ! important; } /* Rumania        */
 .variantClassicChaos .occupationBar24 { background-color: #CFEB1E ! important; } /* Serbia         */
 .variantClassicChaos .occupationBar25 { background-color: #46B300 ! important; } /* Sevastopol     */
 .variantClassicChaos .occupationBar26 { background-color: #FFBF00 ! important; } /* Smyrna         */
 .variantClassicChaos .occupationBar27 { background-color: #93A2D0 ! important; } /* Spain          */
-.variantClassicChaos .occupationBar28 { background-color: #8B0000 ! important; } /* Petersburg     */
+.variantClassicChaos .occupationBar28 { background-color: #c19090 ! important; } /* Petersburg     */
 .variantClassicChaos .occupationBar29 { background-color: #ACE1AF ! important; } /* Sweden         */
 .variantClassicChaos .occupationBar30 { background-color: #007FFF ! important; } /* Trieste        */
 .variantClassicChaos .occupationBar31 { background-color: #FFB7C5 ! important; } /* Tunis          */
-.variantClassicChaos .occupationBar32 { background-color: #6B3F95 ! important; } /* Venice         */
+.variantClassicChaos .occupationBar32 { background-color: #c485ff ! important; } /* Venice         */
 .variantClassicChaos .occupationBar33 { background-color: #FF8C00 ! important; } /* Vienna         */
 .variantClassicChaos .occupationBar34 { background-color: #00CC99 ! important; } /* Warsaw         */

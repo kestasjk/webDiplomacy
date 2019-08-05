@@ -7,8 +7,8 @@
 .variantAncMed .country4 { color: rgb(195, 140, 215) ! important; } /* Persia   */
 .variantAncMed .country5 { color: rgb(232, 107, 107) ! important; } /* Rome     */
 
-.variantAncMed .occupationBar1 { background-color: #79AFC6; } /* Carthage */
-.variantAncMed .occupationBar2 { background-color: #EAEAAF; } /* Egypt    */
-.variantAncMed .occupationBar3 { background-color: #A4C499; } /* Greece   */
-.variantAncMed .occupationBar4 { background-color: #A87E9F; } /* Persia   */
-.variantAncMed .occupationBar5 { background-color: #C48F85; } /* Rome     */
+.variantAncMed .occupationBar1 { background-color: rgb(102, 176, 201); } /* Carthage */
+.variantAncMed .occupationBar2 { background-color: rgb(234, 235, 168); } /* Egypt    */
+.variantAncMed .occupationBar3 { background-color: rgb(150, 193, 144); } /* Greece   */
+.variantAncMed .occupationBar4 { background-color: rgb(195, 140, 215); } /* Persia   */
+.variantAncMed .occupationBar5 { background-color: rgb(232, 107, 107); } /* Rome     */
