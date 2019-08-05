@@ -125,6 +125,11 @@ class adminActionsRestricted extends adminActionsForum
 					along with that phase\'s orders, and sets the time so that the game will be reprocessed.',
 				'params' => array('gameID'=>'Game ID'),
 			),
+			'updateDonators' => array(
+				'name' => 'Update Donators',
+				'description' => 'Will not do anything outside webdip, updates all donators to sync with Ranks on the new forum.',
+				'params' => array(),
+			),
 			'notice' => array(
 				'name' => 'Toggle site-wide notice',
 				'description' => 'Toggle the notice which is displayed in a noticebar across the whole site.',
@@ -733,7 +738,48 @@ class adminActionsRestricted extends adminActionsForum
 
 		$DB->sql_put("UPDATE wD_Users SET type = CONCAT_WS(',',type,'Donator".$type."') WHERE id = ".$userID);
 
+		// If we're using the new forum then add a rank to the user. 
+		if( isset(Config::$customForumURL) && ($type == 'Gold' || $type == 'Silver' || $type == 'Bronze') ) 
+		{
+			// Make sure the user has a new forum profile before trying an insert into the custom tables.
+			list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
+			if ($newForumId > 0)
+			{
+				$rank = 12;
+				switch ($type) 
+				{
+					case 'Gold':
+						$rank = 12;
+						break;
+					case 'Silver':
+						$rank = 13;
+						break;
+					case 'Bronze':
+						$rank = 14;
+						break;
+				}
+				
+				$DB->sql_put("UPDATE phpbb_users SET user_rank = ".$rank." WHERE user_rank = 0 and webdip_user_id = ".$userID);
+			}
+		}
+
 		return l_t('User ID %s given donator status.',$userID);
+	}
+
+	public function updateDonators(array $params)
+	{
+		if( isset(Config::$customForumURL) ) 
+		{
+			$DB->sql_put("UPDATE phpbb_users p INNER JOIN wD_Users u ON u.id = p.webdip_user_id SET p.user_rank = 12 WHERE p.user_rank in (0,13,14) and u.type like '%DonatorGold%'");
+			$DB->sql_put("UPDATE phpbb_users p INNER JOIN wD_Users u ON u.id = p.webdip_user_id SET p.user_rank = 13 WHERE p.user_rank in (0,14) and u.type like '%DonatorSilver%'");
+			$DB->sql_put("UPDATE phpbb_users p INNER JOIN wD_Users u ON u.id = p.webdip_user_id SET p.user_rank = 14 WHERE p.user_rank in (0) and u.type like '%DonatorBronze%'");
+
+			return l_t('Donator ranks synced with User tables');
+		}
+		else
+		{
+			return 'This tool is not for use outside webdip';
+		}
 	}
 
 	public function makeDonator(array $params)
