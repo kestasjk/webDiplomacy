@@ -58,7 +58,9 @@ class setMemberOrderStatus extends set {
 		elseif( $this->Ready )
 			return '<img src="'.l_s('images/icons/tick.png').'" alt="'.l_t('Ready').'" title="'.l_t('Ready to move to the next turn').'" /> ';
 		elseif( $this->Completed )
+		{
 			return '<img src="'.l_s('images/icons/tick_faded.png').'" alt="'.l_t('Completed').'" title="'.l_t('Orders completed, but not ready for next turn').'" /> ';
+		}
 		elseif( $this->Saved )
 			return '<img src="'.l_s('images/icons/alert_minor.png').'" alt="'.l_t('Saved').'" title="'.l_t('Orders saved, but not completed!').'" /> ';
 		else

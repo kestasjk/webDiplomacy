@@ -49,13 +49,6 @@ print libHTML::pageTitle('Information and Links','Links to pages with more infor
         </p>
     </div>
 
-    <div class = 'help_title'>Hall of Fame!</div>
-    <div class = 'help_content'>
-        <p>
-            The <a href="halloffame.php">Hall of fame</a>! See the pros of this server, the top 100 by points!
-        </p>
-    </div>
-
     <div class = 'help_title'>DATC Adjudicator Tests</div>
     <div class = 'help_content'>
         <p>

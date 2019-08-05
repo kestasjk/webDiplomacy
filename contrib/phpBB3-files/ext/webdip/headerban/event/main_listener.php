@@ -95,12 +95,23 @@ class main_listener implements EventSubscriberInterface
     /**
      * @param \phpbb\event\data $event The variant CSS
      */
-	public function variantCSS()
+	public function variantCSS($finalTheme)
 	{
-		$variantCSS=array();
-		foreach(\Config::$variants as $variantName)
-			$variantCSS[] = '<link rel="stylesheet" href="'.$this->WEBDIPPATH.('variants/'.$variantName.'/resources/style.css').'" type="text/css" />';
-		return implode("\n",$variantCSS);
+		if ($finalTheme == 'dark')
+		{
+			$variantCSS=array();
+			foreach(\Config::$variants as $variantName)
+				$variantCSS[] = '<link rel="stylesheet" href="'.$this->WEBDIPPATH.('variants/'.$variantName.'/resources/darkMode/style.css').'" type="text/css" />';
+			//$variantCSS[] = '<link rel="stylesheet" href="'.$this->WEBDIPPATH.('/css/darkMode/global.css').'" type="text/css" />';
+			return implode("\n",$variantCSS);
+		}
+		else 
+		{
+			$variantCSS=array();
+			foreach(\Config::$variants as $variantName)
+				$variantCSS[] = '<link rel="stylesheet" href="'.$this->WEBDIPPATH.('variants/'.$variantName.'/resources/style.css').'" type="text/css" />';
+			return implode("\n",$variantCSS);
+		}
 	}
     /**
      * @param \phpbb\event\data $event The event object
@@ -111,8 +122,8 @@ class main_listener implements EventSubscriberInterface
 		{
 			$this->template->assign_vars(array(
 				'U_WD_WEBDIPPOINTS' => '',
-				'U_WD_GAMENOTIFYBLOCK' => '',
-				'U_WD_NOTICEBLOCK' => ''
+				'U_WD_NOTICEBLOCK' => '',
+				'U_WD_GAMENOTIFYBLOCK' => ''
 			));
 			
 			return;
@@ -122,15 +133,33 @@ class main_listener implements EventSubscriberInterface
 		{
 			$wdId = (int)$this->user->data['webdip_user_id'];
 			
+			$theme = $this->db->sql_query("SELECT case when darkMode is null or darkMode = 'No' then 'light' else 'dark' end as theme FROM wD_UserOptions WHERE userID =".$wdId);
+			while ($row = $this->db->sql_fetchrow($theme))
+			{
+				$finalTheme = $row['theme'];
+			}
+			$this->db->sql_freeresult($theme);
+			
 			$this->fetchMisc();
 			$this->fetchAndCheckUser($wdId);
 			$this->fetchGameNotices($wdId);
 			
-			$this->template->assign_vars(array(
+			if ($finalTheme == 'dark')
+			{
+				$this->template->assign_vars(array(
+				'U_WD_WEBDIPPOINTS' => '(' . $this->points . ' <img src="' . $this->WEBDIPPATH . 'images/icons/points.png" alt="D" />)'.'<link rel="stylesheet" href="'.$this->WEBDIPPATH.('/css/darkMode/global.css').'" type="text/css" />',
+				'U_WD_NOTICEBLOCK' => $this->noticeBlock() . $this->variantCSS($finalTheme),
+				'U_WD_GAMENOTIFYBLOCK' => $this->gameNotifyBlock()
+				));
+			}
+			else
+			{
+				$this->template->assign_vars(array(
 				'U_WD_WEBDIPPOINTS' => '(' . $this->points . ' <img src="' . $this->WEBDIPPATH . 'images/icons/points.png" alt="D" />)',
-				'U_WD_GAMENOTIFYBLOCK' => $this->gameNotifyBlock(),
-				'U_WD_NOTICEBLOCK' => $this->noticeBlock() . $this->variantCSS()
-			));
+				'U_WD_NOTICEBLOCK' => $this->noticeBlock() . $this->variantCSS($finalTheme),
+				'U_WD_GAMENOTIFYBLOCK' => $this->gameNotifyBlock()
+				));
+			}			
 		}
 		else
 		{
@@ -192,23 +221,32 @@ class main_listener implements EventSubscriberInterface
 		foreach ( $this->gameBar as $notifyGame )
 		{
 			// Games that are finished should show as 'no orders'
-			if ( $notifyGame['phase'] != 'Finished') {
-				if( $notifyGame['orderStatus'] == 'None' ) {
+			if ( $notifyGame['phase'] != 'Finished') 
+			{
+				if( $notifyGame['orderStatus'] == 'None' ) 
+				{
 					$orderIcon = '';
-				} else {
+				} 
+				else 
+				{
 					$orderIcon = 'alert.png';
-					if( strpos($notifyGame['orderStatus'],'Saved')!==false ) {
+					if( strpos($notifyGame['orderStatus'],'Saved')!==false ) 
+					{
 						$orderIcon = 'alert_minor.png';
 					}
-					if( strpos($notifyGame['orderStatus'],'Completed')!==false ) {
+					if( strpos($notifyGame['orderStatus'],'Completed')!==false ) 
+					{
 						$orderIcon = 'tick_faded.png';
 					}
-					if( strpos($notifyGame['orderStatus'],'Ready')!==false ) {
+					if( strpos($notifyGame['orderStatus'],'Ready')!==false ) 
+					{
 						$orderIcon = '';
 					}
 				}
-			} else {
-					$orderIcon = '';
+			} 
+			else 
+			{
+				$orderIcon = '';
 			}
 
 			$gameNotifyBlock .= '<span class="variant'.\Config::$variants[$notifyGame['variantID']].'">'.
@@ -220,7 +258,8 @@ class main_listener implements EventSubscriberInterface
 
 			$gameNotifyBlock .= ' ';
 
-			if( strlen($orderIcon) > 0 ) {
+			if( strlen($orderIcon) > 0 ) 
+			{
 				$gameNotifyBlock .= '<img src="' . $this->WEBDIPPATH . ''.'images/icons/' . $orderIcon . '" />';
 			}
 				

@@ -198,7 +198,7 @@ class panelGameHome extends panelGameBoard
 				<form action="#" method="post">
 					<a href="board.php?gameID='.$this->id.'">'.l_t('Open').'</a>
 					<input type="hidden" value="'.$this->id.'" name="gameToggleName" />
-					<input type="submit" title="Turn on/off the notifications for this game." style="float: right;" class = "home-submit" name="submit" value="'.$SubmitName.'"/>
+					<input type="submit" title="Turn on/off the notifications for this game." style="float: right;" class = "home-submit toggle-notice" name="submit" value="'.$SubmitName.'"/>
 					</form>
 					</div>';
 			}
@@ -209,7 +209,7 @@ class panelGameHome extends panelGameBoard
 					<form action="#" method="post">
 					<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t('Open').'</a> 
 					<input type="hidden" value="'.$this->id.'" name="gameToggleName" />
-					<input type="submit" title="Turn on/off the notifications for this game." style="float: right;" class = "home-submit" name="submit" value="'.$SubmitName.'"/>
+					<input type="submit" title="Turn on/off the notifications for this game." style="float: right;" class = "home-submit toggle-notice" name="submit" value="'.$SubmitName.'"/>
 					</form>
 					
 					</div>';

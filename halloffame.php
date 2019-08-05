@@ -66,7 +66,7 @@ while ( list($id, $username, $points) = $DB->tabl_row($crashed) )
 			<td class="hof"> '.number_format($points).' '.libHTML::points().' - #'.$i.' </td>';
 	if ($User->username == $username)
 	{
-		print '<td class="hof"><a href="profile.php?userID='.$id.'" style="color:red;">'.$username.'</a></td> ';
+		print '<td class="hof"><a class="hof-self" href="profile.php?userID='.$id.'">'.$username.'</a></td> ';
 		$showMe = 0;
 	}
 	else
@@ -85,7 +85,7 @@ if ( $User->type['User'] && $User->points > 100 and $showMe == 1 )
 			</tr>';
 	print ' <tr class="hof">
 			<td class="hof"> '.number_format($User->points).' '.libHTML::points().' - <a name="me"></a>#'.$position.' </td>
-			<td class="hof" style="color:red;"><strong><em>'.$User->username.'</em></strong></td>
+			<td class="hof hof-self"><strong><em>'.$User->username.'</em></strong></td>
 			</tr>';
 }
 
@@ -127,7 +127,7 @@ while ( list($id, $username, $points) = $DB->tabl_row($crashed) )
 			<td class="hof"> '.number_format($points).' '.libHTML::points().' - #'.$i.' </td>';
 	if ($User->username == $username)
 	{
-		print '<td class="hof"><a href="profile.php?userID='.$id.'" style="color:red;">'.$username.'</a></td> ';
+		print '<td class="hof"><a class="hof-self" href="profile.php?userID='.$id.'">'.$username.'</a></td> ';
 		$showMe = 0;
 	}
 	else
@@ -145,7 +145,7 @@ if ( $User->type['User'] && $User->points > 100 &&  $User->timeLastSessionEnded 
 			</tr>';
 	print ' <tr class="hof">
 			<td class="hof"> '.number_format($User->points).' '.libHTML::points().' - <a name="me"></a>#'.$position.' </td>
-			<td class="hof" style="color:red;"><strong><em>'.$User->username.'</em></strong></td>
+			<td class="hof hof-self"><strong><em>'.$User->username.'</em></strong></td>
 			</tr>';
 }
 

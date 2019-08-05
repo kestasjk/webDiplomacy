@@ -1,0 +1,132 @@
+.homeNoticesPMs {
+	width:60%;
+}
+.homeNoticesGame {
+	width:auto;
+	margin-left:5px;
+}
+.homeInfoList {
+	float:right;
+	text-align:right;
+	font-size:14px;
+	font-style:italic;	
+	background-color:#fff;
+	padding-left:10px;
+	padding-bottom:15px;
+	border-left:1px solid #c1c1c1;
+}
+.homeInfoList h4 {
+	font-size:14px;
+	font-style:normal;
+	margin:0;
+	margin-bottom:5px;
+}
+.homeInfoList strong {
+	font-style:normal;
+}
+a.current {
+	color:black !important;
+}
+div.homeUserContent {
+	margin-top:15px;
+}
+table.homeTable p.notice{
+	padding:5px;
+}
+.homeTable div.hr {
+	margin-top:4px;
+	margin-bottom:4px;
+}
+table.homeTable td, table.homeTable a {
+	overflow:hidden;
+}
+table.homeTable tr {
+	vertical-align:top;
+}
+td.homeNoticesPMs textarea, td.homeNoticesGame textarea {
+	font-size:14px !important;
+}
+td.homeMessages, td.homeGameNotices, td.homeGamesStats, td.homeNoticesPMs, td.homeNoticesGame {
+	/*border:1px solid #aaa;*/
+	background-color: #3b4042;
+	padding:0 !important;
+	margin:0;
+}
+table.homeTable td.homeSplit {
+	border:0 !important;
+}	
+td.homeMessages {
+	width:250px;
+	max-width:250px;
+}
+td.homeGameNotices {
+	width:250px;
+	max-width:250px;
+}
+td.homeGamesStats {
+	width:284px; /* 800px = 250+250+(300-6[borders]-10[table dividers])*/
+	max-width:250px !important;
+}
+td.homeSplit {
+	width:5px;
+	border:0;
+	padding:0;
+	margin:0;
+}
+div.homeHeader {
+	text-align:center;
+	font-weight:bold;
+	font-size:16px;
+	text-align: center;
+	color: rgba(255, 255, 255, 0.8);
+	padding-top: 3px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+.homeForumGroup {
+	font-size:12px;
+}
+.homeForumSubject, .homeForumLink {
+	padding:4px 2%;
+}
+.homeForumSubject {
+	color: rgba(255, 255, 255, 0.8);
+	font-weight:bold;
+}
+td.homeGameNotices .homeForumSubject {
+	width:250px;
+} 
+.homeForumPost {
+	padding:4px 2%;
+	color: rgba(255, 255, 255, 0.8);
+}
+.homeForumPostTime {
+	float:right;
+	text-align:right;
+	color: rgba(255, 255, 255, 0.8);
+	font-style:italic;
+	padding-left:3px;
+	text-decoration:underline;
+	border-left:1px solid #aaa;
+}
+.homeForumReplies {
+	float:right;
+	text-align:right;
+	color: rgba(255,255,255,0.8);
+	font-style:italic;
+}
+.homeForumReplies {
+	text-align:center;
+}
+.homeForumMessage {
+	color: rgba(255, 255, 255, 0.8);;
+}
+
+/* dark mode only */
+
+.forum-preview-span {
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.home-forum-latest {
+	color: rgba(255, 255, 255, 0.8);
+}

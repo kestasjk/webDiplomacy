@@ -1,0 +1,476 @@
+.gamesList {
+	margin-top:10px;	
+}
+.mapnav {
+  margin: 0.5em;
+}
+.gamePanel {
+	color: #333;
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	background-color: #4c4d4e;
+	margin-top:10px !important; 
+}
+.memberVotes {
+	font-weight:bold;
+	}
+.gamePanelHome {
+	width:100%;
+}
+.boardHeader {
+	color: #000;
+}
+.bar {
+	padding:5px 2%;
+}
+.gamePanel .bar {
+	border:0;
+}
+TABLE.orders > tbody > tr.barAlt1 {
+	background-color: #555;
+}
+TABLE.orders > tbody > tr.barAlt2 {
+	background-color: #5555558a;
+}
+.barAlt1, .barAltLight1 {
+	/*background-color:#f5f5f5 !important;*/
+}
+.barAlt2, .barAltLight2 {
+	/*background-color:#f0f0f0 !important;*/
+}
+.homeMembersTable .barAlt1 {
+	/*background-color:#eaeaea !important;*/
+}
+.homeMembersTable .barAlt2 {
+	/*background-color:#e5e5e5 !important;*/
+}
+.lastBar {
+	height:0;
+	padding:0;
+}
+
+/* ---- titleBar ---- */
+.titleBarHomeGameName {
+	white-space:nowrap;
+	overflow:hidden;
+}
+.titleBarHomeGameName .game{
+	text-align:center;
+}
+.boardHeader .titleBar {
+	padding: 8px 16px;	
+	padding-bottom:6px;
+	font-size:15px;
+}
+.gamePanelHome .titleBar {
+	padding:4px 2%;
+	font-size:12px;
+}
+.titleBarRightSide {
+	float:right;
+	text-align:right;
+	color: rgba(255, 255, 255, 0.8);
+}
+.titleBarLeftSide {
+	float:left;
+	color: rgba(255, 255, 255, 0.8);
+}
+.gameName {
+	font-weight:bold;
+}
+.gamePanel .gameName {
+	font-size:16px;
+}
+.boardHeader .gameName {
+	font-size:17px;
+}
+.gamePanelHome .gameName {
+	font-size:12px;
+}
+.gameDate {
+	font-style:italic;
+	}
+.gamePanelHome .gameDate {
+	font-size:11px;
+}
+.gamePhase {
+	font-style:italic;
+	font-weight:bold;
+}
+.gameTimeRemaining {
+	font-weight:bold;
+}
+.gameTimeRemainingNextPhase {
+	font-weight:normal;
+}
+.gameTimeHoursPerPhaseText {
+	font-style:italic;
+	}
+.gameTimeRemainingFixed {
+	font-style:italic;
+	font-weight:normal;
+}
+.gamePot, .excusedNMRs {
+	font-weight:bold;
+}
+.gamePotType {
+	font-style:italic;
+}
+div.memberBoardHeader {
+	padding:0 !important;
+	border:0;
+}
+
+/* ---- noticeBar ---- */
+.gameNoticeBar {
+	text-align:center;
+	font-weight:bold;
+	color: rgba(255, 255, 255, 0.8);
+}
+
+/* ---- occupationBar ---- */
+.occupationBarJoined {
+	background-color: #A4C499;
+}
+.occupationBarNotJoined {
+	background-color: #C48F85;
+}
+.occupationBarEngland {
+	background-color: #EFC4E4;
+}
+.occupationBarAustria {
+	background-color: #C48F85;
+}
+.occupationBarGermany {
+	background-color: #A08A75;
+}
+.occupationBarItaly {
+	background-color: #A4C499;
+}
+.occupationBarFrance {
+	background-color: #79AFC6;
+}
+.occupationBarTurkey {
+	background-color: #EAEAAF;
+}
+.occupationBarRussia {
+	background-color: #A87E9F;
+}
+
+/* ---- membersList ---- */
+.membersList {
+	/*color: #444;*/
+}
+.boardHeader .membersList, .gamePanelHome .membersList {
+	margin:0;
+	border:0;
+}
+.chatbox .membersList {
+	border:0;
+}
+.member {
+	padding:3px 2%;
+}
+.membersList em {
+	font-weight:bold;
+	font-style:italic;
+}
+.membersList em.bad {
+	color: #D36161 !important;
+}
+.membersList em.good {
+	color: #7CCE5F !important;
+}
+.memberRightSide {
+	width:85%;
+	padding-right:3px;
+	color: rgba(255, 255, 255, 0.8);
+}
+.memberGameDetail {
+	float:right;
+	font-style:italic;
+	text-align:right;
+	color: rgba(255, 255, 255, 0.8);
+}
+.memberUserDetail {
+	float:left;
+	color: rgba(255, 255, 255, 0.8);
+}
+.memberLeftSide {
+	text-align:right;
+	width:auto;
+	color: rgba(255, 255, 255, 0.8);
+}
+.membersFullTable .memberLeftSide {
+	border-right: 1px solid #c1c1c1;
+}
+.memberYourCountry {
+	font-weight:bold;
+}
+.memberName {
+	white-space: nowrap;
+	color: rgba(255, 255, 255, 0.8);
+}
+.memberStatus {
+	font-style:italic;
+}
+.memberStatus em {
+	font-weight:bold;
+	font-style:italic;
+}
+.memberStatusFade {
+	color:#777;
+}
+.memberStatusWon, .memberStatusDrawn {
+	text-decoration: underline
+}
+.memberStatusLeft, .memberStatusResigned {
+	font-style:italic;
+}
+.memberStatusDefeated, .memberStatusResigned {
+	text-decoration: line-through
+}
+.memberStatusHeader {
+	border-top: 1px solid #cecece;
+}
+.modEyes.bar {
+	text-align: center;
+	font-weight: bold;
+	color: #eaeaea;
+	background-color:#225;
+}
+.modEyes .memberLeftSide {
+	border-left: 3px solid #777777;
+}
+.modEyes .memberPreGameList {
+	border-left: 3px solid #777777;
+	border-right: 3px solid #777777;
+}
+.modEyes .memberRightSide{
+	border-right: 3px solid #777777;
+}
+.memberAlternate1 {
+	background-color:#5e6368;
+}
+.memberAlternate2 {
+	background-color:#5e6368;
+}
+.memberPreGameList {
+	text-align:center;
+	font-weight:normal !important;
+}
+.panelBarGraph {
+	padding:0;
+	overflow:hidden;
+	height:6px;
+}
+.panelBarGraphMember {
+	padding:0;
+	overflow:hidden;
+	height:6px;
+	margin-left:0%;
+	margin-right:0%;
+}
+.panelBarGraphCountry {
+	padding:0;
+	overflow:hidden;
+	height:6px;
+	margin-left:0%;
+	margin-right:0%;
+}
+.panelBarGraphTop {
+	padding:0;
+	overflow:hidden;
+	height:6px;
+	margin-left:0%;
+	margin-right:0%;
+}
+.panelBarGraph td.first {
+	border-left:solid 0px #fff !important;
+}
+.panelBarGraph td {
+	border-left:solid 1px #666;
+	height:6px;
+}
+.barDivBorderTop {
+	border-top:solid 1px #c1c1c1;
+}
+.barDivBorderBottom{
+	border-bottom:solid 1px #c1c1c1;
+}
+.memberProgressBar, .memberProgressBarBlank {
+	border-bottom:solid 1px #cecece;
+	margin-top:3px;
+}
+.boardHeader .memberProgressBar, .boardHeader .memberProgressBarBlank {
+	margin-top:0;
+	height:6px;
+}
+.gamePanelHome .panelBarGraph {
+	margin-top:0;
+	height:4px;
+	margin-left: 0%;
+	margin-right: 0%;
+}
+.memberPointsCount {
+	font-style:italic;
+}
+.memberUnitCount {
+	font-style:italic;
+}
+.memberLastSeen {
+	font-style:italic;
+}
+.missedPhases {
+	font-style:italic;
+}
+.memberProgressBarSCs {
+	background-color: #79AFC6;
+}
+.memberProgressBarUnitDeficit {
+	background-color: #A4C499;
+}
+.memberProgressBarUnitSurplus {
+	background-color: #C48F85;
+}
+.gamePanelHome table.homeMembersTable  {
+	text-align:center;
+	table-layout:fixed;
+	margin:0;
+	padding:0;
+	color: rgba(255, 255, 255, 0.8);
+}
+.gamePanelHome .homeMembersTable td {
+	margin:0;
+	padding:2px 0;
+}
+
+/* ---- .archiveBar, .joinBar, .openBar ---- */
+.archiveBar {
+	color: rgba(255, 255, 255, 0.8);
+}
+.enterBar em {
+	font-style:normal;
+	font-weight:bold;
+}
+.enterBarJoin {
+	float:right;
+	text-align:right;
+	color: rgba(255, 255, 255, 0.8);
+}
+.enterBarOpen {
+	float:left;
+}
+.archiveBar a {
+	font-weight:normal !important;
+}
+.homeGameLinks {
+	font-size:12px;
+}
+.homeGameLinks a {
+	margin:0 4px;
+}
+
+/* --- Home game panel --- */
+.gamePanelHome {
+	font-size:11px;
+}
+.panelAnonOnlyFlag, .panelTempBanned {
+	text-align: center !important;
+	color: rgba(255, 255, 255, 0.8);
+}
+.memberVotePanel {
+	/*border-top: 1px solid #cecece!important;*/
+	padding:0 5%;
+}
+
+@media only screen and (max-width: 800px) {
+	.titleBarRightSide {
+		float: none;
+		text-align: center;
+	}
+	.titleBarLeftSide {
+		float: none;
+		text-align: center;
+	}
+	.gamePanelHome{
+		font-size: 16px;
+	}
+	.gamePanelHome .titleBar{
+		font-size: 14px;
+	}
+	.gamePanelHome .gameName{
+		font-size: 16px;
+	}
+	.gamePanelHome .homeMembersTable td {
+		display: table-cell;
+	}
+	.gamePanelHome .homeMembersTable tr {
+		display: table-row;
+	}
+	.gamePanelHome .homeMembersTable td {
+		display: table-cell;
+	}
+	.gamePanelHome .homeMembersTable tr {
+		display: table-row;
+	}
+	.gamePanelHome .occupationBarTable td {
+		display: table-cell;
+	}
+	.gamePanelHome .occupationBarTable tr {
+		display: table-row;
+	}
+	.gamePanelHome .memberBoardHeader td {
+		display: table-cell;
+	}
+	.gamePanelHome .memberBoardHeader tr {
+		display: table-row;
+	}
+	.gamePanel {
+		width:100%;
+	}
+	.homeGameLinks{
+		font-size: 16px;
+	}
+	.memberUserDetail {
+		float:none;
+		text-align: right;
+		overflow: hidden;
+	}
+	.memberUserDetail > input{
+		margin-top: 10px;
+	}
+	.archiveBar{
+		text-align: center;
+	}
+	.memberName{
+		white-space: normal;
+		word-break: break-all;
+	}
+	.memberLeftSide{
+		text-align: center;
+	}
+	span[class*="StatusIcon"] > img{
+		margin: 0 auto;
+		display: block;
+	}
+	.memberBoardHeader img{
+		display: inherit !important;
+		margin: inherit !important;
+	}
+	img[title="Mute player"]{
+		margin: 0 auto;
+		display: block;
+	}
+	img[title="Unread message"]{
+		margin: 0 auto 5px;
+		display: block;
+	}
+	.orderEnd{
+		display: none;
+	}
+	#mapImage{
+		width: 100%;
+	}
+}

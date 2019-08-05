@@ -456,7 +456,7 @@ class processMembers extends Members
 		assert('$this->Game->lockMode == UPDATE');
 
 		if ( $this->Game->private and md5($password) != $this->Game->password and $password != $this->Game->password )
-			throw new Exception(l_t("The password you supplied is incorrect, please try again."));
+			throw new Exception(l_t("The invite code you supplied is incorrect, please try again."));
 
 		if ( !$this->Game->isJoinable() )
 			throw new Exception(l_t("You cannot join this game."));
@@ -661,45 +661,62 @@ class processMembers extends Members
 		}
 
 		/*
-		 * For all player with status left, that NMRed this turn, the NMR is always
-		 * counted as unexcused. An unexcused turn might impose temp bans as
-		 * further sanctions.
+		 * For all player with status left, that NMRed this turn, the NMR is always counted as unexcused. An unexcused turn might impose temp bans as further sanctions.
 		 */
 		foreach( $this->ByStatus['Left'] as $Member ) 
 		{
 			if( $Member->missedPhases == 0 ) { continue; } // no NMR
 			
 			// Check if the NMR got an excuse and count the number of unexcused NMRs during the last year for the member to decide what to do.
-			list( $systemExcused, $modExcused, $samePeriodExcused ) = 
-					$DB->sql_row("SELECT systemExcused, modExcused, samePeriodExcused
-						FROM wD_MissedTurns
-						WHERE gameID = ".$this->Game->id."
-							AND userID = ".$Member->userID."
-						ORDER BY turnDateTime DESC LIMIT 1");
+			list( $systemExcused, $modExcused, $samePeriodExcused ) = $DB->sql_row("SELECT systemExcused, modExcused, samePeriodExcused FROM wD_MissedTurns
+				WHERE gameID = ".$this->Game->id." AND userID = ".$Member->userID." ORDER BY turnDateTime DESC LIMIT 1");
 			
-			list( $yearlyCount ) = $DB->sql_row("SELECT COUNT(1)
-						FROM wD_MissedTurns
-						WHERE userID = ".$Member->userID."
-							AND turnDateTime > ".time()." - (3600 * 24 * 365)
-							AND systemExcused = 0 
-							AND modExcused = 0 
-							AND samePeriodExcused = 0");
+			list( $yearlyCount ) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns
+				WHERE userID = ".$Member->userID." AND turnDateTime > ".time()." - (3600 * 24 * 365)
+				AND liveGame = 0 AND systemExcused = 0 AND modExcused = 0 AND samePeriodExcused = 0");
+			
+			list( $liveMonthlyCount ) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns
+				WHERE userID = ".$Member->userID." AND turnDateTime > ".time()." - (3600 * 24 * 28)
+				AND liveGame = 1 AND systemExcused = 0 AND modExcused = 0 AND samePeriodExcused = 0");
 			
 			if( $systemExcused || $modExcused ) continue; // excused miss (though a left member should not be able to get an excused miss unless mod interaction)
 			
 			$memberMsg = l_t("You have missed a deadline and have no excuses left.");
-			
+
+			list( $phaseMinutes ) = $DB->sql_row("SELECT phaseMinutes FROM wD_Games WHERE id = ".$this->Game->id);
 			
 			// Check, if there was at last one other unexcused NMR during the last 72 hours. In this case, this NMR will not be sanctionized.
 			if( $samePeriodExcused )
 			{
-				$Member->send('No','No',$memberMsg." ".l_t("Due to other unexcused "
-						. "missed deadlines during the past 72 hours, this "
-						. "will only affect your Reliability Rating."));
-			 }
+				$Member->send('No','No',$memberMsg." ".l_t("Due to other unexcused missed deadlines in the past 72 hours, this will only affect your Reliability Rating."));
+			}
 
-			 else 
-			 {
+			else if ($phaseMinutes < 61)
+			{
+				/*
+				 * This NMR might be sanctionized according to the monthly missed turn count for live games
+				 * 
+				 * misses:
+				 * 
+				 * 0-2: warning
+				 * 3+: 1-day temp ban
+				 */
+				$memberMsg.=" ".l_t("You missed %s ".(($liveMonthlyCount == 1)?"deadline":"deadlines"). " without an excuse during live games this past month.",$liveMonthlyCount);
+				
+				if( $liveMonthlyCount <= 2 )
+				{
+					$Member->send('No','No',$memberMsg." ".l_t("%s more ". ((3-$liveMonthlyCount == 1)?"miss":"misses"). " will impose a 1 day ban on you.", 3-$liveMonthlyCount));
+				} 
+
+				else
+				{
+					User::tempBanUser($Member->userID, 1, 'System', FALSE);
+					$Member->send('No','No',$memberMsg." ".l_t("Due to your unreliable behavior in live games you will be prevented from joining games for a day."));
+				} 
+			}
+
+			else 
+			{
 				/*
 				 * This NMR might be sanctionized according to the yearly missed
 				 * turn count and the following table:
@@ -714,22 +731,18 @@ class processMembers extends Members
 				 * 8: 30-days
 				 * 9 or more: infinite (1 year)
 				 */
-				$memberMsg.=" ".l_t("You missed %s ".(($yearlyCount == 1)?"deadline":"deadlines")
-						. " without an excuse during this year.",$yearlyCount);
+				$memberMsg.=" ".l_t("You missed %s ".(($yearlyCount == 1)?"deadline":"deadlines"). " without an excuse during this year.",$yearlyCount);
 				
 				if( $yearlyCount <= 3 )
 				{
-					$Member->send('No','No',$memberMsg." ".l_t("%s more "
-						. ((4-$yearlyCount == 1)?"miss":"misses")
-						. " will impose a temporary ban on you.", 4-$yearlyCount));
+					$Member->send('No','No',$memberMsg." ".l_t("%s more ". ((4-$yearlyCount == 1)?"miss":"misses"). " will impose a temporary ban on you.", 4-$yearlyCount));
 				} 
 
 				elseif( $yearlyCount >= 9)
 				{
 					User::tempBanUser($Member->userID, 365, 'System', FALSE);
-					$Member->send('No','No',$memberMsg." ".l_t("Due to your unreliable behaviour "
-							. "you will be prevented from joining games for a year. "
-							. "Contact the Mods to lift the ban."));
+					$Member->send('No','No',$memberMsg." ".l_t("Due to your unreliable behavior you will be prevented from joining games for a year. "
+					. "Contact the Mods to lift the ban."));
 				} 
 
 				else 
@@ -746,8 +759,7 @@ class processMembers extends Members
 					
 					User::tempBanUser($Member->userID, $days,'System', FALSE);
 					$Member->send('No','No',$memberMsg." ".l_t("You are temporarily banned from joining, rejoining, or making games for %s "
-							. (($days==1)?"day":"days")
-							. ". Be more reliable!", $days));	
+							. (($days==1)?"day":"days")	. ". Be more reliable!", $days));	
 				}
 					
 			}
@@ -764,13 +776,16 @@ class processMembers extends Members
 		 
 		$year = time() - 31536000;
 		$lastMonth = time() - 2419200;
+		$lastWeek = time() - 604800;
 
 		$RELIABILITY_QUERY = "
 		UPDATE wD_Users u 
 		set u.reliabilityRating = greatest(0, 
 		(100 *(1 - ((SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.modExcused = 0 and t.turnDateTime > ".$year.") / greatest(1,u.yearlyPhaseCount))))
-		-(6*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastMonth."))
-		-(5*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$year.")))";
+		-(6*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 0 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastMonth."))
+		-(6*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 1 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastWeek."))
+		-(5*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 1 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastMonth."))
+		-(5*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 0 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$year.")))";
 
 		$DB->sql_put($RELIABILITY_QUERY . " WHERE u.id IN (".implode(",",array_keys($this->ByUserID)) . ')');
 	}

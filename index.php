@@ -477,7 +477,6 @@ class libHome
 			{
 				$buf .= '<div class="homeForumPost homeForumPostAlt'.libHTML::alternate().' userID'.$post['userID'].'">
 
-
 					<div class="homeForumPostTime">'.libTime::text($post['timeSent']).' '.$post['iconMessage'].'</div>
 					<a href="profile.php?userID='.$post['userID'].'" class="light">'.$post['username'].'</a>
 						'.' ('.$post['points'].libHTML::points().
@@ -583,7 +582,7 @@ class libHome
 
 						$buf .= '<div class="" style="margin-bottom:5px;margin-left:3px; margin-right:3px;">';
 						$buf .= '<div class="homeForumPostTime" style="float:right;font-weight:bold"><em>'.libTime::text($t['topic_last_post_time']).'</em></div>';
-						$buf .= '<span style=\'color:#009902;font-size:90%\'>';
+						$buf .= '<span class="home-forum-latest">';
 						$buf .= 'Latest:</span> <a href="profile.php?userID='.$t['topic_last_poster_webdip'].'" class="light">'.$t['topic_last_poster_name'].'</a> '
 						.'</div>';
 					}
@@ -606,11 +605,11 @@ class libHome
 
 					$buf .= '<div style="margin-left:3px; margin-right:3px; font-size:90%">';
 					$buf .= '<div style="float:right">';
-					$buf .= l_t('<span style="color:black">%s</span> replies','<strong>'.($t['topic_posts_approved']-1).'</strong>');
-					$buf .= ', '.l_t('<span style="color:black">%s</span> views','<strong style=\'content: "\f14c"\'>'.($t['topic_views']-1).'</strong>');
+					$buf .= l_t('<span class="forum-preview-span">%s replies, </span>','<strong>'.($t['topic_posts_approved']-1).'</strong>');
+					$buf .= l_t('<span class="forum-preview-span">%s views</span>','<strong style=\'content: "\f14c"\'>'.($t['topic_views']-1).'</strong>');
 					$buf .= '</div>';
-					$buf .= '&raquo;
-					<a href="'.$urlForum.'">'.$t['forum_name'].'</a>
+					$buf .= '<span class="forum-preview-span">&raquo;
+					<a href="'.$urlForum.'">'.$t['forum_name'].'</a></span>
 
 					</div>';
 					$buf .= '</div>';

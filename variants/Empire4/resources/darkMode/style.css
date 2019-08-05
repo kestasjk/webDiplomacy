@@ -1,0 +1,24 @@
+@CHARSET "ISO-8859-1";
+
+.variantEmpire4 .country0 { color: rgba(255, 255, 255, 0.8) ! important; }  /* Global           */
+.variantEmpire4 .country1 { color: rgb(235, 235, 168) ! important; }  /* British-Columbia */
+.variantEmpire4 .country2 { color: rgb(232, 107, 107) ! important }  /* California       */
+.variantEmpire4 .country3 { color: rgb(217, 151, 93) ! important; }  /* Florida          */
+.variantEmpire4 .country4 { color: rgb(158, 224, 255) ! important; }  /* Heartland        */
+.variantEmpire4 .country5 { color: rgb(129, 255, 89) ! important; }  /* Mexico           */
+.variantEmpire4 .country6 { color: rgb(173, 108, 196) ! important; }  /* New-York         */
+.variantEmpire4 .country7 { color: rgb(249, 193, 230) ! important; }  /* Peru             */
+.variantEmpire4 .country8 { color: rgb(97, 177, 0) ! important; }  /* Quebec           */
+.variantEmpire4 .country9 { color: rgb(181, 181, 181) ! important; }  /* Texas            */
+.variantEmpire4 .country10 { color: rgb(87, 150, 171) ! important; } /* Cuba             */
+
+.variantEmpire4 .occupationBar1 { background-color: rgb(235, 235, 168); }  /* British-Columbia */
+.variantEmpire4 .occupationBar2 { background-color: rgb(232, 107, 107); }  /* California       */
+.variantEmpire4 .occupationBar3 { background-color: rgb(217, 151, 93); }  /* Florida          */
+.variantEmpire4 .occupationBar4 { background-color: rgb(158, 224, 255); }  /* Heartland        */
+.variantEmpire4 .occupationBar5 { background-color: rgb(129, 255, 89); }  /* Mexico           */
+.variantEmpire4 .occupationBar6 { background-color: rgb(173, 108, 196); }  /* New-York         */
+.variantEmpire4 .occupationBar7 { background-color: rgb(249, 193, 230); }  /* Peru             */
+.variantEmpire4 .occupationBar8 { background-color: rgb(97, 177, 0); }  /* Quebec           */
+.variantEmpire4 .occupationBar9 { background-color: rgb(181, 181, 181); }  /* Texas            */
+.variantEmpire4 .occupationBar10 { background-color: rgb(87, 150, 171); } /* Cuba             */
