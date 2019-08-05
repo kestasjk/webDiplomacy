@@ -768,6 +768,8 @@ class adminActionsRestricted extends adminActionsForum
 
 	public function updateDonators(array $params)
 	{
+		global $DB;
+		
 		if( isset(Config::$customForumURL) ) 
 		{
 			$DB->sql_put("UPDATE phpbb_users p INNER JOIN wD_Users u ON u.id = p.webdip_user_id SET p.user_rank = 12 WHERE p.user_rank in (0,13,14) and u.type like '%DonatorGold%'");
