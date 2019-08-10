@@ -66,7 +66,8 @@ class UnorderedCountries {
                                             AND g.variantID in ($apiVariants)
                                             " . $filterGameClause . "
                                             AND g.processStatus = 'Not-processing'
-                                            AND g.phase IN ('Diplomacy', 'Retreats', 'Builds');");
+                                            AND g.phase IN ('Diplomacy', 'Retreats', 'Builds')
+                                      ORDER BY g.processTime ASC;");
 
         while( $row = $DB->tabl_hash($countryTabl) )
         {
