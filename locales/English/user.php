@@ -79,14 +79,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 	foreach ($User->options->value as $name=>$val) 
 	{
-		if (UserOptions::$titles[$name] == "Dark Theme (this setting toggle when you navigate away from this page)" && !$User->type['Moderator'])
-        {
-            print '<div style="display: none;"><li class="settings"><strong>'.UserOptions::$titles[$name].':</strong></li>';
-        }
-        else
-        {
-			print '<div><li class="settings"><strong>'.UserOptions::$titles[$name].':</strong></li>';
-		}
+		print '<div><li class="settings"><strong>'.UserOptions::$titles[$name].':</strong></li>';
 		foreach (UserOptions::$possibleValues[$name] as $possible) 
 		{
 			print ' <input type="radio" name="userForm['.$name.']" value="'.$possible.'" '. ($val == $possible ? 'checked' :'') . ' > '. $possible;
