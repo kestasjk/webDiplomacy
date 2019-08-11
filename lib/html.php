@@ -441,7 +441,6 @@ class libHTML
 		    var cssDirectory = "'.CSSDIR.'";
 				var cssVersion = "'.CSSVERSION.'";
 		</script>
-		<script type="text/javascript" src="'.l_j('javascript/desktopMode.js').'?ver='.JSVERSION.'"></script>
 
 		<link rel="stylesheet" id="global-css" href="'.CSSDIR.l_s('/'.$darkMode.'global.css').'?ver='.CSSVERSION.'" type="text/css" />
 		<link rel="stylesheet" id="game-panel-css" href="'.CSSDIR.l_s('/'.$darkMode.'gamepanel.css').'?ver='.CSSVERSION.'" type="text/css" />
@@ -1070,7 +1069,11 @@ class libHTML
 	{
 		// Version, sourceforge and HTML compliance logos
 		return l_t('webDiplomacy version <strong>%s</strong>',number_format(VERSION/100,2)).'<br />
-			<a class="light" id="js-desktop-mode" style="cursor: pointer; color: #006699;" onclick="toggleDesktopMode()">Enable Desktop Mode</a> <br />
+			<div>
+			<a class="light" id="js-desktop-mode" style="cursor: pointer; color: #006699;" onclick="toggleDesktopMode(true)">Enable Desktop Mode</a>
+			</div>
+			<br />
+
 			<a href="http://github.com/kestasjk/webDiplomacy" class="light">GitHub Project</a> |
 			<a href="http://github.com/kestasjk/webDiplomacy/issues" class="light">Bug Reports</a> | <a href="mailto:'.Config::$modEMail.'" class="light">Moderator Email</a> |
 			<a href="contactUsDirect.php" class="light">Contact Us Directly</a>';
@@ -1148,6 +1151,7 @@ class libHTML
 				this.lastMessageIDViewed='.$User->lastMessageIDViewed.';
 				this.timeLastSessionEnded='.$User->timeLastSessionEnded.';
 				this.token="'.md5(Config::$secret.$User->id.'Array').'";
+				this.darkMode="'.$User->options->value['darkMode'].'";
 			}
 			User = new UserClass();
 			var headerEvent = document.getElementsByClassName("clickable");
@@ -1191,17 +1195,27 @@ class libHTML
 				}, this);
 			}
 			var toggle = localStorage.getItem("desktopEnabled");
+			var darkMode = localStorage.getItem("darkModeEnabled");
+			var dark = User.darkMode;
+			if (dark == "Yes") {
+				dark = true;
+			} else {
+				dark = false;
+			}
+			localStorage.setItem("darkModeEnabled", dark);
 			var toggleElem = document.getElementById(\'js-desktop-mode\');
             if (toggle == "true") {
                 if(toggleElem !== null) {
-                    toggleElem.innerHTML = "Disable Desktop Mode";
+                	toggleElem.innerHTML = "Disable Desktop Mode";
                 }
             } else {
                 if(toggleElem !== null) {
-                    toggleElem.innerHTML = "Enable Desktop Mode";
+                	toggleElem.innerHTML = "Enable Desktop Mode";
                 }
             }
 		</script>
+
+		<script type="text/javascript" src="'.l_j('javascript/desktopMode.js').'?ver='.JSVERSION.'"></script>
 		';
 
 		if( Config::$debug )

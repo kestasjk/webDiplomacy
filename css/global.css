@@ -583,6 +583,14 @@ a.light {
 	}
 }
 
+@media not all and (min-resolution:.001dpcm) { 
+    @media {
+        #navSubMenu div#nav-drop {
+       		transform: translateX(-22.5%);
+		}	
+    }
+}
+
 #header-goto a:hover {
 	background-color: rgba(255, 255, 255, 0.75);
 	border-radius: 15px 0 15px 0;
@@ -1950,6 +1958,9 @@ input[id^="FinalizeButton"]{
 .archive-messages-table{
 	table-layout: fixed;
 }
+
+/* end desktop only */
+
 @media only screen and (max-width: 500px){
 	#logo{
 		position: relative;
@@ -2001,6 +2012,9 @@ input[id^="FinalizeButton"]{
 	}
 	#navSubMenu {
 		margin-top: 5px;
+	}
+	#navSubMenu div#nav-drop {
+       	transform: translateX(-22.5%);
 	}
 	#seperator{
 		margin: 0 -10px;

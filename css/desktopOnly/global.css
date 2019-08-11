@@ -58,6 +58,11 @@ input[type="text"], input[type="password"], textarea, select {
 	border: 1px solid #c1c1c1;
 	color:#000000;
 }
+
+input:read-only.toggle-notice {
+	background-color: transparent !important;
+}
+
 input:read-only {
   background-color:#999 !important;
 }
@@ -578,6 +583,14 @@ a.light {
 	}
 }
 
+@media not all and (min-resolution:.001dpcm) { 
+    @media {
+        #navSubMenu div#nav-drop {
+       		transform: translateX(-22.5%);
+		}	
+    }
+}
+
 #header-goto a:hover {
 	background-color: rgba(255, 255, 255, 0.75);
 	border-radius: 15px 0 15px 0;
@@ -744,10 +757,8 @@ div#chatboxtabs a {
 	padding-top:3px;
 	padding-bottom:3px;
 }
-div.gamelistings-tabs a
 div.gamelistings-tabs a:hover {
 	text-decoration:none;
-	background-color: #f5f5f5;
 	border-bottom:2px solid #009902 ! important;
 	border-top:1px solid #009902 ! important;
 	border-left:1px solid #009902 ! important;
