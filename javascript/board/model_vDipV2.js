@@ -419,13 +419,22 @@ function loadModel() {
 			 * 
 			 * Returns true, if a path was found
 			 */
-			findPath: function () {
+			findPath: function (forceInternalNode) {
+				// at least one internal node can be enforced in case of direct
+				// path searches from land to land that must include at least 
+				// one fleet.
+				if(Object.isUndefined(forceInternalNode)) 
+					forceInternalNode = false;
 
 				// start with initial path only containing StartTerr
 				var start = new PathClass(this.startTerr, null);
 				start.node.setVisited(this);
 				
-				var testPaths = start.node.getValidBorderTerritories().map(function(nextNode){
+				var testPaths = start.node.getValidBorderTerritories().select(
+					function(nextNode){
+						// skip the end node as one starting node if an internal node should be enforced
+						return !forceInternalNode || !this.fEndNode(nextNode);
+					},this).map(function(nextNode){
 						return start.addNode(nextNode);
 					});
 
@@ -912,7 +921,7 @@ function loadModel() {
 					
 				} else if (AnyNodes.length == this.Nodes.keys().length) {
 					var search = new PathSearchClass(StartTerr, fEndNode);
-					if(!search.findPath())
+					if(!search.findPath(true))
 						return false;
 
 					this.Path = search.path.toArray().reverse();
