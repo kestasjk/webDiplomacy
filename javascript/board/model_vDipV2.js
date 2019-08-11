@@ -249,43 +249,245 @@ function loadModel() {
 			}
 		});
 		
+		/*
+		 * As big variants can have much more complex convoy groups the path 
+		 * searching code was reworked by Tobias Florin.
+		 *
+		 * While the new code got a lot more complex it actually improves the 
+		 * performance a lot. Even on the most extreme case that is currently 
+		 * available, a test map of the variant WWIV sealanes with fleets in every
+		 * sea territory (>260) one expensive path search to set a convoy only 
+		 * takes a few 10 ms (browser was none responsive  even for cases with 
+		 * much less fleets). But the algorithm might need some explanation which 
+		 * is tried below.
+		 * 
+		 * While it is simple and more or less efficient to search a simple path
+		 * from start to end node in a breadth search approach, searching for path
+		 * that contains one middle node (the convoying fleet) turned out to be
+		 * much more problematic. One minor improvement over the original code was
+		 * to introduce such a simple breadth search for the first case. The other
+		 * much more important was to develop an algorithm for the second case.
+		 * 
+		 * So how does this work? 
+		 * First of all two paths from start and end to middle respectively are
+		 * calculated. If they do not share any common nodes apart from the middle
+		 * node, the problem is already solved as a complete simple path from start
+		 * to end via middle was found. However, if this is not the case, alternative
+		 * routes are searched for the shorter path. After all alternatives are
+		 * found the second path is searched again. But this time there are additional
+		 * conditions: The second path must not include any node of the first path
+		 * for which no alternative route without that node exists (so this node
+		 * must be included in the first path and therefor cannot be used in the
+		 * second). The search for the second path ends early, if the search reaches
+		 * a node of the first path, for which an alternative route exists without 
+		 * that node. In this case the alternative path is simply used for the first
+		 * path and the second path is build by the current search path and then
+		 * just following the path fork of the first path that it reached to the 
+		 * middle node. This way the second path can be found in a sufficiently 
+		 * efficient way.
+		 * 
+		 * But the alternative routes have to be found in an efficient way, too.
+		 * This is done systematically in the following way. Beginning from the
+		 * last node before middle of the found first path, alternative forks to
+		 * the middle node are searched. This alternative nodes can only reach
+		 * the middle nodes via nodes that are not used yet or that are only used
+		 * by a fork that has more alternatives (called path rank in the code)
+		 * than the current fork. In the latter case, the old fork is removed and 
+		 * its path is used by the new fork.
+		 * 
+		 * If a new fork is found, alternatives are searched for this fork, as well, 
+		 * starting again with the last node. So one gets a very recoursive pattern
+		 * overall. This pattern guarantees, that after the search for alternatives
+		 * is done, only those forks are found, that fork as early as possible in
+		 * the path. This way it is guaranteed that there is really no alternative
+		 * route around a node if it is not found by this algorithm.
+		 * 
+		 * To further improve performance, each search from each node places a
+		 * so called search-object on each node it visited. This object includes
+		 * the information about the node the search started and the rank of the
+		 * path at that point. If the search was unsuccessful and another search
+		 * enters a node visited by the first search it can be quickly decided, 
+		 * if it is worth continuing that search. If the rank of the path at the
+		 * start node of the current search is not lower than the last one, no
+		 * additional forks can be reused so it is impossible to find a new path 
+		 * continuing at this point and more exponentionally growing execution 
+		 * time is saved.
+		 * 
+		 * Apart from those main concepts most minor calculation steps that inlcude
+		 * recursions over menu nodes are implemented in way trying to get as much
+		 * efficiency as possible. However, there might even be more potential to
+		 * improve the code, that I do not want to follow here as it is probably
+		 * not worth the effort. If this situation changes at some point, one might
+		 * for example consider reusing started search paths from a successful 
+		 * search for new searches. Or of course scrap the whole concept as I have
+		 * done myself several times.
+		 */
+		
 		TerritoryClass.addMethods({
-			nodeInit: function () {
+			nodeInit: function (search) {
 				this.convoyNode = true;
-				/*
-				 * this.convoyPaths includes all paths that have reached a node.
-				 * For each new path that reaches a node it has to be checked,
-				 * if the node is already reached by a shorter path, that includes
-				 * all the nodes of the current path (I call the new path a reducible
-				 * path in this case; further explanations at the findAllPaths 
-				 * function). As a consequence of the bridth first search, the
-				 * convoyPaths are in ascending order of path length.
-				 */
-				this.convoyPaths = new Array();
+				
+				// contains the last search that went
+				// through this node -> needed for breadth first search
+				this.lastVisitedBy = null;
+				
+				// contains the last search that went through this node and was not success.
+				// In case a new search passes this node with a same or higher rank, no
+				// additional search has to be done  (as there won't be a success in this
+				// case as well)
+				// (will only be updated, when lastVisitedBy is updated or state is called
+				// by internal functions!)
+				this.lastSearchNotSuccess = null;
+				
+				// the current path that uses this node
+				this.path = null;
+				
+				// a cache for the border territories that are important for the path search
 				this.validBorderTerritoriesCache = null;
+				
+				// data of the current search (the overall one; for validBorderTerritories)
+				this.search = search;
+				
+				// A mark only used for checking, if two paths are seperated or not
+				this.inPath = null;
 			},
-			addPath: function (path) {
-				this.convoyPaths.push(path);
+			visited: function(node){
+				return (this.lastVisitedBy === node);
+			},
+			setVisited: function(search){
+				// update lastSuccessfulSearch so no information gets lost
+				if(!this.lastVisitedBy === null && !this.lastVisitedBy.success)
+					this.lastSearchNotSuccess = this.lastVisitedBy;
+				
+				this.lastVisitedBy = search;
+			},
+			/*
+			 * Returns a number (rank) to decide if this node might lead to a 
+			 * successfull search.
+			 * 
+			 * In case this node is part of a complete path, the rank (number of 
+			 * alternative routes) of the path at this node is returned. Only if
+			 * the rank is lower than that of the current search's starting territory
+			 * this node can be part of the new path.
+			 * 
+			 * In case this node is not part of a complete path, the rank of the
+			 * last unsuccessful search (i.e. the rank of the starting node) is 
+			 * reaturned. Only if the rank of the current search is lower, it might
+			 * lead to a successful search.
+			 */
+			getMaxRank: function(){
+				if(this.hasPath())
+					return this.path.getRank();
+				else
+					return (this.lastSearchNotSuccess !== null)? this.lastSearchNotSuccess.path.getNextNodeRank(): Infinity;
+			},
+			hasPath: function(){
+				return !(this.path === null);
 			},
 			isConvoyNode: function () {
 				return !Object.isUndefined(this.convoyNode) && this.convoyNode;
 			},
 			//add function to cache valid border territories with specific search params for efficiency
-			getValidBorderTerritories: function(StartTerr, fAllNode, fEndNode){
-				if( this.validBorderTerritoriesCache == null )
+			getValidBorderTerritories: function(){
+				if( this.validBorderTerritoriesCache === null )
 					this.validBorderTerritoriesCache = this.getBorderTerritories().findAll(function (n) {
-							return n.isConvoyNode() && n.id != StartTerr.id && (fAllNode(n) || fEndNode(n));
-					});
+							return n.isConvoyNode() && n.id != this.search.startTerr.id && (this.search.fAllNode(n) || this.search.fEndNode(n));
+				},this);
 				
 				return this.validBorderTerritoriesCache;
-			}			
+			},
+		});
+		
+		/*
+		 * A class representing a simple path search from a start terr to one
+		 * or more end terrs. 
+		 */
+		PathSearchClass = Class.create({
+			initialize: function(startTerr, fEndNode, fAllNode){
+				this.startTerr = startTerr;
+				this.fEndNode = fEndNode;
+				this.fAllNode = fAllNode;
+				
+				this.success = false; // is set to true, if a path is found
+			},
+			/*
+			 * Find a path from start node to endNode with simple breadth-first search
+			 * 
+			 * Note that fEndNode and fAllNode might not be the ones
+			 * of the general overall search, but search specific. Especially fAllNode 
+			 * contains path specific restrictions.
+			 * 
+			 * Returns true, if a path was found
+			 */
+			findPath: function () {
+
+				// start with initial path only containing StartTerr
+				var start = new PathClass(this.startTerr, null);
+				start.node.setVisited(this);
+				
+				var testPaths = start.node.getValidBorderTerritories().map(function(nextNode){
+						return start.addNode(nextNode);
+					});
+
+				while (testPaths.length > 0) {
+
+					var testPath = testPaths.shift();
+					
+					// check if path is found
+					if(this.fEndNode(testPath.node)){
+						this.success = true;
+						this.path = testPath;
+						return true;
+					}
+
+					// check if node was already visited or fails fAllNode conditions
+					if (testPath.node.visited(this) || !(Object.isUndefined(this.fAllNode) || this.fAllNode(testPath.node))) {
+						continue;
+					}
+					// set the node visited
+					testPath.node.setVisited(this);
+					
+					// create new branches of the path, that reach to neighbored valid territories
+					var NextNodes = testPath.node.getValidBorderTerritories();
+						
+					// add new paths to testPaths	
+					NextNodes.each(function(nextNode){
+						testPaths.push(testPath.addNode(nextNode));
+					});
+				}
+
+				// no path is found
+				return false;
+			},
 		});
 
+		/*
+		 * A recoursive implementation of a path
+		 */
 		var PathClass = Class.create({
 			initialize: function (node, pathToNode) {
-				this.node = node
+				// the current node
+				this.node = node;
+				
+				// the path to previous node
 				this.pathToNode = pathToNode;
-				this.length = (pathToNode != null) ? pathToNode.length + 1 : 1;
+					
+				// a complete path is a path, that goes from start to end terr 
+				// of the current search
+				this.complete = false;	
+				
+				// a tag that stores if this path node was already checked for 
+				// alternative path branches to end terr
+				this.alternativeChecked = false;
+				
+				// the fixed next nodes (might be more than one due to forks)
+				this.pathNextNodes = new Array();
+				
+				// the rank symbolizes, how many alternative routes exist from this path to endNode 
+				// (only relevant for complete paths)
+				// don't call directly but use this.getRank() as this.rank 
+				// does not contain the real rank for optimization reasons
+				this.rank = /*(pathToNode !== null) ? pathToNode.rank :*/ 0;
 			},
 			includes: function (node) {
 				if (this.node == node)
@@ -304,62 +506,269 @@ function loadModel() {
 				return new PathClass(node, this);
 			},
 			/*
+			 * removes the first element of the path and return the new first one
+			 */
+			removeFirst: function(){
+				if(this.pathToNode == null) return;
+				
+				if(this.pathToNode.pathToNode != null)
+					return this.pathToNode.removeFirst();
+				
+				return this.newPathToNode(null);
+			},
+			/*
+			 * The path is a complete path from start node to end node. Set it is 
+			 * fixed in each node for further searches.
+			 */
+			setComplete: function(nextNode){
+				this.node.path = this;
+				
+				if(this.pathToNode === null)
+					this.setRank(0); //assure, the rank is set to 0 if this node is the start
+				
+				if(!Object.isUndefined(nextNode) && this.pathNextNodes.indexOf(nextNode) === -1){
+					// adjust the ranks / count of alternative routes
+					this.pathNextNodes.invoke('changeRank',1);
+					nextNode.setRank(/*this.rank +*/ this.pathNextNodes.length);
+					
+					this.pathNextNodes.push(nextNode);
+				}
+				
+				// previous nodes of complete path are already set to complete
+				if(!this.complete){
+					this.complete = true;
+					
+					if(this.pathToNode !==null)
+						this.pathToNode.setComplete(this);
+				}
+			},
+			/*
+			 * To avoid resource intensive rank updates for all following nodes 
+			 * everytime the rank is changed, the (real) rank is only calculated on call
+			 * by just summing up this rank and all the rank of the predecessors.
+			 */
+			getRank: function(){
+				return this.rank + ((this.pathToNode !== null)?this.pathToNode.getRank(): 0);
+			},
+			/*
+			 * Changes the rank for this path node and all following (in case of a complete path).
+			 * 
+			 * Positive change -> increase
+			 * Negative change -> decrease
+			 */
+			changeRank: function(change){
+				this.rank += change;
+				/*if(this.complete)
+					this.pathNextNodes.invoke('changeRank',change);*/
+			},
+			/*
+			 * Sets this rank and adjust the rank of following nodes
+			 */
+			setRank: function(newRank){
+				var diff = newRank - this.rank;
+				
+				this.changeRank(diff);
+			},
+			/*
+			 * get the last node of the complete path (normally end node)
+			 */
+			getLastPathNode: function(){
+				if(!this.complete || this.pathNextNodes.length == 0)
+					// this is the last element of the path
+					return this;
+				else
+					// (arbitrarily) choose the first of the complete next nodes instead
+					return this.pathNextNodes[0].getLastPathNode();
+			},
+			removePathNextNode: function(path){
+				if(!this.complete) return;
+				
+				var index = this.pathNextNodes.indexOf(path);
+				
+				if(index == -1) return;
+				
+				this.pathNextNodes.splice(this.pathNextNodes.indexOf(path),1);
+				
+				this.pathNextNodes.invoke('changeRank',-1); // decrease rank of all other forks (one alternative was just deleted
+				
+				if(this.pathNextNodes.length == 0){
+					// path not part of an alternative path -> dissolve completely
+					this.node.path = null;
+					this.dissolvePathToNode();
+				}
+			},
+			dissolvePathToNode: function(){
+				if(this.pathToNode != null)
+					this.pathToNode.removePathNextNode(this);
+				
+				this.complete = false;
+			},
+			/*
+			 * Dissolves the previous path to this node and add new path to node
+			 */
+			newPathToNode: function(node){
+				this.dissolvePathToNode();
+				
+				this.pathToNode = node;
+				
+				return this;
+			},
+			/*
+			 * Attaches the current path to an existing path through the node. 
+			 * 
+			 * Returns the path node where the reconnection happened.
+			 */
+			attachToNodePath: function(){
+				if(this.node.hasPath())
+					return this.node.path.newPathToNode(this.pathToNode);
+				else
+					return this;
+			},
+			getNextNodeRank: function(){
+				return this.getRank()+this.pathNextNodes.length-1;
+			},
+			/*
+			 * check for this path, if alternative paths starting from this.node
+			 * to end terr exist.
+			 */
+			searchAlternativeRoutes: function(fEndNode){
+				if(!this.complete) return;
+				
+				/*
+				 * Only search for alternative routes in relevant cases:
+				 * - not already done
+				 * - not end node
+				 * - not next to end node (no alternative can be found, where this path is not part of)
+				 */
+				if(!this.alternativeChecked){
+					if(fEndNode(this.node) || this.pathNextNodes.pluck("node").any(fEndNode)){
+						this.alternativeChecked = true;
+					}else{
+						var nextNodeRank = this.getNextNodeRank();
+						var alternativeRouteSearch = new PathSearchClass(this.node, // start at this node
+							function(node){
+								// final node is found or node with higher rank
+								return fEndNode(node) || (node.hasPath() && nextNodeRank<node.getMaxRank());
+							}, 
+							function(node){
+								/* additional condition an alternative route nodes have to fullfill
+								 * for optimization:
+								 * 
+								 * node not already used in search of same rank or lower before
+								 *		(=> if it is, there are no chances of finding an alternative route)
+								 */
+								return nextNodeRank<node.getMaxRank();
+							});
+
+						if(alternativeRouteSearch.findPath()){
+							// there exists an alternativeRoute
+							var alternativeRoute = alternativeRouteSearch.path;
+
+							// first check if alternativeRoute reaches endNode or path with lower rank
+							if(!fEndNode(alternativeRoute.node)){
+								// not EndNode -> reconnect paths
+								var alternativeRoute = alternativeRoute.attachToNodePath();
+							}
+
+							// append alternativeRoute to current path
+							alternativeRoute.removeFirst().newPathToNode(this);
+
+							// next set the route complete
+							alternativeRoute.setComplete();
+
+							// now search alternativeRoute for alternativeRoutes (beginning at the node next to end node)
+							alternativeRoute.pathToNode.searchAlternativeRoutes(fEndNode);
+							/*
+							 * Note, that not extra check is needed for pathToNode:
+							 * Even if the alternativeRoute heads directly into endNode,
+							 * pathToNode is at least this. So the extreme case is that other
+							 * paths from this node are checked (which is wanted)
+							 */
+						}else{
+							// all alternative routes from this node are found
+							this.alternativeChecked = true;
+						}
+					}
+				}
+				
+				if(this.pathToNode !== null)
+					this.pathToNode.searchAlternativeRoutes(fEndNode);
+			},
+			/* 
+			 * Returns an alternative path that does not pass through this.node.
+			 * Alternative routes have to be searched before-
+			 */
+			getAlternativeRoute: function(){
+				if(!this.alternativeChecked) return null;
+				
+				if(this.pathToNode === null) return null;
+				
+				if(this.pathToNode.pathNextNodes.length > 1){
+					// there is a fork in the path at node before
+					// find a path to next node of previous node that is not this.
+					// and return the complete path
+					return this.pathToNode.pathNextNodes
+							.find(function(path){return path !== this;}, this)
+							.getLastPathNode();
+				}else{
+					return this.pathToNode.getAlternativeRoute();
+				}
+			},
+			/*
 			 * Checks if this path can be appended to path so a simple path is preserved.
 			 * So this basically checks if both paths share any common nodes apart from
 			 * path.lastNode and this.firstNode. 
 			 * 
-			 * Implemented recursivly.
+			 * Implemented recursivly
 			 */
 			canBeAppendedTo: function (path) {
-				if (this.pathToNode == null)
-					// -> reached start of path
-					return true;
-
-				if (path.includes(this.node))
-					return false;
-
-				return this.pathToNode.canBeAppendedTo(path);
+				path.markPath();
+				
+				var retValue = true;
+				
+				if(this.node.inPath == path)
+					retValue = false;
+				else if(this.pathToNode !== null)
+					retValue = this.pathToNode.canBeAppendedTo(path);
+				
+				return retValue;
+			},
+			markPath: function(){
+				if(this.node.inPath === this) return;
+				
+				this.node.inPath = this;
+				
+				if(this.pathToNode !== null)
+					this.pathToNode.markPath();
 			},
 			toArray: function (array) {
 				if (Object.isUndefined(array))
 					array = new Array();
-				else
-					//do not include last element of path in array representation
-					array.push(this.node.id);
+				
+				//do not include last element of path in array representation
+				array.push(this.node.id);
 
 				if (this.pathToNode != null)
 					return this.pathToNode.toArray(array);
 				else
-					// final array has to be reversed since we moved backwards
-					return array.reverse();
+					return array
 			},
-			/*
-			 * Check for each convoyPath, if it is a subpath of this
-			 * path (includes only elements of this path). 
-			 * For this it has to be checked, if the pathToNode of any convoyPath 
-			 * identical to the predecessor path of the same length of this path.
-			 * For efficiency reasons, the lengthiest paths (last in order convoyPath)
-			 * are tested first because predecessor paths can only be checked in
-			 * descending length via pathToNode
-			 */
-			hasSubpathInConvoyPaths: function(){
-				var predPath = this.pathToNode;
-				
-				for(var i=this.node.convoyPaths.length-1; i>=0; i--){
-					var pathAgainst = this.node.convoyPaths[i].pathToNode;
-					
-					// get the predecessor, that is of pathAgainst.length
-					while(pathAgainst.length < predPath.length)
-						predPath = predPath.pathToNode;
-					
-					// check if pathAgainst and predecessor are identical
-					if (predPath === pathAgainst){
-						//pathAgainst reduced version of testPath
-						return true;
-					}
+			getLength: function(){
+				return 1 +((this.pathToNode !== null)?this.pathToNode.getLength():0);
+			},
+			//DEBUGGING ONLY
+			getFirst: function(){
+				if(this.pathToNode === null) 
+					return this;
+				else
+					return this.pathToNode.getFirst();
+			},
+			getAllPathsFromThis: function(){
+				if(this.pathNextNodes.length === 0){
+					return this;
+				}else{
+					return this.pathNextNodes.invoke('getAllPathsFromThis').flatten();
 				}
-				
-				return false;
 			}
 		});
 
@@ -373,12 +782,11 @@ function loadModel() {
 				}, this);
 			},
 			addNode: function (Node) {
-				Node.nodeInit();
 				this.Nodes.set(Node.id, Node);
 			},
-			resetNodePaths: function () {
+			initNodes: function (search) {
 				this.Nodes.values().map(function (n) {
-					n.nodeInit(); //reset node
+					n.nodeInit(search); 
 				});
 			},
 			routeSetLoad: function (ConvoyGroup) {
@@ -393,110 +801,128 @@ function loadModel() {
 				}, this);
 			},
 			routeSetStart: function (StartTerr, fEndNode, fAllNode, fAnyNode) {
-				// if fAnyNode describes one specific node -> split problem into two by searching
-				// paths from StartTerr to AnyNode and AnyNode to EndNode and check if paths
-				// exist with no shared nodes
+
+				// initialize nodes and load valied border territories for this search
+				this.initNodes(new PathSearchClass(StartTerr, fEndNode, fAllNode));
 
 				var AnyNodes = this.Nodes.values().select(fAnyNode);
 
 				if (AnyNodes.length == 1) {
-					// collect all minimal valid paths from startNode to anyNode and from anyNode to endNode
-					var paths1 = this.findAllPaths(StartTerr, function (node) {
+					var EndTerr = this.Nodes.values().find(fEndNode);
+					
+					// find path simple path to AnyNode (from now on middle node)
+					var fMiddleNode = function (node) {
 						return (node.id == AnyNodes[0].id);
-					}, fAllNode);
-					var paths2 = this.findAllPaths(AnyNodes[0], fEndNode, fAllNode);
-
-					// check if there exists a combination of paths that form a simple path
-					// (no shared nodes apart from anyNode)
-					for(var i=0; i<paths1.length; i++)
-						for(var j=0; j<paths2.length; j++)
-							if (paths2[j].canBeAppendedTo(paths1[i])) {
-								this.Path = paths1[i].toArray().concat(paths2[j].toArray());
-								return true;
-							}
-
-					return false;
-
-				} else if (AnyNodes.length == this.Nodes.keys().length) {
-					var path = this.findPath(StartTerr, fEndNode, fAllNode);
-
-					if (path == null)
+					};
+					
+					/*
+					 * Calculate two paths from start to middle and end to middle (which is works fast).
+					 * 
+					 * If those two paths are seperated ones, the problem is already
+					 * solved and we can take a short cut. 
+					 * 
+					 * If not, take the shorter one to calculate alternatives
+					 * (as shorter paths might have lesser alternatives from a 
+					 * statistical point of view).
+					 * 
+					 */
+					
+					// first path
+					var search = new PathSearchClass(StartTerr, fMiddleNode);
+					
+					if(!search.findPath())
+						return false;
+					
+					// second path
+					var search2 = new PathSearchClass(EndTerr, fMiddleNode);
+					
+					if(!search2.findPath())
 						return false;
 
-					this.Path = path.toArray();
+					// are the two found paths seperated (apart from middleNode)
+					if(!search2.path.pathToNode.canBeAppendedTo(search.path)){
+						// if paths are not already found
+						
+						// check which path is shorter to search for alternatives
+						if(search.path.getLength() > search2.path.getLength()){
+							search = search2;
+							EndTerr = StartTerr; // we now started our search at end terr, so start terr is the new end terr
+						}
+						
+						// set this path fixed as complete path for further search
+						search.path.setComplete();
+
+						// find all alternative routes to end node 
+						// (beginning at the node next to end node) 
+						search.path.pathToNode.searchAlternativeRoutes(fMiddleNode);
+
+						// now see if there exists a second path from end node to middle node
+						var search2 = new PathSearchClass(
+								EndTerr, // start search at end node
+								function(node){
+									// end nodes are the middle node or a path node with a complete fork before (rank > 0)
+									// (which can be used as alternative route from start to middle)
+									return fMiddleNode(node) || (node.hasPath() && node.getMaxRank() > 0);
+								},
+								function(node){
+									// ignore nodes with paths in general (those should only be end nodes if rank > 0)
+									return !node.hasPath(); 
+								});
+
+						if(!search2.findPath())
+							return false;
+					}
+					
+					/*
+					 * there exists a path start - middle - end
+					 * But it has to be completed first:
+					 * - a fitting path start - middle has to be found
+					 * - path2 might be completed from a node where it connected to one
+					 * of the first paths
+					 */
+					var path1; // the final chosen first part of the whole path
+					var path2; // the final chosen second part of the whole path
+					
+					// first check if second search reaches middleNode (or just a part of an alternative route)
+					if(fMiddleNode(search2.path.node)){
+						// it does directly reach endNode
+						// the initial path can be chosen as path1
+						path1 = search.path;
+						path2 = search2.path;
+					} else {
+						// not EndNode -> path2 connects to one path from first paths
+						// -> find alternative first path and then reconnect path2
+						path1 = search2.path.node.path.getAlternativeRoute();
+						
+						path2 = search2.path.attachToNodePath().getLastPathNode();
+					}
+					
+					// now there exist to disjoint paths, one from start and one from end to middle
+					// -> build the final path
+					// toArray generates an element starting with the last element
+					// -> path1 has to be reversed
+					// middleNode should not be included twice
+					// -> chose path2.pathToNode instead
+					// do not include endNode -> remove last element
+					this.Path = path1.toArray().reverse().concat(path2.pathToNode.toArray());
+					this.Path.pop();
+					
+					return true;
+					
+					
+				} else if (AnyNodes.length == this.Nodes.keys().length) {
+					var search = new PathSearchClass(StartTerr, fEndNode);
+					if(!search.findPath())
+						return false;
+
+					this.Path = search.path.toArray().reverse();
+					this.Path.pop();
 
 					return true;
 
 				} else
 					return false;
 
-			},
-			/*
-			 * This method find all paths from startNode to endNode that can not be reduced
-			 * to shorter valid paths by removing nodes (so basically no unnecessary loops).
-			 * 
-			 * This is done in breadth-first search since this guarantees that tested nodes
-			 * in search can only have already been reached via different paths that are 
-			 * shorter or of equal length. So it just has to be tested if the current path
-			 * with the new node can be reduced to the existing one and not vice versa.
-			 * 
-			 * if onePath==true, then just search for one path in simple breadth-first search
-			 */
-			findAllPaths: function (StartTerr, fEndNode, fAllNode, onePath) {
-				if (Object.isUndefined(onePath))
-					onePath = false;
-
-				// first make sure, that no paths are stored for nodes from previous searches
-				this.resetNodePaths();
-
-				// start with initial path only containing StartTerr
-				var testPaths = new Array(new PathClass(StartTerr, null));
-
-				while (testPaths.length > 0) {
-
-					var testPath = testPaths.shift();
-
-					// check if node was already visited by a shorter path that is a subpath of this one
-					// (-> this path gets obsolete as additional loop)
-					if (testPath.node.convoyPaths.length != 0) {
-
-						//onePath: node already reached -> do not continue this path
-						if (onePath)
-							continue;
-						
-						if(testPath.hasSubpathInConvoyPaths())
-							continue;
-					}
-
-					// add this path to the paths that contain node
-					testPath.node.addPath(testPath);
-
-					if (!fEndNode(testPath.node)) {
-						// create new branches of the path, that reach to neighbored valid territories
-						var NextNodes = testPath.node.getValidBorderTerritories(StartTerr, fAllNode, fEndNode);
-						
-						// add new paths to testPaths	
-						NextNodes.each(function(nextNode){
-							testPaths.push(testPath.addNode(nextNode));
-						});
-					}else if(onePath){
-						// one path is found
-						break;
-					}
-				}
-
-
-
-				// all paths that are not superpath of other paths that reach EndNode are found
-				// return all paths that reached EndNode
-				return this.Nodes.values().find(fEndNode).convoyPaths;
-			},
-			/*
-			 * Find a path to endNode with simple breadth-first search (uses algorithm of findAllPaths)
-			 */
-			findPath: function (StartTerr, fEndNode, fAllNode) {
-				var paths = this.findAllPaths(StartTerr, fEndNode, fAllNode, true)
-				return (paths.length == 0) ? null : paths[0];
 			}
 		});
 		
