@@ -895,3 +895,13 @@ ALTER TABLE `wD_Backup_Games` ADD `finishTime` int(10) unsigned DEFAULT NULL;
 UPDATE `wD_Backup_Games` g SET `finishTime` = (SELECT MAX(n.timeSent) FROM `wD_Notices` n WHERE n.type = 'Game' AND n.linkID = g.id) WHERE (SELECT COUNT(1) FROM `wD_Notices` n1 WHERE n1.linkID = g.id AND `type` = 'Game') > 0 AND `gameOver` <> 'No';
 
 UPDATE `wD_Backup_Games` SET `finishTime` = `processTime` WHERE `finishTime` IS NULL AND `gameOver` <> 'No';
+
+UPDATE `wD_Misc` SET `value` = '159' WHERE `name` = 'Version';
+
+ALTER TABLE `wD_Users`
+CHANGE `type` `type` SET(
+	'Banned', 'Guest', 'System', 'User', 'Moderator',
+	'Admin', 'Donator', 'DonatorBronze', 'DonatorSilver',
+	'DonatorGold', 'DonatorPlatinum', 'ForumModerator', 'Bot'
+) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'User';
+

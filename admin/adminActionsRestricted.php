@@ -89,6 +89,16 @@ class adminActionsRestricted extends adminActionsForum
 				'description' => 'Takes forum moderator status from the specified user ID.',
 				'params' => array('userID'=>'Mod User ID'),
 			),
+			'giveBot' => array(
+				'name' => 'Give bot status',
+				'description' => 'Gives bot status to the specified user ID.',
+				'params' => array('userID'=>'User ID'),
+			),
+			'takeBot' => array(
+				'name' => 'Take bot status',
+				'description' => 'Takes bot status from the specified user ID.',
+				'params' => array('userID'=>'User ID'),
+			),
 			'makeDonator' => array(
 				'name' => 'Give donator benefits',
 				'description' => 'Give donator benefits (in practical terms this just means opt-out of the distributed processing).<br />
@@ -570,6 +580,42 @@ class adminActionsRestricted extends adminActionsForum
 		);
 
 		return l_t('This user had their forum moderator status taken.');
+	}
+	
+	public function giveBot(array $params)
+	{
+		global $DB;
+
+		$userID = (int)$params['userID'];
+
+		$botUser = new User($userID);
+
+		if( $botUser->type['Bot'] )
+			throw new Exception(l_t("This user is already a bot"));
+
+		$DB->sql_put(
+			"UPDATE wD_Users SET type = CONCAT_WS(',',type,'Bot') WHERE id = ".$userID
+		);
+
+		return l_t('This user was given bot status.');
+	}
+
+	public function takeBot(array $params)
+	{
+		global $DB;
+
+		$userID = (int)$params['userID'];
+
+		$botUser = new User($userID);
+
+		if( ! $botUser->type['Bot'] )
+			throw new Exception(l_t("This user isn't a bot"));
+
+		$DB->sql_put(
+			"UPDATE wD_Users SET type = REPLACE(type,'Bot','') WHERE id = ".$userID
+		);
+
+		return l_t('This user had their bot status taken.');
 	}
 
 	public function checkPausedGames(array $params)
