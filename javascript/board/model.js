@@ -241,7 +241,17 @@ function loadModel() {
 			getConvoyFromChoices : function(ToTerritory) {
 				if( this.convoyLink )
 				{
-					this.convoyOptions = this.ConvoyGroup.Armies.select(function(a){return a.Territory!=ToTerritory;}).pluck('Territory').pluck('id');
+					this.convoyOptions = this.ConvoyGroup.Armies.select(function(ConvoyArmy){
+						if( ToTerritory == ConvoyArmy.Territory )
+							return false;
+						
+						var path=ToTerritory.ConvoyGroup.pathArmyToCoastWithFleet(ConvoyArmy.Territory, ToTerritory, this.Territory);
+						if( Object.isUndefined(path) )
+							return false;
+						else
+							return true;
+						
+					},this).pluck('Territory').pluck('id');
 					return this.convoyOptions;
 				}
 				else
