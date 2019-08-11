@@ -390,9 +390,12 @@ function loadModel() {
 			//add function to cache valid border territories with specific search params for efficiency
 			getValidBorderTerritories: function(){
 				if( this.validBorderTerritoriesCache === null )
-					this.validBorderTerritoriesCache = this.getBorderTerritories().findAll(function (n) {
+					this.validBorderTerritoriesCache = this.Borders
+						.select(function(b){return b.f;}).pluck('id').compact()
+						.map(function(n){return Territories.get(n);},this)
+						.findAll(function (n) {
 							return n.isConvoyNode() && n.id != this.search.startTerr.id && (this.search.fAllNode(n) || this.search.fEndNode(n));
-				},this);
+						},this);
 				
 				return this.validBorderTerritoriesCache;
 			},
@@ -579,14 +582,14 @@ function loadModel() {
 				this.changeRank(diff);
 			},
 			/*
-			 * get the last node of the complete path (normally end node)
+			 * get the last node of the path (normally end node)
 			 */
 			getLastPathNode: function(){
-				if(!this.complete || this.pathNextNodes.length == 0)
+				if(this.pathNextNodes.length == 0)
 					// this is the last element of the path
 					return this;
 				else
-					// (arbitrarily) choose the first of the complete next nodes instead
+					// (arbitrarily) choose the first of the next nodes instead
 					return this.pathNextNodes[0].getLastPathNode();
 			},
 			removePathNextNode: function(path){
