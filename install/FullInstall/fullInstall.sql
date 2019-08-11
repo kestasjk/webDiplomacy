@@ -888,10 +888,10 @@ ALTER TABLE `wD_Games` ADD `finishTime` int(10) unsigned DEFAULT NULL;
 
 UPDATE `wD_Games` g SET `finishTime` = (SELECT MAX(n.timeSent) FROM `wD_Notices` n WHERE n.type = 'Game' AND n.linkID = g.id) WHERE (SELECT COUNT(1) FROM `wD_Notices` n1 WHERE n1.linkID = g.id AND `type` = 'Game') > 0;
 
-UPDATE `wD_Games` SET `finishTime` = `processTime` WHERE `finishTime` IS NULL;
+UPDATE `wD_Games` SET `finishTime` = `processTime` WHERE `finishTime` IS NULL AND `gameOver` <> 'No';
 
 ALTER TABLE `wD__Backup_Games` ADD `finishTime` int(10) unsigned DEFAULT NULL;
 
 UPDATE `wD__Backup_Games` g SET `finishTime` = (SELECT MAX(n.timeSent) FROM `wD_Notices` n WHERE n.type = 'Game' AND n.linkID = g.id) WHERE (SELECT COUNT(1) FROM `wD_Notices` n1 WHERE n1.linkID = g.id AND `type` = 'Game') > 0;
 
-UPDATE `wD_Backup_Games` SET `finishTime` = `processTime` WHERE `finishTime` IS NULL;
+UPDATE `wD_Backup_Games` SET `finishTime` = `processTime` WHERE `finishTime` IS NULL AND `gameOver` <> 'No';
