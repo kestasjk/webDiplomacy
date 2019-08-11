@@ -965,6 +965,9 @@ class processGame extends Game
 		 * 'Playing'/'Left' -> 'Won'/'Survived'/'Resigned'
 		 * ('Defeated' status members are already set by now)
 		 */
+		global $DB;
+		$DB->sql_put("UPDATE wD_Games SET finishTime=".time()." WHERE id=".$this->id);
+		 
 		$this->Members->setWon($Winner);
 
 		// Then the game is set to finished
@@ -1134,6 +1137,7 @@ class processGame extends Game
 	public function setDrawn()
 	{
 		global $DB;
+		$DB->sql_put("UPDATE wD_Games SET finishTime=".time()." WHERE id=".$this->id);
 
 		// Unpause the game so that the processTime data isn't finalized as NULL
 		if( $this->processStatus == 'Paused' )
