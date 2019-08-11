@@ -2254,7 +2254,7 @@ fieldset dl:hover dt label, .button, .button:hover, .icon, .icon:hover, .button 
 	border-color: rgba(175, 255, 175, 0.5);
 }
 
-select.inputbox option {
+select.inputbox option, p.post-notice {
 	background-color: transparent;
 }
 
