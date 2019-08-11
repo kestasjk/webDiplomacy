@@ -39,7 +39,6 @@ function toggleDesktopMode() {
 //Change the CSS documents between Desktop and Mobile Variants
 // TRUE = Mobile Included --- FALSE = Desktop Only
 function changeCSS(toggle, dark) {
-    console.log(dark)
     if (dark === false) {
         dark = '';
     } else {

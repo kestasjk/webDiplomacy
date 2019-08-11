@@ -447,8 +447,6 @@ class libHTML
 		<link rel="stylesheet" id="home-css" href="'.CSSDIR.l_s('/'.$darkMode.'home.css').'?ver='.CSSVERSION.'" type="text/css" />
 		'.$variantCSS.'
 
-		<script type="text/javascript" src="'.l_j('javascript/desktopMode.js').'?ver='.JSVERSION.'"></script>
-
 		<title>'.l_t('%s - webDiplomacy',$title).'</title>
 	</head>';
 	}
@@ -1216,6 +1214,8 @@ class libHTML
                 }
             }
 		</script>
+
+		<script type="text/javascript" src="'.l_j('javascript/desktopMode.js').'?ver='.JSVERSION.'"></script>
 		';
 
 		if( Config::$debug )
