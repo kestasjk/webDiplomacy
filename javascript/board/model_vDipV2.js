@@ -819,6 +819,11 @@ function loadModel() {
 				if (AnyNodes.length == 1) {
 					var EndTerr = this.Nodes.values().find(fEndNode);
 					
+					// The EndTerr might not be part of the Convoy group.
+					// In this case no valid path can be found.
+					if(Object.isUndefined(EndTerr))
+						return false;
+					
 					// find path simple path to AnyNode (from now on middle node)
 					var fMiddleNode = function (node) {
 						return (node.id == AnyNodes[0].id);
@@ -912,8 +917,15 @@ function loadModel() {
 					// -> path1 has to be reversed
 					// middleNode should not be included twice
 					// -> chose path2.pathToNode instead
-					// do not include endNode -> remove last element
 					this.Path = path1.toArray().reverse().concat(path2.pathToNode.toArray());
+					
+					// the path might still be reversed at this point if a search
+					// backwards was considered more efficient
+					
+					if(this.Path[0] != StartTerr.id)
+						this.Path.reverse();
+					
+					// do not include endNode in the final -> remove last element
 					this.Path.pop();
 					
 					return true;
