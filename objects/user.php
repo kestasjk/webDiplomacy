@@ -530,7 +530,7 @@ class User {
 
 		// Convert an array of types this user has into an array of true/false indexed by type
 		$this->type = explode(',', $this->type);
-		$validTypes = array('System','Banned','User','Moderator','Guest','Admin','Donator','DonatorBronze','DonatorSilver','DonatorGold','DonatorPlatinum','ForumModerator');
+		$validTypes = array('System','Banned','User','Moderator','Guest','Admin','Donator','DonatorBronze','DonatorSilver','DonatorGold','DonatorPlatinum','ForumModerator','Bot');
 		$types = array();
 		foreach($validTypes as $type)
 		{
@@ -821,6 +821,11 @@ class User {
 	public static function tempBanUser($userID, $days, $reason, $overwrite = true)
 	{
 		global $DB;
+		
+		$banUser = new User($userID);
+		
+		if( $banUser->type['Bot'] )
+			return;
 		
 		/*
 		 * If the temp ban value should only be extended (no overwrite), check
