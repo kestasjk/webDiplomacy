@@ -2,7 +2,7 @@
 
 .variantClassicFvA .country0 { color: rgba(255, 255, 255, 0.8) ! important; } /* Global */
 .variantClassicFvA .country1 { color: rgb(117, 165, 255) ! important; } /* France */
-.variantClassicFvA .country2 { color: rgb(232, 107, 107) ! important; } /* Austria */
+.variantClassicFvA .country2 { color: rgb(255, 122, 122) ! important; } /* Austria */
 
 .variantClassicFvA .occupationBar1 { background-color: rgb(117, 165, 255); } /* France */
-.variantClassicFvA .occupationBar2 { background-color: rgb(232, 107, 107); } /* Austria */
+.variantClassicFvA .occupationBar2 { background-color: rgb(255, 122, 122); } /* Austria */
