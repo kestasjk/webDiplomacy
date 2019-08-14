@@ -89,6 +89,16 @@ class adminActionsRestricted extends adminActionsForum
 				'description' => 'Takes forum moderator status from the specified user ID.',
 				'params' => array('userID'=>'Mod User ID'),
 			),
+			'giveBot' => array(
+				'name' => 'Give bot status',
+				'description' => 'Gives bot status to the specified user ID.',
+				'params' => array('userID'=>'User ID'),
+			),
+			'takeBot' => array(
+				'name' => 'Take bot status',
+				'description' => 'Takes bot status from the specified user ID.',
+				'params' => array('userID'=>'User ID'),
+			),
 			'makeDonator' => array(
 				'name' => 'Give donator benefits',
 				'description' => 'Give donator benefits (in practical terms this just means opt-out of the distributed processing).<br />
@@ -239,6 +249,11 @@ class adminActionsRestricted extends adminActionsForum
 				'name' => 'API - Show API key and permissions for a user',
 				'description' => 'Display API key and permissions for a user.',
 				'params' => array('userID'=>'User ID'),
+			),
+			'updateVariantInfo' => array(
+				'name' => 'Update wD_VariantInfo',
+				'description' => 'Will add or update the info in wD_VariantInfo for a given variantID. If left blank, it will loop through all variants.',
+				'params' => array('variantID'=>'Variant ID'),
 			)
 		);
 
@@ -565,6 +580,42 @@ class adminActionsRestricted extends adminActionsForum
 		);
 
 		return l_t('This user had their forum moderator status taken.');
+	}
+	
+	public function giveBot(array $params)
+	{
+		global $DB;
+
+		$userID = (int)$params['userID'];
+
+		$botUser = new User($userID);
+
+		if( $botUser->type['Bot'] )
+			throw new Exception(l_t("This user is already a bot"));
+
+		$DB->sql_put(
+			"UPDATE wD_Users SET type = CONCAT_WS(',',type,'Bot') WHERE id = ".$userID
+		);
+
+		return l_t('This user was given bot status.');
+	}
+
+	public function takeBot(array $params)
+	{
+		global $DB;
+
+		$userID = (int)$params['userID'];
+
+		$botUser = new User($userID);
+
+		if( ! $botUser->type['Bot'] )
+			throw new Exception(l_t("This user isn't a bot"));
+
+		$DB->sql_put(
+			"UPDATE wD_Users SET type = REPLACE(type,'Bot','') WHERE id = ".$userID
+		);
+
+		return l_t('This user had their bot status taken.');
 	}
 
 	public function checkPausedGames(array $params)
@@ -964,6 +1015,71 @@ class adminActionsRestricted extends adminActionsForum
 		<div><strong>listGamesWithPlayersInCD</strong>: ".$row['listGamesWithPlayersInCD']."</div>
 		<div><strong>submitOrdersForUserInCD</strong>: ".$row['submitOrdersForUserInCD']."</div>
 		";
+	}
+	public function updateVariantInfo($params) {
+		global $DB;
+		$variantID = (int)$params['variantID'];
+		$variantIDs = array();
+		if ($variantID <> 0)
+		{
+			$variantIDs[] = $variantID;
+		}
+		else 
+		{
+			foreach(Config::$variants as $id => $name)
+			{
+				$variantIDs[] = $id;
+			}
+		}
+		foreach($variantIDs as $key => $value)
+		{
+			$sql = "INSERT INTO wD_VariantInfo(variantID, mapID, supplyCenterTarget, supplyCenterCount, countryCount, name, fullName, description, author";
+			$Variant=libVariant::loadFromVariantID($value);
+			$mapID = $Variant->mapID;
+			$SCCount = $Variant->supplyCenterCount;
+			$SCTarget = $Variant->supplyCenterTarget;
+			$name = $Variant->name;
+			$fullName = $Variant->fullName;
+			$description = $Variant->description;
+			$author = $Variant->author;
+			$countryCount = count($Variant->countries);
+			$sql2 = "VALUES(".$value.", ".$mapID.", ".$SCTarget.", ".$SCCount.", ".$countryCount.", '".$name."', '".$fullName."', '".$description."', '".$author."'";
+			$adapter = '';
+			if(isset($Variant->$adapter))
+			{
+				$sql .= ", adapter";
+				$adapter = $Variant->adapter;
+				$sql2 = $sql2.", '".$adapter."'";
+			}
+			$version = '';
+			if(isset($Variant->$version))
+			{
+				$sql .= ", version";
+				$version = $Variant->version;
+				$sql2 = $sql2.", '".$version."'";
+			}
+			$codeVersion = '';
+			if(isset($Variant->$codeVersion))
+			{
+				$sql .= ", codeVersion";
+				$codeVersion = $Variant->codeVersion;
+				$sql2 = $sql2.", '".$codeVersion."'";
+			}
+			$homepage = '';
+			if(isset($Variant->$homepage))
+			{
+				$sql .= ", homepage";
+				$homepage = $Variant->homepage;
+				$sql2 = $sql2.", '".$homepage."'";
+			}
+			$countryList = implode(",",$Variant->countries);
+			$sql2 = $sql2.", '".$countryList."')";
+			$sql .= ", countriesList) ";
+			$sql .= $sql2;
+			$DB->sql_put("DELETE FROM wD_VariantInfo WHERE variantID=".$value);
+			$DB->sql_put($sql);
+		}
+		return l_t('Variant Info Updated');
 	}
 }
 
