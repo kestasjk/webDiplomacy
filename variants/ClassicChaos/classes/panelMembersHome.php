@@ -24,7 +24,6 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-// Split the Home-View after 9 Countries for a better readability.
 class ClassicChaosVariant_panelMembersHome extends panelMembersHome
 {
 
@@ -52,52 +51,70 @@ class ClassicChaosVariant_panelMembersHome extends panelMembersHome
 			}
 		}
 		
+		// print countries with members > $maxPerRow on multiple rows on home page
+
 		$buf = '<table class="homeMembersTable">';
 		$memberNum = count($membersList);
-		$rowsCount=count($membersList[0]);
-		$maxPerRow = 9;
-		$rowsCount2 = ceil($memberNum / $maxPerRow); // No more than 10 countries per line, otherwise show half and half (or third and third and third... etc)
+		$maxPerRow = 7;
+		$rowsCount= count($membersList[0]);
+		$rowsCount2 = ceil($memberNum / $maxPerRow);
 		$numPerLine = round($memberNum / $rowsCount2);
 		$div = $maxPerRow;
-		if ($rowsCount2 > 1) {
+
+		if ($rowsCount2 > 1) 
+		{
 			$div = $memberNum / $rowsCount2;
-		} else {
+		} 
+		else 
+		{
 			$div = count($membersList);
 		}
+
 		$div = ceil($div);
-		
 		$alternate = libHTML::$alternate;
-		for($j=0;$j<$rowsCount2;$j++)
-		{
-			for($i=0;$i<$rowsCount;$i++)
+
+		for ($j = 0; $j < $rowsCount2; $j++)
+		{ 
+			for ($i = 0; $i < $rowsCount; $i++)
 			{
-					if ($i == 0 && $div % 2 == 0) libHTML::alternate();
+				if ($i == 0 && $div % 2 == 0) libHTML::alternate();
+
 				$rowBuf='';
-				
 				$dataPresent=false;
-					
-					$count = -1;
+				$count = -1;
+				$width = $memberNum / $maxPerRow;
+
 				foreach($membersList as $data)
 				{
-						$count++;
-						if($count < $j*$div || $count >= ($j+1)*$div) {
-							continue;
-						}
-					if($data[$i]) $dataPresent=true;
-						else $data[$i] = '&nbsp;';
-					$rowBuf .= '<td class="barAlt'.libHTML::alternate().'">'.$data[$i].'</td>';
-				}
-					if ($j == ($rowsCount2 - 1) && ($memberNum % $div) != 0) { // account for odd numbers
-						$rowBuf .='<td class="barAlt'.libHTML::alternate().'">&nbsp;</td>';
+					$count++;
+					if($count < $j * $div || $count >= ($j + 1)*$div) 
+					{
+						continue;
 					}
-					if ($i+1 < $rowsCount && $div % 2 != 0 ) libHTML::alternate();
+					if($data[$i]) 
+					{
+						$dataPresent=true;
+					}
+					else {
+						$data[$i] = '&nbsp;';
+					}
+					$rowBuf .= '<td style="width:'.$width.'%;" class="barAlt'.libHTML::alternate().'">'.$data[$i].'</td>';
+				}
+
+				// account for odd numbers
+				if ($j == ($rowsCount2 - 1) && ($memberNum % $div) != 0) 
+				{
+					$rowBuf .='<td style="display: none;" class="barAlt'.libHTML::alternate().'">&nbsp;</td>';
+				}
+
+				if ($i + 1 < $rowsCount && $div % 2 != 0 ) libHTML::alternate();
+
 				if($dataPresent)
 				{
-					$buf .= '<tr>'.$rowBuf.'</tr>';
+					$buf .= '<tr class="homeMembersTableTr">'.$rowBuf.'</tr>';
 				}
 			}
 		}
-		
 		$buf .= '</table>';
 		return $buf;
 	}

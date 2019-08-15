@@ -61,55 +61,76 @@ class panelMembersHome extends panelMembers
 			for($countryID=1; $countryID<=count($this->Game->Variant->countries); $countryID++)
 			{
 				$Member = $this->ByCountryID[$countryID];
-
-				//if ( $User->id == $this->ByCountryID[$countryID]->userID )
-				//	continue;
-				//elseif( $Member->status != 'Playing' && $Member->status != 'Left' )
-				//	continue;
-
 				$membersList[] = $Member->memberColumn();
 			}
 		}
 
+		// print countries with members > $maxPerRow on multiple rows on home page
+
 		$buf = '<table class="homeMembersTable">';
-		$rowsCount=count($membersList[0]);
+		$memberNum = count($membersList);
+		$maxPerRow = 7;
+		$rowsCount= count($membersList[0]);
+		$rowsCount2 = ceil($memberNum / $maxPerRow);
+		$numPerLine = round($memberNum / $rowsCount2);
+		$div = $maxPerRow;
 
-		$alternate = libHTML::$alternate;
-		for($i=0;$i<$rowsCount;$i++)
+		if ($rowsCount2 > 1) 
 		{
-			$rowBuf='';
-
-			$dataPresent=false;
-			$remainingPlayers=count($this->ByID);
-			$remainingWidth=100;
-			foreach($membersList as $data)
-			{
-				if($data[$i]) $dataPresent=true;
-
-				if( $remainingPlayers>1 )
-					$width = floor($remainingWidth/$remainingPlayers);
-				else
-					$width = $remainingWidth;
-
-				$remainingPlayers--;
-				$remainingWidth -= $width;
-
-				$rowBuf .= '<td style="width:'.$width.'%" class="barAlt'.libHTML::alternate().'">'.$data[$i].'</td>';
-			}
-			libHTML::alternate();
-			if($dataPresent)
-			{
-				$buf .= '<tr>'.$rowBuf.'</tr>';
-			}
-
-			libHTML::$alternate = $alternate;
+			$div = $memberNum / $rowsCount2;
+		} 
+		else 
+		{
+			$div = count($membersList);
 		}
-		libHTML::alternate();
 
+		$div = ceil($div);
+		$alternate = libHTML::$alternate;
+
+		for ($j = 0; $j < $rowsCount2; $j++)
+		{ 
+			for ($i = 0; $i < $rowsCount; $i++)
+			{
+				if ($i == 0 && $div % 2 == 0) libHTML::alternate();
+
+				$rowBuf='';
+				$dataPresent=false;
+				$count = -1;
+				$width = $memberNum / $maxPerRow;
+
+				foreach($membersList as $data)
+				{
+					$count++;
+					if($count < $j * $div || $count >= ($j + 1)*$div) 
+					{
+						continue;
+					}
+					if($data[$i]) 
+					{
+						$dataPresent=true;
+					}
+					else {
+						$data[$i] = '&nbsp;';
+					}
+					$rowBuf .= '<td style="width:'.$width.'%;" class="barAlt'.libHTML::alternate().'">'.$data[$i].'</td>';
+				}
+
+				// account for odd numbers
+				if ($j == ($rowsCount2 - 1) && ($memberNum % $div) != 0) 
+				{
+					$rowBuf .='<td style="display: none;" class="barAlt'.libHTML::alternate().'">&nbsp;</td>';
+				}
+
+				if ($i + 1 < $rowsCount && $div % 2 != 0 ) libHTML::alternate();
+
+				if($dataPresent)
+				{
+					$buf .= '<tr class="homeMembersTableTr">'.$rowBuf.'</tr>';
+				}
+			}
+		}
 		$buf .= '</table>';
 		return $buf;
-
-
 	}
 }
 ?>
