@@ -1070,6 +1070,7 @@ class adminActions extends adminActionsForms
 	public function givePoints(array $params)
 	{
 		global $DB;
+		$User = new User($params['userID']);
 
 		$userID = (int)$params['userID'];
 		$points = (int)$params['points'];
@@ -1081,6 +1082,14 @@ class adminActions extends adminActionsForms
 		else
 		{
 			$points = (-1)*$points;
+
+			if ( ($User->points - $points) < 0) 
+			{
+				$modMessedUp = $User->points;
+				$DB->sql_put("UPDATE wD_Users SET points = 0 WHERE id=".$userID);
+				return l_t('This user had all their points ('.$modMessedUp.') removed because a mod tried removing more points than the user had.',$points,libHTML::points());
+			}
+
 			$DB->sql_put("UPDATE wD_Users SET points = points - ".$points." WHERE id=".$userID);
 		}
 
