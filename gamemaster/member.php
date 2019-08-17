@@ -167,7 +167,6 @@ class processMember extends Member
 		$this->points += $bet;
 		$this->Game->pot -= $bet;
 
-		global $User;
 		if($User instanceof User && $User->id == $this->userID) $User->points += $bet;
 
 		return $bet;
@@ -184,8 +183,10 @@ class processMember extends Member
 	{
 		global $User; 
 
+		$userPassed = new User($this->userID);
+
 		// Do not give banned players or bot's any points. 
-		if ($User->type['Bot'] || $User->type['Banned'] ) return 0;
+		if ($userPassed->type['Bot'] || $userPassed->type['Banned'] ) return 0;
 
 		$this->pointsWon=0;
 		$awardSupplement = User::pointsSupplement($this->userID, 0, $this->bet,$this->gameID, $this->points);
@@ -209,10 +210,12 @@ class processMember extends Member
 	{
 		global $DB, $Game, $User;
 
+		$userPassed = new User($this->userID);
+
 		// User::points* update the database, but not this object
 
 		// Do not give banned players or bot's any points. 
-		if ($User->type['Bot'] || $User->type['Banned'] ) return 0;
+		if ($userPassed->type['Bot'] || $userPassed->type['Banned'] ) return 0;
 
 		// Might we need to be topped up?
 		if ( $awardedPoints < $this->bet )
