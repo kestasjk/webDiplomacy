@@ -39,17 +39,17 @@ class panelMembersHome extends panelMembers
 		global $User;
 		// $membersList[$i]=array($nameOrCountryID,$iconOne,$iconTwo,...);
 		$membersList = array();
-		if( $this->Game->phase == 'Pre-game')
+		if($this->Game->phase == 'Pre-game')
 		{
-			$count=count($this->ByID);
-			for($i=0;$i<$count;$i++)
-				$membersList[]=array(($i+1),'<img src="'.l_s('images/icons/tick.png').'" alt=" " title="'.l_t('Player joined, spot filled').'" />');
-			for($i=$count;$i<=count($this->Game->Variant->countries);$i++)
-				$membersList[]=array(($i+1), '');
+			$count = count($this->ByID);
+			for ($i = 0; $i < $count; $i++)
+				$membersList[] = array(($i + 1),'<img src="images/icons/tick.png" alt=" " title="Player joined, spot filled" />');
+			for ($i = $count + 1; $i <= count($this->Game->Variant->countries); $i++)
+				$membersList[] = array(($i), '');
 		}
 		else
 		{
-			for($countryID=1; $countryID<=count($this->Game->Variant->countries); $countryID++)
+			for($countryID = 1; $countryID <= count($this->Game->Variant->countries); $countryID++)
 			{
 				$Member = $this->ByCountryID[$countryID];
 				$membersList[] = $Member->memberColumn();
@@ -59,7 +59,7 @@ class panelMembersHome extends panelMembers
 		$buf = '<table class="homeMembersTable">';
 		$memberNum = count($membersList);
 		$maxPerRow = 7;
-		$rowsCount= count($membersList[0]);
+		$rowsCount = count($membersList[0]);
 		$rowsCount2 = ceil($memberNum / $maxPerRow);
 		$numPerLine = round($memberNum / $rowsCount2);
 		$div = $maxPerRow;
@@ -78,8 +78,8 @@ class panelMembersHome extends panelMembers
 			for ($i = 0; $i < $rowsCount; $i++)
 			{
 				if ($i == 0 && $div % 2 == 0) libHTML::alternate();
-				$rowBuf='';
-				$dataPresent=false;
+				$rowBuf = '';
+				$dataPresent = false;
 				$count = -1;
 				$width = $memberNum / $maxPerRow;
 				foreach($membersList as $data)
@@ -91,7 +91,7 @@ class panelMembersHome extends panelMembers
 					}
 					if($data[$i]) 
 					{
-						$dataPresent=true;
+						$dataPresent = true;
 					}
 					else {
 						$data[$i] = '&nbsp;';
