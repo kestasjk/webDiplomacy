@@ -417,6 +417,9 @@ class libHTML
 		/*
 		 * This line when included in the header caused certain translated hyphenated letters to come out as black diamonds with question marks.
 		 */
+
+		// all css theme code must be rendered prior to allowing desktop mode
+
 		return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 		<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">
 		<head>
@@ -445,11 +448,32 @@ class libHTML
 			<link rel="stylesheet" id="home-css" href="'.CSSDIR.l_s('/'.$darkMode.'home.css').'?ver='.CSSVERSION.'" type="text/css" />
 			'.$variantCSS.'
 
+			<script type="text/javascript">
+				var dark = "'.$darkMode.'";
+				if (dark == "darkMode/") {
+					dark = true;
+				} else {
+					dark = false;
+				}
+				localStorage.setItem("darkModeEnabled", dark);
+				var toggle = localStorage.getItem("desktopEnabled");
+				var toggleElem = document.getElementById(\'js-desktop-mode\');
+	            if (toggle == "true") {
+	                if(toggleElem !== null) {
+	                	toggleElem.innerHTML = "Disable Desktop Mode";
+	                }
+	            } else {
+	                if(toggleElem !== null) {
+	                	toggleElem.innerHTML = "Enable Desktop Mode";
+	                }
+	            }
+			</script>
+
 			<script type="text/javascript" src="'.l_j('javascript/desktopMode.js').'?ver='.JSVERSION.'"></script>
 			<title>'.l_t('%s - webDiplomacy',$title).'</title>
 		</head>';
 	}
-
+	
 	/**
 	 * Print the HTML which comes before the main content; title, menu, notification bar.
 	 *
@@ -1146,10 +1170,7 @@ class libHTML
 		foreach( array_merge($footerIncludes,self::$footerIncludes) as $includeJS ) // Add on the dynamically added includes
 			$buf .= '<script type="text/javascript" src="'.STATICSRV.JSDIR.'/'.$includeJS.'?ver='.JSVERSION.'"></script>';
 
-		// Utility (error detection, message protection), HTML post-processing,
-		// time handling functions. Only logged-in users need to run these
-		$buf .= '
-		<script type="text/javascript">
+		'<script type="text/javascript">
 			var UserClass = function () {
 				this.id='.$User->id.';
 				this.username="'.htmlentities($User->username).'";
@@ -1157,7 +1178,6 @@ class libHTML
 				this.lastMessageIDViewed='.$User->lastMessageIDViewed.';
 				this.timeLastSessionEnded='.$User->timeLastSessionEnded.';
 				this.token="'.md5(Config::$secret.$User->id.'Array').'";
-				this.darkMode="'.$User->options->value['darkMode'].'";
 			}
 			User = new UserClass();
 			var headerEvent = document.getElementsByClassName("clickable");
@@ -1200,27 +1220,7 @@ class libHTML
 					}
 				}, this);
 			}
-			var toggle = localStorage.getItem("desktopEnabled");
-			var darkMode = localStorage.getItem("darkModeEnabled");
-			var dark = User.darkMode;
-			if (dark == "Yes") {
-				dark = true;
-			} else {
-				dark = false;
-			}
-			localStorage.setItem("darkModeEnabled", dark);
-			var toggleElem = document.getElementById(\'js-desktop-mode\');
-            if (toggle == "true") {
-                if(toggleElem !== null) {
-                	toggleElem.innerHTML = "Disable Desktop Mode";
-                }
-            } else {
-                if(toggleElem !== null) {
-                	toggleElem.innerHTML = "Enable Desktop Mode";
-                }
-            }
-		</script>
-		';
+		</script>';
 
 		if( Config::$debug )
 			$buf .= '<br /><strong>JavaScript localization lookup failures:</strong><br /><span id="jsLocalizationDebug"></span>';
