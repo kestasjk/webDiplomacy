@@ -22,11 +22,8 @@
  * @package Base
  */
 require_once('header.php');
-
 require_once(l_r('lib/message.php'));
-
 require_once(l_r('objects/game.php'));
-
 require_once(l_r('gamepanel/gamehome.php'));
 
 /*
@@ -245,9 +242,7 @@ class libHome
 	{
 		$userStats = self::statsGlobalUser();
 		$gameStats = self::statsGlobalGame();
-		//$topUsers = self::topUsers();
 
-		//$buf='<div class="content" style="text-align:center;"><strong>Users:</strong> ';
 		$buf='<strong>'.l_t('Users:').'</strong> ';
 		$first=true;
 		foreach($userStats as $name => $val)
@@ -264,13 +259,8 @@ class libHome
 			$buf .= l_t($name).':<strong>'.$val.'</strong>';
 		}
 
-		//$buf .= '</div>';
-		//$buf .= '<br /><h3>Hall of fame</h3>'.implode('<br />',$topUsers);
-
-
 		return $buf;
 	}
-
 
 	static public function gameWatchBlock ()
 	{
@@ -306,7 +296,7 @@ class libHome
 	{
 		global $User, $DB;
 
-                if ($User->options->value['displayUpcomingLive'] == 'No') return '';
+        if ($User->options->value['displayUpcomingLive'] == 'No') return '';
 
 		$tabl=$DB->sql_tabl("SELECT g.* FROM wD_Games g
 			WHERE (g.phase = 'Pre-game' OR (g.phase in ('Diplomacy','Retreats','Builds') and g.minimumBet is not null and g.gameOver = 'No')) AND g.phaseMinutes < 60 AND g.password IS NULL
@@ -397,7 +387,8 @@ class libHome
 		return $buf;
 	}
 
-	static function forumNew() {
+	static function forumNew() 
+	{
 		// Select by id, prints replies and new threads
 		global $DB, $Misc;
 
@@ -418,9 +409,7 @@ class libHome
 		$threadIDs = array();
 		$threads = array();
 
-		while(list(
-				$postID, $threadID, $type, $timeSent, $replies, $subject,
-				$userID, $username, $points, $online, $userType, $message, $latestReplySent,$threadStarterUserID
+		while(list($postID, $threadID, $type, $timeSent, $replies, $subject, $userID, $username, $points, $online, $userType, $message, $latestReplySent,$threadStarterUserID
 			) = $DB->tabl_row($tabl))
 		{
 			$threadCount++;
@@ -436,8 +425,7 @@ class libHome
 			{
 				if(strlen($subject)>30) $subject = substr($subject,0,40).'...';
 				$threadIDs[] = $threadID;
-				$threads[$threadID] = array('subject'=>$subject, 'replies'=>$replies,
-					'posts'=>array(),'threadStarterUserID'=>$threadStarterUserID);
+				$threads[$threadID] = array('subject'=>$subject, 'replies'=>$replies, 'posts'=>array(),'threadStarterUserID'=>$threadStarterUserID);
 			}
 
 			$message=Message::refilterHTML($message);
@@ -471,7 +459,6 @@ class libHome
 				...</div>';
 			}
 
-
 			$data['posts'] = array_reverse($data['posts']);
 			foreach($data['posts'] as $post)
 			{
@@ -485,7 +472,6 @@ class libHome
 					<div style="clear:both"></div>
 					<div class="homeForumMessage">'.$post['message'].'</div>
 					</div>';
-
 			}
 
 			$buf .= '<div class="homeForumLink">
@@ -529,17 +515,11 @@ class libHome
 		// Select by id, prints replies and new threads
 		global $DB, $Misc;
 
-		$tabl = $DB->sql_tabl("SELECT t.forum_id, f.forum_name,
-
-				t.topic_id, t.topic_title, t.topic_time,
-				t.topic_views, t.topic_posts_approved,
-
+		$tabl = $DB->sql_tabl("SELECT t.forum_id, f.forum_name, t.topic_id, t.topic_title, t.topic_time, t.topic_views, t.topic_posts_approved,
 				u1.webdip_user_id as topic_poster_webdip, t.topic_poster, t.topic_first_poster_name, t.topic_first_poster_colour,
-
 				t.topic_last_post_id, t.topic_last_post_time,
 				u2.webdip_user_id as topic_last_poster_webdip, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_poster_colour,
 				p.post_id, p.post_text
-
 				FROM phpbb_topics t
 				INNER JOIN phpbb_posts p ON p.post_id = t.topic_last_post_id
 				INNER JOIN phpbb_forums f ON f.forum_id = t.forum_id
@@ -578,7 +558,8 @@ class libHome
 					$buf .= '<div class="homeForumPost homeForumPostAlt'.$alt.'">';
 
 
-					if( $t['topic_posts_approved']>1 ) {
+					if( $t['topic_posts_approved']>1 ) 
+					{
 
 						$buf .= '<div class="" style="margin-bottom:5px;margin-left:3px; margin-right:3px;">';
 						$buf .= '<div class="homeForumPostTime" style="float:right;font-weight:bold"><em>'.libTime::text($t['topic_last_post_time']).'</em></div>';
@@ -602,7 +583,6 @@ class libHome
 
 					$buf .= '<div class="" style="margin-bottom:5px;margin-left:3px; margin-right:3px;">';
 
-
 					$buf .= '<div style="margin-left:3px; margin-right:3px; font-size:90%">';
 					$buf .= '<div style="float:right">';
 					$buf .= l_t('<span class="forum-preview-span">%s replies, </span>','<strong>'.($t['topic_posts_approved']-1).'</strong>');
@@ -614,7 +594,6 @@ class libHome
 					</div>';
 					$buf .= '</div>';
 					$buf .= '</div>';
-
 		}
 
 		if( $buf )
@@ -630,7 +609,6 @@ class libHome
 
 if( !$User->type['User'] )
 {
-
 	print '<div class = "introToDiplomacy"><div class="content-notice" style="text-align:center">'.libHome::globalInfo().'</div></div>';
 	print libHTML::pageTitle(l_t('Welcome to webDiplomacy!'),l_t('A multiplayer web implementation of the popular turn-based strategy game Diplomacy.'));
 	//print '<div class="content">';
@@ -638,14 +616,14 @@ if( !$User->type['User'] )
 	<p style="text-align: center;"><img
 	src="<?php print l_s('images/startmap.png'); ?>" alt="<?php print l_t('The map'); ?>"
 	title="<?php print l_t('A webDiplomacy map'); ?>" /></p>
-<div class = "introToDiplomacy_show"><p class="welcome"><?php print l_t('<em> "Luck plays no part in Diplomacy. Cunning and
-cleverness, honesty and perfectly-timed betrayal are the tools needed to
-outwit your fellow players. The most skillful negotiator will climb to
-victory over the backs of both enemies and friends.<br />
-<br />
+	<div class = "introToDiplomacy_show"><p class="welcome"><?php print l_t('<em> "Luck plays no part in Diplomacy. Cunning and
+	cleverness, honesty and perfectly-timed betrayal are the tools needed to
+	outwit your fellow players. The most skillful negotiator will climb to
+	victory over the backs of both enemies and friends.<br />
+	<br />
 
-Who do you trust?"<br />
-(<a href="https://avalonhill.wizards.com/games/diplomacy">Avalon Hill</a>)</em>'); ?></p>
+	Who do you trust?"<br />
+	(<a href="https://avalonhill.wizards.com/games/diplomacy">Avalon Hill</a>)</em>'); ?></p>
 	<?php
 	print '</div></div>';
 
@@ -662,7 +640,8 @@ elseif( isset($_REQUEST['notices']) )
 	print '<table class="homeTable"><tr>';
 
 	notice::$noticesPage=true;
-	if( !isset(Config::$customForumURL) ) {
+	if( !isset(Config::$customForumURL) ) 
+	{
 		print '<td class="homeNoticesPMs">';
 		print '<div class="homeHeader">'.l_t('Private messages').'</a></div>';
 		print libHome::NoticePMs();
@@ -680,11 +659,6 @@ elseif( isset($_REQUEST['notices']) )
 }
 else
 {
-	/*
-	print '<div class="content-bare content-home-header">';
-	print '<div class="boardHeader">blabla</div>';
-	print '</div>';
-	*/
 	print '<div class="content-bare content-home-header">';// content-follow-on">';
 
 	print '<table class="homeTable"><tr>';
@@ -692,19 +666,21 @@ else
 	print '<td class="homeMessages">';
 
 	$liveGames = libHome::upcomingLiveGames();
-	if ($liveGames != '') {
+	if ($liveGames != '') 
+	{
 		print '<div class="homeHeader">'.l_t('Joinable live games').' <a href="gamelistings.php?gamelistType=Search&phaseLengthMax=30m&messageNorm=Yes&messagePub=Yes&messageNon=Yes&messageRule=Yes&Submit=Search#results">'.libHTML::link().'</a></div>';
 		print $liveGames;
 	}
 
-	if( isset(Config::$customForumURL) ) { // isset($_REQUEST['HomeForumTest']) ) {
-
+	if( isset(Config::$customForumURL) ) 
+	{ 
 		print '<div class="homeHeader">'.l_t('Forum').' <a href="/contrib/phpBB3/">'.libHTML::link().'</a></div>';
 		if( file_exists(libCache::dirName('forum').'/home-forum.html') )
 		{
 			print file_get_contents(libCache::dirName('forum').'/home-forum.html');
 			$diff = (time() - filemtime(libCache::dirName('forum').'/home-forum.html'));
-			if( $diff > 60*5 ) {
+			if( $diff > 60*5 ) 
+			{
 				unlink(libCache::dirName('forum').'/home-forum.html');
 			}
 		}
@@ -715,7 +691,8 @@ else
 			print $buf_home_forum;
 		}
 	}
-	else { //if( !isset(Config::$customForumURL)) {
+	else 
+	{ 
 		print '<div class="homeHeader">'.l_t('Forum').' <a href="forum.php">'.libHTML::link().'</a></div>';
 		if( file_exists(libCache::dirName('forum').'/home-forum.html') )
 			print file_get_contents(libCache::dirName('forum').'/home-forum.html');
@@ -731,11 +708,6 @@ else
 	print '<td class="homeSplit"></td>';
 
 	print '<td class="homeGameNotices">';
-
-	/*$buf = libHome::PMs();
-	if(strlen($buf))
-		print '<div class="homeHeader">Private messages</div>'.$buf;
-	*/
 
 	print '<div class="homeHeader">'.l_t('Notices').' <a href="index.php?notices=on">'.libHTML::link().'</a></div>';
 	print libHome::Notice();
