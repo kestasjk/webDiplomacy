@@ -88,10 +88,42 @@ class Members
 
 	function votesPassed()
 	{
+		global $DB;
 		$votes=self::$votes;
 		foreach($this->ByStatus['Playing'] as $Member)
 		{
-			$votes = array_intersect($votes, $Member->votes);
+			$userPassed = new User($Member->userID);
+			if($userPassed->type['Bot'])
+			{
+				$botVotes = array('Pause');
+				$botSC = $Member->supplyCenterNo;
+				foreach($this->ByStatus['Playing'] as $CurMember)
+				{
+					if ($botSC < $CurMember->supplyCenterNo)
+					{
+						$botVotes = array('Draw','Pause','Cancel');
+					}
+				}
+				$oldSC = 0;
+				list($oldSC) = $DB->sql_row("SELECT COUNT(ts.terrID) FROM wD_TerrStatusArchive ts INNER JOIN wD_Territories t ON ( ts.terrID = t.id ) WHERE t.supply='Yes' AND ts.countryID = ".$Member->countryID." AND ts.gameID = ".$this->Game->id." AND t.mapID=".$this->Game->Variant->mapID." AND ts.turn = ".max(0,$this->Game->turn - 4));
+				if ($oldSC >= $botSC)
+				{
+					$botVotes = array('Draw','Pause','Cancel');
+				}
+				elseif ($this->Game->turn < 2) 
+				{
+					$botVotes = array('Draw','Pause','Cancel');
+				}
+				elseif ($this->Game->turn < 4) 
+				{
+					$botVotes = array('Pause','Cancel');
+				}
+				$votes = array_intersect($votes, $botVotes);
+			}
+			else
+			{
+			  $votes = array_intersect($votes, $Member->votes);
+			}
 			if(count($votes)==0) break;
 		}
 		return $votes;
