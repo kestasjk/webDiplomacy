@@ -255,18 +255,21 @@ class User {
 	public static function pointsSupplement($userID, $pointsWon, $bet, $gameID, $points)
 	{
 		global $DB;
-		//10,23,105
+
+		$userPassed = new User($userID);
+
 		// If the user is winning points, and there is a chance they are winning fewer than they bet,
 		// this function is needed to make sure no-one runs out of points completely, by making sure
 		// all players have at least 100 points, including active bets in active games.
 
 		$pointsInPlay = self::pointsInPlay($userID, $gameID); // Points in 'Playing'/'Left' games except $gameID
 
-		if ( 100 <= ($pointsInPlay + $pointsWon + $points))
-			return 0; // This member is doing fine, doesn't need topping up
+		if ( 100 <= ($pointsInPlay + $pointsWon + $points)) return 0;
+		
+		// Bot's don't need points.
+		if ($userPassed->type['Bot']) return 0;
 
-		$supplement = (100 - ($pointsInPlay + $pointsWon + $points)); // The maximum supplement
-		//19 = 100 - (_ + 10 + 71)
+		$supplement = (100 - ($pointsInPlay + $pointsWon + $points)); // The maximum supplement, 19 = 100 - (_ + 10 + 71)
 
 		// You can't be supplemented back more than you bet in
 		if( $supplement > $bet ) $supplement = $bet;
@@ -282,11 +285,34 @@ class User {
 
 		assert('$points >= 0');
 
-		// 'Won','Bet','Cancel','Supplement'
+		$userPassed = new User($userID);
+
+		// Always adjust banned members to 0 points. 
+		if ($userPassed->type['Banned']) 
+		{
+			$DB->sql_put("UPDATE wD_Users SET points = 0 WHERE id = ".$userID);
+			return;
+		}
+
+		// Bot's don't need points.
+		if ($userPassed->type['Bot']) 
+		{
+			if ( $transferType == 'Bet' )
+			{
+				$DB->sql_put("UPDATE wD_Games SET pot = pot + 5 WHERE id = ".$gameID);
+				$DB->sql_put("UPDATE wD_Members SET bet = 5 WHERE id = ".$memberID);
+			}
+
+			elseif ( $transferType == 'Cancel' )
+			{
+				$DB->sql_put("UPDATE wD_Games SET pot = IF(pot > 5,(pot - 5),0) WHERE id = ".$gameID);
+			}
+			return;
+		}
+		
+		// 'Won','Bet','Cancel','Supplement', Won doesn't mean they won, this could be 0, it's just the transaction type
 		if($transferType == 'Won')
 		{
-			// Won doesn't mean they won, this could be 0, it's just the transaction type
-
 			/*
 			 * It is expected that if they won less than they bet they have already been topped up the
 			 * 100-minimum-points-supplement, and are now only being paid what they won from the game.
@@ -294,14 +320,12 @@ class User {
 			 */
 
 			$DB->sql_put("UPDATE wD_Members SET pointsWon = ".$points." WHERE userID = ".$userID." AND gameID = ".$gameID);
-
 		}
 
-		if ( $transferType == 'Cancel' )
-			$DB->sql_put("DELETE FROM wD_PointsTransactions
-				WHERE userID = ".$userID." AND gameID = ".$gameID);
+		if ( $transferType == 'Cancel' ) $DB->sql_put("DELETE FROM wD_PointsTransactions WHERE userID = ".$userID." AND gameID = ".$gameID);
+
 		else
-			$DB->sql_put("INSERT INTO wD_PointsTransactions ( userID, type, points, gameID, memberID )
+			$DB->sql_put("INSERT INTO wD_PointsTransactions ( userID, type, points, gameID, memberID ) 
 				VALUES ( ".$userID.", '".$transferType."', ".$points.", ".$gameID.", ".$memberID." )");
 
 		if ( $transferType == 'Bet' )
@@ -310,13 +334,19 @@ class User {
 			$DB->sql_put("UPDATE wD_Games SET pot = pot + ".$points." WHERE id = ".$gameID);
 			$DB->sql_put("UPDATE wD_Members SET bet = ".$points." WHERE id = ".$memberID);
 		}
+
 		elseif ( $transferType == 'Cancel' )
 		{
 			$DB->sql_put("UPDATE wD_Users SET points = points + ".$points." WHERE id = ".$userID);
 			$DB->sql_put("UPDATE wD_Games SET pot = IF(pot > ".$points.",(pot - ".$points."),0) WHERE id = ".$gameID);
 		}
+
 		else
-			$DB->sql_put("UPDATE wD_Users SET points = points + ".$points." WHERE id = ".$userID);
+		{
+			// Prevent mods from trying to dock more points than a user has, throwing an exception. Just dock the user to 0.
+			if (($points < 0 ) && ($this->points + $points) < 0 ) { $DB->sql_put("UPDATE wD_Users SET points = 0 WHERE id = ".$userID); }
+			else { $DB->sql_put("UPDATE wD_Users SET points = points + ".$points." WHERE id = ".$userID); }
+		}
 	}
 
 	/**
@@ -332,10 +362,8 @@ class User {
 
 		list($id) = $DB->sql_row("SELECT id FROM wD_Users WHERE email='".$email."'");
 
-		if ( isset($id) and $id )
-			return $id;
-		else
-			return 0;
+		if ( isset($id) and $id ) return $id;
+		else return 0;
 	}
 
 	/**
@@ -351,10 +379,8 @@ class User {
 
 		list($id) = $DB->sql_row("SELECT id FROM wD_Users WHERE username='".$username."'");
 
-		if ( isset($id) and $id )
-			return $id;
-		else
-			return 0;
+		if ( isset($id) and $id ) return $id;
+		else return 0;
 	}
 
 	/**
