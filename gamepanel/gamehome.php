@@ -117,20 +117,42 @@ class panelGameHome extends panelGameBoard
 				Pot: <span class="gamePot">'.$this->pot().'</span>';
 
 		$alternatives=array();
+
+		if ($this->variantID)
+		{
+			// hardcoding readable values for less readable variant names
+			if ($this->Variant->name == 'ClassicChaos')
+				$alternatives[]=l_t('Chaos');
+			elseif ($this->Variant->name == 'ClassicGvI')
+				$alternatives[]=l_t('GvI');
+			elseif ($this->Variant->name == 'ClassicFvA')
+				$alternatives[]=l_t('FvA');
+			elseif ($this->Variant->name == 'Empire4')
+				$alternatives[]=l_t('American Empire');
+			elseif ($this->Variant->name == 'Modern2')
+				$alternatives[]=l_t('Modern');
+			elseif ($this->Variant->name == 'AncMed')
+				$alternatives[]=l_t('Ancient Med');
+			// if not hardcoded, exact variant name defined will display
+			else
+				$alternatives[]=l_t($this->Variant->name);
+		}
+
 		if( $this->pressType=='NoPress')
-			$alternatives[]=l_t('No chat');
+			$alternatives[]=l_t('no chat');
 		elseif( $this->pressType=='RulebookPress' )
-			$alternatives[]=l_t('Rulebook chat');
+			$alternatives[]=l_t('rulebook chat');
 		elseif( $this->pressType=='PublicPressOnly' )
-			$alternatives[]=l_t('Public chat');
+			$alternatives[]=l_t('public chat');
+
 		if( $this->anon=='Yes' )
-			$alternatives[]=l_t('Anon');
+			$alternatives[]=l_t('anon');
 		if( $this->drawType=='draw-votes-hidden')
-			$alternatives[]=l_t('Hidden draw votes');
+			$alternatives[]=l_t('hidden draw votes');
 
 		if( $this->minimumReliabilityRating > 0) 
 		{
-			$alternatives[]= l_t('<span class="%s">RR%s%%</span>',
+			$alternatives[]= l_t('<span class="%s">RR>%s%%</span>',
 			($User->reliabilityRating < $this->minimumReliabilityRating ? 'Austria' :''), 
 			($this->minimumReliabilityRating));
 		}

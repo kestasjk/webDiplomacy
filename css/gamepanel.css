@@ -68,6 +68,9 @@
 .titleBarLeftSide {
 	float:left;
 }
+.titleBarRightSide, .titleBarLeftSide {
+	max-width: 50%;
+}
 .gameName {
 	font-weight:bold;
 	color: #009902;
