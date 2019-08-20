@@ -106,11 +106,7 @@ class Members
 				}
 				$oldSC = 0;
 				list($oldSC) = $DB->sql_row("SELECT COUNT(ts.terrID) FROM wD_TerrStatusArchive ts INNER JOIN wD_Territories t ON ( ts.terrID = t.id ) WHERE t.supply='Yes' AND ts.countryID = ".$Member->countryID." AND ts.gameID = ".$this->Game->id." AND t.mapID=".$this->Game->Variant->mapID." AND ts.turn = ".max(0,$this->Game->turn - 4));
-				if ($oldSC >= $botSC)
-				{
-					$botVotes = array('Draw','Pause','Cancel');
-				}
-				elseif ($this->Game->turn < 2) 
+				if ($oldSC >= $botSC || $this->Game->turn < 2)
 				{
 					$botVotes = array('Draw','Pause','Cancel');
 				}
