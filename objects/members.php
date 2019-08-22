@@ -90,6 +90,7 @@ class Members
 	{
 		global $DB;
 		$votes=self::$votes;
+		$forceDraw = true;
 		foreach($this->ByStatus['Playing'] as $Member)
 		{
 			$userPassed = new User($Member->userID);
@@ -119,8 +120,13 @@ class Members
 			else
 			{
 			  $votes = array_intersect($votes, $Member->votes);
+				$forceDraw = false;
 			}
 			if(count($votes)==0) break;
+		}
+		if ($forceDraw)
+		{
+			$votes = array('Draw');
 		}
 		return $votes;
 	}
