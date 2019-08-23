@@ -678,10 +678,16 @@ class adminActionsRestricted extends adminActionsForum
 		$oldPhase = $Game->phase;
 		$oldTurn = $Game->turn;
 
-		// - Check that the game is still active and can be turned back
+		// - Check that the game can be turned back (i.e. has at least one turn processed)
 		if ( $Game->turn < 1 )
 		{
 			throw new Exception(l_t('This game cannot be turned back; it is new or is finished.'));
+		}
+
+		// - Check that game is 'paused' or 'crashed', to avoid having bots submit orders while reprocessing
+		if ( $Game->processStatus == 'Not-processing' )
+		{
+			throw new Exception(l_t('This game cannot be turned back. Please pause the game before reprocessing.'));
 		}
 
 		// - Delete current turn values
@@ -721,8 +727,8 @@ class adminActionsRestricted extends adminActionsForum
 
 		// - Update the game turn, phase and next process time
 		$DB->sql_put("UPDATE wD_Games
-					SET turn = ".$lastTurn.", phase = 'Diplomacy', gameOver='No', processTime = phaseMinutes*60+".time().",
-						processStatus='Not-processing', pauseTimeRemaining=NULL
+					SET turn = ".$lastTurn.", phase = 'Diplomacy', gameOver='No', processTime=NULL,
+						processStatus='Paused', pauseTimeRemaining=60*phaseMinutes
 					WHERE id = ".$Game->id);
 
 		$DB->sql_put("UPDATE wD_Members SET votes='', orderStatus='',
