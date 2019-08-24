@@ -202,7 +202,7 @@ class panelGameBoard extends panelGame
 				$buf .= 'This game is scored using draw size scoring. In a draw, points are split evenly among all players remaining.';
 				break;             
 		case 'Unranked':
-				$buf .= 'This game is unanked. In a draw, all points are returned to their previous owners.';
+				$buf .= 'This game is unranked. In a draw, all points are returned to their previous owners.';
 				break;             
 		case 'Sum-of-squares':
 				$buf .= 'This game is scored using sum of squares. In a draw, points are split among remaining players based upon how many supply centers they have.';
