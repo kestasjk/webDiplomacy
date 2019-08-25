@@ -67,7 +67,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 
 		list($countryCount) = $DB->sql_row("SELECT countryCount FROM wD_VariantInfo WHERE variantID=".$input['variantID']);
 		
-		if ($input['countryID'] <= 0)
+		if ($input['countryID'] < 0 or $input['countryID'] > 7)
 		{
 			throw new Exception(l_t("%s is an invalid country ID.",(string)$input['countryID']));
 		}
@@ -95,7 +95,14 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			{
 				$currCountry += 1;
 			}
-			processMember::create($botID, 5, $currCountry);
+			if ($input['countryID'] == 0)
+			{
+				processMember::create($botID, 5, 0);
+			}
+			else
+			{
+				processMember::create($botID, 5, $currCountry);
+			}
 			$currCountry += 1;
 		}
 		$Game->Members->joinedRedirect();
@@ -127,7 +134,7 @@ print '<div class="content-bare content-board-header content-title-header">
 	<div class="pageDescription">Start a new game of Diplomacy against bots.</div>
 </div>
 <div class="content content-follow-on">
-	<p><a href="/gamecreate.php">Play A Game Against Humans</a></p>
+	<p><a href="gamecreate.php">Play A Game Against Humans</a></p>
 	<div class = "gameCreateShow">
 	<p>All Games against bots are unranked, with 3 day phases and 4 excused missed turns. However, anytime you ready up your orders, the game will immediately move to the next phase.</p>
 		<form method="post">
@@ -160,9 +167,9 @@ print '<div class="content-bare content-board-header content-title-header">
 						$defaultName=$Variant->fullName;
 					}
 					print "case \"".$variantID."\":\n";		
-					
+					print "document.getElementById('countryID').options[0]=new Option ('Random','0');";
 					for ($i=1; $i<=count($Variant->countries); $i++)
-						print "document.getElementById('countryID').options[".($i - 1)."]=new Option ('".$Variant->countries[($i -1)]."', '".$i."');";
+						print "document.getElementById('countryID').options[".$i."]=new Option ('".$Variant->countries[($i -1)]."', '".$i."');";
 					print "break;\n";		
 				}	
 				ksort($checkboxes);	

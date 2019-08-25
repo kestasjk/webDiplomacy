@@ -33,7 +33,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	<?php
 	if($User->type['Moderator'])
 	{
-		print '<p><a href="/botgamecreate.php">Play A Game Against Bots</a></p>';
+		print '<p><a href="botgamecreate.php">Play A Game Against Bots</a></p>';
 	}
 	?>
 	<div class = "gameCreateShow">
