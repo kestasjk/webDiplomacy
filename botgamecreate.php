@@ -162,7 +162,8 @@ print '<div class="content-bare content-board-header content-title-header">
 					
 					$Variant = libVariant::loadFromVariantName($variantName);
 					$checkboxes[$Variant->fullName] = '<option value="'.$variantID.'"'.(($first=='')?' selected':'').'>'.$Variant->fullName.'</option>';
-					if($first=='') {
+					if($first=='')
+					{
 						$first='"'.$variantID.'"';
 						$defaultName=$Variant->fullName;
 					}
@@ -179,14 +180,8 @@ print '<div class="content-bare content-board-header content-title-header">
 	}
 </script>
 <?php		
-			
 			print implode($checkboxes);
-			
 			print '</select>';
-			
-
-			
-			
 			print '</br></br>
 
 			<strong>Country: </strong>
