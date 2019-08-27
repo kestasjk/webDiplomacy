@@ -74,7 +74,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 
 		// Create Game record & object
 		require_once(l_r('gamemaster/game.php'));
-		$Game = processGame::create($input['variantID'],$input['name'],'',5,'Unranked',4320,60,'No','Regular','Normal','draw-votes-public',0,4);
+		$Game = processGame::create($input['variantID'],$input['name'],'',5,'Unranked',4320,60,'Yes','Regular','Normal','draw-votes-public',0,4);
 
 		// Prevent temp banned players from making new games.
 		if ($User->userIsTempBanned())
