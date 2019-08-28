@@ -30,7 +30,8 @@ require_once(l_r('gamepanel/game.php'));
  */
 class panelGameBoard extends panelGame
 {
-	function mapHTML() {
+	function mapHTML() 
+	{
 		global $User;
 
 		$mapTurn = (($this->phase=='Pre-game'||$this->phase=='Diplomacy') ? $this->turn-1 : $this->turn);
@@ -38,6 +39,7 @@ class panelGameBoard extends panelGame
 		$largemapLink = $smallmapLink.'&mapType=large'.($User->options->value['showMoves']=='No'?'&hideMoves':'');
 
 		$staticFilename=Game::mapFilename($this->id, $mapTurn, 'small');
+
 		if( file_exists($staticFilename) && $User->options->value['showMoves'] == 'Yes' )
 			$smallmapLink = STATICSRV.$staticFilename.'?nocache='.rand(0,99999);
 
@@ -59,15 +61,15 @@ class panelGameBoard extends panelGame
 							
 			</p>
 			<p id="History" class="lightgrey"></p>
-		</div>
-';
+		</div>';
 
 		$this->mapJS($mapTurn);
 
 		return $map;
 	}
 
-	protected function mapJS($mapTurn) {
+	protected function mapJS($mapTurn) 
+	{
 		libHTML::$footerScript[] = 'turnToText='.$this->Variant->turnAsDateJS()."
 		mapArrows($mapTurn,$mapTurn);
 		";
@@ -79,11 +81,7 @@ class panelGameBoard extends panelGame
 		$buf = '';
 
 		if ( $this->phase != 'Pre-game') 
-			$buf .= '
-				<div class="bar archiveBar">
-					'.$this->archiveBar().'
-				</div>
-				';
+			$buf .= '<div class="bar archiveBar"> '.$this->archiveBar().'</div> ';
 
 		$buf .= parent::links();
 
@@ -112,9 +110,7 @@ class panelGameBoard extends panelGame
 	function votes()
 	{
 		global $User;
-		if ( ( $this->phase == 'Pre-game' || $this->phase == 'Finished' ) ||
-			!isset($this->Members->ByUserID[$User->id]) )
-			return '';
+		if ( ( $this->phase == 'Pre-game' || $this->phase == 'Finished' ) || !isset($this->Members->ByUserID[$User->id]) ) return '';
 
 		$vAllowed = Members::$votes;
 		$vSet = $this->Members->ByUserID[$User->id]->votes;
@@ -122,18 +118,34 @@ class panelGameBoard extends panelGame
 
 		$vCancel=array();
 		$vVote=array();
+
 		foreach($vAllowed as $vote)
-			if(in_array($vote, $vSet))
+		{
+			// Set when the option to vote concede is allowed. Restrict it to games set via the config. 
+			if ($vote == 'Concede')
 			{
-				if(!in_array($vote, $vPassed))
-					$vCancel[]=$vote;
+				if ( (empty(Config::$concedeVariants)) || (in_array($this->variantID, Config::$concedeVariants)) )
+				{
+					if(in_array($vote, $vSet))
+					{
+						if(!in_array($vote, $vPassed)) $vCancel[]=$vote;
+					}
+					else $vVote[]=$vote;
+				}
 			}
 			else
-				$vVote[]=$vote;
+			{
+				if(in_array($vote, $vSet))
+				{
+					if(!in_array($vote, $vPassed)) $vCancel[]=$vote;
+				}
+				else $vVote[]=$vote;
+			}			
+		}
 
-				$buf = '<div style="width: 300px; margin: 0 auto; text-align:center;"><a href="contactUsDirect.php" align="center";>Need help?</a></div>
-				<div class="bar membersList memberVotePanel"><a name="votebar"></a>
-				<table><tr class="member">
+		$buf = '<div style="width: 300px; margin: 0 auto; text-align:center;"><a href="contactUsDirect.php" align="center";>Need help?</a></div>
+		<div class="bar membersList memberVotePanel"><a name="votebar"></a>
+		<table><tr class="member">
 			<td class="memberLeftSide">
 				<strong>'.l_t('Votes:').'</strong>
 			</td>
@@ -141,7 +153,7 @@ class panelGameBoard extends panelGame
 				'.$this->showVoteForm($vVote, $vCancel).'
 			</td>
 			</tr>
-			</table>';
+		</table>';
 
 		return $buf . '</div>';
 	}
@@ -194,34 +206,36 @@ class panelGameBoard extends panelGame
 				<span class="close1">&times;</span>
 				<p><strong>Draw Vote: </strong></br>
 					If all remaining players vote draw, the game will be drawn. ';
-		switch ($this->potType) {
-		case 'Points-per-supply-center':
-				$buf .= 'This game is scored using points per supply center. In a draw, points are split evenly among all players remaining.';
+		switch ($this->potType) 
+		{
+			case 'Points-per-supply-center':
+					$buf .= 'This game is scored using points per supply center. In a draw, points are split evenly among all players remaining.';
+					break;
+			case 'Winner-takes-all':
+					$buf .= 'This game is scored using draw size scoring. In a draw, points are split evenly among all players remaining.';
+					break;             
+			case 'Unranked':
+					$buf .= 'This game is unranked. In a draw, all points are returned to their previous owners.';
+					break;             
+			case 'Sum-of-squares':
+					$buf .= 'This game is scored using sum of squares. In a draw, points are split among remaining players based upon how many supply centers they have.';
+					break;             
+			default:
+					trigger_error("Unknown pot type '".$this->potType."'");
+					break;
+		}
+		switch ($this->drawType) 
+		{
+			case 'draw-votes-public':
+				$buf .= ' Draw votes are publicly displayed in this game.';
 				break;
-		case 'Winner-takes-all':
-				$buf .= 'This game is scored using draw size scoring. In a draw, points are split evenly among all players remaining.';
-				break;             
-		case 'Unranked':
-				$buf .= 'This game is unranked. In a draw, all points are returned to their previous owners.';
-				break;             
-		case 'Sum-of-squares':
-				$buf .= 'This game is scored using sum of squares. In a draw, points are split among remaining players based upon how many supply centers they have.';
-				break;             
-		default:
-				trigger_error("Unknown pot type '".$this->potType."'");
+			case 'draw-votes-hidden':
+				$buf .= ' Draw votes are not publicly known in this game.';
 				break;
-					}
-		switch ($this->drawType) {
-		case 'draw-votes-public':
-			$buf .= ' Draw votes are publicly displayed in this game.';
-			break;
-		case 'draw-votes-hidden':
-			$buf .= ' Draw votes are not publicly known in this game.';
-			break;
-		default:
-			trigger_error("Unknown draw type '".$this->drawType."'");
-			break;
-				}
+			default:
+				trigger_error("Unknown draw type '".$this->drawType."'");
+				break;
+		}
 		$buf.= '</p>';
 		
 		if( $this->processStatus == 'Paused' )
@@ -283,7 +297,6 @@ class panelGameBoard extends panelGame
 	{
 		global $User;
 
-
 		$buf = '<a name="gamePanel"></a>';
 		$buf .= $this->header();
 
@@ -319,7 +332,6 @@ class panelGameBoard extends panelGame
 			$buf .= '<div class="membersList">'.$this->Members->ByUserID[$User->id]->memberHeaderBar().'</div>';
 		}
 
-
 		return $buf;
 	}
 
@@ -335,8 +347,7 @@ class panelGameBoard extends panelGame
 			'.$this->members().'
 			'.$this->links().'
 			<div class="bar lastBar"> </div>
-		</div>
-		';
+		</div>';
 	}
 }
 ?>
