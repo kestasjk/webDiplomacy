@@ -75,23 +75,26 @@ class processGame extends Game
 	function applyVotes()
 	{
 		assert('$this->phase != "Finished"');
-
-		$votes = $this->Members->votesPassed();
-
-		$this->gamelog(l_t('Applying votes'));
-
-		// Only act on one vote at a time ..
-		if ( in_array('Draw', $votes) )
+		if($this->phase != "Pre-game")
 		{
-			$this->setDrawn();
-		}
-		elseif ( in_array('Cancel', $votes) )
-		{
-			$this->setCancelled();
-		}
-		elseif( in_array('Pause', $votes) )
-		{
-			$this->togglePause();
+
+			$votes = $this->Members->votesPassed();
+
+			$this->gamelog(l_t('Applying votes'));
+
+			// Only act on one vote at a time ..
+			if ( in_array('Draw', $votes) )
+			{
+				$this->setDrawn();
+			}
+			elseif ( in_array('Cancel', $votes) )
+			{
+				$this->setCancelled();
+			}
+			elseif( in_array('Pause', $votes) )
+			{
+				$this->togglePause();
+			}
 		}
 	}
 

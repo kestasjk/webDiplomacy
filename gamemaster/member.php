@@ -30,10 +30,7 @@ class processMember extends Member
 {
 	function pointsInfoLog()
 	{
-		return array(
-				'points'=>$this->points, 'pointsWon'=>$this->pointsWon, 'bet'=>$this->bet,
-				'unitNo'=>$this->unitNo, 'supplyCenterNo'=>$this->supplyCenterNo
-			);
+		return array('points'=>$this->points, 'pointsWon'=>$this->pointsWon, 'bet'=>$this->bet, 'unitNo'=>$this->unitNo, 'supplyCenterNo'=>$this->supplyCenterNo);
 	}
 
 	/**
@@ -51,11 +48,12 @@ class processMember extends Member
 
 		$this->cancelBet();
 
-		// This logic is deleting the record from the database, and intentionally not reloading the this object to have a new count of
+		// This logic is deleting the record from the database, and intentionally not reloading this object to have a new count of
 		// number of records in the database so that the count in the if statement will equal 1. This is amazingly deceptive code and 
 		// needs to be fixed at some point.
 		$DB->sql_put("DELETE FROM wD_Members WHERE id=".$this->id);
 
+		// Again, this is relying on the member record already being gone but not reloaded so the game can erase the game.
 		if(count($Game->Members->ByUserID)==1)
 		{
 			// No-one else left in the game
@@ -85,7 +83,7 @@ class processMember extends Member
 	 * @param $userID The userID
 	 * @param $bet The bet, will throw an exception if the user doesn't have enough
 	 */
-	static function create($userID, $bet)
+	static function create($userID, $bet, $countryID=0)
 	{
 		global $DB, $Game;
 
@@ -94,7 +92,7 @@ class processMember extends Member
 		// It is assumed this is being run within a transaction
 
 		$DB->sql_put("INSERT INTO wD_Members SET
-			userID = ".$userID.", gameID = ".$Game->id.", orderStatus='None,Completed,Ready', bet = 0, timeLoggedIn = ".time().", excusedMissedTurns = ".$Game->excusedMissedTurns);
+			userID = ".$userID.", gameID = ".$Game->id.", countryID=".$countryID.", orderStatus='None,Completed,Ready', bet = 0, timeLoggedIn = ".time().", excusedMissedTurns = ".$Game->excusedMissedTurns);
 
 		$Game->Members->load();
 
@@ -113,9 +111,18 @@ class processMember extends Member
 	 */
 	function makeBet($bet)
 	{
-		if ( $bet > $this->points )
+		global $User;
+
+		if ( $bet > $this->points && !$User->type['Bot'] )
 		{
 			throw new Exception(l_t('You do not have enough points to join this game. You need to bet %s.',$bet.' '.libHTML::points()));
+		}
+
+		if ($User->type['Bot'])
+		{
+			User::pointsTransfer($this->userID, 'Bet', $bet, $this->gameID, $this->id);
+			$this->Game->pot += 5;
+			return 5;
 		}
 
 		User::pointsTransfer($this->userID, 'Bet', $bet, $this->gameID, $this->id);
@@ -123,9 +130,7 @@ class processMember extends Member
 		$this->points -= $bet;
 		$this->Game->pot += $bet;
 
-		global $User;
-		if($User instanceof User && $User->id == $this->userID)
-			$User->points -= $bet;
+		if($User instanceof User && $User->id == $this->userID) $User->points -= $bet;
 
 		return $bet;
 	}
@@ -136,20 +141,23 @@ class processMember extends Member
 	 */
 	function cancelBet()
 	{
-		global $DB;
+		global $DB, $User;
+
+		if ($User->type['Bot'])
+		{
+			User::pointsTransfer($this->userID, 'Cancel', 5, $this->gameID, $this->id);
+			$this->Game->pot -= 5;
+			return 5;
+		}
 
 		$bet = $this->bet;
 
 		if ( $this->status != 'Playing' && $this->status != 'Left' )
 		{
 			list($supplementAmount) = $DB->sql_row(
-				"SELECT points FROM wD_PointsTransactions WHERE type='Supplement'
-				AND userID=".$this->userID." AND gameID=".$this->gameID." AND memberID=".$this->id
-			);
+				"SELECT points FROM wD_PointsTransactions WHERE type='Supplement' AND userID=".$this->userID." AND gameID=".$this->gameID." AND memberID=".$this->id);
 
-			if( isset($supplementAmount) && $supplementAmount>0 )
-				$bet -= $supplementAmount;
-
+			if( isset($supplementAmount) && $supplementAmount>0 ) $bet -= $supplementAmount;
 		}
 
 		assert('$bet <= $this->Game->pot');
@@ -159,9 +167,7 @@ class processMember extends Member
 		$this->points += $bet;
 		$this->Game->pot -= $bet;
 
-		global $User;
-		if($User instanceof User && $User->id == $this->userID)
-			$User->points += $bet;
+		if($User instanceof User && $User->id == $this->userID) $User->points += $bet;
 
 		return $bet;
 	}
@@ -175,9 +181,17 @@ class processMember extends Member
 	 */
 	function awardSupplement()
 	{
+		global $User; 
+
+		$userPassed = new User($this->userID);
+
+		// Do not give banned players or bot's any points. 
+		if ($userPassed->type['Bot'] || $userPassed->type['Banned'] ) return 0;
+
 		$this->pointsWon=0;
 		$awardSupplement = User::pointsSupplement($this->userID, 0, $this->bet,$this->gameID, $this->points);
 		$this->points += $awardSupplement;
+
 		return $awardSupplement;
 	}
 
@@ -194,9 +208,14 @@ class processMember extends Member
 	 */
 	function awardPoints($awardedPoints)
 	{
-		global $DB, $Game;
+		global $DB, $Game, $User;
+
+		$userPassed = new User($this->userID);
 
 		// User::points* update the database, but not this object
+
+		// Do not give banned players or bot's any points. 
+		if ($userPassed->type['Bot'] || $userPassed->type['Banned'] ) return 0;
 
 		// Might we need to be topped up?
 		if ( $awardedPoints < $this->bet )
@@ -206,8 +225,8 @@ class processMember extends Member
 
 		$this->pointsWon = $awardedPoints;
 
-		if ( $awardedPoints == 0 )
-			return $supplement; // Don't record 0 point transactions
+		// Don't record 0 point transactions
+		if ( $awardedPoints == 0 ) return $supplement; 
 
 		User::pointsTransfer($this->userID, 'Won', $awardedPoints, $this->gameID, $this->id);
 
@@ -264,9 +283,7 @@ class processMember extends Member
 		global $DB;
 
 		$DB->sql_put("
-			UPDATE wD_Members m SET gameMessagesSent = (
-				SELECT COUNT(gm.gameID) FROM wD_GameMessages gm WHERE m.gameID = gm.gameID AND m.countryID = gm.fromCountryID
-			)
+			UPDATE wD_Members m SET gameMessagesSent = ( SELECT COUNT(gm.gameID) FROM wD_GameMessages gm WHERE m.gameID = gm.gameID AND m.countryID = gm.fromCountryID )
 			WHERE m.id = ".$this->id);
 	}
 
@@ -286,7 +303,7 @@ class processMember extends Member
 
 		if ( $Game->potType == 'Unranked')
 		{
-		$this->send('No','No',l_t("The game has ended: You survived and were returned %s",$winnings.' '.libHTML::points()));
+			$this->send('No','No',l_t("The game has ended: You survived and were returned %s",$winnings.' '.libHTML::points()));
 		}
 		else if ( $Game->potType != 'Points-per-supply-center')
 		{
@@ -370,8 +387,7 @@ class processMember extends Member
 		$refundedPoints = $this->cancelBet();
 
 		$this->setStatus('Survived');
-		$this->send('No', 'No',
-				l_t("This game has been cancelled, and you got your bet of %s back.",$refundedPoints.libHTML::points()));
+		$this->send('No', 'No', l_t("This game has been cancelled, and you got your bet of %s back.",$refundedPoints.libHTML::points()));
 	}
 
 	/**
@@ -411,15 +427,20 @@ class processMember extends Member
 	 */
 	function setDefeated($points)
 	{
-		if ($points != 0) {
-				$winnings = $this->awardPoints($points);
-			    $this->send('No','No',l_t("You were defeated and returned %s; better luck next time!",$winnings));
-		} else {
-				$refundedPoints = $this->awardSupplement();
-				$but="";
-				if($refundedPoints)
-				  $but=l_t(", but you have been refunded %s to make up your starting 100",$refundedPoints);
-			    $this->send('No','No',l_t("You were defeated, and lost your bet%s; better luck next time!",$but));
+		if ($points != 0) 
+		{
+			$winnings = $this->awardPoints($points);
+			$this->send('No','No',l_t("You were defeated and returned %s; better luck next time!",$winnings));
+		} 
+		else 
+		{
+			$refundedPoints = $this->awardSupplement();
+			$but="";
+
+			if($refundedPoints) 
+				$but=l_t(", but you have been refunded %s to make up your starting 100",$refundedPoints);
+
+			$this->send('No','No',l_t("You were defeated, and lost your bet%s; better luck next time!",$but));
 		}
 		$this->setStatus('Defeated');
 
@@ -439,8 +460,7 @@ class processMember extends Member
 
 		$this->setStatus('Drawn');
 
-		$this->send('No','No',l_t("You have drawn with your rivals, and survived! ".
-			"You win %s, your share of the pot!",$winnings." ".libHTML::points()));
+		$this->send('No','No',l_t("You have drawn with your rivals, and survived! You win %s, your share of the pot!",$winnings." ".libHTML::points()));
 	}
 
 	/**
@@ -482,12 +502,9 @@ class processMember extends Member
 		global $DB;
 		
 		$this->excusedMissedTurns--;
-		$DB->sql_put("UPDATE wD_Members m 
-				SET m.excusedMissedTurns = ".$this->excusedMissedTurns."
-				WHERE m.id = ".$this->id);
+		$DB->sql_put("UPDATE wD_Members m SET m.excusedMissedTurns = ".$this->excusedMissedTurns." WHERE m.id = ".$this->id);
 		
-		$this->send('No','No',l_t("You have missed a deadline and lost an excuse (%s left). "
-				. "Be more reliable!",$this->excusedMissedTurns));
+		$this->send('No','No',l_t("You have missed a deadline and lost an excuse (%s left). "."Be more reliable!",$this->excusedMissedTurns));
 	}
 }
 

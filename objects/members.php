@@ -88,11 +88,55 @@ class Members
 
 	function votesPassed()
 	{
+		global $DB;
 		$votes=self::$votes;
+		//gets the number of players that are still playing for use of the bot
+		$playerCount = count($this->ByStatus['Playing']);
+		//initialize an int to keep track of how many bots are playing 
+		$botCount = 0; 
 		foreach($this->ByStatus['Playing'] as $Member)
 		{
-			$votes = array_intersect($votes, $Member->votes);
-			if(count($votes)==0) break;
+			$userPassed = new User($Member->userID);
+			//Bot votes are handled differently
+			if($userPassed->type['Bot']) 
+			{
+				$botCount += 1;
+				//Each bot will automatically vote for a pause
+				$botVotes = array('Pause'); 
+				$botSC = $Member->supplyCenterNo;
+				//This loop checks to see if the bot is winning or tied for the lead, since it will not vote draw or cancel in these cases
+				foreach($this->ByStatus['Playing'] as $CurMember) 
+				{
+					if ($botSC < $CurMember->supplyCenterNo)
+					{
+						$botVotes = array('Draw','Pause','Cancel');
+					}
+				}
+				//This variable and the following query get the SC count for 2 years ago, which will be used to prevent bot stalemates
+				$oldSC = 0; 
+				list($oldSC) = $DB->sql_row("SELECT COUNT(ts.terrID) FROM wD_TerrStatusArchive ts INNER JOIN wD_Territories t ON ( ts.terrID = t.id ) WHERE t.supply='Yes' AND ts.countryID = ".$Member->countryID." AND ts.gameID = ".$this->Game->id." AND t.mapID=".$this->Game->Variant->mapID." AND ts.turn = ".max(0,$this->Game->turn - 4));
+				//A bot will draw or cancel if it is stalled out or if it is the first year
+				if ($oldSC >= $botSC || $this->Game->turn < 2) 
+				{
+					$botVotes = array('Draw','Pause','Cancel');
+				}
+				//A bot will always cancel in the first two years
+				elseif ($this->Game->turn < 4) 
+				{
+					$botVotes = array('Pause','Cancel');
+				}
+				$votes = array_intersect($votes, $botVotes);
+			}
+			else
+			{
+				$votes = array_intersect($votes, $Member->votes);
+				if(count($votes)==0) break;
+			}
+		}
+		//This condition will force draw the game if the only players left are bots
+		if ($playerCount == $botCount) 
+		{
+			$votes = array('Draw');
 		}
 		return $votes;
 	}

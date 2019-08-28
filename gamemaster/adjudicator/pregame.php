@@ -206,12 +206,13 @@ class adjudicatorPreGame {
 		if( !$this->isEnoughPlayers() ) $Game->setNotEnoughPlayers();
 
 		// Determine which countryID is given to which userID
-		$userCountries = $this->userCountries();// $userCountries[$userID]=$countryID
-
-		assert('count($userCountries) == count($Game->Variant->countries) && count($userCountries) == count($Game->Members->ByID)');
-
-		$this->assignCountries($userCountries);
-
+		if (count($Game->Members->ByCountryID)==0)
+		{
+			$userCountries = $this->userCountries();// $userCountries[$userID]=$countryID
+			assert('count($userCountries) == count($Game->Variant->countries) && count($userCountries) == count($Game->Members->ByID)');
+			$this->assignCountries($userCountries);
+		}
+		
 		// Create starting board conditions, typically based on $countryUnits
 		$this->assignTerritories(); // TerrStatus
 		$this->assignUnits(); // Units
