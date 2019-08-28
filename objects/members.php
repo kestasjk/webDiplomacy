@@ -141,8 +141,6 @@ class Members
 			else
 			{
 				$votes = array_intersect($votes, $Member->votes);
-				if(count($votes)==0) break;
-
 				if (in_array('Concede',$Member->votes))	$concede++;
 			}
 		}
