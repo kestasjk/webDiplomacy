@@ -955,7 +955,7 @@ class User {
 
 		$tabl = $DB->sql_tabl(
 			"SELECT COUNT(m.id), m.status FROM wD_Members m 
-			 inner join wD_Games g on g.id = m.gameID WHERE m.userID = ".$this->id." AND g.variantID <> 1 and g.gameOver <> 'No' 
+			 inner join wD_Games g on g.id = m.gameID WHERE m.userID = ".$this->id." AND g.variantID <> 1 and g.gameOver <> 'No' and g.playerTypes = 'Members'
 			 GROUP BY m.status"
 		);
 
@@ -979,7 +979,7 @@ class User {
 
 		$tabl = $DB->sql_tabl(
 				"SELECT COUNT(m.id), m.status FROM wD_Members m 
-				 inner join wD_Games g on g.id = m.gameID WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' 
+				 inner join wD_Games g on g.id = m.gameID WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.playerTypes = 'Members'
 				 GROUP BY m.status"
 			);
 
@@ -1004,7 +1004,7 @@ class User {
 		$tabl = $DB->sql_tabl(
 				"SELECT COUNT(m.id), m.status FROM wD_Members m 
 				 inner join wD_Games g on g.id = m.gameID 
-				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.pressType = 'NoPress' 
+				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.pressType = 'NoPress' and g.playerTypes = 'Members'
 				 GROUP BY m.status"
 			);
 
@@ -1029,7 +1029,7 @@ class User {
 		$tabl = $DB->sql_tabl(
 				"SELECT COUNT(m.id), m.status FROM wD_Members m 
 				 inner join wD_Games g on g.id = m.gameID 
-				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.pressType in ('Regular', 'RulebookPress')
+				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.pressType in ('Regular', 'RulebookPress') and g.playerTypes = 'Members'
 				 GROUP BY m.status"
 			);
 
@@ -1054,7 +1054,7 @@ class User {
 		$tabl = $DB->sql_tabl(
 				"SELECT COUNT(m.id), m.status FROM wD_Members m 
 				 inner join wD_Games g on g.id = m.gameID 
-				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.potType <> 'Unranked'
+				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.potType <> 'Unranked' and g.playerTypes = 'Members'
 				 GROUP BY m.status"
 			);
 

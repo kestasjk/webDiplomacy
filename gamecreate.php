@@ -171,7 +171,8 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input['missingPlayerPolicy'],
 			$input['drawType'],
 			$input['minimumReliabilityRating'],
-			$input['excusedMissedTurns']);
+			$input['excusedMissedTurns'],
+			'Members');
 
 		// Prevent temp banned players from making new games.
 		if ($User->userIsTempBanned())
