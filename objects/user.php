@@ -1347,5 +1347,17 @@ class User {
 			return $variable;
 		}
 	}
+
+	/*
+	 * Get the number of total bot games the member is currently playing in. 
+	 */
+	public function getBotGameCount() 
+	{
+		global $DB;
+		list($totalBotGames) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g inner join wD_Members m on m.gameID = g.id  
+			WHERE m.userID = ".$this->id." AND g.gameOver = 'No' and g.playerTypes = 'MemberVsBots'");
+		
+		return $totalBotGames;
+	}
 }
 ?>
