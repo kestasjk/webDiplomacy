@@ -45,7 +45,7 @@ class UserOptions
 
 	public static $titles = array(
 		'colourblind' => 'Colourblindness',
-		'darkMode' => 'Dark Theme (this setting toggle when you navigate away from this page)',
+		'darkMode' => 'Dark Theme (this setting toggles when you navigate away from this page)',
 		'displayUpcomingLive' => 'Display upcoming live games',
 		'showMoves' => 'Show move arrows on the game map',
 		'orderSort' => 'Sort possible orders'
