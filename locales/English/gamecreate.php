@@ -30,6 +30,12 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	<div class="pageDescription">Start a new customized game of Diplomacy.</div>
 </div>
 <div class="content content-follow-on">
+	<?php
+	if($User->type['Moderator'])
+	{
+		print '<p><a href="botgamecreate.php">Play A Game Against Bots</a></p>';
+	}
+	?>
 	<div class = "gameCreateShow">
 		<form method="post">
 			<p>
