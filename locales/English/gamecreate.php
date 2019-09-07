@@ -106,9 +106,14 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 						All: Global and Private Messaging allowed. </br></br>
 						Global Only: Only Global Messaging allowed.</br></br>
 						None: No messaging allowed.</br></br>
-						None, fill empty spots with bots: No messaging allowed, if the game has at least 2 human players it will 
-						fill with bots if there are empty spaces at the designated start time instead of being cancelled. This type 
-						of game will default to a 5 point bet, unranked, and anonymous regardless of what settings you select.</br></br>
+						<?php
+						if($User->type['Moderator'])
+						{
+							print 'None, fill empty spots with bots: No messaging allowed, if the game has at least 2 human players it will 
+							fill with bots if there are empty spaces at the designated start time instead of being cancelled. This type 
+							of game will default to a 5 point bet, unranked, and anonymous regardless of what settings you select.</br></br>';
+						}
+						?>
 						Rulebook: No messaging allowed during build and retreat phases.</br>
 					</p>
 				</div>
@@ -117,7 +122,12 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				<option name="newGame[pressType]" value="Regular" selected>All </option>
 				<option name="newGame[pressType]" value="PublicPressOnly">Global only</option>
 				<option name="newGame[pressType]" value="NoPress">None (No messaging)</option>
-				<option name="newGame[pressType]" value="NoPressWithBots">None, fill empty spots with bots</option>
+				<?php
+				if($User->type['Moderator'])
+				{
+					print '<option name="newGame[pressType]" value="NoPressWithBots">None, fill empty spots with bots</option>';
+				}
+				?>
 				<option name="newGame[pressType]" value="RulebookPress">Per rulebook</option>
 			</select>
 
