@@ -111,7 +111,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 						{
 							print 'None, fill empty spots with bots: No messaging allowed, if the game has at least 2 human players it will 
 							fill with bots if there are empty spaces at the designated start time instead of being cancelled. This type 
-							of game will default to a 5 point bet, unranked, and anonymous regardless of what settings you select.</br></br>';
+							of game will default to a 5 point bet, unranked, and anonymous regardless of what settings you select.<b>
+							This only will work for classic games, other variants will ignore this setting.</b></br></br>';
 						}
 						?>
 						Rulebook: No messaging allowed during build and retreat phases.</br>

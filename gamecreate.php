@@ -108,6 +108,12 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input['bet'] = 5; 
 			$input['potType'] = 'Unranked';
 		}
+
+		// Only classic can support fill with bots. 
+		if ( ($input['variantID'] != 1) && ($input['pressType'] = 'NoPressWithBots') )
+		{
+			$input['pressType'] = 'NoPress';
+		}
 		
 		// If no press is selected, force the game to anon to prevent cheating via out of game messaging. 
 		switch($input['pressType']) 
