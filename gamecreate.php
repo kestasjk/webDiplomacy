@@ -47,6 +47,8 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$input = array();
 		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy','drawType','minimumReliabilityRating','excusedMissedTurns');
 
+		$playerTypes = 'Members';
+
 		if ( !isset($form['missingPlayerPolicy']) ) {$form['missingPlayerPolicy'] = 'Normal'; }
 		
 		foreach($required as $requiredName)
@@ -107,7 +109,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input['potType'] = 'Unranked';
 		}
 		
-		// If no press is selected, force the game to anon to prevent cheating via out of game messaging.
+		// If no press is selected, force the game to anon to prevent cheating via out of game messaging. 
 		switch($input['pressType']) 
 		{
 			case 'PublicPressOnly':
@@ -116,6 +118,13 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			case 'NoPress':
 				$input['pressType'] = 'NoPress';
 				$input['anon'] = 'Yes';
+				break;
+			case 'NoPressWithBots':
+				$input['pressType'] = 'NoPress';
+				$input['anon'] = 'Yes';
+				$input['potType'] = 'Unranked';
+				$input['bet'] = 5; 
+				$playerTypes = 'Mixed';
 				break;
 			case 'RulebookPress':
 				$input['pressType'] = 'RulebookPress';
@@ -172,7 +181,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input['drawType'],
 			$input['minimumReliabilityRating'],
 			$input['excusedMissedTurns'],
-			'Members');
+			$playerTypes);
 
 		// Prevent temp banned players from making new games.
 		if ($User->userIsTempBanned())

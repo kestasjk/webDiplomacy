@@ -95,16 +95,33 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				</select>
 			</p>
 			
-			<p>
-				<strong>Game Messaging:</strong></br>
-				<select class = "gameCreate" name="newGame[pressType]">
-					<option name="newGame[pressType]" value="Regular" selected>All </option>
-					<option name="newGame[pressType]" value="PublicPressOnly">Global only</option>
-					<option name="newGame[pressType]" value="NoPress">No messaging</option>
-					<option name="newGame[pressType]" value="RulebookPress">Per rulebook</option>
-				</select>
-			</p>
+			<strong>Game Messaging:</strong>
+			<img id = "modBtnMessaging" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+			<div id="messagingModal" class="modal">
+				<!-- Modal content -->
+				<div class="modal-content">
+					<span class="close7">&times;</span>
+					<p><strong>Game Messaging:</strong> </br>
+						The type of messaging allowed in a game.</br></br>
+						All: Global and Private Messaging allowed. </br></br>
+						Global Only: Only Global Messaging allowed.</br></br>
+						None: No messaging allowed.</br></br>
+						None, fill empty spots with bots: No messaging allowed, if the game has at least 2 human players it will 
+						fill with bots if there are empty spaces at the designated start time instead of being cancelled. This type 
+						of game will default to a 5 point bet, unranked, and anonymous regardless of what settings you select.</br></br>
+						Rulebook: No messaging allowed during build and retreat phases.</br>
+					</p>
+				</div>
+			</div>
+			<select class = "gameCreate" name="newGame[pressType]">
+				<option name="newGame[pressType]" value="Regular" selected>All </option>
+				<option name="newGame[pressType]" value="PublicPressOnly">Global only</option>
+				<option name="newGame[pressType]" value="NoPress">None (No messaging)</option>
+				<option name="newGame[pressType]" value="NoPressWithBots">None, fill empty spots with bots</option>
+				<option name="newGame[pressType]" value="RulebookPress">Per rulebook</option>
+			</select>
 
+			</br></br>
 			<strong>Variant type (map choices):</strong>
 			<img id = "modBtnVariant" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
 			<div id="variantModal" class="modal">
@@ -248,6 +265,7 @@ var modal3 = document.getElementById('variantModal');
 var modal4 = document.getElementById('phaseLengthModal');
 var modal5 = document.getElementById('betModal');
 var modal6 = document.getElementById('anonModal');
+var modal7 = document.getElementById('messagingModal');
 
 // Get the button that opens the modal
 var btn1 = document.getElementById("modBtnDelays");
@@ -256,6 +274,7 @@ var btn3 = document.getElementById("modBtnVariant");
 var btn4 = document.getElementById("modBtnPhaseLength");
 var btn5 = document.getElementById("modBtnBet");
 var btn6 = document.getElementById("modBtnAnon");
+var btn7 = document.getElementById("modBtnMessaging");
 
 // Get the <span> element that closes the modal
 var span1 = document.getElementsByClassName("close1")[0];
@@ -264,6 +283,8 @@ var span3 = document.getElementsByClassName("close3")[0];
 var span4 = document.getElementsByClassName("close4")[0];
 var span5 = document.getElementsByClassName("close5")[0];
 var span6 = document.getElementsByClassName("close6")[0];
+var span7 = document.getElementsByClassName("close7")[0];
+
 
 // When the user clicks the button, open the modal 
 btn1.onclick = function() { modal1.style.display = "block"; }
@@ -272,6 +293,8 @@ btn3.onclick = function() { modal3.style.display = "block"; }
 btn4.onclick = function() { modal4.style.display = "block"; }
 btn5.onclick = function() { modal5.style.display = "block"; }
 btn6.onclick = function() { modal6.style.display = "block"; }
+btn7.onclick = function() { modal7.style.display = "block"; }
+
 
 // When the user clicks on <span> (x), close the modal
 span1.onclick = function() { modal1.style.display = "none"; }
@@ -280,14 +303,16 @@ span3.onclick = function() { modal3.style.display = "none"; }
 span4.onclick = function() { modal4.style.display = "none"; }
 span5.onclick = function() { modal5.style.display = "none"; }
 span6.onclick = function() { modal6.style.display = "none"; }
+span7.onclick = function() { modal7.style.display = "none"; }
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
-  if (event.target == modal1) { modal1.style.display = "none"; }
-  if (event.target == modal2) { modal2.style.display = "none"; }
-  if (event.target == modal3) { modal3.style.display = "none"; }
-  if (event.target == modal4) { modal4.style.display = "none"; }
+	if (event.target == modal1) { modal1.style.display = "none"; }
+	if (event.target == modal2) { modal2.style.display = "none"; }
+	if (event.target == modal3) { modal3.style.display = "none"; }
+	if (event.target == modal4) { modal4.style.display = "none"; }
 	if (event.target == modal5) { modal5.style.display = "none"; }
 	if (event.target == modal6) { modal6.style.display = "none"; }
+	if (event.target == modal7) { modal7.style.display = "none"; }
 }
 </script>
