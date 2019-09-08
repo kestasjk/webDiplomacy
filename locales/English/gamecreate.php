@@ -106,29 +106,14 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 						All: Global and Private Messaging allowed. </br></br>
 						Global Only: Only Global Messaging allowed.</br></br>
 						None: No messaging allowed.</br></br>
-						<?php
-						if($User->type['Moderator'])
-						{
-							print 'None, fill empty spots with bots: No messaging allowed, if the game has at least 2 human players it will 
-							fill with bots if there are empty spaces at the designated start time instead of being cancelled. This type 
-							of game will default to a 5 point bet, unranked, and anonymous regardless of what settings you select.<b>
-							This only will work for classic games, other variants will ignore this setting.</b></br></br>';
-						}
-						?>
 						Rulebook: No messaging allowed during build and retreat phases.</br>
 					</p>
 				</div>
 			</div>
-			<select class = "gameCreate" name="newGame[pressType]">
+			<select class = "gameCreate" id="pressType" name="newGame[pressType]" onchange="setBotFill()">
 				<option name="newGame[pressType]" value="Regular" selected>All </option>
 				<option name="newGame[pressType]" value="PublicPressOnly">Global only</option>
 				<option name="newGame[pressType]" value="NoPress">None (No messaging)</option>
-				<?php
-				if($User->type['Moderator'])
-				{
-					print '<option name="newGame[pressType]" value="NoPressWithBots">None, fill empty spots with bots</option>';
-				}
-				?>
 				<option name="newGame[pressType]" value="RulebookPress">Per rulebook</option>
 			</select>
 
@@ -158,7 +143,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					</p>
 				</div>
 			</div>
-			<select id="variantID" class = "gameCreate" name="newGame[variantID]">
+			<select id="variant" class = "gameCreate" name="newGame[variantID]" onchange="setBotFill()">
 			<?php
 			$first=true;
 			foreach(Config::$variants as $variantID=>$variantName)
@@ -173,8 +158,30 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			}
 			print '</select>';
 			?>
-			
 			</br></br>
+			<?php
+			if($User->type['Moderator'])
+			{
+				print'<div id="botFill" style="display:none">
+				<strong>Fill Empty Spots with Bots: </strong>
+				<img id = "modBtnBot" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+				<div id="botModal" class="modal">
+					<!-- Modal content -->
+					<div class="modal-content">
+						<span class="close8">&times;</span>
+						<p><strong>Fill with Bots:</strong> </br>
+							If the game has at least 2 human players it will 
+							fill with bots if there are empty spaces at the designated start time instead of being cancelled. This type 
+							of game will default to a 5 point bet, unranked, and anonymous regardless of what settings you select. If the game
+							fills with 7 human players it will run just like any normal game and will be included in classic stats. 
+						</p>
+					</div>
+				</div>
+				<input type="checkbox" id="botBox" class="gameCreate" name="newGame[botFill]" value="Yes">
+				</br></br>
+				</div>';
+			}
+			?>
 			<strong>Scoring:(<a href="points.php#DSS">See scoring types here</a>)</strong>
 			<img id = "modBtnScoring" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
 			<div id="scoringModal" class="modal">
@@ -277,6 +284,7 @@ var modal4 = document.getElementById('phaseLengthModal');
 var modal5 = document.getElementById('betModal');
 var modal6 = document.getElementById('anonModal');
 var modal7 = document.getElementById('messagingModal');
+var modal8 = document.getElementById('botModal');
 
 // Get the button that opens the modal
 var btn1 = document.getElementById("modBtnDelays");
@@ -286,6 +294,7 @@ var btn4 = document.getElementById("modBtnPhaseLength");
 var btn5 = document.getElementById("modBtnBet");
 var btn6 = document.getElementById("modBtnAnon");
 var btn7 = document.getElementById("modBtnMessaging");
+var btn8 = document.getElementById("modBtnBot");
 
 // Get the <span> element that closes the modal
 var span1 = document.getElementsByClassName("close1")[0];
@@ -295,7 +304,7 @@ var span4 = document.getElementsByClassName("close4")[0];
 var span5 = document.getElementsByClassName("close5")[0];
 var span6 = document.getElementsByClassName("close6")[0];
 var span7 = document.getElementsByClassName("close7")[0];
-
+var span8 = document.getElementsByClassName("close8")[0];
 
 // When the user clicks the button, open the modal 
 btn1.onclick = function() { modal1.style.display = "block"; }
@@ -305,7 +314,7 @@ btn4.onclick = function() { modal4.style.display = "block"; }
 btn5.onclick = function() { modal5.style.display = "block"; }
 btn6.onclick = function() { modal6.style.display = "block"; }
 btn7.onclick = function() { modal7.style.display = "block"; }
-
+btn8.onclick = function() { modal8.style.display = "block"; }
 
 // When the user clicks on <span> (x), close the modal
 span1.onclick = function() { modal1.style.display = "none"; }
@@ -315,6 +324,7 @@ span4.onclick = function() { modal4.style.display = "none"; }
 span5.onclick = function() { modal5.style.display = "none"; }
 span6.onclick = function() { modal6.style.display = "none"; }
 span7.onclick = function() { modal7.style.display = "none"; }
+span8.onclick = function() { modal8.style.display = "none"; }
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
@@ -325,5 +335,24 @@ window.onclick = function(event) {
 	if (event.target == modal5) { modal5.style.display = "none"; }
 	if (event.target == modal6) { modal6.style.display = "none"; }
 	if (event.target == modal7) { modal7.style.display = "none"; }
+	if (event.target == modal8) { modal8.style.display = "none"; }
+}
+
+function setBotFill(){
+	content = document.getElementById('botFill');
+
+	ePress = document.getElementById('pressType');
+	pressType = ePress.options[ePress.selectedIndex].value;
+
+	eVariant = document.getElementById('variant');
+	variant = eVariant.options[eVariant.selectedIndex].value;
+
+	if (pressType == "NoPress" && variant == 1){
+		content.style.display = "block";
+	}
+	else{
+		content.style.display = "none";
+		document.getElementById("botBox").checked = false;
+	}
 }
 </script>

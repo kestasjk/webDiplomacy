@@ -51,6 +51,15 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 
 		if ( !isset($form['missingPlayerPolicy']) ) {$form['missingPlayerPolicy'] = 'Normal'; }
 		
+		$input['botFill'] = 'No';
+		if ( isset($form['botFill']) )
+		{
+			if ($form['botFill'] == 'Yes')
+			{
+				$input['botFill'] = 'Yes';
+			}
+		}
+		
 		foreach($required as $requiredName)
 		{
 			if ( isset($form[$requiredName]) ) { $input[$requiredName] = $form[$requiredName]; }
@@ -109,10 +118,10 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input['potType'] = 'Unranked';
 		}
 
-		// Only classic can support fill with bots. 
-		if ( ($input['variantID'] != 1) && ($input['pressType'] = 'NoPressWithBots') )
+		// Only classic, no press can support fill with bots. 
+		if ( ($input['variantID'] != 1) && ($input['pressType'] != 'NoPress') )
 		{
-			$input['pressType'] = 'NoPress';
+			$input['botFill'] = 'No';
 		}
 		
 		// If no press is selected, force the game to anon to prevent cheating via out of game messaging. 
@@ -125,19 +134,21 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 				$input['pressType'] = 'NoPress';
 				$input['anon'] = 'Yes';
 				break;
-			case 'NoPressWithBots':
-				$input['pressType'] = 'NoPress';
-				$input['anon'] = 'Yes';
-				$input['potType'] = 'Unranked';
-				$input['bet'] = 5; 
-				$playerTypes = 'Mixed';
-				break;
 			case 'RulebookPress':
 				$input['pressType'] = 'RulebookPress';
 				break;
 			case 'Regular': // Regular is the default
 			default:
 				$input['pressType'] = 'Regular';
+		}
+		
+		if($input['botFill'] == 'Yes')
+		{
+			$input['pressType'] = 'NoPress';
+			$input['anon'] = 'Yes';
+			$input['potType'] = 'Unranked';
+			$input['bet'] = 5; 
+			$playerTypes = 'Mixed';
 		}
 		
 		switch($input['missingPlayerPolicy']) 
