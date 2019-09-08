@@ -385,11 +385,6 @@ class SetOrders extends ApiEntry {
 			if ($member->status != 'Left')
 				throw new ClientForbiddenException(
 					'A user not controlling a country can submit orders only for a country in CD.');
-			// We must have enough time to set orders.
-			$currentTime = time();
-			if (($currentTime + 60) < $game->processTime) {
-				throw new RequestException('Process time is not close enough (current time ' . $currentTime . ', process time ' . $game->processTime . ').');
-			}
 		}
 
 

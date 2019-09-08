@@ -64,7 +64,6 @@ class CountriesInCivilDisorder {
         // 3) Only if the power has not logged in during the turn (missedPhases > 0) or is in CD (status = Left)
         // 4) Only if orders have not yet been submitted (orderStatus is NULL or '')
         // 5) Only if the game is still active (i.e. not pre-game, finished, paused, etc.)
-        // 6) And only if the next process() is within the next 60 seconds
 
 		$countryTabl = $DB->sql_tabl("SELECT DISTINCT m.gameID, m.countryID
                                       FROM wD_Members AS m
@@ -77,9 +76,7 @@ class CountriesInCivilDisorder {
                                             AND m.status = 'Left'
                                             AND (m.orderStatus IS NULL OR m.orderStatus = '')
                                             AND g.processStatus = 'Not-processing'
-                                            AND g.phase IN ('Diplomacy', 'Retreats', 'Builds')
-                                            AND g.processTime >= ".time()."
-                                            AND g.processTime <= ".(time() + 60).";");
+                                            AND g.phase IN ('Diplomacy', 'Retreats', 'Builds');");
 
         while( $row = $DB->tabl_hash($countryTabl) )
         {
