@@ -657,7 +657,11 @@ class ApiKey {
 			// If game ID is required, then user must be member of this game.
 			// Otherwise, any user can call this function.
 			if ($apiEntry->requiresGameID() && !isset($apiEntry->getAssociatedGame()->Members->ByUserID[$this->userID]))
-				throw new ClientForbiddenException('Access denied. User is not member of associated game.');
+				throw new ClientForbiddenException(sprintf(
+					"Access denied. User is not member of associated game. - API Key: %s - Game ID: %s - User ID: %s",
+					substr($this->apiKey, 0, 8),
+					$apiEntry->getAssociatedGame()->id,
+					$this->userID));
 		} else {
 			// Permission field available.
 			if (!in_array($permissionField, ApiKey::$permissionFields))
@@ -669,10 +673,19 @@ class ApiKey {
 				$permissionIsExplicit = true;
 			} else {
 				if (!$apiEntry->requiresGameID())
-					throw new ClientForbiddenException("Permission denied.");
+					throw new ClientForbiddenException(sprintf(
+						"Permission denied. - API Key: %s - UserID: %s - Missing permission: %s",
+						substr($this->apiKey, 0, 8),
+						$this->userID,
+						$permissionField));
 
 				if (!isset($apiEntry->getAssociatedGame()->Members->ByUserID[$this->userID]))
-					throw new ClientForbiddenException('Permission denied, and user is not member of associated game.');
+					throw new ClientForbiddenException(sprintf(
+						"Permission denied, and user is not member of associated game. - API Key: %s - Game ID: %s - User ID: %s - Missing permission: %s",
+						substr($this->apiKey, 0, 8),
+						$apiEntry->getAssociatedGame()->id,
+						$this->userID,
+						$permissionField));
 			}
 		}
 
