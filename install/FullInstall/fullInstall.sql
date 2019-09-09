@@ -834,8 +834,6 @@ CREATE TABLE `wD_TournamentScoring` (
 INDEX ( `tournamentID` )
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-UPDATE `wD_Misc` SET `value` = '155' WHERE `name` = 'Version';
-
 CREATE TABLE `wD_ApiKeys` (
     `apiKey` varchar(80) NOT NULL UNIQUE,
     `userID` mediumint(8) unsigned NOT NULL DEFAULT 0,
@@ -855,17 +853,11 @@ CREATE TABLE `wD_ApiPermissions` (
 );
 ALTER TABLE `wD_ApiPermissions` ADD CONSTRAINT `wD_ApiPermissions_pk` PRIMARY KEY (`userID`);
 
-UPDATE `wD_Misc` SET `value` = '156' WHERE `name` = 'Version';
-
 ALTER TABLE `wD_MissedTurns` ADD `liveGame` BOOLEAN DEFAULT 0;  
 
 update wD_MissedTurns m inner join wD_Games g on g.id = m.gameID set m.liveGame = 1 where g.phaseMinutes < 61 and g.id is not null;
 
-UPDATE `wD_Misc` SET `value` = '157' WHERE `name` = 'Version';
-
 ALTER TABLE `wD_UserOptions` ADD `darkMode` enum('Yes','No') NOT NULL DEFAULT 'No';
-
-UPDATE `wD_Misc` SET `value` = '158' WHERE `name` = 'Version';
 
 CREATE TABLE `wD_VariantInfo` (
   `variantID` smallint(4) unsigned NOT NULL,
@@ -896,8 +888,6 @@ UPDATE `wD_Backup_Games` g SET `finishTime` = (SELECT MAX(n.timeSent) FROM `wD_N
 
 UPDATE `wD_Backup_Games` SET `finishTime` = `processTime` WHERE `finishTime` IS NULL AND `gameOver` <> 'No';
 
-UPDATE `wD_Misc` SET `value` = '159' WHERE `name` = 'Version';
-
 ALTER TABLE `wD_Users`
 CHANGE `type` `type` SET(
 	'Banned', 'Guest', 'System', 'User', 'Moderator',
@@ -906,3 +896,9 @@ CHANGE `type` `type` SET(
 	'DonatorAdamantium', 'DonatorService', 'DonatorOwner', 'Bot'
 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'User';
 
+ALTER TABLE `wD_Members` MODIFY `votes` set('Draw','Pause','Cancel','Concede');
+
+UPDATE `wD_Misc` SET `value` = '161' WHERE `name` = 'Version';
+
+ALTER TABLE `wD_Games` ADD COLUMN `playerTypes` enum('Members', 'Mixed', 'MemberVsBots') DEFAULT 'Members' NOT NULL;
+ALTER TABLE `wD_Backup_Games` ADD COLUMN `playerTypes` enum('Members', 'Mixed', 'MemberVsBots') DEFAULT 'Members' NOT NULL;

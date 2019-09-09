@@ -119,7 +119,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		}
 
 		// Only classic, no press can support fill with bots. 
-		if ( ($input['variantID'] != 1) && ($input['pressType'] != 'NoPress') )
+		if ( ($input['variantID'] != 1) || ($input['pressType'] != 'NoPress') )
 		{
 			$input['botFill'] = 'No';
 		}
