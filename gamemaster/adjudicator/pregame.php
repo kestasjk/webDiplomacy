@@ -216,7 +216,7 @@ class adjudicatorPreGame
 		// If the "fill with bots" game fills with all humans then change the game playerTypes to "Members" so GR and game stats are accurate about which games had bots in them.
 		else if ( ($Game->playerTypes == "Mixed") && ($this->isEnoughPlayers()) )
 		{
-			$DB->sql_put("UPDATE wD_Games SET playerTypes = 'Members' WHERE id = ".$gameID);
+			$DB->sql_put("UPDATE wD_Games SET playerTypes = 'Members' WHERE id = ".$Game->id);
 		}
 		else
 		{
