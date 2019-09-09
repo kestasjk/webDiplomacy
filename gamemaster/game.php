@@ -292,7 +292,7 @@ class processGame extends Game
 	 *
 	 * @return Game The object corresponding to the new game
 	 */
-	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $joinPeriod, $anon, $press, $missingPlayerPolicy='Normal', $drawType, $rrLimit, $excusedMissedTurns)
+	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $joinPeriod, $anon, $press, $missingPlayerPolicy='Normal', $drawType, $rrLimit, $excusedMissedTurns, $playerTypes)
 	{
 		global $DB;
 
@@ -305,14 +305,17 @@ class processGame extends Game
 		$name = substr($name,0,50);
 		$unique = false;
 		$i = 1;
+
 		while ( ! $unique )
 		{
 			list($count) = $DB->sql_row("SELECT COUNT(id) FROM wD_Games WHERE name='".$name.($i > 1 ? '-'.$i : '')."'");
+
 			if ( $count == 0 )
 			{
 				$unique = true;
 			}
-			else{
+			else
+			{
 				$i++;
 				$name = substr($name,0,50-strlen('-'.$i));
 			}
@@ -338,7 +341,8 @@ class processGame extends Game
 						missingPlayerPolicy = '".$missingPlayerPolicy."',
 						drawType='".$drawType."', 
 						minimumReliabilityRating=".$rrLimit.",
-						excusedMissedTurns = ".$excusedMissedTurns);
+						excusedMissedTurns = ".$excusedMissedTurns.",
+						playerTypes = '".$playerTypes."'");
 
 		$gameID = $DB->last_inserted();
 

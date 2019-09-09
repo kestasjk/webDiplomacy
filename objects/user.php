@@ -955,7 +955,7 @@ class User {
 
 		$tabl = $DB->sql_tabl(
 			"SELECT COUNT(m.id), m.status FROM wD_Members m 
-			 inner join wD_Games g on g.id = m.gameID WHERE m.userID = ".$this->id." AND g.variantID <> 1 and g.gameOver <> 'No' 
+			 inner join wD_Games g on g.id = m.gameID WHERE m.userID = ".$this->id." AND g.variantID <> 1 and g.gameOver <> 'No' and g.playerTypes = 'Members'
 			 GROUP BY m.status"
 		);
 
@@ -979,7 +979,7 @@ class User {
 
 		$tabl = $DB->sql_tabl(
 				"SELECT COUNT(m.id), m.status FROM wD_Members m 
-				 inner join wD_Games g on g.id = m.gameID WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' 
+				 inner join wD_Games g on g.id = m.gameID WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.playerTypes = 'Members'
 				 GROUP BY m.status"
 			);
 
@@ -1004,7 +1004,7 @@ class User {
 		$tabl = $DB->sql_tabl(
 				"SELECT COUNT(m.id), m.status FROM wD_Members m 
 				 inner join wD_Games g on g.id = m.gameID 
-				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.pressType = 'NoPress' 
+				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.pressType = 'NoPress' and g.playerTypes = 'Members'
 				 GROUP BY m.status"
 			);
 
@@ -1029,7 +1029,7 @@ class User {
 		$tabl = $DB->sql_tabl(
 				"SELECT COUNT(m.id), m.status FROM wD_Members m 
 				 inner join wD_Games g on g.id = m.gameID 
-				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.pressType in ('Regular', 'RulebookPress')
+				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.pressType in ('Regular', 'RulebookPress') and g.playerTypes = 'Members'
 				 GROUP BY m.status"
 			);
 
@@ -1054,7 +1054,7 @@ class User {
 		$tabl = $DB->sql_tabl(
 				"SELECT COUNT(m.id), m.status FROM wD_Members m 
 				 inner join wD_Games g on g.id = m.gameID 
-				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.potType <> 'Unranked'
+				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.potType <> 'Unranked' and g.playerTypes = 'Members'
 				 GROUP BY m.status"
 			);
 
@@ -1346,6 +1346,18 @@ class User {
 		{
 			return $variable;
 		}
+	}
+
+	/*
+	 * Get the number of total bot games the member is currently playing in. 
+	 */
+	public function getBotGameCount() 
+	{
+		global $DB;
+		list($totalBotGames) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g inner join wD_Members m on m.gameID = g.id  
+			WHERE m.userID = ".$this->id." AND g.gameOver = 'No' and g.playerTypes = 'MemberVsBots'");
+		
+		return $totalBotGames;
 	}
 }
 ?>

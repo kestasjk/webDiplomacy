@@ -26,15 +26,17 @@ require_once('assignmentSolver.php');
  * @package GameMaster
  * @subpackage Adjudicator
  */
-class adjudicatorPreGame {
-
-	protected function isEnoughPlayers() {
+class adjudicatorPreGame 
+{
+	protected function isEnoughPlayers() 
+	{
 		global $Game;
 
 		return ( count($Game->Members->ByID) == count($Game->Variant->countries) );
 	}
 
-	protected function userCountries() {
+	protected function userCountries() 
+	{
 		global $Game;
 		/*
 		 * Find out who gets which countryID;
@@ -110,7 +112,8 @@ class adjudicatorPreGame {
 		return $userCountryCounts;
 	}
 
-	protected function assignCountries(array $userCountries) {
+	protected function assignCountries(array $userCountries) 
+	{
 		global $DB, $Game;
 
 		// Finally the user->countryID array is written to the database and Game->Members objects,
@@ -118,11 +121,7 @@ class adjudicatorPreGame {
 		// to the database
 		foreach( $userCountries as $userID=>$countryID )
 		{
-			$DB->sql_put(
-				"UPDATE wD_Members
-				SET countryID='".$countryID."'
-				WHERE userID=".$userID." AND gameID = ".$Game->id
-			);
+			$DB->sql_put("UPDATE wD_Members SET countryID='".$countryID."' WHERE userID=".$userID." AND gameID = ".$Game->id);
 		}
 
 		$Game->Members->ByCountryID=array();
@@ -136,7 +135,8 @@ class adjudicatorPreGame {
 			assert('$Game->Members->ByCountryID[$countryID]->countryID==$countryID');
 	}
 
-	protected function assignTerritories() {
+	protected function assignTerritories() 
+	{
 		global $DB, $Game;
 
 		$DB->sql_put(
@@ -147,7 +147,8 @@ class adjudicatorPreGame {
 		);
 	}
 
-	protected function assignUnits() {
+	protected function assignUnits() 
+	{
 		global $DB, $Game;
 
 		$terrIDByName = array();
@@ -168,13 +169,11 @@ class adjudicatorPreGame {
 			}
 		}
 
-		$DB->sql_put(
-			"INSERT INTO wD_Units ( gameID, countryID, terrID, type )
-			VALUES ".implode(', ', $UnitINSERTs)
-		);
+		$DB->sql_put("INSERT INTO wD_Units ( gameID, countryID, terrID, type ) VALUES ".implode(', ', $UnitINSERTs));
 	}
 
-	protected function assignUnitOccupations() {
+	protected function assignUnitOccupations() 
+	{
 		global $DB, $Game;
 
 		// Now link the TerrStatus and Units records via the occupyingUnitID TerrStatus column
@@ -200,10 +199,30 @@ class adjudicatorPreGame {
 	 */
 	function adjudicate()
 	{		
-		global $Game;
+		global $Game, $DB;
 
-		// Will give back bets, send messages, delete the game, and throw an exception to get back to gamemaster.php
-		if( !$this->isEnoughPlayers() ) $Game->setNotEnoughPlayers();
+		// If the game is a mixed game and there are not enough players in the game, and at least 2 humans then fill the game with bots. 
+		if ( ($Game->playerTypes == "Mixed") && (!$this->isEnoughPlayers()) && (count($Game->Members->ByID) > 1) )
+		{
+			$botNum = (count($Game->Variant->countries) - count($Game->Members->ByID));
+
+			$tabl = $DB->sql_tabl("SELECT id FROM wD_Users WHERE type LIKE '%bot%' LIMIT ".$botNum);
+
+			while (list($botID) = $DB->tabl_row($tabl))
+			{
+				processMember::create($botID, 5, 0);
+			}
+		}
+		// If the "fill with bots" game fills with all humans then change the game playerTypes to "Members" so GR and game stats are accurate about which games had bots in them.
+		else if ( ($Game->playerTypes == "Mixed") && ($this->isEnoughPlayers()) )
+		{
+			$DB->sql_put("UPDATE wD_Games SET playerTypes = 'Members' WHERE id = ".$gameID);
+		}
+		else
+		{
+			// Will give back bets, send messages, delete the game, and throw an exception to get back to gamemaster.php if there are not enough players to start. 
+			if( !$this->isEnoughPlayers() ) $Game->setNotEnoughPlayers();
+		}
 
 		// Determine which countryID is given to which userID
 		if (count($Game->Members->ByCountryID)==0)
@@ -214,9 +233,9 @@ class adjudicatorPreGame {
 		}
 		
 		// Create starting board conditions, typically based on $countryUnits
-		$this->assignTerritories(); // TerrStatus
-		$this->assignUnits(); // Units
-		$this->assignUnitOccupations(); // TerrStatus occupyingUnitID
+		$this->assignTerritories(); 
+		$this->assignUnits();
+		$this->assignUnitOccupations();
 	}
 }
 

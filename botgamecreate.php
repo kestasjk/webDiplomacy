@@ -38,6 +38,15 @@ if( !$User->type['User'] )
 	libHTML::notice(l_t('Not logged on'),l_t("Only a logged on user can create games. Please <a href='logon.php' class='light'>log on</a> to create your own games."));
 }
 
+// Limit users to 3 bot games at a time unless they are a moderator. 
+if ($User->getBotGameCount() > 2)
+{
+    if (!$User->type['Moderator'])
+    {
+        libHTML::notice('3 bot games at a time.','Sorry, only 3 bot games at a time, please finish one of your current ones to start another!');
+    }
+}
+
 libHTML::starthtml();
 
 if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
@@ -55,7 +64,8 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		{
 			if ( isset($form[$requiredName]) ) { $input[$requiredName] = $form[$requiredName]; }
 			else{ throw new Exception(l_t('The variable "%s" is needed to create a game, but was not entered.',$requiredName)); }
-		}
+        }
+        
 		unset($required, $form);
 
 		$input['variantID']=(int)$input['variantID'];
@@ -74,7 +84,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 
 		// Create Game record & object
 		require_once(l_r('gamemaster/game.php'));
-		$Game = processGame::create($input['variantID'],$input['name'],'',5,'Unranked',4320,60,'Yes','Regular','Normal','draw-votes-public',0,4);
+		$Game = processGame::create($input['variantID'],$input['name'],'',5,'Unranked',4320,60,'Yes','Regular','Normal','draw-votes-public',0,4,'MemberVsBots');
 
 		// Prevent temp banned players from making new games.
 		if ($User->userIsTempBanned())
