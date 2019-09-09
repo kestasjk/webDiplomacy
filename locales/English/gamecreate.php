@@ -110,7 +110,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					</p>
 				</div>
 			</div>
-			<select class = "gameCreate" id="pressType" name="newGame[pressType]" onchange="setBotFill()">
+			<select class = "gameCreate" id="pressType" name="newGame[pressType]" <?php if($User->type['Moderator']) {print 'onchange="setBotFill()"';} ?> >
 				<option name="newGame[pressType]" value="Regular" selected>All </option>
 				<option name="newGame[pressType]" value="PublicPressOnly">Global only</option>
 				<option name="newGame[pressType]" value="NoPress">None (No messaging)</option>
@@ -143,7 +143,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					</p>
 				</div>
 			</div>
-			<select id="variant" class = "gameCreate" name="newGame[variantID]" onchange="setBotFill()">
+			<select id="variant" class = "gameCreate" name="newGame[variantID]" <?php if($User->type['Moderator']) {print 'onchange="setBotFill()"';} ?> >
 			<?php
 			$first=true;
 			foreach(Config::$variants as $variantID=>$variantName)
@@ -338,13 +338,14 @@ window.onclick = function(event) {
 	if (event.target == modal8) { modal8.style.display = "none"; }
 }
 
+<?php if($User->type['Moderator']) {print '
 function setBotFill(){
-	content = document.getElementById('botFill');
+	content = document.getElementById("botFill");
 
-	ePress = document.getElementById('pressType');
+	ePress = document.getElementById("pressType");
 	pressType = ePress.options[ePress.selectedIndex].value;
 
-	eVariant = document.getElementById('variant');
+	eVariant = document.getElementById("variant");
 	variant = eVariant.options[eVariant.selectedIndex].value;
 
 	if (pressType == "NoPress" && variant == 1){
@@ -354,5 +355,5 @@ function setBotFill(){
 		content.style.display = "none";
 		document.getElementById("botBox").checked = false;
 	}
-}
+}';} ?>
 </script>
