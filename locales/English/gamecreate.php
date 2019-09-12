@@ -30,12 +30,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	<div class="pageDescription">Start a new customized game of Diplomacy.</div>
 </div>
 <div class="content content-follow-on">
-	<?php
-	if($User->type['Moderator'])
-	{
-		print '<p><a href="botgamecreate.php">Play A Game Against Bots</a></p>';
-	}
-	?>
+	<p><a href="botgamecreate.php">Play A Game Against Bots</a></p>
+
 	<div class = "gameCreateShow">
 		<form method="post">
 			<p>
@@ -110,7 +106,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					</p>
 				</div>
 			</div>
-			<select class = "gameCreate" id="pressType" name="newGame[pressType]" <?php if($User->type['Moderator']) {print 'onchange="setBotFill()"';} ?> >
+			<select class = "gameCreate" id="pressType" name="newGame[pressType]" onchange="setBotFill()">
 				<option name="newGame[pressType]" value="Regular" selected>All </option>
 				<option name="newGame[pressType]" value="PublicPressOnly">Global only</option>
 				<option name="newGame[pressType]" value="NoPress">None (No messaging)</option>
@@ -143,7 +139,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					</p>
 				</div>
 			</div>
-			<select id="variant" class = "gameCreate" name="newGame[variantID]" <?php if($User->type['Moderator']) {print 'onchange="setBotFill()"';} ?> >
+			<select id="variant" class = "gameCreate" name="newGame[variantID]" onchange="setBotFill()">
 			<?php
 			$first=true;
 			foreach(Config::$variants as $variantID=>$variantName)
@@ -159,29 +155,25 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			print '</select>';
 			?>
 			</br></br>
-			<?php
-			if($User->type['Moderator'])
-			{
-				print'<div id="botFill" style="display:none">
-				<strong>Fill Empty Spots with Bots: </strong>
-				<img id = "modBtnBot" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-				<div id="botModal" class="modal">
-					<!-- Modal content -->
-					<div class="modal-content">
-						<span class="close8">&times;</span>
-						<p><strong>Fill with Bots:</strong> </br>
-							If the game has at least 2 human players it will 
-							fill with bots if there are empty spaces at the designated start time instead of being cancelled. This type 
-							of game will default to a 5 point bet, unranked, and anonymous regardless of what settings you select. If the game
-							fills with 7 human players it will run just like any normal game and will be included in classic stats. 
-						</p>
-					</div>
+			<div id="botFill" style="display:none">
+			<strong>Fill Empty Spots with Bots: </strong>
+			<img id = "modBtnBot" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+			<div id="botModal" class="modal">
+				<!-- Modal content -->
+				<div class="modal-content">
+					<span class="close8">&times;</span>
+					<p><strong>Fill with Bots:</strong> </br>
+						If the game has at least 2 human players it will 
+						fill with bots if there are empty spaces at the designated start time instead of being cancelled. This type 
+						of game will default to a 5 point bet, unranked, and anonymous regardless of what settings you select. If the game
+						fills with 7 human players it will run just like any normal game and will be included in classic stats. 
+					</p>
 				</div>
-				<input type="checkbox" id="botBox" class="gameCreate" name="newGame[botFill]" value="Yes">
-				</br></br>
-				</div>';
-			}
-			?>
+			</div>
+			<input type="checkbox" id="botBox" class="gameCreate" name="newGame[botFill]" value="Yes">
+			</br></br>
+			</div>
+			
 			<strong>Scoring:(<a href="points.php#DSS">See scoring types here</a>)</strong>
 			<img id = "modBtnScoring" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
 			<div id="scoringModal" class="modal">
@@ -338,7 +330,6 @@ window.onclick = function(event) {
 	if (event.target == modal8) { modal8.style.display = "none"; }
 }
 
-<?php if($User->type['Moderator']) {print '
 function setBotFill(){
 	content = document.getElementById("botFill");
 
@@ -355,5 +346,5 @@ function setBotFill(){
 		content.style.display = "none";
 		document.getElementById("botBox").checked = false;
 	}
-}';} ?>
+}
 </script>

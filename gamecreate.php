@@ -145,7 +145,6 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		if($input['botFill'] == 'Yes')
 		{
 			$input['pressType'] = 'NoPress';
-			$input['anon'] = 'Yes';
 			$input['potType'] = 'Unranked';
 			$input['bet'] = 5; 
 			$playerTypes = 'Mixed';

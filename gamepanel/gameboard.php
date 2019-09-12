@@ -205,7 +205,7 @@ class panelGameBoard extends panelGame
 			<div class="modal-content">
 				<span class="close1">&times;</span>
 				<p><strong>Draw Vote: </strong></br>
-					If all remaining players vote draw, the game will be drawn. ';
+					If all players vote draw, the game will be drawn. ';
 		switch ($this->potType) 
 		{
 			case 'Points-per-supply-center':
@@ -241,19 +241,29 @@ class panelGameBoard extends panelGame
 		if( $this->processStatus == 'Paused' )
 		{
 			$buf .= '<p><strong>Unpause Vote: </strong></br>
-						If all remaining players vote unpause, the game will be unpaused. If a game has been paused for a long period of time, you may email the mods at webdipmod@gmail.com and they will look into getting the game started back up.
+						If all players vote unpause, the game will be unpaused. If a game is stuck paused, email the mods at webdipmod@gmail.com for help.
 					</p>';
 		}
 		else
 		{
 			$buf .= '<p><strong>Pause Vote: </strong></br>
-						If all remaining players vote pause, the game will be paused. The game will remain paused until all players vote unpause. If you need a game paused'. ($this->pressType == 'NoPress' ? '' : ' due to an emergency').', click on the Need Help? link just above this icon to contact the mods.
+						If all players vote pause, the game will be paused until all players vote unpause. If you need a game paused'. ($this->pressType == 'NoPress' ? '' : ' due to an emergency').', click on the Need Help? link just above this icon to contact the mods.
 					</p>';
 		}
 		
 		$buf .= '<p><strong>Cancel Vote: </strong></br>
-					If all remaining players vote cancel, the game will be cancelled. All points will be refunded, and the game will be deleted. Cancels are typically used in the first year or two of a game with missing players.
-				</p>
+					If all players vote cancel, the game will be cancelled. All points will be refunded, and the game will be deleted. Cancels are typically used in the first year or two of a game with missing players.
+				</p>';
+
+		if ($this->playerTypes <> 'Members')
+		{
+			$buf .= '<p><strong>Bot Voting: </strong></br>
+				The bots in this game do not get a pause or unpause vote, pausing and unpausing only counts human votes. <br><br>
+				If a bot is winning a game and has gained supply centers in the last 4 turns, it will stop the game from being drawn or cancelled. Otherwise bot games can be drawn or cancelled anytime.  
+			</p>';
+		}
+		
+		$buf .='
 			</div>
 		</div>';
 		

@@ -713,12 +713,13 @@ print '<div class="leftHalf" style="width:50%">';
 if( $UserProfile->type['Banned'] )
 	print '<p><strong>'.l_t('Banned').'</strong></p>';
 
+if( $UserProfile->type['Bot'] )
+{
+	print '<p class="profileCommentURL">Bot User</p>';
+}
+
 if( $User->type['Moderator'] )
 {
-	if( $UserProfile->type['Bot'] )
-	{
-		print '<p class="profileCommentURL">Bot User</p>';
-	}
 	if($UserProfile->modLastCheckedOn > 0 && $UserProfile->modLastCheckedBy > 0)
 	{
 		list($modUsername) = $DB->sql_row("SELECT username FROM `wD_Users` WHERE id = ".$UserProfile->modLastCheckedBy);
