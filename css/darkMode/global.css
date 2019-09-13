@@ -2451,4 +2451,14 @@ input[id^="FinalizeButton"]{
 	.profileUsername {
 		text-align: center !important;
 	}
+	.modal-content {
+		background-color: #5e6368;
+		color: rgba(255, 255, 255, 0.8);
+		margin: auto;
+		padding: 10px;
+		border: 1px solid #888;
+		width: 90%;
+		max-width: 760px;
+		font-size: 12px !important
+	  }
 }

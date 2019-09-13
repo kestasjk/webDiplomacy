@@ -1110,10 +1110,10 @@ input[type=submit].gameCreate:hover {
 
 /* Modal Content */
 .modal-content {
-  background-color: #fefefe;
-  margin: auto;
-  padding: 10px;
-  border: 1px solid #888;
+ 	background-color: #fefefe;
+ 	margin: auto;
+  	padding: 10px;
+  	border: 1px solid #888;
 	width: 80%;
 	max-width: 760px;
 }
@@ -2121,4 +2121,13 @@ input[id^="FinalizeButton"]{
 	.profileUsername {
 		text-align: center !important;
 	}
+	.modal-content {
+		background-color: #fefefe;
+		margin: auto;
+	   	padding: 10px;
+	   	border: 1px solid #888;
+	   	width: 90%;
+		max-width: 760px;
+		font-size: 12px !important;
+   }
 }
