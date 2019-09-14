@@ -720,10 +720,13 @@ if( $UserProfile->type['Bot'] )
 
 if( $User->type['Moderator'] )
 {
-	if($UserProfile->modLastCheckedOn > 0 && $UserProfile->modLastCheckedBy > 0)
+	$lastCheckedBy = $UserProfile->modLastCheckedBy();
+	$modLastCheckedOn = $UserProfile->modLastCheckedOn();
+
+	if($UserProfile->modLastCheckedOn() > 0 && $lastCheckedBy > 0)
 	{
-		list($modUsername) = $DB->sql_row("SELECT username FROM `wD_Users` WHERE id = ".$UserProfile->modLastCheckedBy);
-		print '<p class="profileCommentURL">Investigated: '.$UserProfile->timeModLastCheckedtxt().', by: <a href="/profile.php?userID='.$UserProfile->modLastCheckedBy.'">'.$modUsername.'</a></p>';
+		list($modUsername) = $DB->sql_row("SELECT username FROM `wD_Users` WHERE id = ".$lastCheckedBy);
+		print '<p class="profileCommentURL">Investigated: '.libTime::text($modLastCheckedOn).', by: <a href="/profile.php?userID='.$lastCheckedBy.'">'.$modUsername.'</a></p>';
 	}
 	else
 	{
