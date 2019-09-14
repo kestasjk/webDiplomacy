@@ -57,6 +57,7 @@ class UnorderedCountries {
         // 2) On a map (and a gameID) that is supported by the API
         // 3) Where orders have not yet been submitted (orderStatus is NULL or '') and player is playing (not defeated)
         // 4) Only if the game is still active (i.e. not pre-game, finished, paused, etc.)
+        // 5) Only if the turn is < 100 (to avoid any games going past W1950A)
 
 		$countryTabl = $DB->sql_tabl("SELECT m.gameID, m.countryID
                                       FROM wD_Members AS m
@@ -68,6 +69,7 @@ class UnorderedCountries {
                                             " . $filterGameClause . "
                                             AND g.processStatus = 'Not-processing'
                                             AND g.phase IN ('Diplomacy', 'Retreats', 'Builds')
+                                            AND g.turn < 100
                                       ORDER BY g.processTime ASC;");
 
         while( $row = $DB->tabl_hash($countryTabl) )
