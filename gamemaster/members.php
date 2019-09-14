@@ -595,13 +595,7 @@ class processMembers extends Members
 		// update the turn count
 		$DB->sql_put("UPDATE wD_Users u
 				INNER JOIN wD_Members m ON m.userID = u.id
-				INNER JOIN (
-					SELECT userID, count(*) as yearlyTurns
-					FROM wD_TurnDate AS t
-					WHERE t.turnDateTime > ".time()." - (3600 *24*365)
-					GROUP BY userID
-				  ) AS TotalTurns ON u.id = TotalTurns.userID
-				SET u.yearlyPhaseCount = TotalTurns.yearlyTurns
+				SET u.yearlyPhaseCount = (SELECT count(1) as yearlyTurns FROM wD_TurnDate AS t WHERE t.userID = u.id and t.turnDateTime > (".time()." - (31536000)))
 				WHERE m.gameID = ".$this->Game->id." 
 					AND ( m.status='Playing' OR m.status='Left' )
 					AND EXISTS(SELECT o.id FROM wD_Orders o WHERE o.gameID = m.gameID AND o.countryID = m.countryID)");
