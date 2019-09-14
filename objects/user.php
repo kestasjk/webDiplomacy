@@ -189,18 +189,6 @@ class User {
 	public $tempBan;
 
 	/**
-	 * UNIX timestamp of when a mod last checked this user
-	 * @var int
-	 */
-	public $modLastCheckedOn;
-
-	/**
-	 * userID of the last mod to check this user
-	 * @var int
-	 */
-	public $modLastCheckedBy;
-
-	/**
 	 * date the user last used an emergency pause
 	 * @var int
 	 */
@@ -530,14 +518,11 @@ class User {
 			u.tempBan,
 			IF(s.userID IS NULL,0,1) as online,
 			u.deletedCDs, 
-			c.modLastCheckedOn,
-			c.modLastCheckedBy,
 			u.emergencyPauseDate, 
 			u.yearlyPhaseCount,
 			u.tempBanReason
 			FROM wD_Users u
 			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
-			LEFT JOIN wD_UserConnections c on ( u.id = c.userID )
 			WHERE ".( $username ? "u.username='".$username."'" : "u.id=".$this->id ));
 
 		if ( ! isset($row['id']) or ! $row['id'] )
@@ -726,11 +711,6 @@ class User {
 	function timeJoinedtxt()
 	{
 		return libTime::text($this->timeJoined);
-	}
-
-	function timeModLastCheckedtxt()
-	{
-		return libTime::text($this->modLastCheckedOn);
 	}
 
 	/**
@@ -1358,6 +1338,28 @@ class User {
 			WHERE m.userID = ".$this->id." AND g.gameOver = 'No' and g.playerTypes = 'MemberVsBots'");
 		
 		return $totalBotGames;
+	}
+
+	/*
+	 * Get time the user was last checked by a mod
+	 */
+	public function modLastCheckedOn() 
+	{
+		global $DB;
+		list($modLastCheckedOn) = $DB->sql_row("SELECT c.modLastCheckedOn FROM wD_UserConnections c WHERE c.userID = ".$this->id);
+		
+		return $modLastCheckedOn;
+	}
+
+	/*
+	 * Get the mod who last checked the user
+	 */
+	public function modLastCheckedBy() 
+	{
+		global $DB;
+		list($modLastCheckedBy) = $DB->sql_row("SELECT c.modLastCheckedBy FROM wD_UserConnections c WHERE c.userID = ".$this->id);
+		
+		return $modLastCheckedBy;
 	}
 }
 ?>
