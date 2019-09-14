@@ -535,38 +535,38 @@ class SetOrders extends ApiEntry {
 		}
 
 		// Processing game
-        if ($orderInterface->orderStatus->Ready && !$previousReadyValue) {
-            require_once(l_r('objects/misc.php'));
-            require_once(l_r('objects/notice.php'));
-            require_once(l_r('objects/user.php'));
-            global $Misc;
-            $Misc = new Misc();
-            $game = $this->getAssociatedGame();
-
-            if( $game->processStatus!='Crashed' && $game->attempts > count($game->Members->ByID)*2 )
-            {
-                $DB->sql_put("COMMIT");
-                require_once(l_r('gamemaster/game.php'));
-
-                $game = libVariant::$Variant->processGame($game->id);
-                $game->crashed();
-                $DB->sql_put("COMMIT");
-            }
-            elseif( $game->needsProcess() )
-            {
-                $DB->sql_put("UPDATE wD_Games SET attempts=attempts+1 WHERE id=".$game->id);
-                $DB->sql_put("COMMIT");
-
-                require_once(l_r('gamemaster/game.php'));
-                $game = libVariant::$Variant->processGame($gameID);
-                if( $game->needsProcess() )
-                {
-                    $game->process();
-                    $DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$game->id);
-                    $DB->sql_put("COMMIT");
-                }
-            }
-        }
+        // if ($orderInterface->orderStatus->Ready && !$previousReadyValue) {
+        //     require_once(l_r('objects/misc.php'));
+        //     require_once(l_r('objects/notice.php'));
+        //     require_once(l_r('objects/user.php'));
+        //     global $Misc;
+        //     $Misc = new Misc();
+        //     $game = $this->getAssociatedGame();
+        //
+        //     if( $game->processStatus!='Crashed' && $game->attempts > count($game->Members->ByID)*2 )
+        //     {
+        //         $DB->sql_put("COMMIT");
+        //         require_once(l_r('gamemaster/game.php'));
+        //
+        //         $game = libVariant::$Variant->processGame($game->id);
+        //         $game->crashed();
+        //         $DB->sql_put("COMMIT");
+        //     }
+        //     elseif( $game->needsProcess() )
+        //     {
+        //         $DB->sql_put("UPDATE wD_Games SET attempts=attempts+1 WHERE id=".$game->id);
+        //         $DB->sql_put("COMMIT");
+        //
+        //         require_once(l_r('gamemaster/game.php'));
+        //         $game = libVariant::$Variant->processGame($gameID);
+        //         if( $game->needsProcess() )
+        //         {
+        //             $game->process();
+        //             $DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$game->id);
+        //             $DB->sql_put("COMMIT");
+        //         }
+        //     }
+        // }
 
         // Returning current orders
 		return json_encode($currentOrders);

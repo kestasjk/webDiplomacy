@@ -97,39 +97,39 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 
 		$results = $O->getResults();
 
-		if( $newReady && !$oldReady )
-		{
-			$results['process']='Checked';
-
-			$Game = libVariant::$Variant->Game($O->gameID);
-
-			if( $Game->processStatus!='Crashed' && $Game->attempts > count($Game->Members->ByID)*2 )
-			{
-				$DB->sql_put("COMMIT");
-				require_once(l_r('gamemaster/game.php'));
-				$Game =libVariant::$Variant->processGame($Game->id);
-				$Game->crashed();
-				$DB->sql_put("COMMIT");
-			}
-			elseif( $Game->needsProcess() )
-			{
-				$DB->sql_put("UPDATE wD_Games SET attempts=attempts+1 WHERE id=".$Game->id);
-				$DB->sql_put("COMMIT");
-
-				$results['process']='Attempted';
-
-				require_once(l_r('gamemaster/game.php'));
-				$Game = libVariant::$Variant->processGame($O->gameID);
-				if( $Game->needsProcess() )
-				{
-					$Game->process();
-					$DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$Game->id);
-					$DB->sql_put("COMMIT");
-					$results['process']='Success';
-					$results['notice']=l_t('Game processed, click <a href="%s">here</a> to refresh..','board.php?gameID='.$Game->id.'&nocache='.rand(0,1000));
-				}
-			}
-		}
+		// if( $newReady && !$oldReady )
+        // {
+        // 	$results['process']='Checked';
+        //
+        // 	$Game = libVariant::$Variant->Game($O->gameID);
+        //
+        // 	if( $Game->processStatus!='Crashed' && $Game->attempts > count($Game->Members->ByID)*2 )
+        // 	{
+        // 		$DB->sql_put("COMMIT");
+        // 		require_once(l_r('gamemaster/game.php'));
+        // 		$Game =libVariant::$Variant->processGame($Game->id);
+        // 		$Game->crashed();
+        // 		$DB->sql_put("COMMIT");
+        // 	}
+        // 	elseif( $Game->needsProcess() )
+        // 	{
+        // 		$DB->sql_put("UPDATE wD_Games SET attempts=attempts+1 WHERE id=".$Game->id);
+        // 		$DB->sql_put("COMMIT");
+        //
+        // 		$results['process']='Attempted';
+        //
+        // 		require_once(l_r('gamemaster/game.php'));
+        // 		$Game = libVariant::$Variant->processGame($O->gameID);
+        // 		if( $Game->needsProcess() )
+        // 		{
+        // 			$Game->process();
+        // 			$DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$Game->id);
+        // 			$DB->sql_put("COMMIT");
+        // 			$results['process']='Success';
+        // 			$results['notice']=l_t('Game processed, click <a href="%s">here</a> to refresh..','board.php?gameID='.$Game->id.'&nocache='.rand(0,1000));
+        // 		}
+        // 	}
+        // }
 	}
 	catch(Exception $e)
 	{
