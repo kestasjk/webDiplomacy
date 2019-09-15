@@ -710,6 +710,28 @@ class processGame extends Game
 		}
 		
 		$this->Members->updateReliabilityStats();
+		
+		
+		//Applies any votes for bot games anytime the phase changes - needed for forced draws.
+		if ($this->playerTypes <> 'Members')
+		{
+			$playerCount = count($this->Members->ByStatus['Playing']);
+			$botCount = 0;
+			foreach($this->Members->ByStatus['Playing'] as $Member)
+			{
+				$userPassed = new User($Member->userID);
+	
+				//Bot votes are handled differently
+				if($userPassed->type['Bot']) 
+				{
+					$botCount += 1;
+				}
+			}
+			if ($playerCount == $botCount) 
+			{
+				$this->setDrawn();
+			}
+		}
 	}
 
 	/**
