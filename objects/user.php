@@ -189,18 +189,6 @@ class User {
 	public $tempBan;
 
 	/**
-	 * UNIX timestamp of when a mod last checked this user
-	 * @var int
-	 */
-	public $modLastCheckedOn;
-
-	/**
-	 * userID of the last mod to check this user
-	 * @var int
-	 */
-	public $modLastCheckedBy;
-
-	/**
 	 * date the user last used an emergency pause
 	 * @var int
 	 */
@@ -530,14 +518,11 @@ class User {
 			u.tempBan,
 			IF(s.userID IS NULL,0,1) as online,
 			u.deletedCDs, 
-			c.modLastCheckedOn,
-			c.modLastCheckedBy,
 			u.emergencyPauseDate, 
 			u.yearlyPhaseCount,
 			u.tempBanReason
 			FROM wD_Users u
 			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
-			LEFT JOIN wD_UserConnections c on ( u.id = c.userID )
 			WHERE ".( $username ? "u.username='".$username."'" : "u.id=".$this->id ));
 
 		if ( ! isset($row['id']) or ! $row['id'] )
@@ -726,11 +711,6 @@ class User {
 	function timeJoinedtxt()
 	{
 		return libTime::text($this->timeJoined);
-	}
-
-	function timeModLastCheckedtxt()
-	{
-		return libTime::text($this->modLastCheckedOn);
 	}
 
 	/**
@@ -955,7 +935,7 @@ class User {
 
 		$tabl = $DB->sql_tabl(
 			"SELECT COUNT(m.id), m.status FROM wD_Members m 
-			 inner join wD_Games g on g.id = m.gameID WHERE m.userID = ".$this->id." AND g.variantID <> 1 and g.gameOver <> 'No' 
+			 inner join wD_Games g on g.id = m.gameID WHERE m.userID = ".$this->id." AND g.variantID <> 1 and g.gameOver <> 'No' and g.playerTypes = 'Members'
 			 GROUP BY m.status"
 		);
 
@@ -979,7 +959,7 @@ class User {
 
 		$tabl = $DB->sql_tabl(
 				"SELECT COUNT(m.id), m.status FROM wD_Members m 
-				 inner join wD_Games g on g.id = m.gameID WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' 
+				 inner join wD_Games g on g.id = m.gameID WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.playerTypes = 'Members'
 				 GROUP BY m.status"
 			);
 
@@ -1004,7 +984,7 @@ class User {
 		$tabl = $DB->sql_tabl(
 				"SELECT COUNT(m.id), m.status FROM wD_Members m 
 				 inner join wD_Games g on g.id = m.gameID 
-				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.pressType = 'NoPress' 
+				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.pressType = 'NoPress' and g.playerTypes = 'Members'
 				 GROUP BY m.status"
 			);
 
@@ -1029,7 +1009,7 @@ class User {
 		$tabl = $DB->sql_tabl(
 				"SELECT COUNT(m.id), m.status FROM wD_Members m 
 				 inner join wD_Games g on g.id = m.gameID 
-				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.pressType in ('Regular', 'RulebookPress')
+				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.pressType in ('Regular', 'RulebookPress') and g.playerTypes = 'Members'
 				 GROUP BY m.status"
 			);
 
@@ -1054,7 +1034,7 @@ class User {
 		$tabl = $DB->sql_tabl(
 				"SELECT COUNT(m.id), m.status FROM wD_Members m 
 				 inner join wD_Games g on g.id = m.gameID 
-				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.potType <> 'Unranked'
+				 WHERE m.userID = ".$this->id." AND g.variantID = 1 and g.gameOver <> 'No' and g.potType <> 'Unranked' and g.playerTypes = 'Members'
 				 GROUP BY m.status"
 			);
 
@@ -1346,6 +1326,40 @@ class User {
 		{
 			return $variable;
 		}
+	}
+
+	/*
+	 * Get the number of total bot games the member is currently playing in. 
+	 */
+	public function getBotGameCount() 
+	{
+		global $DB;
+		list($totalBotGames) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g inner join wD_Members m on m.gameID = g.id  
+			WHERE m.userID = ".$this->id." AND g.gameOver = 'No' and g.playerTypes = 'MemberVsBots'");
+		
+		return $totalBotGames;
+	}
+
+	/*
+	 * Get time the user was last checked by a mod
+	 */
+	public function modLastCheckedOn() 
+	{
+		global $DB;
+		list($modLastCheckedOn) = $DB->sql_row("SELECT c.modLastCheckedOn FROM wD_UserConnections c WHERE c.userID = ".$this->id);
+		
+		return $modLastCheckedOn;
+	}
+
+	/*
+	 * Get the mod who last checked the user
+	 */
+	public function modLastCheckedBy() 
+	{
+		global $DB;
+		list($modLastCheckedBy) = $DB->sql_row("SELECT c.modLastCheckedBy FROM wD_UserConnections c WHERE c.userID = ".$this->id);
+		
+		return $modLastCheckedBy;
 	}
 }
 ?>
