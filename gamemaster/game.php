@@ -710,6 +710,25 @@ class processGame extends Game
 		}
 		
 		$this->Members->updateReliabilityStats();
+		
+		//Anytime the phase changes checks for force draws if only bots are left.
+		if ($this->playerTypes <> 'Members' && $this->phase <> 'Finished' && $this->phase <> 'Pre-game')
+		{
+			$playerCount = count($this->Members->ByStatus['Playing']);
+			$botCount = 0;
+			foreach($this->Members->ByStatus['Playing'] as $Member)
+			{
+				$userPassed = new User($Member->userID);
+				if($userPassed->type['Bot']) 
+				{
+					$botCount += 1;
+				}
+			}
+			if ($playerCount == $botCount) 
+			{
+				$this->setDrawn();
+			}
+		}
 	}
 
 	/**
