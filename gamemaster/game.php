@@ -711,8 +711,8 @@ class processGame extends Game
 		
 		$this->Members->updateReliabilityStats();
 		
-		//Applies any votes for bot games anytime the phase changes - needed for forced draws.
-		if ($this->playerTypes <> 'Members')
+		//Anytime the phase changes checks for force draws if only bots are left.
+		if ($this->playerTypes <> 'Members' && $this->phase <> 'Finished' && $this->phase <> 'Pre-game')
 		{
 			$playerCount = count($this->Members->ByStatus['Playing']);
 			$botCount = 0;
