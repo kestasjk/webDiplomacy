@@ -121,6 +121,13 @@ class adminActions extends adminActionsForms
 					<em>Be careful:</em> this will cause any players without submitted moves to NMR.',
 				'params' => array('gameID'=>'Game ID'),
 			),
+			'toggleAllowBotCDOrdering' => array(
+				'name' => 'Toggle Bot CD Ordering',
+				'description' => 'Will toggle the flag that allows bots to submit orders for users in civil disorder.<br /><br />
+						<em>Note:</em> The flag will be ignored if the game is part of a tournament,
+						if the Wait for orders mode is on, if the game if excluded by the config file, or if the bot does not support the map.',
+				'params' => array('gameID'=>'Game ID'),
+			),
 			'toggleWaitForOrders' => array(
 				'name' => 'Toggle Wait for orders mode',
 				'description' => 'Will toggle this game between normal NMR rules and wait-for-orders mode.<br />
@@ -412,6 +419,29 @@ class adminActions extends adminActionsForms
 
 		return l_t('Process time changed from %s to %s. Next process time is %s.',
 			libTime::timeLengthText($oldPhaseMinutes*60),libTime::timeLengthText($Game->phaseMinutes*60),libTime::text($Game->processTime));
+	}
+
+	public function toggleAllowBotCDOrdering(array $params)
+	{
+		global $DB;
+
+		require_once(l_r('objects/game.php'));
+
+		$Variant=libVariant::loadFromGameID($params['gameID']);
+		$Game = $Variant->Game($params['gameID']);
+
+		if( $Game->allowBotCDOrdering == 'Yes' )
+		{
+			$msg = "Bot CD ordering is now disabled for that game.";
+			$setting = 'No';
+		}
+		else
+		{
+			$msg = "Bot CD ordering is now enabled for that game (**Note: It can still be ignored**).";
+			$setting = 'Yes';
+		}
+		$DB->sql_put("UPDATE wD_Games SET allowBotCDOrdering = '".$setting."' WHERE id = ".$Game->id);
+		return l_t($msg);
 	}
 
 	public function toggleWaitForOrders(array $params)

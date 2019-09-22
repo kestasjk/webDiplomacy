@@ -45,7 +45,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$form = $_REQUEST['newGame']; // This makes $form look harmless when it is unsanitized; the parameters must all be sanitized
 
 		$input = array();
-		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy','drawType','minimumReliabilityRating','excusedMissedTurns');
+		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy','drawType','minimumReliabilityRating','excusedMissedTurns', 'allowBotCDOrdering');
 
 		$playerTypes = 'Members';
 
@@ -104,6 +104,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		}
 		
 		$input['anon'] = ( (strtolower($input['anon']) == 'yes') ? 'Yes' : 'No' );
+		$input['allowBotCDOrdering'] = ( (strtolower($input['allowBotCDOrdering']) == 'yes') ? 'Yes' : 'No' );
 		
 		// Force 1 vs 1 variants to be unranked to prevent point farming. 
 		if ( $input['variantID'] == 15 )
@@ -197,7 +198,8 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input['drawType'],
 			$input['minimumReliabilityRating'],
 			$input['excusedMissedTurns'],
-			$playerTypes);
+			$playerTypes,
+            $input['allowBotCDOrdering']);
 
 		// Prevent temp banned players from making new games.
 		if ($User->userIsTempBanned())

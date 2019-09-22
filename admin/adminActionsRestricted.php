@@ -242,7 +242,7 @@ class adminActionsRestricted extends adminActionsForum
 			),
 			'setApiPermission' => array(
 				'name' => 'API - Set API key permission',
-				'description' => 'Set an API permission for a user. (getStateOfAllGames, submitOrdersForUserInCD, listGamesWithPlayersInCD)',
+				'description' => 'Set an API permission for a user. (canReplaceUsersInCD)',
 				'params' => array('userID'=>'User ID', 'permissionName' => 'Permission name', 'permissionValue' => 'Permission value ("Yes" or "No").'),
 			),
 			'showApiKeys' => array(
@@ -973,9 +973,7 @@ class adminActionsRestricted extends adminActionsForum
 		$permissionName = strval($params['permissionName']);
 		$permissionValue = strval($params['permissionValue']);
 		$currentPermissions = array(
-			'getStateOfAllGames',
-			'submitOrdersForUserInCD',
-			'listGamesWithPlayersInCD',
+			'canReplaceUsersInCD'
 		);
 		if (!in_array($permissionName, $currentPermissions))
 			throw new Exception('Unknown permission "'.$permissionName.'". Should be one of: ['.implode(', ', $currentPermissions).'].');
@@ -999,9 +997,7 @@ class adminActionsRestricted extends adminActionsForum
 		$row = $DB->sql_hash("
 		SELECT
 		       k.apiKey,
-		       IFNULL(p.getStateOfAllGames, 'No') as getStateOfAllGames,
-		       IFNULL(p.listGamesWithPlayersInCD, 'No') as listGamesWithPlayersInCD,
-		       IFNULL(p.submitOrdersForUserInCD, 'No') as submitOrdersForUserInCD
+		       IFNULL(p.canReplaceUsersInCD, 'No') as canReplaceUsersInCD
 		FROM wD_ApiKeys AS k
 		LEFT JOIN wD_ApiPermissions AS p ON (k.userID = p.userID)
 		WHERE k.userID = ".$userID."
@@ -1011,9 +1007,7 @@ class adminActionsRestricted extends adminActionsForum
 		return "
 		<div><strong>User ID</strong>: ".$userID."</div>
 		<div><strong>API key</strong>: ".$row['apiKey']."</div>
-		<div><strong>getStateOfAllGames</strong>: ".$row['getStateOfAllGames']."</div>
-		<div><strong>listGamesWithPlayersInCD</strong>: ".$row['listGamesWithPlayersInCD']."</div>
-		<div><strong>submitOrdersForUserInCD</strong>: ".$row['submitOrdersForUserInCD']."</div>
+		<div><strong>canReplaceUsersInCD</strong>: ".$row['canReplaceUsersInCD']."</div>
 		";
 	}
 	public function updateVariantInfo($params) {

@@ -1147,7 +1147,7 @@ select option {
 }
 
 /* The Close Button */
-.close1, .close2, .close3, .close4, .close5, .close6 {
+.close1, .close2, .close3, .close4, .close5, .close6, .close9 {
   color: #aaaaaa;
   float: right;
   font-size: 28px;
@@ -1155,7 +1155,8 @@ select option {
 }
 
 .close1:hover, .close1:focus, .close2:hover, .close2:focus, .close3:hover, .close3:focus,
-.close4:hover, .close4:focus, .close5:hover, .close5:focus, .close6:hover, .close6:focus {
+.close4:hover, .close4:focus, .close5:hover, .close5:focus, .close6:hover, .close6:focus,
+.close9:hover, .close9:focus{
   color: #000;
   text-decoration: none;
   cursor: pointer;
