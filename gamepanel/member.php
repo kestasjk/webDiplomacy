@@ -483,14 +483,14 @@ class panelMember extends Member
 	 */
 	function memberFinalized()
 	{
-		if( $this->status!='Playing' ) return '';
+		if (!in_array($this->status, array('Playing', 'Left'))) return '';
 
 		return '<span class="member'.$this->id.'StatusIcon">'.$this->orderStatus->icon().'</span>';
 	}
 
 	function memberFinalizedAnon()
 	{
-		if( $this->status!='Playing' ) return '';
+		if (!in_array($this->status, array('Playing', 'Left'))) return '';
 
 		return '<span class="member'.$this->id.'StatusIcon">'.$this->orderStatus->iconAnon().'</span>';
 	}

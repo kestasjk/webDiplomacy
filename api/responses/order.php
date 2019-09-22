@@ -1,8 +1,8 @@
 <?php
 /*
-    Copyright (C) 2004-2010 Kestas J. Kuliukas / Timothy Jones
+    Copyright (C) 2004-2019 Kestas J. Kuliukas, Philip Paquette
 
-	This file is part of webDiplomacy.
+    This file is part of webDiplomacy.
 
     webDiplomacy is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published by
@@ -16,15 +16,16 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
- */
-namespace webdiplomacy_api;
+*/
 
+namespace API;
 defined('IN_CODE') or die('This script can not be run by itself.');
 
+require_once('api/responses/unit.php');
 
 /**
  * Order JSON response
- * @package webdiplomacy_api
+ * @package API
  */
 class Order {
 
@@ -41,7 +42,7 @@ class Order {
     public $phase;
 
     /**
-     * The country ID issung the order
+     * The country ID issuing the order
      * @var int
      */
     public $countryID;
@@ -95,23 +96,8 @@ class Order {
      */
     public $dislodged;
 
-    function toJson()
-	{
-		return json_encode($this);
-	}
-
-	/**
-	 * Get unit ordered by this order, if available.
-	 */
-	function getOrderedUnit() {
-		if ($this->type == 'Build Army' || $this->type == 'Build Fleet')
-			return null;
-		$retreating = in_array($this->type, array('Retreat', 'Disband')) ? 'Yes' : 'No';
-		return new Unit($this->unitType, $this->terrID, $this->countryID, $retreating);
-	}
-
-	/**
-	 * Initialize a order (move) object
+    /**
+     * Initialize a order (move) object
      * @param int $turn - The turn where the order/move was issued.
      * @param string $phase - The phase within the turn
      * @param int $countryID - The country ID owning the unit
@@ -123,9 +109,8 @@ class Order {
      * @param string $viaConvoy - Whether the units wants to move via convoy
      * @param string $success - Whether the move/order succeeded
      * @param string $dislodged - Whether the unit has been dislodged
-	 */
-	function __construct($turn, $phase, $countryID, $terrID, $unitType, $type, $toTerrID, $fromTerrID, $viaConvoy, $success, $dislodged)
-	{
+     */
+    function __construct($turn, $phase, $countryID, $terrID, $unitType, $type, $toTerrID, $fromTerrID, $viaConvoy, $success, $dislodged) {
         $this->turn = intval($turn);
         $this->phase = strval($phase);
         $this->countryID = intval($countryID);
@@ -137,6 +122,19 @@ class Order {
         $this->viaConvoy = strval($viaConvoy);
         $this->success = strval($success);
         $this->dislodged = strval($dislodged);
-	}
+    }
 
+    /**
+     * Get the unit ordered by this order, if available.
+     */
+    function getOrderedUnit() {
+        if ($this->type == 'Build Army' || $this->type == 'Build Fleet') { return null; }
+        $retreating = in_array($this->type, array('Retreat', 'Disband')) ? 'Yes' : 'No';
+        return new Unit($this->unitType, $this->terrID, $this->countryID, $retreating);
+    }
+
+    /**
+     * Encodes this object in JSON
+     */
+    function toJson() { return json_encode($this); }
 }

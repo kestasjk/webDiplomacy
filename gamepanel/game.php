@@ -264,6 +264,15 @@ class panelGame extends Game
 
 		if($this->playerTypes=='MemberVsBots')
 			$alternatives[]=l_t('Bot Game');
+
+		if ($this->allowBotCDOrdering == 'Yes'
+			&& $this->missingPlayerPolicy == 'Normal'
+			&& in_array($this->variantID, Config::$apiConfig['variantIDs'])
+			&& ($this->pressType == 'NoPress' || !Config::$apiConfig['noPressOnly'])
+			&& (empty(Config::$apiConfig['restrictToGameIDs']) || in_array($this->id, Config::$apiConfig['restrictToGameIDs']))
+		) {
+			$alternatives[]=l_t('Allow Bot CD Ordering');
+		}
 		
 		if( $this->anon=='Yes' )
 			$alternatives[]=l_t('Anonymous players');

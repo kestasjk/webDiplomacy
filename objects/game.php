@@ -241,6 +241,13 @@ class Game
 	public $playerTypes;
 
 	/**
+	 * Are bots allowed to replace users in CD?
+	 * The game must have a missingPlayerPolicy of Normal, be on a map that the bot supports, and not be part of a tournament
+	 * Otherwise, this setting is ignored
+	 */
+	public $allowBotCDOrdering;
+
+	/**
 	 * @param int/array $gameData The game ID of the game to load, or the array of its database row
 	 * @param string[optional] $lockMode The database locking phase to use; no locking by default
 	 */
@@ -442,7 +449,8 @@ class Game
 			g.drawType,
 			g.minimumReliabilityRating,
 			g.excusedMissedTurns,
-			g.playerTypes
+			g.playerTypes,
+       		g.allowBotCDOrdering
 			FROM wD_Games g
 			WHERE g.id=".$this->id.' '.$this->lockMode);
 

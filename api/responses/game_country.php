@@ -1,8 +1,8 @@
 <?php
 /*
-    Copyright (C) 2004-2010 Kestas J. Kuliukas / Timothy Jones
+    Copyright (C) 2004-2019 Kestas J. Kuliukas, Philip Paquette
 
-	This file is part of webDiplomacy.
+    This file is part of webDiplomacy.
 
     webDiplomacy is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published by
@@ -16,30 +16,31 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
- */
-namespace webdiplomacy_api;
+*/
 
+namespace API;
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 /**
- * Game country, defined by a game ID and a country ID.
- * @package webdiplomacy_api
+ * Game country, defined as a tuple of (gameID, countryID)
+ * @package API
  */
 class GameCountry {
-	public $gameID;
-	public $countryID;
+    public $gameID;
+    public $countryID;
 
-	function toJson() { return json_encode($this); }
+    /**
+     * Initialize the tuple (gameID, countryID)
+     * @param int $gameID - Game ID
+     * @param int $countryID - Country ID
+     */
+    function __construct($gameID, $countryID) {
+        $this->gameID = intval($gameID);
+        $this->countryID = intval($countryID);
+    }
 
-	/**
-	 * Initialize a unit of a power in civil disorder
-	 * @param int $gameID - Game ID
-	 * @param int $countryID - Country ID
-	 */
-	function __construct($gameID, $countryID)
-	{
-		$this->gameID = intval($gameID);
-		$this->countryID = intval($countryID);
-	}
+    /**
+     * Encodes this object in JSON
+     */
+    function toJson() { return json_encode($this); }
 }
-?>

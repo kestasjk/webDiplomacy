@@ -1,8 +1,8 @@
 <?php
 /*
-    Copyright (C) 2004-2010 Kestas J. Kuliukas / Timothy Jones
+    Copyright (C) 2004-2019 Kestas J. Kuliukas, Philip Paquette
 
-	This file is part of webDiplomacy.
+    This file is part of webDiplomacy.
 
     webDiplomacy is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published by
@@ -16,14 +16,14 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
- */
-namespace webdiplomacy_api;
+*/
+
+namespace API;
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-
 /**
- * Territory JSON response
- * @package webdiplomacy_api
+ * Territory JSON response - Tuple of (terrID, countryID)
+ * @package API
  */
 class Territory {
 
@@ -39,21 +39,18 @@ class Territory {
      */
     public $countryID;
 
-    function toJson()
-	{
-		return json_encode($this);
-	}
-
-	/**
-	 * Initialize a unit object
-     * @param string $unitType - The unit type
+    /**
+     * Initialize a territory object - Tuple of (terrID, countryID)
      * @param int $terrID - The territory ID
      * @param int $countryID - The country ID
-	 */
-	function __construct($terrID, $countryID)
-	{
-	    $this->terrID = intval($terrID);
-	    $this->countryID = intval($countryID);
-	}
+     */
+    function __construct($terrID, $countryID) {
+        $this->terrID = intval($terrID);
+        $this->countryID = intval($countryID);
+    }
 
+    /**
+     * Encodes this object in JSON
+     */
+    function toJson() { return json_encode($this); }
 }
