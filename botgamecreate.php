@@ -146,7 +146,7 @@ print '<div class="content-bare content-board-header content-title-header">
 <div class="content content-follow-on">
 	<p><a href="gamecreate.php">Play A Game Against Humans</a></p>
 	<div class = "gameCreateShow">
-	<p>All Games against bots are unranked, with 3 day phases and 4 excused missed turns. However, anytime you ready up your orders, the game will immediately move to the next phase.</p>
+	<p>All games against bots are unranked, with 3 day phases and 4 excused missed turns. However, anytime you ready up your orders, the game will immediately move to the next phase.</p>
 		<form method="post">
 			<p>
 				<strong>Game Name:</strong></br>
