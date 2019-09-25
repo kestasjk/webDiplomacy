@@ -109,14 +109,18 @@ function adminStatusList($name, $query)
 	}
 }
 
-if( $User->type['Admin'] ) {
+if( $User->type['Admin'] ) 
+{
 	// Get the order logs used to validate whether stories about orders being swapped around
-	if( isset($_REQUEST['viewOrderLogGameID']) && isset($_REQUEST['viewOrderLogCountryID']) ) {
+	if( isset($_REQUEST['viewOrderLogGameID']) && isset($_REQUEST['viewOrderLogCountryID']) ) 
+	{
 		$viewOrderLogGameID=(int)$_REQUEST['viewOrderLogGameID'];
 		$viewOrderLogCountryID=(int)$_REQUEST['viewOrderLogCountryID'];
 
 		$orderlogDirectory = Config::orderlogDirectory();
-		if ( false === $orderlogDirectory ) {
+
+		if ( false === $orderlogDirectory ) 
+		{
 			print '<p class="notice">'.l_t('Order logging not enabled; check config.php').'</p>';
 		}
 		else
@@ -125,15 +129,20 @@ if( $User->type['Admin'] ) {
 
 			$logfile = libCache::dirID($orderlogDirectory, $viewOrderLogGameID, true).'/'.$viewOrderLogCountryID.'.txt';
 
-			if( ! file_exists($logfile) ) {
+			if( ! file_exists($logfile) ) 
+			{
 				print '<p class="notice">'.l_t('No log file found for this gameID/countryID.').'</p>';
-			} else {
+			} 
+			else 
+			{
 				print '<pre>'.file_get_contents($logfile).'</pre>';
 			}
 
 			unset($logfile);
 		}
-	} else {
+	} 
+	else 
+	{
 		$viewOrderLogGameID='';
 		$viewOrderLogCountryID='';
 	}
@@ -165,25 +174,26 @@ adminStatusList(l_t('Paused games'),"SELECT CONCAT('<a href=\"board.php?gameID='
 //require_once('gamemaster/game.php');
 //adminStatusTable('Backed up games',processGame::backedUpGames());
 
-adminStatusList(l_t('Mods'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
-	FROM wD_Users WHERE type LIKE '%Moderator%'");
-adminStatusList(l_t('Admins'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
-	FROM wD_Users WHERE type LIKE '%Admin%'");
+adminStatusList(l_t('Mods'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>') FROM wD_Users WHERE type LIKE '%Moderator%'");
+adminStatusList(l_t('Admins'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>') FROM wD_Users WHERE type LIKE '%Admin%'");
 adminStatusList(l_t('Temp Banned - By Mod'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 FROM wD_Users WHERE tempBanReason is not null and tempBanReason <> 'System' and tempBan > ".time());
+
 adminStatusList(l_t('Temp Banned - By System'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 FROM wD_Users WHERE (tempBanReason is null or tempBanReason = 'System') and tempBan > ".time());
+
 adminStatusList(l_t('Donors'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 	FROM wD_Users WHERE type LIKE '%Donator%'".(isset($_REQUEST['full'])?'':"LIMIT 50"));
+
 adminStatusList(l_t('Banned users'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 FROM wD_Users WHERE type LIKE '%Banned%'".(isset($_REQUEST['full'])?'':"LIMIT 50"));
 
 list($notice) = $DB->sql_row("SELECT message FROM wD_Config WHERE name = 'Notice'");
 list($panic) = $DB->sql_row("SELECT message FROM wD_Config WHERE name = 'Panic'");
 list($maintenance) = $DB->sql_row("SELECT message FROM wD_Config WHERE name = 'Maintenance'");
+
 print '<br/><br/>';
 print '<b>Site-Wide Notice: '.$notice.'</b><br/><br/>';
 print '<b>Panic Message: '.$panic.'</b><br/><br/>';
 print '<b>Maintenance Message: '.$maintenance.'</b><br/><br/>';
-
 ?>

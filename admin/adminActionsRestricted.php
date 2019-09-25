@@ -54,21 +54,6 @@ class adminActionsRestricted extends adminActionsForum
 				'description' => 'Clears order log text files.',
 				'params' => array(),
 			),
-			'clearAccessLogs' => array(
-				'name' => 'Clear access logs',
-				'description' => 'Clears access log table of logs older than 30 days.</br>
-					<em>WARNING:</em> Doing this will make catching cheaters difficult or impossible.
-					If possible, please take a backup if possible before clearing this table.',
-				'params' => array(),
-			),
-			'clearAdminLogs' => array(
-				'name' => 'Clear admin logs',
-				'description' => 'Clears admin log table.</br>
-					<em>WARNING:</em> Doing this removes the record of Moderator actions from the site.
-					This makes referencing past actions impossible, and damages moderator ability to function.
-					If possible, please take a backup if possible before clearing this table.',
-				'params' => array(),
-			),
 			'giveModerator' => array(
 				'name' => 'Give moderator status',
 				'description' => 'Gives moderator status to the specified user ID.',
@@ -218,12 +203,6 @@ class adminActionsRestricted extends adminActionsForum
 					<em>Only a dev</em> should run this function after they ensure the issue has been fixed.',
 				'params' => array(),
 			),
-			'banIP' => array(
-				'name' => 'Ban an IP',
-				'description' => 'Bans a certain IP address.<br />
-					Note: Doesn\'t work.',
-				'params' => array('IP'=>'IP address (xxx.xxx.xxx.xxx)'),
-			),
 			'unCrashGames' => array(
 				'name' => 'Uncrash games',
 				'description' => 'Uncrashes all crashed games except the games specified (if any).<br />
@@ -259,13 +238,15 @@ class adminActionsRestricted extends adminActionsForum
 
 		adminActions::$actions = array_merge(adminActions::$actions, $restrictedActions);
 	}
-	public function wipeVariants(array $params) {
+	public function wipeVariants(array $params) 
+	{
 
 		foreach(Config::$variants as $variantID=>$variantName)
 			libVariant::wipe($variantName);
 
 		return l_t('All variants wiped.');
 	}
+
 	public function backupGameConfirm(array $params)
 	{
 		global $DB;
@@ -276,6 +257,7 @@ class adminActionsRestricted extends adminActionsForum
 
 		return l_t('Are you sure you want to backup this game?');
 	}
+
 	public function backupGame(array $params)
 	{
 		global $DB;
@@ -290,6 +272,7 @@ class adminActionsRestricted extends adminActionsForum
 
 		return l_t('Game backed up');
 	}
+
 	public function restoreGameConfirm(array $params)
 	{
 		global $DB;
@@ -300,6 +283,7 @@ class adminActionsRestricted extends adminActionsForum
 
 		return l_t('Are you sure you want to restore this game?');
 	}
+
 	public function restoreGame(array $params)
 	{
 		global $DB;
@@ -314,10 +298,12 @@ class adminActionsRestricted extends adminActionsForum
 
 		return l_t('Game restored');
 	}
+
 	public function wipeBackupsConfirm(array $params)
 	{
 		return l_t('Are you sure you want to wipe backups?');
 	}
+
 	public function wipeBackups(array $params)
 	{
 		global $DB;
@@ -346,35 +332,19 @@ class adminActionsRestricted extends adminActionsForum
 		 * 		phaseMinutes*60 >= downtime - Add
 		 * 			downtime>phaseMinutes*60Add time up to phaseMinutes*60
 		 */
-		/*if($timeHours==0)
-		{
-			$DB->sql_put('UPDATE wD_Games SET processTime = processTime+phaseMinutes*60
-				WHERE processStatus="Not-processing" AND NOT phase="Finished" AND
-					(
-					( phase="Pre-game" AND processTime-'.time().'<=phaseMinutes*60 )
-					OR (NOT phase="Pre-game" AND '.round($timeHours*60*60).'<=phaseMinutes*60 )
-					)');
 
-			$DB->sql_put('UPDATE wD_Games SET processStatus="Paused", processTime=NULL,
-					pausedTimeRemaining=IF((processTime-'.time().')<=0, phaseMinutes*60, processTime-'.time().')
-				WHERE processStatus="Not-processing" AND NOT phase="Finished" AND
-					NOT phase="Pre-game" AND '.round($timeHours*60*60).'>phaseMinutes*60 )');
-		}
-		else
-		{*/
-			$DB->sql_put('UPDATE wD_Games SET processTime = processTime+'.round($timeHours*60*60).'
-				WHERE processStatus="Not-processing" AND NOT phase="Finished" AND
-					(
-					( phase="Pre-game" AND processTime<=phaseMinutes*60+'.time().' )
-					OR (NOT phase="Pre-game" AND '.round($timeHours*60*60).'<=phaseMinutes*60 )
-					)');
+		$DB->sql_put('UPDATE wD_Games SET processTime = processTime+'.round($timeHours*60*60).'
+			WHERE processStatus="Not-processing" AND NOT phase="Finished" AND
+				(
+				( phase="Pre-game" AND processTime<=phaseMinutes*60+'.time().' )
+				OR (NOT phase="Pre-game" AND '.round($timeHours*60*60).'<=phaseMinutes*60 )
+				)');
 
-			$DB->sql_put('UPDATE wD_Games SET processStatus="Paused", processTime=NULL,
-					pauseTimeRemaining=IF((processTime-'.time().')<=0, phaseMinutes*60, processTime-'.time().')
-				WHERE processStatus="Not-processing" AND NOT phase="Finished" AND
-					NOT phase="Pre-game" AND '.round($timeHours*60*60).'>phaseMinutes*60');
-			$DB->sql_put("COMMIT");
-		//}
+		$DB->sql_put('UPDATE wD_Games SET processStatus="Paused", processTime=NULL,
+				pauseTimeRemaining=IF((processTime-'.time().')<=0, phaseMinutes*60, processTime-'.time().')
+			WHERE processStatus="Not-processing" AND NOT phase="Finished" AND
+				NOT phase="Pre-game" AND '.round($timeHours*60*60).'>phaseMinutes*60');
+		$DB->sql_put("COMMIT");
 
 		if($timeHours==0)
 			return l_t('All game process times have been set to their phase time');
@@ -451,6 +421,7 @@ class adminActionsRestricted extends adminActionsForum
 
 		$logs = array();
 		$exclude = array('.','..','index.html');
+
 		while ( false !== ( $file = readdir($handle) ) )
 		{
 			if( in_array($file, $exclude) ) continue;
@@ -484,30 +455,23 @@ class adminActionsRestricted extends adminActionsForum
 	}
 	public function clearAccessLogs(array $params)
 	{
-		global $DB;
+		// global $DB;
+		// list($i) = $DB->sql_row("SELECT COUNT(userID) FROM wD_AccessLog WHERE DATEDIFF(CURRENT_DATE, lastRequest) > 30");
+		// $DB->sql_put("DELETE FROM wD_AccessLog WHERE DATEDIFF(CURRENT_DATE, lastRequest) > 30");
+		// $DB->sql_put("OPTIMIZE TABLE wD_AccessLog");
 
-		list($i) = $DB->sql_row("SELECT COUNT(userID) FROM wD_AccessLog WHERE DATEDIFF(CURRENT_DATE, lastRequest) > 30");
-
-		$DB->sql_put("DELETE FROM wD_AccessLog WHERE DATEDIFF(CURRENT_DATE, lastRequest) > 30");
-
-		$DB->sql_put("OPTIMIZE TABLE wD_AccessLog");
-
-		return l_t('Old access logs cleared; %s records deleted.',$i);
+		return l_t('Disabled, do NOT clear access logs for ANY reason.');
 	}
 
 	public function clearAdminLogs(array $params)
 	{
-		global $DB;
+		// global $DB;
+		// $DB->sql_put("BEGIN");
+		// list($i) = $DB->sql_row("SELECT COUNT(userID) FROM wD_AdminLog");
+		// $DB->sql_put("DELETE FROM wD_AdminLog");
+		// $DB->sql_put("COMMIT");
 
-		$DB->sql_put("BEGIN");
-
-		list($i) = $DB->sql_row("SELECT COUNT(userID) FROM wD_AdminLog");
-
-		$DB->sql_put("DELETE FROM wD_AdminLog");
-
-		$DB->sql_put("COMMIT");
-
-		return l_t('The admin log was cleared; %s records deleted.',$i);
+		return l_t('Disabled, do not clear admin log.');
 	}
 
 	public function giveModerator(array $params)
@@ -521,9 +485,7 @@ class adminActionsRestricted extends adminActionsForum
 		if( $modUser->type['Moderator'] )
 			throw new Exception(l_t("This user is already a moderator"));
 
-		$DB->sql_put(
-			"UPDATE wD_Users SET type = CONCAT_WS(',',type,'Moderator') WHERE id = ".$userID
-		);
+		$DB->sql_put("UPDATE wD_Users SET type = CONCAT_WS(',',type,'Moderator') WHERE id = ".$userID);
 
 		return l_t('This user was given moderator status.');
 	}
@@ -539,9 +501,7 @@ class adminActionsRestricted extends adminActionsForum
 		if( ! $modUser->type['Moderator'] )
 			throw new Exception(l_t("This user isn't a moderator"));
 
-		$DB->sql_put(
-			"UPDATE wD_Users SET type = REPLACE(type,'Moderator','') WHERE id = ".$userID
-		);
+		$DB->sql_put("UPDATE wD_Users SET type = REPLACE(type,'Moderator','') WHERE id = ".$userID);
 
 		return l_t('This user had their moderator status taken.');
 	}
@@ -557,9 +517,7 @@ class adminActionsRestricted extends adminActionsForum
 		if( $modUser->type['ForumModerator'] )
 			throw new Exception(l_t("This user is already a moderator"));
 
-		$DB->sql_put(
-			"UPDATE wD_Users SET type = CONCAT_WS(',',type,'ForumModerator') WHERE id = ".$userID
-		);
+		$DB->sql_put("UPDATE wD_Users SET type = CONCAT_WS(',',type,'ForumModerator') WHERE id = ".$userID);
 
 		return l_t('This user was given forum moderator status.');
 	}
@@ -575,9 +533,7 @@ class adminActionsRestricted extends adminActionsForum
 		if( ! $modUser->type['ForumModerator'] )
 			throw new Exception(l_t("This user isn't a forum moderator"));
 
-		$DB->sql_put(
-			"UPDATE wD_Users SET type = REPLACE(type,'ForumModerator','') WHERE id = ".$userID
-		);
+		$DB->sql_put("UPDATE wD_Users SET type = REPLACE(type,'ForumModerator','') WHERE id = ".$userID);
 
 		return l_t('This user had their forum moderator status taken.');
 	}
@@ -593,9 +549,7 @@ class adminActionsRestricted extends adminActionsForum
 		if( $botUser->type['Bot'] )
 			throw new Exception(l_t("This user is already a bot"));
 
-		$DB->sql_put(
-			"UPDATE wD_Users SET type = CONCAT_WS(',',type,'Bot') WHERE id = ".$userID
-		);
+		$DB->sql_put("UPDATE wD_Users SET type = CONCAT_WS(',',type,'Bot') WHERE id = ".$userID);
 
 		return l_t('This user was given bot status.');
 	}
@@ -611,9 +565,7 @@ class adminActionsRestricted extends adminActionsForum
 		if( ! $botUser->type['Bot'] )
 			throw new Exception(l_t("This user isn't a bot"));
 
-		$DB->sql_put(
-			"UPDATE wD_Users SET type = REPLACE(type,'Bot','') WHERE id = ".$userID
-		);
+		$DB->sql_put("UPDATE wD_Users SET type = REPLACE(type,'Bot','') WHERE id = ".$userID);
 
 		return l_t('This user had their bot status taken.');
 	}
@@ -691,7 +643,6 @@ class adminActionsRestricted extends adminActionsForum
 
 		// - Calculate the turn being moved back to
 		$lastTurn = ( ( $Game->phase == 'Diplomacy' ) ? $Game->turn-1 : $Game->turn );
-
 
 		// Begin moving the archives back
 		{
@@ -775,12 +726,14 @@ class adminActionsRestricted extends adminActionsForum
 
 		return l_t('The unit destroy indexes were recreated for map ID #%s ; there were %s entries before and there are currently %s entries.', $mapID, $entriesBefore, $entriesAfter);
 	}
+
 	public function recalculateRR(array $params)
 	{
 		require_once(l_r('gamemaster/gamemaster.php'));
 		libGameMaster::updateReliabilityRating(true);
 		return l_t("Reliability Ratings have been recalculated");
 	}
+
 	private function makeDonatorType(array $params, $type='') 
 	{
 		global $DB;
@@ -839,26 +792,27 @@ class adminActionsRestricted extends adminActionsForum
 	{
 		return $this->makeDonatorType($params);
 	}
+
 	public function makeDonatorPlatinum(array $params)
 	{
 		return $this->makeDonatorType($params,'Platinum');
 	}
+
 	public function makeDonatorGold(array $params)
 	{
 		return $this->makeDonatorType($params,'Gold');
 	}
+
 	public function makeDonatorSilver(array $params)
 	{
 		return $this->makeDonatorType($params,'Silver');
 	}
+
 	public function makeDonatorBronze(array $params)
 	{
 		return $this->makeDonatorType($params,'Bronze');
 	}
-	public function banIP(array $params)
-	{
-		User::banIP(ip2long($ip));
-	}
+
 	public function resetLastProcessTime(array $params)
 	{
 		global $Misc;
@@ -868,6 +822,7 @@ class adminActionsRestricted extends adminActionsForum
 
 		return l_t('Last process time reset');
 	}
+
 	public function unCrashGames(array $params)
 	{
 		global $DB;
@@ -883,9 +838,8 @@ class adminActionsRestricted extends adminActionsForum
 		}
 		$excludeGameIDs = implode(',', $excludeGameIDs);
 
-		$tabl = $DB->sql_tabl(
-			"SELECT * FROM wD_Games WHERE processStatus = 'Crashed' ".( $excludeGameIDs ? "AND id NOT IN (".$excludeGameIDs.")" : "" )." FOR UPDATE"
-		);
+		$tabl = $DB->sql_tabl("SELECT * FROM wD_Games WHERE processStatus = 'Crashed' ".( $excludeGameIDs ? "AND id NOT IN (".$excludeGameIDs.")" : "" )." FOR UPDATE");
+
 		$count=0;
 		while($row=$DB->tabl_hash($tabl))
 		{
@@ -923,91 +877,117 @@ class adminActionsRestricted extends adminActionsForum
 			$Game->Members->send('No',l_t("This game has been uncrashed%s. Thanks for your patience.",$newTimeDetails));
 		}
 
-		/* Simpler, but doesn't accomodate live games well
-		$DB->sql_put(
-			"UPDATE wD_Games SET processStatus = 'Not-processing', processTime = ".time()." + 60*phaseMinutes
-			WHERE AND processStatus = 'Crashed' ".( $excludeGameIDs ? "AND id NOT IN (".$excludeGameIDs.")" : "" )
-		);*/
-
 		$details = l_t('All crashed games were un-crashed');
+
 		if ( $excludeGameIDs )
 			$details .= l_t(', except: %s',$excludeGameIDs);
+
 		$details .= l_t('. %s games in total.',$count);
 
 		return $details;
 	}
 
-	public function addApiKey($params) {
+	public function addApiKey($params) 
+	{
 		global $DB;
 
 		// Generating API Key
 		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 		$randomString = '';
-		for ($i = 0; $i < 80; $i++) {
+
+		for ($i = 0; $i < 80; $i++) 
+		{
 			$randomString .= $characters[rand(0, strlen($characters) - 1)];
 		}
 
 		$userID = intval($params['userID']);
 		$apiKey = strval($randomString);
 		$row = $DB->sql_hash('SELECT COUNT(userID) AS hasUserID FROM wD_ApiKeys WHERE userID = '.$userID);
+
 		if ($row['hasUserID'])
 			throw new Exception(l_t('An API key is already associated to user ID %s.', $userID));
+
 		$row = $DB->sql_hash('SELECT COUNT(apiKey) AS hasApiKey FROM wD_ApiKeys WHERE apiKey = '.$userID);
+
 		if ($row['hasApiKey'])
 			throw new Exception(l_t('This API key is already associated with a user ID.'));
+
 		$DB->sql_put('INSERT INTO wD_ApiKeys (userID, apiKey) VALUES ('.$userID.', "'.$apiKey.'")');
 		$DB->sql_put("COMMIT");
+
 		return l_t('API key %s successfully added for user ID %s.', $randomString, $userID);
 	}
-	public function deleteApiKey($params) {
+
+	public function deleteApiKey($params) 
+	{
 		global $DB;
+
 		$userID = intval($params['userID']);
+
 		$DB->sql_put('DELETE FROM wD_ApiPermissions WHERE userID = '.$userID);
 		$DB->sql_put('DELETE FROM wD_ApiKeys WHERE userID = '.$userID);
 		$DB->sql_put("COMMIT");
+
 		return l_t('API key(s) removed for user ID %s.', $userID);
 	}
-	public function setApiPermission($params) {
+
+	public function setApiPermission($params) 
+	{
 		global $DB;
+
 		$userID = intval($params['userID']);
 		$permissionName = strval($params['permissionName']);
 		$permissionValue = strval($params['permissionValue']);
+
 		$currentPermissions = array(
 			'getStateOfAllGames',
 			'submitOrdersForUserInCD',
 			'listGamesWithPlayersInCD',
 		);
+
 		if (!in_array($permissionName, $currentPermissions))
 			throw new Exception('Unknown permission "'.$permissionName.'". Should be one of: ['.implode(', ', $currentPermissions).'].');
+
 		if (!in_array($permissionValue, array('Yes', 'No')))
 			throw new Exception('Invalid permission value "'.$permissionValue.'". Should be either "Yes" or "No".');
+
 		$row = $DB->sql_hash('SELECT COUNT(userID) AS hasUserID FROM wD_ApiKeys WHERE userID = '.$userID);
+
 		if (!$row['hasUserID'])
 			throw new Exception(l_t('No API key for user %s. You should create an API key for this user before setting permissions for him.', $userID));
+
 		$row = $DB->sql_hash('SELECT COUNT(userID) AS hasPermissionsEntry FROM wD_ApiPermissions WHERE userID = '.$userID);
-		if ($row['hasPermissionsEntry']) {
+
+		if ($row['hasPermissionsEntry']) 
+		{
 			$DB->sql_put("UPDATE wD_ApiPermissions SET $permissionName = '$permissionValue' WHERE userID = $userID;");
-		} else {
+		} 
+
+		else 
+		{
 			$DB->sql_put("INSERT INTO wD_ApiPermissions (userID, $permissionName) VALUES ($userID, '$permissionValue');");
-		};
+		}
+
 		$DB->sql_put("COMMIT");
 		return l_t('Permissions successfully set.');
 	}
-	public function showApiKeys($params) {
+
+	public function showApiKeys($params) 
+	{
 		global $DB;
+
 		$userID = intval($params['userID']);
+
 		$row = $DB->sql_hash("
-		SELECT
-		       k.apiKey,
-		       IFNULL(p.getStateOfAllGames, 'No') as getStateOfAllGames,
-		       IFNULL(p.listGamesWithPlayersInCD, 'No') as listGamesWithPlayersInCD,
-		       IFNULL(p.submitOrdersForUserInCD, 'No') as submitOrdersForUserInCD
+		SELECT k.apiKey, IFNULL(p.getStateOfAllGames, 'No') as getStateOfAllGames, IFNULL(p.listGamesWithPlayersInCD, 'No') as listGamesWithPlayersInCD,
+		IFNULL(p.submitOrdersForUserInCD, 'No') as submitOrdersForUserInCD
 		FROM wD_ApiKeys AS k
 		LEFT JOIN wD_ApiPermissions AS p ON (k.userID = p.userID)
-		WHERE k.userID = ".$userID."
-		");
+		WHERE k.userID = ".$userID);
+
 		if (!$row)
 			return l_t('No api Key for user %s.', $userID);
+
 		return "
 		<div><strong>User ID</strong>: ".$userID."</div>
 		<div><strong>API key</strong>: ".$row['apiKey']."</div>
@@ -1016,10 +996,14 @@ class adminActionsRestricted extends adminActionsForum
 		<div><strong>submitOrdersForUserInCD</strong>: ".$row['submitOrdersForUserInCD']."</div>
 		";
 	}
-	public function updateVariantInfo($params) {
+
+	public function updateVariantInfo($params) 
+	{
 		global $DB;
+
 		$variantID = (int)$params['variantID'];
 		$variantIDs = array();
+
 		if ($variantID <> 0)
 		{
 			$variantIDs[] = $variantID;
@@ -1031,6 +1015,7 @@ class adminActionsRestricted extends adminActionsForum
 				$variantIDs[] = $id;
 			}
 		}
+
 		foreach($variantIDs as $key => $value)
 		{
 			$sql = "INSERT INTO wD_VariantInfo(variantID, mapID, supplyCenterTarget, supplyCenterCount, countryCount, name, fullName, description, author";
@@ -1044,6 +1029,7 @@ class adminActionsRestricted extends adminActionsForum
 			$author = $Variant->author;
 			$countryCount = count($Variant->countries);
 			$sql2 = "VALUES(".$value.", ".$mapID.", ".$SCTarget.", ".$SCCount.", ".$countryCount.", '".$name."', '".$fullName."', '".$description."', '".$author."'";
+			
 			$adapter = '';
 			if(isset($Variant->$adapter))
 			{
@@ -1051,6 +1037,7 @@ class adminActionsRestricted extends adminActionsForum
 				$adapter = $Variant->adapter;
 				$sql2 = $sql2.", '".$adapter."'";
 			}
+
 			$version = '';
 			if(isset($Variant->$version))
 			{
@@ -1058,6 +1045,7 @@ class adminActionsRestricted extends adminActionsForum
 				$version = $Variant->version;
 				$sql2 = $sql2.", '".$version."'";
 			}
+
 			$codeVersion = '';
 			if(isset($Variant->$codeVersion))
 			{
@@ -1065,6 +1053,7 @@ class adminActionsRestricted extends adminActionsForum
 				$codeVersion = $Variant->codeVersion;
 				$sql2 = $sql2.", '".$codeVersion."'";
 			}
+
 			$homepage = '';
 			if(isset($Variant->$homepage))
 			{
@@ -1072,10 +1061,12 @@ class adminActionsRestricted extends adminActionsForum
 				$homepage = $Variant->homepage;
 				$sql2 = $sql2.", '".$homepage."'";
 			}
+
 			$countryList = implode(",",$Variant->countries);
 			$sql2 = $sql2.", '".$countryList."')";
 			$sql .= ", countriesList) ";
 			$sql .= $sql2;
+
 			$DB->sql_put("DELETE FROM wD_VariantInfo WHERE variantID=".$value);
 			$DB->sql_put($sql);
 		}

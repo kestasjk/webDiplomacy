@@ -34,10 +34,9 @@ print '<table class= "modTools">';
 print '<th class= "modTools">Time</th>';
 print '<th class= "modTools">Action</th>';
 
-$alternate = 1;
 $tabl = $DB->sql_tabl(
 	"SELECT a.name, u.username, a.time, a.details, a.params
-		FROM wD_AdminLog a INNER JOIN wD_Users u ON ( a.userID = u.id )
+		FROM wD_AdminLog a INNER JOIN wD_Users u ON ( a.userID = u.id ) 
 		ORDER BY a.time DESC ".(isset($_REQUEST['full'])?'':"LIMIT 20"));
 
 while ( $row = $DB->tabl_hash($tabl) )
