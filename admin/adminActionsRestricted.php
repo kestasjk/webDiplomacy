@@ -89,6 +89,16 @@ class adminActionsRestricted extends adminActionsForum
 				'description' => 'Takes forum moderator status from the specified user ID.',
 				'params' => array('userID'=>'Mod User ID'),
 			),
+			'giveBot' => array(
+				'name' => 'Give bot status',
+				'description' => 'Gives bot status to the specified user ID.',
+				'params' => array('userID'=>'User ID'),
+			),
+			'takeBot' => array(
+				'name' => 'Take bot status',
+				'description' => 'Takes bot status from the specified user ID.',
+				'params' => array('userID'=>'User ID'),
+			),
 			'makeDonator' => array(
 				'name' => 'Give donator benefits',
 				'description' => 'Give donator benefits (in practical terms this just means opt-out of the distributed processing).<br />
@@ -124,6 +134,11 @@ class adminActionsRestricted extends adminActionsForum
 				'description' => 'Returns an active game to the last Diplomacy phase,
 					along with that phase\'s orders, and sets the time so that the game will be reprocessed.',
 				'params' => array('gameID'=>'Game ID'),
+			),
+			'updateDonators' => array(
+				'name' => 'Update Donators',
+				'description' => 'Will not do anything outside webdip, updates all donators to sync with Ranks on the new forum.',
+				'params' => array(),
 			),
 			'notice' => array(
 				'name' => 'Toggle site-wide notice',
@@ -234,6 +249,11 @@ class adminActionsRestricted extends adminActionsForum
 				'name' => 'API - Show API key and permissions for a user',
 				'description' => 'Display API key and permissions for a user.',
 				'params' => array('userID'=>'User ID'),
+			),
+			'updateVariantInfo' => array(
+				'name' => 'Update wD_VariantInfo',
+				'description' => 'Will add or update the info in wD_VariantInfo for a given variantID. If left blank, it will loop through all variants.',
+				'params' => array('variantID'=>'Variant ID'),
 			)
 		);
 
@@ -561,6 +581,42 @@ class adminActionsRestricted extends adminActionsForum
 
 		return l_t('This user had their forum moderator status taken.');
 	}
+	
+	public function giveBot(array $params)
+	{
+		global $DB;
+
+		$userID = (int)$params['userID'];
+
+		$botUser = new User($userID);
+
+		if( $botUser->type['Bot'] )
+			throw new Exception(l_t("This user is already a bot"));
+
+		$DB->sql_put(
+			"UPDATE wD_Users SET type = CONCAT_WS(',',type,'Bot') WHERE id = ".$userID
+		);
+
+		return l_t('This user was given bot status.');
+	}
+
+	public function takeBot(array $params)
+	{
+		global $DB;
+
+		$userID = (int)$params['userID'];
+
+		$botUser = new User($userID);
+
+		if( ! $botUser->type['Bot'] )
+			throw new Exception(l_t("This user isn't a bot"));
+
+		$DB->sql_put(
+			"UPDATE wD_Users SET type = REPLACE(type,'Bot','') WHERE id = ".$userID
+		);
+
+		return l_t('This user had their bot status taken.');
+	}
 
 	public function checkPausedGames(array $params)
 	{
@@ -733,7 +789,50 @@ class adminActionsRestricted extends adminActionsForum
 
 		$DB->sql_put("UPDATE wD_Users SET type = CONCAT_WS(',',type,'Donator".$type."') WHERE id = ".$userID);
 
+		// If we're using the new forum then add a rank to the user. 
+		if( isset(Config::$customForumURL) && ($type == 'Gold' || $type == 'Silver' || $type == 'Bronze') ) 
+		{
+			// Make sure the user has a new forum profile before trying an insert into the custom tables.
+			list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$userID);
+			if ($newForumId > 0)
+			{
+				$rank = 12;
+				switch ($type) 
+				{
+					case 'Gold':
+						$rank = 12;
+						break;
+					case 'Silver':
+						$rank = 13;
+						break;
+					case 'Bronze':
+						$rank = 14;
+						break;
+				}
+				
+				$DB->sql_put("UPDATE phpbb_users SET user_rank = ".$rank." WHERE user_rank = 0 and webdip_user_id = ".$userID);
+			}
+		}
+
 		return l_t('User ID %s given donator status.',$userID);
+	}
+
+	public function updateDonators(array $params)
+	{
+		global $DB;
+		
+		if( isset(Config::$customForumURL) ) 
+		{
+			$DB->sql_put("UPDATE phpbb_users p INNER JOIN wD_Users u ON u.id = p.webdip_user_id SET p.user_rank = 12 WHERE p.user_rank in (0,13,14) and u.type like '%DonatorGold%'");
+			$DB->sql_put("UPDATE phpbb_users p INNER JOIN wD_Users u ON u.id = p.webdip_user_id SET p.user_rank = 13 WHERE p.user_rank in (0,14) and u.type like '%DonatorSilver%'");
+			$DB->sql_put("UPDATE phpbb_users p INNER JOIN wD_Users u ON u.id = p.webdip_user_id SET p.user_rank = 14 WHERE p.user_rank in (0) and u.type like '%DonatorBronze%'");
+
+			return l_t('Donator ranks synced with User tables');
+		}
+		else
+		{
+			return 'This tool is not for use outside webdip';
+		}
 	}
 
 	public function makeDonator(array $params)
@@ -916,6 +1015,71 @@ class adminActionsRestricted extends adminActionsForum
 		<div><strong>listGamesWithPlayersInCD</strong>: ".$row['listGamesWithPlayersInCD']."</div>
 		<div><strong>submitOrdersForUserInCD</strong>: ".$row['submitOrdersForUserInCD']."</div>
 		";
+	}
+	public function updateVariantInfo($params) {
+		global $DB;
+		$variantID = (int)$params['variantID'];
+		$variantIDs = array();
+		if ($variantID <> 0)
+		{
+			$variantIDs[] = $variantID;
+		}
+		else 
+		{
+			foreach(Config::$variants as $id => $name)
+			{
+				$variantIDs[] = $id;
+			}
+		}
+		foreach($variantIDs as $key => $value)
+		{
+			$sql = "INSERT INTO wD_VariantInfo(variantID, mapID, supplyCenterTarget, supplyCenterCount, countryCount, name, fullName, description, author";
+			$Variant=libVariant::loadFromVariantID($value);
+			$mapID = $Variant->mapID;
+			$SCCount = $Variant->supplyCenterCount;
+			$SCTarget = $Variant->supplyCenterTarget;
+			$name = $Variant->name;
+			$fullName = $Variant->fullName;
+			$description = $Variant->description;
+			$author = $Variant->author;
+			$countryCount = count($Variant->countries);
+			$sql2 = "VALUES(".$value.", ".$mapID.", ".$SCTarget.", ".$SCCount.", ".$countryCount.", '".$name."', '".$fullName."', '".$description."', '".$author."'";
+			$adapter = '';
+			if(isset($Variant->$adapter))
+			{
+				$sql .= ", adapter";
+				$adapter = $Variant->adapter;
+				$sql2 = $sql2.", '".$adapter."'";
+			}
+			$version = '';
+			if(isset($Variant->$version))
+			{
+				$sql .= ", version";
+				$version = $Variant->version;
+				$sql2 = $sql2.", '".$version."'";
+			}
+			$codeVersion = '';
+			if(isset($Variant->$codeVersion))
+			{
+				$sql .= ", codeVersion";
+				$codeVersion = $Variant->codeVersion;
+				$sql2 = $sql2.", '".$codeVersion."'";
+			}
+			$homepage = '';
+			if(isset($Variant->$homepage))
+			{
+				$sql .= ", homepage";
+				$homepage = $Variant->homepage;
+				$sql2 = $sql2.", '".$homepage."'";
+			}
+			$countryList = implode(",",$Variant->countries);
+			$sql2 = $sql2.", '".$countryList."')";
+			$sql .= ", countriesList) ";
+			$sql .= $sql2;
+			$DB->sql_put("DELETE FROM wD_VariantInfo WHERE variantID=".$value);
+			$DB->sql_put($sql);
+		}
+		return l_t('Variant Info Updated');
 	}
 }
 

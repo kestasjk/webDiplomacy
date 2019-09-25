@@ -60,7 +60,13 @@ input[type="text"], input[type="password"], textarea, select {
 	background-color: #757b81;
 	border: 1px solid #ccc;
 	color:rgba(255, 255, 255, 0.8);
+	cursor: default;
 }
+
+input:read-only.toggle-notice {
+	background-color: transparent !important;
+}
+
 input:read-only {
   background-color:#999 !important;
 }
@@ -174,7 +180,7 @@ div.clear {
 	border-bottom: 0;
 }
 h1, h2, h3, h4 {
-	color: #009902;
+	color: #79d58d;
 	margin-bottom:5px;
 }
 h3 {
@@ -559,13 +565,13 @@ a.light {
 }
 
 #navSubMenu div#nav-drop {
+	position: absolute;
+	width: auto;
 	visibility: hidden;
 	display: flex;
 	flex-direction: column;
-	position: absolute;
 	overflow: auto;
 	margin-top: 25px;
-	width: auto;
 	z-index: 999;
 	background-color: #0b6a0b;
 	border-radius: 7px;
@@ -589,6 +595,15 @@ a.light {
         margin-top: 10px !important;
 	}
 }
+
+@media not all and (min-resolution:.001dpcm) { 
+    @media {
+        #navSubMenu div#nav-drop {
+       		transform: translateX(-22.5%);
+		}	
+    }
+}
+
 
 #header-goto a:hover {
 	background-color: rgba(255, 255, 255, 0.75);
@@ -835,7 +850,7 @@ div.gamelistings-tabs a:hover, div.gamelistings-tabs a.current:hover {
 	background-color:#555;
 }
 .replyalternate2 {
-	background-color:#5555558a;
+	background-color:#454545;
 }
 .message-head {
 	font-size:13px;
@@ -2240,7 +2255,7 @@ fieldset dl:hover dt label, .button, .button:hover, .icon, .icon:hover, .button 
 	border-color: rgba(175, 255, 175, 0.5);
 }
 
-select.inputbox option {
+select.inputbox option, p.post-notice {
 	background-color: transparent;
 }
 
@@ -2327,6 +2342,9 @@ input[id^="FinalizeButton"]{
 	}
 	#navSubMenu {
 		margin-top: 5px;
+	}
+	#navSubMenu div#nav-drop {
+       	transform: translateX(-22.5%);
 	}
 	#seperator{
 		margin: 0 -10px;
@@ -2433,4 +2451,14 @@ input[id^="FinalizeButton"]{
 	.profileUsername {
 		text-align: center !important;
 	}
+	.modal-content {
+		background-color: #5e6368;
+		color: rgba(255, 255, 255, 0.8);
+		margin: auto;
+		padding: 10px;
+		border: 1px solid #888;
+		width: 90%;
+		max-width: 760px;
+		font-size: 12px !important
+	  }
 }

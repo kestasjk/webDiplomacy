@@ -55,18 +55,22 @@ class UnorderedCountries {
         // Finds powers (gameID, countryID) that
         // 1) Are played by the user linked to the API key making the request (m.userID = $userID)
         // 2) On a map (and a gameID) that is supported by the API
-        // 3) Where orders have not yet been submitted (orderStatus is NULL or '')
+        // 3) Where orders have not yet been submitted (orderStatus is NULL or '') and player is playing (not defeated)
         // 4) Only if the game is still active (i.e. not pre-game, finished, paused, etc.)
+        // 5) Only if the turn is < 100 (to avoid any games going past W1950A)
 
 		$countryTabl = $DB->sql_tabl("SELECT m.gameID, m.countryID
                                       FROM wD_Members AS m
                                       LEFT JOIN wD_Games AS g ON ( g.id = m.gameID )
                                       WHERE (m.orderStatus IS NULL OR m.orderStatus = '')
+                                            AND m.status = 'Playing'
                                             AND m.userID = $userID
                                             AND g.variantID in ($apiVariants)
                                             " . $filterGameClause . "
                                             AND g.processStatus = 'Not-processing'
-                                            AND g.phase IN ('Diplomacy', 'Retreats', 'Builds');");
+                                            AND g.phase IN ('Diplomacy', 'Retreats', 'Builds')
+                                            AND g.turn < 100
+                                      ORDER BY g.processTime ASC;");
 
         while( $row = $DB->tabl_hash($countryTabl) )
         {

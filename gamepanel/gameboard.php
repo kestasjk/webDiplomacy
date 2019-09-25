@@ -30,7 +30,8 @@ require_once(l_r('gamepanel/game.php'));
  */
 class panelGameBoard extends panelGame
 {
-	function mapHTML() {
+	function mapHTML() 
+	{
 		global $User;
 
 		$mapTurn = (($this->phase=='Pre-game'||$this->phase=='Diplomacy') ? $this->turn-1 : $this->turn);
@@ -38,6 +39,7 @@ class panelGameBoard extends panelGame
 		$largemapLink = $smallmapLink.'&mapType=large'.($User->options->value['showMoves']=='No'?'&hideMoves':'');
 
 		$staticFilename=Game::mapFilename($this->id, $mapTurn, 'small');
+
 		if( file_exists($staticFilename) && $User->options->value['showMoves'] == 'Yes' )
 			$smallmapLink = STATICSRV.$staticFilename.'?nocache='.rand(0,99999);
 
@@ -59,15 +61,15 @@ class panelGameBoard extends panelGame
 							
 			</p>
 			<p id="History" class="lightgrey"></p>
-		</div>
-';
+		</div>';
 
 		$this->mapJS($mapTurn);
 
 		return $map;
 	}
 
-	protected function mapJS($mapTurn) {
+	protected function mapJS($mapTurn) 
+	{
 		libHTML::$footerScript[] = 'turnToText='.$this->Variant->turnAsDateJS()."
 		mapArrows($mapTurn,$mapTurn);
 		";
@@ -79,11 +81,7 @@ class panelGameBoard extends panelGame
 		$buf = '';
 
 		if ( $this->phase != 'Pre-game') 
-			$buf .= '
-				<div class="bar archiveBar">
-					'.$this->archiveBar().'
-				</div>
-				';
+			$buf .= '<div class="bar archiveBar"> '.$this->archiveBar().'</div> ';
 
 		$buf .= parent::links();
 
@@ -112,9 +110,7 @@ class panelGameBoard extends panelGame
 	function votes()
 	{
 		global $User;
-		if ( ( $this->phase == 'Pre-game' || $this->phase == 'Finished' ) ||
-			!isset($this->Members->ByUserID[$User->id]) )
-			return '';
+		if ( ( $this->phase == 'Pre-game' || $this->phase == 'Finished' ) || !isset($this->Members->ByUserID[$User->id]) ) return '';
 
 		$vAllowed = Members::$votes;
 		$vSet = $this->Members->ByUserID[$User->id]->votes;
@@ -122,18 +118,34 @@ class panelGameBoard extends panelGame
 
 		$vCancel=array();
 		$vVote=array();
+
 		foreach($vAllowed as $vote)
-			if(in_array($vote, $vSet))
+		{
+			// Set when the option to vote concede is allowed. Restrict it to games set via the config. 
+			if ($vote == 'Concede')
 			{
-				if(!in_array($vote, $vPassed))
-					$vCancel[]=$vote;
+				if ( (empty(Config::$concedeVariants)) || (in_array($this->variantID, Config::$concedeVariants)) )
+				{
+					if(in_array($vote, $vSet))
+					{
+						if(!in_array($vote, $vPassed)) $vCancel[]=$vote;
+					}
+					else $vVote[]=$vote;
+				}
 			}
 			else
-				$vVote[]=$vote;
+			{
+				if(in_array($vote, $vSet))
+				{
+					if(!in_array($vote, $vPassed)) $vCancel[]=$vote;
+				}
+				else $vVote[]=$vote;
+			}			
+		}
 
-				$buf = '<div style="width: 300px; margin: 0 auto; text-align:center;"><a href="contactUsDirect.php" align="center";>Need help?</a></div>
-				<div class="bar membersList memberVotePanel"><a name="votebar"></a>
-				<table><tr class="member">
+		$buf = '<div style="width: 300px; margin: 0 auto; text-align:center;"><a href="contactUsDirect.php" align="center";>Need help?</a></div>
+		<div class="bar membersList memberVotePanel"><a name="votebar"></a>
+		<table><tr class="member">
 			<td class="memberLeftSide">
 				<strong>'.l_t('Votes:').'</strong>
 			</td>
@@ -141,7 +153,7 @@ class panelGameBoard extends panelGame
 				'.$this->showVoteForm($vVote, $vCancel).'
 			</td>
 			</tr>
-			</table>';
+		</table>';
 
 		return $buf . '</div>';
 	}
@@ -185,8 +197,88 @@ class panelGameBoard extends panelGame
 
 			$buf .= '</div>';
 		}
+		
+		$buf .= '</form>';
+		
+		$buf .= '<img id = "modBtnVote" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" style="padding: 8px;"/>
+		<div id="voteModal" class="modal">
+			<div class="modal-content">
+				<span class="close1">&times;</span>
+				<p><strong>Draw Vote: </strong></br>
+					If all players vote draw, the game will be drawn. ';
+		switch ($this->potType) 
+		{
+			case 'Points-per-supply-center':
+					$buf .= 'This game is scored using points per supply center. In a draw, points are split evenly among all players remaining.';
+					break;
+			case 'Winner-takes-all':
+					$buf .= 'This game is scored using draw size scoring. In a draw, points are split evenly among all players remaining.';
+					break;             
+			case 'Unranked':
+					$buf .= 'This game is unranked. In a draw, all points are returned to their previous owners.';
+					break;             
+			case 'Sum-of-squares':
+					$buf .= 'This game is scored using sum of squares. In a draw, points are split among remaining players based upon how many supply centers they have.';
+					break;             
+			default:
+					trigger_error("Unknown pot type '".$this->potType."'");
+					break;
+		}
+		switch ($this->drawType) 
+		{
+			case 'draw-votes-public':
+				$buf .= ' Draw votes are publicly displayed in this game.';
+				break;
+			case 'draw-votes-hidden':
+				$buf .= ' Draw votes are not publicly known in this game.';
+				break;
+			default:
+				trigger_error("Unknown draw type '".$this->drawType."'");
+				break;
+		}
+		$buf.= '</p>';
+		
+		if( $this->processStatus == 'Paused' )
+		{
+			$buf .= '<p><strong>Unpause Vote: </strong></br>
+						If all players vote unpause, the game will be unpaused. If a game is stuck paused, email the mods at webdipmod@gmail.com for help.
+					</p>';
+		}
+		else
+		{
+			$buf .= '<p><strong>Pause Vote: </strong></br>
+						If all players vote pause, the game will be paused until all players vote unpause. If you need a game paused'. ($this->pressType == 'NoPress' ? '' : ' due to an emergency').', click on the Need Help? link just above this icon to contact the mods.
+					</p>';
+		}
+		
+		$buf .= '<p><strong>Cancel Vote: </strong></br>
+					If all players vote cancel, the game will be cancelled. All points will be refunded, and the game will be deleted. Cancels are typically used in the first year or two of a game with missing players.
+				</p>';
 
-        $buf .= '</form><div style="clear:both"></div>';
+		if ($this->playerTypes <> 'Members')
+		{
+			$buf .= '<p><strong>Bot Voting: </strong></br>
+				The bots in this game do not get a pause or unpause vote, pausing and unpausing only counts human votes. <br><br>
+				If a bot is winning a game and has gained supply centers in the last 4 turns, it will stop the game from being drawn or cancelled. Otherwise bot games can be drawn or cancelled anytime.  
+			</p>';
+		}
+		
+		$buf .='
+			</div>
+		</div>';
+		
+		$buf .= '<script>
+		var modal1 = document.getElementById("voteModal");
+		var btn1 = document.getElementById("modBtnVote");
+		var span1 = document.getElementsByClassName("close1")[0];
+		btn1.onclick = function() { modal1.style.display = "block"; }
+		span1.onclick = function() { modal1.style.display = "none"; }
+		window.onclick = function(event) {
+		  if (event.target == modal1) { modal1.style.display = "none"; }
+		}
+		</script>';
+
+    $buf .= '<div style="clear:both"></div>';
 
 		return $buf;
 	}
@@ -214,7 +306,6 @@ class panelGameBoard extends panelGame
 	public function contentHeader()
 	{
 		global $User;
-
 
 		$buf = '<a name="gamePanel"></a>';
 		$buf .= $this->header();
@@ -251,7 +342,6 @@ class panelGameBoard extends panelGame
 			$buf .= '<div class="membersList">'.$this->Members->ByUserID[$User->id]->memberHeaderBar().'</div>';
 		}
 
-
 		return $buf;
 	}
 
@@ -267,8 +357,7 @@ class panelGameBoard extends panelGame
 			'.$this->members().'
 			'.$this->links().'
 			<div class="bar lastBar"> </div>
-		</div>
-		';
+		</div>';
 	}
 }
 ?>

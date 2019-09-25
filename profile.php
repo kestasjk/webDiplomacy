@@ -499,9 +499,11 @@ if( $total )
 	print '<li><strong>'.l_t('All Game stats:').'</strong> </div><div class = "profile_content_show">';
 
 	// Shows each of the game details
-	foreach($rankingDetails['stats'] as $name => $status)
+	foreach($includeStatus as $name)
 	{
-		if ( !in_array($name, $includeStatus) ) continue;
+		if ( !array_key_exists($name, $rankingDetails['stats']) ) continue;
+
+		$status = $rankingDetails['stats'][$name];
 
 		if (!$showAnon && isset($rankingDetails['anon'][$name]))
 			$status -= $rankingDetails['anon'][$name];
@@ -510,6 +512,8 @@ if( $total )
 		print ' ( '.round(($status/$total)*100).'% )';
 		print '</li>';
 	}
+	print '<li>'.l_t('Total (finished): <strong>%s</strong>',$total).'</li>';
+	print '<br>';
 
 	// This shows the Playing/Civil Disorder and CD takeover stats.
 	foreach($rankingDetails['stats'] as $name => $status)
@@ -520,8 +524,8 @@ if( $total )
 			$status -= $rankingDetails['anon'][$name];
 		print '<li>'.l_t($name.': <strong>%s</strong>',$status).'</li>';
 	}
-	print '<li>'.l_t('Total (finished): <strong>%s</strong>',$total).'</li>';
 	print '</li>';
+	print '</div>';
 
 	// Get a count of the number of classic games that have been played.
 	$totalClassic = 0;
@@ -531,16 +535,17 @@ if( $total )
 
 		$totalClassic += $status;
 	}
-	print '</div>';
 
 	// Print out Classic stats if any classic games have been finished.
 	if( $totalClassic )
 	{
 		print '<div class = "profile_title">';
 		print '<li><strong>'.l_t('Classic:').'</strong></div><div class = "profile_content">';
-		foreach($rankingDetailsClassic['stats'] as $name => $status)
+		foreach($includeStatus as $name)
 		{
-			if ( !in_array($name, $includeStatus) ) continue;
+			if ( !array_key_exists($name, $rankingDetailsClassic['stats']) ) continue;
+
+			$status = $rankingDetailsClassic['stats'][$name];
 
 			print '<li>'.l_t($name.': <strong>%s</strong>',$status);
 			print ' ( '.round(($status/$totalClassic)*100).'% )';
@@ -549,7 +554,6 @@ if( $total )
 		print '<li>'.l_t('Total (finished): <strong>%s</strong>',$totalClassic).'</li>';
 		print '</li>';
 		print '</div>';
-		// print '</div>';
 	}
 
 	// Get a count of the number of classic press games that have been played.
@@ -567,9 +571,11 @@ if( $total )
 		print '<div class = "profile_title">';
 		print '<li><strong>'.l_t('Classic Press:').'</strong> </div><div class = "profile_content">';
 
-		foreach($rankingDetailsClassicPress['stats'] as $name => $status)
+		foreach($includeStatus as $name)
 		{
-			if ( !in_array($name, $includeStatus) ) continue;
+			if ( !array_key_exists($name, $rankingDetailsClassicPress['stats']) ) continue;
+
+			$status = $rankingDetailsClassicPress['stats'][$name];
 
 			print '<li>'.l_t($name.': <strong>%s</strong>',$status);
 			print ' ( '.round(($status/$totalClassicPress)*100).'% )';
@@ -595,9 +601,11 @@ if( $total )
 		print '<div class = "profile_title">';
 		print '<li><strong>'.l_t('Classic Gunboat:').'</strong> </div><div class = "profile_content">';
 
-		foreach($rankingDetailsClassicGunboat['stats'] as $name => $status)
+		foreach($includeStatus as $name)
 		{
-			if ( !in_array($name, $includeStatus) ) continue;
+			if ( !array_key_exists($name, $rankingDetailsClassicGunboat['stats']) ) continue;
+
+			$status = $rankingDetailsClassicGunboat['stats'][$name];
 
 			print '<li>'.l_t($name.': <strong>%s</strong>',$status);
 			print ' ( '.round(($status/$totalClassicGunboat)*100).'% )';
@@ -623,9 +631,11 @@ if( $total )
 		print '<div class = "profile_title">';
 		print '<li><strong>'.l_t('Classic Ranked:').'</strong> </div><div class = "profile_content">';
 
-		foreach($rankingDetailsClassicRanked['stats'] as $name => $status)
+		foreach($includeStatus as $name)
 		{
-			if ( !in_array($name, $includeStatus) ) continue;
+			if ( !array_key_exists($name, $rankingDetailsClassicRanked['stats']) ) continue;
+
+			$status = $rankingDetailsClassicRanked['stats'][$name];
 
 			print '<li>'.l_t($name.': <strong>%s</strong>',$status);
 			print ' ( '.round(($status/$totalClassicRanked)*100).'% )';
@@ -651,9 +661,11 @@ if( $total )
 		print '<div class = "profile_title">';
 		print '<li><strong>'.l_t('Variant stats:').'</strong> </div> <div class = "profile_content">';
 
-		foreach($rankingDetailsVariants['stats'] as $name => $status)
+		foreach($includeStatus as $name)
 		{
-			if ( !in_array($name, $includeStatus) ) continue;
+			if ( !array_key_exists($name, $rankingDetailsVariants['stats']) ) continue;
+
+			$status = $rankingDetailsVariants['stats'][$name];
 
 			print '<li>'.l_t($name.': <strong>%s</strong>',$status);
 			print ' ( '.round(($status/$totalVariants)*100).'% )';
@@ -701,12 +713,20 @@ print '<div class="leftHalf" style="width:50%">';
 if( $UserProfile->type['Banned'] )
 	print '<p><strong>'.l_t('Banned').'</strong></p>';
 
+if( $UserProfile->type['Bot'] )
+{
+	print '<p class="profileCommentURL">Bot User</p>';
+}
+
 if( $User->type['Moderator'] )
 {
-	if($UserProfile->modLastCheckedOn > 0 && $UserProfile->modLastCheckedBy > 0)
+	$lastCheckedBy = $UserProfile->modLastCheckedBy();
+	$modLastCheckedOn = $UserProfile->modLastCheckedOn();
+
+	if($UserProfile->modLastCheckedOn() > 0 && $lastCheckedBy > 0)
 	{
-		list($modUsername) = $DB->sql_row("SELECT username FROM `wD_Users` WHERE id = ".$UserProfile->modLastCheckedBy);
-		print '<p class="profileCommentURL">Investigated: '.$UserProfile->timeModLastCheckedtxt().', by: <a href="/profile.php?userID='.$UserProfile->modLastCheckedBy.'">'.$modUsername.'</a></p>';
+		list($modUsername) = $DB->sql_row("SELECT username FROM `wD_Users` WHERE id = ".$lastCheckedBy);
+		print '<p class="profileCommentURL">Investigated: '.libTime::text($modLastCheckedOn).', by: <a href="/profile.php?userID='.$lastCheckedBy.'">'.$modUsername.'</a></p>';
 	}
 	else
 	{

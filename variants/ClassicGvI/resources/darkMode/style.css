@@ -2,7 +2,7 @@
 
 .variantClassicGvI .country0 { color: rgba(255, 255, 255, 0.8) ! important; } /* Global */
 .variantClassicGvI .country1 { color: rgb(202, 172, 133) ! important } /* Germany */
-.variantClassicGvI .country2 { color: rgb(50, 168, 109) ! important; } /* Italy */
+.variantClassicGvI .country2 { color: rgb(50, 226, 138) ! important; } /* Italy */
 
-.variantClassicGvI .occupationBar1 { background-color: #A08A75; } /* Germany */
-.variantClassicGvI .occupationBar2 { background-color: #A4C499; } /* Italy */
+.variantClassicGvI .occupationBar1 { background-color: rgb(202, 172, 133); } /* Germany */
+.variantClassicGvI .occupationBar2 { background-color: rgb(50, 226, 138); } /* Italy */

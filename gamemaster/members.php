@@ -238,7 +238,7 @@ class processMembers extends Members
 	}
 
 	/**
-	 * Set members to drawn, giving points to those still around and supplements to those who had left
+	 * Set members to drawn, giving points to those still around and supplements to those who had left.
 	 */
 	function setDrawn()
 	{
@@ -259,6 +259,26 @@ class processMembers extends Members
 
 		foreach($this->ByStatus['Playing'] as $Member)
 			$Member->setDrawn( $points[$Member->countryID] );
+		$this->writeLog();
+	}
+
+	/**
+	 * Set members to defeated, giving points to those still around and supplements to those who had left.
+	 */
+	function setConcede()
+	{
+		$this->prepareLog();
+		assert('count($this->ByStatus[\'Playing\']) > 0');
+
+		foreach($this->ByStatus['Left'] as $Member)
+			$Member->setResigned();
+			
+		foreach($this->ByStatus['Playing'] as $Member)
+		{
+			if (in_array('Concede',$Member->votes))
+				$Member->setDefeated($this->Game->Scoring->pointsForDefeat($Member));
+		}
+		
 		$this->writeLog();
 	}
 
@@ -575,13 +595,7 @@ class processMembers extends Members
 		// update the turn count
 		$DB->sql_put("UPDATE wD_Users u
 				INNER JOIN wD_Members m ON m.userID = u.id
-				INNER JOIN (
-					SELECT userID, count(*) as yearlyTurns
-					FROM wD_TurnDate AS t
-					WHERE t.turnDateTime > ".time()." - (3600 *24*365)
-					GROUP BY userID
-				  ) AS TotalTurns ON u.id = TotalTurns.userID
-				SET u.yearlyPhaseCount = TotalTurns.yearlyTurns
+				SET u.yearlyPhaseCount = (SELECT count(1) as yearlyTurns FROM wD_TurnDate AS t WHERE t.userID = u.id and t.turnDateTime > (".time()." - (31536000)))
 				WHERE m.gameID = ".$this->Game->id." 
 					AND ( m.status='Playing' OR m.status='Left' )
 					AND EXISTS(SELECT o.id FROM wD_Orders o WHERE o.gameID = m.gameID AND o.countryID = m.countryID)");

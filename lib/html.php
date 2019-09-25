@@ -129,15 +129,13 @@ class libHTML
 	static function forumMessage($threadID, $messageID)
 	{
 		return '<a style="'.self::$hideStyle.'" class="messageIconForum" threadID="'.$threadID.'" messageID="'.$messageID.'" href="forum.php?threadID='.$threadID.'#'.$messageID.'">'.
-		'<img src="'.l_s('images/icons/mail.png').'" alt="'.l_t('New').'" title="'.l_t('Unread messages!').'" />'.
-		'</a> ';
+		'<img src="'.l_s('images/icons/mail.png').'" alt="'.l_t('New').'" title="'.l_t('Unread messages!').'" />'.'</a> ';
 	}
 
 	static function forumParticipated($threadID)
 	{
 		return '<a style="'.self::$hideStyle.'" class="participatedIconForum" threadID="'.$threadID.'" href="forum.php?threadID='.$threadID.'#'.$threadID.'">'.
-			'<img src="'.l_s('images/icons/star.png').'" alt="'.l_t('Participated').'" title="'.l_t('You have participated in this thread.').'" />'.
-			'</a> ';
+			'<img src="'.l_s('images/icons/star.png').'" alt="'.l_t('Participated').'" title="'.l_t('You have participated in this thread.').'" />'.'</a> ';
 	}
 
 	/**
@@ -335,7 +333,7 @@ class libHTML
 		list($toID) = $DB->sql_row("SELECT toID FROM wD_ForumMessages WHERE id=".$postID);
 
 		if( $toID == null || $toID == 0 )
-		$toID = $postID;
+			$toID = $postID;
 
 		return '<a href="forum.php?threadID='.$toID.'#'.$postID.'">'.l_t('Go to thread').'</a>';
 	}
@@ -421,35 +419,35 @@ class libHTML
 		 */
 		return '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 		<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">
-	<head>
-	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
-		<meta http-equiv="Content-Style-Type" content="text/css" />
-		<meta name="robots" content="index,follow" />
-		<meta name="description" content="'.l_t('webDiplomacy is an online, multiplayer, turn-based strategy game that lets you play Diplomacy online.').'" />
-		<meta name="keywords" content="'.l_t('diplomacy,diplomacy game,online diplomacy,classic diplomacy,web diplomacy,diplomacy board game,play diplomacy,php diplomacy').'" />
-		<link rel="shortcut icon" href="'.STATICSRV.l_s('favicon.ico').'" />
-		<link rel="icon" href="'.STATICSRV.l_s('favicon.ico').'" />
-		
-		<script type="text/javascript" src="useroptions.php"></script>
-		<script type="text/javascript" src="javascript/clickhandler.js"></script>
-		<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/prototype.js').'"></script>
-		<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/scriptaculous.js').'"></script>
-		<link rel="stylesheet" type="text/css" href="'.STATICSRV.l_s('contrib/js/pushup/src/css/pushup.css').'" />
-		<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/pushup/src/js/pushup.js').'"></script>
-		<script type="text/javascript">
-		    STATICSRV="'.STATICSRV.'";
-		    var cssDirectory = "'.CSSDIR.'";
-				var cssVersion = "'.CSSVERSION.'";
-		</script>
-		<script type="text/javascript" src="'.l_j('javascript/desktopMode.js').'?ver='.JSVERSION.'"></script>
+		<head>
+		<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+			<meta http-equiv="Content-Style-Type" content="text/css" />
+			<meta name="robots" content="index,follow" />
+			<meta name="description" content="'.l_t('webDiplomacy is an online, multiplayer, turn-based strategy game that lets you play Diplomacy online.').'" />
+			<meta name="keywords" content="'.l_t('diplomacy,diplomacy game,online diplomacy,classic diplomacy,web diplomacy,diplomacy board game,play diplomacy,php diplomacy').'" />
+			<link rel="shortcut icon" href="'.STATICSRV.l_s('favicon.ico').'" />
+			<link rel="icon" href="'.STATICSRV.l_s('favicon.ico').'" />
+			
+			<script type="text/javascript" src="useroptions.php"></script>
+			<script type="text/javascript" src="javascript/clickhandler.js"></script>
+			<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/prototype.js').'"></script>
+			<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/scriptaculous.js').'"></script>
+			<link rel="stylesheet" type="text/css" href="'.STATICSRV.l_s('contrib/js/pushup/src/css/pushup.css').'" />
+			<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/pushup/src/js/pushup.js').'"></script>
+			<script type="text/javascript">
+				STATICSRV="'.STATICSRV.'";
+				var cssDirectory = "'.CSSDIR.'";
+					var cssVersion = "'.CSSVERSION.'";
+			</script>
 
-		<link rel="stylesheet" id="global-css" href="'.CSSDIR.l_s('/'.$darkMode.'global.css').'?ver='.CSSVERSION.'" type="text/css" />
-		<link rel="stylesheet" id="game-panel-css" href="'.CSSDIR.l_s('/'.$darkMode.'gamepanel.css').'?ver='.CSSVERSION.'" type="text/css" />
-		<link rel="stylesheet" id="home-css" href="'.CSSDIR.l_s('/'.$darkMode.'home.css').'?ver='.CSSVERSION.'" type="text/css" />
-		'.$variantCSS.'
+			<link rel="stylesheet" id="global-css" href="'.CSSDIR.l_s('/'.$darkMode.'global.css').'?ver='.CSSVERSION.'" type="text/css" />
+			<link rel="stylesheet" id="game-panel-css" href="'.CSSDIR.l_s('/'.$darkMode.'gamepanel.css').'?ver='.CSSVERSION.'" type="text/css" />
+			<link rel="stylesheet" id="home-css" href="'.CSSDIR.l_s('/'.$darkMode.'home.css').'?ver='.CSSVERSION.'" type="text/css" />
+			'.$variantCSS.'
 
-		<title>'.l_t('%s - webDiplomacy',$title).'</title>
-	</head>';
+			<script type="text/javascript" src="'.l_j('javascript/desktopMode.js').'?ver='.JSVERSION.'"></script>
+			<title>'.l_t('%s - webDiplomacy',$title).'</title>
+		</head>';
 	}
 
 	/**
@@ -473,7 +471,8 @@ class libHTML
 		print libHTML::prebody($title===FALSE ? l_t($pages[$scriptname]['name']) : $title).
 			'<body>'.libHTML::menu($pages, $scriptname);
 
-		if( defined('FACEBOOKSCRIPT') ) {
+		if( defined('FACEBOOKSCRIPT') ) 
+		{
 			?>
 			<script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php/en_US" type="text/javascript"></script>
 			<script type="text/javascript">
@@ -525,9 +524,7 @@ class libHTML
 		{
 			$gameNotifyBlock = libHTML::gameNotifyBlock();
 			if ( $gameNotifyBlock )
-				print '<div class="content-notice"><div class="gamelistings-tabs">'.
-					$gameNotifyBlock.
-					'</div></div>';
+				print '<div class="content-notice"><div class="gamelistings-tabs">'.$gameNotifyBlock.'</div></div>';
 		}
 	}
 
@@ -570,9 +567,7 @@ class libHTML
 				Config::$downtimeTriggerMinutes,libTime::text($Misc->LastProcessTime));
 
 		if ( $notice )
-			return '<div class="content-notice"><p class="notice">'.
-				implode('</p><div class="hr"></div><p class="notice">',$notice).
-				'</p></div>';
+			return '<div class="content-notice"><p class="notice">'.implode('</p><div class="hr"></div><p class="notice">',$notice).'</p></div>';
 		else
 			return '';
 	}
@@ -613,7 +608,8 @@ class libHTML
 				'</a></span> ';
 		}
 
-		if( isset(Config::$customForumURL) ) {
+		if( isset(Config::$customForumURL) ) 
+		{
 			// We are using a PHPBB install; pull private messages from the phpBB install for this user
 			$tabl = $DB->sql_tabl(
 			"SELECT p.msg_id, p.pm_new, p.pm_unread, fromm.webdip_user_id, fromU.username, fromU.points, fromU.type
@@ -622,8 +618,8 @@ class libHTML
 				INNER JOIN phpbb_users fromm ON fromm.user_id = p.author_id
 				INNER JOIN wD_Users fromU ON fromU.Id = fromm.webdip_user_id
 				WHERE (pm_new = 1 OR pm_unread = 1) AND toU.webdip_user_id = ".$User->id);
-			while($row_hash = $DB->tabl_hash($tabl)) {
-
+			while($row_hash = $DB->tabl_hash($tabl)) 
+			{
 				$profile_link = $row_hash['username'];
 				$profile_link.=' ('.$row_hash['points'].libHTML::points().User::typeIcon($row_hash['type']).')';
 
@@ -639,9 +635,12 @@ class libHTML
 			require_once(l_r('objects/basic/set.php'));
 
 			// Games that are finished should show as 'no orders'
-			if ( $notifyGame['phase'] != 'Finished') {
+			if ( $notifyGame['phase'] != 'Finished') 
+			{
 					$notifyGame['orderStatus'] = new setMemberOrderStatus($notifyGame['orderStatus']);
-			} else {
+			} 
+			else 
+			{
 					$notifyGame['orderStatus'] = new setMemberOrderStatus('None');
 			}
 
@@ -684,12 +683,17 @@ class libHTML
 
 		// Items displayed in the menu
 		$links['index.php']=array('name'=>'Home', 'inmenu'=>TRUE, 'title'=>"See what's happening");
-	    if( isset(Config::$customForumURL) ) {
+
+		if( isset(Config::$customForumURL) ) 
+		{
 			$links[Config::$customForumURL]=array('name'=>'Forum', 'inmenu'=>TRUE, 'title'=>"The forum; chat, get help, help others, arrange games, discuss strategies");
 			$links['forum.php']=array('name'=>'Old Forum', 'inmenu'=>false, 'title'=>"The old forum; chat, get help, help others, arrange games, discuss strategies");
-        } else {
+		} 
+		else 
+		{
 			$links['forum.php']=array('name'=>'Forum', 'inmenu'=>TRUE, 'title'=>"The forum; chat, get help, help others, arrange games, discuss strategies");
-        }
+		}
+		
 		$links['gamelistings.php']=array('name'=>'Games', 'inmenu'=>TRUE, 'title'=>"Game listings; a searchable list of the games on this server");
 
 		if (is_object($User))
@@ -734,6 +738,7 @@ class libHTML
 		$links['tournamentInfo.php']=array('name'=>'Tournament Info', 'inmenu'=>FALSE);
 		$links['tournamentScoring.php']=array('name'=>'Tournament Scoring', 'inmenu'=>FALSE);
 		$links['tournamentRegistration.php']=array('name'=>'Tournament Registration', 'inmenu'=>FALSE);
+		$links['botgamecreate.php']=array('name'=>'New Bot Game', 'inmenu'=>TRUE, 'title'=>"Start up a new bot game");
 
 		if ( is_object($User) )
 		{
@@ -1018,6 +1023,7 @@ class libHTML
 		);
 
 		$first=true;
+
 		foreach($stats as $name=>$stat)
 		{
 			if ( $first ) $first=false;
@@ -1033,6 +1039,7 @@ class libHTML
 			'Active games'=>$Misc->GamesActive,
 			'Finished games'=>$Misc->GamesFinished);
 		$first=true;
+
 		foreach($stats as $name=>$stat)
 		{
 			if ( $first ) $first=false;
@@ -1042,7 +1049,6 @@ class libHTML
 		}
 
 		if ( !isset($User) || !$User->type['Moderator'] ) return $buf;
-
 
 		$buf .= '<br /><br />';
 
@@ -1070,7 +1076,11 @@ class libHTML
 	{
 		// Version, sourceforge and HTML compliance logos
 		return l_t('webDiplomacy version <strong>%s</strong>',number_format(VERSION/100,2)).'<br />
-			<a class="light" id="js-desktop-mode" style="cursor: pointer; color: #006699;" onclick="toggleDesktopMode()">Enable Desktop Mode</a> <br />
+			<div>
+			<a class="light" id="js-desktop-mode" style="cursor: pointer; color: #006699;" onclick="toggleDesktopMode(true)">Enable Desktop Mode</a>
+			</div>
+			<br />
+
 			<a href="http://github.com/kestasjk/webDiplomacy" class="light">GitHub Project</a> |
 			<a href="http://github.com/kestasjk/webDiplomacy/issues" class="light">Bug Reports</a> | <a href="mailto:'.Config::$modEMail.'" class="light">Moderator Email</a> |
 			<a href="contactUsDirect.php" class="light">Contact Us Directly</a>';
@@ -1148,6 +1158,7 @@ class libHTML
 				this.lastMessageIDViewed='.$User->lastMessageIDViewed.';
 				this.timeLastSessionEnded='.$User->timeLastSessionEnded.';
 				this.token="'.md5(Config::$secret.$User->id.'Array').'";
+				this.darkMode="'.$User->options->value['darkMode'].'";
 			}
 			User = new UserClass();
 			var headerEvent = document.getElementsByClassName("clickable");
@@ -1191,14 +1202,22 @@ class libHTML
 				}, this);
 			}
 			var toggle = localStorage.getItem("desktopEnabled");
+			var darkMode = localStorage.getItem("darkModeEnabled");
+			var dark = User.darkMode;
+			if (dark == "Yes") {
+				dark = true;
+			} else {
+				dark = false;
+			}
+			localStorage.setItem("darkModeEnabled", dark);
 			var toggleElem = document.getElementById(\'js-desktop-mode\');
             if (toggle == "true") {
                 if(toggleElem !== null) {
-                    toggleElem.innerHTML = "Disable Desktop Mode";
+                	toggleElem.innerHTML = "Disable Desktop Mode";
                 }
             } else {
                 if(toggleElem !== null) {
-                    toggleElem.innerHTML = "Enable Desktop Mode";
+                	toggleElem.innerHTML = "Enable Desktop Mode";
                 }
             }
 		</script>

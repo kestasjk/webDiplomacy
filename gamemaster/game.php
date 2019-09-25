@@ -75,23 +75,29 @@ class processGame extends Game
 	function applyVotes()
 	{
 		assert('$this->phase != "Finished"');
-
-		$votes = $this->Members->votesPassed();
-
-		$this->gamelog(l_t('Applying votes'));
-
-		// Only act on one vote at a time ..
-		if ( in_array('Draw', $votes) )
+		if($this->phase != "Pre-game")
 		{
-			$this->setDrawn();
-		}
-		elseif ( in_array('Cancel', $votes) )
-		{
-			$this->setCancelled();
-		}
-		elseif( in_array('Pause', $votes) )
-		{
-			$this->togglePause();
+			$votes = $this->Members->votesPassed();
+
+			$this->gamelog(l_t('Applying votes'));
+
+			// Only act on one vote at a time.
+			if ( in_array('Draw', $votes) )
+			{
+				$this->setDrawn();
+			}
+			elseif ( in_array('Cancel', $votes) )
+			{
+				$this->setCancelled();
+			}
+			elseif( in_array('Pause', $votes) )
+			{
+				$this->togglePause();
+			}
+			elseif( in_array('Concede', $votes) )
+			{
+				$this->setConcede();
+			}
 		}
 	}
 
@@ -286,7 +292,7 @@ class processGame extends Game
 	 *
 	 * @return Game The object corresponding to the new game
 	 */
-	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $joinPeriod, $anon, $press, $missingPlayerPolicy='Normal', $drawType, $rrLimit, $excusedMissedTurns)
+	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $joinPeriod, $anon, $press, $missingPlayerPolicy='Normal', $drawType, $rrLimit, $excusedMissedTurns, $playerTypes)
 	{
 		global $DB;
 
@@ -299,14 +305,17 @@ class processGame extends Game
 		$name = substr($name,0,50);
 		$unique = false;
 		$i = 1;
+
 		while ( ! $unique )
 		{
 			list($count) = $DB->sql_row("SELECT COUNT(id) FROM wD_Games WHERE name='".$name.($i > 1 ? '-'.$i : '')."'");
+
 			if ( $count == 0 )
 			{
 				$unique = true;
 			}
-			else{
+			else
+			{
 				$i++;
 				$name = substr($name,0,50-strlen('-'.$i));
 			}
@@ -332,7 +341,8 @@ class processGame extends Game
 						missingPlayerPolicy = '".$missingPlayerPolicy."',
 						drawType='".$drawType."', 
 						minimumReliabilityRating=".$rrLimit.",
-						excusedMissedTurns = ".$excusedMissedTurns);
+						excusedMissedTurns = ".$excusedMissedTurns.",
+						playerTypes = '".$playerTypes."'");
 
 		$gameID = $DB->last_inserted();
 
@@ -700,6 +710,25 @@ class processGame extends Game
 		}
 		
 		$this->Members->updateReliabilityStats();
+		
+		//Anytime the phase changes checks for force draws if only bots are left.
+		if ($this->playerTypes <> 'Members' && $this->phase <> 'Finished' && $this->phase <> 'Pre-game')
+		{
+			$playerCount = count($this->Members->ByStatus['Playing']);
+			$botCount = 0;
+			foreach($this->Members->ByStatus['Playing'] as $Member)
+			{
+				$userPassed = new User($Member->userID);
+				if($userPassed->type['Bot']) 
+				{
+					$botCount += 1;
+				}
+			}
+			if ($playerCount == $botCount) 
+			{
+				$this->setDrawn();
+			}
+		}
 	}
 
 	/**
@@ -965,6 +994,9 @@ class processGame extends Game
 		 * 'Playing'/'Left' -> 'Won'/'Survived'/'Resigned'
 		 * ('Defeated' status members are already set by now)
 		 */
+		global $DB;
+		$DB->sql_put("UPDATE wD_Games SET finishTime=".time()." WHERE id=".$this->id);
+		 
 		$this->Members->setWon($Winner);
 
 		// Then the game is set to finished
@@ -1134,6 +1166,7 @@ class processGame extends Game
 	public function setDrawn()
 	{
 		global $DB;
+		$DB->sql_put("UPDATE wD_Games SET finishTime=".time()." WHERE id=".$this->id);
 
 		// Unpause the game so that the processTime data isn't finalized as NULL
 		if( $this->processStatus == 'Paused' )
@@ -1159,7 +1192,45 @@ class processGame extends Game
 
 		Game::wipeCache($this->id,$this->turn);
 	}
-	
+
+	/**
+	 * All players but one choosed to concede.
+	 * End the game; archive the terrstatus and moves, delete active data, set members to defeated
+	 * and set the Winner. Also delete the current map to display the finished
+	 * message on the map
+	 */
+	public function setConcede()
+	{
+		global $DB;
+
+		// Ensure backend that a concede cannot be applied for the wrong variant type. 
+		if ( (empty(Config::$concedeVariants)) || (in_array($this->variantID, Config::$concedeVariants)) )
+		{
+			// Unpause the game so that the processTime data isn't finalized as NULL
+			if( $this->processStatus == 'Paused' ) { $this->togglePause(); }
+
+			$this->archiveTerrStatus();
+			
+			if ( $this->phase == 'Diplomacy' and $this->turn > 0 )
+			{
+				$DB->sql_put("INSERT INTO wD_MovesArchive
+					( gameID, turn, terrID, countryID, unitType, success, dislodged, type, toTerrID, fromTerrID, viaConvoy )
+					SELECT gameID, turn+1, terrID, countryID, unitType, success, dislodged, type, toTerrID, fromTerrID, viaConvoy
+					FROM wD_MovesArchive WHERE gameID = ".$this->id." AND turn = ".($this->turn-1));
+			}
+			
+			$this->Members->setConcede();
+			foreach($this->Members->ByStatus['Playing'] as $Member)
+				$Winner = $Member;
+			$this->setWon($Winner);
+
+			$DB->sql_put("DELETE FROM wD_Orders WHERE gameID = ".$this->id);
+			$DB->sql_put("DELETE FROM wD_Units WHERE gameID = ".$this->id);
+			$DB->sql_put("DELETE FROM wD_TerrStatus WHERE gameID = ".$this->id);
+
+			Game::wipeCache($this->id,$this->turn);
+		}
+	}
 }
 
 ?>
