@@ -127,6 +127,7 @@ class adminActionsTD extends adminActionsForms
 		
 		$this->fixedGameID = $Game->id;
 	}
+	
 	public function countryReallocate(array $params)
 	{
 		global $DB;
@@ -241,11 +242,13 @@ class adminActionsTD extends adminActionsForms
 		$DB->sql_put("BEGIN");
 		foreach($newUserIDByNewCountryID as $newCountryID=>$userID)
 			$DB->sql_put("UPDATE wD_Members SET userID=".$userID." WHERE gameID=".$Game->id." AND countryID=".$newCountryID);
+
 		$DB->sql_put("COMMIT");
 
 		return l_t('In this game these countries were successfully swapped:').'<br />'.implode(',<br />', $changes).'.<br />
 			'.l_t('These changes can be reversed with "%s"',$changeBackStr);
 	}
+
 	public function alterMessaging(array $params)
 	{
 		global $DB;
@@ -266,6 +269,7 @@ class adminActionsTD extends adminActionsForms
 
 		return l_t('Game changed to pressType=%s.',$newSettingName);
 	}
+
 	public function changePhaseLength(array $params)
 	{
 		global $DB;
@@ -296,6 +300,7 @@ class adminActionsTD extends adminActionsForms
 		return l_t('Process time changed from %s to %s. Next process time is %s.',
 			libTime::timeLengthText($oldPhaseMinutes*60),libTime::timeLengthText($Game->phaseMinutes*60),libTime::text($Game->processTime));
 	}
+
 	public function setProcessTimeToPhaseConfirm(array $params)
 	{
 		global $DB;
@@ -309,6 +314,7 @@ class adminActionsTD extends adminActionsForms
 
 		return l_t('Are you sure you want to reset the phase process time of this game to process in %s hours?',($Game->phaseMinutes/60));
 	}
+
 	public function setProcessTimeToPhase(array $params)
 	{
 		global $DB;
@@ -321,28 +327,22 @@ class adminActionsTD extends adminActionsForms
 		if( $Game->processStatus != 'Not-processing' || $Game->phase == 'Finished' )
 			return l_t('This game is paused/crashed/finished.');
 
-		$DB->sql_put(
-			"UPDATE wD_Games
-			SET processTime = ".time()." + phaseMinutes * 60
-			WHERE id = ".$Game->id
-		);
+		$DB->sql_put("UPDATE wD_Games SET processTime = ".time()." + phaseMinutes * 60 WHERE id = ".$Game->id);
 
 		return l_t('Process time reset successfully');
 	}
+
 	public function makePublic(array $params)
 	{
 		global $DB;
 
 		$gameID = intval($this->fixedGameID);
 
-		$DB->sql_put(
-			"UPDATE wD_Games
-			SET password = NULL
-			WHERE id = ".$gameID
-		);
+		$DB->sql_put("UPDATE wD_Games SET password = NULL WHERE id = ".$gameID);
 
 		return l_t('Password removed');
 	}
+
 	public function makePrivate(array $params)
 	{
 		global $DB;
@@ -350,14 +350,11 @@ class adminActionsTD extends adminActionsForms
 		$gameID = intval($this->fixedGameID);
 		$password=$params['password'];
 
-		$DB->sql_put(
-			"UPDATE wD_Games
-			SET password = UNHEX('".md5($password)."')
-			WHERE id = ".$gameID
-		);
+		$DB->sql_put( "UPDATE wD_Games SET password = UNHEX('".md5($password)."') WHERE id = ".$gameID);
 
 		return l_t('Password set to "%s"',$password);
 	}
+
 	public function setProcessTimeToNow(array $params)
 	{
 		global $DB;
@@ -370,14 +367,11 @@ class adminActionsTD extends adminActionsForms
 		if( $Game->processStatus != 'Not-processing' || $Game->phase == 'Finished' )
 			return l_t('This game is paused/crashed/finished.');
 
-		$DB->sql_put(
-			"UPDATE wD_Games
-			SET processTime = ".time()."
-			WHERE id = ".$Game->id
-		);
+		$DB->sql_put("UPDATE wD_Games SET processTime = ".time()." WHERE id = ".$Game->id);
 
 		return 'Process time set to now successfully';
 	}
+
 	public function setProcessTimeToNowConfirm(array $params)
 	{
 		global $DB;
@@ -389,6 +383,7 @@ class adminActionsTD extends adminActionsForms
 
 		return l_t('Are you sure you want to start processing this game now?');
 	}
+
 	public function drawGameConfirm(array $params)
 	{
 		global $DB;
@@ -400,6 +395,7 @@ class adminActionsTD extends adminActionsForms
 
 		return l_t('Are you sure you want to draw this game? This is really hard to undo, so be sure this is correct!');
 	}
+
 	public function togglePause(array $params)
 	{
 		global $DB, $Game;
@@ -418,6 +414,7 @@ class adminActionsTD extends adminActionsForms
 
 		return l_t('This game is now '.( $Game->processStatus == 'Paused' ? 'paused':'unpaused').'.');
 	}
+
 	public function cdUserConfirm(array $params)
 	{
 		global $DB;
@@ -433,6 +430,7 @@ class adminActionsTD extends adminActionsForms
 
 		return l_t('Are you sure you want to put this user into civil-disorder'.(isset($Game)?', in this game':', in all his games').'?');
 	}
+
 	public function cdUser(array $params)
 	{
 		global $DB;
@@ -453,6 +451,7 @@ class adminActionsTD extends adminActionsForms
 
 		return l_t('This user put into civil-disorder in this game');
 	}
+
 	public function excusedMissedTurnsIncreaseAll(array $params)
 	{
 		global $DB;

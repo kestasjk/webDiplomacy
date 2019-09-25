@@ -122,8 +122,6 @@ while(strlen($lastLine) || ( list($userID) = $DB->tabl_row($tabl)) )
 		}
 		else
 			$sqlBuf .= ",";
-
-
 	}
 
 	if( isset($userID) && $userID )
