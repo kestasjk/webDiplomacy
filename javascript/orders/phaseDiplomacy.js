@@ -28,7 +28,7 @@ function loadOrdersPhase() {
 				
 				var convoyPath = $A([ ]);
 				
-				if( this.isComplete && !Object.isUndefined(this.Unit.convoyOptions) )
+				if( this.isComplete )
 				{
 					if( this.type=='Move' && this.Unit.convoyOptions.any(function(c){ return (c==this.toTerrID); },this) )
 					{
