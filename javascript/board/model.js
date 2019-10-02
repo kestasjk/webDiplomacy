@@ -166,6 +166,8 @@ function loadModel() {
 				{
 					this.convoyOptions=this.ConvoyGroup.Coasts.select(this.canConvoyTo, this).pluck('id');
 					choices=snapTogether(choices,this.convoyOptions).uniq();
+				} else {
+					this.convoyOptions = []
 				}
 				
 				return choices;
@@ -221,6 +223,8 @@ function loadModel() {
 					this.convoyOptions=AgainstTerritory.ConvoyGroup.Armies.pluck('Territory').pluck('id');
 					
 					PossibleUnits=snapTogether(PossibleUnits,ConvoyArmies);
+				} else {
+					this.convoyOptions = []
 				}
 				
 				// Return names, excluding the current territory
@@ -252,10 +256,11 @@ function loadModel() {
 							return true;
 						
 					},this).pluck('Territory').pluck('id');
-					return this.convoyOptions;
 				}
 				else
-					return [ ];
+					this.convoyOptions = []
+					
+				return this.convoyOptions;
 			}
 		});
 		

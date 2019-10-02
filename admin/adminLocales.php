@@ -28,7 +28,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * @package Admin
  */
 
-if( !$User->type['Admin'] ) {
+if( !$User->type['Admin'] ) 
+{
 	print l_t("This page is intended only for administrators to do work on locale lookup lists.");
 	libHTML::footer();
 }
@@ -46,8 +47,8 @@ if( !$User->type['Admin'] ) {
 <?php print l_t('Note that these do not include JavaScript failures, which are not captured.'); ?><br />
 <?php print '<a href="?failedLookupsDump=on">'.l_t('Dump').'</a> - <a href="?failedLookupsWipe=on">'.l_t('Wipe').'</a>'; ?>
 </p>
-<?php 
 
+<?php 
 if( isset($_REQUEST['failedLookupsDump']) )
 {
 	$tabl = $DB->sql_tabl("SELECT * FROM ( SELECT lookupString, SUM(count) count FROM wD_FailedLookups GROUP BY lookupString ) a ORDER BY count DESC");
@@ -65,8 +66,6 @@ elseif( isset($_REQUEST['failedLookupsWipe']) )
 	print '<p class="notice">'.l_t('Failed lookups table cleared.').'</p>';
 }
 ?>
-
-
 
 <h4><?php print l_t('Uploading translations.'); ?></h4>
 <p><?php print l_t('Copy the translations at the bottom into a text file, <b>take a backup</b>, make any necessary modifications, then reupload the file.'); ?><br /><br />
@@ -86,19 +85,15 @@ elseif( isset($_REQUEST['failedLookupsWipe']) )
 
 error_reporting(E_STRICT | E_ALL | E_NOTICE);
 
-if( isset($_FILES["file"]) ) {
-	
+if( isset($_FILES["file"]) ) 
+{
 	print '<h2>'.l_t('Processing upload').'</h2>';
-	
 	print '<p>'.l_t('Loading data..').'<br />';
 	
 	if ($_FILES["file"]["error"] > 0)
 		throw new Exception(l_t("Error:")." " . $_FILES["file"]["error"]);
 	
 	$translations = file_get_contents($_FILES["file"]["tmp_name"]);
-	
-	//if( get_magic_quotes_gpc() )
-	//	$translations = stripslashes($translations);
 	
 	$length = strlen($translations);
 	
@@ -108,14 +103,16 @@ if( isset($_FILES["file"]) ) {
 	$string_from = "";
 	$parsed = array();
 	
-	function error_context($translations, $i) {
+	function error_context($translations, $i) 
+	{
 		$start = $i - 20;
 		$length = 40;
 		if( $start < 0 ) $start = 0;
 		return substr($translations, $start, $length);
 	}
 	
-	function process_string($str) {
+	function process_string($str) 
+	{
 		return mb_convert_encoding(stripslashes($str),"UTF-8","US-ASCII");
 	}
 	
@@ -130,10 +127,10 @@ if( isset($_FILES["file"]) ) {
 	
 	for( $i = 0; $i < $length; $i++)
 	{
-		
 		//print "Character ".$i.". Mode: ".$mode.". Character: ".$translations{$i}.".<br />";
 		
-		switch($mode) {
+		switch($mode) 
+		{
 			case 'whitespace_before':
 				if( $translations{$i} == ' ' || $translations{$i} == "\r" || $translations{$i} == "\n"  || $translations{$i} == "\t" )
 					continue;
@@ -231,30 +228,7 @@ if( isset($_FILES["file"]) ) {
 			default:
 				throw new Exception(l_t("Unexpected parse mode: %s",$mode));
 		}
-		
 	}
-	
-	//print htmlentities(serialize($parsed));
-	/*
-	print "Parsed length = ".strlen(serialize($parsed))." Current length = ".strlen(file_get_contents('lookup.php.txt'))."\n\n";
-	print "Parsed\n\n";
-	print serialize($parsed);
-	print "Current\n\n";
-	print file_get_contents('lookup.php.txt');
-	
-	$current = unserialize(file_get_contents('lookup.php.txt'));
-	
-	foreach($parsed as $k=>$v) {
-		if( $v != $current[$k] ) {
-			print "Difference with ".$k.":\n".$v."\nvs\n".$current[$k]."\n\n";
-		}
-	}
-	foreach($current as $k=>$v) {
-		if( $v != $parsed[$k] ) {
-			print "Difference with ".$k.":\n".$v."\nvs\n".$parsed[$k]."\n\n";
-		}
-	}
-	*/
 	
 	print l_t('Taking a backup of PHP lookups..').'<br />';
 	if( file_exists('locales/'.Config::$locale.'/lookup.php.txt') )
@@ -265,7 +239,8 @@ if( isset($_FILES["file"]) ) {
 	
 	print l_t('Saving to PHP..').'<br />';
 	
-	if( false === file_put_contents('locales/'.Config::$locale.'/lookup.php.txt',serialize($parsed)) ) {
+	if( false === file_put_contents('locales/'.Config::$locale.'/lookup.php.txt',serialize($parsed)) ) 
+	{
 		throw new Exception(l_t("Couldn't write results to lookup.php.txt"));
 	}
 	
@@ -280,7 +255,8 @@ if( isset($_FILES["file"]) ) {
 	
 	$js = "Locale.textLookup = \$H({\n";
 	
-	foreach($parsed as $k=>$v) {
+	foreach($parsed as $k=>$v) 
+	{
 		$js .= "\t'".
 			str_replace("'", "\\'", str_replace("\n", "\\\n", str_replace("\r\n", "\n", $k)))
 			."': '".
@@ -290,14 +266,15 @@ if( isset($_FILES["file"]) ) {
 	}
 	$js .= "});\n";
 	
-	if( false === file_put_contents('locales/'.Config::$locale.'/lookup.js',$js) ) {
+	if( false === file_put_contents('locales/'.Config::$locale.'/lookup.js',$js) ) 
+	{
 		throw new Exception(l_t("Couldn't write results to lookup.js"));
 	}
 	
 	print l_t('Done').'.<br /><br />'.l_t('Check below that the translations have been applied successfully.').'</p>';
 }
-
 ?>
+
 <h2><?php print l_t('Translations upload:'); ?></h2>
 <form method="post" enctype="multipart/form-data">
 <input type="file" name="file" id="file"><br>
@@ -308,7 +285,8 @@ if( isset($_FILES["file"]) ) {
 <textarea ROWS="20" style="width:100%">
 <?php 
 
-if( file_exists('locales/'.Config::$locale.'/lookup.php.txt')) {
+if( file_exists('locales/'.Config::$locale.'/lookup.php.txt')) 
+{
 	$current = unserialize(file_get_contents('locales/'.Config::$locale.'/lookup.php.txt'));
 	foreach( $current as $k=>$v)
 		print "'".str_replace('&', '&amp;', addslashes($k))."' => '".str_replace('&', '&amp;', addslashes($v))."',\n";
