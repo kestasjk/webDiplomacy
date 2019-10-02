@@ -54,7 +54,8 @@ class processMember extends Member
 		$DB->sql_put("DELETE FROM wD_Members WHERE id=".$this->id);
 
 		// Again, this is relying on the member record already being gone but not reloaded so the game can erase the game.
-		if(count($Game->Members->ByUserID)==1)
+		// There is also a check here to make sure that BotVsMember games are deleted if the member leaves, which can otherwise cause issues
+		if(count($Game->Members->ByUserID)==1 or $Game->playerTypes=='MemberVsBots')
 		{
 			// No-one else left in the game
 			processGame::eraseGame($Game->id);
