@@ -292,7 +292,7 @@ class processGame extends Game
 	 *
 	 * @return Game The object corresponding to the new game
 	 */
-	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $joinPeriod, $anon, $press, $missingPlayerPolicy='Normal', $drawType, $rrLimit, $excusedMissedTurns, $playerTypes)
+	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $nextPhaseMinutes, $phaseSwitchPeriod, $joinPeriod, $anon, $press, $missingPlayerPolicy='Normal', $drawType, $rrLimit, $excusedMissedTurns, $playerTypes)
 	{
 		global $DB;
 
@@ -313,6 +313,7 @@ class processGame extends Game
 			if ( $count == 0 )
 			{
 				$unique = true;
+
 			}
 			else
 			{
@@ -327,6 +328,8 @@ class processGame extends Game
 		 */
 		$pTime = time() + $joinPeriod*60;
 		$pTime = $pTime - fmod($pTime, 300) + 300;	// for short game & phase timer
+		$createTime = time();
+		$startTime = -1;
 		$DB->sql_put("INSERT INTO wD_Games
 					SET variantID=".$variantID.",
 						name = '".$name.($i > 1 ? '-'.$i : '')."',
@@ -338,11 +341,15 @@ class processGame extends Game
 						".( $password ? "password = UNHEX('".md5($password)."')," : "").
 						"processTime = ".$pTime.",
 						phaseMinutes = ".$phaseMinutes.",
+						nextPhaseMinutes = ".$nextPhaseMinutes",
+						phaseSwitchPeriod = ".$phaseSwitchPeriod",
 						missingPlayerPolicy = '".$missingPlayerPolicy."',
 						drawType='".$drawType."', 
 						minimumReliabilityRating=".$rrLimit.",
 						excusedMissedTurns = ".$excusedMissedTurns.",
-						playerTypes = '".$playerTypes."'");
+						playerTypes = '".$playerTypes."',
+						createTime = ".$createTime",
+						startTime = ".$startTime);
 
 		$gameID = $DB->last_inserted();
 
@@ -517,6 +524,38 @@ class processGame extends Game
 	}
 
 	/**
+	 * If enough time has passed, switch to the next phase time.
+	 */
+	protected function switchPhaseTime(){
+		global $DB;
+
+		$newPhaseMinutes = $this->nextPhaseMinutes
+		$this->phaseMinutes = $newPhaseMinutes;
+		$this->phaseSwitchPeriod = -1;
+		// $this->processTime = time()+($newPhaseMinutes*60);
+
+		$DB->sql_put("UPDATE wD_Games 
+		SET phaseMinutes = ".$Game->phaseMinutes.", 
+		processTime = ".$Game->processTime.",
+		phaseSwitchPeriod = ".$this->phaseSwitchPeriod", 
+		WHERE id = ".$Game->id);
+
+	}
+
+	/**
+	 * If the start time has not been set, set it to the current time.
+	 */
+	protected function initializeStartTime(){
+		global $DB;
+		
+		if ($this->startTime == -1){
+			$this->startTime = time();
+
+			$DB->sql_put("UPDATE wD_Games SET startTime = ".$this->startTime" WHERE id = ".$Game->id);
+		}
+	}
+
+	/**
 	 * Process; the main gamemaster function for managing games; processes orders, adjudicates them,
 	 * applies the results, creates new orders, updates supply center/army numbers, and moves the
 	 * game onto the next phase (or updates it as won)
@@ -555,6 +594,13 @@ class processGame extends Game
 		 * - Create new orders for the current phase
 		 * - Set the next date for game processing
 		 */
+
+		 /*
+		 * If the required amount of time has passed, switch the game's phaseMinutes.
+		 */
+		if ((time() - $this->startTime) >= $this.phaseSwitchPeriod and $this->startTime > 0 and $this->phaseSwitchPeriod > 0){
+			$this->switchPhaseTime();
+		}
 
 		/*
 		* Register the turn for each member with orders and update their phase count
@@ -1130,6 +1176,8 @@ class processGame extends Game
 		}
 		elseif( $this->processStatus == 'Not-processing' )
 		{
+			// When the game gets paused, switch the phase time, even if the phase period has not passed.
+			$this->switchPhaseTime();
 			$this->processStatus = 'Paused';
 
 			// Use processTime to find pauseTimeRemaining

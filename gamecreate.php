@@ -45,7 +45,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$form = $_REQUEST['newGame']; // This makes $form look harmless when it is unsanitized; the parameters must all be sanitized
 
 		$input = array();
-		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy','drawType','minimumReliabilityRating','excusedMissedTurns');
+		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'nextPhaseMinutes', 'phaseSwitchPeriod', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy','drawType','minimumReliabilityRating','excusedMissedTurns');
 
 		$playerTypes = 'Members';
 
@@ -96,6 +96,23 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		{
 			throw new Exception(l_t("The phase value is too large or small; it must be between 5 minutes and 10 days."));
 		}
+
+		$input['nextPhaseMinutes'] = (int)$input['nextPhaseMinutes'];
+		if ( $input['nextPhaseMinutes'] < 5 or $input['nextPhaseMinutes'] > 1440*10 or $input['nextPhaseMinutes'] < $input['phaseMinutes']))
+		{
+			throw new Exception(l_t("The next phase value is too large or small; it must be between 5 minutes and 10 days, and must be larger or equal to the value of the original phase value."));
+		}
+
+		if ($input['phaseMinutes'] > 30){
+			$input['nextPhaseMinutes'] = $input['phaseMinutes']];
+		}
+
+		$input['phaseSwitchPeriod'] = (int)$input['phaseSwitchPeriod'];
+
+		if ($input['phaseMinutes'] == $input['nextPhaseMinutes']){
+			$input['phaseSwitchPeriod'] = -1;
+		}
+
 
 		$input['joinPeriod'] = (int)$input['joinPeriod'];
 		if ( $input['joinPeriod'] < 5 or $input['joinPeriod'] > 1440*14 )
@@ -190,6 +207,8 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input['bet'], 
 			$input['potType'], 
 			$input['phaseMinutes'], 
+			$input['nextPhaseMinutes'],
+			$input['phaseSwitchPeriod'],
 			$input['joinPeriod'], 
 			$input['anon'], 
 			$input['pressType'], 
