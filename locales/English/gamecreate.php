@@ -90,6 +90,36 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				?>
 				</select>
 			</p>
+			<p>
+				<strong>Time Until Phase Swap</strong></br>
+				<select class = "gameCreate" id="wait" name="newGame[phaseSwitchPeriod]">
+				<?php
+				$phaseList = array(15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
+				1440);
+					foreach ($phaseList as $i) 
+					{
+						$opt = libTime::timeLengthText($i*60);
+
+						print '<option value="'.$i.'"'.($i==10080 ? ' selected' : '').'>'.$opt.'</option>';
+					}
+				?>
+				</select>
+			</p>
+			<p>
+				<strong>Phase Length After Swap</strong></br>
+				<select class = "gameCreate" id="wait" name="newGame[nextPhaseMinutes]">
+				<?php
+				$phaseList = array(15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
+				1440);
+					foreach ($phaseList as $i) 
+					{
+						$opt = libTime::timeLengthText($i*60);
+
+						print '<option value="'.$i.'"'.($i==10080 ? ' selected' : '').'>'.$opt.'</option>';
+					}
+				?>
+				</select>
+			</p>
 			
 			<strong>Game Messaging:</strong>
 			<img id = "modBtnMessaging" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />

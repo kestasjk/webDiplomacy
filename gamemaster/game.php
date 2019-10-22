@@ -598,7 +598,7 @@ class processGame extends Game
 		 /*
 		 * If the required amount of time has passed, switch the game's phaseMinutes.
 		 */
-		if ((time() - $this->startTime) >= $this.phaseSwitchPeriod and $this->startTime > 0 and $this->phaseSwitchPeriod > 0){
+		if ((time() - $this->startTime) >= $this.phaseSwitchPeriod * 60 and $this->startTime > 0 and $this->phaseSwitchPeriod > 0){
 			$this->switchPhaseTime();
 		}
 
