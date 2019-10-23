@@ -109,8 +109,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				<strong>Phase Length After Swap</strong></br>
 				<select class = "gameCreate" id="wait" name="newGame[nextPhaseMinutes]">
 				<?php
-				$phaseList = array(15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
-				1440);
+				$phaseList = array(1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400);
 					foreach ($phaseList as $i) 
 					{
 						$opt = libTime::timeLengthText($i*60);
