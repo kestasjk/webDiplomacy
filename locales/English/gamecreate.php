@@ -92,29 +92,35 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			</p>
 			<p>
 				<strong>Time Until Phase Swap</strong></br>
-				<select class = "gameCreate" id="wait" name="newGame[phaseSwitchPeriod]">
+				<select class = "gameCreate" id="phaseSwitchPeriod" name="newGame[phaseSwitchPeriod]">
 				<?php
-				$phaseList = array(15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
+				$phaseList = array(-1, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
 				1440);
 					foreach ($phaseList as $i) 
 					{
-						$opt = libTime::timeLengthText($i*60);
+						if $i != -1{
+							$opt = libTime::timeLengthText($i*60);
 
-						print '<option value="'.$i.'"'.($i==10080 ? ' selected' : '').'>'.$opt.'</option>';
+							print '<option value="'.$i.'"'.($i==-1 ? ' selected' : '').'>'.$opt.'</option>';
+						}
+						else {
+							$opt = "No phase switch";
+							print '<option value="'.$i.'"'.($i==-1 ? ' selected' : '').'>'.$opt.'</option>';
+						}
 					}
 				?>
 				</select>
 			</p>
-			<p>
+			<p id="nextPhaseMinutesPara">
 				<strong>Phase Length After Swap</strong></br>
-				<select class = "gameCreate" id="wait" name="newGame[nextPhaseMinutes]">
+				<select class = "gameCreate" id="nextPhaseMinutes" name="newGame[nextPhaseMinutes]">
 				<?php
 				$phaseList = array(1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400);
 					foreach ($phaseList as $i) 
 					{
 						$opt = libTime::timeLengthText($i*60);
 
-						print '<option value="'.$i.'"'.($i==10080 ? ' selected' : '').'>'.$opt.'</option>';
+						print '<option value="'.$i.'"'.($i==1440 ? ' selected' : '').'>'.$opt.'</option>';
 					}
 				?>
 				</select>
@@ -376,4 +382,27 @@ function setBotFill(){
 		document.getElementById("botBox").checked = false;
 	}
 }
+
+// Display nextPhaseMinutes paragraph only if phaseSwitchPeriod has selected a period.
+const nextPhaseMinutesPara = document.getElementById("nextPhaseMinutesPara");
+const phaseSwitchPeriodSelect = document.getElementById("phaseSwitchPeriod");
+
+nextPhaseMinutesPara.style.display = "none";
+
+const displayWhenNotSelected(source, value, target) => {
+	const selectedIndex = source.selectedIndex;
+	const selectedValue = source[selectedIndex].value;
+
+	if (selectedValue != value){
+		target.style.display = "block";
+	}
+	else {
+		target.style.display = "none";
+	}
+}
+
+phaseSwitchPeriodSelect.addEventListener("change", (evt) =>
+	displayWhenNotSelected(phaseSwitchPeriodSelect, -1, nextPhaseMinutesPara)
+);
+
 </script>
