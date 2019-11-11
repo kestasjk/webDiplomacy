@@ -218,8 +218,8 @@ switch($page)
 
 		print "<p>".l_t("Thank you for verifying your email address!</p>
 			<p>Enter the username, password, and any of the optional settings you want into the screen below to
-			complete the registration process.")." </br></br><font color='red'>Your username is visible to other members so please keep it appropiate and 
-			and avoid using your full name if you are concerned about privacy.</font></p>";
+			complete the registration process.")." </br></br><font color='red'>Your username is visible to other members so please keep it appropriate and 
+			and avoid using your full name if you are concerned about privacy. Keep in mind that we do not grant name change requests, so pick a name you're sure about. </font></p>";
 
 	case 'userForm':
 		print '<form method="post" class = "settings_show" autocomplete="off"><ul class="formlist">';
