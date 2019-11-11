@@ -189,7 +189,7 @@ switch($page)
 	case 'emailSent':
 
 		print '<h3>'.l_t('Anti-bot Validation - Confirmed!').'</h3>';
-		print "<p>".l_t("Okay, now that we know you're a human we need to check that you have a real email address.")."</p>";
+		print "<p>".l_t("Now that we know you're a human, we need to check that you have a real email address.")."</p>";
 
 		print '<div class="hr"></div>';
 		print '<h3>'.l_t('Email Validation').'</h3>';
@@ -218,8 +218,8 @@ switch($page)
 
 		print "<p>".l_t("Thank you for verifying your email address!</p>
 			<p>Enter the username, password, and any of the optional settings you want into the screen below to
-			complete the registration process.")." </br></br><font color='red'>Your username is visible to other members so please keep it appropiate and 
-			and avoid using your full name if you are concerned about privacy.</font></p>";
+			complete the registration process.")." </br></br><font color='red'>Your username is visible to other members, so please keep it appropriate and 
+			and avoid using your full name if you are concerned about privacy. Keep in mind that we do not grant name change requests, so pick a name that you're sure about. </font></p>";
 
 	case 'userForm':
 		print '<form method="post" class = "settings_show" autocomplete="off"><ul class="formlist">';
