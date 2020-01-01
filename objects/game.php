@@ -471,7 +471,7 @@ class Game
 			g.excusedMissedTurns,
 			g.playerTypes,
 			g.createTime,
-			g.startTime,
+			g.startTime
 			FROM wD_Games g
 			WHERE g.id=".$this->id.' '.$this->lockMode);
 
