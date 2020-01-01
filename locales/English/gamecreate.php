@@ -66,7 +66,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					</p>
 				</div>
 			</div>
-			<select class = "gameCreate" name="newGame[phaseMinutes]">
+			<select class = "gameCreate" name="newGame[phaseMinutes]" id="selectPhaseMinutes">
 			<?php
 				$phaseList = array(5,7, 10, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
 					1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400);
@@ -74,31 +74,16 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				foreach ($phaseList as $i) { print '<option value="'.$i.'"'.($i==1440 ? ' selected' : '').'>'.libTime::timeLengthText($i*60).'</option>'; }
 			?>
 			</select>
-
-			<p>
-				<strong>Time to Fill Game: (5 min - 14 days)</strong></br>
-				<select class = "gameCreate" id="wait" name="newGame[joinPeriod]">
-				<?php
-				$phaseList = array(5,7, 10, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
-				1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400, 20160);
-					foreach ($phaseList as $i) 
-					{
-						$opt = libTime::timeLengthText($i*60);
-
-						print '<option value="'.$i.'"'.($i==10080 ? ' selected' : '').'>'.$opt.'</option>';
-					}
-				?>
-				</select>
-			</p>
-			<p>
+			
+			<p id="phaseSwitchPeriodPara">
 				<strong>Time Until Phase Swap</strong></br>
-				<select class = "gameCreate" id="phaseSwitchPeriod" name="newGame[phaseSwitchPeriod]">
+				<select class = "gameCreate" id="selectPhaseSwitchPeriod" name="newGame[phaseSwitchPeriod]">
 				<?php
-				$phaseList = array(-1, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
+				$phaseList = array(-1, 10, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
 				1440);
 					foreach ($phaseList as $i) 
 					{
-						if $i != -1{
+						if ($i != -1){
 							$opt = libTime::timeLengthText($i*60);
 
 							print '<option value="'.$i.'"'.($i==-1 ? ' selected' : '').'>'.$opt.'</option>';
@@ -111,9 +96,10 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				?>
 				</select>
 			</p>
+			
 			<p id="nextPhaseMinutesPara">
 				<strong>Phase Length After Swap</strong></br>
-				<select class = "gameCreate" id="nextPhaseMinutes" name="newGame[nextPhaseMinutes]">
+				<select class = "gameCreate" id="selectNextPhaseMinutes" name="newGame[nextPhaseMinutes]">
 				<?php
 				$phaseList = array(1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400);
 					foreach ($phaseList as $i) 
@@ -121,6 +107,22 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 						$opt = libTime::timeLengthText($i*60);
 
 						print '<option value="'.$i.'"'.($i==1440 ? ' selected' : '').'>'.$opt.'</option>';
+					}
+				?>
+				</select>
+			</p>
+			
+			<p>
+				<strong>Time to Fill Game: (5 min - 14 days)</strong></br>
+				<select class = "gameCreate" id="wait" name="newGame[joinPeriod]">
+				<?php
+				$phaseList = array(5,7, 10, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
+				1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400, 20160);
+					foreach ($phaseList as $i) 
+					{
+						$opt = libTime::timeLengthText($i*60);
+
+						print '<option value="'.$i.'"'.($i==10080 ? ' selected' : '').'>'.$opt.'</option>';
 					}
 				?>
 				</select>
@@ -384,25 +386,43 @@ function setBotFill(){
 }
 
 // Display nextPhaseMinutes paragraph only if phaseSwitchPeriod has selected a period.
-const nextPhaseMinutesPara = document.getElementById("nextPhaseMinutesPara");
-const phaseSwitchPeriodSelect = document.getElementById("phaseSwitchPeriod");
+nextPhaseMinutesPara = document.getElementById("nextPhaseMinutesPara");
+
+selectPhaseSwitchPeriod = document.getElementById("selectPhaseSwitchPeriod");
+phaseSwitchPeriodPara = document.getElementById("phaseSwitchPeriodPara");
+
+selectPhaseMinutes = document.getElementById("selectPhaseMinutes");
 
 nextPhaseMinutesPara.style.display = "none";
+phaseSwitchPeriodPara.style.display = "none";
 
-const displayWhenNotSelected(source, value, target) => {
-	const selectedIndex = source.selectedIndex;
-	const selectedValue = source[selectedIndex].value;
 
-	if (selectedValue != value){
-		target.style.display = "block";
+const updatePhasePeriod = () => {
+	console.log('called!!!');
+	console.log(selectPhaseMinutes.value);
+	if (selectPhaseMinutes.value > 60){
+		phaseSwitchPeriodPara.style.display = "none";
+		nextPhaseMinutesPara.style.display = "none";
 	}
-	else {
-		target.style.display = "none";
+	else{
+		phaseSwitchPeriodPara.style.display = "block";
+		
+		if (selectPhaseSwitchPeriod.value == -1){	
+		nextPhaseMinutesPara.style.display = "none";
+		}
+		else{
+		nextPhaseMinutesPara.style.display = "block";
+		}
 	}
 }
 
-phaseSwitchPeriodSelect.addEventListener("change", (evt) =>
-	displayWhenNotSelected(phaseSwitchPeriodSelect, -1, nextPhaseMinutesPara)
-);
+selectPhaseSwitchPeriod.addEventListener("change", (evt) => {
+	updatePhasePeriod();
+});
+selectPhaseMinutes.addEventListener("change", (evt) => {
+	updatePhasePeriod();
+});
+
+// phaseSwitchPeriodSelect.style.display = "none";
 
 </script>
