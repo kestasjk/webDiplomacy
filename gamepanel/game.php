@@ -194,6 +194,72 @@ class panelGame extends Game
 		return $buf;
 	}
 
+	/*
+	function phaseSwitchInfo()
+	{
+		$buf = '';
+		
+		if ($this->phase == 'Finished' or $this->phaseSwitchPeriod <= 0){
+			return $buf;
+		}
+		
+		$buf .= '<div class="titleBarRightSide">'.
+					l_t('Next phase length: <span class="nextPhaseMinutes"><strong>%s</strong> /phase</span>', libTime::timeLengthText($this->nextPhaseMinutes * 60)).'</div>';
+			
+		if ($this->startTime > 0){
+			
+			$timeWhenSwitch = (($this->phaseSwitchPeriod * 60) + $this->startTime);
+			
+			
+			$timeWhenSwitch = libTime::remainingText($timeWhenSwitch);
+			
+			$buf .= '<div style="clear:both"></div>';
+			$buf .= '<div class="titleBarRightSide">'.
+						l_t('Phase switch: <strong>%s</strong>', $timeWhenSwitch).'</div>';	
+		}
+		
+		else {
+			$timeTillNextPhase = libTime::timeLengthText($this->phaseSwitchPeriod * 60);
+			
+			$buf .= '<div style="clear:both"></div>';
+			$buf .= '<div class="titleBarRightSide">'.
+						l_t('Phase switch: <strong>%s</strong> after game start', $timeTillNextPhase).'</div>';	
+		}
+								
+
+		return $buf;
+	}
+	*/
+	
+	function phaseSwitchInfo()
+		{
+		$buf = '';
+		
+		if ($this->phase == 'Finished' or $this->phaseSwitchPeriod <= 0){
+			return $buf;
+		}
+		
+			
+		if ($this->startTime > 0){
+			
+			$timeWhenSwitch = (($this->phaseSwitchPeriod * 60) + $this->startTime);
+			
+			
+			$timeWhenSwitch = libTime::remainingText($timeWhenSwitch);
+			
+			$buf .= l_t('<div>Phase switch: <strong>%s</strong></div>', $timeWhenSwitch);	
+		}
+		
+		else {
+			$timeTillNextPhase = libTime::timeLengthText($this->phaseSwitchPeriod * 60);
+			
+			$buf .= l_t('<div>Phase switch: <span><strong>%s</strong> after game start.</span></div>', $timeTillNextPhase);	
+		}
+		
+				$buf .= l_t('<div>Next phase length: <span><strong>%s</strong> /phase.</span></div>', libTime::timeLengthText($this->nextPhaseMinutes * 60));
+								
+		return $buf;
+	}
 	/**
 	 * The title bar, giving the vital game related data
 	 *
@@ -203,26 +269,37 @@ class panelGame extends Game
 	{
 		$rightTop = '
 			<div class="titleBarRightSide">
-				<span class="gameTimeRemaining">'.$this->gameTimeRemaining().'</span>
-			</div>
-			';
+				<div>
+				<span class="gameTimeRemaining">'.$this->gameTimeRemaining().'</span></div>'.
+			'</div>';
 
-		$rightBottom = '<div class="titleBarRightSide">
-				<span class="gameHoursPerPhase">
-					'.$this->gameHoursPerPhase().'
-				</span>
-			</div>';
+		$rightMiddle = '<div class="titleBarRightSide">'.
+				'<div>'.
+					'<span class="gameHoursPerPhase">'.$this->gameHoursPerPhase().'</span>'.$this->phaseSwitchInfo().
+				'</div>';
+			
+
+				
+		$rightMiddle .= '</div>';
+		
+		$rightBottom = '<div class="titleBarRightSide">'.
+					l_t('%s excused missed turn','<span class="excusedNMRs">'.$this->excusedMissedTurns.'</span>
+					').
+				'</div>';
+		// $rightBottom .= $this->phaseSwitchInfo();
 
 		$date=' - <span class="gameDate">'.$this->datetxt().'</span>, <span class="gamePhase">'.l_t($this->phase).'</span>';
 
-		$leftTop = '<div class="titleBarLeftSide">
+		$leftTop = '<div class="titleBarLeftSide" align=">
 				'.$this->gameIcons().
 				'<span class="gameName">'.$this->titleBarName().'</span>';
 
-		$leftBottom = '<div class="titleBarLeftSide">
+		$leftBottom = '<div class="titleBarLeftSide"><div>
 				'.l_t('Pot:').' <span class="gamePot">'.$this->pot.' '.libHTML::points().'</span>';
 
-		$leftBottom .= $date;
+		$leftBottom .= $date.'</div>';
+		
+		$leftBottom .= '<div>'.$this->gameVariants().'</div>';
 
 		$leftTop .= '</div>';
 		$leftBottom .= '</div>';
@@ -231,21 +308,28 @@ class panelGame extends Game
 			'.$rightTop.'
 			'.$leftTop.'
 			<div style="clear:both"></div>
-			'.$rightBottom.'
+			'.$rightMiddle.'
 			'.$leftBottom.'
 			<div style="clear:both"></div>
-			';
+			'.$rightBottom.'
+			<div style="clear:both"></div>';
 
-		$buf .= $this->gameVariants();
+		// $buf .= $this->phaseSwitchInfo();
 
+		// $buf .= $this->gameVariants();
+
+		/*
 		$buf .= '<div class="titleBarRightSide">'.
-					l_t('%s excused missed turn','<span class="excusedNMRs">'.$this->excusedMissedTurns.'</span>').
+					l_t('%s excused missed turn','<span class="excusedNMRs">'.$this->excusedMissedTurns.'</span>
+					').
 				'</div>';
-
-		$buf .= '<div style="clear:both"></div>';
-
+		*/
+		// $buf .= '<div style="clear:both"></div>';
+		
 		return $buf;
 	}
+	
+
 
 	function gameVariants()
 	{
