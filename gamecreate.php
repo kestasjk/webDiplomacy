@@ -98,13 +98,13 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		}
 
 		$input['nextPhaseMinutes'] = (int)$input['nextPhaseMinutes'];
-		if ( $input['nextPhaseMinutes'] < 5 or $input['nextPhaseMinutes'] > 1440*10 or $input['nextPhaseMinutes'] < $input['phaseMinutes']))
+		if ( $input['nextPhaseMinutes'] < 5 or $input['nextPhaseMinutes'] > 1440*10 or $input['nextPhaseMinutes'] < $input['phaseMinutes'])
 		{
 			throw new Exception(l_t("The next phase value is too large or small; it must be between 5 minutes and 10 days, and must be larger or equal to the value of the original phase value."));
 		}
 
 		if ($input['phaseMinutes'] > 30){
-			$input['nextPhaseMinutes'] = $input['phaseMinutes']];
+			$input['nextPhaseMinutes'] = $input['phaseMinutes'];
 		}
 
 		$input['phaseSwitchPeriod'] = (int)$input['phaseSwitchPeriod'];
