@@ -329,7 +329,7 @@ class processGame extends Game
 		$pTime = time() + $joinPeriod*60;
 		$pTime = $pTime - fmod($pTime, 300) + 300;	// for short game & phase timer
 		$createTime = time();
-		$startTime = -1;
+		$startTime = 0;
 		$DB->sql_put("INSERT INTO wD_Games
 					SET variantID=".$variantID.",
 						name = '".$name.($i > 1 ? '-'.$i : '')."',
@@ -341,14 +341,14 @@ class processGame extends Game
 						".( $password ? "password = UNHEX('".md5($password)."')," : "").
 						"processTime = ".$pTime.",
 						phaseMinutes = ".$phaseMinutes.",
-						nextPhaseMinutes = ".$nextPhaseMinutes",
-						phaseSwitchPeriod = ".$phaseSwitchPeriod",
+						nextPhaseMinutes = ".$nextPhaseMinutes.",
+						phaseSwitchPeriod = ".$phaseSwitchPeriod.",
 						missingPlayerPolicy = '".$missingPlayerPolicy."',
 						drawType='".$drawType."', 
 						minimumReliabilityRating=".$rrLimit.",
 						excusedMissedTurns = ".$excusedMissedTurns.",
 						playerTypes = '".$playerTypes."',
-						createTime = ".$createTime",
+						createTime = ".$createTime.",
 						startTime = ".$startTime);
 
 		$gameID = $DB->last_inserted();
@@ -390,7 +390,7 @@ class processGame extends Game
 
 	/**
 	 * Create a new game from a game ID; create the parent for UPDATE so that
-	 * no-one else can process this game at the same tiem
+	 * no-one else can process this game at the same time
 	 *
 	 * @param int $id Game ID
 	 */
@@ -529,29 +529,30 @@ class processGame extends Game
 	protected function switchPhaseTime(){
 		global $DB;
 
-		$newPhaseMinutes = $this->nextPhaseMinutes
+		$newPhaseMinutes = $this->nextPhaseMinutes;
 		$this->phaseMinutes = $newPhaseMinutes;
 		$this->phaseSwitchPeriod = -1;
-		// $this->processTime = time()+($newPhaseMinutes*60);
+		$this->nextPhaseMinutes = -1;
+		$this->processTime = time()+($newPhaseMinutes*60);
 
 		$DB->sql_put("UPDATE wD_Games 
-		SET phaseMinutes = ".$Game->phaseMinutes.", 
-		processTime = ".$Game->processTime.",
-		phaseSwitchPeriod = ".$this->phaseSwitchPeriod", 
-		WHERE id = ".$Game->id);
+		SET phaseMinutes = ".$this->phaseMinutes.", 
+		processTime = ".$this->processTime.",
+		phaseSwitchPeriod = ".$this->phaseSwitchPeriod."
+		WHERE id = ".$this->id);
 
 	}
 
 	/**
 	 * If the start time has not been set, set it to the current time.
 	 */
-	protected function initializeStartTime(){
+	function initializeStartTime(){
 		global $DB;
 		
-		if ($this->startTime == -1){
+		if ($this->startTime == 0){
 			$this->startTime = time();
 
-			$DB->sql_put("UPDATE wD_Games SET startTime = ".$this->startTime" WHERE id = ".$Game->id);
+			$DB->sql_put("UPDATE wD_Games SET startTime = ".$this->startTime." WHERE id = ".$this->id);
 		}
 	}
 
@@ -598,7 +599,7 @@ class processGame extends Game
 		 /*
 		 * If the required amount of time has passed, switch the game's phaseMinutes.
 		 */
-		if ((time() - $this->startTime) >= $this.phaseSwitchPeriod * 60 and $this->startTime > 0 and $this->phaseSwitchPeriod > 0){
+		if ((time() - $this->startTime) >= $this->phaseSwitchPeriod * 60 and $this->startTime > 0 and $this->phaseSwitchPeriod > 0){
 			$this->switchPhaseTime();
 		}
 
