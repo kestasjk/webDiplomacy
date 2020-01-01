@@ -1,0 +1,88 @@
+Guide for getting a development instance running on a Windows machine.
+
+This is entirely for development, I wouldn't recommend following these steps for an instance you intend to actually host from.
+
+These are the steps I took, I can't guarantee that any changes to these steps will work.
+
+--------------------------------------------------------------------------------------
+
+Step 1: Download and install WampServer 3.2.0 - http://www.wampserver.com/en/download-wampserver-64bits/
+
+This page will later host a newer version of WampServer, so you might need to find a legacy version.
+
+You will see a WampServer button in your task bar. Click this, and change your php version to 5.6.40
+
+These are my versions with a working instance:
+
+phpMyAdmin 4.9.2
+Adminer 4.7.5
+Apache 2.4.41
+php 5.6.40
+MariaDB 10.4.10
+MySQL 5.7.28
+
+--------------------------------------------------------------------------------------
+
+Step 2: Verify everything is working
+
+Navigate to http://localhost/
+
+You should have a WAMPServer instance up.
+
+--------------------------------------------------------------------------------------
+
+Step 3:
+
+Navigate to "phpmyadmin" under "Tools".
+
+Log in to MySQL with 
+
+username: root
+
+and a blank password.
+
+
+Go to databases, and create a database named "webdiplomacy".
+
+Go to variables, and edit the "sql mode" variable so that it does not have STRICT_ALL_TABLES or STRICT_TRANS_TABLES.
+
+Go to user accounts, create a new user with username "webdiplomacy", password "webdiplomacy", and all the privileges. 
+I am sure this is insanely insecure, but this is for development only.
+
+--------------------------------------------------------------------------------------
+
+Step 4:
+
+Navigate to C:\wamp64\www
+
+And clone your fork of webDiplomacy here. Ensure that the folder it's cloned to is named "webDiplomacy".
+
+Navigate to http://localhost/webdiplomacy/index.php? in your browser. You should see a bunch of errors. This is good!
+
+--------------------------------------------------------------------------------------
+
+Step 5:
+
+Change the name of instant-windows-config.php to config.php
+
+You can edit the contents if you want, but this should be good.
+
+--------------------------------------------------------------------------------------
+
+Step 6:
+
+Navigate back to phpmyadmin and log in as root.
+
+go to the "webdiplomacy" database, import, and choose the file C:\wamp64\www\webDiplomacy\install\FullInstall\fullInstall.sql
+
+This should work - if this file hasn't been properly maintained you may need to import every script under C:\wamp64\www\webDiplomacy\install instead, yikes.
+
+--------------------------------------------------------------------------------------
+
+Step 7:
+
+You should have a working instance! Hooray!
+
+You can navigate to http://localhost/webdiplomacy/gamemaster.php?gameMasterSecret=1 to trigger a process event whenever you want.
+
+I recommend doing this instead of a timed script for testing.
