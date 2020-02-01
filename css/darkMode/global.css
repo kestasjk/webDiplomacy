@@ -1116,10 +1116,6 @@ input[type=submit].gameCreate:hover {
   background-color: #45a049;
 }
 
-select option {
-	background: #777 !important;
-}
-
 /* The Modal (background) */
 .modal {
   display: none; /* Hidden by default */

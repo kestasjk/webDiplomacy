@@ -185,7 +185,20 @@ misorders in the future is to double check all of your orders, and even if you d
 That button will direct you to a form that you can send to the moderators and they will help you.",
 
 
-"The webDiplomacy Forum " => "Sub-section",
+"webDiplomacy AI" => "Sub-section",
+
+"Does webDiplomacy support artificial intelligence?" => "Yes! webDiplomacy was the first online Diplomacy site to support artificial intelligence. You can play no press games against bot users on our 7 player classic map or on either of our 1v1 maps.",
+
+"How did you train the AI?" => "The webDiplomacy AI was developed in tandem with university researchers and trained on over 160,000 Diplomacy games across different scoring systems, different phase lengths, and on various platforms. The AI's strategies and tactics are up to standard and provide a challenge for most users as well as a place to experiment, learn, and perfect your game.",
+
+"Do you plan on making further changes to the AI?" => "While there are currently no immediate plans to further train or expand the AI's capabilities, we intend to allow the AI to fill open positions in games that have yet to start that would otherwise be canceled. We also hope that the AI will be useful for filling some positions in civil disorder until they are taken over by other players so that there are no inactive positions in eligible games.",
+
+"How do I play against the AI?" => "You can play no press games against bot users on the classic map or on either 1v1 map. In order to play against the AI, create a new game and select \"Play a Game Against Bots.\" Once you're there, you can pick your variant and pick the country that you play, or simply play as a random country by default.",
+
+"Where can I find more in depth information about the AI?" => "You can find more information by reading <a href='https://github.com/diplomacy/research/blob/master/neurips_paper_v1.pdf' class='light'>this research paper</a>, or you can hear a discussion with jmo1121109 and peterwiggin <a href='https://diplomacygames.com/rise-of-the-bots/' class='light'>here</a>.",
+
+
+"The Forum " => "Sub-section",
 
 "Didn't the forum look different before?" => "Yes, it did! webDiplomacy used to have a very basic forum that slowly became more and more problematic 
 as webDiplomacy grew. When the site was small, the server load the forum caused was fairly small as well, but as the site got bigger and bigger and 

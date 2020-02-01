@@ -24,9 +24,6 @@
 .homeInfoList strong {
 	font-style:normal;
 }
-a.current {
-	color:black !important;
-}
 div.homeUserContent {
 	margin-top:15px;
 }
