@@ -396,7 +396,7 @@ nextPhaseMinutesPara.style.display = "none";
 phaseSwitchPeriodPara.style.display = "none";
 
 
-const updatePhasePeriod = () => {
+function updatePhasePeriod(){
 	if (selectPhaseMinutes.value > 60){
 		phaseSwitchPeriodPara.style.display = "none";
 		nextPhaseMinutesPara.style.display = "none";
@@ -413,13 +413,10 @@ const updatePhasePeriod = () => {
 	}
 }
 
-selectPhaseSwitchPeriod.addEventListener("change", (evt) => {
-	updatePhasePeriod();
-});
-selectPhaseMinutes.addEventListener("change", (evt) => {
-	updatePhasePeriod();
-});
 
-// phaseSwitchPeriodSelect.style.display = "none";
+
+
+selectPhaseSwitchPeriod.addEventListener("change", updatePhasePeriod)
+selectPhaseMinutes.addEventListener("change", updatePhasePeriod)
 
 </script>
