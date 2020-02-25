@@ -328,7 +328,6 @@ class processGame extends Game
 		 */
 		$pTime = time() + $joinPeriod*60;
 		$pTime = $pTime - fmod($pTime, 300) + 300;	// for short game & phase timer
-		$createTime = time();
 		$startTime = 0;
 		$DB->sql_put("INSERT INTO wD_Games
 					SET variantID=".$variantID.",
@@ -348,7 +347,6 @@ class processGame extends Game
 						minimumReliabilityRating=".$rrLimit.",
 						excusedMissedTurns = ".$excusedMissedTurns.",
 						playerTypes = '".$playerTypes."',
-						createTime = ".$createTime.",
 						startTime = ".$startTime);
 
 		$gameID = $DB->last_inserted();

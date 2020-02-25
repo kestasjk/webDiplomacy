@@ -253,11 +253,6 @@ class Game
 	 */
 	public $playerTypes;
 
-	/**
-	 * The time the game was created, a UNIX timestamp.
-	 * @var int
-	 */
-	public $createTime;
 
 	/**
 	 * The time the game was started, a UNIX timestamp. Initialized as -1.
@@ -470,7 +465,6 @@ class Game
 			g.minimumReliabilityRating,
 			g.excusedMissedTurns,
 			g.playerTypes,
-			g.createTime,
 			g.startTime
 			FROM wD_Games g
 			WHERE g.id=".$this->id.' '.$this->lockMode);
