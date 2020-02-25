@@ -98,17 +98,20 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		}
 
 		$input['nextPhaseMinutes'] = (int)$input['nextPhaseMinutes'];
+		# Case when nextPhaseMinutes is an invalid value.
 		if ( $input['nextPhaseMinutes'] < 5 or $input['nextPhaseMinutes'] > 1440*10 or $input['nextPhaseMinutes'] < $input['phaseMinutes'])
 		{
 			throw new Exception(l_t("The next phase value is too large or small; it must be between 5 minutes and 10 days, and must be larger or equal to the value of the original phase value."));
 		}
 
-		if ($input['phaseMinutes'] > 30){
+		# Case when the game is not a live game to begin with.
+		if ($input['phaseMinutes'] > 60){
 			$input['nextPhaseMinutes'] = $input['phaseMinutes'];
 		}
 
 		$input['phaseSwitchPeriod'] = (int)$input['phaseSwitchPeriod'];
 
+		# If we're not doing a live phase transition, then we don't need a phase switch period.
 		if ($input['phaseMinutes'] == $input['nextPhaseMinutes']){
 			$input['phaseSwitchPeriod'] = -1;
 		}
