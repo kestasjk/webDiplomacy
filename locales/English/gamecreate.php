@@ -79,8 +79,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				<strong>Time Until Phase Swap</strong></br>
 				<select class = "gameCreate" id="selectPhaseSwitchPeriod" name="newGame[phaseSwitchPeriod]">
 				<?php
-				$phaseList = array(-1, 10, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
-				1440);
+				$phaseList = array(-1, 10, 15, 20, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360);
 					foreach ($phaseList as $i) 
 					{
 						if ($i != -1){
@@ -398,8 +397,6 @@ phaseSwitchPeriodPara.style.display = "none";
 
 
 const updatePhasePeriod = () => {
-	console.log('called!!!');
-	console.log(selectPhaseMinutes.value);
 	if (selectPhaseMinutes.value > 60){
 		phaseSwitchPeriodPara.style.display = "none";
 		nextPhaseMinutesPara.style.display = "none";
