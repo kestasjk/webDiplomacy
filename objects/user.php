@@ -779,7 +779,7 @@ class User {
 		}*/
 
 		$DB->sql_put("INSERT INTO wD_Sessions (userID, lastRequest, hits, ip, userAgent, cookieCode)
-					VALUES (".$this->id.",CURRENT_TIMESTAMP,1, INET_ATON('127.0.0.1'),
+					VALUES (".$this->id.",CURRENT_TIMESTAMP,1, INET_ATON('".$_SERVER['REMOTE_ADDR']."'),
 							UNHEX('".$userAgentHash."'), ".$cookieCode." )
 					ON DUPLICATE KEY UPDATE hits=hits+1");
 
