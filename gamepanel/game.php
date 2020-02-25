@@ -195,12 +195,12 @@ class panelGame extends Game
 	}
 	
 	function phaseSwitchInfo()
-		{
-		$buf = '';
+	{
+	$buf = '';
 		
-		if ($this->phase == 'Finished' or $this->phaseSwitchPeriod <= 0){
-			return $buf;
-		}
+	if ($this->phase == 'Finished' or $this->phaseSwitchPeriod <= 0){
+		return $buf;
+	}
 		
 			
 		if ($this->startTime > 0){
