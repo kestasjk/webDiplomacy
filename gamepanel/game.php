@@ -198,12 +198,14 @@ class panelGame extends Game
 	{
 	$buf = '';
 		
-	if ($this->phase == 'Finished' or $this->phaseSwitchPeriod <= 0){
+	if ($this->phase == 'Finished' or $this->phaseSwitchPeriod <= 0)
+	{
 		return $buf;
 	}
 		
 			
-		if ($this->startTime > 0){
+		if ($this->startTime > 0)
+		{
 			
 			$timeWhenSwitch = (($this->phaseSwitchPeriod * 60) + $this->startTime);
 			
