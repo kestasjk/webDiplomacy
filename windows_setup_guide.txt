@@ -83,6 +83,8 @@ Step 7:
 
 You should have a working instance! Hooray!
 
+If you don't, please amend this guide once you figure it out.
+
 You can navigate to http://localhost/webdiplomacy/gamemaster.php?gameMasterSecret=1 to trigger a process event whenever you want.
 
 I recommend doing this instead of a timed script for testing.
