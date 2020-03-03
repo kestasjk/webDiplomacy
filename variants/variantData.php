@@ -49,7 +49,7 @@ class VariantData
 	 */
 	public $typeID = 0;
 	
-	public function VariantData($variantID)
+	public function __construct($variantID)
 	{
 		$this->variantID = $variantID;
 	}
