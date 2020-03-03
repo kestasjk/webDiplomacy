@@ -190,7 +190,7 @@ class libAuth
 	 */
 	static public function adminUserSwitch(User $User)
 	{
-		assert('$User->type["Admin"]');
+		assert($User->type['Admin']);
 
 		if ( isset($_REQUEST['auid']) )
 		{

@@ -249,7 +249,7 @@ class adjDependencyNode
 			/*
 			 * It's a numeric comparison request
 			 */
-			assert('$decision == "compare"');
+			assert($decision == 'compare');
 
 			/*
 			 * Create a decision name that can be placed on the stack, which will allow us

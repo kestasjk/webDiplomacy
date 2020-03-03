@@ -315,7 +315,7 @@ class Members
 
 	function pointsLowestCD()
 	{
-		assert('$this->Game->phase != "Pre-game" && $this->Game->phase != "Finished"');
+		assert($this->Game->phase != 'Pre-game' && $this->Game->phase != 'Finished');
 
 		$pointsLowestCD = false;
 		foreach($this->ByStatus['Left'] as $Member)

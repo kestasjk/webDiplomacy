@@ -243,7 +243,7 @@ class processMembers extends Members
 	function setDrawn()
 	{
 		$this->prepareLog();
-		assert('count($this->ByStatus[\'Playing\']) > 0');
+		assert(count($this->ByStatus['Playing']) > 0);
 
 		// Calculate the points each player gets.
 		// These are pre-calculated because if they aren't the pot has to be decreased, and active
@@ -268,7 +268,7 @@ class processMembers extends Members
 	function setConcede()
 	{
 		$this->prepareLog();
-		assert('count($this->ByStatus[\'Playing\']) > 0');
+		assert(count($this->ByStatus['Playing']) > 0);
 
 		foreach($this->ByStatus['Left'] as $Member)
 			$Member->setResigned();
@@ -373,7 +373,7 @@ class processMembers extends Members
 		if( !isset(Config::$pointsLogFile) || !Config::$pointsLogFile )
 			return;
 
-		assert('is_array($this->logBefore);');
+		assert(is_array($this->logBefore));
 
 		$before=$this->logBefore;
 		$after=$this->pointsInfoLog();
@@ -473,7 +473,7 @@ class processMembers extends Members
 		$countryID=(int)$countryID;
 
 		// If we're not locked for UPDATE we can't keep things consistant
-		assert('$this->Game->lockMode == UPDATE');
+		assert($this->Game->lockMode == UPDATE);
 
 		if ( $this->Game->private and md5($password) != $this->Game->password and $password != $this->Game->password )
 			throw new Exception(l_t("The invite code you supplied is incorrect, please try again."));

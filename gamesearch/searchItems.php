@@ -268,7 +268,7 @@ abstract class searchItemCheckbox extends searchItem
 	
 	protected function setValue($values)
 	{
-		assert('is_array($values)');
+		assert(is_array($values));
 		foreach($this->options as $value=>$option)
 			if(in_array($value,$values))
 				$option->checked=true;
@@ -295,7 +295,7 @@ abstract class searchItemCheckbox extends searchItem
 	
 	function filterInput($input)
 	{
-		assert('is_array($input)');
+		assert(is_array($input));
 		if ( $this->locked ) return;
 		
 		$values=array();

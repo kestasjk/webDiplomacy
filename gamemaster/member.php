@@ -88,7 +88,7 @@ class processMember extends Member
 	{
 		global $DB, $Game;
 
-		assert('$Game instanceof processGame');
+		assert($Game instanceof processGame);
 
 		// It is assumed this is being run within a transaction
 
@@ -161,7 +161,7 @@ class processMember extends Member
 			if( isset($supplementAmount) && $supplementAmount>0 ) $bet -= $supplementAmount;
 		}
 
-		assert('$bet <= $this->Game->pot');
+		assert($bet <= $this->Game->pot);
 
 		User::pointsTransfer($this->userID, 'Cancel', $bet, $this->gameID, $this->id);
 

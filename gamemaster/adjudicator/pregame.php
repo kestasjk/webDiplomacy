@@ -132,7 +132,7 @@ class adjudicatorPreGame
 		}
 
 		for($countryID=1; $countryID<=count($Game->Variant->countries); $countryID++)
-			assert('$Game->Members->ByCountryID[$countryID]->countryID==$countryID');
+			assert($Game->Members->ByCountryID[$countryID]->countryID == $countryID);
 	}
 
 	protected function assignTerritories() 
@@ -228,7 +228,7 @@ class adjudicatorPreGame
 		if (count($Game->Members->ByCountryID)==0)
 		{
 			$userCountries = $this->userCountries();// $userCountries[$userID]=$countryID
-			assert('count($userCountries) == count($Game->Variant->countries) && count($userCountries) == count($Game->Members->ByID)');
+			assert(count($userCountries) == count($Game->Variant->countries) && count($userCountries) == count($Game->Members->ByID));
 			$this->assignCountries($userCountries);
 		}
 		

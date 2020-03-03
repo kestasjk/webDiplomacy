@@ -52,7 +52,7 @@ class ScoringPPSC extends ScoringSystem {
              */
             $SCsInPlayCount = (float)$this->Game->Members->supplyCenterCount('Playing');
 
-            assert('$SCsInPlayCount > 0');
+            assert($SCsInPlayCount > 0);
 
             $SCTarget = $this->Game->Variant->supplyCenterTarget;
             foreach($this->Game->Members->ByStatus['Playing'] as $Member)
