@@ -1,0 +1,18 @@
+{
+  "name": "kestasjk/web-diplomacy",
+  "description": "webDiplomacy",
+  "keywords": ["diplomacy"],
+  "type": "project",
+  "repositories": [],
+  "require": {
+    "php": "^7.0"
+  },
+  "require-dev": {},
+  "config": {
+    "preferred-install": "dist",
+    "sort-packages": true,
+    "optimize-autoloader": true
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}

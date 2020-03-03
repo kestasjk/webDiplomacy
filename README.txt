@@ -55,6 +55,14 @@ Edit config.sample.php to work with your setup, being very careful to read the w
 about security issues. The salts/secrets, errorlog/orderlog directories, can all
 leave your server wide open if you don't set them right. Rename to config.php when ready.
 
+=> Composer
+
+Install Composer via https://getcomposer.org/. Then run:
+
+    composer install
+
+This will install all external dependencies that webDiplomacy uses.
+
 => Log-on
 Once you've set config.php up you can use the random gameMasterSecret you entered
 to authenticate as the admin. First create a user via the registration page, then 
