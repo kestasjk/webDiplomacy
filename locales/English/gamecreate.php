@@ -411,6 +411,22 @@ function updatePhasePeriod(){
 		nextPhaseMinutesPara.style.display = "block";
 		}
 	}
+
+
+	var phaseLength = parseInt(selectPhaseMinutes.value);
+
+
+	for (i = 0; i < selectPhaseSwitchPeriod.length; i++){
+		var optVal = parseInt(selectPhaseSwitchPeriod.options[i].value);
+		if (optVal <= 0 || optVal > phaseLength){
+			selectPhaseSwitchPeriod.options[i].hidden = false;
+			selectPhaseSwitchPeriod.options[i].disabled = false;
+		}
+		else{
+			selectPhaseSwitchPeriod.options[i].hidden = true;
+			selectPhaseSwitchPeriod.options[i].disabled = true;
+		}
+	}
 }
 
 
