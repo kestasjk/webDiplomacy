@@ -920,3 +920,5 @@ ADD COLUMN `startTime` int(10) UNSIGNED DEFAULT NULL;
 UPDATE `wD_Backup_Games`
 SET `nextPhaseMinutes` = `phaseMinutes`
 WHERE `nextPhaseMinutes` = 0;
+
+UPDATE `wD_Misc` SET `value` = '162' WHERE `name` = 'Version';
