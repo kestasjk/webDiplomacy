@@ -824,11 +824,6 @@ if ( $UserProfile->hideEmail != 'No' )
 		unlink($emailCacheFilename);
 }
 
-if ( $UserProfile->homepage )
-{
-	print '<li style="word-wrap:break-word"><strong>'.l_t('Home page:').'</strong> '.$UserProfile->homepage.'</li>';
-}
-
 print '<li>&nbsp;</li>';
 
 //print '<li><a href="profile.php?detail=reports&userID='.$UserProfile->id.'" class="light">View/post a moderator report</a></li>';
