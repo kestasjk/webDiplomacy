@@ -208,11 +208,16 @@ class panelGame extends Game
 		{
 			
 			$timeWhenSwitch = (($this->phaseSwitchPeriod * 60) + $this->startTime);
+
+			if ($this->processTime >= $timeWhenSwitch){
+				$buf .= l_t('<div>Phase switch: <strong>End Of Phase</strong></div>', $timeWhenSwitch);
+			}
+
+			else {
+				$timeWhenSwitch = libTime::remainingText($timeWhenSwitch);
+				$buf .= l_t('<div>Phase switch: <strong>%s</strong></div>', $timeWhenSwitch);
+			}
 			
-			
-			$timeWhenSwitch = libTime::remainingText($timeWhenSwitch);
-			
-			$buf .= l_t('<div>Phase switch: <strong>%s</strong></div>', $timeWhenSwitch);	
 		}
 		
 		else {

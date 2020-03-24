@@ -127,9 +127,6 @@ class panelGameHome extends panelGameBoard
 			$alternatives[]=l_t('Anon');
 		if( $this->drawType=='draw-votes-hidden')
 			$alternatives[]=l_t('Hidden draw votes');
-		
-		if( $this->nextPhaseMinutes > 0 )
-			$alternatives[]=l_t('Phase switch');
 
 		if( $this->minimumReliabilityRating > 0) 
 		{
