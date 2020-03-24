@@ -95,6 +95,10 @@ $credits = array(
 		<a href="profile.php?userID=37168">ghug</a> (past)'
 	),
 	array(
+		'Creator of the webDiplomacy AI',
+		'<a href="https://github.com/ppaquette">Philip Paquette</a> - <a href="https://github.com/diplomacy/research/blob/master/neurips_paper_v1.pdf" class="light">Underlying AI/ML Collaborative Research Paper</a>' 
+	),
+	array(
 		'Past Contributors',
 		'<strong><u>Algis Kuliukas</u></strong> - original database design and maintenance <br />
 		<a href="http://www.xcelco.on.ca/~ravgames/dipmaps/">Rob Addison</a> - creator of small diplomacy map image <br />
@@ -105,13 +109,13 @@ $credits = array(
 		<strong><u>Carey Jensen</u></strong> - variant developer, goondip.com developer <br />
 		<strong><u>Alex Lebedev</u></strong> - sponsored the localization support <br />
 		<a href="https://sourceforge.net/sendmessage.php?touser=1295433">paranoidjpn</a> - Japanese translation, testing, UTF-8 support, developing the small PNG map <br />
-		<strong><u><a href="profile.php?userID=18263">Oliver Auth</a></u></strong> - variant creator, owner of <a href="https://vdiplomacy.net">vDiplomacy</a>' 
+		<strong><u><a href="profile.php?userID=18263">Oliver Auth</a></u></strong> - variant creator, owner of <a href="https://vdiplomacy.net" class="light">vDiplomacy</a>' 
 	),
 	array(
 		'Miscellaneous',
-		'Tank and Battleship Icons - released under the <a href="http://www.opensource.org/licenses/gpl-license.php" class="light">GNU Public License</a><br />
-		Font used in the fullscreen map - released under the <a href="contrib/BVFL.txt" class="light">Bitsream Vera Fonts License</a><br />
-		Our JavaScript utility library - the <a href="http://www.prototypejs.org/">Prototype</a> JavaScript framework team'
+		'<strong><u>Tank and Battleship Icons</u></strong> - released under the <a href="http://www.opensource.org/licenses/gpl-license.php" class="light">GNU Public License</a><br />
+		<strong><u>Font used in the fullscreen map</u></strong> - released under the <a href="contrib/BVFL.txt" class="light">Bitsream Vera Fonts License</a><br />
+		<strong><u>Our JavaScript utility library</u></strong> - the <a href="http://www.prototypejs.org/" class="light">Prototype</a> JavaScript framework team'
 	));
 
 	print '<div class="credits">';

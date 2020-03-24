@@ -77,7 +77,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 
 		list($countryCount) = $DB->sql_row("SELECT countryCount FROM wD_VariantInfo WHERE variantID=".$input['variantID']);
 		
-		if ($input['countryID'] < 0 or $input['countryID'] > 7)
+		if ($input['countryID'] < 0 or $input['countryID'] > $countryCount)
 		{
 			throw new Exception(l_t("%s is an invalid country ID.",(string)$input['countryID']));
 		}
@@ -95,10 +95,12 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 
 		// Create first Member record & object
 		processMember::create($User->id, 5, $input['countryID']);
+
 		//Add Bots
 		$botNum = $countryCount - 1;
 		$tabl = $DB->sql_tabl("SELECT id FROM wD_Users WHERE type LIKE '%bot%' LIMIT ".$botNum);
 		$currCountry = 1;
+
 		while (list($botID) = $DB->tabl_row($tabl))
 		{
 			if($currCountry == $input['countryID'])
@@ -146,7 +148,7 @@ print '<div class="content-bare content-board-header content-title-header">
 <div class="content content-follow-on">
 	<p><a href="gamecreate.php">Play A Game Against Humans</a></p>
 	<div class = "gameCreateShow">
-	<p>All Games against bots are unranked, with 3 day phases and 4 excused missed turns. However, anytime you ready up your orders, the game will immediately move to the next phase.</p>
+	<p>All games against bots are unranked, with 3 day phases and 4 excused missed turns. However, anytime you ready up your orders, the game will immediately move to the next phase.</p>
 		<form method="post">
 			<p>
 				<strong>Game Name:</strong></br>
@@ -169,7 +171,6 @@ print '<div class="content-bare content-board-header content-title-header">
 			{
 				if (in_array($variantID, Config::$apiConfig['variantIDs']))
 				{
-					
 					$Variant = libVariant::loadFromVariantName($variantName);
 					$checkboxes[$Variant->fullName] = '<option value="'.$variantID.'"'.(($first=='')?' selected':'').'>'.$Variant->fullName.'</option>';
 					if($first=='')
@@ -208,8 +209,6 @@ print '<div class="content-bare content-board-header content-title-header">
 			<?php
 			print '</form>
 	</div>';
-
-
 
 print '</div>';
 libHTML::footer();

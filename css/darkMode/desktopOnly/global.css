@@ -60,6 +60,7 @@ input[type="text"], input[type="password"], textarea, select {
 	background-color: #757b81;
 	border: 1px solid #ccc;
 	color:rgba(255, 255, 255, 0.8);
+	cursor: default;
 }
 
 input:read-only.toggle-notice {
@@ -1113,10 +1114,6 @@ input[type=submit].gameCreate {
 
 input[type=submit].gameCreate:hover {
   background-color: #45a049;
-}
-
-select option {
-	background: #777 !important;
 }
 
 /* The Modal (background) */

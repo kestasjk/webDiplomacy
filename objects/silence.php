@@ -1,7 +1,7 @@
 <?php
 
-class Silence {
-	
+class Silence 
+{
 	/**
 	* Silence ID
 	* @var int
@@ -57,14 +57,18 @@ class Silence {
 	public $reason;
 	
 	
-	public function isEnabled() {
+	public function isEnabled() 
+	{
 		return $this->enabled && !$this->isExpired();
 	}
-	protected function isExpired() {
+
+	protected function isExpired() 
+	{
 		return !($this->length==0 || ( time() < ($this->startTime + $this->length*60*60*24)));
 	}
 	
-	public function disable() {
+	public function disable() 
+	{
 		global $DB;
 		
 		$this->enabled=false;
@@ -84,7 +88,8 @@ class Silence {
 	 * @param int/null $length The length in days (for user silences). If not given this is indefinite
 	 * @return int The silence ID
 	 */
-	public static function create($moderatorUserID,$reason,$postID=null,$userID=null,$length=null) {
+	public static function create($moderatorUserID,$reason,$postID=null,$userID=null,$length=null) 
+	{
 		global $DB;
 		
 		$moderatorUserID=(int)$moderatorUserID;
@@ -111,7 +116,8 @@ class Silence {
 		if( is_numeric($userID) )
 			$DB->sql_put("UPDATE wD_Users SET silenceID = ".$silenceID." WHERE id=".$userID);
 		
-		if( is_numeric($postID) ) {
+		if( is_numeric($postID) ) 
+		{
 			// The post
 			$DB->sql_put("UPDATE wD_ForumMessages SET silenceID = ".$silenceID." WHERE id=".$postID);
 			
@@ -120,12 +126,13 @@ class Silence {
 				INNER JOIN wD_ForumMessages post ON post.toID = thread.id 
 				SET thread.silenceID = ".$silenceID." 
 				WHERE post.id=".$postID);
-			}
+		}
 		
 		return $silenceID;
 	}
 	
-	public function changeLength($length) {
+	public function changeLength($length) 
+	{
 		global $DB;
 		
 		$length = (int) $length;
@@ -141,12 +148,14 @@ class Silence {
 		$this->length = $length;
 	}
 	
-	public function load($id) {
+	public function load($id) 
+	{
 		global $DB;
 		
 		$record = array();
 		
-		if( is_array($id) ) {
+		if( is_array($id) ) 
+		{
 			// If it's an array this may be coming in from a forum joined hash
 			$record = $id;
 		}
@@ -178,14 +187,15 @@ class Silence {
 		$this->startTime = (int)$record['silenceStartTime'];
 		$this->length = (int)$record['silenceLength'];
 		$this->reason = $record['silenceReason'];
-		
 	}
 	
-	public function Silence($id) {
+	public function Silence($id) 
+	{
 		$this->load($id);
 	}
 	
-	public static function isSilenced(array $forumRecord) {
+	public static function isSilenced(array $forumRecord) 
+	{
 		return ( isset($forumRecord['silenceID']) && is_numeric($forumRecord['silenceID']));
 	}
 	/**
@@ -198,22 +208,20 @@ class Silence {
 	 * 
 	 * @return string A text message containing the results. Will be "" if nothing happened.
 	 */
-	public static function formActions() {
+	public static function formActions() 
+	{
 		global $User;
 		
 		if( !$User->type['ForumModerator'] ) return;
 		
-		if( 
-			isset($_REQUEST['silencePostID']) && 
-			isset($_REQUEST['silenceReason'])
-		) {
-			// Validation is done within create(), so these values can be passed straight through
-			
-			
+		// Validation is done within create(), so these values can be passed straight through
+		if(isset($_REQUEST['silencePostID']) && isset($_REQUEST['silenceReason']) ) 
+		{
 			return l_t("Silence created successfully");
 		}
 		
-		if( isset($_REQUEST['disableSilenceID']) ) {
+		if( isset($_REQUEST['disableSilenceID']) ) 
+		{
 			$silence = new Silence();
 			$silence->load($_REQUEST['disableSilenceID']);
 			$silence->disable();
@@ -224,8 +232,8 @@ class Silence {
 		return "";
 	}
 	
-	public function toString() {
-		
+	public function toString() 
+	{
 		$Moderator = new User($this->moderatorUserID);
 		
 		$startTime = libTime::text($this->startTime);
@@ -239,7 +247,8 @@ class Silence {
 			'Reason' => $this->reason
 		);
 		
-		if( $this->userID ) {
+		if( $this->userID ) 
+		{
 			$SilencedUser = new User($this->userID);
 			$silenceData['User'] = $SilencedUser->profile_link();
 		}
@@ -250,12 +259,13 @@ class Silence {
 		$strArr = array('<ul class="formlist"><li>');
 		foreach($silenceData as $k=>$v)
 			$strArr[] = l_t($k).": <i>".$v."</i>";
+
 		$strArr[]='</li></ul>';
 		return implode("</li><li>",$strArr);
 	}
 	
-	public static function printLength($length) {
+	public static function printLength($length) 
+	{
 		return ($length==0 ? l_t("indefinitely") : l_t("for %s days",$length) );
-		
 	}
 }
