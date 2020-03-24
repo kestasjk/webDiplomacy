@@ -87,7 +87,7 @@ class adminActions extends adminActionsForms
 			),
 			'banUser' => array(
 				'name' => 'Ban a user',
-				'description' => 'Bans a user, setting his games to civil disorder, and removing his points.',
+				'description' => 'Bans a user, setting their games to civil disorder, and removing their points.',
 				'params' => array('userID'=>'User ID','reason'=>'Reason'),
 			),
 			'unbanUser' => array(

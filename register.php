@@ -169,12 +169,12 @@ switch($page)
 	case 'firstValidationForm':
 
 		print '<h2>'.l_t('Welcome to webDiplomacy!').'</h2>';
-		print '<p>'.l_t('We are a competitive community looking for fair and fun games; to ensure you are a human with a working email address please fill out the registration form below. Help us keep the server free of spam and cheaters!').'</p>';
+		print '<p>'.l_t('We are a competitive community looking for fair and fun games; to ensure you are a human with a working email address, please fill out the registration form below. Help us keep the server free of spam and cheaters!').'</p>';
 
 		print '<h2>'.l_t('Site User Agreement (We aren’t Apple™, so please read this.)').'</h2>';
 		print '<p>'.l_t('I agree not to create more than one account.<br /> '.
 		'I agree not to work around game communication rules.<br /> '.
-		'I agree not to make alliances based on out of game relationships.<br /> '.
+		'I agree not to make alliances based on out-of-game relationships.<br /> '.
 		'I agree not to play public games with family, or friends.<br /> '.
 		'I agree to treat all members with respect regardless of race, religion, gender, or creed.<br /><br /> '.
 
@@ -189,7 +189,7 @@ switch($page)
 	case 'emailSent':
 
 		print '<h3>'.l_t('Anti-bot Validation - Confirmed!').'</h3>';
-		print "<p>".l_t("Okay, now that we know you're a human we need to check that you have a real email address.")."</p>";
+		print "<p>".l_t("Now that we know you're a human, we need to check that you have a real email address.")."</p>";
 
 		print '<div class="hr"></div>';
 		print '<h3>'.l_t('Email Validation').'</h3>';
@@ -197,16 +197,16 @@ switch($page)
 			"with a link that you can click on to confirm that it's your real email address, and then you're ".
 			"ready to go!",htmlentities($_REQUEST['emailValidate']))."</p>";
 
-		print "<p>".l_t("The email may take a couple of minutes to arrive; if it doesn't appear check your spam folder.")."</p>";
+		print "<p>".l_t("The email may take a couple of minutes to arrive. If it doesn't appear, check your spam folder.")."</p>";
 
-		print '<p>'.l_t('If you have problems email this server\'s admin at %s',Config::$adminEMail).'</p>';
+		print '<p>'.l_t('If you have problems, email this server\'s admin at %s',Config::$adminEMail).'</p>';
 
 		break;
 
 	case 'emailTokenFailed':
 		print '<p>'.l_t('The email token you provided was not accepted; please go back to the email you were sent and '.
 			'check that you visited the exact URL given.').'</p>';
-		print '<p>'.l_t('If the email did not arrive check your spam box. If you are sure you haven\'t received it and that '.
+		print '<p>'.l_t('If the email did not arrive, check your spam box. If you are sure you haven\'t received it and that '.
 			'you have waited long enough for it try going through the registration process from the start.').'<br /><br />
 
 			'.l_t('If it still fails email this server\'s admin at %s',Config::$adminEMail).'</p>';
@@ -218,7 +218,7 @@ switch($page)
 
 		print "<p>".l_t("Thank you for verifying your email address!</p>
 			<p>Enter the username, password, and any of the optional settings you want into the screen below to
-			complete the registration process.")." </br></br><font color='red'>Your username is visible to other members so please keep it appropiate and 
+			complete the registration process.")." </br></br><font color='red'>Your username is visible to other members and cannot be changed, so please make sure you're sure about it. Keep it appropriate and 
 			and avoid using your full name if you are concerned about privacy.</font></p>";
 
 	case 'userForm':
