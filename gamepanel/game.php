@@ -204,22 +204,17 @@ class panelGame extends Game
 	}
 		
 			
-		if ($this->startTime > 0)
-		{
-			
+		if ($this->startTime > 0) {
+
 			$timeWhenSwitch = (($this->phaseSwitchPeriod * 60) + $this->startTime);
 
-			if ($this->processTime >= $timeWhenSwitch){
+			if ($this->processTime >= $timeWhenSwitch) {
 				$buf .= l_t('<div>Phase switch: <strong>End Of Phase</strong></div>', $timeWhenSwitch);
-			}
-
-			else {
+			} else {
 				$timeWhenSwitch = libTime::remainingText($timeWhenSwitch);
-				$buf .= l_t('<div>Phase switch: <strong>%s</strong></div>', $timeWhenSwitch);
+				$buf .= l_t('<div>Phase switch: <strong>%s</strong>', $timeWhenSwitch) . ' (' . libTime::detailedText($timeWhenSwitch) . ')</div>';
 			}
-			
 		}
-		
 		else {
 			$timeTillNextPhase = libTime::timeLengthText($this->phaseSwitchPeriod * 60);
 			
