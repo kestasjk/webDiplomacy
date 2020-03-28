@@ -622,8 +622,13 @@ class adminActions extends adminActionsForms
 
 		if( $Game->phase == 'Diplomacy' or $Game->phase == 'Retreats' or $Game->phase == 'Builds' )
 		{
-			list($gameName, $pot, $potType, $varID) = $DB->sql_row("SELECT name, pot, potType, variantID FROM wD_Games WHERE id=".$gameID);
-			$logInfo = 'Game ID: '.$gameID.' was cancelled. Name: '.$gameName.', Pot: '.$pot.', Pot Type: '.$potType.', VariantID: '.$varID;
+			$name = addslashes($Game->name);
+			$pot = $Game->pot;
+			$potType = $Game->potType;
+			$varID = $Game->variantID;
+
+			$logInfo = 'Game ID: '.$name.' was cancelled. Name: '.$name.', Pot: '.$pot.', Pot Type: '.$potType.', VariantID: '.$varID;
+
 			$tabl = $DB->sql_tabl("SELECT countryID, userID, bet, status FROM wD_Members WHERE gameID=".$gameID);
 			while(list($curCountryID,$curUserID,$curBet,$curStatus) = $DB->tabl_row($tabl))
 			{
@@ -720,9 +725,13 @@ class adminActions extends adminActionsForms
 			}*/
 
 			// Now backup and erase the game from existence, then commit:
-			list($gameName, $pot, $potType, $varID) = $DB->sql_row("SELECT name, pot, potType, variantID FROM wD_Games WHERE id=".$gameID);
+			$name = addslashes($Game->name);
+			$pot = $Game->pot;
+			$potType = $Game->potType;
+			$varID = $Game->variantID;
 
-			$logInfo = 'Game ID: '.$gameID.' was cancelled. Name: '.$gameName.', Pot: '.$pot.', Pot Type: '.$potType.', VariantID: '.$varID;
+			$logInfo = 'Game ID: '.$name.' was cancelled. Name: '.$name.', Pot: '.$pot.', Pot Type: '.$potType.', VariantID: '.$varID;
+
 			$tabl = $DB->sql_tabl("SELECT countryID, userID, bet, status FROM wD_Members WHERE gameID=".$gameID);
 
 			while(list($curCountryID,$curUserID,$curBet,$curStatus) = $DB->tabl_row($tabl))
