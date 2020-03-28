@@ -156,6 +156,19 @@ class Game
 	 */
 	public $phaseMinutes;
 
+	/**
+	 * The number of minutes per phase to switch to later. Defaults to $phaseMinutes.
+	 *
+	 * @var int
+	 */
+	public $nextPhaseMinutes;
+
+	/**
+	 * The number of minutes after the game starts when $phaseMinutes is switched to $nextPhaseMinutes. Defaults to -1 (never).
+	 * @var int
+	 */
+	public $phaseSwitchPeriod;
+
 	// Arrays of aggregate objects
 	/**
 	 * An array of Member(/processMember) objects indexed by countryID
@@ -239,6 +252,13 @@ class Game
 	 * Is the game made of up members only, 1 member and bot(s), or mixed.
 	 */
 	public $playerTypes;
+
+
+	/**
+	 * The time the game was started, a UNIX timestamp. Initialized as -1.
+	 * @var int
+	 */
+	public $startTime;
 
 	/**
 	 * @param int/array $gameData The game ID of the game to load, or the array of its database row
@@ -433,6 +453,8 @@ class Game
 			g.pot,
 			g.potType,
 			g.phaseMinutes,
+			g.nextPhaseMinutes,
+			g.phaseSwitchPeriod,
 			g.processStatus,
 			g.pauseTimeRemaining,
 			g.minimumBet,
@@ -442,7 +464,8 @@ class Game
 			g.drawType,
 			g.minimumReliabilityRating,
 			g.excusedMissedTurns,
-			g.playerTypes
+			g.playerTypes,
+			g.startTime
 			FROM wD_Games g
 			WHERE g.id=".$this->id.' '.$this->lockMode);
 

@@ -66,7 +66,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					</p>
 				</div>
 			</div>
-			<select class = "gameCreate" name="newGame[phaseMinutes]">
+			<select class = "gameCreate" name="newGame[phaseMinutes]" id="selectPhaseMinutes">
 			<?php
 				$phaseList = array(5,7, 10, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
 					1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400);
@@ -74,7 +74,43 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				foreach ($phaseList as $i) { print '<option value="'.$i.'"'.($i==1440 ? ' selected' : '').'>'.libTime::timeLengthText($i*60).'</option>'; }
 			?>
 			</select>
+			
+			<p id="phaseSwitchPeriodPara">
+				<strong>Time Until Phase Swap</strong></br>
+				<select class = "gameCreate" id="selectPhaseSwitchPeriod" name="newGame[phaseSwitchPeriod]">
+				<?php
+				$phaseList = array(-1, 10, 15, 20, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360);
+					foreach ($phaseList as $i) 
+					{
+						if ($i != -1){
+							$opt = libTime::timeLengthText($i*60);
 
+							print '<option value="'.$i.'"'.($i==-1 ? ' selected' : '').'>'.$opt.'</option>';
+						}
+						else {
+							$opt = "No phase switch";
+							print '<option value="'.$i.'"'.($i==-1 ? ' selected' : '').'>'.$opt.'</option>';
+						}
+					}
+				?>
+				</select>
+			</p>
+			
+			<p id="nextPhaseMinutesPara">
+				<strong>Phase Length After Swap</strong></br>
+				<select class = "gameCreate" id="selectNextPhaseMinutes" name="newGame[nextPhaseMinutes]">
+				<?php
+				$phaseList = array(1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400);
+					foreach ($phaseList as $i) 
+					{
+						$opt = libTime::timeLengthText($i*60);
+
+						print '<option value="'.$i.'"'.($i==1440 ? ' selected' : '').'>'.$opt.'</option>';
+					}
+				?>
+				</select>
+			</p>
+			
 			<p>
 				<strong>Time to Fill Game: (5 min - 14 days)</strong></br>
 				<select class = "gameCreate" id="wait" name="newGame[joinPeriod]">
@@ -347,4 +383,56 @@ function setBotFill(){
 		document.getElementById("botBox").checked = false;
 	}
 }
+
+// Display nextPhaseMinutes paragraph only if phaseSwitchPeriod has selected a period.
+nextPhaseMinutesPara = document.getElementById("nextPhaseMinutesPara");
+
+selectPhaseSwitchPeriod = document.getElementById("selectPhaseSwitchPeriod");
+phaseSwitchPeriodPara = document.getElementById("phaseSwitchPeriodPara");
+
+selectPhaseMinutes = document.getElementById("selectPhaseMinutes");
+
+nextPhaseMinutesPara.style.display = "none";
+phaseSwitchPeriodPara.style.display = "none";
+
+
+function updatePhasePeriod(){
+	if (selectPhaseMinutes.value > 60){
+		phaseSwitchPeriodPara.style.display = "none";
+		nextPhaseMinutesPara.style.display = "none";
+	}
+	else{
+		phaseSwitchPeriodPara.style.display = "block";
+		
+		if (selectPhaseSwitchPeriod.value == -1){	
+		nextPhaseMinutesPara.style.display = "none";
+		}
+		else{
+		nextPhaseMinutesPara.style.display = "block";
+		}
+	}
+
+
+	var phaseLength = parseInt(selectPhaseMinutes.value);
+
+
+	for (i = 0; i < selectPhaseSwitchPeriod.length; i++){
+		var optVal = parseInt(selectPhaseSwitchPeriod.options[i].value);
+		if (optVal <= 0 || optVal > phaseLength){
+			selectPhaseSwitchPeriod.options[i].hidden = false;
+			selectPhaseSwitchPeriod.options[i].disabled = false;
+		}
+		else{
+			selectPhaseSwitchPeriod.options[i].hidden = true;
+			selectPhaseSwitchPeriod.options[i].disabled = true;
+		}
+	}
+}
+
+
+
+
+selectPhaseSwitchPeriod.addEventListener("change", updatePhasePeriod)
+selectPhaseMinutes.addEventListener("change", updatePhasePeriod)
+
 </script>

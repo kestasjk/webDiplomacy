@@ -104,6 +104,11 @@ class libTime
 
                 if ( $days > 0 )
                 {
+					$day_word = "days";
+					if ( $days == 1 ){
+						$day_word = "day";		
+					}						
+					
                         // D, H
                         $minutes += round($seconds/60); // Add a minute if the seconds almost give a minute
                         $seconds = 0;
@@ -112,9 +117,9 @@ class libTime
                         $minutes = 0;
 
                         if ( $hours > 0 )
-                                return l_t('%s days, %s hours',$days,$hours);
+                                return l_t('%s '.$day_word.', %s hours',$days,$hours);
                         else
-                                return l_t('%s days', $days);
+                                return l_t('%s '.$day_word, $days);
                 }
                 elseif ( $hours > 0 )
                 {
