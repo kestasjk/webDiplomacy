@@ -52,12 +52,6 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		<input type="password" name="userForm[passwordcheck]" maxlength=30 autocomplete="new-password" class = "settings">
 	</p>
 
-	<p><strong>Home page:</strong></br>
-		<input type="text" class = "settings" size=50 name="userForm[homepage]" value="<?php print $User->homepage; ?>" maxlength=150>
-		</br><?php if ( !$User->type['User'] ) print '<strong>(Optional)</strong>: '; ?>
-			Your blog or personal/favorite website.
-	</p>
-
 	<p><strong>Comment:</strong></br>
 		<TEXTAREA NAME="userForm[comment]" ROWS="3" COLS="50" class = "settings"><?php
 			print str_replace('<br />', "\n", $User->comment);
