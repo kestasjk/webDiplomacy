@@ -175,7 +175,6 @@ class panelGame extends Game
 		}
 	}
 
-
 	/**
 	 * Icons for the game, e.g. private padlock and featured star
 	 * @return string
@@ -196,35 +195,41 @@ class panelGame extends Game
 	
 	function phaseSwitchInfo()
 	{
-	$buf = '';
-		
-	if ($this->phase == 'Finished' or $this->phaseSwitchPeriod <= 0)
-	{
-		return $buf;
-	}
-		
+		$buf = '';
 			
-		if ($this->startTime > 0) {
+		if ($this->phase == 'Finished' or $this->phaseSwitchPeriod <= 0)
+		{
+			return $buf;
+		}
+			
+		if ($this->startTime > 0) 
+		{
 
 			$timeWhenSwitch = (($this->phaseSwitchPeriod * 60) + $this->startTime);
 
-			if ($this->processTime >= $timeWhenSwitch) {
+			if ($this->processTime >= $timeWhenSwitch) 
+			{
 				$buf .= l_t('<div>Phase switch: <strong>End Of Phase</strong></div>', $timeWhenSwitch);
-			} else {
+			} 
+			else 
+			{
 				$timeWhenSwitch = libTime::remainingText($timeWhenSwitch);
 				$buf .= l_t('<div>Phase switch: <strong>%s</strong>', $timeWhenSwitch) . ' (' . libTime::detailedText($timeWhenSwitch) . ')</div>';
 			}
 		}
-		else {
+
+		else 
+		{
 			$timeTillNextPhase = libTime::timeLengthText($this->phaseSwitchPeriod * 60);
 			
 			$buf .= l_t('<div>Phase switch: <span><strong>%s</strong> after game start.</span></div>', $timeTillNextPhase);	
 		}
 		
-				$buf .= l_t('<div>Next phase length: <span><strong>%s</strong> /phase.</span></div>', libTime::timeLengthText($this->nextPhaseMinutes * 60));
+		$buf .= l_t('<div>Next phase length: <span><strong>%s</strong> /phase.</span></div>', libTime::timeLengthText($this->nextPhaseMinutes * 60));
 								
 		return $buf;
 	}
+
 	/**
 	 * The title bar, giving the vital game related data
 	 *
@@ -254,7 +259,7 @@ class panelGame extends Game
 
 		$date=' - <span class="gameDate">'.$this->datetxt().'</span>, <span class="gamePhase">'.l_t($this->phase).'</span>';
 
-		$leftTop = '<div class="titleBarLeftSide" align=">
+		$leftTop = '<div class="titleBarLeftSide">
 				'.$this->gameIcons().
 				'<span class="gameName">'.$this->titleBarName().'</span>';
 
@@ -280,8 +285,6 @@ class panelGame extends Game
 		
 		return $buf;
 	}
-	
-
 
 	function gameVariants()
 	{
@@ -328,23 +331,7 @@ class panelGame extends Game
 	function gameHoursPerPhase()
 	{
 		$buf = l_t('<strong>%s</strong> /phase',libTime::timeLengthText($this->phaseMinutes*60));
-			// <span class="gameTimeHoursPerPhaseText">(';
-
-		// if ( $this->isLiveGame() )
-		// 	$buf .= l_t('live');
-		// elseif ( $this->phaseMinutes < 6*60 )
-		// 	$buf .= l_t('very fast');
-		// elseif ( $this->phaseMinutes < 16*60 )
-		// 	$buf .= l_t('fast');
-		// elseif ( $this->phaseMinutes < 36*60 )
-		// 	$buf .= l_t('normal');
-		// elseif ( $this->phaseMinutes < 3*24*60 )
-		// 	$buf .= l_t('slow');
-		// else
-		// 	$buf .= l_t('very slow');
-
 		return $buf ;
-		// .')</span>';
 	}
 
 	/**
@@ -586,6 +573,5 @@ class panelGame extends Game
 			</div></form>';
 	}
 }
-
 
 ?>
