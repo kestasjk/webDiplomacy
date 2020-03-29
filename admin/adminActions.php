@@ -204,7 +204,12 @@ class adminActions extends adminActionsForms
 				'name' => 'Excused Missed Turns - Remove',
 				'description' => 'Removes 1 excused missed turn for a specific user in a game. If the user(s) do not have excused turns left nothing will happen.',
 				'params' => array('gameID'=>'Game ID','userID'=>'User ID'),
-			)
+			),
+			'generateRegistrationLink' => array(
+				'name' => 'Generate Registration Link',
+				'description' => 'Generate a registration email link for a user having problems making an account.',
+				'params' => array('email'=>'Registration Email'),
+			),
 		);
 
 	public function __construct()
@@ -1217,6 +1222,32 @@ class adminActions extends adminActionsForms
 
 		return "This user's RR has been recalculated.";
 	}
+
+	public function generateRegistrationLink(array $params)
+	{
+		global $DB;
+
+		if (!isset($params['email']))
+			return "Please enter a valid email.";
+		
+		$email = $DB->msg_escape($params['email']);
+
+		list($emailAlreadyInUse) = $DB->sql_row("SELECT count(1) FROM wD_Users WHERE email = '".$email."'");
+		if ($emailAlreadyInUse > 0)
+		{
+			list($emailUsername) = $DB->sql_row("SELECT username FROM wD_Users WHERE email = '".$email."'");
+			return "This email is already in use for ".$emailUsername;
+		}
+		
+		$thisURL = 'http://'.$_SERVER['SERVER_NAME']."/register.php";
+		if ($_SERVER['SERVER_NAME'] == '127.0.0.1')
+			$thisURL = 'http://'.$_SERVER['SERVER_NAME']."/webdiplomacy/register.php";
+		
+		$emailToken = substr(md5(Config::$secret.$email),0,5).'%7C'.urlencode($email);
+
+		return "Please give the user the following link: <br>".$thisURL.'?emailToken='.$emailToken;
+	}
+
 }
 
 ?>
