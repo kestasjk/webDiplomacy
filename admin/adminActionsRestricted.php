@@ -74,6 +74,11 @@ class adminActionsRestricted extends adminActionsForum
 				'description' => 'Takes forum moderator status from the specified user ID.',
 				'params' => array('userID'=>'Mod User ID'),
 			),
+			'changeUsername' => array(
+				'name' => 'Change username',
+				'description' => 'Changes user\'s current name to the specified username.',
+				'params' => array('userID'=>'User ID', 'username'=>'New Username', 'reason'=>'Reason'), 
+			),
 			'giveBot' => array(
 				'name' => 'Give bot status',
 				'description' => 'Gives bot status to the specified user ID.',
@@ -536,6 +541,53 @@ class adminActionsRestricted extends adminActionsForum
 		$DB->sql_put("UPDATE wD_Users SET type = REPLACE(type,'ForumModerator','') WHERE id = ".$userID);
 
 		return l_t('This user had their forum moderator status taken.');
+	}
+
+	public function changeUsername(array $params)
+	{
+		global $DB;
+		global $User;
+		
+		$userID = (int)$params['userID'];
+		$newUsername = (string)$params['username'];
+
+		if( !isset($params['reason']) || strlen($params['reason'])==0 )
+		{
+			return "Could not change username because no reason was given.";
+		}
+
+		$changeReason = $DB->msg_escape($params['reason']);
+
+		// check if username exists
+		list($result) = $DB->sql_row("SELECT username FROM wD_Users WHERE id = '".$userID."' AND username = '".$newUsername."'");
+		if (!empty($result)) 
+		{
+			return "This username has already been taken by another user.";
+		}
+		
+		// get and store old username, set new username
+		list($oldUsername) = $DB->sql_row("SELECT username FROM wD_Users WHERE id = ".$userID);
+		$time = time();
+		$changedBy = $User->username;
+
+		$DB->sql_put(
+			'INSERT INTO wD_UsernameHistory (userID, oldUsername, newUsername, date, reason, changedBy) 
+			VALUES ("'.$userID.'", "'.$oldUsername.'", "'.$newUsername.'", "'.$time.'", "'.$changeReason.'", "'.$changedBy.'")'
+		);
+		$DB->sql_put("UPDATE wD_Users SET username = '".$newUsername."' WHERE id = ".$userID);
+
+		// update new forum on webdip
+		if (isset(Config::$customForumURL))
+		{
+			$newUsernameClean = strtolower($newUsername);
+
+			$DB->sql_put(
+				"UPDATE phpbb_users SET username = '".$newUsername."', username_clean = '".$newUsernameClean."' 
+				WHERE username = '".$oldUsername."' AND webdip_user_id = '".$userID."' limit 1"
+			);
+		}
+
+		return "This user's username has been changed.";
 	}
 	
 	public function giveBot(array $params)
