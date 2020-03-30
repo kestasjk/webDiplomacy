@@ -98,13 +98,6 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		}
 
 		$input['nextPhaseMinutes'] = (int)$input['nextPhaseMinutes'];
-		
-		// If the next phase minutes is less than 1 day or more than 10 because someone is messing around with the console, default to 2 days if the game is live.
-		if ( $input['nextPhaseMinutes'] < 1440 or (($input['nextPhaseMinutes'] > 1440*10) and $input['phaseMinutes'] < 61))
-		{
-			$input['nextPhaseMinutes'] = 2880;
-		}
-
 		$input['phaseSwitchPeriod'] = (int)$input['phaseSwitchPeriod'];
 
 		// If a game is not live, set the next phase minutes to match the phase.
@@ -113,11 +106,20 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input['nextPhaseMinutes'] = $input['phaseMinutes'];
 			$input['phaseSwitchPeriod'] = -1;
 		}
-
-		// If the phase Switch period is outside the allowed range default it to 3 hours.
-		if (($input['phaseSwitchPeriod'] > 360 or $input['phaseSwitchPeriod'] < $input['phaseMinutes']) and $input['phaseMinutes'] < 61 and $input['phaseSwitchPeriod'] != -1)
+		
+		if ($input['phaseMinutes'] < 61 and $input['phaseSwitchPeriod'] != -1)
 		{
-			$input['phaseSwitchPeriod'] = 180;
+			// If the next phase minutes is less than 1 day or more than 10 because someone is messing around with the console, default to 2 days if the game is live.
+			if (($input['nextPhaseMinutes'] < 1440 or $input['nextPhaseMinutes'] > 1440*10))
+			{
+				$input['nextPhaseMinutes'] = 2880;
+			}
+
+			// If the phase Switch period is outside the allowed range default it to 3 hours.
+			if (($input['phaseSwitchPeriod'] > 360 or $input['phaseSwitchPeriod'] < $input['phaseMinutes']))
+			{
+				$input['phaseSwitchPeriod'] = 180;
+			}
 		}
 
 		$input['joinPeriod'] = (int)$input['joinPeriod'];
