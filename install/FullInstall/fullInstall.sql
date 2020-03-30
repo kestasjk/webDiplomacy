@@ -913,8 +913,6 @@ UPDATE `wD_Backup_Games`
 SET `nextPhaseMinutes` = `phaseMinutes`
 WHERE `nextPhaseMinutes` = 0;
 
-UPDATE `wD_Misc` SET `value` = '162' WHERE `name` = 'Version';
-
 CREATE TABLE `wD_UsernameHistory` (
   `userID` mediumint(8) NOT NULL,
   `oldUsername` varchar(30) NOT NULL,
@@ -923,3 +921,5 @@ CREATE TABLE `wD_UsernameHistory` (
   `reason` varchar(50) NOT NULL,
   `changedBy` varchat(30) NOT NULL
 );
+
+UPDATE `wD_Misc` SET `value` = '163' WHERE `name` = 'Version';
