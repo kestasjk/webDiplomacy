@@ -574,7 +574,7 @@ class adminActionsRestricted extends adminActionsForum
 			'INSERT INTO wD_UsernameHistory (userID, oldUsername, newUsername, date, reason, changedBy) 
 			VALUES ("'.$userID.'", "'.$oldUsername.'", "'.$newUsername.'", "'.$time.'", "'.$changeReason.'", "'.$changedBy.'")'
 		);
-		$DB->sql_put("UPDATE wD_Users SET username = '".$newUsername."' WHERE id = ".$userID);
+		$DB->sql_put("UPDATE wD_Users SET username = '".$newUsername."' WHERE id = '".$userID."' limit 1");
 
 		// update new forum on webdip
 		if (isset(Config::$customForumURL))
