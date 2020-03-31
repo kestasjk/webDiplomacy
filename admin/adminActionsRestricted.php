@@ -553,20 +553,25 @@ class adminActionsRestricted extends adminActionsForum
 
 		if( !isset($params['reason']) || strlen($params['reason'])==0 )
 		{
-			return "Could not change username because no reason was given.";
+			return l_t("Could not change username because no reason was given.");
 		}
 
 		$changeReason = $DB->msg_escape($params['reason']);
 
 		// check if username exists
-		list($result) = $DB->sql_row("SELECT username FROM wD_Users WHERE id = '".$userID."' AND username = '".$newUsername."'");
+		list($result) = $DB->sql_row("SELECT username FROM wD_Users WHERE username = '".$newUsername."'");
 		if (!empty($result)) 
 		{
-			return "This username has already been taken by another user.";
+			return l_t("This username has already been taken by another user.");
 		}
 		
-		// get and store old username, set new username
+		// get and store old username and if it exists set new username
 		list($oldUsername) = $DB->sql_row("SELECT username FROM wD_Users WHERE id = ".$userID);
+		if (empty($oldUsername))
+		{
+			return l_t("User id %s has not been found.", $userID);
+		}
+
 		$time = time();
 		$changedBy = $User->username;
 
@@ -587,7 +592,7 @@ class adminActionsRestricted extends adminActionsForum
 			);
 		}
 
-		return "This user's username has been changed.";
+		return l_t("This user's username has been changed from %s to %s.",$oldUsername, $newUsername);
 	}
 	
 	public function giveBot(array $params)
