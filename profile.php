@@ -751,7 +751,7 @@ if( $User->type['Moderator'] )
 
 	if (!empty($previousEmails))
 	{
-		print '<p class="profileCommentURL">Previous Usernames: '.$previousEmails.'</p>';
+		print '<p class="profileCommentURL">Previous Emails: '.$previousEmails.'</p>';
 	}
 
 	if($UserProfile->qualifiesForEmergency() )

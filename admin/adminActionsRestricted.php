@@ -76,7 +76,7 @@ class adminActionsRestricted extends adminActionsForum
 			),
 			'changeEmail' => array(
 				'name' => 'Change email',
-				'description' => 'Changes user\'s current registered email to the specified email.',
+				'description' => 'Update user\'s registered email.',
 				'params' => array('userID'=>'User ID', 'email'=>'New Email', 'reason'=>'Reason')
 			),
 			'changeUsername' => array(
@@ -583,9 +583,9 @@ class adminActionsRestricted extends adminActionsForum
 
 		$DB->sql_put(
 			'INSERT INTO wD_EmailHistory (userID, oldEmail, newEmail, date, reason, changedBy) 
-			VALUES ("'.$userID.'", "'.$oldEmail['email'].'", "'.$newEmail.'", "'.$time.'", "'.$changeReason.'", "'.$changedBy.'")'
+			VALUES ('.$userID.', "'.$oldEmail['email'].'", "'.$newEmail.'", '.$time.', "'.$changeReason.'", "'.$changedBy.'")'
 		);
-		$DB->sql_put("UPDATE wD_Users SET email = '".$newEmail."' WHERE id = '".$userID."' limit 1");
+		$DB->sql_put("UPDATE wD_Users SET email = '".$newEmail."' WHERE id = '.$userID.' limit 1");
 
 		return l_t("%s's email has been changed from %s to %s.", $oldEmail['username'], $oldEmail['email'], $newEmail);
 
