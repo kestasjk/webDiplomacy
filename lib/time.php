@@ -45,14 +45,14 @@ class libTime
          * @param int $givenTime GMT UNIX timestamp
          * @return string Time remaining
          */
-        static public function remainingText($givenTime, $timeFrom=false, $includeSecondsRemaining=true)
+        static public function remainingText($givenTime, $timeFrom=false)
         {
             if ( $timeFrom===false ) $timeFrom = time();
 
             $secondsRemaining = $givenTime - $timeFrom;
 
             return '<span class="timeremaining" unixtime="'.$givenTime.'" unixtimefrom="'.$timeFrom.'">'.
-                self::remainingTextString($givenTime, $timeFrom, $includeSecondsRemaining).'</span>';
+                self::remainingTextString($givenTime, $timeFrom).'</span>';
         }
 
         /**
@@ -90,16 +90,12 @@ class libTime
             return gmstrftime("%c");
         }
 
-        static private function remainingTextString($givenTime, $timeFrom, $includeSecondsRemaining)
+        static private function remainingTextString($givenTime, $timeFrom)
         {
                 $secondsRemaining = $givenTime - $timeFrom;
 
-                if ($includeSecondsRemaining) {
-                    if ( $secondsRemaining <= 0 )
-                    {
+                if ( $secondsRemaining <= 0 )
                         return l_t('Now');
-                    }
-                }
 
                 $seconds = floor( $secondsRemaining % 60);
                 $minutes = floor(( $secondsRemaining % (60*60) )/60);
