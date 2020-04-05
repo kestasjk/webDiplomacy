@@ -74,6 +74,11 @@ class adminActionsRestricted extends adminActionsForum
 				'description' => 'Takes forum moderator status from the specified user ID.',
 				'params' => array('userID'=>'Mod User ID'),
 			),
+			'changeEmail' => array(
+				'name' => 'Change email',
+				'description' => 'Update user\'s registered email.',
+				'params' => array('userID'=>'User ID', 'email'=>'New Email', 'reason'=>'Reason')
+			),
 			'changeUsername' => array(
 				'name' => 'Change username',
 				'description' => 'Changes user\'s current name to the specified username.',
@@ -541,6 +546,49 @@ class adminActionsRestricted extends adminActionsForum
 		$DB->sql_put("UPDATE wD_Users SET type = REPLACE(type,'ForumModerator','') WHERE id = ".$userID);
 
 		return l_t('This user had their forum moderator status taken.');
+	}
+
+	public function changeEmail(array $params)
+	{
+		global $DB;
+		global $User;
+
+		$userID = (int)$params['userID'];
+		$newEmail = (string)$params['email'];
+
+		if( !isset($params['reason']) || strlen($params['reason'])==0 )
+		{
+			return l_t("Could not change email because no reason was given.");
+		}
+
+		$changeReason = $DB->msg_escape($params['reason']);
+
+		// check if new email is claimed by another account
+		list($result) = $DB->sql_row("SELECT username FROM wD_Users WHERE email = '".$newEmail."'");
+		if (!empty($result)) 
+		{
+			return l_t("This email has already been taken by another user: %s.", $result);
+		}
+
+		// get and store user's old email
+		$oldEmail = $DB->sql_hash("SELECT username, email FROM wD_Users WHERE id = ".$userID);
+
+		if (empty($oldEmail))
+		{
+			return l_t("User id %s has not been found.", $userID);
+		}
+
+		$time = time();
+		$changedBy = $User->username;
+
+		$DB->sql_put(
+			'INSERT INTO wD_EmailHistory (userID, oldEmail, newEmail, date, reason, changedBy) 
+			VALUES ('.$userID.', "'.$oldEmail['email'].'", "'.$newEmail.'", '.$time.', "'.$changeReason.'", "'.$changedBy.'")'
+		);
+		$DB->sql_put("UPDATE wD_Users SET email = '".$newEmail."' WHERE id = '.$userID.' limit 1");
+
+		return l_t("%s's email has been changed from %s to %s.", $oldEmail['username'], $oldEmail['email'], $newEmail);
+
 	}
 
 	public function changeUsername(array $params)
