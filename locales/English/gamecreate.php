@@ -79,17 +79,16 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				<strong>Time Until Phase Swap</strong></br>
 				<select class = "gameCreate" id="selectPhaseSwitchPeriod" name="newGame[phaseSwitchPeriod]">
 				<?php
-				$phaseList = array(-1, 10, 15, 20, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360);
+					$phaseList = array(-1, 10, 15, 20, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360);
 					foreach ($phaseList as $i) 
 					{
-						if ($i != -1){
-							$opt = libTime::timeLengthText($i*60);
-
-							print '<option value="'.$i.'"'.($i==-1 ? ' selected' : '').'>'.$opt.'</option>';
+						if ($i != -1)
+						{
+							print '<option value="'.$i.'"'.($i==-1 ? ' selected' : '').'>'.libTime::timeLengthText($i*60).'</option>';
 						}
-						else {
-							$opt = "No phase switch";
-							print '<option value="'.$i.'"'.($i==-1 ? ' selected' : '').'>'.$opt.'</option>';
+						else 
+						{
+							print '<option value="'.$i.'"'.($i==-1 ? ' selected' : '').'> No phase switch</option>';
 						}
 					}
 				?>
@@ -100,12 +99,10 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				<strong>Phase Length After Swap</strong></br>
 				<select class = "gameCreate" id="selectNextPhaseMinutes" name="newGame[nextPhaseMinutes]">
 				<?php
-				$phaseList = array(1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400);
+					$phaseList = array(1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400);
 					foreach ($phaseList as $i) 
 					{
-						$opt = libTime::timeLengthText($i*60);
-
-						print '<option value="'.$i.'"'.($i==1440 ? ' selected' : '').'>'.$opt.'</option>';
+						print '<option value="'.$i.'"'.($i==1440 ? ' selected' : '').'>'.libTime::timeLengthText($i*60).'</option>';
 					}
 				?>
 				</select>
@@ -115,13 +112,11 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				<strong>Time to Fill Game: (5 min - 14 days)</strong></br>
 				<select class = "gameCreate" id="wait" name="newGame[joinPeriod]">
 				<?php
-				$phaseList = array(5,7, 10, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
-				1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400, 20160);
+					$phaseList = array(5,7, 10, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
+					1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400, 20160);
 					foreach ($phaseList as $i) 
 					{
-						$opt = libTime::timeLengthText($i*60);
-
-						print '<option value="'.$i.'"'.($i==10080 ? ' selected' : '').'>'.$opt.'</option>';
+						print '<option value="'.$i.'"'.($i==10080 ? ' selected' : '').'>'.libTime::timeLengthText($i*60).'</option>';
 					}
 				?>
 				</select>
@@ -161,14 +156,14 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 						<br /><br />
 						<strong>Available variants:</strong> </br>
 						<?php
-						foreach(Config::$variants as $variantID=>$variantName)
-						{
-							if($variantID != 57)
+							foreach(Config::$variants as $variantID=>$variantName)
 							{
-								$Variant = libVariant::loadFromVariantName($variantName);
-								print $Variant->link().'</br>';
+								if($variantID != 57)
+								{
+									$Variant = libVariant::loadFromVariantName($variantName);
+									print $Variant->link().'</br>';
+								}
 							}
-						}
 						?>
 						<br/>
 						*Please note that 1 vs 1 games will default to a 5 point bet as an unranked game no matter what bet/game type are selected.
@@ -177,18 +172,18 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			</div>
 			<select id="variant" class = "gameCreate" name="newGame[variantID]" onchange="setBotFill()">
 			<?php
-			$first=true;
-			foreach(Config::$variants as $variantID=>$variantName)
-			{
-				if($variantID != 57)
+				$first=true;
+				foreach(Config::$variants as $variantID=>$variantName)
 				{
-					$Variant = libVariant::loadFromVariantName($variantName);
-					if($first) { print '<option name="newGame[variantID]" selected value="'.$variantID.'">'.$variantName.'</option>'; }
-					else { print '<option name="newGame[variantID]" value="'.$variantID.'">'.$variantName.'</option>'; }			
-					$first=false;
+					if($variantID != 57)
+					{
+						$Variant = libVariant::loadFromVariantName($variantName);
+						if($first) { print '<option name="newGame[variantID]" selected value="'.$variantID.'">'.$variantName.'</option>'; }
+						else { print '<option name="newGame[variantID]" value="'.$variantID.'">'.$variantName.'</option>'; }			
+						$first=false;
+					}
 				}
-			}
-			print '</select>';
+				print '</select>';
 			?>
 			</br></br>
 			<div id="botFill" style="display:none">
