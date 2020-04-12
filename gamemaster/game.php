@@ -524,30 +524,41 @@ class processGame extends Game
 	/**
 	 * If enough time has passed, switch to the next phase time.
 	 */
-	protected function switchPhaseTime(){
+	private function switchPhaseTime()
+	{
 		global $DB;
+
+		// Only impact live games.
+		if ($this->phaseMinutes > 60) return;
+
+		// If there's no phase switch needed then return.
+		if ($this->phaseSwitchPeriod < 1) return;
+
+		// If the live game has already been changed nothing to do.
+		if ($this->phaseMinutes == $this->nextPhaseMinutes) return;
+
+		// If the start time isn't filled out then return.
+		if ($this->startTime == 0) return; 
+
+		// If the current time minus the start time is less than the time till phase switch then it isn't time to alter the phase yet.
+		if ((time() - $this->startTime) < $this->phaseSwitchPeriod * 60) return;
 
 		$newPhaseMinutes = $this->nextPhaseMinutes;
 		$this->phaseMinutes = $newPhaseMinutes;
-		$this->phaseSwitchPeriod = -1;
-		$this->nextPhaseMinutes = -1;
 		$this->processTime = time()+($newPhaseMinutes*60);
 
-		$DB->sql_put("UPDATE wD_Games 
-		SET phaseMinutes = ".$this->phaseMinutes.", 
-		processTime = ".$this->processTime.",
-		phaseSwitchPeriod = ".$this->phaseSwitchPeriod."
-		WHERE id = ".$this->id);
-
+		$DB->sql_put("UPDATE wD_Games SET phaseMinutes = ".$this->phaseMinutes.", processTime = ".$this->processTime." WHERE id = ".$this->id);
 	}
 
 	/**
 	 * If the start time has not been set, set it to the current time.
 	 */
-	function initializeStartTime(){
+	function initializeStartTime()
+	{
 		global $DB;
 		
-		if ($this->startTime == 0){
+		if ($this->startTime == 0)
+		{
 			$this->startTime = time();
 
 			$DB->sql_put("UPDATE wD_Games SET startTime = ".$this->startTime." WHERE id = ".$this->id);
@@ -597,9 +608,7 @@ class processGame extends Game
 		 /*
 		 * If the required amount of time has passed, switch the game's phaseMinutes.
 		 */
-		if ((time() - $this->startTime) >= $this->phaseSwitchPeriod * 60 and $this->startTime > 0 and $this->phaseSwitchPeriod > 0){
-			$this->switchPhaseTime();
-		}
+		$this->switchPhaseTime();
 
 		/*
 		* Register the turn for each member with orders and update their phase count
@@ -1175,8 +1184,6 @@ class processGame extends Game
 		}
 		elseif( $this->processStatus == 'Not-processing' )
 		{
-			// When the game gets paused, switch the phase time, even if the phase period has not passed.
-			$this->switchPhaseTime();
 			$this->processStatus = 'Paused';
 
 			// Use processTime to find pauseTimeRemaining
