@@ -210,6 +210,11 @@ class adminActions extends adminActionsForms
 				'description' => 'Generate a registration email link for a user having problems making an account.',
 				'params' => array('email'=>'Registration Email'),
 			),
+			'removeAllVotes' => array(
+				'name' => 'Remove all player votes',
+				'description' => 'Removes any draw, unpause or cancel votes by any player in a game. If the game is not paused, this tool will not run.',
+				'params' => array('gameID'=>'Game ID')
+			)
 		);
 
 	public function __construct()
@@ -1246,6 +1251,39 @@ class adminActions extends adminActionsForms
 		$emailToken = substr(md5(Config::$secret.$email),0,5).'%7C'.urlencode($email);
 
 		return "Please give the user the following link: <br>".$thisURL.'?emailToken='.$emailToken;
+	}
+
+	public function removeAllVotes(array $params)
+	{
+		global $DB, $User;
+		$Variant=libVariant::loadFromGameID($params['gameID']);
+		$Game = $Variant->Game($params['gameID']);
+		$gameID = $Game->id;
+
+		list($isGamePaused) = $DB->sql_row(
+			"SELECT count(1) FROM wD_Games WHERE id = ".$gameID." AND processStatus = 'Paused'"
+		);
+
+		if ($isGamePaused == 0)
+		{
+			return "This game is not paused. Please pause this game if it is under investigation.";
+		}
+
+		list($isModInGame) = $DB->sql_row(
+			"SELECT count(1) FROM wD_Members m INNER JOIN wD_Games g ON ( g.id = m.gameID ) WHERE m.userID = "
+			.$User->id." and m.gameID =".$gameID." AND NOT g.phase = 'Finished'"
+		);
+
+		if ($isModInGame > 0) {
+			$details = "User votes were not changed in gameID: ". $gameID. " because the moderator was in the game.";
+			$DB->sql_put("INSERT INTO wD_AdminLog ( name, userID, time, details, params )
+						VALUES ( 'RemoveAllVotes', ".$User->id.", ".time().", '".$details."', '' )");
+			return "Do not change votes in games you are in! This has been logged.";
+		}
+
+		$DB->sql_put("UPDATE wD_Members SET votes='' WHERE gameID = ".$gameID);
+
+		return "All votes have been removed in game " .$gameID;
 	}
 
 }
