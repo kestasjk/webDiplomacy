@@ -1272,10 +1272,6 @@ class adminActions extends adminActionsForms
 		$newRating = (int)$params['newRating'];
 		$oldRating = $DB->sql_row("SELECT minimumReliabilityRating FROM wD_Games WHERE id = ".$Game->id);
 
-		list($playersBelowNewRating) = $DB->sql_row(
-			"SELECT count(1) FROM wD_Members m INNER JOIN wD_Games g ON ( g.id = m.gameID ) WHERE m.userID = "
-		.$User->id." and m.gameID =".$gameID." AND NOT g.phase = 'Finished'");
-
 		$DB->sql_put(
 			"UPDATE wD_Games SET minimumReliabilityRating = ".$newRating." WHERE id = ".$Game->id." limit 1"
 		);
