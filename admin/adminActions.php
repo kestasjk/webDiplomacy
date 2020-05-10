@@ -1267,12 +1267,21 @@ class adminActions extends adminActionsForms
 			return "Please enter a valid reliability rating requirement (0-100).";
 		}
 
-		$gameID = (int)$params['gameID'];
+		$Variant=libVariant::loadFromGameID((int)$params['gameID']);
+		$Game = $Variant->Game((int)$params['gameID']);
 		$newRating = (int)$params['newRating'];
+		$oldRating = $DB->sql_row("SELECT minimumReliabilityRating FROM wD_Games WHERE id = ".$Game->id);
 
-		$DB->sql_put("UPDATE wD_Games SET minimumReliabilityRating = ".$newRating." WHERE id = ".$gameID);
+		list($playersBelowNewRating) = $DB->sql_row(
+			"SELECT count(1) FROM wD_Members m INNER JOIN wD_Games g ON ( g.id = m.gameID ) WHERE m.userID = "
+		.$User->id." and m.gameID =".$gameID." AND NOT g.phase = 'Finished'");
 
-		return "Game ".$gameID."'s reliability rating has been set to ".$newRating;
+		$DB->sql_put(
+			"UPDATE wD_Games SET minimumReliabilityRating = ".$newRating." WHERE id = ".$Game->id." limit 1"
+		);
+
+		return "Reliability rating threshold of <a href='board.php?gameID=$Game->id'>$Game->name</a>
+			has been changed from ".$oldRating[0]." to ".$newRating;
 	}
 
 }
