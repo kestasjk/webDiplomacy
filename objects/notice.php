@@ -42,6 +42,7 @@ class notice
 
 	private static $recent;
 	private static $new;
+	
 	public function viewedSplitter()
 	{
 		global $User;
@@ -49,6 +50,7 @@ class notice
 		self::$recent=($this->timeSent >= $_SESSION['lastSeenHome'] );
 		self::$new=($this->timeSent >= $User->timeLastSessionEnded );
 	}
+
 	public function __construct(array $hash)
 	{
 		foreach($hash as $n=>$v)
@@ -65,9 +67,10 @@ class notice
 		}
 		else
 			$this->linkURL = '';
-
 	}
+
 	public static $noticesPage=false;
+
 	private function isRespondable()
 	{
 		global $User;
@@ -80,6 +83,7 @@ class notice
 
 		return true;
 	}
+
 	public static function sendPMs()
 	{
 		global $User;
@@ -106,6 +110,7 @@ class notice
 		}
 		return false;
 	}
+
 	private function replyBox()
 	{
 		if( !isset(Config::$customForumURL) ) 
@@ -124,6 +129,7 @@ class notice
 			</div>';
 		}
 	}
+
 	public function html()
 	{
 		global $User;
@@ -141,7 +147,7 @@ class notice
 
 		elseif (strpos($this->text, 'Your application to join') !== false || strpos($this->text, 'Congratulations! You have been accepted into') !== false || strpos($this->text, 'You have been removed from') !== false)
 		{
-			$buf = '<div style="background-color: #ddd;" class="homeNotice '.($this->type=='Game'?'" gameID="'.$this->fromID.'"':'userID'.$this->fromID.'"').'>
+			$buf = '<div style="background-color: #F08080;" class="homeNotice '.($this->type=='Game'?'" gameID="'.$this->fromID.'"':'userID'.$this->fromID.'"').'>
 			<div class="homeForumGroup homeForumAlt'.libHTML::alternate().'">
 				<div class="homeForumSubject homeForumTopBorder">'.$this->fromLink().'</div>
 				<div class="homeForumPostAlt'.libHTML::alternate().' homeForumPost">
@@ -171,19 +177,11 @@ class notice
 			$buf .= '<div class="homeForumPostAlt'.libHTML::alternate().' homeForumPost">'.$this->replyBox().'</div>';
 
 		$buf .= '	</div>';
-					//<div class="homeForumMessage">'.$post['message'].'</div>
-
-					/*
-			$buf .= '<div class="homeForumLink">
-					<div class="homeForumPostTime"><strong>'.$data['replies'].'</strong> replies</div>
-					<a href="forum.php?threadID='.$threadID.'#'.$threadID.'">Open</a>
-					</div>
-					</div>';*/
-
 		$buf .= '</div>';
 
 		return $buf;
 	}
+
 	public function fromLink()
 	{
 		$linkName=$this->linkName;
@@ -196,14 +194,17 @@ class notice
 
 		return $buf;
 	}
+
 	public function timeSent()
 	{
 		return libTime::text($this->timeSent);
 	}
+
 	public function message()
 	{
 		return $this->text;
 	}
+
 	public static function send($toUserID, $fromID, $type, $keep, $private, $text, $linkName, $linkID='NULL')
 	{
 		global $DB;

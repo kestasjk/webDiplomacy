@@ -722,6 +722,12 @@ if( $User->type['Moderator'] )
 {
 	$lastCheckedBy = $UserProfile->modLastCheckedBy();
 	$modLastCheckedOn = $UserProfile->modLastCheckedOn();
+	list($previousUsernames) = $DB->sql_row(
+		"SELECT GROUP_CONCAT(DISTINCT oldUsername SEPARATOR ', ') FROM wD_UsernameHistory WHERE userID = ".$UserProfile->id
+	);
+	list($previousEmails) = $DB->sql_row(
+		"SELECT GROUP_CONCAT(DISTINCT oldEmail SEPARATOR ', ') FROM wD_EmailHistory WHERE userID = ".$UserProfile->id
+	);
 
 	if($UserProfile->modLastCheckedOn() > 0 && $lastCheckedBy > 0)
 	{
@@ -732,9 +738,20 @@ if( $User->type['Moderator'] )
 	{
 		print '<p>Investigated: Never</p>';
 	}
+
 	if ($UserProfile->userIsTempBanned())
 	{
 		print '<p>Temp Ban Time: '.libTime::remainingText($UserProfile->tempBan).' Reason: '.$UserProfile->tempBanReason.'</p>';
+	}
+
+	if (!empty($previousUsernames))
+	{
+		print '<p class="profileCommentURL">Previous Usernames: '.$previousUsernames.'</p>';
+	}
+
+	if (!empty($previousEmails))
+	{
+		print '<p class="profileCommentURL">Previous Emails: '.$previousEmails.'</p>';
 	}
 
 	if($UserProfile->qualifiesForEmergency() )
@@ -825,11 +842,6 @@ if ( $UserProfile->hideEmail != 'No' )
 
 	if( file_exists($emailCacheFilename) )
 		unlink($emailCacheFilename);
-}
-
-if ( $UserProfile->homepage )
-{
-	print '<li style="word-wrap:break-word"><strong>'.l_t('Home page:').'</strong> '.$UserProfile->homepage.'</li>';
 }
 
 print '<li>&nbsp;</li>';

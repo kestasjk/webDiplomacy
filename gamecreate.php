@@ -45,7 +45,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$form = $_REQUEST['newGame']; // This makes $form look harmless when it is unsanitized; the parameters must all be sanitized
 
 		$input = array();
-		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy','drawType','minimumReliabilityRating','excusedMissedTurns');
+		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'nextPhaseMinutes', 'phaseSwitchPeriod', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy','drawType','minimumReliabilityRating','excusedMissedTurns');
 
 		$playerTypes = 'Members';
 
@@ -97,6 +97,31 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			throw new Exception(l_t("The phase value is too large or small; it must be between 5 minutes and 10 days."));
 		}
 
+		$input['nextPhaseMinutes'] = (int)$input['nextPhaseMinutes'];
+		$input['phaseSwitchPeriod'] = (int)$input['phaseSwitchPeriod'];
+
+		// If a game is not live, set the next phase minutes to match the phase.
+		if ($input['phaseMinutes'] > 60)
+		{
+			$input['nextPhaseMinutes'] = $input['phaseMinutes'];
+			$input['phaseSwitchPeriod'] = -1;
+		}
+		
+		if ($input['phaseMinutes'] < 61 and $input['phaseSwitchPeriod'] != -1)
+		{
+			// If the next phase minutes is less than 1 day or more than 10 because someone is messing around with the console, default to 2 days if the game is live.
+			if (($input['nextPhaseMinutes'] < 1440 or $input['nextPhaseMinutes'] > 1440*10))
+			{
+				$input['nextPhaseMinutes'] = 2880;
+			}
+
+			// If the phase Switch period is outside the allowed range default it to 3 hours.
+			if (($input['phaseSwitchPeriod'] > 360 or $input['phaseSwitchPeriod'] < $input['phaseMinutes']))
+			{
+				$input['phaseSwitchPeriod'] = 180;
+			}
+		}
+
 		$input['joinPeriod'] = (int)$input['joinPeriod'];
 		if ( $input['joinPeriod'] < 5 or $input['joinPeriod'] > 1440*14 )
 		{
@@ -106,13 +131,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$input['anon'] = ( (strtolower($input['anon']) == 'yes') ? 'Yes' : 'No' );
 		
 		// Force 1 vs 1 variants to be unranked to prevent point farming. 
-		if ( $input['variantID'] == 15 )
-		{
-			$input['bet'] = 5; 
-			$input['potType'] = 'Unranked';
-		}
-		
-		if ( $input['variantID'] == 23 )
+		if ( $input['variantID'] == 15 or  $input['variantID'] == 23)
 		{
 			$input['bet'] = 5; 
 			$input['potType'] = 'Unranked';
@@ -142,6 +161,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 				$input['pressType'] = 'Regular';
 		}
 		
+		// Force bot games to be no press and unranked.
 		if($input['botFill'] == 'Yes')
 		{
 			$input['pressType'] = 'NoPress';
@@ -167,20 +187,24 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 				$input['drawType'] = 'draw-votes-public';
 				break;
 		}
+
 		$input['minimumReliabilityRating'] = (int)$input['minimumReliabilityRating'];
 		if ( $input['minimumReliabilityRating'] < 0 or $input['minimumReliabilityRating'] > 100 )
 		{
             throw new Exception(l_t("The reliability rating threshold must range from 0-100"));
 		}
+
 		if ( $input['minimumReliabilityRating'] > $User->reliabilityRating )
 		{
             throw new Exception(l_t("Your reliability rating is %s%%, so you can't create a game which requires players to have a RR of %s%% or greater.",($User->reliabilityRating),$input['minimumReliabilityRating']));
 		}
+
 		$input['excusedMissedTurns'] = (int) $input['excusedMissedTurns'];
 		if ( $input['excusedMissedTurns'] < 0 || $input['excusedMissedTurns'] > 4 )
 		{
 			throw new Exception(l_t("The excused missed turn number is too large or small; it must be between 0 and 4."));
 		}
+
 		// Create Game record & object
 		require_once(l_r('gamemaster/game.php'));
 		$Game = processGame::create(
@@ -190,6 +214,8 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input['bet'], 
 			$input['potType'], 
 			$input['phaseMinutes'], 
+			$input['nextPhaseMinutes'],
+			$input['phaseSwitchPeriod'],
 			$input['joinPeriod'], 
 			$input['anon'], 
 			$input['pressType'], 

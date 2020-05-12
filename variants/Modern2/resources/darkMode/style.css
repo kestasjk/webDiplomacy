@@ -2,10 +2,10 @@
 	
 .variantModern2 .country0 { color: rgba(255, 255, 255, 0.8) ! important; }  /* Global  */
 .variantModern2 .country1 { color: rgb(226, 165, 212) ! important; }  /* Britain */
-.variantModern2 .country2 { color: rgb(85, 214, 41) ! important; }  /* Egypt   */
+.variantModern2 .country2 { color: rgb(50, 168, 109) ! important; }  /* Egypt   */
 .variantModern2 .country3 { color: rgb(117, 165, 255) ! important; }  /* France  */
 .variantModern2 .country4 { color: rgb(202, 172, 133) ! important; }  /* Germany */
-.variantModern2 .country5 { color: rgb(50, 168, 109) ! important; }  /* Italy   */
+.variantModern2 .country5 { color: rgb(85, 214, 41) ! important; }  /* Italy   */
 .variantModern2 .country6 { color: rgb(232, 107, 107) ! important; }  /* Poland  */
 .variantModern2 .country7 { color: rgb(195, 140, 215) ! important; }  /* Russia  */
 .variantModern2 .country8 { color: rgb(253, 192, 136) ! important; }  /* Spain   */
@@ -13,10 +13,10 @@
 .variantModern2 .country10 { color: rgb(181, 181, 181) ! important; } /* Ukraine */
 
 .variantModern2 .occupationBar1 { background-color: rgb(226, 165, 212); }  /* Britain */
-.variantModern2 .occupationBar2 { background-color: rgb(85, 214, 41); }  /* Egypt   */
+.variantModern2 .occupationBar2 { background-color: rgb(50, 168, 109); }  /* Egypt   */
 .variantModern2 .occupationBar3 { background-color: rgb(117, 165, 255); }  /* France  */
 .variantModern2 .occupationBar4 { background-color: rgb(202, 172, 133); }  /* Germany */
-.variantModern2 .occupationBar5 { background-color: rgb(50, 168, 109); }  /* Italy   */
+.variantModern2 .occupationBar5 { background-color: rgb(85, 214, 41); }  /* Italy   */
 .variantModern2 .occupationBar6 { background-color: rgb(232, 107, 107); }  /* Poland  */
 .variantModern2 .occupationBar7 { background-color: rgb(195, 140, 215); }  /* Russia  */
 .variantModern2 .occupationBar8 { background-color: rgb(253, 192, 136); }  /* Spain   */

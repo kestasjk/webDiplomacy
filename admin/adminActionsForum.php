@@ -121,6 +121,7 @@ class adminActionsForum extends adminActions
 			}
 		}
 	}
+
 	private static function setNextActiveUserSilence($silenceID) 
 	{
 		global $DB;
@@ -140,6 +141,7 @@ class adminActionsForum extends adminActions
 			}
 		}
 	}
+
 	public function disableSilence(array $params) 
 	{
 		$silence = new Silence($params['silenceID']);
@@ -155,6 +157,7 @@ class adminActionsForum extends adminActions
 		
 		return l_t('%s disabled.',$silence->toString());
 	}
+
 	public function disableSilenceConfirm(array $params) 
 	{
 		$silence = new Silence($params['silenceID']);
@@ -179,6 +182,7 @@ class adminActionsForum extends adminActions
 		
 		return l_t('%s changed from <i>%s</i> to <i>%s</i>.',$silence->toString(),Silence::printLength($previousLength),Silence::printLength($silence->length));
 	}
+
 	public function changeSilenceLengthConfirm(array $params) 
 	{
 		$silence = new Silence($params['silenceID']);
@@ -231,6 +235,7 @@ class adminActionsForum extends adminActions
 		$silence = new Silence($silenceID);
 		return l_t('User silenced:').' <br/>' .$silence->toString();
 	}
+
 	public function createUserSilenceConfirm(array $params)
 	{
 		self::checkSilenceParams($params);
@@ -257,6 +262,7 @@ class adminActionsForum extends adminActions
 		$silence = new Silence($silenceID);
 		return l_t('Thread silenced:').' <br/>' .$silence->toString();
 	}
+
 	public function createThreadSilenceConfirm(array $params)
 	{
 		self::checkSilenceParams($params);
@@ -281,6 +287,7 @@ class adminActionsForum extends adminActions
 		$silence = new Silence($silenceID);
 		return l_t('User and thread silenced:').' <br/>' .$silence->toString();
 	}
+	
 	public function createUserThreadSilenceConfirm(array $params)
 	{
 		self::checkSilenceParams($params);
@@ -288,6 +295,7 @@ class adminActionsForum extends adminActions
 		return l_t('Are you sure you want to silence this user %s, and silence the thread they were posting in, because <i>%s</i> ?',
 			Silence::printLength($params['length']),$params['reason']);
 	}
+
 	public function syncForumLikes(array $params)
 	{
 		global $DB;
