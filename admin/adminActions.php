@@ -69,6 +69,11 @@ class adminActions extends adminActionsForms
 				'description' => 'Replace one player in a given game with another one. This does not impact points. If the replacing player does not meet the RR requirements for the game or is already in the game, that game replacement will not occur.',
 				'params' => array('userID'=>'UserID to be replaced','replaceID'=>'UserID replacing','gameIDs'=>'GameID (all active if empty)', )
 			),
+			'changeReliability' => array(
+				'name' => 'Change minimum RR required',
+				'description' => 'Change the minimum reliability rating threshold required to join this game',
+				'params' => array('gameID'=>'Game ID', 'newRating'=>'Reliability requirement (0-100)')
+			),
 			'tempBan' => array(
 				'name' => 'Temporary ban a player',
 				'description' => 'Stops a player from joining or creating new games for that many days. To remove a temp ban, enter 0 days. Include a reason for the temp
@@ -1246,6 +1251,33 @@ class adminActions extends adminActionsForms
 		$emailToken = substr(md5(Config::$secret.$email),0,5).'%7C'.urlencode($email);
 
 		return "Please give the user the following link: <br>".$thisURL.'?emailToken='.$emailToken;
+	}
+
+	public function changeReliability(array $params)
+	{
+		global $DB;
+
+		if (!isset($params['gameID']))
+		{
+			return "Please enter a game ID.";
+		}
+		
+		if (!isset($params['newRating']) || (!preg_match('/^[0-9][0-9]?$|^100$/', $params['newRating'])))
+		{
+			return "Please enter a valid reliability rating requirement (0-100).";
+		}
+
+		$Variant=libVariant::loadFromGameID((int)$params['gameID']);
+		$Game = $Variant->Game((int)$params['gameID']);
+		$newRating = (int)$params['newRating'];
+		$oldRating = $DB->sql_row("SELECT minimumReliabilityRating FROM wD_Games WHERE id = ".$Game->id);
+
+		$DB->sql_put(
+			"UPDATE wD_Games SET minimumReliabilityRating = ".$newRating." WHERE id = ".$Game->id." limit 1"
+		);
+
+		return "Reliability rating threshold of <a href='board.php?gameID=$Game->id'>$Game->name</a>
+			has been changed from ".$oldRating[0]." to ".$newRating;
 	}
 
 }
