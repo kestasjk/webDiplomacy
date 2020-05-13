@@ -69,6 +69,36 @@ print libHTML::pageTitle('Information and Links','Links to pages with more infor
             If you want to fix/improve/install webDiplomacy all the info you need to make it happen is <a href="developers.php">here</a>.
         </p>
     </div>
+    <div class = 'help_title'>Privacy</div>
+    <div class = 'help_content'>
+        <p>
+            At WebDiplomacy.net, the privacy of our visitors is of great importance to us. 
+            This privacy policy outlines the types of information received and stored by WebDiplomacy.net and how it is used, plus our use of cookies. <br /><br />
+
+            <strong>User information:</strong><br />
+            We only store personal information which was entered by you, the user. This includes your chosen username, password, 
+            and e-mail address, which is required at sign-up. This information is used purely for identification on the website. 
+            Only your username will be published online on our website, your e-mail address is visible only to moderators.<br /><br />
+
+            <strong>Log Files:</strong><br />
+            Like many other websites, www.WebDiplomacy.net makes use of access logs for improving the website, analyzing trends, catching cheaters, etc. 
+            The information inside the log files includes IP addresses, anonymized browser identifiers, timestamps. IP addresses, and other such information 
+            are not linked to any information that is personally identifiable. <br /><br />
+
+            <strong>Academic Research:</strong><br />
+            We are pleased to be able to offer historic move data that is publically available for research purposes, as well as historic, 
+            anonymized and redacted game message data to reputable research organizations under strict NDA provisions. Such data can result 
+            in the development of AI models that can play Diplomacy, which we can then incorporate into WebDiplomacy.net to improve the system. 
+            Such efforts also advance the field of computer science which the Diplomacy hobby has always benefited/contributed from/to.<br /><br />
+            
+            <strong>Cookies:</strong><br />
+            WebDiplomacy.net, as with any interactive website, uses cookies to store authentication credentials and store information that persists 
+            across requests. Cookies are simply information sent from the server to your web-browser that your web-browser is expected to repeat on 
+            subsequent requests. Almost all web browsers will allow or deny storage of cookies depending on your preferences.<br />
+            We use Google Analytics to monitor usage trends. Refer to Google's privacy policy. (Note that browsers set to reject third-party cookies, 
+            which some do by default, will not repeat any cookies sent by Google Analytics on our behalf.)
+        </p>
+    </div>
 
     <div class = 'help_title'>Credits</div>
     <div class = 'help_content'>
