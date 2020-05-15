@@ -521,7 +521,7 @@ class adminActionsRestricted extends adminActionsSeniorMod
 		if( $modUser->type['SeniorMod'] )
 			throw new Exception(l_t("This user is already a senior moderator"));
 		
-		if( $modUser->type['Moderator'] )
+		if( ! $modUser->type['Moderator'] )
 			throw new Exception(l_t("This user is not a moderator"));
 
 		$DB->sql_put("UPDATE wD_Users SET type = CONCAT_WS(',',type,'SeniorMod') WHERE id = ".$userID);
