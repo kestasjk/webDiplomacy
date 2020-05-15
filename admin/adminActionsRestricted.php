@@ -29,7 +29,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  *
  * @package Admin
  */
-class adminActionsRestricted extends adminActionsForum
+class adminActionsRestricted extends adminActionsSeniorMod
 {
 	public function __construct()
 	{
@@ -59,9 +59,19 @@ class adminActionsRestricted extends adminActionsForum
 				'description' => 'Gives moderator status to the specified user ID.',
 				'params' => array('userID'=>'User ID'),
 			),
+			'giveSeniorModerator' => array(
+				'name' => 'Give senior moderator status',
+				'description' => 'Gives senior moderator status to the specified user ID.',
+				'params' => array('userID'=>'User ID'),
+			),
 			'takeModerator' => array(
 				'name' => 'Take moderator status',
 				'description' => 'Takes moderator status from the specified user ID.',
+				'params' => array('userID'=>'Mod User ID'),
+			),
+			'takeSeniorModerator' => array(
+				'name' => 'Take senior moderator status',
+				'description' => 'Takes senior moderator status from the specified user ID.',
 				'params' => array('userID'=>'Mod User ID'),
 			),
 			'giveForumModerator' => array(
@@ -500,6 +510,25 @@ class adminActionsRestricted extends adminActionsForum
 		return l_t('This user was given moderator status.');
 	}
 
+	public function giveSeniorModerator(array $params)
+	{
+		global $DB;
+
+		$userID = (int)$params['userID'];
+
+		$modUser = new User($userID);
+
+		if( $modUser->type['SeniorMod'] )
+			throw new Exception(l_t("This user is already a senior moderator"));
+		
+		if( ! $modUser->type['Moderator'] )
+			throw new Exception(l_t("This user is not a moderator"));
+
+		$DB->sql_put("UPDATE wD_Users SET type = CONCAT_WS(',',type,'SeniorMod') WHERE id = ".$userID);
+
+		return l_t('This user was given senior moderator status.');
+	}
+
 	public function takeModerator(array $params)
 	{
 		global $DB;
@@ -511,9 +540,28 @@ class adminActionsRestricted extends adminActionsForum
 		if( ! $modUser->type['Moderator'] )
 			throw new Exception(l_t("This user isn't a moderator"));
 
+		if( $modUser->type['SeniorMod'] )
+			throw new Exception(l_t("Remove Senior Mod status first."));
+
 		$DB->sql_put("UPDATE wD_Users SET type = REPLACE(type,'Moderator','') WHERE id = ".$userID);
 
 		return l_t('This user had their moderator status taken.');
+	}
+
+	public function takeSeniorModerator(array $params)
+	{
+		global $DB;
+
+		$userID = (int)$params['userID'];
+
+		$modUser = new User($userID);
+
+		if( ! $modUser->type['SeniorMod'] )
+			throw new Exception(l_t("This user isn't a senior moderator"));
+
+		$DB->sql_put("UPDATE wD_Users SET type = REPLACE(type,'SeniorMod','') WHERE id = ".$userID);
+
+		return l_t('This user had their senior moderator status taken.');
 	}
 
 	public function giveForumModerator(array $params)
@@ -525,7 +573,7 @@ class adminActionsRestricted extends adminActionsForum
 		$modUser = new User($userID);
 
 		if( $modUser->type['ForumModerator'] )
-			throw new Exception(l_t("This user is already a moderator"));
+			throw new Exception(l_t("This user is already a forum moderator"));
 
 		$DB->sql_put("UPDATE wD_Users SET type = CONCAT_WS(',',type,'ForumModerator') WHERE id = ".$userID);
 
