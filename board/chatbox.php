@@ -83,7 +83,7 @@ class Chatbox
 	 * Post a message to the given countryID, if there is one to be posted. Will also send messages as a
 	 * GameMaster if the user is a moderator which isn't joined into the game.
 	 *
-	 * @param $msgCountryID The countryID to post to, may include 0 (Global)
+	 * @param int $msgCountryID The countryID to post to, may include 0 (Global)
 	 */
 	public function postMessage($msgCountryID)
 	{

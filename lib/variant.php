@@ -48,8 +48,7 @@ class libVariant {
 	 * For everything in board/* (used by ajax.php and board.php) it can be assumed that only one variant
 	 * will be loaded, so here that variant is defined where it will be globally accessible.
 	 *
-	 * @param Variant $Variant
-	 * @return unknown_type
+	 * @param WDVariant $Variant
 	 */
 	public static function setGlobals(WDVariant $Variant) {
 		if( isset(libVariant::$Variant) )
@@ -91,7 +90,7 @@ class libVariant {
 	/**
 	 * Return a Variant object given a variant ID
 	 * @param int $variantID
-	 * @return Variant
+	 * @return WDVariant
 	 */
 	public static function loadFromVariantID($variantID) {
 		return self::loadFromVariantName( Config::$variants[$variantID] );
@@ -118,7 +117,7 @@ class libVariant {
 	/**
 	 * Return a Variant object given its short name (the preferred/quickest way)
 	 * @param string $variantName
-	 * @return Variant
+	 * @return WDVariant
 	 */
 	public static function loadFromVariantName($variantName) {
 		global $DB, $Misc;
@@ -170,8 +169,8 @@ class libVariant {
 
 	/**
 	 * Return a Variant object corresponding to a game ID. This has to
-	 * @param unknown_type $gameID
-	 * @return unknown_type
+	 * @param int $gameID
+	 * @return WDVariant
 	 */
 	public static function loadFromGameID($gameID) {
 		global $DB;

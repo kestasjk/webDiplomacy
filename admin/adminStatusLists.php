@@ -33,7 +33,7 @@ if( $User->type['Admin'] )
 {
 	//There may be sensitive info that would allow privilege escalation in these error logs
 
-	print '<p class="modTools"><strong>'.l_t('Error logs:').'</strong> '.libError::stats().' ('.libHTML::admincp('clearErrorLogs',null,'Clear').')</p>';
+	print '<p class="modTools"><strong>'.l_t('Error logs:').'</strong> '.libError::stats().' ('.libHTML::admincp('clearErrorLogs', [],'Clear').')</p>';
 
 	$dir =  libError::directory();
 	$errorlogs = libError::errorTimes();

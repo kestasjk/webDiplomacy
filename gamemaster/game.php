@@ -195,7 +195,7 @@ class processGame extends Game
 	 * Restores a game from a backup table, or throws an exception if it isn't in a backup table.
 	 * Will erase the live game before restoring it from backup.
 	 *
-	 * @param $gameID The game ID
+	 * @param int $gameID The game ID
 	 */
 	static function restoreGame($gameID)
 	{

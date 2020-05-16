@@ -819,7 +819,7 @@ class User {
 	 * 
 	 * @param int $userID The id of the user to be temp banned.
 	 * @param int $days The time of the ban in days.
-	 * @param text $reason The reason for the temp ban.
+	 * @param string $reason The reason for the temp ban.
 	 * @param boolean $overwrite True, if the temp ban value should be overwritten
 	 *		in any case. If false, an existing temp ban might be only extended (for
 	 *		automated temp bans).

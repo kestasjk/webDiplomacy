@@ -43,11 +43,11 @@ class adjConvoyMove extends adjMove
 	 * array which is otherwise full of IDs
 	 *
 	 * @param array $units
-	 * @param unknown_type[optional] $chain The chain getting processed 
+	 * @param array|boolean [optional] $chain The chain getting processed
 	 */
-	public function setUnits(array $units, &$chain=false)
+	public function setUnits(array $units, &$chain = false)
 	{
-		if ( $chain === false )
+		if ($chain === false || !is_array($chain))
 		{
 			if ( is_array($this->convoyChain) )
 			{
@@ -59,14 +59,15 @@ class adjConvoyMove extends adjMove
 			return;
 		}
 		
-		foreach($chain as &$var)
+		foreach ($chain as $var)
 		{
 			// &$var means that the chain is edited, and $var isn't just a copy
 			
-			if ( is_array($var) )
-				$this->setUnits($units, $var); // Convert the sub-array into unit objects
-			else
-				$var = $units[$var]; // Set the ID to be a unit object instead
+			if (is_array($var)) {
+                $this->setUnits($units, $var); // Convert the sub-array into unit objects
+            } else {
+                $var = $units[$var]; // Set the ID to be a unit object instead
+            }
 		}
 	}
 	
@@ -76,15 +77,16 @@ class adjConvoyMove extends adjMove
 		if ( $this->convoyChain === false ) return false;
 		else return $this->checkChain($this->convoyChain);
 	}
-	
-	/**
-	 * A recursive function to check whether the convoy chain is a valid path. Returns
-	 * true if the sub-chain does have a valid path to the destination, false if the
-	 * sub-chain does not
-	 *
-	 * @param array $chain
-	 * @return boolean
-	 */
+
+    /**
+     * A recursive function to check whether the convoy chain is a valid path. Returns
+     * true if the sub-chain does have a valid path to the destination, false if the
+     * sub-chain does not
+     *
+     * @param array $chain
+     * @return boolean
+     * @throws adjParadoxException
+     */
 	private function checkChain($chain)
 	{
 		/*
@@ -157,5 +159,3 @@ class adjConvoyMove extends adjMove
 		else return false;
 	}
 }
-
-?>

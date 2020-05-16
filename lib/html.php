@@ -291,10 +291,10 @@ class libHTML
 	/**
 	 * A link to an admin control panel action
 	 *
-	 * @param $actionName The name of the action
+	 * @param string $actionName The name of the action
 	 * @param array $args The args in a $name=>$value array
-	 * @param $linkName The name to give the link, the URL is returned if no linkName is given
-	 * @param $confirm Boolean to determine whether the action needs javascript confirmation
+	 * @param string $linkName The name to give the link, the URL is returned if no linkName is given
+	 * @param boolean $confirm Boolean to determine whether the action needs javascript confirmation
 	 * @return string A link URL or an <a href>
 	 */
 	static function admincp($actionName, $args=null, $linkName=null,$confirm=false)
@@ -578,7 +578,7 @@ class libHTML
 	 *
 	 * @return string The notification block HTML
 	 */
-	static public function gameNotifyBlock ()
+	static public function gameNotifyBlock()
 	{
 		global $User, $DB;
 

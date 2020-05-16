@@ -53,6 +53,9 @@ class userOrderDiplomacy extends userOrder
 		}
 	}
 
+    /**
+     * @return bool
+     */
 	protected function typeCheck()
 	{
 		switch($this->type) {
@@ -62,8 +65,7 @@ class userOrderDiplomacy extends userOrder
 			case 'Support move':
 				return true;
 			case 'Convoy':
-				if ( $this->Unit->type == 'Fleet' and $this->Unit->Territory->type == 'Sea' )
-					return true;
+			    return $this->Unit->type == 'Fleet' && $this->Unit->Territory->type == 'Sea';
 			default:
 				return false;
 		}

@@ -50,7 +50,7 @@ class setMemberOrderStatus extends set {
 
 	/**
 	 * None,Saved,Completed,Ready
-	 * @return unknown_type
+	 * @return string
 	 */
 	function icon() {
 		if( $this->None )
