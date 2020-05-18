@@ -249,6 +249,12 @@ class adminActionsRestricted extends adminActionsSeniorMod
 				'description' => 'Display API key and permissions for a user.',
 				'params' => array('userID'=>'User ID'),
 			),
+			'calculateGR' => array(
+				'name' => 'Calculate Ghost Ratings',
+				'description' => 'Calculate GR for next x games and populate out the database. Note that this only needs to be done when 
+				first adding GR to the server. After that, games will automatically calculate GR adjustments as they finish.',
+				'params' => array('batchSize'=>'Batch Size'),
+			),
 			'updateVariantInfo' => array(
 				'name' => 'Update wD_VariantInfo',
 				'description' => 'Will add or update the info in wD_VariantInfo for a given variantID. If left blank, it will loop through all variants.',
@@ -1150,6 +1156,42 @@ class adminActionsRestricted extends adminActionsSeniorMod
 		<div><strong>listGamesWithPlayersInCD</strong>: ".$row['listGamesWithPlayersInCD']."</div>
 		<div><strong>submitOrdersForUserInCD</strong>: ".$row['submitOrdersForUserInCD']."</div>
 		";
+	}
+
+	public function calculateGR($params) {
+		require_once(l_r('ghostratings/calculations.php'));
+		global $DB;
+		$batch_size = (int)$params['batchSize'];
+		if ($batch_size <= 0)
+		{
+			return l_t('Invalid batch size. Please enter a positive integer.');
+		}
+		$data = $DB->sql_tabl("SELECT id, variantID, pressType, potType, turn, gameOver, phaseMinutes, processTime, playerTypes FROM wD_Games WHERE gameOver <> 'No' AND grCalculated <> 1 ORDER BY processTime ASC LIMIT ".$batch_size.";");
+		while (list($gameID, $variantID, $pressType, $potType, $turn, $gameOver, $phaseMinutes, $time, $playerTypes) = $DB->tabl_row($data))
+		{
+			$winnerID = 0;
+			list($SCTarget, $SCTotal) = $DB->sql_row("SELECT supplyCenterTarget, supplyCenterCount FROM wD_VariantInfo WHERE variantID=".$variantID);
+			$players = $DB->sql_tabl("SELECT userID, supplyCenterNo, status FROM wD_Members WHERE gameID =".$gameID);
+			$SCcounts = array();
+			$memberStatus = array();
+			while(list($userID, $SCcount, $status) = $DB->tabl_row($players))
+			{
+				$SCcounts[$userID] = $SCcount;
+				$memberStatus[$userID] = $status;
+				if ($status == 'Won')
+				{
+					$winnerID = $userID;
+				}
+			}
+			$botGame = True;
+			if($playerTypes == 'Members')
+			{
+				$botGame = False;
+			}
+			$ghostRatings = new GhostRatings($gameID, $SCcounts, $memberStatus, $variantID, $pressType, $potType, $turn, $gameOver, $phaseMinutes, $SCTarget, $SCTotal, $winnerID, $botGame, $time);
+		  $ghostRatings->processGR();
+		}
+		return l_t('GR Calculated');
 	}
 
 	public function updateVariantInfo($params) 

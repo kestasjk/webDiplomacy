@@ -24,6 +24,7 @@ require_once(l_r('gamemaster/gamemaster.php'));
 
 require_once(l_r('objects/game.php'));
 require_once(l_r('gamemaster/members.php'));
+require_once(l_r('ghostratings/calculations.php'));
 
 /**
  * This class creates games, joins players up to games, manages the passing of games
@@ -1050,6 +1051,33 @@ class processGame extends Game
 		 */
 		global $DB;
 		$DB->sql_put("UPDATE wD_Games SET finishTime=".time()." WHERE id=".$this->id);
+		
+		//Do GR Stuff
+	 $SCcounts = array();
+	 $memberStatus = array();
+	 foreach($this->Members->ByStatus['Playing'] as $Member)
+	 {
+		 $SCcounts[$Member->userID] = $Member->supplyCenterNo;
+		 $memberStatus[$Member->userID] = 'Survived';
+	 }
+	 foreach($this->Members->ByStatus['Left'] as $Member)
+	 {
+		 $SCcounts[$Member->userID] = $Member->supplyCenterNo;
+		 $memberStatus[$Member->userID] = 'Resigned';
+	 }
+	 foreach($this->Members->ByStatus['Defeated'] as $Member)
+	 {
+		 $SCcounts[$Member->userID] = 0;
+		 $memberStatus[$Member->userID] = 'Defeated';
+	 }
+	 $memberStatus[$Winner->userID] = 'Won';
+	 $botGame = True;
+	 if ($this->playerTypes == 'Members')
+	 {
+		 $botGame = False;
+	 }
+	 $ghostRatings = new GhostRatings($this->id, $SCcounts, $memberStatus, $this->variantID, $this->pressType, $this->potType, $this->turn, "Won", $this->phaseMinutes, $this->Variant->terrIDByName["supplyCenterTarget"], $this->Variant->terrIDByName["supplyCenterCount"], $Winner->userID, $botGame, time());
+	 $ghostRatings->processGR();
 		 
 		$this->Members->setWon($Winner);
 
@@ -1235,6 +1263,31 @@ class processGame extends Game
 				SELECT gameID, turn+1, terrID, countryID, unitType, success, dislodged, type, toTerrID, fromTerrID, viaConvoy
 				FROM wD_MovesArchive WHERE gameID = ".$this->id." AND turn = ".($this->turn-1));
 		}
+		//Do GR Stuff
+		$SCcounts = array();
+		$memberStatus = array();
+		foreach($this->Members->ByStatus['Playing'] as $Member)
+		{
+			$SCcounts[$Member->userID] = $Member->supplyCenterNo;
+			$memberStatus[$Member->userID] = 'Drawn';
+		}
+		foreach($this->Members->ByStatus['Left'] as $Member)
+		{
+			$SCcounts[$Member->userID] = $Member->supplyCenterNo;
+			$memberStatus[$Member->userID] = 'Resigned';
+		}
+		foreach($this->Members->ByStatus['Defeated'] as $Member)
+		{
+			$SCcounts[$Member->userID] = 0;
+			$memberStatus[$Member->userID] = 'Defeated';
+		}
+		$botGame = True;
+		if ($this->playerTypes == 'Members')
+		{
+			$botGame = False;
+		}
+		$ghostRatings = new GhostRatings($this->id, $SCcounts, $memberStatus, $this->variantID, $this->pressType, $this->potType, $this->turn, "Drawn", $this->phaseMinutes, $this->Variant->terrIDByName["supplyCenterTarget"], $this->Variant->terrIDByName["supplyCenterCount"], 0, $botGame, time());
+		$ghostRatings->processGR();
 
 		// Sets the Members statuses to Drawn as needed, gives refunds, sends messages
 		$this->Members->setDrawn();
