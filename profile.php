@@ -236,8 +236,8 @@ if ( isset($_REQUEST['detail']) )
 				delays do not hurt your score in any way.
 				</br>
 				</br>
-				<strong>Live Game:</strong> If a game had phases 60 minutes long or less any excused missed turns will only impact your rating for 28 days total. The penality is the same, 
-				5% long term and 6% short term, except the long term penality is for 28 days and the short term is for 7 days.</br>
+				<strong>Live Game:</strong> If a game had phases 60 minutes long or less any excused missed turns will only impact your rating for 28 days total. The penalty is the same, 
+				5% long term and 6% short term, except the long term penalty is for 28 days and the short term is for 7 days.</br>
 				<strong>System Excused:</strong> If you had an "excused missed turn" left this will be yes and will not cause additional penalties against your rating.</br>
 				<strong>Mod Excused:</strong> If a moderator excused the missed turn this field will be yes and will not cause additional penalties against your rating.</br>
 				<strong>Same Period Excused:</strong> If you have multiple un-excused missed turns in a 24 hour period you are only penalized once with the exception of live games, 
@@ -247,17 +247,17 @@ if ( isset($_REQUEST['detail']) )
 				print '<div class = "profile_content">';
 				print '<p>
 				Many games are made with a minimum rating requirement so this may impact the quality of games you can enter. If you have more then 3 non-live un-excused missed turns in a year
-				you will begin getting temporarily banned from making new games, joining existing games, or rejoining your own games. </br>
+				you will begin getting temporarily banned from making new games, joining existing games, or rejoining your own games.</br>
 				</br>
 				 <li>1-3 un-excused delays: warnings</li>
 				 <li>4 un-excused delays: 1-day temp ban</li>
 				 <li>5 un-excused delays: 3-day temp ban</li>
 				 <li>6 un-excused delays: 7-day temp ban</li>
 				 <li>7 un-excused delays: 14-day temp ban</li>
-				 <li>8 un-excused delays: 30-days temp ban</li>
+				 <li>8 un-excused delays: 30-day temp ban</li>
 				 <li>9 or more un-excused delays: infinite, must contact mods for removal</li>
 				 Live game excused turns are penalized independently for temporary bans. 1-2 un-excused missed turns in live games will be a warning, and the 3rd, and any after that will 
-				 result in a 24 hour temp ban. The 2 warnings reset every 28 days resulting in significantly more yearly warnings for live game players then the noraml system. 
+				 result in a 24 hour temp ban. The 2 warnings reset every 28 days resulting in significantly more yearly warnings for live game players then the normal system.
 				</p></div>';
 
 				$missedTurns = $UserProfile->getMissedTurns();
@@ -692,9 +692,9 @@ if( $total )
 		$allMissedTurns = $UserProfile->getYearlyUnExcusedMissedTurns();
 		If ($recentMissedTurns > 0)
 		{
-			print '<li class="rr-profile-info"> Recent Un-excused Delays: ' . $recentMissedTurns.'</font></li>';
-			print '<li class="rr-profile-info"> Recent Delay RR Penalty: ' . ($recentMissedTurns*6).'%</font></li>';
-			print '<li class="rr-profile-info"> Yearly Delay RR Penalty: ' . ($allMissedTurns*5).'%</font></li>';
+			print '<li class="rr-profile-info"> Recent un-excused delays: ' . $recentMissedTurns.'</font></li>';
+			print '<li class="rr-profile-info"> Recent delay RR penalty: ' . ($recentMissedTurns*6).'%</font></li>';
+			print '<li class="rr-profile-info"> Yearly delay RR penalty: ' . ($allMissedTurns*5).'%</font></li>';
 		}
 		print '<li style="font-size:13px">'.l_t('Un-excused delays/phases:').' <strong>'.$allMissedTurns.'/'.$UserProfile->yearlyPhaseCount.'</strong></li>';
 	}
