@@ -44,8 +44,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
    private $pressMod;
    private $modValue;
    
-   private $k;
-   private $start;
+   private $k; //This determines how much an individual game affects a players ranking in 1v1s.
+   private $start; //This determines the starting ranking for a player in 1v1s.
    private $modMultiplier;
 
  	
@@ -66,10 +66,10 @@ defined('IN_CODE') or die('This script can not be run by itself.');
      $this->winner = $winner;
      $this->botGame = $botGame;
      $this->time = $time;
-     $this->k = 32;
-     $this->start = 100;
+     $this->k = 32; //A higher k value means players will move faster up and down in rankings.
+     $this->start = 100; //32 and 100 are arbitrary numbers used for scaling in 1v1 rankings.
      $this->pressMod = Config::$grPressMods[$this->pressType];
-     $this->modvalue = (17.5 * $this->variantMod * $this->pressMod);
+     $this->modvalue = (17.5 * $this->variantMod * $this->pressMod); //17.5 is the 'k' value for non 1v1 games and is used for scaling.
    }
      
    public function processGR()
@@ -331,16 +331,16 @@ defined('IN_CODE') or die('This script can not be run by itself.');
              }
              else
              {
-               $DB->sql_put("UPDATE wD_GhostRatingsHistory SET rating=".$newRating." WHERE userID=".$userID." AND categoryID=".$categoryID." AND monthYear=".$date);
+               $DB->sql_put("UPDATE wD_GhostRatingsHistory SET rating=".$newRating." WHERE userID=".$userID." AND categoryID=".$categoryID." AND monthYear=".$date." LIMIT 1");
              }
-             $sqlUpdate = $sqlUpdate . " WHERE categoryID=".$categoryID." AND userID=".$userID;
+             $sqlUpdate = $sqlUpdate . " WHERE categoryID=".$categoryID." AND userID=".$userID." LIMIT 1";
              $DB->sql_put($sqlUpdate);
              $DB->sql_put("INSERT INTO wD_GhostRatingsBackup(userID, categoryID, gameID, adjustment, timeFinished) VALUES(".$userID.", ".$categoryID.", ".$this->gameID.", ".$adjustment.", ".$this->time.")");
            }
          }
        }
      }
-     $DB->sql_put("UPDATE wD_Games SET grCalculated=1 WHERE id=".$this->gameID);
+     $DB->sql_put("UPDATE wD_Games SET grCalculated=1 WHERE id=".$this->gameID." LIMIT 1");
    }
  }
 ?>

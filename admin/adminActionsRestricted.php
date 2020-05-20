@@ -1158,7 +1158,8 @@ class adminActionsRestricted extends adminActionsSeniorMod
 		";
 	}
 
-	public function calculateGR($params) {
+	public function calculateGR($params)
+	{
 		require_once(l_r('ghostratings/calculations.php'));
 		global $DB;
 		$batch_size = (int)$params['batchSize'];

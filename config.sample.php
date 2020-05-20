@@ -140,7 +140,7 @@ class Config
 			"variants" => array(1,2,9,19,20,17),
 			/*pressMods sets which press type to include*/
 			"presses" => array('Regular','PublicPressOnly','NoPress','RulebookPress'),
-			/*phases sets whether you want to include live games, non-live games, or both. The cutoff is at 1 hour phase lengths*/
+			/*phases sets whether you want to include live games, non-live games, or both. The cutoff is at 1 hour phase lengths. 1 hour phases are considered non-live*/
 			"phases" => array('Live', 'Nonlive'),
 			/*scoring lets you choose what type of scoring sytems to include - only these three types are supported in the current code*/
 			"scoring" => array('Winner-takes-all','Points-per-supply-center','Sum-of-squares')
