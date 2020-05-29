@@ -29,7 +29,7 @@ $formOutput = '';
 
 try
 {
-	$error = array();
+	$errors = array();
 
 	$SQLVars = User::processForm($_REQUEST['userForm'], $errors);
 
