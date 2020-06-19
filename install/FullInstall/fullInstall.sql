@@ -929,7 +929,7 @@ CREATE TABLE `wD_EmailHistory` (
   `date` int(10) unsigned NOT NULL,
   `reason` varchar(50) NOT NULL,
   `changedBy` varchar(30) NOT NULL
-)
+);
 
 UPDATE `wD_Misc` SET `value` = '164' WHERE `name` = 'Version';
 
