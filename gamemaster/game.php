@@ -1081,9 +1081,15 @@ class processGame extends Game
 		//Do GR Stuff
 		if (isset(Config::$grCategories))
 		{
-		  list($memberStatus, $SCcounts, $botGame) = $this->prepGR();
-		  $ghostRatings = new GhostRatings($this->id, $SCcounts, $memberStatus, $this->variantID, $this->pressType, $this->potType, $this->turn, "Won", $this->phaseMinutes, $this->Variant->terrIDByName["supplyCenterTarget"], $this->Variant->terrIDByName["supplyCenterCount"], $Winner->userID, $botGame, time());
-		  $ghostRatings->processGR();
+			if (isset(Config::$grActive))
+			{
+				if (Config::$grActive)
+				{
+				  list($memberStatus, $SCcounts, $botGame) = $this->prepGR();
+				  $ghostRatings = new GhostRatings($this->id, $SCcounts, $memberStatus, $this->variantID, $this->pressType, $this->potType, $this->turn, "Won", $this->phaseMinutes, $this->Variant->terrIDByName["supplyCenterTarget"], $this->Variant->terrIDByName["supplyCenterCount"], $Winner->userID, $botGame, time());
+				  $ghostRatings->processGR();
+				}
+			}
 		}
 		
 		// Then the game is set to finished
@@ -1275,9 +1281,15 @@ class processGame extends Game
 		//Do GR Stuff
 		if (isset(Config::$grCategories))
 		{
-			list($memberStatus, $SCcounts, $botGame) = $this->prepGR();
-			$ghostRatings = new GhostRatings($this->id, $SCcounts, $memberStatus, $this->variantID, $this->pressType, $this->potType, $this->turn, "Drawn", $this->phaseMinutes, $this->Variant->terrIDByName["supplyCenterTarget"], $this->Variant->terrIDByName["supplyCenterCount"], 0, $botGame, time());
-			$ghostRatings->processGR();
+			if (isset(Config::$grActive))
+			{
+				if (Config::$grActive)
+				{
+					list($memberStatus, $SCcounts, $botGame) = $this->prepGR();
+					$ghostRatings = new GhostRatings($this->id, $SCcounts, $memberStatus, $this->variantID, $this->pressType, $this->potType, $this->turn, "Drawn", $this->phaseMinutes, $this->Variant->terrIDByName["supplyCenterTarget"], $this->Variant->terrIDByName["supplyCenterCount"], 0, $botGame, time());
+					$ghostRatings->processGR();
+				}
+			}
 		}
 		
 		$this->setPhase('Finished', 'Drawn');

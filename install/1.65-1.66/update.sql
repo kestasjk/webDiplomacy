@@ -31,6 +31,10 @@ INDEX ( `userID`),
 INDEX ( `categoryID` )
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-ALTER TABLE `wD_Games` ADD COLUMN `grCalculated` INT NOT NULL DEFAULT 0;
+ALTER TABLE `wD_Games`
+ADD COLUMN `grCalculated` INT NOT NULL DEFAULT 0,
+ADD INDEX ( `grCalculated`);
 
-ALTER TABLE `wD_Backup_Games` ADD COLUMN `grCalculated` INT NOT NULL DEFAULT 0;
+ALTER TABLE `wD_Backup_Games`
+ADD COLUMN `grCalculated` INT NOT NULL DEFAULT 0,
+ADD INDEX (`grCalculated`);

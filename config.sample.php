@@ -126,6 +126,12 @@ class Config
 	public static $variants=array(1=>'Classic', 2=>'World', 9=>'AncMed',19=>'Modern2',20=>'Empire4');//3=>'FleetRome', 4=>'CustomStart', 5=>'BuildAnywhere');
 
 	/**
+	 * A boolean controlling whether automatic gr calculations are enabled. Set to true for auto-GR calculation and false to require manual calculations via the modtool. Note that $grCategories must exist to work.
+	 * @var boolean
+	 */
+	public static $grActive = false;
+
+	/**
 	 * An array of categories to use when calculating GhostRatings
 	 * @var array
 	 */
