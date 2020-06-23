@@ -121,6 +121,7 @@ if ( isset($_REQUEST['viewArchive']) )
 		case 'Messages': require_once(l_r('board/info/messages.php')); break;
 		case 'Graph': require_once(l_r('board/info/graph.php')); break;
 		case 'Maps': require_once(l_r('board/info/maps.php')); break;
+		case 'Gif': require_once(l_r('board/info/gif.php')); break;
 		case 'Reports':
 			require_once(l_r('lib/modnotes.php'));
 			libModNotes::checkDeleteNote();
