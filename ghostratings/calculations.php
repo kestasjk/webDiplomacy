@@ -60,7 +60,14 @@ defined('IN_CODE') or die('This script can not be run by itself.');
      $this->gameTurns = $gameTurns;
      $this->gameStatus = $gameStatus;
      $this->phaseMinutes = $phaseMinutes;
-     $this->variantMod = Config::$grVariantMods[$this->variantID];
+     if (isset(Config::$grVariantMods[$this->variantID]))
+     {
+       $this->variantMod = Config::$grVariantMods[$this->variantID];
+     }
+     else
+     {
+       $this->variantMod = 1;
+     }
      $this->victorySC = $victorySC;
      $this->variantSC = $variantSC;
      $this->winner = $winner;
@@ -68,7 +75,14 @@ defined('IN_CODE') or die('This script can not be run by itself.');
      $this->time = $time;
      $this->k = 32; //A higher k value means players will move faster up and down in rankings.
      $this->start = 100; //32 and 100 are arbitrary numbers used for scaling in 1v1 rankings.
-     $this->pressMod = Config::$grPressMods[$this->pressType];
+     if (isset(Config::$grPressMods[$this->pressType]))
+     {
+       $this->pressMod = Config::$grPressMods[$this->pressType];
+     }
+     else
+     {
+       $this->pressMod = 1;
+     }
      $this->modvalue = (17.5 * $this->variantMod * $this->pressMod); //17.5 is the 'k' value for non 1v1 games and is used for scaling.
    }
      
