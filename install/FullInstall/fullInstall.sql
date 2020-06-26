@@ -944,20 +944,20 @@ CREATE TABLE `wD_GhostRatings` (
 `categoryID` mediumint(8) unsigned NOT NULL,
 `rating` FLOAT,
 `peakRating` FLOAT,
-`monthYear` smallint(4) unsigned NOT NULL,
+`yearMonth` mediumint(6) unsigned NOT NULL,
 INDEX ( `userID` ),
 INDEX ( `categoryID` ),
-INDEX ( `monthYear` )
+INDEX ( `yearMonth` )
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `wD_GhostRatingsHistory` (
 `userID` mediumint(8) unsigned NOT NULL,
 `categoryID` mediumint(8) unsigned NOT NULL,
-`monthYear` smallint(4) unsigned NOT NULL,
+`yearMonth` mediumint(6) unsigned NOT NULL,
 `rating` FLOAT,
 INDEX ( `userID` ),
 INDEX ( `categoryID` ),
-INDEX ( `monthYear` )
+INDEX ( `yearMonth` )
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `wD_GhostRatingsBackup` (
