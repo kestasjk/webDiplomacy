@@ -135,23 +135,23 @@ defined('IN_CODE') or die('This script can not be run by itself.');
            //First we need to grab everyones GR for this category to use in the calculations
            $userGR = array();
            $peakGR = array();
-           $monthYear = array();
+           $yearMonth = array();
            $grSum = 0;
            $first = True;
-           $date = date('my',$this->time);
+           $date = date('Ym',$this->time);
            foreach($this->SCcounts as $userID=>$scs)
            {
              $rating = $this->start;
              $peakRating = $rating;
              $userDate = $date;
              $sqlCount = "SELECT COUNT(1) FROM wD_GhostRatings WHERE categoryID=".$categoryID." AND userID=".$userID;
-             $sql = "SELECT rating, peakRating, monthYear FROM wD_GhostRatings WHERE categoryID=".$categoryID." AND userID=".$userID;
+             $sql = "SELECT rating, peakRating, yearMonth FROM wD_GhostRatings WHERE categoryID=".$categoryID." AND userID=".$userID;
              $inDB = 1;
              list($inDB) = $DB->sql_row($sqlCount);
              if ($inDB < 1)
              {
-               $DB->sql_put("INSERT INTO wD_GhostRatings(userID, categoryID, rating, peakrating, monthYear) VALUES(".$userID.", ".$categoryID.", ".$rating.", ".$peakRating.", ".$date.")");
-               $DB->sql_put("INSERT INTO wD_GhostRatingsHistory(userID, categoryID, monthYear, rating) VALUES(".$userID.", ".$categoryID.", ".$date.", ".$rating.")");
+               $DB->sql_put("INSERT INTO wD_GhostRatings(userID, categoryID, rating, peakrating, yearMonth) VALUES(".$userID.", ".$categoryID.", ".$rating.", ".$peakRating.", ".$date.")");
+               $DB->sql_put("INSERT INTO wD_GhostRatingsHistory(userID, categoryID, yearMonth, rating) VALUES(".$userID.", ".$categoryID.", ".$date.", ".$rating.")");
              }
              else
              {
@@ -159,7 +159,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
              }
              $userGR[$userID] = $rating;
              $peakGR[$userID] = $peakRating;
-             $monthYear[$userID] = $userDate;
+             $yearMonth[$userID] = $userDate;
              $grSum += $rating;
            }
            $grAdjustment = array();
@@ -338,14 +338,14 @@ defined('IN_CODE') or die('This script can not be run by itself.');
              {
                $sqlUpdate = $sqlUpdate . ", peakRating=".$newRating;
              }
-             if ($date <> $monthYear[$userID])
+             if ($date <> $yearMonth[$userID])
              {
-               $sqlUpdate = $sqlUpdate. ", monthYear=".$date;
-               $DB->sql_put("INSERT INTO wD_GhostRatingsHistory(userID, categoryID, monthYear, rating) VALUES(".$userID.", ".$categoryID.", ".$date.", ".$newRating.")");
+               $sqlUpdate = $sqlUpdate. ", yearMonth=".$date;
+               $DB->sql_put("INSERT INTO wD_GhostRatingsHistory(userID, categoryID, yearMonth, rating) VALUES(".$userID.", ".$categoryID.", ".$date.", ".$newRating.")");
              }
              else
              {
-               $DB->sql_put("UPDATE wD_GhostRatingsHistory SET rating=".$newRating." WHERE userID=".$userID." AND categoryID=".$categoryID." AND monthYear=".$date." LIMIT 1");
+               $DB->sql_put("UPDATE wD_GhostRatingsHistory SET rating=".$newRating." WHERE userID=".$userID." AND categoryID=".$categoryID." AND yearMonth=".$date." LIMIT 1");
              }
              $sqlUpdate = $sqlUpdate . " WHERE categoryID=".$categoryID." AND userID=".$userID." LIMIT 1";
              $DB->sql_put($sqlUpdate);
