@@ -152,13 +152,13 @@ You can recognize the supply centers with the markers which are placed on them.<
 <h3>Rules</h3>
 <ul class="formlist">
 <li class="formlistdesc">
-	In diplomacy no army or fleet is stronger than another, and a <strong>holding</strong>
-	unit will always beat a <strong>moving</strong> unit of equal support.
+	In diplomacy no army or fleet is stronger than another, so two <strong>moving</strong> units of equal strength will bounce. 
+	A <strong>holding</strong> unit will always beat a <strong>moving</strong> unit of equal support.
 	<p style="text-align:center;">
-		<img src="<?php print STATICSRV; ?>datc/maps/806-large.map-thumb" alt=" "
-			title="An army in Naples attempts to move to Rome, but has no support, so the defending army is not dislodged" />
 		<img src="<?php print STATICSRV; ?>datc/maps/807-large.map-thumb" alt=" "
 			title="The fleet and army are both equally matched in their attempt to move into Apulia, so neither succeeds" />
+		<img src="<?php print STATICSRV; ?>datc/maps/806-large.map-thumb" alt=" "
+			title="An army in Naples attempts to move to Rome, but has no support, so the defending army is not dislodged" />
 	</p>
 </li>
 
@@ -174,7 +174,9 @@ You can recognize the supply centers with the markers which are placed on them.<
 
 
 <li class="formlistdesc">
-	And support can be given to <strong>holding</strong> units, with a green <strong>support hold</strong> order.
+	Support can be given to <strong>holding</strong> units, with a green <strong>support hold</strong> order. A unit that issued a 
+	<strong>support move</strong> or <strong>support hold</strong> order can be also be supported in place, but a unit that tried to 
+	<strong>move</strong> can never be issued a <strong>support hold</strong>, even if it bounced back to its original territory.
 	<p style="text-align:center;">
 		<img src="<?php print STATICSRV; ?>datc/maps/804-large.map-thumb" alt=" "
 				title="A green support-hold from the fleet in Tyrrhenian Sea lets Rome hold against an equally well-supported Venice" />
@@ -194,7 +196,7 @@ You can recognize the supply centers with the markers which are placed on them.<
 </li>
 
 <li class="formlistdesc">
-	Also; if a unit is being attacked it has to defend itself by <strong>holding</strong>, and can't support another unit.
+	If a unit is being attacked, it has to defend itself by <strong>holding</strong>, and can't support another unit.
 	<p style="text-align:center;">
 		<img src="<?php print STATICSRV; ?>datc/maps/808-large.map-thumb" alt=" "
 				title="No supporting units are being attacked, all of them count: Trieste 2 - Venice 1; Trieste moves" />
@@ -214,10 +216,12 @@ You can recognize the supply centers with the markers which are placed on them.<
 	<a href="register.php" class="light">register</a> a user account you can
 	<a href="gamecreate.php" class="light">create a game</a>
 	and <a href="gamelistings.php?gamelistType=New" class="light">join existing games</a>.
+	There is no better way to learn than by actually playing the game!
 	<p style="text-align:center;">
 		<img src="<?php print STATICSRV; ?>datc/maps/812-large.map-thumb" alt=" "
 				title="Because Prussia is support-holding the fleet in the Baltic Sea the equally supported move to the Baltic Sea from Livonia fails: This allows the fleet in the Baltic Sea to successfully convoy an army from Berlin to Sweden"  />
 	</p>
-	</li>
+	If you're interested in a more comprehensive treatment of the rules, see <a href="https://media.wizards.com/2015/downloads/ah/diplomacy_rules.pdf" class="light">Avalon Hill's Official Rulebook</a>, but this intro is all you need to get playing!
+</li>
 </ul>
 </div>

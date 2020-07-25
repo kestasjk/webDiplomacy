@@ -65,7 +65,7 @@ Without donations, webDiplomacy would be unable to continue operating.
 However, donating is not the only way you can help. If you have time and a fair amount of experience playing Diplomacy online, 
 we are always looking for skilled, patient, and experienced moderators. webDiplomacy's moderators are the best trained and most effective 
 of any Diplomacy site online at keeping games free of cheating and ensuring that gameplay is as smooth as possible at all times. 
-Moderators are also responsible for welcome and assisting new players, assisting with tournaments and special games, and managing any player emergencies. 
+Moderators are also responsible for welcoming and assisting new players, assisting with tournaments and special games, and managing any player emergencies. 
 If you are an experienced, patient Diplomacy player with an aptitude for spotting suspicious behavior and a desire to help out on webDiplomacy, 
 send us an email at <a href='mailto:".Config::$adminEMail."' class='light'>".Config::$adminEMail."</a> with your username and a brief bit about why 
 you think you would make a good moderator. Even if we don't need new moderators right this second, we will keep your application on file and you will be 
@@ -90,7 +90,7 @@ Once you have a good command of how the game works, <a href='gamelistings.php' c
 beyond the basics than by actually playing the game.
 <br><br>
 If you really want to dive into the more advanced guide of how Diplomacy works, check out 
-<a href='http://www.wizards.com/avalonhill/rules/diplomacy.pdf' class='light'>Avalon Hill's rulebook</a> on Diplomacy. 
+<a href='https://media.wizards.com/2015/downloads/ah/diplomacy_rules.pdf' class='light'>Avalon Hill's rulebook</a> on Diplomacy. 
 Be mindful that Avalon Hill's rulebook is written for those who purchased the board game itself, not for those who are playing online, so there are some inconsistencies. 
 For example, webDiplomacy does not offer an alternative for six players on the classic board. Instead, we offer different Diplomacy boards called 
 <a href='variants.php' class='light'>variants</a> where you can play on a different map with different amounts of players. 
