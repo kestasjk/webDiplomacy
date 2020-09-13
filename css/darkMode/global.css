@@ -1016,6 +1016,66 @@ TD.army, div.army {
 	color:#55c11f;
 }
 
+/* Section for help modals */
+
+.tutorial-wrap {
+	display: block;
+	width: 50%;
+	max-width: 800px;
+	min-height: 200px;
+	background-color: #202125;
+	backdrop-filter: blur(20px);
+	opacity: 0.8;
+	color: rgba(255, 255, 255, 0.8);
+	position: fixed;
+	margin: 5% auto auto auto;
+	left: 0;
+	right: 0;
+	z-index: 999;
+}
+
+@media only screen and (max-width: 800px) {
+	.tutorial-wrap {
+		width: 90%;
+		max-height: 300px;
+		overflow: scroll;
+	}
+}
+
+@media only screen and (max-width: 800px) and (min-width: 500px) {
+	.tutorial-wrap {
+		margin: -20% auto;
+	}
+}
+ 
+@media only screen and (max-width: 500px) {
+	.tutorial-wrap {
+		margin: -50% auto;
+	}
+}
+
+.tutorial, .tutorial-header {
+	padding: 0 10px;
+}
+
+.tutorial-buttons {
+	padding: 10px;
+}
+
+.tutorial-end, .tutorial-close {
+	margin: 10px 0 0 0;
+}
+
+.tutorial-hide {
+	display: none;
+}
+
+.tutorial-close-button {
+	cursor: pointer;
+}
+
+/* End section for help modals */
+
 /* Section for Login and Password Recovery styling */
 input[type=text].login, input[type=password].login, select.login {
   width: 100%;
