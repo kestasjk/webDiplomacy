@@ -65,7 +65,7 @@ Without donations, webDiplomacy would be unable to continue operating.
 However, donating is not the only way you can help. If you have time and a fair amount of experience playing Diplomacy online, 
 we are always looking for skilled, patient, and experienced moderators. webDiplomacy's moderators are the best trained and most effective 
 of any Diplomacy site online at keeping games free of cheating and ensuring that gameplay is as smooth as possible at all times. 
-Moderators are also responsible for welcome and assisting new players, assisting with tournaments and special games, and managing any player emergencies. 
+Moderators are also responsible for welcoming and assisting new players, assisting with tournaments and special games, and managing any player emergencies. 
 If you are an experienced, patient Diplomacy player with an aptitude for spotting suspicious behavior and a desire to help out on webDiplomacy, 
 send us an email at <a href='mailto:".Config::$adminEMail."' class='light'>".Config::$adminEMail."</a> with your username and a brief bit about why 
 you think you would make a good moderator. Even if we don't need new moderators right this second, we will keep your application on file and you will be 
@@ -90,7 +90,7 @@ Once you have a good command of how the game works, <a href='gamelistings.php' c
 beyond the basics than by actually playing the game.
 <br><br>
 If you really want to dive into the more advanced guide of how Diplomacy works, check out 
-<a href='http://www.wizards.com/avalonhill/rules/diplomacy.pdf' class='light'>Avalon Hill's rulebook</a> on Diplomacy. 
+<a href='https://media.wizards.com/2015/downloads/ah/diplomacy_rules.pdf' class='light'>Avalon Hill's rulebook</a> on Diplomacy. 
 Be mindful that Avalon Hill's rulebook is written for those who purchased the board game itself, not for those who are playing online, so there are some inconsistencies. 
 For example, webDiplomacy does not offer an alternative for six players on the classic board. Instead, we offer different Diplomacy boards called 
 <a href='variants.php' class='light'>variants</a> where you can play on a different map with different amounts of players. 
@@ -185,7 +185,20 @@ misorders in the future is to double check all of your orders, and even if you d
 That button will direct you to a form that you can send to the moderators and they will help you.",
 
 
-"The webDiplomacy Forum " => "Sub-section",
+"webDiplomacy AI" => "Sub-section",
+
+"Does webDiplomacy support artificial intelligence?" => "Yes! webDiplomacy was the first online Diplomacy site to support artificial intelligence. You can play no press games against bot users on our 7 player classic map or on either of our 1v1 maps.",
+
+"How did you train the AI?" => "The webDiplomacy AI was developed in tandem with university researchers and trained on over 160,000 Diplomacy games across different scoring systems, different phase lengths, and on various platforms. The AI's strategies and tactics are up to standard and provide a challenge for most users as well as a place to experiment, learn, and perfect your game.",
+
+"Do you plan on making further changes to the AI?" => "While there are currently no immediate plans to further train or expand the AI's capabilities, we intend to allow the AI to fill open positions in games that have yet to start that would otherwise be canceled. We also hope that the AI will be useful for filling some positions in civil disorder until they are taken over by other players so that there are no inactive positions in eligible games.",
+
+"How do I play against the AI?" => "You can play no press games against bot users on the classic map or on either 1v1 map. In order to play against the AI, create a new game and select \"Play a Game Against Bots.\" Once you're there, you can pick your variant and pick the country that you play, or simply play as a random country by default.",
+
+"Where can I find more in depth information about the AI?" => "You can find more information by reading <a href='https://github.com/diplomacy/research/blob/master/neurips_paper_v1.pdf' class='light'>this research paper</a>, or you can hear a discussion with jmo1121109 and peterwiggin <a href='https://diplomacygames.com/rise-of-the-bots/' class='light'>here</a>.",
+
+
+"The Forum " => "Sub-section",
 
 "Didn't the forum look different before?" => "Yes, it did! webDiplomacy used to have a very basic forum that slowly became more and more problematic 
 as webDiplomacy grew. When the site was small, the server load the forum caused was fairly small as well, but as the site got bigger and bigger and 

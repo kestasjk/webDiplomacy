@@ -152,7 +152,7 @@ function updateTimers() {
 	
 	var timeFrom = Math.floor((new Date).getTime() / 1000);
 	
-	$$(".gameTimeRemaining .timeremaining").map(function(c) {
+	$$(".timeremaining").map(function(c) {
 		
 		var givenTime = parseInt(c.getAttribute("unixtime"));
 		var secondsRemaining = givenTime - timeFrom;

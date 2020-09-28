@@ -350,7 +350,7 @@ abstract class drawMap
 				if ( count($param) == 3 )
 					$param = $this->color($param);
 
-				if ( count($param) == 2 )
+				else if ( count($param) == 2 )
 					$param = $param[ $this->smallmap ? 0 : 1 ];
 			}
 		}
@@ -1218,7 +1218,7 @@ abstract class drawMap
 	 * Add the territory names, either with GD FreeType or with the small-map overlay
 	 */
  	public function addTerritoryNames() {
- 		if ( count($this->mapNames) )
+ 		if ( !empty($this->mapNames) )
 		{
 			$this->mapNames = $this->loadImage($this->mapNames);
 			$this->setTransparancy($this->mapNames);

@@ -878,15 +878,7 @@ CREATE TABLE `wD_VariantInfo` (
 
 ALTER TABLE `wD_Games` ADD `finishTime` int(10) unsigned DEFAULT NULL;
 
-UPDATE `wD_Games` g SET `finishTime` = (SELECT MAX(n.timeSent) FROM `wD_Notices` n WHERE n.type = 'Game' AND n.linkID = g.id) WHERE (SELECT COUNT(1) FROM `wD_Notices` n1 WHERE n1.linkID = g.id AND `type` = 'Game') > 0 AND `gameOver` <> 'No';
-
-UPDATE `wD_Games` SET `finishTime` = `processTime` WHERE `finishTime` IS NULL AND `gameOver` <> 'No';
-
 ALTER TABLE `wD_Backup_Games` ADD `finishTime` int(10) unsigned DEFAULT NULL;
-
-UPDATE `wD_Backup_Games` g SET `finishTime` = (SELECT MAX(n.timeSent) FROM `wD_Notices` n WHERE n.type = 'Game' AND n.linkID = g.id) WHERE (SELECT COUNT(1) FROM `wD_Notices` n1 WHERE n1.linkID = g.id AND `type` = 'Game') > 0 AND `gameOver` <> 'No';
-
-UPDATE `wD_Backup_Games` SET `finishTime` = `processTime` WHERE `finishTime` IS NULL AND `gameOver` <> 'No';
 
 ALTER TABLE `wD_Users`
 CHANGE `type` `type` SET(
@@ -902,3 +894,88 @@ UPDATE `wD_Misc` SET `value` = '161' WHERE `name` = 'Version';
 
 ALTER TABLE `wD_Games` ADD COLUMN `playerTypes` enum('Members', 'Mixed', 'MemberVsBots') DEFAULT 'Members' NOT NULL;
 ALTER TABLE `wD_Backup_Games` ADD COLUMN `playerTypes` enum('Members', 'Mixed', 'MemberVsBots') DEFAULT 'Members' NOT NULL;
+
+ALTER TABLE `wD_Games`
+ADD COLUMN `nextPhaseMinutes` int(10) UNSIGNED DEFAULT 0 NOT NULL AFTER `phaseMinutes`,
+ADD COLUMN `phaseSwitchPeriod` int(10) DEFAULT -1 AFTER `nextPhaseMinutes`,
+ADD COLUMN `startTime` int(10) UNSIGNED DEFAULT NULL;
+
+UPDATE `wD_Games`
+SET `nextPhaseMinutes` = `phaseMinutes`
+WHERE `nextPhaseMinutes` = 0;
+
+ALTER TABLE `wD_Backup_Games`
+ADD COLUMN `nextPhaseMinutes` int(10) UNSIGNED DEFAULT 0 NOT NULL AFTER `phaseMinutes`,
+ADD COLUMN `phaseSwitchPeriod` int(10) DEFAULT -1 AFTER `nextPhaseMinutes`,
+ADD COLUMN `startTime` int(10) UNSIGNED DEFAULT NULL;
+
+UPDATE `wD_Backup_Games`
+SET `nextPhaseMinutes` = `phaseMinutes`
+WHERE `nextPhaseMinutes` = 0;
+
+CREATE TABLE `wD_UsernameHistory` (
+  `userID` mediumint(8) NOT NULL,
+  `oldUsername` varchar(30) NOT NULL,
+  `newUsername` varchar(30) NOT NULL,
+  `date` int(10) unsigned NOT NULL,
+  `reason` varchar(50) NOT NULL,
+  `changedBy` varchar(30) NOT NULL
+);
+
+CREATE TABLE `wD_EmailHistory` (
+  `userID` mediumint(8) NOT NULL,
+  `oldEmail` varchar(90) NOT NULL,
+  `newEmail` varchar(90) NOT NULL,
+  `date` int(10) unsigned NOT NULL,
+  `reason` varchar(50) NOT NULL,
+  `changedBy` varchar(30) NOT NULL
+);
+
+ALTER TABLE `wD_Users`
+CHANGE `type` `type` SET(
+	'Banned', 'Guest', 'System', 'User', 'Moderator',
+	'Admin', 'Donator', 'DonatorBronze', 'DonatorSilver',
+	'DonatorGold', 'DonatorPlatinum', 'ForumModerator', 'FtfTD',
+	'DonatorAdamantium', 'DonatorService', 'DonatorOwner', 'Bot', 'SeniorMod'
+) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'User';
+
+CREATE TABLE `wD_GhostRatings` (
+`userID` mediumint(8) unsigned NOT NULL,
+`categoryID` mediumint(8) unsigned NOT NULL,
+`rating` FLOAT,
+`peakRating` FLOAT,
+`yearMonth` mediumint(6) unsigned NOT NULL,
+INDEX ( `userID` ),
+INDEX ( `categoryID` ),
+INDEX ( `yearMonth` )
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `wD_GhostRatingsHistory` (
+`userID` mediumint(8) unsigned NOT NULL,
+`categoryID` mediumint(8) unsigned NOT NULL,
+`yearMonth` mediumint(6) unsigned NOT NULL,
+`rating` FLOAT,
+INDEX ( `userID` ),
+INDEX ( `categoryID` ),
+INDEX ( `yearMonth` )
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `wD_GhostRatingsBackup` (
+`userID` mediumint(8) unsigned NOT NULL,
+`categoryID` mediumint(8) unsigned NOT NULL,
+`gameID` mediumint(8) unsigned NOT NULL,
+`adjustment` FLOAT,
+`timeFinished` int(10) unsigned NOT NULL,
+INDEX ( `userID`),
+INDEX ( `categoryID` )
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+ALTER TABLE `wD_Games`
+ADD COLUMN `grCalculated` INT NOT NULL DEFAULT 0,
+ADD INDEX ( `grCalculated`);
+
+ALTER TABLE `wD_Backup_Games`
+ADD COLUMN `grCalculated` INT NOT NULL DEFAULT 0,
+ADD INDEX (`grCalculated`);
+
+UPDATE `wD_Misc` SET `value` = '166' WHERE `name` = 'Version';

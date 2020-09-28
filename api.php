@@ -287,6 +287,57 @@ class ListGamesWithMissingOrders extends ApiEntry {
 }
 
 /**
+ * API entry game/togglevote
+ */
+class ToggleVote extends ApiEntry {
+	public function __construct() {
+		parent::__construct('game/togglevote', 'GET', '', array('gameID','countryID','vote'));
+	}
+	public function run($userID, $permissionIsExplicit) {
+		global $DB;
+
+		$args = $this->getArgs();
+		$gameID = intval($args['gameID']);
+		$countryID = intval($args['countryID']);
+		$vote = $args['vote'];
+		if( $vote === 'Draw' ) $vote = 'Draw';
+		else if( $vote === 'Pause' ) $vote = 'Pause';
+		else if( $vote === 'Cancel' ) $vote = 'Cancel';
+		else if( $vote === 'Concede' ) $vote = 'Concede';
+		else throw new RequestException('Invalid vote type; allowed are Draw, Concede, Pause, Cancel');
+
+		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
+			throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
+
+		$currentVotes = $DB->sql_hash("SELECT votes FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." AND userID = ".$userID);
+		$currentVotes = $currentVotes['votes'];
+		$newVotes = '';
+		if( strpos($currentVotes, $vote) !== false )
+		{
+			// The vote is currently set, so unset it:
+			$voteArr = explode(',',$currentVotes);
+			$newVoteArr = array();
+			for($i=0; $i< count($voteArr); $i++)
+				if( $voteArr[$i] != $vote )
+					$newVoteArr[] = $voteArr[$i];
+			$newVotes = implode(',', $newVoteArr);
+		}
+		else
+		{
+			if( strpos($currentVotes,',') !== false )
+				$voteArr = explode(',',$currentVotes);
+			else
+				$voteArr = array($currentVotes);
+			$voteArr[] = $vote;
+			$newVotes = implode(',', $voteArr);
+		}
+		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."' WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
+		$DB->sql_put("COMMIT");
+		return $newVotes;
+	}
+}
+
+/**
  * API entry game/status
  */
 class GetGamesStates extends ApiEntry {
@@ -752,6 +803,7 @@ try {
 	$api->load(new ListGamesWithMissingOrders());
 	$api->load(new GetGamesStates());
 	$api->load(new SetOrders());
+	$api->load(new ToggleVote());
 	$jsonEncodedResponse = $api->run();
 	// Set JSON header.
 	header('Content-Type: application/json');

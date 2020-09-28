@@ -156,7 +156,8 @@ class adminMultiCheck
 			{
 				if ( $name == 'lastRequest' )
 				{
-					$timeComparison = l_t('(%s earlier)',libTime::remainingText($lastRow['lastRequest'],$part));
+					$isMaf = true;
+					$timeComparison = l_t('(%s earlier)',libTime::remainingText($lastRow['lastRequest'], $part, $isMaf));
 
 					if ( ( $lastRow['lastRequest'] - $part ) < 15*60 )
 						print '<span class="redComparison" >'.$timeComparison.'</span>';

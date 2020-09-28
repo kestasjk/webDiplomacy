@@ -110,6 +110,10 @@
 .gamePotType {
 	font-style:italic;
 }
+
+.timestampGames {
+	font-weight:bold;
+}
 div.memberBoardHeader {
 	padding:0 !important;
 	border:0;

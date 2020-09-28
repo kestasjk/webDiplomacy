@@ -61,7 +61,6 @@ print "</tr>";
 $showMe = 1;
 while ( list($id, $username, $points) = $DB->tabl_row($crashed) )
 {
-
 	print ' <tr class="hof">
 			<td class="hof"> '.number_format($points).' '.libHTML::points().' - #'.$i.' </td>';
 	if ($User->username == $username)
@@ -122,7 +121,6 @@ print "</tr>";
 $showMe = 1;
 while ( list($id, $username, $points) = $DB->tabl_row($crashed) )
 {
-
 	print ' <tr class="hof">
 			<td class="hof"> '.number_format($points).' '.libHTML::points().' - #'.$i.' </td>';
 	if ($User->username == $username)
@@ -137,6 +135,7 @@ while ( list($id, $username, $points) = $DB->tabl_row($crashed) )
 	print'	</tr>';
 	$i++;
 }
+
 if ( $User->type['User'] && $User->points > 100 &&  $User->timeLastSessionEnded > $sixMonths and $showMe == 1 )
 {
 	print ' <tr class="hof">

@@ -175,7 +175,6 @@ class panelGame extends Game
 		}
 	}
 
-
 	/**
 	 * Icons for the game, e.g. private padlock and featured star
 	 * @return string
@@ -193,6 +192,42 @@ class panelGame extends Game
 
 		return $buf;
 	}
+	
+	function phaseSwitchInfo()
+	{
+		$buf = '';
+		
+		if ($this->phase == 'Finished' or $this->phaseSwitchPeriod <= 0 or $this->nextPhaseMinutes == $this->phaseMinutes)
+		{
+			return $buf;
+		}
+			
+		$buf .= '<div>Changing phase length: <span><strong>'.libTime::timeLengthText($this->nextPhaseMinutes * 60).'</strong> /phase</span></div>';
+		if ($this->startTime > 0) 
+		{
+			$timeWhenSwitch = (($this->phaseSwitchPeriod * 60) + $this->startTime);
+
+			if (time() >= $timeWhenSwitch) 
+			{
+				$buf .= '<div><strong> At: End Of Phase</strong></div>';
+			} 
+			else 
+			{
+				$buf .= '<div> In: <strong>'.libTime::remainingText($timeWhenSwitch).'</strong>' . ' (' . libTime::detailedText($timeWhenSwitch) . ')</div>';
+			}
+		}
+
+		else 
+		{
+			$timeTillNextPhase = libTime::timeLengthText($this->phaseSwitchPeriod * 60);
+			
+			$buf .= '<div><span><strong>'.$timeTillNextPhase.'</strong> after game start</span></div></br>';	
+		}
+		
+		
+								
+		return $buf;
+	}
 
 	/**
 	 * The title bar, giving the vital game related data
@@ -203,15 +238,23 @@ class panelGame extends Game
 	{
 		$rightTop = '
 			<div class="titleBarRightSide">
-				<span class="gameTimeRemaining">'.$this->gameTimeRemaining().'</span>
-			</div>
-			';
+				<div>
+				<span class="gameTimeRemaining">'.$this->gameTimeRemaining().'</span></div>'.
+			'</div>';
 
-		$rightBottom = '<div class="titleBarRightSide">
-				<span class="gameHoursPerPhase">
-					'.$this->gameHoursPerPhase().'
-				</span>
-			</div>';
+		$rightMiddle = '<div class="titleBarRightSide">'.
+				'<div>'.
+					'<span class="gameHoursPerPhase">'.$this->gameHoursPerPhase().'</span>'.$this->phaseSwitchInfo().
+				'</div>';
+			
+
+				
+		$rightMiddle .= '</div>';
+		
+		$rightBottom = '<div class="titleBarRightSide">'.
+					l_t('%s excused missed turn','<span class="excusedNMRs">'.$this->excusedMissedTurns.'</span>
+					').
+				'</div>';
 
 		$date=' - <span class="gameDate">'.$this->datetxt().'</span>, <span class="gamePhase">'.l_t($this->phase).'</span>';
 
@@ -219,10 +262,12 @@ class panelGame extends Game
 				'.$this->gameIcons().
 				'<span class="gameName">'.$this->titleBarName().'</span>';
 
-		$leftBottom = '<div class="titleBarLeftSide">
+		$leftBottom = '<div class="titleBarLeftSide"><div>
 				'.l_t('Pot:').' <span class="gamePot">'.$this->pot.' '.libHTML::points().'</span>';
 
-		$leftBottom .= $date;
+		$leftBottom .= $date.'</div>';
+		
+		$leftBottom .= '<div>'.$this->gameVariants().'</div>';
 
 		$leftTop .= '</div>';
 		$leftBottom .= '</div>';
@@ -231,19 +276,12 @@ class panelGame extends Game
 			'.$rightTop.'
 			'.$leftTop.'
 			<div style="clear:both"></div>
-			'.$rightBottom.'
+			'.$rightMiddle.'
 			'.$leftBottom.'
 			<div style="clear:both"></div>
-			';
-
-		$buf .= $this->gameVariants();
-
-		$buf .= '<div class="titleBarRightSide">'.
-					l_t('%s excused missed turn','<span class="excusedNMRs">'.$this->excusedMissedTurns.'</span>').
-				'</div>';
-
-		$buf .= '<div style="clear:both"></div>';
-
+			'.$rightBottom.'
+			<div style="clear:both"></div>';
+		
 		return $buf;
 	}
 
@@ -292,23 +330,7 @@ class panelGame extends Game
 	function gameHoursPerPhase()
 	{
 		$buf = l_t('<strong>%s</strong> /phase',libTime::timeLengthText($this->phaseMinutes*60));
-			// <span class="gameTimeHoursPerPhaseText">(';
-
-		// if ( $this->isLiveGame() )
-		// 	$buf .= l_t('live');
-		// elseif ( $this->phaseMinutes < 6*60 )
-		// 	$buf .= l_t('very fast');
-		// elseif ( $this->phaseMinutes < 16*60 )
-		// 	$buf .= l_t('fast');
-		// elseif ( $this->phaseMinutes < 36*60 )
-		// 	$buf .= l_t('normal');
-		// elseif ( $this->phaseMinutes < 3*24*60 )
-		// 	$buf .= l_t('slow');
-		// else
-		// 	$buf .= l_t('very slow');
-
 		return $buf ;
-		// .')</span>';
 	}
 
 	/**
@@ -550,6 +572,5 @@ class panelGame extends Game
 			</div></form>';
 	}
 }
-
 
 ?>

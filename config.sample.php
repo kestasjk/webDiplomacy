@@ -126,6 +126,85 @@ class Config
 	public static $variants=array(1=>'Classic', 2=>'World', 9=>'AncMed',19=>'Modern2',20=>'Empire4');//3=>'FleetRome', 4=>'CustomStart', 5=>'BuildAnywhere');
 
 	/**
+	 * A boolean controlling whether automatic gr calculations are enabled. Set to true for auto-GR calculation and false to require manual calculations via the modtool. Note that $grCategories must exist to work.
+	 * @var boolean
+	 */
+	public static $grActive = false;
+
+	/**
+	 * An array of categories to use when calculating GhostRatings
+	 * @var array
+	 */
+	public static $grCategories=array(
+		/* A Category ID maps to an array of settings */
+		0 => array(
+			/*gives the name of the category*/
+			"name" => "Overall",
+			/*Different scoring systems are used for 1v1 and non-1v1*/
+			"1v1" => "No",
+			/*variantMods sets which variants to include*/
+			"variants" => array(1,2,9,19,20,17),
+			/*pressMods sets which press type to include*/
+			"presses" => array('Regular','PublicPressOnly','NoPress','RulebookPress'),
+			/*phases sets whether you want to include live games, non-live games, or both. The cutoff is at 1 hour phase lengths. 1 hour phases are considered non-live*/
+			"phases" => array('Live', 'Nonlive'),
+			/*scoring lets you choose what type of scoring sytems to include - only these three types are supported in the current code*/
+			"scoring" => array('Winner-takes-all','Points-per-supply-center','Sum-of-squares')
+		),
+		1 => array(
+			"name" => "Gunboat",
+			"1v1" => "No",
+			"variants" => array(1,2,9,19,20,17),
+			"presses" => array('NoPress'),
+			"phases" => array('Live', 'Nonlive'),
+			"scoring" => array('Winner-takes-all','Points-per-supply-center','Sum-of-squares')
+		),
+		2 => array(
+			"name" => "Live",
+			"1v1" => "No",
+			"variants" => array(1,2,9,19,20,17),
+			"presses" => array('Regular','PublicPressOnly','NoPress','RulebookPress'),
+			"phases" => array('Live'),
+			"scoring" => array('Winner-takes-all','Points-per-supply-center','Sum-of-squares')
+		),
+		3 => array(
+			"name" => "Full Press",
+			"1v1" => "No",
+			"variants" => array(1),
+			"presses" => array('Regular'),
+			"phases" => array('Nonlive'),
+			"scoring" => array('Winner-takes-all','Sum-of-squares')
+		),
+		4 => array (
+			"name" => "1v1 Overall",
+			"1v1" => "Yes",
+			"variants" => array(15,23)
+		),
+		5 => array (
+			"name" => "FvA",
+			"1v1" => "Yes",
+			"variants" => array(15)
+		),
+		6 => array (
+			"name" => "GvI",
+			"1v1" => "Yes",
+			"variants" => array(23)
+		)
+	);
+	
+	/**
+	 * An array of modvalues to use when calculating GhostRatings. The lower the number the more weight it carries
+	 * @var array
+	 */
+	public static $grVariantMods = array(1=>1, 2=>4, 9=>2, 19=>4, 20=>4, 15=>1, 23=>1, 17=>8);
+	
+	/**
+	 * An array of modvalues to use when calculating GhostRatings. The lower the number the more weight it carries
+	 * @var array
+	 */
+	public static $grPressMods = array('Regular'=>1,'PublicPressOnly'=>2,'NoPress'=>4,'RulebookPress'=>1);
+
+	/**
 	 * The API configuration. Whether to enable it or not, and restrict it to some variants or some gameIDs.
 	 *
 	 * @var array

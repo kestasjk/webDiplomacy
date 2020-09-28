@@ -76,7 +76,7 @@ try
 		$set .= $SQLName." = '".$SQLVars[$SQLName]."'";
 	}
 
-	if ( count($errors) ) throw new Exception(implode('. ',$errors));
+	if ( is_array($errors) && count($errors)>0 ) throw new Exception(implode('. ',$errors));
 
 	$set .= ', timeJoined = '.time().', timeLastSessionEnded = '.time();
 

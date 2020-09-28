@@ -45,12 +45,17 @@ class libTime
          * @param int $givenTime GMT UNIX timestamp
          * @return string Time remaining
          */
-        static public function remainingText($givenTime, $timeFrom=false)
+        static public function remainingText($givenTime, $timeFrom=false, $isMaf=false)
         {
             if ( $timeFrom===false ) $timeFrom = time();
 
             $secondsRemaining = $givenTime - $timeFrom;
 
+            if ($isMaf)
+            {
+                return '<span class="maftimestamp" unixtime="'.$givenTime.'" unixtimefrom="'.$timeFrom.'">'.
+                self::remainingTextString($givenTime, $timeFrom, $isMaf).'</span>';
+            }
             return '<span class="timeremaining" unixtime="'.$givenTime.'" unixtimefrom="'.$timeFrom.'">'.
                 self::remainingTextString($givenTime, $timeFrom).'</span>';
         }
@@ -90,12 +95,17 @@ class libTime
             return gmstrftime("%c");
         }
 
-        static private function remainingTextString($givenTime, $timeFrom)
+        static private function remainingTextString($givenTime, $timeFrom, $isMaf=false)
         {
                 $secondsRemaining = $givenTime - $timeFrom;
 
-                if ( $secondsRemaining <= 0 )
+                if (!$isMaf)
+                {
+                    if ( $secondsRemaining <= 0 )
+                    {
                         return l_t('Now');
+                    }
+                }
 
                 $seconds = floor( $secondsRemaining % 60);
                 $minutes = floor(( $secondsRemaining % (60*60) )/60);
@@ -104,6 +114,11 @@ class libTime
 
                 if ( $days > 0 )
                 {
+					$day_word = "days";
+					if ( $days == 1 ){
+						$day_word = "day";		
+					}						
+					
                         // D, H
                         $minutes += round($seconds/60); // Add a minute if the seconds almost give a minute
                         $seconds = 0;
@@ -112,9 +127,9 @@ class libTime
                         $minutes = 0;
 
                         if ( $hours > 0 )
-                                return l_t('%s days, %s hours',$days,$hours);
+                                return l_t('%s '.$day_word.', %s hours',$days,$hours);
                         else
-                                return l_t('%s days', $days);
+                                return l_t('%s '.$day_word, $days);
                 }
                 elseif ( $hours > 0 )
                 {

@@ -225,7 +225,7 @@ class adjudicatorPreGame
 		}
 
 		// Determine which countryID is given to which userID
-		if (count($Game->Members->ByCountryID)==0)
+		if ( empty($Game->Members->ByCountryID) || ( is_array($Game->Members->ByCountryID) && count($Game->Members->ByCountryID) == 0))
 		{
 			$userCountries = $this->userCountries();// $userCountries[$userID]=$countryID
 			assert('count($userCountries) == count($Game->Variant->countries) && count($userCountries) == count($Game->Members->ByID)');
@@ -236,6 +236,8 @@ class adjudicatorPreGame
 		$this->assignTerritories(); 
 		$this->assignUnits();
 		$this->assignUnitOccupations();
+		// Initialize the game's start time at this point.
+		$Game->initializeStartTime();
 	}
 }
 

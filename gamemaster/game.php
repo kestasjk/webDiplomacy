@@ -24,6 +24,7 @@ require_once(l_r('gamemaster/gamemaster.php'));
 
 require_once(l_r('objects/game.php'));
 require_once(l_r('gamemaster/members.php'));
+require_once(l_r('ghostratings/calculations.php'));
 
 /**
  * This class creates games, joins players up to games, manages the passing of games
@@ -292,7 +293,7 @@ class processGame extends Game
 	 *
 	 * @return Game The object corresponding to the new game
 	 */
-	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $joinPeriod, $anon, $press, $missingPlayerPolicy='Normal', $drawType, $rrLimit, $excusedMissedTurns, $playerTypes)
+	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $nextPhaseMinutes, $phaseSwitchPeriod, $joinPeriod, $anon, $press, $missingPlayerPolicy='Normal', $drawType, $rrLimit, $excusedMissedTurns, $playerTypes)
 	{
 		global $DB;
 
@@ -313,6 +314,7 @@ class processGame extends Game
 			if ( $count == 0 )
 			{
 				$unique = true;
+
 			}
 			else
 			{
@@ -327,6 +329,7 @@ class processGame extends Game
 		 */
 		$pTime = time() + $joinPeriod*60;
 		$pTime = $pTime - fmod($pTime, 300) + 300;	// for short game & phase timer
+		$startTime = 0;
 		$DB->sql_put("INSERT INTO wD_Games
 					SET variantID=".$variantID.",
 						name = '".$name.($i > 1 ? '-'.$i : '')."',
@@ -338,11 +341,14 @@ class processGame extends Game
 						".( $password ? "password = UNHEX('".md5($password)."')," : "").
 						"processTime = ".$pTime.",
 						phaseMinutes = ".$phaseMinutes.",
+						nextPhaseMinutes = ".$nextPhaseMinutes.",
+						phaseSwitchPeriod = ".$phaseSwitchPeriod.",
 						missingPlayerPolicy = '".$missingPlayerPolicy."',
 						drawType='".$drawType."', 
 						minimumReliabilityRating=".$rrLimit.",
 						excusedMissedTurns = ".$excusedMissedTurns.",
-						playerTypes = '".$playerTypes."'");
+						playerTypes = '".$playerTypes."',
+						startTime = ".$startTime);
 
 		$gameID = $DB->last_inserted();
 
@@ -383,7 +389,7 @@ class processGame extends Game
 
 	/**
 	 * Create a new game from a game ID; create the parent for UPDATE so that
-	 * no-one else can process this game at the same tiem
+	 * no-one else can process this game at the same time
 	 *
 	 * @param int $id Game ID
 	 */
@@ -517,6 +523,50 @@ class processGame extends Game
 	}
 
 	/**
+	 * If enough time has passed, switch to the next phase time.
+	 */
+	private function switchPhaseTime()
+	{
+		global $DB;
+
+		// Only impact live games.
+		if ($this->phaseMinutes > 60) return;
+
+		// If there's no phase switch needed then return.
+		if ($this->phaseSwitchPeriod < 1) return;
+
+		// If the live game has already been changed nothing to do.
+		if ($this->phaseMinutes == $this->nextPhaseMinutes) return;
+
+		// If the start time isn't filled out then return.
+		if ($this->startTime == 0) return; 
+
+		// If the current time minus the start time is less than the time till phase switch then it isn't time to alter the phase yet.
+		if ((time() - $this->startTime) < $this->phaseSwitchPeriod * 60) return;
+
+		$newPhaseMinutes = $this->nextPhaseMinutes;
+		$this->phaseMinutes = $newPhaseMinutes;
+		$this->processTime = time()+($newPhaseMinutes*60);
+
+		$DB->sql_put("UPDATE wD_Games SET phaseMinutes = ".$this->phaseMinutes.", processTime = ".$this->processTime." WHERE id = ".$this->id);
+	}
+
+	/**
+	 * If the start time has not been set, set it to the current time.
+	 */
+	function initializeStartTime()
+	{
+		global $DB;
+		
+		if ($this->startTime == 0)
+		{
+			$this->startTime = time();
+
+			$DB->sql_put("UPDATE wD_Games SET startTime = ".$this->startTime." WHERE id = ".$this->id);
+		}
+	}
+
+	/**
 	 * Process; the main gamemaster function for managing games; processes orders, adjudicates them,
 	 * applies the results, creates new orders, updates supply center/army numbers, and moves the
 	 * game onto the next phase (or updates it as won)
@@ -555,6 +605,11 @@ class processGame extends Game
 		 * - Create new orders for the current phase
 		 * - Set the next date for game processing
 		 */
+
+		 /*
+		 * If the required amount of time has passed, switch the game's phaseMinutes.
+		 */
+		$this->switchPhaseTime();
 
 		/*
 		* Register the turn for each member with orders and update their phase count
@@ -979,6 +1034,30 @@ class processGame extends Game
 	}
 
 	/**
+	 *Gets information needed for GR from the games in a usable format.
+	 *
+	 *@return array memberstatus - An array that maps from player ID to status
+	 *@return array SCcounts - An array that maps from player ID to SC count
+	 *@return bool botGame - A boolean that is true if bots are involved
+	 */
+	protected function prepGR()
+	{
+		$SCcounts = array();
+		$memberStatus = array();
+		foreach($this->Members->ByOrder as $Member)
+		{
+			$SCcounts[$Member->userID] = $Member->supplyCenterNo;
+			$memberStatus[$Member->userID] = $Member->status;
+		}
+		$botGame = True;
+		if ($this->playerTypes == 'Members')
+		{
+			$botGame = False;
+		}
+		return array($memberStatus, $SCcounts, $botGame);
+	}
+
+	/**
 	 * Set the game as Won, with the given member as the winner. Will set the game phase,
 	 * distribute points, and set member data
 	 *
@@ -998,7 +1077,21 @@ class processGame extends Game
 		$DB->sql_put("UPDATE wD_Games SET finishTime=".time()." WHERE id=".$this->id);
 		 
 		$this->Members->setWon($Winner);
-
+		
+		//Do GR Stuff
+		if (isset(Config::$grCategories))
+		{
+			if (isset(Config::$grActive))
+			{
+				if (Config::$grActive)
+				{
+				  list($memberStatus, $SCcounts, $botGame) = $this->prepGR();
+				  $ghostRatings = new GhostRatings($this->id, $SCcounts, $memberStatus, $this->variantID, $this->pressType, $this->potType, $this->turn, "Won", $this->phaseMinutes, $this->Variant->terrIDByName["supplyCenterTarget"], $this->Variant->terrIDByName["supplyCenterCount"], $Winner->userID, $botGame, time());
+				  $ghostRatings->processGR();
+				}
+			}
+		}
+		
 		// Then the game is set to finished
 		$this->setPhase('Finished', 'Won');
 	}
@@ -1184,6 +1277,21 @@ class processGame extends Game
 
 		// Sets the Members statuses to Drawn as needed, gives refunds, sends messages
 		$this->Members->setDrawn();
+		
+		//Do GR Stuff
+		if (isset(Config::$grCategories))
+		{
+			if (isset(Config::$grActive))
+			{
+				if (Config::$grActive)
+				{
+					list($memberStatus, $SCcounts, $botGame) = $this->prepGR();
+					$ghostRatings = new GhostRatings($this->id, $SCcounts, $memberStatus, $this->variantID, $this->pressType, $this->potType, $this->turn, "Drawn", $this->phaseMinutes, $this->Variant->terrIDByName["supplyCenterTarget"], $this->Variant->terrIDByName["supplyCenterCount"], 0, $botGame, time());
+					$ghostRatings->processGR();
+				}
+			}
+		}
+		
 		$this->setPhase('Finished', 'Drawn');
 
 		$DB->sql_put("DELETE FROM wD_Orders WHERE gameID = ".$this->id);

@@ -175,6 +175,7 @@ adminStatusList(l_t('Paused games'),"SELECT CONCAT('<a href=\"board.php?gameID='
 //adminStatusTable('Backed up games',processGame::backedUpGames());
 
 adminStatusList(l_t('Mods'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>') FROM wD_Users WHERE type LIKE '%Moderator%'");
+adminStatusList(l_t('Senior Mods'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>') FROM wD_Users WHERE type LIKE '%SeniorMod%'");
 adminStatusList(l_t('Admins'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>') FROM wD_Users WHERE type LIKE '%Admin%'");
 adminStatusList(l_t('Temp Banned - By Mod'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 FROM wD_Users WHERE tempBanReason is not null and tempBanReason <> 'System' and tempBan > ".time());

@@ -29,7 +29,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  *
  * @package Admin
  */
-class adminActionsRestricted extends adminActionsForum
+class adminActionsRestricted extends adminActionsSeniorMod
 {
 	public function __construct()
 	{
@@ -59,9 +59,19 @@ class adminActionsRestricted extends adminActionsForum
 				'description' => 'Gives moderator status to the specified user ID.',
 				'params' => array('userID'=>'User ID'),
 			),
+			'giveSeniorModerator' => array(
+				'name' => 'Give senior moderator status',
+				'description' => 'Gives senior moderator status to the specified user ID.',
+				'params' => array('userID'=>'User ID'),
+			),
 			'takeModerator' => array(
 				'name' => 'Take moderator status',
 				'description' => 'Takes moderator status from the specified user ID.',
+				'params' => array('userID'=>'Mod User ID'),
+			),
+			'takeSeniorModerator' => array(
+				'name' => 'Take senior moderator status',
+				'description' => 'Takes senior moderator status from the specified user ID.',
 				'params' => array('userID'=>'Mod User ID'),
 			),
 			'giveForumModerator' => array(
@@ -73,6 +83,16 @@ class adminActionsRestricted extends adminActionsForum
 				'name' => 'Take forum moderator status',
 				'description' => 'Takes forum moderator status from the specified user ID.',
 				'params' => array('userID'=>'Mod User ID'),
+			),
+			'changeEmail' => array(
+				'name' => 'Change email',
+				'description' => 'Update user\'s registered email.',
+				'params' => array('userID'=>'User ID', 'email'=>'New Email', 'reason'=>'Reason')
+			),
+			'changeUsername' => array(
+				'name' => 'Change username',
+				'description' => 'Changes user\'s current name to the specified username.',
+				'params' => array('userID'=>'User ID', 'username'=>'New Username', 'reason'=>'Reason'), 
 			),
 			'giveBot' => array(
 				'name' => 'Give bot status',
@@ -228,6 +248,12 @@ class adminActionsRestricted extends adminActionsForum
 				'name' => 'API - Show API key and permissions for a user',
 				'description' => 'Display API key and permissions for a user.',
 				'params' => array('userID'=>'User ID'),
+			),
+			'calculateGR' => array(
+				'name' => 'Calculate Ghost Ratings',
+				'description' => 'Calculate GR for next x games and populate out the database. Note that this only needs to be done when 
+				first adding GR to the server. After that, games will automatically calculate GR adjustments as they finish.',
+				'params' => array('batchSize'=>'Batch Size'),
 			),
 			'updateVariantInfo' => array(
 				'name' => 'Update wD_VariantInfo',
@@ -490,6 +516,25 @@ class adminActionsRestricted extends adminActionsForum
 		return l_t('This user was given moderator status.');
 	}
 
+	public function giveSeniorModerator(array $params)
+	{
+		global $DB;
+
+		$userID = (int)$params['userID'];
+
+		$modUser = new User($userID);
+
+		if( $modUser->type['SeniorMod'] )
+			throw new Exception(l_t("This user is already a senior moderator"));
+		
+		if( ! $modUser->type['Moderator'] )
+			throw new Exception(l_t("This user is not a moderator"));
+
+		$DB->sql_put("UPDATE wD_Users SET type = CONCAT_WS(',',type,'SeniorMod') WHERE id = ".$userID);
+
+		return l_t('This user was given senior moderator status.');
+	}
+
 	public function takeModerator(array $params)
 	{
 		global $DB;
@@ -501,9 +546,28 @@ class adminActionsRestricted extends adminActionsForum
 		if( ! $modUser->type['Moderator'] )
 			throw new Exception(l_t("This user isn't a moderator"));
 
+		if( $modUser->type['SeniorMod'] )
+			throw new Exception(l_t("Remove Senior Mod status first."));
+
 		$DB->sql_put("UPDATE wD_Users SET type = REPLACE(type,'Moderator','') WHERE id = ".$userID);
 
 		return l_t('This user had their moderator status taken.');
+	}
+
+	public function takeSeniorModerator(array $params)
+	{
+		global $DB;
+
+		$userID = (int)$params['userID'];
+
+		$modUser = new User($userID);
+
+		if( ! $modUser->type['SeniorMod'] )
+			throw new Exception(l_t("This user isn't a senior moderator"));
+
+		$DB->sql_put("UPDATE wD_Users SET type = REPLACE(type,'SeniorMod','') WHERE id = ".$userID);
+
+		return l_t('This user had their senior moderator status taken.');
 	}
 
 	public function giveForumModerator(array $params)
@@ -515,7 +579,7 @@ class adminActionsRestricted extends adminActionsForum
 		$modUser = new User($userID);
 
 		if( $modUser->type['ForumModerator'] )
-			throw new Exception(l_t("This user is already a moderator"));
+			throw new Exception(l_t("This user is already a forum moderator"));
 
 		$DB->sql_put("UPDATE wD_Users SET type = CONCAT_WS(',',type,'ForumModerator') WHERE id = ".$userID);
 
@@ -536,6 +600,103 @@ class adminActionsRestricted extends adminActionsForum
 		$DB->sql_put("UPDATE wD_Users SET type = REPLACE(type,'ForumModerator','') WHERE id = ".$userID);
 
 		return l_t('This user had their forum moderator status taken.');
+	}
+
+	public function changeEmail(array $params)
+	{
+		global $DB;
+		global $User;
+
+		$userID = (int)$params['userID'];
+		$newEmail = (string)$params['email'];
+
+		if( !isset($params['reason']) || strlen($params['reason'])==0 )
+		{
+			return l_t("Could not change email because no reason was given.");
+		}
+
+		$changeReason = $DB->msg_escape($params['reason']);
+
+		// check if new email is claimed by another account
+		list($result) = $DB->sql_row("SELECT username FROM wD_Users WHERE email = '".$newEmail."'");
+		if (!empty($result)) 
+		{
+			return l_t("This email has already been taken by another user: %s.", $result);
+		}
+
+		// get and store user's old email
+		$oldEmail = $DB->sql_hash("SELECT username, email FROM wD_Users WHERE id = ".$userID);
+
+		if (empty($oldEmail))
+		{
+			return l_t("User id %s has not been found.", $userID);
+		}
+
+		$time = time();
+		$changedBy = $User->username;
+
+		$DB->sql_put(
+			'INSERT INTO wD_EmailHistory (userID, oldEmail, newEmail, date, reason, changedBy) 
+			VALUES ('.$userID.', "'.$oldEmail['email'].'", "'.$newEmail.'", '.$time.', "'.$changeReason.'", "'.$changedBy.'")'
+		);
+		$DB->sql_put(
+			"UPDATE wD_Users SET email = '".$newEmail."' WHERE id = ".$userID." limit 1"
+		);
+
+		return l_t("%s's email has been changed from %s to %s.", $oldEmail['username'], $oldEmail['email'], $newEmail);
+
+	}
+
+	public function changeUsername(array $params)
+	{
+		global $DB;
+		global $User;
+		
+		$userID = (int)$params['userID'];
+		$newUsername = (string)$params['username'];
+
+		if( !isset($params['reason']) || strlen($params['reason'])==0 )
+		{
+			return l_t("Could not change username because no reason was given.");
+		}
+
+		$changeReason = $DB->msg_escape($params['reason']);
+
+		// check if username exists
+		list($result) = $DB->sql_row("SELECT username FROM wD_Users WHERE username = '".$newUsername."'");
+		if (!empty($result)) 
+		{
+			return l_t("This username has already been taken by another user.");
+		}
+		
+		// get and store old username and if it exists set new username
+		list($oldUsername) = $DB->sql_row("SELECT username FROM wD_Users WHERE id = ".$userID);
+		if (empty($oldUsername))
+		{
+			return l_t("User id %s has not been found.", $userID);
+		}
+
+		$time = time();
+		$changedBy = $User->username;
+
+		$DB->sql_put(
+			'INSERT INTO wD_UsernameHistory (userID, oldUsername, newUsername, date, reason, changedBy) 
+			VALUES ("'.$userID.'", "'.$oldUsername.'", "'.$newUsername.'", "'.$time.'", "'.$changeReason.'", "'.$changedBy.'")'
+		);
+		$DB->sql_put("UPDATE wD_Users SET username = '".$newUsername."' WHERE id = '".$userID."' limit 1");
+
+		// update new forum on webdip
+		if (isset(Config::$customForumURL))
+		{
+			$newUsernameClean = strtolower($newUsername);
+
+			$DB->sql_put(
+				"UPDATE phpbb_users SET username = '".$newUsername."', username_clean = '".$newUsernameClean."' 
+				WHERE username = '".$oldUsername."' AND webdip_user_id = '".$userID."' limit 1"
+			);
+		}
+
+		return l_t("This user's username has been changed from %s to %s.",$oldUsername, $newUsername);
 	}
 	
 	public function giveBot(array $params)
@@ -995,6 +1156,43 @@ class adminActionsRestricted extends adminActionsForum
 		<div><strong>listGamesWithPlayersInCD</strong>: ".$row['listGamesWithPlayersInCD']."</div>
 		<div><strong>submitOrdersForUserInCD</strong>: ".$row['submitOrdersForUserInCD']."</div>
 		";
+	}
+
+	public function calculateGR($params)
+	{
+		require_once(l_r('ghostratings/calculations.php'));
+		global $DB;
+		$batch_size = (int)$params['batchSize'];
+		if ($batch_size <= 0)
+		{
+			return l_t('Invalid batch size. Please enter a positive integer.');
+		}
+		$data = $DB->sql_tabl("SELECT id, variantID, pressType, potType, turn, gameOver, phaseMinutes, processTime, playerTypes FROM wD_Games WHERE gameOver <> 'No' AND grCalculated <> 1 ORDER BY processTime ASC LIMIT ".$batch_size.";");
+		while (list($gameID, $variantID, $pressType, $potType, $turn, $gameOver, $phaseMinutes, $time, $playerTypes) = $DB->tabl_row($data))
+		{
+			$winnerID = 0;
+			list($SCTarget, $SCTotal) = $DB->sql_row("SELECT supplyCenterTarget, supplyCenterCount FROM wD_VariantInfo WHERE variantID=".$variantID);
+			$players = $DB->sql_tabl("SELECT userID, supplyCenterNo, status FROM wD_Members WHERE gameID =".$gameID);
+			$SCcounts = array();
+			$memberStatus = array();
+			while(list($userID, $SCcount, $status) = $DB->tabl_row($players))
+			{
+				$SCcounts[$userID] = $SCcount;
+				$memberStatus[$userID] = $status;
+				if ($status == 'Won')
+				{
+					$winnerID = $userID;
+				}
+			}
+			$botGame = True;
+			if($playerTypes == 'Members')
+			{
+				$botGame = False;
+			}
+			$ghostRatings = new GhostRatings($gameID, $SCcounts, $memberStatus, $variantID, $pressType, $potType, $turn, $gameOver, $phaseMinutes, $SCTarget, $SCTotal, $winnerID, $botGame, $time);
+		  $ghostRatings->processGR();
+		}
+		return l_t('GR Calculated');
 	}
 
 	public function updateVariantInfo($params) 
