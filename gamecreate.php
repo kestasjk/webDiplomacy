@@ -247,12 +247,12 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 if ($User->reliabilityRating < 100)
 {
 	$maxRR = max(0, (floor($User->reliabilityRating - 1)));
-	$defaultRR = min(80,$maxRR);
+	$defaultRR = min(50,$maxRR);
 }
 else
 {
 	$maxRR = 100;
-	$defaultRR = 80;
+	$defaultRR = 50;
 }
 
 if ( $User->points >= 5 ) { $defaultPoints = 5; }
