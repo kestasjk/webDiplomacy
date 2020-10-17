@@ -1021,11 +1021,11 @@ TD.army, div.army {
 .tutorial-wrap {
 	display: block;
 	width: 50%;
-	max-width: 800px;
+	max-width: 780px;
 	min-height: 200px;
 	background-color: #202125;
 	backdrop-filter: blur(20px);
-	opacity: 0.8;
+	opacity: 0.9;
 	color: rgba(255, 255, 255, 0.8);
 	position: fixed;
 	margin: 5% auto auto auto;

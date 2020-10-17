@@ -1000,11 +1000,11 @@ TD.army, div.army {
 .tutorial-wrap {
 	display: block;
 	width: 50%;
-	max-width: 800px;
+	max-width: 780px;
 	min-height: 200px;
 	background-color: #e5e5e5;
 	backdrop-filter: blur(20px);
-	opacity: 0.8;
+	opacity: 0.9;
 	color: #009902;
 	position: fixed;
 	margin: 5% auto auto auto;
