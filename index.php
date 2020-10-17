@@ -337,7 +337,7 @@ class libHome
 		if($count==0)
 		{
 			$buf .= '<div class="hr"></div>';
-			$buf .= '<div class="bottomborder"><p class="notice">'.l_t('You\'re not joined to any games!').'<br />
+			$buf .= '<div class="bottomborder"><p class="notice">'.l_t('You have not joined any games!').'<br />
 				'.l_t('Access the <a href="gamelistings.php?tab=">Games</a> '.
 				'link above to find games you can join, or start a '.
 				'<a href="gamecreate.php">New game</a> yourself.</a>').'</p></div>';
@@ -659,7 +659,49 @@ elseif( isset($_REQUEST['notices']) )
 }
 else
 {
+	
 	print '<div class="content-bare content-home-header">';// content-follow-on">';
+	
+	// home page tutorial
+	if (isset($_COOKIE['wD-Tutorial-Index'])) 
+	{
+		$tutorialMessage = l_t(
+			'To help you become familiar with webDiplomacy, we prepared a few brief presentations
+			for you that you will find on different pages of the site. You will only see these once apiece, but if you
+			ever want to review what you read, you can check out our <a href="faq.php" target="_blank">Frequently Asked Questions</a>. 
+			If you are new to the game of Diplomacy, we also recommend our <a href="intro.php" target="_blank">Intro to Diplomacy</a> 
+			and our <a href="rules.php" target="_blank">site rules</a>.
+			<br><br>
+			Even if you are familiar with the game of Diplomacy, webDiplomacy does some things a bit differently than other sites or
+			face to face Diplomacy communities. We developed our own scoring system, the Ghost Ratings, which you can read about <a
+			href="https://sites.google.com/view/webdipinfo/ghost-ratings" target="_blank">here</a>, in addition to points that you can
+			use to cover the bet to enter games. We also developed a reliability rating to gauge how committed and reliable a player
+			is to entering orders prior to deadlines. Whether you decide to be a casual Diplomacy player or a very dedicated player,
+			it is important to enter orders prior to the deadlines so that the game is fair and balanced for everyone, and so that
+			games are not delayed while players are replaced. Some games require a minimum reliability rating, so it is important to
+			keep it high! You can read more about reliability rating <a href="profile.php?detail=civilDisorders&userID='.$User->id.'" 
+			target="_blank">here</a>. 
+			<br><br>
+			You are currently on the home screen. This is the landing page that you will see when you log into the site. While you can
+			access any Diplomacy games you are playing from any page on the site when you have orders to submit or a message to read, 
+			you can see all of your games in one place here. When you join games, they will appear on the right side of the screen
+			under "My Games." Since you are not in any games right now, it will be empty. You can also see games that you "spectate" here,
+			which are games that you are not playing in but just want to watch, as well as tournaments that you join when you are more experienced.
+			In the center of the page, you will see if a phase has changed in any of your games, a notice if you were defeated, drew with your opponents, 
+			or won a game you are in, or miss a phase deadline and need to catch up. On the left side of the page, you can see upcoming live games. 
+			Live games are games that finish quickly, with phase lengths ranging between 5 and 30 minutes. Below upcoming live games, you can see the 
+			latest posts on our forum, a place you can go to ask questions, find high quality games with other players, read Diplomacy advice from 
+			some of the best players in the world, join tournaments, and play some forum games. 
+			<br><br>
+			To reach out to the moderators for help with your account, you can click <a href="contactUsDirect.php" target="_blank">here</a>. 
+			Thank you for joining the site, and have fun!'
+		);
+	
+		libHTML::help('Home', $tutorialMessage);
+
+		unset($_COOKIE['wD-Tutorial-Index']);
+		setcookie('wD-Tutorial-Index', '', time()-3600);
+	}
 
 	print '<table class="homeTable"><tr>';
 
@@ -784,7 +826,7 @@ else
 	print '</div>';
 }
 
-libHTML::$footerIncludes[] = l_j('home.js');
+libHTML::$footerIncludes = [l_j('home.js'), l_j('help.js')];
 libHTML::$footerScript[] = l_jf('homeGameHighlighter').'();';
 
 $_SESSION['lastSeenHome']=time();
