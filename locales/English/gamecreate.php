@@ -30,6 +30,52 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	<div class="pageDescription">Start a new customized game of Diplomacy.</div>
 </div>
 <div class="content content-follow-on">
+	<?php
+	
+		// game creation tutorial
+		if (isset($_COOKIE['wD-Tutorial-GameCreate'])) 
+		{
+			$tutorialMessage = l_t('
+				This is the game creation page. In order to create a new game, you just need to fill out
+				the following form. These slides will give you a quick overview of what you need to think
+				about in order to make your game and make sure that you know what each setting you select
+				means.
+				<br>
+				On webDiplomacy, you can play games against humans or bots. If you want to play against other players,
+				you\'re in the right place. You can just fill out this form. If you want to play against bots,
+				you can click "Play a Game Against Bots." Our bots are artificial intelligence users, so they are not 
+				computer players like you might encounter in online chess, for example. They are very unique and 
+				they are trained rigorously based on the decisions real players made, which means they are both 
+				intelligent and unpredictable. Give them a try sometime, you might be surprised how good they are!
+				<br>
+				You should first give your game an appropriate title, determine how much you want each player 
+				to have to bet to join, and how long each phase would last. If you want to play a game that lasts
+				a few hours in the evening but takes your full attention, your phase length should be 5 or 10 minutes, 
+				or a "live" game. If you want the game to take place over time instead of requiring your full attention
+				one night, pick a longer phase length, or a "non-live" game. 
+				<br>
+				By default, your game has 7 days to fill. You can change that the time to fill game if you like, but the
+				important thing to know is that if you are creating a non-live game, your game will start when it is
+				filled, not when the time to fill expires. So, for example, if your non-live game has 7 days to fill
+				but is full within 3 days, it will start in 3 days, not 7. A live game will be "scheduled," meaning that
+				it will not start until the time to fill has expired, even if it fills early.
+				<br>
+				If you are playing with friends, family, or people you know outside of webDiplomacy, you are required
+				to set an invite code to your game. You can send this invite code to whoever you want to invite and know
+				that people who you do not want in your game will not accidentally join. If you are just looking for a 
+				game with some other players, you do not need to add an invite code. 
+				<br>
+				You also get to choose whether players can send messages or not, whether players are anonymized or 
+				displayed, what map you want to play on, how the game should be scored, and more. For more information on
+				these settings, just click the "?" icon next to them on the form after you close this tutorial. Good luck!
+			');
+
+			libHTML::help('Create New Game', $tutorialMessage);
+
+			unset($_COOKIE['wD-Tutorial-GameCreate']);
+			setcookie('wD-Tutorial-GameCreate', '', time()-3600);
+		}
+	?>
 	<p><a href="botgamecreate.php">Play A Game Against Bots</a></p>
 
 	<div class = "gameCreateShow">
@@ -431,3 +477,5 @@ selectPhaseSwitchPeriod.addEventListener("change", updatePhasePeriod)
 selectPhaseMinutes.addEventListener("change", updatePhasePeriod)
 
 </script>
+
+<?php libHTML::$footerIncludes[] = l_j('help.js'); ?>

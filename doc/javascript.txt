@@ -15,6 +15,7 @@ JavaScript is used in webDiplomacy for three things mainly:
 	- Hovering over a game title on the home page filters out notices from that game
 	- The FAQ and "New thread" button in the forum
 	- Allowing the map image history of a game to be scrolled through
+	- Paginating a tutorial so the user is not overwhelmed
 
 If you change the JS code, then you can increment $jsVersion in lib/html.php to force clients
 to reload their javascript.
@@ -57,6 +58,9 @@ timeHandler.js
 home.js
 	- Contains JavaScript which only runs on index.php, such as the JS which filters
 		notices out for a certain game.
+help.js
+	- Contains Javascript that only runs to move a user through tutorial mode, and 
+		to end the tutorial when they have finished it.
 mapUI.js
 	- Alters the board map, allowing old turns to be shown using the back/forward arrows, 
 		and the large map button.
