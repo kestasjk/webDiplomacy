@@ -182,7 +182,7 @@ img {
 p.profileComment {
 	font-size:12px;
 	font-style:italic;
-	width:80%;
+	width:95%;
 	margin-left:auto;
 	margin-right:auto;
 	word-break: break-word;
@@ -219,6 +219,31 @@ p.profileComment {
 	font-size: 13px;
 	margin-top:3px !important;
 	border-radius: 7px;
+}
+
+.comment_title {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #777;
+	color: white;
+	cursor: pointer;
+	padding: 5px;
+	border: 1px solid #ccc;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+.comment_content {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	font-size: 13px;
+	margin-top:3px !important;
+	border-radius: 7px;
+	overflow-y: scroll;
+	max-height: 200px;
 }
 
 .profile_content_show {
@@ -295,6 +320,30 @@ div.profile-show {
 	border-radius: 7px;
 	background-color: #f1f1f1;
 	padding: 5px;
+}
+div.profile-show-floating {
+	border-radius: 7px;
+	display: flex;
+}
+div.profile-show-inside-left {
+	border-radius: 7px;
+	background-color: #f1f1f1;
+	padding: 5px;
+	min-width:35%;	
+	margin-right:20px;
+}
+div.profile-show-inside {
+	border-radius: 7px;
+	background-color: #f1f1f1;
+	padding: 5px;
+	min-width:30%;
+}
+div.profile-show-ranking {
+	border-radius: 7px;
+	background-color: #f1f1f1;
+	padding: 5px;
+	min-width:25%;
+	margin-right:20px;
 }
 div.rightHalf {
 	float:right;
@@ -1013,6 +1062,26 @@ TD.army, div.army {
 	z-index: 999;
 }
 
+@media only screen and (max-width: 800px) {
+	.tutorial-wrap {
+		width: 90%;
+		max-height: 300px;
+		overflow: scroll;
+	}
+}
+
+@media only screen and (max-width: 800px) and (min-width: 500px) {
+	.tutorial-wrap {
+		margin: -20% auto;
+	}
+}
+ 
+@media only screen and (max-width: 500px) {
+	.tutorial-wrap {
+		margin: -50% auto;
+	}
+}
+
 .tutorial, .tutorial-header {
 	padding: 0 10px;
 }
@@ -1150,10 +1219,10 @@ input[type=submit].gameCreate:hover {
 
 /* Modal Content */
 .modal-content {
-  background-color: #fefefe;
-  margin: auto;
-  padding: 10px;
-  border: 1px solid #888;
+ 	background-color: #fefefe;
+ 	margin: auto;
+  	padding: 10px;
+  	border: 1px solid #888;
 	width: 80%;
 	max-width: 760px;
 }
@@ -1998,3 +2067,5 @@ input[id^="FinalizeButton"]{
 .archive-messages-table{
 	table-layout: fixed;
 }
+
+/* end desktop only */
