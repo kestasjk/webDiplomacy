@@ -847,6 +847,7 @@ class libHTML
 			{
 				$links['profile.php']=array('name'=>'Find user', 'inmenu'=>true);  // Overrides the previous one with one that appears in the menu
 				$links['admincp.php']=array('name'=>'Admin CP', 'inmenu'=>true);
+				$links['userprofile.php']=array('name'=>'ProfileNew', 'inmenu'=>FALSE);
 			}
 			$links['gamemaster.php']=array('name'=>'GameMaster', 'inmenu'=>FALSE);
 		}
