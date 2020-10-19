@@ -48,6 +48,7 @@ if( strpos($_SERVER['PHP_SELF'], 'header.php') )
 if( !defined('IN_CODE') )
 	define('IN_CODE', 1); // A flag to tell scripts they aren't being executed by themselves
 
+require_once 'vendor/autoload.php';
 require_once('config.php');
 
 require_once('global/definitions.php');

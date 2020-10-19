@@ -388,16 +388,15 @@ abstract class WDVariant {
  * [Name]Variant -> variants/[Name]/variant.php
  * [Name]Variant_[Class] -> variants/[Name]/classes/[Class].php
  */
-function __autoload($classname) {
+spl_autoload_register(function ($classname) {
+    $pos = strpos($classname, 'Variant');
+    if (empty($pos)) return;
 
-	if( !( $pos=strpos($classname,'Variant') ) || $pos==0 ) return;
+    $variantName = substr($classname, 0, $pos);
 
-	$variantName=substr($classname, 0, $pos);
+    $variantFile = $classname == $variantName . 'Variant' ?
+        l_r('variants/' . $variantName . '/variant.php') :
+        l_r('variants/' . $variantName . '/classes/' . substr($classname, ($pos + 8)) . '.php');
 
-	if( $classname==$variantName.'Variant' )
-		require_once(l_r('variants/'.$variantName.'/variant.php'));
-	else
-		require_once(l_r('variants/'.$variantName.'/classes/'.substr($classname, ($pos+8)).'.php'));
-}
-
-?>
+    require_once $variantFile;
+});
