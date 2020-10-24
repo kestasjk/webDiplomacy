@@ -192,6 +192,14 @@ img {
 p.profileComment {
 	font-size:12px;
 	font-style:italic;
+	width:80%;
+	margin-left:auto;
+	margin-right:auto;
+	word-break: break-word;
+}
+p.newProfileComment {
+	font-size:12px;
+	font-style:italic;
 	width:95%;
 	margin-left:auto;
 	margin-right:auto;
@@ -262,6 +270,15 @@ p.profileComment {
 	font-size: 13px;
 	display: show;
 	padding: 0 0 0 10px;
+	margin-top: 3px !important;
+}
+.profile_content_gr {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	font-size: 13px;
+	display: show;
+	padding: 0 0 0 0;
 	margin-top: 3px !important;
 }
 
@@ -337,7 +354,7 @@ div.profile-show-inside-left {
 	border-radius: 7px;
 	background-color: #5f6368;
 	padding: 5px;
-	min-width:35%;	
+	min-width:30%;	
 	margin-right:20px;
 }
 div.profile-show-inside {
@@ -350,7 +367,7 @@ div.profile-show-ranking {
 	border-radius: 7px;
 	background-color: #5f6368;
 	padding: 5px;
-	min-width:25%;
+	min-width:30%;
 	margin-right:20px;
 }
 div.rightHalf {
@@ -374,6 +391,13 @@ ul.formlist {
 	list-style: none;
 	margin-left:20px;
 	margin-right:20px;
+	padding:0;
+	color: rgba(255, 255, 255, 0.8);
+}
+ul.profile {
+	list-style: none;
+	margin-left:5px;
+	margin-right:5px;
 	padding:0;
 	color: rgba(255, 255, 255, 0.8);
 }
