@@ -841,6 +841,7 @@ class libHTML
 		$links['tournamentRegistration.php']=array('name'=>'Tournament Registration', 'inmenu'=>FALSE);
 		$links['botgamecreate.php']=array('name'=>'New Bot Game', 'inmenu'=>TRUE, 'title'=>"Start up a new bot game");
 
+
 		if ( is_object($User) )
 		{
 			if ( $User->type['Admin'] or $User->type['Moderator'] )
@@ -848,6 +849,7 @@ class libHTML
 				$links['profile.php']=array('name'=>'Find user', 'inmenu'=>true);  // Overrides the previous one with one that appears in the menu
 				$links['admincp.php']=array('name'=>'Admin CP', 'inmenu'=>true);
 				$links['userprofile.php']=array('name'=>'ProfileNew', 'inmenu'=>FALSE);
+				$links['search.php']=array('name'=>'Find user 2.0', 'inmenu'=>FALSE);  // Overrides the previous one with one that appears in the menu
 			}
 			$links['gamemaster.php']=array('name'=>'GameMaster', 'inmenu'=>FALSE);
 		}

@@ -43,23 +43,23 @@ try
 }
 catch (Exception $e)
 {
-	libHTML::error(l_t("Invalid user ID given."));
+	libHTML::error("Invalid user ID given.");
 }
 
 if ( ! $UserProfile->type['User'] && !$UserProfile->type['Banned'] )
 {
-	$message = l_t('Cannot display profile: The specified account #%s is not an active user;',$userID).' ';
+	$message = 'Cannot display profile: The specified account #'.$userID.' is not an active user; ';
 	if( $UserProfile->type['Guest'] )
-		$message .= l_t('it is a guest account, used by unregistered people to view the server without interacting.');
+		$message .= 'it is a guest account, used by unregistered people to view the server without interacting.';
 	elseif( $UserProfile->type['System'] )
-		$message .= l_t('it is a system account, without a real human using it.');
+		$message .= 'it is a system account, without a real human using it.';
 	else
-		$message .= l_t('in fact I\'m not sure what this account is...');
+		$message .= 'in fact I\'m not sure what this account is...';
 
 	foreach($UserProfile->type as $name=>$on)
 	{
 		if ( $on )
-			$message .= l_t($name).', ';
+			$message .= $name.', ';
 	}
 	libHTML::error($message);
 }
@@ -67,7 +67,6 @@ if ( ! $UserProfile->type['User'] && !$UserProfile->type['Banned'] )
 libHTML::starthtml();
 
 print '<div class="content">';
-
 print '<div>';
 print '<h2 class = "profileUsername">'.$UserProfile->username.'</h2>';
 
@@ -87,15 +86,14 @@ if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 			$modActions=array();
 
 			if ( $User->type['Admin'] )
-				$modActions[] = '<a href="index.php?auid='.$UserProfile->id.'">'.l_t('Enter this user\'s account').'</a>';
+				$modActions[] = '<a href="index.php?auid='.$UserProfile->id.'">Enter this user\'s account</a>';
 
 			$modActions[] = libHTML::admincpType('User',$UserProfile->id);
 
 			if( !$UserProfile->type['Admin'] && ( $User->type['Admin'] || !$UserProfile->type['Moderator'] ) )
-				$modActions[] = libHTML::admincp('banUser',array('userID'=>$UserProfile->id), l_t('Ban user'));
+				$modActions[] = libHTML::admincp('banUser',array('userID'=>$UserProfile->id), 'Ban user');
 
-			$modActions[] = '<a href="admincp.php?tab=Multi-accounts&aUserID='.$UserProfile->id.'" class="light">'.
-				l_t('Enter multi-account finder').'</a>';
+			$modActions[] = '<a href="admincp.php?tab=Multi-accounts&aUserID='.$UserProfile->id.'" class="light">Enter multi-account finder</a>';
 
 			if($modActions)
 			{
@@ -104,7 +102,6 @@ if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 		}
 
 		print '<strong>UserId:</strong> '.$UserProfile->id.'</br></br>';
-
 		print '<strong>Email:</strong></br>'.$UserProfile->email;
 		
 		$lastCheckedBy = $UserProfile->modLastCheckedBy();
@@ -161,10 +158,10 @@ if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 			print	'<div class = "profile_content">';
 			$silences = $UserProfile->getSilences();
 
-			print '<p><ul class="formlist"><li><strong>'.l_t('Silences:').'</strong></li><li>';
+			print '<p><ul class="formlist"><li><strong>Silences:</strong></li><li>';
 
 			if( count($silences) == 0 )
-				print l_t('No silences against this user.').'</p>';
+				print 'No silences against this user.</p>';
 			else
 			{
 				print '<ul class="formlist">';
@@ -177,25 +174,23 @@ if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 			}
 
 			print '</li><li>';
-			print libHTML::admincp('createUserSilence',array('userID'=>$UserProfile->id,'reason'=>''),l_t('Silence user'));
+			print libHTML::admincp('createUserSilence',array('userID'=>$UserProfile->id,'reason'=>''),'Silence user');
 			print '</li></ul></p>';
-				
 			print '</div>';
 		}
 	}
 	print '</div></div></br>';
 }
 
-
 print '<div class = "profile-show-floating">';
 
 // Profile Information
 print '<div class = "profile-show-inside-left">';
 	print '<strong>Profile Information</strong>';
-	print '<p><ul class="formlist">';
+	print '<p><ul class="profile">';
 
 	if( $UserProfile->type['Banned'] )
-		print '<p><strong>'.l_t('Banned').'</strong></p>';
+		print '<p><strong>Banned</strong></p>';
 
 	if( $UserProfile->type['Bot'] )
 		print '<li><p class="profileCommentURL">Bot User</p>';
@@ -210,35 +205,35 @@ print '<div class = "profile-show-inside-left">';
 		print '</div></br>';
 	}
 
-
 	if ( $UserProfile->type['Moderator'] ||  $UserProfile->type['ForumModerator'] || $UserProfile->type['Admin'] )
 	{
-		print '<li><strong>'.l_t('Mod/Admin team').'</strong></li>';
-		print '<li>'.l_t('The best way to get moderator assistance is using our built in <a href="contactUsDirect.php">help page</a>. Please do not message
-		moderators directly for help.').'</li>';
+		print '<li><strong>Mod/Admin team</strong></li>';
+		print '<li>The best way to get moderator assistance is using our built in <a href="contactUsDirect.php">help page</a>. Please do not message
+		moderators directly for help.</li>';
 		print '<li>&nbsp;</li>';
 	}
 
 	if ( $UserProfile->online || time() - (24*60*60) < $UserProfile->timeLastSessionEnded)
-		print '<li><strong>'.l_t('Visited in last 24 hours').'</strong></li>';
+		print '<li><strong>Visited in last 24 hours</strong></li>';
 	else
-		print '<li><strong>'.l_t('Last visited:').'</strong> '.libTime::text($UserProfile->timeLastSessionEnded).'</li>';
+		print '<li><strong>Last visited:</strong> '.libTime::text($UserProfile->timeLastSessionEnded).'</li>';
 
-	print '<li><strong>'.l_t('Joined:').'</strong> '.$UserProfile->timeJoinedtxt().'</li></br>';
+	print '<li><strong>Joined:</strong> '.$UserProfile->timeJoinedtxt().'</li></br>';
 
 	if( $UserProfile->type['DonatorPlatinum'] )
-		$donatorMarker = libHTML::platinum().' - <strong>'.l_t('Platinum').'</strong>';
+		$donatorMarker = libHTML::platinum().' - <strong>Platinum</strong>';
 	elseif( $UserProfile->type['DonatorGold'] )
-		$donatorMarker = libHTML::gold().' - <strong>'.l_t('Gold').'</strong>';
+		$donatorMarker = libHTML::gold().' - <strong>Gold</strong>';
 	elseif( $UserProfile->type['DonatorSilver'] )
-		$donatorMarker = libHTML::silver().' - '.l_t('Silver');
+		$donatorMarker = libHTML::silver().' - Silver';
 	elseif( $UserProfile->type['DonatorBronze'] )
-		$donatorMarker = libHTML::bronze().' - '.l_t('Bronze');
+		$donatorMarker = libHTML::bronze().' - Bronze';
 	else
 		$donatorMarker = false;
 
 	if( $donatorMarker )
-		print '<li><strong>'.l_t('Donator:').'</strong> '.$donatorMarker.'</li>';
+		print '<li><strong>Donator:</strong> '.$donatorMarker.'</li>';
+
 	print '</li></ul></p>';
 print '</div></br>';
 
@@ -255,59 +250,95 @@ print '<strong>Ranking Info</strong>';
 
 	$showAnon = ($UserProfile->id == $User->id || $User->type['Moderator']);
 
-	print '<p><ul class="formlist">';
+	print '<p><ul class="profile">';
 	print '<div class = "profile_title"><strong>Points'.libHTML::points().':</strong></div>';
 	print '<div class = "profile_content_show">';
 		print '<li><strong>Available:</strong> '.number_format($UserProfile->points).'</li>';
 		print '<li><strong>In play:</strong> '.number_format(($rankingDetails['worth']-$UserProfile->points-($showAnon ? 0 : $rankingDetails['anon']['points']))).'</li>';
 		print '<li><strong>Total:</strong> '.number_format($rankingDetails['worth']).'</li>';
-		print '</div>';
-	print '</ul></p>';
+	print '</div>';
 
+	// Ghost Rating information
+	$rankingGhostRating = $UserProfile->getCurrentGRByCategory();
+	$ghostRatingTrends = $UserProfile->getGRTrending(0,12);
+
+	// Determine user theme and set colors for use in the javascript for chart generation, Yes is Dark Mode, No is Light Mode.
+	if ($User->getTheme() == 'Yes') 
+	{
+		$chartLineColor = 'white';
+		$chartBackgroundColor = '#757b81';
+		$trendColor = '#79d58d';
+	}
+	else
+	{
+		$chartLineColor = 'black';
+		$chartBackgroundColor = '#f1f1f1';
+		$trendColor = '#009902';
+	}
+
+	// Print out GR information for each category a user has a ranking.
+	if (!empty($rankingGhostRating))
+	{
+		foreach( $rankingGhostRating AS $key=>$data )
+		{
+			print '<div class = "profile_title"><strong>Ghost Rating '.$key.':</strong></div>';
+
+			if($key == 'Overall')
+				print '<div class = "profile_content_show">';
+			else 
+				print '<div class = "profile_content">';
+
+			foreach( $data AS $key1=>$data1 )
+			{
+				print '<li><strong>'.$key1.':</strong> '.number_format($data1).'</li>';
+			}
+			print '</div>';
+		}
+	}
+
+	print '</ul></p>';
 print '</div></br>';
 
-// Game Stats
+// This section displays the needed Game Stats
+$total = 0;
+$includeStatus=array('Won','Drawn','Survived','Defeated','Resigned');
+foreach($rankingDetails['stats'] as $name => $status)
+{
+	if ( !in_array($name, $includeStatus) ) continue;
+
+	$total += $status;
+	if (!$showAnon && isset($rankingDetails['anon'][$name]))
+		$total -= $rankingDetails['anon'][$name];
+}
+
 print '<div class = "profile-show-inside">';
-print '<strong style = "text-align: center;">Game Stats</strong>';
-
-	print '<ul class="formlist">';
-	$total = 0;
-	$includeStatus=array('Won','Drawn','Survived','Defeated','Resigned');
-	foreach($rankingDetails['stats'] as $name => $status)
-	{
-		if ( !in_array($name, $includeStatus) ) continue;
-
-		$total += $status;
-		if (!$showAnon && isset($rankingDetails['anon'][$name]))
-			$total -= $rankingDetails['anon'][$name];
-	}
+	print '<strong style = "text-align: center;">Game Stats</strong>';
+	print '<ul class="profile">';
 
 	if( $total )
 	{
 		print '<div class = "profile_title">';
-		print '<li><strong>'.l_t('All Game stats:').'</strong> </div>
+		print '<li><strong>All Game stats:</strong> </div>
 		<div class = "profile_content_show">';
 
 		list($posts) = $DB->sql_row("SELECT SUM(gameMessagesSent) FROM wD_Members m WHERE m.userID = ".$UserProfile->id);
 		if( is_null($posts) ) $posts=0;
-		print '<li><strong>'.l_t('Game messages:').'</strong> '.number_format($posts).'</li></br>';
+		print '<li><strong>Game messages:</strong> '.number_format($posts).'</li></br>';
 
 		// Shows each of the game details
 		foreach($includeStatus as $name)
 		{
 			if ( !array_key_exists($name, $rankingDetails['stats']) ) continue;
-
 			$status = $rankingDetails['stats'][$name];
 
 			if (!$showAnon && isset($rankingDetails['anon'][$name]))
 				$status -= $rankingDetails['anon'][$name];
 
-			print '<li>'.l_t($name.': <strong>%s</strong>',$status);
+			print '<li>'.$name.': <strong>'.$status.'</strong>';
 			print ' ( '.round(($status/$total)*100).'% )';
 			print '</li>';
 		}
-		print '<li>'.l_t('Total (finished): <strong>%s</strong>',$total).'</li>';
-		print '<br>';
+		print '<li>Total (finished): <strong>'.$total.'</strong></li><br>';
 
 		// This shows the Playing/Civil Disorder and CD takeover stats.
 		foreach($rankingDetails['stats'] as $name => $status)
@@ -316,17 +347,15 @@ print '<strong style = "text-align: center;">Game Stats</strong>';
 
 			if (!$showAnon && isset($rankingDetails['anon'][$name]))
 				$status -= $rankingDetails['anon'][$name];
-			print '<li>'.l_t($name.': <strong>%s</strong>',$status).'</li>';
+			print '<li>'.$name.': <strong>'.$status.'</strong></li>';
 		}
-		print '</li>';
-		print '</div>';
+		print '</li></div>';
 
 		// Get a count of the number of classic games that have been played.
 		$totalClassic = 0;
 		foreach($rankingDetailsClassic['stats'] as $name => $status)
 		{
 			if ( !in_array($name, $includeStatus) ) continue;
-
 			$totalClassic += $status;
 		}
 
@@ -334,20 +363,18 @@ print '<strong style = "text-align: center;">Game Stats</strong>';
 		if( $totalClassic )
 		{
 			print '<div class = "profile_title">';
-			print '<li><strong>'.l_t('Classic:').'</strong></div><div class = "profile_content">';
+			print '<li><strong>Classic:</strong></div><div class = "profile_content">';
 			foreach($includeStatus as $name)
 			{
 				if ( !array_key_exists($name, $rankingDetailsClassic['stats']) ) continue;
-
 				$status = $rankingDetailsClassic['stats'][$name];
 
-				print '<li>'.l_t($name.': <strong>%s</strong>',$status);
+				print '<li>'.$name.': <strong>'.$status.'</strong>';
 				print ' ( '.round(($status/$totalClassic)*100).'% )';
 				print '</li>';
 			}
-			print '<li>'.l_t('Total (finished): <strong>%s</strong>',$totalClassic).'</li>';
-			print '</li>';
-			print '</div>';
+			print '<li>'.'Total (finished): <strong>'.$totalClassic.'</strong></li>';
+			print '</li></div>';
 		}
 
 		// Get a count of the number of classic press games that have been played.
@@ -355,7 +382,6 @@ print '<strong style = "text-align: center;">Game Stats</strong>';
 		foreach($rankingDetailsClassicPress['stats'] as $name => $status)
 		{
 			if ( !in_array($name, $includeStatus) ) continue;
-
 			$totalClassicPress += $status;
 		}
 
@@ -363,21 +389,19 @@ print '<strong style = "text-align: center;">Game Stats</strong>';
 		if( $totalClassicPress )
 		{
 			print '<div class = "profile_title">';
-			print '<li><strong>'.l_t('Classic Press:').'</strong> </div><div class = "profile_content">';
+			print '<li><strong>Classic Press:</strong> </div><div class = "profile_content">';
 
 			foreach($includeStatus as $name)
 			{
 				if ( !array_key_exists($name, $rankingDetailsClassicPress['stats']) ) continue;
-
 				$status = $rankingDetailsClassicPress['stats'][$name];
 
-				print '<li>'.l_t($name.': <strong>%s</strong>',$status);
+				print '<li>'.$name.': <strong>'.$status.'</strong>';
 				print ' ( '.round(($status/$totalClassicPress)*100).'% )';
 				print '</li>';
 			}
-			print '<li>'.l_t('Total (finished): <strong>%s</strong>',$totalClassicPress).'</li>';
-			print '</li>';
-			print '</div>';
+			print '<li>Total (finished): <strong>'.$totalClassicPress.'</strong></li>';
+			print '</li></div>';
 		}
 
 		// Get a count of the number of classic gunboat games that have been played.
@@ -385,7 +409,6 @@ print '<strong style = "text-align: center;">Game Stats</strong>';
 		foreach($rankingDetailsClassicGunboat['stats'] as $name => $status)
 		{
 			if ( !in_array($name, $includeStatus) ) continue;
-
 			$totalClassicGunboat += $status;
 		}
 
@@ -393,21 +416,19 @@ print '<strong style = "text-align: center;">Game Stats</strong>';
 		if( $totalClassicGunboat )
 		{
 			print '<div class = "profile_title">';
-			print '<li><strong>'.l_t('Classic Gunboat:').'</strong> </div><div class = "profile_content">';
+			print '<li><strong>Classic Gunboat:</strong> </div><div class = "profile_content">';
 
 			foreach($includeStatus as $name)
 			{
 				if ( !array_key_exists($name, $rankingDetailsClassicGunboat['stats']) ) continue;
-
 				$status = $rankingDetailsClassicGunboat['stats'][$name];
 
-				print '<li>'.l_t($name.': <strong>%s</strong>',$status);
+				print '<li>'.$name.': <strong>'.$status.'</strong>';
 				print ' ( '.round(($status/$totalClassicGunboat)*100).'% )';
 				print '</li>';
 			}
-			print '<li>'.l_t('Total (finished): <strong>%s</strong>',$totalClassicGunboat).'</li>';
-			print '</li>';
-			print '</div>';
+			print '<li>Total (finished): <strong>'.$totalClassicGunboat.'</strong></li>';
+			print '</li></div>';
 		}
 
 		// Get a count of the number of classic ranked games that have been played.
@@ -415,7 +436,6 @@ print '<strong style = "text-align: center;">Game Stats</strong>';
 		foreach($rankingDetailsClassicRanked['stats'] as $name => $status)
 		{
 			if ( !in_array($name, $includeStatus) ) continue;
-
 			$totalClassicRanked += $status;
 		}
 
@@ -423,21 +443,19 @@ print '<strong style = "text-align: center;">Game Stats</strong>';
 		if( $totalClassicRanked )
 		{
 			print '<div class = "profile_title">';
-			print '<li><strong>'.l_t('Classic Ranked:').'</strong> </div><div class = "profile_content">';
+			print '<li><strong>Classic Ranked:</strong> </div><div class = "profile_content">';
 
 			foreach($includeStatus as $name)
 			{
 				if ( !array_key_exists($name, $rankingDetailsClassicRanked['stats']) ) continue;
-
 				$status = $rankingDetailsClassicRanked['stats'][$name];
 
-				print '<li>'.l_t($name.': <strong>%s</strong>',$status);
+				print '<li>'.$name.': <strong>'.$status.'</strong>';
 				print ' ( '.round(($status/$totalClassicRanked)*100).'% )';
 				print '</li>';
 			}
-			print '<li>'.l_t('Total (finished): <strong>%s</strong>',$totalClassicRanked).'</li>';
-			print '</li>';
-			print '</div>';
+			print '<li>Total (finished): <strong>'.$totalClassicRanked.'</strong></li>';
+			print '</li></div>';
 		}
 
 		// Get a count of the number of classic games that have been played.
@@ -445,7 +463,6 @@ print '<strong style = "text-align: center;">Game Stats</strong>';
 		foreach($rankingDetailsVariants['stats'] as $name => $status)
 		{
 			if ( !in_array($name, $includeStatus) ) continue;
-
 			$totalVariants += $status;
 		}
 
@@ -453,25 +470,27 @@ print '<strong style = "text-align: center;">Game Stats</strong>';
 		if( $totalVariants )
 		{
 			print '<div class = "profile_title">';
-			print '<li><strong>'.l_t('Variant stats:').'</strong> </div> <div class = "profile_content">';
+			print '<li><strong>Variant stats:</strong> </div> <div class = "profile_content">';
 
 			foreach($includeStatus as $name)
 			{
 				if ( !array_key_exists($name, $rankingDetailsVariants['stats']) ) continue;
-
 				$status = $rankingDetailsVariants['stats'][$name];
 
-				print '<li>'.l_t($name.': <strong>%s</strong>',$status);
+				print '<li>'.$name.': <strong>'.$status.'</strong>';
 				print ' ( '.round(($status/$totalVariants)*100).'% )';
 				print '</li>';
 			}
-			print '<li>'.l_t('Total (finished): <strong>%s</strong>',$totalVariants).'</li>';
+			print '<li>Total (finished): <strong>'.$totalVariants.'</strong></li>';
 			print '</li>';
 			print '</div>';
 		}
 
-		print '</br>';
-		print '</li>';
+		print '</br></li>';
+	}
+	else
+	{
+		print 'User has not completed any games';
 	}
 
 	print '</ul></div>';
@@ -507,7 +526,7 @@ if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 	print '<div class = "profile_title"> Reliability Rating: '.$totalRR.'%</div>';
 	print '<div class = "profile_content">';
 	
-	print '<h4>'.l_t('Reliability Explained:').'</h4>';
+	print '<h4>Reliability Explained:</h4>';
 
 	print '<div class = "profile_title">What is Reliability?</div>';
 	print '<div class = "profile_content">';
@@ -648,7 +667,7 @@ if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 		}
 		else
 		{
-			print l_t('No missed turns found for this profile.');
+			print 'No missed turns found for this profile.';
 		}
 		print '</div>';
 		print '</div>';
@@ -656,10 +675,20 @@ if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 	}
 }
 
+// Display the Ghost Ratings Trend Google Chart generated in JS code below.
+if (count($ghostRatingTrends) > 2)
+{
+	print '</br><div class = "profile-show">';
+		print '<div class = "profile_title">Ghost Rating Overall Trending</div>';
+		print '<div class = "profile_content_gr">';
+			print '<div id="line_chart"></div>';
+		print '</div>';
+	print '</div>';
+}
+
 print '<div id="profile-separator"></div>';
 
-// Start interactive area:
-
+// This section of code is designed to interact with phpbb3 forums, allowing users to private message other members through the phpb3 inbox.
 if( isset(Config::$customForumURL) )
 {
 	if ( $User->type['User'] && $User->id != $UserProfile->id)
@@ -695,6 +724,7 @@ if( isset(Config::$customForumURL) )
 print '</div>';
 ?>
 
+<!-- The purpose of this script is to detect button clicks on any html div called profile_title, this allows clickable elements to be loaded hidden and be toggled on click -->
 <script type="text/javascript">
    var coll = document.getElementsByClassName("profile_title");
    var searchCounter;
@@ -708,11 +738,77 @@ print '</div>';
      });
    }
 </script>
+
+<!-- This script loads in the google charts libraries, if additional charts are needed this script should still only be run once. -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	
+<!-- This script is used to generate the Ghost Rating Trending chart. 
+	The use of google charts in webdip codebase is currently experimental 
+	and should be done in an easy to remove fashion. -->
+<script type="text/javascript">
+	google.charts.load('current', {'packages':['corechart']});
+
+	// This line is loading the line charts from the google charts packges only, if other chart types are desired they will need to be loaded independently. 
+	google.charts.load('current', {packages: ['corechart', 'line']});
+	google.charts.setOnLoadCallback(drawBackgroundColor);
+
+	function drawBackgroundColor() {
+		var data = new google.visualization.DataTable();
+		data.addColumn('string', 'TimePeriod');
+		data.addColumn('number', 'GR');
+
+		// The data for the php charts is loaded higher in the code with the rest of the GR data displayed on the profile.
+		data.addRows([
+			<?php
+				foreach( $ghostRatingTrends AS $key=>$data )
+				{
+					echo "['".$key."', ".$data."]," ;
+				}
+			?>
+		]);
+
+		var options = {
+			hAxis: {
+				textStyle: {
+					fontSize : 8,
+					color: '<?php echo $chartLineColor; ?>'
+				},
+				title: 'Time Period',
+				titleTextStyle : {
+					bold : true,
+					color : '<?php echo $chartLineColor; ?>'
+				},
+			},
+			vAxis: {
+				textStyle: {
+					fontSize : 8,
+					color: '<?php echo $chartLineColor; ?>'
+				},
+				title: 'Ghost Rating',
+				titleTextStyle : {
+					bold : true,
+					color : '<?php echo $chartLineColor; ?>'
+				},
+			},
+			backgroundColor: '<?php echo $chartBackgroundColor; ?>',
+			legend: 'none',
+			pointSize: 5,
+			colors: ['<?php echo $trendColor; ?>'	],
+			baselineColor: '<?php echo $chartLineColor; ?>',
+			gridlineColor: '<?php echo $chartLineColor; ?>'				
+		}; 
+
+		var chart = new google.visualization.LineChart(document.getElementById('line_chart'));
+		chart.draw(data, options);
+	}
+</script>
+	
 <?php
 
 libHTML::pagebreak();
 
-print '<h3>'.l_t('%s\'s games',$UserProfile->username).' '.( $User->type['User'] ? '(<a href="gamelistings.php?userID='.$UserProfile->id.'&gamelistType=Search">'.l_t('Search').'</a>)' : '' ).'</h3>';
+// This section and everything below is for the purpose of displaying, in a paged format, all of the profile user's games played on the site. 
+print '<h3>'.$UserProfile->username.'\'s games '.( $User->type['User'] ? '(<a href="gamelistings.php?userID='.$UserProfile->id.'&gamelistType=Search">Search</a>)' : '' ).'</h3>';
 
 $pagenum = 1;
 $resultsPerPage = 20;
@@ -761,7 +857,7 @@ print "<a name='results'></a>";
 
 if($totalResults == 0)
 {
-	print l_t('No games found for this profile.');
+	print 'No games found for this profile.';
 }
 else
 {
@@ -769,14 +865,15 @@ else
 	printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = True);
 
 	print '<div class="gamesList">';
+
 	while( $row = $DB->tabl_hash($tabl) )
 	{
 		$Variant = libVariant::loadFromVariantID($row['variantID']);
 		$G = $Variant->panelGame($row);
 		print $G->summary(false);
 	}
-	print '</div>';
 
+	print '</div>';
 	print '</br>';
 	printPageBar($pagenum, $maxPage, $sortCol, $sortType);
 }
