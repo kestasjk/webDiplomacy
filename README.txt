@@ -24,7 +24,7 @@ a private game there. (http://webdiplomacy.net/ is the official server.)
 
 requirements
 ------------
-- PHP 5.2+
+- PHP 5.2 to 7.0. 7.1+ is not yet supported. webDip runs on PHP 7.0
 - MySQL 5, with support for MyISAM, InnoDB, and memory tables
 - The GD 2 PHP extension, with FreeType support
 - Ability to send e-mail from the server (Access to an SMTP server or sendmail)
@@ -41,9 +41,11 @@ Installing
 ----------
 => Database scripts
 Run install/install.sql to set up the initial data-set, you can run this in 
-phpMyAdmin's "Import" tab, if you don't have shell access. Currently, you will also need
-to run all database update scripts, found in install/1.00-1.01/update.sql through to 
-install/1.34-1.35/update.sql.
+phpMyAdmin's "Import" tab, if you don't have shell access.
+
+Currently, you will also need to run all database update scripts, found in
+install/1.00-1.01/update.sql through to install/1.34-1.35/update.sql. As an alternative,
+you can run install/FullInstall/fullInstall.sql instead of the individual version SQL files.
 
 Note that webDiplomacy is incompatible with MySQL's strict mode, so if STRICT_ALL_TABLES 
 or STRICT_TRANS_TABLES are set in the sql_mode, then you will have errors when
@@ -99,8 +101,17 @@ page without saving the results)
 => Check
 Once you're seeing the Last process time at the bottom of the page staying within 5 
 minutes of the current time the background processing is working, and everything should 
-be up and running. 
+be up and running.
 
+Troubleshooting Installation
+----------------------------
+
+If you're having issues with access to the CP Admin, make sure you have a user created,
+and that the user in the `wD_Users` table has the following `type`:
+
+System,User,Moderator,Admin
+
+Then load the gamemaster page above again, and it should work as expected.
 
 Updating
 --------

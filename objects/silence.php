@@ -189,7 +189,7 @@ class Silence
 		$this->reason = $record['silenceReason'];
 	}
 	
-	public function Silence($id) 
+	public function __construct($id)
 	{
 		$this->load($id);
 	}
