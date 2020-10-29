@@ -31,6 +31,27 @@ libHTML::starthtml();
 
 print '<div class="content">';
 
+// game listings tutorial
+if (isset($_COOKIE['wD-Tutorial-JoinNewGame'])) {
+	$tutorialMessage = l_t('
+		This is the page where you can view games to join. You can choose to join new games 
+		that have not begun yet, take over an open position that another player abandoned, 
+		or check out any active and finished games. You can also find a full list of games you
+		are in and check their status from here. 
+		<br>
+		To join a new game, you need to have the points required to join as well as the reliability
+		rating required in order to join. Your reliability rating may not yet be high enough to join 
+		some games. To improve your reliability rating, join a game you meet the requirements for or
+		<a href="gamecreate.php" target="_blank">create a game of your own</a> and make sure that you 
+		enter your moves before the deadline.
+	');
+
+	libHTML::help('Game Search', $tutorialMessage);
+
+	unset($_COOKIE['wD-Tutorial-JoinNewGame']);
+	setcookie('wD-Tutorial-JoinNewGame', '', time()-3600);
+}
+
 global $User, $Misc, $DB;
 
 $tabs = array();
@@ -1232,5 +1253,6 @@ function printPageButton($pagenum, $currPage)
 	}
 }
 
+libHTML::$footerIncludes[] = l_j('help.js');
 libHTML::footer();
 ?>

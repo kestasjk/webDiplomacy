@@ -23,6 +23,7 @@ namespace webdiplomacy_api;
 use libVariant;
 
 defined('IN_CODE') or die('This script can not be run by itself.');
+require_once(l_r('api/responses/message.php'));
 require_once(l_r('api/responses/order.php'));
 require_once(l_r('api/responses/unit.php'));
 
@@ -180,6 +181,12 @@ class GameState {
 	 * @var int
 	 */
 	public $variantID;
+	
+	/**
+	 * Pot Type - (Winner-takes-all, Points-per-supply-center, Sum-of-squres, Unranked)
+	 * @var int
+	 */
+	public $potType;
 
 	/**
 	 * Turn
@@ -198,6 +205,12 @@ class GameState {
 	 * @var string
 	 */
 	public $gameOver;
+	
+	/**
+	 * pressType - Regular, NoPress, PublicPress
+	 * @var string
+	 */
+	public $pressType;
 
 	/**
 	 * List of game phases (units, centers and orders per phase)
@@ -216,6 +229,21 @@ class GameState {
      * @var array
      */
     public $occupiedFrom = array();
+	/**
+	 * List of votes cast comma separated
+	 * @var string
+	 */
+	public $votes = '';
+	/**
+	 * Statys of countries orders
+	 * @var array
+	 */
+	public $orderStatus = '';
+	/**
+	 * Status of country
+	 * @var array
+	 */
+	public $status = '';
 
 	/**
 	 * Load the GameState object.
@@ -226,13 +254,20 @@ class GameState {
 		global $DB;
 
 		// Loading game state
-		$gameRow = $DB->sql_hash("SELECT id, variantID, turn, phase, gameOver FROM wD_Games WHERE id=".$this->gameID);
+		$gameRow = $DB->sql_hash("SELECT id, variantID, potType, turn, phase, gameOver, pressType FROM wD_Games WHERE id=".$this->gameID);
 		if ( ! $gameRow )
 			throw new \Exception("Unknown game ID.");
 		$this->variantID = intval($gameRow['variantID']);
+		$this->potType = $gameRow['potType'];
 		$this->turn = intval($gameRow['turn']);
 		$this->phase = $gameRow['phase'];
 		$this->gameOver = $gameRow['gameOver'];
+		$this->pressType = $gameRow['pressType'];
+
+		$memberData = $DB->sql_hash("SELECT countryID, votes, orderStatus, status FROM wD_Members WHERE gameID = ".$this->gameID." AND countryID = ".$this->countryID);
+		$this->votes = $memberData['votes'];
+		$this->orderStatus = $memberData['orderStatus'];
+		$this->status = $memberData['status'];
 
 		$units = array();
 		$orders = array();
@@ -350,6 +385,23 @@ class GameState {
 			$phase = $gameSteps->get($order->turn, $order->phase, array());
 			$phase['orders'][] = $order;
 			$gameSteps->set($order->turn, $order->phase, $phase);
+		}
+		// messages
+		if ($this->pressType != 'NoPress') {
+			$msgTabl = $DB->sql_tabl(
+				"SELECT turn, fromCountryID, toCountryID, message from wD_GameMessages WHERE gameID = ".$this->gameID." AND (fromCountryID = ".$this->countryID." OR toCountryID = ".$this->countryID.") ORDER BY timeSent"
+			);
+
+			while ($row = $DB->tabl_hash($msgTabl)) {
+				$message = new \webdiplomacy_api\Message(
+					$row['message'],
+					$row['fromCountryID'],
+					$row['toCountryID']
+				);
+				$phase = $gameSteps->get($row['turn'], 'Diplomacy', array());
+				$phase['messages'][] = $message;
+				$gameSteps->set($row['turn'], 'Diplomacy', $phase);
+			}
 		}
 		foreach ($gameSteps->toArray() as $step) {
 			list($turn, $phaseName, $data) = $step;

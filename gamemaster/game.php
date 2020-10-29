@@ -24,6 +24,7 @@ require_once(l_r('gamemaster/gamemaster.php'));
 
 require_once(l_r('objects/game.php'));
 require_once(l_r('gamemaster/members.php'));
+require_once(l_r('ghostratings/calculations.php'));
 
 /**
  * This class creates games, joins players up to games, manages the passing of games
@@ -1033,6 +1034,30 @@ class processGame extends Game
 	}
 
 	/**
+	 *Gets information needed for GR from the games in a usable format.
+	 *
+	 *@return array memberstatus - An array that maps from player ID to status
+	 *@return array SCcounts - An array that maps from player ID to SC count
+	 *@return bool botGame - A boolean that is true if bots are involved
+	 */
+	protected function prepGR()
+	{
+		$SCcounts = array();
+		$memberStatus = array();
+		foreach($this->Members->ByOrder as $Member)
+		{
+			$SCcounts[$Member->userID] = $Member->supplyCenterNo;
+			$memberStatus[$Member->userID] = $Member->status;
+		}
+		$botGame = True;
+		if ($this->playerTypes == 'Members')
+		{
+			$botGame = False;
+		}
+		return array($memberStatus, $SCcounts, $botGame);
+	}
+
+	/**
 	 * Set the game as Won, with the given member as the winner. Will set the game phase,
 	 * distribute points, and set member data
 	 *
@@ -1052,7 +1077,21 @@ class processGame extends Game
 		$DB->sql_put("UPDATE wD_Games SET finishTime=".time()." WHERE id=".$this->id);
 		 
 		$this->Members->setWon($Winner);
-
+		
+		//Do GR Stuff
+		if (isset(Config::$grCategories))
+		{
+			if (isset(Config::$grActive))
+			{
+				if (Config::$grActive)
+				{
+				  list($memberStatus, $SCcounts, $botGame) = $this->prepGR();
+				  $ghostRatings = new GhostRatings($this->id, $SCcounts, $memberStatus, $this->variantID, $this->pressType, $this->potType, $this->turn, "Won", $this->phaseMinutes, $this->Variant->terrIDByName["supplyCenterTarget"], $this->Variant->terrIDByName["supplyCenterCount"], $Winner->userID, $botGame, time());
+				  $ghostRatings->processGR();
+				}
+			}
+		}
+		
 		// Then the game is set to finished
 		$this->setPhase('Finished', 'Won');
 	}
@@ -1238,6 +1277,21 @@ class processGame extends Game
 
 		// Sets the Members statuses to Drawn as needed, gives refunds, sends messages
 		$this->Members->setDrawn();
+		
+		//Do GR Stuff
+		if (isset(Config::$grCategories))
+		{
+			if (isset(Config::$grActive))
+			{
+				if (Config::$grActive)
+				{
+					list($memberStatus, $SCcounts, $botGame) = $this->prepGR();
+					$ghostRatings = new GhostRatings($this->id, $SCcounts, $memberStatus, $this->variantID, $this->pressType, $this->potType, $this->turn, "Drawn", $this->phaseMinutes, $this->Variant->terrIDByName["supplyCenterTarget"], $this->Variant->terrIDByName["supplyCenterCount"], 0, $botGame, time());
+					$ghostRatings->processGR();
+				}
+			}
+		}
+		
 		$this->setPhase('Finished', 'Drawn');
 
 		$DB->sql_put("DELETE FROM wD_Orders WHERE gameID = ".$this->id);

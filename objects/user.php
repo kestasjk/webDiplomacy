@@ -1138,7 +1138,6 @@ class User {
 
 	public function likeMessageToggleLink($messageID, $fromUserID=-1) 
 	{
-		
 		if( $this->type['User'] && $this->id != $fromUserID && !in_array($messageID, $this->getLikeMessages()))
 			return '<a id="likeMessageToggleLink'.$messageID.'" 
 			href="#" title="'.l_t('Give a mark of approval for this post').'" class="light likeMessageToggleLink" '.
@@ -1360,6 +1359,54 @@ class User {
 		list($modLastCheckedBy) = $DB->sql_row("SELECT c.modLastCheckedBy FROM wD_UserConnections c WHERE c.userID = ".$this->id);
 		
 		return $modLastCheckedBy;
+	}
+
+	/*
+	 * Get the GR category, rating, peak, and position for a given user for all categories.
+	 */
+	public function getCurrentGRByCategory() 
+	{
+		global $DB;		
+		$ghostRatingCategories = array();
+
+		$tabl = $DB->sql_tabl(
+				"SELECT g.categoryID, g.rating, g.peakRating, 
+				(select count(1)+1 from wD_GhostRatings g1 where g1.categoryID = g.categoryID and g1.rating > g.rating) as position 
+				FROM wD_GhostRatings g WHERE g.userID = ".$this->id
+			);
+
+		while ( list($categoryID, $rating, $peakRating, $position) = $DB->tabl_row($tabl) )
+		{
+			$categoryName = Config::$grCategories[$categoryID]["name"];
+
+			$ghostRatingCategories[$categoryName]['Rating'] = $rating; 
+			$ghostRatingCategories[$categoryName]['Peak'] = $peakRating; 
+			$ghostRatingCategories[$categoryName]['Position'] = $position; 
+		}
+
+		return $ghostRatingCategories;
+	}
+
+	/*
+	 * Get the GR category, rating, peak, and position for a given user for all categories.
+	 */
+	public function getGRTrending($categoryID, $limit) 
+	{
+		global $DB;		
+		$ghostRatingTrends = array();
+
+		$tabl = $DB->sql_tabl(
+				"SELECT concat(LEFT(g.yearMonth,4), '-', RIGHT(g.yearMonth,2)) as timePeriod, g.rating 
+				FROM wD_GhostRatingsHistory g WHERE g.userID = ".$this->id. " and g.categoryID = ".(int)$categoryID." order by g.yearMonth desc limit ".(int)$limit
+			);
+
+		while ( list($timePeriod, $rating) = $DB->tabl_row($tabl) )
+		{
+			$ghostRatingTrends[$timePeriod] = $rating; 
+		}
+
+		$reversed = array_reverse($ghostRatingTrends);
+		return $reversed;
 	}
 }
 ?>

@@ -197,7 +197,7 @@
    <div class = "rules_title">Drawing Games</div>
    <div class = "rules_content">
       <p>
-         We do not draw any games due to cheating. We will only force games to draw if they have been at a stalemate for at least two years with no SC's changing hands and no possible sign of a breakthrough. If alerted to such a scenario; we will email the player(s) holding the game up and ask them how they plan to break through. If we deem their plan to be unrealistic, or it includes hoping for misorders or for players to miss phases, then we may force a game to draw.
+         We do not draw any games due to cheating. We will only force games to draw if they are at a stalemate with no SC's changing hands and no possible sign of a breakthrough. If alerted to such a scenario; we will email the player(s) holding the game up and ask them how they plan to break through. If we deem their plan to be unrealistic, or it includes hoping for misorders or for players to miss phases, then we may force a game to draw.
       </p>
    </div>
    <div class = "rules_title">Forum Moderation</div>
