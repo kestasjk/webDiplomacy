@@ -139,6 +139,24 @@ if ( isset($_REQUEST['userForm']) )
 	}
 }
 
+// settings page tutorial
+if (isset($_COOKIE['wD-Tutorial-Settings'])) 
+{
+	$tutorialMessage = l_t('
+		These are your account settings. You can update your registered email here, change your password,
+		and add a comment to your profile. You can also adjust the game board for different types of 
+		colorblindness, set your site theme to a light theme or high-contrast dark theme, choose whether you
+		display upcoming live games on your home screen, and more. Please set your registered email to one
+		that you regularly check if you did not already when you registered, as your account can be banned 
+		if the moderators attempt to contact you by email but do not receive a reply.
+	');
+
+	libHTML::help('Settings', $tutorialMessage);
+
+	unset($_COOKIE['wD-Tutorial-Settings']);
+	setcookie('wD-Tutorial-Settings', '', time()-3600);
+}
+
 print libHTML::pageTitle(l_t('User account settings'),l_t('Control settings for your account.'));
 
 print '
@@ -153,6 +171,8 @@ If you leave the default of "yes" it is only visible to moderators.</div></br>
 require_once(l_r('locales/English/user.php'));
 
 print '</div>';
+
+libHTML::$footerIncludes[] = l_j('help.js');
 libHTML::footer();
 
 ?>

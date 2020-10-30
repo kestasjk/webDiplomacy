@@ -28,9 +28,11 @@ require_once('api/responses/members_in_cd.php');
 require_once('api/responses/unordered_countries.php');
 require_once('api/responses/game_state.php');
 require_once('objects/game.php');
+require_once('objects/user.php');
 require_once('lib/cache.php');
 require_once('lib/html.php');
 require_once('lib/time.php');
+require_once('lib/gamemessage.php');
 $DB = new Database();
 
 /**
@@ -623,6 +625,52 @@ class SetOrders extends ApiEntry {
 		return json_encode($currentOrders);
 	}
 }
+/**
+ * API entry game/sendmessage
+ */
+class SendMessage extends ApiEntry {
+	public function __construct() {
+		parent::__construct('game/sendmessage', 'JSON', '', array('gameID','countryID','toCountryID', 'message'));
+	}
+	public function run($userID, $permissionIsExplicit) {
+		global $DB;
+
+		$args = $this->getArgs();
+
+		if ($args['toCountryID'] === null)
+			throw new RequestException('toCountryID is required.');
+
+		if ($args['message'] === null)
+			throw new RequestException('message is required.');
+
+
+		$gameID = intval($args['gameID']);
+		$countryID = intval($args['countryID']);
+		$toCountryID = intval($args['toCountryID']);
+		$message = $args['message'];
+
+		$game = $this->getAssociatedGame();
+		if ($game->pressType != 'Regular') {
+			throw new RequestException('Game is not regular press.');
+		}
+
+		if (!(isset($game->Members->ByUserID[$userID]) && $countryID == $game->Members->ByUserID[$userID]->countryID)) {
+			throw new ClientForbiddenException('User does not have explicit permission to make this API call.');
+		}
+
+		if ($toCountryID < 1 || $toCountryID > count($game->Members) || $toCountryID == $countryID) {
+			throw new RequestException('Invalid toCountryID');
+		}
+
+		$toUser = new User($game->Members->ByCountryID[$toCountryID]->userID);
+		if(!$toUser->isCountryMuted($game->id, $countryID)) {
+			libGameMessage::send($toCountryID, $countryID, $message);
+		}
+
+		// FIXME: what to return?
+		return json_encode($args);
+	}
+}
 
 /**
  * Class to manage an API key and check associated permissions.
@@ -804,6 +852,7 @@ try {
 	$api->load(new GetGamesStates());
 	$api->load(new SetOrders());
 	$api->load(new ToggleVote());
+	$api->load(new SendMessage());
 	$jsonEncodedResponse = $api->run();
 	// Set JSON header.
 	header('Content-Type: application/json');

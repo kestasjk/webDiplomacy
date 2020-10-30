@@ -47,8 +47,8 @@ define("JSDIR", 'javascript');
 define("CSSDIR", 'css');
 
 //Increment these versions whenever you update any js or css files for cachebusting
-define("JSVERSION",1.5);
-define("CSSVERSION",1.34);
+define("JSVERSION",1.7);
+define("CSSVERSION",1.36);
 
 if( !defined('FACEBOOK') )
 	define('FACEBOOK',false);

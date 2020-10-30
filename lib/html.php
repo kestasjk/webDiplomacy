@@ -385,6 +385,107 @@ class libHTML
 	}
 
 	/**
+	 * Renders reusable modal for tutorial mode, future help functionality
+	 * Breaks up message into array of slides based on HTML <br> element
+	 * 
+	 * @param string $page
+	 * @param string $message
+	 */
+	static public function help($page, $message)
+	{
+		if (isset($_COOKIE['wD-Tutorial'])) 
+		{
+			$bootstrap = "";
+			$messages = [];
+			$i = 0;
+
+			if ($message) 
+			{
+				$messages = preg_split('/<br[^>]*>/i', $message);
+			}
+
+			if (count($messages) > 0) 
+			{
+				$bootstrap = '
+					<div class="tutorial-wrap">
+						<div class="tutorial-header">
+							<h2>webDiplomacy Tutorial - '.$page.'</h2>
+						</div>
+				';
+
+				$messages = array_diff($messages, [""]);
+
+				foreach ($messages as $key => $m) 
+				{
+					$i++;
+					if ($i + 1 <= count($messages)) 
+					{
+						if ($i == 1) 
+						{
+							$bootstrap .= '<div class="tutorial tutorial-display">';
+						} 
+						else 
+						{
+							$bootstrap .= '<div class="tutorial tutorial-hide">';
+						}
+
+						$bootstrap .= '
+							<p id="tutorial-'.$i.'">'. $m .'</p>
+							<div class="tutorial-buttons">
+								<div 
+									class="form-submit"
+									onclick="indexForward('.$i.')"
+								>
+									Next
+								</div>
+								<div 
+									class="form-submit tutorial-close"
+									onclick="hideHelp()"
+								>
+									Close
+								</div>
+							</div>
+						</div>';
+					} 
+					else 
+					{
+						if ($i == 1) 
+						{
+							$bootstrap .= '<div class="tutorial tutorial-display">';
+						} 
+						else 
+						{
+							$bootstrap .= '<div class="tutorial tutorial-hide">';
+						}
+
+						$bootstrap .= '
+							<p id="tutorial-'.$i.'">'. $m .'</p>
+							<div class="tutorial-buttons">
+								<div 
+									class="form-submit"
+									onclick="hideHelp()"
+								>
+									Close
+								</div>
+								<div 
+									class="form-submit tutorial-end"
+									onclick="endTutorial()"
+								>
+									I do not need a tutorial (turn these off)
+								</div>
+							</div>
+						</div>';
+					}
+				}
+
+				$bootstrap .= '</div>';
+			}
+
+			print $bootstrap;
+		}
+	}
+
+	/**
 	 * Name of the script filename which was requested e.g. ajax.php, set in starthtml()
 	 * @var unknown_type
 	 */
@@ -740,12 +841,15 @@ class libHTML
 		$links['tournamentRegistration.php']=array('name'=>'Tournament Registration', 'inmenu'=>FALSE);
 		$links['botgamecreate.php']=array('name'=>'New Bot Game', 'inmenu'=>TRUE, 'title'=>"Start up a new bot game");
 
+
 		if ( is_object($User) )
 		{
 			if ( $User->type['Admin'] or $User->type['Moderator'] )
 			{
 				$links['profile.php']=array('name'=>'Find user', 'inmenu'=>true);  // Overrides the previous one with one that appears in the menu
 				$links['admincp.php']=array('name'=>'Admin CP', 'inmenu'=>true);
+				$links['userprofile.php']=array('name'=>'ProfileNew', 'inmenu'=>FALSE);
+				$links['search.php']=array('name'=>'Find user 2.0', 'inmenu'=>FALSE);  // Overrides the previous one with one that appears in the menu
 			}
 			$links['gamemaster.php']=array('name'=>'GameMaster', 'inmenu'=>FALSE);
 		}
