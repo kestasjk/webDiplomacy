@@ -71,8 +71,7 @@ print '<div>';
 print '<h2 class = "profileUsername">'.$UserProfile->username.'</h2>';
 
 // Show moderator information
-// Print out relibality rating information here instead of having it a new link.
-if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
+if ( $User->type['Moderator'] )
 {	
 	print '<div class = "profile-show">';
 
