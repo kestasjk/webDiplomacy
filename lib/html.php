@@ -826,9 +826,11 @@ class libHTML
 		$links['rules.php']=array('name'=>'Rules', 'inmenu'=>FALSE);
 		$links['recentchanges.php']=array('name'=>'Recent changes', 'inmenu'=>FALSE);
 		$links['intro.php']=array('name'=>'Intro', 'inmenu'=>FALSE);
+		$links['ghostRatings.php']=array('name'=>'The Ghost Ratings', 'inmenu'=>FALSE);
 		$links['credits.php']=array('name'=>'Credits', 'inmenu'=>FALSE);
 		$links['board.php']=array('name'=>'Board', 'inmenu'=>FALSE);
 		$links['profile.php']=array('name'=>'Profile', 'inmenu'=>FALSE);
+		$links['userprofile.php']=array('name'=>'ProfileNew', 'inmenu'=>FALSE);
 		$links['translating.php']=array('name'=>'Translating', 'inmenu'=>FALSE);
 		$links['points.php']=array('name'=>'Points', 'inmenu'=>FALSE);
 		$links['halloffame.php']=array('name'=>'Hall of fame', 'inmenu'=>FALSE);
@@ -846,10 +848,8 @@ class libHTML
 		{
 			if ( $User->type['Admin'] or $User->type['Moderator'] )
 			{
-				$links['profile.php']=array('name'=>'Find user', 'inmenu'=>true);  // Overrides the previous one with one that appears in the menu
+				$links['search.php']=array('name'=>'Find user', 'inmenu'=>true);  // Overrides the previous one with one that appears in the menu
 				$links['admincp.php']=array('name'=>'Admin CP', 'inmenu'=>true);
-				$links['userprofile.php']=array('name'=>'ProfileNew', 'inmenu'=>FALSE);
-				$links['search.php']=array('name'=>'Find user 2.0', 'inmenu'=>FALSE);  // Overrides the previous one with one that appears in the menu
 			}
 			$links['gamemaster.php']=array('name'=>'GameMaster', 'inmenu'=>FALSE);
 		}
@@ -948,7 +948,7 @@ class libHTML
 					$menu.='
 					<div id="navSubMenu" class="clickable nav-tab">Search ▼
                         <div id="nav-drop">
-							<a href="profile.php">Find User</a>
+							<a href="search.php">Find User</a>
 							<a href="gamelistings.php?gamelistType=Search">Game Search</a>
 							<a href="detailedSearch.php" title="advanced search of users and games">Advanced Search</a>
 						</div>
@@ -1003,7 +1003,7 @@ class libHTML
 						<a href="admincp.php?tab=Multi-accounts">Multi Finder</a>
 						<a href="admincp.php?tab=Chatlogs">Pull Press</a>
 						<a href="admincp.php?tab=AccessLog">Access Log</a>
-						<a href="profile.php">Find User</a>';
+						<a href="search.php">Find User</a>';
 
 					if ( $User->type['Admin'] && isset(Config::$customForumURL))
 					{

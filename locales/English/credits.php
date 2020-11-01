@@ -30,7 +30,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 global $DB;
 
-$tabl = $DB->sql_tabl("SELECT CONCAT('<a href=\"profile.php?userID=',id,'\">',username,'</a>') FROM wD_Users WHERE type LIKE '%Moderator%'");
+$tabl = $DB->sql_tabl("SELECT CONCAT('<a href=\"userprofile.php?userID=',id,'\">',username,'</a>') FROM wD_Users WHERE type LIKE '%Moderator%'");
 $moderators = '';
 
 while( list($row) = $DB->tabl_row($tabl) )
@@ -46,53 +46,50 @@ $credits = array(
 	),
 	array(
 		'Managing the <a href="https://discord.gg/f2ram4w">webDiplomacy Discord Server</a>',
-		'<a href="http://webdiplomacy.net/profile.php?userID=100862">Aurelin</a><br />
-		<a href="http://webdiplomacy.net/profile.php?userID=41379">captainmeme</a><br />'
+		'<a href="userprofile.php?userID=100862">Aurelin</a><br />
+		<a href="userprofile.php?userID=41379">captainmeme</a><br />'
 	),
 	array(
 		'Co-owners of webDiplomacy',
 		'<a href="http://kestas.kuliukas.com/">Kestas Kuliukas</a>, original creator of webDiplomacy<br />
-		<a href="profile.php?userID=33599">Zultar</a>'
+		<a href="userprofile.php?userID=33599">Zultar</a>'
 	),	
 	array(
 		'The webDiplomacy Moderators, contact at '.Config::$modEMail, $moderators
 	),
 	array(
 		'The webDiplomacy Developers',
-		'<a href="profile.php?userID=15658">jmo1121109</a>, current lead developer<br />
-		<a href="profile.php?userID=10">kestasjk</a><br />
-		<a href="profile.php?userID=59641">Squigs44</a><br />
-		<a href="profile.php?userID=38739">bo_sox48</a>'
+		'<a href="userprofile.php?userID=15658">jmo1121109</a>, current lead developer<br />
+		<a href="userprofile.php?userID=10">kestasjk</a><br />
+		<a href="userprofile.php?userID=59641">Squigs44</a><br />
+		<a href="userprofile.php?userID=38739">bo_sox48</a>'
 	),
 	array(
 		'Lifetime Site Contributors',
-		'<a href="profile.php?userID=51170">Peregrine Falcon</a>, for his time as a moderator, code contributor, and esteemed member<br />
-		<a href="profile.php?userID=4946">abgemacht</a>, for his time as a moderator, administrator, ombudsman, and overseer of the webDip Player Map<br />
-		<a href="profile.php?userID=54909">A_Tin_Can</a>, for his time as a moderator and as a leader of site development'
+		'<a href="userprofile.php?userID=51170">Peregrine Falcon</a>, for his time as a moderator, code contributor, and esteemed member<br />
+		<a href="userprofile.php?userID=4946">abgemacht</a>, for his time as a moderator, administrator, ombudsman, and overseer of the webDip Player Map<br />
+		<a href="userprofile.php?userID=54909">A_Tin_Can</a>, for his time as a moderator and as a leader of site development'
 	),
 	array(
 		'Past Developers',
-		'<a href="profile.php?userID=54909">A_Tin_Can</a><br />
-		<a href="profile.php?userID=382">figlesquidge</a><br />
-		<a href="profile.php?userID=3013">thewonderllama</a><br />'
+		'<a href="userprofile.php?userID=54909">A_Tin_Can</a><br />
+		<a href="userprofile.php?userID=382">figlesquidge</a><br />
+		<a href="userprofile.php?userID=3013">thewonderllama</a><br />'
 	),
 	array(
 		'Overseer of the <a id="credits-player-map-a" href="https://www.google.com/maps/d/u/0/viewer?mid=zkz1OHicklqk.ky67Va8gNVi0">webDiplomacy Player Map (external link)</a>',
-		'<a href="profile.php?userID=74492">Claesar</a>'
+		'<a href="userprofile.php?userID=74492">Claesar</a>'
 	),
 	array(
 		'Creation of the Original Ghost Ratings',
-		'<a href="profile.php?userID=2188">TheGhostMaker</a><br />
-		<a href="profile.php?userID=13677">Alderian</a>'
+		'<a href="userprofile.php?userID=2188">TheGhostMaker</a><br />
+		<a href="userprofile.php?userID=13677">Alderian</a>'
 	),
 	array(
-		'Maintenance of the Ghost Ratings List',
-		'<a href="profile.php?userID=38739">bo_sox48</a><br/>
-		<a href="profile.php?userID=15658">jmo1121109</a><br/></br>
-		<a href="profile.php?userID=2188">TheGhostMaker</a> (past)<br/>
-		<a href="profile.php?userID=13677">Alderian</a> (past)<br/>
-		<a href="profile.php?userID=23172">Hellenic Riot</a> (past)<br/>
-		<a href="profile.php?userID=37168">ghug</a> (past)'
+		'Integration of Ghost Ratings into the codebase',
+		'<a href="userprofile.php?userID=59641">Squigs44</a><br />
+		<a href="userprofile.php?userID=38739">bo_sox48</a><br/>
+		<a href="userprofile.php?userID=15658">jmo1121109</a>'
 	),
 	array(
 		'Creator of the webDiplomacy AI',
@@ -109,7 +106,7 @@ $credits = array(
 		<strong><u>Carey Jensen</u></strong> - variant developer, goondip.com developer <br />
 		<strong><u>Alex Lebedev</u></strong> - sponsored the localization support <br />
 		<a href="https://sourceforge.net/sendmessage.php?touser=1295433">paranoidjpn</a> - Japanese translation, testing, UTF-8 support, developing the small PNG map <br />
-		<strong><u><a href="profile.php?userID=18263">Oliver Auth</a></u></strong> - variant creator, owner of <a href="https://vdiplomacy.net" class="light">vDiplomacy</a>' 
+		<strong><u><a href="userprofile.php?userID=18263">Oliver Auth</a></u></strong> - variant creator, owner of <a href="https://vdiplomacy.net" class="light">vDiplomacy</a>' 
 	),
 	array(
 		'Miscellaneous',

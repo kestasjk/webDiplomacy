@@ -35,46 +35,55 @@ class Member
 	 * @var int
 	 */
 	var $id;
+
 	/**
 	 * The user ID
 	 * @var int
 	 */
 	var $userID;
+
 	/**
 	 * The game ID
 	 * @var int
 	 */
 	var $gameID;
+
 	/**
 	 * The countryID this member is playing as.
 	 * @var int
 	 */
 	var $countryID;
+
 	/**
 	 * The country this member is playing as. Will be 'Unassigned' if pre-game.
 	 * @var string
 	 */
 	var $country;
+
 	/**
 	 * The member status; 'Playing','Left','Defeated'
 	 * @var string
 	 */
 	var $status;
+
 	/**
 	 * The username corresponding to this member
 	 * @var string
 	 */
 	var $username;
+
 	/**
 	 * The number of points the user currently has available to bet
 	 * @var int
 	 */
 	var $points;
+
 	/**
 	 * The amount the user bet into the game
 	 * @var int
 	 */
 	var $bet;
+	
 	/**
 	 * An array of countries from which this member has new messages. 'Global' may
 	 * also be within this array.
@@ -194,7 +203,7 @@ class Member
 	{
 		if ( $this->Game->phase == 'Pre-game' )
 		{
-			$output = '<a href="profile.php?userID='.$this->userID.'">'.$this->username;
+			$output = '<a href="userprofile.php?userID='.$this->userID.'">'.$this->username;
 		}
 		else
 		{
@@ -205,7 +214,7 @@ class Member
 				$output .= 'style="text-decoration: line-through" ';
 			}
 
-			$output .= 'href="profile.php?userID='.$this->userID.'">'.$this->username;
+			$output .= 'href="userprofile.php?userID='.$this->userID.'">'.$this->username;
 		}
 		return $output.' ('.$this->points.User::typeIcon($this->userType).')</a>';
 	}

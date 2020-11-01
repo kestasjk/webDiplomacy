@@ -207,7 +207,7 @@ class libHome
 		$i=1;
 		while(list($userID,$username,$points)=$DB->tabl_row($tabl))
 		{
-			$rows[] = '#'.$i.': <a href="profile.php?userID='.$userID.'">'.$username.'</a> ('.$points.libHTML::points().')';
+			$rows[] = '#'.$i.': <a href="userprofile.php?userID='.$userID.'">'.$username.'</a> ('.$points.libHTML::points().')';
 			$i++;
 		}
 		return $rows;
@@ -465,7 +465,7 @@ class libHome
 				$buf .= '<div class="homeForumPost homeForumPostAlt'.libHTML::alternate().' userID'.$post['userID'].'">
 
 					<div class="homeForumPostTime">'.libTime::text($post['timeSent']).' '.$post['iconMessage'].'</div>
-					<a href="profile.php?userID='.$post['userID'].'" class="light">'.$post['username'].'</a>
+					<a href="userprofile.php?userID='.$post['userID'].'" class="light">'.$post['username'].'</a>
 						'.' ('.$post['points'].libHTML::points().
 						User::typeIcon($post['userType']).')
 
@@ -553,7 +553,7 @@ class libHome
 					$buf .= '<div style="clear:both"></div>';
 					$buf .= '<div class="homeForumPostTime" style="float:right"><em>'.libTime::text($t['topic_time']).'</em></div>';
 					$buf .= '<span style=\'font-size:90%\'>';
-					$buf .= 'Thread:</span> <a href="profile.php?userID='.$t['topic_poster_webdip'].'" class="light">'.$t['topic_first_poster_name'].'</a> ';
+					$buf .= 'Thread:</span> <a href="userprofile.php?userID='.$t['topic_poster_webdip'].'" class="light">'.$t['topic_first_poster_name'].'</a> ';
 					$buf .= '<div style="clear:both"></div></div>';
 					$buf .= '<div class="homeForumPost homeForumPostAlt'.$alt.'">';
 
@@ -564,7 +564,7 @@ class libHome
 						$buf .= '<div class="" style="margin-bottom:5px;margin-left:3px; margin-right:3px;">';
 						$buf .= '<div class="homeForumPostTime" style="float:right;font-weight:bold"><em>'.libTime::text($t['topic_last_post_time']).'</em></div>';
 						$buf .= '<span class="home-forum-latest">';
-						$buf .= 'Latest:</span> <a href="profile.php?userID='.$t['topic_last_poster_webdip'].'" class="light">'.$t['topic_last_poster_name'].'</a> '
+						$buf .= 'Latest:</span> <a href="userprofile.php?userID='.$t['topic_last_poster_webdip'].'" class="light">'.$t['topic_last_poster_name'].'</a> '
 						.'</div>';
 					}
 
@@ -679,7 +679,7 @@ else
 			is to entering orders prior to deadlines. Whether you decide to be a casual Diplomacy player or a very dedicated player,
 			it is important to enter orders prior to the deadlines so that the game is fair and balanced for everyone, and so that
 			games are not delayed while players are replaced. Some games require a minimum reliability rating, so it is important to
-			keep it high! You can read more about reliability rating <a href="profile.php?detail=civilDisorders&userID='.$User->id.'" 
+			keep it high! You can read more about reliability rating <a href="userprofile.php?userID='.$User->id.'" 
 			target="_blank">here</a>. 
 			<br><br>
 			You are currently on the home screen. This is the landing page that you will see when you log into the site. While you can
