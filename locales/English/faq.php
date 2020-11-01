@@ -29,7 +29,7 @@ $faq = array();
 
 $globalFaq = array(
 
-"The Basics of webDiplomacy" => "Sub-section",
+"The Basics" => "Sub-section",
 
 "What is Diplomacy?" => "Diplomacy is a strategy game currently published by Avalon Hill and created by Allan Calhamer in 1954. 
 In Diplomacy, players practice wartime tactics, employ powerful rhetoric in their negotiations, and make friends and enemies while competing to dominate the board. 
@@ -82,7 +82,7 @@ webDiplomacy can also use help from graphic designers and icon artists to keep o
 Each rule is explained in detail there. If you have questions about a rule or need help, you can always <a href='mailto:".Config::$adminEMail."' class='light'>contact the moderators</a>.",
 
 
-"Playing on webDiplomacy" => "Sub-section",
+"Gameplay" => "Sub-section",
 
 "I want to learn how to play Diplomacy!" => "While it is impossible to master the art of Diplomacy, the game itself is an easy game to begin to learn. 
 The <a href='intro.php' class='light'>intro page</a> is a good starting point for learning the basic mechanics of the game of Diplomacy online. 
@@ -185,20 +185,66 @@ misorders in the future is to double check all of your orders, and even if you d
 That button will direct you to a form that you can send to the moderators and they will help you.",
 
 
-"webDiplomacy AI" => "Sub-section",
+"Our AI" => "Sub-section",
 
-"Does webDiplomacy support artificial intelligence?" => "Yes! webDiplomacy was the first online Diplomacy site to support artificial intelligence. You can play no press games against bot users on our 7 player classic map or on either of our 1v1 maps.",
+"What is AI?" => "AI stands for artificial intelligence. Artificial intelligence are computer programs designed to make decisions based on a range of possible outcomes and consequences just like a human 
+would. Typical artificial intelligence you hear about regularly is driven by machine learning, which simply populates the AI program with data and statistics that allow it to \"improve\" 
+at a task, or deep learning, which uses neural networks with layers and hidden information, just like a human brain has, and encourages the program to make connections between pieces of 
+data and learn which results are good and which results are not. Artificial intelligence is in its infancy, but webDiplomacy has participated in some groundbreaking research into artificial 
+intelligence that set us apart from other gaming sites across the internet.",
 
-"How did you train the AI?" => "The webDiplomacy AI was developed in tandem with university researchers and trained on over 160,000 Diplomacy games across different scoring systems, different phase lengths, and on various platforms. The AI's strategies and tactics are up to standard and provide a challenge for most users as well as a place to experiment, learn, and perfect your game.",
+"So webDiplomacy supports artificial intelligence?" => "Yes! webDiplomacy was the first online Diplomacy site to support artificial intelligence. You can play no press games against 
+bot users on our 7 player classic map or on either of our 1v1 maps.",
 
-"Do you plan on making further changes to the AI?" => "While there are currently no immediate plans to further train or expand the AI's capabilities, we intend to allow the AI to fill open positions in games that have yet to start that would otherwise be canceled. We also hope that the AI will be useful for filling some positions in civil disorder until they are taken over by other players so that there are no inactive positions in eligible games.",
+"How is your AI different from a computer player?" => "A computer player thinks programatically, and will always take the statistically optimal route in a given scenario without appreciating 
+the context in which it exists. It is predictable, and thus it can be gamed. Our artificial intelligence, on the other hand, thinks like a human - while the statistically optimal route is often 
+taken, our artificial intelligence users are capable of acting unpredictably. They do not always make the perfect decision, and sometimes even make bad decisions. While that may make it sound like 
+a computer player would be more challenging, it actually means that our artificial intelligence users are a more accurate representation of a real human, because they are trained by hundreds of thousands 
+of real humans just like you making all kinds of good and bad decisions.",
 
-"How do I play against the AI?" => "You can play no press games against bot users on the classic map or on either 1v1 map. In order to play against the AI, create a new game and select \"Play a Game Against Bots.\" Once you're there, you can pick your variant and pick the country that you play, or simply play as a random country by default.",
+"How did you train the AI?" => "The webDiplomacy AI was developed in tandem with university researchers and trained on over 160,000 Diplomacy games across different scoring systems, 
+different phase lengths, and on various platforms. The AI's strategies and tactics are up to standard and provide a challenge for any user, even the most experienced, and also provide an opportunity 
+for real humans like you to experiment, learn, and perfect your game.",
 
-"Where can I find more in depth information about the AI?" => "You can find more information by reading <a href='https://github.com/diplomacy/research/blob/master/neurips_paper_v1.pdf' class='light'>this research paper</a>, or you can hear a discussion with jmo1121109 and peterwiggin <a href='https://diplomacygames.com/rise-of-the-bots/' class='light'>here</a>.",
+"What research has webDiplomacy's AI been featured in?" => "Our artificial intelligence has been the subject of research by a couple of different artificial intelligence research teams, including 
+Deepmind, a Google subsidiary, and Facebook AI. You can read Deepmind's research paper on training a gunboat AI model <a href='https://arxiv.org/pdf/2006.04635.pdf' class='light'>here</a>, and 
+Facebook AI's research on building their own artificial intelligence user and how it stood up against our artificial intelligence and our actual human members 
+<a href='https://arxiv.org/pdf/2010.02923.pdf' class='light'>here</a>.",
+
+"How do I play against the AI?" => "You can play no press games against bot users on the classic map or on either 1v1 map. In order to play against the AI, create a new game and select 
+\"Play a Game Against Bots.\" Once you're there, you can pick your variant and pick the country that you play, or simply play as a random country by default.",
+
+"Where can I find more in depth information about the webDiplomacy's AI?" => "You can find more information by reading 
+<a href='https://github.com/diplomacy/research/blob/master/neurips_paper_v1.pdf' class='light'>this research paper</a>, or you can hear a discussion with jmo1121109 and peterwiggin 
+<a href='https://diplomacygames.com/rise-of-the-bots/' class='light'>here</a>.",
 
 
-"The Forum " => "Sub-section",
+"Scoring" => "Sub-section",
+
+"How are players ranked on webDiplomacy?" => "We have a number of different methods of ranking players on webDiplomacy. Our oldest and simplest method is points. A player with a higher 
+number of points is, in theory, a better player than someone with fewer points. However, this is not always the case, and over time a true skill scoring system called the Ghost Ratings 
+has gained popularity and since been integrated fully into our site.",
+
+"What are the Ghost Ratings?" => "The Ghost Ratings were developed by TheGhostmaker as an alternative scoring system to points on webDiplomacy. 
+The purpose of the ratings is to more accurately measure the true skill and ability of players by weighting games not by the size of the pot but 
+by the the type of game they are playing and the ability and skill of the other players in that game. It also allows an accurate measurement depicting 
+either improvement or regression over time, whereas once players have gained a significant amount of points, they generally do not lose all of them again. 
+You can see your current overall rating <a href='grCategoryStats.php' class='light'>here</a>, as well how you rank in each Ghost Ratings category, which are broken down 
+by Full Press games, Gunboat games, Live games, combined 1v1 games, France vs Austria 1v1 games, and Germany vs Austria 1v1 games.
+<br><br>
+For more detailed information on the Ghost Ratings, visit our dedicated <a href='ghostRatings.php' class='light'>ghost ratings page.</a>.",
+
+"How are individual games scored on webDiplomacy?" => "Individual games are scored based on the scoring system that the game's creator chose when they made the game. 
+The options are <a href='points.php#DSS' class='light'>draw-size scoring</a> and <a href='points.php#SoS' class='light'>sum-of-squares scoring</a>. 
+<br><br>
+Draw-size scoring is the default scoring system on webDiplomacy previous known as winner-takes-all. In a draw-size scoring game, points are split evenly between remaining 
+powers in the event of a draw, and in the event of a solo the winner takes the entire pot. [ghost ratings info goes here]. 
+<br><br>
+Sum-of-squares scoring is an alternative scoring system to draw-size scoring where each surviving player in a draw receives points proportional to the number of supply 
+centers they have remaining, and in the event of a solo the winner takes the entire pot. [ghost ratings info goes here]. ",
+
+
+"The Forum" => "Sub-section",
 
 "Didn't the forum look different before?" => "Yes, it did! webDiplomacy used to have a very basic forum that slowly became more and more problematic 
 as webDiplomacy grew. When the site was small, the server load the forum caused was fairly small as well, but as the site got bigger and bigger and 
@@ -229,15 +275,6 @@ from the moderators explaining what happened, how long it will persist, and what
 
 "Do you have colorblind friendly maps?" => "We have several colorblind options available in the <a href='usercp.php' class='light'>account settings page</a>. These settings
 only work on the small map in games currently. Currently we have support for Protanope, Deuteranope, and Tritanope.",
-
-"What are the Ghost Ratings?" => "The Ghost Ratings were developed by TheGhostmaker as an alternative scoring system to points on webDiplomacy. 
-The purpose of the ratings is to more accurately measure the true skill and ability of players by weighting games not by the size of the pot but 
-by the the type of game they are playing and the ability and skill of the other players in that game. It also allows an accurate measurement depicting 
-either improvement or regression over time, whereas once players have gained a significant amount of points, they generally do not lose all of them again. 
-The Ghost Ratings were initially developed in 2008 as a single scoring system but have since been expanded on to include various categorizations, 
-including individual ratings for full press, gunboat, live, and 1v1 games, as well as to weight variants on webDiplomacy differently than the classic board.
-<br><br>
-For more information on the Ghost Ratings, visit our external <a href='https://sites.google.com/view/webdipinfo/ghost-ratings' class='light'>webDiplomacy tournaments site</a>.",
 
 "How does webDiplomacy's adjudicator work and what is it based on?" => "webDiplomacy's adjudication software is based on the official Diplomacy rules. 
 However, in order to adapt to online gameplay where it would be extremely impractical to require players to adjudicate games manually, 
@@ -295,7 +332,7 @@ foreach( $faq as $q => $a )
 	}
 }
 
-print '<div class = "faq" style="text-align:center;"><strong>Sections:</strong></br> '.implode(' - ', $sections).'</div> <div class="hr"></div>';
+print '<div class = "faq" style="text-align:center;">'.implode(' - ', $sections).'</div> <div class="hr"></div>';
 
 $section=0;
 
