@@ -216,7 +216,7 @@ if(isset($_REQUEST['tournamentID']))
       {
         print '<TD class = "advancedSearch">'.$rank.'</TD>';
       }
-      print '<TD class= "advancedSearch"><a href="profile.php?userID='.$userID.'">'.$username.'</a></TD>';
+      print '<TD class= "advancedSearch"><a href="userprofile.php?userID='.$userID.'">'.$username.'</a></TD>';
       for ($i = 1; $i <= $tournamentRounds; $i++)
       {
         $curScore = '';

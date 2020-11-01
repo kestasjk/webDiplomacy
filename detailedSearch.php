@@ -688,7 +688,7 @@ if ($tab == 'UserSearch')
 		print "</tr>";
 		foreach ($UsersData as $values)
 		{
-			print '<TR><TD class= "advancedSearch"><a href="profile.php?userID='.$values->userID.'">'.$values->userID.'</a>';
+			print '<TR><TD class= "advancedSearch"><a href="userprofile.php?userID='.$values->userID.'">'.$values->userID.'</a>';
 
 			// Print the mod or banned icons if the user is one or the other.
 			if ($values->mod) 
@@ -939,9 +939,9 @@ else if ($tab == 'GamesByUser')
 		{
 			$sql = $sql." and ((select count(1) from wD_Members m where m.userID = ".$User->id." and m.gameID = g.id ) > 0) ";
 			$sqlCounter = $sqlCounter." and ((select count(1) from wD_Members m where m.userID = ".$User->id." and m.gameID = g.id ) > 0) ";
-			$userMessage = "Showing <a href='profile.php?userID=".$paramUserID."'>".$checkedUsername."'s</a> completed games against me.</p>";
+			$userMessage = "Showing <a href='userprofile.php?userID=".$paramUserID."'>".$checkedUsername."'s</a> completed games against me.</p>";
 		}
-		else { $userMessage =  "Showing <a href='profile.php?userID=".$paramUserID."'>".$checkedUsername."'s</a> completed games.</p>";}
+		else { $userMessage =  "Showing <a href='userprofile.php?userID=".$paramUserID."'>".$checkedUsername."'s</a> completed games.</p>";}
 
 		if ($showOnlyJoinable == 'checked')
 		{
@@ -1146,7 +1146,7 @@ $seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount
 
 			if ($seeDirector=='checked')
 			{
-				if ($values->directorUserID) { print '<TD class= "advancedSearch"><a href="profile.php?userID='.$values->directorUserID.'">'.$values->directorUserID.'</a></TD>'; }
+				if ($values->directorUserID) { print '<TD class= "advancedSearch"><a href="userprofile.php?userID='.$values->directorUserID.'">'.$values->directorUserID.'</a></TD>'; }
 				else { print '<TD class= "advancedSearch">N/A</TD>'; }
 			}
 			if ($seeMinRR=='checked') { print '<TD class= "advancedSearch">'.$values->minimumRR.'</TD>'; }

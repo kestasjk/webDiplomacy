@@ -1371,12 +1371,12 @@ input[type=submit].gameCreate:hover {
 /* End of section for Tournament styling */
 
 /* Section for FAQ styling */
-.faq {
+.faq, .gr-guide-section-wrapper {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	border-collapse: collapse;
 }
 
- .faq_question {
+ .faq_question, .gr-guide-switch {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #777;
 	color: white;
@@ -1391,12 +1391,12 @@ input[type=submit].gameCreate:hover {
 	font-size: 14px;
 }
 
-.faq_question:hover {
+.faq_question:hover, .gr-guide-switch:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #555;
 }
 
-.faq_answer {
+.faq_answer, .gr-guide-detail {
 	padding: 0;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	display: none;
@@ -1407,7 +1407,13 @@ input[type=submit].gameCreate:hover {
 	border-radius: 7px;
 	padding: 0 10px;
 }
-/* End of section for FAQ styling */
+
+.gr-guide-code {
+	font-family: "Roboto Mono", monospace;
+	background-color: #777;
+	padding: 10px;
+}
+/* End of section for FAQ and GR Explained styling */
 
 /* Section for datc styling */
 .datc {
