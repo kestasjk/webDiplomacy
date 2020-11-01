@@ -303,7 +303,7 @@ if ($submitted == false)
 						$playerString = '';
 						while (list($curPlayerID, $curPlayername) = $DB->tabl_row($playersTabl) )
 						{
-								$playerString .= '<a href=/profile.php?userID='.$curPlayerID.'>'.$curPlayername.' ('.$curPlayerID.')</a> ';
+								$playerString .= '<a href=/userprofile.php?userID='.$curPlayerID.'>'.$curPlayername.' ('.$curPlayerID.')</a> ';
 						}
 						if ($playerString == '') { $playerString = 'None'; }
 						print $playerString;
@@ -624,11 +624,11 @@ else
 										list($curPlayername) = $DB->sql_row("SELECT username FROM wD_Users WHERE id=".$playerID);
 										if ($successAdd == '')
 										{
-												$successAdd = 'Succesfully Added: <a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a>';
+												$successAdd = 'Succesfully Added: <a href=/userprofile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a>';
 										}
 										else
 										{
-												$successAdd .= ', <a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a>';
+												$successAdd .= ', <a href=/userprofile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a>';
 										}
 								}
 								else
@@ -649,11 +649,11 @@ else
 												list($curPlayername) = $DB->sql_row("SELECT username FROM wD_Users WHERE id=".$playerID);
 												if ($failedAdd == '')
 												{
-														$failedAdd = 'Failed To Add: </br><a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a> - Already in Tournament';
+														$failedAdd = 'Failed To Add: </br><a href=/userprofile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a> - Already in Tournament';
 												}
 												else
 												{
-														$failedAdd .= '</br><a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a> - Already in Tournament';
+														$failedAdd .= '</br><a href=/userprofile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a> - Already in Tournament';
 												}
 										}
 										else
@@ -661,11 +661,11 @@ else
 												list($curPlayername) = $DB->sql_row("SELECT username FROM wD_Users WHERE id=".$playerID);
 												if ($failedAdd == '')
 												{
-														$failedAdd = 'Failed To Add: </br><a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a> - Cannot Add Director/Codirector';
+														$failedAdd = 'Failed To Add: </br><a href=/userprofile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a> - Cannot Add Director/Codirector';
 												}
 												else
 												{
-														$failedAdd .= '</br><a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a> - Cannot Add Director/Codirector';
+														$failedAdd .= '</br><a href=/userprofile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a> - Cannot Add Director/Codirector';
 												}
 										}
 								}
@@ -701,11 +701,11 @@ else
 										list($curPlayername) = $DB->sql_row("SELECT username FROM wD_Users WHERE id=".$playerID);
 										if ($successRemove == '')
 										{
-												$successRemove = 'Succesfully Removed: <a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a>';
+												$successRemove = 'Succesfully Removed: <a href=/userprofile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a>';
 										}
 										else
 										{
-												$successRemove .= ', <a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a>';
+												$successRemove .= ', <a href=/userprofile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a>';
 										}
 								}
 								else
@@ -726,11 +726,11 @@ else
 												list($curPlayername) = $DB->sql_row("SELECT username FROM wD_Users WHERE id=".$playerID);
 												if ($failedRemove == '')
 												{
-														$failedRemove = 'Failed To Remove: </br><a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a> - Not in Tournament';
+														$failedRemove = 'Failed To Remove: </br><a href=/userprofile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a> - Not in Tournament';
 												}
 												else
 												{
-														$failedRemove .= '</br><a href=/profile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a> - Not in Tournament';
+														$failedRemove .= '</br><a href=/userprofile.php?userID='.$playerID.'>'.$curPlayername.' ('.$playerID.')</a> - Not in Tournament';
 												}
 										}
 								}

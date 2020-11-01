@@ -116,7 +116,7 @@ if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 		if($UserProfile->modLastCheckedOn() > 0 && $lastCheckedBy > 0)
 		{
 			list($modUsername) = $DB->sql_row("SELECT username FROM `wD_Users` WHERE id = ".$lastCheckedBy);
-			print '<p class="profileCommentURL">Investigated: '.libTime::text($modLastCheckedOn).', by: <a href="/profile.php?userID='.$lastCheckedBy.'">'.$modUsername.'</a></p>';
+			print '<p class="profileCommentURL">Investigated: '.libTime::text($modLastCheckedOn).', by: <a href="/userprofile.php?userID='.$lastCheckedBy.'">'.$modUsername.'</a></p>';
 		}
 		else
 		{
@@ -239,7 +239,24 @@ print '</div></br>';
 
 // Ranking Info
 print '<div class = "profile-show-ranking">';
-print '<strong>Ranking Info</strong>';
+print '<strong>Ranking Info</strong>
+		<img id = "modBtnRanking" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+		<div id="rankingModal" class="modal">
+			<!-- Modal content -->
+			<div class="modal-content">
+				<span class="close1">&times;</span>
+				<p><strong>Points:</strong> </br>
+					Points are the currency you use on the site to buy into games. Read more about points <a href="points.php" class="light">here</a>.<br /><br />
+				</p>
+				<p><strong>Ghost Rating:</strong> </br>
+					Ghost rating is a skill based ranking system. The various categories break down player skill by game type, press type, and variant type. You can read more
+					on how Ghost Ratings work <a href="ghostRatings.php" class="light">here</a>.</br></br>
+
+					If you do not see any Ghost Rating information on this profile it is because the player has not completed any games that count towards ghost rating.
+					Unranked games do not get scored in the Ghost Rating model. 
+				</p>
+			</div>
+		</div>';
 
 	$rankingDetails = $UserProfile->rankingDetails();
 	$rankingDetailsClassic = $UserProfile->rankingDetailsClassic();
@@ -802,6 +819,47 @@ print '</div>';
 		chart.draw(data, options);
 	}
 </script>
+
+<script>
+// Get the modal
+var modal1 = document.getElementById('rankingModal');
+// var modal6 = document.getElementById('anonModal');
+// var modal7 = document.getElementById('messagingModal');
+// var modal8 = document.getElementById('botModal');
+
+// Get the button that opens the modal
+var btn1 = document.getElementById("modBtnRanking");
+// var btn6 = document.getElementById("modBtnAnon");
+// var btn7 = document.getElementById("modBtnMessaging");
+// var btn8 = document.getElementById("modBtnBot");
+
+// Get the <span> element that closes the modal
+var span1 = document.getElementsByClassName("close1")[0];
+// var span6 = document.getElementsByClassName("close6")[0];
+// var span7 = document.getElementsByClassName("close7")[0];
+// var span8 = document.getElementsByClassName("close8")[0];
+
+// When the user clicks the button, open the modal 
+btn1.onclick = function() { modal1.style.display = "block"; }
+// btn6.onclick = function() { modal6.style.display = "block"; }
+// btn7.onclick = function() { modal7.style.display = "block"; }
+// btn8.onclick = function() { modal8.style.display = "block"; }
+
+// When the user clicks on <span> (x), close the modal
+span1.onclick = function() { modal1.style.display = "none"; }
+// span6.onclick = function() { modal6.style.display = "none"; }
+// span7.onclick = function() { modal7.style.display = "none"; }
+// span8.onclick = function() { modal8.style.display = "none"; }
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+	if (event.target == modal1) { modal1.style.display = "none"; }
+	// if (event.target == modal6) { modal6.style.display = "none"; }
+	// if (event.target == modal7) { modal7.style.display = "none"; }
+	// if (event.target == modal8) { modal8.style.display = "none"; }
+}
+
+</script>
 	
 <?php
 
@@ -921,7 +979,7 @@ function printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = False)
 	if ($maxPage > 1 && $sortBar)
 	{
 		print '<span style="float:right;">
-			<FORM class="advancedSearch" method="get" action="profile.php#results">
+			<FORM class="advancedSearch" method="get" action="userprofile.php#results">
 			<b>Sort By:</b>
 			<select  class = "advancedSearch" name="sortCol">
 				<option'.(($sortCol=='id') ? ' selected="selected"' : '').' value="id">Game ID</option>
@@ -968,7 +1026,7 @@ function printPageButton($pagenum, $currPage)
 	else
 	{
 		print '<div style="display:inline-block; margin:3px;">';
-		print '<FORM method="get" action=profile.php#results>';
+		print '<FORM method="get" action=userprofile.php#results>';
 
 		foreach($_REQUEST as $key => $value)
 		{
