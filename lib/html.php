@@ -830,6 +830,7 @@ class libHTML
 		$links['credits.php']=array('name'=>'Credits', 'inmenu'=>FALSE);
 		$links['board.php']=array('name'=>'Board', 'inmenu'=>FALSE);
 		$links['profile.php']=array('name'=>'Profile', 'inmenu'=>FALSE);
+		$links['search.php']=array('name'=>'Find user', 'inmenu'=>false);
 		$links['userprofile.php']=array('name'=>'ProfileNew', 'inmenu'=>FALSE);
 		$links['translating.php']=array('name'=>'Translating', 'inmenu'=>FALSE);
 		$links['points.php']=array('name'=>'Points', 'inmenu'=>FALSE);
