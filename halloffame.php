@@ -142,21 +142,21 @@ print '<button class="SearchCollapsible">Overall Peak Ghost Rating</button>';
 print'<div class="advancedSearchContent">';
 
 $currentRating = 0;
-list ($currentRating) = $DB->sql_row("SELECT rating FROM wD_GhostRatings WHERE categoryID = 0 and userID = ".$User->id);
+list ($currentRating) = $DB->sql_row("SELECT peakRating FROM wD_GhostRatings WHERE categoryID = 0 and userID = ".$User->id);
 
 if ( $User->type['User'] && $currentRating > 0 )
 {
-	list($position) = $DB->sql_row("SELECT COUNT(userID)+1 FROM wD_GhostRatings WHERE categoryID = 0 and rating > ".$currentRating);
-	list($players) = $DB->sql_row("SELECT COUNT(1) FROM wD_GhostRatings WHERE categoryID = 0 and rating  > 100");
+	list($position) = $DB->sql_row("SELECT COUNT(userID)+1 FROM wD_GhostRatings WHERE categoryID = 0 and peakRating > ".$currentRating);
+	list($players) = $DB->sql_row("SELECT COUNT(1) FROM wD_GhostRatings WHERE categoryID = 0 and peakRating  > 100");
 
 	print '<p class = "hof">'.l_t('You are ranked <a href="#me" class="light">#'.$position.'</a> out of '.$players.' players with an overall GR of over 100').
 		l_t('. For more stats on your ranking, visit <a class="light" href="userprofile.php?userID='.$User->id.'">your profile</a>.').'</p>';
 }
 
 $i=1;
-$crashed = $DB->sql_tabl("SELECT u.id, u.username, g.rating as 'points' FROM wD_GhostRatings g 
+$crashed = $DB->sql_tabl("SELECT u.id, u.username, g.peakRating as 'points' FROM wD_GhostRatings g 
 							inner join wD_Users u on g.userID = u.id 
-							where g.categoryID = 0 order BY g.rating DESC LIMIT 100 ");
+							where g.categoryID = 0 order BY g.peakRating DESC LIMIT 100 ");
 
 print "<TABLE class='hof'>";
 print "<tr>";
@@ -202,10 +202,10 @@ $sixMonths = time() - 15552000;
 if ( $User->type['User'] && $currentRating > 100 && $User->timeLastSessionEnded > $sixMonths)
 {
 	list($position) = $DB->sql_row("SELECT COUNT(userID)+1 FROM wD_GhostRatings g inner join wD_Users u on u.id = g.userID 
-									WHERE categoryID = 0 and timeLastSessionEnded > ".$sixMonths." and rating > ".$currentRating);
+									WHERE categoryID = 0 and timeLastSessionEnded > ".$sixMonths." and peakRating > ".$currentRating);
 
 	list($players) = $DB->sql_row("SELECT COUNT(1) FROM wD_GhostRatings g inner join wD_Users u on u.id = g.userID 
-									WHERE categoryID = 0 and timeLastSessionEnded > ".$sixMonths." and rating  > 100");
+									WHERE categoryID = 0 and timeLastSessionEnded > ".$sixMonths." and peakRating  > 100");
 
 	print '<p class = "hof">'.l_t('You are ranked <a href="#me" class="light">#'.$position.'</a> out of '.$players.' players with an overall GR of over 100 who have been active in the last six months').
 		l_t('. For more stats on your ranking, visit <a class="light" href="userprofile.php?userID='.$User->id.'">your profile</a>.').'</p>';
@@ -215,7 +215,7 @@ $i=1;
 
 $crashed = $DB->sql_tabl("SELECT u.id, u.username, g.peakRating as 'points' FROM wD_GhostRatings g 
 							inner join wD_Users u on g.userID = u.id 
-							where g.categoryID = 0 and timeLastSessionEnded > ".$sixMonths." order BY g.rating DESC LIMIT 100 ");
+							where g.categoryID = 0 and timeLastSessionEnded > ".$sixMonths." order BY g.peakRating DESC LIMIT 100 ");
 
 print "<TABLE class='hof'>";
 print "<tr>";
