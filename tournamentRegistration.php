@@ -232,12 +232,12 @@ if ($tournamentID > 0)
 		if ($directorID > 0 )
 		{
 			list($directorUsername) = $DB->sql_row("Select username from wD_Users where id =".$directorID);
-			print '<strong>Director:</strong> <a href="profile.php?userID='.$directorID.'">'.$directorUsername.'</a></br>';
+			print '<strong>Director:</strong> <a href="userprofile.php?userID='.$directorID.'">'.$directorUsername.'</a></br>';
 		}
 		if ($coDirectorID > 0 )
 		{
 			list($coDirectorUsername) = $DB->sql_row("Select username from wD_Users where id =".$coDirectorID);
-			print ' <strong>Co-Director:</strong> <a href="profile.php?userID='.$coDirectorID.'">'.$coDirectorUsername.'</a>';
+			print ' <strong>Co-Director:</strong> <a href="userprofile.php?userID='.$coDirectorID.'">'.$coDirectorUsername.'</a>';
 		}
 		if ($forumThreadLink != '')
 		{
@@ -278,7 +278,7 @@ if ($tournamentID > 0)
 						}
 						else
 						{
-							print 'You are too unreliable to join this tournament. The tournament has a minimum reliability rating of '.$minRR.', and <a href="profile.php?detail=civilDisorders&userID='.$User->id.'">';
+							print 'You are too unreliable to join this tournament. The tournament has a minimum reliability rating of '.$minRR.', and <a href="userprofile.php?detail=civilDisorders&userID='.$User->id.'">';
 							print 'your reliability rating is '.$User->reliabilityRating.'</a>.';
 							print ' To make it into future tournaments, increase your reliability rating by not missing turns.';
 						}
@@ -336,7 +336,7 @@ if ($tournamentID > 0)
 					WHERE t.tournamentID=".$tournamentID." AND t.status='Accepted' ORDER BY u.username ASC");
 				while (list($curUserID, $curUsername) = $DB->tabl_row($participantTabl))
 				{
-					print '<TD class = "advancedSearch"><a href="profile.php?userID='.$curUserID.'">'.$curUsername.'</a></TD></TR>';
+					print '<TD class = "advancedSearch"><a href="userprofile.php?userID='.$curUserID.'">'.$curUsername.'</a></TD></TR>';
 				}
 				print '</TABLE>';
 			}
@@ -362,7 +362,7 @@ if ($tournamentID > 0)
 			while (list($curUserID, $curGameCount) = $DB->tabl_row($participantTabl))
 			{
 				$curUser = new User($curUserID);
-				print '<TD class = "advancedSearch"><a href="profile.php?userID='.$curUserID.'">'.$curUser->username.'</a></TD>';
+				print '<TD class = "advancedSearch"><a href="userprofile.php?userID='.$curUserID.'">'.$curUser->username.'</a></TD>';
 				print '<TD class = "advancedSearch">'.$curUser->points.'</TD>';
 				print '<TD class = "advancedSearch">'.$curUser->timeJoinedtxt().'</TD>';
 				print '<TD class = "advancedSearch">'.$curUser->reliabilityRating.'</TD>';
@@ -399,7 +399,7 @@ if ($tournamentID > 0)
 			while (list($curUserID, $curGameCount) = $DB->tabl_row($participantTabl))
 			{
 				$curUser = new User($curUserID);
-				print '<TD class = "advancedSearch"><a href="profile.php?userID='.$curUserID.'">'.$curUser->username.'</a></TD>';
+				print '<TD class = "advancedSearch"><a href="userprofile.php?userID='.$curUserID.'">'.$curUser->username.'</a></TD>';
 				print '<TD class = "advancedSearch">'.$curUser->points.'</TD>';
 				print '<TD class = "advancedSearch">'.$curUser->timeJoinedtxt().'</TD>';
 				print '<TD class = "advancedSearch">'.$curUser->reliabilityRating.'</TD>';
@@ -432,7 +432,7 @@ if ($tournamentID > 0)
 			while (list($curUserID, $curGameCount) = $DB->tabl_row($participantTabl))
 			{
 				$curUser = new User($curUserID);
-				print '<TD class = "advancedSearch"><a href="profile.php?userID='.$curUserID.'">'.$curUser->username.'</a></TD>';
+				print '<TD class = "advancedSearch"><a href="userprofile.php?userID='.$curUserID.'">'.$curUser->username.'</a></TD>';
 				print '<TD class = "advancedSearch">'.$curUser->points.'</TD>';
 				print '<TD class = "advancedSearch">'.$curUser->timeJoinedtxt().'</TD>';
 				print '<TD class = "advancedSearch">'.$curUser->reliabilityRating.'</TD>';
@@ -459,7 +459,7 @@ if ($tournamentID > 0)
 			while (list($curUserID, $curGameCount) = $DB->tabl_row($participantTabl))
 			{
 				$curUser = new User($curUserID);
-				print '<TD class = "advancedSearch"><a href="profile.php?userID='.$curUserID.'">'.$curUser->username.'</a></TD>';
+				print '<TD class = "advancedSearch"><a href="userprofile.php?userID='.$curUserID.'">'.$curUser->username.'</a></TD>';
 				print '<TD class = "advancedSearch">'.$curUser->points.'</TD>';
 				print '<TD class = "advancedSearch">'.$curUser->timeJoinedtxt().'</TD>';
 				print '<TD class = "advancedSearch">'.$curUser->reliabilityRating.'</TD>';

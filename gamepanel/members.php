@@ -105,7 +105,7 @@ class panelMembers extends Members
 				foreach ($this->Game->civilDisorderInfo as $userID => $CD) 
 				{
 					$cdUser = new User($userID);
-					$extras .= '<tr class="member memberAlternate1"><td class="memberLeftSide" style="white-space: nowrap;"><span><a href="profile.php?userID='.$userID .'">'.$cdUser->username.'</a>'.
+					$extras .= '<tr class="member memberAlternate1"><td class="memberLeftSide" style="white-space: nowrap;"><span><a href="userprofile.php?userID='.$userID .'">'.$cdUser->username.'</a>'.
 							' <span class="points">('.$cdUser->points.libHTML::points().User::typeIcon($cdUser->type).')'
 					.(defined('AdminUserSwitch') ? ' (<a href="board.php?gameID='.$this->Game->id.'&auid='.$cdUser->id.'" class="light">+</a>)':'') .
 							'</span></span></td><td class="memberRightSide">';

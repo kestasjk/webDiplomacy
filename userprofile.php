@@ -71,8 +71,7 @@ print '<div>';
 print '<h2 class = "profileUsername">'.$UserProfile->username.'</h2>';
 
 // Show moderator information
-// Print out relibality rating information here instead of having it a new link.
-if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
+if ( $User->type['Moderator'] )
 {	
 	print '<div class = "profile-show">';
 
@@ -116,7 +115,7 @@ if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 		if($UserProfile->modLastCheckedOn() > 0 && $lastCheckedBy > 0)
 		{
 			list($modUsername) = $DB->sql_row("SELECT username FROM `wD_Users` WHERE id = ".$lastCheckedBy);
-			print '<p class="profileCommentURL">Investigated: '.libTime::text($modLastCheckedOn).', by: <a href="/profile.php?userID='.$lastCheckedBy.'">'.$modUsername.'</a></p>';
+			print '<p class="profileCommentURL">Investigated: '.libTime::text($modLastCheckedOn).', by: <a href="/userprofile.php?userID='.$lastCheckedBy.'">'.$modUsername.'</a></p>';
 		}
 		else
 		{
@@ -239,7 +238,24 @@ print '</div></br>';
 
 // Ranking Info
 print '<div class = "profile-show-ranking">';
-print '<strong>Ranking Info</strong>';
+print '<strong>Ranking Info</strong>
+		<img id = "modBtnRanking" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+		<div id="rankingModal" class="modal">
+			<!-- Modal content -->
+			<div class="modal-content">
+				<span class="close1">&times;</span>
+				<p><strong>Points:</strong> </br>
+					Points are the currency you use on the site to buy into games. Read more about points <a href="points.php" class="light">here</a>.<br /><br />
+				</p>
+				<p><strong>Ghost Rating:</strong> </br>
+					Ghost rating is a skill based ranking system. The various categories break down player skill by game type, press type, and variant type. You can read more
+					on how Ghost Ratings work <a href="ghostRatings.php" class="light">here</a>.</br></br>
+
+					If you do not see any Ghost Rating information on this profile it is because the player has not completed any games that count towards ghost rating.
+					Unranked games do not get scored in the Ghost Rating model. 
+				</p>
+			</div>
+		</div>';
 
 	$rankingDetails = $UserProfile->rankingDetails();
 	$rankingDetailsClassic = $UserProfile->rankingDetailsClassic();
@@ -518,162 +534,162 @@ $liveShortPenalty = ($recentLiveUnExcusedMissedTurns*6);
 $totalRR = max(($basePercentage - $recentPenalty - $yearlyPenalty - $liveShortPenalty - $liveLongPenalty),0);
 
 // Print out relibality rating information here instead of having it a new link.
+
+print '<div class = "profile-show">';
+print '<div class = "rrInfo">';
+
+print '<div class = "profile_title"> Reliability Rating: '.$totalRR.'%</div>';
+print '<div class = "profile_content">';
+
+print '<h4>Reliability Explained:</h4>';
+
+print '<div class = "profile_title">What is Reliability?</div>';
+print '<div class = "profile_content">';
+print '<p>Reliability is how consistently you avoid interrupting games. Any un-excused missed turns hurt your rating. If you have any un-excused
+missed turns in the last 4 weeks you will receive an 11% penalty to your RR for <strong>each</strong> of those delays. It is very important
+to everyone you are playing with to be reliable but we understand mistakes happen so this extra penalty will drop to 5% after 28 days. All of the un-excused
+missed turns that negatively impact your rating are highlighted in red below. Excused delays will only negatively impact your base score, seen below. Mod excused
+delays do not hurt your score in any way.
+</br>
+</br>
+<strong>Live Game:</strong> If a game had phases 60 minutes long or less any excused missed turns will only impact your rating for 28 days total. The penalty is the same, 
+5% long term and 6% short term, except the long term penalty is for 28 days and the short term is for 7 days.</br>
+<strong>System Excused:</strong> If you had an "excused missed turn" left this will be yes and will not cause additional penalties against your rating.</br>
+<strong>Mod Excused:</strong> If a moderator excused the missed turn this field will be yes and will not cause additional penalties against your rating.</br>
+<strong>Same Period Excused:</strong> If you have multiple un-excused missed turns in a 24 hour period you are only penalized once with the exception of live games, 
+if this field is yes it will not cause additional penalties against your rating.
+</p></div>';
+print '<div class = "profile_title">What happens if my rating is low?</div>';
+print '<div class = "profile_content">';
+print '<p>
+Many games are made with a minimum rating requirement so this may impact the quality of games you can enter. If you have more then 3 non-live un-excused missed turns in a year
+you will begin getting temporarily banned from making new games, joining existing games, or rejoining your own games.</br>
+</br>
+	<li>1-3 un-excused delays: warnings</li>
+	<li>4 un-excused delays: 1-day temp ban</li>
+	<li>5 un-excused delays: 3-day temp ban</li>
+	<li>6 un-excused delays: 7-day temp ban</li>
+	<li>7 un-excused delays: 14-day temp ban</li>
+	<li>8 un-excused delays: 30-day temp ban</li>
+	<li>9 or more un-excused delays: infinite, must contact mods for removal</li>
+	Live game excused turns are penalized independently for temporary bans. 1-2 un-excused missed turns in live games will be a warning, and the 3rd, and any after that will 
+	result in a 24 hour temp ban. The 2 warnings reset every 28 days resulting in significantly more yearly warnings for live game players then the normal system.
+</p></div>';
+
+print '<h4>Factors Impacting RR:</h4>';
+
 if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 {	
-	print '<div class = "profile-show">';
-	print '<div class = "rrInfo">';
-
-	print '<div class = "profile_title"> Reliability Rating: '.$totalRR.'%</div>';
-	print '<div class = "profile_content">';
-	
-	print '<h4>Reliability Explained:</h4>';
-
-	print '<div class = "profile_title">What is Reliability?</div>';
-	print '<div class = "profile_content">';
-	print '<p>Reliability is how consistently you avoid interrupting games. Any un-excused missed turns hurt your rating. If you have any un-excused
-	missed turns in the last 4 weeks you will receive an 11% penalty to your RR for <strong>each</strong> of those delays. It is very important
-	to everyone you are playing with to be reliable but we understand mistakes happen so this extra penalty will drop to 5% after 28 days. All of the un-excused
-	missed turns that negatively impact your rating are highlighted in red below. Excused delays will only negatively impact your base score, seen below. Mod excused
-	delays do not hurt your score in any way.
-	</br>
-	</br>
-	<strong>Live Game:</strong> If a game had phases 60 minutes long or less any excused missed turns will only impact your rating for 28 days total. The penalty is the same, 
-	5% long term and 6% short term, except the long term penalty is for 28 days and the short term is for 7 days.</br>
-	<strong>System Excused:</strong> If you had an "excused missed turn" left this will be yes and will not cause additional penalties against your rating.</br>
-	<strong>Mod Excused:</strong> If a moderator excused the missed turn this field will be yes and will not cause additional penalties against your rating.</br>
-	<strong>Same Period Excused:</strong> If you have multiple un-excused missed turns in a 24 hour period you are only penalized once with the exception of live games, 
-	if this field is yes it will not cause additional penalties against your rating.
-	</p></div>';
-	print '<div class = "profile_title">What happens if my rating is low?</div>';
-	print '<div class = "profile_content">';
-	print '<p>
-	Many games are made with a minimum rating requirement so this may impact the quality of games you can enter. If you have more then 3 non-live un-excused missed turns in a year
-	you will begin getting temporarily banned from making new games, joining existing games, or rejoining your own games.</br>
-	</br>
-	 <li>1-3 un-excused delays: warnings</li>
-	 <li>4 un-excused delays: 1-day temp ban</li>
-	 <li>5 un-excused delays: 3-day temp ban</li>
-	 <li>6 un-excused delays: 7-day temp ban</li>
-	 <li>7 un-excused delays: 14-day temp ban</li>
-	 <li>8 un-excused delays: 30-day temp ban</li>
-	 <li>9 or more un-excused delays: infinite, must contact mods for removal</li>
-	 Live game excused turns are penalized independently for temporary bans. 1-2 un-excused missed turns in live games will be a warning, and the 3rd, and any after that will 
-	 result in a 24 hour temp ban. The 2 warnings reset every 28 days resulting in significantly more yearly warnings for live game players then the normal system.
-	</p></div>';
-
-	print '<h4>Factors Impacting RR:</h4>';
-
-	if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
-	{	
-		print '<p> <Strong>Yearly Turns:</Strong> '.$UserProfile->yearlyPhaseCount.'</br>';
-	}
-	
-	if ($allLiveUnExcusedMissedTurns > 0 ) 
-	{ 
-		print '<Strong>Yearly Missed Turns:</Strong> '.$missedTurns.'</br>
-		<Strong>Past Month Live Missed Turns:</Strong> '.$liveMissedTurns.'</br>'; 
-	}
-
-	if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
-	{
-		print'<Strong>Total Counted Missed Turns:</Strong> '.$allMissedTurns.'</br>';
-	}
-
-	print '</br><strong>Base Percentage:</strong> '.$basePercentage.'%</br>';
-
-	if ($allLiveUnExcusedMissedTurns > 0 ) { print'(100* (1 - (Yearly Missed Turns + Live Missed Turns)/Yearly Turns))'; }
-	else { print'(100* (1 - Yearly Missed Turns/Yearly Turns))'; }
-
-	print'<h4>Added Penalties:</h4>
-	<Strong>Yearly Unexcused Missed Turns:</Strong> '.$allUnExcusedMissedTurns.' for a penalty of '.$yearlyPenalty.'%</br>
-	<Strong>Recent Unexcused Missed Turns:</Strong> '.$recentUnExcusedMissedTurns.' for a penalty of '.$recentPenalty.'%</br>';
-
-	if ($allLiveUnExcusedMissedTurns > 0 )
-	{
-		print' <h4>Added Live Game Penalties:</h4>
-		<Strong>Last Month Live Unexcused Missed Turns:</Strong> '.$allLiveUnExcusedMissedTurns.' for a penalty of '.$liveLongPenalty.'%</br>
-		<Strong>Last Week Live Unexcused Missed Turns:</Strong> '.$recentLiveUnExcusedMissedTurns.' for a penalty of '.$liveShortPenalty.'%</br>';
-	}
-
-	print'<h4>Total:</h4>
-	<Strong>Reliability Rating:</Strong> '.max(($basePercentage - $recentPenalty - $yearlyPenalty - $liveShortPenalty - $liveLongPenalty),0) .'%
-	</p>';
-
-	if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
-	{
-		print '<h4>Missed Turns:</h4>
-		<p>Red = Unexcused</p>';
-		$tabl = $DB->sql_tabl("SELECT n.gameID, n.countryID, n.turn, 
-		( CASE WHEN n.liveGame = 1 THEN 'Yes' ELSE 'No' END ), 
-		g.name,
-		( CASE WHEN n.systemExcused = 1 THEN 'Yes' ELSE 'No' END ),
-		( CASE WHEN n.modExcused = 1 THEN 'Yes' ELSE 'No' END ),
-		( CASE WHEN n.samePeriodExcused = 1 THEN 'Yes' ELSE 'No' END ),
-		n.id,
-		n.turnDateTime
-		FROM wD_MissedTurns n
-		LEFT JOIN wD_Games g ON n.gameID = g.id
-		WHERE n.userID = ".$UserProfile->id. " and n.turnDateTime > ".(time() - 31536000));
-
-		if ($DB->last_affected() != 0)
-		{
-			print '<TABLE class="rrInfo">';
-			print '<tr>';
-			print '<th class= "rrInfo">ID:</th>';
-			print '<th class= "rrInfo">Game:</th>';
-			print '<th class= "rrInfo">Country</th>';
-			print '<th class= "rrInfo">Turn:</th>';
-			print '<th class= "rrInfo">LiveGame:</th>';
-			print '<th class= "rrInfo">System Excused:</th>';
-			print '<th class= "rrInfo">Mod Excused:</th>';
-			print '<th class= "rrInfo">Same Period Excused:</th>';
-			print '<th class= "rrInfo">Turn Date:</th>';
-			print '</tr>';
-
-			while(list($gameID, $countryID, $turn, $liveGame, $name, $systemExcused, $modExcused, $samePeriodExcused, $id, $turnDateTime)=$DB->tabl_row($tabl))
-			{
-				if ($systemExcused == 'No' && $modExcused == 'No' && $samePeriodExcused == 'No') { print '<tr style="background-color:#F08080;">'; }
-				else { print '<tr>'; }
-
-				print '<td> <strong>'.$id.'</strong></td>';
-				if ($name != '')
-				{
-					$Variant=libVariant::loadFromGameID($gameID);
-					print '<td> <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong></td>';
-					print '<td> <strong>'.$Variant->countries[$countryID-1].'</strong></td>';
-					print '<td> <strong>'.$Variant->turnAsDate($turn).'</strong></td>';
-					print '<td> <strong>'.$liveGame.'</strong></td>';
-					print '<td> <strong>'.$systemExcused.'</strong></td>';
-					print '<td> <strong>'.$modExcused.'</strong></td>';
-					print '<td> <strong>'.$samePeriodExcused.'</strong></td>';
-					print '<td> <strong>'.libTime::detailedText($turnDateTime).'</strong></td>';
-				}
-				else
-				{
-					print '<td> <strong>Cancelled Game</strong></td>';
-					print '<td> <strong>'.$countryID.'</strong></td>';
-					print '<td> <strong>'.$turn.'</strong></td>';
-					print '<td> <strong>'.$liveGame.'</strong></td>';
-					print '<td> <strong>'.$systemExcused.'</strong></td>';
-					print '<td> <strong>'.$modExcused.'</strong></td>';
-					print '<td> <strong>'.$samePeriodExcused.'</strong></td>';
-					print '<td> <strong>'.libTime::detailedText($turnDateTime).'</strong></td>';
-				}
-				
-				print '</tr>';
-			}
-			print '</table>';
-		
-		}
-		else
-		{
-			print 'No missed turns found for this profile.';
-		}
-		print '</div>';
-		print '</div>';
-		print '</div>';
-	}
+	print '<p> <Strong>Yearly Turns:</Strong> '.$UserProfile->yearlyPhaseCount.'</br>';
 }
+
+if ($allLiveUnExcusedMissedTurns > 0 ) 
+{ 
+	print '<Strong>Yearly Missed Turns:</Strong> '.$missedTurns.'</br>
+	<Strong>Past Month Live Missed Turns:</Strong> '.$liveMissedTurns.'</br>'; 
+}
+
+if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
+{
+	print'<Strong>Total Counted Missed Turns:</Strong> '.$allMissedTurns.'</br>';
+}
+
+print '</br><strong>Base Percentage:</strong> '.$basePercentage.'%</br>';
+
+if ($allLiveUnExcusedMissedTurns > 0 ) { print'(100* (1 - (Yearly Missed Turns + Live Missed Turns)/Yearly Turns))'; }
+else { print'(100* (1 - Yearly Missed Turns/Yearly Turns))'; }
+
+print'<h4>Added Penalties:</h4>
+<Strong>Yearly Unexcused Missed Turns:</Strong> '.$allUnExcusedMissedTurns.' for a penalty of '.$yearlyPenalty.'%</br>
+<Strong>Recent Unexcused Missed Turns:</Strong> '.$recentUnExcusedMissedTurns.' for a penalty of '.$recentPenalty.'%</br>';
+
+if ($allLiveUnExcusedMissedTurns > 0 )
+{
+	print' <h4>Added Live Game Penalties:</h4>
+	<Strong>Last Month Live Unexcused Missed Turns:</Strong> '.$allLiveUnExcusedMissedTurns.' for a penalty of '.$liveLongPenalty.'%</br>
+	<Strong>Last Week Live Unexcused Missed Turns:</Strong> '.$recentLiveUnExcusedMissedTurns.' for a penalty of '.$liveShortPenalty.'%</br>';
+}
+
+print'<h4>Total:</h4>
+<Strong>Reliability Rating:</Strong> '.max(($basePercentage - $recentPenalty - $yearlyPenalty - $liveShortPenalty - $liveLongPenalty),0) .'%
+</p>';
+
+if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
+{
+	print '<h4>Missed Turns:</h4>
+	<p>Red = Unexcused</p>';
+	$tabl = $DB->sql_tabl("SELECT n.gameID, n.countryID, n.turn, 
+	( CASE WHEN n.liveGame = 1 THEN 'Yes' ELSE 'No' END ), 
+	g.name,
+	( CASE WHEN n.systemExcused = 1 THEN 'Yes' ELSE 'No' END ),
+	( CASE WHEN n.modExcused = 1 THEN 'Yes' ELSE 'No' END ),
+	( CASE WHEN n.samePeriodExcused = 1 THEN 'Yes' ELSE 'No' END ),
+	n.id,
+	n.turnDateTime
+	FROM wD_MissedTurns n
+	LEFT JOIN wD_Games g ON n.gameID = g.id
+	WHERE n.userID = ".$UserProfile->id. " and n.turnDateTime > ".(time() - 31536000));
+
+	if ($DB->last_affected() != 0)
+	{
+		print '<TABLE class="rrInfo">';
+		print '<tr>';
+		print '<th class= "rrInfo">ID:</th>';
+		print '<th class= "rrInfo">Game:</th>';
+		print '<th class= "rrInfo">Country</th>';
+		print '<th class= "rrInfo">Turn:</th>';
+		print '<th class= "rrInfo">LiveGame:</th>';
+		print '<th class= "rrInfo">System Excused:</th>';
+		print '<th class= "rrInfo">Mod Excused:</th>';
+		print '<th class= "rrInfo">Same Period Excused:</th>';
+		print '<th class= "rrInfo">Turn Date:</th>';
+		print '</tr>';
+
+		while(list($gameID, $countryID, $turn, $liveGame, $name, $systemExcused, $modExcused, $samePeriodExcused, $id, $turnDateTime)=$DB->tabl_row($tabl))
+		{
+			if ($systemExcused == 'No' && $modExcused == 'No' && $samePeriodExcused == 'No') { print '<tr style="background-color:#F08080;">'; }
+			else { print '<tr>'; }
+
+			print '<td> <strong>'.$id.'</strong></td>';
+			if ($name != '')
+			{
+				$Variant=libVariant::loadFromGameID($gameID);
+				print '<td> <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong></td>';
+				print '<td> <strong>'.$Variant->countries[$countryID-1].'</strong></td>';
+				print '<td> <strong>'.$Variant->turnAsDate($turn).'</strong></td>';
+				print '<td> <strong>'.$liveGame.'</strong></td>';
+				print '<td> <strong>'.$systemExcused.'</strong></td>';
+				print '<td> <strong>'.$modExcused.'</strong></td>';
+				print '<td> <strong>'.$samePeriodExcused.'</strong></td>';
+				print '<td> <strong>'.libTime::detailedText($turnDateTime).'</strong></td>';
+			}
+			else
+			{
+				print '<td> <strong>Cancelled Game</strong></td>';
+				print '<td> <strong>'.$countryID.'</strong></td>';
+				print '<td> <strong>'.$turn.'</strong></td>';
+				print '<td> <strong>'.$liveGame.'</strong></td>';
+				print '<td> <strong>'.$systemExcused.'</strong></td>';
+				print '<td> <strong>'.$modExcused.'</strong></td>';
+				print '<td> <strong>'.$samePeriodExcused.'</strong></td>';
+				print '<td> <strong>'.libTime::detailedText($turnDateTime).'</strong></td>';
+			}
+			
+			print '</tr>';
+		}
+		print '</table>';
+	
+	}
+	else
+	{
+		print 'No missed turns found for this profile.';
+	}
+	
+}
+print '</div>';
+print '</div>';
+print '</div>';
+
 
 // Display the Ghost Ratings Trend Google Chart generated in JS code below.
 if (count($ghostRatingTrends) > 2)
@@ -802,6 +818,47 @@ print '</div>';
 		chart.draw(data, options);
 	}
 </script>
+
+<script>
+// Get the modal
+var modal1 = document.getElementById('rankingModal');
+// var modal6 = document.getElementById('anonModal');
+// var modal7 = document.getElementById('messagingModal');
+// var modal8 = document.getElementById('botModal');
+
+// Get the button that opens the modal
+var btn1 = document.getElementById("modBtnRanking");
+// var btn6 = document.getElementById("modBtnAnon");
+// var btn7 = document.getElementById("modBtnMessaging");
+// var btn8 = document.getElementById("modBtnBot");
+
+// Get the <span> element that closes the modal
+var span1 = document.getElementsByClassName("close1")[0];
+// var span6 = document.getElementsByClassName("close6")[0];
+// var span7 = document.getElementsByClassName("close7")[0];
+// var span8 = document.getElementsByClassName("close8")[0];
+
+// When the user clicks the button, open the modal 
+btn1.onclick = function() { modal1.style.display = "block"; }
+// btn6.onclick = function() { modal6.style.display = "block"; }
+// btn7.onclick = function() { modal7.style.display = "block"; }
+// btn8.onclick = function() { modal8.style.display = "block"; }
+
+// When the user clicks on <span> (x), close the modal
+span1.onclick = function() { modal1.style.display = "none"; }
+// span6.onclick = function() { modal6.style.display = "none"; }
+// span7.onclick = function() { modal7.style.display = "none"; }
+// span8.onclick = function() { modal8.style.display = "none"; }
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+	if (event.target == modal1) { modal1.style.display = "none"; }
+	// if (event.target == modal6) { modal6.style.display = "none"; }
+	// if (event.target == modal7) { modal7.style.display = "none"; }
+	// if (event.target == modal8) { modal8.style.display = "none"; }
+}
+
+</script>
 	
 <?php
 
@@ -921,7 +978,7 @@ function printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = False)
 	if ($maxPage > 1 && $sortBar)
 	{
 		print '<span style="float:right;">
-			<FORM class="advancedSearch" method="get" action="profile.php#results">
+			<FORM class="advancedSearch" method="get" action="userprofile.php#results">
 			<b>Sort By:</b>
 			<select  class = "advancedSearch" name="sortCol">
 				<option'.(($sortCol=='id') ? ' selected="selected"' : '').' value="id">Game ID</option>
@@ -968,7 +1025,7 @@ function printPageButton($pagenum, $currPage)
 	else
 	{
 		print '<div style="display:inline-block; margin:3px;">';
-		print '<FORM method="get" action=profile.php#results>';
+		print '<FORM method="get" action=userprofile.php#results>';
 
 		foreach($_REQUEST as $key => $value)
 		{

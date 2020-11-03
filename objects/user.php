@@ -45,21 +45,22 @@ class User {
 		file_put_contents($dir.'/index.html', '');
 	}
 	
-	public function getSilences() {
+	public function getSilences() 
+	{
 		global $DB;
 		
 		$tabl = $DB->sql_tabl("SELECT 
-			silence.id as silenceID,
-			silence.userID as silenceUserID,
-			silence.postID as silencePostID,
-			silence.moderatorUserID as silenceModeratorUserID,
-			silence.enabled as silenceEnabled,
-			silence.startTime as silenceStartTime,
-			silence.length as silenceLength,
-			silence.reason as silenceReason
-		FROM wD_Silences silence
-		WHERE silence.userID = ".$this->id."
-		ORDER BY silence.startTime DESC");
+			s.id as silenceID,
+			s.userID as silenceUserID,
+			s.postID as silencePostID,
+			s.moderatorUserID as silenceModeratorUserID,
+			s.enabled as silenceEnabled,
+			s.startTime as silenceStartTime,
+			s.length as silenceLength,
+			s.reason as silenceReason
+		FROM wD_Silences s
+		WHERE s.userID = ".$this->id."
+		ORDER BY s.startTime DESC");
 		
 		$silences = array();
 		while( $record = $DB->tabl_hash($tabl) )
@@ -70,24 +71,26 @@ class User {
 	
 	private $ActiveSilence;
 	
-	public function isSilenced() {
+	public function isSilenced() 
+	{
 		if( !$this->silenceID ) 
 			return false;
 		
 		$ActiveSilence = new Silence($this->silenceID);
 		
-		if( $ActiveSilence->isEnabled() ) {
+		if( $ActiveSilence->isEnabled() ) 
+		{
 			$this->ActiveSilence = $ActiveSilence;
 			return true;
 		}
 		else
 			return false;
 	}
-	public function getActiveSilence() {
-		
+
+	public function getActiveSilence() 
+	{
 		if( !$this->isSilenced() ) return null;
 		else return $this->ActiveSilence;
-		
 	}
 	
 	/**
@@ -404,8 +407,7 @@ class User {
 
 		if( isset($userForm['password']) and $userForm['password'] )
 		{
-			if ( isset($userForm['passwordcheck'])
-				and $userForm['password'] == $userForm['passwordcheck'] )
+			if ( isset($userForm['passwordcheck']) and $userForm['password'] == $userForm['passwordcheck'] )
 			{
 				$SQLVars['password'] = "UNHEX('".libAuth::pass_Hash($userForm['password'])."')";
 			}
@@ -418,6 +420,7 @@ class User {
 		if(isset($userForm['email']) and $userForm['email'] )
 		{
 			$userForm['email'] = trim($DB->escape($userForm['email']));
+
 			if( !libAuth::validate_email($userForm['email']) )
 			{
 				$errors[] = l_t("The e-mail address you entered isn't valid. Please enter a valid one");
@@ -534,8 +537,10 @@ class User {
 		{
 			$this->{$name} = $value;
 		}
+
 		// For display, cdCount should include deletedCDs
 		$this->{'cdCount'} = $this->{'cdCount'} + $this->{'deletedCDs'};
+
 		// RR should be rounded
 		$this->reliabilityRating = round($this->reliabilityRating);
 
@@ -543,6 +548,7 @@ class User {
 		$this->type = explode(',', $this->type);
 		$validTypes = array('System','Banned','User','Moderator','Guest','Admin','Donator','DonatorBronze','DonatorSilver','DonatorGold','DonatorPlatinum','ForumModerator','Bot','SeniorMod');
 		$types = array();
+
 		foreach($validTypes as $type)
 		{
 			if ( in_array($type, $this->type) )
@@ -574,7 +580,7 @@ class User {
 
 		if ( $this->type['User'] )
 		{
-			$buffer .= '<a href="./profile.php?userID='.$this->id.'"';
+			$buffer .= '<a href="./userprofile.php?userID='.$this->id.'"';
 
 			$buffer.='>'.$this->username;
 
@@ -588,9 +594,11 @@ class User {
 		return $buffer;
 	}
 
-	static function typeIcon($type) {
+	static function typeIcon($type) 
+	{
 		// This must take either a list as it comes from a SQL query, or a built-in $this->type['Admin'] style array
-		if( is_array($type) ) {
+		if( is_array($type) ) 
+		{
 			$types=array();
 
 			foreach($type as $n=>$v)
@@ -688,7 +696,7 @@ class User {
 		}
 	}
 
-        /**
+    /**
 	 * This will clear a notification value in both the object and the wd_users table if not already cleared.
 	 * @param notification notification value to clear, must be 'PrivateMessage', 'GameMessage', 'Unfinalized', or 'GameUpdate'.
 	 **/
@@ -722,11 +730,6 @@ class User {
 
 		session_name('wD_Sess_User-'.$this->id);
 
-		/*if( $this->type['User'] )
-			session_cache_limiter('private_no_expire');
-		else
-			session_cache_limiter('public');*/
-
 		session_start();
 
 		// Non-users can't get banned
@@ -750,33 +753,6 @@ class User {
 
 		if($this->type['Banned'])
 			libHTML::notice(l_t('Banned'), l_t('You have been banned from this server. If you think there has been a mistake contact the moderator team at %s , and if you still aren\'t satisfied contact the admin at %s (with details of what happened).',Config::$modEMail, Config::$adminEMail));
-
-		/*
-		$bans=array();
-		$tabl = $DB->sql_tabl("SELECT numberType, number, userID FROM wD_BannedNumbers
-			WHERE ( number = INET_ATON('".$_SERVER['REMOTE_ADDR']."') AND numberType='IP')
-				OR ( number = ".$cookieCode." AND numberType='CookieCode')
-				OR ( userID=".$this->id.")");
-		while(list($banType,$banNum)=$DB->tabl_row($tabl))
-			$bans[$banType]=$banNum;
-
-		if($this->type['Banned'])
-		{
-			//if( isset($bans['IP']) and $cookieCode!=$bans['CookieCode'] )
-				//setcookie('wD_Code', $bans['CookieCode'],time()+365*7*24*60*60);
-
-			if(!isset($bans['IP']) || ip2long($_SERVER['REMOTE_ADDR'])!=$bans['IP'])
-				self::banIP(ip2long($_SERVER['REMOTE_ADDR']), $this->id);
-
-			libHTML::notice('Banned', 'You have been banned from this server. If you think there has been
-					a mistake contact '.Config::$adminEMail.' .');
-		}
-		elseif( isset($bans['IP']) )
-		{
-			self::banUser($this->id,"You share an IP with a banned user account.", $_SERVER['REMOTE_ADDR']);
-			libHTML::notice('Banned', 'You have been banned from this server. If you think there has been
-				a mistake contact '.Config::$adminEMail.' .');
-		}*/
 
 		$DB->sql_put("INSERT INTO wD_Sessions (userID, lastRequest, hits, ip, userAgent, cookieCode)
 					VALUES (".$this->id.",CURRENT_TIMESTAMP,1, INET_ATON('".$_SERVER['REMOTE_ADDR']."'),
@@ -853,17 +829,13 @@ class User {
 
 		$rankingDetails = array();
 
-		list($rankingDetails['position']) = $DB->sql_row("SELECT COUNT(id)+1
-			FROM wD_Users WHERE points > ".$this->points);
+		list($rankingDetails['position']) = $DB->sql_row("SELECT COUNT(id)+1 FROM wD_Users WHERE points > ".$this->points);
 
-		list($rankingDetails['worth']) = $DB->sql_row(
-			"SELECT SUM(bet) FROM wD_Members WHERE userID = ".$this->id." AND status = 'Playing'");
+		list($rankingDetails['worth']) = $DB->sql_row( "SELECT SUM(bet) FROM wD_Members WHERE userID = ".$this->id." AND status = 'Playing'");
 
 		$rankingDetails['worth'] += $this->points;
 
-		$tabl = $DB->sql_tabl(
-				"SELECT COUNT(id), status FROM wD_Members WHERE userID = ".$this->id." GROUP BY status"
-			);
+		$tabl = $DB->sql_tabl( "SELECT COUNT(id), status FROM wD_Members WHERE userID = ".$this->id." GROUP BY status"	);
 
 		$rankingDetails['stats'] = array();
 		while ( list($number, $status) = $DB->tabl_row($tabl) )
@@ -885,13 +857,14 @@ class User {
 			$points += $bets;
 			$rankingDetails['anon'][$status] = $number;
 		}
+
 		$rankingDetails['anon']['points'] = $points;
 
 		list($rankingDetails['takenOver']) = $DB->sql_row(
 			"SELECT COUNT(c.userID) FROM wD_CivilDisorders c
-			INNER JOIN wD_Games g ON ( g.id = c.gameID )
-			LEFT JOIN wD_Members m ON ( c.gameID = m.gameID and c.userID = ".$this->id." )
-			WHERE c.userID = ".$this->id." AND m.userID IS NULL"
+				INNER JOIN wD_Games g ON ( g.id = c.gameID )
+				LEFT JOIN wD_Members m ON ( c.gameID = m.gameID and c.userID = ".$this->id." )
+				WHERE c.userID = ".$this->id." AND m.userID IS NULL"
 			);
 
 
@@ -1111,9 +1084,12 @@ class User {
 
 		while(list($muteGameID,$muteCountryID) = $DB->tabl_row($tabl))
 		{
-			if( $gameID<0 ) // No game ID given, we are collecting all game IDs
+			// No game ID given, we are collecting all game IDs
+			if( $gameID < 0 ) 
 				$muteCountries[$gameID][] = array($muteGameID, $muteCountryID);
-			else // Game ID given, this is for just one game ID
+
+			// Game ID given, this is for just one game ID
+			else 
 				$muteCountries[$gameID][] = $muteCountryID;
 		}
 

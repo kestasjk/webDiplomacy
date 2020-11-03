@@ -201,7 +201,7 @@ if ((is_int($days)) && ($days > 0) && ($days < 1001))
     {   
         if (($checkIPs=='checked' and $values->IPCount > 0) or ($chCookies=='checked' and $values->CookieCount > 0)) 
         {
-            print '<TR><TD class= "modTools"><a href="profile.php?userID='.$values->userID.'">'.$values->username.'</a></TD>';
+            print '<TR><TD class= "modTools"><a href="userprofile.php?userID='.$values->userID.'">'.$values->username.'</a></TD>';
             print '<TD class= "modTools">'.$values->email.'</TD>';
             print '<TD class= "modTools">'.gmstrftime("%d %b / %I:%M %p",$values->timeJoined).'</TD>';
 

@@ -174,19 +174,19 @@ adminStatusList(l_t('Paused games'),"SELECT CONCAT('<a href=\"board.php?gameID='
 //require_once('gamemaster/game.php');
 //adminStatusTable('Backed up games',processGame::backedUpGames());
 
-adminStatusList(l_t('Mods'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>') FROM wD_Users WHERE type LIKE '%Moderator%'");
-adminStatusList(l_t('Senior Mods'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>') FROM wD_Users WHERE type LIKE '%SeniorMod%'");
-adminStatusList(l_t('Admins'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>') FROM wD_Users WHERE type LIKE '%Admin%'");
-adminStatusList(l_t('Temp Banned - By Mod'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
+adminStatusList(l_t('Mods'),"SELECT CONCAT('<a href=\"userprofile.php?userID=',id,'\" class=\"light\">',username,'</a>') FROM wD_Users WHERE type LIKE '%Moderator%'");
+adminStatusList(l_t('Senior Mods'),"SELECT CONCAT('<a href=\"userprofile.php?userID=',id,'\" class=\"light\">',username,'</a>') FROM wD_Users WHERE type LIKE '%SeniorMod%'");
+adminStatusList(l_t('Admins'),"SELECT CONCAT('<a href=\"userprofile.php?userID=',id,'\" class=\"light\">',username,'</a>') FROM wD_Users WHERE type LIKE '%Admin%'");
+adminStatusList(l_t('Temp Banned - By Mod'),"SELECT CONCAT('<a href=\"userprofile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 FROM wD_Users WHERE tempBanReason is not null and tempBanReason <> 'System' and tempBan > ".time());
 
-adminStatusList(l_t('Temp Banned - By System'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
+adminStatusList(l_t('Temp Banned - By System'),"SELECT CONCAT('<a href=\"userprofile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 FROM wD_Users WHERE (tempBanReason is null or tempBanReason = 'System') and tempBan > ".time());
 
-adminStatusList(l_t('Donors'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
+adminStatusList(l_t('Donors'),"SELECT CONCAT('<a href=\"userprofile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 	FROM wD_Users WHERE type LIKE '%Donator%'".(isset($_REQUEST['full'])?'':"LIMIT 50"));
 
-adminStatusList(l_t('Banned users'),"SELECT CONCAT('<a href=\"profile.php?userID=',id,'\" class=\"light\">',username,'</a>')
+adminStatusList(l_t('Banned users'),"SELECT CONCAT('<a href=\"userprofile.php?userID=',id,'\" class=\"light\">',username,'</a>')
 FROM wD_Users WHERE type LIKE '%Banned%'".(isset($_REQUEST['full'])?'':"LIMIT 50"));
 
 list($notice) = $DB->sql_row("SELECT message FROM wD_Config WHERE name = 'Notice'");
