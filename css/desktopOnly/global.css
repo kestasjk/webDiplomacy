@@ -187,6 +187,14 @@ p.profileComment {
 	margin-right:auto;
 	word-break: break-word;
 }
+p.newPprofileComment {
+	font-size:12px;
+	font-style:italic;
+	width:95%;
+	margin-left:auto;
+	margin-right:auto;
+	word-break: break-word;
+}
 .profileUsername {
 	text-align: left;
 }
@@ -221,6 +229,31 @@ p.profileComment {
 	border-radius: 7px;
 }
 
+.comment_title {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #777;
+	color: white;
+	cursor: pointer;
+	padding: 5px;
+	border: 1px solid #ccc;
+	text-align: left;
+	outline: none;
+	border-radius: 7px;
+	margin-top: 3px;
+	font-size: 14px;
+}
+
+.comment_content {
+	padding: 0;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	font-size: 13px;
+	margin-top:3px !important;
+	border-radius: 7px;
+	overflow-y: scroll;
+	max-height: 200px;
+}
+
 .profile_content_show {
 	border-radius: 7px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -231,7 +264,15 @@ p.profileComment {
 	padding: 0 0 0 10px;
 	margin-top: 3px !important;
 }
-
+.profile_content_gr {
+	border-radius: 7px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	overflow: hidden;
+	font-size: 13px;
+	display: show;
+	padding: 0 0 0 0;
+	margin-top: 3px !important;
+}
 #profile-forum-link-container {
 	display: flex;
 	justify-content: space-around;
@@ -296,6 +337,30 @@ div.profile-show {
 	background-color: #f1f1f1;
 	padding: 5px;
 }
+div.profile-show-floating {
+	border-radius: 7px;
+	display: flex;
+}
+div.profile-show-inside-left {
+	border-radius: 7px;
+	background-color: #f1f1f1;
+	padding: 5px;
+	min-width:30%;	
+	margin-right:20px;
+}
+div.profile-show-inside {
+	border-radius: 7px;
+	background-color: #f1f1f1;
+	padding: 5px;
+	min-width:30%;
+}
+div.profile-show-ranking {
+	border-radius: 7px;
+	background-color: #f1f1f1;
+	padding: 5px;
+	min-width:30%;
+	margin-right:20px;
+}
 div.rightHalf {
 	float:right;
 	width:50%;
@@ -317,6 +382,13 @@ ul.formlist {
 	list-style: none;
 	margin-left:20px;
 	margin-right:20px;
+	padding:0;
+}
+
+ul.profile {
+	list-style: none;
+	margin-left:5px;
+	margin-right:5px;
 	padding:0;
 }
 
@@ -995,6 +1067,66 @@ TD.army, div.army {
 	color:#34870b;
 }
 
+/* Section for help modals */
+
+.tutorial-wrap {
+	display: block;
+	width: 50%;
+	max-width: 780px;
+	min-height: 200px;
+	background-color: #e5e5e5;
+	backdrop-filter: blur(20px);
+	opacity: 0.9;
+	color: #009902;
+	position: fixed;
+	margin: 5% auto auto auto;
+	left: 0;
+	right: 0;
+	z-index: 999;
+}
+
+@media only screen and (max-width: 800px) {
+	.tutorial-wrap {
+		width: 90%;
+		max-height: 300px;
+		overflow: scroll;
+	}
+}
+
+@media only screen and (max-width: 800px) and (min-width: 500px) {
+	.tutorial-wrap {
+		margin: -20% auto;
+	}
+}
+ 
+@media only screen and (max-width: 500px) {
+	.tutorial-wrap {
+		margin: -50% auto;
+	}
+}
+
+.tutorial, .tutorial-header {
+	padding: 0 10px;
+}
+
+.tutorial-buttons {
+	padding: 10px;
+}
+
+.tutorial-end, .tutorial-close {
+	margin: 10px 0 0 0;
+}
+
+.tutorial-hide {
+	display: none;
+}
+
+.tutorial-close-button {
+	cursor: pointer;
+}
+
+/* End section for help modals */
+
 /* Section for Login and Password Recovery styling */
 input[type=text].login, input[type=password].login, select.login {
   width: 100%;
@@ -1110,10 +1242,10 @@ input[type=submit].gameCreate:hover {
 
 /* Modal Content */
 .modal-content {
-  background-color: #fefefe;
-  margin: auto;
-  padding: 10px;
-  border: 1px solid #888;
+ 	background-color: #fefefe;
+ 	margin: auto;
+  	padding: 10px;
+  	border: 1px solid #888;
 	width: 80%;
 	max-width: 760px;
 }
@@ -1214,12 +1346,12 @@ input[type=submit].gameCreate:hover {
 /* End of section for Tournament styling */
 
 /* Section for FAQ styling */
-.faq {
+.faq, .gr-guide-section-wrapper {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	border-collapse: collapse;
 }
 
- .faq_question {
+ .faq_question, .gr-guide-switch {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #777;
 	color: white;
@@ -1234,12 +1366,12 @@ input[type=submit].gameCreate:hover {
 	font-size: 14px;
 }
 
-.faq_question:hover {
+.faq_question:hover, .gr-guide-switch:hover {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	background-color: #555;
 }
 
-.faq_answer {
+.faq_answer, .gr-guide-detail {
 	padding: 0;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	display: none;
@@ -1249,6 +1381,12 @@ input[type=submit].gameCreate:hover {
 	font-size: 14px;
 	border-radius: 7px;
 	padding: 0 10px;
+}
+
+.gr-guide-code {
+	font-family: "Roboto Mono", monospace;
+	background-color: #d2d2d2;
+	padding: 10px;
 }
 /* End of section for FAQ styling */
 
@@ -1958,3 +2096,5 @@ input[id^="FinalizeButton"]{
 .archive-messages-table{
 	table-layout: fixed;
 }
+
+/* end desktop only */

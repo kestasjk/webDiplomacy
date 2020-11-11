@@ -190,7 +190,7 @@ function loadOrdersPhase() {
 						if( this.Unit.type=='Army' && this.Unit.Territory.type=='Coast' )
 						{
 							var ttac = new Hash();
-							var armylocalchoices = this.Unit.Territory.getBorderTerritories().pluck('id');
+							var armylocalchoices = this.Unit.getMovableTerritories().pluck('id');
 							this.toTerrChoices.map(
 									function(c) {
 										if( armylocalchoices.member(c) )
