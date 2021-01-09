@@ -138,7 +138,7 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 		else
 			$DB->sql_put("ROLLBACK");
 
-		$results = array('invalid'=>true, 'statusIcon'=>'<img src="'.l_s('images/icons/alert.png').'" alt="'.l_t('Error').'" title="'.l_t('Error alert').'" />',
+		$results = array('invalid'=>true, 'statusIcon'=>'<img src="'.l_s('images/icons/alert.svg').'" alt="'.l_t('Error').'" title="'.l_t('Error alert').'" />',
 			'statusText'=>'', 'notice'=>l_t('Exception: ').$e->getMessage(), 'orders'=>array());
 	}
 }

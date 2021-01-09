@@ -239,7 +239,7 @@ print '</div></br>';
 // Ranking Info
 print '<div class = "profile-show-ranking">';
 print '<strong>Ranking Info</strong>
-		<img id = "modBtnRanking" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+		<img id = "modBtnRanking" height="16" width="16" src="images/icons/help.svg" alt="Help" title="Help" />
 		<div id="rankingModal" class="modal">
 			<!-- Modal content -->
 			<div class="modal-content">
