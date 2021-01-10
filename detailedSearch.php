@@ -34,10 +34,12 @@ class UserResultData
 	public $reliabilityRating;
 	public $banned;
 	public $mod;
+	public $owner;
+	public $adamantium;
+	public $platinum;
 	public $gold;
 	public $silver;
 	public $bronze;
-	public $platinum;
 	public $userType;
 }
 
@@ -53,6 +55,9 @@ $seeGameCount = 'unchecked';
 $seeRR = 'unchecked';
 $seeMod = 'unchecked';
 $seeBanned = 'unchecked';
+$seeOwner = 'unchecked';
+$seeAdamantium = 'unchecked';
+$seePlatinum = 'unchecked';
 $seeGold = 'unchecked';
 $seeSilver = 'unchecked';
 $seeBronze = 'unchecked';
@@ -80,6 +85,9 @@ if ( isset($_REQUEST['seeGameCount'])) { $seeGameCount='checked'; }
 if ( isset($_REQUEST['seeRR'])) { $seeRR='checked'; }
 if ( isset($_REQUEST['seeMod'])) { $seeMod='checked'; }
 if ( isset($_REQUEST['seeBanned'])) { $seeBanned='checked'; }
+if ( isset($_REQUEST['seeOwner'])) { $seeOwner='checked'; }
+if ( isset($_REQUEST['seeAdamantium'])) { $seeAdamantium='checked'; }
+if ( isset($_REQUEST['seePlatinum'])) { $seePlatinum='checked'; }
 if ( isset($_REQUEST['seeGold'])) { $seeGold='checked'; }
 if ( isset($_REQUEST['seeSilver'])) { $seeSilver='checked'; }
 if ( isset($_REQUEST['seeBronze'])) { $seeBronze='checked'; }
@@ -106,6 +114,9 @@ if ( isset($_REQUEST['seeAll']))
 	$seeRR = 'checked';
 	$seeMod = 'checked';
 	$seeBanned = 'checked';
+	$seeOwner = 'checked';
+	$seeAdamantium = 'checked';
+	$seePlatinum = 'checked';
 	$seeGold = 'checked';
 	$seeSilver = 'checked';
 	$seeBronze = 'checked';
@@ -119,6 +130,9 @@ if ( isset($_REQUEST['type']) && $_REQUEST['type'] && strlen($_REQUEST['type']) 
 	else if ($_REQUEST['type'] == 'Bronze') {$type = 'DonatorBronze';}
 	else if ($_REQUEST['type'] == 'Silver') {$type = 'DonatorSilver';}
 	else if ($_REQUEST['type'] == 'Gold') {$type = 'DonatorGold';}
+	else if ($_REQUEST['type'] == 'Platinum') {$type = 'DonatorPlatinum';}
+	else if ($_REQUEST['type'] == 'Adamantium') {$type = 'DonatorAdamantium';}
+	else if ($_REQUEST['type'] == 'Owner') {$type = 'DonatorOwner';}
 	else if ($_REQUEST['type'] == 'Mod') {$type = 'Moderator';}
 	else {$type = 'none';}
 }
@@ -288,6 +302,9 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tabl
 			<option value="Bronze">Bronze Donator</option>
 			<option value="Silver">Silver Donator</option>
 			<option value="Gold">Gold Donator</option>
+			<option value="Platinum">Platinum Donator</option>
+			<option value="Adamantium">Adamantium Donator</option>
+			<option value="Owner">Co-Owner</option>
 			<option value="Banned">Banned</option>
 			<option value="Mod">Moderators</option>
 		</select></p>
@@ -303,11 +320,14 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tabl
 			print '<input class="advancedSearch" type="checkbox" name="seeNewForumLink" value="seeNewForumLink" checked="checked">New Forum link';
 		}
 		print'</br></br> <strong>Yes/No columns:</strong></br>
-		<input class="advancedSearch" type="checkbox" name="seeMod" value="seeMod">IsMod
-		<input class="advancedSearch" type="checkbox" name="seeBanned" value="seeBanned">IsBanned
-		<input class="advancedSearch" type="checkbox" name="seeGold" value="seeGold">IsGold
-		<input class="advancedSearch" type="checkbox" name="seeSilver" value="seeSilver">IsSilver
-		<input class="advancedSearch" type="checkbox" name="seeBronze" value="seeBronze">IsBronze
+		<input class="advancedSearch" type="checkbox" name="seeMod" value="seeMod">Mod
+		<input class="advancedSearch" type="checkbox" name="seeBanned" value="seeBanned">Banned
+		<input class="advancedSearch" type="checkbox" name="seeOwner" value="seeOwner">Co-Owner
+		<input class="advancedSearch" type="checkbox" name="seeAdamantium" value="seeAdamantium">Adamantium
+		<input class="advancedSearch" type="checkbox" name="seePlatinum" value="seePlatinum">Platinum
+		<input class="advancedSearch" type="checkbox" name="seeGold" value="seeGold">Gold
+		<input class="advancedSearch" type="checkbox" name="seeSilver" value="seeSilver">Silver
+		<input class="advancedSearch" type="checkbox" name="seeBronze" value="seeBronze">Bronze
 		</br></br>
 		<input class="advancedSearch" type="checkbox" name="seeAll" value="seeAll">See All (pulls all columns)
 		</br> </br>
@@ -535,13 +555,33 @@ if ($tab == 'UserSearch')
 		{
 			if ($type == 'DonatorBronze')
 			{
-				$sql = $sql." and u.type like '%". $type."%' and u.type not like '%DonatorSilver%' and u.type not like '%DonatorGold%'";
-				$sqlCounter = $sqlCounter." and u.type like '%". $type."%' and u.type not like '%DonatorSilver%' and u.type not like '%DonatorGold%'";
+				$sql = $sql." and u.type like '%". $type."%' and u.type not like '%DonatorSilver%' and u.type not like '%DonatorGold%' and u.type not like '%DonatorPlatinum%' and u.type not like '%DonatorAdamantium%' and u.type not like '%DonatorOwner%'";
+				$sqlCounter = $sqlCounter." and u.type like '%". $type."%' and u.type not like '%DonatorSilver%' and u.type not like '%DonatorGold%' and u.type not like '%DonatorPlatinum%' and u.type not like '%DonatorAdamantium%' and u.type not like '%DonatorOwner%'";
 			}
 			else if ($type == 'DonatorSilver')
 			{
-				$sql = $sql." and u.type like '%". $type."%' and u.type not like '%DonatorGold%'";
-				$sqlCounter = $sqlCounter." and u.type like '%". $type."%' and u.type not like '%DonatorGold%'";
+				$sql = $sql." and u.type like '%". $type."%' and u.type not like '%DonatorGold%' and u.type not like '%DonatorPlatinum%' and u.type not like '%DonatorAdamantium%' and u.type not like '%DonatorOwner%'";
+				$sqlCounter = $sqlCounter." and u.type like '%". $type."%' and u.type not like '%DonatorGold%' and u.type not like '%DonatorPlatinum%' and u.type not like '%DonatorAdamantium%' and u.type not like '%DonatorOwner%'";
+			}
+			else if ($type == 'DonatorGold')
+			{
+				$sql = $sql." and u.type like '%". $type."%' and u.type not like '%DonatorPlatinum%' and u.type not like '%DonatorAdamantium%' and u.type not like '%DonatorOwner%'";
+				$sqlCounter = $sqlCounter." and u.type like '%". $type."%' and u.type not like '%DonatorPlatinum%' and u.type not like '%DonatorAdamantium%' and u.type not like '%DonatorOwner%'";
+			}
+			else if ($type == 'DonatorPlatinum')
+			{
+				$sql = $sql." and u.type like '%". $type."%' and u.type not like '%DonatorAdamantium%' and u.type not like '%DonatorOwner%'";
+				$sqlCounter = $sqlCounter." and u.type like '%". $type."%' and u.type not like '%DonatorAdamantium%' and u.type not like '%DonatorOwner%'";
+			}
+			else if ($type == 'DonatorAdamantium')
+			{
+				$sql = $sql." and u.type like '%". $type."%' and u.type not like '%DonatorOwner%'";
+				$sqlCounter = $sqlCounter." and u.type like '%". $type."%' and u.type not like '%DonatorOwner%'";
+			}
+			else if ($type == 'DonatorOwner')
+			{
+				$sql = $sql." and u.type like '%". $type."%'";
+				$sqlCounter = $sqlCounter." and u.type like '%". $type."%'";
 			}
 			else
 			{
@@ -577,32 +617,70 @@ if ($tab == 'UserSearch')
 			if (strpos($userType, 'Moderator') !== false) { $myUser->mod = true; } else { $myUser->mod = false;}
 			if (strpos($userType, 'Banned') !== false) { $myUser->banned = true; } else { $myUser->banned = false;}
 
-			if (strpos($userType, 'DonatorGold') !== false)
+			if (strpos($userType, 'DonatorOwner') !== false)
 			{
+				$myUser->owner = true;
+				$myUser->adamantium = false;
+				$myUser->platinum = false;
+				$myUser->gold = false;
+				$myUser->silver = false;
+				$myUser->bronze = false;
+			}
+			else if (strpos($userType, 'DonatorAdamantium') !== false)
+			{
+				$myUser->owner = false;
+				$myUser->adamantium = true;
+				$myUser->platinum = false;
+				$myUser->gold = false;
+				$myUser->silver = false;
+				$myUser->bronze = false;
+			}
+			else if (strpos($userType, 'DonatorPlatinum') !== false)
+			{
+				$myUser->owner = false;
+				$myUser->adamantium = true;
+				$myUser->platinum = false;
+				$myUser->gold = false;
+				$myUser->silver = false;
+				$myUser->bronze = false;
+			}
+			else if (strpos($userType, 'DonatorGold') !== false)
+			{
+				$myUser->owner = false;
+				$myUser->adamantium = false;
+				$myUser->platinum = false;
 				$myUser->gold = true;
 				$myUser->silver = false;
 				$myUser->bronze = false;
 			}
 			else if (strpos($userType, 'DonatorSilver') !== false)
 			{
+				$myUser->owner = false;
+				$myUser->adamantium = false;
+				$myUser->platinum = false;
 				$myUser->gold = false;
 				$myUser->silver = true;
 				$myUser->bronze = false;
 			}
 			else if (strpos($userType, 'DonatorBronze') !== false)
 			{
+				$myUser->owner = false;
+				$myUser->adamantium = false;
+				$myUser->platinum = false;
 				$myUser->gold = false;
 				$myUser->silver = false;
 				$myUser->bronze = true;
 			}
 			else
 			{
+				$myUser->owner = false;
+				$myUser->adamantium = false;
+				$myUser->platinum = false;
 				$myUser->gold = false;
 				$myUser->silver = false;
 				$myUser->bronze = false;
 			}
 
-			if (strpos($userType, 'DonatorPlatinum') !== false) { $myUser->platinum = true; } else { $myUser->platinum = false;}
 			$myUser->reliabilityRating = $reliabilityRating;
 			array_push($UsersData,$myUser);
 		}
@@ -679,11 +757,14 @@ if ($tab == 'UserSearch')
 			printHeaderLink('RR', $tab, $sortCol, $sortType, $sortColg);
 			print '</th>';
 		}
-		if ($seeMod=='checked') { print '<th class= "advancedSearch">IsMod</th>'; }
-		if ($seeBanned=='checked') { print '<th class= "advancedSearch">IsBanned</th>'; }
-		if ($seeGold=='checked') { print '<th class= "advancedSearch">IsGold</th>'; }
-		if ($seeSilver=='checked') { print '<th class= "advancedSearch">IsSilver</th>'; }
-		if ($seeBronze=='checked') { print '<th class= "advancedSearch">IsBronze</th>'; }
+		if ($seeMod=='checked') { print '<th class= "advancedSearch">Mod?</th>'; }
+		if ($seeBanned=='checked') { print '<th class= "advancedSearch">Banned?</th>'; }
+		if ($seeOwner=='checked') { print '<th class= "advancedSearch">Co-Owner?</th>'; }
+		if ($seeAdamantium=='checked') { print '<th class= "advancedSearch">Adamantium?</th>'; }
+		if ($seePlatinum=='checked') { print '<th class= "advancedSearch">Platinum?</th>'; }
+		if ($seeGold=='checked') { print '<th class= "advancedSearch">Gold?</th>'; }
+		if ($seeSilver=='checked') { print '<th class= "advancedSearch">Silver?</th>'; }
+		if ($seeBronze=='checked') { print '<th class= "advancedSearch">Bronze?</th>'; }
 
 		print "</tr>";
 		foreach ($UsersData as $values)
@@ -695,17 +776,19 @@ if ($tab == 'UserSearch')
 			{ 
 				if ($User->getTheme() == 'No') 
 				{
-					print ' <img src="images/icons/mod.png" title="Moderator/Admin" />';
+					print ' <img src="images/icons/mod.svg" title="Moderator/Admin" />';
 				}
 				else
 				{
-					print ' <img src="images/icons/mod3.png" title="Moderator/Admin" />';
+					print ' <img src="images/icons/mod_darkmode.svg" title="Moderator/Admin" />';
 				}
 			}
-			if ($values->banned) { print ' <img src="images/icons/cross.png"title="Banned" />'; }
+			if ($values->banned) { print ' <img src="images/icons/cross.svg"title="Banned" />'; }
 
 			// Only show the highest level of donator status held by a user.
-			if ($values->platinum) { print libHTML::platinum(); }
+			if ($values->owner) { print libHTML::owner(); }
+			else if ($values->adamantium) { print libHTML::adamantium(); }
+			else if ($values->platinum) { print libHTML::platinum(); }
 			else if ($values->gold) { print libHTML::gold(); }
 			else if ($values->silver) { print libHTML::silver(); }
 			else if ($values->bronze) { print libHTML::bronze(); }
@@ -742,6 +825,21 @@ if ($tab == 'UserSearch')
 			{
 				print '<TD class= "advancedSearch">';
 				$values->banned ? print 'Yes</TD>' :  print'No</TD>';
+			}
+			if ($seeOwner=='checked')
+			{
+				print '<TD class= "advancedSearch">';
+				$values->owner ? print 'Yes</TD>' :  print'No</TD>';
+			}
+			if ($seeAdamantium=='checked')
+			{
+				print '<TD class= "advancedSearch">';
+				$values->adamantium ? print 'Yes</TD>' :  print'No</TD>';
+			}
+			if ($seePlatinum=='checked')
+			{
+				print '<TD class= "advancedSearch">';
+				$values->platinum ? print 'Yes</TD>' :  print'No</TD>';
 			}
 			if ($seeGold=='checked')
 			{
