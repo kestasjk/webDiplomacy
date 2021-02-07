@@ -68,7 +68,7 @@ class panelGameHome extends panelGameBoard
 	function gameTimeRemaining()
 	{
 		if( $this->processStatus == 'Paused' )
-			return l_t('Paused').' <img src="'.l_s('images/icons/pause.png').'" title="'.l_t('Paused').'" />';
+			return l_t('Paused').' <img src="'.l_s('images/icons/pause.svg').'" title="'.l_t('Paused').'" />';
 		elseif( $this->processStatus == 'Crashed' )
 			return l_t('Crashed');
 

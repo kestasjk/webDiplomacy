@@ -43,7 +43,7 @@ class panelMembersHome extends panelMembers
 		{
 			$count = count($this->ByID);
 			for ($i = 0; $i < $count; $i++)
-				$membersList[] = array(($i + 1),'<img src="images/icons/tick.png" alt=" " title="Player joined, spot filled" />');
+				$membersList[] = array(($i + 1),'<img src="images/icons/tick.svg" alt="" title="Player joined, spot filled" />');
 			for ($i = $count + 1; $i <= count($this->Game->Variant->countries); $i++)
 				$membersList[] = array(($i), '');
 		}

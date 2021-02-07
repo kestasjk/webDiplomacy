@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="13" height="13" xmlns="http://www.w3.org/2000/svg">
+    <g transform="translate(.5 .5)">
+        <path d="m0.5 2.5v7l3.5-3.5z" fill="#069"/>
+        <path d="m5.5 2.5v7l3.5-3.5z" fill="#069"/>
+        <path d="m11 2.4792v7.0417" fill="none" stroke="#069"/>
+    </g>
+</svg>

@@ -147,7 +147,7 @@ class main_listener implements EventSubscriberInterface
 			if ($finalTheme == 'dark')
 			{
 				$this->template->assign_vars(array(
-				'U_WD_WEBDIPPOINTS' => '(' . $this->points . ' <img src="' . $this->WEBDIPPATH . 'images/icons/points.png" alt="D" />)'.'<link rel="stylesheet" href="'.$this->WEBDIPPATH.('/css/darkMode/global.css').'" type="text/css" />',
+				'U_WD_WEBDIPPOINTS' => '(' . $this->points . ' <img src="' . $this->WEBDIPPATH . 'images/icons/points.svg" alt="D" />)'.'<link rel="stylesheet" href="'.$this->WEBDIPPATH.('/css/darkMode/global.css').'" type="text/css" />',
 				'U_WD_NOTICEBLOCK' => $this->noticeBlock() . $this->variantCSS($finalTheme),
 				'U_WD_GAMENOTIFYBLOCK' => $this->gameNotifyBlock()
 				));
@@ -155,7 +155,7 @@ class main_listener implements EventSubscriberInterface
 			else
 			{
 				$this->template->assign_vars(array(
-				'U_WD_WEBDIPPOINTS' => '(' . $this->points . ' <img src="' . $this->WEBDIPPATH . 'images/icons/points.png" alt="D" />)',
+				'U_WD_WEBDIPPOINTS' => '(' . $this->points . ' <img src="' . $this->WEBDIPPATH . 'images/icons/points.svg" alt="D" />)',
 				'U_WD_NOTICEBLOCK' => $this->noticeBlock() . $this->variantCSS($finalTheme),
 				'U_WD_GAMENOTIFYBLOCK' => $this->gameNotifyBlock()
 				));
@@ -214,7 +214,7 @@ class main_listener implements EventSubscriberInterface
 		if ( strpos($this->notifications,'PrivateMessage')!==false )
 		{
 			$gameNotifyBlock .= '<span class=""><a href="' . $this->WEBDIPPATH . 'index.php?notices=on">'.
-				('PM').' <img src="' . $this->WEBDIPPATH . ''.('images/icons/mail.png').'" alt="'.('New private messages').'" title="'.('New private messages!').'" />'.
+				('PM').' <img src="' . $this->WEBDIPPATH . ''.('images/icons/mail.svg').'" alt="'.('New private messages').'" title="'.('New private messages!').'" />'.
 				'</a></span> ';
 		}
 
@@ -229,14 +229,14 @@ class main_listener implements EventSubscriberInterface
 				} 
 				else 
 				{
-					$orderIcon = 'alert.png';
+					$orderIcon = 'alert.svg';
 					if( strpos($notifyGame['orderStatus'],'Saved')!==false ) 
 					{
-						$orderIcon = 'alert_minor.png';
+						$orderIcon = 'alert_minor.svg';
 					}
 					if( strpos($notifyGame['orderStatus'],'Completed')!==false ) 
 					{
-						$orderIcon = 'tick_faded.png';
+						$orderIcon = 'tick_faded.svg';
 					}
 					if( strpos($notifyGame['orderStatus'],'Ready')!==false ) 
 					{
@@ -254,7 +254,7 @@ class main_listener implements EventSubscriberInterface
 				$notifyGame['name'];
 
 			if ( $notifyGame['processStatus'] == 'Paused' )
-				$gameNotifyBlock .= '-<img src="' . $this->WEBDIPPATH . ''.'images/icons/pause.png'.'" alt="'.'Paused'.'" title="'.'Game paused'.'" />';
+				$gameNotifyBlock .= '-<img src="' . $this->WEBDIPPATH . ''.'images/icons/pause.svg'.'" alt="'.'Paused'.'" title="'.'Game paused'.'" />';
 
 			$gameNotifyBlock .= ' ';
 
@@ -264,7 +264,7 @@ class main_listener implements EventSubscriberInterface
 			}
 				
 			if ( $notifyGame['newMessagesFrom'] )
-				$gameNotifyBlock .= '<img src="' . $this->WEBDIPPATH . ''.'images/icons/mail.png'.'" alt="'.'New messages'.'" title="'.'New messages!'.'" />';
+				$gameNotifyBlock .= '<img src="' . $this->WEBDIPPATH . ''.'images/icons/mail.svg'.'" alt="'.'New messages'.'" title="'.'New messages!'.'" />';
 
 			$gameNotifyBlock .= '</a></span> ';
 		}

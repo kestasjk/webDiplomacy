@@ -219,7 +219,11 @@ print '<div class = "profile-show-inside-left">';
 
 	print '<li><strong>Joined:</strong> '.$UserProfile->timeJoinedtxt().'</li></br>';
 
-	if( $UserProfile->type['DonatorPlatinum'] )
+	if( $UserProfile->type['DonatorOwner'] )
+		$donatorMarker = libHTML::owner().' - <strong>Site Co-Owner</strong>';
+	elseif( $UserProfile->type['DonatorAdamantium'] )
+		$donatorMarker = libHTML::adamantium().' - <strong>Adamantium</strong>';
+	elseif( $UserProfile->type['DonatorPlatinum'] )
 		$donatorMarker = libHTML::platinum().' - <strong>Platinum</strong>';
 	elseif( $UserProfile->type['DonatorGold'] )
 		$donatorMarker = libHTML::gold().' - <strong>Gold</strong>';
@@ -239,7 +243,7 @@ print '</div></br>';
 // Ranking Info
 print '<div class = "profile-show-ranking">';
 print '<strong>Ranking Info</strong>
-		<img id = "modBtnRanking" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+		<img id = "modBtnRanking" height="16" width="16" src="images/icons/help.svg" alt="Help" title="Help" />
 		<div id="rankingModal" class="modal">
 			<!-- Modal content -->
 			<div class="modal-content">

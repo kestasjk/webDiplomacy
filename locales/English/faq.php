@@ -161,7 +161,7 @@ spent all of your points on ongoing games, your total number of points never fal
 Thus, while all your points might be tied up in games you're still playing right now, you will never truly run out of points, and once those games are finished, you will 
 have more points to spend again even if you don't get points back from those games.",
 
-"What do those icons mean? ( <img src='images/icons/tick.png' />, <img src='images/icons/alert.png' /> , <img src='images/icons/mail.png' /> , etc.)" => "If you see an icon 
+"What do those icons mean? ( <img src='images/icons/tick.svg' />, <img src='images/icons/alert.svg' /> , <img src='images/icons/mail.svg' /> , etc.)" => "If you see an icon 
 and don't understand what it means, try hovering your mouse over it. It may give you a hint as to what it means.",
 
 "What is the 'notes' tab and why is it different colors in different games?" => "In a full press game, every country has tabs to message other players. 
@@ -170,7 +170,7 @@ You can send notes to yourself just like you would send press to other players, 
 tab as much or as little as you like in all of your games.",
 
 "Why are some orders missing from the small map?" => "Not all orders are drawn on the small map. Below the small map there is a set of icons - 
-the one in the middle (<img src='images/historyicons/external.png' alt='example' />) opens up the large map, which contains all orders.",
+the one in the middle (<img src='images/historyicons/external.svg' alt='example' />) opens up the large map, which contains all orders.",
 
 "Why is it saying that I can't send someone a message?" => "Some players utilize the mute function, which allows them to prevent someone they don't like from sending 
 them any more messages in that game. If you are muted by another player, the game is not broken and you are not in trouble, but you cannot send them any more messages unless they 

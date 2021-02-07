@@ -485,7 +485,7 @@ while( $message = $DB->tabl_hash($tabl) )
 	}
 	
 	if( isset($postLockedReason) ) {
-		print '<img src="'.l_s('images/icons/lock.png').'" title="'.$postLockedReason.'" /> ';
+		print '<img src="'.l_s('images/icons/lock.svg').'" title="'.$postLockedReason.'" /> ';
 	}
 	
 	

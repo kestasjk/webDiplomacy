@@ -28,10 +28,10 @@ var preview='';
 function toggleMoves(gameID, currentTurn) {
 	if (noMoves == '') {
 		noMoves = '&hideMoves';
-		$('NoMoves').src = 'images/historyicons/showmoves.png';
+		$('NoMoves').src = 'images/historyicons/showmoves.svg';
 	} else {
 		noMoves = '';
-		$('NoMoves').src = 'images/historyicons/hidemoves.png';
+		$('NoMoves').src = 'images/historyicons/hidemoves.svg';
 	}
 	loadMapStep(gameID, currentTurn, 0)	
 	loadMap(gameID, currentTurn, turn)
@@ -88,25 +88,25 @@ function mapArrows(currentTurn, newTurn)
 {
 	if ( newTurn == -1 )
 	{
-		$('Start').src = l_s("images/historyicons/Start_disabled.png");
-		$('Backward').src = l_s("images/historyicons/Backward_disabled.png");
+		$('Start').src = l_s("images/historyicons/Start_disabled.svg");
+		$('Backward').src = l_s("images/historyicons/Backward_disabled.svg");
 	}
 	else
 	{
-		$('Start').src = l_s("images/historyicons/Start.png");
-		$('Backward').src = l_s("images/historyicons/Backward.png");
+		$('Start').src = l_s("images/historyicons/Start.svg");
+		$('Backward').src = l_s("images/historyicons/Backward.svg");
 	}
 	
 	// Draw the greyed icons if the user can go no further forward
 	if ( newTurn == currentTurn )
 	{
-		$('Forward').src = l_s("images/historyicons/Forward_disabled.png");
-		$('End').src = l_s("images/historyicons/End_disabled.png");
+		$('Forward').src = l_s("images/historyicons/Forward_disabled.svg");
+		$('End').src = l_s("images/historyicons/End_disabled.svg");
 	}
 	else
 	{
-		$('Forward').src = l_s("images/historyicons/Forward.png");
-		$('End').src = l_s("images/historyicons/End.png");
+		$('Forward').src = l_s("images/historyicons/Forward.svg");
+		$('End').src = l_s("images/historyicons/End.svg");
 	}
 }
 turnToText='';//() { return ''; }
@@ -138,7 +138,7 @@ function loadMap(gameID, currentTurn, newTurn)
 	// Update the link to the large map
 	$('LargeMapLink').innerHTML = 
 			' <a href="map.php?gameID='+gameID+'&turn='+newTurn+'&mapType=large'+(useroptions.showMoves =='No'?'&hideMoves':'')+'" target="blank" class="light">'+
-			'<img src="'+l_s('images/historyicons/external.png')+'" alt="'+l_t('Open large map')+'" ' +
+			'<img src="'+l_s('images/historyicons/external.svg')+'" alt="'+l_t('Open large map')+'" ' +
 			'title="'+l_t('This button will open the large map in a new window. The large ' +
 			'map shows all the moves, and is useful when the small map isn\'t clear enough.')+'" /><\/a>';
 	

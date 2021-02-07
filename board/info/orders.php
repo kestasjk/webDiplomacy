@@ -214,7 +214,7 @@ while ( $row = $DB->tabl_hash($tabl) )
 			$buffer .= orderIndex($Game->datetxt($row['turn']), 1);
 
 			$buffer .= $Game->datetxt($row['turn']).' <a href="map.php?gameID='.$Game->id.'&largemap=on&turn='.$row['turn'].'">
-					<img src="'.l_s('images/historyicons/external.png').'" alt="'.l_t('Large map').'"
+					<img src="'.l_s('images/historyicons/external.svg').'" alt="'.l_t('Large map').'"
 						title="'.l_t('This button will open the large map in a new window. The large map shows all the moves, and is useful when the small map isn\'t clear enough.').
 						'" /></a>:</h4>';
 			$buffer .= '<p>';

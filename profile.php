@@ -459,14 +459,18 @@ print '<li><strong>'.l_t('Points in play:').'</strong> '.number_format(($ranking
 
 print '<li><strong>'.l_t('Total points:').'</strong> '.number_format($rankingDetails['worth']).' '.libHTML::points().'</li>';
 
-if( $UserProfile->type['DonatorPlatinum'] )
-	$donatorMarker = libHTML::platinum().' - <strong>'.l_t('Platinum').'</strong>';
+if( $UserProfile->type['DonatorOwner'] )
+	$donatorMarker = libHTML::owner().' - <strong>Site Co-Owner</strong>';
+elseif( $UserProfile->type['DonatorAdamantium'] )
+	$donatorMarker = libHTML::adamantium().' - <strong>Adamantium</strong>';
+elseif( $UserProfile->type['DonatorPlatinum'] )
+	$donatorMarker = libHTML::platinum().' - <strong>Platinum</strong>';
 elseif( $UserProfile->type['DonatorGold'] )
-	$donatorMarker = libHTML::gold().' - <strong>'.l_t('Gold').'</strong>';
+	$donatorMarker = libHTML::gold().' - <strong>Gold</strong>';
 elseif( $UserProfile->type['DonatorSilver'] )
-	$donatorMarker = libHTML::silver().' - '.l_t('Silver');
+	$donatorMarker = libHTML::silver().' - Silver';
 elseif( $UserProfile->type['DonatorBronze'] )
-	$donatorMarker = libHTML::bronze().' - '.l_t('Bronze');
+	$donatorMarker = libHTML::bronze().' - Bronze';
 else
 	$donatorMarker = false;
 

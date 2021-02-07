@@ -546,7 +546,7 @@ class User {
 
 		// Convert an array of types this user has into an array of true/false indexed by type
 		$this->type = explode(',', $this->type);
-		$validTypes = array('System','Banned','User','Moderator','Guest','Admin','Donator','DonatorBronze','DonatorSilver','DonatorGold','DonatorPlatinum','ForumModerator','Bot','SeniorMod');
+		$validTypes = array('System','Banned','User','Moderator','Guest','Admin','Donator','DonatorBronze','DonatorSilver','DonatorGold','DonatorPlatinum','DonatorAdamantium','DonatorOwner','ForumModerator','Bot','SeniorMod');
 		$types = array();
 
 		foreach($validTypes as $type)
@@ -614,18 +614,22 @@ class User {
 		{
 			if ($User->getTheme() == 'No' || $User->getTheme() == null)
 			{
-				$buf .= ' <img src="'.l_s('images/icons/mod.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
+				$buf .= ' <img src="'.l_s('images/icons/mod.svg').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
 			}
 			else
 			{
-				$buf .= ' <img src="'.l_s('images/icons/mod3.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
+				$buf .= ' <img src="'.l_s('images/icons/mod_darkmode.svg').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
 			}
 		}
 				
 		elseif(strstr($type,'Banned') )
-			$buf .= ' <img src="'.l_s('images/icons/cross.png').'" alt="X" title="'.l_t('Banned').'" />';
+			$buf .= ' <img src="'.l_s('images/icons/cross.svg').'" alt="X" title="'.l_t('Banned').'" />';
 
-		if( strstr($type,'DonatorPlatinum') )
+		if( strstr($type,'DonatorOwner') )
+			$buf .= libHTML::owner();
+		elseif( strstr($type,'DonatorAdamantium') )
+			$buf .= libHTML::adamantium();
+		elseif( strstr($type,'DonatorPlatinum') )
 			$buf .= libHTML::platinum();
 		elseif( strstr($type,'DonatorGold') )
 			$buf .= libHTML::gold();
@@ -633,6 +637,7 @@ class User {
 			$buf .= libHTML::silver();
 		elseif( strstr($type,'DonatorBronze') )
 			$buf .= libHTML::bronze();
+
 
 		return $buf;
 	}
