@@ -1,0 +1,8 @@
+@CHARSET "ISO-8859-1";
+
+.variantColdWar .country0 { color: rgba(255, 255, 255, 0.8) ! important; } /* Global */
+.variantColdWar .country1 { color: #ff4281 ! important; } /* USSR */
+.variantColdWar .country2 { color: #4284ff ! important; } /* NATO */
+
+.variantColdWar .occupationBar1 { background-color: #be0707; } /* USSR */
+.variantColdWar .occupationBar2 { background-color: #3e5fec; } /* NATO */

@@ -86,7 +86,7 @@ foreach( $variantsOn as $variantName )
       print l_s(libVariant::cacheDir($Variant->name).'/sampleMap.png');
    else
       print 'map.php?variantID=' . $Variant->id;
-   print '" alt=" " title="'.l_t('The map for the %s Variant',$Variant->name).'" /></div><br />';
+   print '" alt=" " title="'.l_t('The map for the %s Variant',$Variant->name).'" style="width: auto; max-width: 100%;" /></div><br />';
    print '<strong>'.l_t('Variant Parameters').'';
    if (isset($Variant->version))
       print ' '.l_t('(Version: %s)',$Variant->version).'';
