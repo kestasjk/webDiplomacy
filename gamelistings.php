@@ -314,7 +314,8 @@ else
 				<option'.(($_REQUEST['variant']=='All') ? ' selected="selected"' : '').' value="All">All</option>';
 			foreach (Config::$variants as $variantID=>$variantName)
 			{
-				if($variantID != 57) {print '<option'.(($_REQUEST['variant']==$variantName) ? ' selected="selected"' : '').' value='.$variantName.'>'.$variantName.'</option>';}
+				$Variants = libVariant::loadFromVariantName($variantName);
+				if($variantID != 57) {print '<option'.(($_REQUEST['variant']==$variantName) ? ' selected="selected"' : '').' value='.$variantName.'>'.$Variants->fullName.'</option>';}
 			}
 			print '</select></p>
 			<p>Excused Missing Turns: <select class="gameCreate" name="excusedTurns">
