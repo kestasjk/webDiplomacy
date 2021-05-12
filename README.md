@@ -1,6 +1,5 @@
 Diplomacy is a popular turn based strategy game in which you battle to control Europe; to win you must be diplomatic and strategic.
 
- 
 webDiplomacy lets you play Diplomacy online.
 
 --- 
