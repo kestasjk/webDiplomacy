@@ -1286,7 +1286,7 @@ class processGame extends Game
 				if (Config::$grActive)
 				{
 					list($memberStatus, $SCcounts, $botGame) = $this->prepGR();
-					$ghostRatings = new GhostRatings($this->id, $SCcounts, $memberStatus, $this->variantID, $this->pressType, $this->potType, $this->turn, "Drawn", $this->phaseMinutes, $this->Variant->supplyCenterTarget, $this->Variant->supplyCenterCount, 0, $botGame, time());
+					$ghostRatings = new GhostRatings($this->id, $SCcounts, $memberStatus, $this->variantID, $this->pressType, $this->potType, $this->turn, "Drawn", $this->phaseMinutes, $this->Variant->terrIDByName["supplyCenterTarget"], $this->Variant->terrIDByName["supplyCenterCount"], 0, $botGame, time());
 					$ghostRatings->processGR();
 				}
 			}
