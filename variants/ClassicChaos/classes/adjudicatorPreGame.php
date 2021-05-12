@@ -38,7 +38,7 @@ class ClassicChaosVariant_adjudicatorPreGame extends adjudicatorPreGame {
 			'Kiel'           => array(),
 			'Liverpool'      => array(),
 			'London'         => array(),
-			'Marseilles'     => array(),
+			'Marseille'      => array(),
 			'Moscow'         => array(),
 			'Munich'         => array(),
 			'Naples'         => array(),

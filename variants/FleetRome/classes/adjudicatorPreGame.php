@@ -7,7 +7,7 @@ class FleetRomeVariant_adjudicatorPreGame extends ClassicVariant_adjudicatorPreG
 					'Edinburgh'=>'Fleet', 'Liverpool'=>'Army', 'London'=>'Fleet'
 				),
 		'France' => array(
-					'Brest'=>'Fleet', 'Paris'=>'Army', 'Marseilles'=>'Army'
+					'Brest'=>'Fleet', 'Paris'=>'Army', 'Marseille'=>'Army'
 				),
 		'Italy' => array(
 					'Venice'=>'Army', 'Rome'=>'Fleet', /* The change */ 'Naples'=>'Fleet'

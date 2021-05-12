@@ -40,7 +40,7 @@ class ClassicChaosVariant_processOrderBuilds extends processOrderBuilds
 			'Kiel'           => array('Kiel'           =>'Army'),
 			'Liverpool'      => array('Liverpool'      =>'Army'),
 			'London'         => array('London'         =>'Army'),
-			'Marseilles'     => array('Marseilles'     =>'Army'),
+			'Marseille'      => array('Marseille'      =>'Army'),
 			'Moscow'         => array('Moscow'         =>'Army'),
 			'Munich'         => array('Munich'         =>'Army'),
 			'Naples'         => array('Naples'         =>'Army'),

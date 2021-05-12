@@ -24,7 +24,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 class ClassicFvAVariant_adjudicatorPreGame extends adjudicatorPreGame {
 
 	protected $countryUnits = array(
-		'France'  => array('Brest'  =>'Fleet', 'Paris' =>'Army', 'Marseilles'=>'Army'),
+		'France'  => array('Brest'  =>'Fleet', 'Paris' =>'Army', 'Marseille'=>'Army'),
 		'Austria' => array('Trieste'=>'Fleet', 'Vienna'=>'Army', 'Budapest'  =>'Army')
 	);
 

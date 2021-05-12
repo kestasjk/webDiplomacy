@@ -37,7 +37,7 @@ orderAPIInitialize
 				<option value="Spain" /> (*4)
 				<option value="Mid-Atlantic Ocean" />
 			</option>
-			<option value="Marseilles" /> (*5)
+			<option value="Marseille" /> (*5)
 		</option>
 	</order>
 	[<order ...>
@@ -51,7 +51,7 @@ orderAPIInitialize
 *3 viaConvoy="No"; this may be given as a sub-option for Paris even before the Paris option is selected
 *4 Support moves from a territory don't use coast data, the client needs to know where coast data is/isn't appropriate
 *5 A support move order has a toTerr and fromTerr parameter, so because this option has no sub-nodes it must be 
-	incomplete. Marseilles has to be selected for toTerr, then the sub-options will be given for it 
+	incomplete. Marseille has to be selected for toTerr, then the sub-options will be given for it 
 	(like with the HTML order drop-down lists)
 
 

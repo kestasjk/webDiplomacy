@@ -41,7 +41,7 @@ class ClassicChaosVariant_drawMap extends drawMap {
 		12 => array( 26, 221,  81), /* Kiel           */
 		13 => array(255, 153, 102), /* Liverpool      */
 		14 => array(  0, 255, 255), /* London         */
-		15 => array(253, 238,   0), /* Marseilles     */
+		15 => array(253, 238,   0), /* Marseille      */
 		16 => array(192, 114, 200), /* Moscow         */
 		17 => array(160, 138, 117), /* Munich         */
 		18 => array(  0,  66,  37), /* Naples         */

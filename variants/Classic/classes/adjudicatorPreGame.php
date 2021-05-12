@@ -27,7 +27,7 @@ class ClassicVariant_adjudicatorPreGame extends adjudicatorPreGame {
 					'Edinburgh'=>'Fleet', 'Liverpool'=>'Army', 'London'=>'Fleet'
 				),
 		'France' => array(
-					'Brest'=>'Fleet', 'Paris'=>'Army', 'Marseilles'=>'Army'
+					'Brest'=>'Fleet', 'Paris'=>'Army', 'Marseille'=>'Army'
 				),
 		'Italy' => array(
 					'Venice'=>'Army', 'Rome'=>'Army', 'Naples'=>'Fleet'

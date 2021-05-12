@@ -47,10 +47,10 @@ class ClassicChaosVariant extends WDVariant {
 	public $homepage   ='http://www.variantbank.org/results/rules/c/chaos.htm';
 
 	public $countries=array(
-		'Ankara'       , 'Belgium', 'Berlin'  , 'Brest'    , 'Budapest', 'Bulgaria'  , 'Constantinople', 'Denmark', 'Edinburgh',
-		'Greece'       , 'Holland', 'Kiel'    , 'Liverpool', 'London'  , 'Marseilles', 'Moscow'        , 'Munich' , 'Naples'   ,
-		'Norway'       , 'Paris'  , 'Portugal', 'Rome'     , 'Rumania' , 'Serbia'    , 'Sevastopol'    , 'Smyrna' , 'Spain'    ,
-		'St-Petersburg', 'Sweden' , 'Trieste' , 'Tunis'    , 'Venice'  , 'Vienna'    , 'Warsaw'                                );
+		'Ankara'       , 'Belgium', 'Berlin'  , 'Brest'    , 'Budapest', 'Bulgaria' , 'Constantinople', 'Denmark', 'Edinburgh',
+		'Greece'       , 'Holland', 'Kiel'    , 'Liverpool', 'London'  , 'Marseille', 'Moscow'        , 'Munich' , 'Naples'   ,
+		'Norway'       , 'Paris'  , 'Portugal', 'Rome'     , 'Rumania' , 'Serbia'   , 'Sevastopol'    , 'Smyrna' , 'Spain'    ,
+		'St-Petersburg', 'Sweden' , 'Trieste' , 'Tunis'    , 'Venice'  , 'Vienna'   , 'Warsaw'                                );
 		
 	public function __construct() {
 		parent::__construct();
