@@ -97,12 +97,20 @@ if ( ( time() - $Misc->LastProcessTime ) > Config::$downtimeTriggerMinutes*60 )
 	libHTML::notice(l_t('Games not processing'),libHTML::admincp('resetLastProcessTime',null,l_t('Continue processing now')));
 }
 
-$Misc->LastProcessTime = time();
+// Get the current processing time. It is important to save this at this point so that next process the next 
+// LastProcessTime will exactly match this process' $currentProcessTime (this ensures all turns that pass over 1 year
+// old get processed properly .. unless the last process time gets reset, in which case the turn counts need to be
+// recalculated)
+$currentProcessTime = time();
 
+// Before the LastProcessTime is overwritten with the current time decrement any turns older than a year from players' phase counts
+$DB->sql_put("UPDATE wD_Users u INNER JOIN ( SELECT userID, COUNT(*) turns FROM wD_TurnDate WHERE (".$Misc->LastProcessTime." - 365*24*60*60) <= turnDateTime AND turnDateTime < (".$currentProcessTime." - 365*24*60*60) GROUP BY userID ) expiredTurns ON expiredTurns.userID = u.id SET u.yearlyPhaseCount = u.yearlyPhaseCount - expiredTurns.turns");
+
+$Misc->LastProcessTime = $currentProcessTime;
 $Misc->write();
 
 
-$startTime = time(); // Only do ~30 sec of processing per cycle
+$startTime = $currentProcessTime; // Only do ~30 sec of processing per cycle
 $tabl = $DB->sql_tabl("SELECT * FROM wD_Games
 	WHERE processStatus='Not-processing' AND processTime <= ".time()." AND NOT phase='Finished'");
 
@@ -156,6 +164,7 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 	print '<br />';
 }
 
+// Find any turns which have just passed more than one year old, and 
 // If it took over 30 secs there may still be games to process
 if( (time() - $startTime)>=30 )
 {
