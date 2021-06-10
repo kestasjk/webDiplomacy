@@ -132,8 +132,8 @@ if( !isset($_REQUEST['variantID']) )
 	global $Game;
 	$Variant=libVariant::loadFromGameID($_REQUEST['gameID']);
 	libVariant::setGlobals($Variant);
-	// The game is locked for update so the map isn't drawn twice at the same time
-	$Game=$Variant->Game($_REQUEST['gameID'],UPDATE);
+	// Locking this game for update is excessive; worst case the map is overwritten
+	$Game=$Variant->Game($_REQUEST['gameID']);
 
 	/*
 	 * Determine which turn we are viewing. This is made a little trickier because

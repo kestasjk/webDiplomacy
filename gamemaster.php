@@ -104,7 +104,8 @@ if ( ( time() - $Misc->LastProcessTime ) > Config::$downtimeTriggerMinutes*60 )
 $currentProcessTime = time();
 
 // Before the LastProcessTime is overwritten with the current time decrement any turns older than a year from players' phase counts
-$DB->sql_put("UPDATE wD_Users u INNER JOIN ( SELECT userID, COUNT(*) turns FROM wD_TurnDate WHERE (".$Misc->LastProcessTime." - 365*24*60*60) <= turnDateTime AND turnDateTime < (".$currentProcessTime." - 365*24*60*60) GROUP BY userID ) expiredTurns ON expiredTurns.userID = u.id SET u.yearlyPhaseCount = u.yearlyPhaseCount - expiredTurns.turns");
+// Temporarily disabled, still causing deadlocks:
+//$DB->sql_put("UPDATE wD_Users u INNER JOIN ( SELECT userID, COUNT(*) turns FROM wD_TurnDate WHERE (".$Misc->LastProcessTime." - 365*24*60*60) <= turnDateTime AND turnDateTime < (".$currentProcessTime." - 365*24*60*60) GROUP BY userID ) expiredTurns ON expiredTurns.userID = u.id SET u.yearlyPhaseCount = u.yearlyPhaseCount - expiredTurns.turns");
 
 $Misc->LastProcessTime = $currentProcessTime;
 $Misc->write();
