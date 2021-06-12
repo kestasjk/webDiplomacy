@@ -121,6 +121,13 @@ class WorldVariant_drawMap extends drawMap {
 			'headLength'=>array(12,12),
 			'border'    =>array(0,0)
 		),
+		'MoveGrey' => array('color'=>array(100,100,100),  // Same as move, but arrowcolor=grey
+						'thickness'=>array(2,4),
+						'headAngle'=>7,
+						'headStart'=>.1,
+						'headLength'=>array(12,30),
+						'border'=>array(0,0)
+					),
 		'Support hold' => array(
 			'color'     =>array(67,206,16), 
 			'thickness' =>array(1,1),
