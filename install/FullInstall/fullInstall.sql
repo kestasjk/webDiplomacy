@@ -669,7 +669,7 @@ ALTER TABLE `wD_Users` ADD COLUMN `cdCount` mediumint(8) unsigned NOT NULL DEFAU
   ADD COLUMN `cdTakenCount` mediumint(8) unsigned NOT NULL DEFAULT '0',
   ADD COLUMN `phaseCount` int(10) unsigned NOT NULL DEFAULT '0',
   ADD COLUMN `gameCount` mediumint(8) unsigned NOT NULL DEFAULT '0',
-  ADD COLUMN `reliabilityRating` double NOT NULL DEFAULT '1',
+  ADD COLUMN `reliabilityRating` double NOT NULL DEFAULT '50',
   ADD COLUMN `deletedCDs` int(11) DEFAULT '0';
 
 CREATE TABLE IF NOT EXISTS `wD_NMRs` (
