@@ -1218,18 +1218,18 @@ class adminActionsRestricted extends adminActionsSeniorMod
 		{
 			$sql = "INSERT INTO wD_VariantInfo(variantID, mapID, supplyCenterTarget, supplyCenterCount, countryCount, name, fullName, description, author";
 			$Variant=libVariant::loadFromVariantID($value);
-			$mapID = $Variant->mapID;
-			$SCCount = $Variant->supplyCenterCount;
-			$SCTarget = $Variant->supplyCenterTarget;
-			$name = $Variant->name;
-			$fullName = $Variant->fullName;
-			$description = $Variant->description;
-			$author = $Variant->author;
+			$mapID        = $Variant->mapID;
+			$SCCount      = $Variant->supplyCenterCount;
+			$SCTarget     = $Variant->supplyCenterTarget;
+			$name         = $DB->escape($Variant->name);
+			$fullName     = $DB->escape($Variant->fullName);
+			$description  = $DB->escape($Variant->description);
+			$author       = $Variant->author;
 			$countryCount = count($Variant->countries);
 			$sql2 = "VALUES(".$value.", ".$mapID.", ".$SCTarget.", ".$SCCount.", ".$countryCount.", '".$name."', '".$fullName."', '".$description."', '".$author."'";
 			
 			$adapter = '';
-			if(isset($Variant->$adapter))
+			if(isset($Variant->adapter))
 			{
 				$sql .= ", adapter";
 				$adapter = $Variant->adapter;
@@ -1237,7 +1237,7 @@ class adminActionsRestricted extends adminActionsSeniorMod
 			}
 
 			$version = '';
-			if(isset($Variant->$version))
+			if(isset($Variant->version))
 			{
 				$sql .= ", version";
 				$version = $Variant->version;
@@ -1245,7 +1245,7 @@ class adminActionsRestricted extends adminActionsSeniorMod
 			}
 
 			$codeVersion = '';
-			if(isset($Variant->$codeVersion))
+			if(isset($Variant->codeVersion))
 			{
 				$sql .= ", codeVersion";
 				$codeVersion = $Variant->codeVersion;
@@ -1253,7 +1253,7 @@ class adminActionsRestricted extends adminActionsSeniorMod
 			}
 
 			$homepage = '';
-			if(isset($Variant->$homepage))
+			if(isset($Variant->homepage))
 			{
 				$sql .= ", homepage";
 				$homepage = $Variant->homepage;
