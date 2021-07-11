@@ -207,6 +207,25 @@ class assignmentSolver
     	
     	return $newWeights;
     }
+
+    function addRandomNumberToWeights($weights)
+    {
+
+    	// The parameter $randomNumberAmplitude determines the range of the random number added to each weight.
+    	$randomNumberAmplitude = 2;
+    	
+    	$newWeights = array();
+    	for ($userIndex = 0; $userIndex < $this->n; $userIndex++)
+    	{
+    		$newWeights[$userIndex] = array();
+    		for ($countryIndex = 0; $countryIndex < $this->n; $countryIndex++)
+    			$newWeights[$userIndex][$countryIndex] = $weights[$userIndex][$countryIndex] + rand(0,$randomNumberAmplitude);
+    	}
+    	
+    	return $newWeights;
+    }
+
+
     
     function makeXY1Indexed($xy)
     {
@@ -220,6 +239,7 @@ class assignmentSolver
     {
         $this->n = count($weights);
         $this->weights = $this->makeWeights0Indexed($weights);
+        $this->weights = $this->addRandomNumberToWeights($this->weights);
         $this->weights = $isMaxAssignmentProblem ? $this->weights : $this->makeMinAssignmentProblemMatrix($this->weights);
         $this->matchedCountries = 0;
         $this->xy = array_fill(0,$this->n,-1);
