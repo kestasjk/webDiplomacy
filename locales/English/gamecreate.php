@@ -43,7 +43,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				<br>
 				On webDiplomacy, you can play games against humans or bots. If you want to play against other players,
 				you\'re in the right place. You can just fill out this form. If you want to play against bots,
-				you can click "Play a Game Against Bots." Our bots are artificial intelligence users, so they are not 
+				you can click "Play a game against bots." Our bots are artificial intelligence users, so they are not 
 				computer players like you might encounter in online chess, for example. They are very unique and 
 				they are trained rigorously based on the decisions real players made, which means they are both 
 				intelligent and unpredictable. Give them a try sometime, you might be surprised how good they are!
@@ -76,7 +76,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			setcookie('wD-Tutorial-GameCreate', '', time()-3600);
 		}
 	?>
-	<p><a href="botgamecreate.php">Play A Game Against Bots</a></p>
+	<p><a href="botgamecreate.php">Play a game against bots</a></p>
 
 	<div class = "gameCreateShow">
 		<form method="post">
