@@ -8,6 +8,7 @@ orderlogs/
 *.tgz
 *.tbz
 *.bz2
+*.7z
 /cache/
 /mapstore/
 /doc/phpDoc/
