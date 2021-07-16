@@ -260,6 +260,11 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 
 		$Orders = '<div id="orderDiv'.$Member->id.'">'.$OI->html().'</div>';
 		unset($OI);
+
+		if( $Game->needsProcess() )
+		{
+			$MC->append('processHint',','.$Game->id);
+		}
 	}
 }
 
