@@ -8,6 +8,7 @@ orderlogs/
 *.tgz
 *.tbz
 *.bz2
+*.7z
 /cache/
 /mapstore/
 /doc/phpDoc/
@@ -25,3 +26,4 @@ ghostRatingData.*
 gr.php
 adminInfo.php
 tmp/
+apilog.txt
