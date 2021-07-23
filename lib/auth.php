@@ -133,12 +133,12 @@ class libAuth
 	private static $formToken_cached = false;
 	public static function formTokenHTML()
 	{
-		if( $formToken_cached === false ) 
+		if( self::$formToken_cached === false ) 
 		{
 			$time=time();
-			$formToken_cached = '<input type="hidden" name="formToken" value="'.$time.'_'.self::formToken_Key($time).'" />';
+			self::$formToken_cached = '<input type="hidden" name="formToken" value="'.$time.'_'.self::formToken_Key($time).'" />';
 		}
-		return $formToken_cached; // One token per page is fine
+		return self::$formToken_cached; // One token per page is fine
 	}
 
 	/**
