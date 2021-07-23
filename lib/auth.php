@@ -152,6 +152,7 @@ class libAuth
 	{
 		$thisURL = 'https://'.$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'];
 
+		$timestamp = time();
 		// %7C = | , but some webmail clients think that | is the end of the link
 		$emailToken = substr(md5(Config::$secret.$email.$timestamp),0,8).'%7C'.$timestamp.'%7C'.urlencode($email);
 
