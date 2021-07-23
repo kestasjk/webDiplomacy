@@ -62,7 +62,7 @@ if( isset($_REQUEST['forgotPassword']) and $User->type['Guest'] )
 			{
 				throw new Exception(l_t("To help prevent abuse please wait 5 minutes before resending forgotten e-mail recovery links. ".
 					"In the meantime please check your spam folder for a missing recovery e-mail, or contact the moderator team."));
-			}
+			} 
 			
 			$MC->set('forgot_'.$forgottenUser->id, 5*60); // Set a flag preventing resends for 5 minutes
 
