@@ -196,6 +196,7 @@ class panelGameHome extends panelGameBoard
 			{
 				return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
 				<form action="#" method="post">
+				'.libAuth::formTokenHTML().'
 					<a href="board.php?gameID='.$this->id.'">'.l_t('Open').'</a>
 					<input type="hidden" value="'.$this->id.'" name="gameToggleName" />
 					<input type="submit" title="Turn on/off the notifications for this game." style="float: right;" class = "home-submit toggle-notice" name="submit" value="'.$SubmitName.'"/>
@@ -207,6 +208,7 @@ class panelGameHome extends panelGameBoard
 				return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
 					
 					<form action="#" method="post">
+					'.libAuth::formTokenHTML().'
 					<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t('Open').'</a> 
 					<input type="hidden" value="'.$this->id.'" name="gameToggleName" />
 					<input type="submit" title="Turn on/off the notifications for this game." style="float: right;" class = "home-submit toggle-notice" name="submit" value="'.$SubmitName.'"/>
