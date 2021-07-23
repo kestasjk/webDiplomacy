@@ -2,33 +2,66 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>My first three.js app</title>
+		<title>webDiplomacy Map 2 - Sandbox</title>
 		<style>
-			body { margin: 0; }
+			body { 
+				margin: 0;
+				background-color:#eeeeee;
+			}
 			canvas { display: block; }
 		</style>
 	</head>
 	<body>
+		<canvas id="glMap" width=1000px height=600px></canvas>
+		<script src="../contrib/js/prototype.js"></script>
 		<script src="js/three.js"></script>
-		<script>var scene = new THREE.Scene();
-var camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, 1, 1000 );
+		<script src="testdata/map.js"></script>
+		<script src="testdata/board.js"></script>
+		<script src="testdata/orders.js"></script>
+		<script>
+			
 
-var renderer = new THREE.WebGLRenderer();
-renderer.setSize( window.innerWidth, window.innerHeight );
-document.body.appendChild( renderer.domElement );
-var geometry = new THREE.BoxGeometry();
-var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-var cube = new THREE.Mesh( geometry, material );
-scene.add( cube );
+			loadTerritories();
+			loadBoardTurnData();
+
+			const canvas = document.getElementById("glMap");
+			const renderer = new THREE.WebGLRenderer({canvas:canvas});
+			renderer.setSize( renderer.domElement.width, renderer.domElement.height);
+
+
+			const rtWidth = renderer.domElement.width / - 8;
+			const rtHeight = renderer.domElement.height / 8;
+			const renderTarget = new THREE.WebGLRenderTarget(rtWidth, rtHeight);
+			const renderScene = new THREE.Scene();
+			const renderCamera = new THREE.OrthographicCamera( renderer.domElement.width / - 8, renderer.domElement.width / 8, renderer.domElement.height / 8, renderer.domElement.height / - 8, 1, 1000 );
+			const renderColor = new THREE.Color('red');
+
+			const renderGeometry = new THREE.PlaneGeometry( 1000, 1000 );
+			const renderMaterial = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+			const renderPlane = new THREE.Mesh( renderGeometry, renderMaterial );
+			renderScene.add( renderPlane );
+
+			const scene = new THREE.Scene();
+			
+			const camera = new THREE.OrthographicCamera( renderer.domElement.width / - 2, renderer.domElement.width / 2, renderer.domElement.height / 2, renderer.domElement.height / - 2, 1, 1000 );
+
+			const geometry = new THREE.PlaneGeometry( 100, 100 );
+			const material = new THREE.MeshBasicMaterial( {color: 0xffffff, map: renderTarget.texture} );
+			const plane = new THREE.Mesh( geometry, material );
+			scene.add( plane );
 
 camera.position.z = 5;
 function animate() {
 	requestAnimationFrame( animate );
+	
+	renderer.setRenderTarget(renderTarget);
+	renderer.render(renderScene, renderCamera);
+	renderer.setRenderTarget(null);
 	renderer.render( scene, camera );
-	cube.rotation.x += 0.01;
-	cube.rotation.y += 0.01;
 }
 animate();
 		</script>
+
+		<img src="testdata/map.png" />
 	</body>
 </html>
