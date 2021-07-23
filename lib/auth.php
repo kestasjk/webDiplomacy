@@ -110,7 +110,7 @@ class libAuth
 	// Checks $_REQUEST['formToken']
 	public static function formToken_Valid()
 	{
-		if( !isset($_REQUEST['formToken'])
+		if( !isset($_REQUEST['formToken']) )
 		{
 			throw new Exception(l_t('No form token provided; form cannot be processed.'));
 		}
