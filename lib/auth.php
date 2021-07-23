@@ -150,10 +150,10 @@ class libAuth
 	 */
 	public static function email_validateURL($email)
 	{
-		$thisURL = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'];
+		$thisURL = 'https://'.$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'];
 
 		// %7C = | , but some webmail clients think that | is the end of the link
-		$emailToken = substr(md5(Config::$secret.$email),0,5).'%7C'.urlencode($email);
+		$emailToken = substr(md5(Config::$secret.$email.$timestamp),0,8).'%7C'.$timestamp.'%7C'.urlencode($email);
 
 		return $thisURL.'?emailToken='.$emailToken;
 	}
@@ -167,14 +167,16 @@ class libAuth
 	 */
 	public static function emailToken_email($emailToken)
 	{
-		$emailToken = explode('|',$emailToken,2);
+		$emailToken = explode('|',$emailToken,3);
 
-		if ( count($emailToken) != 2 )
+		if ( count($emailToken) != 3 )
 			return false;
 
-		list($key, $email) = $emailToken;
+		list($key, $timestamp, $email) = $emailToken;
 
-		if ( $key !== substr(md5(Config::$secret.$email),0,5) )
+		if( (time() - $timestamp) > 60*60 ) throw new Exception("The given e-mail token link has expired; please request another one and click the link within an hour.");
+
+		if ( $key !== substr(md5(Config::$secret.$email.$timestamp),0,8) )
 			return false;
 		else
 			return $email;

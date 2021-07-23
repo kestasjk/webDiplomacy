@@ -23,6 +23,7 @@ require_once('header.php');
 if ((isset($_POST['watch']) || isset($_POST['unwatch'])) && isset($_POST['gameID'])) {
 	require_once(l_r('objects/game.php'));
 	require_once(l_r('gamepanel/gameboard.php'));
+	libAuth::formToken_Valid();
 
 	$gameID = (int)$_POST['gameID'];
 	// Get the game object, if this fails, then someone has entered some rubbish for the gameID

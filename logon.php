@@ -79,8 +79,15 @@ if( isset($_REQUEST['forgotPassword']) and $User->type['Guest'] )
 		}
 		elseif ( $_REQUEST['forgotPassword'] == 3 && isset($_REQUEST['emailToken']) )
 		{
-			$email = $DB->escape(libAuth::emailToken_email($_REQUEST['emailToken']));
+			$validatedEmail = libAuth::emailToken_email($_REQUEST['emailToken']);
+			if( $validatedEmail === false )
+				throw new Exception(l_t("Account not found"));
+			
+			$email = $DB->escape();
 			$userID = User::findEmail($email);
+			if( $userID == 0 )
+				throw new Exception(l_t("Account not found"));
+				
 			$newPassword = base64_encode(rand(1000000000,2000000000));
 
 			$DB->sql_put("UPDATE wD_Users
