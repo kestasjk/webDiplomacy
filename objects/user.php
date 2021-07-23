@@ -1207,6 +1207,7 @@ class User {
 	public function getYearlyUnExcusedMissedTurns() 
 	{
 		global $DB;
+		if( is_null($DB) ) return 0;
 		list($totalNonLiveMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
 		WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.liveGame = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".(time() - 31536000));
 		
@@ -1219,6 +1220,7 @@ class User {
 	public function getRecentUnExcusedMissedTurns() 
 	{
 		global $DB;
+		if( is_null($DB) ) return 0;
 		list($totalMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
 			WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.liveGame = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".(time() - 2419200));
 		
@@ -1231,6 +1233,7 @@ class User {
 	public function getMissedTurns() 
 	{
 		global $DB;
+		if( is_null($DB) ) return 0;
 		list($totalMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
 			WHERE t.userID = ".$this->id." AND t.liveGame = 0 and t.modExcused = 0 and t.turnDateTime > ".(time() - 31536000));
 		
@@ -1244,6 +1247,7 @@ class User {
 	{
 		global $DB;
 
+		if( is_null($DB) ) return 0;
 		list($totalLiveMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
 		WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.liveGame = 1 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".(time() - 2419200));
 		
@@ -1256,6 +1260,7 @@ class User {
 	public function getLiveRecentUnExcusedMissedTurns() 
 	{
 		global $DB;
+		if( is_null($DB) ) return 0;
 		list($totalMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
 			WHERE t.userID = ".$this->id." AND t.modExcused = 0 and t.liveGame = 1 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".(time() - (86400 * 7)));
 		
@@ -1268,6 +1273,7 @@ class User {
 	public function getLiveMissedTurns() 
 	{
 		global $DB;
+		if( is_null($DB) ) return 0;
 		list($totalMissedTurns) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns t  
 			WHERE t.userID = ".$this->id." AND t.liveGame = 1 and t.modExcused = 0 and t.turnDateTime > ".(time() - 2419200));
 		
@@ -1280,6 +1286,9 @@ class User {
 	public function userIsTempBanned() 
 	{
 		global $DB;
+	
+		if( is_null($DB) ) return false; // Don't use the database if we are in an error page without the database handle
+
 		list($tempBan) = $DB->sql_row("SELECT u.tempBan FROM wD_Users u  WHERE u.id = ".$this->id);
 
 		return $tempBan > time();
@@ -1291,6 +1300,8 @@ class User {
 	public function getTheme()
 	{
 		global $DB;
+
+		if( is_null($DB) ) return 'No';
 
 		list($variable) = $DB->sql_row("SELECT darkMode FROM wD_UserOptions WHERE userID=".$this->id);
 		if ($variable == null) 
@@ -1309,6 +1320,7 @@ class User {
 	public function getBotGameCount() 
 	{
 		global $DB;
+		if( is_null($DB) ) return 0;
 		list($totalBotGames) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g inner join wD_Members m on m.gameID = g.id  
 			WHERE m.userID = ".$this->id." AND g.gameOver = 'No' and g.playerTypes = 'MemberVsBots'");
 		
@@ -1321,6 +1333,7 @@ class User {
 	public function modLastCheckedOn() 
 	{
 		global $DB;
+		if( is_null($DB) ) return time();
 		list($modLastCheckedOn) = $DB->sql_row("SELECT c.modLastCheckedOn FROM wD_UserConnections c WHERE c.userID = ".$this->id);
 		
 		return $modLastCheckedOn;
@@ -1332,6 +1345,7 @@ class User {
 	public function modLastCheckedBy() 
 	{
 		global $DB;
+		if( is_null($DB) ) return time();
 		list($modLastCheckedBy) = $DB->sql_row("SELECT c.modLastCheckedBy FROM wD_UserConnections c WHERE c.userID = ".$this->id);
 		
 		return $modLastCheckedBy;
