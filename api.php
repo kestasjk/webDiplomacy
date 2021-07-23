@@ -35,6 +35,7 @@ require_once('lib/html.php');
 require_once('lib/time.php');
 require_once('lib/gamemessage.php');
 $DB = new Database();
+$MC = new Memcached();
 
 /**
  * Exception class - missing credentials (API key).
