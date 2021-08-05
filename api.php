@@ -232,6 +232,7 @@ abstract class ApiEntry {
 		return in_array('gameID', $this->requirements);
 	}
 
+	private $gameCache = null;
 	/**
 	 * Return Game object for game associated to this API entry call.
 	 * To get associated game, API entry must expect a parameter named `gameID`.
@@ -240,6 +241,7 @@ abstract class ApiEntry {
 	 */
 	public function getAssociatedGame() {
 		global $DB;
+		if( !is_null($this->gameCache) ) return $this->gameCache;
 		if (!in_array('gameID', $this->requirements))
 			throw new RequestException('No game ID available for this request.');
 		$args = $this->getArgs();
@@ -252,7 +254,8 @@ abstract class ApiEntry {
 		$gameRow = $DB->sql_hash('SELECT * from wD_Games WHERE id = '.$gameID);
 		if (!$gameRow)
 			throw new RequestException('Invalid game ID');
-		return new Game($gameRow);
+		$this->gameCache = new Game($gameRow, UPDATE);
+		return  $this->gameCache; // Lock game for update, which just ensures the game is always processed sequentially
 	}
 
 	/**
@@ -313,6 +316,7 @@ class ToggleVote extends ApiEntry {
 		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
 			throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 
+		$game = 
 		$currentVotes = $DB->sql_hash("SELECT votes FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." AND userID = ".$userID);
 		$currentVotes = $currentVotes['votes'];
 		$newVotes = '';
