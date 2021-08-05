@@ -56,6 +56,7 @@ if( strlen(Config::$serverMessages['ServerOffline']) )
 	die('<html><head><title>Server offline</title></head>'.
 		'<body>'.Config::$serverMessages['ServerOffline'].'</body></html>');
 
+require_once('objects/memcached.php');
 
 if( ini_get('request_order') !== false ) {
 
@@ -92,7 +93,7 @@ if( ini_get('request_order') !== false ) {
 /*
  * If register_globals in enabled remove globals.
  */
-if (ini_get('register_globals') or get_magic_quotes_gpc())
+if (ini_get('register_globals'))
 {
 	function stripslashes_deep(&$value)
 	{
@@ -140,7 +141,7 @@ $GLOBALS = array();
 $GLOBALS['scriptStartTime'] = microtime(true);
 
 ini_set('memory_limit',"8M"); // 8M is the default
-ini_set('max_execution_time','8');
+ini_set('max_execution_time','4');
 //ini_set('session.cache_limiter','public');
 ignore_user_abort(TRUE); // Carry on if the user exits before the script gets printed.
 	// This shouldn't be necessary for data integrity, but either way it may save reprocess time
@@ -185,6 +186,7 @@ if ( $Misc->Version != VERSION )
 header("Last-Modified: Mon, 26 Jul 1997 05:00:00 GMT");
 header("Cache-Control: no-store, no-cache, must-revalidate");
 header("Cache-Control: post-check=0, pre-check=0", false);
+header("X-Frame-Options: SAMEORIGIN"); //@ibarrionuevo
 
 if( defined('FACEBOOKSCRIPT') ) {
 	require_once(l_r('facebook/facebook-platform/php/facebook.php'));

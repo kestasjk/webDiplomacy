@@ -52,6 +52,8 @@ if(isset($_POST['submit']))
 
 	if ($User->type['User'] and $gameToggleID > 0)
 	{
+		libAuth::formToken_Valid();
+		
 		$noticesStatus = 5;
 		list($noticesStatus) = $DB->sql_row("SELECT hideNotifications FROM wD_Members WHERE userID =".$User->id." and gameID =".$gameToggleID);
 

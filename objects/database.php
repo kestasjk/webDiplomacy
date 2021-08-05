@@ -116,7 +116,8 @@ class Database {
 			 * transaction-mode)
 			 */
 		$this->sql_put("SET AUTOCOMMIT=0, NAMES utf8, time_zone = '+0:00'");
-		$this->sql_put("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED"); // Changed from READ COMMITTED which was causing too many deadlocks; use LOCK IN SHARE MODE when the latest query is needed instead
+		$this->sql_put("SET SQL_MODE='NO_ENGINE_SUBSTITUTION'"); // This statement is just intended to make sure the server isn't in strict mode
+		$this->sql_put("SET TRANSACTION ISOLATION LEVEL READ COMMITTED"); // Changed from READ COMMITTED which was causing too many deadlocks; use LOCK IN SHARE MODE when the latest query is needed instead
 	}
 
 	/**

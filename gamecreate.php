@@ -42,6 +42,8 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 {
 	try
 	{
+		libAuth::formToken_Valid();
+		
 		$form = $_REQUEST['newGame']; // This makes $form look harmless when it is unsanitized; the parameters must all be sanitized
 
 		$input = array();

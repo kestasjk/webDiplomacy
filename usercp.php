@@ -39,6 +39,8 @@ libHTML::starthtml();
 
 if ( isset($_REQUEST['emailToken']))
 {
+	libAuth::formToken_Valid();
+
 	if( !($email = libAuth::emailToken_email($_REQUEST['emailToken'])) )
 		libHTML::notice(l_t("Email change validation"), l_t("A bad email token was given, please check the validation link try again"));
 
@@ -56,6 +58,8 @@ if ( isset($_REQUEST['emailToken']))
 
 if ( isset($_REQUEST['userForm']) )
 {
+	libAuth::formToken_Valid();
+	
 	$formOutput = '';
 
 	try

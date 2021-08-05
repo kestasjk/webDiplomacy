@@ -799,11 +799,12 @@ class adminActions extends adminActionsForms
 			return "This email is already in use for ".$emailUsername;
 		}
 		
-		$thisURL = 'http://'.$_SERVER['SERVER_NAME']."/register.php";
+		$thisURL = 'https://'.$_SERVER['SERVER_NAME']."/register.php";
 		if ($_SERVER['SERVER_NAME'] == '127.0.0.1')
-			$thisURL = 'http://'.$_SERVER['SERVER_NAME']."/webdiplomacy/register.php";
+			$thisURL = 'https://'.$_SERVER['SERVER_NAME']."/webdiplomacy/register.php";
 		
-		$emailToken = substr(md5(Config::$secret.$email),0,5).'%7C'.urlencode($email);
+		$timestamp = time();
+		$emailToken = substr(md5(Config::$secret.$email.$timestamp),0,8).'%7C'.$timestamp.'%7C'.urlencode($email);
 
 		return "Please give the user the following link: <br>".$thisURL.'?emailToken='.$emailToken;
 	}

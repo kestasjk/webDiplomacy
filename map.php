@@ -133,7 +133,8 @@ if( !isset($_REQUEST['variantID']) )
 	$Variant=libVariant::loadFromGameID($_REQUEST['gameID']);
 	libVariant::setGlobals($Variant);
 	// Locking this game for update is excessive; worst case the map is overwritten
-	$Game=$Variant->Game($_REQUEST['gameID']);
+	// Actually 
+	$Game=$Variant->Game($_REQUEST['gameID'], UPDATE);
 
 	/*
 	 * Determine which turn we are viewing. This is made a little trickier because

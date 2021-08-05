@@ -58,6 +58,8 @@ $GamesData = array();
 // Get values from posted contact requests. 
 if(isset($_POST['submit'])) 
 {
+    libAuth::formToken_Valid();
+
     $submitted = true;
     if (isset($_POST['issueType']))
     {
@@ -393,6 +395,7 @@ else
     print '<div class = "contactUsShow">';
     
     print '<form action="#" method="post">';
+    print libAuth::formTokenHTML();
     print   '<p><strong>What do you need to contact us about?</strong></p>
             Issue with game(s) <input type="radio" value="gameIssue" onclick="javascript:gameIssueCheck();" name="issueType" id="gameIssue" required> 
             </br>Other issue <input type="radio" value="otherIssue" onclick="javascript:gameIssueCheck();" name="issueType" id="otherIssue">';

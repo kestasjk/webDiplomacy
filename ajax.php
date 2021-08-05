@@ -100,9 +100,14 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 		if( $newReady && !$oldReady )
 		{
 			$results['process']='Checked';
-
 			$Game = libVariant::$Variant->Game($O->gameID);
-
+			if( $Game->needsProcess() )
+			{
+				$MC->append('processHint',','.$Game->id);
+			}
+			/*
+			Old instant-process code which was disabled as it was causing deadlocks
+			\
 			if( $Game->processStatus!='Crashed' && $Game->attempts > count($Game->Members->ByID)*2 )
 			{
 				$DB->sql_put("COMMIT");
@@ -128,7 +133,7 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 					$results['process']='Success';
 					$results['notice']=l_t('Game processed, click <a href="%s">here</a> to refresh..','board.php?gameID='.$Game->id.'&nocache='.rand(0,1000));
 				}
-			}
+			}*/
 		}
 	}
 	catch(Exception $e)

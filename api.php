@@ -23,6 +23,7 @@ require_once('config.php');
 require_once('global/definitions.php');
 require_once('locales/layer.php');
 require_once('objects/database.php');
+require_once('objects/memcached.php');
 require_once('board/orders/orderinterface.php');
 require_once('api/responses/members_in_cd.php');
 require_once('api/responses/unordered_countries.php');
@@ -284,6 +285,7 @@ class ListGamesWithMissingOrders extends ApiEntry {
 	}
 	public function run($userID, $permissionIsExplicit) {
 		$unorderedCountries = new \webdiplomacy_api\UnorderedCountries($userID);
+
 		return $unorderedCountries->toJson();
 	}
 }
@@ -382,7 +384,7 @@ class SetOrders extends ApiEntry {
 	 * @throws ClientForbiddenException
 	 */
 	public function run($userID, $permissionIsExplicit) {
-		global $DB;
+		global $DB, $MC;
 		$args = $this->getArgs();
 		$gameID = $args['gameID'];	// checked in getAssociatedGame()
 		$turn = $args['turn'];
@@ -587,8 +589,14 @@ class SetOrders extends ApiEntry {
 			);
 		}
 
-		// Processing game
-        if ($orderInterface->orderStatus->Ready && !$previousReadyValue) {
+		// Leave a hint for the game master that this game should be checked:
+        if ($orderInterface->orderStatus->Ready && !$previousReadyValue)
+	{
+		$MC->append('processHint',','.$gameID);
+	}
+	/*       
+	Disabled; all game processing must be done via one path
+	elseif (false && $orderInterface->orderStatus->Ready && !$previousReadyValue) {
             require_once(l_r('objects/misc.php'));
             require_once(l_r('objects/notice.php'));
             require_once(l_r('objects/user.php'));
@@ -606,7 +614,7 @@ class SetOrders extends ApiEntry {
                 $DB->sql_put("COMMIT");
             }
             elseif( $game->needsProcess() )
-            {
+w            {
                 $DB->sql_put("UPDATE wD_Games SET attempts=attempts+1 WHERE id=".$game->id);
                 $DB->sql_put("COMMIT");
 
@@ -619,7 +627,7 @@ class SetOrders extends ApiEntry {
                     $DB->sql_put("COMMIT");
                 }
             }
-        }
+        }*/
 
         // Returning current orders
 		return json_encode($currentOrders);
@@ -819,6 +827,8 @@ class Api {
 	 * @throws ServerInternalException
 	 */
 	public function run() {
+		global $MC;
+		
 		// Get route.
 		if (!isset($_GET['route']))
 			throw new RequestException('No route provided.');
@@ -829,13 +839,33 @@ class Api {
 		$apiKeyString = getBearerToken();
 		if ($apiKeyString == null)
 			throw new ClientUnauthorizedException('No API key provided.');
+
+		$key = str_replace(' ', '_', 'api' . $apiKeyString . $route );
+		if( false && $route == 'players/missing_orders' )
+		{
+			$result = $MC->get($key);
+			if ( $result )
+			{
+				return $result;
+			}
+		}
+
 		// Get API entry.
 		$apiEntry = $this->entries[$route]; /** @var ApiEntry $apiEntry */
 		$apiKey = new ApiKey($apiKeyString);
 		// Check if request is authorized.
 		$permissionIsExplicit = $apiKey->assertHasPermissionFor($apiEntry);
 		// Execute request.
-		return $apiEntry->run($apiKey->getUserID(), $permissionIsExplicit);
+		$userID = $apiKey->getUserID();
+		$result = $apiEntry->run($userID, $permissionIsExplicit); 
+
+		// Cache result
+		if( $route == 'players/missing_orders' )
+		{
+			$MC->set($key, $result, 60); // Continually No rush to expire , should be cleaned on all game processes anyway
+		}
+
+		return $result;
 	}
 }
 

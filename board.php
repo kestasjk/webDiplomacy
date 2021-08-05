@@ -139,6 +139,7 @@ if ( isset($_REQUEST['viewArchive']) )
 if ( $Game->watched() && isset($_REQUEST['unwatch'])) {
 	print '<div class="content-notice gameTimeRemaining">'
 		.'<form method="post" action="redirect.php">'
+		.libAuth::formTokenHTML()
 		.'Are you sure you wish to remove this game from your spectated games list? '
 		.'<input type="hidden" name="gameID" value="'.$Game->id.'">'
 		.'<input type="submit" class="form-submit" name="unwatch" value="Confirm">
@@ -159,10 +160,11 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 		}
 	}
 
-	$DB->sql_put("COMMIT");
+	// $DB->sql_put("COMMIT");
 
 	if( $Game->processStatus!='Crashed' && $Game->processStatus!='Paused' && $Game->attempts > count($Game->Members->ByID)/2+4  )
 	{
+		$DB->get_lock('gamemaster',1);
 		require_once(l_r('gamemaster/game.php'));
 		$Game = $Game->Variant->processGame($Game->id);
 		$Game->crashed();
@@ -172,6 +174,10 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 	{
 		if( $Game->Members->votesPassed() && $Game->phase!='Finished' )
 		{
+			$MC->append('processHint',','.$Game->id);
+			
+			$DB->get_lock('gamemaster',1);
+
 			$DB->sql_put("UPDATE wD_Games SET attempts=attempts+1 WHERE id=".$Game->id);
 			$DB->sql_put("COMMIT");
 
@@ -198,6 +204,18 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 			}
 		}
 		else if( $Game->needsProcess() )
+		{
+			$MC->append('processHint',','.$Game->id);
+		}
+		else if ( false )
+		{
+			$DB->get_lock('gamemaster');
+			$DB->sql_put("COMMIT");
+			// COMMIT and then update the game to indicate that a process is needed, so that the gamemaster will process them, while also checking nothing else has adjusted the process  time
+			$DB->sql_put("UPDATE wD_Games SET processTime=".time()." WHERE id = ".$Game->id." AND processTime = " . $Game->processTime);
+			$DB->sql_put("COMMIT");
+		}
+		else if ( false )
 		{
 			$DB->sql_put("UPDATE wD_Games SET attempts=attempts+1 WHERE id=".$Game->id);
 			$DB->sql_put("COMMIT");
@@ -243,6 +261,11 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 
 		$Orders = '<div id="orderDiv'.$Member->id.'">'.$OI->html().'</div>';
 		unset($OI);
+
+		if( $Game->needsProcess() )
+		{
+			$MC->append('processHint',','.$Game->id);
+		}
 	}
 }
 

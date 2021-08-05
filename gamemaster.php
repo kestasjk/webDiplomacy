@@ -59,6 +59,8 @@ print '<div class="content">';
 $DB->sql_put("COMMIT"); // Unlock our user row, to prevent deadlocks below
 // This means our $User object should only be used for reading from
 
+$DB->get_lock('gamemaster',1);
+
 ini_set('memory_limit',"40M");
 ini_set('max_execution_time','40');
 
@@ -110,11 +112,37 @@ $currentProcessTime = time();
 $Misc->LastProcessTime = $currentProcessTime;
 $Misc->write();
 
+# Take member / bot submitted game ID hints for games that may need early processing,
+# and add them to the list of games to be checked
+$gameIDHints = $MC->get('processHint');
+$MC->replace('processHint','');
+if( $gameIDHints )
+{
+	$gameIDHints = explode(',',trim(''.$gameIDHints));
+	$ids = array();
+	foreach($gameIDHints as $id)
+	{
+		if ( $id && strlen($id) > 0 )
+		{
+			$ids[] = (int)$id;
+		}
+	}
+	$ids = array_unique($ids, SORT_NUMERIC);
+	$gameIDHints = "";
+	if ( count($ids) > 0 ) {
+		$gameIDHints = " OR id IN ( ".implode(',',$ids)." ) ";
+	}
+}
+else
+{
+	$gameIDHints = "";
+}
 
 $startTime = $currentProcessTime; // Only do ~30 sec of processing per cycle
 $tabl = $DB->sql_tabl("SELECT * FROM wD_Games
-	WHERE processStatus='Not-processing' AND processTime <= ".time()." AND NOT phase='Finished'");
+	WHERE processStatus='Not-processing' AND ( processTime <= ".time()." ".$gameIDHints." ) AND NOT phase='Finished'");
 
+$dirtyApiKeys = array(); // Keep track of any api keys with cached data that needs cleansing
 while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 {
 	$Variant=libVariant::loadFromVariantID($gameRow['variantID']);
@@ -145,6 +173,11 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 				$DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$Game->id);
 				$DB->sql_put("COMMIT");
 				print l_t('Processed.');
+				
+				// Flush any memcached data about this game which is may be dirty
+				$stabl = $DB->sql_tabl("SELECT apiKey FROM wD_Members m INNER JOIN wD_ApiKeys a ON m.userID = a.userID WHERE m.gameID = ".$Game->id);
+				while(list($apiKey) = $DB->tabl_row($stabl))
+					$dirtyApiKeys[] = $apiKey;
 			}
 		}
 	}
@@ -164,6 +197,10 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 
 	print '<br />';
 }
+
+$dirtyApiKeys = array_unique($dirtyApiKeys);
+foreach($dirtyApiKeys as $key)
+	$MC->delete(str_replace(' ','_','api'.$key.'players/missing_orders'));
 
 // Find any turns which have just passed more than one year old, and 
 // If it took over 30 secs there may still be games to process

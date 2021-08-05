@@ -537,6 +537,7 @@ class panelGame extends Game
 			if( $User->type['User'] && $this->phase != 'Finished')
 			{
 				$buf .= '<form method="post" action="redirect.php">'
+						.libAuth::formTokenHTML()
 				       .'<input type="hidden" name="gameID" value="'.$this->id.'">';
 				if( ! $this->watched() ) {
 					$buf .= '<input style="margin-top: 0.5em;" type="submit" title="'.l_t('Adds this game to the watched games list on your home page, and subscribes you to game notifications').'" '

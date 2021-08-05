@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>webDiplomacy Map 2 - Sandbox</title>
+		<style>
+			body { 
+				margin: 0;
+				background-color:#eeeeee;
+			}
+			canvas { display: block; }
+		</style>
+	</head>
+	<body>
+		<div id="container" style="width:1000px; height:800px;"></div>
+		<script src="../contrib/js/prototype.js"></script>
+		<script src="js/three.js"></script>
+		<script src="testdata/map.js"></script>
+		<script src="testdata/board.js"></script>
+		<script src="testdata/orders.js"></script>
+		<script>
+
+			loadTerritories();
+			loadBoardTurnData();
+
+			/*
+
+			Units: Id, CountryId, TerritoryId, X, Y, State [Holding,Held,Moving,Moved,Blocked,Conquered,Retreating,Retreated,Destroyed,Created,Disbanded]
+			Orders: Id, Type [Hold,Move,Support Hold,Support Move,Convoy,Retreat,Destroy,Build,Disband], FromTerritoryId, ToTerritoryId, viaConvoy
+			Moves: Id, CountryId, Type [Hold,Move,Support Hold,Support Move,Convoy,Retreat,Destroy,Build,Disband], FromTerritoryId, ToTerritoryId, viaConvoy, IsSuccess
+			Territories: Id, X, Y, SmallX, SmallY, Type [Land,Sea,Coast,CoastChild], IsSupplyCenter
+			TerrStatus: TerritoryId, OwnerCountryId, OccupiedCountryId, IsStandoff
+
+			*/
+</script>
+			<script id="fragment_shader_screen" type="x-shader/x-fragment">
+
+varying vec2 vUv;
+uniform sampler2D tDiffuse;
+
+void main() {
+
+	gl_FragColor = texture2D( tDiffuse, vUv );
+
+}
+
+</script>
+
+<script id="fragment_shader_pass_1" type="x-shader/x-fragment">
+
+varying vec2 vUv;
+uniform float time;
+
+void main() {
+
+	float r = vUv.x;
+	if( vUv.y < 0.5 ) r = 0.0;
+	float g = vUv.y;
+	if( vUv.x < 0.5 ) g = 0.0;
+
+	gl_FragColor = vec4( r, g, time, 1.0 );
+
+}
+
+</script>
+
+<script id="vertexShader" type="x-shader/x-vertex">
+
+varying vec2 vUv;
+
+void main() {
+
+	vUv = uv;
+	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+}
+
+</script>
+
+<script type="module">
+
+let container, stats;
+
+let cameraRTT, camera, sceneRTT, sceneScreen, scene, renderer, zmesh1, zmesh2;
+
+let mouseX = 0, mouseY = 0;
+
+let rtTexture, material, quad;
+
+let delta = 0.01;
+
+init();
+animate();
+
+function init() {
+
+	const texture = new THREE.TextureLoader().load( "img/map.png" );
+
+	container = document.getElementById( 'container' );
+
+	camera = new THREE.OrthographicCamera( container.clientWidth / - 2, container.clientWidth / 2, container.clientHeight / 2, container.clientHeight / - 2, - 10000, 10000 );
+	//PerspectiveCamera( 30, container.clientWidth / container.clientHeight, 1, 10000 );
+	camera.position.z = 100;
+
+	cameraRTT = new THREE.OrthographicCamera( container.clientWidth / - 2, container.clientWidth / 2, container.clientHeight / 2, container.clientHeight / - 2, - 10000, 10000 );
+	cameraRTT.position.z = 100;
+
+	//
+
+	scene = new THREE.Scene();
+	sceneRTT = new THREE.Scene();
+	sceneScreen = new THREE.Scene();
+
+	let light = new THREE.DirectionalLight( 0xffffff );
+	light.position.set( 0, 0, 1 ).normalize();
+	sceneRTT.add( light );
+
+	light = new THREE.DirectionalLight( 0xffaaaa, 1.5 );
+	light.position.set( 0, 0, - 1 ).normalize();
+	sceneRTT.add( light );
+
+	rtTexture = new THREE.WebGLRenderTarget( container.clientWidth, container.clientHeight, { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBFormat } );
+
+	material = new THREE.ShaderMaterial( {
+
+		uniforms: { time: { value: 0.0 } },
+		vertexShader: document.getElementById( 'vertexShader' ).textContent,
+		fragmentShader: document.getElementById( 'fragment_shader_pass_1' ).textContent
+
+	} );
+
+	const materialScreen = new THREE.ShaderMaterial( {
+
+		uniforms: { tDiffuse: { value: rtTexture.texture } },
+		vertexShader: document.getElementById( 'vertexShader' ).textContent,
+		fragmentShader: document.getElementById( 'fragment_shader_screen' ).textContent,
+
+		depthWrite: false
+
+	} );
+
+	const plane = new THREE.PlaneGeometry( container.clientWidth, container.clientHeight );
+
+	quad = new THREE.Mesh( plane, material );
+	quad.position.z = - 100;
+	sceneRTT.add( quad );
+
+	const torusGeometry = new THREE.TorusGeometry( 100, 25, 15, 30 );
+
+	const mat1 = new THREE.MeshPhongMaterial( { color: 0x555555, specular: 0xffaa00, shininess: 5 } );
+	const mat2 = new THREE.MeshPhongMaterial( { color: 0x550000, specular: 0xff2200, shininess: 5 } );
+
+	zmesh1 = new THREE.Mesh( torusGeometry, mat1 );
+	zmesh1.position.set( 0, 0, 100 );
+	zmesh1.scale.set( 1.5, 1.5, 1.5 );
+	sceneRTT.add( zmesh1 );
+
+	zmesh2 = new THREE.Mesh( torusGeometry, mat2 );
+	zmesh2.position.set( 0, 150, 100 );
+	zmesh2.scale.set( 0.75, 0.75, 0.75 );
+	sceneRTT.add( zmesh2 );
+
+	quad = new THREE.Mesh( plane, materialScreen );
+	quad.position.z = - 100;
+	sceneScreen.add( quad );
+
+	const n = 5,
+		geometry = new THREE.SphereGeometry( 10, 64, 32 ),
+		material2 = new THREE.MeshBasicMaterial( { color: 0xffffff, map: texture } );//rtTexture.texture } );
+
+	for ( let j = 0; j < n; j ++ ) {
+
+		for ( let i = 0; i < n; i ++ ) {
+
+			const mesh = new THREE.Mesh( geometry, material2 );
+
+			mesh.position.x = ( i - ( n - 1 ) / 2 ) * 20;
+			mesh.position.y = ( j - ( n - 1 ) / 2 ) * 20;
+			mesh.position.z = 0;
+
+			mesh.rotation.y = - Math.PI / 2;
+
+			scene.add( mesh );
+
+		}
+
+	}
+
+	renderer = new THREE.WebGLRenderer();
+	renderer.setPixelRatio( window.devicePixelRatio );
+	renderer.setSize( container.clientWidth, container.clientHeight );
+	renderer.autoClear = false;
+
+	container.appendChild( renderer.domElement );
+
+	document.addEventListener( 'mousemove', onDocumentMouseMove );
+
+}
+
+function onDocumentMouseMove( event ) {
+
+	mouseX = ( event.clientX - container.clientWidth / 2 );
+	mouseY = ( event.clientY - container.clientHeight / 2 );
+
+}
+
+//
+
+function animate() {
+
+	requestAnimationFrame( animate );
+
+	render();
+
+}
+
+function render() {
+
+	const time = Date.now() * 0.0015;
+
+	camera.position.x += ( mouseX - camera.position.x ) * .05;
+	camera.position.y += ( - mouseY - camera.position.y ) * .05;
+
+	camera.lookAt( scene.position );
+
+	if ( zmesh1 && zmesh2 ) {
+
+		zmesh1.rotation.y = - time;
+		zmesh2.rotation.y = - time + Math.PI / 2;
+
+	}
+
+	if ( material.uniforms[ "time" ].value > 1 || material.uniforms[ "time" ].value < 0 ) {
+
+		delta *= - 1;
+
+	}
+
+	material.uniforms[ "time" ].value += delta;
+
+
+	// Render first scene into texture
+
+	renderer.setRenderTarget( rtTexture );
+	renderer.clear();
+	renderer.render( sceneRTT, cameraRTT );
+
+	// Render full screen quad with generated texture
+
+	renderer.setRenderTarget( null );
+	renderer.clear();
+	renderer.render( sceneScreen, cameraRTT );
+
+	// Render second scene to screen
+	// (using first scene as regular texture)
+
+	renderer.render( scene, camera );
+
+}
+
+</script>
+
+		<img src="testdata/map.png" />
+	</body>
+</html>
