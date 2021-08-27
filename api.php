@@ -361,6 +361,9 @@ class GetGamesStates extends ApiEntry {
 			throw new RequestException('Invalid country ID.');
 		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
 		    throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
+		$game = $this->getAssociatedGame();
+		if (!isset($game->Members->ByUserID[$userID]) || $countryID != $game->Members->ByUserID[$userID]->countryID)
+			throw new ClientForbiddenException('A user can only view game state for the country it controls.');
 		$gameState = new \webdiplomacy_api\GameState(intval($gameID), intval($countryID));
 		return $gameState->toJson();
 	}
