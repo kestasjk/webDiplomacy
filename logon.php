@@ -83,8 +83,8 @@ if( isset($_REQUEST['forgotPassword']) and $User->type['Guest'] )
 			if( $validatedEmail === false )
 				throw new Exception(l_t("Account not found"));
 			
-			$email = $DB->escape();
-			$userID = User::findEmail($email);
+			$validatedEmail = $DB->escape($validatedEmail);
+			$userID = User::findEmail($validatedEmail);
 			if( $userID == 0 )
 				throw new Exception(l_t("Account not found"));
 				
