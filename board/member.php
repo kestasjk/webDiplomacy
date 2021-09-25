@@ -133,11 +133,15 @@ class userMember extends panelMember
 		if(!in_array($voteName, Members::$votes))
 			throw new Exception(l_t("Invalid vote"));
 
-		if(in_array($voteName, $this->votes))
+		$voteOn = in_array($voteName, $this->votes);
+		if($voteOn)
 			unset($this->votes[array_search($voteName, $this->votes)]);
 		else
 			$this->votes[] = $voteName;
 
+		// Keep a log that a vote was set in the game messages, so the vote time is recorded
+		require_once(l_r('lib/gamemessage.php'));
+		libGameMessage::send($this->countryID, $this->countryID, ($voteOn?'Un-':'').'Voted for '.$voteName, $this->gameID);
 		$DB->sql_put("UPDATE wD_Members SET votes='".implode(',',$this->votes)."' WHERE id=".$this->id);
 	}
 
