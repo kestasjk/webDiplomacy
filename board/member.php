@@ -148,7 +148,7 @@ class userMember extends panelMember
 	/**
 	 * Register that you have viewed the messages from a certain countryID and
 	 * no longer need notification of them
-	 *
+	 *da
 	 * @param string $seenCountryID The countryID who's messages were read
 	 */
 	public function seen($seenCountryID)
