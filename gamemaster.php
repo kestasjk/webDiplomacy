@@ -115,7 +115,7 @@ $Misc->write();
 # Take member / bot submitted game ID hints for games that may need early processing,
 # and add them to the list of games to be checked
 $gameIDHints = $MC->get('processHint');
-if( is_null($gameIDHints) ) $MC->set('processHint',''); // If memcached is restarted processHint will be unset
+if( false===($gameIDHints) ) $MC->set('processHint',''); // If memcached is restarted processHint will be unset
 else $MC->replace('processHint','');
 if( $gameIDHints )
 {
