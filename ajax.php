@@ -103,7 +103,7 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 			$Game = libVariant::$Variant->Game($O->gameID, UPDATE); // Lock the game for update to 
 			if( $Game->needsProcess() )
 			{
-				if( false===($MC->append('processHint',','.$Game->id)) ) $MC->set('processHint', ','.$Game->id);
+				$MC->append('processHint',','.$Game->id);
 			}
 			/*
 			Old instant-process code which was disabled as it was causing deadlocks
