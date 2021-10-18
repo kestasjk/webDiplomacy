@@ -389,7 +389,7 @@ class GameState {
 		// messages
 		if ($this->pressType != 'NoPress') {
 			$msgTabl = $DB->sql_tabl(
-				"SELECT turn, fromCountryID, toCountryID, message from wD_GameMessages WHERE gameID = ".$this->gameID." AND (fromCountryID = ".$this->countryID." OR toCountryID = ".$this->countryID.") ORDER BY timeSent"
+				"SELECT turn, fromCountryID, toCountryID, message from wD_GameMessages_Redacted WHERE gameID = ".$this->gameID." AND (fromCountryID = ".$this->countryID." OR toCountryID = ".$this->countryID.") ORDER BY timeSent"
 			);
 
 			while ($row = $DB->tabl_hash($msgTabl)) {
