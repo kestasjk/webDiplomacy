@@ -27,6 +27,7 @@ require_once('header.php');
 
 require_once(l_r('objects/mailer.php'));
 
+// Test commit #2, on staging branch
 global $Mailer;
 $Mailer = new Mailer();
 
