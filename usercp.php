@@ -115,6 +115,28 @@ if ( isset($_REQUEST['userForm']) )
 			$formOutput .= l_t('%s updated successfully.',$name).' ';
 		}
 
+		if( isset(Config::$enabledOptInFeatures) && Config::$enabledOptInFeatures > 0 )
+		{
+			$featureSetSQL = array();
+			foreach($optInFeatures as $featureFlag => $featureInfo)
+			{
+				if( ( $featureFlag & Config::$enabledOptInFeatures ) == 0 ) continue;
+
+				if( key_exists('optInFeature_' . $featureFlag, $_REQUEST['userForm']) )
+				{
+					if( $_REQUEST['userForm']['optInFeature_' . $featureFlag ] == "1" )
+						$User->optInFeatures = $User->optInFeatures | $featureFlag;
+					else
+						$User->optInFeatures = $User->optInFeatures & ~$featureFlag;
+				}
+			}
+			if( count($featureSetSQL) > 0 )
+			{
+				if ( $set != '' ) $set .= ', ';
+				$set .= implode(', ', $featureSetSQL);
+			}
+		}
+
 		if ( $set != '' )
 		{
 			$DB->sql_put("UPDATE wD_Users SET ".$set." WHERE id = ".$User->id);
