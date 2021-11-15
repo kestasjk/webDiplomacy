@@ -119,7 +119,7 @@ if ( isset($_REQUEST['userForm']) )
 		if( isset(Config::$enabledOptInFeatures) && Config::$enabledOptInFeatures > 0 )
 		{
 			$featureSetSQL = array();
-			for( $i=1; pow(2, $i) < Config::$enabledOptInFeatures; $i *= 2 )
+			for( $featureFlag=1; pow(2, $featureFlag) < Config::$enabledOptInFeatures; $featureFlag *= 2 )
 			{
 				if( ( $featureFlag & Config::$enabledOptInFeatures ) == 0 ) continue;
 
@@ -134,7 +134,7 @@ if ( isset($_REQUEST['userForm']) )
 			if( count($featureSetSQL) > 0 )
 			{
 				if ( $set != '' ) $set .= ', ';
-				$set .= implode(', ', $featureSetSQL);
+				$set .= "optInFeatures = " . $User->optInFeatures;
 			}
 		}
 
