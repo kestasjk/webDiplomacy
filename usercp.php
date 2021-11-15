@@ -118,15 +118,11 @@ if ( isset($_REQUEST['userForm']) )
 		// Check if there are any changes to the opt-in features:
 		if( isset(Config::$enabledOptInFeatures) && Config::$enabledOptInFeatures > 0 )
 		{
-			$featureSetSQL = array();
-			print_r($_REQUEST['userForm']);
+			$previousOptInFeatures = $User->optInFeatures;
 			for( $featureFlag=1; pow(2, $featureFlag) < Config::$enabledOptInFeatures; $featureFlag *= 2 )
 			{
 				if( ( $featureFlag & Config::$enabledOptInFeatures ) == 0 ) continue;
 
-				print '$featureFlag='.$featureFlag.'<br/>';
-				print '$User->optInFeatures='.$User->optInFeatures.'<br/>';
-				print '$featureFlag='.$featureFlag.'<br/>';
 				if( key_exists('optInFeature_' . $featureFlag, $_REQUEST['userForm']) )
 				{
 					if( $_REQUEST['userForm']['optInFeature_' . $featureFlag ] == "1" )
@@ -135,7 +131,7 @@ if ( isset($_REQUEST['userForm']) )
 						$User->optInFeatures = $User->optInFeatures & ~$featureFlag;
 				}
 			}
-			if( count($featureSetSQL) > 0 )
+			if( $previousOptInFeatures != $User->optInFeatures )
 			{
 				if ( $set != '' ) $set .= ', ';
 				$set .= "optInFeatures = " . $User->optInFeatures;
