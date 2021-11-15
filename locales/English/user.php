@@ -107,8 +107,8 @@ if( $User->type['User'] )
 			<p>
 				<div style="float:right"><i>'.$description.'</i></div>
 				<div><li class="settings"><strong>'.$header.':</strong></li>
-				<input type="radio" name="userForm[optInFeatures_'+$featureFlag+']" value="1" ' + ( ($featureFlag & $User->optInFeatures) > 0 ? "checked" : "") + '>Enable
-				<input type="radio" name="userForm[optInFeatures_'+$featureFlag+']" value="0" ' + ( ($featureFlag & $User->optInFeatures) == 0 ? "checked" : "") + '>Disable
+				<input type="radio" name="userForm[optInFeatures_'.$featureFlag.']" value="1" ' . ( ($featureFlag & $User->optInFeatures) > 0 ? "checked" : "") . '>Enable
+				<input type="radio" name="userForm[optInFeatures_'.$featureFlag.']" value="0" ' . ( ($featureFlag & $User->optInFeatures) == 0 ? "checked" : "") . '>Disable
 			</p>
 			';
 		}
