@@ -112,6 +112,8 @@ if( $User->type['User'] )
 			</p>
 			';
 		}
+		if( ($User->optInFeatures & 0b01) != 0 ) print '<h4>Opt-in #1: Hello world</h4>';
+		if( ($User->optInFeatures & 0b10) != 0 ) print '<h4>Opt-in #2: World hello</h4>';
 		if( count($optInFeatureFormHTML) > 0 )
 		{
 			?>
