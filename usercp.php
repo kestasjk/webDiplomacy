@@ -135,6 +135,7 @@ if ( isset($_REQUEST['userForm']) )
 			{
 				if ( $set != '' ) $set .= ', ';
 				$set .= "optInFeatures = " . $User->optInFeatures;
+				$formOutput .= l_t('Optional feature set selection updated.').' ';
 			}
 		}
 
