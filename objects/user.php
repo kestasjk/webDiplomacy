@@ -546,6 +546,12 @@ class User {
 			$this->{$name} = $value;
 		}
 
+		// Ensure the only optional opt-in feature flags set are allowed in the config:
+		if( !isset(Config::$enabledOptInFeatures) )
+			$this->optInFeatures = 0;
+		else
+			$this->optInFeatures = $this->optInFeatures & Config::$enabledOptInFeatures;
+
 		// For display, cdCount should include deletedCDs
 		$this->{'cdCount'} = $this->{'cdCount'} + $this->{'deletedCDs'};
 
