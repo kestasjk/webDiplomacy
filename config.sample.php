@@ -249,6 +249,18 @@ class Config
 	public static $faq=array('Have any extra questions been added?'=>'No, not yet.');
 
 	/**
+	 * A bit-mask that masks an int stored against wD_Users to allow users to opt-in to various experimental features
+	 * in a way that doesn't need any database changes to add/remove new features.
+	 * 
+	 * If this is non-zero the user will see a list of options as defined in locales/[locale]/user.php
+	 * 
+	 * @var int
+	 */
+	public static $enabledOptInFeatures = 0;
+	// Enable up to 24 opt-in features:
+	//public static $enabledOptInFeatures = 0b111111111111111111111111;
+
+	/**
 	 * The directory in which error logs are stored. If this returns false errors will not be logged.
 	 * *Must not be accessible to the web server, as sensitive info is stored in this folder.*
 	 *

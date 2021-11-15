@@ -234,6 +234,13 @@ class User {
 	public $darkMode;
 
 	/**
+	 * optInFeatures
+	 * A integer bitset from that can be used to allow users to opt into various experimental features that are in development.
+	 * @var int
+	 */
+	public $optInFeatures;
+
+	/**
 	 * Give this user a supplement of points
 	 *
 	 * @param $userID The user ID
@@ -523,7 +530,8 @@ class User {
 			u.deletedCDs, 
 			u.emergencyPauseDate, 
 			u.yearlyPhaseCount,
-			u.tempBanReason
+			u.tempBanReason,
+			u.optInFeatures
 			FROM wD_Users u
 			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
 			WHERE ".( $username ? "u.username='".$username."'" : "u.id=".$this->id ));

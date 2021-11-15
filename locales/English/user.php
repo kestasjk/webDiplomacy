@@ -52,37 +52,83 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		<input type="password" name="userForm[passwordcheck]" maxlength=30 autocomplete="new-password" class = "settings">
 	</p>
 
-	<p><strong>Comment:</strong></br>
+	<p>
+		<div style="float:right"><i>Profile quote visible to others. Consider favorite quotes or links to games.</i></div>
+		<strong>Comment:</strong></br>
 		<TEXTAREA NAME="userForm[comment]" ROWS="3" COLS="50" class = "settings"><?php
 			print str_replace('<br />', "\n", $User->comment);
 		?></textarea>
-	</br>
-		<?php if ( !$User->type['User'] ) print '<strong>(Optional)</strong>: '; ?>
-		Profile quote visible to others. Consider favorite quotes or links to games.
 	</p>
 
-<?php 
-	if (isset(Config::$customForumURL))
-	{
-		list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$User->id);
-		if ($newForumId > 0)
-		{
-			print '<p class="profileCommentURL"><strong><a href="/contrib/phpBB3/ucp.php?i=179">Forum User Settings</a></strong></p>';
-		}
-	}
+<?php
+	
 
-	foreach ($User->options->value as $name=>$val) 
+if (isset(Config::$customForumURL))
+{
+	list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$User->id);
+	if ($newForumId > 0)
 	{
-		print '<div><li class="settings"><strong>'.UserOptions::$titles[$name].':</strong></li>';
-		foreach (UserOptions::$possibleValues[$name] as $possible) 
-		{
-			print ' <input type="radio" name="userForm['.$name.']" value="'.$possible.'" '. ($val == $possible ? 'checked' :'') . ' > '. $possible;
-		}
-		print '</div></br>';
+		print '<p class="profileCommentURL"><strong><a href="/contrib/phpBB3/ucp.php?i=179">Forum User Settings</a></strong></p>';
 	}
+}
+
+foreach ($User->options->value as $name=>$val) 
+{
+	print '<div><li class="settings"><strong>'.UserOptions::$titles[$name].':</strong></li>';
+	foreach (UserOptions::$possibleValues[$name] as $possible) 
+	{
+		print ' <input type="radio" name="userForm['.$name.']" value="'.$possible.'" '. ($val == $possible ? 'checked' :'') . ' > '. $possible;
+	}
+	print '</div></br>';
+}
  	                               
 if( $User->type['User'] ) 
 {
+	if( isset(Config::$enabledOptInFeatures) && Config::$enabledOptInFeatures > 0 )
+	{
+		// Opt-in features are enabled in the config, so enumerate all the features this user can use
+		$optInFeatures = array(
+			0x1 => array(
+				'Print hello world in the User CP', 
+				"Select this option to print hello world in the user control panel area. This entry is indended to test the opt-in functionality."
+			),
+			0x2 => array(
+				'Print world hello in the User CP', 
+				"Select this option to print hello world in the user control panel area. This entry is indended to test the opt-in functionality."
+			)
+		);
+		$optInFeatureFormHTML = array();
+		foreach($optInFeatures as $featureFlag => $featureInfo)
+		{
+			if( ( $featureFlag & Config::$enabledOptInFeatures ) == 0 ) continue;
+
+			list($header, $description) = $featureInfo;
+			$optInFeatureFormHTML[] = '
+			<p>
+				<div style="float:right"><i>'.$description.'</i></div>
+				<div><li class="settings"><strong>'.$header.':</strong></li>
+				<input type="radio" name="userForm[optInFeatures_'+$featureFlag+']" value="1" ' + ( ($featureFlag & $User->optInFeatures) > 0 ? "checked" : "") + '>Enable
+				<input type="radio" name="userForm[optInFeatures_'+$featureFlag+']" value="0" ' + ( ($featureFlag & $User->optInFeatures) == 0 ? "checked" : "") + '>Disable
+			</p>
+			';
+		}
+		if( count($optInFeatureFormHTML) > 0 )
+		{
+			?>
+			<hr />
+			<div class="sunkenArea">
+				<h3>Opt-in / Experimental features</h3>
+				<p>
+					This area contains various features which are still experimental and under development. Feel free to use them, and let us 
+					know what you think in the forum, but note that the functionality may not be 100% bulletproof yet!
+				</p>
+				<?php print implode('', $optInFeatureFormHTML); ?>
+			</div>
+			<hr />
+			<?php
+		}
+	}
+
 	if (!isset(Config::$customForumURL))
 	{
 		// If the user is registered show the list of muted users/countries:
