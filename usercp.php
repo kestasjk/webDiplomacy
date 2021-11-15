@@ -115,10 +115,11 @@ if ( isset($_REQUEST['userForm']) )
 			$formOutput .= l_t('%s updated successfully.',$name).' ';
 		}
 
+		// Check if there are any changes to the opt-in features:
 		if( isset(Config::$enabledOptInFeatures) && Config::$enabledOptInFeatures > 0 )
 		{
 			$featureSetSQL = array();
-			foreach($optInFeatures as $featureFlag => $featureInfo)
+			for( $i=1; pow(2, $i) < Config::$enabledOptInFeatures; $i *= 2 )
 			{
 				if( ( $featureFlag & Config::$enabledOptInFeatures ) == 0 ) continue;
 
