@@ -119,10 +119,14 @@ if ( isset($_REQUEST['userForm']) )
 		if( isset(Config::$enabledOptInFeatures) && Config::$enabledOptInFeatures > 0 )
 		{
 			$featureSetSQL = array();
+			print_r($_REQUEST['userForm']);
 			for( $featureFlag=1; pow(2, $featureFlag) < Config::$enabledOptInFeatures; $featureFlag *= 2 )
 			{
 				if( ( $featureFlag & Config::$enabledOptInFeatures ) == 0 ) continue;
 
+				print '$featureFlag='.$featureFlag.'<br/>';
+				print '$User->optInFeatures='.$User->optInFeatures.'<br/>';
+				print '$featureFlag='.$featureFlag.'<br/>';
 				if( key_exists('optInFeature_' . $featureFlag, $_REQUEST['userForm']) )
 				{
 					if( $_REQUEST['userForm']['optInFeature_' . $featureFlag ] == "1" )
