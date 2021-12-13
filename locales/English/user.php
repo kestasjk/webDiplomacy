@@ -72,29 +72,13 @@ if (isset(Config::$customForumURL))
 	}
 }
 
-foreach ($User->options->value as $name=>$val) 
-{
-	print '<div><li class="settings"><strong>'.UserOptions::$titles[$name].':</strong></li>';
-	foreach (UserOptions::$possibleValues[$name] as $possible) 
-	{
-		print ' <input type="radio" name="userForm['.$name.']" value="'.$possible.'" '. ($val == $possible ? 'checked' :'') . ' > '. $possible;
-	}
-	print '</div></br>';
-}
- 	                               
-if( $User->type['User'] ) 
-{
-	if( isset(Config::$enabledOptInFeatures) && Config::$enabledOptInFeatures > 0 )
+if( isset(Config::$enabledOptInFeatures) && Config::$enabledOptInFeatures > 0 )
 	{
 		// Opt-in features are enabled in the config, so enumerate all the features this user can use
 		$optInFeatures = array(
 			0x1 => array(
-				'Print hello world in the User CP', 
-				"Select this option to print hello world in the user control panel area. This entry is indended to test the opt-in functionality."
-			),
-			0x2 => array(
-				'Print world hello in the User CP', 
-				"Select this option to print hello world in the user control panel area. This entry is indended to test the opt-in functionality."
+				'Early Access: show in-development features (may be buggy!)', 
+				""
 			)
 		);
 		$optInFeatureFormHTML = array();
@@ -107,30 +91,31 @@ if( $User->type['User'] )
 			<p>
 				<div><li class="settings"><strong>'.$header.':</strong></li>
 				<div><i>'.$description.'</i></div>
-				<input type="radio" name="userForm[optInFeature_'.$featureFlag.']" value="1" ' . ( ($featureFlag & $User->optInFeatures) > 0 ? "checked" : "") . '>Enable
-				<input type="radio" name="userForm[optInFeature_'.$featureFlag.']" value="0" ' . ( ($featureFlag & $User->optInFeatures) == 0 ? "checked" : "") . '>Disable
+				<input type="radio" name="userForm[optInFeature_'.$featureFlag.']" value="1" ' . ( ($featureFlag & $User->optInFeatures) > 0 ? "checked" : "") . '>Yes
+				<input type="radio" name="userForm[optInFeature_'.$featureFlag.']" value="0" ' . ( ($featureFlag & $User->optInFeatures) == 0 ? "checked" : "") . '>No
 			</p>
 			';
 		}
-		if( ($User->optInFeatures & 0b01) != 0 ) print '<h4>Opt-in #1: Hello world</h4>';
-		if( ($User->optInFeatures & 0b10) != 0 ) print '<h4>Opt-in #2: World hello</h4>';
 		if( count($optInFeatureFormHTML) > 0 )
 		{
 			?>
-			<hr />
-			<div class="sunkenArea">
-				<h3>Opt-in / Experimental features</h3>
-				<p>
-					This area contains various features which are still experimental and under development. Feel free to use them, and let us 
-					know what you think in the forum, but note that the functionality may not be 100% bulletproof yet!
-				</p>
 				<?php print implode('', $optInFeatureFormHTML); ?>
-			</div>
-			<hr />
 			<?php
 		}
 	}
 
+foreach ($User->options->value as $name=>$val) 
+{
+	print '<div><li class="settings"><strong>'.UserOptions::$titles[$name].':</strong></li>';
+	foreach (UserOptions::$possibleValues[$name] as $possible) 
+	{
+		print ' <input type="radio" name="userForm['.$name.']" value="'.$possible.'" '. ($val == $possible ? 'checked' :'') . ' > '. $possible;
+	}
+	print '</div></br>';
+}
+ 	                               
+if( $User->type['User'] ) 
+{
 	if (!isset(Config::$customForumURL))
 	{
 		// If the user is registered show the list of muted users/countries:
