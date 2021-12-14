@@ -1,1 +1,6 @@
-src/svg-components
+node_modules/
+public/
+src/svg-components/
+src/tests/
+src/reportWebVitals.ts
+src/setupTests.ts
