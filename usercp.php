@@ -29,6 +29,7 @@ require_once('header.php');
 
 require_once(l_r('objects/mailer.php'));
 
+// Test commit #2, on staging branch
 global $Mailer;
 $Mailer = new Mailer();
 
@@ -114,6 +115,30 @@ if ( isset($_REQUEST['userForm']) )
 
 			$set .= $SQLName." = '".$SQLVars[$SQLName]."'";
 			$formOutput .= l_t('%s updated successfully.',$name).' ';
+		}
+
+		// Check if there are any changes to the opt-in features:
+		if( isset(Config::$enabledOptInFeatures) && Config::$enabledOptInFeatures > 0 )
+		{
+			$previousOptInFeatures = $User->optInFeatures;
+			for( $featureFlag=1; pow(2, $featureFlag) < Config::$enabledOptInFeatures; $featureFlag *= 2 )
+			{
+				if( ( $featureFlag & Config::$enabledOptInFeatures ) == 0 ) continue;
+
+				if( key_exists('optInFeature_' . $featureFlag, $_REQUEST['userForm']) )
+				{
+					if( $_REQUEST['userForm']['optInFeature_' . $featureFlag ] == "1" )
+						$User->optInFeatures = $User->optInFeatures | $featureFlag;
+					else
+						$User->optInFeatures = $User->optInFeatures & ~$featureFlag;
+				}
+			}
+			if( $previousOptInFeatures != $User->optInFeatures )
+			{
+				if ( $set != '' ) $set .= ', ';
+				$set .= "optInFeatures = " . $User->optInFeatures;
+				$formOutput .= l_t('Optional feature set selection updated.').' ';
+			}
 		}
 
 		if ( $set != '' )
