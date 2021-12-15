@@ -78,16 +78,14 @@ if( isset(Config::$enabledOptInFeatures) && Config::$enabledOptInFeatures > 0 )
 		$optInFeatures = array(
 			0x1 => array(
 				'Early Access: show in-development features (may be buggy!)', 
-				""
-			)
+				''
+			),
 		);
-		$optInFeatureFormHTML = array();
 		foreach($optInFeatures as $featureFlag => $featureInfo)
 		{
 			if( ( $featureFlag & Config::$enabledOptInFeatures ) == 0 ) continue;
-
 			list($header, $description) = $featureInfo;
-			$optInFeatureFormHTML[] = '
+			print '
 			<p>
 				<div><li class="settings"><strong>'.$header.':</strong></li>
 				<div><i>'.$description.'</i></div>
@@ -95,12 +93,6 @@ if( isset(Config::$enabledOptInFeatures) && Config::$enabledOptInFeatures > 0 )
 				<input type="radio" name="userForm[optInFeature_'.$featureFlag.']" value="0" ' . ( ($featureFlag & $User->optInFeatures) == 0 ? "checked" : "") . '>No
 			</p>
 			';
-		}
-		if( count($optInFeatureFormHTML) > 0 )
-		{
-			?>
-				<?php print implode('', $optInFeatureFormHTML); ?>
-			<?php
 		}
 	}
 
