@@ -277,8 +277,11 @@ if ( 'Pre-game' != $Game->phase )
 	// Post messages we sent, and get the user we're speaking to
 	$msgCountryID = $CB->findTab();
 
-	$CB->postMessage($msgCountryID);
-	$DB->sql_put("COMMIT");
+	if( isset($Member) )
+	{
+		$CB->postMessage($msgCountryID);
+		$DB->sql_put("COMMIT");
+	}
 
 	$forum = $CB->output($msgCountryID);
 
