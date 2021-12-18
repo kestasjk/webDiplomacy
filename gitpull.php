@@ -15,6 +15,8 @@ if( !isset($headers['X-Hub-Signature-256']) )
 
 $rawReq = file_get_contents('php://input');
 
+// Define this in the apache site config:
+// SetEnv GITWEBHOOKSECRET "jpoiegwe9823-09rjk209873hf3497hqawodji1032r084hj32"
 $sig_check = 'sha256=' . hash_hmac('sha256', $rawReq, getenv('GITWEBHOOKSECRET'));
 
 if (!hash_equals($sig_check, $headers['X-Hub-Signature-256']))

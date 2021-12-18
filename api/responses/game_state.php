@@ -389,14 +389,15 @@ class GameState {
 		// messages
 		if ($this->pressType != 'NoPress') {
 			$msgTabl = $DB->sql_tabl(
-				"SELECT turn, fromCountryID, toCountryID, message from wD_GameMessages_Redacted WHERE gameID = ".$this->gameID." AND (fromCountryID = ".$this->countryID." OR toCountryID = ".$this->countryID.") ORDER BY timeSent"
+				"SELECT turn, fromCountryID, toCountryID, message, phaseMarker from wD_GameMessages_Redacted WHERE gameID = ".$this->gameID." AND (fromCountryID = ".$this->countryID." OR toCountryID = ".$this->countryID.") ORDER BY timeSent"
 			);
 
 			while ($row = $DB->tabl_hash($msgTabl)) {
 				$message = new \webdiplomacy_api\Message(
 					$row['message'],
 					$row['fromCountryID'],
-					$row['toCountryID']
+					$row['toCountryID'],
+					$row['phaseMarker']
 				);
 				$phase = $gameSteps->get($row['turn'], 'Diplomacy', array());
 				$phase['messages'][] = $message;
