@@ -387,11 +387,11 @@ class GetGameOverview extends ApiEntry {
 	private function getMemberData( $members ){
 		return array_map( function( $member ){
 			return [
-				'id' => $member->id,
-				'userID' => $member->userID,
-				'countryID' => $member->countryID,
 				'country' => $member->country,
+				'countryID' => $member->countryID,
+				'id' => $member->id,
 				'online' => $member->online,
+				'userID' => $member->userID,
 			];
 		}, $members->ByOrder );
 	}
@@ -408,25 +408,25 @@ class GetGameOverview extends ApiEntry {
 		    throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 		$game = $this->getAssociatedGame();
 		$json = [
-			'turn' => $game->turn,
-			'phase' => $game->phase,
-			'name' => $game->name,
-			'pot' => $game->pot,
-			'phaseMinutes' => $game->phaseMinutes,
-			'processTime' => $game->processTime,
+			'anon' => $game->anon,
+			'drawType' => $game->drawType,
+			'excusedMissedTurns' => $game->excusedMissedTurns,
 			'gameOver' => $game->gameOver,
 			'members' => $this->getMemberData( $game->Members ),
+			'minimumBet' => $game->minimumBet,
+			'name' => $game->name,
+			'pauseTimeRemaining' => $game->pauseTimeRemaining,
+			'phase' => $game->phase,
+			'phaseMinutes' => $game->phaseMinutes,
+			'playerTypes' => $game->playerTypes,
+			'pot' => $game->pot,
+			'potType' => $game->potType,
+			'processStatus' => $game->processStatus,
+			'processTime' => $game->processTime,
+			'startTime' => $game->startTime,
+			'turn' => $game->turn,
 			'variant' => $game->Variant,
 			'variantID' => $game->variantID,
-			'potType' => $game->potType,
-			'drawType' => $game->drawType,
-			'processStatus' => $game->processStatus,
-			'anon' => $game->anon,
-			'minimumBet' => $game->minimumBet,
-			'pauseTimeRemaining' => $game->pauseTimeRemaining,
-			'excusedMissedTurns' => $game->excusedMissedTurns,
-			'playerTypes' => $game->playerTypes,
-			'startTime' => $game->startTime
 		];
 		return json_encode( $json, JSON_NUMERIC_CHECK );
 	}
@@ -757,7 +757,7 @@ abstract class ApiAuth {
 	protected $userID = null;
 
 	/**
-	 * Cache key associated with this this API request.
+	 * Cache key associated with this API request.
 	 * @var string
 	 */
 	private $cacheKey = null;
