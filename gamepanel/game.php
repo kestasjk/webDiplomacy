@@ -575,14 +575,6 @@ class panelGame extends Game
 				<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t($this->Members->isJoined()?'Open':'View').'</a>
 				'.$playBeta.'
 			';
-
-		// return '<a href="board.php?gameID='.$this->id.'#gamePanel">'.
-		// 	l_t($this->Members->isJoined()?'Open':'View').'</a>';
-
-		// return '<form method="get" action="board.php#gamePanel"><div>
-		// 	<input type="hidden" name="gameID" value="'.$this->id.'" />
-		// 	<input type="submit" value="" class="form-submit" />
-		// 	</div></form>';
 	}
 }
 
