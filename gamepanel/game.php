@@ -142,23 +142,11 @@ class panelGame extends Game
 			static $timerCount=0;
 		$timerCount++;
 
-		if( $this->phase == 'Pre-game' )
-			$buf =
-				'
-					<span class="gameTimeRemainingNextPhase">'.l_t('Start:').'</span> '.$this->processTimetxt().' <span class="timestampGamesWrapper"> ('.libTime::detailedText($this->processTime).') </span>
-				';
-		else
-		{
-			$buf =
-				'
-					<span class="gameTimeRemainingNextPhase">'.l_t('Next:').'</span> '.$this->processTimetxt().' <span class="timestampGamesWrapper"> ('.libTime::detailedText($this->processTime).') </span>
-				';
-
-			//if ( $this->Members->isJoined() )
-				//$buf .= ' <span class="gameTimeRemainingFixed">('.libTime::text($this->processTime).')</span>';
-
-		}
-
+		$buf = 
+			'
+			<span class="gameTimeRemainingNextPhase">'.($this->phase == 'Pre-game' ? l_t('Start:') : l_t('Next:')).'</span> '.$this->processTimetxt().' <span class="timestampGamesWrapper"> ('.libTime::detailedText($this->processTime).') </span>
+			';
+			
 		return $buf;
 	}
 
