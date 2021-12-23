@@ -365,6 +365,10 @@ div.memberBoardHeader {
 .homeGameLinks a {
 	margin:0 4px;
 }
+.homeGameLinksForm {
+	display: flex;
+	justify-content: space-between;
+}
 
 /* --- Home game panel --- */
 .gamePanelHome {

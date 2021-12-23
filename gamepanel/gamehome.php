@@ -198,7 +198,7 @@ class panelGameHome extends panelGameBoard
 			{
 				return 
 					'<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
-						<form action="#" method="post" style="display: flex; justify-content: space-between;">
+						<form class="homeGameLinksForm" action="#" method="post" >
 							'.libAuth::formTokenHTML().'
 							<a href="board.php?gameID='.$this->id.'">'.l_t('Open').'</a>
 							<input type="hidden" value="'.$this->id.'" name="gameToggleName" />
@@ -211,7 +211,7 @@ class panelGameHome extends panelGameBoard
 			{
 				return 
 					'<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
-						<form action="#" method="post" style="display: flex; justify-content: space-between;">
+						<form class="homeGameLinksForm" action="#" method="post" >
 							'.libAuth::formTokenHTML().'
 							<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t('Open').'</a> 
 							<input type="hidden" value="'.$this->id.'" name="gameToggleName" />
