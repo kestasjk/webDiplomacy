@@ -143,12 +143,16 @@ class panelGame extends Game
 		$timerCount++;
 
 		if( $this->phase == 'Pre-game' )
-			$buf = '<span class="gameTimeRemainingNextPhase">'.l_t('Start:').'</span> '.
-				$this->processTimetxt().' ('.libTime::detailedText($this->processTime).')';
+			$buf =
+				'
+					<span class="gameTimeRemainingNextPhase">'.l_t('Start:').'</span> '.$this->processTimetxt().' <span class="timestampGamesWrapper"> ('.libTime::detailedText($this->processTime).') </span>
+				';
 		else
 		{
-			$buf = '<span class="gameTimeRemainingNextPhase">'.l_t('Next:').'</span> '.
-				$this->processTimetxt().' ('.libTime::detailedText($this->processTime).')';
+			$buf =
+				'
+					<span class="gameTimeRemainingNextPhase">'.l_t('Next:').'</span> '.$this->processTimetxt().' <span class="timestampGamesWrapper"> ('.libTime::detailedText($this->processTime).') </span>
+				';
 
 			//if ( $this->Members->isJoined() )
 				//$buf .= ' <span class="gameTimeRemainingFixed">('.libTime::text($this->processTime).')</span>';
@@ -156,6 +160,17 @@ class panelGame extends Game
 		}
 
 		return $buf;
+	}
+
+	function gamePlayBeta()
+	{
+		global $User;
+
+		if (($User->optInFeatures & 0x1) > 0) { 
+			return'<a href="board.php?gameID='.$this->id.'/beta #gamePanel" >'.l_t('Play Beta').'</a> '; 
+		};
+
+		return null;
 	}
 
 	/**
@@ -238,9 +253,10 @@ class panelGame extends Game
 	{
 		$rightTop = '
 			<div class="titleBarRightSide">
-				<div>
-				<span class="gameTimeRemaining">'.$this->gameTimeRemaining().'</span></div>'.
-			'</div>';
+					<span class="gameTimeRemaining">'.$this->gameTimeRemaining().'</span>
+					<span class="gamePlayBeta">'.$this->gamePlayBeta().'</span>
+					<div style="clear:both"></div>
+			</div>';
 
 		$rightMiddle = '<div class="titleBarRightSide">'.
 				'<div>'.
@@ -560,17 +576,25 @@ class panelGame extends Game
 	function openBar()
 	{
 		global $User;
+		$playBeta = '';
+		if (($User->optInFeatures & 0x1) > 0) { $playBeta = '<a href="board.php?gameID='.$this->id.'/beta #gamePanel" style="margin-left: 40px">'.l_t('Play Beta').'</a> '; }
 
 		if( !$this->Members->isJoined() && $this->phase == 'Pre-game' )
 			return '';
+		
+		return
+			'
+				<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t($this->Members->isJoined()?'Open':'View').'</a>
+				'.$playBeta.'
+			';
 
-		return '<a href="board.php?gameID='.$this->id.'#gamePanel">'.
-			l_t($this->Members->isJoined()?'Open':'View').'</a>';
+		// return '<a href="board.php?gameID='.$this->id.'#gamePanel">'.
+		// 	l_t($this->Members->isJoined()?'Open':'View').'</a>';
 
-		return '<form method="get" action="board.php#gamePanel"><div>
-			<input type="hidden" name="gameID" value="'.$this->id.'" />
-			<input type="submit" value="" class="form-submit" />
-			</div></form>';
+		// return '<form method="get" action="board.php#gamePanel"><div>
+		// 	<input type="hidden" name="gameID" value="'.$this->id.'" />
+		// 	<input type="submit" value="" class="form-submit" />
+		// 	</div></form>';
 	}
 }
 

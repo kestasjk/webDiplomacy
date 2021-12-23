@@ -98,6 +98,9 @@ TABLE.orders > tbody > tr.barAlt2 {
 	font-style:italic;
 	font-weight:bold;
 }
+.gamePlayBeta {
+	margin-left: 20px;
+}
 .gameTimeRemaining {
 	font-weight:bold;
 }
@@ -472,5 +475,12 @@ div.memberBoardHeader {
 	}
 	#mapImage{
 		width: 100%;
+	}
+	.timestampGamesWrapper {
+		display: block;
+	}
+	.gameTimeRemaining {
+		float: left;
+		text-align: left;
 	}
 }

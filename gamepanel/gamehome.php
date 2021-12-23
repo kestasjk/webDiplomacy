@@ -165,6 +165,7 @@ class panelGameHome extends panelGameBoard
 		$userInGame = 0;
 		list($userInGame) = $DB->sql_row("SELECT count(1) FROM wD_Members WHERE userID =".$User->id." and gameID =".$this->id);
 		$watchString= '';	
+		$playBeta = '';
 
 		if ($this->watched() || $userInGame == 0)
 		{
@@ -188,32 +189,35 @@ class panelGameHome extends panelGameBoard
 		{
 			$noticesStatus = 5;
 			$SubmitName = 'Toggle Notices';
+			if (($User->optInFeatures & 0x1) > 0) { $playBeta = '<a href="board.php?gameID='.$this->id.'/beta #gamePanel" >'.l_t('Play Beta').'</a> '; }
 			list($noticesStatus) = $DB->sql_row("SELECT hideNotifications FROM wD_Members WHERE userID =".$User->id." and gameID =".$this->id);
 			if ($noticesStatus == 1) { $SubmitName = 'Enable Notices'; }
 			else if ($noticesStatus == 0) { $SubmitName = 'Disable Notices'; }
 
 			if( $this->phase == 'Pre-game')
 			{
-				return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
-				<form action="#" method="post">
-				'.libAuth::formTokenHTML().'
-					<a href="board.php?gameID='.$this->id.'">'.l_t('Open').'</a>
-					<input type="hidden" value="'.$this->id.'" name="gameToggleName" />
-					<input type="submit" title="Turn on/off the notifications for this game." style="float: right;" class = "home-submit toggle-notice" name="submit" value="'.$SubmitName.'"/>
-					</form>
+				return 
+					'<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
+						<form action="#" method="post" style="display: flex; justify-content: space-between;">
+							'.libAuth::formTokenHTML().'
+							<a href="board.php?gameID='.$this->id.'">'.l_t('Open').'</a>
+							<input type="hidden" value="'.$this->id.'" name="gameToggleName" />
+							'.$playBeta.'
+							<input type="submit" title="Turn on/off the notifications for this game." class = "home-submit toggle-notice" name="submit" value="'.$SubmitName.'"/>
+						</form>
 					</div>';
 			}
 			else
 			{
-				return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
-					
-					<form action="#" method="post">
-					'.libAuth::formTokenHTML().'
-					<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t('Open').'</a> 
-					<input type="hidden" value="'.$this->id.'" name="gameToggleName" />
-					<input type="submit" title="Turn on/off the notifications for this game." style="float: right;" class = "home-submit toggle-notice" name="submit" value="'.$SubmitName.'"/>
-					</form>
-					
+				return 
+					'<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
+						<form action="#" method="post" style="display: flex; justify-content: space-between;">
+							'.libAuth::formTokenHTML().'
+							<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t('Open').'</a> 
+							<input type="hidden" value="'.$this->id.'" name="gameToggleName" />
+							'.$playBeta.'
+							<input type="submit" title="Turn on/off the notifications for this game." class = "home-submit toggle-notice" name="submit" value="'.$SubmitName.'"/>
+						</form>
 					</div>';
 			}
 		}	
