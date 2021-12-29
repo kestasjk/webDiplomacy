@@ -538,7 +538,7 @@ $totalRR = max(($basePercentage - $recentPenalty - $yearlyPenalty - $liveShortPe
 print '<div class = "profile-show">';
 print '<div class = "rrInfo">';
 
-print '<div class = "profile_title"> Reliability Rating: '.$totalRR.'%</div>';
+print '<div class = "profile_title"> Reliability Rating: '.round($totalRR,2).'%</div>';
 print '<div class = "profile_content">';
 
 print '<h4>Reliability Explained:</h4>';
@@ -634,11 +634,9 @@ if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 	{
 		print '<TABLE class="rrInfo">';
 		print '<tr>';
-		print '<th class= "rrInfo">ID:</th>';
 		print '<th class= "rrInfo">Game:</th>';
-		print '<th class= "rrInfo">Country</th>';
 		print '<th class= "rrInfo">Turn:</th>';
-		print '<th class= "rrInfo">LiveGame:</th>';
+		print '<th class= "rrInfo">Live?:</th>';
 		print '<th class= "rrInfo">System Excused:</th>';
 		print '<th class= "rrInfo">Mod Excused:</th>';
 		print '<th class= "rrInfo">Same Period Excused:</th>';
@@ -650,12 +648,10 @@ if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 			if ($systemExcused == 'No' && $modExcused == 'No' && $samePeriodExcused == 'No') { print '<tr style="background-color:#F08080;">'; }
 			else { print '<tr>'; }
 
-			print '<td> <strong>'.$id.'</strong></td>';
 			if ($name != '')
 			{
 				$Variant=libVariant::loadFromGameID($gameID);
 				print '<td> <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong></td>';
-				print '<td> <strong>'.$Variant->countries[$countryID-1].'</strong></td>';
 				print '<td> <strong>'.$Variant->turnAsDate($turn).'</strong></td>';
 				print '<td> <strong>'.$liveGame.'</strong></td>';
 				print '<td> <strong>'.$systemExcused.'</strong></td>';
@@ -665,8 +661,7 @@ if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 			}
 			else
 			{
-				print '<td> <strong>Cancelled Game</strong></td>';
-				print '<td> <strong>'.$countryID.'</strong></td>';
+				print '<td> <strong>Cancelled: '.$id.'</strong></td>';
 				print '<td> <strong>'.$turn.'</strong></td>';
 				print '<td> <strong>'.$liveGame.'</strong></td>';
 				print '<td> <strong>'.$systemExcused.'</strong></td>';

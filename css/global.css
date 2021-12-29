@@ -1436,13 +1436,18 @@ input[type=submit].gameCreate:hover {
 	border-collapse: collapse;
 }
 
+.rrInfo table {
+	overflow-x: auto;
+	min-width:600px; 
+}
+
 .rrInfo td, .rrInfo th {
 	border: 1px solid #ddd;
 	padding: 6px;
 }
 
-.rrInfo tr:nth-child(even){background-color: #f2f2f2; word-break: break-word;}
-.rrInfo tr:nth-child(odd){background-color: #ffffff; word-break: break-word;}
+.rrInfo tr:nth-child(even){background-color: #f2f2f2; word-break: break-word; font-size: 12px;}
+.rrInfo tr:nth-child(odd){background-color: #ffffff; word-break: break-word; font-size: 12px;}
 
 .rrInfo th {
 	padding-top: 12px;
@@ -1451,6 +1456,8 @@ input[type=submit].gameCreate:hover {
 	background-color: #009902;
 	color: white;
 	min-width:70px;
+	font-size: 12px;
+	min-width: 50px;
 }
 
 .rr-profile-info {
@@ -2290,5 +2297,8 @@ input[id^="FinalizeButton"]{
 		border-radius: 7px;
 		padding: 5px;
 		margin-right:0px;
+	}
+	.profile_content {
+		overflow: auto !important;
 	}
 }

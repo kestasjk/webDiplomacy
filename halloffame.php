@@ -45,7 +45,7 @@ if ( $User->type['User'] && $User->points > 100 )
 }
 
 $i=1;
-$crashed = $DB->sql_tabl("SELECT id, username, points FROM wD_Users order BY points DESC LIMIT 100 ");
+$top100 = $DB->sql_tabl("SELECT id, username, points FROM wD_Users order BY points DESC LIMIT 100 ");
 
 print "<TABLE class='hof'>";
 print "<tr>";
@@ -54,7 +54,7 @@ print '<th class= "hof">User</th>';
 print "</tr>";
 
 $showMe = 1;
-while ( list($id, $username, $points) = $DB->tabl_row($crashed) )
+while ( list($id, $username, $points) = $DB->tabl_row($top100) )
 {
 	print ' <tr class="hof">
 			<td class="hof"> '.number_format($points).' '.libHTML::points().' - #'.$i.' </td>';
@@ -99,7 +99,7 @@ if ( $User->type['User'] && $User->points > 100 && $User->timeLastSessionEnded >
 }
 
 $i=1;
-$crashed = $DB->sql_tabl("SELECT id, username, points FROM wD_Users WHERE timeLastSessionEnded > ".$sixMonths." order BY points DESC LIMIT 100 ");
+$top100 = $DB->sql_tabl("SELECT id, username, points FROM wD_Users WHERE timeLastSessionEnded > ".$sixMonths." order BY points DESC LIMIT 100 ");
 
 print "<TABLE class='hof'>";
 print "<tr>";
@@ -108,7 +108,7 @@ print '<th class= "hof">User</th>';
 print "</tr>";
 
 $showMe = 1;
-while ( list($id, $username, $points) = $DB->tabl_row($crashed) )
+while ( list($id, $username, $points) = $DB->tabl_row($top100) )
 {
 	print ' <tr class="hof">
 			<td class="hof"> '.number_format($points).' '.libHTML::points().' - #'.$i.' </td>';
@@ -146,15 +146,20 @@ list ($currentRating) = $DB->sql_row("SELECT peakRating FROM wD_GhostRatings WHE
 
 if ( $User->type['User'] && $currentRating > 0 )
 {
-	list($position) = $DB->sql_row("SELECT COUNT(userID)+1 FROM wD_GhostRatings WHERE categoryID = 0 and peakRating > ".$currentRating);
-	list($players) = $DB->sql_row("SELECT COUNT(1) FROM wD_GhostRatings WHERE categoryID = 0 and peakRating  > 100");
+	list($position) = $DB->sql_row("SELECT COUNT(g.userID)+1 FROM wD_GhostRatings g
+									inner join wD_Users u on u.id = g.userID
+									WHERE g.categoryID = 0 and g.peakRating > ".$currentRating." and u.type <> 'banned' and g.userID <> ".$User->id);
+
+	list($players) = $DB->sql_row("SELECT COUNT(1) FROM wD_GhostRatings g
+									inner join wD_Users u on u.id = g.userID
+									WHERE g.categoryID = 0 and g.peakRating  > 100 and u.type <> 'banned'");
 
 	print '<p class = "hof">'.l_t('You are ranked <a href="#me" class="light">#'.$position.'</a> out of '.$players.' players with an overall GR of over 100').
 		l_t('. For more stats on your ranking, visit <a class="light" href="userprofile.php?userID='.$User->id.'">your profile</a>.').'</p>';
 }
 
 $i=1;
-$crashed = $DB->sql_tabl("SELECT u.id, u.username, g.peakRating as 'points' FROM wD_GhostRatings g 
+$top100 = $DB->sql_tabl("SELECT u.id, u.username, g.peakRating as 'points' FROM wD_GhostRatings g 
 							inner join wD_Users u on g.userID = u.id 
 							where g.categoryID = 0 order BY g.peakRating DESC LIMIT 100 ");
 
@@ -165,7 +170,7 @@ print '<th class= "hof">User</th>';
 print "</tr>";
 
 $showMe = 1;
-while ( list($id, $username, $points) = $DB->tabl_row($crashed) )
+while ( list($id, $username, $points) = $DB->tabl_row($top100) )
 {
 	print ' <tr class="hof">
 			<td class="hof"> '.number_format($points).' - #'.$i.' </td>';
@@ -201,11 +206,12 @@ $sixMonths = time() - 15552000;
 
 if ( $User->type['User'] && $currentRating > 100 && $User->timeLastSessionEnded > $sixMonths)
 {
-	list($position) = $DB->sql_row("SELECT COUNT(userID)+1 FROM wD_GhostRatings g inner join wD_Users u on u.id = g.userID 
-									WHERE categoryID = 0 and timeLastSessionEnded > ".$sixMonths." and peakRating > ".$currentRating);
+	list($position) = $DB->sql_row("SELECT COUNT(userID)+1 FROM wD_GhostRatings g 
+									inner join wD_Users u on u.id = g.userID 
+									WHERE categoryID = 0 and timeLastSessionEnded > ".$sixMonths." and peakRating > ".$currentRating." and u.type <> 'banned' and userID <> ".$User->id);
 
 	list($players) = $DB->sql_row("SELECT COUNT(1) FROM wD_GhostRatings g inner join wD_Users u on u.id = g.userID 
-									WHERE categoryID = 0 and timeLastSessionEnded > ".$sixMonths." and peakRating  > 100");
+									WHERE categoryID = 0 and timeLastSessionEnded > ".$sixMonths." and peakRating  > 100 and u.type <> 'banned'");
 
 	print '<p class = "hof">'.l_t('You are ranked <a href="#me" class="light">#'.$position.'</a> out of '.$players.' players with an overall GR of over 100 who have been active in the last six months').
 		l_t('. For more stats on your ranking, visit <a class="light" href="userprofile.php?userID='.$User->id.'">your profile</a>.').'</p>';
@@ -213,9 +219,9 @@ if ( $User->type['User'] && $currentRating > 100 && $User->timeLastSessionEnded 
 
 $i=1;
 
-$crashed = $DB->sql_tabl("SELECT u.id, u.username, g.peakRating as 'points' FROM wD_GhostRatings g 
+$top100 = $DB->sql_tabl("SELECT u.id, u.username, g.peakRating as 'points' FROM wD_GhostRatings g 
 							inner join wD_Users u on g.userID = u.id 
-							where g.categoryID = 0 and timeLastSessionEnded > ".$sixMonths." order BY g.peakRating DESC LIMIT 100 ");
+							where g.categoryID = 0 and timeLastSessionEnded > ".$sixMonths." and u.type <> 'banned' order BY g.peakRating DESC LIMIT 100 ");
 
 print "<TABLE class='hof'>";
 print "<tr>";
@@ -224,7 +230,7 @@ print '<th class= "hof">User</th>';
 print "</tr>";
 
 $showMe = 1;
-while ( list($id, $username, $points) = $DB->tabl_row($crashed) )
+while ( list($id, $username, $points) = $DB->tabl_row($top100) )
 {
 	print ' <tr class="hof">
 			<td class="hof"> '.number_format($points).' - #'.$i.' </td>';
