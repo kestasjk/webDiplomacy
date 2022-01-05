@@ -154,7 +154,7 @@ class panelGame extends Game
 	{
 		global $User;
 
-		if (($User->optInFeatures & 0x1) > 0) { 
+		if ($User->isActiveBeta) { 
 			return'<a href="board.php?gameID='.$this->id.'/beta #gamePanel" >'.l_t('Play Beta').'</a> '; 
 		};
 
@@ -565,7 +565,7 @@ class panelGame extends Game
 	{
 		global $User;
 		$playBeta = '';
-		if (($User->optInFeatures & 0x1) > 0) { $playBeta = '<a href="board.php?gameID='.$this->id.'/beta #gamePanel" style="margin-left: 40px">'.l_t('Play Beta').'</a> '; }
+		if ($User->isActiveBeta) { $playBeta = '<a href="board.php?gameID='.$this->id.'/beta #gamePanel" style="margin-left: 40px">'.l_t('Play Beta').'</a> '; }
 
 		if( !$this->Members->isJoined() && $this->phase == 'Pre-game' )
 			return '';
