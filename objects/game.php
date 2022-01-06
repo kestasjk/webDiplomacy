@@ -388,7 +388,12 @@ class Game
 		$this->private = isset($this->password);
 
 		$this->Variant = $GLOBALS['Variants'][$this->variantID];
-	}                         
+	}   
+	
+	function isClassicGame()
+	{
+		return $this->Variant->name == Config::$variants[1];
+	}
 
 	function watched() 
 	{

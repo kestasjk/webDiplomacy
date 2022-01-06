@@ -154,7 +154,7 @@ class panelGame extends Game
 	{
 		global $User;
 
-		if ($User->isActiveBeta && $this->Variant->name == Config::$variants[1]) { 
+		if ($User->isActiveBeta && $this->isClassicGame()) { 
 			return'<a href="beta?gameID='.$this->id.'" >'.l_t('Play Beta').'</a> '; 
 		};
 
@@ -517,6 +517,9 @@ class panelGame extends Game
 						if ( $this->private )
 							$buf .= '<br />'.self::passwordBox();
 
+						if ( $this->isClassicGame())
+							$buf .= ' <input type="submit" name="join" value="'.l_t('Play Beta').'" class="form-submit" />';
+							
 						$buf .= ' <input type="submit" name="join" value="'.l_t('Join').'" class="form-submit" />';
 
 						$buf .= '</div></form>';
@@ -565,7 +568,7 @@ class panelGame extends Game
 	{
 		global $User;
 		$playBeta = '';
-		if ($User->isActiveBeta && $this->Variant->name == Config::$variants[1]) { $playBeta = '<a href="beta?gameID='.$this->id.'" style="margin-left: 40px">'.l_t('Play Beta').'</a> '; }
+		if ($User->isActiveBeta && $this->isClassicGame()) { $playBeta = '<a href="beta?gameID='.$this->id.'" style="margin-left: 40px">'.l_t('Play Beta').'</a> '; }
 
 		if( !$this->Members->isJoined() && $this->phase == 'Pre-game' )
 			return '';
