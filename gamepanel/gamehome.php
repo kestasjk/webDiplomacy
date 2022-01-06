@@ -189,7 +189,7 @@ class panelGameHome extends panelGameBoard
 		{
 			$noticesStatus = 5;
 			$SubmitName = 'Toggle Notices';
-			if ($User->isActiveBeta) { $playBeta = '<a href="board.php?gameID='.$this->id.'/beta #gamePanel" >'.l_t('Play Beta').'</a> '; }
+			if ($User->isActiveBeta) { $playBeta = '<a href="beta?gameID='.$this->id.'" >'.l_t('Play Beta').'</a> '; }
 			list($noticesStatus) = $DB->sql_row("SELECT hideNotifications FROM wD_Members WHERE userID =".$User->id." and gameID =".$this->id);
 			if ($noticesStatus == 1) { $SubmitName = 'Enable Notices'; }
 			else if ($noticesStatus == 0) { $SubmitName = 'Disable Notices'; }
