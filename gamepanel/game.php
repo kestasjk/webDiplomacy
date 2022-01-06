@@ -154,6 +154,10 @@ class panelGame extends Game
 	{
 		global $User;
 
+		if (!$this->Members->isJoined()) {
+			return null;
+		}
+		
 		if ($User->isActiveBeta && $this->isClassicGame()) { 
 			return'<a href="beta?gameID='.$this->id.'" >'.l_t('Play Beta').'</a> '; 
 		};
@@ -237,14 +241,16 @@ class panelGame extends Game
 	 *
 	 * @return string
 	 */
-	function titleBar()
+	function titleBar($isGameBoard = false)
 	{
 		$rightTop = '
 			<div class="titleBarRightSide">
-					<span class="gameTimeRemaining">'.$this->gameTimeRemaining().'</span>
-					<span class="gamePlayBeta">'.$this->gamePlayBeta().'</span>
-					<div style="clear:both"></div>
-			</div>';
+					<span class="gameTimeRemaining">'.$this->gameTimeRemaining().'</span>';			
+		
+		if ($isGameBoard)
+			$rightTop .= '<span class="gamePlayBeta">'.$this->gamePlayBeta().'</span>';
+
+		$rightTop .= '<div style="clear:both"></div></div>';
 
 		$rightMiddle = '<div class="titleBarRightSide">'.
 				'<div>'.
@@ -519,7 +525,7 @@ class panelGame extends Game
 
 						if ( $this->isClassicGame())
 							$buf .= ' <input type="submit" name="join" value="'.l_t('Play Beta').'" class="form-submit" />';
-							
+
 						$buf .= ' <input type="submit" name="join" value="'.l_t('Join').'" class="form-submit" />';
 
 						$buf .= '</div></form>';

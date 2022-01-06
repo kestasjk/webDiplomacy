@@ -96,7 +96,7 @@ class panelGameHome extends panelGameBoard
 	 * Shortened titlebar info
 	 * @return string
 	 */
-	function titleBar()
+	function titleBar($isGameBoard = false)
 	{
 		global $User;
 		$buf = '
