@@ -241,6 +241,12 @@ class User {
 	public $optInFeatures;
 
 	/**
+	 * only for beta feature
+	 * @var bool
+	 */
+	public $isActiveBeta;
+
+	/**
 	 * Give this user a supplement of points
 	 *
 	 * @param $userID The user ID
@@ -551,6 +557,7 @@ class User {
 			$this->optInFeatures = 0;
 		else
 			$this->optInFeatures = $this->optInFeatures & Config::$enabledOptInFeatures;
+			$this->isActiveBeta = (($this->optInFeatures & 0x1) > 0);
 
 		// For display, cdCount should include deletedCDs
 		$this->{'cdCount'} = $this->{'cdCount'} + $this->{'deletedCDs'};
