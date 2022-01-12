@@ -19,6 +19,7 @@
  */
 
 define('IN_CODE', 1);
+require_once('header.php');
 require_once('config.php');
 require_once('global/definitions.php');
 require_once('locales/layer.php');
@@ -374,6 +375,64 @@ class GetGamesStates extends ApiEntry {
 }
 
 /**
+ * API entry game/overview
+ * 
+ * This should be cleaned up. 
+ */
+class GetGameOverview extends ApiEntry {
+	public function __construct() {
+		parent::__construct('game/overview', 'GET', 'getStateOfAllGames', array('gameID'));
+	}
+
+	private function getMemberData( $members ){
+		return array_map( function( $member ){
+			return [
+				'country' => $member->country,
+				'countryID' => $member->countryID,
+				'id' => $member->id,
+				'online' => $member->online,
+				'userID' => $member->userID,
+			];
+		}, $members->ByOrder );
+	}
+
+	/**
+	 * @throws RequestException
+	 */
+	public function run($userID, $permissionIsExplicit) {
+		$args = $this->getArgs();
+		$gameID = $args['gameID'];
+		if ($gameID === null || !ctype_digit($gameID))
+			throw new RequestException('Invalid game ID: '.$gameID);
+		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
+		    throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
+		$game = $this->getAssociatedGame();
+		$json = [
+			'anon' => $game->anon,
+			'drawType' => $game->drawType,
+			'excusedMissedTurns' => $game->excusedMissedTurns,
+			'gameOver' => $game->gameOver,
+			'members' => $this->getMemberData( $game->Members ),
+			'minimumBet' => $game->minimumBet,
+			'name' => $game->name,
+			'pauseTimeRemaining' => $game->pauseTimeRemaining,
+			'phase' => $game->phase,
+			'phaseMinutes' => $game->phaseMinutes,
+			'playerTypes' => $game->playerTypes,
+			'pot' => $game->pot,
+			'potType' => $game->potType,
+			'processStatus' => $game->processStatus,
+			'processTime' => $game->processTime,
+			'startTime' => $game->startTime,
+			'turn' => $game->turn,
+			'variant' => $game->Variant,
+			'variantID' => $game->variantID,
+		];
+		return json_encode( $json, JSON_NUMERIC_CHECK );
+	}
+}
+
+/**
  * API entry game/orders
  */
 class SetOrders extends ApiEntry {
@@ -688,68 +747,56 @@ class SendMessage extends ApiEntry {
 }
 
 /**
- * Class to manage an API key and check associated permissions.
+ * Class to manage an API authentication and check associated permissions.
  */
-class ApiKey {
-	/**
-	 * API access key.
-	 * @var string
-	 */
-	private $apiKey;
-
+abstract class ApiAuth {
 	/**
 	 * User ID associated to API key.
 	 * @var int
 	 */
-	private $userID;
+	protected $userID = null;
+
+	/**
+	 * Cache key associated with this API request.
+	 * @var string
+	 */
+	private $cacheKey = null;
 
 	/**
 	 * Permissions associated to this API key.
 	 * Associative array mapping permission name to a boolean.
 	 * @var array
 	 */
-	private $permissions;
+	protected $permissions = array();
 
 	/**
 	 * List of current permissions names in database table `wD_ApiPermissions`.
+	 * @var array
 	 */
-	static private $permissionFields = array(
+	static protected $permissionFields = array(
 		'getStateOfAllGames',
 		'submitOrdersForUserInCD',
 		'listGamesWithPlayersInCD'
 	);
 
 	/**
-	 * Load API key.
+	 * Load API auth.
 	 * @throws ClientUnauthorizedException - if associated user cannot be found.
 	 */
-	private function load() {
-		global $DB;
-		$rowUserId = $DB->sql_hash("SELECT userID from wD_ApiKeys WHERE apiKey = '".$DB->escape($this->apiKey)."'");
-		if (!$rowUserId)
-			throw new ClientUnauthorizedException('No user associated to this API key.');
-		$this->userID = intval($rowUserId['userID']);
-		$permissionRow = $DB->sql_hash("SELECT * FROM wD_ApiPermissions WHERE userID = ".$this->userID);
-		if ($permissionRow) {
-			foreach (ApiKey::$permissionFields as $permissionField) {
-				if ($permissionRow[$permissionField] == 'Yes')
-					$this->permissions[$permissionField] = true;
-			}
-		}
-	}
+	abstract protected function load();
 
 	/**
-	 * Initialize API key object.
-	 * @param string $apiKey - API access key.
+	 * Initialize API auth object.
+	 * @param $route - API route.
 	 * @throws ClientUnauthorizedException - If associated user cannot be found.
 	 */
-	public function __construct($apiKey) {
-		$this->apiKey = $apiKey;
-		$this->userID = null;
-		$this->permissions = array();
-		foreach (ApiKey::$permissionFields as $permissionField)
-			$this->permissions[$permissionField] = false;
-		$this->load();
+	abstract public function __construct(string $route);
+
+	/**
+	 * Returns the cache key. This is made in the child depending on class needs. 
+	 */
+	public function getCacheKey() : string {
+		return $this->cacheKey;
 	}
 
 	/**
@@ -774,7 +821,7 @@ class ApiKey {
 				throw new ClientForbiddenException('Access denied. User is not member of associated game.');
 		} else {
 			// Permission field available.
-			if (!in_array($permissionField, ApiKey::$permissionFields))
+			if (!in_array($permissionField, self::$permissionFields))
 				throw new ServerInternalException('Unknown permission name');
 
 			// Permission field must be set for this user.
@@ -801,6 +848,56 @@ class ApiKey {
 	}
 }
 
+class ApiKey extends ApiAuth {
+
+	/**
+	 * API access key.
+	 * @var string
+	 */
+	private $apiKey;
+
+	protected function load(){
+		global $DB;
+		$rowUserId = $DB->sql_hash("SELECT userID from wD_ApiKeys WHERE apiKey = '".$DB->escape($this->apiKey)."'");
+		if (!$rowUserId)
+			throw new ClientUnauthorizedException('No user associated to this API key.');
+		$this->userID = intval($rowUserId['userID']);
+		$permissionRow = $DB->sql_hash("SELECT * FROM wD_ApiPermissions WHERE userID = ".$this->userID);
+		if ($permissionRow) {
+			foreach (self::$permissionFields as $permissionField) {
+				if ($permissionRow[$permissionField] == 'Yes')
+					$this->permissions[$permissionField] = true;
+			}
+		}
+	}
+
+	public function __construct($route){
+		$apiKeyString = getBearerToken();
+		if ($apiKeyString == null)
+			throw new ClientUnauthorizedException('No API key provided.');
+		$this->apiKey = $apiKeyString;
+		$this->cacheKey = str_replace(' ', '_', 'api' . $this->apiKey . $route );
+		foreach (self::$permissionFields as $permissionField)
+			$this->permissions[$permissionField] = false;
+		$this->load();
+	}
+}
+
+class ApiSession extends ApiAuth {
+	protected function load(){
+		global $User;
+		if( !empty( $User ) && $User->type['User'] === true && (int)$User->id > 0 ){
+			$this->userID = $User->id;
+		}
+	}
+
+	public function __construct($route){
+		foreach (self::$permissionFields as $permissionField)
+			$this->permissions[$permissionField] = false;
+		$this->load();
+	}
+}
+
 /**
  * API main call to manage calls.
  */
@@ -811,6 +908,10 @@ class Api {
 	 * @var array
 	 */
 	private $entries;
+
+	private $route;
+
+	private $authClass;
 
 	public function __construct() {
 		$this->entries = array();
@@ -825,6 +926,13 @@ class Api {
 	}
 
 	/**
+	 * Returns the API route being used.
+	 */
+	public function getRoute() : string {
+		return $this->route;
+	}
+
+	/**
 	 * Run API. Parse call and return a response as a JSON-encoded string.
 	 * @return string
 	 * @throws ClientForbiddenException
@@ -834,42 +942,50 @@ class Api {
 	 * @throws ServerInternalException
 	 */
 	public function run() {
-		global $MC;
+		global $MC, $User;
 		
 		// Get route.
 		if (!isset($_GET['route']))
 			throw new RequestException('No route provided.');
-		$route = strtolower(trim($_GET['route']));
-		if (!isset($this->entries[$route]))
-			throw new NotImplementedException('Unknown route.');
-		// Get user ID.
-		$apiKeyString = getBearerToken();
-		if ($apiKeyString == null)
-			throw new ClientUnauthorizedException('No API key provided.');
 
-		$key = str_replace(' ', '_', 'api' . $apiKeyString . $route );
-		if( false && $route == 'players/missing_orders' )
-		{
-			$result = $MC->get($key);
-			if ( $result )
-			{
-				return $result;
-			}
+		$this->route = strtolower(trim($_GET['route']));
+
+		if (!isset($this->entries[$this->route]))
+			throw new NotImplementedException('Unknown route.');
+
+		if ( !empty( $User ) && ( $User->type['User'] ?? false ) === true ){
+			/**
+			 * If the request is an API call using the existing user session, process using the ApiSession class. 
+			 */
+			$this->authClass = 'ApiSession';
+		}else{
+			/**
+			 * If the request is an API call using an API key, process using the ApiKey class. 
+			 */
+			$this->authClass = 'ApiKey';
 		}
 
+		$apiAuth = new $this->authClass($this->route);
 		// Get API entry.
-		$apiEntry = $this->entries[$route]; /** @var ApiEntry $apiEntry */
-		$apiKey = new ApiKey($apiKeyString);
+		$apiEntry = $this->entries[$this->route]; /** @var ApiEntry $apiEntry */
 		// Check if request is authorized.
-		$permissionIsExplicit = $apiKey->assertHasPermissionFor($apiEntry);
+		$permissionIsExplicit = $apiAuth->assertHasPermissionFor($apiEntry);
 		// Execute request.
-		$userID = $apiKey->getUserID();
+		$userID = $apiAuth->getUserID();
 		$result = $apiEntry->run($userID, $permissionIsExplicit); 
+		
+		// if( false && $route == 'players/missing_orders' )
+		// {
+		// 	$result = $MC->get($key);
+		// 	if ( $result )
+		// 	{
+		// 		return $result;
+		// 	}
+		// }
 
 		// Cache result
-		if( $route == 'players/missing_orders' )
-		{
-			$MC->set($key, $result, 60); // Continually No rush to expire , should be cleaned on all game processes anyway
+		if( $this->route == 'players/missing_orders' && $cacheKey = $apiAuth->getCacheKey() ){
+			$MC->set($cacheKey, $result, 60); // Continually No rush to expire , should be cleaned on all game processes anyway
 		}
 
 		return $result;
@@ -887,6 +1003,7 @@ try {
 	$api->load(new ListGamesWithPlayersInCD());
 	$api->load(new ListGamesWithMissingOrders());
 	$api->load(new GetGamesStates());
+	$api->load(new GetGameOverview());
 	$api->load(new SetOrders());
 	$api->load(new ToggleVote());
 	$api->load(new SendMessage());

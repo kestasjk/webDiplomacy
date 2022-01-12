@@ -142,20 +142,27 @@ class panelGame extends Game
 			static $timerCount=0;
 		$timerCount++;
 
-		if( $this->phase == 'Pre-game' )
-			$buf = '<span class="gameTimeRemainingNextPhase">'.l_t('Start:').'</span> '.
-				$this->processTimetxt().' ('.libTime::detailedText($this->processTime).')';
-		else
-		{
-			$buf = '<span class="gameTimeRemainingNextPhase">'.l_t('Next:').'</span> '.
-				$this->processTimetxt().' ('.libTime::detailedText($this->processTime).')';
-
-			//if ( $this->Members->isJoined() )
-				//$buf .= ' <span class="gameTimeRemainingFixed">('.libTime::text($this->processTime).')</span>';
-
-		}
-
+		$buf = 
+			'
+			<span class="gameTimeRemainingNextPhase">'.($this->phase == 'Pre-game' ? l_t('Start:') : l_t('Next:')).'</span> '.$this->processTimetxt().' <span class="timestampGamesWrapper"> ('.libTime::detailedText($this->processTime).') </span>
+			';
+			
 		return $buf;
+	}
+
+	function gamePlayBeta()
+	{
+		global $User;
+
+		if (!$this->Members->isJoined()) {
+			return null;
+		}
+		
+		if ($User->isActiveBeta && $this->isClassicGame()) { 
+			return'<a href="beta?gameID='.$this->id.'" >'.l_t('Play Beta').'</a> '; 
+		};
+
+		return null;
 	}
 
 	/**
@@ -234,13 +241,16 @@ class panelGame extends Game
 	 *
 	 * @return string
 	 */
-	function titleBar()
+	function titleBar($isGameBoard = false)
 	{
 		$rightTop = '
 			<div class="titleBarRightSide">
-				<div>
-				<span class="gameTimeRemaining">'.$this->gameTimeRemaining().'</span></div>'.
-			'</div>';
+					<span class="gameTimeRemaining">'.$this->gameTimeRemaining().'</span>';			
+		
+		if ($isGameBoard)
+			$rightTop .= '<span class="gamePlayBeta">'.$this->gamePlayBeta().'</span>';
+
+		$rightTop .= '<div style="clear:both"></div></div>';
 
 		$rightMiddle = '<div class="titleBarRightSide">'.
 				'<div>'.
@@ -513,6 +523,9 @@ class panelGame extends Game
 						if ( $this->private )
 							$buf .= '<br />'.self::passwordBox();
 
+						if ( $this->isClassicGame())
+							$buf .= ' <input type="submit" name="join" value="'.l_t('Play Beta').'" class="form-submit" />';
+
 						$buf .= ' <input type="submit" name="join" value="'.l_t('Join').'" class="form-submit" />';
 
 						$buf .= '</div></form>';
@@ -560,17 +573,17 @@ class panelGame extends Game
 	function openBar()
 	{
 		global $User;
+		$playBeta = '';
+		if ($User->isActiveBeta && $this->isClassicGame()) { $playBeta = '<a href="beta?gameID='.$this->id.'" style="margin-left: 40px">'.l_t('Play Beta').'</a> '; }
 
 		if( !$this->Members->isJoined() && $this->phase == 'Pre-game' )
 			return '';
-
-		return '<a href="board.php?gameID='.$this->id.'#gamePanel">'.
-			l_t($this->Members->isJoined()?'Open':'View').'</a>';
-
-		return '<form method="get" action="board.php#gamePanel"><div>
-			<input type="hidden" name="gameID" value="'.$this->id.'" />
-			<input type="submit" value="" class="form-submit" />
-			</div></form>';
+		
+		return
+			'
+				<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t($this->Members->isJoined()?'Open':'View').'</a>
+				'.$playBeta.'
+			';
 	}
 }
 

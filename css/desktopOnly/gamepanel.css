@@ -95,6 +95,9 @@
 	font-style:italic;
 	font-weight:bold;
 }
+.gamePlayBeta {
+	margin-left: 20px;
+}
 .gameTimeRemaining {
 	font-weight:bold;
 }
@@ -366,6 +369,10 @@ div.memberBoardHeader {
 }
 .homeGameLinks a {
 	margin:0 4px;
+}
+.homeGameLinksForm {
+	display: flex;
+	justify-content: space-between;
 }
 
 /* --- Home game panel --- */
