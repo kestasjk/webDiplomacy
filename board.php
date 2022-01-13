@@ -49,9 +49,9 @@ if ( $User->type['User'] && ( isset($_REQUEST['join']) || isset($_REQUEST['joinB
 		{
 			// They will be stopped here if they're not allowed.
 			$Game->Members->join(
-				( isset($_REQUEST['gamepass']) ?? null ),
-				( isset($_REQUEST['countryID']) ?? null ),
-				( isset($_REQUEST['joinBeta']) ?? null ) );
+				( $_REQUEST['gamepass'] ?? null ),
+				( $_REQUEST['countryID'] ?? null ),
+				( $_REQUEST['joinBeta'] ?? null ) );
 		}
 		elseif ( isset($_REQUEST['leave']) )
 		{
