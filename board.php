@@ -32,7 +32,7 @@ if ( ! isset($_REQUEST['gameID']) )
 $gameID = (int)$_REQUEST['gameID'];
 
 // If we are trying to join the game lock it for update, so it won't get changed while we are joining it.
-if ( $User->type['User'] && ( isset($_REQUEST['join']) || isset($_REQUEST['leave']) ) && libHTML::checkTicket() )
+if ( $User->type['User'] && ( isset($_REQUEST['join']) || isset($_REQUEST['joinBeta']) || isset($_REQUEST['leave']) ) && libHTML::checkTicket() )
 {
 	try
 	{
@@ -45,12 +45,13 @@ if ( $User->type['User'] && ( isset($_REQUEST['join']) || isset($_REQUEST['leave
 		// If viewing an archive page make that the title, otherwise us the name of the game
 		libHTML::starthtml(isset($_REQUEST['viewArchive'])?$_REQUEST['viewArchive']:$Game->titleBarName());
 
-		if ( isset($_REQUEST['join']) )
+		if ( isset($_REQUEST['join']) || isset($_REQUEST['joinBeta']))
 		{
 			// They will be stopped here if they're not allowed.
 			$Game->Members->join(
-				( isset($_REQUEST['gamepass']) ? $_REQUEST['gamepass'] : null ),
-				( isset($_REQUEST['countryID']) ? $_REQUEST['countryID'] : null ) );
+				( $_REQUEST['gamepass'] ?? null ),
+				( $_REQUEST['countryID'] ?? null ),
+				( $_REQUEST['joinBeta'] ?? null ) );
 		}
 		elseif ( isset($_REQUEST['leave']) )
 		{
@@ -175,7 +176,7 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 		if( $Game->Members->votesPassed() && $Game->phase!='Finished' )
 		{
 			$MC->append('processHint',','.$Game->id);
-			
+
 			$DB->get_lock('gamemaster',1);
 
 			$DB->sql_put("UPDATE wD_Games SET attempts=attempts+1 WHERE id=".$Game->id);

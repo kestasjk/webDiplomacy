@@ -142,11 +142,11 @@ class panelGame extends Game
 			static $timerCount=0;
 		$timerCount++;
 
-		$buf = 
+		$buf =
 			'
 			<span class="gameTimeRemainingNextPhase">'.($this->phase == 'Pre-game' ? l_t('Start:') : l_t('Next:')).'</span> '.$this->processTimetxt().' <span class="timestampGamesWrapper"> ('.libTime::detailedText($this->processTime).') </span>
 			';
-			
+
 		return $buf;
 	}
 
@@ -157,9 +157,9 @@ class panelGame extends Game
 		if (!$this->Members->isJoined()) {
 			return null;
 		}
-		
-		if ($User->isActiveBeta && $this->isClassicGame()) { 
-			return'<a href="beta?gameID='.$this->id.'" >'.l_t('Play Beta').'</a> '; 
+
+		if ($User->isActiveBeta && $this->isClassicGame()) {
+			return'<a href="beta?gameID='.$this->id.'" >'.l_t('Play Beta').'</a> ';
 		};
 
 		return null;
@@ -199,40 +199,40 @@ class panelGame extends Game
 
 		return $buf;
 	}
-	
+
 	function phaseSwitchInfo()
 	{
 		$buf = '';
-		
+
 		if ($this->phase == 'Finished' or $this->phaseSwitchPeriod <= 0 or $this->nextPhaseMinutes == $this->phaseMinutes)
 		{
 			return $buf;
 		}
-			
+
 		$buf .= '<div>Changing phase length: <span><strong>'.libTime::timeLengthText($this->nextPhaseMinutes * 60).'</strong> /phase</span></div>';
-		if ($this->startTime > 0) 
+		if ($this->startTime > 0)
 		{
 			$timeWhenSwitch = (($this->phaseSwitchPeriod * 60) + $this->startTime);
 
-			if (time() >= $timeWhenSwitch) 
+			if (time() >= $timeWhenSwitch)
 			{
 				$buf .= '<div><strong> At: End Of Phase</strong></div>';
-			} 
-			else 
+			}
+			else
 			{
 				$buf .= '<div> In: <strong>'.libTime::remainingText($timeWhenSwitch).'</strong>' . ' (' . libTime::detailedText($timeWhenSwitch) . ')</div>';
 			}
 		}
 
-		else 
+		else
 		{
 			$timeTillNextPhase = libTime::timeLengthText($this->phaseSwitchPeriod * 60);
-			
-			$buf .= '<div><span><strong>'.$timeTillNextPhase.'</strong> after game start</span></div></br>';	
+
+			$buf .= '<div><span><strong>'.$timeTillNextPhase.'</strong> after game start</span></div></br>';
 		}
-		
-		
-								
+
+
+
 		return $buf;
 	}
 
@@ -245,8 +245,8 @@ class panelGame extends Game
 	{
 		$rightTop = '
 			<div class="titleBarRightSide">
-					<span class="gameTimeRemaining">'.$this->gameTimeRemaining().'</span>';			
-		
+					<span class="gameTimeRemaining">'.$this->gameTimeRemaining().'</span>';
+
 		if ($isGameBoard)
 			$rightTop .= '<span class="gamePlayBeta">'.$this->gamePlayBeta().'</span>';
 
@@ -256,11 +256,11 @@ class panelGame extends Game
 				'<div>'.
 					'<span class="gameHoursPerPhase">'.$this->gameHoursPerPhase().'</span>'.$this->phaseSwitchInfo().
 				'</div>';
-			
 
-				
+
+
 		$rightMiddle .= '</div>';
-		
+
 		$rightBottom = '<div class="titleBarRightSide">'.
 					l_t('%s excused missed turn','<span class="excusedNMRs">'.$this->excusedMissedTurns.'</span>
 					').
@@ -276,7 +276,7 @@ class panelGame extends Game
 				'.l_t('Pot:').' <span class="gamePot">'.$this->pot.' '.libHTML::points().'</span>';
 
 		$leftBottom .= $date.'</div>';
-		
+
 		$leftBottom .= '<div>'.$this->gameVariants().'</div>';
 
 		$leftTop .= '</div>';
@@ -291,7 +291,7 @@ class panelGame extends Game
 			<div style="clear:both"></div>
 			'.$rightBottom.'
 			<div style="clear:both"></div>';
-		
+
 		return $buf;
 	}
 
@@ -306,13 +306,13 @@ class panelGame extends Game
 			$alternatives[]=l_t('Rulebook press');
 		elseif( $this->pressType=='PublicPressOnly' )
 			$alternatives[]=l_t('Public messaging only');
-		
+
 		if($this->playerTypes=='Mixed')
 			$alternatives[]=l_t('Fill with Bots');
 
 		if($this->playerTypes=='MemberVsBots')
 			$alternatives[]=l_t('Bot Game');
-		
+
 		if( $this->anon=='Yes' )
 			$alternatives[]=l_t('Anonymous players');
 
@@ -523,8 +523,8 @@ class panelGame extends Game
 						if ( $this->private )
 							$buf .= '<br />'.self::passwordBox();
 
-						if ( $this->isClassicGame())
-							$buf .= ' <input type="submit" name="join" value="'.l_t('Play Beta').'" class="form-submit" />';
+						if ( $this->isClassicGame() && $User->isActiveBeta)
+							$buf .= ' <input type="submit" name="joinBeta" value="'.l_t('Play Beta').'" class="form-submit" />';
 
 						$buf .= ' <input type="submit" name="join" value="'.l_t('Join').'" class="form-submit" />';
 
@@ -578,7 +578,7 @@ class panelGame extends Game
 
 		if( !$this->Members->isJoined() && $this->phase == 'Pre-game' )
 			return '';
-		
+
 		return
 			'
 				<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t($this->Members->isJoined()?'Open':'View').'</a>
