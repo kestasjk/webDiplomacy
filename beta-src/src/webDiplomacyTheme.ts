@@ -10,6 +10,16 @@ const webDiplomacyTheme = createTheme({
       xl: 1500,
     },
   },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 18,
+          padding: "10px 18px 12px",
+        },
+      },
+    },
+  },
   palette: {
     error: {
       main: "#f00",
@@ -25,6 +35,12 @@ const webDiplomacyTheme = createTheme({
     },
   },
   typography: {
+    button: {
+      fontSize: 12,
+      fontWeight: 700,
+      lineHeight: 1.2,
+      textTransform: "none",
+    },
     fontFamily: "SF Pro Display, Segoe UI, Droid Sans, sans-serif",
   },
 });
