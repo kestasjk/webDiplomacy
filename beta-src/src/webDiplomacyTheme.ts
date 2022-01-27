@@ -14,17 +14,17 @@ declare module "@mui/material/styles" {
   }
 
   interface TypographyVariants {
-    smallLabel: React.CSSProperties;
+    label: React.CSSProperties;
   }
 
   export interface TypographyVariantsOptions {
-    smallLabel?: React.CSSProperties;
+    label?: React.CSSProperties;
   }
 }
 
 declare module "@mui/material/Typography" {
   interface TypographyPropsVariantOverrides {
-    smallLabel: true;
+    label: true;
   }
 }
 
@@ -51,32 +51,37 @@ const webDiplomacyTheme = createTheme({
       contrastText: "#000",
     },
   },
-  typography: {
-    body1: {
-      fontSize: 14,
-      lineHeight: 1.29,
-    },
-    h1: {
-      fontSize: 20,
-      fontWeight: 700,
-      lineHeight: 1.2,
-    },
-    h2: {
-      fontSize: 16,
-      fontWeight: 700,
-      lineHeight: 1.125,
-    },
-    h3: {
-      fontSize: 14,
-      fontWeight: 700,
-      lineHeight: 1.15,
-    },
-    smallLabel: {
-      fontSize: 10,
-      fontWeight: 400,
-      lineHeight: 1,
-    },
-  },
 });
+
+webDiplomacyTheme.typography.body1 = {
+  fontFamily: webDiplomacyTheme.typography.fontFamily,
+  fontSize: 14,
+  fontWeight: 400,
+  lineHeight: 1.2,
+};
+
+webDiplomacyTheme.typography.h1 = {
+  fontFamily: webDiplomacyTheme.typography.fontFamily,
+  fontSize: 16,
+  fontWeight: 700,
+  lineHeight: 1.2,
+  [webDiplomacyTheme.breakpoints.up("desktop")]: {
+    fontSize: 20,
+  },
+};
+
+webDiplomacyTheme.typography.h2 = {
+  fontFamily: webDiplomacyTheme.typography.fontFamily,
+  fontSize: 14,
+  fontWeight: 700,
+  lineHeight: 1.2,
+};
+
+webDiplomacyTheme.typography.label = {
+  fontFamily: webDiplomacyTheme.typography.fontFamily,
+  fontSize: 10,
+  fontWeight: 400,
+  lineHeight: 1,
+};
 
 export default webDiplomacyTheme;
