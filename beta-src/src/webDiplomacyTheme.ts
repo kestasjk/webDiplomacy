@@ -41,7 +41,6 @@ const webDiplomacyTheme = createTheme({
       lineHeight: 1.2,
       textTransform: "none",
     },
-    fontFamily: "SF Pro Display, Segoe UI, Droid Sans, sans-serif",
   },
 });
 
