@@ -30,6 +30,8 @@ declare module "@mui/material/Typography" {
 
 // define re-used constants
 const boldFontWeight = 700;
+const disabledBackground = "rgba(0, 0, 0, 0.25)";
+const disabledText = "rgba(255, 255, 255, 0.25)";
 const defaultLineHeight = 1.2;
 const normalFontWeight = 400;
 
@@ -50,10 +52,24 @@ const webDiplomacyTheme = createTheme({
           borderRadius: 18,
           padding: "10px 18px",
         },
+        containedPrimary: {
+          "&:hover": {
+            backgroundColor: "#ff00ff",
+          },
+        },
+        containedSecondary: {
+          "&:hover": {
+            backgroundColor: "#ff00ff",
+          },
+        },
       },
     },
   },
   palette: {
+    action: {
+      disabledBackground,
+      disabled: disabledText,
+    },
     error: {
       main: "#f00",
       contrastText: "#fff",
@@ -70,8 +86,8 @@ const webDiplomacyTheme = createTheme({
   typography: {
     button: {
       fontSize: 12,
-      fontWeight: 700,
-      lineHeight: 1.2,
+      fontWeight: boldFontWeight,
+      lineHeight: defaultLineHeight,
       textTransform: "none",
     },
   },
