@@ -42,7 +42,7 @@ const webDiplomacyTheme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 18,
-          padding: "10px 18px 12px",
+          padding: "10px 18px",
         },
       },
     },
