@@ -28,12 +28,19 @@ declare module "@mui/material/Typography" {
   }
 }
 
-// define re-used constants
+/**
+ * constants
+ * ===
+ * define constants that are to be re-used in the theme. use generic names that
+ * describe their usage.
+ */
 const boldFontWeight = 700;
 const defaultLineHeight = 1.2;
 const normalFontWeight = 400;
 
-// create main theme
+/**
+ * theme creation
+ */
 const webDiplomacyTheme = createTheme({
   breakpoints: {
     values: {
@@ -59,7 +66,9 @@ const webDiplomacyTheme = createTheme({
   },
 });
 
-// define responsive overrides below
+/**
+ * responsive overrides
+ */
 webDiplomacyTheme.typography.body1 = {
   fontFamily: webDiplomacyTheme.typography.fontFamily,
   fontSize: 14,
