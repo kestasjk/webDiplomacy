@@ -28,6 +28,12 @@ declare module "@mui/material/Typography" {
   }
 }
 
+// define re-used constants
+const boldFontWeight = 700;
+const defaultLineHeight = 1.2;
+const normalFontWeight = 400;
+
+// create main theme
 const webDiplomacyTheme = createTheme({
   breakpoints: {
     values: {
@@ -53,18 +59,19 @@ const webDiplomacyTheme = createTheme({
   },
 });
 
+// define responsive overrides below
 webDiplomacyTheme.typography.body1 = {
   fontFamily: webDiplomacyTheme.typography.fontFamily,
   fontSize: 14,
-  fontWeight: 400,
-  lineHeight: 1.2,
+  fontWeight: normalFontWeight,
+  lineHeight: defaultLineHeight,
 };
 
 webDiplomacyTheme.typography.h1 = {
   fontFamily: webDiplomacyTheme.typography.fontFamily,
   fontSize: 16,
-  fontWeight: 700,
-  lineHeight: 1.2,
+  fontWeight: boldFontWeight,
+  lineHeight: defaultLineHeight,
   [webDiplomacyTheme.breakpoints.up("desktop")]: {
     fontSize: 20,
   },
@@ -73,14 +80,14 @@ webDiplomacyTheme.typography.h1 = {
 webDiplomacyTheme.typography.h2 = {
   fontFamily: webDiplomacyTheme.typography.fontFamily,
   fontSize: 14,
-  fontWeight: 700,
-  lineHeight: 1.2,
+  fontWeight: boldFontWeight,
+  lineHeight: defaultLineHeight,
 };
 
 webDiplomacyTheme.typography.label = {
   fontFamily: webDiplomacyTheme.typography.fontFamily,
   fontSize: 10,
-  fontWeight: 400,
+  fontWeight: normalFontWeight,
   lineHeight: 1,
 };
 
