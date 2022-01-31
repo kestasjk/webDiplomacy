@@ -34,9 +34,16 @@ declare module "@mui/material/Typography" {
  * define constants that are to be re-used in the theme. use generic names that
  * describe their usage.
  */
+const activeButtonStyle = {
+  backgroundColor: "#fff",
+  boxShadow: "0 0 2px 2px #000",
+  color: "#000",
+};
 const boldFontWeight = 700;
-const disabledBackground = "rgba(0, 0, 0, 0.25)";
-const disabledText = "rgba(255, 255, 255, 0.25)";
+const disabledBackground = "#b8b8b8";
+const disabledText = "#cacaca";
+const disabledBackgroundSecondary = "transparent";
+const disabledTextSecondary = "#bababa";
 const defaultLineHeight = 1.2;
 const normalFontWeight = 400;
 
@@ -60,13 +67,30 @@ const webDiplomacyTheme = createTheme({
           padding: "10px 18px",
         },
         containedPrimary: {
+          "&:active": {
+            ...activeButtonStyle,
+          },
+          "&:focus": {
+            ...activeButtonStyle,
+          },
           "&:hover": {
-            backgroundColor: "#ff00ff",
+            backgroundColor: "#757575",
+            color: "#fff",
           },
         },
         containedSecondary: {
+          "&.Mui-disabled": {
+            backgroundColor: disabledBackgroundSecondary,
+            color: disabledTextSecondary,
+          },
+          "&:active": {
+            ...activeButtonStyle,
+          },
+          "&:focus": {
+            ...activeButtonStyle,
+          },
           "&:hover": {
-            backgroundColor: "#ff00ff",
+            backgroundColor: "#fafafa",
           },
         },
       },
