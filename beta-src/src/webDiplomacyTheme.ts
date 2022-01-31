@@ -1,13 +1,53 @@
 import { createTheme } from "@mui/material/styles";
 
+declare module "@mui/material/styles" {
+  interface BreakpointOverrides {
+    xs: false;
+    sm: false;
+    md: false;
+    lg: false;
+    xl: false;
+    mobile: true;
+    mobileLg: true;
+    tablet: true;
+    desktop: true;
+  }
+
+  interface TypographyVariants {
+    label: React.CSSProperties;
+  }
+
+  export interface TypographyVariantsOptions {
+    label?: React.CSSProperties;
+  }
+}
+
+declare module "@mui/material/Typography" {
+  interface TypographyPropsVariantOverrides {
+    label: true;
+  }
+}
+
+/**
+ * constants
+ * ===
+ * define constants that are to be re-used in the theme. use generic names that
+ * describe their usage.
+ */
+const boldFontWeight = 700;
+const defaultLineHeight = 1.2;
+const normalFontWeight = 400;
+
+/**
+ * theme creation
+ */
 const webDiplomacyTheme = createTheme({
   breakpoints: {
     values: {
-      xs: 0,
-      sm: 414,
-      md: 834,
-      lg: 1200,
-      xl: 1500,
+      mobile: 0,
+      mobileLg: 414,
+      tablet: 834,
+      desktop: 1500,
     },
   },
   palette: {
@@ -24,9 +64,40 @@ const webDiplomacyTheme = createTheme({
       contrastText: "#000",
     },
   },
-  typography: {
-    fontFamily: "SF Pro Display, Segoe UI, Droid Sans, sans-serif",
-  },
 });
+
+/**
+ * responsive overrides
+ */
+webDiplomacyTheme.typography.body1 = {
+  fontFamily: webDiplomacyTheme.typography.fontFamily,
+  fontSize: 14,
+  fontWeight: normalFontWeight,
+  lineHeight: defaultLineHeight,
+};
+
+webDiplomacyTheme.typography.h1 = {
+  fontFamily: webDiplomacyTheme.typography.fontFamily,
+  fontSize: 16,
+  fontWeight: boldFontWeight,
+  lineHeight: defaultLineHeight,
+  [webDiplomacyTheme.breakpoints.up("desktop")]: {
+    fontSize: 20,
+  },
+};
+
+webDiplomacyTheme.typography.h2 = {
+  fontFamily: webDiplomacyTheme.typography.fontFamily,
+  fontSize: 14,
+  fontWeight: boldFontWeight,
+  lineHeight: defaultLineHeight,
+};
+
+webDiplomacyTheme.typography.label = {
+  fontFamily: webDiplomacyTheme.typography.fontFamily,
+  fontSize: 10,
+  fontWeight: normalFontWeight,
+  lineHeight: 1,
+};
 
 export default webDiplomacyTheme;
