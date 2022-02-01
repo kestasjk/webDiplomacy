@@ -18,7 +18,7 @@ const WDButton: React.FC<WDButtonProps> = function ({
     <Button
       color={color}
       disabled={disabled}
-      onClick={onClick && onClick}
+      onClick={onClick}
       variant="contained"
     >
       {children}
