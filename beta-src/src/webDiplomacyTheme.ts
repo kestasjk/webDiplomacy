@@ -34,7 +34,16 @@ declare module "@mui/material/Typography" {
  * define constants that are to be re-used in the theme. use generic names that
  * describe their usage.
  */
+const activeButtonStyle = {
+  backgroundColor: "#fff",
+  boxShadow: "0 0 2px 2px #000",
+  color: "#000",
+};
 const boldFontWeight = 700;
+const disabledBackground = "#b8b8b8";
+const disabledText = "#cacaca";
+const disabledBackgroundSecondary = "transparent";
+const disabledTextSecondary = "#bababa";
 const defaultLineHeight = 1.2;
 const normalFontWeight = 400;
 
@@ -50,7 +59,48 @@ const webDiplomacyTheme = createTheme({
       desktop: 1500,
     },
   },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 18,
+          padding: "10px 18px",
+        },
+        containedPrimary: {
+          "&:active": {
+            ...activeButtonStyle,
+          },
+          "&:focus": {
+            ...activeButtonStyle,
+          },
+          "&:hover": {
+            backgroundColor: "#757575",
+            color: "#fff",
+          },
+        },
+        containedSecondary: {
+          "&.Mui-disabled": {
+            backgroundColor: disabledBackgroundSecondary,
+            color: disabledTextSecondary,
+          },
+          "&:active": {
+            ...activeButtonStyle,
+          },
+          "&:focus": {
+            ...activeButtonStyle,
+          },
+          "&:hover": {
+            backgroundColor: "#fafafa",
+          },
+        },
+      },
+    },
+  },
   palette: {
+    action: {
+      disabledBackground,
+      disabled: disabledText,
+    },
     error: {
       main: "#f00",
       contrastText: "#fff",
@@ -62,6 +112,14 @@ const webDiplomacyTheme = createTheme({
     secondary: {
       main: "#fff",
       contrastText: "#000",
+    },
+  },
+  typography: {
+    button: {
+      fontSize: 12,
+      fontWeight: boldFontWeight,
+      lineHeight: defaultLineHeight,
+      textTransform: "none",
     },
   },
 });
