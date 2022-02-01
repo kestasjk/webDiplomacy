@@ -1,0 +1,8 @@
+.MuiPopover-paper {
+  top: 0 !important;
+}
+
+.modal__container {
+  position: absolute;
+  right: 0;
+}
