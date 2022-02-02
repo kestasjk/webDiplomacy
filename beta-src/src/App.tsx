@@ -8,11 +8,7 @@ import WDHomeIcon from "./components/WDHomeIcon";
 const App: React.FC = function (): React.ReactElement {
   return (
     <Box className="App">
-      <div>
-        <WDActionIcon />
-        <WDHomeIcon />
-      </div>
-      {/* <img alt="Game Map" src={map} /> */}
+      <img alt="Game Map" src={map} />
     </Box>
   );
 };
