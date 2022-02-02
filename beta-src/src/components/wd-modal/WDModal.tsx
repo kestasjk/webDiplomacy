@@ -1,4 +1,5 @@
 import * as React from "react";
+import "./WDModal.css";
 import { useRef, useState } from "react";
 import { Popover, Button, Box } from "@mui/material";
 
@@ -61,18 +62,18 @@ const WDModal: React.FC<WDModalProps> = function ({
       >
         <Box
           sx={{
-            position: "relative",
             mt: "0px",
+            position: "relative",
             "&::before": {
               background: "linear-gradient(45deg, transparent 50%, white 50%)",
               content: '""',
               display: "block",
-              position: "absolute",
-              width: 22,
               height: 22,
+              position: "absolute",
+              right: 5,
               top: 10,
               transform: "rotate(45deg)",
-              right: 5,
+              width: 22,
             },
           }}
         />

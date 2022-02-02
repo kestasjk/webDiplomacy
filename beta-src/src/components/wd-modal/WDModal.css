@@ -4,12 +4,8 @@
 }
 
 .modal__content {
-  padding: 16px;
   background: linear-gradient(to right, white 96%, transparent 4%);
   max-width: 57vw;
   margin: 0;
-}
-
-body {
-  background-color: rebeccapurple !important;
+  padding: 16px;
 }
