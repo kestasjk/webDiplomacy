@@ -32,6 +32,9 @@ const WDModal: React.FC<WDModalProps> = function ({
           aria-describedby={ariaDescribedBy}
           onClick={handleOpen}
           ref={anchorEl}
+          sx={{
+            mt: "15px",
+          }}
         >
           {triggerIcon}
         </Button>
