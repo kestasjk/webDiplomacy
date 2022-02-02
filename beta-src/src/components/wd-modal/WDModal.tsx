@@ -6,12 +6,16 @@ import { Popover, Button, Box } from "@mui/material";
 interface WDModalProps {
   ariaDescribedBy: string;
   children: React.ReactNode;
+  rightPositioning: number; //    Positioning values represent precentages
+  topPositioning: number; //    Positioning values represent precentages
   triggerIcon: React.ReactNode;
 }
 
 const WDModal: React.FC<WDModalProps> = function ({
   ariaDescribedBy,
   children,
+  rightPositioning,
+  topPositioning,
   triggerIcon,
 }) {
   const anchorEl = useRef(null);
@@ -27,7 +31,10 @@ const WDModal: React.FC<WDModalProps> = function ({
   };
 
   return (
-    <div className="modal__container">
+    <div
+      className="modal__container"
+      style={{ top: `${topPositioning}%`, right: `${rightPositioning}%` }}
+    >
       <div className="modal__trigger-container">
         <Button
           aria-describedby={ariaDescribedBy}
