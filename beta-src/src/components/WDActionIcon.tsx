@@ -13,16 +13,16 @@ const WDActionIcon: React.FC = function () {
   return (
     <Box
       onClick={highlightActionHandler}
-      sx={{
-        position: "absolute",
-      }}
+      // sx={{
+      //   position: "absolute",
+      // }}
     >
       {active && (
         <SvgIcon
           component={ActionIconSelected}
           inheritViewBox
           style={{
-            filter: "drop-shadow(-2px 11px 10px #292929)",
+            filter: "drop-shadow(1px 10px 7px #737373)",
           }}
           sx={{
             height: 52,
