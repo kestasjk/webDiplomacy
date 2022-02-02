@@ -26,7 +26,7 @@
     "build": "react-scripts build && rm -rf ../beta && mv build ../beta",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "svgr": "svgr -d src/components/svg-components --ignore-existing src/svg"
+    "svgr2": "svgr -d src/components/svgr-components --ignore-existing src/assets/svg-svgr"
   },
   "eslintConfig": {
     "extends": [
@@ -47,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "@svgr/cli": "^6.2.0",
     "@typescript-eslint/eslint-plugin": "^5.6.0",
     "@typescript-eslint/parser": "^5.6.0",
     "eslint": "^7.32.0",
