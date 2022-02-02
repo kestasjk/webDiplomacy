@@ -62,8 +62,8 @@ const WDModal: React.FC<WDModalProps> = function ({
         PaperProps={{
           style: {
             backgroundColor: "transparent",
-            boxShadow: "none",
-            borderRadius: 0,
+            boxShadow: "black -5px 4px 6px -4px",
+            borderRadius: "3px 13px 13px 3px",
           },
         }}
       >
