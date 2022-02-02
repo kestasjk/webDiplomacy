@@ -1,35 +1,44 @@
-import { Box } from "@mui/material";
 import * as React from "react";
-import Popover from "@mui/material/Popover";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
+import { useRef, useState } from "react";
+import { Popover, Button, Box } from "@mui/material";
 
-const WDModal: React.FC = function () {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+interface WDModalProps {
+  ariaDescribedBy: string;
+  children: React.ReactNode;
+  triggerIcon: React.ReactNode;
+}
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+const WDModal: React.FC<WDModalProps> = function ({
+  ariaDescribedBy,
+  children,
+  triggerIcon,
+}) {
+  const anchorEl = useRef(null);
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpen = () => {
+    setIsOpen(true);
   };
 
   const handleClose = () => {
-    setAnchorEl(null);
+    setIsOpen(false);
   };
-
-  const open = Boolean(anchorEl);
-  const accessibilityTag = open ? "simple-popover" : undefined;
 
   return (
     <div className="modal__container">
-      <Button
-        aria-describedby={accessibilityTag}
-        variant="contained"
-        onClick={handleClick}
-      >
-        BUTTON STUB
-      </Button>
+      <div className="modal__trigger-container">
+        <Button
+          aria-describedby={ariaDescribedBy}
+          onClick={handleOpen}
+          ref={anchorEl}
+        >
+          {triggerIcon}
+        </Button>
+      </div>
       <Popover
-        open={open}
-        anchorEl={anchorEl}
+        open={isOpen}
+        anchorEl={anchorEl.current}
         onClose={handleClose}
         anchorOrigin={{
           vertical: "center",
@@ -45,9 +54,6 @@ const WDModal: React.FC = function () {
             boxShadow: "none",
             borderRadius: 0,
           },
-        }}
-        sx={{
-          top: 0,
         }}
       >
         <Box
@@ -67,17 +73,8 @@ const WDModal: React.FC = function () {
             },
           }}
         />
-        <Typography
-          sx={{
-            p: 2,
-            background: "linear-gradient(to right, white 96%, transparent 4%)",
-            maxWidth: "57vw",
-          }}
-        >
-          <div className="modal__content">
-            Are you sure you want to exit the game?
-          </div>
-        </Typography>
+
+        <div className="modal__content">{children}</div>
       </Popover>
     </div>
   );

@@ -1,8 +1,15 @@
-.MuiPopover-paper {
-  top: 0 !important;
-}
-
 .modal__container {
   position: absolute;
   right: 0;
+}
+
+.modal__content {
+  padding: 16px;
+  background: linear-gradient(to right, white 96%, transparent 4%);
+  max-width: 57vw;
+  margin: 0;
+}
+
+body {
+  background-color: rebeccapurple !important;
 }
