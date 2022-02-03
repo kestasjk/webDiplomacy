@@ -1,52 +1,36 @@
 import * as React from "react";
-import "./WDModal.css";
-import { useRef, useState } from "react";
-import { Popover, Button, Box } from "@mui/material";
+import { useRef } from "react";
+import { Popover, Box } from "@mui/material";
 
-interface WDModalProps {
-  ariaDescribedBy: string;
+interface WDPopoverProps {
   children: React.ReactNode;
-  rightPositioning: number; //    Positioning values represent precentages
-  topPositioning: number; //    Positioning values represent precentages
-  triggerIcon: React.ReactNode;
+  handleClose: (event: React.MouseEvent<HTMLButtonElement>) => void; // A function that sets isOpen to false
+  isOpen: boolean;
+  trigger: React.ReactNode; // The popover trigger; must have an onClick callback attached that sets isOpen to true
 }
 
-const WDModal: React.FC<WDModalProps> = function ({
-  ariaDescribedBy,
+const WDPopover: React.FC<WDPopoverProps> = function ({
   children,
-  rightPositioning,
-  topPositioning,
-  triggerIcon,
+  handleClose,
+  isOpen,
+  trigger,
 }) {
   const anchorEl = useRef(null);
 
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleOpen = () => {
-    setIsOpen(true);
-  };
-
-  const handleClose = () => {
-    setIsOpen(false);
-  };
-
   return (
-    <div
-      className="modal__container"
-      style={{ top: `${topPositioning}%`, right: `${rightPositioning}%` }}
+    <Box
+      sx={{
+        position: "absolute",
+      }}
     >
-      <div className="modal__trigger-container">
-        <Button
-          aria-describedby={ariaDescribedBy}
-          onClick={handleOpen}
-          ref={anchorEl}
-          sx={{
-            mt: "15px",
-          }}
-        >
-          {triggerIcon}
-        </Button>
-      </div>
+      <Box
+        sx={{
+          pt: "15px",
+        }}
+        ref={anchorEl}
+      >
+        {trigger}
+      </Box>
       <Popover
         open={isOpen}
         anchorEl={anchorEl.current}
@@ -85,10 +69,19 @@ const WDModal: React.FC<WDModalProps> = function ({
           }}
         />
 
-        <div className="modal__content">{children}</div>
+        <Box
+          sx={{
+            background: "linear-gradient(to right, white 94%, transparent 6%)",
+            maxWidth: "57vw",
+            m: 0,
+            p: "16px 25px 16px 16px",
+          }}
+        >
+          {children}
+        </Box>
       </Popover>
-    </div>
+    </Box>
   );
 };
 
-export default WDModal;
+export default WDPopover;
