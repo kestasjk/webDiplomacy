@@ -6,9 +6,9 @@ interface WDPopoverProps {
   children: React.ReactNode;
   isOpen: boolean;
   /**
-   *A callback that sets isOpen to false
+   * a callback to be used when the popover closes
    */
-  onClose: (event: React.MouseEvent<HTMLButtonElement>) => void; // A function that sets isOpen to false
+  onClose: (event: React.MouseEvent<HTMLButtonElement>) => void;
   /**
    *A component that opens or closes the Popover when clicked
    */
@@ -43,8 +43,8 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
           horizontal: "left",
           vertical: "center",
         }}
-        open={isOpen}
         onClose={onClose}
+        open={isOpen}
         PaperProps={{
           style: {
             backgroundColor: "transparent",
