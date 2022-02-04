@@ -6,11 +6,11 @@ interface WDPopoverProps {
   children: React.ReactNode;
   isOpen: boolean;
   /**
-   * a callback to be used when the popover closes
+   * A callback to be used when the popover closes
    */
   onClose: (event: React.MouseEvent<HTMLButtonElement>) => void;
   /**
-   *A component that opens or closes the Popover when clicked
+   * A component that opens or closes the Popover when clicked
    */
   popoverTrigger: React.ReactNode;
 }
