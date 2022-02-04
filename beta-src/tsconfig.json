@@ -23,5 +23,5 @@
   },
   "include": [
     "src"
-, "src/components/svgr-components"  ]
+  ]
 }

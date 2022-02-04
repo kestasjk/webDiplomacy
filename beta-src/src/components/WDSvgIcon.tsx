@@ -1,15 +1,24 @@
 import * as React from "react";
-import { SvgIcon, SvgIconProps } from "@mui/material";
+import { SvgIcon } from "@mui/material";
+// import { ActionIcon, ActionIconSelected } from "./svgr-components";
 
-interface iconProps {
+interface navIconProps {
+  isActive?: "active" | "inactive";
   component: React.FC;
 }
 
-type svgProps = iconProps & SvgIconProps;
+const WDSvgIcon: React.FC<navIconProps> = function ({ component, isActive }) {
+  return (
+    <SvgIcon
+      className={isActive === "active" ? "navIconSelected" : "navIcon"}
+      component={component}
+      inheritViewBox
+    />
+  );
+};
 
-const WDSvgIcon: React.FC<svgProps> = function (props) {
-  const { component, style } = props;
-  return <SvgIcon component={component} style={style} inheritViewBox />;
+WDSvgIcon.defaultProps = {
+  isActive: "inactive",
 };
 
 export default WDSvgIcon;
