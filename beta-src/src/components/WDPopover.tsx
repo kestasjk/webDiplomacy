@@ -1,19 +1,25 @@
 import * as React from "react";
 import { useRef } from "react";
-import { Popover, Box } from "@mui/material";
+import { Box, Popover } from "@mui/material";
 
 interface WDPopoverProps {
   children: React.ReactNode;
-  handleClose: (event: React.MouseEvent<HTMLButtonElement>) => void; // A function that sets isOpen to false
+  /**
+   *A callback that sets isOpen to false
+   */
+  onClose: (event: React.MouseEvent<HTMLButtonElement>) => void; // A function that sets isOpen to false
   isOpen: boolean;
-  trigger: React.ReactNode; // The popover trigger; must have an onClick callback attached that sets isOpen to true
+  /**
+   *A component that opens or closes the Popover when clicked
+   */
+  popoverTrigger: React.ReactNode;
 }
 
 const WDPopover: React.FC<WDPopoverProps> = function ({
   children,
-  handleClose,
+  onClose,
   isOpen,
-  trigger,
+  popoverTrigger,
 }) {
   const anchorEl = useRef(null);
 
@@ -29,26 +35,26 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
         }}
         ref={anchorEl}
       >
-        {trigger}
+        {popoverTrigger}
       </Box>
       <Popover
-        open={isOpen}
         anchorEl={anchorEl.current}
-        onClose={handleClose}
         anchorOrigin={{
-          vertical: "center",
           horizontal: "left",
-        }}
-        transformOrigin={{
           vertical: "center",
-          horizontal: "right",
         }}
+        open={isOpen}
+        onClose={onClose}
         PaperProps={{
           style: {
             backgroundColor: "transparent",
-            boxShadow: "black -5px 4px 6px -4px",
             borderRadius: "3px 13px 13px 3px",
+            boxShadow: "-5px 4px 6px -4px black",
           },
+        }}
+        transformOrigin={{
+          horizontal: "right",
+          vertical: "center",
         }}
       >
         <Box
@@ -58,7 +64,6 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
             "&::before": {
               background: "linear-gradient(45deg, transparent 50%, white 50%)",
               content: '""',
-              display: "block",
               height: 22,
               position: "absolute",
               right: 5,
@@ -72,7 +77,6 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
         <Box
           sx={{
             background: "linear-gradient(to right, white 94%, transparent 6%)",
-            maxWidth: "57vw",
             m: 0,
             p: "16px 25px 16px 16px",
           }}
