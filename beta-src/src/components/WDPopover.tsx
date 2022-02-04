@@ -4,11 +4,11 @@ import { Box, Popover } from "@mui/material";
 
 interface WDPopoverProps {
   children: React.ReactNode;
+  isOpen: boolean;
   /**
    *A callback that sets isOpen to false
    */
   onClose: (event: React.MouseEvent<HTMLButtonElement>) => void; // A function that sets isOpen to false
-  isOpen: boolean;
   /**
    *A component that opens or closes the Popover when clicked
    */
@@ -17,8 +17,8 @@ interface WDPopoverProps {
 
 const WDPopover: React.FC<WDPopoverProps> = function ({
   children,
-  onClose,
   isOpen,
+  onClose,
   popoverTrigger,
 }) {
   const anchorEl = useRef(null);
