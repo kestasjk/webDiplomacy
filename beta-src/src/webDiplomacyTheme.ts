@@ -95,30 +95,6 @@ const webDiplomacyTheme = createTheme({
         },
       },
     },
-    MuiSvgIcon: {
-      styleOverrides: {
-        root: {
-          "&.navIcon": {
-            filter: "drop-shadow(0 0 7px #323232)",
-            margin: 18,
-          },
-          "&.navIconSelected": {
-            filter: "drop-shadow(1px 10px 7px #737373)",
-            height: "52px",
-            width: "53px",
-          },
-        },
-      },
-    },
-    MuiIconButton: {
-      styleOverrides: {
-        root: {
-          "&:hover": {
-            background: "none",
-          },
-        },
-      },
-    },
   },
   palette: {
     action: {
