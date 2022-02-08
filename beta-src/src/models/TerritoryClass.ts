@@ -1,6 +1,8 @@
 import { ITerritory, IBorder, ICoastalBorder } from "./Interfaces";
 import UnitClass from "./UnitClass";
 
+// We may not need this. Since almost all getter methods require broader data from the entire board and setter methods can be done when we create this object.
+
 export default class Territory {
   id: number;
 
@@ -62,6 +64,7 @@ export default class Territory {
     this.Unit = Unit;
     this.unitID = unitID;
 
+    // don't know why they are doing this
     this.supply = supply === "Yes";
 
     this.convoyLink = false;
