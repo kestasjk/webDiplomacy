@@ -673,17 +673,18 @@ class SendMessage extends ApiEntry {
 			throw new ClientForbiddenException('User does not have explicit permission to make this API call.');
 		}
 
-		if ($toCountryID < 1 || $toCountryID > count($game->Members) || $toCountryID == $countryID) {
+		if ($toCountryID < 1 || $toCountryID > count($game->Members->ByUserID) || $toCountryID == $countryID) {
 			throw new RequestException('Invalid toCountryID');
 		}
 
 		$toUser = new User($game->Members->ByCountryID[$toCountryID]->userID);
 		if(!$toUser->isCountryMuted($game->id, $countryID)) {
-			libGameMessage::send($toCountryID, $countryID, $message);
+			$time = libGameMessage::send($toCountryID, $countryID, $message);
 		}
 
-		// FIXME: what to return?
-		return json_encode($args);
+		$DB->sql_put("COMMIT");
+		
+		return $time;
 	}
 }
 
