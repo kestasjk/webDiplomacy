@@ -30,7 +30,8 @@
     "jest/prefer-to-have-length": "warn",
     "jest/valid-expect": "error",
     "react/jsx-filename-extension": ["warn", { "extensions": [".tsx"] }],
-    "no-use-before-define": "off"
+    "no-use-before-define": "off",
+    "no-shadow": "off"
   },
   "settings": {
     "import/resolver": {
