@@ -1,14 +1,8 @@
 import * as React from "react";
-import { useTheme, useMediaQuery, Theme } from "@mui/material";
+import { useTheme } from "@mui/material";
 import WDMapController from "../map/WDMapController";
-import { Devices } from "../../interfaces/Devices";
+import { Devices, Viewport } from "../../interfaces";
 import debounce from "../../utils/debounce";
-
-interface Viewport {
-  width: number;
-  height: number;
-  scale: number;
-}
 
 const getDevice = ({ width, height }): keyof Devices => {
   const theme = useTheme();
@@ -25,18 +19,16 @@ const getDevice = ({ width, height }): keyof Devices => {
     return "tabletLandscape";
   }
 
-  const tablet =
-    width >= theme.breakpoints.values.tablet &&
-    height >= theme.breakpoints.values.tabletLandscape;
-  if (tablet) {
-    return "tablet";
-  }
-
   const mobileLgLandscape =
     width >= theme.breakpoints.values.mobileLgLandscape &&
     height <= theme.breakpoints.values.mobileLg;
   if (mobileLgLandscape) {
     return "mobileLgLandscape";
+  }
+
+  const tablet = width >= theme.breakpoints.values.tablet;
+  if (tablet) {
+    return "tablet";
   }
 
   const mobileLg =
@@ -68,9 +60,6 @@ const getViewport = (): Viewport => {
 
 const WDMain: React.FC = function (): React.ReactElement {
   const [viewport, setViewport] = React.useState<Viewport>(getViewport());
-  console.log({
-    viewport,
-  });
 
   React.useLayoutEffect(() => {
     const updateViewport = debounce(() => {
@@ -81,9 +70,8 @@ const WDMain: React.FC = function (): React.ReactElement {
   }, []);
 
   const device = getDevice(viewport);
-
-  console.log(`DEVICE: ${device}`);
   const key = `${device}-${viewport.width}-${viewport.height}`;
+  console.log(`DEVICE: ${device}`);
   return (
     <WDMapController
       key={key}

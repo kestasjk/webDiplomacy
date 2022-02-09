@@ -6,29 +6,26 @@ import WDNeutral from "./variants/classic/components/WDNeutral";
 import WDSeaAreas from "./variants/classic/components/WDSeaAreas";
 
 interface WDMapProps {
-  width: number;
   height: number;
   preserveAspectRatio: string;
-  style: any;
   svgElement: any;
+  width: number;
 }
 
 const WDMap: React.FC<WDMapProps> = function ({
-  width,
   height,
   preserveAspectRatio,
-  style,
   svgElement,
+  width,
 }): React.ReactElement {
   return (
     <svg
-      width={width}
-      height={height}
-      style={style}
       fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      ref={svgElement}
+      height={height}
       preserveAspectRatio={preserveAspectRatio}
+      ref={svgElement}
+      width={width}
+      xmlns="http://www.w3.org/2000/svg"
     >
       <g id="full-map-svg">
         <rect width={width} height={height} fill="white" />
