@@ -1,6 +1,5 @@
 node_modules/
 public/
-src/components/svgr-components/
 src/tests/
 src/reportWebVitals.ts
 src/setupTests.ts
