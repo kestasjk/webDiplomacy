@@ -1035,7 +1035,6 @@ function loadModel() {
 				Fleet.Territory.getBorderTerritories().map(function(t) {
 						if ( t.type == 'Sea' && !Object.isUndefined(t.Unit) )
 							this.loadFleet(t.Unit);
-							
 					},this);
 			},
 			
@@ -1101,5 +1100,4 @@ function loadModel() {
 		
 		
 	}
-	console.log(Territories['_object']['1'])
 };
