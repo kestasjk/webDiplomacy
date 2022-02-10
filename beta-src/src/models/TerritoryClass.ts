@@ -1,10 +1,8 @@
 import { ITerritory, IBorder, ICoastalBorder } from "./Interfaces";
 import UnitClass from "./UnitClass";
 
-// We may not need this. Since almost all getter methods require broader data from the entire board and setter methods can be done when we create this object.
-
 export default class Territory {
-  id: number;
+  id: string;
 
   name: string;
 
@@ -12,11 +10,11 @@ export default class Territory {
 
   supply: boolean;
 
-  countryID: number;
+  countryID: string;
 
   coast: string;
 
-  coastParentID: number;
+  coastParentID: string;
 
   smallMapX: number;
 
@@ -32,7 +30,7 @@ export default class Territory {
 
   Unit: UnitClass;
 
-  unitID: number;
+  unitID: string;
 
   constructor({
     id,

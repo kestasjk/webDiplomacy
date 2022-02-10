@@ -7,20 +7,21 @@ export interface IBoard {
 }
 
 export interface ITerritory {
-  id: number;
+  id: string;
   name: string;
   type: string;
-  supply: string;
-  countryID: number;
+  supply: boolean;
+  countryID: string;
   coast: string;
-  coastParentID: number;
+  coastParentID: string;
   smallMapX: number;
   smallMapY: number;
   Borders: Array<IBorder>;
   CoastalBorders: Array<ICoastalBorder>;
   coastParent: ITerritory;
   Unit: IUnit;
-  unitID: number;
+  unitID: string;
+  convoyLink: boolean;
 }
 
 export interface IBorder {
@@ -36,29 +37,55 @@ export interface ICoastalBorder {
 }
 
 export interface IUnit {
-  id: number;
-  terrID: number;
-  countryID: number;
+  id: string;
+  terrID: string;
+  countryID: string;
   type: string;
+  Territory: ITerritory;
+  ConvoyGroup: IConvoyGroup;
+  convoyLink: boolean;
 }
 
 export interface ITerrStatus {
-  id: number;
+  id: string;
   standoff: boolean;
-  occupiedFromTerrID: number;
-  unitID: number;
-  ownerCountryID: number;
+  occupiedFromTerrID: string;
+  unitID: string;
+  ownerCountryID: string;
 }
 
 export interface IContext {
-  gameID: number;
-  variantID: number;
-  userID: number;
-  memberID: number;
+  gameID: string;
+  variantID: string;
+  userID: string;
+  memberID: string;
   turn: number;
   phase: string;
-  countryID: number;
+  countryID: string;
   tokenExpireTime: number;
-  maxOrderID: number;
+  maxOrderID: string;
   orderStatus: string;
+}
+
+export interface IConvoyGroup {
+  coasts: ITerritory[];
+  armies: IUnit[];
+  fleets: IUnit[];
+}
+
+export interface IOrder {
+  board: IBoard;
+  unit: IUnit;
+  orderData: IOrderData;
+}
+
+export interface IOrderData {
+  error: string;
+  status: string;
+  id: string;
+  type: string;
+  unitId: string;
+  toTerrID: string;
+  fromTerrID: string;
+  viaConvoy: string;
 }
