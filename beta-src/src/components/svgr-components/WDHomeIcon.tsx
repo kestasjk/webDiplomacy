@@ -1,11 +1,8 @@
 import * as React from "react";
+import { navIconProps } from "../../types.d";
 
-interface HomeIconProps {
-  iconState?: "active" | "inactive";
-}
-
-const WDHomeIcon: React.FC<HomeIconProps> = function ({
-  iconState,
+const WDHomeIcon: React.FC<navIconProps> = function ({
+  iconState = "inactive",
 }): React.ReactElement {
   return (
     <svg
@@ -26,10 +23,6 @@ const WDHomeIcon: React.FC<HomeIconProps> = function ({
       />
     </svg>
   );
-};
-
-WDHomeIcon.defaultProps = {
-  iconState: "inactive",
 };
 
 export default WDHomeIcon;

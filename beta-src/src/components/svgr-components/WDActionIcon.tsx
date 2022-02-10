@@ -1,11 +1,8 @@
 import * as React from "react";
+import { navIconProps } from "../../types.d";
 
-interface ActionIconProps {
-  iconState?: "active" | "inactive";
-}
-
-const WDActionIcon: React.FC<ActionIconProps> = function ({
-  iconState,
+const WDActionIcon: React.FC<navIconProps> = function ({
+  iconState = "inactive",
 }): React.ReactElement {
   return (
     <svg
@@ -48,10 +45,6 @@ const WDActionIcon: React.FC<ActionIconProps> = function ({
       </defs>
     </svg>
   );
-};
-
-WDActionIcon.defaultProps = {
-  iconState: "inactive",
 };
 
 export default WDActionIcon;
