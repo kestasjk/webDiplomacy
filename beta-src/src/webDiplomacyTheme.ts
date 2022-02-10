@@ -16,6 +16,21 @@ declare module "@mui/material/styles" {
     desktop: true;
   }
 
+  interface CountryColor {
+    main: string;
+    light: string;
+  }
+
+  interface PaletteOptions {
+    France: CountryColor;
+    Austria: CountryColor;
+    England: CountryColor;
+    Germany: CountryColor;
+    Russia: CountryColor;
+    Italy: CountryColor;
+    Turkey: CountryColor;
+  }
+
   interface TypographyVariants {
     label: React.CSSProperties;
   }
@@ -123,6 +138,34 @@ const webDiplomacyTheme = createTheme({
     secondary: {
       main: "#fff",
       contrastText: "#000",
+    },
+    France: {
+      main: "#2D5EE8",
+      light: "#B9C9F7",
+    },
+    Austria: {
+      main: "#FC4343",
+      light: "#FEC0C0",
+    },
+    England: {
+      main: "#E136EA",
+      light: "#F5BCF8",
+    },
+    Germany: {
+      main: "#F37C0E",
+      light: "#F5BCF8",
+    },
+    Russia: {
+      main: "#3F1BC1",
+      light: "#BFB3EA",
+    },
+    Italy: {
+      main: "#47D2A0",
+      light: "#C2F0DF",
+    },
+    Turkey: {
+      main: "#F3C400",
+      light: "#FBEBAA",
     },
   },
   typography: {
