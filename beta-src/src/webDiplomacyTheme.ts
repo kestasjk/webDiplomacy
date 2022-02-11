@@ -62,7 +62,7 @@ const webDiplomacyTheme = createTheme({
       mobileLgLandscape: 896,
       tablet: 834,
       tabletLandscape: 1194,
-      desktop: 1300, //  todo change back to 1500
+      desktop: 1500,
     },
   },
   components: {

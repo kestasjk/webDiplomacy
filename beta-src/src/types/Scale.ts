@@ -1,7 +1,7 @@
-import { Devices } from "../interfaces/Devices";
+import Device from "../enums/Device";
 
 type Scale = {
-  [key in keyof Devices]: number[];
+  [key in Device]: number[];
 };
 
 export default Scale;

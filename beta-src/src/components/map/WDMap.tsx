@@ -7,14 +7,12 @@ import WDSeaAreas from "./variants/classic/components/WDSeaAreas";
 
 interface WDMapProps {
   height: number;
-  preserveAspectRatio: string;
   svgElement: any;
   width: number;
 }
 
 const WDMap: React.FC<WDMapProps> = function ({
   height,
-  preserveAspectRatio,
   svgElement,
   width,
 }): React.ReactElement {
@@ -22,7 +20,6 @@ const WDMap: React.FC<WDMapProps> = function ({
     <svg
       fill="none"
       height={height}
-      preserveAspectRatio={preserveAspectRatio}
       ref={svgElement}
       width={width}
       xmlns="http://www.w3.org/2000/svg"

@@ -22,6 +22,7 @@
   "plugins": ["react", "@typescript-eslint", "jest"],
   "rules": {
     "@typescript-eslint/no-use-before-define": ["error"],
+    "@typescript-eslint/no-shadow": ["error"],
     "func-names": ["error", "as-needed"],
     "import/extensions": "off",
     "jest/no-disabled-tests": "warn",
