@@ -22,6 +22,7 @@
   "plugins": ["react", "@typescript-eslint", "jest"],
   "rules": {
     "@typescript-eslint/no-use-before-define": ["error"],
+    "@typescript-eslint/no-shadow": ["error"],
     "func-names": ["error", "as-needed"],
     "import/extensions": "off",
     "jest/no-disabled-tests": "warn",
@@ -30,7 +31,8 @@
     "jest/prefer-to-have-length": "warn",
     "jest/valid-expect": "error",
     "react/jsx-filename-extension": ["warn", { "extensions": [".tsx"] }],
-    "no-use-before-define": "off"
+    "no-use-before-define": "off",
+    "no-shadow": "off"
   },
   "settings": {
     "import/resolver": {
