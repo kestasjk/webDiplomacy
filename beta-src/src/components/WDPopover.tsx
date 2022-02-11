@@ -1,14 +1,16 @@
 import * as React from "react";
 import { useRef } from "react";
-import { Box, Popover } from "@mui/material";
+import { Box, ModalProps, Popover } from "@mui/material";
 
 interface WDPopoverProps {
   children: React.ReactNode;
   isOpen: boolean;
   /**
-   * A callback to be used when the popover closes. Must contain setIsOpen(false) inside of onClose when declared and passed from parent
+   * A optional callback to be called when the Popover closes. For example:
+   *
+   * () => setIsOpen(false)
    */
-  onClose: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onClose?: ModalProps["onClose"];
   /**
    * A component that opens or closes the Popover when clicked.
    */
@@ -30,10 +32,10 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
       }}
     >
       <Box
+        ref={anchorEl}
         sx={{
           pt: "15px",
         }}
-        ref={anchorEl}
       >
         {popoverTrigger}
       </Box>
@@ -86,6 +88,10 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
       </Popover>
     </Box>
   );
+};
+
+WDPopover.defaultProps = {
+  onClose: undefined,
 };
 
 export default WDPopover;
