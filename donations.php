@@ -28,7 +28,22 @@ require_once('header.php');
 libHTML::starthtml();
 print libHTML::pageTitle(l_t('Donations'),l_t('Learn how to donate and what your donations are used for.'));
 
-print "
+if( isset($_GET['thank-you']) )
+{
+	print "
+<div class='donations'>
+    <div class = 'donations_title'>Thank you!</div>
+    <div class = 'donations_content'>
+        <p>
+            Thank you for your donation! Donations help to keep the server up and running for all users, and with fees of only hundreds of USD per year every donation helps keep the server running for free, for everyone.<br />
+	    Thanks again! It may take some time for the PayPal receipt to be registered by the server, please contact the team if you do not receive a marker.
+        </p>
+    </div>
+    </div>";
+}
+else
+{
+	print "
 <div class='donations'>
     <div class = 'donations_title'>Why do you need donations?</div>
     <div class = 'donations_content'>
@@ -82,9 +97,9 @@ print "
 		</form>
         </p>
     </div>
-
-</div></div>";
+</div>";
 ?>
+</div>
 
 <script type="text/javascript">
    var coll = document.getElementsByClassName("donations_title");
