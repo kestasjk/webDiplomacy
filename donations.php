@@ -73,22 +73,13 @@ print "
     <div class = 'donations_title'>How do I donate?</div>
     <div class = 'donations_content_show' style='display:block'>
         <p>
-            If you would like to support the site, click the button below. After submitting a donation, please send an email to a Co-owner at <a href='mailto:".Config::$adminEMail."' class='light'>".Config::$adminEMail."</a> with your username to receive a donator marker. </br>
-		<div id='donate-button-container'>
-		<div id='donate-button'></div>
-		<script src='https://www.paypalobjects.com/donate/sdk/donate-sdk.js' charset='UTF-8'></script>
-		<script>
-		PayPal.Donation.Button({
-		env:'production',
-		hosted_button_id:'5AGZPBJ4HB4U8',
-		image: {
-		src:'https://www.paypalobjects.com/en_AU/i/btn/btn_donate_LG.gif',
-		alt:'Donate with PayPal button',
-		title:'PayPal - The safer, easier way to pay online!',
-		}
-		}).render('#donate-button');
-		</script>
-		</div>
+            If you would like to support the site, click the button below. You will receive a donation marker so that other users are aware that you are helping to keep the site we all enjoy up and running.</br>
+		<form action='https://www.paypal.com/donate' method='post' target='_top'>
+		<input type='hidden' name='hosted_button_id' value='EDEQ2R6ZJK5GW' />
+		<input type='hidden' name='custom' value='".$User->id."' />
+		<input type='image' src='https://www.paypalobjects.com/en_AU/i/btn/btn_donate_LG.gif' border='0' name='submit' title='PayPal - The safer, easier way to pay online!' alt='Donate with PayPal button' />
+		<img alt='' border='0' src='https://www.paypal.com/en_AU/i/scr/pixel.gif' width='1' height='1' />
+		</form>
         </p>
     </div>
 
