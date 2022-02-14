@@ -1,4 +1,5 @@
 import { createTheme } from "@mui/material/styles";
+import Country from "./enums/Country";
 
 declare module "@mui/material/styles" {
   interface BreakpointOverrides {
@@ -14,21 +15,6 @@ declare module "@mui/material/styles" {
     tablet: true;
     tabletLandscape: true;
     desktop: true;
-  }
-
-  interface CountryColor {
-    main: string;
-    light: string;
-  }
-
-  interface PaletteOptions {
-    France: CountryColor;
-    Austria: CountryColor;
-    England: CountryColor;
-    Germany: CountryColor;
-    Russia: CountryColor;
-    Italy: CountryColor;
-    Turkey: CountryColor;
   }
 
   interface TypographyVariants {
@@ -64,6 +50,17 @@ const disabledBackgroundSecondary = "transparent";
 const disabledTextSecondary = "#bababa";
 const defaultLineHeight = 1.2;
 const normalFontWeight = 400;
+
+/// Interface and type for Country Color
+
+interface CountryColor {
+  main: string;
+  light: string;
+}
+
+type CountryPaletteOptions = {
+  [key in Country]: CountryColor;
+};
 
 /**
  * theme creation
@@ -139,34 +136,6 @@ const webDiplomacyTheme = createTheme({
       main: "#fff",
       contrastText: "#000",
     },
-    France: {
-      main: "#2D5EE8",
-      light: "#B9C9F7",
-    },
-    Austria: {
-      main: "#FC4343",
-      light: "#FEC0C0",
-    },
-    England: {
-      main: "#E136EA",
-      light: "#F5BCF8",
-    },
-    Germany: {
-      main: "#F37C0E",
-      light: "#F5BCF8",
-    },
-    Russia: {
-      main: "#3F1BC1",
-      light: "#BFB3EA",
-    },
-    Italy: {
-      main: "#47D2A0",
-      light: "#C2F0DF",
-    },
-    Turkey: {
-      main: "#F3C400",
-      light: "#FBEBAA",
-    },
   },
   typography: {
     button: {
@@ -177,6 +146,42 @@ const webDiplomacyTheme = createTheme({
     },
   },
 });
+
+const countryPalette: CountryPaletteOptions = {
+  France: {
+    main: "#2D5EE8",
+    light: "#B9C9F7",
+  },
+  Austria: {
+    main: "#FC4343",
+    light: "#FEC0C0",
+  },
+  England: {
+    main: "#E136EA",
+    light: "#F5BCF8",
+  },
+  Germany: {
+    main: "#F37C0E",
+    light: "#F5BCF8",
+  },
+  Russia: {
+    main: "#3F1BC1",
+    light: "#BFB3EA",
+  },
+  Italy: {
+    main: "#47D2A0",
+    light: "#C2F0DF",
+  },
+  Turkey: {
+    main: "#F3C400",
+    light: "#FBEBAA",
+  },
+};
+
+webDiplomacyTheme.palette = {
+  ...webDiplomacyTheme.palette,
+  ...countryPalette,
+};
 
 /**
  * responsive overrides

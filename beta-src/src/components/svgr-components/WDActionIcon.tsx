@@ -1,23 +1,28 @@
 import * as React from "react";
-import { navIconProps } from "../../types.d";
+import { navIconProps } from "../../interfaces/Icons";
+import UIState from "../../enums/UIState";
 
 const WDActionIcon: React.FC<navIconProps> = function ({
-  iconState = "inactive",
+  iconState = UIState.INACTIVE,
 }): React.ReactElement {
   return (
     <svg
       filter={
-        iconState === "active" ? "drop-shadow(-1px 12px 7px #636363)" : ""
+        iconState === UIState.ACTIVE ? "drop-shadow(-1px 12px 7px #636363)" : ""
       }
       height={42}
       width={42}
       viewBox="6 3 42 42"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {iconState === "active" && <circle cx={27} cy={24} r={20} fill="#000" />}
+      {iconState === UIState.ACTIVE && (
+        <circle cx={27} cy={24} r={20} fill="#000" />
+      )}
       <g
         filter={
-          iconState === "inactive" ? "drop-shadow(.5px 2px 6px #404040)" : ""
+          iconState === UIState.ACTIVE
+            ? "drop-shadow(.5px 2px 6px #404040)"
+            : ""
         }
         fill="#fff"
       >
