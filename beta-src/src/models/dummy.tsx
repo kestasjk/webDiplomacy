@@ -13,10 +13,10 @@ const METHODS = {
 
 const Dummy: React.FC = function (): React.ReactElement {
   const board = new BoardClass(
-    Object.values(boardData),
-    Object.values(units),
-    terrStatus,
     context,
+    Object.values(boardData),
+    terrStatus,
+    Object.values(units),
   );
 
   const findUnit = (unitID) => {
@@ -26,7 +26,7 @@ const Dummy: React.FC = function (): React.ReactElement {
   const orders = ordersData.map((order) => {
     const unit = findUnit(order.unitID);
 
-    return unit ? new OrderClass(board, unit, order) : null;
+    return unit ? new OrderClass(board, order, unit) : null;
   });
 
   /**
