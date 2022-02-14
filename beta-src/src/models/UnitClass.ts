@@ -3,36 +3,33 @@ import { IUnit } from "./Interfaces";
 import TerritoryClass from "./TerritoryClass";
 
 export default class UnitClass {
-  id: string;
+  id!: string;
 
-  terrID: string;
+  terrID!: string;
 
-  countryID: string;
+  countryID!: string;
 
-  type: string;
+  type!: string;
 
-  convoyLink: boolean;
+  convoyLink!: boolean;
 
-  Territory: TerritoryClass;
+  Territory!: TerritoryClass;
 
-  ConvoyGroup: ConvoyGroupClass;
+  ConvoyGroup!: ConvoyGroupClass;
 
-  constructor({
-    id,
-    terrID,
-    countryID,
-    type,
-    Territory,
-    ConvoyGroup,
-    convoyLink = false,
-  }: IUnit) {
-    this.id = id;
-    this.terrID = terrID;
-    this.countryID = countryID;
-    this.type = type;
-    this.Territory = Territory;
-    this.ConvoyGroup = ConvoyGroup;
+  constructor(data: IUnit) {
+    Object.assign(this, { ...data, convoyLink: false });
+  }
 
-    this.convoyLink = convoyLink;
+  setTerritory(territory: TerritoryClass) {
+    this.Territory = territory;
+  }
+
+  setConvoyGroup(convoyGroup: ConvoyGroupClass) {
+    this.ConvoyGroup = convoyGroup;
+  }
+
+  setConvoyLink() {
+    this.convoyLink = true;
   }
 }

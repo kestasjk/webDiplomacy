@@ -1,9 +1,9 @@
 import BoardClass from "./BoardClass";
 import TerritoryClass from "./TerritoryClass";
-import { IOrder, IOrderData } from "./Interfaces";
+import { IOrderData } from "./Interfaces";
 import UnitClass from "./UnitClass";
 
-export default class OrderClass implements IOrder {
+export default class OrderClass {
   // eslint-disable-next-line no-useless-constructor
   constructor(
     public board: BoardClass,
@@ -17,59 +17,55 @@ export default class OrderClass implements IOrder {
       .map((movableTerritories) => movableTerritories.id);
 
     if (this.unit.convoyLink && this.unit.type === "Army") {
-      const convoyableTerritories = this.unit.ConvoyGroup.coasts.reduce(
-        (acc: string[], cur) => {
-          if (BoardClass.canConvoyTo(cur, this.unit)) {
-            acc.push(cur.id);
-          }
+      const convoyableTerritories = Array.from(
+        this.unit.ConvoyGroup.coasts,
+      ).reduce((acc: string[], cur) => {
+        if (BoardClass.canConvoyTo(cur, this.unit)) {
+          acc.push(cur.id);
+        }
 
-          return acc;
-        },
-        [],
-      );
+        return acc;
+      }, []);
       return Array.from(new Set(choices.concat(convoyableTerritories)));
     }
 
     return choices;
   }
 
-  // Names of units territories I can support-hold
+  /**
+   * Get all units' name current unit can support-hold.
+   */
   getSupportHoldChoices() {
-    const supportHoldChoices = this.board
-      .getMovableUnits(this.unit)
-      .reduce((acc: string[], cur) => {
-        acc.push(cur.Territory.coastParent.id);
+    const movableUnits = this.board.getMovableUnits(this.unit);
 
-        return acc;
-      }, []);
+    const supportHoldChoices = movableUnits.map(
+      (mu) => mu?.Territory.coastParent.id,
+    );
 
     return Array.from(new Set(supportHoldChoices));
   }
 
-  // Names of territories I can support-move to (places I can support an attack to)
+  /**
+   * Get all territories current unit can support-move to (places I can support an attack to)
+   */
   getSupportMoveToChoices() {
-    return this.board
-      .getMovableTerritories(this.unit)
-      .map((movableTerritory) => movableTerritory.coastParent.id);
+    const movableTerritories = this.board.getMovableTerritories(this.unit);
+
+    return movableTerritories.map((mt) => mt.coastParent.id);
   }
 
-  // Names of territories containing units which I can support into the given Territory (fromTerrID)
+  /**
+   * Names of territories containing units which I can support into the given Territory
+   * Essentially a list of units which can move into the given territory(territory that current unit can support move to)
+   */
   getSupportMoveFromChoices(againstTerritory: TerritoryClass) {
-    // Essentially a list of units which can move into the given territory
-
     // Units bordering the given territory which can move into it
     let possibleUnits = this.board
       .getBorderUnits(againstTerritory.coastParent)
-      .filter((borderUnit) => {
-        return this.board.canMoveInto(borderUnit, againstTerritory);
+      .filter((bu) => {
+        return this.board.canMoveInto(bu, againstTerritory);
       });
-    // var PossibleUnits = AgainstTerritory.coastParent
-    //   .getBorderUnits()
-    //   .select(function (u) {
-    //     return u.canMoveInto(AgainstTerritory);
-    //   }, this);
 
-    // Armies that could be convoyed into the given territory
     if (againstTerritory.convoyLink) {
       /*
        * Resource intensive extra check, unnecessary 99% of the time. Leaving this disabled
@@ -82,20 +78,15 @@ export default class OrderClass implements IOrder {
       if (
         this.unit.convoyLink &&
         this.unit.type === "Fleet" &&
-        this.unit.ConvoyGroup.coasts
+        Array.from(this.unit.ConvoyGroup.coasts)
           .map((coast) => coast.id)
           .includes(againstTerritory.id)
       ) {
-        // Make sure ConvoyArmies contains no armies which can only reach AgainstTerritory
-        // via a convoy containing this fleet.
-        ConvoyArmies = againstTerritory.ConvoyGroup.armies.filter(
+        /**
+         * Please ignore now. convoy path related code will be refactored later.
+         */
+        ConvoyArmies = Array.from(againstTerritory.ConvoyGroup.armies).filter(
           (convoyArmy) => {
-            // var path = AgainstTerritory.ConvoyGroup.pathArmyToCoastWithoutFleet(
-            //   ConvoyArmy.Territory,
-            //   AgainstTerritory,
-            //   this.Territory,
-            // );
-
             return !!againstTerritory.ConvoyGroup.pathArmyToCoastWithoutFleet(
               convoyArmy.Territory,
               againstTerritory,
@@ -104,16 +95,10 @@ export default class OrderClass implements IOrder {
           },
         );
       } else {
-        ConvoyArmies = againstTerritory.ConvoyGroup.Armies;
+        ConvoyArmies = againstTerritory.ConvoyGroup.armies;
       }
 
-      //   this.convoyOptions =
-      //     AgainstTerritory.ConvoyGroup.Armies.pluck("Territory").pluck("id");
-
       possibleUnits = possibleUnits.concat(ConvoyArmies);
-      // } else {
-      //   this.convoyOptions = [];
-      // }
     }
 
     return Array.from(
@@ -123,7 +108,9 @@ export default class OrderClass implements IOrder {
         ),
       ),
     ).filter((possibleUnitTerritory) => {
-      // true if its not current territory and not agaianst territory
+      /**
+       * true if its not current territory and not agaianst territory
+       */
       return (
         possibleUnitTerritory !== this.unit.Territory.coastParent.id &&
         possibleUnitTerritory !== againstTerritory.id
@@ -131,19 +118,23 @@ export default class OrderClass implements IOrder {
     });
   }
 
-  // Coasts which a fleet could convoy to
+  /**
+   * get all coasts which a fleet can convoy an army to
+   */
   getConvoyToChoices() {
     if (this.unit.convoyLink) {
-      return this.unit.ConvoyGroup.coasts.map((coast) => coast.id);
+      return Array.from(this.unit.ConvoyGroup.coasts).map((coast) => coast.id);
     }
 
     return [];
   }
 
-  // Coasts which a fleet could convoy from
+  /**
+   * get all coasts which a fleet can convoy an army from
+   */
   getConvoyFromChoices(toTerritory: TerritoryClass) {
     if (this.unit.convoyLink) {
-      return this.unit.ConvoyGroup.armies.filter((convoyArmy) => {
+      return Array.from(this.unit.ConvoyGroup.armies).filter((convoyArmy) => {
         if (toTerritory.id === convoyArmy.Territory.id) {
           return false;
         }

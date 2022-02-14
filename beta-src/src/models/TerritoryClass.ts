@@ -1,70 +1,78 @@
-import { ITerritory, IBorder, ICoastalBorder } from "./Interfaces";
+import ConvoyGroupClass from "./ConvoyGroupClass";
+import { ITerritory, IBorder, ICoastalBorder, ITerrStatus } from "./Interfaces";
 import UnitClass from "./UnitClass";
 
-export default class Territory {
-  id: string;
+export default class TerritoryClass {
+  id!: string;
 
-  name: string;
+  name!: string;
 
-  type: string;
+  type!: string;
 
-  supply: boolean;
+  supply!: boolean;
 
-  countryID: string;
+  countryID!: string;
 
-  coast: string;
+  coast!: string;
 
-  coastParentID: string;
+  coastParentID!: string;
 
-  smallMapX: number;
+  smallMapX!: number;
 
-  smallMapY: number;
+  smallMapY!: number;
 
-  Borders: IBorder[];
+  Borders!: IBorder[];
 
-  CoastalBorders: ICoastalBorder[];
+  CoastalBorders!: ICoastalBorder[];
 
-  convoyLink: boolean;
+  ConvoyGroup!: ConvoyGroupClass;
 
-  coastParent: Territory;
+  ConvoyGroups!: ConvoyGroupClass[];
 
-  Unit: UnitClass;
+  convoyLink!: boolean;
 
-  unitID: string;
+  Unit!: UnitClass;
 
-  constructor({
-    id,
-    name,
-    type,
-    supply,
-    countryID,
-    coast,
-    coastParentID,
-    smallMapX,
-    smallMapY,
-    Borders,
-    CoastalBorders,
-    coastParent,
-    Unit,
-    unitID,
-  }: ITerritory) {
-    this.id = id;
-    this.name = name;
-    this.type = type;
-    this.countryID = countryID;
-    this.coast = coast;
-    this.coastParentID = coastParentID;
-    this.smallMapX = smallMapX;
-    this.smallMapY = smallMapY;
+  standoff!: boolean;
+
+  occupiedFromTerrID!: string;
+
+  unitID?: string;
+
+  ownerCountryID!: string;
+
+  coastParent!: TerritoryClass;
+
+  constructor(terrData: ITerritory, terrStatusData: ITerrStatus) {
+    Object.assign(this, {
+      ...terrData,
+      ...terrStatusData,
+      supply: terrData.supply === "Yes",
+      convoyLink: false,
+    });
+  }
+
+  setUnit(unit: UnitClass) {
+    this.Unit = unit;
+  }
+
+  setCoastParent(coastParent: TerritoryClass) {
+    const { Borders, supply } = coastParent;
+
+    this.coastParent = coastParent;
     this.Borders = Borders;
-    this.CoastalBorders = CoastalBorders;
-    this.coastParent = new Territory(coastParent);
-    this.Unit = Unit;
-    this.unitID = unitID;
+    this.supply = supply;
+  }
 
-    // don't know why they are doing this
-    this.supply = supply === "Yes";
+  setConvoyLink() {
+    this.convoyLink = true;
+  }
 
-    this.convoyLink = false;
+  setConvoyGroups(convoyGroup: ConvoyGroupClass) {
+    this.ConvoyGroups.push(convoyGroup);
+  }
+
+  setConvoyGroup(convoyGroup: ConvoyGroupClass) {
+    this.ConvoyGroup = convoyGroup;
   }
 }

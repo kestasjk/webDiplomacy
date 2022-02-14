@@ -1,107 +1,112 @@
-import { IBoard, IContext, ITerrStatus } from "./Interfaces";
+import ConvoyGroupClass from "./ConvoyGroupClass";
+import { IUnit, ITerritory, IContext, ITerrStatus } from "./Interfaces";
 import TerritoryClass from "./TerritoryClass";
 import UnitClass from "./UnitClass";
 
-export default class BoardClass implements IBoard {
-  myUnits: UnitClass[];
+export default class BoardClass {
+  territories: TerritoryClass[] = [];
+
+  units: UnitClass[] = [];
+
+  convoyGroups: ConvoyGroupClass[] = [];
 
   constructor(
-    public territories: TerritoryClass[],
-    public units: UnitClass[],
-    public terrStatus: ITerrStatus[],
+    territories: ITerritory[],
+    units: IUnit[],
+    terrStatus: ITerrStatus[],
     public context: IContext,
   ) {
-    this.units = [];
-    this.myUnits = [];
+    /**
+     * to reduce time, any territories that is either parent or child are stored and proccessed later in line 61
+     */
+    const coastParents: TerritoryClass[] = [];
+    const coastChildren: TerritoryClass[] = [];
 
     this.territories = territories.map((territory) => {
-      const curTerrStatus = this.terrStatus.find(
-        (ts) => ts.id === territory.id,
-      );
+      const curTerrStatus = terrStatus.find((ts) => ts.id === territory.id);
 
-      const territoryObj = {
-        ...territory,
+      let curTerritory;
 
-        coastParent: territory,
-        ...curTerrStatus,
-      };
+      if (curTerrStatus) {
+        curTerritory = new TerritoryClass(territory, curTerrStatus);
 
-      const curUnit = curTerrStatus?.unitID
-        ? new UnitClass(units[curTerrStatus.unitID])
-        : null;
+        const curUnit = curTerrStatus.unitID
+          ? new UnitClass(units[curTerrStatus.unitID])
+          : null;
 
-      if (curUnit) {
-        this.units.push(curUnit);
+        if (curUnit) {
+          curTerritory.setUnit(curUnit);
 
-        territoryObj.Unit = curUnit;
-        territoryObj.unitID = curUnit.id;
+          curUnit.setTerritory(curTerritory);
 
-        if (curUnit.countryID === territory.countryID) {
-          this.myUnits.push(curUnit);
+          this.units.push(curUnit);
+        }
+
+        if (curTerritory.coast === "Parent") {
+          coastParents.push(curTerritory);
+        }
+
+        if (curTerritory.coast === "Child") {
+          coastChildren.push(curTerritory);
+        }
+
+        if (curTerritory.coastParentID === curTerritory.id) {
+          curTerritory.coastParent = curTerritory;
         }
       }
 
-      if (territory.coastParentID !== territory.id) {
-        const newCoastParent =
-          territories.find((t) => t.id === territory.coastParentID) ||
-          territory;
-
-        territoryObj.coastParent = newCoastParent;
-        territoryObj.supply = newCoastParent?.supply;
-        territoryObj.Borders = newCoastParent?.Borders;
-      }
-
-      return new TerritoryClass(territoryObj);
+      return curTerritory;
     });
+
+    coastChildren.forEach((cc) => {
+      const parent = coastParents.find((cp) => cp.id === cc.coastParentID);
+      if (parent) {
+        cc.setCoastParent(parent);
+      }
+    });
+
+    /**
+     * load and initialize convoyGroup.
+     * convoyGroup has
+     * fleets that are adjacent
+     * coasts that are adjacent above fleets
+     * armies that are placed in above coasts
+     */
+    if (context.phase === "Diplomacy") {
+      this.units.forEach((u) => {
+        if (u.type === "Fleet" && u.Territory.type === "Sea") {
+          const newConvoyGroup = new ConvoyGroupClass(this);
+
+          /**
+           * first load fleets, and coasts with armies within them.
+           */
+          newConvoyGroup.loadFleet(u);
+          newConvoyGroup.loadCoasts();
+          this.convoyGroups.push(newConvoyGroup);
+        }
+      });
+
+      this.convoyGroups.forEach((cg) => cg.linkGroups());
+      this.convoyGroups.forEach((cg) => cg.linkGroups());
+    }
   }
 
+  /**
+   * finds adjacent territories
+   */
   getBorderTerritories(territory: TerritoryClass) {
     const borderIDs = territory.Borders.map((b) => b.id);
 
     return this.territories.filter((t) => borderIDs.includes(`${t.id}`));
   }
 
+  /**
+   * find units on border territories
+   */
   getBorderUnits(territory: TerritoryClass) {
     const borderTerritories = this.getBorderTerritories(territory.coastParent);
 
     return borderTerritories.map((bt) => bt.Unit);
-  }
-
-  canMoveInto(unit: UnitClass, targetTerritory: TerritoryClass) {
-    if (
-      this.getMovableTerritories(unit)
-        .map((movableTerritories) => {
-          return movableTerritories.coastParent.id;
-        })
-        .includes(targetTerritory.coastParent.id)
-    ) {
-      return true;
-    }
-    return false;
-  }
-
-  // Can I move to a given Territory via convoy (must be an army on a coast)
-  static canConvoyTo(targetTerritory: TerritoryClass, unit: UnitClass) {
-    if (unit.type === "Army") {
-      // Can't get convoyed to our own territory
-      if (targetTerritory.id === unit.Territory.id) return false;
-
-      // We're in a convoy group, moving into a convoygroup territory which is in our convoygroup.
-      if (
-        unit.convoyLink &&
-        targetTerritory.convoyLink &&
-        unit.ConvoyGroup.coasts.includes(targetTerritory)
-      )
-        return true;
-    }
-
-    return false;
-  }
-
-  static canCrossBorder(unit: UnitClass, b) {
-    if (unit.type === "Army" && !b.a) return false;
-    if (unit.type === "Fleet" && !b.f) return false;
-    return true;
   }
 
   getMovableTerritories(unit: UnitClass) {
@@ -128,7 +133,8 @@ export default class BoardClass implements IBoard {
     }
 
     const movableTerritories = this.getMovableTerritories(unit);
-    const convoyableTerritories = unit.ConvoyGroup.coasts.reduce(
+
+    const convoyableTerritories = Array.from(unit.ConvoyGroup.coasts).reduce(
       (acc: TerritoryClass[], cur) => {
         if (BoardClass.canConvoyTo(cur, unit)) {
           acc.push(cur);
@@ -146,5 +152,42 @@ export default class BoardClass implements IBoard {
     return this.getMovableTerritories(unit).map((movableTerritory) => {
       return movableTerritory.coastParent.Unit;
     });
+  }
+
+  canMoveInto(unit: UnitClass, targetTerritory: TerritoryClass) {
+    if (
+      this.getMovableTerritories(unit)
+        .map((movableTerritories) => {
+          return movableTerritories.coastParent.id;
+        })
+        .includes(targetTerritory.coastParent.id)
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  // Can I move to a given Territory via convoy (must be an army on a coast)
+  static canConvoyTo(targetTerritory: TerritoryClass, unit: UnitClass) {
+    if (unit.type === "Army") {
+      // Can't get convoyed to our own territory
+      if (targetTerritory.id === unit.Territory.id) return false;
+
+      // We're in a convoy group, moving into a convoygroup territory which is in our convoygroup.
+      if (
+        unit.convoyLink &&
+        targetTerritory.convoyLink &&
+        unit.ConvoyGroup.coasts.has(targetTerritory)
+      )
+        return true;
+    }
+
+    return false;
+  }
+
+  static canCrossBorder(unit: UnitClass, b) {
+    if (unit.type === "Army" && !b.a) return false;
+    if (unit.type === "Fleet" && !b.f) return false;
+    return true;
   }
 }

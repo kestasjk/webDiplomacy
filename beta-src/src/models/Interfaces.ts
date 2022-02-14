@@ -1,7 +1,6 @@
 export interface IBoard {
   territories: ITerritory[];
   units: IUnit[];
-  myUnits: IUnit[];
   terrStatus: ITerrStatus[];
   context: IContext;
 }
@@ -10,7 +9,7 @@ export interface ITerritory {
   id: string;
   name: string;
   type: string;
-  supply: boolean;
+  supply: string;
   countryID: string;
   coast: string;
   coastParentID: string;
@@ -18,9 +17,6 @@ export interface ITerritory {
   smallMapY: number;
   Borders: Array<IBorder>;
   CoastalBorders: Array<ICoastalBorder>;
-  coastParent: ITerritory;
-  Unit: IUnit;
-  unitID: string;
   convoyLink: boolean;
 }
 
@@ -41,8 +37,6 @@ export interface IUnit {
   terrID: string;
   countryID: string;
   type: string;
-  Territory: ITerritory;
-  ConvoyGroup: IConvoyGroup;
   convoyLink: boolean;
 }
 
