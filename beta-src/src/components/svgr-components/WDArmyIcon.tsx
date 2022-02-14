@@ -1,10 +1,11 @@
 import * as React from "react";
 import { useTheme } from "@mui/material/styles";
-import { gameIconProps } from "../../types";
+import { gameIconProps } from "../../interfaces/Icons";
+import UIState from "../../enums/UIState";
 
 const WDArmyIcon: React.FC<gameIconProps> = function ({
   country,
-  iconState,
+  iconState = UIState.NONE,
 }): React.ReactElement {
   const theme = useTheme();
 
@@ -15,13 +16,13 @@ const WDArmyIcon: React.FC<gameIconProps> = function ({
       width={50}
       xmlns="http://www.w3.org/2000/svg"
     >
-      {iconState === "none" && (
+      {iconState === UIState.NONE && (
         <path
           d="M12.023 14a5 5 0 0 1 5-5h15.954a5 5 0 0 1 5 5v17.73a5 5 0 0 1-2.874 4.525l-7.977 3.747a5 5 0 0 1-4.252 0l-7.977-3.747a5 5 0 0 1-2.874-4.526V14Z"
           fill="#fff"
         />
       )}
-      {iconState === "selected" && (
+      {iconState === UIState.SELECTED && (
         <path
           d="M32.977 8H17.023a6 6 0 0 0-6 6v17.73a6 6 0 0 0 3.45 5.43l7.976 3.747a6 6 0 0 0 5.102 0l7.977-3.747a6 6 0 0 0 3.45-5.43V14a6 6 0 0 0-6-6Z"
           fill={theme.palette[country].main}
@@ -29,7 +30,7 @@ const WDArmyIcon: React.FC<gameIconProps> = function ({
           strokeWidth={2}
         />
       )}
-      {iconState === "hold" && (
+      {iconState === UIState.HOLD && (
         <path
           d="M32.977 8H17.023a6 6 0 0 0-6 6v17.73a6 6 0 0 0 3.45 5.43l7.976 3.747a6 6 0 0 0 5.102 0l7.977-3.747a6 6 0 0 0 3.45-5.43V14a6 6 0 0 0-6-6Z"
           fill="#fff"
@@ -37,7 +38,7 @@ const WDArmyIcon: React.FC<gameIconProps> = function ({
           strokeWidth={2}
         />
       )}
-      {iconState === "dislodged" && (
+      {iconState === UIState.DISLODGED && (
         <>
           <path
             d="M32.977 7H17.023a7 7 0 0 0-7 7v17.73a7 7 0 0 0 4.024 6.335l7.977 3.747a7 7 0 0 0 5.952 0l7.977-3.747a7 7 0 0 0 4.024-6.336V14a7 7 0 0 0-7-7Z"
@@ -53,14 +54,14 @@ const WDArmyIcon: React.FC<gameIconProps> = function ({
           />
         </>
       )}
-      {iconState === "build" && (
+      {iconState === UIState.BUILD && (
         <path
           d="M32.977 8.5H17.023a5.5 5.5 0 0 0-5.5 5.5v17.73a5.5 5.5 0 0 0 3.162 4.977l7.977 3.747a5.5 5.5 0 0 0 4.676 0l7.977-3.747a5.5 5.5 0 0 0 3.162-4.978V14a5.5 5.5 0 0 0-5.5-5.5Z"
           fill={theme.palette[country].light}
           stroke={theme.palette[country].main}
         />
       )}
-      {iconState === "disbanded" && (
+      {iconState === UIState.DISBANDED && (
         <>
           <path
             d="m19.028 35.458-3.762 3.37.299-4.956L2.743 39.74l9.574-12.332-3.423-2.033 2.985-1.869L0 12.436l14.7 4.915-.85-15.133 5.75 9.707 1.21-5.97 3.386 8.745L39.23 0l-9.542 18.483 3.392.216-1.791 2.141L45 24.366l-13.125 3.15 3.093 3H30.44l5.446 9.013-10.943-5.544-4.946 8.122-.968-6.65Z"
@@ -76,7 +77,7 @@ const WDArmyIcon: React.FC<gameIconProps> = function ({
           />
         </>
       )}
-      {iconState !== "disbanded" && (
+      {iconState !== UIState.DISBANDED && (
         <path
           d="M34.065 20.963H27.58L25.024 14l-2.461 6.963H16.03l5.538 4.026L19.486 32l5.562-4.026L30.586 32l-2.036-6.987 5.515-4.05Z"
           fill={iconState === "selected" ? "#fff" : theme.palette[country].main}
@@ -84,10 +85,6 @@ const WDArmyIcon: React.FC<gameIconProps> = function ({
       )}
     </svg>
   );
-};
-
-WDArmyIcon.defaultProps = {
-  iconState: "none",
 };
 
 export default WDArmyIcon;
