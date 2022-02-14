@@ -33,7 +33,7 @@ export default class OrderClass {
   }
 
   /**
-   * Get all units' name current unit can support-hold.
+   * get an array of unique ids for the units that can support-hold
    */
   getSupportHoldChoices() {
     const movableUnits = this.board.getMovableUnits(this.unit);
@@ -46,7 +46,7 @@ export default class OrderClass {
   }
 
   /**
-   * Get all territories current unit can support-move to (places I can support an attack to)
+   * get an array of ids the current unit can support-move to
    */
   getSupportMoveToChoices() {
     const movableTerritories = this.board.getMovableTerritories(this.unit);
@@ -83,7 +83,7 @@ export default class OrderClass {
           .includes(againstTerritory.id)
       ) {
         /**
-         * Please ignore now. convoy path related code will be refactored later.
+         * TODO: refactor convoy path related logic.
          */
         ConvoyArmies = Array.from(againstTerritory.ConvoyGroup.armies).filter(
           (convoyArmy) => {
@@ -108,9 +108,6 @@ export default class OrderClass {
         ),
       ),
     ).filter((possibleUnitTerritory) => {
-      /**
-       * true if its not current territory and not agaianst territory
-       */
       return (
         possibleUnitTerritory !== this.unit.Territory.coastParent.id &&
         possibleUnitTerritory !== againstTerritory.id

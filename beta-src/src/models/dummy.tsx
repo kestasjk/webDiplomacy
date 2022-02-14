@@ -4,12 +4,12 @@ import OrderClass from "./OrderClass";
 
 import { boardData, units, context, terrStatus, ordersData } from "./testData";
 
-const METHODS = {
+const METHODS = Object.freeze({
   MOVETO: "move to",
   SUPPORTHOLD: "support hold",
   SUPPORTMOVETO: "support move to",
   CONVOYTO: "convoy to",
-};
+});
 
 const Dummy: React.FC = function (): React.ReactElement {
   const board = new BoardClass(

@@ -17,7 +17,7 @@ export default class BoardClass {
     units: IUnit[],
   ) {
     /**
-     * to reduce time, any territories that is either parent or child are stored and proccessed later in line 61
+     * to reduce time, any territories that is either parent or child are stored and processed later in line 64
      */
     const coastParents: TerritoryClass[] = [];
     const coastChildren: TerritoryClass[] = [];
@@ -203,8 +203,10 @@ export default class BoardClass {
   }
 
   static canCrossBorder(unit: UnitClass, b) {
-    if (unit.type === "Army" && !b.a) return false;
-    if (unit.type === "Fleet" && !b.f) return false;
+    if ((unit.type === "Army" && !b.a) || (unit.type === "Fleet" && !b.f)) {
+      return false;
+    }
+
     return true;
   }
 }

@@ -25,11 +25,7 @@ export default class ConvoyGroupClass {
   }
 
   loadFleet(fleet: UnitClass) {
-    if (fleet.convoyLink) {
-      return;
-    }
-
-    if (fleet.Territory.type !== "Sea") {
+    if (fleet.convoyLink || fleet.Territory.type !== "Sea") {
       return;
     }
 
@@ -48,11 +44,7 @@ export default class ConvoyGroupClass {
   loadCoasts() {
     this.fleets.forEach((f) => {
       this.board.getBorderTerritories(f.Territory).forEach((bt) => {
-        if (bt.type !== "Coast") {
-          return;
-        }
-
-        if (this.coasts.has(bt)) {
+        if (bt.type !== "Coast" || this.coasts.has(bt)) {
           return;
         }
 
@@ -111,7 +103,7 @@ export default class ConvoyGroupClass {
   }
 
   /**
-   * dummy methods for now
+   * TODO: replace dummy methods
    */
   pathArmyToCoastWithoutFleet(a, b, c) {
     return !!this.armies;
