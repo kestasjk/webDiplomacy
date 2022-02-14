@@ -1,23 +1,22 @@
 export interface IBoard {
-  territories: ITerritory[];
-  units: IUnit[];
-  terrStatus: ITerrStatus[];
   context: IContext;
+  territories: ITerritory[];
+  terrStatus: ITerrStatus[];
+  units: IUnit[];
 }
 
 export interface ITerritory {
   id: string;
-  name: string;
-  type: string;
-  supply: string;
-  countryID: string;
   coast: string;
+  countryID: string;
   coastParentID: string;
-  smallMapX: number;
-  smallMapY: number;
-  Borders: Array<IBorder>;
-  CoastalBorders: Array<ICoastalBorder>;
-  convoyLink: boolean;
+  name: string;
+  supply: string;
+  smallMapX: string;
+  smallMapY: string;
+  type: string;
+  Borders: IBorder[];
+  CoastalBorders: ICoastalBorder[];
 }
 
 export interface IBorder {
@@ -34,52 +33,51 @@ export interface ICoastalBorder {
 
 export interface IUnit {
   id: string;
-  terrID: string;
   countryID: string;
   type: string;
-  convoyLink: boolean;
+  terrID: string;
 }
 
 export interface ITerrStatus {
   id: string;
+  occupiedFromTerrID: string | null;
+  ownerCountryID: string | null;
   standoff: boolean;
-  occupiedFromTerrID: string;
-  unitID: string;
-  ownerCountryID: string;
+  unitID: string | null;
 }
 
 export interface IContext {
-  gameID: string;
-  variantID: string;
-  userID: string;
-  memberID: string;
-  turn: number;
-  phase: string;
   countryID: string;
-  tokenExpireTime: number;
+  gameID: number;
+  memberID: number;
   maxOrderID: string;
   orderStatus: string;
+  phase: string;
+  tokenExpireTime: number;
+  turn: number;
+  userID: number;
+  variantID: number;
 }
 
 export interface IConvoyGroup {
-  coasts: ITerritory[];
   armies: IUnit[];
+  coasts: ITerritory[];
   fleets: IUnit[];
 }
 
 export interface IOrder {
   board: IBoard;
-  unit: IUnit;
   orderData: IOrderData;
+  unit: IUnit;
 }
 
 export interface IOrderData {
-  error: string;
-  status: string;
   id: string;
+  error: string | null;
+  fromTerrID: string | null;
+  status: string;
   type: string;
-  unitId: string;
-  toTerrID: string;
-  fromTerrID: string;
-  viaConvoy: string;
+  toTerrID: string | null;
+  unitID: string;
+  viaConvoy: string | null;
 }

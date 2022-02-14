@@ -7,8 +7,8 @@ export default class OrderClass {
   // eslint-disable-next-line no-useless-constructor
   constructor(
     public board: BoardClass,
-    public unit: UnitClass,
     public orderData: IOrderData,
+    public unit: UnitClass,
   ) {}
 
   getMoveChoices() {

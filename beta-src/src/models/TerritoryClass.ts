@@ -5,21 +5,33 @@ import UnitClass from "./UnitClass";
 export default class TerritoryClass {
   id!: string;
 
-  name!: string;
-
-  type!: string;
-
-  supply!: boolean;
-
   countryID!: string;
 
   coast!: string;
 
+  coastParent!: TerritoryClass;
+
   coastParentID!: string;
+
+  convoyLink!: boolean;
+
+  name!: string;
+
+  occupiedFromTerrID!: string;
+
+  ownerCountryID!: string;
 
   smallMapX!: number;
 
   smallMapY!: number;
+
+  supply!: boolean;
+
+  standoff!: boolean;
+
+  type!: string;
+
+  unitID?: string;
 
   Borders!: IBorder[];
 
@@ -29,27 +41,19 @@ export default class TerritoryClass {
 
   ConvoyGroups!: ConvoyGroupClass[];
 
-  convoyLink!: boolean;
-
   Unit!: UnitClass;
 
-  standoff!: boolean;
-
-  occupiedFromTerrID!: string;
-
-  unitID?: string;
-
-  ownerCountryID!: string;
-
-  coastParent!: TerritoryClass;
-
-  constructor(terrData: ITerritory, terrStatusData: ITerrStatus) {
+  constructor(terrData: ITerritory, terrStatusData?: ITerrStatus) {
     Object.assign(this, {
       ...terrData,
-      ...terrStatusData,
       supply: terrData.supply === "Yes",
+      ConvoyGroups: [],
       convoyLink: false,
     });
+
+    if (terrStatusData) {
+      Object.assign(this, terrStatusData);
+    }
   }
 
   setUnit(unit: UnitClass) {

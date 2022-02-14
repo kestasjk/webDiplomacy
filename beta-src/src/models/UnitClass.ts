@@ -5,13 +5,13 @@ import TerritoryClass from "./TerritoryClass";
 export default class UnitClass {
   id!: string;
 
-  terrID!: string;
-
   countryID!: string;
+
+  convoyLink!: boolean;
 
   type!: string;
 
-  convoyLink!: boolean;
+  terrID!: string;
 
   Territory!: TerritoryClass;
 

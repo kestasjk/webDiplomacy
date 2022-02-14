@@ -4,17 +4,17 @@ import TerritoryClass from "./TerritoryClass";
 import UnitClass from "./UnitClass";
 
 export default class BoardClass {
+  convoyGroups: ConvoyGroupClass[] = [];
+
   territories: TerritoryClass[] = [];
 
   units: UnitClass[] = [];
 
-  convoyGroups: ConvoyGroupClass[] = [];
-
   constructor(
-    territories: ITerritory[],
-    units: IUnit[],
-    terrStatus: ITerrStatus[],
     public context: IContext,
+    territories: ITerritory[],
+    terrStatus: ITerrStatus[],
+    units: IUnit[],
   ) {
     /**
      * to reduce time, any territories that is either parent or child are stored and proccessed later in line 61
@@ -25,14 +25,17 @@ export default class BoardClass {
     this.territories = territories.map((territory) => {
       const curTerrStatus = terrStatus.find((ts) => ts.id === territory.id);
 
-      let curTerritory;
+      let curTerritory = new TerritoryClass(territory);
 
       if (curTerrStatus) {
         curTerritory = new TerritoryClass(territory, curTerrStatus);
 
-        const curUnit = curTerrStatus.unitID
-          ? new UnitClass(units[curTerrStatus.unitID])
-          : null;
+        let curUnit;
+        if (curTerrStatus.unitID) {
+          const unitData = units.find((u) => u.id === curTerrStatus.unitID);
+
+          curUnit = unitData ? new UnitClass(unitData) : null;
+        }
 
         if (curUnit) {
           curTerritory.setUnit(curUnit);
@@ -41,18 +44,18 @@ export default class BoardClass {
 
           this.units.push(curUnit);
         }
+      }
 
-        if (curTerritory.coast === "Parent") {
-          coastParents.push(curTerritory);
-        }
+      if (curTerritory.coast === "Parent") {
+        coastParents.push(curTerritory);
+      }
 
-        if (curTerritory.coast === "Child") {
-          coastChildren.push(curTerritory);
-        }
+      if (curTerritory.coast === "Child") {
+        coastChildren.push(curTerritory);
+      }
 
-        if (curTerritory.coastParentID === curTerritory.id) {
-          curTerritory.coastParent = curTerritory;
-        }
+      if (curTerritory.coastParentID === curTerritory.id) {
+        curTerritory.coastParent = curTerritory;
       }
 
       return curTerritory;
@@ -109,6 +112,9 @@ export default class BoardClass {
     return borderTerritories.map((bt) => bt.Unit);
   }
 
+  /**
+   * Get all territories given unit can move to. Not including convoy move
+   */
   getMovableTerritories(unit: UnitClass) {
     return unit.Territory.CoastalBorders.reduce(
       (acc: TerritoryClass[], cur) => {
@@ -126,7 +132,9 @@ export default class BoardClass {
     );
   }
 
-  // Territories I can move to, including convoyable locations for an army
+  /**
+   * Get all territories given unit(Army) can move to. Including convoyable territories.
+   */
   getReachableTerritories(unit: UnitClass) {
     if (!unit.convoyLink && unit.type !== "Army") {
       return [];
@@ -148,12 +156,18 @@ export default class BoardClass {
     );
   }
 
+  /**
+   * Get all units on movable territories. (can support move to)
+   */
   getMovableUnits(unit: UnitClass) {
     return this.getMovableTerritories(unit).map((movableTerritory) => {
       return movableTerritory.coastParent.Unit;
     });
   }
 
+  /**
+   * Can given unit move to the target territory. Not including convoy move
+   */
   canMoveInto(unit: UnitClass, targetTerritory: TerritoryClass) {
     if (
       this.getMovableTerritories(unit)
@@ -167,13 +181,16 @@ export default class BoardClass {
     return false;
   }
 
-  // Can I move to a given Territory via convoy (must be an army on a coast)
+  /**
+   * Can given unit move to the target territory. Including convoy move
+   */
   static canConvoyTo(targetTerritory: TerritoryClass, unit: UnitClass) {
     if (unit.type === "Army") {
-      // Can't get convoyed to our own territory
       if (targetTerritory.id === unit.Territory.id) return false;
 
-      // We're in a convoy group, moving into a convoygroup territory which is in our convoygroup.
+      /**
+       * Unit is in a convoy group. Unit can move to target territory via convoy move.
+       */
       if (
         unit.convoyLink &&
         targetTerritory.convoyLink &&

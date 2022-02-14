@@ -109,4 +109,15 @@ export default class ConvoyGroupClass {
       }
     });
   }
+
+  /**
+   * dummy methods for now
+   */
+  pathArmyToCoastWithoutFleet(a, b, c) {
+    return !!this.armies;
+  }
+
+  pathArmyToCoastWithFleet(a, b, c) {
+    return !!this.armies;
+  }
 }
