@@ -8,9 +8,9 @@ import { Viewport } from "../../interfaces";
 
 const Scales: Scale = {
   DESKTOP: [0.65, 3],
-  MOBILE_LG: [0.82, 1.6],
+  MOBILE_LG: [0.37, 1.6],
   MOBILE_LG_LANDSCAPE: [0.3, 1.6],
-  MOBILE: [0.63, 1.6],
+  MOBILE: [0.37, 1.6],
   MOBILE_LANDSCAPE: [0.27, 1.6],
   TABLET: [0.6275, 3],
   TABLET_LANDSCAPE: [0.6, 3],
