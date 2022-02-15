@@ -6,26 +6,23 @@ import WDNeutral from "./variants/classic/components/WDNeutral";
 import WDSeaAreas from "./variants/classic/components/WDSeaAreas";
 
 interface WDMapProps {
-  height: number;
   svgElement: any;
-  width: number;
 }
 
 const WDMap: React.FC<WDMapProps> = function ({
-  height,
   svgElement,
-  width,
 }): React.ReactElement {
   return (
     <svg
       fill="none"
-      height={height}
       ref={svgElement}
-      width={width}
+      style={{
+        width: "100%",
+        height: "100%",
+      }}
       xmlns="http://www.w3.org/2000/svg"
     >
       <g id="full-map-svg">
-        <rect width={width} height={height} fill="white" />
         <g id="container">
           <g id="bg">
             <path
@@ -72,4 +69,4 @@ const WDMap: React.FC<WDMapProps> = function ({
   );
 };
 
-export default WDMap;
+export default React.memo(WDMap);
