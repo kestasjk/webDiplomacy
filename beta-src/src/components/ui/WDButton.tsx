@@ -5,7 +5,7 @@ interface WDButtonProps {
   children: React.ReactNode;
   color?: "primary" | "secondary";
   disabled?: boolean;
-  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
 }
 
 const WDButton: React.FC<WDButtonProps> = function ({
