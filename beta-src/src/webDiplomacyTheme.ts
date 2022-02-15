@@ -51,8 +51,6 @@ const disabledTextSecondary = "#bababa";
 const defaultLineHeight = 1.2;
 const normalFontWeight = 400;
 
-/// Interface and type for Country Color
-
 interface CountryColor {
   main: string;
   light: string;
@@ -69,11 +67,11 @@ const webDiplomacyTheme = createTheme({
   breakpoints: {
     values: {
       mobile: 0,
-      mobileLandscape: 667,
+      mobileLandscape: 600,
       mobileLg: 414,
       mobileLgLandscape: 896,
       tablet: 834,
-      tabletLandscape: 1194,
+      tabletLandscape: 1024,
       desktop: 1500,
     },
   },
