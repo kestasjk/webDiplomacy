@@ -6,6 +6,8 @@ import UnitClass from "./UnitClass";
 export default class BoardClass {
   convoyGroups: ConvoyGroupClass[] = [];
 
+  supplyCenters: TerritoryClass[] = [];
+
   territories: TerritoryClass[] = [];
 
   units: UnitClass[] = [];
@@ -91,6 +93,19 @@ export default class BoardClass {
 
       this.convoyGroups.forEach((cg) => cg.linkGroups());
       this.convoyGroups.forEach((cg) => cg.linkGroups());
+    }
+
+    if (context.phase === "Builds") {
+      this.territories.forEach((t) => {
+        if (
+          t.coastParent.supply &&
+          t.coastParent.countryID === context.countryID &&
+          t.coastParent.ownerCountryID === context.countryID &&
+          !t.coastParent.Unit
+        ) {
+          this.supplyCenters.push(t);
+        }
+      });
     }
   }
 
