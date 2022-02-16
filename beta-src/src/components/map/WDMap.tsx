@@ -5,17 +5,17 @@ import WDGameBoardOutlines from "./variants/classic/components/WDGameBoardOutlin
 import WDNeutral from "./variants/classic/components/WDNeutral";
 import WDSeaAreas from "./variants/classic/components/WDSeaAreas";
 
-interface WDMapProps {
-  svgElement: any;
+interface WDMapElement {
+  ref: React.RefObject<SVGSVGElement>;
 }
 
-const WDMap: React.FC<WDMapProps> = function ({
-  svgElement,
-}): React.ReactElement {
+const WDMap: React.ForwardRefExoticComponent<
+  React.RefAttributes<SVGSVGElement>
+> = React.forwardRef<SVGSVGElement>(function (_props, ref): React.ReactElement {
   return (
     <svg
       fill="none"
-      ref={svgElement}
+      ref={ref}
       style={{
         width: "100%",
         height: "100%",
@@ -67,6 +67,6 @@ const WDMap: React.FC<WDMapProps> = function ({
       </defs>
     </svg>
   );
-};
+});
 
 export default React.memo(WDMap);
