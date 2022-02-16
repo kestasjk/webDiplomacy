@@ -32,7 +32,7 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
   device,
   viewport,
 }): React.ReactElement {
-  const svgElement = React.useRef(null);
+  const svgElement = React.useRef<SVGSVGElement>(null);
   const [scaleMin, scaleMax] = getInitialScaleForDevice(device);
 
   React.useLayoutEffect(() => {
@@ -76,7 +76,7 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
         height: viewport.height,
       }}
     >
-      <WDMap svgElement={svgElement} />
+      <WDMap ref={svgElement} />
     </div>
   );
 };
