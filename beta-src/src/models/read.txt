@@ -1,44 +1,57 @@
-user - lib/auth.php
-- Board data - load territory
-- Unit - jsonBoardData.php
-- Context - 'gameID','userID','memberID','variantID','turn','phase','countryID','tokenExpireTime','maxOrderID'
-- terrStatus - jsonBoardData.php
-- ordersData - orderInterface.php - line 113 ~ 143
+[Territories, TerrStatus, Units, context, orderData] - list of data we need to create board/order
+    Territories - from wD_Territories
+    TerrStatus - from wD_TerrStatus
+    Units - from wD_Units
+    context - from wD_Games + wD_Members
+    orderData - from wD_Orders
+
+## Assume react app will be loaded into fresh page with no access to the data from original page,
+## we need general game data(context datas derive from this) before load in any board/order related data.
 
 
-There are 5 sets of data we need to build the board and order
- - Territories - 
+Below is the current steps to create game board and order
 
+1. User visit the game page with param gameID
 
- first
- board/orders/orderInterface.php line 319 - context
- board/orders/orderInterface.php line 320 - load board (territories, )
-  - loadTerritories - variants/Classic/install.php line 41 - 91
-        get all the territory data for each and set it to Territories.
-        inject function loadTerritories() to return above data
- - loadBoardTurnData - board/orders/jsonBoardData.php
-        query units and terrStatus
-        inject fundtion loadBoardTurnData() to return above data
- - loadModel - javascript/board/model.js 
-        Load classes which board data will be loaded into
-  - loadBoard - javascript/board/load.js
-        // Load basic data into classes
-- loadOrdersModel - javascript/orders/order.js
-        load order class which contains order's data
- - loadOrdersForm javascript/orders/form.js
-        Handles order submission
- - loadOrdersPhasejavascript/orders/{phase specific file}
-        extends the order class for each phases.
-
-
-User visit the game page with param gameID
-
-board.php receives gameID and create a $Game object.
-    - I can't locate where this data is being queired.
+2. board.php receives gameID and create a $Game object.
+    - $Game object is an instance of processGame which is subclass of Game.
+      This object contains all essential data/methods related to current game(Not include game board specific data i.e. territories,units and orders)
     - at this point, we need $Game, $User, and $Member
-    - Assume $User data will be available after auth, We can have a single API call to get both $Game and $Member data from wD_Games and wD_Members
+    - Assume $User data will be available after auth.
 
-With $Game, $User, and $Member data, generates context which includes
-['gameID','userID','memberID','variantID','turn','phase','countryID','tokenExpireTime','maxOrderID']
-    - board/orders/orderInterface.php line 318
-    - at this point, we have basic game data without actual board/order data
+3. With $Game, $User, and $Member data, generates context which includes
+    ['gameID','userID','memberID','variantID','turn','phase','countryID','tokenExpireTime','maxOrderID']
+
+    - board/orders/orderInterface.php line 318 - jsContextVars()
+    - jsContextVars() query orders data as well - line 113 - 143 ["SELECT id, type, unitID, toTerrID, fromTerrID, viaConvoy
+			FROM wD_Orders WHERE gameID = ".$this->gameID." AND countryID=".$this->countryID]
+    - at this point, we have context and ordersData
+
+4. Time to load board. this happens in board/orders/orderInterface.php line 319. Below are the steps.
+    A. loadTerritories - variants/Classic/install.php line 41 - 91
+        - query all DEFAULT territory data.
+        - query the data and creates a function loadTerritories() which will be called(board/orders/orderInterface.php line 296)
+          to return Territories data.(They also cache this {variants/Classic/cache/territories.js})
+    B. loadBoardTurnData - board/orders/jsonBoardData.php
+        - query both Units and TerrStatus data.
+        - creates a function loadBoardTurnData() which will be called(board/orders/orderInterface.php line 296).
+    C. loadModel - javascript/board/model.js
+        - load all necessary models which board data will be loaded into
+        - Basically a game logic.
+    D. loadBoard - javascript/board/load.js
+        - this will create instances of above models and load the board data into them.
+        - at this point, we have a fully generated game board which contains all data to draw out the board(territories, units, supply centers etc.)    
+    E. loadOrdersModel - javascript/orders/order.js
+        - load Order class which contains order's data
+        - generate/validate order(move) for each units.
+
+    ## Below steps are mostly about form manipulation/submission. We don't need this.
+
+    F. loadOrdersForm - javascript/orders/form.js
+        - handles order submission
+    G. loadOrdersPhase - javascript/orders/{phase specific file}
+        - extends the order class for each phases.
+        - Basically check/manipulate the form to have specific move type for each phases
+        - We can handle this from Order Class itself.
+
+5. Ready to play the game.
