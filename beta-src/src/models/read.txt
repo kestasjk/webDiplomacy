@@ -1,0 +1,44 @@
+user - lib/auth.php
+- Board data - load territory
+- Unit - jsonBoardData.php
+- Context - 'gameID','userID','memberID','variantID','turn','phase','countryID','tokenExpireTime','maxOrderID'
+- terrStatus - jsonBoardData.php
+- ordersData - orderInterface.php - line 113 ~ 143
+
+
+There are 5 sets of data we need to build the board and order
+ - Territories - 
+
+
+ first
+ board/orders/orderInterface.php line 319 - context
+ board/orders/orderInterface.php line 320 - load board (territories, )
+  - loadTerritories - variants/Classic/install.php line 41 - 91
+        get all the territory data for each and set it to Territories.
+        inject function loadTerritories() to return above data
+ - loadBoardTurnData - board/orders/jsonBoardData.php
+        query units and terrStatus
+        inject fundtion loadBoardTurnData() to return above data
+ - loadModel - javascript/board/model.js 
+        Load classes which board data will be loaded into
+  - loadBoard - javascript/board/load.js
+        // Load basic data into classes
+- loadOrdersModel - javascript/orders/order.js
+        load order class which contains order's data
+ - loadOrdersForm javascript/orders/form.js
+        Handles order submission
+ - loadOrdersPhasejavascript/orders/{phase specific file}
+        extends the order class for each phases.
+
+
+User visit the game page with param gameID
+
+board.php receives gameID and create a $Game object.
+    - I can't locate where this data is being queired.
+    - at this point, we need $Game, $User, and $Member
+    - Assume $User data will be available after auth, We can have a single API call to get both $Game and $Member data from wD_Games and wD_Members
+
+With $Game, $User, and $Member data, generates context which includes
+['gameID','userID','memberID','variantID','turn','phase','countryID','tokenExpireTime','maxOrderID']
+    - board/orders/orderInterface.php line 318
+    - at this point, we have basic game data without actual board/order data
