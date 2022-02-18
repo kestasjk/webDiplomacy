@@ -1,4 +1,4 @@
-const boardData = {
+const territories = {
   1: {
     id: "1",
     name: "Clyde",
@@ -2472,4 +2472,4 @@ const ordersData = [
   },
 ];
 
-export { boardData, units, context, terrStatus, ordersData };
+export { territories, units, context, terrStatus, ordersData };

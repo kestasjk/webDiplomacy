@@ -109,6 +109,10 @@ export default class BoardClass {
     }
   }
 
+  findUnitByID(unitID: string) {
+    return this.units.find((unit) => unit.id === unitID);
+  }
+
   /**
    * finds adjacent territories
    */
@@ -175,9 +179,12 @@ export default class BoardClass {
    * Get all units on movable territories. (can support move to)
    */
   getMovableUnits(unit: UnitClass) {
-    return this.getMovableTerritories(unit).map((movableTerritory) => {
-      return movableTerritory.coastParent.Unit;
-    });
+    return this.getMovableTerritories(unit).reduce((acc: UnitClass[], cur) => {
+      if (cur.coastParent.Unit) {
+        acc.push(cur.coastParent.Unit);
+      }
+      return acc;
+    }, []);
   }
 
   /**

@@ -1,3 +1,6 @@
+import BoardClass from "./BoardClass";
+import UnitClass from "./UnitClass";
+
 export interface IBoard {
   context: IContext;
   territories: ITerritory[];
@@ -66,9 +69,9 @@ export interface IConvoyGroup {
 }
 
 export interface IOrder {
-  board: IBoard;
+  board: BoardClass;
   orderData: IOrderData;
-  unit: IUnit;
+  unit: UnitClass;
 }
 
 export interface IOrderData {

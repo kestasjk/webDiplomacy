@@ -14,14 +14,14 @@ export default class OrderClass {
   getMoveChoices() {
     const choices = this.board
       .getMovableTerritories(this.unit)
-      .map((movableTerritories) => movableTerritories.id);
+      .map((movableTerritories) => movableTerritories);
 
     if (this.unit.convoyLink && this.unit.type === "Army") {
       const convoyableTerritories = Array.from(
         this.unit.ConvoyGroup.coasts,
-      ).reduce((acc: string[], cur) => {
+      ).reduce((acc: TerritoryClass[], cur) => {
         if (BoardClass.canConvoyTo(cur, this.unit)) {
-          acc.push(cur.id);
+          acc.push(cur);
         }
 
         return acc;
@@ -39,7 +39,7 @@ export default class OrderClass {
     const movableUnits = this.board.getMovableUnits(this.unit);
 
     const supportHoldChoices = movableUnits.map(
-      (mu) => mu?.Territory.coastParent.id,
+      (mu) => mu?.Territory.coastParent,
     );
 
     return Array.from(new Set(supportHoldChoices));
@@ -51,7 +51,7 @@ export default class OrderClass {
   getSupportMoveToChoices() {
     const movableTerritories = this.board.getMovableTerritories(this.unit);
 
-    return movableTerritories.map((mt) => mt.coastParent.id);
+    return movableTerritories.map((mt) => mt.coastParent);
   }
 
   /**
@@ -60,57 +60,58 @@ export default class OrderClass {
    */
   getSupportMoveFromChoices(againstTerritory: TerritoryClass) {
     // Units bordering the given territory which can move into it
-    let possibleUnits = this.board
+    const possibleUnits = this.board
       .getBorderUnits(againstTerritory.coastParent)
       .filter((bu) => {
+        if (!bu) {
+          return false;
+        }
         return this.board.canMoveInto(bu, againstTerritory);
       });
 
-    if (againstTerritory.convoyLink) {
-      /*
-       * Resource intensive extra check, unnecessary 99% of the time. Leaving this disabled
-       * means when an invalid support move is selected as a fleet the choice is undone once
-       * it is selected and put through the check below.
-       *
-       */
-      let ConvoyArmies;
+    // if (againstTerritory.convoyLink) {
+    //   /*
+    //    * Resource intensive extra check, unnecessary 99% of the time. Leaving this disabled
+    //    * means when an invalid support move is selected as a fleet the choice is undone once
+    //    * it is selected and put through the check below.
+    //    *
+    //    */
+    //   let ConvoyArmies;
 
-      if (
-        this.unit.convoyLink &&
-        this.unit.type === "Fleet" &&
-        Array.from(this.unit.ConvoyGroup.coasts)
-          .map((coast) => coast.id)
-          .includes(againstTerritory.id)
-      ) {
-        /**
-         * TODO: refactor convoy path related logic.
-         */
-        ConvoyArmies = Array.from(againstTerritory.ConvoyGroup.armies).filter(
-          (convoyArmy) => {
-            return !!againstTerritory.ConvoyGroup.pathArmyToCoastWithoutFleet(
-              convoyArmy.Territory,
-              againstTerritory,
-              this.unit.Territory,
-            );
-          },
-        );
-      } else {
-        ConvoyArmies = againstTerritory.ConvoyGroup.armies;
-      }
+    //   if (
+    //     this.unit.convoyLink &&
+    //     this.unit.type === "Fleet" &&
+    //     Array.from(this.unit.ConvoyGroup.coasts)
+    //       .map((coast) => coast.id)
+    //       .includes(againstTerritory.id)
+    //   ) {
+    //     /**
+    //      * TODO: refactor convoy path related logic.
+    //      */
+    //     ConvoyArmies = Array.from(againstTerritory.ConvoyGroup.armies).filter(
+    //       (convoyArmy) => {
+    //         return !!againstTerritory.ConvoyGroup.pathArmyToCoastWithoutFleet(
+    //           convoyArmy.Territory,
+    //           againstTerritory,
+    //           this.unit.Territory,
+    //         );
+    //       },
+    //     );
+    //   } else {
+    //     ConvoyArmies = againstTerritory.ConvoyGroup.armies;
+    //   }
 
-      possibleUnits = possibleUnits.concat(ConvoyArmies);
-    }
+    //   possibleUnits = possibleUnits.concat(ConvoyArmies);
+    // }
 
     return Array.from(
       new Set(
-        possibleUnits.map(
-          (possibleUnit) => possibleUnit.Territory.coastParent.id,
-        ),
+        possibleUnits.map((possibleUnit) => possibleUnit.Territory.coastParent),
       ),
     ).filter((possibleUnitTerritory) => {
       return (
-        possibleUnitTerritory !== this.unit.Territory.coastParent.id &&
-        possibleUnitTerritory !== againstTerritory.id
+        possibleUnitTerritory.id !== this.unit.Territory.coastParent.id &&
+        possibleUnitTerritory.id !== againstTerritory.id
       );
     });
   }
