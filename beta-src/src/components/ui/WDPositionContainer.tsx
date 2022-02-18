@@ -16,6 +16,7 @@ interface WDPositionContainerProps {
 
 const MOBILE_DISTANCE = 16;
 const TABLET_UP_DISTANCE = 24;
+const Z_INDEX = 2;
 
 const responsiveDistance = {
   mobile: MOBILE_DISTANCE,
@@ -48,7 +49,7 @@ const WDPositionContainer: React.FC<WDPositionContainerProps> = function ({
     <Box
       sx={{
         position: "absolute",
-        zIndex: 2,
+        zIndex: Z_INDEX,
         ...getPositionValues(),
       }}
     >
