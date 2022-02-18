@@ -31,7 +31,7 @@ const WDPositionContainer: React.FC<WDPositionContainerProps> = function ({
   children,
   position,
 }): React.ReactElement {
-  const getPositionValues = useMemo(() => {
+  const placement = useMemo(() => {
     switch (position) {
       case Position.BOTTOM_LEFT:
         return { bottom: responsiveDistance, left: responsiveDistance };
@@ -50,7 +50,7 @@ const WDPositionContainer: React.FC<WDPositionContainerProps> = function ({
       sx={{
         position: "absolute",
         zIndex: Z_INDEX,
-        ...getPositionValues,
+        ...placement,
       }}
     >
       {children}
