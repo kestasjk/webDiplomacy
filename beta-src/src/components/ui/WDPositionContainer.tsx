@@ -1,6 +1,6 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import { useCallback } from "react";
+import { useMemo } from "react";
 
 export enum Position {
   BOTTOM_LEFT = "bottom-left",
@@ -31,7 +31,7 @@ const WDPositionContainer: React.FC<WDPositionContainerProps> = function ({
   children,
   position,
 }): React.ReactElement {
-  const getPositionValues = useCallback(() => {
+  const getPositionValues = useMemo(() => {
     switch (position) {
       case Position.BOTTOM_LEFT:
         return { bottom: responsiveDistance, left: responsiveDistance };
@@ -50,7 +50,7 @@ const WDPositionContainer: React.FC<WDPositionContainerProps> = function ({
       sx={{
         position: "absolute",
         zIndex: Z_INDEX,
-        ...getPositionValues(),
+        ...getPositionValues,
       }}
     >
       {children}
