@@ -26,6 +26,7 @@ export default class OrderClass {
 
         return acc;
       }, []);
+
       return Array.from(new Set(choices.concat(convoyableTerritories)));
     }
 
@@ -60,7 +61,7 @@ export default class OrderClass {
    */
   getSupportMoveFromChoices(againstTerritory: TerritoryClass) {
     // Units bordering the given territory which can move into it
-    const possibleUnits = this.board
+    let possibleUnits = this.board
       .getBorderUnits(againstTerritory.coastParent)
       .filter((bu) => {
         if (!bu) {
@@ -69,40 +70,40 @@ export default class OrderClass {
         return this.board.canMoveInto(bu, againstTerritory);
       });
 
-    // if (againstTerritory.convoyLink) {
-    //   /*
-    //    * Resource intensive extra check, unnecessary 99% of the time. Leaving this disabled
-    //    * means when an invalid support move is selected as a fleet the choice is undone once
-    //    * it is selected and put through the check below.
-    //    *
-    //    */
-    //   let ConvoyArmies;
+    if (againstTerritory.convoyLink) {
+      /*
+       * Resource intensive extra check, unnecessary 99% of the time. Leaving this disabled
+       * means when an invalid support move is selected as a fleet the choice is undone once
+       * it is selected and put through the check below.
+       *
+       */
+      let ConvoyArmies;
 
-    //   if (
-    //     this.unit.convoyLink &&
-    //     this.unit.type === "Fleet" &&
-    //     Array.from(this.unit.ConvoyGroup.coasts)
-    //       .map((coast) => coast.id)
-    //       .includes(againstTerritory.id)
-    //   ) {
-    //     /**
-    //      * TODO: refactor convoy path related logic.
-    //      */
-    //     ConvoyArmies = Array.from(againstTerritory.ConvoyGroup.armies).filter(
-    //       (convoyArmy) => {
-    //         return !!againstTerritory.ConvoyGroup.pathArmyToCoastWithoutFleet(
-    //           convoyArmy.Territory,
-    //           againstTerritory,
-    //           this.unit.Territory,
-    //         );
-    //       },
-    //     );
-    //   } else {
-    //     ConvoyArmies = againstTerritory.ConvoyGroup.armies;
-    //   }
+      if (
+        this.unit.convoyLink &&
+        this.unit.type === "Fleet" &&
+        Array.from(this.unit.ConvoyGroup.coasts)
+          .map((coast) => coast.id)
+          .includes(againstTerritory.id)
+      ) {
+        /**
+         * TODO: refactor convoy path related logic.
+         */
+        ConvoyArmies = Array.from(againstTerritory.ConvoyGroup.armies).filter(
+          (convoyArmy) => {
+            return !!againstTerritory.ConvoyGroup.pathArmyToCoastWithoutFleet(
+              convoyArmy.Territory,
+              againstTerritory,
+              this.unit.Territory,
+            );
+          },
+        );
+      } else {
+        ConvoyArmies = againstTerritory.ConvoyGroup.armies;
+      }
 
-    //   possibleUnits = possibleUnits.concat(ConvoyArmies);
-    // }
+      possibleUnits = possibleUnits.concat(ConvoyArmies);
+    }
 
     return Array.from(
       new Set(

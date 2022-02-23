@@ -18,9 +18,6 @@ export default class BoardClass {
     terrStatus: ITerrStatus[],
     units: IUnit[],
   ) {
-    /**
-     * to reduce time, any territories that is either parent or child are stored and processed later in line 64
-     */
     const coastParents: TerritoryClass[] = [];
     const coastChildren: TerritoryClass[] = [];
 
@@ -111,6 +108,10 @@ export default class BoardClass {
 
   findUnitByID(unitID: string) {
     return this.units.find((unit) => unit.id === unitID);
+  }
+
+  findTerritoryByID(territoryID: string) {
+    return this.territories.find((t) => t.id === territoryID);
   }
 
   /**

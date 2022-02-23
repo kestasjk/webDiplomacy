@@ -2,6 +2,8 @@ import TerritoryClass from "./TerritoryClass";
 import UnitClass from "./UnitClass";
 import BoardClass from "./BoardClass";
 
+import NodeSetClass from "./NodeSetClass";
+
 export default class ConvoyGroupClass {
   armies: Set<UnitClass> = new Set();
 
@@ -103,13 +105,62 @@ export default class ConvoyGroupClass {
   }
 
   /**
-   * TODO: replace dummy methods
+   * Path finding logic
    */
-  pathArmyToCoastWithoutFleet(a, b, c) {
-    return !!this.armies;
+  nodeSetClass() {
+    const ns = new NodeSetClass();
+    ns.routeSetLoad(this);
+    return ns;
   }
 
-  pathArmyToCoastWithFleet(a, b, c) {
-    return !!this.armies;
+  pathArmyToCoast(StartTerr, EndTerr) {
+    const ns = this.nodeSetClass();
+    ns.routeSetStart(
+      StartTerr,
+      (EndNode) => {
+        return EndNode.id === EndTerr.id;
+      },
+      (AllNode) => {
+        return AllNode.type === "Sea";
+      },
+      () => {
+        return true;
+      },
+    );
+    return ns.Path;
+  }
+
+  pathArmyToCoastWithoutFleet(StartTerr, EndTerr, WithoutFleetTerr) {
+    const ns = this.nodeSetClass();
+    ns.routeSetStart(
+      StartTerr,
+      (EndNode) => {
+        return EndNode.id === EndTerr.id;
+      },
+      (AllNode) => {
+        return AllNode.type === "Sea" && AllNode.id !== WithoutFleetTerr.id;
+      },
+      () => {
+        return true;
+      },
+    );
+    return ns.Path;
+  }
+
+  pathArmyToCoastWithFleet(StartTerr, EndTerr, WithFleetTerr) {
+    const ns = this.nodeSetClass();
+    ns.routeSetStart(
+      StartTerr,
+      (EndNode) => {
+        return EndNode.id === EndTerr.id;
+      },
+      (AllNode) => {
+        return AllNode.type === "Sea";
+      },
+      (AnyNode) => {
+        return AnyNode.id === WithFleetTerr.id;
+      },
+    );
+    return ns.Path;
   }
 }
