@@ -6,12 +6,10 @@ import WDNeutral from "./variants/classic/components/WDNeutral";
 import WDSeaAreas from "./variants/classic/components/WDSeaAreas";
 
 interface WDMapProps {
-  arrowHeadColor: string;
   svgElement: any;
 }
 
 const WDMap: React.FC<WDMapProps> = function ({
-  arrowHeadColor,
   svgElement,
 }): React.ReactElement {
   return (
@@ -41,16 +39,6 @@ const WDMap: React.FC<WDMapProps> = function ({
         </g>
       </g>
       <defs>
-        <marker
-          id="arrowhead"
-          markerWidth="8"
-          markerHeight="8"
-          refX="0"
-          refY="4"
-          orient="auto"
-        >
-          <polygon points="0 0, 8 4, 0 8" fill={arrowHeadColor} />
-        </marker>
         <radialGradient
           id="paint0_radial_807_2305"
           cx="0"

@@ -18,25 +18,29 @@ export default function drawArrow(actionType, source, svgElement, target) {
     .getBoundingClientRect();
 
   svgElement.select("#arrowline").remove();
+  svgElement.select("#arrowhead").remove();
+
+  svgElement
+    .select("defs")
+    .append("marker")
+    .attr("id", "arrowhead")
+    .attr("markerWidth", 8)
+    .attr("markerHeight", 8)
+    .attr("refX", 0)
+    .attr("refY", 4)
+    .attr("orient", "auto")
+    .append("polygon")
+    .attr("points", "0 0, 8 4, 0 8")
+    .attr("fill", actionTypeColors[actionType]);
 
   svgElement
     .append("line")
-    .attr("x1", sourceNodeData.x)
-    .attr("y1", sourceNodeData.y)
-    .attr("x2", targetNodeData.x)
-    .attr("y2", targetNodeData.y)
+    .attr("x1", sourceNodeData.x + sourceNodeData.width / 2)
+    .attr("y1", sourceNodeData.y + sourceNodeData.height / 2)
+    .attr("x2", targetNodeData.x + targetNodeData.width / 2)
+    .attr("y2", targetNodeData.y + targetNodeData.height / 2)
     .attr("marker-end", "url(#arrowhead)")
     .attr("stroke", actionTypeColors[actionType])
     .attr("stroke-width", "2")
     .attr("id", "arrowline");
-
-  //   svgElement
-  //     .append("line")
-  //     .attr("x1", coordinates.source.x)
-  //     .attr("y1", coordinates.source.y - differenceOfY)
-  //     .attr("x2", coordinates.target.x)
-  //     .attr("y2", coordinates.target.y + differenceOfY)
-  //     .attr("stroke", color)
-  //     .attr("strokeWidth", "1")
-  //     .attr("transform", `rotate(${degrees}degrees)`);
 }

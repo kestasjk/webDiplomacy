@@ -45,18 +45,6 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
   const svgElement = React.useRef(null);
   const [scaleMin, scaleMax] = getInitialScaleForDevice(device);
 
-  const actionTypeColors = {
-    moveOrder: "#FFFFFF",
-    move: "#000000",
-    moveConvoy: "#2042B8",
-    moveFailed: "#BB0000",
-    moveSupport: "#F8F83D",
-    holdSupport: "#3FC621",
-    retreat: "#BD2894",
-  };
-
-  const actionType = "moveConvoy";
-
   React.useLayoutEffect(() => {
     if (svgElement.current) {
       const fullMap = d3.select(svgElement.current);
@@ -132,10 +120,7 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
         height: viewport.height,
       }}
     >
-      <WDMap
-        svgElement={svgElement}
-        arrowHeadColor={actionTypeColors[actionType]}
-      />
+      <WDMap svgElement={svgElement} />
     </div>
   );
 };
