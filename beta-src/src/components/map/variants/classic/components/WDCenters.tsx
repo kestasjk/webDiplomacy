@@ -1,43 +1,5 @@
 import * as React from "react";
 
-// const svg1 = { element: undefined, coordinates: {} };
-// const svg2 = { element: undefined, coordinates: {} };
-
-// function initSourceAndTarget(e) {
-//   e.preventDefault();
-//   if (!svg1.element) {
-//     svg1.element = e.currentTarget;
-//     if (svg1.element) {
-//       svg1.coordinates = (svg1.element as SVGSVGElement).getBBox();
-//     }
-//   } else {
-//     svg2.element = e.currentTarget;
-//     if (svg2.element) {
-//       svg2.coordinates = (svg1.element as SVGSVGElement).getBBox();
-//     }
-//   }
-//   console.log(svg1, svg2);
-// }
-// document
-//   .getElementById("Vector_41294")
-//   ?.addEventListener("click", initSourceAndTarget);
-
-// document
-//   .getElementById("Vector_41350")
-//   ?.addEventListener("click", initSourceAndTarget);
-
-// function drawLine() {
-//   if(svg1.coordinates && svg2.coordinates) {
-//     const link = d3
-//     .linkHorizontal()
-//     .x(d => d.x)
-//     .y(d => d.y)({
-//     source: linkSource,
-//     target: linkTarget
-//   });
-//   }
-// }
-
 const WDCenters: React.FC = function (): React.ReactElement {
   return (
     <g id="&#60;centers-labels&#62;">
