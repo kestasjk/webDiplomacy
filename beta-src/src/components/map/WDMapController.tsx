@@ -5,7 +5,6 @@ import getInitialViewTranslation from "../../utils/map/getInitialViewTranslation
 import Scale from "../../types/Scale";
 import WDMap from "./WDMap";
 import { Viewport } from "../../interfaces";
-import drawArrow from "../../utilities/draw-arrow";
 
 const Scales: Scale = {
   DESKTOP: [0.65, 3],
@@ -33,15 +32,6 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
   device,
   viewport,
 }): React.ReactElement {
-  const [arrowConfigurations, setArrowConfigurations] = React.useState<any>({
-    source: {
-      element: undefined,
-      actionType: "",
-    },
-    target: {
-      element: undefined,
-    },
-  });
   const svgElement = React.useRef(null);
   const [scaleMin, scaleMax] = getInitialScaleForDevice(device);
 
@@ -61,14 +51,6 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
 
       const zoom = ({ transform }) => {
         contained.attr("transform", transform);
-        if (arrowConfigurations.target.element) {
-          drawArrow(
-            arrowConfigurations.source.actionType,
-            arrowConfigurations.source.element,
-            fullMap,
-            arrowConfigurations.target.element,
-          );
-        }
       };
 
       const d3Zoom = d3
@@ -86,30 +68,6 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
         })
         .call(d3Zoom)
         .call(d3Zoom.transform, d3.zoomIdentity.translate(x, y).scale(scale));
-
-      d3.selectAll("path").on("click", (e) => {
-        e.preventDefault();
-
-        if (!arrowConfigurations.source.element) {
-          const updatedState = { ...arrowConfigurations };
-          updatedState.source.element = e.target.id;
-          updatedState.source.actionType = "moveConvoy";
-          setArrowConfigurations(updatedState);
-        } else if (
-          arrowConfigurations.source.element &&
-          !arrowConfigurations.target.element
-        ) {
-          const updatedState = { ...arrowConfigurations };
-          updatedState.target.element = e.target.id;
-          setArrowConfigurations(updatedState);
-          drawArrow(
-            arrowConfigurations.source.actionType,
-            arrowConfigurations.source.element,
-            fullMap,
-            arrowConfigurations.target.element,
-          );
-        }
-      });
     }
   }, [svgElement, viewport]);
 
