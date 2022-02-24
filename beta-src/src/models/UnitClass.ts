@@ -1,6 +1,8 @@
 import ConvoyGroupClass from "./ConvoyGroupClass";
-import { IUnit } from "./Interfaces";
 import TerritoryClass from "./TerritoryClass";
+
+import { UnitType } from "./enums";
+import { IUnit } from "./Interfaces";
 
 export default class UnitClass {
   id!: string;
@@ -9,7 +11,7 @@ export default class UnitClass {
 
   convoyLink!: boolean;
 
-  type!: string;
+  type!: keyof typeof UnitType;
 
   terrID!: string;
 
@@ -31,5 +33,16 @@ export default class UnitClass {
 
   setConvoyLink() {
     this.convoyLink = true;
+  }
+
+  canCrossBorder(b) {
+    if (
+      (this.type === UnitType.Army && !b.a) ||
+      (this.type === UnitType.Fleet && !b.f)
+    ) {
+      return false;
+    }
+
+    return true;
   }
 }

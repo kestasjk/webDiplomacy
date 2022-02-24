@@ -2,9 +2,6 @@ import PathSearchClass from "./PathSearchClass";
 import TerritoryClass from "./TerritoryClass";
 
 export default class NodeSetClass {
-  //   initialize() {
-  //     this.Nodes = $H({});
-  //   }
   Nodes: Record<string, TerritoryClass> = {};
 
   Path: any;
@@ -17,44 +14,32 @@ export default class NodeSetClass {
 
   addNode(Node: TerritoryClass) {
     this.Nodes[Node.id] = Node;
-    // this.Nodes.set(Node.id, Node);
   }
 
   initNodes(search) {
     Object.values(this.Nodes).map((n) => {
       return n.nodeInit(search);
     });
-    // this.Nodes.values().map(function (n) {
-    //   n.nodeInit(search);
-    // });
   }
 
   routeSetLoad(ConvoyGroup) {
     ConvoyGroup.fleets.map((f) => {
       return this.addNode(f.Territory);
     });
-    // ConvoyGroup.Fleets.pluck("Territory").map( (t) {
-    //   this.addNode(t);
-    // }, this);
+
     ConvoyGroup.armies.map((a) => {
       return this.addNode(a.Territory);
     });
-    // ConvoyGroup.Armies.pluck("Territory").map( (t) {
-    //   this.addNode(t);
-    // }, this);
+
     ConvoyGroup.coasts.map((c) => {
       return this.addNode(c);
     });
-    // ConvoyGroup.Coasts.map( (t) {
-    //   this.addNode(t);
-    // }, this);
   }
 
   routeSetStart(StartTerr, fEndNode, fAllNode, fAnyNode) {
     // initialize nodes and load valied border territories for this search
     this.initNodes(new PathSearchClass(StartTerr, fEndNode, fAllNode));
 
-    // const AnyNodes = this.Nodes.values().select(fAnyNode);
     const AnyNodes: TerritoryClass[] = Object.values(this.Nodes).filter(
       fAnyNode,
     );

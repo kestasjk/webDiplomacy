@@ -1,19 +1,13 @@
 import PathClass from "./PathClass";
 
 export default class PathSearchClass {
-  // initialize: function(startTerr, fEndNode, fAllNode){
-  //     this.startTerr = startTerr;
-  //     this.fEndNode = fEndNode;
-  //     this.fAllNode = fAllNode;
-
-  //     this.success = false; // is set to true, if a path is found
-  // },
   success = false;
 
   path: any = null;
 
   // eslint-disable-next-line no-useless-constructor
   constructor(public startTerr, public fEndNode, public fAllNode?) {}
+
   /*
    * Find a path from start node to endNode with simple breadth-first search
    *
@@ -23,12 +17,10 @@ export default class PathSearchClass {
    *
    * Returns true, if a path was found
    */
-
   findPath(forceInternalNode = false) {
     // at least one internal node can be enforced in case of direct
     // path searches from land to land that must include at least
     // one fleet.
-    // if (!forceInternalNode) forceInternalNode = false;
 
     // start with initial path only containing StartTerr
     const start = new PathClass(this.startTerr, null);

@@ -1,7 +1,9 @@
 import ConvoyGroupClass from "./ConvoyGroupClass";
-import { IUnit, ITerritory, IContext, ITerrStatus } from "./Interfaces";
 import TerritoryClass from "./TerritoryClass";
 import UnitClass from "./UnitClass";
+
+import { IUnit, ITerritory, IContext, ITerrStatus } from "./Interfaces";
+import { CoastType, GamePhaseType, UnitType, TerritoryType } from "./enums";
 
 export default class BoardClass {
   convoyGroups: ConvoyGroupClass[] = [];
@@ -24,40 +26,40 @@ export default class BoardClass {
     this.territories = territories.map((territory) => {
       const curTerrStatus = terrStatus.find((ts) => ts.id === territory.id);
 
-      let curTerritory = new TerritoryClass(territory);
+      let currTerritory = new TerritoryClass(territory);
 
       if (curTerrStatus) {
-        curTerritory = new TerritoryClass(territory, curTerrStatus);
+        currTerritory = new TerritoryClass(territory, curTerrStatus);
 
-        let curUnit;
+        let currUnit;
         if (curTerrStatus.unitID) {
           const unitData = units.find((u) => u.id === curTerrStatus.unitID);
 
-          curUnit = unitData ? new UnitClass(unitData) : null;
+          currUnit = unitData ? new UnitClass(unitData) : null;
         }
 
-        if (curUnit) {
-          curTerritory.setUnit(curUnit);
+        if (currUnit) {
+          currTerritory.setUnit(currUnit);
 
-          curUnit.setTerritory(curTerritory);
+          currUnit.setTerritory(currTerritory);
 
-          this.units.push(curUnit);
+          this.units.push(currUnit);
         }
       }
 
-      if (curTerritory.coast === "Parent") {
-        coastParents.push(curTerritory);
+      if (currTerritory.coast === CoastType.Parent) {
+        coastParents.push(currTerritory);
       }
 
-      if (curTerritory.coast === "Child") {
-        coastChildren.push(curTerritory);
+      if (currTerritory.coast === CoastType.Child) {
+        coastChildren.push(currTerritory);
       }
 
-      if (curTerritory.coastParentID === curTerritory.id) {
-        curTerritory.coastParent = curTerritory;
+      if (currTerritory.coastParentID === currTerritory.id) {
+        currTerritory.coastParent = currTerritory;
       }
 
-      return curTerritory;
+      return currTerritory;
     });
 
     coastChildren.forEach((cc) => {
@@ -74,9 +76,12 @@ export default class BoardClass {
      * coasts that are adjacent above fleets
      * armies that are placed in above coasts
      */
-    if (context.phase === "Diplomacy") {
+    if (context.phase === GamePhaseType.Diplomacy) {
       this.units.forEach((u) => {
-        if (u.type === "Fleet" && u.Territory.type === "Sea") {
+        if (
+          u.type === UnitType.Fleet &&
+          u.Territory.type === TerritoryType.Sea
+        ) {
           const newConvoyGroup = new ConvoyGroupClass(this);
 
           /**
@@ -92,7 +97,7 @@ export default class BoardClass {
       this.convoyGroups.forEach((cg) => cg.linkGroups());
     }
 
-    if (context.phase === "Builds") {
+    if (context.phase === GamePhaseType.Build) {
       this.territories.forEach((t) => {
         if (
           t.coastParent.supply &&
@@ -138,7 +143,7 @@ export default class BoardClass {
   getMovableTerritories(unit: UnitClass) {
     return unit.Territory.CoastalBorders.reduce(
       (acc: TerritoryClass[], cur) => {
-        if (BoardClass.canCrossBorder(unit, cur)) {
+        if (unit.canCrossBorder(cur)) {
           const borderTerritory = this.territories.find(
             (territory) => territory.id === cur.id,
           );
@@ -156,7 +161,7 @@ export default class BoardClass {
    * Get all territories given unit(Army) can move to. Including convoyable territories.
    */
   getReachableTerritories(unit: UnitClass) {
-    if (!unit.convoyLink && unit.type !== "Army") {
+    if (!unit.convoyLink && unit.type !== UnitType.Army) {
       return [];
     }
 
@@ -208,7 +213,7 @@ export default class BoardClass {
    * Can given unit move to the target territory. Including convoy move
    */
   static canConvoyTo(targetTerritory: TerritoryClass, unit: UnitClass) {
-    if (unit.type === "Army") {
+    if (unit.type === UnitType.Army) {
       if (targetTerritory.id === unit.Territory.id) return false;
 
       /**
@@ -223,13 +228,5 @@ export default class BoardClass {
     }
 
     return false;
-  }
-
-  static canCrossBorder(unit: UnitClass, b) {
-    if ((unit.type === "Army" && !b.a) || (unit.type === "Fleet" && !b.f)) {
-      return false;
-    }
-
-    return true;
   }
 }

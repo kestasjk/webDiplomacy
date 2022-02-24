@@ -1,16 +1,19 @@
+import BoardClass from "./BoardClass";
 import ConvoyGroupClass from "./ConvoyGroupClass";
-import { ITerritory, IBorder, ICoastalBorder, ITerrStatus } from "./Interfaces";
 import UnitClass from "./UnitClass";
+
 import PathSearchClass from "./PathSearchClass";
 import PathClass from "./PathClass";
-import BoardClass from "./BoardClass";
+
+import { CoastType, TerritoryType } from "./enums";
+import { ITerritory, IBorder, ICoastalBorder, ITerrStatus } from "./Interfaces";
 
 export default class TerritoryClass {
   id!: string;
 
   countryID!: string;
 
-  coast!: string;
+  coast!: keyof typeof CoastType;
 
   coastParent!: TerritoryClass;
 
@@ -32,7 +35,7 @@ export default class TerritoryClass {
 
   standoff!: boolean;
 
-  type!: string;
+  type!: keyof typeof TerritoryType;
 
   unitID?: string;
 

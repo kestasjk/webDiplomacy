@@ -1,31 +1,7 @@
-import TerritoryClass from "./TerritoryClass";
 import PathSearchClass from "./PathSearchClass";
+import TerritoryClass from "./TerritoryClass";
 
 export default class PathClass {
-  // initialize: function (node, pathToNode) {
-  //     // the current node
-  //     this.node = node;
-
-  //     // the path to previous node
-  //     this.pathToNode = pathToNode;
-
-  //     // a complete path is a path, that goes from start to end terr
-  //     // of the current search
-  //     this.complete = false;
-
-  //     // a tag that stores if this path node was already checked for
-  //     // alternative path branches to end terr
-  //     this.alternativeChecked = false;
-
-  //     // the fixed next nodes (might be more than one due to forks)
-  //     this.pathNextNodes = new Array();
-
-  //     // the rank symbolizes, how many alternative routes exist from this path to endNode
-  //     // (only relevant for complete paths)
-  //     // don't call directly but use this.getRank() as this.rank
-  //     // does not contain the real rank for optimization reasons
-  //     this.rank = /*(pathToNode !== null) ? pathToNode.rank :*/ 0;
-  // // },
   complete = false;
 
   alternativeChecked = false;
@@ -44,18 +20,18 @@ export default class PathClass {
 
     return this.pathToNode.includes(node);
   }
+
   /*
    * Creates a new path identical to this one apart from the fact, that a new
    * node was added at the end.
    */
-
   addNode(node) {
     return new PathClass(node, this);
   }
+
   /*
    * removes the first element of the path and return the new first one
    */
-
   removeFirst() {
     if (this.pathToNode == null) return;
 
@@ -65,11 +41,11 @@ export default class PathClass {
 
     this.newPathToNode(null);
   }
+
   /*
    * The path is a complete path from start node to end node. Set it is
    * fixed in each node for further searches.
    */
-
   setComplete(nextNode) {
     this.node.path = this;
 
@@ -95,40 +71,40 @@ export default class PathClass {
       if (this.pathToNode !== null) this.pathToNode.setComplete(this);
     }
   }
+
   /*
    * To avoid resource intensive rank updates for all following nodes
    * everytime the rank is changed, the (real) rank is only calculated on call
    * by just summing up this rank and all the rank of the predecessors.
    */
-
   getRank() {
     return (
       this.rank + (this.pathToNode !== null ? this.pathToNode.getRank() : 0)
     );
   }
+
   /*
    * Changes the rank for this path node and all following (in case of a complete path).
    *
    * Positive change -> increase
    * Negative change -> decrease
    */
-
   changeRank(change) {
     this.rank += change;
   }
+
   /*
    * Sets this rank and adjust the rank of following nodes
    */
-
   setRank(newRank) {
     const diff = newRank - this.rank;
 
     this.changeRank(diff);
   }
+
   /*
    * get the last node of the path (normally end node)
    */
-
   getLastPathNode() {
     if (this.pathNextNodes.length === 0) {
       // this is the last element of the path
@@ -165,10 +141,10 @@ export default class PathClass {
 
     this.complete = false;
   }
+
   /*
    * Dissolves the previous path to this node and add new path to node
    */
-
   newPathToNode(node) {
     this.dissolvePathToNode();
 
@@ -176,12 +152,12 @@ export default class PathClass {
 
     return this;
   }
+
   /*
    * Attaches the current path to an existing path through the node.
    *
    * Returns the path node where the reconnection happened.
    */
-
   attachToNodePath() {
     if (this.node.hasPath()) {
       return this.node.path.newPathToNode(this.pathToNode);
@@ -192,11 +168,11 @@ export default class PathClass {
   getNextNodeRank() {
     return this.getRank() + this.pathNextNodes.length - 1;
   }
+
   /*
    * check for this path, if alternative paths starting from this.node
    * to end terr exist.
    */
-
   searchAlternativeRoutes(fEndNode) {
     if (!this.complete) return;
 
@@ -271,11 +247,11 @@ export default class PathClass {
     if (this.pathToNode !== null)
       this.pathToNode.searchAlternativeRoutes(fEndNode);
   }
+
   /*
    * Returns an alternative path that does not pass through this.node.
    * Alternative routes have to be searched before-
    */
-
   getAlternativeRoute() {
     if (!this.alternativeChecked) return null;
 
@@ -293,6 +269,7 @@ export default class PathClass {
     }
     return this.pathToNode.getAlternativeRoute();
   }
+
   /*
    * Checks if this path can be appended to path so a simple path is preserved.
    * So this basically checks if both paths share any common nodes apart from
@@ -300,7 +277,6 @@ export default class PathClass {
    *
    * Implemented recursivly
    */
-
   canBeAppendedTo(path) {
     path.markPath(path);
 

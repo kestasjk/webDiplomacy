@@ -1,7 +1,9 @@
 import BoardClass from "./BoardClass";
 import TerritoryClass from "./TerritoryClass";
-import { IOrderData } from "./Interfaces";
 import UnitClass from "./UnitClass";
+
+import { IOrderData } from "./Interfaces";
+import { UnitType } from "./enums";
 
 export default class OrderClass {
   // eslint-disable-next-line no-useless-constructor
@@ -16,7 +18,7 @@ export default class OrderClass {
       .getMovableTerritories(this.unit)
       .map((movableTerritories) => movableTerritories);
 
-    if (this.unit.convoyLink && this.unit.type === "Army") {
+    if (this.unit.convoyLink && this.unit.type === UnitType.Army) {
       const convoyableTerritories = Array.from(
         this.unit.ConvoyGroup.coasts,
       ).reduce((acc: TerritoryClass[], cur) => {
@@ -81,14 +83,11 @@ export default class OrderClass {
 
       if (
         this.unit.convoyLink &&
-        this.unit.type === "Fleet" &&
+        this.unit.type === UnitType.Fleet &&
         Array.from(this.unit.ConvoyGroup.coasts)
           .map((coast) => coast.id)
           .includes(againstTerritory.id)
       ) {
-        /**
-         * TODO: refactor convoy path related logic.
-         */
         ConvoyArmies = Array.from(againstTerritory.ConvoyGroup.armies).filter(
           (convoyArmy) => {
             return !!againstTerritory.ConvoyGroup.pathArmyToCoastWithoutFleet(

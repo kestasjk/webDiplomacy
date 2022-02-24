@@ -1,8 +1,10 @@
+import BoardClass from "./BoardClass";
 import TerritoryClass from "./TerritoryClass";
 import UnitClass from "./UnitClass";
-import BoardClass from "./BoardClass";
 
 import NodeSetClass from "./NodeSetClass";
+
+import { UnitType, TerritoryType } from "./enums";
 
 export default class ConvoyGroupClass {
   armies: Set<UnitClass> = new Set();
@@ -27,7 +29,7 @@ export default class ConvoyGroupClass {
   }
 
   loadFleet(fleet: UnitClass) {
-    if (fleet.convoyLink || fleet.Territory.type !== "Sea") {
+    if (fleet.convoyLink || fleet.Territory.type !== TerritoryType.Sea) {
       return;
     }
 
@@ -37,7 +39,7 @@ export default class ConvoyGroupClass {
     this.fleets.add(fleet);
 
     this.board.getBorderTerritories(fleet.Territory).forEach((bt) => {
-      if (bt.type === "Sea" && bt.Unit) {
+      if (bt.type === TerritoryType.Sea && bt.Unit) {
         this.loadFleet(bt.Unit);
       }
     });
@@ -46,7 +48,7 @@ export default class ConvoyGroupClass {
   loadCoasts() {
     this.fleets.forEach((f) => {
       this.board.getBorderTerritories(f.Territory).forEach((bt) => {
-        if (bt.type !== "Coast" || this.coasts.has(bt)) {
+        if (bt.type !== TerritoryType.Coast || this.coasts.has(bt)) {
           return;
         }
 
@@ -54,7 +56,7 @@ export default class ConvoyGroupClass {
 
         this.coasts.add(bt);
 
-        if (bt.Unit && bt.Unit.type === "Army") {
+        if (bt.Unit && bt.Unit.type === UnitType.Army) {
           this.armies.add(bt.Unit);
         }
       });
@@ -97,16 +99,13 @@ export default class ConvoyGroupClass {
 
       c.setConvoyLink();
 
-      if (c.Unit && c.Unit.type === "Army") {
+      if (c.Unit && c.Unit.type === UnitType.Army) {
         c.Unit.setConvoyLink();
         c.Unit.setConvoyGroup(c.ConvoyGroup);
       }
     });
   }
 
-  /**
-   * Path finding logic
-   */
   nodeSetClass() {
     const ns = new NodeSetClass();
     ns.routeSetLoad(this);
@@ -121,7 +120,7 @@ export default class ConvoyGroupClass {
         return EndNode.id === EndTerr.id;
       },
       (AllNode) => {
-        return AllNode.type === "Sea";
+        return AllNode.type === TerritoryType.Sea;
       },
       () => {
         return true;
@@ -138,7 +137,10 @@ export default class ConvoyGroupClass {
         return EndNode.id === EndTerr.id;
       },
       (AllNode) => {
-        return AllNode.type === "Sea" && AllNode.id !== WithoutFleetTerr.id;
+        return (
+          AllNode.type === TerritoryType.Sea &&
+          AllNode.id !== WithoutFleetTerr.id
+        );
       },
       () => {
         return true;
@@ -155,7 +157,7 @@ export default class ConvoyGroupClass {
         return EndNode.id === EndTerr.id;
       },
       (AllNode) => {
-        return AllNode.type === "Sea";
+        return AllNode.type === TerritoryType.Sea;
       },
       (AnyNode) => {
         return AnyNode.id === WithFleetTerr.id;
