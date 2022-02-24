@@ -5,6 +5,7 @@ import getInitialViewTranslation from "../../utils/map/getInitialViewTranslation
 import Scale from "../../types/Scale";
 import WDMap from "./WDMap";
 import { Viewport } from "../../interfaces";
+import drawArrow from "../../utilities/draw-arrow";
 
 const Scales: Scale = {
   DESKTOP: [0.65, 3],
@@ -32,8 +33,29 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
   device,
   viewport,
 }): React.ReactElement {
+  const [arrowConfigurations, setArrowConfigurations] = React.useState<any>({
+    source: {
+      element: undefined,
+      actionType: "",
+    },
+    target: {
+      element: undefined,
+    },
+  });
   const svgElement = React.useRef(null);
   const [scaleMin, scaleMax] = getInitialScaleForDevice(device);
+
+  const actionTypeColors = {
+    moveOrder: "#FFFFFF",
+    move: "#000000",
+    moveConvoy: "#2042B8",
+    moveFailed: "#BB0000",
+    moveSupport: "#F8F83D",
+    holdSupport: "#3FC621",
+    retreat: "#BD2894",
+  };
+
+  const actionType = "moveConvoy";
 
   React.useLayoutEffect(() => {
     if (svgElement.current) {
@@ -51,6 +73,14 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
 
       const zoom = ({ transform }) => {
         contained.attr("transform", transform);
+        if (arrowConfigurations.target.element) {
+          drawArrow(
+            arrowConfigurations.source.actionType,
+            arrowConfigurations.source.element,
+            fullMap,
+            arrowConfigurations.target.element,
+          );
+        }
       };
 
       const d3Zoom = d3
@@ -63,9 +93,35 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
         .on("zoom", zoom);
 
       fullMap
-        .on("wheel", (e) => e.preventDefault())
+        .on("wheel", (e) => {
+          e.preventDefault();
+        })
         .call(d3Zoom)
         .call(d3Zoom.transform, d3.zoomIdentity.translate(x, y).scale(scale));
+
+      d3.selectAll("path").on("click", (e) => {
+        e.preventDefault();
+
+        if (!arrowConfigurations.source.element) {
+          const updatedState = { ...arrowConfigurations };
+          updatedState.source.element = e.target.id;
+          updatedState.source.actionType = "moveConvoy";
+          setArrowConfigurations(updatedState);
+        } else if (
+          arrowConfigurations.source.element &&
+          !arrowConfigurations.target.element
+        ) {
+          const updatedState = { ...arrowConfigurations };
+          updatedState.target.element = e.target.id;
+          setArrowConfigurations(updatedState);
+          drawArrow(
+            arrowConfigurations.source.actionType,
+            arrowConfigurations.source.element,
+            fullMap,
+            arrowConfigurations.target.element,
+          );
+        }
+      });
     }
   }, [svgElement, viewport]);
 
@@ -76,7 +132,10 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
         height: viewport.height,
       }}
     >
-      <WDMap svgElement={svgElement} />
+      <WDMap
+        svgElement={svgElement}
+        arrowHeadColor={actionTypeColors[actionType]}
+      />
     </div>
   );
 };
