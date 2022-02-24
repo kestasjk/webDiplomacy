@@ -27,7 +27,7 @@ export default function drawArrow(actionType, source, svgElement, target) {
     .attr("y2", targetNodeData.y)
     .attr("marker-end", "url(#arrowhead)")
     .attr("stroke", actionTypeColors[actionType])
-    .attr("strokeWidth", "1")
+    .attr("stroke-width", "2")
     .attr("id", "arrowline");
 
   //   svgElement
