@@ -160,7 +160,7 @@ const countryPalette: CountryPaletteOptions = {
   },
   Germany: {
     main: "#F37C0E",
-    light: "#F5BCF8",
+    light: "#FBD3AF",
   },
   Russia: {
     main: "#3F1BC1",
