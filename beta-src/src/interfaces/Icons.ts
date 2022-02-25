@@ -1,5 +1,5 @@
 import Country from "../enums/Country";
-import UIState from "../enums/UIState";
+import { UIState } from "../enums/UIState";
 
 export interface navIconProps {
   iconState?: UIState.ACTIVE | UIState.INACTIVE;

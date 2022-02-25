@@ -1,4 +1,4 @@
-enum UIState {
+export enum UIState {
   NONE = "none",
   SELECTED = "selected",
   HOLD = "hold",
@@ -9,4 +9,8 @@ enum UIState {
   INACTIVE = "inactive",
 }
 
-export default UIState;
+export enum ScrollButtonState {
+  BACK = "left",
+  FORWARD = "right",
+  ENABLED = "enabled",
+}

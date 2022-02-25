@@ -86,6 +86,10 @@ const webDiplomacyTheme = createTheme({
         root: {
           borderRadius: 18,
           padding: "10px 18px",
+          "&.WDScrollButton, &.WDScrollButton:hover, &.WDScrollButton:focus": {
+            backgroundColor: "#fff",
+            boxShadow: "none",
+          },
         },
         containedPrimary: {
           "&:active": {
