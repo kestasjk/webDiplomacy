@@ -16,7 +16,7 @@ const WDScrollButton: React.FC<scrollButtonProps> = function ({
       onClick={onClick}
       variant="contained"
     >
-      <WDPhaseArrowIcon direction={direction} />
+      <WDPhaseArrowIcon direction={direction} disabled={disabled} />
     </Button>
   );
 };
