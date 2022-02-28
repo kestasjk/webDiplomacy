@@ -1,6 +1,8 @@
 import * as React from "react";
+import { useTheme } from "@mui/material";
 
 const Centers: React.FC = function (): React.ReactElement {
+  const theme = useTheme();
   return (
     <svg
       width="18"
@@ -15,7 +17,7 @@ const Centers: React.FC = function (): React.ReactElement {
       />
       <path
         d="M9.00324 13.3635C11.4132 13.3635 13.3668 11.4098 13.3668 8.99987C13.3668 6.5899 11.4132 4.63623 9.00324 4.63623C6.5933 4.63623 4.63965 6.5899 4.63965 8.99987C4.63965 11.4098 6.5933 13.3635 9.00324 13.3635Z"
-        fill="black"
+        fill={theme.palette.primary.main}
       />
     </svg>
   );
