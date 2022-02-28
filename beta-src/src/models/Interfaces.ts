@@ -1,5 +1,6 @@
 import BoardClass from "./BoardClass";
 import UnitClass from "./UnitClass";
+import { OrderStatusType } from "./enums";
 
 export interface IBoard {
   context: IContext;

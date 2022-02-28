@@ -20,3 +20,17 @@ export const TerritoryType = Object.freeze({
   Land: "Land",
   Sea: "Sea",
 });
+
+export const OrderStatusType = Object.freeze({
+  Hold: "Hold",
+  Move: "Move",
+  SupportHold: "Support hold",
+  SupportMove: "Support move",
+  Convoy: "Convoy",
+  Retreat: "Retreat",
+  Disband: "Disband",
+  BuildArmy: "Build army",
+  BuildFleet: "Build fleet",
+  Wait: "Wait",
+  Destroy: "Destroy",
+});

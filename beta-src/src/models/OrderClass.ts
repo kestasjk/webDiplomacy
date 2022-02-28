@@ -41,8 +41,15 @@ export default class OrderClass {
   getSupportHoldChoices() {
     const movableUnits = this.board.getMovableUnits(this.unit);
 
-    const supportHoldChoices = movableUnits.map(
-      (mu) => mu?.Territory.coastParent,
+    const supportHoldChoices = movableUnits.reduce(
+      (acc: TerritoryClass[], cur) => {
+        if (cur.Territory.coastParent) {
+          acc.push(cur.Territory.coastParent);
+        }
+
+        return acc;
+      },
+      [],
     );
 
     return Array.from(new Set(supportHoldChoices));
