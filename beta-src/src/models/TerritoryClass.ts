@@ -27,10 +27,6 @@ export default class TerritoryClass {
 
   ownerCountryID!: string;
 
-  smallMapX!: number;
-
-  smallMapY!: number;
-
   supply!: boolean;
 
   standoff!: boolean;

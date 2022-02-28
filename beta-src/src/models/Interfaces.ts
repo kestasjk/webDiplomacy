@@ -16,8 +16,6 @@ export interface ITerritory {
   coastParentID: string;
   name: string;
   supply: string;
-  smallMapX: string;
-  smallMapY: string;
   type: string;
   Borders: IBorder[];
   CoastalBorders: ICoastalBorder[];
