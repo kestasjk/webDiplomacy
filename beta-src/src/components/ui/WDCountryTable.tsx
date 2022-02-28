@@ -8,6 +8,7 @@ import {
   TableHead,
   TableRow,
   tableCellClasses,
+  useTheme,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import BetIcon from "./icons/country-table/WDBet";
@@ -60,14 +61,15 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
   device,
   maxDelays,
 }): React.ReactElement {
+  const theme = useTheme();
   const mobileLandscapeLayout =
     device === Device.MOBILE_LANDSCAPE || device === Device.MOBILE_LG_LANDSCAPE;
   const WDTableCell = styled(TableCell)(() => {
-    const padding = mobileLandscapeLayout ? "6px 6px" : "6px 16px";
+    const padding = mobileLandscapeLayout ? 6 : "6px 16px";
     return {
       [`&.${tableCellClasses.head}`]: {
-        lineHeight: "unset",
         borderBottom: 0,
+        lineHeight: "normal",
         padding,
       },
       [`&.${tableCellClasses.body}`]: {
@@ -78,8 +80,8 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
   });
   return (
     <div>
-      <Table stickyHeader size="small" aria-label="country info table">
-        <TableHead sx={{ height: "70px" }}>
+      <Table aria-label="country info table" size="small" stickyHeader>
+        <TableHead sx={{ height: "55px" }}>
           <TableRow sx={{ verticalAlign: "top" }}>
             {columns.map((column) => (
               <WDTableCell key={column.id} align={column.align}>
@@ -97,7 +99,7 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
               <TableRow>
                 {columns.map((column) => {
                   const style = {
-                    color: "black",
+                    color: theme.palette.primary.main,
                     fontWeight: 400,
                   };
                   let value: string;
@@ -135,25 +137,22 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                   >
                     <Box
                       sx={{
-                        color: "#959595",
+                        color: theme.palette.action.disabledBackground,
                         display: "inline-block",
-                        marginRight: "10px",
+                        marginRight: 1.5,
                       }}
                     >
                       VOTED
                     </Box>
-                    {Object.entries(country.votes)
-                      .filter((data) => {
-                        return data[1];
-                      })
-                      .map((data) => {
-                        return (
+                    {Object.entries(country.votes).map(
+                      (data) =>
+                        data[1] && (
                           <Chip
                             key={`${country.power}-vote-${data[0]}`}
                             size="small"
                             label={data[0].toUpperCase()}
                             sx={{
-                              color: "white",
+                              color: theme.palette.secondary.main,
                               background: country.color,
                               fontWeight: 900,
                               fontSize: "90%",
@@ -161,8 +160,8 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                               marginRight: 1,
                             }}
                           />
-                        );
-                      })}
+                        ),
+                    )}
                   </WDTableCell>
                 </TableRow>
               )}
