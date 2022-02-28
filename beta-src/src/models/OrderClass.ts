@@ -13,7 +13,11 @@ export default class OrderClass {
     public unit: UnitClass,
   ) {}
 
-  getMoveChoices() {
+  /**
+   *
+   * @returns movable territories including convoyable coasts
+   */
+  getMoveChoices(): TerritoryClass[] {
     const choices = this.board
       .getMovableTerritories(this.unit)
       .map((movableTerritories) => movableTerritories);
@@ -36,9 +40,10 @@ export default class OrderClass {
   }
 
   /**
-   * get an array of unique ids for the units that can support-hold
+   *
+   * @returns array of adjacent units
    */
-  getSupportHoldChoices() {
+  getSupportHoldChoices(): TerritoryClass[] {
     const movableUnits = this.board.getMovableUnits(this.unit);
 
     const supportHoldChoices = movableUnits.reduce(
@@ -56,20 +61,23 @@ export default class OrderClass {
   }
 
   /**
-   * get an array of ids the current unit can support-move to
+   *
+   * @returns array of adjacent territories
    */
-  getSupportMoveToChoices() {
+  getSupportMoveToChoices(): TerritoryClass[] {
     const movableTerritories = this.board.getMovableTerritories(this.unit);
 
     return movableTerritories.map((mt) => mt.coastParent);
   }
 
   /**
-   * Names of territories containing units which I can support into the given Territory
-   * Essentially a list of units which can move into the given territory(territory that current unit can support move to)
+   *
+   * @param againstTerritory from supportMoveToChoices
+   * @returns array of territories that have unit which can move into the given territory
    */
-  getSupportMoveFromChoices(againstTerritory: TerritoryClass) {
-    // Units bordering the given territory which can move into it
+  getSupportMoveFromChoices(
+    againstTerritory: TerritoryClass,
+  ): TerritoryClass[] {
     let possibleUnits = this.board
       .getBorderUnits(againstTerritory.coastParent)
       .filter((bu) => {
@@ -124,9 +132,10 @@ export default class OrderClass {
   }
 
   /**
-   * get all coasts which a fleet can convoy an army to
+   *
+   * @returns array of coasts' id which a fleet can convoy an army to
    */
-  getConvoyToChoices() {
+  getConvoyToChoices(): string[] {
     if (this.unit.convoyLink) {
       return Array.from(this.unit.ConvoyGroup.coasts).map((coast) => coast.id);
     }
@@ -135,9 +144,11 @@ export default class OrderClass {
   }
 
   /**
-   * get all coasts which a fleet can convoy an army from
+   *
+   * @param toTerritory convoy destination
+   * @returns array of coasts that have army which a fleet can convoy from
    */
-  getConvoyFromChoices(toTerritory: TerritoryClass) {
+  getConvoyFromChoices(toTerritory: TerritoryClass): UnitClass[] {
     if (this.unit.convoyLink) {
       return Array.from(this.unit.ConvoyGroup.armies).filter((convoyArmy) => {
         if (toTerritory.id === convoyArmy.Territory.id) {

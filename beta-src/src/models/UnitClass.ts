@@ -35,7 +35,12 @@ export default class UnitClass {
     this.convoyLink = true;
   }
 
-  canCrossBorder(b) {
+  /**
+   *
+   * @param b border object
+   * @returns {boolean}
+   */
+  canCrossBorder(b): boolean {
     if (
       (this.type === UnitType.Army && !b.a) ||
       (this.type === UnitType.Fleet && !b.f)

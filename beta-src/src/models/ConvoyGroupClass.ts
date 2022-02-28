@@ -28,6 +28,11 @@ export default class ConvoyGroupClass {
     this.fleets = fleets;
   }
 
+  /**
+   *
+   * @param fleet
+   * @returns
+   */
   loadFleet(fleet: UnitClass) {
     if (fleet.convoyLink || fleet.Territory.type !== TerritoryType.Sea) {
       return;

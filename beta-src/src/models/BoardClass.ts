@@ -111,18 +111,30 @@ export default class BoardClass {
     }
   }
 
-  findUnitByID(unitID: string) {
+  /**
+   *
+   * @param unitID
+   * @returns {UnitClass}
+   */
+  findUnitByID(unitID: string): UnitClass | undefined {
     return this.units.find((unit) => unit.id === unitID);
   }
 
-  findTerritoryByID(territoryID: string) {
+  /**
+   *
+   * @param territoryID
+   * @returns {TerritoryClass}
+   */
+  findTerritoryByID(territoryID: string): TerritoryClass | undefined {
     return this.territories.find((t) => t.id === territoryID);
   }
 
   /**
    * finds adjacent territories
+   * @param territory
+   * @returns {TerritoryClass[]}
    */
-  getBorderTerritories(territory: TerritoryClass) {
+  getBorderTerritories(territory: TerritoryClass): TerritoryClass[] | [] {
     const borderIDs = territory.Borders.map((b) => b.id);
 
     return this.territories.filter((t) => borderIDs.includes(`${t.id}`));
@@ -130,8 +142,10 @@ export default class BoardClass {
 
   /**
    * find units on border territories
+   * @param territory
+   * @returns {UnitClass[]}
    */
-  getBorderUnits(territory: TerritoryClass) {
+  getBorderUnits(territory: TerritoryClass): UnitClass[] {
     const borderTerritories = this.getBorderTerritories(territory.coastParent);
 
     return borderTerritories.map((bt) => bt.Unit);
@@ -139,8 +153,10 @@ export default class BoardClass {
 
   /**
    * Get all territories given unit can move to. Not including convoy move
+   * @param unit
+   * @returns {TerritoryClass}
    */
-  getMovableTerritories(unit: UnitClass) {
+  getMovableTerritories(unit: UnitClass): TerritoryClass[] {
     return unit.Territory.CoastalBorders.reduce(
       (acc: TerritoryClass[], cur) => {
         if (unit.canCrossBorder(cur)) {
@@ -159,8 +175,10 @@ export default class BoardClass {
 
   /**
    * Get all territories given unit(Army) can move to. Including convoyable territories.
+   * @param unit
+   * @returns {TerritoryClass[]}
    */
-  getReachableTerritories(unit: UnitClass) {
+  getReachableTerritories(unit: UnitClass): TerritoryClass[] {
     if (!unit.convoyLink && unit.type !== UnitType.Army) {
       return [];
     }
@@ -183,8 +201,10 @@ export default class BoardClass {
 
   /**
    * Get all units on movable territories. (can support move to)
+   * @param unit
+   * @returns {UnitClass[]}
    */
-  getMovableUnits(unit: UnitClass) {
+  getMovableUnits(unit: UnitClass): UnitClass[] {
     return this.getMovableTerritories(unit).reduce((acc: UnitClass[], cur) => {
       if (cur.coastParent.Unit) {
         acc.push(cur.coastParent.Unit);
@@ -195,8 +215,11 @@ export default class BoardClass {
 
   /**
    * Can given unit move to the target territory. Not including convoy move
+   * @param unit
+   * @param targetTerritory
+   * @returns {boolean}
    */
-  canMoveInto(unit: UnitClass, targetTerritory: TerritoryClass) {
+  canMoveInto(unit: UnitClass, targetTerritory: TerritoryClass): boolean {
     if (
       this.getMovableTerritories(unit)
         .map((movableTerritories) => {
@@ -211,8 +234,14 @@ export default class BoardClass {
 
   /**
    * Can given unit move to the target territory. Including convoy move
+   * @param targetTerritory
+   * @param unit
+   * @returns {boolean}
    */
-  static canConvoyTo(targetTerritory: TerritoryClass, unit: UnitClass) {
+  static canConvoyTo(
+    targetTerritory: TerritoryClass,
+    unit: UnitClass,
+  ): boolean {
     if (unit.type === UnitType.Army) {
       if (targetTerritory.id === unit.Territory.id) return false;
 
