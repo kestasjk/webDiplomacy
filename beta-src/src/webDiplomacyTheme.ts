@@ -32,6 +32,18 @@ declare module "@mui/material/Typography" {
   }
 }
 
+declare module "@mui/material/styles" {
+  interface Palette {
+    France: CountryColor;
+    Austria: CountryColor;
+    England: CountryColor;
+    Germany: CountryColor;
+    Russia: CountryColor;
+    Italy: CountryColor;
+    Turkey: CountryColor;
+  }
+}
+
 /**
  * constants
  * ===
@@ -58,6 +70,37 @@ interface CountryColor {
 
 type CountryPaletteOptions = {
   [key in Country]: CountryColor;
+};
+
+const countryPalette: CountryPaletteOptions = {
+  France: {
+    main: "#2D5EE8",
+    light: "#B9C9F7",
+  },
+  Austria: {
+    main: "#FC4343",
+    light: "#FEC0C0",
+  },
+  England: {
+    main: "#E136EA",
+    light: "#F5BCF8",
+  },
+  Germany: {
+    main: "#F37C0E",
+    light: "#FBD3AF",
+  },
+  Russia: {
+    main: "#3F1BC1",
+    light: "#BFB3EA",
+  },
+  Italy: {
+    main: "#47D2A0",
+    light: "#C2F0DF",
+  },
+  Turkey: {
+    main: "#F3C400",
+    light: "#FBEBAA",
+  },
 };
 
 /**
@@ -134,6 +177,7 @@ const webDiplomacyTheme = createTheme({
       main: "#fff",
       contrastText: "#000",
     },
+    ...countryPalette,
   },
   typography: {
     button: {
@@ -144,42 +188,6 @@ const webDiplomacyTheme = createTheme({
     },
   },
 });
-
-const countryPalette: CountryPaletteOptions = {
-  France: {
-    main: "#2D5EE8",
-    light: "#B9C9F7",
-  },
-  Austria: {
-    main: "#FC4343",
-    light: "#FEC0C0",
-  },
-  England: {
-    main: "#E136EA",
-    light: "#F5BCF8",
-  },
-  Germany: {
-    main: "#F37C0E",
-    light: "#FBD3AF",
-  },
-  Russia: {
-    main: "#3F1BC1",
-    light: "#BFB3EA",
-  },
-  Italy: {
-    main: "#47D2A0",
-    light: "#C2F0DF",
-  },
-  Turkey: {
-    main: "#F3C400",
-    light: "#FBEBAA",
-  },
-};
-
-webDiplomacyTheme.palette = {
-  ...webDiplomacyTheme.palette,
-  ...countryPalette,
-};
 
 /**
  * responsive overrides
