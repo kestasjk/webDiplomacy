@@ -1,7 +1,7 @@
-import { ScrollButtonState } from "../enums/UIState";
+import ScrollButtonState from "../enums/ScrollButton";
 
 export interface scrollButtonProps {
-  onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
   direction: ScrollButtonState;
   disabled?: boolean;
+  onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
 }
