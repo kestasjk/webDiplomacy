@@ -12,7 +12,7 @@ export default function drawArrow(
   /**
    * svg parent element; must be able to target centers and defs
    */
-  svgElement: any,
+  svgElement: d3.Selection<d3.BaseType, unknown, HTMLElement, any>,
   /**
    * target is the id of the element the arrow ends at
    */
