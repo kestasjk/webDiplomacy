@@ -39,8 +39,10 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
     if (svgElement.current) {
       const fullMap = d3.select(svgElement.current);
       const contained = fullMap.select("#container");
-      const containedRect = contained.node().getBBox();
-      const gameBoardAreaRect = fullMap.select("#outlines").node().getBBox();
+      const containedRect = (contained.node() as SVGSVGElement).getBBox();
+      const gameBoardAreaRect = (
+        fullMap.select("#outlines").node() as SVGSVGElement
+      ).getBBox();
 
       const { scale, x, y } = getInitialViewTranslation(
         containedRect,

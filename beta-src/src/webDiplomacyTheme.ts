@@ -44,6 +44,16 @@ declare module "@mui/material/styles" {
   }
 }
 
+interface ArrowPalette {
+  moveOrderSelected: string;
+  move: string;
+  convoy: string;
+  moveFailed: string;
+  moveSupport: string;
+  holdSupport: string;
+  retreat: string;
+}
+
 /**
  * constants
  * ===
@@ -101,6 +111,16 @@ const countryPalette: CountryPaletteOptions = {
     main: "#F3C400",
     light: "#FBEBAA",
   },
+};
+
+const arrowPalette: ArrowPalette = {
+  moveOrderSelected: "#FFFFFF",
+  move: "#000000",
+  convoy: "#2042B8",
+  moveFailed: "#BB0000",
+  moveSupport: "#F8F83D",
+  holdSupport: "#3FC621",
+  retreat: "#BD2894",
 };
 
 /**
@@ -178,6 +198,7 @@ const webDiplomacyTheme = createTheme({
       contrastText: "#000",
     },
     ...countryPalette,
+    ...arrowPalette,
   },
   typography: {
     button: {

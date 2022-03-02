@@ -1,14 +1,14 @@
 export default function removeArrow(
   /**
-   * id is the id of the arrowline. This ends with a -somenumber
+   * id is the id of the arrowline to be removed
    */
   id: string,
   /**
-   * svgElement is the parent svg element. Must be able to target defs as well as svg#container
+   * The resulting object after selecting the full map using D3 (NOT A SVG ELEMENT); must be able to target centers and defs
    */
-  svgElement: any,
+  d3MapSelector: any,
 ) {
-  const arrowIdTag = id.split("-")[1];
-  svgElement.select(`#${id}`).remove();
-  svgElement.select(`#arrowhead${arrowIdTag}`).remove();
+  const arrowIdTag = id.split("__")[1];
+  d3MapSelector.select(`#${id}`).remove();
+  d3MapSelector.select(`#arrowhead__${arrowIdTag}`).remove();
 }
