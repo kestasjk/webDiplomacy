@@ -146,9 +146,9 @@ export default class BoardClass {
    * @returns {UnitClass[]}
    */
   getBorderUnits(territory: TerritoryClass): UnitClass[] {
-    const borderTerritories = this.getBorderTerritories(territory.coastParent);
-
-    return borderTerritories.map((bt) => bt.Unit);
+    return this.getBorderTerritories(territory.coastParent).map(
+      (bt: TerritoryClass) => bt.Unit,
+    );
   }
 
   /**
@@ -243,7 +243,9 @@ export default class BoardClass {
     unit: UnitClass,
   ): boolean {
     if (unit.type === UnitType.Army) {
-      if (targetTerritory.id === unit.Territory.id) return false;
+      if (targetTerritory.id === unit.Territory.id) {
+        return false;
+      }
 
       /**
        * Unit is in a convoy group. Unit can move to target territory via convoy move.
