@@ -1,27 +1,38 @@
 import * as React from "react";
 import { Box, Button } from "@mui/material";
+import Season from "../../enums/Season";
 
-interface gamePhaseIconProps {
-  iconState: "enabled" | "spring" | "autumn" | "winter";
-  year: number;
-  onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
+interface GamePhaseIconProps {
   disabled?: boolean;
+  iconState: Season;
+  onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
+  year: number;
 }
 
-const WDGamePhaseIcon: React.FC<gamePhaseIconProps> = function ({
-  iconState,
-  year,
-  onClick,
+const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
   disabled,
+  iconState,
+  onClick,
+  year,
 }): React.ReactElement {
   return (
     <Button
-      className={`WDGamePhaseIcon ${disabled && "WDGamePhaseDisabled"}`}
+      disabled={disabled}
       disableRipple
       onClick={onClick}
-      disabled={disabled}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        filter: disabled
+          ? "drop-shadow(1px 4px 8px #b3b3b3)"
+          : "drop-shadow(1px 4px 8px #292929)",
+        "&:hover": {
+          filter: "drop-shadow(1px 4px 2px black)",
+          backgroundColor: "transparent",
+        },
+      }}
     >
-      {iconState === "enabled" && (
+      {iconState === Season.ENABLED && (
         <svg
           width={50}
           height={50}
@@ -32,7 +43,7 @@ const WDGamePhaseIcon: React.FC<gamePhaseIconProps> = function ({
           <path d="m28 17-9 8 9 8" stroke="#fff" strokeWidth={3} />
         </svg>
       )}
-      {iconState === "autumn" && (
+      {iconState === Season.AUTUMN && (
         <svg
           fill="none"
           height={31}
@@ -45,7 +56,7 @@ const WDGamePhaseIcon: React.FC<gamePhaseIconProps> = function ({
           />
         </svg>
       )}
-      {iconState === "spring" && (
+      {iconState === Season.SPRING && (
         <svg
           fill="none"
           height={32}
@@ -64,7 +75,7 @@ const WDGamePhaseIcon: React.FC<gamePhaseIconProps> = function ({
           />
         </svg>
       )}
-      {iconState === "winter" && (
+      {iconState === Season.WINTER && (
         <svg
           fill="none"
           height={35}
@@ -79,13 +90,13 @@ const WDGamePhaseIcon: React.FC<gamePhaseIconProps> = function ({
           />
         </svg>
       )}
-      {iconState !== "enabled" && (
+      {iconState !== Season.ENABLED && (
         <Box
           sx={{
-            textTransform: "uppercase",
-            fontWeight: "bold",
             color: "#fff",
+            fontWeight: "bold",
             margin: 0,
+            textTransform: "uppercase",
           }}
         >
           {year}

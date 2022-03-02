@@ -1,5 +1,4 @@
 import { createTheme } from "@mui/material/styles";
-import { findByLabelText } from "@testing-library/react";
 import Country from "./enums/Country";
 
 declare module "@mui/material/styles" {
@@ -92,18 +91,6 @@ const webDiplomacyTheme = createTheme({
             boxShadow: "none",
             borderRadius: "22px",
             padding: "13px 19px 13px 13px",
-          },
-          "&.WDGamePhaseIcon": {
-            filter: "drop-shadow(1px 4px 8px #292929)",
-            display: "flex",
-            flexDirection: "column",
-          },
-          "&.WDGamePhaseIcon:hover": {
-            filter: "drop-shadow(1px 4px 2px black)",
-            backgroundColor: "transparent",
-          },
-          "&.WDGamePhaseIcon.WDGamePhaseDisabled": {
-            filter: "drop-shadow(1px 4px 8px #b3b3b3)",
           },
         },
         containedPrimary: {
