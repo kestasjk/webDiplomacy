@@ -1,7 +1,10 @@
 import * as React from "react";
+import { useEffect, useState } from "react";
 import { Avatar, Chip } from "@mui/material";
 import BlackCountdownIcon from "../../assets/png/icn_phase_countdown_black.png";
 import RedCountdownIcon from "../../assets/png/icn_phase_countdown_red.png";
+import calculateAndSortRemainingTime from "../../utils/calculateAndSortRemainingTime";
+import { ParsedTimeInterface } from "../../interfaces/ParsedTimeInterface";
 
 interface WDCountdownPillProps {
   remainingTime: number;
@@ -10,33 +13,19 @@ interface WDCountdownPillProps {
 const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
   remainingTime,
 }) {
-  const [endTime, setEndLeft] = React.useState(+new Date(remainingTime * 1000));
+  const [endTime] = useState<number>(+new Date(remainingTime * 1000));
 
-  const [quarterTimeRemaining, setQuarterTimeRemaining] = React.useState(
+  const [quarterTimeRemaining] = useState(
     endTime - (endTime - +new Date()) / 4,
   );
 
-  function calculateTimeLeft() {
-    const difference = endTime - +new Date();
+  const [timeLeft, setTimeLeft] = useState<ParsedTimeInterface>(
+    calculateAndSortRemainingTime(endTime),
+  );
 
-    let timeLeft = {};
-
-    if (difference > 0) {
-      timeLeft = {
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-      };
-    }
-
-    return timeLeft;
-  }
-  const [timeLeft, setTimeLeft] = React.useState<any>(calculateTimeLeft());
-
-  React.useEffect(() => {
+  useEffect(() => {
     const timer = setTimeout(() => {
-      setTimeLeft(calculateTimeLeft());
+      setTimeLeft(calculateAndSortRemainingTime(endTime));
     }, 1000);
 
     return () => clearTimeout(timer);
