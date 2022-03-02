@@ -14,9 +14,13 @@ export default class PathClass {
   constructor(public node, public pathToNode) {}
 
   includes(node) {
-    if (this.node === node) return true;
+    if (this.node === node) {
+      return true;
+    }
 
-    if (this.pathToNode == null) return false;
+    if (this.pathToNode == null) {
+      return false;
+    }
 
     return this.pathToNode.includes(node);
   }
@@ -33,7 +37,9 @@ export default class PathClass {
    * removes the first element of the path and return the new first one
    */
   removeFirst() {
-    if (this.pathToNode == null) return;
+    if (this.pathToNode == null) {
+      return;
+    }
 
     if (this.pathToNode.pathToNode != null) {
       this.pathToNode.removeFirst();
@@ -50,11 +56,12 @@ export default class PathClass {
     this.node.path = this;
 
     // assure, the rank is set to 0 if this node is the start
-    if (this.pathToNode === null) this.setRank(0);
+    if (this.pathToNode === null) {
+      this.setRank(0);
+    }
 
     if (!!nextNode && this.pathNextNodes.indexOf(nextNode) === -1) {
       // adjust the ranks / count of alternative routes
-      //   this.pathNextNodes.invoke("changeRank", 1);
       this.pathNextNodes.forEach((pnn) => {
         pnn.changeRank(1);
       });
@@ -68,7 +75,9 @@ export default class PathClass {
     if (!this.complete) {
       this.complete = true;
 
-      if (this.pathToNode !== null) this.pathToNode.setComplete(this);
+      if (this.pathToNode !== null) {
+        this.pathToNode.setComplete(this);
+      }
     }
   }
 
@@ -116,11 +125,15 @@ export default class PathClass {
   }
 
   removePathNextNode(path) {
-    if (!this.complete) return;
+    if (!this.complete) {
+      return;
+    }
 
     const index = this.pathNextNodes.indexOf(path);
 
-    if (index === -1) return;
+    if (index === -1) {
+      return;
+    }
 
     this.pathNextNodes.splice(this.pathNextNodes.indexOf(path), 1);
 
@@ -137,7 +150,9 @@ export default class PathClass {
   }
 
   dissolvePathToNode() {
-    if (this.pathToNode != null) this.pathToNode.removePathNextNode(this);
+    if (this.pathToNode != null) {
+      this.pathToNode.removePathNextNode(this);
+    }
 
     this.complete = false;
   }
@@ -188,7 +203,6 @@ export default class PathClass {
         this.pathNextNodes.filter((pnn) => {
           return pnn.node === fEndNode;
         })
-        // this.pathNextNodes.pluck("node").any(fEndNode)
       ) {
         this.alternativeChecked = true;
       } else {
@@ -253,9 +267,13 @@ export default class PathClass {
    * Alternative routes have to be searched before-
    */
   getAlternativeRoute() {
-    if (!this.alternativeChecked) return null;
+    if (!this.alternativeChecked) {
+      return null;
+    }
 
-    if (this.pathToNode === null) return null;
+    if (this.pathToNode === null) {
+      return null;
+    }
 
     if (this.pathToNode.pathNextNodes.length > 1) {
       // there is a fork in the path at node before
@@ -282,24 +300,28 @@ export default class PathClass {
 
     let retValue = true;
 
-    if (this.node.inPath === path) retValue = false;
-    else if (this.pathToNode !== null)
+    if (this.node.inPath === path) {
+      retValue = false;
+    } else if (this.pathToNode !== null) {
       retValue = this.pathToNode.canBeAppendedTo(path);
+    }
 
     return retValue;
   }
 
   markPath(path) {
-    if (this.node.inPath === path) return;
+    if (this.node.inPath === path) {
+      return;
+    }
 
     this.node.inPath = path;
 
-    if (this.pathToNode !== null) this.pathToNode.markPath(path);
+    if (this.pathToNode !== null) {
+      this.pathToNode.markPath(path);
+    }
   }
 
   toArray(array: string[] = []) {
-    // if (Object.isUndefined(array)) array = new Array();
-
     // do not include last element of path in array representation
     array.push(this.node.id);
 
@@ -332,6 +354,5 @@ export default class PathClass {
         return pnn.getAllPathsFromThis();
       })
       .flat();
-    // return this.pathNextNodes.invoke("getAllPathsFromThis").flatten();
   }
 }
