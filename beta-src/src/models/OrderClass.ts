@@ -81,10 +81,7 @@ export default class OrderClass {
     let possibleUnits = this.board
       .getBorderUnits(againstTerritory.coastParent)
       .filter((bu) => {
-        if (!bu) {
-          return false;
-        }
-        return this.board.canMoveInto(bu, againstTerritory);
+        return bu && this.board.canMoveInto(bu, againstTerritory);
       });
 
     if (againstTerritory.convoyLink) {

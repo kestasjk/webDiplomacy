@@ -1,4 +1,5 @@
 import { createTheme } from "@mui/material/styles";
+import Country from "./enums/Country";
 
 declare module "@mui/material/styles" {
   interface BreakpointOverrides {
@@ -8,8 +9,11 @@ declare module "@mui/material/styles" {
     lg: false;
     xl: false;
     mobile: true;
+    mobileLandscape: true;
     mobileLg: true;
+    mobileLgLandscape: true;
     tablet: true;
+    tabletLandscape: true;
     desktop: true;
   }
 
@@ -25,6 +29,18 @@ declare module "@mui/material/styles" {
 declare module "@mui/material/Typography" {
   interface TypographyPropsVariantOverrides {
     label: true;
+  }
+}
+
+declare module "@mui/material/styles" {
+  interface Palette {
+    France: CountryColor;
+    Austria: CountryColor;
+    England: CountryColor;
+    Germany: CountryColor;
+    Russia: CountryColor;
+    Italy: CountryColor;
+    Turkey: CountryColor;
   }
 }
 
@@ -47,6 +63,46 @@ const disabledTextSecondary = "#bababa";
 const defaultLineHeight = 1.2;
 const normalFontWeight = 400;
 
+interface CountryColor {
+  main: string;
+  light: string;
+}
+
+type CountryPaletteOptions = {
+  [key in Country]: CountryColor;
+};
+
+const countryPalette: CountryPaletteOptions = {
+  France: {
+    main: "#2D5EE8",
+    light: "#B9C9F7",
+  },
+  Austria: {
+    main: "#FC4343",
+    light: "#FEC0C0",
+  },
+  England: {
+    main: "#E136EA",
+    light: "#F5BCF8",
+  },
+  Germany: {
+    main: "#F37C0E",
+    light: "#FBD3AF",
+  },
+  Russia: {
+    main: "#3F1BC1",
+    light: "#BFB3EA",
+  },
+  Italy: {
+    main: "#47D2A0",
+    light: "#C2F0DF",
+  },
+  Turkey: {
+    main: "#F3C400",
+    light: "#FBEBAA",
+  },
+};
+
 /**
  * theme creation
  */
@@ -54,12 +110,20 @@ const webDiplomacyTheme = createTheme({
   breakpoints: {
     values: {
       mobile: 0,
+      mobileLandscape: 600,
       mobileLg: 414,
+      mobileLgLandscape: 896,
       tablet: 834,
+      tabletLandscape: 1024,
       desktop: 1500,
     },
   },
   components: {
+    MuiUseMediaQuery: {
+      defaultProps: {
+        noSsr: true,
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {
@@ -113,6 +177,7 @@ const webDiplomacyTheme = createTheme({
       main: "#fff",
       contrastText: "#000",
     },
+    ...countryPalette,
   },
   typography: {
     button: {

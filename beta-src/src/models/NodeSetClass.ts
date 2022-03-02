@@ -165,7 +165,9 @@ export default class NodeSetClass {
 
     if (AnyNodes.length === Object.keys(this.Nodes).length) {
       const search = new PathSearchClass(StartTerr, fEndNode);
-      if (!search.findPath(true)) return false;
+      if (!search.findPath(true)) {
+        return false;
+      }
 
       this.Path = search.path.toArray().reverse();
       this.Path.pop();
