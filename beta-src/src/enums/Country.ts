@@ -1,11 +1,11 @@
 enum Country {
-  France = "France",
-  Austria = "Austria",
-  England = "England",
-  Germany = "Germany",
-  Russia = "Russia",
-  Italy = "Italy",
-  Turkey = "Turkey",
+  FRANCE = "France",
+  AUSTRIA = "Austria",
+  ENGLAND = "England",
+  GERMANY = "Germany",
+  RUSSIA = "Russia",
+  ITALY = "Italy",
+  TURKEY = "Turkey",
 }
 
 export default Country;

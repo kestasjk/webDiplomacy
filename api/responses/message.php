@@ -29,6 +29,7 @@ class Message {
 	public $message;
 	public $fromCountryID;
 	public $toCountryID;
+	public $phaseMarker;
 
 	function toJson() { return json_encode($this); }
 
@@ -37,12 +38,14 @@ class Message {
 	 * @param string $message - message
 	 * @param int $fromCountryID - sender country ID
 	 * @param int $toCountryID - receiver country ID
+	 * @param string $phaseMarker - Diplomacy/Retreat/Builds/etc
 
 	 */
-	function __construct($message, $fromCountryID, $toCountryID)
+	function __construct($message, $fromCountryID, $toCountryID, $phaseMarker = null)
 	{
 		$this->message = $message;
 		$this->fromCountryID = intval($fromCountryID);
 		$this->toCountryID = intval($toCountryID);
+		$this->phaseMarker = $phaseMarker;
 	}
 }

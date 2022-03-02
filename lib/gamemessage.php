@@ -64,12 +64,13 @@ class libGameMessage
 		}
 
 		$DB->sql_put("INSERT INTO wD_GameMessages
-					(gameID, toCountryID, fromCountryID, turn, message, timeSent)
+					(gameID, toCountryID, fromCountryID, turn, message, phaseMarker, timeSent)
 					VALUES(".$Game->id.",
 						".$toCountryID.",
 						".$fromCountryID.",
 						".$Game->turn.",
 						'".$message."',
+						'".$Game->phase."',
 						".time().")");
 
 		if ($toCountryID != $fromCountryID || $fromCountryID == 0)
