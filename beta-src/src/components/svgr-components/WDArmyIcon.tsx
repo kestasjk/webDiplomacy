@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useTheme } from "@mui/material/styles";
 import { gameIconProps } from "../../interfaces/Icons";
-import { UIState } from "../../enums/UIState";
+import UIState from "../../enums/UIState";
 
 const WDArmyIcon: React.FC<gameIconProps> = function ({
   country,

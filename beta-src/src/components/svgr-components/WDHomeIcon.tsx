@@ -1,6 +1,6 @@
 import * as React from "react";
 import { navIconProps } from "../../interfaces/Icons";
-import { UIState } from "../../enums/UIState";
+import UIState from "../../enums/UIState";
 
 const WDHomeIcon: React.FC<navIconProps> = function ({
   iconState = UIState.INACTIVE,
