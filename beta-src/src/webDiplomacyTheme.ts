@@ -63,11 +63,6 @@ const disabledTextSecondary = "#bababa";
 const defaultLineHeight = 1.2;
 const normalFontWeight = 400;
 
-<<<<<<< HEAD
-/// Interface and type for Country Color
-
-=======
->>>>>>> 30dae99f8b852f5b295d32f4b311202656e70df3
 interface CountryColor {
   main: string;
   light: string;
