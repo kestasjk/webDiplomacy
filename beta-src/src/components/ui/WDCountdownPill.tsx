@@ -1,27 +1,23 @@
 import * as React from "react";
-import Chip from "@mui/material/Chip";
+import { Avatar, Chip } from "@mui/material";
+import BlackCountdownIcon from "../../assets/png/icn_phase_countdown_black.png";
+import RedCountdownIcon from "../../assets/png/icn_phase_countdown_red.png";
 
 interface WDCountdownPillProps {
-  remainingTime: any;
+  remainingTime: number;
 }
 
 const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
   remainingTime,
 }) {
-  const [endTime, setEndLeft] = React.useState(
-    new Date().getTime() +
-      remainingTime.seconds * 1000 +
-      remainingTime.minutes * 60000 +
-      remainingTime.hours * 3600000 +
-      remainingTime.days * 86400000,
-  );
+  const [endTime, setEndLeft] = React.useState(+new Date(remainingTime * 1000));
 
   const [quarterTimeRemaining, setQuarterTimeRemaining] = React.useState(
-    +new Date(endTime) - (+new Date(endTime) - +new Date()) / 4,
+    endTime - (endTime - +new Date()) / 4,
   );
 
   function calculateTimeLeft() {
-    const difference = +new Date(endTime) - +new Date();
+    const difference = endTime - +new Date();
 
     let timeLeft = {};
 
@@ -48,6 +44,7 @@ const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
 
   let chipDisplay: string;
   let chipColor = "black";
+  let image = BlackCountdownIcon;
 
   if (timeLeft.days) {
     chipDisplay = `${timeLeft.days}d`;
@@ -75,10 +72,16 @@ const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
 
   if (+new Date() > quarterTimeRemaining) {
     chipColor = "red";
+    image = RedCountdownIcon;
   }
 
   return (
     <Chip
+      avatar={
+        <Avatar>
+          <img src={image} alt="" />
+        </Avatar>
+      }
       sx={{
         backgroundColor: `${chipColor}`,
         color: "white",
