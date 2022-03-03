@@ -1,9 +1,9 @@
-import { ParsedTimeInterface } from "../interfaces/ParsedTimeInterface";
+import { ParsedTime } from "../interfaces/ParsedTime";
 
 export default function calculateAndSortRemainingTime(
   endTime: number,
-): ParsedTimeInterface {
-  const difference = endTime - +new Date();
+): ParsedTime {
+  const difference = endTime - +new Date() / 1000;
 
   let timeLeft = {
     days: 0,
@@ -14,10 +14,10 @@ export default function calculateAndSortRemainingTime(
 
   if (difference > 0) {
     timeLeft = {
-      days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-      minutes: Math.floor((difference / 1000 / 60) % 60),
-      seconds: Math.floor((difference / 1000) % 60),
+      days: Math.floor(difference / (60 * 60 * 24)),
+      hours: Math.floor((difference / (60 * 60)) % 24),
+      minutes: Math.floor((difference / 60) % 60),
+      seconds: Math.floor(difference % 60),
     };
   }
 
