@@ -8,33 +8,36 @@ import {
   TableRow,
   TableContainer,
 } from "@mui/material";
+import GameMode from "../../enums/GameMode";
+import Season from "../../enums/Season";
+import Ranking from "../../enums/Ranking";
 
 /**
  * game setting datas which would be passed to the component by parent component/ context/redux store
  */
 
 interface WDInfoDisplayProps {
-  gameTime: number;
-  gameType: string;
+  gameMode: GameMode;
+  gameTime: number | React.ReactNode;
   phase: string;
-  playType: string;
-  rank: string;
-  season: string;
+  potNumber: number;
+  rank: Ranking;
+  season: Season;
   title: string;
-  year: string;
+  year: number | string;
 }
 
 const tableCellStyles = {
   border: "none",
   fontSize: "0.7rem",
-  p: "0px 5px 0px 0px",
+  p: "0 5px 0 0",
 };
 
 const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
+  gameMode,
   gameTime,
-  gameType,
   phase,
-  playType,
+  potNumber,
   rank,
   season,
   title,
@@ -55,7 +58,7 @@ const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
               sx={{
                 border: "none",
                 fontWeight: 600,
-                p: "2px 5px 5px 0px",
+                p: "2px 5px 5px 0",
               }}
             >
               <Box
@@ -87,12 +90,12 @@ const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
           </TableRow>
           <TableRow>
             <TableCell sx={tableCellStyles}>
-              Pot: 35 - {season} {year}
+              Pot: {potNumber} - {season} {year}
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell sx={tableCellStyles}>
-              {gameType}, {playType}, {rank}
+              Classic, {gameMode}, {rank}
             </TableCell>
           </TableRow>
         </TableBody>
