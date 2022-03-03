@@ -8,7 +8,7 @@ export default function drawArrow(
   /**
    * source is the id of the element the arrow begins at
    */
-  source: string,
+  sourceElementID: string,
   /**
    * Map SVG element
    */
@@ -16,13 +16,19 @@ export default function drawArrow(
   /**
    * target is the id of the element the arrow ends at
    */
-  target: string,
+  targetElementID: string,
 ) {
-  const arrowIdNumber = `${source}-${target}`;
+  const arrowIdNumber = `${sourceElementID}-${targetElementID}`;
   const d3MapSelector = d3.select(svgMap);
 
-  const sourceNodeData = d3MapSelector.select(`#${source}`).node().getBBox();
-  const targetNodeData = d3MapSelector.select(`#${target}`).node().getBBox();
+  const sourceNodeData = d3MapSelector
+    .select(`#${sourceElementID}`)
+    .node()
+    .getBBox();
+  const targetNodeData = d3MapSelector
+    .select(`#${targetElementID}`)
+    .node()
+    .getBBox();
 
   d3MapSelector
     .select("defs")

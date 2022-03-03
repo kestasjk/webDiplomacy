@@ -1,5 +1,6 @@
 import { createTheme } from "@mui/material/styles";
 import Country from "./enums/Country";
+import ArrowType from "./enums/ArrowType";
 
 declare module "@mui/material/styles" {
   interface BreakpointOverrides {
@@ -41,24 +42,21 @@ declare module "@mui/material/styles" {
     Russia: CountryColor;
     Italy: CountryColor;
     Turkey: CountryColor;
-    moveOrderSelected: string;
-    move: string;
-    convoy: string;
-    moveFailed: string;
-    moveSupport: string;
-    holdSupport: string;
-    retreat: string;
   }
 }
 
-interface ArrowPalette {
-  moveOrderSelected: string;
-  move: string;
-  convoy: string;
-  moveFailed: string;
-  moveSupport: string;
-  holdSupport: string;
-  retreat: string;
+declare module "@mui/material/styles/createPalette" {
+  export interface PaletteOptions {
+    arrowColors: {
+      moveOrderSelected: ArrowColors;
+      move: ArrowColors;
+      convoy: ArrowColors;
+      moveFailed: ArrowColors;
+      moveSupport: ArrowColors;
+      holdSupport: ArrowColors;
+      retreat: ArrowColors;
+    };
+  }
 }
 
 /**
@@ -120,14 +118,22 @@ const countryPalette: CountryPaletteOptions = {
   },
 };
 
-const arrowPalette: ArrowPalette = {
-  moveOrderSelected: "#FFFFFF",
-  move: "#000000",
-  convoy: "#2042B8",
-  moveFailed: "#BB0000",
-  moveSupport: "#F8F83D",
-  holdSupport: "#3FC621",
-  retreat: "#BD2894",
+interface ArrowColors {
+  main: string;
+}
+
+type ArrowPaletteOptions = {
+  [key in ArrowType]: ArrowColors;
+};
+
+const arrowPalette: ArrowPaletteOptions = {
+  moveOrderSelected: { main: "#FFFFFF" },
+  move: { main: "#000000" },
+  convoy: { main: "#2042B8" },
+  moveFailed: { main: "#BB0000" },
+  moveSupport: { main: "#F8F83D" },
+  holdSupport: { main: "#3FC621" },
+  retreat: { main: "#BD2894" },
 };
 
 /**
@@ -205,7 +211,7 @@ const webDiplomacyTheme = createTheme({
       contrastText: "#000",
     },
     ...countryPalette,
-    ...arrowPalette,
+    arrowColors: arrowPalette,
   },
   typography: {
     button: {
