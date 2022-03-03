@@ -1,10 +1,13 @@
 import * as React from "react";
 import * as d3 from "d3";
+import { useTheme } from "@mui/material/styles";
 import Device from "../../enums/Device";
 import getInitialViewTranslation from "../../utils/map/getInitialViewTranslation";
 import Scale from "../../types/Scale";
 import WDMap from "./WDMap";
 import { Viewport } from "../../interfaces";
+import drawArrow from "../../utils/drawArrow";
+import ArrowType from "../../enums/ArrowType";
 
 const Scales: Scale = {
   DESKTOP: [0.65, 3],
@@ -33,7 +36,11 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
   viewport,
 }): React.ReactElement {
   const svgElement = React.useRef<SVGSVGElement>(null);
+  const [arrowConfigurations, setArrowConfigurations] = React.useState<any>([]);
   const [scaleMin, scaleMax] = getInitialScaleForDevice(device);
+
+  const theme = useTheme();
+  const color = theme.palette.retreat;
 
   React.useLayoutEffect(() => {
     if (svgElement.current) {
@@ -70,6 +77,50 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
         .call(d3Zoom.transform, d3.zoomIdentity.translate(x, y).scale(scale));
     }
   }, [svgElement, viewport]);
+
+  React.useEffect(() => {
+    const fullMap = d3.select(svgElement.current);
+    const contained = fullMap.select("#container");
+    contained
+      .select("#centers")
+      .selectAll("path")
+      .on("click", (e) => {
+        e.preventDefault();
+
+        if (
+          arrowConfigurations.length === 0 ||
+          arrowConfigurations[arrowConfigurations.length - 1].target.element
+        ) {
+          setArrowConfigurations([
+            ...arrowConfigurations,
+            {
+              source: {
+                element: e.target.id,
+                actionType: color,
+              },
+              target: {
+                element: undefined,
+              },
+            },
+          ]);
+        } else if (
+          (arrowConfigurations[arrowConfigurations.length - 1].source.element,
+          !arrowConfigurations[arrowConfigurations.length - 1].target.element)
+        ) {
+          const updatedState = [...arrowConfigurations];
+          updatedState[arrowConfigurations.length - 1].target.element =
+            e.target.id;
+          setArrowConfigurations(updatedState);
+          drawArrow(
+            arrowConfigurations[arrowConfigurations.length - 1].source
+              .actionType,
+            arrowConfigurations[arrowConfigurations.length - 1].source.element,
+            fullMap.node(),
+            arrowConfigurations[arrowConfigurations.length - 1].target.element,
+          );
+        }
+      });
+  }, [arrowConfigurations]);
 
   return (
     <div

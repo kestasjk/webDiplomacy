@@ -1,4 +1,4 @@
-enum MoveOrder {
+enum ArrowType {
   MOVE_ORDER_SELECTED = "moveOrderSelected",
   MOVE = "move",
   CONVOY = "convoy",
@@ -8,4 +8,4 @@ enum MoveOrder {
   RETREAT = "retreat",
 }
 
-export default MoveOrder;
+export default ArrowType;

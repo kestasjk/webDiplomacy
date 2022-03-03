@@ -1,3 +1,5 @@
+import * as d3 from "d3";
+
 export default function drawArrow(
   /**
    * color code passed from enum ArrowColors based on move type
@@ -8,15 +10,16 @@ export default function drawArrow(
    */
   source: string,
   /**
-   * The resulting object after selecting the full map using D3 (NOT A SVG ELEMENT); must be able to target centers and defs
+   * Map SVG element
    */
-  d3MapSelector: any,
+  svgMap: SVGSVGElement,
   /**
    * target is the id of the element the arrow ends at
    */
   target: string,
 ) {
   const arrowIdNumber = `${source}-${target}`;
+  const d3MapSelector = d3.select(svgMap);
 
   const sourceNodeData = (
     d3MapSelector.select(`#${source}`).node() as SVGSVGElement

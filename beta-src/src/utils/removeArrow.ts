@@ -1,13 +1,16 @@
+import * as d3 from "d3";
+
 export default function removeArrow(
   /**
    * id is the id of the arrowline to be removed
    */
   id: string,
   /**
-   * The resulting object after selecting the full map using D3 (NOT A SVG ELEMENT); must be able to target centers and defs
+   * Map SVG element
    */
-  d3MapSelector: any,
+  svgMap: SVGSVGElement,
 ) {
+  const d3MapSelector = d3.select(svgMap);
   const arrowIdTag = id.split("__")[1];
   d3MapSelector.select(`#${id}`).remove();
   d3MapSelector.select(`#arrowhead__${arrowIdTag}`).remove();

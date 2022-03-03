@@ -41,6 +41,13 @@ declare module "@mui/material/styles" {
     Russia: CountryColor;
     Italy: CountryColor;
     Turkey: CountryColor;
+    moveOrderSelected: string;
+    move: string;
+    convoy: string;
+    moveFailed: string;
+    moveSupport: string;
+    holdSupport: string;
+    retreat: string;
   }
 }
 
