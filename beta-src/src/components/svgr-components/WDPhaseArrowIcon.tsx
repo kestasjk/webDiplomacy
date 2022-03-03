@@ -1,12 +1,12 @@
 import * as React from "react";
 import ScrollButtonState from "../../enums/ScrollButton";
 
-interface phaseArrowProps {
+interface PhaseArrowProps {
   direction: ScrollButtonState;
   disabled?: boolean;
 }
 
-const WDPhaseArrowIcon: React.FC<phaseArrowProps> = function ({
+const WDPhaseArrowIcon: React.FC<PhaseArrowProps> = function ({
   disabled,
   direction,
 }): React.ReactElement {

@@ -4,13 +4,13 @@ import WDScrollButton from "./WDScrollButton";
 import ScrollButtonState from "../../enums/ScrollButton";
 import Season from "../../enums/Season";
 
-interface gameStateProps {
+interface GameStateProps {
+  disabled?: ScrollButtonState | undefined;
   onChangeSeason: React.MouseEventHandler<HTMLButtonElement> | undefined;
   season: [Season, number];
-  disabled?: ScrollButtonState | undefined;
 }
 
-const WDPillScroller: React.FC<gameStateProps> = function ({
+const WDPillScroller: React.FC<GameStateProps> = function ({
   disabled,
   season,
   onChangeSeason,

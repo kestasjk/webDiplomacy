@@ -4,18 +4,21 @@ import ScrollButtonState from "../../enums/ScrollButton";
 import WDPhaseArrowIcon from "../svgr-components/WDPhaseArrowIcon";
 
 interface ScrollButtonProps {
+  className: string;
   direction: ScrollButtonState;
   disabled?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
 }
 
 const WDScrollButton: React.FC<ScrollButtonProps> = function ({
+  className,
   direction,
   disabled,
   onClick,
 }): React.ReactElement {
   return (
     <Button
+      className={className}
       disabled={disabled}
       disableRipple
       onClick={onClick}

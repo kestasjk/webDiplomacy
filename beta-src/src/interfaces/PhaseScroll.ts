@@ -1,4 +1,4 @@
-import { ScrollButtonState } from "../enums/UIState";
+import ScrollButtonState from "../enums/UIState";
 
 interface gameState {
   seasons: string[];
