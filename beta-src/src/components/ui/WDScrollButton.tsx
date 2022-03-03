@@ -3,26 +3,25 @@ import Button from "@mui/material/Button";
 import ScrollButtonState from "../../enums/ScrollButton";
 import WDPhaseArrowIcon from "../svgr-components/WDPhaseArrowIcon";
 
-interface scrollButtonProps {
+interface ScrollButtonProps {
   direction: ScrollButtonState;
   disabled?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
 }
 
-const WDScrollButton: React.FC<scrollButtonProps> = function ({
+const WDScrollButton: React.FC<ScrollButtonProps> = function ({
   direction,
   disabled,
   onClick,
 }): React.ReactElement {
   return (
     <Button
-      className="WDScrollButton"
       disabled={disabled}
       disableRipple
       onClick={onClick}
       variant="contained"
       sx={{
-        backgroundColor: "#fff",
+        backgroundColor: "secondary.main",
         boxShadow: "none",
         borderRadius: "22px",
         padding: "13px 19px 13px 13px",
