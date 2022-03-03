@@ -1,17 +1,18 @@
 import * as React from "react";
 import { Box, Button } from "@mui/material";
 import Season from "../../enums/Season";
+import UIState from "../../enums/UIState";
 
 interface GamePhaseIconProps {
   disabled?: boolean;
-  iconState: Season;
+  icon: Season | UIState.ACTIVE;
   onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
   year: number;
 }
 
 const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
   disabled,
-  iconState,
+  icon,
   onClick,
   year,
 }): React.ReactElement {
@@ -32,7 +33,7 @@ const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
         },
       }}
     >
-      {iconState === Season.ENABLED && (
+      {icon === Season.ENABLED && (
         <svg
           width={50}
           height={50}
@@ -43,7 +44,7 @@ const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
           <path d="m28 17-9 8 9 8" stroke="#fff" strokeWidth={3} />
         </svg>
       )}
-      {iconState === Season.AUTUMN && (
+      {icon === Season.AUTUMN && (
         <svg
           fill="none"
           height={31}
@@ -56,7 +57,7 @@ const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
           />
         </svg>
       )}
-      {iconState === Season.SPRING && (
+      {icon === Season.SPRING && (
         <svg
           fill="none"
           height={32}
@@ -75,7 +76,7 @@ const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
           />
         </svg>
       )}
-      {iconState === Season.WINTER && (
+      {icon === Season.WINTER && (
         <svg
           fill="none"
           height={35}
@@ -90,7 +91,7 @@ const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
           />
         </svg>
       )}
-      {iconState !== Season.ENABLED && (
+      {icon !== Season.ENABLED && (
         <Box
           sx={{
             color: "#fff",
