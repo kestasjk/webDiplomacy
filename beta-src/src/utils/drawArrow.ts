@@ -21,12 +21,8 @@ export default function drawArrow(
   const arrowIdNumber = `${source}-${target}`;
   const d3MapSelector = d3.select(svgMap);
 
-  const sourceNodeData = (
-    d3MapSelector.select(`#${source}`).node() as SVGSVGElement
-  ).getBBox();
-  const targetNodeData = (
-    d3MapSelector.select(`#${target}`).node() as SVGSVGElement
-  ).getBBox();
+  const sourceNodeData = d3MapSelector.select(`#${source}`).node().getBBox();
+  const targetNodeData = d3MapSelector.select(`#${target}`).node().getBBox();
 
   d3MapSelector
     .select("defs")
