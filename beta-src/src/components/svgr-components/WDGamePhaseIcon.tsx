@@ -33,7 +33,7 @@ const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
         },
       }}
     >
-      {icon === Season.ENABLED && (
+      {icon === UIState.ACTIVE && (
         <svg
           width={50}
           height={50}
@@ -91,7 +91,7 @@ const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
           />
         </svg>
       )}
-      {icon !== Season.ENABLED && (
+      {icon !== UIState.ACTIVE && (
         <Box
           sx={{
             color: "#fff",
