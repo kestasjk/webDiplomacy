@@ -24,7 +24,7 @@ const WDScrollButton: React.FC<ScrollButtonProps> = function ({
       onClick={onClick}
       variant="contained"
       sx={{
-        backgroundColor: "#fff",
+        backgroundColor: "secondary.main",
         boxShadow: "none",
         borderRadius: "22px",
         padding: "13px 19px 13px 13px",
