@@ -17,7 +17,7 @@ export default function drawArrow(
    * target is the id of the element the arrow ends at
    */
   targetElementID: string,
-) {
+): void {
   const arrowIdNumber = `${sourceElementID}-${targetElementID}`;
   const d3MapSelector = d3.select(svgMap);
 
