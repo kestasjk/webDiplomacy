@@ -6,16 +6,14 @@ export default function formatTime(time: ParsedTime) {
     chipDisplay = `${time.days}d`;
     if (time.hours) {
       chipDisplay = `${chipDisplay} ${time.hours}h`;
-    }
-    if (!time.hours && time.minutes) {
+    } else if (time.minutes) {
       chipDisplay = `${chipDisplay} ${time.minutes}m`;
     }
   } else if (time.hours) {
     chipDisplay = `${time.hours}h`;
     if (time.minutes) {
       chipDisplay = `${chipDisplay} ${time.minutes}m`;
-    }
-    if (!time.minutes && time.seconds) {
+    } else if (time.seconds) {
       chipDisplay = `${chipDisplay} ${time.seconds}s`;
     }
   } else if (time.minutes) {
