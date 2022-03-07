@@ -33,7 +33,8 @@ const WDCommandButtons: React.FC = function () {
       <Button
         /**
          * the attribute color with value "primary" or "secondary" can also be applied as a different approach.
-         * HOWEVER, when using the attribute color approach, the attribute variant with value "contained" has to be applied, which causes a clicking theme switching issue
+         * HOWEVER, when using the attribute color approach,
+         * the attribute variant with value "contained" has to be applied, which causes a clicking theme switching issue
          */
         onClick={() => {
           setDraw(!draw);
