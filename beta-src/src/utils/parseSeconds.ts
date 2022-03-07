@@ -3,6 +3,7 @@ import { ParsedTime } from "../interfaces/ParsedTime";
 const secondsInMinute = 60;
 const minutesInHour = 60;
 const hoursInDay = 24;
+
 export default function parseSeconds(seconds: number): ParsedTime {
   let timeLeft: ParsedTime = {
     days: 0,
