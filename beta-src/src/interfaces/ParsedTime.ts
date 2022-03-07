@@ -1,6 +1,6 @@
 export interface ParsedTime {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
+  d: number;
+  h: number;
+  m: number;
+  s: number;
 }
