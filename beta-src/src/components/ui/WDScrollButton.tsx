@@ -18,11 +18,6 @@ const WDScrollButton: React.FC<ScrollButtonProps> = function ({
 }): React.ReactElement {
   return (
     <Button
-      className={className}
-      disabled={disabled}
-      disableRipple
-      onClick={onClick}
-      variant="contained"
       sx={{
         backgroundColor: "secondary.main",
         boxShadow: "none",
@@ -33,6 +28,10 @@ const WDScrollButton: React.FC<ScrollButtonProps> = function ({
           boxShadow: "none",
         },
       }}
+      disabled={disabled}
+      disableRipple
+      onClick={onClick}
+      variant="contained"
     >
       <WDPhaseArrowIcon direction={direction} disabled={disabled} />
     </Button>
