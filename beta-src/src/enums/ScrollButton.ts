@@ -1,5 +1,5 @@
 enum ScrollButtonState {
-  BACKWARDS = "left",
+  BACKWARD = "left",
   FORWARD = "right",
 }
 
