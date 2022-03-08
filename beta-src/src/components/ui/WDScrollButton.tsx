@@ -28,6 +28,7 @@ const WDScrollButton: React.FC<ScrollButtonProps> = function ({
           boxShadow: "none",
         },
       }}
+      className={className}
       disabled={disabled}
       disableRipple
       onClick={onClick}
