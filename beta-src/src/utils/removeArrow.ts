@@ -11,7 +11,7 @@ export default function removeArrow(
   svgMap: SVGSVGElement,
 ): void {
   const d3MapSelector = d3.select(svgMap);
-  const arrowIdTag = id.split("__")[1];
+  const [, arrowIdTag] = id.split("__");
   d3MapSelector.select(`#${id}`).remove();
   d3MapSelector.select(`#arrowhead__${arrowIdTag}`).remove();
 }
