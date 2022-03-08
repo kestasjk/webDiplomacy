@@ -42,6 +42,15 @@ declare module "@mui/material/styles" {
     Russia: SimplePaletteColorOptions;
     Italy: SimplePaletteColorOptions;
     Turkey: SimplePaletteColorOptions;
+    arrowColors: {
+      moveOrderSelected: SimplePaletteColorOptions;
+      move: SimplePaletteColorOptions;
+      convoy: SimplePaletteColorOptions;
+      moveFailed: SimplePaletteColorOptions;
+      moveSupport: SimplePaletteColorOptions;
+      holdSupport: SimplePaletteColorOptions;
+      retreat: SimplePaletteColorOptions;
+    };
   }
 }
 
