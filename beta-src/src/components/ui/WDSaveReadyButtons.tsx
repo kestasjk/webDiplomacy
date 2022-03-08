@@ -15,7 +15,6 @@ const WDSaveReadyButtons: React.FC = function () {
         onClick={() => {
           setSaveSelect(!saveSelect);
         }}
-        variant="contained"
       >
         <span>Save</span>
       </WDButton>
@@ -24,7 +23,6 @@ const WDSaveReadyButtons: React.FC = function () {
         onClick={() => {
           setReadySelect(!readySelect);
         }}
-        variant="contained"
       >
         <span>{readySelect ? "Unready" : "Ready"}</span>
       </WDButton>
