@@ -1,79 +1,56 @@
 import * as React from "react";
 import { useState } from "react";
-import { Stack, Button } from "@mui/material";
+import { Stack } from "@mui/material";
 import WDCheckmarkIcon from "../svgr-components/WDCheckmarkIcon";
+import WDButton from "./WDButton";
 
 /**
- * Define the default/select color theme
+ * Define the vote props passed to the function.
  */
-const defaultStyle = {
-  backgroundColor: "black",
-  border: "2px solid black",
-  color: "white",
-  p: "10px",
-  "&:hover": {
-    backgroundColor: "black",
-  },
-};
+interface voteProps {
+  voteDraw: boolean;
+  votePause: boolean;
+  voteCancel: boolean;
+}
 
-const selectStyle = {
-  backgroundColor: "white",
-  border: "2px solid black",
-  color: "black",
-  p: "10px 8px 10px 8px",
-};
-
-const WDCommandButtons: React.FC = function () {
-  const [draw, setDraw] = useState(false);
-  const [pause, setPause] = useState(false);
-  const [cancel, setCancel] = useState(false);
+const WDCommandButtons: React.FC<voteProps> = function ({
+  voteCancel,
+  voteDraw,
+  votePause,
+}) {
+  const [draw, setDraw] = useState(voteDraw);
+  const [pause, setPause] = useState(votePause);
+  const [cancel, setCancel] = useState(voteCancel);
 
   return (
     <Stack direction="row" spacing={2} alignItems="center">
-      <Button
-        /**
-         * the attribute color with value "primary" or "secondary" can also be applied as a different approach.
-         * HOWEVER, when using the attribute color approach,
-         * the attribute variant with value "contained" has to be applied, which causes a clicking theme switching issue
-         */
+      <WDButton
+        color={draw ? "secondary" : "primary"}
         onClick={() => {
           setDraw(!draw);
-          /**
-           * draw votting logic can be applied below
-           */
-          console.log("draw clicked");
         }}
         startIcon={draw ? <WDCheckmarkIcon /> : ""}
-        sx={draw ? selectStyle : defaultStyle}
       >
         Draw
-      </Button>
-      <Button
+      </WDButton>
+      <WDButton
+        color={pause ? "secondary" : "primary"}
         onClick={() => {
           setPause(!pause);
-          /**
-           * pause votting logic can be applied below
-           */
-          console.log("pause clicked");
         }}
         startIcon={pause ? <WDCheckmarkIcon /> : ""}
-        sx={pause ? selectStyle : defaultStyle}
       >
         Pause
-      </Button>
-      <Button
+      </WDButton>
+      <WDButton
+        color={cancel ? "secondary" : "primary"}
         onClick={() => {
           setCancel(!cancel);
-          /**
-           * cancel votting logic can be applied below
-           */
-          console.log("cancel clicked");
         }}
         startIcon={cancel ? <WDCheckmarkIcon /> : ""}
-        sx={cancel ? selectStyle : defaultStyle}
       >
         Cancel
-      </Button>
+      </WDButton>
     </Stack>
   );
 };
