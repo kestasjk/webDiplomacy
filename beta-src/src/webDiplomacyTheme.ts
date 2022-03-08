@@ -55,6 +55,11 @@ const activeButtonStyle = {
   boxShadow: "0 0 2px 2px #000",
   color: "#000",
 };
+const focusButtonStyle = {
+  backgroundColor: "#000",
+  boxShadow: "0 0 2px 2px #fff",
+  color: "#fff",
+};
 const boldFontWeight = 700;
 const disabledBackground = "#b8b8b8";
 const disabledText = "#cacaca";
@@ -135,7 +140,7 @@ const webDiplomacyTheme = createTheme({
             ...activeButtonStyle,
           },
           "&:focus": {
-            ...activeButtonStyle,
+            ...focusButtonStyle,
           },
           "&:hover": {
             backgroundColor: "#757575",
