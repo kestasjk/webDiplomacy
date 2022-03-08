@@ -1,5 +1,6 @@
-import { createTheme } from "@mui/material/styles";
+import { createTheme, SimplePaletteColorOptions } from "@mui/material/styles";
 import Country from "./enums/Country";
+import ArrowType from "./enums/ArrowType";
 
 declare module "@mui/material/styles" {
   interface BreakpointOverrides {
@@ -34,13 +35,36 @@ declare module "@mui/material/Typography" {
 
 declare module "@mui/material/styles" {
   interface Palette {
-    France: CountryColor;
-    Austria: CountryColor;
-    England: CountryColor;
-    Germany: CountryColor;
-    Russia: CountryColor;
-    Italy: CountryColor;
-    Turkey: CountryColor;
+    France: SimplePaletteColorOptions;
+    Austria: SimplePaletteColorOptions;
+    England: SimplePaletteColorOptions;
+    Germany: SimplePaletteColorOptions;
+    Russia: SimplePaletteColorOptions;
+    Italy: SimplePaletteColorOptions;
+    Turkey: SimplePaletteColorOptions;
+    arrowColors: {
+      moveOrderSelected: SimplePaletteColorOptions;
+      move: SimplePaletteColorOptions;
+      convoy: SimplePaletteColorOptions;
+      moveFailed: SimplePaletteColorOptions;
+      moveSupport: SimplePaletteColorOptions;
+      holdSupport: SimplePaletteColorOptions;
+      retreat: SimplePaletteColorOptions;
+    };
+  }
+}
+
+declare module "@mui/material/styles/createPalette" {
+  export interface PaletteOptions {
+    arrowColors: {
+      moveOrderSelected: SimplePaletteColorOptions;
+      move: SimplePaletteColorOptions;
+      convoy: SimplePaletteColorOptions;
+      moveFailed: SimplePaletteColorOptions;
+      moveSupport: SimplePaletteColorOptions;
+      holdSupport: SimplePaletteColorOptions;
+      retreat: SimplePaletteColorOptions;
+    };
   }
 }
 
@@ -63,13 +87,8 @@ const disabledTextSecondary = "#bababa";
 const defaultLineHeight = 1.2;
 const normalFontWeight = 400;
 
-interface CountryColor {
-  main: string;
-  light: string;
-}
-
 type CountryPaletteOptions = {
-  [key in Country]: CountryColor;
+  [key in Country]: SimplePaletteColorOptions;
 };
 
 const countryPalette: CountryPaletteOptions = {
@@ -101,6 +120,20 @@ const countryPalette: CountryPaletteOptions = {
     main: "#F3C400",
     light: "#FBEBAA",
   },
+};
+
+type ArrowColors = {
+  [key in ArrowType]: SimplePaletteColorOptions;
+};
+
+const arrowColors: ArrowColors = {
+  moveOrderSelected: { main: "#FFFFFF" },
+  move: { main: "#000000" },
+  convoy: { main: "#2042B8" },
+  moveFailed: { main: "#BB0000" },
+  moveSupport: { main: "#F8F83D" },
+  holdSupport: { main: "#3FC621" },
+  retreat: { main: "#BD2894" },
 };
 
 /**
@@ -178,6 +211,7 @@ const webDiplomacyTheme = createTheme({
       contrastText: "#000",
     },
     ...countryPalette,
+    arrowColors,
   },
   typography: {
     button: {
