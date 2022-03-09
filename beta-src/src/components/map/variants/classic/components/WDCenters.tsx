@@ -2,8 +2,8 @@ import * as React from "react";
 
 const WDCenters: React.FC = function (): React.ReactElement {
   return (
-    <g id="&#60;centers-labels&#62;">
-      <g id="&#60;centers&#62;">
+    <g id="centers-labels">
+      <g id="centers">
         <path
           id="Vector_41294"
           d="M2042.71 1288.65C2048.23 1288.65 2052.71 1284.17 2052.71 1278.65C2052.71 1273.13 2048.23 1268.65 2042.71 1268.65C2037.19 1268.65 2032.71 1273.13 2032.71 1278.65C2032.71 1284.17 2037.19 1288.65 2042.71 1288.65Z"

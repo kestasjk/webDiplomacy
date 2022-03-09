@@ -11,6 +11,7 @@ import {
 import GameMode from "../../enums/GameMode";
 import Season from "../../enums/Season";
 import Ranking from "../../enums/Ranking";
+import Phase from "../../enums/Phase";
 
 /**
  * game setting datas which would be passed to the component by parent component/ context/redux store
@@ -19,7 +20,7 @@ import Ranking from "../../enums/Ranking";
 interface WDInfoDisplayProps {
   gameMode: GameMode;
   gameTime: number | React.ReactNode;
-  phase: string;
+  phase: Phase;
   potNumber: number;
   rank: Ranking;
   season: Season;
