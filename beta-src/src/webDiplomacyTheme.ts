@@ -50,16 +50,18 @@ declare module "@mui/material/styles" {
  * define constants that are to be re-used in the theme. use generic names that
  * describe their usage.
  */
+const mainColor = "#000";
+const secondaryColor = "#fff";
 const activeButtonStyle = {
-  backgroundColor: "#fff",
+  backgroundColor: secondaryColor,
   boxShadow: "0 0 2px 2px #000",
-  color: "#000",
+  color: mainColor,
 };
 
 const focusButtonStyle = {
-  backgroundColor: "#000",
+  backgroundColor: mainColor,
   boxShadow: "0 0 2px 2px #fff",
-  color: "#fff",
+  color: secondaryColor,
 };
 const boldFontWeight = 700;
 const disabledBackground = "#b8b8b8";
@@ -145,7 +147,7 @@ const webDiplomacyTheme = createTheme({
           },
           "&:hover": {
             backgroundColor: "#757575",
-            color: "#fff",
+            color: secondaryColor,
           },
         },
         containedSecondary: {
@@ -173,15 +175,15 @@ const webDiplomacyTheme = createTheme({
     },
     error: {
       main: "#f00",
-      contrastText: "#fff",
+      contrastText: secondaryColor,
     },
     primary: {
-      main: "#000",
-      contrastText: "#fff",
+      main: mainColor,
+      contrastText: secondaryColor,
     },
     secondary: {
-      main: "#fff",
-      contrastText: "#000",
+      main: secondaryColor,
+      contrastText: mainColor,
     },
     ...countryPalette,
   },

@@ -3,9 +3,16 @@ import { useState } from "react";
 import { Stack } from "@mui/material";
 import WDButton from "./WDButton";
 
-const WDSaveReadyButtons: React.FC = function () {
-  const [saveSelect, setSaveSelect] = useState(false);
-  const [readySelect, setReadySelect] = useState(false);
+interface saveReadyProps {
+  saveStatus: boolean;
+  readyStatus: boolean;
+}
+const WDSaveReadyButtons: React.FC<saveReadyProps> = function ({
+  saveStatus,
+  readyStatus,
+}) {
+  const [saveSelect, setSaveSelect] = useState(saveStatus);
+  const [readySelect, setReadySelect] = useState(readyStatus);
 
   return (
     <Stack direction="row" spacing={2} alignItems="center">
@@ -16,7 +23,7 @@ const WDSaveReadyButtons: React.FC = function () {
           setSaveSelect(!saveSelect);
         }}
       >
-        <span>Save</span>
+        Save
       </WDButton>
       <WDButton
         color="primary"
@@ -24,7 +31,7 @@ const WDSaveReadyButtons: React.FC = function () {
           setReadySelect(!readySelect);
         }}
       >
-        <span>{readySelect ? "Unready" : "Ready"}</span>
+        {readySelect ? "Unready" : "Ready"}
       </WDButton>
     </Stack>
   );
