@@ -54,13 +54,13 @@ const mainColor = "#000";
 const secondaryColor = "#fff";
 const activeButtonStyle = {
   backgroundColor: secondaryColor,
-  boxShadow: "0 0 2px 2px #000",
+  boxShadow: "0 0 2px 2px",
   color: mainColor,
 };
 
 const focusButtonStyle = {
   backgroundColor: mainColor,
-  boxShadow: "0 0 2px 2px #fff",
+  boxShadow: "0 0 2px 2px",
   color: secondaryColor,
 };
 const boldFontWeight = 700;
