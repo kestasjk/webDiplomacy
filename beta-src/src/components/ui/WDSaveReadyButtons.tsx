@@ -1,26 +1,29 @@
 import * as React from "react";
-import { useState } from "react";
+
 import { Stack } from "@mui/material";
 import WDButton from "./WDButton";
+import SaveStatus from "../../types/saveStatus";
 
 interface saveReadyProps {
-  saveStatus: boolean;
-  readyStatus: boolean;
+  gameState: SaveStatus;
+  setGameState: React.Dispatch<React.SetStateAction<SaveStatus>>;
 }
 const WDSaveReadyButtons: React.FC<saveReadyProps> = function ({
-  saveStatus,
-  readyStatus,
+  gameState,
+  setGameState,
 }) {
-  const [saveSelect, setSaveSelect] = useState(saveStatus);
-  const [readySelect, setReadySelect] = useState(readyStatus);
+  const { save, ready } = gameState;
 
   return (
     <Stack direction="row" spacing={2} alignItems="center">
       <WDButton
         color="primary"
-        disabled={readySelect}
+        disabled={ready}
         onClick={() => {
-          setSaveSelect(!saveSelect);
+          setGameState((preState) => ({
+            ...preState,
+            save: !save,
+          }));
         }}
       >
         Save
@@ -28,10 +31,13 @@ const WDSaveReadyButtons: React.FC<saveReadyProps> = function ({
       <WDButton
         color="primary"
         onClick={() => {
-          setReadySelect(!readySelect);
+          setGameState((preState) => ({
+            ...preState,
+            ready: !ready,
+          }));
         }}
       >
-        {readySelect ? "Unready" : "Ready"}
+        {ready ? "Unready" : "Ready"}
       </WDButton>
     </Stack>
   );
