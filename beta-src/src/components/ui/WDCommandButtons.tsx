@@ -1,33 +1,33 @@
 import * as React from "react";
-import { useState } from "react";
 import { Stack } from "@mui/material";
 import WDCheckmarkIcon from "../svgr-components/WDCheckmarkIcon";
 import WDButton from "./WDButton";
+import VoteType from "../../types/Vote";
 
 /**
- * Define the vote props passed to the function.
+ * Define the voteState props passed to the function.
+ * Define the setVoteState props passed to the function.
  */
 interface voteProps {
-  voteDraw: boolean;
-  votePause: boolean;
-  voteCancel: boolean;
+  voteState: VoteType;
+  setVoteState: React.Dispatch<React.SetStateAction<VoteType>>;
 }
 
 const WDCommandButtons: React.FC<voteProps> = function ({
-  voteCancel,
-  voteDraw,
-  votePause,
+  voteState,
+  setVoteState,
 }) {
-  const [draw, setDraw] = useState(voteDraw);
-  const [pause, setPause] = useState(votePause);
-  const [cancel, setCancel] = useState(voteCancel);
+  const { draw, pause, cancel } = voteState;
 
   return (
     <Stack direction="row" spacing={2} alignItems="center">
       <WDButton
         color={draw ? "secondary" : "primary"}
         onClick={() => {
-          setDraw(!draw);
+          setVoteState((preState) => ({
+            ...preState,
+            draw: !draw,
+          }));
         }}
         startIcon={draw ? <WDCheckmarkIcon /> : ""}
       >
@@ -36,7 +36,10 @@ const WDCommandButtons: React.FC<voteProps> = function ({
       <WDButton
         color={pause ? "secondary" : "primary"}
         onClick={() => {
-          setPause(!pause);
+          setVoteState((preState) => ({
+            ...preState,
+            pause: !pause,
+          }));
         }}
         startIcon={pause ? <WDCheckmarkIcon /> : ""}
       >
@@ -45,7 +48,10 @@ const WDCommandButtons: React.FC<voteProps> = function ({
       <WDButton
         color={cancel ? "secondary" : "primary"}
         onClick={() => {
-          setCancel(!cancel);
+          setVoteState((preState) => ({
+            ...preState,
+            cancel: !cancel,
+          }));
         }}
         startIcon={cancel ? <WDCheckmarkIcon /> : ""}
       >

@@ -7,7 +7,6 @@ interface WDButtonProps {
   disabled?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
   startIcon?: React.ReactNode | undefined;
-  variant?: "text" | "contained" | "outlined";
 }
 
 const WDButton: React.FC<WDButtonProps> = function ({
@@ -16,7 +15,6 @@ const WDButton: React.FC<WDButtonProps> = function ({
   disabled,
   onClick,
   startIcon,
-  variant,
 }): React.ReactElement {
   return (
     <Button
@@ -24,7 +22,7 @@ const WDButton: React.FC<WDButtonProps> = function ({
       disabled={disabled}
       onClick={onClick}
       startIcon={startIcon}
-      variant={variant}
+      variant="contained"
     >
       {children}
     </Button>
@@ -36,7 +34,6 @@ WDButton.defaultProps = {
   disabled: false,
   onClick: undefined,
   startIcon: undefined,
-  variant: "contained",
 };
 
 export default WDButton;
