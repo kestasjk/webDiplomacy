@@ -1,6 +1,8 @@
 import { GameState } from "../interfaces/game";
 
 const initialState: GameState = {
+  apiStatus: "idle",
+  error: null,
   overview: {
     anon: "Yes",
     drawType: "draw-votes-public",
@@ -8,14 +10,14 @@ const initialState: GameState = {
     gameOver: "No",
     members: [
       {
-        country: "Unassigned",
+        country: "",
         countryID: 0,
         id: 855,
         online: false,
         userID: 6,
       },
       {
-        country: "Unassigned",
+        country: "",
         countryID: 0,
         id: 856,
         online: true,
@@ -23,14 +25,14 @@ const initialState: GameState = {
       },
     ],
     minimumBet: 5,
-    name: "test game 1",
+    name: "",
     pauseTimeRemaining: null,
-    phase: "Pre-game",
+    phase: "",
     phaseMinutes: 14400,
-    playerTypes: "Mixed",
+    playerTypes: "",
     pot: 10,
-    potType: "Unranked",
-    processStatus: "Crashed",
+    potType: "",
+    processStatus: "",
     processTime: null,
     startTime: 0,
     turn: 0,
@@ -74,6 +76,22 @@ const initialState: GameState = {
       supplyCenterTarget: 18,
     },
     variantID: 1,
+  },
+  status: {
+    gameID: 2,
+    countryID: 0,
+    variantID: 1,
+    potType: "",
+    turn: 0,
+    phase: "",
+    gameOver: "No",
+    pressType: "",
+    phases: [],
+    standoffs: [],
+    occupiedFrom: [],
+    votes: null,
+    orderStatus: "",
+    status: "",
   },
 };
 

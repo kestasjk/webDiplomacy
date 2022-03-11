@@ -7,6 +7,8 @@ type Member = {
 };
 
 export interface GameState {
+  apiStatus: "idle" | "loading" | "succeeded" | "failed";
+  error: string | null | undefined;
   overview: {
     anon: string;
     drawType: string;
@@ -50,5 +52,21 @@ export interface GameState {
       supplyCenterTarget: number;
     };
     variantID: number;
+  };
+  status: {
+    gameID: number;
+    countryID: number;
+    variantID: number;
+    potType: string;
+    turn: number;
+    phase: string;
+    gameOver: string;
+    pressType: string;
+    phases: string[];
+    standoffs: string[];
+    occupiedFrom: string[];
+    votes: string | null;
+    orderStatus: string;
+    status: string;
   };
 }
