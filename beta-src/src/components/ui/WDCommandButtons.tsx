@@ -3,6 +3,7 @@ import { Stack } from "@mui/material";
 import WDCheckmarkIcon from "../svgr-components/WDCheckmarkIcon";
 import WDButton from "./WDButton";
 import VoteType from "../../types/Vote";
+import Vote from "../../enums/Vote";
 
 /**
  * Define the voteState props passed to the function.
@@ -10,12 +11,12 @@ import VoteType from "../../types/Vote";
  */
 interface voteProps {
   voteState: VoteType;
-  setVoteState: React.Dispatch<React.SetStateAction<VoteType>>;
+  setState: (vote: Vote) => void;
 }
 
 const WDCommandButtons: React.FC<voteProps> = function ({
   voteState,
-  setVoteState,
+  setState,
 }) {
   const { draw, pause, cancel } = voteState;
 
@@ -23,36 +24,21 @@ const WDCommandButtons: React.FC<voteProps> = function ({
     <Stack direction="row" spacing={2} alignItems="center">
       <WDButton
         color={draw ? "secondary" : "primary"}
-        onClick={() => {
-          setVoteState((preState) => ({
-            ...preState,
-            draw: !draw,
-          }));
-        }}
+        onClick={() => setState(Vote.DRAW)}
         startIcon={draw ? <WDCheckmarkIcon /> : ""}
       >
         Draw
       </WDButton>
       <WDButton
         color={pause ? "secondary" : "primary"}
-        onClick={() => {
-          setVoteState((preState) => ({
-            ...preState,
-            pause: !pause,
-          }));
-        }}
+        onClick={() => setState(Vote.PAUSE)}
         startIcon={pause ? <WDCheckmarkIcon /> : ""}
       >
         Pause
       </WDButton>
       <WDButton
         color={cancel ? "secondary" : "primary"}
-        onClick={() => {
-          setVoteState((preState) => ({
-            ...preState,
-            cancel: !cancel,
-          }));
-        }}
+        onClick={() => setState(Vote.CANCEL)}
         startIcon={cancel ? <WDCheckmarkIcon /> : ""}
       >
         Cancel
