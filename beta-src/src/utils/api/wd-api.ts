@@ -91,6 +91,5 @@ const buildQueryString = (params: QueryParams): string =>
 export const getGameApiRequest = (
   route: ApiRoute,
   queryParams: QueryParams,
-): Promise<AxiosResponse | Error> => {
-  return api.get(`?route=${route}&${buildQueryString(queryParams)}`);
-};
+): Promise<AxiosResponse | Error> =>
+  api.get(`?route=${route}&${buildQueryString(queryParams)}`);
