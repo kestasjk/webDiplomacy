@@ -71,10 +71,9 @@ export const useWDApi = (
 
   return {
     callApi,
-    status: response?.status,
-    response,
     error,
     isLoading,
+    response,
   };
 };
 
