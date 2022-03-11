@@ -7,12 +7,12 @@ import Move from "../../enums/Move";
 
 interface WDMoveControlsProps {
   gameState: MoveStatus;
-  setState: (move: Move) => void;
+  toggleState: (move: Move) => void;
 }
 const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
   gameState,
-  setState,
-}) {
+  toggleState,
+}): React.ReactElement {
   const { ready } = gameState;
 
   return (
@@ -20,11 +20,11 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
       <WDButton
         color="primary"
         disabled={ready}
-        onClick={() => setState(Move.SAVE)}
+        onClick={() => toggleState(Move.SAVE)}
       >
         Save
       </WDButton>
-      <WDButton color="primary" onClick={() => setState(Move.READY)}>
+      <WDButton color="primary" onClick={() => toggleState(Move.READY)}>
         {ready ? "Unready" : "Ready"}
       </WDButton>
     </Stack>
