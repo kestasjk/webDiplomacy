@@ -82,7 +82,7 @@ const buildQueryString = (params: QueryParams): string =>
   Object.entries(params)
     .reduce((keyValuePairs: string[], [key, value]) => {
       if (value) {
-        keyValuePairs.push(`${key}=${value}`);
+        keyValuePairs.push(`${encodeURI(key)}=${encodeURI(value)}`);
       }
       return keyValuePairs;
     }, [])
