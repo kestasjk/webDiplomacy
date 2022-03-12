@@ -3,8 +3,8 @@ import WDBoardMap from "./variants/classic/components/WDBoardMap";
 
 const WDMap: React.ForwardRefExoticComponent<
   React.RefAttributes<SVGSVGElement>
-> = React.forwardRef((_props, ref): React.ReactElement => {
-  return (
+> = React.forwardRef(
+  (_props, ref): React.ReactElement => (
     <svg
       fill="none"
       ref={ref}
@@ -20,7 +20,7 @@ const WDMap: React.ForwardRefExoticComponent<
         </g>
       </g>
     </svg>
-  );
-});
+  ),
+);
 
 export default React.memo(WDMap);
