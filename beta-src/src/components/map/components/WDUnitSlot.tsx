@@ -1,11 +1,9 @@
 import * as React from "react";
-import Territory from "../../../enums/Territory";
 import { AbsoluteCoordinates } from "../../../interfaces";
-import WDArmyIcon from "../../svgr-components/WDArmyIcon";
-import Country from "../../../enums/Country";
+import TerritoryName from "../../../types/TerritoryName";
 
 interface WDUnitSlotProps extends AbsoluteCoordinates {
-  terr: Territory;
+  terr: TerritoryName;
 }
 
 const WDUnitSlot: React.FC<WDUnitSlotProps> = function ({
@@ -13,11 +11,7 @@ const WDUnitSlot: React.FC<WDUnitSlotProps> = function ({
   y,
   terr,
 }): React.ReactElement {
-  return (
-    <svg id={`${terr}-unit-slot`} x={x} y={y}>
-      <WDArmyIcon viewBox="7.5 7.5 35 35" country={Country.RUSSIA} />
-    </svg>
-  );
+  return <svg id={`${terr}-unit-slot`} x={x} y={y} />;
 };
 
 export default WDUnitSlot;

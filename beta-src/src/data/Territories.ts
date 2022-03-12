@@ -3,187 +3,187 @@ import TerritoryEnum from "../enums/Territory";
 import { Territory } from "../interfaces";
 
 export const YORK: Territory = {
-  name: TerritoryEnum.YORK,
+  name: "YORK",
   abbr: "YOR",
   type: "land",
 };
 
 export const LONDON: Territory = {
-  name: TerritoryEnum.LONDON,
+  name: "LONDON",
   abbr: "LON",
   type: "land",
 };
 
 export const LIVERPOOL: Territory = {
-  name: TerritoryEnum.LIVERPOOL,
+  name: "LIVERPOOL",
   abbr: "LVP",
   type: "land",
 };
 
 export const WALES: Territory = {
-  name: TerritoryEnum.WALES,
+  name: "WALES",
   abbr: "WAL",
   type: "land",
 };
 
 export const EDINBURGH: Territory = {
-  name: TerritoryEnum.EDINBURGH,
+  name: "EDINBURGH",
   abbr: "EDI",
   type: "land",
 };
 
 export const CLYDE: Territory = {
-  name: TerritoryEnum.CLYDE,
+  name: "CLYDE",
   abbr: "CLY",
   type: "land",
 };
 
 export const SPAIN: Territory = {
-  name: TerritoryEnum.SPAIN,
+  name: "SPAIN",
   abbr: "SPA",
   type: "land",
 };
 
 export const PORTUGAL: Territory = {
-  name: TerritoryEnum.PORTUGAL,
+  name: "PORTUGAL",
   abbr: "POR",
   type: "land",
 };
 
 export const GASCONY: Territory = {
-  name: TerritoryEnum.GASCONY,
+  name: "GASCONY",
   abbr: "GAS",
   type: "land",
 };
 
 export const SAINT_PETERSBURG: Territory = {
-  name: TerritoryEnum.SAINT_PETERSBURG,
+  name: "SAINT_PETERSBURG",
   abbr: "STP",
   type: "land",
 };
 
 export const MOSCOW: Territory = {
-  name: TerritoryEnum.MOSCOW,
+  name: "MOSCOW",
   abbr: "MOS",
   type: "land",
 };
 
 export const FINLAND: Territory = {
-  name: TerritoryEnum.FINLAND,
+  name: "FINLAND",
   abbr: "FIN",
   type: "land",
 };
 
 export const SEVASTOPOL: Territory = {
-  name: TerritoryEnum.SEVASTOPOL,
+  name: "SEVASTOPOL",
   abbr: "SEV",
   type: "land",
 };
 
 export const LIVONIA: Territory = {
-  name: TerritoryEnum.LIVONIA,
+  name: "LIVONIA",
   abbr: "LVN",
   type: "land",
 };
 
 export const WARSAW: Territory = {
-  name: TerritoryEnum.WARSAW,
+  name: "WARSAW",
   abbr: "WAR",
   type: "land",
 };
 
 export const UKRAINE: Territory = {
-  name: TerritoryEnum.UKRAINE,
+  name: "UKRAINE",
   abbr: "UKR",
   type: "land",
 };
 
 export const RUMANIA: Territory = {
-  name: TerritoryEnum.RUMANIA,
+  name: "RUMANIA",
   abbr: "RUM",
   type: "land",
 };
 
 export const ALBANIA: Territory = {
-  name: TerritoryEnum.ALBANIA,
+  name: "ALBANIA",
   abbr: "ALB",
   type: "land",
 };
 
 export const GREECE: Territory = {
-  name: TerritoryEnum.GREECE,
+  name: "GREECE",
   abbr: "GRE",
   type: "land",
 };
 
 export const SERBIA: Territory = {
-  name: TerritoryEnum.SERBIA,
+  name: "SERBIA",
   abbr: "SER",
   type: "land",
 };
 
 export const TRIESTE: Territory = {
-  name: TerritoryEnum.TRIESTE,
+  name: "TRIESTE",
   abbr: "TRI",
   type: "land",
 };
 
 export const NAPLES: Territory = {
-  name: TerritoryEnum.NAPLES,
+  name: "NAPLES",
   abbr: "NAP",
   type: "land",
 };
 
 export const VENICE: Territory = {
-  name: TerritoryEnum.VENICE,
+  name: "VENICE",
   abbr: "VEN",
   type: "land",
 };
 
 export const TUSCANY: Territory = {
-  name: TerritoryEnum.TUSCANY,
+  name: "TUSCANY",
   abbr: "TUS",
   type: "land",
 };
 
 export const MARSEILLES: Territory = {
-  name: TerritoryEnum.MARSEILLES,
+  name: "MARSEILLES",
   abbr: "MAR",
   type: "land",
 };
 
 export const APULIA: Territory = {
-  name: TerritoryEnum.APULIA,
+  name: "APULIA",
   abbr: "APU",
   type: "land",
 };
 
 export const PIEDMONT: Territory = {
-  name: TerritoryEnum.PIEDMONT,
+  name: "PIEDMONT",
   abbr: "PIE",
   type: "land",
 };
 
 export const ROME: Territory = {
-  name: TerritoryEnum.ROME,
+  name: "ROME",
   abbr: "ROM",
   type: "land",
 };
 
 export const BULGARIA: Territory = {
-  name: TerritoryEnum.BULGARIA,
+  name: "BULGARIA",
   abbr: "BUL",
   type: "land",
 };
 
 export const BLACK_SEA: Territory = {
-  name: TerritoryEnum.BLACK_SEA,
+  name: "BLACK_SEA",
   abbr: "BLA",
   type: "water",
 };
 
 export const GULF_OF_BOTHNIA: Territory = {
-  name: TerritoryEnum.GULF_OF_BOTHNIA,
+  name: "GULF_OF_BOTHNIA",
   abbr: "BOT",
   type: "water",
 };

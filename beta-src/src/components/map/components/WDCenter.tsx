@@ -1,10 +1,10 @@
 import * as React from "react";
-import Territory from "../../../enums/Territory";
 import { AbsoluteCoordinates } from "../../../interfaces";
+import TerritoryName from "../../../types/TerritoryName";
 import WDTrigger from "./WDTrigger";
 
 interface WDCenterProps extends AbsoluteCoordinates {
-  terr: Territory;
+  terr: TerritoryName;
 }
 
 const WDCenter: React.FC<WDCenterProps> = function ({

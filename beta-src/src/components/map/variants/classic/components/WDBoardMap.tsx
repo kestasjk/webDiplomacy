@@ -20,6 +20,7 @@ import {
   NAPLES,
   APULIA,
   TUSCANY,
+  ROME,
 } from "../../../../../data/map/land/LandTerritoriesMapData";
 
 import { BLACK_SEA } from "../../../../../data/map/sea/SeaTerritoriesMapData";
@@ -209,6 +210,7 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory terr={NAPLES} />
         <WDTerritory terr={APULIA} />
         <WDTerritory terr={TUSCANY} />
+        <WDTerritory terr={ROME} />
         <svg
           id="GASCONY-territory-2"
           viewBox="0 0 203 212"

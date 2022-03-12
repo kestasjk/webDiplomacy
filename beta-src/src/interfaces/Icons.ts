@@ -7,6 +7,8 @@ export interface navIconProps {
 
 export interface gameIconProps {
   country: Country;
+  height?: number;
   iconState?: UIState;
   viewBox?: string;
+  width?: number;
 }

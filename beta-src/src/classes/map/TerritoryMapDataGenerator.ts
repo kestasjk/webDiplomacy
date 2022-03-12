@@ -1,5 +1,4 @@
 import { TerritoryMapData } from "../../interfaces";
-import TerritoryEnum from "../../enums/Territory";
 import webDiplomacyTheme from "../../webDiplomacyTheme";
 import Country from "../../enums/Country";
 
@@ -10,7 +9,7 @@ interface TerritoryMapDataGeneratorInterface extends TerritoryMapData {
 export default class TerritoryMapDataGenerator
   implements TerritoryMapDataGeneratorInterface
 {
-  public name: TerritoryEnum;
+  public name: TerritoryMapData["name"];
 
   public abbr: TerritoryMapData["abbr"];
 
