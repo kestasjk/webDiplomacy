@@ -7,19 +7,19 @@ import initialState from "./initial-state";
 export const fetchGameOverview = createAsyncThunk(
   ApiRoute.GAME_OVERVIEW,
   async (queryParams: { gameID: string }) => {
-    const response = await getGameApiRequest(
+    const { data } = await getGameApiRequest(
       ApiRoute.GAME_OVERVIEW,
       queryParams,
     );
-    return response.data;
+    return data;
   },
 );
 
 export const fetchGameStatus = createAsyncThunk(
   ApiRoute.GAME_STATUS,
   async (queryParams: { countryID: string; gameID: string }) => {
-    const response = await getGameApiRequest(ApiRoute.GAME_STATUS, queryParams);
-    return response.data;
+    const { data } = await getGameApiRequest(ApiRoute.GAME_STATUS, queryParams);
+    return data;
   },
 );
 
@@ -33,14 +33,7 @@ export const fetchGameStatus = createAsyncThunk(
 const gameApiSlice = createSlice({
   name: "game",
   initialState,
-  reducers: {
-    getGameOverview(state, action) {
-      state.overview = action.payload;
-    },
-    getGameStatus(state, action) {
-      state.status = action.payload;
-    },
-  },
+  reducers: {},
   extraReducers(builder) {
     builder
       // fetchGameOverview
@@ -71,7 +64,7 @@ const gameApiSlice = createSlice({
 });
 /* eslint-enable no-param-reassign */
 
-export const { getGameOverview, getGameStatus } = gameApiSlice.actions;
 export const gameOverview = ({ game: { overview } }: RootState) => overview;
 export const gameStatus = ({ game: { status } }: RootState) => status;
+export const gameApiStatus = ({ game: { apiStatus } }: RootState) => apiStatus;
 export default gameApiSlice.reducer;
