@@ -6,6 +6,7 @@ import UIState from "../../enums/UIState";
 const WDArmyIcon: React.FC<gameIconProps> = function ({
   country,
   iconState = UIState.NONE,
+  viewBox,
 }): React.ReactElement {
   const theme = useTheme();
 
@@ -14,6 +15,7 @@ const WDArmyIcon: React.FC<gameIconProps> = function ({
       filter="drop-shadow(1px 4px 4px #323232)"
       height={50}
       width={50}
+      viewBox={viewBox}
       xmlns="http://www.w3.org/2000/svg"
     >
       {iconState === UIState.NONE && (

@@ -1,5 +1,4 @@
-import { Viewport } from "../../interfaces";
-import BBox from "../../types/BBox";
+import { Viewport, BBox } from "../../interfaces";
 import Translation from "../../types/Translation";
 
 export default function getInitialViewTranslation(
