@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import ApiRoute from "../../enums/ApiRoutes";
+import ApiRoute from "../../enums/ApiRoute";
 import { getGameApiRequest } from "../../utils/api";
 import { RootState } from "../store";
 import initialState from "./initial-state";

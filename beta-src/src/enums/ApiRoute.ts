@@ -1,4 +1,4 @@
-export enum ApiRoute {
+enum ApiRoute {
   GAME_TOGGLEVOTE = "game/togglevote",
   GAME_STATUS = "game/status",
   GAME_OVERVIEW = "game/overview",
