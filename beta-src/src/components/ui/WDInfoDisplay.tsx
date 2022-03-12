@@ -11,7 +11,7 @@ import {
 import GameMode from "../../enums/GameMode";
 import Season from "../../enums/Season";
 import Ranking from "../../enums/Ranking";
-import Phase from "../../enums/Phase";
+import IntegerRange from "../../types/IntegerRange";
 
 /**
  * game setting datas which would be passed to the component by parent component/ context/redux store
@@ -19,13 +19,11 @@ import Phase from "../../enums/Phase";
 
 interface WDInfoDisplayProps {
   gameMode: GameMode;
-  gameTime: number | React.ReactNode;
-  phase: Phase;
-  potNumber: number;
+  potNumber: IntegerRange<35, 665>;
   rank: Ranking;
   season: Season;
   title: string;
-  year: number | string;
+  year: number;
 }
 
 const tableCellStyles = {
@@ -36,8 +34,6 @@ const tableCellStyles = {
 
 const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
   gameMode,
-  gameTime,
-  phase,
   potNumber,
   rank,
   season,
@@ -84,11 +80,6 @@ const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
           </TableRow>
         </TableHead>
         <TableBody>
-          <TableRow>
-            <TableCell sx={tableCellStyles}>
-              Next phase in: {gameTime}, {phase},
-            </TableCell>
-          </TableRow>
           <TableRow>
             <TableCell sx={tableCellStyles}>
               Pot: {potNumber} - {season} {year}
