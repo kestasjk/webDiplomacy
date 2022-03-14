@@ -1,24 +1,25 @@
 {
   "files": {
-    "main.css": "/beta/static/css/main.91570646.chunk.css",
-    "main.js": "/beta/static/js/main.8d87142f.chunk.js",
-    "main.js.map": "/beta/static/js/main.8d87142f.chunk.js.map",
-    "runtime-main.js": "/beta/static/js/runtime-main.19d2a3f9.js",
-    "runtime-main.js.map": "/beta/static/js/runtime-main.19d2a3f9.js.map",
-    "static/js/2.d25197a6.chunk.js": "/beta/static/js/2.d25197a6.chunk.js",
-    "static/js/2.d25197a6.chunk.js.map": "/beta/static/js/2.d25197a6.chunk.js.map",
-    "static/js/3.65264709.chunk.js": "/beta/static/js/3.65264709.chunk.js",
-    "static/js/3.65264709.chunk.js.map": "/beta/static/js/3.65264709.chunk.js.map",
-    "static/js/4.8e225de0.chunk.js": "/beta/static/js/4.8e225de0.chunk.js",
-    "static/js/4.8e225de0.chunk.js.map": "/beta/static/js/4.8e225de0.chunk.js.map",
-    "index.html": "/beta/index.html",
-    "static/css/main.91570646.chunk.css.map": "/beta/static/css/main.91570646.chunk.css.map",
-    "static/js/2.d25197a6.chunk.js.LICENSE.txt": "/beta/static/js/2.d25197a6.chunk.js.LICENSE.txt"
+    "main.css": "/static/css/main.91570646.chunk.css",
+    "main.js": "/static/js/main.1c597447.chunk.js",
+    "main.js.map": "/static/js/main.1c597447.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.2abaeafd.js",
+    "runtime-main.js.map": "/static/js/runtime-main.2abaeafd.js.map",
+    "static/js/2.ef04afe6.chunk.js": "/static/js/2.ef04afe6.chunk.js",
+    "static/js/2.ef04afe6.chunk.js.map": "/static/js/2.ef04afe6.chunk.js.map",
+    "static/js/3.ec7ee4e0.chunk.js": "/static/js/3.ec7ee4e0.chunk.js",
+    "static/js/3.ec7ee4e0.chunk.js.map": "/static/js/3.ec7ee4e0.chunk.js.map",
+    "static/js/4.cb0fe9cc.chunk.js": "/static/js/4.cb0fe9cc.chunk.js",
+    "static/js/4.cb0fe9cc.chunk.js.map": "/static/js/4.cb0fe9cc.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/main.91570646.chunk.css.map": "/static/css/main.91570646.chunk.css.map",
+    "static/js/2.ef04afe6.chunk.js.LICENSE.txt": "/static/js/2.ef04afe6.chunk.js.LICENSE.txt",
+    "static/media/capturable-land.379f9cca.jpeg": "/static/media/capturable-land.379f9cca.jpeg"
   },
   "entrypoints": [
-    "static/js/runtime-main.19d2a3f9.js",
-    "static/js/2.d25197a6.chunk.js",
+    "static/js/runtime-main.2abaeafd.js",
+    "static/js/2.ef04afe6.chunk.js",
     "static/css/main.91570646.chunk.css",
-    "static/js/main.8d87142f.chunk.js"
+    "static/js/main.1c597447.chunk.js"
   ]
 }
