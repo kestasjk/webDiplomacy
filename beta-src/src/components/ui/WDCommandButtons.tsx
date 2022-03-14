@@ -3,7 +3,6 @@ import { Stack } from "@mui/material";
 import WDCheckmarkIcon from "../svgr-components/WDCheckmarkIcon";
 import WDButton from "./WDButton";
 import VoteType from "../../types/Vote";
-import voteStateArray from "../../utils/voteStateArray";
 
 interface voteProps {
   voteState: VoteType;
@@ -14,10 +13,7 @@ const WDCommandButtons: React.FC<voteProps> = function ({
   voteState,
   toggleVote,
 }): React.ReactElement {
-  const voteArray = voteStateArray(voteState);
-
-  const commendButtons = voteArray.map((singleVote) => {
-    const { vote, status } = singleVote;
+  const commandButtons = Object.entries(voteState).map(([vote, status]) => {
     const displayName = vote[0].toUpperCase() + vote.slice(1);
     return (
       <WDButton
@@ -33,7 +29,7 @@ const WDCommandButtons: React.FC<voteProps> = function ({
 
   return (
     <Stack direction="row" spacing={2} alignItems="center">
-      {commendButtons}
+      {commandButtons}
     </Stack>
   );
 };
