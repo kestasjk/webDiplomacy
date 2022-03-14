@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import ApiRoute from "../../enums/ApiRoutes";
+import ApiRoute from "../../enums/ApiRoute";
 
 export type QueryParams = {
   [key: string]: string;
