@@ -1,4 +1,4 @@
-import { GameState } from "../interfaces/game";
+import { GameState } from "../interfaces/GameState";
 
 const initialState: GameState = {
   apiStatus: "idle",

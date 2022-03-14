@@ -1,6 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import ApiRoute from "../../enums/ApiRoute";
 import { getGameApiRequest } from "../../utils/api";
+import GameOverviewResponse from "../interfaces/GameOverviewResponse";
+import { ApiStatus } from "../interfaces/GameState";
+import GameStatusResponse from "../interfaces/GameStatusResponse";
 import { RootState } from "../store";
 import initialState from "./initial-state";
 
@@ -11,7 +14,7 @@ export const fetchGameOverview = createAsyncThunk(
       ApiRoute.GAME_OVERVIEW,
       queryParams,
     );
-    return data;
+    return data as GameOverviewResponse;
   },
 );
 
@@ -19,7 +22,7 @@ export const fetchGameStatus = createAsyncThunk(
   ApiRoute.GAME_STATUS,
   async (queryParams: { countryID: string; gameID: string }) => {
     const { data } = await getGameApiRequest(ApiRoute.GAME_STATUS, queryParams);
-    return data;
+    return data as GameStatusResponse;
   },
 );
 
@@ -64,7 +67,12 @@ const gameApiSlice = createSlice({
 });
 /* eslint-enable no-param-reassign */
 
-export const gameOverview = ({ game: { overview } }: RootState) => overview;
-export const gameStatus = ({ game: { status } }: RootState) => status;
-export const gameApiStatus = ({ game: { apiStatus } }: RootState) => apiStatus;
+export const gameOverview = ({
+  game: { overview },
+}: RootState): GameOverviewResponse => overview;
+export const gameStatus = ({
+  game: { status },
+}: RootState): GameStatusResponse => status;
+export const gameApiStatus = ({ game: { apiStatus } }: RootState): ApiStatus =>
+  apiStatus;
 export default gameApiSlice.reducer;
