@@ -31,6 +31,8 @@ const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
           filter: "drop-shadow(1px 4px 2px black)",
           backgroundColor: "transparent",
         },
+        fontSize: 12,
+        padding: 0,
       }}
     >
       {icon === UIState.ACTIVE && (
@@ -91,18 +93,16 @@ const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
           />
         </svg>
       )}
-      {icon !== UIState.ACTIVE && (
-        <Box
-          sx={{
-            color: "#fff",
-            fontWeight: "bold",
-            margin: 0,
-            textTransform: "uppercase",
-          }}
-        >
-          {year}
-        </Box>
-      )}
+      <Box
+        sx={{
+          color: "#fff",
+          fontWeight: "bold",
+          margin: 0,
+          textTransform: "uppercase",
+        }}
+      >
+        {year}
+      </Box>
     </Button>
   );
 };

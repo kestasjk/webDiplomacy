@@ -21,6 +21,7 @@ const WDPillScroller: React.FC<GameStateProps> = function ({
         alignItems: "center",
         display: "flex",
         filter: "drop-shadow(0px 8px 9px black)",
+        paddingTop: "5px",
       }}
     >
       <ButtonGroup>
@@ -36,6 +37,7 @@ const WDPillScroller: React.FC<GameStateProps> = function ({
             bgcolor: "secondary.main",
             display: "flex",
             fontWeight: "bold",
+            fontSize: 12,
             padding: "5",
             textTransform: "uppercase",
           }}
