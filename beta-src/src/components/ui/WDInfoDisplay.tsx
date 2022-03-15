@@ -12,6 +12,8 @@ import GameMode from "../../enums/GameMode";
 import Season from "../../enums/Season";
 import Ranking from "../../enums/Ranking";
 import IntegerRange from "../../types/IntegerRange";
+import GameType from "../../enums/GameType";
+import WDContentDisplay from "./WDContentDisplay";
 
 /**
  * game setting datas which would be passed to the component by parent component/ context/redux store
@@ -19,6 +21,7 @@ import IntegerRange from "../../types/IntegerRange";
 
 interface WDInfoDisplayProps {
   gameMode: GameMode;
+  gameType: GameType;
   potNumber: IntegerRange<35, 665>;
   rank: Ranking;
   season: Season;
@@ -34,6 +37,7 @@ const tableCellStyles = {
 
 const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
   gameMode,
+  gameType,
   potNumber,
   rank,
   season,
@@ -43,7 +47,7 @@ const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
   return (
     <TableContainer>
       <Table
-        aria-label="a dense table"
+        aria-label="A table of game information"
         size="small"
         sx={{
           maxWidth: 250,
@@ -58,24 +62,12 @@ const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
                 p: "2px 5px 5px 0",
               }}
             >
-              <Box
-                /**
-                 * by applying CSS properties, the title of the game would be able to wrap until the second line
-                 * for the second line display '...' to show it being cut-off
-                 */
-                sx={{
-                  display: "-webkit-box",
-                  lineHeight: "1.2rem",
-                  maxHeight: "2.4rem",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  wordWrap: "break-word",
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: "vertical",
-                }}
-              >
-                {title}
-              </Box>
+              <WDContentDisplay
+                content={title}
+                lineHeight="1.2rem"
+                maxHeight="2.4rem"
+                WebkitLineClamp={2}
+              />
             </TableCell>
           </TableRow>
         </TableHead>
@@ -87,7 +79,7 @@ const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
           </TableRow>
           <TableRow>
             <TableCell sx={tableCellStyles}>
-              Classic, {gameMode}, {rank}
+              {gameType}, {gameMode}, {rank}
             </TableCell>
           </TableRow>
         </TableBody>
