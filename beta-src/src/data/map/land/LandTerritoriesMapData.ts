@@ -534,10 +534,6 @@ export const CLYDE: TerritoryMapData = new TerritoryMapDataGenerator({
       y: 54,
     },
   ],
-  unitSlot: {
-    x: "50%",
-    y: "50%",
-  },
   width: 98,
   height: 121,
   x: 2444,
@@ -563,8 +559,8 @@ export const EDINBURGH: TerritoryMapData = new TerritoryMapDataGenerator({
     },
   ],
   unitSlot: {
-    x: "50%",
-    y: "50%",
+    x: 0,
+    y: 38,
   },
   width: 87,
   height: 197,
@@ -591,8 +587,8 @@ export const LIVERPOOL: TerritoryMapData = new TerritoryMapDataGenerator({
     },
   ],
   unitSlot: {
-    x: "50%",
-    y: "50%",
+    x: 30,
+    y: 55,
   },
   width: 100,
   height: 209,
@@ -619,8 +615,8 @@ export const LONDON: TerritoryMapData = new TerritoryMapDataGenerator({
     },
   ],
   unitSlot: {
-    x: "50%",
-    y: "50%",
+    x: 75,
+    y: 0,
   },
   width: 129,
   height: 111,
@@ -642,10 +638,6 @@ export const WALES: TerritoryMapData = new TerritoryMapDataGenerator({
       y: 75,
     },
   ],
-  unitSlot: {
-    x: "50%",
-    y: "50%",
-  },
   width: 186,
   height: 161,
   x: 2338,
@@ -666,10 +658,6 @@ export const YORK: TerritoryMapData = new TerritoryMapDataGenerator({
       y: 118,
     },
   ],
-  unitSlot: {
-    x: "50%",
-    y: "50%",
-  },
   width: 64,
   height: 155,
   x: 2519,
@@ -685,16 +673,6 @@ export const YORK: TerritoryMapData = new TerritoryMapDataGenerator({
 // Neutral Territories
 export const NEUTRAL_2: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.NEUTRAL_2).get(),
-  labels: [
-    {
-      x: 13,
-      y: 118,
-    },
-  ],
-  unitSlot: {
-    x: "50%",
-    y: "50%",
-  },
   width: 195,
   height: 174,
   x: 2236,

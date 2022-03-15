@@ -49,10 +49,6 @@ export const ENGLISH_CHANNEL: TerritoryMapData = new TerritoryMapDataGenerator({
       y: 52,
     },
   ],
-  unitSlot: {
-    x: "30%",
-    y: "58%",
-  },
   width: 349,
   height: 123,
   x: 2248,
@@ -69,10 +65,6 @@ export const IRISH_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
       y: 190,
     },
   ],
-  unitSlot: {
-    x: "30%",
-    y: "58%",
-  },
   width: 330,
   height: 269,
   x: 2158,
@@ -89,10 +81,6 @@ export const NORTH_ATLANTIC: TerritoryMapData = new TerritoryMapDataGenerator({
       y: 487,
     },
   ],
-  unitSlot: {
-    x: "30%",
-    y: "58%",
-  },
   width: 710,
   height: 1005,
   x: 1828,
@@ -109,10 +97,6 @@ export const NORTH_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
       y: 229,
     },
   ],
-  unitSlot: {
-    x: "30%",
-    y: "58%",
-  },
   width: 326,
   height: 537,
   x: 2526,
