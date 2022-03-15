@@ -7,10 +7,10 @@ import WDMap from "./WDMap";
 import { Viewport } from "../../interfaces";
 
 const Scales: Scale = {
-  DESKTOP: [0.65, 3],
-  MOBILE_LG: [0.37, 1.6],
+  DESKTOP: [0.45, 3],
+  MOBILE_LG: [0.32, 1.6],
   MOBILE_LG_LANDSCAPE: [0.3, 1.6],
-  MOBILE: [0.37, 1.6],
+  MOBILE: [0.32, 1.6],
   MOBILE_LANDSCAPE: [0.27, 1.6],
   TABLET: [0.6275, 3],
   TABLET_LANDSCAPE: [0.6, 3],
@@ -25,8 +25,8 @@ interface WDMapControllerProps {
   viewport: Viewport;
 }
 
-const mapOriginalWidth = 4018;
-const mapOriginalHeight = 2002;
+const mapOriginalWidth = 6010;
+const mapOriginalHeight = 3005;
 
 const WDMapController: React.FC<WDMapControllerProps> = function ({
   device,
