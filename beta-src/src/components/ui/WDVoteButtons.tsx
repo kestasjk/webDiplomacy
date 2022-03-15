@@ -9,12 +9,17 @@ interface voteProps {
   toggleVote: (vote: string) => void;
 }
 
-const WDCommandButtons: React.FC<voteProps> = function ({
+const voteLabel = {
+  draw: "Draw",
+  pause: "Pause",
+  cancel: "Cancel",
+};
+
+const WDVoteButtons: React.FC<voteProps> = function ({
   voteState,
   toggleVote,
 }): React.ReactElement {
   const commandButtons = Object.entries(voteState).map(([vote, status]) => {
-    const displayName = vote[0].toUpperCase() + vote.slice(1);
     return (
       <WDButton
         key={vote}
@@ -22,7 +27,7 @@ const WDCommandButtons: React.FC<voteProps> = function ({
         onClick={() => toggleVote(vote)}
         startIcon={status ? <WDCheckmarkIcon /> : ""}
       >
-        {displayName}
+        {voteLabel[vote]}
       </WDButton>
     );
   });
@@ -34,4 +39,4 @@ const WDCommandButtons: React.FC<voteProps> = function ({
   );
 };
 
-export default WDCommandButtons;
+export default WDVoteButtons;
