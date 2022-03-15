@@ -5,15 +5,19 @@ import UIState from "../../enums/UIState";
 
 const WDFleetIcon: React.FC<gameIconProps> = function ({
   country,
+  height = 50,
   iconState = UIState.NONE,
+  viewBox,
+  width = 50,
 }): React.ReactElement {
   const theme = useTheme();
 
   return (
     <svg
       filter="drop-shadow(1px 4px 4px #323232)"
-      height={50}
-      width={50}
+      height={height}
+      viewBox={viewBox}
+      width={width}
       xmlns="http://www.w3.org/2000/svg"
     >
       {iconState === UIState.NONE && (
