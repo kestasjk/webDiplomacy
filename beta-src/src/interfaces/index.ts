@@ -8,3 +8,4 @@ export * from "./map/TerritoryMapData";
 export * from "./map/BBox";
 export * from "./map/Label";
 export * from "./map/Texture";
+export * from "./map/UnitSlot";

@@ -1,11 +1,18 @@
-import { AbsoluteCoordinates, Territory, BBox, Label, Texture } from "..";
+import {
+  AbsoluteCoordinates,
+  BBox,
+  Label,
+  Territory,
+  Texture,
+  UnitSlot,
+} from "..";
 
 export interface TerritoryMapData extends Territory, BBox {
   centerPos?: AbsoluteCoordinates;
-  labels?: Label[];
-  unitSlot?: AbsoluteCoordinates;
-  path: string;
   fill?: string;
+  labels?: Label[];
+  path: string;
   texture?: Texture;
+  unitSlots?: UnitSlot[];
   viewBox?: string;
 }

@@ -1,31 +1,31 @@
 import * as React from "react";
 import WDTerritory from "../../../components/WDTerritory";
 import {
-  SPAIN,
-  PORTUGAL,
-  GASCONY,
-  MOSCOW,
-  WARSAW,
-  LIVONIA,
-  FINLAND,
-  SAINT_PETERSBURG,
-  SEVASTOPOL,
-  UKRAINE,
-  BULGARIA,
-  RUMANIA,
-  SERBIA,
   ALBANIA,
-  GREECE,
-  TRIESTE,
-  NAPLES,
   APULIA,
-  TUSCANY,
-  ROME,
+  BULGARIA,
   CLYDE,
   EDINBURGH,
+  FINLAND,
+  GASCONY,
+  GREECE,
   LIVERPOOL,
+  LIVONIA,
   LONDON,
+  MOSCOW,
+  NAPLES,
+  PORTUGAL,
+  ROME,
+  RUMANIA,
+  SAINT_PETERSBURG,
+  SERBIA,
+  SEVASTOPOL,
+  SPAIN,
+  TRIESTE,
+  TUSCANY,
+  UKRAINE,
   WALES,
+  WARSAW,
   YORK,
   NEUTRAL_2,
 } from "../../../../../data/map/land/LandTerritoriesMapData";
@@ -204,60 +204,44 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         </g>
       </g>
       <g id="neutral">
-        <WDTerritory terr={NEUTRAL_2} />
+        <WDTerritory territoryMapData={NEUTRAL_2} />
       </g>
       <g id="sea">
-        <WDTerritory terr={BLACK_SEA} />
-        <WDTerritory terr={ENGLISH_CHANNEL} />
-        <WDTerritory terr={GULF_OF_BOTHNIA} />
-        <WDTerritory terr={IRISH_SEA} />
-        <WDTerritory terr={MIDDLE_ATLANTIC} />
-        <WDTerritory terr={NORTH_ATLANTIC} />
-        <WDTerritory terr={NORTH_SEA} />
+        <WDTerritory territoryMapData={BLACK_SEA} />
+        <WDTerritory territoryMapData={ENGLISH_CHANNEL} />
+        <WDTerritory territoryMapData={GULF_OF_BOTHNIA} />
+        <WDTerritory territoryMapData={IRISH_SEA} />
+        <WDTerritory territoryMapData={MIDDLE_ATLANTIC} />
+        <WDTerritory territoryMapData={NORTH_ATLANTIC} />
+        <WDTerritory territoryMapData={NORTH_SEA} />
       </g>
       <g id="outlines">
-        <WDTerritory terr={SPAIN} />
-        <WDTerritory terr={PORTUGAL} />
-        <WDTerritory terr={MOSCOW} />
-        <WDTerritory terr={WARSAW} />
-        <WDTerritory terr={LIVONIA} />
-        <WDTerritory terr={FINLAND} />
-        <WDTerritory terr={SEVASTOPOL} />
-        <WDTerritory terr={SAINT_PETERSBURG} />
-        <WDTerritory terr={UKRAINE} />
-        <WDTerritory terr={BULGARIA} />
-        <WDTerritory terr={RUMANIA} />
-        <WDTerritory terr={SERBIA} />
-        <WDTerritory terr={ALBANIA} />
-        <WDTerritory terr={GREECE} />
-        <WDTerritory terr={TRIESTE} />
-        <WDTerritory terr={NAPLES} />
-        <WDTerritory terr={APULIA} />
-        <WDTerritory terr={TUSCANY} />
-        <WDTerritory terr={ROME} />
-        <svg
-          id="GASCONY-territory-2"
-          viewBox="0 0 203 212"
-          width="203"
-          height="212"
-          x="2365"
-          y="1917"
-        >
-          <path
-            id="land-gas"
-            d={GASCONY.path}
-            fill="url(#texture4)"
-            stroke="black"
-            strokeWidth="0.5"
-          />
-        </svg>
-        <WDTerritory terr={GASCONY} />
-        <WDTerritory terr={CLYDE} />
-        <WDTerritory terr={EDINBURGH} />
-        <WDTerritory terr={LIVERPOOL} />
-        <WDTerritory terr={LONDON} />
-        <WDTerritory terr={WALES} />
-        <WDTerritory terr={YORK} />
+        <WDTerritory territoryMapData={ALBANIA} />
+        <WDTerritory territoryMapData={APULIA} />
+        <WDTerritory territoryMapData={BULGARIA} />
+        <WDTerritory territoryMapData={CLYDE} />
+        <WDTerritory territoryMapData={EDINBURGH} />
+        <WDTerritory territoryMapData={FINLAND} />
+        <WDTerritory territoryMapData={GASCONY} />
+        <WDTerritory territoryMapData={GREECE} />
+        <WDTerritory territoryMapData={LIVERPOOL} />
+        <WDTerritory territoryMapData={LIVONIA} />
+        <WDTerritory territoryMapData={LONDON} />
+        <WDTerritory territoryMapData={MOSCOW} />
+        <WDTerritory territoryMapData={NAPLES} />
+        <WDTerritory territoryMapData={PORTUGAL} />
+        <WDTerritory territoryMapData={ROME} />
+        <WDTerritory territoryMapData={RUMANIA} />
+        <WDTerritory territoryMapData={SAINT_PETERSBURG} />
+        <WDTerritory territoryMapData={SERBIA} />
+        <WDTerritory territoryMapData={SEVASTOPOL} />
+        <WDTerritory territoryMapData={SPAIN} />
+        <WDTerritory territoryMapData={TRIESTE} />
+        <WDTerritory territoryMapData={TUSCANY} />
+        <WDTerritory territoryMapData={UKRAINE} />
+        <WDTerritory territoryMapData={WALES} />
+        <WDTerritory territoryMapData={WARSAW} />
+        <WDTerritory territoryMapData={YORK} />
       </g>
       <defs>
         <pattern

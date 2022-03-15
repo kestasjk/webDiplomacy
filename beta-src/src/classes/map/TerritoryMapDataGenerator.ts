@@ -9,19 +9,23 @@ interface TerritoryMapDataGeneratorInterface extends TerritoryMapData {
 export default class TerritoryMapDataGenerator
   implements TerritoryMapDataGeneratorInterface
 {
-  public name: TerritoryMapData["name"];
-
   public abbr: TerritoryMapData["abbr"];
-
-  public type: TerritoryMapData["type"];
 
   public centerPos: TerritoryMapData["centerPos"];
 
-  public labels: TerritoryMapData["labels"];
-
-  public unitSlot: TerritoryMapData["unitSlot"];
+  public fill: TerritoryMapData["fill"];
 
   public height: TerritoryMapData["height"];
+
+  public labels: TerritoryMapData["labels"];
+
+  public name: TerritoryMapData["name"];
+
+  public path: TerritoryMapData["path"];
+
+  public type: TerritoryMapData["type"];
+
+  public unitSlots: TerritoryMapData["unitSlots"];
 
   public width: TerritoryMapData["width"];
 
@@ -29,42 +33,38 @@ export default class TerritoryMapDataGenerator
 
   public y: TerritoryMapData["y"];
 
-  public path: TerritoryMapData["path"];
-
-  public fill: TerritoryMapData["fill"];
-
   public texture: TerritoryMapData["texture"];
 
   public viewBox: TerritoryMapData["viewBox"];
 
   constructor({
-    name,
     abbr,
-    type,
     centerPos = undefined,
-    labels,
-    unitSlot,
+    country = undefined,
+    fill = "none",
     height,
+    labels,
+    name,
+    path,
+    type,
+    unitSlots,
     width,
     x,
     y,
-    path,
-    fill = "none",
     texture = undefined,
-    country = undefined,
   }: TerritoryMapDataGeneratorInterface) {
-    this.name = name;
     this.abbr = abbr;
-    this.type = type;
     this.centerPos = centerPos;
+    this.fill = fill;
+    this.height = height;
     this.labels = labels;
-    this.unitSlot = unitSlot;
+    this.name = name;
+    this.path = path;
+    this.type = type;
+    this.unitSlots = unitSlots;
+    this.width = width;
     this.x = x;
     this.y = y;
-    this.height = height;
-    this.width = width;
-    this.path = path;
-    this.fill = fill;
     let textureConfig: TerritoryMapData["texture"];
     if (texture) {
       let textureStroke;
@@ -82,20 +82,20 @@ export default class TerritoryMapDataGenerator
     this.viewBox = `0 0 ${width} ${height}`;
   }
 
-  get(): TerritoryMapData {
+  get territory(): TerritoryMapData {
     return {
-      name: this.name,
       abbr: this.abbr,
-      type: this.type,
       centerPos: this.centerPos,
-      labels: this.labels,
-      unitSlot: this.unitSlot,
-      width: this.width,
+      fill: this.fill,
       height: this.height,
+      labels: this.labels,
+      name: this.name,
+      path: this.path,
+      type: this.type,
+      unitSlots: this.unitSlots,
+      width: this.width,
       x: this.x,
       y: this.y,
-      path: this.path,
-      fill: this.fill,
       texture: this.texture,
       viewBox: this.viewBox,
     };

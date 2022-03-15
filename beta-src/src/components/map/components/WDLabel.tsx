@@ -7,11 +7,11 @@ interface WDLabelProps extends Label {
 }
 
 const WDLabel: React.FC<WDLabelProps> = function ({
-  x,
-  y,
-  text,
   id,
   style,
+  text,
+  x,
+  y,
 }): React.ReactElement {
   const theme = useTheme();
   return (
