@@ -534,6 +534,10 @@ export const CLYDE: TerritoryMapData = new TerritoryMapDataGenerator({
       y: 54,
     },
   ],
+  unitSlot: {
+    x: 0,
+    y: 60,
+  },
   width: 98,
   height: 121,
   x: 2444,
@@ -559,8 +563,8 @@ export const EDINBURGH: TerritoryMapData = new TerritoryMapDataGenerator({
     },
   ],
   unitSlot: {
-    x: 0,
-    y: 38,
+    x: 5,
+    y: 55,
   },
   width: 87,
   height: 197,
@@ -615,7 +619,7 @@ export const LONDON: TerritoryMapData = new TerritoryMapDataGenerator({
     },
   ],
   unitSlot: {
-    x: 75,
+    x: 68,
     y: 0,
   },
   width: 129,
@@ -638,6 +642,10 @@ export const WALES: TerritoryMapData = new TerritoryMapDataGenerator({
       y: 75,
     },
   ],
+  unitSlot: {
+    x: 98,
+    y: 90,
+  },
   width: 186,
   height: 161,
   x: 2338,
@@ -658,6 +666,10 @@ export const YORK: TerritoryMapData = new TerritoryMapDataGenerator({
       y: 118,
     },
   ],
+  unitSlot: {
+    x: 7,
+    y: 40,
+  },
   width: 64,
   height: 155,
   x: 2519,
