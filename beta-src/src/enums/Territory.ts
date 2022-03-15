@@ -8,7 +8,11 @@ enum Territory {
   SPAIN,
   PORTUGAL,
   BLACK_SEA,
+  ENGLISH_CHANNEL,
   GULF_OF_BOTHNIA,
+  IRISH_SEA,
+  NORTH_ATLANTIC,
+  NORTH_SEA,
   GASCONY,
   SAINT_PETERSBURG,
   MOSCOW,
@@ -30,6 +34,7 @@ enum Territory {
   APULIA,
   PIEDMONT,
   ROME,
+  NEUTRAL_2,
 }
 
 export default Territory;

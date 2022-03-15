@@ -182,10 +182,40 @@ export const BLACK_SEA: Territory = {
   type: "water",
 };
 
+export const ENGLISH_CHANNEL: Territory = {
+  name: "ENGLISH_CHANNEL",
+  abbr: "ENG",
+  type: "water",
+};
+
 export const GULF_OF_BOTHNIA: Territory = {
   name: "GULF_OF_BOTHNIA",
   abbr: "BOT",
   type: "water",
+};
+
+export const IRISH_SEA: Territory = {
+  name: "IRISH_SEA",
+  abbr: "IRI",
+  type: "water",
+};
+
+export const NORTH_ATLANTIC: Territory = {
+  name: "NORTH_ATLANTIC",
+  abbr: "NAO",
+  type: "water",
+};
+
+export const NORTH_SEA: Territory = {
+  name: "NORTH_SEA",
+  abbr: "NTH",
+  type: "water",
+};
+
+export const NEUTRAL_2: Territory = {
+  name: "NEUTRAL_2",
+  abbr: "",
+  type: "land",
 };
 
 const Territories: TerritoryData = {
@@ -219,7 +249,12 @@ const Territories: TerritoryData = {
   [TerritoryEnum.PIEDMONT]: PIEDMONT,
   [TerritoryEnum.ROME]: ROME,
   [TerritoryEnum.BLACK_SEA]: BLACK_SEA,
+  [TerritoryEnum.ENGLISH_CHANNEL]: ENGLISH_CHANNEL,
   [TerritoryEnum.GULF_OF_BOTHNIA]: GULF_OF_BOTHNIA,
+  [TerritoryEnum.IRISH_SEA]: IRISH_SEA,
+  [TerritoryEnum.NORTH_ATLANTIC]: NORTH_ATLANTIC,
+  [TerritoryEnum.NORTH_SEA]: NORTH_SEA,
+  [TerritoryEnum.NEUTRAL_2]: NEUTRAL_2,
 } as const;
 
 export default Territories;

@@ -27,9 +27,16 @@ import {
   LONDON,
   WALES,
   YORK,
+  NEUTRAL_2,
 } from "../../../../../data/map/land/LandTerritoriesMapData";
-
-import { BLACK_SEA } from "../../../../../data/map/sea/SeaTerritoriesMapData";
+import {
+  BLACK_SEA,
+  ENGLISH_CHANNEL,
+  GULF_OF_BOTHNIA,
+  IRISH_SEA,
+  NORTH_ATLANTIC,
+  NORTH_SEA,
+} from "../../../../../data/map/sea/SeaTerritoriesMapData";
 
 import CapturableLandTexture from "../../../../../assets/textures/capturable-land.jpeg";
 
@@ -194,8 +201,16 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
           />
         </g>
       </g>
+      <g id="neutral">
+        <WDTerritory terr={NEUTRAL_2} />
+      </g>
       <g id="sea">
         <WDTerritory terr={BLACK_SEA} />
+        <WDTerritory terr={ENGLISH_CHANNEL} />
+        <WDTerritory terr={GULF_OF_BOTHNIA} />
+        <WDTerritory terr={IRISH_SEA} />
+        <WDTerritory terr={NORTH_ATLANTIC} />
+        <WDTerritory terr={NORTH_SEA} />
       </g>
       <g id="outlines">
         <WDTerritory terr={SPAIN} />
