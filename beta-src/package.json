@@ -11,10 +11,12 @@
     "@testing-library/jest-dom": "^5.15.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
+    "@types/axios": "^0.14.0",
     "@types/jest": "^26.0.24",
     "@types/node": "^12.20.37",
     "@types/react": "^17.0.37",
     "@types/react-dom": "^17.0.11",
+    "axios": "^0.26.1",
     "d3": "^7.3.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -25,6 +27,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build && rm -rf ../beta && mv build ../beta",
+    "build-local": "NODE_ENV=local react-scripts build --local --configuration=local && rm -rf ../beta && mv build ../beta",
+    "build-test": "NODE_ENV=test react-scripts build --test --configuration=test && rm -rf ../beta && mv build ../beta",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "svgr": "svgr -d src/components/svgr-components --typescript --ignore-existing src/assets/svg-svgr"
