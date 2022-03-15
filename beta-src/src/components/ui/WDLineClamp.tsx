@@ -1,15 +1,15 @@
 import * as React from "react";
 import { Box } from "@mui/material";
 
-interface WDContentDisplayProps {
-  content: string;
-  WebkitLineClamp: number;
+interface WDLineClampProps {
+  children: React.ReactNode;
   lineHeight: string;
   maxHeight: string;
+  WebkitLineClamp: number;
 }
 
-const WDContentDisplay: React.FC<WDContentDisplayProps> = function ({
-  content,
+const WDLineClamp: React.FC<WDLineClampProps> = function ({
+  children,
   lineHeight,
   maxHeight,
   WebkitLineClamp,
@@ -22,14 +22,14 @@ const WDContentDisplay: React.FC<WDContentDisplayProps> = function ({
         maxHeight,
         overflow: "hidden",
         textOverflow: "ellipsis",
-        wordWrap: "break-word",
-        WebkitLineClamp,
         WebkitBoxOrient: "vertical",
+        WebkitLineClamp,
+        wordWrap: "break-word",
       }}
     >
-      {content}
+      {children}
     </Box>
   );
 };
 
-export default WDContentDisplay;
+export default WDLineClamp;
