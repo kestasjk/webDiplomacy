@@ -200,6 +200,12 @@ export const IRISH_SEA: Territory = {
   type: "water",
 };
 
+export const MIDDLE_ATLANTIC: Territory = {
+  name: "MIDDLE_ATLANTIC",
+  abbr: "MAO",
+  type: "water",
+};
+
 export const NORTH_ATLANTIC: Territory = {
   name: "NORTH_ATLANTIC",
   abbr: "NAO",
@@ -252,6 +258,7 @@ const Territories: TerritoryData = {
   [TerritoryEnum.ENGLISH_CHANNEL]: ENGLISH_CHANNEL,
   [TerritoryEnum.GULF_OF_BOTHNIA]: GULF_OF_BOTHNIA,
   [TerritoryEnum.IRISH_SEA]: IRISH_SEA,
+  [TerritoryEnum.MIDDLE_ATLANTIC]: MIDDLE_ATLANTIC,
   [TerritoryEnum.NORTH_ATLANTIC]: NORTH_ATLANTIC,
   [TerritoryEnum.NORTH_SEA]: NORTH_SEA,
   [TerritoryEnum.NEUTRAL_2]: NEUTRAL_2,

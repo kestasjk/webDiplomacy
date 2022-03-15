@@ -34,11 +34,13 @@ import {
   ENGLISH_CHANNEL,
   GULF_OF_BOTHNIA,
   IRISH_SEA,
+  MIDDLE_ATLANTIC,
   NORTH_ATLANTIC,
   NORTH_SEA,
 } from "../../../../../data/map/sea/SeaTerritoriesMapData";
 
 import CapturableLandTexture from "../../../../../assets/textures/capturable-land.jpeg";
+import WaterTexture from "../../../../../assets/textures/sea-texture.png";
 
 const WDBoardMap: React.FC = function (): React.ReactElement {
   return (
@@ -209,6 +211,7 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory terr={ENGLISH_CHANNEL} />
         <WDTerritory terr={GULF_OF_BOTHNIA} />
         <WDTerritory terr={IRISH_SEA} />
+        <WDTerritory terr={MIDDLE_ATLANTIC} />
         <WDTerritory terr={NORTH_ATLANTIC} />
         <WDTerritory terr={NORTH_SEA} />
       </g>
@@ -270,6 +273,16 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
             width="1546"
             height="1384"
           />
+        </pattern>
+      </defs>
+      <defs>
+        <pattern
+          id="sea-texture"
+          patternUnits="userSpaceOnUse"
+          width="1546"
+          height="1384"
+        >
+          <image href={WaterTexture} x="0" y="0" width="1966" height="1615" />
         </pattern>
       </defs>
     </g>
