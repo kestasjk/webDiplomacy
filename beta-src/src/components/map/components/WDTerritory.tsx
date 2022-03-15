@@ -1,3 +1,4 @@
+import { useTheme } from "@mui/material";
 import * as React from "react";
 import { TerritoryMapData } from "../../../interfaces";
 import WDCenter from "./WDCenter";
@@ -5,65 +6,76 @@ import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
 
 interface WDTerritoryProps {
-  terr: TerritoryMapData;
+  territoryMapData: TerritoryMapData;
 }
 
 const WDTerritory: React.FC<WDTerritoryProps> = function ({
-  terr,
+  territoryMapData,
 }): React.ReactElement {
+  const theme = useTheme();
   return (
     <svg
-      id={`${terr.name}-territory`}
-      viewBox={terr.viewBox}
-      width={terr.width}
-      height={terr.height}
-      x={terr.x}
-      y={terr.y}
+      height={territoryMapData.height}
+      id={`${territoryMapData.name}-territory`}
+      viewBox={territoryMapData.viewBox}
+      width={territoryMapData.width}
+      x={territoryMapData.x}
+      y={territoryMapData.y}
     >
-      {terr.texture?.texture && (
+      {territoryMapData.texture?.texture && (
         <path
-          id={`${terr.name}-texture`}
-          d={terr.path}
-          fill={terr.texture.texture}
-          stroke={terr.texture.stroke}
-          strokeWidth={terr.texture.strokeWidth}
-          strokeOpacity={terr.texture.strokeOpacity}
+          d={territoryMapData.path}
+          fill={territoryMapData.texture.texture}
+          id={`${territoryMapData.name}-texture`}
+          stroke={territoryMapData.texture.stroke}
+          strokeOpacity={territoryMapData.texture.strokeOpacity}
+          strokeWidth={territoryMapData.texture.strokeWidth}
         />
       )}
       <path
-        id={`${terr.name}-control-path`}
-        d={terr.path}
-        fill={terr.fill}
+        d={territoryMapData.path}
+        fill={territoryMapData.fill}
         fillOpacity={0.2}
-        stroke="black"
-        strokeWidth="1"
+        id={`${territoryMapData.name}-control-path`}
+        stroke={theme.palette.primary.main}
         strokeOpacity={1}
+        strokeWidth={1}
       />
-      {terr.centerPos && (
-        <WDCenter terr={terr.name} x={terr.centerPos.x} y={terr.centerPos.y} />
+      {territoryMapData.centerPos && (
+        <WDCenter
+          territoryName={territoryMapData.name}
+          x={territoryMapData.centerPos.x}
+          y={territoryMapData.centerPos.y}
+        />
       )}
-      {terr.labels &&
-        terr.labels.map(({ x, y, text, style }, i) => {
+      {territoryMapData.labels &&
+        territoryMapData.labels.map(({ x, y, text, style }, i) => {
           let txt = text;
           let id: string | undefined;
           if (!txt) {
-            txt = terr.abbr;
-            id = `${terr.name}-label-main`;
+            txt = territoryMapData.abbr;
+            id = `${territoryMapData.name}-label-main`;
           }
           return (
             <WDLabel
+              id={id}
               key={id || i}
               style={style}
-              id={id}
+              text={txt}
               x={x}
               y={y}
-              text={txt}
             />
           );
         })}
-      {terr.unitSlot && (
-        <WDUnitSlot x={terr.unitSlot.x} y={terr.unitSlot.y} terr={terr.name} />
-      )}
+      {territoryMapData.unitSlots &&
+        territoryMapData.unitSlots.map((unitSlot) => (
+          <WDUnitSlot
+            name={unitSlot.name}
+            territoryName={territoryMapData.name}
+            x={unitSlot.x}
+            y={unitSlot.y}
+          />
+        ))}
     </svg>
   );
 };

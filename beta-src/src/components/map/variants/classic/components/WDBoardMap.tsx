@@ -1,26 +1,26 @@
 import * as React from "react";
 import WDTerritory from "../../../components/WDTerritory";
 import {
-  SPAIN,
-  PORTUGAL,
-  GASCONY,
-  MOSCOW,
-  WARSAW,
-  LIVONIA,
-  FINLAND,
-  SAINT_PETERSBURG,
-  SEVASTOPOL,
-  UKRAINE,
-  BULGARIA,
-  RUMANIA,
-  SERBIA,
   ALBANIA,
-  GREECE,
-  TRIESTE,
-  NAPLES,
   APULIA,
-  TUSCANY,
+  BULGARIA,
+  FINLAND,
+  GASCONY,
+  GREECE,
+  LIVONIA,
+  MOSCOW,
+  NAPLES,
+  PORTUGAL,
   ROME,
+  RUMANIA,
+  WARSAW,
+  SAINT_PETERSBURG,
+  SERBIA,
+  SEVASTOPOL,
+  SPAIN,
+  TRIESTE,
+  TUSCANY,
+  UKRAINE,
 } from "../../../../../data/map/land/LandTerritoriesMapData";
 
 import { BLACK_SEA } from "../../../../../data/map/sea/SeaTerritoriesMapData";
@@ -189,45 +189,29 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         </g>
       </g>
       <g id="sea">
-        <WDTerritory terr={BLACK_SEA} />
+        <WDTerritory territoryMapData={BLACK_SEA} />
       </g>
       <g id="outlines">
-        <WDTerritory terr={SPAIN} />
-        <WDTerritory terr={PORTUGAL} />
-        <WDTerritory terr={MOSCOW} />
-        <WDTerritory terr={WARSAW} />
-        <WDTerritory terr={LIVONIA} />
-        <WDTerritory terr={FINLAND} />
-        <WDTerritory terr={SEVASTOPOL} />
-        <WDTerritory terr={SAINT_PETERSBURG} />
-        <WDTerritory terr={UKRAINE} />
-        <WDTerritory terr={BULGARIA} />
-        <WDTerritory terr={RUMANIA} />
-        <WDTerritory terr={SERBIA} />
-        <WDTerritory terr={ALBANIA} />
-        <WDTerritory terr={GREECE} />
-        <WDTerritory terr={TRIESTE} />
-        <WDTerritory terr={NAPLES} />
-        <WDTerritory terr={APULIA} />
-        <WDTerritory terr={TUSCANY} />
-        <WDTerritory terr={ROME} />
-        <svg
-          id="GASCONY-territory-2"
-          viewBox="0 0 203 212"
-          width="203"
-          height="212"
-          x="2365"
-          y="1917"
-        >
-          <path
-            id="land-gas"
-            d={GASCONY.path}
-            fill="url(#texture4)"
-            stroke="black"
-            strokeWidth="0.5"
-          />
-        </svg>
-        <WDTerritory terr={GASCONY} />
+        <WDTerritory territoryMapData={ALBANIA} />
+        <WDTerritory territoryMapData={APULIA} />
+        <WDTerritory territoryMapData={BULGARIA} />
+        <WDTerritory territoryMapData={FINLAND} />
+        <WDTerritory territoryMapData={GASCONY} />
+        <WDTerritory territoryMapData={GREECE} />
+        <WDTerritory territoryMapData={LIVONIA} />
+        <WDTerritory territoryMapData={MOSCOW} />
+        <WDTerritory territoryMapData={NAPLES} />
+        <WDTerritory territoryMapData={PORTUGAL} />
+        <WDTerritory territoryMapData={ROME} />
+        <WDTerritory territoryMapData={RUMANIA} />
+        <WDTerritory territoryMapData={WARSAW} />
+        <WDTerritory territoryMapData={SAINT_PETERSBURG} />
+        <WDTerritory territoryMapData={SERBIA} />
+        <WDTerritory territoryMapData={SEVASTOPOL} />
+        <WDTerritory territoryMapData={SPAIN} />
+        <WDTerritory territoryMapData={TRIESTE} />
+        <WDTerritory territoryMapData={TUSCANY} />
+        <WDTerritory territoryMapData={UKRAINE} />
       </g>
       <defs>
         <pattern

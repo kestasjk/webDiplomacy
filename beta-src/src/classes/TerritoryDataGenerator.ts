@@ -15,7 +15,7 @@ export default class TerritoryDataGenerator implements Territory {
     this.type = Territories[terr].type;
   }
 
-  get(): Territory {
+  get territory(): Territory {
     return {
       name: this.name,
       abbr: this.abbr,

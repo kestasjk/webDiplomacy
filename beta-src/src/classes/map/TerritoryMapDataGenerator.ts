@@ -19,7 +19,7 @@ export default class TerritoryMapDataGenerator
 
   public labels: TerritoryMapData["labels"];
 
-  public unitSlot: TerritoryMapData["unitSlot"];
+  public unitSlots: TerritoryMapData["unitSlots"];
 
   public height: TerritoryMapData["height"];
 
@@ -43,7 +43,7 @@ export default class TerritoryMapDataGenerator
     type,
     centerPos = undefined,
     labels,
-    unitSlot,
+    unitSlots,
     height,
     width,
     x,
@@ -58,7 +58,7 @@ export default class TerritoryMapDataGenerator
     this.type = type;
     this.centerPos = centerPos;
     this.labels = labels;
-    this.unitSlot = unitSlot;
+    this.unitSlots = unitSlots;
     this.x = x;
     this.y = y;
     this.height = height;
@@ -82,14 +82,14 @@ export default class TerritoryMapDataGenerator
     this.viewBox = `0 0 ${width} ${height}`;
   }
 
-  get(): TerritoryMapData {
+  get territory(): TerritoryMapData {
     return {
       name: this.name,
       abbr: this.abbr,
       type: this.type,
       centerPos: this.centerPos,
       labels: this.labels,
-      unitSlot: this.unitSlot,
+      unitSlots: this.unitSlots,
       width: this.width,
       height: this.height,
       x: this.x,
