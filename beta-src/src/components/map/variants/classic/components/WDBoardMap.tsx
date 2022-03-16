@@ -38,8 +38,8 @@ import {
   BLACK_SEA,
   ENGLISH_CHANNEL,
   GULF_OF_BOTHNIA,
+  GULF_OF_LYONS,
   IRISH_SEA,
-  LIGUERIAN_SEA,
   MIDDLE_ATLANTIC,
   NORTH_ATLANTIC,
   NORTH_SEA,
@@ -213,8 +213,8 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={BLACK_SEA} />
         <WDTerritory territoryMapData={ENGLISH_CHANNEL} />
         <WDTerritory territoryMapData={GULF_OF_BOTHNIA} />
+        <WDTerritory territoryMapData={GULF_OF_LYONS} />
         <WDTerritory territoryMapData={IRISH_SEA} />
-        <WDTerritory territoryMapData={LIGUERIAN_SEA} />
         <WDTerritory territoryMapData={MIDDLE_ATLANTIC} />
         <WDTerritory territoryMapData={NORTH_ATLANTIC} />
         <WDTerritory territoryMapData={NORTH_SEA} />

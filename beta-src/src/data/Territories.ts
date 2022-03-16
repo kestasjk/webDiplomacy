@@ -86,8 +86,8 @@ export const IRISH_SEA: Territory = {
   type: "water",
 };
 
-export const LIGUERIAN_SEA: Territory = {
-  name: "LIGUERIAN_SEA",
+export const GULF_OF_LYONS: Territory = {
+  name: "GULF_OF_LYONS",
   abbr: "LYO",
   type: "water",
 };
@@ -268,8 +268,8 @@ const Territories: TerritoryData = {
   [TerritoryEnum.GASCONY]: GASCONY,
   [TerritoryEnum.GREECE]: GREECE,
   [TerritoryEnum.GULF_OF_BOTHNIA]: GULF_OF_BOTHNIA,
+  [TerritoryEnum.GULF_OF_LYONS]: GULF_OF_LYONS,
   [TerritoryEnum.IRISH_SEA]: IRISH_SEA,
-  [TerritoryEnum.LIGUERIAN_SEA]: LIGUERIAN_SEA,
   [TerritoryEnum.LIVERPOOL]: LIVERPOOL,
   [TerritoryEnum.LIVONIA]: LIVONIA,
   [TerritoryEnum.LONDON]: LONDON,
