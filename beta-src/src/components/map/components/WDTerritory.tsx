@@ -70,6 +70,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       {territoryMapData.unitSlots &&
         territoryMapData.unitSlots.map((unitSlot) => (
           <WDUnitSlot
+            key={unitSlot.name}
             name={unitSlot.name}
             territoryName={territoryMapData.name}
             x={unitSlot.x}
