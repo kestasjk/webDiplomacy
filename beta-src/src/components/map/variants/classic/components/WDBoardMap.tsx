@@ -4,16 +4,19 @@ import {
   ALBANIA,
   APULIA,
   BULGARIA,
+  CLYDE,
+  EDINBURGH,
   FINLAND,
   GASCONY,
   GREECE,
+  LIVERPOOL,
   LIVONIA,
+  LONDON,
   MOSCOW,
   NAPLES,
   PORTUGAL,
   ROME,
   RUMANIA,
-  WARSAW,
   SAINT_PETERSBURG,
   SERBIA,
   SEVASTOPOL,
@@ -21,11 +24,23 @@ import {
   TRIESTE,
   TUSCANY,
   UKRAINE,
+  WALES,
+  WARSAW,
+  YORK,
+  NEUTRAL_2,
 } from "../../../../../data/map/land/LandTerritoriesMapData";
-
-import { BLACK_SEA } from "../../../../../data/map/sea/SeaTerritoriesMapData";
+import {
+  BLACK_SEA,
+  ENGLISH_CHANNEL,
+  GULF_OF_BOTHNIA,
+  IRISH_SEA,
+  MIDDLE_ATLANTIC,
+  NORTH_ATLANTIC,
+  NORTH_SEA,
+} from "../../../../../data/map/sea/SeaTerritoriesMapData";
 
 import CapturableLandTexture from "../../../../../assets/textures/capturable-land.jpeg";
+import WaterTexture from "../../../../../assets/textures/sea-texture.png";
 
 const WDBoardMap: React.FC = function (): React.ReactElement {
   return (
@@ -190,21 +205,31 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
       </g>
       <g id="sea">
         <WDTerritory territoryMapData={BLACK_SEA} />
+        <WDTerritory territoryMapData={ENGLISH_CHANNEL} />
+        <WDTerritory territoryMapData={GULF_OF_BOTHNIA} />
+        <WDTerritory territoryMapData={IRISH_SEA} />
+        <WDTerritory territoryMapData={MIDDLE_ATLANTIC} />
+        <WDTerritory territoryMapData={NORTH_ATLANTIC} />
+        <WDTerritory territoryMapData={NORTH_SEA} />
       </g>
       <g id="outlines">
         <WDTerritory territoryMapData={ALBANIA} />
         <WDTerritory territoryMapData={APULIA} />
         <WDTerritory territoryMapData={BULGARIA} />
+        <WDTerritory territoryMapData={CLYDE} />
+        <WDTerritory territoryMapData={EDINBURGH} />
         <WDTerritory territoryMapData={FINLAND} />
         <WDTerritory territoryMapData={GASCONY} />
         <WDTerritory territoryMapData={GREECE} />
+        <WDTerritory territoryMapData={LIVERPOOL} />
         <WDTerritory territoryMapData={LIVONIA} />
+        <WDTerritory territoryMapData={LONDON} />
         <WDTerritory territoryMapData={MOSCOW} />
         <WDTerritory territoryMapData={NAPLES} />
+        <WDTerritory territoryMapData={NEUTRAL_2} />
         <WDTerritory territoryMapData={PORTUGAL} />
         <WDTerritory territoryMapData={ROME} />
         <WDTerritory territoryMapData={RUMANIA} />
-        <WDTerritory territoryMapData={WARSAW} />
         <WDTerritory territoryMapData={SAINT_PETERSBURG} />
         <WDTerritory territoryMapData={SERBIA} />
         <WDTerritory territoryMapData={SEVASTOPOL} />
@@ -212,6 +237,9 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={TRIESTE} />
         <WDTerritory territoryMapData={TUSCANY} />
         <WDTerritory territoryMapData={UKRAINE} />
+        <WDTerritory territoryMapData={WALES} />
+        <WDTerritory territoryMapData={WARSAW} />
+        <WDTerritory territoryMapData={YORK} />
       </g>
       <defs>
         <pattern
@@ -227,6 +255,14 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
             width="1546"
             height="1384"
           />
+        </pattern>
+        <pattern
+          id="sea-texture"
+          patternUnits="userSpaceOnUse"
+          width="1546"
+          height="1384"
+        >
+          <image href={WaterTexture} x="0" y="0" width="1966" height="1615" />
         </pattern>
       </defs>
     </g>
