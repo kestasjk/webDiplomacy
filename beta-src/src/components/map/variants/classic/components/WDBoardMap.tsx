@@ -3,7 +3,9 @@ import WDTerritory from "../../../components/WDTerritory";
 import {
   ALBANIA,
   APULIA,
+  BREST,
   BULGARIA,
+  BURGUNDY,
   CLYDE,
   EDINBURGH,
   FINLAND,
@@ -12,8 +14,11 @@ import {
   LIVERPOOL,
   LIVONIA,
   LONDON,
+  MARSEILLES,
   MOSCOW,
   NAPLES,
+  PARIS,
+  PICARDY,
   PORTUGAL,
   ROME,
   RUMANIA,
@@ -34,6 +39,7 @@ import {
   ENGLISH_CHANNEL,
   GULF_OF_BOTHNIA,
   IRISH_SEA,
+  LIGUERIAN_SEA,
   MIDDLE_ATLANTIC,
   NORTH_ATLANTIC,
   NORTH_SEA,
@@ -208,6 +214,7 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={ENGLISH_CHANNEL} />
         <WDTerritory territoryMapData={GULF_OF_BOTHNIA} />
         <WDTerritory territoryMapData={IRISH_SEA} />
+        <WDTerritory territoryMapData={LIGUERIAN_SEA} />
         <WDTerritory territoryMapData={MIDDLE_ATLANTIC} />
         <WDTerritory territoryMapData={NORTH_ATLANTIC} />
         <WDTerritory territoryMapData={NORTH_SEA} />
@@ -215,7 +222,9 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
       <g id="outlines">
         <WDTerritory territoryMapData={ALBANIA} />
         <WDTerritory territoryMapData={APULIA} />
+        <WDTerritory territoryMapData={BREST} />
         <WDTerritory territoryMapData={BULGARIA} />
+        <WDTerritory territoryMapData={BURGUNDY} />
         <WDTerritory territoryMapData={CLYDE} />
         <WDTerritory territoryMapData={EDINBURGH} />
         <WDTerritory territoryMapData={FINLAND} />
@@ -224,9 +233,12 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={LIVERPOOL} />
         <WDTerritory territoryMapData={LIVONIA} />
         <WDTerritory territoryMapData={LONDON} />
+        <WDTerritory territoryMapData={MARSEILLES} />
         <WDTerritory territoryMapData={MOSCOW} />
         <WDTerritory territoryMapData={NAPLES} />
         <WDTerritory territoryMapData={NEUTRAL_2} />
+        <WDTerritory territoryMapData={PARIS} />
+        <WDTerritory territoryMapData={PICARDY} />
         <WDTerritory territoryMapData={PORTUGAL} />
         <WDTerritory territoryMapData={ROME} />
         <WDTerritory territoryMapData={RUMANIA} />

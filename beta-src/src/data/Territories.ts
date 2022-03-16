@@ -20,9 +20,21 @@ export const BLACK_SEA: Territory = {
   type: "water",
 };
 
+export const BREST: Territory = {
+  name: "BREST",
+  abbr: "BRE",
+  type: "land",
+};
+
 export const BULGARIA: Territory = {
   name: "BULGARIA",
   abbr: "BUL",
+  type: "land",
+};
+
+export const BURGUNDY: Territory = {
+  name: "BURGUNDY",
+  abbr: "BUR",
   type: "land",
 };
 
@@ -71,6 +83,12 @@ export const GULF_OF_BOTHNIA: Territory = {
 export const IRISH_SEA: Territory = {
   name: "IRISH_SEA",
   abbr: "IRI",
+  type: "water",
+};
+
+export const LIGUERIAN_SEA: Territory = {
+  name: "LIGUERIAN_SEA",
+  abbr: "LYO",
   type: "water",
 };
 
@@ -132,6 +150,18 @@ export const NORTH_SEA: Territory = {
   name: "NORTH_SEA",
   abbr: "NTH",
   type: "water",
+};
+
+export const PARIS: Territory = {
+  name: "PARIS",
+  abbr: "PAR",
+  type: "land",
+};
+
+export const PICARDY: Territory = {
+  name: "PICARDY",
+  abbr: "PIC",
+  type: "land",
 };
 
 export const PIEDMONT: Territory = {
@@ -228,7 +258,9 @@ const Territories: TerritoryData = {
   [TerritoryEnum.ALBANIA]: ALBANIA,
   [TerritoryEnum.APULIA]: APULIA,
   [TerritoryEnum.BLACK_SEA]: BLACK_SEA,
+  [TerritoryEnum.BREST]: BREST,
   [TerritoryEnum.BULGARIA]: BULGARIA,
+  [TerritoryEnum.BURGUNDY]: BURGUNDY,
   [TerritoryEnum.CLYDE]: CLYDE,
   [TerritoryEnum.EDINBURGH]: EDINBURGH,
   [TerritoryEnum.ENGLISH_CHANNEL]: ENGLISH_CHANNEL,
@@ -237,6 +269,7 @@ const Territories: TerritoryData = {
   [TerritoryEnum.GREECE]: GREECE,
   [TerritoryEnum.GULF_OF_BOTHNIA]: GULF_OF_BOTHNIA,
   [TerritoryEnum.IRISH_SEA]: IRISH_SEA,
+  [TerritoryEnum.LIGUERIAN_SEA]: LIGUERIAN_SEA,
   [TerritoryEnum.LIVERPOOL]: LIVERPOOL,
   [TerritoryEnum.LIVONIA]: LIVONIA,
   [TerritoryEnum.LONDON]: LONDON,
@@ -247,6 +280,8 @@ const Territories: TerritoryData = {
   [TerritoryEnum.NEUTRAL_2]: NEUTRAL_2,
   [TerritoryEnum.NORTH_ATLANTIC]: NORTH_ATLANTIC,
   [TerritoryEnum.NORTH_SEA]: NORTH_SEA,
+  [TerritoryEnum.PARIS]: PARIS,
+  [TerritoryEnum.PICARDY]: PICARDY,
   [TerritoryEnum.PIEDMONT]: PIEDMONT,
   [TerritoryEnum.PORTUGAL]: PORTUGAL,
   [TerritoryEnum.ROME]: ROME,
@@ -258,10 +293,6 @@ const Territories: TerritoryData = {
   [TerritoryEnum.SPAIN]: SPAIN,
   [TerritoryEnum.TRIESTE]: TRIESTE,
   [TerritoryEnum.TUSCANY]: TUSCANY,
-  [TerritoryEnum.MARSEILLES]: MARSEILLES,
-  [TerritoryEnum.APULIA]: APULIA,
-  [TerritoryEnum.PIEDMONT]: PIEDMONT,
-  [TerritoryEnum.ROME]: ROME,
   [TerritoryEnum.UKRAINE]: UKRAINE,
   [TerritoryEnum.VENICE]: VENICE,
   [TerritoryEnum.WALES]: WALES,
