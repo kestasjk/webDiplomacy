@@ -6,6 +6,7 @@ interface WDButtonProps {
   color?: "primary" | "secondary";
   disabled?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
+  startIcon?: React.ReactNode | undefined;
 }
 
 const WDButton: React.FC<WDButtonProps> = function ({
@@ -13,12 +14,15 @@ const WDButton: React.FC<WDButtonProps> = function ({
   color,
   disabled,
   onClick,
+  startIcon,
 }): React.ReactElement {
   return (
     <Button
       color={color}
       disabled={disabled}
+      startIcon={startIcon}
       onClick={onClick}
+      startIcon={startIcon}
       variant="contained"
     >
       {children}
@@ -30,6 +34,7 @@ WDButton.defaultProps = {
   color: "primary",
   disabled: false,
   onClick: undefined,
+  startIcon: undefined,
 };
 
 export default WDButton;
