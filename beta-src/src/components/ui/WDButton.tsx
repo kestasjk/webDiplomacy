@@ -20,7 +20,6 @@ const WDButton: React.FC<WDButtonProps> = function ({
     <Button
       color={color}
       disabled={disabled}
-      startIcon={startIcon}
       onClick={onClick}
       startIcon={startIcon}
       variant="contained"
