@@ -71,7 +71,7 @@ export const GULF_OF_BOTHNIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ],
   width: 362,
   height: 462,
-  x: 3095,
+  x: 3096,
   y: 993,
   texture: {
     texture: Texture.SEA,
