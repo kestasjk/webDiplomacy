@@ -203,9 +203,6 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
           />
         </g>
       </g>
-      <g id="neutral">
-        <WDTerritory territoryMapData={NEUTRAL_2} />
-      </g>
       <g id="sea">
         <WDTerritory territoryMapData={BLACK_SEA} />
         <WDTerritory territoryMapData={ENGLISH_CHANNEL} />
@@ -229,6 +226,7 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={LONDON} />
         <WDTerritory territoryMapData={MOSCOW} />
         <WDTerritory territoryMapData={NAPLES} />
+        <WDTerritory territoryMapData={NEUTRAL_2} />
         <WDTerritory territoryMapData={PORTUGAL} />
         <WDTerritory territoryMapData={ROME} />
         <WDTerritory territoryMapData={RUMANIA} />
@@ -258,8 +256,6 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
             height="1384"
           />
         </pattern>
-      </defs>
-      <defs>
         <pattern
           id="sea-texture"
           patternUnits="userSpaceOnUse"

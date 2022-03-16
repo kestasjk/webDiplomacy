@@ -1,26 +1,26 @@
 {
   "files": {
-    "main.css": "/beta/static/css/main.91570646.chunk.css",
-    "main.js": "/beta/static/js/main.3142bc52.chunk.js",
-    "main.js.map": "/beta/static/js/main.3142bc52.chunk.js.map",
-    "runtime-main.js": "/beta/static/js/runtime-main.f5d6d1ae.js",
-    "runtime-main.js.map": "/beta/static/js/runtime-main.f5d6d1ae.js.map",
-    "static/js/2.641db0a5.chunk.js": "/beta/static/js/2.641db0a5.chunk.js",
-    "static/js/2.641db0a5.chunk.js.map": "/beta/static/js/2.641db0a5.chunk.js.map",
-    "static/js/3.fe296ca8.chunk.js": "/beta/static/js/3.fe296ca8.chunk.js",
-    "static/js/3.fe296ca8.chunk.js.map": "/beta/static/js/3.fe296ca8.chunk.js.map",
-    "static/js/4.1a56a124.chunk.js": "/beta/static/js/4.1a56a124.chunk.js",
-    "static/js/4.1a56a124.chunk.js.map": "/beta/static/js/4.1a56a124.chunk.js.map",
-    "index.html": "/beta/index.html",
-    "static/css/main.91570646.chunk.css.map": "/beta/static/css/main.91570646.chunk.css.map",
-    "static/js/2.641db0a5.chunk.js.LICENSE.txt": "/beta/static/js/2.641db0a5.chunk.js.LICENSE.txt",
-    "static/media/capturable-land.379f9cca.jpeg": "/beta/static/media/capturable-land.379f9cca.jpeg",
-    "static/media/sea-texture.fd82ad46.png": "/beta/static/media/sea-texture.fd82ad46.png"
+    "main.css": "/static/css/main.91570646.chunk.css",
+    "main.js": "/static/js/main.d8540848.chunk.js",
+    "main.js.map": "/static/js/main.d8540848.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.3f783dd6.js",
+    "runtime-main.js.map": "/static/js/runtime-main.3f783dd6.js.map",
+    "static/js/2.641db0a5.chunk.js": "/static/js/2.641db0a5.chunk.js",
+    "static/js/2.641db0a5.chunk.js.map": "/static/js/2.641db0a5.chunk.js.map",
+    "static/js/3.fe296ca8.chunk.js": "/static/js/3.fe296ca8.chunk.js",
+    "static/js/3.fe296ca8.chunk.js.map": "/static/js/3.fe296ca8.chunk.js.map",
+    "static/js/4.1a56a124.chunk.js": "/static/js/4.1a56a124.chunk.js",
+    "static/js/4.1a56a124.chunk.js.map": "/static/js/4.1a56a124.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/main.91570646.chunk.css.map": "/static/css/main.91570646.chunk.css.map",
+    "static/js/2.641db0a5.chunk.js.LICENSE.txt": "/static/js/2.641db0a5.chunk.js.LICENSE.txt",
+    "static/media/capturable-land.379f9cca.jpeg": "/static/media/capturable-land.379f9cca.jpeg",
+    "static/media/sea-texture.fd82ad46.png": "/static/media/sea-texture.fd82ad46.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.f5d6d1ae.js",
+    "static/js/runtime-main.3f783dd6.js",
     "static/js/2.641db0a5.chunk.js",
     "static/css/main.91570646.chunk.css",
-    "static/js/main.3142bc52.chunk.js"
+    "static/js/main.d8540848.chunk.js"
   ]
 }
