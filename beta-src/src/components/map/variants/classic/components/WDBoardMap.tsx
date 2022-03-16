@@ -204,7 +204,7 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         </g>
       </g>
       <g id="sea">
-        <WDTerritory territoryMapData={BLACK_SEA} />
+        {/* <WDTerritory territoryMapData={BLACK_SEA} /> */}
         <WDTerritory territoryMapData={ENGLISH_CHANNEL} />
         <WDTerritory territoryMapData={GULF_OF_BOTHNIA} />
         <WDTerritory territoryMapData={IRISH_SEA} />
