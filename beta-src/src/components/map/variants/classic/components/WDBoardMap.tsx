@@ -188,29 +188,27 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
           />
         </g>
       </g>
-      <g id="sea">
-        <WDTerritory territoryMapData={BLACK_SEA} />
-      </g>
+      <g id="sea">{/* <WDTerritory territoryMapData={BLACK_SEA} /> */}</g>
       <g id="outlines">
-        <WDTerritory territoryMapData={ALBANIA} />
-        <WDTerritory territoryMapData={APULIA} />
-        <WDTerritory territoryMapData={BULGARIA} />
+        {/* <WDTerritory territoryMapData={ALBANIA} /> */}
+        {/* <WDTerritory territoryMapData={APULIA} /> */}
+        {/* <WDTerritory territoryMapData={BULGARIA} /> */}
         <WDTerritory territoryMapData={FINLAND} />
-        <WDTerritory territoryMapData={GASCONY} />
-        <WDTerritory territoryMapData={GREECE} />
+        {/* <WDTerritory territoryMapData={GASCONY} /> */}
+        {/* <WDTerritory territoryMapData={GREECE} /> */}
         <WDTerritory territoryMapData={LIVONIA} />
         <WDTerritory territoryMapData={MOSCOW} />
-        <WDTerritory territoryMapData={NAPLES} />
-        <WDTerritory territoryMapData={PORTUGAL} />
-        <WDTerritory territoryMapData={ROME} />
-        <WDTerritory territoryMapData={RUMANIA} />
+        {/* <WDTerritory territoryMapData={NAPLES} /> */}
+        {/* <WDTerritory territoryMapData={PORTUGAL} /> */}
+        {/* <WDTerritory territoryMapData={ROME} /> */}
+        {/* <WDTerritory territoryMapData={RUMANIA} /> */}
         <WDTerritory territoryMapData={WARSAW} />
         <WDTerritory territoryMapData={SAINT_PETERSBURG} />
-        <WDTerritory territoryMapData={SERBIA} />
+        {/* <WDTerritory territoryMapData={SERBIA} /> */}
         <WDTerritory territoryMapData={SEVASTOPOL} />
-        <WDTerritory territoryMapData={SPAIN} />
-        <WDTerritory territoryMapData={TRIESTE} />
-        <WDTerritory territoryMapData={TUSCANY} />
+        {/* <WDTerritory territoryMapData={SPAIN} /> */}
+        {/* <WDTerritory territoryMapData={TRIESTE} /> */}
+        {/* <WDTerritory territoryMapData={TUSCANY} /> */}
         <WDTerritory territoryMapData={UKRAINE} />
       </g>
       <defs>
