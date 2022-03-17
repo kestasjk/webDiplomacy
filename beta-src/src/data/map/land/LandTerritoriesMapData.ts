@@ -203,7 +203,7 @@ export const FINLAND: TerritoryMapData = new TerritoryMapDataGenerator({
     {
       name: "main",
       x: 120,
-      y: 390,
+      y: 400,
     },
   ],
   width: 256,
@@ -299,21 +299,21 @@ export const LIVONIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.LIVONIA).territory,
   labels: [
     {
-      x: 108,
-      y: 180,
+      x: 106,
+      y: 181,
     },
   ],
   unitSlots: [
     {
       name: "main",
-      x: 45,
-      y: 150,
+      x: 35,
+      y: 145,
     },
   ],
   width: 210,
   height: 335,
   x: 3224,
-  y: 1335,
+  y: 1334,
   texture: {
     texture: Texture.LAND,
   },
@@ -386,21 +386,21 @@ export const MOSCOW: TerritoryMapData = new TerritoryMapDataGenerator({
   },
   labels: [
     {
-      x: "51%",
-      y: "48%",
+      x: "51.5%",
+      y: "48.2%",
     },
   ],
   unitSlots: [
     {
       name: "main",
-      x: 20,
-      y: 30,
+      x: 295,
+      y: 325,
     },
   ],
   width: 804,
   height: 731,
   x: 3337,
-  y: 1112,
+  y: 1111,
   texture: {
     texture: Texture.LAND,
   },
@@ -595,21 +595,41 @@ export const SAINT_PETERSBURG: TerritoryMapData = new TerritoryMapDataGenerator(
     },
     labels: [
       {
-        x: "25%",
-        y: "80%",
+        x: "25.5%",
+        y: "80.5%",
+      },
+      {
+        x: 100,
+        y: 695,
+        text: "SC",
+      },
+      {
+        x: 313,
+        y: 373,
+        text: "NC",
       },
     ],
     unitSlots: [
       {
         name: "main",
-        x: 20,
-        y: 30,
+        x: 182,
+        y: 555,
+      },
+      {
+        name: "sc",
+        x: 135,
+        y: 700,
+      },
+      {
+        name: "nc",
+        x: 347,
+        y: 373,
       },
     ],
     width: 846,
     height: 799,
-    x: 3294,
-    y: 647,
+    x: 3294.5,
+    y: 646,
     texture: {
       texture: Texture.LAND,
     },
@@ -649,8 +669,8 @@ export const SERBIA: TerritoryMapData = new TerritoryMapDataGenerator({
 export const SEVASTOPOL: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.SEVASTOPOL).territory,
   centerPos: {
-    x: 210,
-    y: 405,
+    x: 209,
+    y: 410,
   },
   labels: [
     {
@@ -661,14 +681,14 @@ export const SEVASTOPOL: TerritoryMapData = new TerritoryMapDataGenerator({
   unitSlots: [
     {
       name: "main",
-      x: 180,
-      y: 290,
+      x: 178,
+      y: 285,
     },
   ],
   width: 657,
   height: 588,
-  x: 3485,
-  y: 1622,
+  x: 3484,
+  y: 1620,
   texture: {
     texture: Texture.LAND,
   },
@@ -781,7 +801,7 @@ export const UKRAINE: TerritoryMapData = new TerritoryMapDataGenerator({
   ],
   width: 311,
   height: 302,
-  x: 3350,
+  x: 3349,
   y: 1672,
   texture: {
     texture: Texture.LAND,
@@ -817,26 +837,26 @@ export const WALES: TerritoryMapData = new TerritoryMapDataGenerator({
 export const WARSAW: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.WARSAW).territory,
   centerPos: {
-    x: 54,
-    y: 83,
+    x: 65,
+    y: 75,
   },
   labels: [
     {
-      x: 55,
-      y: 140,
+      x: 58,
+      y: 135,
     },
   ],
   unitSlots: [
     {
       name: "main",
-      x: 90,
-      y: 75,
+      x: 110,
+      y: 65,
     },
   ],
   width: 237,
   height: 196,
-  x: 3127,
-  y: 1619,
+  x: 3126,
+  y: 1618,
   texture: {
     texture: Texture.LAND,
   },
