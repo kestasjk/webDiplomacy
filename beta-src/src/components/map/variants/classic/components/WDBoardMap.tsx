@@ -3,6 +3,7 @@ import WDTerritory from "../../../components/WDTerritory";
 import {
   ALBANIA,
   APULIA,
+  BERLIN,
   BREST,
   BULGARIA,
   BURGUNDY,
@@ -11,20 +12,27 @@ import {
   FINLAND,
   GASCONY,
   GREECE,
+  KIEL,
   LIVERPOOL,
   LIVONIA,
   LONDON,
   MARSEILLES,
   MOSCOW,
+  MUNICH,
   NAPLES,
+  NEUTRAL_2,
+  NEUTRAL_3,
   PARIS,
   PICARDY,
   PORTUGAL,
+  PRUSSIA,
   ROME,
+  RUHR,
   RUMANIA,
   SAINT_PETERSBURG,
   SERBIA,
   SEVASTOPOL,
+  SILESIA,
   SPAIN,
   TRIESTE,
   TUSCANY,
@@ -32,13 +40,14 @@ import {
   WALES,
   WARSAW,
   YORK,
-  NEUTRAL_2,
 } from "../../../../../data/map/land/LandTerritoriesMapData";
 import {
+  BALTIC_SEA,
   BLACK_SEA,
   ENGLISH_CHANNEL,
   GULF_OF_BOTHNIA,
   GULF_OF_LYONS,
+  HELIGOLAND_BIGHT,
   IRISH_SEA,
   MIDDLE_ATLANTIC,
   NORTH_ATLANTIC,
@@ -210,10 +219,12 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         </g>
       </g>
       <g id="sea">
+        <WDTerritory territoryMapData={BALTIC_SEA} />
         {/* <WDTerritory territoryMapData={BLACK_SEA} /> */}
         <WDTerritory territoryMapData={ENGLISH_CHANNEL} />
         <WDTerritory territoryMapData={GULF_OF_BOTHNIA} />
         <WDTerritory territoryMapData={GULF_OF_LYONS} />
+        <WDTerritory territoryMapData={HELIGOLAND_BIGHT} />
         <WDTerritory territoryMapData={IRISH_SEA} />
         <WDTerritory territoryMapData={MIDDLE_ATLANTIC} />
         <WDTerritory territoryMapData={NORTH_ATLANTIC} />
@@ -222,6 +233,7 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
       <g id="outlines">
         {/* <WDTerritory territoryMapData={ALBANIA} /> */}
         {/* <WDTerritory territoryMapData={APULIA} /> */}
+        <WDTerritory territoryMapData={BERLIN} />
         <WDTerritory territoryMapData={BREST} />
         {/* <WDTerritory territoryMapData={BULGARIA} /> */}
         <WDTerritory territoryMapData={BURGUNDY} />
@@ -229,22 +241,28 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={EDINBURGH} />
         <WDTerritory territoryMapData={FINLAND} />
         <WDTerritory territoryMapData={GASCONY} />
+        <WDTerritory territoryMapData={KIEL} />
         {/* <WDTerritory territoryMapData={GREECE} /> */}
         <WDTerritory territoryMapData={LIVERPOOL} />
         <WDTerritory territoryMapData={LIVONIA} />
         <WDTerritory territoryMapData={LONDON} />
         <WDTerritory territoryMapData={MARSEILLES} />
         <WDTerritory territoryMapData={MOSCOW} />
+        <WDTerritory territoryMapData={MUNICH} />
         {/* <WDTerritory territoryMapData={NAPLES} /> */}
         <WDTerritory territoryMapData={NEUTRAL_2} />
+        <WDTerritory territoryMapData={NEUTRAL_3} />
         <WDTerritory territoryMapData={PARIS} />
         <WDTerritory territoryMapData={PICARDY} />
         {/* <WDTerritory territoryMapData={PORTUGAL} /> */}
+        <WDTerritory territoryMapData={PRUSSIA} />
         {/* <WDTerritory territoryMapData={ROME} /> */}
+        <WDTerritory territoryMapData={RUHR} />
         {/* <WDTerritory territoryMapData={RUMANIA} /> */}
         <WDTerritory territoryMapData={SAINT_PETERSBURG} />
         {/* <WDTerritory territoryMapData={SERBIA} /> */}
         <WDTerritory territoryMapData={SEVASTOPOL} />
+        <WDTerritory territoryMapData={SILESIA} />
         {/* <WDTerritory territoryMapData={SPAIN} /> */}
         {/* <WDTerritory territoryMapData={TRIESTE} /> */}
         {/* <WDTerritory territoryMapData={TUSCANY} /> */}
