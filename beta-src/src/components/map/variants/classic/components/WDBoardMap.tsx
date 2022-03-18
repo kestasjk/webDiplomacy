@@ -3,7 +3,9 @@ import WDTerritory from "../../../components/WDTerritory";
 import {
   ALBANIA,
   APULIA,
+  BREST,
   BULGARIA,
+  BURGUNDY,
   CLYDE,
   EDINBURGH,
   FINLAND,
@@ -12,8 +14,11 @@ import {
   LIVERPOOL,
   LIVONIA,
   LONDON,
+  MARSEILLES,
   MOSCOW,
   NAPLES,
+  PARIS,
+  PICARDY,
   PORTUGAL,
   ROME,
   RUMANIA,
@@ -33,6 +38,7 @@ import {
   BLACK_SEA,
   ENGLISH_CHANNEL,
   GULF_OF_BOTHNIA,
+  GULF_OF_LYONS,
   IRISH_SEA,
   MIDDLE_ATLANTIC,
   NORTH_ATLANTIC,
@@ -207,6 +213,7 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         {/* <WDTerritory territoryMapData={BLACK_SEA} /> */}
         <WDTerritory territoryMapData={ENGLISH_CHANNEL} />
         <WDTerritory territoryMapData={GULF_OF_BOTHNIA} />
+        <WDTerritory territoryMapData={GULF_OF_LYONS} />
         <WDTerritory territoryMapData={IRISH_SEA} />
         <WDTerritory territoryMapData={MIDDLE_ATLANTIC} />
         <WDTerritory territoryMapData={NORTH_ATLANTIC} />
@@ -215,18 +222,23 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
       <g id="outlines">
         {/* <WDTerritory territoryMapData={ALBANIA} /> */}
         {/* <WDTerritory territoryMapData={APULIA} /> */}
+        <WDTerritory territoryMapData={BREST} />
         {/* <WDTerritory territoryMapData={BULGARIA} /> */}
+        <WDTerritory territoryMapData={BURGUNDY} />
         <WDTerritory territoryMapData={CLYDE} />
         <WDTerritory territoryMapData={EDINBURGH} />
         <WDTerritory territoryMapData={FINLAND} />
-        {/* <WDTerritory territoryMapData={GASCONY} /> */}
+        <WDTerritory territoryMapData={GASCONY} />
         {/* <WDTerritory territoryMapData={GREECE} /> */}
         <WDTerritory territoryMapData={LIVERPOOL} />
         <WDTerritory territoryMapData={LIVONIA} />
         <WDTerritory territoryMapData={LONDON} />
+        <WDTerritory territoryMapData={MARSEILLES} />
         <WDTerritory territoryMapData={MOSCOW} />
         {/* <WDTerritory territoryMapData={NAPLES} /> */}
         <WDTerritory territoryMapData={NEUTRAL_2} />
+        <WDTerritory territoryMapData={PARIS} />
+        <WDTerritory territoryMapData={PICARDY} />
         {/* <WDTerritory territoryMapData={PORTUGAL} /> */}
         {/* <WDTerritory territoryMapData={ROME} /> */}
         {/* <WDTerritory territoryMapData={RUMANIA} /> */}
