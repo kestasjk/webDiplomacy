@@ -2,15 +2,33 @@ import TerritoryData from "../types/map/TerritoryData";
 import TerritoryEnum from "../enums/Territory";
 import { Territory } from "../interfaces";
 
+export const AEGEAN_SEA: Territory = {
+  name: "AEGEAN_SEA",
+  abbr: "AEG",
+  type: "water",
+};
+
 export const ALBANIA: Territory = {
   name: "ALBANIA",
   abbr: "ALB",
   type: "land",
 };
 
+export const ANKARA: Territory = {
+  name: "ANKARA",
+  abbr: "ANK",
+  type: "land",
+};
+
 export const APULIA: Territory = {
   name: "APULIA",
   abbr: "APU",
+  type: "land",
+};
+
+export const ARMENIA: Territory = {
+  name: "ARMENIA",
+  abbr: "ARM",
   type: "land",
 };
 
@@ -50,9 +68,21 @@ export const BURGUNDY: Territory = {
   type: "land",
 };
 
+export const CHANNEL_1: Territory = {
+  name: "CHANNEL_1",
+  abbr: "",
+  type: "water",
+};
+
 export const CLYDE: Territory = {
   name: "CLYDE",
   abbr: "CLY",
+  type: "land",
+};
+
+export const CONSTANTINOPLE: Territory = {
+  name: "CONSTANTINOPLE",
+  abbr: "CON",
   type: "land",
 };
 
@@ -60,6 +90,12 @@ export const EDINBURGH: Territory = {
   name: "EDINBURGH",
   abbr: "EDI",
   type: "land",
+};
+
+export const EASTERN_MEDITERRANEAN: Territory = {
+  name: "EASTERN_MEDITERRANEAN",
+  abbr: "EAS",
+  type: "water",
 };
 
 export const ENGLISH_CHANNEL: Territory = {
@@ -176,6 +212,18 @@ export const NEUTRAL_3: Territory = {
   type: "land",
 };
 
+export const NEUTRAL_8: Territory = {
+  name: "NEUTRAL_8",
+  abbr: "",
+  type: "land",
+};
+
+export const NEUTRAL_9: Territory = {
+  name: "NEUTRAL_9",
+  abbr: "",
+  type: "land",
+};
+
 export const NORTH_ATLANTIC: Territory = {
   name: "NORTH_ATLANTIC",
   abbr: "NAO",
@@ -266,9 +314,21 @@ export const SILESIA: Territory = {
   type: "land",
 };
 
+export const SMYRNA: Territory = {
+  name: "SMYRNA",
+  abbr: "SMY",
+  type: "land",
+};
+
 export const SPAIN: Territory = {
   name: "SPAIN",
   abbr: "SPA",
+  type: "land",
+};
+
+export const SYRIA: Territory = {
+  name: "SYRIA",
+  abbr: "SYR",
   type: "land",
 };
 
@@ -309,15 +369,21 @@ export const YORK: Territory = {
 };
 
 const Territories: TerritoryData = {
+  [TerritoryEnum.AEGEAN_SEA]: AEGEAN_SEA,
   [TerritoryEnum.ALBANIA]: ALBANIA,
+  [TerritoryEnum.ANKARA]: ANKARA,
   [TerritoryEnum.APULIA]: APULIA,
+  [TerritoryEnum.ARMENIA]: ARMENIA,
   [TerritoryEnum.BALTIC_SEA]: BALTIC_SEA,
   [TerritoryEnum.BERLIN]: BERLIN,
   [TerritoryEnum.BLACK_SEA]: BLACK_SEA,
   [TerritoryEnum.BREST]: BREST,
   [TerritoryEnum.BULGARIA]: BULGARIA,
   [TerritoryEnum.BURGUNDY]: BURGUNDY,
+  [TerritoryEnum.CHANNEL_1]: CHANNEL_1,
   [TerritoryEnum.CLYDE]: CLYDE,
+  [TerritoryEnum.CONSTANTINOPLE]: CONSTANTINOPLE,
+  [TerritoryEnum.EASTERN_MEDITERRANEAN]: EASTERN_MEDITERRANEAN,
   [TerritoryEnum.EDINBURGH]: EDINBURGH,
   [TerritoryEnum.ENGLISH_CHANNEL]: ENGLISH_CHANNEL,
   [TerritoryEnum.FINLAND]: FINLAND,
@@ -338,6 +404,8 @@ const Territories: TerritoryData = {
   [TerritoryEnum.NAPLES]: NAPLES,
   [TerritoryEnum.NEUTRAL_2]: NEUTRAL_2,
   [TerritoryEnum.NEUTRAL_3]: NEUTRAL_3,
+  [TerritoryEnum.NEUTRAL_8]: NEUTRAL_8,
+  [TerritoryEnum.NEUTRAL_9]: NEUTRAL_9,
   [TerritoryEnum.NORTH_ATLANTIC]: NORTH_ATLANTIC,
   [TerritoryEnum.NORTH_SEA]: NORTH_SEA,
   [TerritoryEnum.PARIS]: PARIS,
@@ -353,7 +421,9 @@ const Territories: TerritoryData = {
   [TerritoryEnum.SAINT_PETERSBURG]: SAINT_PETERSBURG,
   [TerritoryEnum.SERBIA]: SERBIA,
   [TerritoryEnum.SEVASTOPOL]: SEVASTOPOL,
+  [TerritoryEnum.SMYRNA]: SMYRNA,
   [TerritoryEnum.SPAIN]: SPAIN,
+  [TerritoryEnum.SYRIA]: SYRIA,
   [TerritoryEnum.TRIESTE]: TRIESTE,
   [TerritoryEnum.TUSCANY]: TUSCANY,
   [TerritoryEnum.UKRAINE]: UKRAINE,
