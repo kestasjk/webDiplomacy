@@ -23,12 +23,18 @@ import {
   MOSCOW,
   MUNICH,
   NAPLES,
+  NEUTRAL_1,
   NEUTRAL_2,
   NEUTRAL_3,
+  NEUTRAL_4,
+  NEUTRAL_5,
+  NEUTRAL_6,
+  NEUTRAL_7,
   NEUTRAL_8,
   NEUTRAL_9,
   PARIS,
   PICARDY,
+  PIEDMONT,
   PORTUGAL,
   PRUSSIA,
   ROME,
@@ -44,11 +50,13 @@ import {
   TRIESTE,
   TUSCANY,
   UKRAINE,
+  VENICE,
   WALES,
   WARSAW,
   YORK,
 } from "../../../../../data/map/land/LandTerritoriesMapData";
 import {
+  ADRIATIC_SEA,
   AEGEAN_SEA,
   BALTIC_SEA,
   BLACK_SEA,
@@ -62,6 +70,7 @@ import {
   MIDDLE_ATLANTIC,
   NORTH_ATLANTIC,
   NORTH_SEA,
+  TYRRHENIAN_SEA,
 } from "../../../../../data/map/sea/SeaTerritoriesMapData";
 
 import CapturableLandTexture from "../../../../../assets/textures/capturable-land.jpeg";
@@ -229,6 +238,7 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         </g>
       </g>
       <g id="sea">
+        <WDTerritory territoryMapData={ADRIATIC_SEA} />
         <WDTerritory territoryMapData={AEGEAN_SEA} />
         <WDTerritory territoryMapData={BALTIC_SEA} />
         <WDTerritory territoryMapData={BLACK_SEA} />
@@ -242,11 +252,12 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={MIDDLE_ATLANTIC} />
         <WDTerritory territoryMapData={NORTH_ATLANTIC} />
         <WDTerritory territoryMapData={NORTH_SEA} />
+        <WDTerritory territoryMapData={TYRRHENIAN_SEA} />
       </g>
       <g id="outlines">
         {/* <WDTerritory territoryMapData={ALBANIA} /> */}
         <WDTerritory territoryMapData={ANKARA} />
-        {/* <WDTerritory territoryMapData={APULIA} /> */}
+        <WDTerritory territoryMapData={APULIA} />
         <WDTerritory territoryMapData={ARMENIA} />
         <WDTerritory territoryMapData={BERLIN} />
         <WDTerritory territoryMapData={BREST} />
@@ -265,16 +276,21 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={MARSEILLES} />
         <WDTerritory territoryMapData={MOSCOW} />
         <WDTerritory territoryMapData={MUNICH} />
-        {/* <WDTerritory territoryMapData={NAPLES} /> */}
+        <WDTerritory territoryMapData={NAPLES} />
+        <WDTerritory territoryMapData={NEUTRAL_1} />
         <WDTerritory territoryMapData={NEUTRAL_2} />
         <WDTerritory territoryMapData={NEUTRAL_3} />
+        <WDTerritory territoryMapData={NEUTRAL_4} />
+        <WDTerritory territoryMapData={NEUTRAL_5} />
+        <WDTerritory territoryMapData={NEUTRAL_6} />
+        <WDTerritory territoryMapData={NEUTRAL_7} />
         <WDTerritory territoryMapData={NEUTRAL_8} />
         <WDTerritory territoryMapData={NEUTRAL_9} />
         <WDTerritory territoryMapData={PARIS} />
         <WDTerritory territoryMapData={PICARDY} />
+        <WDTerritory territoryMapData={PIEDMONT} />
         {/* <WDTerritory territoryMapData={PORTUGAL} /> */}
         <WDTerritory territoryMapData={PRUSSIA} />
-        {/* <WDTerritory territoryMapData={ROME} /> */}
         <WDTerritory territoryMapData={RUHR} />
         {/* <WDTerritory territoryMapData={RUMANIA} /> */}
         <WDTerritory territoryMapData={SAINT_PETERSBURG} />
@@ -285,11 +301,15 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         {/* <WDTerritory territoryMapData={SPAIN} /> */}
         <WDTerritory territoryMapData={SYRIA} />
         {/* <WDTerritory territoryMapData={TRIESTE} /> */}
-        {/* <WDTerritory territoryMapData={TUSCANY} /> */}
         <WDTerritory territoryMapData={UKRAINE} />
+        <WDTerritory territoryMapData={VENICE} />
         <WDTerritory territoryMapData={WALES} />
         <WDTerritory territoryMapData={WARSAW} />
         <WDTerritory territoryMapData={YORK} />
+        {/* These need to be last so the labels and units will appear */}
+        <WDTerritory territoryMapData={NAPLES} />
+        <WDTerritory territoryMapData={ROME} />
+        <WDTerritory territoryMapData={TUSCANY} />
       </g>
       <defs>
         <pattern
