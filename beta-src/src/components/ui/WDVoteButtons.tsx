@@ -6,7 +6,7 @@ import VoteType from "../../types/Vote";
 
 interface voteProps {
   voteState: VoteType;
-  toggleVote: (vote: string) => void;
+  toggleVote: (vote: string, status: boolean) => void;
 }
 
 const voteLabel = {
@@ -24,7 +24,7 @@ const WDVoteButtons: React.FC<voteProps> = function ({
       <WDButton
         key={vote}
         color={status ? "secondary" : "primary"}
-        onClick={() => toggleVote(vote)}
+        onClick={() => toggleVote(vote, status)}
         startIcon={status ? <WDCheckmarkIcon /> : ""}
       >
         {voteLabel[vote]}
