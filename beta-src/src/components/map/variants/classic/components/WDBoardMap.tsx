@@ -59,6 +59,7 @@ import {
   ADRIATIC_SEA,
   AEGEAN_SEA,
   BALTIC_SEA,
+  BARRENTS_SEA,
   BLACK_SEA,
   CHANNEL_1,
   EASTERN_MEDITERRANEAN,
@@ -66,11 +67,17 @@ import {
   GULF_OF_BOTHNIA,
   GULF_OF_LYONS,
   HELIGOLAND_BIGHT,
+  IONIAN_SEA,
   IRISH_SEA,
   MIDDLE_ATLANTIC,
   NORTH_ATLANTIC,
+  NORTH_ATLANTIC2,
   NORTH_SEA,
+  NORWEGIAN_SEA,
+  SKAGERRACK,
+  SKAGERRACK2,
   TYRRHENIAN_SEA,
+  WESTERN_MEDITERRANEAN,
 } from "../../../../../data/map/sea/SeaTerritoriesMapData";
 
 import CapturableLandTexture from "../../../../../assets/textures/capturable-land.jpeg";
@@ -241,6 +248,7 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={ADRIATIC_SEA} />
         <WDTerritory territoryMapData={AEGEAN_SEA} />
         <WDTerritory territoryMapData={BALTIC_SEA} />
+        <WDTerritory territoryMapData={BARRENTS_SEA} />
         <WDTerritory territoryMapData={BLACK_SEA} />
         <WDTerritory territoryMapData={CHANNEL_1} />
         <WDTerritory territoryMapData={EASTERN_MEDITERRANEAN} />
@@ -248,11 +256,17 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={GULF_OF_BOTHNIA} />
         <WDTerritory territoryMapData={GULF_OF_LYONS} />
         <WDTerritory territoryMapData={HELIGOLAND_BIGHT} />
+        <WDTerritory territoryMapData={IONIAN_SEA} />
         <WDTerritory territoryMapData={IRISH_SEA} />
         <WDTerritory territoryMapData={MIDDLE_ATLANTIC} />
         <WDTerritory territoryMapData={NORTH_ATLANTIC} />
+        <WDTerritory territoryMapData={NORTH_ATLANTIC2} />
         <WDTerritory territoryMapData={NORTH_SEA} />
+        <WDTerritory territoryMapData={NORWEGIAN_SEA} />
+        <WDTerritory territoryMapData={SKAGERRACK} />
+        <WDTerritory territoryMapData={SKAGERRACK2} />
         <WDTerritory territoryMapData={TYRRHENIAN_SEA} />
+        <WDTerritory territoryMapData={WESTERN_MEDITERRANEAN} />
       </g>
       <g id="outlines">
         {/* <WDTerritory territoryMapData={ALBANIA} /> */}

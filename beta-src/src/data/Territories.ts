@@ -44,6 +44,12 @@ export const BALTIC_SEA: Territory = {
   type: "water",
 };
 
+export const BARRENTS_SEA: Territory = {
+  name: "BARRENTS_SEA",
+  abbr: "BAR",
+  type: "water",
+};
+
 export const BERLIN: Territory = {
   name: "BERLIN",
   abbr: "BER",
@@ -143,6 +149,12 @@ export const GULF_OF_LYONS: Territory = {
 export const HELIGOLAND_BIGHT: Territory = {
   name: "HELIGOLAND_BIGHT",
   abbr: "HEL",
+  type: "water",
+};
+
+export const IONIAN_SEA: Territory = {
+  name: "IONIAN_SEA",
+  abbr: "ION",
   type: "water",
 };
 
@@ -266,9 +278,21 @@ export const NORTH_ATLANTIC: Territory = {
   type: "water",
 };
 
+export const NORTH_ATLANTIC2: Territory = {
+  name: "NORTH_ATLANTIC2",
+  abbr: "",
+  type: "water",
+};
+
 export const NORTH_SEA: Territory = {
   name: "NORTH_SEA",
   abbr: "NTH",
+  type: "water",
+};
+
+export const NORWEGIAN_SEA: Territory = {
+  name: "NORWEGIAN_SEA",
+  abbr: "NWG",
   type: "water",
 };
 
@@ -344,6 +368,18 @@ export const SILESIA: Territory = {
   type: "land",
 };
 
+export const SKAGERRACK: Territory = {
+  name: "SKAGERRACK",
+  abbr: "SKA",
+  type: "water",
+};
+
+export const SKAGERRACK2: Territory = {
+  name: "SKAGERRACK2",
+  abbr: "",
+  type: "water",
+};
+
 export const SMYRNA: Territory = {
   name: "SMYRNA",
   abbr: "SMY",
@@ -404,6 +440,12 @@ export const WARSAW: Territory = {
   type: "land",
 };
 
+export const WESTERN_MEDITERRANEAN: Territory = {
+  name: "WESTERN_MEDITERRANEAN",
+  abbr: "WES",
+  type: "water",
+};
+
 export const YORK: Territory = {
   name: "YORK",
   abbr: "YOR",
@@ -418,6 +460,7 @@ const Territories: TerritoryData = {
   [TerritoryEnum.APULIA]: APULIA,
   [TerritoryEnum.ARMENIA]: ARMENIA,
   [TerritoryEnum.BALTIC_SEA]: BALTIC_SEA,
+  [TerritoryEnum.BARRENTS_SEA]: BARRENTS_SEA,
   [TerritoryEnum.BERLIN]: BERLIN,
   [TerritoryEnum.BLACK_SEA]: BLACK_SEA,
   [TerritoryEnum.BREST]: BREST,
@@ -435,6 +478,7 @@ const Territories: TerritoryData = {
   [TerritoryEnum.GULF_OF_BOTHNIA]: GULF_OF_BOTHNIA,
   [TerritoryEnum.GULF_OF_LYONS]: GULF_OF_LYONS,
   [TerritoryEnum.HELIGOLAND_BIGHT]: HELIGOLAND_BIGHT,
+  [TerritoryEnum.IONIAN_SEA]: IONIAN_SEA,
   [TerritoryEnum.IRISH_SEA]: IRISH_SEA,
   [TerritoryEnum.KIEL]: KIEL,
   [TerritoryEnum.LIVERPOOL]: LIVERPOOL,
@@ -455,7 +499,9 @@ const Territories: TerritoryData = {
   [TerritoryEnum.NEUTRAL_8]: NEUTRAL_8,
   [TerritoryEnum.NEUTRAL_9]: NEUTRAL_9,
   [TerritoryEnum.NORTH_ATLANTIC]: NORTH_ATLANTIC,
+  [TerritoryEnum.NORTH_ATLANTIC2]: NORTH_ATLANTIC2,
   [TerritoryEnum.NORTH_SEA]: NORTH_SEA,
+  [TerritoryEnum.NORWEGIAN_SEA]: NORWEGIAN_SEA,
   [TerritoryEnum.PARIS]: PARIS,
   [TerritoryEnum.PICARDY]: PICARDY,
   [TerritoryEnum.PIEDMONT]: PIEDMONT,
@@ -468,6 +514,8 @@ const Territories: TerritoryData = {
   [TerritoryEnum.SAINT_PETERSBURG]: SAINT_PETERSBURG,
   [TerritoryEnum.SERBIA]: SERBIA,
   [TerritoryEnum.SEVASTOPOL]: SEVASTOPOL,
+  [TerritoryEnum.SKAGERRACK]: SKAGERRACK,
+  [TerritoryEnum.SKAGERRACK2]: SKAGERRACK2,
   [TerritoryEnum.SMYRNA]: SMYRNA,
   [TerritoryEnum.SPAIN]: SPAIN,
   [TerritoryEnum.SYRIA]: SYRIA,
@@ -478,6 +526,7 @@ const Territories: TerritoryData = {
   [TerritoryEnum.VENICE]: VENICE,
   [TerritoryEnum.WALES]: WALES,
   [TerritoryEnum.WARSAW]: WARSAW,
+  [TerritoryEnum.WESTERN_MEDITERRANEAN]: WESTERN_MEDITERRANEAN,
   [TerritoryEnum.YORK]: YORK,
 } as const;
 
