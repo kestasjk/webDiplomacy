@@ -187,7 +187,7 @@ abstract class ApiEntry {
 		$this->requirements = $requirements;
 	}
 
-	protected function JSONResponse(string $msg, string $referenceCode, bool $success, array $data){
+	protected function JSONResponse(string $msg, string $referenceCode, bool $success, array $data = []){
 		return json_encode([
 			'msg' => $msg,
 			'success' => $success,
@@ -538,7 +538,7 @@ class GetGameData extends ApiEntry {
 			$payload['currentOrders'] = $this->getCurrentOrders();
 		}
 
-		return json_encode($payload);
+		return $this->JSONResponse('Successfully retrieved data.', 'GGD-s-001', true, $payload);
 	}
 }
 
