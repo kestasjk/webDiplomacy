@@ -193,7 +193,7 @@ abstract class ApiEntry {
 			'success' => $success,
 			'referenceCode' =>$referenceCode,
 			'data' => $data,
-		]);
+		], JSON_NUMERIC_CHECK);
 	}
 
 	/**
@@ -411,12 +411,28 @@ class GetGameOverview extends ApiEntry {
 	public function run($userID, $permissionIsExplicit) {
 		$args = $this->getArgs();
 		$gameID = $args['gameID'];
-		if ($gameID === null || !ctype_digit($gameID))
-			throw new RequestException('Invalid game ID: '.$gameID);
-		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
-		    throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
+		if ($gameID === null || !ctype_digit($gameID)){
+			throw new RequestException(
+				$this->JSONResponse(
+					'Invalid game ID.', 
+					'GGO-err-001', 
+					false,
+					['gameID' => $gameID]
+				)
+			);
+		}
+		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs'])){
+			throw new ClientForbiddenException(
+				$this->JSONResponse(
+					'Game ID is not in list of gameIDs where API usage is permitted.', 
+					'GGO-err-002', 
+					false, 
+					['gameID' => $gameID]
+				)
+			);
+		}   
 		$game = $this->getAssociatedGame();
-		$json = [
+		$payload = [
 			'anon' => $game->anon,
 			'drawType' => $game->drawType,
 			'excusedMissedTurns' => $game->excusedMissedTurns,
@@ -437,7 +453,7 @@ class GetGameOverview extends ApiEntry {
 			'variant' => $game->Variant,
 			'variantID' => $game->variantID,
 		];
-		return json_encode( $json, JSON_NUMERIC_CHECK );
+		return $this->JSONResponse('Successfully retrieved game overview.', 'GGO-s-001', true, $payload);
 	}
 }
 
