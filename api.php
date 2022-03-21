@@ -187,6 +187,15 @@ abstract class ApiEntry {
 		$this->requirements = $requirements;
 	}
 
+	protected function JSONResponse(string $msg, string $referenceCode, bool $success, array $data){
+		return json_encode([
+			'msg' => $msg,
+			'success' => $success,
+			'referenceCode' =>$referenceCode,
+			'data' => $data,
+		]);
+	}
+
 	/**
 	 * Return API entry name.
 	 * @return string
@@ -429,6 +438,107 @@ class GetGameOverview extends ApiEntry {
 			'variantID' => $game->variantID,
 		];
 		return json_encode( $json, JSON_NUMERIC_CHECK );
+	}
+}
+
+/**
+ * API entry game/status
+ */
+class GetGameData extends ApiEntry {
+
+	private $contextVars;
+
+	public function __construct() {
+		parent::__construct('game/data', 'GET', 'getStateOfAllGames', array('gameID', 'countryID'));
+	}
+
+	private function setContextVars( $game, $gameID, $userID, $countryID, $member ){
+		$orderInterface = new OrderInterface(
+			$gameID,
+			$game->variantID,
+			$userID,
+			$member->id,
+			$game->turn,
+			$game->phase,
+			$countryID,
+			$member->orderStatus,
+			null,
+			false
+		);
+		$orderInterface->load();
+		$this->contextVars = $orderInterface->getContextVars();
+	}
+
+	private function getContextVars(){
+		return [
+			'context' => $this->contextVars['context'],
+			'contextKey' => $this->contextVars['contextKey'],
+		];
+	}
+
+	private function getCurrentOrders(){
+		return $this->contextVars['ordersData'];
+	}
+
+	/**
+	 * @throws RequestException
+	 */
+	public function run($userID, $permissionIsExplicit) {
+		global $MC;
+		$args = $this->getArgs();
+		$gameID = $args['gameID'];
+		$countryID = $args['countryID'] ?? null;
+		if (empty($gameID) || !ctype_digit($gameID)){
+			throw new RequestException(
+				$this->JSONResponse(
+					'Invalid game ID.', 
+					'GGD-err-001', 
+					false,
+					['gameID' => $gameID]
+				)
+			);
+		}
+		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs'])){
+			throw new ClientForbiddenException(
+				$this->JSONResponse(
+					'Game ID is not in list of gameIDs where API usage is permitted.', 
+					'GGD-err-003', 
+					false, 
+					['gameID' => $gameID]
+				)
+			);
+		}
+		$game = $this->getAssociatedGame();
+		$payload = [];
+
+		if (!is_null($countryID)){
+			if (empty($countryID) || !ctype_digit($countryID)){
+				throw new RequestException(
+					$this->JSONResponse(
+						'Invalid country ID.', 
+						'GGD-err-002', 
+						false, 
+						['countryID' => $countryID]
+					)
+				);
+			}
+			if (!isset($game->Members->ByUserID[$userID]) || $countryID != $game->Members->ByUserID[$userID]->countryID){
+				throw new ClientForbiddenException(
+					$this->JSONResponse(
+						'A user can only view game state for the country it controls.', 
+						'GGD-err-004', 
+						false, 
+						['gameID' => $gameID]
+					)
+				);
+			}
+			$member = $game->Members->ByCountryID[$countryID];
+			$this->setContextVars($game, $gameID, $userID, $countryID, $member);
+			$payload['contextVars'] = $this->getContextVars();
+			$payload['currentOrders'] = $this->getCurrentOrders();
+		}
+
+		return json_encode($payload);
 	}
 }
 
@@ -1004,6 +1114,7 @@ try {
 	$api->load(new ListGamesWithMissingOrders());
 	$api->load(new GetGamesStates());
 	$api->load(new GetGameOverview());
+	$api->load(new GetGameData());
 	$api->load(new SetOrders());
 	$api->load(new ToggleVote());
 	$api->load(new SendMessage());
