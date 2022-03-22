@@ -488,6 +488,108 @@ export const UKRAINE: Territory = {
   type: "land",
 };
 
+export const UNPLAYABLE_LAND1: Territory = {
+  name: "UNPLAYABLE_LAND1",
+  abbr: "",
+  type: "land",
+};
+
+export const UNPLAYABLE_LAND2: Territory = {
+  name: "UNPLAYABLE_LAND2",
+  abbr: "",
+  type: "land",
+};
+
+export const UNPLAYABLE_LAND3: Territory = {
+  name: "UNPLAYABLE_LAND3",
+  abbr: "",
+  type: "land",
+};
+
+export const UNPLAYABLE_LAND4: Territory = {
+  name: "UNPLAYABLE_LAND4",
+  abbr: "",
+  type: "land",
+};
+
+export const UNPLAYABLE_LAND5: Territory = {
+  name: "UNPLAYABLE_LAND5",
+  abbr: "",
+  type: "land",
+};
+
+export const UNPLAYABLE_LAND6: Territory = {
+  name: "UNPLAYABLE_LAND6",
+  abbr: "",
+  type: "land",
+};
+
+export const UNPLAYABLE_LAND7: Territory = {
+  name: "UNPLAYABLE_LAND7",
+  abbr: "",
+  type: "land",
+};
+
+export const UNPLAYABLE_LAND8: Territory = {
+  name: "UNPLAYABLE_LAND8",
+  abbr: "",
+  type: "land",
+};
+
+export const UNPLAYABLE_SEA1: Territory = {
+  name: "UNPLAYABLE_SEA1",
+  abbr: "",
+  type: "water",
+};
+
+export const UNPLAYABLE_SEA2: Territory = {
+  name: "UNPLAYABLE_SEA2",
+  abbr: "",
+  type: "water",
+};
+
+export const UNPLAYABLE_SEA3: Territory = {
+  name: "UNPLAYABLE_SEA3",
+  abbr: "",
+  type: "water",
+};
+
+export const UNPLAYABLE_SEA4: Territory = {
+  name: "UNPLAYABLE_SEA4",
+  abbr: "",
+  type: "water",
+};
+
+export const UNPLAYABLE_SEA5: Territory = {
+  name: "UNPLAYABLE_SEA5",
+  abbr: "",
+  type: "water",
+};
+
+export const UNPLAYABLE_SEA6: Territory = {
+  name: "UNPLAYABLE_SEA6",
+  abbr: "",
+  type: "water",
+};
+
+export const UNPLAYABLE_SEA7: Territory = {
+  name: "UNPLAYABLE_SEA7",
+  abbr: "",
+  type: "water",
+};
+
+export const UNPLAYABLE_SEA8: Territory = {
+  name: "UNPLAYABLE_SEA8",
+  abbr: "",
+  type: "water",
+};
+
+export const UNPLAYABLE_SEA9: Territory = {
+  name: "UNPLAYABLE_SEA9",
+  abbr: "",
+  type: "water",
+};
+
 export const VIENNA: Territory = {
   name: "VIENNA",
   abbr: "VIE",
@@ -606,6 +708,23 @@ const Territories: TerritoryData = {
   [TerritoryEnum.TYROLIA]: TYROLIA,
   [TerritoryEnum.TYRRHENIAN_SEA]: TYRRHENIAN_SEA,
   [TerritoryEnum.UKRAINE]: UKRAINE,
+  [TerritoryEnum.UNPLAYABLE_LAND1]: UNPLAYABLE_LAND1,
+  [TerritoryEnum.UNPLAYABLE_LAND2]: UNPLAYABLE_LAND2,
+  [TerritoryEnum.UNPLAYABLE_LAND3]: UNPLAYABLE_LAND3,
+  [TerritoryEnum.UNPLAYABLE_LAND4]: UNPLAYABLE_LAND4,
+  [TerritoryEnum.UNPLAYABLE_LAND5]: UNPLAYABLE_LAND5,
+  [TerritoryEnum.UNPLAYABLE_LAND6]: UNPLAYABLE_LAND6,
+  [TerritoryEnum.UNPLAYABLE_LAND7]: UNPLAYABLE_LAND7,
+  [TerritoryEnum.UNPLAYABLE_LAND8]: UNPLAYABLE_LAND8,
+  [TerritoryEnum.UNPLAYABLE_SEA1]: UNPLAYABLE_SEA1,
+  [TerritoryEnum.UNPLAYABLE_SEA2]: UNPLAYABLE_SEA2,
+  [TerritoryEnum.UNPLAYABLE_SEA3]: UNPLAYABLE_SEA3,
+  [TerritoryEnum.UNPLAYABLE_SEA4]: UNPLAYABLE_SEA4,
+  [TerritoryEnum.UNPLAYABLE_SEA5]: UNPLAYABLE_SEA5,
+  [TerritoryEnum.UNPLAYABLE_SEA6]: UNPLAYABLE_SEA6,
+  [TerritoryEnum.UNPLAYABLE_SEA7]: UNPLAYABLE_SEA7,
+  [TerritoryEnum.UNPLAYABLE_SEA8]: UNPLAYABLE_SEA8,
+  [TerritoryEnum.UNPLAYABLE_SEA9]: UNPLAYABLE_SEA9,
   [TerritoryEnum.VIENNA]: VIENNA,
   [TerritoryEnum.VENICE]: VENICE,
   [TerritoryEnum.WALES]: WALES,

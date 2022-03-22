@@ -61,6 +61,14 @@ import {
   TUSCANY,
   TYROLIA,
   UKRAINE,
+  UNPLAYABLE_LAND1,
+  UNPLAYABLE_LAND2,
+  UNPLAYABLE_LAND3,
+  UNPLAYABLE_LAND4,
+  UNPLAYABLE_LAND5,
+  UNPLAYABLE_LAND6,
+  UNPLAYABLE_LAND7,
+  UNPLAYABLE_LAND8,
   VIENNA,
   VENICE,
   WALES,
@@ -89,6 +97,15 @@ import {
   SKAGERRACK,
   SKAGERRACK2,
   TYRRHENIAN_SEA,
+  UNPLAYABLE_SEA1,
+  UNPLAYABLE_SEA2,
+  UNPLAYABLE_SEA3,
+  UNPLAYABLE_SEA4,
+  UNPLAYABLE_SEA5,
+  UNPLAYABLE_SEA6,
+  UNPLAYABLE_SEA7,
+  UNPLAYABLE_SEA8,
+  UNPLAYABLE_SEA9,
   WESTERN_MEDITERRANEAN,
 } from "../../../../../data/map/sea/SeaTerritoriesMapData";
 
@@ -278,6 +295,15 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={SKAGERRACK} />
         <WDTerritory territoryMapData={SKAGERRACK2} />
         <WDTerritory territoryMapData={TYRRHENIAN_SEA} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA1} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA2} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA3} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA4} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA5} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA6} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA7} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA8} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA9} />
         <WDTerritory territoryMapData={WESTERN_MEDITERRANEAN} />
       </g>
       <g id="outlines">
@@ -339,6 +365,14 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={TUNISIA} />
         <WDTerritory territoryMapData={TYROLIA} />
         <WDTerritory territoryMapData={UKRAINE} />
+        <WDTerritory territoryMapData={UNPLAYABLE_LAND1} />
+        <WDTerritory territoryMapData={UNPLAYABLE_LAND2} />
+        <WDTerritory territoryMapData={UNPLAYABLE_LAND3} />
+        <WDTerritory territoryMapData={UNPLAYABLE_LAND4} />
+        <WDTerritory territoryMapData={UNPLAYABLE_LAND5} />
+        <WDTerritory territoryMapData={UNPLAYABLE_LAND6} />
+        <WDTerritory territoryMapData={UNPLAYABLE_LAND7} />
+        <WDTerritory territoryMapData={UNPLAYABLE_LAND8} />
         <WDTerritory territoryMapData={VENICE} />
         <WDTerritory territoryMapData={VIENNA} />
         <WDTerritory territoryMapData={WALES} />
