@@ -5,16 +5,22 @@ import {
   ANKARA,
   APULIA,
   ARMENIA,
+  BELGIUM,
   BERLIN,
+  BOHEMIA,
   BREST,
+  BUDAPEST,
   BULGARIA,
   BURGUNDY,
   CLYDE,
   CONSTANTINOPLE,
+  DENMARK,
   EDINBURGH,
   FINLAND,
+  GALACIA,
   GASCONY,
   GREECE,
+  HOLLAND,
   KIEL,
   LIVERPOOL,
   LIVONIA,
@@ -32,6 +38,8 @@ import {
   NEUTRAL_7,
   NEUTRAL_8,
   NEUTRAL_9,
+  NORTH_AFRICA,
+  NORWAY,
   PARIS,
   PICARDY,
   PIEDMONT,
@@ -46,10 +54,14 @@ import {
   SILESIA,
   SMYRNA,
   SPAIN,
+  SWEDEN,
   SYRIA,
   TRIESTE,
+  TUNISIA,
   TUSCANY,
+  TYROLIA,
   UKRAINE,
+  VIENNA,
   VENICE,
   WALES,
   WARSAW,
@@ -269,21 +281,27 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={WESTERN_MEDITERRANEAN} />
       </g>
       <g id="outlines">
-        {/* <WDTerritory territoryMapData={ALBANIA} /> */}
+        <WDTerritory territoryMapData={ALBANIA} />
         <WDTerritory territoryMapData={ANKARA} />
         <WDTerritory territoryMapData={APULIA} />
         <WDTerritory territoryMapData={ARMENIA} />
+        <WDTerritory territoryMapData={BELGIUM} />
         <WDTerritory territoryMapData={BERLIN} />
+        <WDTerritory territoryMapData={BOHEMIA} />
         <WDTerritory territoryMapData={BREST} />
-        {/* <WDTerritory territoryMapData={BULGARIA} /> */}
+        <WDTerritory territoryMapData={BUDAPEST} />
+        <WDTerritory territoryMapData={BULGARIA} />
         <WDTerritory territoryMapData={BURGUNDY} />
         <WDTerritory territoryMapData={CLYDE} />
         <WDTerritory territoryMapData={CONSTANTINOPLE} />
+        <WDTerritory territoryMapData={DENMARK} />
         <WDTerritory territoryMapData={EDINBURGH} />
         <WDTerritory territoryMapData={FINLAND} />
+        <WDTerritory territoryMapData={GALACIA} />
         <WDTerritory territoryMapData={GASCONY} />
+        <WDTerritory territoryMapData={GREECE} />
+        <WDTerritory territoryMapData={HOLLAND} />
         <WDTerritory territoryMapData={KIEL} />
-        {/* <WDTerritory territoryMapData={GREECE} /> */}
         <WDTerritory territoryMapData={LIVERPOOL} />
         <WDTerritory territoryMapData={LIVONIA} />
         <WDTerritory territoryMapData={LONDON} />
@@ -300,23 +318,29 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={NEUTRAL_7} />
         <WDTerritory territoryMapData={NEUTRAL_8} />
         <WDTerritory territoryMapData={NEUTRAL_9} />
+        <WDTerritory territoryMapData={NORTH_AFRICA} />
+        <WDTerritory territoryMapData={NORWAY} />
         <WDTerritory territoryMapData={PARIS} />
         <WDTerritory territoryMapData={PICARDY} />
         <WDTerritory territoryMapData={PIEDMONT} />
-        {/* <WDTerritory territoryMapData={PORTUGAL} /> */}
+        <WDTerritory territoryMapData={PORTUGAL} />
         <WDTerritory territoryMapData={PRUSSIA} />
         <WDTerritory territoryMapData={RUHR} />
-        {/* <WDTerritory territoryMapData={RUMANIA} /> */}
+        <WDTerritory territoryMapData={RUMANIA} />
         <WDTerritory territoryMapData={SAINT_PETERSBURG} />
-        {/* <WDTerritory territoryMapData={SERBIA} /> */}
+        <WDTerritory territoryMapData={SERBIA} />
         <WDTerritory territoryMapData={SEVASTOPOL} />
         <WDTerritory territoryMapData={SILESIA} />
         <WDTerritory territoryMapData={SMYRNA} />
-        {/* <WDTerritory territoryMapData={SPAIN} /> */}
+        <WDTerritory territoryMapData={SPAIN} />
+        <WDTerritory territoryMapData={SWEDEN} />
         <WDTerritory territoryMapData={SYRIA} />
-        {/* <WDTerritory territoryMapData={TRIESTE} /> */}
+        <WDTerritory territoryMapData={TRIESTE} />
+        <WDTerritory territoryMapData={TUNISIA} />
+        <WDTerritory territoryMapData={TYROLIA} />
         <WDTerritory territoryMapData={UKRAINE} />
         <WDTerritory territoryMapData={VENICE} />
+        <WDTerritory territoryMapData={VIENNA} />
         <WDTerritory territoryMapData={WALES} />
         <WDTerritory territoryMapData={WARSAW} />
         <WDTerritory territoryMapData={YORK} />

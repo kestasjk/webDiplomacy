@@ -72,7 +72,7 @@ export const BALTIC_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   width: 355,
   height: 213,
   x: 2884,
-  y: 1400,
+  y: 1399,
   texture: {
     texture: Texture.SEA,
   },
@@ -209,8 +209,8 @@ export const GULF_OF_BOTHNIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ],
   width: 362,
   height: 462,
-  x: 3096,
-  y: 994,
+  x: 3095,
+  y: 993,
   texture: {
     texture: Texture.SEA,
   },
@@ -449,7 +449,7 @@ export const SKAGERRACK: TerritoryMapData = new TerritoryMapDataGenerator({
   width: 144,
   height: 171,
   x: 2837,
-  y: 1324,
+  y: 1323,
   texture: {
     texture: Texture.SEA,
   },
@@ -461,7 +461,7 @@ export const SKAGERRACK2: TerritoryMapData = new TerritoryMapDataGenerator({
   width: 101,
   height: 93,
   x: 2884,
-  y: 1486,
+  y: 1485,
   texture: {
     texture: Texture.SEA,
   },
