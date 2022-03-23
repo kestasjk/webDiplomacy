@@ -2,11 +2,12 @@ import * as React from "react";
 import { Stack } from "@mui/material";
 import WDCheckmarkIcon from "../svgr-components/WDCheckmarkIcon";
 import WDButton from "./WDButton";
+import Vote from "../../enums/Vote";
 import VoteType from "../../types/Vote";
 
 interface voteProps {
   voteState: VoteType;
-  toggleVote: (vote: string, status: boolean) => void;
+  toggleVote: (vote: Vote) => void;
 }
 
 const voteLabel = {
@@ -24,7 +25,7 @@ const WDVoteButtons: React.FC<voteProps> = function ({
       <WDButton
         key={vote}
         color={status ? "secondary" : "primary"}
-        onClick={() => toggleVote(vote, status)}
+        onClick={() => toggleVote(Vote[vote])}
         startIcon={status ? <WDCheckmarkIcon /> : ""}
       >
         {voteLabel[vote]}

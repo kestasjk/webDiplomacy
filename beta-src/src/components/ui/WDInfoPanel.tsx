@@ -1,6 +1,7 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Device from "../../enums/Device";
+import Vote from "../../enums/Vote";
 import WDCountryTable from "./WDCountryTable";
 import WDVoteButtons from "./WDVoteButtons";
 import { CountryTableData } from "../../interfaces/CountryTableData";
@@ -19,10 +20,10 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
 }): React.ReactElement {
   const [voteState, setVoteState] = React.useState(userData.votes);
 
-  const toggleVote = (voteName: string, voteStatus: boolean) => {
+  const toggleVote = (voteName: Vote) => {
     const newVoteState = {
       ...voteState,
-      [voteName]: !voteStatus,
+      [voteName]: !voteState[voteName],
     };
 
     setVoteState(newVoteState);
