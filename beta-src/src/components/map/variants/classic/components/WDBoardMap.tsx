@@ -2,47 +2,111 @@ import * as React from "react";
 import WDTerritory from "../../../components/WDTerritory";
 import {
   ALBANIA,
+  ANKARA,
   APULIA,
+  ARMENIA,
+  BELGIUM,
+  BERLIN,
+  BOHEMIA,
   BREST,
+  BUDAPEST,
   BULGARIA,
   BURGUNDY,
   CLYDE,
+  CONSTANTINOPLE,
+  DENMARK,
   EDINBURGH,
   FINLAND,
+  GALACIA,
   GASCONY,
   GREECE,
+  HOLLAND,
+  KIEL,
   LIVERPOOL,
   LIVONIA,
   LONDON,
   MARSEILLES,
   MOSCOW,
+  MUNICH,
   NAPLES,
+  NEUTRAL_1,
+  NEUTRAL_2,
+  NEUTRAL_3,
+  NEUTRAL_4,
+  NEUTRAL_5,
+  NEUTRAL_6,
+  NEUTRAL_7,
+  NEUTRAL_8,
+  NEUTRAL_9,
+  NORTH_AFRICA,
+  NORWAY,
   PARIS,
   PICARDY,
+  PIEDMONT,
   PORTUGAL,
+  PRUSSIA,
   ROME,
+  RUHR,
   RUMANIA,
   SAINT_PETERSBURG,
   SERBIA,
   SEVASTOPOL,
+  SILESIA,
+  SMYRNA,
   SPAIN,
+  SWEDEN,
+  SYRIA,
   TRIESTE,
+  TUNISIA,
   TUSCANY,
+  TYROLIA,
   UKRAINE,
+  UNPLAYABLE_LAND1,
+  UNPLAYABLE_LAND2,
+  UNPLAYABLE_LAND3,
+  UNPLAYABLE_LAND4,
+  UNPLAYABLE_LAND5,
+  UNPLAYABLE_LAND6,
+  UNPLAYABLE_LAND7,
+  UNPLAYABLE_LAND8,
+  VIENNA,
+  VENICE,
   WALES,
   WARSAW,
   YORK,
-  NEUTRAL_2,
 } from "../../../../../data/map/land/LandTerritoriesMapData";
 import {
+  ADRIATIC_SEA,
+  AEGEAN_SEA,
+  BALTIC_SEA,
+  BARRENTS_SEA,
   BLACK_SEA,
+  CHANNEL_1,
+  EASTERN_MEDITERRANEAN,
   ENGLISH_CHANNEL,
   GULF_OF_BOTHNIA,
   GULF_OF_LYONS,
+  HELIGOLAND_BIGHT,
+  IONIAN_SEA,
   IRISH_SEA,
   MIDDLE_ATLANTIC,
   NORTH_ATLANTIC,
+  NORTH_ATLANTIC2,
   NORTH_SEA,
+  NORWEGIAN_SEA,
+  SKAGERRACK,
+  SKAGERRACK2,
+  TYRRHENIAN_SEA,
+  UNPLAYABLE_SEA1,
+  UNPLAYABLE_SEA2,
+  UNPLAYABLE_SEA3,
+  UNPLAYABLE_SEA4,
+  UNPLAYABLE_SEA5,
+  UNPLAYABLE_SEA6,
+  UNPLAYABLE_SEA7,
+  UNPLAYABLE_SEA8,
+  UNPLAYABLE_SEA9,
+  WESTERN_MEDITERRANEAN,
 } from "../../../../../data/map/sea/SeaTerritoriesMapData";
 
 import CapturableLandTexture from "../../../../../assets/textures/capturable-land.jpeg";
@@ -210,48 +274,114 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         </g>
       </g>
       <g id="sea">
-        {/* <WDTerritory territoryMapData={BLACK_SEA} /> */}
+        <WDTerritory territoryMapData={ADRIATIC_SEA} />
+        <WDTerritory territoryMapData={AEGEAN_SEA} />
+        <WDTerritory territoryMapData={BALTIC_SEA} />
+        <WDTerritory territoryMapData={BARRENTS_SEA} />
+        <WDTerritory territoryMapData={BLACK_SEA} />
+        <WDTerritory territoryMapData={CHANNEL_1} />
+        <WDTerritory territoryMapData={EASTERN_MEDITERRANEAN} />
         <WDTerritory territoryMapData={ENGLISH_CHANNEL} />
         <WDTerritory territoryMapData={GULF_OF_BOTHNIA} />
         <WDTerritory territoryMapData={GULF_OF_LYONS} />
+        <WDTerritory territoryMapData={HELIGOLAND_BIGHT} />
+        <WDTerritory territoryMapData={IONIAN_SEA} />
         <WDTerritory territoryMapData={IRISH_SEA} />
         <WDTerritory territoryMapData={MIDDLE_ATLANTIC} />
         <WDTerritory territoryMapData={NORTH_ATLANTIC} />
+        <WDTerritory territoryMapData={NORTH_ATLANTIC2} />
         <WDTerritory territoryMapData={NORTH_SEA} />
+        <WDTerritory territoryMapData={NORWEGIAN_SEA} />
+        <WDTerritory territoryMapData={SKAGERRACK} />
+        <WDTerritory territoryMapData={SKAGERRACK2} />
+        <WDTerritory territoryMapData={TYRRHENIAN_SEA} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA1} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA2} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA3} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA4} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA5} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA6} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA7} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA8} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA9} />
+        <WDTerritory territoryMapData={WESTERN_MEDITERRANEAN} />
       </g>
       <g id="outlines">
-        {/* <WDTerritory territoryMapData={ALBANIA} /> */}
-        {/* <WDTerritory territoryMapData={APULIA} /> */}
+        <WDTerritory territoryMapData={ALBANIA} />
+        <WDTerritory territoryMapData={ANKARA} />
+        <WDTerritory territoryMapData={APULIA} />
+        <WDTerritory territoryMapData={ARMENIA} />
+        <WDTerritory territoryMapData={BELGIUM} />
+        <WDTerritory territoryMapData={BERLIN} />
+        <WDTerritory territoryMapData={BOHEMIA} />
         <WDTerritory territoryMapData={BREST} />
-        {/* <WDTerritory territoryMapData={BULGARIA} /> */}
+        <WDTerritory territoryMapData={BUDAPEST} />
+        <WDTerritory territoryMapData={BULGARIA} />
         <WDTerritory territoryMapData={BURGUNDY} />
         <WDTerritory territoryMapData={CLYDE} />
+        <WDTerritory territoryMapData={CONSTANTINOPLE} />
+        <WDTerritory territoryMapData={DENMARK} />
         <WDTerritory territoryMapData={EDINBURGH} />
         <WDTerritory territoryMapData={FINLAND} />
+        <WDTerritory territoryMapData={GALACIA} />
         <WDTerritory territoryMapData={GASCONY} />
-        {/* <WDTerritory territoryMapData={GREECE} /> */}
+        <WDTerritory territoryMapData={GREECE} />
+        <WDTerritory territoryMapData={HOLLAND} />
+        <WDTerritory territoryMapData={KIEL} />
         <WDTerritory territoryMapData={LIVERPOOL} />
         <WDTerritory territoryMapData={LIVONIA} />
         <WDTerritory territoryMapData={LONDON} />
         <WDTerritory territoryMapData={MARSEILLES} />
         <WDTerritory territoryMapData={MOSCOW} />
-        {/* <WDTerritory territoryMapData={NAPLES} /> */}
+        <WDTerritory territoryMapData={MUNICH} />
+        <WDTerritory territoryMapData={NAPLES} />
+        <WDTerritory territoryMapData={NEUTRAL_1} />
         <WDTerritory territoryMapData={NEUTRAL_2} />
+        <WDTerritory territoryMapData={NEUTRAL_3} />
+        <WDTerritory territoryMapData={NEUTRAL_4} />
+        <WDTerritory territoryMapData={NEUTRAL_5} />
+        <WDTerritory territoryMapData={NEUTRAL_6} />
+        <WDTerritory territoryMapData={NEUTRAL_7} />
+        <WDTerritory territoryMapData={NEUTRAL_8} />
+        <WDTerritory territoryMapData={NEUTRAL_9} />
+        <WDTerritory territoryMapData={NORTH_AFRICA} />
+        <WDTerritory territoryMapData={NORWAY} />
         <WDTerritory territoryMapData={PARIS} />
         <WDTerritory territoryMapData={PICARDY} />
-        {/* <WDTerritory territoryMapData={PORTUGAL} /> */}
-        {/* <WDTerritory territoryMapData={ROME} /> */}
-        {/* <WDTerritory territoryMapData={RUMANIA} /> */}
+        <WDTerritory territoryMapData={PIEDMONT} />
+        <WDTerritory territoryMapData={PORTUGAL} />
+        <WDTerritory territoryMapData={PRUSSIA} />
+        <WDTerritory territoryMapData={RUHR} />
+        <WDTerritory territoryMapData={RUMANIA} />
         <WDTerritory territoryMapData={SAINT_PETERSBURG} />
-        {/* <WDTerritory territoryMapData={SERBIA} /> */}
+        <WDTerritory territoryMapData={SERBIA} />
         <WDTerritory territoryMapData={SEVASTOPOL} />
-        {/* <WDTerritory territoryMapData={SPAIN} /> */}
-        {/* <WDTerritory territoryMapData={TRIESTE} /> */}
-        {/* <WDTerritory territoryMapData={TUSCANY} /> */}
+        <WDTerritory territoryMapData={SILESIA} />
+        <WDTerritory territoryMapData={SMYRNA} />
+        <WDTerritory territoryMapData={SPAIN} />
+        <WDTerritory territoryMapData={SWEDEN} />
+        <WDTerritory territoryMapData={SYRIA} />
+        <WDTerritory territoryMapData={TRIESTE} />
+        <WDTerritory territoryMapData={TUNISIA} />
+        <WDTerritory territoryMapData={TYROLIA} />
         <WDTerritory territoryMapData={UKRAINE} />
+        <WDTerritory territoryMapData={UNPLAYABLE_LAND1} />
+        <WDTerritory territoryMapData={UNPLAYABLE_LAND2} />
+        <WDTerritory territoryMapData={UNPLAYABLE_LAND3} />
+        <WDTerritory territoryMapData={UNPLAYABLE_LAND4} />
+        <WDTerritory territoryMapData={UNPLAYABLE_LAND5} />
+        <WDTerritory territoryMapData={UNPLAYABLE_LAND6} />
+        <WDTerritory territoryMapData={UNPLAYABLE_LAND7} />
+        <WDTerritory territoryMapData={UNPLAYABLE_LAND8} />
+        <WDTerritory territoryMapData={VENICE} />
+        <WDTerritory territoryMapData={VIENNA} />
         <WDTerritory territoryMapData={WALES} />
         <WDTerritory territoryMapData={WARSAW} />
         <WDTerritory territoryMapData={YORK} />
+        {/* These need to be last so the labels and units will appear */}
+        <WDTerritory territoryMapData={NAPLES} />
+        <WDTerritory territoryMapData={ROME} />
+        <WDTerritory territoryMapData={TUSCANY} />
       </g>
       <defs>
         <pattern

@@ -33,7 +33,8 @@
     "build-test": "NODE_ENV=test react-scripts build --test --configuration=test && rm -rf ../beta && mv build ../beta",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "svgr": "svgr -d src/components/svgr-components --typescript --ignore-existing src/assets/svg-svgr"
+    "svgr": "svgr -d src/components/svgr-components --typescript --ignore-existing src/assets/svg-svgr",
+    "prepare": "cd .. && husky install beta-src/.husky"
   },
   "eslintConfig": {
     "extends": [
@@ -66,6 +67,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.27.1",
     "eslint-plugin-react-hooks": "^4.3.0",
+    "husky": "^7.0.4",
     "i": "^0.3.7",
     "npm": "^8.2.0",
     "prettier": "^2.5.1",

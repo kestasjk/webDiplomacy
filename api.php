@@ -35,6 +35,8 @@ require_once('lib/cache.php');
 require_once('lib/html.php');
 require_once('lib/time.php');
 require_once('lib/gamemessage.php');
+require_once('board/orders/jsonBoardData.php');
+require_once('variants/install.php');
 $DB = new Database();
 
 /**
@@ -185,6 +187,15 @@ abstract class ApiEntry {
 		$this->type = $type;
 		$this->databasePermissionField = $databasePermissionField;
 		$this->requirements = $requirements;
+	}
+
+	protected function JSONResponse(string $msg, string $referenceCode, bool $success, array $data = []){
+		return json_encode([
+			'msg' => $msg,
+			'success' => $success,
+			'referenceCode' =>$referenceCode,
+			'data' => $data,
+		], JSON_NUMERIC_CHECK);
 	}
 
 	/**
@@ -402,12 +413,28 @@ class GetGameOverview extends ApiEntry {
 	public function run($userID, $permissionIsExplicit) {
 		$args = $this->getArgs();
 		$gameID = $args['gameID'];
-		if ($gameID === null || !ctype_digit($gameID))
-			throw new RequestException('Invalid game ID: '.$gameID);
-		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
-		    throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
+		if ($gameID === null || !ctype_digit($gameID)){
+			throw new RequestException(
+				$this->JSONResponse(
+					'Invalid game ID.', 
+					'GGO-err-001', 
+					false,
+					['gameID' => $gameID]
+				)
+			);
+		}
+		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs'])){
+			throw new ClientForbiddenException(
+				$this->JSONResponse(
+					'Game ID is not in list of gameIDs where API usage is permitted.', 
+					'GGO-err-002', 
+					false, 
+					['gameID' => $gameID]
+				)
+			);
+		}   
 		$game = $this->getAssociatedGame();
-		$json = [
+		$payload = [
 			'anon' => $game->anon,
 			'drawType' => $game->drawType,
 			'excusedMissedTurns' => $game->excusedMissedTurns,
@@ -428,7 +455,138 @@ class GetGameOverview extends ApiEntry {
 			'variant' => $game->Variant,
 			'variantID' => $game->variantID,
 		];
-		return json_encode( $json, JSON_NUMERIC_CHECK );
+		return $this->JSONResponse('Successfully retrieved game overview.', 'GGO-s-001', true, $payload);
+	}
+}
+
+/**
+ * API entry game/data
+ * Retrieves API data needed for order generation code and game functionality. 
+ */
+class GetGameData extends ApiEntry {
+
+	private $contextVars;
+
+	public function __construct() {
+		parent::__construct('game/data', 'GET', 'getStateOfAllGames', array('gameID', 'countryID'));
+	}
+
+	private function setContextVars( $game, $gameID, $userID, $countryID, $member ){
+		$this->contextVars = (new OrderInterface(
+			$gameID,
+			$game->variantID,
+			$userID,
+			$member->id,
+			$game->turn,
+			$game->phase,
+			$countryID,
+			$member->orderStatus,
+			null,
+			false
+		))->load()->getContextVars();
+	}
+
+	private function getContextVars(){
+		return [
+			'context' => $this->contextVars['context'],
+			'contextKey' => $this->contextVars['contextKey'],
+		];
+	}
+
+	private function getCurrentOrders(){
+		return $this->contextVars['ordersData'];
+	}
+
+	private function getUnits($gameID){
+        return jsonBoardData::getUnitsData($gameID);
+    }
+
+    private function getTerrStatus($gameID){
+        return jsonBoardData::getTerrStatusData($gameID);
+    }
+
+	/**
+	 * @throws RequestException
+	 */
+	public function run($userID, $permissionIsExplicit) {
+		global $MC;
+		$args = $this->getArgs();
+		$gameID = $args['gameID'];
+		$countryID = $args['countryID'] ?? null;
+		if (empty($gameID) || !ctype_digit($gameID)){
+			throw new RequestException(
+				$this->JSONResponse(
+					'Invalid game ID.', 
+					'GGD-err-001', 
+					false,
+					['gameID' => $gameID]
+				)
+			);
+		}
+		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs'])){
+			throw new ClientForbiddenException(
+				$this->JSONResponse(
+					'Game ID is not in list of gameIDs where API usage is permitted.', 
+					'GGD-err-003', 
+					false, 
+					['gameID' => $gameID]
+				)
+			);
+		}
+		$game = $this->getAssociatedGame();
+		$payload = [];
+
+		if (!is_null($countryID)){
+			if (empty($countryID) || !ctype_digit($countryID)){
+				throw new RequestException(
+					$this->JSONResponse(
+						'Invalid country ID.', 
+						'GGD-err-002', 
+						false, 
+						['countryID' => $countryID]
+					)
+				);
+			}
+			if (!isset($game->Members->ByUserID[$userID]) || $countryID != $game->Members->ByUserID[$userID]->countryID){
+				throw new ClientForbiddenException(
+					$this->JSONResponse(
+						'A user can only view game state for the country it controls.', 
+						'GGD-err-004', 
+						false, 
+						['gameID' => $gameID]
+					)
+				);
+			}
+			$member = $game->Members->ByCountryID[$countryID];
+			$this->setContextVars($game, $gameID, $userID, $countryID, $member);
+			$payload['contextVars'] = $this->getContextVars();
+			$payload['currentOrders'] = $this->getCurrentOrders();
+		}
+
+		if($game->variantID && is_numeric($game->variantID)){
+            $territoriesCacheKey = "territories_$game->variantID";
+            $cachedTerritories = $MC->get($territoriesCacheKey);
+            if($cachedTerritories){
+                $payload['territories'] = $cachedTerritories;
+            }else{
+                $territories = InstallCache::terrJSONData($game->variantID);
+                if(!empty($territories)){
+                    $payload['territories'] = $territories;
+                    $secondsInDay = 86400;
+                    $MC->set($territoriesCacheKey, $territories, $secondsInDay);
+                }
+            }
+        }
+
+		$payload = array_merge(
+            $payload,
+            [
+                'units' => $this->getUnits($gameID),
+                'territoryStatuses' => $this->getTerrStatus($gameID),
+            ],
+        );
+
+		return $this->JSONResponse('Successfully retrieved game data.', 'GGD-s-001', true, $payload);
 	}
 }
 
@@ -1004,6 +1162,7 @@ try {
 	$api->load(new ListGamesWithMissingOrders());
 	$api->load(new GetGamesStates());
 	$api->load(new GetGameOverview());
+	$api->load(new GetGameData());
 	$api->load(new SetOrders());
 	$api->load(new ToggleVote());
 	$api->load(new SendMessage());
