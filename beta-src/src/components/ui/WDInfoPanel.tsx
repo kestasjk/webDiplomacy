@@ -5,20 +5,19 @@ import Vote from "../../enums/Vote";
 import WDCountryTable from "./WDCountryTable";
 import WDVoteButtons from "./WDVoteButtons";
 import { CountryTableData } from "../../interfaces/CountryTableData";
-import { UserData } from "../../interfaces/UserData";
 
 interface WDInfoPanelProps {
   countries: CountryTableData[];
-  userData: UserData;
+  userCountry: CountryTableData;
   device: Device;
 }
 
 const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
   countries,
-  userData,
+  userCountry,
   device,
 }): React.ReactElement {
-  const [voteState, setVoteState] = React.useState(userData.votes);
+  const [voteState, setVoteState] = React.useState(userCountry.votes);
 
   const toggleVote = (voteName: Vote) => {
     const newVoteState = {
@@ -38,10 +37,7 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
          * always show current user at the top
          *
          */
-        countries={[
-          { ...userData.countryTableData, votes: voteState },
-          ...countries,
-        ]}
+        countries={[{ ...userCountry, votes: voteState }, ...countries]}
         device={device}
       />
     </Box>
