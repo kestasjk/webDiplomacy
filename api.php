@@ -460,7 +460,7 @@ class GetGameMembers extends ApiEntry {
 	 * @throws RequestException
 	 */
 	public function run($userID, $permissionIsExplicit) {
-		return $this->JSONResponse('Successfully retrieved game overview.', 'ggm-s-001', true, $this->getData($userID));
+		return $this->JSONResponse('Successfully retrieved game members.', 'ggm-s-001', true, $this->getData($userID));
 	}
 }
 
