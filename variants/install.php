@@ -39,14 +39,8 @@ ini_set('max_execution_time','120');
  * Functions to cache data to text-files for later use. As opposed to InstallTerritory which saves to the database.
  */
 class InstallCache {
-	/**
-	 * Saves the territories.js JSON file which the order-generation code need to know the board layout.
-	 *
-	 * @param string $jsonFileLocation Where the file will be saved to
-	 * @param int $mapID
-	 */
-	public static function terrJSON($jsonFileLocation, $mapID)
-	{
+	
+	public static function terrJSONData($mapID){
 		global $DB;
 
 		$territories = array();
@@ -84,7 +78,18 @@ class InstallCache {
 				array('id'=>$row['toTerrID'], 'a'=>$row['armysPass']=='Yes', 'f'=>$row['fleetsPass']=='Yes');
 		}
 
-		$javascript = "function loadTerritories() {\n".'Territories = $H('.json_encode($territories).');'."\n}\n";
+		return $territories;
+	}
+
+	/**
+	 * Saves the territories.js JSON file which the order-generation code need to know the board layout.
+	 *
+	 * @param string $jsonFileLocation Where the file will be saved to
+	 * @param int $mapID
+	 */
+	public static function terrJSON($jsonFileLocation, $mapID)
+	{
+		$javascript = "function loadTerritories() {\n".'Territories = $H('.json_encode(self::terrJSONData($mapID)).');'."\n}\n";
 
 		file_put_contents($jsonFileLocation, $javascript);
 	}

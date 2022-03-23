@@ -263,7 +263,7 @@ export const BULGARIA: TerritoryMapData = new TerritoryMapDataGenerator({
     {
       x: 180,
       y: 40,
-      text: "EC",
+      text: "NC",
     },
     {
       x: 115,

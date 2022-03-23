@@ -140,6 +140,8 @@ class OrderInterface
 		//elseif( $this->maxOrderID < $maxOrderID )
 
 		//if( $this->tokenExpireTime < time() ) throw new Exception("The game has moved on, you can no longer alter these orders, please refresh.");
+
+		return $this;
 	}
 
 	public function set($orderUpdates)
