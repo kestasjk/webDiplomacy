@@ -35,6 +35,8 @@ require_once('lib/cache.php');
 require_once('lib/html.php');
 require_once('lib/time.php');
 require_once('lib/gamemessage.php');
+require_once('board/orders/jsonBoardData.php');
+require_once('variants/install.php');
 $DB = new Database();
 
 /**
@@ -469,7 +471,7 @@ class GetGameData extends ApiEntry {
 	}
 
 	private function setContextVars( $game, $gameID, $userID, $countryID, $member ){
-		$orderInterface = new OrderInterface(
+		$this->contextVars = (new OrderInterface(
 			$gameID,
 			$game->variantID,
 			$userID,
@@ -480,9 +482,7 @@ class GetGameData extends ApiEntry {
 			$member->orderStatus,
 			null,
 			false
-		);
-		$orderInterface->load();
-		$this->contextVars = $orderInterface->getContextVars();
+		))->load()->getContextVars();
 	}
 
 	private function getContextVars(){
@@ -495,6 +495,14 @@ class GetGameData extends ApiEntry {
 	private function getCurrentOrders(){
 		return $this->contextVars['ordersData'];
 	}
+
+	private function getUnits($gameID){
+        return jsonBoardData::getUnitsData($gameID);
+    }
+
+    private function getTerrStatus($gameID){
+        return jsonBoardData::getTerrStatusData($gameID);
+    }
 
 	/**
 	 * @throws RequestException
@@ -554,7 +562,30 @@ class GetGameData extends ApiEntry {
 			$payload['currentOrders'] = $this->getCurrentOrders();
 		}
 
-		return $this->JSONResponse('Successfully retrieved data.', 'GGD-s-001', true, $payload);
+		if($game->variantID && is_numeric($game->variantID)){
+            $territoriesCacheKey = "territories_$game->variantID";
+            $cachedTerritories = $MC->get($territoriesCacheKey);
+            if($cachedTerritories){
+                $payload['territories'] = $cachedTerritories;
+            }else{
+                $territories = InstallCache::terrJSONData($game->variantID);
+                if(!empty($territories)){
+                    $payload['territories'] = $territories;
+                    $secondsInDay = 86400;
+                    $MC->set($territoriesCacheKey, $territories, $secondsInDay);
+                }
+            }
+        }
+
+		$payload = array_merge(
+            $payload,
+            [
+                'units' => $this->getUnits($gameID),
+                'territoryStatuses' => $this->getTerrStatus($gameID),
+            ],
+        );
+
+		return $this->JSONResponse('Successfully retrieved game data.', 'GGD-s-001', true, $payload);
 	}
 }
 
