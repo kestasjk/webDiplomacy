@@ -460,7 +460,8 @@ class GetGameOverview extends ApiEntry {
 }
 
 /**
- * API entry game/status
+ * API entry game/data
+ * Retrieves API data needed for order generation code and game functionality. 
  */
 class GetGameData extends ApiEntry {
 
