@@ -277,12 +277,21 @@ class OrderInterface
 		return array('context'=>$context, 'json'=>$json, 'key'=>md5(Config::$jsonSecret.$json).sha1(Config::$jsonSecret.$json));
 	}
 
-	protected function jsContextVars() {
+	public function getContextVars(){
 		$context = self::getContext($this);
+		return [
+			'context' => $context['json'],
+			'contextKey' => $context['key'],
+			'ordersData' => $this->Orders
+		];
+	}
+
+	protected function jsContextVars() {
+		$contextVars = $this->getContextVars();
 		libHTML::$footerScript[] = '
-	context='.$context['json'].';
-	contextKey="'.$context['key'].'";
-	ordersData = '.json_encode($this->Orders).';
+	context='.$contextVars['context'].';
+	contextKey="'.$contextVars['contextKey'].'";
+	ordersData = '.json_encode($contextVars['ordersData']).';
 	';
 	}
 
