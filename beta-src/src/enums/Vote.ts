@@ -1,7 +1,7 @@
 enum Vote {
-  DRAW = "draw",
-  PAUSE = "pause",
-  CANCEL = "cancel",
+  cancel,
+  draw,
+  pause,
 }
 
 export default Vote;
