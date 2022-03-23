@@ -2,6 +2,7 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Device from "../../enums/Device";
 import Vote from "../../enums/Vote";
+import IntegerRange from "../../types/IntegerRange";
 import WDCountryTable from "./WDCountryTable";
 import WDVoteButtons from "./WDVoteButtons";
 import { CountryTableData } from "../../interfaces/CountryTableData";
@@ -10,12 +11,14 @@ interface WDInfoPanelProps {
   countries: CountryTableData[];
   userCountry: CountryTableData;
   device: Device;
+  maxDelays: IntegerRange<0, 5>;
 }
 
 const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
   countries,
   userCountry,
   device,
+  maxDelays,
 }): React.ReactElement {
   const [voteState, setVoteState] = React.useState(userCountry.votes);
 
@@ -32,7 +35,7 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
     <Box>
       <WDVoteButtons voteState={voteState} toggleVote={toggleVote} />
       <WDCountryTable
-        maxDelays={3}
+        maxDelays={maxDelays}
         /**
          * always show current user at the top
          *
