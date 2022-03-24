@@ -1,4 +1,5 @@
 import GameDataResponse from "./GameData";
+import GameErrorResponse from "./GameErrorResponse";
 import GameOverviewResponse from "./GameOverviewResponse";
 import GameStatusResponse from "./GameStatusResponse";
 
@@ -7,7 +8,7 @@ export type ApiStatus = "idle" | "loading" | "succeeded" | "failed";
 export interface GameState {
   apiStatus: ApiStatus;
   data: GameDataResponse;
-  error: string | null | undefined;
+  error: GameErrorResponse;
   overview: GameOverviewResponse;
   status: GameStatusResponse;
 }

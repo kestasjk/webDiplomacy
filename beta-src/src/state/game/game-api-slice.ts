@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import ApiRoute from "../../enums/ApiRoute";
 import { getGameApiRequest } from "../../utils/api";
 import GameDataResponse from "../interfaces/GameData";
+import GameErrorResponse from "../interfaces/GameErrorResponse";
 import GameOverviewResponse from "../interfaces/GameOverviewResponse";
 import { ApiStatus } from "../interfaces/GameState";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
@@ -88,12 +89,17 @@ const gameApiSlice = createSlice({
 });
 /* eslint-enable no-param-reassign */
 
+export const gameApiStatus = ({ game: { apiStatus } }: RootState): ApiStatus =>
+  apiStatus;
+export const gameData = ({ game: { data } }: RootState): GameDataResponse =>
+  data;
+export const gameError = ({ game: { error } }: RootState): GameErrorResponse =>
+  error;
 export const gameOverview = ({
   game: { overview },
 }: RootState): GameOverviewResponse => overview;
 export const gameStatus = ({
   game: { status },
 }: RootState): GameStatusResponse => status;
-export const gameApiStatus = ({ game: { apiStatus } }: RootState): ApiStatus =>
-  apiStatus;
+
 export default gameApiSlice.reducer;
