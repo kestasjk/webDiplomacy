@@ -6,8 +6,8 @@ import Season from "../../enums/Season";
 
 interface GameStateProps {
   disabled?: ScrollButtonState | undefined;
-  onChangeSeason: React.MouseEventHandler<HTMLButtonElement> | undefined;
-  season: [Season, number];
+  onChangeSeason?: React.MouseEventHandler<HTMLButtonElement> | undefined;
+  season: [Season, string];
 }
 
 const WDPillScroller: React.FC<GameStateProps> = function ({
@@ -18,7 +18,7 @@ const WDPillScroller: React.FC<GameStateProps> = function ({
   return (
     <Box
       sx={{
-        alignItems: "center",
+        alignItems: "flex-start",
         display: "flex",
         filter: "drop-shadow(0px 8px 9px black)",
         paddingTop: "5px",
@@ -38,7 +38,6 @@ const WDPillScroller: React.FC<GameStateProps> = function ({
             display: "flex",
             fontWeight: "bold",
             fontSize: 12,
-            padding: "5",
             textTransform: "uppercase",
           }}
         >
@@ -57,6 +56,7 @@ const WDPillScroller: React.FC<GameStateProps> = function ({
 
 WDPillScroller.defaultProps = {
   disabled: undefined,
+  onChangeSeason: undefined,
 };
 
 export default WDPillScroller;

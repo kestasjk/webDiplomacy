@@ -8,6 +8,7 @@ export type Member = {
 
 interface GameOverviewResponse {
   anon: string;
+  date: string;
   drawType: string;
   excusedMissedTurns: number;
   gameOver: string;

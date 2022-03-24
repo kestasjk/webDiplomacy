@@ -14,6 +14,7 @@ export const fetchGameOverview = createAsyncThunk(
       ApiRoute.GAME_OVERVIEW,
       queryParams,
     );
+    console.log(data);
     return data as GameOverviewResponse;
   },
 );
