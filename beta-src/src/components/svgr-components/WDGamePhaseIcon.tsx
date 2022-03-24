@@ -7,7 +7,7 @@ interface GamePhaseIconProps {
   disabled?: boolean;
   icon: Season | UIState.ACTIVE;
   onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
-  year: string;
+  year: number;
 }
 
 const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({

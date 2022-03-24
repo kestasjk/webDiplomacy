@@ -8,7 +8,6 @@ export type Member = {
 
 interface GameOverviewResponse {
   anon: string;
-  date: string;
   drawType: string;
   excusedMissedTurns: number;
   gameOver: string;
@@ -23,6 +22,7 @@ interface GameOverviewResponse {
   potType: string;
   processStatus: string;
   processTime: number | null | undefined;
+  season: string;
   startTime: number;
   turn: number;
   variant: {
@@ -50,6 +50,7 @@ interface GameOverviewResponse {
     supplyCenterTarget: number;
   };
   variantID: number;
+  year: number;
 }
 
 export default GameOverviewResponse;

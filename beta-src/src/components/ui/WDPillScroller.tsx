@@ -4,16 +4,18 @@ import WDScrollButton from "./WDScrollButton";
 import ScrollButtonState from "../../enums/ScrollButton";
 import Season from "../../enums/Season";
 
-interface GameStateProps {
+interface WDPillScrollerProps {
   disabled?: ScrollButtonState | undefined;
   onChangeSeason?: React.MouseEventHandler<HTMLButtonElement> | undefined;
-  season: [Season, string];
+  season: Season;
+  year: number;
 }
 
-const WDPillScroller: React.FC<GameStateProps> = function ({
+const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
   disabled,
-  season,
   onChangeSeason,
+  season,
+  year,
 }): React.ReactElement {
   return (
     <Box
@@ -41,7 +43,7 @@ const WDPillScroller: React.FC<GameStateProps> = function ({
             textTransform: "uppercase",
           }}
         >
-          {`${season[0]} ${season[1]}`}
+          {`${season} ${year}`}
         </Box>
         <WDScrollButton
           className="WDScroll--Forward"

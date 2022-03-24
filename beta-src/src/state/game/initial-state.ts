@@ -5,7 +5,6 @@ const initialState: GameState = {
   error: null,
   overview: {
     anon: "Yes",
-    date: "Spring, 1901",
     drawType: "draw-votes-public",
     excusedMissedTurns: 4,
     gameOver: "No",
@@ -35,6 +34,7 @@ const initialState: GameState = {
     potType: "",
     processStatus: "",
     processTime: null,
+    season: "Spring",
     startTime: 0,
     turn: 0,
     variant: {
@@ -77,6 +77,7 @@ const initialState: GameState = {
       supplyCenterTarget: 18,
     },
     variantID: 1,
+    year: 1901,
   },
   status: {
     gameID: 2,
