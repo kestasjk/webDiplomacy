@@ -530,9 +530,12 @@ class GetGameOverview extends ApiEntry {
 			);
 		}   
 		$game = $this->getAssociatedGame();
+		$dateTxt = $game->datetxt($game->$turn);
+		$split = explode(',',$dateTxt);
+		$season = $split[0];
+		$year = intval($split[1] ?? 1901);
 		$payload = array_merge([
 			'anon' => $game->anon,
-			'date' => $game->datetxt($game->turn),
 			'drawType' => $game->drawType,
 			'excusedMissedTurns' => $game->excusedMissedTurns,
 			'gameOver' => $game->gameOver,
@@ -547,9 +550,11 @@ class GetGameOverview extends ApiEntry {
 			'processStatus' => $game->processStatus,
 			'processTime' => $game->processTime,
 			'startTime' => $game->startTime,
+			'season' => $season,
 			'turn' => $game->turn,
 			'variant' => $game->Variant,
 			'variantID' => $game->variantID,
+			'year' => $year,
 		], (new GetGameMembers)->getData($userID));
 		return $this->JSONResponse('Successfully retrieved game overview.', 'GGO-s-001', true, $payload);
 	}
