@@ -1,6 +1,7 @@
 enum Texture {
-  LAND = "url(#capturable-land)",
-  SEA = "url(#sea-texture)",
+  LAND = "#F9F2E6",
+  SEA = "#96B2B2",
+  NEUTRAL_LAND = "#E5CFBE",
 }
 
 export default Texture;
