@@ -297,32 +297,7 @@ class panelGame extends Game
 
 	function gameVariants()
 	{
-		$alternatives=array();
-		$alternatives[]=$this->Variant->link();
-
-		if ( $this->pressType=='NoPress')
-			$alternatives[]=l_t('No messaging');
-		elseif( $this->pressType=='RulebookPress')
-			$alternatives[]=l_t('Rulebook press');
-		elseif( $this->pressType=='PublicPressOnly' )
-			$alternatives[]=l_t('Public messaging only');
-
-		if($this->playerTypes=='Mixed')
-			$alternatives[]=l_t('Fill with Bots');
-
-		if($this->playerTypes=='MemberVsBots')
-			$alternatives[]=l_t('Bot Game');
-
-		if( $this->anon=='Yes' )
-			$alternatives[]=l_t('Anonymous players');
-
-		$alternatives[]=$this->Scoring->longName();
-
-		if( $this->drawType=='draw-votes-hidden')
-			$alternatives[]=l_t('Hidden draw votes');
-
-		if( $this->missingPlayerPolicy=='Wait' )
-			$alternatives[]=l_t('Wait for orders');
+		$alternatives = $this->getAlternatives();
 
 		if ( $alternatives )
 			return '<div class="titleBarLeftSide">

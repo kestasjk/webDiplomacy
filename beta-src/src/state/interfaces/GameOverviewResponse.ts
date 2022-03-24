@@ -1,3 +1,6 @@
+import { MemberData } from "../../interfaces";
+import IntegerRange from "../../types/IntegerRange";
+
 export type Member = {
   country: string;
   countryID: number;
@@ -7,23 +10,28 @@ export type Member = {
 };
 
 interface GameOverviewResponse {
+  alternatives: string;
   anon: string;
   drawType: string;
-  excusedMissedTurns: number;
+  excusedMissedTurns: IntegerRange<0, 5>;
   gameOver: string;
-  members: Member[];
+  members: MemberData[];
   minimumBet: number;
   name: string;
   pauseTimeRemaining: number | null | undefined;
   phase: string;
   phaseMinutes: number;
   playerTypes: string;
-  pot: number;
+  pot: IntegerRange<35, 666>;
   potType: string;
   processStatus: string;
   processTime: number | null | undefined;
+  season: string;
   startTime: number;
   turn: number;
+  user: {
+    member: MemberData;
+  };
   variant: {
     id: number;
     mapID: number;
@@ -49,6 +57,7 @@ interface GameOverviewResponse {
     supplyCenterTarget: number;
   };
   variantID: number;
+  year: string;
 }
 
 export default GameOverviewResponse;

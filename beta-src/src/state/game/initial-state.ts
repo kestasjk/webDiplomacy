@@ -1,41 +1,48 @@
 import { GameState } from "../interfaces/GameState";
+import { Member } from "../interfaces/GameOverviewResponse";
 
 const initialState: GameState = {
   apiStatus: "idle",
   error: null,
   overview: {
+    alternatives: "",
     anon: "Yes",
     drawType: "draw-votes-public",
     excusedMissedTurns: 4,
     gameOver: "No",
-    members: [
-      {
-        country: "",
-        countryID: 0,
-        id: 855,
-        online: false,
-        userID: 6,
-      },
-      {
-        country: "",
-        countryID: 0,
-        id: 856,
-        online: true,
-        userID: 5,
-      },
-    ],
+    members: [],
     minimumBet: 5,
     name: "",
     pauseTimeRemaining: null,
     phase: "",
     phaseMinutes: 14400,
     playerTypes: "",
-    pot: 10,
+    pot: 35,
     potType: "",
     processStatus: "",
     processTime: null,
+    season: "Spring",
     startTime: 0,
     turn: 0,
+    user: {
+      member: {
+        bet: 5,
+        country: "Russia",
+        countryID: 1,
+        excusedMissedTurns: 0,
+        missedPhases: 0,
+        newMessagesFrom: [],
+        online: false,
+        orderStatus: {},
+        status: "Playing",
+        supplyCenterNo: 4,
+        timeLoggedIn: 0,
+        unitNo: 4,
+        userID: 1,
+        username: "",
+        votes: [],
+      },
+    },
     variant: {
       id: 1,
       mapID: 1,
@@ -76,6 +83,7 @@ const initialState: GameState = {
       supplyCenterTarget: 18,
     },
     variantID: 1,
+    year: "1901",
   },
   status: {
     gameID: 2,
