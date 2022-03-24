@@ -409,6 +409,7 @@ class GetGameOverview extends ApiEntry {
 		$game = $this->getAssociatedGame();
 		$json = [
 			'anon' => $game->anon,
+			'date' => $game->datetxt($game->turn),
 			'drawType' => $game->drawType,
 			'excusedMissedTurns' => $game->excusedMissedTurns,
 			'gameOver' => $game->gameOver,
