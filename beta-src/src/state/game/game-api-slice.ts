@@ -1,11 +1,20 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import ApiRoute from "../../enums/ApiRoute";
 import { getGameApiRequest } from "../../utils/api";
+import GameDataResponse from "../interfaces/GameData";
 import GameOverviewResponse from "../interfaces/GameOverviewResponse";
 import { ApiStatus } from "../interfaces/GameState";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
 import { RootState } from "../store";
 import initialState from "./initial-state";
+
+export const fetchGameData = createAsyncThunk(
+  ApiRoute.GAME_DATA,
+  async (queryParams: { countryID: string; gameID: string }) => {
+    const { data } = await getGameApiRequest(ApiRoute.GAME_DATA, queryParams);
+    return data as GameDataResponse;
+  },
+);
 
 export const fetchGameOverview = createAsyncThunk(
   ApiRoute.GAME_OVERVIEW,
@@ -39,6 +48,18 @@ const gameApiSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
+      // fetchGameData
+      .addCase(fetchGameData.pending, (state) => {
+        state.apiStatus = "loading";
+      })
+      .addCase(fetchGameData.fulfilled, (state, action) => {
+        state.apiStatus = "succeeded";
+        state.data = action.payload;
+      })
+      .addCase(fetchGameData.rejected, (state, action) => {
+        state.apiStatus = "failed";
+        state.error = action.error.message;
+      })
       // fetchGameOverview
       .addCase(fetchGameOverview.pending, (state) => {
         state.apiStatus = "loading";
