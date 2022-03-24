@@ -11,7 +11,7 @@ import initialState from "./initial-state";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
-  async (queryParams: { countryID: string; gameID: string }) => {
+  async (queryParams: { countryID?: string; gameID: string }) => {
     const { data } = await getGameApiRequest(ApiRoute.GAME_DATA, queryParams);
     return data as GameDataResponse;
   },
