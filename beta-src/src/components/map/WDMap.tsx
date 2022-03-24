@@ -1,5 +1,7 @@
 import * as React from "react";
 import WDBoardMap from "./variants/classic/components/WDBoardMap";
+import CapturableLandTexture from "../../assets/textures/capturable-land.jpeg";
+import WaterTexture from "../../assets/textures/sea-texture.png";
 
 const WDMap: React.ForwardRefExoticComponent<
   React.RefAttributes<SVGSVGElement>
@@ -19,6 +21,30 @@ const WDMap: React.ForwardRefExoticComponent<
           <WDBoardMap />
         </g>
       </g>
+      <defs>
+        <pattern
+          id="capturable-land"
+          patternUnits="userSpaceOnUse"
+          width="1546"
+          height="1384"
+        >
+          <image
+            href={CapturableLandTexture}
+            x="0"
+            y="0"
+            width="1546"
+            height="1384"
+          />
+        </pattern>
+        <pattern
+          id="sea-texture"
+          patternUnits="userSpaceOnUse"
+          width="1546"
+          height="1384"
+        >
+          <image href={WaterTexture} x="0" y="0" width="1966" height="1615" />
+        </pattern>
+      </defs>
     </svg>
   ),
 );
