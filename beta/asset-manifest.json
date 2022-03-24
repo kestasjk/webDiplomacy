@@ -1,26 +1,26 @@
 {
   "files": {
     "main.css": "/beta/static/css/main.91570646.chunk.css",
-    "main.js": "/beta/static/js/main.5fea81dc.chunk.js",
-    "main.js.map": "/beta/static/js/main.5fea81dc.chunk.js.map",
-    "runtime-main.js": "/beta/static/js/runtime-main.585b6db4.js",
-    "runtime-main.js.map": "/beta/static/js/runtime-main.585b6db4.js.map",
-    "static/js/2.6c246f89.chunk.js": "/beta/static/js/2.6c246f89.chunk.js",
-    "static/js/2.6c246f89.chunk.js.map": "/beta/static/js/2.6c246f89.chunk.js.map",
-    "static/js/3.d51c1d49.chunk.js": "/beta/static/js/3.d51c1d49.chunk.js",
-    "static/js/3.d51c1d49.chunk.js.map": "/beta/static/js/3.d51c1d49.chunk.js.map",
-    "static/js/4.aac2bc48.chunk.js": "/beta/static/js/4.aac2bc48.chunk.js",
-    "static/js/4.aac2bc48.chunk.js.map": "/beta/static/js/4.aac2bc48.chunk.js.map",
+    "main.js": "/beta/static/js/main.e8348bc7.chunk.js",
+    "main.js.map": "/beta/static/js/main.e8348bc7.chunk.js.map",
+    "runtime-main.js": "/beta/static/js/runtime-main.7d419459.js",
+    "runtime-main.js.map": "/beta/static/js/runtime-main.7d419459.js.map",
+    "static/js/2.641db0a5.chunk.js": "/beta/static/js/2.641db0a5.chunk.js",
+    "static/js/2.641db0a5.chunk.js.map": "/beta/static/js/2.641db0a5.chunk.js.map",
+    "static/js/3.fe296ca8.chunk.js": "/beta/static/js/3.fe296ca8.chunk.js",
+    "static/js/3.fe296ca8.chunk.js.map": "/beta/static/js/3.fe296ca8.chunk.js.map",
+    "static/js/4.b4b1c6b2.chunk.js": "/beta/static/js/4.b4b1c6b2.chunk.js",
+    "static/js/4.b4b1c6b2.chunk.js.map": "/beta/static/js/4.b4b1c6b2.chunk.js.map",
     "index.html": "/beta/index.html",
     "static/css/main.91570646.chunk.css.map": "/beta/static/css/main.91570646.chunk.css.map",
-    "static/js/2.6c246f89.chunk.js.LICENSE.txt": "/beta/static/js/2.6c246f89.chunk.js.LICENSE.txt",
+    "static/js/2.641db0a5.chunk.js.LICENSE.txt": "/beta/static/js/2.641db0a5.chunk.js.LICENSE.txt",
     "static/media/capturable-land.379f9cca.jpeg": "/beta/static/media/capturable-land.379f9cca.jpeg",
     "static/media/sea-texture.fd82ad46.png": "/beta/static/media/sea-texture.fd82ad46.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.585b6db4.js",
-    "static/js/2.6c246f89.chunk.js",
+    "static/js/runtime-main.7d419459.js",
+    "static/js/2.641db0a5.chunk.js",
     "static/css/main.91570646.chunk.css",
-    "static/js/main.5fea81dc.chunk.js"
+    "static/js/main.e8348bc7.chunk.js"
   ]
 }
