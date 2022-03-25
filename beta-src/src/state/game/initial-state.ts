@@ -1,5 +1,4 @@
 import { GameState } from "../interfaces/GameState";
-import { Member } from "../interfaces/GameOverviewResponse";
 
 const initialState: GameState = {
   apiStatus: "idle",
@@ -83,7 +82,7 @@ const initialState: GameState = {
       supplyCenterTarget: 18,
     },
     variantID: 1,
-    year: "1901",
+    year: 1901,
   },
   status: {
     gameID: 2,

@@ -135,15 +135,20 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                     }}
                     colSpan={columns.length}
                   >
-                    <Box
-                      sx={{
-                        color: theme.palette.action.disabledBackground,
-                        display: "inline-block",
-                        marginRight: 1.5,
-                      }}
-                    >
-                      VOTED
-                    </Box>
+                    {Object.values(country.votes).reduce(
+                      (prev, curr) => prev + +curr,
+                      0,
+                    ) > 0 && (
+                      <Box
+                        sx={{
+                          color: theme.palette.action.disabledBackground,
+                          display: "inline-block",
+                          marginRight: 1.5,
+                        }}
+                      >
+                        VOTED
+                      </Box>
+                    )}
                     {Object.entries(country.votes).map(
                       (data) =>
                         data[1] && (

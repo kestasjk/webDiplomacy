@@ -2,30 +2,24 @@ import * as React from "react";
 import { useState } from "react";
 import { Box, Stack, Button } from "@mui/material";
 import WDInfoDisplay from "./WDInfoDisplay";
-import GameMode from "../../enums/GameMode";
-import Season from "../../enums/Season";
-import Ranking from "../../enums/Ranking";
-import IntegerRange from "../../types/IntegerRange";
-import GameType from "../../enums/GameType";
 import { CountryTableData } from "../../interfaces";
 import Device from "../../enums/Device";
 import WDInfoPanel from "./WDInfoPanel";
 import WDPress from "./WDPress";
 import ModalViews from "../../enums/ModalViews";
+import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
+import useDevice from "../../hooks/useDevice";
 
 interface WDFullModalProps {
+  alternatives: GameOverviewResponse["alternatives"];
   children: React.ReactNode;
   countries: CountryTableData[];
-  device: Device;
-  gameMode: GameMode;
-  gameType: GameType;
-  maxDelays: IntegerRange<0, 5>;
-  potNumber: IntegerRange<35, 665>;
-  rank: Ranking;
-  season: Season;
-  title: string;
+  excusedMissedTurns: GameOverviewResponse["excusedMissedTurns"];
+  potNumber: GameOverviewResponse["pot"];
+  season: GameOverviewResponse["season"];
+  title: GameOverviewResponse["name"];
   userCountry: CountryTableData;
-  year: number;
+  year: GameOverviewResponse["year"];
 }
 
 const textButtonStyle = {
@@ -50,20 +44,18 @@ const textButtonSelected = {
 };
 
 const WDFullModal: React.FC<WDFullModalProps> = function ({
+  alternatives,
   children,
   countries,
-  device,
-  gameMode,
-  gameType,
-  maxDelays,
+  excusedMissedTurns,
   potNumber,
-  rank,
   season,
   title,
   userCountry,
   year,
 }): React.ReactElement {
   const [view, setView] = useState("info");
+  const [device] = useDevice();
   const mobileLandscapeLayout =
     device === Device.MOBILE_LANDSCAPE || device === Device.MOBILE_LG_LANDSCAPE;
 
@@ -80,11 +72,9 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
             }}
           >
             <WDInfoDisplay
+              alternatives={alternatives}
               device={device}
-              gameMode={gameMode}
-              gameType={gameType}
               potNumber={potNumber}
-              rank={rank}
               season={season}
               title={title}
               year={year}
@@ -93,7 +83,7 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
           <WDInfoPanel
             countries={countries}
             device={device}
-            maxDelays={maxDelays}
+            maxDelays={excusedMissedTurns}
             userCountry={userCountry}
           />
         </Box>

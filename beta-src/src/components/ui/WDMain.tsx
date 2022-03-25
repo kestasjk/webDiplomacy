@@ -17,7 +17,7 @@ const WDMain: React.FC = function (): React.ReactElement {
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
       <WDMapController device={device} viewport={viewport} />
-      <WDUI device={device} />
+      <WDUI />
     </React.Suspense>
   );
 };

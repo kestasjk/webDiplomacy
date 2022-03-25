@@ -2,16 +2,16 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Device from "../../enums/Device";
 import Vote from "../../enums/Vote";
-import IntegerRange from "../../types/IntegerRange";
 import WDCountryTable from "./WDCountryTable";
 import WDVoteButtons from "./WDVoteButtons";
 import { CountryTableData } from "../../interfaces/CountryTableData";
+import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
 
 interface WDInfoPanelProps {
   countries: CountryTableData[];
   userCountry: CountryTableData;
   device: Device;
-  maxDelays: IntegerRange<0, 5>;
+  maxDelays: GameOverviewResponse["excusedMissedTurns"];
 }
 
 const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({

@@ -57,7 +57,7 @@ interface GameOverviewResponse {
     supplyCenterTarget: number;
   };
   variantID: number;
-  year: string;
+  year: number;
 }
 
 export default GameOverviewResponse;

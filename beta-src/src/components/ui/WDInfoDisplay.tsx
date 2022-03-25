@@ -17,10 +17,11 @@ import Device from "../../enums/Device";
 
 interface WDInfoDisplayProps {
   alternatives: string;
+  device: Device;
   potNumber: IntegerRange<35, 666>;
   season: string;
   title: string;
-  year: string;
+  year: number;
 }
 
 const tableCellStyles = {
@@ -31,6 +32,7 @@ const tableCellStyles = {
 
 const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
   alternatives,
+  device,
   potNumber,
   season,
   title,
