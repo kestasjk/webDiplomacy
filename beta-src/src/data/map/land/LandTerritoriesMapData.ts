@@ -35,6 +35,7 @@ export const ANKARA: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 60,
     y: 100,
   },
+  fill: Texture.TURKEY,
   labels: [
     {
       x: 102,
@@ -60,6 +61,7 @@ export const ANKARA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const APULIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.APULIA).territory,
+  fill: Texture.ITALY,
   labels: [
     {
       x: 90,
@@ -85,6 +87,7 @@ export const APULIA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const ARMENIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.ARMENIA).territory,
+  fill: Texture.TURKEY,
   labels: [
     {
       x: 52,
@@ -143,6 +146,7 @@ export const BERLIN: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 57,
     y: 93,
   },
+  fill: Texture.GERMANY,
   labels: [
     {
       x: 55,
@@ -168,6 +172,7 @@ export const BERLIN: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const BOHEMIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.BOHEMIA).territory,
+  fill: Texture.AUSTRIA,
   labels: [
     {
       x: 51,
@@ -197,6 +202,7 @@ export const BREST: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 15,
     y: 35,
   },
+  fill: Texture.FRANCE,
   labels: [
     {
       x: 54,
@@ -226,6 +232,7 @@ export const BUDAPEST: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 67,
     y: 85,
   },
+  fill: Texture.AUSTRIA,
   labels: [
     {
       x: 120,
@@ -300,6 +307,7 @@ export const BULGARIA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const BURGUNDY: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.BURGUNDY).territory,
+  fill: Texture.FRANCE,
   labels: [
     {
       x: 90,
@@ -325,6 +333,7 @@ export const BURGUNDY: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const CLYDE: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.CLYDE).territory,
+  fill: Texture.ENGLAND,
   labels: [
     {
       x: 22,
@@ -354,6 +363,7 @@ export const CONSTANTINOPLE: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 60,
     y: 22,
   },
+  fill: Texture.TURKEY,
   labels: [
     {
       x: 95,
@@ -412,6 +422,7 @@ export const EDINBURGH: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 22,
     y: 155,
   },
+  fill: Texture.ENGLAND,
   labels: [
     {
       x: 8,
@@ -437,6 +448,7 @@ export const EDINBURGH: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const FINLAND: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.FINLAND).territory,
+  fill: Texture.RUSSIA,
   labels: [
     {
       x: 130,
@@ -462,6 +474,7 @@ export const FINLAND: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const GALACIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.GALACIA).territory,
+  fill: Texture.AUSTRIA,
   labels: [
     {
       x: 150,
@@ -487,6 +500,7 @@ export const GALACIA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const GASCONY: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.GASCONY).territory,
+  fill: Texture.FRANCE,
   labels: [
     {
       x: 82,
@@ -570,6 +584,7 @@ export const KIEL: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 130,
     y: 73,
   },
+  fill: Texture.GERMANY,
   labels: [
     {
       x: 92,
@@ -599,6 +614,7 @@ export const LIVERPOOL: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 51,
     y: 159,
   },
+  fill: Texture.ENGLAND,
   labels: [
     {
       x: 59,
@@ -624,6 +640,7 @@ export const LIVERPOOL: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const LIVONIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.LIVONIA).territory,
+  fill: Texture.RUSSIA,
   labels: [
     {
       x: 106,
@@ -653,6 +670,7 @@ export const LONDON: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 28,
     y: 62,
   },
+  fill: Texture.ENGLAND,
   labels: [
     {
       x: 27,
@@ -682,6 +700,7 @@ export const MARSEILLES: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 160,
     y: 110,
   },
+  fill: Texture.FRANCE,
   labels: [
     {
       x: 155,
@@ -711,6 +730,7 @@ export const MOSCOW: TerritoryMapData = new TerritoryMapDataGenerator({
     x: "45%",
     y: "45.3%",
   },
+  fill: Texture.RUSSIA,
   labels: [
     {
       x: "51.5%",
@@ -740,6 +760,7 @@ export const MUNICH: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 154,
     y: 160,
   },
+  fill: Texture.GERMANY,
   labels: [
     {
       x: 100,
@@ -769,6 +790,7 @@ export const NAPLES: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 7,
     y: 10,
   },
+  fill: Texture.ITALY,
   labels: [
     {
       x: 27,
@@ -942,6 +964,7 @@ export const PARIS: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 81,
     y: 9,
   },
+  fill: Texture.FRANCE,
   labels: [
     {
       x: 32,
@@ -967,6 +990,7 @@ export const PARIS: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const PICARDY: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.PICARDY).territory,
+  fill: Texture.FRANCE,
   labels: [
     {
       x: 62,
@@ -992,6 +1016,7 @@ export const PICARDY: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const PIEDMONT: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.PIEDMONT).territory,
+  fill: Texture.ITALY,
   labels: [
     {
       x: 38,
@@ -1046,6 +1071,7 @@ export const PORTUGAL: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const PRUSSIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.PRUSSIA).territory,
+  fill: Texture.GERMANY,
   labels: [
     {
       x: 60,
@@ -1075,6 +1101,7 @@ export const ROME: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 10,
     y: 23,
   },
+  fill: Texture.ITALY,
   labels: [
     {
       x: 48,
@@ -1100,6 +1127,7 @@ export const ROME: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const RUHR: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.RUHR).territory,
+  fill: Texture.GERMANY,
   labels: [
     {
       x: 35,
@@ -1159,6 +1187,7 @@ export const SAINT_PETERSBURG: TerritoryMapData = new TerritoryMapDataGenerator(
       x: "20%",
       y: "78%",
     },
+    fill: Texture.RUSSIA,
     labels: [
       {
         x: "25.5%",
@@ -1238,6 +1267,7 @@ export const SEVASTOPOL: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 209,
     y: 410,
   },
+  fill: Texture.RUSSIA,
   labels: [
     {
       x: 203,
@@ -1263,6 +1293,7 @@ export const SEVASTOPOL: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const SILESIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.SILESIA).territory,
+  fill: Texture.GERMANY,
   labels: [
     {
       x: 98,
@@ -1292,6 +1323,7 @@ export const SMYRNA: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 20,
     y: 150,
   },
+  fill: Texture.TURKEY,
   labels: [
     {
       x: 60,
@@ -1395,6 +1427,7 @@ export const SWEDEN: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const SYRIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.SYRIA).territory,
+  fill: Texture.TURKEY,
   labels: [
     {
       x: 112,
@@ -1424,6 +1457,7 @@ export const TRIESTE: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 56,
     y: 70,
   },
+  fill: Texture.AUSTRIA,
   labels: [
     {
       x: 100,
@@ -1478,6 +1512,7 @@ export const TUNISIA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const TUSCANY: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.TUSCANY).territory,
+  fill: Texture.ITALY,
   labels: [
     {
       x: 28,
@@ -1503,6 +1538,7 @@ export const TUSCANY: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const TYROLIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.TYROLIA).territory,
+  fill: Texture.AUSTRIA,
   labels: [
     {
       x: 95,
@@ -1528,6 +1564,7 @@ export const TYROLIA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const UKRAINE: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.UKRAINE).territory,
+  fill: Texture.RUSSIA,
   labels: [
     {
       x: 130,
@@ -1653,6 +1690,7 @@ export const VIENNA: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 28,
     y: 48,
   },
+  fill: Texture.AUSTRIA,
   labels: [
     {
       x: 69,
@@ -1682,6 +1720,7 @@ export const VENICE: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 68,
     y: 29,
   },
+  fill: Texture.ITALY,
   labels: [
     {
       x: 21,
@@ -1707,6 +1746,7 @@ export const VENICE: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const WALES: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.WALES).territory,
+  fill: Texture.ENGLAND,
   labels: [
     {
       x: 106,
@@ -1736,6 +1776,7 @@ export const WARSAW: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 65,
     y: 75,
   },
+  fill: Texture.RUSSIA,
   labels: [
     {
       x: 58,
@@ -1761,6 +1802,7 @@ export const WARSAW: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const YORK: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.YORK).territory,
+  fill: Texture.ENGLAND,
   labels: [
     {
       x: 13,
