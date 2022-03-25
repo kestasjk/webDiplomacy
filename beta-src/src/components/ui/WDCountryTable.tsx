@@ -35,9 +35,9 @@ interface Column {
 
 const columns: readonly Column[] = [
   { id: "power", label: "Power", icon: PowerIcon, align: "left" },
-  { id: "unitQty", label: "Units", icon: UnitsIcon, align: "center" },
+  { id: "unitNo", label: "Units", icon: UnitsIcon, align: "center" },
   {
-    id: "centerQty",
+    id: "supplyCenterNo",
     label: "Centers",
     icon: CentersIcon,
     align: "center",
@@ -49,7 +49,7 @@ const columns: readonly Column[] = [
     align: "center",
   },
   {
-    id: "delaysLeft",
+    id: "excusedMissedTurns",
     label: "Delays",
     icon: DelaysIcon,
     align: "center",
@@ -111,7 +111,7 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                       style.color = country.color;
                       style.fontWeight = 700;
                       break;
-                    case "delaysLeft":
+                    case "excusedMissedTurns":
                       value = `${country[column.id]}/${maxDelays}`;
                       break;
                     default:

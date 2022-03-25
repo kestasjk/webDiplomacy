@@ -1,11 +1,8 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { Box } from "@mui/material";
-import {
-  fetchGameOverview,
-  gameOverview,
-} from "../../state/game/game-api-slice";
-import { useAppDispatch, useAppSelector } from "../../state/hooks";
+import { gameOverview } from "../../state/game/game-api-slice";
+import { useAppSelector } from "../../state/hooks";
 import Season from "../../enums/Season";
 import UIState from "../../enums/UIState";
 import WDCountdownPill from "./WDCountdownPill";
@@ -18,9 +15,7 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
   const [timerDisplayState, setTimerDisplayState] = useState(true);
 
   const { phaseMinutes, season, year } = useAppSelector(gameOverview);
-  const dispatch = useAppDispatch();
 
-  let currentGameID;
   const phaseTime = phaseMinutes * 60;
   const endTime = Math.floor(Date.now() / 1000) + phaseMinutes * 60;
 
@@ -29,12 +24,6 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
   };
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    currentGameID = urlParams.get("gameID");
-  }, []);
-
-  useEffect(() => {
-    dispatch(fetchGameOverview({ gameID: currentGameID as string }));
     setCurrentSeason(season as Season);
     setCurrentYear(year);
   }, [season, year]);

@@ -7,11 +7,7 @@ import {
   TableRow,
   TableContainer,
 } from "@mui/material";
-import GameMode from "../../enums/GameMode";
-import Season from "../../enums/Season";
-import Ranking from "../../enums/Ranking";
 import IntegerRange from "../../types/IntegerRange";
-import GameType from "../../enums/GameType";
 import WDLineClamp from "./WDLineClamp";
 
 /**
@@ -19,11 +15,9 @@ import WDLineClamp from "./WDLineClamp";
  */
 
 interface WDInfoDisplayProps {
-  gameMode: GameMode;
-  gameType: GameType;
-  potNumber: IntegerRange<35, 665>;
-  rank: Ranking;
-  season: Season;
+  alternatives: string;
+  potNumber: IntegerRange<35, 666>;
+  season: string;
   title: string;
   year: number;
 }
@@ -35,10 +29,8 @@ const tableCellStyles = {
 };
 
 const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
-  gameMode,
-  gameType,
+  alternatives,
   potNumber,
-  rank,
   season,
   title,
   year,
@@ -78,9 +70,7 @@ const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell sx={tableCellStyles}>
-              {gameType}, {gameMode}, {rank}
-            </TableCell>
+            <TableCell sx={tableCellStyles}>{alternatives}</TableCell>
           </TableRow>
         </TableBody>
       </Table>

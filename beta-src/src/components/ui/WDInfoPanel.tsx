@@ -22,10 +22,15 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
 }): React.ReactElement {
   const [voteState, setVoteState] = React.useState(userCountry.votes);
 
+  React.useEffect(() => {
+    setVoteState(userCountry.votes);
+  }, [userCountry, countries]);
+
   const toggleVote = (voteName: Vote) => {
+    const voteKey = Vote[voteName];
     const newVoteState = {
       ...voteState,
-      [voteName]: !voteState[voteName],
+      [voteKey]: !voteState[voteKey],
     };
 
     setVoteState(newVoteState);
