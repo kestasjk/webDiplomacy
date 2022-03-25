@@ -1,5 +1,6 @@
 import { useTheme } from "@mui/material";
 import * as React from "react";
+import Texture from "../../../enums/Texture";
 import { TerritoryMapData } from "../../../interfaces";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
@@ -34,8 +35,9 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       )}
       <path
         d={territoryMapData.path}
-        fill={territoryMapData.fill}
-        fillOpacity={territoryMapData.texture?.texture ? 0.2 : 1}
+        fill={Texture.LAND}
+        fillOpacity={territoryMapData.texture?.texture ? 0.5 : 1}
+        filter={territoryMapData.fill}
         id={`${territoryMapData.name}-control-path`}
         stroke={theme.palette.primary.main}
         strokeOpacity={1}
