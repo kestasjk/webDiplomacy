@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import ApiRoute from "../../enums/ApiRoute";
 import { getGameApiRequest } from "../../utils/api";
-import GameDataResponse from "../interfaces/GameData";
+import GameDataResponse from "../interfaces/GameDataResponse";
 import GameErrorResponse from "../interfaces/GameErrorResponse";
 import GameOverviewResponse from "../interfaces/GameOverviewResponse";
 import { ApiStatus } from "../interfaces/GameState";

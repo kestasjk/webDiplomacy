@@ -1,4 +1,4 @@
-import GameDataResponse from "./GameData";
+import GameDataResponse from "./GameDataResponse";
 import GameErrorResponse from "./GameErrorResponse";
 import GameOverviewResponse from "./GameOverviewResponse";
 import GameStatusResponse from "./GameStatusResponse";
