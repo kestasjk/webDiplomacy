@@ -36,18 +36,31 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
     setVoteState(newVoteState);
   };
 
+  const mobileLandscapeLayout =
+    device === Device.MOBILE_LANDSCAPE || device === Device.MOBILE_LG_LANDSCAPE;
+
+  const padding = mobileLandscapeLayout ? "0 6px" : "0 16px";
+
   return (
     <Box>
-      <WDVoteButtons voteState={voteState} toggleVote={toggleVote} />
-      <WDCountryTable
-        maxDelays={maxDelays}
-        /**
-         * always show current user at the top
-         *
-         */
-        countries={[{ ...userCountry, votes: voteState }, ...countries]}
-        device={device}
-      />
+      <Box sx={{ p: padding }}>
+        <WDVoteButtons voteState={voteState} toggleVote={toggleVote} />
+      </Box>
+      <Box
+        sx={{
+          m: "20px 5px 10px 0",
+        }}
+      >
+        <WDCountryTable
+          maxDelays={maxDelays}
+          /**
+           * always show current user at the top
+           *
+           */
+          countries={[{ ...userCountry, votes: voteState }, ...countries]}
+          device={device}
+        />
+      </Box>
     </Box>
   );
 };

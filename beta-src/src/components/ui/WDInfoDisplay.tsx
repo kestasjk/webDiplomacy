@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import IntegerRange from "../../types/IntegerRange";
 import WDLineClamp from "./WDLineClamp";
+import Device from "../../enums/Device";
 
 /**
  * game setting datas which would be passed to the component by parent component/ context/redux store
@@ -35,13 +36,16 @@ const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
   title,
   year,
 }) {
+  const mobileLandscapeLayout =
+    device === Device.MOBILE_LANDSCAPE || device === Device.MOBILE_LG_LANDSCAPE;
+  const maximumWeight = mobileLandscapeLayout ? 250 : 345;
   return (
     <TableContainer>
       <Table
         aria-label="A table of game information"
         size="small"
         sx={{
-          maxWidth: 250,
+          maxWidth: maximumWeight,
         }}
       >
         <TableHead>
