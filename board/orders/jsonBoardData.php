@@ -29,8 +29,7 @@ class jsonBoardData
 		return "function loadBoardTurnData() {\n".self::getUnits($gameID)."\n\n".self::getTerrStatus($gameID)."\n}\n";
 	}
 
-	protected static function getUnits($gameID)
-	{
+	public static function getUnitsData($gameID){
 		global $DB;
 
 		$units = array();
@@ -39,11 +38,15 @@ class jsonBoardData
 		{
 			$units[$row['id']] = $row;
 		}
-
-		return 'Units = $H('.json_encode($units).');';
+		return $units;
 	}
-	protected static function getTerrStatus($gameID)
+
+	protected static function getUnits($gameID)
 	{
+		return 'Units = $H('.json_encode(self::getUnitsData($gameID)).');';
+	}
+
+	public static function getTerrStatusData($gameID){
 		global $DB;
 
 		$terrstatus=array();
@@ -53,8 +56,12 @@ class jsonBoardData
 			$row['standoff'] = ($row['standoff']=='Yes');
 			$terrstatus[] = $row;
 		}
+		return $terrstatus;
+	}
 
-		return 'TerrStatus = '.json_encode($terrstatus).';';
+	protected static function getTerrStatus($gameID)
+	{
+		return 'TerrStatus = '.json_encode(self::getTerrStatusData($gameID)).';';
 	}
 }
 

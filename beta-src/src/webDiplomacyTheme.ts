@@ -1,4 +1,6 @@
-import { createTheme } from "@mui/material/styles";
+import { createTheme, SimplePaletteColorOptions } from "@mui/material/styles";
+import Country from "./enums/Country";
+import ArrowType from "./enums/ArrowType";
 
 declare module "@mui/material/styles" {
   interface BreakpointOverrides {
@@ -31,16 +33,59 @@ declare module "@mui/material/Typography" {
   }
 }
 
+declare module "@mui/material/styles" {
+  interface Palette {
+    France: SimplePaletteColorOptions;
+    Austria: SimplePaletteColorOptions;
+    England: SimplePaletteColorOptions;
+    Germany: SimplePaletteColorOptions;
+    Russia: SimplePaletteColorOptions;
+    Italy: SimplePaletteColorOptions;
+    Turkey: SimplePaletteColorOptions;
+    arrowColors: {
+      moveOrderSelected: SimplePaletteColorOptions;
+      move: SimplePaletteColorOptions;
+      convoy: SimplePaletteColorOptions;
+      moveFailed: SimplePaletteColorOptions;
+      moveSupport: SimplePaletteColorOptions;
+      holdSupport: SimplePaletteColorOptions;
+      retreat: SimplePaletteColorOptions;
+    };
+  }
+}
+
+declare module "@mui/material/styles/createPalette" {
+  export interface PaletteOptions {
+    arrowColors: {
+      moveOrderSelected: SimplePaletteColorOptions;
+      move: SimplePaletteColorOptions;
+      convoy: SimplePaletteColorOptions;
+      moveFailed: SimplePaletteColorOptions;
+      moveSupport: SimplePaletteColorOptions;
+      holdSupport: SimplePaletteColorOptions;
+      retreat: SimplePaletteColorOptions;
+    };
+  }
+}
+
 /**
  * constants
  * ===
  * define constants that are to be re-used in the theme. use generic names that
  * describe their usage.
  */
+const mainColor = "#000";
+const secondaryColor = "#fff";
 const activeButtonStyle = {
-  backgroundColor: "#fff",
-  boxShadow: "0 0 2px 2px #000",
-  color: "#000",
+  backgroundColor: secondaryColor,
+  boxShadow: "0 0 2px 2px",
+  color: mainColor,
+};
+
+const focusButtonStyle = {
+  backgroundColor: mainColor,
+  boxShadow: "0 0 2px 2px",
+  color: secondaryColor,
 };
 const boldFontWeight = 700;
 const disabledBackground = "#b8b8b8";
@@ -49,6 +94,55 @@ const disabledBackgroundSecondary = "transparent";
 const disabledTextSecondary = "#bababa";
 const defaultLineHeight = 1.2;
 const normalFontWeight = 400;
+
+type CountryPaletteOptions = {
+  [key in Country]: SimplePaletteColorOptions;
+};
+
+const countryPalette: CountryPaletteOptions = {
+  France: {
+    main: "#2D5EE8",
+    light: "#B9C9F7",
+  },
+  Austria: {
+    main: "#FC4343",
+    light: "#FEC0C0",
+  },
+  England: {
+    main: "#E136EA",
+    light: "#F5BCF8",
+  },
+  Germany: {
+    main: "#F37C0E",
+    light: "#FBD3AF",
+  },
+  Russia: {
+    main: "#3F1BC1",
+    light: "#BFB3EA",
+  },
+  Italy: {
+    main: "#47D2A0",
+    light: "#C2F0DF",
+  },
+  Turkey: {
+    main: "#F3C400",
+    light: "#FBEBAA",
+  },
+};
+
+type ArrowColors = {
+  [key in ArrowType]: SimplePaletteColorOptions;
+};
+
+const arrowColors: ArrowColors = {
+  moveOrderSelected: { main: "#FFFFFF" },
+  move: { main: "#000000" },
+  convoy: { main: "#2042B8" },
+  moveFailed: { main: "#BB0000" },
+  moveSupport: { main: "#F8F83D" },
+  holdSupport: { main: "#3FC621" },
+  retreat: { main: "#BD2894" },
+};
 
 /**
  * theme creation
@@ -82,11 +176,11 @@ const webDiplomacyTheme = createTheme({
             ...activeButtonStyle,
           },
           "&:focus": {
-            ...activeButtonStyle,
+            ...focusButtonStyle,
           },
           "&:hover": {
             backgroundColor: "#757575",
-            color: "#fff",
+            color: secondaryColor,
           },
         },
         containedSecondary: {
@@ -114,16 +208,18 @@ const webDiplomacyTheme = createTheme({
     },
     error: {
       main: "#f00",
-      contrastText: "#fff",
+      contrastText: secondaryColor,
     },
     primary: {
-      main: "#000",
-      contrastText: "#fff",
+      main: mainColor,
+      contrastText: secondaryColor,
     },
     secondary: {
-      main: "#fff",
-      contrastText: "#000",
+      main: secondaryColor,
+      contrastText: mainColor,
     },
+    ...countryPalette,
+    arrowColors,
   },
   typography: {
     button: {
