@@ -4,7 +4,8 @@ import Device from "../../enums/Device";
 import getInitialViewTranslation from "../../utils/map/getInitialViewTranslation";
 import Scale from "../../types/Scale";
 import WDMap from "./WDMap";
-import { Viewport } from "../../interfaces";
+import useViewport from "../../hooks/useViewport";
+import getDevice from "../../utils/getDevice";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -20,19 +21,13 @@ const getInitialScaleForDevice = (device: Device): number[] => {
   return Scales[device];
 };
 
-interface WDMapControllerProps {
-  device: Device;
-  viewport: Viewport;
-}
-
 const mapOriginalWidth = 6010;
 const mapOriginalHeight = 3005;
 
-const WDMapController: React.FC<WDMapControllerProps> = function ({
-  device,
-  viewport,
-}): React.ReactElement {
+const WDMapController: React.FC = function (): React.ReactElement {
   const svgElement = React.useRef<SVGSVGElement>(null);
+  const [viewport] = useViewport();
+  const device = getDevice(viewport);
   const [scaleMin, scaleMax] = getInitialScaleForDevice(device);
 
   React.useLayoutEffect(() => {

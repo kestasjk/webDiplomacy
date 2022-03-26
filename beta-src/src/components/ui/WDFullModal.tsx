@@ -8,7 +8,8 @@ import WDInfoPanel from "./WDInfoPanel";
 import WDPress from "./WDPress";
 import ModalViews from "../../enums/ModalViews";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
-import useDevice from "../../hooks/useDevice";
+import useViewport from "../../hooks/useViewport";
+import getDevice from "../../utils/getDevice";
 
 interface WDFullModalProps {
   alternatives: GameOverviewResponse["alternatives"];
@@ -55,7 +56,9 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
   year,
 }): React.ReactElement {
   const [view, setView] = useState("info");
-  const [device] = useDevice();
+  const [viewport] = useViewport();
+  const device = getDevice(viewport);
+
   const mobileLandscapeLayout =
     device === Device.MOBILE_LANDSCAPE || device === Device.MOBILE_LG_LANDSCAPE;
 
@@ -73,7 +76,6 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
           >
             <WDInfoDisplay
               alternatives={alternatives}
-              device={device}
               potNumber={potNumber}
               season={season}
               title={title}
@@ -82,7 +84,6 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
           </Box>
           <WDInfoPanel
             countries={countries}
-            device={device}
             maxDelays={excusedMissedTurns}
             userCountry={userCountry}
           />
@@ -90,7 +91,7 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
       );
     }
     if (view === "press") {
-      return <WDPress device={device}>{children}</WDPress>;
+      return <WDPress>{children}</WDPress>;
     }
     return null;
   };

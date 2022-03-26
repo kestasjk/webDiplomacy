@@ -6,21 +6,23 @@ import WDCountryTable from "./WDCountryTable";
 import WDVoteButtons from "./WDVoteButtons";
 import { CountryTableData } from "../../interfaces/CountryTableData";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
+import useViewport from "../../hooks/useViewport";
+import getDevice from "../../utils/getDevice";
 
 interface WDInfoPanelProps {
   countries: CountryTableData[];
   userCountry: CountryTableData;
-  device: Device;
   maxDelays: GameOverviewResponse["excusedMissedTurns"];
 }
 
 const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
   countries,
   userCountry,
-  device,
   maxDelays,
 }): React.ReactElement {
   const [voteState, setVoteState] = React.useState(userCountry.votes);
+  const [viewport] = useViewport();
+  const device = getDevice(viewport);
 
   React.useEffect(() => {
     setVoteState(userCountry.votes);
@@ -52,13 +54,12 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
         }}
       >
         <WDCountryTable
-          maxDelays={maxDelays}
           /**
            * always show current user at the top
            *
            */
           countries={[{ ...userCountry, votes: voteState }, ...countries]}
-          device={device}
+          maxDelays={maxDelays}
         />
       </Box>
     </Box>

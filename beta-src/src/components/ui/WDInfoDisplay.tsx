@@ -10,6 +10,8 @@ import {
 import IntegerRange from "../../types/IntegerRange";
 import WDLineClamp from "./WDLineClamp";
 import Device from "../../enums/Device";
+import getDevice from "../../utils/getDevice";
+import useViewport from "../../hooks/useViewport";
 
 /**
  * game setting datas which would be passed to the component by parent component/ context/redux store
@@ -17,7 +19,6 @@ import Device from "../../enums/Device";
 
 interface WDInfoDisplayProps {
   alternatives: string;
-  device: Device;
   potNumber: IntegerRange<35, 666>;
   season: string;
   title: string;
@@ -32,12 +33,13 @@ const tableCellStyles = {
 
 const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
   alternatives,
-  device,
   potNumber,
   season,
   title,
   year,
 }) {
+  const [viewport] = useViewport();
+  const device = getDevice(viewport);
   const mobileLandscapeLayout =
     device === Device.MOBILE_LANDSCAPE || device === Device.MOBILE_LG_LANDSCAPE;
   const maximumWeight = mobileLandscapeLayout ? 250 : 345;

@@ -1,16 +1,18 @@
 import * as React from "react";
 import { Box } from "@mui/material";
 import Device from "../../enums/Device";
+import useViewport from "../../hooks/useViewport";
+import getDevice from "../../utils/getDevice";
 
 interface WDPressProps {
   children: React.ReactNode;
-  device: Device;
 }
 
 const WDPress: React.FC<WDPressProps> = function ({
   children,
-  device,
 }): React.ReactElement {
+  const [viewport] = useViewport();
+  const device = getDevice(viewport);
   const mobileLandscapeLayout =
     device === Device.MOBILE_LANDSCAPE || device === Device.MOBILE_LG_LANDSCAPE;
   const padding = mobileLandscapeLayout ? "0 6px" : "0 16px";
