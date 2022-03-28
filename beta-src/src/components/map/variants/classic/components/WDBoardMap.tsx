@@ -108,7 +108,8 @@ import {
   UNPLAYABLE_SEA9,
   WESTERN_MEDITERRANEAN,
 } from "../../../../../data/map/sea/SeaTerritoriesMapData";
-import WDTexture from "./WDTexture";
+import WDLandTexture from "./WDLandTexture";
+import WDSeaTexture from "./WDSeaTexture";
 
 const WDBoardMap: React.FC = function (): React.ReactElement {
   return (
@@ -332,7 +333,6 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={MARSEILLES} />
         <WDTerritory territoryMapData={MOSCOW} />
         <WDTerritory territoryMapData={MUNICH} />
-        <WDTerritory territoryMapData={NAPLES} />
         <WDTerritory territoryMapData={NEUTRAL_1} />
         <WDTerritory territoryMapData={NEUTRAL_2} />
         <WDTerritory territoryMapData={NEUTRAL_3} />
@@ -392,7 +392,8 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={UNPLAYABLE_SEA8} />
         <WDTerritory territoryMapData={UNPLAYABLE_SEA9} />
       </g>
-      <WDTexture />
+      <WDLandTexture />
+      <WDSeaTexture />
     </g>
   );
 };
