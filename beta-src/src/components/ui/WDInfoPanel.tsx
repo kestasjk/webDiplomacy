@@ -11,14 +11,14 @@ import getDevice from "../../utils/getDevice";
 
 interface WDInfoPanelProps {
   countries: CountryTableData[];
-  userCountry: CountryTableData;
   maxDelays: GameOverviewResponse["excusedMissedTurns"];
+  userCountry: CountryTableData;
 }
 
 const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
   countries,
-  userCountry,
   maxDelays,
+  userCountry,
 }): React.ReactElement {
   const [voteState, setVoteState] = React.useState(userCountry.votes);
   const [viewport] = useViewport();
@@ -26,7 +26,7 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
 
   React.useEffect(() => {
     setVoteState(userCountry.votes);
-  }, [userCountry, countries]);
+  }, [userCountry]);
 
   const toggleVote = (voteName: Vote) => {
     const voteKey = Vote[voteName];
@@ -39,14 +39,16 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
   };
 
   const mobileLandscapeLayout =
-    device === Device.MOBILE_LANDSCAPE || device === Device.MOBILE_LG_LANDSCAPE;
+    device === Device.MOBILE_LANDSCAPE ||
+    device === Device.MOBILE_LG_LANDSCAPE ||
+    device === Device.MOBILE;
 
   const padding = mobileLandscapeLayout ? "0 6px" : "0 16px";
 
   return (
     <Box>
       <Box sx={{ p: padding }}>
-        <WDVoteButtons voteState={voteState} toggleVote={toggleVote} />
+        <WDVoteButtons toggleVote={toggleVote} voteState={voteState} />
       </Box>
       <Box
         sx={{
@@ -54,12 +56,12 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
         }}
       >
         <WDCountryTable
+          maxDelays={maxDelays}
           /**
            * always show current user at the top
            *
            */
           countries={[{ ...userCountry, votes: voteState }, ...countries]}
-          maxDelays={maxDelays}
         />
       </Box>
     </Box>

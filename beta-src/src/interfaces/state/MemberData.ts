@@ -8,12 +8,12 @@ export interface MemberData {
   missedPhases: number;
   newMessagesFrom: number[];
   online: boolean;
-  orderStatus: any;
+  orderStatus: unknown;
   status: string;
   supplyCenterNo: number;
   timeLoggedIn: number;
   unitNo: number;
   userID: number;
   username: string;
-  votes: any;
+  votes: unknown;
 }

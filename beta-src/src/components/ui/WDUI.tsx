@@ -10,8 +10,30 @@ import Country from "../../enums/Country";
 import WDFullModal from "./WDFullModal";
 import WDPopover from "./WDPopover";
 import WDActionIcon from "../svgr-components/WDActionIcon";
-import UIState from "../../enums/UIState";
 import WDPhaseUI from "./WDPhaseUI";
+import UIState from "../../enums/UIState";
+import capitalizeString from "../../utils/capitalizeString";
+import Vote from "../../enums/Vote";
+
+const countryMap = {
+  Russia: Country.RUSSIA,
+  Germany: Country.GERMANY,
+  Italy: Country.ITALY,
+  Austria: Country.AUSTRIA,
+  England: Country.ENGLAND,
+  France: Country.FRANCE,
+  Turkey: Country.TURKEY,
+};
+
+const abbrMap = {
+  Russia: "RUS",
+  Germany: "GER",
+  Italy: "ITA",
+  Austria: "AUS",
+  England: "ENG",
+  France: "FRA",
+  Turkey: "TUR",
+};
 
 const WDUI: React.FC = function (): React.ReactElement {
   const theme = useTheme();
@@ -29,26 +51,6 @@ const WDUI: React.FC = function (): React.ReactElement {
     year,
   } = useAppSelector(gameOverview);
 
-  const countryMap = {
-    Russia: Country.RUSSIA,
-    Germany: Country.GERMANY,
-    Italy: Country.ITALY,
-    Austria: Country.AUSTRIA,
-    England: Country.ENGLAND,
-    France: Country.FRANCE,
-    Turkey: Country.TURKEY,
-  };
-
-  const abbrMap = {
-    Russia: "RUS",
-    Germany: "GER",
-    Italy: "ITA",
-    Austria: "AUS",
-    England: "ENG",
-    France: "FRA",
-    Turkey: "TUR",
-  };
-
   const constructTableData = (member) => {
     const memberCountry: Country = countryMap[member.country];
     return {
@@ -57,20 +59,20 @@ const WDUI: React.FC = function (): React.ReactElement {
       color: theme.palette[memberCountry].main,
       power: memberCountry,
       votes: {
-        cancel: member.votes.includes("Cancel"),
-        draw: member.votes.includes("Draw"),
-        pause: member.votes.includes("Pause"),
+        cancel: member.votes.includes(capitalizeString(Vote[Vote.cancel])),
+        draw: member.votes.includes(capitalizeString(Vote[Vote.draw])),
+        pause: member.votes.includes(capitalizeString(Vote[Vote.pause])),
       },
     };
   };
 
-  const countries: CountryTableData[] = members
-    .map((member) => {
-      const isUser = member.userID === user.member.userID;
-      const memberData = isUser ? null : constructTableData(member);
-      return memberData;
-    })
-    .filter((data) => !!data);
+  const countries: CountryTableData[] = [];
+
+  members.forEach((member) => {
+    if (member.userID !== user.member.userID) {
+      countries.push(constructTableData(member));
+    }
+  });
 
   const userTableData = constructTableData(user.member);
 
