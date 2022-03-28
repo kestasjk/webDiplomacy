@@ -36,7 +36,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       <path
         d={territoryMapData.path}
         fill={Texture.LAND}
-        fillOpacity={territoryMapData.texture?.texture ? 0.5 : 1}
+        fillOpacity={territoryMapData.texture?.texture ? 0.2 : 1}
         filter={territoryMapData.fill}
         id={`${territoryMapData.name}-control-path`}
         stroke={theme.palette.primary.main}
