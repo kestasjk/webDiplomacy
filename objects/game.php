@@ -359,32 +359,41 @@ class Game
 	}
 
 	public function getAlternatives(){
-		$alternatives=array();
-		$alternatives[]=$this->Variant->link();
+		$alternatives = array();
+		$alternatives[] = $this->Variant->link();
 
-		if ( $this->pressType=='NoPress')
-			$alternatives[]=l_t('No messaging');
-		elseif( $this->pressType=='RulebookPress')
-			$alternatives[]=l_t('Rulebook press');
-		elseif( $this->pressType=='PublicPressOnly' )
-			$alternatives[]=l_t('Public messaging only');
+		$pressTypeMap = [
+			'NoPress' => 'No messaging',
+			'RulebookPress' => 'Rulebook press',
+			'PublicPressOnly' => 'Public messaging only',
+		];
+		
+		if ( $pressType = $pressTypeMap[$this->pressType] ?? false ){
+			$alternatives[] = l_t( $pressType );
+		}
 
-		if($this->playerTypes=='Mixed')
-			$alternatives[]=l_t('Fill with Bots');
+		$playerTypeMap = [
+			'Mixed' => 'Fill with Bots',
+			'MemberVsBots' => 'Bot Game',
+		];
 
-		if($this->playerTypes=='MemberVsBots')
-			$alternatives[]=l_t('Bot Game');
+		if( $playerType = $playerTypeMap[$this->playerTypes] ?? false ){
+			$alternatives[] = l_t( $playerType );
+		}
 
-		if( $this->anon=='Yes' )
-			$alternatives[]=l_t('Anonymous players');
+		if( $this->anon == 'Yes' ){
+			$alternatives[] = l_t( 'Anonymous players' );
+		}
 
-		$alternatives[]=$this->Scoring->longName();
+		$alternatives[] = $this->Scoring->longName();
 
-		if( $this->drawType=='draw-votes-hidden')
-			$alternatives[]=l_t('Hidden draw votes');
+		if( $this->drawType == 'draw-votes-hidden' ){
+			$alternatives[] = l_t( 'Hidden draw votes' );
+		}
 
-		if( $this->missingPlayerPolicy=='Wait' )
-			$alternatives[]=l_t('Wait for orders');
+		if( $this->missingPlayerPolicy == 'Wait' ){
+			$alternatives[] = l_t( 'Wait for orders' );
+		}
 
 		return $alternatives;
 	}

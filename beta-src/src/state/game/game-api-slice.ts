@@ -10,11 +10,10 @@ import initialState from "./initial-state";
 export const fetchGameOverview = createAsyncThunk(
   ApiRoute.GAME_OVERVIEW,
   async (queryParams: { gameID: string }) => {
-    const { data } = await getGameApiRequest(
-      ApiRoute.GAME_OVERVIEW,
-      queryParams,
-    );
-    return data.data as GameOverviewResponse;
+    const {
+      data: { data },
+    } = await getGameApiRequest(ApiRoute.GAME_OVERVIEW, queryParams);
+    return data as GameOverviewResponse;
   },
 );
 

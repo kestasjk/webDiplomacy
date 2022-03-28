@@ -26,7 +26,7 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
 
   React.useEffect(() => {
     setVoteState(userCountry.votes);
-  }, [userCountry, countries]);
+  }, [userCountry]);
 
   const toggleVote = (voteName: Vote) => {
     const voteKey = Vote[voteName];
