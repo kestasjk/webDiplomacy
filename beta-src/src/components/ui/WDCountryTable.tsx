@@ -19,10 +19,11 @@ import Device from "../../enums/Device";
 import IntegerRange from "../../types/IntegerRange";
 import PowerIcon from "./icons/country-table/WDPower";
 import UnitsIcon from "./icons/country-table/WDUnits";
+import useViewport from "../../hooks/useViewport";
+import getDevice from "../../utils/getDevice";
 
 interface WDCountryTableProps {
   countries: CountryTableData[];
-  device: Device;
   maxDelays: IntegerRange<0, 5>;
 }
 
@@ -35,9 +36,9 @@ interface Column {
 
 const columns: readonly Column[] = [
   { id: "power", label: "Power", icon: PowerIcon, align: "left" },
-  { id: "unitQty", label: "Units", icon: UnitsIcon, align: "center" },
+  { id: "unitNo", label: "Units", icon: UnitsIcon, align: "center" },
   {
-    id: "centerQty",
+    id: "supplyCenterNo",
     label: "Centers",
     icon: CentersIcon,
     align: "center",
@@ -49,7 +50,7 @@ const columns: readonly Column[] = [
     align: "center",
   },
   {
-    id: "delaysLeft",
+    id: "excusedMissedTurns",
     label: "Delays",
     icon: DelaysIcon,
     align: "center",
@@ -58,12 +59,15 @@ const columns: readonly Column[] = [
 
 const WDCountryTable: React.FC<WDCountryTableProps> = function ({
   countries,
-  device,
   maxDelays,
 }): React.ReactElement {
   const theme = useTheme();
+  const [viewport] = useViewport();
+  const device = getDevice(viewport);
   const mobileLandscapeLayout =
-    device === Device.MOBILE_LANDSCAPE || device === Device.MOBILE_LG_LANDSCAPE;
+    device === Device.MOBILE_LANDSCAPE ||
+    device === Device.MOBILE_LG_LANDSCAPE ||
+    device === Device.MOBILE;
   const WDTableCell = styled(TableCell)(() => {
     const padding = mobileLandscapeLayout ? 6 : "6px 16px";
     return {
@@ -111,7 +115,7 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                       style.color = country.color;
                       style.fontWeight = 700;
                       break;
-                    case "delaysLeft":
+                    case "excusedMissedTurns":
                       value = `${country[column.id]}/${maxDelays}`;
                       break;
                     default:
@@ -135,15 +139,20 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                     }}
                     colSpan={columns.length}
                   >
-                    <Box
-                      sx={{
-                        color: theme.palette.action.disabledBackground,
-                        display: "inline-block",
-                        marginRight: 1.5,
-                      }}
-                    >
-                      VOTED
-                    </Box>
+                    {Object.values(country.votes).reduce(
+                      (prev, curr) => prev + +curr,
+                      0,
+                    ) > 0 && (
+                      <Box
+                        sx={{
+                          color: theme.palette.action.disabledBackground,
+                          display: "inline-block",
+                          marginRight: 1.5,
+                        }}
+                      >
+                        VOTED
+                      </Box>
+                    )}
                     {Object.entries(country.votes).map(
                       (data) =>
                         data[1] && (

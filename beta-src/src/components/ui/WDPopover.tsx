@@ -1,6 +1,9 @@
 import * as React from "react";
 import { useRef } from "react";
 import { Box, ModalProps, Popover } from "@mui/material";
+import useViewport from "../../hooks/useViewport";
+import getDevice from "../../utils/getDevice";
+import Device from "../../enums/Device";
 
 interface WDPopoverProps {
   children: React.ReactNode;
@@ -11,6 +14,7 @@ interface WDPopoverProps {
    * () => setIsOpen(false)
    */
   onClose?: ModalProps["onClose"];
+  open?: () => void;
   /**
    * A component that opens or closes the Popover when clicked.
    */
@@ -21,21 +25,25 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
   children,
   isOpen,
   onClose,
+  open,
   popoverTrigger,
 }) {
   const anchorEl = useRef(null);
-
+  const [viewport] = useViewport();
+  const device = getDevice(viewport);
+  const mobileLandscapeLayout =
+    device === Device.MOBILE_LANDSCAPE ||
+    device === Device.MOBILE_LG_LANDSCAPE ||
+    device === Device.MOBILE;
+  const top = mobileLandscapeLayout ? 25 : 30;
   return (
-    <Box
-      sx={{
-        position: "absolute",
-      }}
-    >
+    <Box>
       <Box
-        ref={anchorEl}
         sx={{
           pt: "15px",
         }}
+        ref={anchorEl}
+        onClick={open}
       >
         {popoverTrigger}
       </Box>
@@ -68,8 +76,8 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
               content: '""',
               height: 22,
               position: "absolute",
-              right: 5,
-              top: 10,
+              right: 3,
+              top,
               transform: "rotate(45deg)",
               width: 22,
             },
@@ -78,9 +86,9 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
 
         <Box
           sx={{
-            background: "linear-gradient(to right, white 94%, transparent 6%)",
+            background: "linear-gradient(to right, white 97%, transparent 3%)",
             m: 0,
-            p: "16px 25px 16px 16px",
+            p: "16px 9px 16px 0",
           }}
         >
           {children}
@@ -92,6 +100,7 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
 
 WDPopover.defaultProps = {
   onClose: undefined,
+  open: undefined,
 };
 
 export default WDPopover;

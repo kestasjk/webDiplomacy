@@ -530,9 +530,16 @@ class GetGameOverview extends ApiEntry {
 			);
 		}   
 		$game = $this->getAssociatedGame();
+		$dateTxt = $game->datetxt($game->turn);
+		$split = explode(',', $dateTxt);
+		$season = $split[0];
+		$year = intval($split[1] ?? 1901);
 		$payload = array_merge([
+			'alternatives' => strip_tags(implode(', ',$game->getAlternatives())),
 			'anon' => $game->anon,
 			'drawType' => $game->drawType,
+			'season' => $season,
+			'year' => $year,
 			'excusedMissedTurns' => $game->excusedMissedTurns,
 			'gameOver' => $game->gameOver,
 			'minimumBet' => $game->minimumBet,

@@ -4,6 +4,9 @@ import WDCheckmarkIcon from "../svgr-components/WDCheckmarkIcon";
 import WDButton from "./WDButton";
 import Vote from "../../enums/Vote";
 import VoteType from "../../types/Vote";
+import getDevice from "../../utils/getDevice";
+import useViewport from "../../hooks/useViewport";
+import Device from "../../enums/Device";
 
 interface voteProps {
   voteState: VoteType;
@@ -20,10 +23,19 @@ const WDVoteButtons: React.FC<voteProps> = function ({
   voteState,
   toggleVote,
 }): React.ReactElement {
+  const [viewport] = useViewport();
+  const device = getDevice(viewport);
+  const mobileLandscapeLayout =
+    device === Device.MOBILE_LANDSCAPE ||
+    device === Device.MOBILE_LG_LANDSCAPE ||
+    device === Device.MOBILE;
+  const padding = mobileLandscapeLayout ? "10px 10px" : "10px 18px";
+  const spacing = mobileLandscapeLayout ? 1 : 2;
   const commandButtons = Object.entries(voteState).map(([vote, status]) => {
     return (
       <WDButton
         key={vote}
+        sx={{ p: padding }}
         color={status ? "secondary" : "primary"}
         onClick={() => toggleVote(Vote[vote])}
         startIcon={status ? <WDCheckmarkIcon /> : ""}
@@ -34,7 +46,7 @@ const WDVoteButtons: React.FC<voteProps> = function ({
   });
 
   return (
-    <Stack direction="row" spacing={2} alignItems="center">
+    <Stack direction="row" spacing={spacing} alignItems="center">
       {commandButtons}
     </Stack>
   );
