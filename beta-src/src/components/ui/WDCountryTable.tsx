@@ -65,7 +65,9 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
   const [viewport] = useViewport();
   const device = getDevice(viewport);
   const mobileLandscapeLayout =
-    device === Device.MOBILE_LANDSCAPE || device === Device.MOBILE_LG_LANDSCAPE;
+    device === Device.MOBILE_LANDSCAPE ||
+    device === Device.MOBILE_LG_LANDSCAPE ||
+    device === Device.MOBILE;
   const WDTableCell = styled(TableCell)(() => {
     const padding = mobileLandscapeLayout ? 6 : "6px 16px";
     return {

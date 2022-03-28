@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
-import { Box, Stack, Button } from "@mui/material";
+import { Box } from "@mui/material";
 import WDInfoDisplay from "./WDInfoDisplay";
 import { CountryTableData } from "../../interfaces";
 import Device from "../../enums/Device";
@@ -10,6 +10,8 @@ import ModalViews from "../../enums/ModalViews";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
+import WDViewsContainer from "./WDViewsContainer";
+import WDTabPanel from "./WDTabPanel";
 
 interface WDFullModalProps {
   alternatives: GameOverviewResponse["alternatives"];
@@ -23,26 +25,7 @@ interface WDFullModalProps {
   year: GameOverviewResponse["year"];
 }
 
-const textButtonStyle = {
-  borderRadius: 0,
-  fontWeight: 400,
-  minWidth: 0,
-  p: "0 0 5px 0",
-  "&:hover": {
-    background: "transparent",
-  },
-};
-
-const textButtonSelected = {
-  borderRadius: 0,
-  borderBottom: "solid black 2px",
-  fontWeight: 600,
-  minWidth: 0,
-  p: "0 0 5px 0",
-  "&:hover": {
-    background: "transparent",
-  },
-};
+const tabGroup: ModalViews[] = [ModalViews.PRESS, ModalViews.INFO];
 
 const WDFullModal: React.FC<WDFullModalProps> = function ({
   alternatives,
@@ -55,18 +38,26 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
   userCountry,
   year,
 }): React.ReactElement {
-  const [view, setView] = useState("info");
+  const [view, setView] = useState(ModalViews.INFO);
+  const onChangeView = (tab: ModalViews) => setView(tab);
   const [viewport] = useViewport();
   const device = getDevice(viewport);
 
   const mobileLandscapeLayout =
-    device === Device.MOBILE_LANDSCAPE || device === Device.MOBILE_LG_LANDSCAPE;
+    device === Device.MOBILE_LANDSCAPE ||
+    device === Device.MOBILE_LG_LANDSCAPE ||
+    device === Device.MOBILE;
 
   const padding = mobileLandscapeLayout ? "0 6px" : "0 16px";
 
-  const renderView = () => {
-    if (view === "info") {
-      return (
+  return (
+    <WDViewsContainer
+      tabGroup={tabGroup}
+      currentView={view}
+      onChange={onChangeView}
+      padding={padding}
+    >
+      <WDTabPanel currentTab={ModalViews.INFO} currentView={view}>
         <Box>
           <Box
             sx={{
@@ -88,37 +79,11 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
             userCountry={userCountry}
           />
         </Box>
-      );
-    }
-    if (view === "press") {
-      return <WDPress>{children}</WDPress>;
-    }
-    return null;
-  };
-
-  return (
-    <Box>
-      <Stack
-        alignItems="center"
-        direction="row"
-        spacing={2}
-        sx={{ p: padding }}
-      >
-        <Button
-          onClick={() => setView("press")}
-          sx={view === "press" ? textButtonSelected : textButtonStyle}
-        >
-          {ModalViews.PRESS}
-        </Button>
-        <Button
-          onClick={() => setView("info")}
-          sx={view === "info" ? textButtonSelected : textButtonStyle}
-        >
-          {ModalViews.INFO}
-        </Button>
-      </Stack>
-      {renderView()}
-    </Box>
+      </WDTabPanel>
+      <WDTabPanel currentTab={ModalViews.PRESS} currentView={view}>
+        <WDPress>{children}</WDPress>
+      </WDTabPanel>
+    </WDViewsContainer>
   );
 };
 

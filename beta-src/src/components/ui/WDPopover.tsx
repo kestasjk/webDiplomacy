@@ -1,6 +1,9 @@
 import * as React from "react";
 import { useRef } from "react";
 import { Box, ModalProps, Popover } from "@mui/material";
+import useViewport from "../../hooks/useViewport";
+import getDevice from "../../utils/getDevice";
+import Device from "../../enums/Device";
 
 interface WDPopoverProps {
   children: React.ReactNode;
@@ -26,6 +29,13 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
   popoverTrigger,
 }) {
   const anchorEl = useRef(null);
+  const [viewport] = useViewport();
+  const device = getDevice(viewport);
+  const mobileLandscapeLayout =
+    device === Device.MOBILE_LANDSCAPE ||
+    device === Device.MOBILE_LG_LANDSCAPE ||
+    device === Device.MOBILE;
+  const top = mobileLandscapeLayout ? 25 : 30;
   return (
     <Box>
       <Box
@@ -67,7 +77,7 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
               height: 22,
               position: "absolute",
               right: 3,
-              top: 30,
+              top,
               transform: "rotate(45deg)",
               width: 22,
             },
