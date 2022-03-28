@@ -2,28 +2,22 @@ import { GameState } from "../interfaces/GameState";
 
 const initialState: GameState = {
   apiStatus: "idle",
+  data: {
+    msg: "",
+    referenceCode: "",
+    success: false,
+    data: {
+      contextVars: { context: "", contextKey: "" },
+      currentOrders: [],
+    },
+  },
   error: null,
   overview: {
     anon: "Yes",
     drawType: "draw-votes-public",
     excusedMissedTurns: 4,
     gameOver: "No",
-    members: [
-      {
-        country: "",
-        countryID: 0,
-        id: 855,
-        online: false,
-        userID: 6,
-      },
-      {
-        country: "",
-        countryID: 0,
-        id: 856,
-        online: true,
-        userID: 5,
-      },
-    ],
+    members: [],
     minimumBet: 5,
     name: "",
     pauseTimeRemaining: null,
@@ -43,15 +37,7 @@ const initialState: GameState = {
       fullName: "Classic",
       description: "The standard Diplomacy map of Europe.",
       author: "Avalon Hill",
-      countries: [
-        "England",
-        "France",
-        "Italy",
-        "Germany",
-        "Austria",
-        "Turkey",
-        "Russia",
-      ],
+      countries: [],
       variantClasses: {
         drawMap: "Classic",
         adjudicatorPreGame: "Classic",
