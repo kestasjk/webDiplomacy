@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Box } from "@mui/material";
 import { gameOverview } from "../../state/game/game-api-slice";
 import { useAppSelector } from "../../state/hooks";
+import convertPhaseMin from "../../utils/convertPhaseMin";
 import Season from "../../enums/Season";
 import UIState from "../../enums/UIState";
 import WDCountdownPill from "./WDCountdownPill";
@@ -16,8 +17,8 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
 
   const { phaseMinutes, season, year } = useAppSelector(gameOverview);
 
-  const phaseTime = phaseMinutes * 60;
-  const endTime = Math.floor(Date.now() / 1000) + phaseMinutes * 60;
+  const phaseTime = phaseMinutes * 60; 
+  const endTime = convertPhaseMin(phaseMinutes);
 
   const showPillTimer = () => {
     setTimerDisplayState(!timerDisplayState);
