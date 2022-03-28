@@ -90,30 +90,30 @@ const WDUI: React.FC = function (): React.ReactElement {
 
   return (
     <>
-    <WDPositionContainer position={Position.TOP_RIGHT}>
-      <WDPopover
-        isOpen={showControlModal}
-        open={openControlModal}
-        onClose={closeControlModal}
-        popoverTrigger={controlModalTrigger}
-      >
-        <WDFullModal
-          alternatives={alternatives}
-          countries={countries}
-          excusedMissedTurns={excusedMissedTurns}
-          potNumber={pot}
-          season={season}
-          title={name}
-          userCountry={userTableData}
-          year={year}
+      <WDPositionContainer position={Position.TOP_RIGHT}>
+        <WDPopover
+          isOpen={showControlModal}
+          open={openControlModal}
+          onClose={closeControlModal}
+          popoverTrigger={controlModalTrigger}
         >
-          {null}
-        </WDFullModal>
-      </WDPopover>
-    </WDPositionContainer>
-    <WDPositionContainer position={Position.TOP_LEFT}>
+          <WDFullModal
+            alternatives={alternatives}
+            countries={countries}
+            excusedMissedTurns={excusedMissedTurns}
+            potNumber={pot}
+            season={season}
+            title={name}
+            userCountry={userTableData}
+            year={year}
+          >
+            {null}
+          </WDFullModal>
+        </WDPopover>
+      </WDPositionContainer>
+      <WDPositionContainer position={Position.TOP_LEFT}>
         <WDPhaseUI />
-    </WDPositionContainer>
+      </WDPositionContainer>
     </>
   );
 };

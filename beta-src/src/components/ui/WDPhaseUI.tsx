@@ -17,7 +17,7 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
 
   const { phaseMinutes, season, year } = useAppSelector(gameOverview);
 
-  const phaseTime = phaseMinutes * 60; 
+  const phaseTime = phaseMinutes * 60;
   const endTime = convertPhaseMin(phaseMinutes);
 
   const showPillTimer = () => {
