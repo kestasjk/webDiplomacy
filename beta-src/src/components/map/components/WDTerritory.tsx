@@ -1,6 +1,5 @@
 import { useTheme } from "@mui/material";
 import * as React from "react";
-import Texture from "../../../enums/Texture";
 import { TerritoryMapData } from "../../../interfaces";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
