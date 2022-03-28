@@ -14,16 +14,18 @@ const WDPress: React.FC<WDPressProps> = function ({
   const [viewport] = useViewport();
   const device = getDevice(viewport);
   const mobileLandscapeLayout =
-    device === Device.MOBILE_LANDSCAPE || device === Device.MOBILE_LG_LANDSCAPE;
+    device === Device.MOBILE_LANDSCAPE ||
+    device === Device.MOBILE_LG_LANDSCAPE ||
+    device === Device.MOBILE;
   const padding = mobileLandscapeLayout ? "0 6px" : "0 16px";
-  const minimumWidth = mobileLandscapeLayout ? 265 : 375;
+  const width = mobileLandscapeLayout ? 272 : 358;
 
   return (
     <Box
       sx={{
         m: "20px 0 10px 0",
         p: padding,
-        minWidth: minimumWidth,
+        width,
       }}
     >
       {children}

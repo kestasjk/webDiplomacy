@@ -41,15 +41,18 @@ const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
   const [viewport] = useViewport();
   const device = getDevice(viewport);
   const mobileLandscapeLayout =
-    device === Device.MOBILE_LANDSCAPE || device === Device.MOBILE_LG_LANDSCAPE;
-  const maximumWeight = mobileLandscapeLayout ? 250 : 345;
+    device === Device.MOBILE_LANDSCAPE ||
+    device === Device.MOBILE_LG_LANDSCAPE ||
+    device === Device.MOBILE;
+
+  const width = mobileLandscapeLayout ? 260 : 320;
   return (
     <TableContainer>
       <Table
         aria-label="A table of game information"
         size="small"
         sx={{
-          maxWidth: maximumWeight,
+          width,
         }}
       >
         <TableHead>
