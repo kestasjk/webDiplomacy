@@ -33,7 +33,7 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
     device === Device.MOBILE_LANDSCAPE ||
     device === Device.MOBILE_LG_LANDSCAPE ||
     device === Device.MOBILE;
-  const top = mobileLandscapeLayout ? 32 : 30;
+  const top = mobileLandscapeLayout ? 32 : 40;
 
   return (
     <Box>
