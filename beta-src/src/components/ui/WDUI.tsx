@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useTheme } from "@mui/material";
+import { IconButton, useTheme } from "@mui/material";
 
 import WDPositionContainer from "./WDPositionContainer";
 import Position from "../../enums/Position";
@@ -84,16 +84,17 @@ const WDUI: React.FC = function (): React.ReactElement {
   };
 
   const controlModalTrigger = (
-    <WDActionIcon
-      iconState={showControlModal ? UIState.ACTIVE : UIState.INACTIVE}
-    />
+    <IconButton onClick={openControlModal}>
+      <WDActionIcon
+        iconState={showControlModal ? UIState.ACTIVE : UIState.INACTIVE}
+      />
+    </IconButton>
   );
 
   return (
     <WDPositionContainer position={Position.TOP_RIGHT}>
       <WDPopover
         isOpen={showControlModal}
-        open={openControlModal}
         onClose={closeControlModal}
         popoverTrigger={controlModalTrigger}
       >
