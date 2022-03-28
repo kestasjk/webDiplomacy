@@ -19,10 +19,11 @@ import Device from "../../enums/Device";
 import IntegerRange from "../../types/IntegerRange";
 import PowerIcon from "./icons/country-table/WDPower";
 import UnitsIcon from "./icons/country-table/WDUnits";
+import useViewport from "../../hooks/useViewport";
+import getDevice from "../../utils/getDevice";
 
 interface WDCountryTableProps {
   countries: CountryTableData[];
-  device: Device;
   maxDelays: IntegerRange<0, 5>;
 }
 
@@ -58,10 +59,11 @@ const columns: readonly Column[] = [
 
 const WDCountryTable: React.FC<WDCountryTableProps> = function ({
   countries,
-  device,
   maxDelays,
 }): React.ReactElement {
   const theme = useTheme();
+  const [viewport] = useViewport();
+  const device = getDevice(viewport);
   const mobileLandscapeLayout =
     device === Device.MOBILE_LANDSCAPE || device === Device.MOBILE_LG_LANDSCAPE;
   const WDTableCell = styled(TableCell)(() => {
@@ -135,15 +137,20 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                     }}
                     colSpan={columns.length}
                   >
-                    <Box
-                      sx={{
-                        color: theme.palette.action.disabledBackground,
-                        display: "inline-block",
-                        marginRight: 1.5,
-                      }}
-                    >
-                      VOTED
-                    </Box>
+                    {Object.values(country.votes).reduce(
+                      (prev, curr) => prev + +curr,
+                      0,
+                    ) > 0 && (
+                      <Box
+                        sx={{
+                          color: theme.palette.action.disabledBackground,
+                          display: "inline-block",
+                          marginRight: 1.5,
+                        }}
+                      >
+                        VOTED
+                      </Box>
+                    )}
                     {Object.entries(country.votes).map(
                       (data) =>
                         data[1] && (

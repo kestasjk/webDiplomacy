@@ -1,5 +1,4 @@
 import { GameState } from "../interfaces/GameState";
-import { Member } from "../interfaces/GameOverviewResponse";
 
 const initialState: GameState = {
   apiStatus: "idle",

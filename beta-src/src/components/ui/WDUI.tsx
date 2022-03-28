@@ -1,23 +1,23 @@
 import * as React from "react";
-import { Box, useTheme } from "@mui/material";
+import { useTheme } from "@mui/material";
 
 import WDPositionContainer from "./WDPositionContainer";
 import Position from "../../enums/Position";
-import WDInfoDisplay from "./WDInfoDisplay";
 import { useAppSelector } from "../../state/hooks";
 import { gameOverview } from "../../state/game/game-api-slice";
-import WDInfoPanel from "./WDInfoPanel";
-import Device from "../../enums/Device";
 import { CountryTableData } from "../../interfaces";
 import Country from "../../enums/Country";
+import WDFullModal from "./WDFullModal";
+import WDPopover from "./WDPopover";
+import WDActionIcon from "../svgr-components/WDActionIcon";
+import UIState from "../../enums/UIState";
 import WDPhaseUI from "./WDPhaseUI";
 
-interface WDUIProps {
-  device: Device;
-}
-
-const WDUI: React.FC<WDUIProps> = function ({ device }): React.ReactElement {
+const WDUI: React.FC = function (): React.ReactElement {
   const theme = useTheme();
+
+  const [showControlModal, setShowControlModal] = React.useState(false);
+
   const {
     alternatives,
     excusedMissedTurns,
@@ -28,13 +28,6 @@ const WDUI: React.FC<WDUIProps> = function ({ device }): React.ReactElement {
     user,
     year,
   } = useAppSelector(gameOverview);
-  console.log({
-    alternatives,
-    name,
-    pot,
-    season,
-    year,
-  });
 
   const countryMap = {
     Russia: Country.RUSSIA,
@@ -80,37 +73,47 @@ const WDUI: React.FC<WDUIProps> = function ({ device }): React.ReactElement {
     .filter((data) => !!data);
 
   const userTableData = constructTableData(user.member);
-  console.log({
-    userTableData,
-    countries,
-  });
+
+  const openControlModal = () => {
+    setShowControlModal(true);
+  };
+
+  const closeControlModal = () => {
+    setShowControlModal(false);
+  };
+
+  const controlModalTrigger = (
+    <WDActionIcon
+      iconState={showControlModal ? UIState.ACTIVE : UIState.INACTIVE}
+    />
+  );
 
   return (
     <>
-      <WDPositionContainer position={Position.TOP_RIGHT}>
-        <Box sx={{ background: "white" }}>
-          <Box sx={{ padding: 2 }}>
-            <WDInfoDisplay
-              potNumber={pot}
-              alternatives={alternatives}
-              season={season}
-              title={name}
-              year={year}
-            />
-          </Box>
-          <Box sx={{ padding: 2 }}>
-            <WDInfoPanel
-              countries={countries}
-              device={device}
-              userCountry={userTableData}
-              maxDelays={excusedMissedTurns}
-            />
-          </Box>
-        </Box>
-      </WDPositionContainer>
-      <WDPositionContainer position={Position.TOP_LEFT}>
+    <WDPositionContainer position={Position.TOP_RIGHT}>
+      <WDPopover
+        isOpen={showControlModal}
+        open={openControlModal}
+        onClose={closeControlModal}
+        popoverTrigger={controlModalTrigger}
+      >
+        <WDFullModal
+          alternatives={alternatives}
+          countries={countries}
+          excusedMissedTurns={excusedMissedTurns}
+          potNumber={pot}
+          season={season}
+          title={name}
+          userCountry={userTableData}
+          year={year}
+        >
+          {null}
+        </WDFullModal>
+      </WDPopover>
+    </WDPositionContainer>
+    <WDPositionContainer position={Position.TOP_LEFT}>
         <WDPhaseUI />
-      </WDPositionContainer>
+    </WDPositionContainer>
     </>
   );
 };
