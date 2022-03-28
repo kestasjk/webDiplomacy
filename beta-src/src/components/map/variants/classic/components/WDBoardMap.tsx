@@ -108,9 +108,7 @@ import {
   UNPLAYABLE_SEA9,
   WESTERN_MEDITERRANEAN,
 } from "../../../../../data/map/sea/SeaTerritoriesMapData";
-
-import CapturableLandTexture from "../../../../../assets/textures/capturable-land.jpeg";
-import WaterTexture from "../../../../../assets/textures/sea-texture.png";
+import WDTexture from "./WDTexture";
 
 const WDBoardMap: React.FC = function (): React.ReactElement {
   return (
@@ -274,6 +272,15 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         </g>
       </g>
       <g id="sea">
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA1} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA2} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA3} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA4} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA5} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA6} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA7} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA8} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA9} />
         <WDTerritory territoryMapData={ADRIATIC_SEA} />
         <WDTerritory territoryMapData={AEGEAN_SEA} />
         <WDTerritory territoryMapData={BALTIC_SEA} />
@@ -295,15 +302,6 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={SKAGERRACK} />
         <WDTerritory territoryMapData={SKAGERRACK2} />
         <WDTerritory territoryMapData={TYRRHENIAN_SEA} />
-        <WDTerritory territoryMapData={UNPLAYABLE_SEA1} />
-        <WDTerritory territoryMapData={UNPLAYABLE_SEA2} />
-        <WDTerritory territoryMapData={UNPLAYABLE_SEA3} />
-        <WDTerritory territoryMapData={UNPLAYABLE_SEA4} />
-        <WDTerritory territoryMapData={UNPLAYABLE_SEA5} />
-        <WDTerritory territoryMapData={UNPLAYABLE_SEA6} />
-        <WDTerritory territoryMapData={UNPLAYABLE_SEA7} />
-        <WDTerritory territoryMapData={UNPLAYABLE_SEA8} />
-        <WDTerritory territoryMapData={UNPLAYABLE_SEA9} />
         <WDTerritory territoryMapData={WESTERN_MEDITERRANEAN} />
       </g>
       <g id="outlines">
@@ -348,7 +346,6 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={NORWAY} />
         <WDTerritory territoryMapData={PARIS} />
         <WDTerritory territoryMapData={PICARDY} />
-        <WDTerritory territoryMapData={PIEDMONT} />
         <WDTerritory territoryMapData={PORTUGAL} />
         <WDTerritory territoryMapData={PRUSSIA} />
         <WDTerritory territoryMapData={RUHR} />
@@ -365,6 +362,18 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={TUNISIA} />
         <WDTerritory territoryMapData={TYROLIA} />
         <WDTerritory territoryMapData={UKRAINE} />
+        <WDTerritory territoryMapData={VENICE} />
+        <WDTerritory territoryMapData={VIENNA} />
+        <WDTerritory territoryMapData={WALES} />
+        <WDTerritory territoryMapData={WARSAW} />
+        <WDTerritory territoryMapData={YORK} />
+        {/* These need to be last so the labels and units will appear */}
+        <WDTerritory territoryMapData={NAPLES} />
+        <WDTerritory territoryMapData={PIEDMONT} />
+        <WDTerritory territoryMapData={ROME} />
+        <WDTerritory territoryMapData={TUSCANY} />
+      </g>
+      <g id="unplayable">
         <WDTerritory territoryMapData={UNPLAYABLE_LAND1} />
         <WDTerritory territoryMapData={UNPLAYABLE_LAND2} />
         <WDTerritory territoryMapData={UNPLAYABLE_LAND3} />
@@ -373,40 +382,17 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={UNPLAYABLE_LAND6} />
         <WDTerritory territoryMapData={UNPLAYABLE_LAND7} />
         <WDTerritory territoryMapData={UNPLAYABLE_LAND8} />
-        <WDTerritory territoryMapData={VENICE} />
-        <WDTerritory territoryMapData={VIENNA} />
-        <WDTerritory territoryMapData={WALES} />
-        <WDTerritory territoryMapData={WARSAW} />
-        <WDTerritory territoryMapData={YORK} />
-        {/* These need to be last so the labels and units will appear */}
-        <WDTerritory territoryMapData={NAPLES} />
-        <WDTerritory territoryMapData={ROME} />
-        <WDTerritory territoryMapData={TUSCANY} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA1} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA2} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA3} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA4} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA5} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA6} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA7} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA8} />
+        <WDTerritory territoryMapData={UNPLAYABLE_SEA9} />
       </g>
-      <defs>
-        <pattern
-          id="capturable-land"
-          patternUnits="userSpaceOnUse"
-          width="1546"
-          height="1384"
-        >
-          <image
-            href={CapturableLandTexture}
-            x="0"
-            y="0"
-            width="1546"
-            height="1384"
-          />
-        </pattern>
-        <pattern
-          id="sea-texture"
-          patternUnits="userSpaceOnUse"
-          width="1546"
-          height="1384"
-        >
-          <image href={WaterTexture} x="0" y="0" width="1966" height="1615" />
-        </pattern>
-      </defs>
+      <WDTexture />
     </g>
   );
 };

@@ -35,6 +35,8 @@ require_once('lib/cache.php');
 require_once('lib/html.php');
 require_once('lib/time.php');
 require_once('lib/gamemessage.php');
+require_once('board/orders/jsonBoardData.php');
+require_once('variants/install.php');
 $DB = new Database();
 
 /**
@@ -384,6 +386,87 @@ class GetGamesStates extends ApiEntry {
 }
 
 /**
+ * API entry game/members
+ * Retrieves member data related to a game. 
+ */
+class GetGameMembers extends ApiEntry {
+	private $isAnon;
+
+	private $showDrawVotes;
+
+	public function __construct() {
+		parent::__construct('game/members', 'GET', 'getStateOfAllGames', array('gameID'));
+	}
+
+	private function getMembers( $members ){
+		return array_map( function( $member ){
+			return $this->getMemberData($member);
+		}, $members->ByOrder );
+	}
+
+	private function getMemberData(Member $member, bool $retrievePrivateData = false){
+
+		$votes = $member->votes;
+		if(!$this->showDrawVotes && !$retrievePrivateData){
+			$drawKey = array_search('Draw', $votes);
+			if($drawKey !== false){
+				unset($votes[$drawKey]);
+				$votes = array_values($votes);
+			}
+		}
+
+		return [
+			'bet' => $member->bet,
+			'country' => $member->country,
+			'countryID' => $member->countryID,
+			'excusedMissedTurns' => $member->excusedMissedTurns,
+			'missedPhases' => $member->missedPhases,
+			'newMessagesFrom' => $retrievePrivateData ? $member->newMessagesFrom : [],
+			'online' => $member->online,
+			'orderStatus' => $member->orderStatus,
+			'status' => $member->status,
+			'supplyCenterNo' => $member->supplyCenterNo,
+			'timeLoggedIn' => $member->timeLoggedIn,
+			'unitNo' => $member->unitNo,
+			'userID' => $member->userID,
+			'username' => $this->isAnon && !$retrievePrivateData ? '' : $member->username,
+			'votes' => $votes,
+		];
+	}
+
+	public function getData($userID){
+		$args = $this->getArgs();
+		$gameID = $args['gameID'];
+		if ($gameID === null || !ctype_digit($gameID)){
+			throw new RequestException(
+				$this->JSONResponse(
+					'Invalid game ID.', 
+					'ggm-err-001', 
+					false,
+					['gameID' => $gameID]
+				)
+			);
+		}
+		$game = $this->getAssociatedGame();
+		$this->isAnon = $game->anon === 'Yes' ? true : false;
+		$this->showDrawVotes = $game->drawType === 'draw-votes-public' ? true : false;
+		return [
+			'members' => $this->getMembers( $game->Members ),
+			'user' => [
+				'member' => $this->getMemberData($game->Members->ByUserID[$userID], true),
+			]
+		];
+	}
+
+	/**
+	 * @throws RequestException
+	 */
+	public function run($userID, $permissionIsExplicit) {
+		return $this->JSONResponse('Successfully retrieved game members.', 'ggm-s-001', true, $this->getData($userID));
+	}
+}
+
+/**
  * API entry game/overview
  * 
  * This should be cleaned up. 
@@ -393,16 +476,31 @@ class GetGameOverview extends ApiEntry {
 		parent::__construct('game/overview', 'GET', 'getStateOfAllGames', array('gameID'));
 	}
 
-	private function getMemberData( $members ){
+	private function getMembers( $members ){
 		return array_map( function( $member ){
-			return [
-				'country' => $member->country,
-				'countryID' => $member->countryID,
-				'id' => $member->id,
-				'online' => $member->online,
-				'userID' => $member->userID,
-			];
+			return $this->getMemberData($member);
 		}, $members->ByOrder );
+	}
+
+	private function getMemberData($member){
+		return [
+			'bet' => $member->bet,
+			'country' => $member->country,
+			'countryID' => $member->countryID,
+			'excusedMissedTurns' => $member->excusedMissedTurns,
+			'id' => $member->id,
+			'missedPhases' => $member->missedPhases,
+			'newMessagesFrom' => $member->newMessagesFrom,
+			'online' => $member->online,
+			'orderStatus' => $member->orderStatus,
+			'status' => $member->status,
+			'supplyCenterNo' => $member->supplyCenterNo,
+			'timeLoggedIn' => $member->timeLoggedIn,
+			'unitNo' => $member->unitNo,
+			'userID' => $member->userID,
+			'username' => $member->username,
+			'votes' => $member->votes,
+		];
 	}
 
 	/**
@@ -432,12 +530,11 @@ class GetGameOverview extends ApiEntry {
 			);
 		}   
 		$game = $this->getAssociatedGame();
-		$payload = [
+		$payload = array_merge([
 			'anon' => $game->anon,
 			'drawType' => $game->drawType,
 			'excusedMissedTurns' => $game->excusedMissedTurns,
 			'gameOver' => $game->gameOver,
-			'members' => $this->getMemberData( $game->Members ),
 			'minimumBet' => $game->minimumBet,
 			'name' => $game->name,
 			'pauseTimeRemaining' => $game->pauseTimeRemaining,
@@ -452,13 +549,14 @@ class GetGameOverview extends ApiEntry {
 			'turn' => $game->turn,
 			'variant' => $game->Variant,
 			'variantID' => $game->variantID,
-		];
+		], (new GetGameMembers)->getData($userID));
 		return $this->JSONResponse('Successfully retrieved game overview.', 'GGO-s-001', true, $payload);
 	}
 }
 
 /**
- * API entry game/status
+ * API entry game/data
+ * Retrieves API data needed for order generation code and game functionality. 
  */
 class GetGameData extends ApiEntry {
 
@@ -469,7 +567,7 @@ class GetGameData extends ApiEntry {
 	}
 
 	private function setContextVars( $game, $gameID, $userID, $countryID, $member ){
-		$orderInterface = new OrderInterface(
+		$this->contextVars = (new OrderInterface(
 			$gameID,
 			$game->variantID,
 			$userID,
@@ -480,9 +578,7 @@ class GetGameData extends ApiEntry {
 			$member->orderStatus,
 			null,
 			false
-		);
-		$orderInterface->load();
-		$this->contextVars = $orderInterface->getContextVars();
+		))->load()->getContextVars();
 	}
 
 	private function getContextVars(){
@@ -495,6 +591,14 @@ class GetGameData extends ApiEntry {
 	private function getCurrentOrders(){
 		return $this->contextVars['ordersData'];
 	}
+
+	private function getUnits($gameID){
+        return jsonBoardData::getUnitsData($gameID);
+    }
+
+    private function getTerrStatus($gameID){
+        return jsonBoardData::getTerrStatusData($gameID);
+    }
 
 	/**
 	 * @throws RequestException
@@ -554,7 +658,30 @@ class GetGameData extends ApiEntry {
 			$payload['currentOrders'] = $this->getCurrentOrders();
 		}
 
-		return $this->JSONResponse('Successfully retrieved data.', 'GGD-s-001', true, $payload);
+		if($game->variantID && is_numeric($game->variantID)){
+            $territoriesCacheKey = "territories_$game->variantID";
+            $cachedTerritories = $MC->get($territoriesCacheKey);
+            if($cachedTerritories){
+                $payload['territories'] = $cachedTerritories;
+            }else{
+                $territories = InstallCache::terrJSONData($game->variantID);
+                if(!empty($territories)){
+                    $payload['territories'] = $territories;
+                    $secondsInDay = 86400;
+                    $MC->set($territoriesCacheKey, $territories, $secondsInDay);
+                }
+            }
+        }
+
+		$payload = array_merge(
+            $payload,
+            [
+                'units' => $this->getUnits($gameID),
+                'territoryStatuses' => $this->getTerrStatus($gameID),
+            ],
+        );
+
+		return $this->JSONResponse('Successfully retrieved game data.', 'GGD-s-001', true, $payload);
 	}
 }
 
@@ -1131,6 +1258,7 @@ try {
 	$api->load(new GetGamesStates());
 	$api->load(new GetGameOverview());
 	$api->load(new GetGameData());
+	$api->load(new GetGameMembers());
 	$api->load(new SetOrders());
 	$api->load(new ToggleVote());
 	$api->load(new SendMessage());

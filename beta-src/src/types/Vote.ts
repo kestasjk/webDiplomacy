@@ -1,7 +1,7 @@
-import Vote from "../enums/Vote";
-
 type VoteType = {
-  [key in Vote]: boolean;
+  cancel: boolean;
+  draw: boolean;
+  pause: boolean;
 };
 
 export default VoteType;
