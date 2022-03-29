@@ -24,6 +24,8 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
     setTimerDisplayState(!timerDisplayState);
   };
 
+  const phaseSeconds = phaseMinutes * 60;
+
   useEffect(() => {
     setCurrentSeason(season as Season);
     setCurrentYear(year);
@@ -40,7 +42,7 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
       {timerDisplayState && currentProcessTime && (
         <WDCountdownPill
           endTime={currentProcessTime}
-          phaseTime={phaseMinutes}
+          phaseTime={phaseSeconds}
         />
       )}
       {!timerDisplayState && (
