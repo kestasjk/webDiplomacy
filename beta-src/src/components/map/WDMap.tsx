@@ -170,7 +170,7 @@ const WDMap: React.ForwardRefExoticComponent<
             in2="offset-blur"
             result="inverse"
           />
-          <feFlood floodColor="#3F1BC1" floodOpacity="1" result="color" />
+          <feFlood floodColor="#3F1BC1" floodOpacity="0.85" result="color" />
           <feComposite operator="in" in="color" in2="inverse" result="shadow" />
           <feComponentTransfer in="shadow" result="shadow">
             <feFuncA type="linear" slope="2.5" />
