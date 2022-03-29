@@ -40,6 +40,7 @@ const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
           width={50}
           height={50}
           fill="none"
+          viewBox="-3 -5 55 55"
           xmlns="http://www.w3.org/2000/svg"
         >
           <circle cx={25} cy={25} r={20} fill="#000" />
