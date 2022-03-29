@@ -14,7 +14,6 @@ interface WDPopoverProps {
    * () => setIsOpen(false)
    */
   onClose?: ModalProps["onClose"];
-  open?: () => void;
   /**
    * A component that opens or closes the Popover when clicked.
    */
@@ -25,7 +24,6 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
   children,
   isOpen,
   onClose,
-  open,
   popoverTrigger,
 }) {
   const anchorEl = useRef(null);
@@ -35,7 +33,8 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
     device === Device.MOBILE_LANDSCAPE ||
     device === Device.MOBILE_LG_LANDSCAPE ||
     device === Device.MOBILE;
-  const top = mobileLandscapeLayout ? 25 : 30;
+  const top = mobileLandscapeLayout ? 32 : 40;
+
   return (
     <Box>
       <Box
@@ -43,7 +42,6 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
           pt: "15px",
         }}
         ref={anchorEl}
-        onClick={open}
       >
         {popoverTrigger}
       </Box>
@@ -100,7 +98,6 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
 
 WDPopover.defaultProps = {
   onClose: undefined,
-  open: undefined,
 };
 
 export default WDPopover;
