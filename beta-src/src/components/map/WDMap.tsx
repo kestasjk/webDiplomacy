@@ -2,6 +2,76 @@ import * as React from "react";
 import WDBoardMap from "./variants/classic/components/WDBoardMap";
 import CapturableLandTexture from "../../assets/textures/capturable-land.jpeg";
 import WaterTexture from "../../assets/textures/sea-texture.png";
+import webDiplomacyTheme from "../../webDiplomacyTheme";
+
+const countryFilterConfig = [
+  {
+    countryName: "austria",
+    floodColor: webDiplomacyTheme.palette.Austria.main,
+    floodOpacity: 1,
+  },
+  {
+    countryName: "england",
+    floodColor: webDiplomacyTheme.palette.England.main,
+    floodOpacity: 1,
+  },
+  {
+    countryName: "france",
+    floodColor: webDiplomacyTheme.palette.France.main,
+    floodOpacity: 1,
+  },
+  {
+    countryName: "germany",
+    floodColor: webDiplomacyTheme.palette.Germany.main,
+    floodOpacity: 1,
+  },
+  {
+    countryName: "italy",
+    floodColor: webDiplomacyTheme.palette.Italy.main,
+    floodOpacity: 1,
+  },
+  {
+    countryName: "russia",
+    floodColor: webDiplomacyTheme.palette.Russia.main,
+    floodOpacity: 0.85,
+  },
+
+  {
+    countryName: "turkey",
+    floodColor: webDiplomacyTheme.palette.Turkey.main,
+    floodOpacity: 1,
+  },
+];
+
+const countryFilterDefs = countryFilterConfig.map((country) => {
+  return (
+    <filter id={country.countryName} key={country.countryName}>
+      <feOffset dx="5" dy="5" in="SourceGraphic" result="shadow1" />
+      <feOffset dx="-5" dy="-5" in="SourceGraphic" result="shadow2" />
+      <feMerge result="offset-blur">
+        <feMergeNode in="shadow1" />
+        <feMergeNode in="shadow2" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+      <feGaussianBlur stdDeviation="7.5" result="offset-blur" />
+      <feComposite
+        operator="out"
+        in="SourceGraphic"
+        in2="offset-blur"
+        result="inverse"
+      />
+      <feFlood
+        floodColor={country.floodColor}
+        floodOpacity={country.floodOpacity}
+        result="color"
+      />
+      <feComposite operator="in" in="color" in2="inverse" result="shadow" />
+      <feComponentTransfer in="shadow" result="shadow">
+        <feFuncA type="linear" slope="2.5" />
+      </feComponentTransfer>
+    </filter>
+  );
+});
 
 const WDMap: React.ForwardRefExoticComponent<
   React.RefAttributes<SVGSVGElement>
@@ -44,160 +114,7 @@ const WDMap: React.ForwardRefExoticComponent<
         >
           <image href={WaterTexture} x="0" y="0" width="1966" height="1615" />
         </pattern>
-
-        <filter id="austria">
-          <feOffset dx="5" dy="5" in="SourceGraphic" result="shadow1" />
-          <feOffset dx="-5" dy="-5" in="SourceGraphic" result="shadow2" />
-          <feMerge result="offset-blur">
-            <feMergeNode in="shadow1" />
-            <feMergeNode in="shadow2" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-          <feGaussianBlur stdDeviation="7.5" result="offset-blur" />
-          <feComposite
-            operator="out"
-            in="SourceGraphic"
-            in2="offset-blur"
-            result="inverse"
-          />
-          <feFlood floodColor="#FC4343" floodOpacity="1" result="color" />
-          <feComposite operator="in" in="color" in2="inverse" result="shadow" />
-          <feComponentTransfer in="shadow" result="shadow">
-            <feFuncA type="linear" slope="2.5" />
-          </feComponentTransfer>
-        </filter>
-
-        <filter id="england">
-          <feOffset dx="5" dy="5" in="SourceGraphic" result="shadow1" />
-          <feOffset dx="-5" dy="-5" in="SourceGraphic" result="shadow2" />
-          <feMerge result="offset-blur">
-            <feMergeNode in="shadow1" />
-            <feMergeNode in="shadow2" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-          <feGaussianBlur stdDeviation="7.5" result="offset-blur" />
-          <feComposite
-            operator="out"
-            in="SourceGraphic"
-            in2="offset-blur"
-            result="inverse"
-          />
-          <feFlood floodColor="#E136EA" floodOpacity="1" result="color" />
-          <feComposite operator="in" in="color" in2="inverse" result="shadow" />
-          <feComponentTransfer in="shadow" result="shadow">
-            <feFuncA type="linear" slope="2.5" />
-          </feComponentTransfer>
-        </filter>
-
-        <filter id="france">
-          <feOffset dx="5" dy="5" in="SourceGraphic" result="shadow1" />
-          <feOffset dx="-5" dy="-5" in="SourceGraphic" result="shadow2" />
-          <feMerge result="offset-blur">
-            <feMergeNode in="shadow1" />
-            <feMergeNode in="shadow2" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-          <feGaussianBlur stdDeviation="7.5" result="offset-blur" />
-          <feComposite
-            operator="out"
-            in="SourceGraphic"
-            in2="offset-blur"
-            result="inverse"
-          />
-          <feFlood floodColor="#2D5EE8" floodOpacity="1" result="color" />
-          <feComposite operator="in" in="color" in2="inverse" result="shadow" />
-          <feComponentTransfer in="shadow" result="shadow">
-            <feFuncA type="linear" slope="2.5" />
-          </feComponentTransfer>
-        </filter>
-
-        <filter id="germany">
-          <feOffset dx="5" dy="5" in="SourceGraphic" result="shadow1" />
-          <feOffset dx="-5" dy="-5" in="SourceGraphic" result="shadow2" />
-          <feMerge result="offset-blur">
-            <feMergeNode in="shadow1" />
-            <feMergeNode in="shadow2" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-          <feGaussianBlur stdDeviation="7.5" result="offset-blur" />
-          <feComposite
-            operator="out"
-            in="SourceGraphic"
-            in2="offset-blur"
-            result="inverse"
-          />
-          <feFlood floodColor="#F37C0E" floodOpacity="1" result="color" />
-          <feComposite operator="in" in="color" in2="inverse" result="shadow" />
-          <feComponentTransfer in="shadow" result="shadow">
-            <feFuncA type="linear" slope="2.5" />
-          </feComponentTransfer>
-        </filter>
-
-        <filter id="italy">
-          <feOffset dx="5" dy="5" in="SourceGraphic" result="shadow1" />
-          <feOffset dx="-5" dy="-5" in="SourceGraphic" result="shadow2" />
-          <feMerge result="offset-blur">
-            <feMergeNode in="shadow1" />
-            <feMergeNode in="shadow2" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-          <feGaussianBlur stdDeviation="7.5" result="offset-blur" />
-          <feComposite
-            operator="out"
-            in="SourceGraphic"
-            in2="offset-blur"
-            result="inverse"
-          />
-          <feFlood floodColor="#47D2A0" floodOpacity="1" result="color" />
-          <feComposite operator="in" in="color" in2="inverse" result="shadow" />
-          <feComponentTransfer in="shadow" result="shadow">
-            <feFuncA type="linear" slope="2.5" />
-          </feComponentTransfer>
-        </filter>
-
-        <filter id="russia">
-          <feOffset dx="5" dy="5" in="SourceGraphic" result="shadow1" />
-          <feOffset dx="-5" dy="-5" in="SourceGraphic" result="shadow2" />
-          <feMerge result="offset-blur">
-            <feMergeNode in="shadow1" />
-            <feMergeNode in="shadow2" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-          <feGaussianBlur stdDeviation="7.5" result="offset-blur" />
-          <feComposite
-            operator="out"
-            in="SourceGraphic"
-            in2="offset-blur"
-            result="inverse"
-          />
-          <feFlood floodColor="#3F1BC1" floodOpacity="0.85" result="color" />
-          <feComposite operator="in" in="color" in2="inverse" result="shadow" />
-          <feComponentTransfer in="shadow" result="shadow">
-            <feFuncA type="linear" slope="2.5" />
-          </feComponentTransfer>
-        </filter>
-
-        <filter id="turkey">
-          <feOffset dx="5" dy="5" in="SourceGraphic" result="shadow1" />
-          <feOffset dx="-5" dy="-5" in="SourceGraphic" result="shadow2" />
-          <feMerge result="offset-blur">
-            <feMergeNode in="shadow1" />
-            <feMergeNode in="shadow2" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-          <feGaussianBlur stdDeviation="7.5" result="offset-blur" />
-          <feComposite
-            operator="out"
-            in="SourceGraphic"
-            in2="offset-blur"
-            result="inverse"
-          />
-          <feFlood floodColor="#F3C400" floodOpacity="1" result="color" />
-          <feComposite operator="in" in="color" in2="inverse" result="shadow" />
-          <feComponentTransfer in="shadow" result="shadow">
-            <feFuncA type="linear" slope="2.5" />
-          </feComponentTransfer>
-        </filter>
+        {countryFilterDefs}
       </defs>
     </svg>
   ),
