@@ -38,7 +38,7 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
         display: "flex",
         alignItems: "center",
         height: 65,
-        marginTop: "8px",
+        marginTop: "15px",
       }}
     >
       <WDGamePhaseIcon
