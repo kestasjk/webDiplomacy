@@ -6,6 +6,7 @@ import Territory from "../../../enums/Territory";
 
 export const ALBANIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.ALBANIA).territory,
+  fill: Texture.LAND,
   labels: [
     {
       x: 25,
@@ -117,6 +118,7 @@ export const BELGIUM: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 75,
     y: 20,
   },
+  fill: Texture.LAND,
   labels: [
     {
       x: 75,
@@ -262,6 +264,7 @@ export const BULGARIA: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 20,
     y: 65,
   },
+  fill: Texture.LAND,
   labels: [
     {
       x: 65,
@@ -393,6 +396,7 @@ export const DENMARK: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 99,
     y: 103,
   },
+  fill: Texture.LAND,
   labels: [
     {
       x: 25,
@@ -526,6 +530,7 @@ export const GASCONY: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const GREECE: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.GREECE).territory,
+  fill: Texture.LAND,
   labels: [
     {
       x: 50,
@@ -555,6 +560,7 @@ export const HOLLAND: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 82,
     y: 5,
   },
+  fill: Texture.LAND,
   labels: [
     {
       x: 80,
@@ -912,6 +918,7 @@ export const NORTH_AFRICA: TerritoryMapData = new TerritoryMapDataGenerator({
       y: 155,
     },
   ],
+  fill: Texture.LAND,
   unitSlots: [
     {
       name: "main",
@@ -935,6 +942,7 @@ export const NORWAY: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 140,
     y: 540,
   },
+  fill: Texture.LAND,
   labels: [
     {
       x: 85,
@@ -1071,7 +1079,7 @@ export const PORTUGAL: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const PRUSSIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.PRUSSIA).territory,
-  fill: Texture.GERMANY,
+  fill: Texture.LAND,
   labels: [
     {
       x: 60,
@@ -1090,7 +1098,7 @@ export const PRUSSIA: TerritoryMapData = new TerritoryMapDataGenerator({
   x: 3022,
   y: 1508,
   texture: {
-    texture: Texture.LAND,
+    texture: Texture.GERMANY,
   },
   path: "M267 72.4438C266.48 63.6111 264 54.0982 256.95 48.8165C249.31 43.1248 238.1 43.705 231.04 37.313C226.21 32.9317 224.4 26.2496 222.13 20.1377C219.86 14.0258 216.24 7.59394 210 5.70336C208.07 5.12318 205.77 4.87311 204.65 3.20259C204.247 2.51602 203.979 1.75896 203.86 0.971931C203.86 0.831888 203.81 0.691801 203.78 0.551758C205.142 10.1076 205.687 19.7621 205.41 29.4106C205.25 34.3421 206.07 40.0039 204.35 44.6153C203.5 46.886 201.72 48.6165 199.99 50.3671C198.923 51.5509 197.636 52.5157 196.2 53.2079C195.027 53.6182 193.792 53.8213 192.55 53.8081C189.792 53.7612 187.033 53.8848 184.29 54.1782C181.52 54.4804 178.962 55.8076 177.12 57.8993C175.65 59.7599 175.12 62.1506 174.45 64.4213C172.57 70.8533 169.31 77.0352 164.24 81.4265C162.3 83.0484 160.211 84.482 158 85.7079C150.47 90.0392 141.31 93.1202 133.16 90.1192C130.02 89.0418 127.343 86.9244 125.57 84.1174C124.71 82.7095 124.204 81.1144 124.094 79.4683C123.985 77.8222 124.275 76.174 124.94 74.6644C120.73 70.5532 113.8 70.083 107.94 70.2831C103.042 70.6 98.2194 71.6452 93.6299 73.3841C76.0299 79.466 39.2201 102.393 1.1201 103.473C-0.0799048 121.899 -1.01992 142.195 6.85008 158.89C9.07008 163.592 11.9599 167.983 13.6499 172.895C15.4999 178.226 15.85 183.958 15.75 189.6C15.7582 191.383 15.5635 193.162 15.1699 194.901C16.8599 195.962 18.4899 197.152 20.1699 198.202C29.8899 204.204 41.7599 205.204 53.1699 206.085C65.9399 207.085 78.8001 208.015 91.6001 207.015C96.5145 206.647 101.397 205.932 106.21 204.874C112.4 170.624 143.56 154.369 159.9 150.858C176.9 147.177 212.9 141.185 222.55 137.034C231.09 133.373 253.06 122.819 260.65 109.025C265.548 97.4812 267.721 84.9636 267 72.4438Z",
 }).territory;
@@ -1157,6 +1165,7 @@ export const RUMANIA: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 140,
     y: 180,
   },
+  fill: Texture.LAND,
   labels: [
     {
       x: 85,
@@ -1238,6 +1247,7 @@ export const SERBIA: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 35,
     y: 10,
   },
+  fill: Texture.LAND,
   labels: [
     {
       x: 33,
@@ -1353,6 +1363,7 @@ export const SPAIN: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 177,
     y: 190,
   },
+  fill: Texture.LAND,
   labels: [
     {
       x: 210,
@@ -1402,6 +1413,7 @@ export const SWEDEN: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 160,
     y: 470,
   },
+  fill: Texture.LAND,
   labels: [
     {
       x: 105,
@@ -1487,6 +1499,7 @@ export const TUNISIA: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 100,
     y: 20,
   },
+  fill: Texture.LAND,
   labels: [
     {
       x: 50,
