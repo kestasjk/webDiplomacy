@@ -553,9 +553,11 @@ class GetGameOverview extends ApiEntry {
 			'processStatus' => $game->processStatus,
 			'processTime' => $game->processTime,
 			'startTime' => $game->startTime,
+			'season' => $season,
 			'turn' => $game->turn,
 			'variant' => $game->Variant,
 			'variantID' => $game->variantID,
+			'year' => $year,
 		], (new GetGameMembers)->getData($userID));
 		return $this->JSONResponse('Successfully retrieved game overview.', 'GGO-s-001', true, $payload);
 	}

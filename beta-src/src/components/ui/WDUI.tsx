@@ -10,6 +10,7 @@ import Country from "../../enums/Country";
 import WDFullModal from "./WDFullModal";
 import WDPopover from "./WDPopover";
 import WDActionIcon from "../svgr-components/WDActionIcon";
+import WDPhaseUI from "./WDPhaseUI";
 import UIState from "../../enums/UIState";
 import capitalizeString from "../../utils/capitalizeString";
 import Vote from "../../enums/Vote";
@@ -92,26 +93,31 @@ const WDUI: React.FC = function (): React.ReactElement {
   );
 
   return (
-    <WDPositionContainer position={Position.TOP_RIGHT}>
-      <WDPopover
-        isOpen={showControlModal}
-        onClose={closeControlModal}
-        popoverTrigger={controlModalTrigger}
-      >
-        <WDFullModal
-          alternatives={alternatives}
-          countries={countries}
-          excusedMissedTurns={excusedMissedTurns}
-          potNumber={pot}
-          season={season}
-          title={name}
-          userCountry={userTableData}
-          year={year}
+    <>
+      <WDPositionContainer position={Position.TOP_RIGHT}>
+        <WDPopover
+          isOpen={showControlModal}
+          onClose={closeControlModal}
+          popoverTrigger={controlModalTrigger}
         >
-          {null}
-        </WDFullModal>
-      </WDPopover>
-    </WDPositionContainer>
+          <WDFullModal
+            alternatives={alternatives}
+            countries={countries}
+            excusedMissedTurns={excusedMissedTurns}
+            potNumber={pot}
+            season={season}
+            title={name}
+            userCountry={userTableData}
+            year={year}
+          >
+            {null}
+          </WDFullModal>
+        </WDPopover>
+      </WDPositionContainer>
+      <WDPositionContainer position={Position.TOP_LEFT}>
+        <WDPhaseUI />
+      </WDPositionContainer>
+    </>
   );
 };
 
