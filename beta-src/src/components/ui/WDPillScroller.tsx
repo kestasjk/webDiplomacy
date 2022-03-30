@@ -22,8 +22,9 @@ const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
       sx={{
         alignItems: "flex-start",
         display: "flex",
+        backgroundColor: "white",
+        borderRadius: "22px",
         filter: "drop-shadow(0px 8px 9px black)",
-        paddingTop: "5px",
       }}
     >
       <ButtonGroup>
