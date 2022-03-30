@@ -1,20 +1,25 @@
+/**
+ * This function shows which attributes need to be udpated/applied to set the highlighting properly.  They should be set on the WDTerritory element when it is time to wire this up with the global state.
+ * @param countryName
+ * @param territoryName
+ * @returns
+ */
+
 export default function applyCountryHighlight(
   countryName: string,
   territoryName: string,
-) {
-  const territoryElement = document.getElementById(
+): void {
+  const territoryElement: HTMLElement | null = document.getElementById(
     `${territoryName.toUpperCase()}-control-path`,
   );
 
-  // Needs proper error handling
-  if (!territoryElement) {
-    return alert("Territory not found!"); // eslint-disable-line
+  if (territoryElement == null) {
+    alert("Territory not found!"); // eslint-disable-line
+    return;
   }
 
   territoryElement.setAttribute("fill", `url(#radialFill)`);
   territoryElement.setAttribute("filter", `url(#${countryName.toLowerCase()})`);
   territoryElement.setAttribute("fill-opacity", "0.5");
   territoryElement.setAttribute("stroke-opacity", "0.5");
-
-  return territoryElement;
 }
