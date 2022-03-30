@@ -154,7 +154,7 @@ const webDiplomacyTheme = createTheme({
       mobileLandscape: 600,
       mobileLg: 414,
       mobileLgLandscape: 896,
-      tablet: 834,
+      tablet: 815,
       tabletLandscape: 1024,
       desktop: 1500,
     },

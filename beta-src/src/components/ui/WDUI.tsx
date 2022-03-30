@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IconButton, useTheme } from "@mui/material";
+import { IconButton, Link, useTheme } from "@mui/material";
 
 import WDPositionContainer from "./WDPositionContainer";
 import Position from "../../enums/Position";
@@ -17,6 +17,7 @@ import Vote from "../../enums/Vote";
 import Move from "../../enums/Move";
 import WDMoveControls from "./WDMoveControls";
 import MoveStatus from "../../types/MoveStatus";
+import WDHomeIcon from "../svgr-components/WDHomeIcon";
 
 const countryMap = {
   Russia: Country.RUSSIA,
@@ -96,7 +97,7 @@ const WDUI: React.FC = function (): React.ReactElement {
   };
 
   const controlModalTrigger = (
-    <IconButton onClick={openControlModal}>
+    <IconButton sx={{ padding: 0 }} onClick={openControlModal}>
       <WDActionIcon
         iconState={showControlModal ? UIState.ACTIVE : UIState.INACTIVE}
       />
@@ -114,6 +115,9 @@ const WDUI: React.FC = function (): React.ReactElement {
   return (
     <>
       <WDPositionContainer position={Position.TOP_RIGHT}>
+        <Link href="/">
+          <WDHomeIcon />
+        </Link>
         <WDPopover
           isOpen={showControlModal}
           onClose={closeControlModal}
