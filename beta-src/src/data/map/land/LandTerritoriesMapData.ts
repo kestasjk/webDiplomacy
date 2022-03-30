@@ -955,6 +955,7 @@ export const PORTUGAL: TerritoryMapData = new TerritoryMapDataGenerator({
     x: 13,
     y: 128,
   },
+  fill: Texture.LAND,
   labels: [
     {
       x: 54,
