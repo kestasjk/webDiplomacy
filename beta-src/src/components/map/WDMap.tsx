@@ -45,10 +45,6 @@ const WDMap: React.ForwardRefExoticComponent<
         >
           <image href={WaterTexture} x="0" y="0" width="1966" height="1615" />
         </pattern>
-        <radialGradient id="radialFill">
-          <stop offset="0%" stopColor="transparent" />
-          <stop offset="100%" stopColor="#fff" />
-        </radialGradient>
         {WDCountryHighlightFilterDefs()}
       </defs>
     </svg>

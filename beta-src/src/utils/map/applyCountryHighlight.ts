@@ -18,8 +18,7 @@ export default function applyCountryHighlight(
     return;
   }
 
-  territoryElement.setAttribute("fill", `url(#radialFill)`);
   territoryElement.setAttribute("filter", `url(#${countryName.toLowerCase()})`);
-  territoryElement.setAttribute("fill-opacity", "0.5");
+  territoryElement.setAttribute("fill-opacity", "0.4");
   territoryElement.setAttribute("stroke-opacity", "0.5");
 }
