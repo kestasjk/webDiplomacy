@@ -49,7 +49,7 @@ const WDMap: React.ForwardRefExoticComponent<
           <stop offset="0%" stopColor="transparent" />
           <stop offset="100%" stopColor="#fff" />
         </radialGradient>
-        {WDCountryHighlightFilterDefs}
+        {WDCountryHighlightFilterDefs()}
       </defs>
     </svg>
   ),
