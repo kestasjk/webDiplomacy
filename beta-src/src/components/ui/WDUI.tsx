@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IconButton, useTheme } from "@mui/material";
+import { IconButton, Link, useTheme } from "@mui/material";
 
 import WDPositionContainer from "./WDPositionContainer";
 import Position from "../../enums/Position";
@@ -10,9 +10,14 @@ import Country from "../../enums/Country";
 import WDFullModal from "./WDFullModal";
 import WDPopover from "./WDPopover";
 import WDActionIcon from "../svgr-components/WDActionIcon";
+import WDPhaseUI from "./WDPhaseUI";
 import UIState from "../../enums/UIState";
 import capitalizeString from "../../utils/capitalizeString";
 import Vote from "../../enums/Vote";
+import Move from "../../enums/Move";
+import WDMoveControls from "./WDMoveControls";
+import MoveStatus from "../../types/MoveStatus";
+import WDHomeIcon from "../svgr-components/WDHomeIcon";
 
 const countryMap = {
   Russia: Country.RUSSIA,
@@ -32,6 +37,14 @@ const abbrMap = {
   England: "ENG",
   France: "FRA",
   Turkey: "TUR",
+};
+/**
+ * the game status data created here is for displaying purpose
+ * the real gamestatus data will be provided from Redux Store?
+ */
+const gameStatusData: MoveStatus = {
+  save: false,
+  ready: false,
 };
 
 const WDUI: React.FC = function (): React.ReactElement {
@@ -84,34 +97,53 @@ const WDUI: React.FC = function (): React.ReactElement {
   };
 
   const controlModalTrigger = (
-    <IconButton onClick={openControlModal}>
+    <IconButton sx={{ padding: 0 }} onClick={openControlModal}>
       <WDActionIcon
         iconState={showControlModal ? UIState.ACTIVE : UIState.INACTIVE}
       />
     </IconButton>
   );
 
+  const [gameState, setGameState] = React.useState(gameStatusData);
+  const toggleState = (move: Move) => {
+    setGameState((preState) => ({
+      ...preState,
+      [move]: !gameState[move],
+    }));
+  };
+
   return (
-    <WDPositionContainer position={Position.TOP_RIGHT}>
-      <WDPopover
-        isOpen={showControlModal}
-        onClose={closeControlModal}
-        popoverTrigger={controlModalTrigger}
-      >
-        <WDFullModal
-          alternatives={alternatives}
-          countries={countries}
-          excusedMissedTurns={excusedMissedTurns}
-          potNumber={pot}
-          season={season}
-          title={name}
-          userCountry={userTableData}
-          year={year}
+    <>
+      <WDPositionContainer position={Position.TOP_RIGHT}>
+        <Link href="/">
+          <WDHomeIcon />
+        </Link>
+        <WDPopover
+          isOpen={showControlModal}
+          onClose={closeControlModal}
+          popoverTrigger={controlModalTrigger}
         >
-          {null}
-        </WDFullModal>
-      </WDPopover>
-    </WDPositionContainer>
+          <WDFullModal
+            alternatives={alternatives}
+            countries={countries}
+            excusedMissedTurns={excusedMissedTurns}
+            potNumber={pot}
+            season={season}
+            title={name}
+            userCountry={userTableData}
+            year={year}
+          >
+            {null}
+          </WDFullModal>
+        </WDPopover>
+      </WDPositionContainer>
+      <WDPositionContainer position={Position.TOP_LEFT}>
+        <WDPhaseUI />
+      </WDPositionContainer>
+      <WDPositionContainer position={Position.BOTTOM_RIGHT}>
+        <WDMoveControls gameState={gameState} toggleState={toggleState} />
+      </WDPositionContainer>
+    </>
   );
 };
 

@@ -64,12 +64,13 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
   const theme = useTheme();
   const [viewport] = useViewport();
   const device = getDevice(viewport);
-  const mobileLandscapeLayout =
+  const isMobile =
     device === Device.MOBILE_LANDSCAPE ||
     device === Device.MOBILE_LG_LANDSCAPE ||
-    device === Device.MOBILE;
+    device === Device.MOBILE ||
+    device === Device.MOBILE_LG;
   const WDTableCell = styled(TableCell)(() => {
-    const padding = mobileLandscapeLayout ? 6 : "6px 16px";
+    const padding = isMobile ? 6 : "6px 16px";
     return {
       [`&.${tableCellClasses.head}`]: {
         borderBottom: 0,
@@ -109,7 +110,7 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                   let value: string;
                   switch (column.id) {
                     case "power":
-                      value = mobileLandscapeLayout
+                      value = isMobile
                         ? country.abbr.toUpperCase()
                         : country.power.toUpperCase();
                       style.color = country.color;

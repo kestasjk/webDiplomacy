@@ -1,6 +1,6 @@
 import { ParsedTime } from "../interfaces/ParsedTime";
 
-export default function formatTime(time: ParsedTime) {
+export default function formatTime(time: ParsedTime): string {
   const availableTimeIntervals = Object.keys(time).filter((key) => time[key]);
 
   if (availableTimeIntervals.length > 1) {

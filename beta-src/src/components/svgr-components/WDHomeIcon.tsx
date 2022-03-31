@@ -7,9 +7,7 @@ const WDHomeIcon: React.FC<navIconProps> = function ({
 }): React.ReactElement {
   return (
     <svg
-      filter={
-        iconState === UIState.ACTIVE ? "drop-shadow(-1px 12px 7px #636363)" : ""
-      }
+      filter="drop-shadow(-1px 12px 7px #636363)"
       height={40}
       width={40}
       xmlns="http://www.w3.org/2000/svg"
