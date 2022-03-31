@@ -22,8 +22,7 @@ const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
       disableRipple
       onClick={onClick}
       sx={{
-        display: "flex",
-        flexDirection: "column",
+        position: "relative",
         filter: disabled
           ? "drop-shadow(1px 4px 8px #b3b3b3)"
           : "drop-shadow(1px 4px 8px #292929)",
@@ -40,7 +39,6 @@ const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
           width={50}
           height={50}
           fill="none"
-          viewBox="-3 -5 55 55"
           xmlns="http://www.w3.org/2000/svg"
         >
           <circle cx={25} cy={25} r={20} fill="#000" />
@@ -96,9 +94,13 @@ const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
       )}
       <Box
         sx={{
+          position: "absolute",
+          textAlign: "center",
+          width: "64px",
+          left: 0,
+          bottom: "-20px",
           color: "#fff",
           fontWeight: "bold",
-          margin: 0,
           textTransform: "uppercase",
         }}
       >

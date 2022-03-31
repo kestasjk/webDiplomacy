@@ -22,7 +22,7 @@ const WDScrollButton: React.FC<ScrollButtonProps> = function ({
         backgroundColor: "secondary.main",
         boxShadow: "none",
         borderRadius: "22px",
-        padding: "13px 19px 13px 13px",
+        padding: "13px 19px 12px 13px",
         "&:hover, &:focus, &:disabled": {
           backgroundColor: "#fff",
           boxShadow: "none",

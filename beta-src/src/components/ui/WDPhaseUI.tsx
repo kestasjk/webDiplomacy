@@ -37,8 +37,8 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
       sx={{
         display: "flex",
         alignItems: "center",
-        height: 65,
-        marginTop: "15px",
+        height: 40,
+        marginTop: "3px",
       }}
     >
       <WDGamePhaseIcon
@@ -47,27 +47,13 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
         year={currentYear}
       />
       {timerDisplayState && currentProcessTime && (
-        <Box
-          sx={{
-            position: "relative",
-            top: -5,
-          }}
-        >
-          <WDCountdownPill
-            endTime={currentProcessTime}
-            phaseTime={phaseSeconds}
-          />
-        </Box>
+        <WDCountdownPill
+          endTime={currentProcessTime}
+          phaseTime={phaseSeconds}
+        />
       )}
       {!timerDisplayState && (
-        <Box
-          sx={{
-            position: "relative",
-            top: -3,
-          }}
-        >
-          <WDPillScroller season={currentSeason} year={currentYear} />
-        </Box>
+        <WDPillScroller season={currentSeason} year={currentYear} />
       )}
     </Box>
   );

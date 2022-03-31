@@ -40,14 +40,15 @@ const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
 }) {
   const [viewport] = useViewport();
   const device = getDevice(viewport);
-  const mobileLandscapeLayout =
+  const isMobile =
     device === Device.MOBILE_LANDSCAPE ||
     device === Device.MOBILE_LG_LANDSCAPE ||
-    device === Device.MOBILE;
+    device === Device.MOBILE ||
+    device === Device.MOBILE_LG;
 
-  const width = mobileLandscapeLayout ? 260 : 320;
+  const width = isMobile ? 260 : 320;
   return (
-    <TableContainer>
+    <TableContainer sx={{ overflowX: "inherit" }}>
       <Table
         aria-label="A table of game information"
         size="small"
