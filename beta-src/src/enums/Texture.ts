@@ -1,14 +1,14 @@
 enum Texture {
-  AUSTRIA = "url(#austria)",
-  ENGLAND = "url(#england)",
-  FRANCE = "url(#france)",
-  GERMANY = "url(#germany)",
-  ITALY = "url(#italy)",
+  AUSTRIA = "url(#Austria)",
+  ENGLAND = "url(#England)",
+  FRANCE = "url(#France)",
+  GERMANY = "url(#Germany)",
+  ITALY = "url(#Italy)",
   LAND = "#F9F2E6",
   NEUTRAL_LAND = "#E5CFBE",
-  RUSSIA = "url(#russia)",
+  RUSSIA = "url(#Russia)",
   SEA = "#96B2B2",
-  TURKEY = "url(#turkey)",
+  TURKEY = "url(#Turkey)",
 }
 
 export default Texture;

@@ -1,47 +1,40 @@
 import * as React from "react";
+import Country from "../../enums/Country";
 import webDiplomacyTheme from "../../webDiplomacyTheme";
 
 interface CountryHighlightFilter {
-  countryName: string;
-  floodColor: string;
+  country: Country;
   floodOpacity?: number;
 }
 
 const countryHighlightFilterConfig: CountryHighlightFilter[] = [
   {
-    countryName: "austria",
-    floodColor: webDiplomacyTheme.palette.Austria.main,
+    country: Country.AUSTRIA,
   },
   {
-    countryName: "england",
-    floodColor: webDiplomacyTheme.palette.England.main,
+    country: Country.ENGLAND,
   },
   {
-    countryName: "france",
-    floodColor: webDiplomacyTheme.palette.France.main,
+    country: Country.FRANCE,
   },
   {
-    countryName: "germany",
-    floodColor: webDiplomacyTheme.palette.Germany.main,
+    country: Country.GERMANY,
   },
   {
-    countryName: "italy",
-    floodColor: webDiplomacyTheme.palette.Italy.main,
+    country: Country.ITALY,
   },
   {
-    countryName: "russia",
-    floodColor: webDiplomacyTheme.palette.Russia.main,
+    country: Country.RUSSIA,
     floodOpacity: 0.85,
   },
   {
-    countryName: "turkey",
-    floodColor: webDiplomacyTheme.palette.Turkey.main,
+    country: Country.TURKEY,
   },
 ];
 
 const WDCountryHighlightFilterDefs = function (): React.ReactElement[] {
-  return countryHighlightFilterConfig.map((country: CountryHighlightFilter) => (
-    <filter id={country.countryName} key={country.countryName}>
+  return countryHighlightFilterConfig.map((filter: CountryHighlightFilter) => (
+    <filter id={filter.country} key={filter.country}>
       <feOffset dx="5" dy="5" in="SourceGraphic" result="shadow1" />
       <feOffset dx="-5" dy="-5" in="SourceGraphic" result="shadow2" />
       <feMerge result="offset-blur">
@@ -57,8 +50,8 @@ const WDCountryHighlightFilterDefs = function (): React.ReactElement[] {
         result="inverse"
       />
       <feFlood
-        floodColor={country.floodColor}
-        floodOpacity={country.floodOpacity || 1}
+        floodColor={webDiplomacyTheme.palette[`${filter.country}`].main}
+        floodOpacity={filter.floodOpacity || 1}
         result="color"
       />
       <feComposite operator="in" in="color" in2="inverse" result="shadow" />
