@@ -14,6 +14,7 @@ interface GameOverviewResponse {
   anon: string;
   drawType: string;
   excusedMissedTurns: IntegerRange<0, 5>;
+  gameID: number;
   gameOver: string;
   members: MemberData[];
   minimumBet: number;

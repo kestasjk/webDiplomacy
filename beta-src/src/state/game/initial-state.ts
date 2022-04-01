@@ -9,6 +9,9 @@ const initialState: GameState = {
     data: {
       contextVars: { context: "", contextKey: "" },
       currentOrders: [],
+      territories: {},
+      territoryStatuses: [],
+      units: {},
     },
   },
   error: null,
@@ -17,6 +20,7 @@ const initialState: GameState = {
     anon: "Yes",
     drawType: "draw-votes-public",
     excusedMissedTurns: 4,
+    gameID: 0,
     gameOver: "No",
     members: [],
     minimumBet: 5,
