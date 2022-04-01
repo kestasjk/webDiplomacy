@@ -7,9 +7,7 @@ const WDActionIcon: React.FC<navIconProps> = function ({
 }): React.ReactElement {
   return (
     <svg
-      filter={
-        iconState === UIState.ACTIVE ? "drop-shadow(-1px 12px 7px #636363)" : ""
-      }
+      filter="drop-shadow(-1px 12px 7px #636363)"
       height={42}
       width={42}
       viewBox="6 3 42 42"

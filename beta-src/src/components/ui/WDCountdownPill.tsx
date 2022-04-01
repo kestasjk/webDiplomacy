@@ -20,9 +20,10 @@ const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
 }) {
   const theme = useTheme();
   const endTimeInMilliSeconds = endTime * milli;
-  const phaseTimeInSeconds = phaseTime * milli;
+  const phaseTimeInMilliSeconds = phaseTime * milli;
 
-  const quarterTimeRemaining = endTimeInMilliSeconds - phaseTimeInSeconds / 4;
+  const quarterTimeRemaining =
+    endTimeInMilliSeconds - phaseTimeInMilliSeconds / 4;
 
   const secondsLeft = endTime - +new Date() / milli;
 
