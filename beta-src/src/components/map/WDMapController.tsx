@@ -8,6 +8,8 @@ import { Viewport } from "../../interfaces";
 import debounce from "../../utils/debounce";
 import { useAppDispatch } from "../../state/hooks";
 import { gameApiSliceActions } from "../../state/game/game-api-slice";
+import useViewport from "../../hooks/useViewport";
+import getDevice from "../../utils/getDevice";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -23,19 +25,13 @@ const getInitialScaleForDevice = (device: Device): number[] => {
   return Scales[device];
 };
 
-interface WDMapControllerProps {
-  device: Device;
-  viewport: Viewport;
-}
-
 const mapOriginalWidth = 6010;
 const mapOriginalHeight = 3005;
 
-const WDMapController: React.FC<WDMapControllerProps> = function ({
-  device,
-  viewport,
-}): React.ReactElement {
+const WDMapController: React.FC = function (): React.ReactElement {
   const svgElement = React.useRef<SVGSVGElement>(null);
+  const [viewport] = useViewport();
+  const device = getDevice(viewport);
   const [scaleMin, scaleMax] = getInitialScaleForDevice(device);
   const dispatch = useAppDispatch();
 

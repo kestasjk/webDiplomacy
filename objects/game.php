@@ -358,6 +358,46 @@ class Game
 		return $this->isMemberInfoHidden;
 	}
 
+	public function getAlternatives(){
+		$alternatives = array();
+		$alternatives[] = $this->Variant->link();
+
+		$pressTypeMap = [
+			'NoPress' => 'No messaging',
+			'RulebookPress' => 'Rulebook press',
+			'PublicPressOnly' => 'Public messaging only',
+		];
+		
+		if ( $pressType = $pressTypeMap[$this->pressType] ?? false ){
+			$alternatives[] = l_t( $pressType );
+		}
+
+		$playerTypeMap = [
+			'Mixed' => 'Fill with Bots',
+			'MemberVsBots' => 'Bot Game',
+		];
+
+		if( $playerType = $playerTypeMap[$this->playerTypes] ?? false ){
+			$alternatives[] = l_t( $playerType );
+		}
+
+		if( $this->anon == 'Yes' ){
+			$alternatives[] = l_t( 'Anonymous players' );
+		}
+
+		$alternatives[] = $this->Scoring->longName();
+
+		if( $this->drawType == 'draw-votes-hidden' ){
+			$alternatives[] = l_t( 'Hidden draw votes' );
+		}
+
+		if( $this->missingPlayerPolicy == 'Wait' ){
+			$alternatives[] = l_t( 'Wait for orders' );
+		}
+
+		return $alternatives;
+	}
+
 	/**
 	 * This is a special case of isMemberInfoHidden that returns true if a moderator is seeing the member info (and a normal user wouldn't)
 	 *

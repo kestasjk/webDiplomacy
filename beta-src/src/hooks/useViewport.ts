@@ -20,5 +20,10 @@ export default function useViewport(): [Viewport, () => void] {
     setValue(getViewport());
   };
 
+  React.useEffect(() => {
+    window.addEventListener("resize", setViewport);
+    return () => window.removeEventListener("resize", setViewport);
+  }, []);
+
   return [viewport, setViewport];
 }

@@ -7,23 +7,20 @@ import {
   TableRow,
   TableContainer,
 } from "@mui/material";
-import GameMode from "../../enums/GameMode";
-import Season from "../../enums/Season";
-import Ranking from "../../enums/Ranking";
 import IntegerRange from "../../types/IntegerRange";
-import GameType from "../../enums/GameType";
 import WDLineClamp from "./WDLineClamp";
+import Device from "../../enums/Device";
+import getDevice from "../../utils/getDevice";
+import useViewport from "../../hooks/useViewport";
 
 /**
  * game setting datas which would be passed to the component by parent component/ context/redux store
  */
 
 interface WDInfoDisplayProps {
-  gameMode: GameMode;
-  gameType: GameType;
-  potNumber: IntegerRange<35, 665>;
-  rank: Ranking;
-  season: Season;
+  alternatives: string;
+  potNumber: IntegerRange<35, 666>;
+  season: string;
   title: string;
   year: number;
 }
@@ -35,21 +32,28 @@ const tableCellStyles = {
 };
 
 const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
-  gameMode,
-  gameType,
+  alternatives,
   potNumber,
-  rank,
   season,
   title,
   year,
 }) {
+  const [viewport] = useViewport();
+  const device = getDevice(viewport);
+  const isMobile =
+    device === Device.MOBILE_LANDSCAPE ||
+    device === Device.MOBILE_LG_LANDSCAPE ||
+    device === Device.MOBILE ||
+    device === Device.MOBILE_LG;
+
+  const width = isMobile ? 260 : 320;
   return (
-    <TableContainer>
+    <TableContainer sx={{ overflowX: "inherit" }}>
       <Table
         aria-label="A table of game information"
         size="small"
         sx={{
-          maxWidth: 250,
+          width,
         }}
       >
         <TableHead>
@@ -78,9 +82,7 @@ const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
             </TableCell>
           </TableRow>
           <TableRow>
-            <TableCell sx={tableCellStyles}>
-              {gameType}, {gameMode}, {rank}
-            </TableCell>
+            <TableCell sx={tableCellStyles}>{alternatives}</TableCell>
           </TableRow>
         </TableBody>
       </Table>

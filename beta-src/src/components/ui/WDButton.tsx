@@ -1,5 +1,6 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
+import { SxProps } from "@mui/material";
 
 interface WDButtonProps {
   children: React.ReactNode;
@@ -7,6 +8,7 @@ interface WDButtonProps {
   disabled?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
   startIcon?: React.ReactNode | undefined;
+  sx?: SxProps | undefined;
 }
 
 const WDButton: React.FC<WDButtonProps> = function ({
@@ -15,9 +17,11 @@ const WDButton: React.FC<WDButtonProps> = function ({
   disabled,
   onClick,
   startIcon,
+  sx,
 }): React.ReactElement {
   return (
     <Button
+      sx={sx}
       color={color}
       disabled={disabled}
       onClick={onClick}
@@ -34,6 +38,7 @@ WDButton.defaultProps = {
   disabled: false,
   onClick: undefined,
   startIcon: undefined,
+  sx: undefined,
 };
 
 export default WDButton;

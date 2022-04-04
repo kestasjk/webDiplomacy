@@ -1,6 +1,15 @@
 import * as React from "react";
 import { useRef } from "react";
-import { Box, ModalProps, Popover } from "@mui/material";
+import {
+  Box,
+  ModalProps,
+  Popover,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import useViewport from "../../hooks/useViewport";
+import getDevice from "../../utils/getDevice";
+import Device from "../../enums/Device";
 
 interface WDPopoverProps {
   children: React.ReactNode;
@@ -23,19 +32,29 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
   onClose,
   popoverTrigger,
 }) {
+  const theme = useTheme();
   const anchorEl = useRef(null);
-
+  const [viewport] = useViewport();
+  const device = getDevice(viewport);
+  let isMobile: boolean;
+  switch (device) {
+    case Device.MOBILE:
+    case Device.MOBILE_LG:
+    case Device.MOBILE_LANDSCAPE:
+    case Device.MOBILE_LG_LANDSCAPE:
+      isMobile = true;
+      break;
+    default:
+      isMobile = false;
+      break;
+  }
   return (
-    <Box
-      sx={{
-        position: "absolute",
-      }}
-    >
+    <Box>
       <Box
-        ref={anchorEl}
         sx={{
           pt: "15px",
         }}
+        ref={anchorEl}
       >
         {popoverTrigger}
       </Box>
@@ -48,10 +67,10 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
         onClose={onClose}
         open={isOpen}
         PaperProps={{
-          style: {
+          sx: {
             backgroundColor: "transparent",
-            borderRadius: "3px 13px 13px 3px",
-            boxShadow: "-5px 4px 6px -4px black",
+            boxShadow: "none",
+            maxHeight: "unset",
           },
         }}
         transformOrigin={{
@@ -61,29 +80,41 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
       >
         <Box
           sx={{
-            mt: "0px",
             position: "relative",
-            "&::before": {
-              background: "linear-gradient(45deg, transparent 50%, white 50%)",
-              content: '""',
-              height: 22,
-              position: "absolute",
-              right: 5,
-              top: 10,
-              transform: "rotate(45deg)",
-              width: 22,
-            },
-          }}
-        />
-
-        <Box
-          sx={{
-            background: "linear-gradient(to right, white 94%, transparent 6%)",
-            m: 0,
-            p: "16px 25px 16px 16px",
+            width: isMobile ? 276 : 400,
           }}
         >
-          {children}
+          <Box
+            sx={{
+              mt: "0px",
+              position: "relative",
+              "&::before": {
+                background: theme.palette.secondary.main,
+                content: '""',
+                height: 22,
+                position: "absolute",
+                left: "calc(90% - 11px)",
+                top: useMediaQuery(theme.breakpoints.up("tablet")) ? 76 : 68,
+                transform: "rotateX(45deg) rotateZ(45deg)",
+                width: 22,
+              },
+            }}
+          />
+          <Box
+            sx={{
+              background: theme.palette.secondary.main,
+              borderRadius: 3,
+              maxWidth: "90%",
+              minHeight: 264,
+              maxHeight: viewport.height - 32,
+              overflowX: "hidden",
+              overflowY: "scroll",
+              m: 0,
+              p: "16px 0",
+            }}
+          >
+            {children}
+          </Box>
         </Box>
       </Popover>
     </Box>
