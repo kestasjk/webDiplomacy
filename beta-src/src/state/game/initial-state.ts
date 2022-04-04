@@ -3,6 +3,9 @@ import { GameState } from "../interfaces/GameState";
 const initialState: GameState = {
   apiStatus: "idle",
   error: null,
+  order: {
+    inProgress: false,
+  },
   overview: {
     anon: "Yes",
     drawType: "draw-votes-public",
