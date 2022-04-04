@@ -1,5 +1,5 @@
 import Country from "../../enums/Country";
-import Territory from "../../enums/Territory";
+import Territory from "../../enums/map/variants/classic/Territory";
 
 export default function applyCountryHighlight(
   country: Country,

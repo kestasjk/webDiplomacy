@@ -6,6 +6,15 @@ import Scale from "../../types/Scale";
 import WDMap from "./WDMap";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
+import { useAppSelector } from "../../state/hooks";
+import {
+  gameApiStatus,
+  gameData,
+  gameOverview,
+} from "../../state/game/game-api-slice";
+import GameDataResponse from "../../state/interfaces/GameDataResponse";
+import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
+import drawUnitsOnMap from "../../utils/map/drawUnitsOnMap";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -63,6 +72,18 @@ const WDMapController: React.FC = function (): React.ReactElement {
         .call(d3Zoom.transform, d3.zoomIdentity.translate(x, y).scale(scale));
     }
   }, [svgElement, viewport]);
+
+  const apiStatus = useAppSelector(gameApiStatus);
+  let data: GameDataResponse["data"];
+  let members: GameOverviewResponse["members"];
+  if (apiStatus === "succeeded") {
+    ({ data } = useAppSelector(gameData));
+    ({ members } = useAppSelector(gameOverview));
+  }
+
+  React.useLayoutEffect(() => {
+    drawUnitsOnMap(members, data);
+  }, [svgElement]);
 
   return (
     <div

@@ -1,5 +1,5 @@
 import TerritoryData from "../types/map/TerritoryData";
-import TerritoryEnum from "../enums/Territory";
+import TerritoryEnum from "../enums/map/variants/classic/Territory";
 import { Territory } from "../interfaces";
 
 export const ADRIATIC_SEA: Territory = {
@@ -44,8 +44,8 @@ export const BALTIC_SEA: Territory = {
   type: "water",
 };
 
-export const BARRENTS_SEA: Territory = {
-  name: "BARRENTS_SEA",
+export const BARENTS_SEA: Territory = {
+  name: "BARENTS_SEA",
   abbr: "BAR",
   type: "water",
 };
@@ -146,8 +146,8 @@ export const FINLAND: Territory = {
   type: "land",
 };
 
-export const GALACIA: Territory = {
-  name: "GALACIA",
+export const GALICIA: Territory = {
+  name: "GALICIA",
   abbr: "GAL",
   type: "land",
 };
@@ -458,8 +458,8 @@ export const TRIESTE: Territory = {
   type: "land",
 };
 
-export const TUNISIA: Territory = {
-  name: "TUNISIA",
+export const TUNIS: Territory = {
+  name: "TUNIS",
   abbr: "TUN",
   type: "land",
 };
@@ -634,7 +634,7 @@ const Territories: TerritoryData = {
   [TerritoryEnum.APULIA]: APULIA,
   [TerritoryEnum.ARMENIA]: ARMENIA,
   [TerritoryEnum.BALTIC_SEA]: BALTIC_SEA,
-  [TerritoryEnum.BARRENTS_SEA]: BARRENTS_SEA,
+  [TerritoryEnum.BARENTS_SEA]: BARENTS_SEA,
   [TerritoryEnum.BELGIUM]: BELGIUM,
   [TerritoryEnum.BERLIN]: BERLIN,
   [TerritoryEnum.BLACK_SEA]: BLACK_SEA,
@@ -651,7 +651,7 @@ const Territories: TerritoryData = {
   [TerritoryEnum.EDINBURGH]: EDINBURGH,
   [TerritoryEnum.ENGLISH_CHANNEL]: ENGLISH_CHANNEL,
   [TerritoryEnum.FINLAND]: FINLAND,
-  [TerritoryEnum.GALACIA]: GALACIA,
+  [TerritoryEnum.GALICIA]: GALICIA,
   [TerritoryEnum.GASCONY]: GASCONY,
   [TerritoryEnum.GREECE]: GREECE,
   [TerritoryEnum.GULF_OF_BOTHNIA]: GULF_OF_BOTHNIA,
@@ -703,7 +703,7 @@ const Territories: TerritoryData = {
   [TerritoryEnum.SWEDEN]: SWEDEN,
   [TerritoryEnum.SYRIA]: SYRIA,
   [TerritoryEnum.TRIESTE]: TRIESTE,
-  [TerritoryEnum.TUNISIA]: TUNISIA,
+  [TerritoryEnum.TUNIS]: TUNIS,
   [TerritoryEnum.TUSCANY]: TUSCANY,
   [TerritoryEnum.TYROLIA]: TYROLIA,
   [TerritoryEnum.TYRRHENIAN_SEA]: TYRRHENIAN_SEA,

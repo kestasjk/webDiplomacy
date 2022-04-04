@@ -1,5 +1,5 @@
 import { Territory } from "../interfaces";
-import TerritoryEnum from "../enums/Territory";
+import TerritoryEnum from "../enums/map/variants/classic/Territory";
 import Territories from "../data/Territories";
 
 export default class TerritoryDataGenerator implements Territory {

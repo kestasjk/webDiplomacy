@@ -18,16 +18,7 @@ import Move from "../../enums/Move";
 import WDMoveControls from "./WDMoveControls";
 import MoveStatus from "../../types/MoveStatus";
 import WDHomeIcon from "../svgr-components/WDHomeIcon";
-
-const countryMap = {
-  Russia: Country.RUSSIA,
-  Germany: Country.GERMANY,
-  Italy: Country.ITALY,
-  Austria: Country.AUSTRIA,
-  England: Country.ENGLAND,
-  France: Country.FRANCE,
-  Turkey: Country.TURKEY,
-};
+import countryMap from "../../data/map/variants/classic/CountryMap";
 
 const abbrMap = {
   Russia: "RUS",

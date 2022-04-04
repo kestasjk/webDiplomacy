@@ -1,4 +1,4 @@
-import Territory from "../enums/Territory";
+import Territory from "../enums/map/variants/classic/Territory";
 
 type TerritoryName = keyof typeof Territory;
 
