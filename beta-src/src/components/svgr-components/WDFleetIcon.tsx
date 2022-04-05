@@ -6,6 +6,7 @@ import UIState from "../../enums/UIState";
 const WDFleetIcon: React.FC<gameIconProps> = function ({
   country,
   height = 50,
+  onClick = undefined,
   iconState = UIState.NONE,
   viewBox,
   width = 50,
@@ -15,6 +16,7 @@ const WDFleetIcon: React.FC<gameIconProps> = function ({
   return (
     <svg
       filter="drop-shadow(1px 4px 4px #323232)"
+      onClick={onClick}
       height={height}
       viewBox={viewBox}
       width={width}
