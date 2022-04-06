@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useTheme } from "@mui/material/styles";
 import { gameIconProps } from "../../interfaces/Icons";
 import UIState from "../../enums/UIState";
 import debounce from "../../utils/debounce";
@@ -24,21 +23,11 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
   const { unitCommands } = useAppSelector(gameCommands);
   const { data } = useAppSelector(gameData);
   const commands = unitCommands[meta.unit.id];
-  console.log({
-    commands,
-  });
+
   if (commands && commands.size > 0) {
     const firstCommand = commands.entries().next().value;
-    console.log({
-      firstCommand,
-    });
     if (firstCommand) {
       const [key, value] = firstCommand;
-      console.log({
-        firstCommand,
-        key,
-        value,
-      });
       switch (value.command) {
         case "HOLD":
           setIconState(UIState.HOLD);
@@ -77,21 +66,12 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
         }
       }
     }
-    console.log({
-      currentOrders,
-      unitCanInitiateOrder,
-    });
   }
-  console.log({
-    unitCommands,
-  });
+
   const clickAction = function (e) {
     if (!unitCanInitiateOrder) {
       return;
     }
-    console.log({
-      meta,
-    });
     setIconState(UIState.SELECTED);
     dispatch(
       gameApiSliceActions.processUnitClick({
@@ -106,12 +86,10 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
   }, 200);
 
   const handleSingleClick = (e) => {
-    console.log("single click");
     handleClick[0](e);
   };
 
   const handleDoubleClick = (e) => {
-    console.log("double click");
     handleClick[1]();
     handleClick[0](e);
   };

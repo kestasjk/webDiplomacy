@@ -12,6 +12,7 @@ import {
   gameOrdersMeta,
   saveOrders,
 } from "../../state/game/game-api-slice";
+import { IOrderData } from "../../models/Interfaces";
 
 interface WDMoveControlsProps {
   gameState: MoveStatus;
@@ -25,9 +26,6 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
   const [viewport] = useViewport();
   const { data } = useAppSelector(gameData);
   const ordersMeta = useAppSelector(gameOrdersMeta);
-  console.log({
-    ordersMeta,
-  });
   const dispatch = useAppDispatch();
   const device = getDevice(viewport);
   let isMobile: boolean;
@@ -46,14 +44,24 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
   const click = () => {
     if ("currentOrders" in data && "contextVars" in data) {
       const { currentOrders, contextVars } = data;
-      if (contextVars) {
-        console.log({
-          currentOrders,
-          contextVars,
+      if (contextVars && currentOrders) {
+        const orderUpdates: IOrderData[] = [];
+        currentOrders.forEach((o) => {
+          const updateReference = ordersMeta[o.id].update;
+          let orderUpdate: IOrderData = o;
+          if (updateReference) {
+            orderUpdate = {
+              ...o,
+              ...{
+                type: updateReference.type,
+                toTerrID: updateReference.toTerrID,
+              },
+            };
+          }
+          orderUpdates.push(orderUpdate);
         });
-        const orders = `[{"id": "2419", "unitID": "1984", "type": "Hold", "toTerrID": "", "fromTerrID": "", "viaConvoy": ""}, {"id": "2420", "unitID": "1985", "type": "Move", "toTerrID": "8", "fromTerrID": "", "viaConvoy": "No", "convoyPath": ["50", "61"]}, {"id": "2421", "unitID": "1986", "type": "Hold", "toTerrID": "", "fromTerrID": "", "viaConvoy": ""}, {"id": "2438", "unitID": "2004", "type": "Hold", "toTerrID": "", "fromTerrID": "", "viaConvoy": ""}]`;
         const orderSubmission = {
-          orderUpdates: JSON.parse(orders),
+          orderUpdates,
           context: contextVars.context,
           contextKey: contextVars.contextKey,
         };
@@ -69,17 +77,12 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
     0,
   );
 
-  if (ordersLength === ordersSaved && save) {
-    console.log("DISABLING SAVE");
-    if (save) {
-      toggleState(Move.SAVE);
-    }
+  if (
+    (ordersLength === ordersSaved && save) ||
+    (ordersLength !== ordersSaved && !save)
+  ) {
+    toggleState(Move.SAVE);
   }
-
-  console.log({
-    ordersLength,
-    ordersSaved,
-  });
 
   return (
     <Stack

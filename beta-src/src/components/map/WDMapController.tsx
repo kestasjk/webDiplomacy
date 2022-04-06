@@ -9,12 +9,9 @@ import getDevice from "../../utils/getDevice";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import {
   gameApiSliceActions,
-  gameApiStatus,
   gameData,
   gameOverview,
 } from "../../state/game/game-api-slice";
-import GameDataResponse from "../../state/interfaces/GameDataResponse";
-import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
 import drawUnitsOnMap from "../../utils/map/drawUnitsOnMap";
 
 const Scales: Scale = {
@@ -88,6 +85,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
   React.useLayoutEffect(() => {
     if (data && members) {
       drawUnitsOnMap(members, data);
+      dispatch(gameApiSliceActions.highlightMapTerritories());
     }
   }, [svgElement]);
 

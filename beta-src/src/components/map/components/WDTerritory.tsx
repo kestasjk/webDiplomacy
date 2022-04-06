@@ -22,9 +22,12 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
 }): React.ReactElement {
   const theme = useTheme();
   const dispatch = useAppDispatch();
-  const [territoryFilter, setTerritoryFilter] = React.useState<
-    string | undefined
-  >(undefined);
+  // const [territoryFilter, setTerritoryFilter] = React.useState<
+  //   string | undefined
+  // >(undefined);
+  const [territoryFill, setTerritoryFill] = React.useState<string | undefined>(
+    territoryMapData.fill,
+  );
   const [territoryFillOpacity, setTerritoryFillOpacity] = React.useState<
     number | undefined
   >(undefined);
@@ -40,23 +43,14 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
 
   if (commands && commands.size > 0) {
     const firstCommand = commands.entries().next().value;
-    console.log({
-      commands,
-      territoryMapData,
-      firstCommand,
-    });
     if (firstCommand) {
       const [key, value] = firstCommand;
-      console.log({
-        firstCommand,
-        key,
-        value,
-      });
       switch (value.command) {
         case "HOLD":
-          setTerritoryFilter(`url(#${userCountry}-hold)`);
-          setTerritoryFillOpacity(0.4);
-          setTerritoryStrokeOpacity(0.5);
+          // setTerritoryFilter(`url(#${userCountry}-hold)`);
+          setTerritoryFill(theme.palette[userCountry].main);
+          setTerritoryFillOpacity(0.9);
+          setTerritoryStrokeOpacity(2);
           dispatch(
             gameApiSliceActions.deleteCommand({
               type: "territory",
@@ -65,6 +59,21 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
             }),
           );
           break;
+        case "CAPTURED":
+          if (value.data?.country) {
+            // setTerritoryFilter(`url(#${value.data.country})`);
+            setTerritoryFill(theme.palette[value.data.country].main);
+            setTerritoryFillOpacity(0.4);
+            setTerritoryStrokeOpacity(1);
+            dispatch(
+              gameApiSliceActions.deleteCommand({
+                type: "territory",
+                name: territoryMapData.name,
+                command: key,
+              }),
+            );
+          }
+          break;
         default:
           break;
       }
@@ -72,17 +81,11 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   }
 
   const clickAction = function (e) {
-    console.log({
-      territoryMapData,
-    });
-    const r = dispatch(
+    dispatch(
       gameApiSliceActions.processTerritoryClick({
         name: territoryMapData.name,
       }),
     );
-    console.log({
-      r,
-    });
   };
 
   const handleClick = debounce((e) => {
@@ -90,9 +93,9 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   }, 200);
 
   const handleSingleClick = (e) => {
-    console.log("single click");
     handleClick[0](e);
   };
+
   return (
     <svg
       height={territoryMapData.height}
@@ -115,8 +118,8 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         )}
         <path
           d={territoryMapData.path}
-          fill={territoryMapData.fill}
-          filter={territoryFilter}
+          fill={territoryFill}
+          // filter={territoryFill}
           fillOpacity={territoryFillOpacity}
           id={`${territoryMapData.name}-control-path`}
           stroke={theme.palette.primary.main}

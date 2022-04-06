@@ -13,6 +13,8 @@ import initialState from "./initial-state";
 import { IOrderData } from "../../models/Interfaces";
 import Territory from "../../enums/map/variants/classic/Territory";
 import OrdersMeta from "../interfaces/SavedOrders";
+import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
+import countryMap from "../../data/map/variants/classic/CountryMap";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -46,6 +48,22 @@ interface OrderSubmission {
   contextKey: string;
 }
 
+interface SavedOrder {
+  [key: string]: {
+    changed: string;
+    notice: string | null;
+    status: string;
+  };
+}
+
+interface SavedOrdersConfirmation {
+  invalid: boolean;
+  notice: string;
+  orders: SavedOrder;
+  statusIcon: string;
+  statusText: string;
+}
+
 export const saveOrders = createAsyncThunk(
   "game/submitOrders",
   async (data: OrderSubmission) => {
@@ -54,15 +72,11 @@ export const saveOrders = createAsyncThunk(
     formData.set("context", data.context);
     formData.set("contextKey", data.contextKey);
     const response = await submitOrders(formData);
-    const confirmation = response.headers["x-json"];
-    const s = confirmation.substring(1, confirmation.length - 1);
-    console.log({
-      submitOrders: s,
-    });
-    console.log({
-      submitOrders2: JSON.parse(s),
-    });
-    return response;
+    const confirmation: string = response.headers["x-json"] || "";
+    const parsed: SavedOrdersConfirmation = JSON.parse(
+      confirmation.substring(1, confirmation.length - 1),
+    );
+    return parsed;
   },
 );
 
@@ -100,7 +114,6 @@ const gameApiSlice = createSlice({
       } = current(state);
       const { unitID, inProgress } = order;
       if (unitID === data.payload.unitID) {
-        console.log("cancelling");
         const newUnitCommands =
           new Map(unitCommands[data.payload.unitID]) || new Map();
         newUnitCommands.set(uuidv4(), {
@@ -115,19 +128,17 @@ const gameApiSlice = createSlice({
         state.order.unitID = data.payload.unitID;
         state.order.onTerritory = data.payload.onTerritory;
       }
-      console.log({ order, data });
     },
-    processTerritoryClick(state, data) {
+    processTerritoryClick(state, clickData) {
       const {
         order,
         commands: { unitCommands, territoryCommands },
+        data,
       } = current(state);
       if (order.inProgress) {
-        console.log("order in progress");
-        if (Territory[order.onTerritory] === data.payload.name) {
-          console.log("executing hold order");
+        if (Territory[order.onTerritory] === clickData.payload.name) {
           const newTerritoryCommands =
-            new Map(territoryCommands[data.payload.name]) || new Map();
+            new Map(territoryCommands[clickData.payload.name]) || new Map();
           newTerritoryCommands.set(uuidv4(), {
             command: "HOLD",
           });
@@ -136,9 +147,24 @@ const gameApiSlice = createSlice({
           newUnitCommands.set(uuidv4(), {
             command: "HOLD",
           });
-          state.commands.territoryCommands[data.payload.name] =
+          state.commands.territoryCommands[clickData.payload.name] =
             newTerritoryCommands;
           state.commands.unitCommands[state.order.unitID] = newUnitCommands;
+          if ("currentOrders" in data.data) {
+            const { currentOrders } = data.data;
+            const orderToUpdate = currentOrders?.find((o) => {
+              return o.unitID === state.order.unitID;
+            });
+            if (orderToUpdate) {
+              state.ordersMeta[orderToUpdate.id] = {
+                saved: false,
+                update: {
+                  type: "Hold",
+                  toTerrID: null,
+                },
+              };
+            }
+          }
           state.order.inProgress = false;
           state.order.unitID = "";
           state.order.onTerritory = 0;
@@ -172,6 +198,43 @@ const gameApiSlice = createSlice({
         }
         default:
           break;
+      }
+    },
+    highlightMapTerritories(state) {
+      const {
+        data,
+        overview: { members },
+        commands: { territoryCommands },
+      } = current(state);
+      if (
+        "territoryStatuses" in data.data &&
+        "territories" in data.data &&
+        data.data.territoryStatuses
+      ) {
+        const membersMap = {};
+        const t = data.data.territories;
+        const tS = data.data.territoryStatuses;
+        members.forEach((member) => {
+          membersMap[member.countryID] = member.country;
+        });
+        tS.forEach((status) => {
+          const terr = t[status.id];
+          if (!status.ownerCountryID) {
+            return;
+          }
+          const country = membersMap[status.ownerCountryID];
+          const mappedTerritory = TerritoryMap[terr.name];
+          const terrEnum = Territory[mappedTerritory.territory];
+          const newTerritoryCommands =
+            new Map(territoryCommands[terrEnum]) || new Map();
+          newTerritoryCommands.set(uuidv4(), {
+            command: "CAPTURED",
+            data: {
+              country: countryMap[country],
+            },
+          });
+          state.commands.territoryCommands[terrEnum] = newTerritoryCommands;
+        });
       }
     },
   },
@@ -215,11 +278,16 @@ const gameApiSlice = createSlice({
       })
       // saveOrders
       .addCase(saveOrders.fulfilled, (state, action) => {
-        console.log({
-          state,
-          action,
-          current: current(state),
-        });
+        if (action.payload) {
+          const { orders } = action.payload;
+          Object.entries(orders).forEach(([id, value]) => {
+            if (value.status === "Complete") {
+              state.ordersMeta[id] = {
+                saved: true,
+              };
+            }
+          });
+        }
       });
   },
 });
