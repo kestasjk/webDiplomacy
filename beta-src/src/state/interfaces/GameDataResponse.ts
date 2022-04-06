@@ -6,16 +6,13 @@ import {
   IOrderData,
 } from "../../models/Interfaces";
 
-interface CountryID {
-  contextVars: ContextVar;
-  currentOrders: IOrderData[];
-}
-
 interface InvalidCountryID {
   countryID: number;
 }
 
 interface GameData {
+  contextVars?: ContextVar;
+  currentOrders?: IOrderData[];
   territories: {
     [key: string]: ITerritory;
   };
@@ -24,11 +21,12 @@ interface GameData {
   };
   territoryStatuses: ITerrStatus[];
 }
+
 interface GameDataResponse {
   msg: string;
   referenceCode: string;
   success: boolean;
-  data: CountryID | InvalidCountryID | GameData;
+  data: GameData | InvalidCountryID;
 }
 
 export default GameDataResponse;

@@ -4,12 +4,19 @@ import Device from "../../enums/Device";
 import getInitialViewTranslation from "../../utils/map/getInitialViewTranslation";
 import Scale from "../../types/Scale";
 import WDMap from "./WDMap";
-import { Viewport } from "../../interfaces";
 import debounce from "../../utils/debounce";
-import { useAppDispatch } from "../../state/hooks";
-import { gameApiSliceActions } from "../../state/game/game-api-slice";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
+import { useAppDispatch, useAppSelector } from "../../state/hooks";
+import {
+  gameApiSliceActions,
+  gameApiStatus,
+  gameData,
+  gameOverview,
+} from "../../state/game/game-api-slice";
+import GameDataResponse from "../../state/interfaces/GameDataResponse";
+import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
+import drawUnitsOnMap from "../../utils/map/drawUnitsOnMap";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -87,6 +94,18 @@ const WDMapController: React.FC = function (): React.ReactElement {
         });
     }
   }, [svgElement, viewport]);
+
+  const apiStatus = useAppSelector(gameApiStatus);
+  let data: GameDataResponse["data"];
+  let members: GameOverviewResponse["members"];
+  if (apiStatus === "succeeded") {
+    ({ data } = useAppSelector(gameData));
+    ({ members } = useAppSelector(gameOverview));
+  }
+
+  React.useLayoutEffect(() => {
+    drawUnitsOnMap(members, data);
+  }, [svgElement]);
 
   return (
     <div
