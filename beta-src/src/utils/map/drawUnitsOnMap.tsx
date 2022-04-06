@@ -1,13 +1,8 @@
-import React from "react";
-import { ThemeProvider } from "@mui/material";
 import GameDataResponse from "../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
 import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
-import WDArmyIcon from "../../components/svgr-components/WDArmyIcon";
 import addUnitToTerritory from "./addUnitToTerritory";
-import WDFleetIcon from "../../components/svgr-components/WDFleetIcon";
 import countryMap from "../../data/map/variants/classic/CountryMap";
-import webDiplomacyTheme from "../../webDiplomacyTheme";
 
 export default function drawUnitsOnMap(
   members: GameOverviewResponse["members"],
@@ -25,22 +20,7 @@ export default function drawUnitsOnMap(
           });
           if (memberCountry) {
             const { country } = memberCountry;
-            const unitIcon =
-              unit.type === "Army" ? (
-                <WDArmyIcon country={countryMap[country]} />
-              ) : (
-                <WDFleetIcon country={countryMap[country]} />
-              );
-            const themeUnitIcon = (
-              <ThemeProvider theme={webDiplomacyTheme}>
-                {unitIcon}
-              </ThemeProvider>
-            );
-            addUnitToTerritory(
-              mappedTerritory.territory,
-              themeUnitIcon,
-              mappedTerritory.unitSlotName,
-            );
+            addUnitToTerritory(mappedTerritory, unit, countryMap[country]);
           }
         }
       }

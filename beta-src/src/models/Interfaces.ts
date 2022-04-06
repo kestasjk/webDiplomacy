@@ -73,10 +73,12 @@ export interface IOrder {
 }
 
 export interface IOrderData {
+  convoyPath?: string[];
   error: string | null;
   fixed?: string[];
   fromTerrID: string | null;
   id: string;
+  saved?: boolean;
   status: string;
   toTerrID: string | null;
   type: string;
