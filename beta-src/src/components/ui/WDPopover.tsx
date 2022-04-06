@@ -63,6 +63,7 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
             boxShadow: "none",
             maxHeight: "unset",
             pointerEvents: "all",
+            filter: theme.palette.svg.filters.dropShadows[0],
           },
         }}
         transformOrigin={{
