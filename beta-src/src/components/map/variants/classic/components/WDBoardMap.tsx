@@ -392,8 +392,8 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={UNPLAYABLE_SEA8} />
         <WDTerritory territoryMapData={UNPLAYABLE_SEA9} />
       </g>
-      <WDLandTexture />
-      <WDSeaTexture />
+      {/* <WDLandTexture /> */}
+      {/* <WDSeaTexture /> */}
     </g>
   );
 };
