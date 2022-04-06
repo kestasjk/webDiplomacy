@@ -9,6 +9,7 @@ export interface gameIconProps {
   country: Country;
   height?: number;
   iconState?: UIState;
+  onClick?: React.MouseEventHandler<SVGSVGElement> | undefined;
   viewBox?: string;
   width?: number;
 }

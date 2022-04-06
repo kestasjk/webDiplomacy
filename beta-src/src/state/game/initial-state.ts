@@ -15,6 +15,9 @@ const initialState: GameState = {
     },
   },
   error: null,
+  order: {
+    inProgress: false,
+  },
   overview: {
     alternatives: "",
     anon: "Yes",

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Box, ButtonGroup } from "@mui/material";
+import { Box, ButtonGroup, useTheme } from "@mui/material";
 import WDScrollButton from "./WDScrollButton";
 import ScrollButtonState from "../../enums/ScrollButton";
 import Season from "../../enums/Season";
@@ -17,6 +17,7 @@ const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
   season,
   year,
 }): React.ReactElement {
+  const theme = useTheme();
   return (
     <Box
       sx={{
@@ -24,7 +25,7 @@ const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
         display: "flex",
         backgroundColor: "white",
         borderRadius: "22px",
-        filter: "drop-shadow(0px 8px 9px black)",
+        filter: theme.palette.svg.filters.dropShadows[0],
       }}
     >
       <ButtonGroup>

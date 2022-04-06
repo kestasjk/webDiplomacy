@@ -33,6 +33,12 @@ declare module "@mui/material/Typography" {
   }
 }
 
+interface svgOptions {
+  filters: {
+    dropShadows: string[];
+  };
+}
+
 declare module "@mui/material/styles" {
   interface Palette {
     France: SimplePaletteColorOptions;
@@ -42,6 +48,7 @@ declare module "@mui/material/styles" {
     Russia: SimplePaletteColorOptions;
     Italy: SimplePaletteColorOptions;
     Turkey: SimplePaletteColorOptions;
+    svg: svgOptions;
     arrowColors: {
       moveOrderSelected: SimplePaletteColorOptions;
       move: SimplePaletteColorOptions;
@@ -56,6 +63,7 @@ declare module "@mui/material/styles" {
 
 declare module "@mui/material/styles/createPalette" {
   export interface PaletteOptions {
+    svg: svgOptions;
     arrowColors: {
       moveOrderSelected: SimplePaletteColorOptions;
       move: SimplePaletteColorOptions;
@@ -220,6 +228,11 @@ const webDiplomacyTheme = createTheme({
     },
     ...countryPalette,
     arrowColors,
+    svg: {
+      filters: {
+        dropShadows: ["drop-shadow(0px 3px 10px rgba(0, 0, 0, 0.7))"],
+      },
+    },
   },
   typography: {
     button: {
