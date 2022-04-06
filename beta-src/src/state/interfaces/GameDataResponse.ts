@@ -1,10 +1,14 @@
-import ContextVar from "../../interfaces/ContextVar";
-import Order from "../../interfaces/Order";
-import { ITerritory, ITerrStatus, IUnit } from "../../models/Interfaces";
+import ContextVar from "../../interfaces/state/ContextVar";
+import {
+  ITerritory,
+  ITerrStatus,
+  IUnit,
+  IOrderData,
+} from "../../models/Interfaces";
 
 interface CountryID {
   contextVars: ContextVar;
-  currentOrders: Order[];
+  currentOrders: IOrderData[];
 }
 
 interface InvalidCountryID {
