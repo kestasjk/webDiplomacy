@@ -7,9 +7,6 @@ const WDActionIcon: React.FC<navIconProps> = function ({
   iconState = UIState.INACTIVE,
 }): React.ReactElement {
   const theme = useTheme();
-  console.log({
-    theme,
-  });
   return (
     <svg
       filter={theme.palette.svg.filters.dropShadows[0]}
