@@ -38,7 +38,7 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
   userCountry,
   year,
 }): React.ReactElement {
-  const [view, setView] = useState(ModalViews.INFO);
+  const [view, setView] = useState(ModalViews.PRESS);
   const onChangeView = (tab: ModalViews) => setView(tab);
   const [viewport] = useViewport();
   const device = getDevice(viewport);

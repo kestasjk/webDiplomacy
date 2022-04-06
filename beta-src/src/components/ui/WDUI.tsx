@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IconButton, Link, useTheme } from "@mui/material";
+import { Box, IconButton, Link, useTheme } from "@mui/material";
 
 import WDPositionContainer from "./WDPositionContainer";
 import Position from "../../enums/Position";
@@ -51,6 +51,7 @@ const WDUI: React.FC = function (): React.ReactElement {
   const theme = useTheme();
 
   const [showControlModal, setShowControlModal] = React.useState(false);
+  const popoverTrigger = React.useRef<HTMLElement>(null);
 
   const {
     alternatives,
@@ -88,16 +89,19 @@ const WDUI: React.FC = function (): React.ReactElement {
 
   const userTableData = constructTableData(user.member);
 
-  const openControlModal = () => {
-    setShowControlModal(true);
-  };
-
   const closeControlModal = () => {
     setShowControlModal(false);
   };
 
+  const toggleControlModal = () => {
+    setShowControlModal(!showControlModal);
+  };
+
   const controlModalTrigger = (
-    <IconButton sx={{ padding: 0 }} onClick={openControlModal}>
+    <IconButton
+      sx={{ padding: 0, pointerEvents: "all" }}
+      onClick={toggleControlModal}
+    >
       <WDActionIcon
         iconState={showControlModal ? UIState.ACTIVE : UIState.INACTIVE}
       />
@@ -112,30 +116,50 @@ const WDUI: React.FC = function (): React.ReactElement {
     }));
   };
 
+  React.useEffect(() => {
+    if (popoverTrigger.current) {
+      setTimeout(() => {
+        toggleControlModal();
+      }, 1000);
+    }
+  }, [popoverTrigger]);
+
+  const popover = popoverTrigger.current ? (
+    <WDPopover
+      isOpen={showControlModal}
+      onClose={closeControlModal}
+      anchorEl={popoverTrigger.current}
+    >
+      <WDFullModal
+        alternatives={alternatives}
+        countries={countries}
+        excusedMissedTurns={excusedMissedTurns}
+        potNumber={pot}
+        season={season}
+        title={name}
+        userCountry={userTableData}
+        year={year}
+      >
+        {null}
+      </WDFullModal>
+    </WDPopover>
+  ) : null;
+
   return (
     <>
       <WDPositionContainer position={Position.TOP_RIGHT}>
         <Link href="/">
           <WDHomeIcon />
         </Link>
-        <WDPopover
-          isOpen={showControlModal}
-          onClose={closeControlModal}
-          popoverTrigger={controlModalTrigger}
+        <Box
+          sx={{
+            pt: "15px",
+          }}
+          ref={popoverTrigger}
         >
-          <WDFullModal
-            alternatives={alternatives}
-            countries={countries}
-            excusedMissedTurns={excusedMissedTurns}
-            potNumber={pot}
-            season={season}
-            title={name}
-            userCountry={userTableData}
-            year={year}
-          >
-            {null}
-          </WDFullModal>
-        </WDPopover>
+          {controlModalTrigger}
+        </Box>
+        {popover}
       </WDPositionContainer>
       <WDPositionContainer position={Position.TOP_LEFT}>
         <WDPhaseUI />
