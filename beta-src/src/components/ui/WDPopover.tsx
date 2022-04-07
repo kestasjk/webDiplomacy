@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useRef } from "react";
 import {
   Box,
   ModalProps,
@@ -23,17 +22,16 @@ interface WDPopoverProps {
   /**
    * A component that opens or closes the Popover when clicked.
    */
-  popoverTrigger: React.ReactNode;
+  anchorEl: HTMLElement;
 }
 
 const WDPopover: React.FC<WDPopoverProps> = function ({
   children,
   isOpen,
   onClose,
-  popoverTrigger,
-}) {
+  anchorEl,
+}): React.ReactElement {
   const theme = useTheme();
-  const anchorEl = useRef(null);
   const [viewport] = useViewport();
   const device = getDevice(viewport);
   let isMobile: boolean;
@@ -50,27 +48,22 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
   }
   return (
     <Box>
-      <Box
-        sx={{
-          pt: "15px",
-        }}
-        ref={anchorEl}
-      >
-        {popoverTrigger}
-      </Box>
       <Popover
-        anchorEl={anchorEl.current}
+        anchorEl={anchorEl}
         anchorOrigin={{
           horizontal: "left",
           vertical: "center",
         }}
         onClose={onClose}
         open={isOpen}
+        sx={{ pointerEvents: "none" }}
         PaperProps={{
           sx: {
             backgroundColor: "transparent",
             boxShadow: "none",
             maxHeight: "unset",
+            pointerEvents: "all",
+            filter: theme.palette.svg.filters.dropShadows[0],
           },
         }}
         transformOrigin={{
