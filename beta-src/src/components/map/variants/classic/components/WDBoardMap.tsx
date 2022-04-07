@@ -17,7 +17,7 @@ import {
   DENMARK,
   EDINBURGH,
   FINLAND,
-  GALACIA,
+  GALICIA,
   GASCONY,
   GREECE,
   HOLLAND,
@@ -57,7 +57,7 @@ import {
   SWEDEN,
   SYRIA,
   TRIESTE,
-  TUNISIA,
+  TUNIS,
   TUSCANY,
   TYROLIA,
   UKRAINE,
@@ -79,7 +79,7 @@ import {
   ADRIATIC_SEA,
   AEGEAN_SEA,
   BALTIC_SEA,
-  BARRENTS_SEA,
+  BARENTS_SEA,
   BLACK_SEA,
   CHANNEL_1,
   EASTERN_MEDITERRANEAN,
@@ -285,7 +285,7 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={ADRIATIC_SEA} />
         <WDTerritory territoryMapData={AEGEAN_SEA} />
         <WDTerritory territoryMapData={BALTIC_SEA} />
-        <WDTerritory territoryMapData={BARRENTS_SEA} />
+        <WDTerritory territoryMapData={BARENTS_SEA} />
         <WDTerritory territoryMapData={BLACK_SEA} />
         <WDTerritory territoryMapData={CHANNEL_1} />
         <WDTerritory territoryMapData={EASTERN_MEDITERRANEAN} />
@@ -322,7 +322,7 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={DENMARK} />
         <WDTerritory territoryMapData={EDINBURGH} />
         <WDTerritory territoryMapData={FINLAND} />
-        <WDTerritory territoryMapData={GALACIA} />
+        <WDTerritory territoryMapData={GALICIA} />
         <WDTerritory territoryMapData={GASCONY} />
         <WDTerritory territoryMapData={GREECE} />
         <WDTerritory territoryMapData={HOLLAND} />
@@ -359,7 +359,7 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={SWEDEN} />
         <WDTerritory territoryMapData={SYRIA} />
         <WDTerritory territoryMapData={TRIESTE} />
-        <WDTerritory territoryMapData={TUNISIA} />
+        <WDTerritory territoryMapData={TUNIS} />
         <WDTerritory territoryMapData={TYROLIA} />
         <WDTerritory territoryMapData={UKRAINE} />
         <WDTerritory territoryMapData={VENICE} />

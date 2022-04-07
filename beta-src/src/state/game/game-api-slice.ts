@@ -45,7 +45,11 @@ export const fetchGameStatus = createAsyncThunk(
 const gameApiSlice = createSlice({
   name: "game",
   initialState,
-  reducers: {},
+  reducers: {
+    startOrder(state) {
+      state.order.inProgress = true;
+    },
+  },
   extraReducers(builder) {
     builder
       // fetchGameData
@@ -87,6 +91,8 @@ const gameApiSlice = createSlice({
   },
 });
 /* eslint-enable no-param-reassign */
+
+export const gameApiSliceActions = gameApiSlice.actions;
 
 export const gameApiStatus = ({ game: { apiStatus } }: RootState): ApiStatus =>
   apiStatus;

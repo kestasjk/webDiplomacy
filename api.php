@@ -189,13 +189,13 @@ abstract class ApiEntry {
 		$this->requirements = $requirements;
 	}
 
-	protected function JSONResponse(string $msg, string $referenceCode, bool $success, array $data = []){
+	protected function JSONResponse(string $msg, string $referenceCode, bool $success, array $data = [], $JSON_NUMERIC_CHECK = false){
 		return json_encode([
 			'msg' => $msg,
 			'success' => $success,
 			'referenceCode' =>$referenceCode,
 			'data' => $data,
-		], JSON_NUMERIC_CHECK);
+		], $JSON_NUMERIC_CHECK ? JSON_NUMERIC_CHECK : 0);
 	}
 
 	/**
@@ -541,6 +541,7 @@ class GetGameOverview extends ApiEntry {
 			'season' => $season,
 			'year' => $year,
 			'excusedMissedTurns' => $game->excusedMissedTurns,
+			'gameID' => $gameID,
 			'gameOver' => $game->gameOver,
 			'minimumBet' => $game->minimumBet,
 			'name' => $game->name,
@@ -559,7 +560,7 @@ class GetGameOverview extends ApiEntry {
 			'variantID' => $game->variantID,
 			'year' => $year,
 		], (new GetGameMembers)->getData($userID));
-		return $this->JSONResponse('Successfully retrieved game overview.', 'GGO-s-001', true, $payload);
+		return $this->JSONResponse('Successfully retrieved game overview.', 'GGO-s-001', true, $payload, true);
 	}
 }
 

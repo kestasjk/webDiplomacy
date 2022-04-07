@@ -9,10 +9,10 @@ export interface IBoard {
 }
 
 export interface ITerritory {
-  id: string;
   coast: string;
   countryID: string;
   coastParentID: string;
+  id: string;
   name: string;
   supply: string;
   type: string;
@@ -73,12 +73,13 @@ export interface IOrder {
 }
 
 export interface IOrderData {
-  id: string;
   error: string | null;
+  fixed?: string[];
   fromTerrID: string | null;
+  id: string;
   status: string;
-  type: string;
   toTerrID: string | null;
+  type: string;
   unitID: string;
   viaConvoy: string | null;
 }

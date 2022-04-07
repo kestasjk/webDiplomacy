@@ -1,17 +1,18 @@
-import ContextVar from "../../interfaces/ContextVar";
-import Order from "../../interfaces/Order";
-import { ITerritory, ITerrStatus, IUnit } from "../../models/Interfaces";
-
-interface CountryID {
-  contextVars: ContextVar;
-  currentOrders: Order[];
-}
+import ContextVar from "../../interfaces/state/ContextVar";
+import {
+  ITerritory,
+  ITerrStatus,
+  IUnit,
+  IOrderData,
+} from "../../models/Interfaces";
 
 interface InvalidCountryID {
   countryID: number;
 }
 
 interface GameData {
+  contextVars?: ContextVar;
+  currentOrders?: IOrderData[];
   territories: {
     [key: string]: ITerritory;
   };
@@ -20,11 +21,12 @@ interface GameData {
   };
   territoryStatuses: ITerrStatus[];
 }
+
 interface GameDataResponse {
   msg: string;
   referenceCode: string;
   success: boolean;
-  data: CountryID | InvalidCountryID | GameData;
+  data: GameData | InvalidCountryID;
 }
 
 export default GameDataResponse;

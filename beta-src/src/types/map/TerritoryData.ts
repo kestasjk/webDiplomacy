@@ -1,4 +1,4 @@
-import TerritoryEnum from "../../enums/Territory";
+import TerritoryEnum from "../../enums/map/variants/classic/Territory";
 import { Territory } from "../../interfaces";
 
 type TerritoryData = {

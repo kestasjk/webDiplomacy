@@ -4,8 +4,19 @@ import Device from "../../enums/Device";
 import getInitialViewTranslation from "../../utils/map/getInitialViewTranslation";
 import Scale from "../../types/Scale";
 import WDMap from "./WDMap";
+import debounce from "../../utils/debounce";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
+import { useAppDispatch, useAppSelector } from "../../state/hooks";
+import {
+  gameApiSliceActions,
+  gameApiStatus,
+  gameData,
+  gameOverview,
+} from "../../state/game/game-api-slice";
+import GameDataResponse from "../../state/interfaces/GameDataResponse";
+import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
+import drawUnitsOnMap from "../../utils/map/drawUnitsOnMap";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -29,6 +40,18 @@ const WDMapController: React.FC = function (): React.ReactElement {
   const [viewport] = useViewport();
   const device = getDevice(viewport);
   const [scaleMin, scaleMax] = getInitialScaleForDevice(device);
+  const dispatch = useAppDispatch();
+
+  const clickAction = function (e) {
+    const unitId = e.path[2].id;
+    if (unitId.includes("unit-slot")) {
+      dispatch(gameApiSliceActions.startOrder());
+    }
+  };
+
+  const handleClick = debounce((e) => {
+    clickAction(e);
+  }, 200);
 
   React.useLayoutEffect(() => {
     if (svgElement.current) {
@@ -60,9 +83,29 @@ const WDMapController: React.FC = function (): React.ReactElement {
       fullMap
         .on("wheel", (e) => e.preventDefault())
         .call(d3Zoom)
-        .call(d3Zoom.transform, d3.zoomIdentity.translate(x, y).scale(scale));
+        .call(d3Zoom.transform, d3.zoomIdentity.translate(x, y).scale(scale))
+        .on("dblclick.zoom", null)
+        .on("click", (e) => {
+          handleClick[0](e);
+        })
+        .on("dblclick", (e) => {
+          handleClick[1]();
+          handleClick[0](e);
+        });
     }
   }, [svgElement, viewport]);
+
+  const apiStatus = useAppSelector(gameApiStatus);
+  let data: GameDataResponse["data"];
+  let members: GameOverviewResponse["members"];
+  if (apiStatus === "succeeded") {
+    ({ data } = useAppSelector(gameData));
+    ({ members } = useAppSelector(gameOverview));
+  }
+
+  React.useLayoutEffect(() => {
+    drawUnitsOnMap(members, data);
+  }, [svgElement]);
 
   return (
     <div
