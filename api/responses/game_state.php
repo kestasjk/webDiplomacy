@@ -272,6 +272,14 @@ class GameState {
 		$this->orderStatus = $memberData['orderStatus'];
 		$this->status = $memberData['status'];
 
+		$orderStatusData = $DB->sql_tabl("SELECT countryID, orderStatus FROM wD_Members WHERE gameID = ".$this->gameID);
+		$this->orderStatuses = [];
+		while ($member = $DB->tabl_hash($orderStatusData)) {
+			$countryID = $member["countryID"];
+			$orderStatus = $member["orderStatus"];
+			$this->orderStatuses[$countryID] = $orderStatus;
+		}	
+
 		// current draw votes
 		$this->publicVotes = [];
 		if ($this->drawType === 'draw-votes-public') {
