@@ -200,6 +200,9 @@ class adjudicatorPreGame
 	function adjudicate()
 	{		
 		global $Game, $DB;
+		
+		require_once "lib/gamemessage.php";
+		libGameMessage::send(0, 'GameMaster', 'Game started.', $Game->id);
 
 		// If the game is a mixed game and there are not enough players in the game, and at least 2 humans then fill the game with bots. 
 		if ( ($Game->playerTypes == "Mixed") && (!$this->isEnoughPlayers()) && (count($Game->Members->ByID) > 1) )
