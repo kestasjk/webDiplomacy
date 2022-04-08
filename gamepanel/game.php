@@ -426,21 +426,11 @@ class panelGame extends Game
 	 */
 	function archiveBar()
 	{
-		//let's see how many spectators watch the game
-		global $DB;
-
-		$tabl=$DB->sql_tabl("SELECT count(*) FROM wD_WatchedGames WHERE gameID=".$this->id);
-		list($spectatorscount)=$DB->tabl_row($tabl);
-
-		if ($spectatorscount>0 && $this->phase != 'Finished') $spechtml='- <strong>Spectators: </strong> '.$spectatorscount;
-		else $spechtml='';
-
 		return '<strong>'.l_t('Archive:').'</strong> '.
 			'<a href="board.php?gameID='.$this->id.'&amp;viewArchive=Orders">'.l_t('Orders').'</a>
 			- <a href="board.php?gameID='.$this->id.'&amp;viewArchive=Maps">'.l_t('Maps').'</a>
-                        - <a href="board.php?gameID='.$this->id.'&amp;viewArchive=Messages">'.l_t('Messages').'</a>
+			- <a href="board.php?gameID='.$this->id.'&amp;viewArchive=Messages">'.l_t('Messages').'</a>';
 //			- <a href="board.php?gameID='.$this->id.'&amp;viewArchive=Reports">Reports</a>';
-		        '.$spechtml;
 	}
 
 	/**
