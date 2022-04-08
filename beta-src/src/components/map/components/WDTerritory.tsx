@@ -4,11 +4,10 @@ import countryMap from "../../../data/map/variants/classic/CountryMap";
 import { TerritoryMapData } from "../../../interfaces";
 import {
   gameApiSliceActions,
-  gameCommands,
   gameOverview,
 } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
-import debounce from "../../../utils/debounce";
+import ClickObjectType from "../../../types/state/ClickObjectType";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
@@ -22,24 +21,35 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
 }): React.ReactElement {
   const theme = useTheme();
   const dispatch = useAppDispatch();
-  // const [territoryFilter, setTerritoryFilter] = React.useState<
-  //   string | undefined
-  // >(undefined);
+
   const [territoryFill, setTerritoryFill] = React.useState<string | undefined>(
     territoryMapData.fill,
   );
+
   const [territoryFillOpacity, setTerritoryFillOpacity] = React.useState<
     number | undefined
   >(undefined);
+
   const [territoryStrokeOpacity, setTerritoryStrokeOpacity] = React.useState(1);
 
-  const { territoryCommands } = useAppSelector(gameCommands);
+  const commands = useAppSelector(
+    (state) => state.game.commands.territoryCommands[territoryMapData.name],
+  );
+
   const {
     user: { member },
   } = useAppSelector(gameOverview);
   const userCountry = countryMap[member.country];
 
-  const commands = territoryCommands[territoryMapData.name];
+  const deleteCommand = (key) => {
+    dispatch(
+      gameApiSliceActions.deleteCommand({
+        type: "territoryCommands",
+        id: territoryMapData.name,
+        command: key,
+      }),
+    );
+  };
 
   if (commands && commands.size > 0) {
     const firstCommand = commands.entries().next().value;
@@ -47,32 +57,20 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       const [key, value] = firstCommand;
       switch (value.command) {
         case "HOLD":
-          // setTerritoryFilter(`url(#${userCountry}-hold)`);
           setTerritoryFill(theme.palette[userCountry].main);
           setTerritoryFillOpacity(0.9);
           setTerritoryStrokeOpacity(2);
-          dispatch(
-            gameApiSliceActions.deleteCommand({
-              type: "territory",
-              name: territoryMapData.name,
-              command: key,
-            }),
-          );
+          deleteCommand(key);
           break;
         case "CAPTURED":
           if (value.data?.country) {
-            // setTerritoryFilter(`url(#${value.data.country})`);
             setTerritoryFill(theme.palette[value.data.country].main);
-            setTerritoryFillOpacity(0.4);
-            setTerritoryStrokeOpacity(1);
-            dispatch(
-              gameApiSliceActions.deleteCommand({
-                type: "territory",
-                name: territoryMapData.name,
-                command: key,
-              }),
-            );
+          } else {
+            setTerritoryFill(theme.palette[userCountry].main);
           }
+          setTerritoryFillOpacity(0.4);
+          setTerritoryStrokeOpacity(1);
+          deleteCommand(key);
           break;
         default:
           break;
@@ -80,20 +78,13 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     }
   }
 
-  const clickAction = function (e) {
+  const clickAction = function (clickObject: ClickObjectType) {
     dispatch(
-      gameApiSliceActions.processTerritoryClick({
+      gameApiSliceActions.processMapClick({
         name: territoryMapData.name,
+        clickObject,
       }),
     );
-  };
-
-  const handleClick = debounce((e) => {
-    clickAction(e);
-  }, 200);
-
-  const handleSingleClick = (e) => {
-    handleClick[0](e);
   };
 
   return (
@@ -105,34 +96,34 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       x={territoryMapData.x}
       y={territoryMapData.y}
     >
-      <g onClick={handleSingleClick}>
-        {territoryMapData.texture?.texture && (
-          <path
-            d={territoryMapData.path}
-            fill={territoryMapData.texture.texture}
-            id={`${territoryMapData.name}-texture`}
-            stroke={territoryMapData.texture.stroke}
-            strokeOpacity={territoryMapData.texture.strokeOpacity}
-            strokeWidth={territoryMapData.texture.strokeWidth}
-          />
-        )}
+      {territoryMapData.texture?.texture && (
         <path
           d={territoryMapData.path}
-          fill={territoryFill}
-          // filter={territoryFill}
-          fillOpacity={territoryFillOpacity}
-          id={`${territoryMapData.name}-control-path`}
-          stroke={theme.palette.primary.main}
-          strokeOpacity={1}
-          strokeWidth={territoryStrokeOpacity}
+          fill={territoryMapData.texture.texture}
+          id={`${territoryMapData.name}-texture`}
+          stroke={territoryMapData.texture.stroke}
+          strokeOpacity={territoryMapData.texture.strokeOpacity}
+          strokeWidth={territoryMapData.texture.strokeWidth}
         />
-      </g>
+      )}
+      <path
+        d={territoryMapData.path}
+        fill={territoryFill}
+        fillOpacity={territoryFillOpacity}
+        id={`${territoryMapData.name}-control-path`}
+        onClick={() => clickAction("territory")}
+        stroke={theme.palette.primary.main}
+        strokeOpacity={1}
+        strokeWidth={territoryStrokeOpacity}
+      />
       {territoryMapData.centerPos && (
-        <WDCenter
-          territoryName={territoryMapData.name}
-          x={territoryMapData.centerPos.x}
-          y={territoryMapData.centerPos.y}
-        />
+        <g onClick={() => clickAction("center")}>
+          <WDCenter
+            territoryName={territoryMapData.name}
+            x={territoryMapData.centerPos.x}
+            y={territoryMapData.centerPos.y}
+          />
+        </g>
       )}
       {territoryMapData.labels &&
         territoryMapData.labels.map(({ x, y, text, style }, i) => {
@@ -143,14 +134,16 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
             id = `${territoryMapData.name}-label-main`;
           }
           return (
-            <WDLabel
-              id={id}
-              key={id || i}
-              style={style}
-              text={txt}
-              x={x}
-              y={y}
-            />
+            <g onClick={() => clickAction("label")}>
+              <WDLabel
+                id={id}
+                key={id || i}
+                style={style}
+                text={txt}
+                x={x}
+                y={y}
+              />
+            </g>
           );
         })}
       {territoryMapData.unitSlots &&

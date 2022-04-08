@@ -8,6 +8,7 @@ import getDevice from "../../utils/getDevice";
 import Device from "../../enums/Device";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import {
+  gameApiSliceActions,
   gameData,
   gameOrdersMeta,
   saveOrders,
@@ -41,7 +42,13 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
       break;
   }
 
-  const click = () => {
+  const click = (type: Move) => {
+    dispatch(
+      gameApiSliceActions.processMapClick({
+        name: undefined,
+        clickObject: "save_button",
+      }),
+    );
     if ("currentOrders" in data && "contextVars" in data) {
       const { currentOrders, contextVars } = data;
       if (contextVars && currentOrders) {
@@ -68,6 +75,9 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
         dispatch(saveOrders(orderSubmission));
       }
     }
+    if (type === Move.READY) {
+      toggleState(type);
+    }
   };
 
   const ordersMetaValues = Object.values(ordersMeta);
@@ -90,10 +100,14 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
       direction={isMobile ? "column" : "row"}
       spacing={2}
     >
-      <WDButton color="primary" disabled={ready || !save} onClick={click}>
+      <WDButton
+        color="primary"
+        disabled={ready || !save}
+        onClick={() => click(Move.SAVE)}
+      >
         Save
       </WDButton>
-      <WDButton color="primary" onClick={() => toggleState(Move.READY)}>
+      <WDButton color="primary" onClick={() => click(Move.READY)}>
         {ready ? "Unready" : "Ready"}
       </WDButton>
     </Stack>

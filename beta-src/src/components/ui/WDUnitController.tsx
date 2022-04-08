@@ -5,8 +5,8 @@ import debounce from "../../utils/debounce";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import {
   gameApiSliceActions,
-  gameCommands,
   gameData,
+  gameOrder,
 } from "../../state/game/game-api-slice";
 
 interface UnitControllerProps {
@@ -20,9 +20,20 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
   meta,
 }): React.ReactElement {
   const dispatch = useAppDispatch();
-  const { unitCommands } = useAppSelector(gameCommands);
+
+  const commands = useAppSelector(
+    (state) => state.game.commands.unitCommands[meta.unit.id],
+  );
+
   const { data } = useAppSelector(gameData);
-  const commands = unitCommands[meta.unit.id];
+
+  const order = useAppSelector(gameOrder);
+
+  if (order.unitID === meta.unit.id) {
+    setIconState(UIState.SELECTED);
+  } else {
+    setIconState(UIState.NONE);
+  }
 
   if (commands && commands.size > 0) {
     const firstCommand = commands.entries().next().value;
@@ -33,17 +44,7 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
           setIconState(UIState.HOLD);
           dispatch(
             gameApiSliceActions.deleteCommand({
-              type: "unit",
-              id: meta.unit.id,
-              command: key,
-            }),
-          );
-          break;
-        case "CANCEL":
-          setIconState(UIState.NONE);
-          dispatch(
-            gameApiSliceActions.deleteCommand({
-              type: "unit",
+              type: "unitCommands",
               id: meta.unit.id,
               command: key,
             }),
@@ -54,6 +55,7 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
       }
     }
   }
+
   let unitCanInitiateOrder = false;
   if ("currentOrders" in data) {
     const { currentOrders } = data;
@@ -72,7 +74,6 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
     if (!unitCanInitiateOrder) {
       return;
     }
-    setIconState(UIState.SELECTED);
     dispatch(
       gameApiSliceActions.processUnitClick({
         unitID: meta.unit.id,
