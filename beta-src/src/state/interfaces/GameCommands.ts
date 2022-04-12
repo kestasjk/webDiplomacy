@@ -1,13 +1,6 @@
 import Country from "../../enums/Country";
 import Territory from "../../enums/map/variants/classic/Territory";
 
-type Command =
-  | "HOLD"
-  | "CAPTURED"
-  | "DRAW_ARROW"
-  | "REMOVE_ARROW"
-  | "INVALID_CLICK";
-
 interface DrawArrowCommand {
   from: Territory;
   to: Territory;
@@ -18,6 +11,18 @@ interface ClickCommand {
   evt: unknown;
   territoryName: string;
 }
+type GetArrayElementType<T extends readonly string[]> =
+  T extends readonly (infer U)[] ? U : never;
+
+export const ValidCommands = [
+  "CAPTURED",
+  "DRAW_ARROW",
+  "HOLD",
+  "INVALID_CLICK",
+  "REMOVE_ARROW",
+] as const;
+
+export type Command = GetArrayElementType<typeof ValidCommands>;
 
 export interface GameCommand {
   command: Command;

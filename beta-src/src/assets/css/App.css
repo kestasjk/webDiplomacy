@@ -1,3 +1,7 @@
 .App {
   position: "relative";
 }
+
+.no-pointer-events {
+  pointer-events: none;
+}

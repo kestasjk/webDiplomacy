@@ -8,6 +8,7 @@ import {
 } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import ClickObjectType from "../../../types/state/ClickObjectType";
+import processNextCommand from "../../../utils/processNextCommand";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
@@ -51,36 +52,32 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     );
   };
 
-  if (commands && commands.size > 0) {
-    const firstCommand = commands.entries().next().value;
-    if (firstCommand) {
-      const [key, value] = firstCommand;
-      switch (value.command) {
-        case "HOLD":
-          setTerritoryFill(theme.palette[userCountry].main);
-          setTerritoryFillOpacity(0.9);
-          setTerritoryStrokeOpacity(2);
-          deleteCommand(key);
-          break;
-        case "CAPTURED":
-          if (value.data?.country) {
-            if (value.data.country === "none") {
-              setTerritoryFill("none");
-            } else {
-              setTerritoryFill(theme.palette[value.data.country].main);
-            }
-          } else {
-            setTerritoryFill(theme.palette[userCountry].main);
-          }
-          setTerritoryFillOpacity(0.4);
-          setTerritoryStrokeOpacity(1);
-          deleteCommand(key);
-          break;
-        default:
-          break;
+  const commandActions = {
+    HOLD: (command) => {
+      const [key] = command;
+      setTerritoryFill(theme.palette[userCountry].main);
+      setTerritoryFillOpacity(0.9);
+      setTerritoryStrokeOpacity(2);
+      deleteCommand(key);
+    },
+    CAPTURED: (command) => {
+      const [key, value] = command;
+      if (value.data?.country) {
+        if (value.data.country === "none") {
+          setTerritoryFill("none");
+        } else {
+          setTerritoryFill(theme.palette[value.data.country].main);
+        }
+      } else {
+        setTerritoryFill(theme.palette[userCountry].main);
       }
-    }
-  }
+      setTerritoryFillOpacity(0.4);
+      setTerritoryStrokeOpacity(1);
+      deleteCommand(key);
+    },
+  };
+
+  processNextCommand(commands, commandActions);
 
   const clickAction = function (evt, clickObject: ClickObjectType) {
     dispatch(

@@ -8,6 +8,7 @@ import {
   gameData,
   gameOrder,
 } from "../../state/game/game-api-slice";
+import processNextCommand from "../../utils/processNextCommand";
 
 interface UnitControllerProps {
   meta: gameIconProps["meta"];
@@ -35,33 +36,27 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
     setIconState(UIState.NONE);
   }
 
-  if (commands && commands.size > 0) {
-    const firstCommand = commands.entries().next().value;
-    if (firstCommand) {
-      const [key, value] = firstCommand;
-      switch (value.command) {
-        case "HOLD":
-          setIconState(UIState.HOLD);
-          dispatch(
-            gameApiSliceActions.deleteCommand({
-              type: "unitCommands",
-              id: meta.unit.id,
-              command: key,
-            }),
-          );
-          break;
-        default:
-          break;
-      }
-    }
-  }
+  const commandActions = {
+    HOLD: (command) => {
+      const [key] = command;
+      setIconState(UIState.HOLD);
+      dispatch(
+        gameApiSliceActions.deleteCommand({
+          type: "unitCommands",
+          id: meta.unit.id,
+          command: key,
+        }),
+      );
+    },
+  };
+
+  processNextCommand(commands, commandActions);
 
   let unitCanInitiateOrder = false;
   if ("currentOrders" in data) {
     const { currentOrders } = data;
     if (currentOrders) {
-      const ordersLength = currentOrders.length;
-      for (let i = 0; i < ordersLength; i += 1) {
+      for (let i = 0; i < currentOrders.length; i += 1) {
         if (currentOrders[i].unitID === meta.unit.id) {
           unitCanInitiateOrder = true;
           break;
