@@ -17,6 +17,7 @@ import getValidUnitBorderCrossings from "../../utils/map/getValidUnitBorderCross
 import drawArrow from "../../utils/map/drawArrow";
 import ArrowType from "../../enums/ArrowType";
 import drawCurrentMoveOrders from "../../utils/map/drawCurrentMoveOrders";
+import processNextCommand from "../../utils/processNextCommand";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -58,65 +59,56 @@ const WDMapController: React.FC = function (): React.ReactElement {
     );
   };
 
-  if (commands && commands.size > 0) {
-    const firstCommand = commands.entries().next().value;
-    if (firstCommand) {
-      const [key, value] = firstCommand;
-      switch (value.command) {
-        case "DRAW_ARROW": {
-          const { orderID, arrow } = value.data;
-          const { from, to } = arrow;
-          const arrowIdentifier = `${orderID}`;
-          drawArrow(arrowIdentifier, ArrowType.MOVE, to, from);
-          deleteCommand(key);
-          break;
+  const commandActions = {
+    DRAW_ARROW: (command) => {
+      const [key, value] = command;
+      const { orderID, arrow } = value.data;
+      drawArrow(`${orderID}`, ArrowType.MOVE, arrow.to, arrow.from);
+      deleteCommand(key);
+    },
+    REMOVE_ARROW: (command) => {
+      const [key, value] = command;
+      d3.selectAll(`.arrow__${value.data.orderID}`).remove();
+      deleteCommand(key);
+    },
+    INVALID_CLICK: (command) => {
+      const [key, value] = command;
+      const { evt, territoryName } = value.data.click;
+      const territorySelection = d3.select(`#${territoryName}-territory`);
+      const territory: SVGSVGElement = territorySelection.node();
+      if (territory) {
+        const screenCTM = territory.getScreenCTM();
+        if (screenCTM) {
+          const pt = territory.createSVGPoint();
+          pt.x = evt.clientX;
+          pt.y = evt.clientY;
+          const { x, y } = pt.matrixTransform(screenCTM.inverse());
+          territorySelection
+            .append("circle")
+            .attr("cx", x)
+            .attr("cy", y)
+            .attr("r", 6.5)
+            .attr("fill", "red")
+            .attr("fill-opacity", 0.4)
+            .attr("class", "invalid-click");
+          territorySelection
+            .append("circle")
+            .attr("cx", x)
+            .attr("cy", y)
+            .attr("r", 14)
+            .attr("fill", "red")
+            .attr("fill-opacity", 0.2)
+            .attr("class", "invalid-click");
+          setTimeout(() => {
+            d3.selectAll(".invalid-click").remove();
+          }, 100);
         }
-        case "REMOVE_ARROW": {
-          const { orderID } = value.data;
-          d3.selectAll(`.arrow__${orderID}`).remove();
-          deleteCommand(key);
-          break;
-        }
-        case "INVALID_CLICK": {
-          const { evt, territoryName } = value.data.click;
-          const territorySelection = d3.select(`#${territoryName}-territory`);
-          const territory: SVGSVGElement = territorySelection.node();
-          if (territory) {
-            const screenCTM = territory.getScreenCTM();
-            if (screenCTM) {
-              const pt = territory.createSVGPoint();
-              pt.x = evt.clientX;
-              pt.y = evt.clientY;
-              const { x, y } = pt.matrixTransform(screenCTM.inverse());
-              territorySelection
-                .append("circle")
-                .attr("cx", x)
-                .attr("cy", y)
-                .attr("r", 6.5)
-                .attr("fill", "red")
-                .attr("fill-opacity", 0.4)
-                .attr("class", "invalid-click");
-              territorySelection
-                .append("circle")
-                .attr("cx", x)
-                .attr("cy", y)
-                .attr("r", 14)
-                .attr("fill", "red")
-                .attr("fill-opacity", 0.2)
-                .attr("class", "invalid-click");
-              setTimeout(() => {
-                d3.selectAll(".invalid-click").remove();
-              }, 100);
-            }
-          }
-          deleteCommand(key);
-          break;
-        }
-        default:
-          break;
       }
-    }
-  }
+      deleteCommand(key);
+    },
+  };
+
+  processNextCommand(commands, commandActions);
 
   React.useLayoutEffect(() => {
     if (svgElement.current) {

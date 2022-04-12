@@ -120,7 +120,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         />
       </g>
       {territoryMapData.centerPos && (
-        <g style={{ pointerEvents: "none" }}>
+        <g className="no-pointer-events">
           <WDCenter
             territoryName={territoryMapData.name}
             x={territoryMapData.centerPos.x}
@@ -137,7 +137,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
             id = `${territoryMapData.name}-label-main`;
           }
           return (
-            <g style={{ pointerEvents: "none" }}>
+            <g className="no-pointer-events">
               <WDLabel
                 id={id}
                 key={id || i}
