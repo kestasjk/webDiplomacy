@@ -3,9 +3,9 @@ import * as React from "react";
 const WDLandTexture: React.FC = function (): React.ReactElement {
   return (
     <svg
+      className="no-pointer-events"
       fill="none"
       height="3006"
-      style={{ pointerEvents: "none" }}
       viewBox="0 0 6010 3006"
       width="6010"
     >

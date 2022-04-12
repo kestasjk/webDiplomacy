@@ -1,6 +1,11 @@
 import Country from "../../enums/Country";
 
-type Command = "HOLD" | "CAPTURED";
+type GetArrayElementType<T extends readonly string[]> =
+  T extends readonly (infer U)[] ? U : never;
+
+export const ValidCommands = ["HOLD", "CAPTURED"] as const;
+
+export type Command = GetArrayElementType<typeof ValidCommands>;
 
 export interface GameCommand {
   command: Command;
