@@ -10,6 +10,7 @@ export interface gameIconProps {
   country: Country;
   height?: number;
   iconState?: UIState;
+  id?: string;
   viewBox?: string;
   width?: number;
   meta: UnitMeta;

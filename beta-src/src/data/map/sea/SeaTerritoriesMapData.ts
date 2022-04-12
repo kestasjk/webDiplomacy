@@ -6,6 +6,10 @@ import Texture from "../../../enums/Texture";
 
 export const ADRIATIC_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.ADRIATIC_SEA).territory,
+  arrowReceiver: {
+    x: 160,
+    y: 180,
+  },
   fill: "none",
   labels: [
     {
@@ -32,6 +36,10 @@ export const ADRIATIC_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const AEGEAN_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.AEGEAN_SEA).territory,
+  arrowReceiver: {
+    x: 120,
+    y: 200,
+  },
   fill: "none",
   labels: [
     {
@@ -58,6 +66,10 @@ export const AEGEAN_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const BALTIC_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.BALTIC_SEA).territory,
+  arrowReceiver: {
+    x: 200,
+    y: 150,
+  },
   fill: "none",
   labels: [
     {
@@ -84,6 +96,10 @@ export const BALTIC_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const BARENTS_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.BARENTS_SEA).territory,
+  arrowReceiver: {
+    x: 250,
+    y: 100,
+  },
   fill: "none",
   labels: [
     {
@@ -110,6 +126,10 @@ export const BARENTS_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const BLACK_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.BLACK_SEA).territory,
+  arrowReceiver: {
+    x: 150,
+    y: 250,
+  },
   fill: "none",
   labels: [
     {
@@ -150,6 +170,10 @@ export const CHANNEL_1: TerritoryMapData = new TerritoryMapDataGenerator({
 export const EASTERN_MEDITERRANEAN: TerritoryMapData =
   new TerritoryMapDataGenerator({
     ...new TerritoryDataGenerator(Territory.EASTERN_MEDITERRANEAN).territory,
+    arrowReceiver: {
+      x: 300,
+      y: 165,
+    },
     fill: "none",
     labels: [
       {
@@ -176,6 +200,10 @@ export const EASTERN_MEDITERRANEAN: TerritoryMapData =
 
 export const ENGLISH_CHANNEL: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.ENGLISH_CHANNEL).territory,
+  arrowReceiver: {
+    x: 95,
+    y: 50,
+  },
   fill: "none",
   labels: [
     {
@@ -202,6 +230,10 @@ export const ENGLISH_CHANNEL: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const GULF_OF_BOTHNIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.GULF_OF_BOTHNIA).territory,
+  arrowReceiver: {
+    x: 110,
+    y: 375,
+  },
   fill: "none",
   labels: [
     {
@@ -228,6 +260,10 @@ export const GULF_OF_BOTHNIA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const GULF_OF_LYONS: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.GULF_OF_LYONS).territory,
+  arrowReceiver: {
+    x: 240,
+    y: 150,
+  },
   fill: "none",
   labels: [
     {
@@ -255,6 +291,10 @@ export const GULF_OF_LYONS: TerritoryMapData = new TerritoryMapDataGenerator({
 export const HELIGOLAND_BIGHT: TerritoryMapData = new TerritoryMapDataGenerator(
   {
     ...new TerritoryDataGenerator(Territory.HELIGOLAND_BIGHT).territory,
+    arrowReceiver: {
+      x: 50,
+      y: 100,
+    },
     labels: [
       {
         x: 45,
@@ -281,6 +321,10 @@ export const HELIGOLAND_BIGHT: TerritoryMapData = new TerritoryMapDataGenerator(
 
 export const IONIAN_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.IONIAN_SEA).territory,
+  arrowReceiver: {
+    x: 330,
+    y: 140,
+  },
   fill: "none",
   labels: [
     {
@@ -307,6 +351,10 @@ export const IONIAN_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const IRISH_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.IRISH_SEA).territory,
+  arrowReceiver: {
+    x: 75,
+    y: 175,
+  },
   fill: "none",
   labels: [
     {
@@ -333,6 +381,10 @@ export const IRISH_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const MIDDLE_ATLANTIC: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.MIDDLE_ATLANTIC).territory,
+  arrowReceiver: {
+    x: 450,
+    y: 300,
+  },
   fill: "none",
   labels: [
     {
@@ -359,6 +411,10 @@ export const MIDDLE_ATLANTIC: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const NORTH_ATLANTIC: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.NORTH_ATLANTIC).territory,
+  arrowReceiver: {
+    x: 300,
+    y: 600,
+  },
   fill: "none",
   labels: [
     {
@@ -398,6 +454,10 @@ export const NORTH_ATLANTIC2: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const NORTH_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.NORTH_SEA).territory,
+  arrowReceiver: {
+    x: 150,
+    y: 300,
+  },
   fill: "none",
   labels: [
     {
@@ -424,6 +484,10 @@ export const NORTH_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const NORWEGIAN_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.NORWEGIAN_SEA).territory,
+  arrowReceiver: {
+    x: 400,
+    y: 400,
+  },
   fill: "none",
   labels: [
     {
@@ -450,6 +514,10 @@ export const NORWEGIAN_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const SKAGERRACK: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.SKAGERRACK).territory,
+  arrowReceiver: {
+    x: 35,
+    y: 80,
+  },
   fill: "none",
   labels: [
     {
@@ -489,6 +557,10 @@ export const SKAGERRACK2: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const TYRRHENIAN_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.TYRRHENIAN_SEA).territory,
+  arrowReceiver: {
+    x: 100,
+    y: 200,
+  },
   fill: "none",
   labels: [
     {
@@ -633,6 +705,10 @@ export const UNPLAYABLE_SEA9: TerritoryMapData = new TerritoryMapDataGenerator({
 export const WESTERN_MEDITERRANEAN: TerritoryMapData =
   new TerritoryMapDataGenerator({
     ...new TerritoryDataGenerator(Territory.WESTERN_MEDITERRANEAN).territory,
+    arrowReceiver: {
+      x: 350,
+      y: 100,
+    },
     fill: "none",
     labels: [
       {

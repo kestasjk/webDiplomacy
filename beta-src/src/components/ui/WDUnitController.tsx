@@ -76,8 +76,8 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
     }
     dispatch(
       gameApiSliceActions.processUnitClick({
-        unitID: meta.unit.id,
         onTerritory: meta.mappedTerritory.territory,
+        unitID: meta.unit.id,
       }),
     );
   };

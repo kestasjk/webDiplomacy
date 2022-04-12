@@ -3,9 +3,11 @@ import OrderType from "../../types/state/OrderType";
 
 export interface OrderState {
   inProgress: boolean;
-  unitID: string;
-  onTerritory: Territory;
+  onTerritory: Territory | null;
+  orderID: string;
+  toTerritory: Territory | null;
   type?: OrderType;
+  unitID: string;
 }
 
 export default OrderState;

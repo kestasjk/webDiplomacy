@@ -1,57 +1,107 @@
 import * as d3 from "d3";
+import ArrowType from "../../enums/ArrowType";
+import Territory from "../../enums/map/variants/classic/Territory";
+import webDiplomacyTheme from "../../webDiplomacyTheme";
 
 export default function drawArrow(
   /**
    * color code passed from enum ArrowColors based on move type
    */
-  arrowColor: string,
-  /**
-   * source is the id of the element the arrow begins at
-   */
-  sourceElementID: string,
-  /**
-   * Map SVG element
-   */
-  svgMap: SVGSVGElement,
-  /**
-   * target is the id of the element the arrow ends at
-   */
-  targetElementID: string,
+  arrowIdentifier: string,
+  arrowType: ArrowType,
+  receiverTerritory: Territory,
+  unitTerritory: Territory,
 ): void {
-  const arrowIdNumber = `${sourceElementID}-${targetElementID}`;
-  const d3MapSelector = d3.select(svgMap);
+  const d3MapSelector = d3.select("#map");
 
-  const sourceNodeData = d3MapSelector
-    .select(`#${sourceElementID}`)
-    .node()
-    .getBBox();
-  const targetNodeData = d3MapSelector
-    .select(`#${targetElementID}`)
-    .node()
-    .getBBox();
+  const fromTerritoryName = Territory[unitTerritory];
+  const toTerritoryName = Territory[receiverTerritory];
 
-  d3MapSelector
-    .select("defs")
-    .append("marker")
-    .attr("id", `arrowhead__${arrowIdNumber}`)
-    .attr("markerWidth", 8)
-    .attr("markerHeight", 8)
-    .attr("refX", 0)
-    .attr("refY", 4)
-    .attr("orient", "auto")
-    .append("polygon")
-    .attr("points", "0 0, 8 4, 0 8")
-    .attr("fill", arrowColor);
+  let unitSlotEl = d3.select(`#${fromTerritoryName}-unit`).node();
 
-  d3MapSelector
-    .select("#container")
-    .append("line")
-    .attr("x1", sourceNodeData.x + sourceNodeData.width / 2)
-    .attr("y1", sourceNodeData.y + sourceNodeData.height / 2)
-    .attr("x2", targetNodeData.x + targetNodeData.width / 2)
-    .attr("y2", targetNodeData.y + targetNodeData.height / 2)
-    .attr("marker-end", `url(#arrowhead__${arrowIdNumber})`)
-    .attr("stroke", arrowColor)
-    .attr("stroke-width", "2")
-    .attr("id", `arrowline__${arrowIdNumber}`);
+  const toTerritoryReceiver: SVGRectElement = d3
+    .select(`#${toTerritoryName}-arrow-receiver`)
+    .node();
+
+  const fromTerritoryEl: SVGSVGElement = d3
+    .select(`#${fromTerritoryName}-territory`)
+    .node();
+
+  const toTerritoryEl: SVGSVGElement = d3
+    .select(`#${toTerritoryName}-territory`)
+    .node();
+
+  if (fromTerritoryEl && toTerritoryEl && toTerritoryReceiver && unitSlotEl) {
+    unitSlotEl = unitSlotEl.parentNode;
+    const unitSlotElBBox = unitSlotEl.getBBox();
+    const unitSlotElX = Number(unitSlotEl.getAttribute("x")) + unitSlotElBBox.x;
+
+    let x1 = Number(fromTerritoryEl.getAttribute("x")) + unitSlotElX;
+
+    const x2 =
+      Number(toTerritoryEl.getAttribute("x")) +
+      Number(toTerritoryReceiver.getAttribute("x"));
+
+    let y1 =
+      Number(fromTerritoryEl.getAttribute("y")) +
+      Number(unitSlotEl.getAttribute("y")) +
+      unitSlotElBBox.y;
+
+    const y2 =
+      Number(toTerritoryEl.getAttribute("y")) +
+      Number(toTerritoryReceiver.getAttribute("y"));
+
+    const w = unitSlotElBBox.width;
+    const h = unitSlotElBBox.height;
+
+    const xDiff = x2 - x1;
+    const yDiff = y2 - y1;
+
+    const positionChangeBuffer = 75;
+
+    if (Math.abs(xDiff) < positionChangeBuffer && yDiff < 0) {
+      // top center
+      x1 += w / 2;
+    } else if (Math.abs(xDiff) < positionChangeBuffer && yDiff > 0) {
+      // bottom center
+      y1 += h;
+      x1 += w / 2;
+    } else if (
+      xDiff > positionChangeBuffer &&
+      yDiff < 0 &&
+      Math.abs(yDiff) > positionChangeBuffer
+    ) {
+      // top right
+      x1 += w;
+    } else if (
+      xDiff > positionChangeBuffer &&
+      Math.abs(yDiff) < positionChangeBuffer
+    ) {
+      // center right
+      y1 += h / 2;
+      x1 += w;
+    } else if (xDiff > positionChangeBuffer && yDiff > positionChangeBuffer) {
+      // bottom right
+      y1 += h;
+      x1 += w;
+    } else if (xDiff < 0 && Math.abs(yDiff) < positionChangeBuffer) {
+      // center left
+      y1 += h / 2;
+    } else if (xDiff < 0 && yDiff > positionChangeBuffer) {
+      // bottom left
+      y1 += h;
+    }
+
+    d3MapSelector
+      .select("#container")
+      .append("line")
+      .attr("x1", x1)
+      .attr("y1", y1)
+      .attr("x2", x2)
+      .attr("y2", y2)
+      .attr("marker-end", `url(#arrowHead__${arrowType})`)
+      .attr("stroke", webDiplomacyTheme.palette.arrowColors[arrowType].main)
+      .attr("stroke-width", "2")
+      .attr("class", `arrow__${arrowIdentifier}`);
+  }
 }
