@@ -165,7 +165,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
         drawCurrentMoveOrders(data);
       });
     }
-  }, [svgElement, data]);
+  }, [data, members]);
 
   return (
     <div
