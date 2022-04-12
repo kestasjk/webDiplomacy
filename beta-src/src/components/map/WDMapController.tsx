@@ -87,7 +87,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
       drawUnitsOnMap(members, data);
       dispatch(gameApiSliceActions.highlightMapTerritories());
     }
-  }, [svgElement, data]);
+  }, [data, members]);
 
   return (
     <div
