@@ -250,13 +250,15 @@ const gameApiSlice = createSlice({
               return o.unitID === currOrderUnitID;
             });
             if (orderToUpdate) {
-              state.ordersMeta[orderToUpdate.id] = {
-                saved: false,
-                update: {
-                  type: "Hold",
-                  toTerrID: null,
+              updateOrdersMeta(state, {
+                [orderToUpdate.id]: {
+                  saved: false,
+                  update: {
+                    type: "Hold",
+                    toTerrID: null,
+                  },
                 },
-              };
+              });
             }
           }
           state.order.type = "hold";
@@ -305,14 +307,16 @@ const gameApiSlice = createSlice({
             };
             setCommand(state, command, "territoryCommands", territoryName);
             const update: EditOrderMeta = {};
-            update[order.orderID] = {
-              saved: false,
-              update: {
-                type: "Move",
-                toTerrID: canMove.id,
-                viaConvoy: "No",
+            updateOrdersMeta(state, {
+              [order.orderID]: {
+                saved: false,
+                update: {
+                  type: "Move",
+                  toTerrID: canMove.id,
+                  viaConvoy: "No",
+                },
               },
-            };
+            });
             updateOrdersMeta(state, update);
             state.order.toTerritory = toTerritory;
             state.order.type = "move";

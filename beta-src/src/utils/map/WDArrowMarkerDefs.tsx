@@ -8,7 +8,7 @@ const WDArrowMarkerDefs = function (): React.ReactElement[] {
         id={`arrowHead__${arrowType}`}
         markerWidth={8}
         markerHeight={8}
-        refX={0}
+        refX={7.1}
         refY={4}
         orient="auto"
       >

@@ -30,10 +30,12 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
 
   const order = useAppSelector(gameOrder);
 
-  if (order.unitID === meta.unit.id) {
-    setIconState(UIState.SELECTED);
-  } else {
-    setIconState(UIState.NONE);
+  if (!order.type) {
+    if (order.unitID === meta.unit.id) {
+      setIconState(UIState.SELECTED);
+    } else {
+      setIconState(UIState.NONE);
+    }
   }
 
   const commandActions = {
