@@ -42,7 +42,7 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
       break;
   }
 
-  const click = (type: Move) => {
+  const clickButton = (type: Move) => {
     dispatch(
       gameApiSliceActions.processMapClick({
         name: undefined,
@@ -109,11 +109,11 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
       <WDButton
         color="primary"
         disabled={ready || !save}
-        onClick={() => click(Move.SAVE)}
+        onClick={() => clickButton(Move.SAVE)}
       >
         Save
       </WDButton>
-      <WDButton color="primary" onClick={() => click(Move.READY)}>
+      <WDButton color="primary" onClick={() => clickButton(Move.READY)}>
         {ready ? "Unready" : "Ready"}
       </WDButton>
     </Stack>
