@@ -13,6 +13,11 @@ import {
   gameOverview,
 } from "../../state/game/game-api-slice";
 import drawUnitsOnMap from "../../utils/map/drawUnitsOnMap";
+import getValidUnitBorderCrossings from "../../utils/map/getValidUnitBorderCrossings";
+import drawArrow from "../../utils/map/drawArrow";
+import ArrowType from "../../enums/ArrowType";
+import drawCurrentMoveOrders from "../../utils/map/drawCurrentMoveOrders";
+import processNextCommand from "../../utils/processNextCommand";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -37,15 +42,73 @@ const WDMapController: React.FC = function (): React.ReactElement {
   const dispatch = useAppDispatch();
   const { data } = useAppSelector(gameData);
   const { members } = useAppSelector(gameOverview);
-  if ("currentOrders" in data && data.currentOrders) {
-    dispatch(
-      gameApiSliceActions.markOrdersAsSaved(
-        data.currentOrders.map((order) => order.id),
-      ),
-    );
-  }
+  const commands = useAppSelector(
+    (state) => state.game.commands.mapCommands.all,
+  );
+
   const device = getDevice(viewport);
   const [scaleMin, scaleMax] = getInitialScaleForDevice(device);
+
+  const deleteCommand = (key) => {
+    dispatch(
+      gameApiSliceActions.deleteCommand({
+        type: "mapCommands",
+        id: "all",
+        command: key,
+      }),
+    );
+  };
+
+  const commandActions = {
+    DRAW_ARROW: (command) => {
+      const [key, value] = command;
+      const { orderID, arrow } = value.data;
+      drawArrow(`${orderID}`, ArrowType.MOVE, arrow.to, arrow.from);
+      deleteCommand(key);
+    },
+    REMOVE_ARROW: (command) => {
+      const [key, value] = command;
+      d3.selectAll(`.arrow__${value.data.orderID}`).remove();
+      deleteCommand(key);
+    },
+    INVALID_CLICK: (command) => {
+      const [key, value] = command;
+      const { evt, territoryName } = value.data.click;
+      const territorySelection = d3.select(`#${territoryName}-territory`);
+      const territory: SVGSVGElement = territorySelection.node();
+      if (territory) {
+        const screenCTM = territory.getScreenCTM();
+        if (screenCTM) {
+          const pt = territory.createSVGPoint();
+          pt.x = evt.clientX;
+          pt.y = evt.clientY;
+          const { x, y } = pt.matrixTransform(screenCTM.inverse());
+          territorySelection
+            .append("circle")
+            .attr("cx", x)
+            .attr("cy", y)
+            .attr("r", 6.5)
+            .attr("fill", "red")
+            .attr("fill-opacity", 0.4)
+            .attr("class", "invalid-click");
+          territorySelection
+            .append("circle")
+            .attr("cx", x)
+            .attr("cy", y)
+            .attr("r", 14)
+            .attr("fill", "red")
+            .attr("fill-opacity", 0.2)
+            .attr("class", "invalid-click");
+          setTimeout(() => {
+            d3.selectAll(".invalid-click").remove();
+          }, 100);
+        }
+      }
+      deleteCommand(key);
+    },
+  };
+
+  processNextCommand(commands, commandActions);
 
   React.useLayoutEffect(() => {
     if (svgElement.current) {
@@ -79,6 +142,16 @@ const WDMapController: React.FC = function (): React.ReactElement {
         .call(d3Zoom)
         .call(d3Zoom.transform, d3.zoomIdentity.translate(x, y).scale(scale))
         .on("dblclick.zoom", null);
+
+      if ("currentOrders" in data && data.currentOrders) {
+        const ordersMetaUpdates = {};
+        Object.values(data.currentOrders).forEach((order) => {
+          ordersMetaUpdates[order.id] = {
+            saved: true,
+          };
+        });
+        dispatch(gameApiSliceActions.updateOrdersMeta(ordersMetaUpdates));
+      }
     }
   }, [svgElement, viewport]);
 
@@ -86,6 +159,11 @@ const WDMapController: React.FC = function (): React.ReactElement {
     if (data && members) {
       drawUnitsOnMap(members, data);
       dispatch(gameApiSliceActions.highlightMapTerritories());
+      const ordersMetaUpdates = getValidUnitBorderCrossings(data);
+      dispatch(gameApiSliceActions.updateOrdersMeta(ordersMetaUpdates));
+      setTimeout(() => {
+        drawCurrentMoveOrders(data);
+      });
     }
   }, [data, members]);
 

@@ -1,6 +1,7 @@
 import {
   AbsoluteCoordinates,
   BBox,
+  Coordinates,
   Label,
   Territory,
   Texture,
@@ -8,6 +9,7 @@ import {
 } from "..";
 
 export interface TerritoryMapData extends Territory, BBox {
+  arrowReceiver?: Coordinates;
   centerPos?: AbsoluteCoordinates;
   fill?: string;
   labels?: Label[];

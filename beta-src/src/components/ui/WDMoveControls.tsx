@@ -13,7 +13,7 @@ import {
   gameOrdersMeta,
   saveOrders,
 } from "../../state/game/game-api-slice";
-import { IOrderData } from "../../models/Interfaces";
+import UpdateOrder from "../../interfaces/state/UpdateOrder";
 
 interface WDMoveControlsProps {
   gameState: MoveStatus;
@@ -42,7 +42,7 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
       break;
   }
 
-  const click = (type: Move) => {
+  const clickButton = (type: Move) => {
     dispatch(
       gameApiSliceActions.processMapClick({
         name: undefined,
@@ -52,21 +52,27 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
     if ("currentOrders" in data && "contextVars" in data) {
       const { currentOrders, contextVars } = data;
       if (contextVars && currentOrders) {
-        const orderUpdates: IOrderData[] = [];
-        currentOrders.forEach((o) => {
-          const updateReference = ordersMeta[o.id].update;
-          let orderUpdate: IOrderData = o;
-          if (updateReference) {
-            orderUpdate = {
-              ...o,
-              ...{
-                type: updateReference.type,
-                toTerrID: updateReference.toTerrID,
-              },
+        const orderUpdates: UpdateOrder[] = [];
+        currentOrders.forEach(
+          ({ fromTerrID, id, toTerrID, type: moveType, unitID, viaConvoy }) => {
+            const updateReference = ordersMeta[id].update;
+            let orderUpdate: UpdateOrder = {
+              fromTerrID,
+              id,
+              toTerrID,
+              type: moveType,
+              unitID,
+              viaConvoy,
             };
-          }
-          orderUpdates.push(orderUpdate);
-        });
+            if (updateReference) {
+              orderUpdate = {
+                ...orderUpdate,
+                ...updateReference,
+              };
+            }
+            orderUpdates.push(orderUpdate);
+          },
+        );
         const orderSubmission = {
           orderUpdates,
           context: contextVars.context,
@@ -103,11 +109,11 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
       <WDButton
         color="primary"
         disabled={ready || !save}
-        onClick={() => click(Move.SAVE)}
+        onClick={() => clickButton(Move.SAVE)}
       >
         Save
       </WDButton>
-      <WDButton color="primary" onClick={() => click(Move.READY)}>
+      <WDButton color="primary" onClick={() => clickButton(Move.READY)}>
         {ready ? "Unready" : "Ready"}
       </WDButton>
     </Stack>

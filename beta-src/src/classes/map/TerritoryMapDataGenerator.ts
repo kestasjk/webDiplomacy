@@ -11,6 +11,8 @@ export default class TerritoryMapDataGenerator
 {
   public abbr: TerritoryMapData["abbr"];
 
+  public arrowReceiver: TerritoryMapData["arrowReceiver"];
+
   public centerPos: TerritoryMapData["centerPos"];
 
   public fill: TerritoryMapData["fill"];
@@ -39,6 +41,7 @@ export default class TerritoryMapDataGenerator
 
   constructor({
     abbr,
+    arrowReceiver = undefined,
     centerPos = undefined,
     country = undefined,
     fill = "none",
@@ -54,6 +57,7 @@ export default class TerritoryMapDataGenerator
     texture = undefined,
   }: TerritoryMapDataGeneratorInterface) {
     this.abbr = abbr;
+    this.arrowReceiver = arrowReceiver;
     this.centerPos = centerPos;
     this.fill = fill;
     this.height = height;
@@ -85,6 +89,7 @@ export default class TerritoryMapDataGenerator
   get territory(): TerritoryMapData {
     return {
       abbr: this.abbr,
+      arrowReceiver: this.arrowReceiver,
       centerPos: this.centerPos,
       fill: this.fill,
       height: this.height,

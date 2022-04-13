@@ -3,12 +3,14 @@ import WDBoardMap from "./variants/classic/components/WDBoardMap";
 import CapturableLandTexture from "../../assets/textures/capturable-land.jpeg";
 import WaterTexture from "../../assets/textures/sea-texture.png";
 import WDCountryHighlightFilterDefs from "../../utils/map/WDCountryHighlightFilters";
+import WDArrowMarkerDefs from "../../utils/map/WDArrowMarkerDefs";
 
 const WDMap: React.ForwardRefExoticComponent<
   React.RefAttributes<SVGSVGElement>
 > = React.forwardRef(
   (_props, ref): React.ReactElement => (
     <svg
+      id="map"
       fill="none"
       ref={ref}
       style={{
@@ -46,6 +48,7 @@ const WDMap: React.ForwardRefExoticComponent<
           <image href={WaterTexture} x="0" y="0" width="1966" height="1615" />
         </pattern>
         {WDCountryHighlightFilterDefs()}
+        {WDArrowMarkerDefs()}
       </defs>
     </svg>
   ),

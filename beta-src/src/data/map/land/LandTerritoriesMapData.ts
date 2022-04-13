@@ -6,6 +6,10 @@ import Territory from "../../../enums/map/variants/classic/Territory";
 
 export const ALBANIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.ALBANIA).territory,
+  arrowReceiver: {
+    x: 43,
+    y: 127,
+  },
   fill: "none",
   labels: [
     {
@@ -32,6 +36,10 @@ export const ALBANIA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const ANKARA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.ANKARA).territory,
+  arrowReceiver: {
+    x: 40,
+    y: 80,
+  },
   centerPos: {
     x: 60,
     y: 100,
@@ -62,6 +70,10 @@ export const ANKARA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const APULIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.APULIA).territory,
+  arrowReceiver: {
+    x: 110,
+    y: 95,
+  },
   fill: "none",
   labels: [
     {
@@ -88,6 +100,10 @@ export const APULIA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const ARMENIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.ARMENIA).territory,
+  arrowReceiver: {
+    x: 60,
+    y: 75,
+  },
   fill: "none",
   labels: [
     {
@@ -114,6 +130,10 @@ export const ARMENIA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const BELGIUM: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.BELGIUM).territory,
+  arrowReceiver: {
+    x: 117,
+    y: 70,
+  },
   centerPos: {
     x: 75,
     y: 20,
@@ -144,6 +164,10 @@ export const BELGIUM: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const BERLIN: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.BERLIN).territory,
+  arrowReceiver: {
+    x: 50,
+    y: 45,
+  },
   centerPos: {
     x: 57,
     y: 93,
@@ -174,6 +198,10 @@ export const BERLIN: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const BOHEMIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.BOHEMIA).territory,
+  arrowReceiver: {
+    x: 110,
+    y: 50,
+  },
   fill: "none",
   labels: [
     {
@@ -200,6 +228,10 @@ export const BOHEMIA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const BREST: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.BREST).territory,
+  arrowReceiver: {
+    x: 120,
+    y: 145,
+  },
   centerPos: {
     x: 15,
     y: 35,
@@ -230,6 +262,10 @@ export const BREST: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const BUDAPEST: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.BUDAPEST).territory,
+  arrowReceiver: {
+    x: 165,
+    y: 150,
+  },
   centerPos: {
     x: 67,
     y: 85,
@@ -260,6 +296,10 @@ export const BUDAPEST: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const BULGARIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.BULGARIA).territory,
+  arrowReceiver: {
+    x: 125,
+    y: 75,
+  },
   centerPos: {
     x: 20,
     y: 65,
@@ -310,6 +350,10 @@ export const BULGARIA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const BURGUNDY: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.BURGUNDY).territory,
+  arrowReceiver: {
+    x: 70,
+    y: 160,
+  },
   fill: "none",
   labels: [
     {
@@ -336,6 +380,10 @@ export const BURGUNDY: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const CLYDE: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.CLYDE).territory,
+  arrowReceiver: {
+    x: 50,
+    y: 45,
+  },
   fill: "none",
   labels: [
     {
@@ -362,6 +410,10 @@ export const CLYDE: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const CONSTANTINOPLE: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.CONSTANTINOPLE).territory,
+  arrowReceiver: {
+    x: 155,
+    y: 110,
+  },
   centerPos: {
     x: 60,
     y: 22,
@@ -392,6 +444,10 @@ export const CONSTANTINOPLE: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const DENMARK: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.DENMARK).territory,
+  arrowReceiver: {
+    x: 45,
+    y: 45,
+  },
   centerPos: {
     x: 99,
     y: 103,
@@ -422,6 +478,10 @@ export const DENMARK: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const EDINBURGH: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.EDINBURGH).territory,
+  arrowReceiver: {
+    x: 25,
+    y: 125,
+  },
   centerPos: {
     x: 22,
     y: 155,
@@ -452,6 +512,10 @@ export const EDINBURGH: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const FINLAND: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.FINLAND).territory,
+  arrowReceiver: {
+    x: 120,
+    y: 330,
+  },
   fill: "none",
   labels: [
     {
@@ -478,6 +542,10 @@ export const FINLAND: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const GALICIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.GALICIA).territory,
+  arrowReceiver: {
+    x: 130,
+    y: 45,
+  },
   fill: "none",
   labels: [
     {
@@ -504,6 +572,10 @@ export const GALICIA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const GASCONY: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.GASCONY).territory,
+  arrowReceiver: {
+    x: 110,
+    y: 80,
+  },
   fill: "none",
   labels: [
     {
@@ -530,6 +602,10 @@ export const GASCONY: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const GREECE: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.GREECE).territory,
+  arrowReceiver: {
+    x: 95,
+    y: 160,
+  },
   fill: "none",
   labels: [
     {
@@ -556,6 +632,10 @@ export const GREECE: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const HOLLAND: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.HOLLAND).territory,
+  arrowReceiver: {
+    x: 75,
+    y: 35,
+  },
   centerPos: {
     x: 82,
     y: 5,
@@ -586,6 +666,10 @@ export const HOLLAND: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const KIEL: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.KIEL).territory,
+  arrowReceiver: {
+    x: 128,
+    y: 105,
+  },
   centerPos: {
     x: 130,
     y: 73,
@@ -616,6 +700,10 @@ export const KIEL: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const LIVERPOOL: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.LIVERPOOL).territory,
+  arrowReceiver: {
+    x: 75,
+    y: 155,
+  },
   centerPos: {
     x: 51,
     y: 159,
@@ -646,6 +734,10 @@ export const LIVERPOOL: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const LIVONIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.LIVONIA).territory,
+  arrowReceiver: {
+    x: 130,
+    y: 210,
+  },
   fill: "none",
   labels: [
     {
@@ -672,6 +764,10 @@ export const LIVONIA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const LONDON: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.LONDON).territory,
+  arrowReceiver: {
+    x: 55,
+    y: 60,
+  },
   centerPos: {
     x: 28,
     y: 62,
@@ -702,6 +798,10 @@ export const LONDON: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const MARSEILLES: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.MARSEILLES).territory,
+  arrowReceiver: {
+    x: 180,
+    y: 65,
+  },
   centerPos: {
     x: 160,
     y: 110,
@@ -732,6 +832,10 @@ export const MARSEILLES: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const MOSCOW: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.MOSCOW).territory,
+  arrowReceiver: {
+    x: 420,
+    y: 400,
+  },
   centerPos: {
     x: "45%",
     y: "45.3%",
@@ -762,6 +866,10 @@ export const MOSCOW: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const MUNICH: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.MUNICH).territory,
+  arrowReceiver: {
+    x: 170,
+    y: 150,
+  },
   centerPos: {
     x: 154,
     y: 160,
@@ -792,6 +900,10 @@ export const MUNICH: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const NAPLES: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.NAPLES).territory,
+  arrowReceiver: {
+    x: 45,
+    y: 38,
+  },
   centerPos: {
     x: 7,
     y: 10,
@@ -939,6 +1051,10 @@ export const NEUTRAL_9: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const NORTH_AFRICA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.NORTH_AFRICA).territory,
+  arrowReceiver: {
+    x: 570,
+    y: 150,
+  },
   labels: [
     {
       x: 430,
@@ -965,6 +1081,10 @@ export const NORTH_AFRICA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const NORWAY: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.NORWAY).territory,
+  arrowReceiver: {
+    x: 75,
+    y: 585,
+  },
   centerPos: {
     x: 140,
     y: 540,
@@ -995,6 +1115,10 @@ export const NORWAY: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const PARIS: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.PARIS).territory,
+  arrowReceiver: {
+    x: 100,
+    y: 60,
+  },
   centerPos: {
     x: 81,
     y: 9,
@@ -1025,6 +1149,10 @@ export const PARIS: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const PICARDY: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.PICARDY).territory,
+  arrowReceiver: {
+    x: 110,
+    y: 45,
+  },
   fill: "none",
   labels: [
     {
@@ -1051,6 +1179,10 @@ export const PICARDY: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const PIEDMONT: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.PIEDMONT).territory,
+  arrowReceiver: {
+    x: 50,
+    y: 75,
+  },
   fill: "none",
   labels: [
     {
@@ -1077,6 +1209,10 @@ export const PIEDMONT: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const PORTUGAL: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.PORTUGAL).territory,
+  arrowReceiver: {
+    x: 60,
+    y: 120,
+  },
   centerPos: {
     x: 13,
     y: 128,
@@ -1107,6 +1243,10 @@ export const PORTUGAL: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const PRUSSIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.PRUSSIA).territory,
+  arrowReceiver: {
+    x: 110,
+    y: 140,
+  },
   fill: "none",
   labels: [
     {
@@ -1133,6 +1273,10 @@ export const PRUSSIA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const ROME: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.ROME).territory,
+  arrowReceiver: {
+    x: 42,
+    y: 30,
+  },
   centerPos: {
     x: 10,
     y: 23,
@@ -1163,6 +1307,10 @@ export const ROME: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const RUHR: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.RUHR).territory,
+  arrowReceiver: {
+    x: 55,
+    y: 45,
+  },
   fill: "none",
   labels: [
     {
@@ -1189,6 +1337,10 @@ export const RUHR: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const RUMANIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.RUMANIA).territory,
+  arrowReceiver: {
+    x: 120,
+    y: 170,
+  },
   centerPos: {
     x: 140,
     y: 180,
@@ -1220,6 +1372,10 @@ export const RUMANIA: TerritoryMapData = new TerritoryMapDataGenerator({
 export const SAINT_PETERSBURG: TerritoryMapData = new TerritoryMapDataGenerator(
   {
     ...new TerritoryDataGenerator(Territory.SAINT_PETERSBURG).territory,
+    arrowReceiver: {
+      x: 330,
+      y: 540,
+    },
     centerPos: {
       x: "20%",
       y: "78%",
@@ -1271,6 +1427,10 @@ export const SAINT_PETERSBURG: TerritoryMapData = new TerritoryMapDataGenerator(
 
 export const SERBIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.SERBIA).territory,
+  arrowReceiver: {
+    x: 50,
+    y: 90,
+  },
   centerPos: {
     x: 35,
     y: 10,
@@ -1301,6 +1461,10 @@ export const SERBIA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const SEVASTOPOL: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.SEVASTOPOL).territory,
+  arrowReceiver: {
+    x: 300,
+    y: 200,
+  },
   centerPos: {
     x: 209,
     y: 410,
@@ -1331,6 +1495,10 @@ export const SEVASTOPOL: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const SILESIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.SILESIA).territory,
+  arrowReceiver: {
+    x: 65,
+    y: 50,
+  },
   fill: "none",
   labels: [
     {
@@ -1357,6 +1525,10 @@ export const SILESIA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const SMYRNA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.SMYRNA).territory,
+  arrowReceiver: {
+    x: 85,
+    y: 200,
+  },
   centerPos: {
     x: 20,
     y: 150,
@@ -1387,6 +1559,10 @@ export const SMYRNA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const SPAIN: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.SPAIN).territory,
+  arrowReceiver: {
+    x: 200,
+    y: 275,
+  },
   centerPos: {
     x: 177,
     y: 190,
@@ -1437,6 +1613,10 @@ export const SPAIN: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const SWEDEN: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.SWEDEN).territory,
+  arrowReceiver: {
+    x: 100,
+    y: 530,
+  },
   centerPos: {
     x: 160,
     y: 470,
@@ -1467,6 +1647,10 @@ export const SWEDEN: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const SYRIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.SYRIA).territory,
+  arrowReceiver: {
+    x: 100,
+    y: 100,
+  },
   fill: "none",
   labels: [
     {
@@ -1493,6 +1677,10 @@ export const SYRIA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const TRIESTE: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.TRIESTE).territory,
+  arrowReceiver: {
+    x: 100,
+    y: 60,
+  },
   centerPos: {
     x: 56,
     y: 70,
@@ -1523,6 +1711,10 @@ export const TRIESTE: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const TUNIS: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.TUNIS).territory,
+  arrowReceiver: {
+    x: 95,
+    y: 50,
+  },
   centerPos: {
     x: 100,
     y: 20,
@@ -1553,6 +1745,10 @@ export const TUNIS: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const TUSCANY: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.TUSCANY).territory,
+  arrowReceiver: {
+    x: 50,
+    y: 90,
+  },
   fill: "none",
   labels: [
     {
@@ -1579,6 +1775,10 @@ export const TUSCANY: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const TYROLIA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.TYROLIA).territory,
+  arrowReceiver: {
+    x: 160,
+    y: 60,
+  },
   fill: "none",
   labels: [
     {
@@ -1605,6 +1805,10 @@ export const TYROLIA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const UKRAINE: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.UKRAINE).territory,
+  arrowReceiver: {
+    x: 150,
+    y: 150,
+  },
   fill: "none",
   labels: [
     {
@@ -1751,6 +1955,10 @@ export const UNPLAYABLE_LAND8: TerritoryMapData = new TerritoryMapDataGenerator(
 
 export const VIENNA: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.VIENNA).territory,
+  arrowReceiver: {
+    x: 65,
+    y: 45,
+  },
   centerPos: {
     x: 28,
     y: 48,
@@ -1781,6 +1989,10 @@ export const VIENNA: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const VENICE: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.VENICE).territory,
+  arrowReceiver: {
+    x: 65,
+    y: 65,
+  },
   centerPos: {
     x: 68,
     y: 29,
@@ -1811,6 +2023,10 @@ export const VENICE: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const WALES: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.WALES).territory,
+  arrowReceiver: {
+    x: 125,
+    y: 55,
+  },
   fill: "none",
   labels: [
     {
@@ -1837,6 +2053,10 @@ export const WALES: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const WARSAW: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.WARSAW).territory,
+  arrowReceiver: {
+    x: 130,
+    y: 135,
+  },
   centerPos: {
     x: 65,
     y: 75,
@@ -1867,6 +2087,10 @@ export const WARSAW: TerritoryMapData = new TerritoryMapDataGenerator({
 
 export const YORK: TerritoryMapData = new TerritoryMapDataGenerator({
   ...new TerritoryDataGenerator(Territory.YORK).territory,
+  arrowReceiver: {
+    x: 25,
+    y: 125,
+  },
   fill: "none",
   labels: [
     {

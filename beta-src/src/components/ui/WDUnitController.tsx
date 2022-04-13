@@ -30,10 +30,12 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
 
   const order = useAppSelector(gameOrder);
 
-  if (order.unitID === meta.unit.id) {
-    setIconState(UIState.SELECTED);
-  } else {
-    setIconState(UIState.NONE);
+  if (!order.type) {
+    if (order.unitID === meta.unit.id) {
+      setIconState(UIState.SELECTED);
+    } else {
+      setIconState(UIState.NONE);
+    }
   }
 
   const commandActions = {
@@ -71,8 +73,8 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
     }
     dispatch(
       gameApiSliceActions.processUnitClick({
-        unitID: meta.unit.id,
         onTerritory: meta.mappedTerritory.territory,
+        unitID: meta.unit.id,
       }),
     );
   };

@@ -26,11 +26,12 @@ export default function addUnitToTerritory(
     unit,
     country,
   };
+  const id = `${Territory[mappedTerritory.territory]}-unit`;
   const unitIcon =
     unit.type === "Army" ? (
-      <WDArmyIcon country={country} meta={meta} />
+      <WDArmyIcon id={id} country={country} meta={meta} />
     ) : (
-      <WDFleetIcon country={country} meta={meta} />
+      <WDFleetIcon id={id} country={country} meta={meta} />
     );
   const wrappedUnit = (
     <Provider store={store}>

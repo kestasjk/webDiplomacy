@@ -8,6 +8,7 @@ const WDArmyIcon: React.FC<gameIconProps> = function ({
   country,
   height = 50,
   iconState = UIState.NONE,
+  id = undefined,
   meta,
   viewBox,
   width = 50,
@@ -19,6 +20,7 @@ const WDArmyIcon: React.FC<gameIconProps> = function ({
     <svg
       filter="drop-shadow(1px 4px 4px #323232)"
       height={height}
+      id={id}
       width={width}
       viewBox={viewBox}
     >
