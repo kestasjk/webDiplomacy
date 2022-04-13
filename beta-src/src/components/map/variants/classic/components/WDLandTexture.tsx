@@ -3,11 +3,11 @@ import * as React from "react";
 const WDLandTexture: React.FC = function (): React.ReactElement {
   return (
     <svg
+      className="no-pointer-events"
       fill="none"
       height="3006"
       viewBox="0 0 6010 3006"
       width="6010"
-      xmlns="http://www.w3.org/2000/svg"
     >
       <path
         d="m6010.46 2970.07c-16.27 3.62-31.26 1.66-43.86-10.32-3.6-3.42-2.81-7.4 1.35-9.4 8.97-4.34 17.21-4 26.25 1.2 5.64 3.25 8.65 10.56 16.26 10.52z"

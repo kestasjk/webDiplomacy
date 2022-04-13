@@ -6,6 +6,14 @@ import Move from "../../enums/Move";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
 import Device from "../../enums/Device";
+import { useAppDispatch, useAppSelector } from "../../state/hooks";
+import {
+  gameApiSliceActions,
+  gameData,
+  gameOrdersMeta,
+  saveOrders,
+} from "../../state/game/game-api-slice";
+import { IOrderData } from "../../models/Interfaces";
 
 interface WDMoveControlsProps {
   gameState: MoveStatus;
@@ -13,10 +21,13 @@ interface WDMoveControlsProps {
 }
 
 const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
-  gameState: { ready },
+  gameState: { ready, save },
   toggleState,
 }): React.ReactElement {
   const [viewport] = useViewport();
+  const { data } = useAppSelector(gameData);
+  const ordersMeta = useAppSelector(gameOrdersMeta);
+  const dispatch = useAppDispatch();
   const device = getDevice(viewport);
   let isMobile: boolean;
   switch (device) {
@@ -30,6 +41,59 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
       isMobile = false;
       break;
   }
+
+  const click = (type: Move) => {
+    dispatch(
+      gameApiSliceActions.processMapClick({
+        name: undefined,
+        clickObject: "save_button",
+      }),
+    );
+    if ("currentOrders" in data && "contextVars" in data) {
+      const { currentOrders, contextVars } = data;
+      if (contextVars && currentOrders) {
+        const orderUpdates: IOrderData[] = [];
+        currentOrders.forEach((o) => {
+          const updateReference = ordersMeta[o.id].update;
+          let orderUpdate: IOrderData = o;
+          if (updateReference) {
+            orderUpdate = {
+              ...o,
+              ...{
+                type: updateReference.type,
+                toTerrID: updateReference.toTerrID,
+              },
+            };
+          }
+          orderUpdates.push(orderUpdate);
+        });
+        const orderSubmission = {
+          orderUpdates,
+          context: contextVars.context,
+          contextKey: contextVars.contextKey,
+        };
+        dispatch(saveOrders(orderSubmission));
+      }
+    }
+    if (type === Move.READY) {
+      toggleState(type);
+    }
+  };
+
+  const ordersMetaValues = Object.values(ordersMeta);
+  const ordersLength = ordersMetaValues.length;
+  const ordersSaved = ordersMetaValues.reduce(
+    (acc, meta) => acc + +meta.saved,
+    0,
+  );
+
+  if (
+    (ordersLength === ordersSaved && save) ||
+    (ordersLength !== ordersSaved && !save)
+  ) {
+    toggleState(Move.SAVE);
+  }
+
   return (
     <Stack
       alignItems="center"
@@ -38,12 +102,12 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
     >
       <WDButton
         color="primary"
-        disabled={ready}
-        onClick={() => toggleState(Move.SAVE)}
+        disabled={ready || !save}
+        onClick={() => click(Move.SAVE)}
       >
         Save
       </WDButton>
-      <WDButton color="primary" onClick={() => toggleState(Move.READY)}>
+      <WDButton color="primary" onClick={() => click(Move.READY)}>
         {ready ? "Unready" : "Ready"}
       </WDButton>
     </Stack>

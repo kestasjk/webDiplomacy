@@ -3,11 +3,11 @@ import * as React from "react";
 const WDSeaTexture: React.FC = function (): React.ReactElement {
   return (
     <svg
+      className="no-pointer-events"
       fill="none"
       height="3006"
       viewBox="0 0 6010 3006"
       width="6010"
-      xmlns="http://www.w3.org/2000/svg"
     >
       <path
         d="m944.547 3006.1c-.897-3.73-1.993-7.42-2.621-11.19-.07-.48-.041-.97.085-1.43.127-.47.347-.9.649-1.28.301-.37.676-.68 1.102-.91.426-.22.894-.35 1.373-.38 1.694-.2 4.525.15 5.113 1.21 2.442 4.47 4.226 9.3 6.249 14z"

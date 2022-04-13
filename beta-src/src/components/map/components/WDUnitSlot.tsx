@@ -15,7 +15,8 @@ const WDUnitSlot: React.FC<WDUnitSlotProps> = function ({
 }): React.ReactElement {
   return (
     <svg
-      className="unit"
+      className="unit-slot"
+      data-unit-slot={territoryName}
       id={`${territoryName}-${name}-unit-slot`}
       x={x}
       y={y}

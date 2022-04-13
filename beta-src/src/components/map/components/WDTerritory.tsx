@@ -1,6 +1,14 @@
 import { useTheme } from "@mui/material";
 import * as React from "react";
+import countryMap from "../../../data/map/variants/classic/CountryMap";
 import { TerritoryMapData } from "../../../interfaces";
+import {
+  gameApiSliceActions,
+  gameOverview,
+} from "../../../state/game/game-api-slice";
+import { useAppDispatch, useAppSelector } from "../../../state/hooks";
+import ClickObjectType from "../../../types/state/ClickObjectType";
+import processNextCommand from "../../../utils/processNextCommand";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
@@ -13,6 +21,69 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   territoryMapData,
 }): React.ReactElement {
   const theme = useTheme();
+  const dispatch = useAppDispatch();
+
+  const [territoryFill, setTerritoryFill] = React.useState<string | undefined>(
+    territoryMapData.fill,
+  );
+
+  const [territoryFillOpacity, setTerritoryFillOpacity] = React.useState<
+    number | undefined
+  >(undefined);
+
+  const [territoryStrokeOpacity, setTerritoryStrokeOpacity] = React.useState(1);
+
+  const commands = useAppSelector(
+    (state) => state.game.commands.territoryCommands[territoryMapData.name],
+  );
+
+  const {
+    user: { member },
+  } = useAppSelector(gameOverview);
+  const userCountry = countryMap[member.country];
+
+  const deleteCommand = (key) => {
+    dispatch(
+      gameApiSliceActions.deleteCommand({
+        type: "territoryCommands",
+        id: territoryMapData.name,
+        command: key,
+      }),
+    );
+  };
+
+  const commandActions = {
+    HOLD: (command) => {
+      const [key] = command;
+      setTerritoryFill(theme.palette[userCountry].main);
+      setTerritoryFillOpacity(0.9);
+      setTerritoryStrokeOpacity(2);
+      deleteCommand(key);
+    },
+    CAPTURED: (command) => {
+      const [key, value] = command;
+      if (value.data?.country) {
+        setTerritoryFill(theme.palette[value.data.country].main);
+      } else {
+        setTerritoryFill(theme.palette[userCountry].main);
+      }
+      setTerritoryFillOpacity(0.4);
+      setTerritoryStrokeOpacity(1);
+      deleteCommand(key);
+    },
+  };
+
+  processNextCommand(commands, commandActions);
+
+  const clickAction = function (clickObject: ClickObjectType) {
+    dispatch(
+      gameApiSliceActions.processMapClick({
+        name: territoryMapData.name,
+        clickObject,
+      }),
+    );
+  };
+
   return (
     <svg
       height={territoryMapData.height}
@@ -34,18 +105,22 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       )}
       <path
         d={territoryMapData.path}
-        fill={territoryMapData.fill}
+        fill={territoryFill}
+        fillOpacity={territoryFillOpacity}
         id={`${territoryMapData.name}-control-path`}
+        onClick={() => clickAction("territory")}
         stroke={theme.palette.primary.main}
         strokeOpacity={1}
-        strokeWidth={1}
+        strokeWidth={territoryStrokeOpacity}
       />
       {territoryMapData.centerPos && (
-        <WDCenter
-          territoryName={territoryMapData.name}
-          x={territoryMapData.centerPos.x}
-          y={territoryMapData.centerPos.y}
-        />
+        <g onClick={() => clickAction("center")}>
+          <WDCenter
+            territoryName={territoryMapData.name}
+            x={territoryMapData.centerPos.x}
+            y={territoryMapData.centerPos.y}
+          />
+        </g>
       )}
       {territoryMapData.labels &&
         territoryMapData.labels.map(({ x, y, text, style }, i) => {
@@ -56,14 +131,16 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
             id = `${territoryMapData.name}-label-main`;
           }
           return (
-            <WDLabel
-              id={id}
-              key={id || i}
-              style={style}
-              text={txt}
-              x={x}
-              y={y}
-            />
+            <g onClick={() => clickAction("label")}>
+              <WDLabel
+                id={id}
+                key={id || i}
+                style={style}
+                text={txt}
+                x={x}
+                y={y}
+              />
+            </g>
           );
         })}
       {territoryMapData.unitSlots &&

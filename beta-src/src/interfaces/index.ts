@@ -10,3 +10,4 @@ export * from "./map/Label";
 export * from "./map/Texture";
 export * from "./map/UnitSlot";
 export * from "./state/MemberData";
+export * from "./map/UnitMeta";

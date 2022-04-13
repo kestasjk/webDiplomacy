@@ -17,6 +17,13 @@ const initialState: GameState = {
   error: null,
   order: {
     inProgress: false,
+    unitID: "",
+    onTerritory: 0,
+  },
+  ordersMeta: {},
+  commands: {
+    unitCommands: {},
+    territoryCommands: {},
   },
   overview: {
     alternatives: "",
