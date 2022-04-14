@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Stack } from "@mui/material";
+import { Stack, useTheme } from "@mui/material";
 import WDButton from "./WDButton";
 import MoveStatus from "../../types/MoveStatus";
 import Move from "../../enums/Move";
@@ -24,6 +24,7 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
   gameState: { ready, save },
   toggleState,
 }): React.ReactElement {
+  const theme = useTheme();
   const [viewport] = useViewport();
   const { data } = useAppSelector(gameData);
   const ordersMeta = useAppSelector(gameOrdersMeta);
@@ -100,6 +101,9 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
     toggleState(Move.SAVE);
   }
 
+  const saveDisabled = ready || !save;
+  const readyDisabled = false;
+
   return (
     <Stack
       alignItems="center"
@@ -108,12 +112,26 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
     >
       <WDButton
         color="primary"
-        disabled={ready || !save}
+        disabled={saveDisabled}
         onClick={() => clickButton(Move.SAVE)}
+        sx={{
+          filter: saveDisabled
+            ? undefined
+            : theme.palette.svg.filters.dropShadows[0],
+        }}
       >
         Save
       </WDButton>
-      <WDButton color="primary" onClick={() => clickButton(Move.READY)}>
+      <WDButton
+        color="primary"
+        disabled={readyDisabled}
+        onClick={() => clickButton(Move.READY)}
+        sx={{
+          filter: readyDisabled
+            ? undefined
+            : theme.palette.svg.filters.dropShadows[0],
+        }}
+      >
         {ready ? "Unready" : "Ready"}
       </WDButton>
     </Stack>
