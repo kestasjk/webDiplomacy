@@ -1009,6 +1009,61 @@ class SendMessage extends ApiEntry {
 }
 
 /**
+ * API entry game/getmessage
+ */
+class GetMessage extends ApiEntry {
+	public function __construct() {
+		parent::__construct('game/getmessage', 'GET', '', array('gameID','countryID','toCountryID','offset','limit'));
+	}
+	public function run($userID, $permissionIsExplicit) {
+
+		global $DB;
+		$args = $this->getArgs();
+
+		if ($args['gameID'] === null)
+			throw new RequestException('gameID is required.');
+
+		if ($args['countryID'] === null)
+			throw new RequestException('countryID is required.');
+
+		if (intval($args['limit']) > 25)
+			throw new RequestException('limit should not exceed 25');
+
+		$gameID = intval($args['gameID']);
+		$countryID = intval($args['countryID']);
+		$toCountryID = intval($args['toCountryID']);
+		$offset = intval($args['offset']);
+		$limit = intval($args['limit']);
+
+		$limit = $limit ? $limit : 25;
+		$offset =  $offset ? $offset : 0;
+
+		// Global Get all messages addressed to everyone
+		if ( $countryID == 0 ) {
+			$where = "toCountryID = 0";
+		}
+
+		// Only get messages sent between
+		else {
+			$where = "( toCountryID = $toCountryID AND fromCountryID = $countryID )
+					OR
+					( fromCountryID = $toCountryID AND toCountryID = $countryID )";
+		}
+
+		$tabl = $DB->sql_tabl("SELECT message, toCountryID, fromCountryID, turn, timeSent
+		FROM wD_GameMessages WHERE gameID = $gameID AND $where
+		order BY id DESC LIMIT $limit OFFSET $offset");
+
+		$messages = array();
+		while ( $message = $DB->tabl_hash($tabl) ) {
+			$messages[] = $message;
+		}
+
+		return json_encode($messages);
+	}
+}
+
+/**
  * Class to manage an API authentication and check associated permissions.
  */
 abstract class ApiAuth {
@@ -1271,6 +1326,7 @@ try {
 	$api->load(new SetOrders());
 	$api->load(new ToggleVote());
 	$api->load(new SendMessage());
+	$api->load(new GetMessage());
 	$jsonEncodedResponse = $api->run();
 	// Set JSON header.
 	header('Content-Type: application/json');
