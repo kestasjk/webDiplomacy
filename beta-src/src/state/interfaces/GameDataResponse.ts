@@ -10,12 +10,14 @@ interface InvalidCountryID {
   countryID: number;
 }
 
+export interface APITerritories {
+  [key: string]: ITerritory;
+}
+
 interface GameData {
   contextVars?: ContextVar;
   currentOrders?: IOrderData[];
-  territories: {
-    [key: string]: ITerritory;
-  };
+  territories: APITerritories;
   units: {
     [key: string]: IUnit;
   };

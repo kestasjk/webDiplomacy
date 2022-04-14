@@ -19,6 +19,7 @@ export const ValidCommands = [
   "DRAW_ARROW",
   "HOLD",
   "INVALID_CLICK",
+  "MOVE",
   "REMOVE_ARROW",
 ] as const;
 

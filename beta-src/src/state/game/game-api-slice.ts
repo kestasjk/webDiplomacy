@@ -13,13 +13,13 @@ import { ApiStatus } from "../interfaces/GameState";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
 import { RootState } from "../store";
 import initialState from "./initial-state";
-import { ITerritory } from "../../models/Interfaces";
 import Territory from "../../enums/map/variants/classic/Territory";
 import OrdersMeta, { EditOrderMeta } from "../interfaces/SavedOrders";
 import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import OrderState from "../interfaces/OrderState";
 import UpdateOrder from "../../interfaces/state/UpdateOrder";
+import TerritoriesMeta, { TerritoryMeta } from "../interfaces/TerritoriesState";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -164,28 +164,31 @@ const highlightMapTerritoriesBasedOnStatuses = (
   filter: Territory[] = [],
 ) => {
   const {
-    data: { data: gameData },
+    territoriesMeta,
     overview: { members },
+  }: {
+    territoriesMeta: TerritoriesMeta;
+    overview: {
+      members: GameOverviewResponse["members"];
+    };
   } = current(state);
-  if ("territories" in gameData && gameData.territories) {
+  if (Object.keys(territoriesMeta).length) {
     const membersMap = {};
     members.forEach((member) => {
       membersMap[member.countryID] = member.country;
     });
-    const t: ITerritory[] = Object.values(gameData.territories);
-    t.forEach(({ countryID, name }) => {
-      const country = membersMap[countryID];
-      const mappedTerritory = TerritoryMap[name];
-      if (filter.length && !filter.includes(mappedTerritory.territory)) {
+    Object.values(territoriesMeta).forEach((terr: TerritoryMeta) => {
+      const { ownerCountryID, territory } = terr;
+      const country = ownerCountryID ? membersMap[ownerCountryID] : undefined;
+      if (filter.length && !filter.includes(territory)) {
         return;
       }
-      const terrEnum = Territory[mappedTerritory.territory];
-      if (terrEnum) {
+      if (territory) {
         const command: GameCommand = {
           command: "CAPTURED",
           data: { country: country ? countryMap[country] : "none" },
         };
-        setCommand(state, command, "territoryCommands", terrEnum);
+        setCommand(state, command, "territoryCommands", Territory[territory]);
       }
     });
   }
@@ -197,6 +200,9 @@ const gameApiSlice = createSlice({
   reducers: {
     updateOrdersMeta(state, action: UpdateOrdersMetaAction) {
       updateOrdersMeta(state, action.payload);
+    },
+    updateTerritoriesMeta(state, action) {
+      state.territoriesMeta = action.payload;
     },
     processUnitClick(state, clickData) {
       const { order } = current(state);
@@ -303,7 +309,7 @@ const gameApiSlice = createSlice({
             };
             setCommand(state, command, "mapCommands", "all");
             command = {
-              command: "HOLD",
+              command: "MOVE",
             };
             setCommand(state, command, "territoryCommands", territoryName);
             const update: EditOrderMeta = {};

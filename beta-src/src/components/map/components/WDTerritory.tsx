@@ -53,13 +53,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   };
 
   const commandActions = {
-    HOLD: (command) => {
-      const [key] = command;
-      setTerritoryFill(theme.palette[userCountry].main);
-      setTerritoryFillOpacity(0.9);
-      setTerritoryStrokeOpacity(2);
-      deleteCommand(key);
-    },
     CAPTURED: (command) => {
       const [key, value] = command;
       if (value.data?.country) {
@@ -72,6 +65,20 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         setTerritoryFill(theme.palette[userCountry].main);
       }
       setTerritoryFillOpacity(0.4);
+      setTerritoryStrokeOpacity(1);
+      deleteCommand(key);
+    },
+    HOLD: (command) => {
+      const [key] = command;
+      setTerritoryFill(theme.palette[userCountry].main);
+      setTerritoryFillOpacity(0.9);
+      setTerritoryStrokeOpacity(2);
+      deleteCommand(key);
+    },
+    MOVE: (command) => {
+      const [key] = command;
+      setTerritoryFill(theme.palette[userCountry].main);
+      setTerritoryFillOpacity(0.9);
       setTerritoryStrokeOpacity(1);
       deleteCommand(key);
     },
