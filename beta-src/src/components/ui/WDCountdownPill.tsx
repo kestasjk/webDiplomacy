@@ -57,6 +57,7 @@ const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
           ? theme.palette.error.main
           : theme.palette.primary.main,
         color: theme.palette.secondary.main,
+        filter: theme.palette.svg.filters.dropShadows[0],
       }}
       label={chipDisplay}
     />
