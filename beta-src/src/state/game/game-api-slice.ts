@@ -159,10 +159,7 @@ const updateOrdersMeta = (state, updates: EditOrderMeta) => {
   });
 };
 
-const highlightMapTerritoriesBasedOnStatuses = (
-  state,
-  filter: Territory[] = [],
-) => {
+const highlightMapTerritoriesBasedOnStatuses = (state) => {
   const {
     territoriesMeta,
     overview: { members },
@@ -180,9 +177,6 @@ const highlightMapTerritoriesBasedOnStatuses = (
     Object.values(territoriesMeta).forEach((terr: TerritoryMeta) => {
       const { ownerCountryID, territory } = terr;
       const country = ownerCountryID ? membersMap[ownerCountryID] : undefined;
-      if (filter.length && !filter.includes(territory)) {
-        return;
-      }
       if (territory) {
         const command: GameCommand = {
           command: "CAPTURED",

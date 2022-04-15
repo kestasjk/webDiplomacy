@@ -170,8 +170,9 @@ const WDMapController: React.FC = function (): React.ReactElement {
 
   React.useEffect(() => {
     if (data) {
-      const territoriesMeta = getTerritoriesMeta(data);
-      dispatch(gameApiSliceActions.updateTerritoriesMeta(territoriesMeta));
+      dispatch(
+        gameApiSliceActions.updateTerritoriesMeta(getTerritoriesMeta(data)),
+      );
       dispatch(gameApiSliceActions.highlightMapTerritories());
     }
   }, [data]);

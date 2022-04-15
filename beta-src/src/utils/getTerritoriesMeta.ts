@@ -17,9 +17,9 @@ export default function getTerritoriesMeta(data): TerritoriesMeta {
       { coast, coastParentID, countryID: homeCountryID, name, supply, type },
     ]) => {
       const mappedTerritory = TerritoryMap[name];
-      const territoryStatus = territoryStatuses.find(({ id: territoryID }) => {
-        return id === territoryID;
-      });
+      const territoryStatus = territoryStatuses.find(
+        ({ id: territoryID }) => id === territoryID,
+      );
 
       const countryID: string | null =
         homeCountryID === "0" ? null : homeCountryID;
