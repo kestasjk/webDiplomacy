@@ -18,6 +18,7 @@ import drawArrow from "../../utils/map/drawArrow";
 import ArrowType from "../../enums/ArrowType";
 import drawCurrentMoveOrders from "../../utils/map/drawCurrentMoveOrders";
 import processNextCommand from "../../utils/processNextCommand";
+import getTerritoriesMeta from "../../utils/getTerritoriesMeta";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -158,7 +159,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
   React.useLayoutEffect(() => {
     if (data && members) {
       drawUnitsOnMap(members, data);
-      dispatch(gameApiSliceActions.highlightMapTerritories());
+
       const ordersMetaUpdates = getValidUnitBorderCrossings(data);
       dispatch(gameApiSliceActions.updateOrdersMeta(ordersMetaUpdates));
       setTimeout(() => {
@@ -166,6 +167,15 @@ const WDMapController: React.FC = function (): React.ReactElement {
       });
     }
   }, [data, members]);
+
+  React.useEffect(() => {
+    if (data) {
+      dispatch(
+        gameApiSliceActions.updateTerritoriesMeta(getTerritoriesMeta(data)),
+      );
+      dispatch(gameApiSliceActions.highlightMapTerritories());
+    }
+  }, [data]);
 
   return (
     <div
