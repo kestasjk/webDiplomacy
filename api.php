@@ -1009,25 +1009,32 @@ class SendMessage extends ApiEntry {
 }
 
 /**
- * API entry game/getmessage
+ * API entry game/getmessages
  */
-class GetMessage extends ApiEntry {
+class GetMessages extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/getmessage', 'GET', '', array('gameID','countryID','toCountryID','offset','limit'));
+		parent::__construct('game/getmessages', 'GET', '', array('gameID','countryID','toCountryID','offset','limit'));
 	}
 	public function run($userID, $permissionIsExplicit) {
 
 		global $DB;
 		$args = $this->getArgs();
+		$limitAmount = 25;
 
 		if ($args['gameID'] === null)
-			throw new RequestException('gameID is required.');
+			throw new RequestException(
+				$this->JSONResponse('A gameID is required.', '', false, ['gameID' => $args['gameID']] )
+			);
 
-		if ($args['countryID'] === null)
-			throw new RequestException('countryID is required.');
+		if ($args['countryID'] === null || is_numeric($args['countryID']) === false )
+			throw new RequestException(
+				$this->JSONResponse('A countryID is required.', '', false, ['countryID' => $args['countryID']] )
+			);
 
-		if (intval($args['limit']) > 25)
-			throw new RequestException('limit should not exceed 25');
+		if (intval($args['limit']) > $limitAmount || is_numeric($args['limit']) === false )
+			throw new RequestException(
+				$this->JSONResponse('limit should not exceed 25', '', false, ['limit' => $args['limit']] )
+			);
 
 		$gameID = intval($args['gameID']);
 		$countryID = intval($args['countryID']);
@@ -1035,7 +1042,7 @@ class GetMessage extends ApiEntry {
 		$offset = intval($args['offset']);
 		$limit = intval($args['limit']);
 
-		$limit = $limit ? $limit : 25;
+		$limit = $limit ? $limit : $limitAmount;
 		$offset =  $offset ? $offset : 0;
 
 		// Global Get all messages addressed to everyone
@@ -1059,7 +1066,7 @@ class GetMessage extends ApiEntry {
 			$messages[] = $message;
 		}
 
-		return json_encode($messages);
+		return $this->JSONResponse('Successfully retrieved game messages.', '', true, $messages);
 	}
 }
 
@@ -1326,7 +1333,7 @@ try {
 	$api->load(new SetOrders());
 	$api->load(new ToggleVote());
 	$api->load(new SendMessage());
-	$api->load(new GetMessage());
+	$api->load(new GetMessages());
 	$jsonEncodedResponse = $api->run();
 	// Set JSON header.
 	header('Content-Type: application/json');
