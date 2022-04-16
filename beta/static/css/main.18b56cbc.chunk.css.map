@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://src/assets/css/index.css","webpack://src/assets/css/App.css"],"names":[],"mappings":"AAAA,oBACE,OACF,CCFA,KACE,mBACF,CAEA,mBACE,mBACF","file":"main.18b56cbc.chunk.css","sourcesContent":["::-webkit-scrollbar {\n  width: 0;\n}\n",".App {\n  position: \"relative\";\n}\n\n.no-pointer-events {\n  pointer-events: none;\n}\n"]}
