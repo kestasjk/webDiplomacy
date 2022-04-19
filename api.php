@@ -1037,7 +1037,7 @@ class GetMessages extends ApiEntry {
 		// PublicPressOnly - Only Global messaging allowed.
 		// NoPress - No messaging allowed.
 		// RulebookPress - No messaging allowed during 'Builds' and 'Retreats' phases.
-		if ($pressType == 'NoPress' || ($pressType == 'RulebookPress' && $gamePhase == 'Builds' || $gamePhase == 'Retreats'))
+		if ($pressType == 'NoPress' || $pressType == 'RulebookPress' && $gamePhase == 'Builds' || $pressType == 'RulebookPress' && $gamePhase == 'Retreats')
 		throw new RequestException(
 			$this->JSONResponse(
 				'No messaging allowed for pressType = NoPress. No messaging allowed during "Retreats" and "Builds" phases for pressType = RulebookPress.',
