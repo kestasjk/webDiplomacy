@@ -8,6 +8,7 @@ interface WDUnitSlotProps extends AbsoluteCoordinates {
 }
 
 const WDUnitSlot: React.FC<WDUnitSlotProps> = function ({
+  children,
   name,
   territoryName,
   x,
@@ -20,7 +21,9 @@ const WDUnitSlot: React.FC<WDUnitSlotProps> = function ({
       id={`${territoryName}-${name}-unit-slot`}
       x={x}
       y={y}
-    />
+    >
+      {children}
+    </svg>
   );
 };
 

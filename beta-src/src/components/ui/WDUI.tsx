@@ -9,7 +9,7 @@ import { CountryTableData } from "../../interfaces";
 import Country from "../../enums/Country";
 import WDFullModal from "./WDFullModal";
 import WDPopover from "./WDPopover";
-import WDActionIcon from "../svgr-components/WDActionIcon";
+import WDActionIcon from "./icons/WDActionIcon";
 import WDPhaseUI from "./WDPhaseUI";
 import UIState from "../../enums/UIState";
 import capitalizeString from "../../utils/capitalizeString";
@@ -17,8 +17,8 @@ import Vote from "../../enums/Vote";
 import Move from "../../enums/Move";
 import WDMoveControls from "./WDMoveControls";
 import MoveStatus from "../../types/MoveStatus";
-import WDHomeIcon from "../svgr-components/WDHomeIcon";
 import countryMap from "../../data/map/variants/classic/CountryMap";
+import WDHomeIcon from "./icons/WDHomeIcon";
 
 const abbrMap = {
   Russia: "RUS",

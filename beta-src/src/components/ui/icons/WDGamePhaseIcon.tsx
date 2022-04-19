@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Box, Button, useTheme } from "@mui/material";
-import Season from "../../enums/Season";
-import UIState from "../../enums/UIState";
+import UIState from "../../../enums/UIState";
+import Season from "../../../enums/Season";
 
 interface GamePhaseIconProps {
   disabled?: boolean;

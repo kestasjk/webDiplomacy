@@ -7,8 +7,8 @@ import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
 import Season from "../../enums/Season";
 import UIState from "../../enums/UIState";
 import WDCountdownPill from "./WDCountdownPill";
-import WDGamePhaseIcon from "../svgr-components/WDGamePhaseIcon";
 import WDPillScroller from "./WDPillScroller";
+import WDGamePhaseIcon from "./icons/WDGamePhaseIcon";
 
 const WDPhaseUI: React.FC = function (): React.ReactElement {
   const [currentSeason, setCurrentSeason] = useState<Season>(Season.SPRING);

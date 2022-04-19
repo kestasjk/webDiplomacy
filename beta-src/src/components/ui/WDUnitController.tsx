@@ -1,5 +1,5 @@
 import * as React from "react";
-import { gameIconProps } from "../../interfaces/Icons";
+import { GameIconProps } from "../../interfaces/Icons";
 import UIState from "../../enums/UIState";
 import debounce from "../../utils/debounce";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
@@ -11,7 +11,7 @@ import {
 import processNextCommand from "../../utils/processNextCommand";
 
 interface UnitControllerProps {
-  meta: gameIconProps["meta"];
+  meta: GameIconProps["meta"];
   setIconState: React.Dispatch<UIState>;
 }
 

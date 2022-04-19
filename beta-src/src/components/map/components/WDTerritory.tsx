@@ -9,12 +9,20 @@ import {
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import ClickObjectType from "../../../types/state/ClickObjectType";
 import processNextCommand from "../../../utils/processNextCommand";
+import WDArmy from "../../ui/units/WDArmy";
+import WDArmyIcon from "../../ui/units/WDArmyIcon";
+import WDFleet from "../../ui/units/WDFleet";
+import WDFleetIcon from "../../ui/units/WDFleetIcon";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
 
 interface WDTerritoryProps {
   territoryMapData: TerritoryMapData;
+}
+
+interface Units {
+  [key: string]: React.ReactElement;
 }
 
 const WDTerritory: React.FC<WDTerritoryProps> = function ({
@@ -32,6 +40,8 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   >(undefined);
 
   const [territoryStrokeOpacity, setTerritoryStrokeOpacity] = React.useState(1);
+
+  const [units, setUnits] = React.useState<Units>({});
 
   const commands = useAppSelector(
     (state) => state.game.commands.territoryCommands[territoryMapData.name],
@@ -53,6 +63,86 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   };
 
   const commandActions = {
+    SET_UNIT: (command) => {
+      const [key, value] = command;
+      console.log({ key, value });
+      const {
+        componentType,
+        country,
+        iconState,
+        mappedTerritory,
+        unit,
+        unitType,
+        unitSlotName,
+      } = value.data.setUnit;
+
+      console.log({
+        componentType,
+        country,
+        iconState,
+        mappedTerritory,
+        unit,
+        unitType,
+        unitSlotName,
+      });
+
+      let newUnit;
+      if (country && unitType && componentType) {
+        switch (componentType) {
+          case "Game":
+            if (unit) {
+              switch (unitType) {
+                case "Army":
+                  newUnit = (
+                    <WDArmy
+                      id={`${territoryMapData.name}-unit`}
+                      country={country}
+                      meta={{ country, mappedTerritory, unit }}
+                    />
+                  );
+                  break;
+                case "Fleet":
+                  newUnit = (
+                    <WDFleet
+                      id={`${territoryMapData.name}-unit`}
+                      country={country}
+                      meta={{ country, mappedTerritory, unit }}
+                    />
+                  );
+                  break;
+                default:
+                  break;
+              }
+            }
+            break;
+          case "Icon":
+            switch (unitType) {
+              case "Army":
+                newUnit = (
+                  <WDArmyIcon country={country} iconState={iconState} />
+                );
+                break;
+              case "Fleet":
+                newUnit = (
+                  <WDFleetIcon country={country} iconState={iconState} />
+                );
+                break;
+              default:
+                break;
+            }
+            break;
+          default:
+            break;
+        }
+      }
+
+      const set = {
+        ...units,
+        ...{ [unitSlotName]: newUnit },
+      };
+      setUnits(set);
+      deleteCommand(key);
+    },
     CAPTURED: (command) => {
       const [key, value] = command;
       if (value.data?.country) {
@@ -157,14 +247,16 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
           );
         })}
       {territoryMapData.unitSlots &&
-        territoryMapData.unitSlots.map((unitSlot) => (
+        territoryMapData.unitSlots.map(({ name, x, y }) => (
           <WDUnitSlot
-            key={unitSlot.name}
-            name={unitSlot.name}
+            key={name}
+            name={name}
             territoryName={territoryMapData.name}
-            x={unitSlot.x}
-            y={unitSlot.y}
-          />
+            x={x}
+            y={y}
+          >
+            {units[name]}
+          </WDUnitSlot>
         ))}
       {territoryMapData.arrowReceiver && (
         <rect

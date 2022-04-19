@@ -1,13 +1,23 @@
 import GameDataResponse from "../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
-import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
-import addUnitToTerritory from "./addUnitToTerritory";
+import TerritoryMap, {
+  ITerritory,
+} from "../../data/map/variants/classic/TerritoryMap";
 import countryMap from "../../data/map/variants/classic/CountryMap";
+import Country from "../../enums/Country";
+import { IUnit } from "../../models/Interfaces";
 
-export default function drawUnitsOnMap(
-  members: GameOverviewResponse["members"],
+interface Unit {
+  country: Country;
+  mappedTerritory: ITerritory;
+  unit: IUnit;
+}
+
+export default function getUnits(
   data: GameDataResponse["data"],
-): void {
+  members: GameOverviewResponse["members"],
+): Unit[] {
+  const unitsToDraw: Unit[] = [];
   if (data && members && "units" in data && "territories" in data) {
     const { territories, units } = data;
     Object.values(units).forEach((unit) => {
@@ -20,10 +30,15 @@ export default function drawUnitsOnMap(
           });
           if (memberCountry) {
             const { country } = memberCountry;
-            addUnitToTerritory(mappedTerritory, unit, countryMap[country]);
+            unitsToDraw.push({
+              country: countryMap[country],
+              mappedTerritory,
+              unit,
+            });
           }
         }
       }
     });
   }
+  return unitsToDraw;
 }

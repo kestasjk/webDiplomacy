@@ -12,13 +12,16 @@ import {
   gameData,
   gameOverview,
 } from "../../state/game/game-api-slice";
-import drawUnitsOnMap from "../../utils/map/drawUnitsOnMap";
 import getValidUnitBorderCrossings from "../../utils/map/getValidUnitBorderCrossings";
 import drawArrow from "../../utils/map/drawArrow";
 import ArrowType from "../../enums/ArrowType";
 import drawCurrentMoveOrders from "../../utils/map/drawCurrentMoveOrders";
 import processNextCommand from "../../utils/processNextCommand";
 import getTerritoriesMeta from "../../utils/getTerritoriesMeta";
+import getUnits from "../../utils/map/getUnits";
+import { GameCommand } from "../../state/interfaces/GameCommands";
+import UnitType from "../../types/UnitType";
+import Territory from "../../enums/map/variants/classic/Territory";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -158,8 +161,32 @@ const WDMapController: React.FC = function (): React.ReactElement {
 
   React.useLayoutEffect(() => {
     if (data && members) {
-      drawUnitsOnMap(members, data);
-
+      const unitsToDraw = getUnits(data, members);
+      unitsToDraw.forEach(({ country, mappedTerritory, unit }) => {
+        console.log({
+          country,
+        });
+        const command: GameCommand = {
+          command: "SET_UNIT",
+          data: {
+            setUnit: {
+              componentType: "Game",
+              country,
+              mappedTerritory,
+              unit,
+              unitType: unit.type as UnitType,
+              unitSlotName: mappedTerritory.unitSlotName,
+            },
+          },
+        };
+        dispatch(
+          gameApiSliceActions.dispatchCommand({
+            command,
+            container: "territoryCommands",
+            identifier: Territory[mappedTerritory.territory],
+          }),
+        );
+      });
       const ordersMetaUpdates = getValidUnitBorderCrossings(data);
       dispatch(gameApiSliceActions.updateOrdersMeta(ordersMetaUpdates));
       setTimeout(() => {

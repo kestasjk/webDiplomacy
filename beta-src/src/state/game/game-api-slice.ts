@@ -7,6 +7,7 @@ import GameErrorResponse from "../interfaces/GameErrorResponse";
 import GameOverviewResponse from "../interfaces/GameOverviewResponse";
 import GameCommands, {
   GameCommand,
+  GameCommandContainer,
   GameCommandType,
 } from "../interfaces/GameCommands";
 import { ApiStatus } from "../interfaces/GameState";
@@ -84,6 +85,15 @@ interface NewOrderPayload {
 interface UpdateOrdersMetaAction {
   type: string;
   payload: EditOrderMeta;
+}
+
+interface DispatchCommandAction {
+  type: string;
+  payload: {
+    command: GameCommand;
+    container: GameCommandType;
+    identifier: string;
+  };
 }
 
 export const saveOrders = createAsyncThunk(
@@ -351,6 +361,10 @@ const gameApiSlice = createSlice({
     },
     highlightMapTerritories(state) {
       highlightMapTerritoriesBasedOnStatuses(state);
+    },
+    dispatchCommand(state, action: DispatchCommandAction) {
+      const { command, container, identifier } = action.payload;
+      setCommand(state, command, container, identifier);
     },
   },
   extraReducers(builder) {

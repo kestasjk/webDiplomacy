@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Stack } from "@mui/material";
-import WDCheckmarkIcon from "../svgr-components/WDCheckmarkIcon";
 import WDButton from "./WDButton";
 import Vote from "../../enums/Vote";
 import VoteType from "../../types/Vote";
 import getDevice from "../../utils/getDevice";
 import useViewport from "../../hooks/useViewport";
 import Device from "../../enums/Device";
+import WDCheckmarkIcon from "./icons/WDCheckmarkIcon";
 
 interface voteProps {
   voteState: VoteType;
