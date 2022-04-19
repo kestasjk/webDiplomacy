@@ -1,7 +1,7 @@
 import Territory from "../../../../enums/map/variants/classic/Territory";
 import UnitSlotName from "../../../../types/map/UnitSlotName";
 
-interface ITerritory {
+export interface ITerritory {
   territory: Territory;
   unitSlotName: UnitSlotName;
 }

@@ -4,19 +4,21 @@ import Device from "../../enums/Device";
 import getInitialViewTranslation from "../../utils/map/getInitialViewTranslation";
 import Scale from "../../types/Scale";
 import WDMap from "./WDMap";
-import debounce from "../../utils/debounce";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import {
   gameApiSliceActions,
-  gameApiStatus,
   gameData,
   gameOverview,
 } from "../../state/game/game-api-slice";
-import GameDataResponse from "../../state/interfaces/GameDataResponse";
-import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
 import drawUnitsOnMap from "../../utils/map/drawUnitsOnMap";
+import getValidUnitBorderCrossings from "../../utils/map/getValidUnitBorderCrossings";
+import drawArrow from "../../utils/map/drawArrow";
+import ArrowType from "../../enums/ArrowType";
+import drawCurrentMoveOrders from "../../utils/map/drawCurrentMoveOrders";
+import processNextCommand from "../../utils/processNextCommand";
+import getTerritoriesMeta from "../../utils/getTerritoriesMeta";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -38,20 +40,76 @@ const mapOriginalHeight = 3005;
 const WDMapController: React.FC = function (): React.ReactElement {
   const svgElement = React.useRef<SVGSVGElement>(null);
   const [viewport] = useViewport();
+  const dispatch = useAppDispatch();
+  const { data } = useAppSelector(gameData);
+  const { members } = useAppSelector(gameOverview);
+  const commands = useAppSelector(
+    (state) => state.game.commands.mapCommands.all,
+  );
+
   const device = getDevice(viewport);
   const [scaleMin, scaleMax] = getInitialScaleForDevice(device);
-  const dispatch = useAppDispatch();
 
-  const clickAction = function (e) {
-    const unitId = e.path[2].id;
-    if (unitId.includes("unit-slot")) {
-      dispatch(gameApiSliceActions.startOrder());
-    }
+  const deleteCommand = (key) => {
+    dispatch(
+      gameApiSliceActions.deleteCommand({
+        type: "mapCommands",
+        id: "all",
+        command: key,
+      }),
+    );
   };
 
-  const handleClick = debounce((e) => {
-    clickAction(e);
-  }, 200);
+  const commandActions = {
+    DRAW_ARROW: (command) => {
+      const [key, value] = command;
+      const { orderID, arrow } = value.data;
+      drawArrow(`${orderID}`, ArrowType.MOVE, arrow.to, arrow.from);
+      deleteCommand(key);
+    },
+    REMOVE_ARROW: (command) => {
+      const [key, value] = command;
+      d3.selectAll(`.arrow__${value.data.orderID}`).remove();
+      deleteCommand(key);
+    },
+    INVALID_CLICK: (command) => {
+      const [key, value] = command;
+      const { evt, territoryName } = value.data.click;
+      const territorySelection = d3.select(`#${territoryName}-territory`);
+      const territory: SVGSVGElement = territorySelection.node();
+      if (territory) {
+        const screenCTM = territory.getScreenCTM();
+        if (screenCTM) {
+          const pt = territory.createSVGPoint();
+          pt.x = evt.clientX;
+          pt.y = evt.clientY;
+          const { x, y } = pt.matrixTransform(screenCTM.inverse());
+          territorySelection
+            .append("circle")
+            .attr("cx", x)
+            .attr("cy", y)
+            .attr("r", 6.5)
+            .attr("fill", "red")
+            .attr("fill-opacity", 0.4)
+            .attr("class", "invalid-click");
+          territorySelection
+            .append("circle")
+            .attr("cx", x)
+            .attr("cy", y)
+            .attr("r", 14)
+            .attr("fill", "red")
+            .attr("fill-opacity", 0.2)
+            .attr("class", "invalid-click");
+          setTimeout(() => {
+            d3.selectAll(".invalid-click").remove();
+          }, 100);
+        }
+      }
+      deleteCommand(key);
+    },
+  };
+
+  processNextCommand(commands, commandActions);
 
   React.useLayoutEffect(() => {
     if (svgElement.current) {
@@ -84,28 +142,40 @@ const WDMapController: React.FC = function (): React.ReactElement {
         .on("wheel", (e) => e.preventDefault())
         .call(d3Zoom)
         .call(d3Zoom.transform, d3.zoomIdentity.translate(x, y).scale(scale))
-        .on("dblclick.zoom", null)
-        .on("click", (e) => {
-          handleClick[0](e);
-        })
-        .on("dblclick", (e) => {
-          handleClick[1]();
-          handleClick[0](e);
+        .on("dblclick.zoom", null);
+
+      if ("currentOrders" in data && data.currentOrders) {
+        const ordersMetaUpdates = {};
+        Object.values(data.currentOrders).forEach((order) => {
+          ordersMetaUpdates[order.id] = {
+            saved: true,
+          };
         });
+        dispatch(gameApiSliceActions.updateOrdersMeta(ordersMetaUpdates));
+      }
     }
   }, [svgElement, viewport]);
 
-  const apiStatus = useAppSelector(gameApiStatus);
-  let data: GameDataResponse["data"];
-  let members: GameOverviewResponse["members"];
-  if (apiStatus === "succeeded") {
-    ({ data } = useAppSelector(gameData));
-    ({ members } = useAppSelector(gameOverview));
-  }
-
   React.useLayoutEffect(() => {
-    drawUnitsOnMap(members, data);
-  }, [svgElement]);
+    if (data && members) {
+      drawUnitsOnMap(members, data);
+
+      const ordersMetaUpdates = getValidUnitBorderCrossings(data);
+      dispatch(gameApiSliceActions.updateOrdersMeta(ordersMetaUpdates));
+      setTimeout(() => {
+        drawCurrentMoveOrders(data);
+      });
+    }
+  }, [data, members]);
+
+  React.useEffect(() => {
+    if (data) {
+      dispatch(
+        gameApiSliceActions.updateTerritoriesMeta(getTerritoriesMeta(data)),
+      );
+      dispatch(gameApiSliceActions.highlightMapTerritories());
+    }
+  }, [data]);
 
   return (
     <div
