@@ -12,7 +12,6 @@ import {
   gameData,
   gameOverview,
 } from "../../state/game/game-api-slice";
-import getValidUnitBorderCrossings from "../../utils/map/getValidUnitBorderCrossings";
 import drawArrow from "../../utils/map/drawArrow";
 import ArrowType from "../../enums/ArrowType";
 import drawCurrentMoveOrders from "../../utils/map/drawCurrentMoveOrders";
@@ -22,6 +21,7 @@ import getUnits from "../../utils/map/getUnits";
 import { GameCommand } from "../../state/interfaces/GameCommands";
 import UnitType from "../../types/UnitType";
 import Territory from "../../enums/map/variants/classic/Territory";
+import getOrdersMeta from "../../utils/map/getOrdersMeta";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -45,7 +45,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
   const [viewport] = useViewport();
   const dispatch = useAppDispatch();
   const { data } = useAppSelector(gameData);
-  const { members } = useAppSelector(gameOverview);
+  const { members, phase } = useAppSelector(gameOverview);
   const commands = useAppSelector(
     (state) => state.game.commands.mapCommands.all,
   );
@@ -163,9 +163,6 @@ const WDMapController: React.FC = function (): React.ReactElement {
     if (data && members) {
       const unitsToDraw = getUnits(data, members);
       unitsToDraw.forEach(({ country, mappedTerritory, unit }) => {
-        console.log({
-          country,
-        });
         const command: GameCommand = {
           command: "SET_UNIT",
           data: {
@@ -187,13 +184,13 @@ const WDMapController: React.FC = function (): React.ReactElement {
           }),
         );
       });
-      const ordersMetaUpdates = getValidUnitBorderCrossings(data);
+      const ordersMetaUpdates = getOrdersMeta(data, phase);
       dispatch(gameApiSliceActions.updateOrdersMeta(ordersMetaUpdates));
       setTimeout(() => {
         drawCurrentMoveOrders(data);
       });
     }
-  }, [data, members]);
+  }, [data, members, phase]);
 
   React.useEffect(() => {
     if (data) {
@@ -201,6 +198,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
         gameApiSliceActions.updateTerritoriesMeta(getTerritoriesMeta(data)),
       );
       dispatch(gameApiSliceActions.highlightMapTerritories());
+      dispatch(gameApiSliceActions.drawBuilds());
     }
   }, [data]);
 

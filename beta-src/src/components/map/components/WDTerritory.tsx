@@ -1,5 +1,6 @@
-import { useTheme } from "@mui/material";
+import { Popover, useTheme } from "@mui/material";
 import * as React from "react";
+import BuildUnitMap, { BuildUnitTypeMap } from "../../../data/BuildUnit";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
 import { TerritoryMapData } from "../../../interfaces";
 import {
@@ -13,6 +14,7 @@ import WDArmy from "../../ui/units/WDArmy";
 import WDArmyIcon from "../../ui/units/WDArmyIcon";
 import WDFleet from "../../ui/units/WDFleet";
 import WDFleetIcon from "../../ui/units/WDFleetIcon";
+import WDBuildUnitButtons, { BuildData } from "./WDBuildUnitButtons";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
@@ -22,6 +24,10 @@ interface WDTerritoryProps {
 }
 
 interface Units {
+  [key: string]: React.ReactElement;
+}
+
+interface BuildPopovers {
   [key: string]: React.ReactElement;
 }
 
@@ -40,6 +46,12 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   >(undefined);
 
   const [territoryStrokeOpacity, setTerritoryStrokeOpacity] = React.useState(1);
+
+  const buildPopoverRefs = React.useRef<SVGElement[]>([]);
+
+  const [buildPopovers, setBuildPopovers] = React.useState<BuildPopovers>({});
+
+  const [openBuildPopovers, setOpenBuildPopovers] = React.useState(false);
 
   const [units, setUnits] = React.useState<Units>({});
 
@@ -62,10 +74,98 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     );
   };
 
+  const setMoveHighlight = () => {
+    setTerritoryFill(theme.palette[userCountry].main);
+    setTerritoryFillOpacity(0.9);
+    setTerritoryStrokeOpacity(1);
+  };
+
+  const setCapturedHighlight = (country) => {
+    if (country) {
+      if (country === "none") {
+        setTerritoryFill("none");
+      } else {
+        setTerritoryFill(theme.palette[country].main);
+      }
+    } else {
+      setTerritoryFill(theme.palette[userCountry].main);
+    }
+    setTerritoryFillOpacity(0.4);
+    setTerritoryStrokeOpacity(1);
+  };
+
+  const defaultBuildPopoversClose = () => {
+    setCapturedHighlight(undefined);
+    setOpenBuildPopovers(false);
+  };
+
+  const userBuildPopoversClose = () => {
+    setOpenBuildPopovers(false);
+  };
+
+  const build = (availableOrder, canBuild, toTerrID) => {
+    console.log({ availableOrder, canBuild, toTerrID });
+    dispatch(
+      gameApiSliceActions.updateOrdersMeta({
+        [availableOrder]: {
+          saved: false,
+          update: {
+            type: BuildUnitMap[canBuild],
+            toTerrID,
+          },
+        },
+      }),
+    );
+    userBuildPopoversClose();
+  };
+
   const commandActions = {
+    BUILD: (command) => {
+      const [key, value] = command;
+      const { availableOrder, canBuild, toTerrID } = value.data.build;
+      console.log({
+        command,
+      });
+      const buildPopover = (
+        <WDBuildUnitButtons
+          availableOrder={availableOrder}
+          canBuild={canBuild}
+          country={userCountry}
+          toTerrID={toTerrID}
+          clickCallback={build}
+        />
+      );
+      setBuildPopovers({
+        main: buildPopover,
+      });
+      setMoveHighlight();
+      setOpenBuildPopovers(true);
+      deleteCommand(key);
+    },
+    CAPTURED: (command) => {
+      const [key, value] = command;
+      setCapturedHighlight(value.data?.country);
+      deleteCommand(key);
+    },
+    HOLD: (command) => {
+      const [key] = command;
+      setTerritoryFill(theme.palette[userCountry].main);
+      setTerritoryFillOpacity(0.9);
+      setTerritoryStrokeOpacity(2);
+      deleteCommand(key);
+    },
+    MOVE: (command) => {
+      const [key] = command;
+      setMoveHighlight();
+      deleteCommand(key);
+    },
+    REMOVE_BUILD: (command) => {
+      const [key] = command;
+      setCapturedHighlight(userCountry);
+      deleteCommand(key);
+    },
     SET_UNIT: (command) => {
       const [key, value] = command;
-      console.log({ key, value });
       const {
         componentType,
         country,
@@ -75,16 +175,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         unitType,
         unitSlotName,
       } = value.data.setUnit;
-
-      console.log({
-        componentType,
-        country,
-        iconState,
-        mappedTerritory,
-        unit,
-        unitType,
-        unitSlotName,
-      });
 
       let newUnit;
       if (country && unitType && componentType) {
@@ -119,12 +209,16 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
             switch (unitType) {
               case "Army":
                 newUnit = (
-                  <WDArmyIcon country={country} iconState={iconState} />
+                  <svg filter={theme.palette.svg.filters.dropShadows[1]}>
+                    <WDArmyIcon country={country} iconState={iconState} />
+                  </svg>
                 );
                 break;
               case "Fleet":
                 newUnit = (
-                  <WDFleetIcon country={country} iconState={iconState} />
+                  <svg filter={theme.palette.svg.filters.dropShadows[1]}>
+                    <WDFleetIcon country={country} iconState={iconState} />
+                  </svg>
                 );
                 break;
               default:
@@ -141,35 +235,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         ...{ [unitSlotName]: newUnit },
       };
       setUnits(set);
-      deleteCommand(key);
-    },
-    CAPTURED: (command) => {
-      const [key, value] = command;
-      if (value.data?.country) {
-        if (value.data.country === "none") {
-          setTerritoryFill("none");
-        } else {
-          setTerritoryFill(theme.palette[value.data.country].main);
-        }
-      } else {
-        setTerritoryFill(theme.palette[userCountry].main);
-      }
-      setTerritoryFillOpacity(0.4);
-      setTerritoryStrokeOpacity(1);
-      deleteCommand(key);
-    },
-    HOLD: (command) => {
-      const [key] = command;
-      setTerritoryFill(theme.palette[userCountry].main);
-      setTerritoryFillOpacity(0.9);
-      setTerritoryStrokeOpacity(2);
-      deleteCommand(key);
-    },
-    MOVE: (command) => {
-      const [key] = command;
-      setTerritoryFill(theme.palette[userCountry].main);
-      setTerritoryFillOpacity(0.9);
-      setTerritoryStrokeOpacity(1);
       deleteCommand(key);
     },
   };
@@ -226,23 +291,54 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         </g>
       )}
       {territoryMapData.labels &&
-        territoryMapData.labels.map(({ x, y, text, style }, i) => {
+        territoryMapData.labels.map(({ name, text, style, x, y }, i) => {
           let txt = text;
-          let id: string | undefined;
+          const id = `${territoryMapData.name}-label-${name}`;
           if (!txt) {
             txt = territoryMapData.abbr;
-            id = `${territoryMapData.name}-label-main`;
           }
           return (
-            <g className="no-pointer-events">
+            <g
+              className="no-pointer-events"
+              ref={(el) => {
+                if (el) {
+                  buildPopoverRefs.current.push(el);
+                }
+              }}
+            >
               <WDLabel
                 id={id}
+                name={name}
                 key={id || i}
                 style={style}
                 text={txt}
                 x={x}
                 y={y}
               />
+              <Popover
+                id={id}
+                open={openBuildPopovers}
+                anchorEl={buildPopoverRefs.current[i]}
+                onClose={defaultBuildPopoversClose}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "center",
+                }}
+                transformOrigin={{
+                  vertical: "bottom",
+                  horizontal: "center",
+                }}
+                PaperProps={{
+                  sx: {
+                    background: "rgba(0,0,0,.7)",
+                    borderRadius: 2,
+                    display: "flex",
+                    justifyContent: "space-evenly",
+                  },
+                }}
+              >
+                {buildPopovers[name]}
+              </Popover>
             </g>
           );
         })}
