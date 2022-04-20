@@ -7,7 +7,7 @@ import UIState from "../../../enums/UIState";
 import WDArmyIcon from "../../ui/units/WDArmyIcon";
 import WDFleetIcon from "../../ui/units/WDFleetIcon";
 
-export interface BuildData {
+interface BuildData {
   availableOrder: string;
   country: Country;
   canBuild: BuildUnit;

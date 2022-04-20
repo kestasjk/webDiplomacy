@@ -1,6 +1,6 @@
 import { Popover, useTheme } from "@mui/material";
 import * as React from "react";
-import BuildUnitMap, { BuildUnitTypeMap } from "../../../data/BuildUnit";
+import BuildUnitMap from "../../../data/BuildUnit";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
 import { TerritoryMapData } from "../../../interfaces";
 import {
@@ -14,7 +14,7 @@ import WDArmy from "../../ui/units/WDArmy";
 import WDArmyIcon from "../../ui/units/WDArmyIcon";
 import WDFleet from "../../ui/units/WDFleet";
 import WDFleetIcon from "../../ui/units/WDFleetIcon";
-import WDBuildUnitButtons, { BuildData } from "./WDBuildUnitButtons";
+import WDBuildUnitButtons from "./WDBuildUnitButtons";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
@@ -104,7 +104,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   };
 
   const build = (availableOrder, canBuild, toTerrID) => {
-    console.log({ availableOrder, canBuild, toTerrID });
     dispatch(
       gameApiSliceActions.updateOrdersMeta({
         [availableOrder]: {
@@ -123,9 +122,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     BUILD: (command) => {
       const [key, value] = command;
       const { availableOrder, canBuild, toTerrID } = value.data.build;
-      console.log({
-        command,
-      });
       const buildPopover = (
         <WDBuildUnitButtons
           availableOrder={availableOrder}

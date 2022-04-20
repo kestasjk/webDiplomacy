@@ -415,7 +415,6 @@ const gameApiSlice = createSlice({
         currentOrders
       ) {
         const territoryMeta = territoriesMeta[Territory[territoryName]];
-        console.log({ clickData, territoryMeta });
         if (territoryMeta) {
           const {
             coast: territoryCoast,
@@ -425,32 +424,18 @@ const gameApiSlice = createSlice({
             type: territoryType,
           } = territoryMeta;
 
-          console.log({
-            member,
-            countryID: member.countryID.toString(),
-          });
-
           if (member.countryID.toString() !== countryID || !supply) {
             return;
           }
 
-          console.log({
-            webDipTerritoryID,
-            ordersMeta,
-          });
-
           const existingBuildOrder = Object.entries(ordersMeta).find(
-            ([orderID, { update }]) => {
+            ([, { update }]) => {
               if (update) {
                 return update.toTerrID === webDipTerritoryID;
               }
               return false;
             },
           );
-
-          console.log({
-            existingBuildOrder,
-          });
 
           if (existingBuildOrder) {
             const [id] = existingBuildOrder;
@@ -487,11 +472,6 @@ const gameApiSlice = createSlice({
           }
 
           const territoryHasUnit = !!territoryMeta.unitID;
-
-          console.log({
-            existingBuildOrder,
-            territoryHasUnit,
-          });
 
           let availableOrder;
           for (let i = 0; i < currentOrders.length; i += 1) {
