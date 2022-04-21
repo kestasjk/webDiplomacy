@@ -140,7 +140,11 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     },
     CAPTURED: (command) => {
       const [key, value] = command;
-      setCapturedHighlight(value.data?.country);
+      if (territoryMapData.type === "water") {
+        setTerritoryFill("none");
+      } else {
+        setCapturedHighlight(value.data?.country);
+      }
       deleteCommand(key);
     },
     HOLD: (command) => {
