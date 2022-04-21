@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
 import { v4 as uuidv4 } from "uuid";
 import ApiRoute from "../../enums/ApiRoute";
-import { getGameApiRequest, submitOrders } from "../../utils/api";
+import { getGameApiRequest, QueryParams, submitOrders } from "../../utils/api";
 import GameDataResponse from "../interfaces/GameDataResponse";
 import GameErrorResponse from "../interfaces/GameErrorResponse";
 import GameOverviewResponse from "../interfaces/GameOverviewResponse";
@@ -24,6 +24,9 @@ import BuildUnit from "../../enums/BuildUnit";
 import BuildUnitMap, { BuildUnitTypeMap } from "../../data/BuildUnit";
 import UIState from "../../enums/UIState";
 import { UnitSlotNames } from "../../types/map/UnitSlotName";
+import getOrderStates from "../../utils/state/getOrderStates";
+import ContextVar from "../../interfaces/state/ContextVar";
+import drawCurrentMoveOrders from "../../utils/map/drawCurrentMoveOrders";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -55,6 +58,7 @@ interface OrderSubmission {
   orderUpdates: UpdateOrder[];
   context: string;
   contextKey: string;
+  queryParams?: QueryParams;
 }
 
 interface SavedOrder {
@@ -71,6 +75,8 @@ interface SavedOrdersConfirmation {
   orders: SavedOrder;
   statusIcon: string;
   statusText: string;
+  newContext?: ContextVar["context"];
+  newContextKey?: ContextVar["contextKey"];
 }
 
 interface DeleteCommandPayload {
@@ -106,7 +112,7 @@ export const saveOrders = createAsyncThunk(
     formData.set("orderUpdates", JSON.stringify(data.orderUpdates));
     formData.set("context", data.context);
     formData.set("contextKey", data.contextKey);
-    const response = await submitOrders(formData);
+    const response = await submitOrders(formData, data.queryParams);
     const confirmation: string = response.headers["x-json"] || "";
     const parsed: SavedOrdersConfirmation = JSON.parse(
       confirmation.substring(1, confirmation.length - 1),
@@ -269,7 +275,18 @@ const gameApiSlice = createSlice({
       state.territoriesMeta = action.payload;
     },
     processUnitClick(state, clickData) {
-      const { order } = current(state);
+      const {
+        order,
+        data: {
+          data: { contextVars },
+        },
+      } = current(state);
+      if (contextVars?.context?.orderStatus) {
+        const orderStates = getOrderStates(contextVars?.context?.orderStatus);
+        if (orderStates.Ready) {
+          return;
+        }
+      }
       const { inProgress } = order;
       if (inProgress) {
         if (order.type === "hold" && order.onTerritory !== null) {
@@ -289,7 +306,7 @@ const gameApiSlice = createSlice({
     processMapClick(state, clickData) {
       const {
         data: {
-          data: { currentOrders },
+          data: { currentOrders, contextVars },
         },
         order,
         ordersMeta,
@@ -299,6 +316,12 @@ const gameApiSlice = createSlice({
         },
         territoriesMeta,
       } = current(state);
+      if (contextVars?.context?.orderStatus) {
+        const orderStates = getOrderStates(contextVars?.context?.orderStatus);
+        if (orderStates.Ready) {
+          return;
+        }
+      }
       const {
         payload: { clickObject, evt, name: territoryName },
       } = clickData;
@@ -357,6 +380,7 @@ const gameApiSlice = createSlice({
             return Territory[mappedTerritory.territory] === territoryName;
           });
           if (canMove) {
+            console.log("can move");
             const toTerritory = Number(Territory[territoryName]);
             let command: GameCommand = {
               command: "REMOVE_ARROW",
@@ -570,7 +594,16 @@ const gameApiSlice = createSlice({
       // saveOrders
       .addCase(saveOrders.fulfilled, (state, action) => {
         if (action.payload) {
-          const { orders } = action.payload;
+          console.log({
+            payload: action.payload,
+          });
+          const { orders, newContext, newContextKey } = action.payload;
+          if (newContext && newContextKey) {
+            state.data.data.contextVars = {
+              context: newContext,
+              contextKey: newContextKey,
+            };
+          }
           Object.entries(orders).forEach(([id, value]) => {
             if (value.status === "Complete") {
               state.ordersMeta[id].saved = true;

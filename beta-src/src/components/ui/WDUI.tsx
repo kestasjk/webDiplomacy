@@ -4,7 +4,7 @@ import { Box, IconButton, Link, useTheme } from "@mui/material";
 import WDPositionContainer from "./WDPositionContainer";
 import Position from "../../enums/Position";
 import { useAppSelector } from "../../state/hooks";
-import { gameOverview } from "../../state/game/game-api-slice";
+import { gameData, gameOverview } from "../../state/game/game-api-slice";
 import { CountryTableData } from "../../interfaces";
 import Country from "../../enums/Country";
 import WDFullModal from "./WDFullModal";
@@ -19,6 +19,7 @@ import WDMoveControls from "./WDMoveControls";
 import MoveStatus from "../../types/MoveStatus";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import WDHomeIcon from "./icons/WDHomeIcon";
+import getOrderStates from "../../utils/state/getOrderStates";
 
 const abbrMap = {
   Russia: "RUS",
@@ -42,6 +43,7 @@ const WDUI: React.FC = function (): React.ReactElement {
   const theme = useTheme();
 
   const [showControlModal, setShowControlModal] = React.useState(false);
+  const [readyDisabled, setReadyDisabled] = React.useState(false);
   const popoverTrigger = React.useRef<HTMLElement>(null);
 
   const {
@@ -54,6 +56,10 @@ const WDUI: React.FC = function (): React.ReactElement {
     user,
     year,
   } = useAppSelector(gameOverview);
+
+  const {
+    data: { contextVars },
+  } = useAppSelector(gameData);
 
   const constructTableData = (member) => {
     const memberCountry: Country = countryMap[member.country];
@@ -115,6 +121,25 @@ const WDUI: React.FC = function (): React.ReactElement {
     }
   }, [popoverTrigger]);
 
+  if (contextVars?.context?.orderStatus) {
+    const orderStates = getOrderStates(contextVars.context.orderStatus);
+    if (orderStates.None) {
+      setReadyDisabled(true);
+    }
+    if (!orderStates.Ready && gameState.ready) {
+      setGameState((preState) => ({
+        ...preState,
+        [Move.READY]: false,
+      }));
+    }
+    if ((orderStates.Ready || orderStates.None) && !gameState.ready) {
+      setGameState((preState) => ({
+        ...preState,
+        [Move.READY]: true,
+      }));
+    }
+  }
+
   const popover = popoverTrigger.current ? (
     <WDPopover
       isOpen={showControlModal}
@@ -156,7 +181,11 @@ const WDUI: React.FC = function (): React.ReactElement {
         <WDPhaseUI />
       </WDPositionContainer>
       <WDPositionContainer position={Position.BOTTOM_RIGHT}>
-        <WDMoveControls gameState={gameState} toggleState={toggleState} />
+        <WDMoveControls
+          readyDisabled={readyDisabled}
+          gameState={gameState}
+          toggleState={toggleState}
+        />
       </WDPositionContainer>
     </>
   );

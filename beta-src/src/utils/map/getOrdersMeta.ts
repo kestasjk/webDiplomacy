@@ -26,7 +26,7 @@ export default function getOrdersMeta(data, phase): Props {
       });
     } else {
       const newBoard = new BoardClass(
-        JSON.parse(context),
+        context,
         Object.values(territories),
         territoryStatuses,
         Object.values(units),

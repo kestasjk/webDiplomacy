@@ -42,6 +42,7 @@ const mapOriginalHeight = 3005;
 
 const WDMapController: React.FC = function (): React.ReactElement {
   const svgElement = React.useRef<SVGSVGElement>(null);
+  // const [isLoaded, setIsLoaded] = React.useState(false);
   const [viewport] = useViewport();
   const dispatch = useAppDispatch();
   const { data } = useAppSelector(gameData);
@@ -201,6 +202,25 @@ const WDMapController: React.FC = function (): React.ReactElement {
       dispatch(gameApiSliceActions.drawBuilds());
     }
   }, [data]);
+
+  // React.useLayoutEffect(() => {
+  //   setTimeout(() => {
+
+  //   }, 250);
+  // }, []);
+
+  // const drawMoves = (iteration = 0) => {
+  //   console.log({ data, iteration });
+  //   const drew = drawCurrentMoveOrders(data);
+  //   console.log({
+  //     drew,
+  //   });
+  //   if (!drew) {
+  //     setTimeout(() => {
+  //       drawMoves(iteration + 1);
+  //     }, 250);
+  //   }
+  // };
 
   return (
     <div

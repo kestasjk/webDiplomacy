@@ -7,7 +7,6 @@ const initialState: GameState = {
     referenceCode: "",
     success: false,
     data: {
-      contextVars: { context: "", contextKey: "" },
       currentOrders: [],
       territories: {},
       territoryStatuses: [],

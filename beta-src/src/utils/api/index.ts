@@ -35,5 +35,15 @@ const orderSubmission = axios.create({
   },
 });
 
-export const submitOrders = (orders): Promise<AxiosResponse> =>
-  orderSubmission.post("/ajax.php", orders);
+export const submitOrders = (
+  orders,
+  queryParams: QueryParams = {},
+): Promise<AxiosResponse> => {
+  if (Object.keys(queryParams).length) {
+    return orderSubmission.post(
+      `/ajax.php?${buildQueryString(queryParams)}`,
+      orders,
+    );
+  }
+  return orderSubmission.post("/ajax.php", orders);
+};

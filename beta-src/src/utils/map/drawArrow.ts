@@ -11,7 +11,7 @@ export default function drawArrow(
   arrowType: ArrowType,
   receiverTerritory: Territory,
   unitTerritory: Territory,
-): void {
+): boolean {
   const d3MapSelector = d3.select("#map");
 
   const fromTerritoryName = Territory[unitTerritory];
@@ -30,6 +30,13 @@ export default function drawArrow(
   const toTerritoryEl: SVGSVGElement = d3
     .select(`#${toTerritoryName}-territory`)
     .node();
+
+  console.log({
+    unitSlotEl,
+    toTerritoryReceiver,
+    fromTerritoryEl,
+    toTerritoryEl,
+  });
 
   if (fromTerritoryEl && toTerritoryEl && toTerritoryReceiver && unitSlotEl) {
     unitSlotEl = unitSlotEl.parentNode;
@@ -103,5 +110,8 @@ export default function drawArrow(
       .attr("stroke", webDiplomacyTheme.palette.arrowColors[arrowType].main)
       .attr("stroke-width", "2")
       .attr("class", `arrow__${arrowIdentifier}`);
+
+    return true;
   }
+  return false;
 }
