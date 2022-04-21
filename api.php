@@ -1050,12 +1050,12 @@ class GetMessages extends ApiEntry {
 			)
 		);
 		
-		if ($gameID === null || is_numeric($gameID) === false)
+		if ($gameID === null || !is_numeric($gameID))
 			throw new RequestException(
 				$this->JSONResponse('A gameID is required.', '', false, ['gameID' => $gameID])
 			);
 
-		if ($countryID === null || is_numeric($countryID) === false)
+		if ($countryID === null || !is_numeric($countryID))
 			throw new RequestException(
 				$this->JSONResponse('A countryID is required.', '', false, ['countryID' => $countryID])
 			);
