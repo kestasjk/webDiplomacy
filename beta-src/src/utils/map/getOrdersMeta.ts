@@ -54,9 +54,9 @@ export default function getOrdersMeta(data, phase): Props {
         if (orderUnit) {
           allowedBorderCrossings = moveChoices.filter((choice) => {
             const { Borders } = choice;
-            const from = Borders.find((border) => {
-              return border.id === orderUnit.terrID;
-            });
+            const from = Borders.find(
+              (border) => border.id === orderUnit.terrID,
+            );
             if (from && orderUnit.canCrossBorder(from)) {
               return true;
             }

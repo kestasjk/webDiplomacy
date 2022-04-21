@@ -296,11 +296,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
           return (
             <g
               className="no-pointer-events"
-              ref={(el) => {
-                if (el) {
-                  buildPopoverRefs.current.push(el);
-                }
-              }}
+              ref={(el) => el && buildPopoverRefs.current.push(el)}
             >
               <WDLabel
                 id={id}

@@ -32,7 +32,6 @@ const BuildButton: React.FC<BuildButtonProps> = function ({
 }): React.ReactElement {
   const theme = useTheme();
   const side = 40;
-  const viewBox = `0 0 50 50`;
   return (
     <Box sx={{ margin: "10px 6px" }}>
       <Button
@@ -45,7 +44,7 @@ const BuildButton: React.FC<BuildButtonProps> = function ({
           "&:hover": { background: theme.palette.secondary.main },
         }}
       >
-        <svg viewBox={viewBox} width={side} height={side}>
+        <svg viewBox="0 0 50 50" width={side} height={side}>
           {children}
         </svg>
       </Button>

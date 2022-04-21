@@ -236,15 +236,15 @@ const drawBuilds = (state) => {
     Object.values(ordersMeta).forEach(({ update }) => {
       if (update) {
         const { toTerrID, type } = update;
-        const territoryMeta = Object.values(territoriesMeta).find(({ id }) => {
-          return id === toTerrID;
-        });
+        const territoryMeta = Object.values(territoriesMeta).find(
+          ({ id }) => id === toTerrID,
+        );
         if (territoryMeta) {
           const buildType = BuildUnitMap[type];
           const mappedTerritory = TerritoryMap[territoryMeta.name];
-          const memberCountry = members.find((member) => {
-            return member.countryID.toString() === territoryMeta.countryID;
-          });
+          const memberCountry = members.find(
+            (member) => member.countryID.toString() === territoryMeta.countryID,
+          );
           if (memberCountry) {
             let command: GameCommand = {
               command: "SET_UNIT",
@@ -362,9 +362,9 @@ const gameApiSlice = createSlice({
           };
           setCommand(state, command, "mapCommands", "all");
           if (currentOrders) {
-            const orderToUpdate = currentOrders.find((o) => {
-              return o.unitID === currOrderUnitID;
-            });
+            const orderToUpdate = currentOrders.find(
+              (o) => o.unitID === currOrderUnitID,
+            );
             if (orderToUpdate) {
               updateOrdersMeta(state, {
                 [orderToUpdate.id]: {
@@ -447,12 +447,8 @@ const gameApiSlice = createSlice({
           }
 
           const existingBuildOrder = Object.entries(ordersMeta).find(
-            ([, { update }]) => {
-              if (update) {
-                return update.toTerrID === webDipTerritoryID;
-              }
-              return false;
-            },
+            ([, { update }]) =>
+              update ? update.toTerrID === webDipTerritoryID : false,
           );
 
           if (existingBuildOrder) {
