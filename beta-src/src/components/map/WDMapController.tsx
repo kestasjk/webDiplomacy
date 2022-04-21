@@ -10,18 +10,13 @@ import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import {
   gameApiSliceActions,
   gameData,
-  gameOverview,
+  gameOrdersMeta,
 } from "../../state/game/game-api-slice";
 import drawArrow from "../../utils/map/drawArrow";
 import ArrowType from "../../enums/ArrowType";
 import drawCurrentMoveOrders from "../../utils/map/drawCurrentMoveOrders";
 import processNextCommand from "../../utils/processNextCommand";
 import getTerritoriesMeta from "../../utils/getTerritoriesMeta";
-import getUnits from "../../utils/map/getUnits";
-import { GameCommand } from "../../state/interfaces/GameCommands";
-import UnitType from "../../types/UnitType";
-import Territory from "../../enums/map/variants/classic/Territory";
-import getOrdersMeta from "../../utils/map/getOrdersMeta";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -42,11 +37,10 @@ const mapOriginalHeight = 3005;
 
 const WDMapController: React.FC = function (): React.ReactElement {
   const svgElement = React.useRef<SVGSVGElement>(null);
-  // const [isLoaded, setIsLoaded] = React.useState(false);
   const [viewport] = useViewport();
   const dispatch = useAppDispatch();
   const { data } = useAppSelector(gameData);
-  const { members, phase } = useAppSelector(gameOverview);
+  const ordersMeta = useAppSelector(gameOrdersMeta);
   const commands = useAppSelector(
     (state) => state.game.commands.mapCommands.all,
   );
@@ -160,38 +154,11 @@ const WDMapController: React.FC = function (): React.ReactElement {
     }
   }, [svgElement, viewport]);
 
-  React.useLayoutEffect(() => {
-    if (data && members) {
-      const unitsToDraw = getUnits(data, members);
-      unitsToDraw.forEach(({ country, mappedTerritory, unit }) => {
-        const command: GameCommand = {
-          command: "SET_UNIT",
-          data: {
-            setUnit: {
-              componentType: "Game",
-              country,
-              mappedTerritory,
-              unit,
-              unitType: unit.type as UnitType,
-              unitSlotName: mappedTerritory.unitSlotName,
-            },
-          },
-        };
-        dispatch(
-          gameApiSliceActions.dispatchCommand({
-            command,
-            container: "territoryCommands",
-            identifier: Territory[mappedTerritory.territory],
-          }),
-        );
-      });
-      const ordersMetaUpdates = getOrdersMeta(data, phase);
-      dispatch(gameApiSliceActions.updateOrdersMeta(ordersMetaUpdates));
-      setTimeout(() => {
-        drawCurrentMoveOrders(data);
-      });
-    }
-  }, [data, members, phase]);
+  React.useEffect(() => {
+    setTimeout(() => {
+      drawCurrentMoveOrders(data, ordersMeta);
+    }, 500);
+  }, [ordersMeta]);
 
   React.useEffect(() => {
     if (data) {
@@ -202,25 +169,6 @@ const WDMapController: React.FC = function (): React.ReactElement {
       dispatch(gameApiSliceActions.drawBuilds());
     }
   }, [data]);
-
-  // React.useLayoutEffect(() => {
-  //   setTimeout(() => {
-
-  //   }, 250);
-  // }, []);
-
-  // const drawMoves = (iteration = 0) => {
-  //   console.log({ data, iteration });
-  //   const drew = drawCurrentMoveOrders(data);
-  //   console.log({
-  //     drew,
-  //   });
-  //   if (!drew) {
-  //     setTimeout(() => {
-  //       drawMoves(iteration + 1);
-  //     }, 250);
-  //   }
-  // };
 
   return (
     <div

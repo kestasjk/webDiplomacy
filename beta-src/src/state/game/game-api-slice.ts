@@ -27,6 +27,9 @@ import { UnitSlotNames } from "../../types/map/UnitSlotName";
 import getOrderStates from "../../utils/state/getOrderStates";
 import ContextVar from "../../interfaces/state/ContextVar";
 import drawCurrentMoveOrders from "../../utils/map/drawCurrentMoveOrders";
+import getOrdersMeta from "../../utils/map/getOrdersMeta";
+import getUnits from "../../utils/map/getUnits";
+import UnitType from "../../types/UnitType";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -169,6 +172,14 @@ const setCommand = (
   state.commands[container][id] = newCommand;
 };
 
+const drawOrders = (state) => {
+  const {
+    data: { data },
+    ordersMeta,
+  } = current(state);
+  drawCurrentMoveOrders(data, ordersMeta);
+};
+
 const updateOrdersMeta = (state, updates: EditOrderMeta) => {
   Object.entries(updates).forEach(([orderID, update]) => {
     state.ordersMeta[orderID] = {
@@ -176,6 +187,7 @@ const updateOrdersMeta = (state, updates: EditOrderMeta) => {
       ...update,
     };
   });
+  drawOrders(state);
 };
 
 const highlightMapTerritoriesBasedOnStatuses = (state) => {
@@ -211,56 +223,61 @@ const drawBuilds = (state) => {
   const {
     ordersMeta,
     territoriesMeta,
-    overview: { members },
+    overview: { members, phase },
   }: {
     ordersMeta: OrdersMeta;
     territoriesMeta: TerritoriesMeta;
-    overview: { members: GameOverviewResponse["members"] };
+    overview: {
+      members: GameOverviewResponse["members"];
+      phase: GameOverviewResponse["phase"];
+    };
   } = current(state);
-  Object.values(ordersMeta).forEach(({ update }) => {
-    if (update) {
-      const { toTerrID, type } = update;
-      const territoryMeta = Object.values(territoriesMeta).find(({ id }) => {
-        return id === toTerrID;
-      });
-      if (territoryMeta) {
-        const buildType = BuildUnitMap[type];
-        const mappedTerritory = TerritoryMap[territoryMeta.name];
-        const memberCountry = members.find((member) => {
-          return member.countryID.toString() === territoryMeta.countryID;
+  if (phase === "Builds") {
+    Object.values(ordersMeta).forEach(({ update }) => {
+      if (update) {
+        const { toTerrID, type } = update;
+        const territoryMeta = Object.values(territoriesMeta).find(({ id }) => {
+          return id === toTerrID;
         });
-        if (memberCountry) {
-          let command: GameCommand = {
-            command: "SET_UNIT",
-            data: {
-              setUnit: {
-                componentType: "Icon",
-                country: countryMap[memberCountry?.country],
-                iconState: UIState.BUILD,
-                unitSlotName: mappedTerritory.unitSlotName,
-                unitType: BuildUnitTypeMap[buildType],
+        if (territoryMeta) {
+          const buildType = BuildUnitMap[type];
+          const mappedTerritory = TerritoryMap[territoryMeta.name];
+          const memberCountry = members.find((member) => {
+            return member.countryID.toString() === territoryMeta.countryID;
+          });
+          if (memberCountry) {
+            let command: GameCommand = {
+              command: "SET_UNIT",
+              data: {
+                setUnit: {
+                  componentType: "Icon",
+                  country: countryMap[memberCountry?.country],
+                  iconState: UIState.BUILD,
+                  unitSlotName: mappedTerritory.unitSlotName,
+                  unitType: BuildUnitTypeMap[buildType],
+                },
               },
-            },
-          };
-          setCommand(
-            state,
-            command,
-            "territoryCommands",
-            Territory[territoryMeta.territory],
-          );
-          command = {
-            command: "MOVE",
-          };
-          setCommand(
-            state,
-            command,
-            "territoryCommands",
-            Territory[territoryMeta.territory],
-          );
+            };
+            setCommand(
+              state,
+              command,
+              "territoryCommands",
+              Territory[territoryMeta.territory],
+            );
+            command = {
+              command: "MOVE",
+            };
+            setCommand(
+              state,
+              command,
+              "territoryCommands",
+              Territory[territoryMeta.territory],
+            );
+          }
         }
       }
-    }
-  });
+    });
+  }
 };
 
 const gameApiSlice = createSlice({
@@ -380,33 +397,11 @@ const gameApiSlice = createSlice({
             return Territory[mappedTerritory.territory] === territoryName;
           });
           if (canMove) {
-            console.log("can move");
-            const toTerritory = Number(Territory[territoryName]);
-            let command: GameCommand = {
-              command: "REMOVE_ARROW",
-              data: {
-                orderID: order.orderID,
-              },
-            };
             highlightMapTerritoriesBasedOnStatuses(state);
-            setCommand(state, command, "mapCommands", "all");
-            command = {
-              command: "DRAW_ARROW",
-              data: {
-                orderID: order.orderID,
-                arrow: {
-                  from: order.onTerritory,
-                  to: toTerritory,
-                  type: "move",
-                },
-              },
-            };
-            setCommand(state, command, "mapCommands", "all");
-            command = {
+            const command: GameCommand = {
               command: "MOVE",
             };
             setCommand(state, command, "territoryCommands", territoryName);
-            const update: EditOrderMeta = {};
             updateOrdersMeta(state, {
               [order.orderID]: {
                 saved: false,
@@ -417,8 +412,7 @@ const gameApiSlice = createSlice({
                 },
               },
             });
-            updateOrdersMeta(state, update);
-            state.order.toTerritory = toTerritory;
+            state.order.toTerritory = TerritoryMap[canMove.name].territory;
             state.order.type = "move";
           } else {
             const command: GameCommand = {
@@ -562,6 +556,34 @@ const gameApiSlice = createSlice({
       .addCase(fetchGameData.fulfilled, (state, action) => {
         state.apiStatus = "succeeded";
         state.data = action.payload;
+        const {
+          data: { data },
+          overview: { members, phase },
+        } = current(state);
+        const unitsToDraw = getUnits(data, members);
+        unitsToDraw.forEach(({ country, mappedTerritory, unit }) => {
+          const command: GameCommand = {
+            command: "SET_UNIT",
+            data: {
+              setUnit: {
+                componentType: "Game",
+                country,
+                mappedTerritory,
+                unit,
+                unitType: unit.type as UnitType,
+                unitSlotName: mappedTerritory.unitSlotName,
+              },
+            },
+          };
+          setCommand(
+            state,
+            command,
+            "territoryCommands",
+            Territory[mappedTerritory.territory],
+          );
+        });
+
+        updateOrdersMeta(state, getOrdersMeta(data, phase));
       })
       .addCase(fetchGameData.rejected, (state, action) => {
         state.apiStatus = "failed";
@@ -594,9 +616,6 @@ const gameApiSlice = createSlice({
       // saveOrders
       .addCase(saveOrders.fulfilled, (state, action) => {
         if (action.payload) {
-          console.log({
-            payload: action.payload,
-          });
           const { orders, newContext, newContextKey } = action.payload;
           if (newContext && newContextKey) {
             state.data.data.contextVars = {

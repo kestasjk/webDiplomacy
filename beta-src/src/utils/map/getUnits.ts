@@ -18,27 +18,25 @@ export default function getUnits(
   members: GameOverviewResponse["members"],
 ): Unit[] {
   const unitsToDraw: Unit[] = [];
-  if (data && members && "units" in data && "territories" in data) {
-    const { territories, units } = data;
-    Object.values(units).forEach((unit) => {
-      const territory = territories[unit.terrID];
-      if (territory) {
-        const mappedTerritory = TerritoryMap[territory.name];
-        if (mappedTerritory) {
-          const memberCountry = members.find((member) => {
-            return member.countryID.toString() === unit.countryID;
+  const { territories, units } = data;
+  Object.values(units).forEach((unit) => {
+    const territory = territories[unit.terrID];
+    if (territory) {
+      const mappedTerritory = TerritoryMap[territory.name];
+      if (mappedTerritory) {
+        const memberCountry = members.find((member) => {
+          return member.countryID.toString() === unit.countryID;
+        });
+        if (memberCountry) {
+          const { country } = memberCountry;
+          unitsToDraw.push({
+            country: countryMap[country],
+            mappedTerritory,
+            unit,
           });
-          if (memberCountry) {
-            const { country } = memberCountry;
-            unitsToDraw.push({
-              country: countryMap[country],
-              mappedTerritory,
-              unit,
-            });
-          }
         }
       }
-    });
-  }
+    }
+  });
   return unitsToDraw;
 }

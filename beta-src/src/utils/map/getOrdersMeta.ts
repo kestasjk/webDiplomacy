@@ -11,9 +11,8 @@ export default function getOrdersMeta(data, phase): Props {
   const { contextVars, currentOrders, territories, territoryStatuses, units } =
     data;
 
-  const { context } = contextVars;
   const updateOrdersMeta = {};
-  if (context) {
+  if (contextVars?.context) {
     if (phase === "Builds") {
       currentOrders.forEach(({ id, toTerrID, type }) => {
         updateOrdersMeta[id] = {
@@ -26,7 +25,7 @@ export default function getOrdersMeta(data, phase): Props {
       });
     } else {
       const newBoard = new BoardClass(
-        context,
+        contextVars.context,
         Object.values(territories),
         territoryStatuses,
         Object.values(units),
@@ -35,9 +34,16 @@ export default function getOrdersMeta(data, phase): Props {
       const newOrders: OrderClass[] = [];
 
       currentOrders.forEach((o) => {
-        const orderUnit = newBoard.findUnitByID(o.unitID);
+        const { id, unitID, type, toTerrID } = o;
+        const orderUnit = newBoard.findUnitByID(unitID);
         if (orderUnit) {
           newOrders.push(new OrderClass(newBoard, o, orderUnit));
+          updateOrdersMeta[id] = {
+            update: {
+              type,
+              toTerrID,
+            },
+          };
         }
       });
 
@@ -57,7 +63,8 @@ export default function getOrdersMeta(data, phase): Props {
             return false;
           });
           updateOrdersMeta[o.orderData.id] = {
-            allowedBorderCrossings,
+            ...updateOrdersMeta[o.orderData.id],
+            ...{ allowedBorderCrossings },
           };
         }
       });
