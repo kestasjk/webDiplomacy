@@ -33,8 +33,6 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
   if (!order.type) {
     if (order.unitID === meta.unit.id) {
       setIconState(UIState.SELECTED);
-    } else {
-      setIconState(UIState.NONE);
     }
   }
 
