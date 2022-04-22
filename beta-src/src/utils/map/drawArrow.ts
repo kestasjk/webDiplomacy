@@ -11,7 +11,7 @@ export default function drawArrow(
   arrowType: ArrowType,
   receiverTerritory: Territory,
   unitTerritory: Territory,
-): boolean {
+): void {
   const d3MapSelector = d3.select("#map");
 
   const fromTerritoryName = Territory[unitTerritory];
@@ -109,8 +109,5 @@ export default function drawArrow(
       .attr("stroke", webDiplomacyTheme.palette.arrowColors[arrowType].main)
       .attr("stroke-width", "2")
       .attr("class", arrowClass);
-
-    return true;
   }
-  return false;
 }
