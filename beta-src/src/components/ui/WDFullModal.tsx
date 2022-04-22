@@ -18,6 +18,7 @@ interface WDFullModalProps {
   children: React.ReactNode;
   countries: CountryTableData[];
   excusedMissedTurns: GameOverviewResponse["excusedMissedTurns"];
+  phase: GameOverviewResponse["phase"];
   potNumber: GameOverviewResponse["pot"];
   season: GameOverviewResponse["season"];
   title: GameOverviewResponse["name"];
@@ -32,6 +33,7 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
   children,
   countries,
   excusedMissedTurns,
+  phase,
   potNumber,
   season,
   title,
@@ -67,6 +69,7 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
           >
             <WDInfoDisplay
               alternatives={alternatives}
+              phase={phase}
               potNumber={potNumber}
               season={season}
               title={title}
