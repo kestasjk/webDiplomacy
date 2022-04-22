@@ -15,8 +15,10 @@ export const ValidCommands = [
   "HOLD",
   "INVALID_CLICK",
   "MOVE",
+  "NONE",
   "REMOVE_ARROW",
   "REMOVE_BUILD",
+  "SELECTED",
   "SET_UNIT",
 ] as const;
 

@@ -63,6 +63,7 @@ export default function getOrdersMeta(data, phase): Props {
             return false;
           });
           updateOrdersMeta[o.orderData.id] = {
+            ...{ saved: true },
             ...updateOrdersMeta[o.orderData.id],
             ...{ allowedBorderCrossings },
           };

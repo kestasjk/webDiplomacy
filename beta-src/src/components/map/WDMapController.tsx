@@ -141,16 +141,6 @@ const WDMapController: React.FC = function (): React.ReactElement {
         .call(d3Zoom)
         .call(d3Zoom.transform, d3.zoomIdentity.translate(x, y).scale(scale))
         .on("dblclick.zoom", null);
-
-      if ("currentOrders" in data && data.currentOrders) {
-        const ordersMetaUpdates = {};
-        Object.values(data.currentOrders).forEach((order) => {
-          ordersMetaUpdates[order.id] = {
-            saved: true,
-          };
-        });
-        dispatch(gameApiSliceActions.updateOrdersMeta(ordersMetaUpdates));
-      }
     }
   }, [svgElement, viewport]);
 

@@ -131,7 +131,29 @@ export const saveOrders = createAsyncThunk(
  */
 
 /* eslint-disable no-param-reassign */
+const setCommand = (
+  state,
+  command: GameCommand,
+  container: GameCommandType,
+  id: string,
+) => {
+  const { commands } = current(state);
+  const commandsContainer = commands[container];
+  const newCommand = new Map(commandsContainer[id]) || new Map();
+  newCommand.set(uuidv4(), command);
+  state.commands[container][id] = newCommand;
+};
+
 const resetOrder = (state) => {
+  const {
+    order: { unitID, type },
+  } = current(state);
+  if (type !== "hold") {
+    const command: GameCommand = {
+      command: "NONE",
+    };
+    setCommand(state, command, "unitCommands", unitID);
+  }
   state.order.inProgress = false;
   state.order.unitID = "";
   state.order.orderID = "";
@@ -157,19 +179,10 @@ const startNewOrder = (
   state.order.onTerritory = onTerritory;
   state.order.toTerritory = null;
   delete state.order.type;
-};
-
-const setCommand = (
-  state,
-  command: GameCommand,
-  container: GameCommandType,
-  id: string,
-) => {
-  const { commands } = current(state);
-  const commandsContainer = commands[container];
-  const newCommand = new Map(commandsContainer[id]) || new Map();
-  newCommand.set(uuidv4(), command);
-  state.commands[container][id] = newCommand;
+  const command: GameCommand = {
+    command: "SELECTED",
+  };
+  setCommand(state, command, "unitCommands", unitID);
 };
 
 const drawOrders = (state) => {
