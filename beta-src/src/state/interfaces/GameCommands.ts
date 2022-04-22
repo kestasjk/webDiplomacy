@@ -1,5 +1,26 @@
+import { ITerritory } from "../../data/map/variants/classic/TerritoryMap";
+import BuildUnit from "../../enums/BuildUnit";
 import Country from "../../enums/Country";
 import Territory from "../../enums/map/variants/classic/Territory";
+import UIState from "../../enums/UIState";
+import { IUnit } from "../../models/Interfaces";
+import UnitSlotName from "../../types/map/UnitSlotName";
+import UnitType from "../../types/UnitType";
+import GetArrayElementType from "../../utils/getArrayElementType";
+
+export const ValidCommands = [
+  "BUILD",
+  "CAPTURED",
+  "DRAW_ARROW",
+  "HOLD",
+  "INVALID_CLICK",
+  "MOVE",
+  "NONE",
+  "REMOVE_ARROW",
+  "REMOVE_BUILD",
+  "SELECTED",
+  "SET_UNIT",
+] as const;
 
 interface DrawArrowCommand {
   from: Territory;
@@ -11,27 +32,39 @@ interface ClickCommand {
   evt: unknown;
   territoryName: string;
 }
-type GetArrayElementType<T extends readonly string[]> =
-  T extends readonly (infer U)[] ? U : never;
 
-export const ValidCommands = [
-  "CAPTURED",
-  "DRAW_ARROW",
-  "HOLD",
-  "INVALID_CLICK",
-  "MOVE",
-  "REMOVE_ARROW",
-] as const;
+interface BuildCommand {
+  availableOrder: string;
+  canBuild: BuildUnit;
+  toTerrID: string;
+}
+
+interface RemoveBuild {
+  orderID: string;
+}
+
+interface SetUnitCommand {
+  componentType?: "Game" | "Icon";
+  country?: Country;
+  iconState?: UIState;
+  mappedTerritory?: ITerritory;
+  unit?: IUnit;
+  unitType?: UnitType;
+  unitSlotName: UnitSlotName;
+}
 
 export type Command = GetArrayElementType<typeof ValidCommands>;
 
 export interface GameCommand {
   command: Command;
   data?: {
-    click?: ClickCommand;
-    orderID?: string;
-    country?: keyof Country | "none";
     arrow?: DrawArrowCommand;
+    build?: BuildCommand;
+    click?: ClickCommand;
+    country?: keyof Country | "none";
+    orderID?: string;
+    removeBuild?: RemoveBuild;
+    setUnit?: SetUnitCommand;
   };
 }
 

@@ -36,7 +36,6 @@
     "build:test": "env-cmd -f .env.test npm run build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "svgr": "svgr -d src/components/svgr-components --typescript --ignore-existing src/assets/svg-svgr",
     "prepare": "cd .. && husky install beta-src/.husky"
   },
   "eslintConfig": {

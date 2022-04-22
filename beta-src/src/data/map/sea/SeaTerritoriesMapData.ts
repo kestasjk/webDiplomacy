@@ -13,6 +13,7 @@ export const ADRIATIC_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   fill: "none",
   labels: [
     {
+      name: "main",
       x: 100,
       y: 156,
     },
@@ -43,6 +44,7 @@ export const AEGEAN_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   fill: "none",
   labels: [
     {
+      name: "main",
       x: 100,
       y: 156,
     },
@@ -73,6 +75,7 @@ export const BALTIC_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   fill: "none",
   labels: [
     {
+      name: "main",
       x: 241,
       y: 120,
     },
@@ -103,6 +106,7 @@ export const BARENTS_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   fill: "none",
   labels: [
     {
+      name: "main",
       x: 270,
       y: 320,
     },
@@ -133,6 +137,7 @@ export const BLACK_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   fill: "none",
   labels: [
     {
+      name: "main",
       x: 230,
       y: 239,
     },
@@ -177,6 +182,7 @@ export const EASTERN_MEDITERRANEAN: TerritoryMapData =
     fill: "none",
     labels: [
       {
+        name: "main",
         x: 256,
         y: 124,
       },
@@ -207,6 +213,7 @@ export const ENGLISH_CHANNEL: TerritoryMapData = new TerritoryMapDataGenerator({
   fill: "none",
   labels: [
     {
+      name: "main",
       x: 232,
       y: 52,
     },
@@ -237,6 +244,7 @@ export const GULF_OF_BOTHNIA: TerritoryMapData = new TerritoryMapDataGenerator({
   fill: "none",
   labels: [
     {
+      name: "main",
       x: 92,
       y: 340,
     },
@@ -267,6 +275,7 @@ export const GULF_OF_LYONS: TerritoryMapData = new TerritoryMapDataGenerator({
   fill: "none",
   labels: [
     {
+      name: "main",
       x: 225,
       y: 110,
     },
@@ -297,6 +306,7 @@ export const HELIGOLAND_BIGHT: TerritoryMapData = new TerritoryMapDataGenerator(
     },
     labels: [
       {
+        name: "main",
         x: 45,
         y: 75,
       },
@@ -328,6 +338,7 @@ export const IONIAN_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   fill: "none",
   labels: [
     {
+      name: "main",
       x: 310,
       y: 200,
     },
@@ -358,6 +369,7 @@ export const IRISH_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   fill: "none",
   labels: [
     {
+      name: "main",
       x: 105,
       y: 190,
     },
@@ -388,6 +400,7 @@ export const MIDDLE_ATLANTIC: TerritoryMapData = new TerritoryMapDataGenerator({
   fill: "none",
   labels: [
     {
+      name: "main",
       x: 343,
       y: 200,
     },
@@ -418,6 +431,7 @@ export const NORTH_ATLANTIC: TerritoryMapData = new TerritoryMapDataGenerator({
   fill: "none",
   labels: [
     {
+      name: "main",
       x: 428,
       y: 487,
     },
@@ -461,6 +475,7 @@ export const NORTH_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   fill: "none",
   labels: [
     {
+      name: "main",
       x: 136,
       y: 229,
     },
@@ -491,6 +506,7 @@ export const NORWEGIAN_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   fill: "none",
   labels: [
     {
+      name: "main",
       x: 500,
       y: 230,
     },
@@ -521,6 +537,7 @@ export const SKAGERRACK: TerritoryMapData = new TerritoryMapDataGenerator({
   fill: "none",
   labels: [
     {
+      name: "main",
       x: 43,
       y: 60,
     },
@@ -564,6 +581,7 @@ export const TYRRHENIAN_SEA: TerritoryMapData = new TerritoryMapDataGenerator({
   fill: "none",
   labels: [
     {
+      name: "main",
       x: 136,
       y: 190,
     },
@@ -712,6 +730,7 @@ export const WESTERN_MEDITERRANEAN: TerritoryMapData =
     fill: "none",
     labels: [
       {
+        name: "main",
         x: 390,
         y: 90,
       },

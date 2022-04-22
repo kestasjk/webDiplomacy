@@ -31,7 +31,10 @@
     "jest/prefer-to-have-length": "warn",
     "jest/valid-expect": "error",
     "react/jsx-filename-extension": ["warn", { "extensions": [".tsx"] }],
-    "no-unused-expressions": ["error", { "allowShortCircuit": true }],
+    "no-unused-expressions": [
+      "error",
+      { "allowShortCircuit": true, "allowTernary": true }
+    ],
     "no-use-before-define": "off",
     "no-shadow": "off"
   },

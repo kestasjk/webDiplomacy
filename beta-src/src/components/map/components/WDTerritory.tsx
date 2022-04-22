@@ -1,5 +1,6 @@
-import { useTheme } from "@mui/material";
+import { Popover, useTheme } from "@mui/material";
 import * as React from "react";
+import BuildUnitMap from "../../../data/BuildUnit";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
 import { TerritoryMapData } from "../../../interfaces";
 import {
@@ -9,12 +10,25 @@ import {
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import ClickObjectType from "../../../types/state/ClickObjectType";
 import processNextCommand from "../../../utils/processNextCommand";
+import WDArmy from "../../ui/units/WDArmy";
+import WDArmyIcon from "../../ui/units/WDArmyIcon";
+import WDFleet from "../../ui/units/WDFleet";
+import WDFleetIcon from "../../ui/units/WDFleetIcon";
+import WDBuildUnitButtons from "./WDBuildUnitButtons";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
 
 interface WDTerritoryProps {
   territoryMapData: TerritoryMapData;
+}
+
+interface Units {
+  [key: string]: React.ReactElement;
+}
+
+interface BuildPopovers {
+  [key: string]: React.ReactElement;
 }
 
 const WDTerritory: React.FC<WDTerritoryProps> = function ({
@@ -32,6 +46,14 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   >(undefined);
 
   const [territoryStrokeOpacity, setTerritoryStrokeOpacity] = React.useState(1);
+
+  const buildPopoverRefs = React.useRef<SVGElement[]>([]);
+
+  const [buildPopovers, setBuildPopovers] = React.useState<BuildPopovers>({});
+
+  const [openBuildPopovers, setOpenBuildPopovers] = React.useState(false);
+
+  const [units, setUnits] = React.useState<Units>({});
 
   const commands = useAppSelector(
     (state) => state.game.commands.territoryCommands[territoryMapData.name],
@@ -52,20 +74,73 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     );
   };
 
+  const setMoveHighlight = () => {
+    setTerritoryFill(theme.palette[userCountry].main);
+    setTerritoryFillOpacity(0.9);
+    setTerritoryStrokeOpacity(1);
+  };
+
+  const setCapturedHighlight = (country) => {
+    if (country) {
+      country === "none"
+        ? setTerritoryFill("none")
+        : setTerritoryFill(theme.palette[country].main);
+    } else {
+      setTerritoryFill(theme.palette[userCountry].main);
+    }
+    setTerritoryFillOpacity(0.4);
+    setTerritoryStrokeOpacity(1);
+  };
+
+  const defaultBuildPopoversClose = () => {
+    setCapturedHighlight(undefined);
+    setOpenBuildPopovers(false);
+  };
+
+  const userBuildPopoversClose = () => {
+    setOpenBuildPopovers(false);
+  };
+
+  const build = (availableOrder, canBuild, toTerrID) => {
+    dispatch(
+      gameApiSliceActions.updateOrdersMeta({
+        [availableOrder]: {
+          saved: false,
+          update: {
+            type: BuildUnitMap[canBuild],
+            toTerrID,
+          },
+        },
+      }),
+    );
+    userBuildPopoversClose();
+  };
+
   const commandActions = {
+    BUILD: (command) => {
+      const [key, value] = command;
+      const { availableOrder, canBuild, toTerrID } = value.data.build;
+      const buildPopover = (
+        <WDBuildUnitButtons
+          availableOrder={availableOrder}
+          canBuild={canBuild}
+          country={userCountry}
+          toTerrID={toTerrID}
+          clickCallback={build}
+        />
+      );
+      setBuildPopovers({
+        main: buildPopover,
+      });
+      setMoveHighlight();
+      setOpenBuildPopovers(true);
+      deleteCommand(key);
+    },
     CAPTURED: (command) => {
       const [key, value] = command;
-      if (value.data?.country) {
-        if (value.data.country === "none") {
-          setTerritoryFill("none");
-        } else {
-          setTerritoryFill(theme.palette[value.data.country].main);
-        }
-      } else {
-        setTerritoryFill(theme.palette[userCountry].main);
-      }
-      setTerritoryFillOpacity(0.4);
-      setTerritoryStrokeOpacity(1);
+      territoryMapData.type === "water"
+        ? setTerritoryFill("none")
+        : setCapturedHighlight(value.data?.country);
       deleteCommand(key);
     },
     HOLD: (command) => {
@@ -77,9 +152,85 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     },
     MOVE: (command) => {
       const [key] = command;
-      setTerritoryFill(theme.palette[userCountry].main);
-      setTerritoryFillOpacity(0.9);
-      setTerritoryStrokeOpacity(1);
+      setMoveHighlight();
+      deleteCommand(key);
+    },
+    REMOVE_BUILD: (command) => {
+      const [key] = command;
+      setCapturedHighlight(userCountry);
+      deleteCommand(key);
+    },
+    SET_UNIT: (command) => {
+      const [key, value] = command;
+      const {
+        componentType,
+        country,
+        iconState,
+        mappedTerritory,
+        unit,
+        unitType,
+        unitSlotName,
+      } = value.data.setUnit;
+
+      let newUnit;
+      if (country && unitType && componentType) {
+        switch (componentType) {
+          case "Game":
+            if (unit) {
+              switch (unitType) {
+                case "Army":
+                  newUnit = (
+                    <WDArmy
+                      id={`${territoryMapData.name}-unit`}
+                      country={country}
+                      meta={{ country, mappedTerritory, unit }}
+                    />
+                  );
+                  break;
+                case "Fleet":
+                  newUnit = (
+                    <WDFleet
+                      id={`${territoryMapData.name}-unit`}
+                      country={country}
+                      meta={{ country, mappedTerritory, unit }}
+                    />
+                  );
+                  break;
+                default:
+                  break;
+              }
+            }
+            break;
+          case "Icon":
+            switch (unitType) {
+              case "Army":
+                newUnit = (
+                  <svg filter={theme.palette.svg.filters.dropShadows[1]}>
+                    <WDArmyIcon country={country} iconState={iconState} />
+                  </svg>
+                );
+                break;
+              case "Fleet":
+                newUnit = (
+                  <svg filter={theme.palette.svg.filters.dropShadows[1]}>
+                    <WDFleetIcon country={country} iconState={iconState} />
+                  </svg>
+                );
+                break;
+              default:
+                break;
+            }
+            break;
+          default:
+            break;
+        }
+      }
+
+      const set = {
+        ...units,
+        ...{ [unitSlotName]: newUnit },
+      };
+      setUnits(set);
       deleteCommand(key);
     },
   };
@@ -136,35 +287,64 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         </g>
       )}
       {territoryMapData.labels &&
-        territoryMapData.labels.map(({ x, y, text, style }, i) => {
+        territoryMapData.labels.map(({ name, text, style, x, y }, i) => {
           let txt = text;
-          let id: string | undefined;
+          const id = `${territoryMapData.name}-label-${name}`;
           if (!txt) {
             txt = territoryMapData.abbr;
-            id = `${territoryMapData.name}-label-main`;
           }
           return (
-            <g className="no-pointer-events">
+            <g
+              className="no-pointer-events"
+              ref={(el) => el && buildPopoverRefs.current.push(el)}
+            >
               <WDLabel
                 id={id}
+                name={name}
                 key={id || i}
                 style={style}
                 text={txt}
                 x={x}
                 y={y}
               />
+              <Popover
+                id={id}
+                open={openBuildPopovers}
+                anchorEl={buildPopoverRefs.current[i]}
+                onClose={defaultBuildPopoversClose}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "center",
+                }}
+                transformOrigin={{
+                  vertical: "bottom",
+                  horizontal: "center",
+                }}
+                PaperProps={{
+                  sx: {
+                    background: "rgba(0,0,0,.7)",
+                    borderRadius: 2,
+                    display: "flex",
+                    justifyContent: "space-evenly",
+                  },
+                }}
+              >
+                {buildPopovers[name]}
+              </Popover>
             </g>
           );
         })}
       {territoryMapData.unitSlots &&
-        territoryMapData.unitSlots.map((unitSlot) => (
+        territoryMapData.unitSlots.map(({ name, x, y }) => (
           <WDUnitSlot
-            key={unitSlot.name}
-            name={unitSlot.name}
+            key={name}
+            name={name}
             territoryName={territoryMapData.name}
-            x={unitSlot.x}
-            y={unitSlot.y}
-          />
+            x={x}
+            y={y}
+          >
+            {units[name]}
+          </WDUnitSlot>
         ))}
       {territoryMapData.arrowReceiver && (
         <rect

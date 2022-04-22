@@ -593,7 +593,7 @@ class GetGameData extends ApiEntry {
 
 	private function getContextVars(){
 		return [
-			'context' => $this->contextVars['context'],
+			'context' => json_decode($this->contextVars['context']),
 			'contextKey' => $this->contextVars['contextKey'],
 		];
 	}

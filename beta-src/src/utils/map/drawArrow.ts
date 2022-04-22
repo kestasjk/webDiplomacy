@@ -92,6 +92,12 @@ export default function drawArrow(
       y1 += h;
     }
 
+    const arrowClass = `arrow__${arrowIdentifier}`;
+
+    if (arrowType === ArrowType.MOVE) {
+      d3.selectAll(`.${arrowClass}`).remove();
+    }
+
     d3MapSelector
       .select("#container")
       .append("line")
@@ -102,6 +108,6 @@ export default function drawArrow(
       .attr("marker-end", `url(#arrowHead__${arrowType})`)
       .attr("stroke", webDiplomacyTheme.palette.arrowColors[arrowType].main)
       .attr("stroke-width", "2")
-      .attr("class", `arrow__${arrowIdentifier}`);
+      .attr("class", arrowClass);
   }
 }

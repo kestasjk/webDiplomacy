@@ -1,17 +1,13 @@
 import * as React from "react";
-import { gameIconProps } from "../../interfaces/Icons";
+import { GameIconProps } from "../../interfaces/Icons";
 import UIState from "../../enums/UIState";
 import debounce from "../../utils/debounce";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
-import {
-  gameApiSliceActions,
-  gameData,
-  gameOrder,
-} from "../../state/game/game-api-slice";
+import { gameApiSliceActions, gameData } from "../../state/game/game-api-slice";
 import processNextCommand from "../../utils/processNextCommand";
 
 interface UnitControllerProps {
-  meta: gameIconProps["meta"];
+  meta: GameIconProps["meta"];
   setIconState: React.Dispatch<UIState>;
 }
 
@@ -28,27 +24,31 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
 
   const { data } = useAppSelector(gameData);
 
-  const order = useAppSelector(gameOrder);
-
-  if (!order.type) {
-    if (order.unitID === meta.unit.id) {
-      setIconState(UIState.SELECTED);
-    } else {
-      setIconState(UIState.NONE);
-    }
-  }
+  const deleteCommand = (key) => {
+    dispatch(
+      gameApiSliceActions.deleteCommand({
+        type: "unitCommands",
+        id: meta.unit.id,
+        command: key,
+      }),
+    );
+  };
 
   const commandActions = {
     HOLD: (command) => {
       const [key] = command;
       setIconState(UIState.HOLD);
-      dispatch(
-        gameApiSliceActions.deleteCommand({
-          type: "unitCommands",
-          id: meta.unit.id,
-          command: key,
-        }),
-      );
+      deleteCommand(key);
+    },
+    NONE: (command) => {
+      const [key] = command;
+      setIconState(UIState.NONE);
+      deleteCommand(key);
+    },
+    SELECTED: (command) => {
+      const [key] = command;
+      setIconState(UIState.SELECTED);
+      deleteCommand(key);
     },
   };
 

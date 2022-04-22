@@ -6,10 +6,6 @@ import {
   IOrderData,
 } from "../../models/Interfaces";
 
-interface InvalidCountryID {
-  countryID: number;
-}
-
 export interface APITerritories {
   [key: string]: ITerritory;
 }
@@ -28,7 +24,7 @@ interface GameDataResponse {
   msg: string;
   referenceCode: string;
   success: boolean;
-  data: GameData | InvalidCountryID;
+  data: GameData;
 }
 
 export default GameDataResponse;
