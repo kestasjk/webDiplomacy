@@ -82,11 +82,9 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
 
   const setCapturedHighlight = (country) => {
     if (country) {
-      if (country === "none") {
-        setTerritoryFill("none");
-      } else {
-        setTerritoryFill(theme.palette[country].main);
-      }
+      country === "none"
+        ? setTerritoryFill("none")
+        : setTerritoryFill(theme.palette[country].main);
     } else {
       setTerritoryFill(theme.palette[userCountry].main);
     }
@@ -140,11 +138,9 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     },
     CAPTURED: (command) => {
       const [key, value] = command;
-      if (territoryMapData.type === "water") {
-        setTerritoryFill("none");
-      } else {
-        setCapturedHighlight(value.data?.country);
-      }
+      territoryMapData.type === "water"
+        ? setTerritoryFill("none")
+        : setCapturedHighlight(value.data?.country);
       deleteCommand(key);
     },
     HOLD: (command) => {

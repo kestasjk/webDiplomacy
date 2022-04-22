@@ -24,9 +24,9 @@ export default function getUnits(
     if (territory) {
       const mappedTerritory = TerritoryMap[territory.name];
       if (mappedTerritory) {
-        const memberCountry = members.find((member) => {
-          return member.countryID.toString() === unit.countryID;
-        });
+        const memberCountry = members.find(
+          (member) => member.countryID.toString() === unit.countryID,
+        );
         if (memberCountry) {
           const { country } = memberCountry;
           unitsToDraw.push({

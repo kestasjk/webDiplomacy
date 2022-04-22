@@ -26,8 +26,7 @@ export default function drawCurrentMoveOrders(
             const toTerrDetails = territories[toTerrID];
             const fromTerr = TerritoryMap[onTerrDetails.name].territory;
             const toTerr = TerritoryMap[toTerrDetails.name].territory;
-            const arrowIdentifier = `${id}`;
-            drawArrow(arrowIdentifier, ArrowType.MOVE, toTerr, fromTerr);
+            drawArrow(id, ArrowType.MOVE, toTerr, fromTerr);
           }
         }
       }
