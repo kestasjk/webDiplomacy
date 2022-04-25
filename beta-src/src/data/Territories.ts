@@ -398,6 +398,18 @@ export const SAINT_PETERSBURG: Territory = {
   type: "land",
 };
 
+export const SAINT_PETERSBURG_NORTH_COAST: Territory = {
+  name: "SAINT_PETERSBURG_NORTH_COAST",
+  abbr: "NC",
+  type: "land",
+};
+
+export const SAINT_PETERSBURG_SOUTH_COAST: Territory = {
+  name: "SAINT_PETERSBURG_SOUTH_COAST",
+  abbr: "SC",
+  type: "land",
+};
+
 export const SERBIA: Territory = {
   name: "SERBIA",
   abbr: "SER",
@@ -694,6 +706,8 @@ const Territories: TerritoryData = {
   [TerritoryEnum.RUMANIA]: RUMANIA,
   [TerritoryEnum.SILESIA]: SILESIA,
   [TerritoryEnum.SAINT_PETERSBURG]: SAINT_PETERSBURG,
+  [TerritoryEnum.SAINT_PETERSBURG_NORTH_COAST]: SAINT_PETERSBURG_NORTH_COAST,
+  [TerritoryEnum.SAINT_PETERSBURG_SOUTH_COAST]: SAINT_PETERSBURG_SOUTH_COAST,
   [TerritoryEnum.SERBIA]: SERBIA,
   [TerritoryEnum.SEVASTOPOL]: SEVASTOPOL,
   [TerritoryEnum.SKAGERRACK]: SKAGERRACK,

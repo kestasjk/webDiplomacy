@@ -37,6 +37,7 @@ interface BuildCommand {
   availableOrder: string;
   canBuild: BuildUnit;
   toTerrID: string;
+  unitSlotName: UnitSlotName;
 }
 
 interface RemoveBuild {
@@ -59,7 +60,7 @@ export interface GameCommand {
   command: Command;
   data?: {
     arrow?: DrawArrowCommand;
-    build?: BuildCommand;
+    build?: BuildCommand[];
     click?: ClickCommand;
     country?: keyof Country | "none";
     orderID?: string;

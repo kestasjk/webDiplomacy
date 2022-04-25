@@ -1,4 +1,4 @@
-import { Popover, useTheme } from "@mui/material";
+import { useTheme } from "@mui/material";
 import * as React from "react";
 import BuildUnitMap from "../../../data/BuildUnit";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
@@ -14,7 +14,7 @@ import WDArmy from "../../ui/units/WDArmy";
 import WDArmyIcon from "../../ui/units/WDArmyIcon";
 import WDFleet from "../../ui/units/WDFleet";
 import WDFleetIcon from "../../ui/units/WDFleetIcon";
-import WDBuildUnitButtons from "./WDBuildUnitButtons";
+import WDBuildUnitButtons, { BuildData } from "./WDBuildUnitButtons";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
@@ -28,7 +28,7 @@ interface Units {
 }
 
 interface BuildPopovers {
-  [key: string]: React.ReactElement;
+  [key: string]: BuildData;
 }
 
 const WDTerritory: React.FC<WDTerritoryProps> = function ({
@@ -46,8 +46,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   >(undefined);
 
   const [territoryStrokeOpacity, setTerritoryStrokeOpacity] = React.useState(1);
-
-  const buildPopoverRefs = React.useRef<SVGElement[]>([]);
 
   const [buildPopovers, setBuildPopovers] = React.useState<BuildPopovers>({});
 
@@ -92,15 +90,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     setTerritoryStrokeOpacity(1);
   };
 
-  const defaultBuildPopoversClose = () => {
-    setCapturedHighlight(undefined);
-    setOpenBuildPopovers(false);
-  };
-
-  const userBuildPopoversClose = () => {
-    setOpenBuildPopovers(false);
-  };
-
   const build = (availableOrder, canBuild, toTerrID) => {
     dispatch(
       gameApiSliceActions.updateOrdersMeta({
@@ -113,25 +102,24 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         },
       }),
     );
-    userBuildPopoversClose();
+    setOpenBuildPopovers(false);
+    dispatch(gameApiSliceActions.resetOrder());
   };
 
   const commandActions = {
     BUILD: (command) => {
       const [key, value] = command;
-      const { availableOrder, canBuild, toTerrID } = value.data.build;
-      const buildPopover = (
-        <WDBuildUnitButtons
-          availableOrder={availableOrder}
-          canBuild={canBuild}
-          country={userCountry}
-          toTerrID={toTerrID}
-          clickCallback={build}
-        />
-      );
-      setBuildPopovers({
-        main: buildPopover,
-      });
+      const builds: BuildPopovers = {};
+      const buildsArray = value.data.build;
+      if (buildsArray?.length) {
+        buildsArray.forEach((b) => {
+          builds[b.unitSlotName] = {
+            ...b,
+            ...{ clickCallback: build, country: userCountry },
+          };
+        });
+      }
+      setBuildPopovers(builds);
       setMoveHighlight();
       setOpenBuildPopovers(true);
       deleteCommand(key);
@@ -157,6 +145,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     },
     REMOVE_BUILD: (command) => {
       const [key] = command;
+      setOpenBuildPopovers(false);
       setCapturedHighlight(userCountry);
       deleteCommand(key);
     },
@@ -293,45 +282,33 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
           if (!txt) {
             txt = territoryMapData.abbr;
           }
+          const b = buildPopovers[name];
           return (
-            <g
-              className="no-pointer-events"
-              ref={(el) => el && buildPopoverRefs.current.push(el)}
-            >
-              <WDLabel
-                id={id}
-                name={name}
-                key={id || i}
-                style={style}
-                text={txt}
-                x={x}
-                y={y}
-              />
-              <Popover
-                id={id}
-                open={openBuildPopovers}
-                anchorEl={buildPopoverRefs.current[i]}
-                onClose={defaultBuildPopoversClose}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "center",
-                }}
-                transformOrigin={{
-                  vertical: "bottom",
-                  horizontal: "center",
-                }}
-                PaperProps={{
-                  sx: {
-                    background: "rgba(0,0,0,.7)",
-                    borderRadius: 2,
-                    display: "flex",
-                    justifyContent: "space-evenly",
-                  },
-                }}
-              >
-                {buildPopovers[name]}
-              </Popover>
-            </g>
+            <>
+              <g className="no-pointer-events">
+                <WDLabel
+                  id={id}
+                  name={name}
+                  key={id || i}
+                  style={style}
+                  text={txt}
+                  x={x}
+                  y={y}
+                />
+              </g>
+              {b && openBuildPopovers && (
+                <WDBuildUnitButtons
+                  availableOrder={b.availableOrder}
+                  canBuild={b.canBuild}
+                  clickCallback={b.clickCallback}
+                  country={b.country}
+                  labelID={id}
+                  toTerrID={b.toTerrID}
+                  x={x}
+                  y={y}
+                />
+              )}
+            </>
           );
         })}
       {territoryMapData.unitSlots &&

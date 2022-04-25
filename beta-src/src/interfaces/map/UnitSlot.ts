@@ -1,6 +1,6 @@
 import UnitSlotName from "../../types/map/UnitSlotName";
-import { AbsoluteCoordinates } from "./AbsoluteCoordinates";
+import { Coordinates } from "./Coordinates";
 
-export interface UnitSlot extends AbsoluteCoordinates {
+export interface UnitSlot extends Coordinates {
   name: UnitSlotName;
 }
