@@ -19,6 +19,7 @@ import useViewport from "../../hooks/useViewport";
 
 interface WDInfoDisplayProps {
   alternatives: string;
+  phase: string;
   potNumber: IntegerRange<35, 666>;
   season: string;
   title: string;
@@ -33,6 +34,7 @@ const tableCellStyles = {
 
 const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
   alternatives,
+  phase,
   potNumber,
   season,
   title,
@@ -78,7 +80,7 @@ const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
         <TableBody>
           <TableRow>
             <TableCell sx={tableCellStyles}>
-              Pot: {potNumber} - {season} {year}
+              Pot: {potNumber} - {season} {year} - <b>{phase}</b>
             </TableCell>
           </TableRow>
           <TableRow>
