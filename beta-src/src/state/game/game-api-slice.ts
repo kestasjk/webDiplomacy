@@ -171,15 +171,11 @@ const startNewOrder = (
   const {
     data: { data: gameData },
   } = current(state);
-  const { currentOrders } = gameData;
-  let id = orderID;
-  if (!orderID) {
-    const unit = currentOrders.find((order) => order.unitID === unitID);
-    id = unit ? unit.id : id;
-  }
   state.order.inProgress = true;
   state.order.unitID = unitID;
-  state.order.orderID = id;
+  state.order.orderID =
+    orderID ||
+    gameData.currentOrders.find((order) => order.unitID === unitID)?.id;
   state.order.onTerritory = onTerritory;
   state.order.toTerritory = toTerritory;
   delete state.order.type;
