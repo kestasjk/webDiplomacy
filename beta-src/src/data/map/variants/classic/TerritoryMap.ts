@@ -323,11 +323,11 @@ const TerritoryMap: ITerritoryMap = {
     unitSlotName: "sc",
   },
   "St. Petersburg (North Coast)": {
-    territory: Territory.SAINT_PETERSBURG,
+    territory: Territory.SAINT_PETERSBURG_NORTH_COAST,
     unitSlotName: "nc",
   },
   "St. Petersburg (South Coast)": {
-    territory: Territory.SAINT_PETERSBURG,
+    territory: Territory.SAINT_PETERSBURG_SOUTH_COAST,
     unitSlotName: "sc",
   },
   "Bulgaria (North Coast)": {

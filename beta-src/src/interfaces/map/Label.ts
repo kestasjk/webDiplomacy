@@ -1,8 +1,8 @@
 import React from "react";
 import TerritoryLabel from "../../types/UnitLabel";
-import { AbsoluteCoordinates } from "./AbsoluteCoordinates";
+import { Coordinates } from "./Coordinates";
 
-export interface Label extends AbsoluteCoordinates {
+export interface Label extends Coordinates {
   name: TerritoryLabel;
   style?: React.CSSProperties;
   text?: string;

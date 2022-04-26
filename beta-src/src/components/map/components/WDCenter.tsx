@@ -1,10 +1,10 @@
 import { useTheme } from "@mui/material";
 import * as React from "react";
-import { AbsoluteCoordinates } from "../../../interfaces";
+import { Coordinates } from "../../../interfaces";
 import TerritoryName from "../../../types/TerritoryName";
 import WDTrigger from "./WDTrigger";
 
-interface WDCenterProps extends AbsoluteCoordinates {
+interface WDCenterProps extends Coordinates {
   territoryName: TerritoryName;
 }
 

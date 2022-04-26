@@ -864,15 +864,15 @@ export const MOSCOW: TerritoryMapData = new TerritoryMapDataGenerator({
     y: 400,
   },
   centerPos: {
-    x: "45%",
-    y: "45.3%",
+    x: 350,
+    y: 335,
   },
   fill: "none",
   labels: [
     {
       name: "main",
-      x: "51.5%",
-      y: "48.2%",
+      x: 400,
+      y: 355,
     },
   ],
   unitSlots: [
@@ -1417,15 +1417,15 @@ export const SAINT_PETERSBURG: TerritoryMapData = new TerritoryMapDataGenerator(
       y: 540,
     },
     centerPos: {
-      x: "20%",
-      y: "78%",
+      x: 170,
+      y: 620,
     },
     fill: "none",
     labels: [
       {
         name: "main",
-        x: "25.5%",
-        y: "80.5%",
+        x: 215,
+        y: 640,
       },
       {
         name: "sc",

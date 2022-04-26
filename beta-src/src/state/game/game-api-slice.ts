@@ -164,43 +164,30 @@ const resetOrder = (state) => {
 
 const startNewOrder = (
   state,
-  { payload: { unitID, onTerritory } }: NewOrderPayload,
+  {
+    payload: { unitID, onTerritory, orderID, toTerritory, type },
+  }: NewOrderPayload,
 ) => {
   const {
     data: { data: gameData },
   } = current(state);
-  const { currentOrders } = gameData;
-  const orderForUnit = currentOrders.find((order) => {
-    return order.unitID === unitID;
-  });
   state.order.inProgress = true;
   state.order.unitID = unitID;
-  state.order.orderID = orderForUnit.id;
+  state.order.orderID =
+    orderID ||
+    gameData.currentOrders.find((order) => order.unitID === unitID)?.id;
   state.order.onTerritory = onTerritory;
-  state.order.toTerritory = null;
+  state.order.toTerritory = toTerritory;
   delete state.order.type;
-  const command: GameCommand = {
-    command: "SELECTED",
-  };
-  setCommand(state, command, "unitCommands", unitID);
-};
-
-const drawOrders = (state) => {
-  const {
-    data: { data },
-    ordersMeta,
-  } = current(state);
-  drawCurrentMoveOrders(data, ordersMeta);
-};
-
-const updateOrdersMeta = (state, updates: EditOrderMeta) => {
-  Object.entries(updates).forEach(([orderID, update]) => {
-    state.ordersMeta[orderID] = {
-      ...state.ordersMeta[orderID],
-      ...update,
+  if (type) {
+    state.order.type = type;
+  }
+  if (unitID) {
+    const command: GameCommand = {
+      command: "SELECTED",
     };
-  });
-  drawOrders(state);
+    setCommand(state, command, "unitCommands", unitID);
+  }
 };
 
 const highlightMapTerritoriesBasedOnStatuses = (state) => {
@@ -271,11 +258,17 @@ const drawBuilds = (state) => {
                 },
               },
             };
+            const commandTerritoryDestination =
+              territoryMeta.territory ===
+                Territory.SAINT_PETERSBURG_NORTH_COAST ||
+              territoryMeta.territory === Territory.SAINT_PETERSBURG_SOUTH_COAST
+                ? Territory[Territory.SAINT_PETERSBURG]
+                : Territory[territoryMeta.territory];
             setCommand(
               state,
               command,
               "territoryCommands",
-              Territory[territoryMeta.territory],
+              commandTerritoryDestination,
             );
             command = {
               command: "MOVE",
@@ -284,7 +277,7 @@ const drawBuilds = (state) => {
               state,
               command,
               "territoryCommands",
-              Territory[territoryMeta.territory],
+              commandTerritoryDestination,
             );
           }
         }
@@ -293,13 +286,32 @@ const drawBuilds = (state) => {
   }
 };
 
+const drawOrders = (state) => {
+  const {
+    data: { data },
+    ordersMeta,
+  } = current(state);
+  drawCurrentMoveOrders(data, ordersMeta);
+  drawBuilds(state);
+};
+
+const updateOrdersMeta = (state, updates: EditOrderMeta) => {
+  Object.entries(updates).forEach(([orderID, update]) => {
+    state.ordersMeta[orderID] = {
+      ...state.ordersMeta[orderID],
+      ...update,
+    };
+  });
+  drawOrders(state);
+};
+
 const gameApiSlice = createSlice({
   name: "game",
   initialState,
   reducers: {
+    resetOrder,
     updateOrdersMeta(state, action: UpdateOrdersMetaAction) {
       updateOrdersMeta(state, action.payload);
-      drawBuilds(state);
     },
     updateTerritoriesMeta(state, action) {
       state.territoriesMeta = action.payload;
@@ -397,6 +409,16 @@ const gameApiSlice = createSlice({
         } else if (order.toTerritory !== null && order.type === "move") {
           highlightMapTerritoriesBasedOnStatuses(state);
           resetOrder(state);
+        } else if (order.toTerritory !== null && order.type === "build") {
+          setCommand(
+            state,
+            {
+              command: "REMOVE_BUILD",
+            },
+            "territoryCommands",
+            Territory[order.toTerritory],
+          );
+          resetOrder(state);
         } else if (
           clickObject === "territory" &&
           order.onTerritory !== null &&
@@ -459,9 +481,22 @@ const gameApiSlice = createSlice({
             return;
           }
 
+          const stp = territoriesMeta[Territory.SAINT_PETERSBURG];
+          const stpnc = territoriesMeta[Territory.SAINT_PETERSBURG_NORTH_COAST];
+          const stpsc = territoriesMeta[Territory.SAINT_PETERSBURG_SOUTH_COAST];
+
+          const specialIds = {};
+          if (stp) {
+            specialIds[stp.id] = [stpnc?.id, stpsc?.id];
+          }
+
+          const affectedTerritoryIds = specialIds[webDipTerritoryID]
+            ? [...[webDipTerritoryID], ...specialIds[webDipTerritoryID]]
+            : [webDipTerritoryID];
+
           const existingBuildOrder = Object.entries(ordersMeta).find(
             ([, { update }]) =>
-              update ? update.toTerrID === webDipTerritoryID : false,
+              update ? affectedTerritoryIds.includes(update.toTerrID) : false,
           );
 
           if (existingBuildOrder) {
@@ -510,7 +545,7 @@ const gameApiSlice = createSlice({
             }
           }
 
-          if (availableOrder && !territoryHasUnit) {
+          if (availableOrder && !territoryHasUnit && !order.inProgress) {
             let canBuild = 0;
             if (territoryCoast === "Parent" || territoryCoast === "No") {
               canBuild += BuildUnit.Army;
@@ -521,14 +556,47 @@ const gameApiSlice = createSlice({
             const command: GameCommand = {
               command: "BUILD",
               data: {
-                build: {
-                  availableOrder,
-                  canBuild,
-                  toTerrID: territoryMeta.id,
-                },
+                build: [
+                  {
+                    availableOrder,
+                    canBuild,
+                    toTerrID: territoryMeta.id,
+                    unitSlotName: "main",
+                  },
+                ],
               },
             };
+            if (territoryMeta.territory === Territory.SAINT_PETERSBURG) {
+              const nc =
+                territoriesMeta[Territory.SAINT_PETERSBURG_NORTH_COAST];
+              const sc =
+                territoriesMeta[Territory.SAINT_PETERSBURG_SOUTH_COAST];
+              nc &&
+                command.data?.build?.push({
+                  availableOrder,
+                  canBuild: BuildUnit.Fleet,
+                  toTerrID: nc.id,
+                  unitSlotName: "nc",
+                });
+              sc &&
+                command.data?.build?.push({
+                  availableOrder,
+                  canBuild: BuildUnit.Fleet,
+                  toTerrID: sc.id,
+                  unitSlotName: "sc",
+                });
+            }
             setCommand(state, command, "territoryCommands", territoryName);
+            startNewOrder(state, {
+              payload: {
+                orderID: availableOrder,
+                inProgress: true,
+                unitID: "",
+                onTerritory: null,
+                toTerritory: territoryMeta.territory,
+                type: "build",
+              },
+            });
           }
         }
       }

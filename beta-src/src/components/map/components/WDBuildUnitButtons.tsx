@@ -1,5 +1,4 @@
 /* eslint-disable no-bitwise */
-import { Box, Button, useTheme } from "@mui/material";
 import * as React from "react";
 import BuildUnit from "../../../enums/BuildUnit";
 import Country from "../../../enums/Country";
@@ -7,83 +6,106 @@ import UIState from "../../../enums/UIState";
 import WDArmyIcon from "../../ui/units/WDArmyIcon";
 import WDFleetIcon from "../../ui/units/WDFleetIcon";
 
-interface BuildData {
+export interface BuildData {
   availableOrder: string;
-  country: Country;
-  canBuild: BuildUnit;
-  toTerrID: string;
-}
-
-interface BuildUnitButtonsProps extends BuildData {
   clickCallback: (
     availableOrder: BuildData["availableOrder"],
     canBuild: BuildData["canBuild"],
     toTerrID: BuildData["toTerrID"],
   ) => void;
+  country: Country;
+  canBuild: BuildUnit;
+  labelID: string;
+  toTerrID: string;
+  x: number;
+  y: number;
 }
 
-interface BuildButtonProps {
-  clickCallback: () => void;
-}
-
-const BuildButton: React.FC<BuildButtonProps> = function ({
-  children,
-  clickCallback,
-}): React.ReactElement {
-  const theme = useTheme();
-  const side = 40;
-  return (
-    <Box sx={{ margin: "10px 6px" }}>
-      <Button
-        onClick={clickCallback}
-        sx={{
-          background: theme.palette.secondary.main,
-          borderRadius: "50%",
-          minWidth: 0,
-          padding: 0,
-          "&:hover": { background: theme.palette.secondary.main },
-        }}
-      >
-        <svg viewBox="0 0 50 50" width={side} height={side}>
-          {children}
-        </svg>
-      </Button>
-    </Box>
-  );
-};
-
-const WDBuildUnitButtons: React.FC<BuildUnitButtonsProps> = function ({
+const WDBuildUnitButtons: React.FC<BuildData> = function ({
   availableOrder,
-  canBuild,
-  country,
-  toTerrID,
   clickCallback,
+  country,
+  canBuild,
+  labelID,
+  toTerrID,
+  x,
+  y,
 }): React.ReactElement {
-  const buildOptions = {
-    [BuildUnit.Army]: (
-      <BuildButton
-        clickCallback={() => {
-          clickCallback(availableOrder, BuildUnit.Army, toTerrID);
-        }}
-      >
-        <WDArmyIcon country={country} iconState={UIState.BUILD} />
-      </BuildButton>
-    ),
-    [BuildUnit.Fleet]: (
-      <BuildButton
-        clickCallback={() => {
-          clickCallback(availableOrder, BuildUnit.Fleet, toTerrID);
-        }}
-      >
-        <WDFleetIcon country={country} iconState={UIState.BUILD} />
-      </BuildButton>
-    ),
+  const label: SVGTextElement = document.getElementById(
+    labelID,
+  ) as unknown as SVGTextElement;
+  let rw = 70;
+  const rh = 70;
+  const rBorder = 10;
+  const rFill = "rgba(0,0,0,.7)";
+  const buildButtons: React.ReactElement[] = [];
+  let svgX = x;
+  let svgY = y;
+  const iconStyle: React.CSSProperties = {
+    width: 50,
+    height: 50,
   };
+  const groupStyle: React.CSSProperties = {
+    cursor: "pointer",
+  };
+  if (label) {
+    const cx = 0 + rw / 2;
+    const cy = 0 + rh / 2;
+    const r = 25;
+    const iconX = cx - r;
+    const iconY = cy - r;
+    const labelBB = label.getBBox();
+    svgY -= rh + labelBB.height;
+    if (canBuild & BuildUnit.Army) {
+      buildButtons.push(
+        <g
+          style={groupStyle}
+          onClick={() => {
+            clickCallback(availableOrder, BuildUnit.Army, toTerrID);
+          }}
+        >
+          <circle fill="white" r={r} cx={cx} cy={cy} />
+          <svg x={iconX} y={iconY} style={iconStyle}>
+            <WDArmyIcon country={country} iconState={UIState.BUILD} />
+          </svg>
+        </g>,
+      );
+    }
+    if (canBuild & BuildUnit.Fleet) {
+      let shift = 0;
+      if (buildButtons.length) {
+        shift = rw - rBorder;
+        rw = rw * 2 - rBorder;
+      }
+      buildButtons.push(
+        <g
+          style={groupStyle}
+          onClick={() => {
+            clickCallback(availableOrder, BuildUnit.Fleet, toTerrID);
+          }}
+        >
+          <circle fill="white" r={r} cx={cx + shift} cy={cy} />
+          <svg x={iconX + shift} y={iconY} style={iconStyle}>
+            <WDFleetIcon country={country} iconState={UIState.BUILD} />
+          </svg>
+        </g>,
+      );
+    }
+    svgX -= (rw - labelBB.width) / 2;
+  }
   return (
-    <>
-      {buildOptions[canBuild & BuildUnit.Army]}
-      {buildOptions[canBuild & BuildUnit.Fleet]}
-    </>
+    <svg x={svgX} y={svgY}>
+      <rect
+        x={0}
+        y={0}
+        fill={rFill}
+        width={rw}
+        height={rh}
+        rx={rBorder}
+        ry={rBorder}
+      />
+      {buildButtons}
+    </svg>
   );
 };
 

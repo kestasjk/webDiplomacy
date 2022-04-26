@@ -1,8 +1,8 @@
 import * as React from "react";
-import { AbsoluteCoordinates } from "../../../interfaces";
+import { Coordinates } from "../../../interfaces";
 import TerritoryName from "../../../types/TerritoryName";
 
-interface WDUnitSlotProps extends AbsoluteCoordinates {
+interface WDUnitSlotProps extends Coordinates {
   name: string;
   territoryName: TerritoryName;
 }
