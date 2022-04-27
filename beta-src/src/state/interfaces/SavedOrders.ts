@@ -1,3 +1,4 @@
+import { IOrderData } from "../../models/Interfaces";
 import TerritoryClass from "../../models/TerritoryClass";
 
 interface OrderMetaUpdate {
@@ -7,9 +8,10 @@ interface OrderMetaUpdate {
 }
 
 interface OrderMeta {
+  allowedBorderCrossings?: TerritoryClass[];
   saved: boolean;
   update?: OrderMetaUpdate;
-  allowedBorderCrossings?: TerritoryClass[];
+  originalOrder: IOrderData;
 }
 
 export interface EditOrderMeta {
@@ -17,6 +19,7 @@ export interface EditOrderMeta {
     saved?: boolean;
     update?: OrderMetaUpdate;
     allowedBorderCrossings?: TerritoryClass[];
+    originalOrder?: IOrderData;
   };
 }
 

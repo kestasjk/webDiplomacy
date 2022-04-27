@@ -1,7 +1,7 @@
 import * as React from "react";
 import Button from "@mui/material/Button";
 import ScrollButtonState from "../../enums/ScrollButton";
-import WDPhaseArrowIcon from "../svgr-components/WDPhaseArrowIcon";
+import WDPhaseArrowIcon from "./icons/WDPhaseArrowIcon";
 
 interface ScrollButtonProps {
   className: string;

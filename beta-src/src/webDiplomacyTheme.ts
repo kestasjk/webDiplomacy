@@ -230,7 +230,10 @@ const webDiplomacyTheme = createTheme({
     arrowColors,
     svg: {
       filters: {
-        dropShadows: ["drop-shadow(0px 3px 10px rgba(0, 0, 0, 0.7))"],
+        dropShadows: [
+          "drop-shadow(0px 3px 10px rgba(0, 0, 0, 0.7))",
+          "drop-shadow(1px 4px 4px #323232)",
+        ],
       },
     },
   },

@@ -1,9 +1,9 @@
 import * as React from "react";
 import { useTheme } from "@mui/material";
-import { navIconProps } from "../../interfaces/Icons";
-import UIState from "../../enums/UIState";
+import UIState from "../../../enums/UIState";
+import { NavIconProps } from "../../../interfaces/Icons";
 
-const WDHomeIcon: React.FC<navIconProps> = function ({
+const WDHomeIcon: React.FC<NavIconProps> = function ({
   iconState = UIState.INACTIVE,
 }): React.ReactElement {
   const theme = useTheme();

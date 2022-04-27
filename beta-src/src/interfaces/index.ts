@@ -2,7 +2,6 @@ export * from "./Viewport";
 export * from "./CountryTableData";
 export * from "./Territory";
 export * from "./map/Coordinates";
-export * from "./map/AbsoluteCoordinates";
 export * from "./map/Dimensions";
 export * from "./map/TerritoryMapData";
 export * from "./map/BBox";

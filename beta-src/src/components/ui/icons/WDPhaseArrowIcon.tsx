@@ -1,5 +1,5 @@
 import * as React from "react";
-import ScrollButtonState from "../../enums/ScrollButton";
+import ScrollButtonState from "../../../enums/ScrollButton";
 
 interface PhaseArrowProps {
   direction: ScrollButtonState;

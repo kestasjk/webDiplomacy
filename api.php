@@ -593,7 +593,7 @@ class GetGameData extends ApiEntry {
 
 	private function getContextVars(){
 		return [
-			'context' => $this->contextVars['context'],
+			'context' => json_decode($this->contextVars['context']),
 			'contextKey' => $this->contextVars['contextKey'],
 		];
 	}
@@ -1010,6 +1010,129 @@ class SendMessage extends ApiEntry {
 }
 
 /**
+ * API entry game/getmessages
+ */
+class GetMessages extends ApiEntry {
+	public function __construct() {
+		parent::__construct('game/getmessages', 'GET', '', array('gameID','countryID','toCountryID','offset','limit'));
+	}
+	public function run($userID, $permissionIsExplicit) {
+
+		global $DB;
+		$args = $this->getArgs();
+		$countryID = $args['countryID'];
+		$game = $this->getAssociatedGame();
+		$gameID = $args['gameID'];
+		$gamePhase = $game->phase;
+		$limitAmount = 25;
+		$limit = $args['limit'];
+		$offset = $args['offset'];
+		$pressType = $game->pressType;
+		$toCountryID = intval($args['toCountryID']);
+
+		$limit = isset($limit) ? intval($limit) : $limitAmount;
+		$offset = isset($offset) ? intval($offset) : 0;
+
+		// Press Types
+		// Regular - Global and Private messaging allowed.
+		// PublicPressOnly - Only Global messaging allowed.
+		// NoPress - No messaging allowed.
+		// RulebookPress - No messaging allowed during 'Builds' and 'Retreats' phases.
+		if ($pressType == 'NoPress' || $pressType == 'RulebookPress' && $gamePhase == 'Builds' || $pressType == 'RulebookPress' && $gamePhase == 'Retreats')
+		throw new RequestException(
+			$this->JSONResponse(
+				'No messaging allowed for pressType = NoPress. No messaging allowed during "Retreats" and "Builds" phases for pressType = RulebookPress.',
+				'',
+				false,
+				[
+					'pressType' => $pressType,
+					'phase' => $gamePhase,
+				]
+			)
+		);
+		
+		if ($gameID === null || !is_numeric($gameID))
+			throw new RequestException(
+				$this->JSONResponse('A gameID is required.', '', false, ['gameID' => $gameID])
+			);
+
+		if ($countryID === null || !is_numeric($countryID))
+			throw new RequestException(
+				$this->JSONResponse('A countryID is required.', '', false, ['countryID' => $countryID])
+			);
+
+		if ($limit > $limitAmount) {
+			throw new RequestException(
+				$this->JSONResponse('limit should not exceed 25', '', false, ['limit' => $limit])
+			);
+		}
+
+		// Global Get all messages addressed to everyone
+		if ($countryID == 0) {
+			$where = "toCountryID = 0";
+		}
+
+		// Only get messages sent between
+		else {
+
+			// Check if user has acess to see messages
+			if ( $pressType == 'PublicPressOnly' || !(isset($game->Members->ByUserID[$userID]) && $countryID == $game->Members->ByUserID[$userID]->countryID)) {
+				throw new RequestException(
+					$this->JSONResponse(
+						'User does not have explicit permission to make this API call.',
+						'',
+						false,
+						[
+							'pressType' => $pressType,
+							'phase' => $gamePhase,
+						],
+					)
+				);
+			}
+
+			$where = "( toCountryID = $toCountryID AND fromCountryID = $countryID )
+					OR
+					( fromCountryID = $toCountryID AND toCountryID = $countryID )";
+		}
+
+		$tabl = $DB->sql_tabl("SELECT message, toCountryID, fromCountryID, turn, timeSent
+		FROM wD_GameMessages WHERE gameID = $gameID AND $where
+		order BY id DESC LIMIT $limit OFFSET $offset");
+
+		$messages = array();
+		while ($message = $DB->tabl_hash($tabl)) {
+			$messages[] = $message;
+		}
+
+	    // Checks if there are any messages in the array.
+		if (!$messages) {
+			return $this->JSONResponse(
+				'No messages available',
+				'',
+				true,
+				[
+					'messages' => $messages,
+					'phase' => $gamePhase,
+					'pressType' => $pressType,
+				]
+			);
+		}
+
+		// Return Messages.
+		return $this->JSONResponse(
+			'Successfully retrieved game messages.',
+			'',
+			true,
+			[
+				'messages' => $messages,
+				'phase' => $gamePhase,
+				'pressType' => $pressType,
+			]
+		);
+	}
+}
+
+/**
  * Class to manage an API authentication and check associated permissions.
  */
 abstract class ApiAuth {
@@ -1272,6 +1395,7 @@ try {
 	$api->load(new SetOrders());
 	$api->load(new ToggleVote());
 	$api->load(new SendMessage());
+	$api->load(new GetMessages());
 	$jsonEncodedResponse = $api->run();
 	// Set JSON header.
 	header('Content-Type: application/json');

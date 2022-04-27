@@ -10,10 +10,8 @@ import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import {
   gameApiSliceActions,
   gameData,
-  gameOverview,
+  gameOrdersMeta,
 } from "../../state/game/game-api-slice";
-import drawUnitsOnMap from "../../utils/map/drawUnitsOnMap";
-import getValidUnitBorderCrossings from "../../utils/map/getValidUnitBorderCrossings";
 import drawArrow from "../../utils/map/drawArrow";
 import ArrowType from "../../enums/ArrowType";
 import drawCurrentMoveOrders from "../../utils/map/drawCurrentMoveOrders";
@@ -42,7 +40,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
   const [viewport] = useViewport();
   const dispatch = useAppDispatch();
   const { data } = useAppSelector(gameData);
-  const { members } = useAppSelector(gameOverview);
+  const ordersMeta = useAppSelector(gameOrdersMeta);
   const commands = useAppSelector(
     (state) => state.game.commands.mapCommands.all,
   );
@@ -143,30 +141,14 @@ const WDMapController: React.FC = function (): React.ReactElement {
         .call(d3Zoom)
         .call(d3Zoom.transform, d3.zoomIdentity.translate(x, y).scale(scale))
         .on("dblclick.zoom", null);
-
-      if ("currentOrders" in data && data.currentOrders) {
-        const ordersMetaUpdates = {};
-        Object.values(data.currentOrders).forEach((order) => {
-          ordersMetaUpdates[order.id] = {
-            saved: true,
-          };
-        });
-        dispatch(gameApiSliceActions.updateOrdersMeta(ordersMetaUpdates));
-      }
     }
   }, [svgElement, viewport]);
 
-  React.useLayoutEffect(() => {
-    if (data && members) {
-      drawUnitsOnMap(members, data);
-
-      const ordersMetaUpdates = getValidUnitBorderCrossings(data);
-      dispatch(gameApiSliceActions.updateOrdersMeta(ordersMetaUpdates));
-      setTimeout(() => {
-        drawCurrentMoveOrders(data);
-      });
-    }
-  }, [data, members]);
+  React.useEffect(() => {
+    setTimeout(() => {
+      drawCurrentMoveOrders(data, ordersMeta);
+    }, 500);
+  }, [ordersMeta]);
 
   React.useEffect(() => {
     if (data) {
@@ -174,6 +156,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
         gameApiSliceActions.updateTerritoriesMeta(getTerritoriesMeta(data)),
       );
       dispatch(gameApiSliceActions.highlightMapTerritories());
+      dispatch(gameApiSliceActions.drawBuilds());
     }
   }, [data]);
 
