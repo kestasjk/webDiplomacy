@@ -656,7 +656,9 @@ const gameApiSlice = createSlice({
             state,
             command,
             "territoryCommands",
-            Territory[mappedTerritory.territory],
+            mappedTerritory.parent
+              ? Territory[mappedTerritory.parent]
+              : Territory[mappedTerritory.territory],
           );
         });
 

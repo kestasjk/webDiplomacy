@@ -1,4 +1,4 @@
-import { ITerritory } from "../../data/map/variants/classic/TerritoryMap";
+import { MTerritory } from "../../data/map/variants/classic/TerritoryMap";
 import BuildUnit from "../../enums/BuildUnit";
 import Country from "../../enums/Country";
 import Territory from "../../enums/map/variants/classic/Territory";
@@ -48,7 +48,7 @@ interface SetUnitCommand {
   componentType?: "Game" | "Icon";
   country?: Country;
   iconState?: UIState;
-  mappedTerritory?: ITerritory;
+  mappedTerritory?: MTerritory;
   unit?: IUnit;
   unitType?: UnitType;
   unitSlotName: UnitSlotName;
