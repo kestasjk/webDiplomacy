@@ -155,7 +155,7 @@ const arrowColors: ArrowColors = {
   holdSupport: { main: "#3FC621" },
   retreat: { main: "#BD2894" },
   implied: { main: "#989898" },
-  foreignImplied: { main: "rgba(0,0,0,.4)" },
+  foreignImplied: { main: "rgba(0,0,0,.3)" },
 };
 
 /**
