@@ -1059,7 +1059,10 @@ class GetMessages extends ApiEntry {
 		// PublicPressOnly - Only Global messaging allowed.
 		// NoPress - No messaging allowed.
 		// RulebookPress - No messaging allowed during 'Builds' and 'Retreats' phases.
-		else if ($countryID != $toCountryID && $pressType == 'NoPress' || $countryID != $toCountryID && $pressType == 'RulebookPress' && $gamePhase == 'Builds' || $countryID != $toCountryID && $pressType == 'RulebookPress' && $gamePhase == 'Retreats') {
+		else if ( 
+			($countryID != $toCountryID && $pressType == 'NoPress') || 
+			($countryID != $toCountryID && $pressType == 'RulebookPress' && $gamePhase == 'Builds') || 
+			($countryID != $toCountryID && $pressType == 'RulebookPress' && $gamePhase == 'Retreats') ) {
 			throw new RequestException(
 				$this->JSONResponse(
 					'No messaging allowed for pressType = NoPress. No messaging allowed during "Retreats" and "Builds" phases for pressType = RulebookPress.',
@@ -1068,6 +1071,7 @@ class GetMessages extends ApiEntry {
 					[
 						'pressType' => $pressType,
 						'phase' => $gamePhase,
+						'test' => 'test',
 					]
 				)
 			);
