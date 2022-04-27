@@ -94,7 +94,7 @@ export default function drawArrow(
 
     const arrowClass = `arrow__${arrowIdentifier}`;
 
-    if (arrowType === ArrowType.MOVE) {
+    if (arrowType === ArrowType.MOVE || arrowType === ArrowType.HOLD_SUPPORT) {
       d3.selectAll(`.${arrowClass}`).remove();
     }
 
