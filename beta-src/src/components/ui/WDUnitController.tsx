@@ -50,6 +50,11 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
       setIconState(UIState.SELECTED);
       deleteCommand(key);
     },
+    DISBAND: (command) => {
+      const [key] = command;
+      setIconState(UIState.DISBANDED);
+      deleteCommand(key);
+    },
   };
 
   processNextCommand(commands, commandActions);

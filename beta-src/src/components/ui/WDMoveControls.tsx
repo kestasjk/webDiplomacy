@@ -7,7 +7,7 @@ import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
 import Device from "../../enums/Device";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
-import {
+import gameApiSlice, {
   gameApiSliceActions,
   gameData,
   gameOrdersMeta,
@@ -82,6 +82,7 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
           contextKey: contextVars.contextKey,
           queryParams: {},
         };
+
         if (type === Move.READY) {
           orderSubmission.queryParams = ready
             ? { notready: "on" }
@@ -90,6 +91,7 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
         dispatch(saveOrders(orderSubmission));
       }
     }
+
     if (type === Move.READY) {
       toggleState(type);
     }
@@ -101,6 +103,15 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
     (acc, meta) => acc + +meta.saved,
     0,
   );
+
+  if (ordersSaved) {
+    const disbandingOrdersSaved = ordersMetaValues.filter(
+      (val) => val.saved && val.update && val.update.type === "Disband",
+    );
+    if (disbandingOrdersSaved?.length) {
+      dispatch(gameApiSliceActions.updateUnitsDisbanding());
+    }
+  }
 
   if (
     (ordersLength === ordersSaved && save) ||

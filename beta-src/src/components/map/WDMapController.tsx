@@ -155,6 +155,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
       dispatch(
         gameApiSliceActions.updateTerritoriesMeta(getTerritoriesMeta(data)),
       );
+      dispatch(gameApiSliceActions.updateUnitsDisbanding());
       dispatch(gameApiSliceActions.highlightMapTerritories());
       dispatch(gameApiSliceActions.drawBuilds());
     }

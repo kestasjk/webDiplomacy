@@ -1,6 +1,7 @@
 import BoardClass from "../../models/BoardClass";
 import OrderClass from "../../models/OrderClass";
 import TerritoryClass from "../../models/TerritoryClass";
+import UnitClass from "../../models/UnitClass";
 import { EditOrderMeta } from "../../state/interfaces/SavedOrders";
 
 interface Props {
@@ -35,15 +36,27 @@ export default function getOrdersMeta(data, phase): Props {
 
       currentOrders.forEach((o) => {
         const { id, unitID, type, toTerrID } = o;
-        const orderUnit = newBoard.findUnitByID(unitID);
+        let orderUnit = newBoard.findUnitByID(unitID);
+
+        if (!orderUnit?.Territory && phase === "Retreats") {
+          orderUnit = new UnitClass({
+            ...units[unitID],
+            Territory: territories[units[unitID].terrID],
+          });
+        }
+
         if (orderUnit) {
-          newOrders.push(new OrderClass(newBoard, o, orderUnit));
+          const tempOrder = new OrderClass(newBoard, o, orderUnit);
+          newOrders.push(tempOrder);
           updateOrdersMeta[id] = {
             update: {
               type,
               toTerrID,
             },
           };
+          if (!newBoard.findUnitByID(unitID)) {
+            newBoard.units.push(orderUnit);
+          }
         }
       });
 
@@ -62,6 +75,20 @@ export default function getOrdersMeta(data, phase): Props {
             }
             return false;
           });
+          if (phase === "Retreats") {
+            const occupiedTerritory = newBoard.territories.find(
+              (t) => t.id === orderUnit.terrID,
+            );
+            allowedBorderCrossings = allowedBorderCrossings.filter(
+              (crossing) => !crossing.unitID && !crossing.standoff,
+            );
+            if (occupiedTerritory) {
+              allowedBorderCrossings = allowedBorderCrossings.filter(
+                (crossing) =>
+                  crossing.id !== occupiedTerritory.occupiedFromTerrID,
+              );
+            }
+          }
           updateOrdersMeta[o.orderData.id] = {
             ...{ saved: true },
             ...updateOrdersMeta[o.orderData.id],
