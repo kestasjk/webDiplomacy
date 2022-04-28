@@ -1,5 +1,13 @@
+interface GameMessagesArray {
+  fromCountryID: string;
+  message: string;
+  timeSent: string;
+  toCountryID: string;
+  turn: string;
+}
+
 export interface GameMessages {
-  messages: string[];
+  messages: GameMessagesArray[];
   pressType: string;
   phase: string;
 }

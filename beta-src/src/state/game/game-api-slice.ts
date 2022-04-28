@@ -727,10 +727,17 @@ const gameApiSlice = createSlice({
           });
         }
       })
+      // Fetch Game Messages
       .addCase(fetchGameMessages.fulfilled, (state, action) => {
-        state.apiStatus = "succeeded";
-        console.log("state", state);
-        console.log("action", action);
+        if (action.payload) {
+          // state = current(state);
+          const messages = action.payload;
+          state.messages = {
+            messages: messages.messages,
+            pressType: messages.pressType,
+            phase: messages.phase,
+          };
+        }
       });
   },
 });
