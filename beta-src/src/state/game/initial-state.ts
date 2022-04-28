@@ -118,6 +118,11 @@ const initialState: GameState = {
     orderStatus: "",
     status: "",
   },
+  messages: {
+    messages: [],
+    pressType: "",
+    phase: "",
+  },
 };
 
 export default initialState;

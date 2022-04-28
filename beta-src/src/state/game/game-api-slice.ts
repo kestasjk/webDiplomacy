@@ -11,6 +11,7 @@ import GameCommands, {
 } from "../interfaces/GameCommands";
 import { ApiStatus } from "../interfaces/GameState";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
+import GameMessages from "../interfaces/GameMessages";
 import { RootState } from "../store";
 import initialState from "./initial-state";
 import Territory from "../../enums/map/variants/classic/Territory";
@@ -54,6 +55,23 @@ export const fetchGameStatus = createAsyncThunk(
   async (queryParams: { countryID: string; gameID: string }) => {
     const { data } = await getGameApiRequest(ApiRoute.GAME_STATUS, queryParams);
     return data as GameStatusResponse;
+  },
+);
+
+export const fetchGameMessages = createAsyncThunk(
+  ApiRoute.GAME_MESSAGES,
+  async (queryParams: {
+    gameID: string;
+    countryID: string;
+    toCountryID?: string;
+    offset?: string;
+    limit?: string;
+  }) => {
+    const { data } = await getGameApiRequest(
+      ApiRoute.GAME_MESSAGES,
+      queryParams,
+    );
+    return data as GameMessages;
   },
 );
 
@@ -708,6 +726,11 @@ const gameApiSlice = createSlice({
             }
           });
         }
+      })
+      .addCase(fetchGameMessages.fulfilled, (state, action) => {
+        state.apiStatus = "succeeded";
+        console.log("state", state);
+        console.log("action", action);
       });
   },
 });
