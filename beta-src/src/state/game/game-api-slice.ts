@@ -655,6 +655,7 @@ const gameApiSlice = createSlice({
           data: { data },
           overview: { members, phase },
         } = current(state);
+
         const unitsToDraw = getUnits(data, members);
         unitsToDraw.forEach(({ country, mappedTerritory, unit }) => {
           const command: GameCommand = {
@@ -730,13 +731,7 @@ const gameApiSlice = createSlice({
       // Fetch Game Messages
       .addCase(fetchGameMessages.fulfilled, (state, action) => {
         if (action.payload) {
-          // state = current(state);
-          const messages = action.payload;
-          state.messages = {
-            messages: messages.messages,
-            pressType: messages.pressType,
-            phase: messages.phase,
-          };
+          state.messages = action.payload;
         }
       });
   },
