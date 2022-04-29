@@ -57,6 +57,8 @@ declare module "@mui/material/styles" {
       moveSupport: SimplePaletteColorOptions;
       holdSupport: SimplePaletteColorOptions;
       retreat: SimplePaletteColorOptions;
+      implied: SimplePaletteColorOptions;
+      foreignImplied: SimplePaletteColorOptions;
     };
   }
 }
@@ -72,6 +74,8 @@ declare module "@mui/material/styles/createPalette" {
       moveSupport: SimplePaletteColorOptions;
       holdSupport: SimplePaletteColorOptions;
       retreat: SimplePaletteColorOptions;
+      implied: SimplePaletteColorOptions;
+      foreignImplied: SimplePaletteColorOptions;
     };
   }
 }
@@ -150,6 +154,8 @@ const arrowColors: ArrowColors = {
   moveSupport: { main: "#F8F83D" },
   holdSupport: { main: "#3FC621" },
   retreat: { main: "#BD2894" },
+  implied: { main: "#989898" },
+  foreignImplied: { main: "rgba(0,0,0,.3)" },
 };
 
 /**

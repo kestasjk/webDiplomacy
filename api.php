@@ -1032,24 +1032,6 @@ class GetMessages extends ApiEntry {
 
 		$limit = isset($limit) ? intval($limit) : $limitAmount;
 		$offset = isset($offset) ? intval($offset) : 0;
-
-		// Press Types
-		// Regular - Global and Private messaging allowed.
-		// PublicPressOnly - Only Global messaging allowed.
-		// NoPress - No messaging allowed.
-		// RulebookPress - No messaging allowed during 'Builds' and 'Retreats' phases.
-		if ($pressType == 'NoPress' || $pressType == 'RulebookPress' && $gamePhase == 'Builds' || $pressType == 'RulebookPress' && $gamePhase == 'Retreats')
-		throw new RequestException(
-			$this->JSONResponse(
-				'No messaging allowed for pressType = NoPress. No messaging allowed during "Retreats" and "Builds" phases for pressType = RulebookPress.',
-				'',
-				false,
-				[
-					'pressType' => $pressType,
-					'phase' => $gamePhase,
-				]
-			)
-		);
 		
 		if ($gameID === null || !is_numeric($gameID))
 			throw new RequestException(
@@ -1070,6 +1052,29 @@ class GetMessages extends ApiEntry {
 		// Global Get all messages addressed to everyone
 		if ($countryID == 0) {
 			$where = "toCountryID = 0";
+		}
+
+		// Press Types
+		// Regular - Global and Private messaging allowed.
+		// PublicPressOnly - Only Global messaging allowed.
+		// NoPress - No messaging allowed.
+		// RulebookPress - No messaging allowed during 'Builds' and 'Retreats' phases.
+		else if ( 
+			($countryID != $toCountryID && $pressType == 'NoPress') || 
+			($countryID != $toCountryID && $pressType == 'RulebookPress' && $gamePhase == 'Builds') || 
+			($countryID != $toCountryID && $pressType == 'RulebookPress' && $gamePhase == 'Retreats') ) {
+			throw new RequestException(
+				$this->JSONResponse(
+					'No messaging allowed for pressType = NoPress. No messaging allowed during "Retreats" and "Builds" phases for pressType = RulebookPress.',
+					'',
+					false,
+					[
+						'pressType' => $pressType,
+						'phase' => $gamePhase,
+						'test' => 'test',
+					]
+				)
+			);
 		}
 
 		// Only get messages sent between
