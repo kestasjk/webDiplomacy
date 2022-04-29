@@ -67,10 +67,9 @@ export const fetchGameMessages = createAsyncThunk(
     offset?: string;
     limit?: string;
   }) => {
-    const { data } = await getGameApiRequest(
-      ApiRoute.GAME_MESSAGES,
-      queryParams,
-    );
+    const {
+      data: { data },
+    } = await getGameApiRequest(ApiRoute.GAME_MESSAGES, queryParams);
     return data as GameMessages;
   },
 );
@@ -731,7 +730,12 @@ const gameApiSlice = createSlice({
       // Fetch Game Messages
       .addCase(fetchGameMessages.fulfilled, (state, action) => {
         if (action.payload) {
-          state.messages = action.payload;
+          const { messages, phase, pressType } = action.payload;
+          state.messages = {
+            messages,
+            phase,
+            pressType,
+          };
         }
       });
   },
