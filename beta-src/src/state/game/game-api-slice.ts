@@ -309,6 +309,7 @@ const updateUnitsDisbanding = (state) => {
         (o) =>
           ordersMeta[o.id].update.type === "Disband" || o.type === "Disband",
       );
+      console.log("hello");
 
       if (userDisbandingUnits) {
         const orderStates = getOrderStates(contextVars?.context?.orderStatus);
@@ -318,11 +319,17 @@ const updateUnitsDisbanding = (state) => {
               command: "NONE",
             };
             setCommand(state, command, "unitCommands", order.unitID);
-          } else if (ordersMeta[order.id].saved && !orderStates.Ready) {
+          } else if (
+            (ordersMeta[order.id].saved && !orderStates.Ready) ||
+            !ordersMeta[order.id].allowedBorderCrossings.length
+          ) {
+            console.log("hi");
             const command: GameCommand = {
               command: "DISBAND",
             };
             setCommand(state, command, "unitCommands", order.unitID);
+
+            highlightMapTerritoriesBasedOnStatuses(state);
           }
         });
       }
@@ -337,6 +344,7 @@ const drawOrders = (state) => {
   } = current(state);
   drawCurrentMoveOrders(data, ordersMeta);
   drawBuilds(state);
+  updateUnitsDisbanding(state);
 };
 
 const updateOrdersMeta = (state, updates: EditOrderMeta) => {
@@ -346,7 +354,6 @@ const updateOrdersMeta = (state, updates: EditOrderMeta) => {
       ...update,
     };
   });
-  updateUnitsDisbanding(state);
   drawOrders(state);
 };
 
@@ -707,7 +714,7 @@ const gameApiSlice = createSlice({
               : Territory[mappedTerritory.territory],
           );
         });
-
+        console.log("update");
         updateOrdersMeta(state, getOrdersMeta(data, phase));
       })
       .addCase(fetchGameData.rejected, (state, action) => {
@@ -748,9 +755,13 @@ const gameApiSlice = createSlice({
               contextKey: newContextKey,
             };
           }
+
           Object.entries(orders).forEach(([id, value]) => {
             if (value.status === "Complete") {
               state.ordersMeta[id].saved = true;
+              if (state.ordersMeta[id].update?.type === "Disband") {
+                updateUnitsDisbanding(state);
+              }
             }
           });
         }

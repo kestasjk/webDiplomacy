@@ -80,13 +80,13 @@ export default function getOrdersMeta(data, phase): Props {
               (t) => t.id === orderUnit.terrID,
             );
             allowedBorderCrossings = allowedBorderCrossings.filter(
-              (crossing) => !crossing.unitID && !crossing.standoff,
+              (crossing) =>
+                !crossing.unitID &&
+                !crossing.standoff &&
+                crossing.id !== occupiedTerritory?.occupiedFromTerrID,
             );
-            if (occupiedTerritory) {
-              allowedBorderCrossings = allowedBorderCrossings.filter(
-                (crossing) =>
-                  crossing.id !== occupiedTerritory.occupiedFromTerrID,
-              );
+            if (!allowedBorderCrossings.length) {
+              updateOrdersMeta[o.orderData.id].update.type = "Disband";
             }
           }
           updateOrdersMeta[o.orderData.id] = {
