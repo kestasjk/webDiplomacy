@@ -104,15 +104,6 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
     0,
   );
 
-  // if (ordersSaved) {
-  //   const disbandingOrdersSaved = ordersMetaValues.filter(
-  //     (val) => val.saved && val.update && val.update.type === "Disband",
-  //   );
-  //   if (disbandingOrdersSaved?.length) {
-  //     dispatch(gameApiSliceActions.updateUnitsDisbanding());
-  //   }
-  // }
-
   if (
     (ordersLength === ordersSaved && save) ||
     (ordersLength !== ordersSaved && !save)
