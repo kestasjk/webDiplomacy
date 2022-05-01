@@ -1,4 +1,5 @@
 import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
+import ArrowColor from "../../enums/ArrowColor";
 import ArrowType from "../../enums/ArrowType";
 import OrdersMeta from "../../state/interfaces/SavedOrders";
 import drawArrow from "./drawArrow";
@@ -26,7 +27,14 @@ export default function drawCurrentMoveOrders(
             const toTerrDetails = territories[toTerrID];
             const fromTerr = TerritoryMap[onTerrDetails.name].territory;
             const toTerr = TerritoryMap[toTerrDetails.name].territory;
-            drawArrow(id, ArrowType.MOVE, toTerr, fromTerr);
+            drawArrow(
+              id,
+              ArrowType.MOVE,
+              ArrowColor.MOVE,
+              "territory",
+              toTerr,
+              fromTerr,
+            );
           }
         }
       }

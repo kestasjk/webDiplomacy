@@ -170,7 +170,14 @@ const startNewOrder = (
 ) => {
   const {
     data: { data: gameData },
+    order: { unitID: prevUnitID },
   } = current(state);
+  if (prevUnitID) {
+    const command: GameCommand = {
+      command: "NONE",
+    };
+    setCommand(state, command, "unitCommands", prevUnitID);
+  }
   state.order.inProgress = true;
   state.order.unitID = unitID;
   state.order.orderID =
