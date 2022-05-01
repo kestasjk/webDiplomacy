@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
 import ArrowColor from "../../enums/ArrowColor";
 import ArrowType from "../../enums/ArrowType";
@@ -20,23 +21,50 @@ export default function drawSupportMoveOrders(
         const originalOrder = currentOrders?.find(({ id }) => {
           return id === orderID;
         });
-        if (originalOrder && update?.fromTerrID) {
-          const { id, unitID } = originalOrder;
-          const unitBeingSupported = maps.territoryToUnit[update.fromTerrID];
-          const unitBeingSupportedMoveOrder =
-            maps.unitToOrder[unitBeingSupported];
-          const supportingTerritory = maps.unitToTerritory[unitID];
-          const supportingTerritoryDetails = territories[supportingTerritory];
-          const supportingTerritoryEnum =
-            TerritoryMap[supportingTerritoryDetails.name].territory;
-          drawArrow(
-            id,
-            ArrowType.SUPPORT,
-            ArrowColor.SUPPORT_MOVE,
-            "arrow",
-            unitBeingSupportedMoveOrder,
-            supportingTerritoryEnum,
-          );
+        if (originalOrder && update) {
+          const { fromTerrID, toTerrID } = update;
+          if (fromTerrID && toTerrID) {
+            const { id, unitID } = originalOrder;
+
+            const unitBeingSupported = maps.territoryToUnit[fromTerrID];
+            const unitBeingSupportedOrder =
+              maps.unitToOrder[unitBeingSupported];
+
+            const supportingTerritory = maps.unitToTerritory[unitID];
+            const supportingTerritoryDetails = territories[supportingTerritory];
+
+            const { update: unitBeingSupportedOrderDetails } =
+              ordersMeta[unitBeingSupportedOrder];
+            if (unitBeingSupportedOrderDetails) {
+              const {
+                type: supportedUnitActualOrderType,
+                toTerrID: supportedUnitToTerrID,
+              } = unitBeingSupportedOrderDetails;
+              let supportArrowIdentifer = unitBeingSupportedOrder;
+              if (
+                supportedUnitActualOrderType !== "Move" ||
+                supportedUnitToTerrID !== toTerrID
+              ) {
+                supportArrowIdentifer = uuidv4();
+                drawArrow(
+                  supportArrowIdentifer,
+                  ArrowType.MOVE,
+                  ArrowColor.IMPLIED,
+                  "territory",
+                  TerritoryMap[territories[toTerrID].name].territory,
+                  TerritoryMap[territories[fromTerrID].name].territory,
+                );
+              }
+              drawArrow(
+                id,
+                ArrowType.SUPPORT,
+                ArrowColor.SUPPORT_MOVE,
+                "arrow",
+                supportArrowIdentifer,
+                TerritoryMap[supportingTerritoryDetails.name].territory,
+              );
+            }
+          }
         }
       });
   }
