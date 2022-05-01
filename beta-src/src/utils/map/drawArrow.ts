@@ -32,6 +32,13 @@ export default function drawArrow(
   let unitW;
   let unitH;
 
+  let positionChangeBuffer;
+  let xDiff;
+  let yDiff;
+
+  let rw;
+  let rh;
+
   if (unit && fromTerritoryEl) {
     unit = unit.parentNode;
     const fromTerritoryX = Number(fromTerritoryEl.getAttribute("x"));
@@ -48,7 +55,7 @@ export default function drawArrow(
         if (arrow) {
           x1 = unitX;
           y1 = unitY;
-          const attachPoint = 0.6;
+          const attachPoint = 0.75;
           const arrowX1 = Number(arrow.getAttribute("x1"));
           const arrowY1 = Number(arrow.getAttribute("y1"));
           const arrowX2 = Number(arrow.getAttribute("x2"));
@@ -57,6 +64,9 @@ export default function drawArrow(
           const rise = arrowY2 - arrowY1;
           x2 = arrowX1 + run * attachPoint;
           y2 = arrowY1 + rise * attachPoint;
+          xDiff = x2 - x1;
+          yDiff = y2 - y1;
+          positionChangeBuffer = 60;
         }
         break;
       }
@@ -88,62 +98,11 @@ export default function drawArrow(
           y1 = unitY;
           y2 = Number(toTerritoryEl.getAttribute("y")) + receiverSlotElY;
 
-          const rw = rUnitW;
-          const rh = rUnitH;
-          const xDiff = x2 - x1;
-          const yDiff = y2 - y1;
-          const positionChangeBuffer = 75;
-          if (Math.abs(xDiff) < positionChangeBuffer && yDiff < 0) {
-            // dispatch: top center
-            x1 += unitW / 2;
-            // receiver: bottom center
-            x2 += rw / 2;
-            y2 += rh;
-          } else if (Math.abs(xDiff) < positionChangeBuffer && yDiff > 0) {
-            // dispatch: bottom center
-            y1 += unitH;
-            x1 += unitW / 2;
-            // receiver: top center
-            x2 += rw / 2;
-          } else if (
-            xDiff > positionChangeBuffer &&
-            yDiff < 0 &&
-            Math.abs(yDiff) > positionChangeBuffer
-          ) {
-            // dispatch: top right
-            x1 += unitW;
-            // receive: bottom left
-            y2 += rh;
-          } else if (
-            xDiff > positionChangeBuffer &&
-            Math.abs(yDiff) < positionChangeBuffer
-          ) {
-            // dispatch: center right
-            y1 += unitH / 2;
-            x1 += unitW;
-            // receive: center left
-            y2 += rh / 2;
-          } else if (
-            xDiff > positionChangeBuffer &&
-            yDiff > positionChangeBuffer
-          ) {
-            // dispatch: bottom right
-            y1 += unitH;
-            x1 += unitW;
-            // receive: top left
-            // nothing needs to be done for top left
-          } else if (xDiff < 0 && Math.abs(yDiff) < positionChangeBuffer) {
-            // dispatch: center left
-            y1 += unitH / 2;
-            // receive: center right
-            x2 += rw;
-            y2 += rh / 2;
-          } else if (xDiff < 0 && yDiff > positionChangeBuffer) {
-            // dispatch: bottom left
-            y1 += unitH;
-            // receive: top right
-            x2 += rw;
-          }
+          rw = rUnitW;
+          rh = rUnitH;
+          xDiff = x2 - x1;
+          yDiff = y2 - y1;
+          positionChangeBuffer = 75;
         }
         break;
       }
@@ -165,48 +124,75 @@ export default function drawArrow(
             Number(toTerritoryEl.getAttribute("y")) +
             Number(toTerritoryReceiver.getAttribute("y"));
 
-          const xDiff = x2 - x1;
-          const yDiff = y2 - y1;
-          const positionChangeBuffer = 75;
-          if (Math.abs(xDiff) < positionChangeBuffer && yDiff < 0) {
-            // top center
-            x1 += unitW / 2;
-          } else if (Math.abs(xDiff) < positionChangeBuffer && yDiff > 0) {
-            // bottom center
-            y1 += unitH;
-            x1 += unitW / 2;
-          } else if (
-            xDiff > positionChangeBuffer &&
-            yDiff < 0 &&
-            Math.abs(yDiff) > positionChangeBuffer
-          ) {
-            // top right
-            x1 += unitW;
-          } else if (
-            xDiff > positionChangeBuffer &&
-            Math.abs(yDiff) < positionChangeBuffer
-          ) {
-            // center right
-            y1 += unitH / 2;
-            x1 += unitW;
-          } else if (
-            xDiff > positionChangeBuffer &&
-            yDiff > positionChangeBuffer
-          ) {
-            // bottom right
-            y1 += unitH;
-            x1 += unitW;
-          } else if (xDiff < 0 && Math.abs(yDiff) < positionChangeBuffer) {
-            // center left
-            y1 += unitH / 2;
-          } else if (xDiff < 0 && yDiff > positionChangeBuffer) {
-            // bottom left
-            y1 += unitH;
-          }
+          xDiff = x2 - x1;
+          yDiff = y2 - y1;
+          positionChangeBuffer = 75;
         }
         break;
       }
     }
+
+    if (Math.abs(xDiff) < positionChangeBuffer && yDiff < 0) {
+      // dispatch: top center
+      x1 += unitW / 2;
+      // receiver: bottom center
+      if (rw && rh) {
+        x2 += rw / 2;
+        y2 += rh;
+      }
+    } else if (Math.abs(xDiff) < positionChangeBuffer && yDiff > 0) {
+      // dispatch: bottom center
+      y1 += unitH;
+      x1 += unitW / 2;
+      // receiver: top center
+      if (rw) {
+        x2 += rw / 2;
+      }
+    } else if (
+      xDiff > positionChangeBuffer &&
+      yDiff < 0 &&
+      Math.abs(yDiff) > positionChangeBuffer
+    ) {
+      // dispatch: top right
+      x1 += unitW;
+      // receive: bottom left
+      if (rh) {
+        y2 += rh;
+      }
+    } else if (
+      xDiff > positionChangeBuffer &&
+      Math.abs(yDiff) < positionChangeBuffer
+    ) {
+      // dispatch: center right
+      y1 += unitH / 2;
+      x1 += unitW;
+      // receive: center left
+      if (rh) {
+        y2 += rh / 2;
+      }
+    } else if (xDiff > positionChangeBuffer && yDiff > positionChangeBuffer) {
+      // dispatch: bottom right
+      y1 += unitH;
+      x1 += unitW;
+      // receive: top left
+      // nothing needs to be done for top left
+    } else if (xDiff < 0 && Math.abs(yDiff) < positionChangeBuffer) {
+      // dispatch: center left
+      y1 += unitH / 2;
+      // receive: center right
+      if (rw && rh) {
+        x2 += rw;
+        y2 += rh / 2;
+      }
+    } else if (xDiff < 0 && yDiff > positionChangeBuffer) {
+      // dispatch: bottom left
+      y1 += unitH;
+      // receive: top right
+      if (rw) {
+        x2 += rw;
+      }
+    }
+
     const arrowClass = `arrow__${arrowIdentifier}`;
     if (arrowType === ArrowType.MOVE) {
       d3.selectAll(`.${arrowClass}`).remove();
