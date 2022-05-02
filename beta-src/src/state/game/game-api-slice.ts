@@ -330,6 +330,8 @@ const gameApiSlice = createSlice({
           data: { contextVars },
         },
       } = current(state);
+      console.log("clickData", clickData);
+
       if (contextVars?.context?.orderStatus) {
         const orderStates = getOrderStates(contextVars?.context?.orderStatus);
         if (orderStates.Ready) {

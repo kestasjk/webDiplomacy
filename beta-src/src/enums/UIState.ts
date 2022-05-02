@@ -1,4 +1,5 @@
 enum UIState {
+  CONVOY_ALLY = "convoy_ally",
   NONE = "none",
   SELECTED = "selected",
   HOLD = "hold",

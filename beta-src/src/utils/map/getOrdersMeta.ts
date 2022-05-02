@@ -49,6 +49,8 @@ export default function getOrdersMeta(data, phase): Props {
 
       newOrders.forEach((o) => {
         const moveChoices = o.getMoveChoices();
+
+        const convoy = o.getConvoyFromChoices
         const orderUnit = newBoard.findUnitByID(o.unit.id);
         let allowedBorderCrossings: TerritoryClass[] = [];
         if (orderUnit) {

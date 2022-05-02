@@ -35,6 +35,11 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
   };
 
   const commandActions = {
+    CONVOY_ALLY: (command) => {
+      const [key] = command;
+      setIconState(UIState.SELECTED);
+      deleteCommand(key);
+    },
     HOLD: (command) => {
       const [key] = command;
       setIconState(UIState.HOLD);

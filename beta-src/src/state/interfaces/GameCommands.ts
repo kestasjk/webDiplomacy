@@ -11,6 +11,7 @@ import GetArrayElementType from "../../utils/getArrayElementType";
 export const ValidCommands = [
   "BUILD",
   "CAPTURED",
+  "CONVOY_ALLY",
   "DRAW_ARROW",
   "HOLD",
   "INVALID_CLICK",
