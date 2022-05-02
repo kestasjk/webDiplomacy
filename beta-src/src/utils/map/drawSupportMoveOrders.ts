@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
 import ArrowColor from "../../enums/ArrowColor";
 import ArrowType from "../../enums/ArrowType";
@@ -45,7 +44,7 @@ export default function drawSupportMoveOrders(
                 supportedUnitActualOrderType !== "Move" ||
                 supportedUnitToTerrID !== toTerrID
               ) {
-                supportArrowIdentifer = uuidv4();
+                supportArrowIdentifer = `${id}-implied`;
                 drawArrow(
                   supportArrowIdentifer,
                   ArrowType.MOVE,

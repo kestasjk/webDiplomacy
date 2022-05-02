@@ -32,6 +32,7 @@ import UnitType from "../../types/UnitType";
 import drawSupportMoveOrders from "../../utils/map/drawSupportMoveOrders";
 import drawMoveOrders from "../../utils/map/drawMoveOrders";
 import generateMaps from "../../utils/state/generateMaps";
+import removeAllArrows from "../../utils/map/removeAllArrows";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -312,6 +313,7 @@ const drawOrders = (state) => {
     maps,
     ordersMeta,
   } = current(state);
+  removeAllArrows();
   drawMoveOrders(data, ordersMeta);
   drawSupportMoveOrders(data, maps, ordersMeta);
   drawBuilds(state);
@@ -381,7 +383,6 @@ const gameApiSlice = createSlice({
           order.method === "dblClick" &&
           order.unitID !== clickData.payload.unitID
         ) {
-          console.log("either a support move or a support hold");
           state.order.subsequentClicks.push({
             ...{
               inProgress: true,
@@ -529,7 +530,46 @@ const gameApiSlice = createSlice({
         }
       } else if (inProgress && method === "dblClick") {
         if (subsequentClicks.length) {
-          console.log("support move");
+          // user is trying to do a support move
+          const unitSupporting = ordersMeta[orderID];
+          const unitBeingSupported = subsequentClicks[0];
+          const terrEnum = Number(Territory[territoryName]);
+          const supportMoveMatch = unitSupporting.supportMoveChoices?.find(
+            ({ supportMoveTo: { name } }) =>
+              TerritoryMap[name].territory === terrEnum,
+          );
+          if (supportMoveMatch && supportMoveMatch.supportMoveFrom.length) {
+            const moveFromMatch = supportMoveMatch.supportMoveFrom.find(
+              ({ unitID: uID }) => {
+                return uID === unitBeingSupported.unitID;
+              },
+            );
+            if (moveFromMatch) {
+              // execute support move
+              updateOrdersMeta(state, {
+                [orderID]: {
+                  saved: false,
+                  update: {
+                    type: "Support move",
+                    toTerrID: supportMoveMatch.supportMoveTo.id,
+                    fromTerrID: moveFromMatch.id,
+                  },
+                },
+              });
+              resetOrder(state);
+              return;
+            }
+          }
+          const command: GameCommand = {
+            command: "INVALID_CLICK",
+            data: {
+              click: {
+                evt,
+                territoryName,
+              },
+            },
+          };
+          setCommand(state, command, "mapCommands", "all");
         }
       } else if (
         clickObject === "territory" &&

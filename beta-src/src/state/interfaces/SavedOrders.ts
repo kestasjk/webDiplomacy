@@ -8,9 +8,15 @@ interface OrderMetaUpdate {
   viaConvoy?: string | null;
 }
 
+export interface SupportMoveChoice {
+  supportMoveFrom: TerritoryClass[];
+  supportMoveTo: TerritoryClass;
+}
+
 interface OrderMeta {
   allowedBorderCrossings?: TerritoryClass[];
   saved: boolean;
+  supportMoveChoices?: SupportMoveChoice[];
   update?: OrderMetaUpdate;
   originalOrder: IOrderData;
 }
@@ -21,6 +27,7 @@ export interface EditOrderMeta {
     update?: OrderMetaUpdate;
     allowedBorderCrossings?: TerritoryClass[];
     originalOrder?: IOrderData;
+    supportMoveChoices?: SupportMoveChoice[];
   };
 }
 

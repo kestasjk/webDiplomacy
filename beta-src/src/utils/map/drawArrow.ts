@@ -194,9 +194,7 @@ export default function drawArrow(
     }
 
     const arrowClass = `arrow__${arrowIdentifier}`;
-    if (arrowType === ArrowType.MOVE) {
-      d3.selectAll(`.${arrowClass}`).remove();
-    }
+
     d3MapSelector
       .select("#container")
       .append("line")
