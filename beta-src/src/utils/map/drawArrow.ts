@@ -3,6 +3,7 @@ import ArrowColor from "../../enums/ArrowColor";
 import ArrowType from "../../enums/ArrowType";
 import Territory from "../../enums/map/variants/classic/Territory";
 import webDiplomacyTheme from "../../webDiplomacyTheme";
+import arrowDispatchReceiveCoordinates from "./arrowDispatchReceiveCoordinates";
 
 export default function drawArrow(
   /**
@@ -132,68 +133,24 @@ export default function drawArrow(
       }
     }
 
-    if (Math.abs(xDiff) < positionChangeBuffer && yDiff < 0) {
-      // dispatch: top center
-      x1 += unitW / 2;
-      // receiver: bottom center
-      if (rw && rh) {
-        x2 += rw / 2;
-        y2 += rh;
-      }
-    } else if (Math.abs(xDiff) < positionChangeBuffer && yDiff > 0) {
-      // dispatch: bottom center
-      y1 += unitH;
-      x1 += unitW / 2;
-      // receiver: top center
-      if (rw) {
-        x2 += rw / 2;
-      }
-    } else if (
-      xDiff > positionChangeBuffer &&
-      yDiff < 0 &&
-      Math.abs(yDiff) > positionChangeBuffer
-    ) {
-      // dispatch: top right
-      x1 += unitW;
-      // receive: bottom left
-      if (rh) {
-        y2 += rh;
-      }
-    } else if (
-      xDiff > positionChangeBuffer &&
-      Math.abs(yDiff) < positionChangeBuffer
-    ) {
-      // dispatch: center right
-      y1 += unitH / 2;
-      x1 += unitW;
-      // receive: center left
-      if (rh) {
-        y2 += rh / 2;
-      }
-    } else if (xDiff > positionChangeBuffer && yDiff > positionChangeBuffer) {
-      // dispatch: bottom right
-      y1 += unitH;
-      x1 += unitW;
-      // receive: top left
-      // nothing needs to be done for top left
-    } else if (xDiff < 0 && Math.abs(yDiff) < positionChangeBuffer) {
-      // dispatch: center left
-      y1 += unitH / 2;
-      // receive: center right
-      if (rw && rh) {
-        x2 += rw;
-        y2 += rh / 2;
-      }
-    } else if (xDiff < 0 && yDiff > positionChangeBuffer) {
-      // dispatch: bottom left
-      y1 += unitH;
-      // receive: top right
-      if (rw) {
-        x2 += rw;
-      }
+    const arrowClass = `arrow__${arrowIdentifier}`;
+    if (arrowType === ArrowType.MOVE) {
+      d3.selectAll(`.${arrowClass}`).remove();
     }
 
-    const arrowClass = `arrow__${arrowIdentifier}`;
+    ({ x1, x2, y1, y2 } = arrowDispatchReceiveCoordinates(
+      positionChangeBuffer,
+      unitH,
+      unitW,
+      rh,
+      rw,
+      xDiff,
+      yDiff,
+      x1,
+      x2,
+      y1,
+      y2,
+    ));
 
     d3MapSelector
       .select("#container")

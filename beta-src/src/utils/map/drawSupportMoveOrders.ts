@@ -2,7 +2,7 @@ import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
 import ArrowColor from "../../enums/ArrowColor";
 import ArrowType from "../../enums/ArrowType";
 import GameDataResponse from "../../state/interfaces/GameDataResponse";
-import GameStateMaps from "../../state/interfaces/GameStateMap";
+import GameStateMaps from "../../state/interfaces/GameStateMaps";
 import OrdersMeta from "../../state/interfaces/SavedOrders";
 import drawArrow from "./drawArrow";
 
@@ -17,9 +17,7 @@ export default function drawSupportMoveOrders(
     ordersMetaEntries
       .filter(([, { update }]) => update?.type === "Support move")
       .forEach(([orderID, { update }]) => {
-        const originalOrder = currentOrders?.find(({ id }) => {
-          return id === orderID;
-        });
+        const originalOrder = currentOrders?.find(({ id }) => id === orderID);
         if (originalOrder && update) {
           const { fromTerrID, toTerrID } = update;
           if (fromTerrID && toTerrID) {
