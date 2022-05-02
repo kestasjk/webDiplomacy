@@ -3,7 +3,7 @@ import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
 import ArrowColor from "../../enums/ArrowColor";
 import ArrowType from "../../enums/ArrowType";
 import GameDataResponse from "../../state/interfaces/GameDataResponse";
-import GameStateMaps from "../../state/interfaces/GameStateMap";
+import GameStateMaps from "../../state/interfaces/GameStateMaps";
 import OrdersMeta from "../../state/interfaces/SavedOrders";
 import drawArrow from "./drawArrow";
 

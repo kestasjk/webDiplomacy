@@ -1,5 +1,5 @@
 import GameDataResponse from "../../state/interfaces/GameDataResponse";
-import GameStateMaps from "../../state/interfaces/GameStateMap";
+import GameStateMaps from "../../state/interfaces/GameStateMaps";
 import GameStateMap from "../../types/state/GameStateMap";
 
 export default function generateMaps(
