@@ -35,6 +35,11 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
   };
 
   const commandActions = {
+    DESTROY: (command) => {
+      const [key] = command;
+      setIconState(UIState.DESTROY);
+      deleteCommand(key);
+    },
     HOLD: (command) => {
       const [key] = command;
       setIconState(UIState.HOLD);
