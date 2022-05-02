@@ -18,9 +18,7 @@ export default function drawSupportMoveOrders(
     ordersMetaEntries
       .filter(([, { update }]) => update?.type === "Support move")
       .forEach(([orderID, { update }]) => {
-        const originalOrder = currentOrders?.find(({ id }) => {
-          return id === orderID;
-        });
+        const originalOrder = currentOrders?.find(({ id }) => id === orderID);
         if (originalOrder && update) {
           const { fromTerrID, toTerrID } = update;
           if (fromTerrID && toTerrID) {

@@ -11,9 +11,7 @@ export default function drawMoveOrders(data, ordersMeta: OrdersMeta): void {
     ordersMetaEntries
       .filter(([, { update }]) => update?.type === "Move")
       .forEach(([orderID, { update }]) => {
-        const originalOrder = currentOrders.find(({ id }) => {
-          return id === orderID;
-        });
+        const originalOrder = currentOrders.find(({ id }) => id === orderID);
         if (originalOrder && update && update.toTerrID) {
           const { id, unitID } = originalOrder;
           const unitData = units[unitID];
