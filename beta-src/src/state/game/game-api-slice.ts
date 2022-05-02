@@ -539,9 +539,7 @@ const gameApiSlice = createSlice({
           if (terrEnum === unitBeingSupported.onTerritory) {
             // attemping support hold
             const match = unitSupporting.supportHoldChoices?.find(
-              ({ unitID: uID }) => {
-                return uID === unitBeingSupported.unitID;
-              },
+              ({ unitID: uID }) => uID === unitBeingSupported.unitID,
             );
             if (match) {
               // execute support hold
@@ -565,9 +563,7 @@ const gameApiSlice = createSlice({
             );
             if (supportMoveMatch && supportMoveMatch.supportMoveFrom.length) {
               const match = supportMoveMatch.supportMoveFrom.find(
-                ({ unitID: uID }) => {
-                  return uID === unitBeingSupported.unitID;
-                },
+                ({ unitID: uID }) => uID === unitBeingSupported.unitID,
               );
               if (match) {
                 // execute support move
