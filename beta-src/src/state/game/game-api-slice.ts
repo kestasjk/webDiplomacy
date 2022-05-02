@@ -162,14 +162,32 @@ const resetOrder = (state) => {
   delete state.order.type;
 };
 
-const startNewOrder = (
+const getDataForOrder = (
   state,
-  {
-    payload: { unitID, onTerritory, orderID, toTerritory, type },
-  }: NewOrderPayload,
-) => {
+  { method, onTerritory, orderID, toTerritory, type, unitID }: OrderState,
+): OrderState => {
   const {
     data: { data: gameData },
+  } = current(state);
+  const newOrder: OrderState = {
+    inProgress: true,
+    method,
+    onTerritory,
+    orderID:
+      orderID ||
+      gameData.currentOrders.find((order) => order.unitID === unitID)?.id,
+    subsequentClicks: [],
+    toTerritory,
+    unitID,
+  };
+  if (type) {
+    newOrder.type = type;
+  }
+  return newOrder;
+};
+
+const startNewOrder = (state, action: NewOrderPayload) => {
+  const {
     order: { unitID: prevUnitID },
   } = current(state);
   if (prevUnitID) {
@@ -178,17 +196,10 @@ const startNewOrder = (
     };
     setCommand(state, command, "unitCommands", prevUnitID);
   }
-  state.order.inProgress = true;
-  state.order.unitID = unitID;
-  state.order.orderID =
-    orderID ||
-    gameData.currentOrders.find((order) => order.unitID === unitID)?.id;
-  state.order.onTerritory = onTerritory;
-  state.order.toTerritory = toTerritory;
   delete state.order.type;
-  if (type) {
-    state.order.type = type;
-  }
+  const orderData = getDataForOrder(state, action.payload);
+  state.order = orderData;
+  const { unitID } = orderData;
   if (unitID) {
     const command: GameCommand = {
       command: "SELECTED",
@@ -323,6 +334,26 @@ const gameApiSlice = createSlice({
     updateTerritoriesMeta(state, action) {
       state.territoriesMeta = action.payload;
     },
+    processUnitDoubleClick(state, clickData) {
+      const {
+        order,
+        data: {
+          data: { contextVars },
+        },
+      } = current(state);
+      if (contextVars?.context?.orderStatus) {
+        const orderStates = getOrderStates(contextVars?.context?.orderStatus);
+        if (orderStates.Ready) {
+          return;
+        }
+      }
+      const { inProgress } = order;
+      if (inProgress) {
+        // double click move in progress
+      } else {
+        startNewOrder(state, clickData);
+      }
+    },
     processUnitClick(state, clickData) {
       const {
         order,
@@ -342,6 +373,20 @@ const gameApiSlice = createSlice({
           highlightMapTerritoriesBasedOnStatuses(state);
         } else if (order.type === "move" && order.toTerritory !== null) {
           highlightMapTerritoriesBasedOnStatuses(state);
+        } else if (
+          order.method === "dblClick" &&
+          order.unitID !== clickData.payload.unitID
+        ) {
+          console.log("either a support move or a support hold");
+          state.order.subsequentClicks.push({
+            ...{
+              inProgress: true,
+              orderID: order.orderID,
+              toTerritory: null,
+            },
+            ...clickData.payload,
+          });
+          return;
         }
       }
       if (inProgress && order.unitID === clickData.payload.unitID) {
@@ -357,7 +402,16 @@ const gameApiSlice = createSlice({
         data: {
           data: { currentOrders, contextVars },
         },
-        order,
+        order: {
+          inProgress,
+          method,
+          orderID,
+          onTerritory,
+          subsequentClicks,
+          toTerritory,
+          type,
+          unitID,
+        },
         ordersMeta,
         overview: {
           user: { member },
@@ -374,12 +428,12 @@ const gameApiSlice = createSlice({
       const {
         payload: { clickObject, evt, name: territoryName },
       } = clickData;
-      if (order.inProgress) {
-        const currOrderUnitID = order.unitID;
+      if (inProgress && method === "click") {
+        const currOrderUnitID = unitID;
         if (
-          order.onTerritory !== null &&
-          Territory[order.onTerritory] === territoryName &&
-          !order.type
+          onTerritory !== null &&
+          Territory[onTerritory] === territoryName &&
+          !type
         ) {
           let command: GameCommand = {
             command: "HOLD",
@@ -389,7 +443,7 @@ const gameApiSlice = createSlice({
           command = {
             command: "REMOVE_ARROW",
             data: {
-              orderID: order.orderID,
+              orderID,
             },
           };
           setCommand(state, command, "mapCommands", "all");
@@ -410,30 +464,30 @@ const gameApiSlice = createSlice({
             }
           }
           state.order.type = "hold";
-        } else if (order.onTerritory !== null && order.type === "hold") {
+        } else if (onTerritory !== null && type === "hold") {
           highlightMapTerritoriesBasedOnStatuses(state);
           resetOrder(state);
-        } else if (order.toTerritory !== null && order.type === "move") {
+        } else if (toTerritory !== null && type === "move") {
           highlightMapTerritoriesBasedOnStatuses(state);
           resetOrder(state);
-        } else if (order.toTerritory !== null && order.type === "build") {
+        } else if (toTerritory !== null && type === "build") {
           setCommand(
             state,
             {
               command: "REMOVE_BUILD",
             },
             "territoryCommands",
-            Territory[order.toTerritory],
+            Territory[toTerritory],
           );
           resetOrder(state);
         } else if (
           clickObject === "territory" &&
-          order.onTerritory !== null &&
-          Territory[order.onTerritory] !== territoryName &&
-          !order.type &&
-          order.inProgress
+          onTerritory !== null &&
+          Territory[onTerritory] !== territoryName &&
+          !type &&
+          inProgress
         ) {
-          const { allowedBorderCrossings } = ordersMeta[order.orderID];
+          const { allowedBorderCrossings } = ordersMeta[orderID];
           const canMove = allowedBorderCrossings?.find((border) => {
             const mappedTerritory = TerritoryMap[border.name];
             return Territory[mappedTerritory.territory] === territoryName;
@@ -445,7 +499,7 @@ const gameApiSlice = createSlice({
             };
             setCommand(state, command, "territoryCommands", territoryName);
             updateOrdersMeta(state, {
-              [order.orderID]: {
+              [orderID]: {
                 saved: false,
                 update: {
                   type: "Move",
@@ -468,6 +522,10 @@ const gameApiSlice = createSlice({
             };
             setCommand(state, command, "mapCommands", "all");
           }
+        }
+      } else if (inProgress && method === "dblClick") {
+        if (subsequentClicks.length) {
+          console.log("support move");
         }
       } else if (
         clickObject === "territory" &&
@@ -552,7 +610,7 @@ const gameApiSlice = createSlice({
             }
           }
 
-          if (availableOrder && !territoryHasUnit && !order.inProgress) {
+          if (availableOrder && !territoryHasUnit && !inProgress) {
             let canBuild = 0;
             if (territoryCoast === "Parent" || territoryCoast === "No") {
               canBuild += BuildUnit.Army;
@@ -596,12 +654,14 @@ const gameApiSlice = createSlice({
             setCommand(state, command, "territoryCommands", territoryName);
             startNewOrder(state, {
               payload: {
-                orderID: availableOrder,
                 inProgress: true,
-                unitID: "",
+                method: "click",
+                orderID: availableOrder,
                 onTerritory: null,
+                subsequentClicks: [],
                 toTerritory: territoryMeta.territory,
                 type: "build",
+                unitID: "",
               },
             });
           }
