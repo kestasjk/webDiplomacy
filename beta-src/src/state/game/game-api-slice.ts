@@ -26,10 +26,12 @@ import UIState from "../../enums/UIState";
 import { UnitSlotNames } from "../../types/map/UnitSlotName";
 import getOrderStates from "../../utils/state/getOrderStates";
 import ContextVar from "../../interfaces/state/ContextVar";
-import drawCurrentMoveOrders from "../../utils/map/drawCurrentMoveOrders";
 import getOrdersMeta from "../../utils/map/getOrdersMeta";
 import getUnits from "../../utils/map/getUnits";
 import UnitType from "../../types/UnitType";
+import drawSupportMoveOrders from "../../utils/map/drawSupportMoveOrders";
+import drawMoveOrders from "../../utils/map/drawMoveOrders";
+import generateMaps from "../../utils/state/generateMaps";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -307,9 +309,11 @@ const drawBuilds = (state) => {
 const drawOrders = (state) => {
   const {
     data: { data },
+    maps,
     ordersMeta,
   } = current(state);
-  drawCurrentMoveOrders(data, ordersMeta);
+  drawMoveOrders(data, ordersMeta);
+  drawSupportMoveOrders(data, maps, ordersMeta);
   drawBuilds(state);
 };
 
@@ -704,6 +708,7 @@ const gameApiSlice = createSlice({
           data: { data },
           overview: { members, phase },
         } = current(state);
+        state.maps = generateMaps(data);
         const unitsToDraw = getUnits(data, members);
         unitsToDraw.forEach(({ country, mappedTerritory, unit }) => {
           const command: GameCommand = {

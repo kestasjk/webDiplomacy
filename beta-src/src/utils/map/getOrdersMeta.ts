@@ -34,7 +34,7 @@ export default function getOrdersMeta(data, phase): Props {
       const newOrders: OrderClass[] = [];
 
       currentOrders.forEach((o) => {
-        const { id, unitID, type, toTerrID } = o;
+        const { id, unitID, type, toTerrID, fromTerrID } = o;
         const orderUnit = newBoard.findUnitByID(unitID);
         if (orderUnit) {
           newOrders.push(new OrderClass(newBoard, o, orderUnit));
@@ -42,6 +42,7 @@ export default function getOrdersMeta(data, phase): Props {
             update: {
               type,
               toTerrID,
+              fromTerrID,
             },
           };
         }
