@@ -26,10 +26,10 @@ export default class BoardClass {
     this.territories = territories.map((territory) => {
       const curTerrStatus = terrStatus.find((ts) => ts.id === territory.id);
 
-      let currTerritory = new TerritoryClass(territory);
+      let currTerritory = new TerritoryClass(territory, this);
 
       if (curTerrStatus) {
-        currTerritory = new TerritoryClass(territory, curTerrStatus);
+        currTerritory = new TerritoryClass(territory, this, curTerrStatus);
 
         let currUnit;
         if (curTerrStatus.unitID) {

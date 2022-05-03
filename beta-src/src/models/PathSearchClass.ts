@@ -28,7 +28,7 @@ export default class PathSearchClass {
 
     const testPaths = start.node
       .getValidBorderTerritories()
-      .select((nextNode) => {
+      .filter((nextNode) => {
         // skip the end node as one starting node if an internal node should be enforced
         return !forceInternalNode || !this.fEndNode(nextNode);
       }, this)
@@ -48,15 +48,15 @@ export default class PathSearchClass {
 
       // check if node was already visited or fails fAllNode conditions
       if (
-        !testPath.node.visited(this) &&
-        !this.fAllNode &&
-        !this.fAllNode(testPath.node)
+        !testPath.visited(this) &&
+        this.fAllNode &&
+        !this.fAllNode(testPath)
       ) {
         // set the node visited
-        testPath.node.setVisited(this);
+        testPath.setVisited(this);
 
         // create new branches of the path, that reach to neighbored valid territories
-        const NextNodes = testPath.node.getValidBorderTerritories();
+        const NextNodes = testPath.getValidBorderTerritories();
 
         // add new paths to testPaths
         NextNodes.each((nextNode) => {
