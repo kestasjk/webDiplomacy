@@ -162,17 +162,14 @@ const resetOrder = (state) => {
   delete state.order.type;
 };
 
-const destroyUnit = (state) => {
+// Destroy a Unit during Builds Phase
+const destroyUnit = (state, unitID) => {
   const {
-    order: { unitID },
     ordersMeta,
   }: {
     order: OrderState;
     ordersMeta: OrdersMeta;
   } = current(state);
-
-  console.log("unitID", unitID);
-
   Object.values(ordersMeta).forEach(({ update }) => {
     if (update) {
       const { type } = update;
@@ -187,8 +184,7 @@ const destroyUnit = (state) => {
             },
           },
         };
-
-        setCommand(state, command, "unitCommands", "925");
+        setCommand(state, command, "unitCommands", unitID);
       }
     }
   });
@@ -372,29 +368,24 @@ const gameApiSlice = createSlice({
 
       const { inProgress } = order;
 
-      // Destroy
-      if (
-        phase === "Builds" &&
-        inProgress &&
-        order.unitID === clickData.payload.unitID
-      ) {
-        console.log("in builds");
-        destroyUnit(state);
-      }
-
-      if (inProgress) {
-        if (order.type === "hold" && order.onTerritory !== null) {
-          highlightMapTerritoriesBasedOnStatuses(state);
-        } else if (order.type === "move" && order.toTerritory !== null) {
-          highlightMapTerritoriesBasedOnStatuses(state);
-        }
-      }
-      if (inProgress && order.unitID === clickData.payload.unitID) {
-        resetOrder(state);
-      } else if (inProgress && order.unitID !== clickData.payload.unitID) {
-        startNewOrder(state, clickData);
+      // Destroy Unit
+      if (phase === "Builds") {
+        destroyUnit(state, clickData.payload.unitID);
       } else {
-        startNewOrder(state, clickData);
+        if (inProgress) {
+          if (order.type === "hold" && order.onTerritory !== null) {
+            highlightMapTerritoriesBasedOnStatuses(state);
+          } else if (order.type === "move" && order.toTerritory !== null) {
+            highlightMapTerritoriesBasedOnStatuses(state);
+          }
+        }
+        if (inProgress && order.unitID === clickData.payload.unitID) {
+          resetOrder(state);
+        } else if (inProgress && order.unitID !== clickData.payload.unitID) {
+          startNewOrder(state, clickData);
+        } else {
+          startNewOrder(state, clickData);
+        }
       }
     },
     processMapClick(state, clickData) {

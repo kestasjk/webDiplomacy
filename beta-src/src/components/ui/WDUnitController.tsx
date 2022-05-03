@@ -59,18 +59,22 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
 
   processNextCommand(commands, commandActions);
 
-  const unitCanInitiateOrder = true;
-  // if ("currentOrders" in data) {
-  //   const { currentOrders } = data;
-  //   if (currentOrders) {
-  //     for (let i = 0; i < currentOrders.length; i += 1) {
-  //       if (currentOrders[i].unitID === meta.unit.id) {
-  //         unitCanInitiateOrder = true;
-  //         break;
-  //       }
-  //     }
-  //   }
-  // }
+  // Need to configure currentOrders[i].unitID being null;
+  let unitCanInitiateOrder = false;
+  if ("currentOrders" in data) {
+    const { currentOrders } = data;
+    if (currentOrders) {
+      for (let i = 0; i < currentOrders.length; i += 1) {
+        if (
+          currentOrders[i].unitID === meta.unit.id ||
+          currentOrders[i].unitID === null
+        ) {
+          unitCanInitiateOrder = true;
+          break;
+        }
+      }
+    }
+  }
 
   const clickAction = function (e) {
     if (!unitCanInitiateOrder) {

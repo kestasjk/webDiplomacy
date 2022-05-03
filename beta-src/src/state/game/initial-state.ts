@@ -22,6 +22,7 @@ const initialState: GameState = {
     unitID: "",
   },
   ordersMeta: {},
+  ownUnits: [],
   territoriesMeta: {},
   commands: {
     mapCommands: {},
