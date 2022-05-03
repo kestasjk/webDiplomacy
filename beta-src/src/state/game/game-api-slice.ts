@@ -309,7 +309,6 @@ const updateUnitsDisbanding = (state) => {
         (o) =>
           ordersMeta[o.id].update.type === "Disband" || o.type === "Disband",
       );
-      console.log("hello");
 
       if (userDisbandingUnits) {
         const orderStates = getOrderStates(contextVars?.context?.orderStatus);
@@ -319,11 +318,7 @@ const updateUnitsDisbanding = (state) => {
               command: "NONE",
             };
             setCommand(state, command, "unitCommands", order.unitID);
-          } else if (
-            (ordersMeta[order.id].saved && !orderStates.Ready) ||
-            !ordersMeta[order.id].allowedBorderCrossings.length
-          ) {
-            console.log("hi");
+          } else if (ordersMeta[order.id].saved && !orderStates.Ready) {
             const command: GameCommand = {
               command: "DISBAND",
             };
@@ -705,6 +700,7 @@ const gameApiSlice = createSlice({
               },
             },
           };
+
           setCommand(
             state,
             command,
@@ -714,7 +710,6 @@ const gameApiSlice = createSlice({
               : Territory[mappedTerritory.territory],
           );
         });
-        console.log("update");
         updateOrdersMeta(state, getOrdersMeta(data, phase));
       })
       .addCase(fetchGameData.rejected, (state, action) => {

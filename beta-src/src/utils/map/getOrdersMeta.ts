@@ -43,6 +43,7 @@ export default function getOrdersMeta(data, phase): Props {
             ...units[unitID],
             Territory: territories[units[unitID].terrID],
           });
+          newBoard.units.push(orderUnit);
         }
 
         if (orderUnit) {
@@ -54,9 +55,6 @@ export default function getOrdersMeta(data, phase): Props {
               toTerrID,
             },
           };
-          if (!newBoard.findUnitByID(unitID)) {
-            newBoard.units.push(orderUnit);
-          }
         }
       });
 
@@ -68,16 +66,16 @@ export default function getOrdersMeta(data, phase): Props {
           allowedBorderCrossings = moveChoices.filter((choice) => {
             const { Borders } = choice;
             const from = Borders.find(
-              (border) => border.id === orderUnit.terrID,
+              (border) => border.id === orderUnit?.terrID,
             );
-            if (from && orderUnit.canCrossBorder(from)) {
+            if (from && orderUnit?.canCrossBorder(from)) {
               return true;
             }
             return false;
           });
           if (phase === "Retreats") {
             const occupiedTerritory = newBoard.territories.find(
-              (t) => t.id === orderUnit.terrID,
+              (t) => t.id === orderUnit?.terrID,
             );
             allowedBorderCrossings = allowedBorderCrossings.filter(
               (crossing) =>
