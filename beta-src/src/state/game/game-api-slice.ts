@@ -162,6 +162,38 @@ const resetOrder = (state) => {
   delete state.order.type;
 };
 
+const destroyUnit = (state) => {
+  const {
+    order: { unitID },
+    ordersMeta,
+  }: {
+    order: OrderState;
+    ordersMeta: OrdersMeta;
+  } = current(state);
+
+  console.log("unitID", unitID);
+
+  Object.values(ordersMeta).forEach(({ update }) => {
+    if (update) {
+      const { type } = update;
+      if (type === "Destroy") {
+        const command: GameCommand = {
+          command: "DESTROY",
+          data: {
+            setUnit: {
+              componentType: "Icon",
+              iconState: UIState.DESTROY,
+              unitSlotName: "main",
+            },
+          },
+        };
+
+        setCommand(state, command, "unitCommands", "925");
+      }
+    }
+  });
+};
+
 const startNewOrder = (
   state,
   {
@@ -329,6 +361,7 @@ const gameApiSlice = createSlice({
         data: {
           data: { contextVars },
         },
+        overview: { phase },
       } = current(state);
       if (contextVars?.context?.orderStatus) {
         const orderStates = getOrderStates(contextVars?.context?.orderStatus);
@@ -336,7 +369,19 @@ const gameApiSlice = createSlice({
           return;
         }
       }
+
       const { inProgress } = order;
+
+      // Destroy
+      if (
+        phase === "Builds" &&
+        inProgress &&
+        order.unitID === clickData.payload.unitID
+      ) {
+        console.log("in builds");
+        destroyUnit(state);
+      }
+
       if (inProgress) {
         if (order.type === "hold" && order.onTerritory !== null) {
           highlightMapTerritoriesBasedOnStatuses(state);
