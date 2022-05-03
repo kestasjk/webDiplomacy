@@ -17,6 +17,7 @@ interface OrderMeta {
   allowedBorderCrossings?: TerritoryClass[];
   saved: boolean;
   supportMoveChoices?: SupportMoveChoice[];
+  supportHoldChoices?: TerritoryClass[];
   update?: OrderMetaUpdate;
   originalOrder: IOrderData;
 }
@@ -28,6 +29,7 @@ export interface EditOrderMeta {
     allowedBorderCrossings?: TerritoryClass[];
     originalOrder?: IOrderData;
     supportMoveChoices?: SupportMoveChoice[];
+    suuportHoldChoices?: TerritoryClass[];
   };
 }
 

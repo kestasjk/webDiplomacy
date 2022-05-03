@@ -54,6 +54,7 @@ export default function getOrdersMeta(data, phase): Props {
       newOrders.forEach((o) => {
         const moveChoices = o.getMoveChoices();
         const supportMoveToChoices = o.getSupportMoveToChoices();
+        const supportHoldChoices = o.getSupportHoldChoices();
         const supportMoveChoices: SupportMoveChoice[] = [];
         supportMoveToChoices.forEach((supportMoveTo) => {
           const supportMoveFrom = o.getSupportMoveFromChoices(supportMoveTo);
@@ -82,6 +83,7 @@ export default function getOrdersMeta(data, phase): Props {
             ...updateOrdersMeta[o.orderData.id],
             allowedBorderCrossings,
             supportMoveChoices,
+            supportHoldChoices,
           };
         }
       });

@@ -33,6 +33,7 @@ import drawSupportMoveOrders from "../../utils/map/drawSupportMoveOrders";
 import drawMoveOrders from "../../utils/map/drawMoveOrders";
 import generateMaps from "../../utils/state/generateMaps";
 import removeAllArrows from "../../utils/map/removeAllArrows";
+import drawSupportHoldOrders from "../../utils/map/drawSupportHoldOrders";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -316,6 +317,7 @@ const drawOrders = (state) => {
   removeAllArrows();
   drawMoveOrders(data, ordersMeta);
   drawSupportMoveOrders(data, maps, ordersMeta);
+  drawSupportHoldOrders(data, ordersMeta);
   drawBuilds(state);
 };
 
@@ -530,34 +532,54 @@ const gameApiSlice = createSlice({
         }
       } else if (inProgress && method === "dblClick") {
         if (subsequentClicks.length) {
-          // user is trying to do a support move
+          // user is trying to do a support move or a support hold
           const unitSupporting = ordersMeta[orderID];
           const unitBeingSupported = subsequentClicks[0];
           const terrEnum = Number(Territory[territoryName]);
-          const supportMoveMatch = unitSupporting.supportMoveChoices?.find(
-            ({ supportMoveTo: { name } }) =>
-              TerritoryMap[name].territory === terrEnum,
-          );
-          if (supportMoveMatch && supportMoveMatch.supportMoveFrom.length) {
-            const moveFromMatch = supportMoveMatch.supportMoveFrom.find(
-              ({ unitID: uID }) => {
-                return uID === unitBeingSupported.unitID;
-              },
+          if (terrEnum === unitBeingSupported.onTerritory) {
+            // attemping support hold
+            const match = unitSupporting.supportHoldChoices?.find(
+              ({ unitID: uID }) => uID === unitBeingSupported.unitID,
             );
-            if (moveFromMatch) {
-              // execute support move
+            if (match) {
+              // execute support hold
               updateOrdersMeta(state, {
                 [orderID]: {
                   saved: false,
                   update: {
-                    type: "Support move",
-                    toTerrID: supportMoveMatch.supportMoveTo.id,
-                    fromTerrID: moveFromMatch.id,
+                    type: "Support hold",
+                    toTerrID: match.id,
                   },
                 },
               });
               resetOrder(state);
               return;
+            }
+          } else {
+            // attempting support move
+            const supportMoveMatch = unitSupporting.supportMoveChoices?.find(
+              ({ supportMoveTo: { name } }) =>
+                TerritoryMap[name].territory === terrEnum,
+            );
+            if (supportMoveMatch && supportMoveMatch.supportMoveFrom.length) {
+              const match = supportMoveMatch.supportMoveFrom.find(
+                ({ unitID: uID }) => uID === unitBeingSupported.unitID,
+              );
+              if (match) {
+                // execute support move
+                updateOrdersMeta(state, {
+                  [orderID]: {
+                    saved: false,
+                    update: {
+                      type: "Support move",
+                      toTerrID: supportMoveMatch.supportMoveTo.id,
+                      fromTerrID: match.id,
+                    },
+                  },
+                });
+                resetOrder(state);
+                return;
+              }
             }
           }
           const command: GameCommand = {
