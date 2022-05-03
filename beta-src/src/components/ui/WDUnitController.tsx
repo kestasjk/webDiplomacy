@@ -3,7 +3,7 @@ import { GameIconProps } from "../../interfaces/Icons";
 import UIState from "../../enums/UIState";
 import debounce from "../../utils/debounce";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
-import { gameApiSliceActions, gameData } from "../../state/game/game-api-slice";
+import { gameApiSliceActions } from "../../state/game/game-api-slice";
 import processNextCommand from "../../utils/processNextCommand";
 
 interface UnitControllerProps {
@@ -21,8 +21,6 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
   const commands = useAppSelector(
     (state) => state.game.commands.unitCommands[meta.unit.id],
   );
-
-  const { data } = useAppSelector(gameData);
 
   const deleteCommand = (key) => {
     dispatch(
@@ -54,23 +52,7 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
 
   processNextCommand(commands, commandActions);
 
-  let unitCanInitiateOrder = false;
-  if ("currentOrders" in data) {
-    const { currentOrders } = data;
-    if (currentOrders) {
-      for (let i = 0; i < currentOrders.length; i += 1) {
-        if (currentOrders[i].unitID === meta.unit.id) {
-          unitCanInitiateOrder = true;
-          break;
-        }
-      }
-    }
-  }
-
   const clickAction = (e) => {
-    if (!unitCanInitiateOrder) {
-      return;
-    }
     dispatch(
       gameApiSliceActions.processUnitClick({
         method: "click",
@@ -81,9 +63,6 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
   };
 
   const doubleClickAction = (e) => {
-    if (!unitCanInitiateOrder) {
-      return;
-    }
     dispatch(
       gameApiSliceActions.processUnitDoubleClick({
         method: "dblClick",
