@@ -52,20 +52,10 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
 
   processNextCommand(commands, commandActions);
 
-  const clickAction = (e) => {
+  const clickAction = (e, method) => {
     dispatch(
       gameApiSliceActions.processUnitClick({
-        method: "click",
-        onTerritory: meta.mappedTerritory.territory,
-        unitID: meta.unit.id,
-      }),
-    );
-  };
-
-  const doubleClickAction = (e) => {
-    dispatch(
-      gameApiSliceActions.processUnitDoubleClick({
-        method: "dblClick",
+        method,
         onTerritory: meta.mappedTerritory.territory,
         unitID: meta.unit.id,
       }),
@@ -73,7 +63,7 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
   };
 
   const handleClick = debounce((e) => {
-    clickAction(e);
+    clickAction(e, "click");
   }, 200);
 
   const handleSingleClick = (e) => {
@@ -82,7 +72,7 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
 
   const handleDoubleClick = (e) => {
     handleClick[1]();
-    doubleClickAction(e);
+    clickAction(e, "dblClick");
   };
 
   return (

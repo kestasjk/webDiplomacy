@@ -385,9 +385,10 @@ const gameApiSlice = createSlice({
       if (inProgress) {
         if (unitID === clickData.payload.unitID) {
           resetOrder(state);
-        } else if (type === "hold" && onTerritory !== null) {
-          highlightMapTerritoriesBasedOnStatuses(state);
-        } else if (type === "move" && toTerritory !== null) {
+        } else if (
+          (type === "hold" || type === "move") &&
+          onTerritory !== null
+        ) {
           highlightMapTerritoriesBasedOnStatuses(state);
         } else if (
           method === "dblClick" &&
