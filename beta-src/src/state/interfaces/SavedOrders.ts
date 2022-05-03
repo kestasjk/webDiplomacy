@@ -4,6 +4,7 @@ import TerritoryClass from "../../models/TerritoryClass";
 interface OrderMetaUpdate {
   type: string;
   toTerrID: string | null;
+  fromTerrID?: string | null;
   viaConvoy?: string | null;
 }
 

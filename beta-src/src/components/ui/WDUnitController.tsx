@@ -72,12 +72,26 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
     }
   }
 
-  const clickAction = function (e) {
+  const clickAction = (e) => {
     if (!unitCanInitiateOrder) {
       return;
     }
     dispatch(
       gameApiSliceActions.processUnitClick({
+        method: "click",
+        onTerritory: meta.mappedTerritory.territory,
+        unitID: meta.unit.id,
+      }),
+    );
+  };
+
+  const doubleClickAction = (e) => {
+    if (!unitCanInitiateOrder) {
+      return;
+    }
+    dispatch(
+      gameApiSliceActions.processUnitDoubleClick({
+        method: "dblClick",
         onTerritory: meta.mappedTerritory.territory,
         unitID: meta.unit.id,
       }),
@@ -94,7 +108,7 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
 
   const handleDoubleClick = (e) => {
     handleClick[1]();
-    handleClick[0](e);
+    doubleClickAction(e);
   };
 
   return (

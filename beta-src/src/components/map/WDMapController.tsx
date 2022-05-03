@@ -14,9 +14,9 @@ import {
 } from "../../state/game/game-api-slice";
 import drawArrow from "../../utils/map/drawArrow";
 import ArrowType from "../../enums/ArrowType";
-import drawCurrentMoveOrders from "../../utils/map/drawCurrentMoveOrders";
 import processNextCommand from "../../utils/processNextCommand";
 import getTerritoriesMeta from "../../utils/getTerritoriesMeta";
+import ArrowColor from "../../enums/ArrowColor";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -62,7 +62,14 @@ const WDMapController: React.FC = function (): React.ReactElement {
     DRAW_ARROW: (command) => {
       const [key, value] = command;
       const { orderID, arrow } = value.data;
-      drawArrow(`${orderID}`, ArrowType.MOVE, arrow.to, arrow.from);
+      drawArrow(
+        orderID,
+        ArrowType.MOVE,
+        ArrowColor.MOVE,
+        "territory",
+        arrow.to,
+        arrow.from,
+      );
       deleteCommand(key);
     },
     REMOVE_ARROW: (command) => {
@@ -146,9 +153,9 @@ const WDMapController: React.FC = function (): React.ReactElement {
 
   React.useEffect(() => {
     setTimeout(() => {
-      drawCurrentMoveOrders(data, ordersMeta);
+      dispatch(gameApiSliceActions.updateOrdersMeta(ordersMeta));
     }, 500);
-  }, [ordersMeta]);
+  }, []);
 
   React.useEffect(() => {
     if (data) {
@@ -157,7 +164,6 @@ const WDMapController: React.FC = function (): React.ReactElement {
       );
       dispatch(gameApiSliceActions.updateUnitsDisbanding());
       dispatch(gameApiSliceActions.highlightMapTerritories());
-      dispatch(gameApiSliceActions.drawBuilds());
     }
   }, [data]);
 

@@ -35,9 +35,8 @@ export default function getOrdersMeta(data, phase): Props {
       const newOrders: OrderClass[] = [];
 
       currentOrders.forEach((o) => {
-        const { id, unitID, type, toTerrID } = o;
+        const { id, unitID, type, toTerrID, fromTerrID } = o;
         let orderUnit = newBoard.findUnitByID(unitID);
-
         if (!orderUnit?.Territory && phase === "Retreats") {
           orderUnit = new UnitClass({
             ...units[unitID],
@@ -45,7 +44,6 @@ export default function getOrdersMeta(data, phase): Props {
           });
           newBoard.units.push(orderUnit);
         }
-
         if (orderUnit) {
           const tempOrder = new OrderClass(newBoard, o, orderUnit);
           newOrders.push(tempOrder);
@@ -53,6 +51,7 @@ export default function getOrdersMeta(data, phase): Props {
             update: {
               type,
               toTerrID,
+              fromTerrID,
             },
           };
         }
