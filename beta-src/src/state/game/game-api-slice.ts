@@ -344,30 +344,37 @@ const gameApiSlice = createSlice({
     },
     processUnitDoubleClick(state, clickData) {
       const {
-        order,
         data: {
           data: { contextVars },
         },
+        ownUnits,
       } = current(state);
+      if (!ownUnits.includes(clickData.payload.unitID)) {
+        return;
+      }
       if (contextVars?.context?.orderStatus) {
         const orderStates = getOrderStates(contextVars?.context?.orderStatus);
         if (orderStates.Ready) {
           return;
         }
       }
-      const { inProgress } = order;
-      if (inProgress) {
-        // double click move in progress
-      } else {
-        startNewOrder(state, clickData);
-      }
+      startNewOrder(state, clickData);
     },
     processUnitClick(state, clickData) {
       const {
-        order,
         data: {
           data: { contextVars },
         },
+        order: {
+          inProgress,
+          method,
+          onTerritory,
+          orderID,
+          toTerritory,
+          type,
+          unitID,
+        },
+        ownUnits,
       } = current(state);
       if (contextVars?.context?.orderStatus) {
         const orderStates = getOrderStates(contextVars?.context?.orderStatus);
@@ -375,32 +382,30 @@ const gameApiSlice = createSlice({
           return;
         }
       }
-      const { inProgress } = order;
       if (inProgress) {
-        if (order.type === "hold" && order.onTerritory !== null) {
-          highlightMapTerritoriesBasedOnStatuses(state);
-        } else if (order.type === "move" && order.toTerritory !== null) {
+        if (unitID === clickData.payload.unitID) {
+          resetOrder(state);
+        } else if (
+          (type === "hold" || type === "move") &&
+          onTerritory !== null
+        ) {
           highlightMapTerritoriesBasedOnStatuses(state);
         } else if (
-          order.method === "dblClick" &&
-          order.unitID !== clickData.payload.unitID
+          method === "dblClick" &&
+          unitID !== clickData.payload.unitID
         ) {
           state.order.subsequentClicks.push({
             ...{
               inProgress: true,
-              orderID: order.orderID,
+              orderID,
               toTerritory: null,
             },
             ...clickData.payload,
           });
-          return;
+        } else if (ownUnits.includes(clickData.payload.unitID)) {
+          startNewOrder(state, clickData);
         }
-      }
-      if (inProgress && order.unitID === clickData.payload.unitID) {
-        resetOrder(state);
-      } else if (inProgress && order.unitID !== clickData.payload.unitID) {
-        startNewOrder(state, clickData);
-      } else {
+      } else if (ownUnits.includes(clickData.payload.unitID)) {
         startNewOrder(state, clickData);
       }
     },
@@ -771,6 +776,9 @@ const gameApiSlice = createSlice({
           overview: { members, phase },
         } = current(state);
         state.maps = generateMaps(data);
+        data.currentOrders?.forEach(({ unitID }) => {
+          state.ownUnits.push(unitID);
+        });
         const unitsToDraw = getUnits(data, members);
         unitsToDraw.forEach(({ country, mappedTerritory, unit }) => {
           const command: GameCommand = {
