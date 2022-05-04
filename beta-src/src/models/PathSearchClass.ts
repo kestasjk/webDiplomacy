@@ -48,18 +48,18 @@ export default class PathSearchClass {
 
       // check if node was already visited or fails fAllNode conditions
       if (
-        !testPath.visited(this) &&
-        this.fAllNode &&
-        !this.fAllNode(testPath)
+        testPath.node.visited(this) ||
+        !this.fAllNode ||
+        !this.fAllNode(testPath.node)
       ) {
         // set the node visited
-        testPath.setVisited(this);
+        testPath.node.setVisited(this);
 
         // create new branches of the path, that reach to neighbored valid territories
-        const NextNodes = testPath.getValidBorderTerritories();
+        const NextNodes = testPath.node.getValidBorderTerritories();
 
         // add new paths to testPaths
-        NextNodes.each((nextNode) => {
+        NextNodes.forEach((nextNode) => {
           testPaths.push(testPath.addNode(nextNode));
         });
       }
