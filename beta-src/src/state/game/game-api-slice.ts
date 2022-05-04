@@ -334,17 +334,17 @@ const updateUnitsDisbanding = (state) => {
 
       if (userDisbandingUnits) {
         const orderStates = getOrderStates(contextVars?.context?.orderStatus);
-        userDisbandingUnits.forEach((order, index) => {
+        userDisbandingUnits.forEach(({ id, unitID }) => {
           if (orderStates.Ready) {
             const command: GameCommand = {
               command: "NONE",
             };
-            setCommand(state, command, "unitCommands", order.unitID);
-          } else if (ordersMeta[order.id].saved && !orderStates.Ready) {
+            setCommand(state, command, "unitCommands", unitID);
+          } else if (ordersMeta[id].saved && !orderStates.Ready) {
             const command: GameCommand = {
               command: "DISBAND",
             };
-            setCommand(state, command, "unitCommands", order.unitID);
+            setCommand(state, command, "unitCommands", unitID);
 
             highlightMapTerritoriesBasedOnStatuses(state);
           }
