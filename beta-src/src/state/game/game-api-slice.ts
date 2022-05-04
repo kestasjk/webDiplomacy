@@ -896,11 +896,10 @@ const gameApiSlice = createSlice({
           Object.entries(orders).forEach(([id, value]) => {
             if (value.status === "Complete") {
               state.ordersMeta[id].saved = true;
-              if (state.ordersMeta[id].update?.type === "Disband") {
-                updateUnitsDisbanding(state);
-              }
             }
           });
+
+          updateUnitsDisbanding(state);
         }
       });
   },
