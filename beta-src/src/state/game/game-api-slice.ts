@@ -333,14 +333,8 @@ const updateUnitsDisbanding = (state) => {
       );
 
       if (userDisbandingUnits) {
-        const orderStates = getOrderStates(contextVars?.context?.orderStatus);
         userDisbandingUnits.forEach(({ id, unitID }) => {
-          if (orderStates.Ready) {
-            const command: GameCommand = {
-              command: "NONE",
-            };
-            setCommand(state, command, "unitCommands", unitID);
-          } else if (ordersMeta[id].saved && !orderStates.Ready) {
+          if (ordersMeta[id].saved) {
             const command: GameCommand = {
               command: "DISBAND",
             };
