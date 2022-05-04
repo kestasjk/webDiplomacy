@@ -18,7 +18,6 @@ export interface GameState {
   overview: GameOverviewResponse;
   order: OrderState;
   ordersMeta: OrdersMeta;
-  ownUnits: string[];
   territoriesMeta: TerritoriesMeta;
   commands: GameCommands;
   status: GameStatusResponse;

@@ -117,7 +117,6 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
 
   return (
     <g onClick={handleSingleClick} onDoubleClick={handleDoubleClick}>
-      {meta.unit.id}
       {children}
     </g>
   );

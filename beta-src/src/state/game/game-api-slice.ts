@@ -166,39 +166,7 @@ const resetOrder = (state) => {
   delete state.order.type;
 };
 
-<<<<<<< HEAD
-// Destroy a Unit during Builds Phase
-const destroyUnit = (state, unitID) => {
-  const {
-    ordersMeta,
-  }: {
-    order: OrderState;
-    ordersMeta: OrdersMeta;
-  } = current(state);
-  Object.values(ordersMeta).forEach(({ update }) => {
-    if (update) {
-      const { type } = update;
-      if (type === "Destroy") {
-        const command: GameCommand = {
-          command: "DESTROY",
-          data: {
-            setUnit: {
-              componentType: "Icon",
-              iconState: UIState.DESTROY,
-              unitSlotName: "main",
-            },
-          },
-        };
-        setCommand(state, command, "unitCommands", unitID);
-      }
-    }
-  });
-};
-
-const startNewOrder = (
-=======
 const getDataForOrder = (
->>>>>>> staging
   state,
   { method, onTerritory, orderID, toTerritory, type, unitID }: OrderState,
 ): OrderState => {
@@ -220,6 +188,37 @@ const getDataForOrder = (
     newOrder.type = type;
   }
   return newOrder;
+};
+
+// Destroy a Unit during Builds Phase
+const destroyUnit = (state, unitID) => {
+  const {
+    ordersMeta,
+  }: {
+    order: OrderState;
+    ordersMeta: OrdersMeta;
+  } = current(state);
+  Object.values(ordersMeta).forEach(({ update }) => {
+    if (update) {
+      const { type } = update;
+      if (type === "Destroy") {
+        const command: GameCommand = {
+          command: state.order.inProgress ? "NONE" : "DESTROY",
+          data: {
+            setUnit: {
+              componentType: "Icon",
+              iconState: state.order.inProgress
+                ? UIState.NONE
+                : UIState.DESTROY,
+              unitSlotName: "main",
+            },
+          },
+        };
+        setCommand(state, command, "unitCommands", unitID);
+        state.order.inProgress = !state.order.inProgress;
+      }
+    }
+  });
 };
 
 const startNewOrder = (state, action: NewOrderPayload) => {
@@ -408,45 +407,28 @@ const gameApiSlice = createSlice({
           return;
         }
       }
-
       const { inProgress } = order;
-<<<<<<< HEAD
-
-      // Destroy Unit
       if (phase === "Builds") {
         destroyUnit(state, clickData.payload.unitID);
-=======
-      if (inProgress) {
-        if (order.type === "hold" && order.onTerritory !== null) {
-          highlightMapTerritoriesBasedOnStatuses(state);
-        } else if (order.type === "move" && order.toTerritory !== null) {
-          highlightMapTerritoriesBasedOnStatuses(state);
-        } else if (
-          order.method === "dblClick" &&
-          order.unitID !== clickData.payload.unitID
-        ) {
-          state.order.subsequentClicks.push({
-            ...{
-              inProgress: true,
-              orderID: order.orderID,
-              toTerritory: null,
-            },
-            ...clickData.payload,
-          });
-          return;
-        }
-      }
-      if (inProgress && order.unitID === clickData.payload.unitID) {
-        resetOrder(state);
-      } else if (inProgress && order.unitID !== clickData.payload.unitID) {
-        startNewOrder(state, clickData);
->>>>>>> staging
       } else {
         if (inProgress) {
           if (order.type === "hold" && order.onTerritory !== null) {
             highlightMapTerritoriesBasedOnStatuses(state);
           } else if (order.type === "move" && order.toTerritory !== null) {
             highlightMapTerritoriesBasedOnStatuses(state);
+          } else if (
+            order.method === "dblClick" &&
+            order.unitID !== clickData.payload.unitID
+          ) {
+            state.order.subsequentClicks.push({
+              ...{
+                inProgress: true,
+                orderID: order.orderID,
+                toTerritory: null,
+              },
+              ...clickData.payload,
+            });
+            return;
           }
         }
         if (inProgress && order.unitID === clickData.payload.unitID) {

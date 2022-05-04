@@ -24,15 +24,11 @@ const initialState: GameState = {
     unitID: "",
   },
   ordersMeta: {},
-<<<<<<< HEAD
-  ownUnits: [],
-=======
   maps: {
     territoryToUnit: {},
     unitToOrder: {},
     unitToTerritory: {},
   },
->>>>>>> staging
   territoriesMeta: {},
   commands: {
     mapCommands: {},
