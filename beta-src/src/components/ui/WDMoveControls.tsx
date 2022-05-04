@@ -7,7 +7,7 @@ import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
 import Device from "../../enums/Device";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
-import gameApiSlice, {
+import {
   gameApiSliceActions,
   gameData,
   gameOrdersMeta,
