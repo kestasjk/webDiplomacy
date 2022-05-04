@@ -4,12 +4,20 @@ import TerritoryClass from "../../models/TerritoryClass";
 interface OrderMetaUpdate {
   type: string;
   toTerrID: string | null;
+  fromTerrID?: string | null;
   viaConvoy?: string | null;
+}
+
+export interface SupportMoveChoice {
+  supportMoveFrom: TerritoryClass[];
+  supportMoveTo: TerritoryClass;
 }
 
 interface OrderMeta {
   allowedBorderCrossings?: TerritoryClass[];
   saved: boolean;
+  supportMoveChoices?: SupportMoveChoice[];
+  supportHoldChoices?: TerritoryClass[];
   update?: OrderMetaUpdate;
   originalOrder: IOrderData;
 }
@@ -20,6 +28,8 @@ export interface EditOrderMeta {
     update?: OrderMetaUpdate;
     allowedBorderCrossings?: TerritoryClass[];
     originalOrder?: IOrderData;
+    supportMoveChoices?: SupportMoveChoice[];
+    suuportHoldChoices?: TerritoryClass[];
   };
 }
 

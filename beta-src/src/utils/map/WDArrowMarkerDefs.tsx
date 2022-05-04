@@ -16,7 +16,7 @@ const WDArrowMarkerColors = function (
                 id={`arrowHead__${ArrowType[arrowType]}_${ArrowColor[arrowColor]}`}
                 markerWidth={8}
                 markerHeight={8}
-                refX="2%"
+                refX="16"
                 refY={4}
                 orient="auto"
               >
@@ -38,7 +38,7 @@ const WDArrowMarkerColors = function (
                 id={`arrowHead__${ArrowType[arrowType]}_${ArrowColor[arrowColor]}`}
                 markerWidth={8}
                 markerHeight={8}
-                refX="2%"
+                refX="16"
                 refY={4}
                 orient="auto"
               >

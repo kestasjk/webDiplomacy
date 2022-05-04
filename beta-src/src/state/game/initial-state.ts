@@ -16,13 +16,23 @@ const initialState: GameState = {
   error: null,
   order: {
     inProgress: false,
+    method: "click",
     onTerritory: null,
     orderID: "",
+    subsequentClicks: [],
     toTerritory: null,
     unitID: "",
   },
   ordersMeta: {},
+<<<<<<< HEAD
   ownUnits: [],
+=======
+  maps: {
+    territoryToUnit: {},
+    unitToOrder: {},
+    unitToTerritory: {},
+  },
+>>>>>>> staging
   territoriesMeta: {},
   commands: {
     mapCommands: {},

@@ -14,7 +14,6 @@ import {
 } from "../../state/game/game-api-slice";
 import drawArrow from "../../utils/map/drawArrow";
 import ArrowType from "../../enums/ArrowType";
-import drawCurrentMoveOrders from "../../utils/map/drawCurrentMoveOrders";
 import processNextCommand from "../../utils/processNextCommand";
 import getTerritoriesMeta from "../../utils/getTerritoriesMeta";
 import ArrowColor from "../../enums/ArrowColor";
@@ -154,9 +153,9 @@ const WDMapController: React.FC = function (): React.ReactElement {
 
   React.useEffect(() => {
     setTimeout(() => {
-      drawCurrentMoveOrders(data, ordersMeta);
+      dispatch(gameApiSliceActions.updateOrdersMeta(ordersMeta));
     }, 500);
-  }, [ordersMeta]);
+  }, []);
 
   React.useEffect(() => {
     if (data) {
@@ -164,7 +163,6 @@ const WDMapController: React.FC = function (): React.ReactElement {
         gameApiSliceActions.updateTerritoriesMeta(getTerritoriesMeta(data)),
       );
       dispatch(gameApiSliceActions.highlightMapTerritories());
-      dispatch(gameApiSliceActions.drawBuilds());
     }
   }, [data]);
 

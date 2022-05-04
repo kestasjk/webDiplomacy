@@ -113,7 +113,7 @@ export default class OrderClass {
         ConvoyArmies = againstTerritory.ConvoyGroup.armies;
       }
 
-      possibleUnits = possibleUnits.concat(ConvoyArmies);
+      possibleUnits = [...possibleUnits, ...ConvoyArmies];
     }
 
     return Array.from(

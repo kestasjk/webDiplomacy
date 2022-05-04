@@ -2,6 +2,7 @@ import GameCommands from "./GameCommands";
 import GameDataResponse from "./GameDataResponse";
 import GameErrorResponse from "./GameErrorResponse";
 import GameOverviewResponse from "./GameOverviewResponse";
+import GameStateMaps from "./GameStateMaps";
 import GameStatusResponse from "./GameStatusResponse";
 import OrderState from "./OrderState";
 import OrdersMeta from "./SavedOrders";
@@ -13,6 +14,7 @@ export interface GameState {
   apiStatus: ApiStatus;
   data: GameDataResponse;
   error: GameErrorResponse;
+  maps: GameStateMaps;
   overview: GameOverviewResponse;
   order: OrderState;
   ordersMeta: OrdersMeta;

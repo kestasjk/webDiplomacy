@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 import { v4 as uuidv4 } from "uuid";
+=======
+>>>>>>> staging
 import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
 import ArrowColor from "../../enums/ArrowColor";
 import ArrowType from "../../enums/ArrowType";
@@ -43,7 +46,11 @@ export default function drawSupportMoveOrders(
                 supportedUnitActualOrderType !== "Move" ||
                 supportedUnitToTerrID !== toTerrID
               ) {
+<<<<<<< HEAD
                 supportArrowIdentifer = uuidv4();
+=======
+                supportArrowIdentifer = `${id}-implied`;
+>>>>>>> staging
                 drawArrow(
                   supportArrowIdentifer,
                   ArrowType.MOVE,
