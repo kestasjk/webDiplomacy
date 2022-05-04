@@ -21,7 +21,7 @@ export default function getOrdersMeta(data, phase): Props {
         updateOrdersMeta[id] = {
           saved: true,
           update: {
-            type: toTerrID ? type : "Wait",
+            type: toTerrID ? type : "Destroy",
             toTerrID,
           },
         };

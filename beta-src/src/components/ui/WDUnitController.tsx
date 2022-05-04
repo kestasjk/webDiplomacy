@@ -59,7 +59,6 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
 
   processNextCommand(commands, commandActions);
 
-  // Need to configure currentOrders[i].unitID being null;
   let unitCanInitiateOrder = false;
   if ("currentOrders" in data) {
     const { currentOrders } = data;

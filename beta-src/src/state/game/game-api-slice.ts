@@ -9,7 +9,7 @@ import GameCommands, {
   GameCommand,
   GameCommandType,
 } from "../interfaces/GameCommands";
-import { ApiStatus } from "../interfaces/GameState";
+import { ApiStatus, GameState } from "../interfaces/GameState";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
 import { RootState } from "../store";
 import initialState from "./initial-state";
@@ -193,8 +193,13 @@ const getDataForOrder = (
 // Destroy a Unit during Builds Phase
 const destroyUnit = (state, unitID) => {
   const {
+    data: {
+      data: { currentOrders },
+    },
+    order,
     ordersMeta,
   }: {
+    data: GameDataResponse;
     order: OrderState;
     ordersMeta: OrdersMeta;
   } = current(state);
@@ -203,19 +208,24 @@ const destroyUnit = (state, unitID) => {
       const { type } = update;
       if (type === "Destroy") {
         const command: GameCommand = {
-          command: state.order.inProgress ? "NONE" : "DESTROY",
+          command: order.inProgress ? "NONE" : "DESTROY",
           data: {
             setUnit: {
               componentType: "Icon",
-              iconState: state.order.inProgress
-                ? UIState.NONE
-                : UIState.DESTROY,
+              iconState: order.inProgress ? UIState.NONE : UIState.DESTROY,
               unitSlotName: "main",
             },
           },
         };
         setCommand(state, command, "unitCommands", unitID);
-        state.order.inProgress = !state.order.inProgress;
+        state.order.inProgress = !order.inProgress;
+
+        // How do you save the order?
+        if (order.inProgress) {
+          if (currentOrders) {
+            state.data.data.currentOrders[0].unitID = unitID;
+          }
+        }
       }
     }
   });
