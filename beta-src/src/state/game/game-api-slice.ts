@@ -32,6 +32,8 @@ import UnitType from "../../types/UnitType";
 import drawSupportMoveOrders from "../../utils/map/drawSupportMoveOrders";
 import drawMoveOrders from "../../utils/map/drawMoveOrders";
 import generateMaps from "../../utils/state/generateMaps";
+import removeAllArrows from "../../utils/map/removeAllArrows";
+import drawSupportHoldOrders from "../../utils/map/drawSupportHoldOrders";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -358,8 +360,10 @@ const drawOrders = (state) => {
     maps,
     ordersMeta,
   } = current(state);
+  removeAllArrows();
   drawMoveOrders(data, ordersMeta);
   drawSupportMoveOrders(data, maps, ordersMeta);
+  drawSupportHoldOrders(data, ordersMeta);
   drawBuilds(state);
   updateUnitsDisbanding(state);
 };
@@ -387,30 +391,37 @@ const gameApiSlice = createSlice({
     },
     processUnitDoubleClick(state, clickData) {
       const {
-        order,
         data: {
           data: { contextVars },
         },
+        ownUnits,
       } = current(state);
+      if (!ownUnits.includes(clickData.payload.unitID)) {
+        return;
+      }
       if (contextVars?.context?.orderStatus) {
         const orderStates = getOrderStates(contextVars?.context?.orderStatus);
         if (orderStates.Ready) {
           return;
         }
       }
-      const { inProgress } = order;
-      if (inProgress) {
-        // double click move in progress
-      } else {
-        startNewOrder(state, clickData);
-      }
+      startNewOrder(state, clickData);
     },
     processUnitClick(state, clickData) {
       const {
-        order,
         data: {
           data: { contextVars },
         },
+        order: {
+          inProgress,
+          method,
+          onTerritory,
+          orderID,
+          toTerritory,
+          type,
+          unitID,
+        },
+        ownUnits,
       } = current(state);
       if (contextVars?.context?.orderStatus) {
         const orderStates = getOrderStates(contextVars?.context?.orderStatus);
@@ -418,33 +429,30 @@ const gameApiSlice = createSlice({
           return;
         }
       }
-      const { inProgress } = order;
       if (inProgress) {
-        if (order.type === "hold" && order.onTerritory !== null) {
-          highlightMapTerritoriesBasedOnStatuses(state);
-        } else if (order.type === "move" && order.toTerritory !== null) {
+        if (unitID === clickData.payload.unitID) {
+          resetOrder(state);
+        } else if (
+          (type === "hold" || type === "move") &&
+          onTerritory !== null
+        ) {
           highlightMapTerritoriesBasedOnStatuses(state);
         } else if (
-          order.method === "dblClick" &&
-          order.unitID !== clickData.payload.unitID
+          method === "dblClick" &&
+          unitID !== clickData.payload.unitID
         ) {
-          console.log("either a support move or a support hold");
           state.order.subsequentClicks.push({
             ...{
               inProgress: true,
-              orderID: order.orderID,
+              orderID,
               toTerritory: null,
             },
             ...clickData.payload,
           });
-          return;
+        } else if (ownUnits.includes(clickData.payload.unitID)) {
+          startNewOrder(state, clickData);
         }
-      }
-      if (inProgress && order.unitID === clickData.payload.unitID) {
-        resetOrder(state);
-      } else if (inProgress && order.unitID !== clickData.payload.unitID) {
-        startNewOrder(state, clickData);
-      } else {
+      } else if (ownUnits.includes(clickData.payload.unitID)) {
         startNewOrder(state, clickData);
       }
     },
@@ -576,7 +584,66 @@ const gameApiSlice = createSlice({
         }
       } else if (inProgress && method === "dblClick") {
         if (subsequentClicks.length) {
-          console.log("support move");
+          // user is trying to do a support move or a support hold
+          const unitSupporting = ordersMeta[orderID];
+          const unitBeingSupported = subsequentClicks[0];
+          const terrEnum = Number(Territory[territoryName]);
+          if (terrEnum === unitBeingSupported.onTerritory) {
+            // attemping support hold
+            const match = unitSupporting.supportHoldChoices?.find(
+              ({ unitID: uID }) => uID === unitBeingSupported.unitID,
+            );
+            if (match) {
+              // execute support hold
+              updateOrdersMeta(state, {
+                [orderID]: {
+                  saved: false,
+                  update: {
+                    type: "Support hold",
+                    toTerrID: match.id,
+                  },
+                },
+              });
+              resetOrder(state);
+              return;
+            }
+          } else {
+            // attempting support move
+            const supportMoveMatch = unitSupporting.supportMoveChoices?.find(
+              ({ supportMoveTo: { name } }) =>
+                TerritoryMap[name].territory === terrEnum,
+            );
+            if (supportMoveMatch && supportMoveMatch.supportMoveFrom.length) {
+              const match = supportMoveMatch.supportMoveFrom.find(
+                ({ unitID: uID }) => uID === unitBeingSupported.unitID,
+              );
+              if (match) {
+                // execute support move
+                updateOrdersMeta(state, {
+                  [orderID]: {
+                    saved: false,
+                    update: {
+                      type: "Support move",
+                      toTerrID: supportMoveMatch.supportMoveTo.id,
+                      fromTerrID: match.id,
+                    },
+                  },
+                });
+                resetOrder(state);
+                return;
+              }
+            }
+          }
+          const command: GameCommand = {
+            command: "INVALID_CLICK",
+            data: {
+              click: {
+                evt,
+                territoryName,
+              },
+            },
+          };
+          setCommand(state, command, "mapCommands", "all");
         }
       } else if (
         clickObject === "territory" &&
@@ -757,6 +824,9 @@ const gameApiSlice = createSlice({
           overview: { members, phase },
         } = current(state);
         state.maps = generateMaps(data);
+        data.currentOrders?.forEach(({ unitID }) => {
+          state.ownUnits.push(unitID);
+        });
         const unitsToDraw = getUnits(data, members);
         unitsToDraw.forEach(({ country, mappedTerritory, unit }) => {
           const command: GameCommand = {

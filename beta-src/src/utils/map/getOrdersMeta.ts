@@ -2,7 +2,10 @@ import BoardClass from "../../models/BoardClass";
 import OrderClass from "../../models/OrderClass";
 import TerritoryClass from "../../models/TerritoryClass";
 import UnitClass from "../../models/UnitClass";
-import { EditOrderMeta } from "../../state/interfaces/SavedOrders";
+import {
+  EditOrderMeta,
+  SupportMoveChoice,
+} from "../../state/interfaces/SavedOrders";
 
 interface Props {
   [key: string]: EditOrderMeta;
@@ -59,6 +62,18 @@ export default function getOrdersMeta(data, phase): Props {
 
       newOrders.forEach((o) => {
         const moveChoices = o.getMoveChoices();
+        const supportMoveToChoices = o.getSupportMoveToChoices();
+        const supportHoldChoices = o.getSupportHoldChoices();
+        const supportMoveChoices: SupportMoveChoice[] = [];
+        supportMoveToChoices.forEach((supportMoveTo) => {
+          const supportMoveFrom = o.getSupportMoveFromChoices(supportMoveTo);
+          if (supportMoveFrom.length) {
+            supportMoveChoices.push({
+              supportMoveTo,
+              supportMoveFrom,
+            });
+          }
+        });
         const orderUnit = newBoard.findUnitByID(o.unit.id);
         let allowedBorderCrossings: TerritoryClass[] = [];
         if (orderUnit) {
@@ -89,7 +104,9 @@ export default function getOrdersMeta(data, phase): Props {
           updateOrdersMeta[o.orderData.id] = {
             ...{ saved: true },
             ...updateOrdersMeta[o.orderData.id],
-            ...{ allowedBorderCrossings },
+            allowedBorderCrossings,
+            supportMoveChoices,
+            supportHoldChoices,
           };
         }
       });
