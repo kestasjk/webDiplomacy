@@ -385,23 +385,21 @@ const gameApiSlice = createSlice({
     },
     processUnitDoubleClick(state, clickData) {
       const {
-        order,
         data: {
           data: { contextVars },
         },
+        ownUnits,
       } = current(state);
+      if (!ownUnits.includes(clickData.payload.unitID)) {
+        return;
+      }
       if (contextVars?.context?.orderStatus) {
         const orderStates = getOrderStates(contextVars?.context?.orderStatus);
         if (orderStates.Ready) {
           return;
         }
       }
-      const { inProgress } = order;
-      if (inProgress) {
-        // double click move in progress
-      } else {
-        startNewOrder(state, clickData);
-      }
+      startNewOrder(state, clickData);
     },
     processUnitClick(state, clickData) {
       const {
