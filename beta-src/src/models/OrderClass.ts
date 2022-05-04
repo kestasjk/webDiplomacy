@@ -115,14 +115,14 @@ export default class OrderClass {
 
       possibleUnits = [...possibleUnits, ...ConvoyArmies];
     }
-
+    console.log(this.unit.Territory);
     return Array.from(
       new Set(
         possibleUnits.map((possibleUnit) => possibleUnit.Territory.coastParent),
       ),
     ).filter((possibleUnitTerritory) => {
       return (
-        possibleUnitTerritory.id !== this.unit.Territory.coastParent?.id &&
+        possibleUnitTerritory.id !== this.unit.Territory.coastParentID &&
         possibleUnitTerritory.id !== againstTerritory.id
       );
     });
