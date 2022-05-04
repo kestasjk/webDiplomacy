@@ -65,12 +65,6 @@ export default function getOrdersMeta(data, phase): Props {
         const supportMoveToChoices = o.getSupportMoveToChoices();
         const supportHoldChoices = o.getSupportHoldChoices();
         const supportMoveChoices: SupportMoveChoice[] = [];
-        console.log({
-          moveChoices,
-          supportMoveToChoices,
-          supportHoldChoices,
-          supportMoveChoices,
-        });
         supportMoveToChoices.forEach((supportMoveTo) => {
           const supportMoveFrom = o.getSupportMoveFromChoices(supportMoveTo);
           if (supportMoveFrom.length) {

@@ -115,7 +115,7 @@ export default class OrderClass {
 
       possibleUnits = [...possibleUnits, ...ConvoyArmies];
     }
-    console.log(this.unit.Territory);
+
     return Array.from(
       new Set(
         possibleUnits.map((possibleUnit) => possibleUnit.Territory.coastParent),
