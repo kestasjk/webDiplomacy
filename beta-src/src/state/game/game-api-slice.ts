@@ -316,17 +316,21 @@ const updateUnitsRetreat = (state) => {
       data: { currentOrders },
     },
     order: { inProgress },
+    ordersMeta,
   }: {
     data;
     order;
+    ordersMeta;
   } = current(state);
   currentOrders.forEach((order) => {
-    if (!inProgress && order.type !== "Disband") {
+    const type = ordersMeta[order.id]?.update.type;
+    const isSaved = ordersMeta[order.id]?.saved;
+    if (!inProgress && type !== "Disband") {
       const command: GameCommand = {
         command: "DISLODGED",
       };
       setCommand(state, command, "unitCommands", order.unitID);
-    } else if (order.type === "Disband") {
+    } else if (isSaved && type === "Disband") {
       const command: GameCommand = {
         command: "DISBAND",
       };
