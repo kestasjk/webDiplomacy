@@ -9,7 +9,7 @@ import GameCommands, {
   GameCommand,
   GameCommandType,
 } from "../interfaces/GameCommands";
-import { ApiStatus, GameState } from "../interfaces/GameState";
+import { ApiStatus } from "../interfaces/GameState";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
 import { RootState } from "../store";
 import initialState from "./initial-state";
@@ -190,47 +190,6 @@ const getDataForOrder = (
   return newOrder;
 };
 
-// Destroy a Unit during Builds Phase
-const destroyUnit = (state, unitID) => {
-  const {
-    data: {
-      data: { currentOrders },
-    },
-    order,
-    ordersMeta,
-  }: {
-    data: GameDataResponse;
-    order: OrderState;
-    ordersMeta: OrdersMeta;
-  } = current(state);
-  Object.values(ordersMeta).forEach(({ update }) => {
-    if (update) {
-      const { type } = update;
-      if (type === "Destroy") {
-        const command: GameCommand = {
-          command: order.inProgress ? "NONE" : "DESTROY",
-          data: {
-            setUnit: {
-              componentType: "Icon",
-              iconState: order.inProgress ? UIState.NONE : UIState.DESTROY,
-              unitSlotName: "main",
-            },
-          },
-        };
-        setCommand(state, command, "unitCommands", unitID);
-        state.order.inProgress = !order.inProgress;
-
-        // How do you save the order?
-        if (order.inProgress) {
-          if (currentOrders) {
-            state.data.data.currentOrders[0].unitID = unitID;
-          }
-        }
-      }
-    }
-  });
-};
-
 const startNewOrder = (state, action: NewOrderPayload) => {
   const {
     order: { unitID: prevUnitID },
@@ -349,10 +308,67 @@ const drawBuilds = (state) => {
   }
 };
 
+// Destroy a Unit during Builds Phase
+const destroyUnit = (state, unitID) => {
+  const {
+    data: {
+      data: { currentOrders },
+    },
+    order,
+    ordersMeta,
+  }: {
+    data: GameDataResponse;
+    order: OrderState;
+    ordersMeta: OrdersMeta;
+  } = current(state);
+
+  // Check to make sure you have units to destroy
+  const count = currentOrders?.filter(
+    (item) => item.unitID === "" || item.unitID === null,
+  );
+
+  if (count && count?.length === 0 && unitID !== order.unitID) {
+    return;
+  }
+
+  const ordersMetaEntries = Object.entries(ordersMeta);
+
+  Object.values(ordersMeta).forEach(({ update }) => {
+    if (update) {
+      const { type } = update;
+      if (type === "Destroy") {
+        const command: GameCommand = {
+          command: order.inProgress ? "NONE" : "DESTROY",
+          data: {
+            setUnit: {
+              componentType: "Icon",
+              iconState: order.inProgress ? UIState.NONE : UIState.DESTROY,
+              unitSlotName: "main",
+            },
+          },
+        };
+        setCommand(state, command, "unitCommands", unitID);
+
+        state.data.data.currentOrders.forEach((item) => {
+          ordersMetaEntries.forEach((meta) => {
+            const [id] = meta;
+            if (item.id === id) {
+              item.unitID = unitID;
+            }
+          });
+        });
+        state.order.inProgress = !order.inProgress;
+        state.order.unitID = unitID;
+      }
+    }
+  });
+};
+
 const drawOrders = (state) => {
   const {
     data: { data },
     maps,
+    order,
     ordersMeta,
   } = current(state);
   removeAllArrows();
@@ -360,6 +376,7 @@ const drawOrders = (state) => {
   drawSupportMoveOrders(data, maps, ordersMeta);
   drawSupportHoldOrders(data, ordersMeta);
   drawBuilds(state);
+  destroyUnit(state, order.unitID);
 };
 
 const updateOrdersMeta = (state, updates: EditOrderMeta) => {
@@ -418,17 +435,32 @@ const gameApiSlice = createSlice({
         ownUnits,
         overview: { phase },
       } = current(state);
+      // This is currently empty during Builds so not working
+      // if (!ownUnits.includes(clickData.payload.unitID)) {
+      //   return;
+      // }
       if (contextVars?.context?.orderStatus) {
         const orderStates = getOrderStates(contextVars?.context?.orderStatus);
         if (orderStates.Ready) {
           return;
         }
       }
+
       if (phase === "Builds") {
         destroyUnit(state, clickData.payload.unitID);
+        // updateOrdersMeta(state, {
+        //   1190: {
+        //     saved: true,
+        //     update: {
+        //       type: "Destroy",
+        //       toTerrID: "15",
+        //     },
+        //   },
+        // });
       } else if (inProgress) {
         if (unitID === clickData.payload.unitID) {
           resetOrder(state);
+          startNewOrder(state, clickData);
         } else if (
           (type === "hold" || type === "move") &&
           onTerritory !== null
