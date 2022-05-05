@@ -122,7 +122,7 @@ export default class ConvoyGroupClass {
     ns.routeSetStart(
       StartTerr,
       (EndNode) => {
-        return EndNode.id === EndTerr.id;
+        return EndNode?.id === EndTerr.id;
       },
       (AllNode) => {
         return AllNode.type === TerritoryType.Sea;
@@ -139,7 +139,7 @@ export default class ConvoyGroupClass {
     ns.routeSetStart(
       StartTerr,
       (EndNode) => {
-        return EndNode.id === EndTerr.id;
+        return EndNode?.id === EndTerr.id;
       },
       (AllNode) => {
         return (
@@ -159,7 +159,7 @@ export default class ConvoyGroupClass {
     ns.routeSetStart(
       StartTerr,
       (EndNode) => {
-        return EndNode.id === EndTerr.id;
+        return EndNode?.id === EndTerr.id;
       },
       (AllNode) => {
         return AllNode.type === TerritoryType.Sea;
