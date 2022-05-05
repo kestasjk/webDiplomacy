@@ -31,6 +31,7 @@ import getUnits from "../../utils/map/getUnits";
 import UnitType from "../../types/UnitType";
 import drawSupportMoveOrders from "../../utils/map/drawSupportMoveOrders";
 import drawMoveOrders from "../../utils/map/drawMoveOrders";
+import drawRetreatOrders from "../../utils/map/drawRetreatOrders";
 import generateMaps from "../../utils/state/generateMaps";
 import removeAllArrows from "../../utils/map/removeAllArrows";
 import drawSupportHoldOrders from "../../utils/map/drawSupportHoldOrders";
@@ -151,10 +152,11 @@ const setCommand = (
 const resetOrder = (state) => {
   const {
     order: { unitID, type },
+    overview: { phase },
   } = current(state);
   if (type !== "hold") {
     const command: GameCommand = {
-      command: "NONE",
+      command: phase === "Retreats" ? "DISLODGED" : "NONE",
     };
     setCommand(state, command, "unitCommands", unitID);
   }
@@ -308,44 +310,29 @@ const drawBuilds = (state) => {
   }
 };
 
-const updateUnitsDisbanding = (state) => {
+const updateUnitsRetreat = (state) => {
   const {
     data: {
-      data: { contextVars, currentOrders },
+      data: { currentOrders },
     },
-    territoriesMeta,
-    ordersMeta,
-    overview: { phase },
+    order: { inProgress },
   }: {
     data;
-    territoriesMeta: TerritoriesMeta;
-    ordersMeta;
-    overview: {
-      phase: GameOverviewResponse["phase"];
-      members: GameOverviewResponse["members"];
-    };
+    order;
   } = current(state);
-  if (currentOrders && contextVars && territoriesMeta) {
-    if (phase === "Retreats") {
-      const userDisbandingUnits = currentOrders.filter(
-        (o) =>
-          ordersMeta[o.id].update.type === "Disband" || o.type === "Disband",
-      );
-
-      if (userDisbandingUnits) {
-        userDisbandingUnits.forEach(({ id, unitID }) => {
-          if (ordersMeta[id].saved) {
-            const command: GameCommand = {
-              command: "DISBAND",
-            };
-            setCommand(state, command, "unitCommands", unitID);
-
-            highlightMapTerritoriesBasedOnStatuses(state);
-          }
-        });
-      }
+  currentOrders.forEach((order) => {
+    if (!inProgress && order.type !== "Disband") {
+      const command: GameCommand = {
+        command: "DISLODGED",
+      };
+      setCommand(state, command, "unitCommands", order.unitID);
+    } else if (order.type === "Disband") {
+      const command: GameCommand = {
+        command: "DISBAND",
+      };
+      setCommand(state, command, "unitCommands", order.unitID);
     }
-  }
+  });
 };
 
 const drawOrders = (state) => {
@@ -353,13 +340,17 @@ const drawOrders = (state) => {
     data: { data },
     maps,
     ordersMeta,
+    overview: { phase },
   } = current(state);
   removeAllArrows();
   drawMoveOrders(data, ordersMeta);
   drawSupportMoveOrders(data, maps, ordersMeta);
   drawSupportHoldOrders(data, ordersMeta);
   drawBuilds(state);
-  updateUnitsDisbanding(state);
+  if (phase === "Retreats") {
+    updateUnitsRetreat(state);
+    drawRetreatOrders(data, ordersMeta);
+  }
 };
 
 const updateOrdersMeta = (state, updates: EditOrderMeta) => {
@@ -520,7 +511,10 @@ const gameApiSlice = createSlice({
         } else if (onTerritory !== null && type === "hold") {
           highlightMapTerritoriesBasedOnStatuses(state);
           resetOrder(state);
-        } else if (toTerritory !== null && type === "move") {
+        } else if (
+          toTerritory !== null &&
+          (type === "move" || type === "retreat")
+        ) {
           highlightMapTerritoriesBasedOnStatuses(state);
           resetOrder(state);
         } else if (toTerritory !== null && type === "build") {
@@ -555,14 +549,14 @@ const gameApiSlice = createSlice({
               [orderID]: {
                 saved: false,
                 update: {
-                  type: "Move",
+                  type: phase === "Retreats" ? "Retreat" : "Move",
                   toTerrID: canMove.id,
                   viaConvoy: "No",
                 },
               },
             });
             state.order.toTerritory = TerritoryMap[canMove.name].territory;
-            state.order.type = "move";
+            state.order.type = phase === "Retreats" ? "retreat" : "move";
           } else {
             const command: GameCommand = {
               command: "INVALID_CLICK",
@@ -797,7 +791,6 @@ const gameApiSlice = createSlice({
     highlightMapTerritories(state) {
       highlightMapTerritoriesBasedOnStatuses(state);
     },
-    updateUnitsDisbanding,
     drawBuilds,
     dispatchCommand(state, action: DispatchCommandAction) {
       const { command, container, identifier } = action.payload;
@@ -892,9 +885,9 @@ const gameApiSlice = createSlice({
               state.ordersMeta[id].saved = true;
             }
           });
-
-          updateUnitsDisbanding(state);
         }
+
+        updateUnitsRetreat(state);
       });
   },
 });
