@@ -151,14 +151,21 @@ const setCommand = (
 
 const resetOrder = (state) => {
   const {
-    order: { unitID, type },
+    order: { unitID, type, orderID },
     overview: { phase },
   } = current(state);
-  if (type !== "hold") {
-    const command: GameCommand = {
+  if (type !== "hold" && type !== "retreat") {
+    let command: GameCommand = {
       command: phase === "Retreats" ? "DISLODGED" : "NONE",
     };
     setCommand(state, command, "unitCommands", unitID);
+    command = {
+      command: "REMOVE_ARROW",
+      data: {
+        orderID,
+      },
+    };
+    setCommand(state, command, "mapCommands", "all");
   }
   state.order.inProgress = false;
   state.order.unitID = "";
@@ -322,20 +329,26 @@ const updateUnitsRetreat = (state) => {
     order;
     ordersMeta;
   } = current(state);
-  currentOrders.forEach((order) => {
-    const type = ordersMeta[order.id]?.update.type;
-    const isSaved = ordersMeta[order.id]?.saved;
-    if (!inProgress && type !== "Disband") {
-      const command: GameCommand = {
+  currentOrders.forEach(({ id, unitID }) => {
+    const type = ordersMeta[id]?.update.type;
+    const isSaved = ordersMeta[id]?.saved;
+    let command: GameCommand = {
+      command: "NONE",
+    };
+    if (!isSaved && !inProgress && type !== "Disband") {
+      command = {
         command: "DISLODGED",
       };
-      setCommand(state, command, "unitCommands", order.unitID);
     } else if (isSaved && type === "Disband") {
-      const command: GameCommand = {
+      command = {
         command: "DISBAND",
       };
-      setCommand(state, command, "unitCommands", order.unitID);
+    } else if (!isSaved && type === "Disband") {
+      command = {
+        command: "HOLD",
+      };
     }
+    setCommand(state, command, "unitCommands", unitID);
   });
 };
 
