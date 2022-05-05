@@ -82,6 +82,7 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
           contextKey: contextVars.contextKey,
           queryParams: {},
         };
+
         if (type === Move.READY) {
           orderSubmission.queryParams = ready
             ? { notready: "on" }
@@ -90,6 +91,7 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
         dispatch(saveOrders(orderSubmission));
       }
     }
+
     if (type === Move.READY) {
       toggleState(type);
     }

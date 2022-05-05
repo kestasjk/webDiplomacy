@@ -308,6 +308,46 @@ const drawBuilds = (state) => {
   }
 };
 
+const updateUnitsDisbanding = (state) => {
+  const {
+    data: {
+      data: { contextVars, currentOrders },
+    },
+    territoriesMeta,
+    ordersMeta,
+    overview: { phase },
+  }: {
+    data;
+    territoriesMeta: TerritoriesMeta;
+    ordersMeta;
+    overview: {
+      phase: GameOverviewResponse["phase"];
+      members: GameOverviewResponse["members"];
+    };
+  } = current(state);
+  if (currentOrders && contextVars && territoriesMeta) {
+    if (phase === "Retreats") {
+      const userDisbandingUnits = currentOrders.filter(
+        (o) =>
+          ordersMeta[o.id].update.type === "Disband" || o.type === "Disband",
+      );
+
+      if (userDisbandingUnits) {
+        userDisbandingUnits.forEach(({ id, unitID }) => {
+          if (ordersMeta[id].saved) {
+            const command: GameCommand = {
+              command: "DISBAND",
+            };
+            setCommand(state, command, "unitCommands", unitID);
+
+            highlightMapTerritoriesBasedOnStatuses(state);
+          }
+        });
+      }
+    }
+  }
+};
+
 const drawOrders = (state) => {
   const {
     data: { data },
@@ -319,6 +359,7 @@ const drawOrders = (state) => {
   drawSupportMoveOrders(data, maps, ordersMeta);
   drawSupportHoldOrders(data, ordersMeta);
   drawBuilds(state);
+  updateUnitsDisbanding(state);
 };
 
 const updateOrdersMeta = (state, updates: EditOrderMeta) => {
@@ -468,14 +509,14 @@ const gameApiSlice = createSlice({
                 [orderToUpdate.id]: {
                   saved: false,
                   update: {
-                    type: "Hold",
+                    type: phase === "Retreats" ? "Disband" : "Hold",
                     toTerrID: null,
                   },
                 },
               });
             }
           }
-          state.order.type = "hold";
+          state.order.type = phase === "Retreats" ? "disband" : "hold";
         } else if (onTerritory !== null && type === "hold") {
           highlightMapTerritoriesBasedOnStatuses(state);
           resetOrder(state);
@@ -756,6 +797,7 @@ const gameApiSlice = createSlice({
     highlightMapTerritories(state) {
       highlightMapTerritoriesBasedOnStatuses(state);
     },
+    updateUnitsDisbanding,
     drawBuilds,
     dispatchCommand(state, action: DispatchCommandAction) {
       const { command, container, identifier } = action.payload;
@@ -794,6 +836,7 @@ const gameApiSlice = createSlice({
               },
             },
           };
+
           setCommand(
             state,
             command,
@@ -803,7 +846,6 @@ const gameApiSlice = createSlice({
               : Territory[mappedTerritory.territory],
           );
         });
-
         updateOrdersMeta(state, getOrdersMeta(data, phase));
       })
       .addCase(fetchGameData.rejected, (state, action) => {
@@ -844,11 +886,14 @@ const gameApiSlice = createSlice({
               contextKey: newContextKey,
             };
           }
+
           Object.entries(orders).forEach(([id, value]) => {
             if (value.status === "Complete") {
               state.ordersMeta[id].saved = true;
             }
           });
+
+          updateUnitsDisbanding(state);
         }
       });
   },
