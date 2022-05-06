@@ -165,6 +165,11 @@ class adminActions extends adminActionsForms
 				'description' => 'Generate a registration email link for a user having problems making an account.',
 				'params' => array('email'=>'Registration Email'),
 			),
+			'generateResetLink' => array(
+				'name' => 'Generate Password Reset Link',
+				'description' => 'Generate a password reset email link for a user having problems resetting their password. (Use with care of course.)',
+				'params' => array('email'=>'Registration Email'),
+			),
 		);
 
 	public function __construct()
@@ -807,6 +812,26 @@ class adminActions extends adminActionsForms
 		$emailToken = substr(md5(Config::$secret.$email.$timestamp),0,8).'%7C'.$timestamp.'%7C'.urlencode($email);
 
 		return "Please give the user the following link: <br>".$thisURL.'?emailToken='.$emailToken;
+	}
+
+	public function generateResetLink(array $params)
+	{
+		global $DB;
+
+		if (!isset($params['email']))
+			return "Please enter a valid email.";
+		
+		$email = $DB->msg_escape($params['email']);
+
+		list($emailAlreadyInUse) = $DB->sql_row("SELECT COUNT(*) FROM wD_Users WHERE email = '".$email."' AND NOT (type LIKE '%Mod%' OR type LIKE '%Admin%')");
+		if ($emailAlreadyInUse == 0)
+		{
+			return "Could not find this e-mail address, or this is a Mod/Admin e-mail which cannot be reset using this method.";
+		}
+		
+		$thisURL = libAuth::email_validateURL($email)."&forgotPassword=3";
+		
+		return "Please give the user the following link: <br>".$thisURL;
 	}
 
 	public function changeReliability(array $params)
