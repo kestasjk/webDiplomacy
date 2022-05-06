@@ -1,6 +1,8 @@
 import BoardClass from "../../models/BoardClass";
 import OrderClass from "../../models/OrderClass";
 import TerritoryClass from "../../models/TerritoryClass";
+import GameDataResponse from "../../state/interfaces/GameDataResponse";
+import { GameState } from "../../state/interfaces/GameState";
 import {
   EditOrderMeta,
   SupportMoveChoice,
@@ -10,14 +12,18 @@ interface Props {
   [key: string]: EditOrderMeta;
 }
 
-export default function getOrdersMeta(data, phase): Props {
+export default function getOrdersMeta(
+  data: GameDataResponse["data"],
+  board: GameState["board"],
+  phase: GameState["overview"]["phase"],
+): Props {
   const { contextVars, currentOrders, territories, territoryStatuses, units } =
     data;
 
   const updateOrdersMeta = {};
   if (contextVars?.context) {
     if (phase === "Builds") {
-      currentOrders.forEach(({ id, toTerrID, type }) => {
+      currentOrders?.forEach(({ id, toTerrID, type }) => {
         updateOrdersMeta[id] = {
           saved: true,
           update: {
@@ -27,20 +33,19 @@ export default function getOrdersMeta(data, phase): Props {
         };
       });
     } else {
-      const newBoard = new BoardClass(
-        contextVars.context,
-        Object.values(territories),
-        territoryStatuses,
-        Object.values(units),
-      );
-
       const newOrders: OrderClass[] = [];
 
-      currentOrders.forEach((o) => {
+      if (!board) {
+        return updateOrdersMeta;
+      }
+
+      console.log({ board });
+
+      currentOrders?.forEach((o) => {
         const { id, unitID, type, toTerrID, fromTerrID } = o;
-        const orderUnit = newBoard.findUnitByID(unitID);
+        const orderUnit = board.findUnitByID(unitID);
         if (orderUnit) {
-          newOrders.push(new OrderClass(newBoard, o, orderUnit));
+          newOrders.push(new OrderClass(board, o, orderUnit));
           updateOrdersMeta[id] = {
             update: {
               type,
@@ -56,6 +61,42 @@ export default function getOrdersMeta(data, phase): Props {
         const supportMoveToChoices = o.getSupportMoveToChoices();
         const supportHoldChoices = o.getSupportHoldChoices();
         const supportMoveChoices: SupportMoveChoice[] = [];
+        const convoyToChoices = o.getConvoyToChoices();
+        const convoyToNames: string[] = [];
+        // const convoyFromChoices = {};
+        convoyToChoices.forEach((convoyTo) => {
+          const terr = territories[convoyTo];
+          convoyToNames.push(terr.name);
+        });
+
+        // 2141 baltic sea
+        // 2134 prussia
+
+        // if (o.unit.id === "2141") {
+        //   console.log({ o });
+        //   const terrIds = ["33"];
+        //   terrIds.forEach((t) => {
+        //     const terrr = board.findTerritoryByID(t);
+        //     if (terrr) {
+        //       console.log({ terrr });
+
+        //       console.log({
+        //         terrName: territories[t].name,
+        //         // terrStatus,
+        //       });
+        //       const convoyFromChoices = o.getConvoyFromChoices(terrr);
+        //       console.log({
+        //         convoyFromChoices,
+        //       });
+        //     }
+        //   });
+        // }
+        // convoyToChoices.forEach((to) => {
+        //   const convoyToTerritory = board.findTerritoryByID(to);
+        //   if (convoyToTerritory) {
+        //     convoyFromChoices[to] = o.getConvoyFromChoices(convoyToTerritory);
+        //   }
+        // });
         supportMoveToChoices.forEach((supportMoveTo) => {
           const supportMoveFrom = o.getSupportMoveFromChoices(supportMoveTo);
           if (supportMoveFrom.length) {
@@ -65,7 +106,11 @@ export default function getOrdersMeta(data, phase): Props {
             });
           }
         });
-        const orderUnit = newBoard.findUnitByID(o.unit.id);
+        const orderUnit = board.findUnitByID(o.unit.id);
+        // console.log({
+        //   convoyToNames,
+        //   orderUnit: orderUnit?.Territory.name,
+        // });
         let allowedBorderCrossings: TerritoryClass[] = [];
         if (orderUnit) {
           allowedBorderCrossings = moveChoices.filter((choice) => {
@@ -84,6 +129,8 @@ export default function getOrdersMeta(data, phase): Props {
             allowedBorderCrossings,
             supportMoveChoices,
             supportHoldChoices,
+            convoyToChoices,
+            // convoyFromChoices,
           };
         }
       });

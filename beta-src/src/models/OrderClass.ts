@@ -152,6 +152,12 @@ export default class OrderClass {
           return false;
         }
 
+        console.log({
+          c1: convoyArmy.Territory,
+          c2: toTerritory,
+          c3: this.unit.Territory,
+        });
+
         return !!toTerritory.ConvoyGroup.pathArmyToCoastWithFleet(
           convoyArmy.Territory,
           toTerritory,

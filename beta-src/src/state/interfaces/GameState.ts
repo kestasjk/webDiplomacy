@@ -1,3 +1,4 @@
+import BoardClass from "../../models/BoardClass";
 import GameCommands from "./GameCommands";
 import GameDataResponse from "./GameDataResponse";
 import GameErrorResponse from "./GameErrorResponse";
@@ -13,6 +14,7 @@ export type ApiStatus = "idle" | "loading" | "succeeded" | "failed";
 
 export interface GameState {
   apiStatus: ApiStatus;
+  board: BoardClass | undefined;
   data: GameDataResponse;
   error: GameErrorResponse;
   maps: GameStateMaps;

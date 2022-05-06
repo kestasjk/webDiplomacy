@@ -35,6 +35,9 @@ import drawMoveOrders from "../../utils/map/drawMoveOrders";
 import generateMaps from "../../utils/state/generateMaps";
 import removeAllArrows from "../../utils/map/removeAllArrows";
 import drawSupportHoldOrders from "../../utils/map/drawSupportHoldOrders";
+import BoardClass from "../../models/BoardClass";
+import { IContext } from "../../models/Interfaces";
+import OrderClass from "../../models/OrderClass";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -348,6 +351,86 @@ const updateOrdersMeta = (state, updates: EditOrderMeta) => {
   drawOrders(state);
 };
 
+const calculateConvoy = (state) => {
+  const {
+    board,
+    data: {
+      data: { currentOrders, territories },
+    },
+    order,
+    ordersMeta,
+    maps,
+  } = current(state);
+  const lastFleetInChain =
+    order.subsequentClicks[order.subsequentClicks.length - 1];
+  console.log({ order });
+  if (lastFleetInChain) {
+    const { convoyToChoices } = ordersMeta[lastFleetInChain.orderID];
+    const toTerritory = maps.enumToTerritory[order.toTerritory];
+    const fromTerritory = maps.enumToTerritory[order.onTerritory];
+    console.log({
+      convoyToChoices,
+      toTerritory,
+      lastFleetInChain,
+      fromTerritory,
+    });
+    if (convoyToChoices.includes(toTerritory)) {
+      console.log("can convoy here");
+      const orderUnit = board.findUnitByID(lastFleetInChain.unitID);
+      const fleetOrder = currentOrders?.find(
+        (o) => o.unitID === lastFleetInChain.unitID,
+      );
+      console.log({
+        orderUnit,
+        fleetOrder,
+      });
+      if (fleetOrder) {
+        const convoyOrder = new OrderClass(board, fleetOrder, orderUnit);
+        const againstTerritory = board.findTerritoryByID(toTerritory);
+        const convoyFrom = convoyOrder.getConvoyFromChoices(againstTerritory);
+        console.log({
+          againstTerritory,
+          convoyOrder,
+          convoyFrom,
+        });
+        const convoyArmy = convoyFrom.find((c) => c.id === order.unitID);
+        if (convoyArmy) {
+          console.log({ convoyArmy });
+          console.log({
+            b1: board.findTerritoryByID(fromTerritory),
+            b2: againstTerritory,
+            b3: convoyOrder.unit.Territory,
+          });
+          const convoyPath = convoyArmy.ConvoyGroup.pathArmyToCoastWithFleet(
+            board.findTerritoryByID(fromTerritory),
+            againstTerritory,
+            convoyOrder.unit.Territory,
+          );
+          if (convoyPath) {
+            updateOrdersMeta(state, {
+              [order.unitID]: {
+                saved: false,
+                update: {
+                  convoyPath,
+                  toTerrID: toTerritory,
+                  type: "Move",
+                  viaConvoy: "Yes",
+                },
+              },
+            });
+            console.log({ convoyPath });
+          }
+        }
+      }
+      return;
+    }
+  }
+  const command: GameCommand = {
+    command: "INVALID_CLICK",
+  };
+  setCommand(state, command, "territoryCommands", Territory[order.toTerritory]);
+};
+
 const gameApiSlice = createSlice({
   name: "game",
   initialState,
@@ -380,17 +463,10 @@ const gameApiSlice = createSlice({
     processUnitClick(state, clickData) {
       const {
         data: {
-          data: { contextVars },
+          data: { contextVars, units },
         },
-        order: {
-          inProgress,
-          method,
-          onTerritory,
-          orderID,
-          toTerritory,
-          type,
-          unitID,
-        },
+        order: { inProgress, method, onTerritory, orderID, type, unitID },
+        ordersMeta,
         ownUnits,
       } = current(state);
       if (contextVars?.context?.orderStatus) {
@@ -420,7 +496,22 @@ const gameApiSlice = createSlice({
             ...clickData.payload,
           });
         } else if (ownUnits.includes(clickData.payload.unitID)) {
-          startNewOrder(state, clickData);
+          const currentOrderUnitType = units[unitID].type;
+          const newClickUnitType = units[clickData.payload.unitID].type;
+          if (currentOrderUnitType === "Army" && newClickUnitType === "Fleet") {
+            // this is a convoy move
+            state.order.type = "convoy";
+            state.order.subsequentClicks.push({
+              ...{
+                inProgress: true,
+                orderID,
+                toTerritory: null,
+              },
+              ...clickData.payload,
+            });
+          } else {
+            startNewOrder(state, clickData);
+          }
         }
       } else if (ownUnits.includes(clickData.payload.unitID)) {
         startNewOrder(state, clickData);
@@ -509,6 +600,9 @@ const gameApiSlice = createSlice({
             Territory[toTerritory],
           );
           resetOrder(state);
+        } else if (type === "convoy") {
+          state.order.toTerritory = Number(Territory[territoryName]);
+          calculateConvoy(state);
         } else if (
           clickObject === "territory" &&
           onTerritory !== null &&
@@ -792,8 +886,33 @@ const gameApiSlice = createSlice({
           data: { data },
           overview: { members, phase },
         } = current(state);
+        let board;
+        if (data.contextVars) {
+          board = new BoardClass(
+            data.contextVars.context,
+            Object.values(data.territories),
+            data.territoryStatuses,
+            Object.values(data.units),
+          );
+          console.log({
+            newBoard2: board,
+          });
+          state.board = board;
+        }
         state.maps = generateMaps(data);
-        data.currentOrders?.forEach(({ unitID }) => {
+        const {
+          maps,
+          data: {
+            data: { territories },
+          },
+        } = current(state);
+        data.currentOrders?.forEach(({ unitID, id }) => {
+          const terr = Object.values(territories).find(
+            (t) => t.id === maps.unitToTerritory[unitID],
+          );
+          console.log(
+            `Unit ID: ${unitID} - Order ID: ${id} - Terr ID: ${terr?.name}`,
+          );
           state.ownUnits.push(unitID);
         });
         const unitsToDraw = getUnits(data, members);
@@ -821,7 +940,7 @@ const gameApiSlice = createSlice({
           );
         });
 
-        updateOrdersMeta(state, getOrdersMeta(data, phase));
+        updateOrdersMeta(state, getOrdersMeta(data, board, phase));
       })
       .addCase(fetchGameData.rejected, (state, action) => {
         state.apiStatus = "failed";

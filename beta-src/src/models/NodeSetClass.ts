@@ -157,6 +157,8 @@ export default class NodeSetClass {
         this.Path.reverse();
       }
 
+      console.log({ this: this });
+
       // do not include endNode in the final -> remove last element
       this.Path.pop();
 
