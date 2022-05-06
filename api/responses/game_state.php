@@ -24,6 +24,7 @@ use libVariant;
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 require_once(l_r('api/responses/message.php'));
+require_once(l_r('api/responses/vote_message.php'));
 require_once(l_r('api/responses/order.php'));
 require_once(l_r('api/responses/unit.php'));
 
@@ -254,7 +255,7 @@ class GameState {
 		global $DB;
 
 		// Loading game state
-		$gameRow = $DB->sql_hash("SELECT id, variantID, potType, turn, phase, gameOver, pressType FROM wD_Games WHERE id=".$this->gameID);
+		$gameRow = $DB->sql_hash("SELECT id, variantID, potType, turn, phase, gameOver, pressType, drawType, processTime FROM wD_Games WHERE id=".$this->gameID);
 		if ( ! $gameRow )
 			throw new \Exception("Unknown game ID.");
 		$this->variantID = intval($gameRow['variantID']);
@@ -263,11 +264,33 @@ class GameState {
 		$this->phase = $gameRow['phase'];
 		$this->gameOver = $gameRow['gameOver'];
 		$this->pressType = $gameRow['pressType'];
+		$this->drawType=$gameRow['drawType'];
+		$this->processTime=$gameRow['processTime'];
 
 		$memberData = $DB->sql_hash("SELECT countryID, votes, orderStatus, status FROM wD_Members WHERE gameID = ".$this->gameID." AND countryID = ".$this->countryID);
 		$this->votes = $memberData['votes'];
 		$this->orderStatus = $memberData['orderStatus'];
 		$this->status = $memberData['status'];
+
+		$orderStatusData = $DB->sql_tabl("SELECT countryID, orderStatus FROM wD_Members WHERE gameID = ".$this->gameID);
+		$this->orderStatuses = [];
+		while ($member = $DB->tabl_hash($orderStatusData)) {
+			$countryID = $member["countryID"];
+			$orderStatus = $member["orderStatus"];
+			$this->orderStatuses[$countryID] = $orderStatus;
+		}	
+
+		// current draw votes
+		$this->publicVotes = [];
+		if ($this->drawType === 'draw-votes-public') {
+			$tabl = $DB->sql_tabl("SELECT countryID, votes FROM wD_Members WHERE gameID = ".$this->gameID);
+			while ($member = $DB->tabl_hash($tabl)) {
+				$countryID = $member["countryID"];
+				$votes = $member["votes"];
+				$this->publicVotes[$countryID] = $votes;
+			}	
+
+		}
 
 		$units = array();
 		$orders = array();
@@ -389,7 +412,12 @@ class GameState {
 		// messages
 		if ($this->pressType != 'NoPress') {
 			$msgTabl = $DB->sql_tabl(
-				"SELECT turn, fromCountryID, toCountryID, message, timeSent, phaseMarker from wD_GameMessages_Redacted WHERE gameID = ".$this->gameID." AND (fromCountryID = ".$this->countryID." OR toCountryID = ".$this->countryID.") ORDER BY timeSent"
+				"SELECT turn, fromCountryID, toCountryID, message, timeSent, phaseMarker
+				FROM wD_GameMessages_Redacted
+				WHERE gameID = ".$this->gameID. 
+				" AND (fromCountryID = ".$this->countryID." OR toCountryID = ".$this->countryID.
+				" OR toCountryID = 0)
+				ORDER BY timeSent"
 			);
 
 			while ($row = $DB->tabl_hash($msgTabl)) {
@@ -405,6 +433,37 @@ class GameState {
 				$gameSteps->set($row['turn'], 'Diplomacy', $phase);
 			}
 		}
+
+		// draw vote history
+		if ($this->drawType === 'draw-votes-public') {
+			$messagify_vote = function($vote) {
+				return ["Voted for ".$vote, "Un-Voted for ".$vote];
+			};
+			
+			$msgs = array_merge(...array_map($messagify_vote, \Members::$votes));
+
+			$msgTabl = $DB->sql_tabl(
+				"SELECT turn, fromCountryID, toCountryID, message, timeSent, phaseMarker 
+				FROM wD_GameMessages_Redacted
+				WHERE gameID = ".$this->gameID." AND 
+				fromCountryID = toCountryID 
+				AND message in ('".implode("','",$msgs)."')
+				ORDER BY timeSent"
+			);
+
+			while ($row = $DB->tabl_hash($msgTabl)) {
+				$message = new \webdiplomacy_api\VoteMessage(
+					$row['message'],
+					$row['fromCountryID'],
+					$row['timeSent'],
+					$row['phaseMarker']
+				);
+				$phase = $gameSteps->get($row['turn'], 'Diplomacy', array());
+				$phase['publicVotesHistory'][] = $message;
+				$gameSteps->set($row['turn'], 'Diplomacy', $phase);
+			}
+		}
+
 		foreach ($gameSteps->toArray() as $step) {
 			list($turn, $phaseName, $data) = $step;
 			$centerTurn = $turn;

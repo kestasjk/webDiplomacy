@@ -319,6 +319,12 @@ class ToggleVote extends ApiEntry {
 		$game = 
 		$currentVotes = $DB->sql_hash("SELECT votes FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." AND userID = ".$userID);
 		$currentVotes = $currentVotes['votes'];
+
+		// Keep a log that a vote was set in the game messages, so the vote time is recorded
+		require_once(l_r('lib/gamemessage.php'));
+		$voteOn = in_array($vote, explode(',',$currentVotes));
+		libGameMessage::send($countryID, $countryID, ($voteOn?'Un-':'').'Voted for '.$vote, $gameID);
+
 		$newVotes = '';
 		if( strpos($currentVotes, $vote) !== false )
 		{
