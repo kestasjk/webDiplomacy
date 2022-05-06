@@ -110,26 +110,38 @@ class adminActionsRestricted extends adminActionsSeniorMod
 					<em>Only for owner use.</em>',
 				'params' => array('userID'=>'User ID'),
 			),
+			'makeDonatorOwner' => array(
+				'name' => 'Donator: Site Co-Owner',
+				'description' => 'Give Co-Owner marker<br />
+					<em>Only for owner use.</em>',
+				'params' => array('userID'=>'User ID'),
+			),
+			'makeDonatorAdamantium' => array(
+				'name' => 'Donator: Adamantium',
+				'description' => 'Give adamantium donator marker<br />
+					<em>Only for owner use.</em>',
+				'params' => array('userID'=>'User ID'),
+			),
 			'makeDonatorPlatinum' => array(
-				'name' => 'Donator: platinum',
+				'name' => 'Donator: Platinum',
 				'description' => 'Give platinum donator marker<br />
 					<em>Only for owner use.</em>',
 				'params' => array('userID'=>'User ID'),
 			),
 			'makeDonatorGold' => array(
-				'name' => 'Donator: gold',
+				'name' => 'Donator: Gold',
 				'description' => 'Give gold donator marker<br />
 					<em>Only for owner use.</em>',
 				'params' => array('userID'=>'User ID'),
 			),
 			'makeDonatorSilver' => array(
-				'name' => 'Donator: silver',
+				'name' => 'Donator: Silver',
 				'description' => 'Give silver donator marker<br />
 					<em>Only for owner use.</em>',
 				'params' => array('userID'=>'User ID'),
 			),
 			'makeDonatorBronze' => array(
-				'name' => 'Donator: bronze',
+				'name' => 'Donator: Bronze',
 				'description' => 'Give bronze donator marker<br />
 					<em>Only for owner use.</em>',
 				'params' => array('userID'=>'User ID'),
@@ -952,6 +964,16 @@ class adminActionsRestricted extends adminActionsSeniorMod
 	public function makeDonator(array $params)
 	{
 		return $this->makeDonatorType($params);
+	}
+
+	public function makeDonatorOwner(array $params)
+	{
+		return $this->makeDonatorType($params,'Owner');
+	}
+
+	public function makeDonatorAdamantium(array $params)
+	{
+		return $this->makeDonatorType($params,'Adamantium');
 	}
 
 	public function makeDonatorPlatinum(array $params)

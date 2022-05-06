@@ -37,7 +37,7 @@ for($i=$Game->turn;$i>=0;$i--)
 	print '<p style="text-align:center">
 		<img src="map.php?gameID='.$Game->id.'&turn='.$i.'" title="'.l_t('Small map for this turn').'" /><br />
 		'.l_t('Large map:').' <a href="map.php?gameID='.$Game->id.'&largemap=on&turn='.$i.'">
-					<img src="'.l_s('images/historyicons/external.png').'" alt="'.l_t('Large map').'"
+					<img src="'.l_s('images/historyicons/external.svg').'" alt="'.l_t('Large map').'"
 						title="'.l_t('This button will open the large map in a new window. The large map shows all the moves, and is useful when the small map isn\'t clear enough').'."
 					/></a>
 		</p>';

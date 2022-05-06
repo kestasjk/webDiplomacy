@@ -118,7 +118,7 @@ class panelGame extends Game
 	*/
 
 	function pausedInfo() {
-		return l_t('Paused').' <img src="'.l_s('images/icons/pause.png').'" title="'.l_t('Game paused').'" />';
+		return l_t('Paused').' <img src="'.l_s('images/icons/pause.svg').'" title="'.l_t('Game paused').'" />';
 	}
 
 	/**
@@ -185,10 +185,10 @@ class panelGame extends Game
 
 		$buf = '';
 		if( $this->pot > $Misc->GameFeaturedThreshold )
-			$buf .= '<img src="'.l_s('images/icons/star.png').'" alt="'.l_t('Featured').'" title="'.l_t('This is a featured game, one of the highest stakes games on the server!').'" /> ';
+			$buf .= '<img src="'.l_s('images/icons/star.svg').'" alt="'.l_t('Featured').'" title="'.l_t('This is a featured game, one of the highest stakes games on the server!').'" /> ';
 
 		if( $this->private )
-			$buf .= '<img src="'.l_s('images/icons/lock.png').'" alt="'.l_t('Private').'" title="'.l_t('This is a private game; invite code needed!').'" /> ';
+			$buf .= '<img src="'.l_s('images/icons/lock.svg').'" alt="'.l_t('Private').'" title="'.l_t('This is a private game; invite code needed!').'" /> ';
 
 		return $buf;
 	}

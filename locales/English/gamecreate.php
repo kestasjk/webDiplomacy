@@ -86,7 +86,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			</p>
 
 			<strong>Bet size: (5-<?php print $User->points.libHTML::points(); ?>)</strong>
-			<img id = "modBtnBet" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+			<img id = "modBtnBet" height="16" width="16" src="images/icons/help.svg" alt="Help" title="Help" />
 			<div id="betModal" class="modal">
 				<!-- Modal content -->
 				<div class="modal-content">
@@ -101,7 +101,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			
 			</br></br>
 			<strong>Phase length: (5 min - 10 days)</strong>
-			<img id = "modBtnPhaseLength" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+			<img id = "modBtnPhaseLength" height="16" width="16" src="images/icons/help.svg" alt="Help" title="Help" />
 			<div id="phaseLengthModal" class="modal">
 				<!-- Modal content -->
 				<div class="modal-content">
@@ -169,7 +169,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			</p>
 			
 			<strong>Game Messaging:</strong>
-			<img id = "modBtnMessaging" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+			<img id = "modBtnMessaging" height="16" width="16" src="images/icons/help.svg" alt="Help" title="Help" />
 			<div id="messagingModal" class="modal">
 				<!-- Modal content -->
 				<div class="modal-content">
@@ -192,7 +192,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 			</br></br>
 			<strong>Variant type (map choices):</strong>
-			<img id = "modBtnVariant" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+			<img id = "modBtnVariant" height="16" width="16" src="images/icons/help.svg" alt="Help" title="Help" />
 			<div id="variantModal" class="modal">
 				<!-- Modal content -->
 				<div class="modal-content">
@@ -234,7 +234,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			</br></br>
 			<div id="botFill" style="display:none">
 			<strong>Fill Empty Spots with Bots: </strong>
-			<img id = "modBtnBot" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+			<img id = "modBtnBot" height="16" width="16" src="images/icons/help.svg" alt="Help" title="Help" />
 			<div id="botModal" class="modal">
 				<!-- Modal content -->
 				<div class="modal-content">
@@ -252,7 +252,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			</div>
 			
 			<strong>Scoring:(<a href="points.php#DSS">See scoring types here</a>)</strong>
-			<img id = "modBtnScoring" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+			<img id = "modBtnScoring" height="16" width="16" src="images/icons/help.svg" alt="Help" title="Help" />
 			<div id="scoringModal" class="modal">
 				<!-- Modal content -->
 				<div class="modal-content">
@@ -276,7 +276,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			</select></br></br>
 
 			<strong>Anonymous players: </strong>
-			<img id = "modBtnAnon" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+			<img id = "modBtnAnon" height="16" width="16" src="images/icons/help.svg" alt="Help" title="Help" />
 			<div id="anonModal" class="modal">
 				<!-- Modal content -->
 				<div class="modal-content">
@@ -311,7 +311,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			</p>
 
 			<strong>Excused delays per player:</strong>
-			<img id = "modBtnDelays" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+			<img id = "modBtnDelays" height="16" width="16" src="images/icons/help.svg" alt="Help" title="Help" />
 			<div id="delayModal" class="modal">
 				<!-- Modal content -->
 				<div class="modal-content">
@@ -332,7 +332,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			</select>
 
 			<p>
-				<img src="images/icons/lock.png" alt="Private" /> <strong>Add Invite Code (optional):</strong></br>
+				<img src="images/icons/lock.svg" alt="Private" /> <strong>Add Invite Code (optional):</strong></br>
 				<input class = "gameCreate" type="password"autocomplete="new-password" name="newGame[password]" value="" size="20" /></br>
 				Confirm: <input class = "gameCreate" autocomplete="new-password" type="password" name="newGame[passwordcheck]" value="" size="20" /></br>
 			</p>

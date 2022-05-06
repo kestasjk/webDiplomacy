@@ -144,10 +144,10 @@ abstract class Pager
 		$buf .= '</div>';
 
 		$buf .= '<div style="float:right; padding-left:10px">';
-		$buf .= $this->button($args, $anchor, '1',       'Start'.   $prevDisabled.'.png', 'First');
-		$buf .= $this->button($args, $anchor, $prevPage, 'Backward'.$prevDisabled.'.png', 'Previous');
-		$buf .= $this->button($args, $anchor, $nextPage, 'Forward'. $nextDisabled.'.png', 'Next');
-		$buf .= $this->button($args, $anchor, $lastPage, 'End'.     $lastDisabled.'.png', 'Last', $extra);
+		$buf .= $this->button($args, $anchor, '1',       'Start'.   $prevDisabled.'.svg', 'First');
+		$buf .= $this->button($args, $anchor, $prevPage, 'Backward'.$prevDisabled.'.svg', 'Previous');
+		$buf .= $this->button($args, $anchor, $nextPage, 'Forward'. $nextDisabled.'.svg', 'Next');
+		$buf .= $this->button($args, $anchor, $lastPage, 'End'.     $lastDisabled.'.svg', 'Last', $extra);
 		$buf .= '</div>';
 
 		$buf .= '</div>';
