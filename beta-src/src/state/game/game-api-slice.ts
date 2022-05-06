@@ -78,6 +78,17 @@ export const fetchGameMessages = createAsyncThunk(
   },
 );
 
+export const toggleVoteStatus = createAsyncThunk(
+  ApiRoute.GAME_TOGGLEVOTE,
+  async (queryParams: { countryID: string; gameID: string; vote: string }) => {
+    const { data } = await getGameApiRequest(
+      ApiRoute.GAME_TOGGLEVOTE,
+      queryParams,
+    );
+    return data as any;
+  },
+);
+
 interface OrderSubmission {
   orderUpdates: UpdateOrder[];
   context: string;
