@@ -202,8 +202,10 @@ export default class TerritoryClass {
         .map((b) => {
           return this.board.findTerritoryByID(b.id);
         })
-        // [undefined, territory]
         .filter((n) => {
+          if (!this.search) {
+            return false;
+          }
           if (n) {
             return (
               n.isConvoyNode() &&
