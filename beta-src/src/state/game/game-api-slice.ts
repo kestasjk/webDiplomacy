@@ -262,45 +262,62 @@ const drawBuilds = (state) => {
           ({ id }) => id === toTerrID,
         );
         if (territoryMeta) {
-          const buildType = BuildUnitMap[type];
-          const mappedTerritory = TerritoryMap[territoryMeta.name];
-          const memberCountry = members.find(
-            (member) => member.countryID.toString() === territoryMeta.countryID,
-          );
-          if (memberCountry) {
-            let command: GameCommand = {
-              command: "SET_UNIT",
+          // Destroy Units
+          if (type === "Destroy" && territoryMeta?.unitID) {
+            const command: GameCommand = {
+              command: "DESTROY",
               data: {
                 setUnit: {
                   componentType: "Icon",
-                  country: countryMap[memberCountry?.country],
-                  iconState: UIState.BUILD,
-                  unitSlotName: mappedTerritory.unitSlotName,
-                  unitType: BuildUnitTypeMap[buildType],
+                  iconState: UIState.DESTROY,
+                  unitSlotName: "main",
                 },
               },
             };
-            const commandTerritoryDestination =
-              territoryMeta.territory ===
-                Territory.SAINT_PETERSBURG_NORTH_COAST ||
-              territoryMeta.territory === Territory.SAINT_PETERSBURG_SOUTH_COAST
-                ? Territory[Territory.SAINT_PETERSBURG]
-                : Territory[territoryMeta.territory];
-            setCommand(
-              state,
-              command,
-              "territoryCommands",
-              commandTerritoryDestination,
+            setCommand(state, command, "unitCommands", territoryMeta.unitID);
+          } else {
+            const buildType = BuildUnitMap[type];
+            const mappedTerritory = TerritoryMap[territoryMeta.name];
+            const memberCountry = members.find(
+              (member) =>
+                member.countryID.toString() === territoryMeta.countryID,
             );
-            command = {
-              command: "MOVE",
-            };
-            setCommand(
-              state,
-              command,
-              "territoryCommands",
-              commandTerritoryDestination,
-            );
+            if (memberCountry) {
+              let command: GameCommand = {
+                command: "SET_UNIT",
+                data: {
+                  setUnit: {
+                    componentType: "Icon",
+                    country: countryMap[memberCountry?.country],
+                    iconState: UIState.BUILD,
+                    unitSlotName: mappedTerritory.unitSlotName,
+                    unitType: BuildUnitTypeMap[buildType],
+                  },
+                },
+              };
+              const commandTerritoryDestination =
+                territoryMeta.territory ===
+                  Territory.SAINT_PETERSBURG_NORTH_COAST ||
+                territoryMeta.territory ===
+                  Territory.SAINT_PETERSBURG_SOUTH_COAST
+                  ? Territory[Territory.SAINT_PETERSBURG]
+                  : Territory[territoryMeta.territory];
+              setCommand(
+                state,
+                command,
+                "territoryCommands",
+                commandTerritoryDestination,
+              );
+              command = {
+                command: "MOVE",
+              };
+              setCommand(
+                state,
+                command,
+                "territoryCommands",
+                commandTerritoryDestination,
+              );
+            }
           }
         }
       }
@@ -308,7 +325,6 @@ const drawBuilds = (state) => {
   }
 };
 
-// Destroy a Unit during Builds Phase
 const destroyUnit = (state, unitID) => {
   const {
     data: {
@@ -316,23 +332,24 @@ const destroyUnit = (state, unitID) => {
     },
     order,
     ordersMeta,
+    ownUnits,
   }: {
     data: GameDataResponse;
     order: OrderState;
     ordersMeta: OrdersMeta;
+    ownUnits: string[];
   } = current(state);
-
+  // Check to make sure user owns unit
+  if (!ownUnits.includes(unitID)) {
+    return;
+  }
   // Check to make sure you have units to destroy
   const count = currentOrders?.filter(
     (item) => item.unitID === "" || item.unitID === null,
   );
-
   if (count && count?.length === 0 && unitID !== order.unitID) {
     return;
   }
-
-  const ordersMetaEntries = Object.entries(ordersMeta);
-
   Object.values(ordersMeta).forEach(({ update }) => {
     if (update) {
       const { type } = update;
@@ -348,17 +365,13 @@ const destroyUnit = (state, unitID) => {
           },
         };
         setCommand(state, command, "unitCommands", unitID);
-
-        state.data.data.currentOrders.forEach((item) => {
-          ordersMetaEntries.forEach((meta) => {
-            const [id] = meta;
-            if (item.id === id) {
-              item.unitID = unitID;
-            }
-          });
-        });
         state.order.inProgress = !order.inProgress;
-        state.order.unitID = unitID;
+        state.order.unitID = order.inProgress ? "" : unitID;
+        state.data.data.currentOrders?.forEach((currentOrder) => {
+          if (ordersMeta[currentOrder.id]) {
+            currentOrder.unitID = order.inProgress ? null : unitID;
+          }
+        });
       }
     }
   });
@@ -368,7 +381,6 @@ const drawOrders = (state) => {
   const {
     data: { data },
     maps,
-    order,
     ordersMeta,
   } = current(state);
   removeAllArrows();
@@ -376,7 +388,6 @@ const drawOrders = (state) => {
   drawSupportMoveOrders(data, maps, ordersMeta);
   drawSupportHoldOrders(data, ordersMeta);
   drawBuilds(state);
-  destroyUnit(state, order.unitID);
 };
 
 const updateOrdersMeta = (state, updates: EditOrderMeta) => {
@@ -421,41 +432,39 @@ const gameApiSlice = createSlice({
     processUnitClick(state, clickData) {
       const {
         data: {
-          data: { contextVars },
+          data: { contextVars, currentOrders },
         },
-        order: {
-          inProgress,
-          method,
-          onTerritory,
-          orderID,
-          toTerritory,
-          type,
-          unitID,
-        },
+        order: { inProgress, method, onTerritory, orderID, type, unitID },
+        ordersMeta,
         ownUnits,
         overview: { phase },
       } = current(state);
-      // This is currently empty during Builds so not working
-      // if (!ownUnits.includes(clickData.payload.unitID)) {
-      //   return;
-      // }
       if (contextVars?.context?.orderStatus) {
         const orderStates = getOrderStates(contextVars?.context?.orderStatus);
         if (orderStates.Ready) {
           return;
         }
       }
-
+      // Destroy Units
       if (phase === "Builds") {
         destroyUnit(state, clickData.payload.unitID);
-        // updateOrdersMeta(state, {
-        //   1190: {
-        //     saved: true,
-        //     update: {
-        //       type: "Destroy",
-        //       toTerrID: "15",
-        //     },
-        //   },
+
+        // Saving Order
+        // currentOrders?.forEach((currentOrder) => {
+        //   if (ordersMeta[currentOrder.id]) {
+        //     const { update: toTerrID } = ordersMeta[currentOrder.id];
+        //     if (toTerrID) {
+        //       updateOrdersMeta(state, {
+        //         orderID: {
+        //           saved: true,
+        //           update: {
+        //             type: "Destroy",
+        //             toTerrID: toTerrID.toString(),
+        //           },
+        //         },
+        //       });
+        //     }
+        //   }
         // });
       } else if (inProgress) {
         if (unitID === clickData.payload.unitID) {
@@ -849,11 +858,13 @@ const gameApiSlice = createSlice({
         state.data = action.payload;
         const {
           data: { data },
-          overview: { members, phase },
+          overview: { members, phase, user },
         } = current(state);
         state.maps = generateMaps(data);
-        data.currentOrders?.forEach(({ unitID }) => {
-          state.ownUnits.push(unitID);
+        Object.values(data.units).forEach((unit) => {
+          if (unit.countryID === user.member.countryID.toString()) {
+            state.ownUnits.push(unit.id);
+          }
         });
         const unitsToDraw = getUnits(data, members);
         unitsToDraw.forEach(({ country, mappedTerritory, unit }) => {
