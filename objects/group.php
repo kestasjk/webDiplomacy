@@ -29,6 +29,12 @@ require_once(l_r('objects/basic/set.php'));
  *
  * @package Base
  */
+class GroupType
+{
+	var $name;
+	var $display;
+	
+}
 class Group
 {
 	/**
@@ -48,7 +54,9 @@ class Group
 	 */
 	var $gameID;
 
-    static $validTypes = array('UserSuspicion','ModSuspicion','Family','School','OffSite','RealLife','Community','ModPrivate','ModPublic');
+    static $validTypes = array('UserSuspicion'=>array('User','OwnUser'),'ModSuspicion','Family','School','OffSite','RealLife','Community','ModPrivate','ModPublic');
+    static $userTagDisplay = array('UserSuspicion'=>array('Moderator',,'ModSuspicion','Family','School','OffSite','RealLife','Community','ModPrivate','ModPublic');
+
 	/**
 	 * The type of group
      * 
