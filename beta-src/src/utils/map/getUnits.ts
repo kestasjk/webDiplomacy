@@ -1,7 +1,7 @@
 import GameDataResponse from "../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
 import TerritoryMap, {
-  ITerritory,
+  MTerritory,
 } from "../../data/map/variants/classic/TerritoryMap";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import Country from "../../enums/Country";
@@ -9,7 +9,7 @@ import { IUnit } from "../../models/Interfaces";
 
 interface Unit {
   country: Country;
-  mappedTerritory: ITerritory;
+  mappedTerritory: MTerritory;
   unit: IUnit;
 }
 

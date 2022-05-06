@@ -1,6 +1,6 @@
 import { createTheme, SimplePaletteColorOptions } from "@mui/material/styles";
 import Country from "./enums/Country";
-import ArrowType from "./enums/ArrowType";
+import ArrowColor from "./enums/ArrowColor";
 
 declare module "@mui/material/styles" {
   interface BreakpointOverrides {
@@ -39,6 +39,16 @@ interface svgOptions {
   };
 }
 
+interface PaletteArrowColors {
+  [ArrowColor.IMPLIED]: SimplePaletteColorOptions;
+  [ArrowColor.IMPLIED_FOREIGN]: SimplePaletteColorOptions;
+  [ArrowColor.MOVE]: SimplePaletteColorOptions;
+  [ArrowColor.MOVE_FAILED]: SimplePaletteColorOptions;
+  [ArrowColor.RETREAT]: SimplePaletteColorOptions;
+  [ArrowColor.SUPPORT_HOLD]: SimplePaletteColorOptions;
+  [ArrowColor.SUPPORT_MOVE]: SimplePaletteColorOptions;
+}
+
 declare module "@mui/material/styles" {
   interface Palette {
     France: SimplePaletteColorOptions;
@@ -49,30 +59,14 @@ declare module "@mui/material/styles" {
     Italy: SimplePaletteColorOptions;
     Turkey: SimplePaletteColorOptions;
     svg: svgOptions;
-    arrowColors: {
-      moveOrderSelected: SimplePaletteColorOptions;
-      move: SimplePaletteColorOptions;
-      convoy: SimplePaletteColorOptions;
-      moveFailed: SimplePaletteColorOptions;
-      moveSupport: SimplePaletteColorOptions;
-      holdSupport: SimplePaletteColorOptions;
-      retreat: SimplePaletteColorOptions;
-    };
+    arrowColors: PaletteArrowColors;
   }
 }
 
 declare module "@mui/material/styles/createPalette" {
   export interface PaletteOptions {
     svg: svgOptions;
-    arrowColors: {
-      moveOrderSelected: SimplePaletteColorOptions;
-      move: SimplePaletteColorOptions;
-      convoy: SimplePaletteColorOptions;
-      moveFailed: SimplePaletteColorOptions;
-      moveSupport: SimplePaletteColorOptions;
-      holdSupport: SimplePaletteColorOptions;
-      retreat: SimplePaletteColorOptions;
-    };
+    arrowColors: PaletteArrowColors;
   }
 }
 
@@ -139,17 +133,17 @@ const countryPalette: CountryPaletteOptions = {
 };
 
 type ArrowColors = {
-  [key in ArrowType]: SimplePaletteColorOptions;
+  [key in ArrowColor]: SimplePaletteColorOptions;
 };
 
 const arrowColors: ArrowColors = {
-  moveOrderSelected: { main: "#FFFFFF" },
-  move: { main: "#000000" },
-  convoy: { main: "#2042B8" },
-  moveFailed: { main: "#BB0000" },
-  moveSupport: { main: "#F8F83D" },
-  holdSupport: { main: "#3FC621" },
-  retreat: { main: "#BD2894" },
+  [ArrowColor.IMPLIED]: { main: "#989898" },
+  [ArrowColor.IMPLIED_FOREIGN]: { main: "rgba(0,0,0,.3)" },
+  [ArrowColor.MOVE]: { main: "#000000" },
+  [ArrowColor.MOVE_FAILED]: { main: "#BB0000" },
+  [ArrowColor.RETREAT]: { main: "#BD2894" },
+  [ArrowColor.SUPPORT_HOLD]: { main: "#3FC621" },
+  [ArrowColor.SUPPORT_MOVE]: { main: "#F8F83D" },
 };
 
 /**

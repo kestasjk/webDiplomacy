@@ -1,11 +1,8 @@
 enum ArrowType {
-  MOVE_ORDER_SELECTED = "moveOrderSelected",
-  MOVE = "move",
-  CONVOY = "convoy",
-  MOVE_FAILED = "moveFailed",
-  MOVE_SUPPORT = "moveSupport",
-  HOLD_SUPPORT = "holdSupport",
-  RETREAT = "retreat",
+  CONVOY,
+  MOVE,
+  SUPPORT,
+  HOLD,
 }
 
 export default ArrowType;

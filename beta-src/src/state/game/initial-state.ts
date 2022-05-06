@@ -16,12 +16,20 @@ const initialState: GameState = {
   error: null,
   order: {
     inProgress: false,
+    method: "click",
     onTerritory: null,
     orderID: "",
+    subsequentClicks: [],
     toTerritory: null,
     unitID: "",
   },
   ordersMeta: {},
+  ownUnits: [],
+  maps: {
+    territoryToUnit: {},
+    unitToOrder: {},
+    unitToTerritory: {},
+  },
   territoriesMeta: {},
   commands: {
     mapCommands: {},
@@ -117,6 +125,11 @@ const initialState: GameState = {
     votes: null,
     orderStatus: "",
     status: "",
+  },
+  messages: {
+    messages: [],
+    pressType: "",
+    phase: "",
   },
 };
 
