@@ -70,8 +70,8 @@ class libGameMaster
 
 			// Save access logs, to detect multi-accounters
 			$DB->sql_put("INSERT INTO wD_AccessLog
-				( userID, lastRequest, hits, ip, userAgent, cookieCode )
-				SELECT userID, lastRequest, hits, ip, userAgent, cookieCode
+				( userID, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint )
+				SELECT userID, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint
 				FROM wD_Sessions
 				WHERE userID IN (".$userIDs.")");
 
