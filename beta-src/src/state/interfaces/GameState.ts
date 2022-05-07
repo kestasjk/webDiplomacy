@@ -4,6 +4,7 @@ import GameErrorResponse from "./GameErrorResponse";
 import GameOverviewResponse from "./GameOverviewResponse";
 import GameStateMaps from "./GameStateMaps";
 import GameStatusResponse from "./GameStatusResponse";
+import GameMessages from "./GameMessages";
 import OrderState from "./OrderState";
 import OrdersMeta from "./SavedOrders";
 import TerritoriesMeta from "./TerritoriesState";
@@ -22,4 +23,5 @@ export interface GameState {
   territoriesMeta: TerritoriesMeta;
   commands: GameCommands;
   status: GameStatusResponse;
+  messages: GameMessages;
 }

@@ -164,7 +164,7 @@ export default function drawArrow(
         `url(#arrowHead__${ArrowType[arrowType]}_${ArrowColor[arrowColor]})`,
       )
       .attr("stroke", webDiplomacyTheme.palette.arrowColors[arrowColor].main)
-      .attr("stroke-width", "2")
+      .attr("stroke-width", "3")
       .attr("class", arrowClass);
   }
 }
