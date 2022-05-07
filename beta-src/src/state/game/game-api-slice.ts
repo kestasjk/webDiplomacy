@@ -243,10 +243,12 @@ const highlightMapTerritoriesBasedOnStatuses = (state) => {
 
 const drawBuilds = (state) => {
   const {
+    order: { inProgress },
     ordersMeta,
     territoriesMeta,
     overview: { members, phase },
   }: {
+    order: OrderState;
     ordersMeta: OrdersMeta;
     territoriesMeta: TerritoriesMeta;
     overview: {
@@ -264,15 +266,16 @@ const drawBuilds = (state) => {
         if (territoryMeta) {
           // Destroy Units
           if (type === "Destroy" && territoryMeta?.unitID) {
+            state.data.data.currentOrders?.forEach((currentOrder) => {
+              if (ordersMeta[currentOrder.id]) {
+                currentOrder.unitID = territoryMeta.unitID;
+                currentOrder.toTerrID = toTerrID;
+              }
+            });
+
             const command: GameCommand = {
               command: "DESTROY",
-              data: {
-                setUnit: {
-                  componentType: "Icon",
-                  iconState: UIState.DESTROY,
-                  unitSlotName: "main",
-                },
-              },
+              // command: Progress ? "NONE" : "DESTROY",
             };
             setCommand(state, command, "unitCommands", territoryMeta.unitID);
           } else {
@@ -323,58 +326,6 @@ const drawBuilds = (state) => {
       }
     });
   }
-};
-
-const destroyUnit = (state, unitID) => {
-  const {
-    data: {
-      data: { currentOrders },
-    },
-    order,
-    ordersMeta,
-    ownUnits,
-  }: {
-    data: GameDataResponse;
-    order: OrderState;
-    ordersMeta: OrdersMeta;
-    ownUnits: string[];
-  } = current(state);
-  // Check to make sure user owns unit
-  if (!ownUnits.includes(unitID)) {
-    return;
-  }
-  // Check to make sure you have units to destroy
-  const count = currentOrders?.filter(
-    (item) => item.unitID === "" || item.unitID === null,
-  );
-  if (count && count?.length === 0 && unitID !== order.unitID) {
-    return;
-  }
-  Object.values(ordersMeta).forEach(({ update }) => {
-    if (update) {
-      const { type } = update;
-      if (type === "Destroy") {
-        const command: GameCommand = {
-          command: order.inProgress ? "NONE" : "DESTROY",
-          data: {
-            setUnit: {
-              componentType: "Icon",
-              iconState: order.inProgress ? UIState.NONE : UIState.DESTROY,
-              unitSlotName: "main",
-            },
-          },
-        };
-        setCommand(state, command, "unitCommands", unitID);
-        state.order.inProgress = !order.inProgress;
-        state.order.unitID = order.inProgress ? "" : unitID;
-        state.data.data.currentOrders?.forEach((currentOrder) => {
-          if (ordersMeta[currentOrder.id]) {
-            currentOrder.unitID = order.inProgress ? null : unitID;
-          }
-        });
-      }
-    }
-  });
 };
 
 const drawOrders = (state) => {
@@ -434,6 +385,7 @@ const gameApiSlice = createSlice({
         data: {
           data: { contextVars, currentOrders },
         },
+        maps,
         order: { inProgress, method, onTerritory, orderID, type, unitID },
         ordersMeta,
         ownUnits,
@@ -447,25 +399,52 @@ const gameApiSlice = createSlice({
       }
       // Destroy Units
       if (phase === "Builds") {
-        destroyUnit(state, clickData.payload.unitID);
+        if (!ownUnits.includes(clickData.payload.unitID)) {
+          return;
+        }
 
-        // Saving Order
-        // currentOrders?.forEach((currentOrder) => {
-        //   if (ordersMeta[currentOrder.id]) {
-        //     const { update: toTerrID } = ordersMeta[currentOrder.id];
-        //     if (toTerrID) {
-        //       updateOrdersMeta(state, {
-        //         orderID: {
-        //           saved: true,
-        //           update: {
-        //             type: "Destroy",
-        //             toTerrID: toTerrID.toString(),
-        //           },
-        //         },
-        //       });
-        //     }
-        //   }
-        // });
+        console.log("clickData.payload", clickData.payload);
+        console.log("unitID", unitID);
+        console.log("unitclickData.payload.unitIDID", clickData.payload.unitID);
+
+        state.order.unitID = clickData.payload.unitID;
+        state.order.inProgress = !inProgress;
+        state.data.data.currentOrders?.forEach((currentOrder) => {
+          if (ordersMeta[currentOrder.id]) {
+            currentOrder.unitID = clickData.payload.unitID;
+            currentOrder.toTerrID =
+              maps.unitToTerritory[clickData.payload.unitID];
+          }
+        });
+
+        // Check to make sure you have units to destroy
+        const count = currentOrders?.filter(
+          (item) => item.unitID === "" || item.unitID === null,
+        );
+        if (
+          count &&
+          count?.length === 0 &&
+          clickData.payload.unitID !== unitID
+        ) {
+          console.log("failed");
+          return;
+        }
+
+        // const command: GameCommand = {
+        //   // command: "DESTROY",
+        //   command: inProgress ? "NONE" : "DESTROY",
+        // };
+        // setCommand(state, command, "unitCommands", clickData.payload.unitID);
+
+        updateOrdersMeta(state, {
+          orderID: {
+            saved: false,
+            update: {
+              type: inProgress ? "None" : "Destroy",
+              toTerrID: maps.unitToTerritory[clickData.payload.unitID],
+            },
+          },
+        });
       } else if (inProgress) {
         if (unitID === clickData.payload.unitID) {
           resetOrder(state);
