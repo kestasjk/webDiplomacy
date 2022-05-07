@@ -32,6 +32,7 @@ import getUnits from "../../utils/map/getUnits";
 import UnitType from "../../types/UnitType";
 import drawSupportMoveOrders from "../../utils/map/drawSupportMoveOrders";
 import drawMoveOrders from "../../utils/map/drawMoveOrders";
+import drawRetreatOrders from "../../utils/map/drawRetreatOrders";
 import generateMaps from "../../utils/state/generateMaps";
 import removeAllArrows from "../../utils/map/removeAllArrows";
 import drawSupportHoldOrders from "../../utils/map/drawSupportHoldOrders";
@@ -168,10 +169,17 @@ const setCommand = (
 const resetOrder = (state) => {
   const {
     order: { unitID, type },
+    overview: { phase },
   } = current(state);
-  if (type !== "hold") {
+  if (type !== "hold" && type !== "retreat") {
     const command: GameCommand = {
-      command: "NONE",
+      command: phase === "Retreats" ? "DISLODGED" : "NONE",
+    };
+    setCommand(state, command, "unitCommands", unitID);
+  }
+  if (type === "disband") {
+    const command: GameCommand = {
+      command: "DISBAND",
     };
     setCommand(state, command, "unitCommands", unitID);
   }
@@ -325,17 +333,53 @@ const drawBuilds = (state) => {
   }
 };
 
+const updateUnitsRetreat = (state) => {
+  const {
+    data: {
+      data: { currentOrders },
+    },
+    ordersMeta,
+  }: {
+    data;
+    order;
+    ordersMeta;
+  } = current(state);
+  currentOrders.forEach(({ id, unitID }) => {
+    const type = ordersMeta[id]?.update.type;
+    const isSaved = ordersMeta[id]?.saved;
+    const toTerrID = ordersMeta[id]?.update.toTerrID;
+    let command: GameCommand = {
+      command: "NONE",
+    };
+    if (type === "Retreat" && !toTerrID) {
+      command = {
+        command: "DISLODGED",
+      };
+    } else if (isSaved && type === "Disband") {
+      command = {
+        command: "DISBAND",
+      };
+    }
+    setCommand(state, command, "unitCommands", unitID);
+  });
+};
+
 const drawOrders = (state) => {
   const {
     data: { data },
     maps,
     ordersMeta,
+    overview: { phase },
   } = current(state);
   removeAllArrows();
   drawMoveOrders(data, ordersMeta);
   drawSupportMoveOrders(data, maps, ordersMeta);
   drawSupportHoldOrders(data, ordersMeta);
   drawBuilds(state);
+  if (phase === "Retreats") {
+    updateUnitsRetreat(state);
+    drawRetreatOrders(data, ordersMeta);
+  }
 };
 
 const updateOrdersMeta = (state, updates: EditOrderMeta) => {
@@ -380,22 +424,26 @@ const gameApiSlice = createSlice({
     processUnitClick(state, clickData) {
       const {
         data: {
-          data: { contextVars },
+          data: { contextVars, currentOrders },
         },
-        order: {
-          inProgress,
-          method,
-          onTerritory,
-          orderID,
-          toTerritory,
-          type,
-          unitID,
-        },
+        order: { inProgress, method, onTerritory, orderID, type, unitID },
         ownUnits,
+        ordersMeta,
       } = current(state);
       if (contextVars?.context?.orderStatus) {
         const orderStates = getOrderStates(contextVars?.context?.orderStatus);
-        if (orderStates.Ready) {
+        const clickedUnit = clickData.payload.unitID;
+        const unitOrderFiltered = currentOrders?.filter(
+          (o) => o.unitID === clickedUnit,
+        );
+
+        if (
+          orderStates.Ready ||
+          (unitOrderFiltered?.length &&
+            ordersMeta[unitOrderFiltered[0]?.id].update?.type === "Disband" &&
+            !ordersMeta[unitOrderFiltered[0]?.id].allowedBorderCrossings
+              ?.length)
+        ) {
           return;
         }
       }
@@ -485,18 +533,24 @@ const gameApiSlice = createSlice({
                 [orderToUpdate.id]: {
                   saved: false,
                   update: {
-                    type: "Hold",
+                    type: phase === "Retreats" ? "Disband" : "Hold",
                     toTerrID: null,
                   },
                 },
               });
             }
           }
-          state.order.type = "hold";
-        } else if (onTerritory !== null && type === "hold") {
+          state.order.type = phase === "Retreats" ? "disband" : "hold";
+        } else if (
+          onTerritory !== null &&
+          (type === "hold" || type === "disband")
+        ) {
           highlightMapTerritoriesBasedOnStatuses(state);
           resetOrder(state);
-        } else if (toTerritory !== null && type === "move") {
+        } else if (
+          toTerritory !== null &&
+          (type === "move" || type === "retreat")
+        ) {
           highlightMapTerritoriesBasedOnStatuses(state);
           resetOrder(state);
         } else if (toTerritory !== null && type === "build") {
@@ -531,14 +585,14 @@ const gameApiSlice = createSlice({
               [orderID]: {
                 saved: false,
                 update: {
-                  type: "Move",
+                  type: phase === "Retreats" ? "Retreat" : "Move",
                   toTerrID: canMove.id,
                   viaConvoy: "No",
                 },
               },
             });
             state.order.toTerritory = TerritoryMap[canMove.name].territory;
-            state.order.type = "move";
+            state.order.type = phase === "Retreats" ? "retreat" : "move";
           } else {
             const command: GameCommand = {
               command: "INVALID_CLICK",
@@ -811,6 +865,7 @@ const gameApiSlice = createSlice({
               },
             },
           };
+
           setCommand(
             state,
             command,
@@ -820,7 +875,6 @@ const gameApiSlice = createSlice({
               : Territory[mappedTerritory.territory],
           );
         });
-
         updateOrdersMeta(state, getOrdersMeta(data, phase));
       })
       .addCase(fetchGameData.rejected, (state, action) => {
@@ -861,12 +915,15 @@ const gameApiSlice = createSlice({
               contextKey: newContextKey,
             };
           }
+
           Object.entries(orders).forEach(([id, value]) => {
             if (value.status === "Complete") {
               state.ordersMeta[id].saved = true;
             }
           });
         }
+
+        updateUnitsRetreat(state);
       })
       // Fetch Game Messages
       .addCase(fetchGameMessages.fulfilled, (state, action) => {

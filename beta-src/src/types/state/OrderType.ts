@@ -1,2 +1,2 @@
-type OrderType = "hold" | "move" | "build";
+type OrderType = "hold" | "move" | "build" | "disband" | "retreat";
 export default OrderType;

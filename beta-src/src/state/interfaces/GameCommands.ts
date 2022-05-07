@@ -11,6 +11,8 @@ import GetArrayElementType from "../../utils/getArrayElementType";
 export const ValidCommands = [
   "BUILD",
   "CAPTURED",
+  "DISBAND",
+  "DISLODGED",
   "DRAW_ARROW",
   "HOLD",
   "INVALID_CLICK",
@@ -18,6 +20,7 @@ export const ValidCommands = [
   "NONE",
   "REMOVE_ARROW",
   "REMOVE_BUILD",
+  "RETREAT",
   "SELECTED",
   "SET_UNIT",
 ] as const;
