@@ -38,6 +38,7 @@ import drawSupportHoldOrders from "../../utils/map/drawSupportHoldOrders";
 import BoardClass from "../../models/BoardClass";
 import { IContext } from "../../models/Interfaces";
 import OrderClass from "../../models/OrderClass";
+import drawConvoyOrders from "../../utils/map/drawConvoyOrders";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -183,6 +184,7 @@ const resetOrder = (state) => {
   state.order.orderID = "";
   state.order.onTerritory = 0;
   state.order.toTerritory = 0;
+  state.order.subsequentClicks = [];
   delete state.order.type;
 };
 
@@ -338,6 +340,7 @@ const drawOrders = (state) => {
   drawMoveOrders(data, ordersMeta);
   drawSupportMoveOrders(data, maps, ordersMeta);
   drawSupportHoldOrders(data, ordersMeta);
+  drawConvoyOrders(data, maps, ordersMeta);
   drawBuilds(state);
 };
 
@@ -351,7 +354,7 @@ const updateOrdersMeta = (state, updates: EditOrderMeta) => {
   drawOrders(state);
 };
 
-const calculateConvoy = (state) => {
+const processConvoy = (state) => {
   const {
     board,
     data: {
@@ -407,18 +410,73 @@ const calculateConvoy = (state) => {
             convoyOrder.unit.Territory,
           );
           if (convoyPath) {
-            updateOrdersMeta(state, {
-              [order.unitID]: {
-                saved: false,
-                update: {
-                  convoyPath,
-                  toTerrID: toTerritory,
-                  type: "Move",
-                  viaConvoy: "Yes",
-                },
+            const clickedUnitsTerritories = order.subsequentClicks.map(
+              (click) => {
+                return maps.enumToTerritory[click.onTerritory];
               },
+            );
+            clickedUnitsTerritories.push(
+              maps.enumToTerritory[order.onTerritory],
+            );
+            const updates = {};
+            convoyPath.forEach((terrID) => {
+              let foundClick =
+                maps.enumToTerritory[order.onTerritory] === terrID
+                  ? order
+                  : false;
+              if (!foundClick) {
+                foundClick = order.subsequentClicks.find((click) => {
+                  return maps.enumToTerritory[click.onTerritory] === terrID;
+                });
+              }
+              const unitOrderID = maps.unitToOrder[foundClick.unitID];
+              console.log({ foundClick });
+
+              if (!foundClick) {
+                console.log(`user did not click: ${terrID}`);
+              } else {
+                console.log(`user clicked: ${terrID}`);
+                const unitIsArmy =
+                  board.findUnitByID(foundClick.unitID).type === "Army";
+                console.log({ unitIsArmy });
+                if (unitIsArmy) {
+                  console.log("unit is army");
+                  updates[unitOrderID] = {
+                    saved: false,
+                    update: {
+                      convoyPath,
+                      toTerrID: toTerritory,
+                      type: "Move",
+                      viaConvoy: "Yes",
+                    },
+                  };
+                } else {
+                  console.log("unit is not army");
+                  updates[unitOrderID] = {
+                    saved: false,
+                    update: {
+                      convoyPath,
+                      toTerrID: toTerritory,
+                      fromTerrID: fromTerritory,
+                      type: "Convoy",
+                    },
+                  };
+                }
+              }
             });
-            console.log({ convoyPath });
+
+            console.log({ updates });
+            updateOrdersMeta(state, updates);
+            const command: GameCommand = {
+              command: "MOVE",
+            };
+            setCommand(
+              state,
+              command,
+              "territoryCommands",
+              Territory[order.toTerritory],
+            );
+            console.log({ convoyPath, clickedUnitsTerritories });
           }
         }
       }
@@ -466,7 +524,6 @@ const gameApiSlice = createSlice({
           data: { contextVars, units },
         },
         order: { inProgress, method, onTerritory, orderID, type, unitID },
-        ordersMeta,
         ownUnits,
       } = current(state);
       if (contextVars?.context?.orderStatus) {
@@ -548,10 +605,14 @@ const gameApiSlice = createSlice({
       const {
         payload: { clickObject, evt, name: territoryName },
       } = clickData;
+      const truthyToTerritory =
+        toTerritory !== undefined && toTerritory !== null;
+      const truthyOnTerritory =
+        onTerritory !== undefined && onTerritory !== null;
       if (inProgress && method === "click") {
         const currOrderUnitID = unitID;
         if (
-          onTerritory !== null &&
+          truthyOnTerritory &&
           Territory[onTerritory] === territoryName &&
           !type
         ) {
@@ -584,13 +645,16 @@ const gameApiSlice = createSlice({
             }
           }
           state.order.type = "hold";
-        } else if (onTerritory !== null && type === "hold") {
+        } else if (type === "convoy" && !truthyToTerritory) {
+          state.order.toTerritory = Number(Territory[territoryName]);
+          processConvoy(state);
+        } else if (
+          truthyOnTerritory &&
+          (type === "hold" || type === "move" || type === "convoy")
+        ) {
           highlightMapTerritoriesBasedOnStatuses(state);
           resetOrder(state);
-        } else if (toTerritory !== null && type === "move") {
-          highlightMapTerritoriesBasedOnStatuses(state);
-          resetOrder(state);
-        } else if (toTerritory !== null && type === "build") {
+        } else if (truthyToTerritory && type === "build") {
           setCommand(
             state,
             {
@@ -600,12 +664,9 @@ const gameApiSlice = createSlice({
             Territory[toTerritory],
           );
           resetOrder(state);
-        } else if (type === "convoy") {
-          state.order.toTerritory = Number(Territory[territoryName]);
-          calculateConvoy(state);
         } else if (
           clickObject === "territory" &&
-          onTerritory !== null &&
+          truthyOnTerritory &&
           Territory[onTerritory] !== territoryName &&
           !type &&
           inProgress
