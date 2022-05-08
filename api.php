@@ -1071,7 +1071,6 @@ class GetMessages extends ApiEntry {
 					[
 						'pressType' => $pressType,
 						'phase' => $gamePhase,
-						'test' => 'test',
 					]
 				)
 			);
@@ -1096,7 +1095,7 @@ class GetMessages extends ApiEntry {
 			}
 
 			if (isset($args['allMessages'])) {
-				$where = "fromCountryID = $countryID";
+				$where = "(toCountryID = 0 OR fromCountryID = 0 OR toCountryID = $countryID OR fromCountryID = $countryID)";
 			} else {
 				$where = "( toCountryID = $toCountryID AND fromCountryID = $countryID )
 				OR
