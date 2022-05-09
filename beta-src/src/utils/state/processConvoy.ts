@@ -10,7 +10,7 @@ export default function processConvoy(state): void {
   const {
     board,
     data: {
-      data: { currentOrders, territories },
+      data: { currentOrders },
     },
     order,
     ordersMeta,
@@ -18,44 +18,21 @@ export default function processConvoy(state): void {
   } = current(state);
   const lastFleetInChain =
     order.subsequentClicks[order.subsequentClicks.length - 1];
-  console.log({ order });
   if (lastFleetInChain) {
     const { convoyToChoices } = ordersMeta[lastFleetInChain.orderID];
     const toTerritory = maps.enumToTerritory[order.toTerritory];
     const fromTerritory = maps.enumToTerritory[order.onTerritory];
-    console.log({
-      convoyToChoices,
-      toTerritory,
-      lastFleetInChain,
-      fromTerritory,
-    });
     if (convoyToChoices.includes(toTerritory)) {
-      console.log("can convoy here");
       const orderUnit = board.findUnitByID(lastFleetInChain.unitID);
       const fleetOrder = currentOrders?.find(
         (o) => o.unitID === lastFleetInChain.unitID,
       );
-      console.log({
-        orderUnit,
-        fleetOrder,
-      });
       if (fleetOrder) {
         const convoyOrder = new OrderClass(board, fleetOrder, orderUnit);
         const againstTerritory = board.findTerritoryByID(toTerritory);
         const convoyFrom = convoyOrder.getConvoyFromChoices(againstTerritory);
-        console.log({
-          againstTerritory,
-          convoyOrder,
-          convoyFrom,
-        });
         const convoyArmy = convoyFrom.find((c) => c.id === order.unitID);
         if (convoyArmy) {
-          console.log({ convoyArmy });
-          console.log({
-            b1: board.findTerritoryByID(fromTerritory),
-            b2: againstTerritory,
-            b3: convoyOrder.unit.Territory,
-          });
           const convoyPath = convoyArmy.ConvoyGroup.pathArmyToCoastWithFleet(
             board.findTerritoryByID(fromTerritory),
             againstTerritory,
@@ -81,19 +58,13 @@ export default function processConvoy(state): void {
                   return maps.enumToTerritory[click.onTerritory] === terrID;
                 });
               }
-
-              console.log({ foundClick });
-
               if (!foundClick) {
-                console.log(`user did not click: ${terrID}`);
+                // user did not click this unit
               } else {
                 const unitOrderID = maps.unitToOrder[foundClick.unitID];
-                console.log(`user clicked: ${terrID}`);
                 const unitIsArmy =
                   board.findUnitByID(foundClick.unitID).type === "Army";
-                console.log({ unitIsArmy });
                 if (unitIsArmy) {
-                  console.log("unit is army");
                   updates[unitOrderID] = {
                     saved: false,
                     update: {
@@ -104,7 +75,6 @@ export default function processConvoy(state): void {
                     },
                   };
                 } else {
-                  console.log("unit is not army");
                   updates[unitOrderID] = {
                     saved: false,
                     update: {
@@ -117,8 +87,6 @@ export default function processConvoy(state): void {
                 }
               }
             });
-
-            console.log({ updates });
             updateOrdersMeta(state, updates);
             const command: GameCommand = {
               command: "MOVE",
@@ -129,7 +97,6 @@ export default function processConvoy(state): void {
               "territoryCommands",
               Territory[order.toTerritory],
             );
-            console.log({ convoyPath, clickedUnitsTerritories });
           }
         }
       }

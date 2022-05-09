@@ -13,8 +13,6 @@ export default class ConvoyGroupClass {
 
   fleets: Set<UnitClass> = new Set();
 
-  Path;
-
   // eslint-disable-next-line no-useless-constructor
   constructor(public board: BoardClass) {}
 
@@ -170,7 +168,6 @@ export default class ConvoyGroupClass {
         return AnyNode.id === WithFleetTerr.id;
       },
     );
-    console.log({ ns });
     return ns.Path;
   }
 }
