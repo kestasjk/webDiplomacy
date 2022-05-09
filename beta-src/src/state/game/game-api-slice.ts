@@ -266,16 +266,18 @@ const drawBuilds = (state) => {
         if (territoryMeta) {
           // Destroy Units
           if (type === "Destroy" && territoryMeta?.unitID) {
+            state.order.unitID = inProgress ? "" : territoryMeta.unitID;
+            state.order.inProgress = !inProgress;
+            state.order.toTerritory = inProgress ? "" : territoryMeta.id;
             state.data.data.currentOrders?.forEach((currentOrder) => {
               if (ordersMeta[currentOrder.id]) {
                 currentOrder.unitID = territoryMeta.unitID;
                 currentOrder.toTerrID = toTerrID;
+                state.order.orderID = currentOrder.id;
               }
             });
-
             const command: GameCommand = {
-              command: "DESTROY",
-              // command: Progress ? "NONE" : "DESTROY",
+              command: inProgress ? "NONE" : "DESTROY",
             };
             setCommand(state, command, "unitCommands", territoryMeta.unitID);
           } else {
@@ -387,7 +389,6 @@ const gameApiSlice = createSlice({
         },
         maps,
         order: { inProgress, method, onTerritory, orderID, type, unitID },
-        ordersMeta,
         ownUnits,
         overview: { phase },
       } = current(state);
@@ -406,41 +407,27 @@ const gameApiSlice = createSlice({
         console.log("clickData.payload", clickData.payload);
         console.log("unitID", unitID);
         console.log("unitclickData.payload.unitIDID", clickData.payload.unitID);
-
-        state.order.unitID = clickData.payload.unitID;
-        state.order.inProgress = !inProgress;
-        state.data.data.currentOrders?.forEach((currentOrder) => {
-          if (ordersMeta[currentOrder.id]) {
-            currentOrder.unitID = clickData.payload.unitID;
-            currentOrder.toTerrID =
-              maps.unitToTerritory[clickData.payload.unitID];
-          }
-        });
+        console.log("orderID", orderID);
 
         // Check to make sure you have units to destroy
-        const count = currentOrders?.filter(
-          (item) => item.unitID === "" || item.unitID === null,
-        );
-        if (
-          count &&
-          count?.length === 0 &&
-          clickData.payload.unitID !== unitID
-        ) {
-          console.log("failed");
+        const count = currentOrders?.filter((item) => {
+          return (
+            // was trying item.unitID // need to confirm current implemenatin
+            unitID === "" ||
+            unitID === null ||
+            item.unitID === clickData.payload.unitID
+          );
+        });
+
+        if (count && count?.length === 0) {
           return;
         }
 
-        // const command: GameCommand = {
-        //   // command: "DESTROY",
-        //   command: inProgress ? "NONE" : "DESTROY",
-        // };
-        // setCommand(state, command, "unitCommands", clickData.payload.unitID);
-
         updateOrdersMeta(state, {
-          orderID: {
+          [orderID]: {
             saved: false,
             update: {
-              type: inProgress ? "None" : "Destroy",
+              type: "Destroy",
               toTerrID: maps.unitToTerritory[clickData.payload.unitID],
             },
           },
