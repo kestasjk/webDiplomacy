@@ -85,7 +85,7 @@ export const toggleVoteStatus = createAsyncThunk(
       ApiRoute.GAME_TOGGLEVOTE,
       queryParams,
     );
-    return data as any;
+    return data as string;
   },
 );
 

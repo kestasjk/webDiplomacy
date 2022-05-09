@@ -13,12 +13,14 @@ import { useAppDispatch } from "../../state/hooks";
 
 interface WDInfoPanelProps {
   countries: CountryTableData[];
+  gameID: GameOverviewResponse["gameID"];
   maxDelays: GameOverviewResponse["excusedMissedTurns"];
   userCountry: CountryTableData;
 }
 
 const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
   countries,
+  gameID,
   maxDelays,
   userCountry,
 }): React.ReactElement {
@@ -42,8 +44,8 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
       ...voteState,
       [voteKey]: !voteState[voteKey],
     };
-    const urlParams = new URLSearchParams(window.location.search);
-    const currentGameID = urlParams.get("gameID");
+
+    const currentGameID = gameID.toString();
     const countryID = userCountry.countryID.toString();
 
     setVoteState(newVoteState);
