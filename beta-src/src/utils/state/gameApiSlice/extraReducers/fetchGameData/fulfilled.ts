@@ -4,7 +4,6 @@ import BoardClass from "../../../../../models/BoardClass";
 import { GameCommand } from "../../../../../state/interfaces/GameCommands";
 import GameDataResponse from "../../../../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../../../../state/interfaces/GameOverviewResponse";
-import { GameState } from "../../../../../state/interfaces/GameState";
 import UnitType from "../../../../../types/UnitType";
 import getOrdersMeta from "../../../../map/getOrdersMeta";
 import getUnits from "../../../../map/getUnits";
@@ -34,28 +33,10 @@ export default function fetchGameDataFulfilled(state, action): void {
       data.territoryStatuses,
       Object.values(data.units),
     );
-    console.log({
-      newBoard2: board,
-    });
     state.board = board;
   }
   state.maps = generateMaps(data);
-  const {
-    maps,
-    data: {
-      data: { territories },
-    },
-  }: {
-    maps: GameState["maps"];
-    data: { data: GameDataResponse["data"] };
-  } = current(state);
-  data.currentOrders?.forEach(({ unitID, id }) => {
-    const terr = Object.values(territories).find(
-      (t) => t.id === maps.unitToTerritory[unitID],
-    );
-    console.log(
-      `Unit ID: ${unitID} - Order ID: ${id} - Terr ID: ${terr?.name}`,
-    );
+  data.currentOrders?.forEach(({ unitID }) => {
     state.ownUnits.push(unitID);
   });
   const unitsToDraw = getUnits(data, members);
