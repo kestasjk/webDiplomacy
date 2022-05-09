@@ -340,14 +340,14 @@ const updateUnitsRetreat = (state) => {
     },
     ordersMeta,
   }: {
-    data;
-    order;
-    ordersMeta;
+    data: { data: GameDataResponse["data"] };
+    ordersMeta: OrdersMeta;
   } = current(state);
-  currentOrders.forEach(({ id, unitID }) => {
-    const type = ordersMeta[id]?.update.type;
-    const isSaved = ordersMeta[id]?.saved;
-    const toTerrID = ordersMeta[id]?.update.toTerrID;
+  currentOrders?.forEach(({ id, unitID }) => {
+    const { update, saved } = ordersMeta[id];
+    const toTerrID = update?.toTerrID;
+    const type = update?.type;
+
     let command: GameCommand = {
       command: "NONE",
     };
@@ -355,7 +355,7 @@ const updateUnitsRetreat = (state) => {
       command = {
         command: "DISLODGED",
       };
-    } else if (isSaved && type === "Disband") {
+    } else if (saved && type === "Disband") {
       command = {
         command: "DISBAND",
       };
