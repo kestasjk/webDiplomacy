@@ -404,18 +404,13 @@ const gameApiSlice = createSlice({
           return;
         }
 
-        console.log("clickData.payload", clickData.payload);
-        console.log("unitID", unitID);
-        console.log("unitclickData.payload.unitIDID", clickData.payload.unitID);
-        console.log("orderID", orderID);
-
         // Check to make sure you have units to destroy
         const count = currentOrders?.filter((item) => {
           return (
-            // was trying item.unitID // need to confirm current implemenatin
-            unitID === "" ||
-            unitID === null ||
-            item.unitID === clickData.payload.unitID
+            (unitID === "" ||
+              unitID === null ||
+              item.unitID === clickData.payload.unitID) &&
+            item.type === "Destroy"
           );
         });
 
