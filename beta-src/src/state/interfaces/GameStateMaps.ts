@@ -5,4 +5,5 @@ export default interface GameStateMaps {
   unitToOrder: GameStateMap;
   unitToTerritory: GameStateMap;
   enumToTerritory: GameStateMap;
+  territoryToEnum: GameStateMap;
 }

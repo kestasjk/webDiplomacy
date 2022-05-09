@@ -26,19 +26,38 @@ export default function drawConvoyOrders(
             const unitBeingConvoyed = maps.territoryToUnit[fromTerrID];
             const unitBeingConvoyedOrder = maps.unitToOrder[unitBeingConvoyed];
 
-            const supportingTerritory = maps.unitToTerritory[unitID];
-            const supportingTerritoryDetails = territories[supportingTerritory];
+            const convoyingTerritory = maps.unitToTerritory[unitID];
+            const convoyingTerritoryDetails = territories[convoyingTerritory];
 
-            const { update: unitBeingSupportedOrderDetails } =
+            const { update: unitBeingConvoyedOrderDetails } =
               ordersMeta[unitBeingConvoyedOrder];
-            if (unitBeingSupportedOrderDetails) {
+
+            if (update.toTerrID === unitBeingConvoyedOrderDetails?.toTerrID) {
               drawArrow(
                 id,
                 ArrowType.CONVOY,
                 ArrowColor.CONVOY,
                 "arrow",
                 unitBeingConvoyedOrder,
-                TerritoryMap[supportingTerritoryDetails.name].territory,
+                TerritoryMap[convoyingTerritoryDetails.name].territory,
+              );
+            } else {
+              // draw implied arrows
+              drawArrow(
+                `${id}-implied`,
+                ArrowType.MOVE,
+                ArrowColor.IMPLIED,
+                "territory",
+                Number(maps.territoryToEnum[toTerrID]),
+                Number(maps.territoryToEnum[fromTerrID]),
+              );
+              drawArrow(
+                id,
+                ArrowType.CONVOY,
+                ArrowColor.CONVOY,
+                "arrow",
+                `${id}-implied`,
+                TerritoryMap[convoyingTerritoryDetails.name].territory,
               );
             }
           }

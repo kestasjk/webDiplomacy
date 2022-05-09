@@ -31,6 +31,7 @@ const initialState: GameState = {
     unitToOrder: {},
     unitToTerritory: {},
     enumToTerritory: {},
+    territoryToEnum: {},
   },
   territoriesMeta: {},
   commands: {
