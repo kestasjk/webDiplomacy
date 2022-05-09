@@ -48,8 +48,7 @@ export default function getOrdersMeta(data, phase): Props {
           newBoard.units.push(orderUnit);
         }
         if (orderUnit) {
-          const tempOrder = new OrderClass(newBoard, o, orderUnit);
-          newOrders.push(tempOrder);
+          newOrders.push(new OrderClass(newBoard, o, orderUnit));
           updateOrdersMeta[id] = {
             update: {
               type,
