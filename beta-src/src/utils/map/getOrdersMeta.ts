@@ -38,7 +38,7 @@ export default function getOrdersMeta(
       }
 
       currentOrders?.forEach((o) => {
-        const { id, unitID, type, toTerrID, fromTerrID } = o;
+        const { id, unitID, type, toTerrID, fromTerrID, viaConvoy } = o;
         const orderUnit = board.findUnitByID(unitID);
         if (orderUnit) {
           newOrders.push(new OrderClass(board, o, orderUnit));
@@ -47,6 +47,7 @@ export default function getOrdersMeta(
               type,
               toTerrID,
               fromTerrID,
+              viaConvoy,
             },
           };
         }

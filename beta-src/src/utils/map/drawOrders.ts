@@ -8,12 +8,13 @@ import removeAllArrows from "./removeAllArrows";
 
 export default function drawOrders(state): void {
   const {
+    board,
     data: { data },
     maps,
     ordersMeta,
   } = current(state);
   removeAllArrows();
-  drawMoveOrders(data, ordersMeta);
+  drawMoveOrders(data, maps, ordersMeta, board);
   drawSupportMoveOrders(data, maps, ordersMeta);
   drawSupportHoldOrders(data, ordersMeta);
   drawConvoyOrders(data, maps, ordersMeta);
