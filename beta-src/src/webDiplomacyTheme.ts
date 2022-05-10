@@ -40,6 +40,7 @@ interface svgOptions {
 }
 
 interface PaletteArrowColors {
+  [ArrowColor.CONVOY]: SimplePaletteColorOptions;
   [ArrowColor.IMPLIED]: SimplePaletteColorOptions;
   [ArrowColor.IMPLIED_FOREIGN]: SimplePaletteColorOptions;
   [ArrowColor.MOVE]: SimplePaletteColorOptions;
@@ -137,6 +138,7 @@ type ArrowColors = {
 };
 
 const arrowColors: ArrowColors = {
+  [ArrowColor.CONVOY]: { main: "#2042B8" },
   [ArrowColor.IMPLIED]: { main: "#989898" },
   [ArrowColor.IMPLIED_FOREIGN]: { main: "rgba(0,0,0,.3)" },
   [ArrowColor.MOVE]: { main: "#000000" },

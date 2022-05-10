@@ -1,4 +1,5 @@
 enum ArrowColor {
+  CONVOY,
   IMPLIED,
   IMPLIED_FOREIGN,
   MOVE,
