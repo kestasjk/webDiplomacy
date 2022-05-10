@@ -70,6 +70,7 @@ export const fetchGameMessages = createAsyncThunk(
     toCountryID?: string;
     offset?: string;
     limit?: string;
+    allMessages?: string;
   }) => {
     const {
       data: { data },
