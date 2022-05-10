@@ -8,21 +8,26 @@ import { CountryTableData } from "../../interfaces/CountryTableData";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
+import { toggleVoteStatus } from "../../state/game/game-api-slice";
+import { useAppDispatch } from "../../state/hooks";
 
 interface WDInfoPanelProps {
   countries: CountryTableData[];
+  gameID: GameOverviewResponse["gameID"];
   maxDelays: GameOverviewResponse["excusedMissedTurns"];
   userCountry: CountryTableData;
 }
 
 const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
   countries,
+  gameID,
   maxDelays,
   userCountry,
 }): React.ReactElement {
   const [voteState, setVoteState] = React.useState(userCountry.votes);
   const [viewport] = useViewport();
   const device = getDevice(viewport);
+  const dispatch = useAppDispatch();
 
   React.useEffect(() => {
     setVoteState(userCountry.votes);
@@ -35,7 +40,18 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
       [voteKey]: !voteState[voteKey],
     };
 
+    const currentGameID = String(gameID);
+    const countryID = String(userCountry.countryID);
+
     setVoteState(newVoteState);
+
+    dispatch(
+      toggleVoteStatus({
+        countryID,
+        gameID: currentGameID,
+        vote: voteKey.charAt(0).toUpperCase() + voteKey.slice(1),
+      }),
+    );
   };
 
   const mobileLandscapeLayout =
