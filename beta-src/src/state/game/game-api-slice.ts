@@ -338,24 +338,31 @@ const updateUnitsRetreat = (state) => {
     data: {
       data: { currentOrders },
     },
+    order,
     ordersMeta,
   }: {
-    data: { data: GameDataResponse["data"] };
+    data: GameDataResponse;
+    order: OrderState;
     ordersMeta: OrdersMeta;
   } = current(state);
   currentOrders?.forEach(({ id, unitID }) => {
-    const { update, saved } = ordersMeta[id];
+    const { update } = ordersMeta[id];
     const toTerrID = update?.toTerrID;
     const type = update?.type;
 
     let command: GameCommand = {
-      command: "NONE",
+      command: "HOLD",
     };
+
     if (type === "Retreat" && !toTerrID) {
       command = {
         command: "DISLODGED",
       };
-    } else if (saved && type === "Disband") {
+    } else if (type === "Retreat" && toTerrID) {
+      command = {
+        command: "NONE",
+      };
+    } else if (type === "Disband" && order.orderID !== id) {
       command = {
         command: "DISBAND",
       };
@@ -432,9 +439,8 @@ const gameApiSlice = createSlice({
       } = current(state);
       if (contextVars?.context?.orderStatus) {
         const orderStates = getOrderStates(contextVars?.context?.orderStatus);
-        const clickedUnit = clickData.payload.unitID;
         const unitOrderFiltered = currentOrders?.filter(
-          (o) => o.unitID === clickedUnit,
+          (o) => o.unitID === clickData.payload.unitID,
         );
 
         if (
