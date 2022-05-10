@@ -31,8 +31,9 @@ export default function drawSupportMoveOrders(
             const supportingTerritory = maps.unitToTerritory[unitID];
             const supportingTerritoryDetails = territories[supportingTerritory];
             if (!ownUnits.includes(unitBeingSupported)) {
+              const supportArrowIdentifer = `${id}-foreign`;
               drawArrow(
-                `${id}-foreign`,
+                supportArrowIdentifer,
                 ArrowType.MOVE,
                 ArrowColor.IMPLIED_FOREIGN,
                 "territory",
@@ -44,12 +45,12 @@ export default function drawSupportMoveOrders(
                 ArrowType.SUPPORT,
                 ArrowColor.SUPPORT_MOVE,
                 "arrow",
-                `${id}-foreign`,
+                supportArrowIdentifer,
                 TerritoryMap[supportingTerritoryDetails.name].territory,
               );
             } else {
               // update: unitBeingSupportedOrderDetails will throw an error if the unit being supported
-              // is not your own unit, which is why it is only run after doing a check.
+              // is not your own unit, which is why it is only run after doing a
               const { update: unitBeingSupportedOrderDetails } =
                 ordersMeta[unitBeingSupportedOrder];
               if (unitBeingSupportedOrderDetails) {
