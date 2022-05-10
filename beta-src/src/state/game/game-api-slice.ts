@@ -431,24 +431,23 @@ const gameApiSlice = createSlice({
     processUnitClick(state, clickData) {
       const {
         data: {
-          data: { contextVars, currentOrders },
+          data: { contextVars },
         },
         order: { inProgress, method, onTerritory, orderID, type, unitID },
         ownUnits,
         ordersMeta,
+        maps,
       } = current(state);
       if (contextVars?.context?.orderStatus) {
         const orderStates = getOrderStates(contextVars?.context?.orderStatus);
-        const unitOrderFiltered = currentOrders?.filter(
-          (o) => o.unitID === clickData.payload.unitID,
-        );
+        const unitsOrderMeta =
+          ordersMeta[maps.unitToOrder[clickData.payload.unitID]];
 
         if (
           orderStates.Ready ||
-          (unitOrderFiltered?.length &&
-            ordersMeta[unitOrderFiltered[0]?.id].update?.type === "Disband" &&
-            !ordersMeta[unitOrderFiltered[0]?.id].allowedBorderCrossings
-              ?.length)
+          (unitsOrderMeta &&
+            unitsOrderMeta.update?.type === "Disband" &&
+            !unitsOrderMeta.allowedBorderCrossings?.length)
         ) {
           return;
         }
