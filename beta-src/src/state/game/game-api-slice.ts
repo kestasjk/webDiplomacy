@@ -331,7 +331,6 @@ const drawOrders = (state) => {
     maps,
     ordersMeta,
     ownUnits,
-    clickData,
   } = current(state);
   removeAllArrows();
   drawMoveOrders(data, ordersMeta);
