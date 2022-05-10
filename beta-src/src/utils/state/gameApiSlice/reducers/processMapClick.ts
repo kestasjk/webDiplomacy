@@ -4,9 +4,7 @@ import BuildUnit from "../../../../enums/BuildUnit";
 import Territory from "../../../../enums/map/variants/classic/Territory";
 import { GameCommand } from "../../../../state/interfaces/GameCommands";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
-import GameOverviewResponse from "../../../../state/interfaces/GameOverviewResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
-import OrdersMeta from "../../../../state/interfaces/SavedOrders";
 import { UnitSlotNames } from "../../../../types/map/UnitSlotName";
 import highlightMapTerritoriesBasedOnStatuses from "../../../map/highlightMapTerritoriesBasedOnStatuses";
 import getOrderStates from "../../getOrderStates";
@@ -19,49 +17,33 @@ import updateOrdersMeta from "../../updateOrdersMeta";
 /* eslint-disable no-param-reassign */
 export default function processMapClick(state, clickData) {
   const {
-    data: {
-      data: { currentOrders, contextVars },
-    },
-    order: {
-      inProgress,
-      method,
-      orderID,
-      onTerritory,
-      subsequentClicks,
-      toTerritory,
-      type,
-      unitID,
-    },
+    data: { data },
+    order,
     ordersMeta,
-    overview: {
-      user: { member },
-      phase,
-    },
+    overview,
     territoriesMeta,
   }: {
-    data: {
-      data: {
-        currentOrders: GameDataResponse["data"]["currentOrders"];
-        contextVars: GameDataResponse["data"]["contextVars"];
-      };
-    };
-    order: {
-      inProgress: GameState["order"]["inProgress"];
-      method: GameState["order"]["method"];
-      orderID: GameState["order"]["orderID"];
-      onTerritory: GameState["order"]["onTerritory"];
-      subsequentClicks: GameState["order"]["subsequentClicks"];
-      toTerritory: GameState["order"]["toTerritory"];
-      type: GameState["order"]["type"];
-      unitID: GameState["order"]["unitID"];
-    };
-    ordersMeta: OrdersMeta;
-    overview: {
-      user: { member: GameOverviewResponse["user"]["member"] };
-      phase: GameOverviewResponse["phase"];
-    };
+    data: { data: GameDataResponse["data"] };
+    order: GameState["order"];
+    ordersMeta: GameState["ordersMeta"];
+    overview: GameState["overview"];
     territoriesMeta: GameState["territoriesMeta"];
   } = current(state);
+  const {
+    inProgress,
+    method,
+    orderID,
+    onTerritory,
+    subsequentClicks,
+    toTerritory,
+    type,
+    unitID,
+  } = order;
+  const {
+    user: { member },
+    phase,
+  } = overview;
+  const { currentOrders, contextVars } = data;
   if (contextVars?.context?.orderStatus) {
     const orderStates = getOrderStates(contextVars?.context?.orderStatus);
     if (orderStates.Ready) {
