@@ -28,11 +28,6 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
   const [viewport] = useViewport();
   const device = getDevice(viewport);
   const dispatch = useAppDispatch();
-  const voteCommands = {
-    pause: "Pause",
-    draw: "Draw",
-    cancel: "Cancel",
-  };
 
   React.useEffect(() => {
     setVoteState(userCountry.votes);
@@ -45,16 +40,16 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
       [voteKey]: !voteState[voteKey],
     };
 
-    const currentGameID = gameID.toString();
-    const countryID = userCountry.countryID.toString();
+    const currentGameID = String(gameID);
+    const countryID = String(userCountry.countryID);
 
     setVoteState(newVoteState);
 
     dispatch(
       toggleVoteStatus({
-        countryID: countryID as string,
-        gameID: currentGameID as string,
-        vote: voteCommands[voteKey],
+        countryID,
+        gameID: currentGameID,
+        vote: voteKey.charAt(0).toUpperCase() + voteKey.slice(1),
       }),
     );
   };
