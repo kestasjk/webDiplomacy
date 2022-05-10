@@ -340,15 +340,21 @@ const updateUnitsRetreat = (state) => {
     },
     order,
     ordersMeta,
+    overview: { phase },
   }: {
     data: GameDataResponse;
     order: OrderState;
     ordersMeta: OrdersMeta;
+    overview: GameOverviewResponse;
   } = current(state);
   currentOrders?.forEach(({ id, unitID }) => {
     const { update } = ordersMeta[id];
     const toTerrID = update?.toTerrID;
     const type = update?.type;
+
+    if (phase !== "Retreats") {
+      return;
+    }
 
     let command: GameCommand = {
       command: "HOLD",
@@ -436,19 +442,25 @@ const gameApiSlice = createSlice({
         order: { inProgress, method, onTerritory, orderID, type, unitID },
         ownUnits,
         ordersMeta,
+        overview: { phase },
         maps,
       } = current(state);
-      if (contextVars?.context?.orderStatus) {
-        const orderStates = getOrderStates(contextVars?.context?.orderStatus);
+      if (phase === "Retreats") {
         const unitsOrderMeta =
           ordersMeta[maps.unitToOrder[clickData.payload.unitID]];
 
         if (
-          orderStates.Ready ||
-          (unitsOrderMeta &&
-            unitsOrderMeta.update?.type === "Disband" &&
-            !unitsOrderMeta.allowedBorderCrossings?.length)
+          unitsOrderMeta &&
+          unitsOrderMeta.update?.type === "Disband" &&
+          !unitsOrderMeta.allowedBorderCrossings?.length
         ) {
+          return;
+        }
+      }
+      if (contextVars?.context?.orderStatus) {
+        const orderStates = getOrderStates(contextVars?.context?.orderStatus);
+
+        if (orderStates.Ready) {
           return;
         }
       }
