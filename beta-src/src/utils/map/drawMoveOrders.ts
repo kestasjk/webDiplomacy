@@ -37,16 +37,16 @@ export default function drawMoveOrders(
             );
             if (viaConvoy === "Yes" && board) {
               // implied convoy arrow
-              const unitD = board.findUnitByID(unitID);
-              const onT = board.findTerritoryByID(unitData.terrID);
-              const toT = board.findTerritoryByID(toTerrID);
               let path = convoyPath;
               if (!convoyPath) {
-                path = unitD?.ConvoyGroup.pathArmyToCoastWithoutFleet(
-                  onT,
-                  toT,
-                  onT,
-                );
+                const onTerritory = board.findTerritoryByID(unitData.terrID);
+                path = board
+                  .findUnitByID(unitID)
+                  ?.ConvoyGroup.pathArmyToCoastWithoutFleet(
+                    onTerritory,
+                    board.findTerritoryByID(toTerrID),
+                    onTerritory,
+                  );
               }
               if (path) {
                 path
