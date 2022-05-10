@@ -10,6 +10,7 @@ export default function drawSupportMoveOrders(
   data: GameDataResponse["data"],
   maps: GameStateMaps,
   ordersMeta: OrdersMeta,
+  ownUnits: string[],
 ): void {
   const { currentOrders, territories, units } = data;
   const ordersMetaEntries = Object.entries(ordersMeta);
@@ -29,37 +30,57 @@ export default function drawSupportMoveOrders(
 
             const supportingTerritory = maps.unitToTerritory[unitID];
             const supportingTerritoryDetails = territories[supportingTerritory];
-
-            const { update: unitBeingSupportedOrderDetails } =
-              ordersMeta[unitBeingSupportedOrder];
-            if (unitBeingSupportedOrderDetails) {
-              const {
-                type: supportedUnitActualOrderType,
-                toTerrID: supportedUnitToTerrID,
-              } = unitBeingSupportedOrderDetails;
-              let supportArrowIdentifer = unitBeingSupportedOrder;
-              if (
-                supportedUnitActualOrderType !== "Move" ||
-                supportedUnitToTerrID !== toTerrID
-              ) {
-                supportArrowIdentifer = `${id}-implied`;
-                drawArrow(
-                  supportArrowIdentifer,
-                  ArrowType.MOVE,
-                  ArrowColor.IMPLIED,
-                  "territory",
-                  TerritoryMap[territories[toTerrID].name].territory,
-                  TerritoryMap[territories[fromTerrID].name].territory,
-                );
-              }
+            if (!ownUnits.includes(unitBeingSupported)) {
+              drawArrow(
+                `${id}-foreign`,
+                ArrowType.MOVE,
+                ArrowColor.IMPLIED_FOREIGN,
+                "territory",
+                TerritoryMap[territories[toTerrID].name].territory,
+                TerritoryMap[territories[fromTerrID].name].territory,
+              );
               drawArrow(
                 id,
                 ArrowType.SUPPORT,
                 ArrowColor.SUPPORT_MOVE,
                 "arrow",
-                supportArrowIdentifer,
+                `${id}-foreign`,
                 TerritoryMap[supportingTerritoryDetails.name].territory,
               );
+            } else {
+              // update: unitBeingSupportedOrderDetails will throw an error if the unit being supported
+              // is not your own unit, which is why it is only run after doing a check.
+              const { update: unitBeingSupportedOrderDetails } =
+                ordersMeta[unitBeingSupportedOrder];
+              if (unitBeingSupportedOrderDetails) {
+                const {
+                  type: supportedUnitActualOrderType,
+                  toTerrID: supportedUnitToTerrID,
+                } = unitBeingSupportedOrderDetails;
+                let supportArrowIdentifer = unitBeingSupportedOrder;
+                if (
+                  supportedUnitActualOrderType !== "Move" ||
+                  supportedUnitToTerrID !== toTerrID
+                ) {
+                  supportArrowIdentifer = `${id}-implied`;
+                  drawArrow(
+                    supportArrowIdentifer,
+                    ArrowType.MOVE,
+                    ArrowColor.IMPLIED,
+                    "territory",
+                    TerritoryMap[territories[toTerrID].name].territory,
+                    TerritoryMap[territories[fromTerrID].name].territory,
+                  );
+                }
+                drawArrow(
+                  id,
+                  ArrowType.SUPPORT,
+                  ArrowColor.SUPPORT_MOVE,
+                  "arrow",
+                  supportArrowIdentifer,
+                  TerritoryMap[supportingTerritoryDetails.name].territory,
+                );
+              }
             }
           }
         }

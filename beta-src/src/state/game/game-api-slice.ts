@@ -330,10 +330,12 @@ const drawOrders = (state) => {
     data: { data },
     maps,
     ordersMeta,
+    ownUnits,
+    clickData,
   } = current(state);
   removeAllArrows();
   drawMoveOrders(data, ordersMeta);
-  drawSupportMoveOrders(data, maps, ordersMeta);
+  drawSupportMoveOrders(data, maps, ordersMeta, ownUnits);
   drawSupportHoldOrders(data, ordersMeta);
   drawBuilds(state);
 };
