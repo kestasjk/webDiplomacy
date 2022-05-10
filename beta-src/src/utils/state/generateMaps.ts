@@ -10,6 +10,7 @@ export default function generateMaps(
   const unitToOrder: GameStateMaps["unitToOrder"] = {};
   const unitToTerritory: GameStateMaps["unitToTerritory"] = {};
   const enumToTerritory: GameStateMaps["enumToTerritory"] = {};
+  const territoryToEnum: GameStateMaps["territoryToEnum"] = {};
 
   Object.values(units).forEach(({ id, terrID }) => {
     territoryToUnit[terrID] = id;
@@ -18,6 +19,7 @@ export default function generateMaps(
 
   Object.values(territories).forEach(({ id, name }) => {
     enumToTerritory[TerritoryMap[name].territory] = id;
+    territoryToEnum[id] = TerritoryMap[name].territory.toString();
   });
 
   currentOrders?.forEach(({ id, unitID }) => {
@@ -29,5 +31,6 @@ export default function generateMaps(
     unitToOrder,
     unitToTerritory,
     enumToTerritory,
+    territoryToEnum,
   };
 }
