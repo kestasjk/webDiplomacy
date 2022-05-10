@@ -217,9 +217,9 @@ const getDataForOrder = (
 
 const startNewOrder = (state, action: NewOrderPayload) => {
   const {
-    order: { unitID: prevUnitID },
+    order: { unitID: prevUnitID, type },
   } = current(state);
-  if (prevUnitID) {
+  if (prevUnitID && type !== "hold" && type !== "disband") {
     const command: GameCommand = {
       command: "NONE",
     };
@@ -455,6 +455,9 @@ const gameApiSlice = createSlice({
       if (inProgress) {
         if (unitID === clickData.payload.unitID) {
           resetOrder(state);
+          if (type === "disband" || type === "retreat") {
+            highlightMapTerritoriesBasedOnStatuses(state);
+          }
         } else if (
           (type === "hold" || type === "move") &&
           onTerritory !== null
@@ -473,6 +476,7 @@ const gameApiSlice = createSlice({
             ...clickData.payload,
           });
         } else if (ownUnits.includes(clickData.payload.unitID)) {
+          highlightMapTerritoriesBasedOnStatuses(state);
           startNewOrder(state, clickData);
         }
       } else if (ownUnits.includes(clickData.payload.unitID)) {
