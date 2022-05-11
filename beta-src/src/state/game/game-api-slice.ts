@@ -9,7 +9,7 @@ import GameCommands, {
   GameCommand,
   GameCommandType,
 } from "../interfaces/GameCommands";
-import { ApiStatus } from "../interfaces/GameState";
+import { ApiStatus, GameState } from "../interfaces/GameState";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
 import { RootState } from "../store";
 import initialState from "./initial-state";
@@ -34,6 +34,7 @@ import drawMoveOrders from "../../utils/map/drawMoveOrders";
 import generateMaps from "../../utils/state/generateMaps";
 import removeAllArrows from "../../utils/map/removeAllArrows";
 import drawSupportHoldOrders from "../../utils/map/drawSupportHoldOrders";
+import getAvailableOrder from "../../utils/state/getAvailableOrder";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -243,13 +244,11 @@ const highlightMapTerritoriesBasedOnStatuses = (state) => {
 
 const drawBuilds = (state) => {
   const {
-    data: {
-      data: { currentOrders },
-    },
-    order: { inProgress },
     ordersMeta,
     territoriesMeta,
     overview: { members, phase },
+    maps,
+    ownUnits,
   }: {
     data: GameDataResponse;
     order: OrderState;
@@ -259,8 +258,16 @@ const drawBuilds = (state) => {
       members: GameOverviewResponse["members"];
       phase: GameOverviewResponse["phase"];
     };
+    maps: GameState["maps"];
+    ownUnits;
   } = current(state);
   if (phase === "Builds") {
+    ownUnits.forEach((unitID) => {
+      const command: GameCommand = {
+        command: "NONE",
+      };
+      setCommand(state, command, "unitCommands", unitID);
+    });
     Object.values(ordersMeta).forEach(({ update }) => {
       if (update) {
         const { toTerrID, type } = update;
@@ -269,14 +276,16 @@ const drawBuilds = (state) => {
         );
         if (territoryMeta) {
           // Destroy Units
-          if (type === "Destroy" && territoryMeta?.unitID) {
-            currentOrders?.forEach((currentOrder) => {
-              const command: GameCommand = {
-                command: currentOrder.type === "Destroy" ? "DESTROY" : "NONE",
-              };
-              console.log("command", command);
-              setCommand(state, command, "unitCommands", currentOrder.unitID);
-            });
+          if (type === "Destroy" && toTerrID) {
+            const command: GameCommand = {
+              command: "DESTROY",
+            };
+            setCommand(
+              state,
+              command,
+              "unitCommands",
+              maps.territoryToUnit[toTerrID],
+            );
           } else {
             const buildType = BuildUnitMap[type];
             const mappedTerritory = TerritoryMap[territoryMeta.name];
@@ -403,38 +412,30 @@ const gameApiSlice = createSlice({
           return;
         }
 
-        // Check if current order exist
-        const clickedOrder = currentOrders?.find(
-          (currentOrder) => currentOrder.unitID === clickData.payload.unitID,
+        const existingOrder = Object.entries(ordersMeta).find(
+          ([oID, { update }]) => {
+            console.log({ oID, update });
+            return (
+              update?.toTerrID ===
+              maps.unitToTerritory[clickData.payload.unitID]
+            );
+          },
         );
 
-        console.log("clickData.payload.unitID", clickData.payload.unitID);
-
-        const currentTerritory = territoriesMeta[clickData.payload.onTerritory];
-
-        if (clickedOrder && clickedOrder.id) {
-          state.data.data.currentOrders?.forEach((currentOrder) => {
-            if (currentTerritory.id === currentOrder.toTerrID) {
-              currentOrder.unitID = clickData.payload.unitID;
-              currentOrder.toTerrID =
-                maps.unitToTerritory[clickData.payload.unitID];
-              currentOrder.type = "None";
-
-              updateOrdersMeta(state, {
-                [clickedOrder.id]: {
-                  saved: false,
-                  update: {
-                    type: "Destroy",
-                    toTerrID:
-                      currentOrder.toTerrID ===
-                      maps.unitToTerritory[clickData.payload.unitID]
-                        ? null
-                        : maps.unitToTerritory[clickData.payload.unitID],
-                  },
+        if (existingOrder) {
+          const [eOrderID, eOrder] = existingOrder;
+          if (eOrderID && eOrder) {
+            console.log({ eOrder });
+            updateOrdersMeta(state, {
+              [eOrderID]: {
+                saved: false,
+                update: {
+                  type: "Destroy",
+                  toTerrID: null,
                 },
-              });
-            }
-          });
+              },
+            });
+          }
         } else if (currentOrders) {
           let availableOrder;
           for (let i = 0; i < currentOrders.length; i += 1) {
@@ -445,10 +446,13 @@ const gameApiSlice = createSlice({
               break;
             }
           }
+          console.log({
+            availableOrder,
+          });
           if (availableOrder) {
             state.data.data.currentOrders?.forEach((currentOrder) => {
               if (availableOrder === currentOrder.id) {
-                currentOrder.unitID = clickData.payload.unitID;
+                // currentOrder.unitID = clickData.payload.unitID;
                 currentOrder.toTerrID =
                   maps.unitToTerritory[clickData.payload.unitID];
                 currentOrder.type = "Destroy";
@@ -756,16 +760,7 @@ const gameApiSlice = createSlice({
 
           const territoryHasUnit = !!territoryMeta.unitID;
 
-          let availableOrder;
-          for (let i = 0; i < currentOrders.length; i += 1) {
-            const { id } = currentOrders[i];
-            const orderMeta = ordersMeta[id];
-            if (!orderMeta.update || !orderMeta.update?.toTerrID) {
-              availableOrder = id;
-              break;
-            }
-          }
-
+          const availableOrder = getAvailableOrder(state);
           if (availableOrder && !territoryHasUnit && !inProgress) {
             let canBuild = 0;
             if (territoryCoast === "Parent" || territoryCoast === "No") {
