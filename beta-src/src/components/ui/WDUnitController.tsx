@@ -55,10 +55,6 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
     },
   };
 
-  console.log({
-    commands,
-  });
-
   processNextCommand(commands, commandActions);
 
   const clickAction = (e, method) => {

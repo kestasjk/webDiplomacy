@@ -420,6 +420,8 @@ const gameApiSlice = createSlice({
           },
         );
 
+        console.log("existingOrder", existingOrder);
+
         if (existingOrder) {
           const [eOrderID, eOrder] = existingOrder;
           if (eOrderID && eOrder) {
@@ -434,25 +436,10 @@ const gameApiSlice = createSlice({
             });
           }
         } else if (currentOrders) {
-          let availableOrder;
-          for (let i = 0; i < currentOrders.length; i += 1) {
-            const { id } = currentOrders[i];
-            const orderMeta = ordersMeta[id];
-            if (!orderMeta.update || !orderMeta.update?.toTerrID) {
-              availableOrder = id;
-              break;
-            }
-          }
-          if (availableOrder) {
-            state.data.data.currentOrders?.forEach((currentOrder) => {
-              if (availableOrder === currentOrder.id) {
-                // currentOrder.unitID = clickData.payload.unitID;
-                currentOrder.toTerrID =
-                  maps.unitToTerritory[clickData.payload.unitID];
-                currentOrder.type = "Destroy";
-              }
-            });
+          const availableOrder = getAvailableOrder(currentOrders, ordersMeta);
 
+          console.log("availableOrder", availableOrder);
+          if (availableOrder) {
             updateOrdersMeta(state, {
               [availableOrder]: {
                 saved: false,
@@ -754,7 +741,7 @@ const gameApiSlice = createSlice({
 
           const territoryHasUnit = !!territoryMeta.unitID;
 
-          const availableOrder = getAvailableOrder(state);
+          const availableOrder = getAvailableOrder(currentOrders, ordersMeta);
           if (availableOrder && !territoryHasUnit && !inProgress) {
             let canBuild = 0;
             if (territoryCoast === "Parent" || territoryCoast === "No") {
