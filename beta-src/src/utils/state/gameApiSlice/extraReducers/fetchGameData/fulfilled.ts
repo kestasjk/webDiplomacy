@@ -17,12 +17,13 @@ export default function fetchGameDataFulfilled(state, action): void {
   state.data = action.payload;
   const {
     data: { data },
-    overview: { members, phase },
+    overview: { members, phase, user },
   }: {
     data: { data: GameDataResponse["data"] };
     overview: {
       members: GameOverviewResponse["members"];
       phase: GameOverviewResponse["phase"];
+      user: GameOverviewResponse["user"];
     };
   } = current(state);
   let board;
@@ -36,8 +37,11 @@ export default function fetchGameDataFulfilled(state, action): void {
     state.board = board;
   }
   state.maps = generateMaps(data);
-  data.currentOrders?.forEach(({ unitID }) => {
-    state.ownUnits.push(unitID);
+  state.ownUnits = [];
+  Object.values(data.units).forEach((unit) => {
+    if (unit.countryID === user.member.countryID.toString()) {
+      state.ownUnits.push(unit.id);
+    }
   });
   const unitsToDraw = getUnits(data, members);
   unitsToDraw.forEach(({ country, mappedTerritory, unit }) => {

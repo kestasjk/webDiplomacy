@@ -33,9 +33,9 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
   };
 
   const commandActions = {
-    DISLODGED: (command) => {
+    DESTROY: (command) => {
       const [key] = command;
-      setIconState(UIState.DISLODGED);
+      setIconState(UIState.DESTROY);
       deleteCommand(key);
     },
     HOLD: (command) => {
