@@ -66,7 +66,6 @@ export default function processUnitClick(state, clickData) {
       }
     } else {
       const availableOrder = getAvailableOrder(currentOrders, ordersMeta);
-      console.log("availableOrder", availableOrder);
       if (availableOrder) {
         updateOrdersMeta(state, {
           [availableOrder]: {
