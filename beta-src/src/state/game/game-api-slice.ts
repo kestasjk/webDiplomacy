@@ -1,40 +1,31 @@
-import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
-import { v4 as uuidv4 } from "uuid";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import ApiRoute from "../../enums/ApiRoute";
-import { getGameApiRequest, QueryParams, submitOrders } from "../../utils/api";
+import { getGameApiRequest, submitOrders } from "../../utils/api";
 import GameDataResponse from "../interfaces/GameDataResponse";
 import GameErrorResponse from "../interfaces/GameErrorResponse";
 import GameOverviewResponse from "../interfaces/GameOverviewResponse";
-import GameCommands, {
-  GameCommand,
-  GameCommandType,
-} from "../interfaces/GameCommands";
-import { ApiStatus, GameState } from "../interfaces/GameState";
+import { ApiStatus } from "../interfaces/GameState";
+import GameCommands from "../interfaces/GameCommands";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
+import GameMessages from "../interfaces/GameMessages";
 import { RootState } from "../store";
 import initialState from "./initial-state";
-import Territory from "../../enums/map/variants/classic/Territory";
-import OrdersMeta, { EditOrderMeta } from "../interfaces/SavedOrders";
-import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
-import countryMap from "../../data/map/variants/classic/CountryMap";
+import OrdersMeta from "../interfaces/SavedOrders";
 import OrderState from "../interfaces/OrderState";
-import UpdateOrder from "../../interfaces/state/UpdateOrder";
-import TerritoriesMeta, { TerritoryMeta } from "../interfaces/TerritoriesState";
-import BuildUnit from "../../enums/BuildUnit";
-import BuildUnitMap, { BuildUnitTypeMap } from "../../data/BuildUnit";
-import UIState from "../../enums/UIState";
-import { UnitSlotNames } from "../../types/map/UnitSlotName";
-import getOrderStates from "../../utils/state/getOrderStates";
-import ContextVar from "../../interfaces/state/ContextVar";
-import getOrdersMeta from "../../utils/map/getOrdersMeta";
-import getUnits from "../../utils/map/getUnits";
-import UnitType from "../../types/UnitType";
-import drawSupportMoveOrders from "../../utils/map/drawSupportMoveOrders";
-import drawMoveOrders from "../../utils/map/drawMoveOrders";
-import generateMaps from "../../utils/state/generateMaps";
-import removeAllArrows from "../../utils/map/removeAllArrows";
-import drawSupportHoldOrders from "../../utils/map/drawSupportHoldOrders";
-import getAvailableOrder from "../../utils/state/getAvailableOrder";
+import drawBuilds from "../../utils/map/drawBuilds";
+import updateOrdersMeta from "../../utils/state/updateOrdersMeta";
+import highlightMapTerritoriesBasedOnStatuses from "../../utils/map/highlightMapTerritoriesBasedOnStatuses";
+import UpdateOrdersMetaAction from "../../interfaces/state/UpdateOrdersMetaAction";
+import SavedOrdersConfirmation from "../../interfaces/state/SavedOrdersConfirmation";
+import OrderSubmission from "../../interfaces/state/OrderSubmission";
+import resetOrder from "../../utils/state/resetOrder";
+import processUnitDoubleClick from "../../utils/state/gameApiSlice/reducers/processUnitDoubleClick";
+import processUnitClick from "../../utils/state/gameApiSlice/reducers/processUnitClick";
+import processMapClick from "../../utils/state/gameApiSlice/reducers/processMapClick";
+import deleteCommand from "../../utils/state/gameApiSlice/reducers/deleteCommand";
+import dispatchCommand from "../../utils/state/gameApiSlice/reducers/dispatchCommand";
+import fetchGameDataFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameData/fulfilled";
+import updateUnitsRetreat from "../../utils/map/updateUnitsRetreat";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -62,56 +53,33 @@ export const fetchGameStatus = createAsyncThunk(
   },
 );
 
-interface OrderSubmission {
-  orderUpdates: UpdateOrder[];
-  context: string;
-  contextKey: string;
-  queryParams?: QueryParams;
-}
+export const fetchGameMessages = createAsyncThunk(
+  ApiRoute.GAME_MESSAGES,
+  async (queryParams: {
+    gameID: string;
+    countryID: string;
+    toCountryID?: string;
+    offset?: string;
+    limit?: string;
+    allMessages?: string;
+  }) => {
+    const {
+      data: { data },
+    } = await getGameApiRequest(ApiRoute.GAME_MESSAGES, queryParams);
+    return data as GameMessages;
+  },
+);
 
-interface SavedOrder {
-  [key: string]: {
-    changed: string;
-    notice: string | null;
-    status: string;
-  };
-}
-
-interface SavedOrdersConfirmation {
-  invalid: boolean;
-  notice: string;
-  orders: SavedOrder;
-  statusIcon: string;
-  statusText: string;
-  newContext?: ContextVar["context"];
-  newContextKey?: ContextVar["contextKey"];
-}
-
-interface DeleteCommandPayload {
-  payload: {
-    command: string;
-    id: string;
-    type: GameCommandType;
-  };
-}
-
-interface NewOrderPayload {
-  payload: OrderState;
-}
-
-interface UpdateOrdersMetaAction {
-  type: string;
-  payload: EditOrderMeta;
-}
-
-interface DispatchCommandAction {
-  type: string;
-  payload: {
-    command: GameCommand;
-    container: GameCommandType;
-    identifier: string;
-  };
-}
+export const toggleVoteStatus = createAsyncThunk(
+  ApiRoute.GAME_TOGGLEVOTE,
+  async (queryParams: { countryID: string; gameID: string; vote: string }) => {
+    const { data } = await getGameApiRequest(
+      ApiRoute.GAME_TOGGLEVOTE,
+      queryParams,
+    );
+    return data as string;
+  },
+);
 
 export const saveOrders = createAsyncThunk(
   "game/submitOrders",
@@ -136,228 +104,6 @@ export const saveOrders = createAsyncThunk(
  */
 
 /* eslint-disable no-param-reassign */
-const setCommand = (
-  state,
-  command: GameCommand,
-  container: GameCommandType,
-  id: string,
-) => {
-  const { commands } = current(state);
-  const commandsContainer = commands[container];
-  const newCommand = new Map(commandsContainer[id]) || new Map();
-  newCommand.set(uuidv4(), command);
-  state.commands[container][id] = newCommand;
-};
-
-const resetOrder = (state) => {
-  const {
-    order: { unitID, type },
-  } = current(state);
-  if (type !== "hold") {
-    const command: GameCommand = {
-      command: "NONE",
-    };
-    setCommand(state, command, "unitCommands", unitID);
-  }
-  state.order.inProgress = false;
-  state.order.unitID = "";
-  state.order.orderID = "";
-  state.order.onTerritory = 0;
-  state.order.toTerritory = 0;
-  delete state.order.type;
-};
-
-const getDataForOrder = (
-  state,
-  { method, onTerritory, orderID, toTerritory, type, unitID }: OrderState,
-): OrderState => {
-  const {
-    data: { data: gameData },
-  } = current(state);
-  const newOrder: OrderState = {
-    inProgress: true,
-    method,
-    onTerritory,
-    orderID:
-      orderID ||
-      gameData.currentOrders.find((order) => order.unitID === unitID)?.id,
-    subsequentClicks: [],
-    toTerritory,
-    unitID,
-  };
-  if (type) {
-    newOrder.type = type;
-  }
-  return newOrder;
-};
-
-const startNewOrder = (state, action: NewOrderPayload) => {
-  const {
-    order: { unitID: prevUnitID },
-  } = current(state);
-  if (prevUnitID) {
-    const command: GameCommand = {
-      command: "NONE",
-    };
-    setCommand(state, command, "unitCommands", prevUnitID);
-  }
-  delete state.order.type;
-  const orderData = getDataForOrder(state, action.payload);
-  state.order = orderData;
-  const { unitID } = orderData;
-  if (unitID) {
-    const command: GameCommand = {
-      command: "SELECTED",
-    };
-    setCommand(state, command, "unitCommands", unitID);
-  }
-};
-
-const highlightMapTerritoriesBasedOnStatuses = (state) => {
-  const {
-    territoriesMeta,
-    overview: { members },
-  }: {
-    territoriesMeta: TerritoriesMeta;
-    overview: {
-      members: GameOverviewResponse["members"];
-    };
-  } = current(state);
-  if (Object.keys(territoriesMeta).length) {
-    const membersMap = {};
-    members.forEach((member) => {
-      membersMap[member.countryID] = member.country;
-    });
-    Object.values(territoriesMeta).forEach((terr: TerritoryMeta) => {
-      const { ownerCountryID, territory } = terr;
-      const country = ownerCountryID ? membersMap[ownerCountryID] : undefined;
-      if (territory) {
-        const command: GameCommand = {
-          command: "CAPTURED",
-          data: { country: country ? countryMap[country] : "none" },
-        };
-        setCommand(state, command, "territoryCommands", Territory[territory]);
-      }
-    });
-  }
-};
-
-const drawBuilds = (state) => {
-  const {
-    ordersMeta,
-    territoriesMeta,
-    overview: { members, phase },
-    maps,
-    ownUnits,
-  }: {
-    data: GameDataResponse;
-    order: OrderState;
-    ordersMeta: OrdersMeta;
-    territoriesMeta: TerritoriesMeta;
-    overview: {
-      members: GameOverviewResponse["members"];
-      phase: GameOverviewResponse["phase"];
-    };
-    maps: GameState["maps"];
-    ownUnits;
-  } = current(state);
-  if (phase === "Builds") {
-    ownUnits.forEach((unitID) => {
-      const command: GameCommand = {
-        command: "NONE",
-      };
-      setCommand(state, command, "unitCommands", unitID);
-    });
-    Object.values(ordersMeta).forEach(({ update }) => {
-      if (update) {
-        const { toTerrID, type } = update;
-        const territoryMeta = Object.values(territoriesMeta).find(
-          ({ id }) => id === toTerrID,
-        );
-        if (territoryMeta) {
-          // Destroy Units
-          if (type === "Destroy" && toTerrID) {
-            const command: GameCommand = {
-              command: "DESTROY",
-            };
-            setCommand(
-              state,
-              command,
-              "unitCommands",
-              maps.territoryToUnit[toTerrID],
-            );
-          } else {
-            const buildType = BuildUnitMap[type];
-            const mappedTerritory = TerritoryMap[territoryMeta.name];
-            const memberCountry = members.find(
-              (member) =>
-                member.countryID.toString() === territoryMeta.countryID,
-            );
-            if (memberCountry) {
-              let command: GameCommand = {
-                command: "SET_UNIT",
-                data: {
-                  setUnit: {
-                    componentType: "Icon",
-                    country: countryMap[memberCountry?.country],
-                    iconState: UIState.BUILD,
-                    unitSlotName: mappedTerritory.unitSlotName,
-                    unitType: BuildUnitTypeMap[buildType],
-                  },
-                },
-              };
-              const commandTerritoryDestination =
-                territoryMeta.territory ===
-                  Territory.SAINT_PETERSBURG_NORTH_COAST ||
-                territoryMeta.territory ===
-                  Territory.SAINT_PETERSBURG_SOUTH_COAST
-                  ? Territory[Territory.SAINT_PETERSBURG]
-                  : Territory[territoryMeta.territory];
-              setCommand(
-                state,
-                command,
-                "territoryCommands",
-                commandTerritoryDestination,
-              );
-              command = {
-                command: "MOVE",
-              };
-              setCommand(
-                state,
-                command,
-                "territoryCommands",
-                commandTerritoryDestination,
-              );
-            }
-          }
-        }
-      }
-    });
-  }
-};
-
-const drawOrders = (state) => {
-  const {
-    data: { data },
-    maps,
-    ordersMeta,
-  } = current(state);
-  removeAllArrows();
-  drawMoveOrders(data, ordersMeta);
-  drawSupportMoveOrders(data, maps, ordersMeta);
-  drawSupportHoldOrders(data, ordersMeta);
-  drawBuilds(state);
-};
-
-const updateOrdersMeta = (state, updates: EditOrderMeta) => {
-  Object.entries(updates).forEach(([orderID, update]) => {
-    state.ordersMeta[orderID] = {
-      ...state.ordersMeta[orderID],
-      ...update,
-    };
-  });
-  drawOrders(state);
-};
 
 const gameApiSlice = createSlice({
   name: "game",
@@ -370,458 +116,13 @@ const gameApiSlice = createSlice({
     updateTerritoriesMeta(state, action) {
       state.territoriesMeta = action.payload;
     },
-    processUnitDoubleClick(state, clickData) {
-      const {
-        data: {
-          data: { contextVars },
-        },
-        ownUnits,
-      } = current(state);
-      if (!ownUnits.includes(clickData.payload.unitID)) {
-        return;
-      }
-      if (contextVars?.context?.orderStatus) {
-        const orderStates = getOrderStates(contextVars?.context?.orderStatus);
-        if (orderStates.Ready) {
-          return;
-        }
-      }
-      startNewOrder(state, clickData);
-    },
-    processUnitClick(state, clickData) {
-      const {
-        data: {
-          data: { contextVars, currentOrders },
-        },
-        maps,
-        order: { inProgress, method, onTerritory, orderID, type, unitID },
-        ordersMeta,
-        ownUnits,
-        overview: { phase },
-      } = current(state);
-      if (contextVars?.context?.orderStatus) {
-        const orderStates = getOrderStates(contextVars?.context?.orderStatus);
-        if (orderStates.Ready) {
-          return;
-        }
-      }
-      // Destroy Units
-      if (phase === "Builds") {
-        if (!ownUnits.includes(clickData.payload.unitID)) {
-          return;
-        }
-
-        const existingOrder = Object.entries(ordersMeta).find(
-          ([, { update }]) => {
-            return (
-              update?.toTerrID ===
-              maps.unitToTerritory[clickData.payload.unitID]
-            );
-          },
-        );
-
-        console.log("existingOrder", existingOrder);
-
-        if (existingOrder) {
-          const [eOrderID, eOrder] = existingOrder;
-          if (eOrderID && eOrder) {
-            updateOrdersMeta(state, {
-              [eOrderID]: {
-                saved: false,
-                update: {
-                  type: "Destroy",
-                  toTerrID: null,
-                },
-              },
-            });
-          }
-        } else if (currentOrders) {
-          const availableOrder = getAvailableOrder(currentOrders, ordersMeta);
-
-          console.log("availableOrder", availableOrder);
-          if (availableOrder) {
-            updateOrdersMeta(state, {
-              [availableOrder]: {
-                saved: false,
-                update: {
-                  type: "Destroy",
-                  toTerrID: maps.unitToTerritory[clickData.payload.unitID],
-                },
-              },
-            });
-          }
-        }
-      } else if (inProgress) {
-        if (unitID === clickData.payload.unitID) {
-          resetOrder(state);
-          startNewOrder(state, clickData);
-        } else if (
-          (type === "hold" || type === "move") &&
-          onTerritory !== null
-        ) {
-          highlightMapTerritoriesBasedOnStatuses(state);
-        } else if (
-          method === "dblClick" &&
-          unitID !== clickData.payload.unitID
-        ) {
-          state.order.subsequentClicks.push({
-            ...{
-              inProgress: true,
-              orderID,
-              toTerritory: null,
-            },
-            ...clickData.payload,
-          });
-        } else if (ownUnits.includes(clickData.payload.unitID)) {
-          startNewOrder(state, clickData);
-        }
-      } else if (ownUnits.includes(clickData.payload.unitID)) {
-        startNewOrder(state, clickData);
-      }
-    },
-    processMapClick(state, clickData) {
-      const {
-        data: {
-          data: { currentOrders, contextVars },
-        },
-        order: {
-          inProgress,
-          method,
-          orderID,
-          onTerritory,
-          subsequentClicks,
-          toTerritory,
-          type,
-          unitID,
-        },
-        ordersMeta,
-        overview: {
-          user: { member },
-          phase,
-        },
-        territoriesMeta,
-      } = current(state);
-      if (contextVars?.context?.orderStatus) {
-        const orderStates = getOrderStates(contextVars?.context?.orderStatus);
-        if (orderStates.Ready) {
-          return;
-        }
-      }
-      const {
-        payload: { clickObject, evt, name: territoryName },
-      } = clickData;
-      if (inProgress && method === "click") {
-        const currOrderUnitID = unitID;
-        if (
-          onTerritory !== null &&
-          Territory[onTerritory] === territoryName &&
-          !type
-        ) {
-          let command: GameCommand = {
-            command: "HOLD",
-          };
-          setCommand(state, command, "territoryCommands", territoryName);
-          setCommand(state, command, "unitCommands", currOrderUnitID);
-          command = {
-            command: "REMOVE_ARROW",
-            data: {
-              orderID,
-            },
-          };
-          setCommand(state, command, "mapCommands", "all");
-          if (currentOrders) {
-            const orderToUpdate = currentOrders.find(
-              (o) => o.unitID === currOrderUnitID,
-            );
-            if (orderToUpdate) {
-              updateOrdersMeta(state, {
-                [orderToUpdate.id]: {
-                  saved: false,
-                  update: {
-                    type: "Hold",
-                    toTerrID: null,
-                  },
-                },
-              });
-            }
-          }
-          state.order.type = "hold";
-        } else if (onTerritory !== null && type === "hold") {
-          highlightMapTerritoriesBasedOnStatuses(state);
-          resetOrder(state);
-        } else if (toTerritory !== null && type === "move") {
-          highlightMapTerritoriesBasedOnStatuses(state);
-          resetOrder(state);
-        } else if (toTerritory !== null && type === "build") {
-          setCommand(
-            state,
-            {
-              command: "REMOVE_BUILD",
-            },
-            "territoryCommands",
-            Territory[toTerritory],
-          );
-          resetOrder(state);
-        } else if (
-          clickObject === "territory" &&
-          onTerritory !== null &&
-          Territory[onTerritory] !== territoryName &&
-          !type &&
-          inProgress
-        ) {
-          const { allowedBorderCrossings } = ordersMeta[orderID];
-          const canMove = allowedBorderCrossings?.find((border) => {
-            const mappedTerritory = TerritoryMap[border.name];
-            return Territory[mappedTerritory.territory] === territoryName;
-          });
-          if (canMove) {
-            highlightMapTerritoriesBasedOnStatuses(state);
-            const command: GameCommand = {
-              command: "MOVE",
-            };
-            setCommand(state, command, "territoryCommands", territoryName);
-            updateOrdersMeta(state, {
-              [orderID]: {
-                saved: false,
-                update: {
-                  type: "Move",
-                  toTerrID: canMove.id,
-                  viaConvoy: "No",
-                },
-              },
-            });
-            state.order.toTerritory = TerritoryMap[canMove.name].territory;
-            state.order.type = "move";
-          } else {
-            const command: GameCommand = {
-              command: "INVALID_CLICK",
-              data: {
-                click: {
-                  evt,
-                  territoryName,
-                },
-              },
-            };
-            setCommand(state, command, "mapCommands", "all");
-          }
-        }
-      } else if (inProgress && method === "dblClick") {
-        if (subsequentClicks.length) {
-          // user is trying to do a support move or a support hold
-          const unitSupporting = ordersMeta[orderID];
-          const unitBeingSupported = subsequentClicks[0];
-          const terrEnum = Number(Territory[territoryName]);
-          if (terrEnum === unitBeingSupported.onTerritory) {
-            // attemping support hold
-            const match = unitSupporting.supportHoldChoices?.find(
-              ({ unitID: uID }) => uID === unitBeingSupported.unitID,
-            );
-            if (match) {
-              // execute support hold
-              updateOrdersMeta(state, {
-                [orderID]: {
-                  saved: false,
-                  update: {
-                    type: "Support hold",
-                    toTerrID: match.id,
-                  },
-                },
-              });
-              resetOrder(state);
-              return;
-            }
-          } else {
-            // attempting support move
-            const supportMoveMatch = unitSupporting.supportMoveChoices?.find(
-              ({ supportMoveTo: { name } }) =>
-                TerritoryMap[name].territory === terrEnum,
-            );
-            if (supportMoveMatch && supportMoveMatch.supportMoveFrom.length) {
-              const match = supportMoveMatch.supportMoveFrom.find(
-                ({ unitID: uID }) => uID === unitBeingSupported.unitID,
-              );
-              if (match) {
-                // execute support move
-                updateOrdersMeta(state, {
-                  [orderID]: {
-                    saved: false,
-                    update: {
-                      type: "Support move",
-                      toTerrID: supportMoveMatch.supportMoveTo.id,
-                      fromTerrID: match.id,
-                    },
-                  },
-                });
-                resetOrder(state);
-                return;
-              }
-            }
-          }
-          const command: GameCommand = {
-            command: "INVALID_CLICK",
-            data: {
-              click: {
-                evt,
-                territoryName,
-              },
-            },
-          };
-          setCommand(state, command, "mapCommands", "all");
-        }
-      } else if (
-        clickObject === "territory" &&
-        phase === "Builds" &&
-        currentOrders
-      ) {
-        const territoryMeta = territoriesMeta[Territory[territoryName]];
-        if (territoryMeta) {
-          const {
-            coast: territoryCoast,
-            countryID,
-            id: webDipTerritoryID,
-            supply,
-            type: territoryType,
-          } = territoryMeta;
-
-          if (member.countryID.toString() !== countryID || !supply) {
-            return;
-          }
-
-          const stp = territoriesMeta[Territory.SAINT_PETERSBURG];
-          const stpnc = territoriesMeta[Territory.SAINT_PETERSBURG_NORTH_COAST];
-          const stpsc = territoriesMeta[Territory.SAINT_PETERSBURG_SOUTH_COAST];
-
-          const specialIds = {};
-          if (stp) {
-            specialIds[stp.id] = [stpnc?.id, stpsc?.id];
-          }
-
-          const affectedTerritoryIds = specialIds[webDipTerritoryID]
-            ? [...[webDipTerritoryID], ...specialIds[webDipTerritoryID]]
-            : [webDipTerritoryID];
-
-          const existingBuildOrder = Object.entries(ordersMeta).find(
-            ([, { update }]) =>
-              update ? affectedTerritoryIds.includes(update.toTerrID) : false,
-          );
-
-          if (existingBuildOrder) {
-            const [id] = existingBuildOrder;
-            let command: GameCommand = {
-              command: "REMOVE_BUILD",
-              data: {
-                removeBuild: { orderID: id },
-              },
-            };
-            setCommand(state, command, "territoryCommands", territoryName);
-
-            UnitSlotNames.forEach((slot) => {
-              command = {
-                command: "SET_UNIT",
-                data: {
-                  setUnit: {
-                    unitSlotName: slot,
-                  },
-                },
-              };
-              setCommand(state, command, "territoryCommands", territoryName);
-            });
-
-            updateOrdersMeta(state, {
-              [id]: {
-                saved: false,
-                update: {
-                  type: "Wait",
-                  toTerrID: null,
-                },
-              },
-            });
-            return;
-          }
-
-          const territoryHasUnit = !!territoryMeta.unitID;
-
-          const availableOrder = getAvailableOrder(currentOrders, ordersMeta);
-          if (availableOrder && !territoryHasUnit && !inProgress) {
-            let canBuild = 0;
-            if (territoryCoast === "Parent" || territoryCoast === "No") {
-              canBuild += BuildUnit.Army;
-            }
-            if (territoryType !== "Land" && territoryCoast !== "Parent") {
-              canBuild += BuildUnit.Fleet;
-            }
-            const command: GameCommand = {
-              command: "BUILD",
-              data: {
-                build: [
-                  {
-                    availableOrder,
-                    canBuild,
-                    toTerrID: territoryMeta.id,
-                    unitSlotName: "main",
-                  },
-                ],
-              },
-            };
-            if (territoryMeta.territory === Territory.SAINT_PETERSBURG) {
-              const nc =
-                territoriesMeta[Territory.SAINT_PETERSBURG_NORTH_COAST];
-              const sc =
-                territoriesMeta[Territory.SAINT_PETERSBURG_SOUTH_COAST];
-              nc &&
-                command.data?.build?.push({
-                  availableOrder,
-                  canBuild: BuildUnit.Fleet,
-                  toTerrID: nc.id,
-                  unitSlotName: "nc",
-                });
-              sc &&
-                command.data?.build?.push({
-                  availableOrder,
-                  canBuild: BuildUnit.Fleet,
-                  toTerrID: sc.id,
-                  unitSlotName: "sc",
-                });
-            }
-            setCommand(state, command, "territoryCommands", territoryName);
-            startNewOrder(state, {
-              payload: {
-                inProgress: true,
-                method: "click",
-                orderID: availableOrder,
-                onTerritory: null,
-                subsequentClicks: [],
-                toTerritory: territoryMeta.territory,
-                type: "build",
-                unitID: "",
-              },
-            });
-          }
-        }
-      }
-    },
-    deleteCommand(
-      state,
-      { payload: { type, command, id } }: DeleteCommandPayload,
-    ) {
-      const { commands } = current(state);
-      const commandsType = commands[type];
-      const commandSet = new Map(commandsType[id]);
-      const deleteKey = command;
-      if (commandSet && commandSet.has(deleteKey)) {
-        const newCommandSet = new Map(commandSet);
-        newCommandSet.delete(deleteKey);
-        state.commands[type][id] = newCommandSet;
-      }
-    },
-    highlightMapTerritories(state) {
-      highlightMapTerritoriesBasedOnStatuses(state);
-    },
+    processUnitDoubleClick,
+    processUnitClick,
+    processMapClick,
+    deleteCommand,
+    highlightMapTerritoriesBasedOnStatuses,
     drawBuilds,
-    dispatchCommand(state, action: DispatchCommandAction) {
-      const { command, container, identifier } = action.payload;
-      setCommand(state, command, container, identifier);
-    },
+    dispatchCommand,
   },
   extraReducers(builder) {
     builder
@@ -829,46 +130,7 @@ const gameApiSlice = createSlice({
       .addCase(fetchGameData.pending, (state) => {
         state.apiStatus = "loading";
       })
-      .addCase(fetchGameData.fulfilled, (state, action) => {
-        state.apiStatus = "succeeded";
-        state.data = action.payload;
-        const {
-          data: { data },
-          overview: { members, phase, user },
-        } = current(state);
-        state.maps = generateMaps(data);
-        Object.values(data.units).forEach((unit) => {
-          if (unit.countryID === user.member.countryID.toString()) {
-            state.ownUnits.push(unit.id);
-          }
-        });
-        const unitsToDraw = getUnits(data, members);
-        unitsToDraw.forEach(({ country, mappedTerritory, unit }) => {
-          const command: GameCommand = {
-            command: "SET_UNIT",
-            data: {
-              setUnit: {
-                componentType: "Game",
-                country,
-                mappedTerritory,
-                unit,
-                unitType: unit.type as UnitType,
-                unitSlotName: mappedTerritory.unitSlotName,
-              },
-            },
-          };
-          setCommand(
-            state,
-            command,
-            "territoryCommands",
-            mappedTerritory.parent
-              ? Territory[mappedTerritory.parent]
-              : Territory[mappedTerritory.territory],
-          );
-        });
-
-        updateOrdersMeta(state, getOrdersMeta(data, phase));
-      })
+      .addCase(fetchGameData.fulfilled, fetchGameDataFulfilled)
       .addCase(fetchGameData.rejected, (state, action) => {
         state.apiStatus = "failed";
         state.error = action.error.message;
@@ -907,11 +169,25 @@ const gameApiSlice = createSlice({
               contextKey: newContextKey,
             };
           }
+
           Object.entries(orders).forEach(([id, value]) => {
             if (value.status === "Complete") {
               state.ordersMeta[id].saved = true;
             }
           });
+        }
+
+        updateUnitsRetreat(state);
+      })
+      // Fetch Game Messages
+      .addCase(fetchGameMessages.fulfilled, (state, action) => {
+        if (action.payload) {
+          const { messages, phase, pressType } = action.payload;
+          state.messages = {
+            messages,
+            phase,
+            pressType,
+          };
         }
       });
   },

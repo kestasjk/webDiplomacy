@@ -1,5 +1,3 @@
-import { current } from "@reduxjs/toolkit";
-
 export default function getAvailableOrder(currentOrders, ordersMeta) {
   let availableOrder;
   for (let i = 0; i < currentOrders?.length; i += 1) {

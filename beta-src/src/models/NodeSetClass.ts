@@ -23,15 +23,15 @@ export default class NodeSetClass {
   }
 
   routeSetLoad(ConvoyGroup) {
-    ConvoyGroup.fleets.map((f) => {
+    [...ConvoyGroup.fleets].map((f) => {
       return this.addNode(f.Territory);
     });
 
-    ConvoyGroup.armies.map((a) => {
+    [...ConvoyGroup.armies].map((a) => {
       return this.addNode(a.Territory);
     });
 
-    ConvoyGroup.coasts.map((c) => {
+    [...ConvoyGroup.coasts].map((c) => {
       return this.addNode(c);
     });
   }

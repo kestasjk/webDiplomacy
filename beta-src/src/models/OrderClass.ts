@@ -122,7 +122,7 @@ export default class OrderClass {
       ),
     ).filter((possibleUnitTerritory) => {
       return (
-        possibleUnitTerritory.id !== this.unit.Territory.coastParent.id &&
+        possibleUnitTerritory.id !== this.unit.Territory.coastParentID &&
         possibleUnitTerritory.id !== againstTerritory.id
       );
     });

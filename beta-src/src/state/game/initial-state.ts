@@ -2,6 +2,7 @@ import { GameState } from "../interfaces/GameState";
 
 const initialState: GameState = {
   apiStatus: "idle",
+  board: undefined,
   data: {
     msg: "",
     referenceCode: "",
@@ -29,6 +30,8 @@ const initialState: GameState = {
     territoryToUnit: {},
     unitToOrder: {},
     unitToTerritory: {},
+    enumToTerritory: {},
+    territoryToEnum: {},
   },
   territoriesMeta: {},
   commands: {
@@ -125,6 +128,11 @@ const initialState: GameState = {
     votes: null,
     orderStatus: "",
     status: "",
+  },
+  messages: {
+    messages: [],
+    pressType: "",
+    phase: "",
   },
 };
 

@@ -1,18 +1,25 @@
+import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
 import GameDataResponse from "../../state/interfaces/GameDataResponse";
 import GameStateMaps from "../../state/interfaces/GameStateMaps";
-import GameStateMap from "../../types/state/GameStateMap";
 
 export default function generateMaps(
   data: GameDataResponse["data"],
 ): GameStateMaps {
-  const { units, currentOrders } = data;
-  const territoryToUnit: GameStateMap = {};
-  const unitToOrder: GameStateMap = {};
-  const unitToTerritory: GameStateMap = {};
+  const { currentOrders, territories, units } = data;
+  const territoryToUnit: GameStateMaps["territoryToUnit"] = {};
+  const unitToOrder: GameStateMaps["unitToOrder"] = {};
+  const unitToTerritory: GameStateMaps["unitToTerritory"] = {};
+  const enumToTerritory: GameStateMaps["enumToTerritory"] = {};
+  const territoryToEnum: GameStateMaps["territoryToEnum"] = {};
 
   Object.values(units).forEach(({ id, terrID }) => {
     territoryToUnit[terrID] = id;
     unitToTerritory[id] = terrID;
+  });
+
+  Object.values(territories).forEach(({ id, name }) => {
+    enumToTerritory[TerritoryMap[name].territory] = id;
+    territoryToEnum[id] = TerritoryMap[name].territory.toString();
   });
 
   currentOrders?.forEach(({ id, unitID }) => {
@@ -23,5 +30,7 @@ export default function generateMaps(
     territoryToUnit,
     unitToOrder,
     unitToTerritory,
+    enumToTerritory,
+    territoryToEnum,
   };
 }

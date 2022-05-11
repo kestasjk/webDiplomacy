@@ -78,7 +78,6 @@ const WDArrowMarkerColors = function (
 const WDArrowMarkerDefs = function (): React.ReactElement {
   return (
     <>
-      {WDArrowMarkerColors(ArrowType.CONVOY)}
       {WDArrowMarkerColors(ArrowType.HOLD)}
       {WDArrowMarkerColors(ArrowType.MOVE)}
       {WDArrowMarkerColors(ArrowType.SUPPORT)}

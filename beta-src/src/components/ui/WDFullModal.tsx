@@ -20,6 +20,7 @@ interface WDFullModalProps {
   excusedMissedTurns: GameOverviewResponse["excusedMissedTurns"];
   phase: GameOverviewResponse["phase"];
   potNumber: GameOverviewResponse["pot"];
+  gameID: GameOverviewResponse["gameID"];
   season: GameOverviewResponse["season"];
   title: GameOverviewResponse["name"];
   userCountry: CountryTableData;
@@ -33,6 +34,7 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
   children,
   countries,
   excusedMissedTurns,
+  gameID,
   phase,
   potNumber,
   season,
@@ -80,6 +82,7 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
             countries={countries}
             maxDelays={excusedMissedTurns}
             userCountry={userCountry}
+            gameID={gameID}
           />
         </Box>
       </WDTabPanel>
