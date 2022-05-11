@@ -243,11 +243,15 @@ const highlightMapTerritoriesBasedOnStatuses = (state) => {
 
 const drawBuilds = (state) => {
   const {
+    data: {
+      data: { currentOrders },
+    },
     order: { inProgress },
     ordersMeta,
     territoriesMeta,
     overview: { members, phase },
   }: {
+    data: GameDataResponse;
     order: OrderState;
     ordersMeta: OrdersMeta;
     territoriesMeta: TerritoriesMeta;
@@ -266,20 +270,13 @@ const drawBuilds = (state) => {
         if (territoryMeta) {
           // Destroy Units
           if (type === "Destroy" && territoryMeta?.unitID) {
-            state.order.unitID = inProgress ? "" : territoryMeta.unitID;
-            state.order.inProgress = !inProgress;
-            state.order.toTerritory = inProgress ? "" : territoryMeta.id;
-            state.data.data.currentOrders?.forEach((currentOrder) => {
-              if (ordersMeta[currentOrder.id]) {
-                currentOrder.unitID = territoryMeta.unitID;
-                currentOrder.toTerrID = toTerrID;
-                state.order.orderID = currentOrder.id;
-              }
+            currentOrders?.forEach((currentOrder) => {
+              const command: GameCommand = {
+                command: currentOrder.type === "Destroy" ? "DESTROY" : "NONE",
+              };
+              console.log("command", command);
+              setCommand(state, command, "unitCommands", currentOrder.unitID);
             });
-            const command: GameCommand = {
-              command: inProgress ? "NONE" : "DESTROY",
-            };
-            setCommand(state, command, "unitCommands", territoryMeta.unitID);
           } else {
             const buildType = BuildUnitMap[type];
             const mappedTerritory = TerritoryMap[territoryMeta.name];
@@ -388,7 +385,9 @@ const gameApiSlice = createSlice({
           data: { contextVars, currentOrders },
         },
         maps,
+        territoriesMeta,
         order: { inProgress, method, onTerritory, orderID, type, unitID },
+        ordersMeta,
         ownUnits,
         overview: { phase },
       } = current(state);
@@ -404,29 +403,69 @@ const gameApiSlice = createSlice({
           return;
         }
 
-        // Check to make sure you have units to destroy
-        const count = currentOrders?.filter((item) => {
-          return (
-            (unitID === "" ||
-              unitID === null ||
-              item.unitID === clickData.payload.unitID) &&
-            item.type === "Destroy"
-          );
-        });
+        // Check if current order exist
+        const clickedOrder = currentOrders?.find(
+          (currentOrder) => currentOrder.unitID === clickData.payload.unitID,
+        );
 
-        if (count && count?.length === 0) {
-          return;
+        console.log("clickData.payload.unitID", clickData.payload.unitID);
+
+        const currentTerritory = territoriesMeta[clickData.payload.onTerritory];
+
+        if (clickedOrder && clickedOrder.id) {
+          state.data.data.currentOrders?.forEach((currentOrder) => {
+            if (currentTerritory.id === currentOrder.toTerrID) {
+              currentOrder.unitID = clickData.payload.unitID;
+              currentOrder.toTerrID =
+                maps.unitToTerritory[clickData.payload.unitID];
+              currentOrder.type = "None";
+
+              updateOrdersMeta(state, {
+                [clickedOrder.id]: {
+                  saved: false,
+                  update: {
+                    type: "Destroy",
+                    toTerrID:
+                      currentOrder.toTerrID ===
+                      maps.unitToTerritory[clickData.payload.unitID]
+                        ? null
+                        : maps.unitToTerritory[clickData.payload.unitID],
+                  },
+                },
+              });
+            }
+          });
+        } else if (currentOrders) {
+          let availableOrder;
+          for (let i = 0; i < currentOrders.length; i += 1) {
+            const { id } = currentOrders[i];
+            const orderMeta = ordersMeta[id];
+            if (!orderMeta.update || !orderMeta.update?.toTerrID) {
+              availableOrder = id;
+              break;
+            }
+          }
+          if (availableOrder) {
+            state.data.data.currentOrders?.forEach((currentOrder) => {
+              if (availableOrder === currentOrder.id) {
+                currentOrder.unitID = clickData.payload.unitID;
+                currentOrder.toTerrID =
+                  maps.unitToTerritory[clickData.payload.unitID];
+                currentOrder.type = "Destroy";
+              }
+            });
+
+            updateOrdersMeta(state, {
+              [availableOrder]: {
+                saved: false,
+                update: {
+                  type: "Destroy",
+                  toTerrID: maps.unitToTerritory[clickData.payload.unitID],
+                },
+              },
+            });
+          }
         }
-
-        updateOrdersMeta(state, {
-          [orderID]: {
-            saved: false,
-            update: {
-              type: "Destroy",
-              toTerrID: maps.unitToTerritory[clickData.payload.unitID],
-            },
-          },
-        });
       } else if (inProgress) {
         if (unitID === clickData.payload.unitID) {
           resetOrder(state);
