@@ -394,7 +394,6 @@ const gameApiSlice = createSlice({
           data: { contextVars, currentOrders },
         },
         maps,
-        territoriesMeta,
         order: { inProgress, method, onTerritory, orderID, type, unitID },
         ordersMeta,
         ownUnits,
@@ -413,8 +412,7 @@ const gameApiSlice = createSlice({
         }
 
         const existingOrder = Object.entries(ordersMeta).find(
-          ([oID, { update }]) => {
-            console.log({ oID, update });
+          ([, { update }]) => {
             return (
               update?.toTerrID ===
               maps.unitToTerritory[clickData.payload.unitID]
@@ -425,7 +423,6 @@ const gameApiSlice = createSlice({
         if (existingOrder) {
           const [eOrderID, eOrder] = existingOrder;
           if (eOrderID && eOrder) {
-            console.log({ eOrder });
             updateOrdersMeta(state, {
               [eOrderID]: {
                 saved: false,
@@ -446,9 +443,6 @@ const gameApiSlice = createSlice({
               break;
             }
           }
-          console.log({
-            availableOrder,
-          });
           if (availableOrder) {
             state.data.data.currentOrders?.forEach((currentOrder) => {
               if (availableOrder === currentOrder.id) {
