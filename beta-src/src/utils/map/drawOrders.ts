@@ -15,10 +15,11 @@ export default function drawOrders(state): void {
     maps,
     ordersMeta,
     overview: { phase },
+    ownUnits,
   } = current(state);
   removeAllArrows();
   drawMoveOrders(data, maps, ordersMeta, board);
-  drawSupportMoveOrders(data, maps, ordersMeta);
+  drawSupportMoveOrders(data, maps, ordersMeta, ownUnits);
   drawSupportHoldOrders(data, ordersMeta);
   drawConvoyOrders(data, maps, ordersMeta);
   drawBuilds(state);
