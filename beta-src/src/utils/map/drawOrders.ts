@@ -2,9 +2,11 @@ import { current } from "@reduxjs/toolkit";
 import drawBuilds from "./drawBuilds";
 import drawConvoyOrders from "./drawConvoyOrders";
 import drawMoveOrders from "./drawMoveOrders";
+import drawRetreatOrders from "./drawRetreatOrders";
 import drawSupportHoldOrders from "./drawSupportHoldOrders";
 import drawSupportMoveOrders from "./drawSupportMoveOrders";
 import removeAllArrows from "./removeAllArrows";
+import updateUnitsRetreat from "./updateUnitsRetreat";
 
 export default function drawOrders(state): void {
   const {
@@ -12,6 +14,7 @@ export default function drawOrders(state): void {
     data: { data },
     maps,
     ordersMeta,
+    overview: { phase },
   } = current(state);
   removeAllArrows();
   drawMoveOrders(data, maps, ordersMeta, board);
@@ -19,4 +22,8 @@ export default function drawOrders(state): void {
   drawSupportHoldOrders(data, ordersMeta);
   drawConvoyOrders(data, maps, ordersMeta);
   drawBuilds(state);
+  if (phase === "Retreats") {
+    updateUnitsRetreat(state);
+    drawRetreatOrders(data, ordersMeta);
+  }
 }

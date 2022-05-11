@@ -83,20 +83,24 @@ export default function processMapClick(state, clickData) {
             [orderToUpdate.id]: {
               saved: false,
               update: {
-                type: "Hold",
+                type: phase === "Retreats" ? "Disband" : "Hold",
                 toTerrID: null,
               },
             },
           });
         }
       }
-      state.order.type = "hold";
+      state.order.type = phase === "Retreats" ? "disband" : "hold";
     } else if (type === "convoy" && !truthyToTerritory) {
       state.order.toTerritory = Number(Territory[territoryName]);
       processConvoy(state);
     } else if (
       truthyOnTerritory &&
-      (type === "hold" || type === "move" || type === "convoy")
+      (type === "hold" ||
+        type === "move" ||
+        type === "convoy" ||
+        type === "disband" ||
+        type === "retreat")
     ) {
       highlightMapTerritoriesBasedOnStatuses(state);
       resetOrder(state);
@@ -132,14 +136,14 @@ export default function processMapClick(state, clickData) {
           [orderID]: {
             saved: false,
             update: {
-              type: "Move",
+              type: phase === "Retreats" ? "Retreat" : "Move",
               toTerrID: canMove.id,
               viaConvoy: "No",
             },
           },
         });
         state.order.toTerritory = TerritoryMap[canMove.name].territory;
-        state.order.type = "move";
+        state.order.type = phase === "Retreats" ? "retreat" : "move";
       } else {
         const command: GameCommand = {
           command: "INVALID_CLICK",

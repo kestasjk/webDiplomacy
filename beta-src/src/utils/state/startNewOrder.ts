@@ -7,9 +7,9 @@ import setCommand from "./setCommand";
 /* eslint-disable no-param-reassign */
 export default function startNewOrder(state, action: NewOrderPayload): void {
   const {
-    order: { unitID: prevUnitID },
+    order: { unitID: prevUnitID, type },
   } = current(state);
-  if (prevUnitID) {
+  if (prevUnitID && type !== "hold" && type !== "disband") {
     const command: GameCommand = {
       command: "NONE",
     };

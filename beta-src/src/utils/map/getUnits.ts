@@ -18,9 +18,24 @@ export default function getUnits(
   members: GameOverviewResponse["members"],
 ): Unit[] {
   const unitsToDraw: Unit[] = [];
-  const { territories, units } = data;
+  const { contextVars, territories, territoryStatuses, units } = data;
   Object.values(units).forEach((unit) => {
-    const territory = territories[unit.terrID];
+    let territory = territories[unit.terrID];
+    const territoryStatus = territoryStatuses.find((t) => unit.terrID === t.id);
+    const territoryHasMultipleUnits = Object.values(units).filter(
+      (u) => u.terrID === unit.terrID,
+    );
+
+    if (
+      territoryStatus?.occupiedFromTerrID &&
+      unit.id === territoryStatus.unitID &&
+      territoryStatus?.ownerCountryID === unit.countryID &&
+      territoryHasMultipleUnits.length > 1 &&
+      contextVars?.context.phase === "Retreats"
+    ) {
+      territory = territories[territoryStatus.occupiedFromTerrID];
+    }
+
     if (territory) {
       const mappedTerritory = TerritoryMap[territory.name];
       if (mappedTerritory) {

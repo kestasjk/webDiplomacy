@@ -11,8 +11,23 @@ export default function processUnitClick(state, clickData) {
       data: { contextVars, units },
     },
     order: { inProgress, method, onTerritory, orderID, type, unitID },
+    ordersMeta,
+    maps,
     ownUnits,
+    overview: { phase },
   } = current(state);
+  if (phase === "Retreats") {
+    const unitsOrderMeta =
+      ordersMeta[maps.unitToOrder[clickData.payload.unitID]];
+
+    if (
+      unitsOrderMeta &&
+      unitsOrderMeta.update?.type === "Disband" &&
+      !unitsOrderMeta.allowedBorderCrossings?.length
+    ) {
+      return;
+    }
+  }
   if (contextVars?.context?.orderStatus) {
     const orderStates = getOrderStates(contextVars?.context?.orderStatus);
     if (orderStates.Ready) {
@@ -22,6 +37,9 @@ export default function processUnitClick(state, clickData) {
   if (inProgress) {
     if (unitID === clickData.payload.unitID) {
       resetOrder(state);
+      if (type === "disband" || type === "retreat") {
+        highlightMapTerritoriesBasedOnStatuses(state);
+      }
     } else if ((type === "hold" || type === "move") && onTerritory !== null) {
       highlightMapTerritoriesBasedOnStatuses(state);
     } else if (method === "dblClick" && unitID !== clickData.payload.unitID) {
@@ -47,6 +65,7 @@ export default function processUnitClick(state, clickData) {
           },
           ...clickData.payload,
         });
+        highlightMapTerritoriesBasedOnStatuses(state);
       } else {
         startNewOrder(state, clickData);
       }
