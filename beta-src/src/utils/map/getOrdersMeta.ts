@@ -40,11 +40,14 @@ export default function getOrdersMeta(data, phase): Props {
       currentOrders.forEach((o) => {
         const { id, unitID, type, toTerrID, fromTerrID } = o;
         let orderUnit = newBoard.findUnitByID(unitID);
-        if (!orderUnit?.Territory && phase === "Retreats") {
+        if (!orderUnit && phase === "Retreats") {
           orderUnit = new UnitClass({
             ...units[unitID],
-            Territory: territories[units[unitID].terrID],
           });
+          if (!orderUnit?.Territory) {
+            orderUnit.setTerritory(territories[units[unitID].terrID]);
+          }
+
           newBoard.units.push(orderUnit);
         }
         if (orderUnit) {
