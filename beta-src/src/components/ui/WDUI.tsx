@@ -49,6 +49,7 @@ const WDUI: React.FC = function (): React.ReactElement {
   const {
     alternatives,
     excusedMissedTurns,
+    gameID,
     members,
     name,
     phase,
@@ -151,6 +152,7 @@ const WDUI: React.FC = function (): React.ReactElement {
         alternatives={alternatives}
         countries={countries}
         excusedMissedTurns={excusedMissedTurns}
+        gameID={gameID}
         phase={phase}
         potNumber={pot}
         season={season}
