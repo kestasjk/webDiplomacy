@@ -6,10 +6,17 @@ import setCommand from "./setCommand";
 export default function resetOrder(state): void {
   const {
     order: { unitID, type },
+    overview: { phase },
   } = current(state);
-  if (type !== "hold") {
+  if (type !== "hold" && type !== "retreat") {
     const command: GameCommand = {
-      command: "NONE",
+      command: phase === "Retreats" ? "DISLODGED" : "NONE",
+    };
+    setCommand(state, command, "unitCommands", unitID);
+  }
+  if (type === "disband") {
+    const command: GameCommand = {
+      command: "DISBAND",
     };
     setCommand(state, command, "unitCommands", unitID);
   }

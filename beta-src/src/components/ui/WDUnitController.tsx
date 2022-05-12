@@ -33,6 +33,11 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
   };
 
   const commandActions = {
+    DESTROY: (command) => {
+      const [key] = command;
+      setIconState(UIState.DESTROY);
+      deleteCommand(key);
+    },
     HOLD: (command) => {
       const [key] = command;
       setIconState(UIState.HOLD);
@@ -46,6 +51,11 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
     SELECTED: (command) => {
       const [key] = command;
       setIconState(UIState.SELECTED);
+      deleteCommand(key);
+    },
+    DISBAND: (command) => {
+      const [key] = command;
+      setIconState(UIState.DISBANDED);
       deleteCommand(key);
     },
   };
