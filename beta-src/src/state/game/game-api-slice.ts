@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
 import ApiRoute from "../../enums/ApiRoute";
 import { getGameApiRequest, submitOrders } from "../../utils/api";
 import GameDataResponse from "../interfaces/GameDataResponse";
@@ -96,6 +96,25 @@ export const saveOrders = createAsyncThunk(
     return parsed;
   },
 );
+
+export const loadGame = (gameID: string) => async (dispatch) => {
+  const {
+    payload: {
+      user: {
+        member: { countryID },
+      },
+    },
+  } = await dispatch(
+    fetchGameOverview({
+      gameID,
+    }),
+  );
+  await Promise.all([
+    dispatch(fetchGameData({ gameID, countryID })),
+    dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
+  ]);
+  return true;
+};
 
 /**
  * createSlice handles state changes properly without reassiging state, but
