@@ -97,6 +97,25 @@ export const saveOrders = createAsyncThunk(
   },
 );
 
+export const loadGame = (gameID: string) => async (dispatch) => {
+  const {
+    payload: {
+      user: {
+        member: { countryID },
+      },
+    },
+  } = await dispatch(
+    fetchGameOverview({
+      gameID,
+    }),
+  );
+  await Promise.all([
+    dispatch(fetchGameData({ gameID, countryID })),
+    dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
+  ]);
+  return true;
+};
+
 /**
  * createSlice handles state changes properly without reassiging state, but
  * eslint does not know this. therefore, no-param-reassign is disabled for

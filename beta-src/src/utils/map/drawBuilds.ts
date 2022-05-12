@@ -5,7 +5,6 @@ import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
 import Territory from "../../enums/map/variants/classic/Territory";
 import UIState from "../../enums/UIState";
 import { GameCommand } from "../../state/interfaces/GameCommands";
-import GameDataResponse from "../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
 import { GameState } from "../../state/interfaces/GameState";
 import OrderState from "../../state/interfaces/OrderState";
@@ -21,7 +20,6 @@ export default function drawBuilds(state): void {
     maps,
     ownUnits,
   }: {
-    data: GameDataResponse;
     order: OrderState;
     ordersMeta: OrdersMeta;
     territoriesMeta: TerritoriesMeta;
@@ -42,63 +40,63 @@ export default function drawBuilds(state): void {
     Object.values(ordersMeta).forEach(({ update }) => {
       if (update) {
         const { toTerrID, type } = update;
-        const territoryMeta = Object.values(territoriesMeta).find(
-          ({ id }) => id === toTerrID,
-        );
-        if (territoryMeta) {
-          // Destroy Units
-          if (type === "Destroy" && toTerrID) {
-            const command: GameCommand = {
-              command: "DESTROY",
-            };
-            setCommand(
-              state,
-              command,
-              "unitCommands",
-              maps.territoryToUnit[toTerrID],
-            );
-          } else {
-            const buildType = BuildUnitMap[type];
-            const mappedTerritory = TerritoryMap[territoryMeta.name];
-            const memberCountry = members.find(
-              (member) =>
-                member.countryID.toString() === territoryMeta.countryID,
-            );
-            if (memberCountry) {
-              let command: GameCommand = {
-                command: "SET_UNIT",
-                data: {
-                  setUnit: {
-                    componentType: "Icon",
-                    country: countryMap[memberCountry?.country],
-                    iconState: UIState.BUILD,
-                    unitSlotName: mappedTerritory.unitSlotName,
-                    unitType: BuildUnitTypeMap[buildType],
+        if (toTerrID) {
+          const territoryMeta = territoriesMeta[maps.territoryToEnum[toTerrID]];
+          if (territoryMeta) {
+            // Destroy Units
+            if (type === "Destroy" && toTerrID) {
+              const command: GameCommand = {
+                command: "DESTROY",
+              };
+              setCommand(
+                state,
+                command,
+                "unitCommands",
+                maps.territoryToUnit[toTerrID],
+              );
+            } else {
+              const buildType = BuildUnitMap[type];
+              const mappedTerritory = TerritoryMap[territoryMeta.name];
+              const memberCountry = members.find(
+                (member) =>
+                  member.countryID.toString() === territoryMeta.countryID,
+              );
+              if (memberCountry) {
+                let command: GameCommand = {
+                  command: "SET_UNIT",
+                  data: {
+                    setUnit: {
+                      componentType: "Icon",
+                      country: countryMap[memberCountry?.country],
+                      iconState: UIState.BUILD,
+                      unitSlotName: mappedTerritory.unitSlotName,
+                      unitType: BuildUnitTypeMap[buildType],
+                    },
                   },
-                },
-              };
-              const commandTerritoryDestination =
-                territoryMeta.territory ===
-                  Territory.SAINT_PETERSBURG_NORTH_COAST ||
-                territoryMeta.territory ===
-                  Territory.SAINT_PETERSBURG_SOUTH_COAST
-                  ? Territory[Territory.SAINT_PETERSBURG]
-                  : Territory[territoryMeta.territory];
-              setCommand(
-                state,
-                command,
-                "territoryCommands",
-                commandTerritoryDestination,
-              );
-              command = {
-                command: "MOVE",
-              };
-              setCommand(
-                state,
-                command,
-                "territoryCommands",
-                commandTerritoryDestination,
-              );
+                };
+                const commandTerritoryDestination =
+                  territoryMeta.territory ===
+                    Territory.SAINT_PETERSBURG_NORTH_COAST ||
+                  territoryMeta.territory ===
+                    Territory.SAINT_PETERSBURG_SOUTH_COAST
+                    ? Territory[Territory.SAINT_PETERSBURG]
+                    : Territory[territoryMeta.territory];
+                setCommand(
+                  state,
+                  command,
+                  "territoryCommands",
+                  commandTerritoryDestination,
+                );
+                command = {
+                  command: "MOVE",
+                };
+                setCommand(
+                  state,
+                  command,
+                  "territoryCommands",
+                  commandTerritoryDestination,
+                );
+              }
             }
           }
         }

@@ -5,8 +5,10 @@ import { GameCommand } from "../../../../../state/interfaces/GameCommands";
 import GameDataResponse from "../../../../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../../../../state/interfaces/GameOverviewResponse";
 import UnitType from "../../../../../types/UnitType";
+import getTerritoriesMeta from "../../../../getTerritoriesMeta";
 import getOrdersMeta from "../../../../map/getOrdersMeta";
 import getUnits from "../../../../map/getUnits";
+import highlightMapTerritoriesBasedOnStatuses from "../../../../map/highlightMapTerritoriesBasedOnStatuses";
 import generateMaps from "../../../generateMaps";
 import setCommand from "../../../setCommand";
 import updateOrdersMeta from "../../../updateOrdersMeta";
@@ -68,5 +70,7 @@ export default function fetchGameDataFulfilled(state, action): void {
     );
   });
 
+  state.territoriesMeta = getTerritoriesMeta(data);
+  highlightMapTerritoriesBasedOnStatuses(state);
   updateOrdersMeta(state, getOrdersMeta(data, board, phase));
 }
