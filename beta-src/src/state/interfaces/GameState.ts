@@ -9,6 +9,7 @@ import GameMessages from "./GameMessages";
 import OrderState from "./OrderState";
 import OrdersMeta from "./SavedOrders";
 import TerritoriesMeta from "./TerritoriesState";
+import GameNotification from "./GameNotification";
 
 export type ApiStatus = "idle" | "loading" | "succeeded" | "failed";
 
@@ -26,4 +27,5 @@ export interface GameState {
   commands: GameCommands;
   status: GameStatusResponse;
   messages: GameMessages;
+  notifications: GameNotification[];
 }

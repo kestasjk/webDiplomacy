@@ -191,6 +191,14 @@ const WDUI: React.FC = function (): React.ReactElement {
           toggleState={toggleState}
         />
       </WDPositionContainer>
+      <WDPositionContainer position={Position.BOTTOM_LEFT}>
+        <Link href="/">
+          <WDHomeIcon />
+        </Link>
+        <Link href="/">
+          <WDHomeIcon />
+        </Link>
+      </WDPositionContainer>
     </>
   );
 };
