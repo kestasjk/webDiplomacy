@@ -19,9 +19,10 @@ export default function processConvoy(state): void {
   const lastFleetInChain =
     order.subsequentClicks[order.subsequentClicks.length - 1];
   if (lastFleetInChain) {
-    const { convoyToChoices } = ordersMeta[lastFleetInChain.orderID];
+    const { convoyToChoices } = ordersMeta[lastFleetInChain.order];
     const toTerritory = maps.enumToTerritory[order.toTerritory];
     const fromTerritory = maps.enumToTerritory[order.onTerritory];
+
     if (convoyToChoices.includes(toTerritory)) {
       const orderUnit = board.findUnitByID(lastFleetInChain.unitID);
       const fleetOrder = currentOrders?.find(
