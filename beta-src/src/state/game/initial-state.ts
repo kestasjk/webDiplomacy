@@ -2,6 +2,7 @@ import { GameState } from "../interfaces/GameState";
 
 const initialState: GameState = {
   apiStatus: "idle",
+  board: undefined,
   data: {
     msg: "",
     referenceCode: "",
@@ -16,12 +17,22 @@ const initialState: GameState = {
   error: null,
   order: {
     inProgress: false,
+    method: "click",
     onTerritory: null,
     orderID: "",
+    subsequentClicks: [],
     toTerritory: null,
     unitID: "",
   },
   ordersMeta: {},
+  ownUnits: [],
+  maps: {
+    territoryToUnit: {},
+    unitToOrder: {},
+    unitToTerritory: {},
+    enumToTerritory: {},
+    territoryToEnum: {},
+  },
   territoriesMeta: {},
   commands: {
     mapCommands: {},
@@ -117,6 +128,11 @@ const initialState: GameState = {
     votes: null,
     orderStatus: "",
     status: "",
+  },
+  messages: {
+    messages: [],
+    pressType: "",
+    phase: "",
   },
 };
 

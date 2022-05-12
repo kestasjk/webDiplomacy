@@ -2,25 +2,37 @@ import { IOrderData } from "../../models/Interfaces";
 import TerritoryClass from "../../models/TerritoryClass";
 
 interface OrderMetaUpdate {
+  convoyPath?: string[];
   type: string;
   toTerrID: string | null;
+  fromTerrID?: string | null;
   viaConvoy?: string | null;
 }
 
-interface OrderMeta {
+export interface SupportMoveChoice {
+  supportMoveFrom: TerritoryClass[];
+  supportMoveTo: TerritoryClass;
+}
+
+interface SharedMeta {
   allowedBorderCrossings?: TerritoryClass[];
-  saved: boolean;
+  convoyToChoices?: TerritoryClass[];
+  originalOrder?: IOrderData;
+  supportHoldChoices?: TerritoryClass[];
+  supportMoveChoices?: SupportMoveChoice[];
   update?: OrderMetaUpdate;
-  originalOrder: IOrderData;
+}
+
+interface OrderMeta extends SharedMeta {
+  saved: boolean;
+}
+
+interface EditOrder extends SharedMeta {
+  saved?: boolean;
 }
 
 export interface EditOrderMeta {
-  [key: string]: {
-    saved?: boolean;
-    update?: OrderMetaUpdate;
-    allowedBorderCrossings?: TerritoryClass[];
-    originalOrder?: IOrderData;
-  };
+  [key: string]: EditOrder;
 }
 
 interface OrdersMeta {

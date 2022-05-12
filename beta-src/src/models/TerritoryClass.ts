@@ -47,6 +47,8 @@ export default class TerritoryClass {
 
   convoyNode = true;
 
+  board: BoardClass;
+
   // contains the last search that went
   // through this node -> needed for breadth first search
   lastVisitedBy: PathSearchClass | null = null;
@@ -71,7 +73,11 @@ export default class TerritoryClass {
   // A mark only used for checking, if two paths are seperated or not
   inPath = null;
 
-  constructor(terrData: ITerritory, terrStatusData?: ITerrStatus) {
+  constructor(
+    terrData: ITerritory,
+    board: BoardClass,
+    terrStatusData?: ITerrStatus,
+  ) {
     Object.assign(this, {
       ...terrData,
       supply: terrData.supply === "Yes",
@@ -82,6 +88,8 @@ export default class TerritoryClass {
     if (terrStatusData) {
       Object.assign(this, terrStatusData);
     }
+
+    this.board = board;
   }
 
   setUnit(unit: UnitClass) {
@@ -186,16 +194,18 @@ export default class TerritoryClass {
   }
 
   // add function to cache valid border territories with specific search params for efficiency
-  getValidBorderTerritoriesID(board: BoardClass) {
+  getValidBorderTerritories() {
     if (!this.validBorderTerritoriesCache.length)
       this.validBorderTerritoriesCache = this.Borders.filter((b) => {
         return b.f;
       })
         .map((b) => {
-          return board.findTerritoryByID(b.id);
+          return this.board.findTerritoryByID(b.id);
         })
-        // [undefined, territory]
         .filter((n) => {
+          if (!this.search) {
+            return false;
+          }
           if (n) {
             return (
               n.isConvoyNode() &&

@@ -3,7 +3,7 @@ import { GameIconProps } from "../../interfaces/Icons";
 import UIState from "../../enums/UIState";
 import debounce from "../../utils/debounce";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
-import { gameApiSliceActions, gameData } from "../../state/game/game-api-slice";
+import { gameApiSliceActions } from "../../state/game/game-api-slice";
 import processNextCommand from "../../utils/processNextCommand";
 
 interface UnitControllerProps {
@@ -22,8 +22,6 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
     (state) => state.game.commands.unitCommands[meta.unit.id],
   );
 
-  const { data } = useAppSelector(gameData);
-
   const deleteCommand = (key) => {
     dispatch(
       gameApiSliceActions.deleteCommand({
@@ -38,6 +36,10 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
     CONVOY_ALLY: (command) => {
       const [key] = command;
       setIconState(UIState.SELECTED);
+    },
+    DESTROY: (command) => {
+      const [key] = command;
+      setIconState(UIState.DESTROY);
       deleteCommand(key);
     },
     HOLD: (command) => {
@@ -55,29 +57,19 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
       setIconState(UIState.SELECTED);
       deleteCommand(key);
     },
+    DISBAND: (command) => {
+      const [key] = command;
+      setIconState(UIState.DISBANDED);
+      deleteCommand(key);
+    },
   };
 
   processNextCommand(commands, commandActions);
 
-  let unitCanInitiateOrder = false;
-  if ("currentOrders" in data) {
-    const { currentOrders } = data;
-    if (currentOrders) {
-      for (let i = 0; i < currentOrders.length; i += 1) {
-        if (currentOrders[i].unitID === meta.unit.id) {
-          unitCanInitiateOrder = true;
-          break;
-        }
-      }
-    }
-  }
-
-  const clickAction = function (e) {
-    if (!unitCanInitiateOrder) {
-      return;
-    }
+  const clickAction = (e, method) => {
     dispatch(
       gameApiSliceActions.processUnitClick({
+        method,
         onTerritory: meta.mappedTerritory.territory,
         unitID: meta.unit.id,
       }),
@@ -85,7 +77,7 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
   };
 
   const handleClick = debounce((e) => {
-    clickAction(e);
+    clickAction(e, "click");
   }, 200);
 
   const handleSingleClick = (e) => {
@@ -94,7 +86,7 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
 
   const handleDoubleClick = (e) => {
     handleClick[1]();
-    handleClick[0](e);
+    clickAction(e, "dblClick");
   };
 
   return (
