@@ -7,7 +7,10 @@ import WDMap from "./WDMap";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
-import { gameApiSliceActions } from "../../state/game/game-api-slice";
+import {
+  gameApiSliceActions,
+  gameOrdersMeta,
+} from "../../state/game/game-api-slice";
 import drawArrow from "../../utils/map/drawArrow";
 import ArrowType from "../../enums/ArrowType";
 import processNextCommand from "../../utils/processNextCommand";
@@ -34,6 +37,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
   const svgElement = React.useRef<SVGSVGElement>(null);
   const [viewport] = useViewport();
   const dispatch = useAppDispatch();
+  const ordersMeta = useAppSelector(gameOrdersMeta);
   const commands = useAppSelector(
     (state) => state.game.commands.mapCommands.all,
   );
@@ -143,6 +147,12 @@ const WDMapController: React.FC = function (): React.ReactElement {
         .on("dblclick.zoom", null);
     }
   }, [svgElement, viewport]);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      dispatch(gameApiSliceActions.updateOrdersMeta(ordersMeta));
+    }, 500);
+  }, []);
 
   return (
     <div
