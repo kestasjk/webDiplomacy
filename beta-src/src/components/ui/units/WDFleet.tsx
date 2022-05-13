@@ -2,7 +2,7 @@ import * as React from "react";
 import { useTheme } from "@mui/material/styles";
 import { GameIconProps } from "../../../interfaces/Icons";
 import WDFleetIcon from "./WDFleetIcon";
-import WDUnitController from "../WDUnitController";
+import WDUnitController from "../../controllers/WDUnitController";
 import UIState from "../../../enums/UIState";
 
 const WDFleet: React.FC<GameIconProps> = function ({
