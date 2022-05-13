@@ -3,7 +3,7 @@ import * as d3 from "d3";
 import Device from "../../enums/Device";
 import getInitialViewTranslation from "../../utils/map/getInitialViewTranslation";
 import Scale from "../../types/Scale";
-import WDMap from "./WDMap";
+import WDMap from "../map/WDMap";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";

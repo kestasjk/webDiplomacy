@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useTheme } from "@mui/material/styles";
 import UIState from "../../../enums/UIState";
-import WDUnitController from "../WDUnitController";
+import WDUnitController from "../../controllers/WDUnitController";
 import { GameIconProps } from "../../../interfaces/Icons";
 import WDArmyIcon from "./WDArmyIcon";
 

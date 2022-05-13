@@ -1,13 +1,18 @@
 import * as React from "react";
+import WDMainController from "../controllers/WDMainController";
 import WDUI from "./WDUI";
 
-const WDMapController = React.lazy(() => import("../map/WDMapController"));
+const WDMapController = React.lazy(
+  () => import("../controllers/WDMapController"),
+);
 
 const WDMain: React.FC = function (): React.ReactElement {
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
-      <WDMapController />
-      <WDUI />
+      <WDMainController>
+        <WDMapController />
+        <WDUI />
+      </WDMainController>
     </React.Suspense>
   );
 };
