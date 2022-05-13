@@ -87,7 +87,9 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
         </Box>
       </WDTabPanel>
       <WDTabPanel currentTab={ModalViews.PRESS} currentView={view}>
-        <WDPress userCountry={userCountry}>{children}</WDPress>
+        <WDPress userCountry={userCountry} countries={countries}>
+          {children}
+        </WDPress>
       </WDTabPanel>
     </WDViewsContainer>
   );

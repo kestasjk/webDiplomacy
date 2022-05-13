@@ -1,9 +1,13 @@
 import * as React from "react";
-import { Box, Stack, TextField } from "@mui/material";
+import { Box, Stack, TextField, ButtonGroup, Divider } from "@mui/material";
+import { Email, Send } from "@mui/icons-material";
+
+import Button from "@mui/material/Button";
 import Device from "../../enums/Device";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
 import WDButton from "./WDButton";
+import WDMessageList from "./WDMessageList";
 import { CountryTableData } from "../../interfaces";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import GameMessages, { GameMessage } from "../../state/interfaces/GameMessages";
@@ -12,15 +16,18 @@ import {
   gameMessages,
   gameOverview,
 } from "../../state/game/game-api-slice";
+import webDiplomacyTheme from "../../webDiplomacyTheme";
 
 interface WDPressProps {
   children: React.ReactNode;
   userCountry: CountryTableData;
+  countries: CountryTableData[];
 }
 
 const WDPress: React.FC<WDPressProps> = function ({
   children,
   userCountry,
+  countries,
 }): React.ReactElement {
   const [viewport] = useViewport();
   const device = getDevice(viewport);
@@ -34,15 +41,11 @@ const WDPress: React.FC<WDPressProps> = function ({
 
   const [userMsg, setUserMsg] = React.useState("");
   const [chatHistory, setChatHistory] = React.useState("");
-  const [countrySelected, setCountrySelected] = React.useState(0);
+  const [countryIDSelected, setCountryIDSelected] = React.useState(0);
 
   const { user, gameID } = useAppSelector(gameOverview);
 
   const messages = useAppSelector(gameMessages);
-  const { members } = useAppSelector(gameOverview);
-  const countries = members.map((member) => {
-    return { country: member.country, countryID: member.countryID };
-  });
 
   const sendUserMsg = () => {
     setUserMsg("");
@@ -53,8 +56,8 @@ const WDPress: React.FC<WDPressProps> = function ({
     console.log(messages);
   };
 
-  const updateCountryPane = (country) => {
-    setCountrySelected(country);
+  const updateCountryPane = (country: number) => {
+    setCountryIDSelected(country);
     // const dispatch = useAppDispatch();
     // dispatch(
     //   fetchGameMessages({
@@ -66,34 +69,42 @@ const WDPress: React.FC<WDPressProps> = function ({
     // );
   };
 
-  const countryButtons = countries.map((country) => {
-    return (
-      <WDButton
-        key={country.countryID}
-        sx={{ p: 0 }}
-        color={countrySelected === country.countryID ? "primary" : "secondary"}
-        onClick={() => updateCountryPane(country)}
-      >
-        {country.country}
-      </WDButton>
-    );
-  });
+  const countryButtons = countries
+    .sort((a, b) => a.countryID - b.countryID)
+    .map((country) => {
+      return (
+        <Button
+          key={country.countryID}
+          sx={{
+            p: 1,
+            "&.MuiButton-text": { color: country.color },
+          }}
+          color="primary"
+          onClick={() => updateCountryPane(country.countryID)}
+          size="small"
+          variant={
+            countryIDSelected === country.countryID ? "contained" : "text"
+          }
+        >
+          {country.country.slice(0, 3).toUpperCase()}
+        </Button>
+      );
+    });
 
-  const formatMsg = (msg: GameMessage) => `${msg.message}`;
   return (
-    <Box>
-      <Stack direction="row" spacing={spacing} alignItems="center">
-        {countryButtons}
+    <Box sx={{ p: padding }}>
+      <Stack alignItems="center" sx={{ p: padding }}>
+        <ButtonGroup className="dialogue-countries">
+          {countryButtons}
+        </ButtonGroup>
       </Stack>
-      <Box sx={{ p: padding }}>
-        <TextField
-          id="chat-history"
-          multiline
-          rows={8}
-          inputProps={{ readOnly: true }}
-          value={messages.messages.map(formatMsg).join("\n")}
-        />
-      </Box>
+      <WDMessageList
+        messages={messages.messages}
+        countries={countries}
+        userCountry={userCountry}
+        countryIDSelected={countryIDSelected}
+      />
+      <Divider />
 
       <Box
         sx={{
@@ -102,24 +113,28 @@ const WDPress: React.FC<WDPressProps> = function ({
           width,
         }}
       >
-        <TextField
-          id="user-msg"
-          label="Send Message"
-          variant="outlined"
-          value={userMsg}
-          multiline
-          maxRows={4}
-          onChange={(text) => setUserMsg(text.target.value)}
-        />
-        <WDButton
-          key={userMsg}
-          sx={{ p: padding }}
-          color="primary"
-          disabled={!userMsg}
-          onClick={sendUserMsg}
-        >
-          Send
-        </WDButton>
+        <Stack alignItems="center" direction="row">
+          <TextField
+            id="user-msg"
+            label="Send Message"
+            variant="outlined"
+            value={userMsg}
+            multiline
+            maxRows={4}
+            onChange={(text) => setUserMsg(text.target.value)}
+          />
+          <Button
+            key={userMsg}
+            sx={{ p: padding }}
+            color="primary"
+            disabled={!userMsg}
+            onClick={sendUserMsg}
+            endIcon={<Send />}
+            size="large"
+          >
+            {}
+          </Button>
+        </Stack>
       </Box>
     </Box>
   );
