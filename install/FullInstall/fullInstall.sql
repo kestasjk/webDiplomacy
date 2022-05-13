@@ -980,8 +980,6 @@ ADD INDEX (`grCalculated`);
 
 UPDATE `wD_Misc` SET `value` = '166' WHERE `name` = 'Version';
 
-UPDATE `wD_Misc` SET `value` = '167' WHERE `name` = 'Version';
-
 ALTER TABLE `wD_GameMessages` ADD `phaseMarker` ENUM('Finished','Pre-game','Diplomacy','Retreats','Builds') NULL DEFAULT NULL AFTER `gameID`;
 ALTER TABLE `wD_Backup_GameMessages` ADD `phaseMarker` ENUM('Finished','Pre-game','Diplomacy','Retreats','Builds') NULL DEFAULT NULL AFTER `gameID`;
 
@@ -1013,4 +1011,3 @@ CREATE TABLE `wD_GameMessages_Redacted` (
   KEY `toMember` (`gameID`,`toCountryID`) USING BTREE,
   KEY `fromMember` (`gameID`,`fromCountryID`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
