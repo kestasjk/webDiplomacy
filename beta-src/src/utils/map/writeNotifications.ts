@@ -86,7 +86,7 @@ export default function writeNotifications(state): void {
             lineHeight: "253%",
             m: 1,
             textAlign: "center",
-            Width: 218,
+            width: 218,
           },
         };
       } else {
