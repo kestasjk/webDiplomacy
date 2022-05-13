@@ -1,9 +1,9 @@
 import * as React from "react";
 import {
-  fetchGameData,
   fetchGameOverview,
   gameApiSliceActions,
   gameOverview,
+  loadGameData,
   userActivity,
 } from "../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
@@ -32,9 +32,7 @@ const WDMain: React.FC = function (): React.ReactElement {
     processTime &&
     (season !== newSeason || year !== newYear || processTime !== newProcessTime)
   ) {
-    dispatch(
-      fetchGameData({ gameID: String(gameID), countryID: String(countryID) }),
-    );
+    dispatch(loadGameData(String(gameID), String(countryID)));
   }
   const activityHandler = debounce(() => {
     dispatch(

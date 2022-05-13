@@ -5,4 +5,5 @@ export default interface UserActivity {
   season: string;
   year: number;
   processTime: number | null | undefined;
+  frequency: number;
 }

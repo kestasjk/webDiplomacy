@@ -423,7 +423,12 @@ class GetGameMembers extends ApiEntry {
 			'missedPhases' => $member->missedPhases,
 			'newMessagesFrom' => $retrievePrivateData ? $member->newMessagesFrom : [],
 			'online' => $member->online,
-			'orderStatus' => $member->orderStatus,
+			'orderStatus' => [
+				'Ready' => $member->orderStatus->Ready,
+				'Saved' => $member->orderStatus->Saved,
+				'Completed' => $member->orderStatus->Completed,
+				'None' => $member->orderStatus->None,
+			],
 			'status' => $member->status,
 			'supplyCenterNo' => $member->supplyCenterNo,
 			'timeLoggedIn' => $member->timeLoggedIn,
