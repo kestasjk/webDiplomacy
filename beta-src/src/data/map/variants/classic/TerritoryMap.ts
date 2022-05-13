@@ -316,11 +316,13 @@ const TerritoryMap: ITerritoryMap = {
     unitSlotName: "main",
   },
   "Spain (North Coast)": {
-    territory: Territory.SPAIN,
+    parent: Territory.SPAIN,
+    territory: Territory.SPAIN_NORTH_COAST,
     unitSlotName: "nc",
   },
   "Spain (South Coast)": {
-    territory: Territory.SPAIN,
+    parent: Territory.SPAIN,
+    territory: Territory.SPAIN_SOUTH_COAST,
     unitSlotName: "sc",
   },
   "St. Petersburg (North Coast)": {
@@ -334,11 +336,13 @@ const TerritoryMap: ITerritoryMap = {
     unitSlotName: "sc",
   },
   "Bulgaria (North Coast)": {
-    territory: Territory.BULGARIA,
+    parent: Territory.BULGARIA,
+    territory: Territory.BULGARIA_NORTH_COAST,
     unitSlotName: "nc",
   },
   "Bulgaria (South Coast)": {
-    territory: Territory.BULGARIA,
+    parent: Territory.BULGARIA,
+    territory: Territory.BULGARIA_SOUTH_COAST,
     unitSlotName: "sc",
   },
 };

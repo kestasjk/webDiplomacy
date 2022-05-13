@@ -90,29 +90,31 @@ export default class OrderClass {
        * means when an invalid support move is selected as a fleet the choice is undone once
        * it is selected and put through the check below.
        *
+       * Disabling this check as it is very intensive in getOrdersMeta. An alternative solution would be to only
+       * process this when the user double clicks on a unit, but disabling for now.
        */
-      let ConvoyArmies;
-
-      if (
-        this.unit.convoyLink &&
-        this.unit.type === UnitType.Fleet &&
-        Array.from(this.unit.ConvoyGroup.coasts)
-          .map((coast) => coast.id)
-          .includes(againstTerritory.id)
-      ) {
-        ConvoyArmies = Array.from(againstTerritory.ConvoyGroup.armies).filter(
-          (convoyArmy) => {
-            return !!againstTerritory.ConvoyGroup.pathArmyToCoastWithoutFleet(
-              convoyArmy.Territory,
-              againstTerritory,
-              this.unit.Territory,
-            );
-          },
-        );
-      } else {
-        ConvoyArmies = againstTerritory.ConvoyGroup.armies;
-      }
-
+      const ConvoyArmies = Array.from(againstTerritory.ConvoyGroup.armies);
+      // if (
+      //   this.unit.convoyLink &&
+      //   this.unit.type === UnitType.Fleet &&
+      //   Array.from(this.unit.ConvoyGroup.coasts)
+      //     .map((coast) => coast.id)
+      //     .includes(againstTerritory.id)
+      // ) {
+      //   console.log("1");
+      //   ConvoyArmies = Array.from(againstTerritory.ConvoyGroup.armies).filter(
+      //     (convoyArmy) => {
+      //       return !!againstTerritory.ConvoyGroup.pathArmyToCoastWithoutFleet(
+      //         convoyArmy.Territory,
+      //         againstTerritory,
+      //         this.unit.Territory,
+      //       );
+      //     },
+      //   );
+      // } else {
+      //   console.log("2");
+      //   ConvoyArmies = againstTerritory.ConvoyGroup.armies;
+      // }
       possibleUnits = [...possibleUnits, ...ConvoyArmies];
     }
 
@@ -122,7 +124,7 @@ export default class OrderClass {
       ),
     ).filter((possibleUnitTerritory) => {
       return (
-        possibleUnitTerritory.id !== this.unit.Territory.coastParent.id &&
+        possibleUnitTerritory.id !== this.unit.Territory.coastParentID &&
         possibleUnitTerritory.id !== againstTerritory.id
       );
     });

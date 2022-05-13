@@ -1014,7 +1014,7 @@ class SendMessage extends ApiEntry {
  */
 class GetMessages extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/getmessages', 'GET', '', array('gameID','countryID','toCountryID','offset','limit'));
+		parent::__construct('game/getmessages', 'GET', '', array('gameID','countryID','toCountryID','offset','limit','allMessages'));
 	}
 	public function run($userID, $permissionIsExplicit) {
 
@@ -1071,7 +1071,6 @@ class GetMessages extends ApiEntry {
 					[
 						'pressType' => $pressType,
 						'phase' => $gamePhase,
-						'test' => 'test',
 					]
 				)
 			);
@@ -1095,9 +1094,14 @@ class GetMessages extends ApiEntry {
 				);
 			}
 
-			$where = "( toCountryID = $toCountryID AND fromCountryID = $countryID )
-					OR
-					( fromCountryID = $toCountryID AND toCountryID = $countryID )";
+			if (isset($args['allMessages'])) {
+				$where = "(toCountryID = 0 OR fromCountryID = 0 OR toCountryID = $countryID OR fromCountryID = $countryID)";
+			} else {
+				$where = "( toCountryID = $toCountryID AND fromCountryID = $countryID )
+				OR
+				( fromCountryID = $toCountryID AND toCountryID = $countryID )";
+			}
+
 		}
 
 		$tabl = $DB->sql_tabl("SELECT message, toCountryID, fromCountryID, turn, timeSent
