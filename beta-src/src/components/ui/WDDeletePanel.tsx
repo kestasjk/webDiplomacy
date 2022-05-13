@@ -4,15 +4,15 @@ import { GameState } from "../../state/interfaces/GameState";
 import WDDeleteTracker from "./WDDeleteTracker";
 import WDDeleteReminder from "./WDDeleteReminder";
 
-interface WDNotificationPanelProps {
+interface WDDeletePanelProps {
   notifications: GameState["notifications"];
 }
 
-const WDNotificationPanel: React.FC<WDNotificationPanelProps> = function ({
+const WDDeletePanel: React.FC<WDDeletePanelProps> = function ({
   notifications,
 }): React.ReactElement {
   return (
-    <Stack>
+    <Stack direction="column">
       <Box>
         <WDDeleteTracker notifications={notifications} />
       </Box>
@@ -23,4 +23,4 @@ const WDNotificationPanel: React.FC<WDNotificationPanelProps> = function ({
   );
 };
 
-export default WDNotificationPanel;
+export default WDDeletePanel;

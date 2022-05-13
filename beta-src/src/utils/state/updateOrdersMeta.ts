@@ -10,6 +10,6 @@ export default function updateOrdersMeta(state, updates: EditOrderMeta): void {
       ...update,
     };
   });
-  drawOrders(state);
   writeNotifications(state);
+  drawOrders(state);
 }

@@ -1,22 +1,20 @@
 import * as React from "react";
 import { Stack } from "@mui/material";
-// import { useAppSelector } from "../../state/hooks";
-// import { gameNotifications } from "../../state/game/game-api-slice";
-import WDNotificationPanel from "./WDNotificationPanel";
-import { GameState } from "../../state/interfaces/GameState";
+import { useAppSelector } from "../../state/hooks";
+import { gameNotifications } from "../../state/game/game-api-slice";
+import WDDeletePanel from "./WDDeletePanel";
 
-interface WDNotificationContainerProps {
-  notifications: GameState["notifications"];
-}
-
-const WDNotificationContainer: React.FC<WDNotificationContainerProps> =
-  function ({ notifications }): React.ReactElement {
-    // const notifications = useAppSelector(gameNotifications);
+const WDNotificationContainer: React.FC = function (): React.ReactElement {
+  const notifications = useAppSelector(gameNotifications);
+  if (notifications.length !== 0) {
     return (
       <Stack direction="column">
-        <WDNotificationPanel notifications={notifications} />
+        <WDDeletePanel notifications={notifications} />
       </Stack>
     );
-  };
+  }
+  // eslint-disable-next-line react/jsx-no-useless-fragment
+  return <></>;
+};
 
 export default WDNotificationContainer;

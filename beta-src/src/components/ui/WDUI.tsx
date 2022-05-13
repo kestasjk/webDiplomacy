@@ -20,6 +20,7 @@ import MoveStatus from "../../types/MoveStatus";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import WDHomeIcon from "./icons/WDHomeIcon";
 import getOrderStates from "../../utils/state/getOrderStates";
+import WDNotificationContainer from "./WDNotificationContainer";
 
 const abbrMap = {
   Russia: "RUS",
@@ -192,12 +193,7 @@ const WDUI: React.FC = function (): React.ReactElement {
         />
       </WDPositionContainer>
       <WDPositionContainer position={Position.BOTTOM_LEFT}>
-        <Link href="/">
-          <WDHomeIcon />
-        </Link>
-        <Link href="/">
-          <WDHomeIcon />
-        </Link>
+        <WDNotificationContainer />
       </WDPositionContainer>
     </>
   );
