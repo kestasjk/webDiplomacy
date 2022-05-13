@@ -7,7 +7,6 @@ import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
 import { UnitSlotNames } from "../../../../types/map/UnitSlotName";
 import highlightMapTerritoriesBasedOnStatuses from "../../../map/highlightMapTerritoriesBasedOnStatuses";
-import getOrderStates from "../../getOrderStates";
 import processConvoy from "../../processConvoy";
 import resetOrder from "../../resetOrder";
 import setCommand from "../../setCommand";
@@ -43,12 +42,10 @@ export default function processMapClick(state, clickData) {
     user: { member },
     phase,
   } = overview;
-  const { currentOrders, contextVars } = data;
-  if (contextVars?.context?.orderStatus) {
-    const orderStates = getOrderStates(contextVars?.context?.orderStatus);
-    if (orderStates.Ready) {
-      return;
-    }
+  const { currentOrders } = data;
+  const { orderStatus } = member;
+  if (orderStatus.Ready) {
+    return;
   }
   const {
     payload: { clickObject, evt, name: territoryName },

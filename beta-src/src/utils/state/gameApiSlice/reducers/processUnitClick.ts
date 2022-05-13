@@ -6,7 +6,6 @@ import OrderState from "../../../../state/interfaces/OrderState";
 import OrdersMeta from "../../../../state/interfaces/SavedOrders";
 import highlightMapTerritoriesBasedOnStatuses from "../../../map/highlightMapTerritoriesBasedOnStatuses";
 import getAvailableOrder from "../../getAvailableOrder";
-import getOrderStates from "../../getOrderStates";
 import resetOrder from "../../resetOrder";
 import startNewOrder from "../../startNewOrder";
 import updateOrdersMeta from "../../updateOrdersMeta";
@@ -29,15 +28,17 @@ export default function processUnitClick(state, clickData) {
     overview: GameOverviewResponse;
   } = current(state);
   const {
-    data: { currentOrders, contextVars, units },
+    data: { currentOrders, units },
   } = data;
   const { inProgress, method, onTerritory, orderID, type, unitID } = order;
-  const { phase } = overview;
-  if (contextVars?.context?.orderStatus) {
-    const orderStates = getOrderStates(contextVars?.context?.orderStatus);
-    if (orderStates.Ready) {
-      return;
-    }
+  const {
+    phase,
+    user: {
+      member: { orderStatus },
+    },
+  } = overview;
+  if (orderStatus.Ready) {
+    return;
   }
   // Destroy Units
   const isDestroy =

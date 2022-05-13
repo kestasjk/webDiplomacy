@@ -1,5 +1,6 @@
 import SavedOrdersConfirmation from "../../../../../interfaces/state/SavedOrdersConfirmation";
 import updateUnitsRetreat from "../../../../map/updateUnitsRetreat";
+import getOrderStates from "../../../getOrderStates";
 
 /* eslint-disable no-param-reassign */
 export default function saveOrdersFulfilled(state, action): void {
@@ -10,6 +11,13 @@ export default function saveOrdersFulfilled(state, action): void {
       state.data.data.contextVars = {
         context: newContext,
         contextKey: newContextKey,
+      };
+      const orderStates = getOrderStates(newContext.orderStatus);
+      state.overview.user.member.orderStatus = {
+        Completed: orderStates.Completed,
+        Ready: orderStates.Ready,
+        None: orderStates.None,
+        Saved: orderStates.Saved,
       };
     }
 

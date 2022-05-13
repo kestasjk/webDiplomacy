@@ -4,7 +4,7 @@ import { Box, IconButton, Link, useTheme } from "@mui/material";
 import WDPositionContainer from "./WDPositionContainer";
 import Position from "../../enums/Position";
 import { useAppSelector } from "../../state/hooks";
-import { gameData, gameOverview } from "../../state/game/game-api-slice";
+import { gameOverview } from "../../state/game/game-api-slice";
 import { CountryTableData } from "../../interfaces";
 import Country from "../../enums/Country";
 import WDFullModal from "./WDFullModal";
@@ -19,7 +19,6 @@ import WDMoveControls from "./WDMoveControls";
 import MoveStatus from "../../types/MoveStatus";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import WDHomeIcon from "./icons/WDHomeIcon";
-import getOrderStates from "../../utils/state/getOrderStates";
 
 const abbrMap = {
   Russia: "RUS",
@@ -60,8 +59,8 @@ const WDUI: React.FC = function (): React.ReactElement {
   } = useAppSelector(gameOverview);
 
   const {
-    data: { contextVars },
-  } = useAppSelector(gameData);
+    member: { orderStatus },
+  } = user;
 
   const constructTableData = (member) => {
     const memberCountry: Country = countryMap[member.country];
@@ -123,26 +122,18 @@ const WDUI: React.FC = function (): React.ReactElement {
     }
   }, [popoverTrigger]);
 
-  if (contextVars?.context?.orderStatus) {
-    const orderStates = getOrderStates(contextVars.context.orderStatus);
-    if (orderStates.None) {
-      setReadyDisabled(true);
-    }
-    if (!orderStates.Ready && gameState.ready) {
-      setGameState((preState) => ({
-        ...preState,
-        [Move.READY]: false,
-      }));
-    }
-    if ((orderStates.Ready || orderStates.None) && !gameState.ready) {
-      setGameState((preState) => ({
-        ...preState,
-        [Move.READY]: true,
-      }));
-    }
-  } else if (gameState.ready) {
-    toggleState(Move.READY);
+  if (orderStatus.None && !readyDisabled) {
+    setReadyDisabled(true);
   }
+
+  React.useEffect(() => {
+    if (orderStatus.Ready !== gameState.ready) {
+      setGameState((preState) => ({
+        ...preState,
+        [Move.READY]: orderStatus.Ready,
+      }));
+    }
+  }, [orderStatus]);
 
   const popover = popoverTrigger.current ? (
     <WDPopover
