@@ -192,12 +192,12 @@ const gameApiSlice = createSlice({
       .addCase(saveOrders.fulfilled, saveOrdersFulfilled)
       // Fetch Game Messages
       .addCase(fetchGameMessages.fulfilled, (state, action) => {
+        console.log("fetchGameMessages fulfilled");
+        console.log(action);
         if (action.payload) {
-          const { messages, phase, pressType } = action.payload;
+          const { messages } = action.payload;
           state.messages = {
             messages,
-            phase,
-            pressType,
           };
         }
       });
@@ -228,5 +228,7 @@ export const gameOrder = ({ game: { order } }: RootState): OrderState => order;
 export const userActivity = ({
   game: { activity },
 }: RootState): GameState["activity"] => activity;
+export const gameMessages = ({ game: { messages } }: RootState): GameMessages =>
+  messages;
 
 export default gameApiSlice.reducer;

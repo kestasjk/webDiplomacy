@@ -1,4 +1,4 @@
-interface GameMessagesArray {
+export interface GameMessage {
   fromCountryID: string;
   message: string;
   timeSent: string;
@@ -7,9 +7,7 @@ interface GameMessagesArray {
 }
 
 export interface GameMessages {
-  messages: GameMessagesArray[];
-  pressType: string;
-  phase: string;
+  messages: GameMessage[];
 }
 
 export default GameMessages;

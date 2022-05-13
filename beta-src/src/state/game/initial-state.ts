@@ -145,8 +145,6 @@ const initialState: GameState = {
   },
   messages: {
     messages: [],
-    pressType: "",
-    phase: "",
   },
 };
 
