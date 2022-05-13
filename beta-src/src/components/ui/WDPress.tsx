@@ -1,5 +1,12 @@
 import * as React from "react";
-import { Box, Stack, TextField, ButtonGroup, Divider } from "@mui/material";
+import {
+  Box,
+  Stack,
+  IconButton,
+  TextField,
+  ButtonGroup,
+  Divider,
+} from "@mui/material";
 import { Email, Send } from "@mui/icons-material";
 
 import Button from "@mui/material/Button";
@@ -122,18 +129,18 @@ const WDPress: React.FC<WDPressProps> = function ({
             multiline
             maxRows={4}
             onChange={(text) => setUserMsg(text.target.value)}
+            fullWidth
+            InputProps={{
+              endAdornment: (
+                <>
+                  <Divider orientation="vertical" />
+                  <IconButton onClick={sendUserMsg} disabled={!userMsg}>
+                    <Send color="primary" />
+                  </IconButton>
+                </>
+              ),
+            }}
           />
-          <Button
-            key={userMsg}
-            sx={{ p: padding }}
-            color="primary"
-            disabled={!userMsg}
-            onClick={sendUserMsg}
-            endIcon={<Send />}
-            size="large"
-          >
-            {}
-          </Button>
         </Stack>
       </Box>
     </Box>

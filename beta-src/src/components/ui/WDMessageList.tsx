@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Box, Stack } from "@mui/material";
+import { Box, makeStyles, Stack } from "@mui/material";
 import Device from "../../enums/Device";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
@@ -31,16 +31,16 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
   const padding = mobileLandscapeLayout ? "0 6px" : "0 16px";
   const width = mobileLandscapeLayout ? 272 : 358;
   const spacing = mobileLandscapeLayout ? 1 : 2;
-  const countryIDSelectedStr = String(countryIDSelected);
+
   const messageComponents = messages
     .filter(
       (message) =>
-        message.fromCountryID === countryIDSelectedStr ||
-        message.toCountryID === countryIDSelectedStr,
+        message.fromCountryID === countryIDSelected ||
+        message.toCountryID === countryIDSelected,
     )
     .map((message: GameMessage) => <WDMessage message={message} />);
   console.log(
-    `messageList updated ${countryIDSelected} ${countryIDSelectedStr}`,
+    `messageList updated ${countryIDSelected} ${typeof countryIDSelected}`,
   );
 
   console.log(
@@ -54,6 +54,7 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
         m: "20px 0 10px 0",
         p: padding,
         width,
+        height: "100%",
       }}
     >
       {messageComponents}

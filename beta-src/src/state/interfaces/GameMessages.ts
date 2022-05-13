@@ -1,9 +1,9 @@
 export interface GameMessage {
-  fromCountryID: string;
+  fromCountryID: number;
   message: string;
-  timeSent: string;
-  toCountryID: string;
-  turn: string;
+  timeSent: number;
+  toCountryID: number;
+  turn: number;
 }
 
 export interface GameMessages {
