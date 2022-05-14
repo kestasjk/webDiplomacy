@@ -16,7 +16,7 @@ const buildQueryString = (params: QueryParams): string =>
     .join("&");
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_WD_BASE_URL,
+  // baseURL: process.env.REACT_APP_WD_BASE_URL,
   headers: {
     "Content-Type": "multipart/form-data",
   },
@@ -29,7 +29,7 @@ export const getGameApiRequest = (
   api.get(`api.php?route=${route}&${buildQueryString(queryParams)}`);
 
 const orderSubmission = axios.create({
-  baseURL: process.env.REACT_APP_WD_BASE_URL,
+  // baseURL: process.env.REACT_APP_WD_BASE_URL,
   headers: {
     "Content-Type": "application/x-www-form-urlencoded",
   },
