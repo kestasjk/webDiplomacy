@@ -110,6 +110,10 @@ export default function getOrdersMeta(
             if (!allowedBorderCrossings.length) {
               updateOrdersMeta[o.orderData.id].update.type = "Disband";
             }
+            if (allowedBorderCrossings.length === 1) {
+              const [{ id }] = allowedBorderCrossings;
+              updateOrdersMeta[o.orderData.id].update.toTerrID = id;
+            }
           }
           updateOrdersMeta[o.orderData.id] = {
             ...{ saved: true },

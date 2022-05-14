@@ -25,11 +25,16 @@ export default function getUnits(
     const territoryHasMultipleUnits = Object.values(units).filter(
       (u) => u.terrID === unit.terrID,
     );
+    const occupiedTerritory = territoryStatus?.occupiedFromTerrID
+      ? territoryStatuses.find(
+          (t) => territoryStatus?.occupiedFromTerrID === t.id,
+        )
+      : undefined;
 
     if (
       territoryStatus?.occupiedFromTerrID &&
       unit.id === territoryStatus.unitID &&
-      territoryStatus?.ownerCountryID === unit.countryID &&
+      occupiedTerritory?.ownerCountryID === unit.countryID &&
       territoryHasMultipleUnits.length > 1 &&
       contextVars?.context.phase === "Retreats"
     ) {

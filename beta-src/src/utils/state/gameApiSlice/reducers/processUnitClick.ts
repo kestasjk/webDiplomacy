@@ -39,6 +39,18 @@ export default function processUnitClick(state, clickData) {
       return;
     }
   }
+  if (phase === "Retreats") {
+    const unitsOrderMeta =
+      ordersMeta[maps.unitToOrder[clickData.payload.unitID]];
+
+    if (
+      unitsOrderMeta &&
+      unitsOrderMeta.update?.type === "Disband" &&
+      !unitsOrderMeta.allowedBorderCrossings?.length
+    ) {
+      return;
+    }
+  }
   // Destroy Units
   const isDestroy = currentOrders?.some(({ type: t }) => t === "Destroy");
   if (phase === "Builds") {
