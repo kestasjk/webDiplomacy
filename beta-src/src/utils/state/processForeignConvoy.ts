@@ -23,7 +23,7 @@ export default function processForeignConvoy(state): void {
   if (lastUnitInChain) {
     const { convoyToChoices } = ordersMeta[lastUnitInChain.order];
     const toTerritory = maps.enumToTerritory[order.toTerritory];
-    const fromTerritory = maps.enumToTerritory[lastUnitInChain.toTerritory];
+    const fromTerritory = maps.enumToTerritory[lastUnitInChain.onTerritory];
 
     if (convoyToChoices.includes(toTerritory)) {
       const orderUnit = board.findUnitByID(lastUnitInChain.unitID);
@@ -39,13 +39,12 @@ export default function processForeignConvoy(state): void {
         );
 
         if (convoyArmy) {
-          console.log("convoyArmy", convoyArmy);
-
           const convoyPath = convoyArmy.ConvoyGroup.pathArmyToCoastWithFleet(
             board.findTerritoryByID(fromTerritory),
             againstTerritory,
             convoyOrder.unit.Territory,
           );
+
           if (convoyPath) {
             const clickedUnitsTerritories = order.subsequentClicks.map(
               (click) => {

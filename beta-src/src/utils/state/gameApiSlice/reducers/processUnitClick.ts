@@ -130,7 +130,7 @@ export default function processUnitClick(state, clickData) {
           },
           ...clickData.payload,
         });
-        // highlightMapTerritoriesBasedOnStatuses(state);
+        highlightMapTerritoriesBasedOnStatuses(state);
       } else {
         startNewOrder(state, clickData);
       }
