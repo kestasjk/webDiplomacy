@@ -38,7 +38,7 @@ class Config
 	 *
 	 * @var string
 	 */
-	public static $database_socket='localhost';
+	public static $database_socket='mariadb';
 
 	/**
 	 * The user who will perform all database actions. You should
@@ -324,8 +324,8 @@ class Config
 			"UseSMTP"=> true,
 			/* Use SMTP, if this is FALSE the variable below is ignored. */
 			"SMTPSettings"=> array(
-					"Host"=>"yourdiplomacyserver.com",
-					"Port"=>"25",
+					"Host"=>"mailhog",
+					"Port"=>"8025",
 					"SMTPAuth"=>false,
 					/* If this is FALSE the two variables below are ignored */
 					"Username"=>"webmaster",

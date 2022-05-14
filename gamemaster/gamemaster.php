@@ -130,10 +130,9 @@ class libGameMaster
 				GROUP BY t.userID
 			) p ON p.userID = u.id
 			SET u.yearlyPhaseCount = p.yearlyPhaseCount;");
-			
 		$DB->sql_put("UPDATE wD_TurnDate SET isInReliabilityPeriod = 0 WHERE isInReliabilityPeriod IS NULL;");
 		$DB->sql_put("COMMIT"); // Ensure no users are left locked
-		
+		$DB->sql_put("BEGIN"); // I think this might be needed to ensure we are within a transaction going forward?
 	}
 	/**
 	 * Recalculates the reliability ratings for all users.
