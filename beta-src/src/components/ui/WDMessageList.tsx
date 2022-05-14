@@ -21,7 +21,6 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
   countries,
   countryIDSelected,
 }): React.ReactElement {
-  console.log(`messageList updated ${countryIDSelected}`);
   const [viewport] = useViewport();
   const device = getDevice(viewport);
   const mobileLandscapeLayout =
@@ -32,21 +31,14 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
   const width = mobileLandscapeLayout ? 272 : 358;
   const spacing = mobileLandscapeLayout ? 1 : 2;
 
-  const messageComponents = messages
-    .filter(
-      (message) =>
-        message.fromCountryID === countryIDSelected ||
-        message.toCountryID === countryIDSelected,
-    )
-    .map((message: GameMessage) => <WDMessage message={message} />);
-  console.log(
-    `messageList updated ${countryIDSelected} ${typeof countryIDSelected}`,
+  const filteredMessages = messages.filter(
+    (message) =>
+      message.fromCountryID === countryIDSelected ||
+      message.toCountryID === countryIDSelected,
   );
-
-  console.log(
-    `messages ${messages.length} components ${messageComponents.length}`,
-  );
-  console.log(messages);
+  const messageComponents = filteredMessages.map((message: GameMessage) => (
+    <WDMessage message={message} countries={countries} />
+  ));
 
   return (
     <Box
@@ -57,7 +49,7 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
         height: "100%",
       }}
     >
-      {messageComponents}
+      <Stack direction="column">{messageComponents}</Stack>
     </Box>
   );
 };

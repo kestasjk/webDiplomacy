@@ -998,6 +998,7 @@ class SendMessage extends ApiEntry {
 		$message = $args['message'];
 
 		$game = $this->getAssociatedGame();
+
 		if ($game->pressType != 'Regular') {
 			throw new RequestException('Game is not regular press.');
 		}
@@ -1012,12 +1013,17 @@ class SendMessage extends ApiEntry {
 
 		$toUser = new User($game->Members->ByCountryID[$toCountryID]->userID);
 		if(!$toUser->isCountryMuted($game->id, $countryID)) {
-			$time = libGameMessage::send($toCountryID, $countryID, $message);
-		}
+			$timeSent = libGameMessage::send($toCountryID, $countryID, $message, $gameID);
+			$DB->sql_put("COMMIT");
 
-		$DB->sql_put("COMMIT");
-		
-		return $time;
+			$ret = [
+				"fromCountryID" => intval($args['countryID']),
+				"toCountryID" => intval($args["toCountryID"]),
+				"message" => $args["message"],
+				"timeSent" => $timeSent,
+			];
+			return json_encode($ret);
+		}
 	}
 }
 

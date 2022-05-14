@@ -22,6 +22,7 @@ import {
   fetchGameMessages,
   gameMessages,
   gameOverview,
+  sendMessage,
 } from "../../state/game/game-api-slice";
 import webDiplomacyTheme from "../../webDiplomacyTheme";
 
@@ -38,6 +39,7 @@ const WDPress: React.FC<WDPressProps> = function ({
 }): React.ReactElement {
   const [viewport] = useViewport();
   const device = getDevice(viewport);
+  const dispatch = useAppDispatch();
   const mobileLandscapeLayout =
     device === Device.MOBILE_LANDSCAPE ||
     device === Device.MOBILE_LG_LANDSCAPE ||
@@ -47,33 +49,24 @@ const WDPress: React.FC<WDPressProps> = function ({
   const spacing = mobileLandscapeLayout ? 1 : 2;
 
   const [userMsg, setUserMsg] = React.useState("");
-  const [chatHistory, setChatHistory] = React.useState("");
-  const [countryIDSelected, setCountryIDSelected] = React.useState(0);
+  const [countryIDSelected, setCountryIDSelected] = React.useState(
+    userCountry.countryID,
+  );
 
   const { user, gameID } = useAppSelector(gameOverview);
 
   const messages = useAppSelector(gameMessages);
 
-  const sendUserMsg = () => {
+  const clickSend = () => {
+    dispatch(
+      sendMessage({
+        gameID: String(gameID),
+        countryID: String(userCountry.countryID),
+        toCountryID: String(countryIDSelected),
+        message: userMsg,
+      }),
+    );
     setUserMsg("");
-    setChatHistory((curHistory) => `${curHistory}\n${userMsg}`);
-    console.log("members");
-    console.log(countries);
-    console.log("messages");
-    console.log(messages);
-  };
-
-  const updateCountryPane = (country: number) => {
-    setCountryIDSelected(country);
-    // const dispatch = useAppDispatch();
-    // dispatch(
-    //   fetchGameMessages({
-    //     gameID: gameID as unknown as string,
-    //     countryID: user.member.countryID as unknown as string,
-    //     toCountryID: country.countryID as unknown as string,
-    //     limit: "25",
-    //   }),
-    // );
   };
 
   const countryButtons = countries
@@ -87,7 +80,7 @@ const WDPress: React.FC<WDPressProps> = function ({
             "&.MuiButton-text": { color: country.color },
           }}
           color="primary"
-          onClick={() => updateCountryPane(country.countryID)}
+          onClick={() => setCountryIDSelected(country.countryID)}
           size="small"
           variant={
             countryIDSelected === country.countryID ? "contained" : "text"
@@ -107,19 +100,13 @@ const WDPress: React.FC<WDPressProps> = function ({
       </Stack>
       <WDMessageList
         messages={messages.messages}
-        countries={countries}
+        countries={[...countries, userCountry]} // sorry, its just silly to exclude userCountry from this table
         userCountry={userCountry}
         countryIDSelected={countryIDSelected}
       />
       <Divider />
 
-      <Box
-        sx={{
-          m: "20px 0 10px 0",
-          p: padding,
-          width,
-        }}
-      >
+      <Box>
         <Stack alignItems="center" direction="row">
           <TextField
             id="user-msg"
@@ -134,7 +121,7 @@ const WDPress: React.FC<WDPressProps> = function ({
               endAdornment: (
                 <>
                   <Divider orientation="vertical" />
-                  <IconButton onClick={sendUserMsg} disabled={!userMsg}>
+                  <IconButton onClick={clickSend} disabled={!userMsg}>
                     <Send color="primary" />
                   </IconButton>
                 </>

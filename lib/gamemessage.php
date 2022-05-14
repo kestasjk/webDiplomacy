@@ -36,11 +36,12 @@ class libGameMessage
 	 * @param string $fromCountryID The county being sent from. 'GameMaster' can also be used.
 	 * @param string|array $message The message(s) to be sent (Can be an array of messages for)
 	 * @param int[optional] $gameID The game ID to use. If not given the current global Game is sent to.
+	 * 
+	 * @return int $timeSent The time key of this message in the DB.
 	 */
 	static public function send($toCountryID, $fromCountryID, $message, $gameID=-1)
 	{
 		global $DB, $Game;
-
 		if ( ! is_object($Game) )
 		{
 			$Variant=libVariant::loadFromGameID($gameID);
@@ -62,8 +63,7 @@ class libGameMessage
 		{
 			throw new Exception(l_t("Message too long"));
 		}
-
-		$time = time();
+		$timeSent = time();
 
 		$DB->sql_put("INSERT INTO wD_GameMessages
 					(gameID, toCountryID, fromCountryID, turn, message, phaseMarker, timeSent)
@@ -73,14 +73,14 @@ class libGameMessage
 						".$Game->turn.",
 						'".$message."',
 						'".$Game->phase."',
-						".$time.")");
+						".$timeSent.")");
 
 		if ($toCountryID != $fromCountryID || $fromCountryID == 0)
 		{
 			libGameMessage::notify($toCountryID, $fromCountryID);
 		}
 
-		return $time;
+		return $timeSent;
 	}
 
 	/**

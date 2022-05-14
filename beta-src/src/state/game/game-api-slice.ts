@@ -1,13 +1,20 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import ApiRoute from "../../enums/ApiRoute";
-import { getGameApiRequest, submitOrders } from "../../utils/api";
+import {
+  getGameApiRequest,
+  postGameApiRequest,
+  submitOrders,
+} from "../../utils/api";
 import GameDataResponse from "../interfaces/GameDataResponse";
 import GameErrorResponse from "../interfaces/GameErrorResponse";
 import GameOverviewResponse from "../interfaces/GameOverviewResponse";
 import { ApiStatus, GameState } from "../interfaces/GameState";
 import GameCommands from "../interfaces/GameCommands";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
-import GameMessages from "../interfaces/GameMessages";
+import GameMessages, {
+  GameMessage,
+  mergeMessageArrays,
+} from "../interfaces/GameMessages";
 import { RootState } from "../store";
 import initialState from "./initial-state";
 import OrdersMeta from "../interfaces/SavedOrders";
@@ -69,6 +76,22 @@ export const fetchGameMessages = createAsyncThunk(
       data: { data },
     } = await getGameApiRequest(ApiRoute.GAME_MESSAGES, queryParams);
     return data as GameMessages;
+  },
+);
+
+export const sendMessage = createAsyncThunk(
+  ApiRoute.SEND_MESSAGE,
+  async (queryParams: {
+    gameID: string;
+    countryID: string;
+    toCountryID: string;
+    message: string;
+  }) => {
+    const response = await postGameApiRequest(
+      ApiRoute.SEND_MESSAGE,
+      queryParams,
+    );
+    return response.data as unknown as GameMessage;
   },
 );
 
@@ -190,15 +213,29 @@ const gameApiSlice = createSlice({
       })
       // saveOrders
       .addCase(saveOrders.fulfilled, saveOrdersFulfilled)
+      // Send message
+      .addCase(sendMessage.fulfilled, (state, action) => {
+        if (action.payload) {
+          const message = action.payload;
+          const allMessages = mergeMessageArrays(state.messages.messages, [
+            message,
+          ]);
+          state.messages.messages = allMessages;
+        }
+      })
+      .addCase(sendMessage.rejected, (state, action) => {
+        state.apiStatus = "failed";
+        state.error = action.error.message;
+      })
       // Fetch Game Messages
       .addCase(fetchGameMessages.fulfilled, (state, action) => {
-        console.log("fetchGameMessages fulfilled");
-        console.log(action);
         if (action.payload) {
           const { messages } = action.payload;
-          state.messages = {
+          const allMessages = mergeMessageArrays(
+            state.messages.messages,
             messages,
-          };
+          );
+          state.messages.messages = allMessages;
         }
       });
   },
