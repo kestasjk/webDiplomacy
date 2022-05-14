@@ -1122,7 +1122,7 @@ class GetMessages extends ApiEntry {
 		}
 
 		$tabl = $DB->sql_tabl("SELECT message, toCountryID, fromCountryID, turn, timeSent
-		FROM wD_GameMessages WHERE gameID = $gameID AND $where
+		FROM wD_GameMessages WHERE gameID = $gameID AND ($where)
 		order BY id DESC LIMIT $limit OFFSET $offset");
 
 		$messages = array();
