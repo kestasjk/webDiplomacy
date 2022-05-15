@@ -58,6 +58,14 @@ const WDPress: React.FC<WDPressProps> = function ({
 
   const messages = useAppSelector(gameMessages);
 
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView();
+  };
+  React.useEffect(() => {
+    scrollToBottom();
+  }, [messages, countryIDSelected]);
+
   const clickSend = () => {
     dispatch(
       sendMessage({
@@ -104,6 +112,7 @@ const WDPress: React.FC<WDPressProps> = function ({
         countries={[...countries, userCountry]} // sorry, its just silly to exclude userCountry from this table
         userCountry={userCountry}
         countryIDSelected={countryIDSelected}
+        messagesEndRef={messagesEndRef}
       />
       <Box>
         <Stack alignItems="center" direction="row">

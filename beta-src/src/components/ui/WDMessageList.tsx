@@ -13,6 +13,7 @@ interface WDMessageListProps {
   userCountry: CountryTableData;
   countries: CountryTableData[];
   countryIDSelected: number;
+  messagesEndRef: React.RefObject<HTMLDivElement>;
 }
 
 const WDMessageList: React.FC<WDMessageListProps> = function ({
@@ -20,6 +21,7 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
   userCountry,
   countries,
   countryIDSelected,
+  messagesEndRef,
 }): React.ReactElement {
   const [viewport] = useViewport();
   const device = getDevice(viewport);
@@ -56,6 +58,7 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
     >
       <Box sx={{ overflow: "auto" }}>
         <Stack direction="column">{messageComponents}</Stack>
+        <Box ref={messagesEndRef} />
       </Box>
     </Box>
   );
