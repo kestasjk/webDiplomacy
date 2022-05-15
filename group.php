@@ -24,7 +24,7 @@
 
 require_once('header.php');
 require_once('objects/group.php');
-require_once('objects/groupuser.php');
+require_once('objects/groupUser.php');
 require_once('lib/message.php');
 require_once('objects/notice.php');
 
