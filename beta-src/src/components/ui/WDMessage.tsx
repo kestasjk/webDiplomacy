@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Box } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import Device from "../../enums/Device";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
@@ -18,7 +18,7 @@ const WDMessage: React.FC<WDMessageProps> = function ({
   userCountry,
   countries,
 }): React.ReactElement {
-  const padding = "6px";
+  const padding = "10px";
   const margin = "6px";
 
   const [viewport] = useViewport();
@@ -35,6 +35,8 @@ const WDMessage: React.FC<WDMessageProps> = function ({
   const msgWidth = mobileLandscapeLayout ? "170px" : "250px";
   const justify =
     message.fromCountryID === userCountry.countryID ? "flex-end" : "flex";
+  const msgTime = new Date(0);
+  msgTime.setUTCSeconds(message.timeSent);
 
   return (
     <Box sx={{ display: "flex", justifyContent: justify }}>
@@ -48,11 +50,21 @@ const WDMessage: React.FC<WDMessageProps> = function ({
           maxWidth: msgWidth,
         }}
       >
-        <span style={{ color: fromCountry?.color, fontWeight: "bold" }}>
-          {fromCountry?.country.toUpperCase().slice(0, 3)}
-        </span>
-        {": "}
-        {message.message}
+        <Stack direction="column">
+          <Box>
+            <span style={{ color: fromCountry?.color, fontWeight: "bold" }}>
+              {fromCountry?.country.toUpperCase().slice(0, 3)}
+            </span>
+            {": "}
+            {message.message}
+          </Box>
+          <Box style={{ color: "#888888", fontStyle: "italic" }}>
+            {msgTime.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </Box>
+        </Stack>
       </Box>
     </Box>
   );
