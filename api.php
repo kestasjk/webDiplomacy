@@ -1006,23 +1006,16 @@ class SendMessage extends ApiEntry {
 			throw new ClientForbiddenException('User does not have explicit permission to make this API call.');
 		}
 
-<<<<<<< HEAD
 		if ($toCountryID < 1 || $toCountryID > count($game->Members->ByUserID) || $toCountryID == $countryID) {
-=======
-		if ($toCountryID < 1 || $toCountryID > count($game->Members->ByID) || $toCountryID == $countryID) {
->>>>>>> b114641 (Naive poll loop implemented)
-			throw new RequestException('Invalid toCountryID');
 		}
 
 		$toUser = new User($game->Members->ByCountryID[$toCountryID]->userID);
 		if(!$toUser->isCountryMuted($game->id, $countryID)) {
-			$timeSent = libGameMessage::send($toCountryID, $countryID, $message, $gameID);
-			$DB->sql_put("COMMIT");
-
+			list($escapedMessage, $timeSent) = libGameMessage::send($toCountryID, $countryID, $message, $gameID);
 			$ret = [
 				"fromCountryID" => intval($args['countryID']),
 				"toCountryID" => intval($args["toCountryID"]),
-				"message" => $args["message"],
+				"message" => $escapedMessage,
 				"timeSent" => $timeSent,
 			];
 			return json_encode($ret);
