@@ -220,9 +220,9 @@ print '</div>';
 
 if( isset(Config::$auth0conf) )
 {
+	print libHTML::pageTitle(l_t('External authentication / verification providers (Experimental)'),l_t('Help fight cheaters and improve security by linking to your external accounts.'));
 	print '<div class="settings">';
 	print '<a name="externalAuth"></a>';
-	print '<h4>External authentication / verification providers (Experimental)</h4>';
 	print '<p>webDiplomacy is trialing support for external sources of user authentication / verification. By linking to ';
 	print 'an external provider you are making things easier for the webDiplomacy moderator team, and harder for cheaters, as well ';
 	print 'as allowing a more modern user registration/authentication experience.</p>';
