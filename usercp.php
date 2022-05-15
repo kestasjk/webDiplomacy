@@ -318,11 +318,11 @@ if( isset(Config::$auth0conf) )
 	print '<p class="notice" style="text-align:center">';
 	if( $userInfo )
 	{
-		print '<a href="usercp.php?auth0Login=on">Log into an external provider</a>';
+		print '<a href="usercp.php?auth0Logout=on">Log out from external provider</a>';
 	}
 	else
 	{
-		print '<a href="usercp.php?auth0Logout=on">Log out from external provider ('.$source.')</a>';
+		print '<a href="usercp.php?auth0Login=on">Log into an external provider</a>';
 	}
 	print '</p>';
 }
