@@ -43,6 +43,7 @@ class libOpenID
         
     }
 
+    public static $validColumns = array('given_name','family_name','nickname','name','picture','updated_at','email_verified','email','sub','aud','locale');
     public static function getUserInfo()
     {
         $auth0=self::getAuth0();

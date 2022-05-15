@@ -38,6 +38,21 @@ if(!$User->type['User'])
 	libHTML::error(l_t("You can't use the user control panel, you're using a guest account."));
 }
 
+if( isset(Config::$auth0conf) )
+{
+	// Do login/logout before sending any other headers (though it does work anyway?)
+	require_once('contrib/auth0.php');
+
+	if( isset($_REQUEST['auth0Login']))
+	{
+		libOpenID::logIn();
+	}
+	else if( isset($_REQUEST['auth0Logout']) )
+	{
+		libOpenID::logOut();
+	}
+}
+
 libHTML::starthtml();
 
 if ( isset($_REQUEST['emailToken']))
@@ -195,29 +210,124 @@ print '
 <div class = "settings">This page allows you to update your profile settings. Your email address will never be spammed or given out, and is only used 
 by the moderator team to contact you. Please ensure your email is updated so that the moderators can contact you. </br></br> 
 If you select "no" for "Hide email address" your email will be displayed to other site users in an image file to protect you from bots. 
-If you leave the default of "yes" it is only visible to moderators.</div></br>
-<form method="post" class = "settings_show" autocomplete="off">
-<ul class="formlist">';
+If you leave the default of "yes" it is only visible to moderators.</div></br>';
 
-if( $User->id == 10 )
+//if( $User->id == 10 )
+if( isset(Config::$auth0conf) )
 {
-	require_once('contrib/auth0.php');
+	print '<div>';
+	print '<h4>External authentication / verification providers (Experimental)</h4>';
+	print '<p>webDiplomacy is trialing support for external sources of user authentication / verification. By linking to ';
+	print 'an external provider you are making things easier for the webDiplomacy moderator team, and harder for cheaters, as well ';
+	print 'as allowing a more modern user registration/authentication experience.</p>';
+	print '<p>The data a linked account provides is only your publically available information, and the relationship between your webDiplomacy ';
+	print 'and external accounts is only viewable by the mod team for account verification purposes.</p>';
+	print '<p>Currently Facebook and Google authentication is supported, with Apple and SMS support coming soon.</p>';
+
 	$userInfo = libOpenID::getUserInfo();
-
-	print str_replace("\n","<br />", print_r($userInfo,true));
-
-	print '<br /><br /><a href="usercp.php?auth0Login=on">Log in</a><br />';
-	print '<br /><br /><a href="usercp.php?auth0Logout=on">Log out</a><br />';
+	//print str_replace("\n","<br />", print_r($userInfo,true));
 	
-	if( isset($_REQUEST['auth0Login']))
+	if( $userInfo )
 	{
-		libOpenID::logIn();
+		$sql = "INSERT INTO wD_UserOpenIDLinks ( userId, source, timeCreated, timeUpdated, ";
+
+		$addedCols = array();
+		$addedVals = array();
+		foreach(libOpenID::$validColumns as $col)
+		{
+			if( isset($userInfo[$col]) )
+			{
+				$addedCols[] = $col;
+				$addedVals[] = $DB->msg_escape($userInfo[$col]);
+			}
+		}
+
+		if( count($addedCols) > 0 )
+		{
+			
+			if( isset($userInfo['sub']) )
+			{
+				if( str_starts_with($userInfo['sub'], 'facebook') )
+					$source = 'facebook';
+				elseif( str_starts_with($userInfo['sub'], 'google') )
+					$source = 'google';
+				else
+					$source = 'unknown';
+			}
+
+			if( $source == 'unknown' )
+			{
+				throw new Exception("Unknown source of authentication info; rejected.");
+			}
+
+			$sql .= "`".implode('`, `', $addedCols)."`";
+			$sql .= ') VALUES (';
+			$sql .= $User->id;
+			$sql .= ", '";
+			$sql .= $source;
+			$sql .= "', ";
+			$sql .= time();
+			$sql .= ', ';
+			$sql .= time();
+			$sql .= ', ';
+			$sql .= "'".implode("', '", $addedVals)."'";
+			$sql .= ') ON DUPLICATE KEY UPDATE timeChanged = VALUES(timeChanged)';
+			foreach($addedCols as $addedCol)
+			{
+				$sql .= ", `" . $addedCol . "` = VALUES(`" . $addedCol . "`)";
+			}
+
+			$DB->sql_put($sql);
+			$DB->sql_put("COMMIT");
+		}
 	}
-	else if( isset($_REQUEST['auth0Logout']) )
+
+	$validSources = array('facebook'=>false, 'google'=>false, 'sms'=>false);
+
+	$registeredSources = $DB->sql_tabl("SELECT source, sub FROM wD_UserOpenIDLinks WHERE userId = " . $User->id);
+	while(list($source, $sub) = $DB->tabl_row($registeredSources) )
 	{
-		libOpenID::logOut();
+		if( isset($validSources[$source]) )
+		{
+			$validSources[$source] = $sub;
+		}
 	}
+
+	print '<h4>Current links:</h4>';
+	print '<ul>';
+	foreach($validSources as $source=>$sub)
+	{
+		print '<li><strong>'.$source.':</strong> ';
+		if( $sub === false )
+		{
+			print 'Not linked';
+		}
+		else
+		{
+			print 'Linked, ID='.$sub;
+		}
+		print '</li>';
+	}
+	print '</ul>';
+	
+	print '<h4>Link an account:</h4>';
+	print '<p>To link an external account simply use the links below to authenticate yourself, and the external provider will ';
+	print 'return a token verifying that you have an account with that provider.<br />To link multiple accounts simply use the ';
+	print 'log out button to log out of one external provider, then use the log in link to log into a secondary external provider.</p>';
+	
+	print '<p class="notice" style="text-align:center">';
+	if( $userInfo )
+	{
+		print '<a href="usercp.php?auth0Login=on">Log into an external provider</a>';
+	}
+	else
+	{
+		print '<a href="usercp.php?auth0Logout=on">Log out from external provider ('.$source.')</a>';
+	}
+	print '</p>';
 }
+
+print '<form method="post" class = "settings_show" autocomplete="off"><ul class="formlist">';
 
 require_once(l_r('locales/English/user.php'));
 
