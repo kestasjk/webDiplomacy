@@ -26,7 +26,7 @@ require_once('header.php');
 
 require_once(l_r('objects/game.php'));
 require_once(l_r('objects/group.php'));
-require_once(l_r('objects/groupuser.php'));
+require_once(l_r('objects/groupUser.php'));
 require_once(l_r('gamepanel/game.php'));
 
 if ( isset($_REQUEST['userID']) && intval($_REQUEST['userID'])>0 )
