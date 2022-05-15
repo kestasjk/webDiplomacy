@@ -37,19 +37,26 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
       message.toCountryID === countryIDSelected,
   );
   const messageComponents = filteredMessages.map((message: GameMessage) => (
-    <WDMessage message={message} countries={countries} />
+    <WDMessage
+      message={message}
+      userCountry={userCountry}
+      countries={countries}
+    />
   ));
 
   return (
     <Box
       sx={{
         m: "20px 0 10px 0",
-        p: padding,
-        width,
-        height: "100%",
+        width: "100%",
+        height: "400px",
+        display: "flex",
+        flexDirection: "column-reverse",
       }}
     >
-      <Stack direction="column">{messageComponents}</Stack>
+      <Box sx={{ overflow: "auto" }}>
+        <Stack direction="column">{messageComponents}</Stack>
+      </Box>
     </Box>
   );
 };

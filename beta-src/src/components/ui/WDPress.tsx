@@ -105,8 +105,6 @@ const WDPress: React.FC<WDPressProps> = function ({
         userCountry={userCountry}
         countryIDSelected={countryIDSelected}
       />
-      <Divider />
-
       <Box>
         <Stack alignItems="center" direction="row">
           <TextField
@@ -127,6 +125,9 @@ const WDPress: React.FC<WDPressProps> = function ({
                   </IconButton>
                 </>
               ),
+              style: {
+                padding: "4px 0 4px 8px", // needed to cancel out extra height induced by the button
+              },
             }}
           />
         </Stack>
