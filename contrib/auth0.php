@@ -61,7 +61,7 @@ class libOpenID
     {
         $auth0=self::getAuth0($redirect_url);
         
-        $auth0->login();
+        $auth0->logout();
     }
 }
 
