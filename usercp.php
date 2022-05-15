@@ -212,10 +212,16 @@ by the moderator team to contact you. Please ensure your email is updated so tha
 If you select "no" for "Hide email address" your email will be displayed to other site users in an image file to protect you from bots. 
 If you leave the default of "yes" it is only visible to moderators.</div></br>';
 
-//if( $User->id == 10 )
+print '<form method="post" class = "settings_show" autocomplete="off"><ul class="formlist">';
+
+require_once(l_r('locales/English/user.php'));
+
+print '</div>';
+
 if( isset(Config::$auth0conf) )
 {
 	print '<div>';
+	print '<a name="externalAuth"></a>';
 	print '<h4>External authentication / verification providers (Experimental)</h4>';
 	print '<p>webDiplomacy is trialing support for external sources of user authentication / verification. By linking to ';
 	print 'an external provider you are making things easier for the webDiplomacy moderator team, and harder for cheaters, as well ';
@@ -325,13 +331,8 @@ if( isset(Config::$auth0conf) )
 		print '<a href="usercp.php?auth0Login=on">Log into an external provider</a>';
 	}
 	print '</p>';
+	print '</div>';
 }
-
-print '<form method="post" class = "settings_show" autocomplete="off"><ul class="formlist">';
-
-require_once(l_r('locales/English/user.php'));
-
-print '</div>';
 
 libHTML::$footerIncludes[] = l_j('help.js');
 libHTML::footer();
