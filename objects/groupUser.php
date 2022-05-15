@@ -62,4 +62,68 @@ class GroupUser
 	 * @var float -1.0 to 1.0
 	 */
 	var $modWeighting;
+
+	/**
+	 * @var int User ID that created this
+	 */
+	var $createdByUserId;
+
+	/**
+	 * @var int Time this was last changed
+	 */
+	var $timeCreated;
+
+	/**
+	 * @var int Time this was last changed
+	 */
+	var $timeChanged;
+
+	/**
+	 * @var int? The last moderator user ID that set a weighting, or null
+	 */
+	var $modUserId;
+
+	// Used to render individual user links
+	var $groupName;
+	var $groupType;
+
+	// Below vars used to render profile links:
+	var $userUsername;
+	var $userPoints;
+	var $userType;
+	var $ownerUsername;
+	var $ownerPoints;
+	var $ownerType;
+	var $modUsername;
+	var $modPoints;
+	var $modType;
+
+	/**
+	 * Create a GroupUser object
+	 * @param array $row Hash row containing the record data
+	 */
+	public function __construct($row)
+	{
+		/*
+			"u.username userUsername, u.points userPoints, u.type userType, ".
+			"o.username ownerUsername, o.points ownerPoints, o.type ownerType, ".
+			"m.username modUsername, m.points modPoints, m.type modType ".
+		*/
+		foreach ( $row as $name => $value )
+		{
+			$this->{$name} = $value;
+		}
+	}
+
+	/**
+	 * If it is a suspicion then a small mod weighting means verified, if it is a disclosure the user is trusted, but a mod setting of 100 will force the relationship
+	 */
+	public function isVerified() 
+	{
+		return $this->userWeighting > 0 || $this->modWeighting >= ( $this->groupType == 'Unknown' ? 33 : 100);
+	}
+	public function isDenied() 
+	{
+		return $this->userWeighting < 0 || $this->modWeighting <= ( $this->groupType == 'Unknown' ? -33 : -100);
+	}
 }

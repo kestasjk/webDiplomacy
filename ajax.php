@@ -114,7 +114,7 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 		if( $newReady && !$oldReady )
 		{
 			$results['process']='Checked';
-			$Game = libVariant::$Variant->Game($O->gameID, UPDATE); // Lock the game for update to 
+			$Game = libVariant::$Variant->Game($O->gameID, UPDATE); // No need to lock game for update to check whether it needs a process
 			if( $Game->needsProcess() )
 			{
 				$MC->append('processHint',','.$Game->id);

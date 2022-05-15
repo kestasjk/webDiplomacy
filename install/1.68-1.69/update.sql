@@ -21,3 +21,40 @@ ALTER TABLE `wD_TurnDate`
 UPDATE wD_TurnDate SET isInReliabilityPeriod = 1 WHERE turnDateTime > UNIX_TIMESTAMP() - 365*24*60*60;
 
 ALTER TABLE `wD_Notices` CHANGE `type` `type` ENUM('PM','Game','User','Group') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL; 
+
+ALTER TABLE `wD_ForumMessages` CHANGE `type` `type` ENUM('ThreadStart','ThreadReply','GroupDiscussion') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL; 
+
+CREATE TABLE `wD_Groups` (
+	`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR(15) NOT NULL,
+	`type` ENUM('Person','Family','School','Work','Other','Unknown') NOT NULL,
+	`isActive` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0',
+	`display` SET('Profile','Usertag','AnonGames','Moderators') NOT NULL DEFAULT '',
+	`timeCreated` BIGINT(20) UNSIGNED NOT NULL,
+	`ownerUserId` MEDIUMINT(8) UNSIGNED NOT NULL,
+	`description` VARCHAR(2000) NULL DEFAULT NULL,
+	`moderatorNotes` VARCHAR(2000) NULL DEFAULT NULL,
+	`timeChanged` BIGINT(20) UNSIGNED NOT NULL,
+	PRIMARY KEY (`id`) USING BTREE,
+	INDEX `indGroupsLastChanged` (`timeChanged`) USING BTREE
+)
+ENGINE=InnoDB
+;
+
+CREATE TABLE `wD_GroupUsers` (
+	`userId` MEDIUMINT(8) UNSIGNED NOT NULL,
+	`groupId` MEDIUMINT(8) UNSIGNED NOT NULL,
+	`isActive` TINYINT(1) NOT NULL,
+	`userWeighting` TINYINT(1) NOT NULL,
+	`ownerWeighting` TINYINT(1) NOT NULL,
+	`modWeighting` TINYINT(1) NOT NULL,
+	`modUserId` MEDIUMINT(8) UNSIGNED NULL DEFAULT NULL,
+	`createdByUserId` MEDIUMINT(8) UNSIGNED NOT NULL,
+	`timeChanged` BIGINT(20) UNSIGNED NOT NULL,
+	`timeCreated` BIGINT(20) UNSIGNED NOT NULL,
+	PRIMARY KEY (`userId`, `groupId`, `isActive`) USING BTREE,
+	UNIQUE INDEX `groupUsersByGroup` (`userId`, `groupId`, `isActive`) USING BTREE,
+	INDEX `groupUsersChanged` (`timeChanged`) USING BTREE
+)
+ENGINE=InnoDB
+;

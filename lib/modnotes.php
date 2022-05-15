@@ -17,7 +17,7 @@ class libModNotes {
 		($linkIDType=='User'?'<input type="hidden" name="userID" value="'.$linkID.'" /><input type="hidden" name="detail" value="reports" />':''). // For profile.php, to remain viewing reports
 		($User->type['Moderator']?'Note type: <select name="type"><option value="Report">Report</option><option value="PublicNote">Public note</option><option value="PrivateNote">Private note</option></select><br />':'<input type="hidden" name="type" value="Report" />').'
 		<textarea name="note" style="width:80%;height:600px"></textarea><br />
-		<input type="Submit" value="Submit" />
+		<input type="Submit" class="form-submit" value="Submit" />
 		</form>
 		</div>';
 	}
