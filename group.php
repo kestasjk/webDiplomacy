@@ -58,7 +58,6 @@ if( $groupId === -1 )
 {
 	// No group specified; show an overview page for this user.
 
-	libHTML::starthtml();
 	// Ensure user records don't get locked by this query;
 	$DB->sql_put("COMMIT");
 	$DB->sql_put("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");  // https://stackoverflow.com/a/918092
@@ -100,11 +99,32 @@ if( $groupId === -1 )
 		$groupUsersSorted[$relationType][$verifiedType][] = $groupUser;
 	}
 	
-	print '<div class="content">';
+	libHTML::starthtml();
+
+	print libHTML::pageTitle('Your User Relationships',l_t('View and manage the links created between accounts that disclose outside relationships to players.'));
+
 	print '<div>';
-	print '<h2 class="profileUsername">User Relationships</h2>';
 	print '<p>This page lets you view and manage your user relationships; confirm or deny relationships other users have created, and view the '.
 		'relationships you have created for yourself and others.</p>';
+
+	print '<p>Terminology:<ul>
+		<li><strong>Relationship:</strong> A connection between two users of the site that exists outside of the site, or otherwise causes an account to potentially be biased towards a certain player for reasons outside of the game.</li>
+		<li><strong>Declared:</strong> A relationship that the user has acknowledged by verifying themselves.</li>
+		<li><strong>Verified:</strong> A relationship that has been verified either by being declared, or through moderators investigations.</li>
+		<li><strong>Unverified:</strong> A relationship that may or may not be true; currently not enough information by itself.</li>
+		<li><strong>Denied relationship:</strong> A relationship that has been established that it does not exist. Either a false suspicion a moderator has investigated,
+			or a mistaken link that has been denied.</li>
+		<li><strong>Suspicion:</strong> A relationship created by someone not in the relationship, including others suspected of having a relationship, 
+			based on the behavior of the players in a game. Can be assigned a strength based on the strength of the suspicion.</li>
+		<li><strong>User/Creator/Moderator Rating:</strong> A strength assigned to a relationship: Ranges from -100 for completely deny to 100 for very strong/suspect. [Denied=-100, Doubt=-50, None=0, Weak=33, Mid=66, Strong=100]</li>
+		<li><strong>Active/Inactive:</strong> A relationship can be made inactive by the creator or by a moderator, for if the relationship is not worth considering further, or has ceased.</li>
+		<li><strong>Type:</strong> The nature of the relationship; ranging from accounts being run by the same person to a distant community / organizational relationship.</li>
+		<li><strong>Type: Person/Family/Work/School/Other:</strong> Types of declared relationships where the relation type is known. School indicates the relationship 
+			revolves around school, Person means the users involved are the same person, Other means known but not listed, etc..</li>
+		<li><strong>Type: Unknown:</strong> An unknown relationship, where there is a suspicion but the actual nature of the relationship is unknown. All suspicions start
+			as Unknown relationships, but moderators can change the type if the related users acknowledge and declare it.</li>
+		</ul>
+		</p>';
 
 	print '<h3>Declared relationships:</h3>';
 	print '<div class = "profile_title">Verified - '.count($groupUsersSorted['Declared']['Verified']).' - <em>Relationships which have been verified/acknowledged.</em></div>';
@@ -414,10 +434,7 @@ libHTML::starthtml();
 
 print libHTML::pageTitle('User Relationship Panel: #'.$GroupProfile->id.' '.$GroupProfile->name,l_t('View and manage the links created between accounts that disclose outside relationships to players.'));
 
-print '<div class="content">';
 print '<div>';
-print '<h2 class = "profileUsername">User Relationship Panel: #'.$GroupProfile->id.' '.$GroupProfile->name.'</h2>';
-
 print '<div class = "profile-show-floating" style="margin-left:2.5%">';
 
 // Profile Information
