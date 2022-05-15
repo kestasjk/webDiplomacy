@@ -107,7 +107,9 @@ if( $groupId === -1 )
 	print '<p>This page lets you view and manage your user relationships; confirm or deny relationships other users have created, and view the '.
 		'relationships you have created for yourself and others.</p>';
 
-	print '<p>Terminology:<ul>
+	print '<div class = "profile_title">Terminology</div>';
+	print '<div class = "profile_content">';
+		print '<p><ul>
 		<li><strong>Relationship:</strong> A connection between two users of the site that exists outside of the site, or otherwise causes an account to potentially be biased towards a certain player for reasons outside of the game.</li>
 		<li><strong>Declared:</strong> A relationship that the user has acknowledged by verifying themselves.</li>
 		<li><strong>Verified:</strong> A relationship that has been verified either by being declared, or through moderators investigations.</li>
@@ -125,7 +127,10 @@ if( $groupId === -1 )
 			as Unknown relationships, but moderators can change the type if the related users acknowledge and declare it.</li>
 		</ul>
 		</p>';
-
+	print '</div>';
+		
+	print '<div class="hr"></div>';
+	
 	print '<h3>Declared relationships:</h3>';
 	print '<div class = "profile_title">Verified - '.count($groupUsersSorted['Declared']['Verified']).' - <em>Relationships which have been verified/acknowledged.</em></div>';
 	print '<div class = "profile_content">';
