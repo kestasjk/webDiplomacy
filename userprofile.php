@@ -817,7 +817,7 @@ print '</div>';
 
 			print '<strong>Game reference:</strong> <select class="suspectNew" name="groupGameReference">'.
 				'<option value="">No reference</option>';
-			$tablActiveGamesShared = $DB->sql_tabl("SELECT g.id, g.name, g.turn FROM wD_Members a INNER JOIN wD_Games g ON g.id = a.gameId INNER JOIN wD_Members b ON g.id = b.gameId AND a.userId <> b.userId AND a.userId = " . $User->id." AND b.userId = ".$UserProfile->id." AND a.timeLoggedIn > ".(time() - 7*24*60*60)." AND b.timeLoggedIn > ".(time() - 7*24*60*60)." AND g.anon='No' ORDER BY a.timeLoggedIn DESC");
+			$tablActiveGamesShared = $DB->sql_tabl("SELECT g.id, g.name, g.turn FROM wD_Members a INNER JOIN wD_Games g ON g.id = a.gameId INNER JOIN wD_Members b ON g.id = b.gameId AND a.userId <> b.userId AND a.userId = " . $User->id." AND b.userId = ".$UserProfile->id." AND a.timeLoggedIn > ".(time() - 14*24*60*60)." AND b.timeLoggedIn > ".(time() - 14*24*60*60)." AND (g.anon='No' OR g.phase='Finished') ORDER BY a.timeLoggedIn DESC");
 			//$activeGamesShared = array();
 			$hasSharedGames = false;
 
