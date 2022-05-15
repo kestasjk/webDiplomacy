@@ -20,7 +20,7 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('../vendor/autoload.php');
+require_once('vendor/autoload.php');
 
 use Auth0\SDK\Auth0;
 
