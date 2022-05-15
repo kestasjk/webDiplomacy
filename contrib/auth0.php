@@ -38,9 +38,18 @@ class libOpenID
             'domain'=>Config::$auth0conf['domain'],
             'client_id'=>Config::$auth0conf['client_id'],
             'client_secret'=>Config::$auth0conf['client_secret'],
-            'redirect_uri'=>$redirect_url ?? Config::$auth0conf['redirect_url']
+            'redirect_uri'=>'https://'.self::fixWWWSubdomain($redirect_url ?? Config::$auth0conf['redirect_url'])
         ]);
-        
+    }
+
+    private static function fixWWWSubdomain($redirect_url)
+    {
+        if( false !== strstr(strtolower($_SERVER['SERVER_NAME']), 'www.') && false === strstr(strtolower($redirect_url), 'www.') )
+        {
+            // The user is using a www. domain; add this in.
+            $redirect_url = 'www.'.$redirect_url;
+        }
+        return $redirect_url;
     }
 
     public static $validColumns = array('given_name','family_name','nickname','name','picture','updated_at','email_verified','email','sub','aud','locale');
