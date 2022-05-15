@@ -31,7 +31,7 @@ export const getGameApiRequest = (
 export const postGameApiRequest = (
   route: ApiRoute,
   json: QueryParams,
-): Promise<AxiosResponse> => api.post(`api.php?route=${route}`, json);
+): Promise<AxiosResponse> => api.post(`../api.php?route=${route}`, json);
 
 const orderSubmission = axios.create({
   // baseURL: process.env.REACT_APP_WD_BASE_URL,

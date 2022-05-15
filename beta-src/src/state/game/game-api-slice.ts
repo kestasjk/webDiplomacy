@@ -225,6 +225,7 @@ const gameApiSlice = createSlice({
       })
       .addCase(sendMessage.rejected, (state, action) => {
         state.apiStatus = "failed";
+        console.log(`sendMessages failed: ${action.error.message}`);
         state.error = action.error.message;
       })
       // Fetch Game Messages

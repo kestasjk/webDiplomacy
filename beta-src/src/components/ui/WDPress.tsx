@@ -50,7 +50,8 @@ const WDPress: React.FC<WDPressProps> = function ({
 
   const [userMsg, setUserMsg] = React.useState("");
   const [countryIDSelected, setCountryIDSelected] = React.useState(
-    userCountry.countryID,
+    // start with the first country
+    Math.min(...countries.map((country) => country.countryID)),
   );
 
   const { user, gameID } = useAppSelector(gameOverview);
