@@ -247,9 +247,9 @@ if( isset(Config::$auth0conf) )
 			
 			if( isset($userInfo['sub']) )
 			{
-				if( str_starts_with($userInfo['sub'], 'facebook') )
+				if( false!==strstr($userInfo['sub'], 'facebook') )
 					$source = 'facebook';
-				elseif( str_starts_with($userInfo['sub'], 'google') )
+				elseif( false!==strstr($userInfo['sub'], 'google') )
 					$source = 'google';
 				else
 					$source = 'unknown';
