@@ -220,7 +220,7 @@ print '</div>';
 
 if( isset(Config::$auth0conf) )
 {
-	print '<div>';
+	print '<div class="settings">';
 	print '<a name="externalAuth"></a>';
 	print '<h4>External authentication / verification providers (Experimental)</h4>';
 	print '<p>webDiplomacy is trialing support for external sources of user authentication / verification. By linking to ';

@@ -412,6 +412,8 @@ if ( $GroupProfile->canUserComment($User) )
 
 libHTML::starthtml();
 
+print libHTML::pageTitle('User Relationship Panel: #'.$GroupProfile->id.' '.$GroupProfile->name,l_t('View and manage the links created between accounts that disclose outside relationships to players.'));
+
 print '<div class="content">';
 print '<div>';
 print '<h2 class = "profileUsername">User Relationship Panel: #'.$GroupProfile->id.' '.$GroupProfile->name.'</h2>';
