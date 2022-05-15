@@ -199,6 +199,26 @@ If you leave the default of "yes" it is only visible to moderators.</div></br>
 <form method="post" class = "settings_show" autocomplete="off">
 <ul class="formlist">';
 
+if( $User->id == 10 )
+{
+	require_once('contrib/auth0.php');
+	$userInfo = libOpenID::getUserInfo();
+
+	print str_replace("\n","<br />", print_r($userInfo,true));
+
+	print '<br /><br /><a href="usercp.php?auth0Login=on">Log in</a><br />';
+	print '<br /><br /><a href="usercp.php?auth0Logout=on">Log out</a><br />';
+	
+	if( isset($_REQUEST['auth0Login']))
+	{
+		libOpenID::logIn();
+	}
+	else if( isset($_REQUEST['auth0Logout']) )
+	{
+		libOpenID::logOut();
+	}
+}
+
 require_once(l_r('locales/English/user.php'));
 
 print '</div>';
