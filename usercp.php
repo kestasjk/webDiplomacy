@@ -271,7 +271,7 @@ if( isset(Config::$auth0conf) )
 			$sql .= time();
 			$sql .= ', ';
 			$sql .= "'".implode("', '", $addedVals)."'";
-			$sql .= ') ON DUPLICATE KEY UPDATE timeChanged = VALUES(timeChanged)';
+			$sql .= ') ON DUPLICATE KEY UPDATE timeUpdated = VALUES(timeUpdated)';
 			foreach($addedCols as $addedCol)
 			{
 				$sql .= ", `" . $addedCol . "` = VALUES(`" . $addedCol . "`)";
