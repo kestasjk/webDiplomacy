@@ -332,6 +332,7 @@ if( isset(Config::$auth0conf) )
 	}
 	print '</p>';
 	print '</div>';
+	print '</div>';
 }
 
 libHTML::$footerIncludes[] = l_j('help.js');
