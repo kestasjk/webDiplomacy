@@ -104,11 +104,11 @@ if ( $User->type['Moderator'] )
 
 		print '<strong>UserId:</strong> '.$UserProfile->id.'</br></br>';
 		print '<strong>Email:</strong></br>'.$UserProfile->email.'</br></br>';
-		print '<strong>Mobile linked:</strong></br>'.$UserProfile->email.'</br></br>';
+		/*print '<strong>Mobile linked:</strong></br>'.$UserProfile->email.'</br></br>';
 		print '<strong>Facebook linked:</strong></br>'.$UserProfile->email.'</br></br>';
 		print '<strong>Google linked:</strong></br>'.$UserProfile->email.'</br></br>';
 		print '<strong>Apple linked:</strong></br>'.$UserProfile->email.'</br></br>';
-		
+		*/
 		$lastCheckedBy = $UserProfile->modLastCheckedBy();
 		$modLastCheckedOn = $UserProfile->modLastCheckedOn();
 		list($previousUsernames) = $DB->sql_row(
