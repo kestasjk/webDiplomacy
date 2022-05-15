@@ -40,7 +40,7 @@ if( $User->type['User'])
 		libAuth::formToken_Valid();
 		try
 		{
-			$groupId = Group::create($_REQUEST['groupType'], $_REQUEST['groupName'], $_REQUEST['groupDescription'], $_REQUEST['groupGameReference']);
+			$groupId = Group::create($_REQUEST['groupType'], $_REQUEST['groupName'], $_REQUEST['groupDescription'], isset($_REQUEST['groupGameReference']) ? $_REQUEST['groupGameReference'] : '');
 		}
 		catch (Exception $e)
 		{

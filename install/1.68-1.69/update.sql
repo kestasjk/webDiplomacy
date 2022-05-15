@@ -58,3 +58,23 @@ CREATE TABLE `wD_GroupUsers` (
 )
 ENGINE=InnoDB
 ;
+CREATE TABLE `wD_UserOpenIDLinks` (
+  `userId` mediumint(8) UNSIGNED NOT NULL,
+  `source` enum('facebook','google','sms') NOT NULL,
+  `given_name` varchar(1000) DEFAULT NULL,
+  `family_name` varchar(1000) DEFAULT NULL,
+  `nickname` varchar(1000) DEFAULT NULL,
+  `name` varchar(1000) DEFAULT NULL,
+  `picture` varchar(1000) DEFAULT NULL,
+  `updated_at` varchar(1000) DEFAULT NULL,
+  `email_verified` varchar(1000) DEFAULT NULL,
+  `email` varchar(1000) DEFAULT NULL,
+  `sub` varchar(1000) DEFAULT NULL,
+  `aud` varchar(1000) DEFAULT NULL,
+  `locale` varchar(1000) DEFAULT NULL,
+  `timeCreated` bigint(20) UNSIGNED NOT NULL,
+  `timeUpdated` bigint(20) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `wD_UserOpenIDLinks`
+  ADD PRIMARY KEY (`userId`,`source`);
