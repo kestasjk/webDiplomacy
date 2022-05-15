@@ -704,37 +704,14 @@ print '</div>';
 	print '<div class = "profile_title">User relationships</div>';
 
 	print '<div class = "profile_content_show">';
-	print '<h4>User Relationships Explained:</h4>';
-	/*
-	print '<div class = "profile_title">What is a User Relationship?</div>';
-	print '<div class = "profile_content">';
-	print '<p>
-	</p></div>';
-	print '<div class = "profile_title">How do I add a relationship between myself and other user(s)?</div>';
-	print '<div class = "profile_content">';
-	print '<p>
-	</p></div>';
-	print '<div class = "profile_title">How do I add a suspected / known relationship between other users?</div>';
-	print '<div class = "profile_content">';
-	print '<p>
-	</p></div>';
-	
-	print '<div class = "profile_title">What is this data used for?</div>';
-	print '<div class = "profile_content">';
-	print '<p>
-	</p></div>';
-	print '<div class = "profile_title">How do I dispute a relationship?</div>';
-	print '<div class = "profile_content">';
-	print '<p>
-	</p></div>';*/
-	print '<p>User relationships serve two purposes:<ul><li>1. Allow users who have a relationship outside of the server to disclose 
-		and register the relationship.<br /><br />This lets other players account for possible bias in-game, lets players set their 
-		games to exclude close relationships between players, and helps the moderator team ignore otherwise suspicious usage patterns 
+	print '<p>User relationships serve two purposes:<ul><li>1. Allow users who have a relationship outside of the server to <strong>disclose 
+		and register</strong> the relationship.<br /><br />This lets other players account for possible bias in-game, lets players set their 
+		games to exclude close relationships between players, and <strong>helps the moderator team</strong> ignore otherwise suspicious usage patterns 
 		(e.g. a family / school using the same computer / network).<br /></li>
-		<li>2. Give users a way to register a suspicion that two or more users may have an undisclosed relationship, based on in-game
-		behavior.<br /><br />This gives the suspected user a chance to explain before needing moderators, allows users to exclude suspected-cheaters
-		from their games, gives an extra mechanism to help moderators identify cheaters by taking the suspicions of many users together,
-		provides a single place where a suspicion can be discussed directly, and allows repeat offenders to be tracked across new accounts
+		<li>2. Give users a way to <strong>register a suspicion</strong> that two or more users may have an undisclosed relationship, based on <strong>in-game
+		behavior</strong>.<br /><br />This gives the suspected user a chance to explain before needing moderators, allows users to exclude suspected-cheaters
+		from their games, gives an extra mechanism to help moderators identify cheaters by taking the <strong>suspicions of many users</strong> together,
+		provides a single place where a suspicion can be discussed directly, and allows <strong>repeat offenders to be tracked</strong> across new accounts
 		and excluded without requiring bans.</ul></p>';
 
 		$DB->sql_put("COMMIT");
@@ -759,6 +736,7 @@ print '</div>';
 		
 		if( $User->type['User'] && $User->id != $UserProfile->id )
 		{
+			print '<div class="hr"></div>';
 			print '<p>';
 			print '<h4>Create / Add-to User Relationship:</h4>';
 
@@ -899,6 +877,7 @@ print '</div>';
 			<?php
 		}
 		
+		print '<div class="hr"></div>';
 		print '<h4>Verified Relationships</h4>';
 		if( count($userJoinedGroups) == 0 )
 		{
@@ -910,7 +889,7 @@ print '</div>';
 		}
 		
 		print '<h4>Unverified Relationships</h4>';
-		if( count($userJoinedGroups) == 0 )
+		if( count($userJoinedGroupsUnverified) == 0 )
 		{
 			print '<p class="notice">No unverified relationships exist for this user.</p>';
 		}
