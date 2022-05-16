@@ -10,10 +10,7 @@ export default function processUnitDoubleClick(state, clickData): void {
     },
     ownUnits,
   } = current(state);
-  if (!ownUnits.includes(clickData.payload.unitID)) {
-    return;
-  }
-  if (orderStatus.Ready) {
+  if (orderStatus.Ready || !ownUnits.includes(clickData.payload.unitID)) {
     return;
   }
   startNewOrder(state, clickData);
