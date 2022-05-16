@@ -2,7 +2,7 @@ import * as React from "react";
 import WDMainController from "../controllers/WDMainController";
 import {
   fetchGameData,
-  fetchGameMessages,
+  gameMessages,
   gameOverview,
 } from "../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
@@ -13,7 +13,7 @@ const WDMapController = React.lazy(
 );
 
 const WDMain: React.FC = function (): React.ReactElement {
-  const { user, gameID, members } = useAppSelector(gameOverview);
+  const { user, gameID } = useAppSelector(gameOverview);
   const dispatch = useAppDispatch();
 
   if (user && gameID) {
@@ -24,20 +24,6 @@ const WDMain: React.FC = function (): React.ReactElement {
       }),
     );
   }
-
-  // FIXME: for now, crazily fetch all messages every 1sec
-  React.useEffect(() => {
-    setInterval(() => {
-      if (user && gameID) {
-        dispatch(
-          fetchGameMessages({
-            gameID: gameID as unknown as string,
-            countryID: user.member.countryID as unknown as string,
-          }),
-        );
-      }
-    }, 1000);
-  });
 
   return (
     <React.Suspense fallback={<div>Loading...</div>}>

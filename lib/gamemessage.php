@@ -37,11 +37,12 @@ class libGameMessage
 	 * @param string|array $message The message(s) to be sent (Can be an array of messages for)
 	 * @param int[optional] $gameID The game ID to use. If not given the current global Game is sent to.
 	 * 
-	 * @return int $timeSent The time key of this message in the DB.
+	 * @return string $escapedMsg The escaped message.
+	 * @return int $timeSent The time of this message in the DB.
 	 */
 	static public function send($toCountryID, $fromCountryID, $message, $gameID=-1)
 	{
-		global $DB, $Game;
+		global $DB, $Game, $MC;
 		if ( ! is_object($Game) )
 		{
 			$Variant=libVariant::loadFromGameID($gameID);
@@ -65,6 +66,9 @@ class libGameMessage
 		}
 		$timeSent = time();
 
+		$MC->set("lastmsgtime_{$Game->id}_{$fromCountryID}", $timeSent);
+		$MC->set("lastmsgtime_{$Game->id}_{$toCountryID}", $timeSent);
+
 		$DB->sql_put("INSERT INTO wD_GameMessages
 					(gameID, toCountryID, fromCountryID, turn, message, phaseMarker, timeSent)
 					VALUES(".$Game->id.",
@@ -80,7 +84,7 @@ class libGameMessage
 			libGameMessage::notify($toCountryID, $fromCountryID);
 		}
 
-		return $timeSent;
+		return array($message, $timeSent);
 	}
 
 	/**

@@ -71,6 +71,7 @@ export const fetchGameMessages = createAsyncThunk(
     offset?: string;
     limit?: string;
     allMessages?: string;
+    sinceTime?: string;
   }) => {
     const {
       data: { data },
@@ -229,15 +230,25 @@ const gameApiSlice = createSlice({
         state.error = action.error.message;
       })
       // Fetch Game Messages
+      .addCase(fetchGameMessages.rejected, (state, action) => {
+        state.apiStatus = "failed";
+        console.log(`fetchGameMessages failed: ${action.error.message}`);
+        state.error = action.error.message;
+      })
       .addCase(fetchGameMessages.fulfilled, (state, action) => {
         if (action.payload) {
-          const { messages } = action.payload;
-          const allMessages = mergeMessageArrays(
-            state.messages.messages,
-            messages,
-          );
-          if (state.messages.messages.length !== allMessages.length) {
-            state.messages.messages = allMessages;
+          const { messages, time } = action.payload;
+          if (messages) {
+            const allMessages = mergeMessageArrays(
+              state.messages.messages,
+              messages,
+            );
+            if (state.messages.messages.length !== allMessages.length) {
+              state.messages.messages = allMessages;
+            }
+          }
+          if (time) {
+            state.messages.time = time;
           }
         }
       });

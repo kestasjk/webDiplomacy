@@ -8,6 +8,7 @@ export interface GameMessage {
 
 export interface GameMessages {
   messages: GameMessage[];
+  time: number;
 }
 
 export function mergeMessageArrays(
@@ -21,6 +22,8 @@ export function mergeMessageArrays(
     const key = `${msg.timeSent}:${msg.fromCountryID}:${msg.toCountryID}:${msg.message}`;
     map.set(key, msg);
   });
+  // console.log(`Merging ${msgs1.length} and ${msgs2.length} => ${map.size}`);
+
   return Array.from(map.values()).sort((m1, m2) => m1.timeSent - m2.timeSent);
 }
 

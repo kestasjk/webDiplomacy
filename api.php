@@ -1028,21 +1028,45 @@ class SendMessage extends ApiEntry {
  */
 class GetMessages extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/getmessages', 'GET', '', array('gameID','countryID','toCountryID','offset','limit','allMessages'));
+		parent::__construct('game/getmessages', 'GET', '', array('gameID','countryID','toCountryID','offset','limit','allMessages','sinceTime'));
 	}
 	public function run($userID, $permissionIsExplicit) {
 
-		global $DB;
+		global $DB, $MC;
 		$args = $this->getArgs();
 		$countryID = $args['countryID'];
-		$game = $this->getAssociatedGame();
 		$gameID = $args['gameID'];
-		$gamePhase = $game->phase;
 		$limitAmount = 10000;
 		$limit = $args['limit'];
 		$offset = $args['offset'];
-		$pressType = $game->pressType;
 		$toCountryID = intval($args['toCountryID']);
+		$messages = array();
+
+		$sinceTime = $args['sinceTime'];
+		$lastMsgKey = "lastmsgtime_{$gameID}_{$countryID}";
+		// error_log("fetch messages since time= $sinceTime");
+		if (isset($sinceTime)) {
+			// FIXME: gotta be careful that user has permissions or we could leak
+			// the existence of a message by whether we break here!
+			$lastMsgTime = $MC->get($lastMsgKey);
+			// try to shortcut before doing anything expensive
+			// error_log("last message was {$lastMsgTime}, client asked for messages since {$sinceTime}");
+			if ($lastMsgTime && $lastMsgTime <= $sinceTime) {
+				// error_log("Bailing early because no new messages");
+				return $this->JSONResponse(
+					'No messages available',
+					'',
+					true,
+					[
+						'messages' => $messages,
+					]
+				);
+			}
+		}
+
+		$game = $this->getAssociatedGame();
+		$gamePhase = $game->phase;
+		$pressType = $game->pressType;
 
 		$limit = isset($limit) ? intval($limit) : $limitAmount;
 		$offset = isset($offset) ? intval($offset) : 0;
@@ -1115,13 +1139,15 @@ class GetMessages extends ApiEntry {
 			if (isset($args['allMessages'])) {
 				$where = "$where OR (toCountryID = 0 OR fromCountryID = 0)";
 			}
+			if (isset($args['sinceTime'])) {
+				$where = "($where) AND timeSent >= $sinceTime";
+			}
 		}
 
 		$tabl = $DB->sql_tabl("SELECT message, toCountryID, fromCountryID, turn, timeSent
 		FROM wD_GameMessages WHERE gameID = $gameID AND ($where)
 		order BY id DESC LIMIT $limit OFFSET $offset");
 
-		$messages = array();
 		while ($message = $DB->tabl_hash($tabl)) {
 			$messages[] = [
 				'fromCountryID' => (int) $message['fromCountryID'],
@@ -1132,25 +1158,17 @@ class GetMessages extends ApiEntry {
 			];
 		}
 
-	    // Checks if there are any messages in the array.
-		if (!$messages) {
-			return $this->JSONResponse(
-				'No messages available',
-				'',
-				true,
-				[
-					'messages' => $messages,
-				]
-			);
-		}
-
 		// Return Messages.
+		$curTime = time();
+		$responseStr = $messages ? 'Successfully retrieved game messages.' : 'No messages available';
+		// error_log("$responseStr at time $curTime");
 		return $this->JSONResponse(
-			'Successfully retrieved game messages.',
+			$responseStr,
 			'',
 			true,
 			[
 				'messages' => $messages,
+				'time' => $curTime,
 			]
 		);
 	}
