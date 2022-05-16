@@ -4,10 +4,6 @@ import { getGameApiRequest, submitOrders } from "../../utils/api";
 import GameDataResponse from "../interfaces/GameDataResponse";
 import GameErrorResponse from "../interfaces/GameErrorResponse";
 import GameOverviewResponse from "../interfaces/GameOverviewResponse";
-<<<<<<< HEAD
-=======
-import { ApiStatus, GameState } from "../interfaces/GameState";
->>>>>>> 14c6f1ad589f5ebfb62f0b1211fdac9ab179d56a
 import GameCommands from "../interfaces/GameCommands";
 import { ApiStatus, GameState } from "../interfaces/GameState";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
@@ -241,14 +237,11 @@ export const gameOrdersMeta = ({
   game: { ordersMeta },
 }: RootState): OrdersMeta => ordersMeta;
 export const gameOrder = ({ game: { order } }: RootState): OrderState => order;
-<<<<<<< HEAD
 export const gameNotifications = ({
   game: { notifications },
 }: RootState): GameState["notifications"] => notifications;
-=======
 export const userActivity = ({
   game: { activity },
 }: RootState): GameState["activity"] => activity;
->>>>>>> 14c6f1ad589f5ebfb62f0b1211fdac9ab179d56a
 
 export default gameApiSlice.reducer;
