@@ -1,3 +1,5 @@
+import memberActivityFrequencyMultiplier from "../../../memberActivityFrequencyMultiplier";
+
 /* eslint-disable no-param-reassign */
 export default function fetchGameOverviewFulfilled(state, action): void {
   state.apiStatus = "succeeded";
@@ -22,20 +24,16 @@ export default function fetchGameOverviewFulfilled(state, action): void {
       membersOnline += +online;
     });
     const membersPlayingLength = membersPlaying.length;
-    if (membersOnline) {
-      let percentageOnline = membersOnline / membersPlayingLength;
-      if (percentageOnline === 1) {
-        percentageOnline = 0.9;
-      }
-      frequency -= percentageOnline * frequency;
-    }
-    if (membersReady) {
-      let percentageReady = membersReady / membersPlayingLength;
-      if (percentageReady === 1) {
-        percentageReady = 0.9;
-      }
-      frequency -= percentageReady * frequency;
-    }
+    frequency = memberActivityFrequencyMultiplier(
+      membersOnline,
+      membersPlayingLength,
+      frequency,
+    );
+    frequency = memberActivityFrequencyMultiplier(
+      membersReady,
+      membersPlayingLength,
+      frequency,
+    );
     if (frequency < 10) {
       frequency = 10;
     }
