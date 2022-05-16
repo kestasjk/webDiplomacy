@@ -1,8 +1,7 @@
 import * as React from "react";
 import { Box, Stack } from "@mui/material";
 import { GameState } from "../../state/interfaces/GameState";
-import WDDeleteTracker from "./WDDeleteTracker";
-import WDDeleteReminder from "./WDDeleteReminder";
+import WDNotification from "./WDNotification";
 
 interface WDDeletePanelProps {
   notifications: GameState["notifications"];
@@ -14,10 +13,10 @@ const WDDeletePanel: React.FC<WDDeletePanelProps> = function ({
   return (
     <Stack direction="column">
       <Box>
-        <WDDeleteTracker notifications={notifications} />
+        <WDNotification notification={notifications[0]} />
       </Box>
       <Box>
-        <WDDeleteReminder notifications={notifications} />
+        <WDNotification notification={notifications[1]} />
       </Box>
     </Stack>
   );
