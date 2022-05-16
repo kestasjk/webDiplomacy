@@ -4,6 +4,10 @@ import { getGameApiRequest, submitOrders } from "../../utils/api";
 import GameDataResponse from "../interfaces/GameDataResponse";
 import GameErrorResponse from "../interfaces/GameErrorResponse";
 import GameOverviewResponse from "../interfaces/GameOverviewResponse";
+<<<<<<< HEAD
+=======
+import { ApiStatus, GameState } from "../interfaces/GameState";
+>>>>>>> 14c6f1ad589f5ebfb62f0b1211fdac9ab179d56a
 import GameCommands from "../interfaces/GameCommands";
 import { ApiStatus, GameState } from "../interfaces/GameState";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
@@ -26,6 +30,7 @@ import deleteCommand from "../../utils/state/gameApiSlice/reducers/deleteCommand
 import dispatchCommand from "../../utils/state/gameApiSlice/reducers/dispatchCommand";
 import fetchGameDataFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameData/fulfilled";
 import updateUnitsRetreat from "../../utils/map/updateUnitsRetreat";
+import updateUserActivity from "../../utils/state/gameApiSlice/reducers/updateUserActivity";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -97,6 +102,25 @@ export const saveOrders = createAsyncThunk(
   },
 );
 
+export const loadGame = (gameID: string) => async (dispatch) => {
+  const {
+    payload: {
+      user: {
+        member: { countryID },
+      },
+    },
+  } = await dispatch(
+    fetchGameOverview({
+      gameID,
+    }),
+  );
+  await Promise.all([
+    dispatch(fetchGameData({ gameID, countryID })),
+    dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
+  ]);
+  return true;
+};
+
 /**
  * createSlice handles state changes properly without reassiging state, but
  * eslint does not know this. therefore, no-param-reassign is disabled for
@@ -110,6 +134,7 @@ const gameApiSlice = createSlice({
   initialState,
   reducers: {
     resetOrder,
+    updateUserActivity,
     updateOrdersMeta(state, action: UpdateOrdersMetaAction) {
       updateOrdersMeta(state, action.payload);
     },
@@ -138,10 +163,12 @@ const gameApiSlice = createSlice({
       // fetchGameOverview
       .addCase(fetchGameOverview.pending, (state) => {
         state.apiStatus = "loading";
+        state.activity.makeNewCall = false;
       })
       .addCase(fetchGameOverview.fulfilled, (state, action) => {
         state.apiStatus = "succeeded";
         state.overview = action.payload;
+        state.activity.makeNewCall = false;
       })
       .addCase(fetchGameOverview.rejected, (state, action) => {
         state.apiStatus = "failed";
@@ -214,8 +241,14 @@ export const gameOrdersMeta = ({
   game: { ordersMeta },
 }: RootState): OrdersMeta => ordersMeta;
 export const gameOrder = ({ game: { order } }: RootState): OrderState => order;
+<<<<<<< HEAD
 export const gameNotifications = ({
   game: { notifications },
 }: RootState): GameState["notifications"] => notifications;
+=======
+export const userActivity = ({
+  game: { activity },
+}: RootState): GameState["activity"] => activity;
+>>>>>>> 14c6f1ad589f5ebfb62f0b1211fdac9ab179d56a
 
 export default gameApiSlice.reducer;

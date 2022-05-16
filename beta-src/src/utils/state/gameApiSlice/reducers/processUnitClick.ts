@@ -40,8 +40,9 @@ export default function processUnitClick(state, clickData) {
     }
   }
   // Destroy Units
+  const isDestroy = currentOrders?.some(({ type: t }) => t === "Destroy");
   if (phase === "Builds") {
-    if (!ownUnits.includes(clickData.payload.unitID)) {
+    if (!ownUnits.includes(clickData.payload.unitID) || !isDestroy) {
       return;
     }
 

@@ -3,19 +3,17 @@ import * as d3 from "d3";
 import Device from "../../enums/Device";
 import getInitialViewTranslation from "../../utils/map/getInitialViewTranslation";
 import Scale from "../../types/Scale";
-import WDMap from "./WDMap";
+import WDMap from "../map/WDMap";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import {
   gameApiSliceActions,
-  gameData,
   gameOrdersMeta,
 } from "../../state/game/game-api-slice";
 import drawArrow from "../../utils/map/drawArrow";
 import ArrowType from "../../enums/ArrowType";
 import processNextCommand from "../../utils/processNextCommand";
-import getTerritoriesMeta from "../../utils/getTerritoriesMeta";
 import ArrowColor from "../../enums/ArrowColor";
 
 const Scales: Scale = {
@@ -39,7 +37,6 @@ const WDMapController: React.FC = function (): React.ReactElement {
   const svgElement = React.useRef<SVGSVGElement>(null);
   const [viewport] = useViewport();
   const dispatch = useAppDispatch();
-  const { data } = useAppSelector(gameData);
   const ordersMeta = useAppSelector(gameOrdersMeta);
   const commands = useAppSelector(
     (state) => state.game.commands.mapCommands.all,
@@ -156,15 +153,6 @@ const WDMapController: React.FC = function (): React.ReactElement {
       dispatch(gameApiSliceActions.updateOrdersMeta(ordersMeta));
     }, 500);
   }, []);
-
-  React.useEffect(() => {
-    if (data) {
-      dispatch(
-        gameApiSliceActions.updateTerritoriesMeta(getTerritoriesMeta(data)),
-      );
-      dispatch(gameApiSliceActions.highlightMapTerritoriesBasedOnStatuses());
-    }
-  }, [data]);
 
   return (
     <div

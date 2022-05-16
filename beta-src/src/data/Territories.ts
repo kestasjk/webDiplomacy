@@ -92,6 +92,18 @@ export const BULGARIA: Territory = {
   type: "land",
 };
 
+export const BULGARIA_NORTH_COAST: Territory = {
+  name: "BULGARIA_NORTH_COAST",
+  abbr: "NC",
+  type: "land",
+};
+
+export const BULGARIA_SOUTH_COAST: Territory = {
+  name: "BULGARIA_SOUTH_COAST",
+  abbr: "SC",
+  type: "land",
+};
+
 export const BURGUNDY: Territory = {
   name: "BURGUNDY",
   abbr: "BUR",
@@ -452,6 +464,18 @@ export const SPAIN: Territory = {
   type: "land",
 };
 
+export const SPAIN_NORTH_COAST: Territory = {
+  name: "SPAIN_NORTH_COAST",
+  abbr: "NC",
+  type: "land",
+};
+
+export const SPAIN_SOUTH_COAST: Territory = {
+  name: "SPAIN_SOUTH_COAST",
+  abbr: "SC",
+  type: "land",
+};
+
 export const SWEDEN: Territory = {
   name: "SWEDEN",
   abbr: "SWE",
@@ -654,6 +678,8 @@ const Territories: TerritoryData = {
   [TerritoryEnum.BREST]: BREST,
   [TerritoryEnum.BUDAPEST]: BUDAPEST,
   [TerritoryEnum.BULGARIA]: BULGARIA,
+  [TerritoryEnum.BULGARIA_NORTH_COAST]: BULGARIA_NORTH_COAST,
+  [TerritoryEnum.BULGARIA_SOUTH_COAST]: BULGARIA_SOUTH_COAST,
   [TerritoryEnum.BURGUNDY]: BURGUNDY,
   [TerritoryEnum.CHANNEL_1]: CHANNEL_1,
   [TerritoryEnum.CLYDE]: CLYDE,
@@ -714,6 +740,8 @@ const Territories: TerritoryData = {
   [TerritoryEnum.SKAGERRACK2]: SKAGERRACK2,
   [TerritoryEnum.SMYRNA]: SMYRNA,
   [TerritoryEnum.SPAIN]: SPAIN,
+  [TerritoryEnum.SPAIN_NORTH_COAST]: SPAIN_NORTH_COAST,
+  [TerritoryEnum.SPAIN_SOUTH_COAST]: SPAIN_SOUTH_COAST,
   [TerritoryEnum.SWEDEN]: SWEDEN,
   [TerritoryEnum.SYRIA]: SYRIA,
   [TerritoryEnum.TRIESTE]: TRIESTE,

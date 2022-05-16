@@ -1379,9 +1379,10 @@ class Api {
 		// }
 
 		// Cache result
-		if( $this->route == 'players/missing_orders' && $cacheKey = $apiAuth->getCacheKey() ){
-			$MC->set($cacheKey, $result, 60); // Continually No rush to expire , should be cleaned on all game processes anyway
-		}
+		// FIXME: This breaks API Keys
+		// if( $this->route == 'players/missing_orders' && $cacheKey = $apiAuth->getCacheKey() ){
+		// 	$MC->set($cacheKey, $result, 60); // Continually No rush to expire , should be cleaned on all game processes anyway
+		// }
 
 		return $result;
 	}
