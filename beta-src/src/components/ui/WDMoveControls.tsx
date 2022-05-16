@@ -14,6 +14,7 @@ import {
   saveOrders,
 } from "../../state/game/game-api-slice";
 import UpdateOrder from "../../interfaces/state/UpdateOrder";
+import processNextCommand from "../../utils/processNextCommand";
 
 interface WDMoveControlsProps {
   gameState: MoveStatus;
@@ -32,6 +33,9 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
   const ordersMeta = useAppSelector(gameOrdersMeta);
   const dispatch = useAppDispatch();
   const device = getDevice(viewport);
+  const commands = useAppSelector(
+    (state) => state.game.commands.mapCommands.save,
+  );
   let isMobile: boolean;
   switch (device) {
     case Device.MOBILE:
@@ -95,13 +99,20 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
     }
   };
 
+  const commandActions = {
+    SAVE_ORDERS: (command) => {
+      clickButton(Move.SAVE);
+    },
+  };
+
+  processNextCommand(commands, commandActions);
+
   const ordersMetaValues = Object.values(ordersMeta);
   const ordersLength = ordersMetaValues.length;
   const ordersSaved = ordersMetaValues.reduce(
     (acc, meta) => acc + +meta.saved,
     0,
   );
-
   if (
     (ordersLength === ordersSaved && save) ||
     (ordersLength !== ordersSaved && !save)

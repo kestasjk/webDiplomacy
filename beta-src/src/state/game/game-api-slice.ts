@@ -93,7 +93,6 @@ export const saveOrders = createAsyncThunk(
     const parsed: SavedOrdersConfirmation = JSON.parse(
       confirmation.substring(1, confirmation.length - 1),
     );
-    console.log(parsed);
     return parsed;
   },
 );

@@ -4,12 +4,13 @@ import GameDataResponse from "../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
 import OrderState from "../../state/interfaces/OrderState";
 import OrdersMeta from "../../state/interfaces/SavedOrders";
+import getOrderStates from "../state/getOrderStates";
 import setCommand from "../state/setCommand";
 
 export default function updateUnitsRetreat(state): void {
   const {
     data: {
-      data: { currentOrders },
+      data: { contextVars, currentOrders },
     },
     order,
     ordersMeta,
@@ -20,8 +21,15 @@ export default function updateUnitsRetreat(state): void {
     ordersMeta: OrdersMeta;
     overview: GameOverviewResponse;
   } = current(state);
+  let orderStates;
+
+  if (contextVars) {
+    orderStates = getOrderStates(contextVars.context.orderStatus);
+  }
+
   currentOrders?.forEach(({ id, unitID }) => {
     const { update } = ordersMeta[id];
+    const { allowedBorderCrossings } = ordersMeta[id];
     const toTerrID = update?.toTerrID;
     const type = update?.type;
 
@@ -47,5 +55,17 @@ export default function updateUnitsRetreat(state): void {
       };
     }
     setCommand(state, command, "unitCommands", unitID);
+
+    if (
+      currentOrders.length === 1 &&
+      type === "Disband" &&
+      !allowedBorderCrossings?.length &&
+      !orderStates?.Completed
+    ) {
+      command = {
+        command: "SAVE_ORDERS",
+      };
+      setCommand(state, command, "mapCommands", "save");
+    }
   });
 }
