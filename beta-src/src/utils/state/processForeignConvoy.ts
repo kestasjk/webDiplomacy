@@ -15,7 +15,6 @@ export default function processForeignConvoy(state): void {
     order,
     ordersMeta,
     maps,
-    territoriesMeta,
   } = current(state);
   const lastUnitInChain =
     order.subsequentClicks[order.subsequentClicks.length - 1];
@@ -26,7 +25,7 @@ export default function processForeignConvoy(state): void {
     const fromTerritory = maps.enumToTerritory[lastUnitInChain.onTerritory];
 
     if (convoyToChoices.includes(toTerritory)) {
-      const orderUnit = board.findUnitByID(lastUnitInChain.unitID);
+      // const orderUnit = board.findUnitByID(lastUnitInChain.unitID);
       const fleetOrder = currentOrders?.find((o) => o.unitID === order.unitID);
       if (fleetOrder) {
         const fleetUnit = board.findUnitByID(order.unitID);
@@ -72,11 +71,13 @@ export default function processForeignConvoy(state): void {
                 const unitIsArmy =
                   board.findUnitByID(foundClick.unitID).type === "Army";
                 if (unitIsArmy) {
+                  // unitOrderID is undefined because its a foreign unit.
                   updates[unitOrderID] = {
                     saved: false,
                     update: {
                       convoyPath,
                       toTerrID: toTerritory,
+                      fromTerrID: fromTerritory,
                       type: "Move",
                       viaConvoy: "Yes",
                     },

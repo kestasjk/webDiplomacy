@@ -77,6 +77,73 @@ export default function drawMoveOrders(
               }
             }
           }
+        } else if (update && !originalOrder) {
+          // Supporting Foreign Convoy if no original order.
+          const { convoyPath, fromTerrID, toTerrID, viaConvoy } = update;
+          const foundOrder = currentOrders?.find(
+            ({ toTerrID: ordToTerrID, fromTerrID: ordFromTerrID }) =>
+              ordToTerrID === toTerrID && ordFromTerrID === fromTerrID,
+          );
+
+          if (toTerrID && fromTerrID && foundOrder) {
+            const { id } = foundOrder;
+            const unitID = maps.territoryToUnit[fromTerrID];
+            const unitData = units[unitID];
+            const onTerrDetails = territories[unitData.terrID];
+            const toTerrDetails = territories[toTerrID];
+            const fromTerr = TerritoryMap[onTerrDetails.name].territory;
+            const toTerr = TerritoryMap[toTerrDetails.name].territory;
+            drawArrow(
+              id,
+              ArrowType.MOVE,
+              ArrowColor.MOVE,
+              "territory",
+              toTerr,
+              fromTerr,
+            );
+
+            if (viaConvoy === "Yes" && board) {
+              // implied convoy arrow
+              let path = convoyPath;
+              if (!convoyPath) {
+                const onTerritory = board.findTerritoryByID(unitData.terrID);
+                path = board
+                  .findUnitByID(unitID)
+                  ?.ConvoyGroup.pathArmyToCoastWithoutFleet(
+                    onTerritory,
+                    board.findTerritoryByID(toTerrID),
+                    onTerritory,
+                  );
+              }
+              if (path) {
+                path
+                  .filter((p) => p !== unitData.terrID)
+                  .forEach((p) => {
+                    const convoyingUnitID = maps.territoryToUnit[p];
+                    const convoyingUnitOrder =
+                      maps.unitToOrder[convoyingUnitID];
+                    const unitOrderMeta = ordersMeta[convoyingUnitOrder].update;
+                    if (
+                      unitOrderMeta?.fromTerrID !== unitData.terrID ||
+                      unitOrderMeta?.toTerrID !== update.toTerrID
+                    ) {
+                      drawArrow(
+                        `${id}-implied`,
+                        ArrowType.CONVOY,
+                        ArrowColor.IMPLIED,
+                        "arrow",
+                        id,
+                        Number(
+                          maps.territoryToEnum[
+                            maps.unitToTerritory[convoyingUnitID]
+                          ],
+                        ),
+                      );
+                    }
+                  });
+              }
+            }
+          }
         }
       });
   }
