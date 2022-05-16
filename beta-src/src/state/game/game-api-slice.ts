@@ -92,7 +92,7 @@ export const sendMessage = createAsyncThunk(
       ApiRoute.SEND_MESSAGE,
       queryParams,
     );
-    return response.data as unknown as GameMessage;
+    return response.data as unknown as GameMessages;
   },
 );
 
@@ -238,10 +238,11 @@ const gameApiSlice = createSlice({
       // Send message
       .addCase(sendMessage.fulfilled, (state, action) => {
         if (action.payload) {
-          const message = action.payload;
-          const allMessages = mergeMessageArrays(state.messages.messages, [
-            message,
-          ]);
+          const { messages } = action.payload;
+          const allMessages = mergeMessageArrays(
+            state.messages.messages,
+            messages,
+          );
           state.messages.messages = allMessages;
         }
       })

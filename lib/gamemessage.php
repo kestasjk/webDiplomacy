@@ -37,7 +37,6 @@ class libGameMessage
 	 * @param string|array $message The message(s) to be sent (Can be an array of messages for)
 	 * @param int[optional] $gameID The game ID to use. If not given the current global Game is sent to.
 	 * 
-	 * @return string $escapedMsg The escaped message.
 	 * @return int $timeSent The time of this message in the DB.
 	 */
 	static public function send($toCountryID, $fromCountryID, $message, $gameID=-1)
@@ -84,7 +83,7 @@ class libGameMessage
 			libGameMessage::notify($toCountryID, $fromCountryID);
 		}
 
-		return array($message, $timeSent);
+		return $timeSent;
 	}
 
 	/**

@@ -1044,15 +1044,33 @@ class SendMessage extends ApiEntry {
 
 		$toUser = new User($Game->Members->ByCountryID[$toCountryID]->userID);
 		if(!$toUser->isCountryMuted($Game->id, $countryID)) {
-			list($escapedMessage, $timeSent) = libGameMessage::send($toCountryID, $countryID, $message);
-			$ret = [
-				"fromCountryID" => intval($args['countryID']),
-				"toCountryID" => intval($args["toCountryID"]),
-				"message" => $escapedMessage,
-				"timeSent" => $timeSent,
-			];
-			return json_encode($ret);
+			$timeSent = libGameMessage::send($toCountryID, $countryID, $message);
+
+			// now fetch this message back out of the table.
+			// This is the safest way to make sure all the escaping is correct.
+			// Should we fetch messages from previous timeSent as well to make sure everything is in sync?
+			$tabl = $DB->sql_tabl("SELECT message, turn 
+				FROM wD_GameMessages WHERE 
+				gameID = $gameID AND 
+				timeSent = $timeSent AND 
+				fromCountryID = $countryID AND 
+				toCountryID = $toCountryID
+			");
+
+			while ($msg = $DB->tabl_hash($tabl)) {
+				$messages[] = [
+					'fromCountryID' => $countryID,
+					'message' => $msg['message'],
+					'timeSent' => (int) $timeSent,
+					'toCountryID' => $toCountryID,
+					'turn' => $msg['turn'],
+				];
+			}
 		}
+		$ret = [
+			"messages" => $messages
+		];
+		return json_encode($ret);
 	}
 }
 
