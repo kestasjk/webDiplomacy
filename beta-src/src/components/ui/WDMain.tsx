@@ -1,10 +1,6 @@
 import * as React from "react";
 import WDMainController from "../controllers/WDMainController";
-import {
-  fetchGameData,
-  gameMessages,
-  gameOverview,
-} from "../../state/game/game-api-slice";
+import { fetchGameData, gameOverview } from "../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import WDUI from "./WDUI";
 

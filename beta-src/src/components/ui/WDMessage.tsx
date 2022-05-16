@@ -4,7 +4,6 @@ import Device from "../../enums/Device";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
 import { GameMessage } from "../../state/interfaces/GameMessages";
-import countryMap from "../../data/map/variants/classic/CountryMap";
 import { CountryTableData } from "../../interfaces/CountryTableData";
 
 interface WDMessageProps {
@@ -31,13 +30,11 @@ const WDMessage: React.FC<WDMessageProps> = function ({
   const getCountry = (countryID: number) =>
     countries.find((cand) => cand.countryID === countryID);
   const fromCountry = getCountry(message.fromCountryID);
-  const toCountry = getCountry(message.toCountryID);
   const msgWidth = mobileLandscapeLayout ? "170px" : "250px";
   const justify =
     message.fromCountryID === userCountry.countryID ? "flex-end" : "flex";
   const msgTime = new Date(0);
   msgTime.setUTCSeconds(message.timeSent);
-
   return (
     <Box sx={{ display: "flex", justifyContent: justify }}>
       <Box
@@ -56,7 +53,11 @@ const WDMessage: React.FC<WDMessageProps> = function ({
               {fromCountry?.country.toUpperCase().slice(0, 3)}
             </span>
             {": "}
-            {message.message}
+            {/* Here's a robust but dangerous choice... 
+            The messages are all sanitized in gamemessage.php, and newlines
+            converted to <br/>
+            */}
+            <span dangerouslySetInnerHTML={{ __html: message.message }} />
           </Box>
           <Box style={{ color: "#888888", fontStyle: "italic" }}>
             {msgTime.toLocaleTimeString([], {

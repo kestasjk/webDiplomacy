@@ -25,13 +25,6 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
 }): React.ReactElement {
   const [viewport] = useViewport();
   const device = getDevice(viewport);
-  const mobileLandscapeLayout =
-    device === Device.MOBILE_LANDSCAPE ||
-    device === Device.MOBILE_LG_LANDSCAPE ||
-    device === Device.MOBILE;
-  const padding = mobileLandscapeLayout ? "0 6px" : "0 16px";
-  const width = mobileLandscapeLayout ? 272 : 358;
-  const spacing = mobileLandscapeLayout ? 1 : 2;
 
   const filteredMessages = messages.filter(
     (message) =>
