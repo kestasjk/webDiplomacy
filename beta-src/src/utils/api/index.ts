@@ -25,13 +25,18 @@ const api = axios.create({
 export const getGameApiRequest = (
   route: ApiRoute,
   queryParams: QueryParams,
+  timeout?: number,
 ): Promise<AxiosResponse> =>
-  api.get(`../api.php?route=${route}&${buildQueryString(queryParams)}`);
+  api.get(`../api.php?route=${route}&${buildQueryString(queryParams)}`, {
+    timeout,
+  });
 
 export const postGameApiRequest = (
   route: ApiRoute,
   json: QueryParams,
-): Promise<AxiosResponse> => api.post(`../api.php?route=${route}`, json);
+  timeout?: number,
+): Promise<AxiosResponse> =>
+  api.post(`../api.php?route=${route}`, json, { timeout });
 
 const orderSubmission = axios.create({
   // baseURL: process.env.REACT_APP_WD_BASE_URL,

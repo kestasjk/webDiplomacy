@@ -71,14 +71,18 @@ const WDPress: React.FC<WDPressProps> = function ({
   React.useEffect(() => {
     if (user && gameID) {
       // console.log(`Dispatch messages. time= ${messages.time}`);
-      dispatch(
-        fetchGameMessages({
-          gameID: gameID as unknown as string,
-          countryID: user.member.countryID as unknown as string,
-          allMessages: "true",
-          sinceTime: messages.time as unknown as string,
-        }),
-      );
+
+      if (messages.outstandingRequests === 0) {
+        dispatch(gameApiSliceActions.updateOutstandingMessageRequests(1));
+        dispatch(
+          fetchGameMessages({
+            gameID: gameID as unknown as string,
+            countryID: user.member.countryID as unknown as string,
+            allMessages: "true",
+            sinceTime: messages.time as unknown as string,
+          }),
+        );
+      }
     }
   }, [messagePollCounter]);
 

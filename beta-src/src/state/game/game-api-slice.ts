@@ -75,7 +75,14 @@ export const fetchGameMessages = createAsyncThunk(
   }) => {
     const {
       data: { data },
-    } = await getGameApiRequest(ApiRoute.GAME_MESSAGES, queryParams);
+    } = await getGameApiRequest(
+      ApiRoute.GAME_MESSAGES,
+      queryParams,
+      // set a 60 second timeout.
+      // Timeout is important because we rate-limit to
+      // one outstanding request at a time.
+      60000,
+    );
     return data as GameMessages;
   },
 );
@@ -198,6 +205,9 @@ const gameApiSlice = createSlice({
         (e) => e !== action.payload,
       );
     },
+    updateOutstandingMessageRequests(state, action) {
+      state.messages.outstandingRequests += action.payload;
+    },
   },
   extraReducers(builder) {
     builder
@@ -254,9 +264,17 @@ const gameApiSlice = createSlice({
       .addCase(fetchGameMessages.rejected, (state, action) => {
         state.apiStatus = "failed";
         console.log(`fetchGameMessages failed: ${action.error.message}`);
+        state.messages.outstandingRequests = Math.max(
+          state.messages.outstandingRequests - 1,
+          0,
+        );
         state.error = action.error.message;
       })
       .addCase(fetchGameMessages.fulfilled, (state, action) => {
+        state.messages.outstandingRequests = Math.max(
+          state.messages.outstandingRequests - 1,
+          0,
+        );
         if (action.payload) {
           const { messages, newMessagesFrom, time } = action.payload;
           if (messages) {
