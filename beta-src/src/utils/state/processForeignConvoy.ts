@@ -68,21 +68,10 @@ export default function processForeignConvoy(state): void {
                 // user did not click this unit
               } else {
                 const unitOrderID = maps.unitToOrder[foundClick.unitID];
-                const unitIsArmy =
-                  board.findUnitByID(foundClick.unitID).type === "Army";
-                if (unitIsArmy) {
-                  // unitOrderID is undefined because its a foreign unit.
-                  updates[unitOrderID] = {
-                    saved: false,
-                    update: {
-                      convoyPath,
-                      toTerrID: toTerritory,
-                      fromTerrID: fromTerritory,
-                      type: "Move",
-                      viaConvoy: "Yes",
-                    },
-                  };
-                } else {
+                const unitIsFleet =
+                  board.findUnitByID(foundClick.unitID).type === "Fleet";
+
+                if (unitIsFleet) {
                   updates[unitOrderID] = {
                     saved: false,
                     update: {

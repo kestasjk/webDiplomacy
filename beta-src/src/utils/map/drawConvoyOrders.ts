@@ -35,6 +35,14 @@ export default function drawConvoyOrders(
             if (update.toTerrID === unitBeingConvoyedOrderDetails?.toTerrID) {
               drawArrow(
                 id,
+                ArrowType.MOVE,
+                ArrowColor.MOVE,
+                "territory",
+                TerritoryMap[territories[toTerrID].name].territory,
+                TerritoryMap[territories[fromTerrID].name].territory,
+              );
+              drawArrow(
+                id,
                 ArrowType.CONVOY,
                 ArrowColor.CONVOY,
                 "arrow",
