@@ -18,8 +18,10 @@ import { CountryTableData } from "../../interfaces";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import {
   fetchGameMessages,
+  gameApiSliceActions,
   gameMessages,
   gameOverview,
+  markMessagesSeen,
   sendMessage,
 } from "../../state/game/game-api-slice";
 
@@ -42,8 +44,6 @@ const WDPress: React.FC<WDPressProps> = function ({
     device === Device.MOBILE_LG_LANDSCAPE ||
     device === Device.MOBILE;
   const padding = mobileLandscapeLayout ? "0 6px" : "0 16px";
-  const width = mobileLandscapeLayout ? 272 : 358;
-  const spacing = mobileLandscapeLayout ? 1 : 2;
 
   const [userMsg, setUserMsg] = React.useState("");
   const [countryIDSelected, setCountryIDSelected] = React.useState(
@@ -102,6 +102,19 @@ const WDPress: React.FC<WDPressProps> = function ({
     setUserMsg("");
   };
 
+  if (messages.newMessagesFrom.includes(countryIDSelected)) {
+    // need to update locally and on the server
+    // because we don't immediately re-fetch message data from the server
+    dispatch(gameApiSliceActions.processMessagesSeen(countryIDSelected));
+    dispatch(
+      markMessagesSeen({
+        countryID: String(userCountry.countryID),
+        gameID: String(gameID),
+        seenCountryID: String(countryIDSelected),
+      }),
+    );
+  }
+
   const countryButtons = countries
     .sort((a, b) => a.countryID - b.countryID)
     .map((country) => {
@@ -117,6 +130,13 @@ const WDPress: React.FC<WDPressProps> = function ({
           size="small"
           variant={
             countryIDSelected === country.countryID ? "contained" : "text"
+          }
+          startIcon={
+            messages.newMessagesFrom.includes(country.countryID) ? (
+              <Email />
+            ) : (
+              ""
+            )
           }
         >
           {country.country.slice(0, 3).toUpperCase()}

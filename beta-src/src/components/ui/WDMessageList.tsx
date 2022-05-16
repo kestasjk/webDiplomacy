@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Box, makeStyles, Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import Device from "../../enums/Device";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
@@ -25,7 +25,7 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
 }): React.ReactElement {
   const [viewport] = useViewport();
   const device = getDevice(viewport);
-
+  const height = "350px";
   const filteredMessages = messages.filter(
     (message) =>
       message.fromCountryID === countryIDSelected ||
@@ -44,7 +44,7 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
       sx={{
         m: "20px 0 10px 0",
         width: "100%",
-        height: "400px",
+        height,
         display: "flex",
         flexDirection: "column-reverse",
       }}

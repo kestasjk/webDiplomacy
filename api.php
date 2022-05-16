@@ -364,6 +364,38 @@ class ToggleVote extends ApiEntry {
 }
 
 /**
+ * API entry game/messagesseen
+ */
+class MessagesSeen extends ApiEntry {
+	public function __construct() {
+		// lol why is this a GET
+		parent::__construct('game/messagesseen', 'GET', '', array('gameID','countryID','seenCountryID'));
+	}
+	public function run($userID, $permissionIsExplicit) {
+		global $Game, $DB;
+		$args = $this->getArgs();
+		$countryID = intval($args['countryID']);
+		$seenCountryID = intval($args['seenCountryID']);
+		$Game = $this->getAssociatedGame();
+		$member = $Game->Members->ByUserID[$userID];
+		$newMessagesFrom = $member->newMessagesFrom;
+
+		foreach($newMessagesFrom as $i => $curCountryID)
+		{
+			if ( $curCountryID == $seenCountryID )
+			{
+				unset($newMessagesFrom[$i]);
+				break;
+			}
+		}
+		$DB->sql_put("UPDATE wD_Members
+						SET newMessagesFrom = '".implode(',',$newMessagesFrom)."'
+						WHERE id = ".$member->id);
+		$DB->sql_put("COMMIT");
+	}
+}
+
+/**
  * API entry game/status
  */
 class GetGamesStates extends ApiEntry {
@@ -981,7 +1013,7 @@ class SendMessage extends ApiEntry {
 		parent::__construct('game/sendmessage', 'JSON', '', array('gameID','countryID','toCountryID', 'message'));
 	}
 	public function run($userID, $permissionIsExplicit) {
-		global $DB;
+		global $Game, $DB;
 		$args = $this->getArgs();
 
 		if ($args['toCountryID'] === null)
@@ -996,22 +1028,23 @@ class SendMessage extends ApiEntry {
 		$toCountryID = intval($args['toCountryID']);
 		$message = $args['message'];
 
-		$game = $this->getAssociatedGame();
+		$Game = $this->getAssociatedGame();
 
-		if ($game->pressType != 'Regular') {
+		if ($Game->pressType != 'Regular') {
 			throw new RequestException('Game is not regular press.');
 		}
 
-		if (!(isset($game->Members->ByUserID[$userID]) && $countryID == $game->Members->ByUserID[$userID]->countryID)) {
+		if (!(isset($Game->Members->ByUserID[$userID]) && $countryID == $Game->Members->ByUserID[$userID]->countryID)) {
 			throw new ClientForbiddenException('User does not have explicit permission to make this API call.');
 		}
 
-		if ($toCountryID < 1 || $toCountryID > count($game->Members->ByUserID) || $toCountryID == $countryID) {
+		if ($toCountryID < 1 || $toCountryID > count($Game->Members->ByID) || $toCountryID == $countryID) {
+			throw new RequestException('Invalid toCountryID');
 		}
 
-		$toUser = new User($game->Members->ByCountryID[$toCountryID]->userID);
-		if(!$toUser->isCountryMuted($game->id, $countryID)) {
-			list($escapedMessage, $timeSent) = libGameMessage::send($toCountryID, $countryID, $message, $gameID);
+		$toUser = new User($Game->Members->ByCountryID[$toCountryID]->userID);
+		if(!$toUser->isCountryMuted($Game->id, $countryID)) {
+			list($escapedMessage, $timeSent) = libGameMessage::send($toCountryID, $countryID, $message);
 			$ret = [
 				"fromCountryID" => intval($args['countryID']),
 				"toCountryID" => intval($args["toCountryID"]),
@@ -1162,6 +1195,7 @@ class GetMessages extends ApiEntry {
 		$curTime = time();
 		$responseStr = $messages ? 'Successfully retrieved game messages.' : 'No messages available';
 		// error_log("$responseStr at time $curTime");
+		$newMessagesFrom = array_map('intval', $game->Members->ByUserID[$userID]->newMessagesFrom);
 		return $this->JSONResponse(
 			$responseStr,
 			'',
@@ -1169,6 +1203,7 @@ class GetMessages extends ApiEntry {
 			[
 				'messages' => $messages,
 				'time' => $curTime,
+				'newMessagesFrom' => $newMessagesFrom,
 			]
 		);
 	}
@@ -1438,6 +1473,7 @@ try {
 	$api->load(new ToggleVote());
 	$api->load(new SendMessage());
 	$api->load(new GetMessages());
+	$api->load(new MessagesSeen());
 	$jsonEncodedResponse = $api->run();
 	// Set JSON header.
 	header('Content-Type: application/json');

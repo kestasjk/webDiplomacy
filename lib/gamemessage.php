@@ -116,6 +116,8 @@ class libGameMessage
 												CONCAT_WS(',',newMessagesFrom,'".$fromCountryID."') )
 						WHERE gameID = ".$Game->id." AND countryID=".$toCountryID);
 		}
+		$DB->sql_put("COMMIT");
+
 	}
 }
 ?>
