@@ -11,15 +11,13 @@ import GameOverviewResponse from "../interfaces/GameOverviewResponse";
 import { ApiStatus, GameState } from "../interfaces/GameState";
 import GameCommands from "../interfaces/GameCommands";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
-import GameMessages, {
-  GameMessage,
-  mergeMessageArrays,
-} from "../interfaces/GameMessages";
+import GameMessages, { GameMessage } from "../interfaces/GameMessages";
 import { RootState } from "../store";
 import initialState from "./initial-state";
 import OrdersMeta from "../interfaces/SavedOrders";
 import OrderState from "../interfaces/OrderState";
 import drawBuilds from "../../utils/map/drawBuilds";
+import mergeMessageArrays from "../../utils/state/mergeMessageArrays";
 import updateOrdersMeta from "../../utils/state/updateOrdersMeta";
 import highlightMapTerritoriesBasedOnStatuses from "../../utils/map/highlightMapTerritoriesBasedOnStatuses";
 import UpdateOrdersMetaAction from "../../interfaces/state/UpdateOrdersMetaAction";

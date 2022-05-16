@@ -13,6 +13,7 @@ import Button from "@mui/material/Button";
 import Device from "../../enums/Device";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
+import useInterval from "../../utils/useInterval";
 import WDMessageList from "./WDMessageList";
 import { CountryTableData } from "../../interfaces";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
@@ -54,39 +55,20 @@ const WDPress: React.FC<WDPressProps> = function ({
   const { user, gameID } = useAppSelector(gameOverview);
   const messages = useAppSelector(gameMessages);
 
-  // -------- message polling loop ----------
-  const [messagePollCounter, setMessagePollCounter] = React.useState(0);
-
-  // 1. on construction, set an interval that increments messagePollCounter
-  React.useEffect(() => {
-    setInterval(() => {
-      setMessagePollCounter((c) => c + 1);
-    }, 1000);
-  }, []);
-
-  // 2. each time mesagePollCounter is incremented, we get the state
-  // from the store and dispatch a message fetch.
-  //
   // FIXME: for now, crazily fetch all messages every 1sec
-  React.useEffect(() => {
-    if (user && gameID) {
-      // console.log(`Dispatch messages. time= ${messages.time}`);
-
-      if (messages.outstandingRequests === 0) {
-        dispatch(gameApiSliceActions.updateOutstandingMessageRequests(1));
-        dispatch(
-          fetchGameMessages({
-            gameID: gameID as unknown as string,
-            countryID: user.member.countryID as unknown as string,
-            allMessages: "true",
-            sinceTime: messages.time as unknown as string,
-          }),
-        );
-      }
+  useInterval(() => {
+    if (user && gameID && messages && messages.outstandingRequests === 0) {
+      dispatch(gameApiSliceActions.updateOutstandingMessageRequests(1));
+      dispatch(
+        fetchGameMessages({
+          gameID: gameID as unknown as string,
+          countryID: user.member.countryID as unknown as string,
+          allMessages: "true",
+          sinceTime: messages.time as unknown as string,
+        }),
+      );
     }
-  }, [messagePollCounter]);
-
-  // ----------------------------------------
+  }, 1000);
 
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
