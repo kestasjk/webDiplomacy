@@ -5,7 +5,6 @@ import GameDataResponse from "../../state/interfaces/GameDataResponse";
 import GameStateMaps from "../../state/interfaces/GameStateMaps";
 import OrdersMeta from "../../state/interfaces/SavedOrders";
 import drawArrow from "./drawArrow";
-import Territory from "../../enums/map/variants/classic/Territory";
 
 export default function drawConvoyOrders(
   data: GameDataResponse["data"],
@@ -25,31 +24,21 @@ export default function drawConvoyOrders(
             const { id, unitID } = originalOrder;
 
             const unitBeingConvoyed = maps.territoryToUnit[fromTerrID];
-            const unitBeingConvoyedOrder = maps.unitToOrder[unitBeingConvoyed];
+            const unitBeingConvoyedOrder =
+              maps.unitToOrder[unitBeingConvoyed] || orderID;
 
             const convoyingTerritory = maps.unitToTerritory[unitID];
             const convoyingTerritoryDetails = territories[convoyingTerritory];
 
             const { update: unitBeingConvoyedOrderDetails } =
               ordersMeta[unitBeingConvoyedOrder];
-
-            console.log(
-              "update.toTerrID === unitBeingConvoyedOrderDetails?.toTerrID",
-              update.toTerrID === unitBeingConvoyedOrderDetails?.toTerrID,
-            );
-
             if (update.toTerrID === unitBeingConvoyedOrderDetails?.toTerrID) {
-              console.log("unitBeingConvoyedOrder", unitBeingConvoyedOrder);
-              console.log(
-                "TerritoryMap[convoyingTerritoryDetails.name].territory",
-                TerritoryMap[convoyingTerritoryDetails.name].territory,
-              );
               drawArrow(
                 id,
                 ArrowType.CONVOY,
                 ArrowColor.CONVOY,
                 "arrow",
-                Territory.NORWAY,
+                unitBeingConvoyedOrder,
                 TerritoryMap[convoyingTerritoryDetails.name].territory,
               );
             } else {
