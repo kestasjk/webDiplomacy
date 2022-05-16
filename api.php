@@ -17,8 +17,8 @@
     You should have received a copy of the GNU Affero General Public License
     along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
  */
-define('IN_CODE', 1);
 
+define('IN_CODE', 1);
 require_once('header.php');
 require_once('config.php');
 require_once('global/definitions.php');
