@@ -7,7 +7,7 @@ import countryMap from "../../data/map/variants/classic/CountryMap";
 import Country from "../../enums/Country";
 import { IUnit } from "../../models/Interfaces";
 
-interface Unit {
+export interface Unit {
   country: Country;
   mappedTerritory: MTerritory;
   unit: IUnit;

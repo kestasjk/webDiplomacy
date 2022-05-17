@@ -28,15 +28,7 @@ const WDBuildContainer: React.FC = function (): React.ReactElement {
   const [buildTerritoryName, setBuildTerritoryName] = React.useState(null);
   const [openBuildPopovers, setOpenBuildPopovers] = React.useState(false);
   const userCountry = countryMap[country];
-  const deleteCommand = (key) => {
-    dispatch(
-      gameApiSliceActions.deleteCommand({
-        type: "mapCommands",
-        id: "build",
-        command: key,
-      }),
-    );
-  };
+
   const build = (availableOrder, canBuild, toTerrID) => {
     dispatch(
       gameApiSliceActions.updateOrdersMeta({
@@ -75,13 +67,11 @@ const WDBuildContainer: React.FC = function (): React.ReactElement {
         }),
       );
       setOpenBuildPopovers(true);
-      deleteCommand(key);
     },
     REMOVE_BUILD: (command) => {
       const [key] = command;
       setOpenBuildPopovers(false);
       setBuildTerritoryName(null);
-      deleteCommand(key);
     },
   };
   processNextCommand(commands, commandActions);

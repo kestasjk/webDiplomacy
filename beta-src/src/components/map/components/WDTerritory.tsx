@@ -8,6 +8,7 @@ import {
   gameApiSliceActions,
   gameOverview,
   gameTerritoriesMeta,
+  gameUnits,
 } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import { TerritoryMeta } from "../../../state/interfaces/TerritoriesState";
@@ -38,35 +39,16 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
 }): React.ReactElement {
   const theme = useTheme();
   const dispatch = useAppDispatch();
-  const { members } = useAppSelector(gameOverview);
   const territoriesMeta = useAppSelector(gameTerritoriesMeta);
-
   const [territoryStrokeOpacity, setTerritoryStrokeOpacity] = React.useState(1);
 
   const [buildPopovers, setBuildPopovers] = React.useState<BuildPopovers>({});
 
   const [openBuildPopovers, setOpenBuildPopovers] = React.useState(false);
 
-  const [units, setUnits] = React.useState<Units>({});
-
-  const commands = useAppSelector(
-    (state) => state.game.commands.territoryCommands[territoryMapData.name],
-  );
-
-  const {
-    user: { member },
-  } = useAppSelector(gameOverview);
-  const userCountry = countryMap[member.country];
-
-  const deleteCommand = (key) => {
-    dispatch(
-      gameApiSliceActions.deleteCommand({
-        type: "territoryCommands",
-        id: territoryMapData.name,
-        command: key,
-      }),
-    );
-  };
+  const { user, members } = useAppSelector(gameOverview);
+  const units = useAppSelector(gameUnits);
+  const userCountry = countryMap[user.member.country];
 
   const setMoveHighlight = () => {
     setTerritoryStrokeOpacity(1);
@@ -92,6 +74,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     dispatch(gameApiSliceActions.resetOrder());
   };
 
+<<<<<<< HEAD
 <<<<<<< HEAD
   const commandActions = {
     BUILD: (command) => {
@@ -199,6 +182,8 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
 
   processNextCommand(commands, commandActions);
 =======
+=======
+>>>>>>> cf82051 (Got units displayed again)
   // const commandActions = {
   //   BUILD: (command) => {
   //     const [key, value] = command;
@@ -215,32 +200,35 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   //     setBuildPopovers(builds);
   //     setMoveHighlight();
   //     setOpenBuildPopovers(true);
+  //     deleteCommand(key);
   //   },
   //   CAPTURED: (command) => {
   //     const [key, value] = command;
-  //     console.log(`${territoryMapData.name} CAPTURED ${value.data?.country}`);
   //     territoryMapData.type === "water"
   //       ? setTerritoryFill("none")
   //       : setCapturedHighlight(value.data?.country);
+  //     deleteCommand(key);
   //   },
   //   HOLD: (command) => {
   //     const [key] = command;
+  //     setTerritoryFill(theme.palette[userCountry].main);
+  //     setTerritoryFillOpacity(0.9);
   //     setTerritoryStrokeOpacity(2);
+  //     deleteCommand(key);
   //   },
   //   MOVE: (command) => {
   //     const [key] = command;
   //     setMoveHighlight();
+  //     deleteCommand(key);
   //   },
   //   REMOVE_BUILD: (command) => {
   //     const [key] = command;
   //     setOpenBuildPopovers(false);
   //     setCapturedHighlight(userCountry);
+  //     deleteCommand(key);
   //   },
   //   SET_UNIT: (command) => {
-  //     console.log("SET_UNIT");
   //     const [key, value] = command;
-  //     console.log(value.data);
-
   //     const {
   //       componentType,
   //       country,
@@ -250,9 +238,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   //       unitType,
   //       unitSlotName,
   //     } = value.data.setUnit;
-  //     console.log(
-  //       `${territoryMapData.name} ${country} ${unitType} ${componentType}`,
-  //     );
+
   //     let newUnit;
   //     if (country && unitType && componentType) {
   //       switch (componentType) {
@@ -260,7 +246,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   //           if (unit) {
   //             switch (unitType) {
   //               case "Army":
-  //                 console.log("Made an army...");
   //                 newUnit = (
   //                   <WDArmy
   //                     id={`${territoryMapData.name}-unit`}
@@ -307,39 +292,58 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   //           break;
   //       }
   //     }
+
   //     const set = {
   //       ...units,
   //       ...{ [unitSlotName]: newUnit },
   //     };
   //     setUnits(set);
+  //     deleteCommand(key);
   //   },
   // };
-  // processNextCommand(commands, commandActions);
->>>>>>> f31209a (Proof-of-concept territory fill without commands)
 
+  // processNextCommand(commands, commandActions);
+  const territoryName = territoryMapData.name;
   const territoryNameToMeta: { [key: string]: TerritoryMeta } = {};
+
   Object.entries(territoriesMeta).forEach(([id, meta]) => {
     territoryNameToMeta[Territories[id].name] = meta;
   });
-
-  const countryIDToMember: { [key: number]: MemberData } = {};
-  Object.entries(members).forEach(([id, memberData]) => {
-    countryIDToMember[memberData.countryID] = memberData;
-  });
-  const territoryName = territoryMapData.name;
-  let territoryFill = "none";
-  let territoryFillOpacity = 0;
   const territoryMeta = territoryNameToMeta[territoryName];
 
+  const countryIDToCountry: { [key: number]: string } = {};
+  Object.entries(members).forEach(([id, memberData]) => {
+    countryIDToCountry[memberData.countryID] = memberData.country;
+  });
+
+  let territoryFill = "none";
+  let territoryFillOpacity = 0;
   if (territoryMeta && territoryMeta.countryID) {
     const ownerCountryID = territoryMeta.countryID;
-    const ownerMember = countryIDToMember[ownerCountryID];
-    territoryFill = ownerCountryID
-      ? theme.palette[ownerMember.country].main
-      : "none";
+    const ownerCountry = countryIDToCountry[ownerCountryID];
+    console.log(`${territoryName} ${ownerCountryID}`);
+    territoryFill = ownerCountryID ? theme.palette[ownerCountry].main : "none";
 
     territoryFillOpacity = 0.4;
   }
+
+  const unitFCs: { [key: string]: any } = {};
+  units
+    .filter((unit) => territoryMeta && unit.unit.terrID === territoryMeta.id)
+    .forEach((unit) => {
+      const unitType = unit.unit.type;
+      // FIXME: Maybe we want just a WDFleetIcon for other powers. But does it really matter?
+      // It doesn't seem like I can click on other people's armies / fleets.
+      const WDUnitComponent = unitType === "Fleet" ? WDFleet : WDArmy;
+      unitFCs[unit.mappedTerritory.unitSlotName] = (
+        <WDUnitComponent
+          id={`${territoryName}-${unitType}`}
+          country={unit.country}
+          meta={unit}
+        />
+      );
+    });
+
   const clickAction = function (evt, clickObject: ClickObjectType) {
     dispatch(
       gameApiSliceActions.processMapClick({
@@ -349,10 +353,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       }),
     );
   };
-<<<<<<< HEAD
 
-=======
->>>>>>> f31209a (Proof-of-concept territory fill without commands)
   return (
     <svg
       height={territoryMapData.height}
@@ -399,33 +400,18 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
           if (!txt) {
             txt = territoryMapData.abbr;
           }
-          const b = buildPopovers[name];
           return (
-            <>
-              <g className="no-pointer-events">
-                <WDLabel
-                  id={id}
-                  name={name}
-                  key={id || i}
-                  style={style}
-                  text={txt}
-                  x={x}
-                  y={y}
-                />
-              </g>
-              {b && openBuildPopovers && (
-                <WDBuildUnitButtons
-                  availableOrder={b.availableOrder}
-                  canBuild={b.canBuild}
-                  clickCallback={b.clickCallback}
-                  country={b.country}
-                  labelID={id}
-                  toTerrID={b.toTerrID}
-                  x={x}
-                  y={y}
-                />
-              )}
-            </>
+            <g key={id} className="no-pointer-events">
+              <WDLabel
+                id={id}
+                name={name}
+                key={id || i}
+                style={style}
+                text={txt}
+                x={x}
+                y={y}
+              />
+            </g>
           );
         })}
       {territoryMapData.unitSlots &&
@@ -437,7 +423,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
             x={x}
             y={y}
           >
-            {units[name]}
+            {unitFCs[name]}
           </WDUnitSlot>
         ))}
       {territoryMapData.arrowReceiver && (

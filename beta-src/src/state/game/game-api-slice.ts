@@ -32,6 +32,8 @@ import updateUserActivity from "../../utils/state/gameApiSlice/reducers/updateUs
 import TerritoriesMeta from "../interfaces/TerritoriesState";
 import fetchGameOverviewFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameOverview/fulfilled";
 import saveOrdersFulfilled from "../../utils/state/gameApiSlice/extraReducers/saveOrders/fulfilled";
+import { IUnit } from "../../models/Interfaces";
+import { Unit } from "../../utils/map/getUnits";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -326,5 +328,5 @@ export const gameMessages = ({ game: { messages } }: RootState): GameMessages =>
 export const gameTerritoriesMeta = ({
   game: { territoriesMeta },
 }: RootState): TerritoriesMeta => territoriesMeta;
-
+export const gameUnits = ({ game: { units } }: RootState): Unit[] => units;
 export default gameApiSlice.reducer;

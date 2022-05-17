@@ -11,6 +11,7 @@ import OrdersMeta from "./SavedOrders";
 import TerritoriesMeta from "./TerritoriesState";
 import UserActivity from "./UserActivity";
 import { IUnit } from "../../models/Interfaces";
+import { Unit } from "../../utils/map/getUnits";
 
 export type ApiStatus = "idle" | "loading" | "succeeded" | "failed";
 
@@ -25,7 +26,7 @@ export interface GameState {
   order: OrderState;
   ordersMeta: OrdersMeta;
   ownUnits: string[];
-  units: IUnit[];
+  units: Unit[];
   territoriesMeta: TerritoriesMeta;
   commands: GameCommands;
   status: GameStatusResponse;
