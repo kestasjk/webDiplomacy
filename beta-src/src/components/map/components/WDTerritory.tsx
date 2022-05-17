@@ -1,6 +1,5 @@
 import { useTheme } from "@mui/material";
 import * as React from "react";
-import BuildUnitMap from "../../../data/BuildUnit";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
 import { TerritoryMapData } from "../../../interfaces";
 import {
@@ -14,7 +13,6 @@ import WDArmy from "../../ui/units/WDArmy";
 import WDArmyIcon from "../../ui/units/WDArmyIcon";
 import WDFleet from "../../ui/units/WDFleet";
 import WDFleetIcon from "../../ui/units/WDFleetIcon";
-import WDBuildUnitButtons, { BuildData } from "./WDBuildUnitButtons";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
@@ -25,10 +23,6 @@ interface WDTerritoryProps {
 
 interface Units {
   [key: string]: React.ReactElement;
-}
-
-interface BuildPopovers {
-  [key: string]: BuildData;
 }
 
 const WDTerritory: React.FC<WDTerritoryProps> = function ({
@@ -46,10 +40,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   >(undefined);
 
   const [territoryStrokeOpacity, setTerritoryStrokeOpacity] = React.useState(1);
-
-  const [buildPopovers, setBuildPopovers] = React.useState<BuildPopovers>({});
-
-  const [openBuildPopovers, setOpenBuildPopovers] = React.useState(false);
 
   const [units, setUnits] = React.useState<Units>({});
 
@@ -90,40 +80,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     setTerritoryStrokeOpacity(1);
   };
 
-  const build = (availableOrder, canBuild, toTerrID) => {
-    dispatch(
-      gameApiSliceActions.updateOrdersMeta({
-        [availableOrder]: {
-          saved: false,
-          update: {
-            type: BuildUnitMap[canBuild],
-            toTerrID,
-          },
-        },
-      }),
-    );
-    setOpenBuildPopovers(false);
-    dispatch(gameApiSliceActions.resetOrder());
-  };
-
   const commandActions = {
-    BUILD: (command) => {
-      const [key, value] = command;
-      const builds: BuildPopovers = {};
-      const buildsArray = value.data.build;
-      if (buildsArray?.length) {
-        buildsArray.forEach((b) => {
-          builds[b.unitSlotName] = {
-            ...b,
-            ...{ clickCallback: build, country: userCountry },
-          };
-        });
-      }
-      setBuildPopovers(builds);
-      setMoveHighlight();
-      setOpenBuildPopovers(true);
-      deleteCommand(key);
-    },
     CAPTURED: (command) => {
       const [key, value] = command;
       territoryMapData.type === "water"
@@ -145,7 +102,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     },
     REMOVE_BUILD: (command) => {
       const [key] = command;
-      setOpenBuildPopovers(false);
       setCapturedHighlight(userCountry);
       deleteCommand(key);
     },
@@ -282,33 +238,18 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
           if (!txt) {
             txt = territoryMapData.abbr;
           }
-          const b = buildPopovers[name];
           return (
-            <>
-              <g className="no-pointer-events">
-                <WDLabel
-                  id={id}
-                  name={name}
-                  key={id || i}
-                  style={style}
-                  text={txt}
-                  x={x}
-                  y={y}
-                />
-              </g>
-              {b && openBuildPopovers && (
-                <WDBuildUnitButtons
-                  availableOrder={b.availableOrder}
-                  canBuild={b.canBuild}
-                  clickCallback={b.clickCallback}
-                  country={b.country}
-                  labelID={id}
-                  toTerrID={b.toTerrID}
-                  x={x}
-                  y={y}
-                />
-              )}
-            </>
+            <g key={id} className="no-pointer-events">
+              <WDLabel
+                id={id}
+                name={name}
+                key={id || i}
+                style={style}
+                text={txt}
+                x={x}
+                y={y}
+              />
+            </g>
           );
         })}
       {territoryMapData.unitSlots &&

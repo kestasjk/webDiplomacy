@@ -8,7 +8,12 @@ export interface MemberData {
   missedPhases: number;
   newMessagesFrom: number[];
   online: boolean;
-  orderStatus: unknown;
+  orderStatus: {
+    Completed: boolean;
+    None: boolean;
+    Ready: boolean;
+    Saved: boolean;
+  };
   status: string;
   supplyCenterNo: number;
   timeLoggedIn: number;
