@@ -16,11 +16,10 @@ interface Unit {
 export default function getUnits(
   data: GameDataResponse["data"],
   members: GameOverviewResponse["members"],
-  overview: GameOverviewResponse,
+  phase: GameOverviewResponse["phase"],
 ): Unit[] {
   const unitsToDraw: Unit[] = [];
   const { territories, territoryStatuses, units } = data;
-  const { phase } = overview;
   Object.values(units).forEach((unit) => {
     let territory = territories[unit.terrID];
     const territoryStatus = territoryStatuses.find((t) => unit.terrID === t.id);
