@@ -24,6 +24,7 @@ export const ValidCommands = [
   "RETREAT",
   "SELECTED",
   "SET_UNIT",
+  "TOGGLE_POPOVER",
 ] as const;
 
 interface DrawArrowCommand {

@@ -239,7 +239,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
             txt = territoryMapData.abbr;
           }
           return (
-            <g className="no-pointer-events">
+            <g key={id} className="no-pointer-events">
               <WDLabel
                 id={id}
                 name={name}
