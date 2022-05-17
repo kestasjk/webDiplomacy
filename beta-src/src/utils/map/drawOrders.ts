@@ -1,6 +1,4 @@
 import { current } from "@reduxjs/toolkit";
-import { GameCommand } from "../../state/interfaces/GameCommands";
-import setCommand from "../state/setCommand";
 import drawBuilds from "./drawBuilds";
 import drawConvoyOrders from "./drawConvoyOrders";
 import drawMoveOrders from "./drawMoveOrders";
@@ -29,8 +27,4 @@ export default function drawOrders(state): void {
     updateUnitsRetreat(state);
     drawRetreatOrders(data, ordersMeta);
   }
-  const command: GameCommand = {
-    command: "TOGGLE_POPOVER",
-  };
-  setCommand(state, command, "mapCommands", "ui");
 }
