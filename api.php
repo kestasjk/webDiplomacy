@@ -423,7 +423,12 @@ class GetGameMembers extends ApiEntry {
 			'missedPhases' => $member->missedPhases,
 			'newMessagesFrom' => $retrievePrivateData ? $member->newMessagesFrom : [],
 			'online' => $member->online,
-			'orderStatus' => $member->orderStatus,
+			'orderStatus' => [
+				'Ready' => $member->orderStatus->Ready,
+				'Saved' => $member->orderStatus->Saved,
+				'Completed' => $member->orderStatus->Completed,
+				'None' => $member->orderStatus->None,
+			],
 			'status' => $member->status,
 			'supplyCenterNo' => $member->supplyCenterNo,
 			'timeLoggedIn' => $member->timeLoggedIn,
@@ -1379,9 +1384,10 @@ class Api {
 		// }
 
 		// Cache result
-		if( $this->route == 'players/missing_orders' && $cacheKey = $apiAuth->getCacheKey() ){
-			$MC->set($cacheKey, $result, 60); // Continually No rush to expire , should be cleaned on all game processes anyway
-		}
+		// FIXME: This breaks API Keys
+		// if( $this->route == 'players/missing_orders' && $cacheKey = $apiAuth->getCacheKey() ){
+		// 	$MC->set($cacheKey, $result, 60); // Continually No rush to expire , should be cleaned on all game processes anyway
+		// }
 
 		return $result;
 	}

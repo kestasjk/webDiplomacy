@@ -1,6 +1,15 @@
 import { GameState } from "../interfaces/GameState";
 
 const initialState: GameState = {
+  activity: {
+    lastActive: 0,
+    lastCall: 0,
+    makeNewCall: false,
+    season: "Spring",
+    year: 1901,
+    processTime: 0,
+    frequency: 120,
+  },
   apiStatus: "idle",
   board: undefined,
   data: {
@@ -69,7 +78,12 @@ const initialState: GameState = {
         missedPhases: 0,
         newMessagesFrom: [],
         online: false,
-        orderStatus: {},
+        orderStatus: {
+          Completed: false,
+          None: false,
+          Ready: false,
+          Saved: false,
+        },
         status: "Playing",
         supplyCenterNo: 4,
         timeLoggedIn: 0,
