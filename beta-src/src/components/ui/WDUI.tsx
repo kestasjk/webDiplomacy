@@ -140,6 +140,8 @@ const WDUI: React.FC = function (): React.ReactElement {
         [Move.READY]: true,
       }));
     }
+  } else if (gameState.ready) {
+    toggleState(Move.READY);
   }
 
   const popover = popoverTrigger.current ? (
