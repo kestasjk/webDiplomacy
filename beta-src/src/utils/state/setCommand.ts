@@ -12,6 +12,7 @@ export default function setCommand(
   container: GameCommandType,
   id: string,
 ): void {
+  console.log(`setCommand ${container} ${command.command}`);
   const { commands } = current(state);
   const commandsContainer = commands[container];
   const newCommand = new Map(commandsContainer[id]) || new Map();

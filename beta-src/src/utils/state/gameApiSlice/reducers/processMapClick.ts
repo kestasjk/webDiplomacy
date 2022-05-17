@@ -6,7 +6,8 @@ import { GameCommand } from "../../../../state/interfaces/GameCommands";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
 import { UnitSlotNames } from "../../../../types/map/UnitSlotName";
-import highlightMapTerritoriesBasedOnStatuses from "../../../map/highlightMapTerritoriesBasedOnStatuses";
+
+import getOrderStates from "../../getOrderStates";
 import processConvoy from "../../processConvoy";
 import resetOrder from "../../resetOrder";
 import setCommand from "../../setCommand";
@@ -99,7 +100,6 @@ export default function processMapClick(state, clickData) {
         type === "disband" ||
         type === "retreat")
     ) {
-      highlightMapTerritoriesBasedOnStatuses(state);
       resetOrder(state);
     } else if (truthyToTerritory && type === "build") {
       const command: GameCommand = {
@@ -121,7 +121,6 @@ export default function processMapClick(state, clickData) {
         return Territory[mappedTerritory.territory] === territoryName;
       });
       if (canMove) {
-        highlightMapTerritoriesBasedOnStatuses(state);
         const command: GameCommand = {
           command: "MOVE",
         };

@@ -15,6 +15,8 @@ const WDUnit: React.FC<GameIconProps> = function ({
 }): React.ReactElement {
   const theme = useTheme();
 
+  const [fluidIconState, setFluidIconState] = React.useState(iconState);
+  console.log("Made a WDArmy");
   return (
     <svg
       filter={theme.palette.svg.filters.dropShadows[1]}

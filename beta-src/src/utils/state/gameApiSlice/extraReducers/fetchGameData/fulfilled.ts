@@ -9,13 +9,20 @@ import UnitType from "../../../../../types/UnitType";
 import getTerritoriesMeta from "../../../../getTerritoriesMeta";
 import getOrdersMeta from "../../../../map/getOrdersMeta";
 import getUnits from "../../../../map/getUnits";
-import highlightMapTerritoriesBasedOnStatuses from "../../../../map/highlightMapTerritoriesBasedOnStatuses";
 import generateMaps from "../../../generateMaps";
 import setCommand from "../../../setCommand";
 import updateOrdersMeta from "../../../updateOrdersMeta";
 
 /* eslint-disable no-param-reassign */
 export default function fetchGameDataFulfilled(state, action): void {
+  console.log("fetchGameDataFulfilled");
+  console.log(action);
+  if (state.commands.unitCommands.length) {
+    // FIXME
+    console.log("fetchGameDataFulfilled BAIL");
+
+    return;
+  }
   state.apiStatus = "succeeded";
   state.data = action.payload;
   const {
@@ -31,6 +38,7 @@ export default function fetchGameDataFulfilled(state, action): void {
   } = current(state);
   let board;
   if (data.contextVars) {
+    // FIXME: can't put non-serializable object in store
     board = new BoardClass(
       data.contextVars.context,
       Object.values(data.territories),
@@ -47,46 +55,12 @@ export default function fetchGameDataFulfilled(state, action): void {
     }
   });
   const unitsToDraw = getUnits(data, members);
-  Object.values(data.territories).forEach(({ name }) => {
-    const mappedTerritory = TerritoryMap[name];
-    const command: GameCommand = {
-      command: "SET_UNIT",
-      data: { setUnit: { unitSlotName: mappedTerritory.unitSlotName } },
-    };
-    setCommand(
-      state,
-      command,
-      "territoryCommands",
-      mappedTerritory.parent
-        ? Territory[mappedTerritory.parent]
-        : Territory[mappedTerritory.territory],
-    );
-  });
-  unitsToDraw.forEach(({ country, mappedTerritory, unit }) => {
-    const command: GameCommand = {
-      command: "SET_UNIT",
-      data: {
-        setUnit: {
-          componentType: "Game",
-          country,
-          mappedTerritory,
-          unit,
-          unitType: unit.type as UnitType,
-          unitSlotName: mappedTerritory.unitSlotName,
-        },
-      },
-    };
-    setCommand(
-      state,
-      command,
-      "territoryCommands",
-      mappedTerritory.parent
-        ? Territory[mappedTerritory.parent]
-        : Territory[mappedTerritory.territory],
-    );
-  });
+  console.log("unitsToDraw");
+  console.log(unitsToDraw);
+  console.log(data.territories);
 
   state.territoriesMeta = getTerritoriesMeta(data);
-  highlightMapTerritoriesBasedOnStatuses(state);
+
+  // FIXME: figure out what's here
   updateOrdersMeta(state, getOrdersMeta(data, board, phase));
 }

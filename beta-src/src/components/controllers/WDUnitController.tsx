@@ -26,46 +26,30 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
     (state) => state.game.commands.unitCommands[meta.unit.id],
   );
 
-  const deleteCommand = (key) => {
-    dispatch(
-      gameApiSliceActions.deleteCommand({
-        type: "unitCommands",
-        id: meta.unit.id,
-        command: key,
-      }),
-    );
-  };
-
   const commandActions = {
     DISLODGED: (command) => {
       const [key] = command;
       setIconState(UIState.DISLODGED);
-      deleteCommand(key);
     },
     DESTROY: (command) => {
       const [key] = command;
       setIconState(UIState.DESTROY);
-      deleteCommand(key);
     },
     HOLD: (command) => {
       const [key] = command;
       setIconState(UIState.HOLD);
-      deleteCommand(key);
     },
     NONE: (command) => {
       const [key] = command;
       setIconState(UIState.NONE);
-      deleteCommand(key);
     },
     SELECTED: (command) => {
       const [key] = command;
       setIconState(UIState.SELECTED);
-      deleteCommand(key);
     },
     DISBAND: (command) => {
       const [key] = command;
       setIconState(UIState.DISBANDED);
-      deleteCommand(key);
     },
   };
 

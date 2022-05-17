@@ -45,16 +45,6 @@ const WDMapController: React.FC = function (): React.ReactElement {
   const device = getDevice(viewport);
   const [scaleMin, scaleMax] = getInitialScaleForDevice(device);
 
-  const deleteCommand = (key) => {
-    dispatch(
-      gameApiSliceActions.deleteCommand({
-        type: "mapCommands",
-        id: "all",
-        command: key,
-      }),
-    );
-  };
-
   const commandActions = {
     DRAW_ARROW: (command) => {
       const [key, value] = command;
@@ -67,12 +57,10 @@ const WDMapController: React.FC = function (): React.ReactElement {
         arrow.to,
         arrow.from,
       );
-      deleteCommand(key);
     },
     REMOVE_ARROW: (command) => {
       const [key, value] = command;
       d3.selectAll(`.arrow__${value.data.orderID}`).remove();
-      deleteCommand(key);
     },
     INVALID_CLICK: (command) => {
       const [key, value] = command;
@@ -107,7 +95,6 @@ const WDMapController: React.FC = function (): React.ReactElement {
           }, 100);
         }
       }
-      deleteCommand(key);
     },
   };
 
@@ -153,7 +140,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
       dispatch(gameApiSliceActions.updateOrdersMeta(ordersMeta));
     }, 500);
   }, []);
-
+  console.log("Renderd MapController");
   return (
     <div
       style={{

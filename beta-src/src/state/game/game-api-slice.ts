@@ -11,7 +11,7 @@ import GameOverviewResponse from "../interfaces/GameOverviewResponse";
 import { ApiStatus, GameState } from "../interfaces/GameState";
 import GameCommands from "../interfaces/GameCommands";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
-import GameMessages, { GameMessage } from "../interfaces/GameMessages";
+import GameMessages from "../interfaces/GameMessages";
 import { RootState } from "../store";
 import initialState from "./initial-state";
 import OrdersMeta from "../interfaces/SavedOrders";
@@ -19,7 +19,6 @@ import OrderState from "../interfaces/OrderState";
 import drawBuilds from "../../utils/map/drawBuilds";
 import mergeMessageArrays from "../../utils/state/mergeMessageArrays";
 import updateOrdersMeta from "../../utils/state/updateOrdersMeta";
-import highlightMapTerritoriesBasedOnStatuses from "../../utils/map/highlightMapTerritoriesBasedOnStatuses";
 import UpdateOrdersMetaAction from "../../interfaces/state/UpdateOrdersMetaAction";
 import SavedOrdersConfirmation from "../../interfaces/state/SavedOrdersConfirmation";
 import OrderSubmission from "../../interfaces/state/OrderSubmission";
@@ -27,7 +26,6 @@ import resetOrder from "../../utils/state/resetOrder";
 import processUnitDoubleClick from "../../utils/state/gameApiSlice/reducers/processUnitDoubleClick";
 import processUnitClick from "../../utils/state/gameApiSlice/reducers/processUnitClick";
 import processMapClick from "../../utils/state/gameApiSlice/reducers/processMapClick";
-import deleteCommand from "../../utils/state/gameApiSlice/reducers/deleteCommand";
 import dispatchCommand from "../../utils/state/gameApiSlice/reducers/dispatchCommand";
 import fetchGameDataFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameData/fulfilled";
 import updateUserActivity from "../../utils/state/gameApiSlice/reducers/updateUserActivity";
@@ -194,8 +192,6 @@ const gameApiSlice = createSlice({
     processUnitDoubleClick,
     processUnitClick,
     processMapClick,
-    deleteCommand,
-    highlightMapTerritoriesBasedOnStatuses,
     drawBuilds,
     dispatchCommand,
     processMessagesSeen(state, action) {
@@ -211,10 +207,13 @@ const gameApiSlice = createSlice({
     builder
       // fetchGameData
       .addCase(fetchGameData.pending, (state) => {
+        console.log("fetchGameData pending!");
+
         state.apiStatus = "loading";
       })
       .addCase(fetchGameData.fulfilled, fetchGameDataFulfilled)
       .addCase(fetchGameData.rejected, (state, action) => {
+        console.log("fetchGameData rejected!");
         state.apiStatus = "failed";
         state.error = action.error.message;
       })
@@ -274,6 +273,7 @@ const gameApiSlice = createSlice({
           0,
         );
         if (action.payload) {
+          console.log(`payload`);
           const { messages, newMessagesFrom, time } = action.payload;
           if (messages) {
             const allMessages = mergeMessageArrays(
@@ -287,6 +287,7 @@ const gameApiSlice = createSlice({
           if (newMessagesFrom) {
             state.messages.newMessagesFrom = newMessagesFrom;
           }
+          console.log(`time=${time}`);
           if (time) {
             state.messages.time = time;
           }

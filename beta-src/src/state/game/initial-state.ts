@@ -35,6 +35,7 @@ const initialState: GameState = {
   },
   ordersMeta: {},
   ownUnits: [],
+  units: [],
   maps: {
     territoryToUnit: {},
     unitToOrder: {},
