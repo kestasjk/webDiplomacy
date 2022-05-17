@@ -72,7 +72,6 @@ export default function writeBuildNotifications(state): void {
     }
   } else {
     // If the current phase is not build, make sure the delete indexes are empty
-    state.notifications[0] = undefined;
-    state.notifications[1] = undefined;
+    state.notifications = [];
   }
 }

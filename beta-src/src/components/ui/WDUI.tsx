@@ -198,7 +198,7 @@ const WDUI: React.FC = function (): React.ReactElement {
         />
       </WDPositionContainer>
       <WDPositionContainer position={Position.BOTTOM_LEFT}>
-        <WDNotificationContainer />
+        <WDNotificationContainer phase={phase} />
       </WDPositionContainer>
     </>
   );
