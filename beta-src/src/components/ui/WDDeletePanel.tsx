@@ -10,14 +10,13 @@ interface WDDeletePanelProps {
 const WDDeletePanel: React.FC<WDDeletePanelProps> = function ({
   notifications,
 }): React.ReactElement {
+  // The 0 and 1 index are for delete notifications. Future notification panels will
+  // need to use whichever indexes are used in their respective write____Notifications.ts
+  const { 0: deleteTracker, 1: deleteReminder } = notifications;
   return (
     <Stack direction="column">
-      <Box>
-        <WDNotification notification={notifications[0]} />
-      </Box>
-      <Box>
-        <WDNotification notification={notifications[1]} />
-      </Box>
+      <WDNotification notification={deleteTracker} />
+      <WDNotification notification={deleteReminder} />
     </Stack>
   );
 };

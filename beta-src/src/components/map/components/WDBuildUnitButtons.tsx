@@ -2,6 +2,7 @@
 import * as React from "react";
 import BuildUnit from "../../../enums/BuildUnit";
 import Country from "../../../enums/Country";
+import Territory from "../../../enums/map/variants/classic/Territory";
 import UIState from "../../../enums/UIState";
 import WDArmyIcon from "../../ui/units/WDArmyIcon";
 import WDFleetIcon from "../../ui/units/WDFleetIcon";
@@ -15,10 +16,9 @@ export interface BuildData {
   ) => void;
   country: Country;
   canBuild: BuildUnit;
-  labelID: string;
+  territoryName: keyof Territory | null;
+  unitSlotName: string;
   toTerrID: string;
-  x: number;
-  y: number;
 }
 
 const WDBuildUnitButtons: React.FC<BuildData> = function ({
@@ -26,21 +26,24 @@ const WDBuildUnitButtons: React.FC<BuildData> = function ({
   clickCallback,
   country,
   canBuild,
-  labelID,
+  territoryName,
+  unitSlotName,
   toTerrID,
-  x,
-  y,
 }): React.ReactElement {
   const label: SVGTextElement = document.getElementById(
-    labelID,
+    `${territoryName}-label-${unitSlotName}`,
   ) as unknown as SVGTextElement;
+  const territory: SVGSVGElement = document.getElementById(
+    `${territoryName}-territory`,
+  ) as unknown as SVGSVGElement;
+  const { x, y } = label.getBBox();
+  let svgX = Number(territory.getAttribute("x")) + x;
+  let svgY = Number(territory.getAttribute("y")) + y;
   let rw = 70;
   const rh = 70;
   const rBorder = 10;
   const rFill = "rgba(0,0,0,.7)";
   const buildButtons: React.ReactElement[] = [];
-  let svgX = x;
-  let svgY = y;
   const iconStyle: React.CSSProperties = {
     width: 50,
     height: 50,

@@ -6,10 +6,12 @@ const defaultStyle = {
   backgroundColor: "rgba(0,0,0,.4)",
   color: "#ffffff",
   fontSize: "16px",
+  fontWeight: 700,
   height: 40,
   lineHeight: 2.5,
   m: 1,
   textAlign: "center",
+  width: 200,
 };
 
 // Currently, indexes 0 and 1 are being used as the delete labels.
@@ -41,29 +43,18 @@ export default function writeBuildNotifications(state): void {
       if (ordersToGo > 1) {
         state.notifications[0] = {
           message: `Select ${ordersToGo} units to destroy.`,
-          style: {
-            ...defaultStyle,
-            fontWeight: 700,
-            width: 200,
-          },
+          style: { ...defaultStyle },
         };
+        state.notifications.deletetracker = "hello";
       } else if (ordersToGo === 1) {
         state.notifications[0] = {
           message: "Select 1 unit to destroy.",
-          style: {
-            ...defaultStyle,
-            fontWeight: 700,
-            width: 200,
-          },
+          style: { ...defaultStyle },
         };
       } else if (ordersToGo === 0) {
         state.notifications[0] = {
           message: "Orders ready to submit",
-          style: {
-            ...defaultStyle,
-            fontWeight: 700,
-            width: 200,
-          },
+          style: { ...defaultStyle },
         };
       }
       if (ordersToGo < totalOrders) {

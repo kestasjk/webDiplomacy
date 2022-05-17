@@ -25,8 +25,9 @@ import processMapClick from "../../utils/state/gameApiSlice/reducers/processMapC
 import deleteCommand from "../../utils/state/gameApiSlice/reducers/deleteCommand";
 import dispatchCommand from "../../utils/state/gameApiSlice/reducers/dispatchCommand";
 import fetchGameDataFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameData/fulfilled";
-import updateUnitsRetreat from "../../utils/map/updateUnitsRetreat";
 import updateUserActivity from "../../utils/state/gameApiSlice/reducers/updateUserActivity";
+import fetchGameOverviewFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameOverview/fulfilled";
+import saveOrdersFulfilled from "../../utils/state/gameApiSlice/extraReducers/saveOrders/fulfilled";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -98,6 +99,15 @@ export const saveOrders = createAsyncThunk(
   },
 );
 
+export const loadGameData =
+  (gameID: string, countryID: string) => async (dispatch) => {
+    await Promise.all([
+      dispatch(fetchGameData({ gameID, countryID })),
+      dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
+      dispatch(fetchGameStatus({ gameID, countryID })),
+    ]);
+  };
+
 export const loadGame = (gameID: string) => async (dispatch) => {
   const {
     payload: {
@@ -113,8 +123,8 @@ export const loadGame = (gameID: string) => async (dispatch) => {
   await Promise.all([
     dispatch(fetchGameData({ gameID, countryID })),
     dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
+    dispatch(fetchGameStatus({ gameID, countryID })),
   ]);
-  return true;
 };
 
 /**
@@ -161,11 +171,7 @@ const gameApiSlice = createSlice({
         state.apiStatus = "loading";
         state.activity.makeNewCall = false;
       })
-      .addCase(fetchGameOverview.fulfilled, (state, action) => {
-        state.apiStatus = "succeeded";
-        state.overview = action.payload;
-        state.activity.makeNewCall = false;
-      })
+      .addCase(fetchGameOverview.fulfilled, fetchGameOverviewFulfilled)
       .addCase(fetchGameOverview.rejected, (state, action) => {
         state.apiStatus = "failed";
         state.error = action.error.message;
@@ -183,25 +189,7 @@ const gameApiSlice = createSlice({
         state.error = action.error.message;
       })
       // saveOrders
-      .addCase(saveOrders.fulfilled, (state, action) => {
-        if (action.payload) {
-          const { orders, newContext, newContextKey } = action.payload;
-          if (newContext && newContextKey) {
-            state.data.data.contextVars = {
-              context: newContext,
-              contextKey: newContextKey,
-            };
-          }
-
-          Object.entries(orders).forEach(([id, value]) => {
-            if (value.status === "Complete") {
-              state.ordersMeta[id].saved = true;
-            }
-          });
-        }
-
-        updateUnitsRetreat(state);
-      })
+      .addCase(saveOrders.fulfilled, saveOrdersFulfilled)
       // Fetch Game Messages
       .addCase(fetchGameMessages.fulfilled, (state, action) => {
         if (action.payload) {

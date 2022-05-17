@@ -11,7 +11,6 @@ const WDNotification: React.FC<WDNotificationProps> = function ({
 }): React.ReactElement {
   return (
     <Box>
-      {/* If below exists, render the box */}
       {notification && (
         <Box sx={notification.style}>{notification.message}</Box>
       )}
