@@ -75,13 +75,13 @@ print l_t('Updating session table').'<br />';
 libGameMaster::updateSessionTable();
 
 $statsDir=libCache::dirName('stats');
-// $onlineFile=$statsDir.'/onlineUsers.json';
-// $tabl=$DB->sql_tabl("SELECT userID FROM wD_Sessions");
-// $onlineUsers=array();
-// while(list($userID)=$DB->tabl_row($tabl))
-// 	$onlineUsers[]=$userID;
+$onlineFile=$statsDir.'/onlineUsers.json';
+$tabl=$DB->sql_tabl("SELECT userID FROM wD_Sessions");
+$onlineUsers=array();
+while(list($userID)=$DB->tabl_row($tabl))
+	$onlineUsers[]=$userID;
 
-// file_put_contents($onlineFile, 'onlineUsers=$A(['.implode(',',$onlineUsers).']);');
+file_put_contents($onlineFile, 'onlineUsers=$A(['.implode(',',$onlineUsers).']);');
 
 //- Update misc values (if running as admin/mod)
 if( !$User->type['System'] || (time()%(15*60)<=5*60) )
@@ -91,6 +91,7 @@ if( !$User->type['System'] || (time()%(15*60)<=5*60) )
 	miscUpdate::forum();
 	miscUpdate::game();
 	miscUpdate::user();
+
 }
 
 //- Check last process time, pause processing/save current process time
@@ -98,6 +99,13 @@ if ( ( time() - $Misc->LastProcessTime ) > Config::$downtimeTriggerMinutes*60 )
 {
 	libHTML::notice(l_t('Games not processing'),libHTML::admincp('resetLastProcessTime',null,l_t('Continue processing now')));
 }
+
+// Update the reliability ratings:
+print l_t('Updating user phase/year counts').'<br />';
+libGameMaster::updatePhasePerYearCount();
+
+print l_t('Updating reliabilty ratings');
+libGameMaster::updateReliabilityRating();
 
 // Get the current processing time. It is important to save this at this point so that next process the next 
 // LastProcessTime will exactly match this process' $currentProcessTime (this ensures all turns that pass over 1 year

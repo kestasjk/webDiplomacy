@@ -117,7 +117,8 @@ class Database {
 			 */
 		$this->sql_put("SET AUTOCOMMIT=0, NAMES utf8, time_zone = '+0:00'");
 		$this->sql_put("SET SQL_MODE='NO_ENGINE_SUBSTITUTION'"); // This statement is just intended to make sure the server isn't in strict mode
-		$this->sql_put("SET TRANSACTION ISOLATION LEVEL READ COMMITTED"); // Changed from READ COMMITTED which was causing too many deadlocks; use LOCK IN SHARE MODE when the latest query is needed instead
+		$this->sql_put("SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED"); // 20220515 added SESSION to ensure all transactions run under READ COMMITTED, including after first commit// Changed from READ COMMITTED which was causing too many deadlocks; use LOCK IN SHARE MODE when the latest query is needed instead
+		// This seems odd since SET AUTOCOMMIT=0 is enough to set it for the whole session, but SET TRANSACTION ISOLATION LEVEL doesn't set it for the whole session.. https://dev.mysql.com/doc/refman/5.6/en/innodb-autocommit-commit-rollback.html
 	}
 
 	/**

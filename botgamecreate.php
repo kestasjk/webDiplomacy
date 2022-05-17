@@ -149,7 +149,7 @@ print '<div class="content-bare content-board-header content-title-header">
 	<div class="pageDescription">Start a new game of Diplomacy against bots.</div>
 </div>
 <div class="content content-follow-on">
-	<p><a href="gamecreate.php">Play A Game Against Humans</a></p>
+	<p><a href="gamecreate.php">Play a game against humans</a></p>
 	<div class = "gameCreateShow">
 	<p>All games against bots are unranked, with 3 day phases and 4 excused missed turns. However, anytime you ready up your orders, the game will immediately move to the next phase.</p>
 		<form method="post">
