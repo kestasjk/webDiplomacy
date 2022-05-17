@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Box, Stack } from "@mui/material";
+import { Stack } from "@mui/material";
 import { GameState } from "../../state/interfaces/GameState";
 import WDNotification from "./WDNotification";
 
