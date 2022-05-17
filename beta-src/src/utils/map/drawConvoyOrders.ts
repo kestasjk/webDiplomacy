@@ -36,7 +36,7 @@ export default function drawConvoyOrders(
               drawArrow(
                 id,
                 ArrowType.MOVE,
-                ArrowColor.IMPLIED,
+                ArrowColor.IMPLIED_FOREIGN,
                 "territory",
                 TerritoryMap[territories[toTerrID].name].territory,
                 TerritoryMap[territories[fromTerrID].name].territory,
