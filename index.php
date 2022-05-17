@@ -70,28 +70,9 @@ if(isset($_POST['submit']))
 
 class libHome
 {
-	static public function getType($type=false, $limit=35)
-	{
-		global $DB, $User;
-
-		$notices=array();
-
-		$tabl=$DB->sql_tabl("SELECT n.*
-			FROM wD_Notices n
-			LEFT JOIN wD_Games g on g.name = n.linkName and n.type = 'Game'
-			LEFT JOIN wD_Members m on m.gameID = g.id and n.type = 'Game' and m.userID = ".$User->id."
-			WHERE (m.hideNotifications is null or m.hideNotifications = 0) and n.toUserID=".$User->id.($type ? " AND n.type='".$type."'" : '')."
-			ORDER BY n.timeSent DESC ".($limit?'LIMIT '.$limit:''));
-		while($hash=$DB->tabl_hash($tabl))
-		{
-			$notices[] = new notice($hash);
-		}
-
-		return $notices;
-	}
 	public static function PMs()
 	{
-		$pms = self::getType('PM', 10);
+		$pms = notice::getType('PM', 10);
 		$buf = '';
 		foreach($pms as $pm)
 		{
@@ -103,7 +84,7 @@ class libHome
 	{
 		global $User;
 
-		$pms = self::getType('Game');
+		$pms = notice::getType('Game');
 
 		if(!count($pms))
 		{
@@ -137,7 +118,7 @@ class libHome
 		if ( $message )
 			print '<p class="notice">'.$message.'</p>';
 
-		$pms = self::getType('PM',50);
+		$pms = notice::getType('PM',50);
 
 		if(!count($pms))
 		{
@@ -159,7 +140,7 @@ class libHome
 	{
 		global $User;
 
-		$pms = self::getType('Game');
+		$pms = notice::getType('Game');
 
 		if(!count($pms))
 		{
@@ -182,7 +163,7 @@ class libHome
 	{
 		global $User;
 
-		$pms = self::getType();
+		$pms = notice::getType();
 
 		if(!count($pms))
 		{
@@ -397,12 +378,11 @@ class libHome
 		$tabl = $DB->sql_tabl("
 			SELECT m.id as postID, t.id as threadID, m.type, m.timeSent, IF(t.replies IS NULL,m.replies,t.replies) as replies,
 				IF(t.subject IS NULL,m.subject,t.subject) as subject,
-				u.id as userID, u.username, u.points, IF(s.userID IS NULL,0,0) as online, u.type as userType,
+				u.id as userID, u.username, u.points, u.type as userType,
 				SUBSTRING(m.message,1,100) as message, m.latestReplySent, t.fromUserID as threadStarterUserID
 			FROM wD_ForumMessages m
 			INNER JOIN wD_Users u ON ( m.fromUserID = u.id )
-			LEFT JOIN wD_Sessions s ON ( m.fromUserID = s.userID )
-			LEFT JOIN wD_ForumMessages t ON ( m.toID = t.id AND t.type = 'ThreadStart' AND m.type = 'ThreadReply' )
+			INNER JOIN wD_ForumMessages t ON ( m.toID = t.id AND t.type = 'ThreadStart' AND m.type = 'ThreadReply' )
 			ORDER BY m.timeSent DESC
 			LIMIT 50");
 		$oldThreads=0;
@@ -411,7 +391,7 @@ class libHome
 		$threadIDs = array();
 		$threads = array();
 
-		while(list($postID, $threadID, $type, $timeSent, $replies, $subject, $userID, $username, $points, $online, $userType, $message, $latestReplySent,$threadStarterUserID
+		while(list($postID, $threadID, $type, $timeSent, $replies, $subject, $userID, $username, $points, $userType, $message, $latestReplySent,$threadStarterUserID
 			) = $DB->tabl_row($tabl))
 		{
 			$threadCount++;
@@ -438,7 +418,7 @@ class libHome
 
 			$threads[$threadID]['posts'][] = array(
 				'iconMessage'=>$iconMessage,'userID'=>$userID, 'username'=>$username,
-				'message'=>$message,'points'=>$points, 'online'=>$online, 'userType'=>$userType, 'timeSent'=>$timeSent
+				'message'=>$message,'points'=>$points, 'userType'=>$userType, 'timeSent'=>$timeSent
 			);
 		}
 
@@ -466,11 +446,8 @@ class libHome
 			{
 				$buf .= '<div class="homeForumPost homeForumPostAlt'.libHTML::alternate().' userID'.$post['userID'].'">
 
-					<div class="homeForumPostTime">'.libTime::text($post['timeSent']).' '.$post['iconMessage'].'</div>
-					<a href="userprofile.php?userID='.$post['userID'].'" class="light">'.$post['username'].'</a>
-						'.' ('.$post['points'].libHTML::points().
-						User::typeIcon($post['userType']).')
-
+					<div class="homeForumPostTime">'.libTime::text($post['timeSent']).' '.$post['iconMessage'].'</div>'.
+					User::profile_link_static($post['username'], $post['userID'], $post['userType'], $post['points']).'
 					<div style="clear:both"></div>
 					<div class="homeForumMessage">'.$post['message'].'</div>
 					</div>';

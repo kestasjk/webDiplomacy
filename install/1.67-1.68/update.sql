@@ -23,4 +23,4 @@ CREATE TABLE `wD_GameMessages_Redacted` (
   PRIMARY KEY (`id`) USING BTREE,                                                                                                                                                     
   KEY `toMember` (`gameID`,`toCountryID`) USING BTREE,                                                                                                                                
   KEY `fromMember` (`gameID`,`fromCountryID`) USING BTREE                                                                                                                             
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;    
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;                  

@@ -72,6 +72,15 @@ function orderIndex($title, $depth)
 	}
 }
 
+// People have got invalid territory IDs into the moves archive, this wil prevent it crashing the moves page
+function tryGetTerritoryName($terrID) {
+	global $terrIDToName;
+
+	if( key_exists($terrID,$terrIDToName) )
+		return $terrIDToName[$terrID];
+	else
+		return "???";
+}
 //TODO: Merge this code with the normal order output code
 function outputOrderLogs(array $orders)
 {
@@ -124,10 +133,10 @@ function outputOrderLogs(array $orders)
 					switch($order['type'])
 					{
 						case 'retreat':
-							$buffer .= l_t('The %s at %s retreat to %s',l_t($order['unitType']),l_t($terrIDToName[$order['terrID']]),l_t($terrIDToName[$order['toTerrID']]));
+							$buffer .= l_t('The %s at %s retreat to %s',l_t($order['unitType']),l_t(tryGetTerritoryName($order['terrID'])),l_t(tryGetTerritoryName($order['toTerrID'])));
 							break;
 						case 'disband':
-							$buffer .= l_t('The %s at %s disband',l_t($order['unitType']),l_t($terrIDToName[$order['terrID']]));
+							$buffer .= l_t('The %s at %s disband',l_t($order['unitType']),l_t(tryGetTerritoryName($order['terrID'])));
 					}
 				}
 				elseif ( $phase == 'Unit-placement' )
@@ -136,20 +145,20 @@ function outputOrderLogs(array $orders)
 					{
 						case 'build army':
 						case 'build fleet':
-							$buffer .= l_t('Build %s at %s',($order['type']=='build army'?l_t('army'):l_t('fleet')),l_t($terrIDToName[$order['terrID']]));
+							$buffer .= l_t('Build %s at %s',($order['type']=='build army'?l_t('army'):l_t('fleet')),l_t(tryGetTerritoryName($order['terrID'])));
 							break;
 						case 'wait':
 							$buffer .= l_t('Do not use build order');
 							break;
 						case 'destroy':
-							$buffer .= l_t('Destroy the unit at %s',l_t($terrIDToName[$order['terrID']]));
+							$buffer .= l_t('Destroy the unit at %s',l_t(tryGetTerritoryName($order['terrID'])));
 					}
 				}
 				else
 				{
-					$buffer .= l_t("The %s at %s %s",l_t($order['unitType']),l_t($terrIDToName[$order['terrID']]),l_t($order['type'])).
-						($order['toTerrID'] ? l_t(" to %s",l_t($terrIDToName[$order['toTerrID']])) : '' ).
-						($order['fromTerrID'] ? l_t(" from %s",l_t($terrIDToName[$order['fromTerrID']])) : '').
+					$buffer .= l_t("The %s at %s %s",l_t($order['unitType']),l_t(tryGetTerritoryName($order['terrID'])),l_t($order['type'])).
+						($order['toTerrID'] ? l_t(" to %s",l_t(tryGetTerritoryName($order['toTerrID']))) : '' ).
+						($order['fromTerrID'] ? l_t(" from %s",l_t(tryGetTerritoryName($order['fromTerrID']))) : '').
 						($order['viaConvoy'] == 'Yes' ? l_t(" via convoy") : '');
 				}
 

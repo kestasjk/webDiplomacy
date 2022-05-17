@@ -38,7 +38,7 @@ class Config
 	 *
 	 * @var string
 	 */
-	public static $database_socket='localhost';
+	public static $database_socket='mariadb';
 
 	/**
 	 * The user who will perform all database actions. You should
@@ -123,7 +123,7 @@ class Config
 	 * An array of variants available on the server (for future releases, not yet enabled)
 	 * @var array
 	 */
-	public static $variants=array(1=>'Classic', 2=>'World', 9=>'AncMed',19=>'Modern2',20=>'Empire4');//3=>'FleetRome', 4=>'CustomStart', 5=>'BuildAnywhere');
+	public static $variants=array(1=>'Classic',2=>'World',9=>'AncMed',15=>'ClassicFvA',17=>'ClassicChaos',19=>'Modern2',20=>'Empire4',23=>'ClassicGvI',57=>'KnownWorld_901',91=>'ColdWar');
 
 	/**
 	 * A boolean controlling whether automatic gr calculations are enabled. Set to true for auto-GR calculation and false to require manual calculations via the modtool. Note that $grCategories must exist to work.
@@ -324,8 +324,8 @@ class Config
 			"UseSMTP"=> true,
 			/* Use SMTP, if this is FALSE the variable below is ignored. */
 			"SMTPSettings"=> array(
-					"Host"=>"yourdiplomacyserver.com",
-					"Port"=>"25",
+					"Host"=>"mailhog",
+					"Port"=>"1025",
 					"SMTPAuth"=>false,
 					/* If this is FALSE the two variables below are ignored */
 					"Username"=>"webmaster",
@@ -361,7 +361,7 @@ class Config
 	 * is set to true if viewing as admin)
 	 * @var boolean
 	 */
-	public static $debug=false;
+	public static $debug=true;
 
 	/**
 	 * The locale for this site.

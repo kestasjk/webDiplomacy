@@ -326,6 +326,7 @@ class libAuth
 		}
 		catch(Exception $e)
 		{
+			self::keyWipe(); // If there is a problem with a cookie ensure it is wiped
 			libHTML::error(l_t("The userID provided does not exist."));
 		}
 		return self::generateKey($userID, $TRYUser->password);

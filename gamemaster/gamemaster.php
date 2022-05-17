@@ -70,8 +70,8 @@ class libGameMaster
 
 			// Save access logs, to detect multi-accounters
 			$DB->sql_put("INSERT INTO wD_AccessLog
-				( userID, lastRequest, hits, ip, userAgent, cookieCode )
-				SELECT userID, lastRequest, hits, ip, userAgent, cookieCode
+				( userID, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint )
+				SELECT userID, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint
 				FROM wD_Sessions
 				WHERE userID IN (".$userIDs.")");
 
@@ -94,35 +94,91 @@ class libGameMaster
 	}
 
 	/**
-	 * Recalculates for all users that have logged in the last 30 days.
-	 * 
-	 * This is a relatively DB intensive query since it needs to check over 2 tables for all the users it includes, but it does 
-	 * ensure the way the numbers are calculated can be tracked back to the specific games involved.
-	 * 
-	 * This could be optimized by making it recalculate only for users who are members / who were members in games that have just been
-	 * processed.
-	 * 
-	 * @param $recalculateAll If true don't filter on active users, but recalculate for all users, which takes longer
+	 * Update users' phase-per-year count, which is used to calculate reliability ratings. This has to be 
+	 * done carefully as the refresh rate is fairly high and the dataset is v large. The queries below have 
+	 * been optimized to ensure they don't scan the table but go straight to the index boundaries.
 	 */
-	static public function updateReliabilityRating($recalculateAll = false)
+	static public function updatePhasePerYearCount($recalculateAll = false)
+	{
+		global $DB;
+
+		//-- Careful, the below is carefully optimized to use the indexes in the best way, small changes can make this v slow:
+
+		if( $recalculateAll )
+		{
+			$DB->sql_put("UPDATE wD_TurnDate SET isInReliabilityPeriod = CASE WHEN turnDateTime>UNIX_TIMESTAMP() - 60*60*24*365 THEN 1 ELSE 0 END;");
+		}
+
+		$DB->sql_put("UPDATE wD_TurnDate t
+			INNER JOIN (
+				-- Find the first id marked as in the last year using the isInReliabilityPeriod,turnDateTime index
+				SELECT id FROM wD_TurnDate WHERE isInReliabilityPeriod = 1 ORDER BY isInReliabilityPeriod,turnDateTime LIMIT 1
+			) lwr
+			INNER JOIN (
+				-- Up to the first id younger than a year using the turnDateTime index
+				SELECT id FROM wD_TurnDate WHERE turnDateTime > UNIX_TIMESTAMP() - 365*24*60*60 ORDER BY turnDateTime LIMIT 1
+			) upr
+			SET t.isInReliabilityPeriod = NULL
+			WHERE t.id >= lwr.id AND t.id <= upr.id;");
+
+		$DB->sql_put("UPDATE wD_Users u
+			INNER JOIN (
+				SELECT t.userID, COUNT(*) yearlyPhaseCount
+				FROM (SELECT userID FROM wD_TurnDate WHERE isInReliabilityPeriod IS NULL ".($recalculateAll?" OR 1=1 " :"").") phasesChanged
+				INNER JOIN wD_TurnDate t ON phasesChanged.userID = t.userID
+				WHERE t.isInReliabilityPeriod = 1
+				GROUP BY t.userID
+			) p ON p.userID = u.id
+			SET u.yearlyPhaseCount = p.yearlyPhaseCount;");
+		$DB->sql_put("UPDATE wD_TurnDate SET isInReliabilityPeriod = 0 WHERE isInReliabilityPeriod IS NULL;");
+		$DB->sql_put("COMMIT"); // Ensure no users are left locked
+		$DB->sql_put("BEGIN"); // I think this might be needed to ensure we are within a transaction going forward?
+	}
+	/**
+	 * Recalculates the reliability ratings for all users.
+	 * 
+	 * Each active phase players are in adds to TurnData, which GameMaster sums up for each user for the past 
+	 * year every 15 mins
+	 */
+	static public function updateReliabilityRating()
 	{
 		global $DB, $Misc;
 
-		$year = time() - 31536000;
-		$lastMonth = time() - 2419200;
-		$lastWeek = time() - 604800;
-
-		$RELIABILITY_QUERY = "
-		UPDATE wD_Users u 
-		set u.reliabilityRating = greatest(0, 
-		(100 *(1 - ((SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.modExcused = 0 and t.turnDateTime > ".$year.") / greatest(1,u.yearlyPhaseCount))))
-		-(6*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 0 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastMonth."))
-		-(6*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 1 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastWeek."))
-		-(5*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 1 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastMonth."))
-		-(5*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 0 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$year.")))";
-			
 		// Calculates the RR for members. 
-		$DB->sql_put($RELIABILITY_QUERY. ($recalculateAll ? "" : " WHERE u.timeLastSessionEnded+(30*86400) > ".$Misc->LastProcessTime));
+		$DB->sql_put("SELECT a.id, a.reliabilityRating RR_NOW, b.reliabilityRating RR_NEW FROM wD_Users a
+		INNER JOIN (
+			SELECT userID, IF(reliabilityRating<0,0,reliabilityRating) reliabilityRating
+			FROM (
+				SELECT t.userID, 
+				SUM(CASE 
+				-- If not missed for an exempt reasonwd_turndate
+				WHEN t.systemExcused = 0 AND t.samePeriodExcused = 0
+				THEN
+					CASE
+					-- If not live ..
+					WHEN liveGame = 0
+					THEN
+						-- .. then take 6 for missed turns newer than 1 month ago
+						CASE WHEN t.turnDateTime > UNIX_TIMESTAMP() - 31*24*60*60 THEN -6 ELSE 0 END
+						- -- .. and 5 for older missed turns (only up to 1 year)
+						5
+					ELSE -- liveGame = 1
+						-- Or if live .. take 6 for missed turns under a week ago
+						CASE WHEN t.turnDateTime > UNIX_TIMESTAMP() - 7*24*60*60 THEN -6 ELSE 0 END
+						+
+						-- And take 5 for missed turns under a month ago
+						CASE WHEN t.turnDateTime > UNIX_TIMESTAMP() - 31*24*60*60 THEN -5 ELSE 0 END
+					END
+				-- If missed for an exempt reason add a value from 100 to 0 that gets smaller as the user does more games.
+				-- Goes from 99 with 100 phases / year, and 1 with 0 phases / year.
+				ELSE 100 * (1 - 1 / IF(u.yearlyPhaseCount < 1, 1, u.yearlyPhaseCount))
+				END) reliabilityRating
+			FROM wD_MissedTurns t  
+			INNER JOIN wD_Users u ON u.id = t.UserID
+			WHERE t.modExcused = 0 AND t.turnDateTime > UNIX_TIMESTAMP() - 60*60*24*365
+			GROUP BY t.userID
+			) b 
+		) b ON a.id = b.userID;");
 		
 		$DB->sql_put("COMMIT");
 	}

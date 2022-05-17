@@ -63,6 +63,8 @@ class libGameMessage
 			throw new Exception(l_t("Message too long"));
 		}
 
+		$time = time();
+
 		$DB->sql_put("INSERT INTO wD_GameMessages
 					(gameID, toCountryID, fromCountryID, turn, message, phaseMarker, timeSent)
 					VALUES(".$Game->id.",
@@ -71,12 +73,14 @@ class libGameMessage
 						".$Game->turn.",
 						'".$message."',
 						'".$Game->phase."',
-						".time().")");
+						".$time.")");
 
 		if ($toCountryID != $fromCountryID || $fromCountryID == 0)
 		{
 			libGameMessage::notify($toCountryID, $fromCountryID);
 		}
+
+		return $time;
 	}
 
 	/**
