@@ -16,13 +16,6 @@ import updateOrdersMeta from "../../../updateOrdersMeta";
 /* eslint-disable no-param-reassign */
 export default function fetchGameDataFulfilled(state, action): void {
   console.log("fetchGameDataFulfilled");
-  console.log(action);
-  if (state.commands.unitCommands.length) {
-    // FIXME
-    console.log("fetchGameDataFulfilled BAIL");
-
-    return;
-  }
   state.apiStatus = "succeeded";
   state.data = action.payload;
   const {
@@ -54,10 +47,7 @@ export default function fetchGameDataFulfilled(state, action): void {
       state.ownUnits.push(unit.id);
     }
   });
-  const unitsToDraw = getUnits(data, members);
-  console.log("unitsToDraw");
-  console.log(unitsToDraw);
-  console.log(data.territories);
+  state.units = getUnits(data, members);
 
   state.territoriesMeta = getTerritoriesMeta(data);
 

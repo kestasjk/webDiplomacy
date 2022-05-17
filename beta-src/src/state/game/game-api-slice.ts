@@ -29,6 +29,7 @@ import processMapClick from "../../utils/state/gameApiSlice/reducers/processMapC
 import dispatchCommand from "../../utils/state/gameApiSlice/reducers/dispatchCommand";
 import fetchGameDataFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameData/fulfilled";
 import updateUserActivity from "../../utils/state/gameApiSlice/reducers/updateUserActivity";
+import TerritoriesMeta from "../interfaces/TerritoriesState";
 import fetchGameOverviewFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameOverview/fulfilled";
 import saveOrdersFulfilled from "../../utils/state/gameApiSlice/extraReducers/saveOrders/fulfilled";
 
@@ -322,5 +323,8 @@ export const userActivity = ({
 }: RootState): GameState["activity"] => activity;
 export const gameMessages = ({ game: { messages } }: RootState): GameMessages =>
   messages;
+export const gameTerritoriesMeta = ({
+  game: { territoriesMeta },
+}: RootState): TerritoriesMeta => territoriesMeta;
 
 export default gameApiSlice.reducer;

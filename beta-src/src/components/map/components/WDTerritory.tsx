@@ -2,12 +2,15 @@ import { useTheme } from "@mui/material";
 import * as React from "react";
 import BuildUnitMap from "../../../data/BuildUnit";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
-import { TerritoryMapData } from "../../../interfaces";
+import Territories from "../../../data/Territories";
+import { MemberData, TerritoryMapData } from "../../../interfaces";
 import {
   gameApiSliceActions,
   gameOverview,
+  gameTerritoriesMeta,
 } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
+import { TerritoryMeta } from "../../../state/interfaces/TerritoriesState";
 import ClickObjectType from "../../../types/state/ClickObjectType";
 import processNextCommand from "../../../utils/processNextCommand";
 import WDArmyIcon from "../../ui/units/WDArmyIcon";
@@ -35,14 +38,8 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
 }): React.ReactElement {
   const theme = useTheme();
   const dispatch = useAppDispatch();
-
-  const [territoryFill, setTerritoryFill] = React.useState<string | undefined>(
-    territoryMapData.fill,
-  );
-
-  const [territoryFillOpacity, setTerritoryFillOpacity] = React.useState<
-    number | undefined
-  >(undefined);
+  const { members } = useAppSelector(gameOverview);
+  const territoriesMeta = useAppSelector(gameTerritoriesMeta);
 
   const [territoryStrokeOpacity, setTerritoryStrokeOpacity] = React.useState(1);
 
@@ -72,20 +69,10 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   };
 
   const setMoveHighlight = () => {
-    setTerritoryFill(theme.palette[userCountry].main);
-    setTerritoryFillOpacity(0.9);
     setTerritoryStrokeOpacity(1);
   };
 
   const setCapturedHighlight = (country) => {
-    if (country) {
-      country === "none"
-        ? setTerritoryFill("none")
-        : setTerritoryFill(theme.palette[country].main);
-    } else {
-      setTerritoryFill(theme.palette[userCountry].main);
-    }
-    setTerritoryFillOpacity(0.4);
     setTerritoryStrokeOpacity(1);
   };
 
@@ -105,6 +92,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     dispatch(gameApiSliceActions.resetOrder());
   };
 
+<<<<<<< HEAD
   const commandActions = {
     BUILD: (command) => {
       const [key, value] = command;
@@ -210,7 +198,148 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   };
 
   processNextCommand(commands, commandActions);
+=======
+  // const commandActions = {
+  //   BUILD: (command) => {
+  //     const [key, value] = command;
+  //     const builds: BuildPopovers = {};
+  //     const buildsArray = value.data.build;
+  //     if (buildsArray?.length) {
+  //       buildsArray.forEach((b) => {
+  //         builds[b.unitSlotName] = {
+  //           ...b,
+  //           ...{ clickCallback: build, country: userCountry },
+  //         };
+  //       });
+  //     }
+  //     setBuildPopovers(builds);
+  //     setMoveHighlight();
+  //     setOpenBuildPopovers(true);
+  //   },
+  //   CAPTURED: (command) => {
+  //     const [key, value] = command;
+  //     console.log(`${territoryMapData.name} CAPTURED ${value.data?.country}`);
+  //     territoryMapData.type === "water"
+  //       ? setTerritoryFill("none")
+  //       : setCapturedHighlight(value.data?.country);
+  //   },
+  //   HOLD: (command) => {
+  //     const [key] = command;
+  //     setTerritoryStrokeOpacity(2);
+  //   },
+  //   MOVE: (command) => {
+  //     const [key] = command;
+  //     setMoveHighlight();
+  //   },
+  //   REMOVE_BUILD: (command) => {
+  //     const [key] = command;
+  //     setOpenBuildPopovers(false);
+  //     setCapturedHighlight(userCountry);
+  //   },
+  //   SET_UNIT: (command) => {
+  //     console.log("SET_UNIT");
+  //     const [key, value] = command;
+  //     console.log(value.data);
 
+  //     const {
+  //       componentType,
+  //       country,
+  //       iconState,
+  //       mappedTerritory,
+  //       unit,
+  //       unitType,
+  //       unitSlotName,
+  //     } = value.data.setUnit;
+  //     console.log(
+  //       `${territoryMapData.name} ${country} ${unitType} ${componentType}`,
+  //     );
+  //     let newUnit;
+  //     if (country && unitType && componentType) {
+  //       switch (componentType) {
+  //         case "Game":
+  //           if (unit) {
+  //             switch (unitType) {
+  //               case "Army":
+  //                 console.log("Made an army...");
+  //                 newUnit = (
+  //                   <WDArmy
+  //                     id={`${territoryMapData.name}-unit`}
+  //                     country={country}
+  //                     meta={{ country, mappedTerritory, unit }}
+  //                   />
+  //                 );
+  //                 break;
+  //               case "Fleet":
+  //                 newUnit = (
+  //                   <WDFleet
+  //                     id={`${territoryMapData.name}-unit`}
+  //                     country={country}
+  //                     meta={{ country, mappedTerritory, unit }}
+  //                   />
+  //                 );
+  //                 break;
+  //               default:
+  //                 break;
+  //             }
+  //           }
+  //           break;
+  //         case "Icon":
+  //           switch (unitType) {
+  //             case "Army":
+  //               newUnit = (
+  //                 <svg filter={theme.palette.svg.filters.dropShadows[1]}>
+  //                   <WDArmyIcon country={country} iconState={iconState} />
+  //                 </svg>
+  //               );
+  //               break;
+  //             case "Fleet":
+  //               newUnit = (
+  //                 <svg filter={theme.palette.svg.filters.dropShadows[1]}>
+  //                   <WDFleetIcon country={country} iconState={iconState} />
+  //                 </svg>
+  //               );
+  //               break;
+  //             default:
+  //               break;
+  //           }
+  //           break;
+  //         default:
+  //           break;
+  //       }
+  //     }
+  //     const set = {
+  //       ...units,
+  //       ...{ [unitSlotName]: newUnit },
+  //     };
+  //     setUnits(set);
+  //   },
+  // };
+  // processNextCommand(commands, commandActions);
+>>>>>>> f31209a (Proof-of-concept territory fill without commands)
+
+  const territoryNameToMeta: { [key: string]: TerritoryMeta } = {};
+  Object.entries(territoriesMeta).forEach(([id, meta]) => {
+    territoryNameToMeta[Territories[id].name] = meta;
+  });
+
+  const countryIDToMember: { [key: number]: MemberData } = {};
+  Object.entries(members).forEach(([id, memberData]) => {
+    countryIDToMember[memberData.countryID] = memberData;
+  });
+  const territoryName = territoryMapData.name;
+  let territoryFill = "none";
+  let territoryFillOpacity = 0;
+  const territoryMeta = territoryNameToMeta[territoryName];
+
+  if (territoryMeta && territoryMeta.countryID) {
+    const ownerCountryID = territoryMeta.countryID;
+    const ownerMember = countryIDToMember[ownerCountryID];
+    territoryFill = ownerCountryID
+      ? theme.palette[ownerMember.country].main
+      : "none";
+
+    territoryFillOpacity = 0.4;
+  }
   const clickAction = function (evt, clickObject: ClickObjectType) {
     dispatch(
       gameApiSliceActions.processMapClick({
@@ -220,7 +349,10 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       }),
     );
   };
+<<<<<<< HEAD
 
+=======
+>>>>>>> f31209a (Proof-of-concept territory fill without commands)
   return (
     <svg
       height={territoryMapData.height}

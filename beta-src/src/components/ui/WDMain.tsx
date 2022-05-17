@@ -11,10 +11,7 @@ const WDMapController = React.lazy(
 const WDMain: React.FC = function (): React.ReactElement {
   const { user, gameID } = useAppSelector(gameOverview);
   const dispatch = useAppDispatch();
-  console.log("Rendered WDMain");
   if (user && gameID) {
-    console.log("FetchGameData");
-
     dispatch(
       fetchGameData({
         gameID: gameID as unknown as string,
