@@ -98,6 +98,25 @@ export const saveOrders = createAsyncThunk(
   },
 );
 
+export const loadGame = (gameID: string) => async (dispatch) => {
+  const {
+    payload: {
+      user: {
+        member: { countryID },
+      },
+    },
+  } = await dispatch(
+    fetchGameOverview({
+      gameID,
+    }),
+  );
+  await Promise.all([
+    dispatch(fetchGameData({ gameID, countryID })),
+    dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
+  ]);
+  return true;
+};
+
 /**
  * createSlice handles state changes properly without reassiging state, but
  * eslint does not know this. therefore, no-param-reassign is disabled for
@@ -140,10 +159,12 @@ const gameApiSlice = createSlice({
       // fetchGameOverview
       .addCase(fetchGameOverview.pending, (state) => {
         state.apiStatus = "loading";
+        state.activity.makeNewCall = false;
       })
       .addCase(fetchGameOverview.fulfilled, (state, action) => {
         state.apiStatus = "succeeded";
         state.overview = action.payload;
+        state.activity.makeNewCall = false;
       })
       .addCase(fetchGameOverview.rejected, (state, action) => {
         state.apiStatus = "failed";
