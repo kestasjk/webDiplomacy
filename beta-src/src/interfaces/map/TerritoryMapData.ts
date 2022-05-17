@@ -6,6 +6,7 @@ export interface TerritoryMapData extends Territory, BBox {
   fill?: string;
   labels?: Label[];
   path: string;
+  stroke?: string;
   texture?: Texture;
   unitSlots?: UnitSlot[];
   viewBox?: string;

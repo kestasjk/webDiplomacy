@@ -57,9 +57,9 @@ import {
   SEVASTOPOL,
   SILESIA,
   SMYRNA,
+  SPAIN,
   SPAIN_NORTH_COAST,
   SPAIN_SOUTH_COAST,
-  SPAIN,
   SWEDEN,
   SYRIA,
   TRIESTE,
@@ -163,9 +163,9 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={BOHEMIA} />
         <WDTerritory territoryMapData={BREST} />
         <WDTerritory territoryMapData={BUDAPEST} />
+        <WDTerritory territoryMapData={BULGARIA} />
         <WDTerritory territoryMapData={BULGARIA_NORTH_COAST} />
         <WDTerritory territoryMapData={BULGARIA_SOUTH_COAST} />
-        <WDTerritory territoryMapData={BULGARIA} />
         <WDTerritory territoryMapData={BURGUNDY} />
         <WDTerritory territoryMapData={CLYDE} />
         <WDTerritory territoryMapData={CONSTANTINOPLE} />
@@ -200,16 +200,16 @@ const WDBoardMap: React.FC = function (): React.ReactElement {
         <WDTerritory territoryMapData={PRUSSIA} />
         <WDTerritory territoryMapData={RUHR} />
         <WDTerritory territoryMapData={RUMANIA} />
+        <WDTerritory territoryMapData={SAINT_PETERSBURG} />
         <WDTerritory territoryMapData={SAINT_PETERSBURG_NORTH_COAST} />
         <WDTerritory territoryMapData={SAINT_PETERSBURG_SOUTH_COAST} />
-        <WDTerritory territoryMapData={SAINT_PETERSBURG} />
         <WDTerritory territoryMapData={SERBIA} />
         <WDTerritory territoryMapData={SEVASTOPOL} />
         <WDTerritory territoryMapData={SILESIA} />
         <WDTerritory territoryMapData={SMYRNA} />
+        <WDTerritory territoryMapData={SPAIN} />
         <WDTerritory territoryMapData={SPAIN_NORTH_COAST} />
         <WDTerritory territoryMapData={SPAIN_SOUTH_COAST} />
-        <WDTerritory territoryMapData={SPAIN} />
         <WDTerritory territoryMapData={SWEDEN} />
         <WDTerritory territoryMapData={SYRIA} />
         <WDTerritory territoryMapData={TRIESTE} />
