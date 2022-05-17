@@ -114,12 +114,24 @@ const WDUI: React.FC = function (): React.ReactElement {
     }));
   };
 
-  React.useEffect(() => {
-    if (popoverTrigger.current) {
-      setTimeout(() => {
-        toggleControlModal();
-      }, 1000);
+  const checkIfTriggerVisible = (i = 0) => {
+    if (i > 10) {
+      return;
     }
+    if (popoverTrigger.current) {
+      const rect = popoverTrigger.current.getBoundingClientRect();
+      if (!rect.width || !rect.height) {
+        setTimeout(() => {
+          checkIfTriggerVisible(i + 1);
+        }, 500);
+      } else {
+        toggleControlModal();
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    checkIfTriggerVisible();
   }, [popoverTrigger]);
 
   if (orderStatus.None && !readyDisabled) {
