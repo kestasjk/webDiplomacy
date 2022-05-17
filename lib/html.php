@@ -69,52 +69,52 @@ class libHTML
 
 	static function platinum()
 	{
-		return ' <img src="'.l_s('images/icons/platinum.png').'" alt="(P)" title="'.l_t('Donator - platinum').'" />';
+		return '<img src="'.l_s('images/icons/platinum.png').'" alt="(P)" title="'.l_t('Donator - platinum').'" />';
 	}
 
 	static function gold()
 	{
-		return ' <img src="'.l_s('images/icons/gold.png').'" alt="(G)" title="'.l_t('Donator - gold').'" />';
+		return '<img src="'.l_s('images/icons/gold.png').'" alt="(G)" title="'.l_t('Donator - gold').'" />';
 	}
 
 	static function silver()
 	{
-		return ' <img src="'.l_s('images/icons/silver.png').'" alt="(S)" title="'.l_t('Donator - silver').'" />';
+		return '<img src="'.l_s('images/icons/silver.png').'" alt="(S)" title="'.l_t('Donator - silver').'" />';
 	}
 
 	static function bronze()
 	{
-		return ' <img src="'.l_s('images/icons/bronze.png').'" alt="(B)" title="'.l_t('Donator - bronze').'" />';
+		return '<img src="'.l_s('images/icons/bronze.png').'" alt="(B)" title="'.l_t('Donator - bronze').'" />';
 	}
 
 	static function service()
 	{
-		return ' <img src="'.l_s('images/icons/service.png').'" alt="(P)" title="'.l_t('Service Award').'" />';
+		return '<img src="'.l_s('images/icons/service.png').'" alt="(P)" title="'.l_t('Service Award').'" />';
 	}
 
 	static function owner()
 	{
-		return ' <img src="'.l_s('images/icons/owner.png').'" alt="(P)" title="'.l_t('Site Co-Owner').'" />';
+		return '<img src="'.l_s('images/icons/owner.png').'" alt="(P)" title="'.l_t('Site Co-Owner').'" />';
 	}
 
 	static function adamantium()
 	{
-		return ' <img src="'.l_s('images/icons/adamantium.png').'" alt="(P)" title="'.l_t('Donator - adamantium').'" />';
+		return '<img src="'.l_s('images/icons/adamantium.png').'" alt="(P)" title="'.l_t('Donator - adamantium').'" />';
 	}
 
 	static function goldStar()
 	{
-		return ' <img height="16" width="16" src="'.l_s('images/icons/GoldStar.png').'" alt="(G)" title="'.l_t('1st Place').'" />';
+		return '<img height="16" width="16" src="'.l_s('images/icons/GoldStar.png').'" alt="(G)" title="'.l_t('1st Place').'" />';
 	}
 
 	static function silverStar()
 	{
-		return ' <img height="16" width="16" src="'.l_s('images/icons/SilverStar.png').'" alt="(S)" title="'.l_t('2nd Place').'" />';
+		return '<img height="16" width="16" src="'.l_s('images/icons/SilverStar.png').'" alt="(S)" title="'.l_t('2nd Place').'" />';
 	}
 
 	static function bronzeStar()
 	{
-		return ' <img height="16" width="16" src="'.l_s('images/icons/BronzeStar.png').'" alt="(B)" title="'.l_t('3rd Place').'" />';
+		return '<img height="16" width="16" src="'.l_s('images/icons/BronzeStar.png').'" alt="(B)" title="'.l_t('3rd Place').'" />';
 	}
 
 	/**
@@ -123,7 +123,7 @@ class libHTML
 	 */
 	static function points()
 	{
-		return ' <img src="'.l_s('images/icons/points.png').'" alt="D" title="'.l_t('webDiplomacy points').'" />';
+		return '<img src="'.l_s('images/icons/points.png').'" alt="D" title="'.l_t('webDiplomacy points').'" />';
 	}
 
 	static function forumMessage($threadID, $messageID)
@@ -843,6 +843,7 @@ class libHTML
 		$links['tournamentScoring.php']=array('name'=>'Tournament Scoring', 'inmenu'=>FALSE);
 		$links['tournamentRegistration.php']=array('name'=>'Tournament Registration', 'inmenu'=>FALSE);
 		$links['botgamecreate.php']=array('name'=>'New Bot Game', 'inmenu'=>TRUE, 'title'=>"Start up a new bot game");
+		$links['group.php']=array('name'=>'User Relationships', 'inmenu'=>FALSE);
 
 
 		if ( is_object($User) )
@@ -973,6 +974,7 @@ class libHTML
 						}
 						$menu.='
 							<a href="usercp.php" title="Change your user specific settings">Site Settings</a>
+							<a href="group.php" title="Manage your user relationships">User Relationships</a>
 						</div>
                 	</div>
                 	<div id="navSubMenu" class = "clickable nav-tab">Help ▼
@@ -1247,6 +1249,7 @@ class libHTML
 		$footerIncludes[] = l_j('timeHandler.js');
 		$footerIncludes[] = l_j('forum.js');
 		$footerIncludes[] = l_j('Color.Vision.Daltonize.js');
+		$footerIncludes[] = l_j('../cache/stats/onlineUsers.json');
 
 		// Don't localize all the footer includes here, as some of them may be dynamically generated
 		foreach( array_merge($footerIncludes,self::$footerIncludes) as $includeJS ) // Add on the dynamically added includes
@@ -1325,6 +1328,7 @@ class libHTML
                 	toggleElem.innerHTML = "Enable Desktop Mode";
                 }
             }
+			setUserOnlineIcons();
 		</script>
 		';
 

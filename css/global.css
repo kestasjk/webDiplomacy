@@ -54,7 +54,7 @@ span.points {
 input[type="text"], input[type="password"], textarea, select {
 	font-size: 14px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	background-color: #ffffff ;
+	/* background-color: #ffffff ; This prevents disabled inputs from showing in gray */
 	border: 1px solid #c1c1c1;
 	color:#000000;
 }
@@ -1448,7 +1448,7 @@ input[type=submit].gameCreate:hover {
 	padding-top: 12px;
 	padding-bottom: 12px;
 	text-align: left;
-	background-color: #009902;
+	background-color: #0e8805;
 	color: white;
 	min-width:70px;
 }
@@ -1700,7 +1700,7 @@ input[type=submit].contactUs:hover {
 input[type="text"].userSearch, input[type="password"].userSearch, textarea.userSearch, select.userSearch {
 	font-size: 14px !important;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	background-color: #ffffff !important;
+	background-color: #ffffff !important; 
 	border: 1px solid #c1c1c1;
 	color:#000000;
 }
