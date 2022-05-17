@@ -16,9 +16,11 @@ interface Unit {
 export default function getUnits(
   data: GameDataResponse["data"],
   members: GameOverviewResponse["members"],
+  overview: GameOverviewResponse,
 ): Unit[] {
   const unitsToDraw: Unit[] = [];
-  const { contextVars, territories, territoryStatuses, units } = data;
+  const { territories, territoryStatuses, units } = data;
+  const { phase } = overview;
   Object.values(units).forEach((unit) => {
     let territory = territories[unit.terrID];
     const territoryStatus = territoryStatuses.find((t) => unit.terrID === t.id);
@@ -36,7 +38,7 @@ export default function getUnits(
       unit.id === territoryStatus.unitID &&
       occupiedTerritory?.ownerCountryID === unit.countryID &&
       territoryHasMultipleUnits.length > 1 &&
-      contextVars?.context.phase === "Retreats"
+      phase === "Retreats"
     ) {
       territory = territories[territoryStatus.occupiedFromTerrID];
     }

@@ -98,10 +98,21 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
       toggleState(type);
     }
   };
+  const deleteCommand = (key) => {
+    dispatch(
+      gameApiSliceActions.deleteCommand({
+        type: "mapCommands",
+        id: "all",
+        command: key,
+      }),
+    );
+  };
 
   const commandActions = {
     SAVE_ORDERS: (command) => {
+      const [key, value] = command;
       clickButton(Move.SAVE);
+      deleteCommand(key);
     },
   };
 

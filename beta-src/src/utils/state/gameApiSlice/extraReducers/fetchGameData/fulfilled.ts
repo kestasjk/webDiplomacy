@@ -20,15 +20,12 @@ export default function fetchGameDataFulfilled(state, action): void {
   state.data = action.payload;
   const {
     data: { data },
-    overview: { members, phase, user },
+    overview,
   }: {
     data: { data: GameDataResponse["data"] };
-    overview: {
-      members: GameOverviewResponse["members"];
-      phase: GameOverviewResponse["phase"];
-      user: GameOverviewResponse["user"];
-    };
+    overview: GameOverviewResponse;
   } = current(state);
+  const { members, phase, user } = overview;
   let board;
   if (data.contextVars) {
     board = new BoardClass(
@@ -46,7 +43,7 @@ export default function fetchGameDataFulfilled(state, action): void {
       state.ownUnits.push(unit.id);
     }
   });
-  const unitsToDraw = getUnits(data, members);
+  const unitsToDraw = getUnits(data, members, overview);
   Object.values(data.territories).forEach(({ name }) => {
     const mappedTerritory = TerritoryMap[name];
     const command: GameCommand = {

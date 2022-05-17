@@ -4,28 +4,27 @@ import GameDataResponse from "../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
 import OrderState from "../../state/interfaces/OrderState";
 import OrdersMeta from "../../state/interfaces/SavedOrders";
-import getOrderStates from "../state/getOrderStates";
 import setCommand from "../state/setCommand";
 
 export default function updateUnitsRetreat(state): void {
   const {
     data: {
-      data: { contextVars, currentOrders },
+      data: { currentOrders },
     },
     order,
     ordersMeta,
-    overview: { phase },
+    overview: {
+      phase,
+      user: {
+        member: { orderStatus },
+      },
+    },
   }: {
     data: GameDataResponse;
     order: OrderState;
     ordersMeta: OrdersMeta;
     overview: GameOverviewResponse;
   } = current(state);
-  let orderStates;
-
-  if (contextVars) {
-    orderStates = getOrderStates(contextVars.context.orderStatus);
-  }
 
   currentOrders?.forEach(({ id, unitID }) => {
     const { update } = ordersMeta[id];
@@ -60,7 +59,7 @@ export default function updateUnitsRetreat(state): void {
       currentOrders.length === 1 &&
       type === "Disband" &&
       !allowedBorderCrossings?.length &&
-      !orderStates?.Completed
+      !orderStatus.Completed
     ) {
       command = {
         command: "SAVE_ORDERS",
