@@ -5,9 +5,9 @@ export const CoastType = Object.freeze({
 });
 
 export const GamePhaseType = Object.freeze({
-  Build: "Build",
+  Builds: "Builds",
   Diplomacy: "Diplomacy",
-  Retreat: "Retreat",
+  Retreats: "Retreats",
 });
 
 export const UnitType = Object.freeze({
