@@ -102,14 +102,11 @@ export default function processMapClick(state, clickData) {
       highlightMapTerritoriesBasedOnStatuses(state);
       resetOrder(state);
     } else if (truthyToTerritory && type === "build") {
-      setCommand(
-        state,
-        {
-          command: "REMOVE_BUILD",
-        },
-        "territoryCommands",
-        Territory[toTerritory],
-      );
+      const command: GameCommand = {
+        command: "REMOVE_BUILD",
+      };
+      setCommand(state, command, "territoryCommands", Territory[toTerritory]);
+      setCommand(state, command, "mapCommands", "build");
       resetOrder(state);
     } else if (
       clickObject === "territory" &&
@@ -263,6 +260,7 @@ export default function processMapClick(state, clickData) {
           },
         };
         setCommand(state, command, "territoryCommands", territoryName);
+        setCommand(state, command, "mapCommands", "build");
 
         UnitSlotNames.forEach((slot) => {
           command = {
@@ -311,35 +309,38 @@ export default function processMapClick(state, clickData) {
         const command: GameCommand = {
           command: "BUILD",
           data: {
-            build: [
-              {
-                availableOrder,
-                canBuild,
-                toTerrID: territoryMeta.id,
-                unitSlotName: "main",
-              },
-            ],
+            build: {
+              territoryName,
+              builds: [
+                {
+                  availableOrder,
+                  canBuild,
+                  toTerrID: territoryMeta.id,
+                  unitSlotName: "main",
+                },
+              ],
+            },
           },
         };
         if (territoryMeta.territory === Territory.SAINT_PETERSBURG) {
           const nc = territoriesMeta[Territory.SAINT_PETERSBURG_NORTH_COAST];
           const sc = territoriesMeta[Territory.SAINT_PETERSBURG_SOUTH_COAST];
           nc &&
-            command.data?.build?.push({
+            command.data?.build?.builds?.push({
               availableOrder,
               canBuild: BuildUnit.Fleet,
               toTerrID: nc.id,
               unitSlotName: "nc",
             });
           sc &&
-            command.data?.build?.push({
+            command.data?.build?.builds?.push({
               availableOrder,
               canBuild: BuildUnit.Fleet,
               toTerrID: sc.id,
               unitSlotName: "sc",
             });
         }
-        setCommand(state, command, "territoryCommands", territoryName);
+        setCommand(state, command, "mapCommands", "build");
         startNewOrder(state, {
           payload: {
             inProgress: true,
