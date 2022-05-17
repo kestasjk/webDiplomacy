@@ -4,7 +4,7 @@ import { getGameApiRequest, submitOrders } from "../../utils/api";
 import GameDataResponse from "../interfaces/GameDataResponse";
 import GameErrorResponse from "../interfaces/GameErrorResponse";
 import GameOverviewResponse from "../interfaces/GameOverviewResponse";
-import { ApiStatus } from "../interfaces/GameState";
+import { ApiStatus, GameState } from "../interfaces/GameState";
 import GameCommands from "../interfaces/GameCommands";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
 import GameMessages from "../interfaces/GameMessages";
@@ -26,6 +26,7 @@ import deleteCommand from "../../utils/state/gameApiSlice/reducers/deleteCommand
 import dispatchCommand from "../../utils/state/gameApiSlice/reducers/dispatchCommand";
 import fetchGameDataFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameData/fulfilled";
 import updateUnitsRetreat from "../../utils/map/updateUnitsRetreat";
+import updateUserActivity from "../../utils/state/gameApiSlice/reducers/updateUserActivity";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -110,6 +111,7 @@ const gameApiSlice = createSlice({
   initialState,
   reducers: {
     resetOrder,
+    updateUserActivity,
     updateOrdersMeta(state, action: UpdateOrdersMetaAction) {
       updateOrdersMeta(state, action.payload);
     },
@@ -214,5 +216,8 @@ export const gameOrdersMeta = ({
   game: { ordersMeta },
 }: RootState): OrdersMeta => ordersMeta;
 export const gameOrder = ({ game: { order } }: RootState): OrderState => order;
+export const userActivity = ({
+  game: { activity },
+}: RootState): GameState["activity"] => activity;
 
 export default gameApiSlice.reducer;

@@ -1,12 +1,15 @@
 import { current } from "@reduxjs/toolkit";
+import TerritoryMap from "../../../../../data/map/variants/classic/TerritoryMap";
 import Territory from "../../../../../enums/map/variants/classic/Territory";
 import BoardClass from "../../../../../models/BoardClass";
 import { GameCommand } from "../../../../../state/interfaces/GameCommands";
 import GameDataResponse from "../../../../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../../../../state/interfaces/GameOverviewResponse";
 import UnitType from "../../../../../types/UnitType";
+import getTerritoriesMeta from "../../../../getTerritoriesMeta";
 import getOrdersMeta from "../../../../map/getOrdersMeta";
 import getUnits from "../../../../map/getUnits";
+import highlightMapTerritoriesBasedOnStatuses from "../../../../map/highlightMapTerritoriesBasedOnStatuses";
 import generateMaps from "../../../generateMaps";
 import setCommand from "../../../setCommand";
 import updateOrdersMeta from "../../../updateOrdersMeta";
@@ -44,6 +47,21 @@ export default function fetchGameDataFulfilled(state, action): void {
     }
   });
   const unitsToDraw = getUnits(data, members);
+  Object.values(data.territories).forEach(({ name }) => {
+    const mappedTerritory = TerritoryMap[name];
+    const command: GameCommand = {
+      command: "SET_UNIT",
+      data: { setUnit: { unitSlotName: mappedTerritory.unitSlotName } },
+    };
+    setCommand(
+      state,
+      command,
+      "territoryCommands",
+      mappedTerritory.parent
+        ? Territory[mappedTerritory.parent]
+        : Territory[mappedTerritory.territory],
+    );
+  });
   unitsToDraw.forEach(({ country, mappedTerritory, unit }) => {
     const command: GameCommand = {
       command: "SET_UNIT",
@@ -68,5 +86,7 @@ export default function fetchGameDataFulfilled(state, action): void {
     );
   });
 
+  state.territoriesMeta = getTerritoriesMeta(data);
+  highlightMapTerritoriesBasedOnStatuses(state);
   updateOrdersMeta(state, getOrdersMeta(data, board, phase));
 }
