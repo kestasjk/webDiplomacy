@@ -62,6 +62,8 @@ class notice
 				$this->linkURL = 'board.php?gameID='.$this->linkID;
 			elseif( $this->type=='PM' || $this->type=='User' )
 				$this->linkURL = 'profile.php?userID='.$this->linkID.'#message';
+			elseif( $this->type=='Group' )
+				$this->linkURL = 'group.php?groupId='.$this->linkID.'#message';
 			else
 				$this->linkURL = '';
 		}
@@ -205,6 +207,25 @@ class notice
 		return $this->text;
 	}
 
+	static public function getType($type=false, $limit=35, $linkID=0)
+	{
+		global $DB, $User;
+
+		$notices=array();
+
+		$tabl=$DB->sql_tabl("SELECT n.*
+			FROM wD_Notices n
+			LEFT JOIN wD_Games g on g.name = n.linkName and n.type = 'Game'
+			LEFT JOIN wD_Members m on m.gameID = g.id and n.type = 'Game' and m.userID = ".$User->id."
+			WHERE (m.hideNotifications is null or m.hideNotifications = 0) and n.toUserID=".$User->id.($type ? " AND n.type='".$type."'" : '').($linkID>0?" AND n.fromID = ".$linkID." ":"")."
+			ORDER BY n.timeSent DESC ".($limit?'LIMIT '.$limit:''));
+		while($hash=$DB->tabl_hash($tabl))
+		{
+			$notices[] = new notice($hash);
+		}
+
+		return $notices;
+	}
 	public static function send($toUserID, $fromID, $type, $keep, $private, $text, $linkName, $linkID='NULL')
 	{
 		global $DB;

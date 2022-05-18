@@ -211,11 +211,6 @@ class adminActionsRestricted extends adminActionsSeniorMod
 					using this admin action.',
 				'params' => array('mapID'=>'Map ID'),
 			),
-			'recalculateRR' => array(
-				'name' => 'Recalculate reliability ratings',
-				'description' => 'Updates the reliability ratings for all users.',
-				'params' => array()
-			),
 			'resetLastProcessTime' => array(
 				'name' => 'Reset last process time',
 				'description' => 'Once the reason for the period of no processing is known, and it\'s safe to reenable
@@ -886,13 +881,6 @@ class adminActionsRestricted extends adminActionsSeniorMod
 		$DB->sql_put("COMMIT");
 
 		return l_t('The unit destroy indexes were recreated for map ID #%s ; there were %s entries before and there are currently %s entries.', $mapID, $entriesBefore, $entriesAfter);
-	}
-
-	public function recalculateRR(array $params)
-	{
-		require_once(l_r('gamemaster/gamemaster.php'));
-		libGameMaster::updateReliabilityRating(true);
-		return l_t("Reliability Ratings have been recalculated");
 	}
 
 	private function makeDonatorType(array $params, $type='') 

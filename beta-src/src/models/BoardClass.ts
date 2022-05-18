@@ -97,7 +97,7 @@ export default class BoardClass {
       this.convoyGroups.forEach((cg) => cg.linkGroups());
     }
 
-    if (context.phase === GamePhaseType.Build) {
+    if (context.phase === GamePhaseType.Builds) {
       this.territories.forEach((t) => {
         if (
           t.coastParent.supply &&
