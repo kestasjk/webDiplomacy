@@ -24,15 +24,23 @@ export default function drawConvoyOrders(
             const { id, unitID } = originalOrder;
 
             const unitBeingConvoyed = maps.territoryToUnit[fromTerrID];
-            const unitBeingConvoyedOrder = maps.unitToOrder[unitBeingConvoyed];
+            const unitBeingConvoyedOrder =
+              maps.unitToOrder[unitBeingConvoyed] || orderID;
 
             const convoyingTerritory = maps.unitToTerritory[unitID];
             const convoyingTerritoryDetails = territories[convoyingTerritory];
 
             const { update: unitBeingConvoyedOrderDetails } =
               ordersMeta[unitBeingConvoyedOrder];
-
-            if (update.toTerrID === unitBeingConvoyedOrderDetails?.toTerrID) {
+            if (toTerrID === unitBeingConvoyedOrderDetails?.toTerrID) {
+              drawArrow(
+                id,
+                ArrowType.MOVE,
+                ArrowColor.IMPLIED_FOREIGN,
+                "territory",
+                TerritoryMap[territories[toTerrID].name].territory,
+                TerritoryMap[territories[fromTerrID].name].territory,
+              );
               drawArrow(
                 id,
                 ArrowType.CONVOY,

@@ -115,6 +115,22 @@ export default function processUnitClick(state, clickData) {
       } else {
         startNewOrder(state, clickData);
       }
+    } else if (!ownUnits.includes(clickData.payload.unitID)) {
+      // Convoy Ally
+      const currentOrderUnitType = units[unitID].type;
+      const newClickUnitType = units[clickData.payload.unitID].type;
+      if (currentOrderUnitType === "Fleet" && newClickUnitType === "Army") {
+        state.order.type = "convoy";
+        state.order.subsequentClicks.push({
+          ...{
+            inProgress: true,
+            order: orderID,
+            toTerritory: null,
+          },
+          ...clickData.payload,
+        });
+        highlightMapTerritoriesBasedOnStatuses(state);
+      }
     }
   } else if (ownUnits.includes(clickData.payload.unitID)) {
     startNewOrder(state, clickData);
