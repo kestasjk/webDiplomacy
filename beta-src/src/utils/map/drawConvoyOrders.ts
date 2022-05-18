@@ -32,7 +32,7 @@ export default function drawConvoyOrders(
 
             const { update: unitBeingConvoyedOrderDetails } =
               ordersMeta[unitBeingConvoyedOrder];
-            if (update.toTerrID === unitBeingConvoyedOrderDetails?.toTerrID) {
+            if (toTerrID === unitBeingConvoyedOrderDetails?.toTerrID) {
               drawArrow(
                 id,
                 ArrowType.MOVE,

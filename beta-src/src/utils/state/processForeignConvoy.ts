@@ -25,7 +25,6 @@ export default function processForeignConvoy(state): void {
     const fromTerritory = maps.enumToTerritory[lastUnitInChain.onTerritory];
 
     if (convoyToChoices.includes(toTerritory)) {
-      // const orderUnit = board.findUnitByID(lastUnitInChain.unitID);
       const fleetOrder = currentOrders?.find((o) => o.unitID === order.unitID);
       if (fleetOrder) {
         const fleetUnit = board.findUnitByID(order.unitID);

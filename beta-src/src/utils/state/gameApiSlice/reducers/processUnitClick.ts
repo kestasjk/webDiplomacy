@@ -119,7 +119,6 @@ export default function processUnitClick(state, clickData) {
       // Convoy Ally
       const currentOrderUnitType = units[unitID].type;
       const newClickUnitType = units[clickData.payload.unitID].type;
-
       if (currentOrderUnitType === "Fleet" && newClickUnitType === "Army") {
         state.order.type = "convoy";
         state.order.subsequentClicks.push({
