@@ -9,7 +9,6 @@ import GameDataResponse from "../interfaces/GameDataResponse";
 import GameErrorResponse from "../interfaces/GameErrorResponse";
 import GameOverviewResponse from "../interfaces/GameOverviewResponse";
 import { ApiStatus, GameState } from "../interfaces/GameState";
-import GameCommands from "../interfaces/GameCommands";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
 import GameMessages from "../interfaces/GameMessages";
 import { RootState } from "../store";
@@ -314,8 +313,6 @@ export const gameOverview = ({
 export const gameStatus = ({
   game: { status },
 }: RootState): GameStatusResponse => status;
-export const gameCommands = ({ game: { commands } }: RootState): GameCommands =>
-  commands;
 export const gameOrdersMeta = ({
   game: { ordersMeta },
 }: RootState): OrdersMeta => ordersMeta;

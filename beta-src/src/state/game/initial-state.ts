@@ -44,9 +44,6 @@ const initialState: GameState = {
     territoryToEnum: {},
   },
   territoriesMeta: {},
-  commands: {
-    territoryCommands: {},
-  },
   overview: {
     alternatives: "",
     anon: "Yes",

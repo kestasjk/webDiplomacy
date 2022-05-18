@@ -81,7 +81,7 @@ export interface GameCommandContainer {
   [key: string]: Map<string, GameCommand>;
 }
 
-export type GameCommandType = "territoryCommands";
+export type GameCommandType = "";
 
 type GameCommands = {
   [key in GameCommandType]: GameCommandContainer;

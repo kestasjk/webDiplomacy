@@ -10,10 +10,11 @@ import { GameState } from "../../state/interfaces/GameState";
 import OrderState from "../../state/interfaces/OrderState";
 import OrdersMeta from "../../state/interfaces/SavedOrders";
 import TerritoriesMeta from "../../state/interfaces/TerritoriesState";
+import { RootState } from "../../state/store";
 import setCommand from "../state/setCommand";
 
 /* eslint-disable no-param-reassign */
-export default function drawBuilds(state): void {
+export default function drawBuilds(state: GameState): void {
   const {
     ordersMeta,
     territoriesMeta,
@@ -53,42 +54,6 @@ export default function drawBuilds(state): void {
                 (member) =>
                   member.countryID.toString() === territoryMeta.countryID,
               );
-              if (memberCountry) {
-                let command: GameCommand = {
-                  command: "SET_UNIT",
-                  data: {
-                    setUnit: {
-                      componentType: "Icon",
-                      country: countryMap[memberCountry?.country],
-                      iconState: UIState.BUILD,
-                      unitSlotName: mappedTerritory.unitSlotName,
-                      unitType: BuildUnitTypeMap[buildType],
-                    },
-                  },
-                };
-                const commandTerritoryDestination =
-                  territoryMeta.territory ===
-                    Territory.SAINT_PETERSBURG_NORTH_COAST ||
-                  territoryMeta.territory ===
-                    Territory.SAINT_PETERSBURG_SOUTH_COAST
-                    ? Territory[Territory.SAINT_PETERSBURG]
-                    : Territory[territoryMeta.territory];
-                setCommand(
-                  state,
-                  command,
-                  "territoryCommands",
-                  commandTerritoryDestination,
-                );
-                command = {
-                  command: "MOVE",
-                };
-                setCommand(
-                  state,
-                  command,
-                  "territoryCommands",
-                  commandTerritoryDestination,
-                );
-              }
             }
           }
         }

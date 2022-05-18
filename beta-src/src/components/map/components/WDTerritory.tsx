@@ -239,70 +239,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   //       unitSlotName,
   //     } = value.data.setUnit;
 
-  //     let newUnit;
-  //     if (country && unitType && componentType) {
-  //       switch (componentType) {
-  //         case "Game":
-  //           if (unit) {
-  //             switch (unitType) {
-  //               case "Army":
-  //                 newUnit = (
-  //                   <WDArmy
-  //                     id={`${territoryMapData.name}-unit`}
-  //                     country={country}
-  //                     meta={{ country, mappedTerritory, unit }}
-  //                   />
-  //                 );
-  //                 break;
-  //               case "Fleet":
-  //                 newUnit = (
-  //                   <WDFleet
-  //                     id={`${territoryMapData.name}-unit`}
-  //                     country={country}
-  //                     meta={{ country, mappedTerritory, unit }}
-  //                   />
-  //                 );
-  //                 break;
-  //               default:
-  //                 break;
-  //             }
-  //           }
-  //           break;
-  //         case "Icon":
-  //           switch (unitType) {
-  //             case "Army":
-  //               newUnit = (
-  //                 <svg filter={theme.palette.svg.filters.dropShadows[1]}>
-  //                   <WDArmyIcon country={country} iconState={iconState} />
-  //                 </svg>
-  //               );
-  //               break;
-  //             case "Fleet":
-  //               newUnit = (
-  //                 <svg filter={theme.palette.svg.filters.dropShadows[1]}>
-  //                   <WDFleetIcon country={country} iconState={iconState} />
-  //                 </svg>
-  //               );
-  //               break;
-  //             default:
-  //               break;
-  //           }
-  //           break;
-  //         default:
-  //           break;
-  //       }
-  //     }
-
-  //     const set = {
-  //       ...units,
-  //       ...{ [unitSlotName]: newUnit },
-  //     };
-  //     setUnits(set);
-  //     deleteCommand(key);
-  //   },
-  // };
-
-  // processNextCommand(commands, commandActions);
   const territoryName = territoryMapData.name;
   const territoryNameToMeta: { [key: string]: TerritoryMeta } = {};
 
@@ -336,7 +272,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       const WDUnitComponent = unitType === "Fleet" ? WDFleet : WDArmy;
       unitFCs[unit.mappedTerritory.unitSlotName] = (
         <WDUnitComponent
-          id={`${territoryName}-unit`} // n.b. the id here is used by drawOrders, do not change!
+          id={`${territoryName}-unit`} // n.b. the id here is ref'd by drawOrders, do not change!
           country={unit.country}
           meta={unit}
         />
