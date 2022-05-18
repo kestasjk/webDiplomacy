@@ -1,7 +1,5 @@
 import { current } from "@reduxjs/toolkit";
 import UIState from "../../enums/UIState";
-import { GameCommand } from "../../state/interfaces/GameCommands";
-import setCommand from "./setCommand";
 
 /* eslint-disable no-param-reassign */
 export default function resetOrder(state): void {

@@ -3,7 +3,6 @@ import TerritoryMap from "../../../../data/map/variants/classic/TerritoryMap";
 import BuildUnit from "../../../../enums/BuildUnit";
 import Territory from "../../../../enums/map/variants/classic/Territory";
 import UIState from "../../../../enums/UIState";
-import { GameCommand } from "../../../../state/interfaces/GameCommands";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
 import { UnitSlotNames } from "../../../../types/map/UnitSlotName";
@@ -11,7 +10,6 @@ import invalidClick from "../../../map/invalidClick";
 import getOrderStates from "../../getOrderStates";
 import processConvoy from "../../processConvoy";
 import resetOrder from "../../resetOrder";
-import setCommand from "../../setCommand";
 import startNewOrder from "../../startNewOrder";
 import updateOrdersMeta from "../../updateOrdersMeta";
 

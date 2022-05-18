@@ -4,14 +4,12 @@ import countryMap from "../../data/map/variants/classic/CountryMap";
 import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
 import Territory from "../../enums/map/variants/classic/Territory";
 import UIState from "../../enums/UIState";
-import { GameCommand } from "../../state/interfaces/GameCommands";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
 import { GameState } from "../../state/interfaces/GameState";
 import OrderState from "../../state/interfaces/OrderState";
 import OrdersMeta from "../../state/interfaces/SavedOrders";
 import TerritoriesMeta from "../../state/interfaces/TerritoriesState";
 import { RootState } from "../../state/store";
-import setCommand from "../state/setCommand";
 
 /* eslint-disable no-param-reassign */
 export default function drawBuilds(state: GameState): void {
@@ -47,13 +45,6 @@ export default function drawBuilds(state: GameState): void {
             if (type === "Destroy" && toTerrID) {
               const unitID = maps.territoryToUnit[toTerrID];
               state.unitState[unitID] = UIState.DESTROY;
-            } else {
-              const buildType = BuildUnitMap[type];
-              const mappedTerritory = TerritoryMap[territoryMeta.name];
-              const memberCountry = members.find(
-                (member) =>
-                  member.countryID.toString() === territoryMeta.countryID,
-              );
             }
           }
         }

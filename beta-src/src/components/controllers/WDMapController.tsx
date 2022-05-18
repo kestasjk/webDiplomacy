@@ -13,7 +13,6 @@ import {
 } from "../../state/game/game-api-slice";
 import drawArrow from "../../utils/map/drawArrow";
 import ArrowType from "../../enums/ArrowType";
-import processNextCommand from "../../utils/processNextCommand";
 import ArrowColor from "../../enums/ArrowColor";
 
 const Scales: Scale = {

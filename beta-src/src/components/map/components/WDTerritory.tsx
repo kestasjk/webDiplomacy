@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import { TerritoryMeta } from "../../../state/interfaces/TerritoriesState";
 import ClickObjectType from "../../../types/state/ClickObjectType";
 import processNextCommand from "../../../utils/processNextCommand";
+import WDArmy from "../../ui/units/WDArmy";
 import WDArmyIcon from "../../ui/units/WDArmyIcon";
 import WDFleetIcon from "../../ui/units/WDFleetIcon";
 import WDUnit from "../../ui/units/WDUnit";
@@ -74,6 +75,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     dispatch(gameApiSliceActions.resetOrder());
   };
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
   const commandActions = {
@@ -239,6 +241,8 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   //       unitSlotName,
   //     } = value.data.setUnit;
 
+=======
+>>>>>>> 2cf48cc (4. Remove last vestiges of commands)
   const territoryName = territoryMapData.name;
   const territoryNameToMeta: { [key: string]: TerritoryMeta } = {};
 

@@ -25,7 +25,6 @@ import resetOrder from "../../utils/state/resetOrder";
 import processUnitDoubleClick from "../../utils/state/gameApiSlice/reducers/processUnitDoubleClick";
 import processUnitClick from "../../utils/state/gameApiSlice/reducers/processUnitClick";
 import processMapClick from "../../utils/state/gameApiSlice/reducers/processMapClick";
-import dispatchCommand from "../../utils/state/gameApiSlice/reducers/dispatchCommand";
 import fetchGameDataFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameData/fulfilled";
 import updateUserActivity from "../../utils/state/gameApiSlice/reducers/updateUserActivity";
 import TerritoriesMeta from "../interfaces/TerritoriesState";
@@ -195,7 +194,6 @@ const gameApiSlice = createSlice({
     processUnitClick,
     processMapClick,
     drawBuilds,
-    dispatchCommand,
     processMessagesSeen(state, action) {
       state.messages.newMessagesFrom = state.messages.newMessagesFrom.filter(
         (e) => e !== action.payload,

@@ -1,9 +1,7 @@
 import { current } from "@reduxjs/toolkit";
 import Territory from "../../enums/map/variants/classic/Territory";
 import OrderClass from "../../models/OrderClass";
-import { GameCommand } from "../../state/interfaces/GameCommands";
 import updateOrdersMeta from "./updateOrdersMeta";
-import setCommand from "./setCommand";
 import invalidClick from "../map/invalidClick";
 
 /* eslint-disable no-param-reassign */
