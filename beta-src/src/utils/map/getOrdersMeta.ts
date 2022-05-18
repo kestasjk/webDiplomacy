@@ -113,6 +113,8 @@ export default function getOrdersMeta(
             if (allowedBorderCrossings.length === 1) {
               const [{ id }] = allowedBorderCrossings;
               updateOrdersMeta[o.orderData.id].update.toTerrID = id;
+              updateOrdersMeta[o.orderData.id].update.fromTerrID =
+                orderUnit.terrID;
             }
           }
           updateOrdersMeta[o.orderData.id] = {

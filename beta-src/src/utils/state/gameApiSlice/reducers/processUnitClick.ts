@@ -45,9 +45,10 @@ export default function processUnitClick(state, clickData) {
       ordersMeta[maps.unitToOrder[clickData.payload.unitID]];
 
     if (
-      unitsOrderMeta &&
-      unitsOrderMeta.update?.type === "Disband" &&
-      !unitsOrderMeta.allowedBorderCrossings?.length
+      !unitsOrderMeta ||
+      (unitsOrderMeta &&
+        unitsOrderMeta.update?.type === "Disband" &&
+        !unitsOrderMeta.allowedBorderCrossings?.length)
     ) {
       return;
     }
