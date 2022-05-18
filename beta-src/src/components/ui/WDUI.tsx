@@ -14,9 +14,7 @@ import WDPhaseUI from "./WDPhaseUI";
 import UIState from "../../enums/UIState";
 import capitalizeString from "../../utils/capitalizeString";
 import Vote from "../../enums/Vote";
-import Move from "../../enums/Move";
 import WDMoveControls from "./WDMoveControls";
-import MoveStatus from "../../types/MoveStatus";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import WDHomeIcon from "./icons/WDHomeIcon";
 
@@ -29,20 +27,11 @@ const abbrMap = {
   France: "FRA",
   Turkey: "TUR",
 };
-/**
- * the game status data created here is for displaying purpose
- * the real gamestatus data will be provided from Redux Store?
- */
-const gameStatusData: MoveStatus = {
-  save: false,
-  ready: false,
-};
 
 const WDUI: React.FC = function (): React.ReactElement {
   const theme = useTheme();
 
   const [showControlModal, setShowControlModal] = React.useState(false);
-  const [readyDisabled, setReadyDisabled] = React.useState(false);
   const popoverTrigger = React.useRef<HTMLElement>(null);
 
   const {
@@ -57,10 +46,6 @@ const WDUI: React.FC = function (): React.ReactElement {
     user,
     year,
   } = useAppSelector(gameOverview);
-
-  const {
-    member: { orderStatus },
-  } = user;
 
   const constructTableData = (member) => {
     const memberCountry: Country = countryMap[member.country];
@@ -106,14 +91,6 @@ const WDUI: React.FC = function (): React.ReactElement {
     </IconButton>
   );
 
-  const [gameState, setGameState] = React.useState(gameStatusData);
-  const toggleState = (move: Move) => {
-    setGameState((preState) => ({
-      ...preState,
-      [move]: !gameState[move],
-    }));
-  };
-
   const checkIfTriggerVisible = (i = 0) => {
     if (i > 10) {
       return;
@@ -133,19 +110,6 @@ const WDUI: React.FC = function (): React.ReactElement {
   React.useEffect(() => {
     checkIfTriggerVisible();
   }, [popoverTrigger]);
-
-  if (orderStatus.None && !readyDisabled) {
-    setReadyDisabled(true);
-  }
-
-  React.useEffect(() => {
-    if (orderStatus.Ready !== gameState.ready) {
-      setGameState((preState) => ({
-        ...preState,
-        [Move.READY]: orderStatus.Ready,
-      }));
-    }
-  }, [orderStatus]);
 
   const popover = popoverTrigger.current ? (
     <WDPopover
@@ -190,11 +154,7 @@ const WDUI: React.FC = function (): React.ReactElement {
         <WDPhaseUI />
       </WDPositionContainer>
       <WDPositionContainer position={Position.BOTTOM_RIGHT}>
-        <WDMoveControls
-          readyDisabled={readyDisabled}
-          gameState={gameState}
-          toggleState={toggleState}
-        />
+        <WDMoveControls />
       </WDPositionContainer>
     </>
   );
