@@ -117,7 +117,6 @@ export default function processUnitClick(state, clickData) {
       }
     } else if (!ownUnits.includes(clickData.payload.unitID)) {
       // Convoy Ally
-
       const currentOrderUnitType = units[unitID].type;
       const newClickUnitType = units[clickData.payload.unitID].type;
 
@@ -132,8 +131,6 @@ export default function processUnitClick(state, clickData) {
           ...clickData.payload,
         });
         highlightMapTerritoriesBasedOnStatuses(state);
-      } else {
-        startNewOrder(state, clickData);
       }
     }
   } else if (ownUnits.includes(clickData.payload.unitID)) {
