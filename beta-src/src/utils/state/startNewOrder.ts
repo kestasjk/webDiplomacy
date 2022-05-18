@@ -18,6 +18,7 @@ export default function startNewOrder(state, action: NewOrderPayload): void {
   const { unitID } = orderData;
   // really the state should probably come directly from the order object
   if (unitID) {
+    console.log(`Set ${unitID} to SELECTED`);
     state.unitState[unitID] = UIState.SELECTED;
   }
 }

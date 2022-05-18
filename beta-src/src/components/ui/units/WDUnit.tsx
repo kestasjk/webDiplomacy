@@ -9,7 +9,6 @@ import { gameUnitState } from "../../../state/game/game-api-slice";
 
 const WDUnit: React.FC<GameIconProps> = function ({
   height = 50,
-  iconState = UIState.NONE,
   id = undefined,
   meta,
   viewBox,
@@ -17,9 +16,6 @@ const WDUnit: React.FC<GameIconProps> = function ({
   type,
 }): React.ReactElement {
   const theme = useTheme();
-
-  const unitState = useAppSelector(gameUnitState);
-  const thisUnitState = unitState[meta.unit.id];
 
   return (
     <svg
@@ -29,9 +25,7 @@ const WDUnit: React.FC<GameIconProps> = function ({
       width={width}
       viewBox={viewBox}
     >
-      <WDUnitController meta={meta}>
-        <WDArmyIcon country={meta.country} iconState={thisUnitState} />
-      </WDUnitController>
+      <WDUnitController meta={meta} type={type} />
     </svg>
   );
 };

@@ -27,6 +27,7 @@ export default function processUnitClick(state, clickData) {
     overview: GameOverviewResponse;
   } = current(state);
   console.log("processUnitClick");
+  console.log(clickData.payload);
   const {
     data: { currentOrders, units },
   } = data;

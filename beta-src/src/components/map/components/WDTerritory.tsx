@@ -13,10 +13,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import { TerritoryMeta } from "../../../state/interfaces/TerritoriesState";
 import ClickObjectType from "../../../types/state/ClickObjectType";
-import processNextCommand from "../../../utils/processNextCommand";
-import WDArmy from "../../ui/units/WDArmy";
-import WDArmyIcon from "../../ui/units/WDArmyIcon";
-import WDFleetIcon from "../../ui/units/WDFleetIcon";
+import UnitType from "../../../types/UnitType";
 import WDUnit from "../../ui/units/WDUnit";
 import WDBuildUnitButtons, { BuildData } from "./WDBuildUnitButtons";
 import WDCenter from "./WDCenter";
@@ -75,174 +72,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     dispatch(gameApiSliceActions.resetOrder());
   };
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-  const commandActions = {
-    BUILD: (command) => {
-      const [key, value] = command;
-      const builds: BuildPopovers = {};
-      const buildsArray = value.data.build;
-      if (buildsArray?.length) {
-        buildsArray.forEach((b) => {
-          builds[b.unitSlotName] = {
-            ...b,
-            ...{ clickCallback: build, country: userCountry },
-          };
-        });
-      }
-      setBuildPopovers(builds);
-      setMoveHighlight();
-      setOpenBuildPopovers(true);
-      deleteCommand(key);
-    },
-    CAPTURED: (command) => {
-      const [key, value] = command;
-      territoryMapData.type === "water"
-        ? setTerritoryFill("none")
-        : setCapturedHighlight(value.data?.country);
-      deleteCommand(key);
-    },
-    HOLD: (command) => {
-      const [key] = command;
-      setTerritoryFill(theme.palette[userCountry].main);
-      setTerritoryFillOpacity(0.9);
-      setTerritoryStrokeOpacity(2);
-      deleteCommand(key);
-    },
-    MOVE: (command) => {
-      const [key] = command;
-      setMoveHighlight();
-      deleteCommand(key);
-    },
-    REMOVE_BUILD: (command) => {
-      const [key] = command;
-      setOpenBuildPopovers(false);
-      setCapturedHighlight(userCountry);
-      deleteCommand(key);
-    },
-    SET_UNIT: (command) => {
-      const [key, value] = command;
-      const {
-        componentType,
-        country,
-        iconState,
-        mappedTerritory,
-        unit,
-        unitType,
-        unitSlotName,
-      } = value.data.setUnit;
-
-      let newUnit;
-      if (country && unitType && componentType) {
-        switch (componentType) {
-          case "Game":
-            if (unit) {
-              newUnit = (
-                <WDUnit
-                  id={`${territoryMapData.name}-unit`}
-                  country={country}
-                  meta={{ country, mappedTerritory, unit }}
-                  type={unitType}
-                />
-              );
-            }
-            break;
-          case "Icon":
-            switch (unitType) {
-              case "Army":
-                newUnit = (
-                  <svg filter={theme.palette.svg.filters.dropShadows[1]}>
-                    <WDArmyIcon country={country} iconState={iconState} />
-                  </svg>
-                );
-                break;
-              case "Fleet":
-                newUnit = (
-                  <svg filter={theme.palette.svg.filters.dropShadows[1]}>
-                    <WDFleetIcon country={country} iconState={iconState} />
-                  </svg>
-                );
-                break;
-              default:
-                break;
-            }
-            break;
-          default:
-            break;
-        }
-      }
-
-      const set = {
-        ...units,
-        ...{ [unitSlotName]: newUnit },
-      };
-      setUnits(set);
-      deleteCommand(key);
-    },
-  };
-
-  processNextCommand(commands, commandActions);
-=======
-=======
->>>>>>> cf82051 (Got units displayed again)
-  // const commandActions = {
-  //   BUILD: (command) => {
-  //     const [key, value] = command;
-  //     const builds: BuildPopovers = {};
-  //     const buildsArray = value.data.build;
-  //     if (buildsArray?.length) {
-  //       buildsArray.forEach((b) => {
-  //         builds[b.unitSlotName] = {
-  //           ...b,
-  //           ...{ clickCallback: build, country: userCountry },
-  //         };
-  //       });
-  //     }
-  //     setBuildPopovers(builds);
-  //     setMoveHighlight();
-  //     setOpenBuildPopovers(true);
-  //     deleteCommand(key);
-  //   },
-  //   CAPTURED: (command) => {
-  //     const [key, value] = command;
-  //     territoryMapData.type === "water"
-  //       ? setTerritoryFill("none")
-  //       : setCapturedHighlight(value.data?.country);
-  //     deleteCommand(key);
-  //   },
-  //   HOLD: (command) => {
-  //     const [key] = command;
-  //     setTerritoryFill(theme.palette[userCountry].main);
-  //     setTerritoryFillOpacity(0.9);
-  //     setTerritoryStrokeOpacity(2);
-  //     deleteCommand(key);
-  //   },
-  //   MOVE: (command) => {
-  //     const [key] = command;
-  //     setMoveHighlight();
-  //     deleteCommand(key);
-  //   },
-  //   REMOVE_BUILD: (command) => {
-  //     const [key] = command;
-  //     setOpenBuildPopovers(false);
-  //     setCapturedHighlight(userCountry);
-  //     deleteCommand(key);
-  //   },
-  //   SET_UNIT: (command) => {
-  //     const [key, value] = command;
-  //     const {
-  //       componentType,
-  //       country,
-  //       iconState,
-  //       mappedTerritory,
-  //       unit,
-  //       unitType,
-  //       unitSlotName,
-  //     } = value.data.setUnit;
-
-=======
->>>>>>> 2cf48cc (4. Remove last vestiges of commands)
   const territoryName = territoryMapData.name;
   const territoryNameToMeta: { [key: string]: TerritoryMeta } = {};
 
@@ -270,15 +99,12 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   units
     .filter((unit) => territoryMeta && unit.unit.terrID === territoryMeta.id)
     .forEach((unit) => {
-      const unitType = unit.unit.type;
-      // FIXME: Maybe we want just a WDFleetIcon for other powers. But does it really matter?
-      // It doesn't seem like I can click on other people's armies / fleets.
-      const WDUnitComponent = unitType === "Fleet" ? WDFleet : WDArmy;
       unitFCs[unit.mappedTerritory.unitSlotName] = (
-        <WDUnitComponent
+        <WDUnit
           id={`${territoryName}-unit`} // n.b. the id here is ref'd by drawOrders, do not change!
           country={unit.country}
           meta={unit}
+          type={unit.unit.type as UnitType}
         />
       );
     });
