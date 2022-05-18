@@ -202,7 +202,11 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
           fill={territoryFill}
           fillOpacity={territoryFillOpacity}
           id={`${territoryMapData.name}-control-path`}
-          stroke={theme.palette.primary.main}
+          stroke={
+            territoryMapData.stroke
+              ? territoryMapData.stroke
+              : theme.palette.primary.main
+          }
           strokeOpacity={1}
           strokeWidth={territoryStrokeOpacity}
         />
