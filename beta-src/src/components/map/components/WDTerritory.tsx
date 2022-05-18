@@ -9,10 +9,9 @@ import {
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import ClickObjectType from "../../../types/state/ClickObjectType";
 import processNextCommand from "../../../utils/processNextCommand";
-import WDArmy from "../../ui/units/WDArmy";
 import WDArmyIcon from "../../ui/units/WDArmyIcon";
-import WDFleet from "../../ui/units/WDFleet";
 import WDFleetIcon from "../../ui/units/WDFleetIcon";
+import WDUnit from "../../ui/units/WDUnit";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
@@ -122,28 +121,14 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         switch (componentType) {
           case "Game":
             if (unit) {
-              switch (unitType) {
-                case "Army":
-                  newUnit = (
-                    <WDArmy
-                      id={`${territoryMapData.name}-unit`}
-                      country={country}
-                      meta={{ country, mappedTerritory, unit }}
-                    />
-                  );
-                  break;
-                case "Fleet":
-                  newUnit = (
-                    <WDFleet
-                      id={`${territoryMapData.name}-unit`}
-                      country={country}
-                      meta={{ country, mappedTerritory, unit }}
-                    />
-                  );
-                  break;
-                default:
-                  break;
-              }
+              newUnit = (
+                <WDUnit
+                  id={`${territoryMapData.name}-unit`}
+                  country={country}
+                  meta={{ country, mappedTerritory, unit }}
+                  type={unitType}
+                />
+              );
             }
             break;
           case "Icon":
