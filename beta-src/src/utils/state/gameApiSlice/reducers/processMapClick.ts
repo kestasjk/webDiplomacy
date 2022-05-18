@@ -119,27 +119,31 @@ export default function processMapClick(state, clickData) {
 
       const territoryMeta = territoriesMeta[Territory[territoryName]];
 
-      const bul = territoriesMeta[Territory.BULGARIA];
-      const bulnc = territoriesMeta[Territory.BULGARIA_NORTH_COAST];
-      const bulsc = territoriesMeta[Territory.BULGARIA_SOUTH_COAST];
-
-      const stp = territoriesMeta[Territory.SAINT_PETERSBURG];
-      const stpnc = territoriesMeta[Territory.SAINT_PETERSBURG_NORTH_COAST];
-      const stpsc = territoriesMeta[Territory.SAINT_PETERSBURG_SOUTH_COAST];
-
+      // Territoties w/ North/South Coast
+      const bulgaria = territoriesMeta[Territory.BULGARIA];
+      const petersburg = territoriesMeta[Territory.SAINT_PETERSBURG];
       const spain = territoriesMeta[Territory.SPAIN];
-      const spainnc = territoriesMeta[Territory.SPAIN_NORTH_COAST];
-      const spainsc = territoriesMeta[Territory.SPAIN_SOUTH_COAST];
 
-      const specialIds = {};
-      if (bul && stp && spain) {
-        specialIds[bul.id] = [bulnc?.id, bulsc?.id];
-        specialIds[stp.id] = [stpnc?.id, stpsc?.id];
-        specialIds[spain.id] = [spainnc?.id, spainsc?.id];
+      let terrWithCoastalID = {};
+      if (bulgaria && petersburg && spain) {
+        terrWithCoastalID = {
+          [bulgaria.id]: [
+            territoriesMeta[Territory.BULGARIA_NORTH_COAST]?.id,
+            territoriesMeta[Territory.BULGARIA_SOUTH_COAST]?.id,
+          ],
+          [petersburg.id]: [
+            territoriesMeta[Territory.SAINT_PETERSBURG_NORTH_COAST]?.id,
+            territoriesMeta[Territory.SAINT_PETERSBURG_SOUTH_COAST]?.id,
+          ],
+          [spain.id]: [
+            territoriesMeta[Territory.SPAIN_NORTH_COAST]?.id,
+            territoriesMeta[Territory.SPAIN_SOUTH_COAST]?.id,
+          ],
+        };
       }
 
-      const affectedTerritoryIds = specialIds[territoryMeta.id]
-        ? [...[territoryMeta.id], ...specialIds[territoryMeta.id]]
+      const terrWithCoastalAreas = terrWithCoastalID[territoryMeta.id]
+        ? [...[territoryMeta.id], ...terrWithCoastalID[territoryMeta.id]]
         : [territoryMeta.id];
 
       const canMove = allowedBorderCrossings?.find((border) => {
@@ -147,7 +151,7 @@ export default function processMapClick(state, clickData) {
         const mappedTerritoryID = border.id;
         return (
           Territory[mappedTerritory.territory] === territoryName ||
-          affectedTerritoryIds.includes(mappedTerritoryID)
+          terrWithCoastalAreas.includes(mappedTerritoryID)
         );
       });
 
