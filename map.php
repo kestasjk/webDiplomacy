@@ -136,10 +136,10 @@ if( !isset($_REQUEST['variantID']) )
 	global $Game;
 	$Variant=libVariant::loadFromGameID($_REQUEST['gameID']);
 	libVariant::setGlobals($Variant);
-	// Locking this game for update is excessive; worst case the map is overwritten
-	// Actually 
-	$DB->sql_put("COMMIT");
-	$Game=$Variant->Game($_REQUEST['gameID'], UPDATE);
+	// Get a global lock to prevent two people writing the map at the same time, or rendering the map while a game is being processed
+	// This replaces a game FOR UPDATE lock which would cause deadlocks
+	$DB->get_lock('gamemaster',1);
+	$Game=$Variant->Game($_REQUEST['gameID']);
 
 	/*
 	 * Determine which turn we are viewing. This is made a little trickier because

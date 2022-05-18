@@ -25,6 +25,8 @@
 require_once('header.php');
 
 require_once(l_r('objects/game.php'));
+require_once(l_r('objects/group.php'));
+require_once(l_r('objects/groupUser.php'));
 require_once(l_r('gamepanel/game.php'));
 
 if ( isset($_REQUEST['userID']) && intval($_REQUEST['userID'])>0 )
@@ -101,8 +103,12 @@ if ( $User->type['Moderator'] )
 		}
 
 		print '<strong>UserId:</strong> '.$UserProfile->id.'</br></br>';
-		print '<strong>Email:</strong></br>'.$UserProfile->email;
-		
+		print '<strong>Email:</strong></br>'.$UserProfile->email.'</br></br>';
+		/*print '<strong>Mobile linked:</strong></br>'.$UserProfile->email.'</br></br>';
+		print '<strong>Facebook linked:</strong></br>'.$UserProfile->email.'</br></br>';
+		print '<strong>Google linked:</strong></br>'.$UserProfile->email.'</br></br>';
+		print '<strong>Apple linked:</strong></br>'.$UserProfile->email.'</br></br>';
+		*/
 		$lastCheckedBy = $UserProfile->modLastCheckedBy();
 		$modLastCheckedOn = $UserProfile->modLastCheckedOn();
 		list($previousUsernames) = $DB->sql_row(
@@ -690,6 +696,214 @@ print '</div>';
 print '</div>';
 print '</div>';
 
+// Display the Ghost Ratings Trend Google Chart generated in JS code below.
+
+{
+	print '</br><div class = "profile-show">';
+
+	print '<div class = "profile_title">User relationships</div>';
+
+	print '<div class = "profile_content_show">';
+	print '<p>User relationships serve two purposes:<ul><li>1. Allow users who have a relationship outside of the server to <strong>disclose 
+		and register</strong> the relationship.<br /><br />This lets other players account for possible bias in-game, lets players set their 
+		games to exclude close relationships between players, and <strong>helps the moderator team</strong> ignore otherwise suspicious usage patterns 
+		(e.g. a family / school using the same computer / network).<br /></li>
+		<li>2. Give users a way to <strong>register a suspicion</strong> that two or more users may have an undisclosed relationship, based on <strong>in-game
+		behavior</strong>.<br /><br />This gives the suspected user a chance to explain before needing moderators, allows users to exclude suspected-cheaters
+		from their games, gives an extra mechanism to help moderators identify cheaters by taking the <strong>suspicions of many users</strong> together,
+		provides a single place where a suspicion can be discussed directly, and allows <strong>repeat offenders to be tracked</strong> across new accounts
+		and excluded without requiring bans.</ul></p>';
+
+		$DB->sql_put("COMMIT");
+		$DB->sql_put("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");  // https://stackoverflow.com/a/918092
+		$groupUsers = Group::getUsers("gr.isActive = 1 AND g.userId = ".$UserProfile->id);
+		$DB->sql_put("COMMIT"); // This will revert back to READ COMMITTED.
+		
+		$userJoinedGroups = array();
+		$userJoinedGroupsUnverified = array();
+		foreach($groupUsers as $groupUser)
+		{
+			if( $groupUser->isVerified() )
+			{
+				$userJoinedGroups[$groupUser->groupId] = $groupUser;
+			}
+			else if( !$groupUser->isDenied() )
+			{
+				$userJoinedGroupsUnverified[$groupUser->groupId] = $groupUser;
+			}
+		}
+		unset($groupUsers);
+		
+		if( $User->type['User'] && $User->id != $UserProfile->id )
+		{
+			print '<div class="hr"></div>';
+			print '<p>';
+			print '<h4>Create / Add-to User Relationship:</h4>';
+
+
+			$declaredGroups = Group::declaredGroupNamesByID($User, true);
+			$suspectedGroups = Group::suspectedGroupNamesByID($User, true);
+			foreach($userJoinedGroups as $groupId => $groupName)
+			{
+				if( isset($declaredGroups[$groupId]) ) unset($declaredGroups[$groupId]);
+				if( isset($suspectedGroups[$groupId]) ) unset($suspectedGroups[$groupId]);
+			}
+
+			print '<div class = "profile_title">I have a relationship with this user</div>';
+			print '<div class = "profile_content">';
+			print '<form action="group.php" method="post">';
+			print '<input type="hidden" name="createGroup" value="on" />';
+			print '<input type="hidden" name="addSelf" value="on" />';
+			print '<input type="hidden" name="addUserId" value="'.$UserProfile->id.'" />';
+				print '<strong>New Name / Label:</strong> <input class="discloseNew" type="text" name="groupName" style="width:200px" /> ';
+				if( count($declaredGroups) > 0 )
+				{
+					print 'Or ';
+					print '<strong>Existing Name / Label:</strong> <select id="discloseExisting" name="groupId" style="width:200px"> ';
+					print '<option value="">(Create new)</option>';
+					foreach($declaredGroups as $groupId=>$groupName)
+					{
+						print '<option value="'.$groupId.'">'.$groupName.'</a>';
+					}
+					print '</select>';
+				}
+				print '<br />';
+				print 
+					'<strong>Type:</strong> <input type="radio" class="discloseNew" name="groupType" value="Person"> <label for="selfGroupTypePerson">Same person</label> / '.
+					'<input type="radio" class="discloseNew" id="selfGroupTypeFamily" name="groupType" value="Family"> <label for="selfGroupTypeFamily">Family</label> / '.
+					'<input type="radio" class="discloseNew" id="selfGroupTypeSchool" name="groupType" value="School"> <label for="selfGroupTypeSchool">School</label> / '.
+					'<input type="radio" class="discloseNew" id="selfGroupTypeWork" name="groupType" value="Work"> <label for="selfGroupTypeWork">Work</label> / '.
+					'<input type="radio" class="discloseNew" id="selfGroupTypeOther" name="groupType" value="Other"> <label for="selfGroupTypeOther">Other</label>';
+					print '<br />';
+				print '<strong>Description / Explanation:</strong><br /><TEXTAREA class="discloseNew" NAME="groupDescription" ROWS="4"></TEXTAREA> ';
+				print '<br />';
+				print '<strong>Relation strength:</strong> <select name="groupUserStrength">'.
+					'<option value="33">Weak</option>'.
+					'<option value="66">Mid</option>'.
+					'<option value="100" selected>Strong</option>'.
+					'</select> ';
+					print '<br />';
+				print '<input type="submit" class="form-submit" value="Create relationship"><br />';
+				print libAuth::formTokenHTML();
+			print '</form></div>';
+
+			print '<div class = "profile_title">I suspect there is a relationship between this user and another user</div>';
+			print '<div class = "profile_content">';
+			print '<form action="group.php" method="post">';
+			print '<input type="hidden" name="createGroup" value="on" />';
+			print '<input type="hidden" name="addUserId" value="'.$UserProfile->id.'" />';
+			print '<input type="hidden" name="groupType" value="Unknown" />';
+			print '<strong>New Name / Label:</strong> <input class="suspectNew" type="text" name="groupName" style="width:200px" /> ';
+			
+			if( count($suspectedGroups) > 0 )
+			{
+				print 'Or ';
+				print '<strong>Existing Name / Label:</strong> <select id="suspectExisting" name="groupId" style="width:200px"> ';
+				print '<option value="">(Create new)</option>';
+				foreach($suspectedGroups as $groupId=>$groupName)
+				{
+					print '<option value="'.$groupId.'">'.$groupName.'</option>';
+				}
+				print '</select>';
+			}
+			print '<br />';
+			print '<strong>Description / Explanation:</strong><br /><TEXTAREA class="suspectNew" NAME="groupDescription" ROWS="4"></TEXTAREA> ';
+			print '<br />';
+			print '<strong>Suspicion strength:</strong> <select name="groupUserStrength">'.
+				'<option value="33">Weak</option>'.
+				'<option value="66" selected>Mid</option>'.
+				'<option value="100">Strong</option>'.
+				'</select><br />';
+
+			print '<strong>Game reference:</strong> <select class="suspectNew" name="groupGameReference">'.
+				'<option value="">No reference</option>';
+			$tablActiveGamesShared = $DB->sql_tabl("SELECT g.id, g.name, g.turn FROM wD_Members a INNER JOIN wD_Games g ON g.id = a.gameId INNER JOIN wD_Members b ON g.id = b.gameId AND a.userId <> b.userId AND a.userId = " . $User->id." AND b.userId = ".$UserProfile->id." AND a.timeLoggedIn > ".(time() - 14*24*60*60)." AND b.timeLoggedIn > ".(time() - 14*24*60*60)." AND (g.anon='No' OR g.phase='Finished') ORDER BY a.timeLoggedIn DESC");
+			//$activeGamesShared = array();
+			$hasSharedGames = false;
+
+			while(list($gameId, $gameName, $gameTurn) = $DB->tabl_row($tablActiveGamesShared) )
+			{
+				//$activeGamesShared[] = array('gameID='.$gameId.',turn='.$gameTurn, $gameName );
+				print '<option value="gameID='.$gameId.',turn='.$gameTurn.'">'.$gameName.'</option>';
+				$hasSharedGames = true;
+			}
+			print '</select>';
+			print '<br />';
+
+			if( !$hasSharedGames && !$User->type['Moderator'] )
+			{
+				print '<em>Cannot create a relationship against this user as you do not share any active games with the user, so cannot provide a game reference.<br />'.
+					'Suspect relationships can only be considered from people who are in a game together.</em>';
+			}
+			else
+			{
+				print '<input type="submit" class="form-submit" value="Create relationship"><br />';
+				print libAuth::formTokenHTML();
+			}
+			print '</form>';
+			print '</div>';
+			
+			?>
+			<script>
+			document.observe("dom:loaded", function() {
+				$$('#suspectExisting').each(function(i) { i.observe('change', function() {
+					var toggleVal = ( this.value == "" );
+					$$('.suspectNew').each(function(i) { 
+						if( toggleVal )
+						{
+							i.enable();
+						}
+						else
+						{
+							i.disable();
+						}
+					});
+				});});
+				$$('#discloseExisting').each(function(i) { i.observe('change', function() {
+					var toggleVal = ( this.value == "" );
+					$$('.discloseNew').each(function(i) { 
+						if( toggleVal )
+						{
+							i.enable();
+						}
+						else
+						{
+							i.disable();
+						}
+					});
+				});});
+			});
+			</script>
+			<?php
+		}
+		
+		print '<div class="hr"></div>';
+		print '<h4>Verified Relationships</h4>';
+		if( count($userJoinedGroups) == 0 )
+		{
+			print '<p class="notice">No verified relationships exist for this user.</p>';
+		}
+		else
+		{
+			print Group::outputUserTable_static($userJoinedGroups);
+		}
+		
+		print '<h4>Unverified Relationships</h4>';
+		if( count($userJoinedGroupsUnverified) == 0 )
+		{
+			print '<p class="notice">No unverified relationships exist for this user.</p>';
+		}
+		else
+		{
+			print Group::outputUserTable_static($userJoinedGroupsUnverified);
+		}
+		
+		print '</table>';
+		print '</div>';
+	print '</div>';
+}
+
+print '<div id="profile-separator"></div>';
 
 // Display the Ghost Ratings Trend Google Chart generated in JS code below.
 if (count($ghostRatingTrends) > 2)

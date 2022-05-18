@@ -3,18 +3,17 @@ import { useTheme } from "@mui/material/styles";
 import UIState from "../../../enums/UIState";
 import WDUnitController from "../../controllers/WDUnitController";
 import { GameIconProps } from "../../../interfaces/Icons";
-import WDArmyIcon from "./WDArmyIcon";
 
-const WDArmy: React.FC<GameIconProps> = function ({
+const WDUnit: React.FC<GameIconProps> = function ({
   height = 50,
   iconState = UIState.NONE,
   id = undefined,
   meta,
   viewBox,
   width = 50,
+  type,
 }): React.ReactElement {
   const theme = useTheme();
-  const [fluidIconState, setFluidIconState] = React.useState(iconState);
 
   return (
     <svg
@@ -24,11 +23,9 @@ const WDArmy: React.FC<GameIconProps> = function ({
       width={width}
       viewBox={viewBox}
     >
-      <WDUnitController meta={meta} setIconState={setFluidIconState}>
-        <WDArmyIcon country={meta.country} iconState={fluidIconState} />
-      </WDUnitController>
+      <WDUnitController meta={meta} initialIconState={iconState} type={type} />
     </svg>
   );
 };
 
-export default WDArmy;
+export default WDUnit;

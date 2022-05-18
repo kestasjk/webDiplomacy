@@ -28,3 +28,4 @@ adminInfo.php
 tmp/
 apilog.txt
 git*
+/vendor/

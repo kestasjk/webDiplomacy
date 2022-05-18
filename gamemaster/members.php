@@ -787,30 +787,6 @@ class processMembers extends Members
 		}
 	}
 
-	/**
-	 * Updates the reliability stats for the users in this game.
-	 */
-	function updateReliabilityStats()
-	{
-		global $DB;
-		 require_once(l_r('gamemaster/gamemaster.php'));
-
-		$year = time() - 31536000;
-		$lastMonth = time() - 2419200;
-		$lastWeek = time() - 604800;
-
-		$RELIABILITY_QUERY = "
-		UPDATE wD_Users u
-		set u.reliabilityRating = greatest(0,
-		(100 *(1 - ((SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.modExcused = 0 and t.turnDateTime > ".$year.") / greatest(1,u.yearlyPhaseCount))))
-		-(6*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 0 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastMonth."))
-		-(6*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 1 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastWeek."))
-		-(5*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 1 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastMonth."))
-		-(5*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 0 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$year.")))";
-
-		$DB->sql_put($RELIABILITY_QUERY . " WHERE u.id IN (".implode(",",array_keys($this->ByUserID)) . ')');
-	}
-
 	function processSummary()
 	{
 		$a=array(
