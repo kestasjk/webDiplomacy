@@ -17,6 +17,7 @@ export default function drawOrders(state): void {
     overview: { phase },
     ownUnits,
   } = current(state);
+  console.log("drawOrders");
   removeAllArrows();
   drawMoveOrders(data, maps, ordersMeta, board);
   drawSupportMoveOrders(data, maps, ordersMeta, ownUnits);

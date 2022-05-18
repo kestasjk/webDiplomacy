@@ -26,7 +26,7 @@ export const ValidCommands = [
   "SET_UNIT",
 ] as const;
 
-interface DrawArrowCommand {
+export interface DrawArrowCommand {
   from: Territory;
   to: Territory;
   type: "move";
@@ -37,7 +37,8 @@ interface ClickCommand {
   territoryName: string;
 }
 
-interface BuildCommand {
+// FIXME: Rename when we get rid of commands
+export interface BuildCommand {
   availableOrder: string;
   canBuild: BuildUnit;
   toTerrID: string;
@@ -80,7 +81,7 @@ export interface GameCommandContainer {
   [key: string]: Map<string, GameCommand>;
 }
 
-export type GameCommandType = "territoryCommands" | "mapCommands";
+export type GameCommandType = "territoryCommands";
 
 type GameCommands = {
   [key in GameCommandType]: GameCommandContainer;

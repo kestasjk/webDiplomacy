@@ -1,5 +1,5 @@
 import BoardClass from "../../models/BoardClass";
-import GameCommands from "./GameCommands";
+import GameCommands, { BuildCommand, DrawArrowCommand } from "./GameCommands";
 import GameDataResponse from "./GameDataResponse";
 import GameErrorResponse from "./GameErrorResponse";
 import GameOverviewResponse from "./GameOverviewResponse";
@@ -15,6 +15,7 @@ import UIState from "../../enums/UIState";
 
 export type ApiStatus = "idle" | "loading" | "succeeded" | "failed";
 
+// FIXME: nasty to have dependencies to component state in here
 type UnitState = { [key: string]: UIState };
 
 export interface GameState {
@@ -25,13 +26,16 @@ export interface GameState {
   error: GameErrorResponse;
   maps: GameStateMaps;
   overview: GameOverviewResponse;
-  order: OrderState;
   ordersMeta: OrdersMeta;
   ownUnits: string[];
   units: Unit[];
-  unitState: UnitState; // map from unit ID to icon state
   territoriesMeta: TerritoriesMeta;
   commands: GameCommands;
   status: GameStatusResponse;
   messages: GameMessages;
+
+  order: OrderState;
+  unitState: UnitState; // map from unit ID to icon state
+  buildPopover: BuildCommand[]; // list of possible builds that the user can choose from
+  arrows: DrawArrowCommand[];
 }

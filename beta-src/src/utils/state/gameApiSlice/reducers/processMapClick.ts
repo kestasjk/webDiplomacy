@@ -7,7 +7,7 @@ import { GameCommand } from "../../../../state/interfaces/GameCommands";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
 import { UnitSlotNames } from "../../../../types/map/UnitSlotName";
-
+import invalidClick from "../../../map/invalidClick";
 import getOrderStates from "../../getOrderStates";
 import processConvoy from "../../processConvoy";
 import resetOrder from "../../resetOrder";
@@ -40,6 +40,7 @@ export default function processMapClick(state, clickData) {
     type,
     unitID,
   } = order;
+  console.log("processMapClick");
   const {
     user: { member },
     phase,
@@ -61,18 +62,11 @@ export default function processMapClick(state, clickData) {
       Territory[onTerritory] === territoryName &&
       !type
     ) {
-      let command: GameCommand = {
+      const command: GameCommand = {
         command: "HOLD",
       };
       setCommand(state, command, "territoryCommands", territoryName);
       state.unitState[currOrderUnitID] = UIState.HOLD;
-      command = {
-        command: "REMOVE_ARROW",
-        data: {
-          orderID,
-        },
-      };
-      setCommand(state, command, "mapCommands", "all");
       if (currentOrders) {
         const orderToUpdate = currentOrders.find(
           (o) => o.unitID === currOrderUnitID,
@@ -107,7 +101,6 @@ export default function processMapClick(state, clickData) {
         command: "REMOVE_BUILD",
       };
       setCommand(state, command, "territoryCommands", Territory[toTerritory]);
-      setCommand(state, command, "mapCommands", "build");
       resetOrder(state);
     } else if (
       clickObject === "territory" &&
@@ -116,13 +109,15 @@ export default function processMapClick(state, clickData) {
       !type &&
       inProgress
     ) {
-      console.log("processMapClick");
+      console.log("processMapClick inProgress");
       const { allowedBorderCrossings } = ordersMeta[orderID];
       const canMove = allowedBorderCrossings?.find((border) => {
         const mappedTerritory = TerritoryMap[border.name];
         return Territory[mappedTerritory.territory] === territoryName;
       });
       if (canMove) {
+        console.log("processMapClick canMove");
+
         const command: GameCommand = {
           command: "MOVE",
         };
@@ -140,16 +135,7 @@ export default function processMapClick(state, clickData) {
         state.order.toTerritory = TerritoryMap[canMove.name].territory;
         state.order.type = phase === "Retreats" ? "retreat" : "move";
       } else {
-        const command: GameCommand = {
-          command: "INVALID_CLICK",
-          data: {
-            click: {
-              evt,
-              territoryName,
-            },
-          },
-        };
-        setCommand(state, command, "mapCommands", "all");
+        invalidClick(evt, territoryName);
       }
     }
   } else if (inProgress && method === "dblClick") {
@@ -204,16 +190,7 @@ export default function processMapClick(state, clickData) {
           }
         }
       }
-      const command: GameCommand = {
-        command: "INVALID_CLICK",
-        data: {
-          click: {
-            evt,
-            territoryName,
-          },
-        },
-      };
-      setCommand(state, command, "mapCommands", "all");
+      invalidClick(evt, territoryName);
     }
   } else if (
     clickObject === "territory" &&
@@ -261,7 +238,6 @@ export default function processMapClick(state, clickData) {
           },
         };
         setCommand(state, command, "territoryCommands", territoryName);
-        setCommand(state, command, "mapCommands", "build");
 
         UnitSlotNames.forEach((slot) => {
           command = {
@@ -341,7 +317,6 @@ export default function processMapClick(state, clickData) {
               unitSlotName: "sc",
             });
         }
-        setCommand(state, command, "mapCommands", "build");
         startNewOrder(state, {
           payload: {
             inProgress: true,

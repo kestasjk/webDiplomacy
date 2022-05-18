@@ -11,6 +11,8 @@ export default function drawMoveOrders(
   ordersMeta: OrdersMeta,
   board: GameState["board"],
 ): void {
+  console.log("drawMoveOrders");
+  console.log(data);
   const { currentOrders, territories, units } = data;
   const ordersMetaEntries = Object.entries(ordersMeta);
   if (ordersMetaEntries.length && units && territories) {
@@ -27,6 +29,7 @@ export default function drawMoveOrders(
             const toTerrDetails = territories[toTerrID];
             const fromTerr = TerritoryMap[onTerrDetails.name].territory;
             const toTerr = TerritoryMap[toTerrDetails.name].territory;
+            console.log(`Drawing MOVE arrow from ${toTerr} to ${fromTerr}`);
             drawArrow(
               id,
               ArrowType.MOVE,
