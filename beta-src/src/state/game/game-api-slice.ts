@@ -329,4 +329,6 @@ export const gameTerritoriesMeta = ({
   game: { territoriesMeta },
 }: RootState): TerritoriesMeta => territoriesMeta;
 export const gameUnits = ({ game: { units } }: RootState): Unit[] => units;
+export const gameUnitState = ({ game: { unitState } }: RootState) => unitState;
+
 export default gameApiSlice.reducer;

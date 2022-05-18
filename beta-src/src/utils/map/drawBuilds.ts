@@ -12,6 +12,7 @@ import OrdersMeta from "../../state/interfaces/SavedOrders";
 import TerritoriesMeta from "../../state/interfaces/TerritoriesState";
 import setCommand from "../state/setCommand";
 
+/* eslint-disable no-param-reassign */
 export default function drawBuilds(state): void {
   const {
     ordersMeta,
@@ -30,12 +31,10 @@ export default function drawBuilds(state): void {
     maps: GameState["maps"];
     ownUnits;
   } = current(state);
+
   if (phase === "Builds") {
     ownUnits.forEach((unitID) => {
-      const command: GameCommand = {
-        command: "NONE",
-      };
-      setCommand(state, command, "unitCommands", unitID);
+      state.unitState[unitID] = UIState.NONE;
     });
     Object.values(ordersMeta).forEach(({ update }) => {
       if (update) {
@@ -45,15 +44,8 @@ export default function drawBuilds(state): void {
           if (territoryMeta) {
             // Destroy Units
             if (type === "Destroy" && toTerrID) {
-              const command: GameCommand = {
-                command: "DESTROY",
-              };
-              setCommand(
-                state,
-                command,
-                "unitCommands",
-                maps.territoryToUnit[toTerrID],
-              );
+              const unitID = maps.territoryToUnit[toTerrID];
+              state.unitState[unitID] = UIState.DESTROY;
             } else {
               const buildType = BuildUnitMap[type];
               const mappedTerritory = TerritoryMap[territoryMeta.name];

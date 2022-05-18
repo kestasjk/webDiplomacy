@@ -1,4 +1,5 @@
 import { current } from "@reduxjs/toolkit";
+import UIState from "../../enums/UIState";
 import { GameCommand } from "../../state/interfaces/GameCommands";
 import setCommand from "./setCommand";
 
@@ -9,16 +10,11 @@ export default function resetOrder(state): void {
     overview: { phase },
   } = current(state);
   if (type !== "hold" && type !== "retreat") {
-    const command: GameCommand = {
-      command: phase === "Retreats" ? "DISLODGED" : "NONE",
-    };
-    setCommand(state, command, "unitCommands", unitID);
+    state.unitState[unitID] =
+      phase === "Retreats" ? UIState.DISLODGED : UIState.NONE;
   }
   if (type === "disband") {
-    const command: GameCommand = {
-      command: "DISBAND",
-    };
-    setCommand(state, command, "unitCommands", unitID);
+    state.unitState[unitID] = UIState.DISBANDED;
   }
   state.order.inProgress = false;
   state.order.unitID = "";

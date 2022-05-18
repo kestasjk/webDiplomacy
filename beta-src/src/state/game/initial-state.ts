@@ -36,6 +36,7 @@ const initialState: GameState = {
   ordersMeta: {},
   ownUnits: [],
   units: [],
+  unitState: {},
   maps: {
     territoryToUnit: {},
     unitToOrder: {},
@@ -47,7 +48,6 @@ const initialState: GameState = {
   commands: {
     mapCommands: {},
     territoryCommands: {},
-    unitCommands: {},
   },
   overview: {
     alternatives: "",

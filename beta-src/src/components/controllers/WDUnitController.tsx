@@ -10,50 +10,15 @@ import WDArmyIcon from "../ui/units/WDArmyIcon";
 
 interface UnitControllerProps {
   meta: GameIconProps["meta"];
-  initialIconState: UIState;
-  type: GameIconProps["type"];
 }
 
 const WDUnitController: React.FC<UnitControllerProps> = function ({
-  initialIconState,
+  children,
   meta,
   type,
 }): React.ReactElement {
   const dispatch = useAppDispatch();
   const [iconState, setIconState] = React.useState(initialIconState);
-
-  const commands = useAppSelector(
-    (state) => state.game.commands.unitCommands[meta.unit.id],
-  );
-
-  const commandActions = {
-    DISLODGED: (command) => {
-      const [key] = command;
-      setIconState(UIState.DISLODGED);
-    },
-    DESTROY: (command) => {
-      const [key] = command;
-      setIconState(UIState.DESTROY);
-    },
-    HOLD: (command) => {
-      const [key] = command;
-      setIconState(UIState.HOLD);
-    },
-    NONE: (command) => {
-      const [key] = command;
-      setIconState(UIState.NONE);
-    },
-    SELECTED: (command) => {
-      const [key] = command;
-      setIconState(UIState.SELECTED);
-    },
-    DISBAND: (command) => {
-      const [key] = command;
-      setIconState(UIState.DISBANDED);
-    },
-  };
-
-  processNextCommand(commands, commandActions);
 
   const clickAction = (e, method) => {
     dispatch(

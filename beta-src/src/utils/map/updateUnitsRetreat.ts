@@ -1,4 +1,5 @@
 import { current } from "@reduxjs/toolkit";
+import UIState from "../../enums/UIState";
 import { GameCommand } from "../../state/interfaces/GameCommands";
 import GameDataResponse from "../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
@@ -6,6 +7,7 @@ import OrderState from "../../state/interfaces/OrderState";
 import OrdersMeta from "../../state/interfaces/SavedOrders";
 import setCommand from "../state/setCommand";
 
+/* eslint-disable no-param-reassign */
 export default function updateUnitsRetreat(state): void {
   const {
     data: {
@@ -29,23 +31,15 @@ export default function updateUnitsRetreat(state): void {
       return;
     }
 
-    let command: GameCommand = {
-      command: "HOLD",
-    };
+    let newState = UIState.HOLD;
 
     if (type === "Retreat" && !toTerrID) {
-      command = {
-        command: "DISLODGED",
-      };
+      newState = UIState.DISLODGED;
     } else if (type === "Retreat" && toTerrID) {
-      command = {
-        command: "NONE",
-      };
+      newState = UIState.NONE;
     } else if (type === "Disband" && order.orderID !== id) {
-      command = {
-        command: "DISBAND",
-      };
+      newState = UIState.DISBANDED;
     }
-    setCommand(state, command, "unitCommands", unitID);
+    state.unitState[unitID] = newState;
   });
 }

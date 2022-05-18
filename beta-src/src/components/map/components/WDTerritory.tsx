@@ -321,7 +321,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   if (territoryMeta && territoryMeta.countryID) {
     const ownerCountryID = territoryMeta.countryID;
     const ownerCountry = countryIDToCountry[ownerCountryID];
-    console.log(`${territoryName} ${ownerCountryID}`);
     territoryFill = ownerCountryID ? theme.palette[ownerCountry].main : "none";
 
     territoryFillOpacity = 0.4;

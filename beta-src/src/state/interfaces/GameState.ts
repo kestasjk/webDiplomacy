@@ -10,10 +10,12 @@ import OrderState from "./OrderState";
 import OrdersMeta from "./SavedOrders";
 import TerritoriesMeta from "./TerritoriesState";
 import UserActivity from "./UserActivity";
-import { IUnit } from "../../models/Interfaces";
 import { Unit } from "../../utils/map/getUnits";
+import UIState from "../../enums/UIState";
 
 export type ApiStatus = "idle" | "loading" | "succeeded" | "failed";
+
+type UnitState = { [key: string]: UIState };
 
 export interface GameState {
   activity: UserActivity;
@@ -27,6 +29,7 @@ export interface GameState {
   ordersMeta: OrdersMeta;
   ownUnits: string[];
   units: Unit[];
+  unitState: UnitState; // map from unit ID to icon state
   territoriesMeta: TerritoriesMeta;
   commands: GameCommands;
   status: GameStatusResponse;

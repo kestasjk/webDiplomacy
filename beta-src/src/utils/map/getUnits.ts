@@ -6,6 +6,7 @@ import TerritoryMap, {
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import Country from "../../enums/Country";
 import { IUnit } from "../../models/Interfaces";
+import UIState from "../../enums/UIState";
 
 export interface Unit {
   country: Country;

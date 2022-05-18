@@ -2,6 +2,7 @@ import { current } from "@reduxjs/toolkit";
 import TerritoryMap from "../../../../data/map/variants/classic/TerritoryMap";
 import BuildUnit from "../../../../enums/BuildUnit";
 import Territory from "../../../../enums/map/variants/classic/Territory";
+import UIState from "../../../../enums/UIState";
 import { GameCommand } from "../../../../state/interfaces/GameCommands";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
@@ -64,7 +65,7 @@ export default function processMapClick(state, clickData) {
         command: "HOLD",
       };
       setCommand(state, command, "territoryCommands", territoryName);
-      setCommand(state, command, "unitCommands", currOrderUnitID);
+      state.unitState[currOrderUnitID] = UIState.HOLD;
       command = {
         command: "REMOVE_ARROW",
         data: {
@@ -115,6 +116,7 @@ export default function processMapClick(state, clickData) {
       !type &&
       inProgress
     ) {
+      console.log("processMapClick");
       const { allowedBorderCrossings } = ordersMeta[orderID];
       const canMove = allowedBorderCrossings?.find((border) => {
         const mappedTerritory = TerritoryMap[border.name];
