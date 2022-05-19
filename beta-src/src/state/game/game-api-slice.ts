@@ -231,5 +231,9 @@ export const gameNotifications = ({
 export const userActivity = ({
   game: { activity },
 }: RootState): GameState["activity"] => activity;
+export const mustDestroyUnits = ({
+  game: { mustDestroyUnitsBuildPhase },
+}: RootState): GameState["mustDestroyUnitsBuildPhase"] =>
+  mustDestroyUnitsBuildPhase;
 
 export default gameApiSlice.reducer;

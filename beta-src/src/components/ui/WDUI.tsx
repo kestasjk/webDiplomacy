@@ -158,7 +158,7 @@ const WDUI: React.FC = function (): React.ReactElement {
         <WDMoveControls />
       </WDPositionContainer>
       <WDPositionContainer position={Position.BOTTOM_LEFT}>
-        <WDNotificationContainer phase={phase} />
+        <WDNotificationContainer />
       </WDPositionContainer>
     </>
   );

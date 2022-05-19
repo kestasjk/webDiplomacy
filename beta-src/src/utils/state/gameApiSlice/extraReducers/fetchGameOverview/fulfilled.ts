@@ -5,7 +5,14 @@ export default function fetchGameOverviewFulfilled(state, action): void {
   state.apiStatus = "succeeded";
   state.overview = action.payload;
   state.activity.makeNewCall = false;
-  const { processTime, members } = action.payload;
+  const {
+    processTime,
+    members,
+    phase,
+    user: {
+      member: { supplyCenterNo, unitNo },
+    },
+  } = action.payload;
   if (processTime) {
     const membersPlaying = members.filter(({ status }) => status === "Playing");
     // eslint-disable-next-line no-bitwise
@@ -38,5 +45,8 @@ export default function fetchGameOverviewFulfilled(state, action): void {
       frequency = 10;
     }
     state.activity.frequency = frequency;
+  }
+  if (phase === "Builds" && unitNo > supplyCenterNo) {
+    state.mustDestroyUnitsBuildPhase = true;
   }
 }

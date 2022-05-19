@@ -23,25 +23,16 @@ const defaultStyle = {
 export default function writeBuildNotifications(state): void {
   const {
     ordersMeta,
-    overview: {
-      phase,
-      user: {
-        member: { supplyCenterNo, unitNo },
-      },
-    },
+    overview: { phase },
+    mustDestroyUnitsBuildPhase,
   }: {
     // definition
     ordersMeta: GameState["ordersMeta"];
     overview: {
       phase: GameState["overview"]["phase"];
       pot: GameState["overview"]["pot"];
-      user: {
-        member: {
-          supplyCenterNo: GameState["overview"]["user"]["member"]["supplyCenterNo"];
-          unitNo: GameState["overview"]["user"]["member"]["unitNo"];
-        };
-      };
     };
+    mustDestroyUnitsBuildPhase: GameState["mustDestroyUnitsBuildPhase"];
   } = current(state);
   if (phase === "Builds") {
     let ordersToGo = 0;
@@ -51,7 +42,7 @@ export default function writeBuildNotifications(state): void {
       if (update?.toTerrID === null) ordersToGo += 1;
       totalOrders += 1;
     });
-    if (supplyCenterNo < unitNo) {
+    if (mustDestroyUnitsBuildPhase) {
       if (ordersToGo > 1) {
         state.notifications[0] = {
           message: `Select ${ordersToGo} units to destroy.`,
