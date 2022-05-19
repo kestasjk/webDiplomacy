@@ -43,6 +43,7 @@ const initialState: GameState = {
     territoryToEnum: {},
   },
   territoriesMeta: {},
+  mustDestroyUnitsBuildPhase: false,
   commands: {
     mapCommands: {},
     territoryCommands: {},

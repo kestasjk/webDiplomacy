@@ -1,6 +1,7 @@
 import { current } from "@reduxjs/toolkit";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../../../state/interfaces/GameOverviewResponse";
+import { GameState } from "../../../../state/interfaces/GameState";
 import GameStateMaps from "../../../../state/interfaces/GameStateMaps";
 import OrderState from "../../../../state/interfaces/OrderState";
 import OrdersMeta from "../../../../state/interfaces/SavedOrders";
@@ -19,6 +20,7 @@ export default function processUnitClick(state, clickData) {
     ordersMeta,
     ownUnits,
     overview,
+    mustDestroyUnitsBuildPhase,
   }: {
     data: GameDataResponse;
     maps: GameStateMaps;
@@ -26,6 +28,7 @@ export default function processUnitClick(state, clickData) {
     ordersMeta: OrdersMeta;
     ownUnits: string[];
     overview: GameOverviewResponse;
+    mustDestroyUnitsBuildPhase: GameState["mustDestroyUnitsBuildPhase"];
   } = current(state);
   const {
     data: { currentOrders, units },
@@ -53,10 +56,12 @@ export default function processUnitClick(state, clickData) {
       return;
     }
   }
-  // Destroy Units
-  const isDestroy = currentOrders?.some(({ type: t }) => t === "Destroy");
   if (phase === "Builds") {
-    if (!ownUnits.includes(clickData.payload.unitID) || !isDestroy) {
+    // Destroy Units
+    if (
+      !ownUnits.includes(clickData.payload.unitID) ||
+      !mustDestroyUnitsBuildPhase
+    ) {
       return;
     }
 
