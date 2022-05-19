@@ -34,8 +34,8 @@ export interface GameState {
   messages: GameMessages;
 
   order: OrderState;
+  // FIXME: get rid of these if/when possible
   unitState: UnitState; // map from unit ID to icon state
   buildPopover: BuildCommand[]; // list of possible builds that the user can choose from
-  // builds: BuildDescriptor[]; // current units being built
   arrows: DrawArrowCommand[];
 }

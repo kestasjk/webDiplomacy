@@ -69,7 +69,7 @@ const WDPress: React.FC<WDPressProps> = function ({
         }),
       );
     }
-  }, 100000);
+  }, 1000);
 
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {

@@ -5,7 +5,7 @@ import countryMap from "../../../data/map/variants/classic/CountryMap";
 import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
 import Territories from "../../../data/Territories";
 import UIState from "../../../enums/UIState";
-import { MemberData, TerritoryMapData } from "../../../interfaces";
+import { TerritoryMapData } from "../../../interfaces";
 import {
   gameApiSliceActions,
   gameOrdersMeta,
@@ -19,17 +19,13 @@ import { TerritoryMeta } from "../../../state/interfaces/TerritoriesState";
 import ClickObjectType from "../../../types/state/ClickObjectType";
 import UnitType from "../../../types/UnitType";
 import WDUnit from "../../ui/units/WDUnit";
-import WDBuildUnitButtons, { BuildData } from "./WDBuildUnitButtons";
+import { BuildData } from "./WDBuildUnitButtons";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
 
 interface WDTerritoryProps {
   territoryMapData: TerritoryMapData;
-}
-
-interface Units {
-  [key: string]: React.ReactElement;
 }
 
 interface BuildPopovers {
@@ -42,23 +38,10 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const territoriesMeta = useAppSelector(gameTerritoriesMeta);
-  const [territoryStrokeOpacity, setTerritoryStrokeOpacity] = React.useState(1);
-
-  const [buildPopovers, setBuildPopovers] = React.useState<BuildPopovers>({});
-
-  const [openBuildPopovers, setOpenBuildPopovers] = React.useState(false);
 
   const { user, members } = useAppSelector(gameOverview);
   const units = useAppSelector(gameUnits);
   const userCountry = countryMap[user.member.country];
-
-  const setMoveHighlight = () => {
-    setTerritoryStrokeOpacity(1);
-  };
-
-  const setCapturedHighlight = (country) => {
-    setTerritoryStrokeOpacity(1);
-  };
 
   const build = (availableOrder, canBuild, toTerrID) => {
     dispatch(
@@ -72,7 +55,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         },
       }),
     );
-    setOpenBuildPopovers(false);
     dispatch(gameApiSliceActions.resetOrder());
   };
 
@@ -91,6 +73,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
 
   let territoryFill = "none";
   let territoryFillOpacity = 0;
+  const territoryStrokeOpacity = 1;
   if (territoryMeta && territoryMeta.countryID) {
     const ownerCountryID = territoryMeta.countryID;
     const ownerCountry = countryIDToCountry[ownerCountryID];
@@ -125,11 +108,10 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     .filter(
       ({ update }) =>
         update &&
-        update?.type.split(" ")[1] === "Build" && // updates can be something supporting you or moving to this territory???
+        update?.type.split(" ")[0] === "Build" && // updates can be something supporting you or moving to this territory???
         update.toTerrID === territoryMeta?.id,
     )
     .forEach(({ update }) => {
-      console.log({ update });
       unitFCs.main = (
         <WDUnit
           id={`${territoryName}-unit`} // n.b. the id here is ref'd by drawOrders, do not change!
