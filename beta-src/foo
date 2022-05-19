@@ -1,0 +1,3 @@
+REACT_APP_WD_API_BASE_URL=http://localhost:8895/api.php
+REACT_APP_WD_BASE_URL=http://localhost:8895
+REACT_APP_WD_ORDER_SUBMISSION_BASE_URL=http://localhost:8895/ajax.php

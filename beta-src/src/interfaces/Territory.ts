@@ -5,4 +5,5 @@ export interface Territory {
   name: TerritoryName;
   abbr: string;
   type: TerritoryType;
+  parent?: Territory;
 }

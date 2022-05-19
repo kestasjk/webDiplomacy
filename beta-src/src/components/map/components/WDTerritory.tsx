@@ -117,9 +117,17 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         />
       );
     });
+  if (territoryName === "BERLIN") {
+    console.log("Rerendering BERLIN!");
+  }
   const ordersMeta = useAppSelector(gameOrdersMeta);
   Object.values(ordersMeta)
-    .filter(({ update }) => update && update.toTerrID === territoryMeta?.id)
+    .filter(
+      ({ update }) =>
+        update &&
+        update?.type.split(" ")[1] === "Build" && // updates can be something supporting you or moving to this territory???
+        update.toTerrID === territoryMeta?.id,
+    )
     .forEach(({ update }) => {
       console.log({ update });
       unitFCs.main = (

@@ -38,21 +38,21 @@ const WDBuildContainer: React.FC = function (): React.ReactElement {
   console.log({ buildPopover });
   return (
     <>
-      {Object.values(buildPopover).map((b) => (
-        <WDBuildUnitButtons
-          key={`${b.territoryMeta.id}-${b.unitSlotName}`}
-          availableOrder={b.availableOrder}
-          canBuild={b.canBuild}
-          clickCallback={build}
-          country={countryMap[userMember.country]}
-          territoryName={
-            TerritoryMap[b.territoryMeta.name].parentName ||
-            TerritoryMap[b.territoryMeta.name].territoryName
-          }
-          unitSlotName={b.unitSlotName}
-          toTerrID={b.territoryMeta.id}
-        />
-      ))}
+      {Object.values(buildPopover).map((b) => {
+        const territory = Territories[b.territoryMeta.territory];
+        return (
+          <WDBuildUnitButtons
+            key={`${b.territoryMeta.id}-${b.unitSlotName}`}
+            availableOrder={b.availableOrder}
+            canBuild={b.canBuild}
+            clickCallback={build}
+            country={countryMap[userMember.country]}
+            territoryName={territory.parent?.name || territory.name}
+            unitSlotName={b.unitSlotName}
+            toTerrID={b.territoryMeta.id}
+          />
+        );
+      })}
     </>
   );
 };
