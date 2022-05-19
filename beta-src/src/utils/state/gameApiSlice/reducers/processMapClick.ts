@@ -14,6 +14,12 @@ import setCommand from "../../setCommand";
 import startNewOrder from "../../startNewOrder";
 import updateOrdersMeta from "../../updateOrdersMeta";
 
+const territorySuffix = {
+  _COAST: "",
+  _NORTH: "",
+  _SOUTH: "",
+};
+
 /* eslint-disable no-param-reassign */
 export default function processMapClick(state, clickData) {
   const {
@@ -125,6 +131,12 @@ export default function processMapClick(state, clickData) {
         return Territory[mappedTerritory.territory] === territoryName;
       });
 
+      // This is to get the Parent DOM ID of the coastal territory
+      const territoryNameWithouthCoast = territoryName.replace(
+        /_COAST|_NORTH|_SOUTH/gi,
+        (matched) => territorySuffix[matched],
+      );
+
       if (canMove) {
         highlightMapTerritoriesBasedOnStatuses(state);
         const command: GameCommand = {
@@ -134,7 +146,7 @@ export default function processMapClick(state, clickData) {
           state,
           command,
           "territoryCommands",
-          canMove.coastParent.name.toUpperCase(),
+          territoryNameWithouthCoast,
         );
         updateOrdersMeta(state, {
           [orderID]: {
