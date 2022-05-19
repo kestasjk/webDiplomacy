@@ -64,7 +64,6 @@ export default function processMapClick(state, clickData) {
     ) {
       console.log(`inProgress Click`);
 
-      state.territoryState[territoryName] = UIState.HOLD;
       state.unitState[currOrderUnitID] = UIState.HOLD;
       if (currentOrders) {
         const orderToUpdate = currentOrders.find(
