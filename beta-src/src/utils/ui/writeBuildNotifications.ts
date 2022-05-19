@@ -28,10 +28,7 @@ export default function writeBuildNotifications(state): void {
   }: {
     // definition
     ordersMeta: GameState["ordersMeta"];
-    overview: {
-      phase: GameState["overview"]["phase"];
-      pot: GameState["overview"]["pot"];
-    };
+    overview: { phase: GameState["overview"]["phase"] };
     mustDestroyUnitsBuildPhase: GameState["mustDestroyUnitsBuildPhase"];
   } = current(state);
   if (phase === "Builds") {
