@@ -7,6 +7,7 @@ import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
 import { UnitSlotNames } from "../../../../types/map/UnitSlotName";
 import highlightMapTerritoriesBasedOnStatuses from "../../../map/highlightMapTerritoriesBasedOnStatuses";
+import processForeignConvoy from "../../processForeignConvoy";
 import processConvoy from "../../processConvoy";
 import resetOrder from "../../resetOrder";
 import setCommand from "../../setCommand";
@@ -90,7 +91,9 @@ export default function processMapClick(state, clickData) {
       state.order.type = phase === "Retreats" ? "disband" : "hold";
     } else if (type === "convoy" && !truthyToTerritory) {
       state.order.toTerritory = Number(Territory[territoryName]);
-      processConvoy(state);
+      data.units[order.unitID].type === "Fleet"
+        ? processForeignConvoy(state)
+        : processConvoy(state);
     } else if (
       truthyOnTerritory &&
       (type === "hold" ||

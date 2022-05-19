@@ -149,6 +149,7 @@ const initialState: GameState = {
     phase: "",
   },
   isFleetClicked: false,
+  notifications: [],
 };
 
 export default initialState;

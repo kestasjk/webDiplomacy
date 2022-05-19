@@ -2,10 +2,7 @@ import { useTheme } from "@mui/material";
 import * as React from "react";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
 import { TerritoryMapData } from "../../../interfaces";
-import {
-  gameApiSliceActions,
-  gameOverview,
-} from "../../../state/game/game-api-slice";
+import { gameApiSliceActions } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import ClickObjectType from "../../../types/state/ClickObjectType";
 import processNextCommand from "../../../utils/processNextCommand";
@@ -48,10 +45,11 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
 
   const isFleetClicked = useAppSelector((state) => state.game.isFleetClicked);
 
-  const {
-    user: { member },
-  } = useAppSelector(gameOverview);
-  const userCountry = countryMap[member.country];
+  let userCountry = useAppSelector(
+    (state) => state.game.overview.user.member.country,
+  );
+
+  userCountry = countryMap[userCountry];
 
   const deleteCommand = (key) => {
     dispatch(
