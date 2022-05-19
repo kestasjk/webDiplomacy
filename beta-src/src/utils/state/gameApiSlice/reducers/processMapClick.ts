@@ -7,7 +7,7 @@ import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
 import { UnitSlotNames } from "../../../../types/map/UnitSlotName";
 import highlightMapTerritoriesBasedOnStatuses from "../../../map/highlightMapTerritoriesBasedOnStatuses";
-import getOrderStates from "../../getOrderStates";
+import processForeignConvoy from "../../processForeignConvoy";
 import processConvoy from "../../processConvoy";
 import resetOrder from "../../resetOrder";
 import setCommand from "../../setCommand";
@@ -43,12 +43,10 @@ export default function processMapClick(state, clickData) {
     user: { member },
     phase,
   } = overview;
-  const { currentOrders, contextVars } = data;
-  if (contextVars?.context?.orderStatus) {
-    const orderStates = getOrderStates(contextVars?.context?.orderStatus);
-    if (orderStates.Ready) {
-      return;
-    }
+  const { currentOrders } = data;
+  const { orderStatus } = member;
+  if (orderStatus.Ready) {
+    return;
   }
   const {
     payload: { clickObject, evt, name: territoryName },
@@ -93,7 +91,9 @@ export default function processMapClick(state, clickData) {
       state.order.type = phase === "Retreats" ? "disband" : "hold";
     } else if (type === "convoy" && !truthyToTerritory) {
       state.order.toTerritory = Number(Territory[territoryName]);
-      processConvoy(state);
+      data.units[order.unitID].type === "Fleet"
+        ? processForeignConvoy(state)
+        : processConvoy(state);
     } else if (
       truthyOnTerritory &&
       (type === "hold" ||
@@ -105,14 +105,11 @@ export default function processMapClick(state, clickData) {
       highlightMapTerritoriesBasedOnStatuses(state);
       resetOrder(state);
     } else if (truthyToTerritory && type === "build") {
-      setCommand(
-        state,
-        {
-          command: "REMOVE_BUILD",
-        },
-        "territoryCommands",
-        Territory[toTerritory],
-      );
+      const command: GameCommand = {
+        command: "REMOVE_BUILD",
+      };
+      setCommand(state, command, "territoryCommands", Territory[toTerritory]);
+      setCommand(state, command, "mapCommands", "build");
       resetOrder(state);
     } else if (
       clickObject === "territory" &&
@@ -266,6 +263,7 @@ export default function processMapClick(state, clickData) {
           },
         };
         setCommand(state, command, "territoryCommands", territoryName);
+        setCommand(state, command, "mapCommands", "build");
 
         UnitSlotNames.forEach((slot) => {
           command = {
@@ -314,35 +312,38 @@ export default function processMapClick(state, clickData) {
         const command: GameCommand = {
           command: "BUILD",
           data: {
-            build: [
-              {
-                availableOrder,
-                canBuild,
-                toTerrID: territoryMeta.id,
-                unitSlotName: "main",
-              },
-            ],
+            build: {
+              territoryName,
+              builds: [
+                {
+                  availableOrder,
+                  canBuild,
+                  toTerrID: territoryMeta.id,
+                  unitSlotName: "main",
+                },
+              ],
+            },
           },
         };
         if (territoryMeta.territory === Territory.SAINT_PETERSBURG) {
           const nc = territoriesMeta[Territory.SAINT_PETERSBURG_NORTH_COAST];
           const sc = territoriesMeta[Territory.SAINT_PETERSBURG_SOUTH_COAST];
           nc &&
-            command.data?.build?.push({
+            command.data?.build?.builds?.push({
               availableOrder,
               canBuild: BuildUnit.Fleet,
               toTerrID: nc.id,
               unitSlotName: "nc",
             });
           sc &&
-            command.data?.build?.push({
+            command.data?.build?.builds?.push({
               availableOrder,
               canBuild: BuildUnit.Fleet,
               toTerrID: sc.id,
               unitSlotName: "sc",
             });
         }
-        setCommand(state, command, "territoryCommands", territoryName);
+        setCommand(state, command, "mapCommands", "build");
         startNewOrder(state, {
           payload: {
             inProgress: true,

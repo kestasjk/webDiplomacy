@@ -9,10 +9,13 @@ import GameMessages from "./GameMessages";
 import OrderState from "./OrderState";
 import OrdersMeta from "./SavedOrders";
 import TerritoriesMeta from "./TerritoriesState";
+import GameNotification from "./GameNotification";
+import UserActivity from "./UserActivity";
 
 export type ApiStatus = "idle" | "loading" | "succeeded" | "failed";
 
 export interface GameState {
+  activity: UserActivity;
   apiStatus: ApiStatus;
   board: BoardClass | undefined;
   data: GameDataResponse;
@@ -26,4 +29,5 @@ export interface GameState {
   commands: GameCommands;
   status: GameStatusResponse;
   messages: GameMessages;
+  notifications: GameNotification[];
 }

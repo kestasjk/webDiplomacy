@@ -131,7 +131,7 @@ class User {
 
 	/**
 	 * Notification flags; an array of notification flags, each set to true if notification should be done.
-	 * @var array
+	 * @var setUserNotifications
 	 */
 	public $notifications;
 
@@ -222,7 +222,7 @@ class User {
 	 * 
 	 * Generated in libGameMaster
 	 * 
-	 * @var int/double
+	 * @var int|float
 	 */
 	public $cdCount, $nmrCount, $cdTakenCount, $phaseCount, $gameCount, $reliabilityRating;
 
@@ -348,7 +348,7 @@ class User {
 		else
 		{
 			// Prevent mods from trying to dock more points than a user has, throwing an exception. Just dock the user to 0.
-			if (($points < 0 ) && ($this->points + $points) < 0 ) { $DB->sql_put("UPDATE wD_Users SET points = 0 WHERE id = ".$userID); }
+			if (($points < 0 ) && ($userPassed->points + $points) < 0 ) { $DB->sql_put("UPDATE wD_Users SET points = 0 WHERE id = ".$userID); }
 			else { $DB->sql_put("UPDATE wD_Users SET points = points + ".$points." WHERE id = ".$userID); }
 		}
 	}
@@ -597,19 +597,37 @@ class User {
 	 */
 	function profile_link($welcome = false)
 	{
+		return self::profile_link_static($this->username, $this->id, $this->type, $this->points);
+	}
+
+	/**
+	 * Generate a profile link using raw database values ($type can be a $User->type array or string ENUM field)
+	 */
+	static function profile_link_static($username, $id, $type, $points)
+	{
+		global $User;
+
 		$buffer = '';
 
-		if ( $this->type['User'] )
+		if ( (is_array($type) && $type['User']) || (!is_array($type) && strstr($type, 'User') !== false ) )
 		{
-			$buffer .= '<a href="./userprofile.php?userID='.$this->id.'"';
+			$buffer .= '<a href="./userprofile.php?userID='.$id.'"';
 
-			$buffer.='>'.$this->username;
+			// Allow javascript to use this ID link:
+			$buffer.=' profileLinkUserId="'.$id.'">'.$username;
 
-			$buffer.=' ('.$this->points.libHTML::points().$this->typeIcon($this->type).')</a>';
+			$buffer.='</a> ('.trim($points).libHTML::points().self::typeIcon($type).libHTML::loggedOn($id);
+			
+			$buffer .= ')<span class="userRelationships" profileLinkUserId="'.$id.'"></span>';
+
+			if( isset($User) && $User->type['Moderator'] )
+			{
+				$buffer .= ' (<a href="index.php?auid='.$id.'">+</a>)';
+			}
 		}
 		else
 		{
-			$buffer .= '<em>'.$this->username.'</em>';
+			$buffer .= '<em>'.$username.'</em>';
 		}
 
 		return $buffer;
@@ -635,16 +653,16 @@ class User {
 		{
 			if ($User->getTheme() == 'No' || $User->getTheme() == null)
 			{
-				$buf .= ' <img src="'.l_s('images/icons/mod.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
+				$buf .= '<img src="'.l_s('images/icons/mod.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
 			}
 			else
 			{
-				$buf .= ' <img src="'.l_s('images/icons/mod3.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
+				$buf .= '<img src="'.l_s('images/icons/mod3.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
 			}
 		}
 				
 		elseif(strstr($type,'Banned') )
-			$buf .= ' <img src="'.l_s('images/icons/cross.png').'" alt="X" title="'.l_t('Banned').'" />';
+			$buf .= '<img src="'.l_s('images/icons/cross.png').'" alt="X" title="'.l_t('Banned').'" />';
 
 		if( strstr($type,'DonatorPlatinum') )
 			$buf .= libHTML::platinum();
@@ -772,12 +790,21 @@ class User {
 			$cookieCode = (int) $_COOKIE['wD_Code'];
 		}
 
+        if( isset($_COOKIE['wD_FJT']) && ctype_xdigit($_COOKIE['wD_FJT']) )
+        {
+            $browserFingerprint = trim($_COOKIE['wD_FJT']); // ctype_xdigit is very strict, even the trim is likely unneeded
+        }
+        else
+        {
+            $browserFingerprint = '';
+        }
+
 		if($this->type['Banned'])
 			libHTML::notice(l_t('Banned'), l_t('You have been banned from this server. If you think there has been a mistake contact the moderator team at %s , and if you still aren\'t satisfied contact the admin at %s (with details of what happened).',Config::$modEMail, Config::$adminEMail));
 
-		$DB->sql_put("INSERT INTO wD_Sessions (userID, lastRequest, hits, ip, userAgent, cookieCode)
+		$DB->sql_put("INSERT INTO wD_Sessions (userID, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint)
 					VALUES (".$this->id.",CURRENT_TIMESTAMP,1, INET_ATON('".$_SERVER['REMOTE_ADDR']."'),
-							UNHEX('".$userAgentHash."'), ".$cookieCode." )
+							UNHEX('".$userAgentHash."'), ".$cookieCode.", '".$browserFingerprint."' )
 					ON DUPLICATE KEY UPDATE hits=hits+1");
 
 		$this->online = true;

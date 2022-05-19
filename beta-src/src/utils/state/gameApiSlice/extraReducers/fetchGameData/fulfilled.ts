@@ -1,4 +1,5 @@
 import { current } from "@reduxjs/toolkit";
+import TerritoryMap from "../../../../../data/map/variants/classic/TerritoryMap";
 import Territory from "../../../../../enums/map/variants/classic/Territory";
 import BoardClass from "../../../../../models/BoardClass";
 import { GameCommand } from "../../../../../state/interfaces/GameCommands";
@@ -45,7 +46,22 @@ export default function fetchGameDataFulfilled(state, action): void {
       state.ownUnits.push(unit.id);
     }
   });
-  const unitsToDraw = getUnits(data, members);
+  const unitsToDraw = getUnits(data, members, phase);
+  Object.values(data.territories).forEach(({ name }) => {
+    const mappedTerritory = TerritoryMap[name];
+    const command: GameCommand = {
+      command: "SET_UNIT",
+      data: { setUnit: { unitSlotName: mappedTerritory.unitSlotName } },
+    };
+    setCommand(
+      state,
+      command,
+      "territoryCommands",
+      mappedTerritory.parent
+        ? Territory[mappedTerritory.parent]
+        : Territory[mappedTerritory.territory],
+    );
+  });
   unitsToDraw.forEach(({ country, mappedTerritory, unit }) => {
     const command: GameCommand = {
       command: "SET_UNIT",

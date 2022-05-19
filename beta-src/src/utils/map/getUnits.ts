@@ -16,22 +16,28 @@ interface Unit {
 export default function getUnits(
   data: GameDataResponse["data"],
   members: GameOverviewResponse["members"],
+  phase: GameOverviewResponse["phase"],
 ): Unit[] {
   const unitsToDraw: Unit[] = [];
-  const { contextVars, territories, territoryStatuses, units } = data;
+  const { territories, territoryStatuses, units } = data;
   Object.values(units).forEach((unit) => {
     let territory = territories[unit.terrID];
     const territoryStatus = territoryStatuses.find((t) => unit.terrID === t.id);
     const territoryHasMultipleUnits = Object.values(units).filter(
       (u) => u.terrID === unit.terrID,
     );
+    const occupiedTerritory = territoryStatus?.occupiedFromTerrID
+      ? territoryStatuses.find(
+          (t) => territoryStatus?.occupiedFromTerrID === t.id,
+        )
+      : undefined;
 
     if (
       territoryStatus?.occupiedFromTerrID &&
       unit.id === territoryStatus.unitID &&
-      territoryStatus?.ownerCountryID === unit.countryID &&
+      occupiedTerritory?.ownerCountryID === unit.countryID &&
       territoryHasMultipleUnits.length > 1 &&
-      contextVars?.context.phase === "Retreats"
+      phase === "Retreats"
     ) {
       territory = territories[territoryStatus.occupiedFromTerrID];
     }

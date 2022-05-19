@@ -331,6 +331,12 @@ class ToggleVote extends ApiEntry {
 		$game = 
 		$currentVotes = $DB->sql_hash("SELECT votes FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." AND userID = ".$userID);
 		$currentVotes = $currentVotes['votes'];
+
+		// Keep a log that a vote was set in the game messages, so the vote time is recorded
+		require_once(l_r('lib/gamemessage.php'));
+		$voteOn = in_array($vote, explode(',',$currentVotes));
+		libGameMessage::send($countryID, $countryID, ($voteOn?'Un-':'').'Voted for '.$vote, $gameID);
+
 		$newVotes = '';
 		if( strpos($currentVotes, $vote) !== false )
 		{
@@ -423,7 +429,12 @@ class GetGameMembers extends ApiEntry {
 			'missedPhases' => $member->missedPhases,
 			'newMessagesFrom' => $retrievePrivateData ? $member->newMessagesFrom : [],
 			'online' => $member->online,
-			'orderStatus' => $member->orderStatus,
+			'orderStatus' => [
+				'Ready' => $member->orderStatus->Ready,
+				'Saved' => $member->orderStatus->Saved,
+				'Completed' => $member->orderStatus->Completed,
+				'None' => $member->orderStatus->None,
+			],
 			'status' => $member->status,
 			'supplyCenterNo' => $member->supplyCenterNo,
 			'timeLoggedIn' => $member->timeLoggedIn,
@@ -995,17 +1006,18 @@ class SendMessage extends ApiEntry {
 			throw new ClientForbiddenException('User does not have explicit permission to make this API call.');
 		}
 
-		if ($toCountryID < 1 || $toCountryID > count($game->Members) || $toCountryID == $countryID) {
+		if ($toCountryID < 1 || $toCountryID > count($game->Members->ByUserID) || $toCountryID == $countryID) {
 			throw new RequestException('Invalid toCountryID');
 		}
 
 		$toUser = new User($game->Members->ByCountryID[$toCountryID]->userID);
 		if(!$toUser->isCountryMuted($game->id, $countryID)) {
-			libGameMessage::send($toCountryID, $countryID, $message);
+			$time = libGameMessage::send($toCountryID, $countryID, $message);
 		}
 
-		// FIXME: what to return?
-		return json_encode($args);
+		$DB->sql_put("COMMIT");
+		
+		return $time;
 	}
 }
 
@@ -1379,9 +1391,10 @@ class Api {
 		// }
 
 		// Cache result
-		if( $this->route == 'players/missing_orders' && $cacheKey = $apiAuth->getCacheKey() ){
-			$MC->set($cacheKey, $result, 60); // Continually No rush to expire , should be cleaned on all game processes anyway
-		}
+		// FIXME: This breaks API Keys
+		// if( $this->route == 'players/missing_orders' && $cacheKey = $apiAuth->getCacheKey() ){
+		// 	$MC->set($cacheKey, $result, 60); // Continually No rush to expire , should be cleaned on all game processes anyway
+		// }
 
 		return $result;
 	}

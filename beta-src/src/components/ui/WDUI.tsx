@@ -4,7 +4,7 @@ import { Box, IconButton, Link, useTheme } from "@mui/material";
 import WDPositionContainer from "./WDPositionContainer";
 import Position from "../../enums/Position";
 import { useAppSelector } from "../../state/hooks";
-import { gameData, gameOverview } from "../../state/game/game-api-slice";
+import { gameOverview } from "../../state/game/game-api-slice";
 import { CountryTableData } from "../../interfaces";
 import Country from "../../enums/Country";
 import WDFullModal from "./WDFullModal";
@@ -14,12 +14,10 @@ import WDPhaseUI from "./WDPhaseUI";
 import UIState from "../../enums/UIState";
 import capitalizeString from "../../utils/capitalizeString";
 import Vote from "../../enums/Vote";
-import Move from "../../enums/Move";
 import WDMoveControls from "./WDMoveControls";
-import MoveStatus from "../../types/MoveStatus";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import WDHomeIcon from "./icons/WDHomeIcon";
-import getOrderStates from "../../utils/state/getOrderStates";
+import WDNotificationContainer from "./WDNotificationContainer";
 
 const abbrMap = {
   Russia: "RUS",
@@ -30,20 +28,11 @@ const abbrMap = {
   France: "FRA",
   Turkey: "TUR",
 };
-/**
- * the game status data created here is for displaying purpose
- * the real gamestatus data will be provided from Redux Store?
- */
-const gameStatusData: MoveStatus = {
-  save: false,
-  ready: false,
-};
 
 const WDUI: React.FC = function (): React.ReactElement {
   const theme = useTheme();
 
   const [showControlModal, setShowControlModal] = React.useState(false);
-  const [readyDisabled, setReadyDisabled] = React.useState(false);
   const popoverTrigger = React.useRef<HTMLElement>(null);
 
   const {
@@ -58,10 +47,6 @@ const WDUI: React.FC = function (): React.ReactElement {
     user,
     year,
   } = useAppSelector(gameOverview);
-
-  const {
-    data: { contextVars },
-  } = useAppSelector(gameData);
 
   const constructTableData = (member) => {
     const memberCountry: Country = countryMap[member.country];
@@ -107,40 +92,25 @@ const WDUI: React.FC = function (): React.ReactElement {
     </IconButton>
   );
 
-  const [gameState, setGameState] = React.useState(gameStatusData);
-  const toggleState = (move: Move) => {
-    setGameState((preState) => ({
-      ...preState,
-      [move]: !gameState[move],
-    }));
+  const checkIfTriggerVisible = (i = 0) => {
+    if (i > 10) {
+      return;
+    }
+    if (popoverTrigger.current) {
+      const rect = popoverTrigger.current.getBoundingClientRect();
+      if (!rect.width || !rect.height) {
+        setTimeout(() => {
+          checkIfTriggerVisible(i + 1);
+        }, 500);
+      } else {
+        toggleControlModal();
+      }
+    }
   };
 
   React.useEffect(() => {
-    if (popoverTrigger.current) {
-      setTimeout(() => {
-        toggleControlModal();
-      }, 1000);
-    }
+    checkIfTriggerVisible();
   }, [popoverTrigger]);
-
-  if (contextVars?.context?.orderStatus) {
-    const orderStates = getOrderStates(contextVars.context.orderStatus);
-    if (orderStates.None) {
-      setReadyDisabled(true);
-    }
-    if (!orderStates.Ready && gameState.ready) {
-      setGameState((preState) => ({
-        ...preState,
-        [Move.READY]: false,
-      }));
-    }
-    if ((orderStates.Ready || orderStates.None) && !gameState.ready) {
-      setGameState((preState) => ({
-        ...preState,
-        [Move.READY]: true,
-      }));
-    }
-  }
 
   const popover = popoverTrigger.current ? (
     <WDPopover
@@ -185,11 +155,10 @@ const WDUI: React.FC = function (): React.ReactElement {
         <WDPhaseUI />
       </WDPositionContainer>
       <WDPositionContainer position={Position.BOTTOM_RIGHT}>
-        <WDMoveControls
-          readyDisabled={readyDisabled}
-          gameState={gameState}
-          toggleState={toggleState}
-        />
+        <WDMoveControls />
+      </WDPositionContainer>
+      <WDPositionContainer position={Position.BOTTOM_LEFT}>
+        <WDNotificationContainer phase={phase} />
       </WDPositionContainer>
     </>
   );

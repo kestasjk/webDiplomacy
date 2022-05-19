@@ -14,6 +14,7 @@ const WDArrowMarkerColors = function (
             ([arrowColor, config]) => (
               <marker
                 id={`arrowHead__${ArrowType[arrowType]}_${ArrowColor[arrowColor]}`}
+                key={`arrowHead__${ArrowType[arrowType]}_${ArrowColor[arrowColor]}`}
                 markerWidth={8}
                 markerHeight={8}
                 refX="16"
@@ -36,6 +37,7 @@ const WDArrowMarkerColors = function (
             ([arrowColor, config]) => (
               <marker
                 id={`arrowHead__${ArrowType[arrowType]}_${ArrowColor[arrowColor]}`}
+                key={`arrowHead__${ArrowType[arrowType]}_${ArrowColor[arrowColor]}`}
                 markerWidth={8}
                 markerHeight={8}
                 refX="16"
@@ -55,6 +57,7 @@ const WDArrowMarkerColors = function (
             ([arrowColor, config]) => (
               <marker
                 id={`arrowHead__${ArrowType[arrowType]}_${ArrowColor[arrowColor]}`}
+                key={`arrowHead__${ArrowType[arrowType]}_${ArrowColor[arrowColor]}`}
                 markerWidth={8}
                 markerHeight={8}
                 refX={

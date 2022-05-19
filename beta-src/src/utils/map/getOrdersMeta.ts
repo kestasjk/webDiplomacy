@@ -20,7 +20,7 @@ export default function getOrdersMeta(
   const { contextVars, currentOrders, territories, units } = data;
 
   const updateOrdersMeta = {};
-  if (contextVars?.context) {
+  if (contextVars?.context && currentOrders?.length) {
     if (phase === "Builds") {
       currentOrders?.forEach(({ id, toTerrID, type }) => {
         updateOrdersMeta[id] = {
@@ -38,7 +38,7 @@ export default function getOrdersMeta(
         return updateOrdersMeta;
       }
 
-      currentOrders?.forEach((o) => {
+      currentOrders.forEach((o) => {
         const { id, unitID, type, toTerrID, fromTerrID, viaConvoy } = o;
         let orderUnit = board.findUnitByID(unitID);
         if (!orderUnit && phase === "Retreats") {
@@ -109,6 +109,12 @@ export default function getOrdersMeta(
             );
             if (!allowedBorderCrossings.length) {
               updateOrdersMeta[o.orderData.id].update.type = "Disband";
+            }
+            if (allowedBorderCrossings.length === 1) {
+              const [{ id }] = allowedBorderCrossings;
+              updateOrdersMeta[o.orderData.id].update.toTerrID = id;
+              updateOrdersMeta[o.orderData.id].update.fromTerrID =
+                orderUnit.terrID;
             }
           }
           updateOrdersMeta[o.orderData.id] = {

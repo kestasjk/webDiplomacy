@@ -46,7 +46,21 @@ logJavaScriptError();
 
 $results = array('status'=>'Invalid', 'notice'=>'No valid action specified');
 
-if( isset($_GET['likeMessageToggleToken']) ) {
+// footer JS needs to contain a cached 
+
+// Check for group link changes. Has to be a user at least, and specifying a group type:
+if( isset($User) && $User->type['User'] && isset($_GET['groupType']) && isset($_GET['userId']) && isset($_GET['groupId']) )
+{
+	// Someone is making a group link change.
+	if( isset($_GET['setActive']) )
+	{
+
+	}
+}
+if( isset($_GET['groupId']) && isset($_GET['userId']) && isset($User) && $User->type['User'] )
+{
+}
+else if( isset($_GET['likeMessageToggleToken']) ) {
 	if( libAuth::likeToggleToken_Valid($_GET['likeMessageToggleToken']) ) {
 		
 		$token = explode('_', $_GET['likeMessageToggleToken']);
@@ -100,7 +114,7 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 		if( $newReady && !$oldReady )
 		{
 			$results['process']='Checked';
-			$Game = libVariant::$Variant->Game($O->gameID, UPDATE); // Lock the game for update to 
+			$Game = libVariant::$Variant->Game($O->gameID, UPDATE); // No need to lock game for update to check whether it needs a process
 			if( $Game->needsProcess() )
 			{
 				$MC->append('processHint',','.$Game->id);

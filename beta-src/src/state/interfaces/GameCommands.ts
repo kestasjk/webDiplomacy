@@ -22,6 +22,7 @@ export const ValidCommands = [
   "REMOVE_ARROW",
   "REMOVE_BUILD",
   "RETREAT",
+  "SAVE_ORDERS",
   "SELECTED",
   "SET_UNIT",
 ] as const;
@@ -64,7 +65,10 @@ export interface GameCommand {
   command: Command;
   data?: {
     arrow?: DrawArrowCommand;
-    build?: BuildCommand[];
+    build?: {
+      territoryName: keyof Territory;
+      builds: BuildCommand[];
+    };
     click?: ClickCommand;
     country?: keyof Country | "none";
     orderID?: string;

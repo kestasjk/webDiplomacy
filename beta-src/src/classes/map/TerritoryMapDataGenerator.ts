@@ -35,6 +35,8 @@ export default class TerritoryMapDataGenerator
 
   public y: TerritoryMapData["y"];
 
+  public stroke: TerritoryMapData["stroke"];
+
   public texture: TerritoryMapData["texture"];
 
   public viewBox: TerritoryMapData["viewBox"];
@@ -54,6 +56,7 @@ export default class TerritoryMapDataGenerator
     width,
     x,
     y,
+    stroke,
     texture = undefined,
   }: TerritoryMapDataGeneratorInterface) {
     this.abbr = abbr;
@@ -64,6 +67,7 @@ export default class TerritoryMapDataGenerator
     this.labels = labels;
     this.name = name;
     this.path = path;
+    this.stroke = stroke;
     this.type = type;
     this.unitSlots = unitSlots;
     this.width = width;
@@ -96,6 +100,7 @@ export default class TerritoryMapDataGenerator
       labels: this.labels,
       name: this.name,
       path: this.path,
+      stroke: this.stroke,
       type: this.type,
       unitSlots: this.unitSlots,
       width: this.width,

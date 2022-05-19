@@ -6,7 +6,6 @@ import OrderState from "../../../../state/interfaces/OrderState";
 import OrdersMeta from "../../../../state/interfaces/SavedOrders";
 import highlightMapTerritoriesBasedOnStatuses from "../../../map/highlightMapTerritoriesBasedOnStatuses";
 import getAvailableOrder from "../../getAvailableOrder";
-import getOrderStates from "../../getOrderStates";
 import resetOrder from "../../resetOrder";
 import startNewOrder from "../../startNewOrder";
 import updateOrdersMeta from "../../updateOrdersMeta";
@@ -29,13 +28,28 @@ export default function processUnitClick(state, clickData) {
     overview: GameOverviewResponse;
   } = current(state);
   const {
-    data: { currentOrders, contextVars, units },
+    data: { currentOrders, units },
   } = data;
   const { inProgress, method, onTerritory, orderID, type, unitID } = order;
-  const { phase } = overview;
-  if (contextVars?.context?.orderStatus) {
-    const orderStates = getOrderStates(contextVars?.context?.orderStatus);
-    if (orderStates.Ready) {
+  const {
+    phase,
+    user: {
+      member: { orderStatus },
+    },
+  } = overview;
+  if (orderStatus.Ready) {
+    return;
+  }
+  if (phase === "Retreats") {
+    const unitsOrderMeta =
+      ordersMeta[maps.unitToOrder[clickData.payload.unitID]];
+
+    if (
+      !unitsOrderMeta ||
+      (unitsOrderMeta &&
+        unitsOrderMeta.update?.type === "Disband" &&
+        !unitsOrderMeta.allowedBorderCrossings?.length)
+    ) {
       return;
     }
   }
@@ -113,6 +127,22 @@ export default function processUnitClick(state, clickData) {
         highlightMapTerritoriesBasedOnStatuses(state);
       } else {
         startNewOrder(state, clickData);
+      }
+    } else if (!ownUnits.includes(clickData.payload.unitID)) {
+      // Convoy Ally
+      const currentOrderUnitType = units[unitID].type;
+      const newClickUnitType = units[clickData.payload.unitID].type;
+      if (currentOrderUnitType === "Fleet" && newClickUnitType === "Army") {
+        state.order.type = "convoy";
+        state.order.subsequentClicks.push({
+          ...{
+            inProgress: true,
+            order: orderID,
+            toTerritory: null,
+          },
+          ...clickData.payload,
+        });
+        highlightMapTerritoriesBasedOnStatuses(state);
       }
     }
   } else if (ownUnits.includes(clickData.payload.unitID)) {
