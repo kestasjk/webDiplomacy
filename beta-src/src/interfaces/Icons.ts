@@ -1,5 +1,6 @@
 import Country from "../enums/Country";
 import UIState from "../enums/UIState";
+import UnitType from "../types/UnitType";
 import { UnitMeta } from "./map/UnitMeta";
 
 export interface NavIconProps {
@@ -17,4 +18,5 @@ export interface GameIconProps extends IconProps {
   viewBox?: string;
   width?: number;
   meta: UnitMeta;
+  type: UnitType;
 }

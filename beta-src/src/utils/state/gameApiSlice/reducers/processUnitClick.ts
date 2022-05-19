@@ -40,6 +40,19 @@ export default function processUnitClick(state, clickData) {
   if (orderStatus.Ready) {
     return;
   }
+  if (phase === "Retreats") {
+    const unitsOrderMeta =
+      ordersMeta[maps.unitToOrder[clickData.payload.unitID]];
+
+    if (
+      !unitsOrderMeta ||
+      (unitsOrderMeta &&
+        unitsOrderMeta.update?.type === "Disband" &&
+        !unitsOrderMeta.allowedBorderCrossings?.length)
+    ) {
+      return;
+    }
+  }
   // Destroy Units
   const isDestroy = currentOrders?.some(({ type: t }) => t === "Destroy");
   if (phase === "Builds") {
@@ -114,6 +127,22 @@ export default function processUnitClick(state, clickData) {
         highlightMapTerritoriesBasedOnStatuses(state);
       } else {
         startNewOrder(state, clickData);
+      }
+    } else if (!ownUnits.includes(clickData.payload.unitID)) {
+      // Convoy Ally
+      const currentOrderUnitType = units[unitID].type;
+      const newClickUnitType = units[clickData.payload.unitID].type;
+      if (currentOrderUnitType === "Fleet" && newClickUnitType === "Army") {
+        state.order.type = "convoy";
+        state.order.subsequentClicks.push({
+          ...{
+            inProgress: true,
+            order: orderID,
+            toTerritory: null,
+          },
+          ...clickData.payload,
+        });
+        highlightMapTerritoriesBasedOnStatuses(state);
       }
     }
   } else if (ownUnits.includes(clickData.payload.unitID)) {

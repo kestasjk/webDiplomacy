@@ -2,17 +2,13 @@ import { useTheme } from "@mui/material";
 import * as React from "react";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
 import { TerritoryMapData } from "../../../interfaces";
-import {
-  gameApiSliceActions,
-  gameOverview,
-} from "../../../state/game/game-api-slice";
+import { gameApiSliceActions } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import ClickObjectType from "../../../types/state/ClickObjectType";
 import processNextCommand from "../../../utils/processNextCommand";
-import WDArmy from "../../ui/units/WDArmy";
 import WDArmyIcon from "../../ui/units/WDArmyIcon";
-import WDFleet from "../../ui/units/WDFleet";
 import WDFleetIcon from "../../ui/units/WDFleetIcon";
+import WDUnit from "../../ui/units/WDUnit";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
@@ -47,10 +43,11 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     (state) => state.game.commands.territoryCommands[territoryMapData.name],
   );
 
-  const {
-    user: { member },
-  } = useAppSelector(gameOverview);
-  const userCountry = countryMap[member.country];
+  let userCountry = useAppSelector(
+    (state) => state.game.overview.user.member.country,
+  );
+
+  userCountry = countryMap[userCountry];
 
   const deleteCommand = (key) => {
     dispatch(
@@ -122,28 +119,14 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         switch (componentType) {
           case "Game":
             if (unit) {
-              switch (unitType) {
-                case "Army":
-                  newUnit = (
-                    <WDArmy
-                      id={`${territoryMapData.name}-unit`}
-                      country={country}
-                      meta={{ country, mappedTerritory, unit }}
-                    />
-                  );
-                  break;
-                case "Fleet":
-                  newUnit = (
-                    <WDFleet
-                      id={`${territoryMapData.name}-unit`}
-                      country={country}
-                      meta={{ country, mappedTerritory, unit }}
-                    />
-                  );
-                  break;
-                default:
-                  break;
-              }
+              newUnit = (
+                <WDUnit
+                  id={`${territoryMapData.name}-unit`}
+                  country={country}
+                  meta={{ country, mappedTerritory, unit }}
+                  type={unitType}
+                />
+              );
             }
             break;
           case "Icon":
@@ -217,7 +200,11 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
           fill={territoryFill}
           fillOpacity={territoryFillOpacity}
           id={`${territoryMapData.name}-control-path`}
-          stroke={theme.palette.primary.main}
+          stroke={
+            territoryMapData.stroke
+              ? territoryMapData.stroke
+              : theme.palette.primary.main
+          }
           strokeOpacity={1}
           strokeWidth={territoryStrokeOpacity}
         />

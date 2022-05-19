@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Stack, useTheme } from "@mui/material";
 import WDButton from "./WDButton";
-import MoveStatus from "../../types/MoveStatus";
 import Move from "../../enums/Move";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
@@ -11,27 +10,54 @@ import {
   gameApiSliceActions,
   gameData,
   gameOrdersMeta,
+  gameOverview,
   saveOrders,
 } from "../../state/game/game-api-slice";
 import UpdateOrder from "../../interfaces/state/UpdateOrder";
+import processNextCommand from "../../utils/processNextCommand";
+import MoveStatus from "../../types/MoveStatus";
 
-interface WDMoveControlsProps {
-  gameState: MoveStatus;
-  readyDisabled: boolean;
-  toggleState: (move: Move) => void;
-}
-
-const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
-  gameState: { ready, save },
-  readyDisabled,
-  toggleState,
-}): React.ReactElement {
+const WDMoveControls: React.FC = function (): React.ReactElement {
   const theme = useTheme();
   const [viewport] = useViewport();
   const { data } = useAppSelector(gameData);
   const ordersMeta = useAppSelector(gameOrdersMeta);
+  const [readyDisabled, setReadyDisabled] = React.useState(false);
+  const [gameState, setGameState] = React.useState<MoveStatus>({
+    save: false,
+    ready: false,
+  });
+  const {
+    user: {
+      member: { orderStatus },
+    },
+  } = useAppSelector(gameOverview);
+
+  if (orderStatus.None && !readyDisabled) {
+    setReadyDisabled(true);
+  }
+
+  React.useEffect(() => {
+    if (orderStatus.Ready !== gameState.ready) {
+      setGameState((preState) => ({
+        ...preState,
+        [Move.READY]: orderStatus.Ready,
+      }));
+    }
+  }, [orderStatus]);
+
+  const toggleState = (move: Move) => {
+    setGameState((preState) => ({
+      ...preState,
+      [move]: !gameState[move],
+    }));
+  };
+
   const dispatch = useAppDispatch();
   const device = getDevice(viewport);
+  const commands = useAppSelector(
+    (state) => state.game.commands.mapCommands.save,
+  );
   let isMobile: boolean;
   switch (device) {
     case Device.MOBILE:
@@ -83,7 +109,7 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
           queryParams: {},
         };
         if (type === Move.READY) {
-          orderSubmission.queryParams = ready
+          orderSubmission.queryParams = gameState.ready
             ? { notready: "on" }
             : { ready: "on" };
         }
@@ -94,6 +120,25 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
       toggleState(type);
     }
   };
+  const deleteCommand = (key) => {
+    dispatch(
+      gameApiSliceActions.deleteCommand({
+        type: "mapCommands",
+        id: "all",
+        command: key,
+      }),
+    );
+  };
+
+  const commandActions = {
+    SAVE_ORDERS: (command) => {
+      const [key, value] = command;
+      clickButton(Move.SAVE);
+      deleteCommand(key);
+    },
+  };
+
+  processNextCommand(commands, commandActions);
 
   const ordersMetaValues = Object.values(ordersMeta);
   const ordersLength = ordersMetaValues.length;
@@ -101,15 +146,14 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
     (acc, meta) => acc + +meta.saved,
     0,
   );
-
   if (
-    (ordersLength === ordersSaved && save) ||
-    (ordersLength !== ordersSaved && !save)
+    (ordersLength === ordersSaved && gameState.save) ||
+    (ordersLength !== ordersSaved && !gameState.save)
   ) {
     toggleState(Move.SAVE);
   }
 
-  const saveDisabled = ready || !save;
+  const saveDisabled = gameState.ready || !gameState.save;
 
   return (
     <Stack
@@ -139,7 +183,7 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
             : theme.palette.svg.filters.dropShadows[0],
         }}
       >
-        {ready ? "Unready" : "Ready"}
+        {gameState.ready ? "Unready" : "Ready"}
       </WDButton>
     </Stack>
   );

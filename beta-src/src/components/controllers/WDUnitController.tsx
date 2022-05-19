@@ -5,18 +5,22 @@ import debounce from "../../utils/debounce";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import { gameApiSliceActions } from "../../state/game/game-api-slice";
 import processNextCommand from "../../utils/processNextCommand";
+import WDFleetIcon from "../ui/units/WDFleetIcon";
+import WDArmyIcon from "../ui/units/WDArmyIcon";
 
 interface UnitControllerProps {
   meta: GameIconProps["meta"];
-  setIconState: React.Dispatch<UIState>;
+  initialIconState: UIState;
+  type: GameIconProps["type"];
 }
 
 const WDUnitController: React.FC<UnitControllerProps> = function ({
-  children,
-  setIconState,
+  initialIconState,
   meta,
+  type,
 }): React.ReactElement {
   const dispatch = useAppDispatch();
+  const [iconState, setIconState] = React.useState(initialIconState);
 
   const commands = useAppSelector(
     (state) => state.game.commands.unitCommands[meta.unit.id],
@@ -92,7 +96,12 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
 
   return (
     <g onClick={handleSingleClick} onDoubleClick={handleDoubleClick}>
-      {children}
+      {type === "Fleet" && (
+        <WDFleetIcon iconState={iconState} country={meta.country} />
+      )}
+      {type === "Army" && (
+        <WDArmyIcon iconState={iconState} country={meta.country} />
+      )}
     </g>
   );
 };
