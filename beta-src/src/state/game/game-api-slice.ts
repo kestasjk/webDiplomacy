@@ -4,8 +4,8 @@ import { getGameApiRequest, submitOrders } from "../../utils/api";
 import GameDataResponse from "../interfaces/GameDataResponse";
 import GameErrorResponse from "../interfaces/GameErrorResponse";
 import GameOverviewResponse from "../interfaces/GameOverviewResponse";
-import { ApiStatus, GameState } from "../interfaces/GameState";
 import GameCommands from "../interfaces/GameCommands";
+import { ApiStatus, GameState } from "../interfaces/GameState";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
 import GameMessages from "../interfaces/GameMessages";
 import { RootState } from "../store";
@@ -225,6 +225,9 @@ export const gameOrdersMeta = ({
   game: { ordersMeta },
 }: RootState): OrdersMeta => ordersMeta;
 export const gameOrder = ({ game: { order } }: RootState): OrderState => order;
+export const gameNotifications = ({
+  game: { notifications },
+}: RootState): GameState["notifications"] => notifications;
 export const userActivity = ({
   game: { activity },
 }: RootState): GameState["activity"] => activity;

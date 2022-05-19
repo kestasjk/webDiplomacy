@@ -148,6 +148,7 @@ const initialState: GameState = {
     pressType: "",
     phase: "",
   },
+  notifications: [],
 };
 
 export default initialState;
