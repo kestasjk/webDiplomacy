@@ -46,7 +46,6 @@ export default function fetchGameDataFulfilled(state, action): void {
     }
   });
   state.units = getUnits(data, members);
-
   state.territoriesMeta = getTerritoriesMeta(data);
 
   // FIXME: figure out what's here

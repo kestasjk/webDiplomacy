@@ -2,13 +2,17 @@ import { useTheme } from "@mui/material";
 import * as React from "react";
 import BuildUnitMap from "../../../data/BuildUnit";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
+import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
 import Territories from "../../../data/Territories";
+import UIState from "../../../enums/UIState";
 import { MemberData, TerritoryMapData } from "../../../interfaces";
 import {
   gameApiSliceActions,
+  gameOrdersMeta,
   gameOverview,
   gameTerritoriesMeta,
   gameUnits,
+  gameUnitState,
 } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import { TerritoryMeta } from "../../../state/interfaces/TerritoriesState";
@@ -91,13 +95,17 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     const ownerCountryID = territoryMeta.countryID;
     const ownerCountry = countryIDToCountry[ownerCountryID];
     territoryFill = ownerCountryID ? theme.palette[ownerCountry].main : "none";
-
     territoryFillOpacity = 0.4;
   }
 
+  const unitState = useAppSelector(gameUnitState); // FIXME: too global
   const unitFCs: { [key: string]: any } = {};
   units
-    .filter((unit) => territoryMeta && unit.unit.terrID === territoryMeta.id)
+    .filter(
+      (unit) =>
+        (unit.mappedTerritory.parent || unit.mappedTerritory.territory) ===
+        territoryMeta?.territory,
+    )
     .forEach((unit) => {
       unitFCs[unit.mappedTerritory.unitSlotName] = (
         <WDUnit
@@ -105,10 +113,34 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
           country={unit.country}
           meta={unit}
           type={unit.unit.type as UnitType}
+          iconState={unitState[unit.unit.id]} // FIXME make declarative
         />
       );
     });
-
+  const ordersMeta = useAppSelector(gameOrdersMeta);
+  Object.values(ordersMeta)
+    .filter(({ update }) => update && update.toTerrID === territoryMeta?.id)
+    .forEach(({ update }) => {
+      console.log({ update });
+      unitFCs.main = (
+        <WDUnit
+          id={`${territoryName}-unit`} // n.b. the id here is ref'd by drawOrders, do not change!
+          country={userCountry}
+          meta={{
+            country: userCountry,
+            mappedTerritory: TerritoryMap[territoryName],
+            unit: {
+              id: `${territoryName}-unit`,
+              countryID: "NA",
+              type: update?.type.split(" ")[1] as unknown as string, // Build Army --> Army
+              terrID: territoryMeta.id,
+            },
+          }}
+          type={update?.type.split(" ")[1] as UnitType}
+          iconState={UIState.BUILD}
+        />
+      );
+    });
   const clickAction = function (evt, clickObject: ClickObjectType) {
     dispatch(
       gameApiSliceActions.processMapClick({
@@ -118,7 +150,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       }),
     );
   };
-
   return (
     <svg
       height={territoryMapData.height}

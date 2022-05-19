@@ -4,6 +4,7 @@ import getOrderStates from "../../../getOrderStates";
 
 /* eslint-disable no-param-reassign */
 export default function saveOrdersFulfilled(state, action): void {
+  console.log("saveOrders fulfilled");
   if (action.payload) {
     const { orders, newContext, newContextKey }: SavedOrdersConfirmation =
       action.payload;

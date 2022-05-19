@@ -1,29 +1,24 @@
 import * as React from "react";
 import { GameIconProps } from "../../interfaces/Icons";
-import UIState from "../../enums/UIState";
 import debounce from "../../utils/debounce";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
-import {
-  gameApiSliceActions,
-  gameUnitState,
-} from "../../state/game/game-api-slice";
+import { gameApiSliceActions } from "../../state/game/game-api-slice";
 import WDFleetIcon from "../ui/units/WDFleetIcon";
 import WDArmyIcon from "../ui/units/WDArmyIcon";
 
 interface UnitControllerProps {
   meta: GameIconProps["meta"];
   type: GameIconProps["type"];
+  iconState: GameIconProps["iconState"];
 }
 
 const WDUnitController: React.FC<UnitControllerProps> = function ({
   meta,
   type,
+  iconState,
 }): React.ReactElement {
   const dispatch = useAppDispatch();
 
-  const unitState = useAppSelector(gameUnitState);
-  const iconState = unitState[meta.unit.id];
-  console.log(`unit ID: ${meta.unit.id} iconState=${iconState}`);
   const clickAction = (e, method) => {
     dispatch(
       gameApiSliceActions.processUnitClick({

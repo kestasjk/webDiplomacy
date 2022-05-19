@@ -1,7 +1,10 @@
 /* eslint-disable no-bitwise */
 import * as React from "react";
+import TerritoryDataGenerator from "../../../classes/TerritoryDataGenerator";
 import BuildUnitMap from "../../../data/BuildUnit";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
+import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
+import Territories from "../../../data/Territories";
 import {
   gameApiSliceActions,
   gameOverview,
@@ -13,6 +16,9 @@ import WDBuildUnitButtons from "./WDBuildUnitButtons";
 const WDBuildContainer: React.FC = function (): React.ReactElement {
   const dispatch = useAppDispatch();
   const build = (availableOrder, canBuild, toTerrID) => {
+    console.log(
+      `Dispatched a build ${canBuild} ${BuildUnitMap[canBuild]} ${toTerrID}`,
+    );
     dispatch(
       gameApiSliceActions.updateOrdersMeta({
         [availableOrder]: {
@@ -29,17 +35,22 @@ const WDBuildContainer: React.FC = function (): React.ReactElement {
   const buildPopover = useAppSelector((state) => state.game.buildPopover);
   const userMember = useAppSelector((state) => state.game.overview.user.member);
 
+  console.log({ buildPopover });
   return (
     <>
       {Object.values(buildPopover).map((b) => (
         <WDBuildUnitButtons
+          key={`${b.territoryMeta.id}-${b.unitSlotName}`}
           availableOrder={b.availableOrder}
           canBuild={b.canBuild}
-          clickCallback={() => build(b.availableOrder, b.canBuild, b.toTerrID)}
+          clickCallback={build}
           country={countryMap[userMember.country]}
-          territoryName={gameTerritoriesMeta[b.toTerrID].name}
+          territoryName={
+            TerritoryMap[b.territoryMeta.name].parentName ||
+            TerritoryMap[b.territoryMeta.name].territoryName
+          }
           unitSlotName={b.unitSlotName}
-          toTerrID={b.toTerrID}
+          toTerrID={b.territoryMeta.id}
         />
       ))}
     </>

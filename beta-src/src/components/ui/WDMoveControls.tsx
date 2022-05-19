@@ -68,6 +68,7 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
   }
 
   const clickButton = (type: Move) => {
+    console.log("Entered save button click");
     dispatch(
       gameApiSliceActions.processMapClick({
         name: undefined,
@@ -109,6 +110,7 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
             ? { notready: "on" }
             : { ready: "on" };
         }
+        console.log({ orderSubmission });
         dispatch(saveOrders(orderSubmission));
       }
     }

@@ -20,5 +20,6 @@ export default function resetOrder(state): void {
   state.order.onTerritory = 0;
   state.order.toTerritory = 0;
   state.order.subsequentClicks = [];
+  state.buildPopover = [];
   delete state.order.type;
 }

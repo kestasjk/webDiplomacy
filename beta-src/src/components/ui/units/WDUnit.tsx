@@ -14,6 +14,7 @@ const WDUnit: React.FC<GameIconProps> = function ({
   viewBox,
   width = 50,
   type,
+  iconState,
 }): React.ReactElement {
   const theme = useTheme();
 
@@ -25,7 +26,7 @@ const WDUnit: React.FC<GameIconProps> = function ({
       width={width}
       viewBox={viewBox}
     >
-      <WDUnitController meta={meta} type={type} />
+      <WDUnitController meta={meta} type={type} iconState={iconState} />
     </svg>
   );
 };

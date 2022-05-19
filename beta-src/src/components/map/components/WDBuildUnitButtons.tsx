@@ -16,7 +16,7 @@ export interface BuildData {
   ) => void;
   country: Country;
   canBuild: BuildUnit;
-  territoryName: keyof Territory | null;
+  territoryName: string | null;
   unitSlotName: string;
   toTerrID: string;
 }
@@ -30,12 +30,14 @@ const WDBuildUnitButtons: React.FC<BuildData> = function ({
   unitSlotName,
   toTerrID,
 }): React.ReactElement {
+  const labelId = `${territoryName}-label-${unitSlotName}`;
   const label: SVGTextElement = document.getElementById(
-    `${territoryName}-label-${unitSlotName}`,
+    labelId,
   ) as unknown as SVGTextElement;
   const territory: SVGSVGElement = document.getElementById(
     `${territoryName}-territory`,
   ) as unknown as SVGSVGElement;
+  if (!label) throw Error(labelId);
   const { x, y } = label.getBBox();
   let svgX = Number(territory.getAttribute("x")) + x;
   let svgY = Number(territory.getAttribute("y")) + y;
@@ -62,6 +64,7 @@ const WDBuildUnitButtons: React.FC<BuildData> = function ({
     if (canBuild & BuildUnit.Army) {
       buildButtons.push(
         <g
+          key="Army"
           style={groupStyle}
           onClick={() => {
             clickCallback(availableOrder, BuildUnit.Army, toTerrID);
@@ -82,6 +85,7 @@ const WDBuildUnitButtons: React.FC<BuildData> = function ({
       }
       buildButtons.push(
         <g
+          key="Fleet"
           style={groupStyle}
           onClick={() => {
             clickCallback(availableOrder, BuildUnit.Fleet, toTerrID);
