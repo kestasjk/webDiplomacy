@@ -148,6 +148,7 @@ const initialState: GameState = {
     pressType: "",
     phase: "",
   },
+  isFleetClicked: false,
 };
 
 export default initialState;

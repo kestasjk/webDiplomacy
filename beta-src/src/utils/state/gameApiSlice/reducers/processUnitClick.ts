@@ -40,6 +40,9 @@ export default function processUnitClick(state, clickData) {
   if (orderStatus.Ready) {
     return;
   }
+  const unitType = units[clickData.payload.unitID].type;
+  state.isFleetClicked = unitType === "Fleet";
+
   // Destroy Units
   const isDestroy = currentOrders?.some(({ type: t }) => t === "Destroy");
   if (phase === "Builds") {

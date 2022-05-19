@@ -117,42 +117,9 @@ export default function processMapClick(state, clickData) {
     ) {
       const { allowedBorderCrossings } = ordersMeta[orderID];
 
-      const territoryMeta = territoriesMeta[Territory[territoryName]];
-
-      // Territoties w/ North/South Coast
-      const bulgaria = territoriesMeta[Territory.BULGARIA];
-      const petersburg = territoriesMeta[Territory.SAINT_PETERSBURG];
-      const spain = territoriesMeta[Territory.SPAIN];
-
-      let terrWithCoastalID = {};
-      if (bulgaria && petersburg && spain) {
-        terrWithCoastalID = {
-          [bulgaria.id]: [
-            territoriesMeta[Territory.BULGARIA_NORTH_COAST]?.id,
-            territoriesMeta[Territory.BULGARIA_SOUTH_COAST]?.id,
-          ],
-          [petersburg.id]: [
-            territoriesMeta[Territory.SAINT_PETERSBURG_NORTH_COAST]?.id,
-            territoriesMeta[Territory.SAINT_PETERSBURG_SOUTH_COAST]?.id,
-          ],
-          [spain.id]: [
-            territoriesMeta[Territory.SPAIN_NORTH_COAST]?.id,
-            territoriesMeta[Territory.SPAIN_SOUTH_COAST]?.id,
-          ],
-        };
-      }
-
-      const terrWithCoastalAreas = terrWithCoastalID[territoryMeta.id]
-        ? [...[territoryMeta.id], ...terrWithCoastalID[territoryMeta.id]]
-        : [territoryMeta.id];
-
       const canMove = allowedBorderCrossings?.find((border) => {
         const mappedTerritory = TerritoryMap[border.name];
-        const mappedTerritoryID = border.id;
-        return (
-          Territory[mappedTerritory.territory] === territoryName ||
-          terrWithCoastalAreas.includes(mappedTerritoryID)
-        );
+        return Territory[mappedTerritory.territory] === territoryName;
       });
 
       if (canMove) {
@@ -160,7 +127,12 @@ export default function processMapClick(state, clickData) {
         const command: GameCommand = {
           command: "MOVE",
         };
-        setCommand(state, command, "territoryCommands", territoryName);
+        setCommand(
+          state,
+          command,
+          "territoryCommands",
+          canMove.coastParent.name.toUpperCase(),
+        );
         updateOrdersMeta(state, {
           [orderID]: {
             saved: false,

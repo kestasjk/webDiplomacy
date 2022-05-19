@@ -46,6 +46,8 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     (state) => state.game.commands.territoryCommands[territoryMapData.name],
   );
 
+  const isFleetClicked = useAppSelector((state) => state.game.isFleetClicked);
+
   const {
     user: { member },
   } = useAppSelector(gameOverview);
@@ -177,6 +179,15 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     );
   };
 
+  const costalTerritories = [
+    "BULGARIA_NORTH_COAST",
+    "BULGARIA_SOUTH_COAST",
+    "SPAIN_NORTH_COAST",
+    "SPAIN_SOUTH_COAST",
+    "SAINT_PETERSBURG_NORTH_COAST",
+    "SAINT_PETERSBURG_SOUTH_COAST",
+  ];
+
   return (
     <svg
       height={territoryMapData.height}
@@ -185,6 +196,11 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       width={territoryMapData.width}
       x={territoryMapData.x}
       y={territoryMapData.y}
+      className={
+        costalTerritories.includes(territoryMapData.name) && !isFleetClicked
+          ? "no-pointer-events"
+          : ""
+      }
     >
       <g onClick={(e) => clickAction(e, "territory")}>
         {territoryMapData.texture?.texture && (
@@ -199,7 +215,11 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         )}
         <path
           d={territoryMapData.path}
-          fill={territoryFill}
+          fill={
+            costalTerritories.includes(territoryMapData.name)
+              ? "rgba(0, 0, 0, .001)"
+              : territoryFill
+          }
           fillOpacity={territoryFillOpacity}
           id={`${territoryMapData.name}-control-path`}
           stroke={

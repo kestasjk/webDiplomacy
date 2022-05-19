@@ -28,4 +28,5 @@ export interface GameState {
   commands: GameCommands;
   status: GameStatusResponse;
   messages: GameMessages;
+  isFleetClicked: boolean;
 }
