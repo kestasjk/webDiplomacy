@@ -1,6 +1,5 @@
 import { useTheme } from "@mui/material";
 import * as React from "react";
-import BuildUnitMap from "../../../data/BuildUnit";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
 import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
 import Territories from "../../../data/Territories";
@@ -8,6 +7,7 @@ import UIState from "../../../enums/UIState";
 import { TerritoryMapData } from "../../../interfaces";
 import {
   gameApiSliceActions,
+  gameOrder,
   gameOrdersMeta,
   gameOverview,
   gameTerritoriesMeta,
@@ -19,17 +19,12 @@ import { TerritoryMeta } from "../../../state/interfaces/TerritoriesState";
 import ClickObjectType from "../../../types/state/ClickObjectType";
 import UnitType from "../../../types/UnitType";
 import WDUnit from "../../ui/units/WDUnit";
-import { BuildData } from "./WDBuildUnitButtons";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
 
 interface WDTerritoryProps {
   territoryMapData: TerritoryMapData;
-}
-
-interface BuildPopovers {
-  [key: string]: BuildData;
 }
 
 const WDTerritory: React.FC<WDTerritoryProps> = function ({
@@ -43,42 +38,27 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   const units = useAppSelector(gameUnits);
   const userCountry = countryMap[user.member.country];
 
-  const build = (availableOrder, canBuild, toTerrID) => {
-    dispatch(
-      gameApiSliceActions.updateOrdersMeta({
-        [availableOrder]: {
-          saved: false,
-          update: {
-            type: BuildUnitMap[canBuild],
-            toTerrID,
-          },
-        },
-      }),
-    );
-    dispatch(gameApiSliceActions.resetOrder());
-  };
-
   const territoryName = territoryMapData.name;
-  const territoryNameToMeta: { [key: string]: TerritoryMeta } = {};
-
-  Object.entries(territoriesMeta).forEach(([id, meta]) => {
-    territoryNameToMeta[Territories[id].name] = meta;
-  });
-  const territoryMeta = territoryNameToMeta[territoryName];
-
-  const countryIDToCountry: { [key: number]: string } = {};
-  Object.entries(members).forEach(([id, memberData]) => {
-    countryIDToCountry[memberData.countryID] = memberData.country;
-  });
+  // FIXME eww, pass this down.
+  const territoryIdAndMeta = Object.entries(territoriesMeta).find(
+    ([id, meta]) => Territories[id].name === territoryName,
+  );
+  const territoryMeta = territoryIdAndMeta && territoryIdAndMeta[1];
 
   let territoryFill = "none";
   let territoryFillOpacity = 0;
   const territoryStrokeOpacity = 1;
-  if (territoryMeta && territoryMeta.countryID) {
-    const ownerCountryID = territoryMeta.countryID;
-    const ownerCountry = countryIDToCountry[ownerCountryID];
-    territoryFill = ownerCountryID ? theme.palette[ownerCountry].main : "none";
+  if (territoryMeta?.countryID) {
+    const ownerCountryID = territoryMeta?.countryID;
+    const ownerCountry =
+      members.find(({ countryID }) => String(countryID) === ownerCountryID)
+        ?.country || "null";
+    territoryFill = theme.palette[ownerCountry]?.main;
     territoryFillOpacity = 0.4;
+  }
+  const curOrder = useAppSelector(gameOrder);
+  if (territoryMeta?.territory === curOrder.toTerritory) {
+    territoryFillOpacity = 0.9;
   }
 
   const unitState = useAppSelector(gameUnitState); // FIXME: too global
@@ -100,9 +80,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         />
       );
     });
-  if (territoryName === "BERLIN") {
-    console.log("Rerendering BERLIN!");
-  }
   const ordersMeta = useAppSelector(gameOrdersMeta);
   Object.values(ordersMeta)
     .filter(
@@ -112,7 +89,8 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         update.toTerrID === territoryMeta?.id,
     )
     .forEach(({ update }) => {
-      unitFCs.main = (
+      territoryFillOpacity = 0.9;
+      unitFCs.main = ( // FIXME: needs to support coasts
         <WDUnit
           id={`${territoryName}-unit`} // n.b. the id here is ref'd by drawOrders, do not change!
           country={userCountry}
@@ -123,7 +101,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
               id: `${territoryName}-unit`,
               countryID: "NA",
               type: update?.type.split(" ")[1] as unknown as string, // Build Army --> Army
-              terrID: territoryMeta.id,
+              terrID: territoryMeta?.id || "null",
             },
           }}
           type={update?.type.split(" ")[1] as UnitType}
@@ -131,6 +109,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         />
       );
     });
+
   const clickAction = function (evt, clickObject: ClickObjectType) {
     dispatch(
       gameApiSliceActions.processMapClick({
