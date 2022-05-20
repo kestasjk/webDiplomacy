@@ -31,4 +31,5 @@ export interface GameState {
   status: GameStatusResponse;
   messages: GameMessages;
   notifications: GameNotification[];
+  lastUnitClick: number;
 }

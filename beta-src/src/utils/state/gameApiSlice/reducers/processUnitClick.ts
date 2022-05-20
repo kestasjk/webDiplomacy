@@ -30,10 +30,18 @@ export default function processUnitClick(state, clickData) {
     overview: GameOverviewResponse;
     mustDestroyUnitsBuildPhase: GameState["mustDestroyUnitsBuildPhase"];
   } = current(state);
+  const { lastUnitClick } = current(state);
   const {
     data: { currentOrders, units },
   } = data;
-  const { inProgress, method, onTerritory, orderID, type, unitID } = order;
+  const {
+    inProgress: orderInProgress,
+    method,
+    onTerritory,
+    orderID,
+    type,
+    unitID,
+  } = order;
   const {
     phase,
     user: {
@@ -42,6 +50,18 @@ export default function processUnitClick(state, clickData) {
   } = overview;
   if (orderStatus.Ready) {
     return;
+  }
+  const now = Date.now();
+  let inProgress = orderInProgress;
+  state.lastUnitClick = now;
+  const dblClickThreshold = 200;
+  if (
+    lastUnitClick &&
+    order.method !== "dblClick" &&
+    now < lastUnitClick + dblClickThreshold
+  ) {
+    clickData.payload.method = "dblClick";
+    inProgress = false;
   }
   if (phase === "Retreats") {
     const unitsOrderMeta =
