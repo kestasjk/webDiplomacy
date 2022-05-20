@@ -1,5 +1,5 @@
 import BoardClass from "../../models/BoardClass";
-import { BuildCommand, DrawArrowCommand } from "./GameCommands";
+import { BuildCommand } from "./GameCommands";
 import GameDataResponse from "./GameDataResponse";
 import GameErrorResponse from "./GameErrorResponse";
 import GameOverviewResponse from "./GameOverviewResponse";
