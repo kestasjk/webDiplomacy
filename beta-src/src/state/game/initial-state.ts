@@ -41,6 +41,7 @@ const initialState: GameState = {
     unitToTerritory: {},
     enumToTerritory: {},
     territoryToEnum: {},
+    coastalTerritories: [],
   },
   territoriesMeta: {},
   commands: {

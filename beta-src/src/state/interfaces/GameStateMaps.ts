@@ -6,4 +6,5 @@ export default interface GameStateMaps {
   unitToTerritory: GameStateMap;
   enumToTerritory: GameStateMap;
   territoryToEnum: GameStateMap;
+  coastalTerritories: string[];
 }

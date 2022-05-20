@@ -49,6 +49,10 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     (state) => state.game.overview.user.member.country,
   );
 
+  const coastalTerritories = useAppSelector(
+    (state) => state.game.maps.coastalTerritories,
+  );
+
   userCountry = countryMap[userCountry];
 
   const deleteCommand = (key) => {
@@ -177,15 +181,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     );
   };
 
-  const costalTerritories = [
-    "BULGARIA_NORTH_COAST",
-    "BULGARIA_SOUTH_COAST",
-    "SPAIN_NORTH_COAST",
-    "SPAIN_SOUTH_COAST",
-    "SAINT_PETERSBURG_NORTH_COAST",
-    "SAINT_PETERSBURG_SOUTH_COAST",
-  ];
-
   return (
     <svg
       height={territoryMapData.height}
@@ -195,7 +190,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       x={territoryMapData.x}
       y={territoryMapData.y}
       className={
-        costalTerritories.includes(territoryMapData.name) && !isFleetClicked
+        coastalTerritories.includes(territoryMapData.name) && !isFleetClicked
           ? "no-pointer-events"
           : ""
       }
@@ -214,7 +209,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         <path
           d={territoryMapData.path}
           fill={
-            costalTerritories.includes(territoryMapData.name)
+            coastalTerritories.includes(territoryMapData.name)
               ? "rgba(0, 0, 0, .001)"
               : territoryFill
           }
