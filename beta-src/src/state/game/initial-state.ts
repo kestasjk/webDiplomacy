@@ -150,7 +150,6 @@ const initialState: GameState = {
   },
   unitState: {},
   buildPopover: [],
-  arrows: [],
 };
 
 export default initialState;

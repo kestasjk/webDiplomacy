@@ -47,7 +47,6 @@ const WDMapController: React.FC = function (): React.ReactElement {
   const device = getDevice(viewport);
   const [scaleMin, scaleMax] = getInitialScaleForDevice(device);
 
-  const arrows = useAppSelector((state) => state.game.arrows);
   const [phase, units, orders, territories] = useAppSelector((state) => {
     if (
       state.game.viewedPhaseState.viewedPhaseIdx >=
@@ -175,20 +174,6 @@ const WDMapController: React.FC = function (): React.ReactElement {
     ];
   });
   const maps = useAppSelector((state) => state.game.maps);
-
-  // ideally the arrows would be rendered as FCs declaratively,
-  // rather than imperatively through the drawArrow function,
-  // but that's too much work.
-  arrows.forEach((arrow, arrowIdx) => {
-    drawArrow(
-      String(arrowIdx),
-      ArrowType.MOVE,
-      ArrowColor.MOVE,
-      "territory",
-      arrow.to,
-      arrow.from,
-    );
-  });
 
   React.useLayoutEffect(() => {
     if (svgElement.current) {
