@@ -15,10 +15,10 @@ import drawArrowFunctional from "../../../utils/map/drawArrowFunctional";
 import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
 import { APITerritories } from "../../../state/interfaces/GameDataResponse";
 
-function drawMoveOrders(
+function accumulateMoveOrderArrows(
+  arrows: (React.ReactElement | null)[],
   orders: IOrderDataHistorical[],
   maps: GameStateMaps,
-  arrows: (React.ReactElement | null)[],
   territories: APITerritories,
 ): void {
   console.log("drawMoveOrders");
@@ -40,6 +40,9 @@ function drawMoveOrders(
             fromTerr,
           ),
         );
+        // console.log("ARROW");
+        // console.log(arrows[0]);
+
         if (order.viaConvoy === "Yes") {
           // TODO
         }
@@ -61,7 +64,7 @@ const WDArrowContainer: React.FC<WDArrowProps> = function ({
   territories,
 }): React.ReactElement {
   const arrows: (React.ReactElement | null)[] = [];
-  drawMoveOrders(orders, maps, arrows, territories);
+  accumulateMoveOrderArrows(arrows, orders, maps, territories);
   return <g id="arrows">{arrows}</g>;
 };
 

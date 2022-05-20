@@ -15,129 +15,100 @@ export default function drawArrowFunctional(
   arrowType: ArrowType,
   arrowColor: ArrowColor,
   receiverType: "territory" | "unit" | "arrow",
-  receiverIdentifier: Territory | string,
+  receiverIdentifier: Territory | React.ReactElement,
   unitTerritory: Territory,
-): React.ReactElement | null {
+): React.ReactElement {
   console.log(
     `drawArrowFunctional ${receiverType} ${receiverIdentifier} ${unitTerritory}`,
   );
-  let x1;
-  let x2;
-  let y1;
-  let y2;
-
-  const fromTerritoryName = Territory[unitTerritory];
-  const fromTerritoryData = TerritoryMap[fromTerritoryName].territoryMapData;
-  const { unitSlotName } = TerritoryMap[fromTerritoryName];
-  const unitW = UNIT_WIDTH;
-  const unitH = UNIT_HEIGHT;
 
   let positionChangeBuffer;
-  let xDiff;
-  let yDiff;
 
-  let rw;
-  let rh;
-
-  const fromTerritoryX = fromTerritoryData.x;
-  const fromTerritoryY = fromTerritoryData.y;
-  let unitX = fromTerritoryX;
-  let unitY = fromTerritoryY;
-  if (fromTerritoryData.unitSlotsBySlotName[unitSlotName]) {
-    unitX += fromTerritoryData.unitSlotsBySlotName[unitSlotName].x;
-    unitY += fromTerritoryData.unitSlotsBySlotName[unitSlotName].y;
+  // Source of arrow
+  let x1;
+  let y1;
+  {
+    const fromTerritoryName = Territory[unitTerritory];
+    const fromTerritoryData = TerritoryMap[fromTerritoryName].territoryMapData;
+    const { unitSlotName } = TerritoryMap[fromTerritoryName];
+    const fromTerritoryX = fromTerritoryData.x;
+    const fromTerritoryY = fromTerritoryData.y;
+    let unitX = fromTerritoryX;
+    let unitY = fromTerritoryY;
+    if (fromTerritoryData.unitSlotsBySlotName[unitSlotName]) {
+      unitX += fromTerritoryData.unitSlotsBySlotName[unitSlotName].x;
+      unitY += fromTerritoryData.unitSlotsBySlotName[unitSlotName].y;
+    }
+    x1 = unitX;
+    y1 = unitY;
   }
 
+  // Switch to find the receiver (i.e. destination) of arrow
+  // And the receiver's width and height
+  let x2;
+  let y2;
+  let receiverWidth;
+  let receiverHeight;
   switch (receiverType) {
     case "arrow": {
-      const arrow: SVGLineElement = d3
-        .selectAll(`.arrow__${receiverIdentifier}`)
-        .node();
+      const receiverArrow = receiverIdentifier as React.ReactElement;
+      const attachPoint = 0.75;
+      const arrowX1 = receiverArrow.props.x1;
+      const arrowY1 = receiverArrow.props.y1;
+      const arrowX2 = receiverArrow.props.x2;
+      const arrowY2 = receiverArrow.props.y2;
+      const run = arrowX2 - arrowX1;
+      const rise = arrowY2 - arrowY1;
 
-      if (arrow) {
-        x1 = unitX;
-        y1 = unitY;
-        const attachPoint = 0.75;
-        const arrowX1 = Number(arrow.getAttribute("x1"));
-        const arrowY1 = Number(arrow.getAttribute("y1"));
-        const arrowX2 = Number(arrow.getAttribute("x2"));
-        const arrowY2 = Number(arrow.getAttribute("y2"));
-        const run = arrowX2 - arrowX1;
-        const rise = arrowY2 - arrowY1;
-        x2 = arrowX1 + run * attachPoint;
-        y2 = arrowY1 + rise * attachPoint;
-        xDiff = x2 - x1;
-        yDiff = y2 - y1;
-        positionChangeBuffer = 60;
-      }
+      x2 = arrowX1 + run * attachPoint;
+      y2 = arrowY1 + rise * attachPoint;
+      receiverWidth = 0;
+      receiverHeight = 0;
+      positionChangeBuffer = 60;
       break;
     }
     case "unit": {
-      const toTerritoryName = Territory[receiverIdentifier];
-      let receiverUnit = d3.select(`#${toTerritoryName}-unit`).node();
-      const toTerritoryEl: SVGSVGElement = d3
-        .select(`#${toTerritoryName}-territory`)
-        .node();
+      const toTerritoryName = Territory[receiverIdentifier as Territory];
+      const toTerritoryData = TerritoryMap[toTerritoryName].territoryMapData;
+      const { unitSlotName } = TerritoryMap[toTerritoryName];
 
-      if (toTerritoryEl && receiverUnit) {
-        receiverUnit = receiverUnit.parentNode;
-
-        const {
-          x: rUnitX,
-          y: rUnitY,
-          width: rUnitW,
-          height: rUnitH,
-        } = receiverUnit.getBBox();
-
-        const receiverSlotElX = Number(receiverUnit.getAttribute("x")) + rUnitX;
-        const receiverSlotElY = Number(receiverUnit.getAttribute("y")) + rUnitY;
-
-        x1 = unitX;
-        x2 = Number(toTerritoryEl.getAttribute("x")) + receiverSlotElX;
-
-        y1 = unitY;
-        y2 = Number(toTerritoryEl.getAttribute("y")) + receiverSlotElY;
-
-        rw = rUnitW;
-        rh = rUnitH;
-        xDiff = x2 - x1;
-        yDiff = y2 - y1;
-        positionChangeBuffer = 75;
+      const toTerritoryX = toTerritoryData.x;
+      const toTerritoryY = toTerritoryData.y;
+      x2 = toTerritoryX;
+      y2 = toTerritoryY;
+      if (toTerritoryData.unitSlotsBySlotName[unitSlotName]) {
+        x2 += toTerritoryData.unitSlotsBySlotName[unitSlotName].x;
+        y2 += toTerritoryData.unitSlotsBySlotName[unitSlotName].y;
       }
+      receiverWidth = UNIT_WIDTH;
+      receiverHeight = UNIT_HEIGHT;
+      positionChangeBuffer = 75;
       break;
     }
     default: {
-      const toTerritoryName = Territory[receiverIdentifier];
-      const toTerritoryReceiver: SVGRectElement = d3
-        .select(`#${toTerritoryName}-arrow-receiver`)
-        .node();
-      const toTerritoryEl: SVGSVGElement = d3
-        .select(`#${toTerritoryName}-territory`)
-        .node();
-      if (toTerritoryEl && toTerritoryName) {
-        x1 = unitX;
-        x2 =
-          Number(toTerritoryEl.getAttribute("x")) +
-          Number(toTerritoryReceiver.getAttribute("x"));
-        y1 = unitY;
-        y2 =
-          Number(toTerritoryEl.getAttribute("y")) +
-          Number(toTerritoryReceiver.getAttribute("y"));
+      const toTerritoryName = Territory[receiverIdentifier as Territory];
+      const toTerritoryData = TerritoryMap[toTerritoryName].territoryMapData;
 
-        xDiff = x2 - x1;
-        yDiff = y2 - y1;
-        positionChangeBuffer = 75;
-      }
+      const toTerritoryX = toTerritoryData.x;
+      const toTerritoryY = toTerritoryData.y;
+      x2 = toTerritoryX;
+      y2 = toTerritoryY;
+      receiverWidth = 0;
+      receiverHeight = 0;
+      positionChangeBuffer = 75;
       break;
     }
   }
 
+  const xDiff = x2 - x1;
+  const yDiff = y2 - y1;
+
   ({ x1, x2, y1, y2 } = arrowDispatchReceiveCoordinates(
     positionChangeBuffer,
-    unitH,
-    unitW,
-    rh,
-    rw,
+    UNIT_HEIGHT,
+    UNIT_WIDTH,
+    receiverHeight,
+    receiverWidth,
     xDiff,
     yDiff,
     x1,

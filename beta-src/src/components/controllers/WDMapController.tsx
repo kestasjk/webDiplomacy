@@ -15,7 +15,11 @@ import drawArrow from "../../utils/map/drawArrow";
 import ArrowType from "../../enums/ArrowType";
 import ArrowColor from "../../enums/ArrowColor";
 import getUnits from "../../utils/map/getUnits";
-import { IOrderDataHistorical, IUnit } from "../../models/Interfaces";
+import {
+  IOrderData,
+  IOrderDataHistorical,
+  IUnit,
+} from "../../models/Interfaces";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -55,6 +59,12 @@ const WDMapController: React.FC = function (): React.ReactElement {
       // exactly the same way.
 
       const ordersHistorical: IOrderDataHistorical[] = [];
+      const currentOrdersById: { [key: number]: IOrderData } = {};
+      if (state.game.data.data.currentOrders) {
+        state.game.data.data.currentOrders.forEach((orderData) => {
+          currentOrdersById[orderData.id] = orderData;
+        });
+      }
       Object.values(state.game.ordersMeta).forEach((orderMeta, orderID) => {
         let fromTerrID = 0;
         let toTerrID = 0;
@@ -64,8 +74,8 @@ const WDMapController: React.FC = function (): React.ReactElement {
         let viaConvoy;
 
         let { originalOrder } = orderMeta;
-        if (!originalOrder && state.game.data.data.currentOrders) {
-          originalOrder = state.game.data.data.currentOrders[orderID];
+        if (!originalOrder) {
+          originalOrder = currentOrdersById[orderID];
         }
         if (originalOrder) {
           if (originalOrder.fromTerrID) {
