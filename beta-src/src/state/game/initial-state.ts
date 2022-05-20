@@ -150,6 +150,7 @@ const initialState: GameState = {
     phase: "",
   },
   notifications: [],
+  lastUnitClick: 0,
 };
 
 export default initialState;
