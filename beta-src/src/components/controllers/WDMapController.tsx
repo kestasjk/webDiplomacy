@@ -65,7 +65,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
           currentOrdersById[orderData.id] = orderData;
         });
       }
-      Object.values(state.game.ordersMeta).forEach((orderMeta, orderID) => {
+      Object.entries(state.game.ordersMeta).forEach(([orderID, orderMeta]) => {
         let fromTerrID = 0;
         let toTerrID = 0;
         let terrID = 0;
@@ -84,13 +84,22 @@ const WDMapController: React.FC = function (): React.ReactElement {
           if (originalOrder.toTerrID) {
             toTerrID = Number(originalOrder.toTerrID);
           }
-          const terrIDString =
-            state.game.maps.unitToTerritory[originalOrder.unitID];
-          if (terrIDString) {
-            terrID = Number(terrIDString);
-          }
           type = originalOrder.type;
-          unitType = state.game.data.data.units[originalOrder.unitID].type;
+
+          if (type.startsWith("Build ")) {
+            if (originalOrder.toTerrID) {
+              terrID = Number(originalOrder.toTerrID);
+            }
+            [, unitType] = type.split(" ");
+          } else {
+            const terrIDString =
+              state.game.maps.unitToTerritory[originalOrder.unitID];
+            if (terrIDString) {
+              terrID = Number(terrIDString);
+            }
+            unitType = state.game.data.data.units[originalOrder.unitID].type;
+          }
+
           if (originalOrder.viaConvoy === "Yes") {
             viaConvoy = "Yes";
           } else {
@@ -125,6 +134,8 @@ const WDMapController: React.FC = function (): React.ReactElement {
         ordersHistorical.push(orderHistorical);
       });
       console.log("Ordershistorical");
+      console.log(currentOrdersById);
+      console.log(state.game.ordersMeta);
       console.log(ordersHistorical);
 
       return [

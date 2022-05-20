@@ -18,7 +18,7 @@ export default function drawOrders(state): void {
     ownUnits,
   } = current(state);
   console.log("drawOrders");
-  /*
+  /* TODO delete this when we have everything replicated
   removeAllArrows();
   drawMoveOrders(data, maps, ordersMeta, board);
   drawSupportMoveOrders(data, maps, ordersMeta, ownUnits);

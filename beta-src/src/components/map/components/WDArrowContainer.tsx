@@ -11,14 +11,15 @@ import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import GameStateMaps from "../../../state/interfaces/GameStateMaps";
 import ArrowType from "../../../enums/ArrowType";
 import ArrowColor from "../../../enums/ArrowColor";
-import drawArrowFunctional from "../../../utils/map/drawArrowFunctional";
+import drawArrowFunctional, {
+  getArrowX1Y1X2Y2,
+} from "../../../utils/map/drawArrowFunctional";
 import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
 import { APITerritories } from "../../../state/interfaces/GameDataResponse";
 
 function accumulateMoveOrderArrows(
   arrows: (React.ReactElement | null)[],
   orders: IOrderDataHistorical[],
-  maps: GameStateMaps,
   territories: APITerritories,
 ): void {
   console.log("drawMoveOrders");
@@ -26,6 +27,9 @@ function accumulateMoveOrderArrows(
     .filter((order) => order.type === "Move")
     .forEach((order) => {
       if (order.toTerrID) {
+        // console.log(order);
+        // console.log(territories);
+        // console.log(order.terrID);
         const fromTerr = TerritoryMap[territories[order.terrID].name].territory;
         const toTerr = TerritoryMap[territories[order.toTerrID].name].territory;
 
@@ -33,9 +37,10 @@ function accumulateMoveOrderArrows(
           drawArrowFunctional(
             ArrowType.MOVE,
             order.success === "Yes" ? ArrowColor.MOVE : ArrowColor.MOVE_FAILED,
+            "unit",
+            fromTerr,
             "territory",
             toTerr,
-            fromTerr,
           ),
         );
         // console.log("ARROW");
@@ -47,6 +52,184 @@ function accumulateMoveOrderArrows(
       }
     });
 }
+
+function accumulateSupportHoldOrderArrows(
+  arrows: (React.ReactElement | null)[],
+  orders: IOrderDataHistorical[],
+  territories: APITerritories,
+): void {
+  orders
+    .filter((order) => order.type === "Support hold")
+    .forEach((order) => {
+      if (!order.toTerrID) {
+        return;
+      }
+      const supporterTerr =
+        TerritoryMap[territories[order.terrID].name].territory;
+      const supporteeTerr =
+        TerritoryMap[territories[order.toTerrID].name].territory;
+      arrows.push(
+        drawArrowFunctional(
+          ArrowType.HOLD,
+          ArrowColor.SUPPORT_HOLD,
+          "unit",
+          supporterTerr,
+          "unit",
+          supporteeTerr,
+        ),
+      );
+    });
+}
+
+function accumulateSupportMoveOrderArrows(
+  arrows: (React.ReactElement | null)[],
+  orders: IOrderDataHistorical[],
+  ordersByTerrID: { [key: number]: IOrderDataHistorical },
+  territories: APITerritories,
+): void {
+  orders
+    .filter((order) => order.type === "Support move")
+    .forEach((order) => {
+      if (!(order.fromTerrID && order.toTerrID)) {
+        return;
+      }
+
+      const supporterTerr =
+        TerritoryMap[territories[order.terrID].name].territory;
+      const supporteeTerr =
+        TerritoryMap[territories[order.fromTerrID].name].territory;
+      let isCoordinated = false;
+      const supporteeOrder = ordersByTerrID[order.fromTerrID];
+      if (
+        supporteeOrder &&
+        supporteeOrder.type === "Move" &&
+        supporteeOrder.terrID === order.fromTerrID &&
+        (supporteeOrder.toTerrID === order.toTerrID ||
+          territories[supporteeOrder.toTerrID].coastParentID ===
+            order.toTerrID.toString())
+      ) {
+        isCoordinated = true;
+      }
+
+      if (isCoordinated) {
+        // For coordinated supports, use the order for the supportee for determining
+        // the destination location because the destination location of the supportee order
+        // must be coast-qualified whereas the supported-to location of the supporter order
+        // does not have to be coast-qualified.
+        const toTerr =
+          TerritoryMap[
+            territories[ordersByTerrID[order.fromTerrID].toTerrID].name
+          ].territory;
+        arrows.push(
+          drawArrowFunctional(
+            ArrowType.SUPPORT,
+            ArrowColor.SUPPORT_MOVE,
+            "unit",
+            supporterTerr,
+            "arrow",
+            getArrowX1Y1X2Y2("unit", supporteeTerr, "territory", toTerr),
+          ),
+        );
+      } else {
+        // Uncoordinated supports
+        const toTerr = TerritoryMap[territories[order.toTerrID].name].territory;
+        arrows.push(
+          drawArrowFunctional(
+            ArrowType.SUPPORT,
+            ArrowColor.SUPPORT_MOVE,
+            "unit",
+            supporterTerr,
+            "arrow",
+            getArrowX1Y1X2Y2("unit", supporteeTerr, "territory", toTerr),
+          ),
+        );
+        // Also draw a ghosty arrow of what we're trying to support.
+        arrows.push(
+          drawArrowFunctional(
+            ArrowType.MOVE,
+            ArrowColor.IMPLIED_FOREIGN,
+            "unit",
+            supporteeTerr,
+            "territory",
+            toTerr,
+          ),
+        );
+      }
+    });
+}
+
+function accumulateConvoyOrderArrows(
+  arrows: (React.ReactElement | null)[],
+  orders: IOrderDataHistorical[],
+  ordersByTerrID: { [key: number]: IOrderDataHistorical },
+  territories: APITerritories,
+): void {
+  orders
+    .filter((order) => order.type === "Convoy")
+    .forEach((order) => {
+      if (!(order.fromTerrID && order.toTerrID)) {
+        return;
+      }
+
+      const convoyerTerr =
+        TerritoryMap[territories[order.terrID].name].territory;
+      const convoyeeTerr =
+        TerritoryMap[territories[order.fromTerrID].name].territory;
+      let isCoordinated = false;
+      const convoyeeOrder = ordersByTerrID[order.fromTerrID];
+      if (
+        convoyeeOrder &&
+        convoyeeOrder.type === "Move" &&
+        convoyeeOrder.terrID === order.fromTerrID &&
+        (convoyeeOrder.toTerrID === order.toTerrID ||
+          territories[convoyeeOrder.toTerrID].coastParentID ===
+            order.toTerrID.toString())
+      ) {
+        isCoordinated = true;
+      }
+
+      const toTerr = TerritoryMap[territories[order.toTerrID].name].territory;
+      arrows.push(
+        drawArrowFunctional(
+          ArrowType.CONVOY,
+          ArrowColor.CONVOY,
+          "unit",
+          convoyerTerr,
+          "arrow",
+          getArrowX1Y1X2Y2("unit", convoyeeTerr, "territory", toTerr),
+        ),
+      );
+      if (!isCoordinated) {
+        // Also draw a ghosty arrow of what we're trying to convoy.
+        arrows.push(
+          drawArrowFunctional(
+            ArrowType.MOVE,
+            ArrowColor.IMPLIED,
+            "unit",
+            convoyeeTerr,
+            "territory",
+            toTerr,
+          ),
+        );
+      }
+    });
+}
+
+/*
+export interface IOrderDataHistorical {
+  countryID: string;
+  dislodged: string;
+  fromTerrID: number;
+  phase: string;
+  success: string;
+  terrID: number;
+  toTerrID: number;
+  turn: number;
+  type: string;
+  unitType: string;
+  viaConvoy: string;
+}
+*/
 
 interface WDArrowProps {
   phase: string;
@@ -62,9 +245,16 @@ const WDArrowContainer: React.FC<WDArrowProps> = function ({
   territories,
 }): React.ReactElement {
   const arrows: (React.ReactElement | null)[] = [];
-  accumulateMoveOrderArrows(arrows, orders, maps, territories);
+
+  const ordersByTerrID = {};
+  orders.forEach((order) => {
+    ordersByTerrID[order.terrID] = order;
+  });
+  accumulateMoveOrderArrows(arrows, orders, territories);
+  accumulateSupportHoldOrderArrows(arrows, orders, territories);
+  accumulateSupportMoveOrderArrows(arrows, orders, ordersByTerrID, territories);
+  accumulateConvoyOrderArrows(arrows, orders, ordersByTerrID, territories);
   return <g id="arrows">{arrows}</g>;
 };
-
 
 export default WDArrowContainer;

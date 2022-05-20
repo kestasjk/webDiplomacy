@@ -1,5 +1,8 @@
 enum Territory {
-  ADRIATIC_SEA,
+  // Start at 1 out of paranoia that someone somewhere will
+  // do if (territory) to check for territory being null or undefined
+  // and will accidentally catch 0.
+  ADRIATIC_SEA = 1,
   AEGEAN_SEA,
   ALBANIA,
   ANKARA,

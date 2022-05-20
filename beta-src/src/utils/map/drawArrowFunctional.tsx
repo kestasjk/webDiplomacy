@@ -8,39 +8,30 @@ import arrowDispatchReceiveCoordinates from "./arrowDispatchReceiveCoordinates";
 import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
 import { UNIT_HEIGHT, UNIT_WIDTH } from "../../components/ui/units/WDUnit";
 
-export default function drawArrowFunctional(
-  /**
-   * color code passed from enum ArrowColors based on move type
-   */
-  arrowType: ArrowType,
-  arrowColor: ArrowColor,
+export function getArrowX1Y1X2Y2(
+  sourceType: "unit",
+  sourceIdentifier: Territory,
   receiverType: "territory" | "unit" | "arrow",
-  receiverIdentifier: Territory | React.ReactElement,
-  unitTerritory: Territory,
-): React.ReactElement {
-  console.log(
-    `drawArrowFunctional ${receiverType} ${receiverIdentifier} ${unitTerritory}`,
-  );
-
+  receiverIdentifier: Territory | [number, number, number, number],
+): [number, number, number, number] {
   let positionChangeBuffer;
 
   // Source of arrow
   let x1;
   let y1;
   {
+    const unitTerritory = sourceIdentifier;
     const fromTerritoryName = Territory[unitTerritory];
     const fromTerritoryData = TerritoryMap[fromTerritoryName].territoryMapData;
     const { unitSlotName } = TerritoryMap[fromTerritoryName];
     const fromTerritoryX = fromTerritoryData.x;
     const fromTerritoryY = fromTerritoryData.y;
-    let unitX = fromTerritoryX;
-    let unitY = fromTerritoryY;
+    x1 = fromTerritoryX;
+    y1 = fromTerritoryY;
     if (fromTerritoryData.unitSlotsBySlotName[unitSlotName]) {
-      unitX += fromTerritoryData.unitSlotsBySlotName[unitSlotName].x;
-      unitY += fromTerritoryData.unitSlotsBySlotName[unitSlotName].y;
+      x1 += fromTerritoryData.unitSlotsBySlotName[unitSlotName].x;
+      y1 += fromTerritoryData.unitSlotsBySlotName[unitSlotName].y;
     }
-    x1 = unitX;
-    y1 = unitY;
   }
 
   // Switch to find the receiver (i.e. destination) of arrow
@@ -51,12 +42,13 @@ export default function drawArrowFunctional(
   let receiverHeight;
   switch (receiverType) {
     case "arrow": {
-      const receiverArrow = receiverIdentifier as React.ReactElement;
+      const [arrowX1, arrowY1, arrowX2, arrowY2] = receiverIdentifier as [
+        number,
+        number,
+        number,
+        number,
+      ];
       const attachPoint = 0.75;
-      const arrowX1 = receiverArrow.props.x1;
-      const arrowY1 = receiverArrow.props.y1;
-      const arrowX2 = receiverArrow.props.x2;
-      const arrowY2 = receiverArrow.props.y2;
       const run = arrowX2 - arrowX1;
       const rise = arrowY2 - arrowY1;
 
@@ -72,10 +64,8 @@ export default function drawArrowFunctional(
       const toTerritoryData = TerritoryMap[toTerritoryName].territoryMapData;
       const { unitSlotName } = TerritoryMap[toTerritoryName];
 
-      const toTerritoryX = toTerritoryData.x;
-      const toTerritoryY = toTerritoryData.y;
-      x2 = toTerritoryX;
-      y2 = toTerritoryY;
+      x2 = toTerritoryData.x;
+      y2 = toTerritoryData.y;
       if (toTerritoryData.unitSlotsBySlotName[unitSlotName]) {
         x2 += toTerritoryData.unitSlotsBySlotName[unitSlotName].x;
         y2 += toTerritoryData.unitSlotsBySlotName[unitSlotName].y;
@@ -89,10 +79,12 @@ export default function drawArrowFunctional(
       const toTerritoryName = Territory[receiverIdentifier as Territory];
       const toTerritoryData = TerritoryMap[toTerritoryName].territoryMapData;
 
-      const toTerritoryX = toTerritoryData.x;
-      const toTerritoryY = toTerritoryData.y;
-      x2 = toTerritoryX;
-      y2 = toTerritoryY;
+      x2 = toTerritoryData.x;
+      y2 = toTerritoryData.y;
+      if (toTerritoryData.arrowReceiver) {
+        x2 += toTerritoryData.arrowReceiver.x;
+        y2 += toTerritoryData.arrowReceiver.y;
+      }
       receiverWidth = 0;
       receiverHeight = 0;
       positionChangeBuffer = 75;
@@ -116,6 +108,27 @@ export default function drawArrowFunctional(
     y1,
     y2,
   ));
+
+  return [x1, y1, x2, y2];
+}
+
+export default function drawArrowFunctional(
+  arrowType: ArrowType,
+  arrowColor: ArrowColor,
+  sourceType: "unit",
+  sourceIdentifier: Territory,
+  receiverType: "territory" | "unit" | "arrow",
+  receiverIdentifier: Territory | [number, number, number, number],
+): React.ReactElement {
+  console.log(
+    `drawArrowFunctional ${sourceIdentifier} ${receiverType} ${receiverIdentifier} `,
+  );
+  const [x1, y1, x2, y2] = getArrowX1Y1X2Y2(
+    sourceType,
+    sourceIdentifier,
+    receiverType,
+    receiverIdentifier,
+  );
 
   return (
     <line

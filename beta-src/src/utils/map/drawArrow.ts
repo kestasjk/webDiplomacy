@@ -5,6 +5,9 @@ import Territory from "../../enums/map/variants/classic/Territory";
 import webDiplomacyTheme from "../../webDiplomacyTheme";
 import arrowDispatchReceiveCoordinates from "./arrowDispatchReceiveCoordinates";
 
+// TODO delete this once nothing uses it and we've ironed out any bugs
+// and no longer need this code as a reference for the old arrrow impl.
+
 export default function drawArrow(
   /**
    * color code passed from enum ArrowColors based on move type
