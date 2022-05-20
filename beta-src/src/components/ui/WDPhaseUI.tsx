@@ -7,15 +7,12 @@ import {
   gameViewedPhase,
 } from "../../state/game/game-api-slice";
 import { useAppSelector } from "../../state/hooks";
-import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
-import ScrollButtonState from "../../enums/ScrollButton";
-import Season from "../../enums/Season";
-import UIState from "../../enums/UIState";
-import getHistoricalPhaseSeasonYear from "../../utils/state/getHistoricalPhaseSeasonYear";
+import {
+  getGamePhaseSeasonYear,
+  getHistoricalPhaseSeasonYear,
+} from "../../utils/state/getPhaseSeasonYear";
 import WDCountdownPill from "./WDCountdownPill";
 import WDPillScroller from "./WDPillScroller";
-import WDGamePhaseIcon from "./icons/WDGamePhaseIcon";
-import { GamePhaseType } from "../../models/enums";
 
 const WDPhaseUI: React.FC = function (): React.ReactElement {
   const { phaseMinutes, processTime, phase, season, year } =
@@ -24,6 +21,11 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
   const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
 
   const phaseSeconds = phaseMinutes * 60;
+  const [gamePhase, gameSeason, gameYear] = getGamePhaseSeasonYear(
+    phase,
+    season,
+    year,
+  );
   const [viewedPhase, viewedSeason, viewedYear] = getHistoricalPhaseSeasonYear(
     gameStatusData,
     viewedPhaseIdx,
@@ -52,9 +54,9 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
           viewedPhase={viewedPhase}
           viewedSeason={viewedSeason}
           viewedYear={viewedYear}
-          gamePhase={phase}
-          gameSeason={season as Season}
-          gameYear={year}
+          gamePhase={gamePhase}
+          gameSeason={gameSeason}
+          gameYear={gameYear}
         />
       )}
     </Box>
