@@ -46,7 +46,7 @@ export default function fetchGameDataFulfilled(state, action): void {
       state.ownUnits.push(unit.id);
     }
   });
-  const unitsToDraw = getUnits(data, members);
+  const unitsToDraw = getUnits(data, members, phase);
   Object.values(data.territories).forEach(({ name }) => {
     const mappedTerritory = TerritoryMap[name];
     const command: GameCommand = {

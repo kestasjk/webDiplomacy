@@ -1,6 +1,7 @@
 import { current } from "@reduxjs/toolkit";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../../../state/interfaces/GameOverviewResponse";
+import { GameState } from "../../../../state/interfaces/GameState";
 import GameStateMaps from "../../../../state/interfaces/GameStateMaps";
 import OrderState from "../../../../state/interfaces/OrderState";
 import OrdersMeta from "../../../../state/interfaces/SavedOrders";
@@ -19,6 +20,7 @@ export default function processUnitClick(state, clickData) {
     ordersMeta,
     ownUnits,
     overview,
+    mustDestroyUnitsBuildPhase,
   }: {
     data: GameDataResponse;
     maps: GameStateMaps;
@@ -26,6 +28,7 @@ export default function processUnitClick(state, clickData) {
     ordersMeta: OrdersMeta;
     ownUnits: string[];
     overview: GameOverviewResponse;
+    mustDestroyUnitsBuildPhase: GameState["mustDestroyUnitsBuildPhase"];
   } = current(state);
   const {
     data: { currentOrders, units },
@@ -40,10 +43,25 @@ export default function processUnitClick(state, clickData) {
   if (orderStatus.Ready) {
     return;
   }
-  // Destroy Units
-  const isDestroy = currentOrders?.some(({ type: t }) => t === "Destroy");
+  if (phase === "Retreats") {
+    const unitsOrderMeta =
+      ordersMeta[maps.unitToOrder[clickData.payload.unitID]];
+
+    if (
+      !unitsOrderMeta ||
+      (unitsOrderMeta &&
+        unitsOrderMeta.update?.type === "Disband" &&
+        !unitsOrderMeta.allowedBorderCrossings?.length)
+    ) {
+      return;
+    }
+  }
   if (phase === "Builds") {
-    if (!ownUnits.includes(clickData.payload.unitID) || !isDestroy) {
+    // Destroy Units
+    if (
+      !ownUnits.includes(clickData.payload.unitID) ||
+      !mustDestroyUnitsBuildPhase
+    ) {
       return;
     }
 
@@ -114,6 +132,22 @@ export default function processUnitClick(state, clickData) {
         highlightMapTerritoriesBasedOnStatuses(state);
       } else {
         startNewOrder(state, clickData);
+      }
+    } else if (!ownUnits.includes(clickData.payload.unitID)) {
+      // Convoy Ally
+      const currentOrderUnitType = units[unitID].type;
+      const newClickUnitType = units[clickData.payload.unitID].type;
+      if (currentOrderUnitType === "Fleet" && newClickUnitType === "Army") {
+        state.order.type = "convoy";
+        state.order.subsequentClicks.push({
+          ...{
+            inProgress: true,
+            order: orderID,
+            toTerritory: null,
+          },
+          ...clickData.payload,
+        });
+        highlightMapTerritoriesBasedOnStatuses(state);
       }
     }
   } else if (ownUnits.includes(clickData.payload.unitID)) {

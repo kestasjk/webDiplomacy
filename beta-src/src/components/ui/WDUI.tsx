@@ -17,6 +17,7 @@ import Vote from "../../enums/Vote";
 import WDMoveControls from "./WDMoveControls";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import WDHomeIcon from "./icons/WDHomeIcon";
+import WDNotificationContainer from "./WDNotificationContainer";
 
 const abbrMap = {
   Russia: "RUS",
@@ -155,6 +156,9 @@ const WDUI: React.FC = function (): React.ReactElement {
       </WDPositionContainer>
       <WDPositionContainer position={Position.BOTTOM_RIGHT}>
         <WDMoveControls />
+      </WDPositionContainer>
+      <WDPositionContainer position={Position.BOTTOM_LEFT}>
+        <WDNotificationContainer />
       </WDPositionContainer>
     </>
   );

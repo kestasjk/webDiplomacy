@@ -13,15 +13,22 @@ export default function updateUnitsRetreat(state): void {
     },
     order,
     ordersMeta,
-    overview: { phase },
+    overview: {
+      phase,
+      user: {
+        member: { orderStatus },
+      },
+    },
   }: {
     data: GameDataResponse;
     order: OrderState;
     ordersMeta: OrdersMeta;
     overview: GameOverviewResponse;
   } = current(state);
+
   currentOrders?.forEach(({ id, unitID }) => {
     const { update } = ordersMeta[id];
+    const { allowedBorderCrossings } = ordersMeta[id];
     const toTerrID = update?.toTerrID;
     const type = update?.type;
 
@@ -47,5 +54,17 @@ export default function updateUnitsRetreat(state): void {
       };
     }
     setCommand(state, command, "unitCommands", unitID);
+
+    if (
+      currentOrders.length === 1 &&
+      type === "Disband" &&
+      !allowedBorderCrossings?.length &&
+      !orderStatus.Completed
+    ) {
+      command = {
+        command: "SAVE_ORDERS",
+      };
+      setCommand(state, command, "mapCommands", "save");
+    }
   });
 }
