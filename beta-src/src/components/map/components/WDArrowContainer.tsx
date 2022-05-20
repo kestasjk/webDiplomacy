@@ -26,10 +26,8 @@ function accumulateMoveOrderArrows(
     .filter((order) => order.type === "Move")
     .forEach((order) => {
       if (order.toTerrID) {
-        const fromTerrDetails = territories[order.terrID];
-        const toTerrDetails = territories[order.toTerrID];
-        const fromTerr = TerritoryMap[fromTerrDetails.name].territory;
-        const toTerr = TerritoryMap[toTerrDetails.name].territory;
+        const fromTerr = TerritoryMap[territories[order.terrID].name].territory;
+        const toTerr = TerritoryMap[territories[order.toTerrID].name].territory;
 
         arrows.push(
           drawArrowFunctional(
@@ -68,20 +66,5 @@ const WDArrowContainer: React.FC<WDArrowProps> = function ({
   return <g id="arrows">{arrows}</g>;
 };
 
-/*
-export interface IOrderDataHistorical {
-  countryID: string;
-  dislodged: string;
-  fromTerrID: number;
-  phase: string;
-  success: string;
-  terrID: number;
-  toTerrID: number;
-  turn: number;
-  type: string;
-  unitType: string;
-  viaConvoy: string;
-}
-*/
 
 export default WDArrowContainer;

@@ -1,13 +1,13 @@
-import { Territory } from "../interfaces";
+import { TerritoryI } from "../interfaces";
 import TerritoryEnum from "../enums/map/variants/classic/Territory";
 import Territories from "../data/Territories";
 
-export default class TerritoryDataGenerator implements Territory {
-  public abbr: Territory["abbr"];
+export default class TerritoryDataGenerator implements TerritoryI {
+  public abbr: TerritoryI["abbr"];
 
-  public name: Territory["name"];
+  public name: TerritoryI["name"];
 
-  public type: Territory["type"];
+  public type: TerritoryI["type"];
 
   constructor(terr: TerritoryEnum) {
     this.abbr = Territories[terr].abbr;
@@ -15,7 +15,7 @@ export default class TerritoryDataGenerator implements Territory {
     this.type = Territories[terr].type;
   }
 
-  get territory(): Territory {
+  get territory(): TerritoryI {
     return {
       abbr: this.abbr,
       name: this.name,

@@ -1,6 +1,6 @@
-import { BBox, Coordinates, Label, Territory, Texture, UnitSlot } from "..";
+import { BBox, Coordinates, Label, TerritoryI, Texture, UnitSlot } from "..";
 
-export interface TerritoryMapData extends Territory, BBox {
+export interface TerritoryMapData extends TerritoryI, BBox {
   arrowReceiver?: Coordinates;
   centerPos?: Coordinates;
   fill?: string;

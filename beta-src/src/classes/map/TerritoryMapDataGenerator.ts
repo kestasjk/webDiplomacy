@@ -2,7 +2,7 @@ import {
   BBox,
   Coordinates,
   Label,
-  Territory,
+  TerritoryI,
   TerritoryMapData,
   Texture,
   UnitSlot,
@@ -10,7 +10,7 @@ import {
 import webDiplomacyTheme from "../../webDiplomacyTheme";
 import Country from "../../enums/Country";
 
-interface TerritoryMapDataGeneratorInterface extends Territory, BBox {
+interface TerritoryMapDataGeneratorInterface extends TerritoryI, BBox {
   arrowReceiver?: Coordinates;
   centerPos?: Coordinates;
   country?: Country;

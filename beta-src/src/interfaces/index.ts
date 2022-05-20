@@ -1,6 +1,6 @@
 export * from "./Viewport";
 export * from "./CountryTableData";
-export * from "./Territory";
+export * from "./TerritoryI";
 export * from "./map/Coordinates";
 export * from "./map/Dimensions";
 export * from "./map/TerritoryMapData";

@@ -1,9 +1,9 @@
 import TerritoryType from "../types/map/TerritoryType";
 import TerritoryName from "../types/TerritoryName";
 
-export interface Territory {
+export interface TerritoryI {
   name: TerritoryName;
   abbr: string;
   type: TerritoryType;
-  parent?: Territory;
+  parent?: TerritoryI;
 }
