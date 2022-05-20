@@ -17,6 +17,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import { TerritoryMeta } from "../../../state/interfaces/TerritoriesState";
 import ClickObjectType from "../../../types/state/ClickObjectType";
+import OrderType from "../../../types/state/OrderType";
 import UnitType from "../../../types/UnitType";
 import WDUnit from "../../ui/units/WDUnit";
 import WDCenter from "./WDCenter";
@@ -44,7 +45,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     ([id, meta]) => Territories[id].name === territoryName,
   );
   const territoryMeta = territoryIdAndMeta && territoryIdAndMeta[1];
-
   let territoryFill = "none";
   let territoryFillOpacity = 0;
   const territoryStrokeOpacity = 1;
@@ -57,8 +57,12 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     territoryFillOpacity = 0.4;
   }
   const curOrder = useAppSelector(gameOrder);
-  if (territoryMeta?.territory === curOrder.toTerritory) {
+  if (
+    territoryMeta?.territory &&
+    territoryMeta?.territory === curOrder.toTerritory
+  ) {
     territoryFillOpacity = 0.9;
+    territoryFill = theme.palette[userCountry].main;
   }
 
   const unitState = useAppSelector(gameUnitState); // FIXME: too global
