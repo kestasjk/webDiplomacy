@@ -11,7 +11,6 @@ const WDMapController = React.lazy(
 const WDMain: React.FC = function (): React.ReactElement {
   const { user, gameID } = useAppSelector(gameOverview);
   const dispatch = useAppDispatch();
-
   if (user && gameID) {
     dispatch(
       fetchGameData({

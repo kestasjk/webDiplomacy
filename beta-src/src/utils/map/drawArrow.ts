@@ -16,6 +16,9 @@ export default function drawArrow(
   receiverIdentifier: Territory | string,
   unitTerritory: Territory,
 ): void {
+  console.log(
+    `drawArrow ${receiverType} ${receiverIdentifier} ${unitTerritory}`,
+  );
   const d3MapSelector = d3.select("#map");
 
   let x1;

@@ -4,7 +4,6 @@ import GameOverviewResponse from "../../../../state/interfaces/GameOverviewRespo
 import GameStateMaps from "../../../../state/interfaces/GameStateMaps";
 import OrderState from "../../../../state/interfaces/OrderState";
 import OrdersMeta from "../../../../state/interfaces/SavedOrders";
-import highlightMapTerritoriesBasedOnStatuses from "../../../map/highlightMapTerritoriesBasedOnStatuses";
 import getAvailableOrder from "../../getAvailableOrder";
 import resetOrder from "../../resetOrder";
 import startNewOrder from "../../startNewOrder";
@@ -83,11 +82,6 @@ export default function processUnitClick(state, clickData) {
   } else if (inProgress) {
     if (unitID === clickData.payload.unitID) {
       resetOrder(state);
-      if (type === "disband" || type === "retreat") {
-        highlightMapTerritoriesBasedOnStatuses(state);
-      }
-    } else if ((type === "hold" || type === "move") && onTerritory !== null) {
-      highlightMapTerritoriesBasedOnStatuses(state);
     } else if (method === "dblClick" && unitID !== clickData.payload.unitID) {
       state.order.subsequentClicks.push({
         ...{
@@ -111,7 +105,6 @@ export default function processUnitClick(state, clickData) {
           },
           ...clickData.payload,
         });
-        highlightMapTerritoriesBasedOnStatuses(state);
       } else {
         startNewOrder(state, clickData);
       }

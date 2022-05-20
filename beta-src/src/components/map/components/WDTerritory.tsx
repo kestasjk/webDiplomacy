@@ -1,16 +1,23 @@
 import { useTheme } from "@mui/material";
 import * as React from "react";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
+import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
+import Territories from "../../../data/Territories";
+import UIState from "../../../enums/UIState";
 import { TerritoryMapData } from "../../../interfaces";
 import {
   gameApiSliceActions,
+  gameOrder,
+  gameOrdersMeta,
   gameOverview,
+  gameTerritoriesMeta,
+  gameUnits,
+  gameUnitState,
 } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
+import { TerritoryMeta } from "../../../state/interfaces/TerritoriesState";
 import ClickObjectType from "../../../types/state/ClickObjectType";
-import processNextCommand from "../../../utils/processNextCommand";
-import WDArmyIcon from "../../ui/units/WDArmyIcon";
-import WDFleetIcon from "../../ui/units/WDFleetIcon";
+import UnitType from "../../../types/UnitType";
 import WDUnit from "../../ui/units/WDUnit";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
@@ -20,152 +27,88 @@ interface WDTerritoryProps {
   territoryMapData: TerritoryMapData;
 }
 
-interface Units {
-  [key: string]: React.ReactElement;
-}
-
 const WDTerritory: React.FC<WDTerritoryProps> = function ({
   territoryMapData,
 }): React.ReactElement {
   const theme = useTheme();
   const dispatch = useAppDispatch();
+  const territoriesMeta = useAppSelector(gameTerritoriesMeta);
 
-  const [territoryFill, setTerritoryFill] = React.useState<string | undefined>(
-    territoryMapData.fill,
+  const { user, members } = useAppSelector(gameOverview);
+  const units = useAppSelector(gameUnits);
+  const userCountry = countryMap[user.member.country];
+
+  const territoryName = territoryMapData.name;
+  // FIXME eww, pass this down.
+  const territoryIdAndMeta = Object.entries(territoriesMeta).find(
+    ([id, meta]) => Territories[id].name === territoryName,
   );
+  const territoryMeta = territoryIdAndMeta && territoryIdAndMeta[1];
 
-  const [territoryFillOpacity, setTerritoryFillOpacity] = React.useState<
-    number | undefined
-  >(undefined);
+  let territoryFill = "none";
+  let territoryFillOpacity = 0;
+  const territoryStrokeOpacity = 1;
+  if (territoryMeta?.countryID) {
+    const ownerCountryID = territoryMeta?.countryID;
+    const ownerCountry =
+      members.find(({ countryID }) => String(countryID) === ownerCountryID)
+        ?.country || "null";
+    territoryFill = theme.palette[ownerCountry]?.main;
+    territoryFillOpacity = 0.4;
+  }
+  const curOrder = useAppSelector(gameOrder);
+  if (territoryMeta?.territory === curOrder.toTerritory) {
+    territoryFillOpacity = 0.9;
+  }
 
-  const [territoryStrokeOpacity, setTerritoryStrokeOpacity] = React.useState(1);
-
-  const [units, setUnits] = React.useState<Units>({});
-
-  const commands = useAppSelector(
-    (state) => state.game.commands.territoryCommands[territoryMapData.name],
-  );
-
-  const {
-    user: { member },
-  } = useAppSelector(gameOverview);
-  const userCountry = countryMap[member.country];
-
-  const deleteCommand = (key) => {
-    dispatch(
-      gameApiSliceActions.deleteCommand({
-        type: "territoryCommands",
-        id: territoryMapData.name,
-        command: key,
-      }),
-    );
-  };
-
-  const setMoveHighlight = () => {
-    setTerritoryFill(theme.palette[userCountry].main);
-    setTerritoryFillOpacity(0.9);
-    setTerritoryStrokeOpacity(1);
-  };
-
-  const setCapturedHighlight = (country) => {
-    if (country) {
-      country === "none"
-        ? setTerritoryFill("none")
-        : setTerritoryFill(theme.palette[country].main);
-    } else {
-      setTerritoryFill(theme.palette[userCountry].main);
-    }
-    setTerritoryFillOpacity(0.4);
-    setTerritoryStrokeOpacity(1);
-  };
-
-  const commandActions = {
-    CAPTURED: (command) => {
-      const [key, value] = command;
-      territoryMapData.type === "water"
-        ? setTerritoryFill("none")
-        : setCapturedHighlight(value.data?.country);
-      deleteCommand(key);
-    },
-    HOLD: (command) => {
-      const [key] = command;
-      setTerritoryFill(theme.palette[userCountry].main);
-      setTerritoryFillOpacity(0.9);
-      setTerritoryStrokeOpacity(2);
-      deleteCommand(key);
-    },
-    MOVE: (command) => {
-      const [key] = command;
-      setMoveHighlight();
-      deleteCommand(key);
-    },
-    REMOVE_BUILD: (command) => {
-      const [key] = command;
-      setCapturedHighlight(userCountry);
-      deleteCommand(key);
-    },
-    SET_UNIT: (command) => {
-      const [key, value] = command;
-      const {
-        componentType,
-        country,
-        iconState,
-        mappedTerritory,
-        unit,
-        unitType,
-        unitSlotName,
-      } = value.data.setUnit;
-
-      let newUnit;
-      if (country && unitType && componentType) {
-        switch (componentType) {
-          case "Game":
-            if (unit) {
-              newUnit = (
-                <WDUnit
-                  id={`${territoryMapData.name}-unit`}
-                  country={country}
-                  meta={{ country, mappedTerritory, unit }}
-                  type={unitType}
-                />
-              );
-            }
-            break;
-          case "Icon":
-            switch (unitType) {
-              case "Army":
-                newUnit = (
-                  <svg filter={theme.palette.svg.filters.dropShadows[1]}>
-                    <WDArmyIcon country={country} iconState={iconState} />
-                  </svg>
-                );
-                break;
-              case "Fleet":
-                newUnit = (
-                  <svg filter={theme.palette.svg.filters.dropShadows[1]}>
-                    <WDFleetIcon country={country} iconState={iconState} />
-                  </svg>
-                );
-                break;
-              default:
-                break;
-            }
-            break;
-          default:
-            break;
-        }
-      }
-
-      const set = {
-        ...units,
-        ...{ [unitSlotName]: newUnit },
-      };
-      setUnits(set);
-      deleteCommand(key);
-    },
-  };
-
-  processNextCommand(commands, commandActions);
+  const unitState = useAppSelector(gameUnitState); // FIXME: too global
+  const unitFCs: { [key: string]: any } = {};
+  units
+    .filter(
+      (unit) =>
+        (unit.mappedTerritory.parent || unit.mappedTerritory.territory) ===
+        territoryMeta?.territory,
+    )
+    .forEach((unit) => {
+      unitFCs[unit.mappedTerritory.unitSlotName] = (
+        <WDUnit
+          id={`${territoryName}-unit`} // n.b. the id here is ref'd by drawOrders, do not change!
+          country={unit.country}
+          meta={unit}
+          type={unit.unit.type as UnitType}
+          iconState={unitState[unit.unit.id]} // FIXME make declarative
+        />
+      );
+    });
+  const ordersMeta = useAppSelector(gameOrdersMeta);
+  Object.values(ordersMeta)
+    .filter(
+      ({ update }) =>
+        update &&
+        update?.type.split(" ")[0] === "Build" && // updates can be something supporting you or moving to this territory???
+        update.toTerrID === territoryMeta?.id,
+    )
+    .forEach(({ update }) => {
+      territoryFillOpacity = 0.9;
+      unitFCs.main = ( // FIXME: needs to support coasts
+        <WDUnit
+          id={`${territoryName}-unit`} // n.b. the id here is ref'd by drawOrders, do not change!
+          country={userCountry}
+          meta={{
+            country: userCountry,
+            mappedTerritory: TerritoryMap[territoryName],
+            unit: {
+              id: `${territoryName}-unit`,
+              countryID: "NA",
+              type: update?.type.split(" ")[1] as unknown as string, // Build Army --> Army
+              terrID: territoryMeta?.id || "null",
+            },
+          }}
+          type={update?.type.split(" ")[1] as UnitType}
+          iconState={UIState.BUILD}
+        />
+      );
+    });
 
   const clickAction = function (evt, clickObject: ClickObjectType) {
     dispatch(
@@ -176,7 +119,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       }),
     );
   };
-
   return (
     <svg
       height={territoryMapData.height}
@@ -246,7 +188,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
             x={x}
             y={y}
           >
-            {units[name]}
+            {unitFCs[name]}
           </WDUnitSlot>
         ))}
       {territoryMapData.arrowReceiver && (

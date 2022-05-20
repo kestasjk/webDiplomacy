@@ -13,7 +13,6 @@ import {
 } from "../../state/game/game-api-slice";
 import drawArrow from "../../utils/map/drawArrow";
 import ArrowType from "../../enums/ArrowType";
-import processNextCommand from "../../utils/processNextCommand";
 import ArrowColor from "../../enums/ArrowColor";
 
 const Scales: Scale = {
@@ -38,80 +37,25 @@ const WDMapController: React.FC = function (): React.ReactElement {
   const [viewport] = useViewport();
   const dispatch = useAppDispatch();
   const ordersMeta = useAppSelector(gameOrdersMeta);
-  const commands = useAppSelector(
-    (state) => state.game.commands.mapCommands.all,
-  );
 
   const device = getDevice(viewport);
   const [scaleMin, scaleMax] = getInitialScaleForDevice(device);
 
-  const deleteCommand = (key) => {
-    dispatch(
-      gameApiSliceActions.deleteCommand({
-        type: "mapCommands",
-        id: "all",
-        command: key,
-      }),
+  const arrows = useAppSelector((state) => state.game.arrows);
+
+  // ideally the arrows would be rendered as FCs declaratively,
+  // rather than imperatively through the drawArrow function,
+  // but that's too much work.
+  arrows.forEach((arrow, arrowIdx) => {
+    drawArrow(
+      String(arrowIdx),
+      ArrowType.MOVE,
+      ArrowColor.MOVE,
+      "territory",
+      arrow.to,
+      arrow.from,
     );
-  };
-
-  const commandActions = {
-    DRAW_ARROW: (command) => {
-      const [key, value] = command;
-      const { orderID, arrow } = value.data;
-      drawArrow(
-        orderID,
-        ArrowType.MOVE,
-        ArrowColor.MOVE,
-        "territory",
-        arrow.to,
-        arrow.from,
-      );
-      deleteCommand(key);
-    },
-    REMOVE_ARROW: (command) => {
-      const [key, value] = command;
-      d3.selectAll(`.arrow__${value.data.orderID}`).remove();
-      deleteCommand(key);
-    },
-    INVALID_CLICK: (command) => {
-      const [key, value] = command;
-      const { evt, territoryName } = value.data.click;
-      const territorySelection = d3.select(`#${territoryName}-territory`);
-      const territory: SVGSVGElement = territorySelection.node();
-      if (territory) {
-        const screenCTM = territory.getScreenCTM();
-        if (screenCTM) {
-          const pt = territory.createSVGPoint();
-          pt.x = evt.clientX;
-          pt.y = evt.clientY;
-          const { x, y } = pt.matrixTransform(screenCTM.inverse());
-          territorySelection
-            .append("circle")
-            .attr("cx", x)
-            .attr("cy", y)
-            .attr("r", 6.5)
-            .attr("fill", "red")
-            .attr("fill-opacity", 0.4)
-            .attr("class", "invalid-click");
-          territorySelection
-            .append("circle")
-            .attr("cx", x)
-            .attr("cy", y)
-            .attr("r", 14)
-            .attr("fill", "red")
-            .attr("fill-opacity", 0.2)
-            .attr("class", "invalid-click");
-          setTimeout(() => {
-            d3.selectAll(".invalid-click").remove();
-          }, 100);
-        }
-      }
-      deleteCommand(key);
-    },
-  };
-
-  processNextCommand(commands, commandActions);
+  });
 
   React.useLayoutEffect(() => {
     if (svgElement.current) {
@@ -153,7 +97,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
       dispatch(gameApiSliceActions.updateOrdersMeta(ordersMeta));
     }, 500);
   }, []);
-
+  console.log("Renderd MapController");
   return (
     <div
       style={{

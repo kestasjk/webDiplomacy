@@ -58,6 +58,7 @@ const WDPress: React.FC<WDPressProps> = function ({
   // FIXME: for now, crazily fetch all messages every 1sec
   useInterval(() => {
     if (user && gameID && messages && messages.outstandingRequests === 0) {
+      console.log("Dispatching");
       dispatch(gameApiSliceActions.updateOutstandingMessageRequests(1));
       dispatch(
         fetchGameMessages({

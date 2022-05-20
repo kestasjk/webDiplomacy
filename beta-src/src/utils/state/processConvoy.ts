@@ -1,12 +1,11 @@
 import { current } from "@reduxjs/toolkit";
 import Territory from "../../enums/map/variants/classic/Territory";
 import OrderClass from "../../models/OrderClass";
-import { GameCommand } from "../../state/interfaces/GameCommands";
 import updateOrdersMeta from "./updateOrdersMeta";
-import setCommand from "./setCommand";
+import invalidClick from "../map/invalidClick";
 
 /* eslint-disable no-param-reassign */
-export default function processConvoy(state): void {
+export default function processConvoy(state, evt): void {
   const {
     board,
     data: {
@@ -89,23 +88,11 @@ export default function processConvoy(state): void {
               }
             });
             updateOrdersMeta(state, updates);
-            const command: GameCommand = {
-              command: "MOVE",
-            };
-            setCommand(
-              state,
-              command,
-              "territoryCommands",
-              Territory[order.toTerritory],
-            );
           }
         }
       }
       return;
     }
   }
-  const command: GameCommand = {
-    command: "INVALID_CLICK",
-  };
-  setCommand(state, command, "territoryCommands", Territory[order.toTerritory]);
+  invalidClick(evt, Territory[order.toTerritory]); // not sure if this is the right specification of Territory
 }

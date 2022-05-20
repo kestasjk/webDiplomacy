@@ -3,15 +3,18 @@ import { useTheme } from "@mui/material/styles";
 import UIState from "../../../enums/UIState";
 import WDUnitController from "../../controllers/WDUnitController";
 import { GameIconProps } from "../../../interfaces/Icons";
+import WDArmyIcon from "./WDArmyIcon";
+import { useAppSelector } from "../../../state/hooks";
+import { gameUnitState } from "../../../state/game/game-api-slice";
 
 const WDUnit: React.FC<GameIconProps> = function ({
   height = 50,
-  iconState = UIState.NONE,
   id = undefined,
   meta,
   viewBox,
   width = 50,
   type,
+  iconState,
 }): React.ReactElement {
   const theme = useTheme();
 
@@ -23,7 +26,7 @@ const WDUnit: React.FC<GameIconProps> = function ({
       width={width}
       viewBox={viewBox}
     >
-      <WDUnitController meta={meta} initialIconState={iconState} type={type} />
+      <WDUnitController meta={meta} type={type} iconState={iconState} />
     </svg>
   );
 };

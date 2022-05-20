@@ -35,6 +35,7 @@ const initialState: GameState = {
   },
   ordersMeta: {},
   ownUnits: [],
+  units: [],
   maps: {
     territoryToUnit: {},
     unitToOrder: {},
@@ -43,11 +44,6 @@ const initialState: GameState = {
     territoryToEnum: {},
   },
   territoriesMeta: {},
-  commands: {
-    mapCommands: {},
-    territoryCommands: {},
-    unitCommands: {},
-  },
   overview: {
     alternatives: "",
     anon: "Yes",
@@ -149,6 +145,9 @@ const initialState: GameState = {
     time: 0,
     outstandingRequests: 0,
   },
+  unitState: {},
+  buildPopover: [],
+  arrows: [],
 };
 
 export default initialState;

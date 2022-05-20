@@ -33,6 +33,7 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
   );
   const messageComponents = filteredMessages.map((message: GameMessage) => (
     <WDMessage
+      key={`${message.timeSent}:${message.fromCountryID}:${message.toCountryID}:${message.message}`}
       message={message}
       userCountry={userCountry}
       countries={countries}
