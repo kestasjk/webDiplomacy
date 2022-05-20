@@ -1,4 +1,5 @@
 import { current } from "@reduxjs/toolkit";
+import { GameCommand } from "../../../../state/interfaces/GameCommands";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../../../state/interfaces/GameOverviewResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
@@ -8,8 +9,10 @@ import OrdersMeta from "../../../../state/interfaces/SavedOrders";
 import highlightMapTerritoriesBasedOnStatuses from "../../../map/highlightMapTerritoriesBasedOnStatuses";
 import getAvailableOrder from "../../getAvailableOrder";
 import resetOrder from "../../resetOrder";
+import setCommand from "../../setCommand";
 import startNewOrder from "../../startNewOrder";
 import updateOrdersMeta from "../../updateOrdersMeta";
+import Territory from "../../../../enums/map/variants/classic/Territory";
 
 /* eslint-disable no-param-reassign */
 export default function processUnitClick(state, clickData) {
@@ -52,7 +55,16 @@ export default function processUnitClick(state, clickData) {
     return;
   }
   const unitType = units[clickData.payload.unitID].type;
-  state.isFleetClicked = unitType === "Fleet";
+
+  if (unitType === "Fleet" && ownUnits.includes(clickData.payload.unitID)) {
+    const command: GameCommand = {
+      command: "ENABLE_COAST",
+    };
+
+    maps.coastalTerritories.forEach((coast) => {
+      setCommand(state, command, "territoryCommands", Territory[coast]);
+    });
+  }
 
   const now = Date.now();
   let inProgress = orderInProgress;

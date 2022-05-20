@@ -150,7 +150,6 @@ const initialState: GameState = {
     pressType: "",
     phase: "",
   },
-  isFleetClicked: false,
   notifications: [],
   lastUnitClick: 0,
 };

@@ -37,20 +37,18 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
 
   const [territoryStrokeOpacity, setTerritoryStrokeOpacity] = React.useState(1);
 
+  const [coastalClickable, setCoastalClickable] = React.useState(
+    territoryMapData.type === "coast" ? "no-pointer-events" : "",
+  );
+
   const [units, setUnits] = React.useState<Units>({});
 
   const commands = useAppSelector(
     (state) => state.game.commands.territoryCommands[territoryMapData.name],
   );
 
-  const isFleetClicked = useAppSelector((state) => state.game.isFleetClicked);
-
   let userCountry = useAppSelector(
     (state) => state.game.overview.user.member.country,
-  );
-
-  const coastalTerritories = useAppSelector(
-    (state) => state.game.maps.coastalTerritories,
   );
 
   userCountry = countryMap[userCountry];
@@ -89,6 +87,16 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       territoryMapData.type === "water"
         ? setTerritoryFill("none")
         : setCapturedHighlight(value.data?.country);
+      deleteCommand(key);
+    },
+    DISABLE_COAST: (command) => {
+      const [key] = command;
+      setCoastalClickable("no-pointer-events");
+      deleteCommand(key);
+    },
+    ENABLE_COAST: (command) => {
+      const [key] = command;
+      setCoastalClickable("");
       deleteCommand(key);
     },
     HOLD: (command) => {
@@ -189,11 +197,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       width={territoryMapData.width}
       x={territoryMapData.x}
       y={territoryMapData.y}
-      className={
-        coastalTerritories.includes(territoryMapData.name) && !isFleetClicked
-          ? "no-pointer-events"
-          : ""
-      }
+      className={coastalClickable}
     >
       <g onClick={(e) => clickAction(e, "territory")}>
         {territoryMapData.texture?.texture && (
@@ -209,7 +213,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         <path
           d={territoryMapData.path}
           fill={
-            coastalTerritories.includes(territoryMapData.name)
+            territoryMapData.type === "coast"
               ? "rgba(0, 0, 0, .001)"
               : territoryFill
           }

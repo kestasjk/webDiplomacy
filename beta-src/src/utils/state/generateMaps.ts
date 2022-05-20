@@ -1,7 +1,6 @@
 import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
 import GameDataResponse from "../../state/interfaces/GameDataResponse";
 import GameStateMaps from "../../state/interfaces/GameStateMaps";
-import Territory from "../../enums/map/variants/classic/Territory";
 
 export default function generateMaps(
   data: GameDataResponse["data"],
@@ -27,7 +26,7 @@ export default function generateMaps(
   Object.entries(TerritoryMap)
     .filter(([, territory]) => territory.parent !== undefined)
     .forEach(([, { territory }]) => {
-      coastalTerritories.push(Territory[territory]);
+      coastalTerritories.push(territory);
     });
 
   currentOrders?.forEach(({ id, unitID }) => {
