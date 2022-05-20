@@ -47,7 +47,7 @@ function accumulateMoveOrderArrows(
         // console.log(arrows[0]);
 
         if (order.viaConvoy === "Yes") {
-          // TODO
+          // TODO need to distinguish via vs nonvia orders??
         }
       }
     });

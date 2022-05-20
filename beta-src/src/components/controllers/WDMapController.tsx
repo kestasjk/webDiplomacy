@@ -38,6 +38,12 @@ const getInitialScaleForDevice = (device: Device): number[] => {
 const mapOriginalWidth = 6010;
 const mapOriginalHeight = 3005;
 
+// TODO big spaghetti to unify webdip's historical representation
+// with webdip's live representation
+// and with ordersMeta.
+// into one single set of data about orders and units that we can
+// pass down so that everything else below us renders functionally
+// based on that.
 const WDMapController: React.FC = function (): React.ReactElement {
   const svgElement = React.useRef<SVGSVGElement>(null);
   const [viewport] = useViewport();
@@ -145,10 +151,6 @@ const WDMapController: React.FC = function (): React.ReactElement {
       ];
     }
 
-    // TODO this is a bit horrible. Let's move this somewhere or put some API
-    // on getting data from the status and/or data and move this there?
-    // Convert from webdip's historical representation to webdip's
-    // live representation of units
     const phaseHistorical =
       state.game.status.phases[state.game.viewedPhaseState.viewedPhaseIdx];
     const unitsHistorical = phaseHistorical.units;

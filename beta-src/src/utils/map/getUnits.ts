@@ -24,7 +24,7 @@ export default function getUnits(
   const unitsToDraw: Unit[] = [];
   Object.values(units).forEach((unit) => {
     const territory = territories[unit.terrID];
-    /* TODO break this for now 
+    /* TODO break this for now, need to fix declaratively to get retreats to display properly
     const territoryStatus = territoryStatuses.find((t) => unit.terrID === t.id);
     const territoryHasMultipleUnits = Object.values(units).filter(
       (u) => u.terrID === unit.terrID,
