@@ -135,7 +135,7 @@ const UNPLAYABLE_DATA = [
   UNPLAYABLE_LAND7,
   UNPLAYABLE_LAND8,
 ];
-const SEA_DATA = [
+const PLAYABLE_DATA = [
   ADRIATIC_SEA,
   AEGEAN_SEA,
   BALTIC_SEA,
@@ -158,8 +158,6 @@ const SEA_DATA = [
   SKAGERRACK2,
   TYRRHENIAN_SEA,
   WESTERN_MEDITERRANEAN,
-];
-const LAND_DATA = [
   ALBANIA,
   ANKARA,
   APULIA,
@@ -241,19 +239,9 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
       />,
     );
   });
-  const seaTerritories: React.ReactElement[] = [];
-  SEA_DATA.forEach((data) => {
-    seaTerritories.push(
-      <WDTerritory
-        territoryMapData={data}
-        units={units}
-        key={`${data.name}-territory`}
-      />,
-    );
-  });
-  const landTerritories: React.ReactElement[] = [];
-  LAND_DATA.forEach((data) => {
-    landTerritories.push(
+  const playableTerritories: React.ReactElement[] = [];
+  PLAYABLE_DATA.forEach((data) => {
+    playableTerritories.push(
       <WDTerritory
         territoryMapData={data}
         units={units}
@@ -265,8 +253,7 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
   return (
     <g id="wD-boardmap-v10.3.4 1" clipPath="url(#clip0_3405_33911)">
       <g id="unplayable">{unplayableTerritories}</g>
-      <g id="sea">{seaTerritories}</g>
-      <g id="outlines">{landTerritories}</g>
+      <g id="playableTerritories">{playableTerritories}</g>
     </g>
   );
 };
