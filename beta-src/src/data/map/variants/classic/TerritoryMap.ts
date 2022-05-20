@@ -1,5 +1,85 @@
 import Territory from "../../../../enums/map/variants/classic/Territory";
 import UnitSlotName from "../../../../types/map/UnitSlotName";
+import {
+  ALBANIA,
+  ANKARA,
+  APULIA,
+  ARMENIA,
+  BELGIUM,
+  BERLIN,
+  BOHEMIA,
+  BREST,
+  BUDAPEST,
+  BULGARIA,
+  BURGUNDY,
+  CLYDE,
+  CONSTANTINOPLE,
+  DENMARK,
+  EDINBURGH,
+  FINLAND,
+  GALICIA,
+  GASCONY,
+  GREECE,
+  HOLLAND,
+  KIEL,
+  LIVERPOOL,
+  LIVONIA,
+  LONDON,
+  MARSEILLES,
+  MOSCOW,
+  MUNICH,
+  NAPLES,
+  NORTH_AFRICA,
+  NORWAY,
+  PARIS,
+  PICARDY,
+  PIEDMONT,
+  PORTUGAL,
+  PRUSSIA,
+  ROME,
+  RUHR,
+  RUMANIA,
+  SAINT_PETERSBURG,
+  SERBIA,
+  SEVASTOPOL,
+  SILESIA,
+  SMYRNA,
+  SPAIN,
+  SWEDEN,
+  SYRIA,
+  TRIESTE,
+  TUNIS,
+  TUSCANY,
+  TYROLIA,
+  UKRAINE,
+  VIENNA,
+  VENICE,
+  WALES,
+  WARSAW,
+  YORK,
+} from "../../land/LandTerritoriesMapData";
+import {
+  ADRIATIC_SEA,
+  AEGEAN_SEA,
+  BALTIC_SEA,
+  BARENTS_SEA,
+  BLACK_SEA,
+  EASTERN_MEDITERRANEAN,
+  ENGLISH_CHANNEL,
+  GULF_OF_BOTHNIA,
+  GULF_OF_LYONS,
+  HELIGOLAND_BIGHT,
+  IONIAN_SEA,
+  IRISH_SEA,
+  MIDDLE_ATLANTIC,
+  NORTH_ATLANTIC,
+  NORTH_SEA,
+  NORWEGIAN_SEA,
+  SKAGERRACK,
+  TYRRHENIAN_SEA,
+  WESTERN_MEDITERRANEAN,
+} from "../../sea/SeaTerritoriesMapData";
+import { TerritoryMapData } from "../../../../interfaces";
 
 export interface MTerritory {
   parent?: Territory;
@@ -7,6 +87,7 @@ export interface MTerritory {
   territoryName: string;
   parentName?: string;
   unitSlotName: UnitSlotName;
+  territoryMapData: TerritoryMapData;
 }
 
 type ITerritoryMap = {
@@ -14,383 +95,458 @@ type ITerritoryMap = {
 };
 
 /**
- * This file maps territory names to local app enums.
+ * This file maps territory names to local app enums and map data.
  */
-const TerritoryMap: ITerritoryMap = {
+const territoryMapByWebdipName: ITerritoryMap = {
   Clyde: {
     territory: Territory.CLYDE,
     territoryName: "CLYDE",
     unitSlotName: "main",
+    territoryMapData: CLYDE,
   },
   Edinburgh: {
     territory: Territory.EDINBURGH,
     territoryName: "EDINBURGH",
     unitSlotName: "main",
+    territoryMapData: EDINBURGH,
   },
   Liverpool: {
     territory: Territory.LIVERPOOL,
     territoryName: "LIVERPOOL",
     unitSlotName: "main",
+    territoryMapData: LIVERPOOL,
   },
   Yorkshire: {
     territory: Territory.YORK,
     territoryName: "YORK",
     unitSlotName: "main",
+    territoryMapData: YORK,
   },
   Wales: {
     territory: Territory.WALES,
     territoryName: "WALES",
     unitSlotName: "main",
+    territoryMapData: WALES,
   },
   London: {
     territory: Territory.LONDON,
     territoryName: "LONDON",
     unitSlotName: "main",
+    territoryMapData: LONDON,
   },
   Portugal: {
     territory: Territory.PORTUGAL,
     territoryName: "PORTUGAL",
     unitSlotName: "main",
+    territoryMapData: PORTUGAL,
   },
   Spain: {
     territory: Territory.SPAIN,
     territoryName: "SPAIN",
     unitSlotName: "main",
+    territoryMapData: SPAIN,
   },
   "North Africa": {
     territory: Territory.NORTH_AFRICA,
     territoryName: "NORTH_AFRICA",
     unitSlotName: "main",
+    territoryMapData: NORTH_AFRICA,
   },
   Tunis: {
     territory: Territory.TUNIS,
     territoryName: "TUNIS",
     unitSlotName: "main",
+    territoryMapData: TUNIS,
   },
   Naples: {
     territory: Territory.NAPLES,
     territoryName: "NAPLES",
     unitSlotName: "main",
+    territoryMapData: NAPLES,
   },
   Rome: {
     territory: Territory.ROME,
     territoryName: "ROME",
     unitSlotName: "main",
+    territoryMapData: ROME,
   },
   Tuscany: {
     territory: Territory.TUSCANY,
     territoryName: "TUSCANY",
     unitSlotName: "main",
+    territoryMapData: TUSCANY,
   },
   Piedmont: {
     territory: Territory.PIEDMONT,
     territoryName: "PIEDMONT",
     unitSlotName: "main",
+    territoryMapData: PIEDMONT,
   },
   Venice: {
     territory: Territory.VENICE,
     territoryName: "VENICE",
     unitSlotName: "main",
+    territoryMapData: VENICE,
   },
   Apulia: {
     territory: Territory.APULIA,
     territoryName: "APULIA",
     unitSlotName: "main",
+    territoryMapData: APULIA,
   },
   Greece: {
     territory: Territory.GREECE,
     territoryName: "GREECE",
     unitSlotName: "main",
+    territoryMapData: GREECE,
   },
   Albania: {
     territory: Territory.ALBANIA,
     territoryName: "ALBANIA",
     unitSlotName: "main",
+    territoryMapData: ALBANIA,
   },
   Serbia: {
     territory: Territory.SERBIA,
     territoryName: "SERBIA",
     unitSlotName: "main",
+    territoryMapData: SERBIA,
   },
   Bulgaria: {
     territory: Territory.BULGARIA,
     territoryName: "BULGARIA",
     unitSlotName: "main",
+    territoryMapData: BULGARIA,
   },
   Rumania: {
     territory: Territory.RUMANIA,
     territoryName: "RUMANIA",
     unitSlotName: "main",
+    territoryMapData: RUMANIA,
   },
   Constantinople: {
     territory: Territory.CONSTANTINOPLE,
     territoryName: "CONSTANTINOPLE",
     unitSlotName: "main",
+    territoryMapData: CONSTANTINOPLE,
   },
   Smyrna: {
     territory: Territory.SMYRNA,
     territoryName: "SMYRNA",
     unitSlotName: "main",
+    territoryMapData: SMYRNA,
   },
   Ankara: {
     territory: Territory.ANKARA,
     territoryName: "ANKARA",
     unitSlotName: "main",
+    territoryMapData: ANKARA,
   },
   Armenia: {
     territory: Territory.ARMENIA,
     territoryName: "ARMENIA",
     unitSlotName: "main",
+    territoryMapData: ARMENIA,
   },
   Syria: {
     territory: Territory.SYRIA,
     territoryName: "SYRIA",
     unitSlotName: "main",
+    territoryMapData: SYRIA,
   },
   Sevastopol: {
     territory: Territory.SEVASTOPOL,
     territoryName: "SEVASTOPOL",
     unitSlotName: "main",
+    territoryMapData: SEVASTOPOL,
   },
   Ukraine: {
     territory: Territory.UKRAINE,
     territoryName: "UKRAINE",
     unitSlotName: "main",
+    territoryMapData: UKRAINE,
   },
   Warsaw: {
     territory: Territory.WARSAW,
     territoryName: "WARSAW",
     unitSlotName: "main",
+    territoryMapData: WARSAW,
   },
   Livonia: {
     territory: Territory.LIVONIA,
     territoryName: "LIVONIA",
     unitSlotName: "main",
+    territoryMapData: LIVONIA,
   },
   Moscow: {
     territory: Territory.MOSCOW,
     territoryName: "MOSCOW",
     unitSlotName: "main",
+    territoryMapData: MOSCOW,
   },
   "St. Petersburg": {
     territory: Territory.SAINT_PETERSBURG,
     territoryName: "SAINT_PETERSBURG",
     unitSlotName: "main",
+    territoryMapData: SAINT_PETERSBURG,
   },
   Finland: {
     territory: Territory.FINLAND,
     territoryName: "FINLAND",
     unitSlotName: "main",
+    territoryMapData: FINLAND,
   },
   Sweden: {
     territory: Territory.SWEDEN,
     territoryName: "SWEDEN",
     unitSlotName: "main",
+    territoryMapData: SWEDEN,
   },
   Norway: {
     territory: Territory.NORWAY,
     territoryName: "NORWAY",
     unitSlotName: "main",
+    territoryMapData: NORWAY,
   },
   Denmark: {
     territory: Territory.DENMARK,
     territoryName: "DENMARK",
     unitSlotName: "main",
+    territoryMapData: DENMARK,
   },
   Kiel: {
     territory: Territory.KIEL,
     territoryName: "KIEL",
     unitSlotName: "main",
+    territoryMapData: KIEL,
   },
   Berlin: {
     territory: Territory.BERLIN,
     territoryName: "BERLIN",
     unitSlotName: "main",
+    territoryMapData: BERLIN,
   },
   Prussia: {
     territory: Territory.PRUSSIA,
     territoryName: "PRUSSIA",
     unitSlotName: "main",
+    territoryMapData: PRUSSIA,
   },
   Silesia: {
     territory: Territory.SILESIA,
     territoryName: "SILESIA",
     unitSlotName: "main",
+    territoryMapData: SILESIA,
   },
   Munich: {
     territory: Territory.MUNICH,
     territoryName: "MUNICH",
     unitSlotName: "main",
+    territoryMapData: MUNICH,
   },
   Ruhr: {
     territory: Territory.RUHR,
     territoryName: "RUHR",
     unitSlotName: "main",
+    territoryMapData: RUHR,
   },
   Holland: {
     territory: Territory.HOLLAND,
     territoryName: "HOLLAND",
     unitSlotName: "main",
+    territoryMapData: HOLLAND,
   },
   Belgium: {
     territory: Territory.BELGIUM,
     territoryName: "BELGIUM",
     unitSlotName: "main",
+    territoryMapData: BELGIUM,
   },
   Picardy: {
     territory: Territory.PICARDY,
     territoryName: "PICARDY",
     unitSlotName: "main",
+    territoryMapData: PICARDY,
   },
   Brest: {
     territory: Territory.BREST,
     territoryName: "BREST",
     unitSlotName: "main",
+    territoryMapData: BREST,
   },
   Paris: {
     territory: Territory.PARIS,
     territoryName: "PARIS",
     unitSlotName: "main",
+    territoryMapData: PARIS,
   },
   Burgundy: {
     territory: Territory.BURGUNDY,
     territoryName: "BURGUNDY",
     unitSlotName: "main",
+    territoryMapData: BURGUNDY,
   },
   Marseilles: {
     territory: Territory.MARSEILLES,
     territoryName: "MARSEILLES",
     unitSlotName: "main",
+    territoryMapData: MARSEILLES,
   },
   Gascony: {
     territory: Territory.GASCONY,
     territoryName: "GASCONY",
     unitSlotName: "main",
+    territoryMapData: GASCONY,
   },
   "Barents Sea": {
     territory: Territory.BARENTS_SEA,
     territoryName: "BARENTS_SEA",
     unitSlotName: "main",
+    territoryMapData: BARENTS_SEA,
   },
   "Norwegian Sea": {
     territory: Territory.NORWEGIAN_SEA,
     territoryName: "NORWEGIAN_SEA",
     unitSlotName: "main",
+    territoryMapData: NORWEGIAN_SEA,
   },
   "North Sea": {
     territory: Territory.NORTH_SEA,
     territoryName: "NORTH_SEA",
     unitSlotName: "main",
+    territoryMapData: NORTH_SEA,
   },
   Skagerrack: {
     territory: Territory.SKAGERRACK,
     territoryName: "SKAGERRACK",
     unitSlotName: "main",
+    territoryMapData: SKAGERRACK,
   },
   "Heligoland Bight": {
     territory: Territory.HELIGOLAND_BIGHT,
     territoryName: "HELIGOLAND_BIGHT",
     unitSlotName: "main",
+    territoryMapData: HELIGOLAND_BIGHT,
   },
   "Baltic Sea": {
     territory: Territory.BALTIC_SEA,
     territoryName: "BALTIC_SEA",
     unitSlotName: "main",
+    territoryMapData: BALTIC_SEA,
   },
   "Gulf of Bothnia": {
     territory: Territory.GULF_OF_BOTHNIA,
     territoryName: "GULF_OF_BOTHNIA",
     unitSlotName: "main",
+    territoryMapData: GULF_OF_BOTHNIA,
   },
   "North Atlantic Ocean": {
     territory: Territory.NORTH_ATLANTIC,
     territoryName: "NORTH_ATLANTIC",
     unitSlotName: "main",
+    territoryMapData: NORTH_ATLANTIC,
   },
   "Irish Sea": {
     territory: Territory.IRISH_SEA,
     territoryName: "IRISH_SEA",
     unitSlotName: "main",
+    territoryMapData: IRISH_SEA,
   },
   "English Channel": {
     territory: Territory.ENGLISH_CHANNEL,
     territoryName: "ENGLISH_CHANNEL",
     unitSlotName: "main",
+    territoryMapData: ENGLISH_CHANNEL,
   },
   "Mid-Atlantic Ocean": {
     territory: Territory.MIDDLE_ATLANTIC,
     territoryName: "MIDDLE_ATLANTIC",
     unitSlotName: "main",
+    territoryMapData: MIDDLE_ATLANTIC,
   },
   "Western Mediterranean": {
     territory: Territory.WESTERN_MEDITERRANEAN,
     territoryName: "WESTERN_MEDITERRANEAN",
     unitSlotName: "main",
+    territoryMapData: WESTERN_MEDITERRANEAN,
   },
   "Gulf of Lyons": {
     territory: Territory.GULF_OF_LYONS,
     territoryName: "GULF_OF_LYONS",
     unitSlotName: "main",
+    territoryMapData: GULF_OF_LYONS,
   },
   "Tyrrhenian Sea": {
     territory: Territory.TYRRHENIAN_SEA,
     territoryName: "TYRRHENIAN_SEA",
     unitSlotName: "main",
+    territoryMapData: TYRRHENIAN_SEA,
   },
   "Ionian Sea": {
     territory: Territory.IONIAN_SEA,
     territoryName: "IONIAN_SEA",
     unitSlotName: "main",
+    territoryMapData: IONIAN_SEA,
   },
   "Adriatic Sea": {
     territory: Territory.ADRIATIC_SEA,
     territoryName: "ADRIATIC_SEA",
     unitSlotName: "main",
+    territoryMapData: ADRIATIC_SEA,
   },
   "Aegean Sea": {
     territory: Territory.AEGEAN_SEA,
     territoryName: "AEGEAN_SEA",
     unitSlotName: "main",
+    territoryMapData: AEGEAN_SEA,
   },
   "Eastern Mediterranean": {
     territory: Territory.EASTERN_MEDITERRANEAN,
     territoryName: "EASTERN_MEDITERRANEAN",
     unitSlotName: "main",
+    territoryMapData: EASTERN_MEDITERRANEAN,
   },
   "Black Sea": {
     territory: Territory.BLACK_SEA,
     territoryName: "BLACK_SEA",
     unitSlotName: "main",
+    territoryMapData: BLACK_SEA,
   },
   Tyrolia: {
     territory: Territory.TYROLIA,
     territoryName: "TYROLIA",
     unitSlotName: "main",
+    territoryMapData: TYROLIA,
   },
   Bohemia: {
     territory: Territory.BOHEMIA,
     territoryName: "BOHEMIA",
     unitSlotName: "main",
+    territoryMapData: BOHEMIA,
   },
   Vienna: {
     territory: Territory.VIENNA,
     territoryName: "VIENNA",
     unitSlotName: "main",
+    territoryMapData: VIENNA,
   },
   Trieste: {
     territory: Territory.TRIESTE,
     territoryName: "TRIESTE",
     unitSlotName: "main",
+    territoryMapData: TRIESTE,
   },
   Budapest: {
     territory: Territory.BUDAPEST,
     territoryName: "BUDAPEST",
     unitSlotName: "main",
+    territoryMapData: BUDAPEST,
   },
   Galicia: {
     territory: Territory.GALICIA,
     territoryName: "GALICIA",
     unitSlotName: "main",
+    territoryMapData: GALICIA,
   },
   "Spain (North Coast)": {
     parent: Territory.SPAIN,
@@ -398,6 +554,7 @@ const TerritoryMap: ITerritoryMap = {
     territory: Territory.SPAIN_NORTH_COAST,
     territoryName: "SPAIN_NORTH_COAST",
     unitSlotName: "nc",
+    territoryMapData: SPAIN,
   },
   "Spain (South Coast)": {
     parent: Territory.SPAIN,
@@ -405,6 +562,7 @@ const TerritoryMap: ITerritoryMap = {
     territory: Territory.SPAIN_SOUTH_COAST,
     territoryName: "SPAIN_SOUTH_COAST",
     unitSlotName: "sc",
+    territoryMapData: SPAIN,
   },
   "St. Petersburg (North Coast)": {
     parent: Territory.SAINT_PETERSBURG,
@@ -412,6 +570,7 @@ const TerritoryMap: ITerritoryMap = {
     territory: Territory.SAINT_PETERSBURG_NORTH_COAST,
     territoryName: "SAINT_PETERSBURG_NORTH_COAST",
     unitSlotName: "nc",
+    territoryMapData: SAINT_PETERSBURG,
   },
   "St. Petersburg (South Coast)": {
     parent: Territory.SAINT_PETERSBURG,
@@ -419,6 +578,7 @@ const TerritoryMap: ITerritoryMap = {
     territory: Territory.SAINT_PETERSBURG_SOUTH_COAST,
     territoryName: "SAINT_PETERSBURG_SOUTH_COAST",
     unitSlotName: "sc",
+    territoryMapData: SAINT_PETERSBURG,
   },
   "Bulgaria (North Coast)": {
     parent: Territory.BULGARIA,
@@ -426,6 +586,7 @@ const TerritoryMap: ITerritoryMap = {
     territory: Territory.BULGARIA_NORTH_COAST,
     territoryName: "BULGARIA_NORTH_COAST",
     unitSlotName: "nc",
+    territoryMapData: BULGARIA,
   },
   "Bulgaria (South Coast)": {
     parent: Territory.BULGARIA,
@@ -433,7 +594,20 @@ const TerritoryMap: ITerritoryMap = {
     territory: Territory.BULGARIA_SOUTH_COAST,
     territoryName: "BULGARIA_SOUTH_COAST",
     unitSlotName: "sc",
+    territoryMapData: BULGARIA,
   },
+};
+
+const territoryMapByEnumName = Object.fromEntries(
+  Object.entries(territoryMapByWebdipName).map(([key, data]) => [
+    Territory[data.territory],
+    data,
+  ]),
+);
+
+const TerritoryMap: ITerritoryMap = {
+  ...territoryMapByWebdipName,
+  ...territoryMapByEnumName,
 };
 
 export default TerritoryMap;

@@ -46,7 +46,8 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
       state.ownUnits.push(unit.id);
     }
   });
-  state.units = getUnits(data, members);
+  state.units = getUnits(data.territories, data.units, members);
+
   state.territoriesMeta = getTerritoriesMeta(data);
 
   const numUnsavedOrders = Object.values(state.ordersMeta).reduce(

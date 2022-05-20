@@ -12,6 +12,7 @@ import TerritoriesMeta from "./TerritoriesState";
 import UserActivity from "./UserActivity";
 import { Unit } from "../../utils/map/getUnits";
 import UIState from "../../enums/UIState";
+import ViewedPhaseState from "./ViewedPhaseState";
 
 export type ApiStatus = "idle" | "loading" | "succeeded" | "failed";
 
@@ -30,6 +31,7 @@ export interface GameState {
   ownUnits: string[];
   units: Unit[];
   territoriesMeta: TerritoriesMeta;
+  viewedPhaseState: ViewedPhaseState;
   status: GameStatusResponse;
   messages: GameMessages;
 

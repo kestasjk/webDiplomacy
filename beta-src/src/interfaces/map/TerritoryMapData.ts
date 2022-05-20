@@ -8,5 +8,6 @@ export interface TerritoryMapData extends Territory, BBox {
   path: string;
   texture?: Texture;
   unitSlots?: UnitSlot[];
+  unitSlotsBySlotName: { [key: string]: UnitSlot };
   viewBox?: string;
 }

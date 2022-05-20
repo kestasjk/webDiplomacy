@@ -14,6 +14,8 @@ import {
 import drawArrow from "../../utils/map/drawArrow";
 import ArrowType from "../../enums/ArrowType";
 import ArrowColor from "../../enums/ArrowColor";
+import getUnits from "../../utils/map/getUnits";
+import { IOrderDataHistorical, IUnit } from "../../models/Interfaces";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -42,6 +44,116 @@ const WDMapController: React.FC = function (): React.ReactElement {
   const [scaleMin, scaleMax] = getInitialScaleForDevice(device);
 
   const arrows = useAppSelector((state) => state.game.arrows);
+  const [phase, units, orders, territories] = useAppSelector((state) => {
+    if (
+      state.game.viewedPhaseState.viewedPhaseIdx >=
+      state.game.status.phases.length - 1
+    ) {
+      // Convert from our internal order representation to webdip's
+      // historical representation of orders so that we draw
+      // our internal orders and webdip's historical orders
+      // exactly the same way.
+
+      const ordersHistorical: IOrderDataHistorical[] = [];
+      Object.values(state.game.ordersMeta).forEach((orderMeta, orderID) => {
+        let fromTerrID = 0;
+        let toTerrID = 0;
+        let terrID = 0;
+        let type = "";
+        let unitType = "";
+        let viaConvoy;
+
+        let { originalOrder } = orderMeta;
+        if (!originalOrder && state.game.data.data.currentOrders) {
+          originalOrder = state.game.data.data.currentOrders[orderID];
+        }
+        if (originalOrder) {
+          if (originalOrder.fromTerrID) {
+            fromTerrID = Number(originalOrder.fromTerrID);
+          }
+          if (originalOrder.toTerrID) {
+            toTerrID = Number(originalOrder.toTerrID);
+          }
+          const terrIDString =
+            state.game.maps.unitToTerritory[originalOrder.unitID];
+          if (terrIDString) {
+            terrID = Number(terrIDString);
+          }
+          type = originalOrder.type;
+          unitType = state.game.data.data.units[originalOrder.unitID].type;
+          if (originalOrder.viaConvoy === "Yes") {
+            viaConvoy = "Yes";
+          } else {
+            viaConvoy = "No";
+          }
+        }
+        if (orderMeta.update) {
+          if (orderMeta.update.fromTerrID !== undefined) {
+            fromTerrID = Number(orderMeta.update.fromTerrID);
+          }
+          toTerrID = Number(orderMeta.update.toTerrID);
+          type = orderMeta.update.type;
+          if (orderMeta.update.viaConvoy === "Yes") {
+            viaConvoy = "Yes";
+          } else {
+            viaConvoy = "No";
+          }
+        }
+        const orderHistorical: IOrderDataHistorical = {
+          countryID: state.game.status.countryID.toString(),
+          dislodged: "No",
+          fromTerrID,
+          phase: state.game.overview.phase,
+          success: "Yes",
+          terrID,
+          toTerrID,
+          turn: state.game.overview.turn,
+          type,
+          unitType,
+          viaConvoy,
+        };
+        ordersHistorical.push(orderHistorical);
+      });
+      console.log("Ordershistorical");
+      console.log(ordersHistorical);
+
+      return [
+        state.game.overview.phase,
+        state.game.units,
+        ordersHistorical,
+        state.game.data.data.territories,
+      ];
+    }
+
+    // TODO this is a bit horrible. Let's move this somewhere or put some API
+    // on getting data from the status and/or data and move this there?
+    // Convert from webdip's historical representation to webdip's
+    // live representation of units
+    const phaseHistorical =
+      state.game.status.phases[state.game.viewedPhaseState.viewedPhaseIdx];
+    const unitsHistorical = phaseHistorical.units;
+    const unitsConverted: { [key: string]: IUnit } = {};
+    unitsHistorical.forEach((unitHistorical, index) => {
+      unitsConverted[index] = {
+        id: index.toString(),
+        countryID: unitHistorical.countryID.toString(),
+        type: unitHistorical.unitType,
+        terrID: unitHistorical.terrID.toString(),
+      };
+    });
+    const unitsLive = getUnits(
+      state.game.data.data.territories,
+      unitsConverted,
+      state.game.overview.members,
+    );
+    return [
+      phaseHistorical.phase,
+      unitsLive,
+      phaseHistorical.orders,
+      state.game.data.data.territories,
+    ];
+  });
+  const maps = useAppSelector((state) => state.game.maps);
 
   // ideally the arrows would be rendered as FCs declaratively,
   // rather than imperatively through the drawArrow function,
@@ -105,7 +217,14 @@ const WDMapController: React.FC = function (): React.ReactElement {
         height: viewport.height,
       }}
     >
-      <WDMap ref={svgElement} />
+      <WDMap
+        ref={svgElement}
+        units={units}
+        phase={phase}
+        orders={orders}
+        maps={maps}
+        territories={territories}
+      />
     </div>
   );
 };

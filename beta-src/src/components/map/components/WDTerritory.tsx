@@ -11,7 +11,6 @@ import {
   gameOrdersMeta,
   gameOverview,
   gameTerritoriesMeta,
-  gameUnits,
   gameUnitState,
 } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
@@ -22,20 +21,22 @@ import WDUnit from "../../ui/units/WDUnit";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
+import { Unit } from "../../../utils/map/getUnits";
 
 interface WDTerritoryProps {
   territoryMapData: TerritoryMapData;
+  units: Unit[];
 }
 
 const WDTerritory: React.FC<WDTerritoryProps> = function ({
   territoryMapData,
+  units,
 }): React.ReactElement {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const territoriesMeta = useAppSelector(gameTerritoriesMeta);
 
   const { user, members } = useAppSelector(gameOverview);
-  const units = useAppSelector(gameUnits);
   const userCountry = countryMap[user.member.country];
 
   const territoryName = territoryMapData.name;
@@ -80,34 +81,36 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         />
       );
     });
+
   const ordersMeta = useAppSelector(gameOrdersMeta);
   Object.values(ordersMeta)
     .filter(
       ({ update }) =>
         update &&
-        update?.type.split(" ")[0] === "Build" && // updates can be something supporting you or moving to this territory???
+        update.type.split(" ")[0] === "Build" && // updates can be something supporting you or moving to this territory???
         update.toTerrID === territoryMeta?.id,
     )
     .forEach(({ update }) => {
       territoryFillOpacity = 0.9;
-      unitFCs.main = ( // FIXME: needs to support coasts
-        <WDUnit
-          id={`${territoryName}-unit`} // n.b. the id here is ref'd by drawOrders, do not change!
-          country={userCountry}
-          meta={{
-            country: userCountry,
-            mappedTerritory: TerritoryMap[territoryName],
-            unit: {
-              id: `${territoryName}-unit`,
-              countryID: "NA",
-              type: update?.type.split(" ")[1] as unknown as string, // Build Army --> Army
-              terrID: territoryMeta?.id || "null",
-            },
-          }}
-          type={update?.type.split(" ")[1] as UnitType}
-          iconState={UIState.BUILD}
-        />
-      );
+      unitFCs.main = // FIXME: needs to support coasts
+        (
+          <WDUnit
+            id={`${territoryName}-unit`} // n.b. the id here is ref'd by drawOrders, do not change!
+            country={userCountry}
+            meta={{
+              country: userCountry,
+              mappedTerritory: TerritoryMap[territoryName],
+              unit: {
+                id: `${territoryName}-unit`,
+                countryID: "NA",
+                type: update?.type.split(" ")[1] as unknown as string, // Build Army --> Army
+                terrID: territoryMeta?.id || "null",
+              },
+            }}
+            type={update?.type.split(" ")[1] as UnitType}
+            iconState={UIState.BUILD}
+          />
+        );
     });
 
   const clickAction = function (evt, clickObject: ClickObjectType) {

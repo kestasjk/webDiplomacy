@@ -44,6 +44,9 @@ const initialState: GameState = {
     territoryToEnum: {},
   },
   territoriesMeta: {},
+  viewedPhaseState: {
+    viewedPhaseIdx: 0,
+  },
   overview: {
     alternatives: "",
     anon: "Yes",

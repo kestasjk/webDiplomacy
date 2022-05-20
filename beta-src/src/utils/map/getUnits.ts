@@ -1,4 +1,6 @@
-import GameDataResponse from "../../state/interfaces/GameDataResponse";
+import GameDataResponse, {
+  APITerritories,
+} from "../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
 import TerritoryMap, {
   MTerritory,
@@ -15,13 +17,14 @@ export interface Unit {
 }
 
 export default function getUnits(
-  data: GameDataResponse["data"],
+  territories: APITerritories,
+  units: { [key: string]: IUnit },
   members: GameOverviewResponse["members"],
 ): Unit[] {
   const unitsToDraw: Unit[] = [];
-  const { contextVars, territories, territoryStatuses, units } = data;
   Object.values(units).forEach((unit) => {
-    let territory = territories[unit.terrID];
+    const territory = territories[unit.terrID];
+    /* TODO break this for now 
     const territoryStatus = territoryStatuses.find((t) => unit.terrID === t.id);
     const territoryHasMultipleUnits = Object.values(units).filter(
       (u) => u.terrID === unit.terrID,
@@ -36,6 +39,7 @@ export default function getUnits(
     ) {
       territory = territories[territoryStatus.occupiedFromTerrID];
     }
+    */
 
     if (territory) {
       const mappedTerritory = TerritoryMap[territory.name];

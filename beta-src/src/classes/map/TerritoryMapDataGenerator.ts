@@ -1,14 +1,28 @@
-import { TerritoryMapData } from "../../interfaces";
+import {
+  BBox,
+  Coordinates,
+  Label,
+  Territory,
+  TerritoryMapData,
+  Texture,
+  UnitSlot,
+} from "../../interfaces";
 import webDiplomacyTheme from "../../webDiplomacyTheme";
 import Country from "../../enums/Country";
 
-interface TerritoryMapDataGeneratorInterface extends TerritoryMapData {
+interface TerritoryMapDataGeneratorInterface extends Territory, BBox {
+  arrowReceiver?: Coordinates;
+  centerPos?: Coordinates;
   country?: Country;
+  fill?: string;
+  labels?: Label[];
+  path: string;
+  texture?: Texture;
+  unitSlots?: UnitSlot[];
+  viewBox?: string;
 }
 
-export default class TerritoryMapDataGenerator
-  implements TerritoryMapDataGeneratorInterface
-{
+export default class TerritoryMapDataGenerator implements TerritoryMapData {
   public abbr: TerritoryMapData["abbr"];
 
   public arrowReceiver: TerritoryMapData["arrowReceiver"];
@@ -28,6 +42,8 @@ export default class TerritoryMapDataGenerator
   public type: TerritoryMapData["type"];
 
   public unitSlots: TerritoryMapData["unitSlots"];
+
+  public unitSlotsBySlotName: TerritoryMapData["unitSlotsBySlotName"];
 
   public width: TerritoryMapData["width"];
 
@@ -66,6 +82,13 @@ export default class TerritoryMapDataGenerator
     this.path = path;
     this.type = type;
     this.unitSlots = unitSlots;
+    this.unitSlotsBySlotName = {};
+    if (this.unitSlots) {
+      this.unitSlots.forEach((unitSlot) => {
+        this.unitSlotsBySlotName[unitSlot.name] = unitSlot;
+      });
+    }
+
     this.width = width;
     this.x = x;
     this.y = y;
@@ -98,6 +121,7 @@ export default class TerritoryMapDataGenerator
       path: this.path,
       type: this.type,
       unitSlots: this.unitSlots,
+      unitSlotsBySlotName: this.unitSlotsBySlotName,
       width: this.width,
       x: this.x,
       y: this.y,

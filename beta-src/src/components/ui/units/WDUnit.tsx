@@ -7,12 +7,13 @@ import WDArmyIcon from "./WDArmyIcon";
 import { useAppSelector } from "../../../state/hooks";
 import { gameUnitState } from "../../../state/game/game-api-slice";
 
+export const UNIT_HEIGHT = 50;
+export const UNIT_WIDTH = 50;
+
 const WDUnit: React.FC<GameIconProps> = function ({
-  height = 50,
   id = undefined,
   meta,
   viewBox,
-  width = 50,
   type,
   iconState,
 }): React.ReactElement {
@@ -21,9 +22,9 @@ const WDUnit: React.FC<GameIconProps> = function ({
   return (
     <svg
       filter={theme.palette.svg.filters.dropShadows[1]}
-      height={height}
+      height={UNIT_HEIGHT}
       id={id}
-      width={width}
+      width={UNIT_WIDTH}
       viewBox={viewBox}
     >
       <WDUnitController meta={meta} type={type} iconState={iconState} />

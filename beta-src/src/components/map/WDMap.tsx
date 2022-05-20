@@ -4,11 +4,24 @@ import CapturableLandTexture from "../../assets/textures/capturable-land.jpeg";
 import WaterTexture from "../../assets/textures/sea-texture.png";
 import WDArrowMarkerDefs from "../../utils/map/WDArrowMarkerDefs";
 import WDBuildContainer from "./components/WDBuildContainer";
+import WDArrowContainer from "./components/WDArrowContainer";
+import { Unit } from "../../utils/map/getUnits";
+import { IOrderDataHistorical } from "../../models/Interfaces";
+import GameStateMaps from "../../state/interfaces/GameStateMaps";
+import { APITerritories } from "../../state/interfaces/GameDataResponse";
+
+interface WDMapProps {
+  units: Unit[];
+  phase: string;
+  orders: IOrderDataHistorical[];
+  maps: GameStateMaps;
+  territories: APITerritories;
+}
 
 const WDMap: React.ForwardRefExoticComponent<
-  React.RefAttributes<SVGSVGElement>
-> = React.forwardRef(
-  (_props, ref): React.ReactElement => (
+  WDMapProps & React.RefAttributes<SVGSVGElement>
+> = React.forwardRef<SVGSVGElement, WDMapProps>(
+  ({ units, phase, orders, maps, territories }, ref): React.ReactElement => (
     <svg
       id="map"
       fill="none"
@@ -21,7 +34,13 @@ const WDMap: React.ForwardRefExoticComponent<
     >
       <g id="full-map-svg">
         <g id="container">
-          <WDBoardMap />
+          <WDBoardMap units={units} />
+          <WDArrowContainer
+            phase={phase}
+            orders={orders}
+            maps={maps}
+            territories={territories}
+          />
           <WDBuildContainer />
         </g>
       </g>
