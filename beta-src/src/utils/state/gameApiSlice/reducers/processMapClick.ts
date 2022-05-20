@@ -13,23 +13,20 @@ import resetOrder from "../../resetOrder";
 import setCommand from "../../setCommand";
 import startNewOrder from "../../startNewOrder";
 import updateOrdersMeta from "../../updateOrdersMeta";
-
-const territorySuffix = {
-  _COAST: "",
-  _NORTH: "",
-  _SOUTH: "",
-};
+import GameStateMaps from "../../../../state/interfaces/GameStateMaps";
 
 /* eslint-disable no-param-reassign */
 export default function processMapClick(state, clickData) {
   const {
     data: { data },
+    maps,
     order,
     ordersMeta,
     overview,
     territoriesMeta,
   }: {
     data: { data: GameDataResponse["data"] };
+    maps: GameStateMaps;
     order: GameState["order"];
     ordersMeta: GameState["ordersMeta"];
     overview: GameState["overview"];
@@ -131,11 +128,7 @@ export default function processMapClick(state, clickData) {
         return Territory[mappedTerritory.territory] === territoryName;
       });
 
-      // This is to get the Parent DOM ID of the coastal territory
-      const territoryNameWithouthCoast = territoryName.replace(
-        /_COAST|_NORTH|_SOUTH/gi,
-        (matched) => territorySuffix[matched],
-      );
+      const territory = territoriesMeta[Territory[territoryName]];
 
       if (canMove) {
         highlightMapTerritoriesBasedOnStatuses(state);
@@ -146,7 +139,7 @@ export default function processMapClick(state, clickData) {
           state,
           command,
           "territoryCommands",
-          territoryNameWithouthCoast,
+          Territory[maps.territoryToEnum[territory.coastParentID]],
         );
         updateOrdersMeta(state, {
           [orderID]: {
