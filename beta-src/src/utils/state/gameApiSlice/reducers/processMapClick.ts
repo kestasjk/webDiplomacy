@@ -24,6 +24,7 @@ export default function processMapClick(state, clickData) {
     ordersMeta,
     overview,
     territoriesMeta,
+    mustDestroyUnitsBuildPhase,
   }: {
     data: { data: GameDataResponse["data"] };
     maps: GameStateMaps;
@@ -31,6 +32,7 @@ export default function processMapClick(state, clickData) {
     ordersMeta: GameState["ordersMeta"];
     overview: GameState["overview"];
     territoriesMeta: GameState["territoriesMeta"];
+    mustDestroyUnitsBuildPhase: GameState["mustDestroyUnitsBuildPhase"];
   } = current(state);
   const {
     inProgress,
@@ -48,7 +50,7 @@ export default function processMapClick(state, clickData) {
   } = overview;
   const { currentOrders } = data;
   const { orderStatus } = member;
-  if (orderStatus.Ready) {
+  if (orderStatus.Ready || mustDestroyUnitsBuildPhase) {
     return;
   }
   const {

@@ -19,7 +19,6 @@ import UpdateOrdersMetaAction from "../../interfaces/state/UpdateOrdersMetaActio
 import SavedOrdersConfirmation from "../../interfaces/state/SavedOrdersConfirmation";
 import OrderSubmission from "../../interfaces/state/OrderSubmission";
 import resetOrder from "../../utils/state/resetOrder";
-import processUnitDoubleClick from "../../utils/state/gameApiSlice/reducers/processUnitDoubleClick";
 import processUnitClick from "../../utils/state/gameApiSlice/reducers/processUnitClick";
 import processMapClick from "../../utils/state/gameApiSlice/reducers/processMapClick";
 import deleteCommand from "../../utils/state/gameApiSlice/reducers/deleteCommand";
@@ -147,7 +146,6 @@ const gameApiSlice = createSlice({
     updateTerritoriesMeta(state, action) {
       state.territoriesMeta = action.payload;
     },
-    processUnitDoubleClick,
     processUnitClick,
     processMapClick,
     deleteCommand,
@@ -231,5 +229,9 @@ export const gameNotifications = ({
 export const userActivity = ({
   game: { activity },
 }: RootState): GameState["activity"] => activity;
+export const mustDestroyUnits = ({
+  game: { mustDestroyUnitsBuildPhase },
+}: RootState): GameState["mustDestroyUnitsBuildPhase"] =>
+  mustDestroyUnitsBuildPhase;
 
 export default gameApiSlice.reducer;

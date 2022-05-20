@@ -1,6 +1,7 @@
 import { current } from "@reduxjs/toolkit";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../../../state/interfaces/GameOverviewResponse";
+import { GameState } from "../../../../state/interfaces/GameState";
 import GameStateMaps from "../../../../state/interfaces/GameStateMaps";
 import OrderState from "../../../../state/interfaces/OrderState";
 import OrdersMeta from "../../../../state/interfaces/SavedOrders";
@@ -19,6 +20,7 @@ export default function processUnitClick(state, clickData) {
     ordersMeta,
     ownUnits,
     overview,
+    mustDestroyUnitsBuildPhase,
   }: {
     data: GameDataResponse;
     maps: GameStateMaps;
@@ -26,11 +28,20 @@ export default function processUnitClick(state, clickData) {
     ordersMeta: OrdersMeta;
     ownUnits: string[];
     overview: GameOverviewResponse;
+    mustDestroyUnitsBuildPhase: GameState["mustDestroyUnitsBuildPhase"];
   } = current(state);
+  const { lastUnitClick } = current(state);
   const {
     data: { currentOrders, units },
   } = data;
-  const { inProgress, method, onTerritory, orderID, type, unitID } = order;
+  const {
+    inProgress: orderInProgress,
+    method,
+    onTerritory,
+    orderID,
+    type,
+    unitID,
+  } = order;
   const {
     phase,
     user: {
@@ -43,6 +54,18 @@ export default function processUnitClick(state, clickData) {
   const unitType = units[clickData.payload.unitID].type;
   state.isFleetClicked = unitType === "Fleet";
 
+  const now = Date.now();
+  let inProgress = orderInProgress;
+  state.lastUnitClick = now;
+  const dblClickThreshold = 200;
+  if (
+    lastUnitClick &&
+    order.method !== "dblClick" &&
+    now < lastUnitClick + dblClickThreshold
+  ) {
+    clickData.payload.method = "dblClick";
+    inProgress = false;
+  }
   if (phase === "Retreats") {
     const unitsOrderMeta =
       ordersMeta[maps.unitToOrder[clickData.payload.unitID]];
@@ -56,10 +79,12 @@ export default function processUnitClick(state, clickData) {
       return;
     }
   }
-  // Destroy Units
-  const isDestroy = currentOrders?.some(({ type: t }) => t === "Destroy");
   if (phase === "Builds") {
-    if (!ownUnits.includes(clickData.payload.unitID) || !isDestroy) {
+    // Destroy Units
+    if (
+      !ownUnits.includes(clickData.payload.unitID) ||
+      !mustDestroyUnitsBuildPhase
+    ) {
       return;
     }
 

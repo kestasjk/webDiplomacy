@@ -44,6 +44,7 @@ const initialState: GameState = {
     coastalTerritories: [],
   },
   territoriesMeta: {},
+  mustDestroyUnitsBuildPhase: false,
   commands: {
     mapCommands: {},
     territoryCommands: {},
@@ -151,6 +152,7 @@ const initialState: GameState = {
   },
   isFleetClicked: false,
   notifications: [],
+  lastUnitClick: 0,
 };
 
 export default initialState;
