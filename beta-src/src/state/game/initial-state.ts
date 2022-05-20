@@ -146,8 +146,9 @@ const initialState: GameState = {
   },
   messages: {
     messages: [],
-    pressType: "",
-    phase: "",
+    newMessagesFrom: [],
+    time: 0,
+    outstandingRequests: 0,
   },
   notifications: [],
   lastUnitClick: 0,

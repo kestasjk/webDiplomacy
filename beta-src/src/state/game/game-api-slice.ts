@@ -1,18 +1,23 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import ApiRoute from "../../enums/ApiRoute";
-import { getGameApiRequest, submitOrders } from "../../utils/api";
+import {
+  getGameApiRequest,
+  postGameApiRequest,
+  submitOrders,
+} from "../../utils/api";
 import GameDataResponse from "../interfaces/GameDataResponse";
 import GameErrorResponse from "../interfaces/GameErrorResponse";
 import GameOverviewResponse from "../interfaces/GameOverviewResponse";
 import GameCommands from "../interfaces/GameCommands";
 import { ApiStatus, GameState } from "../interfaces/GameState";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
-import GameMessages from "../interfaces/GameMessages";
+import GameMessages, { GameMessage } from "../interfaces/GameMessages";
 import { RootState } from "../store";
 import initialState from "./initial-state";
 import OrdersMeta from "../interfaces/SavedOrders";
 import OrderState from "../interfaces/OrderState";
 import drawBuilds from "../../utils/map/drawBuilds";
+import mergeMessageArrays from "../../utils/state/mergeMessageArrays";
 import updateOrdersMeta from "../../utils/state/updateOrdersMeta";
 import highlightMapTerritoriesBasedOnStatuses from "../../utils/map/highlightMapTerritoriesBasedOnStatuses";
 import UpdateOrdersMetaAction from "../../interfaces/state/UpdateOrdersMetaAction";
@@ -63,11 +68,35 @@ export const fetchGameMessages = createAsyncThunk(
     offset?: string;
     limit?: string;
     allMessages?: string;
+    sinceTime?: string;
   }) => {
     const {
       data: { data },
-    } = await getGameApiRequest(ApiRoute.GAME_MESSAGES, queryParams);
+    } = await getGameApiRequest(
+      ApiRoute.GAME_MESSAGES,
+      queryParams,
+      // set a 60 second timeout.
+      // Timeout is important because we rate-limit to
+      // one outstanding request at a time.
+      60000,
+    );
     return data as GameMessages;
+  },
+);
+
+export const sendMessage = createAsyncThunk(
+  ApiRoute.SEND_MESSAGE,
+  async (queryParams: {
+    gameID: string;
+    countryID: string;
+    toCountryID: string;
+    message: string;
+  }) => {
+    const response = await postGameApiRequest(
+      ApiRoute.SEND_MESSAGE,
+      queryParams,
+    );
+    return response.data as unknown as GameMessages;
   },
 );
 
@@ -76,6 +105,21 @@ export const toggleVoteStatus = createAsyncThunk(
   async (queryParams: { countryID: string; gameID: string; vote: string }) => {
     const { data } = await getGameApiRequest(
       ApiRoute.GAME_TOGGLEVOTE,
+      queryParams,
+    );
+    return data as string;
+  },
+);
+
+export const markMessagesSeen = createAsyncThunk(
+  ApiRoute.MESSAGES_SEEN,
+  async (queryParams: {
+    countryID: string;
+    gameID: string;
+    seenCountryID: string;
+  }) => {
+    const { data } = await getGameApiRequest(
+      ApiRoute.MESSAGES_SEEN,
       queryParams,
     );
     return data as string;
@@ -152,6 +196,14 @@ const gameApiSlice = createSlice({
     highlightMapTerritoriesBasedOnStatuses,
     drawBuilds,
     dispatchCommand,
+    processMessagesSeen(state, action) {
+      state.messages.newMessagesFrom = state.messages.newMessagesFrom.filter(
+        (e) => e !== action.payload,
+      );
+    },
+    updateOutstandingMessageRequests(state, action) {
+      state.messages.outstandingRequests += action.payload;
+    },
   },
   extraReducers(builder) {
     builder
@@ -188,15 +240,54 @@ const gameApiSlice = createSlice({
       })
       // saveOrders
       .addCase(saveOrders.fulfilled, saveOrdersFulfilled)
-      // Fetch Game Messages
-      .addCase(fetchGameMessages.fulfilled, (state, action) => {
+      // Send message
+      .addCase(sendMessage.fulfilled, (state, action) => {
         if (action.payload) {
-          const { messages, phase, pressType } = action.payload;
-          state.messages = {
+          const { messages } = action.payload;
+          const allMessages = mergeMessageArrays(
+            state.messages.messages,
             messages,
-            phase,
-            pressType,
-          };
+          );
+          state.messages.messages = allMessages;
+        }
+      })
+      .addCase(sendMessage.rejected, (state, action) => {
+        state.apiStatus = "failed";
+        console.log(`sendMessages failed: ${action.error.message}`);
+        state.error = action.error.message;
+      })
+      // Fetch Game Messages
+      .addCase(fetchGameMessages.rejected, (state, action) => {
+        state.apiStatus = "failed";
+        console.log(`fetchGameMessages failed: ${action.error.message}`);
+        state.messages.outstandingRequests = Math.max(
+          state.messages.outstandingRequests - 1,
+          0,
+        );
+        state.error = action.error.message;
+      })
+      .addCase(fetchGameMessages.fulfilled, (state, action) => {
+        state.messages.outstandingRequests = Math.max(
+          state.messages.outstandingRequests - 1,
+          0,
+        );
+        if (action.payload) {
+          const { messages, newMessagesFrom, time } = action.payload;
+          if (messages) {
+            const allMessages = mergeMessageArrays(
+              state.messages.messages,
+              messages,
+            );
+            if (state.messages.messages.length !== allMessages.length) {
+              state.messages.messages = allMessages;
+            }
+          }
+          if (newMessagesFrom) {
+            state.messages.newMessagesFrom = newMessagesFrom;
+          }
+          if (time) {
+            state.messages.time = time;
+          }
         }
       });
   },
@@ -229,6 +320,8 @@ export const gameNotifications = ({
 export const userActivity = ({
   game: { activity },
 }: RootState): GameState["activity"] => activity;
+export const gameMessages = ({ game: { messages } }: RootState): GameMessages =>
+  messages;
 export const mustDestroyUnits = ({
   game: { mustDestroyUnitsBuildPhase },
 }: RootState): GameState["mustDestroyUnitsBuildPhase"] =>
