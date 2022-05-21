@@ -29,7 +29,7 @@ export default function drawArrow(
   let y1;
   let y2;
 
-  const fromTerritoryName = Territory[unitTerritory];
+  const fromTerritoryName = unitTerritory;
   const fromTerritoryEl: SVGSVGElement = d3
     .select(`#${fromTerritoryName}-territory`)
     .node();

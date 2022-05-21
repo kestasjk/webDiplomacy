@@ -1,6 +1,5 @@
 /* eslint-disable no-bitwise */
 import * as React from "react";
-import TerritoryDataGenerator from "../../../classes/TerritoryDataGenerator";
 import BuildUnitMap from "../../../data/BuildUnit";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
 import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
@@ -47,7 +46,7 @@ const WDBuildContainer: React.FC = function (): React.ReactElement {
             canBuild={b.canBuild}
             clickCallback={build}
             country={countryMap[userMember.country]}
-            territoryName={territory.parent?.name || territory.name}
+            territoryName={territory.parent?.territory || territory.territory}
             unitSlotName={b.unitSlotName}
             toTerrID={b.territoryMeta.id}
           />

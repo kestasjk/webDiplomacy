@@ -48,8 +48,8 @@ export default function drawConvoyOrders(
                 ArrowType.MOVE,
                 ArrowColor.IMPLIED,
                 "territory",
-                Number(maps.territoryToEnum[toTerrID]),
-                Number(maps.territoryToEnum[fromTerrID]),
+                maps.terrIDToTerritory[toTerrID],
+                maps.terrIDToTerritory[fromTerrID],
               );
               drawArrow(
                 id,

@@ -1,784 +1,786 @@
 import TerritoryData from "../types/map/TerritoryData";
-import TerritoryEnum from "../enums/map/variants/classic/Territory";
+import Territory from "../enums/map/variants/classic/Territory";
 import { TerritoryI } from "../interfaces";
 
+// FIXME: burn this down as well
+
 export const ADRIATIC_SEA: TerritoryI = {
-  name: "ADRIATIC_SEA",
+  territory: Territory.ADRIATIC_SEA,
   abbr: "ADR",
   type: "water",
 };
 
 export const AEGEAN_SEA: TerritoryI = {
-  name: "AEGEAN_SEA",
+  territory: Territory.AEGEAN_SEA,
   abbr: "AEG",
   type: "water",
 };
 
 export const ALBANIA: TerritoryI = {
-  name: "ALBANIA",
+  territory: Territory.ALBANIA,
   abbr: "ALB",
   type: "land",
 };
 
 export const ANKARA: TerritoryI = {
-  name: "ANKARA",
+  territory: Territory.ANKARA,
   abbr: "ANK",
   type: "land",
 };
 
 export const APULIA: TerritoryI = {
-  name: "APULIA",
+  territory: Territory.APULIA,
   abbr: "APU",
   type: "land",
 };
 
 export const ARMENIA: TerritoryI = {
-  name: "ARMENIA",
+  territory: Territory.ARMENIA,
   abbr: "ARM",
   type: "land",
 };
 
 export const BALTIC_SEA: TerritoryI = {
-  name: "BALTIC_SEA",
+  territory: Territory.BALTIC_SEA,
   abbr: "BAL",
   type: "water",
 };
 
 export const BARENTS_SEA: TerritoryI = {
-  name: "BARENTS_SEA",
+  territory: Territory.BARENTS_SEA,
   abbr: "BAR",
   type: "water",
 };
 
 export const BELGIUM: TerritoryI = {
-  name: "BELGIUM",
+  territory: Territory.BELGIUM,
   abbr: "BEL",
   type: "land",
 };
 
 export const BERLIN: TerritoryI = {
-  name: "BERLIN",
+  territory: Territory.BERLIN,
   abbr: "BER",
   type: "land",
 };
 
 export const BLACK_SEA: TerritoryI = {
-  name: "BLACK_SEA",
+  territory: Territory.BLACK_SEA,
   abbr: "BLA",
   type: "water",
 };
 
 export const BOHEMIA: TerritoryI = {
-  name: "BOHEMIA",
+  territory: Territory.BOHEMIA,
   abbr: "BOH",
   type: "land",
 };
 
 export const BREST: TerritoryI = {
-  name: "BREST",
+  territory: Territory.BREST,
   abbr: "BRE",
   type: "land",
 };
 
 export const BUDAPEST: TerritoryI = {
-  name: "BUDAPEST",
+  territory: Territory.BUDAPEST,
   abbr: "BUD",
   type: "land",
 };
 
 export const BULGARIA: TerritoryI = {
-  name: "BULGARIA",
+  territory: Territory.BULGARIA,
   abbr: "BUL",
   type: "land",
 };
 
 export const BULGARIA_NORTH_COAST: TerritoryI = {
-  name: "BULGARIA_NORTH_COAST",
+  territory: Territory.BULGARIA_NORTH_COAST,
   abbr: "NC",
   type: "land",
   parent: BULGARIA,
 };
 
 export const BULGARIA_SOUTH_COAST: TerritoryI = {
-  name: "BULGARIA_SOUTH_COAST",
+  territory: Territory.BULGARIA_SOUTH_COAST,
   abbr: "SC",
   type: "land",
   parent: BULGARIA,
 };
 
 export const BURGUNDY: TerritoryI = {
-  name: "BURGUNDY",
+  territory: Territory.BURGUNDY,
   abbr: "BUR",
   type: "land",
 };
 
 export const CHANNEL_1: TerritoryI = {
-  name: "CHANNEL_1",
+  territory: Territory.CHANNEL_1,
   abbr: "",
   type: "water",
 };
 
 export const CLYDE: TerritoryI = {
-  name: "CLYDE",
+  territory: Territory.CLYDE,
   abbr: "CLY",
   type: "land",
 };
 
 export const CONSTANTINOPLE: TerritoryI = {
-  name: "CONSTANTINOPLE",
+  territory: Territory.CONSTANTINOPLE,
   abbr: "CON",
   type: "land",
 };
 
 export const DENMARK: TerritoryI = {
-  name: "DENMARK",
+  territory: Territory.DENMARK,
   abbr: "DEN",
   type: "land",
 };
 
 export const EDINBURGH: TerritoryI = {
-  name: "EDINBURGH",
+  territory: Territory.EDINBURGH,
   abbr: "EDI",
   type: "land",
 };
 
 export const EASTERN_MEDITERRANEAN: TerritoryI = {
-  name: "EASTERN_MEDITERRANEAN",
+  territory: Territory.EASTERN_MEDITERRANEAN,
   abbr: "EAS",
   type: "water",
 };
 
 export const ENGLISH_CHANNEL: TerritoryI = {
-  name: "ENGLISH_CHANNEL",
+  territory: Territory.ENGLISH_CHANNEL,
   abbr: "ENG",
   type: "water",
 };
 
 export const FINLAND: TerritoryI = {
-  name: "FINLAND",
+  territory: Territory.FINLAND,
   abbr: "FIN",
   type: "land",
 };
 
 export const GALICIA: TerritoryI = {
-  name: "GALICIA",
+  territory: Territory.GALICIA,
   abbr: "GAL",
   type: "land",
 };
 
 export const GASCONY: TerritoryI = {
-  name: "GASCONY",
+  territory: Territory.GASCONY,
   abbr: "GAS",
   type: "land",
 };
 
 export const GREECE: TerritoryI = {
-  name: "GREECE",
+  territory: Territory.GREECE,
   abbr: "GRE",
   type: "land",
 };
 
 export const GULF_OF_BOTHNIA: TerritoryI = {
-  name: "GULF_OF_BOTHNIA",
+  territory: Territory.GULF_OF_BOTHNIA,
   abbr: "BOT",
   type: "water",
 };
 
 export const GULF_OF_LYONS: TerritoryI = {
-  name: "GULF_OF_LYONS",
+  territory: Territory.GULF_OF_LYONS,
   abbr: "LYO",
   type: "water",
 };
 
 export const HELIGOLAND_BIGHT: TerritoryI = {
-  name: "HELIGOLAND_BIGHT",
+  territory: Territory.HELIGOLAND_BIGHT,
   abbr: "HEL",
   type: "water",
 };
 
 export const HOLLAND: TerritoryI = {
-  name: "HOLLAND",
+  territory: Territory.HOLLAND,
   abbr: "HOL",
   type: "land",
 };
 
 export const IONIAN_SEA: TerritoryI = {
-  name: "IONIAN_SEA",
+  territory: Territory.IONIAN_SEA,
   abbr: "ION",
   type: "water",
 };
 
 export const IRISH_SEA: TerritoryI = {
-  name: "IRISH_SEA",
+  territory: Territory.IRISH_SEA,
   abbr: "IRI",
   type: "water",
 };
 
 export const KIEL: TerritoryI = {
-  name: "KIEL",
+  territory: Territory.KIEL,
   abbr: "KIE",
   type: "land",
 };
 
 export const LIVERPOOL: TerritoryI = {
-  name: "LIVERPOOL",
+  territory: Territory.LIVERPOOL,
   abbr: "LVP",
   type: "land",
 };
 
 export const LIVONIA: TerritoryI = {
-  name: "LIVONIA",
+  territory: Territory.LIVONIA,
   abbr: "LVN",
   type: "land",
 };
 
 export const LONDON: TerritoryI = {
-  name: "LONDON",
+  territory: Territory.LONDON,
   abbr: "LON",
   type: "land",
 };
 
 export const MARSEILLES: TerritoryI = {
-  name: "MARSEILLES",
+  territory: Territory.MARSEILLES,
   abbr: "MAR",
   type: "land",
 };
 
 export const MIDDLE_ATLANTIC: TerritoryI = {
-  name: "MIDDLE_ATLANTIC",
+  territory: Territory.MIDDLE_ATLANTIC,
   abbr: "MAO",
   type: "water",
 };
 
 export const MOSCOW: TerritoryI = {
-  name: "MOSCOW",
+  territory: Territory.MOSCOW,
   abbr: "MOS",
   type: "land",
 };
 
 export const MUNICH: TerritoryI = {
-  name: "MUNICH",
+  territory: Territory.MUNICH,
   abbr: "MUN",
   type: "land",
 };
 
 export const NAPLES: TerritoryI = {
-  name: "NAPLES",
+  territory: Territory.NAPLES,
   abbr: "NAP",
   type: "land",
 };
 
 export const NEUTRAL_1: TerritoryI = {
-  name: "NEUTRAL_1",
+  territory: Territory.NEUTRAL_1,
   abbr: "",
   type: "land",
 };
 
 export const NEUTRAL_2: TerritoryI = {
-  name: "NEUTRAL_2",
+  territory: Territory.NEUTRAL_2,
   abbr: "",
   type: "land",
 };
 
 export const NEUTRAL_3: TerritoryI = {
-  name: "NEUTRAL_3",
+  territory: Territory.NEUTRAL_3,
   abbr: "",
   type: "land",
 };
 
 export const NEUTRAL_4: TerritoryI = {
-  name: "NEUTRAL_4",
+  territory: Territory.NEUTRAL_4,
   abbr: "",
   type: "land",
 };
 
 export const NEUTRAL_5: TerritoryI = {
-  name: "NEUTRAL_5",
+  territory: Territory.NEUTRAL_5,
   abbr: "",
   type: "land",
 };
 
 export const NEUTRAL_6: TerritoryI = {
-  name: "NEUTRAL_6",
+  territory: Territory.NEUTRAL_6,
   abbr: "",
   type: "land",
 };
 
 export const NEUTRAL_7: TerritoryI = {
-  name: "NEUTRAL_7",
+  territory: Territory.NEUTRAL_7,
   abbr: "",
   type: "land",
 };
 
 export const NEUTRAL_8: TerritoryI = {
-  name: "NEUTRAL_8",
+  territory: Territory.NEUTRAL_8,
   abbr: "",
   type: "land",
 };
 
 export const NEUTRAL_9: TerritoryI = {
-  name: "NEUTRAL_9",
+  territory: Territory.NEUTRAL_9,
   abbr: "",
   type: "land",
 };
 
 export const NORTH_AFRICA: TerritoryI = {
-  name: "NORTH_AFRICA",
+  territory: Territory.NORTH_AFRICA,
   abbr: "NAF",
   type: "land",
 };
 
 export const NORTH_ATLANTIC: TerritoryI = {
-  name: "NORTH_ATLANTIC",
+  territory: Territory.NORTH_ATLANTIC,
   abbr: "NAO",
   type: "water",
 };
 
 export const NORTH_ATLANTIC2: TerritoryI = {
-  name: "NORTH_ATLANTIC2",
+  territory: Territory.NORTH_ATLANTIC2,
   abbr: "",
   type: "water",
 };
 
 export const NORTH_SEA: TerritoryI = {
-  name: "NORTH_SEA",
+  territory: Territory.NORTH_SEA,
   abbr: "NTH",
   type: "water",
 };
 
 export const NORWAY: TerritoryI = {
-  name: "NORWAY",
+  territory: Territory.NORWAY,
   abbr: "NWY",
   type: "land",
 };
 
 export const NORWEGIAN_SEA: TerritoryI = {
-  name: "NORWEGIAN_SEA",
+  territory: Territory.NORWEGIAN_SEA,
   abbr: "NWG",
   type: "water",
 };
 
 export const PARIS: TerritoryI = {
-  name: "PARIS",
+  territory: Territory.PARIS,
   abbr: "PAR",
   type: "land",
 };
 
 export const PICARDY: TerritoryI = {
-  name: "PICARDY",
+  territory: Territory.PICARDY,
   abbr: "PIC",
   type: "land",
 };
 
 export const PIEDMONT: TerritoryI = {
-  name: "PIEDMONT",
+  territory: Territory.PIEDMONT,
   abbr: "PIE",
   type: "land",
 };
 
 export const PORTUGAL: TerritoryI = {
-  name: "PORTUGAL",
+  territory: Territory.PORTUGAL,
   abbr: "POR",
   type: "land",
 };
 
 export const PRUSSIA: TerritoryI = {
-  name: "PRUSSIA",
+  territory: Territory.PRUSSIA,
   abbr: "PRU",
   type: "land",
 };
 
 export const ROME: TerritoryI = {
-  name: "ROME",
+  territory: Territory.ROME,
   abbr: "ROM",
   type: "land",
 };
 
 export const RUHR: TerritoryI = {
-  name: "RUHR",
+  territory: Territory.RUHR,
   abbr: "RUH",
   type: "land",
 };
 
 export const RUMANIA: TerritoryI = {
-  name: "RUMANIA",
+  territory: Territory.RUMANIA,
   abbr: "RUM",
   type: "land",
 };
 
 export const SAINT_PETERSBURG: TerritoryI = {
-  name: "SAINT_PETERSBURG",
+  territory: Territory.SAINT_PETERSBURG,
   abbr: "STP",
   type: "land",
 };
 
 export const SAINT_PETERSBURG_NORTH_COAST: TerritoryI = {
-  name: "SAINT_PETERSBURG_NORTH_COAST",
+  territory: Territory.SAINT_PETERSBURG_NORTH_COAST,
   abbr: "NC",
   type: "land",
   parent: SAINT_PETERSBURG,
 };
 
 export const SAINT_PETERSBURG_SOUTH_COAST: TerritoryI = {
-  name: "SAINT_PETERSBURG_SOUTH_COAST",
+  territory: Territory.SAINT_PETERSBURG_SOUTH_COAST,
   abbr: "SC",
   type: "land",
   parent: SAINT_PETERSBURG,
 };
 
 export const SERBIA: TerritoryI = {
-  name: "SERBIA",
+  territory: Territory.SERBIA,
   abbr: "SER",
   type: "land",
 };
 
 export const SEVASTOPOL: TerritoryI = {
-  name: "SEVASTOPOL",
+  territory: Territory.SEVASTOPOL,
   abbr: "SEV",
   type: "land",
 };
 
 export const SILESIA: TerritoryI = {
-  name: "SILESIA",
+  territory: Territory.SILESIA,
   abbr: "SIL",
   type: "land",
 };
 
 export const SKAGERRACK: TerritoryI = {
-  name: "SKAGERRACK",
+  territory: Territory.SKAGERRACK,
   abbr: "SKA",
   type: "water",
 };
 
 export const SKAGERRACK2: TerritoryI = {
-  name: "SKAGERRACK2",
+  territory: Territory.SKAGERRACK2,
   abbr: "",
   type: "water",
 };
 
 export const SMYRNA: TerritoryI = {
-  name: "SMYRNA",
+  territory: Territory.SMYRNA,
   abbr: "SMY",
   type: "land",
 };
 
 export const SPAIN: TerritoryI = {
-  name: "SPAIN",
+  territory: Territory.SPAIN,
   abbr: "SPA",
   type: "land",
 };
 
 export const SPAIN_NORTH_COAST: TerritoryI = {
-  name: "SPAIN_NORTH_COAST",
+  territory: Territory.SPAIN_NORTH_COAST,
   abbr: "NC",
   type: "land",
   parent: SPAIN,
 };
 
 export const SPAIN_SOUTH_COAST: TerritoryI = {
-  name: "SPAIN_SOUTH_COAST",
+  territory: Territory.SPAIN_SOUTH_COAST,
   abbr: "SC",
   type: "land",
   parent: SPAIN,
 };
 
 export const SWEDEN: TerritoryI = {
-  name: "SWEDEN",
+  territory: Territory.SWEDEN,
   abbr: "SWE",
   type: "land",
 };
 
 export const SYRIA: TerritoryI = {
-  name: "SYRIA",
+  territory: Territory.SYRIA,
   abbr: "SYR",
   type: "land",
 };
 
 export const TRIESTE: TerritoryI = {
-  name: "TRIESTE",
+  territory: Territory.TRIESTE,
   abbr: "TRI",
   type: "land",
 };
 
 export const TUNIS: TerritoryI = {
-  name: "TUNIS",
+  territory: Territory.TUNIS,
   abbr: "TUN",
   type: "land",
 };
 
 export const TUSCANY: TerritoryI = {
-  name: "TUSCANY",
+  territory: Territory.TUSCANY,
   abbr: "TUS",
   type: "land",
 };
 
 export const TYROLIA: TerritoryI = {
-  name: "TYROLIA",
+  territory: Territory.TYROLIA,
   abbr: "TYR",
   type: "land",
 };
 
 export const TYRRHENIAN_SEA: TerritoryI = {
-  name: "TYRRHENIAN_SEA",
+  territory: Territory.TYRRHENIAN_SEA,
   abbr: "TYS",
   type: "water",
 };
 
 export const UKRAINE: TerritoryI = {
-  name: "UKRAINE",
+  territory: Territory.UKRAINE,
   abbr: "UKR",
   type: "land",
 };
 
 export const UNPLAYABLE_LAND1: TerritoryI = {
-  name: "UNPLAYABLE_LAND1",
+  territory: Territory.UNPLAYABLE_LAND1,
   abbr: "",
   type: "land",
 };
 
 export const UNPLAYABLE_LAND2: TerritoryI = {
-  name: "UNPLAYABLE_LAND2",
+  territory: Territory.UNPLAYABLE_LAND2,
   abbr: "",
   type: "land",
 };
 
 export const UNPLAYABLE_LAND3: TerritoryI = {
-  name: "UNPLAYABLE_LAND3",
+  territory: Territory.UNPLAYABLE_LAND3,
   abbr: "",
   type: "land",
 };
 
 export const UNPLAYABLE_LAND4: TerritoryI = {
-  name: "UNPLAYABLE_LAND4",
+  territory: Territory.UNPLAYABLE_LAND4,
   abbr: "",
   type: "land",
 };
 
 export const UNPLAYABLE_LAND5: TerritoryI = {
-  name: "UNPLAYABLE_LAND5",
+  territory: Territory.UNPLAYABLE_LAND5,
   abbr: "",
   type: "land",
 };
 
 export const UNPLAYABLE_LAND6: TerritoryI = {
-  name: "UNPLAYABLE_LAND6",
+  territory: Territory.UNPLAYABLE_LAND6,
   abbr: "",
   type: "land",
 };
 
 export const UNPLAYABLE_LAND7: TerritoryI = {
-  name: "UNPLAYABLE_LAND7",
+  territory: Territory.UNPLAYABLE_LAND7,
   abbr: "",
   type: "land",
 };
 
 export const UNPLAYABLE_LAND8: TerritoryI = {
-  name: "UNPLAYABLE_LAND8",
+  territory: Territory.UNPLAYABLE_LAND8,
   abbr: "",
   type: "land",
 };
 
 export const UNPLAYABLE_SEA1: TerritoryI = {
-  name: "UNPLAYABLE_SEA1",
+  territory: Territory.UNPLAYABLE_SEA1,
   abbr: "",
   type: "water",
 };
 
 export const UNPLAYABLE_SEA2: TerritoryI = {
-  name: "UNPLAYABLE_SEA2",
+  territory: Territory.UNPLAYABLE_SEA2,
   abbr: "",
   type: "water",
 };
 
 export const UNPLAYABLE_SEA3: TerritoryI = {
-  name: "UNPLAYABLE_SEA3",
+  territory: Territory.UNPLAYABLE_SEA3,
   abbr: "",
   type: "water",
 };
 
 export const UNPLAYABLE_SEA4: TerritoryI = {
-  name: "UNPLAYABLE_SEA4",
+  territory: Territory.UNPLAYABLE_SEA4,
   abbr: "",
   type: "water",
 };
 
 export const UNPLAYABLE_SEA5: TerritoryI = {
-  name: "UNPLAYABLE_SEA5",
+  territory: Territory.UNPLAYABLE_SEA5,
   abbr: "",
   type: "water",
 };
 
 export const UNPLAYABLE_SEA6: TerritoryI = {
-  name: "UNPLAYABLE_SEA6",
+  territory: Territory.UNPLAYABLE_SEA6,
   abbr: "",
   type: "water",
 };
 
 export const UNPLAYABLE_SEA7: TerritoryI = {
-  name: "UNPLAYABLE_SEA7",
+  territory: Territory.UNPLAYABLE_SEA7,
   abbr: "",
   type: "water",
 };
 
 export const UNPLAYABLE_SEA8: TerritoryI = {
-  name: "UNPLAYABLE_SEA8",
+  territory: Territory.UNPLAYABLE_SEA8,
   abbr: "",
   type: "water",
 };
 
 export const UNPLAYABLE_SEA9: TerritoryI = {
-  name: "UNPLAYABLE_SEA9",
+  territory: Territory.UNPLAYABLE_SEA9,
   abbr: "",
   type: "water",
 };
 
 export const VIENNA: TerritoryI = {
-  name: "VIENNA",
+  territory: Territory.VIENNA,
   abbr: "VIE",
   type: "land",
 };
 
 export const VENICE: TerritoryI = {
-  name: "VENICE",
+  territory: Territory.VENICE,
   abbr: "VEN",
   type: "land",
 };
 
 export const WALES: TerritoryI = {
-  name: "WALES",
+  territory: Territory.WALES,
   abbr: "WAL",
   type: "land",
 };
 
 export const WARSAW: TerritoryI = {
-  name: "WARSAW",
+  territory: Territory.WARSAW,
   abbr: "WAR",
   type: "land",
 };
 
 export const WESTERN_MEDITERRANEAN: TerritoryI = {
-  name: "WESTERN_MEDITERRANEAN",
+  territory: Territory.WESTERN_MEDITERRANEAN,
   abbr: "WES",
   type: "water",
 };
 
 export const YORK: TerritoryI = {
-  name: "YORK",
+  territory: Territory.YORK,
   abbr: "YOR",
   type: "land",
 };
 
 const Territories: TerritoryData = {
-  [TerritoryEnum.ADRIATIC_SEA]: ADRIATIC_SEA,
-  [TerritoryEnum.AEGEAN_SEA]: AEGEAN_SEA,
-  [TerritoryEnum.ALBANIA]: ALBANIA,
-  [TerritoryEnum.ANKARA]: ANKARA,
-  [TerritoryEnum.APULIA]: APULIA,
-  [TerritoryEnum.ARMENIA]: ARMENIA,
-  [TerritoryEnum.BALTIC_SEA]: BALTIC_SEA,
-  [TerritoryEnum.BARENTS_SEA]: BARENTS_SEA,
-  [TerritoryEnum.BELGIUM]: BELGIUM,
-  [TerritoryEnum.BERLIN]: BERLIN,
-  [TerritoryEnum.BLACK_SEA]: BLACK_SEA,
-  [TerritoryEnum.BOHEMIA]: BOHEMIA,
-  [TerritoryEnum.BREST]: BREST,
-  [TerritoryEnum.BUDAPEST]: BUDAPEST,
-  [TerritoryEnum.BULGARIA]: BULGARIA,
-  [TerritoryEnum.BULGARIA_NORTH_COAST]: BULGARIA_NORTH_COAST,
-  [TerritoryEnum.BULGARIA_SOUTH_COAST]: BULGARIA_SOUTH_COAST,
-  [TerritoryEnum.BURGUNDY]: BURGUNDY,
-  [TerritoryEnum.CHANNEL_1]: CHANNEL_1,
-  [TerritoryEnum.CLYDE]: CLYDE,
-  [TerritoryEnum.CONSTANTINOPLE]: CONSTANTINOPLE,
-  [TerritoryEnum.DENMARK]: DENMARK,
-  [TerritoryEnum.EASTERN_MEDITERRANEAN]: EASTERN_MEDITERRANEAN,
-  [TerritoryEnum.EDINBURGH]: EDINBURGH,
-  [TerritoryEnum.ENGLISH_CHANNEL]: ENGLISH_CHANNEL,
-  [TerritoryEnum.FINLAND]: FINLAND,
-  [TerritoryEnum.GALICIA]: GALICIA,
-  [TerritoryEnum.GASCONY]: GASCONY,
-  [TerritoryEnum.GREECE]: GREECE,
-  [TerritoryEnum.GULF_OF_BOTHNIA]: GULF_OF_BOTHNIA,
-  [TerritoryEnum.GULF_OF_LYONS]: GULF_OF_LYONS,
-  [TerritoryEnum.HELIGOLAND_BIGHT]: HELIGOLAND_BIGHT,
-  [TerritoryEnum.HOLLAND]: HOLLAND,
-  [TerritoryEnum.IONIAN_SEA]: IONIAN_SEA,
-  [TerritoryEnum.IRISH_SEA]: IRISH_SEA,
-  [TerritoryEnum.KIEL]: KIEL,
-  [TerritoryEnum.LIVERPOOL]: LIVERPOOL,
-  [TerritoryEnum.LIVONIA]: LIVONIA,
-  [TerritoryEnum.LONDON]: LONDON,
-  [TerritoryEnum.MARSEILLES]: MARSEILLES,
-  [TerritoryEnum.MIDDLE_ATLANTIC]: MIDDLE_ATLANTIC,
-  [TerritoryEnum.MOSCOW]: MOSCOW,
-  [TerritoryEnum.MUNICH]: MUNICH,
-  [TerritoryEnum.NAPLES]: NAPLES,
-  [TerritoryEnum.NEUTRAL_1]: NEUTRAL_1,
-  [TerritoryEnum.NEUTRAL_2]: NEUTRAL_2,
-  [TerritoryEnum.NEUTRAL_3]: NEUTRAL_3,
-  [TerritoryEnum.NEUTRAL_4]: NEUTRAL_4,
-  [TerritoryEnum.NEUTRAL_5]: NEUTRAL_5,
-  [TerritoryEnum.NEUTRAL_6]: NEUTRAL_6,
-  [TerritoryEnum.NEUTRAL_7]: NEUTRAL_7,
-  [TerritoryEnum.NEUTRAL_8]: NEUTRAL_8,
-  [TerritoryEnum.NEUTRAL_9]: NEUTRAL_9,
-  [TerritoryEnum.NORTH_AFRICA]: NORTH_AFRICA,
-  [TerritoryEnum.NORTH_ATLANTIC]: NORTH_ATLANTIC,
-  [TerritoryEnum.NORTH_ATLANTIC2]: NORTH_ATLANTIC2,
-  [TerritoryEnum.NORTH_SEA]: NORTH_SEA,
-  [TerritoryEnum.NORWAY]: NORWAY,
-  [TerritoryEnum.NORWEGIAN_SEA]: NORWEGIAN_SEA,
-  [TerritoryEnum.PARIS]: PARIS,
-  [TerritoryEnum.PICARDY]: PICARDY,
-  [TerritoryEnum.PIEDMONT]: PIEDMONT,
-  [TerritoryEnum.PORTUGAL]: PORTUGAL,
-  [TerritoryEnum.PRUSSIA]: PRUSSIA,
-  [TerritoryEnum.ROME]: ROME,
-  [TerritoryEnum.RUHR]: RUHR,
-  [TerritoryEnum.RUMANIA]: RUMANIA,
-  [TerritoryEnum.SILESIA]: SILESIA,
-  [TerritoryEnum.SAINT_PETERSBURG]: SAINT_PETERSBURG,
-  [TerritoryEnum.SAINT_PETERSBURG_NORTH_COAST]: SAINT_PETERSBURG_NORTH_COAST,
-  [TerritoryEnum.SAINT_PETERSBURG_SOUTH_COAST]: SAINT_PETERSBURG_SOUTH_COAST,
-  [TerritoryEnum.SERBIA]: SERBIA,
-  [TerritoryEnum.SEVASTOPOL]: SEVASTOPOL,
-  [TerritoryEnum.SKAGERRACK]: SKAGERRACK,
-  [TerritoryEnum.SKAGERRACK2]: SKAGERRACK2,
-  [TerritoryEnum.SMYRNA]: SMYRNA,
-  [TerritoryEnum.SPAIN]: SPAIN,
-  [TerritoryEnum.SPAIN_NORTH_COAST]: SPAIN_NORTH_COAST,
-  [TerritoryEnum.SPAIN_SOUTH_COAST]: SPAIN_SOUTH_COAST,
-  [TerritoryEnum.SWEDEN]: SWEDEN,
-  [TerritoryEnum.SYRIA]: SYRIA,
-  [TerritoryEnum.TRIESTE]: TRIESTE,
-  [TerritoryEnum.TUNIS]: TUNIS,
-  [TerritoryEnum.TUSCANY]: TUSCANY,
-  [TerritoryEnum.TYROLIA]: TYROLIA,
-  [TerritoryEnum.TYRRHENIAN_SEA]: TYRRHENIAN_SEA,
-  [TerritoryEnum.UKRAINE]: UKRAINE,
-  [TerritoryEnum.UNPLAYABLE_LAND1]: UNPLAYABLE_LAND1,
-  [TerritoryEnum.UNPLAYABLE_LAND2]: UNPLAYABLE_LAND2,
-  [TerritoryEnum.UNPLAYABLE_LAND3]: UNPLAYABLE_LAND3,
-  [TerritoryEnum.UNPLAYABLE_LAND4]: UNPLAYABLE_LAND4,
-  [TerritoryEnum.UNPLAYABLE_LAND5]: UNPLAYABLE_LAND5,
-  [TerritoryEnum.UNPLAYABLE_LAND6]: UNPLAYABLE_LAND6,
-  [TerritoryEnum.UNPLAYABLE_LAND7]: UNPLAYABLE_LAND7,
-  [TerritoryEnum.UNPLAYABLE_LAND8]: UNPLAYABLE_LAND8,
-  [TerritoryEnum.UNPLAYABLE_SEA1]: UNPLAYABLE_SEA1,
-  [TerritoryEnum.UNPLAYABLE_SEA2]: UNPLAYABLE_SEA2,
-  [TerritoryEnum.UNPLAYABLE_SEA3]: UNPLAYABLE_SEA3,
-  [TerritoryEnum.UNPLAYABLE_SEA4]: UNPLAYABLE_SEA4,
-  [TerritoryEnum.UNPLAYABLE_SEA5]: UNPLAYABLE_SEA5,
-  [TerritoryEnum.UNPLAYABLE_SEA6]: UNPLAYABLE_SEA6,
-  [TerritoryEnum.UNPLAYABLE_SEA7]: UNPLAYABLE_SEA7,
-  [TerritoryEnum.UNPLAYABLE_SEA8]: UNPLAYABLE_SEA8,
-  [TerritoryEnum.UNPLAYABLE_SEA9]: UNPLAYABLE_SEA9,
-  [TerritoryEnum.VIENNA]: VIENNA,
-  [TerritoryEnum.VENICE]: VENICE,
-  [TerritoryEnum.WALES]: WALES,
-  [TerritoryEnum.WARSAW]: WARSAW,
-  [TerritoryEnum.WESTERN_MEDITERRANEAN]: WESTERN_MEDITERRANEAN,
-  [TerritoryEnum.YORK]: YORK,
+  [Territory.ADRIATIC_SEA]: ADRIATIC_SEA,
+  [Territory.AEGEAN_SEA]: AEGEAN_SEA,
+  [Territory.ALBANIA]: ALBANIA,
+  [Territory.ANKARA]: ANKARA,
+  [Territory.APULIA]: APULIA,
+  [Territory.ARMENIA]: ARMENIA,
+  [Territory.BALTIC_SEA]: BALTIC_SEA,
+  [Territory.BARENTS_SEA]: BARENTS_SEA,
+  [Territory.BELGIUM]: BELGIUM,
+  [Territory.BERLIN]: BERLIN,
+  [Territory.BLACK_SEA]: BLACK_SEA,
+  [Territory.BOHEMIA]: BOHEMIA,
+  [Territory.BREST]: BREST,
+  [Territory.BUDAPEST]: BUDAPEST,
+  [Territory.BULGARIA]: BULGARIA,
+  [Territory.BULGARIA_NORTH_COAST]: BULGARIA_NORTH_COAST,
+  [Territory.BULGARIA_SOUTH_COAST]: BULGARIA_SOUTH_COAST,
+  [Territory.BURGUNDY]: BURGUNDY,
+  [Territory.CHANNEL_1]: CHANNEL_1,
+  [Territory.CLYDE]: CLYDE,
+  [Territory.CONSTANTINOPLE]: CONSTANTINOPLE,
+  [Territory.DENMARK]: DENMARK,
+  [Territory.EASTERN_MEDITERRANEAN]: EASTERN_MEDITERRANEAN,
+  [Territory.EDINBURGH]: EDINBURGH,
+  [Territory.ENGLISH_CHANNEL]: ENGLISH_CHANNEL,
+  [Territory.FINLAND]: FINLAND,
+  [Territory.GALICIA]: GALICIA,
+  [Territory.GASCONY]: GASCONY,
+  [Territory.GREECE]: GREECE,
+  [Territory.GULF_OF_BOTHNIA]: GULF_OF_BOTHNIA,
+  [Territory.GULF_OF_LYONS]: GULF_OF_LYONS,
+  [Territory.HELIGOLAND_BIGHT]: HELIGOLAND_BIGHT,
+  [Territory.HOLLAND]: HOLLAND,
+  [Territory.IONIAN_SEA]: IONIAN_SEA,
+  [Territory.IRISH_SEA]: IRISH_SEA,
+  [Territory.KIEL]: KIEL,
+  [Territory.LIVERPOOL]: LIVERPOOL,
+  [Territory.LIVONIA]: LIVONIA,
+  [Territory.LONDON]: LONDON,
+  [Territory.MARSEILLES]: MARSEILLES,
+  [Territory.MIDDLE_ATLANTIC]: MIDDLE_ATLANTIC,
+  [Territory.MOSCOW]: MOSCOW,
+  [Territory.MUNICH]: MUNICH,
+  [Territory.NAPLES]: NAPLES,
+  [Territory.NEUTRAL_1]: NEUTRAL_1,
+  [Territory.NEUTRAL_2]: NEUTRAL_2,
+  [Territory.NEUTRAL_3]: NEUTRAL_3,
+  [Territory.NEUTRAL_4]: NEUTRAL_4,
+  [Territory.NEUTRAL_5]: NEUTRAL_5,
+  [Territory.NEUTRAL_6]: NEUTRAL_6,
+  [Territory.NEUTRAL_7]: NEUTRAL_7,
+  [Territory.NEUTRAL_8]: NEUTRAL_8,
+  [Territory.NEUTRAL_9]: NEUTRAL_9,
+  [Territory.NORTH_AFRICA]: NORTH_AFRICA,
+  [Territory.NORTH_ATLANTIC]: NORTH_ATLANTIC,
+  [Territory.NORTH_ATLANTIC2]: NORTH_ATLANTIC2,
+  [Territory.NORTH_SEA]: NORTH_SEA,
+  [Territory.NORWAY]: NORWAY,
+  [Territory.NORWEGIAN_SEA]: NORWEGIAN_SEA,
+  [Territory.PARIS]: PARIS,
+  [Territory.PICARDY]: PICARDY,
+  [Territory.PIEDMONT]: PIEDMONT,
+  [Territory.PORTUGAL]: PORTUGAL,
+  [Territory.PRUSSIA]: PRUSSIA,
+  [Territory.ROME]: ROME,
+  [Territory.RUHR]: RUHR,
+  [Territory.RUMANIA]: RUMANIA,
+  [Territory.SILESIA]: SILESIA,
+  [Territory.SAINT_PETERSBURG]: SAINT_PETERSBURG,
+  [Territory.SAINT_PETERSBURG_NORTH_COAST]: SAINT_PETERSBURG_NORTH_COAST,
+  [Territory.SAINT_PETERSBURG_SOUTH_COAST]: SAINT_PETERSBURG_SOUTH_COAST,
+  [Territory.SERBIA]: SERBIA,
+  [Territory.SEVASTOPOL]: SEVASTOPOL,
+  [Territory.SKAGERRACK]: SKAGERRACK,
+  [Territory.SKAGERRACK2]: SKAGERRACK2,
+  [Territory.SMYRNA]: SMYRNA,
+  [Territory.SPAIN]: SPAIN,
+  [Territory.SPAIN_NORTH_COAST]: SPAIN_NORTH_COAST,
+  [Territory.SPAIN_SOUTH_COAST]: SPAIN_SOUTH_COAST,
+  [Territory.SWEDEN]: SWEDEN,
+  [Territory.SYRIA]: SYRIA,
+  [Territory.TRIESTE]: TRIESTE,
+  [Territory.TUNIS]: TUNIS,
+  [Territory.TUSCANY]: TUSCANY,
+  [Territory.TYROLIA]: TYROLIA,
+  [Territory.TYRRHENIAN_SEA]: TYRRHENIAN_SEA,
+  [Territory.UKRAINE]: UKRAINE,
+  [Territory.UNPLAYABLE_LAND1]: UNPLAYABLE_LAND1,
+  [Territory.UNPLAYABLE_LAND2]: UNPLAYABLE_LAND2,
+  [Territory.UNPLAYABLE_LAND3]: UNPLAYABLE_LAND3,
+  [Territory.UNPLAYABLE_LAND4]: UNPLAYABLE_LAND4,
+  [Territory.UNPLAYABLE_LAND5]: UNPLAYABLE_LAND5,
+  [Territory.UNPLAYABLE_LAND6]: UNPLAYABLE_LAND6,
+  [Territory.UNPLAYABLE_LAND7]: UNPLAYABLE_LAND7,
+  [Territory.UNPLAYABLE_LAND8]: UNPLAYABLE_LAND8,
+  [Territory.UNPLAYABLE_SEA1]: UNPLAYABLE_SEA1,
+  [Territory.UNPLAYABLE_SEA2]: UNPLAYABLE_SEA2,
+  [Territory.UNPLAYABLE_SEA3]: UNPLAYABLE_SEA3,
+  [Territory.UNPLAYABLE_SEA4]: UNPLAYABLE_SEA4,
+  [Territory.UNPLAYABLE_SEA5]: UNPLAYABLE_SEA5,
+  [Territory.UNPLAYABLE_SEA6]: UNPLAYABLE_SEA6,
+  [Territory.UNPLAYABLE_SEA7]: UNPLAYABLE_SEA7,
+  [Territory.UNPLAYABLE_SEA8]: UNPLAYABLE_SEA8,
+  [Territory.UNPLAYABLE_SEA9]: UNPLAYABLE_SEA9,
+  [Territory.VIENNA]: VIENNA,
+  [Territory.VENICE]: VENICE,
+  [Territory.WALES]: WALES,
+  [Territory.WARSAW]: WARSAW,
+  [Territory.WESTERN_MEDITERRANEAN]: WESTERN_MEDITERRANEAN,
+  [Territory.YORK]: YORK,
 } as const;
 
 export default Territories;

@@ -1,6 +1,7 @@
 import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
 import ArrowColor from "../../enums/ArrowColor";
 import ArrowType from "../../enums/ArrowType";
+import Territory from "../../enums/map/variants/classic/Territory";
 import { GameState } from "../../state/interfaces/GameState";
 import OrdersMeta from "../../state/interfaces/SavedOrders";
 import drawArrow from "./drawArrow";
@@ -69,11 +70,7 @@ export default function drawMoveOrders(
                         ArrowColor.IMPLIED,
                         "arrow",
                         id,
-                        Number(
-                          maps.territoryToEnum[
-                            maps.unitToTerritory[convoyingUnitID]
-                          ],
-                        ),
+                        maps.unitToTerritory[convoyingUnitID],
                       );
                     }
                   });

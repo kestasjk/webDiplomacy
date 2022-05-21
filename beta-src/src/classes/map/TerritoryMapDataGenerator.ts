@@ -10,19 +10,26 @@ import {
 import webDiplomacyTheme from "../../webDiplomacyTheme";
 import Country from "../../enums/Country";
 
-interface TerritoryMapDataGeneratorInterface extends TerritoryI, BBox {
+export interface TerritoryMapDataGeneratorDrawData extends BBox {
   arrowReceiver?: Coordinates;
   centerPos?: Coordinates;
   country?: Country;
   fill?: string;
   labels?: Label[];
   path: string;
+  playable: boolean;
   texture?: Texture;
   unitSlots?: UnitSlot[];
   viewBox?: string;
 }
 
+interface TerritoryMapDataGeneratorInterface
+  extends TerritoryI,
+    TerritoryMapDataGeneratorDrawData {}
+
 export default class TerritoryMapDataGenerator implements TerritoryMapData {
+  public territory: TerritoryMapData["territory"];
+
   public abbr: TerritoryMapData["abbr"];
 
   public arrowReceiver: TerritoryMapData["arrowReceiver"];
@@ -34,8 +41,6 @@ export default class TerritoryMapDataGenerator implements TerritoryMapData {
   public height: TerritoryMapData["height"];
 
   public labels: TerritoryMapData["labels"];
-
-  public name: TerritoryMapData["name"];
 
   public path: TerritoryMapData["path"];
 
@@ -51,11 +56,14 @@ export default class TerritoryMapDataGenerator implements TerritoryMapData {
 
   public y: TerritoryMapData["y"];
 
+  public playable: TerritoryMapData["playable"];
+
   public texture: TerritoryMapData["texture"];
 
   public viewBox: TerritoryMapData["viewBox"];
 
   constructor({
+    territory,
     abbr,
     arrowReceiver = undefined,
     centerPos = undefined,
@@ -63,13 +71,13 @@ export default class TerritoryMapDataGenerator implements TerritoryMapData {
     fill = "none",
     height,
     labels,
-    name,
     path,
     type,
     unitSlots,
     width,
     x,
     y,
+    playable,
     texture = undefined,
   }: TerritoryMapDataGeneratorInterface) {
     this.abbr = abbr;
@@ -78,9 +86,9 @@ export default class TerritoryMapDataGenerator implements TerritoryMapData {
     this.fill = fill;
     this.height = height;
     this.labels = labels;
-    this.name = name;
     this.path = path;
     this.type = type;
+    this.playable = playable;
     this.unitSlots = unitSlots;
     this.unitSlotsBySlotName = {};
     if (this.unitSlots) {
@@ -111,13 +119,13 @@ export default class TerritoryMapDataGenerator implements TerritoryMapData {
 
   get territory(): TerritoryMapData {
     return {
+      territory: this.territory;
       abbr: this.abbr,
       arrowReceiver: this.arrowReceiver,
       centerPos: this.centerPos,
       fill: this.fill,
       height: this.height,
       labels: this.labels,
-      name: this.name,
       path: this.path,
       type: this.type,
       unitSlots: this.unitSlots,
@@ -125,6 +133,7 @@ export default class TerritoryMapDataGenerator implements TerritoryMapData {
       width: this.width,
       x: this.x,
       y: this.y,
+      playable: this.playable,
       texture: this.texture,
       viewBox: this.viewBox,
     };

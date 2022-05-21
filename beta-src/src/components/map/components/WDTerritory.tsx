@@ -39,12 +39,8 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   const { user, members } = useAppSelector(gameOverview);
   const userCountry = countryMap[user.member.country];
 
-  const territoryName = territoryMapData.name;
-  // FIXME eww, pass this down.
-  const territoryIdAndMeta = Object.entries(territoriesMeta).find(
-    ([id, meta]) => Territories[id].name === territoryName,
-  );
-  const territoryMeta = territoryIdAndMeta && territoryIdAndMeta[1];
+  const territoryName = territoryMapData;
+  const territoryMeta = territoriesMeta[territoryMapData.territory];
 
   let territoryFill = "none";
   let territoryFillOpacity = 0;
@@ -92,25 +88,24 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     )
     .forEach(({ update }) => {
       territoryFillOpacity = 0.9;
-      unitFCs.main = // FIXME: needs to support coasts
-        (
-          <WDUnit
-            id={`${territoryName}-unit`} // n.b. the id here is ref'd by drawOrders, do not change!
-            country={userCountry}
-            meta={{
-              country: userCountry,
-              mappedTerritory: TerritoryMap[territoryName],
-              unit: {
-                id: `${territoryName}-unit`,
-                countryID: "NA",
-                type: update?.type.split(" ")[1] as unknown as string, // Build Army --> Army
-                terrID: territoryMeta?.id || "null",
-              },
-            }}
-            type={update?.type.split(" ")[1] as UnitType}
-            iconState={UIState.BUILD}
-          />
-        );
+      unitFCs.main = ( // FIXME: needs to support coasts
+        <WDUnit
+          id={`${territoryName}-unit`} // n.b. the id here is ref'd by drawOrders, do not change!
+          country={userCountry}
+          meta={{
+            country: userCountry,
+            mappedTerritory: TerritoryMap[territoryName],
+            unit: {
+              id: `${territoryName}-unit`,
+              countryID: "NA",
+              type: update?.type.split(" ")[1] as unknown as string, // Build Army --> Army
+              terrID: territoryMeta?.id || "null",
+            },
+          }}
+          type={update?.type.split(" ")[1] as UnitType}
+          iconState={UIState.BUILD}
+        />
+      );
     });
 
   const clickAction = function (evt, clickObject: ClickObjectType) {

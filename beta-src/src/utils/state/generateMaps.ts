@@ -1,4 +1,4 @@
-import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
+import { webdipNameToTerritory } from "../../data/map/variants/classic/TerritoryMap";
 import GameDataResponse from "../../state/interfaces/GameDataResponse";
 import GameStateMaps from "../../state/interfaces/GameStateMaps";
 
@@ -6,20 +6,22 @@ export default function generateMaps(
   data: GameDataResponse["data"],
 ): GameStateMaps {
   const { currentOrders, territories, units } = data;
+  const territoryToTerrID: GameStateMaps["territoryToTerrID"] = {};
+  const terrIDToTerritory: GameStateMaps["terrIDToTerritory"] = {};
   const territoryToUnit: GameStateMaps["territoryToUnit"] = {};
   const unitToOrder: GameStateMaps["unitToOrder"] = {};
   const unitToTerritory: GameStateMaps["unitToTerritory"] = {};
-  const enumToTerritory: GameStateMaps["enumToTerritory"] = {};
-  const territoryToEnum: GameStateMaps["territoryToEnum"] = {};
-
-  Object.values(units).forEach(({ id, terrID }) => {
-    territoryToUnit[terrID] = id;
-    unitToTerritory[id] = terrID;
-  });
 
   Object.values(territories).forEach(({ id, name }) => {
-    enumToTerritory[TerritoryMap[name].territory] = id;
-    territoryToEnum[id] = TerritoryMap[name].territory.toString();
+    const territory = webdipNameToTerritory[name];
+    territoryToTerrID[territory] = id;
+    terrIDToTerritory[id] = territory;
+  });
+
+  Object.values(units).forEach(({ id, terrID }) => {
+    const territory = terrIDToTerritory[terrID];
+    territoryToUnit[territory] = id;
+    unitToTerritory[id] = territory;
   });
 
   currentOrders?.forEach(({ id, unitID }) => {
@@ -30,7 +32,7 @@ export default function generateMaps(
     territoryToUnit,
     unitToOrder,
     unitToTerritory,
-    enumToTerritory,
-    territoryToEnum,
+    territoryToTerrID,
+    terrIDToTerritory,
   };
 }

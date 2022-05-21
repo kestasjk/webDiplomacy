@@ -1,8 +1,8 @@
-import TerritoryEnum from "../../enums/map/variants/classic/Territory";
+import Territory from "../../enums/map/variants/classic/Territory";
 import { TerritoryI } from "../../interfaces";
 
 type TerritoryData = {
-  [key in TerritoryEnum]: TerritoryI;
+  [key in Territory]: TerritoryI;
 };
 
 export default TerritoryData;

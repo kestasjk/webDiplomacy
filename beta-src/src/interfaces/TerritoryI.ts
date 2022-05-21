@@ -1,8 +1,8 @@
+import Territory from "../enums/map/variants/classic/Territory";
 import TerritoryType from "../types/map/TerritoryType";
-import TerritoryName from "../types/TerritoryName";
 
 export interface TerritoryI {
-  name: TerritoryName;
+  territory: Territory;
   abbr: string;
   type: TerritoryType;
   parent?: TerritoryI;
