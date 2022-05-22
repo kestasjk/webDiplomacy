@@ -30,6 +30,7 @@ function accumulateMoveOrderArrows(
         console.log(order);
         console.log(territories);
         console.log(order.terrID);
+        console.log(territories[order.terrID]);
         const fromTerr = TerritoryMap[territories[order.terrID].name].territory;
         const toTerr = TerritoryMap[territories[order.toTerrID].name].territory;
 

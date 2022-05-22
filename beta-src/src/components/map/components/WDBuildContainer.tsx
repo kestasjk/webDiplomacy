@@ -2,13 +2,8 @@
 import * as React from "react";
 import BuildUnitMap from "../../../data/BuildUnit";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
-import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
 import Territories from "../../../data/Territories";
-import {
-  gameApiSliceActions,
-  gameOverview,
-  gameTerritoriesMeta,
-} from "../../../state/game/game-api-slice";
+import { gameApiSliceActions } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import WDBuildUnitButtons from "./WDBuildUnitButtons";
 
