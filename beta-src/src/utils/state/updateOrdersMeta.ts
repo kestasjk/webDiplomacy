@@ -4,7 +4,7 @@ import drawOrders from "../map/drawOrders";
 /* eslint-disable no-param-reassign */
 export default function updateOrdersMeta(state, updates: EditOrderMeta): void {
   console.log("updateOrdersMeta");
-  console.log(updates);
+  console.log({ updates });
   const entries = Object.entries(updates);
   if (entries.length) {
     entries.forEach(([orderID, update]) => {

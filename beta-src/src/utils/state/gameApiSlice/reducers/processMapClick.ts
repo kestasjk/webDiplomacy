@@ -1,5 +1,7 @@
 import { current } from "@reduxjs/toolkit";
-import TerritoryMap from "../../../../data/map/variants/classic/TerritoryMap";
+import TerritoryMap, {
+  webdipNameToTerritory,
+} from "../../../../data/map/variants/classic/TerritoryMap";
 import BuildUnit from "../../../../enums/BuildUnit";
 import Territory from "../../../../enums/map/variants/classic/Territory";
 import UIState from "../../../../enums/UIState";
@@ -151,7 +153,8 @@ export default function processMapClick(state, clickData) {
       } else {
         // attempting support move
         const supportMoveMatch = unitSupporting.supportMoveChoices?.find(
-          ({ supportMoveTo: { name } }) => name === territory,
+          ({ supportMoveTo }) =>
+            webdipNameToTerritory[supportMoveTo.name] === territory, // FIXME ugly
         );
         if (supportMoveMatch && supportMoveMatch.supportMoveFrom.length) {
           const match = supportMoveMatch.supportMoveFrom.find(
@@ -182,7 +185,6 @@ export default function processMapClick(state, clickData) {
     currentOrders
   ) {
     const territoryMeta = territoriesMeta[Territory[territory]];
-    console.log("processMap currentOrders Build");
 
     if (territoryMeta) {
       const {
@@ -216,7 +218,6 @@ export default function processMapClick(state, clickData) {
       );
 
       if (existingBuildOrder) {
-        console.log("existingBuildOrder");
         const [id] = existingBuildOrder;
 
         updateOrdersMeta(state, {
