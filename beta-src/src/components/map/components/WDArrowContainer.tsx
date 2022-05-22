@@ -27,9 +27,9 @@ function accumulateMoveOrderArrows(
     .filter((order) => order.type === "Move")
     .forEach((order) => {
       if (order.toTerrID) {
-        // console.log(order);
-        // console.log(territories);
-        // console.log(order.terrID);
+        console.log(order);
+        console.log(territories);
+        console.log(order.terrID);
         const fromTerr = TerritoryMap[territories[order.terrID].name].territory;
         const toTerr = TerritoryMap[territories[order.toTerrID].name].territory;
 

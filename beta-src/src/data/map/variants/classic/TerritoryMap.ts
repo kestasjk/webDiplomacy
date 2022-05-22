@@ -134,16 +134,25 @@ export const coastData = {
   },
 };
 
-const TerritoryMap: ITerritoryMap = Object.fromEntries(
+const territoryToMTerr: ITerritoryMap = Object.fromEntries(
   Object.entries(territoryToWebdipName).map(([territory, webdipName]) => [
     territory,
     {
       parent: coastData[territory]?.parent,
       territory: territory as Territory,
-      unitSlotName: coastData[territory]?.unitSlotName,
+      unitSlotName: coastData[territory]?.unitSlotName || "main",
       territoryMapData: territoriesMapData[territory],
     },
   ]),
 );
+
+const webdipNameToMTerr = Object.fromEntries(
+  Object.entries(territoryToMTerr).map(([territory, data]) => [
+    territoryToWebdipName[territory],
+    data,
+  ]),
+);
+
+const TerritoryMap = { ...territoryToMTerr, ...webdipNameToMTerr };
 
 export default TerritoryMap;

@@ -71,7 +71,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         territoryMeta?.territory,
     )
     .forEach((unit) => {
-      console.log(`Found unit in ${territory}`);
       unitFCs[unit.mappedTerritory.unitSlotName] = (
         <WDUnit
           id={`${territory}-unit`} // n.b. the id here is ref'd by drawOrders, do not change!

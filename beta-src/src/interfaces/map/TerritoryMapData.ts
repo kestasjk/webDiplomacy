@@ -1,6 +1,7 @@
 import { BBox, Coordinates, Label, TerritoryI, Texture, UnitSlot } from "..";
 
-export interface TerritoryMapData extends TerritoryI, BBox {
+// just used for construction the TerritoryMapData. Do not use.
+export interface TerritoryMapDrawData extends BBox {
   arrowReceiver?: Coordinates;
   centerPos?: Coordinates;
   fill?: string;
@@ -9,6 +10,12 @@ export interface TerritoryMapData extends TerritoryI, BBox {
   playable: boolean;
   texture?: Texture;
   unitSlots?: UnitSlot[];
-  unitSlotsBySlotName: { [key: string]: UnitSlot };
   viewBox?: string;
+}
+
+export interface TerritoryMapData
+  extends TerritoryMapDrawData,
+    TerritoryI,
+    BBox {
+  unitSlotsBySlotName: { [key: string]: UnitSlot };
 }
