@@ -9,6 +9,7 @@ const WDMapController = React.lazy(
 );
 
 const WDMain: React.FC = function (): React.ReactElement {
+  console.log("WDMain rerendered");
   const { user, gameID } = useAppSelector(gameOverview);
   const dispatch = useAppDispatch();
   if (user && gameID) {

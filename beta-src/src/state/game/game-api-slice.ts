@@ -347,6 +347,7 @@ export const gameTerritoriesMeta = ({
 }: RootState): TerritoriesMeta => territoriesMeta;
 export const gameUnits = ({ game: { units } }: RootState): Unit[] => units;
 export const gameUnitState = ({ game: { unitState } }: RootState) => unitState;
+export const gameMaps = ({ game: { maps } }: RootState) => maps;
 
 export const gameViewedPhase = ({
   game: { viewedPhaseState },

@@ -10,10 +10,13 @@ import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import {
   gameApiSliceActions,
   gameOrdersMeta,
+  gameOverview,
+  gameStatus,
+  gameData,
+  gameMaps,
+  gameUnits,
+  gameViewedPhase,
 } from "../../state/game/game-api-slice";
-import drawArrow from "../../utils/map/drawArrow";
-import ArrowType from "../../enums/ArrowType";
-import ArrowColor from "../../enums/ArrowColor";
 import getUnits from "../../utils/map/getUnits";
 import {
   IOrderData,
@@ -49,15 +52,19 @@ const WDMapController: React.FC = function (): React.ReactElement {
   const [viewport] = useViewport();
   const dispatch = useAppDispatch();
   const ordersMeta = useAppSelector(gameOrdersMeta);
-
   const device = getDevice(viewport);
   const [scaleMin, scaleMax] = getInitialScaleForDevice(device);
 
-  const [phase, units, orders, territories] = useAppSelector((state) => {
-    if (
-      state.game.viewedPhaseState.viewedPhaseIdx >=
-      state.game.status.phases.length - 1
-    ) {
+  // FIXME: it's not ideal for us to be fetching the whole world from store here
+  const viewedPhaseState = useAppSelector(gameViewedPhase);
+  const overview = useAppSelector(gameOverview);
+  const status = useAppSelector(gameStatus);
+  const data = useAppSelector(gameData);
+  const maps = useAppSelector(gameMaps);
+  const stateUnits = useAppSelector(gameUnits);
+
+  const updateForPhase = () => {
+    if (viewedPhaseState.viewedPhaseIdx >= status.phases.length - 1) {
       // Convert from our internal order representation to webdip's
       // historical representation of orders so that we draw
       // our internal orders and webdip's historical orders
@@ -65,12 +72,12 @@ const WDMapController: React.FC = function (): React.ReactElement {
 
       const ordersHistorical: IOrderDataHistorical[] = [];
       const currentOrdersById: { [key: number]: IOrderData } = {};
-      if (state.game.data.data.currentOrders) {
-        state.game.data.data.currentOrders.forEach((orderData) => {
+      if (data.data.currentOrders) {
+        data.data.currentOrders.forEach((orderData) => {
           currentOrdersById[orderData.id] = orderData;
         });
       }
-      Object.entries(state.game.ordersMeta).forEach(([orderID, orderMeta]) => {
+      Object.entries(ordersMeta).forEach(([orderID, orderMeta]) => {
         let fromTerrID = 0;
         let toTerrID = 0;
         let terrID = 0;
@@ -97,12 +104,11 @@ const WDMapController: React.FC = function (): React.ReactElement {
             }
             [, unitType] = type.split(" ");
           } else {
-            const terrIDString =
-              state.game.maps.unitToTerrID[originalOrder.unitID];
+            const terrIDString = maps.unitToTerrID[originalOrder.unitID];
             if (terrIDString) {
               terrID = Number(terrIDString);
             }
-            unitType = state.game.data.data.units[originalOrder.unitID].type;
+            unitType = data.data.units[originalOrder.unitID].type;
           }
 
           if (originalOrder.viaConvoy === "Yes") {
@@ -124,14 +130,14 @@ const WDMapController: React.FC = function (): React.ReactElement {
           }
         }
         const orderHistorical: IOrderDataHistorical = {
-          countryID: state.game.status.countryID.toString(),
+          countryID: status.countryID.toString(),
           dislodged: "No",
           fromTerrID,
-          phase: state.game.overview.phase,
+          phase: overview.phase,
           success: "Yes",
           terrID,
           toTerrID,
-          turn: state.game.overview.turn,
+          turn: overview.turn,
           type,
           unitType,
           viaConvoy,
@@ -143,16 +149,15 @@ const WDMapController: React.FC = function (): React.ReactElement {
       // console.log(state.game.ordersMeta);
       // console.log(ordersHistorical);
 
-      return [
-        state.game.overview.phase,
-        state.game.units,
-        ordersHistorical,
-        state.game.data.data.territories,
-      ];
+      return {
+        phase: overview.phase,
+        units: stateUnits,
+        orders: ordersHistorical,
+        territories: data.data.territories,
+      };
     }
 
-    const phaseHistorical =
-      state.game.status.phases[state.game.viewedPhaseState.viewedPhaseIdx];
+    const phaseHistorical = status.phases[viewedPhaseState.viewedPhaseIdx];
     const unitsHistorical = phaseHistorical.units;
     const unitsConverted: { [key: string]: IUnit } = {};
     unitsHistorical.forEach((unitHistorical, index) => {
@@ -164,18 +169,18 @@ const WDMapController: React.FC = function (): React.ReactElement {
       };
     });
     const unitsLive = getUnits(
-      state.game.data.data.territories,
+      data.data.territories,
       unitsConverted,
-      state.game.overview.members,
+      overview.members,
     );
-    return [
-      phaseHistorical.phase,
-      unitsLive,
-      phaseHistorical.orders,
-      state.game.data.data.territories,
-    ];
-  });
-  const maps = useAppSelector((state) => state.game.maps);
+    return {
+      phase: phaseHistorical.phase as string,
+      units: unitsLive,
+      orders: phaseHistorical.orders,
+      territories: data.data.territories,
+    };
+  };
+  const { phase, units, orders, territories } = updateForPhase();
 
   React.useLayoutEffect(() => {
     if (svgElement.current) {

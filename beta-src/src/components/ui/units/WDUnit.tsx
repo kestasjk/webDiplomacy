@@ -18,7 +18,6 @@ const WDUnit: React.FC<GameIconProps> = function ({
   iconState,
 }): React.ReactElement {
   const theme = useTheme();
-
   return (
     <svg
       filter={theme.palette.svg.filters.dropShadows[1]}
