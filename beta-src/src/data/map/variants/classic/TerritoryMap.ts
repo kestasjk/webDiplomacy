@@ -13,7 +13,7 @@ export interface MTerritory {
 }
 
 type ITerritoryMap = {
-  [key in Territory]?: MTerritory;
+  [key: string]: MTerritory;
 };
 
 export const webdipNameToTerritory: { [key: string]: Territory } = {
@@ -139,7 +139,7 @@ const TerritoryMap: ITerritoryMap = Object.fromEntries(
     territory,
     {
       parent: coastData[territory]?.parent,
-      territory,
+      territory: territory as Territory,
       unitSlotName: coastData[territory]?.unitSlotName,
       territoryMapData: territoriesMapData[territory],
     },

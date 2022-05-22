@@ -47,9 +47,7 @@ export default function processUnitClick(state, clickData) {
     }
 
     const existingOrder = Object.entries(ordersMeta).find(([, { update }]) => {
-      return (
-        update?.toTerrID === maps.unitToTerritory[clickData.payload.unitID]
-      );
+      return update?.toTerrID === maps.unitToTerrID[clickData.payload.unitID];
     });
 
     if (existingOrder) {
@@ -73,7 +71,7 @@ export default function processUnitClick(state, clickData) {
             saved: false,
             update: {
               type: "Destroy",
-              toTerrID: maps.unitToTerritory[clickData.payload.unitID],
+              toTerrID: maps.unitToTerrID[clickData.payload.unitID],
             },
           },
         });

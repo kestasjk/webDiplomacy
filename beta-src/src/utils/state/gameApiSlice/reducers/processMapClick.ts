@@ -49,7 +49,7 @@ export default function processMapClick(state, clickData) {
     return;
   }
   const {
-    payload: { clickObject, evt, name: territoryName },
+    payload: { clickObject, evt, name: territory },
   } = clickData;
   const truthyToTerritory = toTerritory !== undefined && toTerritory !== null;
   const truthyOnTerritory = onTerritory !== undefined && onTerritory !== null;
@@ -57,11 +57,7 @@ export default function processMapClick(state, clickData) {
   if (inProgress && method === "click") {
     state.buildPopover = [];
     const currOrderUnitID = unitID;
-    if (
-      truthyOnTerritory &&
-      Territory[onTerritory] === territoryName &&
-      !type
-    ) {
+    if (truthyOnTerritory && onTerritory === territory && !type) {
       console.log(`inProgress Click`);
 
       state.unitState[currOrderUnitID] = UIState.HOLD;
@@ -83,7 +79,7 @@ export default function processMapClick(state, clickData) {
       }
       state.order.type = phase === "Retreats" ? "disband" : "hold";
     } else if (type === "convoy" && !truthyToTerritory) {
-      state.order.toTerritory = Number(Territory[territoryName]);
+      state.order.toTerritory = Number(Territory[territory]);
       processConvoy(state, evt);
     } else if (
       truthyOnTerritory &&
@@ -100,7 +96,7 @@ export default function processMapClick(state, clickData) {
     } else if (
       clickObject === "territory" &&
       truthyOnTerritory &&
-      Territory[onTerritory] !== territoryName &&
+      onTerritory !== territory &&
       !type &&
       inProgress
     ) {
@@ -108,7 +104,7 @@ export default function processMapClick(state, clickData) {
       const { allowedBorderCrossings } = ordersMeta[orderID];
       const canMove = allowedBorderCrossings?.find((border) => {
         const mappedTerritory = TerritoryMap[border.name];
-        return Territory[mappedTerritory.territory] === territoryName;
+        return Territory[mappedTerritory.territory] === territory;
       });
       if (canMove) {
         updateOrdersMeta(state, {
@@ -124,7 +120,7 @@ export default function processMapClick(state, clickData) {
         state.order.toTerritory = TerritoryMap[canMove.name].territory;
         state.order.type = phase === "Retreats" ? "retreat" : "move";
       } else {
-        invalidClick(evt, territoryName);
+        invalidClick(evt, territory);
       }
     }
   } else if (inProgress && method === "dblClick") {
@@ -133,8 +129,7 @@ export default function processMapClick(state, clickData) {
       // user is trying to do a support move or a support hold
       const unitSupporting = ordersMeta[orderID];
       const unitBeingSupported = subsequentClicks[0];
-      const terrEnum = Number(Territory[territoryName]);
-      if (terrEnum === unitBeingSupported.onTerritory) {
+      if (territory === unitBeingSupported.onTerritory) {
         // attemping support hold
         const match = unitSupporting.supportHoldChoices?.find(
           ({ unitID: uID }) => uID === unitBeingSupported.unitID,
@@ -156,8 +151,7 @@ export default function processMapClick(state, clickData) {
       } else {
         // attempting support move
         const supportMoveMatch = unitSupporting.supportMoveChoices?.find(
-          ({ supportMoveTo: { name } }) =>
-            TerritoryMap[name].territory === terrEnum,
+          ({ supportMoveTo: { name } }) => name === territory,
         );
         if (supportMoveMatch && supportMoveMatch.supportMoveFrom.length) {
           const match = supportMoveMatch.supportMoveFrom.find(
@@ -180,14 +174,14 @@ export default function processMapClick(state, clickData) {
           }
         }
       }
-      invalidClick(evt, territoryName);
+      invalidClick(evt, territory);
     }
   } else if (
     clickObject === "territory" &&
     phase === "Builds" &&
     currentOrders
   ) {
-    const territoryMeta = territoriesMeta[Territory[territoryName]];
+    const territoryMeta = territoriesMeta[Territory[territory]];
     console.log("processMap currentOrders Build");
 
     if (territoryMeta) {

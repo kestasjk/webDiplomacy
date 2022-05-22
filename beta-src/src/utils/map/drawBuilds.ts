@@ -39,11 +39,12 @@ export default function drawBuilds(state: GameState): void {
       if (update) {
         const { toTerrID, type } = update;
         if (toTerrID) {
-          const territoryMeta = territoriesMeta[maps.territoryToEnum[toTerrID]];
+          const territory = maps.terrIDToTerritory[toTerrID];
+          const territoryMeta = territoriesMeta[territory];
           if (territoryMeta) {
             // Destroy Units
             if (type === "Destroy" && toTerrID) {
-              const unitID = maps.territoryToUnit[toTerrID];
+              const unitID = maps.terrIDToUnit[toTerrID];
               state.unitState[unitID] = UIState.DESTROY;
             }
           }

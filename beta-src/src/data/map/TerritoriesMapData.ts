@@ -2812,10 +2812,9 @@ const territoriesMapData = Object.fromEntries(
     // eww, why???
 
     new TerritoryMapDataGenerator({
-      territory,
       ...Territories[territory],
       ...drawData,
-    }).territory,
+    }).getTerritory,
   ]),
 );
 

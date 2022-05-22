@@ -56,7 +56,7 @@ export default function drawMoveOrders(
                 path
                   .filter((p) => p !== unitData.terrID)
                   .forEach((p) => {
-                    const convoyingUnitID = maps.territoryToUnit[p];
+                    const convoyingUnitID = maps.terrIDToUnit[p];
                     const convoyingUnitOrder =
                       maps.unitToOrder[convoyingUnitID];
                     const unitOrderMeta = ordersMeta[convoyingUnitOrder].update;
@@ -70,7 +70,9 @@ export default function drawMoveOrders(
                         ArrowColor.IMPLIED,
                         "arrow",
                         id,
-                        maps.unitToTerritory[convoyingUnitID],
+                        maps.terrIDToTerritory[
+                          maps.unitToTerrID[convoyingUnitID]
+                        ],
                       );
                     }
                   });

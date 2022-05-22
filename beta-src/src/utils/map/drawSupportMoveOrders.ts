@@ -25,11 +25,11 @@ export default function drawSupportMoveOrders(
           if (fromTerrID && toTerrID) {
             const { id, unitID } = originalOrder;
 
-            const unitBeingSupported = maps.territoryToUnit[fromTerrID];
+            const unitBeingSupported = maps.terrIDToUnit[fromTerrID];
             const unitBeingSupportedOrder =
               maps.unitToOrder[unitBeingSupported];
 
-            const supportingTerritory = maps.unitToTerritory[unitID];
+            const supportingTerritory = maps.unitToTerrID[unitID];
             const supportingTerritoryDetails = territories[supportingTerritory];
             if (!ownUnits.includes(unitBeingSupported)) {
               const supportArrowIdentifer = `${id}-foreign`;

@@ -5,7 +5,6 @@ export interface TerritoryMeta {
   coastParentID: string;
   countryID: string | null;
   id: string;
-  name: string;
   ownerCountryID: string | null;
   standoff: boolean;
   supply: boolean;

@@ -16,7 +16,7 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
       <WDTerritory
         territoryMapData={data}
         units={units}
-        key={`${data.name}-territory`}
+        key={`${data.territory}-territory`}
       />
     ));
   const playableTerritories = Object.values(territoriesMapData)
@@ -25,7 +25,7 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
       <WDTerritory
         territoryMapData={data}
         units={units}
-        key={`${data.name}-territory`}
+        key={`${data.territory}-territory`}
       />
     ));
 

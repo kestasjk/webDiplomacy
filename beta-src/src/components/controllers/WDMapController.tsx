@@ -98,7 +98,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
             [, unitType] = type.split(" ");
           } else {
             const terrIDString =
-              state.game.maps.unitToTerritory[originalOrder.unitID];
+              state.game.maps.unitToTerrID[originalOrder.unitID];
             if (terrIDString) {
               terrID = Number(terrIDString);
             }
@@ -138,10 +138,10 @@ const WDMapController: React.FC = function (): React.ReactElement {
         };
         ordersHistorical.push(orderHistorical);
       });
-      console.log("Ordershistorical");
-      console.log(currentOrdersById);
-      console.log(state.game.ordersMeta);
-      console.log(ordersHistorical);
+      // console.log("Ordershistorical");
+      // console.log(currentOrdersById);
+      // console.log(state.game.ordersMeta);
+      // console.log(ordersHistorical);
 
       return [
         state.game.overview.phase,

@@ -37,11 +37,11 @@ const initialState: GameState = {
   ownUnits: [],
   units: [],
   maps: {
-    territoryToUnit: {},
+    terrIDToUnit: {},
     unitToOrder: {},
-    unitToTerritory: {},
-    enumToTerritory: {},
-    territoryToEnum: {},
+    unitToTerrID: {},
+    terrIDToTerritory: {},
+    territoryToTerrID: {},
   },
   territoriesMeta: {},
   viewedPhaseState: {

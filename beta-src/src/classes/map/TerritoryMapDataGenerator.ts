@@ -9,7 +9,9 @@ import {
 } from "../../interfaces";
 import webDiplomacyTheme from "../../webDiplomacyTheme";
 import Country from "../../enums/Country";
+import Territory from "../../enums/map/variants/classic/Territory";
 
+// FIXME: burn me down please
 export interface TerritoryMapDataGeneratorDrawData extends BBox {
   arrowReceiver?: Coordinates;
   centerPos?: Coordinates;
@@ -27,8 +29,8 @@ interface TerritoryMapDataGeneratorInterface
   extends TerritoryI,
     TerritoryMapDataGeneratorDrawData {}
 
-export default class TerritoryMapDataGenerator implements TerritoryMapData {
-  public territory: TerritoryMapData["territory"];
+export default class TerritoryMapDataGenerator {
+  public innerTerritory: TerritoryMapData["territory"];
 
   public abbr: TerritoryMapData["abbr"];
 
@@ -80,6 +82,7 @@ export default class TerritoryMapDataGenerator implements TerritoryMapData {
     playable,
     texture = undefined,
   }: TerritoryMapDataGeneratorInterface) {
+    this.innerTerritory = territory;
     this.abbr = abbr;
     this.arrowReceiver = arrowReceiver;
     this.centerPos = centerPos;
@@ -117,9 +120,9 @@ export default class TerritoryMapDataGenerator implements TerritoryMapData {
     this.viewBox = `0 0 ${width} ${height}`;
   }
 
-  get territory(): TerritoryMapData {
+  get getTerritory(): TerritoryMapData {
     return {
-      territory: this.territory;
+      territory: this.innerTerritory,
       abbr: this.abbr,
       arrowReceiver: this.arrowReceiver,
       centerPos: this.centerPos,

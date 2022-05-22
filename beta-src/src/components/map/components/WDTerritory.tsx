@@ -22,6 +22,7 @@ import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
 import { Unit } from "../../../utils/map/getUnits";
+import Territory from "../../../enums/map/variants/classic/Territory";
 
 interface WDTerritoryProps {
   territoryMapData: TerritoryMapData;
@@ -39,7 +40,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   const { user, members } = useAppSelector(gameOverview);
   const userCountry = countryMap[user.member.country];
 
-  const territoryName = territoryMapData;
+  const { territory } = territoryMapData;
   const territoryMeta = territoriesMeta[territoryMapData.territory];
 
   let territoryFill = "none";
@@ -60,6 +61,9 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
 
   const unitState = useAppSelector(gameUnitState); // FIXME: too global
   const unitFCs: { [key: string]: any } = {};
+  if (territory === Territory.BERLIN) {
+    console.log({ territory, units, territoryMeta });
+  }
   units
     .filter(
       (unit) =>
@@ -67,9 +71,10 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         territoryMeta?.territory,
     )
     .forEach((unit) => {
+      console.log(`Found unit in ${territory}`);
       unitFCs[unit.mappedTerritory.unitSlotName] = (
         <WDUnit
-          id={`${territoryName}-unit`} // n.b. the id here is ref'd by drawOrders, do not change!
+          id={`${territory}-unit`} // n.b. the id here is ref'd by drawOrders, do not change!
           country={unit.country}
           meta={unit}
           type={unit.unit.type as UnitType}
@@ -90,13 +95,13 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       territoryFillOpacity = 0.9;
       unitFCs.main = ( // FIXME: needs to support coasts
         <WDUnit
-          id={`${territoryName}-unit`} // n.b. the id here is ref'd by drawOrders, do not change!
+          id={`${territory}-unit`} // n.b. the id here is ref'd by drawOrders, do not change!
           country={userCountry}
           meta={{
             country: userCountry,
-            mappedTerritory: TerritoryMap[territoryName],
+            mappedTerritory: TerritoryMap[territory],
             unit: {
-              id: `${territoryName}-unit`,
+              id: `${territory}-unit`,
               countryID: "NA",
               type: update?.type.split(" ")[1] as unknown as string, // Build Army --> Army
               terrID: territoryMeta?.id || "null",
@@ -113,14 +118,14 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       gameApiSliceActions.processMapClick({
         clickObject,
         evt,
-        name: territoryMapData.name,
+        name: territory,
       }),
     );
   };
   return (
     <svg
       height={territoryMapData.height}
-      id={`${territoryMapData.name}-territory`}
+      id={`${territory}-territory`}
       viewBox={territoryMapData.viewBox}
       width={territoryMapData.width}
       x={territoryMapData.x}
@@ -131,7 +136,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
           <path
             d={territoryMapData.path}
             fill={territoryMapData.texture.texture}
-            id={`${territoryMapData.name}-texture`}
+            id={`${territory}-texture`}
             stroke={territoryMapData.texture.stroke}
             strokeOpacity={territoryMapData.texture.strokeOpacity}
             strokeWidth={territoryMapData.texture.strokeWidth}
@@ -141,7 +146,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
           d={territoryMapData.path}
           fill={territoryFill}
           fillOpacity={territoryFillOpacity}
-          id={`${territoryMapData.name}-control-path`}
+          id={`${territory}-control-path`}
           stroke={theme.palette.primary.main}
           strokeOpacity={1}
           strokeWidth={territoryStrokeOpacity}
@@ -150,7 +155,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       {territoryMapData.centerPos && (
         <g className="no-pointer-events">
           <WDCenter
-            territoryName={territoryMapData.name}
+            territory={territory}
             x={territoryMapData.centerPos.x}
             y={territoryMapData.centerPos.y}
           />
@@ -159,7 +164,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       {territoryMapData.labels &&
         territoryMapData.labels.map(({ name, text, style, x, y }, i) => {
           let txt = text;
-          const id = `${territoryMapData.name}-label-${name}`;
+          const id = `${territory}-label-${name}`;
           if (!txt) {
             txt = territoryMapData.abbr;
           }
@@ -179,19 +184,13 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         })}
       {territoryMapData.unitSlots &&
         territoryMapData.unitSlots.map(({ name, x, y }) => (
-          <WDUnitSlot
-            key={name}
-            name={name}
-            territoryName={territoryMapData.name}
-            x={x}
-            y={y}
-          >
+          <WDUnitSlot key={name} name={name} territory={territory} x={x} y={y}>
             {unitFCs[name]}
           </WDUnitSlot>
         ))}
       {territoryMapData.arrowReceiver && (
         <rect
-          id={`${territoryMapData.name}-arrow-receiver`}
+          id={`${territory}-arrow-receiver`}
           x={territoryMapData.arrowReceiver.x}
           y={territoryMapData.arrowReceiver.y}
           width="1"

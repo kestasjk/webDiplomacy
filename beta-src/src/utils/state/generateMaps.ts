@@ -8,9 +8,9 @@ export default function generateMaps(
   const { currentOrders, territories, units } = data;
   const territoryToTerrID: GameStateMaps["territoryToTerrID"] = {};
   const terrIDToTerritory: GameStateMaps["terrIDToTerritory"] = {};
-  const territoryToUnit: GameStateMaps["territoryToUnit"] = {};
+  const terrIDToUnit: GameStateMaps["terrIDToUnit"] = {};
   const unitToOrder: GameStateMaps["unitToOrder"] = {};
-  const unitToTerritory: GameStateMaps["unitToTerritory"] = {};
+  const unitToTerrID: GameStateMaps["unitToTerrID"] = {};
 
   Object.values(territories).forEach(({ id, name }) => {
     const territory = webdipNameToTerritory[name];
@@ -19,9 +19,8 @@ export default function generateMaps(
   });
 
   Object.values(units).forEach(({ id, terrID }) => {
-    const territory = terrIDToTerritory[terrID];
-    territoryToUnit[territory] = id;
-    unitToTerritory[id] = territory;
+    terrIDToUnit[terrID] = id;
+    unitToTerrID[id] = terrID;
   });
 
   currentOrders?.forEach(({ id, unitID }) => {
@@ -29,9 +28,9 @@ export default function generateMaps(
   });
 
   return {
-    territoryToUnit,
+    terrIDToUnit,
     unitToOrder,
-    unitToTerritory,
+    unitToTerrID,
     territoryToTerrID,
     terrIDToTerritory,
   };

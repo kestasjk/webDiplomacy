@@ -4,6 +4,7 @@ import GameDataResponse, {
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
 import TerritoryMap, {
   MTerritory,
+  webdipNameToTerritory,
 } from "../../data/map/variants/classic/TerritoryMap";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import Country from "../../enums/Country";
@@ -22,6 +23,7 @@ export default function getUnits(
   members: GameOverviewResponse["members"],
 ): Unit[] {
   const unitsToDraw: Unit[] = [];
+  console.log({ units });
   Object.values(units).forEach((unit) => {
     const territory = territories[unit.terrID];
     /* TODO break this for now, need to fix declaratively to get retreats to display properly
@@ -42,7 +44,8 @@ export default function getUnits(
     */
 
     if (territory) {
-      const mappedTerritory = TerritoryMap[territory.name];
+      const mappedTerritory =
+        TerritoryMap[webdipNameToTerritory[territory.name]];
       if (mappedTerritory) {
         const memberCountry = members.find(
           (member) => member.countryID.toString() === unit.countryID,

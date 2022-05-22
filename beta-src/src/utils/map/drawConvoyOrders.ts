@@ -23,10 +23,10 @@ export default function drawConvoyOrders(
           if (fromTerrID && toTerrID) {
             const { id, unitID } = originalOrder;
 
-            const unitBeingConvoyed = maps.territoryToUnit[fromTerrID];
+            const unitBeingConvoyed = maps.terrIDToUnit[fromTerrID];
             const unitBeingConvoyedOrder = maps.unitToOrder[unitBeingConvoyed];
 
-            const convoyingTerritory = maps.unitToTerritory[unitID];
+            const convoyingTerritory = maps.unitToTerrID[unitID];
             const convoyingTerritoryDetails = territories[convoyingTerritory];
 
             const { update: unitBeingConvoyedOrderDetails } =
