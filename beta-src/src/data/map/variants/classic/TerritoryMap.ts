@@ -141,7 +141,9 @@ const territoryToMTerr: ITerritoryMap = Object.fromEntries(
       parent: coastData[territory]?.parent,
       territory: territory as Territory,
       unitSlotName: coastData[territory]?.unitSlotName || "main",
-      territoryMapData: territoriesMapData[territory],
+      territoryMapData:
+        territoriesMapData[territory] ||
+        territoriesMapData[coastData[territory]?.parent],
     },
   ]),
 );
