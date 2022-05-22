@@ -14,7 +14,7 @@ import Button from "@mui/material/Button";
 import Device from "../../enums/Device";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
-import useInterval from "../../utils/useInterval";
+import useInterval from "../../hooks/useInterval";
 import WDMessageList from "./WDMessageList";
 import { CountryTableData } from "../../interfaces";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
