@@ -26,6 +26,7 @@ export interface GameState {
   ordersMeta: OrdersMeta;
   ownUnits: string[];
   territoriesMeta: TerritoriesMeta;
+  transition: boolean;
   mustDestroyUnitsBuildPhase: boolean;
   commands: GameCommands;
   status: GameStatusResponse;
