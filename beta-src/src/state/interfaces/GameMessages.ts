@@ -1,15 +1,16 @@
-interface GameMessagesArray {
-  fromCountryID: string;
+export interface GameMessage {
+  fromCountryID: number;
   message: string;
-  timeSent: string;
-  toCountryID: string;
-  turn: string;
+  timeSent: number;
+  toCountryID: number;
+  turn: number;
 }
 
 export interface GameMessages {
-  messages: GameMessagesArray[];
-  pressType: string;
-  phase: string;
+  messages: GameMessage[];
+  newMessagesFrom: number[];
+  time: number;
+  outstandingRequests: number;
 }
 
 export default GameMessages;
