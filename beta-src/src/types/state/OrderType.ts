@@ -2,6 +2,7 @@ type OrderType =
   | "destroy"
   | "hold"
   | "move"
+  | "support"
   | "build"
   | "disband"
   | "retreat"

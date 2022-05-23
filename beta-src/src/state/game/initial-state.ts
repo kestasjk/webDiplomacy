@@ -150,6 +150,10 @@ const initialState: GameState = {
   },
   unitState: {},
   buildPopover: [],
+  flyoutMenu: {
+    unitSlotName: "",
+    orderID: "",
+  },
 };
 
 export default initialState;

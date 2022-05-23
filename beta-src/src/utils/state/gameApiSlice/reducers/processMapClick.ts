@@ -71,7 +71,7 @@ export default function processMapClick(state, clickData) {
   });
   if (!inProgress) {
     if (curUnitID && ownsCurUnit) {
-      startNewOrder(state, { unitID: curUnitID });
+      const newOrderID = startNewOrder(state, { unitID: curUnitID });
     } else {
       invalidClick(evt, territory);
     }

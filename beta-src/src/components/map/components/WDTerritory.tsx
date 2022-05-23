@@ -56,13 +56,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     territoryFillOpacity = 0.4;
   }
   const curOrder = useAppSelector(gameOrder);
-  if (
-    territoryMeta?.territory &&
-    territoryMeta?.territory === curOrder.toTerritory
-  ) {
-    territoryFillOpacity = 0.9;
-    territoryFill = theme.palette[userCountry].main;
-  }
 
   const unitState = useAppSelector(gameUnitState); // FIXME: too global
   const unitFCs: { [key: string]: any } = {};
@@ -73,8 +66,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         territoryMeta?.territory,
     )
     .forEach((unit) => {
-      console.log(territory, curOrder.unitID, unit.unit.id);
-      if (curOrder.unitID === unit.unit.id) {
+      if (curOrder.unitID === unit.unit.id && curOrder.type) {
         territoryFillOpacity = 0.9;
         territoryFill = theme.palette[userCountry]?.main;
       }

@@ -1,5 +1,5 @@
 import BoardClass from "../../models/BoardClass";
-import { BuildCommand } from "./GameCommands";
+import { BuildCommand, FlyoutCommand } from "./GameCommands";
 import GameDataResponse from "./GameDataResponse";
 import GameErrorResponse from "./GameErrorResponse";
 import GameOverviewResponse from "./GameOverviewResponse";
@@ -39,4 +39,5 @@ export interface GameState {
   // FIXME: get rid of these if/when possible
   unitState: UnitState; // map from unit ID to icon state
   buildPopover: BuildCommand[]; // list of possible builds that the user can choose from
+  flyoutMenu: FlyoutCommand;
 }

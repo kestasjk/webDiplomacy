@@ -18,6 +18,7 @@ import OrdersMeta from "../interfaces/SavedOrders";
 import OrderState from "../interfaces/OrderState";
 import drawBuilds from "../../utils/map/drawBuilds";
 import mergeMessageArrays from "../../utils/state/mergeMessageArrays";
+import updateOrder from "../../utils/state/updateOrder";
 import updateOrdersMeta from "../../utils/state/updateOrdersMeta";
 import UpdateOrdersMetaAction from "../../interfaces/state/UpdateOrdersMetaAction";
 import SavedOrdersConfirmation from "../../interfaces/state/SavedOrdersConfirmation";
@@ -191,6 +192,9 @@ const gameApiSlice = createSlice({
   reducers: {
     resetOrder,
     updateUserActivity,
+    updateOrder(state, action) {
+      updateOrder(state, action.payload);
+    },
     updateOrdersMeta(state, action: UpdateOrdersMetaAction) {
       updateOrdersMeta(state, action.payload);
     },
@@ -348,7 +352,8 @@ export const gameTerritoriesMeta = ({
 export const gameUnits = ({ game: { units } }: RootState): Unit[] => units;
 export const gameUnitState = ({ game: { unitState } }: RootState) => unitState;
 export const gameMaps = ({ game: { maps } }: RootState) => maps;
-
+export const gameFlyoutMenu = ({ game: { flyoutMenu } }: RootState) =>
+  flyoutMenu;
 export const gameViewedPhase = ({
   game: { viewedPhaseState },
 }: RootState): ViewedPhaseState => viewedPhaseState;
