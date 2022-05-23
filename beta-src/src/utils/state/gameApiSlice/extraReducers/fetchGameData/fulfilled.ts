@@ -5,6 +5,7 @@ import BoardClass from "../../../../../models/BoardClass";
 import { GameCommand } from "../../../../../state/interfaces/GameCommands";
 import GameDataResponse from "../../../../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../../../../state/interfaces/GameOverviewResponse";
+import { GameState } from "../../../../../state/interfaces/GameState";
 import UnitType from "../../../../../types/UnitType";
 import getTerritoriesMeta from "../../../../getTerritoriesMeta";
 import getOrdersMeta from "../../../../map/getOrdersMeta";
@@ -15,7 +16,7 @@ import setCommand from "../../../setCommand";
 import updateOrdersMeta from "../../../updateOrdersMeta";
 
 /* eslint-disable no-param-reassign */
-export default function fetchGameDataFulfilled(state, action): void {
+export default function fetchGameDataFulfilled(state: GameState, action): void {
   state.apiStatus = "succeeded";
   state.data = action.payload;
   const {
@@ -88,5 +89,11 @@ export default function fetchGameDataFulfilled(state, action): void {
 
   state.territoriesMeta = getTerritoriesMeta(data);
   highlightMapTerritoriesBasedOnStatuses(state);
-  updateOrdersMeta(state, getOrdersMeta(data, board, phase));
+  const numUnsavedOrders = Object.values(state.ordersMeta).reduce(
+    (acc, meta) => acc + 1 - +meta.saved,
+    0,
+  );
+  if (!numUnsavedOrders) {
+    updateOrdersMeta(state, getOrdersMeta(data, board, phase));
+  }
 }

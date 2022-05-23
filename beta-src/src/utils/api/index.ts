@@ -16,17 +16,27 @@ const buildQueryString = (params: QueryParams): string =>
     .join("&");
 
 const api = axios.create({
-  // baseURL: process.env.REACT_APP_WD_BASE_URL,
-  headers: {
-    "Content-Type": "multipart/form-data",
-  },
+  // why do we need multipart form-data?
+  // headers: {
+  //   "Content-Type": "multipart/form-data",
+  // },
 });
 
 export const getGameApiRequest = (
   route: ApiRoute,
   queryParams: QueryParams,
+  timeout?: number,
 ): Promise<AxiosResponse> =>
-  api.get(`../api.php?route=${route}&${buildQueryString(queryParams)}`);
+  api.get(`../api.php?route=${route}&${buildQueryString(queryParams)}`, {
+    timeout,
+  });
+
+export const postGameApiRequest = (
+  route: ApiRoute,
+  json: QueryParams,
+  timeout?: number,
+): Promise<AxiosResponse> =>
+  api.post(`../api.php?route=${route}`, json, { timeout });
 
 const orderSubmission = axios.create({
   // baseURL: process.env.REACT_APP_WD_BASE_URL,

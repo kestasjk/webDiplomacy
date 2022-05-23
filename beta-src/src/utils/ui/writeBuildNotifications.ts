@@ -24,22 +24,22 @@ export default function writeBuildNotifications(state): void {
   const {
     ordersMeta,
     overview: { phase },
+    mustDestroyUnitsBuildPhase,
   }: {
     // definition
     ordersMeta: GameState["ordersMeta"];
     overview: { phase: GameState["overview"]["phase"] };
+    mustDestroyUnitsBuildPhase: GameState["mustDestroyUnitsBuildPhase"];
   } = current(state);
   if (phase === "Builds") {
     let ordersToGo = 0;
     let totalOrders = 0;
-    let toDo;
     // values instead of entries key/value difference
     Object.values(ordersMeta).forEach(({ update }) => {
       if (update?.toTerrID === null) ordersToGo += 1;
       totalOrders += 1;
-      if (update?.type === "Destroy") toDo = "Destroy";
     });
-    if (toDo === "Destroy") {
+    if (mustDestroyUnitsBuildPhase) {
       if (ordersToGo > 1) {
         state.notifications[0] = {
           message: `Select ${ordersToGo} units to destroy.`,
