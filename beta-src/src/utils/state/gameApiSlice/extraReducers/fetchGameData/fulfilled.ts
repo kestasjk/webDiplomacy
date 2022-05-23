@@ -1,11 +1,11 @@
 import { current } from "@reduxjs/toolkit";
-import { useEffect } from "react";
 import TerritoryMap from "../../../../../data/map/variants/classic/TerritoryMap";
 import Territory from "../../../../../enums/map/variants/classic/Territory";
 import BoardClass from "../../../../../models/BoardClass";
 import { GameCommand } from "../../../../../state/interfaces/GameCommands";
 import GameDataResponse from "../../../../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../../../../state/interfaces/GameOverviewResponse";
+import { GameState } from "../../../../../state/interfaces/GameState";
 import UnitType from "../../../../../types/UnitType";
 import getTerritoriesMeta from "../../../../getTerritoriesMeta";
 import getOrdersMeta from "../../../../map/getOrdersMeta";
@@ -16,7 +16,7 @@ import setCommand from "../../../setCommand";
 import updateOrdersMeta from "../../../updateOrdersMeta";
 
 /* eslint-disable no-param-reassign */
-export default function fetchGameDataFulfilled(state, action): void {
+export default function fetchGameDataFulfilled(state: GameState, action): void {
   // state.transition = false;
   state.apiStatus = "succeeded";
   state.data = action.payload;
