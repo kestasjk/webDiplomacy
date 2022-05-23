@@ -4,6 +4,7 @@ import CapturableLandTexture from "../../assets/textures/capturable-land.jpeg";
 import WaterTexture from "../../assets/textures/sea-texture.png";
 import WDArrowMarkerDefs from "../../utils/map/WDArrowMarkerDefs";
 import WDBuildContainer from "./components/WDBuildContainer";
+import WDOrderTypeButtons from "./components/WDOrderTypeButtons";
 import WDArrowContainer from "./components/WDArrowContainer";
 import { Unit } from "../../utils/map/getUnits";
 import { IOrderDataHistorical } from "../../models/Interfaces";
@@ -42,6 +43,7 @@ const WDMap: React.ForwardRefExoticComponent<
             territories={territories}
           />
           <WDBuildContainer />
+          <WDOrderTypeButtons />
         </g>
       </g>
       <defs>

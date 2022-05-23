@@ -7,6 +7,7 @@ import Territory from "../../../../enums/map/variants/classic/Territory";
 import UIState from "../../../../enums/UIState";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
+import GameStateMaps from "../../../../state/interfaces/GameStateMaps";
 import { UnitSlotNames } from "../../../../types/map/UnitSlotName";
 import invalidClick from "../../../map/invalidClick";
 import getOrderStates from "../../getOrderStates";
@@ -23,12 +24,16 @@ export default function processMapClick(state, clickData) {
     ordersMeta,
     overview,
     territoriesMeta,
+    maps,
+    ownUnits,
   }: {
     data: { data: GameDataResponse["data"] };
     order: GameState["order"];
     ordersMeta: GameState["ordersMeta"];
     overview: GameState["overview"];
     territoriesMeta: GameState["territoriesMeta"];
+    maps: GameStateMaps;
+    ownUnits: GameState["ownUnits"];
   } = current(state);
   const {
     inProgress,
@@ -41,6 +46,7 @@ export default function processMapClick(state, clickData) {
     unitID,
   } = order;
   console.log("processMapClick");
+  console.log({ order });
   const {
     user: { member },
     phase,
@@ -48,11 +54,74 @@ export default function processMapClick(state, clickData) {
   const { currentOrders } = data;
   const { orderStatus } = member;
   if (orderStatus.Ready) {
-    return;
+    return; // FIXME
   }
   const {
-    payload: { clickObject, evt, name: territory },
+    payload: { clickObject, evt, territory },
   } = clickData;
+  const curTerrID = maps.territoryToTerrID[territory];
+  const curUnitID = maps.terrIDToUnit[curTerrID];
+  const ownsCurUnit = ownUnits.includes(curUnitID);
+  console.log({
+    territory,
+    curTerrID,
+    unitID,
+    curUnitID,
+    map: maps.terrIDToUnit,
+  });
+  if (!inProgress) {
+    if (curUnitID && ownsCurUnit) {
+      startNewOrder(state, { unitID: curUnitID });
+    } else {
+      invalidClick(evt, territory);
+    }
+  } else {
+    // eslint-disable-next-line no-lonely-if
+    if (curUnitID === unitID) {
+      console.log(`inProgress Click`);
+      state.unitState[unitID] = UIState.HOLD;
+      if (currentOrders) {
+        const orderToUpdate = currentOrders.find((o) => o.unitID === unitID);
+        if (orderToUpdate) {
+          updateOrdersMeta(state, {
+            [orderToUpdate.id]: {
+              saved: false,
+              update: {
+                type: phase === "Retreats" ? "Disband" : "Hold",
+                toTerrID: null,
+              },
+            },
+          });
+        }
+      }
+      state.order.type = phase === "Retreats" ? "disband" : "hold";
+      resetOrder(state);
+      return;
+    }
+    const { allowedBorderCrossings } = ordersMeta[orderID];
+    const canMove = allowedBorderCrossings?.find((border) => {
+      const mappedTerritory = TerritoryMap[border.name];
+      return Territory[mappedTerritory.territory] === territory;
+    });
+    console.log({ canMove });
+    if (canMove) {
+      updateOrdersMeta(state, {
+        [orderID]: {
+          saved: false,
+          update: {
+            type: phase === "Retreats" ? "Retreat" : "Move",
+            toTerrID: canMove.id,
+            viaConvoy: "No",
+          },
+        },
+      });
+      state.order.toTerritory = TerritoryMap[canMove.name].territory;
+      state.order.type = phase === "Retreats" ? "retreat" : "move";
+      resetOrder(state);
+    } else {
+      invalidClick(evt, territory);
+    }
+  }
   const truthyToTerritory = toTerritory !== undefined && toTerritory !== null;
   const truthyOnTerritory = onTerritory !== undefined && onTerritory !== null;
   console.log({ clickObject, phase, currentOrders });

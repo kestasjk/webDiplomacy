@@ -1,11 +1,12 @@
 import * as d3 from "d3";
+import Territory from "../../enums/map/variants/classic/Territory";
 
 export default function invalidClick(
   evt: any, // FIXME: what type is this?
-  territoryName: string,
+  name: Territory,
 ): void {
   console.log("INVALID CLICK");
-  const territorySelection = d3.select(`#${territoryName}-territory`);
+  const territorySelection = d3.select(`#${name}-territory`);
   const territory: SVGSVGElement = territorySelection.node();
   if (territory) {
     const screenCTM = territory.getScreenCTM();

@@ -66,9 +66,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
 
   const unitState = useAppSelector(gameUnitState); // FIXME: too global
   const unitFCs: { [key: string]: any } = {};
-  if (territory === Territory.BERLIN) {
-    console.log({ territory, units, territoryMeta });
-  }
   units
     .filter(
       (unit) =>
@@ -76,6 +73,11 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         territoryMeta?.territory,
     )
     .forEach((unit) => {
+      console.log(territory, curOrder.unitID, unit.unit.id);
+      if (curOrder.unitID === unit.unit.id) {
+        territoryFillOpacity = 0.9;
+        territoryFill = theme.palette[userCountry]?.main;
+      }
       unitFCs[unit.mappedTerritory.unitSlotName] = (
         <WDUnit
           id={`${territory}-unit`} // n.b. the id here is ref'd by drawOrders, do not change!
@@ -123,7 +125,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       gameApiSliceActions.processMapClick({
         clickObject,
         evt,
-        name: territory,
+        territory,
       }),
     );
   };
