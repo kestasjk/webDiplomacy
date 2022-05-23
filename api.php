@@ -364,6 +364,38 @@ class ToggleVote extends ApiEntry {
 }
 
 /**
+ * API entry game/messagesseen
+ */
+class MessagesSeen extends ApiEntry {
+	public function __construct() {
+		// lol why is this a GET
+		parent::__construct('game/messagesseen', 'GET', '', array('gameID','countryID','seenCountryID'));
+	}
+	public function run($userID, $permissionIsExplicit) {
+		global $Game, $DB;
+		$args = $this->getArgs();
+		$countryID = intval($args['countryID']);
+		$seenCountryID = intval($args['seenCountryID']);
+		$Game = $this->getAssociatedGame();
+		$member = $Game->Members->ByUserID[$userID];
+		$newMessagesFrom = $member->newMessagesFrom;
+
+		foreach($newMessagesFrom as $i => $curCountryID)
+		{
+			if ( $curCountryID == $seenCountryID )
+			{
+				unset($newMessagesFrom[$i]);
+				break;
+			}
+		}
+		$DB->sql_put("UPDATE wD_Members
+						SET newMessagesFrom = '".implode(',',$newMessagesFrom)."'
+						WHERE id = ".$member->id);
+		$DB->sql_put("COMMIT");
+	}
+}
+
+/**
  * API entry game/status
  */
 class GetGamesStates extends ApiEntry {
@@ -981,8 +1013,7 @@ class SendMessage extends ApiEntry {
 		parent::__construct('game/sendmessage', 'JSON', '', array('gameID','countryID','toCountryID', 'message'));
 	}
 	public function run($userID, $permissionIsExplicit) {
-		global $DB;
-
+		global $Game, $DB;
 		$args = $this->getArgs();
 
 		if ($args['toCountryID'] === null)
@@ -997,27 +1028,49 @@ class SendMessage extends ApiEntry {
 		$toCountryID = intval($args['toCountryID']);
 		$message = $args['message'];
 
-		$game = $this->getAssociatedGame();
-		if ($game->pressType != 'Regular') {
+		$Game = $this->getAssociatedGame();
+
+		if ($Game->pressType != 'Regular') {
 			throw new RequestException('Game is not regular press.');
 		}
 
-		if (!(isset($game->Members->ByUserID[$userID]) && $countryID == $game->Members->ByUserID[$userID]->countryID)) {
+		if (!(isset($Game->Members->ByUserID[$userID]) && $countryID == $Game->Members->ByUserID[$userID]->countryID)) {
 			throw new ClientForbiddenException('User does not have explicit permission to make this API call.');
 		}
 
-		if ($toCountryID < 1 || $toCountryID > count($game->Members->ByUserID) || $toCountryID == $countryID) {
+		if ($toCountryID < 1 || $toCountryID > count($Game->Members->ByID) || $toCountryID == $countryID) {
 			throw new RequestException('Invalid toCountryID');
 		}
 
-		$toUser = new User($game->Members->ByCountryID[$toCountryID]->userID);
-		if(!$toUser->isCountryMuted($game->id, $countryID)) {
-			$time = libGameMessage::send($toCountryID, $countryID, $message);
-		}
+		$toUser = new User($Game->Members->ByCountryID[$toCountryID]->userID);
+		if(!$toUser->isCountryMuted($Game->id, $countryID)) {
+			$timeSent = libGameMessage::send($toCountryID, $countryID, $message);
 
-		$DB->sql_put("COMMIT");
-		
-		return $time;
+			// now fetch this message back out of the table.
+			// This is the safest way to make sure all the escaping is correct.
+			// Should we fetch messages from previous timeSent as well to make sure everything is in sync?
+			$tabl = $DB->sql_tabl("SELECT message, turn 
+				FROM wD_GameMessages WHERE 
+				gameID = $gameID AND 
+				timeSent = $timeSent AND 
+				fromCountryID = $countryID AND 
+				toCountryID = $toCountryID
+			");
+
+			while ($msg = $DB->tabl_hash($tabl)) {
+				$messages[] = [
+					'fromCountryID' => $countryID,
+					'message' => $msg['message'],
+					'timeSent' => (int) $timeSent,
+					'toCountryID' => $toCountryID,
+					'turn' => $msg['turn'],
+				];
+			}
+		}
+		$ret = [
+			"messages" => $messages
+		];
+		return json_encode($ret);
 	}
 }
 
@@ -1026,21 +1079,45 @@ class SendMessage extends ApiEntry {
  */
 class GetMessages extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/getmessages', 'GET', '', array('gameID','countryID','toCountryID','offset','limit','allMessages'));
+		parent::__construct('game/getmessages', 'GET', '', array('gameID','countryID','toCountryID','offset','limit','allMessages','sinceTime'));
 	}
 	public function run($userID, $permissionIsExplicit) {
 
-		global $DB;
+		global $DB, $MC;
 		$args = $this->getArgs();
 		$countryID = $args['countryID'];
-		$game = $this->getAssociatedGame();
 		$gameID = $args['gameID'];
-		$gamePhase = $game->phase;
-		$limitAmount = 25;
+		$limitAmount = 10000;
 		$limit = $args['limit'];
 		$offset = $args['offset'];
-		$pressType = $game->pressType;
 		$toCountryID = intval($args['toCountryID']);
+		$messages = array();
+
+		$sinceTime = $args['sinceTime'];
+		$lastMsgKey = "lastmsgtime_{$gameID}_{$countryID}";
+		// error_log("fetch messages since time= $sinceTime");
+		if (isset($sinceTime)) {
+			// FIXME: gotta be careful that user has permissions or we could leak
+			// the existence of a message by whether we break here!
+			$lastMsgTime = $MC->get($lastMsgKey);
+			// try to shortcut before doing anything expensive
+			// error_log("last message was {$lastMsgTime}, client asked for messages since {$sinceTime}");
+			if ($lastMsgTime && $lastMsgTime <= $sinceTime) {
+				// error_log("Bailing early because no new messages");
+				return $this->JSONResponse(
+					'No messages available',
+					'',
+					true,
+					[
+						'messages' => $messages,
+					]
+				);
+			}
+		}
+
+		$game = $this->getAssociatedGame();
+		$gamePhase = $game->phase;
+		$pressType = $game->pressType;
 
 		$limit = isset($limit) ? intval($limit) : $limitAmount;
 		$offset = isset($offset) ? intval($offset) : 0;
@@ -1057,7 +1134,7 @@ class GetMessages extends ApiEntry {
 
 		if ($limit > $limitAmount) {
 			throw new RequestException(
-				$this->JSONResponse('limit should not exceed 25', '', false, ['limit' => $limit])
+				$this->JSONResponse('limit should not exceed 10000', '', false, ['limit' => $limit])
 			);
 		}
 
@@ -1106,48 +1183,45 @@ class GetMessages extends ApiEntry {
 				);
 			}
 
-			if (isset($args['allMessages'])) {
-				$where = "(toCountryID = 0 OR fromCountryID = 0 OR toCountryID = $countryID OR fromCountryID = $countryID)";
-			} else {
-				$where = "( toCountryID = $toCountryID AND fromCountryID = $countryID )
-				OR
-				( fromCountryID = $toCountryID AND toCountryID = $countryID )";
+			$where = "(toCountryID = $countryID OR fromCountryID = $countryID)";
+			if (isset($args['toCountryID'])) {
+				$where = "$where OR (toCountryID = $toCountryID OR fromCountryID = $toCountryID)";
 			}
-
+			if (isset($args['allMessages'])) {
+				$where = "$where OR (toCountryID = 0 OR fromCountryID = 0)";
+			}
+			if (isset($args['sinceTime'])) {
+				$where = "($where) AND timeSent >= $sinceTime";
+			}
 		}
 
 		$tabl = $DB->sql_tabl("SELECT message, toCountryID, fromCountryID, turn, timeSent
-		FROM wD_GameMessages WHERE gameID = $gameID AND $where
+		FROM wD_GameMessages WHERE gameID = $gameID AND ($where)
 		order BY id DESC LIMIT $limit OFFSET $offset");
 
-		$messages = array();
 		while ($message = $DB->tabl_hash($tabl)) {
-			$messages[] = $message;
-		}
-
-	    // Checks if there are any messages in the array.
-		if (!$messages) {
-			return $this->JSONResponse(
-				'No messages available',
-				'',
-				true,
-				[
-					'messages' => $messages,
-					'phase' => $gamePhase,
-					'pressType' => $pressType,
-				]
-			);
+			$messages[] = [
+				'fromCountryID' => (int) $message['fromCountryID'],
+				'message' => $message['message'],
+				'timeSent' => (int) $message['timeSent'],
+				'toCountryID' => (int) $message['toCountryID'],
+				'turn' => (int) $message['turn'],
+			];
 		}
 
 		// Return Messages.
+		$curTime = time();
+		$responseStr = $messages ? 'Successfully retrieved game messages.' : 'No messages available';
+		// error_log("$responseStr at time $curTime");
+		$newMessagesFrom = array_map('intval', $game->Members->ByUserID[$userID]->newMessagesFrom);
 		return $this->JSONResponse(
-			'Successfully retrieved game messages.',
+			$responseStr,
 			'',
 			true,
 			[
 				'messages' => $messages,
-				'phase' => $gamePhase,
-				'pressType' => $pressType,
+				'time' => $curTime,
+				'newMessagesFrom' => $newMessagesFrom,
 			]
 		);
 	}
@@ -1350,7 +1424,6 @@ class Api {
 	 */
 	public function run() {
 		global $MC, $User;
-		
 		// Get route.
 		if (!isset($_GET['route']))
 			throw new RequestException('No route provided.');
@@ -1418,6 +1491,7 @@ try {
 	$api->load(new ToggleVote());
 	$api->load(new SendMessage());
 	$api->load(new GetMessages());
+	$api->load(new MessagesSeen());
 	$jsonEncodedResponse = $api->run();
 	// Set JSON header.
 	header('Content-Type: application/json');

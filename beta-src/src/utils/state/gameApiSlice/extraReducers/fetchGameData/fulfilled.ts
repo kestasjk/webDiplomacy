@@ -17,7 +17,7 @@ import updateOrdersMeta from "../../../updateOrdersMeta";
 
 /* eslint-disable no-param-reassign */
 export default function fetchGameDataFulfilled(state: GameState, action): void {
-  // state.transition = false;
+  state.transition = false;
   state.apiStatus = "succeeded";
   state.data = action.payload;
   const {
@@ -90,5 +90,11 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
 
   state.territoriesMeta = getTerritoriesMeta(data);
   highlightMapTerritoriesBasedOnStatuses(state);
-  updateOrdersMeta(state, getOrdersMeta(data, board, phase));
+  const numUnsavedOrders = Object.values(state.ordersMeta).reduce(
+    (acc, meta) => acc + 1 - +meta.saved,
+    0,
+  );
+  if (!numUnsavedOrders) {
+    updateOrdersMeta(state, getOrdersMeta(data, board, phase));
+  }
 }

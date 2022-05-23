@@ -1,1 +1,0 @@
-{"version":3,"file":"static/css/main.ea0bb781.css","mappings":"AAAA,oBACE,OACF,CCFA,KACE,mBACF,CAEA,mBACE,mBACF","sources":["assets/css/index.css","assets/css/App.css"],"sourcesContent":["::-webkit-scrollbar {\n  width: 0;\n}\n",".App {\n  position: \"relative\";\n}\n\n.no-pointer-events {\n  pointer-events: none;\n}\n"],"names":[],"sourceRoot":""}
