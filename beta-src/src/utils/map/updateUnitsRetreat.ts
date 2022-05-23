@@ -26,19 +26,21 @@ export default function updateUnitsRetreat(state): void {
     overview: GameOverviewResponse;
   } = current(state);
 
+  if (phase !== "Retreats") {
+    return;
+  }
+
+  const nonForcedDisbandingUnit = Object.values(ordersMeta).find(
+    (o) => o.allowedBorderCrossings?.length && o.update?.type !== "Disband",
+  );
+  let command: GameCommand = {
+    command: "HOLD",
+  };
+
   currentOrders?.forEach(({ id, unitID }) => {
     const { update } = ordersMeta[id];
-    const { allowedBorderCrossings } = ordersMeta[id];
     const toTerrID = update?.toTerrID;
     const type = update?.type;
-
-    if (phase !== "Retreats") {
-      return;
-    }
-
-    let command: GameCommand = {
-      command: "HOLD",
-    };
 
     if (type === "Retreat" && !toTerrID) {
       command = {
@@ -54,17 +56,12 @@ export default function updateUnitsRetreat(state): void {
       };
     }
     setCommand(state, command, "unitCommands", unitID);
-
-    if (
-      currentOrders.length === 1 &&
-      type === "Disband" &&
-      !allowedBorderCrossings?.length &&
-      !orderStatus.Completed
-    ) {
-      command = {
-        command: "SAVE_ORDERS",
-      };
-      setCommand(state, command, "mapCommands", "save");
-    }
   });
+
+  if (!nonForcedDisbandingUnit && !orderStatus.Completed) {
+    command = {
+      command: "SAVE_ORDERS",
+    };
+    setCommand(state, command, "mapCommands", "save");
+  }
 }
