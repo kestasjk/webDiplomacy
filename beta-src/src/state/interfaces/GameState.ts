@@ -32,6 +32,7 @@ export interface GameState {
   territoriesMeta: TerritoriesMeta;
   status: GameStatusResponse;
   messages: GameMessages;
+  outstandingMessageRequests: number;
 
   order: OrderState;
   // FIXME: get rid of these if/when possible

@@ -200,7 +200,7 @@ const gameApiSlice = createSlice({
       );
     },
     updateOutstandingMessageRequests(state, action) {
-      state.messages.outstandingRequests += action.payload;
+      state.outstandingMessageRequests += action.payload;
     },
   },
   extraReducers(builder) {
@@ -261,15 +261,15 @@ const gameApiSlice = createSlice({
       .addCase(fetchGameMessages.rejected, (state, action) => {
         state.apiStatus = "failed";
         console.log(`fetchGameMessages failed: ${action.error.message}`);
-        state.messages.outstandingRequests = Math.max(
-          state.messages.outstandingRequests - 1,
+        state.outstandingMessageRequests = Math.max(
+          state.outstandingMessageRequests - 1,
           0,
         );
         state.error = action.error.message;
       })
       .addCase(fetchGameMessages.fulfilled, (state, action) => {
-        state.messages.outstandingRequests = Math.max(
-          state.messages.outstandingRequests - 1,
+        state.outstandingMessageRequests = Math.max(
+          state.outstandingMessageRequests - 1,
           0,
         );
         if (action.payload) {

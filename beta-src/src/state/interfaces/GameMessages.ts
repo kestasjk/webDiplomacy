@@ -10,7 +10,6 @@ export interface GameMessages {
   messages: GameMessage[];
   newMessagesFrom: number[];
   time: number;
-  outstandingRequests: number;
 }
 
 export default GameMessages;
