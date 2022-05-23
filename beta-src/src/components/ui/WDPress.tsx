@@ -89,6 +89,16 @@ const WDPress: React.FC<WDPressProps> = function ({
     setUserMsg("");
   };
 
+  // capture enter for end, shift-enter for newline
+  const keydownHandler = (e) => {
+    const keyCode = e.which || e.keyCode;
+    const ENTER = 13;
+    if (keyCode === ENTER && !e.shiftKey) {
+      e.preventDefault();
+      clickSend();
+    }
+  };
+
   if (messages.newMessagesFrom.includes(countryIDSelected)) {
     // need to update locally and on the server
     // because we don't immediately re-fetch message data from the server
@@ -155,6 +165,7 @@ const WDPress: React.FC<WDPressProps> = function ({
             multiline
             maxRows={4}
             onChange={(text) => setUserMsg(text.target.value)}
+            onKeyDown={keydownHandler}
             fullWidth
             InputProps={{
               endAdornment: (

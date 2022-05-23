@@ -16,6 +16,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import { TerritoryMeta } from "../../../state/interfaces/TerritoriesState";
 import ClickObjectType from "../../../types/state/ClickObjectType";
+import OrderType from "../../../types/state/OrderType";
 import UnitType from "../../../types/UnitType";
 import WDUnit from "../../ui/units/WDUnit";
 import WDCenter from "./WDCenter";
@@ -55,8 +56,12 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     territoryFillOpacity = 0.4;
   }
   const curOrder = useAppSelector(gameOrder);
-  if (territoryMeta?.territory === curOrder.toTerritory) {
+  if (
+    territoryMeta?.territory &&
+    territoryMeta?.territory === curOrder.toTerritory
+  ) {
     territoryFillOpacity = 0.9;
+    territoryFill = theme.palette[userCountry].main;
   }
 
   const unitState = useAppSelector(gameUnitState); // FIXME: too global
@@ -92,9 +97,10 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     )
     .forEach(({ update }) => {
       territoryFillOpacity = 0.9;
-      unitFCs.main = ( // FIXME: needs to support coasts
+      // FIXME: needs to support coasts
+      unitFCs.main = (
         <WDUnit
-          id={`${territory}-unit`} // n.b. the id here is ref'd by drawOrders, do not change!
+          id={`${territory}-unit`}
           country={userCountry}
           meta={{
             country: userCountry,
