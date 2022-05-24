@@ -148,7 +148,6 @@ const initialState: GameState = {
     time: 0,
     outstandingRequests: 0,
   },
-  buildPopover: [],
 };
 
 export default initialState;

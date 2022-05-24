@@ -36,6 +36,4 @@ export interface GameState {
   messages: GameMessages;
 
   order: OrderState;
-  // FIXME: get rid of these if/when possible
-  buildPopover: BuildCommand[]; // list of possible builds that the user can choose from
 }

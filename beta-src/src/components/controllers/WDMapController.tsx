@@ -90,6 +90,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
           originalOrder = currentOrdersById[orderID];
         }
         if (originalOrder) {
+          console.log({ originalOrder });
           if (originalOrder.fromTerrID) {
             fromTerrID = Number(originalOrder.fromTerrID);
           }
@@ -103,7 +104,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
               terrID = Number(originalOrder.toTerrID);
             }
             [, unitType] = type.split(" ");
-          } else {
+          } else if (originalOrder.unitID) {
             const terrIDString = maps.unitToTerrID[originalOrder.unitID];
             if (terrIDString) {
               terrID = Number(terrIDString);

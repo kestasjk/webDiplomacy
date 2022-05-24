@@ -2,6 +2,7 @@ import { current } from "@reduxjs/toolkit";
 import TerritoryMap, {
   webdipNameToTerritory,
 } from "../../../../data/map/variants/classic/TerritoryMap";
+import Territories from "../../../../data/Territories";
 import BuildUnit from "../../../../enums/BuildUnit";
 import Territory from "../../../../enums/map/variants/classic/Territory";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
@@ -13,6 +14,7 @@ import processConvoy from "../../processConvoy";
 import resetOrder from "../../resetOrder";
 import startNewOrder from "../../startNewOrder";
 import updateOrder from "../../updateOrder";
+import updateOrdersMeta from "../../updateOrdersMeta";
 
 /* eslint-disable no-param-reassign */
 export default function processMapClick(state, clickData) {
@@ -61,6 +63,80 @@ export default function processMapClick(state, clickData) {
     map: maps.terrIDToUnit,
   });
 
+  // build phase
+  if (phase === "Builds") {
+    const territoryMeta = territoriesMeta[Territory[territory]];
+
+    if (
+      member.countryID !== Number(territoryMeta.countryID) || // FIXME ugh string vs number
+      !territoryMeta.supply
+    ) {
+      console.log("Not a SC");
+      console.log({ member, territoryMeta });
+      invalidClick(evt, territory);
+      return;
+    }
+
+    const existingBuildOrder = Object.entries(ordersMeta).find(
+      ([, { update }]) => {
+        if (!update || !update.toTerrID) return false;
+        if (update.toTerrID === clickTerrID) return true;
+        // FIXME omg how is it so hard to find the parent??? Territories still needs work
+        // we should have a parent map directly in terms of territories and IDs.
+        const parent =
+          Territories[maps.terrIDToTerritory[update.toTerrID]].parent
+            ?.territory;
+        const parentID = parent && maps.territoryToTerrID[parent];
+        return parentID === clickTerrID;
+      },
+    );
+
+    if (existingBuildOrder) {
+      console.log("Existing build order");
+      const [id] = existingBuildOrder;
+
+      updateOrdersMeta(state, {
+        [id]: {
+          saved: false,
+          update: {
+            type: "Wait",
+            toTerrID: null,
+          },
+        },
+      });
+      return;
+    }
+
+    const territoryHasUnit = !!territoryMeta.unitID;
+    const { currentOrders } = data;
+    let availableOrder;
+    if (!currentOrders) return;
+    for (let i = 0; i < currentOrders.length; i += 1) {
+      const { id } = currentOrders[i];
+      const orderMeta = ordersMeta[id];
+      if (!orderMeta.update || !orderMeta.update?.toTerrID) {
+        availableOrder = id;
+        break;
+      }
+    }
+    console.log(
+      `trying to start build order: ${availableOrder} ${territoryHasUnit} ${order.inProgress}`,
+    );
+    resetOrder(state);
+    if (availableOrder && !territoryHasUnit && !order.inProgress) {
+      state.order = {
+        inProgress: true,
+        orderID: availableOrder,
+        type: "Build",
+        toTerrID: clickTerrID,
+      };
+    } else {
+      invalidClick(evt, territory);
+    }
+    return;
+  }
+
+  // move phases
   if (!order.inProgress) {
     if (clickUnitID && ownsCurUnit) {
       startNewOrder(state, { unitID: clickUnitID });
