@@ -1,5 +1,4 @@
 import { EditOrderMeta } from "../../state/interfaces/SavedOrders";
-import drawOrders from "../map/drawOrders";
 
 /* eslint-disable no-param-reassign */
 export default function updateOrdersMeta(state, updates: EditOrderMeta): void {
@@ -13,6 +12,5 @@ export default function updateOrdersMeta(state, updates: EditOrderMeta): void {
         ...update,
       };
     });
-    drawOrders(state);
   }
 }
