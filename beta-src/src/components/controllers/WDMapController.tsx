@@ -17,12 +17,8 @@ import {
   gameUnits,
   gameViewedPhase,
 } from "../../state/game/game-api-slice";
-import getUnits from "../../utils/map/getUnits";
-import {
-  IOrderData,
-  IOrderDataHistorical,
-  IUnit,
-} from "../../models/Interfaces";
+import { getUnitsHistorical } from "../../utils/map/getUnits";
+import { IOrderData, IOrderDataHistorical } from "../../models/Interfaces";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -56,6 +52,9 @@ const WDMapController: React.FC = function (): React.ReactElement {
   const [scaleMin, scaleMax] = getInitialScaleForDevice(device);
 
   // FIXME: it's not ideal for us to be fetching the whole world from store here
+  // This is hard to untangle though because the representation of the data in the
+  // store is relatively bad. You have to depend on a lot of stuff in order to
+  // draw useful things right now.
   const viewedPhaseState = useAppSelector(gameViewedPhase);
   const overview = useAppSelector(gameOverview);
   const status = useAppSelector(gameStatus);
@@ -130,7 +129,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
           }
         }
         const orderHistorical: IOrderDataHistorical = {
-          countryID: status.countryID.toString(),
+          countryID: status.countryID,
           dislodged: "No",
           fromTerrID,
           phase: overview.phase,
@@ -159,19 +158,16 @@ const WDMapController: React.FC = function (): React.ReactElement {
 
     const phaseHistorical = status.phases[viewedPhaseState.viewedPhaseIdx];
     const unitsHistorical = phaseHistorical.units;
-    const unitsConverted: { [key: string]: IUnit } = {};
-    unitsHistorical.forEach((unitHistorical, index) => {
-      unitsConverted[index] = {
-        id: index.toString(),
-        countryID: unitHistorical.countryID.toString(),
-        type: unitHistorical.unitType,
-        terrID: unitHistorical.terrID.toString(),
-      };
-    });
-    const unitsLive = getUnits(
+    const prevPhaseOrders =
+      viewedPhaseState.viewedPhaseIdx > 0
+        ? status.phases[viewedPhaseState.viewedPhaseIdx - 1].orders
+        : [];
+    const unitsLive = getUnitsHistorical(
       data.data.territories,
-      unitsConverted,
+      unitsHistorical,
       overview.members,
+      prevPhaseOrders,
+      phaseHistorical.orders,
     );
     return {
       phase: phaseHistorical.phase as string,

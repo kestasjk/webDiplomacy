@@ -12,46 +12,49 @@ import GameStateMaps from "../../../state/interfaces/GameStateMaps";
 import ArrowType from "../../../enums/ArrowType";
 import ArrowColor from "../../../enums/ArrowColor";
 import drawArrowFunctional, {
+  getTargetXYWH,
   getArrowX1Y1X2Y2,
 } from "../../../utils/map/drawArrowFunctional";
 import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
 import { APITerritories } from "../../../state/interfaces/GameDataResponse";
+import { Unit } from "../../../utils/map/getUnits";
 
 function accumulateMoveOrderArrows(
   arrows: (React.ReactElement | null)[],
   orders: IOrderDataHistorical[],
   territories: APITerritories,
 ): void {
-  console.log("drawMoveOrders");
+  // console.log("drawMoveOrders");
   orders
     .filter((order) => order.type === "Move")
     .forEach((order) => {
-      if (order.toTerrID) {
-        console.log({
-          order,
-          territories,
-          terrID: order.terrID,
-          lookup: territories[order.terrID],
-        });
-        const fromTerr = TerritoryMap[territories[order.terrID].name].territory;
-        const toTerr = TerritoryMap[territories[order.toTerrID].name].territory;
+      if (!order.toTerrID) {
+        return;
+      }
+      // console.log({
+      //   order,
+      //   territories,
+      //   terrID: order.terrID,
+      //   lookup: territories[order.terrID],
+      // });
+      const fromTerr = TerritoryMap[territories[order.terrID].name].territory;
+      const toTerr = TerritoryMap[territories[order.toTerrID].name].territory;
 
-        arrows.push(
-          drawArrowFunctional(
-            ArrowType.MOVE,
-            order.success === "Yes" ? ArrowColor.MOVE : ArrowColor.MOVE_FAILED,
-            "unit",
-            fromTerr,
-            "territory",
-            toTerr,
-          ),
-        );
-        // console.log("ARROW");
-        // console.log(arrows[0]);
+      arrows.push(
+        drawArrowFunctional(
+          ArrowType.MOVE,
+          order.success === "Yes" ? ArrowColor.MOVE : ArrowColor.MOVE_FAILED,
+          "unit",
+          fromTerr,
+          "territory",
+          toTerr,
+        ),
+      );
+      // console.log("ARROW");
+      // console.log(arrows[0]);
 
-        if (order.viaConvoy === "Yes") {
-          // TODO need to distinguish via vs nonvia orders??
-        }
+      if (order.viaConvoy === "Yes") {
+        // TODO need to distinguish via vs nonvia orders??
       }
     });
 }
@@ -218,6 +221,84 @@ function accumulateConvoyOrderArrows(
     });
 }
 
+function accumulateRetreatArrows(
+  arrows: (React.ReactElement | null)[],
+  orders: IOrderDataHistorical[],
+  territories: APITerritories,
+): void {
+  orders
+    .filter((order) => order.type === "Retreat")
+    .forEach((order) => {
+      if (!order.toTerrID) {
+        return;
+      }
+      const fromTerr = TerritoryMap[territories[order.terrID].name].territory;
+      const toTerr = TerritoryMap[territories[order.toTerrID].name].territory;
+
+      arrows.push(
+        drawArrowFunctional(
+          ArrowType.MOVE,
+          ArrowColor.RETREAT,
+          "unit",
+          fromTerr,
+          "territory",
+          toTerr,
+        ),
+      );
+    });
+}
+
+function accumulateDislodgerArrows(
+  arrows: (React.ReactElement | null)[],
+  units: Unit[],
+  territories: APITerritories,
+): void {
+  units
+    .filter((unit) => unit.isDislodging)
+    .forEach((unit) => {
+      if (unit.movedFromTerrID === null) return;
+      const fromTerr =
+        TerritoryMap[territories[unit.movedFromTerrID].name].territory;
+      const toTerr = TerritoryMap[territories[unit.unit.terrID].name].territory;
+
+      arrows.push(
+        drawArrowFunctional(
+          ArrowType.MOVE,
+          ArrowColor.MOVE,
+          "territory",
+          fromTerr,
+          "dislodger",
+          toTerr,
+        ),
+      );
+    });
+}
+
+// This isn't exactly an arrow, but...
+function accumulateBuildCircles(
+  arrows: (React.ReactElement | null)[],
+  units: Unit[],
+  territories: APITerritories,
+): void {
+  units
+    .filter((unit) => unit.isBuild)
+    .forEach((unit) => {
+      const terr = TerritoryMap[territories[unit.unit.terrID].name].territory;
+      const [x, y, w, h] = getTargetXYWH("unit", terr);
+
+      arrows.push(
+        <circle
+          key={`build-circle-${terr}`}
+          cx={x + w / 2}
+          cy={y + h / 2}
+          r={10 + (w + h) / 4}
+          fill="none"
+          stroke="rgb(0,150,0)"
+          strokeWidth={6}
+        />,
+      );
+    });
+}
 /*
 export interface IOrderDataHistorical {
   countryID: string;
@@ -237,6 +318,7 @@ export interface IOrderDataHistorical {
 interface WDArrowProps {
   phase: string;
   orders: IOrderDataHistorical[];
+  units: Unit[];
   maps: GameStateMaps;
   territories: APITerritories;
 }
@@ -244,6 +326,7 @@ interface WDArrowProps {
 const WDArrowContainer: React.FC<WDArrowProps> = function ({
   phase,
   orders,
+  units,
   maps,
   territories,
 }): React.ReactElement {
@@ -257,6 +340,9 @@ const WDArrowContainer: React.FC<WDArrowProps> = function ({
   accumulateSupportHoldOrderArrows(arrows, orders, territories);
   accumulateSupportMoveOrderArrows(arrows, orders, ordersByTerrID, territories);
   accumulateConvoyOrderArrows(arrows, orders, ordersByTerrID, territories);
+  accumulateRetreatArrows(arrows, orders, territories);
+  accumulateDislodgerArrows(arrows, units, territories);
+  accumulateBuildCircles(arrows, units, territories);
   return <g id="arrows">{arrows}</g>;
 };
 

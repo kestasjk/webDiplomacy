@@ -4,7 +4,7 @@ import countryMap from "../../../data/map/variants/classic/CountryMap";
 import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
 import Territories from "../../../data/Territories";
 import UIState from "../../../enums/UIState";
-import { TerritoryMapData } from "../../../interfaces";
+import { Coordinates, TerritoryMapData } from "../../../interfaces";
 import {
   gameApiSliceActions,
   gameOrder,
@@ -18,7 +18,7 @@ import { TerritoryMeta } from "../../../state/interfaces/TerritoriesState";
 import ClickObjectType from "../../../types/state/ClickObjectType";
 import OrderType from "../../../types/state/OrderType";
 import UnitType from "../../../types/UnitType";
-import WDUnit from "../../ui/units/WDUnit";
+import WDUnit, { UNIT_HEIGHT, UNIT_WIDTH } from "../../ui/units/WDUnit";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
@@ -64,11 +64,8 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     territoryFill = theme.palette[userCountry].main;
   }
 
-  const unitState = useAppSelector(gameUnitState); // FIXME: too global
   const unitFCs: { [key: string]: any } = {};
-  if (territory === Territory.BERLIN) {
-    console.log({ territory, units, territoryMeta });
-  }
+  const unitFCsDislodging: { [key: string]: any } = {};
   units
     .filter(
       (unit) =>
@@ -76,46 +73,25 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         territoryMeta?.territory,
     )
     .forEach((unit) => {
-      unitFCs[unit.mappedTerritory.unitSlotName] = (
+      let unitState: UIState = UIState.NONE;
+      if (unit.isBuild) {
+        unitState = UIState.BUILD;
+      }
+
+      const wdUnit = (
         <WDUnit
-          id={`${territory}-unit`} // n.b. the id here is ref'd by drawOrders, do not change!
+          id={`${territory}-unit`}
           country={unit.country}
           meta={unit}
           type={unit.unit.type as UnitType}
-          iconState={unitState[unit.unit.id]} // FIXME make declarative
+          iconState={unitState}
         />
       );
-    });
-
-  const ordersMeta = useAppSelector(gameOrdersMeta);
-  Object.values(ordersMeta)
-    .filter(
-      ({ update }) =>
-        update &&
-        update.type.split(" ")[0] === "Build" && // updates can be something supporting you or moving to this territory???
-        update.toTerrID === territoryMeta?.id,
-    )
-    .forEach(({ update }) => {
-      territoryFillOpacity = 0.9;
-      // FIXME: needs to support coasts
-      unitFCs.main = (
-        <WDUnit
-          id={`${territory}-unit`}
-          country={userCountry}
-          meta={{
-            country: userCountry,
-            mappedTerritory: TerritoryMap[territory],
-            unit: {
-              id: `${territory}-unit`,
-              countryID: "NA",
-              type: update?.type.split(" ")[1] as unknown as string, // Build Army --> Army
-              terrID: territoryMeta?.id || "null",
-            },
-          }}
-          type={update?.type.split(" ")[1] as UnitType}
-          iconState={UIState.BUILD}
-        />
-      );
+      if (unit.isDislodging) {
+        unitFCsDislodging[unit.mappedTerritory.unitSlotName] = wdUnit;
+      } else {
+        unitFCs[unit.mappedTerritory.unitSlotName] = wdUnit;
+      }
     });
 
   const clickAction = function (evt, clickObject: ClickObjectType) {
@@ -188,11 +164,38 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
           );
         })}
       {territoryMapData.unitSlots &&
-        territoryMapData.unitSlots.map(({ name, x, y }) => (
-          <WDUnitSlot key={name} name={name} territory={territory} x={x} y={y}>
-            {unitFCs[name]}
-          </WDUnitSlot>
-        ))}
+        territoryMapData.unitSlots
+          .filter(({ name }) => name in unitFCs)
+          .map(({ name, x, y }) => (
+            <WDUnitSlot
+              key={name}
+              name={name}
+              territory={territory}
+              x={x}
+              y={y}
+            >
+              {unitFCs[name]}
+            </WDUnitSlot>
+          ))}
+      {territoryMapData.unitSlots &&
+        territoryMapData.arrowReceiver &&
+        territoryMapData.unitSlots
+          .filter(({ name }) => name in unitFCsDislodging)
+          .map(({ name }) => {
+            const unitName = `${name}-dislodging`;
+            const arrowReceiver = territoryMapData.arrowReceiver as Coordinates;
+            return (
+              <WDUnitSlot
+                key={unitName}
+                name={unitName}
+                territory={territory}
+                x={arrowReceiver.x - UNIT_WIDTH / 2}
+                y={arrowReceiver.y - UNIT_HEIGHT / 2}
+              >
+                {unitFCsDislodging[name]}
+              </WDUnitSlot>
+            );
+          })}
       {territoryMapData.arrowReceiver && (
         <rect
           id={`${territory}-arrow-receiver`}

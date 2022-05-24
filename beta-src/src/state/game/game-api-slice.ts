@@ -30,6 +30,7 @@ import fetchGameDataFulfilled from "../../utils/state/gameApiSlice/extraReducers
 import updateUserActivity from "../../utils/state/gameApiSlice/reducers/updateUserActivity";
 import TerritoriesMeta from "../interfaces/TerritoriesState";
 import fetchGameOverviewFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameOverview/fulfilled";
+import fetchGameStatusFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameStatus/fulfilled";
 import saveOrdersFulfilled from "../../utils/state/gameApiSlice/extraReducers/saveOrders/fulfilled";
 import { IUnit } from "../../models/Interfaces";
 import { Unit } from "../../utils/map/getUnits";
@@ -244,19 +245,7 @@ const gameApiSlice = createSlice({
       .addCase(fetchGameStatus.pending, (state) => {
         state.apiStatus = "loading";
       })
-      .addCase(fetchGameStatus.fulfilled, (state, action) => {
-        state.apiStatus = "succeeded";
-        // If the user is scrolled to the current phase, make the viewed
-        // phase track the current phase
-        if (
-          state.viewedPhaseState.viewedPhaseIdx >=
-          state.status.phases.length - 1
-        ) {
-          state.viewedPhaseState.viewedPhaseIdx =
-            action.payload.phases.length - 1;
-        }
-        state.status = action.payload;
-      })
+      .addCase(fetchGameStatus.fulfilled, fetchGameStatusFulfilled)
       .addCase(fetchGameStatus.rejected, (state, action) => {
         state.apiStatus = "failed";
         state.error = action.error.message;
