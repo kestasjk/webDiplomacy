@@ -37,12 +37,11 @@ function getUnitState(unitID: string, curOrder, ordersMeta, maps): UIState {
     return UIState.SELECTED;
   }
   const orderID = maps.unitToOrder[unitID];
-  console.log({ orderID });
   const unitOrder = ordersMeta[orderID];
   if (unitOrder) {
     const orderType = unitOrder.update?.type || unitOrder.originalOrder?.type;
-    if (orderType === "hold") unitState = UIState.HOLD;
-    if (orderType === "destroy") unitState = UIState.DESTROY;
+    if (orderType === "Hold") unitState = UIState.HOLD;
+    if (orderType === "Destroy") unitState = UIState.DESTROY;
   }
   return unitState;
 }

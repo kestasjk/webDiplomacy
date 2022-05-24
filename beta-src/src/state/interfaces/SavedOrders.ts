@@ -1,7 +1,7 @@
 import { IOrderData } from "../../models/Interfaces";
 import TerritoryClass from "../../models/TerritoryClass";
 
-interface OrderMetaUpdate {
+export interface OrderMetaUpdate {
   convoyPath?: string[];
   type: string;
   toTerrID: string | null;

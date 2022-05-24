@@ -26,10 +26,9 @@ const initialState: GameState = {
   error: null,
   order: {
     inProgress: false,
-    onTerritory: null,
+    fromTerrID: "",
     orderID: "",
-    subsequentClicks: [],
-    toTerritory: null,
+    toTerrID: "",
     unitID: "",
   },
   ordersMeta: {},

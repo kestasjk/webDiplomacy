@@ -3,19 +3,18 @@ import OrderState from "../../state/interfaces/OrderState";
 
 export default function getDataForOrder(
   state,
-  { onTerritory, orderID, toTerritory, type, unitID }: OrderState,
+  { fromTerrID, orderID, toTerrID, type, unitID }: OrderState,
 ): OrderState {
   const {
     data: { data: gameData },
   } = current(state);
   const newOrder: OrderState = {
     inProgress: true,
-    onTerritory,
+    fromTerrID,
     orderID:
       orderID ||
       gameData.currentOrders.find((order) => order.unitID === unitID)?.id,
-    subsequentClicks: [],
-    toTerritory,
+    toTerrID,
     unitID,
   };
   if (type) {

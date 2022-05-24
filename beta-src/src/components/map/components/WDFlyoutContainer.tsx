@@ -30,17 +30,6 @@ const WDFlyoutContainer: React.FC = function (): React.ReactElement {
         type: orderType,
       }),
     );
-    dispatch(
-      gameApiSliceActions.updateOrdersMeta({
-        [order.orderID]: {
-          saved: false,
-          update: {
-            type: orderType,
-            toTerrID: null,
-          },
-        },
-      }),
-    );
   };
 
   return (
@@ -50,28 +39,28 @@ const WDFlyoutContainer: React.FC = function (): React.ReactElement {
         unitSlotName={unitSlotName}
         position="left"
         text="Hold"
-        clickHandler={clickHandler("hold")}
+        clickHandler={clickHandler("Hold")}
       />
       <WDFlyoutButton
         territory={territory}
         unitSlotName={unitSlotName}
         position="right"
         text="Move"
-        clickHandler={clickHandler("move")}
+        clickHandler={clickHandler("Move")}
       />
       <WDFlyoutButton
         territory={territory}
         unitSlotName={unitSlotName}
         position="top"
         text="Support"
-        clickHandler={clickHandler("support")}
+        clickHandler={clickHandler("Support")}
       />
       <WDFlyoutButton
         territory={territory}
         unitSlotName={unitSlotName}
         position="bottom"
         text="Convoy"
-        clickHandler={clickHandler("convoy")}
+        clickHandler={clickHandler("Convoy")}
       />
     </>
   );

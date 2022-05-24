@@ -3,7 +3,7 @@ import UIState from "../../enums/UIState";
 import getDataForOrder from "./getDataForOrder";
 
 /* eslint-disable no-param-reassign */
-export default function startNewOrder(state, partialOrderState): void {
+export default function startNewOrder(state, partialOrderState): string {
   console.log("startNewOrder");
   const {
     order: { unitID: prevUnitID, type },
@@ -14,5 +14,6 @@ export default function startNewOrder(state, partialOrderState): void {
   delete state.order.type;
   const orderData = getDataForOrder(state, partialOrderState);
   state.order = orderData;
-  const { unitID } = orderData;
+  state.order.inProgress = true;
+  return orderData.orderID;
 }
