@@ -45,9 +45,12 @@ function getUnitState(
 
   if (unitOrder) {
     const orderType = unitOrder.update?.type;
-    if (orderType === "Hold") unitState = UIState.HOLD;
-  }
+    console.log({ orderType, unitState });
 
+    if (orderType === "Hold") unitState = UIState.HOLD;
+    if (orderType === "Retreat") unitState = UIState.DISLODGED; // FIXME: is this right?
+  }
+  console.log({ ordersMeta });
   // Destroys are defined through toTerrID; these orders have no unitIDs (sigh)
   Object.values(ordersMeta).forEach((meta) => {
     if (meta.update?.toTerrID === terrID) {

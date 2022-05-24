@@ -22,10 +22,8 @@ export default function updateOrder(state, update: OrderUpdate): void {
   // system gets confused if I update state.order
   // and then commit state.order
   if (
-    newOrder.type === "Hold" ||
-    newOrder.type === "Destroy" ||
-    newOrder.type === "Disband" ||
-    (newOrder.type && newOrder.toTerrID)
+    ["Hold", "Destroy", "Disband"].includes(newOrder.type) ||
+    (newOrder.type && newOrder.type !== "Build" && newOrder.toTerrID)
   ) {
     commitOrder(state, newOrder);
   } else {

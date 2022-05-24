@@ -77,7 +77,7 @@ export default function processMapClick(state, clickData) {
       const parentID = parent && maps.territoryToTerrID[parent];
       return parentID === clickTerrID;
     });
-
+    console.log({ ordersMeta });
     if (existingOrder) {
       console.log("Existing build order");
       const [id] = existingOrder;
@@ -163,6 +163,7 @@ export default function processMapClick(state, clickData) {
   } else if (order.type === "Support" || order.type === "Convoy") {
     // FIXME: dedup
     const { allowedBorderCrossings } = ordersMeta[order.orderID];
+    // FIXME: use supportMoveChoices and supportHoldChoices
     const canMove = allowedBorderCrossings?.find((border) => {
       const mappedTerritory = TerritoryMap[border.name];
       return Territory[mappedTerritory.territory] === territory;
