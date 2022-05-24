@@ -16,7 +16,6 @@ import { RootState } from "../store";
 import initialState from "./initial-state";
 import OrdersMeta from "../interfaces/SavedOrders";
 import OrderState from "../interfaces/OrderState";
-import drawBuilds from "../../utils/map/drawBuilds";
 import mergeMessageArrays from "../../utils/state/mergeMessageArrays";
 import updateOrder from "../../utils/state/updateOrder";
 import updateOrdersMeta from "../../utils/state/updateOrdersMeta";
@@ -200,7 +199,6 @@ const gameApiSlice = createSlice({
       state.territoriesMeta = action.payload;
     },
     processMapClick,
-    drawBuilds,
     processMessagesSeen(state, action) {
       state.messages.newMessagesFrom = state.messages.newMessagesFrom.filter(
         (e) => e !== action.payload,
