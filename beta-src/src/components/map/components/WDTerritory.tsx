@@ -1,7 +1,9 @@
 import { useTheme } from "@mui/material";
 import * as React from "react";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
-import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
+import TerritoryMap, {
+  territoryToWebdipName,
+} from "../../../data/map/variants/classic/TerritoryMap";
 import Territories from "../../../data/Territories";
 import UIState from "../../../enums/UIState";
 import { TerritoryMapData } from "../../../interfaces";
@@ -24,27 +26,43 @@ import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
 import { Unit } from "../../../utils/map/getUnits";
 import Territory from "../../../enums/map/variants/classic/Territory";
+import OrdersMeta from "../../../state/interfaces/SavedOrders";
+
+function getUnitState(
+  terrID: string | undefined,
+  unitID: string,
+  curOrder,
+  ordersMeta: OrdersMeta,
+  maps,
+): UIState {
+  let unitState = UIState.NONE;
+
+  if (curOrder.unitID === unitID) {
+    return UIState.SELECTED;
+  }
+  const unitOrderID = maps.unitToOrder[unitID];
+  const unitOrder = ordersMeta[unitOrderID];
+
+  if (unitOrder) {
+    const orderType = unitOrder.update?.type;
+    if (orderType === "Hold") unitState = UIState.HOLD;
+  }
+
+  // Destroys are defined through toTerrID; these orders have no unitIDs (sigh)
+  Object.values(ordersMeta).forEach((meta) => {
+    if (meta.update?.toTerrID === terrID) {
+      if (meta.update?.type === "Destroy") unitState = UIState.DESTROY;
+    }
+  });
+
+  return unitState;
+}
 
 interface WDTerritoryProps {
   territoryMapData: TerritoryMapData;
   units: Unit[];
 }
 
-function getUnitState(unitID: string, curOrder, ordersMeta, maps): UIState {
-  let unitState = UIState.NONE;
-
-  if (curOrder.unitID === unitID) {
-    return UIState.SELECTED;
-  }
-  const orderID = maps.unitToOrder[unitID];
-  const unitOrder = ordersMeta[orderID];
-  if (unitOrder) {
-    const orderType = unitOrder.update?.type || unitOrder.originalOrder?.type;
-    if (orderType === "Hold") unitState = UIState.HOLD;
-    if (orderType === "Destroy") unitState = UIState.DESTROY;
-  }
-  return unitState;
-}
 const WDTerritory: React.FC<WDTerritoryProps> = function ({
   territoryMapData,
   units,
@@ -58,7 +76,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
 
   const { territory } = territoryMapData;
   const territoryMeta = territoriesMeta[territoryMapData.territory];
-
   let territoryFill = "none";
   let territoryFillOpacity = 0;
   const territoryStrokeOpacity = 1;
@@ -91,7 +108,13 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
           country={unit.country}
           meta={unit}
           type={unit.unit.type as UnitType}
-          iconState={getUnitState(unit.unit.id, curOrder, ordersMeta, maps)}
+          iconState={getUnitState(
+            territoryMeta?.id,
+            unit.unit.id,
+            curOrder,
+            ordersMeta,
+            maps,
+          )}
         />
       );
     });

@@ -8,15 +8,16 @@ interface OrderUpdate {
   fromTerrID?: string | null;
   toTerrID?: string | null;
   viaConvoy?: string | null;
+  orderID?: string | null;
+  inProgress?: boolean;
 }
 /* eslint-disable no-param-reassign */
 export default function updateOrder(state, update: OrderUpdate): void {
   console.log("updateOrder");
   const { order } = current(state);
   console.log({ order, update });
-  if (!state.order.inProgress) throw Error("");
   const newOrder = { ...state.order, ...update };
-
+  if (!newOrder.inProgress) throw Error(newOrder);
   // gotta do this carefully because the proxying
   // system gets confused if I update state.order
   // and then commit state.order

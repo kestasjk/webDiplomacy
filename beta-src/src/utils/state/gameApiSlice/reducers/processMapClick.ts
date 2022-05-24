@@ -9,6 +9,7 @@ import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
 import GameStateMaps from "../../../../state/interfaces/GameStateMaps";
 import invalidClick from "../../../map/invalidClick";
+import getAvailableOrder from "../../getAvailableOrder";
 import getOrderStates from "../../getOrderStates";
 import processConvoy from "../../processConvoy";
 import resetOrder from "../../resetOrder";
@@ -67,33 +68,19 @@ export default function processMapClick(state, clickData) {
   if (phase === "Builds") {
     const territoryMeta = territoriesMeta[Territory[territory]];
 
-    if (
-      member.countryID !== Number(territoryMeta.countryID) || // FIXME ugh string vs number
-      !territoryMeta.supply
-    ) {
-      console.log("Not a SC");
-      console.log({ member, territoryMeta });
-      invalidClick(evt, territory);
-      return;
-    }
+    // FIXME: abstract to a function
+    const existingOrder = Object.entries(ordersMeta).find(([, { update }]) => {
+      if (!update || !update.toTerrID) return false;
+      if (update.toTerrID === clickTerrID) return true;
+      const updateTerr = maps.terrIDToTerritory[update.toTerrID];
+      const { parent } = TerritoryMap[updateTerr];
+      const parentID = parent && maps.territoryToTerrID[parent];
+      return parentID === clickTerrID;
+    });
 
-    const existingBuildOrder = Object.entries(ordersMeta).find(
-      ([, { update }]) => {
-        if (!update || !update.toTerrID) return false;
-        if (update.toTerrID === clickTerrID) return true;
-        // FIXME omg how is it so hard to find the parent??? Territories still needs work
-        // we should have a parent map directly in terms of territories and IDs.
-        const parent =
-          Territories[maps.terrIDToTerritory[update.toTerrID]].parent
-            ?.territory;
-        const parentID = parent && maps.territoryToTerrID[parent];
-        return parentID === clickTerrID;
-      },
-    );
-
-    if (existingBuildOrder) {
+    if (existingOrder) {
       console.log("Existing build order");
-      const [id] = existingBuildOrder;
+      const [id] = existingOrder;
 
       updateOrdersMeta(state, {
         [id]: {
@@ -107,32 +94,44 @@ export default function processMapClick(state, clickData) {
       return;
     }
 
-    const territoryHasUnit = !!territoryMeta.unitID;
-    const { currentOrders } = data;
-    let availableOrder;
-    if (!currentOrders) return;
-    for (let i = 0; i < currentOrders.length; i += 1) {
-      const { id } = currentOrders[i];
-      const orderMeta = ordersMeta[id];
-      if (!orderMeta.update || !orderMeta.update?.toTerrID) {
-        availableOrder = id;
-        break;
-      }
+    const isDestroy =
+      overview.user.member.supplyCenterNo < overview.user.member.unitNo;
+    if (
+      member.countryID !== Number(territoryMeta.ownerCountryID) || // FIXME ugh string vs number
+      (!territoryMeta.supply && !isDestroy)
+    ) {
+      console.log("Not a SC");
+      console.log({ member, territoryMeta, isDestroy });
+      invalidClick(evt, territory);
+      return;
     }
+
+    const { currentOrders } = data;
+    const availableOrder = getAvailableOrder(currentOrders, ordersMeta);
+    const territoryHasUnit = !!territoryMeta.unitID;
+    const unitValid = isDestroy === territoryHasUnit;
+    if (!availableOrder || !unitValid) {
+      console.log({
+        availableOrder,
+        isDestroy,
+        territoryHasUnit,
+        overview,
+        territoryMeta,
+      });
+      invalidClick(evt, territory);
+      return;
+    }
+
     console.log(
       `trying to start build order: ${availableOrder} ${territoryHasUnit} ${order.inProgress}`,
     );
     resetOrder(state);
-    if (availableOrder && !territoryHasUnit && !order.inProgress) {
-      state.order = {
-        inProgress: true,
-        orderID: availableOrder,
-        type: "Build",
-        toTerrID: clickTerrID,
-      };
-    } else {
-      invalidClick(evt, territory);
-    }
+    updateOrder(state, {
+      inProgress: true,
+      orderID: availableOrder,
+      type: isDestroy ? "Destroy" : "Build",
+      toTerrID: clickTerrID,
+    });
     return;
   }
 
