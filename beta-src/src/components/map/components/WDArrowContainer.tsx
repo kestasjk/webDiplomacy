@@ -16,6 +16,7 @@ import drawArrowFunctional, {
 } from "../../../utils/map/drawArrowFunctional";
 import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
 import { APITerritories } from "../../../state/interfaces/GameDataResponse";
+import { Unit } from "../../../utils/map/getUnits";
 
 function accumulateMoveOrderArrows(
   arrows: (React.ReactElement | null)[],
@@ -246,6 +247,32 @@ function accumulateRetreatArrows(
     });
 }
 
+function accumulateDislodgerArrows(
+  arrows: (React.ReactElement | null)[],
+  units: Unit[],
+  territories: APITerritories,
+): void {
+  units
+    .filter((unit) => unit.isDislodging)
+    .forEach((unit) => {
+      if (unit.movedFromTerrID === null) return;
+      const fromTerr =
+        TerritoryMap[territories[unit.movedFromTerrID].name].territory;
+      const toTerr = TerritoryMap[territories[unit.unit.terrID].name].territory;
+
+      arrows.push(
+        drawArrowFunctional(
+          ArrowType.MOVE,
+          ArrowColor.MOVE,
+          "territory",
+          fromTerr,
+          "dislodger",
+          toTerr,
+        ),
+      );
+    });
+}
+
 /*
 export interface IOrderDataHistorical {
   countryID: string;
@@ -265,6 +292,7 @@ export interface IOrderDataHistorical {
 interface WDArrowProps {
   phase: string;
   orders: IOrderDataHistorical[];
+  units: Unit[];
   maps: GameStateMaps;
   territories: APITerritories;
 }
@@ -272,6 +300,7 @@ interface WDArrowProps {
 const WDArrowContainer: React.FC<WDArrowProps> = function ({
   phase,
   orders,
+  units,
   maps,
   territories,
 }): React.ReactElement {
@@ -286,6 +315,7 @@ const WDArrowContainer: React.FC<WDArrowProps> = function ({
   accumulateSupportMoveOrderArrows(arrows, orders, ordersByTerrID, territories);
   accumulateConvoyOrderArrows(arrows, orders, ordersByTerrID, territories);
   accumulateRetreatArrows(arrows, orders, territories);
+  accumulateDislodgerArrows(arrows, units, territories);
   return <g id="arrows">{arrows}</g>;
 };
 

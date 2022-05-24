@@ -7,41 +7,20 @@ import arrowDispatchReceiveCoordinates from "./arrowDispatchReceiveCoordinates";
 import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
 import { UNIT_HEIGHT, UNIT_WIDTH } from "../../components/ui/units/WDUnit";
 
-export function getArrowX1Y1X2Y2(
-  sourceType: "unit",
-  sourceIdentifier: Territory,
-  receiverType: "territory" | "unit" | "arrow",
-  receiverIdentifier: Territory | [number, number, number, number],
+// Returns the coordinates of the upper left corner
+// of the source or destination of an arrow, and the source or destination
+// object's width and height.
+export function getTargetXYWH(
+  type: "territory" | "unit" | "arrow" | "dislodger",
+  identifier: Territory | [number, number, number, number],
 ): [number, number, number, number] {
-  let positionChangeBuffer;
-
-  // Source of arrow
-  let x1;
-  let y1;
-  {
-    const unitTerritory = sourceIdentifier;
-    const fromTerritoryName = Territory[unitTerritory];
-    const fromTerritoryData = TerritoryMap[fromTerritoryName].territoryMapData;
-    const { unitSlotName } = TerritoryMap[fromTerritoryName];
-    const fromTerritoryX = fromTerritoryData.x;
-    const fromTerritoryY = fromTerritoryData.y;
-    x1 = fromTerritoryX;
-    y1 = fromTerritoryY;
-    if (fromTerritoryData.unitSlotsBySlotName[unitSlotName]) {
-      x1 += fromTerritoryData.unitSlotsBySlotName[unitSlotName].x;
-      y1 += fromTerritoryData.unitSlotsBySlotName[unitSlotName].y;
-    }
-  }
-
-  // Switch to find the receiver (i.e. destination) of arrow
-  // And the receiver's width and height
-  let x2;
-  let y2;
-  let receiverWidth;
-  let receiverHeight;
-  switch (receiverType) {
+  let x;
+  let y;
+  let width;
+  let height;
+  switch (type) {
     case "arrow": {
-      const [arrowX1, arrowY1, arrowX2, arrowY2] = receiverIdentifier as [
+      const [arrowX1, arrowY1, arrowX2, arrowY2] = identifier as [
         number,
         number,
         number,
@@ -51,62 +30,85 @@ export function getArrowX1Y1X2Y2(
       const run = arrowX2 - arrowX1;
       const rise = arrowY2 - arrowY1;
 
-      x2 = arrowX1 + run * attachPoint;
-      y2 = arrowY1 + rise * attachPoint;
-      receiverWidth = 0;
-      receiverHeight = 0;
-      positionChangeBuffer = 60;
+      x = arrowX1 + run * attachPoint;
+      y = arrowY1 + rise * attachPoint;
+      width = 0;
+      height = 0;
       break;
     }
     case "unit": {
-      const toTerritoryName = Territory[receiverIdentifier as Territory];
+      const toTerritoryName = Territory[identifier as Territory];
       const toTerritoryData = TerritoryMap[toTerritoryName].territoryMapData;
       const { unitSlotName } = TerritoryMap[toTerritoryName];
 
-      x2 = toTerritoryData.x;
-      y2 = toTerritoryData.y;
+      x = toTerritoryData.x;
+      y = toTerritoryData.y;
       if (toTerritoryData.unitSlotsBySlotName[unitSlotName]) {
-        x2 += toTerritoryData.unitSlotsBySlotName[unitSlotName].x;
-        y2 += toTerritoryData.unitSlotsBySlotName[unitSlotName].y;
+        x += toTerritoryData.unitSlotsBySlotName[unitSlotName].x;
+        y += toTerritoryData.unitSlotsBySlotName[unitSlotName].y;
       }
-      receiverWidth = UNIT_WIDTH;
-      receiverHeight = UNIT_HEIGHT;
-      positionChangeBuffer = 75;
+      width = UNIT_WIDTH;
+      height = UNIT_HEIGHT;
+      break;
+    }
+    case "dislodger": {
+      const toTerritoryName = Territory[identifier as Territory];
+      const toTerritoryData = TerritoryMap[toTerritoryName].territoryMapData;
+
+      x = toTerritoryData.x - UNIT_WIDTH / 2;
+      y = toTerritoryData.y - UNIT_HEIGHT / 2;
+      if (toTerritoryData.arrowReceiver) {
+        x += toTerritoryData.arrowReceiver.x;
+        y += toTerritoryData.arrowReceiver.y;
+      }
+      width = UNIT_WIDTH;
+      height = UNIT_HEIGHT;
       break;
     }
     default: {
-      const toTerritoryName = Territory[receiverIdentifier as Territory];
+      const toTerritoryName = Territory[identifier as Territory];
       const toTerritoryData = TerritoryMap[toTerritoryName].territoryMapData;
 
-      x2 = toTerritoryData.x;
-      y2 = toTerritoryData.y;
+      x = toTerritoryData.x;
+      y = toTerritoryData.y;
       if (toTerritoryData.arrowReceiver) {
-        x2 += toTerritoryData.arrowReceiver.x;
-        y2 += toTerritoryData.arrowReceiver.y;
+        x += toTerritoryData.arrowReceiver.x;
+        y += toTerritoryData.arrowReceiver.y;
       }
-      receiverWidth = 0;
-      receiverHeight = 0;
-      positionChangeBuffer = 75;
+      width = 0;
+      height = 0;
       break;
     }
   }
+  return [x, y, width, height];
+}
 
-  const xDiff = x2 - x1;
-  const yDiff = y2 - y1;
+export function getArrowX1Y1X2Y2(
+  sourceType: "territory" | "unit" | "arrow" | "dislodger",
+  sourceIdentifier: Territory | [number, number, number, number],
+  receiverType: "territory" | "unit" | "arrow" | "dislodger",
+  receiverIdentifier: Territory | [number, number, number, number],
+): [number, number, number, number] {
+  // Source of arrow
+  const [sx1, sy1, sourceWidth, sourceHeight] = getTargetXYWH(
+    sourceType,
+    sourceIdentifier,
+  );
+  const [rx2, ry2, receiverWidth, receiverHeight] = getTargetXYWH(
+    receiverType,
+    receiverIdentifier,
+  );
 
-  ({ x1, x2, y1, y2 } = arrowDispatchReceiveCoordinates(
-    positionChangeBuffer,
-    UNIT_HEIGHT,
-    UNIT_WIDTH,
+  const { x1, x2, y1, y2 } = arrowDispatchReceiveCoordinates(
+    sourceHeight,
+    sourceWidth,
     receiverHeight,
     receiverWidth,
-    xDiff,
-    yDiff,
-    x1,
-    x2,
-    y1,
-    y2,
-  ));
+    sx1,
+    rx2,
+    sy1,
+    ry2,
+  );
 
   return [x1, y1, x2, y2];
 }
@@ -114,9 +116,9 @@ export function getArrowX1Y1X2Y2(
 export default function drawArrowFunctional(
   arrowType: ArrowType,
   arrowColor: ArrowColor,
-  sourceType: "unit",
-  sourceIdentifier: Territory,
-  receiverType: "territory" | "unit" | "arrow",
+  sourceType: "territory" | "unit" | "arrow" | "dislodger",
+  sourceIdentifier: Territory | [number, number, number, number],
+  receiverType: "territory" | "unit" | "arrow" | "dislodger",
   receiverIdentifier: Territory | [number, number, number, number],
 ): React.ReactElement {
   console.log(

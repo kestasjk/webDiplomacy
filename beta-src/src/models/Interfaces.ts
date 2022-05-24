@@ -55,6 +55,13 @@ export interface IUnitHistorical {
 
 export interface ITerrStatus {
   id: string;
+  // occupiedFromTerrID is used to mark where a unit came from when moving
+  // in to occupy another, and is used to determine what the legal retreat
+  // locations are for dislodged units. HOWEVER you cannot rely on this always
+  // to be non-null. It is null in case of a dislodgement-by-convoy due to
+  // needing to adjudicate certain convoy dislogement cornercases correctly.
+  // So this can NOT be relied on as an indicator of when a unit occupies
+  // another territory, it can ONLY be used for adjudicating retreat locations.
   occupiedFromTerrID: string | null;
   ownerCountryID: string | null;
   standoff: boolean;

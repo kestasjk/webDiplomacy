@@ -38,6 +38,7 @@ const WDMap: React.ForwardRefExoticComponent<
           <WDArrowContainer
             phase={phase}
             orders={orders}
+            units={units}
             maps={maps}
             territories={territories}
           />

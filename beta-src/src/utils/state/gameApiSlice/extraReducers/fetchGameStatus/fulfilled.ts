@@ -13,39 +13,29 @@ import generateMaps from "../../../generateMaps";
 import updateOrdersMeta from "../../../updateOrdersMeta";
 
 /* eslint-disable no-param-reassign */
-export default function fetchGameDataFulfilled(state: GameState, action): void {
-  console.log("fetchGameDataFulfilled");
+export default function fetchGameStatusFulfilled(
+  state: GameState,
+  action,
+): void {
+  console.log("fetchGameStatusFulfilled");
   state.apiStatus = "succeeded";
-  state.data = action.payload;
+
+  // If the user is scrolled to the current phase, make the viewed
+  // phase track the current phase
+  if (state.viewedPhaseState.viewedPhaseIdx >= state.status.phases.length - 1) {
+    state.viewedPhaseState.viewedPhaseIdx = action.payload.phases.length - 1;
+  }
+
+  state.status = action.payload;
   const {
     data: { data },
-    overview: { members, phase, user },
+    overview: { members },
   }: {
     data: { data: GameDataResponse["data"] };
     overview: {
       members: GameOverviewResponse["members"];
-      phase: GameOverviewResponse["phase"];
-      user: GameOverviewResponse["user"];
     };
   } = current(state);
-  let board;
-  if (data.contextVars) {
-    // FIXME: can't put non-serializable object in store
-    board = new BoardClass(
-      data.contextVars.context,
-      Object.values(data.territories),
-      data.territoryStatuses,
-      Object.values(data.units),
-    );
-    state.board = board;
-  }
-  state.maps = generateMaps(data);
-  state.ownUnits = [];
-  Object.values(data.units).forEach((unit) => {
-    if (unit.countryID === user.member.countryID.toString()) {
-      state.ownUnits.push(unit.id);
-    }
-  });
 
   // Also depends on status, so this is updated both here and when GameStatus is fulfilled.
   const prevPhaseOrders =
@@ -59,15 +49,4 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
     members,
     prevPhaseOrders,
   );
-
-  state.territoriesMeta = getTerritoriesMeta(data);
-
-  const numUnsavedOrders = Object.values(state.ordersMeta).reduce(
-    (acc, meta) => acc + 1 - +meta.saved,
-    0,
-  );
-  if (!numUnsavedOrders) {
-    console.log("Updating ordersMeta");
-    updateOrdersMeta(state, getOrdersMeta(data, board, phase));
-  }
 }
