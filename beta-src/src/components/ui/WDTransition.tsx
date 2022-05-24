@@ -11,47 +11,54 @@ const WDTransition: React.FC = function (): React.ReactElement {
         position: "fixed",
         left: "0px",
         top: "0px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
       }}
     >
       <Box
-        component="img"
-        src="beta-src/src/assets/png/web-diplomacy-logo.png"
         sx={{
-          filter: `boxShadow: "0px 0px 250px rgba(255, 255, 255, 0.5)"`,
-          position: "fixed",
-          height: "568px",
-          width: "568px",
-          left: "50%",
-          top: "50%",
-          transform: "translate(-50%, -50%)",
-        }}
-      />
-      <Box
-        sx={{
-          color: "#ffffff",
-          position: "fixed",
-          height: "21px",
-          width: "150px",
-          fontSize: "14px",
-          letterSpacing: "0.6em",
-          left: "50%",
-          top: "50%",
-          transform: "translate(-50%, 800%)",
-          textAlign: "center",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
-        LOADING
+        <Box
+          component="img"
+          src="beta-src/src/assets/png/web-diplomacy-logo.png"
+          sx={{
+            filter: `box-shadow: "0px 0px 250px rgba(255, 255, 255, 0.5)"`,
+            height: "568px",
+            width: "568px",
+          }}
+        />
         <Box
           sx={{
+            color: "#ffffff",
             position: "relative",
-            top: "16px",
+            height: "21px",
+            width: "150px",
+            fontSize: "14px",
+            letterSpacing: "0.6em",
+            textAlign: "center",
+            top: "-130px",
           }}
         >
-          <LinearProgress
+          LOADING
+          <Box
             sx={{
-              background: `linear-gradient(to right, #8D7C41, #CBB97B, #FFFFFF)`,
+              position: "relative",
+              top: "16px",
             }}
-          />
+          >
+            <LinearProgress
+              sx={{
+                background: `linear-gradient(to right, #8D7C41, #CBB97B, #FFFFFF)`,
+              }}
+            />
+          </Box>
         </Box>
       </Box>
       <Box
@@ -71,6 +78,7 @@ const WDTransition: React.FC = function (): React.ReactElement {
           width: "145px",
         }}
       >
+        {/* Nested box to be able to add an icon in later easily if wanted */}
         <Box
           sx={{
             height: "42px",
