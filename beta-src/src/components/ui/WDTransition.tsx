@@ -69,11 +69,10 @@ const WDTransition: React.FC = function (): React.ReactElement {
           color: "#ffffff",
           fontSize: "14px",
           fontWeight: 400,
-          height: 60,
           left: 30,
           lineHeight: 2.5,
           m: 1,
-          position: "fixed",
+          position: "absolute",
           textAlign: "center",
           width: "145px",
         }}
@@ -86,9 +85,10 @@ const WDTransition: React.FC = function (): React.ReactElement {
             lineHeight: "18px",
             whiteSpace: "normal",
             position: "relative",
-            top: "11px",
+            top: "4px",
             textAlign: "left",
-            left: "21px",
+            left: "11px",
+            margin: "9px",
           }}
         >
           Seasons change, so does loyalty

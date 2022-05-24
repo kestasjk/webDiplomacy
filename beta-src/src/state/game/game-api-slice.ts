@@ -215,7 +215,6 @@ const gameApiSlice = createSlice({
       .addCase(fetchGameData.fulfilled, fetchGameDataFulfilled)
       .addCase(fetchGameData.rejected, (state, action) => {
         state.apiStatus = "failed";
-        state.transition = true;
         state.error = action.error.message;
       })
       // fetchGameOverview
