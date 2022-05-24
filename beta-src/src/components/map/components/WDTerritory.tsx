@@ -64,8 +64,16 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     territoryFill = theme.palette[userCountry].main;
   }
 
-  const unitFCs: { [key: string]: any } = {};
-  const unitFCsDislodging: { [key: string]: any } = {};
+  // Maps unitSlot name -> unit to draw.
+  const unitFCs: { [key: string]: React.ReactElement } = {};
+  // Maps unitSlot name -> unit to draw, but specifically for units
+  // that are currently disloging another unit on a retreat phase.
+  // This is separate because we need to draw the
+  // dislodger unit in an alternative location when there are two
+  // units in a territory so that they don't overlap each other, including
+  // when those units share the same unitSlot within that territory.
+  const unitFCsDislodging: { [key: string]: React.ReactElement } = {};
+
   units
     .filter(
       (unit) =>
@@ -183,6 +191,8 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
           .filter(({ name }) => name in unitFCsDislodging)
           .map(({ name }) => {
             const unitName = `${name}-dislodging`;
+            // For dislodger units, we draw them at the location of the
+            // arrow receiver.
             const arrowReceiver = territoryMapData.arrowReceiver as Coordinates;
             return (
               <WDUnitSlot
