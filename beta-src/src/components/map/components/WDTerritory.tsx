@@ -7,11 +7,11 @@ import UIState from "../../../enums/UIState";
 import { TerritoryMapData } from "../../../interfaces";
 import {
   gameApiSliceActions,
+  gameMaps,
   gameOrder,
   gameOrdersMeta,
   gameOverview,
   gameTerritoriesMeta,
-  gameUnitState,
 } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import { TerritoryMeta } from "../../../state/interfaces/TerritoriesState";
@@ -30,6 +30,22 @@ interface WDTerritoryProps {
   units: Unit[];
 }
 
+function getUnitState(unitID: string, curOrder, ordersMeta, maps): UIState {
+  let unitState = UIState.NONE;
+
+  if (curOrder.unitID === unitID) {
+    return UIState.SELECTED;
+  }
+  const orderID = maps.unitToOrder[unitID];
+  console.log({ orderID });
+  const unitOrder = ordersMeta[orderID];
+  if (unitOrder) {
+    const orderType = unitOrder.update?.type || unitOrder.originalOrder?.type;
+    if (orderType === "hold") unitState = UIState.HOLD;
+    if (orderType === "destroy") unitState = UIState.DESTROY;
+  }
+  return unitState;
+}
 const WDTerritory: React.FC<WDTerritoryProps> = function ({
   territoryMapData,
   units,
@@ -56,8 +72,8 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     territoryFillOpacity = 0.4;
   }
   const curOrder = useAppSelector(gameOrder);
-
-  const unitState = useAppSelector(gameUnitState); // FIXME: too global
+  const ordersMeta = useAppSelector(gameOrdersMeta);
+  const maps = useAppSelector(gameMaps);
   const unitFCs: { [key: string]: any } = {};
   units
     .filter(
@@ -76,12 +92,11 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
           country={unit.country}
           meta={unit}
           type={unit.unit.type as UnitType}
-          iconState={unitState[unit.unit.id]} // FIXME make declarative
+          iconState={getUnitState(unit.unit.id, curOrder, ordersMeta, maps)}
         />
       );
     });
 
-  const ordersMeta = useAppSelector(gameOrdersMeta);
   Object.values(ordersMeta)
     .filter(
       ({ update }) =>

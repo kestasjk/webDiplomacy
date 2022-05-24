@@ -24,8 +24,6 @@ import UpdateOrdersMetaAction from "../../interfaces/state/UpdateOrdersMetaActio
 import SavedOrdersConfirmation from "../../interfaces/state/SavedOrdersConfirmation";
 import OrderSubmission from "../../interfaces/state/OrderSubmission";
 import resetOrder from "../../utils/state/resetOrder";
-import processUnitDoubleClick from "../../utils/state/gameApiSlice/reducers/processUnitDoubleClick";
-import processUnitClick from "../../utils/state/gameApiSlice/reducers/processUnitClick";
 import processMapClick from "../../utils/state/gameApiSlice/reducers/processMapClick";
 import fetchGameDataFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameData/fulfilled";
 import updateUserActivity from "../../utils/state/gameApiSlice/reducers/updateUserActivity";
@@ -201,8 +199,6 @@ const gameApiSlice = createSlice({
     updateTerritoriesMeta(state, action) {
       state.territoriesMeta = action.payload;
     },
-    processUnitDoubleClick,
-    processUnitClick,
     processMapClick,
     drawBuilds,
     processMessagesSeen(state, action) {
@@ -350,10 +346,7 @@ export const gameTerritoriesMeta = ({
   game: { territoriesMeta },
 }: RootState): TerritoriesMeta => territoriesMeta;
 export const gameUnits = ({ game: { units } }: RootState): Unit[] => units;
-export const gameUnitState = ({ game: { unitState } }: RootState) => unitState;
 export const gameMaps = ({ game: { maps } }: RootState) => maps;
-export const gameFlyoutMenu = ({ game: { flyoutMenu } }: RootState) =>
-  flyoutMenu;
 export const gameViewedPhase = ({
   game: { viewedPhaseState },
 }: RootState): ViewedPhaseState => viewedPhaseState;

@@ -1,5 +1,4 @@
 import SavedOrdersConfirmation from "../../../../../interfaces/state/SavedOrdersConfirmation";
-import updateUnitsRetreat from "../../../../map/updateUnitsRetreat";
 import getOrderStates from "../../../getOrderStates";
 
 /* eslint-disable no-param-reassign */
@@ -28,6 +27,4 @@ export default function saveOrdersFulfilled(state, action): void {
       }
     });
   }
-
-  updateUnitsRetreat(state);
 }

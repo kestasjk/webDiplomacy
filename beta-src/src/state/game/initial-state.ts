@@ -26,7 +26,6 @@ const initialState: GameState = {
   error: null,
   order: {
     inProgress: false,
-    method: "click",
     onTerritory: null,
     orderID: "",
     subsequentClicks: [],
@@ -37,11 +36,13 @@ const initialState: GameState = {
   ownUnits: [],
   units: [],
   maps: {
-    terrIDToUnit: {},
-    unitToOrder: {},
-    unitToTerrID: {},
     terrIDToTerritory: {},
     territoryToTerrID: {},
+    terrIDToUnit: {},
+    unitToTerrID: {},
+    territoryToUnit: {},
+    unitToTerritory: {},
+    unitToOrder: {},
   },
   territoriesMeta: {},
   viewedPhaseState: {
@@ -148,12 +149,7 @@ const initialState: GameState = {
     time: 0,
     outstandingRequests: 0,
   },
-  unitState: {},
   buildPopover: [],
-  flyoutMenu: {
-    unitSlotName: "",
-    orderID: "",
-  },
 };
 
 export default initialState;

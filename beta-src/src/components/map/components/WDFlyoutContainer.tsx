@@ -4,16 +4,14 @@ import { Box, Button, Stack } from "@mui/material";
 import Territories from "../../../data/Territories";
 import {
   gameApiSliceActions,
-  gameFlyoutMenu,
   gameMaps,
   gameOrder,
 } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
-import WDBuildUnitButtons from "./WDBuildUnitButtons";
 import Territory from "../../../enums/map/variants/classic/Territory";
 import WDFlyoutButton from "./WDFlyoutButton";
 
-const WDFlyoutMenu: React.FC = function (): React.ReactElement {
+const WDFlyoutContainer: React.FC = function (): React.ReactElement {
   const dispatch = useAppDispatch();
   const order = useAppSelector(gameOrder);
   const maps = useAppSelector(gameMaps);
@@ -79,4 +77,4 @@ const WDFlyoutMenu: React.FC = function (): React.ReactElement {
   );
 };
 
-export default WDFlyoutMenu;
+export default WDFlyoutContainer;

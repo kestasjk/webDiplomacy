@@ -13,8 +13,6 @@ export default function updateOrder(state, update: EditOrder): void {
   console.log({ orderAfter: order });
   if (order.type === "hold") {
     // agh get rid of this!!!
-
-    state.unitState[order.unitID] = UIState.HOLD;
     commitOrder(state);
   }
 }

@@ -37,7 +37,6 @@ export default function processMapClick(state, clickData) {
   } = current(state);
   const {
     inProgress,
-    method,
     orderID,
     onTerritory,
     subsequentClicks,
@@ -71,7 +70,7 @@ export default function processMapClick(state, clickData) {
   });
   if (!inProgress) {
     if (curUnitID && ownsCurUnit) {
-      const newOrderID = startNewOrder(state, { unitID: curUnitID });
+      startNewOrder(state, { unitID: curUnitID });
     } else {
       invalidClick(evt, territory);
     }
@@ -125,7 +124,8 @@ export default function processMapClick(state, clickData) {
   const truthyToTerritory = toTerritory !== undefined && toTerritory !== null;
   const truthyOnTerritory = onTerritory !== undefined && onTerritory !== null;
   console.log({ clickObject, phase, currentOrders });
-  if (inProgress && method === "click") {
+  if (inProgress) {
+    // && method === "click") {
     state.buildPopover = [];
     const currOrderUnitID = unitID;
     if (truthyOnTerritory && onTerritory === territory && !type) {
@@ -194,7 +194,9 @@ export default function processMapClick(state, clickData) {
         invalidClick(evt, territory);
       }
     }
-  } else if (inProgress && method === "dblClick") {
+    // eslint-disable-next-line no-dupe-else-if
+  } else if (inProgress) {
+    // && method === "dblClick") {
     console.log(`inProgress dblClick`);
     if (subsequentClicks.length) {
       // user is trying to do a support move or a support hold
