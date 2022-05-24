@@ -94,6 +94,7 @@ export default function processMapClick(state, clickData) {
         }
       }
       state.order.type = phase === "Retreats" ? "disband" : "hold";
+      resetOrder(state);
     } else if (type === "convoy" && !truthyToTerritory) {
       state.order.toTerritory = Number(Territory[territoryName]);
       data.units[order.unitID].type === "Fleet"
