@@ -95,7 +95,9 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         />
       );
     });
-
+  if (curOrder.fromTerrID === maps.territoryToTerrID[territory]) {
+    territoryFillOpacity = 0.7;
+  }
   Object.values(ordersMeta)
     .filter(
       ({ update }) =>

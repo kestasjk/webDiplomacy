@@ -6,6 +6,7 @@ import {
   gameApiSliceActions,
   gameMaps,
   gameOrder,
+  gameUnits,
 } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import Territory from "../../../enums/map/variants/classic/Territory";
@@ -15,11 +16,15 @@ const WDFlyoutContainer: React.FC = function (): React.ReactElement {
   const dispatch = useAppDispatch();
   const order = useAppSelector(gameOrder);
   const maps = useAppSelector(gameMaps);
+  const units = useAppSelector(gameUnits);
+
   console.log({ order });
 
   if (!order.inProgress || order.type || !order.unitID) {
     return <Box />;
   }
+
+  const unit = units.find((u) => u.unit.id === order.unitID);
 
   const territory = maps.terrIDToTerritory[maps.unitToTerrID[order.unitID]];
   const unitSlotName = "main"; // FIXME
@@ -55,13 +60,15 @@ const WDFlyoutContainer: React.FC = function (): React.ReactElement {
         text="Support"
         clickHandler={clickHandler("Support")}
       />
-      <WDFlyoutButton
-        territory={territory}
-        unitSlotName={unitSlotName}
-        position="bottom"
-        text="Convoy"
-        clickHandler={clickHandler("Convoy")}
-      />
+      {(unit?.unit?.type === "Fleet" && (
+        <WDFlyoutButton
+          territory={territory}
+          unitSlotName={unitSlotName}
+          position="bottom"
+          text="Convoy"
+          clickHandler={clickHandler("Convoy")}
+        />
+      )) || <g />}
     </>
   );
 };

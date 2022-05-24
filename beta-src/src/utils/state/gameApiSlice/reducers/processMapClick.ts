@@ -67,12 +67,7 @@ export default function processMapClick(state, clickData) {
     } else {
       invalidClick(evt, territory);
     }
-  } else if (!order.type) {
-    // flyout should be open, you shouldn't be clicking randomly
-    // but maybe we should assume move?
-    console.log(`clicking with no type`);
-    invalidClick(evt, territory);
-  } else if (clickUnitID === order.unitID) {
+  } else if (!order.type || clickUnitID === order.unitID) {
     // cancel the order
     resetOrder(state);
   } else if (order.type === "Move") {

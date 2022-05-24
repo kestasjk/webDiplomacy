@@ -6,8 +6,8 @@ export default function resetOrder(state): void {
   state.order.inProgress = false;
   state.order.unitID = "";
   state.order.orderID = "";
-  state.order.onTerritory = 0;
-  state.order.toTerritory = 0;
+  state.order.fromTerrID = "";
+  state.order.toTerrID = "";
   state.order.subsequentClicks = [];
   state.buildPopover = [];
   delete state.order.type;

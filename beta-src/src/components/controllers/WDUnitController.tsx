@@ -18,7 +18,7 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
   iconState,
 }): React.ReactElement {
   return (
-    <g>
+    <g style={{ pointerEvents: "none" }}>
       {type === "Fleet" && (
         <WDFleetIcon iconState={iconState} country={meta.country} />
       )}
