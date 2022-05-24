@@ -4,6 +4,7 @@ import OrderClass from "../../models/OrderClass";
 import { GameCommand } from "../../state/interfaces/GameCommands";
 import updateOrdersMeta from "./updateOrdersMeta";
 import setCommand from "./setCommand";
+import OrdersMeta from "../../state/interfaces/SavedOrders";
 
 /* eslint-disable no-param-reassign */
 export default function processForeignConvoy(state): void {
@@ -15,6 +16,7 @@ export default function processForeignConvoy(state): void {
     order,
     ordersMeta,
     maps,
+    territoriesMeta,
   } = current(state);
   const lastUnitInChain =
     order.subsequentClicks[order.subsequentClicks.length - 1];
@@ -83,6 +85,15 @@ export default function processForeignConvoy(state): void {
                 }
               }
             });
+
+            // const ordersMetaEntries = Object.entries(territoriesMeta);
+            // ordersMetaEntries.filter(([, item]): any =>
+            //   console.log("item", item.id === fromTerritory),
+            // );
+
+            // console.log("fromTerritory", fromTerritory);
+            // console.log("ordersMetaEntries", ordersMetaEntries);
+
             updateOrdersMeta(state, updates);
             const command: GameCommand = {
               command: "MOVE",
