@@ -11,7 +11,7 @@ export default function commitOrder(state, order): void {
     o.type = o.fromTerrID === o.toTerrID ? "Support hold" : "Support move";
   }
   if (!o.viaConvoy) {
-    o.viaConvoy = "no";
+    o.viaConvoy = "No";
   }
   updateOrdersMeta(state, {
     [order.orderID]: {

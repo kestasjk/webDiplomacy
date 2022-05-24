@@ -20,7 +20,7 @@ export default function saveOrdersFulfilled(state, action): void {
         Saved: orderStates.Saved,
       };
     }
-
+    console.log({ returnOrders: orders });
     Object.entries(orders).forEach(([id, value]) => {
       if (value.status === "Complete") {
         state.ordersMeta[id].saved = true;
