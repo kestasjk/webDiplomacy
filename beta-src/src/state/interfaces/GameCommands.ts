@@ -1,5 +1,5 @@
 import BuildUnit from "../../enums/BuildUnit";
-import UnitSlotName from "../../types/map/UnitSlotName";
+import { UnitSlotName } from "../../interfaces/map/TerritoryMapData";
 import { TerritoryMeta } from "./TerritoriesState";
 
 export interface BuildCommand {

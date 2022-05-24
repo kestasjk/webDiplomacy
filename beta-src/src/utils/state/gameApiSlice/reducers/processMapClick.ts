@@ -7,7 +7,6 @@ import Territory from "../../../../enums/map/variants/classic/Territory";
 import UIState from "../../../../enums/UIState";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
-import { UnitSlotNames } from "../../../../types/map/UnitSlotName";
 import invalidClick from "../../../map/invalidClick";
 import getOrderStates from "../../getOrderStates";
 import processConvoy from "../../processConvoy";
