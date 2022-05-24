@@ -58,6 +58,7 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
     data.units,
     members,
     prevPhaseOrders,
+    state.ordersMeta,
   );
 
   state.territoriesMeta = getTerritoriesMeta(data);

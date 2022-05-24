@@ -12,6 +12,7 @@ import GameStateMaps from "../../../state/interfaces/GameStateMaps";
 import ArrowType from "../../../enums/ArrowType";
 import ArrowColor from "../../../enums/ArrowColor";
 import drawArrowFunctional, {
+  getTargetXYWH,
   getArrowX1Y1X2Y2,
 } from "../../../utils/map/drawArrowFunctional";
 import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
@@ -273,6 +274,31 @@ function accumulateDislodgerArrows(
     });
 }
 
+// This isn't exactly an arrow, but...
+function accumulateBuildCircles(
+  arrows: (React.ReactElement | null)[],
+  units: Unit[],
+  territories: APITerritories,
+): void {
+  units
+    .filter((unit) => unit.isBuild)
+    .forEach((unit) => {
+      const terr = TerritoryMap[territories[unit.unit.terrID].name].territory;
+      const [x, y, w, h] = getTargetXYWH("unit", terr);
+
+      arrows.push(
+        <circle
+          key={`build-circle-${terr}`}
+          cx={x + w / 2}
+          cy={y + h / 2}
+          r={10 + (w + h) / 4}
+          fill="none"
+          stroke="rgb(0,150,0)"
+          strokeWidth={6}
+        />,
+      );
+    });
+}
 /*
 export interface IOrderDataHistorical {
   countryID: string;
@@ -316,6 +342,7 @@ const WDArrowContainer: React.FC<WDArrowProps> = function ({
   accumulateConvoyOrderArrows(arrows, orders, ordersByTerrID, territories);
   accumulateRetreatArrows(arrows, orders, territories);
   accumulateDislodgerArrows(arrows, units, territories);
+  accumulateBuildCircles(arrows, units, territories);
   return <g id="arrows">{arrows}</g>;
 };
 

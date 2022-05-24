@@ -108,7 +108,7 @@ export interface IOrderData {
 }
 
 export interface IOrderDataHistorical {
-  countryID: string;
+  countryID: number;
   dislodged: string;
   fromTerrID: number;
   phase: string;

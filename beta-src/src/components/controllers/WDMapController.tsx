@@ -52,6 +52,9 @@ const WDMapController: React.FC = function (): React.ReactElement {
   const [scaleMin, scaleMax] = getInitialScaleForDevice(device);
 
   // FIXME: it's not ideal for us to be fetching the whole world from store here
+  // This is hard to untangle though because the representation of the data in the
+  // store is relatively bad. You have to depend on a lot of stuff in order to
+  // draw useful things right now.
   const viewedPhaseState = useAppSelector(gameViewedPhase);
   const overview = useAppSelector(gameOverview);
   const status = useAppSelector(gameStatus);
@@ -126,7 +129,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
           }
         }
         const orderHistorical: IOrderDataHistorical = {
-          countryID: status.countryID.toString(),
+          countryID: status.countryID,
           dislodged: "No",
           fromTerrID,
           phase: overview.phase,
@@ -164,6 +167,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
       unitsHistorical,
       overview.members,
       prevPhaseOrders,
+      phaseHistorical.orders,
     );
     return {
       phase: phaseHistorical.phase as string,

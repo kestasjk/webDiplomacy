@@ -48,5 +48,6 @@ export default function fetchGameStatusFulfilled(
     data.units,
     members,
     prevPhaseOrders,
+    state.ordersMeta,
   );
 }

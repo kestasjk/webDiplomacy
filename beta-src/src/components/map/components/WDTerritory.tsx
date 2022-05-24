@@ -64,7 +64,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     territoryFill = theme.palette[userCountry].main;
   }
 
-  const unitState = useAppSelector(gameUnitState); // FIXME: too global
   const unitFCs: { [key: string]: any } = {};
   const unitFCsDislodging: { [key: string]: any } = {};
   units
@@ -74,13 +73,18 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         territoryMeta?.territory,
     )
     .forEach((unit) => {
+      let unitState: UIState = UIState.NONE;
+      if (unit.isBuild) {
+        unitState = UIState.BUILD;
+      }
+
       const wdUnit = (
         <WDUnit
           id={`${territory}-unit`}
           country={unit.country}
           meta={unit}
           type={unit.unit.type as UnitType}
-          iconState={unitState[unit.unit.id]} // FIXME make declarative
+          iconState={unitState}
         />
       );
       if (unit.isDislodging) {
@@ -88,37 +92,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       } else {
         unitFCs[unit.mappedTerritory.unitSlotName] = wdUnit;
       }
-    });
-
-  const ordersMeta = useAppSelector(gameOrdersMeta);
-  Object.values(ordersMeta)
-    .filter(
-      ({ update }) =>
-        update &&
-        update.type.split(" ")[0] === "Build" && // updates can be something supporting you or moving to this territory???
-        update.toTerrID === territoryMeta?.id,
-    )
-    .forEach(({ update }) => {
-      territoryFillOpacity = 0.9;
-      // FIXME: needs to support coasts
-      unitFCs.main = (
-        <WDUnit
-          id={`${territory}-unit`}
-          country={userCountry}
-          meta={{
-            country: userCountry,
-            mappedTerritory: TerritoryMap[territory],
-            unit: {
-              id: `${territory}-unit`,
-              countryID: "NA",
-              type: update?.type.split(" ")[1] as unknown as string, // Build Army --> Army
-              terrID: territoryMeta?.id || "null",
-            },
-          }}
-          type={update?.type.split(" ")[1] as UnitType}
-          iconState={UIState.BUILD}
-        />
-      );
     });
 
   const clickAction = function (evt, clickObject: ClickObjectType) {
