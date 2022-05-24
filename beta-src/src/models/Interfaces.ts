@@ -37,6 +37,7 @@ export interface ICenter {
   terrID: string;
 }
 
+// What webdip api gives for LIVE units (in gameData response)
 export interface IUnit {
   id: string;
   countryID: string;
@@ -44,6 +45,7 @@ export interface IUnit {
   terrID: string;
 }
 
+// What webdip api gives for HISTORICAL units (in gameStatus response)
 export interface IUnitHistorical {
   unitType: string;
   retreating: string;

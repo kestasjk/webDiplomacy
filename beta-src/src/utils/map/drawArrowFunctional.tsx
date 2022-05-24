@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as d3 from "d3";
 import ArrowColor from "../../enums/ArrowColor";
 import ArrowType from "../../enums/ArrowType";
 import Territory from "../../enums/map/variants/classic/Territory";
