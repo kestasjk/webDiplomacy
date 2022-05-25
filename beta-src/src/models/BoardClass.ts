@@ -63,6 +63,7 @@ export default class BoardClass {
       const parent = coastParents.find((cp) => cp.id === cc.coastParentID);
       if (parent) {
         cc.setCoastParent(parent);
+        parent.addCoastChild(cc);
       }
     });
 
@@ -200,7 +201,21 @@ export default class BoardClass {
    * @returns {UnitClass[]}
    */
   getMovableUnits(unit: UnitClass): UnitClass[] {
-    return this.getMovableTerritories(unit).reduce((acc: UnitClass[], cur) => {
+    const movableTerritories = this.getMovableTerritories(unit);
+
+    // tricky: we can support units in the territory itself *or*
+    // any coasts of the territory.
+    // iterate over a copy of movableTerritories so we can insert
+    [...movableTerritories].forEach((terr) => {
+      terr.coastChildren.forEach((child) => {
+        movableTerritories.push(child);
+      });
+    });
+
+    return movableTerritories.reduce((acc: UnitClass[], cur) => {
+      if (cur.Unit) {
+        acc.push(cur.Unit);
+      }
       if (cur.coastParent.Unit) {
         acc.push(cur.coastParent.Unit);
       }

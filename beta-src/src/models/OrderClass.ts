@@ -44,7 +44,6 @@ export default class OrderClass {
    */
   getSupportHoldChoices(): TerritoryClass[] {
     const movableUnits = this.board.getMovableUnits(this.unit);
-
     const supportHoldChoices = movableUnits.reduce(
       (acc: TerritoryClass[], cur) => {
         if (cur.Territory.coastParent) {

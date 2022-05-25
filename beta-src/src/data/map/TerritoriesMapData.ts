@@ -2860,23 +2860,24 @@ const mapDrawData: { [key in Territory]?: TerritoryMapDrawData } = {
   },
 };
 
-const territoriesMapData = Object.fromEntries(
-  Object.entries(mapDrawData).map(([territory, drawData]) => [
-    territory,
-    // eww, why???
-    {
-      ...Territories[territory],
-      ...drawData,
-      viewBox: `0 0 ${drawData.width} ${drawData.height}`,
-      unitSlotsBySlotName:
-        (drawData.unitSlots &&
-          Object.fromEntries(
-            drawData.unitSlots.map((slot) => [slot.name, slot]),
-          )) ||
-        {},
-      texture: addTextureDefaults(drawData.texture),
-    },
-  ]),
-);
+const territoriesMapData: { [key: string]: TerritoryMapData } =
+  Object.fromEntries(
+    Object.entries(mapDrawData).map(([territory, drawData]) => [
+      territory,
+      // eww, why???
+      {
+        ...Territories[territory],
+        ...drawData,
+        viewBox: `0 0 ${drawData.width} ${drawData.height}`,
+        unitSlotsBySlotName:
+          (drawData.unitSlots &&
+            Object.fromEntries(
+              drawData.unitSlots.map((slot) => [slot.name, slot]),
+            )) ||
+          {},
+        texture: addTextureDefaults(drawData.texture),
+      },
+    ]),
+  );
 
 export default territoriesMapData;
