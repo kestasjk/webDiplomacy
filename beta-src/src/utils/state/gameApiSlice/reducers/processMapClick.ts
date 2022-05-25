@@ -178,25 +178,27 @@ export default function processMapClick(state, clickData) {
     resetOrder(state);
   } else if (order.type === "Move") {
     const canMove = canUnitMove(ordersMeta[order.orderID], territory);
-    const canConvoy = false;
-    // const { convoyToChoices } = ordersMeta[order.orderID];
-    // const canConvoy = !!convoyToChoices?.find(
-    //   (terrID) => maps.terrIDToTerritory[terrID] === territory,
-    // );
-    // console.log({ canMove, canConvoy });
-    if (canMove || canConvoy) {
+    const { convoyToChoices } = ordersMeta[order.orderID];
+    const canConvoy = !!convoyToChoices?.find(
+      (terrID) => maps.terrIDToTerritory[terrID] === territory,
+    );
+    console.log({ canMove, canConvoy });
+    if (canConvoy) {
       updateOrder(state, {
         toTerrID: clickTerrID,
-        viaConvoy: canConvoy ? "Yes" : "",
+        viaConvoy: "Yes",
+      });
+      if (!processConvoy(state, evt)) {
+        invalidClick(evt, territory);
+      }
+    } else if (canMove) {
+      updateOrder(state, {
+        toTerrID: clickTerrID,
       });
     } else {
       invalidClick(evt, territory);
     }
   } else if (order.type === "Support") {
-    // FIXME: dedup
-    const { allowedBorderCrossings } = ordersMeta[order.orderID];
-    // FIXME: use supportMoveChoices and supportHoldChoices
-    const canMove = canUnitMove(ordersMeta[order.orderID], territory);
     if (!order.fromTerrID) {
       // click 1
       if (
@@ -210,9 +212,27 @@ export default function processMapClick(state, clickData) {
     } else {
       // click 2
       // eslint-disable-next-line no-lonely-if
-      if (canMove) {
+      if (canUnitMove(ordersMeta[order.orderID], territory)) {
         updateOrder(state, { toTerrID: clickTerrID });
       } else {
+        invalidClick(evt, territory);
+      }
+    }
+  } else if (order.type === "Convoy") {
+    if (!order.fromTerrID) {
+      // click 1
+      // gotta click on an Army
+      const unit = data.units[clickUnitID];
+      if (unit?.type === "Army") {
+        updateOrder(state, { fromTerrID: clickTerrID });
+      } else {
+        // gotta support a unit
+        invalidClick(evt, territory);
+      }
+    } else {
+      // click 2
+      updateOrder(state, { toTerrID: clickTerrID });
+      if (!processConvoy(state, evt)) {
         invalidClick(evt, territory);
       }
     }
