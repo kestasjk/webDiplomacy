@@ -17,6 +17,7 @@ import updateOrdersMeta from "../../../updateOrdersMeta";
 
 /* eslint-disable no-param-reassign */
 export default function fetchGameDataFulfilled(state: GameState, action): void {
+  state.transition = false;
   state.apiStatus = "succeeded";
   state.data = action.payload;
   const {

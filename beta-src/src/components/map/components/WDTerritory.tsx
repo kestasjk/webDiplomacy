@@ -61,8 +61,8 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     );
   };
 
-  const setMoveHighlight = () => {
-    setTerritoryFill(theme.palette[userCountry].main);
+  const setMoveHighlight = (country) => {
+    setTerritoryFill(theme.palette[country].main);
     setTerritoryFillOpacity(0.9);
     setTerritoryStrokeOpacity(1);
   };
@@ -105,8 +105,10 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       deleteCommand(key);
     },
     MOVE: (command) => {
-      const [key] = command;
-      setMoveHighlight();
+      const [key, value] = command;
+      value.data?.country
+        ? setMoveHighlight(value.data.country)
+        : setMoveHighlight(userCountry);
       deleteCommand(key);
     },
     REMOVE_BUILD: (command) => {
