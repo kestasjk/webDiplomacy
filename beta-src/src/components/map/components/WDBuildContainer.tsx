@@ -1,14 +1,26 @@
 /* eslint-disable no-bitwise */
+import { Box } from "@mui/material";
 import * as React from "react";
 import BuildUnitMap from "../../../data/BuildUnit";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
 import Territories from "../../../data/Territories";
-import { gameApiSliceActions } from "../../../state/game/game-api-slice";
+import BuildUnit from "../../../enums/BuildUnit";
+import {
+  gameApiSliceActions,
+  gameOrder,
+  gameTerritoriesMeta,
+  gameMaps,
+} from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import WDBuildUnitButtons from "./WDBuildUnitButtons";
+import { TerritoryMeta } from "../../../state/interfaces/TerritoriesState";
+import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
 
 const WDBuildContainer: React.FC = function (): React.ReactElement {
   const dispatch = useAppDispatch();
+  const territoriesMeta = useAppSelector(gameTerritoriesMeta);
+  const maps = useAppSelector(gameMaps);
+
   const build = (availableOrder, canBuild, toTerrID) => {
     console.log(
       `Dispatched a build ${canBuild} ${BuildUnitMap[canBuild]} ${toTerrID}`,
@@ -26,28 +38,29 @@ const WDBuildContainer: React.FC = function (): React.ReactElement {
     );
     dispatch(gameApiSliceActions.resetOrder());
   };
-  const buildPopover = useAppSelector((state) => state.game.buildPopover);
+  const order = useAppSelector(gameOrder);
   const userMember = useAppSelector((state) => state.game.overview.user.member);
-
-  console.log({ buildPopover });
+  if (!order || order.type !== "Build") {
+    return <Box />;
+  }
+  const territory = maps.terrIDToTerritory[order.toTerrID];
+  const territoryMeta = territoriesMeta[territory];
+  const { parent } = TerritoryMap[territory];
+  const unitSlotName = "main"; // FIXME
+  const canBuild =
+    territoryMeta?.type === "Coast" ? BuildUnit.All : BuildUnit.Army;
+  console.log({ canBuild, territoryMeta });
   return (
-    <>
-      {Object.values(buildPopover).map((b) => {
-        const territory = Territories[b.territoryMeta.territory];
-        return (
-          <WDBuildUnitButtons
-            key={`${b.territoryMeta.id}-${b.unitSlotName}`}
-            availableOrder={b.availableOrder}
-            canBuild={b.canBuild}
-            clickCallback={build}
-            country={countryMap[userMember.country]}
-            territoryName={territory.parent?.territory || territory.territory}
-            unitSlotName={b.unitSlotName}
-            toTerrID={b.territoryMeta.id}
-          />
-        );
-      })}
-    </>
+    <WDBuildUnitButtons
+      key={`${territoryMeta?.id}-${unitSlotName}`}
+      availableOrder={order.orderID}
+      canBuild={canBuild}
+      clickCallback={build}
+      country={countryMap[userMember.country]}
+      territoryName={parent || territory}
+      unitSlotName={unitSlotName}
+      toTerrID={order.toTerrID}
+    />
   );
 };
 

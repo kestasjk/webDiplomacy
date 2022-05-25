@@ -16,15 +16,13 @@ import { RootState } from "../store";
 import initialState from "./initial-state";
 import OrdersMeta from "../interfaces/SavedOrders";
 import OrderState from "../interfaces/OrderState";
-import drawBuilds from "../../utils/map/drawBuilds";
 import mergeMessageArrays from "../../utils/state/mergeMessageArrays";
+import updateOrder from "../../utils/state/updateOrder";
 import updateOrdersMeta from "../../utils/state/updateOrdersMeta";
 import UpdateOrdersMetaAction from "../../interfaces/state/UpdateOrdersMetaAction";
 import SavedOrdersConfirmation from "../../interfaces/state/SavedOrdersConfirmation";
 import OrderSubmission from "../../interfaces/state/OrderSubmission";
 import resetOrder from "../../utils/state/resetOrder";
-import processUnitDoubleClick from "../../utils/state/gameApiSlice/reducers/processUnitDoubleClick";
-import processUnitClick from "../../utils/state/gameApiSlice/reducers/processUnitClick";
 import processMapClick from "../../utils/state/gameApiSlice/reducers/processMapClick";
 import fetchGameDataFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameData/fulfilled";
 import updateUserActivity from "../../utils/state/gameApiSlice/reducers/updateUserActivity";
@@ -192,16 +190,16 @@ const gameApiSlice = createSlice({
   reducers: {
     resetOrder,
     updateUserActivity,
+    updateOrder(state, action) {
+      updateOrder(state, action.payload);
+    },
     updateOrdersMeta(state, action: UpdateOrdersMetaAction) {
       updateOrdersMeta(state, action.payload);
     },
     updateTerritoriesMeta(state, action) {
       state.territoriesMeta = action.payload;
     },
-    processUnitDoubleClick,
-    processUnitClick,
     processMapClick,
-    drawBuilds,
     processMessagesSeen(state, action) {
       state.messages.newMessagesFrom = state.messages.newMessagesFrom.filter(
         (e) => e !== action.payload,
@@ -335,9 +333,7 @@ export const gameTerritoriesMeta = ({
   game: { territoriesMeta },
 }: RootState): TerritoriesMeta => territoriesMeta;
 export const gameUnits = ({ game: { units } }: RootState): Unit[] => units;
-export const gameUnitState = ({ game: { unitState } }: RootState) => unitState;
 export const gameMaps = ({ game: { maps } }: RootState) => maps;
-
 export const gameViewedPhase = ({
   game: { viewedPhaseState },
 }: RootState): ViewedPhaseState => viewedPhaseState;

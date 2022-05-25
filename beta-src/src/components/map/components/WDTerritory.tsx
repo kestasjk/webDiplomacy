@@ -1,17 +1,19 @@
 import { useTheme } from "@mui/material";
 import * as React from "react";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
-import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
+import TerritoryMap, {
+  territoryToWebdipName,
+} from "../../../data/map/variants/classic/TerritoryMap";
 import Territories from "../../../data/Territories";
 import UIState from "../../../enums/UIState";
 import { Coordinates, TerritoryMapData } from "../../../interfaces";
 import {
   gameApiSliceActions,
+  gameMaps,
   gameOrder,
   gameOrdersMeta,
   gameOverview,
   gameTerritoriesMeta,
-  gameUnitState,
 } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import { TerritoryMeta } from "../../../state/interfaces/TerritoriesState";
@@ -24,6 +26,40 @@ import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
 import { Unit } from "../../../utils/map/getUnits";
 import Territory from "../../../enums/map/variants/classic/Territory";
+import OrdersMeta from "../../../state/interfaces/SavedOrders";
+
+function getUnitState(
+  terrID: string | undefined,
+  unitID: string,
+  curOrder,
+  ordersMeta: OrdersMeta,
+  maps,
+): UIState {
+  let unitState = UIState.NONE;
+
+  if (curOrder.unitID === unitID) {
+    return UIState.SELECTED;
+  }
+  const unitOrderID = maps.unitToOrder[unitID];
+  const unitOrder = ordersMeta[unitOrderID];
+
+  if (unitOrder) {
+    const orderType = unitOrder.update?.type;
+    console.log({ orderType, unitState });
+
+    if (orderType === "Hold") unitState = UIState.HOLD;
+    if (orderType === "Retreat") unitState = UIState.DISLODGED; // FIXME: is this right?
+  }
+  console.log({ ordersMeta });
+  // Destroys are defined through toTerrID; these orders have no unitIDs (sigh)
+  Object.values(ordersMeta).forEach((meta) => {
+    if (meta.update?.toTerrID === terrID) {
+      if (meta.update?.type === "Destroy") unitState = UIState.DESTROY;
+    }
+  });
+
+  return unitState;
+}
 
 interface WDTerritoryProps {
   territoryMapData: TerritoryMapData;
@@ -43,7 +79,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
 
   const { territory } = territoryMapData;
   const territoryMeta = territoriesMeta[territoryMapData.territory];
-
   let territoryFill = "none";
   let territoryFillOpacity = 0;
   const territoryStrokeOpacity = 1;
@@ -56,13 +91,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     territoryFillOpacity = 0.4;
   }
   const curOrder = useAppSelector(gameOrder);
-  if (
-    territoryMeta?.territory &&
-    territoryMeta?.territory === curOrder.toTerritory
-  ) {
-    territoryFillOpacity = 0.9;
-    territoryFill = theme.palette[userCountry].main;
-  }
 
   // Maps unitSlot name -> unit to draw.
   const unitFCs: { [key: string]: React.ReactElement } = {};
@@ -86,6 +114,10 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         unitState = UIState.BUILD;
       }
 
+      if (curOrder.unitID === unit.unit.id && curOrder.type) {
+        territoryFillOpacity = 0.9;
+        territoryFill = theme.palette[userCountry]?.main;
+      }
       const wdUnit = (
         <WDUnit
           id={`${territory}-unit`}
@@ -107,7 +139,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       gameApiSliceActions.processMapClick({
         clickObject,
         evt,
-        name: territory,
+        territory,
       }),
     );
   };
