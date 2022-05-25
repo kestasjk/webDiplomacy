@@ -5,7 +5,6 @@ import { GameCommand } from "../../state/interfaces/GameCommands";
 import updateOrdersMeta from "./updateOrdersMeta";
 import setCommand from "./setCommand";
 
-/* eslint-disable no-param-reassign */
 export default function processForeignConvoy(state): void {
   const {
     board,
@@ -15,6 +14,8 @@ export default function processForeignConvoy(state): void {
     order,
     ordersMeta,
     maps,
+    overview,
+    territoriesMeta,
   } = current(state);
   const lastUnitInChain =
     order.subsequentClicks[order.subsequentClicks.length - 1];
@@ -83,9 +84,19 @@ export default function processForeignConvoy(state): void {
                 }
               }
             });
+
+            const territoryMeta = Object.entries(territoriesMeta).filter(
+              ([, item]: [string, any]) => item.id === fromTerritory,
+            );
+            const [[, territory]]: [string, any][] = territoryMeta;
+            const member = overview.members.find((m) => {
+              return m.countryID === Number(territory.ownerCountryID);
+            });
+
             updateOrdersMeta(state, updates);
             const command: GameCommand = {
               command: "MOVE",
+              data: { country: member.country },
             };
             setCommand(
               state,
