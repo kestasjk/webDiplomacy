@@ -28,39 +28,6 @@ import { Unit, UnitDrawMode } from "../../../utils/map/getUnits";
 import Territory from "../../../enums/map/variants/classic/Territory";
 import OrdersMeta from "../../../state/interfaces/SavedOrders";
 
-function getUnitState(
-  terrID: string | undefined,
-  unitID: string,
-  curOrder,
-  ordersMeta: OrdersMeta,
-  maps,
-): UIState {
-  let unitState = UIState.NONE;
-
-  if (curOrder.unitID === unitID) {
-    return UIState.SELECTED;
-  }
-  const unitOrderID = maps.unitToOrder[unitID];
-  const unitOrder = ordersMeta[unitOrderID];
-
-  if (unitOrder) {
-    const orderType = unitOrder.update?.type;
-    console.log({ orderType, unitState });
-
-    if (orderType === "Hold") unitState = UIState.HOLD;
-    if (orderType === "Retreat") unitState = UIState.DISLODGED; // FIXME: is this right?
-  }
-  console.log({ ordersMeta });
-  // Destroys are defined through toTerrID; these orders have no unitIDs (sigh)
-  Object.values(ordersMeta).forEach((meta) => {
-    if (meta.update?.toTerrID === terrID) {
-      if (meta.update?.type === "Destroy") unitState = UIState.DESTROY;
-    }
-  });
-
-  return unitState;
-}
-
 interface WDTerritoryProps {
   territoryMapData: TerritoryMapData;
   units: Unit[];
@@ -137,6 +104,9 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       if (curOrder.unitID === unit.unit.id && curOrder.type) {
         territoryFillOpacity = 0.9;
         territoryFill = theme.palette[userCountry]?.main;
+      }
+      if (curOrder.fromTerrID === territoryMeta?.id) {
+        territoryFillOpacity = 0.7;
       }
       const wdUnit = (
         <WDUnit
