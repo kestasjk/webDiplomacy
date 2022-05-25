@@ -82,12 +82,13 @@ export default function processMapClick(state, clickData) {
   const clickUnitID = maps.terrIDToUnit[clickTerrID];
   const clickUnit = data.units[clickUnitID];
   const orderUnit = data.units[order.unitID];
+  const orderUnitTerrID = maps.unitToTerrID[order.unitID];
   // ugh, shouldn't have to do this!!!
   // const clickUnit = units.find((unit) => unit.unit.id === clickUnitID);
 
   const ownsCurUnit = ownUnits.includes(clickUnitID);
 
-  // build phase
+  // ---------------------- BUILD PHASE ---------------------------
   if (phase === "Builds") {
     const territoryMeta = territoriesMeta[Territory[territory]];
 
@@ -145,7 +146,7 @@ export default function processMapClick(state, clickData) {
     return;
   }
 
-  // retreat phases
+  // ---------------------- RETREAT PHASE ---------------------------
   if (phase === "Retreats") {
     if (!order.inProgress) {
       if (clickUnitID && ownsCurUnit) {
@@ -157,9 +158,16 @@ export default function processMapClick(state, clickData) {
     } else if (clickUnitID === order.unitID) {
       updateOrder(state, { type: "Disband" });
     } else {
+      // 1. must be able to move to the terr
       const canMove = canUnitMove(ordersMeta[order.orderID], territory);
-
-      if (canMove) {
+      // 2. can't retreat to the territory that dislodged us
+      const toOccupier =
+        data.territoryStatuses[orderUnitTerrID].occupiedFromTerrID ===
+        clickTerrID;
+      // 3. can't retreat to a territory with a standoff
+      const toStandoff = data.territoryStatuses[clickTerrID].standoff;
+      const canRetreat = canMove && !toOccupier && !toStandoff;
+      if (canRetreat) {
         updateOrder(state, { toTerrID: clickTerrID });
       } else {
         invalidClick(evt, territory);
@@ -168,7 +176,7 @@ export default function processMapClick(state, clickData) {
     return;
   }
 
-  // move phases
+  // ---------------------- MOVE PHASE ---------------------------
   if (!order.inProgress) {
     if (clickUnitID && ownsCurUnit) {
       startNewOrder(state, { unitID: clickUnitID });
@@ -180,6 +188,7 @@ export default function processMapClick(state, clickData) {
     resetOrder(state);
   } else if (order.type === "Move") {
     if (!order.viaConvoy) {
+      // direct move
       const canMove = canUnitMove(ordersMeta[order.orderID], territory);
       if (canMove) {
         updateOrder(state, {
