@@ -138,6 +138,7 @@ export const saveOrders = createAsyncThunk(
     formData.set("context", data.context);
     formData.set("contextKey", data.contextKey);
     const response = await submitOrders(formData, data.queryParams);
+    console.log({ response });
     const confirmation: string = response.headers["x-json"] || "";
     const parsed: SavedOrdersConfirmation = JSON.parse(
       confirmation.substring(1, confirmation.length - 1),
