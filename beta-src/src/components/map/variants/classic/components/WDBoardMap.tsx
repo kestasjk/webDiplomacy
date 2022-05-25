@@ -22,7 +22,12 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
     ));
   // Hack - Rome and Naples need to be sorted to the end or else their label will get cut
   // off by neighboring territories drawn on top of it.
-  let playableTerritoriesData = Object.values(territoriesMapData).filter((data) => data.playable && data.territory != Territory.NAPLES && data.territory != Territory.ROME);
+  const playableTerritoriesData = Object.values(territoriesMapData).filter(
+    (data) =>
+      data.playable &&
+      data.territory !== Territory.NAPLES &&
+      data.territory !== Territory.ROME,
+  );
   playableTerritoriesData.push(territoriesMapData[Territory.NAPLES]);
   playableTerritoriesData.push(territoriesMapData[Territory.ROME]);
 
