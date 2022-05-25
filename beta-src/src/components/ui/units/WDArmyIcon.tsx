@@ -30,7 +30,7 @@ const WDArmyIcon: React.FC<IconProps> = function ({
           d="M32.977 8H17.023a6 6 0 0 0-6 6v17.73a6 6 0 0 0 3.45 5.43l7.976 3.747a6 6 0 0 0 5.102 0l7.977-3.747a6 6 0 0 0 3.45-5.43V14a6 6 0 0 0-6-6Z"
           fill="#fff"
           stroke="#000"
-          strokeWidth={3}
+          strokeWidth={4}
         />
       )}
       {iconState === UIState.DISLODGED && (
