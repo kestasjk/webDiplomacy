@@ -20,6 +20,15 @@ export default function resetOrder(state): void {
     };
     setCommand(state, command, "unitCommands", unitID);
   }
+
+  const command: GameCommand = {
+    command: "ENABLE_TERRITORY_CLICK",
+  };
+
+  setCommand(state, command, "territoryCommands", "BULGARIA");
+  setCommand(state, command, "territoryCommands", "SPAIN");
+  setCommand(state, command, "territoryCommands", "SAINT_PETERSBURG");
+
   state.order.inProgress = false;
   state.order.unitID = "";
   state.order.orderID = "";
