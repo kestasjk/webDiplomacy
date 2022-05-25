@@ -11,6 +11,7 @@ export interface TerritoryMeta {
   territory: Territory;
   type: string;
   unitID: string | null;
+  coastChildIDs: string[];
 }
 
 type TerritoriesMeta = {

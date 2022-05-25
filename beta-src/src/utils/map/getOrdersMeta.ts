@@ -65,7 +65,7 @@ export default function getOrdersMeta(
       });
 
       newOrders.forEach((o) => {
-        const moveChoices = o.getMoveChoices();
+        const moveChoices = board.getMovableTerritories(o.unit);
         const supportMoveToChoices = o.getSupportMoveToChoices();
         const supportHoldChoices = o.getSupportHoldChoices();
         const supportMoveChoices: SupportMoveChoice[] = [];
@@ -87,16 +87,7 @@ export default function getOrdersMeta(
         const orderUnit = board.findUnitByID(o.unit.id);
         let allowedBorderCrossings: TerritoryClass[] = [];
         if (orderUnit) {
-          allowedBorderCrossings = moveChoices.filter((choice) => {
-            const { Borders } = choice;
-            const from = Borders.find(
-              (border) => border.id === orderUnit?.terrID,
-            );
-            if (from && orderUnit?.canCrossBorder(from)) {
-              return true;
-            }
-            return false;
-          });
+          allowedBorderCrossings = [...moveChoices];
           if (phase === "Retreats") {
             const occupiedTerritory = board.territories.find(
               (t) => t.id === orderUnit?.terrID,

@@ -21,7 +21,6 @@ export default class OrderClass {
     const choices = this.board
       .getMovableTerritories(this.unit)
       .map((movableTerritories) => movableTerritories);
-
     if (this.unit.convoyLink && this.unit.type === UnitType.Army) {
       const convoyableTerritories = Array.from(
         this.unit.ConvoyGroup.coasts,

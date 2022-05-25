@@ -9,6 +9,7 @@ import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
 import GameStateMaps from "../../../../state/interfaces/GameStateMaps";
 import { OrderMeta } from "../../../../state/interfaces/SavedOrders";
+import { TerritoryMeta } from "../../../../state/interfaces/TerritoriesState";
 import invalidClick from "../../../map/invalidClick";
 import getAvailableOrder from "../../getAvailableOrder";
 import getOrderStates from "../../getOrderStates";
@@ -62,6 +63,8 @@ export default function processMapClick(state, clickData) {
     maps: GameStateMaps;
     ownUnits: GameState["ownUnits"];
   } = current(state);
+  // ---------------------- PREPARATION ---------------------------
+
   console.log("processMapClick");
   const {
     user: { member },
@@ -74,24 +77,34 @@ export default function processMapClick(state, clickData) {
   } = clickData;
 
   if (orderStatus.Ready) {
+    alert("You need to unready your orders to update them"); // FIXME: move to alerts modal!
     invalidClick(evt, territory);
-    return; // FIXME
+    return; // FIXME this is very confusing for the user!
   }
+  const territoryMeta: TerritoryMeta = territoriesMeta[territory];
 
   const clickTerrID = maps.territoryToTerrID[territory];
-  const clickUnitID = maps.terrIDToUnit[clickTerrID];
+  let clickUnitID = maps.terrIDToUnit[clickTerrID];
+  // Fixup unit for coast!
+  if (!clickUnitID) {
+    // Note: I think we could use the TerritoryClass stuff to find children like this
+    territoryMeta.coastChildIDs.forEach((childID) => {
+      const coastUnitID = maps.terrIDToUnit[childID];
+      if (
+        coastUnitID &&
+        (phase !== "Retreats" || ownUnits.includes(coastUnitID)) // on retreats there may be 2 units
+      ) {
+        clickUnitID = coastUnitID;
+      }
+    });
+  }
   const clickUnit = data.units[clickUnitID];
   const orderUnit = data.units[order.unitID];
   const orderUnitTerrID = maps.unitToTerrID[order.unitID];
-  // ugh, shouldn't have to do this!!!
-  // const clickUnit = units.find((unit) => unit.unit.id === clickUnitID);
-
   const ownsCurUnit = ownUnits.includes(clickUnitID);
 
   // ---------------------- BUILD PHASE ---------------------------
   if (phase === "Builds") {
-    const territoryMeta = territoriesMeta[Territory[territory]];
-
     // FIXME: abstract to a function
     const existingOrder = Object.entries(ordersMeta).find(([, { update }]) => {
       if (!update || !update.toTerrID) return false;
@@ -158,16 +171,9 @@ export default function processMapClick(state, clickData) {
     } else if (clickUnitID === order.unitID) {
       updateOrder(state, { type: "Disband" });
     } else {
-      // 1. must be able to move to the terr
+      // n.b. this already handes standoffs etc.
       const canMove = canUnitMove(ordersMeta[order.orderID], territory);
-      // 2. can't retreat to the territory that dislodged us
-      const toOccupier =
-        data.territoryStatuses[orderUnitTerrID].occupiedFromTerrID ===
-        clickTerrID;
-      // 3. can't retreat to a territory with a standoff
-      const toStandoff = data.territoryStatuses[clickTerrID].standoff;
-      const canRetreat = canMove && !toOccupier && !toStandoff;
-      if (canRetreat) {
+      if (canMove) {
         updateOrder(state, { toTerrID: clickTerrID });
       } else {
         invalidClick(evt, territory);

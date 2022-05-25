@@ -19,7 +19,6 @@ export default function getTerritoriesMeta(data): TerritoriesMeta {
       { coast, coastParentID, countryID: homeCountryID, name, supply, type },
     ]) => {
       const territory = webdipNameToTerritory[name];
-      const mappedTerritory = TerritoryMap[territory];
       const territoryStatus = territoryStatuses.find(
         ({ id: territoryID }) => id === territoryID,
       );
@@ -46,10 +45,20 @@ export default function getTerritoriesMeta(data): TerritoriesMeta {
           territory,
           type,
           unitID: territoryStatus ? territoryStatus.unitID : null,
+          coastChildIDs: [],
         };
       }
     },
   );
+  Object.values(territoriesMeta).forEach((meta) => {
+    if (meta.coastParentID !== meta.id) {
+      const parent = Object.values(territoriesMeta).find(
+        (m) => m.id === meta.coastParentID,
+      )!.territory;
+
+      territoriesMeta[parent]!.coastChildIDs.push(meta.id);
+    }
+  });
 
   return territoriesMeta;
 }

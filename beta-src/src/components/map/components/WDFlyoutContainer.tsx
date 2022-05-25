@@ -14,6 +14,7 @@ import { Unit } from "../../../utils/map/getUnits";
 import isConvoyable from "../../../utils/state/isConvoyable";
 
 import WDFlyoutButton from "./WDFlyoutButton";
+import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
 
 interface WDFlyoutContainerProps {
   units: Unit[];
@@ -35,8 +36,12 @@ const WDFlyoutContainer: React.FC<WDFlyoutContainerProps> = function ({
 
   const unit = units.find((u) => u.unit.id === order.unitID);
 
-  const territory = maps.terrIDToTerritory[maps.unitToTerrID[order.unitID]];
-  const unitSlotName = "main"; // FIXME
+  let territory = maps.unitToTerritory[order.unitID];
+  const mTerr = TerritoryMap[territory];
+  const { unitSlotName } = mTerr;
+  if (mTerr.parent) {
+    territory = mTerr.parent;
+  }
   const clickHandler =
     (orderType, viaConvoy: string | undefined = undefined) =>
     () => {
@@ -48,7 +53,6 @@ const WDFlyoutContainer: React.FC<WDFlyoutContainerProps> = function ({
         }),
       );
     };
-
   return (
     <>
       <WDFlyoutButton
