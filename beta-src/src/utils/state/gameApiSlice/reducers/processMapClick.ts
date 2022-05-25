@@ -25,6 +25,24 @@ function canUnitMove(orderMeta: OrderMeta, territory: Territory): boolean {
   );
 }
 
+function canSupportTerritory(
+  orderMeta: OrderMeta,
+  territory: Territory,
+): boolean {
+  const { supportHoldChoices, supportMoveChoices } = orderMeta;
+  console.log({ supportHoldChoices, supportMoveChoices });
+  const all: Territory[] = [];
+  supportHoldChoices?.forEach((t) => {
+    all.push(webdipNameToTerritory[t.name]);
+  });
+  supportMoveChoices?.forEach((x) => {
+    x.supportMoveFrom.forEach((t) => {
+      all.push(webdipNameToTerritory[t.name]);
+    });
+  });
+  return all.includes(territory);
+}
+
 /* eslint-disable no-param-reassign */
 export default function processMapClick(state, clickData) {
   const {
@@ -181,12 +199,14 @@ export default function processMapClick(state, clickData) {
     const canMove = canUnitMove(ordersMeta[order.orderID], territory);
     if (!order.fromTerrID) {
       // click 1
-      if (!maps.terrIDToUnit[clickTerrID]) {
-        // gotta support a unit
-        invalidClick(evt, territory);
-        return;
+      if (
+        maps.terrIDToUnit[clickTerrID] &&
+        canSupportTerritory(ordersMeta[order.orderID], territory)
+      ) {
+        updateOrder(state, { fromTerrID: clickTerrID });
       }
-      updateOrder(state, { fromTerrID: clickTerrID });
+      // gotta support a unit
+      invalidClick(evt, territory);
     } else {
       // click 2
       // eslint-disable-next-line no-lonely-if

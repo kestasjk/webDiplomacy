@@ -105,6 +105,9 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         territoryFillOpacity = 0.9;
         territoryFill = theme.palette[userCountry]?.main;
       }
+      if (curOrder.fromTerrID === territoryMeta?.id) {
+        territoryFillOpacity = 0.7;
+      }
       const wdUnit = (
         <WDUnit
           id={`${territory}-unit`}
