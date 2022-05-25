@@ -210,6 +210,7 @@ const gameApiSlice = createSlice({
       // fetchGameData
       .addCase(fetchGameData.pending, (state) => {
         state.apiStatus = "loading";
+        state.transition = true;
       })
       .addCase(fetchGameData.fulfilled, fetchGameDataFulfilled)
       .addCase(fetchGameData.rejected, (state, action) => {
@@ -317,6 +318,9 @@ export const gameOrder = ({ game: { order } }: RootState): OrderState => order;
 export const gameNotifications = ({
   game: { notifications },
 }: RootState): GameState["notifications"] => notifications;
+export const gameTransition = ({
+  game: { transition },
+}: RootState): GameState["transition"] => transition;
 export const userActivity = ({
   game: { activity },
 }: RootState): GameState["activity"] => activity;
