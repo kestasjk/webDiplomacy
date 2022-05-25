@@ -30,6 +30,7 @@ const initialState: GameState = {
     orderID: "",
     toTerrID: "",
     unitID: "",
+    viaConvoy: "",
   },
   ordersMeta: {},
   ownUnits: [],

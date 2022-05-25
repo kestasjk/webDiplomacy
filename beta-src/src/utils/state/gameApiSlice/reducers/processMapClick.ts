@@ -80,12 +80,15 @@ export default function processMapClick(state, clickData) {
 
   const clickTerrID = maps.territoryToTerrID[territory];
   const clickUnitID = maps.terrIDToUnit[clickTerrID];
+  const clickUnit = data.units[clickUnitID];
+  const orderUnit = data.units[order.unitID];
+  const orderUnitTerrID = maps.unitToTerrID[order.unitID];
   // ugh, shouldn't have to do this!!!
   // const clickUnit = units.find((unit) => unit.unit.id === clickUnitID);
 
   const ownsCurUnit = ownUnits.includes(clickUnitID);
 
-  // build phase
+  // ---------------------- BUILD PHASE ---------------------------
   if (phase === "Builds") {
     const territoryMeta = territoriesMeta[Territory[territory]];
 
@@ -143,7 +146,7 @@ export default function processMapClick(state, clickData) {
     return;
   }
 
-  // retreat phases
+  // ---------------------- RETREAT PHASE ---------------------------
   if (phase === "Retreats") {
     if (!order.inProgress) {
       if (clickUnitID && ownsCurUnit) {
@@ -155,9 +158,16 @@ export default function processMapClick(state, clickData) {
     } else if (clickUnitID === order.unitID) {
       updateOrder(state, { type: "Disband" });
     } else {
+      // 1. must be able to move to the terr
       const canMove = canUnitMove(ordersMeta[order.orderID], territory);
-
-      if (canMove) {
+      // 2. can't retreat to the territory that dislodged us
+      const toOccupier =
+        data.territoryStatuses[orderUnitTerrID].occupiedFromTerrID ===
+        clickTerrID;
+      // 3. can't retreat to a territory with a standoff
+      const toStandoff = data.territoryStatuses[clickTerrID].standoff;
+      const canRetreat = canMove && !toOccupier && !toStandoff;
+      if (canRetreat) {
         updateOrder(state, { toTerrID: clickTerrID });
       } else {
         invalidClick(evt, territory);
@@ -166,7 +176,7 @@ export default function processMapClick(state, clickData) {
     return;
   }
 
-  // move phases
+  // ---------------------- MOVE PHASE ---------------------------
   if (!order.inProgress) {
     if (clickUnitID && ownsCurUnit) {
       startNewOrder(state, { unitID: clickUnitID });
@@ -177,26 +187,36 @@ export default function processMapClick(state, clickData) {
     // cancel the order
     resetOrder(state);
   } else if (order.type === "Move") {
-    const canMove = canUnitMove(ordersMeta[order.orderID], territory);
-    const canConvoy = false;
-    // const { convoyToChoices } = ordersMeta[order.orderID];
-    // const canConvoy = !!convoyToChoices?.find(
-    //   (terrID) => maps.terrIDToTerritory[terrID] === territory,
-    // );
-    // console.log({ canMove, canConvoy });
-    if (canMove || canConvoy) {
-      updateOrder(state, {
-        toTerrID: clickTerrID,
-        viaConvoy: canConvoy ? "Yes" : "",
-      });
+    if (!order.viaConvoy) {
+      // direct move
+      const canMove = canUnitMove(ordersMeta[order.orderID], territory);
+      if (canMove) {
+        updateOrder(state, {
+          toTerrID: clickTerrID,
+        });
+      } else {
+        invalidClick(evt, territory);
+      }
     } else {
-      invalidClick(evt, territory);
+      // via convoy
+      const { convoyToChoices } = ordersMeta[order.orderID];
+      const canConvoy = !!convoyToChoices?.find(
+        (terrID) => maps.terrIDToTerritory[terrID] === territory,
+      );
+      console.log({ canConvoy, clickUnit, orderUnit, territory });
+      if (canConvoy) {
+        updateOrder(state, {
+          toTerrID: clickTerrID,
+          viaConvoy: "Yes",
+        });
+        if (!processConvoy(state, evt)) {
+          invalidClick(evt, territory);
+        }
+      } else {
+        invalidClick(evt, territory);
+      }
     }
   } else if (order.type === "Support") {
-    // FIXME: dedup
-    const { allowedBorderCrossings } = ordersMeta[order.orderID];
-    // FIXME: use supportMoveChoices and supportHoldChoices
-    const canMove = canUnitMove(ordersMeta[order.orderID], territory);
     if (!order.fromTerrID) {
       // click 1
       if (
@@ -210,9 +230,26 @@ export default function processMapClick(state, clickData) {
     } else {
       // click 2
       // eslint-disable-next-line no-lonely-if
-      if (canMove) {
+      if (canUnitMove(ordersMeta[order.orderID], territory)) {
         updateOrder(state, { toTerrID: clickTerrID });
       } else {
+        invalidClick(evt, territory);
+      }
+    }
+  } else if (order.type === "Convoy") {
+    if (!order.fromTerrID) {
+      // click 1
+      // gotta click on an Army
+      if (clickUnit?.type === "Army") {
+        updateOrder(state, { fromTerrID: clickTerrID });
+      } else {
+        // gotta support a unit
+        invalidClick(evt, territory);
+      }
+    } else {
+      // click 2
+      updateOrder(state, { toTerrID: clickTerrID });
+      if (!processConvoy(state, evt)) {
         invalidClick(evt, territory);
       }
     }

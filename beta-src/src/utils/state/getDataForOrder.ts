@@ -17,6 +17,7 @@ export default function getDataForOrder(
     toTerrID,
     unitID,
     type,
+    viaConvoy: "",
   };
   return newOrder;
 }

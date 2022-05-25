@@ -107,6 +107,11 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       }
       if (curOrder.fromTerrID === territoryMeta?.id) {
         territoryFillOpacity = 0.7;
+        // yuck
+        const ownerCountry = members.find(
+          (m) => m.countryID === Number(territoryMeta.ownerCountryID),
+        )?.country;
+        territoryFill = theme.palette[ownerCountry || ""]?.main;
       }
       const wdUnit = (
         <WDUnit
