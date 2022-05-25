@@ -4,12 +4,15 @@ import { Box, Button, Stack } from "@mui/material";
 import Territories from "../../../data/Territories";
 import {
   gameApiSliceActions,
+  gameBoard,
   gameMaps,
   gameOrder,
 } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import Territory from "../../../enums/map/variants/classic/Territory";
 import { Unit } from "../../../utils/map/getUnits";
+import isConvoyable from "../../../utils/state/isConvoyable";
+
 import WDFlyoutButton from "./WDFlyoutButton";
 
 interface WDFlyoutContainerProps {
@@ -22,6 +25,7 @@ const WDFlyoutContainer: React.FC<WDFlyoutContainerProps> = function ({
   const dispatch = useAppDispatch();
   const order = useAppSelector(gameOrder);
   const maps = useAppSelector(gameMaps);
+  const board = useAppSelector(gameBoard);
 
   console.log({ order });
 
@@ -33,14 +37,17 @@ const WDFlyoutContainer: React.FC<WDFlyoutContainerProps> = function ({
 
   const territory = maps.terrIDToTerritory[maps.unitToTerrID[order.unitID]];
   const unitSlotName = "main"; // FIXME
-  const clickHandler = (orderType) => () => {
-    console.log(`Dispatched ${orderType}`);
-    dispatch(
-      gameApiSliceActions.updateOrder({
-        type: orderType,
-      }),
-    );
-  };
+  const clickHandler =
+    (orderType, viaConvoy: string | undefined = undefined) =>
+    () => {
+      console.log(`Dispatched ${orderType}`);
+      dispatch(
+        gameApiSliceActions.updateOrder({
+          type: orderType,
+          viaConvoy,
+        }),
+      );
+    };
 
   return (
     <>
@@ -74,6 +81,15 @@ const WDFlyoutContainer: React.FC<WDFlyoutContainerProps> = function ({
           clickHandler={clickHandler("Convoy")}
         />
       )) || <g />}
+      {board && isConvoyable(board, unit) && (
+        <WDFlyoutButton
+          territory={territory}
+          unitSlotName={unitSlotName}
+          position="bottom"
+          text="Via"
+          clickHandler={clickHandler("Move", "Yes")}
+        />
+      )}
     </>
   );
 };

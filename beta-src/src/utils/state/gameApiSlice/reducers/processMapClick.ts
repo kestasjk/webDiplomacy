@@ -80,6 +80,8 @@ export default function processMapClick(state, clickData) {
 
   const clickTerrID = maps.territoryToTerrID[territory];
   const clickUnitID = maps.terrIDToUnit[clickTerrID];
+  const clickUnit = data.units[clickUnitID];
+  const orderUnit = data.units[order.unitID];
   // ugh, shouldn't have to do this!!!
   // const clickUnit = units.find((unit) => unit.unit.id === clickUnitID);
 
@@ -177,26 +179,33 @@ export default function processMapClick(state, clickData) {
     // cancel the order
     resetOrder(state);
   } else if (order.type === "Move") {
-    const canMove = canUnitMove(ordersMeta[order.orderID], territory);
-    const { convoyToChoices } = ordersMeta[order.orderID];
-    const canConvoy = !!convoyToChoices?.find(
-      (terrID) => maps.terrIDToTerritory[terrID] === territory,
-    );
-    console.log({ canMove, canConvoy });
-    if (canConvoy) {
-      updateOrder(state, {
-        toTerrID: clickTerrID,
-        viaConvoy: "Yes",
-      });
-      if (!processConvoy(state, evt)) {
+    if (!order.viaConvoy) {
+      const canMove = canUnitMove(ordersMeta[order.orderID], territory);
+      if (canMove) {
+        updateOrder(state, {
+          toTerrID: clickTerrID,
+        });
+      } else {
         invalidClick(evt, territory);
       }
-    } else if (canMove) {
-      updateOrder(state, {
-        toTerrID: clickTerrID,
-      });
     } else {
-      invalidClick(evt, territory);
+      // via convoy
+      const { convoyToChoices } = ordersMeta[order.orderID];
+      const canConvoy = !!convoyToChoices?.find(
+        (terrID) => maps.terrIDToTerritory[terrID] === territory,
+      );
+      console.log({ canConvoy, clickUnit, orderUnit, territory });
+      if (canConvoy) {
+        updateOrder(state, {
+          toTerrID: clickTerrID,
+          viaConvoy: "Yes",
+        });
+        if (!processConvoy(state, evt)) {
+          invalidClick(evt, territory);
+        }
+      } else {
+        invalidClick(evt, territory);
+      }
     }
   } else if (order.type === "Support") {
     if (!order.fromTerrID) {
@@ -222,8 +231,7 @@ export default function processMapClick(state, clickData) {
     if (!order.fromTerrID) {
       // click 1
       // gotta click on an Army
-      const unit = data.units[clickUnitID];
-      if (unit?.type === "Army") {
+      if (clickUnit?.type === "Army") {
         updateOrder(state, { fromTerrID: clickTerrID });
       } else {
         // gotta support a unit

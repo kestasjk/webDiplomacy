@@ -23,11 +23,13 @@ export default function processConvoy(state: GameState, evt): boolean {
   const orderUnit = board.findUnitByID(order.unitID);
   const unitTerrID = maps.unitToTerrID[order.unitID];
   const againstTerritory = board.findTerritoryByID(toTerrID);
+  if (!againstTerritory) throw Error();
   let convoyPath;
   if (order.type === "Convoy") {
     const fleetOrder = currentOrders?.find((o) => o.unitID === order.unitID);
     const convoyOrder = new OrderClass(board, fleetOrder!, orderUnit!);
     const convoyArmy = board.units.find((c) => c.terrID === order.fromTerrID);
+    if (!convoyArmy || convoyArmy.type !== "Army") throw Error();
     const fromTerritory = board.findTerritoryByID(fromTerrID);
     console.log({
       fromTerritory,
@@ -41,6 +43,7 @@ export default function processConvoy(state: GameState, evt): boolean {
     );
   } else if (order.type === "Move") {
     const convoyArmy = board.units.find((c) => c.id === order.unitID);
+    if (!convoyArmy || convoyArmy.type !== "Army") throw Error();
     convoyPath = convoyArmy?.ConvoyGroup.pathArmyToCoast(
       board.findTerritoryByID(unitTerrID),
       againstTerritory,
