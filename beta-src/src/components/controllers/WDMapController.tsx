@@ -79,6 +79,12 @@ const WDMapController: React.FC = function (): React.ReactElement {
         });
       }
       Object.entries(ordersMeta).forEach(([orderID, orderMeta]) => {
+        // FIXME ordersMeta can accumulate garbage over multiple phases.
+        // Is there anywhere else where we iterate over it and therefore iterate
+        // over garbage orders?
+        if (!currentOrdersById[orderID]) {
+          return;
+        }
         let fromTerrID = 0;
         let toTerrID = 0;
         let terrID = 0;
@@ -98,9 +104,11 @@ const WDMapController: React.FC = function (): React.ReactElement {
           if (originalOrder.toTerrID) {
             toTerrID = Number(originalOrder.toTerrID);
           }
+          // FIXME apparently type can be null or undefined, even though not recorded in the
+          // type of the interface
           type = originalOrder.type;
 
-          if (type.startsWith("Build ")) {
+          if (type && type.startsWith("Build ")) {
             if (originalOrder.toTerrID) {
               terrID = Number(originalOrder.toTerrID);
             }
@@ -131,6 +139,12 @@ const WDMapController: React.FC = function (): React.ReactElement {
             viaConvoy = "No";
           }
         }
+
+        // !terrID is safe because webdip doesn't seem to use terrID 0.
+        if (!type || !unitType || !terrID) {
+          return;
+        }
+
         const orderHistorical: IOrderDataHistorical = {
           countryID: status.countryID,
           dislodged: "No",

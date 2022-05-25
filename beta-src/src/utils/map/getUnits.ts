@@ -151,14 +151,23 @@ export function getUnitsLive(
   //--------------------------------------------------------------------
   // Compute all the additional units to draw from the current orders
   //--------------------------------------------------------------------
-  Object.values(ordersMeta).forEach(({ update }, index) => {
+  Object.entries(ordersMeta).forEach(([orderID, { update }], index) => {
     if (
       !update ||
+      !update.type ||
       !update.type.startsWith("Build ") ||
       update.toTerrID === null
     ) {
       return;
     }
+    // FIXME hack to handle the fact that right now ordersmeta is not
+    // cleaned out between phases, we have to make sure that the order
+    // actually exists
+    const currentOrder = currentOrders.find((order) => order.id === orderID);
+    if (!currentOrder) {
+      return;
+    }
+
     const territory = territories[update.toTerrID];
     const iUnit: IUnit = {
       // Arbitrarily add 100000 to get unique ids from the normal units
