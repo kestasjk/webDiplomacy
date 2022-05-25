@@ -12,7 +12,6 @@ import resetOrder from "../../resetOrder";
 import setCommand from "../../setCommand";
 import startNewOrder from "../../startNewOrder";
 import updateOrdersMeta from "../../updateOrdersMeta";
-import Territory from "../../../../enums/map/variants/classic/Territory";
 
 /* eslint-disable no-param-reassign */
 export default function processUnitClick(state, clickData) {
@@ -58,12 +57,12 @@ export default function processUnitClick(state, clickData) {
 
   if (unitType === "Fleet" && ownUnits.includes(clickData.payload.unitID)) {
     const command: GameCommand = {
-      command: "ENABLE_COAST",
+      command: "DISABLE_TERRITORY_CLICK",
     };
 
-    maps.coastalTerritories.forEach((coast) => {
-      setCommand(state, command, "territoryCommands", Territory[coast]);
-    });
+    setCommand(state, command, "territoryCommands", "BULGARIA");
+    setCommand(state, command, "territoryCommands", "SPAIN");
+    setCommand(state, command, "territoryCommands", "SAINT_PETERSBURG");
   }
 
   const now = Date.now();

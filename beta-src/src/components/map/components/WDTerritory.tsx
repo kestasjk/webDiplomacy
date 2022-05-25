@@ -37,9 +37,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
 
   const [territoryStrokeOpacity, setTerritoryStrokeOpacity] = React.useState(1);
 
-  const [coastalClickable, setCoastalClickable] = React.useState(
-    territoryMapData.type === "coast" ? "no-pointer-events" : "",
-  );
+  const [territoryClickable, setTerritoryClickable] = React.useState("");
 
   const [units, setUnits] = React.useState<Units>({});
 
@@ -89,14 +87,14 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         : setCapturedHighlight(value.data?.country);
       deleteCommand(key);
     },
-    DISABLE_COAST: (command) => {
+    DISABLE_TERRITORY_CLICK: (command) => {
       const [key] = command;
-      setCoastalClickable("no-pointer-events");
+      setTerritoryClickable("no-pointer-events");
       deleteCommand(key);
     },
-    ENABLE_COAST: (command) => {
+    ENABLE_TERRITORY_CLICK: (command) => {
       const [key] = command;
-      setCoastalClickable("");
+      setTerritoryClickable("");
       deleteCommand(key);
     },
     HOLD: (command) => {
@@ -197,9 +195,11 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       width={territoryMapData.width}
       x={territoryMapData.x}
       y={territoryMapData.y}
-      className={coastalClickable}
     >
-      <g onClick={(e) => clickAction(e, "territory")}>
+      <g
+        onClick={(e) => clickAction(e, "territory")}
+        className={territoryClickable}
+      >
         {territoryMapData.texture?.texture && (
           <path
             d={territoryMapData.path}

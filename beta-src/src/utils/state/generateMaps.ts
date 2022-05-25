@@ -11,7 +11,6 @@ export default function generateMaps(
   const unitToTerritory: GameStateMaps["unitToTerritory"] = {};
   const enumToTerritory: GameStateMaps["enumToTerritory"] = {};
   const territoryToEnum: GameStateMaps["territoryToEnum"] = {};
-  const coastalTerritories: GameStateMaps["coastalTerritories"] = [];
 
   Object.values(units).forEach(({ id, terrID }) => {
     territoryToUnit[terrID] = id;
@@ -23,12 +22,6 @@ export default function generateMaps(
     territoryToEnum[id] = TerritoryMap[name].territory.toString();
   });
 
-  Object.entries(TerritoryMap)
-    .filter(([, territory]) => territory.parent !== undefined)
-    .forEach(([, { territory }]) => {
-      coastalTerritories.push(territory);
-    });
-
   currentOrders?.forEach(({ id, unitID }) => {
     unitToOrder[unitID] = id;
   });
@@ -39,6 +32,5 @@ export default function generateMaps(
     unitToTerritory,
     enumToTerritory,
     territoryToEnum,
-    coastalTerritories,
   };
 }
