@@ -23,7 +23,7 @@ interface SharedMeta {
   update?: OrderMetaUpdate;
 }
 
-interface OrderMeta extends SharedMeta {
+export interface OrderMeta extends SharedMeta {
   saved: boolean;
 }
 
@@ -35,6 +35,7 @@ export interface EditOrderMeta {
   [key: string]: EditOrder;
 }
 
+// The key on this interface is Order ID.
 interface OrdersMeta {
   [key: string]: OrderMeta;
 }

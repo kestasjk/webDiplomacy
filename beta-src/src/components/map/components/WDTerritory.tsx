@@ -24,7 +24,7 @@ import WDUnit, { UNIT_HEIGHT, UNIT_WIDTH } from "../../ui/units/WDUnit";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
-import { Unit } from "../../../utils/map/getUnits";
+import { Unit, UnitDrawMode } from "../../../utils/map/getUnits";
 import Territory from "../../../enums/map/variants/classic/Territory";
 import OrdersMeta from "../../../state/interfaces/SavedOrders";
 
@@ -109,9 +109,29 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         territoryMeta?.territory,
     )
     .forEach((unit) => {
-      let unitState: UIState = UIState.NONE;
-      if (unit.isBuild) {
-        unitState = UIState.BUILD;
+      let unitState: UIState;
+      switch (unit.drawMode) {
+        case UnitDrawMode.NONE:
+          unitState = UIState.NONE;
+          break;
+        case UnitDrawMode.HOLD:
+          unitState = UIState.HOLD;
+          break;
+        case UnitDrawMode.BUILD:
+          unitState = UIState.BUILD;
+          break;
+        case UnitDrawMode.DISLODGING:
+          unitState = UIState.NONE;
+          break;
+        case UnitDrawMode.DISLODGED:
+          unitState = UIState.DISLODGED;
+          break;
+        case UnitDrawMode.DISBANDED:
+          unitState = UIState.DISBANDED;
+          break;
+        default:
+          unitState = UIState.NONE;
+          break;
       }
 
       if (curOrder.unitID === unit.unit.id && curOrder.type) {
@@ -127,7 +147,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
           iconState={unitState}
         />
       );
-      if (unit.isDislodging) {
+      if (unit.drawMode === UnitDrawMode.DISLODGING) {
         unitFCsDislodging[unit.mappedTerritory.unitSlotName] = wdUnit;
       } else {
         unitFCs[unit.mappedTerritory.unitSlotName] = wdUnit;

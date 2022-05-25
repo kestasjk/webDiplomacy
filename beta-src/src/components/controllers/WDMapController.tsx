@@ -163,6 +163,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
         overview.members,
         prevPhaseOrders,
         ordersMeta,
+        data.data.currentOrders ? data.data.currentOrders : [],
       );
 
       return {

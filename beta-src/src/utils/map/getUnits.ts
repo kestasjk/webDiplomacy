@@ -9,13 +9,23 @@ import TerritoryMap, {
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import Country from "../../enums/Country";
 import {
+  IOrderData,
   IOrderDataHistorical,
   ITerrStatus,
   IUnit,
   IUnitHistorical,
 } from "../../models/Interfaces";
 import UIState from "../../enums/UIState";
-import OrdersMeta from "../../state/interfaces/SavedOrders";
+import OrdersMeta, { OrderMeta } from "../../state/interfaces/SavedOrders";
+
+export enum UnitDrawMode {
+  NONE = "none",
+  HOLD = "hold",
+  DISBANDED = "disbanded",
+  DISLODGED = "dislodged",
+  DISLODGING = "dislodging",
+  BUILD = "build",
+}
 
 // What we manually construct to unify historical and live units and
 // pass down to deeper state for rendering the UI
@@ -23,10 +33,8 @@ export interface Unit {
   country: Country;
   mappedTerritory: MTerritory;
   unit: IUnit;
-  isRetreating: boolean;
-  isDislodging: boolean;
+  drawMode: UnitDrawMode;
   movedFromTerrID: string | null;
-  isBuild: boolean;
 }
 
 export function getUnitsLive(
@@ -36,6 +44,7 @@ export function getUnitsLive(
   members: GameOverviewResponse["members"],
   prevPhaseOrders: IOrderDataHistorical[],
   ordersMeta: OrdersMeta,
+  currentOrders: IOrderData[],
 ): Unit[] {
   // Accumulate all the units we want to draw into here
   const unitsToDraw: Unit[] = [];
@@ -60,13 +69,28 @@ export function getUnitsLive(
   });
 
   // Maps current terrID => previous terrID for units that successfully moved last phase.
-  const successfulMoves: { [key: string]: string } = {};
+  const successfulPrevMoves: { [key: string]: string } = {};
   prevPhaseOrders.forEach((prevOrder) => {
     if (prevOrder.success && prevOrder.type === "Move") {
-      successfulMoves[prevOrder.toTerrID.toString()] =
+      successfulPrevMoves[prevOrder.toTerrID.toString()] =
         prevOrder.terrID.toString();
     }
   });
+
+  console.log({ ordersMeta });
+  const ordersMetaByTerrID: { [key: string]: OrderMeta } = {};
+  Object.entries(ordersMeta).forEach(([orderID, orderMeta]) => {
+    // FIXME having to chain lookups like this here and in many other places in the
+    // code is horrible. Maybe we can improve this by just making things like OrdersMeta
+    // have *all* of the data on them, rather than just a subset.
+    // Or making the webdip API be more helpful and add more convenience fields to stuff.
+    const currentOrder = currentOrders.find((order) => order.id === orderID);
+    if (currentOrder && units[currentOrder.unitID]) {
+      const { terrID } = units[currentOrder.unitID];
+      ordersMetaByTerrID[terrID] = orderMeta;
+    }
+  });
+
   // console.log({ prevPhaseOrders });
   // console.log({ successfulMoves });
 
@@ -85,27 +109,39 @@ export function getUnitsLive(
         if (memberCountry) {
           const { country } = memberCountry;
 
-          const isRetreating =
+          let drawMode = UnitDrawMode.NONE;
+          const isRetreat =
             territoryStatusesByTerrID[unit.terrID] &&
             territoryStatusesByTerrID[unit.terrID].unitID !== null &&
             territoryStatusesByTerrID[unit.terrID].unitID !== unit.id;
-
-          const isDislodging =
-            unitCountByTerrID[unit.terrID] >= 2 && !isRetreating;
+          if (ordersMetaByTerrID[unit.terrID]?.update?.type === "Hold") {
+            drawMode = UnitDrawMode.HOLD;
+          } else if (
+            isRetreat &&
+            ordersMetaByTerrID[unit.terrID]?.update?.type === "Disband"
+          ) {
+            drawMode = UnitDrawMode.DISBANDED;
+          } else if (
+            ordersMetaByTerrID[unit.terrID]?.update?.type === "Destroy"
+          ) {
+            drawMode = UnitDrawMode.DISBANDED;
+          } else if (isRetreat) {
+            drawMode = UnitDrawMode.DISLODGED;
+          } else if (unitCountByTerrID[unit.terrID] >= 2) {
+            drawMode = UnitDrawMode.DISLODGING;
+          }
 
           const movedFromTerrID =
-            unit.terrID in successfulMoves
-              ? successfulMoves[unit.terrID]
+            unit.terrID in successfulPrevMoves
+              ? successfulPrevMoves[unit.terrID]
               : null;
 
           unitsToDraw.push({
             country: countryMap[country],
             mappedTerritory,
             unit,
-            isRetreating,
-            isDislodging,
+            drawMode,
             movedFromTerrID,
-            isBuild: false,
           });
         }
       }
@@ -144,10 +180,8 @@ export function getUnitsLive(
             country: countryMap[country],
             mappedTerritory,
             unit: iUnit,
-            isRetreating: false,
-            isDislodging: false,
+            drawMode: UnitDrawMode.BUILD,
             movedFromTerrID: null,
-            isBuild: true,
           });
         }
       }
@@ -181,12 +215,17 @@ export function getUnitsHistorical(
   });
 
   // Maps current terrID => previous terrID for units that successfully moved last phase.
-  const successfulMoves: { [key: string]: string } = {};
+  const successfulPrevMoves: { [key: string]: string } = {};
   prevPhaseOrders.forEach((prevOrder) => {
     if (prevOrder.success && prevOrder.type === "Move") {
-      successfulMoves[prevOrder.toTerrID.toString()] =
+      successfulPrevMoves[prevOrder.toTerrID.toString()] =
         prevOrder.terrID.toString();
     }
+  });
+
+  const curPhaseOrdersByTerrID: { [key: string]: IOrderDataHistorical } = {};
+  curPhaseOrders.forEach((order) => {
+    curPhaseOrdersByTerrID[order.terrID] = order;
   });
 
   //--------------------------------------------------------------------
@@ -211,23 +250,33 @@ export function getUnitsHistorical(
         if (memberCountry) {
           const { country } = memberCountry;
 
-          const isRetreating = unit.retreating === "Yes";
-          const isDislodging =
-            unitCountByTerrID[unit.terrID] >= 2 && !isRetreating;
+          let drawMode = UnitDrawMode.NONE;
+          if (curPhaseOrdersByTerrID[unit.terrID]?.type === "Hold") {
+            drawMode = UnitDrawMode.HOLD;
+          } else if (
+            unit.retreating === "Yes" &&
+            curPhaseOrdersByTerrID[unit.terrID]?.type === "Disband"
+          ) {
+            drawMode = UnitDrawMode.DISBANDED;
+          } else if (curPhaseOrdersByTerrID[unit.terrID]?.type === "Destroy") {
+            drawMode = UnitDrawMode.DISBANDED;
+          } else if (unit.retreating === "Yes") {
+            drawMode = UnitDrawMode.DISLODGED;
+          } else if (unitCountByTerrID[unit.terrID] >= 2) {
+            drawMode = UnitDrawMode.DISLODGING;
+          }
 
           const movedFromTerrID =
-            unit.terrID in successfulMoves
-              ? successfulMoves[unit.terrID]
+            unit.terrID in successfulPrevMoves
+              ? successfulPrevMoves[unit.terrID]
               : null;
 
           unitsToDraw.push({
             country: countryMap[country],
             mappedTerritory,
             unit: iUnit,
-            isRetreating,
-            isDislodging,
+            drawMode,
             movedFromTerrID,
-            isBuild: false,
           });
         }
       }
@@ -262,10 +311,8 @@ export function getUnitsHistorical(
             country: countryMap[country],
             mappedTerritory,
             unit: iUnit,
-            isRetreating: false,
-            isDislodging: false,
+            drawMode: UnitDrawMode.BUILD,
             movedFromTerrID: null,
-            isBuild: true,
           });
         }
       }

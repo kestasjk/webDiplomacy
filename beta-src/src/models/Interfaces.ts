@@ -104,7 +104,9 @@ export interface IOrderData {
   toTerrID: string | null;
   type: string;
   unitID: string;
-  viaConvoy: string | null; // TODO when is this ever null???
+  // Can be null on retreats or other moves where convoying doesn't make sense
+  // Otherwise equal to "Yes" or "No".
+  viaConvoy: string | null; 
 }
 
 export interface IOrderDataHistorical {
