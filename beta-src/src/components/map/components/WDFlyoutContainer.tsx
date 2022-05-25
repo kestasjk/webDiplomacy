@@ -6,17 +6,22 @@ import {
   gameApiSliceActions,
   gameMaps,
   gameOrder,
-  gameUnits,
 } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import Territory from "../../../enums/map/variants/classic/Territory";
+import { Unit } from "../../../utils/map/getUnits";
 import WDFlyoutButton from "./WDFlyoutButton";
 
-const WDFlyoutContainer: React.FC = function (): React.ReactElement {
+interface WDFlyoutContainerProps {
+  units: Unit[];
+}
+
+const WDFlyoutContainer: React.FC<WDFlyoutContainerProps> = function ({
+  units,
+}): React.ReactElement {
   const dispatch = useAppDispatch();
   const order = useAppSelector(gameOrder);
   const maps = useAppSelector(gameMaps);
-  const units = useAppSelector(gameUnits);
 
   console.log({ order });
 

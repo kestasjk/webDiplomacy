@@ -29,7 +29,6 @@ export interface GameState {
   overview: GameOverviewResponse;
   ordersMeta: OrdersMeta;
   ownUnits: string[];
-  units: Unit[];
   territoriesMeta: TerritoriesMeta;
   viewedPhaseState: ViewedPhaseState;
   status: GameStatusResponse;

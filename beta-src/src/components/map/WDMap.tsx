@@ -46,7 +46,7 @@ const WDMap: React.ForwardRefExoticComponent<
             territories={territories}
           />
           <WDBuildContainer />
-          <WDFlyoutContainer />
+          <WDFlyoutContainer units={units} />
         </g>
       </g>
       <defs>
