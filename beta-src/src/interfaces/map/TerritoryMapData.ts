@@ -13,18 +13,18 @@ export type UnitSlotName = GetArrayElementType<typeof UnitSlotNames>;
 
 export interface UnitSlot extends Coordinates {
   name: UnitSlotName;
+  arrowReceiver: Coordinates;
 }
 
 // just used for construction the TerritoryMapData. Do not use.
 export interface TerritoryMapDrawData extends BBox {
-  arrowReceiver?: Coordinates;
   centerPos?: Coordinates;
   fill?: string;
   labels?: Label[];
   path: string;
   playable: boolean;
   texture?: Texture;
-  unitSlots?: UnitSlot[];
+  unitSlots: UnitSlot[]; // always present, but might be zero-length 
   viewBox?: string;
 }
 

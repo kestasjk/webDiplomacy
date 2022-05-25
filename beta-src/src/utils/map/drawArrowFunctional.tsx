@@ -70,12 +70,13 @@ export function getTargetXYWH(
     case "dislodger": {
       const toTerritoryName = Territory[identifier as Territory];
       const toTerritoryData = TerritoryMap[toTerritoryName].territoryMapData;
+      const { unitSlotName } = TerritoryMap[toTerritoryName];
 
       x = toTerritoryData.x - UNIT_WIDTH / 2;
       y = toTerritoryData.y - UNIT_HEIGHT / 2;
-      if (toTerritoryData.arrowReceiver) {
-        x += toTerritoryData.arrowReceiver.x;
-        y += toTerritoryData.arrowReceiver.y;
+      if (toTerritoryData.unitSlotsBySlotName[unitSlotName]) {
+        x += toTerritoryData.unitSlotsBySlotName[unitSlotName].arrowReceiver.x;
+        y += toTerritoryData.unitSlotsBySlotName[unitSlotName].arrowReceiver.y;
       }
       width = UNIT_WIDTH;
       height = UNIT_HEIGHT;
@@ -90,14 +91,19 @@ export function getTargetXYWH(
     default: {
       const toTerritoryName = Territory[identifier as Territory];
       const toTerritoryData = TerritoryMap[toTerritoryName].territoryMapData;
+      const { unitSlotName } = TerritoryMap[toTerritoryName];
 
       const bufferSize = 12;
 
       x = toTerritoryData.x;
       y = toTerritoryData.y;
-      if (toTerritoryData.arrowReceiver) {
-        x += toTerritoryData.arrowReceiver.x - bufferSize / 2;
-        y += toTerritoryData.arrowReceiver.y - bufferSize / 2;
+      if (toTerritoryData.unitSlotsBySlotName[unitSlotName]) {
+        x +=
+          toTerritoryData.unitSlotsBySlotName[unitSlotName].arrowReceiver.x -
+          bufferSize / 2;
+        y +=
+          toTerritoryData.unitSlotsBySlotName[unitSlotName].arrowReceiver.y -
+          bufferSize / 2;
       }
       width = bufferSize;
       height = bufferSize;

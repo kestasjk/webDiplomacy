@@ -171,50 +171,31 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
             </g>
           );
         })}
-      {territoryMapData.unitSlots &&
-        territoryMapData.unitSlots
-          .filter(({ name }) => name in unitFCs)
-          .map(({ name, x, y }) => (
+      {territoryMapData.unitSlots
+        .filter(({ name }) => name in unitFCs)
+        .map(({ name, x, y }) => (
+          <WDUnitSlot key={name} name={name} territory={territory} x={x} y={y}>
+            {unitFCs[name]}
+          </WDUnitSlot>
+        ))}
+      {territoryMapData.unitSlots
+        .filter(({ name }) => name in unitFCsDislodging)
+        .map(({ name, arrowReceiver }) => {
+          const unitName = `${name}-dislodging`;
+          // For dislodger units, we draw them at the location of the
+          // arrow receiver.
+          return (
             <WDUnitSlot
-              key={name}
-              name={name}
+              key={unitName}
+              name={unitName}
               territory={territory}
-              x={x}
-              y={y}
+              x={arrowReceiver.x - UNIT_WIDTH / 2}
+              y={arrowReceiver.y - UNIT_HEIGHT / 2}
             >
-              {unitFCs[name]}
+              {unitFCsDislodging[name]}
             </WDUnitSlot>
-          ))}
-      {territoryMapData.unitSlots &&
-        territoryMapData.arrowReceiver &&
-        territoryMapData.unitSlots
-          .filter(({ name }) => name in unitFCsDislodging)
-          .map(({ name }) => {
-            const unitName = `${name}-dislodging`;
-            // For dislodger units, we draw them at the location of the
-            // arrow receiver.
-            const arrowReceiver = territoryMapData.arrowReceiver as Coordinates;
-            return (
-              <WDUnitSlot
-                key={unitName}
-                name={unitName}
-                territory={territory}
-                x={arrowReceiver.x - UNIT_WIDTH / 2}
-                y={arrowReceiver.y - UNIT_HEIGHT / 2}
-              >
-                {unitFCsDislodging[name]}
-              </WDUnitSlot>
-            );
-          })}
-      {territoryMapData.arrowReceiver && (
-        <rect
-          id={`${territory}-arrow-receiver`}
-          x={territoryMapData.arrowReceiver.x}
-          y={territoryMapData.arrowReceiver.y}
-          width="1"
-          height="1"
-        />
-      )}
+          );
+        })}
     </svg>
   );
 };
