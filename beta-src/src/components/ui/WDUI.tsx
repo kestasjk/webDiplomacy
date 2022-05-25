@@ -141,6 +141,7 @@ const WDUI: React.FC = function (): React.ReactElement {
         <Link href="/">
           <WDHomeIcon />
         </Link>
+
         <Box
           sx={{
             pt: "15px",
@@ -148,6 +149,23 @@ const WDUI: React.FC = function (): React.ReactElement {
           ref={popoverTrigger}
         >
           {controlModalTrigger}
+        </Box>
+        <Box
+          component="div"
+          sx={{
+            display: "block",
+            p: 1,
+            mt: 2,
+            bgcolor: "#fff",
+            color: "grey.800",
+            border: "1px solid",
+            borderColor: "grey.300",
+            borderRadius: 2,
+            fontSize: "0.875rem",
+            fontWeight: "700",
+          }}
+        >
+          {abbrMap[user.member.country]}
         </Box>
         {popover}
       </WDPositionContainer>

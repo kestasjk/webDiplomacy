@@ -8,6 +8,7 @@ import {
   Divider,
 } from "@mui/material";
 import { Email, Send } from "@mui/icons-material";
+import AutorenewIcon from "@mui/icons-material/Autorenew";
 
 import Button from "@mui/material/Button";
 import Device from "../../enums/Device";
@@ -89,6 +90,19 @@ const WDPress: React.FC<WDPressProps> = function ({
     setUserMsg("");
   };
 
+  const dispatchMessages = () => {
+    // need to update locally and on the server
+    // because we don't immediately re-fetch message data from the server
+    dispatch(gameApiSliceActions.processMessagesSeen(countryIDSelected));
+    dispatch(
+      markMessagesSeen({
+        countryID: String(userCountry.countryID),
+        gameID: String(gameID),
+        seenCountryID: String(countryIDSelected),
+      }),
+    );
+  };
+
   // capture enter for end, shift-enter for newline
   const keydownHandler = (e) => {
     const keyCode = e.which || e.keyCode;
@@ -100,16 +114,7 @@ const WDPress: React.FC<WDPressProps> = function ({
   };
 
   if (messages.newMessagesFrom.includes(countryIDSelected)) {
-    // need to update locally and on the server
-    // because we don't immediately re-fetch message data from the server
-    dispatch(gameApiSliceActions.processMessagesSeen(countryIDSelected));
-    dispatch(
-      markMessagesSeen({
-        countryID: String(userCountry.countryID),
-        gameID: String(gameID),
-        seenCountryID: String(countryIDSelected),
-      }),
-    );
+    dispatchMessages();
   }
 
   const countryButtons = countries
@@ -157,6 +162,16 @@ const WDPress: React.FC<WDPressProps> = function ({
       />
       <Box>
         <Stack alignItems="center" direction="row">
+          <Button
+            href="#message-reload-button"
+            onClick={dispatchMessages}
+            style={{
+              maxWidth: "12px",
+              minWidth: "12px",
+            }}
+          >
+            <AutorenewIcon sx={{ fontSize: "medium" }} />
+          </Button>
           <TextField
             id="user-msg"
             label="Send Message"
