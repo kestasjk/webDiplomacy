@@ -14,10 +14,13 @@ import {
   gameStatus,
   gameData,
   gameMaps,
-  gameUnits,
   gameViewedPhase,
 } from "../../state/game/game-api-slice";
-import { getUnitsHistorical } from "../../utils/map/getUnits";
+import {
+  Unit,
+  getUnitsLive,
+  getUnitsHistorical,
+} from "../../utils/map/getUnits";
 import { IOrderData, IOrderDataHistorical } from "../../models/Interfaces";
 
 const Scales: Scale = {
@@ -60,7 +63,6 @@ const WDMapController: React.FC = function (): React.ReactElement {
   const status = useAppSelector(gameStatus);
   const data = useAppSelector(gameData);
   const maps = useAppSelector(gameMaps);
-  const stateUnits = useAppSelector(gameUnits);
 
   const updateForPhase = () => {
     if (viewedPhaseState.viewedPhaseIdx >= status.phases.length - 1) {
@@ -77,6 +79,12 @@ const WDMapController: React.FC = function (): React.ReactElement {
         });
       }
       Object.entries(ordersMeta).forEach(([orderID, orderMeta]) => {
+        // FIXME ordersMeta can accumulate garbage over multiple phases.
+        // Is there anywhere else where we iterate over it and therefore iterate
+        // over garbage orders?
+        if (!currentOrdersById[orderID]) {
+          return;
+        }
         let fromTerrID = 0;
         let toTerrID = 0;
         let terrID = 0;
@@ -89,20 +97,23 @@ const WDMapController: React.FC = function (): React.ReactElement {
           originalOrder = currentOrdersById[orderID];
         }
         if (originalOrder) {
+          console.log({ originalOrder });
           if (originalOrder.fromTerrID) {
             fromTerrID = Number(originalOrder.fromTerrID);
           }
           if (originalOrder.toTerrID) {
             toTerrID = Number(originalOrder.toTerrID);
           }
+          // FIXME apparently type can be null or undefined, even though not recorded in the
+          // type of the interface
           type = originalOrder.type;
 
-          if (type.startsWith("Build ")) {
+          if (type && type.startsWith("Build ")) {
             if (originalOrder.toTerrID) {
               terrID = Number(originalOrder.toTerrID);
             }
             [, unitType] = type.split(" ");
-          } else {
+          } else if (originalOrder.unitID) {
             const terrIDString = maps.unitToTerrID[originalOrder.unitID];
             if (terrIDString) {
               terrID = Number(terrIDString);
@@ -128,6 +139,12 @@ const WDMapController: React.FC = function (): React.ReactElement {
             viaConvoy = "No";
           }
         }
+
+        // !terrID is safe because webdip doesn't seem to use terrID 0.
+        if (!type || !unitType || !terrID) {
+          return;
+        }
+
         const orderHistorical: IOrderDataHistorical = {
           countryID: status.countryID,
           dislodged: "No",
@@ -148,9 +165,24 @@ const WDMapController: React.FC = function (): React.ReactElement {
       // console.log(state.game.ordersMeta);
       // console.log(ordersHistorical);
 
+      // Also depends on status, so this is updated both here and when GameStatus is fulfilled.
+      const prevPhaseOrders =
+        status.phases.length > 1
+          ? status.phases[status.phases.length - 2].orders
+          : [];
+      const units: Unit[] = getUnitsLive(
+        data.data.territories,
+        data.data.territoryStatuses,
+        data.data.units,
+        overview.members,
+        prevPhaseOrders,
+        ordersMeta,
+        data.data.currentOrders ? data.data.currentOrders : [],
+      );
+
       return {
         phase: overview.phase,
-        units: stateUnits,
+        units,
         orders: ordersHistorical,
         territories: data.data.territories,
       };

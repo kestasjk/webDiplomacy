@@ -36,18 +36,4 @@ export default function fetchGameStatusFulfilled(
       members: GameOverviewResponse["members"];
     };
   } = current(state);
-
-  // Also depends on status, so this is updated both here and when GameStatus is fulfilled.
-  const prevPhaseOrders =
-    state.status.phases.length > 1
-      ? state.status.phases[state.status.phases.length - 2].orders
-      : [];
-  state.units = getUnitsLive(
-    data.territories,
-    data.territoryStatuses,
-    data.units,
-    members,
-    prevPhaseOrders,
-    state.ordersMeta,
-  );
 }

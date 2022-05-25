@@ -4,11 +4,14 @@ import CapturableLandTexture from "../../assets/textures/capturable-land.jpeg";
 import WaterTexture from "../../assets/textures/sea-texture.png";
 import WDArrowMarkerDefs from "../../utils/map/WDArrowMarkerDefs";
 import WDBuildContainer from "./components/WDBuildContainer";
+import WDFlyoutContainer from "./components/WDFlyoutContainer";
 import WDArrowContainer from "./components/WDArrowContainer";
 import { Unit } from "../../utils/map/getUnits";
 import { IOrderDataHistorical } from "../../models/Interfaces";
 import GameStateMaps from "../../state/interfaces/GameStateMaps";
 import { APITerritories } from "../../state/interfaces/GameDataResponse";
+import Territory from "../../enums/map/variants/classic/Territory";
+import Territories from "../../data/Territories";
 
 interface WDMapProps {
   units: Unit[];
@@ -43,6 +46,7 @@ const WDMap: React.ForwardRefExoticComponent<
             territories={territories}
           />
           <WDBuildContainer />
+          <WDFlyoutContainer units={units} />
         </g>
       </g>
       <defs>

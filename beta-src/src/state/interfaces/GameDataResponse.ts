@@ -15,6 +15,7 @@ interface GameData {
   currentOrders?: IOrderData[];
   territories: APITerritories;
   units: {
+    // Key is the Unit ID.
     [key: string]: IUnit;
   };
   territoryStatuses: ITerrStatus[];

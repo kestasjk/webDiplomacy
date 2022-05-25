@@ -5,7 +5,6 @@ import WDUnitController from "../../controllers/WDUnitController";
 import { GameIconProps } from "../../../interfaces/Icons";
 import WDArmyIcon from "./WDArmyIcon";
 import { useAppSelector } from "../../../state/hooks";
-import { gameUnitState } from "../../../state/game/game-api-slice";
 
 export const UNIT_HEIGHT = 50;
 export const UNIT_WIDTH = 50;

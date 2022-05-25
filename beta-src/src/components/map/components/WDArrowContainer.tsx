@@ -17,7 +17,7 @@ import drawArrowFunctional, {
 } from "../../../utils/map/drawArrowFunctional";
 import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
 import { APITerritories } from "../../../state/interfaces/GameDataResponse";
-import { Unit } from "../../../utils/map/getUnits";
+import { Unit, UnitDrawMode } from "../../../utils/map/getUnits";
 
 function accumulateMoveOrderArrows(
   arrows: (React.ReactElement | null)[],
@@ -254,7 +254,7 @@ function accumulateDislodgerArrows(
   territories: APITerritories,
 ): void {
   units
-    .filter((unit) => unit.isDislodging)
+    .filter((unit) => unit.drawMode === UnitDrawMode.DISLODGING)
     .forEach((unit) => {
       if (unit.movedFromTerrID === null) return;
       const fromTerr =
@@ -281,7 +281,7 @@ function accumulateBuildCircles(
   territories: APITerritories,
 ): void {
   units
-    .filter((unit) => unit.isBuild)
+    .filter((unit) => unit.drawMode === UnitDrawMode.BUILD)
     .forEach((unit) => {
       const terr = TerritoryMap[territories[unit.unit.terrID].name].territory;
       const [x, y, w, h] = getTargetXYWH("unit", terr);

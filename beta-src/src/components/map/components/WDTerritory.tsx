@@ -1,17 +1,19 @@
 import { useTheme } from "@mui/material";
 import * as React from "react";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
-import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
+import TerritoryMap, {
+  territoryToWebdipName,
+} from "../../../data/map/variants/classic/TerritoryMap";
 import Territories from "../../../data/Territories";
 import UIState from "../../../enums/UIState";
 import { Coordinates, TerritoryMapData } from "../../../interfaces";
 import {
   gameApiSliceActions,
+  gameMaps,
   gameOrder,
   gameOrdersMeta,
   gameOverview,
   gameTerritoriesMeta,
-  gameUnitState,
 } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import { TerritoryMeta } from "../../../state/interfaces/TerritoriesState";
@@ -22,8 +24,42 @@ import WDUnit, { UNIT_HEIGHT, UNIT_WIDTH } from "../../ui/units/WDUnit";
 import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
-import { Unit } from "../../../utils/map/getUnits";
+import { Unit, UnitDrawMode } from "../../../utils/map/getUnits";
 import Territory from "../../../enums/map/variants/classic/Territory";
+import OrdersMeta from "../../../state/interfaces/SavedOrders";
+
+function getUnitState(
+  terrID: string | undefined,
+  unitID: string,
+  curOrder,
+  ordersMeta: OrdersMeta,
+  maps,
+): UIState {
+  let unitState = UIState.NONE;
+
+  if (curOrder.unitID === unitID) {
+    return UIState.SELECTED;
+  }
+  const unitOrderID = maps.unitToOrder[unitID];
+  const unitOrder = ordersMeta[unitOrderID];
+
+  if (unitOrder) {
+    const orderType = unitOrder.update?.type;
+    console.log({ orderType, unitState });
+
+    if (orderType === "Hold") unitState = UIState.HOLD;
+    if (orderType === "Retreat") unitState = UIState.DISLODGED; // FIXME: is this right?
+  }
+  console.log({ ordersMeta });
+  // Destroys are defined through toTerrID; these orders have no unitIDs (sigh)
+  Object.values(ordersMeta).forEach((meta) => {
+    if (meta.update?.toTerrID === terrID) {
+      if (meta.update?.type === "Destroy") unitState = UIState.DESTROY;
+    }
+  });
+
+  return unitState;
+}
 
 interface WDTerritoryProps {
   territoryMapData: TerritoryMapData;
@@ -43,7 +79,6 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
 
   const { territory } = territoryMapData;
   const territoryMeta = territoriesMeta[territoryMapData.territory];
-
   let territoryFill = "none";
   let territoryFillOpacity = 0;
   const territoryStrokeOpacity = 1;
@@ -56,16 +91,17 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     territoryFillOpacity = 0.4;
   }
   const curOrder = useAppSelector(gameOrder);
-  if (
-    territoryMeta?.territory &&
-    territoryMeta?.territory === curOrder.toTerritory
-  ) {
-    territoryFillOpacity = 0.9;
-    territoryFill = theme.palette[userCountry].main;
-  }
 
-  const unitFCs: { [key: string]: any } = {};
-  const unitFCsDislodging: { [key: string]: any } = {};
+  // Maps unitSlot name -> unit to draw.
+  const unitFCs: { [key: string]: React.ReactElement } = {};
+  // Maps unitSlot name -> unit to draw, but specifically for units
+  // that are currently disloging another unit on a retreat phase.
+  // This is separate because we need to draw the
+  // dislodger unit in an alternative location when there are two
+  // units in a territory so that they don't overlap each other, including
+  // when those units share the same unitSlot within that territory.
+  const unitFCsDislodging: { [key: string]: React.ReactElement } = {};
+
   units
     .filter(
       (unit) =>
@@ -73,11 +109,35 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         territoryMeta?.territory,
     )
     .forEach((unit) => {
-      let unitState: UIState = UIState.NONE;
-      if (unit.isBuild) {
-        unitState = UIState.BUILD;
+      let unitState: UIState;
+      switch (unit.drawMode) {
+        case UnitDrawMode.NONE:
+          unitState = UIState.NONE;
+          break;
+        case UnitDrawMode.HOLD:
+          unitState = UIState.HOLD;
+          break;
+        case UnitDrawMode.BUILD:
+          unitState = UIState.BUILD;
+          break;
+        case UnitDrawMode.DISLODGING:
+          unitState = UIState.NONE;
+          break;
+        case UnitDrawMode.DISLODGED:
+          unitState = UIState.DISLODGED;
+          break;
+        case UnitDrawMode.DISBANDED:
+          unitState = UIState.DISBANDED;
+          break;
+        default:
+          unitState = UIState.NONE;
+          break;
       }
 
+      if (curOrder.unitID === unit.unit.id && curOrder.type) {
+        territoryFillOpacity = 0.9;
+        territoryFill = theme.palette[userCountry]?.main;
+      }
       const wdUnit = (
         <WDUnit
           id={`${territory}-unit`}
@@ -87,7 +147,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
           iconState={unitState}
         />
       );
-      if (unit.isDislodging) {
+      if (unit.drawMode === UnitDrawMode.DISLODGING) {
         unitFCsDislodging[unit.mappedTerritory.unitSlotName] = wdUnit;
       } else {
         unitFCs[unit.mappedTerritory.unitSlotName] = wdUnit;
@@ -99,7 +159,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       gameApiSliceActions.processMapClick({
         clickObject,
         evt,
-        name: territory,
+        territory,
       }),
     );
   };
@@ -163,48 +223,31 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
             </g>
           );
         })}
-      {territoryMapData.unitSlots &&
-        territoryMapData.unitSlots
-          .filter(({ name }) => name in unitFCs)
-          .map(({ name, x, y }) => (
+      {territoryMapData.unitSlots
+        .filter(({ name }) => name in unitFCs)
+        .map(({ name, x, y }) => (
+          <WDUnitSlot key={name} name={name} territory={territory} x={x} y={y}>
+            {unitFCs[name]}
+          </WDUnitSlot>
+        ))}
+      {territoryMapData.unitSlots
+        .filter(({ name }) => name in unitFCsDislodging)
+        .map(({ name, arrowReceiver }) => {
+          const unitName = `${name}-dislodging`;
+          // For dislodger units, we draw them at the location of the
+          // arrow receiver.
+          return (
             <WDUnitSlot
-              key={name}
-              name={name}
+              key={unitName}
+              name={unitName}
               territory={territory}
-              x={x}
-              y={y}
+              x={arrowReceiver.x - UNIT_WIDTH / 2}
+              y={arrowReceiver.y - UNIT_HEIGHT / 2}
             >
-              {unitFCs[name]}
+              {unitFCsDislodging[name]}
             </WDUnitSlot>
-          ))}
-      {territoryMapData.unitSlots &&
-        territoryMapData.arrowReceiver &&
-        territoryMapData.unitSlots
-          .filter(({ name }) => name in unitFCsDislodging)
-          .map(({ name }) => {
-            const unitName = `${name}-dislodging`;
-            const arrowReceiver = territoryMapData.arrowReceiver as Coordinates;
-            return (
-              <WDUnitSlot
-                key={unitName}
-                name={unitName}
-                territory={territory}
-                x={arrowReceiver.x - UNIT_WIDTH / 2}
-                y={arrowReceiver.y - UNIT_HEIGHT / 2}
-              >
-                {unitFCsDislodging[name]}
-              </WDUnitSlot>
-            );
-          })}
-      {territoryMapData.arrowReceiver && (
-        <rect
-          id={`${territory}-arrow-receiver`}
-          x={territoryMapData.arrowReceiver.x}
-          y={territoryMapData.arrowReceiver.y}
-          width="1"
-          height="1"
-        />
-      )}
+          );
+        })}
     </svg>
   );
 };

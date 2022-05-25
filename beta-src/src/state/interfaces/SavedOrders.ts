@@ -1,7 +1,7 @@
 import { IOrderData } from "../../models/Interfaces";
 import TerritoryClass from "../../models/TerritoryClass";
 
-interface OrderMetaUpdate {
+export interface OrderMetaUpdate {
   convoyPath?: string[];
   type: string;
   toTerrID: string | null;
@@ -23,11 +23,11 @@ interface SharedMeta {
   update?: OrderMetaUpdate;
 }
 
-interface OrderMeta extends SharedMeta {
+export interface OrderMeta extends SharedMeta {
   saved: boolean;
 }
 
-interface EditOrder extends SharedMeta {
+export interface EditOrder extends SharedMeta {
   saved?: boolean;
 }
 
@@ -35,6 +35,7 @@ export interface EditOrderMeta {
   [key: string]: EditOrder;
 }
 
+// The key on this interface is Order ID.
 interface OrdersMeta {
   [key: string]: OrderMeta;
 }

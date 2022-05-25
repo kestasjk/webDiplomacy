@@ -17,33 +17,8 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
   type,
   iconState,
 }): React.ReactElement {
-  const dispatch = useAppDispatch();
-
-  const clickAction = (e, method) => {
-    dispatch(
-      gameApiSliceActions.processUnitClick({
-        method,
-        onTerritory: meta.mappedTerritory.territory,
-        unitID: meta.unit.id,
-      }),
-    );
-  };
-
-  const handleClick = debounce((e) => {
-    clickAction(e, "click");
-  }, 200);
-
-  const handleSingleClick = (e) => {
-    handleClick[0](e);
-  };
-
-  const handleDoubleClick = (e) => {
-    handleClick[1]();
-    clickAction(e, "dblClick");
-  };
-
   return (
-    <g onClick={handleSingleClick} onDoubleClick={handleDoubleClick}>
+    <g style={{ pointerEvents: "none" }}>
       {type === "Fleet" && (
         <WDFleetIcon iconState={iconState} country={meta.country} />
       )}

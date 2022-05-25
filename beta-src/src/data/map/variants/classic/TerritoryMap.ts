@@ -1,9 +1,6 @@
 import Territory from "../../../../enums/map/variants/classic/Territory";
-import UnitSlotName, {
-  UnitSlotNames,
-} from "../../../../types/map/UnitSlotName";
 import territoriesMapData from "../../TerritoriesMapData";
-import { TerritoryMapData } from "../../../../interfaces";
+import { TerritoryMapData, UnitSlotName } from "../../../../interfaces";
 
 export interface MTerritory {
   parent?: Territory;
