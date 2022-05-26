@@ -1,10 +1,10 @@
 import * as React from "react";
-import { Box, IconButton, Link, useTheme } from "@mui/material";
+import { Box, IconButton, Link, useTheme, Badge } from "@mui/material";
 
 import WDPositionContainer from "./WDPositionContainer";
 import Position from "../../enums/Position";
-import { useAppSelector } from "../../state/hooks";
-import { gameOverview } from "../../state/game/game-api-slice";
+import { useAppSelector, useAppDispatch } from "../../state/hooks";
+import { gameOverview, gameMessages } from "../../state/game/game-api-slice";
 import { CountryTableData } from "../../interfaces";
 import Country from "../../enums/Country";
 import WDFullModal from "./WDFullModal";
@@ -47,6 +47,7 @@ const WDUI: React.FC = function (): React.ReactElement {
     user,
     year,
   } = useAppSelector(gameOverview);
+  const messages = useAppSelector(gameMessages);
 
   const constructTableData = (member) => {
     const memberCountry: Country = countryMap[member.country];
@@ -148,7 +149,13 @@ const WDUI: React.FC = function (): React.ReactElement {
           }}
           ref={popoverTrigger}
         >
-          {controlModalTrigger}
+          {messages.newMessagesFrom.length ? (
+            <Badge badgeContent={messages.newMessagesFrom} color="secondary">
+              {controlModalTrigger}
+            </Badge>
+          ) : (
+            controlModalTrigger
+          )}
         </Box>
         <Box
           component="div"
