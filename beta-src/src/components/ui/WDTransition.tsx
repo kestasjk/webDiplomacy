@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Box, LinearProgress } from "@mui/material";
+import LoadingImage from "../../assets/png/web-diplomacy-logo.png";
 
 const WDTransition: React.FC = function (): React.ReactElement {
   return (
@@ -27,7 +28,7 @@ const WDTransition: React.FC = function (): React.ReactElement {
       >
         <Box
           component="img"
-          src="beta-src/src/assets/png/web-diplomacy-logo.png"
+          src={LoadingImage}
           sx={{
             filter: `box-shadow: "0px 0px 250px rgba(255, 255, 255, 0.5)"`,
             height: "568px",
