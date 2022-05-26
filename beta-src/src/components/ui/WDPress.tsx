@@ -55,7 +55,7 @@ const WDPress: React.FC<WDPressProps> = function ({
   const { user, gameID } = useAppSelector(gameOverview);
   const messages = useAppSelector(({ game }) => game.messages.messages);
   const newMessagesFrom = useAppSelector(
-   ({ game }) => game.messages.newMessagesFrom,
+    ({ game }) => game.messages.newMessagesFrom,
   );
 
   // FIXME: for now, crazily fetch all messages every 1sec
