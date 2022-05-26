@@ -46,9 +46,7 @@ export default function getUnits(
               occupiedTerritory?.ownerCountryID !== unit.countryID &&
               territoryHasMultipleUnits.length > 1 &&
               phase === "Retreats") ||
-            (phase === "Retreats" &&
-              !territoryStatus?.occupiedFromTerrID &&
-              territoryHasMultipleUnits.length === 1) ||
+            (phase === "Retreats" && territoryHasMultipleUnits.length === 1) ||
             phase !== "Retreats"
           ) {
             unitsToDraw.push({
