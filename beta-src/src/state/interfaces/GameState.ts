@@ -33,6 +33,6 @@ export interface GameState {
   viewedPhaseState: ViewedPhaseState;
   status: GameStatusResponse;
   messages: GameMessages;
-
+  outstandingMessageRequests: number;
   order: OrderState;
 }

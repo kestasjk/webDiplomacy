@@ -54,10 +54,13 @@ const WDPress: React.FC<WDPressProps> = function ({
 
   const { user, gameID } = useAppSelector(gameOverview);
   const messages = useAppSelector(gameMessages);
+  const outstandingMessageRequests = useAppSelector(
+    (state) => state.game.outstandingMessageRequests,
+  );
 
   // FIXME: for now, crazily fetch all messages every 1sec
   useInterval(() => {
-    if (user && gameID && messages && messages.outstandingRequests === 0) {
+    if (user && gameID && messages && outstandingMessageRequests === 0) {
       console.log("Dispatching");
       dispatch(gameApiSliceActions.updateOutstandingMessageRequests(1));
       dispatch(
@@ -74,6 +77,7 @@ const WDPress: React.FC<WDPressProps> = function ({
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     // scroll to the bottom of the message list
+    // FIXME: should this happen if we get a message from a 3rd party?
     messagesEndRef.current?.scrollIntoView();
   }, [messages, countryIDSelected]);
 
