@@ -21,6 +21,7 @@ import PowerIcon from "./icons/country-table/WDPower";
 import UnitsIcon from "./icons/country-table/WDUnits";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
+import WDCheckmarkIcon from "./icons/WDCheckmarkIcon";
 
 interface WDCountryTableProps {
   countries: CountryTableData[];
@@ -36,6 +37,12 @@ interface Column {
 
 const columns: readonly Column[] = [
   { id: "power", label: "Power", icon: PowerIcon, align: "left" },
+  {
+    id: "orderStatus",
+    label: "Status",
+    icon: WDCheckmarkIcon,
+    align: "center",
+  },
   { id: "unitNo", label: "Units", icon: UnitsIcon, align: "center" },
   {
     id: "supplyCenterNo",
@@ -70,7 +77,7 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
     device === Device.MOBILE ||
     device === Device.MOBILE_LG;
   const WDTableCell = styled(TableCell)(() => {
-    const padding = isMobile ? 6 : "6px 16px";
+    const padding = isMobile ? 6 : "6px 10px";
     return {
       [`&.${tableCellClasses.head}`]: {
         borderBottom: 0,
@@ -107,7 +114,7 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                     color: theme.palette.primary.main,
                     fontWeight: 400,
                   };
-                  let value: string;
+                  let value;
                   switch (column.id) {
                     case "power":
                       value = isMobile
@@ -116,6 +123,19 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                       style.color = country.color;
                       style.fontWeight = 700;
                       break;
+                    case "orderStatus":
+                      return (
+                        <WDTableCell key={column.id} align={column.align}>
+                          {(country.orderStatus.Saved ||
+                            country.orderStatus.Ready) && (
+                            <WDCheckmarkIcon
+                              color={
+                                (country.orderStatus.Ready && "#0A0") || "#888"
+                              }
+                            />
+                          )}
+                        </WDTableCell>
+                      );
                     case "excusedMissedTurns":
                       value = `${country[column.id]}/${maxDelays}`;
                       break;

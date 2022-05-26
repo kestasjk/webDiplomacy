@@ -26,24 +26,27 @@ const initialState: GameState = {
   error: null,
   order: {
     inProgress: false,
-    method: "click",
-    onTerritory: null,
+    fromTerrID: "",
     orderID: "",
-    subsequentClicks: [],
-    toTerritory: null,
+    toTerrID: "",
     unitID: "",
+    viaConvoy: "",
   },
   ordersMeta: {},
   ownUnits: [],
-  units: [],
   maps: {
+    terrIDToTerritory: {},
+    territoryToTerrID: {},
+    terrIDToUnit: {},
+    unitToTerrID: {},
     territoryToUnit: {},
-    unitToOrder: {},
     unitToTerritory: {},
-    enumToTerritory: {},
-    territoryToEnum: {},
+    unitToOrder: {},
   },
   territoriesMeta: {},
+  viewedPhaseState: {
+    viewedPhaseIdx: 0,
+  },
   overview: {
     alternatives: "",
     anon: "Yes",
@@ -144,10 +147,6 @@ const initialState: GameState = {
     newMessagesFrom: [],
     time: 0,
   },
-  outstandingMessageRequests: 0,
-  unitState: {},
-  buildPopover: [],
-  arrows: [],
 };
 
 export default initialState;

@@ -1,4 +1,6 @@
-import TerritoryMap from "../data/map/variants/classic/TerritoryMap";
+import TerritoryMap, {
+  webdipNameToTerritory,
+} from "../data/map/variants/classic/TerritoryMap";
 import { ITerrStatus } from "../models/Interfaces";
 import { APITerritories } from "../state/interfaces/GameDataResponse";
 import TerritoriesMeta from "../state/interfaces/TerritoriesState";
@@ -16,7 +18,8 @@ export default function getTerritoriesMeta(data): TerritoriesMeta {
       id,
       { coast, coastParentID, countryID: homeCountryID, name, supply, type },
     ]) => {
-      const mappedTerritory = TerritoryMap[name];
+      const territory = webdipNameToTerritory[name];
+      const mappedTerritory = TerritoryMap[territory];
       const territoryStatus = territoryStatuses.find(
         ({ id: territoryID }) => id === territoryID,
       );
@@ -31,14 +34,12 @@ export default function getTerritoriesMeta(data): TerritoriesMeta {
             : territoryStatus.ownerCountryID;
       }
 
-      const { territory } = mappedTerritory;
       if (!territoriesMeta[territory]) {
         territoriesMeta[territory] = {
           coast,
           coastParentID,
           countryID,
           id,
-          name,
           ownerCountryID,
           standoff: territoryStatus ? territoryStatus.standoff : false,
           supply: supply === "Yes",

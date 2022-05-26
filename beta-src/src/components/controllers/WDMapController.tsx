@@ -10,10 +10,18 @@ import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import {
   gameApiSliceActions,
   gameOrdersMeta,
+  gameOverview,
+  gameStatus,
+  gameData,
+  gameMaps,
+  gameViewedPhase,
 } from "../../state/game/game-api-slice";
-import drawArrow from "../../utils/map/drawArrow";
-import ArrowType from "../../enums/ArrowType";
-import ArrowColor from "../../enums/ArrowColor";
+import {
+  Unit,
+  getUnitsLive,
+  getUnitsHistorical,
+} from "../../utils/map/getUnits";
+import { IOrderData, IOrderDataHistorical } from "../../models/Interfaces";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -32,37 +40,183 @@ const getInitialScaleForDevice = (device: Device): number[] => {
 const mapOriginalWidth = 6010;
 const mapOriginalHeight = 3005;
 
+// TODO big spaghetti to unify webdip's historical representation
+// with webdip's live representation
+// and with ordersMeta.
+// into one single set of data about orders and units that we can
+// pass down so that everything else below us renders functionally
+// based on that.
 const WDMapController: React.FC = function (): React.ReactElement {
   const svgElement = React.useRef<SVGSVGElement>(null);
   const [viewport] = useViewport();
   const dispatch = useAppDispatch();
   const ordersMeta = useAppSelector(gameOrdersMeta);
-
   const device = getDevice(viewport);
   const [scaleMin, scaleMax] = getInitialScaleForDevice(device);
 
-  const arrows = useAppSelector((state) => state.game.arrows);
+  // FIXME: it's not ideal for us to be fetching the whole world from store here
+  // This is hard to untangle though because the representation of the data in the
+  // store is relatively bad. You have to depend on a lot of stuff in order to
+  // draw useful things right now.
+  const viewedPhaseState = useAppSelector(gameViewedPhase);
+  const overview = useAppSelector(gameOverview);
+  const status = useAppSelector(gameStatus);
+  const data = useAppSelector(gameData);
+  const maps = useAppSelector(gameMaps);
 
-  // ideally the arrows would be rendered as FCs declaratively,
-  // rather than imperatively through the drawArrow function,
-  // but that's too much work.
-  arrows.forEach((arrow, arrowIdx) => {
-    drawArrow(
-      String(arrowIdx),
-      ArrowType.MOVE,
-      ArrowColor.MOVE,
-      "territory",
-      arrow.to,
-      arrow.from,
+  const updateForPhase = () => {
+    if (viewedPhaseState.viewedPhaseIdx >= status.phases.length - 1) {
+      // Convert from our internal order representation to webdip's
+      // historical representation of orders so that we draw
+      // our internal orders and webdip's historical orders
+      // exactly the same way.
+
+      const ordersHistorical: IOrderDataHistorical[] = [];
+      const currentOrdersById: { [key: number]: IOrderData } = {};
+      if (data.data.currentOrders) {
+        data.data.currentOrders.forEach((orderData) => {
+          currentOrdersById[orderData.id] = orderData;
+        });
+      }
+      Object.entries(ordersMeta).forEach(([orderID, orderMeta]) => {
+        // FIXME ordersMeta can accumulate garbage over multiple phases.
+        // Is there anywhere else where we iterate over it and therefore iterate
+        // over garbage orders?
+        if (!currentOrdersById[orderID]) {
+          return;
+        }
+        let fromTerrID = 0;
+        let toTerrID = 0;
+        let terrID = 0;
+        let type: string | null = "";
+        let unitType = "";
+        let viaConvoy;
+
+        let { originalOrder } = orderMeta;
+        if (!originalOrder) {
+          originalOrder = currentOrdersById[orderID];
+        }
+        if (originalOrder) {
+          console.log({ originalOrder });
+          if (originalOrder.fromTerrID) {
+            fromTerrID = Number(originalOrder.fromTerrID);
+          }
+          if (originalOrder.toTerrID) {
+            toTerrID = Number(originalOrder.toTerrID);
+          }
+          type = originalOrder.type;
+
+          if (type && type.startsWith("Build ")) {
+            if (originalOrder.toTerrID) {
+              terrID = Number(originalOrder.toTerrID);
+            }
+            [, unitType] = type.split(" ");
+          } else if (originalOrder.unitID) {
+            const terrIDString = maps.unitToTerrID[originalOrder.unitID];
+            if (terrIDString) {
+              terrID = Number(terrIDString);
+            }
+            unitType = data.data.units[originalOrder.unitID].type;
+          }
+
+          if (originalOrder.viaConvoy === "Yes") {
+            viaConvoy = "Yes";
+          } else {
+            viaConvoy = "No";
+          }
+        }
+        if (orderMeta.update) {
+          if (orderMeta.update.fromTerrID !== undefined) {
+            fromTerrID = Number(orderMeta.update.fromTerrID);
+          }
+          toTerrID = Number(orderMeta.update.toTerrID);
+          type = orderMeta.update.type;
+          if (orderMeta.update.viaConvoy === "Yes") {
+            viaConvoy = "Yes";
+          } else {
+            viaConvoy = "No";
+          }
+        }
+
+        // !terrID is safe because webdip doesn't seem to use terrID 0.
+        if (!type || !unitType || !terrID) {
+          return;
+        }
+
+        const orderHistorical: IOrderDataHistorical = {
+          countryID: status.countryID,
+          dislodged: "No",
+          fromTerrID,
+          phase: overview.phase,
+          success: "Yes",
+          terrID,
+          toTerrID,
+          turn: overview.turn,
+          type,
+          unitType,
+          viaConvoy,
+        };
+        ordersHistorical.push(orderHistorical);
+      });
+      // console.log("Ordershistorical");
+      // console.log(currentOrdersById);
+      // console.log(state.game.ordersMeta);
+      // console.log(ordersHistorical);
+
+      // Also depends on status, so this is updated both here and when GameStatus is fulfilled.
+      const prevPhaseOrders =
+        status.phases.length > 1
+          ? status.phases[status.phases.length - 2].orders
+          : [];
+      const units: Unit[] = getUnitsLive(
+        data.data.territories,
+        data.data.territoryStatuses,
+        data.data.units,
+        overview.members,
+        prevPhaseOrders,
+        ordersMeta,
+        data.data.currentOrders ? data.data.currentOrders : [],
+      );
+
+      return {
+        phase: overview.phase,
+        units,
+        orders: ordersHistorical,
+        territories: data.data.territories,
+      };
+    }
+
+    const phaseHistorical = status.phases[viewedPhaseState.viewedPhaseIdx];
+    const unitsHistorical = phaseHistorical.units;
+    const prevPhaseOrders =
+      viewedPhaseState.viewedPhaseIdx > 0
+        ? status.phases[viewedPhaseState.viewedPhaseIdx - 1].orders
+        : [];
+    const unitsLive = getUnitsHistorical(
+      data.data.territories,
+      unitsHistorical,
+      overview.members,
+      prevPhaseOrders,
+      phaseHistorical.orders,
     );
-  });
+    return {
+      phase: phaseHistorical.phase as string,
+      units: unitsLive,
+      orders: phaseHistorical.orders,
+      territories: data.data.territories,
+    };
+  };
+  const { phase, units, orders, territories } = updateForPhase();
 
   React.useLayoutEffect(() => {
     if (svgElement.current) {
       const fullMap = d3.select(svgElement.current);
       const contained = fullMap.select("#container");
       const containedRect = contained.node().getBBox();
-      const gameBoardAreaRect = fullMap.select("#outlines").node().getBBox();
+      const gameBoardAreaRect = fullMap
+        .select("#playableTerritories")
+        .node()
+        .getBBox();
 
       const { scale, x, y } = getInitialViewTranslation(
         containedRect,
@@ -105,7 +259,14 @@ const WDMapController: React.FC = function (): React.ReactElement {
         height: viewport.height,
       }}
     >
-      <WDMap ref={svgElement} />
+      <WDMap
+        ref={svgElement}
+        units={units}
+        phase={phase}
+        orders={orders}
+        maps={maps}
+        territories={territories}
+      />
     </div>
   );
 };

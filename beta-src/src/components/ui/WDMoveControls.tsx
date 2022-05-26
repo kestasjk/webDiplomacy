@@ -69,12 +69,6 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
 
   const clickButton = (type: Move) => {
     console.log("Entered save button click");
-    dispatch(
-      gameApiSliceActions.processMapClick({
-        name: undefined,
-        clickObject: "save_button",
-      }),
-    );
     if ("currentOrders" in data && "contextVars" in data) {
       const { currentOrders, contextVars } = data;
       if (contextVars && currentOrders) {
@@ -86,7 +80,7 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
               fromTerrID,
               id,
               toTerrID,
-              type: moveType,
+              type: moveType || "",
               unitID,
               viaConvoy,
             };

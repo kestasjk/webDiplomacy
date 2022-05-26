@@ -11,32 +11,32 @@ import GameOverviewResponse from "../interfaces/GameOverviewResponse";
 import { ApiStatus, GameState } from "../interfaces/GameState";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
 import GameMessages from "../interfaces/GameMessages";
+import ViewedPhaseState from "../interfaces/ViewedPhaseState";
 import { RootState } from "../store";
 import initialState from "./initial-state";
 import OrdersMeta from "../interfaces/SavedOrders";
 import OrderState from "../interfaces/OrderState";
-import drawBuilds from "../../utils/map/drawBuilds";
 import mergeMessageArrays from "../../utils/state/mergeMessageArrays";
+import updateOrder from "../../utils/state/updateOrder";
 import updateOrdersMeta from "../../utils/state/updateOrdersMeta";
 import UpdateOrdersMetaAction from "../../interfaces/state/UpdateOrdersMetaAction";
 import SavedOrdersConfirmation from "../../interfaces/state/SavedOrdersConfirmation";
 import OrderSubmission from "../../interfaces/state/OrderSubmission";
 import resetOrder from "../../utils/state/resetOrder";
-import processUnitDoubleClick from "../../utils/state/gameApiSlice/reducers/processUnitDoubleClick";
-import processUnitClick from "../../utils/state/gameApiSlice/reducers/processUnitClick";
 import processMapClick from "../../utils/state/gameApiSlice/reducers/processMapClick";
 import fetchGameDataFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameData/fulfilled";
 import updateUserActivity from "../../utils/state/gameApiSlice/reducers/updateUserActivity";
 import TerritoriesMeta from "../interfaces/TerritoriesState";
 import fetchGameOverviewFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameOverview/fulfilled";
+import fetchGameStatusFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameStatus/fulfilled";
 import saveOrdersFulfilled from "../../utils/state/gameApiSlice/extraReducers/saveOrders/fulfilled";
-import { IUnit } from "../../models/Interfaces";
-import { Unit } from "../../utils/map/getUnits";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
   async (queryParams: { countryID?: string; gameID: string }) => {
     const { data } = await getGameApiRequest(ApiRoute.GAME_DATA, queryParams);
+    console.log("fetchGameData");
+    console.log(data);
     return data as GameDataResponse;
   },
 );
@@ -47,6 +47,8 @@ export const fetchGameOverview = createAsyncThunk(
     const {
       data: { data },
     } = await getGameApiRequest(ApiRoute.GAME_OVERVIEW, queryParams);
+    console.log("fetchGameOverview");
+    console.log(data);
     return data as GameOverviewResponse;
   },
 );
@@ -55,6 +57,8 @@ export const fetchGameStatus = createAsyncThunk(
   ApiRoute.GAME_STATUS,
   async (queryParams: { countryID: string; gameID: string }) => {
     const { data } = await getGameApiRequest(ApiRoute.GAME_STATUS, queryParams);
+    console.log("fetchGameStatus");
+    console.log(data);
     return data as GameStatusResponse;
   },
 );
@@ -134,6 +138,7 @@ export const saveOrders = createAsyncThunk(
     formData.set("context", data.context);
     formData.set("contextKey", data.contextKey);
     const response = await submitOrders(formData, data.queryParams);
+    console.log({ response });
     const confirmation: string = response.headers["x-json"] || "";
     const parsed: SavedOrdersConfirmation = JSON.parse(
       confirmation.substring(1, confirmation.length - 1),
@@ -184,16 +189,16 @@ const gameApiSlice = createSlice({
   reducers: {
     resetOrder,
     updateUserActivity,
+    updateOrder(state, action) {
+      updateOrder(state, action.payload);
+    },
     updateOrdersMeta(state, action: UpdateOrdersMetaAction) {
       updateOrdersMeta(state, action.payload);
     },
     updateTerritoriesMeta(state, action) {
       state.territoriesMeta = action.payload;
     },
-    processUnitDoubleClick,
-    processUnitClick,
     processMapClick,
-    drawBuilds,
     processMessagesSeen(state, action) {
       state.messages.newMessagesFrom = state.messages.newMessagesFrom.filter(
         (e) => e !== action.payload,
@@ -201,6 +206,12 @@ const gameApiSlice = createSlice({
     },
     updateOutstandingMessageRequests(state, action) {
       state.outstandingMessageRequests += action.payload;
+    },
+    changeViewedPhaseIdxBy(state, action) {
+      let newIdx = state.viewedPhaseState.viewedPhaseIdx + action.payload;
+      newIdx = Math.min(newIdx, state.status.phases.length - 1);
+      newIdx = Math.max(newIdx, 0);
+      state.viewedPhaseState.viewedPhaseIdx = newIdx;
     },
   },
   extraReducers(builder) {
@@ -231,10 +242,7 @@ const gameApiSlice = createSlice({
       .addCase(fetchGameStatus.pending, (state) => {
         state.apiStatus = "loading";
       })
-      .addCase(fetchGameStatus.fulfilled, (state, action) => {
-        state.apiStatus = "succeeded";
-        state.status = action.payload;
-      })
+      .addCase(fetchGameStatus.fulfilled, fetchGameStatusFulfilled)
       .addCase(fetchGameStatus.rejected, (state, action) => {
         state.apiStatus = "failed";
         state.error = action.error.message;
@@ -323,7 +331,10 @@ export const gameMessages = ({ game: { messages } }: RootState): GameMessages =>
 export const gameTerritoriesMeta = ({
   game: { territoriesMeta },
 }: RootState): TerritoriesMeta => territoriesMeta;
-export const gameUnits = ({ game: { units } }: RootState): Unit[] => units;
-export const gameUnitState = ({ game: { unitState } }: RootState) => unitState;
+export const gameMaps = ({ game: { maps } }: RootState) => maps;
+export const gameBoard = ({ game: { board } }: RootState) => board;
+export const gameViewedPhase = ({
+  game: { viewedPhaseState },
+}: RootState): ViewedPhaseState => viewedPhaseState;
 
 export default gameApiSlice.reducer;

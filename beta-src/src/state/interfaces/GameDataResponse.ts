@@ -10,11 +10,12 @@ export interface APITerritories {
   [key: string]: ITerritory;
 }
 
-interface GameData {
+export interface GameData {
   contextVars?: ContextVar;
   currentOrders?: IOrderData[];
   territories: APITerritories;
   units: {
+    // Key is the Unit ID.
     [key: string]: IUnit;
   };
   territoryStatuses: ITerrStatus[];

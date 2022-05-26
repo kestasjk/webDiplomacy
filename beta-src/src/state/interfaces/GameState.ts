@@ -1,5 +1,5 @@
 import BoardClass from "../../models/BoardClass";
-import { BuildCommand, DrawArrowCommand } from "./GameCommands";
+import { BuildCommand, FlyoutCommand } from "./GameCommands";
 import GameDataResponse from "./GameDataResponse";
 import GameErrorResponse from "./GameErrorResponse";
 import GameOverviewResponse from "./GameOverviewResponse";
@@ -12,6 +12,7 @@ import TerritoriesMeta from "./TerritoriesState";
 import UserActivity from "./UserActivity";
 import { Unit } from "../../utils/map/getUnits";
 import UIState from "../../enums/UIState";
+import ViewedPhaseState from "./ViewedPhaseState";
 
 export type ApiStatus = "idle" | "loading" | "succeeded" | "failed";
 
@@ -28,15 +29,11 @@ export interface GameState {
   overview: GameOverviewResponse;
   ordersMeta: OrdersMeta;
   ownUnits: string[];
-  units: Unit[];
   territoriesMeta: TerritoriesMeta;
+  viewedPhaseState: ViewedPhaseState;
   status: GameStatusResponse;
   messages: GameMessages;
   outstandingMessageRequests: number;
 
   order: OrderState;
-  // FIXME: get rid of these if/when possible
-  unitState: UnitState; // map from unit ID to icon state
-  buildPopover: BuildCommand[]; // list of possible builds that the user can choose from
-  arrows: DrawArrowCommand[];
 }

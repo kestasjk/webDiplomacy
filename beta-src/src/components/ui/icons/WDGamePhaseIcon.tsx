@@ -8,6 +8,7 @@ interface GamePhaseIconProps {
   icon: Season | UIState.ACTIVE;
   onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
   year: number;
+  phaseLabel: string;
 }
 
 const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
@@ -15,6 +16,7 @@ const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
   icon,
   onClick,
   year,
+  phaseLabel,
 }): React.ReactElement {
   const theme = useTheme();
   const dropShadow = theme.palette.svg.filters.dropShadows[0];
@@ -26,6 +28,7 @@ const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
       sx={{
         position: "relative",
         fontSize: 12,
+        top: -10,
         padding: 0,
         minHeight: squareSide,
         minWidth: squareSide,
@@ -83,6 +86,19 @@ const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
         }}
       >
         <span style={{ filter: dropShadow }}>{year}</span>
+      </Box>
+      <Box
+        sx={{
+          position: "absolute",
+          textAlign: "center",
+          width: squareSide,
+          left: 0,
+          bottom: "-22px",
+          color: "#fff",
+          fontWeight: "bold",
+        }}
+      >
+        <span style={{ filter: dropShadow }}>{phaseLabel}</span>
       </Box>
     </Button>
   );

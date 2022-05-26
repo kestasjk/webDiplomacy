@@ -30,6 +30,7 @@ const abbrMap = {
 
 const WDUI: React.FC = function (): React.ReactElement {
   const theme = useTheme();
+  console.log("WDUI rerendered");
 
   const [showControlModal, setShowControlModal] = React.useState(false);
   const popoverTrigger = React.useRef<HTMLElement>(null);

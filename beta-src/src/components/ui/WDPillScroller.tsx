@@ -1,66 +1,64 @@
 import * as React from "react";
 import { Box, ButtonGroup, useTheme } from "@mui/material";
+import { useAppDispatch } from "../../state/hooks";
 import WDScrollButton from "./WDScrollButton";
 import ScrollButtonState from "../../enums/ScrollButton";
 import Season from "../../enums/Season";
+import { gameApiSliceActions } from "../../state/game/game-api-slice";
+import WDGamePhaseIcon from "./icons/WDGamePhaseIcon";
+import formatPhaseForDisplay from "../../utils/formatPhaseForDisplay";
 
 interface WDPillScrollerProps {
-  disabled?: ScrollButtonState | undefined;
-  onChangeSeason?: React.MouseEventHandler<HTMLButtonElement> | undefined;
-  season: Season;
-  year: number;
+  backwardDisabled: boolean;
+  forwardDisabled: boolean;
+  viewedPhase: string;
+  viewedSeason: Season;
+  viewedYear: number;
 }
 
 const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
-  disabled,
-  onChangeSeason,
-  season,
-  year,
+  backwardDisabled,
+  forwardDisabled,
+  viewedPhase,
+  viewedSeason,
+  viewedYear,
 }): React.ReactElement {
   const theme = useTheme();
+  const dispatch = useAppDispatch();
   return (
     <Box
       sx={{
-        alignItems: "flex-start",
+        alignItems: "center",
         display: "flex",
-        backgroundColor: "white",
         borderRadius: "22px",
+        borderWidth: "0",
         filter: theme.palette.svg.filters.dropShadows[0],
+        userSelect: "none",
       }}
     >
-      <ButtonGroup>
-        <WDScrollButton
-          className="WDScroll--Backward"
-          direction={ScrollButtonState.BACKWARD}
-          disabled={disabled === ScrollButtonState.BACKWARD}
-          onClick={onChangeSeason}
-        />
-        <Box
-          sx={{
-            alignItems: "center",
-            bgcolor: "secondary.main",
-            display: "flex",
-            fontWeight: "bold",
-            fontSize: 12,
-            textTransform: "uppercase",
-          }}
-        >
-          {`${season} ${year}`}
-        </Box>
-        <WDScrollButton
-          className="WDScroll--Forward"
-          direction={ScrollButtonState.FORWARD}
-          disabled={disabled === ScrollButtonState.FORWARD}
-          onClick={onChangeSeason}
-        />
-      </ButtonGroup>
+      <WDScrollButton
+        className="WDScroll--Backward"
+        direction={ScrollButtonState.BACKWARD}
+        disabled={backwardDisabled}
+        onClick={() => {
+          dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(-1));
+        }}
+      />
+      <WDGamePhaseIcon
+        icon={viewedSeason}
+        year={viewedYear}
+        phaseLabel={formatPhaseForDisplay(viewedPhase)}
+      />
+      <WDScrollButton
+        className="WDScroll--Forward"
+        direction={ScrollButtonState.FORWARD}
+        disabled={forwardDisabled}
+        onClick={() => {
+          dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1));
+        }}
+      />
     </Box>
   );
-};
-
-WDPillScroller.defaultProps = {
-  disabled: undefined,
-  onChangeSeason: undefined,
 };
 
 export default WDPillScroller;

@@ -8,7 +8,7 @@ import { GameState } from "../../../../../state/interfaces/GameState";
 import UnitType from "../../../../../types/UnitType";
 import getTerritoriesMeta from "../../../../getTerritoriesMeta";
 import getOrdersMeta from "../../../../map/getOrdersMeta";
-import getUnits from "../../../../map/getUnits";
+import { getUnitsLive } from "../../../../map/getUnits";
 import generateMaps from "../../../generateMaps";
 import updateOrdersMeta from "../../../updateOrdersMeta";
 
@@ -46,7 +46,7 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
       state.ownUnits.push(unit.id);
     }
   });
-  state.units = getUnits(data, members);
+
   state.territoriesMeta = getTerritoriesMeta(data);
 
   const numUnsavedOrders = Object.values(state.ordersMeta).reduce(

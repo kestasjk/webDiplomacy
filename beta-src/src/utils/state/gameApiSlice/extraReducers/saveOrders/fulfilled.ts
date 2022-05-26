@@ -1,5 +1,4 @@
 import SavedOrdersConfirmation from "../../../../../interfaces/state/SavedOrdersConfirmation";
-import updateUnitsRetreat from "../../../../map/updateUnitsRetreat";
 import getOrderStates from "../../../getOrderStates";
 
 /* eslint-disable no-param-reassign */
@@ -21,13 +20,11 @@ export default function saveOrdersFulfilled(state, action): void {
         Saved: orderStates.Saved,
       };
     }
-
+    console.log({ returnOrders: orders });
     Object.entries(orders).forEach(([id, value]) => {
       if (value.status === "Complete") {
         state.ordersMeta[id].saved = true;
       }
     });
   }
-
-  updateUnitsRetreat(state);
 }
