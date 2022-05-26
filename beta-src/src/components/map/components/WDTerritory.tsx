@@ -37,6 +37,8 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
 
   const [territoryStrokeOpacity, setTerritoryStrokeOpacity] = React.useState(1);
 
+  const [territoryClickable, setTerritoryClickable] = React.useState("");
+
   const [units, setUnits] = React.useState<Units>({});
 
   const commands = useAppSelector(
@@ -59,8 +61,8 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
     );
   };
 
-  const setMoveHighlight = () => {
-    setTerritoryFill(theme.palette[userCountry].main);
+  const setMoveHighlight = (country) => {
+    setTerritoryFill(theme.palette[country].main);
     setTerritoryFillOpacity(0.9);
     setTerritoryStrokeOpacity(1);
   };
@@ -85,6 +87,16 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         : setCapturedHighlight(value.data?.country);
       deleteCommand(key);
     },
+    DISABLE_TERRITORY_CLICK: (command) => {
+      const [key] = command;
+      setTerritoryClickable("no-pointer-events");
+      deleteCommand(key);
+    },
+    ENABLE_TERRITORY_CLICK: (command) => {
+      const [key] = command;
+      setTerritoryClickable("");
+      deleteCommand(key);
+    },
     HOLD: (command) => {
       const [key] = command;
       setTerritoryFill(theme.palette[userCountry].main);
@@ -93,8 +105,10 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       deleteCommand(key);
     },
     MOVE: (command) => {
-      const [key] = command;
-      setMoveHighlight();
+      const [key, value] = command;
+      value.data?.country
+        ? setMoveHighlight(value.data.country)
+        : setMoveHighlight(userCountry);
       deleteCommand(key);
     },
     REMOVE_BUILD: (command) => {
@@ -184,7 +198,10 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
       x={territoryMapData.x}
       y={territoryMapData.y}
     >
-      <g onClick={(e) => clickAction(e, "territory")}>
+      <g
+        onClick={(e) => clickAction(e, "territory")}
+        className={territoryClickable}
+      >
         {territoryMapData.texture?.texture && (
           <path
             d={territoryMapData.path}
@@ -197,7 +214,11 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
         )}
         <path
           d={territoryMapData.path}
-          fill={territoryFill}
+          fill={
+            territoryMapData.type === "coast"
+              ? "rgba(0, 0, 0, .001)"
+              : territoryFill
+          }
           fillOpacity={territoryFillOpacity}
           id={`${territoryMapData.name}-control-path`}
           stroke={

@@ -21,7 +21,7 @@ export default function getUnits(
   const unitsToDraw: Unit[] = [];
   const { territories, territoryStatuses, units } = data;
   Object.values(units).forEach((unit) => {
-    let territory = territories[unit.terrID];
+    const territory = territories[unit.terrID];
     const territoryStatus = territoryStatuses.find((t) => unit.terrID === t.id);
     const territoryHasMultipleUnits = Object.values(units).filter(
       (u) => u.terrID === unit.terrID,
@@ -32,16 +32,6 @@ export default function getUnits(
         )
       : undefined;
 
-    if (
-      territoryStatus?.occupiedFromTerrID &&
-      unit.id === territoryStatus.unitID &&
-      occupiedTerritory?.ownerCountryID === unit.countryID &&
-      territoryHasMultipleUnits.length > 1 &&
-      phase === "Retreats"
-    ) {
-      territory = territories[territoryStatus.occupiedFromTerrID];
-    }
-
     if (territory) {
       const mappedTerritory = TerritoryMap[territory.name];
       if (mappedTerritory) {
@@ -50,11 +40,21 @@ export default function getUnits(
         );
         if (memberCountry) {
           const { country } = memberCountry;
-          unitsToDraw.push({
-            country: countryMap[country],
-            mappedTerritory,
-            unit,
-          });
+          if (
+            (territoryStatus?.occupiedFromTerrID &&
+              unit.id !== territoryStatus.unitID &&
+              occupiedTerritory?.ownerCountryID !== unit.countryID &&
+              territoryHasMultipleUnits.length > 1 &&
+              phase === "Retreats") ||
+            (phase === "Retreats" && territoryHasMultipleUnits.length === 1) ||
+            phase !== "Retreats"
+          ) {
+            unitsToDraw.push({
+              country: countryMap[country],
+              mappedTerritory,
+              unit,
+            });
+          }
         }
       }
     }

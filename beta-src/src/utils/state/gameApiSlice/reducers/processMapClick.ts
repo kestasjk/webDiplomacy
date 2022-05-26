@@ -13,11 +13,13 @@ import resetOrder from "../../resetOrder";
 import setCommand from "../../setCommand";
 import startNewOrder from "../../startNewOrder";
 import updateOrdersMeta from "../../updateOrdersMeta";
+import GameStateMaps from "../../../../state/interfaces/GameStateMaps";
 
 /* eslint-disable no-param-reassign */
 export default function processMapClick(state, clickData) {
   const {
     data: { data },
+    maps,
     order,
     ordersMeta,
     overview,
@@ -25,6 +27,7 @@ export default function processMapClick(state, clickData) {
     mustDestroyUnitsBuildPhase,
   }: {
     data: { data: GameDataResponse["data"] };
+    maps: GameStateMaps;
     order: GameState["order"];
     ordersMeta: GameState["ordersMeta"];
     overview: GameState["overview"];
@@ -91,6 +94,7 @@ export default function processMapClick(state, clickData) {
         }
       }
       state.order.type = phase === "Retreats" ? "disband" : "hold";
+      resetOrder(state);
     } else if (type === "convoy" && !truthyToTerritory) {
       state.order.toTerritory = Number(Territory[territoryName]);
       data.units[order.unitID].type === "Fleet"
@@ -121,16 +125,25 @@ export default function processMapClick(state, clickData) {
       inProgress
     ) {
       const { allowedBorderCrossings } = ordersMeta[orderID];
+
       const canMove = allowedBorderCrossings?.find((border) => {
         const mappedTerritory = TerritoryMap[border.name];
         return Territory[mappedTerritory.territory] === territoryName;
       });
+
+      const territory = territoriesMeta[Territory[territoryName]];
+
       if (canMove) {
         highlightMapTerritoriesBasedOnStatuses(state);
         const command: GameCommand = {
           command: "MOVE",
         };
-        setCommand(state, command, "territoryCommands", territoryName);
+        setCommand(
+          state,
+          command,
+          "territoryCommands",
+          Territory[maps.territoryToEnum[territory.coastParentID]],
+        );
         updateOrdersMeta(state, {
           [orderID]: {
             saved: false,
