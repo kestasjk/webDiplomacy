@@ -80,7 +80,7 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
               fromTerrID,
               id,
               toTerrID,
-              type: moveType,
+              type: moveType || "",
               unitID,
               viaConvoy,
             };

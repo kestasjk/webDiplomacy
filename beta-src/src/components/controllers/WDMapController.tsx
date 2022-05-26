@@ -88,7 +88,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
         let fromTerrID = 0;
         let toTerrID = 0;
         let terrID = 0;
-        let type = "";
+        let type: string | null = "";
         let unitType = "";
         let viaConvoy;
 
@@ -104,8 +104,6 @@ const WDMapController: React.FC = function (): React.ReactElement {
           if (originalOrder.toTerrID) {
             toTerrID = Number(originalOrder.toTerrID);
           }
-          // FIXME apparently type can be null or undefined, even though not recorded in the
-          // type of the interface
           type = originalOrder.type;
 
           if (type && type.startsWith("Build ")) {

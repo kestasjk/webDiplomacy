@@ -30,22 +30,22 @@ import OrdersMeta from "../../../state/interfaces/SavedOrders";
 
 interface WDTerritoryProps {
   territoryMapData: TerritoryMapData;
+  territoryMeta: TerritoryMeta | undefined;
   units: Unit[];
 }
 
 const WDTerritory: React.FC<WDTerritoryProps> = function ({
   territoryMapData,
+  territoryMeta,
   units,
 }): React.ReactElement {
   const theme = useTheme();
   const dispatch = useAppDispatch();
-  const territoriesMeta = useAppSelector(gameTerritoriesMeta);
 
   const { user, members } = useAppSelector(gameOverview);
   const userCountry = countryMap[user.member.country];
 
   const { territory } = territoryMapData;
-  const territoryMeta = territoriesMeta[territoryMapData.territory];
   let territoryFill = "none";
   let territoryFillOpacity = 0;
   const territoryStrokeOpacity = 1;

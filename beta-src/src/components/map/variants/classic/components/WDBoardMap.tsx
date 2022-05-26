@@ -3,6 +3,8 @@ import WDTerritory from "../../../components/WDTerritory";
 import { Unit } from "../../../../../utils/map/getUnits";
 import territoriesMapData from "../../../../../data/map/TerritoriesMapData";
 import Territory from "../../../../../enums/map/variants/classic/Territory";
+import { gameTerritoriesMeta } from "../../../../../state/game/game-api-slice";
+import { useAppSelector } from "../../../../../state/hooks";
 
 interface WDBoardMapProps {
   units: Unit[];
@@ -11,15 +13,21 @@ interface WDBoardMapProps {
 const WDBoardMap: React.FC<WDBoardMapProps> = function ({
   units,
 }): React.ReactElement {
+  const territoriesMeta = useAppSelector(gameTerritoriesMeta);
+
   const unplayableTerritories = Object.values(territoriesMapData)
     .filter((data) => !data.playable)
-    .map((data) => (
-      <WDTerritory
-        territoryMapData={data}
-        units={units}
-        key={`${data.territory}-territory`}
-      />
-    ));
+    .map((data) => {
+      const territoryMeta = territoriesMeta[data.territory];
+      return (
+        <WDTerritory
+          territoryMapData={data}
+          territoryMeta={territoryMeta}
+          units={units}
+          key={`${data.territory}-territory`}
+        />
+      );
+    });
   // Hack - Rome and Naples need to be sorted to the end or else their label will get cut
   // off by neighboring territories drawn on top of it.
   const playableTerritoriesData = Object.values(territoriesMapData).filter(
@@ -31,13 +39,17 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
   playableTerritoriesData.push(territoriesMapData[Territory.NAPLES]);
   playableTerritoriesData.push(territoriesMapData[Territory.ROME]);
 
-  const playableTerritories = playableTerritoriesData.map((data) => (
-    <WDTerritory
-      territoryMapData={data}
-      units={units}
-      key={`${data.territory}-territory`}
-    />
-  ));
+  const playableTerritories = playableTerritoriesData.map((data) => {
+    const territoryMeta = territoriesMeta[data.territory];
+    return (
+      <WDTerritory
+        territoryMapData={data}
+        territoryMeta={territoryMeta}
+        units={units}
+        key={`${data.territory}-territory`}
+      />
+    );
+  });
 
   return (
     <g id="wD-boardmap-v10.3.4 1" clipPath="url(#clip0_3405_33911)">
