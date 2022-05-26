@@ -70,6 +70,7 @@ const WDUI: React.FC = function (): React.ReactElement {
       countries.push(constructTableData(member));
     }
   });
+  countries.sort((x, y) => x.countryID - y.countryID);
 
   const userTableData = constructTableData(user.member);
 
