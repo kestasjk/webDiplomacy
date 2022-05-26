@@ -95,6 +95,11 @@ export default function processMapClick(state, clickData) {
     return; // FIXME this is very confusing for the user!
   }
   const territoryMeta: TerritoryMeta = territoriesMeta[territory];
+  // Click is outside the map entirely?
+  if (!territoryMeta) {
+    invalidClick(evt, territory);
+    return;
+  }
 
   const clickTerrID = maps.territoryToTerrID[territory];
   let clickUnitID = maps.terrIDToUnit[clickTerrID];
