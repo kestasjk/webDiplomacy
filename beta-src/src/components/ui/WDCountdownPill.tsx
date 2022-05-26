@@ -56,7 +56,7 @@ const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [endTime]);
 
   const isTimeRunningOut = +new Date() > quarterTimeRemaining;
   const shouldDisplayGamePhase =
