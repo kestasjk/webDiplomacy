@@ -1,3 +1,4 @@
+import getCurrentUnixTimestamp from "../../../../getCurrentUnixTimestamp";
 import memberActivityFrequencyMultiplier from "../../../memberActivityFrequencyMultiplier";
 
 /* eslint-disable no-param-reassign */
@@ -15,8 +16,7 @@ export default function fetchGameOverviewFulfilled(state, action): void {
   } = action.payload;
   if (processTime) {
     const membersPlaying = members.filter(({ status }) => status === "Playing");
-    // eslint-disable-next-line no-bitwise
-    const now = (Date.now() / 1000) | 0;
+    const now = getCurrentUnixTimestamp();
     const tenMinutes = 600;
     const twoMinutes = 120;
     let frequency = twoMinutes;
