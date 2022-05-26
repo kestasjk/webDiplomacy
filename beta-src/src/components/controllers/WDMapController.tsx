@@ -97,7 +97,6 @@ const WDMapController: React.FC = function (): React.ReactElement {
           originalOrder = currentOrdersById[orderID];
         }
         if (originalOrder) {
-          console.log({ originalOrder });
           if (originalOrder.fromTerrID) {
             fromTerrID = Number(originalOrder.fromTerrID);
           }

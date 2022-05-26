@@ -22,6 +22,12 @@ interface WDCountdownPillProps {
 
 const milli = 1000;
 
+const getFormattedTimeLeft = function (endTime: number) {
+  const secondsLeft = endTime - +new Date() / milli;
+  const timeLeft = parseSeconds(secondsLeft);
+  return formatTime(timeLeft);
+};
+
 const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
   endTime,
   phaseTime,
@@ -39,26 +45,25 @@ const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
   const quarterTimeRemaining =
     endTimeInMilliSeconds - phaseTimeInMilliSeconds / 4;
 
-  const secondsLeft = endTime - +new Date() / milli;
-
-  const [timeLeft, setTimeLeft] = useState<ParsedTime>(
-    parseSeconds(secondsLeft),
+  const [formattedTimeLeft, setFormattedTimeLeft] = useState<string>(
+    getFormattedTimeLeft(endTime),
   );
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setTimeLeft(parseSeconds(secondsLeft));
+    const timer = setInterval(() => {
+      const newFormattedTimeLeft = getFormattedTimeLeft(endTime);
+      setFormattedTimeLeft(newFormattedTimeLeft);
     }, 1000);
 
-    return () => clearTimeout(timer);
-  }, [secondsLeft]);
+    return () => clearInterval(timer);
+  }, []);
 
   const isTimeRunningOut = +new Date() > quarterTimeRemaining;
   const shouldDisplayGamePhase =
     viewedPhase !== gamePhase ||
     viewedSeason !== gameSeason ||
     viewedYear !== gameYear;
-  let chipDisplay: string = formatTime(timeLeft);
+  let chipDisplay: string = formattedTimeLeft;
   if (shouldDisplayGamePhase) {
     chipDisplay += ` for ${gameSeason} ${gameYear} ${formatPhaseForDisplay(
       gamePhase,
