@@ -1,14 +1,18 @@
 import { current } from "@reduxjs/toolkit";
+import territoriesMapData from "../../../../data/map/TerritoriesMapData";
 import TerritoryMap, {
   webdipNameToTerritory,
 } from "../../../../data/map/variants/classic/TerritoryMap";
 import Territories from "../../../../data/Territories";
 import BuildUnit from "../../../../enums/BuildUnit";
 import Territory from "../../../../enums/map/variants/classic/Territory";
+import { TerritoryMapData } from "../../../../interfaces/map/TerritoryMapData";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
 import GameStateMaps from "../../../../state/interfaces/GameStateMaps";
 import { OrderMeta } from "../../../../state/interfaces/SavedOrders";
+import { TerritoryMeta } from "../../../../state/interfaces/TerritoriesState";
+import { getTargetXYWH } from "../../../map/drawArrowFunctional";
 import invalidClick from "../../../map/invalidClick";
 import getAvailableOrder from "../../getAvailableOrder";
 import getOrderStates from "../../getOrderStates";
@@ -20,9 +24,19 @@ import updateOrdersMeta from "../../updateOrdersMeta";
 
 function canUnitMove(orderMeta: OrderMeta, territory: Territory): boolean {
   const { allowedBorderCrossings } = orderMeta;
+  console.log({ allowedBorderCrossings, territory });
   return !!allowedBorderCrossings?.find(
     (border) => TerritoryMap[border.name].territory === territory,
   );
+}
+
+function getClickPositionInTerritory(evt, territoryMapData: TerritoryMapData) {
+  const boundingRect = evt.target.getBoundingClientRect();
+  const diffX = evt.clientX - boundingRect.x;
+  const diffY = evt.clientY - boundingRect.y;
+  const scaleX = boundingRect.width / territoryMapData.width;
+  const scaleY = boundingRect.height / territoryMapData.height;
+  return { x: diffX / scaleX, y: diffY / scaleY };
 }
 
 function canSupportTerritory(
@@ -30,7 +44,7 @@ function canSupportTerritory(
   territory: Territory,
 ): boolean {
   const { supportHoldChoices, supportMoveChoices } = orderMeta;
-  console.log({ supportHoldChoices, supportMoveChoices });
+  // console.log({ supportHoldChoices, supportMoveChoices, territory });
   const all: Territory[] = [];
   supportHoldChoices?.forEach((t) => {
     all.push(webdipNameToTerritory[t.name]);
@@ -62,6 +76,8 @@ export default function processMapClick(state, clickData) {
     maps: GameStateMaps;
     ownUnits: GameState["ownUnits"];
   } = current(state);
+  // ---------------------- PREPARATION ---------------------------
+
   console.log("processMapClick");
   const {
     user: { member },
@@ -74,24 +90,35 @@ export default function processMapClick(state, clickData) {
   } = clickData;
 
   if (orderStatus.Ready) {
+    alert("You need to unready your orders to update them"); // FIXME: move to alerts modal!
     invalidClick(evt, territory);
-    return; // FIXME
+    return; // FIXME this is very confusing for the user!
   }
+  const territoryMeta: TerritoryMeta = territoriesMeta[territory];
 
   const clickTerrID = maps.territoryToTerrID[territory];
-  const clickUnitID = maps.terrIDToUnit[clickTerrID];
+  let clickUnitID = maps.terrIDToUnit[clickTerrID];
+  // Fixup unit for coast!
+  if (!clickUnitID) {
+    // Note: I think we could use the TerritoryClass stuff to find children like this
+    territoryMeta.coastChildIDs.forEach((childID) => {
+      const coastUnitID = maps.terrIDToUnit[childID];
+      if (
+        coastUnitID &&
+        (phase !== "Retreats" || ownUnits.includes(coastUnitID)) // on retreats there may be 2 units
+      ) {
+        clickUnitID = coastUnitID;
+      }
+    });
+  }
+
   const clickUnit = data.units[clickUnitID];
   const orderUnit = data.units[order.unitID];
-  const orderUnitTerrID = maps.unitToTerrID[order.unitID];
-  // ugh, shouldn't have to do this!!!
-  // const clickUnit = units.find((unit) => unit.unit.id === clickUnitID);
-
   const ownsCurUnit = ownUnits.includes(clickUnitID);
+  const mapData = territoriesMapData[territory];
 
   // ---------------------- BUILD PHASE ---------------------------
   if (phase === "Builds") {
-    const territoryMeta = territoriesMeta[Territory[territory]];
-
     // FIXME: abstract to a function
     const existingOrder = Object.entries(ordersMeta).find(([, { update }]) => {
       if (!update || !update.toTerrID) return false;
@@ -118,7 +145,6 @@ export default function processMapClick(state, clickData) {
 
     const isDestroy =
       overview.user.member.supplyCenterNo < overview.user.member.unitNo;
-    console.log({ isDestroy });
     if (
       member.countryID !== Number(territoryMeta.ownerCountryID) || // FIXME ugh string vs number
       (!territoryMeta.supply && !isDestroy)
@@ -131,7 +157,6 @@ export default function processMapClick(state, clickData) {
     const availableOrder = getAvailableOrder(currentOrders, ordersMeta);
     const territoryHasUnit = !!territoryMeta.unitID;
     const unitValid = isDestroy === territoryHasUnit;
-    console.log({ availableOrder, unitValid });
     if (!availableOrder || !unitValid) {
       invalidClick(evt, territory);
       return;
@@ -158,16 +183,9 @@ export default function processMapClick(state, clickData) {
     } else if (clickUnitID === order.unitID) {
       updateOrder(state, { type: "Disband" });
     } else {
-      // 1. must be able to move to the terr
+      // n.b. this already handes standoffs etc.
       const canMove = canUnitMove(ordersMeta[order.orderID], territory);
-      // 2. can't retreat to the territory that dislodged us
-      const toOccupier =
-        data.territoryStatuses[orderUnitTerrID].occupiedFromTerrID ===
-        clickTerrID;
-      // 3. can't retreat to a territory with a standoff
-      const toStandoff = data.territoryStatuses[clickTerrID].standoff;
-      const canRetreat = canMove && !toOccupier && !toStandoff;
-      if (canRetreat) {
+      if (canMove) {
         updateOrder(state, { toTerrID: clickTerrID });
       } else {
         invalidClick(evt, territory);
@@ -187,12 +205,45 @@ export default function processMapClick(state, clickData) {
     // cancel the order
     resetOrder(state);
   } else if (order.type === "Move") {
+    //------------------------------------------------------------
+    // tricky: get coast-qualified versions if the dest is a coast
+    // FIXME: there should be a single object that has all the data for this
+    // -----------------------------------------------------------
+    let clickTerrIDCQ = clickTerrID;
+    let territoryCQ = territory;
+    if (orderUnit.type === "Fleet" && territoryMeta.coastChildIDs) {
+      // have to figure out which coast, oy.
+      const clickPos = getClickPositionInTerritory(evt, mapData);
+
+      // here we've got name => {x, y}
+      let bestSlot = "";
+      let bestDist2 = 1e100;
+      mapData!.labels!.forEach((label) => {
+        if (["nc", "sc"].includes(label.name)) {
+          const dist2 =
+            (clickPos.x - label.x) ** 2 + (clickPos.y - label.y) ** 2;
+          if (dist2 < bestDist2) {
+            bestSlot = label.name;
+            bestDist2 = dist2;
+          }
+        }
+      });
+      territoryMeta.coastChildIDs.forEach((childID) => {
+        const mTerr = TerritoryMap[maps.terrIDToTerritory[childID]];
+        if (mTerr.unitSlotName === bestSlot) {
+          territoryCQ = mTerr.territory;
+          clickTerrIDCQ = maps.territoryToTerrID[territoryCQ];
+        }
+      });
+    }
+    // -----------------------------------------------------------
+
     if (!order.viaConvoy) {
       // direct move
-      const canMove = canUnitMove(ordersMeta[order.orderID], territory);
+      const canMove = canUnitMove(ordersMeta[order.orderID], territoryCQ);
       if (canMove) {
         updateOrder(state, {
-          toTerrID: clickTerrID,
+          toTerrID: clickTerrIDCQ,
         });
       } else {
         invalidClick(evt, territory);
@@ -201,12 +252,11 @@ export default function processMapClick(state, clickData) {
       // via convoy
       const { convoyToChoices } = ordersMeta[order.orderID];
       const canConvoy = !!convoyToChoices?.find(
-        (terrID) => maps.terrIDToTerritory[terrID] === territory,
+        (terrID) => maps.terrIDToTerritory[terrID] === territoryCQ,
       );
-      console.log({ canConvoy, clickUnit, orderUnit, territory });
       if (canConvoy) {
         updateOrder(state, {
-          toTerrID: clickTerrID,
+          toTerrID: clickTerrIDCQ,
           viaConvoy: "Yes",
         });
         if (!processConvoy(state, evt)) {
@@ -220,7 +270,7 @@ export default function processMapClick(state, clickData) {
     if (!order.fromTerrID) {
       // click 1
       if (
-        maps.terrIDToUnit[clickTerrID] &&
+        clickUnitID &&
         canSupportTerritory(ordersMeta[order.orderID], territory)
       ) {
         updateOrder(state, { fromTerrID: clickTerrID });

@@ -19,6 +19,8 @@ export default class TerritoryClass {
 
   coastParentID!: string;
 
+  coastChildren!: Set<TerritoryClass>;
+
   convoyLink!: boolean;
 
   name!: string;
@@ -83,6 +85,7 @@ export default class TerritoryClass {
       supply: terrData.supply === "Yes",
       ConvoyGroups: [],
       convoyLink: false,
+      coastChildren: new Set<TerritoryClass>(),
     });
 
     if (terrStatusData) {
@@ -102,6 +105,10 @@ export default class TerritoryClass {
     this.coastParent = coastParent;
     this.Borders = Borders;
     this.supply = supply;
+  }
+
+  addCoastChild(coastChild: TerritoryClass) {
+    this.coastChildren.add(coastChild);
   }
 
   setConvoyLink() {
