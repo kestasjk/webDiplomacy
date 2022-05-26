@@ -42,6 +42,7 @@ const WDPositionContainer: React.FC<WDPositionContainerProps> = function ({
   return (
     <Box
       sx={{
+        touchAction: "none",
         position: "absolute",
         zIndex: Z_INDEX,
         ...placement,
