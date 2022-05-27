@@ -16,9 +16,8 @@ export default function getDataForOrder(
       gameData.currentOrders.find((order) => order.unitID === unitID)?.id,
     toTerrID,
     unitID,
+    type,
+    viaConvoy: "",
   };
-  if (type) {
-    newOrder.type = type;
-  }
   return newOrder;
 }

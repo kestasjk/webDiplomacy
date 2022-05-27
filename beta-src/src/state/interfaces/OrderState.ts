@@ -8,6 +8,7 @@ export interface OrderState {
   unitID: string;
   fromTerrID: string;
   toTerrID: string;
+  viaConvoy: string;
 }
 
 export default OrderState;

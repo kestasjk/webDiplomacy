@@ -1,13 +1,18 @@
 import { current } from "@reduxjs/toolkit";
+import territoriesMapData from "../../../../data/map/TerritoriesMapData";
 import TerritoryMap, {
   webdipNameToTerritory,
 } from "../../../../data/map/variants/classic/TerritoryMap";
 import Territories from "../../../../data/Territories";
 import BuildUnit from "../../../../enums/BuildUnit";
 import Territory from "../../../../enums/map/variants/classic/Territory";
+import { TerritoryMapData } from "../../../../interfaces/map/TerritoryMapData";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
 import GameStateMaps from "../../../../state/interfaces/GameStateMaps";
+import { OrderMeta } from "../../../../state/interfaces/SavedOrders";
+import { TerritoryMeta } from "../../../../state/interfaces/TerritoriesState";
+import { getTargetXYWH } from "../../../map/drawArrowFunctional";
 import invalidClick from "../../../map/invalidClick";
 import getAvailableOrder from "../../getAvailableOrder";
 import getOrderStates from "../../getOrderStates";
@@ -16,6 +21,41 @@ import resetOrder from "../../resetOrder";
 import startNewOrder from "../../startNewOrder";
 import updateOrder from "../../updateOrder";
 import updateOrdersMeta from "../../updateOrdersMeta";
+
+function canUnitMove(orderMeta: OrderMeta, territory: Territory): boolean {
+  const { allowedBorderCrossings } = orderMeta;
+  console.log({ allowedBorderCrossings, territory });
+  return !!allowedBorderCrossings?.find(
+    (border) => TerritoryMap[border.name].territory === territory,
+  );
+}
+
+function getClickPositionInTerritory(evt, territoryMapData: TerritoryMapData) {
+  const boundingRect = evt.target.getBoundingClientRect();
+  const diffX = evt.clientX - boundingRect.x;
+  const diffY = evt.clientY - boundingRect.y;
+  const scaleX = boundingRect.width / territoryMapData.width;
+  const scaleY = boundingRect.height / territoryMapData.height;
+  return { x: diffX / scaleX, y: diffY / scaleY };
+}
+
+function canSupportTerritory(
+  orderMeta: OrderMeta,
+  territory: Territory,
+): boolean {
+  const { supportHoldChoices, supportMoveChoices } = orderMeta;
+  // console.log({ supportHoldChoices, supportMoveChoices, territory });
+  const all: Territory[] = [];
+  supportHoldChoices?.forEach((t) => {
+    all.push(webdipNameToTerritory[t.name]);
+  });
+  supportMoveChoices?.forEach((x) => {
+    x.supportMoveFrom.forEach((t) => {
+      all.push(webdipNameToTerritory[t.name]);
+    });
+  });
+  return all.includes(territory);
+}
 
 /* eslint-disable no-param-reassign */
 export default function processMapClick(state, clickData) {
@@ -36,8 +76,9 @@ export default function processMapClick(state, clickData) {
     maps: GameStateMaps;
     ownUnits: GameState["ownUnits"];
   } = current(state);
+  // ---------------------- PREPARATION ---------------------------
+
   console.log("processMapClick");
-  console.log({ order });
   const {
     user: { member },
     phase,
@@ -49,25 +90,40 @@ export default function processMapClick(state, clickData) {
   } = clickData;
 
   if (orderStatus.Ready) {
+    alert("You need to unready your orders to update them"); // FIXME: move to alerts modal!
     invalidClick(evt, territory);
-    return; // FIXME
+    return; // FIXME this is very confusing for the user!
+  }
+  const territoryMeta: TerritoryMeta = territoriesMeta[territory];
+  // Click is outside the map entirely?
+  if (!territoryMeta) {
+    invalidClick(evt, territory);
+    return;
   }
 
   const clickTerrID = maps.territoryToTerrID[territory];
-  const clickUnitID = maps.terrIDToUnit[clickTerrID];
+  let clickUnitID = maps.terrIDToUnit[clickTerrID];
+  // Fixup unit for coast!
+  if (!clickUnitID) {
+    // Note: I think we could use the TerritoryClass stuff to find children like this
+    territoryMeta.coastChildIDs.forEach((childID) => {
+      const coastUnitID = maps.terrIDToUnit[childID];
+      if (
+        coastUnitID &&
+        (phase !== "Retreats" || ownUnits.includes(coastUnitID)) // on retreats there may be 2 units
+      ) {
+        clickUnitID = coastUnitID;
+      }
+    });
+  }
+
+  const clickUnit = data.units[clickUnitID];
+  const orderUnit = data.units[order.unitID];
   const ownsCurUnit = ownUnits.includes(clickUnitID);
-  console.log({
-    territory,
-    clickTerrID,
-    unitID: order.unitID,
-    clickUnitID,
-    map: maps.terrIDToUnit,
-  });
+  const mapData = territoriesMapData[territory];
 
-  // build phase
+  // ---------------------- BUILD PHASE ---------------------------
   if (phase === "Builds") {
-    const territoryMeta = territoriesMeta[Territory[territory]];
-
     // FIXME: abstract to a function
     const existingOrder = Object.entries(ordersMeta).find(([, { update }]) => {
       if (!update || !update.toTerrID) return false;
@@ -77,9 +133,7 @@ export default function processMapClick(state, clickData) {
       const parentID = parent && maps.territoryToTerrID[parent];
       return parentID === clickTerrID;
     });
-    console.log({ ordersMeta });
     if (existingOrder) {
-      console.log("Existing build order");
       const [id] = existingOrder;
 
       updateOrdersMeta(state, {
@@ -100,8 +154,6 @@ export default function processMapClick(state, clickData) {
       member.countryID !== Number(territoryMeta.ownerCountryID) || // FIXME ugh string vs number
       (!territoryMeta.supply && !isDestroy)
     ) {
-      console.log("Not a SC");
-      console.log({ member, territoryMeta, isDestroy });
       invalidClick(evt, territory);
       return;
     }
@@ -111,20 +163,9 @@ export default function processMapClick(state, clickData) {
     const territoryHasUnit = !!territoryMeta.unitID;
     const unitValid = isDestroy === territoryHasUnit;
     if (!availableOrder || !unitValid) {
-      console.log({
-        availableOrder,
-        isDestroy,
-        territoryHasUnit,
-        overview,
-        territoryMeta,
-      });
       invalidClick(evt, territory);
       return;
     }
-
-    console.log(
-      `trying to start build order: ${availableOrder} ${territoryHasUnit} ${order.inProgress}`,
-    );
     resetOrder(state);
     updateOrder(state, {
       inProgress: true,
@@ -135,7 +176,30 @@ export default function processMapClick(state, clickData) {
     return;
   }
 
-  // move phases
+  // ---------------------- RETREAT PHASE ---------------------------
+  if (phase === "Retreats") {
+    if (!order.inProgress) {
+      if (clickUnitID && ownsCurUnit) {
+        // && clickUnit?.isRetreating) {
+        startNewOrder(state, { unitID: clickUnitID, type: "Retreat" });
+      } else {
+        invalidClick(evt, territory);
+      }
+    } else if (clickUnitID === order.unitID) {
+      updateOrder(state, { type: "Disband" });
+    } else {
+      // n.b. this already handes standoffs etc.
+      const canMove = canUnitMove(ordersMeta[order.orderID], territory);
+      if (canMove) {
+        updateOrder(state, { toTerrID: clickTerrID });
+      } else {
+        invalidClick(evt, territory);
+      }
+    }
+    return;
+  }
+
+  // ---------------------- MOVE PHASE ---------------------------
   if (!order.inProgress) {
     if (clickUnitID && ownsCurUnit) {
       startNewOrder(state, { unitID: clickUnitID });
@@ -146,334 +210,103 @@ export default function processMapClick(state, clickData) {
     // cancel the order
     resetOrder(state);
   } else if (order.type === "Move") {
-    const { allowedBorderCrossings } = ordersMeta[order.orderID];
-    const canMove = allowedBorderCrossings?.find((border) => {
-      const mappedTerritory = TerritoryMap[border.name];
-      return Territory[mappedTerritory.territory] === territory;
-    });
+    //------------------------------------------------------------
+    // tricky: get coast-qualified versions if the dest is a coast
+    // FIXME: there should be a single object that has all the data for this
+    // -----------------------------------------------------------
+    let clickTerrIDCQ = clickTerrID;
+    let territoryCQ = territory;
+    if (orderUnit.type === "Fleet" && territoryMeta.coastChildIDs) {
+      // have to figure out which coast, oy.
+      const clickPos = getClickPositionInTerritory(evt, mapData);
 
-    console.log({ canMove });
-    if (canMove) {
-      updateOrder(state, {
-        toTerrID: clickTerrID,
+      // here we've got name => {x, y}
+      let bestSlot = "";
+      let bestDist2 = 1e100;
+      mapData!.labels!.forEach((label) => {
+        if (["nc", "sc"].includes(label.name)) {
+          const dist2 =
+            (clickPos.x - label.x) ** 2 + (clickPos.y - label.y) ** 2;
+          if (dist2 < bestDist2) {
+            bestSlot = label.name;
+            bestDist2 = dist2;
+          }
+        }
       });
-    } else {
-      invalidClick(evt, territory);
+      territoryMeta.coastChildIDs.forEach((childID) => {
+        const mTerr = TerritoryMap[maps.terrIDToTerritory[childID]];
+        if (mTerr.unitSlotName === bestSlot) {
+          territoryCQ = mTerr.territory;
+          clickTerrIDCQ = maps.territoryToTerrID[territoryCQ];
+        }
+      });
     }
-  } else if (order.type === "Support" || order.type === "Convoy") {
-    // FIXME: dedup
-    const { allowedBorderCrossings } = ordersMeta[order.orderID];
-    // FIXME: use supportMoveChoices and supportHoldChoices
-    const canMove = allowedBorderCrossings?.find((border) => {
-      const mappedTerritory = TerritoryMap[border.name];
-      return Territory[mappedTerritory.territory] === territory;
-    });
+    // -----------------------------------------------------------
 
+    if (!order.viaConvoy) {
+      // direct move
+      const canMove = canUnitMove(ordersMeta[order.orderID], territoryCQ);
+      if (canMove) {
+        updateOrder(state, {
+          toTerrID: clickTerrIDCQ,
+        });
+      } else {
+        invalidClick(evt, territory);
+      }
+    } else {
+      // via convoy
+      const { convoyToChoices } = ordersMeta[order.orderID];
+      const canConvoy = !!convoyToChoices?.find(
+        (terrID) => maps.terrIDToTerritory[terrID] === territoryCQ,
+      );
+      if (canConvoy) {
+        updateOrder(state, {
+          toTerrID: clickTerrIDCQ,
+          viaConvoy: "Yes",
+        });
+        if (!processConvoy(state, evt)) {
+          invalidClick(evt, territory);
+        }
+      } else {
+        invalidClick(evt, territory);
+      }
+    }
+  } else if (order.type === "Support") {
     if (!order.fromTerrID) {
       // click 1
-      if (!maps.terrIDToUnit[clickTerrID]) {
-        // gotta support a unit
-        invalidClick(evt, territory);
-        return;
+      if (
+        clickUnitID &&
+        canSupportTerritory(ordersMeta[order.orderID], territory)
+      ) {
+        updateOrder(state, { fromTerrID: clickTerrID });
       }
-      updateOrder(state, { fromTerrID: clickTerrID });
+      // gotta support a unit
+      invalidClick(evt, territory);
     } else {
       // click 2
       // eslint-disable-next-line no-lonely-if
-      if (canMove) {
+      if (canUnitMove(ordersMeta[order.orderID], territory)) {
         updateOrder(state, { toTerrID: clickTerrID });
       } else {
         invalidClick(evt, territory);
       }
     }
+  } else if (order.type === "Convoy") {
+    if (!order.fromTerrID) {
+      // click 1
+      // gotta click on an Army
+      if (clickUnit?.type === "Army") {
+        updateOrder(state, { fromTerrID: clickTerrID });
+      } else {
+        // gotta support a unit
+        invalidClick(evt, territory);
+      }
+    } else {
+      // click 2
+      updateOrder(state, { toTerrID: clickTerrID });
+      if (!processConvoy(state, evt)) {
+        invalidClick(evt, territory);
+      }
+    }
   }
 }
-
-//       },
-//     });
-//   updateOrder({})
-//   // eslint-disable-next-line no-lonely-if
-//   if (clickUnitID === order.unitID) {
-//     if (currentOrders) {
-//       const orderToUpdate = currentOrders.find((o) => o.unitID === unitID);
-//       if (orderToUpdate) {
-//         updateOrdersMeta(state, {
-//           [orderToUpdate.id]: {
-//             saved: false,
-//             update: {
-//               type: phase === "Retreats" ? "Disband" : "Hold",
-//               toTerrID: null,
-//             },
-//           },
-//         });
-//       }
-//     }
-//     state.order.type = phase === "Retreats" ? "disband" : "hold";
-//     resetOrder(state);
-//     return;
-//   }
-//   const { allowedBorderCrossings } = ordersMeta[orderID];
-//   const canMove = allowedBorderCrossings?.find((border) => {
-//     const mappedTerritory = TerritoryMap[border.name];
-//     return Territory[mappedTerritory.territory] === territory;
-//   });
-//   console.log({ canMove });
-//   if (canMove) {
-//     updateOrdersMeta(state, {
-//       [orderID]: {
-//         saved: false,
-//         update: {
-//           type: phase === "Retreats" ? "Retreat" : "Move",
-//           toTerrID: canMove.id,
-//           viaConvoy: "No",
-//         },
-//       },
-//     });
-//     state.order.toTerritory = TerritoryMap[canMove.name].territory;
-//     state.order.type = phase === "Retreats" ? "retreat" : "move";
-//     resetOrder(state);
-//   } else {
-//     invalidClick(evt, territory);
-//   }
-// }
-// const truthyToTerritory = toTerritory !== undefined && toTerritory !== null;
-// const truthyOnTerritory = onTerritory !== undefined && onTerritory !== null;
-// console.log({ clickObject, phase, currentOrders });
-// if (inProgress) {
-//   // && method === "click") {
-//   state.buildPopover = [];
-//   const currOrderUnitID = unitID;
-//   if (truthyOnTerritory && onTerritory === territory && !type) {
-//     console.log(`inProgress Click`);
-
-//     state.unitState[currOrderUnitID] = UIState.HOLD;
-//     if (currentOrders) {
-//       const orderToUpdate = currentOrders.find(
-//         (o) => o.unitID === currOrderUnitID,
-//       );
-//       if (orderToUpdate) {
-//         updateOrdersMeta(state, {
-//           [orderToUpdate.id]: {
-//             saved: false,
-//             update: {
-//               type: phase === "Retreats" ? "Disband" : "Hold",
-//               toTerrID: null,
-//             },
-//           },
-//         });
-//       }
-//     }
-//     state.order.type = phase === "Retreats" ? "disband" : "hold";
-//   } else if (type === "convoy" && !truthyToTerritory) {
-//     state.order.toTerritory = Number(Territory[territory]);
-//     processConvoy(state, evt);
-//   } else if (
-//     truthyOnTerritory &&
-//     (type === "hold" ||
-//       type === "move" ||
-//       type === "convoy" ||
-//       type === "disband" ||
-//       type === "retreat" ||
-//       type === "build")
-//   ) {
-//     resetOrder(state);
-//   } else if (truthyToTerritory && type === "build") {
-//     resetOrder(state);
-//   } else if (
-//     clickObject === "territory" &&
-//     truthyOnTerritory &&
-//     onTerritory !== territory &&
-//     !type &&
-//     inProgress
-//   ) {
-//     console.log(`inProgress truthyWtf`);
-//     const { allowedBorderCrossings } = ordersMeta[orderID];
-//     const canMove = allowedBorderCrossings?.find((border) => {
-//       const mappedTerritory = TerritoryMap[border.name];
-//       return Territory[mappedTerritory.territory] === territory;
-//     });
-//     if (canMove) {
-//       updateOrdersMeta(state, {
-//         [orderID]: {
-//           saved: false,
-//           update: {
-//             type: phase === "Retreats" ? "Retreat" : "Move",
-//             toTerrID: canMove.id,
-//             viaConvoy: "No",
-//           },
-//         },
-//       });
-//       state.order.toTerritory = TerritoryMap[canMove.name].territory;
-//       state.order.type = phase === "Retreats" ? "retreat" : "move";
-//     } else {
-//       invalidClick(evt, territory);
-//     }
-//   }
-//   // eslint-disable-next-line no-dupe-else-if
-// } else if (inProgress) {
-//   // && method === "dblClick") {
-//   console.log(`inProgress dblClick`);
-//   if (subsequentClicks.length) {
-//     // user is trying to do a support move or a support hold
-//     const unitSupporting = ordersMeta[orderID];
-//     const unitBeingSupported = subsequentClicks[0];
-//     if (territory === unitBeingSupported.onTerritory) {
-//       // attemping support hold
-//       const match = unitSupporting.supportHoldChoices?.find(
-//         ({ unitID: uID }) => uID === unitBeingSupported.unitID,
-//       );
-//       if (match) {
-//         // execute support hold
-//         updateOrdersMeta(state, {
-//           [orderID]: {
-//             saved: false,
-//             update: {
-//               type: "Support hold",
-//               toTerrID: match.id,
-//             },
-//           },
-//         });
-//         resetOrder(state);
-//         return;
-//       }
-//     } else {
-//       // attempting support move
-//       const supportMoveMatch = unitSupporting.supportMoveChoices?.find(
-//         ({ supportMoveTo }) =>
-//           webdipNameToTerritory[supportMoveTo.name] === territory, // FIXME ugly
-//       );
-//       if (supportMoveMatch && supportMoveMatch.supportMoveFrom.length) {
-//         const match = supportMoveMatch.supportMoveFrom.find(
-//           ({ unitID: uID }) => uID === unitBeingSupported.unitID,
-//         );
-//         if (match) {
-//           // execute support move
-//           updateOrdersMeta(state, {
-//             [orderID]: {
-//               saved: false,
-//               update: {
-//                 type: "Support move",
-//                 toTerrID: supportMoveMatch.supportMoveTo.id,
-//                 fromTerrID: match.id,
-//               },
-//             },
-//           });
-//           resetOrder(state);
-//           return;
-//         }
-//       }
-//     }
-//     invalidClick(evt, territory);
-//   }
-// } else if (
-//   clickObject === "territory" &&
-//   phase === "Builds" &&
-//   currentOrders
-// ) {
-//   const territoryMeta = territoriesMeta[Territory[territory]];
-
-//   if (territoryMeta) {
-//     const {
-//       coast: territoryCoast,
-//       countryID,
-//       id: webDipTerritoryID,
-//       supply,
-//       type: territoryType,
-//     } = territoryMeta;
-
-//     if (member.countryID.toString() !== countryID || !supply) {
-//       return;
-//     }
-
-//     const stp = territoriesMeta[Territory.SAINT_PETERSBURG];
-//     const stpnc = territoriesMeta[Territory.SAINT_PETERSBURG_NORTH_COAST];
-//     const stpsc = territoriesMeta[Territory.SAINT_PETERSBURG_SOUTH_COAST];
-
-//     const specialIds = {};
-//     if (stp) {
-//       specialIds[stp.id] = [stpnc?.id, stpsc?.id];
-//     }
-
-//     const affectedTerritoryIds = specialIds[webDipTerritoryID]
-//       ? [...[webDipTerritoryID], ...specialIds[webDipTerritoryID]]
-//       : [webDipTerritoryID];
-
-//     const existingBuildOrder = Object.entries(ordersMeta).find(
-//       ([, { update }]) =>
-//         update ? affectedTerritoryIds.includes(update.toTerrID) : false,
-//     );
-
-//     if (existingBuildOrder) {
-//       const [id] = existingBuildOrder;
-
-//       updateOrdersMeta(state, {
-//         [id]: {
-//           saved: false,
-//           update: {
-//             type: "Wait",
-//             toTerrID: null,
-//           },
-//         },
-//       });
-//       return;
-//     }
-
-//     const territoryHasUnit = !!territoryMeta.unitID;
-
-//     let availableOrder;
-//     for (let i = 0; i < currentOrders.length; i += 1) {
-//       const { id } = currentOrders[i];
-//       const orderMeta = ordersMeta[id];
-//       if (!orderMeta.update || !orderMeta.update?.toTerrID) {
-//         availableOrder = id;
-//         break;
-//       }
-//     }
-//     console.log(
-//       `trying to start order: ${availableOrder} ${territoryHasUnit} ${inProgress}`,
-//     );
-//     if (availableOrder && !territoryHasUnit && !inProgress) {
-//       let canBuild = 0;
-//       if (territoryCoast === "Parent" || territoryCoast === "No") {
-//         canBuild += BuildUnit.Army;
-//       }
-//       if (territoryType !== "Land" && territoryCoast !== "Parent") {
-//         canBuild += BuildUnit.Fleet;
-//       }
-//       state.buildPopover = [];
-//       state.buildPopover.push({
-//         availableOrder,
-//         canBuild,
-//         territoryMeta,
-//         unitSlotName: "main",
-//       });
-//       if (stp && territoryMeta.territory === Territory.SAINT_PETERSBURG) {
-//         state.buildPopover.push({
-//           availableOrder,
-//           canBuild: BuildUnit.Fleet,
-//           territoryMeta: stpnc,
-//           unitSlotName: "nc",
-//         });
-//         state.buildPopover.push({
-//           availableOrder,
-//           canBuild: BuildUnit.Fleet,
-//           territoryMeta: stpsc,
-//           unitSlotName: "sc",
-//         });
-//       }
-
-//       startNewOrder(state, {
-//         payload: {
-//           inProgress: true,
-//           method: "click",
-//           orderID: availableOrder,
-//           onTerritory: null,
-//           subsequentClicks: [],
-//           toTerritory: territoryMeta.territory,
-//           type: "build",
-//           unitID: "",
-//         },
-//       });
-//     }
-//   }
-// }

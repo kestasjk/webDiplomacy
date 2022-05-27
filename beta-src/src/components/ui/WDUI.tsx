@@ -1,9 +1,9 @@
 import * as React from "react";
-import { Box, IconButton, Link, useTheme } from "@mui/material";
+import { Box, IconButton, Link, useTheme, Badge } from "@mui/material";
 
 import WDPositionContainer from "./WDPositionContainer";
 import Position from "../../enums/Position";
-import { useAppSelector } from "../../state/hooks";
+import { useAppSelector, useAppDispatch } from "../../state/hooks";
 import { gameOverview } from "../../state/game/game-api-slice";
 import { CountryTableData } from "../../interfaces";
 import Country from "../../enums/Country";
@@ -47,6 +47,9 @@ const WDUI: React.FC = function (): React.ReactElement {
     user,
     year,
   } = useAppSelector(gameOverview);
+  const newMessagesFrom = useAppSelector(
+    ({ game }) => game.messages.newMessagesFrom,
+  );
 
   const constructTableData = (member) => {
     const memberCountry: Country = countryMap[member.country];
@@ -70,6 +73,7 @@ const WDUI: React.FC = function (): React.ReactElement {
       countries.push(constructTableData(member));
     }
   });
+  countries.sort((x, y) => x.countryID - y.countryID);
 
   const userTableData = constructTableData(user.member);
 
@@ -141,13 +145,38 @@ const WDUI: React.FC = function (): React.ReactElement {
         <Link href="/">
           <WDHomeIcon />
         </Link>
+
         <Box
           sx={{
             pt: "15px",
           }}
           ref={popoverTrigger}
         >
-          {controlModalTrigger}
+          {newMessagesFrom.length ? (
+            <Badge badgeContent={newMessagesFrom} color="secondary">
+              {controlModalTrigger}
+            </Badge>
+          ) : (
+            controlModalTrigger
+          )}
+        </Box>
+        <Box
+          component="div"
+          sx={{
+            display: "block",
+            p: 1,
+            mt: 2,
+            bgcolor: theme.palette[user.member.country]?.light,
+            color: "black",
+            border: "1px solid",
+            borderColor: "grey.300",
+            borderRadius: 2,
+            fontSize: "0.875rem",
+            fontWeight: "700",
+          }}
+          title={`Currently playing as ${user.member.country}`}
+        >
+          {abbrMap[user.member.country]}
         </Box>
         {popover}
       </WDPositionContainer>

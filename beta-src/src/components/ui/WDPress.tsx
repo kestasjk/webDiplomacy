@@ -8,6 +8,7 @@ import {
   Divider,
 } from "@mui/material";
 import { Email, Send } from "@mui/icons-material";
+import AutorenewIcon from "@mui/icons-material/Autorenew";
 
 import Button from "@mui/material/Button";
 import Device from "../../enums/Device";
@@ -20,11 +21,11 @@ import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import {
   fetchGameMessages,
   gameApiSliceActions,
-  gameMessages,
   gameOverview,
   markMessagesSeen,
   sendMessage,
 } from "../../state/game/game-api-slice";
+import { store } from "../../state/store";
 
 interface WDPressProps {
   children: React.ReactNode;
@@ -53,26 +54,33 @@ const WDPress: React.FC<WDPressProps> = function ({
   );
 
   const { user, gameID } = useAppSelector(gameOverview);
-  const messages = useAppSelector(gameMessages);
-  const outstandingMessageRequests = useAppSelector(
-    (state) => state.game.outstandingMessageRequests,
+
+  const messages = useAppSelector(({ game }) => game.messages.messages);
+  const newMessagesFrom = useAppSelector(
+    ({ game }) => game.messages.newMessagesFrom,
   );
 
-  // FIXME: for now, crazily fetch all messages every 1sec
-  useInterval(() => {
-    if (user && gameID && messages && outstandingMessageRequests === 0) {
-      console.log("Dispatching");
-      dispatch(gameApiSliceActions.updateOutstandingMessageRequests(1));
-      dispatch(
-        fetchGameMessages({
-          gameID: gameID as unknown as string,
-          countryID: user.member.countryID as unknown as string,
-          allMessages: "true",
-          sinceTime: messages.time as unknown as string,
-        }),
-      );
+  const dispatchFetchMessages = () => {
+    if (user && gameID) {
+      const { game } = store.getState();
+      const { outstandingMessageRequests } = game;
+      if (outstandingMessageRequests === 0) {
+        console.log("Dispatching");
+        dispatch(gameApiSliceActions.updateOutstandingMessageRequests(1));
+        dispatch(
+          fetchGameMessages({
+            gameID: gameID as unknown as string,
+            countryID: user.member.countryID as unknown as string,
+            allMessages: "true",
+            sinceTime: game.messages.time as unknown as string,
+          }),
+        );
+      }
     }
-  }, 1000);
+  };
+
+  // FIXME: for now, crazily fetch all messages every 1sec
+  useInterval(dispatchFetchMessages, 1000);
 
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
@@ -93,17 +101,7 @@ const WDPress: React.FC<WDPressProps> = function ({
     setUserMsg("");
   };
 
-  // capture enter for end, shift-enter for newline
-  const keydownHandler = (e) => {
-    const keyCode = e.which || e.keyCode;
-    const ENTER = 13;
-    if (keyCode === ENTER && !e.shiftKey) {
-      e.preventDefault();
-      clickSend();
-    }
-  };
-
-  if (messages.newMessagesFrom.includes(countryIDSelected)) {
+  const dispatchMessagesSeen = () => {
     // need to update locally and on the server
     // because we don't immediately re-fetch message data from the server
     dispatch(gameApiSliceActions.processMessagesSeen(countryIDSelected));
@@ -114,6 +112,20 @@ const WDPress: React.FC<WDPressProps> = function ({
         seenCountryID: String(countryIDSelected),
       }),
     );
+  };
+
+  // capture enter for end, shift-enter for newline
+  const keydownHandler = (e) => {
+    const keyCode = e.which || e.keyCode;
+    const ENTER = 13;
+    if (keyCode === ENTER && !e.shiftKey) {
+      e.preventDefault();
+      clickSend();
+    }
+  };
+
+  if (newMessagesFrom.includes(countryIDSelected)) {
+    dispatchMessagesSeen();
   }
 
   const countryButtons = countries
@@ -133,11 +145,7 @@ const WDPress: React.FC<WDPressProps> = function ({
             countryIDSelected === country.countryID ? "contained" : "text"
           }
           startIcon={
-            messages.newMessagesFrom.includes(country.countryID) ? (
-              <Email />
-            ) : (
-              ""
-            )
+            newMessagesFrom.includes(country.countryID) ? <Email /> : ""
           }
         >
           {country.country.slice(0, 3).toUpperCase()}
@@ -153,7 +161,7 @@ const WDPress: React.FC<WDPressProps> = function ({
         </ButtonGroup>
       </Stack>
       <WDMessageList
-        messages={messages.messages}
+        messages={messages}
         countries={[...countries, userCountry]} // sorry, its just silly to exclude userCountry from this table
         userCountry={userCountry}
         countryIDSelected={countryIDSelected}
@@ -161,6 +169,19 @@ const WDPress: React.FC<WDPressProps> = function ({
       />
       <Box>
         <Stack alignItems="center" direction="row">
+          <Button
+            href="#message-reload-button"
+            onClick={() => {
+              dispatchMessagesSeen();
+              dispatchFetchMessages();
+            }}
+            style={{
+              maxWidth: "12px",
+              minWidth: "12px",
+            }}
+          >
+            <AutorenewIcon sx={{ fontSize: "medium" }} />
+          </Button>
           <TextField
             id="user-msg"
             label="Send Message"

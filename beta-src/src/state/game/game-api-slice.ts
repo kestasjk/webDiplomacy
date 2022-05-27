@@ -30,6 +30,7 @@ import TerritoriesMeta from "../interfaces/TerritoriesState";
 import fetchGameOverviewFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameOverview/fulfilled";
 import fetchGameStatusFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameStatus/fulfilled";
 import saveOrdersFulfilled from "../../utils/state/gameApiSlice/extraReducers/saveOrders/fulfilled";
+import shallowArraysEqual from "../../utils/shallowArraysEqual";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -138,6 +139,7 @@ export const saveOrders = createAsyncThunk(
     formData.set("context", data.context);
     formData.set("contextKey", data.contextKey);
     const response = await submitOrders(formData, data.queryParams);
+    console.log({ response });
     const confirmation: string = response.headers["x-json"] || "";
     const parsed: SavedOrdersConfirmation = JSON.parse(
       confirmation.substring(1, confirmation.length - 1),
@@ -292,9 +294,22 @@ const gameApiSlice = createSlice({
             }
           }
           if (newMessagesFrom) {
-            state.messages.newMessagesFrom = newMessagesFrom;
+            // Only use the new newMessagesFrom if it has distinct values
+            // Otherwise, use the old value to preserve reference equality
+            // so that selectors recognize nothing changed and less of the UI
+            // needs to redraw
+            if (
+              !shallowArraysEqual(
+                state.messages.newMessagesFrom,
+                newMessagesFrom,
+              )
+            ) {
+              state.messages.newMessagesFrom = newMessagesFrom;
+            }
           }
-          console.log(`time=${time}`);
+          console.log(
+            `time=${time}, outstandingMessageRequests=${state.outstandingMessageRequests}`,
+          );
           if (time) {
             state.messages.time = time;
           }
@@ -325,12 +340,18 @@ export const gameOrder = ({ game: { order } }: RootState): OrderState => order;
 export const userActivity = ({
   game: { activity },
 }: RootState): GameState["activity"] => activity;
-export const gameMessages = ({ game: { messages } }: RootState): GameMessages =>
-  messages;
+// gameMessages considered harmful, because part of the GameMessages object is a
+// counter that tracks the last query timestamp, which means that if you use this
+// selector rather than a more specific one, your component will update basically
+// every time the server is queries for messages, regardless of whether
+// the messages changed or not.
+// export const gameMessages = ({ game: { messages } }: RootState): GameMessages =>
+//  messages;
 export const gameTerritoriesMeta = ({
   game: { territoriesMeta },
 }: RootState): TerritoriesMeta => territoriesMeta;
 export const gameMaps = ({ game: { maps } }: RootState) => maps;
+export const gameBoard = ({ game: { board } }: RootState) => board;
 export const gameViewedPhase = ({
   game: { viewedPhaseState },
 }: RootState): ViewedPhaseState => viewedPhaseState;
