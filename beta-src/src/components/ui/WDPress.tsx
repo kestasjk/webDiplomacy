@@ -8,6 +8,7 @@ import {
   Divider,
 } from "@mui/material";
 import { Email, Send } from "@mui/icons-material";
+import AutorenewIcon from "@mui/icons-material/Autorenew";
 
 import Button from "@mui/material/Button";
 import Device from "../../enums/Device";
@@ -58,8 +59,7 @@ const WDPress: React.FC<WDPressProps> = function ({
     ({ game }) => game.messages.newMessagesFrom,
   );
 
-  // FIXME: for now, crazily fetch all messages every 1sec
-  useInterval(() => {
+  const dispatchFetchMessages = () => {
     if (user && gameID) {
       const { game } = store.getState();
       const { outstandingMessageRequests } = game;
@@ -76,7 +76,10 @@ const WDPress: React.FC<WDPressProps> = function ({
         );
       }
     }
-  }, 1000);
+  };
+
+  // FIXME: for now, crazily fetch all messages every 1sec
+  useInterval(dispatchFetchMessages, 1000);
 
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
@@ -96,6 +99,19 @@ const WDPress: React.FC<WDPressProps> = function ({
     setUserMsg("");
   };
 
+  const dispatchMessagesSeen = () => {
+    // need to update locally and on the server
+    // because we don't immediately re-fetch message data from the server
+    dispatch(gameApiSliceActions.processMessagesSeen(countryIDSelected));
+    dispatch(
+      markMessagesSeen({
+        countryID: String(userCountry.countryID),
+        gameID: String(gameID),
+        seenCountryID: String(countryIDSelected),
+      }),
+    );
+  };
+
   // capture enter for end, shift-enter for newline
   const keydownHandler = (e) => {
     const keyCode = e.which || e.keyCode;
@@ -107,16 +123,7 @@ const WDPress: React.FC<WDPressProps> = function ({
   };
 
   if (newMessagesFrom.includes(countryIDSelected)) {
-    // need to update locally and on the server
-    // because we don't immediately re-fetch message data from the server
-    dispatch(gameApiSliceActions.processMessagesSeen(countryIDSelected));
-    dispatch(
-      markMessagesSeen({
-        countryID: String(userCountry.countryID),
-        gameID: String(gameID),
-        seenCountryID: String(countryIDSelected),
-      }),
-    );
+    dispatchMessagesSeen();
   }
 
   const countryButtons = countries
@@ -160,6 +167,19 @@ const WDPress: React.FC<WDPressProps> = function ({
       />
       <Box>
         <Stack alignItems="center" direction="row">
+          <Button
+            href="#message-reload-button"
+            onClick={() => {
+              dispatchMessagesSeen();
+              dispatchFetchMessages();
+            }}
+            style={{
+              maxWidth: "12px",
+              minWidth: "12px",
+            }}
+          >
+            <AutorenewIcon sx={{ fontSize: "medium" }} />
+          </Button>
           <TextField
             id="user-msg"
             label="Send Message"
