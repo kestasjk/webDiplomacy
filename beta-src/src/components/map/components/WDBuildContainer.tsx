@@ -3,7 +3,6 @@ import { Box } from "@mui/material";
 import * as React from "react";
 import BuildUnitMap from "../../../data/BuildUnit";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
-import Territories from "../../../data/Territories";
 import BuildUnit from "../../../enums/BuildUnit";
 import {
   gameApiSliceActions,

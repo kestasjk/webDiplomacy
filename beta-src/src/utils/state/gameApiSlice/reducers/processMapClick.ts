@@ -3,7 +3,6 @@ import provincesMapData from "../../../../data/map/ProvincesMapData";
 import TerritoryMap, {
   webdipNameToTerritory,
 } from "../../../../data/map/variants/classic/TerritoryMap";
-import Territories from "../../../../data/Territories";
 import BuildUnit from "../../../../enums/BuildUnit";
 import Territory from "../../../../enums/map/variants/classic/Territory";
 import { ProvinceMapData } from "../../../../interfaces/map/ProvinceMapData";

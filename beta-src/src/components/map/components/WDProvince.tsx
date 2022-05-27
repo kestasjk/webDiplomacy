@@ -4,7 +4,6 @@ import countryMap from "../../../data/map/variants/classic/CountryMap";
 import TerritoryMap, {
   territoryToWebdipName,
 } from "../../../data/map/variants/classic/TerritoryMap";
-import Territories from "../../../data/Territories";
 import UIState from "../../../enums/UIState";
 import { Coordinates, ProvinceMapData } from "../../../interfaces";
 import {

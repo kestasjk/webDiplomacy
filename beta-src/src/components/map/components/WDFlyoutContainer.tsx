@@ -1,7 +1,6 @@
 /* eslint-disable no-bitwise */
 import * as React from "react";
 import { Box, Button, Stack } from "@mui/material";
-import Territories from "../../../data/Territories";
 import {
   gameApiSliceActions,
   gameBoard,

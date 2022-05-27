@@ -11,7 +11,6 @@ import { IOrderDataHistorical } from "../../models/Interfaces";
 import GameStateMaps from "../../state/interfaces/GameStateMaps";
 import { APITerritories } from "../../state/interfaces/GameDataResponse";
 import Territory from "../../enums/map/variants/classic/Territory";
-import Territories from "../../data/Territories";
 
 interface WDMapProps {
   units: Unit[];
