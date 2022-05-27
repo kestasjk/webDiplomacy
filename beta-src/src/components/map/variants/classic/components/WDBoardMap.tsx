@@ -15,7 +15,7 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
 }): React.ReactElement {
   const territoriesMeta = useAppSelector(gameTerritoriesMeta);
 
-  const unplayableTerritories = Object.values(provincesMapData)
+  const unplayableProvinces = Object.values(provincesMapData)
     .filter((data) => !data.playable)
     .map((data) => {
       const territoryMeta = territoriesMeta[data.territory];
@@ -30,16 +30,16 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
     });
   // Hack - Rome and Naples need to be sorted to the end or else their label will get cut
   // off by neighboring territories drawn on top of it.
-  const playableTerritoriesData = Object.values(provincesMapData).filter(
+  const playableProvincesData = Object.values(provincesMapData).filter(
     (data) =>
       data.playable &&
       data.territory !== Territory.NAPLES &&
       data.territory !== Territory.ROME,
   );
-  playableTerritoriesData.push(provincesMapData[Territory.NAPLES]);
-  playableTerritoriesData.push(provincesMapData[Territory.ROME]);
+  playableProvincesData.push(provincesMapData[Territory.NAPLES]);
+  playableProvincesData.push(provincesMapData[Territory.ROME]);
 
-  const playableTerritories = playableTerritoriesData.map((data) => {
+  const playableProvinces = playableProvincesData.map((data) => {
     const territoryMeta = territoriesMeta[data.territory];
     return (
       <WDProvince
@@ -53,8 +53,8 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
 
   return (
     <g id="wD-boardmap-v10.3.4 1" clipPath="url(#clip0_3405_33911)">
-      <g id="unplayable">{unplayableTerritories}</g>
-      <g id="playableTerritories">{playableTerritories}</g>
+      <g id="unplayable">{unplayableProvinces}</g>
+      <g id="playableProvinces">{playableProvinces}</g>
     </g>
   );
 };

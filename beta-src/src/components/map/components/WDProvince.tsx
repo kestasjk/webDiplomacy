@@ -34,7 +34,7 @@ interface WDProvinceProps {
   units: Unit[];
 }
 
-const WDTerritory: React.FC<WDProvinceProps> = function ({
+const WDProvince: React.FC<WDProvinceProps> = function ({
   provinceMapData,
   territoryMeta,
   units,
@@ -229,4 +229,4 @@ const WDTerritory: React.FC<WDProvinceProps> = function ({
   );
 };
 
-export default WDTerritory;
+export default WDProvince;
