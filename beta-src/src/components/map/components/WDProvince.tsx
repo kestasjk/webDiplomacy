@@ -70,11 +70,7 @@ const WDProvince: React.FC<WDProvinceProps> = function ({
   const unitFCsDislodging: { [key: string]: React.ReactElement } = {};
 
   units
-    .filter(
-      (unit) =>
-        (unit.mappedTerritory.parent || unit.mappedTerritory.territory) ===
-        territoryMeta?.territory,
-    )
+    .filter((unit) => unit.mappedTerritory.province === province)
     .forEach((unit) => {
       let unitState: UIState;
       switch (unit.drawMode) {

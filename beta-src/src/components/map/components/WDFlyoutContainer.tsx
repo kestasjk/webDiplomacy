@@ -37,14 +37,8 @@ const WDFlyoutContainer: React.FC<WDFlyoutContainerProps> = function ({
 
   const unit = units.find((u) => u.unit.id === order.unitID);
 
-  let territory = maps.unitToTerritory[order.unitID];
-  const mTerr = TerritoryMap[territory];
-  const { unitSlotName } = mTerr;
-  if (mTerr.parent) {
-    territory = mTerr.parent;
-  }
-  // FIXME type
-  const province = territory as unknown as Province;
+  const mTerr = TerritoryMap[maps.unitToTerritory[order.unitID]];
+  const { province, unitSlotName } = mTerr;
   const clickHandler =
     (orderType, viaConvoy: string | undefined = undefined) =>
     () => {

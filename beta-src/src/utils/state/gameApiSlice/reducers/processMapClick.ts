@@ -39,9 +39,7 @@ function canUnitMoveToProvince(
 ): boolean {
   const { allowedBorderCrossings } = orderMeta;
   return !!allowedBorderCrossings?.find(
-    (border) =>
-      TerritoryMap[border.name].territory === provinceMapData.rootTerritory ||
-      TerritoryMap[border.name].parent === provinceMapData.rootTerritory,
+    (border) => TerritoryMap[border.name].province === provinceMapData.province,
   );
 }
 
@@ -55,32 +53,28 @@ function canSupporteeMoveToOrHoldAtProvince(
     return false;
   }
   const supporteeTerr: Territory = maps.terrIDToTerritory[order.fromTerrID];
-  // FIXME: Types
-  const supporteeProvince: Province = (TerritoryMap[supporteeTerr].parent ||
-    supporteeTerr) as unknown as Province;
+  const supporteeProvince: Province = TerritoryMap[supporteeTerr].province;
   // Make sure you can find the unit
-  const supporteeUnit = maps.provinceIDToUnit[order.fromTerrID];
-  if (!supporteeUnit) {
+  const supporteeUnits = maps.provinceIDToUnits[order.fromTerrID];
+  if (!supporteeUnits) {
     return false;
   }
   // Make sure the board has the unit
-  const supporteeUnitClass = board.findUnitByID(supporteeUnit);
+  const supporteeUnitClass = board.findUnitByID(supporteeUnits[0]);
   if (!supporteeUnitClass) {
     return false;
   }
 
-  // Make sure that either the region is where the supportee already is
-  // or the region is one where the supportee can move to a territory
-  // of that region.
+  // Make sure that either the province is where the supportee already is
+  // or the province is one where the supportee can move to a territory
+  // of that province.
   return (
     provinceMapData.province === supporteeProvince ||
     !!board
       .getMovableTerritories(supporteeUnitClass)
       .find(
         (border) =>
-          TerritoryMap[border.name].territory ===
-            provinceMapData.rootTerritory ||
-          TerritoryMap[border.name].parent === provinceMapData.rootTerritory,
+          TerritoryMap[border.name].province === provinceMapData.province,
       )
   );
 }
@@ -199,35 +193,27 @@ export default function processMapClick(
   }
 
   const clickTerrID = maps.territoryToTerrID[province];
-  let clickUnitID = maps.terrIDToUnit[clickTerrID];
-  // Fixup unit for coast!
-  if (!clickUnitID) {
-    // Note: I think we could use the TerritoryClass stuff to find children like this
-    territoryMeta.coastChildIDs.forEach((childID) => {
-      const coastUnitID = maps.terrIDToUnit[childID];
-      if (
-        coastUnitID &&
-        (phase !== "Retreats" || ownUnits.includes(coastUnitID)) // on retreats there may be 2 units
-      ) {
-        clickUnitID = coastUnitID;
-      }
-    });
+  let clickUnitID: string | undefined;
+  {
+    const clickUnitIDs = maps.provinceToUnits[province];
+    // Handle multiple units on retreat
+    if (clickUnitIDs.length >= 2) {
+      clickUnitID = clickUnitIDs.find((unitID) => ownUnits.includes(unitID));
+    } else if (clickUnitIDs.length === 1) {
+      [clickUnitID] = clickUnitIDs;
+    }
   }
 
-  const clickUnit = data.units[clickUnitID];
+  const clickUnit = clickUnitID ? data.units[clickUnitID] : undefined;
   const orderUnit = data.units[order.unitID];
-  const ownsCurUnit = ownUnits.includes(clickUnitID);
+  const ownsCurUnit = clickUnitID && ownUnits.includes(clickUnitID);
 
   // ---------------------- BUILD PHASE ---------------------------
   if (phase === "Builds") {
     // FIXME: abstract to a function
     const existingOrder = Object.entries(ordersMeta).find(([, { update }]) => {
       if (!update || !update.toTerrID) return false;
-      if (update.toTerrID === clickTerrID) return true;
-      const updateTerr = maps.terrIDToTerritory[update.toTerrID];
-      const { parent } = TerritoryMap[updateTerr];
-      const parentID = parent && maps.territoryToTerrID[parent];
-      return parentID === clickTerrID;
+      return maps.terrIDToProvince[update.toTerrID] === province;
     });
     if (existingOrder) {
       const [id] = existingOrder;

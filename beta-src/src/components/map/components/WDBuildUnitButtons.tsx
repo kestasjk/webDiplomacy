@@ -2,7 +2,7 @@
 import * as React from "react";
 import BuildUnit from "../../../enums/BuildUnit";
 import Country from "../../../enums/Country";
-import Territory from "../../../enums/map/variants/classic/Territory";
+import Province from "../../../enums/map/variants/classic/Province";
 import UIState from "../../../enums/UIState";
 import WDArmyIcon from "../../ui/units/WDArmyIcon";
 import WDFleetIcon from "../../ui/units/WDFleetIcon";
@@ -16,7 +16,7 @@ export interface BuildData {
   ) => void;
   country: Country;
   canBuild: BuildUnit;
-  provinceName: string | null;
+  province: Province;
   unitSlotName: string;
   toTerrID: string;
 }
@@ -26,16 +26,16 @@ const WDBuildUnitButtons: React.FC<BuildData> = function ({
   clickCallback,
   country,
   canBuild,
-  provinceName,
+  province,
   unitSlotName,
   toTerrID,
 }): React.ReactElement {
-  const labelId = `${provinceName}-label-${unitSlotName}`;
+  const labelId = `${province}-label-${unitSlotName}`;
   const label: SVGTextElement = document.getElementById(
     labelId,
   ) as unknown as SVGTextElement;
   const provinceElem: SVGSVGElement = document.getElementById(
-    `${provinceName}-province`,
+    `${province}-province`,
   ) as unknown as SVGSVGElement;
   if (!label) throw Error(labelId);
   const { x, y } = label.getBBox();

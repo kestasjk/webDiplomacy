@@ -1,4 +1,6 @@
-import { webdipNameToTerritory } from "../../data/map/variants/classic/TerritoryMap";
+import TerritoryMap, {
+  webdipNameToTerritory,
+} from "../../data/map/variants/classic/TerritoryMap";
 import GameDataResponse from "../../state/interfaces/GameDataResponse";
 import GameStateMaps from "../../state/interfaces/GameStateMaps";
 
@@ -8,11 +10,11 @@ export default function generateMaps(
   const { currentOrders, territories, units } = data;
   const territoryToTerrID: GameStateMaps["territoryToTerrID"] = {};
   const terrIDToTerritory: GameStateMaps["terrIDToTerritory"] = {};
-  const terrIDToRegionID: GameStateMaps["terrIDToProvinceID"] = {};
-  const terrIDToUnit: GameStateMaps["terrIDToUnit"] = {};
-  const regionIDToUnit: GameStateMaps["provinceIDToUnit"] = {};
+  const terrIDToProvinceID: GameStateMaps["terrIDToProvinceID"] = {};
+  const terrIDToProvince: GameStateMaps["terrIDToProvince"] = {};
+  const provinceIDToUnits: GameStateMaps["provinceIDToUnits"] = {};
   const unitToTerrID: GameStateMaps["unitToTerrID"] = {};
-  const territoryToUnit: GameStateMaps["territoryToUnit"] = {};
+  const provinceToUnits: GameStateMaps["provinceToUnits"] = {};
   const unitToTerritory: GameStateMaps["unitToTerritory"] = {};
   const unitToOrder: GameStateMaps["unitToOrder"] = {};
 
@@ -20,15 +22,19 @@ export default function generateMaps(
     const territory = webdipNameToTerritory[name];
     territoryToTerrID[territory] = id;
     terrIDToTerritory[id] = territory;
-    terrIDToRegionID[id] = coastParentID || id;
+    terrIDToProvinceID[id] = coastParentID || id;
+    terrIDToProvince[id] = TerritoryMap[territory].province;
   });
 
   Object.values(units).forEach(({ id, terrID }) => {
-    terrIDToUnit[terrID] = id;
-    regionIDToUnit[terrIDToRegionID[terrID]] = id;
+    const provinceID = terrIDToProvinceID[terrID];
+    if (!provinceIDToUnits[provinceID]) provinceIDToUnits[provinceID] = [];
+    provinceIDToUnits[terrIDToProvinceID[terrID]].push(id);
     unitToTerrID[id] = terrID;
     const territory = terrIDToTerritory[terrID];
-    territoryToUnit[territory] = id;
+    const province = terrIDToProvince[terrID];
+    if (!provinceToUnits[province]) provinceToUnits[province] = [];
+    provinceToUnits[province].push(id);
     unitToTerritory[id] = territory;
   });
 
@@ -39,11 +45,11 @@ export default function generateMaps(
   return {
     territoryToTerrID,
     terrIDToTerritory,
-    terrIDToProvinceID: terrIDToRegionID,
-    terrIDToUnit,
-    provinceIDToUnit: regionIDToUnit,
+    terrIDToProvinceID,
+    terrIDToProvince,
+    provinceIDToUnits,
     unitToTerrID,
-    territoryToUnit,
+    provinceToUnits,
     unitToTerritory,
     unitToOrder,
   };
