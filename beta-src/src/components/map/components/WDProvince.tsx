@@ -28,14 +28,14 @@ import { Unit, UnitDrawMode } from "../../../utils/map/getUnits";
 import Territory from "../../../enums/map/variants/classic/Territory";
 import OrdersMeta from "../../../state/interfaces/SavedOrders";
 
-interface WDTerritoryProps {
-  territoryMapData: ProvinceMapData;
+interface WDProvinceProps {
+  provinceMapData: ProvinceMapData;
   territoryMeta: TerritoryMeta | undefined;
   units: Unit[];
 }
 
-const WDTerritory: React.FC<WDTerritoryProps> = function ({
-  territoryMapData,
+const WDTerritory: React.FC<WDProvinceProps> = function ({
+  provinceMapData,
   territoryMeta,
   units,
 }): React.ReactElement {
@@ -45,7 +45,7 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   const { user, members } = useAppSelector(gameOverview);
   const userCountry = countryMap[user.member.country];
 
-  const { territory } = territoryMapData;
+  const { territory } = provinceMapData;
   let territoryFill = "none";
   let territoryFillOpacity = 0;
   const territoryStrokeOpacity = 1;
@@ -140,26 +140,26 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
   };
   return (
     <svg
-      height={territoryMapData.height}
+      height={provinceMapData.height}
       id={`${territory}-territory`}
-      viewBox={territoryMapData.viewBox}
-      width={territoryMapData.width}
-      x={territoryMapData.x}
-      y={territoryMapData.y}
+      viewBox={provinceMapData.viewBox}
+      width={provinceMapData.width}
+      x={provinceMapData.x}
+      y={provinceMapData.y}
     >
       <g onClick={(e) => clickAction(e, "territory")}>
-        {territoryMapData.texture?.texture && (
+        {provinceMapData.texture?.texture && (
           <path
-            d={territoryMapData.path}
-            fill={territoryMapData.texture.texture}
+            d={provinceMapData.path}
+            fill={provinceMapData.texture.texture}
             id={`${territory}-texture`}
-            stroke={territoryMapData.texture.stroke}
-            strokeOpacity={territoryMapData.texture.strokeOpacity}
-            strokeWidth={territoryMapData.texture.strokeWidth}
+            stroke={provinceMapData.texture.stroke}
+            strokeOpacity={provinceMapData.texture.strokeOpacity}
+            strokeWidth={provinceMapData.texture.strokeWidth}
           />
         )}
         <path
-          d={territoryMapData.path}
+          d={provinceMapData.path}
           fill={territoryFill}
           fillOpacity={territoryFillOpacity}
           id={`${territory}-control-path`}
@@ -168,21 +168,21 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
           strokeWidth={territoryStrokeOpacity}
         />
       </g>
-      {territoryMapData.centerPos && (
+      {provinceMapData.centerPos && (
         <g className="no-pointer-events">
           <WDCenter
             territory={territory}
-            x={territoryMapData.centerPos.x}
-            y={territoryMapData.centerPos.y}
+            x={provinceMapData.centerPos.x}
+            y={provinceMapData.centerPos.y}
           />
         </g>
       )}
-      {territoryMapData.labels &&
-        territoryMapData.labels.map(({ name, text, style, x, y }, i) => {
+      {provinceMapData.labels &&
+        provinceMapData.labels.map(({ name, text, style, x, y }, i) => {
           let txt = text;
           const id = `${territory}-label-${name}`;
           if (!txt) {
-            txt = territoryMapData.abbr;
+            txt = provinceMapData.abbr;
           }
           return (
             <g key={id} className="no-pointer-events">
@@ -198,14 +198,14 @@ const WDTerritory: React.FC<WDTerritoryProps> = function ({
             </g>
           );
         })}
-      {territoryMapData.unitSlots
+      {provinceMapData.unitSlots
         .filter(({ name }) => name in unitFCs)
         .map(({ name, x, y }) => (
           <WDUnitSlot key={name} name={name} territory={territory} x={x} y={y}>
             {unitFCs[name]}
           </WDUnitSlot>
         ))}
-      {territoryMapData.unitSlots
+      {provinceMapData.unitSlots
         .filter(({ name }) => name in unitFCsDislodging)
         .map(({ name, arrowReceiver }) => {
           const unitName = `${name}-dislodging`;

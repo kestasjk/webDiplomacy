@@ -1,5 +1,5 @@
 import * as React from "react";
-import WDTerritory from "../../../components/WDTerritory";
+import WDProvince from "../../../components/WDProvince";
 import { Unit } from "../../../../../utils/map/getUnits";
 import territoriesMapData from "../../../../../data/map/TerritoriesMapData";
 import Territory from "../../../../../enums/map/variants/classic/Territory";
@@ -20,8 +20,8 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
     .map((data) => {
       const territoryMeta = territoriesMeta[data.territory];
       return (
-        <WDTerritory
-          territoryMapData={data}
+        <WDProvince
+          provinceMapData={data}
           territoryMeta={territoryMeta}
           units={units}
           key={`${data.territory}-territory`}
@@ -42,8 +42,8 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
   const playableTerritories = playableTerritoriesData.map((data) => {
     const territoryMeta = territoriesMeta[data.territory];
     return (
-      <WDTerritory
-        territoryMapData={data}
+      <WDProvince
+        provinceMapData={data}
         territoryMeta={territoryMeta}
         units={units}
         key={`${data.territory}-territory`}
