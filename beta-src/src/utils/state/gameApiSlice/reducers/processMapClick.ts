@@ -197,9 +197,9 @@ export default function processMapClick(
   {
     const clickUnitIDs = maps.provinceToUnits[province];
     // Handle multiple units on retreat
-    if (clickUnitIDs.length >= 2) {
+    if (clickUnitIDs && clickUnitIDs.length >= 2) {
       clickUnitID = clickUnitIDs.find((unitID) => ownUnits.includes(unitID));
-    } else if (clickUnitIDs.length === 1) {
+    } else if (clickUnitIDs && clickUnitIDs.length === 1) {
       [clickUnitID] = clickUnitIDs;
     }
   }
@@ -248,12 +248,20 @@ export default function processMapClick(
       invalidClick(evt, province);
       return;
     }
+
+    // Build on the appropriately clicked coast for STP
+    let toTerrID = clickTerrID;
+    if (!isDestroy) {
+      const territory = getBestCoastalUnitTerritory(evt, provinceMapData);
+      toTerrID = maps.territoryToTerrID[territory];
+    }
+
     resetOrder(state);
     updateOrder(state, {
       inProgress: true,
       orderID: availableOrder,
       type: isDestroy ? "Destroy" : "Build",
-      toTerrID: clickTerrID,
+      toTerrID,
     });
     return;
   }
