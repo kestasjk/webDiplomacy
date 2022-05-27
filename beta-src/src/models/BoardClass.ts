@@ -210,6 +210,12 @@ export default class BoardClass {
       terr.coastChildren.forEach((child) => {
         movableTerritories.push(child);
       });
+      // also need to make sure you iterate over the parent's children
+      // so that you can include coasts laterally rather than just
+      // parent <-> child
+      terr.coastParent.coastChildren.forEach((child) => {
+        movableTerritories.push(child);
+      });
     });
 
     return movableTerritories.reduce((acc: UnitClass[], cur) => {

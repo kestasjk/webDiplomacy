@@ -7,10 +7,14 @@ import Territories from "../../../../data/Territories";
 import BuildUnit from "../../../../enums/BuildUnit";
 import Territory from "../../../../enums/map/variants/classic/Territory";
 import { TerritoryMapData } from "../../../../interfaces/map/TerritoryMapData";
+import BoardClass from "../../../../models/BoardClass";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
 import GameStateMaps from "../../../../state/interfaces/GameStateMaps";
-import { OrderMeta } from "../../../../state/interfaces/SavedOrders";
+import OrderState from "../../../../state/interfaces/OrderState";
+import OrdersMeta, {
+  OrderMeta,
+} from "../../../../state/interfaces/SavedOrders";
 import { TerritoryMeta } from "../../../../state/interfaces/TerritoriesState";
 import { getTargetXYWH } from "../../../map/drawArrowFunctional";
 import invalidClick from "../../../map/invalidClick";
@@ -22,11 +26,60 @@ import startNewOrder from "../../startNewOrder";
 import updateOrder from "../../updateOrder";
 import updateOrdersMeta from "../../updateOrdersMeta";
 
-function canUnitMove(orderMeta: OrderMeta, territory: Territory): boolean {
+function canUnitMoveTo(orderMeta: OrderMeta, territory: Territory): boolean {
   const { allowedBorderCrossings } = orderMeta;
-  console.log({ allowedBorderCrossings, territory });
   return !!allowedBorderCrossings?.find(
     (border) => TerritoryMap[border.name].territory === territory,
+  );
+}
+
+function canUnitMoveToRegion(
+  orderMeta: OrderMeta,
+  territory: Territory,
+): boolean {
+  const { allowedBorderCrossings } = orderMeta;
+  return !!allowedBorderCrossings?.find(
+    (border) =>
+      TerritoryMap[border.name].territory === territory ||
+      TerritoryMap[border.name].parent === territory,
+  );
+}
+
+function canSupporteeMoveToOrHoldAtRegion(
+  order: OrderState,
+  territory: Territory,
+  maps: GameStateMaps,
+  board: BoardClass,
+): boolean {
+  if (!order.fromTerrID) {
+    return false;
+  }
+  const supporteeTerr: Territory = maps.terrIDToTerritory[order.fromTerrID];
+  const supporteeRegion: Territory =
+    TerritoryMap[supporteeTerr].parent || supporteeTerr;
+  // Make sure you can find the unit
+  const supporteeUnit = maps.regionIDToUnit[order.fromTerrID];
+  if (!supporteeUnit) {
+    return false;
+  }
+  // Make sure the board has the unit
+  const supporteeUnitClass = board.findUnitByID(supporteeUnit);
+  if (!supporteeUnitClass) {
+    return false;
+  }
+
+  // Make sure that either the region is where the supportee already is
+  // or the region is one where the supportee can move to a territory
+  // of that region.
+  return (
+    territory === supporteeRegion ||
+    !!board
+      .getMovableTerritories(supporteeUnitClass)
+      .find(
+        (border) =>
+          TerritoryMap[border.name].territory === territory ||
+          TerritoryMap[border.name].parent === territory,
+      )
   );
 }
 
@@ -57,9 +110,32 @@ function canSupportTerritory(
   return all.includes(territory);
 }
 
+// Returns either "nc" or "sc", the one closest to the position of the click.
+function getBestCoastalUnitSlot(
+  evt,
+  territoryMapData: TerritoryMapData,
+): string {
+  const clickPos = getClickPositionInTerritory(evt, territoryMapData);
+
+  // here we've got name => {x, y}
+  let bestSlot = "";
+  let bestDist2 = 1e100;
+  territoryMapData!.labels!.forEach((label) => {
+    if (["nc", "sc"].includes(label.name)) {
+      const dist2 = (clickPos.x - label.x) ** 2 + (clickPos.y - label.y) ** 2;
+      if (dist2 < bestDist2) {
+        bestSlot = label.name;
+        bestDist2 = dist2;
+      }
+    }
+  });
+  return bestSlot;
+}
+
 /* eslint-disable no-param-reassign */
 export default function processMapClick(state, clickData) {
   const {
+    board,
     data: { data },
     order,
     ordersMeta,
@@ -68,6 +144,7 @@ export default function processMapClick(state, clickData) {
     maps,
     ownUnits,
   }: {
+    board: GameState["board"];
     data: { data: GameDataResponse["data"] };
     order: GameState["order"];
     ordersMeta: GameState["ordersMeta"];
@@ -188,12 +265,25 @@ export default function processMapClick(state, clickData) {
     } else if (clickUnitID === order.unitID) {
       updateOrder(state, { type: "Disband" });
     } else {
+      let clickTerrIDCQ = clickTerrID;
+      let territoryCQ = territory;
+      if (orderUnit.type === "Fleet" && territoryMeta.coastChildIDs) {
+        // have to figure out which coast, oy.
+        const bestSlot = getBestCoastalUnitSlot(evt, mapData);
+        territoryMeta.coastChildIDs.forEach((childID) => {
+          const mTerr = TerritoryMap[maps.terrIDToTerritory[childID]];
+          if (mTerr.unitSlotName === bestSlot) {
+            territoryCQ = mTerr.territory;
+            clickTerrIDCQ = maps.territoryToTerrID[territoryCQ];
+          }
+        });
+      }
       // n.b. this already handes standoffs etc.
-      const canMove = canUnitMove(ordersMeta[order.orderID], territory);
+      const canMove = canUnitMoveTo(ordersMeta[order.orderID], territoryCQ);
       if (canMove) {
-        updateOrder(state, { toTerrID: clickTerrID });
+        updateOrder(state, { toTerrID: clickTerrIDCQ });
       } else {
-        invalidClick(evt, territory);
+        invalidClick(evt, territoryCQ);
       }
     }
     return;
@@ -218,21 +308,7 @@ export default function processMapClick(state, clickData) {
     let territoryCQ = territory;
     if (orderUnit.type === "Fleet" && territoryMeta.coastChildIDs) {
       // have to figure out which coast, oy.
-      const clickPos = getClickPositionInTerritory(evt, mapData);
-
-      // here we've got name => {x, y}
-      let bestSlot = "";
-      let bestDist2 = 1e100;
-      mapData!.labels!.forEach((label) => {
-        if (["nc", "sc"].includes(label.name)) {
-          const dist2 =
-            (clickPos.x - label.x) ** 2 + (clickPos.y - label.y) ** 2;
-          if (dist2 < bestDist2) {
-            bestSlot = label.name;
-            bestDist2 = dist2;
-          }
-        }
-      });
+      const bestSlot = getBestCoastalUnitSlot(evt, mapData);
       territoryMeta.coastChildIDs.forEach((childID) => {
         const mTerr = TerritoryMap[maps.terrIDToTerritory[childID]];
         if (mTerr.unitSlotName === bestSlot) {
@@ -245,7 +321,7 @@ export default function processMapClick(state, clickData) {
 
     if (!order.viaConvoy) {
       // direct move
-      const canMove = canUnitMove(ordersMeta[order.orderID], territoryCQ);
+      const canMove = canUnitMoveTo(ordersMeta[order.orderID], territoryCQ);
       if (canMove) {
         updateOrder(state, {
           toTerrID: clickTerrIDCQ,
@@ -285,7 +361,11 @@ export default function processMapClick(state, clickData) {
     } else {
       // click 2
       // eslint-disable-next-line no-lonely-if
-      if (canUnitMove(ordersMeta[order.orderID], territory)) {
+      if (
+        canUnitMoveToRegion(ordersMeta[order.orderID], territory) &&
+        board &&
+        canSupporteeMoveToOrHoldAtRegion(order, territory, maps, board)
+      ) {
         updateOrder(state, { toTerrID: clickTerrID });
       } else {
         invalidClick(evt, territory);
