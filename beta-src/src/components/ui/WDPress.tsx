@@ -54,6 +54,7 @@ const WDPress: React.FC<WDPressProps> = function ({
   );
 
   const { user, gameID } = useAppSelector(gameOverview);
+
   const messages = useAppSelector(({ game }) => game.messages.messages);
   const newMessagesFrom = useAppSelector(
     ({ game }) => game.messages.newMessagesFrom,
@@ -84,6 +85,7 @@ const WDPress: React.FC<WDPressProps> = function ({
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     // scroll to the bottom of the message list
+    // FIXME: should this happen if we get a message from a 3rd party?
     messagesEndRef.current?.scrollIntoView();
   }, [messages, countryIDSelected]);
 
