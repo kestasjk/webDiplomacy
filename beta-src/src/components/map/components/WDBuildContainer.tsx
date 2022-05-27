@@ -14,10 +14,10 @@ import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import WDBuildUnitButtons from "./WDBuildUnitButtons";
 import { TerritoryMeta } from "../../../state/interfaces/TerritoriesState";
 import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
+import provincesMapData from "../../../data/map/ProvincesMapData";
 
 const WDBuildContainer: React.FC = function (): React.ReactElement {
   const dispatch = useAppDispatch();
-  const territoriesMeta = useAppSelector(gameTerritoriesMeta);
   const maps = useAppSelector(gameMaps);
 
   const build = (availableOrder, canBuild, toTerrID) => {
@@ -50,14 +50,14 @@ const WDBuildContainer: React.FC = function (): React.ReactElement {
     return <Box />;
   }
   const territory = maps.terrIDToTerritory[order.toTerrID];
-  const territoryMeta = territoriesMeta[territory];
   const { province, unitSlotName } = TerritoryMap[territory];
   const canBuild =
-    territoryMeta?.type === "Coast" ? BuildUnit.All : BuildUnit.Army;
-  console.log({ canBuild, territoryMeta });
+    provincesMapData[province].type === "Coast"
+      ? BuildUnit.All
+      : BuildUnit.Army;
   return (
     <WDBuildUnitButtons
-      key={`${territoryMeta?.id}-${unitSlotName}`}
+      key={`${province}-${unitSlotName}`}
       availableOrder={order.orderID}
       canBuild={canBuild}
       clickCallback={build}
