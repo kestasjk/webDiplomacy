@@ -182,6 +182,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
         units,
         orders: ordersHistorical,
         territories: data.data.territories,
+        isLatestPhase: true,
       };
     }
 
@@ -203,9 +204,10 @@ const WDMapController: React.FC = function (): React.ReactElement {
       units: unitsLive,
       orders: phaseHistorical.orders,
       territories: data.data.territories,
+      isLatestPhase: false,
     };
   };
-  const { phase, units, orders, territories } = updateForPhase();
+  const { phase, units, orders, territories, isLatestPhase } = updateForPhase();
 
   React.useLayoutEffect(() => {
     if (svgElement.current) {
@@ -265,6 +267,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
         orders={orders}
         maps={maps}
         territories={territories}
+        isLatestPhase={isLatestPhase}
       />
     </div>
   );
