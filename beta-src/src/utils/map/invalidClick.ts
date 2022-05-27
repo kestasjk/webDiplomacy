@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import Province from "../../enums/map/variants/classic/Province";
 
 export default function invalidClick(
-  evt: any, // FIXME: what type is this?
+  evt: React.MouseEvent<SVGGElement, MouseEvent>,
   name: Province,
 ): void {
   console.log("INVALID CLICK");

@@ -286,7 +286,7 @@ export default function processMapClick(
     } else {
       let clickTerrIDCQ = clickTerrID;
       let territoryCQ = rootTerritory;
-      if (orderUnit.type === "Fleet" && territoryMeta.coastChildIDs) {
+      if (orderUnit.type === "Fleet") {
         // have to figure out which coast, oy.
         territoryCQ = getBestCoastalUnitTerritory(evt, provinceMapData);
         clickTerrIDCQ = maps.territoryToTerrID[territoryCQ];
@@ -315,11 +315,10 @@ export default function processMapClick(
   } else if (order.type === "Move") {
     //------------------------------------------------------------
     // tricky: get coast-qualified versions if the dest is a coast
-    // FIXME: there should be a single object that has all the data for this
     // -----------------------------------------------------------
     let clickTerrIDCQ = clickTerrID;
     let territoryCQ = rootTerritory;
-    if (orderUnit.type === "Fleet" && territoryMeta.coastChildIDs) {
+    if (orderUnit.type === "Fleet") {
       territoryCQ = getBestCoastalUnitTerritory(evt, provinceMapData);
       clickTerrIDCQ = maps.territoryToTerrID[territoryCQ];
     }
