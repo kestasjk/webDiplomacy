@@ -132,8 +132,16 @@ function getBestCoastalUnitSlot(
   return bestSlot;
 }
 
+interface MapClickData {
+  evt: React.MouseEvent<SVGGElement, MouseEvent>;
+  territory: Territory;
+}
+
 /* eslint-disable no-param-reassign */
-export default function processMapClick(state, clickData) {
+export default function processMapClick(
+  state: GameState,
+  clickData: { payload: MapClickData },
+) {
   const {
     board,
     data: { data },
@@ -163,7 +171,7 @@ export default function processMapClick(state, clickData) {
   const { orderStatus } = member;
 
   const {
-    payload: { clickObject, evt, territory },
+    payload: { evt, territory },
   } = clickData;
 
   if (orderStatus.Ready) {
@@ -171,7 +179,7 @@ export default function processMapClick(state, clickData) {
     invalidClick(evt, territory);
     return; // FIXME this is very confusing for the user!
   }
-  const territoryMeta: TerritoryMeta = territoriesMeta[territory];
+  const territoryMeta: TerritoryMeta | undefined = territoriesMeta[territory];
   // Click is outside the map entirely?
   if (!territoryMeta) {
     invalidClick(evt, territory);

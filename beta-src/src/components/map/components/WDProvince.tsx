@@ -129,10 +129,12 @@ const WDTerritory: React.FC<WDProvinceProps> = function ({
       }
     });
 
-  const clickAction = function (evt, clickObject: ClickObjectType) {
+  const clickAction = function (
+    evt: React.MouseEvent<SVGGElement, MouseEvent>,
+    clickObject: ClickObjectType,
+  ) {
     dispatch(
       gameApiSliceActions.processMapClick({
-        clickObject,
         evt,
         territory,
       }),
