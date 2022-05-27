@@ -6,7 +6,12 @@ import PathSearchClass from "./PathSearchClass";
 import PathClass from "./PathClass";
 
 import { CoastType, TerritoryType } from "./enums";
-import { ITerritory, IBorder, ICoastalBorder, ITerrStatus } from "./Interfaces";
+import {
+  ITerritory,
+  IBorder,
+  ICoastalBorder,
+  IProvinceStatus,
+} from "./Interfaces";
 
 export default class TerritoryClass {
   id!: string;
@@ -78,7 +83,7 @@ export default class TerritoryClass {
   constructor(
     terrData: ITerritory,
     board: BoardClass,
-    terrStatusData?: ITerrStatus,
+    terrStatusData?: IProvinceStatus,
   ) {
     Object.assign(this, {
       ...terrData,

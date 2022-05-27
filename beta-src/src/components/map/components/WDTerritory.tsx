@@ -6,7 +6,7 @@ import TerritoryMap, {
 } from "../../../data/map/variants/classic/TerritoryMap";
 import Territories from "../../../data/Territories";
 import UIState from "../../../enums/UIState";
-import { Coordinates, TerritoryMapData } from "../../../interfaces";
+import { Coordinates, ProvinceMapData } from "../../../interfaces";
 import {
   gameApiSliceActions,
   gameMaps,
@@ -29,7 +29,7 @@ import Territory from "../../../enums/map/variants/classic/Territory";
 import OrdersMeta from "../../../state/interfaces/SavedOrders";
 
 interface WDTerritoryProps {
-  territoryMapData: TerritoryMapData;
+  territoryMapData: ProvinceMapData;
   territoryMeta: TerritoryMeta | undefined;
   units: Unit[];
 }

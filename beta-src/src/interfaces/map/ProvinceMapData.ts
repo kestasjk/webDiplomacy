@@ -17,7 +17,7 @@ export interface UnitSlot extends Coordinates {
 }
 
 // just used for construction the TerritoryMapData. Do not use.
-export interface TerritoryMapDrawData extends BBox {
+export interface ProvinceMapDrawData extends BBox {
   centerPos?: Coordinates;
   fill?: string;
   labels?: Label[];
@@ -28,8 +28,8 @@ export interface TerritoryMapDrawData extends BBox {
   viewBox?: string;
 }
 
-export interface TerritoryMapData
-  extends TerritoryMapDrawData,
+export interface ProvinceMapData
+  extends ProvinceMapDrawData,
     TerritoryI,
     BBox {
   unitSlotsBySlotName: { [key: string]: UnitSlot };

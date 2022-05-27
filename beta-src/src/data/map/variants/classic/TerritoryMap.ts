@@ -1,12 +1,12 @@
 import Territory from "../../../../enums/map/variants/classic/Territory";
 import territoriesMapData from "../../TerritoriesMapData";
-import { TerritoryMapData, UnitSlotName } from "../../../../interfaces";
+import { ProvinceMapData, UnitSlotName } from "../../../../interfaces";
 
 export interface MTerritory {
   parent?: Territory;
   territory: Territory;
   unitSlotName: UnitSlotName;
-  territoryMapData: TerritoryMapData;
+  territoryMapData: ProvinceMapData;
 }
 
 type ITerritoryMap = {

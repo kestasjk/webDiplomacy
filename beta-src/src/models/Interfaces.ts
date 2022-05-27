@@ -4,7 +4,7 @@ import UnitClass from "./UnitClass";
 export interface IBoard {
   context: IContext;
   territories: ITerritory[];
-  terrStatus: ITerrStatus[];
+  terrStatus: IProvinceStatus[];
   units: IUnit[];
 }
 
@@ -53,7 +53,7 @@ export interface IUnitHistorical {
   countryID: number;
 }
 
-export interface ITerrStatus {
+export interface IProvinceStatus {
   id: string;
   // occupiedFromTerrID is used to mark where a unit came from when moving
   // in to occupy another, and is used to determine what the legal retreat

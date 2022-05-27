@@ -1,7 +1,7 @@
 import ContextVar from "../../interfaces/state/ContextVar";
 import {
   ITerritory,
-  ITerrStatus,
+  IProvinceStatus,
   IUnit,
   IOrderData,
 } from "../../models/Interfaces";
@@ -18,7 +18,7 @@ export interface GameData {
     // Key is the Unit ID.
     [key: string]: IUnit;
   };
-  territoryStatuses: ITerrStatus[];
+  territoryStatuses: IProvinceStatus[];
 }
 
 interface GameDataResponse {

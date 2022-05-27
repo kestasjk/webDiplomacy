@@ -1,13 +1,13 @@
 import Territory from "../../enums/map/variants/classic/Territory";
 import Territories from "../Territories";
 import {
-  TerritoryMapData,
-  TerritoryMapDrawData,
-} from "../../interfaces/map/TerritoryMapData";
+  ProvinceMapData,
+  ProvinceMapDrawData,
+} from "../../interfaces/map/ProvinceMapData";
 import Texture from "../../enums/Texture";
 import addTextureDefaults from "../../utils/map/addTextureDefaults";
 
-const mapDrawData: { [key in Territory]?: TerritoryMapDrawData } = {
+const mapDrawData: { [key in Territory]?: ProvinceMapDrawData } = {
   /* land territories */
   [Territory.ALBANIA]: {
     fill: "none",
@@ -2860,7 +2860,7 @@ const mapDrawData: { [key in Territory]?: TerritoryMapDrawData } = {
   },
 };
 
-const territoriesMapData: { [key: string]: TerritoryMapData } =
+const territoriesMapData: { [key: string]: ProvinceMapData } =
   Object.fromEntries(
     Object.entries(mapDrawData).map(([territory, drawData]) => [
       territory,

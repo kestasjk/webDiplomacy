@@ -2,7 +2,7 @@ import ConvoyGroupClass from "./ConvoyGroupClass";
 import TerritoryClass from "./TerritoryClass";
 import UnitClass from "./UnitClass";
 
-import { IUnit, ITerritory, IContext, ITerrStatus } from "./Interfaces";
+import { IUnit, ITerritory, IContext, IProvinceStatus } from "./Interfaces";
 import { CoastType, GamePhaseType, UnitType, TerritoryType } from "./enums";
 
 export default class BoardClass {
@@ -17,7 +17,7 @@ export default class BoardClass {
   constructor(
     public context: IContext,
     territories: ITerritory[],
-    terrStatus: ITerrStatus[],
+    terrStatus: IProvinceStatus[],
     units: IUnit[],
   ) {
     const coastParents: TerritoryClass[] = [];

@@ -6,7 +6,7 @@ import TerritoryMap, {
 import Territories from "../../../../data/Territories";
 import BuildUnit from "../../../../enums/BuildUnit";
 import Territory from "../../../../enums/map/variants/classic/Territory";
-import { TerritoryMapData } from "../../../../interfaces/map/TerritoryMapData";
+import { ProvinceMapData } from "../../../../interfaces/map/ProvinceMapData";
 import BoardClass from "../../../../models/BoardClass";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
@@ -83,7 +83,7 @@ function canSupporteeMoveToOrHoldAtRegion(
   );
 }
 
-function getClickPositionInTerritory(evt, territoryMapData: TerritoryMapData) {
+function getClickPositionInTerritory(evt, territoryMapData: ProvinceMapData) {
   const boundingRect = evt.target.getBoundingClientRect();
   const diffX = evt.clientX - boundingRect.x;
   const diffY = evt.clientY - boundingRect.y;
@@ -113,7 +113,7 @@ function canSupportTerritory(
 // Returns either "nc" or "sc", the one closest to the position of the click.
 function getBestCoastalUnitSlot(
   evt,
-  territoryMapData: TerritoryMapData,
+  territoryMapData: ProvinceMapData,
 ): string {
   const clickPos = getClickPositionInTerritory(evt, territoryMapData);
 
