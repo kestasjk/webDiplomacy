@@ -10,7 +10,6 @@ import Texture from "../../enums/Texture";
 import addTextureDefaults from "../../utils/map/addTextureDefaults";
 import { Coordinates } from "../../interfaces/map/Coordinates";
 import { Label } from "../../interfaces/map/Label";
-import TerritoryType from "../../types/map/TerritoryType";
 import { TextureData } from "../../interfaces/map/TextureData";
 
 interface PreUnitSlot extends Coordinates {
@@ -27,7 +26,7 @@ interface ProvinceMapDrawData extends BBox {
   path: string;
   playable: boolean;
   texture?: TextureData;
-  type: TerritoryType;
+  type: "land" | "water";
   unitSlots: PreUnitSlot[];
   viewBox?: string;
 }

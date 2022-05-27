@@ -1,6 +1,5 @@
 export * from "./Viewport";
 export * from "./CountryTableData";
-export * from "./TerritoryI";
 export * from "./map/Coordinates";
 export * from "./map/ProvinceMapData";
 export * from "./map/Label";

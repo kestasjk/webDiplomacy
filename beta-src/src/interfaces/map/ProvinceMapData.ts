@@ -2,8 +2,6 @@ import { Coordinates, Label, TextureData } from "..";
 import GetArrayElementType from "../../utils/getArrayElementType";
 import Territory from "../../enums/map/variants/classic/Territory";
 import Province from "../../enums/map/variants/classic/Province";
-import TerritoryType from "../../types/map/TerritoryType";
-import TerritoryLabel from "../../types/UnitLabel";
 
 export interface Dimensions {
   height: number;
@@ -30,7 +28,7 @@ export interface ProvinceMapData extends BBox {
   path: string;
   playable: boolean;
   texture?: TextureData;
-  type: TerritoryType;
+  type: "land" | "water";
   rootTerritory: Territory | null; // null for unplayable provinces
   unitSlots: UnitSlot[]; // always present, but might be zero-length
   viewBox?: string;
