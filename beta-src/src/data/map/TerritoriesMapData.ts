@@ -368,8 +368,8 @@ const mapDrawData: { [key in Territory]?: TerritoryMapDrawData } = {
     labels: [
       {
         name: "main",
-        x: 90,
-        y: 133,
+        x: 80,
+        y: 123,
       },
     ],
     unitSlots: [
@@ -378,8 +378,8 @@ const mapDrawData: { [key in Territory]?: TerritoryMapDrawData } = {
         x: 125,
         y: 60,
         arrowReceiver: {
-          x: 70,
-          y: 160,
+          x: 120,
+          y: 145,
         },
       },
     ],
