@@ -1,4 +1,4 @@
-import { Box, Button, Grid } from "@mui/material";
+import { Box, Button, Grid, Stack } from "@mui/material";
 import * as React from "react";
 import Position from "../../enums/Position";
 import { IContext } from "../../models/Interfaces";
@@ -17,12 +17,19 @@ import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
 import GameStatusResponse from "../../state/interfaces/GameStatusResponse";
 import debounce from "../../utils/debounce";
-import WDPositionContainer from "../ui/WDPositionContainer";
 
 const getPhaseKey = function (
   data: GameOverviewResponse | GameStatusResponse | IContext,
 ): string {
   return `${data.turn}.${data.phase}`;
+};
+
+const centeredStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  justifyContent: "center",
+  alignItems: "center",
 };
 
 const WDMainController: React.FC = function ({ children }): React.ReactElement {
@@ -43,8 +50,7 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
     ? getPhaseKey(data.contextVars.context)
     : "<BAD>";
 
-  const consistentPhase =
-    overviewKey === statusKey && overviewKey === dataKey && false; // FIXME: data.phase
+  const consistentPhase = overviewKey === statusKey && overviewKey === dataKey;
   const staleData = userActivity.processTime !== overview.processTime;
 
   if (!consistentPhase || userActivity.makeNewCall) {
@@ -70,40 +76,23 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   }, 500);
 
   if (!consistentPhase) {
-    return (
-      <Box
-        sx={{
-          position: "fixed",
-          left: "50%",
-          top: "50%",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        Waiting for consistent state...
-      </Box>
-    );
+    return <Box>Loading...</Box>;
   }
   if (overviewKey !== displayedPhaseKey) {
-    // && displayedPhaseKey !== null) {
+    //  && displayedPhaseKey !== null) {
     return (
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Button
-          size="large"
-          variant="contained"
-          color="success"
-          onClick={() => setDisplayedPhaseKey(overviewKey)}
-        >
-          View {overview.season} {overview.year} {overview.phase}
-        </Button>
+      <Box sx={centeredStyle}>
+        <Stack direction="column" alignItems="center">
+          <Box sx={{ m: "4px" }}>Game progressed to a new phase...</Box>
+          <Button
+            size="large"
+            variant="contained"
+            color="success"
+            onClick={() => setDisplayedPhaseKey(overviewKey)}
+          >
+            View {overview.season} {overview.year} {overview.phase}
+          </Button>
+        </Stack>
       </Box>
     );
   }

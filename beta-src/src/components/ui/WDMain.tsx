@@ -12,8 +12,8 @@ const WDMain: React.FC = function (): React.ReactElement {
     <React.Suspense fallback={<div>Loading...</div>}>
       <WDMainController>
         <WDMapController />
+        <WDUI />
       </WDMainController>
-      <WDUI />
     </React.Suspense>
   );
 };
