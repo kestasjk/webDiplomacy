@@ -1,11 +1,36 @@
 import Territory from "../../enums/map/variants/classic/Territory";
 import Province from "../../enums/map/variants/classic/Province";
 import {
+  BBox,
   ProvinceMapData,
-  ProvinceMapDrawData,
+  UnitSlot,
+  UnitSlotName,
 } from "../../interfaces/map/ProvinceMapData";
 import Texture from "../../enums/Texture";
 import addTextureDefaults from "../../utils/map/addTextureDefaults";
+import { Coordinates } from "../../interfaces/map/Coordinates";
+import { Label } from "../../interfaces/map/Label";
+import TerritoryType from "../../types/map/TerritoryType";
+import { TextureData } from "../../interfaces/map/TextureData";
+
+interface PreUnitSlot extends Coordinates {
+  name: UnitSlotName;
+  arrowReceiver: Coordinates;
+  territory?: Territory;
+}
+
+interface ProvinceMapDrawData extends BBox {
+  abbr: string;
+  centerPos?: Coordinates;
+  fill?: string;
+  labels?: Label[];
+  path: string;
+  playable: boolean;
+  texture?: TextureData;
+  type: TerritoryType;
+  unitSlots: PreUnitSlot[];
+  viewBox?: string;
+}
 
 const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   /* land */
@@ -358,6 +383,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
         name: "nc",
         x: 150,
         y: 40,
+        territory: Territory.BULGARIA_NORTH_COAST,
         arrowReceiver: {
           x: 195,
           y: 72,
@@ -367,6 +393,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
         name: "sc",
         x: 105,
         y: 106,
+        territory: Territory.BULGARIA_SOUTH_COAST,
         arrowReceiver: {
           x: 120,
           y: 140,
@@ -1519,6 +1546,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
         name: "sc",
         x: 135,
         y: 700,
+        territory: Territory.SAINT_PETERSBURG_SOUTH_COAST,
         arrowReceiver: {
           x: 173,
           y: 615,
@@ -1528,6 +1556,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
         name: "nc",
         x: 347,
         y: 373,
+        territory: Territory.SAINT_PETERSBURG_NORTH_COAST,
         arrowReceiver: {
           x: 302,
           y: 433,
@@ -1725,6 +1754,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
         name: "nc",
         x: 150,
         y: 55,
+        territory: Territory.SPAIN_NORTH_COAST,
         arrowReceiver: {
           x: 216,
           y: 116,
@@ -1734,6 +1764,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
         name: "sc",
         x: 55,
         y: 355,
+        territory: Territory.SPAIN_SOUTH_COAST,
         arrowReceiver: {
           x: 165,
           y: 375,
@@ -3071,18 +3102,68 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
 
 const provincesMapData: { [key: string]: ProvinceMapData } = Object.fromEntries(
   Object.entries(mapDrawData).map(([province, drawData]) => {
+    const {
+      abbr,
+      type,
+      fill,
+      labels,
+      width,
+      height,
+      x,
+      y,
+      playable,
+      texture,
+      path,
+    } = drawData;
+    // For provinces that are playable, their string matches the Territory enum exactly
+    // So just brute force cast it
+    const rootTerritory = playable ? (province as unknown as Territory) : null;
+    const unitSlots = drawData.unitSlots.map((preUnitSlot: PreUnitSlot) => {
+      let territory: Territory;
+      if (preUnitSlot.name === "main") {
+        if (!rootTerritory) {
+          throw new Error(
+            `Province with unit slots that isn't playable: ${province.toString()}`,
+          );
+        }
+        territory = rootTerritory;
+      } else {
+        if (!preUnitSlot.territory) {
+          throw new Error(
+            `Unknown territory for unit slot in province: ${province.toString()}`,
+          );
+        }
+        territory = preUnitSlot.territory;
+      }
+      const unitSlot: UnitSlot = {
+        name: preUnitSlot.name,
+        x: preUnitSlot.x,
+        y: preUnitSlot.y,
+        territory,
+        arrowReceiver: preUnitSlot.arrowReceiver,
+      };
+      return unitSlot;
+    });
     return [
       province,
       {
-        ...drawData,
-        territory: province as Territory,
+        abbr,
+        type,
+        fill,
+        labels,
+        width,
+        height,
+        x,
+        y,
+        playable,
+        path,
+        province: province as Province,
+        rootTerritory,
         viewBox: `0 0 ${drawData.width} ${drawData.height}`,
-        unitSlotsBySlotName:
-          (drawData.unitSlots &&
-            Object.fromEntries(
-              drawData.unitSlots.map((slot) => [slot.name, slot]),
-            )) ||
-          {},
+        unitSlots,
+        unitSlotsBySlotName: Object.fromEntries(
+          unitSlots.map((slot) => [slot.name, slot]),
+        ),
         texture: addTextureDefaults(drawData.texture),
       },
     ];

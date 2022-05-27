@@ -5,6 +5,7 @@ import TerritoryMap, {
 } from "../../../../data/map/variants/classic/TerritoryMap";
 import BuildUnit from "../../../../enums/BuildUnit";
 import Territory from "../../../../enums/map/variants/classic/Territory";
+import Province from "../../../../enums/map/variants/classic/Province";
 import { ProvinceMapData } from "../../../../interfaces/map/ProvinceMapData";
 import BoardClass from "../../../../models/BoardClass";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
@@ -34,19 +35,19 @@ function canUnitMoveTo(orderMeta: OrderMeta, territory: Territory): boolean {
 
 function canUnitMoveToProvince(
   orderMeta: OrderMeta,
-  territory: Territory,
+  provinceMapData: ProvinceMapData,
 ): boolean {
   const { allowedBorderCrossings } = orderMeta;
   return !!allowedBorderCrossings?.find(
     (border) =>
-      TerritoryMap[border.name].territory === territory ||
-      TerritoryMap[border.name].parent === territory,
+      TerritoryMap[border.name].territory === provinceMapData.rootTerritory ||
+      TerritoryMap[border.name].parent === provinceMapData.rootTerritory,
   );
 }
 
 function canSupporteeMoveToOrHoldAtProvince(
   order: OrderState,
-  territory: Territory,
+  provinceMapData: ProvinceMapData,
   maps: GameStateMaps,
   board: BoardClass,
 ): boolean {
@@ -54,8 +55,9 @@ function canSupporteeMoveToOrHoldAtProvince(
     return false;
   }
   const supporteeTerr: Territory = maps.terrIDToTerritory[order.fromTerrID];
-  const supporteeRegion: Territory =
-    TerritoryMap[supporteeTerr].parent || supporteeTerr;
+  // FIXME: Types
+  const supporteeProvince: Province = (TerritoryMap[supporteeTerr].parent ||
+    supporteeTerr) as unknown as Province;
   // Make sure you can find the unit
   const supporteeUnit = maps.provinceIDToUnit[order.fromTerrID];
   if (!supporteeUnit) {
@@ -71,13 +73,14 @@ function canSupporteeMoveToOrHoldAtProvince(
   // or the region is one where the supportee can move to a territory
   // of that region.
   return (
-    territory === supporteeRegion ||
+    provinceMapData.province === supporteeProvince ||
     !!board
       .getMovableTerritories(supporteeUnitClass)
       .find(
         (border) =>
-          TerritoryMap[border.name].territory === territory ||
-          TerritoryMap[border.name].parent === territory,
+          TerritoryMap[border.name].territory ===
+            provinceMapData.rootTerritory ||
+          TerritoryMap[border.name].parent === provinceMapData.rootTerritory,
       )
   );
 }
@@ -91,9 +94,9 @@ function getClickPositionInProvince(evt, provinceMapData: ProvinceMapData) {
   return { x: diffX / scaleX, y: diffY / scaleY };
 }
 
-function canSupportTerritory(
+function canSupportProvince(
   orderMeta: OrderMeta,
-  territory: Territory,
+  provinceMapData: ProvinceMapData,
 ): boolean {
   const { supportHoldChoices, supportMoveChoices } = orderMeta;
   // console.log({ supportHoldChoices, supportMoveChoices, territory });
@@ -106,11 +109,22 @@ function canSupportTerritory(
       all.push(webdipNameToTerritory[t.name]);
     });
   });
-  return all.includes(territory);
+  return (
+    provinceMapData.rootTerritory !== null &&
+    all.includes(provinceMapData.rootTerritory)
+  );
 }
 
-// Returns either "nc" or "sc", the one closest to the position of the click.
-function getBestCoastalUnitSlot(evt, provinceMapData: ProvinceMapData): string {
+// If the province has special coasts, returns special coastal territory closest
+// to the position of the click. Else just returns the single territory corresponding
+// to the province.
+function getBestCoastalUnitTerritory(
+  evt,
+  provinceMapData: ProvinceMapData,
+): Territory {
+  if (provinceMapData.unitSlots.length === 1) {
+    return provinceMapData.unitSlots[0].territory;
+  }
   const clickPos = getClickPositionInProvince(evt, provinceMapData);
 
   // here we've got name => {x, y}
@@ -125,12 +139,12 @@ function getBestCoastalUnitSlot(evt, provinceMapData: ProvinceMapData): string {
       }
     }
   });
-  return bestSlot;
+  return provinceMapData.unitSlotsBySlotName[bestSlot].territory;
 }
 
 interface MapClickData {
   evt: React.MouseEvent<SVGGElement, MouseEvent>;
-  territory: Territory;
+  province: Province;
 }
 
 /* eslint-disable no-param-reassign */
@@ -167,22 +181,24 @@ export default function processMapClick(
   const { orderStatus } = member;
 
   const {
-    payload: { evt, territory },
+    payload: { evt, province },
   } = clickData;
 
   if (orderStatus.Ready) {
     alert("You need to unready your orders to update them"); // FIXME: move to alerts modal!
-    invalidClick(evt, territory);
+    invalidClick(evt, province);
     return; // FIXME this is very confusing for the user!
   }
-  const territoryMeta: TerritoryMeta | undefined = territoriesMeta[territory];
+  const provinceMapData = provincesMapData[province];
+  const { rootTerritory } = provinceMapData;
+  const territoryMeta: TerritoryMeta | undefined = territoriesMeta[province];
   // Click is outside the map entirely?
-  if (!territoryMeta) {
-    invalidClick(evt, territory);
+  if (!territoryMeta || !rootTerritory) {
+    invalidClick(evt, province);
     return;
   }
 
-  const clickTerrID = maps.territoryToTerrID[territory];
+  const clickTerrID = maps.territoryToTerrID[province];
   let clickUnitID = maps.terrIDToUnit[clickTerrID];
   // Fixup unit for coast!
   if (!clickUnitID) {
@@ -201,7 +217,6 @@ export default function processMapClick(
   const clickUnit = data.units[clickUnitID];
   const orderUnit = data.units[order.unitID];
   const ownsCurUnit = ownUnits.includes(clickUnitID);
-  const mapData = provincesMapData[territory];
 
   // ---------------------- BUILD PHASE ---------------------------
   if (phase === "Builds") {
@@ -235,7 +250,7 @@ export default function processMapClick(
       member.countryID !== Number(territoryMeta.ownerCountryID) || // FIXME ugh string vs number
       (!territoryMeta.supply && !isDestroy)
     ) {
-      invalidClick(evt, territory);
+      invalidClick(evt, province);
       return;
     }
 
@@ -244,7 +259,7 @@ export default function processMapClick(
     const territoryHasUnit = !!territoryMeta.unitID;
     const unitValid = isDestroy === territoryHasUnit;
     if (!availableOrder || !unitValid) {
-      invalidClick(evt, territory);
+      invalidClick(evt, province);
       return;
     }
     resetOrder(state);
@@ -264,30 +279,24 @@ export default function processMapClick(
         // && clickUnit?.isRetreating) {
         startNewOrder(state, { unitID: clickUnitID, type: "Retreat" });
       } else {
-        invalidClick(evt, territory);
+        invalidClick(evt, province);
       }
     } else if (clickUnitID === order.unitID) {
       updateOrder(state, { type: "Disband" });
     } else {
       let clickTerrIDCQ = clickTerrID;
-      let territoryCQ = territory;
+      let territoryCQ = rootTerritory;
       if (orderUnit.type === "Fleet" && territoryMeta.coastChildIDs) {
         // have to figure out which coast, oy.
-        const bestSlot = getBestCoastalUnitSlot(evt, mapData);
-        territoryMeta.coastChildIDs.forEach((childID) => {
-          const mTerr = TerritoryMap[maps.terrIDToTerritory[childID]];
-          if (mTerr.unitSlotName === bestSlot) {
-            territoryCQ = mTerr.territory;
-            clickTerrIDCQ = maps.territoryToTerrID[territoryCQ];
-          }
-        });
+        territoryCQ = getBestCoastalUnitTerritory(evt, provinceMapData);
+        clickTerrIDCQ = maps.territoryToTerrID[territoryCQ];
       }
       // n.b. this already handes standoffs etc.
       const canMove = canUnitMoveTo(ordersMeta[order.orderID], territoryCQ);
       if (canMove) {
         updateOrder(state, { toTerrID: clickTerrIDCQ });
       } else {
-        invalidClick(evt, territoryCQ);
+        invalidClick(evt, province);
       }
     }
     return;
@@ -298,7 +307,7 @@ export default function processMapClick(
     if (clickUnitID && ownsCurUnit) {
       startNewOrder(state, { unitID: clickUnitID });
     } else {
-      invalidClick(evt, territory);
+      invalidClick(evt, province);
     }
   } else if (!order.type || clickUnitID === order.unitID) {
     // cancel the order
@@ -309,17 +318,10 @@ export default function processMapClick(
     // FIXME: there should be a single object that has all the data for this
     // -----------------------------------------------------------
     let clickTerrIDCQ = clickTerrID;
-    let territoryCQ = territory;
+    let territoryCQ = rootTerritory;
     if (orderUnit.type === "Fleet" && territoryMeta.coastChildIDs) {
-      // have to figure out which coast, oy.
-      const bestSlot = getBestCoastalUnitSlot(evt, mapData);
-      territoryMeta.coastChildIDs.forEach((childID) => {
-        const mTerr = TerritoryMap[maps.terrIDToTerritory[childID]];
-        if (mTerr.unitSlotName === bestSlot) {
-          territoryCQ = mTerr.territory;
-          clickTerrIDCQ = maps.territoryToTerrID[territoryCQ];
-        }
-      });
+      territoryCQ = getBestCoastalUnitTerritory(evt, provinceMapData);
+      clickTerrIDCQ = maps.territoryToTerrID[territoryCQ];
     }
     // -----------------------------------------------------------
 
@@ -331,7 +333,7 @@ export default function processMapClick(
           toTerrID: clickTerrIDCQ,
         });
       } else {
-        invalidClick(evt, territory);
+        invalidClick(evt, province);
       }
     } else {
       // via convoy
@@ -345,10 +347,10 @@ export default function processMapClick(
           viaConvoy: "Yes",
         });
         if (!processConvoy(state, evt)) {
-          invalidClick(evt, territory);
+          invalidClick(evt, province);
         }
       } else {
-        invalidClick(evt, territory);
+        invalidClick(evt, province);
       }
     }
   } else if (order.type === "Support") {
@@ -356,23 +358,23 @@ export default function processMapClick(
       // click 1
       if (
         clickUnitID &&
-        canSupportTerritory(ordersMeta[order.orderID], territory)
+        canSupportProvince(ordersMeta[order.orderID], provinceMapData)
       ) {
         updateOrder(state, { fromTerrID: clickTerrID });
       }
       // gotta support a unit
-      invalidClick(evt, territory);
+      invalidClick(evt, province);
     } else {
       // click 2
       // eslint-disable-next-line no-lonely-if
       if (
-        canUnitMoveToProvince(ordersMeta[order.orderID], territory) &&
+        canUnitMoveToProvince(ordersMeta[order.orderID], provinceMapData) &&
         board &&
-        canSupporteeMoveToOrHoldAtProvince(order, territory, maps, board)
+        canSupporteeMoveToOrHoldAtProvince(order, provinceMapData, maps, board)
       ) {
         updateOrder(state, { toTerrID: clickTerrID });
       } else {
-        invalidClick(evt, territory);
+        invalidClick(evt, province);
       }
     }
   } else if (order.type === "Convoy") {
@@ -383,13 +385,13 @@ export default function processMapClick(
         updateOrder(state, { fromTerrID: clickTerrID });
       } else {
         // gotta support a unit
-        invalidClick(evt, territory);
+        invalidClick(evt, province);
       }
     } else {
       // click 2
       updateOrder(state, { toTerrID: clickTerrID });
       if (!processConvoy(state, evt)) {
-        invalidClick(evt, territory);
+        invalidClick(evt, province);
       }
     }
   }

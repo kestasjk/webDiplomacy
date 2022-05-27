@@ -109,7 +109,6 @@ enum Territory {
   WARSAW = "WARSAW",
   WESTERN_MEDITERRANEAN = "WESTERN_MEDITERRANEAN",
   YORK = "YORK",
-  // Territory = "Territory"
 }
 
 export default Territory;

@@ -45,6 +45,7 @@ const WDBuildContainer: React.FC = function (): React.ReactElement {
   const territory = maps.terrIDToTerritory[order.toTerrID];
   const territoryMeta = territoriesMeta[territory];
   const { parent } = TerritoryMap[territory];
+  // FIXME does this really work on st petersburg??
   const unitSlotName = "main"; // FIXME
   const canBuild =
     territoryMeta?.type === "Coast" ? BuildUnit.All : BuildUnit.Army;
@@ -56,7 +57,7 @@ const WDBuildContainer: React.FC = function (): React.ReactElement {
       canBuild={canBuild}
       clickCallback={build}
       country={countryMap[userMember.country]}
-      territoryName={parent || territory}
+      provinceName={parent || territory}
       unitSlotName={unitSlotName}
       toTerrID={order.toTerrID}
     />

@@ -2,7 +2,7 @@ import * as React from "react";
 import WDProvince from "../../../components/WDProvince";
 import { Unit } from "../../../../../utils/map/getUnits";
 import provincesMapData from "../../../../../data/map/ProvincesMapData";
-import Territory from "../../../../../enums/map/variants/classic/Territory";
+import Province from "../../../../../enums/map/variants/classic/Province";
 import { gameTerritoriesMeta } from "../../../../../state/game/game-api-slice";
 import { useAppSelector } from "../../../../../state/hooks";
 
@@ -18,13 +18,13 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
   const unplayableProvinces = Object.values(provincesMapData)
     .filter((data) => !data.playable)
     .map((data) => {
-      const territoryMeta = territoriesMeta[data.territory];
+      const territoryMeta = territoriesMeta[data.province];
       return (
         <WDProvince
           provinceMapData={data}
           territoryMeta={territoryMeta}
           units={units}
-          key={`${data.territory}-territory`}
+          key={`${data.province}-province`}
         />
       );
     });
@@ -33,20 +33,20 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
   const playableProvincesData = Object.values(provincesMapData).filter(
     (data) =>
       data.playable &&
-      data.territory !== Territory.NAPLES &&
-      data.territory !== Territory.ROME,
+      data.province !== Province.NAPLES &&
+      data.province !== Province.ROME,
   );
-  playableProvincesData.push(provincesMapData[Territory.NAPLES]);
-  playableProvincesData.push(provincesMapData[Territory.ROME]);
+  playableProvincesData.push(provincesMapData[Province.NAPLES]);
+  playableProvincesData.push(provincesMapData[Province.ROME]);
 
   const playableProvinces = playableProvincesData.map((data) => {
-    const territoryMeta = territoriesMeta[data.territory];
+    const territoryMeta = territoriesMeta[data.province];
     return (
       <WDProvince
         provinceMapData={data}
         territoryMeta={territoryMeta}
         units={units}
-        key={`${data.territory}-territory`}
+        key={`${data.province}-province`}
       />
     );
   });

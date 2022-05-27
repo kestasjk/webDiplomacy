@@ -24,6 +24,7 @@ import WDCenter from "./WDCenter";
 import WDLabel from "./WDLabel";
 import WDUnitSlot from "./WDUnitSlot";
 import { Unit, UnitDrawMode } from "../../../utils/map/getUnits";
+import Province from "../../../enums/map/variants/classic/Province";
 import Territory from "../../../enums/map/variants/classic/Territory";
 import OrdersMeta from "../../../state/interfaces/SavedOrders";
 
@@ -44,7 +45,7 @@ const WDProvince: React.FC<WDProvinceProps> = function ({
   const { user, members } = useAppSelector(gameOverview);
   const userCountry = countryMap[user.member.country];
 
-  const { territory } = provinceMapData;
+  const { province } = provinceMapData;
   let territoryFill = "none";
   let territoryFillOpacity = 0;
   const territoryStrokeOpacity = 1;
@@ -114,7 +115,7 @@ const WDProvince: React.FC<WDProvinceProps> = function ({
       }
       const wdUnit = (
         <WDUnit
-          id={`${territory}-unit`}
+          id={`${province}-unit`}
           country={unit.country}
           meta={unit}
           type={unit.unit.type as UnitType}
@@ -130,30 +131,29 @@ const WDProvince: React.FC<WDProvinceProps> = function ({
 
   const clickAction = function (
     evt: React.MouseEvent<SVGGElement, MouseEvent>,
-    clickObject: ClickObjectType,
   ) {
     dispatch(
       gameApiSliceActions.processMapClick({
         evt,
-        territory,
+        province,
       }),
     );
   };
   return (
     <svg
       height={provinceMapData.height}
-      id={`${territory}-territory`}
+      id={`${province}-province`}
       viewBox={provinceMapData.viewBox}
       width={provinceMapData.width}
       x={provinceMapData.x}
       y={provinceMapData.y}
     >
-      <g onClick={(e) => clickAction(e, "territory")}>
+      <g onClick={(e) => clickAction(e)}>
         {provinceMapData.texture?.texture && (
           <path
             d={provinceMapData.path}
             fill={provinceMapData.texture.texture}
-            id={`${territory}-texture`}
+            id={`${province}-texture`}
             stroke={provinceMapData.texture.stroke}
             strokeOpacity={provinceMapData.texture.strokeOpacity}
             strokeWidth={provinceMapData.texture.strokeWidth}
@@ -163,7 +163,7 @@ const WDProvince: React.FC<WDProvinceProps> = function ({
           d={provinceMapData.path}
           fill={territoryFill}
           fillOpacity={territoryFillOpacity}
-          id={`${territory}-control-path`}
+          id={`${province}-control-path`}
           stroke={theme.palette.primary.main}
           strokeOpacity={1}
           strokeWidth={territoryStrokeOpacity}
@@ -172,7 +172,7 @@ const WDProvince: React.FC<WDProvinceProps> = function ({
       {provinceMapData.centerPos && (
         <g className="no-pointer-events">
           <WDCenter
-            territory={territory}
+            province={province}
             x={provinceMapData.centerPos.x}
             y={provinceMapData.centerPos.y}
           />
@@ -181,7 +181,7 @@ const WDProvince: React.FC<WDProvinceProps> = function ({
       {provinceMapData.labels &&
         provinceMapData.labels.map(({ name, text, style, x, y }, i) => {
           let txt = text;
-          const id = `${territory}-label-${name}`;
+          const id = `${province}-label-${name}`;
           if (!txt) {
             txt = provinceMapData.abbr;
           }
@@ -202,7 +202,7 @@ const WDProvince: React.FC<WDProvinceProps> = function ({
       {provinceMapData.unitSlots
         .filter(({ name }) => name in unitFCs)
         .map(({ name, x, y }) => (
-          <WDUnitSlot key={name} name={name} territory={territory} x={x} y={y}>
+          <WDUnitSlot key={name} name={name} x={x} y={y}>
             {unitFCs[name]}
           </WDUnitSlot>
         ))}
@@ -216,7 +216,6 @@ const WDProvince: React.FC<WDProvinceProps> = function ({
             <WDUnitSlot
               key={unitName}
               name={unitName}
-              territory={territory}
               x={arrowReceiver.x - UNIT_WIDTH / 2}
               y={arrowReceiver.y - UNIT_HEIGHT / 2}
             >

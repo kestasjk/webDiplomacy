@@ -16,7 +16,7 @@ export interface BuildData {
   ) => void;
   country: Country;
   canBuild: BuildUnit;
-  territoryName: string | null;
+  provinceName: string | null;
   unitSlotName: string;
   toTerrID: string;
 }
@@ -26,21 +26,21 @@ const WDBuildUnitButtons: React.FC<BuildData> = function ({
   clickCallback,
   country,
   canBuild,
-  territoryName,
+  provinceName,
   unitSlotName,
   toTerrID,
 }): React.ReactElement {
-  const labelId = `${territoryName}-label-${unitSlotName}`;
+  const labelId = `${provinceName}-label-${unitSlotName}`;
   const label: SVGTextElement = document.getElementById(
     labelId,
   ) as unknown as SVGTextElement;
-  const territory: SVGSVGElement = document.getElementById(
-    `${territoryName}-territory`,
+  const provinceElem: SVGSVGElement = document.getElementById(
+    `${provinceName}-province`,
   ) as unknown as SVGSVGElement;
   if (!label) throw Error(labelId);
   const { x, y } = label.getBBox();
-  let svgX = Number(territory.getAttribute("x")) + x;
-  let svgY = Number(territory.getAttribute("y")) + y;
+  let svgX = Number(provinceElem.getAttribute("x")) + x;
+  let svgY = Number(provinceElem.getAttribute("y")) + y;
   let rw = 70;
   const rh = 70;
   const rBorder = 10;

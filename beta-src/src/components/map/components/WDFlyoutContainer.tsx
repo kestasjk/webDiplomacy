@@ -9,6 +9,7 @@ import {
 } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import Territory from "../../../enums/map/variants/classic/Territory";
+import Province from "../../../enums/map/variants/classic/Province";
 import { Unit } from "../../../utils/map/getUnits";
 import isConvoyable from "../../../utils/state/isConvoyable";
 
@@ -27,6 +28,7 @@ const WDFlyoutContainer: React.FC<WDFlyoutContainerProps> = function ({
   const maps = useAppSelector(gameMaps);
   const board = useAppSelector(gameBoard);
 
+  console.log("FLYOUT");
   console.log({ order });
 
   if (!order.inProgress || order.type || !order.unitID) {
@@ -41,6 +43,8 @@ const WDFlyoutContainer: React.FC<WDFlyoutContainerProps> = function ({
   if (mTerr.parent) {
     territory = mTerr.parent;
   }
+  // FIXME type
+  const province = territory as unknown as Province;
   const clickHandler =
     (orderType, viaConvoy: string | undefined = undefined) =>
     () => {
@@ -55,21 +59,21 @@ const WDFlyoutContainer: React.FC<WDFlyoutContainerProps> = function ({
   return (
     <>
       <WDFlyoutButton
-        territory={territory}
+        province={province}
         unitSlotName={unitSlotName}
         position="left"
         text="Hold"
         clickHandler={clickHandler("Hold")}
       />
       <WDFlyoutButton
-        territory={territory}
+        province={province}
         unitSlotName={unitSlotName}
         position="right"
         text="Move"
         clickHandler={clickHandler("Move")}
       />
       <WDFlyoutButton
-        territory={territory}
+        province={province}
         unitSlotName={unitSlotName}
         position="top"
         text="Support"
@@ -77,7 +81,7 @@ const WDFlyoutContainer: React.FC<WDFlyoutContainerProps> = function ({
       />
       {(unit?.unit?.type === "Fleet" && (
         <WDFlyoutButton
-          territory={territory}
+          province={province}
           unitSlotName={unitSlotName}
           position="bottom"
           text="Convoy"
@@ -86,7 +90,7 @@ const WDFlyoutContainer: React.FC<WDFlyoutContainerProps> = function ({
       )) || <g />}
       {board && isConvoyable(board, unit) && (
         <WDFlyoutButton
-          territory={territory}
+          province={province}
           unitSlotName={unitSlotName}
           position="bottom"
           text="Via"

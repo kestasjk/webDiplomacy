@@ -7,12 +7,14 @@ import {
 } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import WDBuildUnitButtons from "./WDBuildUnitButtons";
-import Territory from "../../../enums/map/variants/classic/Territory";
+import Province from "../../../enums/map/variants/classic/Province";
+import provincesMapData from "../../../data/map/ProvincesMapData";
+import { UNIT_HEIGHT, UNIT_WIDTH } from "../../ui/units/WDUnit";
 
 type Position = "left" | "right" | "top" | "bottom";
 
 interface WDOrderTypeButtonProps {
-  territory: Territory;
+  province: Province;
   unitSlotName: string;
   position: Position;
   text: string;
@@ -20,29 +22,25 @@ interface WDOrderTypeButtonProps {
 }
 
 const WDFlyoutButton: React.FC<WDOrderTypeButtonProps> = function ({
-  territory,
+  province,
   unitSlotName,
   position,
   text,
   clickHandler,
 }): React.ReactElement {
   const dispatch = useAppDispatch();
-  const labelId = `${territory}-${unitSlotName}-unit-slot`;
-  const label: SVGTextElement = document.getElementById(
-    labelId,
-  ) as unknown as SVGTextElement;
-  const territoryElem: SVGSVGElement = document.getElementById(
-    `${territory}-territory`,
-  ) as unknown as SVGSVGElement;
-  if (!label) return <Box />; // throw Error(labelId);
+  const provinceMapData = provincesMapData[province];
+  if (!provinceMapData || !provinceMapData.unitSlotsBySlotName[unitSlotName])
+    return <Box />;
+
   const unitX =
-    Number(territoryElem.getAttribute("x")) +
-    Number(label.getAttribute("x")) +
-    20;
+    provinceMapData.x +
+    provinceMapData.unitSlotsBySlotName[unitSlotName].x +
+    UNIT_WIDTH / 2;
   const unitY =
-    Number(territoryElem.getAttribute("y")) +
-    Number(label.getAttribute("y")) +
-    20;
+    provinceMapData.y +
+    provinceMapData.unitSlotsBySlotName[unitSlotName].y +
+    UNIT_HEIGHT / 2;
 
   const fontSize = 24;
   const rw = 55 + fontSize * text.length * 0.4;
