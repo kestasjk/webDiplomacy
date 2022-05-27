@@ -213,7 +213,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
       const contained = fullMap.select("#container");
       const containedRect = contained.node().getBBox();
       const gameBoardAreaRect = fullMap
-        .select("#playableTerritories")
+        .select("#playableProvinces")
         .node()
         .getBBox();
 
