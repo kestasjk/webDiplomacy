@@ -1,7 +1,4 @@
-
-import {
-  IPhaseDataHistorical,
-} from "../../models/Interfaces";
+import { IPhaseDataHistorical } from "../../models/Interfaces";
 
 interface GameStatusResponse {
   gameID: number;

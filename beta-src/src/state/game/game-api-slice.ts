@@ -190,6 +190,9 @@ const gameApiSlice = createSlice({
   reducers: {
     resetOrder,
     updateUserActivity,
+    updateUserActivityProcessTime(state, action) {
+      state.activity.processTime = action.payload;
+    },
     updateOrder(state, action) {
       updateOrder(state, action.payload);
     },
@@ -337,7 +340,7 @@ export const gameOrdersMeta = ({
   game: { ordersMeta },
 }: RootState): OrdersMeta => ordersMeta;
 export const gameOrder = ({ game: { order } }: RootState): OrderState => order;
-export const userActivity = ({
+export const gameUserActivity = ({
   game: { activity },
 }: RootState): GameState["activity"] => activity;
 // gameMessages considered harmful, because part of the GameMessages object is a

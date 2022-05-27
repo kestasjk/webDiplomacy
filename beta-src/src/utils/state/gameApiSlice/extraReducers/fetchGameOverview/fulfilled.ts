@@ -1,11 +1,25 @@
+import {
+  fetchGameStatus,
+  loadGameData,
+} from "../../../../../state/game/game-api-slice";
+import { useAppDispatch } from "../../../../../state/hooks";
+import GameOverviewResponse from "../../../../../state/interfaces/GameOverviewResponse";
+import { GameState } from "../../../../../state/interfaces/GameState";
 import memberActivityFrequencyMultiplier from "../../../memberActivityFrequencyMultiplier";
+import fetchGameStatusFulfilled from "../fetchGameStatus/fulfilled";
 
 /* eslint-disable no-param-reassign */
-export default function fetchGameOverviewFulfilled(state, action): void {
+export default function fetchGameOverviewFulfilled(
+  state: GameState,
+  action,
+): void {
   state.apiStatus = "succeeded";
-  state.overview = action.payload;
   state.activity.makeNewCall = false;
-  const { processTime, members } = action.payload;
+  const response: GameOverviewResponse = action.payload;
+  const { processTime, members, user, gameID } = response;
+
+  state.overview = action.payload;
+
   if (processTime) {
     const membersPlaying = members.filter(({ status }) => status === "Playing");
     // eslint-disable-next-line no-bitwise
@@ -38,5 +52,6 @@ export default function fetchGameOverviewFulfilled(state, action): void {
       frequency = 10;
     }
     state.activity.frequency = frequency;
+    state.activity.processTime = processTime;
   }
 }

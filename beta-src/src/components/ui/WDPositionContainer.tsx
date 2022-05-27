@@ -34,8 +34,10 @@ const WDPositionContainer: React.FC<WDPositionContainerProps> = function ({
       case Position.TOP_RIGHT:
         return { right: responsiveDistance, top: responsiveDistance };
       case Position.TOP_LEFT:
-      default:
         return { left: responsiveDistance, top: responsiveDistance };
+      case Position.CENTER:
+      default:
+        return { justifyContent: "center", alignItems: "center" };
     }
   }, [position]);
 

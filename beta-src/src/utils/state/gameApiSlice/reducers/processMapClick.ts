@@ -57,6 +57,19 @@ function canSupportTerritory(
   return all.includes(territory);
 }
 
+// careful: can't use terrIDToUnit because there may be two units on a territory during retreat
+function findTerrIDForUnit(
+  terrID: string,
+  maps: GameStateMaps,
+  ownUnits: string[],
+  phase: string,
+) {
+  if (phase === "Retreats") {
+    return ownUnits.find((unit) => maps.unitToTerrID[unit] === terrID) || "";
+  }
+  return maps.terrIDToUnit[terrID];
+}
+
 /* eslint-disable no-param-reassign */
 export default function processMapClick(state, clickData) {
   const currentState: GameState = current(state);
@@ -103,12 +116,13 @@ export default function processMapClick(state, clickData) {
   }
 
   const clickTerrID = maps.territoryToTerrID[territory];
-  let clickUnitID = maps.terrIDToUnit[clickTerrID];
+  let clickUnitID = findTerrIDForUnit(clickTerrID, maps, ownUnits, phase);
+  console.log({ clickUnitID });
   // Fixup unit for coast!
   if (!clickUnitID) {
     // Note: I think we could use the TerritoryClass stuff to find children like this
     territoryMeta.coastChildIDs.forEach((childID) => {
-      const coastUnitID = maps.terrIDToUnit[childID];
+      const coastUnitID = findTerrIDForUnit(childID, maps, ownUnits, phase);
       if (
         coastUnitID &&
         (phase !== "Retreats" || ownUnits.includes(coastUnitID)) // on retreats there may be 2 units
@@ -180,8 +194,10 @@ export default function processMapClick(state, clickData) {
   // ---------------------- RETREAT PHASE ---------------------------
   if (phase === "Retreats") {
     if (!order.inProgress) {
-      if (clickUnitID && ownsCurUnit) {
-        // && clickUnit?.isRetreating) {
+      const isRetreating = data.currentOrders?.find(
+        (o) => o.unitID === clickUnitID,
+      );
+      if (clickUnitID && ownsCurUnit && isRetreating) {
         startNewOrder(state, { unitID: clickUnitID, type: "Retreat" });
       } else {
         invalidClick(evt, territory);

@@ -17,18 +17,13 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
   console.log("fetchGameDataFulfilled");
   state.apiStatus = "succeeded";
   state.data = action.payload;
+  const currentState = current(state);
   const {
     data: { data },
     overview: { members, phase, user },
-  }: {
-    data: { data: GameDataResponse["data"] };
-    overview: {
-      members: GameOverviewResponse["members"];
-      phase: GameOverviewResponse["phase"];
-      user: GameOverviewResponse["user"];
-    };
-  } = current(state);
+  } = currentState;
   let board;
+  console.log({ contextVars: data.contextVars });
   if (data.contextVars) {
     // FIXME: can't put non-serializable object in store
     board = new BoardClass(
@@ -54,7 +49,6 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
     0,
   );
   if (!numUnsavedOrders) {
-    console.log("Updating ordersMeta");
     updateOrdersMeta(state, getOrdersMeta(data, board, phase));
   }
 }
