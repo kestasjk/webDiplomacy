@@ -1,5 +1,8 @@
 import Territory from "../../enums/map/variants/classic/Territory";
-import GameStateMap from "../../types/state/GameStateMap";
+
+type GameStateMap = {
+  [key: string]: string;
+};
 
 type IDToTerritory = { [key: string]: Territory };
 export default interface GameStateMaps {
