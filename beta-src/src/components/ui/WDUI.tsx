@@ -166,14 +166,15 @@ const WDUI: React.FC = function (): React.ReactElement {
             display: "block",
             p: 1,
             mt: 2,
-            bgcolor: "#fff",
-            color: "grey.800",
+            bgcolor: theme.palette[user.member.country]?.light,
+            color: "black",
             border: "1px solid",
             borderColor: "grey.300",
             borderRadius: 2,
             fontSize: "0.875rem",
             fontWeight: "700",
           }}
+          title={`Currently playing as ${user.member.country}`}
         >
           {abbrMap[user.member.country]}
         </Box>

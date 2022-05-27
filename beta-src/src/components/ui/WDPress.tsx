@@ -59,8 +59,7 @@ const WDPress: React.FC<WDPressProps> = function ({
     ({ game }) => game.messages.newMessagesFrom,
   );
 
-  // FIXME: for now, crazily fetch all messages every 1sec
-  useInterval(() => {
+  const dispatchFetchMessages = () => {
     if (user && gameID) {
       const { game } = store.getState();
       const { outstandingMessageRequests } = game;
@@ -77,7 +76,10 @@ const WDPress: React.FC<WDPressProps> = function ({
         );
       }
     }
-  }, 1000);
+  };
+
+  // FIXME: for now, crazily fetch all messages every 1sec
+  useInterval(dispatchFetchMessages, 1000);
 
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
@@ -97,7 +99,7 @@ const WDPress: React.FC<WDPressProps> = function ({
     setUserMsg("");
   };
 
-  const dispatchMessages = () => {
+  const dispatchMessagesSeen = () => {
     // need to update locally and on the server
     // because we don't immediately re-fetch message data from the server
     dispatch(gameApiSliceActions.processMessagesSeen(countryIDSelected));
@@ -121,7 +123,7 @@ const WDPress: React.FC<WDPressProps> = function ({
   };
 
   if (newMessagesFrom.includes(countryIDSelected)) {
-    dispatchMessages();
+    dispatchMessagesSeen();
   }
 
   const countryButtons = countries
@@ -167,7 +169,10 @@ const WDPress: React.FC<WDPressProps> = function ({
         <Stack alignItems="center" direction="row">
           <Button
             href="#message-reload-button"
-            onClick={dispatchMessages}
+            onClick={() => {
+              dispatchMessagesSeen();
+              dispatchFetchMessages();
+            }}
             style={{
               maxWidth: "12px",
               minWidth: "12px",
