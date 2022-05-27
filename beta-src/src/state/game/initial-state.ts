@@ -30,6 +30,7 @@ const initialState: GameState = {
     orderID: "",
     toTerrID: "",
     unitID: "",
+    viaConvoy: "",
   },
   ordersMeta: {},
   ownUnits: [],
@@ -145,8 +146,8 @@ const initialState: GameState = {
     messages: [],
     newMessagesFrom: [],
     time: 0,
-    outstandingRequests: 0,
   },
+  outstandingMessageRequests: 0,
 };
 
 export default initialState;

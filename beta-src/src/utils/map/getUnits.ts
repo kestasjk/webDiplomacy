@@ -77,7 +77,6 @@ export function getUnitsLive(
     }
   });
 
-  console.log({ ordersMeta });
   const ordersMetaByTerrID: { [key: string]: OrderMeta } = {};
   Object.entries(ordersMeta).forEach(([orderID, orderMeta]) => {
     // FIXME having to chain lookups like this here and in many other places in the
@@ -85,15 +84,21 @@ export function getUnitsLive(
     // have *all* of the data on them, rather than just a subset.
     // Or making the webdip API be more helpful and add more convenience fields to stuff.
     const currentOrder = currentOrders.find((order) => order.id === orderID);
-    if (currentOrder && units[currentOrder.unitID]) {
-      const { terrID } = units[currentOrder.unitID];
-      ordersMetaByTerrID[terrID] = orderMeta;
+    // console.log({ orderID, orderMeta, currentOrder, units });
+
+    if (currentOrder) {
+      // for normal orders it's the first case, for builds/destroys the second
+      const terrID =
+        units[currentOrder.unitID]?.terrID || orderMeta.update?.toTerrID;
+      if (terrID) {
+        ordersMetaByTerrID[terrID] = orderMeta;
+      }
     }
   });
 
   // console.log({ prevPhaseOrders });
   // console.log({ successfulMoves });
-
+  // console.log({ ordersMetaByTerrID });
   //--------------------------------------------------------------------
   // Compute the units to draw from the current units
   //--------------------------------------------------------------------
@@ -268,6 +273,7 @@ export function getUnitsHistorical(
           ) {
             drawMode = UnitDrawMode.DISBANDED;
           } else if (curPhaseOrdersByTerrID[unit.terrID]?.type === "Destroy") {
+            console.log("Found a destroy order");
             drawMode = UnitDrawMode.DISBANDED;
           } else if (unit.retreating === "Yes") {
             drawMode = UnitDrawMode.DISLODGED;

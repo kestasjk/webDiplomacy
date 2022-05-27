@@ -16,7 +16,7 @@ export interface SupportMoveChoice {
 
 interface SharedMeta {
   allowedBorderCrossings?: TerritoryClass[];
-  convoyToChoices?: TerritoryClass[];
+  convoyToChoices?: string[]; //TerritoryClass[];
   originalOrder?: IOrderData;
   supportHoldChoices?: TerritoryClass[];
   supportMoveChoices?: SupportMoveChoice[];

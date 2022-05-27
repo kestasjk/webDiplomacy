@@ -30,21 +30,18 @@ export default class BoardClass {
 
       if (curTerrStatus) {
         currTerritory = new TerritoryClass(territory, this, curTerrStatus);
+      }
 
-        let currUnit;
-        if (curTerrStatus.unitID) {
-          const unitData = units.find((u) => u.id === curTerrStatus.unitID);
+      // n.b. currTerrStatus.unit does not handle coasts!
+      const unitData = units.find((u) => u.terrID === currTerritory.id);
+      const currUnit = unitData ? new UnitClass(unitData) : null;
 
-          currUnit = unitData ? new UnitClass(unitData) : null;
-        }
+      if (currUnit) {
+        currTerritory.setUnit(currUnit);
 
-        if (currUnit) {
-          currTerritory.setUnit(currUnit);
+        currUnit.setTerritory(currTerritory);
 
-          currUnit.setTerritory(currTerritory);
-
-          this.units.push(currUnit);
-        }
+        this.units.push(currUnit);
       }
 
       if (currTerritory.coast === CoastType.Parent) {
@@ -66,6 +63,7 @@ export default class BoardClass {
       const parent = coastParents.find((cp) => cp.id === cc.coastParentID);
       if (parent) {
         cc.setCoastParent(parent);
+        parent.addCoastChild(cc);
       }
     });
 
@@ -163,10 +161,8 @@ export default class BoardClass {
           const borderTerritory = this.territories.find(
             (territory) => territory.id === cur.id,
           );
-
           if (borderTerritory) acc.push(borderTerritory);
         }
-
         return acc;
       },
       [],
@@ -205,7 +201,21 @@ export default class BoardClass {
    * @returns {UnitClass[]}
    */
   getMovableUnits(unit: UnitClass): UnitClass[] {
-    return this.getMovableTerritories(unit).reduce((acc: UnitClass[], cur) => {
+    const movableTerritories = this.getMovableTerritories(unit);
+
+    // tricky: we can support units in the territory itself *or*
+    // any coasts of the territory.
+    // iterate over a copy of movableTerritories so we can insert
+    [...movableTerritories].forEach((terr) => {
+      terr.coastChildren.forEach((child) => {
+        movableTerritories.push(child);
+      });
+    });
+
+    return movableTerritories.reduce((acc: UnitClass[], cur) => {
+      if (cur.Unit) {
+        acc.push(cur.Unit);
+      }
       if (cur.coastParent.Unit) {
         acc.push(cur.coastParent.Unit);
       }
