@@ -3104,6 +3104,7 @@ const provincesMapData: { [key: string]: ProvinceMapData } = Object.fromEntries(
     const {
       abbr,
       type,
+      centerPos,
       fill,
       labels,
       width,
@@ -3148,6 +3149,7 @@ const provincesMapData: { [key: string]: ProvinceMapData } = Object.fromEntries(
       {
         abbr,
         type,
+        centerPos,
         fill,
         labels,
         width,
