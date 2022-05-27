@@ -26,7 +26,7 @@ interface ProvinceMapDrawData extends BBox {
   path: string;
   playable: boolean;
   texture?: TextureData;
-  type: "land" | "water";
+  type: "Land" | "Coast" | "Sea";
   unitSlots: PreUnitSlot[];
   viewBox?: string;
 }
@@ -35,7 +35,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   /* land */
   [Province.ALBANIA]: {
     abbr: "ALB",
-    type: "land",
+    type: "Coast",
     fill: "none",
     labels: [
       {
@@ -67,7 +67,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.ANKARA]: {
     abbr: "ANK",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 60,
@@ -103,7 +103,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.APULIA]: {
     abbr: "APU",
-    type: "land",
+    type: "Coast",
     fill: "none",
     labels: [
       {
@@ -135,7 +135,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.ARMENIA]: {
     abbr: "ARM",
-    type: "land",
+    type: "Coast",
     fill: "none",
     labels: [
       {
@@ -167,7 +167,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.BELGIUM]: {
     abbr: "BEL",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 75,
@@ -203,7 +203,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.BERLIN]: {
     abbr: "BER",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 57,
@@ -239,7 +239,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.BOHEMIA]: {
     abbr: "BOH",
-    type: "land",
+    type: "Land",
     fill: "none",
     labels: [
       {
@@ -271,7 +271,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.BREST]: {
     abbr: "BRE",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 15,
@@ -307,7 +307,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.BUDAPEST]: {
     abbr: "BUD",
-    type: "land",
+    type: "Land",
     fill: "none",
     centerPos: {
       x: 67,
@@ -343,7 +343,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.BULGARIA]: {
     abbr: "BUL",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 20,
@@ -411,7 +411,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.BURGUNDY]: {
     abbr: "BUR",
-    type: "land",
+    type: "Land",
     fill: "none",
     labels: [
       {
@@ -443,7 +443,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.CLYDE]: {
     abbr: "CLY",
-    type: "land",
+    type: "Coast",
     fill: "none",
     labels: [
       {
@@ -475,7 +475,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.CONSTANTINOPLE]: {
     abbr: "CON",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 60,
@@ -514,8 +514,8 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
       x: 99,
       y: 103,
     },
-    abbr: "",
-    type: "land",
+    abbr: "DEN",
+    type: "Coast",
     fill: "none",
     labels: [
       {
@@ -547,7 +547,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.EDINBURGH]: {
     abbr: "EDI",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 22,
@@ -583,7 +583,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.FINLAND]: {
     abbr: "FIN",
-    type: "land",
+    type: "Coast",
     fill: "none",
     labels: [
       {
@@ -615,7 +615,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.GALICIA]: {
     abbr: "GAL",
-    type: "land",
+    type: "Land",
     fill: "none",
     labels: [
       {
@@ -647,7 +647,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.GASCONY]: {
     abbr: "GAS",
-    type: "land",
+    type: "Coast",
     fill: "none",
     labels: [
       {
@@ -679,7 +679,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.GREECE]: {
     abbr: "GRE",
-    type: "land",
+    type: "Coast",
     fill: "none",
     labels: [
       {
@@ -711,7 +711,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.HOLLAND]: {
     abbr: "HOL",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 82,
@@ -751,7 +751,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
       y: 73,
     },
     abbr: "KIE",
-    type: "land",
+    type: "Coast",
     fill: "none",
     labels: [
       {
@@ -783,7 +783,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.LIVERPOOL]: {
     abbr: "LVP",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 51,
@@ -819,7 +819,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.LIVONIA]: {
     abbr: "LVN",
-    type: "land",
+    type: "Coast",
     fill: "none",
     labels: [
       {
@@ -851,7 +851,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.LONDON]: {
     abbr: "LON",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 28,
@@ -887,7 +887,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.MARSEILLES]: {
     abbr: "MAR",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 160,
@@ -923,7 +923,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.MOSCOW]: {
     abbr: "MOS",
-    type: "land",
+    type: "Land",
     fill: "none",
     centerPos: {
       x: 350,
@@ -959,7 +959,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.MUNICH]: {
     abbr: "MUN",
-    type: "land",
+    type: "Land",
     fill: "none",
     centerPos: {
       x: 154,
@@ -995,7 +995,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.NAPLES]: {
     abbr: "NAP",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 7,
@@ -1036,7 +1036,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 2261,
     y: 675,
     abbr: "",
-    type: "land",
+    type: "Land",
     fill: "none",
     playable: true,
     texture: {
@@ -1051,7 +1051,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 2235,
     y: 1392,
     abbr: "",
-    type: "land",
+    type: "Land",
     fill: "none",
     playable: true,
     texture: {
@@ -1066,7 +1066,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 2672,
     y: 1922,
     abbr: "",
-    type: "land",
+    type: "Land",
     fill: "none",
     playable: true,
     texture: {
@@ -1081,7 +1081,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 2472,
     y: 2286,
     abbr: "",
-    type: "land",
+    type: "Land",
     fill: "none",
     playable: true,
     texture: {
@@ -1096,7 +1096,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 2746,
     y: 2182,
     abbr: "",
-    type: "land",
+    type: "Land",
     fill: "none",
     playable: true,
     texture: {
@@ -1111,7 +1111,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 2719,
     y: 2265,
     abbr: "",
-    type: "land",
+    type: "Land",
     fill: "none",
     playable: true,
     texture: {
@@ -1126,7 +1126,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 2872,
     y: 2442,
     abbr: "",
-    type: "land",
+    type: "Land",
     fill: "none",
     playable: true,
     texture: {
@@ -1141,7 +1141,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 3344,
     y: 2576,
     abbr: "",
-    type: "land",
+    type: "Land",
     fill: "none",
     playable: true,
     texture: {
@@ -1156,7 +1156,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 3723,
     y: 2535,
     abbr: "",
-    type: "land",
+    type: "Land",
     fill: "none",
     playable: true,
     texture: {
@@ -1166,7 +1166,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.NORTH_AFRICA]: {
     abbr: "NAF",
-    type: "land",
+    type: "Coast",
     fill: "none",
     labels: [
       {
@@ -1198,7 +1198,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.NORWAY]: {
     abbr: "NWY",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 140,
@@ -1234,7 +1234,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.PARIS]: {
     abbr: "PAR",
-    type: "land",
+    type: "Land",
     fill: "none",
     centerPos: {
       x: 81,
@@ -1270,7 +1270,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.PICARDY]: {
     abbr: "PIC",
-    type: "land",
+    type: "Coast",
     fill: "none",
     labels: [
       {
@@ -1302,7 +1302,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.PIEDMONT]: {
     abbr: "PIE",
-    type: "land",
+    type: "Coast",
     fill: "none",
     labels: [
       {
@@ -1334,7 +1334,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.PORTUGAL]: {
     abbr: "POR",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 13,
@@ -1370,7 +1370,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.PRUSSIA]: {
     abbr: "PRU",
-    type: "land",
+    type: "Coast",
     fill: "none",
     labels: [
       {
@@ -1402,7 +1402,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.ROME]: {
     abbr: "ROM",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 10,
@@ -1438,7 +1438,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.RUHR]: {
     abbr: "RUH",
-    type: "land",
+    type: "Land",
     fill: "none",
     labels: [
       {
@@ -1470,7 +1470,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.RUMANIA]: {
     abbr: "RUM",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 140,
@@ -1506,7 +1506,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.SAINT_PETERSBURG]: {
     abbr: "STP",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 170,
@@ -1574,7 +1574,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.SERBIA]: {
     abbr: "SER",
-    type: "land",
+    type: "Land",
     fill: "none",
     centerPos: {
       x: 35,
@@ -1610,7 +1610,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.SEVASTOPOL]: {
     abbr: "SEV",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 209,
@@ -1645,8 +1645,8 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     path: "M656.4 220.043C649.72 212.741 639.4 201.828 634.73 198.037C630.67 194.736 625.73 192.695 621.24 190.034C618.085 188.087 614.826 186.31 611.48 184.713C606.686 182.711 601.769 181.017 596.76 179.641C575.102 173.008 554.211 164.088 534.44 153.033C533.144 152.378 531.94 151.554 530.86 150.582C529.46 149.025 528.361 147.22 527.62 145.26C523.98 137.168 518.5 127.455 519.43 118.622C519.764 114.745 518.884 110.861 516.913 107.506C514.943 104.151 511.978 101.492 508.43 99.8966C505.6 98.7063 502.53 98.2462 499.56 97.4459C488.72 94.555 479.49 87.2128 472.38 78.5401C465.27 69.8675 460.03 59.8244 454.81 49.8913C452.8 45.8858 450.563 41.9983 448.11 38.2478C445.134 34.0229 441.866 30.0118 438.33 26.2441C437.175 24.8771 435.885 23.6304 434.48 22.523C432.134 20.9699 429.565 19.7858 426.86 19.0119C419.53 16.5111 411.86 14.0103 404.2 15.2407C395.49 16.6711 388.45 21.9428 379.63 22.1428C363.285 22.5061 347.105 18.8189 332.53 11.4096C324.09 7.09826 315.82 1.40643 306.35 0.936282C303.886 0.705836 301.407 1.1666 299.19 2.26677C297.285 3.45716 295.686 5.07764 294.52 6.9982C290.39 13.1301 288.24 20.3423 285.4 27.1744C282.56 34.0065 278.72 40.8385 272.4 44.7297C265.13 49.2411 255.98 49.0211 247.46 48.3209C240.29 47.7207 233.13 46.8803 226.03 45.7C217.55 44.2996 209.03 42.4191 200.46 42.8092C188.636 43.4638 177.389 48.1361 168.58 56.0533C169.72 67.7068 175.58 78.7402 175.12 90.4438C174.89 96.0355 173.2 101.447 171.71 106.829C167.26 122.934 164.51 139.459 162.17 155.994C158.85 179.411 155.81 204.269 141.17 222.834C130.45 236.428 114.73 244.971 99.4699 253.143C92.9699 256.625 84.6199 259.145 78.1499 262.707C71.6799 266.268 67.2199 272.79 63.1499 279.051C57.7899 287.254 52.4299 295.486 48.1499 304.289C44.3799 311.982 39.9299 321.504 33.4299 327.076C31.0899 329.077 18.43 341.08 15.03 342.081C11.63 343.081 6.03007 349.083 1.84007 352.084C-1.52993 354.485 6.58988 358.746 7.14988 362.847C8.51988 372.85 7.77995 383.093 7.71995 393.226C7.65995 403.36 8.33003 413.753 12.3 423.076C13.49 425.866 15.0601 428.647 17.5801 430.338C19.8584 431.707 22.4623 432.439 25.1201 432.459C38.2401 433.159 51.6699 425.346 64.3899 428.637C65.2952 414.899 69.7769 401.636 77.3899 390.166C79.0499 387.675 80.9301 385.034 80.8401 382.033C80.6601 375.441 71.7899 371.27 72.1799 364.678L80.02 367.308C82.64 368.189 85.5101 369.069 88.1101 368.139C89.6958 367.456 91.0972 366.407 92.1999 365.078C94.5806 362.535 96.6457 359.713 98.3501 356.675C99.8801 353.944 101.16 350.983 103.42 348.803C105.579 346.94 108.093 345.535 110.81 344.672C121.17 340.76 132.7 338.61 143.3 341.831C145.3 342.451 147.67 343.831 147.37 345.962C147.199 346.771 146.758 347.497 146.12 348.023C144.37 349.613 141.97 350.213 139.71 350.914C137.45 351.614 136 352.814 133.95 353.734C134.82 360.436 141.03 365.178 147.32 367.629C155.633 370.854 164.731 371.465 173.4 369.379C177.06 368.489 180.59 367.128 184.23 366.118C188.735 364.854 193.374 364.132 198.05 363.967C201.57 364.968 203.5 369.109 202.9 372.71C202.3 376.311 199.76 379.312 196.9 381.553C194.04 383.794 190.72 385.444 187.77 387.555C183.097 390.989 179.407 395.59 177.07 400.899C176.273 402.343 176.011 404.022 176.33 405.64C177.06 408.051 179.82 409.141 182.33 409.642C187.39 410.582 192.79 410.302 197.42 412.552C204.26 415.883 207.56 424.076 207.55 431.678C207.55 434.679 207.12 437.83 208.04 440.681C208.662 442.447 209.612 444.08 210.84 445.493C213.394 448.755 216.883 451.16 220.84 452.385C222.813 452.973 224.894 453.106 226.926 452.773C228.958 452.44 230.887 451.651 232.57 450.464C234.82 448.744 236.35 446.283 237.93 443.932C241.284 438.98 245.105 434.361 249.34 430.138C250.807 428.572 252.491 427.225 254.34 426.137C257.64 424.316 261.55 424.026 265.08 422.695C272.08 420.045 276.7 412.622 276.99 405.14L296.74 404.64C300.24 404.55 304.21 404.25 306.43 401.529C307.555 400.011 308.152 398.167 308.13 396.277C308.167 392.538 306.909 388.901 304.57 385.984C302.87 383.814 300.43 381.983 297.67 381.923C295.86 382.017 294.103 382.564 292.56 383.514C286.7 386.664 281.46 391.346 274.93 392.626C269.48 393.697 263.78 392.186 258.93 389.535C254.08 386.885 249.85 383.173 245.7 379.532L238.11 372.8C235.747 370.484 233.05 368.535 230.11 367.018C227.85 366.018 225.37 365.468 223.11 364.388C220.85 363.307 218.68 361.317 218.26 358.856C229.87 354.215 241.97 350.153 252.26 342.981C267.34 332.428 278 315.553 294.54 307.48L319.54 295.276C336.49 287.004 353.54 278.671 368.66 267.358C372.06 264.817 375.66 262.006 379.9 261.746C380.425 261.667 380.961 261.694 381.477 261.824C381.992 261.955 382.475 262.187 382.9 262.507C384.03 263.507 383.97 265.317 383.65 266.818C382.79 270.819 381.53 275.731 377.89 277.611C365.89 283.863 355.37 292.736 345.01 301.518C343.42 302.869 341.73 304.379 341.33 306.43C341.21 307.355 341.292 308.296 341.57 309.187C341.848 310.078 342.315 310.898 342.94 311.591C346.72 316.193 353.45 316.313 359.4 315.933C360.414 316.802 361.203 317.904 361.699 319.144C362.195 320.384 362.384 321.726 362.25 323.055C361.965 325.712 361.246 328.304 360.12 330.727C357.553 337.169 354.98 343.608 352.4 350.043C350.35 355.185 348.27 360.406 347.69 365.918C347.39 368.719 347.49 371.57 346.96 374.341C346.43 377.112 345.15 379.902 342.77 381.423C339.77 383.344 335.83 382.783 332.35 381.933C328.87 381.083 325.2 380.012 321.8 381.133C321.66 384.984 321.8 389.265 324.39 392.076C326 393.807 328.31 394.677 330.53 395.497L347.27 401.629C353.71 403.99 360.15 406.351 366.75 408.161C376.66 410.882 386.89 413.023 396.5 416.664C411.02 422.155 425.74 427.757 438.25 436.95C444.09 441.241 449.37 446.273 455.31 450.434C463.989 456.517 473.883 460.646 484.31 462.538C490.41 463.628 496.63 463.948 502.7 465.189C509.488 466.585 515.992 469.114 521.94 472.671C533.54 479.613 542.94 490.996 545.25 504.32C546.107 509.394 545.821 514.594 544.415 519.543C543.008 524.492 540.516 529.065 537.12 532.929C540.81 536.5 544.27 540.381 547.78 544.103C558.327 555.301 569.927 565.458 582.42 574.432C589.2 579.303 596.49 583.925 604.71 585.355C612.93 586.786 621.46 584.875 629.86 585.075C638.26 585.275 646.42 587.566 654.76 587.296C655.386 587.296 656.017 587.256 656.65 587.176L656.4 220.043Z",
   },
   [Province.SILESIA]: {
-    abbr: "",
-    type: "land",
+    abbr: "SIL",
+    type: "Land",
     fill: "none",
     labels: [
       {
@@ -1678,7 +1678,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.SMYRNA]: {
     abbr: "SMY",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 20,
@@ -1714,7 +1714,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.SPAIN]: {
     abbr: "SPA",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 177,
@@ -1782,7 +1782,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.SWEDEN]: {
     abbr: "SWE",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 160,
@@ -1818,7 +1818,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.SYRIA]: {
     abbr: "SYR",
-    type: "land",
+    type: "Coast",
     fill: "none",
     labels: [
       {
@@ -1850,7 +1850,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.TRIESTE]: {
     abbr: "TRI",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 56,
@@ -1886,7 +1886,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.TUNIS]: {
     abbr: "TUN",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 100,
@@ -1922,7 +1922,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.TUSCANY]: {
     abbr: "TUS",
-    type: "land",
+    type: "Coast",
     fill: "none",
     labels: [
       {
@@ -1954,7 +1954,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.TYROLIA]: {
     abbr: "TYR",
-    type: "land",
+    type: "Land",
     fill: "none",
     labels: [
       {
@@ -1986,7 +1986,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.UKRAINE]: {
     abbr: "UKR",
-    type: "land",
+    type: "Land",
     fill: "none",
     labels: [
       {
@@ -2023,7 +2023,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 3723,
     y: -1,
     abbr: "",
-    type: "land",
+    type: "Land",
     fill: "none",
     playable: false,
     texture: {
@@ -2038,7 +2038,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 4140,
     y: -1,
     abbr: "",
-    type: "land",
+    type: "Land",
     fill: "none",
     playable: false,
     texture: {
@@ -2053,7 +2053,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 4140,
     y: 1840,
     abbr: "",
-    type: "land",
+    type: "Land",
     fill: "none",
     playable: false,
     texture: {
@@ -2068,7 +2068,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 4140,
     y: 2161,
     abbr: "",
-    type: "land",
+    type: "Land",
     fill: "none",
     playable: false,
     texture: {
@@ -2083,7 +2083,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 1594,
     y: 2627,
     abbr: "",
-    type: "land",
+    type: "Land",
     fill: "none",
     playable: false,
     texture: {
@@ -2098,7 +2098,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 2668,
     y: 2651,
     abbr: "",
-    type: "land",
+    type: "Land",
     fill: "none",
     playable: false,
     texture: {
@@ -2113,7 +2113,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 2733,
     y: 2649,
     abbr: "",
-    type: "land",
+    type: "Land",
     fill: "none",
     playable: false,
     texture: {
@@ -2128,7 +2128,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 3853,
     y: 2168,
     abbr: "",
-    type: "land",
+    type: "Land",
     fill: "none",
     playable: false,
     texture: {
@@ -2138,7 +2138,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.VIENNA]: {
     abbr: "VIE",
-    type: "land",
+    type: "Land",
     fill: "none",
     centerPos: {
       x: 28,
@@ -2174,7 +2174,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.VENICE]: {
     abbr: "VEN",
-    type: "land",
+    type: "Coast",
     fill: "none",
     centerPos: {
       x: 68,
@@ -2210,7 +2210,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.WALES]: {
     abbr: "WAL",
-    type: "land",
+    type: "Coast",
     fill: "none",
     labels: [
       {
@@ -2242,7 +2242,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.WARSAW]: {
     abbr: "WAR",
-    type: "land",
+    type: "Land",
     fill: "none",
     centerPos: {
       x: 65,
@@ -2278,7 +2278,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.YORK]: {
     abbr: "YOR",
-    type: "land",
+    type: "Coast",
     fill: "none",
     labels: [
       {
@@ -2311,7 +2311,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   /* sea */
   [Province.ADRIATIC_SEA]: {
     abbr: "ADR",
-    type: "water",
+    type: "Sea",
     fill: "none",
     labels: [
       {
@@ -2343,7 +2343,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.AEGEAN_SEA]: {
     abbr: "AEG",
-    type: "water",
+    type: "Sea",
     fill: "none",
     labels: [
       {
@@ -2375,7 +2375,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.BALTIC_SEA]: {
     abbr: "BAL",
-    type: "water",
+    type: "Sea",
     fill: "none",
     labels: [
       {
@@ -2407,7 +2407,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.BARENTS_SEA]: {
     abbr: "BAR",
-    type: "water",
+    type: "Sea",
     fill: "none",
     labels: [
       {
@@ -2439,7 +2439,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.BLACK_SEA]: {
     abbr: "BLA",
-    type: "water",
+    type: "Sea",
     fill: "none",
     labels: [
       {
@@ -2472,7 +2472,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   [Province.CHANNEL_1]: {
     unitSlots: [],
     abbr: "",
-    type: "water",
+    type: "Sea",
     fill: "none",
     width: 146,
     height: 112,
@@ -2486,7 +2486,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.EASTERN_MEDITERRANEAN]: {
     abbr: "EAS",
-    type: "water",
+    type: "Sea",
     fill: "none",
     labels: [
       {
@@ -2518,7 +2518,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.ENGLISH_CHANNEL]: {
     abbr: "ENG",
-    type: "water",
+    type: "Sea",
     fill: "none",
     labels: [
       {
@@ -2550,7 +2550,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.GULF_OF_BOTHNIA]: {
     abbr: "BOT",
-    type: "water",
+    type: "Sea",
     fill: "none",
     labels: [
       {
@@ -2582,7 +2582,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.GULF_OF_LYONS]: {
     abbr: "LYO",
-    type: "water",
+    type: "Sea",
     fill: "none",
     labels: [
       {
@@ -2621,7 +2621,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
       },
     ],
     abbr: "HEL",
-    type: "water",
+    type: "Sea",
     fill: "none",
     unitSlots: [
       {
@@ -2646,7 +2646,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.IONIAN_SEA]: {
     abbr: "ION",
-    type: "water",
+    type: "Sea",
     fill: "none",
     labels: [
       {
@@ -2678,7 +2678,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.IRISH_SEA]: {
     abbr: "IRI",
-    type: "water",
+    type: "Sea",
     fill: "none",
     labels: [
       {
@@ -2710,7 +2710,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.MIDDLE_ATLANTIC]: {
     abbr: "MAO",
-    type: "water",
+    type: "Sea",
     fill: "none",
     labels: [
       {
@@ -2742,7 +2742,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.NORTH_ATLANTIC]: {
     abbr: "NAO",
-    type: "water",
+    type: "Sea",
     fill: "none",
     labels: [
       {
@@ -2775,7 +2775,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   [Province.NORTH_ATLANTIC2]: {
     unitSlots: [],
     abbr: "",
-    type: "water",
+    type: "Sea",
     fill: "none",
     width: 33,
     height: 44,
@@ -2789,7 +2789,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.NORTH_SEA]: {
     abbr: "NTH",
-    type: "water",
+    type: "Sea",
     fill: "none",
     labels: [
       {
@@ -2821,7 +2821,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.NORWEGIAN_SEA]: {
     abbr: "NWG",
-    type: "water",
+    type: "Sea",
     fill: "none",
     labels: [
       {
@@ -2853,7 +2853,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.SKAGERRACK]: {
     abbr: "SKA",
-    type: "water",
+    type: "Sea",
     fill: "none",
     labels: [
       {
@@ -2886,7 +2886,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   [Province.SKAGERRACK2]: {
     unitSlots: [],
     abbr: "",
-    type: "water",
+    type: "Sea",
     fill: "none",
     width: 101,
     height: 93,
@@ -2900,7 +2900,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.TYRRHENIAN_SEA]: {
     abbr: "TYS",
-    type: "water",
+    type: "Sea",
     fill: "none",
     labels: [
       {
@@ -2937,7 +2937,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: -1,
     y: -1,
     abbr: "",
-    type: "water",
+    type: "Sea",
     fill: "none",
     playable: false,
     texture: {
@@ -2952,7 +2952,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 2305,
     y: -1,
     abbr: "",
-    type: "water",
+    type: "Sea",
     fill: "none",
     playable: false,
     texture: {
@@ -2967,7 +2967,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 3270,
     y: -1,
     abbr: "",
-    type: "water",
+    type: "Sea",
     fill: "none",
     playable: false,
     texture: {
@@ -2982,7 +2982,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: -1,
     y: 1621,
     abbr: "",
-    type: "water",
+    type: "Sea",
     fill: "none",
     playable: false,
     texture: {
@@ -2997,7 +2997,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 4164,
     y: 1720,
     abbr: "",
-    type: "water",
+    type: "Sea",
     fill: "none",
     playable: false,
     texture: {
@@ -3012,7 +3012,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 2840,
     y: 2650,
     abbr: "",
-    type: "water",
+    type: "Sea",
     fill: "none",
     playable: false,
     texture: {
@@ -3027,7 +3027,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 3346,
     y: 2650,
     abbr: "",
-    type: "water",
+    type: "Sea",
     fill: "none",
     playable: false,
     texture: {
@@ -3042,7 +3042,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 3751,
     y: 2797,
     abbr: "",
-    type: "water",
+    type: "Sea",
     fill: "none",
     playable: false,
     texture: {
@@ -3057,7 +3057,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     x: 4393,
     y: 2713,
     abbr: "",
-    type: "water",
+    type: "Sea",
     fill: "none",
     playable: false,
     texture: {
@@ -3067,7 +3067,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
   },
   [Province.WESTERN_MEDITERRANEAN]: {
     abbr: "WES",
-    type: "water",
+    type: "Sea",
     fill: "none",
     labels: [
       {

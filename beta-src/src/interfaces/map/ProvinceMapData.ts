@@ -28,7 +28,7 @@ export interface ProvinceMapData extends BBox {
   path: string;
   playable: boolean;
   texture?: TextureData;
-  type: "land" | "water";
+  type: "Land" | "Coast" | "Sea";
   rootTerritory: Territory | null; // null for unplayable provinces
   unitSlots: UnitSlot[]; // always present, but might be zero-length
   viewBox?: string;
