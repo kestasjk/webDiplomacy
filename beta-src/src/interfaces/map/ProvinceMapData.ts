@@ -16,7 +16,7 @@ export interface UnitSlot extends Coordinates {
   arrowReceiver: Coordinates;
 }
 
-// just used for construction the TerritoryMapData. Do not use.
+// just used for construction the ProvinceMapData. Do not use.
 export interface ProvinceMapDrawData extends BBox {
   centerPos?: Coordinates;
   fill?: string;

@@ -1,7 +1,7 @@
 import * as React from "react";
 import WDProvince from "../../../components/WDProvince";
 import { Unit } from "../../../../../utils/map/getUnits";
-import territoriesMapData from "../../../../../data/map/TerritoriesMapData";
+import provincesMapData from "../../../../../data/map/ProvincesMapData";
 import Territory from "../../../../../enums/map/variants/classic/Territory";
 import { gameTerritoriesMeta } from "../../../../../state/game/game-api-slice";
 import { useAppSelector } from "../../../../../state/hooks";
@@ -15,7 +15,7 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
 }): React.ReactElement {
   const territoriesMeta = useAppSelector(gameTerritoriesMeta);
 
-  const unplayableTerritories = Object.values(territoriesMapData)
+  const unplayableTerritories = Object.values(provincesMapData)
     .filter((data) => !data.playable)
     .map((data) => {
       const territoryMeta = territoriesMeta[data.territory];
@@ -30,14 +30,14 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
     });
   // Hack - Rome and Naples need to be sorted to the end or else their label will get cut
   // off by neighboring territories drawn on top of it.
-  const playableTerritoriesData = Object.values(territoriesMapData).filter(
+  const playableTerritoriesData = Object.values(provincesMapData).filter(
     (data) =>
       data.playable &&
       data.territory !== Territory.NAPLES &&
       data.territory !== Territory.ROME,
   );
-  playableTerritoriesData.push(territoriesMapData[Territory.NAPLES]);
-  playableTerritoriesData.push(territoriesMapData[Territory.ROME]);
+  playableTerritoriesData.push(provincesMapData[Territory.NAPLES]);
+  playableTerritoriesData.push(provincesMapData[Territory.ROME]);
 
   const playableTerritories = playableTerritoriesData.map((data) => {
     const territoryMeta = territoriesMeta[data.territory];

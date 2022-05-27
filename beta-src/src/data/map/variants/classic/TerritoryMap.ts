@@ -1,12 +1,12 @@
 import Territory from "../../../../enums/map/variants/classic/Territory";
-import territoriesMapData from "../../TerritoriesMapData";
+import provincesMapData from "../../ProvincesMapData";
 import { ProvinceMapData, UnitSlotName } from "../../../../interfaces";
 
 export interface MTerritory {
   parent?: Territory;
   territory: Territory;
   unitSlotName: UnitSlotName;
-  territoryMapData: ProvinceMapData;
+  provinceMapData: ProvinceMapData;
 }
 
 type ITerritoryMap = {
@@ -138,9 +138,9 @@ const territoryToMTerr: ITerritoryMap = Object.fromEntries(
       parent: coastData[territory]?.parent,
       territory: territory as Territory,
       unitSlotName: coastData[territory]?.unitSlotName || "main",
-      territoryMapData:
-        territoriesMapData[territory] ||
-        territoriesMapData[coastData[territory]?.parent],
+      provinceMapData:
+        provincesMapData[territory] ||
+        provincesMapData[coastData[territory]?.parent],
     },
   ]),
 );

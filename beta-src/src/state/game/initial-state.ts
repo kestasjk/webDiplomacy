@@ -37,9 +37,9 @@ const initialState: GameState = {
   maps: {
     terrIDToTerritory: {},
     territoryToTerrID: {},
-    terrIDToRegionID: {},
+    terrIDToProvinceID: {},
     terrIDToUnit: {},
-    regionIDToUnit: {},
+    provinceIDToUnit: {},
     unitToTerrID: {},
     territoryToUnit: {},
     unitToTerritory: {},

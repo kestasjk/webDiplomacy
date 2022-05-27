@@ -2860,24 +2860,23 @@ const mapDrawData: { [key in Territory]?: ProvinceMapDrawData } = {
   },
 };
 
-const territoriesMapData: { [key: string]: ProvinceMapData } =
-  Object.fromEntries(
-    Object.entries(mapDrawData).map(([territory, drawData]) => [
-      territory,
-      // eww, why???
-      {
-        ...Territories[territory],
-        ...drawData,
-        viewBox: `0 0 ${drawData.width} ${drawData.height}`,
-        unitSlotsBySlotName:
-          (drawData.unitSlots &&
-            Object.fromEntries(
-              drawData.unitSlots.map((slot) => [slot.name, slot]),
-            )) ||
-          {},
-        texture: addTextureDefaults(drawData.texture),
-      },
-    ]),
-  );
+const provincesMapData: { [key: string]: ProvinceMapData } = Object.fromEntries(
+  Object.entries(mapDrawData).map(([territory, drawData]) => [
+    territory,
+    // eww, why???
+    {
+      ...Territories[territory],
+      ...drawData,
+      viewBox: `0 0 ${drawData.width} ${drawData.height}`,
+      unitSlotsBySlotName:
+        (drawData.unitSlots &&
+          Object.fromEntries(
+            drawData.unitSlots.map((slot) => [slot.name, slot]),
+          )) ||
+        {},
+      texture: addTextureDefaults(drawData.texture),
+    },
+  ]),
+);
 
-export default territoriesMapData;
+export default provincesMapData;

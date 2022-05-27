@@ -48,7 +48,7 @@ export function getTargetXYWH(
     // that unit's icon would be.
     case "unit": {
       const toTerritoryName = Territory[identifier as Territory];
-      const toTerritoryData = TerritoryMap[toTerritoryName].territoryMapData;
+      const toTerritoryData = TerritoryMap[toTerritoryName].provinceMapData;
       const { unitSlotName } = TerritoryMap[toTerritoryName];
 
       x = toTerritoryData.x;
@@ -69,7 +69,7 @@ export function getTargetXYWH(
     // arrow receiver slot instead.
     case "dislodger": {
       const toTerritoryName = Territory[identifier as Territory];
-      const toTerritoryData = TerritoryMap[toTerritoryName].territoryMapData;
+      const toTerritoryData = TerritoryMap[toTerritoryName].provinceMapData;
       const { unitSlotName } = TerritoryMap[toTerritoryName];
 
       x = toTerritoryData.x - UNIT_WIDTH / 2;
@@ -90,7 +90,7 @@ export function getTargetXYWH(
     // stop slightly short of each other instead of all overlapping.
     default: {
       const toTerritoryName = Territory[identifier as Territory];
-      const toTerritoryData = TerritoryMap[toTerritoryName].territoryMapData;
+      const toTerritoryData = TerritoryMap[toTerritoryName].provinceMapData;
       const { unitSlotName } = TerritoryMap[toTerritoryName];
 
       const bufferSize = 12;

@@ -8,9 +8,9 @@ export default function generateMaps(
   const { currentOrders, territories, units } = data;
   const territoryToTerrID: GameStateMaps["territoryToTerrID"] = {};
   const terrIDToTerritory: GameStateMaps["terrIDToTerritory"] = {};
-  const terrIDToRegionID: GameStateMaps["terrIDToRegionID"] = {};
+  const terrIDToRegionID: GameStateMaps["terrIDToProvinceID"] = {};
   const terrIDToUnit: GameStateMaps["terrIDToUnit"] = {};
-  const regionIDToUnit: GameStateMaps["regionIDToUnit"] = {};
+  const regionIDToUnit: GameStateMaps["provinceIDToUnit"] = {};
   const unitToTerrID: GameStateMaps["unitToTerrID"] = {};
   const territoryToUnit: GameStateMaps["territoryToUnit"] = {};
   const unitToTerritory: GameStateMaps["unitToTerritory"] = {};
@@ -39,9 +39,9 @@ export default function generateMaps(
   return {
     territoryToTerrID,
     terrIDToTerritory,
-    terrIDToRegionID,
+    terrIDToProvinceID: terrIDToRegionID,
     terrIDToUnit,
-    regionIDToUnit,
+    provinceIDToUnit: regionIDToUnit,
     unitToTerrID,
     territoryToUnit,
     unitToTerritory,

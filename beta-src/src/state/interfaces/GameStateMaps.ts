@@ -5,9 +5,9 @@ type IDToTerritory = { [key: string]: Territory };
 export default interface GameStateMaps {
   territoryToTerrID: GameStateMap;
   terrIDToTerritory: IDToTerritory;
-  terrIDToRegionID: GameStateMap;
+  terrIDToProvinceID: GameStateMap;
   terrIDToUnit: GameStateMap;
-  regionIDToUnit: GameStateMap; 
+  provinceIDToUnit: GameStateMap; 
   unitToTerrID: GameStateMap;
   territoryToUnit: GameStateMap;
   unitToTerritory: IDToTerritory;

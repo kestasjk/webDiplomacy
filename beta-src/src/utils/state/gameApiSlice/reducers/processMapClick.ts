@@ -1,5 +1,5 @@
 import { current } from "@reduxjs/toolkit";
-import territoriesMapData from "../../../../data/map/TerritoriesMapData";
+import provincesMapData from "../../../../data/map/ProvincesMapData";
 import TerritoryMap, {
   webdipNameToTerritory,
 } from "../../../../data/map/variants/classic/TerritoryMap";
@@ -33,7 +33,7 @@ function canUnitMoveTo(orderMeta: OrderMeta, territory: Territory): boolean {
   );
 }
 
-function canUnitMoveToRegion(
+function canUnitMoveToProvince(
   orderMeta: OrderMeta,
   territory: Territory,
 ): boolean {
@@ -45,7 +45,7 @@ function canUnitMoveToRegion(
   );
 }
 
-function canSupporteeMoveToOrHoldAtRegion(
+function canSupporteeMoveToOrHoldAtProvince(
   order: OrderState,
   territory: Territory,
   maps: GameStateMaps,
@@ -58,7 +58,7 @@ function canSupporteeMoveToOrHoldAtRegion(
   const supporteeRegion: Territory =
     TerritoryMap[supporteeTerr].parent || supporteeTerr;
   // Make sure you can find the unit
-  const supporteeUnit = maps.regionIDToUnit[order.fromTerrID];
+  const supporteeUnit = maps.provinceIDToUnit[order.fromTerrID];
   if (!supporteeUnit) {
     return false;
   }
@@ -83,12 +83,12 @@ function canSupporteeMoveToOrHoldAtRegion(
   );
 }
 
-function getClickPositionInTerritory(evt, territoryMapData: ProvinceMapData) {
+function getClickPositionInProvince(evt, provinceMapData: ProvinceMapData) {
   const boundingRect = evt.target.getBoundingClientRect();
   const diffX = evt.clientX - boundingRect.x;
   const diffY = evt.clientY - boundingRect.y;
-  const scaleX = boundingRect.width / territoryMapData.width;
-  const scaleY = boundingRect.height / territoryMapData.height;
+  const scaleX = boundingRect.width / provinceMapData.width;
+  const scaleY = boundingRect.height / provinceMapData.height;
   return { x: diffX / scaleX, y: diffY / scaleY };
 }
 
@@ -111,16 +111,13 @@ function canSupportTerritory(
 }
 
 // Returns either "nc" or "sc", the one closest to the position of the click.
-function getBestCoastalUnitSlot(
-  evt,
-  territoryMapData: ProvinceMapData,
-): string {
-  const clickPos = getClickPositionInTerritory(evt, territoryMapData);
+function getBestCoastalUnitSlot(evt, provinceMapData: ProvinceMapData): string {
+  const clickPos = getClickPositionInProvince(evt, provinceMapData);
 
   // here we've got name => {x, y}
   let bestSlot = "";
   let bestDist2 = 1e100;
-  territoryMapData!.labels!.forEach((label) => {
+  provinceMapData!.labels!.forEach((label) => {
     if (["nc", "sc"].includes(label.name)) {
       const dist2 = (clickPos.x - label.x) ** 2 + (clickPos.y - label.y) ** 2;
       if (dist2 < bestDist2) {
@@ -205,7 +202,7 @@ export default function processMapClick(
   const clickUnit = data.units[clickUnitID];
   const orderUnit = data.units[order.unitID];
   const ownsCurUnit = ownUnits.includes(clickUnitID);
-  const mapData = territoriesMapData[territory];
+  const mapData = provincesMapData[territory];
 
   // ---------------------- BUILD PHASE ---------------------------
   if (phase === "Builds") {
@@ -370,9 +367,9 @@ export default function processMapClick(
       // click 2
       // eslint-disable-next-line no-lonely-if
       if (
-        canUnitMoveToRegion(ordersMeta[order.orderID], territory) &&
+        canUnitMoveToProvince(ordersMeta[order.orderID], territory) &&
         board &&
-        canSupporteeMoveToOrHoldAtRegion(order, territory, maps, board)
+        canSupporteeMoveToOrHoldAtProvince(order, territory, maps, board)
       ) {
         updateOrder(state, { toTerrID: clickTerrID });
       } else {
