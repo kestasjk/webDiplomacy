@@ -20,11 +20,11 @@ import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import {
   fetchGameMessages,
   gameApiSliceActions,
-  gameMessages,
   gameOverview,
   markMessagesSeen,
   sendMessage,
 } from "../../state/game/game-api-slice";
+import { store } from "../../state/store";
 
 interface WDPressProps {
   children: React.ReactNode;
@@ -53,23 +53,28 @@ const WDPress: React.FC<WDPressProps> = function ({
   );
 
   const { user, gameID } = useAppSelector(gameOverview);
-  const messages = useAppSelector(gameMessages);
-  const outstandingRequests = useAppSelector(
-    ({ game: { outstandingMessageRequests } }) => outstandingMessageRequests,
+  const messages = useAppSelector(({ game }) => game.messages.messages);
+  const newMessagesFrom = useAppSelector(
+    ({ game }) => game.messages.newMessagesFrom,
   );
+
   // FIXME: for now, crazily fetch all messages every 1sec
   useInterval(() => {
-    if (user && gameID && messages && outstandingRequests === 0) {
-      console.log("Dispatching");
-      dispatch(gameApiSliceActions.updateOutstandingMessageRequests(1));
-      dispatch(
-        fetchGameMessages({
-          gameID: gameID as unknown as string,
-          countryID: user.member.countryID as unknown as string,
-          allMessages: "true",
-          sinceTime: messages.time as unknown as string,
-        }),
-      );
+    if (user && gameID) {
+      const { game } = store.getState();
+      const { outstandingMessageRequests } = game;
+      if (outstandingMessageRequests === 0) {
+        console.log("Dispatching");
+        dispatch(gameApiSliceActions.updateOutstandingMessageRequests(1));
+        dispatch(
+          fetchGameMessages({
+            gameID: gameID as unknown as string,
+            countryID: user.member.countryID as unknown as string,
+            allMessages: "true",
+            sinceTime: game.messages.time as unknown as string,
+          }),
+        );
+      }
     }
   }, 1000);
 
@@ -101,7 +106,7 @@ const WDPress: React.FC<WDPressProps> = function ({
     }
   };
 
-  if (messages.newMessagesFrom.includes(countryIDSelected)) {
+  if (newMessagesFrom.includes(countryIDSelected)) {
     // need to update locally and on the server
     // because we don't immediately re-fetch message data from the server
     dispatch(gameApiSliceActions.processMessagesSeen(countryIDSelected));
@@ -131,11 +136,7 @@ const WDPress: React.FC<WDPressProps> = function ({
             countryIDSelected === country.countryID ? "contained" : "text"
           }
           startIcon={
-            messages.newMessagesFrom.includes(country.countryID) ? (
-              <Email />
-            ) : (
-              ""
-            )
+            newMessagesFrom.includes(country.countryID) ? <Email /> : ""
           }
         >
           {country.country.slice(0, 3).toUpperCase()}
@@ -151,7 +152,7 @@ const WDPress: React.FC<WDPressProps> = function ({
         </ButtonGroup>
       </Stack>
       <WDMessageList
-        messages={messages.messages}
+        messages={messages}
         countries={[...countries, userCountry]} // sorry, its just silly to exclude userCountry from this table
         userCountry={userCountry}
         countryIDSelected={countryIDSelected}
