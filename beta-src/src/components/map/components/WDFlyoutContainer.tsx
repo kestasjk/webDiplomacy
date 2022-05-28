@@ -76,15 +76,16 @@ const WDFlyoutContainer: React.FC<WDFlyoutContainerProps> = function ({
         text="Support"
         clickHandler={clickHandler("Support")}
       />
-      {(unit?.unit?.type === "Fleet" && (
-        <WDFlyoutButton
-          territory={territory}
-          unitSlotName={unitSlotName}
-          position="bottom"
-          text="Convoy"
-          clickHandler={clickHandler("Convoy")}
-        />
-      )) || <g />}
+      {(unit?.unit?.type === "Fleet" &&
+        Territories[territory].type === "water" && (
+          <WDFlyoutButton
+            territory={territory}
+            unitSlotName={unitSlotName}
+            position="bottom"
+            text="Convoy"
+            clickHandler={clickHandler("Convoy")}
+          />
+        )) || <g />}
       {board && isConvoyable(board, unit) && (
         <WDFlyoutButton
           territory={territory}

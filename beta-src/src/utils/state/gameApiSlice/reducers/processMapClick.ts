@@ -59,6 +59,7 @@ function canSupportTerritory(
 
 /* eslint-disable no-param-reassign */
 export default function processMapClick(state, clickData) {
+  const currentState: GameState = current(state);
   const {
     data: { data },
     order,
@@ -67,15 +68,10 @@ export default function processMapClick(state, clickData) {
     territoriesMeta,
     maps,
     ownUnits,
-  }: {
-    data: { data: GameDataResponse["data"] };
-    order: GameState["order"];
-    ordersMeta: GameState["ordersMeta"];
-    overview: GameState["overview"];
-    territoriesMeta: GameState["territoriesMeta"];
-    maps: GameStateMaps;
-    ownUnits: GameState["ownUnits"];
-  } = current(state);
+    viewedPhaseState,
+    status,
+  } = currentState;
+
   // ---------------------- PREPARATION ---------------------------
 
   console.log("processMapClick");
@@ -89,10 +85,15 @@ export default function processMapClick(state, clickData) {
     payload: { clickObject, evt, territory },
   } = clickData;
 
+  if (viewedPhaseState.viewedPhaseIdx < status.phases.length - 1) {
+    alert("You need to switch to the current phase to enter orders."); // FIXME: move to alerts modal!
+    invalidClick(evt, territory);
+    return;
+  }
   if (orderStatus.Ready) {
     alert("You need to unready your orders to update them"); // FIXME: move to alerts modal!
     invalidClick(evt, territory);
-    return; // FIXME this is very confusing for the user!
+    return;
   }
   const territoryMeta: TerritoryMeta = territoriesMeta[territory];
   // Click is outside the map entirely?
