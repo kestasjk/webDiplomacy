@@ -1,7 +1,6 @@
 import { current } from "@reduxjs/toolkit";
 import TerritoryMap from "../../../../../data/map/variants/classic/TerritoryMap";
 import Territory from "../../../../../enums/map/variants/classic/Territory";
-import BoardClass from "../../../../../models/BoardClass";
 import GameDataResponse from "../../../../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../../../../state/interfaces/GameOverviewResponse";
 import { GameState } from "../../../../../state/interfaces/GameState";

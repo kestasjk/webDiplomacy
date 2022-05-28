@@ -1,4 +1,3 @@
-import BoardClass from "../../models/BoardClass";
 import { BuildCommand, FlyoutCommand } from "./GameCommands";
 import GameDataResponse from "./GameDataResponse";
 import GameErrorResponse from "./GameErrorResponse";
