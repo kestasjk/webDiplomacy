@@ -150,6 +150,14 @@ const initialState: GameState = {
     time: 0,
   },
   outstandingMessageRequests: 0,
+  legalOrders: {
+    legalMoveDestsByUnitID: {},
+    legalRetreatDestsByUnitID: {},
+    possibleBuildDests: [],
+    legalViasByUnitID: {},
+    legalConvoysByUnitID: {},
+    legalSupportsByUnitID: {},
+  },
 };
 
 export default initialState;

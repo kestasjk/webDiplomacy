@@ -11,6 +11,7 @@ import getOrdersMeta from "../../../../map/getOrdersMeta";
 import { getUnitsLive } from "../../../../map/getUnits";
 import generateMaps from "../../../generateMaps";
 import updateOrdersMeta from "../../../updateOrdersMeta";
+import { getLegalOrders } from "./precomputeLegalOrders";
 
 /* eslint-disable no-param-reassign */
 export default function fetchGameDataFulfilled(state: GameState, action): void {
@@ -48,6 +49,8 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
   });
 
   state.territoriesMeta = getTerritoriesMeta(data);
+
+  state.legalOrders = getLegalOrders(state.overview, data, state.maps);
 
   const numUnsavedOrders = Object.values(state.ordersMeta).reduce(
     (acc, meta) => acc + 1 - +meta.saved,

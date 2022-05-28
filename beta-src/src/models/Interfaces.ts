@@ -10,6 +10,8 @@ export interface IBoard {
 
 export interface ITerritory {
   coast: string;
+  // This country ID does not appear to change over the course of the game.
+  // It indicates the initial home ownership of a territory.
   countryID: string;
   coastParentID: string;
   id: string;
@@ -65,6 +67,8 @@ export interface IProvinceStatus {
   occupiedFromTerrID: string | null;
   ownerCountryID: string | null;
   standoff: boolean;
+  // The unit that is currently in this province. In case of dislodgment,
+  // this is the dislodger, not the dislodged piece.
   unitID: string | null;
 }
 

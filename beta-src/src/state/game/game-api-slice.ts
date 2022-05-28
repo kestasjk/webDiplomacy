@@ -355,5 +355,7 @@ export const gameBoard = ({ game: { board } }: RootState) => board;
 export const gameViewedPhase = ({
   game: { viewedPhaseState },
 }: RootState): ViewedPhaseState => viewedPhaseState;
+export const gameLegalOrders = ({ game: { legalOrders } }: RootState) =>
+  legalOrders;
 
 export default gameApiSlice.reducer;
