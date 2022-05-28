@@ -27,16 +27,17 @@ import { Unit, UnitDrawMode } from "../../../utils/map/getUnits";
 import Province from "../../../enums/map/variants/classic/Province";
 import Territory from "../../../enums/map/variants/classic/Territory";
 import OrdersMeta from "../../../state/interfaces/SavedOrders";
+import { IProvinceStatus } from "../../../models/Interfaces";
 
 interface WDProvinceProps {
   provinceMapData: ProvinceMapData;
-  territoryMeta: TerritoryMeta | undefined;
+  ownerCountryID: string | undefined;
   units: Unit[];
 }
 
 const WDProvince: React.FC<WDProvinceProps> = function ({
   provinceMapData,
-  territoryMeta,
+  ownerCountryID,
   units,
 }): React.ReactElement {
   const theme = useTheme();
@@ -49,15 +50,15 @@ const WDProvince: React.FC<WDProvinceProps> = function ({
   let territoryFill = "none";
   let territoryFillOpacity = 0;
   const territoryStrokeOpacity = 1;
-  if (territoryMeta?.countryID) {
-    const ownerCountryID = territoryMeta?.countryID;
-    const ownerCountry =
-      members.find(({ countryID }) => String(countryID) === ownerCountryID)
-        ?.country || "null";
-    territoryFill = theme.palette[ownerCountry]?.main;
-    territoryFillOpacity = 0.4;
+  if (ownerCountryID && provinceMapData.centerPos) {
+    const ownerCountry = members.find(
+      (m) => m.countryID === Number(ownerCountryID),
+    )?.country;
+    if (ownerCountry) {
+      territoryFill = theme.palette[ownerCountry]?.main;
+      territoryFillOpacity = 0.4;
+    }
   }
-  const curOrder = useAppSelector(gameOrder);
 
   // Maps unitSlot name -> unit to draw.
   const unitFCs: { [key: string]: React.ReactElement } = {};
@@ -97,6 +98,7 @@ const WDProvince: React.FC<WDProvinceProps> = function ({
           break;
       }
 
+      /*
       if (curOrder.unitID === unit.unit.id && curOrder.type) {
         territoryFillOpacity = 0.9;
         territoryFill = theme.palette[userCountry]?.main;
@@ -109,6 +111,7 @@ const WDProvince: React.FC<WDProvinceProps> = function ({
         )?.country;
         territoryFill = theme.palette[ownerCountry || ""]?.main;
       }
+      */
       const wdUnit = (
         <WDUnit
           id={`${province}-unit`}

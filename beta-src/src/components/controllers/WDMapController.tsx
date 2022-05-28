@@ -15,6 +15,7 @@ import {
   gameData,
   gameMaps,
   gameViewedPhase,
+  gameLegalOrders,
 } from "../../state/game/game-api-slice";
 import {
   Unit,
@@ -22,6 +23,7 @@ import {
   getUnitsHistorical,
 } from "../../utils/map/getUnits";
 import { IOrderData, IOrderDataHistorical } from "../../models/Interfaces";
+import provincesMapData from "../../data/map/ProvincesMapData";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -177,11 +179,21 @@ const WDMapController: React.FC = function (): React.ReactElement {
         data.data.currentOrders ? data.data.currentOrders : [],
       );
 
+      const centersByProvince: { [key: string]: { ownerCountryID: string } } =
+        {};
+      data.data.territoryStatuses.forEach((provinceStatus) => {
+        const province = maps.terrIDToProvince[provinceStatus.id];
+        if (provincesMapData[province].centerPos) {
+          const ownerCountryID = provinceStatus.ownerCountryID || "0";
+          centersByProvince[province] = { ownerCountryID };
+        }
+      });
+
       return {
         phase: overview.phase,
         units,
         orders: ordersHistorical,
-        territories: data.data.territories,
+        centersByProvince,
         isLatestPhase: true,
       };
     }
@@ -199,15 +211,28 @@ const WDMapController: React.FC = function (): React.ReactElement {
       prevPhaseOrders,
       phaseHistorical.orders,
     );
+    const centersByProvince: {
+      [key: string]: { ownerCountryID: string };
+    } = {};
+    phaseHistorical.centers.forEach((iCenter) => {
+      centersByProvince[maps.terrIDToProvince[iCenter.terrID]] = {
+        ownerCountryID: iCenter.countryID.toString(),
+      };
+    });
     return {
       phase: phaseHistorical.phase as string,
       units: unitsLive,
       orders: phaseHistorical.orders,
-      territories: data.data.territories,
+      centersByProvince,
       isLatestPhase: false,
     };
   };
-  const { phase, units, orders, territories, isLatestPhase } = updateForPhase();
+  const { phase, units, orders, centersByProvince, isLatestPhase } =
+    updateForPhase();
+  const { territories } = data.data;
+
+  // const legalOrders = useAppSelector(gameLegalOrders);
+  // console.log({ legalOrders });
 
   React.useLayoutEffect(() => {
     if (svgElement.current) {
@@ -267,6 +292,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
         orders={orders}
         maps={maps}
         territories={territories}
+        centersByProvince={centersByProvince}
         isLatestPhase={isLatestPhase}
       />
     </div>

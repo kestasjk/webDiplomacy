@@ -35,8 +35,8 @@ export interface ICoastalBorder {
 }
 
 export interface ICenter {
-  countryID: string;
-  terrID: string;
+  countryID: number;
+  terrID: number;
 }
 
 // What webdip api gives for LIVE units (in gameData response)

@@ -18,6 +18,7 @@ interface WDMapProps {
   orders: IOrderDataHistorical[];
   maps: GameStateMaps;
   territories: APITerritories;
+  centersByProvince: { [key: string]: { ownerCountryID: string } };
   isLatestPhase: boolean;
 }
 
@@ -25,7 +26,15 @@ const WDMap: React.ForwardRefExoticComponent<
   WDMapProps & React.RefAttributes<SVGSVGElement>
 > = React.forwardRef<SVGSVGElement, WDMapProps>(
   (
-    { units, phase, orders, maps, territories, isLatestPhase },
+    {
+      units,
+      phase,
+      orders,
+      maps,
+      territories,
+      centersByProvince,
+      isLatestPhase,
+    },
     ref,
   ): React.ReactElement => (
     <svg
@@ -40,7 +49,7 @@ const WDMap: React.ForwardRefExoticComponent<
     >
       <g id="full-map-svg">
         <g id="container">
-          <WDBoardMap units={units} />
+          <WDBoardMap units={units} centersByProvince={centersByProvince} />
           <WDArrowContainer
             phase={phase}
             orders={orders}

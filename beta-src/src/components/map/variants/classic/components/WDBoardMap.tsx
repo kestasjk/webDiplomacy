@@ -3,26 +3,36 @@ import WDProvince from "../../../components/WDProvince";
 import { Unit } from "../../../../../utils/map/getUnits";
 import provincesMapData from "../../../../../data/map/ProvincesMapData";
 import Province from "../../../../../enums/map/variants/classic/Province";
-import { gameTerritoriesMeta } from "../../../../../state/game/game-api-slice";
+import { gameData, gameMaps, gameOrder } from "../../../../../state/game/game-api-slice";
 import { useAppSelector } from "../../../../../state/hooks";
+import { IProvinceStatus } from "../../../../../models/Interfaces";
 
 interface WDBoardMapProps {
   units: Unit[];
+  centersByProvince: { [key: string]: { ownerCountryID: string } };
 }
 
 const WDBoardMap: React.FC<WDBoardMapProps> = function ({
   units,
+  centersByProvince,
 }): React.ReactElement {
-  const territoriesMeta = useAppSelector(gameTerritoriesMeta);
+  const gameDataResponse = useAppSelector(gameData);
+  const maps = useAppSelector(gameMaps);
+  const provinceStatusByProvID: { [key: string]: IProvinceStatus } = {};
+  gameDataResponse.data.territoryStatuses.forEach((provinceStatus) => {
+    provinceStatusByProvID[maps.terrIDToProvince[provinceStatus.id]] =
+      provinceStatus;
+  });
+
+  const curOrder = useAppSelector(gameOrder);
 
   const unplayableProvinces = Object.values(provincesMapData)
     .filter((data) => !data.playable)
     .map((data) => {
-      const territoryMeta = territoriesMeta[data.province];
       return (
         <WDProvince
           provinceMapData={data}
-          territoryMeta={territoryMeta}
+          ownerCountryID={centersByProvince[data.province]?.ownerCountryID}
           units={units}
           key={`${data.province}-province`}
         />
@@ -40,11 +50,10 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
   playableProvincesData.push(provincesMapData[Province.ROME]);
 
   const playableProvinces = playableProvincesData.map((data) => {
-    const territoryMeta = territoriesMeta[data.province];
     return (
       <WDProvince
         provinceMapData={data}
-        territoryMeta={territoryMeta}
+        ownerCountryID={centersByProvince[data.province]?.ownerCountryID}
         units={units}
         key={`${data.province}-province`}
       />
