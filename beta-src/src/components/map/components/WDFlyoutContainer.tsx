@@ -27,8 +27,8 @@ const WDFlyoutContainer: React.FC<WDFlyoutContainerProps> = function ({
   const maps = useAppSelector(gameMaps);
   const legalOrders = useAppSelector(gameLegalOrders);
 
-  console.log("FLYOUT");
-  console.log({ order });
+  // console.log("FLYOUT");
+  // console.log({ order });
 
   if (!order.inProgress || order.type || !order.unitID) {
     return <Box />;

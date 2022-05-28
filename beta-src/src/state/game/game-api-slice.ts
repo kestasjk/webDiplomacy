@@ -282,7 +282,7 @@ const gameApiSlice = createSlice({
           0,
         );
         if (action.payload) {
-          console.log(`payload`);
+          // console.log(`payload`);
           const { messages, newMessagesFrom, time } = action.payload;
           if (messages) {
             const allMessages = mergeMessageArrays(
@@ -308,7 +308,7 @@ const gameApiSlice = createSlice({
             }
           }
           console.log(
-            `time=${time}, outstandingMessageRequests=${state.outstandingMessageRequests}`,
+            `Messages fetched at time=${time}`,
           );
           if (time) {
             state.messages.time = time;

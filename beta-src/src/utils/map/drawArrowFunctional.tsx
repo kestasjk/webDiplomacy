@@ -153,9 +153,9 @@ export default function drawArrowFunctional(
   receiverType: "territory" | "unit" | "arrow" | "dislodger",
   receiverIdentifier: Territory | [number, number, number, number],
 ): React.ReactElement {
-  console.log(
-    `drawArrowFunctional ${sourceIdentifier} ${receiverType} ${receiverIdentifier} `,
-  );
+  // console.log(
+  //   `drawArrowFunctional ${sourceIdentifier} ${receiverType} ${receiverIdentifier} `,
+  // );
   const [x1, y1, x2, y2] = getArrowX1Y1X2Y2(
     sourceType,
     sourceIdentifier,
