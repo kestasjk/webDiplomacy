@@ -11,7 +11,7 @@ import GameStateMaps from "../../../../../state/interfaces/GameStateMaps";
 
 interface LegalVia {
   dest: Territory;
-  provIDPath: string[];
+  provIDPaths: string[][];
 }
 
 interface LegalConvoy {
@@ -170,8 +170,6 @@ export function getAllPossibleBuildDests(
   return possibleBuildDests;
 }
 
-// Same as LegalVia, but we name it differently for how it's used for
-// different purposes during the internal calculation.
 interface PathToCoast {
   dest: Territory;
   provIDPath: string[];
@@ -209,7 +207,7 @@ export function getAllLegalConvoys(
     }
     // For armies, territory id is the same as province id.
     const initialProvID = unit.terrID;
-    const legalVias: LegalVia[] = [];
+    const legalViasByDest: { [key: string]: LegalVia } = {};
 
     // Perform DFS to find every location we can reach, and a path that does it.
     const reachedProvIDs = new Set<string>();
@@ -235,25 +233,30 @@ export function getAllLegalConvoys(
           if (reachedProvIDs.has(nextProvID)) {
             return;
           }
-          reachedProvIDs.add(nextProvID);
           // If it's a sea, then we recurse, so long as there is a unit there.
           if (nextITerr.type === "Sea") {
             if (provinceStatusByProvID[nextProvID]?.unitID) {
+              reachedProvIDs.add(nextProvID);
               pathSoFar.push(nextProvID);
               searchAllNeighbors(nextITerr, pathSoFar);
               pathSoFar.pop();
+              reachedProvIDs.delete(nextProvID);
             }
           }
           // Otherwise it's not a sea. Then we terminate.
           else {
             const dest = TerritoryMap[nextITerr.name].territory;
-            legalVias.push({ dest, provIDPath: [...pathSoFar] });
+            if (!legalViasByDest[dest]) {
+              legalViasByDest[dest] = { dest, provIDPaths: [[...pathSoFar]] };
+            } else {
+              legalViasByDest[dest].provIDPaths.push([...pathSoFar]);
+            }
           }
         }
       });
     };
     searchAllNeighbors(data.territories[initialProvID], [initialProvID]);
-    legalViasByUnitID[unitID] = legalVias;
+    legalViasByUnitID[unitID] = Object.values(legalViasByDest);
   });
 
   // ========================================================================
@@ -392,6 +395,7 @@ export function getAllLegalSupportsByUnitID(
     const legalSupportsBySrc: { [key: string]: Province[] } = {};
 
     // Find all provinces that this unit can move to.
+    const unitProvID = maps.terrIDToProvinceID[unit.terrID];
     const iTerr = data.territories[unit.terrID];
     const borderKind = unit.type === UnitType.Army ? "a" : "f";
     // Use Borders instead of CoastalBorders.
@@ -428,7 +432,8 @@ export function getAllLegalSupportsByUnitID(
                 // to reach a province is equivalent to it being able to reach the root territory
                 // of that province, since armies never go on special coasts.
                 // So we can simply test its desination vs the root territory.
-                via.dest === destinationTerrRoot,
+                via.dest === destinationTerrRoot &&
+                via.provIDPaths.find((path) => !path.includes(unitProvID)),
             )
           ) {
             const src = maps.terrIDToProvince[supporteeUnit.terrID];
