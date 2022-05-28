@@ -12,7 +12,9 @@ interface GameStatusResponse {
   phases: IPhaseDataHistorical[];
   standoffs: string[];
   occupiedFrom: string[];
-  votes: string | null;
+  // need to get votes from gameOverview because status
+  // is only updated once per phase
+  // votes: string | null;
   orderStatus: string;
   status: string;
 }

@@ -136,7 +136,6 @@ const initialState: GameState = {
     phases: [],
     standoffs: [],
     occupiedFrom: [],
-    votes: null,
     orderStatus: "",
     status: "",
   },
