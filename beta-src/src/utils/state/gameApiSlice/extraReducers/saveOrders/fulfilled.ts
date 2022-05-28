@@ -27,5 +27,4 @@ export default function saveOrdersFulfilled(state, action): void {
       }
     });
   }
-  state.activity.makeNewCall = true;
 }

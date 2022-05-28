@@ -1,7 +1,5 @@
-import { Box, Button, Grid, Stack } from "@mui/material";
+import { Box } from "@mui/material";
 import * as React from "react";
-import Position from "../../enums/Position";
-import { IContext } from "../../models/Interfaces";
 import {
   fetchGameOverview,
   gameApiSliceActions,
@@ -29,40 +27,20 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   const { countryID } = overview.user.member;
 
   const overviewKey = getPhaseKey(overview);
-  console.log({ overview });
   const statusKey = getPhaseKey(status);
   const dataKey = data.contextVars
     ? getPhaseKey(data.contextVars.context)
     : "<BAD>";
 
   if (userActivity.makeNewCall) {
-    console.log({
-      overviewKey,
-      statusKey,
-      dataKey,
-    });
     dispatch(fetchGameOverview({ gameID: String(overview.gameID) }));
   }
-  const needsFetchGameData = useAppSelector(
-    ({
-      game: {
-        activity: { needsGameData },
-      },
-    }) => needsGameData,
-  );
+  const activity = useAppSelector(gameUserActivity);
   const isPregame = ["", "Pre-game"].includes(overview.phase);
   const consistentPhase =
     isPregame || (overviewKey === statusKey && overviewKey === dataKey);
 
-  console.log({
-    consistentPhase,
-    overviewKey,
-    statusKey,
-    dataKey,
-  });
-
-  if (needsFetchGameData && !isPregame) {
-    console.log("FETCHING DATA");
+  if (activity.needsGameData && !isPregame) {
     dispatch(gameApiSliceActions.setNeedsGameData(false));
     dispatch(loadGameData(String(overview.gameID), String(countryID)));
   }
@@ -79,7 +57,7 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   if (!consistentPhase) {
     return <Box>Loading...</Box>;
   }
-  console.log({ displayedPhaseKey, overviewKey });
+
   const phaseProgressed =
     displayedPhaseKey && overviewKey !== displayedPhaseKey;
   if (displayedPhaseKey === null && overview.phase) {

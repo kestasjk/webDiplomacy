@@ -34,7 +34,6 @@ export interface GameState {
   status: GameStatusResponse;
   messages: GameMessages;
   outstandingMessageRequests: number;
-  outstandingGameRequests: number;
 
   order: OrderState;
 }

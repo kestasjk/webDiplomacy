@@ -117,7 +117,6 @@ export default function processMapClick(state, clickData) {
 
   const clickTerrID = maps.territoryToTerrID[territory];
   let clickUnitID = findTerrIDForUnit(clickTerrID, maps, ownUnits, phase);
-  console.log({ clickUnitID });
   // Fixup unit for coast!
   if (!clickUnitID) {
     // Note: I think we could use the TerritoryClass stuff to find children like this

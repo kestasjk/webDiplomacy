@@ -148,6 +148,16 @@ export const saveOrders = createAsyncThunk(
   },
 );
 
+export const loadGameData =
+  (gameID: string, countryID: string) => async (dispatch) => {
+    console.log("loadGameData");
+    await Promise.all([
+      dispatch(fetchGameData({ gameID, countryID })),
+      // dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
+      dispatch(fetchGameStatus({ gameID, countryID })),
+    ]);
+  };
+
 export const loadGame = (gameID: string) => async (dispatch) => {
   console.log("loadGame");
   const {
@@ -167,16 +177,6 @@ export const loadGame = (gameID: string) => async (dispatch) => {
     dispatch(fetchGameStatus({ gameID, countryID })),
   ]);
 };
-
-export const loadGameData =
-  (gameID: string, countryID: string) => async (dispatch) => {
-    console.log("loadGameData");
-    await Promise.all([
-      dispatch(fetchGameData({ gameID, countryID })),
-      // dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
-      dispatch(fetchGameStatus({ gameID, countryID })),
-    ]);
-  };
 
 /**
  * createSlice handles state changes properly without reassiging state, but
@@ -213,9 +213,6 @@ const gameApiSlice = createSlice({
     setNeedsGameData(state, action) {
       state.activity.needsGameData = action.payload;
     },
-    updateOutstandingGameRequests(state, action) {
-      state.outstandingGameRequests += action.payload;
-    },
     changeViewedPhaseIdxBy(state, action) {
       let newIdx = state.viewedPhaseState.viewedPhaseIdx + action.payload;
       newIdx = Math.min(newIdx, state.status.phases.length - 1);
@@ -234,11 +231,6 @@ const gameApiSlice = createSlice({
       .addCase(fetchGameData.fulfilled, fetchGameDataFulfilled)
       .addCase(fetchGameData.rejected, (state, action) => {
         console.log("fetchGameData rejected!");
-        state.outstandingGameRequests = Math.max(
-          state.outstandingGameRequests - 1,
-          0,
-        );
-
         state.apiStatus = "failed";
         state.error = action.error.message;
       })
@@ -259,11 +251,6 @@ const gameApiSlice = createSlice({
       .addCase(fetchGameStatus.fulfilled, fetchGameStatusFulfilled)
       .addCase(fetchGameStatus.rejected, (state, action) => {
         state.apiStatus = "failed";
-        state.outstandingGameRequests = Math.max(
-          state.outstandingGameRequests - 1,
-          0,
-        );
-
         state.error = action.error.message;
       })
       // saveOrders
