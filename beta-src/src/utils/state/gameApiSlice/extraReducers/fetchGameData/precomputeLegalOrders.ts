@@ -481,6 +481,7 @@ export function getLegalOrders(
   data: GameData,
   maps: GameStateMaps,
 ): LegalOrders {
+  const startTimeStamp = performance.now();
   const legalMoveDestsByUnitID = getAllLegalMoveDestsByUnitID(overview, data);
   const legalRetreatDestsByUnitID = getAllLegalRetreatDestsByUnitID(
     overview,
@@ -506,6 +507,10 @@ export function getLegalOrders(
     maps,
     legalMoveDestsByUnitID,
     legalViasByUnitID,
+  );
+  const endTimeStamp = performance.now();
+  console.log(
+    `getLegalOrders took ${endTimeStamp - startTimeStamp} milliseconds`,
   );
   return {
     legalMoveDestsByUnitID,
