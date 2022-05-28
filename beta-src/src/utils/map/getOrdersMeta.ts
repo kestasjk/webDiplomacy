@@ -1,13 +1,7 @@
 import { IOrderData, IUnit } from "../../models/Interfaces";
-import OrderClass from "../../models/OrderClass";
-import TerritoryClass from "../../models/TerritoryClass";
-import UnitClass from "../../models/UnitClass";
 import GameDataResponse from "../../state/interfaces/GameDataResponse";
 import { GameState } from "../../state/interfaces/GameState";
-import {
-  EditOrderMeta,
-  SupportMoveChoice,
-} from "../../state/interfaces/SavedOrders";
+import { EditOrderMeta } from "../../state/interfaces/SavedOrders";
 
 interface Props {
   [key: string]: EditOrderMeta;
