@@ -73,6 +73,7 @@ const WDFlyoutContainer: React.FC<WDFlyoutContainerProps> = function ({
         clickHandler={clickHandler("Support")}
       />
       {(unit?.unit?.type === "Fleet" &&
+        mTerr.provinceMapData.type === "Sea" &&
         legalOrders.hasAnyLegalConvoysByUnitID[order.unitID] && (
           <WDFlyoutButton
             province={province}

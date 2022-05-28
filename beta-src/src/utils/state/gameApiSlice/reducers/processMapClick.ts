@@ -71,6 +71,7 @@ export default function processMapClick(
   state: GameState,
   clickData: { payload: MapClickData },
 ) {
+  const currentState: GameState = current(state);
   const {
     data: { data },
     order,
@@ -80,16 +81,9 @@ export default function processMapClick(
     maps,
     ownUnits,
     legalOrders,
-  }: {
-    data: { data: GameDataResponse["data"] };
-    order: GameState["order"];
-    ordersMeta: GameState["ordersMeta"];
-    overview: GameState["overview"];
-    territoriesMeta: GameState["territoriesMeta"];
-    maps: GameStateMaps;
-    ownUnits: GameState["ownUnits"];
-    legalOrders: LegalOrders;
-  } = current(state);
+    viewedPhaseState,
+    status,
+  } = currentState;
   // ---------------------- PREPARATION ---------------------------
 
   console.log("processMapClick");
@@ -103,10 +97,15 @@ export default function processMapClick(
     payload: { evt, clickProvince },
   } = clickData;
 
+  if (viewedPhaseState.viewedPhaseIdx < status.phases.length - 1) {
+    alert("You need to switch to the current phase to enter orders."); // FIXME: move to alerts modal!
+    invalidClick(evt, clickProvince);
+    return;
+  }
   if (orderStatus.Ready) {
     alert("You need to unready your orders to update them"); // FIXME: move to alerts modal!
     invalidClick(evt, clickProvince);
-    return; // FIXME this is very confusing for the user!
+    return;
   }
   const clickProvinceMapData = provincesMapData[clickProvince];
   const clickRootTerritory = clickProvinceMapData.rootTerritory;

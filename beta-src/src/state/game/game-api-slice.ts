@@ -307,9 +307,7 @@ const gameApiSlice = createSlice({
               state.messages.newMessagesFrom = newMessagesFrom;
             }
           }
-          console.log(
-            `Messages fetched at time=${time}`,
-          );
+          console.log(`Messages fetched at time=${time}`);
           if (time) {
             state.messages.time = time;
           }
