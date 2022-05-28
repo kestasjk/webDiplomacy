@@ -177,8 +177,8 @@ interface PathToCoast {
 
 // Returns all legal convoy orders.
 // Returns (legalViasByUnitID, legalConvoysByUnitID).
-// Both are keyed by unitID, the inner map of legalConvoysByUnitID is keyed by the Territory
-// where convoyee starts.
+// Both are keyed by unitID, the inner map of legalConvoysByUnitID is keyed by the
+// Territory, or equivalently the Province, where the convoyee starts.
 // Computes via moves for ALL players.
 // Computes convoy moves for only the player playing.
 export function getAllLegalConvoys(

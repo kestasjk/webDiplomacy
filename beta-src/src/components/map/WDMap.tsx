@@ -49,7 +49,12 @@ const WDMap: React.ForwardRefExoticComponent<
     >
       <g id="full-map-svg">
         <g id="container">
-          <WDBoardMap units={units} centersByProvince={centersByProvince} />
+          <WDBoardMap
+            units={units}
+            centersByProvince={centersByProvince}
+            phase={phase}
+            isLatestPhase={isLatestPhase}
+          />
           <WDArrowContainer
             phase={phase}
             orders={orders}
@@ -85,6 +90,47 @@ const WDMap: React.ForwardRefExoticComponent<
           <image href={WaterTexture} x="0" y="0" width="1966" height="1615" />
         </pattern>
         {WDArrowMarkerDefs()}
+
+        <filter id="selectionGlow" height="120%" width="120%" x="-10%" y="-10%">
+          <feMorphology
+            operator="dilate"
+            radius="5"
+            in="SourceAlpha"
+            result="thickerSource"
+          />
+          <feGaussianBlur
+            stdDeviation="8"
+            in="thickerSource"
+            result="blurredSource"
+          />
+          <feFlood floodColor="rgb(100,200,255)" result="glowColor" />
+          <feComposite
+            in="glowColor"
+            in2="blurredSource"
+            operator="in"
+            result="selectionGlowGlow"
+          />
+        </filter>
+        <filter id="choiceGlow" height="120%" width="120%" x="-10%" y="-10%">
+          <feMorphology
+            operator="dilate"
+            radius="1"
+            in="SourceAlpha"
+            result="thickerSource"
+          />
+          <feGaussianBlur
+            stdDeviation="6"
+            in="thickerSource"
+            result="blurredSource"
+          />
+          <feFlood floodColor="rgb(255,200,100)" result="glowColor" />
+          <feComposite
+            in="glowColor"
+            in2="blurredSource"
+            operator="in"
+            result="choicesGlowGlow"
+          />
+        </filter>
       </defs>
     </svg>
   ),

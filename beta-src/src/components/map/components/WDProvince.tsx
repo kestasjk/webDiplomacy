@@ -44,7 +44,6 @@ const WDProvince: React.FC<WDProvinceProps> = function ({
   const dispatch = useAppDispatch();
 
   const { user, members } = useAppSelector(gameOverview);
-  const userCountry = countryMap[user.member.country];
 
   const { province } = provinceMapData;
   let territoryFill = "none";
@@ -59,74 +58,6 @@ const WDProvince: React.FC<WDProvinceProps> = function ({
       territoryFillOpacity = 0.4;
     }
   }
-
-  // Maps unitSlot name -> unit to draw.
-  const unitFCs: { [key: string]: React.ReactElement } = {};
-  // Maps unitSlot name -> unit to draw, but specifically for units
-  // that are currently disloging another unit on a retreat phase.
-  // This is separate because we need to draw the
-  // dislodger unit in an alternative location when there are two
-  // units in a territory so that they don't overlap each other, including
-  // when those units share the same unitSlot within that territory.
-  const unitFCsDislodging: { [key: string]: React.ReactElement } = {};
-
-  units
-    .filter((unit) => unit.mappedTerritory.province === province)
-    .forEach((unit) => {
-      let unitState: UIState;
-      switch (unit.drawMode) {
-        case UnitDrawMode.NONE:
-          unitState = UIState.NONE;
-          break;
-        case UnitDrawMode.HOLD:
-          unitState = UIState.HOLD;
-          break;
-        case UnitDrawMode.BUILD:
-          unitState = UIState.BUILD;
-          break;
-        case UnitDrawMode.DISLODGING:
-          unitState = UIState.NONE;
-          break;
-        case UnitDrawMode.DISLODGED:
-          unitState = UIState.DISLODGED;
-          break;
-        case UnitDrawMode.DISBANDED:
-          unitState = UIState.DISBANDED;
-          break;
-        default:
-          unitState = UIState.NONE;
-          break;
-      }
-
-      /*
-      if (curOrder.unitID === unit.unit.id && curOrder.type) {
-        territoryFillOpacity = 0.9;
-        territoryFill = theme.palette[userCountry]?.main;
-      }
-      if (curOrder.fromTerrID === territoryMeta?.id) {
-        territoryFillOpacity = 0.7;
-        // yuck
-        const ownerCountry = members.find(
-          (m) => m.countryID === Number(territoryMeta.ownerCountryID),
-        )?.country;
-        territoryFill = theme.palette[ownerCountry || ""]?.main;
-      }
-      */
-      const wdUnit = (
-        <WDUnit
-          id={`${province}-unit`}
-          country={unit.country}
-          meta={unit}
-          type={unit.unit.type as UnitType}
-          iconState={unitState}
-        />
-      );
-      if (unit.drawMode === UnitDrawMode.DISLODGING) {
-        unitFCsDislodging[unit.mappedTerritory.unitSlotName] = wdUnit;
-      } else {
-        unitFCs[unit.mappedTerritory.unitSlotName] = wdUnit;
-      }
-    });
 
   const clickAction = function (
     evt: React.MouseEvent<SVGGElement, MouseEvent>,
@@ -196,30 +127,6 @@ const WDProvince: React.FC<WDProvinceProps> = function ({
                 y={y}
               />
             </g>
-          );
-        })}
-      {provinceMapData.unitSlots
-        .filter(({ name }) => name in unitFCs)
-        .map(({ name, x, y }) => (
-          <WDUnitSlot key={name} name={name} x={x} y={y}>
-            {unitFCs[name]}
-          </WDUnitSlot>
-        ))}
-      {provinceMapData.unitSlots
-        .filter(({ name }) => name in unitFCsDislodging)
-        .map(({ name, arrowReceiver }) => {
-          const unitName = `${name}-dislodging`;
-          // For dislodger units, we draw them at the location of the
-          // arrow receiver.
-          return (
-            <WDUnitSlot
-              key={unitName}
-              name={unitName}
-              x={arrowReceiver.x - UNIT_WIDTH / 2}
-              y={arrowReceiver.y - UNIT_HEIGHT / 2}
-            >
-              {unitFCsDislodging[name]}
-            </WDUnitSlot>
           );
         })}
     </svg>
