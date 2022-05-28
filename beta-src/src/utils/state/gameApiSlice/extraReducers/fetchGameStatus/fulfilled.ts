@@ -18,6 +18,10 @@ export default function fetchGameStatusFulfilled(
   action,
 ): void {
   console.log("fetchGameStatusFulfilled");
+  state.outstandingGameRequests = Math.max(
+    state.outstandingGameRequests - 1,
+    0,
+  );
   state.apiStatus = "succeeded";
 
   // If the user is scrolled to the current phase, make the viewed

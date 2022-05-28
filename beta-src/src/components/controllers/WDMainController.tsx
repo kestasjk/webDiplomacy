@@ -10,26 +10,18 @@ import {
   gameUserActivity,
   gameData,
   gameStatus,
-  loadGame,
   loadGameData,
 } from "../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
 import GameStatusResponse from "../../state/interfaces/GameStatusResponse";
 import debounce from "../../utils/debounce";
+import WDGameProgressOverlay from "../ui/WDGameProgressOverlay";
 
 const getPhaseKey = function (
   data: GameOverviewResponse | GameStatusResponse | IContext,
 ): string {
   return `${data.turn}.${data.phase}`;
-};
-
-const centeredStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  justifyContent: "center",
-  alignItems: "center",
 };
 
 const WDMainController: React.FC = function ({ children }): React.ReactElement {
@@ -61,8 +53,29 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
     });
     dispatch(fetchGameOverview({ gameID: String(overview.gameID) }));
   }
-  if (!consistentPhase || staleData) {
-    gameApiSliceActions.updateUserActivityProcessTime(overview.processTime);
+  const outstandingRequests = useAppSelector(
+    ({ game: { outstandingGameRequests } }) => outstandingGameRequests,
+  );
+  console.log({
+    consistentPhase,
+    staleData,
+    overviewKey,
+    statusKey,
+    dataKey,
+    activityTime: userActivity.processTime,
+    overviewTime: overview.processTime,
+    outstandingRequests,
+  });
+
+  if (
+    (!consistentPhase || staleData) &&
+    overview.processTime !== null &&
+    outstandingRequests === 0
+  ) {
+    dispatch(
+      gameApiSliceActions.updateUserActivityProcessTime(overview.processTime),
+    );
+    dispatch(gameApiSliceActions.updateOutstandingGameRequests(2));
     dispatch(loadGameData(String(overview.gameID), String(countryID)));
   }
 
@@ -78,30 +91,20 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   if (!consistentPhase) {
     return <Box>Loading...</Box>;
   }
-  if (overviewKey !== displayedPhaseKey) {
-    //  && displayedPhaseKey !== null) {
-    return (
-      <Box sx={centeredStyle}>
-        <Stack direction="column" alignItems="center">
-          <Box sx={{ m: "4px" }}>Game progressed to a new phase...</Box>
-          <Button
-            size="large"
-            variant="contained"
-            color="success"
-            onClick={() => setDisplayedPhaseKey(overviewKey)}
-          >
-            View {overview.season} {overview.year} {overview.phase}
-          </Button>
-        </Stack>
-      </Box>
-    );
-  }
+  const phaseProgressed =
+    displayedPhaseKey && overviewKey !== displayedPhaseKey;
   if (displayedPhaseKey === null) {
     setDisplayedPhaseKey(overviewKey);
   }
   return (
     <div onMouseMove={activityHandler[0]} onClickCapture={activityHandler[0]}>
       {children}
+      {phaseProgressed && (
+        <WDGameProgressOverlay
+          overview={overview}
+          clickHandler={() => setDisplayedPhaseKey(overviewKey)}
+        />
+      )}
     </div>
   );
 };

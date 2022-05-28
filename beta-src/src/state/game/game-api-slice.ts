@@ -148,15 +148,6 @@ export const saveOrders = createAsyncThunk(
   },
 );
 
-export const loadGameData =
-  (gameID: string, countryID: string) => async (dispatch) => {
-    await Promise.all([
-      dispatch(fetchGameData({ gameID, countryID })),
-      dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
-      dispatch(fetchGameStatus({ gameID, countryID })),
-    ]);
-  };
-
 export const loadGame = (gameID: string) => async (dispatch) => {
   const {
     payload: {
@@ -176,6 +167,16 @@ export const loadGame = (gameID: string) => async (dispatch) => {
   ]);
 };
 
+export const loadGameData =
+  (gameID: string, countryID: string) => async (dispatch) => {
+    console.log("loadGameData");
+    await Promise.all([
+      dispatch(fetchGameData({ gameID, countryID })),
+      // dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
+      dispatch(fetchGameStatus({ gameID, countryID })),
+    ]);
+  };
+
 /**
  * createSlice handles state changes properly without reassiging state, but
  * eslint does not know this. therefore, no-param-reassign is disabled for
@@ -191,6 +192,7 @@ const gameApiSlice = createSlice({
     resetOrder,
     updateUserActivity,
     updateUserActivityProcessTime(state, action) {
+      console.log({ action });
       state.activity.processTime = action.payload;
     },
     updateOrder(state, action) {
@@ -211,6 +213,9 @@ const gameApiSlice = createSlice({
     updateOutstandingMessageRequests(state, action) {
       state.outstandingMessageRequests += action.payload;
     },
+    updateOutstandingGameRequests(state, action) {
+      state.outstandingGameRequests += action.payload;
+    },
     changeViewedPhaseIdxBy(state, action) {
       let newIdx = state.viewedPhaseState.viewedPhaseIdx + action.payload;
       newIdx = Math.min(newIdx, state.status.phases.length - 1);
@@ -229,6 +234,11 @@ const gameApiSlice = createSlice({
       .addCase(fetchGameData.fulfilled, fetchGameDataFulfilled)
       .addCase(fetchGameData.rejected, (state, action) => {
         console.log("fetchGameData rejected!");
+        state.outstandingGameRequests = Math.max(
+          state.outstandingGameRequests - 1,
+          0,
+        );
+
         state.apiStatus = "failed";
         state.error = action.error.message;
       })
@@ -249,6 +259,11 @@ const gameApiSlice = createSlice({
       .addCase(fetchGameStatus.fulfilled, fetchGameStatusFulfilled)
       .addCase(fetchGameStatus.rejected, (state, action) => {
         state.apiStatus = "failed";
+        state.outstandingGameRequests = Math.max(
+          state.outstandingGameRequests - 1,
+          0,
+        );
+
         state.error = action.error.message;
       })
       // saveOrders
@@ -285,7 +300,6 @@ const gameApiSlice = createSlice({
           0,
         );
         if (action.payload) {
-          console.log(`payload`);
           const { messages, newMessagesFrom, time } = action.payload;
           if (messages) {
             const allMessages = mergeMessageArrays(

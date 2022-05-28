@@ -146,6 +146,7 @@ const initialState: GameState = {
     time: 0,
   },
   outstandingMessageRequests: 0,
+  outstandingGameRequests: 0,
 };
 
 export default initialState;

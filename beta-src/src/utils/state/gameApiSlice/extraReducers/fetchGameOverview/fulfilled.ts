@@ -1,12 +1,6 @@
-import {
-  fetchGameStatus,
-  loadGameData,
-} from "../../../../../state/game/game-api-slice";
-import { useAppDispatch } from "../../../../../state/hooks";
 import GameOverviewResponse from "../../../../../state/interfaces/GameOverviewResponse";
 import { GameState } from "../../../../../state/interfaces/GameState";
 import memberActivityFrequencyMultiplier from "../../../memberActivityFrequencyMultiplier";
-import fetchGameStatusFulfilled from "../fetchGameStatus/fulfilled";
 
 /* eslint-disable no-param-reassign */
 export default function fetchGameOverviewFulfilled(
@@ -52,6 +46,5 @@ export default function fetchGameOverviewFulfilled(
       frequency = 10;
     }
     state.activity.frequency = frequency;
-    state.activity.processTime = processTime;
   }
 }
