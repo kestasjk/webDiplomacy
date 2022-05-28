@@ -9,15 +9,10 @@ import OrderState from "./OrderState";
 import OrdersMeta from "./SavedOrders";
 import TerritoriesMeta from "./TerritoriesState";
 import UserActivity from "./UserActivity";
-import { Unit } from "../../utils/map/getUnits";
-import UIState from "../../enums/UIState";
 import ViewedPhaseState from "./ViewedPhaseState";
 import { LegalOrders } from "../../utils/state/gameApiSlice/extraReducers/fetchGameData/precomputeLegalOrders";
 
 export type ApiStatus = "idle" | "loading" | "succeeded" | "failed";
-
-// FIXME: nasty to have dependencies to component state in here
-type UnitState = { [key: string]: UIState };
 
 export interface GameState {
   activity: UserActivity;

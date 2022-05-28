@@ -10,6 +10,9 @@ type GameStateMapMulti = {
 
 type IDToTerritory = { [key: string]: Territory };
 type IDToProvince = { [key: string]: Province };
+// FIXME maybe we can make this whole thing more typesafe if instead of direct-accessing
+// the fields, we instead use some accessor methods, which can enforce that you pass in
+// the appropriate type as a key, instead of just "string".
 export default interface GameStateMaps {
   territoryToTerrID: GameStateMap;
   terrIDToTerritory: IDToTerritory;
