@@ -3,7 +3,6 @@ import * as React from "react";
 import Position from "../../enums/Position";
 import { IContext } from "../../models/Interfaces";
 import {
-  fetchGameData,
   fetchGameOverview,
   gameApiSliceActions,
   gameOverview,
@@ -13,16 +12,9 @@ import {
   loadGameData,
 } from "../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
-import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
-import GameStatusResponse from "../../state/interfaces/GameStatusResponse";
 import debounce from "../../utils/debounce";
+import getPhaseKey from "../../utils/state/getPhaseKey";
 import WDGameProgressOverlay from "../ui/WDGameProgressOverlay";
-
-const getPhaseKey = function (
-  data: GameOverviewResponse | GameStatusResponse | IContext,
-): string {
-  return `${data.turn}.${data.phase}`;
-};
 
 const WDMainController: React.FC = function ({ children }): React.ReactElement {
   const [displayedPhaseKey, setDisplayedPhaseKey] = React.useState<
@@ -37,15 +29,13 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   const { countryID } = overview.user.member;
 
   const overviewKey = getPhaseKey(overview);
+  console.log({ overview });
   const statusKey = getPhaseKey(status);
   const dataKey = data.contextVars
     ? getPhaseKey(data.contextVars.context)
     : "<BAD>";
 
-  const consistentPhase = overviewKey === statusKey && overviewKey === dataKey;
-  const staleData = userActivity.processTime !== overview.processTime;
-
-  if (!consistentPhase || userActivity.makeNewCall) {
+  if (userActivity.makeNewCall) {
     console.log({
       overviewKey,
       statusKey,
@@ -53,29 +43,27 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
     });
     dispatch(fetchGameOverview({ gameID: String(overview.gameID) }));
   }
-  const outstandingRequests = useAppSelector(
-    ({ game: { outstandingGameRequests } }) => outstandingGameRequests,
+  const needsFetchGameData = useAppSelector(
+    ({
+      game: {
+        activity: { needsGameData },
+      },
+    }) => needsGameData,
   );
+  const isPregame = ["", "Pre-game"].includes(overview.phase);
+  const consistentPhase =
+    isPregame || (overviewKey === statusKey && overviewKey === dataKey);
+
   console.log({
     consistentPhase,
-    staleData,
     overviewKey,
     statusKey,
     dataKey,
-    activityTime: userActivity.processTime,
-    overviewTime: overview.processTime,
-    outstandingRequests,
   });
 
-  if (
-    (!consistentPhase || staleData) &&
-    overview.processTime !== null &&
-    outstandingRequests === 0
-  ) {
-    dispatch(
-      gameApiSliceActions.updateUserActivityProcessTime(overview.processTime),
-    );
-    dispatch(gameApiSliceActions.updateOutstandingGameRequests(2));
+  if (needsFetchGameData && !isPregame) {
+    console.log("FETCHING DATA");
+    dispatch(gameApiSliceActions.setNeedsGameData(false));
     dispatch(loadGameData(String(overview.gameID), String(countryID)));
   }
 
@@ -91,14 +79,15 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   if (!consistentPhase) {
     return <Box>Loading...</Box>;
   }
+  console.log({ displayedPhaseKey, overviewKey });
   const phaseProgressed =
     displayedPhaseKey && overviewKey !== displayedPhaseKey;
-  if (displayedPhaseKey === null) {
+  if (displayedPhaseKey === null && overview.phase) {
     setDisplayedPhaseKey(overviewKey);
   }
   return (
     <div onMouseMove={activityHandler[0]} onClickCapture={activityHandler[0]}>
-      {children}
+      {!isPregame && children}
       {phaseProgressed && (
         <WDGameProgressOverlay
           overview={overview}

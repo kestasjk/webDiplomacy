@@ -4,9 +4,9 @@ const initialState: GameState = {
   activity: {
     lastActive: 0,
     lastCall: 0,
-    makeNewCall: false,
     frequency: 120,
-    processTime: null,
+    makeNewCall: false,
+    needsGameData: false,
   },
   apiStatus: "idle",
   board: undefined,

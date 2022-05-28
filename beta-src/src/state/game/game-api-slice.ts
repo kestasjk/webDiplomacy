@@ -149,6 +149,7 @@ export const saveOrders = createAsyncThunk(
 );
 
 export const loadGame = (gameID: string) => async (dispatch) => {
+  console.log("loadGame");
   const {
     payload: {
       user: {
@@ -191,10 +192,6 @@ const gameApiSlice = createSlice({
   reducers: {
     resetOrder,
     updateUserActivity,
-    updateUserActivityProcessTime(state, action) {
-      console.log({ action });
-      state.activity.processTime = action.payload;
-    },
     updateOrder(state, action) {
       updateOrder(state, action.payload);
     },
@@ -212,6 +209,9 @@ const gameApiSlice = createSlice({
     },
     updateOutstandingMessageRequests(state, action) {
       state.outstandingMessageRequests += action.payload;
+    },
+    setNeedsGameData(state, action) {
+      state.activity.needsGameData = action.payload;
     },
     updateOutstandingGameRequests(state, action) {
       state.outstandingGameRequests += action.payload;
