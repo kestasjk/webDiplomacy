@@ -32,13 +32,11 @@ import { IProvinceStatus } from "../../../models/Interfaces";
 interface WDProvinceProps {
   provinceMapData: ProvinceMapData;
   ownerCountryID: string | undefined;
-  units: Unit[];
 }
 
 const WDProvince: React.FC<WDProvinceProps> = function ({
   provinceMapData,
   ownerCountryID,
-  units,
 }): React.ReactElement {
   const theme = useTheme();
   const dispatch = useAppDispatch();

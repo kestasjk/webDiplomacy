@@ -132,7 +132,7 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
   }
   const provincesToHighlightSet = new Set(provincesToHighlight);
   const provincesToChooseSet = new Set(provincesToChoose);
-  console.log({ provincesToChooseSet });
+  // console.log({ provincesToChooseSet });
 
   const unplayableProvinces = Object.values(provincesMapData)
     .filter((data) => !data.playable)
@@ -141,7 +141,6 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
         <WDProvince
           provinceMapData={data}
           ownerCountryID={centersByProvince[data.province]?.ownerCountryID}
-          units={units}
           key={`${data.province}-province`}
         />
       );
@@ -162,7 +161,6 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
       <WDProvince
         provinceMapData={data}
         ownerCountryID={centersByProvince[data.province]?.ownerCountryID}
-        units={units}
         key={`${data.province}-province`}
       />
     );
@@ -180,7 +178,7 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
         provinceMapData={data}
         units={units}
         highlightMode={highlightMode}
-        key={`${data.province}-province`}
+        key={`${data.province}-province-overlay`}
       />
     );
   });
