@@ -104,7 +104,7 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
           ) as Province[];
         }
       }
-    } else if (phase === "Retreat") {
+    } else if (phase === "Retreats") {
       if (!curOrder.inProgress) {
         provincesToHighlight = [];
         provincesToChoose = [];
