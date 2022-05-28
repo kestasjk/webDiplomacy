@@ -107,7 +107,9 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
     } else if (phase === "Retreats") {
       if (!curOrder.inProgress) {
         provincesToHighlight = [];
-        provincesToChoose = [];
+        provincesToChoose = Object.keys(
+          legalOrders.legalRetreatDestsByUnitID,
+        ).map((unitID) => maps.terrIDToProvince[maps.unitToTerrID[unitID]]);
       } else if (curOrder.type === "Retreat") {
         provincesToHighlight = [
           maps.terrIDToProvince[maps.unitToTerrID[curOrder.unitID]],
