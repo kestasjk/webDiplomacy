@@ -20,7 +20,6 @@ import { getTargetXYWH } from "../../../map/drawArrowFunctional";
 import invalidClick from "../../../map/invalidClick";
 import getAvailableOrder from "../../getAvailableOrder";
 import getOrderStates from "../../getOrderStates";
-import processConvoy from "../../processConvoy";
 import resetOrder from "../../resetOrder";
 import startNewOrder from "../../startNewOrder";
 import updateOrder from "../../updateOrder";
@@ -74,7 +73,6 @@ export default function processMapClick(
   clickData: { payload: MapClickData },
 ) {
   const {
-    board,
     data: { data },
     order,
     ordersMeta,
@@ -84,7 +82,6 @@ export default function processMapClick(
     ownUnits,
     legalOrders,
   }: {
-    board: GameState["board"];
     data: { data: GameDataResponse["data"] };
     order: GameState["order"];
     ordersMeta: GameState["ordersMeta"];
@@ -270,7 +267,7 @@ export default function processMapClick(
         updateOrder(state, {
           toTerrID: maps.territoryToTerrID[territory],
           viaConvoy: "Yes",
-          convoyPath: via.provIDPaths,
+          convoyPath: via.provIDPaths[0],
         });
       } else {
         invalidClick(evt, clickProvince);

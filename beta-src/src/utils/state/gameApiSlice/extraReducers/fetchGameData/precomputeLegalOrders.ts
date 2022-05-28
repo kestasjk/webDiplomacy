@@ -36,6 +36,7 @@ export interface LegalOrders {
   legalViasByUnitID: { [key: string]: LegalVia[] };
   // The inner key is province
   legalConvoysByUnitID: { [key: string]: { [key: string]: LegalConvoy[] } };
+  hasAnyLegalConvoysByUnitID: { [key: string]: boolean };
   // The inner key is province
   legalSupportsByUnitID: { [key: string]: { [key: string]: LegalSupport[] } };
 }
@@ -492,6 +493,13 @@ export function getLegalOrders(
     data,
     maps,
   );
+  const hasAnyLegalConvoysByUnitID = Object.fromEntries(
+    Object.entries(legalConvoysByUnitID).map(([unitID, convoysBySrc]) => [
+      unitID,
+      Object.values(convoysBySrc).some((convoys) => convoys.length > 0),
+    ]),
+  );
+
   const legalSupportsByUnitID = getAllLegalSupportsByUnitID(
     overview,
     data,
@@ -505,6 +513,7 @@ export function getLegalOrders(
     possibleBuildDests,
     legalViasByUnitID,
     legalConvoysByUnitID,
+    hasAnyLegalConvoysByUnitID,
     legalSupportsByUnitID,
   };
 }

@@ -23,7 +23,6 @@ type UnitState = { [key: string]: UIState };
 export interface GameState {
   activity: UserActivity;
   apiStatus: ApiStatus;
-  board: BoardClass | undefined;
   data: GameDataResponse; // Directly from API
   error: GameErrorResponse;
   maps: GameStateMaps; // Computed as a function of GameDataResponse

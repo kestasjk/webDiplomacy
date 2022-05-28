@@ -3,7 +3,7 @@ import * as React from "react";
 import { Box, Button, Stack } from "@mui/material";
 import {
   gameApiSliceActions,
-  gameBoard,
+  gameLegalOrders,
   gameMaps,
   gameOrder,
 } from "../../../state/game/game-api-slice";
@@ -11,7 +11,6 @@ import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import Territory from "../../../enums/map/variants/classic/Territory";
 import Province from "../../../enums/map/variants/classic/Province";
 import { Unit } from "../../../utils/map/getUnits";
-import isConvoyable from "../../../utils/state/isConvoyable";
 
 import WDFlyoutButton from "./WDFlyoutButton";
 import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
@@ -26,7 +25,7 @@ const WDFlyoutContainer: React.FC<WDFlyoutContainerProps> = function ({
   const dispatch = useAppDispatch();
   const order = useAppSelector(gameOrder);
   const maps = useAppSelector(gameMaps);
-  const board = useAppSelector(gameBoard);
+  const legalOrders = useAppSelector(gameLegalOrders);
 
   console.log("FLYOUT");
   console.log({ order });
@@ -73,24 +72,26 @@ const WDFlyoutContainer: React.FC<WDFlyoutContainerProps> = function ({
         text="Support"
         clickHandler={clickHandler("Support")}
       />
-      {(unit?.unit?.type === "Fleet" && (
-        <WDFlyoutButton
-          province={province}
-          unitSlotName={unitSlotName}
-          position="bottom"
-          text="Convoy"
-          clickHandler={clickHandler("Convoy")}
-        />
-      )) || <g />}
-      {board && isConvoyable(board, unit) && (
-        <WDFlyoutButton
-          province={province}
-          unitSlotName={unitSlotName}
-          position="bottom"
-          text="Via"
-          clickHandler={clickHandler("Move", "Yes")}
-        />
-      )}
+      {(unit?.unit?.type === "Fleet" &&
+        legalOrders.hasAnyLegalConvoysByUnitID[order.unitID] && (
+          <WDFlyoutButton
+            province={province}
+            unitSlotName={unitSlotName}
+            position="bottom"
+            text="Convoy"
+            clickHandler={clickHandler("Convoy")}
+          />
+        )) || <g />}
+      {unit?.unit?.type === "Army" &&
+        legalOrders.legalViasByUnitID[order.unitID].length > 0 && (
+          <WDFlyoutButton
+            province={province}
+            unitSlotName={unitSlotName}
+            position="bottom"
+            text="Via"
+            clickHandler={clickHandler("Move", "Yes")}
+          />
+        )}
     </>
   );
 };

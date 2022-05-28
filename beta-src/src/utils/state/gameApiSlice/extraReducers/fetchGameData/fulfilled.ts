@@ -29,17 +29,6 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
       user: GameOverviewResponse["user"];
     };
   } = current(state);
-  let board;
-  if (data.contextVars) {
-    // FIXME: can't put non-serializable object in store
-    board = new BoardClass(
-      data.contextVars.context,
-      Object.values(data.territories),
-      data.territoryStatuses,
-      Object.values(data.units),
-    );
-    state.board = board;
-  }
   state.maps = generateMaps(data);
   state.ownUnits = [];
   Object.values(data.units).forEach((unit) => {
@@ -58,6 +47,6 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
   );
   if (!numUnsavedOrders) {
     console.log("Updating ordersMeta");
-    updateOrdersMeta(state, getOrdersMeta(data, board, phase));
+    updateOrdersMeta(state, getOrdersMeta(data, phase));
   }
 }

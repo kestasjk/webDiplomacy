@@ -11,7 +11,6 @@ const initialState: GameState = {
     frequency: 120,
   },
   apiStatus: "idle",
-  board: undefined,
   data: {
     msg: "",
     referenceCode: "",
@@ -156,6 +155,7 @@ const initialState: GameState = {
     possibleBuildDests: [],
     legalViasByUnitID: {},
     legalConvoysByUnitID: {},
+    hasAnyLegalConvoysByUnitID: {},
     legalSupportsByUnitID: {},
   },
 };
