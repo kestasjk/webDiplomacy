@@ -65,7 +65,7 @@ const WDProvince: React.FC<WDProvinceProps> = function ({
     dispatch(
       gameApiSliceActions.processMapClick({
         evt,
-        province,
+        clickProvince: province,
       }),
     );
   };

@@ -14,6 +14,12 @@ interface LegalVia {
   provIDPaths: string[][];
 }
 
+interface LegalSupport {
+  src: Province;
+  dest: Province;
+  convoyProvIDPath: string[] | null;
+}
+
 interface LegalConvoy {
   src: Territory;
   dest: Territory;
@@ -28,8 +34,10 @@ export interface LegalOrders {
   legalRetreatDestsByUnitID: { [key: string]: Territory[] };
   possibleBuildDests: Territory[];
   legalViasByUnitID: { [key: string]: LegalVia[] };
+  // The inner key is province
   legalConvoysByUnitID: { [key: string]: { [key: string]: LegalConvoy[] } };
-  legalSupportsByUnitID: { [key: string]: { [key: string]: Province[] } };
+  // The inner key is province
+  legalSupportsByUnitID: { [key: string]: { [key: string]: LegalSupport[] } };
 }
 
 // Returns all destination territories that a unit can legally move to on its own.
@@ -153,9 +161,11 @@ export function getAllPossibleBuildDests(
       return;
     }
     // It has to be a supply center, and our home center
+    // And there can't be any units there.
     if (
       data.territories[provStatus.id].supply !== "Yes" ||
-      data.territories[provStatus.id].countryID !== ourCountryID
+      data.territories[provStatus.id].countryID !== ourCountryID ||
+      provStatus.unitID !== null
     ) {
       return;
     }
@@ -376,13 +386,13 @@ export function getAllLegalSupportsByUnitID(
   maps: GameStateMaps,
   legalMoveDestsByUnitID: { [key: string]: Territory[] },
   legalViasByUnitID: { [key: string]: LegalVia[] },
-): { [key: string]: { [key: string]: Province[] } } {
+): { [key: string]: { [key: string]: LegalSupport[] } } {
   if (overview.phase !== "Diplomacy") {
     return {};
   }
   console.log("getAllLegalSupportsByUnitID");
   const legalSupportsByUnitID: {
-    [key: string]: { [key: string]: Province[] };
+    [key: string]: { [key: string]: LegalSupport[] };
   } = {};
 
   const ourCountryID = overview.user.member.countryID.toString();
@@ -392,7 +402,17 @@ export function getAllLegalSupportsByUnitID(
       return;
     }
 
-    const legalSupportsBySrc: { [key: string]: Province[] } = {};
+    const legalSupportsBySrc: { [key: string]: LegalSupport[] } = {};
+    const addSupport = function (
+      src: Province,
+      dest: Province,
+      convoyProvIDPath: string[] | null,
+    ) {
+      if (!legalSupportsBySrc[src]) {
+        legalSupportsBySrc[src] = [];
+      }
+      legalSupportsBySrc[src].push({ src, dest, convoyProvIDPath });
+    };
 
     // Find all provinces that this unit can move to.
     const unitProvID = maps.terrIDToProvinceID[unit.terrID];
@@ -413,20 +433,22 @@ export function getAllLegalSupportsByUnitID(
           if (supporteeID === unitID) {
             return;
           }
+          // Support hold
+          const supporteeProvince = maps.terrIDToProvince[supporteeUnit.terrID];
+          if (supporteeProvince === destination) {
+            addSupport(supporteeProvince, destination, null);
+          }
           // Move to that province
-          if (
+          else if (
             legalMoveDestsByUnitID[supporteeID].find(
               (territory) => TerritoryMap[territory].province === destination,
             )
           ) {
-            const src = maps.terrIDToProvince[supporteeUnit.terrID];
-            if (!legalSupportsBySrc[src]) legalSupportsBySrc[src] = [];
-            legalSupportsBySrc[src].push(destination);
+            addSupport(supporteeProvince, destination, null);
           }
           // VIA to that province
-          else if (
-            legalViasByUnitID[supporteeID] &&
-            legalViasByUnitID[supporteeID].find(
+          else if (legalViasByUnitID[supporteeID]) {
+            const foundVia = legalViasByUnitID[supporteeID].find(
               (via) =>
                 // If a unit can move via convoy, it is an army, in which case it being able
                 // to reach a province is equivalent to it being able to reach the root territory
@@ -434,11 +456,15 @@ export function getAllLegalSupportsByUnitID(
                 // So we can simply test its desination vs the root territory.
                 via.dest === destinationTerrRoot &&
                 via.provIDPaths.find((path) => !path.includes(unitProvID)),
-            )
-          ) {
-            const src = maps.terrIDToProvince[supporteeUnit.terrID];
-            if (!legalSupportsBySrc[src]) legalSupportsBySrc[src] = [];
-            legalSupportsBySrc[src].push(destination);
+            );
+            if (foundVia) {
+              // Make the typechecker happy with || [], this should be guaranteed to succeed though
+              const foundPath =
+                foundVia.provIDPaths.find(
+                  (path) => !path.includes(unitProvID),
+                ) || [];
+              addSupport(supporteeProvince, destination, foundPath);
+            }
           }
         });
       }

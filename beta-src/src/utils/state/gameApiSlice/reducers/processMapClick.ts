@@ -25,59 +25,7 @@ import resetOrder from "../../resetOrder";
 import startNewOrder from "../../startNewOrder";
 import updateOrder from "../../updateOrder";
 import updateOrdersMeta from "../../updateOrdersMeta";
-
-function canUnitMoveTo(orderMeta: OrderMeta, territory: Territory): boolean {
-  const { allowedBorderCrossings } = orderMeta;
-  return !!allowedBorderCrossings?.find(
-    (border) => TerritoryMap[border.name].territory === territory,
-  );
-}
-
-function canUnitMoveToProvince(
-  orderMeta: OrderMeta,
-  provinceMapData: ProvinceMapData,
-): boolean {
-  const { allowedBorderCrossings } = orderMeta;
-  return !!allowedBorderCrossings?.find(
-    (border) => TerritoryMap[border.name].province === provinceMapData.province,
-  );
-}
-
-function canSupporteeMoveToOrHoldAtProvince(
-  order: OrderState,
-  provinceMapData: ProvinceMapData,
-  maps: GameStateMaps,
-  board: BoardClass,
-): boolean {
-  if (!order.fromTerrID) {
-    return false;
-  }
-  const supporteeTerr: Territory = maps.terrIDToTerritory[order.fromTerrID];
-  const supporteeProvince: Province = TerritoryMap[supporteeTerr].province;
-  // Make sure you can find the unit
-  const supporteeUnits = maps.provinceIDToUnits[order.fromTerrID];
-  if (!supporteeUnits) {
-    return false;
-  }
-  // Make sure the board has the unit
-  const supporteeUnitClass = board.findUnitByID(supporteeUnits[0]);
-  if (!supporteeUnitClass) {
-    return false;
-  }
-
-  // Make sure that either the province is where the supportee already is
-  // or the province is one where the supportee can move to a territory
-  // of that province.
-  return (
-    provinceMapData.province === supporteeProvince ||
-    !!board
-      .getMovableTerritories(supporteeUnitClass)
-      .find(
-        (border) =>
-          TerritoryMap[border.name].province === provinceMapData.province,
-      )
-  );
-}
+import { LegalOrders } from "../extraReducers/fetchGameData/precomputeLegalOrders";
 
 function getClickPositionInProvince(evt, provinceMapData: ProvinceMapData) {
   const boundingRect = evt.target.getBoundingClientRect();
@@ -86,27 +34,6 @@ function getClickPositionInProvince(evt, provinceMapData: ProvinceMapData) {
   const scaleX = boundingRect.width / provinceMapData.width;
   const scaleY = boundingRect.height / provinceMapData.height;
   return { x: diffX / scaleX, y: diffY / scaleY };
-}
-
-function canSupportProvince(
-  orderMeta: OrderMeta,
-  provinceMapData: ProvinceMapData,
-): boolean {
-  const { supportHoldChoices, supportMoveChoices } = orderMeta;
-  // console.log({ supportHoldChoices, supportMoveChoices, territory });
-  const all: Territory[] = [];
-  supportHoldChoices?.forEach((t) => {
-    all.push(webdipNameToTerritory[t.name]);
-  });
-  supportMoveChoices?.forEach((x) => {
-    x.supportMoveFrom.forEach((t) => {
-      all.push(webdipNameToTerritory[t.name]);
-    });
-  });
-  return (
-    provinceMapData.rootTerritory !== null &&
-    all.includes(provinceMapData.rootTerritory)
-  );
 }
 
 // If the province has special coasts, returns special coastal territory closest
@@ -138,7 +65,7 @@ function getBestCoastalUnitTerritory(
 
 interface MapClickData {
   evt: React.MouseEvent<SVGGElement, MouseEvent>;
-  province: Province;
+  clickProvince: Province;
 }
 
 /* eslint-disable no-param-reassign */
@@ -155,6 +82,7 @@ export default function processMapClick(
     territoriesMeta,
     maps,
     ownUnits,
+    legalOrders,
   }: {
     board: GameState["board"];
     data: { data: GameDataResponse["data"] };
@@ -164,6 +92,7 @@ export default function processMapClick(
     territoriesMeta: GameState["territoriesMeta"];
     maps: GameStateMaps;
     ownUnits: GameState["ownUnits"];
+    legalOrders: LegalOrders;
   } = current(state);
   // ---------------------- PREPARATION ---------------------------
 
@@ -175,28 +104,28 @@ export default function processMapClick(
   const { orderStatus } = member;
 
   const {
-    payload: { evt, province },
+    payload: { evt, clickProvince },
   } = clickData;
 
   if (orderStatus.Ready) {
     alert("You need to unready your orders to update them"); // FIXME: move to alerts modal!
-    invalidClick(evt, province);
+    invalidClick(evt, clickProvince);
     return; // FIXME this is very confusing for the user!
   }
-  const provinceMapData = provincesMapData[province];
-  const { rootTerritory } = provinceMapData;
-  const territoryMeta: TerritoryMeta | undefined = territoriesMeta[province];
+  const clickProvinceMapData = provincesMapData[clickProvince];
+  const clickRootTerritory = clickProvinceMapData.rootTerritory;
+  const territoryMeta: TerritoryMeta | undefined =
+    territoriesMeta[clickProvince];
   // Click is outside the map entirely?
-  if (!territoryMeta || !rootTerritory) {
-    invalidClick(evt, province);
+  if (!territoryMeta || !clickRootTerritory) {
+    invalidClick(evt, clickProvince);
     return;
   }
 
-  const clickTerrID = maps.territoryToTerrID[province];
   let clickUnitID: string | undefined;
   {
-    const clickUnitIDs = maps.provinceToUnits[province];
-    // Handle multiple units on retreat
+    const clickUnitIDs = maps.provinceToUnits[clickProvince];
+    // Handle multiple units on retreat, pick the one that we own if there are multiple
     if (clickUnitIDs && clickUnitIDs.length >= 2) {
       clickUnitID = clickUnitIDs.find((unitID) => ownUnits.includes(unitID));
     } else if (clickUnitIDs && clickUnitIDs.length === 1) {
@@ -213,7 +142,7 @@ export default function processMapClick(
     // FIXME: abstract to a function
     const existingOrder = Object.entries(ordersMeta).find(([, { update }]) => {
       if (!update || !update.toTerrID) return false;
-      return maps.terrIDToProvince[update.toTerrID] === province;
+      return maps.terrIDToProvince[update.toTerrID] === clickProvince;
     });
     if (existingOrder) {
       const [id] = existingOrder;
@@ -232,27 +161,37 @@ export default function processMapClick(
 
     const isDestroy =
       overview.user.member.supplyCenterNo < overview.user.member.unitNo;
-    if (
-      member.countryID !== Number(territoryMeta.ownerCountryID) || // FIXME ugh string vs number
-      (!territoryMeta.supply && !isDestroy)
-    ) {
-      invalidClick(evt, province);
+    const isBuild =
+      overview.user.member.supplyCenterNo > overview.user.member.unitNo;
+    // Cannot click on other people's units, and on builds you can only
+    // click on your own supply centers.
+    // FIXME ugh string vs number
+    if (member.countryID !== Number(territoryMeta.ownerCountryID)) {
+      invalidClick(evt, clickProvince);
       return;
     }
 
     const { currentOrders } = data;
     const availableOrder = getAvailableOrder(currentOrders, ordersMeta);
-    const territoryHasUnit = !!territoryMeta.unitID;
-    const unitValid = isDestroy === territoryHasUnit;
-    if (!availableOrder || !unitValid) {
-      invalidClick(evt, province);
+    if (!availableOrder) {
+      invalidClick(evt, clickProvince);
       return;
     }
 
-    // Build on the appropriately clicked coast for STP
-    let toTerrID = clickTerrID;
-    if (!isDestroy) {
-      const territory = getBestCoastalUnitTerritory(evt, provinceMapData);
+    let toTerrID;
+    if (isDestroy) {
+      if (!clickUnit) {
+        invalidClick(evt, clickProvince);
+        return;
+      }
+      toTerrID = clickUnit.terrID;
+    } else if (isBuild) {
+      // Build on the appropriately clicked coast for STP
+      const territory = getBestCoastalUnitTerritory(evt, clickProvinceMapData);
+      if (!legalOrders.possibleBuildDests.includes(territory)) {
+        invalidClick(evt, clickProvince);
+        return;
+      }
       toTerrID = maps.territoryToTerrID[territory];
     }
 
@@ -273,24 +212,22 @@ export default function processMapClick(
         // && clickUnit?.isRetreating) {
         startNewOrder(state, { unitID: clickUnitID, type: "Retreat" });
       } else {
-        invalidClick(evt, province);
+        invalidClick(evt, clickProvince);
       }
     } else if (clickUnitID === order.unitID) {
+      // Clicking again on the same unit itself disbands it.
       updateOrder(state, { type: "Disband" });
     } else {
-      let clickTerrIDCQ = clickTerrID;
-      let territoryCQ = rootTerritory;
-      if (orderUnit.type === "Fleet") {
-        // have to figure out which coast, oy.
-        territoryCQ = getBestCoastalUnitTerritory(evt, provinceMapData);
-        clickTerrIDCQ = maps.territoryToTerrID[territoryCQ];
-      }
-      // n.b. this already handes standoffs etc.
-      const canMove = canUnitMoveTo(ordersMeta[order.orderID], territoryCQ);
-      if (canMove) {
-        updateOrder(state, { toTerrID: clickTerrIDCQ });
+      const territory =
+        orderUnit.type === "Fleet"
+          ? getBestCoastalUnitTerritory(evt, clickProvinceMapData)
+          : clickRootTerritory;
+      if (
+        legalOrders.legalRetreatDestsByUnitID[order.unitID].includes(territory)
+      ) {
+        updateOrder(state, { toTerrID: maps.territoryToTerrID[territory] });
       } else {
-        invalidClick(evt, province);
+        invalidClick(evt, clickProvince);
       }
     }
     return;
@@ -301,49 +238,42 @@ export default function processMapClick(
     if (clickUnitID && ownsCurUnit) {
       startNewOrder(state, { unitID: clickUnitID });
     } else {
-      invalidClick(evt, province);
+      invalidClick(evt, clickProvince);
     }
   } else if (!order.type || clickUnitID === order.unitID) {
-    // cancel the order
+    // Clicking on the same territory a second time cancels the order.
     resetOrder(state);
   } else if (order.type === "Move") {
-    //------------------------------------------------------------
-    // tricky: get coast-qualified versions if the dest is a coast
-    // -----------------------------------------------------------
-    let clickTerrIDCQ = clickTerrID;
-    let territoryCQ = rootTerritory;
-    if (orderUnit.type === "Fleet") {
-      territoryCQ = getBestCoastalUnitTerritory(evt, provinceMapData);
-      clickTerrIDCQ = maps.territoryToTerrID[territoryCQ];
-    }
+    const territory =
+      orderUnit.type === "Fleet"
+        ? getBestCoastalUnitTerritory(evt, clickProvinceMapData)
+        : clickRootTerritory;
     // -----------------------------------------------------------
 
     if (!order.viaConvoy) {
       // direct move
-      const canMove = canUnitMoveTo(ordersMeta[order.orderID], territoryCQ);
-      if (canMove) {
+      if (
+        legalOrders.legalMoveDestsByUnitID[order.unitID].includes(territory)
+      ) {
         updateOrder(state, {
-          toTerrID: clickTerrIDCQ,
+          toTerrID: maps.territoryToTerrID[territory],
         });
       } else {
-        invalidClick(evt, province);
+        invalidClick(evt, clickProvince);
       }
     } else {
       // via convoy
-      const { convoyToChoices } = ordersMeta[order.orderID];
-      const canConvoy = !!convoyToChoices?.find(
-        (terrID) => maps.terrIDToTerritory[terrID] === territoryCQ,
+      const via = legalOrders.legalViasByUnitID[order.unitID].find(
+        (v) => v.dest === territory,
       );
-      if (canConvoy) {
+      if (via) {
         updateOrder(state, {
-          toTerrID: clickTerrIDCQ,
+          toTerrID: maps.territoryToTerrID[territory],
           viaConvoy: "Yes",
+          convoyPath: via.provIDPaths,
         });
-        if (!processConvoy(state, evt)) {
-          invalidClick(evt, province);
-        }
       } else {
-        invalidClick(evt, province);
+        invalidClick(evt, clickProvince);
       }
     }
   } else if (order.type === "Support") {
@@ -351,40 +281,57 @@ export default function processMapClick(
       // click 1
       if (
         clickUnitID &&
-        canSupportProvince(ordersMeta[order.orderID], provinceMapData)
+        legalOrders.legalSupportsByUnitID[order.unitID][clickProvince].length >
+          0
       ) {
-        updateOrder(state, { fromTerrID: clickTerrID });
+        updateOrder(state, {
+          fromTerrID: maps.territoryToTerrID[clickRootTerritory],
+        });
       }
       // gotta support a unit
-      invalidClick(evt, province);
+      invalidClick(evt, clickProvince);
     } else {
       // click 2
       // eslint-disable-next-line no-lonely-if
-      if (
-        canUnitMoveToProvince(ordersMeta[order.orderID], provinceMapData) &&
-        board &&
-        canSupporteeMoveToOrHoldAtProvince(order, provinceMapData, maps, board)
-      ) {
-        updateOrder(state, { toTerrID: clickTerrID });
+      const fromProvince = maps.terrIDToProvince[order.fromTerrID];
+      const foundSupport = legalOrders.legalSupportsByUnitID[order.unitID][
+        fromProvince
+      ].find((support) => support.dest === clickProvince);
+      if (foundSupport) {
+        updateOrder(state, {
+          toTerrID: maps.territoryToTerrID[clickRootTerritory],
+          convoyPath: foundSupport.convoyProvIDPath,
+        });
       } else {
-        invalidClick(evt, province);
+        invalidClick(evt, clickProvince);
       }
     }
   } else if (order.type === "Convoy") {
     if (!order.fromTerrID) {
       // click 1
-      // gotta click on an Army
-      if (clickUnit?.type === "Army") {
-        updateOrder(state, { fromTerrID: clickTerrID });
+      // gotta click on an Army that is convoyable
+      if (
+        clickUnit?.type === "Army" &&
+        legalOrders.legalConvoysByUnitID[order.unitID][clickProvince].length > 0
+      ) {
+        updateOrder(state, {
+          fromTerrID: maps.territoryToTerrID[clickRootTerritory],
+        });
       } else {
         // gotta support a unit
-        invalidClick(evt, province);
+        invalidClick(evt, clickProvince);
       }
     } else {
       // click 2
-      updateOrder(state, { toTerrID: clickTerrID });
-      if (!processConvoy(state, evt)) {
-        invalidClick(evt, province);
+      const fromProvince = maps.terrIDToProvince[order.fromTerrID];
+      const convoy = legalOrders.legalConvoysByUnitID[order.unitID][
+        fromProvince
+      ].find((c) => c.dest === clickRootTerritory);
+      if (convoy) {
+        updateOrder(state, {
+          toTerrID: maps.territoryToTerrID[clickRootTerritory],
+          convoyPath: [...convoy.provIDPath1, ...convoy.provIDPath2],
+        });
       }
     }
   }
