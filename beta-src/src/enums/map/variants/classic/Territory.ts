@@ -1,3 +1,19 @@
+/*
+A Territory is a distinct playable location that a unit can go to.
+The north/south coasts of STP, SPA, BUL are considered separate
+territories.
+
+See also Province.ts.
+
+This is the internal type that we mostly use in this codebase to 
+enumerate this notion. From the API we also have to work with
+territory IDs ("terrID") quite often though. 
+
+See GameStateMaps.ts for converting Territories to/from IDs.
+See TerritoryMap for getting the data about the province
+that contains a territory.
+*/
+
 enum Territory {
   ADRIATIC_SEA = "ADRIATIC_SEA",
   AEGEAN_SEA = "AEGEAN_SEA",

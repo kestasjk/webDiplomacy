@@ -1,3 +1,36 @@
+/* 
+A province is a bordered drawable region on the map.
+
+The north/south coasts of STP, SPA, BUL are not considered
+separate provinces.
+
+A lot of the rules of the game are phrased in terms of provinces,
+(e.g. only one unit per province except during retreat phases,
+supports consider movement capability to the province, rather than
+movement capability to the territory, ownership of supply centers
+is at the province-level rather than the territory-level, etc).
+
+So it is very common in movement and order logic to work with
+provinces rather than territories.
+
+When interacting with the game API, it is also common to work
+with province IDs from the API. It is guaranteed that a 
+provinceID numerically or stringwise matches the territoryID
+of the root territory (i.e. non-special-coast territory) of the 
+province.
+
+Likewise, it is guaranteed that the Province enum for playable
+provinces is stringwise equal to the Territory enum for
+the root territory of that province.
+
+However, we should try not to rely too heavily this mixing
+up of these types if possible.
+
+See GameStateMaps.ts for converting Provinces to/from IDs.
+See ProvincesMapData for getting detailed data about the properties
+of a province and what Territories it has within it.
+*/
+
 enum Province {
   ADRIATIC_SEA = "ADRIATIC_SEA",
   AEGEAN_SEA = "AEGEAN_SEA",
