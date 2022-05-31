@@ -257,6 +257,9 @@ if ($submitted == true)
     $worked = true;
     $pausedGames = '';
 
+    // Make it easier to respond to direct to the user
+    $Mailer->SetReplyTo($User->email, $User->username);
+
     if ($issueType=='emergencyIssue')
     {
         if ($User->qualifiesForEmergency())
@@ -295,8 +298,6 @@ if ($submitted == true)
 
             try
             {
-                // Make it easier to respond to the e-mail
-                $Mailer->SetReplyTo($User->email, $User->username);
                 $Mailer->Send(array($email=>$email), $subject.' '.$User->username,
                 "
                 This request is from <a href='https://www.webdiplomacy.net/userprofile.php?userID=".$User->id."' class = 'contactUs'>".$User->username."</a>, 
