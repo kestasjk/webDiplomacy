@@ -185,10 +185,8 @@ const WDMapController: React.FC = function (): React.ReactElement {
         {};
       data.data.territoryStatuses.forEach((provinceStatus) => {
         const province = maps.terrIDToProvince[provinceStatus.id];
-        if (provincesMapData[province].centerPos) {
-          const ownerCountryID = provinceStatus.ownerCountryID || "0";
-          centersByProvince[province] = { ownerCountryID };
-        }
+        const ownerCountryID = provinceStatus.ownerCountryID || "0";
+        centersByProvince[province] = { ownerCountryID };
       });
 
       return {
@@ -298,7 +296,6 @@ const WDMapController: React.FC = function (): React.ReactElement {
     return () => window.removeEventListener("keydown", keydownHandler);
   });
 
-  console.log("Renderd MapController");
   return (
     <div
       style={{

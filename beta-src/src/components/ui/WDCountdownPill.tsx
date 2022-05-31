@@ -42,7 +42,6 @@ const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
   const endTimeInMilliSeconds = endTime * milli;
   const phaseTimeInMilliSeconds = phaseTime * milli;
   const [viewport] = useViewport();
-  console.log({ viewport });
   const quarterTimeRemaining =
     endTimeInMilliSeconds - phaseTimeInMilliSeconds / 4;
 
