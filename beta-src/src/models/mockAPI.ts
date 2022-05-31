@@ -9,7 +9,7 @@ import {
 import {
   ITerritory,
   IUnit,
-  ITerrStatus,
+  IProvinceStatus,
   IContext,
   IOrderData,
 } from "./Interfaces";
@@ -17,7 +17,7 @@ import {
 interface IData {
   territories: ITerritory[];
   units: IUnit[];
-  terrStatus: ITerrStatus[];
+  terrStatus: IProvinceStatus[];
   context: IContext;
   ordersData: IOrderData[];
 }

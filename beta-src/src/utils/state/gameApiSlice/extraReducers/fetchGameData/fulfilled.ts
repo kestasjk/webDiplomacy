@@ -1,7 +1,6 @@
 import { current } from "@reduxjs/toolkit";
 import TerritoryMap from "../../../../../data/map/variants/classic/TerritoryMap";
 import Territory from "../../../../../enums/map/variants/classic/Territory";
-import BoardClass from "../../../../../models/BoardClass";
 import GameDataResponse from "../../../../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../../../../state/interfaces/GameOverviewResponse";
 import { GameState } from "../../../../../state/interfaces/GameState";
@@ -11,6 +10,7 @@ import getOrdersMeta from "../../../../map/getOrdersMeta";
 import { getUnitsLive } from "../../../../map/getUnits";
 import generateMaps from "../../../generateMaps";
 import updateOrdersMeta from "../../../updateOrdersMeta";
+import { getLegalOrders } from "./precomputeLegalOrders";
 
 /* eslint-disable no-param-reassign */
 export default function fetchGameDataFulfilled(state: GameState, action): void {
@@ -28,17 +28,6 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
       user: GameOverviewResponse["user"];
     };
   } = current(state);
-  let board;
-  if (data.contextVars) {
-    // FIXME: can't put non-serializable object in store
-    board = new BoardClass(
-      data.contextVars.context,
-      Object.values(data.territories),
-      data.territoryStatuses,
-      Object.values(data.units),
-    );
-    state.board = board;
-  }
   state.maps = generateMaps(data);
   state.ownUnits = [];
   Object.values(data.units).forEach((unit) => {
@@ -49,12 +38,14 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
 
   state.territoriesMeta = getTerritoriesMeta(data);
 
+  state.legalOrders = getLegalOrders(state.overview, data, state.maps);
+
   const numUnsavedOrders = Object.values(state.ordersMeta).reduce(
     (acc, meta) => acc + 1 - +meta.saved,
     0,
   );
   if (!numUnsavedOrders) {
     console.log("Updating ordersMeta");
-    updateOrdersMeta(state, getOrdersMeta(data, board, phase));
+    updateOrdersMeta(state, getOrdersMeta(data, phase));
   }
 }
