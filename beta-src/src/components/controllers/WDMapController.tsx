@@ -277,6 +277,24 @@ const WDMapController: React.FC = function (): React.ReactElement {
       dispatch(gameApiSliceActions.updateOrdersMeta(ordersMeta));
     }, 500);
   }, []);
+
+  React.useEffect(() => {
+    const keydownHandler = (e) => {
+      const keyCode = e.which || e.keyCode;
+      const ESCAPE = 27;
+      // console.log("KEYCODE");
+      // console.log(keyCode);
+      if (keyCode === ESCAPE) {
+        e.preventDefault();
+        // console.log("DISPATCH RESET ORDER");
+        dispatch(gameApiSliceActions.resetOrder());
+      }
+    };
+    // console.log("ADDING HANLDER");
+    window.addEventListener("keydown", keydownHandler);
+    return () => window.removeEventListener("keydown", keydownHandler);
+  });
+
   console.log("Renderd MapController");
   return (
     <div

@@ -11,4 +11,6 @@ export default function resetOrder(state): void {
   state.order.subsequentClicks = [];
   state.buildPopover = [];
   delete state.order.type;
+  // console.log("RESET");
+  // console.log(state);
 }
