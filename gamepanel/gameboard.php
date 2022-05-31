@@ -258,7 +258,7 @@ class panelGameBoard extends panelGame
 		if ($this->playerTypes == 'MemberVsBots')
 		{
 			$buf .= '<p><strong>Bot Voting: </strong></br>
-				A vote to Pause or Cancel will immidiately Pause or Cancel the game.
+				A vote to Pause or Cancel will immediately Pause or Cancel the game.
 			</p>';
 		}
 		else if ($this->playerTypes == 'Mixed')
