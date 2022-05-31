@@ -681,6 +681,10 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     abbr: "GRE",
     type: "Coast",
     fill: "none",
+    centerPos: {
+      x: 124,
+      y: 163,
+    },
     labels: [
       {
         name: "main",
