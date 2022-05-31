@@ -1,1 +1,1 @@
-export * from "./Territories";
+export {}

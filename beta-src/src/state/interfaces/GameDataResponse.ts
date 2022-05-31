@@ -1,7 +1,7 @@
 import ContextVar from "../../interfaces/state/ContextVar";
 import {
   ITerritory,
-  ITerrStatus,
+  IProvinceStatus,
   IUnit,
   IOrderData,
 } from "../../models/Interfaces";
@@ -18,7 +18,12 @@ export interface GameData {
     // Key is the Unit ID.
     [key: string]: IUnit;
   };
-  territoryStatuses: ITerrStatus[];
+  // This array is very quirky, beware.
+  // Its entries correspond to provinces rather than territories
+  // and it may NOT be complete - some provinces that "don't have much going on"
+  // may be omitted entirely from this array, and one is supposed to assume that
+  // all the fields of such a missing province are the "default" values.
+  territoryStatuses: IProvinceStatus[];
 }
 
 interface GameDataResponse {

@@ -282,7 +282,7 @@ const gameApiSlice = createSlice({
           0,
         );
         if (action.payload) {
-          console.log(`payload`);
+          // console.log(`payload`);
           const { messages, newMessagesFrom, time } = action.payload;
           if (messages) {
             const allMessages = mergeMessageArrays(
@@ -307,9 +307,7 @@ const gameApiSlice = createSlice({
               state.messages.newMessagesFrom = newMessagesFrom;
             }
           }
-          console.log(
-            `time=${time}, outstandingMessageRequests=${state.outstandingMessageRequests}`,
-          );
+          console.log(`Messages fetched at time=${time}`);
           if (time) {
             state.messages.time = time;
           }
@@ -351,9 +349,10 @@ export const gameTerritoriesMeta = ({
   game: { territoriesMeta },
 }: RootState): TerritoriesMeta => territoriesMeta;
 export const gameMaps = ({ game: { maps } }: RootState) => maps;
-export const gameBoard = ({ game: { board } }: RootState) => board;
 export const gameViewedPhase = ({
   game: { viewedPhaseState },
 }: RootState): ViewedPhaseState => viewedPhaseState;
+export const gameLegalOrders = ({ game: { legalOrders } }: RootState) =>
+  legalOrders;
 
 export default gameApiSlice.reducer;

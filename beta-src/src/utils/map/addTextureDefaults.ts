@@ -1,8 +1,8 @@
 import Country from "../../enums/Country";
-import { Texture } from "../../interfaces/map/Texture";
+import { TextureData } from "../../interfaces/map/TextureData";
 import webDiplomacyTheme from "../../webDiplomacyTheme";
 
-const addTextureDefaults = (texture?: Texture) => {
+const addTextureDefaults = (texture?: TextureData) => {
   if (!texture) {
     return texture;
   }

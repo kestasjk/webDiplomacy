@@ -1,15 +1,15 @@
-import BoardClass from "./BoardClass";
-import UnitClass from "./UnitClass";
 
 export interface IBoard {
   context: IContext;
   territories: ITerritory[];
-  terrStatus: ITerrStatus[];
+  terrStatus: IProvinceStatus[];
   units: IUnit[];
 }
 
 export interface ITerritory {
   coast: string;
+  // This country ID does not appear to change over the course of the game.
+  // It indicates the initial home ownership of a territory.
   countryID: string;
   coastParentID: string;
   id: string;
@@ -33,8 +33,8 @@ export interface ICoastalBorder {
 }
 
 export interface ICenter {
-  countryID: string;
-  terrID: string;
+  countryID: number;
+  terrID: number;
 }
 
 // What webdip api gives for LIVE units (in gameData response)
@@ -53,7 +53,7 @@ export interface IUnitHistorical {
   countryID: number;
 }
 
-export interface ITerrStatus {
+export interface IProvinceStatus {
   id: string;
   // occupiedFromTerrID is used to mark where a unit came from when moving
   // in to occupy another, and is used to determine what the legal retreat
@@ -65,6 +65,8 @@ export interface ITerrStatus {
   occupiedFromTerrID: string | null;
   ownerCountryID: string | null;
   standoff: boolean;
+  // The unit that is currently in this province. In case of dislodgment,
+  // this is the dislodger, not the dislodged piece.
   unitID: string | null;
 }
 
@@ -85,12 +87,6 @@ export interface IConvoyGroup {
   armies: IUnit[];
   coasts: ITerritory[];
   fleets: IUnit[];
-}
-
-export interface IOrder {
-  board: BoardClass;
-  orderData: IOrderData;
-  unit: UnitClass;
 }
 
 export interface IOrderData {

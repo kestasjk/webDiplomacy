@@ -1,21 +1,21 @@
 import * as d3 from "d3";
-import Territory from "../../enums/map/variants/classic/Territory";
+import Province from "../../enums/map/variants/classic/Province";
 
 export default function invalidClick(
-  evt: any, // FIXME: what type is this?
-  name: Territory,
+  evt: React.MouseEvent<SVGGElement, MouseEvent>,
+  name: Province,
 ): void {
   console.log("INVALID CLICK");
-  const territorySelection = d3.select(`#${name}-territory`);
-  const territory: SVGSVGElement = territorySelection.node();
-  if (territory) {
-    const screenCTM = territory.getScreenCTM();
+  const provinceSelection = d3.select(`#${name}-province`);
+  const province: SVGSVGElement = provinceSelection.node();
+  if (province) {
+    const screenCTM = province.getScreenCTM();
     if (screenCTM) {
-      const pt = territory.createSVGPoint();
+      const pt = province.createSVGPoint();
       pt.x = evt.clientX;
       pt.y = evt.clientY;
       const { x, y } = pt.matrixTransform(screenCTM.inverse());
-      territorySelection
+      provinceSelection
         .append("circle")
         .attr("cx", x)
         .attr("cy", y)
@@ -23,7 +23,7 @@ export default function invalidClick(
         .attr("fill", "red")
         .attr("fill-opacity", 0.4)
         .attr("class", "invalid-click");
-      territorySelection
+      provinceSelection
         .append("circle")
         .attr("cx", x)
         .attr("cy", y)

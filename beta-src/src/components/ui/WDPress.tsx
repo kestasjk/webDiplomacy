@@ -65,7 +65,7 @@ const WDPress: React.FC<WDPressProps> = function ({
       const { game } = store.getState();
       const { outstandingMessageRequests } = game;
       if (outstandingMessageRequests === 0) {
-        console.log("Dispatching");
+        console.log("Dispatching fetch messages");
         dispatch(gameApiSliceActions.updateOutstandingMessageRequests(1));
         dispatch(
           fetchGameMessages({
