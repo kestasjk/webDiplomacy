@@ -162,6 +162,7 @@ export default function processMapClick(state, clickData) {
     const { currentOrders } = data;
     const availableOrder = getAvailableOrder(currentOrders, ordersMeta);
     const territoryHasUnit = !!territoryMeta.unitID;
+    const isCoast = territoryMeta.type === "Coast";
     const unitValid = isDestroy === territoryHasUnit;
     if (!availableOrder || !unitValid) {
       invalidClick(evt, territory);
@@ -171,7 +172,8 @@ export default function processMapClick(state, clickData) {
     updateOrder(state, {
       inProgress: true,
       orderID: availableOrder,
-      type: isDestroy ? "Destroy" : "Build",
+      // eslint-disable-next-line no-nested-ternary
+      type: isDestroy ? "Destroy" : isCoast ? "Build" : "Build Army",
       toTerrID: clickTerrID,
     });
     return;

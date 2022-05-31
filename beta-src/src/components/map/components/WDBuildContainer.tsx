@@ -49,7 +49,6 @@ const WDBuildContainer: React.FC = function (): React.ReactElement {
   const unitSlotName = "main"; // FIXME
   const canBuild =
     territoryMeta?.type === "Coast" ? BuildUnit.All : BuildUnit.Army;
-  console.log({ canBuild, territoryMeta });
   return (
     <WDBuildUnitButtons
       key={`${territoryMeta?.id}-${unitSlotName}`}

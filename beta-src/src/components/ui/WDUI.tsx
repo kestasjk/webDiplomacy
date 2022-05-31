@@ -17,6 +17,7 @@ import Vote from "../../enums/Vote";
 import WDMoveControls from "./WDMoveControls";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import WDHomeIcon from "./icons/WDHomeIcon";
+import WDBuildCounts from "./WDBuildCounts";
 
 const abbrMap = {
   Russia: "RUS",
@@ -30,7 +31,6 @@ const abbrMap = {
 
 const WDUI: React.FC = function (): React.ReactElement {
   const theme = useTheme();
-  console.log("WDUI rerendered");
 
   const [showControlModal, setShowControlModal] = React.useState(false);
   const popoverTrigger = React.useRef<HTMLElement>(null);
@@ -178,6 +178,7 @@ const WDUI: React.FC = function (): React.ReactElement {
         >
           {abbrMap[user.member.country]}
         </Box>
+        <WDBuildCounts />
         {popover}
       </WDPositionContainer>
       <WDPositionContainer position={Position.TOP_LEFT}>
