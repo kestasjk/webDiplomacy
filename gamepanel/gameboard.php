@@ -255,7 +255,13 @@ class panelGameBoard extends panelGame
 					If all players vote cancel, the game will be cancelled. All points will be refunded, and the game will be deleted. Cancels are typically used in the first year or two of a game with missing players.
 				</p>';
 
-		if ($this->playerTypes <> 'Members')
+		if ($this->playerTypes == 'MemberVsBots')
+		{
+			$buf .= '<p><strong>Bot Voting: </strong></br>
+				A vote to Pause or Cancel will immidiately Pause or Cancel the game.
+			</p>';
+		}
+		else if ($this->playerTypes == 'Mixed')
 		{
 			$buf .= '<p><strong>Bot Voting: </strong></br>
 				The bots in this game do not get a pause or unpause vote, pausing and unpausing only counts human votes. <br><br>
