@@ -351,7 +351,7 @@ class GameState {
 				  FROM wD_Territories t
 				  JOIN wD_TerrStatusArchive ts
 				  ON ( ts.terrID = t.id )
-				  WHERE ts.gameID = ".$this->gameID." AND t.supply = 'Yes' AND t.mapID=".$mapID
+				  WHERE ts.gameID = ".$this->gameID." AND t.mapID=".$mapID
 		);
 		while ($row = $DB->tabl_hash($centersTabl)) {
 			$inGameCenters[intval($row['turn'])][] = new Territory($row['id'], $row['countryID']);
