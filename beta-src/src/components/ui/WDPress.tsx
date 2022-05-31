@@ -156,7 +156,7 @@ const WDPress: React.FC<WDPressProps> = function ({
   return (
     <Box sx={{ p: padding }}>
       <Stack alignItems="center" sx={{ p: padding }}>
-        <ButtonGroup className="dialogue-countries">
+        <ButtonGroup className="dialogue-countries" sx={{ display: "inline" }}>
           {countryButtons}
         </ButtonGroup>
       </Stack>
