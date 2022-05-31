@@ -1,6 +1,7 @@
 import { Box, Button, Stack } from "@mui/material";
 import * as React from "react";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
+import formatPhaseForDisplay from "../../utils/formatPhaseForDisplay";
 
 const centeredStyle = {
   position: "absolute",
@@ -44,7 +45,8 @@ const WDGameProgressOverlay: React.FC<WDGameProgressOverlayProps> = function ({
           color="success"
           onClick={clickHandler}
         >
-          View {overview.season} {overview.year} {overview.phase}
+          View {overview.season} {overview.year}{" "}
+          {formatPhaseForDisplay(overview.phase)}
         </Button>
       </Stack>
     );

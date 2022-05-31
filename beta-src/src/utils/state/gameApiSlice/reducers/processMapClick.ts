@@ -66,19 +66,6 @@ interface MapClickData {
   clickProvince: Province;
 }
 
-// careful: can't use terrIDToUnit because there may be two units on a territory during retreat
-function findTerrIDForUnit(
-  terrID: string,
-  maps: GameStateMaps,
-  ownUnits: string[],
-  phase: string,
-) {
-  if (phase === "Retreats") {
-    return ownUnits.find((unit) => maps.unitToTerrID[unit] === terrID) || "";
-  }
-  return maps.terrIDToUnit[terrID];
-}
-
 /* eslint-disable no-param-reassign */
 export default function processMapClick(
   state: GameState,
