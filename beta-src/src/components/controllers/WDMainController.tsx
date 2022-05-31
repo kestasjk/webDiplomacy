@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import * as React from "react";
+import { useEffect } from "react";
 import {
   fetchGameOverview,
   gameApiSliceActions,
@@ -53,6 +54,11 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
       }),
     );
   }, 500);
+
+  const { name, gameID } = overview;
+  useEffect(() => {
+    document.title = `${name} - webDiplomacy Game ${gameID}`;
+  }, [name, gameID]);
 
   if (!consistentPhase) {
     return <Box>Loading...</Box>;
