@@ -17,6 +17,8 @@ import {
 } from "../../models/Interfaces";
 import UIState from "../../enums/UIState";
 import OrdersMeta, { OrderMeta } from "../../state/interfaces/SavedOrders";
+import { MemberData } from "../../interfaces/state/MemberData";
+import getAvailableOrder from "../state/getAvailableOrder";
 
 export enum UnitDrawMode {
   NONE = "none",
@@ -45,6 +47,8 @@ export function getUnitsLive(
   prevPhaseOrders: IOrderDataHistorical[],
   ordersMeta: OrdersMeta,
   currentOrders: IOrderData[],
+  currentUser: { member: MemberData },
+  phase: string,
 ): Unit[] {
   // Accumulate all the units we want to draw into here
   const unitsToDraw: Unit[] = [];
@@ -96,6 +100,12 @@ export function getUnitsLive(
     }
   });
 
+  const excessUnitsBeyondSCs =
+    currentUser.member.unitNo - currentUser.member.supplyCenterNo;
+  const isDestroyPhase = phase === "Builds" && excessUnitsBeyondSCs > 0;
+  const allDestroysAssigned =
+    !isDestroyPhase || !getAvailableOrder(currentOrders, ordersMeta);
+
   // console.log({ prevPhaseOrders });
   // console.log({ successfulMoves });
   // console.log({ ordersMetaByTerrID });
@@ -134,6 +144,14 @@ export function getUnitsLive(
             drawMode = UnitDrawMode.DISLODGED;
           } else if (unitCountByTerrID[unit.terrID] >= 2) {
             drawMode = UnitDrawMode.DISLODGING;
+          } else if (
+            unit.countryID === currentUser.member.countryID.toString() &&
+            isDestroyPhase &&
+            !allDestroysAssigned
+          ) {
+            // while the user hasn't inputted enough destroy orders,
+            // mark all units according to the little red striping for dislodged
+            drawMode = UnitDrawMode.DISLODGED;
           }
 
           const movedFromTerrID =

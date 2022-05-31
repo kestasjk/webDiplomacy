@@ -177,6 +177,8 @@ const WDMapController: React.FC = function (): React.ReactElement {
         prevPhaseOrders,
         ordersMeta,
         data.data.currentOrders ? data.data.currentOrders : [],
+        overview.user,
+        overview.phase,
       );
 
       const centersByProvince: { [key: string]: { ownerCountryID: string } } =
