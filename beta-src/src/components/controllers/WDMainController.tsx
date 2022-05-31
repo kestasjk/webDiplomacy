@@ -1,38 +1,50 @@
+import { Box } from "@mui/material";
 import * as React from "react";
 import {
-  fetchGameData,
   fetchGameOverview,
   gameApiSliceActions,
   gameOverview,
-  userActivity,
+  gameUserActivity,
+  gameData,
+  gameStatus,
+  loadGameData,
 } from "../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import debounce from "../../utils/debounce";
+import getPhaseKey from "../../utils/state/getPhaseKey";
+import WDGameProgressOverlay from "../ui/WDGameProgressOverlay";
 
 const WDMainController: React.FC = function ({ children }): React.ReactElement {
+  const [displayedPhaseKey, setDisplayedPhaseKey] = React.useState<
+    string | null
+  >(null);
   const dispatch = useAppDispatch();
-  const { season, year, processTime, makeNewCall } =
-    useAppSelector(userActivity);
-  const {
-    season: newSeason,
-    year: newYear,
-    processTime: newProcessTime,
-    gameID,
-    user: {
-      member: { countryID },
-    },
-  } = useAppSelector(gameOverview);
-  if (makeNewCall) {
-    dispatch(fetchGameOverview({ gameID: String(gameID) }));
+  const userActivity = useAppSelector(gameUserActivity);
+  const overview = useAppSelector(gameOverview);
+  const { data } = useAppSelector(gameData);
+  const status = useAppSelector(gameStatus);
+
+  const { countryID } = overview.user.member;
+
+  const overviewKey = getPhaseKey(overview);
+  const statusKey = getPhaseKey(status);
+  const dataKey = data.contextVars
+    ? getPhaseKey(data.contextVars.context)
+    : "<BAD>";
+
+  if (userActivity.makeNewCall) {
+    dispatch(fetchGameOverview({ gameID: String(overview.gameID) }));
   }
-  if (
-    processTime &&
-    (season !== newSeason || year !== newYear || processTime !== newProcessTime)
-  ) {
-    dispatch(
-      fetchGameData({ gameID: String(gameID), countryID: String(countryID) }),
-    );
+  const activity = useAppSelector(gameUserActivity);
+  const isPregame = ["", "Pre-game"].includes(overview.phase);
+  const consistentPhase =
+    isPregame || (overviewKey === statusKey && overviewKey === dataKey);
+
+  if (activity.needsGameData && !isPregame) {
+    dispatch(gameApiSliceActions.setNeedsGameData(false));
+    dispatch(loadGameData(String(overview.gameID), String(countryID)));
   }
+
   const activityHandler = debounce(() => {
     dispatch(
       gameApiSliceActions.updateUserActivity({
@@ -41,9 +53,31 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
       }),
     );
   }, 500);
+
+  if (!consistentPhase) {
+    return <Box>Loading...</Box>;
+  }
+
+  const phaseProgressed =
+    displayedPhaseKey && overviewKey !== displayedPhaseKey;
+  if (displayedPhaseKey === null && overview.phase) {
+    setDisplayedPhaseKey(overviewKey);
+  }
   return (
     <div onMouseMove={activityHandler[0]} onClickCapture={activityHandler[0]}>
-      {children}
+      {!isPregame && children}
+      {phaseProgressed && (
+        <WDGameProgressOverlay
+          overview={overview}
+          clickHandler={() => {
+            setDisplayedPhaseKey(overviewKey);
+            // When the user clicks on the overlay to show the latest
+            // phase, this makes it also jump forward to show them the
+            // latest phase.
+            dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(Infinity));
+          }}
+        />
+      )}
     </div>
   );
 };

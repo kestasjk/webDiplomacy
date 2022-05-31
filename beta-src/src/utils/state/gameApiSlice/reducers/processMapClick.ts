@@ -116,7 +116,6 @@ export default function processMapClick(
     invalidClick(evt, clickProvince);
     return;
   }
-
   let clickUnitID: string | undefined;
   {
     const clickUnitIDs = maps.provinceToUnits[clickProvince];
@@ -205,8 +204,10 @@ export default function processMapClick(
   // ---------------------- RETREAT PHASE ---------------------------
   if (phase === "Retreats") {
     if (!order.inProgress) {
-      if (clickUnitID && ownsCurUnit) {
-        // && clickUnit?.isRetreating) {
+      const isRetreating = data.currentOrders?.find(
+        (o) => o.unitID === clickUnitID,
+      );
+      if (clickUnitID && ownsCurUnit && isRetreating) {
         startNewOrder(state, { unitID: clickUnitID, type: "Retreat" });
       } else {
         invalidClick(evt, clickProvince);

@@ -1,11 +1,27 @@
+import GameOverviewResponse from "../../../../../state/interfaces/GameOverviewResponse";
+import { GameState } from "../../../../../state/interfaces/GameState";
+import getPhaseKey from "../../../getPhaseKey";
 import memberActivityFrequencyMultiplier from "../../../memberActivityFrequencyMultiplier";
 
 /* eslint-disable no-param-reassign */
-export default function fetchGameOverviewFulfilled(state, action): void {
+export default function fetchGameOverviewFulfilled(
+  state: GameState,
+  action,
+): void {
   state.apiStatus = "succeeded";
-  state.overview = action.payload;
   state.activity.makeNewCall = false;
-  const { processTime, members } = action.payload;
+  const response: GameOverviewResponse = action.payload;
+  const { processTime, members, user, gameID } = response;
+
+  const oldPhaseKey = getPhaseKey(state.overview);
+  const newPhaseKey = getPhaseKey(response);
+  console.log({ oldPhaseKey, newPhaseKey });
+  if (oldPhaseKey !== newPhaseKey) {
+    state.activity.needsGameData = true;
+  }
+
+  state.overview = action.payload;
+
   if (processTime) {
     const membersPlaying = members.filter(({ status }) => status === "Playing");
     // eslint-disable-next-line no-bitwise

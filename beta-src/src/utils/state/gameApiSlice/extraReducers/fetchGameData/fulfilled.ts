@@ -14,20 +14,14 @@ import { getLegalOrders } from "./precomputeLegalOrders";
 
 /* eslint-disable no-param-reassign */
 export default function fetchGameDataFulfilled(state: GameState, action): void {
-  console.log("fetchGameDataFulfilled");
   state.apiStatus = "succeeded";
   state.data = action.payload;
+  const currentState = current(state);
   const {
     data: { data },
-    overview: { members, phase, user },
-  }: {
-    data: { data: GameDataResponse["data"] };
-    overview: {
-      members: GameOverviewResponse["members"];
-      phase: GameOverviewResponse["phase"];
-      user: GameOverviewResponse["user"];
-    };
-  } = current(state);
+    overview: { phase, user },
+  } = currentState;
+
   state.maps = generateMaps(data);
   state.ownUnits = [];
   Object.values(data.units).forEach((unit) => {

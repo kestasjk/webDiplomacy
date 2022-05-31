@@ -150,14 +150,16 @@ export const saveOrders = createAsyncThunk(
 
 export const loadGameData =
   (gameID: string, countryID: string) => async (dispatch) => {
+    console.log("loadGameData");
     await Promise.all([
       dispatch(fetchGameData({ gameID, countryID })),
-      dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
+      // dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
       dispatch(fetchGameStatus({ gameID, countryID })),
     ]);
   };
 
 export const loadGame = (gameID: string) => async (dispatch) => {
+  console.log("loadGame");
   const {
     payload: {
       user: {
@@ -207,6 +209,9 @@ const gameApiSlice = createSlice({
     },
     updateOutstandingMessageRequests(state, action) {
       state.outstandingMessageRequests += action.payload;
+    },
+    setNeedsGameData(state, action) {
+      state.activity.needsGameData = action.payload;
     },
     changeViewedPhaseIdxBy(state, action) {
       let newIdx = state.viewedPhaseState.viewedPhaseIdx + action.payload;
@@ -282,7 +287,6 @@ const gameApiSlice = createSlice({
           0,
         );
         if (action.payload) {
-          // console.log(`payload`);
           const { messages, newMessagesFrom, time } = action.payload;
           if (messages) {
             const allMessages = mergeMessageArrays(
@@ -335,7 +339,7 @@ export const gameOrdersMeta = ({
   game: { ordersMeta },
 }: RootState): OrdersMeta => ordersMeta;
 export const gameOrder = ({ game: { order } }: RootState): OrderState => order;
-export const userActivity = ({
+export const gameUserActivity = ({
   game: { activity },
 }: RootState): GameState["activity"] => activity;
 // gameMessages considered harmful, because part of the GameMessages object is a

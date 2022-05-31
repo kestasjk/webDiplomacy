@@ -4,11 +4,9 @@ const initialState: GameState = {
   activity: {
     lastActive: 0,
     lastCall: 0,
-    makeNewCall: false,
-    season: "Spring",
-    year: 1901,
-    processTime: 0,
     frequency: 120,
+    makeNewCall: false,
+    needsGameData: false,
   },
   apiStatus: "idle",
   data: {
@@ -139,7 +137,6 @@ const initialState: GameState = {
     phases: [],
     standoffs: [],
     occupiedFrom: [],
-    votes: null,
     orderStatus: "",
     status: "",
   },
