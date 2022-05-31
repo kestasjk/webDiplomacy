@@ -74,7 +74,7 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
         <Box
           sx={{
             position: "relative",
-            width: isMobile ? viewport.width - 70 : 400,
+            width: Math.min(viewport.width - 70, 400),
           }}
         >
           <Box

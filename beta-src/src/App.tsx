@@ -12,6 +12,9 @@ const App: React.FC = function (): React.ReactElement {
   dispatch(loadGame(String(currentGameID)));
   return (
     <Box className="App">
+      {/* The following line prevents the UI from being scaled down when the viewport is small.
+      That leads to a very bad experience for this UI, with part of the map cut off. */}
+      <meta name="viewport" content="width=device-width, user-scalable=no" />
       <WDMain />
     </Box>
   );

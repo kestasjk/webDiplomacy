@@ -35,9 +35,12 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
     <Box
       sx={{
         display: "flex",
+        flexWrap: "wrap",
+        webkitFlexWrap: "wrap",
         alignItems: "center",
         height: 40,
         marginTop: "3px",
+        marginRight: "55px", // for right side icons
       }}
     >
       <WDPillScroller

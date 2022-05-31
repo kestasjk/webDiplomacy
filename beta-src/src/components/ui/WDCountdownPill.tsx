@@ -1,13 +1,13 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { Avatar, Chip, useTheme } from "@mui/material";
+import { Avatar, Box, Chip, useTheme } from "@mui/material";
 import TimeNotRunningOutIcon from "../../assets/png/icn_phase_countdown_black.png";
 import TimeRunningOutIcon from "../../assets/png/icn_phase_countdown_red.png";
 import Season from "../../enums/Season";
 import parseSeconds from "../../utils/parseSeconds";
-import { ParsedTime } from "../../interfaces/ParsedTime";
 import formatTime from "../../utils/formatTime";
 import formatPhaseForDisplay from "../../utils/formatPhaseForDisplay";
+import useViewport from "../../hooks/useViewport";
 
 interface WDCountdownPillProps {
   endTime: number;
@@ -41,7 +41,8 @@ const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
   const theme = useTheme();
   const endTimeInMilliSeconds = endTime * milli;
   const phaseTimeInMilliSeconds = phaseTime * milli;
-
+  const [viewport] = useViewport();
+  console.log({ viewport });
   const quarterTimeRemaining =
     endTimeInMilliSeconds - phaseTimeInMilliSeconds / 4;
 
@@ -63,13 +64,15 @@ const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
     viewedPhase !== gamePhase ||
     viewedSeason !== gameSeason ||
     viewedYear !== gameYear;
-  let chipDisplay: string = formattedTimeLeft;
-  if (shouldDisplayGamePhase) {
-    chipDisplay += ` for ${gameSeason} ${gameYear} ${formatPhaseForDisplay(
-      gamePhase,
-    )}`;
-  } else {
-    chipDisplay += " this phase";
+  let chipDisplay = formattedTimeLeft;
+  if (viewport.width >= 600) {
+    if (shouldDisplayGamePhase) {
+      chipDisplay += ` for ${gameSeason} ${gameYear} ${formatPhaseForDisplay(
+        gamePhase,
+      )}`;
+    } else {
+      chipDisplay += " this phase";
+    }
   }
 
   return (
