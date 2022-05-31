@@ -95,13 +95,13 @@ export const BULGARIA: Territory = {
 export const BULGARIA_NORTH_COAST: Territory = {
   name: "BULGARIA_NORTH_COAST",
   abbr: "NC",
-  type: "land",
+  type: "coast",
 };
 
 export const BULGARIA_SOUTH_COAST: Territory = {
   name: "BULGARIA_SOUTH_COAST",
   abbr: "SC",
-  type: "land",
+  type: "coast",
 };
 
 export const BURGUNDY: Territory = {
@@ -413,13 +413,13 @@ export const SAINT_PETERSBURG: Territory = {
 export const SAINT_PETERSBURG_NORTH_COAST: Territory = {
   name: "SAINT_PETERSBURG_NORTH_COAST",
   abbr: "NC",
-  type: "land",
+  type: "coast",
 };
 
 export const SAINT_PETERSBURG_SOUTH_COAST: Territory = {
   name: "SAINT_PETERSBURG_SOUTH_COAST",
   abbr: "SC",
-  type: "land",
+  type: "coast",
 };
 
 export const SERBIA: Territory = {
@@ -467,13 +467,13 @@ export const SPAIN: Territory = {
 export const SPAIN_NORTH_COAST: Territory = {
   name: "SPAIN_NORTH_COAST",
   abbr: "NC",
-  type: "land",
+  type: "coast",
 };
 
 export const SPAIN_SOUTH_COAST: Territory = {
   name: "SPAIN_SOUTH_COAST",
   abbr: "SC",
-  type: "land",
+  type: "coast",
 };
 
 export const SWEDEN: Territory = {

@@ -1,3 +1,3 @@
-type TerritoryType = "land" | "water";
+type TerritoryType = "coast" | "land" | "water";
 
 export default TerritoryType;

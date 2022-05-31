@@ -18,7 +18,6 @@ export default function updateUserActivity(state, action): void {
     state.activity.processTime = newProcessTime;
   }
   if (lastActive >= lastCall + frequency) {
-    state.activity.lastCall = lastActive;
     state.activity.makeNewCall = true;
   } else {
     state.activity.makeNewCall = false;

@@ -11,7 +11,7 @@ import GameOverviewResponse from "../interfaces/GameOverviewResponse";
 import GameCommands from "../interfaces/GameCommands";
 import { ApiStatus, GameState } from "../interfaces/GameState";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
-import GameMessages, { GameMessage } from "../interfaces/GameMessages";
+import GameMessages from "../interfaces/GameMessages";
 import { RootState } from "../store";
 import initialState from "./initial-state";
 import OrdersMeta from "../interfaces/SavedOrders";
@@ -32,6 +32,7 @@ import fetchGameDataFulfilled from "../../utils/state/gameApiSlice/extraReducers
 import updateUserActivity from "../../utils/state/gameApiSlice/reducers/updateUserActivity";
 import fetchGameOverviewFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameOverview/fulfilled";
 import saveOrdersFulfilled from "../../utils/state/gameApiSlice/extraReducers/saveOrders/fulfilled";
+import getCurrentUnixTimestamp from "../../utils/getCurrentUnixTimestamp";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -210,6 +211,11 @@ const gameApiSlice = createSlice({
       // fetchGameData
       .addCase(fetchGameData.pending, (state) => {
         state.apiStatus = "loading";
+        state.transition = true;
+        state.ordersMeta = {};
+        if (state.overview.phase !== "Builds") {
+          state.mustDestroyUnitsBuildPhase = false;
+        }
       })
       .addCase(fetchGameData.fulfilled, fetchGameDataFulfilled)
       .addCase(fetchGameData.rejected, (state, action) => {
@@ -220,6 +226,7 @@ const gameApiSlice = createSlice({
       .addCase(fetchGameOverview.pending, (state) => {
         state.apiStatus = "loading";
         state.activity.makeNewCall = false;
+        state.activity.lastCall = getCurrentUnixTimestamp();
       })
       .addCase(fetchGameOverview.fulfilled, fetchGameOverviewFulfilled)
       .addCase(fetchGameOverview.rejected, (state, action) => {
@@ -317,6 +324,9 @@ export const gameOrder = ({ game: { order } }: RootState): OrderState => order;
 export const gameNotifications = ({
   game: { notifications },
 }: RootState): GameState["notifications"] => notifications;
+export const gameTransition = ({
+  game: { transition },
+}: RootState): GameState["transition"] => transition;
 export const userActivity = ({
   game: { activity },
 }: RootState): GameState["activity"] => activity;

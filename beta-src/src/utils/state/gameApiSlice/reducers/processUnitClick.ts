@@ -1,4 +1,5 @@
 import { current } from "@reduxjs/toolkit";
+import { GameCommand } from "../../../../state/interfaces/GameCommands";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import GameOverviewResponse from "../../../../state/interfaces/GameOverviewResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
@@ -8,6 +9,7 @@ import OrdersMeta from "../../../../state/interfaces/SavedOrders";
 import highlightMapTerritoriesBasedOnStatuses from "../../../map/highlightMapTerritoriesBasedOnStatuses";
 import getAvailableOrder from "../../getAvailableOrder";
 import resetOrder from "../../resetOrder";
+import setCommand from "../../setCommand";
 import startNewOrder from "../../startNewOrder";
 import updateOrdersMeta from "../../updateOrdersMeta";
 
@@ -51,6 +53,18 @@ export default function processUnitClick(state, clickData) {
   if (orderStatus.Ready) {
     return;
   }
+  const unitType = units[clickData.payload.unitID].type;
+
+  if (unitType === "Fleet" && ownUnits.includes(clickData.payload.unitID)) {
+    const command: GameCommand = {
+      command: "DISABLE_TERRITORY_CLICK",
+    };
+
+    setCommand(state, command, "territoryCommands", "BULGARIA");
+    setCommand(state, command, "territoryCommands", "SPAIN");
+    setCommand(state, command, "territoryCommands", "SAINT_PETERSBURG");
+  }
+
   const now = Date.now();
   let inProgress = orderInProgress;
   state.lastUnitClick = now;
