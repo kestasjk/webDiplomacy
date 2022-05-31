@@ -190,11 +190,13 @@ export default function processMapClick(
       toTerrID = maps.territoryToTerrID[territory];
     }
 
+    const isCoast = clickProvinceMapData.type === "Coast";
     resetOrder(state);
     updateOrder(state, {
       inProgress: true,
       orderID: availableOrder,
-      type: isDestroy ? "Destroy" : "Build",
+      // eslint-disable-next-line no-nested-ternary
+      type: isDestroy ? "Destroy" : isCoast ? "Build" : "Build Army",
       toTerrID,
     });
     return;
