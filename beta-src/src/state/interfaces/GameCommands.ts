@@ -1,6 +1,6 @@
 import BuildUnit from "../../enums/BuildUnit";
 import Territory from "../../enums/map/variants/classic/Territory";
-import { UnitSlotName } from "../../interfaces/map/TerritoryMapData";
+import { UnitSlotName } from "../../interfaces/map/ProvinceMapData";
 import { TerritoryMeta } from "./TerritoriesState";
 
 export interface BuildCommand {

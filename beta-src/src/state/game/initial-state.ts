@@ -9,7 +9,6 @@ const initialState: GameState = {
     needsGameData: false,
   },
   apiStatus: "idle",
-  board: undefined,
   data: {
     msg: "",
     referenceCode: "",
@@ -35,9 +34,11 @@ const initialState: GameState = {
   maps: {
     terrIDToTerritory: {},
     territoryToTerrID: {},
-    terrIDToUnit: {},
+    terrIDToProvinceID: {},
+    terrIDToProvince: {},
+    provinceIDToUnits: {},
     unitToTerrID: {},
-    territoryToUnit: {},
+    provinceToUnits: {},
     unitToTerritory: {},
     unitToOrder: {},
   },
@@ -145,6 +146,15 @@ const initialState: GameState = {
     time: 0,
   },
   outstandingMessageRequests: 0,
+  legalOrders: {
+    legalMoveDestsByUnitID: {},
+    legalRetreatDestsByUnitID: {},
+    possibleBuildDests: [],
+    legalViasByUnitID: {},
+    legalConvoysByUnitID: {},
+    hasAnyLegalConvoysByUnitID: {},
+    legalSupportsByUnitID: {},
+  },
 };
 
 export default initialState;

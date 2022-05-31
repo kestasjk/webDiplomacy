@@ -1,5 +1,4 @@
 import { IOrderData } from "../../models/Interfaces";
-import TerritoryClass from "../../models/TerritoryClass";
 
 export interface OrderMetaUpdate {
   convoyPath?: string[];
@@ -9,17 +8,8 @@ export interface OrderMetaUpdate {
   viaConvoy?: string | null;
 }
 
-export interface SupportMoveChoice {
-  supportMoveFrom: TerritoryClass[];
-  supportMoveTo: TerritoryClass;
-}
-
 interface SharedMeta {
-  allowedBorderCrossings?: TerritoryClass[];
-  convoyToChoices?: string[]; //TerritoryClass[];
   originalOrder?: IOrderData;
-  supportHoldChoices?: TerritoryClass[];
-  supportMoveChoices?: SupportMoveChoice[];
   update?: OrderMetaUpdate;
 }
 

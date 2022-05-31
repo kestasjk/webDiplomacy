@@ -1,12 +1,13 @@
 import Territory from "../../../../enums/map/variants/classic/Territory";
-import territoriesMapData from "../../TerritoriesMapData";
-import { TerritoryMapData, UnitSlotName } from "../../../../interfaces";
+import provincesMapData from "../../ProvincesMapData";
+import { ProvinceMapData, UnitSlotName } from "../../../../interfaces";
+import Province from "../../../../enums/map/variants/classic/Province";
 
 export interface MTerritory {
-  parent?: Territory;
   territory: Territory;
   unitSlotName: UnitSlotName;
-  territoryMapData: TerritoryMapData;
+  province: Province;
+  provinceMapData: ProvinceMapData;
 }
 
 type ITerritoryMap = {
@@ -132,17 +133,20 @@ export const coastData = {
 };
 
 const territoryToMTerr: ITerritoryMap = Object.fromEntries(
-  Object.entries(territoryToWebdipName).map(([territory, webdipName]) => [
-    territory,
-    {
-      parent: coastData[territory]?.parent,
-      territory: territory as Territory,
-      unitSlotName: coastData[territory]?.unitSlotName || "main",
-      territoryMapData:
-        territoriesMapData[territory] ||
-        territoriesMapData[coastData[territory]?.parent],
-    },
-  ]),
+  Object.entries(territoryToWebdipName).map(([territory, webdipName]) => {
+    const provinceMapData =
+      provincesMapData[territory] ||
+      provincesMapData[coastData[territory]?.parent];
+    return [
+      territory,
+      {
+        territory: territory as Territory,
+        unitSlotName: coastData[territory]?.unitSlotName || "main",
+        province: provinceMapData.province,
+        provinceMapData,
+      },
+    ];
+  }),
 );
 
 const webdipNameToMTerr = Object.fromEntries(

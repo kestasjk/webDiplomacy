@@ -11,7 +11,7 @@ import Country from "../../enums/Country";
 import {
   IOrderData,
   IOrderDataHistorical,
-  ITerrStatus,
+  IProvinceStatus,
   IUnit,
   IUnitHistorical,
 } from "../../models/Interfaces";
@@ -39,7 +39,7 @@ export interface Unit {
 
 export function getUnitsLive(
   territories: APITerritories,
-  territoryStatuses: ITerrStatus[],
+  territoryStatuses: IProvinceStatus[],
   units: { [key: string]: IUnit },
   members: GameOverviewResponse["members"],
   prevPhaseOrders: IOrderDataHistorical[],

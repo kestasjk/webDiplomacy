@@ -1,22 +1,22 @@
 import { useTheme } from "@mui/material";
 import * as React from "react";
-import Territory from "../../../enums/map/variants/classic/Territory";
+import Province from "../../../enums/map/variants/classic/Province";
 import { Coordinates } from "../../../interfaces";
 import WDTrigger from "./WDTrigger";
 
 interface WDCenterProps extends Coordinates {
-  territory: Territory;
+  province: Province;
 }
 
 const WDCenter: React.FC<WDCenterProps> = function ({
-  territory,
+  province,
   x,
   y,
 }): React.ReactElement {
   const theme = useTheme();
   return (
     <svg
-      id={`${territory}-center`}
+      id={`${province}-center`}
       width="34"
       height="34"
       viewBox="0 0 34 34"

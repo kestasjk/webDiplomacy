@@ -1,7 +1,7 @@
 import TerritoryMap, {
   webdipNameToTerritory,
 } from "../data/map/variants/classic/TerritoryMap";
-import { ITerrStatus } from "../models/Interfaces";
+import { IProvinceStatus } from "../models/Interfaces";
 import { APITerritories } from "../state/interfaces/GameDataResponse";
 import TerritoriesMeta from "../state/interfaces/TerritoriesState";
 
@@ -9,7 +9,8 @@ export default function getTerritoriesMeta(data): TerritoriesMeta {
   const {
     territories,
     territoryStatuses,
-  }: { territories: APITerritories; territoryStatuses: ITerrStatus[] } = data;
+  }: { territories: APITerritories; territoryStatuses: IProvinceStatus[] } =
+    data;
 
   const territoriesMeta: TerritoriesMeta = {};
 

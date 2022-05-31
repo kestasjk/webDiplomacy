@@ -1,60 +1,69 @@
 import { current } from "@reduxjs/toolkit";
-import territoriesMapData from "../../../../data/map/TerritoriesMapData";
+import provincesMapData from "../../../../data/map/ProvincesMapData";
 import TerritoryMap, {
   webdipNameToTerritory,
 } from "../../../../data/map/variants/classic/TerritoryMap";
-import Territories from "../../../../data/Territories";
 import BuildUnit from "../../../../enums/BuildUnit";
 import Territory from "../../../../enums/map/variants/classic/Territory";
-import { TerritoryMapData } from "../../../../interfaces/map/TerritoryMapData";
+import Province from "../../../../enums/map/variants/classic/Province";
+import { ProvinceMapData } from "../../../../interfaces/map/ProvinceMapData";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
 import GameStateMaps from "../../../../state/interfaces/GameStateMaps";
-import { OrderMeta } from "../../../../state/interfaces/SavedOrders";
+import OrderState from "../../../../state/interfaces/OrderState";
+import OrdersMeta, {
+  OrderMeta,
+} from "../../../../state/interfaces/SavedOrders";
 import { TerritoryMeta } from "../../../../state/interfaces/TerritoriesState";
 import { getTargetXYWH } from "../../../map/drawArrowFunctional";
 import invalidClick from "../../../map/invalidClick";
 import getAvailableOrder from "../../getAvailableOrder";
 import getOrderStates from "../../getOrderStates";
-import processConvoy from "../../processConvoy";
 import resetOrder from "../../resetOrder";
 import startNewOrder from "../../startNewOrder";
 import updateOrder from "../../updateOrder";
 import updateOrdersMeta from "../../updateOrdersMeta";
+import { LegalOrders } from "../extraReducers/fetchGameData/precomputeLegalOrders";
 
-function canUnitMove(orderMeta: OrderMeta, territory: Territory): boolean {
-  const { allowedBorderCrossings } = orderMeta;
-  console.log({ allowedBorderCrossings, territory });
-  return !!allowedBorderCrossings?.find(
-    (border) => TerritoryMap[border.name].territory === territory,
-  );
-}
-
-function getClickPositionInTerritory(evt, territoryMapData: TerritoryMapData) {
+function getClickPositionInProvince(evt, provinceMapData: ProvinceMapData) {
   const boundingRect = evt.target.getBoundingClientRect();
   const diffX = evt.clientX - boundingRect.x;
   const diffY = evt.clientY - boundingRect.y;
-  const scaleX = boundingRect.width / territoryMapData.width;
-  const scaleY = boundingRect.height / territoryMapData.height;
+  const scaleX = boundingRect.width / provinceMapData.width;
+  const scaleY = boundingRect.height / provinceMapData.height;
   return { x: diffX / scaleX, y: diffY / scaleY };
 }
 
-function canSupportTerritory(
-  orderMeta: OrderMeta,
-  territory: Territory,
-): boolean {
-  const { supportHoldChoices, supportMoveChoices } = orderMeta;
-  // console.log({ supportHoldChoices, supportMoveChoices, territory });
-  const all: Territory[] = [];
-  supportHoldChoices?.forEach((t) => {
-    all.push(webdipNameToTerritory[t.name]);
+// If the province has special coasts, returns special coastal territory closest
+// to the position of the click. Else just returns the single territory corresponding
+// to the province.
+function getBestCoastalUnitTerritory(
+  evt,
+  provinceMapData: ProvinceMapData,
+): Territory {
+  if (provinceMapData.unitSlots.length === 1) {
+    return provinceMapData.unitSlots[0].territory;
+  }
+  const clickPos = getClickPositionInProvince(evt, provinceMapData);
+
+  // here we've got name => {x, y}
+  let bestSlot = "";
+  let bestDist2 = 1e100;
+  provinceMapData!.labels!.forEach((label) => {
+    if (["nc", "sc"].includes(label.name)) {
+      const dist2 = (clickPos.x - label.x) ** 2 + (clickPos.y - label.y) ** 2;
+      if (dist2 < bestDist2) {
+        bestSlot = label.name;
+        bestDist2 = dist2;
+      }
+    }
   });
-  supportMoveChoices?.forEach((x) => {
-    x.supportMoveFrom.forEach((t) => {
-      all.push(webdipNameToTerritory[t.name]);
-    });
-  });
-  return all.includes(territory);
+  return provinceMapData.unitSlotsBySlotName[bestSlot].territory;
+}
+
+interface MapClickData {
+  evt: React.MouseEvent<SVGGElement, MouseEvent>;
+  clickProvince: Province;
 }
 
 // careful: can't use terrIDToUnit because there may be two units on a territory during retreat
@@ -71,7 +80,10 @@ function findTerrIDForUnit(
 }
 
 /* eslint-disable no-param-reassign */
-export default function processMapClick(state, clickData) {
+export default function processMapClick(
+  state: GameState,
+  clickData: { payload: MapClickData },
+) {
   const currentState: GameState = current(state);
   const {
     data: { data },
@@ -81,10 +93,10 @@ export default function processMapClick(state, clickData) {
     territoriesMeta,
     maps,
     ownUnits,
+    legalOrders,
     viewedPhaseState,
     status,
   } = currentState;
-
   // ---------------------- PREPARATION ---------------------------
 
   console.log("processMapClick");
@@ -95,57 +107,49 @@ export default function processMapClick(state, clickData) {
   const { orderStatus } = member;
 
   const {
-    payload: { clickObject, evt, territory },
+    payload: { evt, clickProvince },
   } = clickData;
 
   if (viewedPhaseState.viewedPhaseIdx < status.phases.length - 1) {
     alert("You need to switch to the current phase to enter orders."); // FIXME: move to alerts modal!
-    invalidClick(evt, territory);
+    invalidClick(evt, clickProvince);
     return;
   }
   if (orderStatus.Ready) {
     alert("You need to unready your orders to update them"); // FIXME: move to alerts modal!
-    invalidClick(evt, territory);
+    invalidClick(evt, clickProvince);
     return;
   }
-  const territoryMeta: TerritoryMeta = territoriesMeta[territory];
+  const clickProvinceMapData = provincesMapData[clickProvince];
+  const clickRootTerritory = clickProvinceMapData.rootTerritory;
+  const territoryMeta: TerritoryMeta | undefined =
+    territoriesMeta[clickProvince];
   // Click is outside the map entirely?
-  if (!territoryMeta) {
-    invalidClick(evt, territory);
+  if (!territoryMeta || !clickRootTerritory) {
+    invalidClick(evt, clickProvince);
     return;
   }
-
-  const clickTerrID = maps.territoryToTerrID[territory];
-  let clickUnitID = findTerrIDForUnit(clickTerrID, maps, ownUnits, phase);
-  // Fixup unit for coast!
-  if (!clickUnitID) {
-    // Note: I think we could use the TerritoryClass stuff to find children like this
-    territoryMeta.coastChildIDs.forEach((childID) => {
-      const coastUnitID = findTerrIDForUnit(childID, maps, ownUnits, phase);
-      if (
-        coastUnitID &&
-        (phase !== "Retreats" || ownUnits.includes(coastUnitID)) // on retreats there may be 2 units
-      ) {
-        clickUnitID = coastUnitID;
-      }
-    });
+  let clickUnitID: string | undefined;
+  {
+    const clickUnitIDs = maps.provinceToUnits[clickProvince];
+    // Handle multiple units on retreat, pick the one that we own if there are multiple
+    if (clickUnitIDs && clickUnitIDs.length >= 2) {
+      clickUnitID = clickUnitIDs.find((unitID) => ownUnits.includes(unitID));
+    } else if (clickUnitIDs && clickUnitIDs.length === 1) {
+      [clickUnitID] = clickUnitIDs;
+    }
   }
 
-  const clickUnit = data.units[clickUnitID];
+  const clickUnit = clickUnitID ? data.units[clickUnitID] : undefined;
   const orderUnit = data.units[order.unitID];
-  const ownsCurUnit = ownUnits.includes(clickUnitID);
-  const mapData = territoriesMapData[territory];
+  const ownsCurUnit = clickUnitID && ownUnits.includes(clickUnitID);
 
   // ---------------------- BUILD PHASE ---------------------------
   if (phase === "Builds") {
     // FIXME: abstract to a function
     const existingOrder = Object.entries(ordersMeta).find(([, { update }]) => {
       if (!update || !update.toTerrID) return false;
-      if (update.toTerrID === clickTerrID) return true;
-      const updateTerr = maps.terrIDToTerritory[update.toTerrID];
-      const { parent } = TerritoryMap[updateTerr];
-      const parentID = parent && maps.territoryToTerrID[parent];
-      return parentID === clickTerrID;
+      return maps.terrIDToProvince[update.toTerrID] === clickProvince;
     });
     if (existingOrder) {
       const [id] = existingOrder;
@@ -164,28 +168,48 @@ export default function processMapClick(state, clickData) {
 
     const isDestroy =
       overview.user.member.supplyCenterNo < overview.user.member.unitNo;
-    if (
-      member.countryID !== Number(territoryMeta.ownerCountryID) || // FIXME ugh string vs number
-      (!territoryMeta.supply && !isDestroy)
-    ) {
-      invalidClick(evt, territory);
+    const isBuild =
+      overview.user.member.supplyCenterNo > overview.user.member.unitNo;
+    // Cannot click on other people's units, and on builds you can only
+    // click on your own supply centers.
+    // FIXME ugh string vs number
+    if (member.countryID !== Number(territoryMeta.ownerCountryID)) {
+      invalidClick(evt, clickProvince);
       return;
     }
 
     const { currentOrders } = data;
     const availableOrder = getAvailableOrder(currentOrders, ordersMeta);
-    const territoryHasUnit = !!territoryMeta.unitID;
-    const unitValid = isDestroy === territoryHasUnit;
-    if (!availableOrder || !unitValid) {
-      invalidClick(evt, territory);
+    if (!availableOrder) {
+      invalidClick(evt, clickProvince);
       return;
     }
+
+    let toTerrID;
+    if (isDestroy) {
+      if (!clickUnit) {
+        invalidClick(evt, clickProvince);
+        return;
+      }
+      toTerrID = clickUnit.terrID;
+    } else if (isBuild) {
+      // Build on the appropriately clicked coast for STP
+      const territory = getBestCoastalUnitTerritory(evt, clickProvinceMapData);
+      if (!legalOrders.possibleBuildDests.includes(territory)) {
+        invalidClick(evt, clickProvince);
+        return;
+      }
+      toTerrID = maps.territoryToTerrID[territory];
+    }
+
+    const isCoast = clickProvinceMapData.type === "Coast";
     resetOrder(state);
     updateOrder(state, {
       inProgress: true,
       orderID: availableOrder,
-      type: isDestroy ? "Destroy" : "Build",
-      toTerrID: clickTerrID,
+      // eslint-disable-next-line no-nested-ternary
+      type: isDestroy ? "Destroy" : isCoast ? "Build" : "Build Army",
+      toTerrID,
     });
     return;
   }
@@ -199,17 +223,22 @@ export default function processMapClick(state, clickData) {
       if (clickUnitID && ownsCurUnit && isRetreating) {
         startNewOrder(state, { unitID: clickUnitID, type: "Retreat" });
       } else {
-        invalidClick(evt, territory);
+        invalidClick(evt, clickProvince);
       }
     } else if (clickUnitID === order.unitID) {
+      // Clicking again on the same unit itself disbands it.
       updateOrder(state, { type: "Disband" });
     } else {
-      // n.b. this already handes standoffs etc.
-      const canMove = canUnitMove(ordersMeta[order.orderID], territory);
-      if (canMove) {
-        updateOrder(state, { toTerrID: clickTerrID });
+      const territory =
+        orderUnit.type === "Fleet"
+          ? getBestCoastalUnitTerritory(evt, clickProvinceMapData)
+          : clickRootTerritory;
+      if (
+        legalOrders.legalRetreatDestsByUnitID[order.unitID].includes(territory)
+      ) {
+        updateOrder(state, { toTerrID: maps.territoryToTerrID[territory] });
       } else {
-        invalidClick(evt, territory);
+        invalidClick(evt, clickProvince);
       }
     }
     return;
@@ -220,71 +249,42 @@ export default function processMapClick(state, clickData) {
     if (clickUnitID && ownsCurUnit) {
       startNewOrder(state, { unitID: clickUnitID });
     } else {
-      invalidClick(evt, territory);
+      invalidClick(evt, clickProvince);
     }
   } else if (!order.type || clickUnitID === order.unitID) {
-    // cancel the order
+    // Clicking on the same territory a second time cancels the order.
     resetOrder(state);
   } else if (order.type === "Move") {
-    //------------------------------------------------------------
-    // tricky: get coast-qualified versions if the dest is a coast
-    // FIXME: there should be a single object that has all the data for this
-    // -----------------------------------------------------------
-    let clickTerrIDCQ = clickTerrID;
-    let territoryCQ = territory;
-    if (orderUnit.type === "Fleet" && territoryMeta.coastChildIDs) {
-      // have to figure out which coast, oy.
-      const clickPos = getClickPositionInTerritory(evt, mapData);
-
-      // here we've got name => {x, y}
-      let bestSlot = "";
-      let bestDist2 = 1e100;
-      mapData!.labels!.forEach((label) => {
-        if (["nc", "sc"].includes(label.name)) {
-          const dist2 =
-            (clickPos.x - label.x) ** 2 + (clickPos.y - label.y) ** 2;
-          if (dist2 < bestDist2) {
-            bestSlot = label.name;
-            bestDist2 = dist2;
-          }
-        }
-      });
-      territoryMeta.coastChildIDs.forEach((childID) => {
-        const mTerr = TerritoryMap[maps.terrIDToTerritory[childID]];
-        if (mTerr.unitSlotName === bestSlot) {
-          territoryCQ = mTerr.territory;
-          clickTerrIDCQ = maps.territoryToTerrID[territoryCQ];
-        }
-      });
-    }
+    const territory =
+      orderUnit.type === "Fleet"
+        ? getBestCoastalUnitTerritory(evt, clickProvinceMapData)
+        : clickRootTerritory;
     // -----------------------------------------------------------
 
     if (!order.viaConvoy) {
       // direct move
-      const canMove = canUnitMove(ordersMeta[order.orderID], territoryCQ);
-      if (canMove) {
+      if (
+        legalOrders.legalMoveDestsByUnitID[order.unitID].includes(territory)
+      ) {
         updateOrder(state, {
-          toTerrID: clickTerrIDCQ,
+          toTerrID: maps.territoryToTerrID[territory],
         });
       } else {
-        invalidClick(evt, territory);
+        invalidClick(evt, clickProvince);
       }
     } else {
       // via convoy
-      const { convoyToChoices } = ordersMeta[order.orderID];
-      const canConvoy = !!convoyToChoices?.find(
-        (terrID) => maps.terrIDToTerritory[terrID] === territoryCQ,
+      const via = legalOrders.legalViasByUnitID[order.unitID].find(
+        (v) => v.dest === territory,
       );
-      if (canConvoy) {
+      if (via) {
         updateOrder(state, {
-          toTerrID: clickTerrIDCQ,
+          toTerrID: maps.territoryToTerrID[territory],
           viaConvoy: "Yes",
+          convoyPath: via.provIDPaths[0],
         });
-        if (!processConvoy(state, evt)) {
-          invalidClick(evt, territory);
-        }
       } else {
-        invalidClick(evt, territory);
+        invalidClick(evt, clickProvince);
       }
     }
   } else if (order.type === "Support") {
@@ -292,36 +292,57 @@ export default function processMapClick(state, clickData) {
       // click 1
       if (
         clickUnitID &&
-        canSupportTerritory(ordersMeta[order.orderID], territory)
+        legalOrders.legalSupportsByUnitID[order.unitID][clickProvince].length >
+          0
       ) {
-        updateOrder(state, { fromTerrID: clickTerrID });
+        updateOrder(state, {
+          fromTerrID: maps.territoryToTerrID[clickRootTerritory],
+        });
       }
       // gotta support a unit
-      invalidClick(evt, territory);
+      invalidClick(evt, clickProvince);
     } else {
       // click 2
       // eslint-disable-next-line no-lonely-if
-      if (canUnitMove(ordersMeta[order.orderID], territory)) {
-        updateOrder(state, { toTerrID: clickTerrID });
+      const fromProvince = maps.terrIDToProvince[order.fromTerrID];
+      const foundSupport = legalOrders.legalSupportsByUnitID[order.unitID][
+        fromProvince
+      ].find((support) => support.dest === clickProvince);
+      if (foundSupport) {
+        updateOrder(state, {
+          toTerrID: maps.territoryToTerrID[clickRootTerritory],
+          convoyPath: foundSupport.convoyProvIDPath,
+        });
       } else {
-        invalidClick(evt, territory);
+        invalidClick(evt, clickProvince);
       }
     }
   } else if (order.type === "Convoy") {
     if (!order.fromTerrID) {
       // click 1
-      // gotta click on an Army
-      if (clickUnit?.type === "Army") {
-        updateOrder(state, { fromTerrID: clickTerrID });
+      // gotta click on an Army that is convoyable
+      if (
+        clickUnit?.type === "Army" &&
+        legalOrders.legalConvoysByUnitID[order.unitID][clickProvince].length > 0
+      ) {
+        updateOrder(state, {
+          fromTerrID: maps.territoryToTerrID[clickRootTerritory],
+        });
       } else {
         // gotta support a unit
-        invalidClick(evt, territory);
+        invalidClick(evt, clickProvince);
       }
     } else {
       // click 2
-      updateOrder(state, { toTerrID: clickTerrID });
-      if (!processConvoy(state, evt)) {
-        invalidClick(evt, territory);
+      const fromProvince = maps.terrIDToProvince[order.fromTerrID];
+      const convoy = legalOrders.legalConvoysByUnitID[order.unitID][
+        fromProvince
+      ].find((c) => c.dest === clickRootTerritory);
+      if (convoy) {
+        updateOrder(state, {
+          toTerrID: maps.territoryToTerrID[clickRootTerritory],
+          convoyPath: [...convoy.provIDPath1, ...convoy.provIDPath2],
+        });
       }
     }
   }
