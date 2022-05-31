@@ -117,6 +117,7 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
         provincesToChoose = legalOrders.legalRetreatDestsByUnitID[
           curOrder.unitID
         ].map((territory) => TerritoryMap[territory].province);
+        provincesToChoose.push(provincesToHighlight[0]);
       }
     } else if (phase === "Builds") {
       if (user.member.supplyCenterNo < user.member.unitNo) {
@@ -141,6 +142,8 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
         <WDProvince
           provinceMapData={data}
           ownerCountryID={centersByProvince[data.province]?.ownerCountryID}
+          playerCountryID={user.member.countryID}
+          highlightSelection={false}
           key={`${data.province}-province`}
         />
       );
@@ -157,27 +160,25 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
   playableProvincesData.push(provincesMapData[Province.ROME]);
 
   const playableProvinces = playableProvincesData.map((data) => {
+    const highlightSelection = provincesToHighlightSet.has(data.province);
     return (
       <WDProvince
         provinceMapData={data}
         ownerCountryID={centersByProvince[data.province]?.ownerCountryID}
+        playerCountryID={user.member.countryID}
+        highlightSelection={highlightSelection}
         key={`${data.province}-province`}
       />
     );
   });
 
   const playableProvinceOverlays = playableProvincesData.map((data) => {
-    let highlightMode: "selected" | "choice" | null = null;
-    if (provincesToHighlightSet.has(data.province)) {
-      highlightMode = "selected";
-    } else if (provincesToChooseSet.has(data.province)) {
-      highlightMode = "choice";
-    }
+    const highlightChoice = provincesToChooseSet.has(data.province);
     return (
       <WDProvinceOverlay
         provinceMapData={data}
         units={units}
-        highlightMode={highlightMode}
+        highlightChoice={highlightChoice}
         key={`${data.province}-province-overlay`}
       />
     );

@@ -32,13 +32,13 @@ import { IProvinceStatus } from "../../../models/Interfaces";
 interface WDProvinceOverlayProps {
   provinceMapData: ProvinceMapData;
   units: Unit[];
-  highlightMode: "selected" | "choice" | null;
+  highlightChoice: boolean;
 }
 
 const WDProvinceOverlay: React.FC<WDProvinceOverlayProps> = function ({
   provinceMapData,
   units,
-  highlightMode,
+  highlightChoice,
 }): React.ReactElement {
   const { province } = provinceMapData;
 
@@ -129,19 +129,7 @@ const WDProvinceOverlay: React.FC<WDProvinceOverlayProps> = function ({
             </WDUnitSlot>
           );
         })}
-      {highlightMode === "selected" && (
-        <path
-          d={provinceMapData.path}
-          fill="none"
-          fillOpacity={0.0}
-          id={`${province}-selection-outline`}
-          stroke="black"
-          strokeOpacity={1}
-          strokeWidth={4}
-          filter="url(#selectionGlow)"
-        />
-      )}
-      {highlightMode === "choice" && (
+      {highlightChoice && (
         <path
           d={provinceMapData.path}
           fill="none"
@@ -149,8 +137,7 @@ const WDProvinceOverlay: React.FC<WDProvinceOverlayProps> = function ({
           id={`${province}-choice-outline`}
           stroke="black"
           strokeOpacity={1}
-          strokeWidth={4}
-          filter="url(#choiceGlow)"
+          strokeWidth={5}
         />
       )}
     </svg>

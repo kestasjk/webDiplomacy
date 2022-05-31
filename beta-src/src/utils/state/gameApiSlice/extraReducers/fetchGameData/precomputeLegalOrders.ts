@@ -11,6 +11,10 @@ import GameStateMaps from "../../../../../state/interfaces/GameStateMaps";
 
 interface LegalVia {
   dest: Territory;
+  // A list of all the possible paths in province IDs by which this VIA move
+  // could be accomplished. Contains the starting location but not the ending
+  // location, because that's the format a path needs to be in to be accepted
+  // by the webdip API.
   provIDPaths: string[][];
 }
 
@@ -23,15 +27,17 @@ interface LegalSupport {
 interface LegalConvoy {
   src: Territory;
   dest: Territory;
-  // Concatenate these two arrays if you want the final convoy path.
+  // Concatenate these two arrays if you want the final convoy path that you need
+  // to give to webdip.
   // Do NOT modify these arrays.
   provIDPath1: string[];
   provIDPath2: string[];
 }
 
+type UnitID = string;
 export interface LegalOrders {
-  legalMoveDestsByUnitID: { [key: string]: Territory[] };
-  legalRetreatDestsByUnitID: { [key: string]: Territory[] };
+  legalMoveDestsByUnitID: { [key: UnitID]: Territory[] };
+  legalRetreatDestsByUnitID: { [key: UnitID]: Territory[] };
   possibleBuildDests: Territory[];
   legalViasByUnitID: { [key: string]: LegalVia[] };
   // The inner key is province

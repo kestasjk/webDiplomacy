@@ -123,7 +123,7 @@ const WDMap: React.ForwardRefExoticComponent<
             in="thickerSource"
             result="blurredSource"
           />
-          <feFlood floodColor="rgb(255,200,100)" result="glowColor" />
+          <feFlood floodColor="rgb(255,255,255)" result="glowColor" />
           <feComposite
             in="glowColor"
             in2="blurredSource"
