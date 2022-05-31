@@ -69,7 +69,13 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
       {phaseProgressed && (
         <WDGameProgressOverlay
           overview={overview}
-          clickHandler={() => setDisplayedPhaseKey(overviewKey)}
+          clickHandler={() => {
+            setDisplayedPhaseKey(overviewKey);
+            // When the user clicks on the overlay to show the latest
+            // phase, this makes it also jump forward to show them the
+            // latest phase.
+            dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(Infinity));
+          }}
         />
       )}
     </div>
