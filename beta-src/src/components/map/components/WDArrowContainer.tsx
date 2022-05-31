@@ -84,7 +84,7 @@ function accumulateSupportHoldOrderArrows(
       // order does not have to be coast qualified.
       const supporteeTerr = supporteeOrder
         ? TerritoryMap[territories[supporteeOrder.terrID].name].territory
-        : TerritoryMap[territories[order.fromTerrID].name].territory;
+        : TerritoryMap[territories[order.toTerrID].name].territory;
 
       arrows.push(
         drawArrowFunctional(
