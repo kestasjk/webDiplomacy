@@ -10,14 +10,12 @@ function useOutsideAlerter(refs, handler) {
      * Alert if clicked on outside of element
      */
     function handleClickOutside(event) {
-      console.log("SAW A CLICK");
       // eslint-disable-next-line no-restricted-syntax
       for (const ref of refs) {
         if (ref.current && ref.current.contains(event.target)) {
           return;
         }
       }
-      console.log("ITS OUTSIDE");
       handler();
     }
     // Bind the event listener
