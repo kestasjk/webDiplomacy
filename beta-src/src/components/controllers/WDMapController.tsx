@@ -262,6 +262,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
           [mapOriginalWidth, mapOriginalHeight],
         ])
         .scaleExtent([scale, scaleMax])
+        .clickDistance(3)
         .on("zoom", zoom);
 
       fullMap
