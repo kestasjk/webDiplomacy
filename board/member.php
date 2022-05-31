@@ -147,9 +147,9 @@ class userMember extends panelMember
 		{
 			// If it's a member vs bots game allow the member to pause or cancel the game
 			if( $voteOn )
-				$DB->sql_put("UPDATE wD_Members SET votes=CONCAT(votes,',".$voteName."') WHERE gameID=".$this->gameID);
-			else
 				$DB->sql_put("UPDATE wD_Members SET votes=REPLACE(votes,'".$voteName."','') WHERE gameID=".$this->gameID);
+			else
+				$DB->sql_put("UPDATE wD_Members SET votes=CONCAT(votes,',".$voteName."') WHERE gameID=".$this->gameID);
 		}
 		else
 		{
