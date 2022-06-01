@@ -121,8 +121,7 @@ const WDUI: React.FC = function (): React.ReactElement {
   const dispatchFetchMessages = () => {
     const { game } = store.getState();
     const { outstandingMessageRequests } = game;
-    if (outstandingMessageRequests === 0) {
-      dispatch(gameApiSliceActions.updateOutstandingMessageRequests(1));
+    if (!outstandingMessageRequests) {
       dispatch(
         fetchGameMessages({
           gameID: String(gameID),

@@ -1,13 +1,6 @@
 import { GameState } from "../interfaces/GameState";
 
 const initialState: GameState = {
-  activity: {
-    lastActive: 0,
-    lastCall: 0,
-    frequency: 120,
-    makeNewCall: false,
-    needsGameData: false,
-  },
   apiStatus: "idle",
   data: {
     msg: "",
@@ -145,7 +138,9 @@ const initialState: GameState = {
     newMessagesFrom: [],
     time: 0,
   },
-  outstandingMessageRequests: 0,
+  outstandingOverviewRequests: false,
+  outstandingMessageRequests: false,
+  needsGameData: false,
   legalOrders: {
     legalMoveDestsByUnitID: {},
     legalRetreatDestsByUnitID: {},

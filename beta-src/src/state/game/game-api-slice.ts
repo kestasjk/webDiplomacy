@@ -25,7 +25,6 @@ import OrderSubmission from "../../interfaces/state/OrderSubmission";
 import resetOrder from "../../utils/state/resetOrder";
 import processMapClick from "../../utils/state/gameApiSlice/reducers/processMapClick";
 import fetchGameDataFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameData/fulfilled";
-import updateUserActivity from "../../utils/state/gameApiSlice/reducers/updateUserActivity";
 import TerritoriesMeta from "../interfaces/TerritoriesState";
 import fetchGameOverviewFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameOverview/fulfilled";
 import fetchGameStatusFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameStatus/fulfilled";
@@ -192,7 +191,6 @@ const gameApiSlice = createSlice({
   initialState,
   reducers: {
     resetOrder,
-    updateUserActivity,
     updateOrder(state, action) {
       updateOrder(state, action.payload);
     },
@@ -214,11 +212,8 @@ const gameApiSlice = createSlice({
           m.unread = false;
         });
     },
-    updateOutstandingMessageRequests(state, action) {
-      state.outstandingMessageRequests += action.payload;
-    },
     setNeedsGameData(state, action) {
-      state.activity.needsGameData = action.payload;
+      state.needsGameData = action.payload;
     },
     changeViewedPhaseIdxBy(state, action) {
       let newIdx = state.viewedPhaseState.viewedPhaseIdx + action.payload;
@@ -249,13 +244,14 @@ const gameApiSlice = createSlice({
       })
       // fetchGameOverview
       .addCase(fetchGameOverview.pending, (state) => {
+        state.outstandingOverviewRequests = true;
         state.apiStatus = "loading";
-        state.activity.makeNewCall = false;
       })
       .addCase(fetchGameOverview.fulfilled, fetchGameOverviewFulfilled)
       .addCase(fetchGameOverview.rejected, (state, action) => {
         state.apiStatus = "failed";
         state.error = action.error.message;
+        state.outstandingMessageRequests = false;
       })
       // fetchGameStatus
       .addCase(fetchGameStatus.pending, (state) => {
@@ -285,20 +281,17 @@ const gameApiSlice = createSlice({
         state.error = action.error.message;
       })
       // Fetch Game Messages
+      .addCase(fetchGameMessages.pending, (state, action) => {
+        state.outstandingMessageRequests = true;
+      })
       .addCase(fetchGameMessages.rejected, (state, action) => {
         state.apiStatus = "failed";
         console.log(`fetchGameMessages failed: ${action.error.message}`);
-        state.outstandingMessageRequests = Math.max(
-          state.outstandingMessageRequests - 1,
-          0,
-        );
+        state.outstandingMessageRequests = false;
         state.error = action.error.message;
       })
       .addCase(fetchGameMessages.fulfilled, (state, action) => {
-        state.outstandingMessageRequests = Math.max(
-          state.outstandingMessageRequests - 1,
-          0,
-        );
+        state.outstandingMessageRequests = false;
         if (action.payload) {
           const { messages, newMessagesFrom, time } = action.payload;
           if (messages) {
@@ -360,9 +353,6 @@ export const gameOrdersMeta = ({
   game: { ordersMeta },
 }: RootState): OrdersMeta => ordersMeta;
 export const gameOrder = ({ game: { order } }: RootState): OrderState => order;
-export const gameUserActivity = ({
-  game: { activity },
-}: RootState): GameState["activity"] => activity;
 export const gameTerritoriesMeta = ({
   game: { territoriesMeta },
 }: RootState): TerritoriesMeta => territoriesMeta;
