@@ -18,7 +18,7 @@ export interface OrderMeta extends SharedMeta {
 }
 
 export interface EditOrder extends SharedMeta {
-  saved?: boolean;
+  saved: boolean;
 }
 
 export interface EditOrderMeta {

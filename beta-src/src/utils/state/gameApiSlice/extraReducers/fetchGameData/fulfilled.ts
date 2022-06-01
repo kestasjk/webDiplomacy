@@ -38,8 +38,10 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
     (acc, meta) => acc + 1 - +meta.saved,
     0,
   );
-  if (!numUnsavedOrders) {
-    console.log("Updating ordersMeta");
+  // If all orders are saved, then update them from queries.
+  // If not all orders are saved, then we want to keep the current UI state rather than
+  // grabbing the new orders from the server.
+  if (numUnsavedOrders === 0) {
     updateOrdersMeta(state, getOrdersMeta(data, phase));
   }
 }
