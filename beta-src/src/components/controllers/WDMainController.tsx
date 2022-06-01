@@ -9,8 +9,6 @@ import {
   gameData,
   gameStatus,
   loadGameData,
-  fetchGameMessages,
-  gameOutstandingMessageRequests,
 } from "../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import debounce from "../../utils/debounce";
@@ -58,7 +56,7 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
     );
   }, 500);
 
-  const { name, user, gameID } = overview;
+  const { name, gameID } = overview;
   useEffect(() => {
     document.title = `${name} - webDiplomacy Game ${gameID}`;
   }, [name, gameID]);
