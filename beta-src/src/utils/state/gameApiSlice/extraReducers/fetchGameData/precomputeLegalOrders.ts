@@ -136,11 +136,10 @@ export function getAllLegalRetreatDestsByUnitID(
         // Cannot retreat to any bordering province that the dislodger occupied our province from.
         // Note that all these checks need to be done at the province level, not the territory level.
         if (
-          !borderStatus || (
-          !borderStatus.unitID &&
-          !borderStatus.standoff &&
-          occupiedFromProvID !== borderProvID
-          )
+          !borderStatus ||
+          (!borderStatus.unitID &&
+            !borderStatus.standoff &&
+            occupiedFromProvID !== borderProvID)
         ) {
           legalDests.push(
             TerritoryMap[data.territories[border.id].name].territory,
