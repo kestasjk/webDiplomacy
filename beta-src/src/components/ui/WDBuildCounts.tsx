@@ -43,21 +43,19 @@ const WDBuildCounts: React.FC = function (): React.ReactElement {
     >
       <Stack>
         {range(numRemainingBuilds).map((buildIdx) => (
-          <svg style={{ height: UNIT_HEIGHT, width: UNIT_WIDTH_SQUOOSHED }}>
-            <WDArmyIcon
-              key={buildIdx}
-              country={Country.FRANCE}
-              iconState={UIState.BUILD}
-            />
+          <svg
+            key={buildIdx}
+            style={{ height: UNIT_HEIGHT, width: UNIT_WIDTH_SQUOOSHED }}
+          >
+            <WDArmyIcon country={Country.FRANCE} iconState={UIState.BUILD} />
           </svg>
         ))}
         {range(numRemainingDestroys).map((buildIdx) => (
-          <svg style={{ height: UNIT_HEIGHT, width: UNIT_WIDTH_SQUOOSHED }}>
-            <WDArmyIcon
-              key={buildIdx}
-              country={Country.FRANCE}
-              iconState={UIState.DESTROY}
-            />
+          <svg
+            key={buildIdx}
+            style={{ height: UNIT_HEIGHT, width: UNIT_WIDTH_SQUOOSHED }}
+          >
+            <WDArmyIcon country={Country.FRANCE} iconState={UIState.DESTROY} />
           </svg>
         ))}
       </Stack>
