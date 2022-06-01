@@ -9,12 +9,23 @@ import getTerritoriesMeta from "../../../../getTerritoriesMeta";
 import getOrdersMeta from "../../../../map/getOrdersMeta";
 import { getUnitsLive } from "../../../../map/getUnits";
 import generateMaps from "../../../generateMaps";
+import getPhaseKey from "../../../getPhaseKey";
 import updateOrdersMeta from "../../../updateOrdersMeta";
 import { getLegalOrders } from "./precomputeLegalOrders";
 
 /* eslint-disable no-param-reassign */
 export default function fetchGameDataFulfilled(state: GameState, action): void {
   state.apiStatus = "succeeded";
+
+  const oldPhaseKey = getPhaseKey(state.data.data.contextVars?.context);
+  const newPhaseKey = getPhaseKey(action.payload.data.contextVars?.context);
+  console.log(`fetchGameDataFulfilled  ${oldPhaseKey} -> ${newPhaseKey}`);
+
+  // Upon phase change, sweep away all orders from the previous turn
+  if (oldPhaseKey !== newPhaseKey) {
+    state.ordersMeta = {};
+  }
+
   state.data = action.payload;
   const currentState = current(state);
   const {

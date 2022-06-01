@@ -29,9 +29,7 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
 
   const overviewKey = getPhaseKey(overview);
   const statusKey = getPhaseKey(status);
-  const dataKey = data.contextVars
-    ? getPhaseKey(data.contextVars.context)
-    : "<BAD>";
+  const dataKey = getPhaseKey(data.contextVars?.context);
 
   const dispatchFetchOverview = () => {
     const { game } = store.getState();
