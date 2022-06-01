@@ -17,8 +17,6 @@ import debounce from "../../utils/debounce";
 import getPhaseKey from "../../utils/state/getPhaseKey";
 import WDGameProgressOverlay from "../ui/WDGameProgressOverlay";
 import WDAlertModal from "../ui/WDAlertModal";
-import { store } from "../../state/store";
-import useInterval from "../../utils/useInterval";
 
 const WDMainController: React.FC = function ({ children }): React.ReactElement {
   const [displayedPhaseKey, setDisplayedPhaseKey] = React.useState<

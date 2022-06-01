@@ -38,11 +38,11 @@ const WDProvince: React.FC<WDProvinceProps> = function ({
   const territoryStrokeOpacity = 1;
 
   // Normally, color according to supply center ownership
-  if (ownerCountryID && provinceMapData.centerPos) {
+  if (ownerCountryID) {
     const ownerCountry = members.find(
       (m) => m.countryID === Number(ownerCountryID),
     )?.country;
-    if (ownerCountry) {
+    if (ownerCountry && provinceMapData.type !== "Sea") {
       territoryFill = theme.palette[ownerCountry]?.main;
       territoryFillOpacity = 0.4;
     }

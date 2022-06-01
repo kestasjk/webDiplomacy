@@ -19,6 +19,7 @@ import UIState from "../../enums/UIState";
 import OrdersMeta, { OrderMeta } from "../../state/interfaces/SavedOrders";
 import { MemberData } from "../../interfaces/state/MemberData";
 import getAvailableOrder from "../state/getAvailableOrder";
+import GameStateMaps from "../../state/interfaces/GameStateMaps";
 
 export enum UnitDrawMode {
   NONE = "none",
@@ -49,6 +50,7 @@ export function getUnitsLive(
   currentOrders: IOrderData[],
   currentUser: { member: MemberData },
   phase: string,
+  maps: GameStateMaps,
 ): Unit[] {
   // Accumulate all the units we want to draw into here
   const unitsToDraw: Unit[] = [];
@@ -129,15 +131,23 @@ export function getUnitsLive(
             territoryStatusesByTerrID[unit.terrID] &&
             territoryStatusesByTerrID[unit.terrID].unitID !== null &&
             territoryStatusesByTerrID[unit.terrID].unitID !== unit.id;
+          const unitProvID = maps.terrIDToProvinceID[unit.terrID];
+
           if (ordersMetaByTerrID[unit.terrID]?.update?.type === "Hold") {
             drawMode = UnitDrawMode.HOLD;
           } else if (
             isRetreat &&
-            ordersMetaByTerrID[unit.terrID]?.update?.type === "Disband"
+            // Webdip API might specify disbands in terms of province ID.
+            // So also check the province ID, i.e. the ID of the root territory.
+            (ordersMetaByTerrID[unit.terrID]?.update?.type === "Disband" ||
+              ordersMetaByTerrID[unitProvID]?.update?.type === "Disband")
           ) {
             drawMode = UnitDrawMode.DISBANDED;
           } else if (
-            ordersMetaByTerrID[unit.terrID]?.update?.type === "Destroy"
+            // Webdip API specifies destroys in terms of province ID!!
+            // So also check the province ID, i.e. the ID of the root territory.
+            ordersMetaByTerrID[unit.terrID]?.update?.type === "Destroy" ||
+            ordersMetaByTerrID[unitProvID]?.update?.type === "Destroy"
           ) {
             drawMode = UnitDrawMode.DISBANDED;
           } else if (isRetreat) {
@@ -173,6 +183,7 @@ export function getUnitsLive(
 
   //--------------------------------------------------------------------
   // Compute all the additional units to draw from the current orders
+  // Namely, the builds.
   //--------------------------------------------------------------------
   Object.entries(ordersMeta).forEach(([orderID, { update }], index) => {
     if (
@@ -229,6 +240,7 @@ export function getUnitsHistorical(
   members: GameOverviewResponse["members"],
   prevPhaseOrders: IOrderDataHistorical[],
   curPhaseOrders: IOrderDataHistorical[],
+  maps: GameStateMaps,
 ): Unit[] {
   // Accumulate all the units we want to draw into here
   const unitsToDraw: Unit[] = [];
@@ -282,15 +294,25 @@ export function getUnitsHistorical(
         if (memberCountry) {
           const { country } = memberCountry;
 
+          const unitProvID = maps.terrIDToProvinceID[unit.terrID];
+
           let drawMode = UnitDrawMode.NONE;
           if (curPhaseOrdersByTerrID[unit.terrID]?.type === "Hold") {
             drawMode = UnitDrawMode.HOLD;
           } else if (
             unit.retreating === "Yes" &&
-            curPhaseOrdersByTerrID[unit.terrID]?.type === "Disband"
+            // Webdip API might specify disbands in terms of province ID.
+            // So also check the province ID, i.e. the ID of the root territory.
+            (curPhaseOrdersByTerrID[unit.terrID]?.type === "Disband" ||
+              curPhaseOrdersByTerrID[unitProvID]?.type === "Disband")
           ) {
             drawMode = UnitDrawMode.DISBANDED;
-          } else if (curPhaseOrdersByTerrID[unit.terrID]?.type === "Destroy") {
+          } else if (
+            // Webdip API specifies destroys in terms of province ID!!
+            // So also check the province ID, i.e. the ID of the root territory.
+            curPhaseOrdersByTerrID[unit.terrID]?.type === "Destroy" ||
+            curPhaseOrdersByTerrID[unitProvID]?.type === "Destroy"
+          ) {
             console.log("Found a destroy order");
             drawMode = UnitDrawMode.DISBANDED;
           } else if (unit.retreating === "Yes") {

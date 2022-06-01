@@ -24,7 +24,9 @@ import {
   gameMessages,
   gameOutstandingMessageRequests,
 } from "../../state/game/game-api-slice";
-import useInterval from "../../utils/useInterval";
+import useInterval from "../../hooks/useInterval";
+import useOutsideAlerter from "../../hooks/useOutsideAlerter";
+import useViewport from "../../hooks/useViewport";
 
 const abbrMap = {
   Russia: "RUS",
@@ -41,6 +43,7 @@ const WDUI: React.FC = function (): React.ReactElement {
 
   const [showControlModal, setShowControlModal] = React.useState(false);
   const popoverTrigger = React.useRef<HTMLElement>(null);
+  const modalRef = React.useRef<HTMLElement>(null);
 
   const {
     alternatives,
@@ -86,6 +89,15 @@ const WDUI: React.FC = function (): React.ReactElement {
   const closeControlModal = () => {
     setShowControlModal(false);
   };
+
+  const [viewport] = useViewport();
+  useOutsideAlerter([modalRef, popoverTrigger, viewport], () => {
+    // if viewport is too small to do chat and map at same time,
+    // then close the modal on outside click.
+    if (viewport.width <= theme.breakpoints.values.mobileLandscape) {
+      closeControlModal();
+    }
+  });
 
   const toggleControlModal = () => {
     setShowControlModal(!showControlModal);
@@ -141,6 +153,7 @@ const WDUI: React.FC = function (): React.ReactElement {
         title={name}
         userCountry={userTableData}
         year={year}
+        modalRef={modalRef}
       >
         {null}
       </WDFullModal>

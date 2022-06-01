@@ -339,7 +339,7 @@ class GameState {
 		$preGameCentersTabl = $DB->sql_tabl(
 			"SELECT t.id, t.countryID
 				  FROM wD_Territories t
-				  WHERE t.supply = 'Yes' AND t.mapID = ".$mapID
+				  WHERE t.mapID = ".$mapID
 		);
 		while ($row = $DB->tabl_hash($preGameCentersTabl)) {
 			array_push($preGameCenters, new Territory($row['id'], $row['countryID']));
@@ -351,7 +351,7 @@ class GameState {
 				  FROM wD_Territories t
 				  JOIN wD_TerrStatusArchive ts
 				  ON ( ts.terrID = t.id )
-				  WHERE ts.gameID = ".$this->gameID." AND t.supply = 'Yes' AND t.mapID=".$mapID
+				  WHERE ts.gameID = ".$this->gameID." AND t.mapID=".$mapID
 		);
 		while ($row = $DB->tabl_hash($centersTabl)) {
 			$inGameCenters[intval($row['turn'])][] = new Territory($row['id'], $row['countryID']);
