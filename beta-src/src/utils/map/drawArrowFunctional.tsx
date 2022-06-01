@@ -110,6 +110,7 @@ export function getTargetXYWH(
       break;
     }
   }
+
   return [x, y, width, height];
 }
 
@@ -145,6 +146,8 @@ export function getArrowX1Y1X2Y2(
 }
 
 // See getTargetXYWH for a description of the possible types and identifiers.
+// If skipDrawingProportion is specified, will skip drawing the first
+// skipDrawingProportion-th of the line segment of the arrow.
 export default function drawArrowFunctional(
   arrowType: ArrowType,
   arrowColor: ArrowColor,
@@ -152,16 +155,65 @@ export default function drawArrowFunctional(
   sourceIdentifier: Territory | [number, number, number, number],
   receiverType: "territory" | "unit" | "arrow" | "dislodger",
   receiverIdentifier: Territory | [number, number, number, number],
+  offsetArrowSourcePixels = 0.0,
 ): React.ReactElement {
   // console.log(
   //   `drawArrowFunctional ${sourceIdentifier} ${receiverType} ${receiverIdentifier} `,
   // );
-  const [x1, y1, x2, y2] = getArrowX1Y1X2Y2(
+  // eslint-disable-next-line prefer-const
+  let [x1, y1, x2, y2] = getArrowX1Y1X2Y2(
     sourceType,
     sourceIdentifier,
     receiverType,
     receiverIdentifier,
   );
+
+  let strokeDasharray: string | undefined;
+  if (arrowType === ArrowType.CONVOY) {
+    strokeDasharray = "4 3";
+  } else if (arrowType === ArrowType.HOLD) {
+    strokeDasharray = "12 3";
+  }
+
+  let strokeWidth;
+  switch (arrowColor) {
+    case ArrowColor.MOVE:
+    case ArrowColor.CONVOY:
+    case ArrowColor.IMPLIED:
+    case ArrowColor.IMPLIED_FOREIGN:
+    case ArrowColor.RETREAT:
+    case ArrowColor.SUPPORT_HOLD:
+    case ArrowColor.SUPPORT_MOVE:
+      strokeWidth = 3;
+      break;
+    case ArrowColor.MOVE_FAILED:
+    case ArrowColor.CONVOY_FAILED:
+    case ArrowColor.SUPPORT_HOLD_FAILED:
+    case ArrowColor.SUPPORT_MOVE_FAILED:
+      strokeWidth = 2.5;
+      break;
+    default:
+      strokeWidth = 3;
+  }
+
+  if (offsetArrowSourcePixels > 0) {
+    // Offset the source location perpendicular to the direction of travel by
+    // offsetArrowSourcePixels distance.
+    // Start by finding a unit vector in the direction of the arrows
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const length = Math.sqrt(dx * dx + dy * dy);
+    if (length > 0) {
+      const dxunit = dx / length;
+      const dyunit = dy / length;
+      // Rotate 90 degrees
+      const dxunitRotated = dyunit;
+      const dyunitRotated = -dxunit;
+      // Add the desired number of pixels
+      x1 += offsetArrowSourcePixels * dxunitRotated;
+      y1 += offsetArrowSourcePixels * dyunitRotated;
+    }
+  }
 
   return (
     <line
@@ -172,7 +224,8 @@ export default function drawArrowFunctional(
       y2={y2}
       markerEnd={`url(#arrowHead__${ArrowType[arrowType]}_${ArrowColor[arrowColor]})`}
       stroke={webDiplomacyTheme.palette.arrowColors[arrowColor].main}
-      strokeWidth={3}
+      strokeWidth={strokeWidth}
+      strokeDasharray={strokeDasharray}
     />
   );
 }
