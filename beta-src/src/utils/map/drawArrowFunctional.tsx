@@ -170,7 +170,7 @@ export default function drawArrowFunctional(
 
   let strokeDasharray: string | undefined;
   if (arrowType === ArrowType.CONVOY) {
-    strokeDasharray = "8 4";
+    strokeDasharray = "4 3";
   } else if (arrowType === ArrowType.HOLD) {
     strokeDasharray = "12 3";
   }
