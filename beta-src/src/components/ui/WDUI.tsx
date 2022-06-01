@@ -4,7 +4,6 @@ import { Box, IconButton, Link, useTheme, Badge } from "@mui/material";
 import WDPositionContainer from "./WDPositionContainer";
 import Position from "../../enums/Position";
 import { useAppSelector, useAppDispatch } from "../../state/hooks";
-import { gameOverview, gameMessages } from "../../state/game/game-api-slice";
 import { CountryTableData } from "../../interfaces";
 import Country from "../../enums/Country";
 import WDFullModal from "./WDFullModal";
@@ -18,6 +17,14 @@ import WDMoveControls from "./WDMoveControls";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import WDHomeIcon from "./icons/WDHomeIcon";
 import WDBuildCounts from "./WDBuildCounts";
+import {
+  gameOverview,
+  fetchGameMessages,
+  gameApiSliceActions,
+  gameMessages,
+  gameOutstandingMessageRequests,
+} from "../../state/game/game-api-slice";
+import useInterval from "../../utils/useInterval";
 
 const abbrMap = {
   Russia: "RUS",
@@ -94,6 +101,28 @@ const WDUI: React.FC = function (): React.ReactElement {
       />
     </IconButton>
   );
+
+  const messageTime = useAppSelector((state) => state.game.messages.time);
+  const outstandingMessageRequests = useAppSelector(
+    gameOutstandingMessageRequests,
+  );
+  const dispatch = useAppDispatch();
+  const dispatchFetchMessages = () => {
+    if (outstandingMessageRequests === 0) {
+      dispatch(gameApiSliceActions.updateOutstandingMessageRequests(1));
+      dispatch(
+        fetchGameMessages({
+          gameID: String(gameID),
+          countryID: String(userTableData.countryID),
+          allMessages: "true",
+          sinceTime: String(messageTime),
+        }),
+      );
+    }
+  };
+
+  // FIXME: for now, crazily fetch all messages every 2sec
+  useInterval(dispatchFetchMessages, 2000);
 
   const popover = popoverTrigger.current ? (
     <WDPopover

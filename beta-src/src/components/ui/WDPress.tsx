@@ -60,28 +60,6 @@ const WDPress: React.FC<WDPressProps> = function ({
     ({ game }) => game.messages.newMessagesFrom,
   );
 
-  const dispatchFetchMessages = () => {
-    if (user && gameID) {
-      const { game } = store.getState();
-      const { outstandingMessageRequests } = game;
-      if (outstandingMessageRequests === 0) {
-        console.log("Dispatching fetch messages");
-        dispatch(gameApiSliceActions.updateOutstandingMessageRequests(1));
-        dispatch(
-          fetchGameMessages({
-            gameID: gameID as unknown as string,
-            countryID: user.member.countryID as unknown as string,
-            allMessages: "true",
-            sinceTime: game.messages.time as unknown as string,
-          }),
-        );
-      }
-    }
-  };
-
-  // FIXME: for now, crazily fetch all messages every 1sec
-  useInterval(dispatchFetchMessages, 1000);
-
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     // scroll to the bottom of the message list
@@ -169,7 +147,7 @@ const WDPress: React.FC<WDPressProps> = function ({
       />
       <Box>
         <Stack alignItems="center" direction="row">
-          <Button
+          {/* <Button
             href="#message-reload-button"
             onClick={dispatchFetchMessages}
             style={{
@@ -178,7 +156,7 @@ const WDPress: React.FC<WDPressProps> = function ({
             }}
           >
             <AutorenewIcon sx={{ fontSize: "medium" }} />
-          </Button>
+          </Button> */}
           <TextField
             id="user-msg"
             label="Send Message"

@@ -9,12 +9,16 @@ import {
   gameData,
   gameStatus,
   loadGameData,
+  fetchGameMessages,
+  gameOutstandingMessageRequests,
 } from "../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import debounce from "../../utils/debounce";
 import getPhaseKey from "../../utils/state/getPhaseKey";
 import WDGameProgressOverlay from "../ui/WDGameProgressOverlay";
 import WDAlertModal from "../ui/WDAlertModal";
+import { store } from "../../state/store";
+import useInterval from "../../utils/useInterval";
 
 const WDMainController: React.FC = function ({ children }): React.ReactElement {
   const [displayedPhaseKey, setDisplayedPhaseKey] = React.useState<
@@ -56,7 +60,7 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
     );
   }, 500);
 
-  const { name, gameID } = overview;
+  const { name, user, gameID } = overview;
   useEffect(() => {
     document.title = `${name} - webDiplomacy Game ${gameID}`;
   }, [name, gameID]);

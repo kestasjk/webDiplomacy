@@ -332,8 +332,8 @@ const gameApiSlice = createSlice({
               state.messages.newMessagesFrom = newMessagesFrom;
             }
           }
-          console.log(`Messages fetched at time=${time}`);
           if (time) {
+            console.log(`Messages fetched at time=${time}`);
             state.messages.time = time;
           }
         }
@@ -373,6 +373,9 @@ export const gameUserActivity = ({
 export const gameTerritoriesMeta = ({
   game: { territoriesMeta },
 }: RootState): TerritoriesMeta => territoriesMeta;
+export const gameOutstandingMessageRequests = ({
+  game: { outstandingMessageRequests },
+}: RootState) => outstandingMessageRequests;
 export const gameMessages = ({ game: { messages } }: RootState) => messages;
 export const gameMaps = ({ game: { maps } }: RootState) => maps;
 export const gameViewedPhase = ({
