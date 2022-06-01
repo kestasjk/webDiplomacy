@@ -155,7 +155,7 @@ export default function drawArrowFunctional(
   sourceIdentifier: Territory | [number, number, number, number],
   receiverType: "territory" | "unit" | "arrow" | "dislodger",
   receiverIdentifier: Territory | [number, number, number, number],
-  skipDrawingProportion = 0.0,
+  offsetArrowSourcePixels = 0.0,
 ): React.ReactElement {
   // console.log(
   //   `drawArrowFunctional ${sourceIdentifier} ${receiverType} ${receiverIdentifier} `,
@@ -168,7 +168,13 @@ export default function drawArrowFunctional(
     receiverIdentifier,
   );
 
-  const strokeDasharray = arrowType === ArrowType.CONVOY ? "8 4" : undefined;
+  let strokeDasharray: string | undefined;
+  if (arrowType === ArrowType.CONVOY) {
+    strokeDasharray = "8 4";
+  } else if (arrowType === ArrowType.HOLD) {
+    strokeDasharray = "12 3";
+  }
+
   let strokeWidth;
   switch (arrowColor) {
     case ArrowColor.MOVE:
@@ -190,9 +196,23 @@ export default function drawArrowFunctional(
       strokeWidth = 3;
   }
 
-  if (skipDrawingProportion > 0) {
-    x1 += skipDrawingProportion * (x2 - x1);
-    y1 += skipDrawingProportion * (y2 - y1);
+  if (offsetArrowSourcePixels > 0) {
+    // Offset the source location perpendicular to the direction of travel by
+    // offsetArrowSourcePixels distance.
+    // Start by finding a unit vector in the direction of the arrows
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const length = Math.sqrt(dx * dx + dy * dy);
+    if (length > 0) {
+      const dxunit = dx / length;
+      const dyunit = dy / length;
+      // Rotate 90 degrees
+      const dxunitRotated = dyunit;
+      const dyunitRotated = -dxunit;
+      // Add the desired number of pixels
+      x1 += offsetArrowSourcePixels * dxunitRotated;
+      y1 += offsetArrowSourcePixels * dyunitRotated;
+    }
   }
 
   return (

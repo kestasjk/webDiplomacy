@@ -116,18 +116,17 @@ function accumulateSupportHoldOrderArrows(
           ? ArrowColor.SUPPORT_HOLD
           : ArrowColor.SUPPORT_HOLD_FAILED;
 
-      // In case of a mutual support hold, draw the arrow starting halfway closer!
-      // This is so that if only one side of a mutual support failed, it's not just
-      // up to drawing order what the line gets colors, instead you get half the line
-      // red and half the line black.
+      // In case of a mutual support hold, offset the support line by a few pixels
+      // so that the corresponding returning support line from the other order
+      // doesn't overlap with it.
       const hasMutualSupport =
         supporterProvIDToSupporteeProvID[supporteeProvID] === supporterProvID;
-      const skipDrawingProportion = hasMutualSupport ? 0.49 : 0.0;
+      const offsetArrowSourcePixels = hasMutualSupport ? 4.5 : 0;
       console.log({
         supporteeProvID,
         supporterProvID,
         hasMutualSupport,
-        skipDrawingProportion,
+        offsetArrowSourcePixels,
       });
 
       arrows.push(
@@ -138,7 +137,7 @@ function accumulateSupportHoldOrderArrows(
           supporterTerr,
           "unit",
           supporteeTerr,
-          skipDrawingProportion,
+          offsetArrowSourcePixels,
         ),
       );
     });
