@@ -179,6 +179,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
         data.data.currentOrders ? data.data.currentOrders : [],
         overview.user,
         overview.phase,
+        maps,
       );
 
       const centersByProvince: { [key: string]: { ownerCountryID: string } } =
@@ -210,6 +211,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
       overview.members,
       prevPhaseOrders,
       phaseHistorical.orders,
+      maps,
     );
     const centersByProvince: {
       [key: string]: { ownerCountryID: string };
