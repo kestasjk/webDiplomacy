@@ -127,19 +127,17 @@ export function getAllLegalRetreatDestsByUnitID(
       if (border[borderKind]) {
         const borderProvID = maps.terrIDToProvinceID[border.id];
         const borderStatus = provinceStatusByProvID[borderProvID];
+        // Cannot retreat to any bordering province that the dislodger occupied our province from.
         // If borderStatus doesn't exist at all, then webdip is indicating that there are no units there
         // and probably no standoff or any other properites there. We should assume that they are all
         // defaults, and therefore a retreat there is possible.
         // Otherwise...
         // Cannot retreat to bordering provinces with units
         // Cannot retreat to bordering provinces with a standoff
-        // Cannot retreat to any bordering province that the dislodger occupied our province from.
         // Note that all these checks need to be done at the province level, not the territory level.
         if (
-          !borderStatus ||
-          (!borderStatus.unitID &&
-            !borderStatus.standoff &&
-            occupiedFromProvID !== borderProvID)
+          occupiedFromProvID !== borderProvID &&
+          (!borderStatus || (!borderStatus.unitID && !borderStatus.standoff))
         ) {
           legalDests.push(
             TerritoryMap[data.territories[border.id].name].territory,
