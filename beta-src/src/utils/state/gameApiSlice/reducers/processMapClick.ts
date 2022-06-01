@@ -178,7 +178,8 @@ export default function processMapClick(
         invalidClick(evt, clickProvince);
         return;
       }
-      toTerrID = clickUnit.terrID;
+      // Webdip API expects that destroy actions are in terms of province ID, not territory ID!
+      toTerrID = maps.terrIDToProvinceID[clickUnit.terrID];
     } else if (isBuild) {
       // Build on the appropriately clicked coast for STP
       const territory = getBestCoastalUnitTerritory(evt, clickProvinceMapData);
