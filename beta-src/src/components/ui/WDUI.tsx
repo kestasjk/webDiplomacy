@@ -4,7 +4,6 @@ import { Box, IconButton, Link, useTheme, Badge } from "@mui/material";
 import WDPositionContainer from "./WDPositionContainer";
 import Position from "../../enums/Position";
 import { useAppSelector, useAppDispatch } from "../../state/hooks";
-import { gameOverview } from "../../state/game/game-api-slice";
 import { CountryTableData } from "../../interfaces";
 import Country from "../../enums/Country";
 import WDFullModal from "./WDFullModal";
@@ -18,8 +17,15 @@ import WDMoveControls from "./WDMoveControls";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import WDHomeIcon from "./icons/WDHomeIcon";
 import WDBuildCounts from "./WDBuildCounts";
+import {
+  gameOverview,
+  fetchGameMessages,
+  gameApiSliceActions,
+} from "../../state/game/game-api-slice";
+import useInterval from "../../hooks/useInterval";
 import useOutsideAlerter from "../../hooks/useOutsideAlerter";
 import useViewport from "../../hooks/useViewport";
+import { store } from "../../state/store";
 
 const abbrMap = {
   Russia: "RUS",
@@ -50,8 +56,11 @@ const WDUI: React.FC = function (): React.ReactElement {
     user,
     year,
   } = useAppSelector(gameOverview);
-  const newMessagesFrom = useAppSelector(
-    ({ game }) => game.messages.newMessagesFrom,
+
+  // console.log("WDUI RENDERED");
+
+  const numUnread = useAppSelector(({ game }) =>
+    game.messages.messages.reduce((acc, m) => acc + Number(m.unread), 0),
   );
 
   const constructTableData = (member) => {
@@ -108,6 +117,26 @@ const WDUI: React.FC = function (): React.ReactElement {
     </IconButton>
   );
 
+  const dispatch = useAppDispatch();
+  const dispatchFetchMessages = () => {
+    const { game } = store.getState();
+    const { outstandingMessageRequests } = game;
+    if (outstandingMessageRequests === 0) {
+      dispatch(gameApiSliceActions.updateOutstandingMessageRequests(1));
+      dispatch(
+        fetchGameMessages({
+          gameID: String(gameID),
+          countryID: String(userTableData.countryID),
+          allMessages: "true",
+          sinceTime: String(game.messages.time),
+        }),
+      );
+    }
+  };
+
+  // FIXME: for now, crazily fetch all messages every 2sec
+  useInterval(dispatchFetchMessages, 2000);
+
   const popover = popoverTrigger.current ? (
     <WDPopover
       isOpen={showControlModal}
@@ -145,8 +174,8 @@ const WDUI: React.FC = function (): React.ReactElement {
           }}
           ref={popoverTrigger}
         >
-          {newMessagesFrom.length ? (
-            <Badge badgeContent={newMessagesFrom} color="secondary">
+          {numUnread ? (
+            <Badge badgeContent={numUnread} color="error">
               {controlModalTrigger}
             </Badge>
           ) : (
