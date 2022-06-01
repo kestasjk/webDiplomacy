@@ -1038,34 +1038,44 @@ class SendMessage extends ApiEntry {
 			throw new ClientForbiddenException('User does not have explicit permission to make this API call.');
 		}
 
-		if ($toCountryID < 1 || $toCountryID > count($Game->Members->ByID) || $toCountryID == $countryID) {
+		if ($toCountryID < 0 || $toCountryID > count($Game->Members->ByID) || $toCountryID == $countryID) {
 			throw new RequestException('Invalid toCountryID');
+			return json_encode($ret);
+
 		}
 
-		$toUser = new User($Game->Members->ByCountryID[$toCountryID]->userID);
-		if(!$toUser->isCountryMuted($Game->id, $countryID)) {
-			$timeSent = libGameMessage::send($toCountryID, $countryID, $message);
-
-			// now fetch this message back out of the table.
-			// This is the safest way to make sure all the escaping is correct.
-			// Should we fetch messages from previous timeSent as well to make sure everything is in sync?
-			$tabl = $DB->sql_tabl("SELECT message, turn 
-				FROM wD_GameMessages WHERE 
-				gameID = $gameID AND 
-				timeSent = $timeSent AND 
-				fromCountryID = $countryID AND 
-				toCountryID = $toCountryID
-			");
-
-			while ($msg = $DB->tabl_hash($tabl)) {
-				$messages[] = [
-					'fromCountryID' => $countryID,
-					'message' => $msg['message'],
-					'timeSent' => (int) $timeSent,
-					'toCountryID' => $toCountryID,
-					'turn' => $msg['turn'],
+		if ($toCountryID != 0) {
+			$toUser = new User($Game->Members->ByCountryID[$toCountryID]->userID);
+			if($toUser->isCountryMuted($Game->id, $countryID)) {
+				// uhh... send back nothing
+				$ret = [
+					"messages" => $messages
 				];
+				return json_encode($ret);
 			}
+		}
+
+		$timeSent = libGameMessage::send($toCountryID, $countryID, $message);
+
+		// now fetch this message back out of the table.
+		// This is the safest way to make sure all the escaping is correct.
+		// Should we fetch messages from previous timeSent as well to make sure everything is in sync?
+		$tabl = $DB->sql_tabl("SELECT message, turn 
+			FROM wD_GameMessages WHERE 
+			gameID = $gameID AND 
+			timeSent = $timeSent AND 
+			fromCountryID = $countryID AND 
+			toCountryID = $toCountryID
+		");
+
+		while ($msg = $DB->tabl_hash($tabl)) {
+			$messages[] = [
+				'fromCountryID' => $countryID,
+				'message' => $msg['message'],
+				'timeSent' => (int) $timeSent,
+				'toCountryID' => $toCountryID,
+				'turn' => $msg['turn'],
+			];
 		}
 		$ret = [
 			"messages" => $messages

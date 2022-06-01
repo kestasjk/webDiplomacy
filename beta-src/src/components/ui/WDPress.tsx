@@ -47,14 +47,13 @@ const WDPress: React.FC<WDPressProps> = function ({
   const padding = mobileLandscapeLayout ? "0 6px" : "0 16px";
 
   const [userMsg, setUserMsg] = React.useState("");
-  const [countryIDSelected, setCountryIDSelected] = React.useState(
-    // start with the first country
-    Math.min(...countries.map((country) => country.countryID)),
-  );
 
   const { user, gameID } = useAppSelector(gameOverview);
 
   const messages = useAppSelector(({ game }) => game.messages.messages);
+  const countryIDSelected = useAppSelector(
+    ({ game }) => game.messages.countryIDSelected,
+  );
   const newMessagesFrom = useAppSelector(
     ({ game }) => game.messages.newMessagesFrom,
   );
@@ -101,32 +100,36 @@ const WDPress: React.FC<WDPressProps> = function ({
     }
   };
 
-  const countryButtons = countries
+  const makeCountryButton = ({ country, countryID, color }) => {
+    return (
+      <Button
+        key={countryID}
+        sx={{
+          p: 1,
+          "&.MuiButton-text": { color },
+        }}
+        color="primary"
+        onClick={() => {
+          dispatch(gameApiSliceActions.selectMessageCountryID(countryID));
+        }}
+        size="small"
+        variant={countryIDSelected === countryID ? "contained" : "text"}
+        startIcon={newMessagesFrom.includes(countryID) ? <Email /> : ""}
+      >
+        {country.slice(0, 3).toUpperCase()}
+      </Button>
+    );
+  };
+
+  let countryButtons = countries
     .sort((a, b) => a.countryID - b.countryID)
-    .map((country) => {
-      return (
-        <Button
-          key={country.countryID}
-          sx={{
-            p: 1,
-            "&.MuiButton-text": { color: country.color },
-          }}
-          color="primary"
-          onClick={() => {
-            setCountryIDSelected(country.countryID);
-          }}
-          size="small"
-          variant={
-            countryIDSelected === country.countryID ? "contained" : "text"
-          }
-          startIcon={
-            newMessagesFrom.includes(country.countryID) ? <Email /> : ""
-          }
-        >
-          {country.country.slice(0, 3).toUpperCase()}
-        </Button>
-      );
-    });
+    .map(makeCountryButton);
+  const allButton = makeCountryButton({
+    country: "ALL",
+    countryID: 0,
+    color: "primary",
+  });
+  countryButtons = [allButton, ...countryButtons];
 
   return (
     <Box

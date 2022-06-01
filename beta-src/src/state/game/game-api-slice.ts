@@ -227,6 +227,9 @@ const gameApiSlice = createSlice({
     hideAlert(state, action) {
       state.alert.visible = false;
     },
+    selectMessageCountryID(state, action) {
+      state.messages.countryIDSelected = action.payload;
+    },
   },
   extraReducers(builder) {
     builder

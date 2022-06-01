@@ -11,6 +11,7 @@ export interface GameMessages {
   messages: GameMessage[];
   newMessagesFrom: number[];
   time: number;
+  countryIDSelected: number;
 }
 
 export default GameMessages;
