@@ -40,11 +40,8 @@ const WDPress: React.FC<WDPressProps> = function ({
   const [viewport] = useViewport();
   const device = getDevice(viewport);
   const dispatch = useAppDispatch();
-  const mobileLandscapeLayout =
-    device === Device.MOBILE_LANDSCAPE ||
-    device === Device.MOBILE_LG_LANDSCAPE ||
-    device === Device.MOBILE;
-  const padding = mobileLandscapeLayout ? "0 6px" : "0 16px";
+
+  const padding = 0;
 
   const [userMsg, setUserMsg] = React.useState("");
 
