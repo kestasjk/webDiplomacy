@@ -21,12 +21,11 @@ import {
   gameOverview,
   fetchGameMessages,
   gameApiSliceActions,
-  gameMessages,
-  gameOutstandingMessageRequests,
 } from "../../state/game/game-api-slice";
 import useInterval from "../../hooks/useInterval";
 import useOutsideAlerter from "../../hooks/useOutsideAlerter";
 import useViewport from "../../hooks/useViewport";
+import { store } from "../../state/store";
 
 const abbrMap = {
   Russia: "RUS",
@@ -58,8 +57,12 @@ const WDUI: React.FC = function (): React.ReactElement {
     year,
   } = useAppSelector(gameOverview);
 
-  const { messages } = useAppSelector(gameMessages);
-  const numUnread = messages.reduce((acc, m) => acc + Number(m.unread), 0);
+  // console.log("WDUI RENDERED");
+
+  const numUnread = useAppSelector(({ game }) =>
+    game.messages.messages.reduce((acc, m) => acc + Number(m.unread), 0),
+  );
+
   const constructTableData = (member) => {
     const memberCountry: Country = countryMap[member.country];
     return {
@@ -114,12 +117,10 @@ const WDUI: React.FC = function (): React.ReactElement {
     </IconButton>
   );
 
-  const messageTime = useAppSelector((state) => state.game.messages.time);
-  const outstandingMessageRequests = useAppSelector(
-    gameOutstandingMessageRequests,
-  );
   const dispatch = useAppDispatch();
   const dispatchFetchMessages = () => {
+    const { game } = store.getState();
+    const { outstandingMessageRequests } = game;
     if (outstandingMessageRequests === 0) {
       dispatch(gameApiSliceActions.updateOutstandingMessageRequests(1));
       dispatch(
@@ -127,7 +128,7 @@ const WDUI: React.FC = function (): React.ReactElement {
           gameID: String(gameID),
           countryID: String(userTableData.countryID),
           allMessages: "true",
-          sinceTime: String(messageTime),
+          sinceTime: String(game.messages.time),
         }),
       );
     }

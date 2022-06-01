@@ -363,6 +363,9 @@ export const gameOrder = ({ game: { order } }: RootState): OrderState => order;
 export const gameUserActivity = ({
   game: { activity },
 }: RootState): GameState["activity"] => activity;
+export const gameTerritoriesMeta = ({
+  game: { territoriesMeta },
+}: RootState): TerritoriesMeta => territoriesMeta;
 // gameMessages considered harmful, because part of the GameMessages object is a
 // counter that tracks the last query timestamp, which means that if you use this
 // selector rather than a more specific one, your component will update basically
@@ -370,13 +373,6 @@ export const gameUserActivity = ({
 // the messages changed or not.
 // export const gameMessages = ({ game: { messages } }: RootState): GameMessages =>
 //  messages;
-export const gameTerritoriesMeta = ({
-  game: { territoriesMeta },
-}: RootState): TerritoriesMeta => territoriesMeta;
-export const gameOutstandingMessageRequests = ({
-  game: { outstandingMessageRequests },
-}: RootState) => outstandingMessageRequests;
-export const gameMessages = ({ game: { messages } }: RootState) => messages;
 export const gameMaps = ({ game: { maps } }: RootState) => maps;
 export const gameViewedPhase = ({
   game: { viewedPhaseState },
