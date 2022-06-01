@@ -24,6 +24,9 @@ import startNewOrder from "../../startNewOrder";
 import updateOrder from "../../updateOrder";
 import updateOrdersMeta from "../../updateOrdersMeta";
 import { LegalOrders } from "../extraReducers/fetchGameData/precomputeLegalOrders";
+import { gameApiSliceActions } from "../../../../state/game/game-api-slice";
+import { useAppDispatch } from "../../../../state/hooks";
+import { setAlert } from "../../../../state/interfaces/GameAlert";
 
 function getClickPositionInProvince(evt, provinceMapData: ProvinceMapData) {
   const boundingRect = evt.target.getBoundingClientRect();
@@ -96,14 +99,16 @@ export default function processMapClick(
   const {
     payload: { evt, clickProvince },
   } = clickData;
-
   if (viewedPhaseState.viewedPhaseIdx < status.phases.length - 1) {
-    alert("You need to switch to the current phase to enter orders."); // FIXME: move to alerts modal!
+    setAlert(
+      state.alert,
+      "You need to switch to the current phase to enter orders.",
+    );
     invalidClick(evt, clickProvince);
     return;
   }
   if (orderStatus.Ready) {
-    alert("You need to unready your orders to update them"); // FIXME: move to alerts modal!
+    setAlert(state.alert, "You need to unready your orders to update them.");
     invalidClick(evt, clickProvince);
     return;
   }

@@ -11,6 +11,7 @@ import TerritoriesMeta from "./TerritoriesState";
 import UserActivity from "./UserActivity";
 import ViewedPhaseState from "./ViewedPhaseState";
 import { LegalOrders } from "../../utils/state/gameApiSlice/extraReducers/fetchGameData/precomputeLegalOrders";
+import GameAlert from "./GameAlert";
 
 export type ApiStatus = "idle" | "loading" | "succeeded" | "failed";
 
@@ -30,4 +31,5 @@ export interface GameState {
   outstandingMessageRequests: number; // Stateful, restricts querying api for messages
   order: OrderState;
   legalOrders: LegalOrders; // Computed as a function of GameOverviewResponse, GameDataResponse, GameStateMaps
+  alert: GameAlert;
 }

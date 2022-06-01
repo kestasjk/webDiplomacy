@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import debounce from "../../utils/debounce";
 import getPhaseKey from "../../utils/state/getPhaseKey";
 import WDGameProgressOverlay from "../ui/WDGameProgressOverlay";
+import WDAlertModal from "../ui/WDAlertModal";
 
 const WDMainController: React.FC = function ({ children }): React.ReactElement {
   const [displayedPhaseKey, setDisplayedPhaseKey] = React.useState<
@@ -84,6 +85,7 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
           }}
         />
       )}
+      <WDAlertModal />
     </div>
   );
 };

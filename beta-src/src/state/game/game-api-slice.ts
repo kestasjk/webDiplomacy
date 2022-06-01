@@ -31,6 +31,7 @@ import fetchGameOverviewFulfilled from "../../utils/state/gameApiSlice/extraRedu
 import fetchGameStatusFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameStatus/fulfilled";
 import saveOrdersFulfilled from "../../utils/state/gameApiSlice/extraReducers/saveOrders/fulfilled";
 import shallowArraysEqual from "../../utils/shallowArraysEqual";
+import { setAlert } from "../interfaces/GameAlert";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -219,6 +220,12 @@ const gameApiSlice = createSlice({
       newIdx = Math.max(newIdx, 0);
       state.viewedPhaseState.viewedPhaseIdx = newIdx;
     },
+    setAlert(state, action) {
+      setAlert(state.alert, action.payload);
+    },
+    hideAlert(state, action) {
+      state.alert.visible = false;
+    },
   },
   extraReducers(builder) {
     builder
@@ -358,5 +365,5 @@ export const gameViewedPhase = ({
 }: RootState): ViewedPhaseState => viewedPhaseState;
 export const gameLegalOrders = ({ game: { legalOrders } }: RootState) =>
   legalOrders;
-
+export const gameAlert = ({ game: { alert } }: RootState) => alert;
 export default gameApiSlice.reducer;
