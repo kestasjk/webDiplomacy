@@ -912,6 +912,8 @@ class SetOrders extends ApiEntry {
 			if (empty($updatedOrders))
 				break;
 			// Load updated orders.
+			// FIXME this function (board/orders/orderinterface.php) may report an error
+			// via libHTML::notice, which is not friendly to JSON API.
 			$orderInterface->load();
 			$orderInterface->set(json_encode(array_values($updatedOrders)));
 			$results = $orderInterface->validate();

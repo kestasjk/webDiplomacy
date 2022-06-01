@@ -140,10 +140,23 @@ export const saveOrders = createAsyncThunk(
     formData.set("contextKey", data.contextKey);
     const response = await submitOrders(formData, data.queryParams);
     console.log({ response });
-    const confirmation: string = response.headers["x-json"] || "";
-    const parsed: SavedOrdersConfirmation = JSON.parse(
-      confirmation.substring(1, confirmation.length - 1),
-    );
+    // Sometimes webdip sends back a response that doesn't have the "x-json" header at all,
+    // instead it has an HTML page displaying an error message.
+    // We're of course not going to try to render a whole HTML page, so instead we simply
+    // manually construct an error message.
+    const confirmation: string = response.headers["x-json"];
+    let parsed: SavedOrdersConfirmation;
+    if (!confirmation) {
+      parsed = {
+        invalid: true,
+        notice: "Error saving orders, no server response or game already advanced to next phase",
+        orders: {},
+      };
+    } else {
+      parsed = JSON.parse(
+        confirmation.substring(1, confirmation.length - 1),
+      );
+    }
     return parsed;
   },
 );
