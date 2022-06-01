@@ -149,13 +149,12 @@ export const saveOrders = createAsyncThunk(
     if (!confirmation) {
       parsed = {
         invalid: true,
-        notice: "Error saving orders, no server response or game already advanced to next phase",
+        notice:
+          "Error saving orders, no server response or game already advanced to next phase",
         orders: {},
       };
     } else {
-      parsed = JSON.parse(
-        confirmation.substring(1, confirmation.length - 1),
-      );
+      parsed = JSON.parse(confirmation.substring(1, confirmation.length - 1));
     }
     return parsed;
   },
