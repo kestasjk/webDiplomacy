@@ -155,6 +155,11 @@ const initialState: GameState = {
     hasAnyLegalConvoysByUnitID: {},
     legalSupportsByUnitID: {},
   },
+  alert: {
+    message: "",
+    idx: 0,
+    visible: false,
+  },
 };
 
 export default initialState;
