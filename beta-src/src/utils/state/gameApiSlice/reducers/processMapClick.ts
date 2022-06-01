@@ -279,6 +279,7 @@ export default function processMapClick(
       // click 1
       if (
         clickUnitID &&
+        legalOrders.legalSupportsByUnitID[order.unitID][clickProvince] &&
         legalOrders.legalSupportsByUnitID[order.unitID][clickProvince].length >
           0
       ) {
