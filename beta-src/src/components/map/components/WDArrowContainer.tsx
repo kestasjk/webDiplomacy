@@ -18,6 +18,7 @@ import drawArrowFunctional, {
 import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
 import { APITerritories } from "../../../state/interfaces/GameDataResponse";
 import { Unit, UnitDrawMode } from "../../../utils/map/getUnits";
+import webDiplomacyTheme from "../../../webDiplomacyTheme";
 
 function accumulateMoveOrderArrows(
   arrows: (React.ReactElement | null)[],
@@ -86,16 +87,35 @@ function accumulateSupportHoldOrderArrows(
         ? TerritoryMap[territories[supporteeOrder.terrID].name].territory
         : TerritoryMap[territories[order.toTerrID].name].territory;
 
+      const arrowColor =
+        order.success === "Yes"
+          ? ArrowColor.SUPPORT_HOLD
+          : ArrowColor.SUPPORT_HOLD_FAILED;
+
       arrows.push(
         drawArrowFunctional(
           ArrowType.HOLD,
-          ArrowColor.SUPPORT_HOLD,
+          arrowColor,
           "unit",
           supporterTerr,
           "unit",
           supporteeTerr,
         ),
       );
+      /*
+      const [x, y, w, h] = getTargetXYWH("unit", supporteeTerr);
+      arrows.push(
+        <circle
+          key={`support-hold-circle-${supporterTerr}-${supporteeTerr}`}
+          cx={x + w / 2}
+          cy={y + h / 2}
+          r={extraBuffer + (w + h) / 4}
+          fill="none"
+          stroke={webDiplomacyTheme.palette.arrowColors[arrowColor].main}
+          strokeWidth={4}
+        />,
+      );
+      */
     });
 }
 

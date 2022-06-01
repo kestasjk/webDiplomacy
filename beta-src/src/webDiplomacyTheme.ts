@@ -48,6 +48,8 @@ interface PaletteArrowColors {
   [ArrowColor.RETREAT]: SimplePaletteColorOptions;
   [ArrowColor.SUPPORT_HOLD]: SimplePaletteColorOptions;
   [ArrowColor.SUPPORT_MOVE]: SimplePaletteColorOptions;
+  [ArrowColor.SUPPORT_HOLD_FAILED]: SimplePaletteColorOptions;
+  [ArrowColor.SUPPORT_MOVE_FAILED]: SimplePaletteColorOptions;
 }
 
 declare module "@mui/material/styles" {
@@ -144,8 +146,10 @@ const arrowColors: ArrowColors = {
   [ArrowColor.MOVE]: { main: "#000000" },
   [ArrowColor.MOVE_FAILED]: { main: "#BB0000" },
   [ArrowColor.RETREAT]: { main: "#BD2894" },
-  [ArrowColor.SUPPORT_HOLD]: { main: "#3FC621" },
-  [ArrowColor.SUPPORT_MOVE]: { main: "#F8F83D" },
+  [ArrowColor.SUPPORT_HOLD]: { main: "#000000" },
+  [ArrowColor.SUPPORT_MOVE]: { main: "#000000" },
+  [ArrowColor.SUPPORT_HOLD_FAILED]: { main: "#BB0000" },
+  [ArrowColor.SUPPORT_MOVE_FAILED]: { main: "#BB0000" },
 };
 
 /**

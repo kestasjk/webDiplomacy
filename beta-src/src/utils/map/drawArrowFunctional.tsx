@@ -110,6 +110,7 @@ export function getTargetXYWH(
       break;
     }
   }
+
   return [x, y, width, height];
 }
 
@@ -163,6 +164,8 @@ export default function drawArrowFunctional(
     receiverIdentifier,
   );
 
+  const strokeDasharray = arrowType === ArrowType.CONVOY ? "6 6" : undefined;
+
   return (
     <line
       key={`${x1}-${y1}-${x2}-${y2}-${arrowType}-${arrowColor}`}
@@ -173,6 +176,7 @@ export default function drawArrowFunctional(
       markerEnd={`url(#arrowHead__${ArrowType[arrowType]}_${ArrowColor[arrowColor]})`}
       stroke={webDiplomacyTheme.palette.arrowColors[arrowColor].main}
       strokeWidth={3}
+      strokeDasharray={strokeDasharray}
     />
   );
 }
