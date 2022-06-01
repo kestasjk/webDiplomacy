@@ -101,10 +101,6 @@ const WDPress: React.FC<WDPressProps> = function ({
     }
   };
 
-  if (newMessagesFrom.includes(countryIDSelected)) {
-    dispatchMessagesSeen();
-  }
-
   const countryButtons = countries
     .sort((a, b) => a.countryID - b.countryID)
     .map((country) => {
@@ -116,7 +112,9 @@ const WDPress: React.FC<WDPressProps> = function ({
             "&.MuiButton-text": { color: country.color },
           }}
           color="primary"
-          onClick={() => setCountryIDSelected(country.countryID)}
+          onClick={() => {
+            setCountryIDSelected(country.countryID);
+          }}
           size="small"
           variant={
             countryIDSelected === country.countryID ? "contained" : "text"
@@ -131,7 +129,10 @@ const WDPress: React.FC<WDPressProps> = function ({
     });
 
   return (
-    <Box sx={{ p: padding }}>
+    <Box
+      sx={{ p: padding }}
+      onClick={dispatchMessagesSeen} // clicking anywhere in the window means you've seen it
+    >
       <Stack alignItems="center" sx={{ p: padding }}>
         <ButtonGroup className="dialogue-countries" sx={{ display: "inline" }}>
           {countryButtons}

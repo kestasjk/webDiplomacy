@@ -298,9 +298,7 @@ const gameApiSlice = createSlice({
             const unreadMessages = messages.map((m) => {
               return {
                 ...m,
-                unread: state.messages.newMessagesFrom.includes(
-                  m.fromCountryID,
-                ),
+                unread: newMessagesFrom.includes(m.fromCountryID),
               };
             });
             const allMessages = mergeMessageArrays(
