@@ -18,7 +18,6 @@ import drawArrowFunctional, {
 import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
 import { APITerritories } from "../../../state/interfaces/GameDataResponse";
 import { Unit, UnitDrawMode } from "../../../utils/map/getUnits";
-import webDiplomacyTheme from "../../../webDiplomacyTheme";
 
 function accumulateMoveOrderArrows(
   arrows: (React.ReactElement | null)[],
@@ -60,29 +59,54 @@ function accumulateMoveOrderArrows(
     });
 }
 
+function getProvIDNumberOfTerrIDNumber(
+  terrID: number,
+  territories: APITerritories,
+): number {
+  if (territories[terrID]?.coastParentID) {
+    return Number(territories[terrID].coastParentID);
+  }
+  return terrID;
+}
+
 function accumulateSupportHoldOrderArrows(
   arrows: (React.ReactElement | null)[],
   orders: IOrderDataHistorical[],
-  ordersByTerrID: { [key: number]: IOrderDataHistorical },
-  ordersByCoastParentTerrID: { [key: number]: IOrderDataHistorical },
+  ordersByProvID: { [key: number]: IOrderDataHistorical },
   territories: APITerritories,
 ): void {
+  // Maps supportee and supporter provIDs to help us find mutual supports.
+  const supporterProvIDToSupporteeProvID: { [key: number]: number } = {};
+  orders
+    .filter((order) => order.type === "Support hold")
+    .forEach((order) => {
+      const provID = getProvIDNumberOfTerrIDNumber(order.terrID, territories);
+      // Support orders toTerrID are always provinces
+      const supporteeProvID = order.toTerrID;
+      supporterProvIDToSupporteeProvID[provID] = supporteeProvID;
+    });
+  console.log({ supporterProvIDToSupporteeProvID });
+
   orders
     .filter((order) => order.type === "Support hold")
     .forEach((order) => {
       if (!order.toTerrID) {
         return;
       }
+      const supporterProvID = getProvIDNumberOfTerrIDNumber(
+        order.terrID,
+        territories,
+      );
       const supporterTerr =
         TerritoryMap[territories[order.terrID].name].territory;
 
-      const supporteeOrder =
-        ordersByTerrID[order.toTerrID] ||
-        ordersByCoastParentTerrID[order.toTerrID];
+      // Support orders toTerrID are actually always provinces
+      const supporteeProvID = order.toTerrID;
+      const supporteeOrder = ordersByProvID[supporteeProvID];
 
       // If the supportee order is found at all, use it for the
-      // supportee territory since it is coast qualified whereas the supporter's
-      // order does not have to be coast qualified.
+      // supportee territory since it is a territory id whereas the supporter's
+      // order might be province id.
       const supporteeTerr = supporteeOrder
         ? TerritoryMap[territories[supporteeOrder.terrID].name].territory
         : TerritoryMap[territories[order.toTerrID].name].territory;
@@ -92,6 +116,20 @@ function accumulateSupportHoldOrderArrows(
           ? ArrowColor.SUPPORT_HOLD
           : ArrowColor.SUPPORT_HOLD_FAILED;
 
+      // In case of a mutual support hold, draw the arrow starting halfway closer!
+      // This is so that if only one side of a mutual support failed, it's not just
+      // up to drawing order what the line gets colors, instead you get half the line
+      // red and half the line black.
+      const hasMutualSupport =
+        supporterProvIDToSupporteeProvID[supporteeProvID] === supporterProvID;
+      const skipDrawingProportion = hasMutualSupport ? 0.49 : 0.0;
+      console.log({
+        supporteeProvID,
+        supporterProvID,
+        hasMutualSupport,
+        skipDrawingProportion,
+      });
+
       arrows.push(
         drawArrowFunctional(
           ArrowType.HOLD,
@@ -100,6 +138,7 @@ function accumulateSupportHoldOrderArrows(
           supporterTerr,
           "unit",
           supporteeTerr,
+          skipDrawingProportion,
         ),
       );
     });
@@ -108,8 +147,7 @@ function accumulateSupportHoldOrderArrows(
 function accumulateSupportMoveOrderArrows(
   arrows: (React.ReactElement | null)[],
   orders: IOrderDataHistorical[],
-  ordersByTerrID: { [key: number]: IOrderDataHistorical },
-  ordersByCoastParentTerrID: { [key: number]: IOrderDataHistorical },
+  ordersByProvID: { [key: number]: IOrderDataHistorical },
   territories: APITerritories,
 ): void {
   orders
@@ -122,9 +160,9 @@ function accumulateSupportMoveOrderArrows(
       const supporterTerr =
         TerritoryMap[territories[order.terrID].name].territory;
       let isCoordinated = false;
-      const supporteeOrder =
-        ordersByTerrID[order.fromTerrID] ||
-        ordersByCoastParentTerrID[order.fromTerrID];
+      // Support orders fromTerrID are actually always provinces
+      const supporteeProvID = order.fromTerrID;
+      const supporteeOrder = ordersByProvID[supporteeProvID];
       if (
         supporteeOrder &&
         supporteeOrder.type === "Move" &&
@@ -199,7 +237,7 @@ function accumulateSupportMoveOrderArrows(
 function accumulateConvoyOrderArrows(
   arrows: (React.ReactElement | null)[],
   orders: IOrderDataHistorical[],
-  ordersByTerrID: { [key: number]: IOrderDataHistorical },
+  ordersByProvID: { [key: number]: IOrderDataHistorical },
   territories: APITerritories,
 ): void {
   orders
@@ -214,7 +252,8 @@ function accumulateConvoyOrderArrows(
       const convoyeeTerr =
         TerritoryMap[territories[order.fromTerrID].name].territory;
       let isCoordinated = false;
-      const convoyeeOrder = ordersByTerrID[order.fromTerrID];
+      // Convoyees are always armies, whose terrIDs and provIDs match
+      const convoyeeOrder = ordersByProvID[order.fromTerrID];
       if (
         convoyeeOrder &&
         convoyeeOrder.type === "Move" &&
@@ -367,32 +406,15 @@ const WDArrowContainer: React.FC<WDArrowProps> = function ({
 }): React.ReactElement {
   const arrows: (React.ReactElement | null)[] = [];
 
-  const ordersByTerrID = {};
+  const ordersByProvID = {};
   orders.forEach((order) => {
-    ordersByTerrID[order.terrID] = order;
-  });
-  const ordersByCoastParentTerrID = {};
-  orders.forEach((order) => {
-    if (territories[order.terrID]?.coastParentID)
-      ordersByCoastParentTerrID[territories[order.terrID].coastParentID] =
-        order;
+    ordersByProvID[getProvIDNumberOfTerrIDNumber(order.terrID, territories)] =
+      order;
   });
   accumulateMoveOrderArrows(arrows, orders, territories);
-  accumulateSupportHoldOrderArrows(
-    arrows,
-    orders,
-    ordersByTerrID,
-    ordersByCoastParentTerrID,
-    territories,
-  );
-  accumulateSupportMoveOrderArrows(
-    arrows,
-    orders,
-    ordersByTerrID,
-    ordersByCoastParentTerrID,
-    territories,
-  );
-  accumulateConvoyOrderArrows(arrows, orders, ordersByTerrID, territories);
+  accumulateSupportHoldOrderArrows(arrows, orders, ordersByProvID, territories);
+  accumulateSupportMoveOrderArrows(arrows, orders, ordersByProvID, territories);
+  accumulateConvoyOrderArrows(arrows, orders, ordersByProvID, territories);
   accumulateRetreatArrows(arrows, orders, territories);
   accumulateDislodgerArrows(arrows, units, territories);
   accumulateBuildCircles(arrows, units, territories);

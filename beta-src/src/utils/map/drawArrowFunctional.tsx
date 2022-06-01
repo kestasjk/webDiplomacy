@@ -146,6 +146,8 @@ export function getArrowX1Y1X2Y2(
 }
 
 // See getTargetXYWH for a description of the possible types and identifiers.
+// If skipDrawingProportion is specified, will skip drawing the first
+// skipDrawingProportion-th of the line segment of the arrow.
 export default function drawArrowFunctional(
   arrowType: ArrowType,
   arrowColor: ArrowColor,
@@ -153,11 +155,13 @@ export default function drawArrowFunctional(
   sourceIdentifier: Territory | [number, number, number, number],
   receiverType: "territory" | "unit" | "arrow" | "dislodger",
   receiverIdentifier: Territory | [number, number, number, number],
+  skipDrawingProportion = 0.0,
 ): React.ReactElement {
   // console.log(
   //   `drawArrowFunctional ${sourceIdentifier} ${receiverType} ${receiverIdentifier} `,
   // );
-  const [x1, y1, x2, y2] = getArrowX1Y1X2Y2(
+  // eslint-disable-next-line prefer-const
+  let [x1, y1, x2, y2] = getArrowX1Y1X2Y2(
     sourceType,
     sourceIdentifier,
     receiverType,
@@ -184,6 +188,11 @@ export default function drawArrowFunctional(
       break;
     default:
       strokeWidth = 3;
+  }
+
+  if (skipDrawingProportion > 0) {
+    x1 += skipDrawingProportion * (x2 - x1);
+    y1 += skipDrawingProportion * (y2 - y1);
   }
 
   return (
