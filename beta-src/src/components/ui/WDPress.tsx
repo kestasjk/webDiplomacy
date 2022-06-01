@@ -74,15 +74,15 @@ const WDPress: React.FC<WDPressProps> = function ({
     setUserMsg("");
   };
 
-  const dispatchMessagesSeen = () => {
+  const dispatchMessagesSeen = (countryID) => {
     // need to update locally and on the server
     // because we don't immediately re-fetch message data from the server
-    dispatch(gameApiSliceActions.processMessagesSeen(countryIDSelected));
+    dispatch(gameApiSliceActions.processMessagesSeen(countryID));
     dispatch(
       markMessagesSeen({
         countryID: String(userCountry.countryID),
         gameID: String(gameID),
-        seenCountryID: String(countryIDSelected),
+        seenCountryID: String(countryID),
       }),
     );
   };
@@ -107,6 +107,7 @@ const WDPress: React.FC<WDPressProps> = function ({
         }}
         color="primary"
         onClick={() => {
+          dispatchMessagesSeen(countryID);
           dispatch(gameApiSliceActions.selectMessageCountryID(countryID));
         }}
         size="small"
@@ -131,7 +132,7 @@ const WDPress: React.FC<WDPressProps> = function ({
   return (
     <Box
       sx={{ p: padding }}
-      onClick={dispatchMessagesSeen} // clicking anywhere in the window means you've seen it
+      onClick={() => dispatchMessagesSeen(countryIDSelected)} // clicking anywhere in the window means you've seen it
     >
       <Stack alignItems="center" sx={{ p: padding }}>
         <ButtonGroup className="dialogue-countries" sx={{ display: "inline" }}>
@@ -167,6 +168,7 @@ const WDPress: React.FC<WDPressProps> = function ({
             onChange={(text) => setUserMsg(text.target.value)}
             onKeyDown={keydownHandler}
             fullWidth
+            sx={{ m: "0 0 0 6px" }}
             InputProps={{
               endAdornment: (
                 <>

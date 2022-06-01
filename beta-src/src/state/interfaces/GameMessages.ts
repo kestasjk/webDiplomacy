@@ -1,10 +1,16 @@
+export enum MessageStatus {
+  READ,
+  UNREAD,
+  UNKNOWN,
+}
+
 export interface GameMessage {
   fromCountryID: number;
   message: string;
   timeSent: number;
   toCountryID: number;
   turn: number;
-  unread: boolean;
+  status: MessageStatus;
 }
 
 export interface GameMessages {

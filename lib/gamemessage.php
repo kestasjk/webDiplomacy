@@ -65,8 +65,14 @@ class libGameMessage
 		}
 		$timeSent = time();
 
-		$MC->set("lastmsgtime_{$Game->id}_{$fromCountryID}", $timeSent);
-		$MC->set("lastmsgtime_{$Game->id}_{$toCountryID}", $timeSent);
+		if ($toCountryID == 0) {
+			foreach($Game->Members->ByCountryID as $countryID => $member) {
+				$MC->set("lastmsgtime_{$Game->id}_{$countryID}", $timeSent);
+			}
+		} else {
+			$MC->set("lastmsgtime_{$Game->id}_{$fromCountryID}", $timeSent);
+			$MC->set("lastmsgtime_{$Game->id}_{$toCountryID}", $timeSent);
+		}
 
 		$DB->sql_put("INSERT INTO wD_GameMessages
 					(gameID, toCountryID, fromCountryID, turn, message, phaseMarker, timeSent)

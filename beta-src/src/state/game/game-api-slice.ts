@@ -10,7 +10,7 @@ import GameErrorResponse from "../interfaces/GameErrorResponse";
 import GameOverviewResponse from "../interfaces/GameOverviewResponse";
 import { ApiStatus, GameState } from "../interfaces/GameState";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
-import GameMessages from "../interfaces/GameMessages";
+import GameMessages, { MessageStatus } from "../interfaces/GameMessages";
 import ViewedPhaseState from "../interfaces/ViewedPhaseState";
 import { RootState } from "../store";
 import initialState from "./initial-state";
@@ -209,7 +209,7 @@ const gameApiSlice = createSlice({
       state.messages.messages
         .filter((m) => [m.fromCountryID, m.toCountryID].includes(countryID))
         .forEach((m) => {
-          m.unread = false;
+          m.status = MessageStatus.READ;
         });
     },
     setNeedsGameData(state, action) {
@@ -298,15 +298,20 @@ const gameApiSlice = createSlice({
         if (action.payload) {
           const { messages, newMessagesFrom, time } = action.payload;
           if (messages) {
-            const unreadMessages = messages.map((m) => {
+            const messagesWithStatus = messages.map((m) => {
               return {
                 ...m,
-                unread: newMessagesFrom.includes(m.fromCountryID),
+                // eslint-disable-next-line no-nested-ternary
+                status: newMessagesFrom.includes(m.fromCountryID)
+                  ? state.messages.time === 0
+                    ? MessageStatus.UNKNOWN
+                    : MessageStatus.UNREAD
+                  : MessageStatus.READ,
               };
             });
             const allMessages = mergeMessageArrays(
               state.messages.messages,
-              unreadMessages,
+              messagesWithStatus,
             );
             if (state.messages.messages.length !== allMessages.length) {
               state.messages.messages = allMessages;
