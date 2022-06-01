@@ -5,23 +5,22 @@ import {
   fetchGameOverview,
   gameApiSliceActions,
   gameOverview,
-  gameUserActivity,
   gameData,
   gameStatus,
   loadGameData,
 } from "../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
-import debounce from "../../utils/debounce";
 import getPhaseKey from "../../utils/state/getPhaseKey";
 import WDGameProgressOverlay from "../ui/WDGameProgressOverlay";
 import WDAlertModal from "../ui/WDAlertModal";
+import { store } from "../../state/store";
+import useInterval from "../../hooks/useInterval";
 
 const WDMainController: React.FC = function ({ children }): React.ReactElement {
   const [displayedPhaseKey, setDisplayedPhaseKey] = React.useState<
     string | null
   >(null);
   const dispatch = useAppDispatch();
-  const userActivity = useAppSelector(gameUserActivity);
   const overview = useAppSelector(gameOverview);
   const { data } = useAppSelector(gameData);
   const status = useAppSelector(gameStatus);
@@ -34,27 +33,31 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
     ? getPhaseKey(data.contextVars.context)
     : "<BAD>";
 
-  if (userActivity.makeNewCall) {
-    dispatch(fetchGameOverview({ gameID: String(overview.gameID) }));
-  }
-  const activity = useAppSelector(gameUserActivity);
+  const dispatchFetchOverview = () => {
+    const { game } = store.getState();
+    const { outstandingOverviewRequests } = game;
+    console.log({ outstandingOverviewRequests });
+    if (!outstandingOverviewRequests) {
+      dispatch(
+        fetchGameOverview({
+          gameID: String(overview.gameID),
+        }),
+      );
+    }
+  };
+
+  // FIXME: for now, crazily fetch all messages every 5sec
+  useInterval(dispatchFetchOverview, 5000);
+
+  const needsGameData = useAppSelector(({ game }) => game.needsGameData);
   const isPregame = ["", "Pre-game"].includes(overview.phase);
   const consistentPhase =
     isPregame || (overviewKey === statusKey && overviewKey === dataKey);
 
-  if (activity.needsGameData && !isPregame) {
+  if (needsGameData && !isPregame) {
     dispatch(gameApiSliceActions.setNeedsGameData(false));
     dispatch(loadGameData(String(overview.gameID), String(countryID)));
   }
-
-  const activityHandler = debounce(() => {
-    dispatch(
-      gameApiSliceActions.updateUserActivity({
-        // eslint-disable-next-line no-bitwise
-        lastActive: (Date.now() / 1000) | 0,
-      }),
-    );
-  }, 500);
 
   const { name, gameID } = overview;
   useEffect(() => {
@@ -71,7 +74,7 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
     setDisplayedPhaseKey(overviewKey);
   }
   return (
-    <div onMouseMove={activityHandler[0]} onClickCapture={activityHandler[0]}>
+    <div>
       {!isPregame && children}
       {phaseProgressed && (
         <WDGameProgressOverlay

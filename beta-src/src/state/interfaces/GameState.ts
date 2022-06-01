@@ -8,7 +8,6 @@ import GameMessages from "./GameMessages";
 import OrderState from "./OrderState";
 import OrdersMeta from "./SavedOrders";
 import TerritoriesMeta from "./TerritoriesState";
-import UserActivity from "./UserActivity";
 import ViewedPhaseState from "./ViewedPhaseState";
 import { LegalOrders } from "../../utils/state/gameApiSlice/extraReducers/fetchGameData/precomputeLegalOrders";
 import GameAlert from "./GameAlert";
@@ -16,7 +15,6 @@ import GameAlert from "./GameAlert";
 export type ApiStatus = "idle" | "loading" | "succeeded" | "failed";
 
 export interface GameState {
-  activity: UserActivity;
   apiStatus: ApiStatus;
   data: GameDataResponse; // Directly from API
   error: GameErrorResponse;
@@ -28,7 +26,9 @@ export interface GameState {
   viewedPhaseState: ViewedPhaseState; // Stateful, tracks what phase the user views.
   status: GameStatusResponse; // Directly from API
   messages: GameMessages;
-  outstandingMessageRequests: number; // Stateful, restricts querying api for messages
+  outstandingOverviewRequests: boolean; // Stateful, restricts querying api for overview
+  outstandingMessageRequests: boolean; // Stateful, restricts querying api for messages
+  needsGameData: boolean; // Stateful, determines when game data has changed and needs refresh
   order: OrderState;
   legalOrders: LegalOrders; // Computed as a function of GameOverviewResponse, GameDataResponse, GameStateMaps
   alert: GameAlert;
