@@ -14,7 +14,6 @@ import Button from "@mui/material/Button";
 import Device from "../../enums/Device";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
-import useInterval from "../../utils/useInterval";
 import WDMessageList from "./WDMessageList";
 import { CountryTableData } from "../../interfaces";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
@@ -59,28 +58,6 @@ const WDPress: React.FC<WDPressProps> = function ({
   const newMessagesFrom = useAppSelector(
     ({ game }) => game.messages.newMessagesFrom,
   );
-
-  const dispatchFetchMessages = () => {
-    if (user && gameID) {
-      const { game } = store.getState();
-      const { outstandingMessageRequests } = game;
-      if (outstandingMessageRequests === 0) {
-        console.log("Dispatching fetch messages");
-        dispatch(gameApiSliceActions.updateOutstandingMessageRequests(1));
-        dispatch(
-          fetchGameMessages({
-            gameID: gameID as unknown as string,
-            countryID: user.member.countryID as unknown as string,
-            allMessages: "true",
-            sinceTime: game.messages.time as unknown as string,
-          }),
-        );
-      }
-    }
-  };
-
-  // FIXME: for now, crazily fetch all messages every 1sec
-  useInterval(dispatchFetchMessages, 1000);
 
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
@@ -169,19 +146,16 @@ const WDPress: React.FC<WDPressProps> = function ({
       />
       <Box>
         <Stack alignItems="center" direction="row">
-          <Button
+          {/* <Button
             href="#message-reload-button"
-            onClick={() => {
-              dispatchMessagesSeen();
-              dispatchFetchMessages();
-            }}
+            onClick={dispatchFetchMessages}
             style={{
               maxWidth: "12px",
               minWidth: "12px",
             }}
           >
             <AutorenewIcon sx={{ fontSize: "medium" }} />
-          </Button>
+          </Button> */}
           <TextField
             id="user-msg"
             label="Send Message"
