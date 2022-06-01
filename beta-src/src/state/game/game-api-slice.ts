@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
 import ApiRoute from "../../enums/ApiRoute";
 import {
   getGameApiRequest,
@@ -204,9 +204,15 @@ const gameApiSlice = createSlice({
     },
     processMapClick,
     processMessagesSeen(state, action) {
+      const countryID = action.payload;
       state.messages.newMessagesFrom = state.messages.newMessagesFrom.filter(
-        (e) => e !== action.payload,
+        (e) => e !== countryID,
       );
+      state.messages.messages
+        .filter((m) => [m.fromCountryID, m.toCountryID].includes(countryID))
+        .forEach((m) => {
+          m.unread = false;
+        });
     },
     updateOutstandingMessageRequests(state, action) {
       state.outstandingMessageRequests += action.payload;
@@ -296,9 +302,17 @@ const gameApiSlice = createSlice({
         if (action.payload) {
           const { messages, newMessagesFrom, time } = action.payload;
           if (messages) {
+            const unreadMessages = messages.map((m) => {
+              return {
+                ...m,
+                unread: state.messages.newMessagesFrom.includes(
+                  m.fromCountryID,
+                ),
+              };
+            });
             const allMessages = mergeMessageArrays(
               state.messages.messages,
-              messages,
+              unreadMessages,
             );
             if (state.messages.messages.length !== allMessages.length) {
               state.messages.messages = allMessages;
@@ -359,6 +373,7 @@ export const gameUserActivity = ({
 export const gameTerritoriesMeta = ({
   game: { territoriesMeta },
 }: RootState): TerritoriesMeta => territoriesMeta;
+export const gameMessages = ({ game: { messages } }: RootState) => messages;
 export const gameMaps = ({ game: { maps } }: RootState) => maps;
 export const gameViewedPhase = ({
   game: { viewedPhaseState },

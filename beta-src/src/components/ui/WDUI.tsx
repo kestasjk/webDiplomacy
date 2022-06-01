@@ -4,7 +4,7 @@ import { Box, IconButton, Link, useTheme, Badge } from "@mui/material";
 import WDPositionContainer from "./WDPositionContainer";
 import Position from "../../enums/Position";
 import { useAppSelector, useAppDispatch } from "../../state/hooks";
-import { gameOverview } from "../../state/game/game-api-slice";
+import { gameOverview, gameMessages } from "../../state/game/game-api-slice";
 import { CountryTableData } from "../../interfaces";
 import Country from "../../enums/Country";
 import WDFullModal from "./WDFullModal";
@@ -47,10 +47,9 @@ const WDUI: React.FC = function (): React.ReactElement {
     user,
     year,
   } = useAppSelector(gameOverview);
-  const newMessagesFrom = useAppSelector(
-    ({ game }) => game.messages.newMessagesFrom,
-  );
 
+  const { messages } = useAppSelector(gameMessages);
+  const numUnread = messages.reduce((acc, m) => acc + Number(m.unread), 0);
   const constructTableData = (member) => {
     const memberCountry: Country = countryMap[member.country];
     return {
@@ -132,8 +131,8 @@ const WDUI: React.FC = function (): React.ReactElement {
           }}
           ref={popoverTrigger}
         >
-          {newMessagesFrom.length ? (
-            <Badge badgeContent={newMessagesFrom} color="secondary">
+          {numUnread ? (
+            <Badge badgeContent={numUnread} color="error">
               {controlModalTrigger}
             </Badge>
           ) : (

@@ -4,6 +4,7 @@ export interface GameMessage {
   timeSent: number;
   toCountryID: number;
   turn: number;
+  unread: boolean;
 }
 
 export interface GameMessages {

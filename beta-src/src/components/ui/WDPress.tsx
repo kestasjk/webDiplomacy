@@ -171,10 +171,7 @@ const WDPress: React.FC<WDPressProps> = function ({
         <Stack alignItems="center" direction="row">
           <Button
             href="#message-reload-button"
-            onClick={() => {
-              dispatchMessagesSeen();
-              dispatchFetchMessages();
-            }}
+            onClick={dispatchFetchMessages}
             style={{
               maxWidth: "12px",
               minWidth: "12px",
