@@ -102,20 +102,6 @@ function accumulateSupportHoldOrderArrows(
           supporteeTerr,
         ),
       );
-      /*
-      const [x, y, w, h] = getTargetXYWH("unit", supporteeTerr);
-      arrows.push(
-        <circle
-          key={`support-hold-circle-${supporterTerr}-${supporteeTerr}`}
-          cx={x + w / 2}
-          cy={y + h / 2}
-          r={extraBuffer + (w + h) / 4}
-          fill="none"
-          stroke={webDiplomacyTheme.palette.arrowColors[arrowColor].main}
-          strokeWidth={4}
-        />,
-      );
-      */
     });
 }
 
@@ -159,6 +145,11 @@ function accumulateSupportMoveOrderArrows(
         ? TerritoryMap[territories[supporteeOrder.terrID].name].territory
         : TerritoryMap[territories[order.fromTerrID].name].territory;
 
+      const arrowColor =
+        order.success === "Yes"
+          ? ArrowColor.SUPPORT_MOVE
+          : ArrowColor.SUPPORT_MOVE_FAILED;
+
       if (isCoordinated) {
         // For coordinated supports, use the order for the supportee for determining
         // the destination location because the destination of the supportee order
@@ -170,7 +161,7 @@ function accumulateSupportMoveOrderArrows(
         arrows.push(
           drawArrowFunctional(
             ArrowType.SUPPORT,
-            ArrowColor.SUPPORT_MOVE,
+            arrowColor,
             "unit",
             supporterTerr,
             "arrow",
@@ -183,7 +174,7 @@ function accumulateSupportMoveOrderArrows(
         arrows.push(
           drawArrowFunctional(
             ArrowType.SUPPORT,
-            ArrowColor.SUPPORT_MOVE,
+            arrowColor,
             "unit",
             supporterTerr,
             "arrow",
@@ -235,11 +226,14 @@ function accumulateConvoyOrderArrows(
         isCoordinated = true;
       }
 
+      const arrowColor =
+        order.success === "Yes" ? ArrowColor.CONVOY : ArrowColor.CONVOY_FAILED;
+
       const toTerr = TerritoryMap[territories[order.toTerrID].name].territory;
       arrows.push(
         drawArrowFunctional(
           ArrowType.CONVOY,
-          ArrowColor.CONVOY,
+          arrowColor,
           "unit",
           convoyerTerr,
           "arrow",
@@ -251,7 +245,7 @@ function accumulateConvoyOrderArrows(
         arrows.push(
           drawArrowFunctional(
             ArrowType.MOVE,
-            ArrowColor.IMPLIED,
+            ArrowColor.IMPLIED_FOREIGN,
             "unit",
             convoyeeTerr,
             "territory",

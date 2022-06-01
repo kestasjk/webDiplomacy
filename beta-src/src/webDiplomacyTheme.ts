@@ -150,6 +150,7 @@ const arrowColors: ArrowColors = {
   [ArrowColor.SUPPORT_MOVE]: { main: "#000000" },
   [ArrowColor.SUPPORT_HOLD_FAILED]: { main: "#BB0000" },
   [ArrowColor.SUPPORT_MOVE_FAILED]: { main: "#BB0000" },
+  [ArrowColor.CONVOY_FAILED]: { main: "#BB0000" },
 };
 
 /**

@@ -164,7 +164,27 @@ export default function drawArrowFunctional(
     receiverIdentifier,
   );
 
-  const strokeDasharray = arrowType === ArrowType.CONVOY ? "6 6" : undefined;
+  const strokeDasharray = arrowType === ArrowType.CONVOY ? "8 4" : undefined;
+  let strokeWidth;
+  switch (arrowColor) {
+    case ArrowColor.MOVE:
+    case ArrowColor.CONVOY:
+    case ArrowColor.IMPLIED:
+    case ArrowColor.IMPLIED_FOREIGN:
+    case ArrowColor.RETREAT:
+    case ArrowColor.SUPPORT_HOLD:
+    case ArrowColor.SUPPORT_MOVE:
+      strokeWidth = 3;
+      break;
+    case ArrowColor.MOVE_FAILED:
+    case ArrowColor.CONVOY_FAILED:
+    case ArrowColor.SUPPORT_HOLD_FAILED:
+    case ArrowColor.SUPPORT_MOVE_FAILED:
+      strokeWidth = 2.5;
+      break;
+    default:
+      strokeWidth = 3;
+  }
 
   return (
     <line
@@ -175,7 +195,7 @@ export default function drawArrowFunctional(
       y2={y2}
       markerEnd={`url(#arrowHead__${ArrowType[arrowType]}_${ArrowColor[arrowColor]})`}
       stroke={webDiplomacyTheme.palette.arrowColors[arrowColor].main}
-      strokeWidth={3}
+      strokeWidth={strokeWidth}
       strokeDasharray={strokeDasharray}
     />
   );

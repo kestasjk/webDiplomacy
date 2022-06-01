@@ -15,14 +15,18 @@ const WDArrowMarkerColors = function (
               <marker
                 id={`arrowHead__${ArrowType[arrowType]}_${ArrowColor[arrowColor]}`}
                 key={`arrowHead__${ArrowType[arrowType]}_${ArrowColor[arrowColor]}`}
-                markerWidth={8}
+                markerWidth={12}
                 markerHeight={8}
-                refX="16"
-                refY={4}
+                refX={18}
+                refY={3}
                 orient="auto"
               >
                 <polygon
-                  points="0 0, 8 4, 0 8, 0 7, 6 4, 0 1"
+                  points="0 0, 6 3, 0 6, 0 5, 4 3, 0 1"
+                  fill={config.main}
+                />
+                <polygon
+                  points="4 0, 10 3, 4 6, 4 5, 8 3, 4 1"
                   fill={config.main}
                 />
               </marker>
@@ -44,11 +48,7 @@ const WDArrowMarkerColors = function (
                 refY={15}
                 orient="auto"
               >
-                <path
-                  d=" M 9 22 A 10 10 180 0 1 9 8"
-                  stroke={config.main}
-                  strokeWidth={1}
-                />
+                <path d=" M 8 22 A 10 10 180 0 1 8 8" stroke={config.main} />
               </marker>
             ),
           )}
