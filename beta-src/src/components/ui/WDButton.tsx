@@ -31,23 +31,23 @@ const WDButton: React.FC<WDButtonProps> = function ({
       variant="contained"
       style={{
         animation:
-          doAnimateGlow && !disabled ? "glowing 1.5s linear infinite" : "",
+          doAnimateGlow && !disabled ? "glowing 1.5s ease infinite" : "",
       }}
     >
       <style>
         {`
         @keyframes glowing {
           0% {
-            background-color: #000000;
-            box-shadow: 0 0 5px #000000;
-          }
-          50% {
             background-color: #447733;
             box-shadow: 0 0 15px #447733;
           }
-          100% {
+          50% {
             background-color: #000000;
             box-shadow: 0 0 5px #000000;
+          }
+          100% {
+            background-color: #447733;
+            box-shadow: 0 0 15px #447733;
           }
         }`}
       </style>
