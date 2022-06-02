@@ -50,7 +50,7 @@ const initialState: GameState = {
     minimumBet: 5,
     name: "",
     pauseTimeRemaining: null,
-    phase: "",
+    phase: "Loading",
     phaseMinutes: 14400,
     playerTypes: "",
     pot: 35,

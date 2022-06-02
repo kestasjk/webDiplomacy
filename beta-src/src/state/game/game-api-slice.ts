@@ -139,7 +139,7 @@ export const saveOrders = createAsyncThunk(
     formData.set("context", data.context);
     formData.set("contextKey", data.contextKey);
     const response = await submitOrders(formData, data.queryParams);
-    //console.log({ response });
+    // console.log({ response });
     // Sometimes webdip sends back a response that doesn't have the "x-json" header at all,
     // instead it has an HTML page displaying an error message.
     // We're of course not going to try to render a whole HTML page, so instead we simply
