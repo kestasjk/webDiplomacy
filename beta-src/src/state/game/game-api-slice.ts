@@ -258,13 +258,11 @@ const gameApiSlice = createSlice({
       })
       // fetchGameOverview
       .addCase(fetchGameOverview.pending, (state) => {
-        console.log("fetchGameOverview pending");
         state.outstandingOverviewRequests = true;
         state.apiStatus = "loading";
       })
       .addCase(fetchGameOverview.fulfilled, fetchGameOverviewFulfilled)
       .addCase(fetchGameOverview.rejected, (state, action) => {
-        console.log("fetchGameOverview rejected");
         state.apiStatus = "failed";
         state.error = action.error.message;
         state.outstandingOverviewRequests = false;
