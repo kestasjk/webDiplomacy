@@ -85,7 +85,7 @@ function accumulateSupportHoldOrderArrows(
       const supporteeProvID = order.toTerrID;
       supporterProvIDToSupporteeProvID[provID] = supporteeProvID;
     });
-  console.log({ supporterProvIDToSupporteeProvID });
+  // console.log({ supporterProvIDToSupporteeProvID });
 
   orders
     .filter((order) => order.type === "Support hold")
@@ -122,12 +122,12 @@ function accumulateSupportHoldOrderArrows(
       const hasMutualSupport =
         supporterProvIDToSupporteeProvID[supporteeProvID] === supporterProvID;
       const offsetArrowSourcePixels = hasMutualSupport ? 6 : 0;
-      console.log({
-        supporteeProvID,
-        supporterProvID,
-        hasMutualSupport,
-        offsetArrowSourcePixels,
-      });
+      // console.log({
+      //   supporteeProvID,
+      //   supporterProvID,
+      //   hasMutualSupport,
+      //   offsetArrowSourcePixels,
+      // });
 
       arrows.push(
         drawArrowFunctional(

@@ -74,6 +74,7 @@ const initialState: GameState = {
           None: false,
           Ready: false,
           Saved: false,
+          Hidden: false,
         },
         status: "Playing",
         supplyCenterNo: 4,

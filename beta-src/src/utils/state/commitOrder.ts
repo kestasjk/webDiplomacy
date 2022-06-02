@@ -3,8 +3,7 @@ import resetOrder from "./resetOrder";
 
 /* eslint-disable no-param-reassign */
 export default function commitOrder(state, order): void {
-  console.log("commitOrder");
-  console.log({ order });
+  // console.log({ order });
   // just be careful
   const o = { ...order };
   if (o.type === "Support") {

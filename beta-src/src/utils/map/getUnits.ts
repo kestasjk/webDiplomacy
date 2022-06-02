@@ -313,7 +313,6 @@ export function getUnitsHistorical(
             curPhaseOrdersByTerrID[unit.terrID]?.type === "Destroy" ||
             curPhaseOrdersByTerrID[unitProvID]?.type === "Destroy"
           ) {
-            console.log("Found a destroy order");
             drawMode = UnitDrawMode.DISBANDED;
           } else if (unit.retreating === "Yes") {
             drawMode = UnitDrawMode.DISLODGED;
