@@ -39,7 +39,6 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
     0,
   );
   if (!numUnsavedOrders) {
-    console.log("Updating ordersMeta");
     updateOrdersMeta(state, getOrdersMeta(data, phase));
   }
 }

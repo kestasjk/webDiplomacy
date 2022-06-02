@@ -72,7 +72,7 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
   }
 
   const clickButton = (type: Move) => {
-    console.log("Entered save button click");
+    // console.log("Entered save button click");
     if ("currentOrders" in data && "contextVars" in data) {
       const { currentOrders, contextVars } = data;
       if (contextVars && currentOrders) {
@@ -108,7 +108,7 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
             ? { notready: "on" }
             : { ready: "on" };
         }
-        console.log({ orderSubmission });
+        // console.log({ orderSubmission });
         dispatch(saveOrders(orderSubmission));
       }
     }

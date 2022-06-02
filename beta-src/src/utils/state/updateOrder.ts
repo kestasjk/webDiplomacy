@@ -26,9 +26,8 @@ function isOrderReady(order: OrderUpdate): boolean {
 }
 /* eslint-disable no-param-reassign */
 export default function updateOrder(state, update: OrderUpdate): void {
-  console.log("updateOrder");
   const { order } = current(state);
-  console.log({ order, update });
+  // console.log({ order, update });
   const newOrder = { ...state.order, ...update };
   if (!newOrder.inProgress) throw Error(newOrder);
   // gotta do this carefully because the proxying

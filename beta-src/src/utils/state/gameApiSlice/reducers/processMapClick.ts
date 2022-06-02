@@ -89,7 +89,6 @@ export default function processMapClick(
   } = currentState;
   // ---------------------- PREPARATION ---------------------------
 
-  console.log("processMapClick");
   const {
     user: { member },
     phase,

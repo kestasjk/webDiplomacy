@@ -59,7 +59,6 @@ export function getAllLegalMoveDestsByUnitID(
   if (overview.phase !== "Diplomacy") {
     return {};
   }
-  console.log("getAllLegalMoveDestsByUnitID");
   const legalMoveDestsByUnitID: { [key: string]: Territory[] } = {};
 
   Object.entries(data.units).forEach(([unitID, unit]) => {
@@ -96,7 +95,6 @@ export function getAllLegalRetreatDestsByUnitID(
   if (overview.phase !== "Retreats") {
     return {};
   }
-  console.log("getAllLegalRetreatDestsByUnitID");
   const legalRetreatDestsByUnitID: { [key: string]: Territory[] } = {};
 
   const provinceStatusByProvID: { [key: string]: IProvinceStatus } = {};
@@ -160,7 +158,6 @@ export function getAllPossibleBuildDests(
   if (overview.phase !== "Builds") {
     return [];
   }
-  console.log("getAllPossibleBuildDests");
   const possibleBuildDests: Territory[] = [];
 
   const ourCountryID = overview.user.member.countryID.toString();
@@ -211,7 +208,6 @@ export function getAllLegalConvoys(
   if (overview.phase !== "Diplomacy") {
     return [{}, {}];
   }
-  console.log("getAllLegalConvoys");
   const ourCountryID = overview.user.member.countryID.toString();
   const provinceStatusByProvID: { [key: string]: IProvinceStatus } = {};
   data.territoryStatuses.forEach((provinceStatus) => {
@@ -399,7 +395,6 @@ export function getAllLegalSupportsByUnitID(
   if (overview.phase !== "Diplomacy") {
     return {};
   }
-  console.log("getAllLegalSupportsByUnitID");
   const legalSupportsByUnitID: {
     [key: string]: { [key: string]: LegalSupport[] };
   } = {};
@@ -517,9 +512,9 @@ export function getLegalOrders(
     legalViasByUnitID,
   );
   const endTimeStamp = performance.now();
-  console.log(
-    `getLegalOrders took ${endTimeStamp - startTimeStamp} milliseconds`,
-  );
+  // console.log(
+  //   `getLegalOrders took ${endTimeStamp - startTimeStamp} milliseconds`,
+  // );
   return {
     legalMoveDestsByUnitID,
     legalRetreatDestsByUnitID,

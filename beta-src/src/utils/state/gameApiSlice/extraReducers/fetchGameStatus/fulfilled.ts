@@ -16,7 +16,7 @@ export default function fetchGameStatusFulfilled(
   state: GameState,
   action,
 ): void {
-  console.log("fetchGameStatusFulfilled");
+  // console.log("fetchGameStatusFulfilled");
   state.apiStatus = "succeeded";
 
   // If the user is scrolled to the current phase, make the viewed

@@ -36,8 +36,8 @@ export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
   async (queryParams: { countryID?: string; gameID: string }) => {
     const { data } = await getGameApiRequest(ApiRoute.GAME_DATA, queryParams);
-    console.log("fetchGameData");
-    console.log(data);
+    // console.log("fetchGameData");
+    // console.log(data);
     return data as GameDataResponse;
   },
 );
@@ -48,8 +48,8 @@ export const fetchGameOverview = createAsyncThunk(
     const {
       data: { data },
     } = await getGameApiRequest(ApiRoute.GAME_OVERVIEW, queryParams);
-    console.log("fetchGameOverview");
-    console.log(data);
+    // console.log("fetchGameOverview");
+    // console.log(data);
     return data as GameOverviewResponse;
   },
 );
@@ -58,8 +58,8 @@ export const fetchGameStatus = createAsyncThunk(
   ApiRoute.GAME_STATUS,
   async (queryParams: { countryID: string; gameID: string }) => {
     const { data } = await getGameApiRequest(ApiRoute.GAME_STATUS, queryParams);
-    console.log("fetchGameStatus");
-    console.log(data);
+    // console.log("fetchGameStatus");
+    // console.log(data);
     return data as GameStatusResponse;
   },
 );
@@ -139,7 +139,7 @@ export const saveOrders = createAsyncThunk(
     formData.set("context", data.context);
     formData.set("contextKey", data.contextKey);
     const response = await submitOrders(formData, data.queryParams);
-    console.log({ response });
+    // console.log({ response });
     const confirmation: string = response.headers["x-json"] || "";
     const parsed: SavedOrdersConfirmation = JSON.parse(
       confirmation.substring(1, confirmation.length - 1),
@@ -150,7 +150,7 @@ export const saveOrders = createAsyncThunk(
 
 export const loadGameData =
   (gameID: string, countryID: string) => async (dispatch) => {
-    console.log("loadGameData");
+    // console.log("loadGameData");
     await Promise.all([
       dispatch(fetchGameData({ gameID, countryID })),
       // dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
@@ -159,7 +159,7 @@ export const loadGameData =
   };
 
 export const loadGame = (gameID: string) => async (dispatch) => {
-  console.log("loadGame");
+  // console.log("loadGame");
   const {
     payload: {
       user: {
@@ -235,13 +235,12 @@ const gameApiSlice = createSlice({
     builder
       // fetchGameData
       .addCase(fetchGameData.pending, (state) => {
-        console.log("fetchGameData pending!");
-
+        // console.log("fetchGameData pending!");
         state.apiStatus = "loading";
       })
       .addCase(fetchGameData.fulfilled, fetchGameDataFulfilled)
       .addCase(fetchGameData.rejected, (state, action) => {
-        console.log("fetchGameData rejected!");
+        // console.log("fetchGameData rejected!");
         state.apiStatus = "failed";
         state.error = action.error.message;
       })
@@ -280,7 +279,7 @@ const gameApiSlice = createSlice({
       })
       .addCase(sendMessage.rejected, (state, action) => {
         state.apiStatus = "failed";
-        console.log(`sendMessages failed: ${action.error.message}`);
+        // console.log(`sendMessages failed: ${action.error.message}`);
         state.error = action.error.message;
       })
       // Fetch Game Messages
@@ -289,7 +288,7 @@ const gameApiSlice = createSlice({
       })
       .addCase(fetchGameMessages.rejected, (state, action) => {
         state.apiStatus = "failed";
-        console.log(`fetchGameMessages failed: ${action.error.message}`);
+        // console.log(`fetchGameMessages failed: ${action.error.message}`);
         state.outstandingMessageRequests = false;
         state.error = action.error.message;
       })
@@ -332,7 +331,7 @@ const gameApiSlice = createSlice({
             }
           }
           if (time) {
-            console.log(`Messages fetched at time=${time}`);
+            // console.log(`Messages fetched at time=${time}`);
             state.messages.time = time;
           }
         }
