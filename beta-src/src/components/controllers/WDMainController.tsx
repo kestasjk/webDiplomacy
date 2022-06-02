@@ -66,15 +66,15 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
     return <Box>Loading...</Box>;
   }
 
-  const phaseProgressed =
-    displayedPhaseKey && overviewKey !== displayedPhaseKey;
+  const showOverlay =
+    isPregame || (displayedPhaseKey && overviewKey !== displayedPhaseKey);
   if (displayedPhaseKey === null && overview.phase) {
     setDisplayedPhaseKey(overviewKey);
   }
   return (
     <div>
       {!isPregame && children}
-      {phaseProgressed && (
+      {showOverlay && (
         <WDGameProgressOverlay
           overview={overview}
           clickHandler={() => {
