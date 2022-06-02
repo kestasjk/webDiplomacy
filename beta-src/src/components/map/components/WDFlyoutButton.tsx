@@ -96,6 +96,9 @@ const WDFlyoutButton: React.FC<WDOrderTypeButtonProps> = function ({
           alignmentBaseline="middle"
           fontFamily="Roboto"
           fontSize={fontSize}
+          style={{
+            userSelect: "none",
+          }}
           fill="black"
         >
           {text}

@@ -22,6 +22,7 @@ const WDLabel: React.FC<WDLabelProps> = function ({
         fill: theme.palette.primary.main,
         fontWeight: 900,
         fontSize: "150%",
+        userSelect: "none",
         ...style,
       }}
       x={x}

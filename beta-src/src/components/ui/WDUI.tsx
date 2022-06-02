@@ -201,6 +201,7 @@ const WDUI: React.FC = function (): React.ReactElement {
             borderRadius: 2,
             fontSize: "0.875rem",
             fontWeight: "700",
+            userSelect: "none",
           }}
           title={`Currently playing as ${user.member.country}`}
         >
