@@ -9,7 +9,6 @@ import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import WDBuildUnitButtons from "./WDBuildUnitButtons";
 import Province from "../../../enums/map/variants/classic/Province";
 import provincesMapData from "../../../data/map/ProvincesMapData";
-import { UNIT_HEIGHT, UNIT_WIDTH } from "../../ui/units/WDUnit";
 
 type Position = "left" | "right" | "top" | "bottom";
 
@@ -34,13 +33,9 @@ const WDFlyoutButton: React.FC<WDOrderTypeButtonProps> = function ({
     return <Box />;
 
   const unitX =
-    provinceMapData.x +
-    provinceMapData.unitSlotsBySlotName[unitSlotName].x +
-    UNIT_WIDTH / 2;
+    provinceMapData.x + provinceMapData.unitSlotsBySlotName[unitSlotName].x;
   const unitY =
-    provinceMapData.y +
-    provinceMapData.unitSlotsBySlotName[unitSlotName].y +
-    UNIT_HEIGHT / 2;
+    provinceMapData.y + provinceMapData.unitSlotsBySlotName[unitSlotName].y;
 
   const fontSize = 24;
   const rw = 55 + fontSize * text.length * 0.4;

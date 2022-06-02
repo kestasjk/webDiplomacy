@@ -6,8 +6,8 @@ import { GameIconProps } from "../../../interfaces/Icons";
 import WDArmyIcon from "./WDArmyIcon";
 import { useAppSelector } from "../../../state/hooks";
 
-export const UNIT_HEIGHT = 50;
-export const UNIT_WIDTH = 50;
+export const UNIT_HEIGHT = 75;
+export const UNIT_WIDTH = 75;
 
 const WDUnit: React.FC<GameIconProps> = function ({
   id = undefined,
@@ -24,8 +24,15 @@ const WDUnit: React.FC<GameIconProps> = function ({
       id={id}
       width={UNIT_WIDTH}
       viewBox={viewBox}
+      style={{ overflow: "visible" }}
     >
-      <WDUnitController meta={meta} type={type} iconState={iconState} />
+      <WDUnitController
+        meta={meta}
+        type={type}
+        iconState={iconState}
+        unitWidth={UNIT_WIDTH}
+        unitHeight={UNIT_HEIGHT}
+      />
     </svg>
   );
 };

@@ -1,32 +1,14 @@
 import { useTheme } from "@mui/material";
 import * as React from "react";
-import countryMap from "../../../data/map/variants/classic/CountryMap";
-import TerritoryMap, {
-  territoryToWebdipName,
-} from "../../../data/map/variants/classic/TerritoryMap";
 import UIState from "../../../enums/UIState";
 import { Coordinates, ProvinceMapData } from "../../../interfaces";
-import {
-  gameApiSliceActions,
-  gameMaps,
-  gameOrder,
-  gameOrdersMeta,
-  gameOverview,
-  gameTerritoriesMeta,
-} from "../../../state/game/game-api-slice";
-import { useAppDispatch, useAppSelector } from "../../../state/hooks";
-import { TerritoryMeta } from "../../../state/interfaces/TerritoriesState";
-import ClickObjectType from "../../../types/state/ClickObjectType";
 import OrderType from "../../../types/state/OrderType";
 import UnitType from "../../../types/UnitType";
-import WDUnit, { UNIT_HEIGHT, UNIT_WIDTH } from "../../ui/units/WDUnit";
-import WDCenter from "./WDCenter";
-import WDLabel from "./WDLabel";
+import WDUnit from "../../ui/units/WDUnit";
 import WDUnitSlot from "./WDUnitSlot";
 import { Unit, UnitDrawMode } from "../../../utils/map/getUnits";
 import Province from "../../../enums/map/variants/classic/Province";
 import Territory from "../../../enums/map/variants/classic/Territory";
-import OrdersMeta from "../../../state/interfaces/SavedOrders";
 import { IProvinceStatus } from "../../../models/Interfaces";
 
 interface WDProvinceOverlayProps {
@@ -64,7 +46,10 @@ const WDProvinceOverlay: React.FC<WDProvinceOverlayProps> = function ({
           unitState = UIState.HOLD;
           break;
         case UnitDrawMode.BUILD:
-          unitState = UIState.BUILD;
+          // This state of drawing the unit reduces constrast on the unit and isn't necessary
+          // now that we have green build circles highlighting the new builds.
+          // unitState = UIState.BUILD;
+          unitState = UIState.NONE;
           break;
         case UnitDrawMode.DISLODGING:
           unitState = UIState.NONE;
@@ -122,8 +107,8 @@ const WDProvinceOverlay: React.FC<WDProvinceOverlayProps> = function ({
             <WDUnitSlot
               key={unitName}
               name={unitName}
-              x={arrowReceiver.x - UNIT_WIDTH / 2}
-              y={arrowReceiver.y - UNIT_HEIGHT / 2}
+              x={arrowReceiver.x}
+              y={arrowReceiver.y}
             >
               {unitFCsDislodging[name]}
             </WDUnitSlot>

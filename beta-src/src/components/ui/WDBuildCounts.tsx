@@ -11,7 +11,7 @@ import { useAppSelector } from "../../state/hooks";
 import WDArmyIcon from "./units/WDArmyIcon";
 import UIState from "../../enums/UIState";
 import Country from "../../enums/Country";
-import { UNIT_HEIGHT } from "./units/WDUnit";
+import { UNIT_HEIGHT, UNIT_WIDTH } from "./units/WDUnit";
 
 const range = (N: number) => Array.from(Array(N).keys());
 
@@ -45,7 +45,11 @@ const WDBuildCounts: React.FC = function (): React.ReactElement {
         {range(numRemainingBuilds).map((buildIdx) => (
           <svg
             key={buildIdx}
-            style={{ height: UNIT_HEIGHT, width: UNIT_WIDTH_SQUOOSHED }}
+            style={{
+              height: UNIT_HEIGHT,
+              width: UNIT_WIDTH_SQUOOSHED,
+              overflow: "visible",
+            }}
           >
             <WDArmyIcon country={Country.FRANCE} iconState={UIState.BUILD} />
           </svg>
@@ -53,7 +57,11 @@ const WDBuildCounts: React.FC = function (): React.ReactElement {
         {range(numRemainingDestroys).map((buildIdx) => (
           <svg
             key={buildIdx}
-            style={{ height: UNIT_HEIGHT, width: UNIT_WIDTH_SQUOOSHED }}
+            style={{
+              height: UNIT_HEIGHT,
+              width: UNIT_WIDTH_SQUOOSHED,
+              overflow: "visible",
+            }}
           >
             <WDArmyIcon country={Country.FRANCE} iconState={UIState.DESTROY} />
           </svg>
