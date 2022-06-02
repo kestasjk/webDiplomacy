@@ -1,5 +1,4 @@
 import Country from "../enums/Country";
-import VoteType from "../types/Vote";
 import { MemberData } from "./state/MemberData";
 
 export interface CountryTableData extends MemberData {
@@ -8,5 +7,5 @@ export interface CountryTableData extends MemberData {
   color: string;
   power: Country;
   unitNo: number;
-  votes: VoteType;
+  votes: string[];
 }

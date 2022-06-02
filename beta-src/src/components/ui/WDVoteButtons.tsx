@@ -2,22 +2,15 @@ import * as React from "react";
 import { Stack } from "@mui/material";
 import WDButton from "./WDButton";
 import Vote from "../../enums/Vote";
-import VoteType from "../../types/Vote";
 import getDevice from "../../utils/getDevice";
 import useViewport from "../../hooks/useViewport";
 import Device from "../../enums/Device";
 import WDCheckmarkIcon from "./icons/WDCheckmarkIcon";
 
 interface voteProps {
-  voteState: VoteType;
+  voteState: string[];
   toggleVote: (vote: Vote) => void;
 }
-
-const voteLabel = {
-  draw: "Draw",
-  pause: "Pause",
-  cancel: "Cancel",
-};
 
 const WDVoteButtons: React.FC<voteProps> = function ({
   voteState,
@@ -31,7 +24,8 @@ const WDVoteButtons: React.FC<voteProps> = function ({
     device === Device.MOBILE;
   const padding = mobileLandscapeLayout ? "10px 10px" : "10px 18px";
   const spacing = mobileLandscapeLayout ? 1 : 2;
-  const commandButtons = Object.entries(voteState).map(([vote, status]) => {
+  const commandButtons = Object.keys(Vote).map((vote) => {
+    const status = voteState.includes(vote);
     return (
       <WDButton
         key={vote}
@@ -40,7 +34,7 @@ const WDVoteButtons: React.FC<voteProps> = function ({
         onClick={() => toggleVote(Vote[vote])}
         startIcon={status ? <WDCheckmarkIcon /> : ""}
       >
-        {voteLabel[vote]}
+        {vote}
       </WDButton>
     );
   });

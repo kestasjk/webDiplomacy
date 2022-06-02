@@ -23,6 +23,7 @@ import UnitsIcon from "./icons/country-table/WDUnits";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
 import WDCheckmarkIcon from "./icons/WDCheckmarkIcon";
+import Vote from "../../enums/Vote";
 
 interface WDCountryTableProps {
   countries: CountryTableData[];
@@ -154,51 +155,47 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                   );
                 })}
               </TableRow>
-              {country.votes && (
-                <TableRow>
-                  <WDTableCell
+              <TableRow
+                sx={{ display: country.votes.length ? "contents" : "none" }}
+              >
+                <WDTableCell
+                  sx={{
+                    fontSize: "70%",
+                    paddingTop: "0px !important",
+                    fontWeight: 700,
+                  }}
+                  colSpan={columns.length}
+                >
+                  <Box
                     sx={{
-                      fontSize: "70%",
-                      paddingTop: "0px !important",
-                      fontWeight: 700,
+                      color: theme.palette.action.disabledBackground,
+                      display: "inline-block",
+                      marginRight: 1.5,
                     }}
-                    colSpan={columns.length}
                   >
-                    {Object.values(country.votes).reduce(
-                      (prev, curr) => prev + +curr,
-                      0,
-                    ) > 0 && (
-                      <Box
-                        sx={{
-                          color: theme.palette.action.disabledBackground,
-                          display: "inline-block",
-                          marginRight: 1.5,
-                        }}
-                      >
-                        VOTED
-                      </Box>
-                    )}
-                    {Object.entries(country.votes).map(
-                      (data) =>
-                        data[1] && (
-                          <Chip
-                            key={`${country.power}-vote-${data[0]}`}
-                            size="small"
-                            label={data[0].toUpperCase()}
-                            sx={{
-                              color: theme.palette.secondary.main,
-                              background: country.color,
-                              fontWeight: 900,
-                              fontSize: "90%",
-                              height: 14,
-                              marginRight: 1,
-                            }}
-                          />
-                        ),
-                    )}
-                  </WDTableCell>
-                </TableRow>
-              )}
+                    VOTED
+                  </Box>
+
+                  {Object.keys(Vote).map(
+                    (vote) =>
+                      country.votes.includes(vote) && (
+                        <Chip
+                          key={`${country.power}-vote-${vote}`}
+                          size="small"
+                          label={vote.toUpperCase()}
+                          sx={{
+                            color: theme.palette.secondary.main,
+                            background: country.color,
+                            fontWeight: 900,
+                            fontSize: "90%",
+                            height: 14,
+                            marginRight: 1,
+                          }}
+                        />
+                      ),
+                  )}
+                </WDTableCell>
+              </TableRow>
             </React.Fragment>
           ))}
         </TableBody>
