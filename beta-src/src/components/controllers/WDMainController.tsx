@@ -48,11 +48,11 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   useInterval(dispatchFetchOverview, 5000);
 
   const needsGameData = useAppSelector(({ game }) => game.needsGameData);
-  const isPregame = ["", "Pre-game"].includes(overview.phase);
+  const noPhase = ["Error", "Pre-game"].includes(overview.phase);
   const consistentPhase =
-    isPregame || (overviewKey === statusKey && overviewKey === dataKey);
+    noPhase || (overviewKey === statusKey && overviewKey === dataKey);
 
-  if (needsGameData && !isPregame) {
+  if (needsGameData && !noPhase) {
     dispatch(gameApiSliceActions.setNeedsGameData(false));
     dispatch(loadGameData(String(overview.gameID), String(countryID)));
   }
@@ -67,13 +67,13 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   }
 
   const showOverlay =
-    isPregame || (displayedPhaseKey && overviewKey !== displayedPhaseKey);
+    noPhase || (displayedPhaseKey && overviewKey !== displayedPhaseKey);
   if (displayedPhaseKey === null && overview.phase) {
     setDisplayedPhaseKey(overviewKey);
   }
   return (
     <div>
-      {!isPregame && children}
+      {!noPhase && children}
       {showOverlay && (
         <WDGameProgressOverlay
           overview={overview}

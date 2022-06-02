@@ -18,5 +18,7 @@ export default function fetchGameOverviewFulfilled(
       state.needsGameData = true;
     }
     state.overview = response;
+  } else {
+    state.overview.phase = "Error";
   }
 }
