@@ -55,10 +55,10 @@ const WDGameProgressOverlay: React.FC<WDGameProgressOverlayProps> = function ({
         <b>Pre-game:</b> Game is waiting to start
       </Box>
     );
-  } else if (overview.phase === "") {
+  } else if (overview.phase === "Error") {
     innerElem = <Box>Could not load game. You may need to join this game.</Box>;
   } else {
-    innerElem = <Box>Game is {overview.phase}!</Box>;
+    innerElem = <Box>Game phase is {overview.phase}!</Box>;
   }
   return (
     <>
