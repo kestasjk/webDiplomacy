@@ -185,7 +185,7 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
   });
 
   return (
-    <g id="wD-boardmap-v10.3.4 1" clipPath="url(#clip0_3405_33911)">
+    <g id="wD-boardmap-v10.3.4 1">
       <g id="unplayable">{unplayableProvinces}</g>
       <g id="playableProvinces">{playableProvinces}</g>
       <g id="playableProvinceOverlays">{playableProvinceOverlays}</g>
