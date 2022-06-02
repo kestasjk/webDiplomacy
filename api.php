@@ -1015,6 +1015,7 @@ class SendMessage extends ApiEntry {
 	public function run($userID, $permissionIsExplicit) {
 		global $Game, $DB;
 		$args = $this->getArgs();
+		$messages = array();
 
 		if ($args['toCountryID'] === null)
 			throw new RequestException('toCountryID is required.');
@@ -1040,18 +1041,12 @@ class SendMessage extends ApiEntry {
 
 		if ($toCountryID < 0 || $toCountryID > count($Game->Members->ByID) || $toCountryID == $countryID) {
 			throw new RequestException('Invalid toCountryID');
-			return json_encode($ret);
-
 		}
 
 		if ($toCountryID != 0) {
 			$toUser = new User($Game->Members->ByCountryID[$toCountryID]->userID);
 			if($toUser->isCountryMuted($Game->id, $countryID)) {
-				// uhh... send back nothing
-				$ret = [
-					"messages" => $messages
-				];
-				return json_encode($ret);
+				return json_encode(["messages" => []]);
 			}
 		}
 
