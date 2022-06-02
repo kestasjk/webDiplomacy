@@ -3139,10 +3139,20 @@ const provincesMapData: { [key: string]: ProvinceMapData } = Object.fromEntries(
         }
         territory = preUnitSlot.territory;
       }
+      // When all the coordinates above were developed, they were assuming the
+      // unit would be 50x50 and the coordinates were specifying the upper left
+      // corner of that unit.
+
+      // The units aren't actually 50x50 any more, and the rest of the UI
+      // is written to assume the coordinates of a unit give the location of the
+      // center of the unit. So we need as a preprocessing step to subtract
+      // 25 from all the coordinates above.
+      const UNIT_OFFSET = 25;
+
       const unitSlot: UnitSlot = {
         name: preUnitSlot.name,
-        x: preUnitSlot.x,
-        y: preUnitSlot.y,
+        x: preUnitSlot.x + UNIT_OFFSET,
+        y: preUnitSlot.y + UNIT_OFFSET,
         territory,
         arrowReceiver: preUnitSlot.arrowReceiver,
       };

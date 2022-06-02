@@ -7,7 +7,6 @@ import Province from "../../../enums/map/variants/classic/Province";
 import UIState from "../../../enums/UIState";
 import WDArmyIcon from "../../ui/units/WDArmyIcon";
 import WDFleetIcon from "../../ui/units/WDFleetIcon";
-import { UNIT_WIDTH, UNIT_HEIGHT } from "../../ui/units/WDUnit";
 
 export interface BuildData {
   availableOrder: string;
@@ -34,13 +33,9 @@ const WDBuildUnitButtons: React.FC<BuildData> = function ({
 }): React.ReactElement {
   const provinceMapData = provincesMapData[province];
   let svgX =
-    provinceMapData.x +
-    provinceMapData.unitSlotsBySlotName[unitSlotName].x +
-    UNIT_WIDTH / 2;
+    provinceMapData.x + provinceMapData.unitSlotsBySlotName[unitSlotName].x;
   let svgY =
-    provinceMapData.y +
-    provinceMapData.unitSlotsBySlotName[unitSlotName].y +
-    UNIT_HEIGHT / 2;
+    provinceMapData.y + provinceMapData.unitSlotsBySlotName[unitSlotName].y;
 
   let rw = 70;
   const rh = 70;

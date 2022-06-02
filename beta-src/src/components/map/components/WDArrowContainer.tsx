@@ -121,7 +121,7 @@ function accumulateSupportHoldOrderArrows(
       // doesn't overlap with it.
       const hasMutualSupport =
         supporterProvIDToSupporteeProvID[supporteeProvID] === supporterProvID;
-      const offsetArrowSourcePixels = hasMutualSupport ? 4.5 : 0;
+      const offsetArrowSourcePixels = hasMutualSupport ? 6 : 0;
       // console.log({
       //   supporteeProvID,
       //   supporterProvID,
@@ -362,12 +362,12 @@ function accumulateBuildCircles(
       arrows.push(
         <circle
           key={`build-circle-${terr}`}
-          cx={x + w / 2}
-          cy={y + h / 2}
-          r={10 + (w + h) / 4}
+          cx={x}
+          cy={y}
+          r={(1.4 * (w + h)) / 4}
           fill="none"
           stroke="rgb(0,150,0)"
-          strokeWidth={6}
+          strokeWidth={0.05 * (w + h)}
         />,
       );
     });

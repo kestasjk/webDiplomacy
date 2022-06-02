@@ -22,6 +22,7 @@ export function getTargetXYWH(
   let y;
   let width;
   let height;
+
   switch (type) {
     case "arrow": {
       // If the target of this arrow is itself an arrow, then target a point
@@ -72,8 +73,6 @@ export function getTargetXYWH(
       const toTerritoryData = TerritoryMap[toTerritoryName].provinceMapData;
       const { unitSlotName } = TerritoryMap[toTerritoryName];
 
-      x = toTerritoryData.x - UNIT_WIDTH / 2;
-      y = toTerritoryData.y - UNIT_HEIGHT / 2;
       if (toTerritoryData.unitSlotsBySlotName[unitSlotName]) {
         x += toTerritoryData.unitSlotsBySlotName[unitSlotName].arrowReceiver.x;
         y += toTerritoryData.unitSlotsBySlotName[unitSlotName].arrowReceiver.y;
@@ -98,12 +97,8 @@ export function getTargetXYWH(
       x = toTerritoryData.x;
       y = toTerritoryData.y;
       if (toTerritoryData.unitSlotsBySlotName[unitSlotName]) {
-        x +=
-          toTerritoryData.unitSlotsBySlotName[unitSlotName].arrowReceiver.x -
-          bufferSize / 2;
-        y +=
-          toTerritoryData.unitSlotsBySlotName[unitSlotName].arrowReceiver.y -
-          bufferSize / 2;
+        x += toTerritoryData.unitSlotsBySlotName[unitSlotName].arrowReceiver.x;
+        y += toTerritoryData.unitSlotsBySlotName[unitSlotName].arrowReceiver.y;
       }
       width = bufferSize;
       height = bufferSize;
@@ -122,7 +117,8 @@ export function getArrowX1Y1X2Y2(
   receiverIdentifier: Territory | [number, number, number, number],
 ): [number, number, number, number] {
   // Source of arrow
-  const [sx1, sy1, sourceWidth, sourceHeight] = getTargetXYWH(
+  // eslint-disable-next-line prefer-const
+  let [sx1, sy1, sourceWidth, sourceHeight] = getTargetXYWH(
     sourceType,
     sourceIdentifier,
   );
@@ -130,6 +126,15 @@ export function getArrowX1Y1X2Y2(
     receiverType,
     receiverIdentifier,
   );
+
+  // Draw the arrows slightly closer to a unit than their nominal size for the arrow source, the portion of
+  // the unit's nominal size that the unit icon actually covers is a bit smaller and
+  // the arrow looks a bit too far away otherwise.
+  const UNIT_SOURCE_SHRINK_FACTOR = 0.9;
+  if (sourceType === "unit" || sourceType === "dislodger") {
+    sourceWidth *= UNIT_SOURCE_SHRINK_FACTOR;
+    sourceHeight *= UNIT_SOURCE_SHRINK_FACTOR;
+  }
 
   const { x1, x2, y1, y2 } = arrowDispatchReceiveCoordinates(
     sourceHeight,
@@ -184,16 +189,16 @@ export default function drawArrowFunctional(
     case ArrowColor.RETREAT:
     case ArrowColor.SUPPORT_HOLD:
     case ArrowColor.SUPPORT_MOVE:
-      strokeWidth = 3;
+      strokeWidth = 3.5;
       break;
     case ArrowColor.MOVE_FAILED:
     case ArrowColor.CONVOY_FAILED:
     case ArrowColor.SUPPORT_HOLD_FAILED:
     case ArrowColor.SUPPORT_MOVE_FAILED:
-      strokeWidth = 2.5;
+      strokeWidth = 3;
       break;
     default:
-      strokeWidth = 3;
+      strokeWidth = 3.5;
   }
 
   if (offsetArrowSourcePixels > 0) {

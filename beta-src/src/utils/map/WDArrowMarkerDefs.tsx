@@ -42,13 +42,15 @@ const WDArrowMarkerColors = function (
               <marker
                 id={`arrowHead__${ArrowType[arrowType]}_${ArrowColor[arrowColor]}`}
                 key={`arrowHead__${ArrowType[arrowType]}_${ArrowColor[arrowColor]}`}
-                markerWidth={30}
-                markerHeight={30}
-                refX={5}
-                refY={15}
+                markerWidth={90}
+                markerHeight={90}
+                refX={10}
+                refY={45}
                 orient="auto"
+                markerUnits="userSpaceOnUse"
+                strokeWidth={4}
               >
-                <path d=" M 8 22 A 10 10 180 0 1 8 8" stroke={config.main} />
+                <path d=" M 24 72 A 30 30 180 0 1 24 18" stroke={config.main} />
               </marker>
             ),
           )}

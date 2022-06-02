@@ -3,6 +3,12 @@ import { useTheme } from "@mui/material/styles";
 import { IconProps } from "../../../interfaces/Icons";
 import UIState from "../../../enums/UIState";
 
+// The drawing of this icon assumes a coordinate system where the icon fits within
+// a rectangle from [0,0] to [FLEET_RAW_ICON_WIDTH,FLEET_RAW_ICON_HEIGHT]
+// This gets scaled a bit by WDUnitController
+export const FLEET_RAW_ICON_WIDTH = 50;
+export const FLEET_RAW_ICON_HEIGHT = 50;
+
 const WDFleetIcon: React.FC<IconProps> = function ({
   country,
   iconState = UIState.NONE,
