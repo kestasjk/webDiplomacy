@@ -10,6 +10,7 @@ import {
   tableCellClasses,
   useTheme,
 } from "@mui/material";
+import { Lock } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import BetIcon from "./icons/country-table/WDBet";
 import CentersIcon from "./icons/country-table/WDCenters";
@@ -126,6 +127,9 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                     case "orderStatus":
                       return (
                         <WDTableCell key={column.id} align={column.align}>
+                          {country.orderStatus.Hidden && (
+                            <Lock sx={{ fontSize: "16px", color: "#666" }} />
+                          )}
                           {(country.orderStatus.Saved ||
                             country.orderStatus.Ready) && (
                             <WDCheckmarkIcon
