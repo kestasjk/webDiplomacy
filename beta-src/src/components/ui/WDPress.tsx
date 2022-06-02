@@ -8,17 +8,14 @@ import {
   Divider,
 } from "@mui/material";
 import { Email, Send } from "@mui/icons-material";
-import AutorenewIcon from "@mui/icons-material/Autorenew";
 
 import Button from "@mui/material/Button";
-import Device from "../../enums/Device";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
 import WDMessageList from "./WDMessageList";
 import { CountryTableData } from "../../interfaces";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import {
-  fetchGameMessages,
   gameApiSliceActions,
   gameOverview,
   markMessagesSeen,
