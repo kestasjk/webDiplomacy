@@ -73,6 +73,11 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
 
   const clickButton = (type: Move) => {
     // console.log("Entered save button click");
+    // When you click save or ready, it should clear any actively entered order you have going,
+    // and/or any of the move input flyover. It doesn't make sense to ready and have the UI
+    // stay with a partially-entered order.
+    dispatch(gameApiSliceActions.resetOrder());
+
     if ("currentOrders" in data && "contextVars" in data) {
       const { currentOrders, contextVars } = data;
       if (contextVars && currentOrders) {

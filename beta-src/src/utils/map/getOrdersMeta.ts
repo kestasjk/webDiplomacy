@@ -10,17 +10,17 @@ interface Props {
 export default function getOrdersMeta(
   data: GameDataResponse["data"],
   phase: GameState["overview"]["phase"],
-): Props {
+): EditOrderMeta {
   const { contextVars, currentOrders, units } = data;
 
-  const updateOrdersMeta = {};
+  const updateOrdersMeta: EditOrderMeta = {};
   if (contextVars?.context && currentOrders?.length) {
     if (phase === "Builds") {
       currentOrders?.forEach(({ id, toTerrID, type }) => {
         updateOrdersMeta[id] = {
           saved: true,
           update: {
-            type: toTerrID ? type : "Wait",
+            type: toTerrID ? type || "" : "Wait",
             toTerrID,
           },
         };
@@ -30,24 +30,16 @@ export default function getOrdersMeta(
 
       currentOrders.forEach((o) => {
         const { id, unitID, type, toTerrID, fromTerrID, viaConvoy } = o;
-        if (units[unitID]) {
+        if (units[unitID]?.id) {
           newOrders.push([o, units[unitID]]);
           updateOrdersMeta[id] = {
+            saved: true,
             update: {
-              type,
+              type: type || "",
               toTerrID,
               fromTerrID,
               viaConvoy,
             },
-          };
-        }
-      });
-
-      newOrders.forEach(([orderData, orderUnit]) => {
-        if (units[orderUnit.id]) {
-          updateOrdersMeta[orderData.id] = {
-            ...{ saved: true },
-            ...updateOrdersMeta[orderData.id],
           };
         }
       });

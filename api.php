@@ -452,7 +452,6 @@ class GetGameMembers extends ApiEntry {
 				$votes = array_values($votes);
 			}
 		}
-
 		return [
 			'bet' => $member->bet,
 			'country' => $member->country,
@@ -461,12 +460,12 @@ class GetGameMembers extends ApiEntry {
 			'missedPhases' => $member->missedPhases,
 			'newMessagesFrom' => $retrievePrivateData ? $member->newMessagesFrom : [],
 			'online' => $member->online,
-			'orderStatus' => [
+			'orderStatus' => ($this->isAnon && !$retrievePrivateData ? ['Hidden' => 1] : [
 				'Ready' => $member->orderStatus->Ready,
 				'Saved' => $member->orderStatus->Saved,
 				'Completed' => $member->orderStatus->Completed,
 				'None' => $member->orderStatus->None,
-			],
+			]),
 			'status' => $member->status,
 			'supplyCenterNo' => $member->supplyCenterNo,
 			'timeLoggedIn' => $member->timeLoggedIn,
@@ -912,6 +911,8 @@ class SetOrders extends ApiEntry {
 			if (empty($updatedOrders))
 				break;
 			// Load updated orders.
+			// FIXME this function (board/orders/orderinterface.php) may report an error
+			// via libHTML::notice, which is not friendly to JSON API.
 			$orderInterface->load();
 			$orderInterface->set(json_encode(array_values($updatedOrders)));
 			$results = $orderInterface->validate();

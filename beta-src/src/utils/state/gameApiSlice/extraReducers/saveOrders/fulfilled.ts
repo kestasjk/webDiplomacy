@@ -1,11 +1,17 @@
 import SavedOrdersConfirmation from "../../../../../interfaces/state/SavedOrdersConfirmation";
+import { setAlert } from "../../../../../state/interfaces/GameAlert";
 import getOrderStates from "../../../getOrderStates";
 
 /* eslint-disable no-param-reassign */
 export default function saveOrdersFulfilled(state, action): void {
   if (action.payload) {
-    const { orders, newContext, newContextKey }: SavedOrdersConfirmation =
-      action.payload;
+    const {
+      invalid,
+      notice,
+      orders,
+      newContext,
+      newContextKey,
+    }: SavedOrdersConfirmation = action.payload;
     if (newContext && newContextKey) {
       state.data.data.contextVars = {
         context: newContext,
@@ -25,5 +31,17 @@ export default function saveOrdersFulfilled(state, action): void {
         state.ordersMeta[id].saved = true;
       }
     });
+
+    // Report any errors
+    if (invalid) {
+      if (notice) {
+        setAlert(state.alert, `Error saving orders: ${notice}`);
+      } else {
+        setAlert(
+          state.alert,
+          `Unknown error saving orders, server indicated that API call was invalid`,
+        );
+      }
+    }
   }
 }

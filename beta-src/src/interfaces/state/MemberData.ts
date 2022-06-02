@@ -5,6 +5,7 @@ export interface OrderStatus {
   None: boolean;
   Ready: boolean;
   Saved: boolean;
+  Hidden: boolean;
 }
 
 export interface MemberData {

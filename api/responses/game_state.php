@@ -255,7 +255,7 @@ class GameState {
 		global $DB;
 
 		// Loading game state
-		$gameRow = $DB->sql_hash("SELECT id, variantID, potType, turn, phase, gameOver, pressType, drawType, processTime, phaseMinutes FROM wD_Games WHERE id=".$this->gameID);
+		$gameRow = $DB->sql_hash("SELECT id, variantID, potType, turn, phase, gameOver, pressType, drawType, processTime, phaseMinutes, anon FROM wD_Games WHERE id=".$this->gameID);
 		if ( ! $gameRow )
 			throw new \Exception("Unknown game ID.");
 		$this->variantID = intval($gameRow['variantID']);
@@ -277,7 +277,7 @@ class GameState {
 		$this->orderStatuses = [];
 		while ($member = $DB->tabl_hash($orderStatusData)) {
 			$countryID = $member["countryID"];
-			$orderStatus = $member["orderStatus"];
+			$orderStatus = $gameRow['anon'] == 'Yes' ? 'Hidden' : $member["orderStatus"];
 			$this->orderStatuses[$countryID] = $orderStatus;
 		}	
 

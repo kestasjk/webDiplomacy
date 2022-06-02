@@ -89,7 +89,7 @@ const WDFlyoutContainer: React.FC<WDFlyoutContainerProps> = function ({
             province={province}
             unitSlotName={unitSlotName}
             position="bottom"
-            text="Via"
+            text="Via Convoy"
             clickHandler={clickHandler("Move", "Yes")}
           />
         )}
