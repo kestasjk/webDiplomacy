@@ -34,7 +34,7 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   const dispatchFetchOverview = () => {
     const { game } = store.getState();
     const { outstandingOverviewRequests } = game;
-    console.log({ outstandingOverviewRequests });
+    // console.log({ outstandingOverviewRequests });
     if (!outstandingOverviewRequests) {
       dispatch(
         fetchGameOverview({

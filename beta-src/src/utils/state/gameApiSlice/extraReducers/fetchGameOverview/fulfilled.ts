@@ -13,7 +13,7 @@ export default function fetchGameOverviewFulfilled(
 
   const oldPhaseKey = getPhaseKey(state.overview, "<BAD OVERVIEW_KEY>");
   const newPhaseKey = getPhaseKey(response, "<BAD OVERVIEW_KEY>");
-  console.log({ oldPhaseKey, newPhaseKey });
+  // console.log({ oldPhaseKey, newPhaseKey });
   if (oldPhaseKey !== newPhaseKey) {
     state.needsGameData = true;
   }

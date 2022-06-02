@@ -7,7 +7,7 @@ const WDMapController = React.lazy(
 );
 
 const WDMain: React.FC = function (): React.ReactElement {
-  console.log("WDMain rerendered");
+  // console.log("WDMain rerendered");
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
       <WDMainController>

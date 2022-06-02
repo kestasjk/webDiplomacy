@@ -4,9 +4,8 @@ import getDataForOrder from "./getDataForOrder";
 
 /* eslint-disable no-param-reassign */
 export default function startNewOrder(state, partialOrderState): string {
-  console.log("startNewOrder");
   const orderData = getDataForOrder(state, partialOrderState);
-  console.log({ orderData });
+  // console.log({ orderData });
   state.order = orderData;
   state.order.inProgress = true;
   return orderData.orderID;

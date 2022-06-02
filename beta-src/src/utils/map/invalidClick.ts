@@ -5,7 +5,7 @@ export default function invalidClick(
   evt: React.MouseEvent<SVGGElement, MouseEvent>,
   name: Province,
 ): void {
-  console.log("INVALID CLICK");
+  // console.log("INVALID CLICK");
   const provinceSelection = d3.select(`#${name}-province`);
   const province: SVGSVGElement = provinceSelection.node();
   if (province) {

@@ -21,9 +21,9 @@ const WDBuildContainer: React.FC = function (): React.ReactElement {
   const maps = useAppSelector(gameMaps);
 
   const build = (availableOrder, canBuild, toTerrID) => {
-    console.log(
-      `Dispatched a build ${canBuild} ${BuildUnitMap[canBuild]} ${toTerrID}`,
-    );
+    // console.log(
+    //   `Dispatched a build ${canBuild} ${BuildUnitMap[canBuild]} ${toTerrID}`,
+    // );
     let terrIDToBuildOn = toTerrID;
     if (BuildUnitMap[canBuild] === "Build Army") {
       // If we initiated a build popup onto a special coast but the user

@@ -41,7 +41,7 @@ const WDFlyoutContainer: React.FC<WDFlyoutContainerProps> = function ({
   const clickHandler =
     (orderType, viaConvoy: string | undefined = undefined) =>
     () => {
-      console.log(`Dispatched ${orderType}`);
+      // console.log(`Dispatched ${orderType}`);
       dispatch(
         gameApiSliceActions.updateOrder({
           type: orderType,
