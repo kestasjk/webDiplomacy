@@ -90,6 +90,17 @@ const WDProvinceOverlay: React.FC<WDProvinceOverlayProps> = function ({
       y={provinceMapData.y}
       overflow="visible"
     >
+      {highlightChoice && (
+        <path
+          d={provinceMapData.path}
+          fill="none"
+          fillOpacity={0.0}
+          id={`${province}-choice-outline`}
+          stroke="black"
+          strokeOpacity={1}
+          strokeWidth={5}
+        />
+      )}
       {provinceMapData.unitSlots
         .filter(({ name }) => name in unitFCs)
         .map(({ name, x, y }) => (
@@ -114,17 +125,6 @@ const WDProvinceOverlay: React.FC<WDProvinceOverlayProps> = function ({
             </WDUnitSlot>
           );
         })}
-      {highlightChoice && (
-        <path
-          d={provinceMapData.path}
-          fill="none"
-          fillOpacity={0.0}
-          id={`${province}-choice-outline`}
-          stroke="black"
-          strokeOpacity={1}
-          strokeWidth={5}
-        />
-      )}
     </svg>
   );
 };
