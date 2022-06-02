@@ -15,12 +15,16 @@ import {
 } from "../../state/game/game-api-slice";
 import UpdateOrder from "../../interfaces/state/UpdateOrder";
 import MoveStatus from "../../types/MoveStatus";
+import { RootState } from "../../state/store";
 
 const WDMoveControls: React.FC = function (): React.ReactElement {
   const theme = useTheme();
   const [viewport] = useViewport();
   const { data } = useAppSelector(gameData);
   const ordersMeta = useAppSelector(gameOrdersMeta);
+  const currentOrderInProgress = useAppSelector(
+    ({ game: { order } }: RootState) => order.inProgress,
+  );
   const [readyDisabled, setReadyDisabled] = React.useState(false);
   const [gameState, setGameState] = React.useState<MoveStatus>({
     save: false,
@@ -128,6 +132,8 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
   }
 
   const saveDisabled = gameState.ready || !gameState.save;
+  const doAnimateGlow =
+    !saveDisabled && ordersLength !== ordersSaved && !currentOrderInProgress;
 
   return (
     <Stack
@@ -144,6 +150,7 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
             ? undefined
             : theme.palette.svg.filters.dropShadows[0],
         }}
+        doAnimateGlow={doAnimateGlow}
       >
         Save
       </WDButton>
