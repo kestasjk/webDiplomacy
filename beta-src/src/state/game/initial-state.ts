@@ -137,6 +137,7 @@ const initialState: GameState = {
     messages: [],
     newMessagesFrom: [],
     time: 0,
+    countryIDSelected: 0,
   },
   outstandingOverviewRequests: false,
   outstandingMessageRequests: false,

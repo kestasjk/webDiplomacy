@@ -26,6 +26,7 @@ import useInterval from "../../hooks/useInterval";
 import useOutsideAlerter from "../../hooks/useOutsideAlerter";
 import useViewport from "../../hooks/useViewport";
 import { store } from "../../state/store";
+import { MessageStatus } from "../../state/interfaces/GameMessages";
 
 const abbrMap = {
   Russia: "RUS",
@@ -59,8 +60,14 @@ const WDUI: React.FC = function (): React.ReactElement {
 
   // console.log("WDUI RENDERED");
 
-  const numUnread = useAppSelector(({ game }) =>
-    game.messages.messages.reduce((acc, m) => acc + Number(m.unread), 0),
+  const messages = useAppSelector(({ game }) => game.messages.messages);
+  const numUnread = messages.reduce(
+    (acc, m) => acc + Number(m.status === MessageStatus.UNREAD),
+    0,
+  );
+  const numUnknown = messages.reduce(
+    (acc, m) => acc + Number(m.status === MessageStatus.UNKNOWN),
+    0,
   );
 
   const constructTableData = (member) => {
@@ -173,8 +180,8 @@ const WDUI: React.FC = function (): React.ReactElement {
           }}
           ref={popoverTrigger}
         >
-          {numUnread ? (
-            <Badge badgeContent={numUnread} color="error">
+          {numUnread + numUnknown ? (
+            <Badge badgeContent={numUnknown ? " " : numUnread} color="error">
               {controlModalTrigger}
             </Badge>
           ) : (
