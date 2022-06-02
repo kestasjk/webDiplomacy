@@ -11,8 +11,8 @@ export default function fetchGameOverviewFulfilled(
   state.outstandingOverviewRequests = false;
   const response: GameOverviewResponse = action.payload;
 
-  const oldPhaseKey = getPhaseKey(state.overview);
-  const newPhaseKey = getPhaseKey(response);
+  const oldPhaseKey = getPhaseKey(state.overview, "<BAD OLD_OVERVIEW_KEY>");
+  const newPhaseKey = getPhaseKey(response, "<BAD NEW_OVERVIEW_KEY>");
   console.log({ oldPhaseKey, newPhaseKey });
   if (oldPhaseKey !== newPhaseKey) {
     state.needsGameData = true;

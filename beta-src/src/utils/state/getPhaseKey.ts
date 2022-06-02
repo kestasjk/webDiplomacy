@@ -4,9 +4,10 @@ import { IContext } from "../../models/Interfaces";
 
 const getPhaseKey = function (
   data: GameOverviewResponse | GameStatusResponse | IContext | undefined,
+  valueIfUndefined: string,
 ): string {
   if (!data) {
-    return "<BAD>";
+    return valueIfUndefined;
   }
   return `${data.turn}.${data.phase}`;
 };

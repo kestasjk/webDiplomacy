@@ -17,8 +17,14 @@ import { getLegalOrders } from "./precomputeLegalOrders";
 export default function fetchGameDataFulfilled(state: GameState, action): void {
   state.apiStatus = "succeeded";
 
-  const oldPhaseKey = getPhaseKey(state.data.data.contextVars?.context);
-  const newPhaseKey = getPhaseKey(action.payload.data.contextVars?.context);
+  const oldPhaseKey = getPhaseKey(
+    state.data.data.contextVars?.context,
+    "<BAD OLD_DATA_KEY>",
+  );
+  const newPhaseKey = getPhaseKey(
+    action.payload.data.contextVars?.context,
+    "<BAD NEW_DATA_KEY>",
+  );
   console.log(`fetchGameDataFulfilled  ${oldPhaseKey} -> ${newPhaseKey}`);
 
   // Upon phase change, sweep away all orders from the previous turn
