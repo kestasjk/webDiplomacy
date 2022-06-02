@@ -10,13 +10,13 @@ export default function fetchGameOverviewFulfilled(
   state.apiStatus = "succeeded";
   state.outstandingOverviewRequests = false;
   const response: GameOverviewResponse = action.payload;
-
-  const oldPhaseKey = getPhaseKey(state.overview, "<BAD OVERVIEW_KEY>");
-  const newPhaseKey = getPhaseKey(response, "<BAD OVERVIEW_KEY>");
-  // console.log({ oldPhaseKey, newPhaseKey });
-  if (oldPhaseKey !== newPhaseKey) {
-    state.needsGameData = true;
+  if (response) {
+    const oldPhaseKey = getPhaseKey(state.overview, "<BAD OVERVIEW_KEY>");
+    const newPhaseKey = getPhaseKey(response, "<BAD OVERVIEW_KEY>");
+    // console.log({ oldPhaseKey, newPhaseKey });
+    if (oldPhaseKey !== newPhaseKey) {
+      state.needsGameData = true;
+    }
+    state.overview = response;
   }
-
-  state.overview = action.payload;
 }

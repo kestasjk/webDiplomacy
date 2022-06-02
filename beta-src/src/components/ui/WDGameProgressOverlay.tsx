@@ -33,9 +33,8 @@ const WDGameProgressOverlay: React.FC<WDGameProgressOverlayProps> = function ({
   overview,
   clickHandler,
 }) {
-  const isPhase = ["Diplomacy", "Retreats", "Builds"].includes(overview.phase);
   let innerElem;
-  if (isPhase) {
+  if (["Diplomacy", "Retreats", "Builds"].includes(overview.phase)) {
     innerElem = (
       <Stack direction="column" alignItems="center">
         <Box sx={{ m: "4px" }}>Game progressed to a new phase...</Box>
@@ -50,8 +49,16 @@ const WDGameProgressOverlay: React.FC<WDGameProgressOverlayProps> = function ({
         </Button>
       </Stack>
     );
+  } else if (overview.phase === "Pre-game") {
+    innerElem = (
+      <Box>
+        <b>Pre-game:</b> Game is waiting to start
+      </Box>
+    );
+  } else if (overview.phase === "") {
+    innerElem = <Box>Could not load game. You may need to join this game.</Box>;
   } else {
-    innerElem = <Box>Game is {overview.phase}</Box>;
+    innerElem = <Box>Game is {overview.phase}!</Box>;
   }
   return (
     <>
