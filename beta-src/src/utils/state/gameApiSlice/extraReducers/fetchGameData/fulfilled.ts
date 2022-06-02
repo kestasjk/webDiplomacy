@@ -9,12 +9,29 @@ import getTerritoriesMeta from "../../../../getTerritoriesMeta";
 import getOrdersMeta from "../../../../map/getOrdersMeta";
 import { getUnitsLive } from "../../../../map/getUnits";
 import generateMaps from "../../../generateMaps";
+import getPhaseKey from "../../../getPhaseKey";
 import updateOrdersMeta from "../../../updateOrdersMeta";
 import { getLegalOrders } from "./precomputeLegalOrders";
 
 /* eslint-disable no-param-reassign */
 export default function fetchGameDataFulfilled(state: GameState, action): void {
   state.apiStatus = "succeeded";
+
+  const oldPhaseKey = getPhaseKey(
+    state.data.data.contextVars?.context,
+    "<BAD OLD_DATA_KEY>",
+  );
+  const newPhaseKey = getPhaseKey(
+    action.payload.data.contextVars?.context,
+    "<BAD NEW_DATA_KEY>",
+  );
+  console.log(`fetchGameDataFulfilled  ${oldPhaseKey} -> ${newPhaseKey}`);
+
+  // Upon phase change, sweep away all orders from the previous turn
+  if (oldPhaseKey !== newPhaseKey) {
+    state.ordersMeta = {};
+  }
+
   state.data = action.payload;
   const currentState = current(state);
   const {
@@ -38,8 +55,10 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
     (acc, meta) => acc + 1 - +meta.saved,
     0,
   );
-  if (!numUnsavedOrders) {
-    console.log("Updating ordersMeta");
+  // If all orders are saved, then update them from queries.
+  // If not all orders are saved, then we want to keep the current UI state rather than
+  // grabbing the new orders from the server.
+  if (numUnsavedOrders === 0) {
     updateOrdersMeta(state, getOrdersMeta(data, phase));
   }
 }
