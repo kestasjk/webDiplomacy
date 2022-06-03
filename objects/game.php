@@ -354,7 +354,7 @@ class Game
 	{
 		return ($this->directorUserID != null && $this->directorUserID == $userID) 
 			|| ($this->tournamentDirectorUserID != null && $this->tournamentDirectorUserID == $userID) 
-			|| ($this->tournamentCoirectorUserID != null && $this->tournamentCoirectorUserID == $userID);
+			|| ($this->tournamentCodirectorUserID != null && $this->tournamentCodirectorUserID == $userID);
 	}
 	/**
 	 * Should members be hidden for this game and this viewer?

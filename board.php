@@ -151,7 +151,6 @@ catch(Exception $e)
 		($User->type['User'] ? l_t("Check your <a href='index.php' class='light'>notices</a> for messages regarding this game."):''));
 }
 
-
 if ( isset($_REQUEST['viewArchive']) )
 {
 	// Start HTML with board gamepanel header
