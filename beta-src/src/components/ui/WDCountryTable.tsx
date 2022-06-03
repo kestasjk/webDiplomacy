@@ -79,7 +79,7 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
     device === Device.MOBILE ||
     device === Device.MOBILE_LG;
   const WDTableCell = styled(TableCell)(() => {
-    const padding = isMobile ? 6 : "6px 10px";
+    const padding = "8px 5px 0px 5px";
     return {
       [`&.${tableCellClasses.head}`]: {
         borderBottom: 0,
@@ -156,8 +156,23 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                 })}
               </TableRow>
               <TableRow
-                sx={{ display: country.votes.length ? "contents" : "none" }}
+              //   sx={{
+              //     display:
+              //       country.votes.length || country.username
+              //         ? "contents"
+              //         : "none",
+              //   }}
               >
+                <WDTableCell
+                  sx={{
+                    display: country.username ? "inline-block" : "none",
+                    paddingTop: "0px !important",
+                    fontSize: "10pt",
+                    fontFamily: "Roboto",
+                  }}
+                >
+                  {country.username}
+                </WDTableCell>
                 <WDTableCell
                   sx={{
                     fontSize: "70%",
@@ -169,7 +184,7 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                   <Box
                     sx={{
                       color: theme.palette.action.disabledBackground,
-                      display: "inline-block",
+                      display: country.votes.length ? "inline-block" : "none",
                       marginRight: 1.5,
                     }}
                   >
@@ -195,6 +210,7 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                       ),
                   )}
                 </WDTableCell>
+                <WDTableCell />
               </TableRow>
             </React.Fragment>
           ))}
