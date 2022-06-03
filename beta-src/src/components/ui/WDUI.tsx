@@ -123,8 +123,8 @@ const WDUI: React.FC = function (): React.ReactElement {
   const dispatch = useAppDispatch();
   const dispatchFetchMessages = () => {
     const { game } = store.getState();
-    const { outstandingMessageRequests } = game;
-    if (!outstandingMessageRequests) {
+    const { outstandingMessageRequests, overview } = game;
+    if (!outstandingMessageRequests && overview.phase !== "Pre-game") {
       dispatch(
         fetchGameMessages({
           gameID: String(gameID),
