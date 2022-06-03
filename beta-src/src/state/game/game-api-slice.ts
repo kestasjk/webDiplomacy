@@ -242,6 +242,16 @@ const gameApiSlice = createSlice({
     selectMessageCountryID(state, action) {
       state.messages.countryIDSelected = action.payload;
     },
+    toggleVoteState(state, action) {
+      const voteKey: string = action.payload;
+      let votes = current(state.overview.user.member.votes) as string[];
+      if (votes.includes(voteKey)) {
+        votes = votes.filter((vote) => vote !== voteKey);
+      } else {
+        votes = [...votes, voteKey];
+      }
+      state.overview.user.member.votes = votes;
+    },
   },
   extraReducers(builder) {
     builder

@@ -8,7 +8,10 @@ import { CountryTableData } from "../../interfaces/CountryTableData";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
-import { toggleVoteStatus } from "../../state/game/game-api-slice";
+import {
+  gameApiSliceActions,
+  toggleVoteStatus,
+} from "../../state/game/game-api-slice";
 import { useAppDispatch } from "../../state/hooks";
 
 interface WDInfoPanelProps {
@@ -24,36 +27,20 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
   maxDelays,
   userCountry,
 }): React.ReactElement {
-  const [voteState, setVoteState] = React.useState(userCountry.votes);
   const [viewport] = useViewport();
   const device = getDevice(viewport);
   const dispatch = useAppDispatch();
 
-  React.useEffect(() => {
-    setVoteState(userCountry.votes);
-  }, [userCountry]);
-
-  const toggleVote = (voteName: Vote) => {
-    const voteKey = Vote[voteName];
-    const newVoteState = {
-      ...voteState,
-      [voteKey]: !voteState[voteKey],
-    };
-
-    const currentGameID = String(gameID);
-    const countryID = String(userCountry.countryID);
-
-    setVoteState(newVoteState);
-
+  const toggleVote = (voteKey: Vote) => {
+    dispatch(gameApiSliceActions.toggleVoteState(voteKey));
     dispatch(
       toggleVoteStatus({
-        countryID,
-        gameID: currentGameID,
-        vote: voteKey.charAt(0).toUpperCase() + voteKey.slice(1),
+        countryID: String(userCountry.countryID),
+        gameID: String(gameID),
+        vote: voteKey,
       }),
     );
   };
-
   const mobileLandscapeLayout =
     device === Device.MOBILE_LANDSCAPE ||
     device === Device.MOBILE_LG_LANDSCAPE ||
@@ -64,7 +51,7 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
   return (
     <Box>
       <Box sx={{ p: padding }}>
-        <WDVoteButtons toggleVote={toggleVote} voteState={voteState} />
+        <WDVoteButtons toggleVote={toggleVote} voteState={userCountry.votes} />
       </Box>
       <Box
         sx={{
@@ -77,7 +64,10 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
            * always show current user at the top
            *
            */
-          countries={[{ ...userCountry, votes: voteState }, ...countries]}
+          countries={[
+            { ...userCountry, votes: userCountry.votes },
+            ...countries,
+          ]}
         />
       </Box>
     </Box>

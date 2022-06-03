@@ -23,5 +23,5 @@ export interface MemberData {
   unitNo: number;
   userID: number;
   username: string;
-  votes: unknown;
+  votes: string[];
 }

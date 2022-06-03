@@ -77,11 +77,7 @@ const WDUI: React.FC = function (): React.ReactElement {
       abbr: abbrMap[member.country],
       color: theme.palette[memberCountry].main,
       power: memberCountry,
-      votes: {
-        cancel: member.votes.includes(capitalizeString(Vote[Vote.cancel])),
-        draw: member.votes.includes(capitalizeString(Vote[Vote.draw])),
-        pause: member.votes.includes(capitalizeString(Vote[Vote.pause])),
-      },
+      votes: member.votes,
     };
   };
 

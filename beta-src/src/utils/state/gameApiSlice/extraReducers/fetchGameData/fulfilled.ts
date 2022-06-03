@@ -25,7 +25,7 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
     action.payload.data.contextVars?.context,
     "<BAD NEW_DATA_KEY>",
   );
-  console.log(`fetchGameDataFulfilled  ${oldPhaseKey} -> ${newPhaseKey}`);
+  // console.log(`fetchGameDataFulfilled  ${oldPhaseKey} -> ${newPhaseKey}`);
 
   // Upon phase change, sweep away all orders from the previous turn
   if (oldPhaseKey !== newPhaseKey) {
