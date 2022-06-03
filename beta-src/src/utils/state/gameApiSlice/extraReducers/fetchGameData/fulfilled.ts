@@ -10,6 +10,7 @@ import getOrdersMeta from "../../../../map/getOrdersMeta";
 import { getUnitsLive } from "../../../../map/getUnits";
 import generateMaps from "../../../generateMaps";
 import getPhaseKey from "../../../getPhaseKey";
+import resetOrder from "../../../resetOrder";
 import updateOrdersMeta from "../../../updateOrdersMeta";
 import { getLegalOrders } from "./precomputeLegalOrders";
 
@@ -30,6 +31,7 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
   // Upon phase change, sweep away all orders from the previous turn
   if (oldPhaseKey !== newPhaseKey) {
     state.ordersMeta = {};
+    resetOrder(state);
   }
 
   state.data = action.payload;
