@@ -2,9 +2,10 @@ import * as React from "react";
 import { Stack } from "@mui/material";
 import { GameState } from "../../state/interfaces/GameState";
 import WDNotification from "./WDNotification";
+import GameNotification from "../../state/interfaces/GameNotification";
 
 interface WDDeletePanelProps {
-  notifications: GameState["notifications"];
+  notifications: GameNotification[];
 }
 
 const WDDeletePanel: React.FC<WDDeletePanelProps> = function ({

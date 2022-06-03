@@ -14,7 +14,6 @@ import {
   saveOrders,
 } from "../../state/game/game-api-slice";
 import UpdateOrder from "../../interfaces/state/UpdateOrder";
-import processNextCommand from "../../utils/processNextCommand";
 import MoveStatus from "../../types/MoveStatus";
 import { RootState } from "../../state/store";
 
@@ -59,9 +58,6 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
 
   const dispatch = useAppDispatch();
   const device = getDevice(viewport);
-  const commands = useAppSelector(
-    (state) => state.game.commands.mapCommands.save,
-  );
   let isMobile: boolean;
   switch (device) {
     case Device.MOBILE:
@@ -125,25 +121,6 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
       toggleState(type);
     }
   };
-  const deleteCommand = (key) => {
-    dispatch(
-      gameApiSliceActions.deleteCommand({
-        type: "mapCommands",
-        id: "all",
-        command: key,
-      }),
-    );
-  };
-
-  const commandActions = {
-    SAVE_ORDERS: (command) => {
-      const [key, value] = command;
-      clickButton(Move.SAVE);
-      deleteCommand(key);
-    },
-  };
-
-  processNextCommand(commands, commandActions);
 
   const ordersMetaValues = Object.values(ordersMeta);
   const ordersLength = ordersMetaValues.length;
