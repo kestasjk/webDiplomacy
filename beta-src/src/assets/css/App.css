@@ -5,3 +5,12 @@
 .no-pointer-events {
   pointer-events: none;
 }
+
+.fade-in {
+  transition: opacity 0.25s;
+}
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+  pointer-events: none;
+}

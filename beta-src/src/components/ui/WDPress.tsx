@@ -10,21 +10,18 @@ import {
 import { Email, Send } from "@mui/icons-material";
 
 import Button from "@mui/material/Button";
-import Device from "../../enums/Device";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
-import useInterval from "../../hooks/useInterval";
 import WDMessageList from "./WDMessageList";
 import { CountryTableData } from "../../interfaces";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import {
-  fetchGameMessages,
   gameApiSliceActions,
-  gameMessages,
   gameOverview,
   markMessagesSeen,
   sendMessage,
 } from "../../state/game/game-api-slice";
+import { store } from "../../state/store";
 
 interface WDPressProps {
   children: React.ReactNode;
@@ -40,39 +37,25 @@ const WDPress: React.FC<WDPressProps> = function ({
   const [viewport] = useViewport();
   const device = getDevice(viewport);
   const dispatch = useAppDispatch();
-  const mobileLandscapeLayout =
-    device === Device.MOBILE_LANDSCAPE ||
-    device === Device.MOBILE_LG_LANDSCAPE ||
-    device === Device.MOBILE;
-  const padding = mobileLandscapeLayout ? "0 6px" : "0 16px";
+
+  const padding = 0;
 
   const [userMsg, setUserMsg] = React.useState("");
-  const [countryIDSelected, setCountryIDSelected] = React.useState(
-    // start with the first country
-    Math.min(...countries.map((country) => country.countryID)),
-  );
 
   const { user, gameID } = useAppSelector(gameOverview);
-  const messages = useAppSelector(gameMessages);
 
-  // FIXME: for now, crazily fetch all messages every 1sec
-  useInterval(() => {
-    if (user && gameID && messages && messages.outstandingRequests === 0) {
-      dispatch(gameApiSliceActions.updateOutstandingMessageRequests(1));
-      dispatch(
-        fetchGameMessages({
-          gameID: gameID as unknown as string,
-          countryID: user.member.countryID as unknown as string,
-          allMessages: "true",
-          sinceTime: messages.time as unknown as string,
-        }),
-      );
-    }
-  }, 1000);
+  const messages = useAppSelector(({ game }) => game.messages.messages);
+  const countryIDSelected = useAppSelector(
+    ({ game }) => game.messages.countryIDSelected,
+  );
+  const newMessagesFrom = useAppSelector(
+    ({ game }) => game.messages.newMessagesFrom,
+  );
 
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     // scroll to the bottom of the message list
+    // FIXME: should this happen if we get a message from a 3rd party?
     messagesEndRef.current?.scrollIntoView();
   }, [messages, countryIDSelected]);
 
@@ -88,57 +71,73 @@ const WDPress: React.FC<WDPressProps> = function ({
     setUserMsg("");
   };
 
-  if (messages.newMessagesFrom.includes(countryIDSelected)) {
+  const dispatchMessagesSeen = (countryID) => {
     // need to update locally and on the server
     // because we don't immediately re-fetch message data from the server
-    dispatch(gameApiSliceActions.processMessagesSeen(countryIDSelected));
+    dispatch(gameApiSliceActions.processMessagesSeen(countryID));
     dispatch(
       markMessagesSeen({
         countryID: String(userCountry.countryID),
         gameID: String(gameID),
-        seenCountryID: String(countryIDSelected),
+        seenCountryID: String(countryID),
       }),
     );
-  }
+  };
 
-  const countryButtons = countries
+  // capture enter for end, shift-enter for newline
+  const keydownHandler = (e) => {
+    const keyCode = e.which || e.keyCode;
+    const ENTER = 13;
+    if (keyCode === ENTER && !e.shiftKey) {
+      e.preventDefault();
+      clickSend();
+    }
+  };
+
+  const makeCountryButton = ({ country, countryID, color }) => {
+    return (
+      <Button
+        key={countryID}
+        sx={{
+          p: 1,
+          "&.MuiButton-text": { color },
+        }}
+        color="primary"
+        onClick={() => {
+          dispatchMessagesSeen(countryID);
+          dispatch(gameApiSliceActions.selectMessageCountryID(countryID));
+        }}
+        size="small"
+        variant={countryIDSelected === countryID ? "contained" : "text"}
+        startIcon={newMessagesFrom.includes(countryID) ? <Email /> : ""}
+      >
+        {country.slice(0, 3).toUpperCase()}
+      </Button>
+    );
+  };
+
+  let countryButtons = countries
     .sort((a, b) => a.countryID - b.countryID)
-    .map((country) => {
-      return (
-        <Button
-          key={country.countryID}
-          sx={{
-            p: 1,
-            "&.MuiButton-text": { color: country.color },
-          }}
-          color="primary"
-          onClick={() => setCountryIDSelected(country.countryID)}
-          size="small"
-          variant={
-            countryIDSelected === country.countryID ? "contained" : "text"
-          }
-          startIcon={
-            messages.newMessagesFrom.includes(country.countryID) ? (
-              <Email />
-            ) : (
-              ""
-            )
-          }
-        >
-          {country.country.slice(0, 3).toUpperCase()}
-        </Button>
-      );
-    });
+    .map(makeCountryButton);
+  const allButton = makeCountryButton({
+    country: "ALL",
+    countryID: 0,
+    color: "primary",
+  });
+  countryButtons = [allButton, ...countryButtons];
 
   return (
-    <Box sx={{ p: padding }}>
+    <Box
+      sx={{ p: padding }}
+      onClick={() => dispatchMessagesSeen(countryIDSelected)} // clicking anywhere in the window means you've seen it
+    >
       <Stack alignItems="center" sx={{ p: padding }}>
-        <ButtonGroup className="dialogue-countries">
+        <ButtonGroup className="dialogue-countries" sx={{ display: "inline" }}>
           {countryButtons}
         </ButtonGroup>
       </Stack>
       <WDMessageList
-        messages={messages.messages}
+        messages={messages}
         countries={[...countries, userCountry]} // sorry, its just silly to exclude userCountry from this table
         userCountry={userCountry}
         countryIDSelected={countryIDSelected}
@@ -146,6 +145,16 @@ const WDPress: React.FC<WDPressProps> = function ({
       />
       <Box>
         <Stack alignItems="center" direction="row">
+          {/* <Button
+            href="#message-reload-button"
+            onClick={dispatchFetchMessages}
+            style={{
+              maxWidth: "12px",
+              minWidth: "12px",
+            }}
+          >
+            <AutorenewIcon sx={{ fontSize: "medium" }} />
+          </Button> */}
           <TextField
             id="user-msg"
             label="Send Message"
@@ -154,7 +163,9 @@ const WDPress: React.FC<WDPressProps> = function ({
             multiline
             maxRows={4}
             onChange={(text) => setUserMsg(text.target.value)}
+            onKeyDown={keydownHandler}
             fullWidth
+            sx={{ m: "0 0 0 6px" }}
             InputProps={{
               endAdornment: (
                 <>

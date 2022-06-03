@@ -9,6 +9,7 @@ interface WDButtonProps {
   onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
   startIcon?: React.ReactNode | undefined;
   sx?: SxProps | undefined;
+  doAnimateGlow?: boolean;
 }
 
 const WDButton: React.FC<WDButtonProps> = function ({
@@ -17,6 +18,7 @@ const WDButton: React.FC<WDButtonProps> = function ({
   disabled,
   onClick,
   startIcon,
+  doAnimateGlow,
   sx,
 }): React.ReactElement {
   return (
@@ -27,7 +29,29 @@ const WDButton: React.FC<WDButtonProps> = function ({
       onClick={onClick}
       startIcon={startIcon}
       variant="contained"
+      style={{
+        animation:
+          doAnimateGlow && !disabled ? "glowing 1.5s ease infinite" : "",
+        pointerEvents: "auto",
+      }}
     >
+      <style>
+        {`
+        @keyframes glowing {
+          0% {
+            background-color: #447733;
+            box-shadow: 0 0 15px #447733;
+          }
+          50% {
+            background-color: #000000;
+            box-shadow: 0 0 5px #000000;
+          }
+          100% {
+            background-color: #447733;
+            box-shadow: 0 0 15px #447733;
+          }
+        }`}
+      </style>
       {children}
     </Button>
   );
@@ -39,6 +63,7 @@ WDButton.defaultProps = {
   onClick: undefined,
   startIcon: undefined,
   sx: undefined,
+  doAnimateGlow: false,
 };
 
 export default WDButton;

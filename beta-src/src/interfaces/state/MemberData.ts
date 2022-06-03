@@ -1,5 +1,13 @@
 import IntegerRange from "../../types/IntegerRange";
 
+export interface OrderStatus {
+  Completed: boolean;
+  None: boolean;
+  Ready: boolean;
+  Saved: boolean;
+  Hidden: boolean;
+}
+
 export interface MemberData {
   bet: IntegerRange<5, 96>;
   country: string;
@@ -8,17 +16,12 @@ export interface MemberData {
   missedPhases: number;
   newMessagesFrom: number[];
   online: boolean;
-  orderStatus: {
-    Completed: boolean;
-    None: boolean;
-    Ready: boolean;
-    Saved: boolean;
-  };
+  orderStatus: OrderStatus;
   status: string;
   supplyCenterNo: number;
   timeLoggedIn: number;
   unitNo: number;
   userID: number;
   username: string;
-  votes: unknown;
+  votes: string[];
 }

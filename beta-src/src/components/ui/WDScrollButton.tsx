@@ -7,6 +7,7 @@ interface ScrollButtonProps {
   className: string;
   direction: ScrollButtonState;
   disabled?: boolean;
+  doAnimateGlow?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
 }
 
@@ -14,6 +15,7 @@ const WDScrollButton: React.FC<ScrollButtonProps> = function ({
   className,
   direction,
   disabled,
+  doAnimateGlow,
   onClick,
 }): React.ReactElement {
   return (
@@ -27,6 +29,9 @@ const WDScrollButton: React.FC<ScrollButtonProps> = function ({
           backgroundColor: "#fff",
           boxShadow: "none",
         },
+        animation:
+          doAnimateGlow && !disabled ? "scrollglowing 1.5s ease infinite" : "",
+        pointerEvents: "auto",
       }}
       className={className}
       disabled={disabled}
@@ -34,6 +39,20 @@ const WDScrollButton: React.FC<ScrollButtonProps> = function ({
       onClick={onClick}
       variant="contained"
     >
+      <style>
+        {`
+        @keyframes scrollglowing {
+          0% {
+            background-color: #66ff55;
+          }
+          50% {
+            background-color: #ffffff;
+          }
+          100% {
+            background-color: #66ff55;
+          }
+        }`}
+      </style>
       <WDPhaseArrowIcon direction={direction} disabled={disabled} />
     </Button>
   );
@@ -41,6 +60,7 @@ const WDScrollButton: React.FC<ScrollButtonProps> = function ({
 
 WDScrollButton.defaultProps = {
   disabled: false,
+  doAnimateGlow: false,
   onClick: undefined,
 };
 

@@ -25,5 +25,12 @@ export default function useViewport(): [Viewport, () => void] {
     return () => window.removeEventListener("resize", setViewport);
   }, []);
 
+  // need to update the viewport when the mobile device
+  // orientation changes as well.
+  React.useEffect(() => {
+    window.addEventListener("orientationchange", setViewport);
+    return () => window.removeEventListener("orientationchange", setViewport);
+  }, []);
+
   return [viewport, setViewport];
 }

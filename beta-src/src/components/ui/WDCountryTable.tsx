@@ -10,6 +10,7 @@ import {
   tableCellClasses,
   useTheme,
 } from "@mui/material";
+import { Lock } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import BetIcon from "./icons/country-table/WDBet";
 import CentersIcon from "./icons/country-table/WDCenters";
@@ -21,6 +22,8 @@ import PowerIcon from "./icons/country-table/WDPower";
 import UnitsIcon from "./icons/country-table/WDUnits";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
+import WDCheckmarkIcon from "./icons/WDCheckmarkIcon";
+import Vote from "../../enums/Vote";
 
 interface WDCountryTableProps {
   countries: CountryTableData[];
@@ -36,6 +39,12 @@ interface Column {
 
 const columns: readonly Column[] = [
   { id: "power", label: "Power", icon: PowerIcon, align: "left" },
+  {
+    id: "orderStatus",
+    label: "Status",
+    icon: WDCheckmarkIcon,
+    align: "center",
+  },
   { id: "unitNo", label: "Units", icon: UnitsIcon, align: "center" },
   {
     id: "supplyCenterNo",
@@ -70,7 +79,7 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
     device === Device.MOBILE ||
     device === Device.MOBILE_LG;
   const WDTableCell = styled(TableCell)(() => {
-    const padding = isMobile ? 6 : "6px 16px";
+    const padding = "8px 5px 0px 5px";
     return {
       [`&.${tableCellClasses.head}`]: {
         borderBottom: 0,
@@ -107,7 +116,7 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                     color: theme.palette.primary.main,
                     fontWeight: 400,
                   };
-                  let value: string;
+                  let value;
                   switch (column.id) {
                     case "power":
                       value = isMobile
@@ -116,6 +125,22 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                       style.color = country.color;
                       style.fontWeight = 700;
                       break;
+                    case "orderStatus":
+                      return (
+                        <WDTableCell key={column.id} align={column.align}>
+                          {country.orderStatus.Hidden && (
+                            <Lock sx={{ fontSize: "16px", color: "#666" }} />
+                          )}
+                          {(country.orderStatus.Saved ||
+                            country.orderStatus.Ready) && (
+                            <WDCheckmarkIcon
+                              color={
+                                (country.orderStatus.Ready && "#0A0") || "#888"
+                              }
+                            />
+                          )}
+                        </WDTableCell>
+                      );
                     case "excusedMissedTurns":
                       value = `${country[column.id]}/${maxDelays}`;
                       break;
@@ -130,51 +155,55 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                   );
                 })}
               </TableRow>
-              {country.votes && (
-                <TableRow>
-                  <WDTableCell
+              <TableRow>
+                <WDTableCell
+                  sx={{
+                    paddingTop: "0px !important",
+                    fontSize: "10pt",
+                    fontFamily: "Roboto",
+                  }}
+                >
+                  {country.username}
+                </WDTableCell>
+                <WDTableCell
+                  sx={{
+                    fontSize: "70%",
+                    paddingTop: "0px !important",
+                    fontWeight: 700,
+                  }}
+                  colSpan={columns.length}
+                >
+                  <Box
                     sx={{
-                      fontSize: "70%",
-                      paddingTop: "0px !important",
-                      fontWeight: 700,
+                      color: theme.palette.action.disabledBackground,
+                      display: country.votes.length ? "inline-block" : "none",
+                      marginRight: 1.5,
                     }}
-                    colSpan={columns.length}
                   >
-                    {Object.values(country.votes).reduce(
-                      (prev, curr) => prev + +curr,
-                      0,
-                    ) > 0 && (
-                      <Box
-                        sx={{
-                          color: theme.palette.action.disabledBackground,
-                          display: "inline-block",
-                          marginRight: 1.5,
-                        }}
-                      >
-                        VOTED
-                      </Box>
-                    )}
-                    {Object.entries(country.votes).map(
-                      (data) =>
-                        data[1] && (
-                          <Chip
-                            key={`${country.power}-vote-${data[0]}`}
-                            size="small"
-                            label={data[0].toUpperCase()}
-                            sx={{
-                              color: theme.palette.secondary.main,
-                              background: country.color,
-                              fontWeight: 900,
-                              fontSize: "90%",
-                              height: 14,
-                              marginRight: 1,
-                            }}
-                          />
-                        ),
-                    )}
-                  </WDTableCell>
-                </TableRow>
-              )}
+                    VOTED
+                  </Box>
+
+                  {Object.keys(Vote).map(
+                    (vote) =>
+                      country.votes.includes(vote) && (
+                        <Chip
+                          key={`${country.power}-vote-${vote}`}
+                          size="small"
+                          label={vote.toUpperCase()}
+                          sx={{
+                            color: theme.palette.secondary.main,
+                            background: country.color,
+                            fontWeight: 900,
+                            fontSize: "90%",
+                            height: 14,
+                            marginRight: 1,
+                          }}
+                        />
+                      ),
+                  )}
+                </WDTableCell>
+                <WDTableCell />
+              </TableRow>
             </React.Fragment>
           ))}
         </TableBody>

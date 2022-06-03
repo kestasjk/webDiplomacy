@@ -1,8 +1,9 @@
 /* eslint-disable no-bitwise */
 import * as React from "react";
+import provincesMapData from "../../../data/map/ProvincesMapData";
 import BuildUnit from "../../../enums/BuildUnit";
 import Country from "../../../enums/Country";
-import Territory from "../../../enums/map/variants/classic/Territory";
+import Province from "../../../enums/map/variants/classic/Province";
 import UIState from "../../../enums/UIState";
 import WDArmyIcon from "../../ui/units/WDArmyIcon";
 import WDFleetIcon from "../../ui/units/WDFleetIcon";
@@ -16,7 +17,7 @@ export interface BuildData {
   ) => void;
   country: Country;
   canBuild: BuildUnit;
-  territoryName: keyof Territory | null;
+  province: Province;
   unitSlotName: string;
   toTerrID: string;
 }
@@ -26,19 +27,16 @@ const WDBuildUnitButtons: React.FC<BuildData> = function ({
   clickCallback,
   country,
   canBuild,
-  territoryName,
+  province,
   unitSlotName,
   toTerrID,
 }): React.ReactElement {
-  const label: SVGTextElement = document.getElementById(
-    `${territoryName}-label-${unitSlotName}`,
-  ) as unknown as SVGTextElement;
-  const territory: SVGSVGElement = document.getElementById(
-    `${territoryName}-territory`,
-  ) as unknown as SVGSVGElement;
-  const { x, y } = label.getBBox();
-  let svgX = Number(territory.getAttribute("x")) + x;
-  let svgY = Number(territory.getAttribute("y")) + y;
+  const provinceMapData = provincesMapData[province];
+  let svgX =
+    provinceMapData.x + provinceMapData.unitSlotsBySlotName[unitSlotName].x;
+  let svgY =
+    provinceMapData.y + provinceMapData.unitSlotsBySlotName[unitSlotName].y;
+
   let rw = 70;
   const rh = 70;
   const rBorder = 10;
@@ -51,51 +49,51 @@ const WDBuildUnitButtons: React.FC<BuildData> = function ({
   const groupStyle: React.CSSProperties = {
     cursor: "pointer",
   };
-  if (label) {
-    const cx = 0 + rw / 2;
-    const cy = 0 + rh / 2;
-    const r = 25;
-    const iconX = cx - r;
-    const iconY = cy - r;
-    const labelBB = label.getBBox();
-    svgY -= rh + labelBB.height;
-    if (canBuild & BuildUnit.Army) {
-      buildButtons.push(
-        <g
-          style={groupStyle}
-          onClick={() => {
-            clickCallback(availableOrder, BuildUnit.Army, toTerrID);
-          }}
-        >
-          <circle fill="white" r={r} cx={cx} cy={cy} />
-          <svg x={iconX} y={iconY} style={iconStyle}>
-            <WDArmyIcon country={country} iconState={UIState.BUILD} />
-          </svg>
-        </g>,
-      );
-    }
-    if (canBuild & BuildUnit.Fleet) {
-      let shift = 0;
-      if (buildButtons.length) {
-        shift = rw - rBorder;
-        rw = rw * 2 - rBorder;
-      }
-      buildButtons.push(
-        <g
-          style={groupStyle}
-          onClick={() => {
-            clickCallback(availableOrder, BuildUnit.Fleet, toTerrID);
-          }}
-        >
-          <circle fill="white" r={r} cx={cx + shift} cy={cy} />
-          <svg x={iconX + shift} y={iconY} style={iconStyle}>
-            <WDFleetIcon country={country} iconState={UIState.BUILD} />
-          </svg>
-        </g>,
-      );
-    }
-    svgX -= (rw - labelBB.width) / 2;
+
+  const cx = 0 + rw / 2;
+  const cy = 0 + rh / 2;
+  const r = 25;
+  const iconX = cx - r;
+  const iconY = cy - r;
+  svgY -= rh;
+  if (canBuild & BuildUnit.Army) {
+    buildButtons.push(
+      <g
+        key="Army"
+        style={groupStyle}
+        onClick={() => {
+          clickCallback(availableOrder, BuildUnit.Army, toTerrID);
+        }}
+      >
+        <circle fill="white" r={r} cx={cx} cy={cy} />
+        <svg x={iconX} y={iconY} style={iconStyle}>
+          <WDArmyIcon country={country} iconState={UIState.BUILD} />
+        </svg>
+      </g>,
+    );
   }
+  if (canBuild & BuildUnit.Fleet) {
+    let shift = 0;
+    if (buildButtons.length) {
+      shift = rw - rBorder;
+      rw = rw * 2 - rBorder;
+    }
+    buildButtons.push(
+      <g
+        key="Fleet"
+        style={groupStyle}
+        onClick={() => {
+          clickCallback(availableOrder, BuildUnit.Fleet, toTerrID);
+        }}
+      >
+        <circle fill="white" r={r} cx={cx + shift} cy={cy} />
+        <svg x={iconX + shift} y={iconY} style={iconStyle}>
+          <WDFleetIcon country={country} iconState={UIState.BUILD} />
+        </svg>
+      </g>,
+    );
+  }
+  svgX -= rw / 2;
   return (
     <svg x={svgX} y={svgY}>
       <rect

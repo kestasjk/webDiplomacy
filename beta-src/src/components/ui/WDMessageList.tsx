@@ -28,11 +28,13 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
   const height = "350px";
   const filteredMessages = messages.filter(
     (message) =>
-      message.fromCountryID === countryIDSelected ||
-      message.toCountryID === countryIDSelected,
+      (message.fromCountryID === countryIDSelected ||
+        message.toCountryID === countryIDSelected) &&
+      (countryIDSelected === 0 || message.toCountryID !== 0), // public messages in public chat
   );
   const messageComponents = filteredMessages.map((message: GameMessage) => (
     <WDMessage
+      key={`${message.timeSent}:${message.fromCountryID}:${message.toCountryID}:${message.message}`}
       message={message}
       userCountry={userCountry}
       countries={countries}

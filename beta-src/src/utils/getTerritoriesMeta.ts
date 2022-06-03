@@ -1,5 +1,7 @@
-import TerritoryMap from "../data/map/variants/classic/TerritoryMap";
-import { ITerrStatus } from "../models/Interfaces";
+import TerritoryMap, {
+  webdipNameToTerritory,
+} from "../data/map/variants/classic/TerritoryMap";
+import { IProvinceStatus } from "../models/Interfaces";
 import { APITerritories } from "../state/interfaces/GameDataResponse";
 import TerritoriesMeta from "../state/interfaces/TerritoriesState";
 
@@ -7,7 +9,8 @@ export default function getTerritoriesMeta(data): TerritoriesMeta {
   const {
     territories,
     territoryStatuses,
-  }: { territories: APITerritories; territoryStatuses: ITerrStatus[] } = data;
+  }: { territories: APITerritories; territoryStatuses: IProvinceStatus[] } =
+    data;
 
   const territoriesMeta: TerritoriesMeta = {};
 
@@ -16,7 +19,7 @@ export default function getTerritoriesMeta(data): TerritoriesMeta {
       id,
       { coast, coastParentID, countryID: homeCountryID, name, supply, type },
     ]) => {
-      const mappedTerritory = TerritoryMap[name];
+      const territory = webdipNameToTerritory[name];
       const territoryStatus = territoryStatuses.find(
         ({ id: territoryID }) => id === territoryID,
       );
@@ -31,24 +34,32 @@ export default function getTerritoriesMeta(data): TerritoriesMeta {
             : territoryStatus.ownerCountryID;
       }
 
-      const { territory } = mappedTerritory;
       if (!territoriesMeta[territory]) {
         territoriesMeta[territory] = {
           coast,
           coastParentID,
           countryID,
           id,
-          name,
           ownerCountryID,
           standoff: territoryStatus ? territoryStatus.standoff : false,
           supply: supply === "Yes",
           territory,
           type,
           unitID: territoryStatus ? territoryStatus.unitID : null,
+          coastChildIDs: [],
         };
       }
     },
   );
+  Object.values(territoriesMeta).forEach((meta) => {
+    if (meta.coastParentID !== meta.id) {
+      const parent = Object.values(territoriesMeta).find(
+        (m) => m.id === meta.coastParentID,
+      )!.territory;
+
+      territoriesMeta[parent]!.coastChildIDs.push(meta.id);
+    }
+  });
 
   return territoriesMeta;
 }

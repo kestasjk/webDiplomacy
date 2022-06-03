@@ -255,7 +255,7 @@ class GameState {
 		global $DB;
 
 		// Loading game state
-		$gameRow = $DB->sql_hash("SELECT id, variantID, potType, turn, phase, gameOver, pressType, drawType, processTime, phaseMinutes FROM wD_Games WHERE id=".$this->gameID);
+		$gameRow = $DB->sql_hash("SELECT id, variantID, potType, turn, phase, gameOver, pressType, drawType, processTime, phaseMinutes, anon FROM wD_Games WHERE id=".$this->gameID);
 		if ( ! $gameRow )
 			throw new \Exception("Unknown game ID.");
 		$this->variantID = intval($gameRow['variantID']);
@@ -277,7 +277,7 @@ class GameState {
 		$this->orderStatuses = [];
 		while ($member = $DB->tabl_hash($orderStatusData)) {
 			$countryID = $member["countryID"];
-			$orderStatus = $member["orderStatus"];
+			$orderStatus = $gameRow['anon'] == 'Yes' ? 'Hidden' : $member["orderStatus"];
 			$this->orderStatuses[$countryID] = $orderStatus;
 		}	
 
@@ -339,7 +339,7 @@ class GameState {
 		$preGameCentersTabl = $DB->sql_tabl(
 			"SELECT t.id, t.countryID
 				  FROM wD_Territories t
-				  WHERE t.supply = 'Yes' AND t.mapID = ".$mapID
+				  WHERE t.mapID = ".$mapID
 		);
 		while ($row = $DB->tabl_hash($preGameCentersTabl)) {
 			array_push($preGameCenters, new Territory($row['id'], $row['countryID']));
@@ -351,7 +351,7 @@ class GameState {
 				  FROM wD_Territories t
 				  JOIN wD_TerrStatusArchive ts
 				  ON ( ts.terrID = t.id )
-				  WHERE ts.gameID = ".$this->gameID." AND t.supply = 'Yes' AND t.mapID=".$mapID
+				  WHERE ts.gameID = ".$this->gameID." AND t.mapID=".$mapID
 		);
 		while ($row = $DB->tabl_hash($centersTabl)) {
 			$inGameCenters[intval($row['turn'])][] = new Territory($row['id'], $row['countryID']);

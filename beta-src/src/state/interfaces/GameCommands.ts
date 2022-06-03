@@ -1,95 +1,17 @@
-import { MTerritory } from "../../data/map/variants/classic/TerritoryMap";
 import BuildUnit from "../../enums/BuildUnit";
-import Country from "../../enums/Country";
 import Territory from "../../enums/map/variants/classic/Territory";
-import UIState from "../../enums/UIState";
-import { IUnit } from "../../models/Interfaces";
-import UnitSlotName from "../../types/map/UnitSlotName";
-import UnitType from "../../types/UnitType";
-import GetArrayElementType from "../../utils/getArrayElementType";
+import { UnitSlotName } from "../../interfaces/map/ProvinceMapData";
+import { TerritoryMeta } from "./TerritoriesState";
 
-export const ValidCommands = [
-  "BUILD",
-  "CAPTURED",
-  "DESTROY",
-  "DISABLE_TERRITORY_CLICK",
-  "DISBAND",
-  "DISLODGED",
-  "DRAW_ARROW",
-  "ENABLE_TERRITORY_CLICK",
-  "HOLD",
-  "INVALID_CLICK",
-  "MOVE",
-  "NONE",
-  "REMOVE_ARROW",
-  "REMOVE_BUILD",
-  "RETREAT",
-  "SAVE_ORDERS",
-  "SELECTED",
-  "SET_UNIT",
-] as const;
-
-interface DrawArrowCommand {
-  from: Territory;
-  to: Territory;
-  type: "move";
-}
-
-interface ClickCommand {
-  evt: unknown;
-  territoryName: string;
-}
-
-interface BuildCommand {
+export interface BuildCommand {
   availableOrder: string;
   canBuild: BuildUnit;
-  toTerrID: string;
+  territoryMeta: TerritoryMeta;
   unitSlotName: UnitSlotName;
 }
 
-interface RemoveBuild {
+export interface FlyoutCommand {
   orderID: string;
+  territory?: Territory;
+  unitSlotName: string;
 }
-
-interface SetUnitCommand {
-  componentType?: "Game" | "Icon";
-  country?: Country;
-  iconState?: UIState;
-  mappedTerritory?: MTerritory;
-  unit?: IUnit;
-  unitType?: UnitType;
-  unitSlotName: UnitSlotName;
-}
-
-export type Command = GetArrayElementType<typeof ValidCommands>;
-
-export interface GameCommand {
-  command: Command;
-  data?: {
-    arrow?: DrawArrowCommand;
-    build?: {
-      territoryName: keyof Territory;
-      builds: BuildCommand[];
-    };
-    click?: ClickCommand;
-    country?: keyof Country | "none";
-    orderID?: string;
-    removeBuild?: RemoveBuild;
-    setUnit?: SetUnitCommand;
-  };
-}
-
-export interface GameCommandContainer {
-  [key: string]: Map<string, GameCommand>;
-}
-
-export type GameCommandType =
-  | "territoryCommands"
-  | "unitCommands"
-  | "mapCommands";
-
-type GameCommands = {
-  [key in GameCommandType]: GameCommandContainer;
-};
-
-export default GameCommands;

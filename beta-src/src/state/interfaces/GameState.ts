@@ -1,5 +1,4 @@
-import BoardClass from "../../models/BoardClass";
-import GameCommands from "./GameCommands";
+import { BuildCommand, FlyoutCommand } from "./GameCommands";
 import GameDataResponse from "./GameDataResponse";
 import GameErrorResponse from "./GameErrorResponse";
 import GameOverviewResponse from "./GameOverviewResponse";
@@ -9,28 +8,28 @@ import GameMessages from "./GameMessages";
 import OrderState from "./OrderState";
 import OrdersMeta from "./SavedOrders";
 import TerritoriesMeta from "./TerritoriesState";
-import GameNotification from "./GameNotification";
-import UserActivity from "./UserActivity";
+import ViewedPhaseState from "./ViewedPhaseState";
+import { LegalOrders } from "../../utils/state/gameApiSlice/extraReducers/fetchGameData/precomputeLegalOrders";
+import GameAlert from "./GameAlert";
 
 export type ApiStatus = "idle" | "loading" | "succeeded" | "failed";
 
 export interface GameState {
-  activity: UserActivity;
   apiStatus: ApiStatus;
-  board: BoardClass | undefined;
-  data: GameDataResponse;
+  data: GameDataResponse; // Directly from API
   error: GameErrorResponse;
-  maps: GameStateMaps;
-  overview: GameOverviewResponse;
-  order: OrderState;
-  ordersMeta: OrdersMeta;
-  ownUnits: string[];
+  maps: GameStateMaps; // Computed as a function of GameDataResponse
+  overview: GameOverviewResponse; // Directly from API
+  ordersMeta: OrdersMeta; // Stateful, tracks user order input
+  ownUnits: string[]; // Computed as a function of GameDataResponse
   territoriesMeta: TerritoriesMeta;
-  transition: boolean;
-  mustDestroyUnitsBuildPhase: boolean;
-  commands: GameCommands;
-  status: GameStatusResponse;
+  viewedPhaseState: ViewedPhaseState; // Stateful, tracks what phase the user views.
+  status: GameStatusResponse; // Directly from API
   messages: GameMessages;
-  notifications: GameNotification[];
-  lastUnitClick: number;
+  outstandingOverviewRequests: boolean; // Stateful, restricts querying api for overview
+  outstandingMessageRequests: boolean; // Stateful, restricts querying api for messages
+  needsGameData: boolean; // Stateful, determines when game data has changed and needs refresh
+  order: OrderState;
+  legalOrders: LegalOrders; // Computed as a function of GameOverviewResponse, GameDataResponse, GameStateMaps
+  alert: GameAlert;
 }

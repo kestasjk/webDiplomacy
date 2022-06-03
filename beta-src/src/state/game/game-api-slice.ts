@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
 import ApiRoute from "../../enums/ApiRoute";
 import {
   getGameApiRequest,
@@ -8,36 +8,36 @@ import {
 import GameDataResponse from "../interfaces/GameDataResponse";
 import GameErrorResponse from "../interfaces/GameErrorResponse";
 import GameOverviewResponse from "../interfaces/GameOverviewResponse";
-import GameCommands from "../interfaces/GameCommands";
 import { ApiStatus, GameState } from "../interfaces/GameState";
 import GameStatusResponse from "../interfaces/GameStatusResponse";
-import GameMessages from "../interfaces/GameMessages";
+import GameMessages, { MessageStatus } from "../interfaces/GameMessages";
+import ViewedPhaseState from "../interfaces/ViewedPhaseState";
 import { RootState } from "../store";
 import initialState from "./initial-state";
 import OrdersMeta from "../interfaces/SavedOrders";
 import OrderState from "../interfaces/OrderState";
-import drawBuilds from "../../utils/map/drawBuilds";
 import mergeMessageArrays from "../../utils/state/mergeMessageArrays";
+import updateOrder from "../../utils/state/updateOrder";
 import updateOrdersMeta from "../../utils/state/updateOrdersMeta";
-import highlightMapTerritoriesBasedOnStatuses from "../../utils/map/highlightMapTerritoriesBasedOnStatuses";
 import UpdateOrdersMetaAction from "../../interfaces/state/UpdateOrdersMetaAction";
 import SavedOrdersConfirmation from "../../interfaces/state/SavedOrdersConfirmation";
 import OrderSubmission from "../../interfaces/state/OrderSubmission";
 import resetOrder from "../../utils/state/resetOrder";
-import processUnitClick from "../../utils/state/gameApiSlice/reducers/processUnitClick";
 import processMapClick from "../../utils/state/gameApiSlice/reducers/processMapClick";
-import deleteCommand from "../../utils/state/gameApiSlice/reducers/deleteCommand";
-import dispatchCommand from "../../utils/state/gameApiSlice/reducers/dispatchCommand";
 import fetchGameDataFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameData/fulfilled";
-import updateUserActivity from "../../utils/state/gameApiSlice/reducers/updateUserActivity";
+import TerritoriesMeta from "../interfaces/TerritoriesState";
 import fetchGameOverviewFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameOverview/fulfilled";
+import fetchGameStatusFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameStatus/fulfilled";
 import saveOrdersFulfilled from "../../utils/state/gameApiSlice/extraReducers/saveOrders/fulfilled";
-import getCurrentUnixTimestamp from "../../utils/getCurrentUnixTimestamp";
+import shallowArraysEqual from "../../utils/shallowArraysEqual";
+import { setAlert } from "../interfaces/GameAlert";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
   async (queryParams: { countryID?: string; gameID: string }) => {
     const { data } = await getGameApiRequest(ApiRoute.GAME_DATA, queryParams);
+    // console.log("fetchGameData");
+    // console.log(data);
     return data as GameDataResponse;
   },
 );
@@ -48,6 +48,8 @@ export const fetchGameOverview = createAsyncThunk(
     const {
       data: { data },
     } = await getGameApiRequest(ApiRoute.GAME_OVERVIEW, queryParams);
+    // console.log("fetchGameOverview");
+    // console.log(data);
     return data as GameOverviewResponse;
   },
 );
@@ -56,6 +58,8 @@ export const fetchGameStatus = createAsyncThunk(
   ApiRoute.GAME_STATUS,
   async (queryParams: { countryID: string; gameID: string }) => {
     const { data } = await getGameApiRequest(ApiRoute.GAME_STATUS, queryParams);
+    // console.log("fetchGameStatus");
+    // console.log(data);
     return data as GameStatusResponse;
   },
 );
@@ -135,35 +139,54 @@ export const saveOrders = createAsyncThunk(
     formData.set("context", data.context);
     formData.set("contextKey", data.contextKey);
     const response = await submitOrders(formData, data.queryParams);
-    const confirmation: string = response.headers["x-json"] || "";
-    const parsed: SavedOrdersConfirmation = JSON.parse(
-      confirmation.substring(1, confirmation.length - 1),
-    );
+    // console.log({ response });
+    // Sometimes webdip sends back a response that doesn't have the "x-json" header at all,
+    // instead it has an HTML page displaying an error message.
+    // We're of course not going to try to render a whole HTML page, so instead we simply
+    // manually construct an error message.
+    const confirmation: string = response.headers["x-json"];
+    let parsed: SavedOrdersConfirmation;
+    if (!confirmation) {
+      parsed = {
+        invalid: true,
+        notice:
+          "Error saving orders, no server response or game already advanced to next phase",
+        orders: {},
+      };
+    } else {
+      parsed = JSON.parse(confirmation.substring(1, confirmation.length - 1));
+    }
     return parsed;
   },
 );
 
 export const loadGameData =
   (gameID: string, countryID: string) => async (dispatch) => {
+    // console.log("loadGameData");
     await Promise.all([
       dispatch(fetchGameData({ gameID, countryID })),
-      dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
+      // dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
       dispatch(fetchGameStatus({ gameID, countryID })),
     ]);
   };
 
 export const loadGame = (gameID: string) => async (dispatch) => {
+  // console.log("loadGame");
   const {
     payload: {
       user: {
         member: { countryID },
       },
+      phase,
     },
   } = await dispatch(
     fetchGameOverview({
       gameID,
     }),
   );
+  if (phase === "Pre-game") {
+    return;
+  }
   await Promise.all([
     dispatch(fetchGameData({ gameID, countryID })),
     dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
@@ -184,38 +207,70 @@ const gameApiSlice = createSlice({
   initialState,
   reducers: {
     resetOrder,
-    updateUserActivity,
+    updateOrder(state, action) {
+      updateOrder(state, action.payload);
+    },
     updateOrdersMeta(state, action: UpdateOrdersMetaAction) {
       updateOrdersMeta(state, action.payload);
     },
     updateTerritoriesMeta(state, action) {
       state.territoriesMeta = action.payload;
     },
-    processUnitClick,
     processMapClick,
-    deleteCommand,
-    highlightMapTerritoriesBasedOnStatuses,
-    drawBuilds,
-    dispatchCommand,
     processMessagesSeen(state, action) {
+      const countryID = action.payload;
       state.messages.newMessagesFrom = state.messages.newMessagesFrom.filter(
-        (e) => e !== action.payload,
+        (e) => e !== countryID,
+      );
+      state.messages.messages
+        .filter((m) => [m.fromCountryID, m.toCountryID].includes(countryID))
+        .forEach((m) => {
+          m.status = MessageStatus.READ;
+        });
+    },
+    setNeedsGameData(state, action) {
+      state.needsGameData = action.payload;
+    },
+    changeViewedPhaseIdxBy(state, action) {
+      let newIdx = state.viewedPhaseState.viewedPhaseIdx + action.payload;
+      newIdx = Math.min(newIdx, state.status.phases.length - 1);
+      newIdx = Math.max(newIdx, 0);
+      state.viewedPhaseState.viewedPhaseIdx = newIdx;
+      state.viewedPhaseState.latestPhaseViewed = Math.max(
+        state.viewedPhaseState.latestPhaseViewed,
+        newIdx,
       );
     },
-    updateOutstandingMessageRequests(state, action) {
-      state.messages.outstandingRequests += action.payload;
+    setViewedPhaseToLatestPhaseViewed(state) {
+      state.viewedPhaseState.viewedPhaseIdx =
+        state.viewedPhaseState.latestPhaseViewed;
+    },
+    setAlert(state, action) {
+      setAlert(state.alert, action.payload);
+    },
+    hideAlert(state, action) {
+      state.alert.visible = false;
+    },
+    selectMessageCountryID(state, action) {
+      state.messages.countryIDSelected = action.payload;
+    },
+    toggleVoteState(state, action) {
+      const voteKey: string = action.payload;
+      let votes = current(state.overview.user.member.votes) as string[];
+      if (votes.includes(voteKey)) {
+        votes = votes.filter((vote) => vote !== voteKey);
+      } else {
+        votes = [...votes, voteKey];
+      }
+      state.overview.user.member.votes = votes;
     },
   },
   extraReducers(builder) {
     builder
       // fetchGameData
       .addCase(fetchGameData.pending, (state) => {
+        // console.log("fetchGameData pending!");
         state.apiStatus = "loading";
-        state.transition = true;
-        state.ordersMeta = {};
-        if (state.overview.phase !== "Builds") {
-          state.mustDestroyUnitsBuildPhase = false;
-        }
       })
       .addCase(fetchGameData.fulfilled, fetchGameDataFulfilled)
       .addCase(fetchGameData.rejected, (state, action) => {
@@ -224,23 +279,20 @@ const gameApiSlice = createSlice({
       })
       // fetchGameOverview
       .addCase(fetchGameOverview.pending, (state) => {
+        state.outstandingOverviewRequests = true;
         state.apiStatus = "loading";
-        state.activity.makeNewCall = false;
-        state.activity.lastCall = getCurrentUnixTimestamp();
       })
       .addCase(fetchGameOverview.fulfilled, fetchGameOverviewFulfilled)
       .addCase(fetchGameOverview.rejected, (state, action) => {
         state.apiStatus = "failed";
         state.error = action.error.message;
+        state.outstandingOverviewRequests = false;
       })
       // fetchGameStatus
       .addCase(fetchGameStatus.pending, (state) => {
         state.apiStatus = "loading";
       })
-      .addCase(fetchGameStatus.fulfilled, (state, action) => {
-        state.apiStatus = "succeeded";
-        state.status = action.payload;
-      })
+      .addCase(fetchGameStatus.fulfilled, fetchGameStatusFulfilled)
       .addCase(fetchGameStatus.rejected, (state, action) => {
         state.apiStatus = "failed";
         state.error = action.error.message;
@@ -260,39 +312,61 @@ const gameApiSlice = createSlice({
       })
       .addCase(sendMessage.rejected, (state, action) => {
         state.apiStatus = "failed";
-        console.log(`sendMessages failed: ${action.error.message}`);
+        // console.log(`sendMessages failed: ${action.error.message}`);
         state.error = action.error.message;
       })
       // Fetch Game Messages
+      .addCase(fetchGameMessages.pending, (state, action) => {
+        state.outstandingMessageRequests = true;
+      })
       .addCase(fetchGameMessages.rejected, (state, action) => {
         state.apiStatus = "failed";
-        console.log(`fetchGameMessages failed: ${action.error.message}`);
-        state.messages.outstandingRequests = Math.max(
-          state.messages.outstandingRequests - 1,
-          0,
-        );
+        // console.log(`fetchGameMessages failed: ${action.error.message}`);
+        state.outstandingMessageRequests = false;
         state.error = action.error.message;
       })
       .addCase(fetchGameMessages.fulfilled, (state, action) => {
-        state.messages.outstandingRequests = Math.max(
-          state.messages.outstandingRequests - 1,
-          0,
-        );
+        state.outstandingMessageRequests = false;
         if (action.payload) {
           const { messages, newMessagesFrom, time } = action.payload;
           if (messages) {
+            const messagesWithStatus = messages.map((m) => {
+              return {
+                ...m,
+                status:
+                  // eslint-disable-next-line no-nested-ternary
+                  newMessagesFrom.includes(m.fromCountryID) ||
+                  newMessagesFrom.includes(m.toCountryID) // needed for ALL
+                    ? state.messages.time === 0
+                      ? MessageStatus.UNKNOWN
+                      : MessageStatus.UNREAD
+                    : MessageStatus.READ,
+              };
+            });
             const allMessages = mergeMessageArrays(
               state.messages.messages,
-              messages,
+              messagesWithStatus,
             );
             if (state.messages.messages.length !== allMessages.length) {
               state.messages.messages = allMessages;
             }
           }
           if (newMessagesFrom) {
-            state.messages.newMessagesFrom = newMessagesFrom;
+            // Only use the new newMessagesFrom if it has distinct values
+            // Otherwise, use the old value to preserve reference equality
+            // so that selectors recognize nothing changed and less of the UI
+            // needs to redraw
+            if (
+              !shallowArraysEqual(
+                state.messages.newMessagesFrom,
+                newMessagesFrom,
+              )
+            ) {
+              state.messages.newMessagesFrom = newMessagesFrom;
+            }
           }
           if (time) {
+            // console.log(`Messages fetched at time=${time}`);
             state.messages.time = time;
           }
         }
@@ -315,26 +389,25 @@ export const gameOverview = ({
 export const gameStatus = ({
   game: { status },
 }: RootState): GameStatusResponse => status;
-export const gameCommands = ({ game: { commands } }: RootState): GameCommands =>
-  commands;
 export const gameOrdersMeta = ({
   game: { ordersMeta },
 }: RootState): OrdersMeta => ordersMeta;
 export const gameOrder = ({ game: { order } }: RootState): OrderState => order;
-export const gameNotifications = ({
-  game: { notifications },
-}: RootState): GameState["notifications"] => notifications;
-export const gameTransition = ({
-  game: { transition },
-}: RootState): GameState["transition"] => transition;
-export const userActivity = ({
-  game: { activity },
-}: RootState): GameState["activity"] => activity;
-export const gameMessages = ({ game: { messages } }: RootState): GameMessages =>
-  messages;
-export const mustDestroyUnits = ({
-  game: { mustDestroyUnitsBuildPhase },
-}: RootState): GameState["mustDestroyUnitsBuildPhase"] =>
-  mustDestroyUnitsBuildPhase;
-
+export const gameTerritoriesMeta = ({
+  game: { territoriesMeta },
+}: RootState): TerritoriesMeta => territoriesMeta;
+// gameMessages considered harmful, because part of the GameMessages object is a
+// counter that tracks the last query timestamp, which means that if you use this
+// selector rather than a more specific one, your component will update basically
+// every time the server is queries for messages, regardless of whether
+// the messages changed or not.
+// export const gameMessages = ({ game: { messages } }: RootState): GameMessages =>
+//  messages;
+export const gameMaps = ({ game: { maps } }: RootState) => maps;
+export const gameViewedPhase = ({
+  game: { viewedPhaseState },
+}: RootState): ViewedPhaseState => viewedPhaseState;
+export const gameLegalOrders = ({ game: { legalOrders } }: RootState) =>
+  legalOrders;
+export const gameAlert = ({ game: { alert } }: RootState) => alert;
 export default gameApiSlice.reducer;

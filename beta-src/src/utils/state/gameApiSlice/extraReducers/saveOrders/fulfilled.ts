@@ -1,12 +1,17 @@
 import SavedOrdersConfirmation from "../../../../../interfaces/state/SavedOrdersConfirmation";
-import updateUnitsRetreat from "../../../../map/updateUnitsRetreat";
+import { setAlert } from "../../../../../state/interfaces/GameAlert";
 import getOrderStates from "../../../getOrderStates";
 
 /* eslint-disable no-param-reassign */
 export default function saveOrdersFulfilled(state, action): void {
   if (action.payload) {
-    const { orders, newContext, newContextKey }: SavedOrdersConfirmation =
-      action.payload;
+    const {
+      invalid,
+      notice,
+      orders,
+      newContext,
+      newContextKey,
+    }: SavedOrdersConfirmation = action.payload;
     if (newContext && newContextKey) {
       state.data.data.contextVars = {
         context: newContext,
@@ -20,13 +25,23 @@ export default function saveOrdersFulfilled(state, action): void {
         Saved: orderStates.Saved,
       };
     }
-
+    // console.log({ returnOrders: orders });
     Object.entries(orders).forEach(([id, value]) => {
       if (value.status === "Complete") {
         state.ordersMeta[id].saved = true;
       }
     });
-  }
 
-  updateUnitsRetreat(state);
+    // Report any errors
+    if (invalid) {
+      if (notice) {
+        setAlert(state.alert, `Error saving orders: ${notice}`);
+      } else {
+        setAlert(
+          state.alert,
+          `Unknown error saving orders, server indicated that API call was invalid`,
+        );
+      }
+    }
+  }
 }

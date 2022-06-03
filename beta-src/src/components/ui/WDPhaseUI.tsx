@@ -1,59 +1,69 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
 import { Box } from "@mui/material";
-import { gameOverview } from "../../state/game/game-api-slice";
+import {
+  gameOverview,
+  gameStatus,
+  gameViewedPhase,
+} from "../../state/game/game-api-slice";
 import { useAppSelector } from "../../state/hooks";
-import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
-import Season from "../../enums/Season";
-import UIState from "../../enums/UIState";
+import {
+  getGamePhaseSeasonYear,
+  getHistoricalPhaseSeasonYear,
+} from "../../utils/state/getPhaseSeasonYear";
 import WDCountdownPill from "./WDCountdownPill";
 import WDPillScroller from "./WDPillScroller";
-import WDGamePhaseIcon from "./icons/WDGamePhaseIcon";
 
 const WDPhaseUI: React.FC = function (): React.ReactElement {
-  const [currentSeason, setCurrentSeason] = useState<Season>(Season.SPRING);
-  const [currentYear, setCurrentYear] = useState<number>(1901);
-  const [currentProcessTime, setCurrentProcessTime] =
-    useState<GameOverviewResponse["processTime"]>(null);
-  const [timerDisplayState, setTimerDisplayState] = useState(true);
-
-  const { phaseMinutes, processTime, season, year } =
+  const { phaseMinutes, processTime, phase, season, year } =
     useAppSelector(gameOverview);
-
-  const showPillTimer = () => {
-    setTimerDisplayState(!timerDisplayState);
-  };
+  const gameStatusData = useAppSelector(gameStatus);
+  const { viewedPhaseIdx, latestPhaseViewed } = useAppSelector(gameViewedPhase);
 
   const phaseSeconds = phaseMinutes * 60;
-
-  useEffect(() => {
-    setCurrentSeason(season as Season);
-    setCurrentYear(year);
-    setCurrentProcessTime(processTime);
-  }, [processTime, season, year]);
+  const [gamePhase, gameSeason, gameYear] = getGamePhaseSeasonYear(
+    phase,
+    season,
+    year,
+  );
+  const [viewedPhase, viewedSeason, viewedYear] = getHistoricalPhaseSeasonYear(
+    gameStatusData,
+    viewedPhaseIdx,
+  );
+  const animateForwardGlow =
+    latestPhaseViewed < gameStatusData.phases.length - 1;
 
   return (
     <Box
       sx={{
         display: "flex",
+        flexWrap: "wrap",
+        webkitFlexWrap: "wrap",
         alignItems: "center",
         height: 40,
         marginTop: "3px",
+        marginRight: "55px", // for right side icons
+        pointerEvents: "none", // this box is invisible and used for layout alone, it shouldn't mask out clicks behind it
       }}
     >
-      <WDGamePhaseIcon
-        icon={timerDisplayState ? currentSeason : UIState.ACTIVE}
-        onClick={showPillTimer}
-        year={currentYear}
+      <WDPillScroller
+        backwardDisabled={viewedPhaseIdx === 0}
+        forwardDisabled={viewedPhaseIdx === gameStatusData.phases.length - 1}
+        animateForwardGlow={animateForwardGlow}
+        viewedPhase={viewedPhase}
+        viewedSeason={viewedSeason}
+        viewedYear={viewedYear}
       />
-      {timerDisplayState && currentProcessTime && (
+      {processTime && (
         <WDCountdownPill
-          endTime={currentProcessTime}
+          endTime={processTime}
           phaseTime={phaseSeconds}
+          viewedPhase={viewedPhase}
+          viewedSeason={viewedSeason}
+          viewedYear={viewedYear}
+          gamePhase={gamePhase}
+          gameSeason={gameSeason}
+          gameYear={gameYear}
         />
-      )}
-      {!timerDisplayState && (
-        <WDPillScroller season={currentSeason} year={currentYear} />
       )}
     </Box>
   );

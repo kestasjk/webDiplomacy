@@ -4,11 +4,39 @@ import CapturableLandTexture from "../../assets/textures/capturable-land.jpeg";
 import WaterTexture from "../../assets/textures/sea-texture.png";
 import WDArrowMarkerDefs from "../../utils/map/WDArrowMarkerDefs";
 import WDBuildContainer from "./components/WDBuildContainer";
+import WDFlyoutContainer from "./components/WDFlyoutContainer";
+import WDArrowContainer from "./components/WDArrowContainer";
+import { Unit } from "../../utils/map/getUnits";
+import { IOrderDataHistorical } from "../../models/Interfaces";
+import GameStateMaps from "../../state/interfaces/GameStateMaps";
+import { APITerritories } from "../../state/interfaces/GameDataResponse";
+import Territory from "../../enums/map/variants/classic/Territory";
+
+interface WDMapProps {
+  units: Unit[];
+  phase: string;
+  orders: IOrderDataHistorical[];
+  maps: GameStateMaps;
+  territories: APITerritories;
+  centersByProvince: { [key: string]: { ownerCountryID: string } };
+  isLatestPhase: boolean;
+}
 
 const WDMap: React.ForwardRefExoticComponent<
-  React.RefAttributes<SVGSVGElement>
-> = React.forwardRef(
-  (_props, ref): React.ReactElement => (
+  WDMapProps & React.RefAttributes<SVGSVGElement>
+> = React.forwardRef<SVGSVGElement, WDMapProps>(
+  (
+    {
+      units,
+      phase,
+      orders,
+      maps,
+      territories,
+      centersByProvince,
+      isLatestPhase,
+    },
+    ref,
+  ): React.ReactElement => (
     <svg
       id="map"
       fill="none"
@@ -21,8 +49,21 @@ const WDMap: React.ForwardRefExoticComponent<
     >
       <g id="full-map-svg">
         <g id="container">
-          <WDBoardMap />
-          <WDBuildContainer />
+          <WDBoardMap
+            units={units}
+            centersByProvince={centersByProvince}
+            phase={phase}
+            isLatestPhase={isLatestPhase}
+          />
+          <WDArrowContainer
+            phase={phase}
+            orders={orders}
+            units={units}
+            maps={maps}
+            territories={territories}
+          />
+          {isLatestPhase && <WDBuildContainer />}
+          {isLatestPhase && <WDFlyoutContainer units={units} />}
         </g>
       </g>
       <defs>
@@ -49,6 +90,47 @@ const WDMap: React.ForwardRefExoticComponent<
           <image href={WaterTexture} x="0" y="0" width="1966" height="1615" />
         </pattern>
         {WDArrowMarkerDefs()}
+
+        <filter id="selectionGlow" height="120%" width="120%" x="-10%" y="-10%">
+          <feMorphology
+            operator="dilate"
+            radius="5"
+            in="SourceAlpha"
+            result="thickerSource"
+          />
+          <feGaussianBlur
+            stdDeviation="8"
+            in="thickerSource"
+            result="blurredSource"
+          />
+          <feFlood floodColor="rgb(100,200,255)" result="glowColor" />
+          <feComposite
+            in="glowColor"
+            in2="blurredSource"
+            operator="in"
+            result="selectionGlowGlow"
+          />
+        </filter>
+        <filter id="choiceGlow" height="120%" width="120%" x="-10%" y="-10%">
+          <feMorphology
+            operator="dilate"
+            radius="1"
+            in="SourceAlpha"
+            result="thickerSource"
+          />
+          <feGaussianBlur
+            stdDeviation="6"
+            in="thickerSource"
+            result="blurredSource"
+          />
+          <feFlood floodColor="rgb(255,255,255)" result="glowColor" />
+          <feComposite
+            in="glowColor"
+            in2="blurredSource"
+            operator="in"
+            result="choicesGlowGlow"
+          />
+        </filter>
       </defs>
     </svg>
   ),

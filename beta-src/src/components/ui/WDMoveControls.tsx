@@ -11,17 +11,28 @@ import {
   gameData,
   gameOrdersMeta,
   gameOverview,
+  gameStatus,
+  gameViewedPhase,
   saveOrders,
 } from "../../state/game/game-api-slice";
 import UpdateOrder from "../../interfaces/state/UpdateOrder";
-import processNextCommand from "../../utils/processNextCommand";
 import MoveStatus from "../../types/MoveStatus";
+import { RootState } from "../../state/store";
 
 const WDMoveControls: React.FC = function (): React.ReactElement {
   const theme = useTheme();
   const [viewport] = useViewport();
   const { data } = useAppSelector(gameData);
   const ordersMeta = useAppSelector(gameOrdersMeta);
+  const status = useAppSelector(gameStatus);
+  const viewedPhaseState = useAppSelector(gameViewedPhase);
+
+  const viewingCurPhase =
+    viewedPhaseState.viewedPhaseIdx >= status.phases.length - 1;
+
+  const currentOrderInProgress = useAppSelector(
+    ({ game: { order } }: RootState) => order.inProgress,
+  );
   const [readyDisabled, setReadyDisabled] = React.useState(false);
   const [gameState, setGameState] = React.useState<MoveStatus>({
     save: false,
@@ -55,9 +66,6 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
 
   const dispatch = useAppDispatch();
   const device = getDevice(viewport);
-  const commands = useAppSelector(
-    (state) => state.game.commands.mapCommands.save,
-  );
   let isMobile: boolean;
   switch (device) {
     case Device.MOBILE:
@@ -72,12 +80,12 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
   }
 
   const clickButton = (type: Move) => {
-    dispatch(
-      gameApiSliceActions.processMapClick({
-        name: undefined,
-        clickObject: "save_button",
-      }),
-    );
+    // console.log("Entered save button click");
+    // When you click save or ready, it should clear any actively entered order you have going,
+    // and/or any of the move input flyover. It doesn't make sense to ready and have the UI
+    // stay with a partially-entered order.
+    dispatch(gameApiSliceActions.resetOrder());
+
     if ("currentOrders" in data && "contextVars" in data) {
       const { currentOrders, contextVars } = data;
       if (contextVars && currentOrders) {
@@ -89,7 +97,7 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
               fromTerrID,
               id,
               toTerrID,
-              type: moveType,
+              type: moveType || "",
               unitID,
               viaConvoy,
             };
@@ -113,6 +121,7 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
             ? { notready: "on" }
             : { ready: "on" };
         }
+        // console.log({ orderSubmission });
         dispatch(saveOrders(orderSubmission));
       }
     }
@@ -120,25 +129,6 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
       toggleState(type);
     }
   };
-  const deleteCommand = (key) => {
-    dispatch(
-      gameApiSliceActions.deleteCommand({
-        type: "mapCommands",
-        id: "all",
-        command: key,
-      }),
-    );
-  };
-
-  const commandActions = {
-    SAVE_ORDERS: (command) => {
-      const [key, value] = command;
-      clickButton(Move.SAVE);
-      deleteCommand(key);
-    },
-  };
-
-  processNextCommand(commands, commandActions);
 
   const ordersMetaValues = Object.values(ordersMeta);
   const ordersLength = ordersMetaValues.length;
@@ -154,6 +144,8 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
   }
 
   const saveDisabled = gameState.ready || !gameState.save;
+  const doAnimateGlow =
+    !saveDisabled && ordersLength !== ordersSaved && !currentOrderInProgress;
 
   return (
     <Stack
@@ -163,19 +155,20 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
     >
       <WDButton
         color="primary"
-        disabled={saveDisabled}
+        disabled={saveDisabled || !viewingCurPhase}
         onClick={() => clickButton(Move.SAVE)}
         sx={{
           filter: saveDisabled
             ? undefined
             : theme.palette.svg.filters.dropShadows[0],
         }}
+        doAnimateGlow={doAnimateGlow}
       >
         Save
       </WDButton>
       <WDButton
         color="primary"
-        disabled={readyDisabled}
+        disabled={readyDisabled || !viewingCurPhase}
         onClick={() => clickButton(Move.READY)}
         sx={{
           filter: readyDisabled

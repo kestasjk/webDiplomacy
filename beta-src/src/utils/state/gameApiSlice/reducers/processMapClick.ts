@@ -1,375 +1,340 @@
 import { current } from "@reduxjs/toolkit";
-import TerritoryMap from "../../../../data/map/variants/classic/TerritoryMap";
+import provincesMapData from "../../../../data/map/ProvincesMapData";
+import TerritoryMap, {
+  webdipNameToTerritory,
+} from "../../../../data/map/variants/classic/TerritoryMap";
 import BuildUnit from "../../../../enums/BuildUnit";
 import Territory from "../../../../enums/map/variants/classic/Territory";
-import { GameCommand } from "../../../../state/interfaces/GameCommands";
+import Province from "../../../../enums/map/variants/classic/Province";
+import { ProvinceMapData } from "../../../../interfaces/map/ProvinceMapData";
 import GameDataResponse from "../../../../state/interfaces/GameDataResponse";
 import { GameState } from "../../../../state/interfaces/GameState";
-import { UnitSlotNames } from "../../../../types/map/UnitSlotName";
-import highlightMapTerritoriesBasedOnStatuses from "../../../map/highlightMapTerritoriesBasedOnStatuses";
-import processForeignConvoy from "../../processForeignConvoy";
-import processConvoy from "../../processConvoy";
-import resetOrder from "../../resetOrder";
-import setCommand from "../../setCommand";
-import startNewOrder from "../../startNewOrder";
-import updateOrdersMeta from "../../updateOrdersMeta";
 import GameStateMaps from "../../../../state/interfaces/GameStateMaps";
+import OrderState from "../../../../state/interfaces/OrderState";
+import OrdersMeta, {
+  OrderMeta,
+} from "../../../../state/interfaces/SavedOrders";
+import { TerritoryMeta } from "../../../../state/interfaces/TerritoriesState";
+import { getTargetXYWH } from "../../../map/drawArrowFunctional";
+import invalidClick from "../../../map/invalidClick";
+import getAvailableOrder from "../../getAvailableOrder";
+import getOrderStates from "../../getOrderStates";
+import resetOrder from "../../resetOrder";
+import startNewOrder from "../../startNewOrder";
+import updateOrder from "../../updateOrder";
+import updateOrdersMeta from "../../updateOrdersMeta";
+import { LegalOrders } from "../extraReducers/fetchGameData/precomputeLegalOrders";
+import { gameApiSliceActions } from "../../../../state/game/game-api-slice";
+import { useAppDispatch } from "../../../../state/hooks";
+import { setAlert } from "../../../../state/interfaces/GameAlert";
+
+function getClickPositionInProvince(evt, provinceMapData: ProvinceMapData) {
+  const boundingRect = evt.target.getBoundingClientRect();
+  const diffX = evt.clientX - boundingRect.x;
+  const diffY = evt.clientY - boundingRect.y;
+  const scaleX = boundingRect.width / provinceMapData.width;
+  const scaleY = boundingRect.height / provinceMapData.height;
+  return { x: diffX / scaleX, y: diffY / scaleY };
+}
+
+// If the province has special coasts, returns special coastal territory closest
+// to the position of the click. Else just returns the single territory corresponding
+// to the province.
+function getBestCoastalUnitTerritory(
+  evt,
+  provinceMapData: ProvinceMapData,
+): Territory {
+  if (provinceMapData.unitSlots.length === 1) {
+    return provinceMapData.unitSlots[0].territory;
+  }
+  const clickPos = getClickPositionInProvince(evt, provinceMapData);
+
+  // here we've got name => {x, y}
+  let bestSlot = "";
+  let bestDist2 = 1e100;
+  provinceMapData!.labels!.forEach((label) => {
+    if (["nc", "sc"].includes(label.name)) {
+      const dist2 = (clickPos.x - label.x) ** 2 + (clickPos.y - label.y) ** 2;
+      if (dist2 < bestDist2) {
+        bestSlot = label.name;
+        bestDist2 = dist2;
+      }
+    }
+  });
+  return provinceMapData.unitSlotsBySlotName[bestSlot].territory;
+}
+
+interface MapClickData {
+  evt: React.MouseEvent<SVGGElement, MouseEvent>;
+  clickProvince: Province;
+}
 
 /* eslint-disable no-param-reassign */
-export default function processMapClick(state, clickData) {
+export default function processMapClick(
+  state: GameState,
+  clickData: { payload: MapClickData },
+) {
+  const currentState: GameState = current(state);
   const {
     data: { data },
-    maps,
     order,
     ordersMeta,
     overview,
     territoriesMeta,
-    mustDestroyUnitsBuildPhase,
-  }: {
-    data: { data: GameDataResponse["data"] };
-    maps: GameStateMaps;
-    order: GameState["order"];
-    ordersMeta: GameState["ordersMeta"];
-    overview: GameState["overview"];
-    territoriesMeta: GameState["territoriesMeta"];
-    mustDestroyUnitsBuildPhase: GameState["mustDestroyUnitsBuildPhase"];
-  } = current(state);
-  const {
-    inProgress,
-    method,
-    orderID,
-    onTerritory,
-    subsequentClicks,
-    toTerritory,
-    type,
-    unitID,
-  } = order;
+    maps,
+    ownUnits,
+    legalOrders,
+    viewedPhaseState,
+    status,
+  } = currentState;
+  // ---------------------- PREPARATION ---------------------------
+
   const {
     user: { member },
     phase,
   } = overview;
-  const { currentOrders } = data;
   const { orderStatus } = member;
-  if (orderStatus.Ready || mustDestroyUnitsBuildPhase) {
+
+  const {
+    payload: { evt, clickProvince },
+  } = clickData;
+  if (viewedPhaseState.viewedPhaseIdx < status.phases.length - 1) {
+    setAlert(
+      state.alert,
+      "You need to switch to the current phase to enter orders.",
+    );
+    invalidClick(evt, clickProvince);
     return;
   }
-  const {
-    payload: { clickObject, evt, name: territoryName },
-  } = clickData;
-  const truthyToTerritory = toTerritory !== undefined && toTerritory !== null;
-  const truthyOnTerritory = onTerritory !== undefined && onTerritory !== null;
-  if (inProgress && method === "click") {
-    const currOrderUnitID = unitID;
-    if (
-      truthyOnTerritory &&
-      Territory[onTerritory] === territoryName &&
-      !type
-    ) {
-      let command: GameCommand = {
-        command: "HOLD",
-      };
-      setCommand(state, command, "territoryCommands", territoryName);
-      setCommand(state, command, "unitCommands", currOrderUnitID);
-      command = {
-        command: "REMOVE_ARROW",
-        data: {
-          orderID,
-        },
-      };
-      setCommand(state, command, "mapCommands", "all");
-      if (currentOrders) {
-        const orderToUpdate = currentOrders.find(
-          (o) => o.unitID === currOrderUnitID,
-        );
-        if (orderToUpdate) {
-          updateOrdersMeta(state, {
-            [orderToUpdate.id]: {
-              saved: false,
-              update: {
-                type: phase === "Retreats" ? "Disband" : "Hold",
-                toTerrID: null,
-              },
-            },
-          });
-        }
-      }
-      state.order.type = phase === "Retreats" ? "disband" : "hold";
-      resetOrder(state);
-    } else if (type === "convoy" && !truthyToTerritory) {
-      state.order.toTerritory = Number(Territory[territoryName]);
-      data.units[order.unitID].type === "Fleet"
-        ? processForeignConvoy(state)
-        : processConvoy(state);
-    } else if (
-      truthyOnTerritory &&
-      (type === "hold" ||
-        type === "move" ||
-        type === "convoy" ||
-        type === "disband" ||
-        type === "retreat")
-    ) {
-      highlightMapTerritoriesBasedOnStatuses(state);
-      resetOrder(state);
-    } else if (truthyToTerritory && type === "build") {
-      const command: GameCommand = {
-        command: "REMOVE_BUILD",
-      };
-      setCommand(state, command, "territoryCommands", Territory[toTerritory]);
-      setCommand(state, command, "mapCommands", "build");
-      resetOrder(state);
-    } else if (
-      clickObject === "territory" &&
-      truthyOnTerritory &&
-      Territory[onTerritory] !== territoryName &&
-      !type &&
-      inProgress
-    ) {
-      const { allowedBorderCrossings } = ordersMeta[orderID];
+  if (orderStatus.Ready) {
+    setAlert(state.alert, "You need to unready your orders to update them.");
+    invalidClick(evt, clickProvince);
+    return;
+  }
+  const clickProvinceMapData = provincesMapData[clickProvince];
+  const clickRootTerritory = clickProvinceMapData.rootTerritory;
+  const territoryMeta: TerritoryMeta | undefined =
+    territoriesMeta[clickProvince];
+  // Click is outside the map entirely?
+  if (!territoryMeta || !clickRootTerritory) {
+    invalidClick(evt, clickProvince);
+    return;
+  }
+  let clickUnitID: string | undefined;
+  {
+    const clickUnitIDs = maps.provinceToUnits[clickProvince];
+    // Handle multiple units on retreat, pick the one that we own if there are multiple
+    if (clickUnitIDs && clickUnitIDs.length >= 2) {
+      clickUnitID = clickUnitIDs.find((unitID) => ownUnits.includes(unitID));
+    } else if (clickUnitIDs && clickUnitIDs.length === 1) {
+      [clickUnitID] = clickUnitIDs;
+    }
+  }
 
-      const canMove = allowedBorderCrossings?.find((border) => {
-        const mappedTerritory = TerritoryMap[border.name];
-        return Territory[mappedTerritory.territory] === territoryName;
+  const clickUnit = clickUnitID ? data.units[clickUnitID] : undefined;
+  const orderUnit = data.units[order.unitID];
+  const ownsCurUnit = clickUnitID && ownUnits.includes(clickUnitID);
+
+  // ---------------------- BUILD PHASE ---------------------------
+  if (phase === "Builds") {
+    // FIXME: abstract to a function
+    const existingOrder = Object.entries(ordersMeta).find(([, { update }]) => {
+      if (!update || !update.toTerrID) return false;
+      return maps.terrIDToProvince[update.toTerrID] === clickProvince;
+    });
+    if (existingOrder) {
+      const [id] = existingOrder;
+
+      updateOrdersMeta(state, {
+        [id]: {
+          saved: false,
+          update: {
+            type: "Wait",
+            toTerrID: null,
+          },
+        },
       });
-
-      const territory = territoriesMeta[Territory[territoryName]];
-
-      if (canMove) {
-        highlightMapTerritoriesBasedOnStatuses(state);
-        const command: GameCommand = {
-          command: "MOVE",
-        };
-        setCommand(
-          state,
-          command,
-          "territoryCommands",
-          Territory[maps.territoryToEnum[territory.coastParentID]],
-        );
-        updateOrdersMeta(state, {
-          [orderID]: {
-            saved: false,
-            update: {
-              type: phase === "Retreats" ? "Retreat" : "Move",
-              toTerrID: canMove.id,
-              viaConvoy: "No",
-            },
-          },
-        });
-        state.order.toTerritory = TerritoryMap[canMove.name].territory;
-        state.order.type = phase === "Retreats" ? "retreat" : "move";
-      } else {
-        const command: GameCommand = {
-          command: "INVALID_CLICK",
-          data: {
-            click: {
-              evt,
-              territoryName,
-            },
-          },
-        };
-        setCommand(state, command, "mapCommands", "all");
-      }
+      return;
     }
-  } else if (inProgress && method === "dblClick") {
-    if (subsequentClicks.length) {
-      // user is trying to do a support move or a support hold
-      const unitSupporting = ordersMeta[orderID];
-      const unitBeingSupported = subsequentClicks[0];
-      const terrEnum = Number(Territory[territoryName]);
-      if (terrEnum === unitBeingSupported.onTerritory) {
-        // attemping support hold
-        const match = unitSupporting.supportHoldChoices?.find(
-          ({ unitID: uID }) => uID === unitBeingSupported.unitID,
-        );
-        if (match) {
-          // execute support hold
-          updateOrdersMeta(state, {
-            [orderID]: {
-              saved: false,
-              update: {
-                type: "Support hold",
-                toTerrID: match.id,
-              },
-            },
-          });
-          resetOrder(state);
-          return;
-        }
-      } else {
-        // attempting support move
-        const supportMoveMatch = unitSupporting.supportMoveChoices?.find(
-          ({ supportMoveTo: { name } }) =>
-            TerritoryMap[name].territory === terrEnum,
-        );
-        if (supportMoveMatch && supportMoveMatch.supportMoveFrom.length) {
-          const match = supportMoveMatch.supportMoveFrom.find(
-            ({ unitID: uID }) => uID === unitBeingSupported.unitID,
-          );
-          if (match) {
-            // execute support move
-            updateOrdersMeta(state, {
-              [orderID]: {
-                saved: false,
-                update: {
-                  type: "Support move",
-                  toTerrID: supportMoveMatch.supportMoveTo.id,
-                  fromTerrID: match.id,
-                },
-              },
-            });
-            resetOrder(state);
-            return;
-          }
-        }
-      }
-      const command: GameCommand = {
-        command: "INVALID_CLICK",
-        data: {
-          click: {
-            evt,
-            territoryName,
-          },
-        },
-      };
-      setCommand(state, command, "mapCommands", "all");
-    }
-  } else if (
-    clickObject === "territory" &&
-    phase === "Builds" &&
-    currentOrders
-  ) {
-    const territoryMeta = territoriesMeta[Territory[territoryName]];
-    if (territoryMeta) {
-      const {
-        coast: territoryCoast,
-        countryID,
-        id: webDipTerritoryID,
-        supply,
-        type: territoryType,
-      } = territoryMeta;
 
-      if (member.countryID.toString() !== countryID || !supply) {
+    const isDestroy =
+      overview.user.member.supplyCenterNo < overview.user.member.unitNo;
+    const isBuild =
+      overview.user.member.supplyCenterNo > overview.user.member.unitNo;
+    // Cannot click on other people's units, and on builds you can only
+    // click on your own supply centers.
+    // FIXME ugh string vs number
+    if (member.countryID !== Number(territoryMeta.ownerCountryID)) {
+      invalidClick(evt, clickProvince);
+      return;
+    }
+
+    const { currentOrders } = data;
+    const availableOrder = getAvailableOrder(currentOrders, ordersMeta);
+    if (!availableOrder) {
+      invalidClick(evt, clickProvince);
+      return;
+    }
+
+    let toTerrID;
+    if (isDestroy) {
+      if (!clickUnit) {
+        invalidClick(evt, clickProvince);
         return;
       }
-
-      const stp = territoriesMeta[Territory.SAINT_PETERSBURG];
-      const stpnc = territoriesMeta[Territory.SAINT_PETERSBURG_NORTH_COAST];
-      const stpsc = territoriesMeta[Territory.SAINT_PETERSBURG_SOUTH_COAST];
-
-      const specialIds = {};
-      if (stp) {
-        specialIds[stp.id] = [stpnc?.id, stpsc?.id];
+      // Webdip API expects that destroy actions are in terms of province ID, not territory ID!
+      toTerrID = maps.terrIDToProvinceID[clickUnit.terrID];
+    } else if (isBuild) {
+      // Build on the appropriately clicked coast for STP
+      const territory = getBestCoastalUnitTerritory(evt, clickProvinceMapData);
+      if (!legalOrders.possibleBuildDests.includes(territory)) {
+        invalidClick(evt, clickProvince);
+        return;
       }
+      toTerrID = maps.territoryToTerrID[territory];
+    }
 
-      const affectedTerritoryIds = specialIds[webDipTerritoryID]
-        ? [...[webDipTerritoryID], ...specialIds[webDipTerritoryID]]
-        : [webDipTerritoryID];
+    const isCoast = clickProvinceMapData.type === "Coast";
+    resetOrder(state);
+    updateOrder(state, {
+      inProgress: true,
+      orderID: availableOrder,
+      // eslint-disable-next-line no-nested-ternary
+      type: isDestroy ? "Destroy" : isCoast ? "Build" : "Build Army",
+      toTerrID,
+    });
+    return;
+  }
 
-      const existingBuildOrder = Object.entries(ordersMeta).find(
-        ([, { update }]) =>
-          update ? affectedTerritoryIds.includes(update.toTerrID) : false,
+  // ---------------------- RETREAT PHASE ---------------------------
+  if (phase === "Retreats") {
+    if (!order.inProgress) {
+      const isRetreating = data.currentOrders?.find(
+        (o) => o.unitID === clickUnitID,
       );
-
-      if (existingBuildOrder) {
-        const [id] = existingBuildOrder;
-        let command: GameCommand = {
-          command: "REMOVE_BUILD",
-          data: {
-            removeBuild: { orderID: id },
-          },
-        };
-        setCommand(state, command, "territoryCommands", territoryName);
-        setCommand(state, command, "mapCommands", "build");
-
-        UnitSlotNames.forEach((slot) => {
-          command = {
-            command: "SET_UNIT",
-            data: {
-              setUnit: {
-                unitSlotName: slot,
-              },
-            },
-          };
-          setCommand(state, command, "territoryCommands", territoryName);
-        });
-
-        updateOrdersMeta(state, {
-          [id]: {
-            saved: false,
-            update: {
-              type: "Wait",
-              toTerrID: null,
-            },
-          },
-        });
-        return;
+      if (clickUnitID && ownsCurUnit && isRetreating) {
+        startNewOrder(state, { unitID: clickUnitID, type: "Retreat" });
+      } else {
+        invalidClick(evt, clickProvince);
       }
-
-      const territoryHasUnit = !!territoryMeta.unitID;
-
-      let availableOrder;
-      for (let i = 0; i < currentOrders.length; i += 1) {
-        const { id } = currentOrders[i];
-        const orderMeta = ordersMeta[id];
-        if (!orderMeta.update || !orderMeta.update?.toTerrID) {
-          availableOrder = id;
-          break;
-        }
+    } else if (clickUnitID === order.unitID) {
+      // Clicking again on the same unit itself disbands it.
+      updateOrder(state, { type: "Disband" });
+    } else {
+      const territory =
+        orderUnit.type === "Fleet"
+          ? getBestCoastalUnitTerritory(evt, clickProvinceMapData)
+          : clickRootTerritory;
+      if (
+        legalOrders.legalRetreatDestsByUnitID[order.unitID].includes(territory)
+      ) {
+        updateOrder(state, { toTerrID: maps.territoryToTerrID[territory] });
+      } else {
+        invalidClick(evt, clickProvince);
       }
+    }
+    return;
+  }
 
-      if (availableOrder && !territoryHasUnit && !inProgress) {
-        let canBuild = 0;
-        if (territoryCoast === "Parent" || territoryCoast === "No") {
-          canBuild += BuildUnit.Army;
-        }
-        if (territoryType !== "Land" && territoryCoast !== "Parent") {
-          canBuild += BuildUnit.Fleet;
-        }
-        const command: GameCommand = {
-          command: "BUILD",
-          data: {
-            build: {
-              territoryName,
-              builds: [
-                {
-                  availableOrder,
-                  canBuild,
-                  toTerrID: territoryMeta.id,
-                  unitSlotName: "main",
-                },
-              ],
-            },
-          },
-        };
-        if (territoryMeta.territory === Territory.SAINT_PETERSBURG) {
-          const nc = territoriesMeta[Territory.SAINT_PETERSBURG_NORTH_COAST];
-          const sc = territoriesMeta[Territory.SAINT_PETERSBURG_SOUTH_COAST];
-          nc &&
-            command.data?.build?.builds?.push({
-              availableOrder,
-              canBuild: BuildUnit.Fleet,
-              toTerrID: nc.id,
-              unitSlotName: "nc",
-            });
-          sc &&
-            command.data?.build?.builds?.push({
-              availableOrder,
-              canBuild: BuildUnit.Fleet,
-              toTerrID: sc.id,
-              unitSlotName: "sc",
-            });
-        }
-        setCommand(state, command, "mapCommands", "build");
-        startNewOrder(state, {
-          payload: {
-            inProgress: true,
-            method: "click",
-            orderID: availableOrder,
-            onTerritory: null,
-            subsequentClicks: [],
-            toTerritory: territoryMeta.territory,
-            type: "build",
-            unitID: "",
-          },
+  // ---------------------- MOVE PHASE ---------------------------
+  if (!order.inProgress) {
+    if (clickUnitID && ownsCurUnit) {
+      startNewOrder(state, { unitID: clickUnitID });
+    } else {
+      invalidClick(evt, clickProvince);
+    }
+  } else if (!order.type || clickUnitID === order.unitID) {
+    // Clicking on the same territory a second time cancels the order.
+    resetOrder(state);
+  } else if (order.type === "Move") {
+    const territory =
+      orderUnit.type === "Fleet"
+        ? getBestCoastalUnitTerritory(evt, clickProvinceMapData)
+        : clickRootTerritory;
+    // -----------------------------------------------------------
+
+    if (!order.viaConvoy) {
+      // direct move
+      if (
+        legalOrders.legalMoveDestsByUnitID[order.unitID].includes(territory)
+      ) {
+        updateOrder(state, {
+          toTerrID: maps.territoryToTerrID[territory],
+        });
+      } else {
+        invalidClick(evt, clickProvince);
+      }
+    } else {
+      // via convoy
+      const via = legalOrders.legalViasByUnitID[order.unitID].find(
+        (v) => v.dest === territory,
+      );
+      if (via) {
+        updateOrder(state, {
+          toTerrID: maps.territoryToTerrID[territory],
+          viaConvoy: "Yes",
+          convoyPath: via.provIDPaths[0],
+        });
+      } else {
+        invalidClick(evt, clickProvince);
+      }
+    }
+  } else if (order.type === "Support") {
+    if (!order.fromTerrID) {
+      // click 1
+      if (
+        clickUnitID &&
+        legalOrders.legalSupportsByUnitID[order.unitID][clickProvince]?.length >
+          0
+      ) {
+        updateOrder(state, {
+          fromTerrID: maps.territoryToTerrID[clickRootTerritory],
+        });
+      }
+      // gotta support a unit
+      invalidClick(evt, clickProvince);
+    } else {
+      // click 2
+      // eslint-disable-next-line no-lonely-if
+      const fromProvince = maps.terrIDToProvince[order.fromTerrID];
+      const foundSupport = legalOrders.legalSupportsByUnitID[order.unitID][
+        fromProvince
+      ].find((support) => support.dest === clickProvince);
+      if (foundSupport) {
+        updateOrder(state, {
+          toTerrID: maps.territoryToTerrID[clickRootTerritory],
+          convoyPath: foundSupport.convoyProvIDPath,
+        });
+      } else {
+        invalidClick(evt, clickProvince);
+      }
+    }
+  } else if (order.type === "Convoy") {
+    if (!order.fromTerrID) {
+      // click 1
+      // gotta click on an Army that is convoyable
+      if (
+        clickUnit?.type === "Army" &&
+        legalOrders.legalConvoysByUnitID[order.unitID][clickProvince]
+      ) {
+        updateOrder(state, {
+          fromTerrID: maps.territoryToTerrID[clickRootTerritory],
+        });
+      } else {
+        // gotta support a unit
+        invalidClick(evt, clickProvince);
+      }
+    } else {
+      // click 2
+      const fromProvince = maps.terrIDToProvince[order.fromTerrID];
+      const convoy =
+        legalOrders.legalConvoysByUnitID[order.unitID][fromProvince][
+          clickProvince
+        ];
+      if (convoy) {
+        updateOrder(state, {
+          toTerrID: maps.territoryToTerrID[clickRootTerritory],
+          convoyPath: [...convoy.provIDPath1, ...convoy.provIDPath2],
         });
       }
     }

@@ -74,7 +74,7 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
         <Box
           sx={{
             position: "relative",
-            width: isMobile ? 276 : 400,
+            width: Math.min(viewport.width - 70, 400),
           }}
         >
           <Box
@@ -86,7 +86,7 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
                 content: '""',
                 height: 22,
                 position: "absolute",
-                left: "calc(90% - 11px)",
+                left: "calc(93% - 11px)",
                 top: useMediaQuery(theme.breakpoints.up("tablet")) ? 76 : 68,
                 transform: "rotateX(45deg) rotateZ(45deg)",
                 width: 22,
@@ -97,7 +97,7 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
             sx={{
               background: theme.palette.secondary.main,
               borderRadius: 3,
-              maxWidth: "90%",
+              maxWidth: "93%",
               minHeight: 264,
               maxHeight: viewport.height - 32,
               overflowX: "hidden",

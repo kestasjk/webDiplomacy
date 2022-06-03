@@ -1,3 +1,5 @@
+import { IPhaseDataHistorical } from "../../models/Interfaces";
+
 interface GameStatusResponse {
   gameID: number;
   countryID: number;
@@ -7,10 +9,12 @@ interface GameStatusResponse {
   phase: string;
   gameOver: string;
   pressType: string;
-  phases: string[];
+  phases: IPhaseDataHistorical[];
   standoffs: string[];
   occupiedFrom: string[];
-  votes: string | null;
+  // need to get votes from gameOverview because status
+  // is only updated once per phase
+  // votes: string | null;
   orderStatus: string;
   status: string;
 }

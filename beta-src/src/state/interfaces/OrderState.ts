@@ -3,13 +3,12 @@ import OrderType from "../../types/state/OrderType";
 
 export interface OrderState {
   inProgress: boolean;
-  method: "click" | "dblClick";
-  onTerritory: Territory | null;
   orderID: string;
-  subsequentClicks: OrderState[];
-  toTerritory: Territory | null;
   type?: OrderType;
   unitID: string;
+  fromTerrID: string;
+  toTerrID: string;
+  viaConvoy: string;
 }
 
 export default OrderState;

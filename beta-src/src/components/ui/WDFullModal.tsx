@@ -25,6 +25,7 @@ interface WDFullModalProps {
   title: GameOverviewResponse["name"];
   userCountry: CountryTableData;
   year: GameOverviewResponse["year"];
+  modalRef: React.RefObject<HTMLElement>;
 }
 
 const tabGroup: ModalViews[] = [ModalViews.PRESS, ModalViews.INFO];
@@ -41,6 +42,7 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
   title,
   userCountry,
   year,
+  modalRef,
 }): React.ReactElement {
   const [view, setView] = useState(ModalViews.PRESS);
   const onChangeView = (tab: ModalViews) => setView(tab);
@@ -55,43 +57,45 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
   const padding = mobileLandscapeLayout ? "0 6px" : "0 16px";
 
   return (
-    <WDViewsContainer
-      tabGroup={tabGroup}
-      currentView={view}
-      onChange={onChangeView}
-      padding={padding}
-    >
-      <WDTabPanel currentTab={ModalViews.INFO} currentView={view}>
-        <Box>
-          <Box
-            sx={{
-              m: "20px 0 10px 0",
-              p: padding,
-            }}
-          >
-            <WDInfoDisplay
-              alternatives={alternatives}
-              phase={phase}
-              potNumber={potNumber}
-              season={season}
-              title={title}
-              year={year}
+    <Box ref={modalRef}>
+      <WDViewsContainer
+        tabGroup={tabGroup}
+        currentView={view}
+        onChange={onChangeView}
+        padding={padding}
+      >
+        <WDTabPanel currentTab={ModalViews.INFO} currentView={view}>
+          <Box>
+            <Box
+              sx={{
+                m: "20px 0 10px 0",
+                p: padding,
+              }}
+            >
+              <WDInfoDisplay
+                alternatives={alternatives}
+                phase={phase}
+                potNumber={potNumber}
+                season={season}
+                title={title}
+                year={year}
+              />
+            </Box>
+            <WDInfoPanel
+              countries={countries}
+              maxDelays={excusedMissedTurns}
+              userCountry={userCountry}
+              gameID={gameID}
             />
           </Box>
-          <WDInfoPanel
-            countries={countries}
-            maxDelays={excusedMissedTurns}
-            userCountry={userCountry}
-            gameID={gameID}
-          />
-        </Box>
-      </WDTabPanel>
-      <WDTabPanel currentTab={ModalViews.PRESS} currentView={view}>
-        <WDPress userCountry={userCountry} countries={countries}>
-          {children}
-        </WDPress>
-      </WDTabPanel>
-    </WDViewsContainer>
+        </WDTabPanel>
+        <WDTabPanel currentTab={ModalViews.PRESS} currentView={view}>
+          <WDPress userCountry={userCountry} countries={countries}>
+            {children}
+          </WDPress>
+        </WDTabPanel>
+      </WDViewsContainer>
+    </Box>
   );
 };
 
