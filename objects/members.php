@@ -96,6 +96,24 @@ class Members
 		//gets the number of players that are still playing for use of the bot
 		$playerCount = count($this->ByStatus['Playing']);
 
+		// Get the SC count for 2 years ago, which will be used to prevent bot stalemates. TODO: make this restriction and the other bot restrictions 
+		// apply on the vote apply side, rather than filtering out votes already cast.
+		$oldSCsByCountry = array();
+		if( $this->Game->turn >= 2 )
+		{
+			$tablSCs = $DB->sql_tabl("SELECT ts.countryID, COUNT(ts.terrID) supplyCenters FROM wD_TerrStatusArchive ts ".
+				"INNER JOIN wD_Territories t ON ( ts.terrID = t.id ) ".
+				"WHERE t.supply='Yes' AND ts.gameID = ".$this->Game->id." ".
+				"AND t.mapID=".$this->Game->Variant->mapID." AND ts.turn = ".max(0,$this->Game->turn - 4)." ".
+				"GROUP BY ts.countryID");
+			while(list($countryID, $oldSCs) = $DB->tabl_row($tablSCs))
+			{
+				$oldSCsByCountry[$countryID] = $oldSCs;
+			}
+			unset($tablSCs);
+			unset($oldSCs);
+		}
+					
 		//initialize an int to keep track of how many bots are playing 
 		$botCount = 0; 
 		foreach($this->ByStatus['Playing'] as $Member)
@@ -120,11 +138,8 @@ class Members
 					}
 				}
 
-				//This variable and the following query get the SC count for 2 years ago, which will be used to prevent bot stalemates
-				$oldSC = 0; 
-				list($oldSC) = $DB->sql_row("SELECT COUNT(ts.terrID) FROM wD_TerrStatusArchive ts INNER JOIN wD_Territories t ON ( ts.terrID = t.id ) 
-				WHERE t.supply='Yes' AND ts.countryID = ".$Member->countryID." AND ts.gameID = ".$this->Game->id." 
-				AND t.mapID=".$this->Game->Variant->mapID." AND ts.turn = ".max(0,$this->Game->turn - 4));
+				if( array_key_exists($Member->countryID, $oldSCsByCountry) )
+					$oldSC = $oldSCsByCountry[$Member->countryID];
 
 				//A bot will draw or cancel if it is stalled out or if it is the first year
 				if ($oldSC >= $botSC || $this->Game->turn < 2) 
