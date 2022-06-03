@@ -864,6 +864,9 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 	if ( $User->type['Admin'] )
 		$modActions[] = '<a href="index.php?auid='.$UserProfile->id.'">'.l_t('Enter this user\'s account').'</a>';
 
+	if ( $User->type['Admin'] )
+		$modActions[] = '<a href="index.php?auid_cookie='.$UserProfile->id.'">'.l_t('Log on as user with cookie').'</a>';
+
 	$modActions[] = libHTML::admincpType('User',$UserProfile->id);
 
 	if( !$UserProfile->type['Admin'] && ( $User->type['Admin'] || !$UserProfile->type['Moderator'] ) )

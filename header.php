@@ -225,6 +225,13 @@ if( !defined('AJAX') )
 	{
 		Config::$debug=true;
 
+		if ( isset($_REQUEST['auid_cookie']) )
+		{
+			libAuth::keyWipe();
+			libAuth::keySet($_REQUEST['auid_cookie'], true);
+			die("Your cookie has been swapped for user ID " . $_REQUEST['auid_cookie'] . " <a href='.'>Refresh page as new user</a>");
+		}
+
 		if ( isset($_REQUEST['auid']) || isset($_SESSION['auid']) )
 			$User = libAuth::adminUserSwitch($User);
 		else
