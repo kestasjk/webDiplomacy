@@ -322,12 +322,14 @@ const gameApiSlice = createSlice({
             const messagesWithStatus = messages.map((m) => {
               return {
                 ...m,
-                // eslint-disable-next-line no-nested-ternary
-                status: newMessagesFrom.includes(m.fromCountryID)
-                  ? state.messages.time === 0
-                    ? MessageStatus.UNKNOWN
-                    : MessageStatus.UNREAD
-                  : MessageStatus.READ,
+                status:
+                  // eslint-disable-next-line no-nested-ternary
+                  newMessagesFrom.includes(m.fromCountryID) ||
+                  newMessagesFrom.includes(m.toCountryID) // needed for ALL
+                    ? state.messages.time === 0
+                      ? MessageStatus.UNKNOWN
+                      : MessageStatus.UNREAD
+                    : MessageStatus.READ,
               };
             });
             const allMessages = mergeMessageArrays(
