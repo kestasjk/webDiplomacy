@@ -101,11 +101,11 @@ print '<div class="gamelistings-tabsNew">';
 $GamesNewUser = $GamesOpenUser = $GamesActiveUser = 0;
 if($User->type['User'] )
 {
-	list($GamesNewUser) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
+	/*list($GamesNewUser) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
 		WHERE g.phase = 'Pre-game' AND m.userID = ".$User->id);
 	list($GamesOpenUser) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
 		WHERE g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No' AND g.phase <> 'Pre-game' AND g.phase <> 'Finished'
-		AND m.userID = ".$User->id." AND ".$User->points." >= g.minimumBet AND ".$User->reliabilityRating." >= g.minimumReliabilityRating".($User->userIsTempBanned() ? " AND 0=1" : " "));
+		AND m.userID = ".$User->id." AND ".$User->points." >= g.minimumBet AND ".$User->reliabilityRating." >= g.minimumReliabilityRating".($User->userIsTempBanned() ? " AND 0=1" : " "));*/
 	list($GamesMine) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
 		WHERE g.phase <> 'Finished' AND m.userID = ".$User->id);
 	list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE minimumBet IS NOT NULL AND password IS NULL AND gameOver = 'No'
@@ -114,12 +114,30 @@ if($User->type['User'] )
 }
 else
 {
-	list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE minimumBet IS NOT NULL AND password IS NULL AND gameOver = 'No'
-		AND phase <> 'Pre-game' AND phase <> 'Finished' AND playerTypes <> 'MemberVsBots' ");
+	if( ($GamesOpen = $MC->get('GamesOpen')) === false )
+	{
+		list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE minimumBet IS NOT NULL AND password IS NULL AND gameOver = 'No'
+			AND phase <> 'Pre-game' AND phase <> 'Finished' AND playerTypes <> 'MemberVsBots' ");
+		$MC->set('GamesOpen', $GamesOpen, 600);
+	}
 }
-list($GamesNew) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Pre-game' AND playerTypes <> 'MemberVsBots'");
-list($GamesActive) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase <> 'Pre-game' AND phase <> 'Finished' AND playerTypes <> 'MemberVsBots'");
-list($GamesFinished) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Finished' AND playerTypes <> 'MemberVsBots'");
+
+if( ($GamesNew = $MC->get('GamesNew')) === false )
+{
+	list($GamesNew) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Pre-game' AND playerTypes <> 'MemberVsBots'");
+	$MC->set('GamesNew', $GamesNew, 600);
+}
+if( ($GamesActive = $MC->get('GamesActive')) === false )
+{
+	list($GamesActive) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase <> 'Pre-game' AND phase <> 'Finished' AND playerTypes <> 'MemberVsBots'");
+	$MC->set('GamesActive', $GamesActive, 600);
+}
+if( ($GamesFinished = $MC->get('GamesFinished')) === false )
+{
+	list($GamesFinished) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Finished' AND playerTypes <> 'MemberVsBots'");
+	$MC->set('GamesFinished', $GamesFinished, 600);
+}
+
 
 $GamesNew -= $GamesNewUser;
 $GamesOpen -= $GamesOpenUser;
