@@ -129,7 +129,7 @@ try
 	}
 
 	// Process the chatbox / game messages
-	if( isset($Member) || $User->type['Moderator'] || $Game->isDirector($User->id) )
+	if( $Game->phase != 'Pre-game' && ( isset($Member) || $User->type['Moderator'] || $Game->isDirector($User->id) ) )
 	{
 		$CB = $Game->Variant->Chatbox();
 		// Now that we have retrieved the latest messages we can update the time we last viewed the messages
