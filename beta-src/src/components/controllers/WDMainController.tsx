@@ -59,7 +59,7 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
 
   const { name, gameID } = overview;
   useEffect(() => {
-    document.title = `${name} - webDiplomacy Game ${gameID}`;
+    document.title = `${name} - webDiplomacy`;
   }, [name, gameID]);
 
   if (!consistentPhase) {
