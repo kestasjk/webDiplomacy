@@ -109,13 +109,13 @@ if($User->type['User'] )
 	list($GamesMine) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
 		WHERE g.phase <> 'Finished' AND m.userID = ".$User->id);
 	list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE minimumBet IS NOT NULL AND password IS NULL AND gameOver = 'No'
-		AND phase <> 'Pre-game' AND phase <> 'Finished'
+		AND phase <> 'Pre-game' AND phase <> 'Finished' AND playerTypes <> 'MemberVsBots' 
 		AND ".$User->points." >= minimumBet AND ".$User->reliabilityRating." >= minimumReliabilityRating".($User->userIsTempBanned() ? " AND 0=1" : " "));
 }
 else
 {
 	list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE minimumBet IS NOT NULL AND password IS NULL AND gameOver = 'No'
-		AND phase <> 'Pre-game' AND phase <> 'Finished'");
+		AND phase <> 'Pre-game' AND phase <> 'Finished' AND playerTypes <> 'MemberVsBots' ");
 }
 list($GamesNew) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Pre-game' AND playerTypes <> 'MemberVsBots'");
 list($GamesActive) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase <> 'Pre-game' AND phase <> 'Finished' AND playerTypes <> 'MemberVsBots'");
@@ -184,18 +184,18 @@ if ($tab == 'My games')
 	}
 	else
 	{
-		$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished'";
+		$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND playerTypes <> 'MemberVsBots' ";
 		$totalResults = $GamesActive;
 	}
 }
 elseif ($tab == 'New')
 {
-	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase = 'Pre-game'";
+	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase = 'Pre-game' AND playerTypes <> 'MemberVsBots' ";
 	$totalResults = $GamesNew;
 }
 elseif ($tab == 'Open Positions')
 {
-	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished'
+	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND playerTypes <> 'MemberVsBots' 
 		AND g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No'";
 		if($User->type['User'])
 		{
@@ -205,12 +205,12 @@ elseif ($tab == 'Open Positions')
 }
 elseif ($tab == 'Active')
 {
-	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished'";
+	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND playerTypes <> 'MemberVsBots' ";
 	$totalResults = $GamesActive;
 }
 elseif ($tab == 'Finished')
 {
-	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase = 'Finished'";
+	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase = 'Finished' AND playerTypes <> 'MemberVsBots' ";
 	$totalResults = $GamesFinished;
 }
 else
