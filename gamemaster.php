@@ -179,6 +179,9 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 
 	try
 	{
+		// If there are votes to apply, apply them:
+		$Game->applyVotes();
+		
 		if( $Game->processStatus!='Crashed' && $Game->attempts > count($Game->Members->ByID)*2 )
 		{
 			$Game = $Variant->processGame($Game->id);

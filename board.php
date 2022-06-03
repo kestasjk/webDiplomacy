@@ -105,9 +105,11 @@ try
 					if( isset($_REQUEST[$possibleVoteType]) && isset($Member) && libHTML::checkTicket() )
 					{
 						$Member->toggleVote($possibleVoteType);
-						$MC->append('processHint',','.$Game->id); // Alert the gamemaster that this game needs processing
 					}
 				}
+
+				if( count($Game->Members->votesPassed()) > 0 )
+					$MC->append('processHint',','.$Game->id); // Alert the gamemaster that this game needs processing
 
 				$CB = $Game->Variant->Chatbox();
 
