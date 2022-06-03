@@ -172,48 +172,23 @@ class panelMember extends Member
 			return '';
 	}
 
-	private $isNameHidden;
 	function isNameHidden()
 	{
-		global $User, $DB;
-		list($directorUserID) = $DB->sql_row("SELECT directorUserID FROM wD_Games WHERE id = ".$this->Game->id);
-		list($tournamentDirector, $tournamentCodirector) = $DB->sql_row("SELECT directorID, coDirectorID FROM wD_Tournaments t INNER JOIN wD_TournamentGames g ON t.id = g.tournamentID WHERE g.gameID = ".$this->Game->id);
-
-		if ( !isset($this->isNameHidden) )
-		{
-			if ( ($this->Game->isMemberInfoHidden() && $User->id!=$this->userID) && !(isset($directorUserID) && $directorUserID == $User->id) 
-			&& !(isset($tournamentDirector) && $tournamentDirector == $User->id) && !(isset($tournamentCodirector) && $tournamentCodirector == $User->id))
-				$this->isNameHidden = true;
-			else
-				$this->isNameHidden = false;
-		}
-
-		return $this->isNameHidden;
+		global $User;
+		
+		return $this->Game->isMemberInfoHidden() && $User->id!=$this->userID && !$this->Game->isDirector($User->id);
 	}
 
-	private $isLastSeenHidden;
 	function isLastSeenHidden()
 	{
-		global $User, $DB;
+		global $User;
 
-		list($tournamentDirector, $tournamentCodirector) = $DB->sql_row("SELECT directorID, coDirectorID FROM wD_Tournaments t INNER JOIN wD_TournamentGames g ON t.id = g.tournamentID WHERE g.gameID = ".$this->Game->id);
-
-		$this->isLastSeenHidden = true;
-		if ((($User->type['Moderator']) || (isset($tournamentDirector) && $tournamentDirector == $User->id) || 
-		(isset($tournamentCodirector) && $tournamentCodirector == $User->id))&& (! $this->Game->Members->isJoined()))
-		{
-			$this->isLastSeenHidden = false;
-		}
-
-		return $this->isLastSeenHidden;
+		return ( $User->type['Moderator'] || $this->Game->isDirector($User->id) ) && !$this->Game->Members->isJoined();
 	}
 
-	private $isMissedTurnsHidden;
 	function isMissedTurnsHidden()
 	{
-		$this->isMissedTurnsHidden = $this->isNameHidden();
-
-		return $this->isMissedTurnsHidden;
+		return $this->isNameHidden();
 	}
 
 	/**

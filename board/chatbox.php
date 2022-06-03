@@ -88,9 +88,7 @@ class Chatbox
 	public function postMessage($msgCountryID)
 	{
 		global $Member, $Game, $User, $DB;
-		list($directorUserID) = $DB->sql_row("SELECT directorUserID FROM wD_Games WHERE id = ".$Game->id);
-		list($tournamentDirector, $tournamentCodirector) = $DB->sql_row("SELECT directorID, coDirectorID FROM wD_Tournaments t INNER JOIN wD_TournamentGames g ON t.id = g.tournamentID WHERE g.gameID = ".$Game->id);
-
+		
 		if( isset($_POST['newmessage']) AND $_POST['newmessage']!="" )
 		{
 			$newmessage = trim($_REQUEST['newmessage']);
@@ -121,13 +119,9 @@ class Chatbox
 			{
 				libGameMessage::send(0, 'Moderator', '('.$User->username.'): '.$newmessage);
 			}
-			elseif(isset($directorUserID) && $directorUserID == $User->id)
+			elseif( $Game->isDirector($User->id) )
 			{
-				libGameMessage::send(0, 'Game Director', '('.$User->username.'): '.$newmessage);
-			}
-			elseif((isset($tournamentDirector) && $tournamentDirector == $User->id) || (isset($tournamentCodirector) && $tournamentCodirector == $User->id) )
-			{
-				libGameMessage::send(0, 'Tournament Director', '('.$User->username.'): '.$newmessage);
+				libGameMessage::send(0, 'Game/Tournament Director', '('.$User->username.'): '.$newmessage);
 			}
 		}
 
@@ -149,9 +143,7 @@ class Chatbox
 	 */
 	public function output ($msgCountryID)
 	{
-		global $DB, $Game, $User, $Member;
-		list($directorUserID) = $DB->sql_row("SELECT directorUserID FROM wD_Games WHERE id = ".$Game->id);
-		list($tournamentDirector, $tournamentCodirector) = $DB->sql_row("SELECT directorID, coDirectorID FROM wD_Tournaments t INNER JOIN wD_TournamentGames g ON t.id = g.tournamentID WHERE g.gameID = ".$Game->id);
+		global $Game, $User, $Member;
 
 		$chatbox = '<a name="chatboxanchor"></a><a name="chatbox"></a>';
 
@@ -201,8 +193,7 @@ class Chatbox
 
 		$chatbox .= '</TABLE></DIV>';
 
-		if ( ( $User->type['Moderator'] && $msgCountryID == 0 ) ||((isset($directorUserID) && $directorUserID == $User->id && $msgCountryID == 0 ))||
-				 (isset($tournamentDirector) && $tournamentDirector == $User->id && $msgCountryID == 0) || (isset($tournamentCodirector) && $tournamentCodirector == $User->id && $msgCountryID == 0) ||
+		if ( ($msgCountryID == 0 && ( $User->type['Moderator'] || $Game->isDirector($User->id) )) || // A moderator / directory can see the global tab
 		     ( isset($Member) &&
 		       ( $Game->pressType == 'Regular' ||                                         // All tabs allowed for Regular
 		         $Member->countryID == $msgCountryID ||                                   // Notes tab always allowed
