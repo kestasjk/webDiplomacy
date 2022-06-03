@@ -140,6 +140,8 @@ class Members
 
 				if( array_key_exists($Member->countryID, $oldSCsByCountry) )
 					$oldSC = $oldSCsByCountry[$Member->countryID];
+				else
+					$oldSC = $botSC;
 
 				//A bot will draw or cancel if it is stalled out or if it is the first year
 				if ($oldSC >= $botSC || $this->Game->turn < 2) 
