@@ -52,7 +52,9 @@ const WDGameProgressOverlay: React.FC<WDGameProgressOverlayProps> = function ({
   clickHandler,
 }) {
   let innerElem;
-  if (["Diplomacy", "Retreats", "Builds"].includes(overview.phase)) {
+  if (
+    ["Diplomacy", "Retreats", "Builds", "Finished"].includes(overview.phase)
+  ) {
     if (status.phases.length <= 1) {
       innerElem = (
         <Stack direction="column" alignItems="center">
