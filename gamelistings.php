@@ -55,7 +55,7 @@ if (isset($_COOKIE['wD-Tutorial-JoinNewGame'])) {
 global $User, $Misc, $DB;
 
 $tabs = array();
-$sortCol = 'id';
+$sortCol = 'pot'; // Show the high stakes games first by default
 $sortType = 'desc';
 
 if ( isset($_REQUEST['sortCol']))
@@ -444,9 +444,9 @@ else
 			<input type="checkbox" class="gameCreate" name="messageRule" value="Yes"'.((isset($_REQUEST['Submit']) && $_REQUEST['messageRule'] <> "Yes") ? '' : ' checked').'>Rulebook
 			</p>
 			<p>Sort By: <select  class = "gameCreate" name="sortCol">
+			<option'.(($sortCol=='pot') ? ' selected="selected"' : '').' value="pot">Pot Size</option>
 				<option'.(($sortCol=='id') ? ' selected="selected"' : '').' value="id">Game ID</option>
 				<option'.(($sortCol=='name') ? ' selected="selected"' : '').' value="name">Game Name</option>
-				<option'.(($sortCol=='pot') ? ' selected="selected"' : '').' value="pot">Pot Size</option>
 				<option'.(($sortCol=='minimumBet') ? ' selected="selected"' : '').' value="minimumBet">Bet</option>
 				<option'.(($sortCol=='phaseMinutes') ? ' selected="selected"' : '').' value="phaseMinutes">Phase Length</option>
 				<option'.(($sortCol=='minimumReliabilityRating') ? ' selected="selected"' : '').' value="minimumReliabilityRating">Reliability Rating</option>
