@@ -117,9 +117,9 @@ else
 	list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE minimumBet IS NOT NULL AND password IS NULL AND gameOver = 'No'
 		AND phase <> 'Pre-game' AND phase <> 'Finished'");
 }
-list($GamesNew) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Pre-game'");
-list($GamesActive) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase <> 'Pre-game' AND phase <> 'Finished'");
-list($GamesFinished) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Finished'");
+list($GamesNew) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Pre-game' AND playerTypes <> 'MemberVsBots'");
+list($GamesActive) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase <> 'Pre-game' AND phase <> 'Finished' AND playerTypes <> 'MemberVsBots'");
+list($GamesFinished) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Finished' AND playerTypes <> 'MemberVsBots'");
 
 $GamesNew -= $GamesNewUser;
 $GamesOpen -= $GamesOpenUser;

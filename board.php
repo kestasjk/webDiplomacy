@@ -67,42 +67,89 @@ if ( $User->type['User'] && ( isset($_REQUEST['join']) || isset($_REQUEST['leave
 		// Couldn't leave/join game
 		libHTML::error($e->getMessage());
 	}
+	die(); // This point in the code isn't reached, all code paths above will have terminated by here (this means no need to get a different Game object)
 }
-else
+
+try
 {
-	try
+	require_once(l_r('objects/game.php'));
+	require_once(l_r('board/chatbox.php'));
+	require_once(l_r('gamepanel/gameboard.php'));
+	$Variant=libVariant::loadFromGameID($gameID);
+	libVariant::setGlobals($Variant);
+	$Game = $Variant->panelGameBoard($gameID);
+	
+	// If viewing an archive page make that the title, otherwise us the name of the game
+	libHTML::starthtml(isset($_REQUEST['viewArchive'])?$_REQUEST['viewArchive']:$Game->titleBarName());
+
+	if ( $Game->Members->isJoined() && !$Game->Members->isTempBanned() )
 	{
-		require_once(l_r('objects/game.php'));
-		require_once(l_r('board/chatbox.php'));
-		require_once(l_r('gamepanel/gameboard.php'));
+		// We are a member, load the extra code that we might need
+		require_once(l_r('gamemaster/gamemaster.php'));
+		require_once(l_r('board/member.php'));
+		require_once(l_r('board/orders/orderinterface.php'));
+		global $Member;
+		$Game->Members->makeUserMember($User->id);
+		$Member = $Game->Members->ByUserID[$User->id];
 
-		$Variant=libVariant::loadFromGameID($gameID);
-		libVariant::setGlobals($Variant);
-		$Game = $Variant->panelGameBoard($gameID);
+		// As a member check for any vote submissions, order submissions, and if the game needs to be processed
 
-		// If viewing an archive page make that the title, otherwise us the name of the game
-		libHTML::starthtml(isset($_REQUEST['viewArchive'])?$_REQUEST['viewArchive']:$Game->titleBarName());
-
-		if ( $Game->Members->isJoined() && !$Game->Members->isTempBanned() )
+		// Before HTML pre-generate everything and check input, so game summary header will be accurate
+		if( $Member->status == 'Playing' && $Game->phase != 'Finished' )
 		{
-			// We are a member, load the extra code that we might need
-			require_once(l_r('gamemaster/gamemaster.php'));
-			require_once(l_r('board/member.php'));
-			require_once(l_r('board/orders/orderinterface.php'));
+			if( $Game->phase != 'Pre-game' )
+			{
+				if(isset($_REQUEST['Unpause'])) $_REQUEST['Pause']='on'; // Hack because Unpause = toggle Pause
 
-			global $Member;
-			$Game->Members->makeUserMember($User->id);
-			$Member = $Game->Members->ByUserID[$User->id];
+				foreach(Members::$votes as $possibleVoteType) {
+					if( isset($_REQUEST[$possibleVoteType]) && isset($Member) && libHTML::checkTicket() )
+					{
+						$Member->toggleVote($possibleVoteType);
+						$MC->append('processHint',','.$Game->id); // Alert the gamemaster that this game needs processing
+					}
+				}
+
+				$CB = $Game->Variant->Chatbox();
+
+				// Now that we have retrieved the latest messages we can update the time we last viewed the messages
+				// Post messages we sent, and get the user we're speaking to
+				$msgCountryID = $CB->findTab();
+			
+				if( isset($Member) )
+				{
+					$CB->postMessage($msgCountryID);
+					$DB->sql_put("COMMIT");
+				}
+			
+				$forum = $CB->output($msgCountryID);
+			
+				unset($CB);
+			
+				libHTML::$footerScript[] = 'makeFormsSafe();';
+
+				if ( $Game->phase !='Finished' )
+				{
+					$OI = OrderInterface::newBoard();
+					$OI->load();
+
+					$Orders = '<div id="orderDiv'.$Member->id.'">'.$OI->html().'</div>';
+					unset($OI);
+				}
+			}
+
+			if( $Game->needsProcess() )
+			{
+				$MC->append('processHint',','.$Game->id);
+			}
 		}
 	}
-	catch(Exception $e)
-	{
-		// Couldn't load game
-		libHTML::error(l_t("Couldn't load specified game; this probably means this game was cancelled or abandoned.")." ".
-			($User->type['User'] ? l_t("Check your <a href='index.php' class='light'>notices</a> for messages regarding this game."):''));
-	}
 }
-
+catch(Exception $e)
+{
+	// Couldn't load game
+	libHTML::error(l_t("Couldn't load specified game; this probably means this game was cancelled or abandoned.")." ".
+		($User->type['User'] ? l_t("Check your <a href='index.php' class='light'>notices</a> for messages regarding this game."):''));
+}
 
 if ( isset($_REQUEST['viewArchive']) )
 {
@@ -135,6 +182,11 @@ if ( isset($_REQUEST['viewArchive']) )
 	libHTML::footer();
 }
 
+$map = $Game->mapHTML();
+
+/*
+ * Now there is $orders, $form, and $map. That's all the HTML cached, now begin printing
+ */
 
 if ( $Game->watched() && isset($_REQUEST['unwatch'])) {
 	print '<div class="content-notice gameTimeRemaining">'
@@ -145,168 +197,6 @@ if ( $Game->watched() && isset($_REQUEST['unwatch'])) {
 		.'<input type="submit" class="form-submit" name="unwatch" value="Confirm">
 		</form></div>';
 }
-
-// Before HTML pre-generate everything and check input, so game summary header will be accurate
-
-if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
-{
-	if( $Game->phase != 'Pre-game' )
-	{
-		if(isset($_REQUEST['Unpause'])) $_REQUEST['Pause']='on'; // Hack because Unpause = toggle Pause
-
-		foreach(Members::$votes as $possibleVoteType) {
-			if( isset($_REQUEST[$possibleVoteType]) && isset($Member) && libHTML::checkTicket() )
-				$Member->toggleVote($possibleVoteType);
-		}
-	}
-
-	// $DB->sql_put("COMMIT");
-
-	if( $Game->processStatus!='Crashed' && $Game->processStatus!='Paused' && $Game->attempts > count($Game->Members->ByID)/2+4  )
-	{
-		$DB->get_lock('gamemaster',1);
-		require_once(l_r('gamemaster/game.php'));
-		$Game = $Game->Variant->processGame($Game->id);
-		$Game->crashed();
-		$DB->sql_put("COMMIT");
-	}
-	else
-	{
-		if( $Game->Members->votesPassed() && $Game->phase!='Finished' )
-		{
-			$MC->append('processHint',','.$Game->id);
-			
-			$DB->get_lock('gamemaster',1);
-
-			$DB->sql_put("UPDATE wD_Games SET attempts=attempts+1 WHERE id=".$Game->id);
-			$DB->sql_put("COMMIT");
-
-			require_once(l_r('gamemaster/game.php'));
-			$Game = $Game->Variant->processGame($Game->id);
-			try
-			{
-				$Game->applyVotes(); // Will requery votesPassed()
-				$DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$Game->id);
-				$DB->sql_put("COMMIT");
-			}
-			catch(Exception $e)
-			{
-				if( $e->getMessage() == "Abandoned" || $e->getMessage() == "Cancelled" )
-				{
-					assert('$Game->phase=="Pre-game" || $e->getMessage() == "Cancelled"');
-					$DB->sql_put("COMMIT");
-					libHTML::notice(l_t('Cancelled'), l_t("Game was cancelled or didn't have enough players to start."));
-				}
-				else
-					$DB->sql_put("ROLLBACK");
-
-				throw $e;
-			}
-		}
-		else if( $Game->needsProcess() )
-		{
-			$MC->append('processHint',','.$Game->id);
-		}
-		else if ( false )
-		{
-			$DB->get_lock('gamemaster');
-			$DB->sql_put("COMMIT");
-			// COMMIT and then update the game to indicate that a process is needed, so that the gamemaster will process them, while also checking nothing else has adjusted the process  time
-			$DB->sql_put("UPDATE wD_Games SET processTime=".time()." WHERE id = ".$Game->id." AND processTime = " . $Game->processTime);
-			$DB->sql_put("COMMIT");
-		}
-		else if ( false )
-		{
-			$DB->sql_put("UPDATE wD_Games SET attempts=attempts+1 WHERE id=".$Game->id);
-			$DB->sql_put("COMMIT");
-
-			require_once(l_r('gamemaster/game.php'));
-			$Game = $Game->Variant->processGame($Game->id);
-			if( $Game->needsProcess() )
-			{
-				try
-				{
-					$Game->process();
-					$DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$Game->id);
-					$DB->sql_put("COMMIT");
-				}
-				catch(Exception $e)
-				{
-					if( $e->getMessage() == "Abandoned" || $e->getMessage() == "Cancelled" )
-					{
-						assert('$Game->phase=="Pre-game" || $e->getMessage() == "Cancelled"');
-						$DB->sql_put("COMMIT");
-						libHTML::notice(l_t('Cancelled'), l_t("Game was cancelled or didn't have enough players to start."));
-					}
-					else
-						$DB->sql_put("ROLLBACK");
-
-					throw $e;
-				}
-			}
-		}
-	}
-
-	if( $Game instanceof processGame )
-	{
-		$Game = $Game->Variant->panelGameBoard($Game->id);
-		$Game->Members->makeUserMember($User->id);
-		$Member = $Game->Members->ByUserID[$User->id];
-	}
-
-	if ( 'Pre-game' != $Game->phase && $Game->phase!='Finished' )
-	{
-		$OI = OrderInterface::newBoard();
-		$OI->load();
-
-		$Orders = '<div id="orderDiv'.$Member->id.'">'.$OI->html().'</div>';
-		unset($OI);
-
-		if( $Game->needsProcess() )
-		{
-			$MC->append('processHint',','.$Game->id);
-		}
-	}
-}
-
-if ( 'Pre-game' != $Game->phase )
-{
-	$CB = $Game->Variant->Chatbox();
-
-	// Now that we have retrieved the latest messages we can update the time we last viewed the messages
-	// Post messages we sent, and get the user we're speaking to
-	$msgCountryID = $CB->findTab();
-
-	if( isset($Member) )
-	{
-		$CB->postMessage($msgCountryID);
-		$DB->sql_put("COMMIT");
-	}
-
-	$forum = $CB->output($msgCountryID);
-
-	unset($CB);
-
-	libHTML::$footerScript[] = 'makeFormsSafe();';
-}
-
-$map = $Game->mapHTML();
-
-/*if( isset($_REQUEST['goNow']) )
-{
-	$DB->sql_put("UPDATE wD_Games SET processTime=1 WHERE id=".$Game->id);
-}//*/
-/*require_once(l_r('gamemaster/game.php'));
-$Game = $Variant->processGame($Game->id);
-$tabl=$DB->sql_tabl("SELECT id FROM wD_Users WHERE points>150 LIMIT 4");
-while(list($id)=$DB->tabl_row($tabl))
-	processMember::create($id, 5);
-
-$Game = $Game->Variant->panelGameBoard($Game->id);//*/
-
-/*
- * Now there is $orders, $form, and $map. That's all the HTML cached, now begin printing
- */
 
 print '</div>';
 print '<div class="content-bare content-board-header">';
@@ -374,12 +264,8 @@ if($User->type['Moderator'])
 	}
 }
 
-// TODO: Have this loaded up when the game object is loaded up
-list($directorUserID) = $DB->sql_row("SELECT directorUserID FROM wD_Games WHERE id = ".$Game->id);
-list($tournamentDirector, $tournamentCodirector) = $DB->sql_row("SELECT directorID, coDirectorID FROM wD_Tournaments t INNER JOIN wD_TournamentGames g ON t.id = g.tournamentID WHERE g.gameID = ".$Game->id);
-if( (isset($directorUserID) && $directorUserID == $User->id) || (isset($tournamentDirector) && $tournamentDirector == $User->id) || (isset($tournamentCodirector) && $tournamentCodirector == $User->id) )
+if( $Game->isDirector($User->id) )
 {
-	// This guy is the game director
 	define("INBOARD", true);
 
 	require_once(l_r("admin/adminActionsForms.php"));
