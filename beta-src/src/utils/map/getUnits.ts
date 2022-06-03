@@ -133,13 +133,6 @@ export function getUnitsLive(
             territoryStatusesByProvID[unitProvID] &&
             territoryStatusesByProvID[unitProvID].unitID !== null &&
             territoryStatusesByProvID[unitProvID].unitID !== unit.id;
-          // console.log("UNIT");
-          // console.log({
-          //   unit,
-          //   isRetreat,
-          //   territoryStatusesByProvID,
-          //   ometa: ordersMetaByTerrID[unit.terrID],
-          // });
 
           if (ordersMetaByTerrID[unit.terrID]?.update?.type === "Hold") {
             drawMode = UnitDrawMode.HOLD;
