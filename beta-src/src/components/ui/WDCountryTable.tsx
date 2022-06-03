@@ -158,7 +158,6 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
               <TableRow>
                 <WDTableCell
                   sx={{
-                    display: country.username ? "inline-block" : "none",
                     paddingTop: "0px !important",
                     fontSize: "10pt",
                     fontFamily: "Roboto",
