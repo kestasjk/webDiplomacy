@@ -11,6 +11,8 @@ import {
   gameData,
   gameOrdersMeta,
   gameOverview,
+  gameStatus,
+  gameViewedPhase,
   saveOrders,
 } from "../../state/game/game-api-slice";
 import UpdateOrder from "../../interfaces/state/UpdateOrder";
@@ -22,6 +24,12 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
   const [viewport] = useViewport();
   const { data } = useAppSelector(gameData);
   const ordersMeta = useAppSelector(gameOrdersMeta);
+  const status = useAppSelector(gameStatus);
+  const viewedPhaseState = useAppSelector(gameViewedPhase);
+
+  const viewingCurPhase =
+    viewedPhaseState.viewedPhaseIdx >= status.phases.length - 1;
+
   const currentOrderInProgress = useAppSelector(
     ({ game: { order } }: RootState) => order.inProgress,
   );
@@ -148,7 +156,7 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
     >
       <WDButton
         color="primary"
-        disabled={saveDisabled}
+        disabled={saveDisabled || !viewingCurPhase}
         onClick={() => clickButton(Move.SAVE)}
         sx={{
           filter: saveDisabled
@@ -161,7 +169,7 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
       </WDButton>
       <WDButton
         color="primary"
-        disabled={readyDisabled}
+        disabled={readyDisabled || !viewingCurPhase}
         onClick={() => clickButton(Move.READY)}
         sx={{
           filter: readyDisabled
