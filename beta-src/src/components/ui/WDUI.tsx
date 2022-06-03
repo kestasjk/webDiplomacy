@@ -173,6 +173,7 @@ const WDUI: React.FC = function (): React.ReactElement {
         <Box
           sx={{
             pt: "15px",
+            pointerEvents: "auto",
           }}
           ref={popoverTrigger}
         >

@@ -13,6 +13,9 @@ const WDHomeIcon: React.FC<NavIconProps> = function ({
       height={40}
       width={40}
       xmlns="http://www.w3.org/2000/svg"
+      style={{
+        pointerEvents: "auto",
+      }}
     >
       {iconState === UIState.ACTIVE && (
         <circle cx="20" cy="20" r="20" fill="#000" />

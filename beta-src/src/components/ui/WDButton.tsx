@@ -32,6 +32,7 @@ const WDButton: React.FC<WDButtonProps> = function ({
       style={{
         animation:
           doAnimateGlow && !disabled ? "glowing 1.5s ease infinite" : "",
+        pointerEvents: "auto",
       }}
     >
       <style>

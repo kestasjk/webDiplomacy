@@ -31,6 +31,7 @@ const WDScrollButton: React.FC<ScrollButtonProps> = function ({
         },
         animation:
           doAnimateGlow && !disabled ? "scrollglowing 1.5s ease infinite" : "",
+        pointerEvents: "auto",
       }}
       className={className}
       disabled={disabled}

@@ -42,6 +42,7 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
         height: 40,
         marginTop: "3px",
         marginRight: "55px", // for right side icons
+        pointerEvents: "none", // this box is invisible and used for layout alone, it shouldn't mask out clicks behind it
       }}
     >
       <WDPillScroller
