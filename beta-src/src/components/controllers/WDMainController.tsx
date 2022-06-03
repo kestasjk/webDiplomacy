@@ -52,7 +52,6 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   const consistentPhase =
     noPhase || (overviewKey === statusKey && overviewKey === dataKey);
 
-  console.log({ countryID });
   if (needsGameData && !noPhase) {
     dispatch(gameApiSliceActions.setNeedsGameData(false));
     dispatch(

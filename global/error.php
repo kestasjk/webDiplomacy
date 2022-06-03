@@ -152,10 +152,10 @@ function error_handler($errno, $errstr, $errfile=false, $errline=false, $errcont
 		mkdir($errorlogDirectory) or libHTML::error('Error creating errorlog directory');
 	}
 
-	// if ( ! is_file($errorlogDirectory.'/index.html') )
-	// {
-	// 	touch($errorlogDirectory.'/index.html') or libHTML::error('Error creating index file for errorlog directory');
-	// }
+	if ( ! is_file($errorlogDirectory.'/index.html') )
+	{
+		touch($errorlogDirectory.'/index.html') or libHTML::error('Error creating index file for errorlog directory');
+	}
 
 	if( JSERROR )
 	{
@@ -182,6 +182,7 @@ function error_handler($errno, $errstr, $errfile=false, $errline=false, $errcont
 		$message .= 'This error could not be logged! Please contact the administrator about this error.';
 	}
 	$message .= '</p>';
+	
 	libHTML::error($message);
 
 }

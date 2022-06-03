@@ -162,7 +162,6 @@ export const saveOrders = createAsyncThunk(
 
 export const loadGameData =
   (gameID: string, countryID?: string) => async (dispatch) => {
-    console.log("loadGameData");
     await Promise.all([
       dispatch(fetchGameData({ gameID, countryID })),
       // dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
@@ -243,7 +242,7 @@ const gameApiSlice = createSlice({
     },
     toggleVoteState(state, action) {
       const voteKey: string = action.payload;
-      let votes = current(state.overview.user!.member.votes) as string[];
+      let votes = current(state.overview.user!.member.votes);
       if (votes.includes(voteKey)) {
         votes = votes.filter((vote) => vote !== voteKey);
       } else {

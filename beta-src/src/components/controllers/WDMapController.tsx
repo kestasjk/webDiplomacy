@@ -69,7 +69,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
   const updateForPhase = () => {
     if (
       viewedPhaseState.viewedPhaseIdx >= status.phases.length - 1 &&
-      overview.user
+      overview.user // only do live viewing if non-spectating
     ) {
       // Convert from our internal order representation to webdip's
       // historical representation of orders so that we draw

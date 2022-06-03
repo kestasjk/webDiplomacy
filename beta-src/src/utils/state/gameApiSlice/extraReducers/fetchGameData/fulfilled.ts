@@ -27,15 +27,11 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
   }
 
   state.data = action.payload;
-  console.log({ action });
-  console.log(action.payload);
   const currentState = current(state);
-  console.log({ currentState });
   const {
     data: { data },
     overview: { phase, user },
   } = currentState;
-  console.log({ data });
   state.maps = generateMaps(data);
   state.ownUnits = [];
   Object.values(data.units).forEach((unit) => {

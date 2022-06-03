@@ -417,8 +417,6 @@ class GetGamesStates extends ApiEntry {
 		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
 		    throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 		$game = $this->getAssociatedGame();
-		error_log($countryID != null);
-		error_log($countryID == null);
 		if ($countryID != null && (!isset($game->Members->ByUserID[$userID]) || $countryID != $game->Members->ByUserID[$userID]->countryID))
 			throw new ClientForbiddenException('A user can only view game state for the country it controls.');
 		$gameState = new \webdiplomacy_api\GameState($gameID, $countryID);
@@ -436,6 +434,7 @@ class GetGameMembers extends ApiEntry {
 	private $showDrawVotes;
 
 	public function __construct() {
+		error_log("construct GetGameMembers");
 		parent::__construct('game/members', 'GET', 'getStateOfAllGames', array('gameID'));
 	}
 
@@ -698,10 +697,8 @@ class GetGameData extends ApiEntry {
 		}
 		$game = $this->getAssociatedGame();
 		$payload = [];
-		error_log("getGameData mid1");
 
 		if (!is_null($countryID)){
-			error_log("in country aprt");
 			if (empty($countryID) || !ctype_digit($countryID)){
 				throw new RequestException(
 					$this->JSONResponse(
@@ -727,7 +724,6 @@ class GetGameData extends ApiEntry {
 			$payload['contextVars'] = $this->getContextVars();
 			$payload['currentOrders'] = $this->getCurrentOrders();
 		}
-		error_log("data mid2");
 
 		if($game->variantID && is_numeric($game->variantID)){
             $territoriesCacheKey = "territories_$game->variantID";
@@ -743,18 +739,16 @@ class GetGameData extends ApiEntry {
                 }
             }
         }
-		error_log("data mid3");
 
 		$payload = array_merge(
             $payload,
             [
                 'units' => $this->getUnits($gameID),
                 'territoryStatuses' => $this->getTerrStatus($gameID),
-				'turn' => $game->turn,
-				'phase' => $game->phase,
+                'turn' => $game->turn,
+                'phase' => $game->phase,
             ],
         );
-		error_log("data mid4");
 
 		return $this->JSONResponse('Successfully retrieved game data.', 'GGD-s-001', true, $payload);
 	}
@@ -1322,13 +1316,12 @@ abstract class ApiAuth {
 	public function assertHasPermissionFor(ApiEntry $apiEntry) {
 		$permissionIsExplicit = false;
 		$permissionField = $apiEntry->getPermissionField();
-		error_log("perm= $permissionField");
 		if ($permissionField == '') {
 			// No permission field.
 			// If game ID is required, then user must be member of this game.
 			// Otherwise, any user can call this function.
 			if ($apiEntry->requiresGameID() && !isset($apiEntry->getAssociatedGame()->Members->ByUserID[$this->userID]))
-				return false; // throw new ClientForbiddenException('Access denied. User is not member of associated game.');
+				throw new ClientForbiddenException('Access denied. User is not member of associated game.');
 		} else {
 			// Permission field available.
 			if (!in_array($permissionField, self::$permissionFields))
@@ -1336,7 +1329,7 @@ abstract class ApiAuth {
 
 			// Permission field must be set for this user.
 			// Otherwise, game ID must be required and user must be member of this game.
-			if ($this->permissions[$permissionField] || $permissionField == "getStateOfAllGames") {
+			if ($this->permissions[$permissionField] || $permissionField == "getStateOfAllGames") {  // FIXME: can we open getStateOfAllGames to everyone?
 				$permissionIsExplicit = true;
 			} else {
 				if (!$apiEntry->requiresGameID())
@@ -1475,15 +1468,12 @@ class Api {
 		}
 
 		$apiAuth = new $this->authClass($this->route);
-
 		// Get API entry.
 		$apiEntry = $this->entries[$this->route]; /** @var ApiEntry $apiEntry */
 		// Check if request is authorized.
 		$permissionIsExplicit = $apiAuth->assertHasPermissionFor($apiEntry);
 		// Execute request.
-
 		$userID = $apiAuth->getUserID();
-		// error_log("userID= $userID , explicit= $permissionIsExplicit");
 		$result = $apiEntry->run($userID, $permissionIsExplicit); 
 		
 		// if( false && $route == 'players/missing_orders' )
