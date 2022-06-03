@@ -136,7 +136,6 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
     (acc, meta) => acc + +meta.saved,
     0,
   );
-
   if (
     (ordersLength === ordersSaved && gameState.save) ||
     (ordersLength !== ordersSaved && !gameState.save)
