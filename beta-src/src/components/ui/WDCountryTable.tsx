@@ -155,14 +155,7 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                   );
                 })}
               </TableRow>
-              <TableRow
-              //   sx={{
-              //     display:
-              //       country.votes.length || country.username
-              //         ? "contents"
-              //         : "none",
-              //   }}
-              >
+              <TableRow>
                 <WDTableCell
                   sx={{
                     display: country.username ? "inline-block" : "none",
