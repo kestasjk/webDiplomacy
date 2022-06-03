@@ -232,6 +232,14 @@ const gameApiSlice = createSlice({
       newIdx = Math.min(newIdx, state.status.phases.length - 1);
       newIdx = Math.max(newIdx, 0);
       state.viewedPhaseState.viewedPhaseIdx = newIdx;
+      state.viewedPhaseState.latestPhaseViewed = Math.max(
+        state.viewedPhaseState.latestPhaseViewed,
+        newIdx,
+      );
+    },
+    setViewedPhaseToLatestPhaseViewed(state) {
+      state.viewedPhaseState.viewedPhaseIdx =
+        state.viewedPhaseState.latestPhaseViewed;
     },
     setAlert(state, action) {
       setAlert(state.alert, action.payload);

@@ -7,6 +7,7 @@ import {
   gameOverview,
   gameData,
   gameStatus,
+  gameViewedPhase,
   loadGameData,
 } from "../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
@@ -24,6 +25,7 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   const overview = useAppSelector(gameOverview);
   const { data } = useAppSelector(gameData);
   const status = useAppSelector(gameStatus);
+  const viewedPhaseState = useAppSelector(gameViewedPhase);
 
   const { countryID } = overview.user.member;
 
@@ -77,12 +79,16 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
       {showOverlay && (
         <WDGameProgressOverlay
           overview={overview}
+          status={status}
+          viewedPhaseState={viewedPhaseState}
           clickHandler={() => {
             setDisplayedPhaseKey(overviewKey);
-            // When the user clicks on the overlay to show the latest
-            // phase, this makes it also jump forward to show them the
-            // latest phase.
-            dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(Infinity));
+            // When the user clicks on the overlay, we jump them to the latest phase
+            // that they've seen so far. If the game has moved on one or more phases past that
+            // then this phase will now be filled with the latest orders that the user has
+            // *not* yet seen (i.e. presumably they saw this phase when they were entering
+            // orders for it, before that phase ended and other powers' orders appeared).
+            dispatch(gameApiSliceActions.setViewedPhaseToLatestPhaseViewed());
           }}
         />
       )}

@@ -11,6 +11,7 @@ import formatPhaseForDisplay from "../../utils/formatPhaseForDisplay";
 interface WDPillScrollerProps {
   backwardDisabled: boolean;
   forwardDisabled: boolean;
+  animateForwardGlow: boolean;
   viewedPhase: string;
   viewedSeason: Season;
   viewedYear: number;
@@ -19,6 +20,7 @@ interface WDPillScrollerProps {
 const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
   backwardDisabled,
   forwardDisabled,
+  animateForwardGlow,
   viewedPhase,
   viewedSeason,
   viewedYear,
@@ -53,6 +55,7 @@ const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
         className="WDScroll--Forward"
         direction={ScrollButtonState.FORWARD}
         disabled={forwardDisabled}
+        doAnimateGlow={animateForwardGlow}
         onClick={() => {
           dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1));
         }}
