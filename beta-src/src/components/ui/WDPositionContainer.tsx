@@ -45,6 +45,7 @@ const WDPositionContainer: React.FC<WDPositionContainerProps> = function ({
         touchAction: "none",
         position: "absolute",
         zIndex: Z_INDEX,
+        pointerEvents: "none", // this component is for layout alone, it shouldn't mask out clicks behind it
         ...placement,
       }}
     >
