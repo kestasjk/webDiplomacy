@@ -11,10 +11,10 @@ export default function fetchGameStatusFulfilled(
   // console.log("fetchGameStatusFulfilled");
   state.apiStatus = "succeeded";
 
-  // If the user is scrolled to the current phase, make the viewed
-  // phase track the current phase
-  if (state.viewedPhaseState.viewedPhaseIdx >= state.status.phases.length - 1) {
+  // If this is the initial update, then jump to the most recent state upon load
+  if (state.status.phases.length <= 0 && action.payload.phases.length > 0) {
     state.viewedPhaseState.viewedPhaseIdx = action.payload.phases.length - 1;
+    state.viewedPhaseState.latestPhaseViewed = action.payload.phases.length - 1;
   }
 
   state.status = action.payload;
