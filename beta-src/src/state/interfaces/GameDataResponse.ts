@@ -24,6 +24,8 @@ export interface GameData {
   // may be omitted entirely from this array, and one is supposed to assume that
   // all the fields of such a missing province are the "default" values.
   territoryStatuses: IProvinceStatus[];
+  turn: number;
+  phase: string;
 }
 
 interface GameDataResponse {

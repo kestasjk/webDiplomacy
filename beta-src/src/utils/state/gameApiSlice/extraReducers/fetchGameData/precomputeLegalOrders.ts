@@ -101,7 +101,7 @@ export function getAllLegalRetreatDestsByUnitID(
   data.territoryStatuses.forEach((provinceStatus) => {
     provinceStatusByProvID[provinceStatus.id] = provinceStatus;
   });
-  const ourCountryID = overview.user.member.countryID.toString();
+  const ourCountryID = overview.user!.member.countryID.toString();
   Object.entries(data.units).forEach(([unitID, unit]) => {
     // If this unit is owned by someone else, then don't compute.
     if (unit.countryID !== ourCountryID) {
@@ -159,8 +159,7 @@ export function getAllPossibleBuildDests(
     return [];
   }
   const possibleBuildDests: Territory[] = [];
-
-  const ourCountryID = overview.user.member.countryID.toString();
+  const ourCountryID = overview.user!.member.countryID.toString();
   data.territoryStatuses.forEach((provStatus) => {
     // We have to own this province.
     if (provStatus.ownerCountryID !== ourCountryID) {
@@ -208,7 +207,7 @@ export function getAllLegalConvoys(
   if (overview.phase !== "Diplomacy") {
     return [{}, {}];
   }
-  const ourCountryID = overview.user.member.countryID.toString();
+  const ourCountryID = overview.user!.member.countryID.toString();
   const provinceStatusByProvID: { [key: string]: IProvinceStatus } = {};
   data.territoryStatuses.forEach((provinceStatus) => {
     provinceStatusByProvID[provinceStatus.id] = provinceStatus;
@@ -398,8 +397,7 @@ export function getAllLegalSupportsByUnitID(
   const legalSupportsByUnitID: {
     [key: string]: { [key: string]: LegalSupport[] };
   } = {};
-
-  const ourCountryID = overview.user.member.countryID.toString();
+  const ourCountryID = overview.user!.member.countryID.toString();
   Object.entries(data.units).forEach(([unitID, unit]) => {
     // If this unit is owned by someone else, then don't compute.
     if (unit.countryID !== ourCountryID) {

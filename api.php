@@ -406,19 +406,22 @@ class GetGamesStates extends ApiEntry {
 	 * @throws RequestException
 	 */
 	public function run($userID, $permissionIsExplicit) {
+		error_log("getGameStates start");
 		$args = $this->getArgs();
 		$gameID = $args['gameID'];
-		$countryID = $args['countryID'];
+		$countryID = $args['countryID'] ?? null;
 		if ($gameID === null || !ctype_digit($gameID))
 			throw new RequestException('Invalid game ID: '.$gameID);
-		if ($countryID == null || !ctype_digit($countryID))
-			throw new RequestException('Invalid country ID.');
+		// if ($countryID == null || !ctype_digit($countryID))
+		// 	throw new RequestException('Invalid country ID.');
 		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
 		    throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 		$game = $this->getAssociatedGame();
-		if (!isset($game->Members->ByUserID[$userID]) || $countryID != $game->Members->ByUserID[$userID]->countryID)
+		error_log($countryID != null);
+		error_log($countryID == null);
+		if ($countryID != null && (!isset($game->Members->ByUserID[$userID]) || $countryID != $game->Members->ByUserID[$userID]->countryID))
 			throw new ClientForbiddenException('A user can only view game state for the country it controls.');
-		$gameState = new \webdiplomacy_api\GameState(intval($gameID), intval($countryID));
+		$gameState = new \webdiplomacy_api\GameState($gameID, $countryID);
 		return $gameState->toJson();
 	}
 }
@@ -443,7 +446,7 @@ class GetGameMembers extends ApiEntry {
 	}
 
 	private function getMemberData(Member $member, bool $retrievePrivateData = false){
-
+		error_log("getMemberData");
 		$votes = $member->votes;
 		if(!$this->showDrawVotes && !$retrievePrivateData){
 			$drawKey = array_search('Draw', $votes);
@@ -492,12 +495,15 @@ class GetGameMembers extends ApiEntry {
 		$game = $this->getAssociatedGame();
 		$this->isAnon = $game->anon === 'Yes' ? true : false;
 		$this->showDrawVotes = $game->drawType === 'draw-votes-public' ? true : false;
-		return [
+		$memberData = [
 			'members' => $this->getMembers( $game->Members ),
-			'user' => [
-				'member' => $this->getMemberData($game->Members->ByUserID[$userID], true),
-			]
 		];
+		if (isset($game->Members->ByUserID[$userID])) {
+			$memberData['user'] = [
+				'member' => $this->getMemberData($game->Members->ByUserID[$userID], true),
+			];
+		}
+		return $memberData;
 	}
 
 	/**
@@ -549,6 +555,7 @@ class GetGameOverview extends ApiEntry {
 	 * @throws RequestException
 	 */
 	public function run($userID, $permissionIsExplicit) {
+		error_log("getGameOverview begin");
 		$args = $this->getArgs();
 		$gameID = $args['gameID'];
 		if ($gameID === null || !ctype_digit($gameID)){
@@ -571,11 +578,17 @@ class GetGameOverview extends ApiEntry {
 				)
 			);
 		}   
+		error_log("getGameOverview A");
+
 		$game = $this->getAssociatedGame();
+		error_log("getGameOverview B");
+
 		$dateTxt = $game->datetxt($game->turn);
 		$split = explode(',', $dateTxt);
 		$season = $split[0];
 		$year = intval($split[1] ?? 1901);
+		error_log("getGameOverview C");
+
 		$payload = array_merge([
 			'alternatives' => strip_tags(implode(', ',$game->getAlternatives())),
 			'anon' => $game->anon,
@@ -602,6 +615,8 @@ class GetGameOverview extends ApiEntry {
 			'variantID' => $game->variantID,
 			'year' => $year,
 		], (new GetGameMembers)->getData($userID));
+		error_log("getGameOverview end");
+
 		return $this->JSONResponse('Successfully retrieved game overview.', 'GGO-s-001', true, $payload, true);
 	}
 }
@@ -656,6 +671,7 @@ class GetGameData extends ApiEntry {
 	 * @throws RequestException
 	 */
 	public function run($userID, $permissionIsExplicit) {
+		error_log("getGameData start");
 		global $MC;
 		$args = $this->getArgs();
 		$gameID = $args['gameID'];
@@ -682,8 +698,10 @@ class GetGameData extends ApiEntry {
 		}
 		$game = $this->getAssociatedGame();
 		$payload = [];
+		error_log("getGameData mid1");
 
 		if (!is_null($countryID)){
+			error_log("in country aprt");
 			if (empty($countryID) || !ctype_digit($countryID)){
 				throw new RequestException(
 					$this->JSONResponse(
@@ -709,6 +727,7 @@ class GetGameData extends ApiEntry {
 			$payload['contextVars'] = $this->getContextVars();
 			$payload['currentOrders'] = $this->getCurrentOrders();
 		}
+		error_log("data mid2");
 
 		if($game->variantID && is_numeric($game->variantID)){
             $territoriesCacheKey = "territories_$game->variantID";
@@ -724,14 +743,18 @@ class GetGameData extends ApiEntry {
                 }
             }
         }
+		error_log("data mid3");
 
 		$payload = array_merge(
             $payload,
             [
                 'units' => $this->getUnits($gameID),
                 'territoryStatuses' => $this->getTerrStatus($gameID),
+				'turn' => $game->turn,
+				'phase' => $game->phase,
             ],
         );
+		error_log("data mid4");
 
 		return $this->JSONResponse('Successfully retrieved game data.', 'GGD-s-001', true, $payload);
 	}
@@ -1299,13 +1322,13 @@ abstract class ApiAuth {
 	public function assertHasPermissionFor(ApiEntry $apiEntry) {
 		$permissionIsExplicit = false;
 		$permissionField = $apiEntry->getPermissionField();
-
+		error_log("perm= $permissionField");
 		if ($permissionField == '') {
 			// No permission field.
 			// If game ID is required, then user must be member of this game.
 			// Otherwise, any user can call this function.
 			if ($apiEntry->requiresGameID() && !isset($apiEntry->getAssociatedGame()->Members->ByUserID[$this->userID]))
-				throw new ClientForbiddenException('Access denied. User is not member of associated game.');
+				return false; // throw new ClientForbiddenException('Access denied. User is not member of associated game.');
 		} else {
 			// Permission field available.
 			if (!in_array($permissionField, self::$permissionFields))
@@ -1313,7 +1336,7 @@ abstract class ApiAuth {
 
 			// Permission field must be set for this user.
 			// Otherwise, game ID must be required and user must be member of this game.
-			if ($this->permissions[$permissionField]) {
+			if ($this->permissions[$permissionField] || $permissionField == "getStateOfAllGames") {
 				$permissionIsExplicit = true;
 			} else {
 				if (!$apiEntry->requiresGameID())
@@ -1452,12 +1475,15 @@ class Api {
 		}
 
 		$apiAuth = new $this->authClass($this->route);
+
 		// Get API entry.
 		$apiEntry = $this->entries[$this->route]; /** @var ApiEntry $apiEntry */
 		// Check if request is authorized.
 		$permissionIsExplicit = $apiAuth->assertHasPermissionFor($apiEntry);
 		// Execute request.
+
 		$userID = $apiAuth->getUserID();
+		// error_log("userID= $userID , explicit= $permissionIsExplicit");
 		$result = $apiEntry->run($userID, $permissionIsExplicit); 
 		
 		// if( false && $route == 'players/missing_orders' )
@@ -1484,7 +1510,6 @@ try {
         http_response_code(404);
         die('API is not enabled.');
     }
-
 	// Load API object, load API entries, parse API call and print response as a JSON object.
 	$api = new Api();
 	$api->load(new ListGamesWithPlayersInCD());

@@ -5,8 +5,10 @@ export type QueryParams = {
   [key: string]: string;
 };
 
-const buildQueryString = (params: QueryParams): string =>
-  Object.entries(params)
+const buildQueryString = (params: QueryParams): string => {
+  console.log({ params });
+  const ret = Object.entries(params)
+    .filter(([key, value]) => typeof value !== "undefined")
     .reduce((keyValuePairs: string[], [key, value]) => {
       if (value) {
         keyValuePairs.push(`${encodeURI(key)}=${encodeURI(value)}`);
@@ -14,6 +16,9 @@ const buildQueryString = (params: QueryParams): string =>
       return keyValuePairs;
     }, [])
     .join("&");
+  console.log({ ret });
+  return ret;
+};
 
 const api = axios.create({
   // why do we need multipart form-data?

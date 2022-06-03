@@ -7,7 +7,8 @@ import GameStateMaps from "../../state/interfaces/GameStateMaps";
 export default function generateMaps(
   data: GameDataResponse["data"],
 ): GameStateMaps {
-  const { currentOrders, territories, units } = data;
+  console.log({ data });
+  const { territories, units } = data;
   const territoryToTerrID: GameStateMaps["territoryToTerrID"] = {};
   const terrIDToTerritory: GameStateMaps["terrIDToTerritory"] = {};
   const terrIDToProvinceID: GameStateMaps["terrIDToProvinceID"] = {};
@@ -38,7 +39,7 @@ export default function generateMaps(
     unitToTerritory[id] = territory;
   });
 
-  currentOrders?.forEach(({ id, unitID }) => {
+  data.currentOrders?.forEach(({ id, unitID }) => {
     unitToOrder[unitID] = id;
   });
 

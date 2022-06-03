@@ -11,6 +11,8 @@ const initialState: GameState = {
       territories: {},
       territoryStatuses: [],
       units: {},
+      turn: 0,
+      phase: "",
     },
   },
   error: null,

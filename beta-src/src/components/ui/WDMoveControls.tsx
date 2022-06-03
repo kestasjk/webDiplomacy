@@ -16,8 +16,15 @@ import {
 import UpdateOrder from "../../interfaces/state/UpdateOrder";
 import MoveStatus from "../../types/MoveStatus";
 import { RootState } from "../../state/store";
+import { OrderStatus } from "../../interfaces/state/MemberData";
 
-const WDMoveControls: React.FC = function (): React.ReactElement {
+interface WDMoveControlsProps {
+  orderStatus: OrderStatus;
+}
+
+const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
+  orderStatus,
+}): React.ReactElement {
   const theme = useTheme();
   const [viewport] = useViewport();
   const { data } = useAppSelector(gameData);
@@ -30,11 +37,6 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
     save: false,
     ready: false,
   });
-  const {
-    user: {
-      member: { orderStatus },
-    },
-  } = useAppSelector(gameOverview);
 
   if (orderStatus.None && !readyDisabled) {
     setReadyDisabled(true);

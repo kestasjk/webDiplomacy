@@ -50,9 +50,14 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
 
   return (
     <Box>
-      <Box sx={{ p: padding }}>
-        <WDVoteButtons toggleVote={toggleVote} voteState={userCountry.votes} />
-      </Box>
+      {userCountry && (
+        <Box sx={{ p: padding }}>
+          <WDVoteButtons
+            toggleVote={toggleVote}
+            voteState={userCountry.votes}
+          />
+        </Box>
+      )}
       <Box
         sx={{
           m: "20px 5px 10px 0",
@@ -64,10 +69,7 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
            * always show current user at the top
            *
            */
-          countries={[
-            { ...userCountry, votes: userCountry.votes },
-            ...countries,
-          ]}
+          countries={userCountry ? [userCountry, ...countries] : countries}
         />
       </Box>
     </Box>

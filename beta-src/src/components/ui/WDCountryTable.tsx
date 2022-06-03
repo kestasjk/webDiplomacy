@@ -202,7 +202,6 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                       ),
                   )}
                 </WDTableCell>
-                <WDTableCell />
               </TableRow>
             </React.Fragment>
           ))}

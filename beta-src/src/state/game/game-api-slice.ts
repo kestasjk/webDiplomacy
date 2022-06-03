@@ -56,7 +56,7 @@ export const fetchGameOverview = createAsyncThunk(
 
 export const fetchGameStatus = createAsyncThunk(
   ApiRoute.GAME_STATUS,
-  async (queryParams: { countryID: string; gameID: string }) => {
+  async (queryParams: { countryID?: string; gameID: string }) => {
     const { data } = await getGameApiRequest(ApiRoute.GAME_STATUS, queryParams);
     // console.log("fetchGameStatus");
     // console.log(data);
@@ -161,8 +161,8 @@ export const saveOrders = createAsyncThunk(
 );
 
 export const loadGameData =
-  (gameID: string, countryID: string) => async (dispatch) => {
-    // console.log("loadGameData");
+  (gameID: string, countryID?: string) => async (dispatch) => {
+    console.log("loadGameData");
     await Promise.all([
       dispatch(fetchGameData({ gameID, countryID })),
       // dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
@@ -171,23 +171,22 @@ export const loadGameData =
   };
 
 export const loadGame = (gameID: string) => async (dispatch) => {
-  // console.log("loadGame");
-  const {
-    payload: {
-      user: {
-        member: { countryID },
-      },
-    },
-  } = await dispatch(
+  const response = await dispatch(
     fetchGameOverview({
       gameID,
     }),
   );
-  await Promise.all([
+  const countryID = response.payload.user?.member.countryID;
+  const dispatches = [
     dispatch(fetchGameData({ gameID, countryID })),
-    dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
     dispatch(fetchGameStatus({ gameID, countryID })),
-  ]);
+  ];
+  if (countryID) {
+    dispatches.push(
+      dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
+    );
+  }
+  await Promise.all(dispatches);
 };
 
 /**
@@ -244,25 +243,25 @@ const gameApiSlice = createSlice({
     },
     toggleVoteState(state, action) {
       const voteKey: string = action.payload;
-      let votes = current(state.overview.user.member.votes) as string[];
+      let votes = current(state.overview.user!.member.votes) as string[];
       if (votes.includes(voteKey)) {
         votes = votes.filter((vote) => vote !== voteKey);
       } else {
         votes = [...votes, voteKey];
       }
-      state.overview.user.member.votes = votes;
+      state.overview.user!.member.votes = votes;
     },
   },
   extraReducers(builder) {
     builder
       // fetchGameData
       .addCase(fetchGameData.pending, (state) => {
-        // console.log("fetchGameData pending!");
+        console.log("fetchGameData pending!");
         state.apiStatus = "loading";
       })
       .addCase(fetchGameData.fulfilled, fetchGameDataFulfilled)
       .addCase(fetchGameData.rejected, (state, action) => {
-        // console.log("fetchGameData rejected!");
+        console.log("fetchGameData rejected!");
         state.apiStatus = "failed";
         state.error = action.error.message;
       })

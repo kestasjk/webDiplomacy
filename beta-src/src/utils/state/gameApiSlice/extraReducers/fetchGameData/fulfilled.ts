@@ -17,14 +17,8 @@ import { getLegalOrders } from "./precomputeLegalOrders";
 export default function fetchGameDataFulfilled(state: GameState, action): void {
   state.apiStatus = "succeeded";
 
-  const oldPhaseKey = getPhaseKey(
-    state.data.data.contextVars?.context,
-    "<BAD OLD_DATA_KEY>",
-  );
-  const newPhaseKey = getPhaseKey(
-    action.payload.data.contextVars?.context,
-    "<BAD NEW_DATA_KEY>",
-  );
+  const oldPhaseKey = getPhaseKey(state.data.data, "<BAD OLD_DATA_KEY>");
+  const newPhaseKey = getPhaseKey(action.payload.data, "<BAD NEW_DATA_KEY>");
   // console.log(`fetchGameDataFulfilled  ${oldPhaseKey} -> ${newPhaseKey}`);
 
   // Upon phase change, sweep away all orders from the previous turn
@@ -33,24 +27,27 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
   }
 
   state.data = action.payload;
+  console.log({ action });
+  console.log(action.payload);
   const currentState = current(state);
+  console.log({ currentState });
   const {
     data: { data },
     overview: { phase, user },
   } = currentState;
-
+  console.log({ data });
   state.maps = generateMaps(data);
   state.ownUnits = [];
   Object.values(data.units).forEach((unit) => {
-    if (unit.countryID === user.member.countryID.toString()) {
+    if (unit.countryID === user?.member.countryID.toString()) {
       state.ownUnits.push(unit.id);
     }
   });
 
   state.territoriesMeta = getTerritoriesMeta(data);
-
-  state.legalOrders = getLegalOrders(state.overview, data, state.maps);
-
+  if (state.overview.user) {
+    state.legalOrders = getLegalOrders(state.overview, data, state.maps);
+  }
   const numUnsavedOrders = Object.values(state.ordersMeta).reduce(
     (acc, meta) => acc + 1 - +meta.saved,
     0,

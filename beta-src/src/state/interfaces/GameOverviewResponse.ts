@@ -30,7 +30,7 @@ interface GameOverviewResponse {
   season: string;
   startTime: number;
   turn: number;
-  user: {
+  user?: {
     member: MemberData;
   };
   variant: {
