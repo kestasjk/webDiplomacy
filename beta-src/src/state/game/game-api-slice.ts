@@ -177,12 +177,16 @@ export const loadGame = (gameID: string) => async (dispatch) => {
       user: {
         member: { countryID },
       },
+      phase,
     },
   } = await dispatch(
     fetchGameOverview({
       gameID,
     }),
   );
+  if (phase === "Pre-game") {
+    return;
+  }
   await Promise.all([
     dispatch(fetchGameData({ gameID, countryID })),
     dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
@@ -270,7 +274,6 @@ const gameApiSlice = createSlice({
       })
       .addCase(fetchGameData.fulfilled, fetchGameDataFulfilled)
       .addCase(fetchGameData.rejected, (state, action) => {
-        // console.log("fetchGameData rejected!");
         state.apiStatus = "failed";
         state.error = action.error.message;
       })
