@@ -59,18 +59,19 @@ export function getUnitsLive(
   // Precompute a bunch of useful mappings
   //--------------------------------------------------------------------
 
-  const territoryStatusesByTerrID = Object.fromEntries(
+  const territoryStatusesByProvID = Object.fromEntries(
     territoryStatuses.map((territoryStatus) => [
       territoryStatus.id,
       territoryStatus,
     ]),
   );
-  const unitCountByTerrID: { [key: string]: number } = {};
+  const unitCountByProvID: { [key: string]: number } = {};
   Object.values(units).forEach((unit) => {
-    if (unit.terrID in unitCountByTerrID) {
-      unitCountByTerrID[unit.terrID] += 1;
+    const provID = maps.terrIDToProvinceID[unit.terrID];
+    if (provID in unitCountByProvID) {
+      unitCountByProvID[provID] += 1;
     } else {
-      unitCountByTerrID[unit.terrID] = 1;
+      unitCountByProvID[provID] = 1;
     }
   });
 
@@ -126,12 +127,19 @@ export function getUnitsLive(
         if (memberCountry) {
           const { country } = memberCountry;
 
+          const unitProvID = maps.terrIDToProvinceID[unit.terrID];
           let drawMode = UnitDrawMode.NONE;
           const isRetreat =
-            territoryStatusesByTerrID[unit.terrID] &&
-            territoryStatusesByTerrID[unit.terrID].unitID !== null &&
-            territoryStatusesByTerrID[unit.terrID].unitID !== unit.id;
-          const unitProvID = maps.terrIDToProvinceID[unit.terrID];
+            territoryStatusesByProvID[unitProvID] &&
+            territoryStatusesByProvID[unitProvID].unitID !== null &&
+            territoryStatusesByProvID[unitProvID].unitID !== unit.id;
+          // console.log("UNIT");
+          // console.log({
+          //   unit,
+          //   isRetreat,
+          //   territoryStatusesByProvID,
+          //   ometa: ordersMetaByTerrID[unit.terrID],
+          // });
 
           if (ordersMetaByTerrID[unit.terrID]?.update?.type === "Hold") {
             drawMode = UnitDrawMode.HOLD;
@@ -152,7 +160,7 @@ export function getUnitsLive(
             drawMode = UnitDrawMode.DISBANDED;
           } else if (isRetreat) {
             drawMode = UnitDrawMode.DISLODGED;
-          } else if (unitCountByTerrID[unit.terrID] >= 2) {
+          } else if (unitCountByProvID[unitProvID] >= 2) {
             drawMode = UnitDrawMode.DISLODGING;
           } else if (
             unit.countryID === currentUser.member.countryID.toString() &&
