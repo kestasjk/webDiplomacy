@@ -111,24 +111,6 @@ try
 				if( count($Game->Members->votesPassed()) > 0 )
 					$MC->append('processHint',','.$Game->id); // Alert the gamemaster that this game needs processing
 
-				$CB = $Game->Variant->Chatbox();
-
-				// Now that we have retrieved the latest messages we can update the time we last viewed the messages
-				// Post messages we sent, and get the user we're speaking to
-				$msgCountryID = $CB->findTab();
-			
-				if( isset($Member) )
-				{
-					$CB->postMessage($msgCountryID);
-					$DB->sql_put("COMMIT");
-				}
-			
-				$forum = $CB->output($msgCountryID);
-			
-				unset($CB);
-			
-				libHTML::$footerScript[] = 'makeFormsSafe();';
-
 				if ( $Game->phase !='Finished' )
 				{
 					$OI = OrderInterface::newBoard();
@@ -144,6 +126,19 @@ try
 				$MC->append('processHint',','.$Game->id);
 			}
 		}
+	}
+
+	// Process the chatbox / game messages
+	if( isset($Member) || $User->type['Moderator'] || $Game->isDirector($User->id) )
+	{
+		$CB = $Game->Variant->Chatbox();
+		// Now that we have retrieved the latest messages we can update the time we last viewed the messages
+		// Post messages we sent, and get the user we're speaking to
+		$msgCountryID = $CB->findTab();
+		$CB->postMessage($msgCountryID);
+		$forum = $CB->output($msgCountryID);
+		unset($CB);
+		libHTML::$footerScript[] = 'makeFormsSafe();';
 	}
 }
 catch(Exception $e)
