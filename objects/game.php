@@ -172,7 +172,6 @@ class Game
 	// Arrays of aggregate objects
 	/**
 	 * An array of Member(/processMember) objects indexed by countryID
-	 * @var array
 	 */
 	public $Members;
 

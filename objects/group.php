@@ -32,7 +32,7 @@ require_once(l_r('objects/basic/set.php'));
 class Group
 {
 	/**
-	 * The member ID
+	 * The group ID
 	 * @var int
 	 */
 	var $id;
@@ -43,6 +43,12 @@ class Group
 	var $name;
 
     static $validTypes = array('Person','Family','School','Work','Other','Unknown');
+
+	/**
+	 * The game ID, if applicable
+	 * @var int|null
+	 */
+	var $gameID;
 
 	/**
 	 * The type of group
@@ -98,10 +104,52 @@ class Group
 	var $GroupUsers;
 
 	/**
+	 * This is called if a suspicion is submitted directly from a game. The intention is that when created this way 
+	 * suspicions can be created for anonymous games, tying them to the user IDs while keeping them anonymous by
+	 * linking to the gameID and getting the country.
+	 * 
+	 * @return int ID of the group created
+	 */
+	static function createSuspicionFromGame($gameId, $countriesSuspected, $suspicionStrength, $explanation )
+	{
+		global $DB, $User;
+
+		$gameId = (int)$gameId;
+		$filteredCountriesSuspected = array();
+		foreach($countriesSuspected as $countrySuspected)
+			$filteredCountriesSuspected[] = (int)$countrySuspected;
+		$countriesSuspected = $filteredCountriesSuspected;
+		unset($filteredCountriesSuspected);
+		$suspicionStrength = (int) $suspicionStrength;
+		// $explanation = Pass this in as-is, will be filtered within
+		
+		// Take the gameID and countries and get the user IDs
+		$Variant = libVariant::loadFromGameID($gameId);
+		$Game = $Variant->Game($gameId);
+
+		$suspectedUsers = array();
+		foreach($countriesSuspected as $countrySuspected)
+		{
+			$suspectedUsers[] = new User($Game->Members->ByCountryID[$countrySuspected]->userID);
+		}
+	
+		$groupId = self::create('Unknown', $Game->name . ' - #' . $Game->turn, $explanation, $Game->id, $Game->id);
+		$Group = new Group($groupId);
+		foreach($suspectedUsers as $suspectedUser)
+		{
+			$Group->userAdd($User, $suspectedUser, $suspicionStrength);
+		}
+
+		return $groupId;
+	}
+
+
+
+	/**
 	 * Validate the inputs and permissions and create a group in the DB, returning an ID, or else throw exception
 	 * @return int ID of the group created
 	 */
-	static function create($groupType, $groupName, $groupDescription, $groupGameReference)
+	static function create($groupType, $groupName, $groupDescription, $groupGameReference, $gameID = null)
 	{
 		global $User, $DB;
 		if( Group::canUserCreate($User) )
@@ -121,7 +169,7 @@ class Group
 				$groupDescription .= '<br />Game Reference: ' . $groupGameReference;
 
 				$groupName = $DB->msg_escape($groupName);
-				$DB->sql_put("INSERT INTO wD_Groups (`name`,isActive,`type`,`display`,ownerUserId,timeCreated,timeChanged,`description`) VALUES ('".$groupName."',1,'" .$groupType ."','Moderators',".$User->id.",".time().",".time().",'".$groupDescription."')");
+				$DB->sql_put("INSERT INTO wD_Groups (`name`,isActive,`type`,`display`,ownerUserId,timeCreated,timeChanged,`description`,`gameId`) VALUES ('".$groupName."',1,'" .$groupType ."','Moderators',".$User->id.",".time().",".time().",'".$groupDescription."',".($gameID == null ? "NULL" : $gameID).")");
 				list($groupId) = $DB->sql_row("SELECT LAST_INSERT_ID()");
 				return $groupId;
 			}
@@ -386,9 +434,17 @@ class Group
 	}
 	public function outputUserTable($User = null)
 	{
-		return self::outputUserTable_static($this->GroupUsers, $User);
+		$Game = null;
+		if( $this->gameID != null )
+		{
+			// This is associated with a game; if it is an anonymous game
+			// we need to ensure the user ID is not shown.
+			$Variant = libVariant::loadFromGameID($this->gameID);
+			$Game = $Variant->Game($this->gameID);
+		}
+		return self::outputUserTable_static($this->GroupUsers, $User, $Game);
 	}
-	public static function outputUserTable_static($groupUsers, $User = null)
+	public static function outputUserTable_static($groupUsers, $User = null, $Game)
 	{
 		$userId = -1;
 		$isModerator = false;
@@ -405,6 +461,7 @@ class Group
 		$buf .= '<tr><th style="text-align:right">Link / Type</th><th style="text-align:center">User / Rating</th><th style="text-align:center">Creator / Rating</th><th style="text-align:center">Moderator / Rating</th><th style="text-align:left">Created / Updated</th></tr>';
 		foreach($groupUsers as $groupUser)
 		{
+			
 			
 			$buf .= '<tr>';
 			$buf .= '<td style="text-align:right">';
@@ -486,7 +543,7 @@ class Group
 		$closestWeighting = self::getClosestWeighting($givenWeighting);
 		return self::$allowedWeightings[$closestWeighting];
 	}
-	private static function getSelectWeighting($weightingType, $userId, $weighting)
+	public static function getSelectWeighting($weightingType, $userId, $weighting)
 	{
 		$closestWeighting = self::getClosestWeightingName($weighting);
 		$buf = '<select name="'.$weightingType.'Weighting'.$userId.'">';

@@ -713,7 +713,7 @@ class User {
 	}
 
 	/**
-	 * This will set a notification value in both the object and wd_users table if not already set.
+	 * This will set a notification value in both the object and wD_Users table if not already set.
 	 * @param notification notification value to set, must be 'PrivateMessage', 'GameMessage', 'Unfinalized', or 'GameUpdate'.
 	 **/
 	function setNotification($notification)
@@ -729,7 +729,7 @@ class User {
 	}
 
     /**
-	 * This will clear a notification value in both the object and the wd_users table if not already cleared.
+	 * This will clear a notification value in both the object and the wD_Users table if not already cleared.
 	 * @param notification notification value to clear, must be 'PrivateMessage', 'GameMessage', 'Unfinalized', or 'GameUpdate'.
 	 **/
 	function clearNotification($notification)
