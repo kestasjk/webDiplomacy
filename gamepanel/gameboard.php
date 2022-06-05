@@ -356,7 +356,7 @@ class panelGameBoard extends panelGame
 		global $User;
 		libHTML::$alternate=2;
 		$buf = '<div class="titleBar">
-				'.$this->titleBar().'
+				'.$this->titleBar(true).'
 			</div>';
 
 		$noticeBar = $this->gameNoticeBar();

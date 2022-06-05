@@ -1,0 +1,25 @@
+::-webkit-scrollbar {
+  width: 0;
+}
+
+div::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+
+div::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+textarea::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+}

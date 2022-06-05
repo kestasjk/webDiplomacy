@@ -19,6 +19,7 @@
  */
 
 define('IN_CODE', 1);
+require_once('header.php');
 require_once('config.php');
 require_once('global/definitions.php');
 require_once('locales/layer.php');
@@ -34,6 +35,8 @@ require_once('lib/cache.php');
 require_once('lib/html.php');
 require_once('lib/time.php');
 require_once('lib/gamemessage.php');
+require_once('board/orders/jsonBoardData.php');
+require_once('variants/install.php');
 $DB = new Database();
 
 /**
@@ -184,6 +187,15 @@ abstract class ApiEntry {
 		$this->type = $type;
 		$this->databasePermissionField = $databasePermissionField;
 		$this->requirements = $requirements;
+	}
+
+	protected function JSONResponse(string $msg, string $referenceCode, bool $success, array $data = [], $JSON_NUMERIC_CHECK = false){
+		return json_encode([
+			'msg' => $msg,
+			'success' => $success,
+			'referenceCode' =>$referenceCode,
+			'data' => $data,
+		], $JSON_NUMERIC_CHECK ? JSON_NUMERIC_CHECK : 0);
 	}
 
 	/**
@@ -352,6 +364,38 @@ class ToggleVote extends ApiEntry {
 }
 
 /**
+ * API entry game/messagesseen
+ */
+class MessagesSeen extends ApiEntry {
+	public function __construct() {
+		// lol why is this a GET
+		parent::__construct('game/messagesseen', 'GET', '', array('gameID','countryID','seenCountryID'));
+	}
+	public function run($userID, $permissionIsExplicit) {
+		global $Game, $DB;
+		$args = $this->getArgs();
+		$countryID = intval($args['countryID']);
+		$seenCountryID = intval($args['seenCountryID']);
+		$Game = $this->getAssociatedGame();
+		$member = $Game->Members->ByUserID[$userID];
+		$newMessagesFrom = $member->newMessagesFrom;
+
+		foreach($newMessagesFrom as $i => $curCountryID)
+		{
+			if ( $curCountryID == $seenCountryID )
+			{
+				unset($newMessagesFrom[$i]);
+				break;
+			}
+		}
+		$DB->sql_put("UPDATE wD_Members
+						SET newMessagesFrom = '".implode(',',$newMessagesFrom)."'
+						WHERE id = ".$member->id);
+		$DB->sql_put("COMMIT");
+	}
+}
+
+/**
  * API entry game/status
  */
 class GetGamesStates extends ApiEntry {
@@ -376,6 +420,320 @@ class GetGamesStates extends ApiEntry {
 			throw new ClientForbiddenException('A user can only view game state for the country it controls.');
 		$gameState = new \webdiplomacy_api\GameState(intval($gameID), intval($countryID));
 		return $gameState->toJson();
+	}
+}
+
+/**
+ * API entry game/members
+ * Retrieves member data related to a game. 
+ */
+class GetGameMembers extends ApiEntry {
+	private $isAnon;
+
+	private $showDrawVotes;
+
+	public function __construct() {
+		parent::__construct('game/members', 'GET', 'getStateOfAllGames', array('gameID'));
+	}
+
+	private function getMembers( $members ){
+		return array_map( function( $member ){
+			return $this->getMemberData($member);
+		}, $members->ByOrder );
+	}
+
+	private function getMemberData(Member $member, bool $retrievePrivateData = false){
+
+		$votes = $member->votes;
+		if(!$this->showDrawVotes && !$retrievePrivateData){
+			$drawKey = array_search('Draw', $votes);
+			if($drawKey !== false){
+				unset($votes[$drawKey]);
+				$votes = array_values($votes);
+			}
+		}
+		return [
+			'bet' => $member->bet,
+			'country' => $member->country,
+			'countryID' => $member->countryID,
+			'excusedMissedTurns' => $member->excusedMissedTurns,
+			'missedPhases' => $member->missedPhases,
+			'newMessagesFrom' => $retrievePrivateData ? $member->newMessagesFrom : [],
+			'online' => $member->online,
+			'orderStatus' => ($this->isAnon && !$retrievePrivateData ? ['Hidden' => 1] : [
+				'Ready' => $member->orderStatus->Ready,
+				'Saved' => $member->orderStatus->Saved,
+				'Completed' => $member->orderStatus->Completed,
+				'None' => $member->orderStatus->None,
+			]),
+			'status' => $member->status,
+			'supplyCenterNo' => $member->supplyCenterNo,
+			'timeLoggedIn' => $member->timeLoggedIn,
+			'unitNo' => $member->unitNo,
+			'userID' => $member->userID,
+			'username' => $this->isAnon && !$retrievePrivateData ? '' : $member->username,
+			'votes' => $votes,
+		];
+	}
+
+	public function getData($userID){
+		$args = $this->getArgs();
+		$gameID = $args['gameID'];
+		if ($gameID === null || !ctype_digit($gameID)){
+			throw new RequestException(
+				$this->JSONResponse(
+					'Invalid game ID.', 
+					'ggm-err-001', 
+					false,
+					['gameID' => $gameID]
+				)
+			);
+		}
+		$game = $this->getAssociatedGame();
+		$this->isAnon = $game->anon === 'Yes' ? true : false;
+		$this->showDrawVotes = $game->drawType === 'draw-votes-public' ? true : false;
+		return [
+			'members' => $this->getMembers( $game->Members ),
+			'user' => [
+				'member' => $this->getMemberData($game->Members->ByUserID[$userID], true),
+			]
+		];
+	}
+
+	/**
+	 * @throws RequestException
+	 */
+	public function run($userID, $permissionIsExplicit) {
+		return $this->JSONResponse('Successfully retrieved game members.', 'ggm-s-001', true, $this->getData($userID));
+	}
+}
+
+/**
+ * API entry game/overview
+ * 
+ * This should be cleaned up. 
+ */
+class GetGameOverview extends ApiEntry {
+	public function __construct() {
+		parent::__construct('game/overview', 'GET', 'getStateOfAllGames', array('gameID'));
+	}
+
+	private function getMembers( $members ){
+		return array_map( function( $member ){
+			return $this->getMemberData($member);
+		}, $members->ByOrder );
+	}
+
+	private function getMemberData($member){
+		return [
+			'bet' => $member->bet,
+			'country' => $member->country,
+			'countryID' => $member->countryID,
+			'excusedMissedTurns' => $member->excusedMissedTurns,
+			'id' => $member->id,
+			'missedPhases' => $member->missedPhases,
+			'newMessagesFrom' => $member->newMessagesFrom,
+			'online' => $member->online,
+			'orderStatus' => $member->orderStatus,
+			'status' => $member->status,
+			'supplyCenterNo' => $member->supplyCenterNo,
+			'timeLoggedIn' => $member->timeLoggedIn,
+			'unitNo' => $member->unitNo,
+			'userID' => $member->userID,
+			'username' => $member->username,
+			'votes' => $member->votes,
+		];
+	}
+
+	/**
+	 * @throws RequestException
+	 */
+	public function run($userID, $permissionIsExplicit) {
+		$args = $this->getArgs();
+		$gameID = $args['gameID'];
+		if ($gameID === null || !ctype_digit($gameID)){
+			throw new RequestException(
+				$this->JSONResponse(
+					'Invalid game ID.', 
+					'GGO-err-001', 
+					false,
+					['gameID' => $gameID]
+				)
+			);
+		}
+		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs'])){
+			throw new ClientForbiddenException(
+				$this->JSONResponse(
+					'Game ID is not in list of gameIDs where API usage is permitted.', 
+					'GGO-err-002', 
+					false, 
+					['gameID' => $gameID]
+				)
+			);
+		}   
+		$game = $this->getAssociatedGame();
+		$dateTxt = $game->datetxt($game->turn);
+		$split = explode(',', $dateTxt);
+		$season = $split[0];
+		$year = intval($split[1] ?? 1901);
+		$payload = array_merge([
+			'alternatives' => strip_tags(implode(', ',$game->getAlternatives())),
+			'anon' => $game->anon,
+			'drawType' => $game->drawType,
+			'season' => $season,
+			'year' => $year,
+			'excusedMissedTurns' => $game->excusedMissedTurns,
+			'gameID' => $gameID,
+			'gameOver' => $game->gameOver,
+			'minimumBet' => $game->minimumBet,
+			'name' => $game->name,
+			'pauseTimeRemaining' => $game->pauseTimeRemaining,
+			'phase' => $game->phase,
+			'phaseMinutes' => $game->phaseMinutes,
+			'playerTypes' => $game->playerTypes,
+			'pot' => $game->pot,
+			'potType' => $game->potType,
+			'processStatus' => $game->processStatus,
+			'processTime' => $game->processTime,
+			'startTime' => $game->startTime,
+			'season' => $season,
+			'turn' => $game->turn,
+			'variant' => $game->Variant,
+			'variantID' => $game->variantID,
+			'year' => $year,
+		], (new GetGameMembers)->getData($userID));
+		return $this->JSONResponse('Successfully retrieved game overview.', 'GGO-s-001', true, $payload, true);
+	}
+}
+
+/**
+ * API entry game/data
+ * Retrieves API data needed for order generation code and game functionality. 
+ */
+class GetGameData extends ApiEntry {
+
+	private $contextVars;
+
+	public function __construct() {
+		parent::__construct('game/data', 'GET', 'getStateOfAllGames', array('gameID', 'countryID'));
+	}
+
+	private function setContextVars( $game, $gameID, $userID, $countryID, $member ){
+		$this->contextVars = (new OrderInterface(
+			$gameID,
+			$game->variantID,
+			$userID,
+			$member->id,
+			$game->turn,
+			$game->phase,
+			$countryID,
+			$member->orderStatus,
+			null,
+			false
+		))->load()->getContextVars();
+	}
+
+	private function getContextVars(){
+		return [
+			'context' => json_decode($this->contextVars['context']),
+			'contextKey' => $this->contextVars['contextKey'],
+		];
+	}
+
+	private function getCurrentOrders(){
+		return $this->contextVars['ordersData'];
+	}
+
+	private function getUnits($gameID){
+        return jsonBoardData::getUnitsData($gameID);
+    }
+
+    private function getTerrStatus($gameID){
+        return jsonBoardData::getTerrStatusData($gameID);
+    }
+
+	/**
+	 * @throws RequestException
+	 */
+	public function run($userID, $permissionIsExplicit) {
+		global $MC;
+		$args = $this->getArgs();
+		$gameID = $args['gameID'];
+		$countryID = $args['countryID'] ?? null;
+		if (empty($gameID) || !ctype_digit($gameID)){
+			throw new RequestException(
+				$this->JSONResponse(
+					'Invalid game ID.', 
+					'GGD-err-001', 
+					false,
+					['gameID' => $gameID]
+				)
+			);
+		}
+		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs'])){
+			throw new ClientForbiddenException(
+				$this->JSONResponse(
+					'Game ID is not in list of gameIDs where API usage is permitted.', 
+					'GGD-err-003', 
+					false, 
+					['gameID' => $gameID]
+				)
+			);
+		}
+		$game = $this->getAssociatedGame();
+		$payload = [];
+
+		if (!is_null($countryID)){
+			if (empty($countryID) || !ctype_digit($countryID)){
+				throw new RequestException(
+					$this->JSONResponse(
+						'Invalid country ID.', 
+						'GGD-err-002', 
+						false, 
+						['countryID' => $countryID]
+					)
+				);
+			}
+			if (!isset($game->Members->ByUserID[$userID]) || $countryID != $game->Members->ByUserID[$userID]->countryID){
+				throw new ClientForbiddenException(
+					$this->JSONResponse(
+						'A user can only view game state for the country it controls.', 
+						'GGD-err-004', 
+						false, 
+						['gameID' => $gameID]
+					)
+				);
+			}
+			$member = $game->Members->ByCountryID[$countryID];
+			$this->setContextVars($game, $gameID, $userID, $countryID, $member);
+			$payload['contextVars'] = $this->getContextVars();
+			$payload['currentOrders'] = $this->getCurrentOrders();
+		}
+
+		if($game->variantID && is_numeric($game->variantID)){
+            $territoriesCacheKey = "territories_$game->variantID";
+            $cachedTerritories = $MC->get($territoriesCacheKey);
+            if($cachedTerritories){
+                $payload['territories'] = $cachedTerritories;
+            }else{
+                $territories = InstallCache::terrJSONData($game->variantID);
+                if(!empty($territories)){
+                    $payload['territories'] = $territories;
+                    $secondsInDay = 86400;
+                    $MC->set($territoriesCacheKey, $territories, $secondsInDay);
+                }
+            }
+        }
+
+		$payload = array_merge(
+            $payload,
+            [
+                'units' => $this->getUnits($gameID),
+                'territoryStatuses' => $this->getTerrStatus($gameID),
+            ],
+        );
+
+		return $this->JSONResponse('Successfully retrieved game data.', 'GGD-s-001', true, $payload);
 	}
 }
 
@@ -553,6 +911,8 @@ class SetOrders extends ApiEntry {
 			if (empty($updatedOrders))
 				break;
 			// Load updated orders.
+			// FIXME this function (board/orders/orderinterface.php) may report an error
+			// via libHTML::notice, which is not friendly to JSON API.
 			$orderInterface->load();
 			$orderInterface->set(json_encode(array_values($updatedOrders)));
 			$results = $orderInterface->validate();
@@ -654,9 +1014,9 @@ class SendMessage extends ApiEntry {
 		parent::__construct('game/sendmessage', 'JSON', '', array('gameID','countryID','toCountryID', 'message'));
 	}
 	public function run($userID, $permissionIsExplicit) {
-		global $DB;
-
+		global $Game, $DB;
 		$args = $this->getArgs();
+		$messages = array();
 
 		if ($args['toCountryID'] === null)
 			throw new RequestException('toCountryID is required.');
@@ -670,93 +1030,260 @@ class SendMessage extends ApiEntry {
 		$toCountryID = intval($args['toCountryID']);
 		$message = $args['message'];
 
-		$game = $this->getAssociatedGame();
-		if ($game->pressType != 'Regular') {
+		$Game = $this->getAssociatedGame();
+
+		if ($Game->pressType != 'Regular') {
 			throw new RequestException('Game is not regular press.');
 		}
 
-		if (!(isset($game->Members->ByUserID[$userID]) && $countryID == $game->Members->ByUserID[$userID]->countryID)) {
+		if (!(isset($Game->Members->ByUserID[$userID]) && $countryID == $Game->Members->ByUserID[$userID]->countryID)) {
 			throw new ClientForbiddenException('User does not have explicit permission to make this API call.');
 		}
 
-		if ($toCountryID < 1 || $toCountryID > count($game->Members->ByUserID) || $toCountryID == $countryID) {
+		if ($toCountryID < 0 || $toCountryID > count($Game->Members->ByID) || $toCountryID == $countryID) {
 			throw new RequestException('Invalid toCountryID');
 		}
 
-		$toUser = new User($game->Members->ByCountryID[$toCountryID]->userID);
-		if(!$toUser->isCountryMuted($game->id, $countryID)) {
-			$time = libGameMessage::send($toCountryID, $countryID, $message);
+		if ($toCountryID != 0) {
+			$toUser = new User($Game->Members->ByCountryID[$toCountryID]->userID);
+			if($toUser->isCountryMuted($Game->id, $countryID)) {
+				return json_encode(["messages" => []]);
+			}
 		}
 
-		$DB->sql_put("COMMIT");
-		
-		return $time;
+		$timeSent = libGameMessage::send($toCountryID, $countryID, $message);
+
+		// now fetch this message back out of the table.
+		// This is the safest way to make sure all the escaping is correct.
+		// Should we fetch messages from previous timeSent as well to make sure everything is in sync?
+		$tabl = $DB->sql_tabl("SELECT message, turn 
+			FROM wD_GameMessages WHERE 
+			gameID = $gameID AND 
+			timeSent = $timeSent AND 
+			fromCountryID = $countryID AND 
+			toCountryID = $toCountryID
+		");
+
+		while ($msg = $DB->tabl_hash($tabl)) {
+			$messages[] = [
+				'fromCountryID' => $countryID,
+				'message' => $msg['message'],
+				'timeSent' => (int) $timeSent,
+				'toCountryID' => $toCountryID,
+				'turn' => $msg['turn'],
+			];
+		}
+		$ret = [
+			"messages" => $messages
+		];
+		return json_encode($ret);
 	}
 }
 
 /**
- * Class to manage an API key and check associated permissions.
+ * API entry game/getmessages
  */
-class ApiKey {
-	/**
-	 * API access key.
-	 * @var string
-	 */
-	private $apiKey;
+class GetMessages extends ApiEntry {
+	public function __construct() {
+		parent::__construct('game/getmessages', 'GET', '', array('gameID','countryID','toCountryID','offset','limit','allMessages','sinceTime'));
+	}
+	public function run($userID, $permissionIsExplicit) {
 
+		global $DB, $MC;
+		$args = $this->getArgs();
+		$countryID = $args['countryID'];
+		$gameID = $args['gameID'];
+		$limitAmount = 10000;
+		$limit = $args['limit'];
+		$offset = $args['offset'];
+		$toCountryID = intval($args['toCountryID']);
+		$messages = array();
+
+		$sinceTime = $args['sinceTime'];
+		$lastMsgKey = "lastmsgtime_{$gameID}_{$countryID}";
+		// error_log("fetch messages since time= $sinceTime");
+		if (isset($sinceTime)) {
+			// FIXME: gotta be careful that user has permissions or we could leak
+			// the existence of a message by whether we break here!
+			$lastMsgTime = $MC->get($lastMsgKey);
+			// try to shortcut before doing anything expensive
+			// error_log("last message was {$lastMsgTime}, client asked for messages since {$sinceTime}");
+			if ($lastMsgTime && $lastMsgTime <= $sinceTime) {
+				// error_log("Bailing early because no new messages");
+				return $this->JSONResponse(
+					'No messages available',
+					'',
+					true,
+					[
+						'messages' => $messages,
+					]
+				);
+			}
+		}
+
+		$game = $this->getAssociatedGame();
+		$gamePhase = $game->phase;
+		$pressType = $game->pressType;
+
+		$limit = isset($limit) ? intval($limit) : $limitAmount;
+		$offset = isset($offset) ? intval($offset) : 0;
+		
+		if ($gameID === null || !is_numeric($gameID))
+			throw new RequestException(
+				$this->JSONResponse('A gameID is required.', '', false, ['gameID' => $gameID])
+			);
+
+		if ($countryID === null || !is_numeric($countryID))
+			throw new RequestException(
+				$this->JSONResponse('A countryID is required.', '', false, ['countryID' => $countryID])
+			);
+
+		if ($limit > $limitAmount) {
+			throw new RequestException(
+				$this->JSONResponse('limit should not exceed 10000', '', false, ['limit' => $limit])
+			);
+		}
+
+		// Global Get all messages addressed to everyone
+		if ($countryID == 0) {
+			$where = "toCountryID = 0";
+		}
+
+		// Press Types
+		// Regular - Global and Private messaging allowed.
+		// PublicPressOnly - Only Global messaging allowed.
+		// NoPress - No messaging allowed.
+		// RulebookPress - No messaging allowed during 'Builds' and 'Retreats' phases.
+		else if ( 
+			($countryID != $toCountryID && $pressType == 'NoPress') || 
+			($countryID != $toCountryID && $pressType == 'RulebookPress' && $gamePhase == 'Builds') || 
+			($countryID != $toCountryID && $pressType == 'RulebookPress' && $gamePhase == 'Retreats') ) {
+			throw new RequestException(
+				$this->JSONResponse(
+					'No messaging allowed for pressType = NoPress. No messaging allowed during "Retreats" and "Builds" phases for pressType = RulebookPress.',
+					'',
+					false,
+					[
+						'pressType' => $pressType,
+						'phase' => $gamePhase,
+					]
+				)
+			);
+		}
+
+		// Only get messages sent between
+		else {
+
+			// Check if user has acess to see messages
+			if ( $pressType == 'PublicPressOnly' || !(isset($game->Members->ByUserID[$userID]) && $countryID == $game->Members->ByUserID[$userID]->countryID)) {
+				throw new RequestException(
+					$this->JSONResponse(
+						'User does not have explicit permission to make this API call.',
+						'',
+						false,
+						[
+							'pressType' => $pressType,
+							'phase' => $gamePhase,
+						],
+					)
+				);
+			}
+
+			$where = "(toCountryID = $countryID OR fromCountryID = $countryID)";
+			if (isset($args['toCountryID'])) {
+				$where = "$where OR (toCountryID = $toCountryID OR fromCountryID = $toCountryID)";
+			}
+			if (isset($args['allMessages'])) {
+				$where = "$where OR (toCountryID = 0 OR fromCountryID = 0)";
+			}
+			if (isset($args['sinceTime'])) {
+				$where = "($where) AND timeSent >= $sinceTime";
+			}
+		}
+
+		$tabl = $DB->sql_tabl("SELECT message, toCountryID, fromCountryID, turn, timeSent
+		FROM wD_GameMessages WHERE gameID = $gameID AND ($where)
+		order BY id DESC LIMIT $limit OFFSET $offset");
+
+		while ($message = $DB->tabl_hash($tabl)) {
+			$messages[] = [
+				'fromCountryID' => (int) $message['fromCountryID'],
+				'message' => $message['message'],
+				'timeSent' => (int) $message['timeSent'],
+				'toCountryID' => (int) $message['toCountryID'],
+				'turn' => (int) $message['turn'],
+			];
+		}
+
+		// Return Messages.
+		$curTime = time();
+		$responseStr = $messages ? 'Successfully retrieved game messages.' : 'No messages available';
+		// error_log("$responseStr at time $curTime");
+		$newMessagesFrom = array_map('intval', $game->Members->ByUserID[$userID]->newMessagesFrom);
+		return $this->JSONResponse(
+			$responseStr,
+			'',
+			true,
+			[
+				'messages' => $messages,
+				'time' => $curTime,
+				'newMessagesFrom' => $newMessagesFrom,
+			]
+		);
+	}
+}
+
+/**
+ * Class to manage an API authentication and check associated permissions.
+ */
+abstract class ApiAuth {
 	/**
 	 * User ID associated to API key.
 	 * @var int
 	 */
-	private $userID;
+	protected $userID = null;
+
+	/**
+	 * Cache key associated with this API request.
+	 * @var string
+	 */
+	private $cacheKey = null;
 
 	/**
 	 * Permissions associated to this API key.
 	 * Associative array mapping permission name to a boolean.
 	 * @var array
 	 */
-	private $permissions;
+	protected $permissions = array();
 
 	/**
 	 * List of current permissions names in database table `wD_ApiPermissions`.
+	 * @var array
 	 */
-	static private $permissionFields = array(
+	static protected $permissionFields = array(
 		'getStateOfAllGames',
 		'submitOrdersForUserInCD',
 		'listGamesWithPlayersInCD'
 	);
 
 	/**
-	 * Load API key.
+	 * Load API auth.
 	 * @throws ClientUnauthorizedException - if associated user cannot be found.
 	 */
-	private function load() {
-		global $DB;
-		$rowUserId = $DB->sql_hash("SELECT userID from wD_ApiKeys WHERE apiKey = '".$DB->escape($this->apiKey)."'");
-		if (!$rowUserId)
-			throw new ClientUnauthorizedException('No user associated to this API key.');
-		$this->userID = intval($rowUserId['userID']);
-		$permissionRow = $DB->sql_hash("SELECT * FROM wD_ApiPermissions WHERE userID = ".$this->userID);
-		if ($permissionRow) {
-			foreach (ApiKey::$permissionFields as $permissionField) {
-				if ($permissionRow[$permissionField] == 'Yes')
-					$this->permissions[$permissionField] = true;
-			}
-		}
-	}
+	abstract protected function load();
 
 	/**
-	 * Initialize API key object.
-	 * @param string $apiKey - API access key.
+	 * Initialize API auth object.
+	 * @param $route - API route.
 	 * @throws ClientUnauthorizedException - If associated user cannot be found.
 	 */
-	public function __construct($apiKey) {
-		$this->apiKey = $apiKey;
-		$this->userID = null;
-		$this->permissions = array();
-		foreach (ApiKey::$permissionFields as $permissionField)
-			$this->permissions[$permissionField] = false;
-		$this->load();
+	abstract public function __construct(string $route);
+
+	/**
+	 * Returns the cache key. This is made in the child depending on class needs. 
+	 */
+	public function getCacheKey() : string {
+		return $this->cacheKey;
 	}
 
 	/**
@@ -781,7 +1308,7 @@ class ApiKey {
 				throw new ClientForbiddenException('Access denied. User is not member of associated game.');
 		} else {
 			// Permission field available.
-			if (!in_array($permissionField, ApiKey::$permissionFields))
+			if (!in_array($permissionField, self::$permissionFields))
 				throw new ServerInternalException('Unknown permission name');
 
 			// Permission field must be set for this user.
@@ -808,6 +1335,56 @@ class ApiKey {
 	}
 }
 
+class ApiKey extends ApiAuth {
+
+	/**
+	 * API access key.
+	 * @var string
+	 */
+	private $apiKey;
+
+	protected function load(){
+		global $DB;
+		$rowUserId = $DB->sql_hash("SELECT userID from wD_ApiKeys WHERE apiKey = '".$DB->escape($this->apiKey)."'");
+		if (!$rowUserId)
+			throw new ClientUnauthorizedException('No user associated to this API key.');
+		$this->userID = intval($rowUserId['userID']);
+		$permissionRow = $DB->sql_hash("SELECT * FROM wD_ApiPermissions WHERE userID = ".$this->userID);
+		if ($permissionRow) {
+			foreach (self::$permissionFields as $permissionField) {
+				if ($permissionRow[$permissionField] == 'Yes')
+					$this->permissions[$permissionField] = true;
+			}
+		}
+	}
+
+	public function __construct($route){
+		$apiKeyString = getBearerToken();
+		if ($apiKeyString == null)
+			throw new ClientUnauthorizedException('No API key provided.');
+		$this->apiKey = $apiKeyString;
+		$this->cacheKey = str_replace(' ', '_', 'api' . $this->apiKey . $route );
+		foreach (self::$permissionFields as $permissionField)
+			$this->permissions[$permissionField] = false;
+		$this->load();
+	}
+}
+
+class ApiSession extends ApiAuth {
+	protected function load(){
+		global $User;
+		if( !empty( $User ) && $User->type['User'] === true && (int)$User->id > 0 ){
+			$this->userID = $User->id;
+		}
+	}
+
+	public function __construct($route){
+		foreach (self::$permissionFields as $permissionField)
+			$this->permissions[$permissionField] = false;
+		$this->load();
+	}
+}
+
 /**
  * API main call to manage calls.
  */
@@ -818,6 +1395,10 @@ class Api {
 	 * @var array
 	 */
 	private $entries;
+
+	private $route;
+
+	private $authClass;
 
 	public function __construct() {
 		$this->entries = array();
@@ -832,6 +1413,13 @@ class Api {
 	}
 
 	/**
+	 * Returns the API route being used.
+	 */
+	public function getRoute() : string {
+		return $this->route;
+	}
+
+	/**
 	 * Run API. Parse call and return a response as a JSON-encoded string.
 	 * @return string
 	 * @throws ClientForbiddenException
@@ -841,43 +1429,51 @@ class Api {
 	 * @throws ServerInternalException
 	 */
 	public function run() {
-		global $MC;
-		
+		global $MC, $User;
 		// Get route.
 		if (!isset($_GET['route']))
 			throw new RequestException('No route provided.');
-		$route = strtolower(trim($_GET['route']));
-		if (!isset($this->entries[$route]))
-			throw new NotImplementedException('Unknown route.');
-		// Get user ID.
-		$apiKeyString = getBearerToken();
-		if ($apiKeyString == null)
-			throw new ClientUnauthorizedException('No API key provided.');
 
-		$key = str_replace(' ', '_', 'api' . $apiKeyString . $route );
-		if( false && $route == 'players/missing_orders' )
-		{
-			$result = $MC->get($key);
-			if ( $result )
-			{
-				return $result;
-			}
+		$this->route = strtolower(trim($_GET['route']));
+
+		if (!isset($this->entries[$this->route]))
+			throw new NotImplementedException('Unknown route.');
+
+		if ( !empty( $User ) && ( $User->type['User'] ?? false ) === true ){
+			/**
+			 * If the request is an API call using the existing user session, process using the ApiSession class. 
+			 */
+			$this->authClass = 'ApiSession';
+		}else{
+			/**
+			 * If the request is an API call using an API key, process using the ApiKey class. 
+			 */
+			$this->authClass = 'ApiKey';
 		}
 
+		$apiAuth = new $this->authClass($this->route);
 		// Get API entry.
-		$apiEntry = $this->entries[$route]; /** @var ApiEntry $apiEntry */
-		$apiKey = new ApiKey($apiKeyString);
+		$apiEntry = $this->entries[$this->route]; /** @var ApiEntry $apiEntry */
 		// Check if request is authorized.
-		$permissionIsExplicit = $apiKey->assertHasPermissionFor($apiEntry);
+		$permissionIsExplicit = $apiAuth->assertHasPermissionFor($apiEntry);
 		// Execute request.
-		$userID = $apiKey->getUserID();
+		$userID = $apiAuth->getUserID();
 		$result = $apiEntry->run($userID, $permissionIsExplicit); 
+		
+		// if( false && $route == 'players/missing_orders' )
+		// {
+		// 	$result = $MC->get($key);
+		// 	if ( $result )
+		// 	{
+		// 		return $result;
+		// 	}
+		// }
 
 		// Cache result
-		if( $route == 'players/missing_orders' )
-		{
-			$MC->set($key, $result, 60); // Continually No rush to expire , should be cleaned on all game processes anyway
-		}
+		// FIXME: This breaks API Keys
+		// if( $this->route == 'players/missing_orders' && $cacheKey = $apiAuth->getCacheKey() ){
+		// 	$MC->set($cacheKey, $result, 60); // Continually No rush to expire , should be cleaned on all game processes anyway
+		// }
 
 		return $result;
 	}
@@ -894,9 +1490,14 @@ try {
 	$api->load(new ListGamesWithPlayersInCD());
 	$api->load(new ListGamesWithMissingOrders());
 	$api->load(new GetGamesStates());
+	$api->load(new GetGameOverview());
+	$api->load(new GetGameData());
+	$api->load(new GetGameMembers());
 	$api->load(new SetOrders());
 	$api->load(new ToggleVote());
 	$api->load(new SendMessage());
+	$api->load(new GetMessages());
+	$api->load(new MessagesSeen());
 	$jsonEncodedResponse = $api->run();
 	// Set JSON header.
 	header('Content-Type: application/json');

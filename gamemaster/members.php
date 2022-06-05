@@ -177,7 +177,7 @@ class processMembers extends Members
 	function checkForWinner()
 	{
 		global $DB;
-		
+
 		/*
 		 * See if only one person is left over
 		 * If more than one is left over see if any of them have the winning number of more supply centers
@@ -224,7 +224,7 @@ class processMembers extends Members
 				if($retreating)
 					return false;
 			}
-			
+
 			// If more than one is left over see if any of them have supplyCenterTarget or more supply centers
 			foreach($this->ByStatus['Playing'] as $Member)
 			{
@@ -272,13 +272,13 @@ class processMembers extends Members
 
 		foreach($this->ByStatus['Left'] as $Member)
 			$Member->setResigned();
-			
+
 		foreach($this->ByStatus['Playing'] as $Member)
 		{
 			if (in_array('Concede',$Member->votes))
 				$Member->setDefeated($this->Game->Scoring->pointsForDefeat($Member));
 		}
-		
+
 		$this->writeLog();
 	}
 
@@ -451,7 +451,7 @@ class processMembers extends Members
 		else
 			return false;
 	}
-	
+
 
 	/**
 	 * Allow the user to join a game. The User must have enough points, the Game must be
@@ -466,7 +466,7 @@ class processMembers extends Members
 	 * @param string[optional] $password The optional password supplied to enter the game
 	 * @param string[optional] $countryID The countryID to be taken (filtered)
 	 */
-	function join($password="", $countryID=-1)
+	function join($password="", $countryID=-1, $joinBeta=false)
 	{
 		global $DB, $User;
 
@@ -484,7 +484,7 @@ class processMembers extends Members
 		if ( !($this->Game->minimumReliabilityRating <= $User->reliabilityRating) )
 			throw new Exception(l_t("Your Reliability Rating of %s%% is not high enough to join this game, which is restricted to %s%% RR and above.",
 				$User->reliabilityRating, $this->Game->minimumReliabilityRating));
-				
+
 		if ( $User->userIsTempBanned() )
 			throw new Exception("You are blocked from joining new games.");
 
@@ -534,7 +534,7 @@ class processMembers extends Members
 					SET userID = ".$User->id.", status='Playing', orderStatus=REPLACE(orderStatus,'Ready',''),
 						timeLoggedIn = ".time()."
 					WHERE id = ".$CD->id);
-			$DB->sql_put('DELETE FROM wD_WatchedGames WHERE userID='.$User->id. ' AND gameID='.$this->Game->id);		
+			$DB->sql_put('DELETE FROM wD_WatchedGames WHERE userID='.$User->id. ' AND gameID='.$this->Game->id);
 
 			unset($this->ByUserID[$CD->userID]);
 			unset($this->ByStatus['Left'][$CD->id]);
@@ -561,16 +561,23 @@ class processMembers extends Members
 
 		$this->Game->gamelog(l_t('New member joined'));
 
-		$this->joinedRedirect();
+		$this->joinedRedirect($joinBeta);
 	}
 
 	/**
 	 * Redirect to a game after joining it. Script ends here.
 	 */
-	function joinedRedirect()
+	function joinedRedirect($joinBeta=false)
 	{
 		// We have successfully joined, now give a message to tell the user so
-		header('refresh: 4; url=board.php?gameID='.$this->Game->id);
+
+		// Redirect to beta game if user joined game via Play Beta button
+		if ($joinBeta) {
+			header('refresh: 4; url=beta?gameID='.$this->Game->id);
+		}
+		else {
+			header('refresh: 4; url=board.php?gameID='.$this->Game->id);
+		}
 
 		$message = '<p class="notice">'.l_t('You are being redirected to %s. Good luck!','<a href="board.php?gameID='.$this->Game->id.'">'.$this->Game->name.'</a>').'</p>';
 
@@ -580,74 +587,74 @@ class processMembers extends Members
 	/**
 	 * Register a turn and updates the phase count for each active member (playing of left) with orders.
 	 */
-	function registerTurn() 
+	function registerTurn()
 	{
 		global $DB;
-		
+
 		// enter a turn for each active player with orders
 		$DB->sql_put("INSERT INTO wD_TurnDate (gameID, userID, countryID, turn, turnDateTime)
 				SELECT m.gameID,m.userID,m.countryID,".$this->Game->turn.",".time()."
 				FROM wD_Members m
 				WHERE m.gameID = ".$this->Game->id."
-					AND ( m.status='Playing' OR m.status='Left' ) 
+					AND ( m.status='Playing' OR m.status='Left' )
 					AND EXISTS(SELECT o.id FROM wD_Orders o WHERE o.gameID = m.gameID AND o.countryID = m.countryID)");
-		
+
 		// increment the turn count (turn counts are decremented after 1 year in /gamemaster.php)
 		$DB->sql_put("UPDATE wD_Users u
 				INNER JOIN wD_Members m ON m.userID = u.id
 				SET u.yearlyPhaseCount = u.yearlyPhaseCount + 1
-				WHERE m.gameID = ".$this->Game->id." 
+				WHERE m.gameID = ".$this->Game->id."
 					AND ( m.status='Playing' OR m.status='Left' )
 					AND EXISTS(SELECT o.id FROM wD_Orders o WHERE o.gameID = m.gameID AND o.countryID = m.countryID)");
 	}
-	
+
 	/**
-	 * Add a missed phase / turn to all members who are NMRing. Reset those of 
+	 * Add a missed phase / turn to all members who are NMRing. Reset those of
 	 * members who have not NMRed.
-	 * 
+	 *
 	 * @param array $nmrs A list of member ids including the NMRs of the current turn
 	 */
-	function registerNMRs($nmrs) 
+	function registerNMRs($nmrs)
 	{
 		global $DB;
-	
+
 		foreach( $this->ByID as $Member )
 		{
 			if( in_array($Member->id, $nmrs) )
 			{
-				$Member->missedPhases++;	
-			} 
-			else 
+				$Member->missedPhases++;
+			}
+			else
 			{
 				$Member->missedPhases = 0;
 			}
-			
+
 			$DB->sql_put("UPDATE wD_Members m
 					SET m.missedPhases = ".$Member->missedPhases."
 					WHERE m.id = ".$Member->id);
 		}
 	}
-	
+
 	private $activeNMRs = false;
 	/**
-	 * Check if any active NMRs (i.e. NMRs by members with status 'playing') 
+	 * Check if any active NMRs (i.e. NMRs by members with status 'playing')
 	 * were detected during NMR handling.
-	 * 
+	 *
 	 * @return boolean Returns true, if there is at least one NMR by an active member.
 	 */
-	function withActiveNMRs() 
+	function withActiveNMRs()
 	{
 		return $this->activeNMRs;
 	}
-	
+
 	/**
-	 * Handle NMRs and check, if further sanctions due to unexcused NMRs have 
+	 * Handle NMRs and check, if further sanctions due to unexcused NMRs have
 	 * to be imposed.
 	 */
-	function handleNMRs() 
+	function handleNMRs()
 	{
 		global $DB;
-		
+
 		// Check if there is at least one active NMR and for that case reduce the excuses of all active members with NMRs and set members with no excuses as left.
 		$this->activeNMRs = false;
 		$needReset = 0;
@@ -655,50 +662,50 @@ class processMembers extends Members
 		foreach( $this->ByStatus['Playing'] as $Member )
 		{
  			if( $Member->missedPhases == 0 ) { continue; } // no NMR
-			 
+
 			$this->activeNMRs = true; // there is at least one active NMR
-			
-			if( $Member->excusedMissedTurns > 0 ) { $Member->removeExcuse(); } 
-			else 
-			{ 
-				$Member->setLeft(); 
-				$needReset = 1;	
+
+			if( $Member->excusedMissedTurns > 0 ) { $Member->removeExcuse(); }
+			else
+			{
+				$Member->setLeft();
+				$needReset = 1;
 			}
 		}
 
-		// If anyone is removed from the game the minimum bet needs to be reset so someone else can take over the position. 
+		// If anyone is removed from the game the minimum bet needs to be reset so someone else can take over the position.
 		if ($needReset == 1)
 		{
 			$Variant=libVariant::loadFromGameID($this->Game->id);
 			$Game = $Variant->processGame($this->Game->id);
-			$Game->resetMinimumBet();	
+			$Game->resetMinimumBet();
 		}
 
 		/*
 		 * For all player with status left, that NMRed this turn, the NMR is always counted as unexcused. An unexcused turn might impose temp bans as further sanctions.
 		 */
-		foreach( $this->ByStatus['Left'] as $Member ) 
+		foreach( $this->ByStatus['Left'] as $Member )
 		{
 			if( $Member->missedPhases == 0 ) { continue; } // no NMR
-			
+
 			// Check if the NMR got an excuse and count the number of unexcused NMRs during the last year for the member to decide what to do.
 			list( $systemExcused, $modExcused, $samePeriodExcused ) = $DB->sql_row("SELECT systemExcused, modExcused, samePeriodExcused FROM wD_MissedTurns
 				WHERE gameID = ".$this->Game->id." AND userID = ".$Member->userID." ORDER BY turnDateTime DESC LIMIT 1");
-			
+
 			list( $yearlyCount ) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns
 				WHERE userID = ".$Member->userID." AND turnDateTime > ".time()." - (3600 * 24 * 365)
 				AND liveGame = 0 AND systemExcused = 0 AND modExcused = 0 AND samePeriodExcused = 0");
-			
+
 			list( $liveMonthlyCount ) = $DB->sql_row("SELECT COUNT(1) FROM wD_MissedTurns
 				WHERE userID = ".$Member->userID." AND turnDateTime > ".time()." - (3600 * 24 * 28)
 				AND liveGame = 1 AND systemExcused = 0 AND modExcused = 0 AND samePeriodExcused = 0");
-			
+
 			if( $systemExcused || $modExcused ) continue; // excused miss (though a left member should not be able to get an excused miss unless mod interaction)
-			
+
 			$memberMsg = l_t("You have missed a deadline and have no excuses left.");
 
 			list( $phaseMinutes ) = $DB->sql_row("SELECT phaseMinutes FROM wD_Games WHERE id = ".$this->Game->id);
-			
+
 			// Check, if there was at last one other unexcused NMR during the last 72 hours. In this case, this NMR will not be sanctionized.
 			if( $samePeriodExcused )
 			{
@@ -709,34 +716,34 @@ class processMembers extends Members
 			{
 				/*
 				 * This NMR might be sanctionized according to the monthly missed turn count for live games
-				 * 
+				 *
 				 * misses:
-				 * 
+				 *
 				 * 0-2: warning
 				 * 3+: 1-day temp ban
 				 */
 				$memberMsg.=" ".l_t("You missed %s ".(($liveMonthlyCount == 1)?"deadline":"deadlines"). " without an excuse during live games this past month.",$liveMonthlyCount);
-				
+
 				if( $liveMonthlyCount <= 2 )
 				{
 					$Member->send('No','No',$memberMsg." ".l_t("%s more ". ((3-$liveMonthlyCount == 1)?"miss":"misses"). " will impose a 1 day ban on you.", 3-$liveMonthlyCount));
-				} 
+				}
 
 				else
 				{
 					User::tempBanUser($Member->userID, 1, 'System', FALSE);
 					$Member->send('No','No',$memberMsg." ".l_t("Due to your unreliable behavior in live games you will be prevented from joining games for a day."));
-				} 
+				}
 			}
 
-			else 
+			else
 			{
 				/*
 				 * This NMR might be sanctionized according to the yearly missed
 				 * turn count and the following table:
-				 * 
+				 *
 				 * misses:
-				 * 
+				 *
 				 * up to 3: warning
 				 * 4: 1-day temp ban
 				 * 5: 3-day
@@ -746,20 +753,20 @@ class processMembers extends Members
 				 * 9 or more: infinite (1 year)
 				 */
 				$memberMsg.=" ".l_t("You missed %s ".(($yearlyCount == 1)?"deadline":"deadlines"). " without an excuse during this year.",$yearlyCount);
-				
+
 				if( $yearlyCount <= 3 )
 				{
 					$Member->send('No','No',$memberMsg." ".l_t("%s more ". ((4-$yearlyCount == 1)?"miss":"misses"). " will impose a temporary ban on you.", 4-$yearlyCount));
-				} 
+				}
 
 				elseif( $yearlyCount >= 9)
 				{
 					User::tempBanUser($Member->userID, 365, 'System', FALSE);
 					$Member->send('No','No',$memberMsg." ".l_t("Due to your unreliable behavior you will be prevented from joining games for a year. "
 					. "Contact the Mods to lift the ban."));
-				} 
+				}
 
-				else 
+				else
 				{
 					$days = 0;
 					switch($yearlyCount)
@@ -770,12 +777,12 @@ class processMembers extends Members
 						case 7: $days = 14; break;
 						case 8: $days = 30; break;
 					}
-					
+
 					User::tempBanUser($Member->userID, $days,'System', FALSE);
 					$Member->send('No','No',$memberMsg." ".l_t("You are temporarily banned from joining, rejoining, or making games for %s "
-							. (($days==1)?"day":"days")	. ". Be more reliable!", $days));	
+							. (($days==1)?"day":"days")	. ". Be more reliable!", $days));
 				}
-					
+
 			}
 		}
 	}

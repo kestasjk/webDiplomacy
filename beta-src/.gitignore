@@ -1,0 +1,17 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+
+# IDEs and editors
+/.vscode
+
+# misc
+.DS_Store
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+npm-debug.log*
