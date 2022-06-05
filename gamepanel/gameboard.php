@@ -157,9 +157,8 @@ class panelGameBoard extends panelGame
 		{
 			if ($this->anon == 'No' || !$Member->isNameHidden() )
 				$buf .= '<input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . $Member->profile_link() . ', ';
-			else
-				$buf .= '<input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . $Member->countryName() . ', ';
-		}
+			//else
+			//	$buf .= '<input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . libVarina $Member->countryName() . ', ';		}
 		$buf .= '</div>
 			<strong>Explanation:</strong> <em>Below please enter a detailed explanation of why you believe the selected countries are meta/multi gaming.</em><br />
 			<textarea name="explanation"></textarea><br />
