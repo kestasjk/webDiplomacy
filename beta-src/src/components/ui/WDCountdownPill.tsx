@@ -6,7 +6,7 @@ import TimeRunningOutIcon from "../../assets/png/icn_phase_countdown_red.png";
 import Season from "../../enums/Season";
 import parseSeconds from "../../utils/parseSeconds";
 import formatTime from "../../utils/formatTime";
-import formatPhaseForDisplay from "../../utils/formatPhaseForDisplay";
+import { formatPSYForDisplay } from "../../utils/formatPhaseForDisplay";
 import useViewport from "../../hooks/useViewport";
 
 interface WDCountdownPillProps {
@@ -66,9 +66,12 @@ const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
   let chipDisplay = formattedTimeLeft;
   if (viewport.width >= 600) {
     if (shouldDisplayGamePhase) {
-      chipDisplay += ` for ${gameSeason} ${gameYear} ${formatPhaseForDisplay(
-        gamePhase,
-      )}`;
+      chipDisplay += ` for ${formatPSYForDisplay({
+        phase: gamePhase,
+        season: gameSeason,
+        year: gameYear,
+      })}
+      }`;
     } else {
       chipDisplay += " this phase";
     }

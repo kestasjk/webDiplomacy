@@ -12,9 +12,13 @@ import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
 import WDViewsContainer from "./WDViewsContainer";
 import WDTabPanel from "./WDTabPanel";
+<<<<<<< HEAD
 import WDOrdersPanel from "./WDOrdersPanel";
 import { IOrderDataHistorical } from "../../models/Interfaces";
 import GameStateMaps from "../../state/interfaces/GameStateMaps";
+=======
+import WDGamesList from "./WDGamesList";
+>>>>>>> 96530f0e ('MY GAMES' tab: ugly version)
 
 interface WDFullModalProps {
   alternatives: GameOverviewResponse["alternatives"];
@@ -37,6 +41,7 @@ const tabGroup: ModalViews[] = [
   ModalViews.PRESS,
   ModalViews.INFO,
   ModalViews.ORDERS,
+  ModalViews.GAMES,
 ];
 
 const WDFullModal: React.FC<WDFullModalProps> = function ({
@@ -105,12 +110,17 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
             {children}
           </WDPress>
         </WDTabPanel>
+<<<<<<< HEAD
         <WDTabPanel currentTab={ModalViews.ORDERS} currentView={view}>
           <WDOrdersPanel
             orders={orders}
             allCountries={allCountries}
             maps={maps}
           />
+=======
+        <WDTabPanel currentTab={ModalViews.GAMES} currentView={view}>
+          <WDGamesList />
+>>>>>>> 96530f0e ('MY GAMES' tab: ugly version)
         </WDTabPanel>
       </WDViewsContainer>
     </Box>
