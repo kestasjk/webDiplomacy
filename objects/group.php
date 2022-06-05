@@ -444,7 +444,7 @@ class Group
 		}
 		return self::outputUserTable_static($this->GroupUsers, $User, $Game);
 	}
-	public static function outputUserTable_static($groupUsers, $User = null, $Game)
+	public static function outputUserTable_static($groupUsers, $User = null, $Game = null)
 	{
 		$userId = -1;
 		$isModerator = false;
