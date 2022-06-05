@@ -21,6 +21,7 @@
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 require_once(l_r('gamepanel/game.php'));
+require_once(l_r('objects/group.php'));
 
 /**
  * This class displays the game panel within a board context. It displays more info
@@ -143,7 +144,31 @@ class panelGameBoard extends panelGame
 			}			
 		}
 
-		$buf = '<div style="width: 300px; margin: 0 auto; text-align:center;"><a href="contactUsDirect.php" align="center";>Need help?</a></div>
+		$buf = '<div style="width: 300px; margin: 0 auto; text-align:center; padding-top:5px; padding-bottom:5px;">
+			<a href="contactUsDirect.php">Need help?</a> - <a href="javascript:lodgeCheatingSuspicion();return false;">Lodge cheating suspicion</a>
+			</div>
+			<div class="bar membersList memberVotePanel memberSuspectPanel" style="font-weight:normal !important">
+			<form action="group.php" method="post">
+			'.libAuth::formTokenHTML().'
+			<input type="hidden" name="gameID" value="'.$this->id.'" />
+			<strong>Countries:</strong> <em>Please select the countries / users which you believe are metagaming / multi-accounting.</em><br />
+			<div style="text-align:center">';
+		foreach($this->Members->ByCountryID as $countryID=>$Member)
+		{
+			if ($this->anon == 'No' || !$Member->isNameHidden() )
+				$buf .= '<input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . $Member->profile_link() . ', ';
+			else
+				$buf .= '<input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . $Member->countryName() . ', ';
+		}
+		$buf .= '</div>
+			<strong>Explanation:</strong> <em>Below please enter a detailed explanation of why you believe the selected countries are meta/multi gaming.</em><br />
+			<textarea name="explanation"></textarea><br />
+			<strong>Strength:</strong> '.Group::getSelectWeighting('user', '', 50).' <em>Choose from WEAK to STRONG, to select how strongly you suspect these users. This will determine whether mods urgently investigate or just take note of a possible link for future investigations.</em><br />
+		';
+		$buf .= '<em>Note: Accusations will be followed up by the mod team, and will be discussed all involved. Do not submit without a genuine suspicion of meta/multi-gaming</em><br />
+			<input class="form-submit" type="Submit" name="Submit" value="Submit" /> ';
+		$buf .= '</form>
+		</div>
 		<div class="bar membersList memberVotePanel"><a name="votebar"></a>
 		<table><tr class="member">
 			<td class="memberLeftSide">

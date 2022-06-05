@@ -814,6 +814,7 @@ class libHTML
 		}
 
 		$links['help.php']=array('name'=>'Help/Donate', 'inmenu'=>TRUE, 'title'=>'Get help and information; guides, intros, FAQs, stats, links');
+		$links['diplonow.php']=array('name'=>'DiploNow', 'inmenu'=>FALSE, 'title'=>'Start playing Diplomacy with bots now, stop whenever you want.');
 
 		// Items not displayed on the menu
 		$links['map.php']=array('name'=>'Map', 'inmenu'=>FALSE);

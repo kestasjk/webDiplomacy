@@ -33,9 +33,30 @@ require_once('objects/notice.php');
 $groupId = -1;
 if( $User->type['User']) 
 {
-	
+	if( isset($_REQUEST['gameID']) && isset($_REQUEST['explanation']) && isset($_REQUEST['userWeighting']) )
+	{
+		$gameID = (int)$_REQUEST['gameID'];
+		// We are submitting a cheating accusation from a game
+		$Variant = libVariant::loadFromGameID($gameID);
+		$Game = $Variant->Game($gameID);
+		libAuth::formToken_Valid();
+		$suspectedCountries = array();
+		foreach($Game->Members->ByCountryID as $countryID=>$Member)
+		{
+			if( isset($_REQUEST['countryIsSuspected'.$countryID]) && $_REQUEST['countryIsSuspected'.$countryID] )
+				$suspectedCountries[] = $countryID;
+		}
+		try 
+		{
+			$groupId = Group::createSuspicionFromGame($gameID, $suspectedCountries, $_REQUEST['userWeighting'], $_REQUEST['explanation']);
+		}
+		catch(Exception $e)
+		{
+			libHTML::error(l_t("Could not lodge new suspicion: ". $e->getMessage()));
+		}
+	}
 	// Check for create group commands:
-	if( isset($_REQUEST['createGroup']) && isset($_REQUEST['groupType']) && isset($_REQUEST['groupName']) && isset($_REQUEST['groupDescription']) && (!isset($_REQUEST['groupId']) || strlen($_REQUEST['groupId'])==0) )
+	elseif( isset($_REQUEST['createGroup']) && isset($_REQUEST['groupType']) && isset($_REQUEST['groupName']) && isset($_REQUEST['groupDescription']) && (!isset($_REQUEST['groupId']) || strlen($_REQUEST['groupId'])==0) )
 	{
 		libAuth::formToken_Valid();
 		try
