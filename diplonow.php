@@ -77,11 +77,11 @@ require_once('gamemaster/member.php');
 	$acct = 'diplonow_'.round(rand(0,100000));
 	$pass = (string)(rand(0,1000000000)); 
 	//$DB->sql_put("INSERT INTO wd_Users (username,type,email,points,comment,homepage,timejoined,timeLastSessionEnded,password) VALUES ('".$acct."', 'User', '".$acct."', 0, '', '', ".time().", ".time().", UNHEX('".$passHash."'));");
-	$DB->sql_put("INSERT INTO wd_users(
+	$DB->sql_put("INSERT INTO wD_Users(
 		`username`,`email`,`points`,`comment`,`homepage`,`hideEmail`,`timeJoined`,`locale`,`timeLastSessionEnded`,`lastMessageIDViewed`,`password`,`type`,`notifications`,`muteReports`,`silenceID`,`cdCount`,`nmrCount`,`cdTakenCount`,`phaseCount`,`gameCount`,`reliabilityRating`,`deletedCDs`,`tempBan`,`emergencyPauseDate`,`yearlyPhaseCount`,`tempBanReason`,`optInFeatures`
 		)
 		SELECT '".$acct."' `username`,'".$acct."' `email`, 100 `points`,`comment`,`homepage`,`hideEmail`,`timeJoined`,`locale`,".time()." `timeLastSessionEnded`,".time()."`lastMessageIDViewed`,UNHEX('".libAuth::pass_Hash($pass)."'),'User' `type`,`notifications`,`muteReports`,`silenceID`,`cdCount`,`nmrCount`,`cdTakenCount`,`phaseCount`,`gameCount`,`reliabilityRating`,`deletedCDs`,`tempBan`,`emergencyPauseDate`,`yearlyPhaseCount`,`tempBanReason`,1
-		FROM wd_users
+		FROM wD_Users
 		WHERE id = 1");
 	list($newUserID) = $DB->sql_row("SELECT LAST_INSERT_ID()");
 	
