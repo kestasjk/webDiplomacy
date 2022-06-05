@@ -448,7 +448,7 @@ class Group
 	{
 		$userId = -1;
 		$isModerator = false;
-		$creatorId = -1;
+		$creatorId = -1; 
 
 		if( $User != null )
 		{
