@@ -11,6 +11,7 @@ import { IOrderDataHistorical } from "../../models/Interfaces";
 import GameStateMaps from "../../state/interfaces/GameStateMaps";
 import { APITerritories } from "../../state/interfaces/GameDataResponse";
 import Territory from "../../enums/map/variants/classic/Territory";
+import Province from "../../enums/map/variants/classic/Province";
 
 interface WDMapProps {
   units: Unit[];
@@ -19,6 +20,7 @@ interface WDMapProps {
   maps: GameStateMaps;
   territories: APITerritories;
   centersByProvince: { [key: string]: { ownerCountryID: string } };
+  standoffProvinces: Province[];
   isLatestPhase: boolean;
 }
 
@@ -33,6 +35,7 @@ const WDMap: React.ForwardRefExoticComponent<
       maps,
       territories,
       centersByProvince,
+      standoffProvinces,
       isLatestPhase,
     },
     ref,
@@ -61,6 +64,7 @@ const WDMap: React.ForwardRefExoticComponent<
             units={units}
             maps={maps}
             territories={territories}
+            standoffProvinces={standoffProvinces}
           />
           {isLatestPhase && <WDBuildContainer />}
           {isLatestPhase && <WDFlyoutContainer units={units} />}

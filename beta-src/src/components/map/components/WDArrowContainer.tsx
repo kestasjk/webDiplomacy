@@ -18,6 +18,8 @@ import drawArrowFunctional, {
 import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
 import { APITerritories } from "../../../state/interfaces/GameDataResponse";
 import { Unit, UnitDrawMode } from "../../../utils/map/getUnits";
+import Province from "../../../enums/map/variants/classic/Province";
+import provincesMapData from "../../../data/map/ProvincesMapData";
 
 function accumulateMoveOrderArrows(
   arrows: (React.ReactElement | null)[],
@@ -372,6 +374,43 @@ function accumulateBuildCircles(
       );
     });
 }
+
+function accumulateStandoffMarks(
+  arrows: (React.ReactElement | null)[],
+  standoffProvinces: Province[],
+): void {
+  standoffProvinces.forEach((province) => {
+    const { rootTerritory } = provincesMapData[province];
+    if (!rootTerritory) return;
+
+    const [x1, y1, w1, h1] = getTargetXYWH("territory", rootTerritory);
+    const MARKSIZE = 25;
+    arrows.push(
+      <g>
+        <line
+          key={`standoffmark-${province}-1`}
+          x1={x1 - MARKSIZE}
+          y1={y1 - MARKSIZE}
+          x2={x1 + MARKSIZE}
+          y2={y1 + MARKSIZE}
+          stroke="red"
+          strokeWidth={6}
+        />
+        <line
+          key={`standoffmark-${province}-2`}
+          x1={x1 + MARKSIZE}
+          y1={y1 - MARKSIZE}
+          x2={x1 - MARKSIZE}
+          y2={y1 + MARKSIZE}
+          stroke="red"
+          strokeWidth={6}
+        />
+        <title>Cannot retreat here, standoff/bounce last turn</title>
+      </g>,
+    );
+  });
+}
+
 /*
 export interface IOrderDataHistorical {
   countryID: string;
@@ -394,6 +433,7 @@ interface WDArrowProps {
   units: Unit[];
   maps: GameStateMaps;
   territories: APITerritories;
+  standoffProvinces: Province[];
 }
 
 const WDArrowContainer: React.FC<WDArrowProps> = function ({
@@ -402,6 +442,7 @@ const WDArrowContainer: React.FC<WDArrowProps> = function ({
   units,
   maps,
   territories,
+  standoffProvinces,
 }): React.ReactElement {
   const arrows: (React.ReactElement | null)[] = [];
 
@@ -417,6 +458,7 @@ const WDArrowContainer: React.FC<WDArrowProps> = function ({
   accumulateRetreatArrows(arrows, orders, territories);
   accumulateDislodgerArrows(arrows, units, territories);
   accumulateBuildCircles(arrows, units, territories);
+  accumulateStandoffMarks(arrows, standoffProvinces);
   return <g id="arrows">{arrows}</g>;
 };
 
