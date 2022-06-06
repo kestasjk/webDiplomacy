@@ -25,7 +25,7 @@ import { store } from "../../state/store";
 
 interface WDPressProps {
   children: React.ReactNode;
-  userCountry: CountryTableData;
+  userCountry: CountryTableData | null;
   countries: CountryTableData[];
 }
 
@@ -60,6 +60,9 @@ const WDPress: React.FC<WDPressProps> = function ({
   }, [messages, countryIDSelected]);
 
   const clickSend = () => {
+    if (!userCountry) {
+      return;
+    }
     dispatch(
       sendMessage({
         gameID: String(gameID),
@@ -75,13 +78,15 @@ const WDPress: React.FC<WDPressProps> = function ({
     // need to update locally and on the server
     // because we don't immediately re-fetch message data from the server
     dispatch(gameApiSliceActions.processMessagesSeen(countryID));
-    dispatch(
-      markMessagesSeen({
-        countryID: String(userCountry.countryID),
-        gameID: String(gameID),
-        seenCountryID: String(countryID),
-      }),
-    );
+    if (userCountry) {
+      dispatch(
+        markMessagesSeen({
+          countryID: String(userCountry.countryID),
+          gameID: String(gameID),
+          seenCountryID: String(countryID),
+        }),
+      );
+    }
   };
 
   // capture enter for end, shift-enter for newline
@@ -126,6 +131,11 @@ const WDPress: React.FC<WDPressProps> = function ({
   });
   countryButtons = [allButton, ...countryButtons];
 
+  const countriesForMessageList = [...countries];
+  if (userCountry) {
+    countriesForMessageList.push(userCountry); // sorry, its just silly to exclude userCountry from this table
+  }
+
   return (
     <Box
       sx={{ p: padding }}
@@ -138,14 +148,15 @@ const WDPress: React.FC<WDPressProps> = function ({
       </Stack>
       <WDMessageList
         messages={messages}
-        countries={[...countries, userCountry]} // sorry, its just silly to exclude userCountry from this table
+        countries={countriesForMessageList}
         userCountry={userCountry}
         countryIDSelected={countryIDSelected}
         messagesEndRef={messagesEndRef}
       />
-      <Box>
-        <Stack alignItems="center" direction="row">
-          {/* <Button
+      {userCountry && (
+        <Box>
+          <Stack alignItems="center" direction="row">
+            {/* <Button
             href="#message-reload-button"
             onClick={dispatchFetchMessages}
             style={{
@@ -155,33 +166,34 @@ const WDPress: React.FC<WDPressProps> = function ({
           >
             <AutorenewIcon sx={{ fontSize: "medium" }} />
           </Button> */}
-          <TextField
-            id="user-msg"
-            label="Send Message"
-            variant="outlined"
-            value={userMsg}
-            multiline
-            maxRows={4}
-            onChange={(text) => setUserMsg(text.target.value)}
-            onKeyDown={keydownHandler}
-            fullWidth
-            sx={{ m: "0 0 0 6px" }}
-            InputProps={{
-              endAdornment: (
-                <>
-                  <Divider orientation="vertical" />
-                  <IconButton onClick={clickSend} disabled={!userMsg}>
-                    <Send color="primary" />
-                  </IconButton>
-                </>
-              ),
-              style: {
-                padding: "4px 0 4px 8px", // needed to cancel out extra height induced by the button
-              },
-            }}
-          />
-        </Stack>
-      </Box>
+            <TextField
+              id="user-msg"
+              label="Send Message"
+              variant="outlined"
+              value={userMsg}
+              multiline
+              maxRows={4}
+              onChange={(text) => setUserMsg(text.target.value)}
+              onKeyDown={keydownHandler}
+              fullWidth
+              sx={{ m: "0 0 0 6px" }}
+              InputProps={{
+                endAdornment: (
+                  <>
+                    <Divider orientation="vertical" />
+                    <IconButton onClick={clickSend} disabled={!userMsg}>
+                      <Send color="primary" />
+                    </IconButton>
+                  </>
+                ),
+                style: {
+                  padding: "4px 0 4px 8px", // needed to cancel out extra height induced by the button
+                },
+              }}
+            />
+          </Stack>
+        </Box>
+      )}
     </Box>
   );
 };

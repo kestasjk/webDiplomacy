@@ -18,7 +18,7 @@ interface WDInfoPanelProps {
   countries: CountryTableData[];
   gameID: GameOverviewResponse["gameID"];
   maxDelays: GameOverviewResponse["excusedMissedTurns"];
-  userCountry: CountryTableData;
+  userCountry: CountryTableData | null;
 }
 
 const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
@@ -33,13 +33,15 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
 
   const toggleVote = (voteKey: Vote) => {
     dispatch(gameApiSliceActions.toggleVoteState(voteKey));
-    dispatch(
-      toggleVoteStatus({
-        countryID: String(userCountry.countryID),
-        gameID: String(gameID),
-        vote: voteKey,
-      }),
-    );
+    if (userCountry) {
+      dispatch(
+        toggleVoteStatus({
+          countryID: String(userCountry.countryID),
+          gameID: String(gameID),
+          vote: voteKey,
+        }),
+      );
+    }
   };
   const mobileLandscapeLayout =
     device === Device.MOBILE_LANDSCAPE ||
