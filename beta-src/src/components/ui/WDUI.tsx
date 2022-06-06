@@ -124,8 +124,7 @@ const WDUI: React.FC = function (): React.ReactElement {
   const dispatchFetchMessages = () => {
     const { game } = store.getState();
     const { outstandingMessageRequests } = game;
-    if (!outstandingMessageRequests && user) {
-      console.log("FETCHING GAME MESSAGES");
+    if (!outstandingMessageRequests && phase !== "Pre-game" && user) {
       dispatch(
         fetchGameMessages({
           gameID: String(gameID),
@@ -174,6 +173,7 @@ const WDUI: React.FC = function (): React.ReactElement {
         <Box
           sx={{
             pt: "15px",
+            pointerEvents: "auto",
           }}
           ref={popoverTrigger}
         >

@@ -176,6 +176,10 @@ export const loadGame = (gameID: string) => async (dispatch) => {
     }),
   );
   const countryID = response.payload.user?.member.countryID;
+  const { phase } = response.payload;
+  if (phase === "Pre-game") {
+    return;
+  }
   const dispatches = [
     dispatch(fetchGameData({ gameID, countryID })),
     dispatch(fetchGameStatus({ gameID, countryID })),
@@ -230,6 +234,14 @@ const gameApiSlice = createSlice({
       newIdx = Math.min(newIdx, state.status.phases.length - 1);
       newIdx = Math.max(newIdx, 0);
       state.viewedPhaseState.viewedPhaseIdx = newIdx;
+      state.viewedPhaseState.latestPhaseViewed = Math.max(
+        state.viewedPhaseState.latestPhaseViewed,
+        newIdx,
+      );
+    },
+    setViewedPhaseToLatestPhaseViewed(state) {
+      state.viewedPhaseState.viewedPhaseIdx =
+        state.viewedPhaseState.latestPhaseViewed;
     },
     setAlert(state, action) {
       setAlert(state.alert, action.payload);
@@ -255,12 +267,12 @@ const gameApiSlice = createSlice({
     builder
       // fetchGameData
       .addCase(fetchGameData.pending, (state) => {
-        console.log("fetchGameData pending!");
+        // console.log("fetchGameData pending!");
         state.apiStatus = "loading";
       })
       .addCase(fetchGameData.fulfilled, fetchGameDataFulfilled)
       .addCase(fetchGameData.rejected, (state, action) => {
-        console.log("fetchGameData rejected!");
+        // console.log("fetchGameData rejected!");
         state.apiStatus = "failed";
         state.error = action.error.message;
       })

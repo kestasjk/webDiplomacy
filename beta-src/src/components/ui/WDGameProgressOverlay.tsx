@@ -1,7 +1,19 @@
 import { Box, Button, Stack } from "@mui/material";
 import * as React from "react";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
+import GameStatusResponse from "../../state/interfaces/GameStatusResponse";
+import ViewedPhaseState from "../../state/interfaces/ViewedPhaseState";
 import formatPhaseForDisplay from "../../utils/formatPhaseForDisplay";
+import {
+  getGamePhaseSeasonYear,
+  getHistoricalPhaseSeasonYear,
+} from "../../utils/state/getPhaseSeasonYear";
+
+// Various of the buttons draw with a Z_INDEX of 2
+// So we set this overlay to a Z_INDEX of 4 to draw on top of them,
+// so that the user isn't scrolling phases and playing with the save and ready buttons
+// while this overlay sits on top.
+const Z_INDEX = 4;
 
 const centeredStyle = {
   position: "absolute",
@@ -13,6 +25,7 @@ const centeredStyle = {
   backgroundColor: "rgba(255,255,255,1)",
   p: "10px",
   borderRadius: "5px",
+  zIndex: Z_INDEX,
 };
 
 const overlayStyle = {
@@ -22,33 +35,95 @@ const overlayStyle = {
   height: "100%",
   width: "100%",
   backgroundColor: "rgba(52,52,52,0.6)",
+  zIndex: Z_INDEX,
 };
 
 interface WDGameProgressOverlayProps {
   overview: GameOverviewResponse;
+  status: GameStatusResponse;
+  viewedPhaseState: ViewedPhaseState;
   clickHandler: () => void;
 }
 
 const WDGameProgressOverlay: React.FC<WDGameProgressOverlayProps> = function ({
   overview,
+  status,
+  viewedPhaseState,
   clickHandler,
 }) {
   let innerElem;
-  if (["Diplomacy", "Retreats", "Builds"].includes(overview.phase)) {
-    innerElem = (
-      <Stack direction="column" alignItems="center">
-        <Box sx={{ m: "4px" }}>Game progressed to a new phase...</Box>
+  if (
+    ["Diplomacy", "Retreats", "Builds", "Finished"].includes(overview.phase)
+  ) {
+    if (status.phases.length <= 1) {
+      innerElem = (
+        <Stack direction="column" alignItems="center">
+          <Box sx={{ m: "4px" }}>Game progressed to a new phase...</Box>
+          <Button
+            size="large"
+            variant="contained"
+            color="success"
+            onClick={clickHandler}
+          >
+            View {overview.season} {overview.year}{" "}
+            {formatPhaseForDisplay(overview.phase)}
+          </Button>
+        </Stack>
+      );
+    } else {
+      const stuffToRender: React.ReactElement[] = [];
+      for (
+        let idx = viewedPhaseState.latestPhaseViewed;
+        idx < status.phases.length - 1;
+        idx += 1
+      ) {
+        const [phase, season, year] = getHistoricalPhaseSeasonYear(status, idx);
+        stuffToRender.push(
+          <Box key={`progressBox${idx}`} sx={{ m: "4px" }}>
+            Finished phase {`${season} ${year} ${formatPhaseForDisplay(phase)}`}
+            .
+          </Box>,
+        );
+      }
+
+      const [phase, season, year] = getGamePhaseSeasonYear(
+        overview.phase,
+        overview.season,
+        overview.year,
+      );
+      stuffToRender.push(
+        <Box sx={{ m: "4px" }} key="newPhaseMsgBox">
+          Beginning new phase{" "}
+          {`${season} ${year} ${formatPhaseForDisplay(phase)}`}.
+        </Box>,
+      );
+
+      const [oldPhase, oldSeason, oldYear] = getHistoricalPhaseSeasonYear(
+        status,
+        viewedPhaseState.latestPhaseViewed,
+      );
+      const buttonLabel = `View orders for ${oldSeason} ${oldYear} ${formatPhaseForDisplay(
+        oldPhase,
+      )}`;
+
+      stuffToRender.push(
         <Button
           size="large"
           variant="contained"
           color="success"
           onClick={clickHandler}
+          key="newPhaseOverlayButton"
         >
-          View {overview.season} {overview.year}{" "}
-          {formatPhaseForDisplay(overview.phase)}
-        </Button>
-      </Stack>
-    );
+          {buttonLabel}
+        </Button>,
+      );
+
+      innerElem = (
+        <Stack direction="column" alignItems="center">
+          {stuffToRender}
+        </Stack>
+      );
+    }
   } else if (overview.phase === "Pre-game") {
     innerElem = (
       <Box>

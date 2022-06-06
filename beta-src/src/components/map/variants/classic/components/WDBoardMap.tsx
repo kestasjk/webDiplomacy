@@ -93,9 +93,11 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
             maps.terrIDToProvince[maps.unitToTerrID[curOrder.unitID]],
             maps.terrIDToProvince[curOrder.fromTerrID],
           ];
-          provincesToChoose = legalOrders.legalConvoysByUnitID[curOrder.unitID][
-            maps.terrIDToProvince[curOrder.fromTerrID]
-          ].map((convoy) => TerritoryMap[convoy.dest].province);
+          provincesToChoose = Object.keys(
+            legalOrders.legalConvoysByUnitID[curOrder.unitID][
+              maps.terrIDToProvince[curOrder.fromTerrID]
+            ],
+          ) as Province[];
         } else {
           provincesToHighlight = [
             maps.terrIDToProvince[maps.unitToTerrID[curOrder.unitID]],

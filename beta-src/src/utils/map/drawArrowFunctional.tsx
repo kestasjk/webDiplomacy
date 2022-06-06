@@ -73,6 +73,8 @@ export function getTargetXYWH(
       const toTerritoryData = TerritoryMap[toTerritoryName].provinceMapData;
       const { unitSlotName } = TerritoryMap[toTerritoryName];
 
+      x = toTerritoryData.x;
+      y = toTerritoryData.y;
       if (toTerritoryData.unitSlotsBySlotName[unitSlotName]) {
         x += toTerritoryData.unitSlotsBySlotName[unitSlotName].arrowReceiver.x;
         y += toTerritoryData.unitSlotsBySlotName[unitSlotName].arrowReceiver.y;

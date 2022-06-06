@@ -40,6 +40,7 @@ const initialState: GameState = {
   territoriesMeta: {},
   viewedPhaseState: {
     viewedPhaseIdx: 0,
+    latestPhaseViewed: 0,
   },
   overview: {
     alternatives: "",

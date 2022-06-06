@@ -9,19 +9,22 @@ import GameOverviewResponse from "../../../../../state/interfaces/GameOverviewRe
 import { GameState } from "../../../../../state/interfaces/GameState";
 import GameStateMaps from "../../../../../state/interfaces/GameStateMaps";
 
+type UnitID = string;
+type ProvinceID = string;
+
 interface LegalVia {
   dest: Territory;
   // A list of all the possible paths in province IDs by which this VIA move
   // could be accomplished. Contains the starting location but not the ending
   // location, because that's the format a path needs to be in to be accepted
   // by the webdip API.
-  provIDPaths: string[][];
+  provIDPaths: ProvinceID[][];
 }
 
 interface LegalSupport {
   src: Province;
   dest: Province;
-  convoyProvIDPath: string[] | null;
+  convoyProvIDPath: ProvinceID[] | null;
 }
 
 interface LegalConvoy {
@@ -30,21 +33,24 @@ interface LegalConvoy {
   // Concatenate these two arrays if you want the final convoy path that you need
   // to give to webdip.
   // Do NOT modify these arrays.
-  provIDPath1: string[];
-  provIDPath2: string[];
+  provIDPath1: ProvinceID[];
+  provIDPath2: ProvinceID[];
 }
 
-type UnitID = string;
 export interface LegalOrders {
   legalMoveDestsByUnitID: { [key: UnitID]: Territory[] };
   legalRetreatDestsByUnitID: { [key: UnitID]: Territory[] };
   possibleBuildDests: Territory[];
-  legalViasByUnitID: { [key: string]: LegalVia[] };
+  legalViasByUnitID: { [key: UnitID]: LegalVia[] };
+  // The inner keys are provinces
+  legalConvoysByUnitID: {
+    [key: UnitID]: { [key: string]: { [key: string]: LegalConvoy } };
+  };
+  hasAnyLegalConvoysByUnitID: { [key: UnitID]: boolean };
   // The inner key is province
-  legalConvoysByUnitID: { [key: string]: { [key: string]: LegalConvoy[] } };
-  hasAnyLegalConvoysByUnitID: { [key: string]: boolean };
-  // The inner key is province
-  legalSupportsByUnitID: { [key: string]: { [key: string]: LegalSupport[] } };
+  legalSupportsByUnitID: {
+    [key: UnitID]: { [key: string]: LegalSupport[] };
+  };
 }
 
 // Returns all destination territories that a unit can legally move to on its own.
@@ -54,12 +60,12 @@ export function getAllLegalMoveDestsByUnitID(
   overview: GameOverviewResponse,
   data: GameData,
 ): {
-  [key: string]: Territory[];
+  [key: UnitID]: Territory[];
 } {
   if (overview.phase !== "Diplomacy") {
     return {};
   }
-  const legalMoveDestsByUnitID: { [key: string]: Territory[] } = {};
+  const legalMoveDestsByUnitID: { [key: UnitID]: Territory[] } = {};
 
   Object.entries(data.units).forEach(([unitID, unit]) => {
     const legalDests: Territory[] = [];
@@ -90,14 +96,14 @@ export function getAllLegalRetreatDestsByUnitID(
   data: GameData,
   maps: GameStateMaps,
 ): {
-  [key: string]: Territory[];
+  [key: UnitID]: Territory[];
 } {
   if (overview.phase !== "Retreats") {
     return {};
   }
-  const legalRetreatDestsByUnitID: { [key: string]: Territory[] } = {};
+  const legalRetreatDestsByUnitID: { [key: UnitID]: Territory[] } = {};
 
-  const provinceStatusByProvID: { [key: string]: IProvinceStatus } = {};
+  const provinceStatusByProvID: { [key: ProvinceID]: IProvinceStatus } = {};
   data.territoryStatuses.forEach((provinceStatus) => {
     provinceStatusByProvID[provinceStatus.id] = provinceStatus;
   });
@@ -117,7 +123,7 @@ export function getAllLegalRetreatDestsByUnitID(
     const iTerr = data.territories[unit.terrID];
     const borderKind = unit.type === UnitType.Army ? "a" : "f";
     // If non-null, a dislodger occupied our province coming from this province
-    const occupiedFromProvID: string | null = provStatus.occupiedFromTerrID
+    const occupiedFromProvID: ProvinceID | null = provStatus.occupiedFromTerrID
       ? maps.terrIDToProvinceID[provStatus.occupiedFromTerrID]
       : null;
     iTerr.CoastalBorders.forEach((border) => {
@@ -187,7 +193,7 @@ export function getAllPossibleBuildDests(
 
 interface PathToCoast {
   dest: Territory;
-  provIDPath: string[];
+  provIDPath: UnitID[];
 }
 
 // Returns all legal convoy orders.
@@ -201,19 +207,19 @@ export function getAllLegalConvoys(
   data: GameData,
   maps: GameStateMaps,
 ): [
-  { [key: string]: LegalVia[] },
-  { [key: string]: { [key: string]: LegalConvoy[] } },
+  { [key: UnitID]: LegalVia[] },
+  { [key: UnitID]: { [key: string]: { [key: string]: LegalConvoy } } },
 ] {
   if (overview.phase !== "Diplomacy") {
     return [{}, {}];
   }
   const ourCountryID = overview.user!.member.countryID.toString();
-  const provinceStatusByProvID: { [key: string]: IProvinceStatus } = {};
+  const provinceStatusByProvID: { [key: ProvinceID]: IProvinceStatus } = {};
   data.territoryStatuses.forEach((provinceStatus) => {
     provinceStatusByProvID[provinceStatus.id] = provinceStatus;
   });
 
-  const legalViasByUnitID: { [key: string]: LegalVia[] } = {};
+  const legalViasByUnitID: { [key: UnitID]: LegalVia[] } = {};
   Object.entries(data.units).forEach(([unitID, unit]) => {
     // If this unit is not an army, then don't compute.
     if (unit.type !== UnitType.Army) {
@@ -224,12 +230,12 @@ export function getAllLegalConvoys(
     const legalViasByDest: { [key: string]: LegalVia } = {};
 
     // Perform DFS to find every location we can reach, and a path that does it.
-    const reachedProvIDs = new Set<string>();
+    const reachedProvIDs = new Set<ProvinceID>();
     reachedProvIDs.add(initialProvID);
 
     const searchAllNeighbors = function (
       iTerr: ITerritory,
-      pathSoFar: string[],
+      pathSoFar: ProvinceID[],
     ) {
       // Use Borders instead of CoastalBorders.
       // Borders appears to be province-level adjacency, whereas CoastalBoarders
@@ -279,11 +285,10 @@ export function getAllLegalConvoys(
   // We start in the middle at the fleet and use DFS to compute paths going outward
   // to armies and to coastal provinces.
   // The cartesian product of these two gives us all our results.
-  // Note that when taking such a cartesian product, the final paths may
-  // self-intersect. This is okay! We permit this.
+  // We filter the results for paths that don't re-use the same fleet more than once.
 
   const legalConvoysByUnitID: {
-    [key: string]: { [key: string]: LegalConvoy[] };
+    [key: UnitID]: { [key: string]: { [key: string]: LegalConvoy } };
   } = {};
   Object.entries(data.units).forEach(([unitID, unit]) => {
     // If this unit is owned by someone else or isn't a fleet on a sea, then don't compute.
@@ -301,12 +306,12 @@ export function getAllLegalConvoys(
     const initialProvID = unit.terrID;
 
     // Perform DFS to find every coastal army and coast we can reach, and a path that does it.
-    const reachedProvIDs = new Set<string>();
+    const reachedProvIDs = new Set<ProvinceID>();
     reachedProvIDs.add(initialProvID);
 
     const searchAllNeighbors = function (
       iTerr: ITerritory,
-      pathSoFar: string[],
+      pathSoFar: ProvinceID[],
     ) {
       // Use Borders instead of CoastalBorders.
       // Borders appears to be province-level adjacency, whereas CoastalBoarders
@@ -318,14 +323,15 @@ export function getAllLegalConvoys(
           if (reachedProvIDs.has(nextProvID)) {
             return;
           }
-          reachedProvIDs.add(nextProvID);
           // If it's a sea, then we recurse, so long as there is a unit there.
           const nextITerr = data.territories[nextProvID];
           if (nextITerr.type === "Sea") {
             if (provinceStatusByProvID[nextProvID]?.unitID) {
+              reachedProvIDs.add(nextProvID);
               pathSoFar.push(nextProvID);
               searchAllNeighbors(nextITerr, pathSoFar);
               pathSoFar.pop();
+              reachedProvIDs.delete(nextProvID);
             }
           }
           // Otherwise it's not a sea. Then we terminate.
@@ -346,10 +352,11 @@ export function getAllLegalConvoys(
     };
     searchAllNeighbors(data.territories[initialProvID], [initialProvID]);
 
-    // Now putting together each path to a coast army with each path to a coast
+    // Now putting together paths to each unique coast army with paths to a coast
     // gives us our final convoys that pass through this fleet.
-    const legalConvoysByConvoyeeTerritory: { [key: string]: LegalConvoy[] } =
-      {};
+    const legalConvoysByConvoyeeTerritory: {
+      [key: string]: { [key: string]: LegalConvoy };
+    } = {};
     pathsToCoastalArmy.forEach((pathToCoastalArmy) => {
       const provIDPath1 = [...pathToCoastalArmy.provIDPath];
       // Make sure the path contains the starting location, the flip it and pop
@@ -359,21 +366,46 @@ export function getAllLegalConvoys(
       provIDPath1.push(maps.territoryToTerrID[pathToCoastalArmy.dest]);
       provIDPath1.reverse();
       provIDPath1.pop();
-      const legalConvoys: LegalConvoy[] = [];
+
+      const provIDPath1Set = new Set(provIDPath1);
+
+      if (!legalConvoysByConvoyeeTerritory[pathToCoastalArmy.dest]) {
+        legalConvoysByConvoyeeTerritory[pathToCoastalArmy.dest] = {};
+      }
+      const legalConvoysByDestination =
+        legalConvoysByConvoyeeTerritory[pathToCoastalArmy.dest];
+
       pathsToCoast.forEach((pathToCoast) => {
         // Cannot convoy from a location to itself.
-        if (pathToCoast.dest !== pathToCoastalArmy.dest) {
-          legalConvoys.push({
+        if (pathToCoast.dest === pathToCoastalArmy.dest) return;
+        // If we already found a valid convoy for this army to this dest, skip
+        if (legalConvoysByDestination[pathToCoast.dest]) return;
+
+        // Check whether the to the destination overlaps with the path to the army
+        if (
+          pathToCoast.provIDPath.every(
+            (provIDInPath) => !provIDPath1Set.has(provIDInPath),
+          )
+        ) {
+          legalConvoysByDestination[pathToCoast.dest] = {
             src: pathToCoastalArmy.dest,
             dest: pathToCoast.dest,
             provIDPath1,
             provIDPath2: pathToCoast.provIDPath,
-          });
+          };
         }
       });
-      legalConvoysByConvoyeeTerritory[pathToCoastalArmy.dest] = legalConvoys;
     });
 
+    // Filter out all armies from the map that didn't find a valid way to convoy somewhere
+    const convoyeeSrcs = Object.keys(legalConvoysByConvoyeeTerritory);
+    convoyeeSrcs.forEach((convoyeeSrc) => {
+      if (
+        Object.keys(legalConvoysByConvoyeeTerritory[convoyeeSrc]).length <= 0
+      ) {
+        delete legalConvoysByConvoyeeTerritory[convoyeeSrc];
+      }
+    });
     legalConvoysByUnitID[unitID] = legalConvoysByConvoyeeTerritory;
   });
 
@@ -388,14 +420,14 @@ export function getAllLegalSupportsByUnitID(
   overview: GameOverviewResponse,
   data: GameData,
   maps: GameStateMaps,
-  legalMoveDestsByUnitID: { [key: string]: Territory[] },
-  legalViasByUnitID: { [key: string]: LegalVia[] },
-): { [key: string]: { [key: string]: LegalSupport[] } } {
+  legalMoveDestsByUnitID: { [key: UnitID]: Territory[] },
+  legalViasByUnitID: { [key: UnitID]: LegalVia[] },
+): { [key: UnitID]: { [key: ProvinceID]: LegalSupport[] } } {
   if (overview.phase !== "Diplomacy") {
     return {};
   }
   const legalSupportsByUnitID: {
-    [key: string]: { [key: string]: LegalSupport[] };
+    [key: UnitID]: { [key: ProvinceID]: LegalSupport[] };
   } = {};
   const ourCountryID = overview.user!.member.countryID.toString();
   Object.entries(data.units).forEach(([unitID, unit]) => {
@@ -404,11 +436,11 @@ export function getAllLegalSupportsByUnitID(
       return;
     }
 
-    const legalSupportsBySrc: { [key: string]: LegalSupport[] } = {};
+    const legalSupportsBySrc: { [key: ProvinceID]: LegalSupport[] } = {};
     const addSupport = function (
       src: Province,
       dest: Province,
-      convoyProvIDPath: string[] | null,
+      convoyProvIDPath: ProvinceID[] | null,
     ) {
       if (!legalSupportsBySrc[src]) {
         legalSupportsBySrc[src] = [];
@@ -498,7 +530,7 @@ export function getLegalOrders(
   const hasAnyLegalConvoysByUnitID = Object.fromEntries(
     Object.entries(legalConvoysByUnitID).map(([unitID, convoysBySrc]) => [
       unitID,
-      Object.values(convoysBySrc).some((convoys) => convoys.length > 0),
+      Object.values(convoysBySrc).length > 0,
     ]),
   );
 

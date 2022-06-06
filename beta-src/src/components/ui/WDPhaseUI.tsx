@@ -17,7 +17,7 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
   const { phaseMinutes, processTime, phase, season, year } =
     useAppSelector(gameOverview);
   const gameStatusData = useAppSelector(gameStatus);
-  const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
+  const { viewedPhaseIdx, latestPhaseViewed } = useAppSelector(gameViewedPhase);
 
   const phaseSeconds = phaseMinutes * 60;
   const [gamePhase, gameSeason, gameYear] = getGamePhaseSeasonYear(
@@ -29,6 +29,8 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
     gameStatusData,
     viewedPhaseIdx,
   );
+  const animateForwardGlow =
+    latestPhaseViewed < gameStatusData.phases.length - 1;
 
   return (
     <Box
@@ -40,11 +42,13 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
         height: 40,
         marginTop: "3px",
         marginRight: "55px", // for right side icons
+        pointerEvents: "none", // this box is invisible and used for layout alone, it shouldn't mask out clicks behind it
       }}
     >
       <WDPillScroller
         backwardDisabled={viewedPhaseIdx === 0}
         forwardDisabled={viewedPhaseIdx === gameStatusData.phases.length - 1}
+        animateForwardGlow={animateForwardGlow}
         viewedPhase={viewedPhase}
         viewedSeason={viewedSeason}
         viewedYear={viewedYear}

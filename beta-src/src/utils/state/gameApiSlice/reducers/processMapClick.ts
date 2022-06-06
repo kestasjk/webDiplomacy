@@ -318,7 +318,7 @@ export default function processMapClick(
       // gotta click on an Army that is convoyable
       if (
         clickUnit?.type === "Army" &&
-        legalOrders.legalConvoysByUnitID[order.unitID][clickProvince].length > 0
+        legalOrders.legalConvoysByUnitID[order.unitID][clickProvince]
       ) {
         updateOrder(state, {
           fromTerrID: maps.territoryToTerrID[clickRootTerritory],
@@ -330,9 +330,10 @@ export default function processMapClick(
     } else {
       // click 2
       const fromProvince = maps.terrIDToProvince[order.fromTerrID];
-      const convoy = legalOrders.legalConvoysByUnitID[order.unitID][
-        fromProvince
-      ].find((c) => c.dest === clickRootTerritory);
+      const convoy =
+        legalOrders.legalConvoysByUnitID[order.unitID][fromProvince][
+          clickProvince
+        ];
       if (convoy) {
         updateOrder(state, {
           toTerrID: maps.territoryToTerrID[clickRootTerritory],
