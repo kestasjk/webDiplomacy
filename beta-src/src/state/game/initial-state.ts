@@ -58,6 +58,7 @@ const initialState: GameState = {
     playerTypes: "",
     pot: 35,
     potType: "",
+    pressType: "",
     processStatus: "",
     processTime: null,
     season: "Spring",

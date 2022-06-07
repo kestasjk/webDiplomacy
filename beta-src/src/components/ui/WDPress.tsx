@@ -42,7 +42,7 @@ const WDPress: React.FC<WDPressProps> = function ({
 
   const [userMsg, setUserMsg] = React.useState("");
 
-  const { user, gameID } = useAppSelector(gameOverview);
+  const { user, gameID, pressType, phase } = useAppSelector(gameOverview);
 
   const messages = useAppSelector(({ game }) => game.messages.messages);
   const countryIDSelected = useAppSelector(
@@ -135,6 +135,12 @@ const WDPress: React.FC<WDPressProps> = function ({
   if (userCountry) {
     countriesForMessageList.push(userCountry);
   }
+  const canMsg =
+    pressType === "Regular" ||
+    (pressType === "PublicPressOnly" && countryIDSelected === 0) ||
+    (pressType === "RulebookPress" &&
+      ["Diplomacy", "Finished"].includes(phase));
+
   return (
     <Box
       sx={{ p: padding }}
@@ -182,13 +188,19 @@ const WDPress: React.FC<WDPressProps> = function ({
               onChange={(text) => setUserMsg(text.target.value)}
               onKeyDown={keydownHandler}
               fullWidth
+              disabled={!canMsg}
               sx={{ m: "0 0 0 6px" }}
               InputProps={{
                 endAdornment: (
                   <>
                     <Divider orientation="vertical" />
-                    <IconButton onClick={clickSend} disabled={!userMsg}>
-                      <Send color="primary" />
+                    <IconButton
+                      onClick={clickSend}
+                      disabled={!userMsg || !canMsg}
+                    >
+                      <Send
+                        color={userMsg && canMsg ? "primary" : "disabled"}
+                      />
                     </IconButton>
                   </>
                 ),

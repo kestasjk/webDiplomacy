@@ -25,6 +25,7 @@ interface GameOverviewResponse {
   playerTypes: string;
   pot: IntegerRange<35, 666>;
   potType: string;
+  pressType: string;
   processStatus: string;
   processTime: number | null | undefined;
   season: string;

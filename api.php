@@ -596,6 +596,7 @@ class GetGameOverview extends ApiEntry {
 			'potType' => $game->potType,
 			'processStatus' => $game->processStatus,
 			'processTime' => $game->processTime,
+			'pressType' => $game->pressType,
 			'startTime' => $game->startTime,
 			'season' => $season,
 			'turn' => $game->turn,
