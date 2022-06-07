@@ -59,11 +59,10 @@ const WDMain: React.FC = function (): React.ReactElement {
         if (!currentOrdersById[orderID]) {
           return;
         }
+        let unitID = "";
         let fromTerrID = 0;
         let toTerrID = 0;
-        let terrID = 0;
         let type: string | null = "";
-        let unitType = "";
         let viaConvoy;
 
         let { originalOrder } = orderMeta;
@@ -71,6 +70,7 @@ const WDMain: React.FC = function (): React.ReactElement {
           originalOrder = currentOrdersById[orderID];
         }
         if (originalOrder) {
+          unitID = originalOrder.unitID;
           if (originalOrder.fromTerrID) {
             fromTerrID = Number(originalOrder.fromTerrID);
           }
@@ -78,20 +78,6 @@ const WDMain: React.FC = function (): React.ReactElement {
             toTerrID = Number(originalOrder.toTerrID);
           }
           type = originalOrder.type;
-
-          if (type && type.startsWith("Build ")) {
-            if (originalOrder.toTerrID) {
-              terrID = Number(originalOrder.toTerrID);
-            }
-            [, unitType] = type.split(" ");
-          } else if (originalOrder.unitID) {
-            const terrIDString = maps.unitToTerrID[originalOrder.unitID];
-            if (terrIDString) {
-              terrID = Number(terrIDString);
-            }
-            unitType = data.data.units[originalOrder.unitID].type;
-          }
-
           if (originalOrder.viaConvoy === "Yes") {
             viaConvoy = "Yes";
           } else {
@@ -109,6 +95,34 @@ const WDMain: React.FC = function (): React.ReactElement {
           } else {
             viaConvoy = "No";
           }
+        }
+
+        let terrID = 0;
+        let unitType = "";
+
+        if (type && type.startsWith("Build ")) {
+          if (toTerrID) {
+            terrID = toTerrID;
+          }
+          [, unitType] = type.split(" ");
+        } else if (type && type.startsWith("Destroy")) {
+          if (toTerrID) {
+            terrID = toTerrID;
+          }
+          if (terrID) {
+            const unitsInProv =
+              maps.provinceToUnits[maps.terrIDToProvince[terrID.toString()]];
+            if (unitsInProv && unitsInProv[0]) {
+              unitType = data.data.units[unitsInProv[0]].type || "";
+            }
+          }
+          // console.log({ terrID, unitType });
+        } else if (unitID) {
+          const terrIDString = maps.unitToTerrID[unitID];
+          if (terrIDString) {
+            terrID = Number(terrIDString);
+          }
+          unitType = data.data.units[unitID].type;
         }
 
         // !terrID is safe because webdip doesn't seem to use terrID 0.
