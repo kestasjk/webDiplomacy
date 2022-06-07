@@ -124,12 +124,11 @@ const WDUI: React.FC = function (): React.ReactElement {
   const dispatchFetchMessages = () => {
     const { game } = store.getState();
     const { outstandingMessageRequests } = game;
-    if (!outstandingMessageRequests && phase !== "Pre-game" && user) {
+    if (!outstandingMessageRequests && phase !== "Pre-game") {
       dispatch(
         fetchGameMessages({
           gameID: String(gameID),
-          countryID: String(user.member.countryID),
-          allMessages: "true",
+          countryID: user ? String(user.member.countryID) : undefined,
           sinceTime: String(game.messages.time),
         }),
       );

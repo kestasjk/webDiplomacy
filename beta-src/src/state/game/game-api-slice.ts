@@ -68,11 +68,7 @@ export const fetchGameMessages = createAsyncThunk(
   ApiRoute.GAME_MESSAGES,
   async (queryParams: {
     gameID: string;
-    countryID: string;
-    toCountryID?: string;
-    offset?: string;
-    limit?: string;
-    allMessages?: string;
+    countryID?: string;
     sinceTime?: string;
   }) => {
     const {
@@ -164,7 +160,6 @@ export const loadGameData =
   (gameID: string, countryID?: string) => async (dispatch) => {
     await Promise.all([
       dispatch(fetchGameData({ gameID, countryID })),
-      // dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
       dispatch(fetchGameStatus({ gameID, countryID })),
     ]);
   };
@@ -183,12 +178,8 @@ export const loadGame = (gameID: string) => async (dispatch) => {
   const dispatches = [
     dispatch(fetchGameData({ gameID, countryID })),
     dispatch(fetchGameStatus({ gameID, countryID })),
+    dispatch(fetchGameMessages({ gameID, countryID })),
   ];
-  if (countryID) {
-    dispatches.push(
-      dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
-    );
-  }
   await Promise.all(dispatches);
 };
 

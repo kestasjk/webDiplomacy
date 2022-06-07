@@ -492,13 +492,11 @@ class GetGameMembers extends ApiEntry {
 		$memberData = [
 			'members' => $this->getMembers( $game->Members ),
 		];
-		error_log('foo1');
 		if (isset($game->Members->ByUserID[$userID])) {
 			$memberData['user'] = [
 				'member' => $this->getMemberData($game->Members->ByUserID[$userID], true),
 			];
 		}
-		error_log('foo2');
 		return $memberData;
 	}
 
@@ -553,7 +551,6 @@ class GetGameOverview extends ApiEntry {
 	public function run($userID, $permissionIsExplicit) {
 		$args = $this->getArgs();
 		$gameID = $args['gameID'];
-		error_log('gameOverview start');
 		if ($gameID === null || !ctype_digit($gameID)){
 			throw new RequestException(
 				$this->JSONResponse(
@@ -574,14 +571,11 @@ class GetGameOverview extends ApiEntry {
 				)
 			);
 		}   
-		error_log("AA");
 		$game = $this->getAssociatedGame();
-		error_log("A");
 		$dateTxt = $game->datetxt($game->turn);
 		$split = explode(',', $dateTxt);
 		$season = $split[0];
 		$year = intval($split[1] ?? 1901);
-		error_log("B");
 
 		$payload = array_merge([
 			'alternatives' => strip_tags(implode(', ',$game->getAlternatives())),
@@ -609,7 +603,6 @@ class GetGameOverview extends ApiEntry {
 			'variantID' => $game->variantID,
 			'year' => $year,
 		], (new GetGameMembers)->getData($userID));
-		error_log("Done overview");
 		return $this->JSONResponse('Successfully retrieved game overview.', 'GGO-s-001', true, $payload, true);
 	}
 }
@@ -1042,8 +1035,12 @@ class SendMessage extends ApiEntry {
 
 		$Game = $this->getAssociatedGame();
 
-		if ($Game->pressType != 'Regular') {
-			throw new RequestException('Game is not regular press.');
+		$allowed = ($Game->pressType == 'Regular') || 
+		           ($countryID == $toCountryID) ||
+		           ($Game->pressType == 'RulebookPress' && ($Game->phase == 'Diplomacy' || $Game->phase == 'Finished')) ||
+		           ($Game->pressType == 'PublicPressOnly' && $toCountryID == 0);
+		if (!$allowed) {
+			throw new RequestException("Message is invalid in $Game->pressType");
 		}
 
 		if (!(isset($Game->Members->ByUserID[$userID]) && $countryID == $Game->Members->ByUserID[$userID]->countryID)) {
@@ -1095,18 +1092,14 @@ class SendMessage extends ApiEntry {
  */
 class GetMessages extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/getmessages', 'GET', '', array('gameID','countryID','toCountryID','offset','limit','allMessages','sinceTime'));
+		parent::__construct('game/getmessages', 'GET', 'getStateOfAllGames', array('gameID','countryID','sinceTime'));
 	}
 	public function run($userID, $permissionIsExplicit) {
-
+		error_log("message start");
 		global $DB, $MC;
 		$args = $this->getArgs();
-		$countryID = $args['countryID'];
+		$countryID = $args['countryID'] ?? 0;
 		$gameID = $args['gameID'];
-		$limitAmount = 10000;
-		$limit = $args['limit'];
-		$offset = $args['offset'];
-		$toCountryID = intval($args['toCountryID']);
 		$messages = array();
 
 		$sinceTime = $args['sinceTime'];
@@ -1135,9 +1128,6 @@ class GetMessages extends ApiEntry {
 		$gamePhase = $game->phase;
 		$pressType = $game->pressType;
 
-		$limit = isset($limit) ? intval($limit) : $limitAmount;
-		$offset = isset($offset) ? intval($offset) : 0;
-		
 		if ($gameID === null || !is_numeric($gameID))
 			throw new RequestException(
 				$this->JSONResponse('A gameID is required.', '', false, ['gameID' => $gameID])
@@ -1148,73 +1138,14 @@ class GetMessages extends ApiEntry {
 				$this->JSONResponse('A countryID is required.', '', false, ['countryID' => $countryID])
 			);
 
-		if ($limit > $limitAmount) {
-			throw new RequestException(
-				$this->JSONResponse('limit should not exceed 10000', '', false, ['limit' => $limit])
-			);
-		}
-
-		// Global Get all messages addressed to everyone
-		if ($countryID == 0) {
-			$where = "toCountryID = 0";
-		}
-
-		// Press Types
-		// Regular - Global and Private messaging allowed.
-		// PublicPressOnly - Only Global messaging allowed.
-		// NoPress - No messaging allowed.
-		// RulebookPress - No messaging allowed during 'Builds' and 'Retreats' phases.
-		else if ( 
-			($countryID != $toCountryID && $pressType == 'NoPress') || 
-			($countryID != $toCountryID && $pressType == 'RulebookPress' && $gamePhase == 'Builds') || 
-			($countryID != $toCountryID && $pressType == 'RulebookPress' && $gamePhase == 'Retreats') ) {
-			throw new RequestException(
-				$this->JSONResponse(
-					'No messaging allowed for pressType = NoPress. No messaging allowed during "Retreats" and "Builds" phases for pressType = RulebookPress.',
-					'',
-					false,
-					[
-						'pressType' => $pressType,
-						'phase' => $gamePhase,
-					]
-				)
-			);
-		}
-
-		// Only get messages sent between
-		else {
-
-			// Check if user has acess to see messages
-			if ( $pressType == 'PublicPressOnly' || !(isset($game->Members->ByUserID[$userID]) && $countryID == $game->Members->ByUserID[$userID]->countryID)) {
-				throw new RequestException(
-					$this->JSONResponse(
-						'User does not have explicit permission to make this API call.',
-						'',
-						false,
-						[
-							'pressType' => $pressType,
-							'phase' => $gamePhase,
-						],
-					)
-				);
-			}
-
-			$where = "(toCountryID = $countryID OR fromCountryID = $countryID)";
-			if (isset($args['toCountryID'])) {
-				$where = "$where OR (toCountryID = $toCountryID OR fromCountryID = $toCountryID)";
-			}
-			if (isset($args['allMessages'])) {
-				$where = "$where OR (toCountryID = 0 OR fromCountryID = 0)";
-			}
-			if (isset($args['sinceTime'])) {
-				$where = "($where) AND timeSent >= $sinceTime";
-			}
+		$where = "(toCountryID = $countryID OR fromCountryID = $countryID)";
+		$where = "$where OR (toCountryID = 0 OR fromCountryID = 0)";
+		if (isset($args['sinceTime'])) {
+			$where = "($where) AND timeSent >= $sinceTime";
 		}
 
 		$tabl = $DB->sql_tabl("SELECT message, toCountryID, fromCountryID, turn, timeSent
-		FROM wD_GameMessages WHERE gameID = $gameID AND ($where)
-		order BY id DESC LIMIT $limit OFFSET $offset");
-
+		FROM wD_GameMessages WHERE gameID = $gameID AND ($where)");
 		while ($message = $DB->tabl_hash($tabl)) {
 			$messages[] = [
 				'fromCountryID' => (int) $message['fromCountryID'],
@@ -1224,12 +1155,11 @@ class GetMessages extends ApiEntry {
 				'turn' => (int) $message['turn'],
 			];
 		}
-
 		// Return Messages.
 		$curTime = time();
 		$responseStr = $messages ? 'Successfully retrieved game messages.' : 'No messages available';
 		// error_log("$responseStr at time $curTime");
-		$newMessagesFrom = array_map('intval', $game->Members->ByUserID[$userID]->newMessagesFrom);
+		$newMessagesFrom = $countryID == 0 ? [] : array_map('intval', $game->Members->ByUserID[$userID]->newMessagesFrom);
 		return $this->JSONResponse(
 			$responseStr,
 			'',
@@ -1394,7 +1324,7 @@ class ApiSession extends ApiAuth {
 		
 		// every session user can get state of all games (i.e. spectate)
 		$this->permissions["getStateOfAllGames"] = true;
-		
+
 		$this->load();
 	}
 }

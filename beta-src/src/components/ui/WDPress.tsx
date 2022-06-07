@@ -129,20 +129,26 @@ const WDPress: React.FC<WDPressProps> = function ({
     countryID: 0,
     color: "primary",
   });
-  countryButtons = [allButton, ...countryButtons];
+  countryButtons = userCountry ? [allButton, ...countryButtons] : [allButton];
 
   const countriesForMessageList = [...countries];
   if (userCountry) {
     countriesForMessageList.push(userCountry);
   }
-
   return (
     <Box
       sx={{ p: padding }}
       onClick={() => dispatchMessagesSeen(countryIDSelected)} // clicking anywhere in the window means you've seen it
     >
       <Stack alignItems="center" sx={{ p: padding }}>
-        <ButtonGroup className="dialogue-countries" sx={{ display: "inline" }}>
+        <ButtonGroup
+          className="dialogue-countries"
+          sx={{
+            display: "inline",
+            padding: "6px 0px",
+            width: userCountry ? "auto" : "95%",
+          }}
+        >
           {countryButtons}
         </ButtonGroup>
       </Stack>
