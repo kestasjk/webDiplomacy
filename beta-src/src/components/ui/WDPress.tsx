@@ -133,7 +133,7 @@ const WDPress: React.FC<WDPressProps> = function ({
 
   const countriesForMessageList = [...countries];
   if (userCountry) {
-    countriesForMessageList.push(userCountry); // sorry, its just silly to exclude userCountry from this table
+    countriesForMessageList.push(userCountry);
   }
 
   return (

@@ -406,14 +406,11 @@ class GetGamesStates extends ApiEntry {
 	 * @throws RequestException
 	 */
 	public function run($userID, $permissionIsExplicit) {
-		error_log("getGameStates start");
 		$args = $this->getArgs();
 		$gameID = $args['gameID'];
 		$countryID = $args['countryID'] ?? null;
 		if ($gameID === null || !ctype_digit($gameID))
 			throw new RequestException('Invalid game ID: '.$gameID);
-		// if ($countryID == null || !ctype_digit($countryID))
-		// 	throw new RequestException('Invalid country ID.');
 		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
 		    throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 		$game = $this->getAssociatedGame();
@@ -434,7 +431,6 @@ class GetGameMembers extends ApiEntry {
 	private $showDrawVotes;
 
 	public function __construct() {
-		error_log("construct GetGameMembers");
 		parent::__construct('game/members', 'GET', 'getStateOfAllGames', array('gameID'));
 	}
 
@@ -445,7 +441,6 @@ class GetGameMembers extends ApiEntry {
 	}
 
 	private function getMemberData(Member $member, bool $retrievePrivateData = false){
-		error_log("getMemberData");
 		$votes = $member->votes;
 		if(!$this->showDrawVotes && !$retrievePrivateData){
 			$drawKey = array_search('Draw', $votes);
@@ -497,11 +492,13 @@ class GetGameMembers extends ApiEntry {
 		$memberData = [
 			'members' => $this->getMembers( $game->Members ),
 		];
+		error_log('foo1');
 		if (isset($game->Members->ByUserID[$userID])) {
 			$memberData['user'] = [
 				'member' => $this->getMemberData($game->Members->ByUserID[$userID], true),
 			];
 		}
+		error_log('foo2');
 		return $memberData;
 	}
 
@@ -554,9 +551,9 @@ class GetGameOverview extends ApiEntry {
 	 * @throws RequestException
 	 */
 	public function run($userID, $permissionIsExplicit) {
-		error_log("getGameOverview begin");
 		$args = $this->getArgs();
 		$gameID = $args['gameID'];
+		error_log('gameOverview start');
 		if ($gameID === null || !ctype_digit($gameID)){
 			throw new RequestException(
 				$this->JSONResponse(
@@ -577,16 +574,14 @@ class GetGameOverview extends ApiEntry {
 				)
 			);
 		}   
-		error_log("getGameOverview A");
-
+		error_log("AA");
 		$game = $this->getAssociatedGame();
-		error_log("getGameOverview B");
-
+		error_log("A");
 		$dateTxt = $game->datetxt($game->turn);
 		$split = explode(',', $dateTxt);
 		$season = $split[0];
 		$year = intval($split[1] ?? 1901);
-		error_log("getGameOverview C");
+		error_log("B");
 
 		$payload = array_merge([
 			'alternatives' => strip_tags(implode(', ',$game->getAlternatives())),
@@ -614,8 +609,7 @@ class GetGameOverview extends ApiEntry {
 			'variantID' => $game->variantID,
 			'year' => $year,
 		], (new GetGameMembers)->getData($userID));
-		error_log("getGameOverview end");
-
+		error_log("Done overview");
 		return $this->JSONResponse('Successfully retrieved game overview.', 'GGO-s-001', true, $payload, true);
 	}
 }
@@ -670,7 +664,6 @@ class GetGameData extends ApiEntry {
 	 * @throws RequestException
 	 */
 	public function run($userID, $permissionIsExplicit) {
-		error_log("getGameData start");
 		global $MC;
 		$args = $this->getArgs();
 		$gameID = $args['gameID'];
@@ -1316,6 +1309,7 @@ abstract class ApiAuth {
 	public function assertHasPermissionFor(ApiEntry $apiEntry) {
 		$permissionIsExplicit = false;
 		$permissionField = $apiEntry->getPermissionField();
+
 		if ($permissionField == '') {
 			// No permission field.
 			// If game ID is required, then user must be member of this game.
@@ -1329,7 +1323,7 @@ abstract class ApiAuth {
 
 			// Permission field must be set for this user.
 			// Otherwise, game ID must be required and user must be member of this game.
-			if ($this->permissions[$permissionField] || $permissionField == "getStateOfAllGames") {  // FIXME: can we open getStateOfAllGames to everyone?
+			if ($this->permissions[$permissionField]) {
 				$permissionIsExplicit = true;
 			} else {
 				if (!$apiEntry->requiresGameID())
@@ -1397,6 +1391,10 @@ class ApiSession extends ApiAuth {
 	public function __construct($route){
 		foreach (self::$permissionFields as $permissionField)
 			$this->permissions[$permissionField] = false;
+		
+		// every session user can get state of all games (i.e. spectate)
+		$this->permissions["getStateOfAllGames"] = true;
+		
 		$this->load();
 	}
 }
