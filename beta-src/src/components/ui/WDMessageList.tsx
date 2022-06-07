@@ -10,7 +10,7 @@ import { CountryTableData } from "../../interfaces/CountryTableData";
 
 interface WDMessageListProps {
   messages: GameMessage[];
-  userCountry: CountryTableData;
+  userCountry: CountryTableData | null;
   countries: CountryTableData[];
   countryIDSelected: number;
   messagesEndRef: React.RefObject<HTMLDivElement>;

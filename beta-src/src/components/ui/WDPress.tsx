@@ -25,7 +25,7 @@ import { store } from "../../state/store";
 
 interface WDPressProps {
   children: React.ReactNode;
-  userCountry: CountryTableData;
+  userCountry: CountryTableData | null;
   countries: CountryTableData[];
 }
 
@@ -42,7 +42,7 @@ const WDPress: React.FC<WDPressProps> = function ({
 
   const [userMsg, setUserMsg] = React.useState("");
 
-  const { user, gameID } = useAppSelector(gameOverview);
+  const { user, gameID, pressType, phase } = useAppSelector(gameOverview);
 
   const messages = useAppSelector(({ game }) => game.messages.messages);
   const countryIDSelected = useAppSelector(
@@ -60,6 +60,9 @@ const WDPress: React.FC<WDPressProps> = function ({
   }, [messages, countryIDSelected]);
 
   const clickSend = () => {
+    if (!userCountry) {
+      return;
+    }
     dispatch(
       sendMessage({
         gameID: String(gameID),
@@ -75,13 +78,15 @@ const WDPress: React.FC<WDPressProps> = function ({
     // need to update locally and on the server
     // because we don't immediately re-fetch message data from the server
     dispatch(gameApiSliceActions.processMessagesSeen(countryID));
-    dispatch(
-      markMessagesSeen({
-        countryID: String(userCountry.countryID),
-        gameID: String(gameID),
-        seenCountryID: String(countryID),
-      }),
-    );
+    if (userCountry) {
+      dispatch(
+        markMessagesSeen({
+          countryID: String(userCountry.countryID),
+          gameID: String(gameID),
+          seenCountryID: String(countryID),
+        }),
+      );
+    }
   };
 
   // capture enter for end, shift-enter for newline
@@ -124,7 +129,17 @@ const WDPress: React.FC<WDPressProps> = function ({
     countryID: 0,
     color: "primary",
   });
-  countryButtons = [allButton, ...countryButtons];
+  countryButtons = userCountry ? [allButton, ...countryButtons] : [allButton];
+
+  const countriesForMessageList = [...countries];
+  if (userCountry) {
+    countriesForMessageList.push(userCountry);
+  }
+  const canMsg =
+    pressType === "Regular" ||
+    (pressType === "PublicPressOnly" && countryIDSelected === 0) ||
+    (pressType === "RulebookPress" &&
+      ["Diplomacy", "Finished"].includes(phase));
 
   return (
     <Box
@@ -132,20 +147,28 @@ const WDPress: React.FC<WDPressProps> = function ({
       onClick={() => dispatchMessagesSeen(countryIDSelected)} // clicking anywhere in the window means you've seen it
     >
       <Stack alignItems="center" sx={{ p: padding }}>
-        <ButtonGroup className="dialogue-countries" sx={{ display: "inline" }}>
+        <ButtonGroup
+          className="dialogue-countries"
+          sx={{
+            display: "inline",
+            padding: "6px 0px",
+            width: userCountry ? "auto" : "95%",
+          }}
+        >
           {countryButtons}
         </ButtonGroup>
       </Stack>
       <WDMessageList
         messages={messages}
-        countries={[...countries, userCountry]} // sorry, its just silly to exclude userCountry from this table
+        countries={countriesForMessageList}
         userCountry={userCountry}
         countryIDSelected={countryIDSelected}
         messagesEndRef={messagesEndRef}
       />
-      <Box>
-        <Stack alignItems="center" direction="row">
-          {/* <Button
+      {userCountry && (
+        <Box>
+          <Stack alignItems="center" direction="row">
+            {/* <Button
             href="#message-reload-button"
             onClick={dispatchFetchMessages}
             style={{
@@ -155,33 +178,40 @@ const WDPress: React.FC<WDPressProps> = function ({
           >
             <AutorenewIcon sx={{ fontSize: "medium" }} />
           </Button> */}
-          <TextField
-            id="user-msg"
-            label="Send Message"
-            variant="outlined"
-            value={userMsg}
-            multiline
-            maxRows={4}
-            onChange={(text) => setUserMsg(text.target.value)}
-            onKeyDown={keydownHandler}
-            fullWidth
-            sx={{ m: "0 0 0 6px" }}
-            InputProps={{
-              endAdornment: (
-                <>
-                  <Divider orientation="vertical" />
-                  <IconButton onClick={clickSend} disabled={!userMsg}>
-                    <Send color="primary" />
-                  </IconButton>
-                </>
-              ),
-              style: {
-                padding: "4px 0 4px 8px", // needed to cancel out extra height induced by the button
-              },
-            }}
-          />
-        </Stack>
-      </Box>
+            <TextField
+              id="user-msg"
+              label="Send Message"
+              variant="outlined"
+              value={userMsg}
+              multiline
+              maxRows={4}
+              onChange={(text) => setUserMsg(text.target.value)}
+              onKeyDown={keydownHandler}
+              fullWidth
+              disabled={!canMsg}
+              sx={{ m: "0 0 0 6px" }}
+              InputProps={{
+                endAdornment: (
+                  <>
+                    <Divider orientation="vertical" />
+                    <IconButton
+                      onClick={clickSend}
+                      disabled={!userMsg || !canMsg}
+                    >
+                      <Send
+                        color={userMsg && canMsg ? "primary" : "disabled"}
+                      />
+                    </IconButton>
+                  </>
+                ),
+                style: {
+                  padding: "4px 0 4px 8px", // needed to cancel out extra height induced by the button
+                },
+              }}
+            />
+          </Stack>
+        </Box>
+      )}
     </Box>
   );
 };

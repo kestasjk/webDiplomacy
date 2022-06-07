@@ -8,7 +8,7 @@ import { CountryTableData } from "../../interfaces/CountryTableData";
 
 interface WDMessageProps {
   message: GameMessage;
-  userCountry: CountryTableData;
+  userCountry: CountryTableData | null;
   countries: CountryTableData[];
 }
 
@@ -32,7 +32,9 @@ const WDMessage: React.FC<WDMessageProps> = function ({
   const fromCountry = getCountry(message.fromCountryID);
   const msgWidth = mobileLandscapeLayout ? "170px" : "250px";
   const justify =
-    message.fromCountryID === userCountry.countryID ? "flex-end" : "flex";
+    userCountry && message.fromCountryID === userCountry.countryID
+      ? "flex-end"
+      : "flex";
   const msgTime = new Date(0);
   msgTime.setUTCSeconds(message.timeSent);
   return (

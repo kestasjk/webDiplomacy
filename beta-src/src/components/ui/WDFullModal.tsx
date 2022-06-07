@@ -23,7 +23,7 @@ interface WDFullModalProps {
   gameID: GameOverviewResponse["gameID"];
   season: GameOverviewResponse["season"];
   title: GameOverviewResponse["name"];
-  userCountry: CountryTableData;
+  userCountry: CountryTableData | null;
   year: GameOverviewResponse["year"];
   modalRef: React.RefObject<HTMLElement>;
 }
