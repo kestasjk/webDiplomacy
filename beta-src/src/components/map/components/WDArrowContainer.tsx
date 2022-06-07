@@ -20,6 +20,15 @@ import { APITerritories } from "../../../state/interfaces/GameDataResponse";
 import { Unit, UnitDrawMode } from "../../../utils/map/getUnits";
 import Province from "../../../enums/map/variants/classic/Province";
 import provincesMapData from "../../../data/map/ProvincesMapData";
+import Territory from "../../../enums/map/variants/classic/Territory";
+
+// Indicates that we should draw this Province as having a standoff.
+export interface StandoffInfo {
+  // The province of the standoff
+  province: Province;
+  // The source and destination of moves that caused the standoff
+  attemptedMoves: [Territory, Territory][];
+}
 
 function accumulateMoveOrderArrows(
   arrows: (React.ReactElement | null)[],
@@ -377,37 +386,49 @@ function accumulateBuildCircles(
 
 function accumulateStandoffMarks(
   arrows: (React.ReactElement | null)[],
-  standoffProvinces: Province[],
+  standoffs: StandoffInfo[],
 ): void {
-  standoffProvinces.forEach((province) => {
+  standoffs.forEach((standoff) => {
+    const { province } = standoff;
     const { rootTerritory } = provincesMapData[province];
     if (!rootTerritory) return;
 
     const [x1, y1, w1, h1] = getTargetXYWH("territory", rootTerritory);
     const MARKSIZE = 25;
     arrows.push(
-      <g>
-        <line
-          key={`standoffmark-${province}-1`}
-          x1={x1 - MARKSIZE}
-          y1={y1 - MARKSIZE}
-          x2={x1 + MARKSIZE}
-          y2={y1 + MARKSIZE}
-          stroke="red"
-          strokeWidth={6}
-        />
-        <line
-          key={`standoffmark-${province}-2`}
-          x1={x1 + MARKSIZE}
-          y1={y1 - MARKSIZE}
-          x2={x1 - MARKSIZE}
-          y2={y1 + MARKSIZE}
-          stroke="red"
-          strokeWidth={6}
-        />
-        <title>Cannot retreat here, standoff/bounce last turn</title>
-      </g>,
+      <line
+        key={`standoffmark-${province}-1`}
+        x1={x1 - MARKSIZE}
+        y1={y1 - MARKSIZE}
+        x2={x1 + MARKSIZE}
+        y2={y1 + MARKSIZE}
+        stroke="red"
+        strokeWidth={6}
+      />,
     );
+    arrows.push(
+      <line
+        key={`standoffmark-${province}-2`}
+        x1={x1 + MARKSIZE}
+        y1={y1 - MARKSIZE}
+        x2={x1 - MARKSIZE}
+        y2={y1 + MARKSIZE}
+        stroke="red"
+        strokeWidth={6}
+      />,
+    );
+    standoff.attemptedMoves.forEach(([src, dst]) => {
+      arrows.push(
+        drawArrowFunctional(
+          ArrowType.MOVE,
+          ArrowColor.MOVE_FAILED,
+          "unit",
+          src,
+          "territory",
+          dst,
+        ),
+      );
+    });
   });
 }
 
@@ -433,7 +454,7 @@ interface WDArrowProps {
   units: Unit[];
   maps: GameStateMaps;
   territories: APITerritories;
-  standoffProvinces: Province[];
+  standoffs: StandoffInfo[];
 }
 
 const WDArrowContainer: React.FC<WDArrowProps> = function ({
@@ -442,7 +463,7 @@ const WDArrowContainer: React.FC<WDArrowProps> = function ({
   units,
   maps,
   territories,
-  standoffProvinces,
+  standoffs,
 }): React.ReactElement {
   const arrows: (React.ReactElement | null)[] = [];
 
@@ -458,7 +479,7 @@ const WDArrowContainer: React.FC<WDArrowProps> = function ({
   accumulateRetreatArrows(arrows, orders, territories);
   accumulateDislodgerArrows(arrows, units, territories);
   accumulateBuildCircles(arrows, units, territories);
-  accumulateStandoffMarks(arrows, standoffProvinces);
+  accumulateStandoffMarks(arrows, standoffs);
   return <g id="arrows">{arrows}</g>;
 };
 

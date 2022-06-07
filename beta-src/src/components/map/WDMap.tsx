@@ -5,7 +5,7 @@ import WaterTexture from "../../assets/textures/sea-texture.png";
 import WDArrowMarkerDefs from "../../utils/map/WDArrowMarkerDefs";
 import WDBuildContainer from "./components/WDBuildContainer";
 import WDFlyoutContainer from "./components/WDFlyoutContainer";
-import WDArrowContainer from "./components/WDArrowContainer";
+import WDArrowContainer, { StandoffInfo } from "./components/WDArrowContainer";
 import { Unit } from "../../utils/map/getUnits";
 import { IOrderDataHistorical } from "../../models/Interfaces";
 import GameStateMaps from "../../state/interfaces/GameStateMaps";
@@ -20,7 +20,7 @@ interface WDMapProps {
   maps: GameStateMaps;
   territories: APITerritories;
   centersByProvince: { [key: string]: { ownerCountryID: string } };
-  standoffProvinces: Province[];
+  standoffs: StandoffInfo[];
   isLatestPhase: boolean;
 }
 
@@ -35,7 +35,7 @@ const WDMap: React.ForwardRefExoticComponent<
       maps,
       territories,
       centersByProvince,
-      standoffProvinces,
+      standoffs,
       isLatestPhase,
     },
     ref,
@@ -64,7 +64,7 @@ const WDMap: React.ForwardRefExoticComponent<
             units={units}
             maps={maps}
             territories={territories}
-            standoffProvinces={standoffProvinces}
+            standoffs={standoffs}
           />
           {isLatestPhase && <WDBuildContainer />}
           {isLatestPhase && <WDFlyoutContainer units={units} />}

@@ -25,6 +25,7 @@ import {
 import { IOrderData, IOrderDataHistorical } from "../../models/Interfaces";
 import provincesMapData from "../../data/map/ProvincesMapData";
 import Province from "../../enums/map/variants/classic/Province";
+import { StandoffInfo } from "../map/components/WDArrowContainer";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -188,14 +189,10 @@ const WDMapController: React.FC = function (): React.ReactElement {
 
       const centersByProvince: { [key: string]: { ownerCountryID: string } } =
         {};
-      const standoffProvinces: Province[] = [];
       data.data.territoryStatuses.forEach((provinceStatus) => {
         const province = maps.terrIDToProvince[provinceStatus.id];
         const ownerCountryID = provinceStatus.ownerCountryID || "0";
         centersByProvince[province] = { ownerCountryID };
-        if (overview.phase === "Retreats" && provinceStatus.standoff) {
-          standoffProvinces.push(province);
-        }
       });
 
       return {
@@ -204,7 +201,6 @@ const WDMapController: React.FC = function (): React.ReactElement {
         orders: ordersHistorical,
         centersByProvince,
         isLatestPhase: true,
-        standoffProvinces,
       };
     }
 
@@ -230,44 +226,47 @@ const WDMapController: React.FC = function (): React.ReactElement {
         ownerCountryID: iCenter.countryID.toString(),
       };
     });
-    const standoffProvinces: Province[] = [];
-    if (
-      phaseHistorical.phase === "Retreats" &&
-      viewedPhaseState.viewedPhaseIdx > 0
-    ) {
-      const provincesWithUnits = new Set(
-        unitsLive.map((unit) => unit.mappedTerritory.province),
-      );
-      const prevPhase = status.phases[viewedPhaseState.viewedPhaseIdx - 1];
-      prevPhase.orders.forEach((order) => {
-        if (order.type === "Move" && order.toTerrID) {
-          const province = maps.terrIDToProvince[order.toTerrID];
-          if (!provincesWithUnits.has(province)) {
-            // If we have a move order to a province but that province has no units now
-            // then it's a standoff
-            standoffProvinces.push(province);
-          }
-        }
-      });
-    }
+
     return {
       phase: phaseHistorical.phase as string,
       units: unitsLive,
       orders: phaseHistorical.orders,
       centersByProvince,
       isLatestPhase: false,
-      standoffProvinces,
     };
   };
-  const {
-    phase,
-    units,
-    orders,
-    centersByProvince,
-    isLatestPhase,
-    standoffProvinces,
-  } = updateForPhase();
+  const { phase, units, orders, centersByProvince, isLatestPhase } =
+    updateForPhase();
   const { territories } = data.data;
+
+  let standoffs: StandoffInfo[] = [];
+  if (phase === "Retreats" && viewedPhaseState.viewedPhaseIdx > 0) {
+    const provincesWithUnits = new Set(
+      units.map((unit) => unit.mappedTerritory.province),
+    );
+    const prevPhase = status.phases[viewedPhaseState.viewedPhaseIdx - 1];
+    const standoffsByProvince: { [key: string]: StandoffInfo } = {};
+    prevPhase.orders.forEach((order) => {
+      if (order.type === "Move" && order.toTerrID) {
+        const province = maps.terrIDToProvince[order.toTerrID];
+        if (!provincesWithUnits.has(province)) {
+          // If we have a move order to a province but that province has no units now
+          // then it's a standoff
+          if (!standoffsByProvince[province]) {
+            standoffsByProvince[province] = {
+              province,
+              attemptedMoves: [],
+            };
+          }
+          standoffsByProvince[province].attemptedMoves.push([
+            maps.terrIDToTerritory[order.terrID],
+            maps.terrIDToTerritory[order.toTerrID],
+          ]);
+        }
+      }
+    });
+    standoffs = Object.values(standoffsByProvince);
+  }
 
   // const legalOrders = useAppSelector(gameLegalOrders);
   // console.log({ legalOrders });
@@ -349,7 +348,7 @@ const WDMapController: React.FC = function (): React.ReactElement {
         maps={maps}
         territories={territories}
         centersByProvince={centersByProvince}
-        standoffProvinces={standoffProvinces}
+        standoffs={standoffs}
         isLatestPhase={isLatestPhase}
       />
     </div>
