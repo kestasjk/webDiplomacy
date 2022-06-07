@@ -416,7 +416,7 @@ class GetGamesStates extends ApiEntry {
 		$game = $this->getAssociatedGame();
 		if ($countryID != null && (!isset($game->Members->ByUserID[$userID]) || $countryID != $game->Members->ByUserID[$userID]->countryID))
 			throw new ClientForbiddenException('A user can only view game state for the country it controls.');
-		$gameState = new \webdiplomacy_api\GameState($gameID, $countryID);
+		$gameState = new \webdiplomacy_api\GameState(intval($gameID), $countryID ? intval($countryID) : null);
 		return $gameState->toJson();
 	}
 }
