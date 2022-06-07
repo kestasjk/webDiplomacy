@@ -23,14 +23,6 @@ const WDArmyIcon: React.FC<IconProps> = function ({
           fill="#fff"
         />
       )}
-      {iconState === UIState.SELECTED && (
-        <path
-          d="M32.977 8H17.023a6 6 0 0 0-6 6v17.73a6 6 0 0 0 3.45 5.43l7.976 3.747a6 6 0 0 0 5.102 0l7.977-3.747a6 6 0 0 0 3.45-5.43V14a6 6 0 0 0-6-6Z"
-          fill={theme.palette[country].main}
-          stroke="#fff"
-          strokeWidth={2}
-        />
-      )}
       {iconState === UIState.HOLD && (
         <path
           d="M32.977 8H17.023a6 6 0 0 0-6 6v17.73a6 6 0 0 0 3.45 5.43l7.976 3.747a6 6 0 0 0 5.102 0l7.977-3.747a6 6 0 0 0 3.45-5.43V14a6 6 0 0 0-6-6Z"
@@ -81,7 +73,9 @@ const WDArmyIcon: React.FC<IconProps> = function ({
       {iconState !== UIState.DISBANDED && iconState !== UIState.DESTROY && (
         <path
           d="M34.065 20.963H27.58L25.024 14l-2.461 6.963H16.03l5.538 4.026L19.486 32l5.562-4.026L30.586 32l-2.036-6.987 5.515-4.05Z"
-          fill={iconState === "selected" ? "#fff" : theme.palette[country].main}
+          fill={theme.palette[country].main}
+          stroke={theme.palette[country].main}
+          strokeWidth={1.5}
         />
       )}
     </>
