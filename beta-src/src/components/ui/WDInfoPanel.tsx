@@ -15,14 +15,14 @@ import {
 import { useAppDispatch } from "../../state/hooks";
 
 interface WDInfoPanelProps {
-  countries: CountryTableData[];
+  allCountries: CountryTableData[];
   gameID: GameOverviewResponse["gameID"];
   maxDelays: GameOverviewResponse["excusedMissedTurns"];
   userCountry: CountryTableData;
 }
 
 const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
-  countries,
+  allCountries,
   gameID,
   maxDelays,
   userCountry,
@@ -58,17 +58,7 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
           m: "20px 5px 10px 0",
         }}
       >
-        <WDCountryTable
-          maxDelays={maxDelays}
-          /**
-           * always show current user at the top
-           *
-           */
-          countries={[
-            { ...userCountry, votes: userCountry.votes },
-            ...countries,
-          ]}
-        />
+        <WDCountryTable maxDelays={maxDelays} countries={allCountries} />
       </Box>
     </Box>
   );

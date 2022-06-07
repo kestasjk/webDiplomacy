@@ -26,13 +26,13 @@ import { store } from "../../state/store";
 interface WDPressProps {
   children: React.ReactNode;
   userCountry: CountryTableData;
-  countries: CountryTableData[];
+  allCountries: CountryTableData[];
 }
 
 const WDPress: React.FC<WDPressProps> = function ({
   children,
   userCountry,
-  countries,
+  allCountries,
 }): React.ReactElement {
   const [viewport] = useViewport();
   const device = getDevice(viewport);
@@ -116,7 +116,8 @@ const WDPress: React.FC<WDPressProps> = function ({
     );
   };
 
-  let countryButtons = countries
+  let countryButtons = allCountries
+    .filter((country) => country.countryID !== userCountry.countryID)
     .sort((a, b) => a.countryID - b.countryID)
     .map(makeCountryButton);
   const allButton = makeCountryButton({
@@ -138,7 +139,7 @@ const WDPress: React.FC<WDPressProps> = function ({
       </Stack>
       <WDMessageList
         messages={messages}
-        countries={[...countries, userCountry]} // sorry, its just silly to exclude userCountry from this table
+        allCountries={allCountries}
         userCountry={userCountry}
         countryIDSelected={countryIDSelected}
         messagesEndRef={messagesEndRef}

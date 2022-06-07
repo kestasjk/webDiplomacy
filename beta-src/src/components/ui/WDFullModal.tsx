@@ -12,12 +12,15 @@ import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
 import WDViewsContainer from "./WDViewsContainer";
 import WDTabPanel from "./WDTabPanel";
+import WDOrdersPanel from "./WDOrdersPanel";
+import { IOrderDataHistorical } from "../../models/Interfaces";
 
 interface WDFullModalProps {
   alternatives: GameOverviewResponse["alternatives"];
   children: React.ReactNode;
-  countries: CountryTableData[];
+  allCountries: CountryTableData[];
   excusedMissedTurns: GameOverviewResponse["excusedMissedTurns"];
+  orders: IOrderDataHistorical[];
   phase: GameOverviewResponse["phase"];
   potNumber: GameOverviewResponse["pot"];
   gameID: GameOverviewResponse["gameID"];
@@ -28,14 +31,19 @@ interface WDFullModalProps {
   modalRef: React.RefObject<HTMLElement>;
 }
 
-const tabGroup: ModalViews[] = [ModalViews.PRESS, ModalViews.INFO];
+const tabGroup: ModalViews[] = [
+  ModalViews.PRESS,
+  ModalViews.INFO,
+  ModalViews.ORDERS,
+];
 
 const WDFullModal: React.FC<WDFullModalProps> = function ({
   alternatives,
   children,
-  countries,
+  allCountries,
   excusedMissedTurns,
   gameID,
+  orders,
   phase,
   potNumber,
   season,
@@ -82,7 +90,7 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
               />
             </Box>
             <WDInfoPanel
-              countries={countries}
+              allCountries={allCountries}
               maxDelays={excusedMissedTurns}
               userCountry={userCountry}
               gameID={gameID}
@@ -90,9 +98,12 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
           </Box>
         </WDTabPanel>
         <WDTabPanel currentTab={ModalViews.PRESS} currentView={view}>
-          <WDPress userCountry={userCountry} countries={countries}>
+          <WDPress userCountry={userCountry} allCountries={allCountries}>
             {children}
           </WDPress>
+        </WDTabPanel>
+        <WDTabPanel currentTab={ModalViews.ORDERS} currentView={view}>
+          <WDOrdersPanel orders={orders} allCountries={allCountries} />
         </WDTabPanel>
       </WDViewsContainer>
     </Box>
