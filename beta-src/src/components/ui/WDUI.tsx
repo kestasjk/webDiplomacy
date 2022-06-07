@@ -21,6 +21,7 @@ import {
   gameOverview,
   fetchGameMessages,
   gameApiSliceActions,
+  gameMaps,
 } from "../../state/game/game-api-slice";
 import useInterval from "../../hooks/useInterval";
 import useOutsideAlerter from "../../hooks/useOutsideAlerter";
@@ -62,6 +63,7 @@ const WDUI: React.FC<WDUIProps> = function ({ orders }): React.ReactElement {
     user,
     year,
   } = useAppSelector(gameOverview);
+  const maps = useAppSelector(gameMaps);
 
   // console.log("WDUI RENDERED");
 
@@ -160,6 +162,7 @@ const WDUI: React.FC<WDUIProps> = function ({ orders }): React.ReactElement {
         allCountries={allCountries}
         excusedMissedTurns={excusedMissedTurns}
         gameID={gameID}
+        maps={maps}
         orders={orders}
         phase={phase}
         potNumber={pot}

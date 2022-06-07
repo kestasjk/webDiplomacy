@@ -14,12 +14,14 @@ import WDViewsContainer from "./WDViewsContainer";
 import WDTabPanel from "./WDTabPanel";
 import WDOrdersPanel from "./WDOrdersPanel";
 import { IOrderDataHistorical } from "../../models/Interfaces";
+import GameStateMaps from "../../state/interfaces/GameStateMaps";
 
 interface WDFullModalProps {
   alternatives: GameOverviewResponse["alternatives"];
   children: React.ReactNode;
   allCountries: CountryTableData[];
   excusedMissedTurns: GameOverviewResponse["excusedMissedTurns"];
+  maps: GameStateMaps;
   orders: IOrderDataHistorical[];
   phase: GameOverviewResponse["phase"];
   potNumber: GameOverviewResponse["pot"];
@@ -43,6 +45,7 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
   allCountries,
   excusedMissedTurns,
   gameID,
+  maps,
   orders,
   phase,
   potNumber,
@@ -103,7 +106,11 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
           </WDPress>
         </WDTabPanel>
         <WDTabPanel currentTab={ModalViews.ORDERS} currentView={view}>
-          <WDOrdersPanel orders={orders} allCountries={allCountries} />
+          <WDOrdersPanel
+            orders={orders}
+            allCountries={allCountries}
+            maps={maps}
+          />
         </WDTabPanel>
       </WDViewsContainer>
     </Box>
