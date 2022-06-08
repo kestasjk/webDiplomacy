@@ -21,12 +21,14 @@ import {
   gameOverview,
   fetchGameMessages,
   gameApiSliceActions,
+  gameMaps,
 } from "../../state/game/game-api-slice";
 import useInterval from "../../hooks/useInterval";
 import useOutsideAlerter from "../../hooks/useOutsideAlerter";
 import useViewport from "../../hooks/useViewport";
 import { store } from "../../state/store";
 import { MessageStatus } from "../../state/interfaces/GameMessages";
+import { IOrderDataHistorical } from "../../models/Interfaces";
 
 const abbrMap = {
   Russia: "RUS",
@@ -38,7 +40,11 @@ const abbrMap = {
   Turkey: "TUR",
 };
 
-const WDUI: React.FC = function (): React.ReactElement {
+interface WDUIProps {
+  orders: IOrderDataHistorical[];
+}
+
+const WDUI: React.FC<WDUIProps> = function ({ orders }): React.ReactElement {
   const theme = useTheme();
 
   const [showControlModal, setShowControlModal] = React.useState(false);
@@ -57,6 +63,7 @@ const WDUI: React.FC = function (): React.ReactElement {
     user,
     year,
   } = useAppSelector(gameOverview);
+  const maps = useAppSelector(gameMaps);
 
   // console.log("WDUI RENDERED");
 
@@ -81,14 +88,19 @@ const WDUI: React.FC = function (): React.ReactElement {
     };
   };
 
-  const countries: CountryTableData[] = [];
+  const allCountries: CountryTableData[] = [];
+  const getCountrySortIdx = function (countryID: number) {
+    // Sort user country to the front
+    if (countryID === user?.member.countryID) return -1;
+    return countryID;
+  };
 
   members.forEach((member) => {
-    if (member.userID !== user?.member.userID) {
-      countries.push(constructTableData(member));
-    }
+    allCountries.push(constructTableData(member));
   });
-  countries.sort((x, y) => x.countryID - y.countryID);
+  allCountries.sort(
+    (x, y) => getCountrySortIdx(x.countryID) - getCountrySortIdx(y.countryID),
+  );
 
   const userTableData = user ? constructTableData(user.member) : null;
 
@@ -146,9 +158,11 @@ const WDUI: React.FC = function (): React.ReactElement {
     >
       <WDFullModal
         alternatives={alternatives}
-        countries={countries}
+        allCountries={allCountries}
         excusedMissedTurns={excusedMissedTurns}
         gameID={gameID}
+        maps={maps}
+        orders={orders}
         phase={phase}
         potNumber={pot}
         season={season}

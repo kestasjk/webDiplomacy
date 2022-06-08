@@ -9,13 +9,13 @@ import { CountryTableData } from "../../interfaces/CountryTableData";
 interface WDMessageProps {
   message: GameMessage;
   userCountry: CountryTableData | null;
-  countries: CountryTableData[];
+  allCountries: CountryTableData[];
 }
 
 const WDMessage: React.FC<WDMessageProps> = function ({
   message,
   userCountry,
-  countries,
+  allCountries,
 }): React.ReactElement {
   const padding = "10px";
   const margin = "6px";
@@ -28,7 +28,7 @@ const WDMessage: React.FC<WDMessageProps> = function ({
     device === Device.MOBILE;
 
   const getCountry = (countryID: number) =>
-    countries.find((cand) => cand.countryID === countryID);
+    allCountries.find((cand) => cand.countryID === countryID);
   const fromCountry = getCountry(message.fromCountryID);
   const msgWidth = mobileLandscapeLayout ? "170px" : "250px";
   const justify =

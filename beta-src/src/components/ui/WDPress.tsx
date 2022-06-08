@@ -26,13 +26,13 @@ import { store } from "../../state/store";
 interface WDPressProps {
   children: React.ReactNode;
   userCountry: CountryTableData | null;
-  countries: CountryTableData[];
+  allCountries: CountryTableData[];
 }
 
 const WDPress: React.FC<WDPressProps> = function ({
   children,
   userCountry,
-  countries,
+  allCountries,
 }): React.ReactElement {
   const [viewport] = useViewport();
   const device = getDevice(viewport);
@@ -121,7 +121,8 @@ const WDPress: React.FC<WDPressProps> = function ({
     );
   };
 
-  let countryButtons = countries
+  let countryButtons = allCountries
+    .filter((country) => country.countryID !== userCountry?.countryID)
     .sort((a, b) => a.countryID - b.countryID)
     .map(makeCountryButton);
   const allButton = makeCountryButton({
@@ -131,10 +132,6 @@ const WDPress: React.FC<WDPressProps> = function ({
   });
   countryButtons = userCountry ? [allButton, ...countryButtons] : [allButton];
 
-  const countriesForMessageList = [...countries];
-  if (userCountry) {
-    countriesForMessageList.push(userCountry);
-  }
   const canMsg =
     pressType === "Regular" ||
     (pressType === "PublicPressOnly" && countryIDSelected === 0) ||
@@ -160,7 +157,7 @@ const WDPress: React.FC<WDPressProps> = function ({
       </Stack>
       <WDMessageList
         messages={messages}
-        countries={countriesForMessageList}
+        allCountries={allCountries}
         userCountry={userCountry}
         countryIDSelected={countryIDSelected}
         messagesEndRef={messagesEndRef}
