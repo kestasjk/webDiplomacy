@@ -37,10 +37,12 @@ const WDMain: React.FC = function (): React.ReactElement {
   const maps = useAppSelector(gameMaps);
 
   const updateForPhase = () => {
+    // Only do live viewing if game is not over and not spectating
+    const isPlayingGame = status.status === "Playing" && !!overview.user;
     if (
       viewedPhaseState.viewedPhaseIdx >= status.phases.length - 1 &&
-      status.status === "Playing" && // only live viewing if game not over
-      overview.user // only do live viewing if non-spectating
+      isPlayingGame &&
+      overview.user
     ) {
       // Convert from our internal order representation to webdip's
       // historical representation of orders so that we draw
@@ -183,7 +185,7 @@ const WDMain: React.FC = function (): React.ReactElement {
         units,
         orders: ordersHistorical,
         centersByProvince,
-        isLatestPhase: true,
+        isLivePhase: true,
       };
     }
 
@@ -194,7 +196,7 @@ const WDMain: React.FC = function (): React.ReactElement {
         units: [],
         orders: [],
         centersByProvince: {},
-        isLatestPhase: true,
+        isLivePhase: isPlayingGame,
       };
     }
 
@@ -224,10 +226,10 @@ const WDMain: React.FC = function (): React.ReactElement {
       units: unitsLive,
       orders: phaseHistorical.orders,
       centersByProvince,
-      isLatestPhase: false,
+      isLivePhase: false,
     };
   };
-  const { phase, units, orders, centersByProvince, isLatestPhase } =
+  const { phase, units, orders, centersByProvince, isLivePhase } =
     updateForPhase();
   const { territories } = data.data;
 
@@ -240,12 +242,21 @@ const WDMain: React.FC = function (): React.ReactElement {
     const standoffsByProvince: { [key: string]: StandoffInfo } = {};
     prevPhase.orders.forEach((order) => {
       if (order.type === "Move" && order.toTerrID) {
+        const provID = maps.terrIDToProvinceID[order.toTerrID];
         const province = maps.terrIDToProvince[order.toTerrID];
         if (!provincesWithUnits.has(province)) {
+          // FIXME: This logic is wrong because a unit might fail to move
+          // due to it being a convoy and the convoying fleet being dislodged!
+          // Rarely, this may cause us to graphically indicate a standoff on historical
+          // phases, when actually there was none.
+          // Probably the way to fix this is to get the API to give us the historical
+          // standoff status of different provinces - right now, it does NOT do so.
+          //
           // If we have a move order to a province but that province has no units now
           // then it's a standoff
           if (!standoffsByProvince[province]) {
             standoffsByProvince[province] = {
+              provID,
               province,
               attemptedMoves: [],
             };
@@ -258,6 +269,29 @@ const WDMain: React.FC = function (): React.ReactElement {
       }
     });
     standoffs = Object.values(standoffsByProvince);
+
+    // FIXME: Messy. After-the-fact, do some filtering of the standoffs to remove
+    // some (but not all) of the above false positives. In particular, live phases
+    // should always be correct, but historical phases that have two units that both
+    // move to the same location via convoy where their convoy fails due to the intervening
+    // fleets being dislodged will incorrectly depict a standoff there.
+    if (isLivePhase) {
+      const territoryStatusesByProvID = Object.fromEntries(
+        data.data.territoryStatuses.map((territoryStatus) => [
+          territoryStatus.id,
+          territoryStatus,
+        ]),
+      );
+      standoffs = standoffs.filter(
+        (standoff) =>
+          standoff.attemptedMoves.length >= 2 &&
+          territoryStatusesByProvID[standoff.provID].standoff,
+      );
+    } else {
+      standoffs = standoffs.filter(
+        (standoff) => standoff.attemptedMoves.length >= 2,
+      );
+    }
   }
 
   return (
@@ -271,7 +305,7 @@ const WDMain: React.FC = function (): React.ReactElement {
           territories={territories}
           centersByProvince={centersByProvince}
           standoffs={standoffs}
-          isLatestPhase={isLatestPhase}
+          isLivePhase={isLivePhase}
         />
         <WDUI orders={orders} />
       </WDMainController>

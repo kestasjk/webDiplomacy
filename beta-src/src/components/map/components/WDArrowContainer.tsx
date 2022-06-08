@@ -24,6 +24,8 @@ import Territory from "../../../enums/map/variants/classic/Territory";
 
 // Indicates that we should draw this Province as having a standoff.
 export interface StandoffInfo {
+  // The webdip province ID of the standoff
+  provID: string;
   // The province of the standoff
   province: Province;
   // The source and destination of moves that caused the standoff
