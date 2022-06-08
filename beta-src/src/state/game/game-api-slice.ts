@@ -299,9 +299,6 @@ const gameApiSlice = createSlice({
           state.activeGames = action.payload.games;
         }
       })
-      .addCase(fetchPlayerActiveGames.rejected, (state, action) => {
-        console.log({ action });
-      })
       // saveOrders
       .addCase(saveOrders.fulfilled, saveOrdersFulfilled)
       // Send message

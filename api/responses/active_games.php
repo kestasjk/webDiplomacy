@@ -76,7 +76,7 @@ class ActiveGames {
                 'gameID' => intval($row['gameID']),
                 'countryID' => intval($row['countryID']),
                 'orderStatus' => $row['orderStatus'],
-                'newMessagesFrom' => array_map('intval', explode(',', $row['newMessagesFrom'])),
+                'newMessagesFrom' => (strlen($row['newMessagesFrom']) ? array_map('intval', explode(',', $row['newMessagesFrom'])) : array()),
                 'unitNo' => intval($row['unitNo']),
                 'name' => $row['name'],
                 'turn' => intval($row['turn']),

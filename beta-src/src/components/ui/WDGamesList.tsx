@@ -27,10 +27,7 @@ import {
   playerActiveGames,
 } from "../../state/game/game-api-slice";
 import WDVerticalScroll from "./WDVerticalScroll";
-import {
-  formatPSYForDisplay,
-  formatPSYForDisplayShort,
-} from "../../utils/formatPhaseForDisplay";
+import { formatPSYForDisplay } from "../../utils/formatPhaseForDisplay";
 import { getPhaseSeasonYear } from "../../utils/state/getPhaseSeasonYear";
 import WDOrderStatusIcon from "./WDOrderStatusIcon";
 import getOrderStates from "../../utils/state/getOrderStates";
@@ -47,6 +44,8 @@ const WDGamesList: React.FC = function (): React.ReactElement {
     overview.members.map((m) => [m.countryID, m.country]),
   );
 
+  const SBox = styled(Box)(() => ({ padding: "2px", fontWeight: 700 }));
+
   return (
     <WDVerticalScroll>
       <Stack sx={{ alignItems: "center" }}>
@@ -62,7 +61,7 @@ const WDGamesList: React.FC = function (): React.ReactElement {
               }}
               href={`?gameID=${game.gameID}`}
             >
-              <Box
+              <SBox
                 sx={{
                   display: "grid",
                   gridTemplateRows: "auto",
@@ -71,22 +70,17 @@ const WDGamesList: React.FC = function (): React.ReactElement {
                 }}
               >
                 <Stack sx={{ gridColumn: 1, gridRow: 1 }}>
-                  <Box
-                    className="game-button"
+                  <SBox
                     sx={{
                       fontSize: "16px",
-                      fontWeight: 700,
-                      lineHeight: "19px",
                     }}
                   >
                     {game.name}
-                  </Box>
-                  <Box
-                    className="game-button"
+                  </SBox>
+                  <SBox
                     sx={{
                       fontWeight: 400,
                       fontSize: "11px",
-                      lineHeight: "13px",
                     }}
                   >
                     {formatPSYForDisplay(
@@ -94,87 +88,60 @@ const WDGamesList: React.FC = function (): React.ReactElement {
                     )}
                     <br />
                     <span
-                      className="game-button"
                       style={{
                         color: theme.palette[countries[game.countryID]].main,
-                        fontWeight: 700,
                         fontSize: "11px",
+                        fontWeight: 700,
                         padding: 0,
                       }}
                     >
                       {countries[game.countryID]}
                     </span>{" "}
                     - {game.unitNo} units
-                  </Box>
+                  </SBox>
                 </Stack>
                 <Stack sx={{ gridColumn: 2, gridRow: 1 }}>
-                  <Box
+                  <SBox
                     sx={{
-                      fontWeight: 700,
                       fontSize: "14px",
-                      lineHeight: "16px",
                       textAlign: "right",
                     }}
-                    className="game-button"
                   >
                     {getFormattedTimeLeft(game.processTime).replace(
                       " remaining",
                       "",
                     )}
-                  </Box>
-                  <Box
+                  </SBox>
+                  <SBox
                     component="span"
                     sx={{
-                      fontWeight: 700,
                       fontSize: "10px",
-                      lineHeight: "12px",
                       textAlign: "right",
                       verticalAlign: "middle",
                     }}
-                    className="game-button"
                   >
-                    {game.newMessagesFrom.length && (
+                    {!!game.newMessagesFrom.length && (
                       <Email
                         fontSize="small"
                         sx={{
                           verticalAlign: "middle",
-                          color: "#66C",
+                          color: "#88A",
                           m: "3px",
                         }}
                       />
                     )}
-                    <Box
+                    <SBox
                       component="span"
                       sx={{ verticalAlign: "middle", m: "3px" }}
                     >
                       <WDOrderStatusIcon
                         orderStatus={getOrderStates(game.orderStatus)}
                       />
-                    </Box>
-                  </Box>
+                    </SBox>
+                  </SBox>
                 </Stack>
-              </Box>
+              </SBox>
             </Button>
-            // <TableRow key={game.name}>
-            //   <WDTableCell>
-            //     <Link href={`beta?gameID=${game.gameID}`}>{game.name}</Link>
-            //   </WDTableCell>
-            //   <WDTableCell>
-            //     {getCountryNameFromID(game.countryID)
-            //       .substring(0, 3)
-            //       .toUpperCase()}
-            //   </WDTableCell>
-            //   <WDTableCell>
-            //     {formatPSYForDisplayShort(
-            //       getPhaseSeasonYear(game.turn, game.phase),
-            //     )}
-            //   </WDTableCell>
-            //   <WDTableCell>
-            //     <WDOrderStatusIcon
-            //       orderStatus={getOrderStates(game.orderStatus)}
-            //     />
-            //   </WDTableCell>
-            // </TableRow>
           ))}
       </Stack>
     </WDVerticalScroll>
