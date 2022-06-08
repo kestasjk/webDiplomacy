@@ -188,7 +188,6 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
     });
 
   const playableProvinceOverlays = playableProvincesData.map((data) => {
-    const highlightChoice = provincesToChooseSet.has(data.province);
     return (
       <WDProvinceOverlay
         provinceMapData={data}
