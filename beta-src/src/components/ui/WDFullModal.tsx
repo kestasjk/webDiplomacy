@@ -15,6 +15,7 @@ import WDTabPanel from "./WDTabPanel";
 import WDOrdersPanel from "./WDOrdersPanel";
 import { IOrderDataHistorical } from "../../models/Interfaces";
 import GameStateMaps from "../../state/interfaces/GameStateMaps";
+import { Unit } from "../../utils/map/getUnits";
 
 interface WDFullModalProps {
   alternatives: GameOverviewResponse["alternatives"];
@@ -28,6 +29,7 @@ interface WDFullModalProps {
   gameID: GameOverviewResponse["gameID"];
   season: GameOverviewResponse["season"];
   title: GameOverviewResponse["name"];
+  units: Unit[];
   userCountry: CountryTableData | null;
   year: GameOverviewResponse["year"];
   modalRef: React.RefObject<HTMLElement>;
@@ -51,6 +53,7 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
   potNumber,
   season,
   title,
+  units,
   userCountry,
   year,
   modalRef,
@@ -108,6 +111,7 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
         <WDTabPanel currentTab={ModalViews.ORDERS} currentView={view}>
           <WDOrdersPanel
             orders={orders}
+            units={units}
             allCountries={allCountries}
             maps={maps}
           />
