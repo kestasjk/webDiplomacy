@@ -56,7 +56,7 @@ export const fetchGameOverview = createAsyncThunk(
 
 export const fetchGameStatus = createAsyncThunk(
   ApiRoute.GAME_STATUS,
-  async (queryParams: { countryID: string; gameID: string }) => {
+  async (queryParams: { countryID?: string; gameID: string }) => {
     const { data } = await getGameApiRequest(ApiRoute.GAME_STATUS, queryParams);
     // console.log("fetchGameStatus");
     // console.log(data);
@@ -68,11 +68,7 @@ export const fetchGameMessages = createAsyncThunk(
   ApiRoute.GAME_MESSAGES,
   async (queryParams: {
     gameID: string;
-    countryID: string;
-    toCountryID?: string;
-    offset?: string;
-    limit?: string;
-    allMessages?: string;
+    countryID?: string;
     sinceTime?: string;
   }) => {
     const {
@@ -161,37 +157,30 @@ export const saveOrders = createAsyncThunk(
 );
 
 export const loadGameData =
-  (gameID: string, countryID: string) => async (dispatch) => {
-    // console.log("loadGameData");
+  (gameID: string, countryID?: string) => async (dispatch) => {
     await Promise.all([
       dispatch(fetchGameData({ gameID, countryID })),
-      // dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
       dispatch(fetchGameStatus({ gameID, countryID })),
     ]);
   };
 
 export const loadGame = (gameID: string) => async (dispatch) => {
-  // console.log("loadGame");
-  const {
-    payload: {
-      user: {
-        member: { countryID },
-      },
-      phase,
-    },
-  } = await dispatch(
+  const response = await dispatch(
     fetchGameOverview({
       gameID,
     }),
   );
+  const countryID = response.payload.user?.member.countryID;
+  const { phase } = response.payload;
   if (phase === "Pre-game") {
     return;
   }
-  await Promise.all([
+  const dispatches = [
     dispatch(fetchGameData({ gameID, countryID })),
-    dispatch(fetchGameMessages({ gameID, countryID, allMessages: "true" })),
     dispatch(fetchGameStatus({ gameID, countryID })),
-  ]);
+    dispatch(fetchGameMessages({ gameID, countryID })),
+  ];
+  await Promise.all(dispatches);
 };
 
 /**
@@ -256,13 +245,13 @@ const gameApiSlice = createSlice({
     },
     toggleVoteState(state, action) {
       const voteKey: string = action.payload;
-      let votes = current(state.overview.user.member.votes) as string[];
+      let votes = current(state.overview.user!.member.votes);
       if (votes.includes(voteKey)) {
         votes = votes.filter((vote) => vote !== voteKey);
       } else {
         votes = [...votes, voteKey];
       }
-      state.overview.user.member.votes = votes;
+      state.overview.user!.member.votes = votes;
     },
   },
   extraReducers(builder) {
@@ -274,6 +263,7 @@ const gameApiSlice = createSlice({
       })
       .addCase(fetchGameData.fulfilled, fetchGameDataFulfilled)
       .addCase(fetchGameData.rejected, (state, action) => {
+        // console.log("fetchGameData rejected!");
         state.apiStatus = "failed";
         state.error = action.error.message;
       })

@@ -18,7 +18,7 @@ interface WDInfoPanelProps {
   allCountries: CountryTableData[];
   gameID: GameOverviewResponse["gameID"];
   maxDelays: GameOverviewResponse["excusedMissedTurns"];
-  userCountry: CountryTableData;
+  userCountry: CountryTableData | null;
 }
 
 const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
@@ -33,13 +33,15 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
 
   const toggleVote = (voteKey: Vote) => {
     dispatch(gameApiSliceActions.toggleVoteState(voteKey));
-    dispatch(
-      toggleVoteStatus({
-        countryID: String(userCountry.countryID),
-        gameID: String(gameID),
-        vote: voteKey,
-      }),
-    );
+    if (userCountry) {
+      dispatch(
+        toggleVoteStatus({
+          countryID: String(userCountry.countryID),
+          gameID: String(gameID),
+          vote: voteKey,
+        }),
+      );
+    }
   };
   const mobileLandscapeLayout =
     device === Device.MOBILE_LANDSCAPE ||
@@ -50,9 +52,14 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
 
   return (
     <Box>
-      <Box sx={{ p: padding }}>
-        <WDVoteButtons toggleVote={toggleVote} voteState={userCountry.votes} />
-      </Box>
+      {userCountry && (
+        <Box sx={{ p: padding }}>
+          <WDVoteButtons
+            toggleVote={toggleVote}
+            voteState={userCountry.votes}
+          />
+        </Box>
+      )}
       <Box
         sx={{
           m: "20px 5px 10px 0",

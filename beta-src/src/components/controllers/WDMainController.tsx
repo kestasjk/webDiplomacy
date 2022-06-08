@@ -27,11 +27,11 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   const status = useAppSelector(gameStatus);
   const viewedPhaseState = useAppSelector(gameViewedPhase);
 
-  const { countryID } = overview.user.member;
+  const countryID = overview.user?.member.countryID;
 
   const overviewKey = getPhaseKey(overview, "<BAD OVERVIEW_KEY>");
   const statusKey = getPhaseKey(status, "<BAD STATUS_KEY>");
-  const dataKey = getPhaseKey(data.contextVars?.context, "<BAD DATA_KEY>");
+  const dataKey = getPhaseKey(data, "<BAD DATA_KEY>");
 
   const dispatchFetchOverview = () => {
     const { game } = store.getState();
@@ -56,7 +56,12 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
 
   if (needsGameData && !noPhase) {
     dispatch(gameApiSliceActions.setNeedsGameData(false));
-    dispatch(loadGameData(String(overview.gameID), String(countryID)));
+    dispatch(
+      loadGameData(
+        String(overview.gameID),
+        countryID ? String(countryID) : undefined, // keep undefined when converting
+      ),
+    );
   }
 
   const { name, gameID } = overview;

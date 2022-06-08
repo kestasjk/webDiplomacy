@@ -91,7 +91,7 @@ const WDUI: React.FC<WDUIProps> = function ({ orders }): React.ReactElement {
   const allCountries: CountryTableData[] = [];
   const getCountrySortIdx = function (countryID: number) {
     // Sort user country to the front
-    if (countryID === user.member.countryID) return -1;
+    if (countryID === user?.member.countryID) return -1;
     return countryID;
   };
 
@@ -102,7 +102,7 @@ const WDUI: React.FC<WDUIProps> = function ({ orders }): React.ReactElement {
     (x, y) => getCountrySortIdx(x.countryID) - getCountrySortIdx(y.countryID),
   );
 
-  const userTableData = constructTableData(user.member);
+  const userTableData = user ? constructTableData(user.member) : null;
 
   const closeControlModal = () => {
     setShowControlModal(false);
@@ -135,13 +135,12 @@ const WDUI: React.FC<WDUIProps> = function ({ orders }): React.ReactElement {
   const dispatch = useAppDispatch();
   const dispatchFetchMessages = () => {
     const { game } = store.getState();
-    const { outstandingMessageRequests, overview } = game;
-    if (!outstandingMessageRequests && overview.phase !== "Pre-game") {
+    const { outstandingMessageRequests } = game;
+    if (!outstandingMessageRequests && phase !== "Pre-game") {
       dispatch(
         fetchGameMessages({
           gameID: String(gameID),
-          countryID: String(userTableData.countryID),
-          allMessages: "true",
+          countryID: user ? String(user.member.countryID) : undefined,
           sinceTime: String(game.messages.time),
         }),
       );
@@ -199,34 +198,38 @@ const WDUI: React.FC<WDUIProps> = function ({ orders }): React.ReactElement {
             controlModalTrigger
           )}
         </Box>
-        <Box
-          component="div"
-          sx={{
-            display: "block",
-            p: 1,
-            mt: 2,
-            bgcolor: theme.palette[user.member.country]?.light,
-            color: "black",
-            border: "1px solid",
-            borderColor: "grey.300",
-            borderRadius: 2,
-            fontSize: "0.875rem",
-            fontWeight: "700",
-            userSelect: "none",
-          }}
-          title={`Currently playing as ${user.member.country}`}
-        >
-          {abbrMap[user.member.country]}
-        </Box>
+        {user && (
+          <Box
+            component="div"
+            sx={{
+              display: "block",
+              p: 1,
+              mt: 2,
+              bgcolor: theme.palette[user.member.country]?.light,
+              color: "black",
+              border: "1px solid",
+              borderColor: "grey.300",
+              borderRadius: 2,
+              fontSize: "0.875rem",
+              fontWeight: "700",
+              userSelect: "none",
+            }}
+            title={`Currently playing as ${user.member.country}`}
+          >
+            {abbrMap[user.member.country]}
+          </Box>
+        )}
         <WDBuildCounts />
         {popover}
       </WDPositionContainer>
       <WDPositionContainer position={Position.TOP_LEFT}>
         <WDPhaseUI />
       </WDPositionContainer>
-      <WDPositionContainer position={Position.BOTTOM_RIGHT}>
-        <WDMoveControls />
-      </WDPositionContainer>
+      {user && (
+        <WDPositionContainer position={Position.BOTTOM_RIGHT}>
+          <WDMoveControls orderStatus={user.member.orderStatus} />
+        </WDPositionContainer>
+      )}
     </>
   );
 };

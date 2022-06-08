@@ -10,7 +10,6 @@ export default function fetchGameStatusFulfilled(
 ): void {
   // console.log("fetchGameStatusFulfilled");
   state.apiStatus = "succeeded";
-
   // If this is the initial update, then jump to the most recent state upon load
   if (state.status.phases.length <= 0 && action.payload.phases.length > 0) {
     state.viewedPhaseState.viewedPhaseIdx = action.payload.phases.length - 1;

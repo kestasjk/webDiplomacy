@@ -23,7 +23,7 @@ const WDBuildCounts: React.FC = function (): React.ReactElement {
 
   const isCurrent = viewedPhaseIdx >= phases.length - 1;
   if (phase !== "Builds" || !isCurrent) return <Box />;
-  const extraSCs = user.member.supplyCenterNo - user.member.unitNo;
+  const extraSCs = user ? user.member.supplyCenterNo - user.member.unitNo : 0;
   const numBuildOrders = Object.values(ordersMeta).filter((o) =>
     o.update?.type.startsWith("Build"),
   ).length;

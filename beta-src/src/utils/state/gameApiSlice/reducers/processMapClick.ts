@@ -90,14 +90,17 @@ export default function processMapClick(
   // ---------------------- PREPARATION ---------------------------
 
   const {
-    user: { member },
-    phase,
-  } = overview;
-  const { orderStatus } = member;
-
-  const {
     payload: { evt, clickProvince },
   } = clickData;
+
+  if (!overview.user) {
+    invalidClick(evt, clickProvince);
+    return;
+  }
+  const { phase } = overview;
+  const { member } = overview.user!;
+  const { orderStatus } = member;
+
   if (viewedPhaseState.viewedPhaseIdx < status.phases.length - 1) {
     setAlert(
       state.alert,

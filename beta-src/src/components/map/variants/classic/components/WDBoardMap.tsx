@@ -42,11 +42,12 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
   const curOrder: OrderState = useAppSelector(gameOrder);
   const legalOrders: LegalOrders = useAppSelector(gameLegalOrders);
 
-  const { user, members } = useAppSelector(gameOverview);
+  const overview = useAppSelector(gameOverview);
+  const { members, user } = overview;
 
   let provincesToHighlight: Province[] = [];
   let provincesToChoose: Province[] = [];
-  if (isLatestPhase) {
+  if (isLatestPhase && user) {
     if (phase === "Diplomacy") {
       if (!curOrder.inProgress) {
         provincesToHighlight = [];
@@ -144,7 +145,7 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
         <WDProvince
           provinceMapData={data}
           ownerCountryID={centersByProvince[data.province]?.ownerCountryID}
-          playerCountryID={user.member.countryID}
+          playerCountryID={user?.member.countryID}
           highlightSelection={false}
           key={`${data.province}-province`}
         />
@@ -167,7 +168,7 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
       <WDProvince
         provinceMapData={data}
         ownerCountryID={centersByProvince[data.province]?.ownerCountryID}
-        playerCountryID={user.member.countryID}
+        playerCountryID={user?.member.countryID}
         highlightSelection={highlightSelection}
         key={`${data.province}-province`}
       />

@@ -38,7 +38,8 @@ const WDMain: React.FC = function (): React.ReactElement {
   const updateForPhase = () => {
     if (
       viewedPhaseState.viewedPhaseIdx >= status.phases.length - 1 &&
-      status.status === "Playing"
+      status.status === "Playing" && // only live viewing if game not over
+      overview.user // only do live viewing if non-spectating
     ) {
       // Convert from our internal order representation to webdip's
       // historical representation of orders so that we draw

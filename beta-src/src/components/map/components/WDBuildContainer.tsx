@@ -45,7 +45,9 @@ const WDBuildContainer: React.FC = function (): React.ReactElement {
     dispatch(gameApiSliceActions.resetOrder());
   };
   const order = useAppSelector(gameOrder);
-  const userMember = useAppSelector((state) => state.game.overview.user.member);
+  const userMember = useAppSelector(
+    (state) => state.game.overview.user!.member,
+  );
   if (!order || order.type !== "Build") {
     return <Box />;
   }
