@@ -203,7 +203,7 @@ const WDMain: React.FC = function (): React.ReactElement {
       viewedPhaseState.viewedPhaseIdx > 0
         ? status.phases[viewedPhaseState.viewedPhaseIdx - 1].orders
         : [];
-    const unitsLive = getUnitsHistorical(
+    const units = getUnitsHistorical(
       data.data.territories,
       unitsHistorical,
       overview.members,
@@ -219,10 +219,26 @@ const WDMain: React.FC = function (): React.ReactElement {
         ownerCountryID: iCenter.countryID.toString(),
       };
     });
+    // On historical build phases, the API doesn't report the unit type of
+    // destroyed units! So we manually fill those in ourselves
+    let { orders } = phaseHistorical;
+    if (phaseHistorical.phase === "Builds") {
+      orders = orders.map((order) => {
+        if (order.type !== "Destroy") return order;
+        const foundUnit = units.find(
+          (unit) =>
+            unit.mappedTerritory.province ===
+            maps.terrIDToProvince[order.terrID],
+        );
+        if (!foundUnit) return order;
+        return { ...order, unitType: foundUnit.unit.type };
+      });
+    }
+
     return {
       phase: phaseHistorical.phase as string,
-      units: unitsLive,
-      orders: phaseHistorical.orders,
+      units,
+      orders,
       centersByProvince,
       isLatestPhase: false,
     };

@@ -114,50 +114,53 @@ const WDOrdersPanel: React.FC<WDOrdersPanelProps> = function ({
     } else if (order.type === "Build Fleet" && terrStr) {
       orderStrings.push(`Build F ${terrStr}`);
     } else if (uType && provStr) {
-      orderStrings.push(`${uType} ${provStr} order unknown/unassigned`);
+      orderStrings.push(`${uType} ${provStr} order unassigned`);
     }
   });
-  // console.log({ orders, orderStringsByCountryID });
+  console.log({ orders, orderStringsByCountryID });
 
   return (
     <WDVerticalScroll>
       <Table aria-label="country info table" size="small" stickyHeader>
         <TableBody>
-          {allCountries.map((country) => (
-            <React.Fragment key={country.power}>
-              <TableRow key="orderlabel">
-                <TableCell
-                  align="left"
-                  sx={{
-                    borderBottom: "none",
-                    paddingTop: "14px",
-                    paddingBottom: "2px",
-                  }}
-                >
-                  <span style={{ color: country.color, fontWeight: 700 }}>
-                    {country.power.toUpperCase()}
-                  </span>
-                </TableCell>
-              </TableRow>
-              {orderStringsByCountryID[country.countryID]?.map(
-                (orderString) => (
-                  <TableRow key={`order-${orderString}`}>
+          {allCountries.map(
+            (country) =>
+              orderStringsByCountryID[country.countryID] && (
+                <React.Fragment key={country.power}>
+                  <TableRow key="orderlabel">
                     <TableCell
+                      align="left"
                       sx={{
-                        paddingTop: "0px !important",
-                        fontSize: "10pt",
-                        fontFamily: "Roboto",
                         borderBottom: "none",
+                        paddingTop: "14px",
                         paddingBottom: "2px",
                       }}
                     >
-                      {orderString}
+                      <span style={{ color: country.color, fontWeight: 700 }}>
+                        {country.power.toUpperCase()}
+                      </span>
                     </TableCell>
                   </TableRow>
-                ),
-              )}
-            </React.Fragment>
-          ))}
+                  {orderStringsByCountryID[country.countryID]?.map(
+                    (orderString) => (
+                      <TableRow key={`order-${orderString}`}>
+                        <TableCell
+                          sx={{
+                            paddingTop: "0px !important",
+                            fontSize: "10pt",
+                            fontFamily: "Roboto",
+                            borderBottom: "none",
+                            paddingBottom: "2px",
+                          }}
+                        >
+                          {orderString}
+                        </TableCell>
+                      </TableRow>
+                    ),
+                  )}
+                </React.Fragment>
+              ),
+          )}
         </TableBody>
       </Table>
     </WDVerticalScroll>
