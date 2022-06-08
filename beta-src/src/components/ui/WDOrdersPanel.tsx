@@ -1,26 +1,10 @@
 import * as React from "react";
-import {
-  Box,
-  Chip,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  tableCellClasses,
-  useTheme,
-} from "@mui/material";
-import Device from "../../enums/Device";
-import WDCountryTable from "./WDCountryTable";
+import { Table, TableBody, TableCell, TableRow } from "@mui/material";
 import { CountryTableData } from "../../interfaces/CountryTableData";
-import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
-import useViewport from "../../hooks/useViewport";
-import getDevice from "../../utils/getDevice";
 import { IOrderDataHistorical } from "../../models/Interfaces";
 import GameStateMaps from "../../state/interfaces/GameStateMaps";
-import TerritoryMap, {
-  territoryToWebdipName,
-} from "../../data/map/variants/classic/TerritoryMap";
+import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
+import WDVerticalScroll from "./WDVerticalScroll";
 
 interface WDOrdersPanelProps {
   orders: IOrderDataHistorical[];
@@ -136,7 +120,7 @@ const WDOrdersPanel: React.FC<WDOrdersPanelProps> = function ({
   // console.log({ orders, orderStringsByCountryID });
 
   return (
-    <div>
+    <WDVerticalScroll>
       <Table aria-label="country info table" size="small" stickyHeader>
         <TableBody>
           {allCountries.map((country) => (
@@ -176,7 +160,7 @@ const WDOrdersPanel: React.FC<WDOrdersPanelProps> = function ({
           ))}
         </TableBody>
       </Table>
-    </div>
+    </WDVerticalScroll>
   );
 };
 
