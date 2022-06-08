@@ -18,7 +18,6 @@ import { TerritoryMeta } from "../../../../state/interfaces/TerritoriesState";
 import { getTargetXYWH } from "../../../map/drawArrowFunctional";
 import invalidClick from "../../../map/invalidClick";
 import getAvailableOrder from "../../getAvailableOrder";
-import getOrderStates from "../../getOrderStates";
 import resetOrder from "../../resetOrder";
 import startNewOrder from "../../startNewOrder";
 import updateOrder from "../../updateOrder";

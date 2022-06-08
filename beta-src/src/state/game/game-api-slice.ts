@@ -28,7 +28,11 @@ import fetchGameDataFulfilled from "../../utils/state/gameApiSlice/extraReducers
 import TerritoriesMeta from "../interfaces/TerritoriesState";
 import fetchGameOverviewFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameOverview/fulfilled";
 import fetchGameStatusFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameStatus/fulfilled";
-import saveOrdersFulfilled from "../../utils/state/gameApiSlice/extraReducers/saveOrders/fulfilled";
+import {
+  saveOrdersPending,
+  saveOrdersFulfilled,
+  saveOrdersRejected,
+} from "../../utils/state/gameApiSlice/extraReducers/saveOrders/fulfilled";
 import shallowArraysEqual from "../../utils/shallowArraysEqual";
 import { setAlert } from "../interfaces/GameAlert";
 
@@ -129,29 +133,44 @@ export const markMessagesSeen = createAsyncThunk(
 
 export const saveOrders = createAsyncThunk(
   "game/submitOrders",
-  async (data: OrderSubmission) => {
+  async (data: OrderSubmission, thunkAPI) => {
     const formData = new FormData();
     formData.set("orderUpdates", JSON.stringify(data.orderUpdates));
     formData.set("context", data.context);
     formData.set("contextKey", data.contextKey);
-    const response = await submitOrders(formData, data.queryParams);
+    let response;
+    try {
+      response = await submitOrders(formData, data.queryParams);
+    } catch (e) {
+      console.log("Exception submitting orders");
+      console.log(e);
+      const result: SavedOrdersConfirmation = {
+        invalid: true,
+        notice:
+          "Error saving orders, no server response or network connection timed out",
+        orders: {},
+      };
+      return thunkAPI.rejectWithValue(result);
+    }
     // console.log({ response });
     // Sometimes webdip sends back a response that doesn't have the "x-json" header at all,
     // instead it has an HTML page displaying an error message.
     // We're of course not going to try to render a whole HTML page, so instead we simply
     // manually construct an error message.
     const confirmation: string = response.headers["x-json"];
-    let parsed: SavedOrdersConfirmation;
     if (!confirmation) {
-      parsed = {
+      const result: SavedOrdersConfirmation = {
         invalid: true,
         notice:
           "Error saving orders, no server response or game already advanced to next phase",
         orders: {},
       };
-    } else {
-      parsed = JSON.parse(confirmation.substring(1, confirmation.length - 1));
+      return thunkAPI.rejectWithValue(result);
     }
+
+    const parsed: SavedOrdersConfirmation = JSON.parse(
+      confirmation.substring(1, confirmation.length - 1),
+    );
     return parsed;
   },
 );
@@ -288,7 +307,9 @@ const gameApiSlice = createSlice({
         state.error = action.error.message;
       })
       // saveOrders
+      .addCase(saveOrders.pending, saveOrdersPending)
       .addCase(saveOrders.fulfilled, saveOrdersFulfilled)
+      .addCase(saveOrders.rejected, saveOrdersRejected)
       // Send message
       .addCase(sendMessage.fulfilled, (state, action) => {
         if (action.payload) {

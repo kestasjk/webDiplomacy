@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Box } from "@mui/material";
 import {
+  gameOrdersMeta,
   gameOverview,
   gameStatus,
   gameViewedPhase,
@@ -29,8 +30,16 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
     gameStatusData,
     viewedPhaseIdx,
   );
+  const ordersMeta = useAppSelector(gameOrdersMeta);
+  const ordersMetaValues = Object.values(ordersMeta);
+  const ordersLength = ordersMetaValues.length;
+  const ordersSaved = ordersMetaValues.reduce(
+    (acc, meta) => acc + +meta.saved,
+    0,
+  );
   const animateForwardGlow =
-    latestPhaseViewed < gameStatusData.phases.length - 1;
+    latestPhaseViewed < gameStatusData.phases.length - 1 ||
+    ordersSaved !== ordersLength;
 
   return (
     <Box
