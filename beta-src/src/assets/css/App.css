@@ -14,3 +14,8 @@
   transition: opacity 0.5s ease-out;
   pointer-events: none;
 }
+
+.game-button {
+  padding: 2px;
+  fontstyle: "Roboto";
+}

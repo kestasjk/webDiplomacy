@@ -10,6 +10,8 @@ import {
   tableCellClasses,
   useTheme,
   Link,
+  Stack,
+  Button,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Device from "../../enums/Device";
@@ -21,7 +23,10 @@ import {
   playerActiveGames,
 } from "../../state/game/game-api-slice";
 import WDVerticalScroll from "./WDVerticalScroll";
-import { formatPSYForDisplayShort } from "../../utils/formatPhaseForDisplay";
+import {
+  formatPSYForDisplay,
+  formatPSYForDisplayShort,
+} from "../../utils/formatPhaseForDisplay";
 import { getPhaseSeasonYear } from "../../utils/state/getPhaseSeasonYear";
 import WDOrderStatusIcon from "./WDOrderStatusIcon";
 import getOrderStates from "../../utils/state/getOrderStates";
@@ -62,40 +67,59 @@ const WDGamesList: React.FC = function (): React.ReactElement {
   });
   return (
     <WDVerticalScroll>
-      <Table aria-label="country info table" size="small" stickyHeader>
-        <TableHead sx={{ height: "55px" }}>
-          <TableRow sx={{ verticalAlign: "top" }}>
-            <WDTableCell>Game</WDTableCell>
-            <WDTableCell>Power</WDTableCell>
-            <WDTableCell>Phase</WDTableCell>
-            <WDTableCell>Status</WDTableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {activeGames.map((game) => (
-            <TableRow key={game.name}>
-              <WDTableCell>
-                <Link href={`beta?gameID=${game.gameID}`}>{game.name}</Link>
-              </WDTableCell>
-              <WDTableCell>
-                {getCountryNameFromID(game.countryID)
-                  .substring(0, 3)
-                  .toUpperCase()}
-              </WDTableCell>
-              <WDTableCell>
-                {formatPSYForDisplayShort(
-                  getPhaseSeasonYear(game.turn, game.phase),
-                )}
-              </WDTableCell>
-              <WDTableCell>
-                <WDOrderStatusIcon
-                  orderStatus={getOrderStates(game.orderStatus)}
-                />
-              </WDTableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <Stack sx={{ align: "center" }}>
+        {activeGames.map((game) => (
+          <Button
+            key={game.gameID}
+            variant="outlined"
+            sx={{ align: "center", width: "90%", m: "6px" }}
+            href={`beta?gameID=${game.gameID}`}
+          >
+            <Stack direction="column" sx={{ m: "10px" }}>
+              <Stack direction="row">
+                <Stack sx={{ float: "left", left: "0px" }}>
+                  <Box className="game-button" sx={{ fontSize: "20px" }}>
+                    {game.name}
+                  </Box>
+                  <Box className="game-button" sx={{ fontSize: "12px" }}>
+                    {formatPSYForDisplay(
+                      getPhaseSeasonYear(game.turn, game.phase),
+                    )}
+                  </Box>
+                </Stack>
+                <Stack sx={{ float: "right" }}>
+                  <Box className="game-button">Top right 1</Box>
+                  <Box className="game-button">Top right 2</Box>
+                </Stack>
+              </Stack>
+              <Stack direction="row">
+                <Box className="game-button">FRA 2</Box>
+                <Box className="game-button">AUS 3</Box>
+              </Stack>
+            </Stack>
+          </Button>
+          // <TableRow key={game.name}>
+          //   <WDTableCell>
+          //     <Link href={`beta?gameID=${game.gameID}`}>{game.name}</Link>
+          //   </WDTableCell>
+          //   <WDTableCell>
+          //     {getCountryNameFromID(game.countryID)
+          //       .substring(0, 3)
+          //       .toUpperCase()}
+          //   </WDTableCell>
+          //   <WDTableCell>
+          //     {formatPSYForDisplayShort(
+          //       getPhaseSeasonYear(game.turn, game.phase),
+          //     )}
+          //   </WDTableCell>
+          //   <WDTableCell>
+          //     <WDOrderStatusIcon
+          //       orderStatus={getOrderStates(game.orderStatus)}
+          //     />
+          //   </WDTableCell>
+          // </TableRow>
+        ))}
+      </Stack>
     </WDVerticalScroll>
   );
 };
