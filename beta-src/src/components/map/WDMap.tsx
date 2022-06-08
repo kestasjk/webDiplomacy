@@ -91,6 +91,29 @@ const WDMap: React.ForwardRefExoticComponent<
         </pattern>
         {WDArrowMarkerDefs()}
 
+        <pattern
+          id="neutral-land-texture"
+          width="30"
+          height="10"
+          patternTransform="rotate(45 0 0)"
+          patternUnits="userSpaceOnUse"
+        >
+          <rect
+            x="0"
+            y="0"
+            width="30"
+            height="10"
+            style={{ fill: "#C5BFBE" }}
+          />
+          <line
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="10"
+            style={{ stroke: "#B5AFAE", strokeWidth: 30 }}
+          />
+        </pattern>
+
         <filter id="selectionGlow" height="120%" width="120%" x="-10%" y="-10%">
           <feMorphology
             operator="dilate"

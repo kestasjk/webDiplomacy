@@ -114,24 +114,24 @@ const countryPalette: CountryPaletteOptions = {
     light: "#FEC0C0",
   },
   England: {
-    main: "#E136EA",
-    light: "#F5BCF8",
+    main: "#F146FA",
+    light: "#F9C0FC",
   },
   Germany: {
-    main: "#F37C0E",
-    light: "#FBD3AF",
+    main: "#916620",
+    light: "#E3C5A7",
   },
   Russia: {
-    main: "#3F1BC1",
-    light: "#BFB3EA",
+    main: "#4B1BA2",
+    light: "#C5B3E5",
   },
   Italy: {
-    main: "#47D2A0",
-    light: "#C2F0DF",
+    main: "#47D290",
+    light: "#C2F0CF",
   },
   Turkey: {
-    main: "#F3C400",
-    light: "#FBEBAA",
+    main: "#F6C903",
+    light: "#FDEFAC",
   },
 };
 
