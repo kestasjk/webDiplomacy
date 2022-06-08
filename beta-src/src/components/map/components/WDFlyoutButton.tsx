@@ -37,7 +37,7 @@ const WDFlyoutButton: React.FC<WDOrderTypeButtonProps> = function ({
   const unitY =
     provinceMapData.y + provinceMapData.unitSlotsBySlotName[unitSlotName].y;
 
-  const fontSize = 24;
+  const fontSize = 28;
   const rw = 55 + fontSize * text.length * 0.4;
   const rh = 45 + fontSize;
   const rBorder = 35;
