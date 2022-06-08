@@ -21,12 +21,14 @@ import {
   gameOverview,
   fetchGameMessages,
   gameApiSliceActions,
+  gameMaps,
 } from "../../state/game/game-api-slice";
 import useInterval from "../../hooks/useInterval";
 import useOutsideAlerter from "../../hooks/useOutsideAlerter";
 import useViewport from "../../hooks/useViewport";
 import { store } from "../../state/store";
 import { MessageStatus } from "../../state/interfaces/GameMessages";
+import { IOrderDataHistorical } from "../../models/Interfaces";
 
 const abbrMap = {
   Russia: "RUS",
@@ -38,7 +40,11 @@ const abbrMap = {
   Turkey: "TUR",
 };
 
-const WDUI: React.FC = function (): React.ReactElement {
+interface WDUIProps {
+  orders: IOrderDataHistorical[];
+}
+
+const WDUI: React.FC<WDUIProps> = function ({ orders }): React.ReactElement {
   const theme = useTheme();
 
   const [showControlModal, setShowControlModal] = React.useState(false);
@@ -57,6 +63,7 @@ const WDUI: React.FC = function (): React.ReactElement {
     user,
     year,
   } = useAppSelector(gameOverview);
+  const maps = useAppSelector(gameMaps);
 
   // console.log("WDUI RENDERED");
 
@@ -81,16 +88,21 @@ const WDUI: React.FC = function (): React.ReactElement {
     };
   };
 
-  const countries: CountryTableData[] = [];
+  const allCountries: CountryTableData[] = [];
+  const getCountrySortIdx = function (countryID: number) {
+    // Sort user country to the front
+    if (countryID === user?.member.countryID) return -1;
+    return countryID;
+  };
 
   members.forEach((member) => {
-    if (member.userID !== user.member.userID) {
-      countries.push(constructTableData(member));
-    }
+    allCountries.push(constructTableData(member));
   });
-  countries.sort((x, y) => x.countryID - y.countryID);
+  allCountries.sort(
+    (x, y) => getCountrySortIdx(x.countryID) - getCountrySortIdx(y.countryID),
+  );
 
-  const userTableData = constructTableData(user.member);
+  const userTableData = user ? constructTableData(user.member) : null;
 
   const closeControlModal = () => {
     setShowControlModal(false);
@@ -123,13 +135,12 @@ const WDUI: React.FC = function (): React.ReactElement {
   const dispatch = useAppDispatch();
   const dispatchFetchMessages = () => {
     const { game } = store.getState();
-    const { outstandingMessageRequests, overview } = game;
-    if (!outstandingMessageRequests && overview.phase !== "Pre-game") {
+    const { outstandingMessageRequests } = game;
+    if (!outstandingMessageRequests && phase !== "Pre-game") {
       dispatch(
         fetchGameMessages({
           gameID: String(gameID),
-          countryID: String(userTableData.countryID),
-          allMessages: "true",
+          countryID: user ? String(user.member.countryID) : undefined,
           sinceTime: String(game.messages.time),
         }),
       );
@@ -147,9 +158,11 @@ const WDUI: React.FC = function (): React.ReactElement {
     >
       <WDFullModal
         alternatives={alternatives}
-        countries={countries}
+        allCountries={allCountries}
         excusedMissedTurns={excusedMissedTurns}
         gameID={gameID}
+        maps={maps}
+        orders={orders}
         phase={phase}
         potNumber={pot}
         season={season}
@@ -185,34 +198,38 @@ const WDUI: React.FC = function (): React.ReactElement {
             controlModalTrigger
           )}
         </Box>
-        <Box
-          component="div"
-          sx={{
-            display: "block",
-            p: 1,
-            mt: 2,
-            bgcolor: theme.palette[user.member.country]?.light,
-            color: "black",
-            border: "1px solid",
-            borderColor: "grey.300",
-            borderRadius: 2,
-            fontSize: "0.875rem",
-            fontWeight: "700",
-            userSelect: "none",
-          }}
-          title={`Currently playing as ${user.member.country}`}
-        >
-          {abbrMap[user.member.country]}
-        </Box>
+        {user && (
+          <Box
+            component="div"
+            sx={{
+              display: "block",
+              p: 1,
+              mt: 2,
+              bgcolor: theme.palette[user.member.country]?.light,
+              color: "black",
+              border: "1px solid",
+              borderColor: "grey.300",
+              borderRadius: 2,
+              fontSize: "0.875rem",
+              fontWeight: "700",
+              userSelect: "none",
+            }}
+            title={`Currently playing as ${user.member.country}`}
+          >
+            {abbrMap[user.member.country]}
+          </Box>
+        )}
         <WDBuildCounts />
         {popover}
       </WDPositionContainer>
       <WDPositionContainer position={Position.TOP_LEFT}>
         <WDPhaseUI />
       </WDPositionContainer>
-      <WDPositionContainer position={Position.BOTTOM_RIGHT}>
-        <WDMoveControls />
-      </WDPositionContainer>
+      {user && (
+        <WDPositionContainer position={Position.BOTTOM_RIGHT}>
+          <WDMoveControls orderStatus={user.member.orderStatus} />
+        </WDPositionContainer>
+      )}
     </>
   );
 };

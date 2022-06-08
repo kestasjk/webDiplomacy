@@ -10,8 +10,8 @@ import { CountryTableData } from "../../interfaces/CountryTableData";
 
 interface WDMessageListProps {
   messages: GameMessage[];
-  userCountry: CountryTableData;
-  countries: CountryTableData[];
+  userCountry: CountryTableData | null;
+  allCountries: CountryTableData[];
   countryIDSelected: number;
   messagesEndRef: React.RefObject<HTMLDivElement>;
 }
@@ -19,7 +19,7 @@ interface WDMessageListProps {
 const WDMessageList: React.FC<WDMessageListProps> = function ({
   messages,
   userCountry,
-  countries,
+  allCountries,
   countryIDSelected,
   messagesEndRef,
 }): React.ReactElement {
@@ -37,7 +37,7 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
       key={`${message.timeSent}:${message.fromCountryID}:${message.toCountryID}:${message.message}`}
       message={message}
       userCountry={userCountry}
-      countries={countries}
+      allCountries={allCountries}
     />
   ));
 

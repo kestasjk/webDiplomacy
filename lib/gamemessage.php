@@ -66,6 +66,7 @@ class libGameMessage
 		$timeSent = time();
 
 		if ($toCountryID == 0) {
+			$MC->set("lastmsgtime_{$Game->id}_0", $timeSent); // spectators
 			foreach($Game->Members->ByCountryID as $countryID => $member) {
 				$MC->set("lastmsgtime_{$Game->id}_{$countryID}", $timeSent);
 			}
