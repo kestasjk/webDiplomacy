@@ -12,16 +12,13 @@ interface WDOrderStatusIconProps {
 const WDOrderStatusIcon: React.FC<WDOrderStatusIconProps> = function ({
   orderStatus,
 }): React.ReactElement {
-  console.log({ orderStatus });
-  let inner = <Box />;
   if (orderStatus.Hidden) {
-    inner = <Lock sx={{ fontSize: "16px", color: "#666" }} />;
-  } else if (orderStatus.Saved || orderStatus.Ready) {
-    inner = <WDCheckmarkIcon color={(orderStatus.Ready && "#0A0") || "#888"} />;
-  } else {
-    inner = <PriorityHigh sx={{ fontSize: "16px", color: "#A00" }} />;
+    return <Lock sx={{ fontSize: "16px", color: "#666" }} />;
   }
-  return <Box sx={{ alignIterms: "center" }}>{inner}</Box>;
+  if (orderStatus.Saved || orderStatus.Ready) {
+    return <WDCheckmarkIcon color={(orderStatus.Ready && "#0A0") || "#888"} />;
+  }
+  return <PriorityHigh sx={{ fontSize: "16px", color: "#C00" }} />;
 };
 
 export default WDOrderStatusIcon;

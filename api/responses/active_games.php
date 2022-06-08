@@ -60,7 +60,7 @@ class ActiveGames {
         // 2) On a map (and a gameID) that is supported by the API
         // 3) Only if the game is still active (i.e. not pre-game, finished, paused, etc.)
 
-		$countryTabl = $DB->sql_tabl("SELECT m.gameID, m.countryID, m.orderStatus, m.newMessagesFrom, m.supplyCenterNo, g.turn, g.phase, g.name, g.processTime, g.phaseMinutes
+		$countryTabl = $DB->sql_tabl("SELECT m.gameID, m.countryID, m.orderStatus, m.newMessagesFrom, m.unitNo, g.turn, g.phase, g.name, g.processTime, g.phaseMinutes
                                       FROM wD_Members AS m
                                       LEFT JOIN wD_Games AS g ON ( g.id = m.gameID )
                                       WHERE m.status = 'Playing'
@@ -77,7 +77,7 @@ class ActiveGames {
                 'countryID' => intval($row['countryID']),
                 'orderStatus' => $row['orderStatus'],
                 'newMessagesFrom' => array_map('intval', explode(',', $row['newMessagesFrom'])),
-                'supplyCenterNo' => intval($row['supplyCenterNo']),
+                'unitNo' => intval($row['unitNo']),
                 'name' => $row['name'],
                 'turn' => intval($row['turn']),
                 'phase' => $row['phase'],
@@ -85,8 +85,6 @@ class ActiveGames {
                 'phaseMinutes' => intval($row['phaseMinutes']),
             ]);
         }
-        $len = count($this->value);
-        error_log("Found $len active games.");
 	}
 
 	function toJson()

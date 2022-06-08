@@ -4,8 +4,7 @@ import { Avatar, Box, Chip, useTheme } from "@mui/material";
 import TimeNotRunningOutIcon from "../../assets/png/icn_phase_countdown_black.png";
 import TimeRunningOutIcon from "../../assets/png/icn_phase_countdown_red.png";
 import Season from "../../enums/Season";
-import parseSeconds from "../../utils/parseSeconds";
-import formatTime from "../../utils/formatTime";
+import formatTime, { getFormattedTimeLeft } from "../../utils/formatTime";
 import { formatPSYForDisplay } from "../../utils/formatPhaseForDisplay";
 import useViewport from "../../hooks/useViewport";
 
@@ -21,12 +20,6 @@ interface WDCountdownPillProps {
 }
 
 const milli = 1000;
-
-const getFormattedTimeLeft = function (endTime: number) {
-  const secondsLeft = endTime - +new Date() / milli;
-  const timeLeft = parseSeconds(secondsLeft);
-  return formatTime(timeLeft);
-};
 
 const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
   endTime,
