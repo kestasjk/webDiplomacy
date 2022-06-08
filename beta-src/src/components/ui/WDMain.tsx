@@ -16,6 +16,7 @@ import {
   getUnitsLive,
   Unit,
 } from "../../utils/map/getUnits";
+import { StandoffInfo } from "../map/components/WDArrowContainer";
 
 const WDMapController = React.lazy(
   () => import("../controllers/WDMapController"),
@@ -230,6 +231,35 @@ const WDMain: React.FC = function (): React.ReactElement {
     updateForPhase();
   const { territories } = data.data;
 
+  let standoffs: StandoffInfo[] = [];
+  if (phase === "Retreats" && viewedPhaseState.viewedPhaseIdx > 0) {
+    const provincesWithUnits = new Set(
+      units.map((unit) => unit.mappedTerritory.province),
+    );
+    const prevPhase = status.phases[viewedPhaseState.viewedPhaseIdx - 1];
+    const standoffsByProvince: { [key: string]: StandoffInfo } = {};
+    prevPhase.orders.forEach((order) => {
+      if (order.type === "Move" && order.toTerrID) {
+        const province = maps.terrIDToProvince[order.toTerrID];
+        if (!provincesWithUnits.has(province)) {
+          // If we have a move order to a province but that province has no units now
+          // then it's a standoff
+          if (!standoffsByProvince[province]) {
+            standoffsByProvince[province] = {
+              province,
+              attemptedMoves: [],
+            };
+          }
+          standoffsByProvince[province].attemptedMoves.push([
+            maps.terrIDToTerritory[order.terrID],
+            maps.terrIDToTerritory[order.toTerrID],
+          ]);
+        }
+      }
+    });
+    standoffs = Object.values(standoffsByProvince);
+  }
+
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
       <WDMainController>
@@ -240,6 +270,7 @@ const WDMain: React.FC = function (): React.ReactElement {
           maps={maps}
           territories={territories}
           centersByProvince={centersByProvince}
+          standoffs={standoffs}
           isLatestPhase={isLatestPhase}
         />
         <WDUI orders={orders} />

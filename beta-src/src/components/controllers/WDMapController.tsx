@@ -15,6 +15,8 @@ import { Unit } from "../../utils/map/getUnits";
 import { IOrderDataHistorical } from "../../models/Interfaces";
 import GameStateMaps from "../../state/interfaces/GameStateMaps";
 import { APITerritories } from "../../state/interfaces/GameDataResponse";
+import Province from "../../enums/map/variants/classic/Province";
+import { StandoffInfo } from "../map/components/WDArrowContainer";
 
 const Scales: Scale = {
   DESKTOP: [0.45, 3],
@@ -40,6 +42,7 @@ interface WDMapControllerProps {
   maps: GameStateMaps;
   territories: APITerritories;
   centersByProvince: { [key: string]: { ownerCountryID: string } };
+  standoffs: StandoffInfo[];
   isLatestPhase: boolean;
 }
 
@@ -51,6 +54,7 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
   territories,
   centersByProvince,
   isLatestPhase,
+  standoffs,
 }): React.ReactElement {
   const svgElement = React.useRef<SVGSVGElement>(null);
   const [viewport] = useViewport();
@@ -139,6 +143,7 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
         maps={maps}
         territories={territories}
         centersByProvince={centersByProvince}
+        standoffs={standoffs}
         isLatestPhase={isLatestPhase}
       />
     </div>
