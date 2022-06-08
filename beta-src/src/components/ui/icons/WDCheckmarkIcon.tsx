@@ -12,7 +12,7 @@ const WDCheckmarkIcon: React.FC<WDCheckmarkIconProps> = function ({
     <svg
       width={17}
       height={16}
-      viewBox="0 0 17 15"
+      viewBox="0 0 14 14"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >

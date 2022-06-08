@@ -12,6 +12,8 @@ import WDLineClamp from "./WDLineClamp";
 import Device from "../../enums/Device";
 import getDevice from "../../utils/getDevice";
 import useViewport from "../../hooks/useViewport";
+import Season from "../../enums/Season";
+import { formatPSYForDisplay } from "../../utils/formatPhaseForDisplay";
 
 /**
  * game setting datas which would be passed to the component by parent component/ context/redux store
@@ -80,7 +82,14 @@ const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
         <TableBody>
           <TableRow>
             <TableCell sx={tableCellStyles}>
-              Pot: {potNumber} - {season} {year} - <b>{phase}</b>
+              Pot: {potNumber} -
+              <b>
+                {formatPSYForDisplay({
+                  phase,
+                  season: season as Season,
+                  year,
+                })}
+              </b>
             </TableCell>
           </TableRow>
           <TableRow>

@@ -1,11 +1,6 @@
-interface OrderStates {
-  None: boolean;
-  Saved: boolean;
-  Completed: boolean;
-  Ready: boolean;
-}
+import { OrderStatus } from "../../interfaces";
 
-export default function getOrderStates(orderStatus: string): OrderStates {
+export default function getOrderStates(orderStatus: string): OrderStatus {
   /**
    * orderStates will be a string like "None,Saved,Completed,Ready"
    */
@@ -15,5 +10,6 @@ export default function getOrderStates(orderStatus: string): OrderStates {
     Saved: orderStates.includes("Saved"),
     Completed: orderStates.includes("Completed"),
     Ready: orderStates.includes("Ready"),
+    Hidden: orderStates.includes("Hidden"),
   };
 }
