@@ -28,6 +28,7 @@ require_once('objects/memcached.php');
 require_once('board/orders/orderinterface.php');
 require_once('api/responses/members_in_cd.php');
 require_once('api/responses/unordered_countries.php');
+require_once('api/responses/active_games.php');
 require_once('api/responses/game_state.php');
 require_once('objects/game.php');
 require_once('objects/user.php');
@@ -302,6 +303,19 @@ class ListGamesWithMissingOrders extends ApiEntry {
 		$unorderedCountries = new \webdiplomacy_api\UnorderedCountries($userID);
 
 		return $unorderedCountries->toJson();
+	}
+}
+
+/**
+ * API entry players/active_games
+ */
+class ListActiveGamesForUser extends ApiEntry {
+	public function __construct() {
+		parent::__construct('players/active_games', 'GET', '', array());
+	}
+	public function run($userID, $permissionIsExplicit) {
+		$activeGames = new \webdiplomacy_api\ActiveGames($userID);
+		return $activeGames->toJson();
 	}
 }
 
@@ -1433,6 +1447,7 @@ try {
 	$api = new Api();
 	$api->load(new ListGamesWithPlayersInCD());
 	$api->load(new ListGamesWithMissingOrders());
+	$api->load(new ListActiveGamesForUser());
 	$api->load(new GetGamesStates());
 	$api->load(new GetGameOverview());
 	$api->load(new GetGameData());
@@ -1442,6 +1457,7 @@ try {
 	$api->load(new SendMessage());
 	$api->load(new GetMessages());
 	$api->load(new MessagesSeen());
+
 	$jsonEncodedResponse = $api->run();
 	// Set JSON header.
 	header('Content-Type: application/json');
