@@ -451,7 +451,6 @@ export interface IOrderDataHistorical {
 */
 
 interface WDArrowProps {
-  phase: string;
   orders: IOrderDataHistorical[];
   units: Unit[];
   maps: GameStateMaps;
@@ -460,7 +459,6 @@ interface WDArrowProps {
 }
 
 const WDArrowContainer: React.FC<WDArrowProps> = function ({
-  phase,
   orders,
   units,
   maps,

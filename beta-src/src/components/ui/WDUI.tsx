@@ -150,6 +150,8 @@ const WDUI: React.FC<WDUIProps> = function ({ orders }): React.ReactElement {
   // FIXME: for now, crazily fetch all messages every 2sec
   useInterval(dispatchFetchMessages, 2000);
 
+  const gameIsFinished = phase === "Finished";
+
   const popover = popoverTrigger.current ? (
     <WDPopover
       isOpen={showControlModal}
@@ -225,7 +227,7 @@ const WDUI: React.FC<WDUIProps> = function ({ orders }): React.ReactElement {
       <WDPositionContainer position={Position.TOP_LEFT}>
         <WDPhaseUI />
       </WDPositionContainer>
-      {user && (
+      {user && !gameIsFinished && (
         <WDPositionContainer position={Position.BOTTOM_RIGHT}>
           <WDMoveControls orderStatus={user.member.orderStatus} />
         </WDPositionContainer>

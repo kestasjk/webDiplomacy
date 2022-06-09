@@ -59,7 +59,6 @@ const WDMap: React.ForwardRefExoticComponent<
             isLivePhase={isLivePhase}
           />
           <WDArrowContainer
-            phase={phase}
             orders={orders}
             units={units}
             maps={maps}

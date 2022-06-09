@@ -19,6 +19,7 @@ interface WDInfoPanelProps {
   gameID: GameOverviewResponse["gameID"];
   maxDelays: GameOverviewResponse["excusedMissedTurns"];
   userCountry: CountryTableData | null;
+  gameIsFinished: boolean;
 }
 
 const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
@@ -26,6 +27,7 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
   gameID,
   maxDelays,
   userCountry,
+  gameIsFinished,
 }): React.ReactElement {
   const [viewport] = useViewport();
   const device = getDevice(viewport);
@@ -52,7 +54,7 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
 
   return (
     <Box>
-      {userCountry && (
+      {userCountry && !gameIsFinished && (
         <Box sx={{ p: padding }}>
           <WDVoteButtons
             toggleVote={toggleVote}

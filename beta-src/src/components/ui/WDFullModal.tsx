@@ -69,6 +69,8 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
 
   const padding = mobileLandscapeLayout ? "0 6px" : "0 16px";
 
+  const gameIsFinished = phase === "Finished";
+
   return (
     <Box ref={modalRef}>
       <WDViewsContainer
@@ -99,6 +101,7 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
               maxDelays={excusedMissedTurns}
               userCountry={userCountry}
               gameID={gameID}
+              gameIsFinished={gameIsFinished}
             />
           </Box>
         </WDTabPanel>
