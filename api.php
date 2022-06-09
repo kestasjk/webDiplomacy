@@ -363,6 +363,71 @@ class ToggleVote extends ApiEntry {
 	}
 }
 
+// FIXME - a bit copypasta with the above API call togglevote.
+// togglevote also uses GET rather than POST, but GET is not supposed to be used
+// for state-modifying web queries. So probably togglevote should be deprecated.
+/**
+ * API entry game/setvote
+ */
+class SetVote extends ApiEntry {
+	public function __construct() {
+		parent::__construct('game/setvote', 'JSON', '', array('gameID','countryID','vote','voteOn'));
+	}
+	public function run($userID, $permissionIsExplicit) {
+		global $DB;
+
+		$args = $this->getArgs();
+		$gameID = intval($args['gameID']);
+		$countryID = intval($args['countryID']);
+		$vote = $args['vote'];
+		$voteOn = filter_var($args['voteOn'], FILTER_VALIDATE_BOOLEAN);
+		if( $vote === 'Draw' ) $vote = 'Draw';
+		else if( $vote === 'Pause' ) $vote = 'Pause';
+		else if( $vote === 'Cancel' ) $vote = 'Cancel';
+		else if( $vote === 'Concede' ) $vote = 'Concede';
+		else throw new RequestException('Invalid vote type; allowed are Draw, Concede, Pause, Cancel');
+
+		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
+			throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
+
+		$game = 
+		$currentVotes = $DB->sql_hash("SELECT votes FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." AND userID = ".$userID);
+		$currentVotes = $currentVotes['votes'];
+
+		if( $voteOn === in_array($vote, explode(',',$currentVotes)) )
+		{
+			return $currentVotes;
+		}
+		// Keep a log that a vote was set in the game messages, so the vote time is recorded
+		require_once(l_r('lib/gamemessage.php'));
+		libGameMessage::send($countryID, $countryID, ($voteOn?'Un-':'').'Voted for '.$vote, $gameID);
+
+		$newVotes = '';
+		if( strpos($currentVotes, $vote) !== false )
+		{
+			// The vote is currently set, so unset it:
+			$voteArr = explode(',',$currentVotes);
+			$newVoteArr = array();
+			for($i=0; $i< count($voteArr); $i++)
+				if( $voteArr[$i] != $vote )
+					$newVoteArr[] = $voteArr[$i];
+			$newVotes = implode(',', $newVoteArr);
+		}
+		else
+		{
+			if( strpos($currentVotes,',') !== false )
+				$voteArr = explode(',',$currentVotes);
+			else
+				$voteArr = array($currentVotes);
+			$voteArr[] = $vote;
+			$newVotes = implode(',', $voteArr);
+		}
+		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."' WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
+		$DB->sql_put("COMMIT");
+		return $newVotes;
+	}
+}
+
 /**
  * API entry game/messagesseen
  */
@@ -1439,6 +1504,7 @@ try {
 	$api->load(new GetGameMembers());
 	$api->load(new SetOrders());
 	$api->load(new ToggleVote());
+	$api->load(new SetVote());
 	$api->load(new SendMessage());
 	$api->load(new GetMessages());
 	$api->load(new MessagesSeen());

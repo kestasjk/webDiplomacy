@@ -15,7 +15,7 @@ export function saveOrdersPending(state: GameState, action): void {
   state.savingOrdersInProgress = queryParams.userIntent;
 }
 
-export function saveOrdersFulfilled(state: GameState, action): void {
+export function saveRejectOrdersCommon(state: GameState, action): void {
   state.savingOrdersInProgress = null;
   if (action.payload) {
     const {
@@ -79,6 +79,12 @@ export function saveOrdersFulfilled(state: GameState, action): void {
   }
 }
 
+export function saveOrdersFulfilled(state: GameState, action): void {
+  state.apiStatus = "succeeded";
+  saveRejectOrdersCommon(state, action);
+}
+
 export function saveOrdersRejected(state, action): void {
-  saveOrdersFulfilled(state, action);
+  state.apiStatus = "failed";
+  saveRejectOrdersCommon(state, action);
 }

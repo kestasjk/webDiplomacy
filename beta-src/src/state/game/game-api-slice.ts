@@ -105,11 +105,16 @@ export const sendMessage = createAsyncThunk(
   },
 );
 
-export const toggleVoteStatus = createAsyncThunk(
-  ApiRoute.GAME_TOGGLEVOTE,
-  async (queryParams: { countryID: string; gameID: string; vote: string }) => {
-    const { data } = await getGameApiRequest(
-      ApiRoute.GAME_TOGGLEVOTE,
+export const setVoteStatus = createAsyncThunk(
+  ApiRoute.GAME_SETVOTE,
+  async (queryParams: {
+    countryID: string;
+    gameID: string;
+    vote: string;
+    voteOn: string;
+  }) => {
+    const { data } = await postGameApiRequest(
+      ApiRoute.GAME_SETVOTE,
       queryParams,
     );
     return data as string;
@@ -150,6 +155,7 @@ export const saveOrders = createAsyncThunk(
           "Error saving orders, no server response or network connection timed out",
         orders: {},
       };
+      // Reject this value because it indicates an error with the connection itself
       return thunkAPI.rejectWithValue(result);
     }
     // console.log({ response });
@@ -165,7 +171,9 @@ export const saveOrders = createAsyncThunk(
           "Error saving orders, no server response or game already advanced to next phase",
         orders: {},
       };
-      return thunkAPI.rejectWithValue(result);
+      // Return this value normally without rejecting it since it's not a problem
+      // with the connection, it's webdip declaring our order illegal or something like that.
+      return result;
     }
 
     const parsed: SavedOrdersConfirmation = JSON.parse(
@@ -262,16 +270,6 @@ const gameApiSlice = createSlice({
     selectMessageCountryID(state, action) {
       state.messages.countryIDSelected = action.payload;
     },
-    toggleVoteState(state, action) {
-      const voteKey: string = action.payload;
-      let votes = current(state.overview.user!.member.votes);
-      if (votes.includes(voteKey)) {
-        votes = votes.filter((vote) => vote !== voteKey);
-      } else {
-        votes = [...votes, voteKey];
-      }
-      state.overview.user!.member.votes = votes;
-    },
   },
   extraReducers(builder) {
     builder
@@ -310,6 +308,39 @@ const gameApiSlice = createSlice({
       .addCase(saveOrders.pending, saveOrdersPending)
       .addCase(saveOrders.fulfilled, saveOrdersFulfilled)
       .addCase(saveOrders.rejected, saveOrdersRejected)
+      // setVoteStatus
+      .addCase(setVoteStatus.pending, (state, action) => {
+        state.apiStatus = "loading";
+        const { vote, voteOn } = action.meta.arg;
+        state.votingInProgress = { ...state.votingInProgress, [vote]: voteOn };
+      })
+      .addCase(setVoteStatus.fulfilled, (state, action) => {
+        state.apiStatus = "succeeded";
+        const { vote } = action.meta.arg;
+        state.votingInProgress = { ...state.votingInProgress, [vote]: null };
+        if (state.overview.user) {
+          if (action.payload) {
+            const newVotes = action.payload.split(",").filter((s) => !!s);
+            state.overview.user.member.votes = newVotes;
+            state.overview.members.forEach((member) => {
+              if (member.countryID === state.overview.user?.member.countryID) {
+                member.votes = newVotes;
+              }
+            });
+          }
+        }
+      })
+      .addCase(setVoteStatus.rejected, (state, action) => {
+        state.apiStatus = "failed";
+        state.error = action.error.message;
+        const { vote } = action.meta.arg;
+        state.votingInProgress = { ...state.votingInProgress, [vote]: null };
+        // In any error case saving orders, try reloading everything so that we can
+        // attempt to resync with the server again.
+        // store.dispatch(
+        //   fetchGameOverview({ gameID: state.overview.gameID.toString() }),
+        // );
+      })
       // Send message
       .addCase(sendMessage.fulfilled, (state, action) => {
         if (action.payload) {

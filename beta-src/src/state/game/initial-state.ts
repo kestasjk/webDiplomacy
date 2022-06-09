@@ -147,6 +147,11 @@ const initialState: GameState = {
   outstandingOverviewRequests: false,
   outstandingMessageRequests: false,
   savingOrdersInProgress: null,
+  votingInProgress: {
+    Cancel: null,
+    Pause: null,
+    Draw: null,
+  },
   needsGameData: false,
   legalOrders: {
     legalMoveDestsByUnitID: {},

@@ -5,7 +5,7 @@ enum ApiRoute {
   SEND_MESSAGE = "game/sendmessage",
   MESSAGES_SEEN = "game/messagesseen",
   GAME_OVERVIEW = "game/overview",
-  GAME_TOGGLEVOTE = "game/togglevote",
+  GAME_SETVOTE = "game/setvote",
 }
 
 export default ApiRoute;
