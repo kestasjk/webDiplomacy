@@ -268,7 +268,7 @@ const WDMain: React.FC = function (): React.ReactElement {
         }
       }
     });
-    standoffs = Object.values(standoffsByProvince);
+    standoffs = Object.values(standoffsByProvince) || [];
 
     // FIXME: Messy. After-the-fact, do some filtering of the standoffs to remove
     // some (but not all) of the above false positives. In particular, live phases
