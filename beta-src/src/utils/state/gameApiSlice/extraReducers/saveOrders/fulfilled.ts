@@ -60,9 +60,7 @@ export function saveRejectOrdersCommon(state: GameState, action): void {
       }
       // In any error case saving orders, try reloading everything so that we can
       // attempt to resync with the server again.
-      // store.dispatch(
-      //   fetchGameOverview({ gameID: state.overview.gameID.toString() }),
-      // );
+      state.needsGameOverview = true;
       state.needsGameData = true;
     }
   } else {
@@ -72,9 +70,7 @@ export function saveRejectOrdersCommon(state: GameState, action): void {
     );
     // In any error case, try reloading everything so that we can attempt to resync
     // with the server again.
-    // store.dispatch(
-    //   fetchGameOverview({ gameID: state.overview.gameID.toString() }),
-    // );
+    state.needsGameOverview = true;
     state.needsGameData = true;
   }
 }

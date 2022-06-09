@@ -49,11 +49,18 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   // FIXME: for now, crazily fetch all messages every 5sec
   useInterval(dispatchFetchOverview, 5000);
 
+  const needsGameOverview = useAppSelector(
+    ({ game }) => game.needsGameOverview,
+  );
   const needsGameData = useAppSelector(({ game }) => game.needsGameData);
   const noPhase = ["Error", "Pre-game"].includes(overview.phase);
   const consistentPhase =
     noPhase || (overviewKey === statusKey && overviewKey === dataKey);
 
+  if (needsGameOverview && !noPhase) {
+    dispatch(gameApiSliceActions.setNeedsGameOverview(false));
+    dispatch(fetchGameOverview({ gameID: String(overview.gameID) }));
+  }
   if (needsGameData && !noPhase) {
     dispatch(gameApiSliceActions.setNeedsGameData(false));
     dispatch(

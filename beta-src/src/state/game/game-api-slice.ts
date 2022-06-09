@@ -244,6 +244,9 @@ const gameApiSlice = createSlice({
           m.status = MessageStatus.READ;
         });
     },
+    setNeedsGameOverview(state, action) {
+      state.needsGameOverview = action.payload;
+    },
     setNeedsGameData(state, action) {
       state.needsGameData = action.payload;
     },
@@ -327,6 +330,10 @@ const gameApiSlice = createSlice({
                 member.votes = newVotes;
               }
             });
+          } else {
+            // In any error case setting votes, try reloading everything so that we can
+            // attempt to resync with the server again.
+            state.needsGameOverview = true;
           }
         }
       })
@@ -335,11 +342,9 @@ const gameApiSlice = createSlice({
         state.error = action.error.message;
         const { vote } = action.meta.arg;
         state.votingInProgress = { ...state.votingInProgress, [vote]: null };
-        // In any error case saving orders, try reloading everything so that we can
+        // In any error case setting votes, try reloading everything so that we can
         // attempt to resync with the server again.
-        // store.dispatch(
-        //   fetchGameOverview({ gameID: state.overview.gameID.toString() }),
-        // );
+        state.needsGameOverview = true;
       })
       // Send message
       .addCase(sendMessage.fulfilled, (state, action) => {

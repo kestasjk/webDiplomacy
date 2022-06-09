@@ -152,6 +152,7 @@ const initialState: GameState = {
     Pause: null,
     Draw: null,
   },
+  needsGameOverview: false,
   needsGameData: false,
   legalOrders: {
     legalMoveDestsByUnitID: {},
