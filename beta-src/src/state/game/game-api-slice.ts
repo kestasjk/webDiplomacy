@@ -35,6 +35,7 @@ import {
 } from "../../utils/state/gameApiSlice/extraReducers/saveOrders/fulfilled";
 import shallowArraysEqual from "../../utils/shallowArraysEqual";
 import { setAlert } from "../interfaces/GameAlert";
+import PlayerActiveGames from "../interfaces/PlayerActiveGames";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -86,6 +87,14 @@ export const fetchGameMessages = createAsyncThunk(
       60000,
     );
     return data as GameMessages;
+  },
+);
+
+export const fetchPlayerActiveGames = createAsyncThunk(
+  ApiRoute.PLAYERS_ACTIVE_GAMES,
+  async () => {
+    const { data } = await getGameApiRequest(ApiRoute.PLAYERS_ACTIVE_GAMES, {});
+    return data as { games: PlayerActiveGames };
   },
 );
 
@@ -188,6 +197,7 @@ export const loadGameData =
     await Promise.all([
       dispatch(fetchGameData({ gameID, countryID })),
       dispatch(fetchGameStatus({ gameID, countryID })),
+      dispatch(fetchPlayerActiveGames()),
     ]);
   };
 
@@ -202,12 +212,8 @@ export const loadGame = (gameID: string) => async (dispatch) => {
   if (phase === "Pre-game") {
     return;
   }
-  const dispatches = [
-    dispatch(fetchGameData({ gameID, countryID })),
-    dispatch(fetchGameStatus({ gameID, countryID })),
-    dispatch(fetchGameMessages({ gameID, countryID })),
-  ];
-  await Promise.all(dispatches);
+
+  await loadGameData(gameID, countryID);
 };
 
 /**
@@ -306,6 +312,12 @@ const gameApiSlice = createSlice({
       .addCase(fetchGameStatus.rejected, (state, action) => {
         state.apiStatus = "failed";
         state.error = action.error.message;
+      })
+      .addCase(fetchPlayerActiveGames.fulfilled, (state, action) => {
+        console.log(action.payload);
+        if (typeof action.payload.games !== "undefined") {
+          state.activeGames = action.payload.games;
+        }
       })
       // saveOrders
       .addCase(saveOrders.pending, saveOrdersPending)
@@ -457,4 +469,6 @@ export const gameViewedPhase = ({
 export const gameLegalOrders = ({ game: { legalOrders } }: RootState) =>
   legalOrders;
 export const gameAlert = ({ game: { alert } }: RootState) => alert;
+export const playerActiveGames = ({ game: { activeGames } }: RootState) =>
+  activeGames;
 export default gameApiSlice.reducer;

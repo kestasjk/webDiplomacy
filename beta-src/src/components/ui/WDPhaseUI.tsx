@@ -21,15 +21,16 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
   const { viewedPhaseIdx, latestPhaseViewed } = useAppSelector(gameViewedPhase);
 
   const phaseSeconds = phaseMinutes * 60;
-  const [gamePhase, gameSeason, gameYear] = getGamePhaseSeasonYear(
-    phase,
-    season,
-    year,
-  );
-  const [viewedPhase, viewedSeason, viewedYear] = getHistoricalPhaseSeasonYear(
-    gameStatusData,
-    viewedPhaseIdx,
-  );
+  const {
+    phase: gamePhase,
+    season: gameSeason,
+    year: gameYear,
+  } = getGamePhaseSeasonYear(phase, season, year);
+  const {
+    phase: viewedPhase,
+    season: viewedSeason,
+    year: viewedYear,
+  } = getHistoricalPhaseSeasonYear(gameStatusData, viewedPhaseIdx);
   const ordersMeta = useAppSelector(gameOrdersMeta);
   const ordersMetaValues = Object.values(ordersMeta);
   const ordersLength = ordersMetaValues.length;

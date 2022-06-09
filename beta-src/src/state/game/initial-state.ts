@@ -168,6 +168,7 @@ const initialState: GameState = {
     idx: 0,
     visible: false,
   },
+  activeGames: [],
 };
 
 export default initialState;

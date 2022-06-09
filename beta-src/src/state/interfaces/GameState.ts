@@ -1,4 +1,3 @@
-import { BuildCommand, FlyoutCommand } from "./GameCommands";
 import GameDataResponse from "./GameDataResponse";
 import GameErrorResponse from "./GameErrorResponse";
 import GameOverviewResponse from "./GameOverviewResponse";
@@ -13,6 +12,7 @@ import { LegalOrders } from "../../utils/state/gameApiSlice/extraReducers/fetchG
 import GameAlert from "./GameAlert";
 import { OrderSubmissionUserIntent } from "../../interfaces/state/OrderSubmission";
 import Vote from "../../enums/Vote";
+import PlayerActiveGames from "./PlayerActiveGames";
 
 export type ApiStatus = "idle" | "loading" | "succeeded" | "failed";
 
@@ -31,10 +31,11 @@ export interface GameState {
   outstandingOverviewRequests: boolean; // Stateful, restricts querying api for overview
   outstandingMessageRequests: boolean; // Stateful, restricts querying api for messages
   savingOrdersInProgress: OrderSubmissionUserIntent | null; // Stateful, non-null when we have an active request to save orders.
-  votingInProgress: { [key in Vote] : string | null }; // Stateful, non-null "Yes" or "No" values indicate we have an active vote query to set vote to "Yes" or to "No".
+  votingInProgress: { [key in Vote]: string | null }; // Stateful, non-null "Yes" or "No" values indicate we have an active vote query to set vote to "Yes" or to "No".
   needsGameOverview: boolean; // Stateful, determines when game overview needs urgent refresh
   needsGameData: boolean; // Stateful, determines when game data has changed and needs refresh
   order: OrderState;
   legalOrders: LegalOrders; // Computed as a function of GameOverviewResponse, GameDataResponse, GameStateMaps
   alert: GameAlert;
+  activeGames: PlayerActiveGames;
 }
