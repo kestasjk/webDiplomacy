@@ -396,6 +396,42 @@ function accumulateBuildCircles(
     });
 }
 
+function accumulateDisbandMarks(
+  arrows: (React.ReactElement | null)[],
+  units: Unit[],
+  territories: APITerritories,
+): void {
+  units
+    .filter((unit) => unit.drawMode === UnitDrawMode.DISBANDED)
+    .forEach((unit) => {
+      const terr = TerritoryMap[territories[unit.unit.terrID].name].territory;
+      const [x1, y1, w1, h1] = getTargetXYWH("unit", terr);
+      const MARKSIZE = 38;
+      arrows.push(
+        <line
+          key={`disbandmark-${terr}-1`}
+          x1={x1 - MARKSIZE}
+          y1={y1 - MARKSIZE}
+          x2={x1 + MARKSIZE}
+          y2={y1 + MARKSIZE}
+          stroke="red"
+          strokeWidth={4}
+        />,
+      );
+      arrows.push(
+        <line
+          key={`disbandmark-${terr}-2`}
+          x1={x1 + MARKSIZE}
+          y1={y1 - MARKSIZE}
+          x2={x1 - MARKSIZE}
+          y2={y1 + MARKSIZE}
+          stroke="red"
+          strokeWidth={4}
+        />,
+      );
+    });
+}
+
 function accumulateStandoffMarks(
   arrows: (React.ReactElement | null)[],
   standoffs: StandoffInfo[],
@@ -406,7 +442,7 @@ function accumulateStandoffMarks(
     if (!rootTerritory) return;
 
     const [x1, y1, w1, h1] = getTargetXYWH("territory", rootTerritory);
-    const MARKSIZE = 25;
+    const MARKSIZE = 15;
     arrows.push(
       <line
         key={`standoffmark-${province}-1`}
@@ -414,7 +450,7 @@ function accumulateStandoffMarks(
         y1={y1 - MARKSIZE}
         x2={x1 + MARKSIZE}
         y2={y1 + MARKSIZE}
-        stroke="red"
+        stroke="tomato"
         strokeWidth={6}
       />,
     );
@@ -425,7 +461,7 @@ function accumulateStandoffMarks(
         y1={y1 - MARKSIZE}
         x2={x1 - MARKSIZE}
         y2={y1 + MARKSIZE}
-        stroke="red"
+        stroke="tomato"
         strokeWidth={6}
       />,
     );
@@ -506,6 +542,7 @@ const WDArrowContainer: React.FC<WDArrowProps> = function ({
   accumulateRetreatArrows(arrows, orders, territories);
   accumulateDislodgerArrows(arrows, units, territories);
   accumulateBuildCircles(arrows, units, territories);
+  accumulateDisbandMarks(arrows, units, territories);
   accumulateStandoffMarks(arrows, standoffs);
   return <g id="arrows">{arrows}</g>;
 };
