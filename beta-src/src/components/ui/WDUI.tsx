@@ -13,7 +13,7 @@ import WDPhaseUI from "./WDPhaseUI";
 import UIState from "../../enums/UIState";
 import capitalizeString from "../../utils/capitalizeString";
 import Vote from "../../enums/Vote";
-import WDMoveControls from "./WDMoveControls";
+import WDOrderStatusControls from "./WDOrderStatusControls";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import WDHomeIcon from "./icons/WDHomeIcon";
 import WDBuildCounts from "./WDBuildCounts";
@@ -233,7 +233,7 @@ const WDUI: React.FC<WDUIProps> = function ({
       </WDPositionContainer>
       {user && (
         <WDPositionContainer position={Position.BOTTOM_RIGHT}>
-          <WDMoveControls orderStatus={user.member.orderStatus} />
+          <WDOrderStatusControls orderStatus={user.member.orderStatus} />
         </WDPositionContainer>
       )}
     </>
