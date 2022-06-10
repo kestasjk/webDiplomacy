@@ -9,6 +9,7 @@ import {
   TableRow,
   useTheme,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import * as React from "react";
 import Device from "../../enums/Device";
 import Season from "../../enums/Season";
@@ -44,6 +45,15 @@ interface Column {
   id: keyof CountryTableData;
   label: string;
 }
+
+const WDTableCell = styled(TableCell)(() => {
+  return {
+    // paddingTop: "15px",
+    // paddingBottom: "0px",
+    borderTop: "1px solid rgba(224,224,224,1)",
+    borderBottom: 0,
+  };
+});
 
 const columns: readonly Column[] = [
   { id: "power", label: "Power", icon: PowerIcon, align: "left" },
@@ -92,17 +102,21 @@ const WDGameFinishedOverlay: React.FC<WDGameFinishedOverlayProps> = function ({
 
   const innerElem = (
     <Stack direction="column" alignItems="center">
-      <Box sx={{ m: "4px" }}>Game is finished:</Box>
-      <Table aria-label="country info table" size="small" stickyHeader>
+      <Box sx={{ m: "10px" }}>Game is finished.</Box>
+      <Table aria-label="game finished table" size="small" stickyHeader>
         <TableHead sx={{ height: "55px" }}>
           <TableRow sx={{ verticalAlign: "top" }}>
             {columns.map((column) => (
-              <TableCell key={column.id} align={column.align}>
+              <WDTableCell
+                key={column.id}
+                align={column.align}
+                sx={{ borderTop: 0 }}
+              >
                 {column.icon && <column.icon />}
                 <Box sx={{ fontSize: 10, fontWeight: 400 }}>
                   {column.label.toUpperCase()}
                 </Box>
-              </TableCell>
+              </WDTableCell>
             ))}
           </TableRow>
         </TableHead>
@@ -132,22 +146,23 @@ const WDGameFinishedOverlay: React.FC<WDGameFinishedOverlayProps> = function ({
                       break;
                   }
                   return (
-                    <TableCell key={column.id} align={column.align}>
+                    <WDTableCell key={column.id} align={column.align}>
                       <span style={style}>{value}</span>
-                    </TableCell>
+                    </WDTableCell>
                   );
                 })}
               </TableRow>
               <TableRow>
-                <TableCell
+                <WDTableCell
                   sx={{
                     paddingTop: "0px !important",
+                    borderTop: 0,
                     fontSize: "10pt",
                     fontFamily: "Roboto",
                   }}
                 >
                   {country.username}
-                </TableCell>
+                </WDTableCell>
               </TableRow>
             </React.Fragment>
           ))}

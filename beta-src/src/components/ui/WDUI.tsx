@@ -56,7 +56,6 @@ const WDUI: React.FC<WDUIProps> = function ({
   const [showControlModal, setShowControlModal] = React.useState(false);
   const popoverTrigger = React.useRef<HTMLElement>(null);
   const modalRef = React.useRef<HTMLElement>(null);
-
   const {
     alternatives,
     anon,

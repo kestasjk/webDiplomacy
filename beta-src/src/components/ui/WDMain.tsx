@@ -322,9 +322,9 @@ const WDMain: React.FC = function (): React.ReactElement {
   }
 
   const viewingGameFinishedPhase =
-    phase === "Finished" &&
-    viewedPhaseState.viewedPhaseIdx === status.phases.length - 1;
-
+    overview.phase === "Finished" &&
+    (viewedPhaseState.viewedPhaseIdx === status.phases.length - 1 ||
+      status.phases.length === 0);
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
       <WDMainController>
