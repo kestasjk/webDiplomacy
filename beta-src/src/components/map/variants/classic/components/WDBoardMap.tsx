@@ -22,14 +22,14 @@ interface WDBoardMapProps {
   units: Unit[];
   centersByProvince: { [key: string]: { ownerCountryID: string } };
   phase: string;
-  isLatestPhase: boolean;
+  isLivePhase: boolean; // Game is live and user is viewing the latest phase?
 }
 
 const WDBoardMap: React.FC<WDBoardMapProps> = function ({
   units,
   centersByProvince,
   phase,
-  isLatestPhase,
+  isLivePhase,
 }): React.ReactElement {
   const gameDataResponse = useAppSelector(gameData);
   const maps = useAppSelector(gameMaps);
@@ -47,7 +47,7 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
 
   let provincesToHighlight: Province[] = [];
   let provincesToChoose: Province[] = [];
-  if (isLatestPhase && user) {
+  if (isLivePhase && user) {
     if (phase === "Diplomacy") {
       if (!curOrder.inProgress) {
         provincesToHighlight = [];

@@ -43,7 +43,7 @@ interface WDMapControllerProps {
   territories: APITerritories;
   centersByProvince: { [key: string]: { ownerCountryID: string } };
   standoffs: StandoffInfo[];
-  isLatestPhase: boolean;
+  isLivePhase: boolean; // Game is live and user is viewing the latest phase?
 }
 
 const WDMapController: React.FC<WDMapControllerProps> = function ({
@@ -53,7 +53,7 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
   maps,
   territories,
   centersByProvince,
-  isLatestPhase,
+  isLivePhase,
   standoffs,
 }): React.ReactElement {
   const svgElement = React.useRef<SVGSVGElement>(null);
@@ -144,7 +144,7 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
         territories={territories}
         centersByProvince={centersByProvince}
         standoffs={standoffs}
-        isLatestPhase={isLatestPhase}
+        isLivePhase={isLivePhase}
       />
     </div>
   );
