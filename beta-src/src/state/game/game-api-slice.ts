@@ -28,10 +28,20 @@ import fetchGameDataFulfilled from "../../utils/state/gameApiSlice/extraReducers
 import TerritoriesMeta from "../interfaces/TerritoriesState";
 import fetchGameOverviewFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameOverview/fulfilled";
 import fetchGameStatusFulfilled from "../../utils/state/gameApiSlice/extraReducers/fetchGameStatus/fulfilled";
-import saveOrdersFulfilled from "../../utils/state/gameApiSlice/extraReducers/saveOrders/fulfilled";
+import {
+  saveOrdersPending,
+  saveOrdersFulfilled,
+  saveOrdersRejected,
+} from "../../utils/state/gameApiSlice/extraReducers/saveOrders/fulfilled";
 import shallowArraysEqual from "../../utils/shallowArraysEqual";
 import { setAlert } from "../interfaces/GameAlert";
 import PlayerActiveGames from "../interfaces/PlayerActiveGames";
+import {
+  handleGetSucceeded,
+  handleGetFailed,
+  handlePostSucceeded,
+  handlePostFailed,
+} from "../../utils/state/gameApiSlice/extraReducers/handleSucceededFailed";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -110,11 +120,16 @@ export const sendMessage = createAsyncThunk(
   },
 );
 
-export const toggleVoteStatus = createAsyncThunk(
-  ApiRoute.GAME_TOGGLEVOTE,
-  async (queryParams: { countryID: string; gameID: string; vote: string }) => {
-    const { data } = await getGameApiRequest(
-      ApiRoute.GAME_TOGGLEVOTE,
+export const setVoteStatus = createAsyncThunk(
+  ApiRoute.GAME_SETVOTE,
+  async (queryParams: {
+    countryID: string;
+    gameID: string;
+    vote: string;
+    voteOn: string;
+  }) => {
+    const { data } = await postGameApiRequest(
+      ApiRoute.GAME_SETVOTE,
       queryParams,
     );
     return data as string;
@@ -138,29 +153,47 @@ export const markMessagesSeen = createAsyncThunk(
 
 export const saveOrders = createAsyncThunk(
   "game/submitOrders",
-  async (data: OrderSubmission) => {
+  async (data: OrderSubmission, thunkAPI) => {
     const formData = new FormData();
     formData.set("orderUpdates", JSON.stringify(data.orderUpdates));
     formData.set("context", data.context);
     formData.set("contextKey", data.contextKey);
-    const response = await submitOrders(formData, data.queryParams);
+    let response;
+    try {
+      response = await submitOrders(formData, data.queryParams);
+    } catch (e) {
+      console.log("Exception submitting orders");
+      console.log(e);
+      const result: SavedOrdersConfirmation = {
+        invalid: true,
+        notice:
+          "Error saving orders, no server response or network connection timed out",
+        orders: {},
+      };
+      // Reject this value because it indicates an error with the connection itself
+      return thunkAPI.rejectWithValue(result);
+    }
     // console.log({ response });
     // Sometimes webdip sends back a response that doesn't have the "x-json" header at all,
     // instead it has an HTML page displaying an error message.
     // We're of course not going to try to render a whole HTML page, so instead we simply
     // manually construct an error message.
     const confirmation: string = response.headers["x-json"];
-    let parsed: SavedOrdersConfirmation;
     if (!confirmation) {
-      parsed = {
+      const result: SavedOrdersConfirmation = {
         invalid: true,
         notice:
           "Error saving orders, no server response or game already advanced to next phase",
         orders: {},
       };
-    } else {
-      parsed = JSON.parse(confirmation.substring(1, confirmation.length - 1));
+      // Return this value normally without rejecting it since it's not a problem
+      // with the connection, it's webdip declaring our order illegal or something like that.
+      return result;
     }
+
+    const parsed: SavedOrdersConfirmation = JSON.parse(
+      confirmation.substring(1, confirmation.length - 1),
+    );
     return parsed;
   },
 );
@@ -180,13 +213,15 @@ export const loadGame = (gameID: string) => async (dispatch) => {
       gameID,
     }),
   );
-  const countryID = response.payload.user?.member.countryID;
-  const { phase } = response.payload;
-  if (phase === "Pre-game") {
-    return;
-  }
+  if (response.payload) {
+    const countryID = response.payload.user?.member.countryID;
+    const { phase } = response.payload;
+    if (phase === "Pre-game") {
+      return;
+    }
 
-  await loadGameData(gameID, countryID);
+    await loadGameData(gameID, countryID);
+  }
 };
 
 /**
@@ -223,6 +258,9 @@ const gameApiSlice = createSlice({
           m.status = MessageStatus.READ;
         });
     },
+    setNeedsGameOverview(state, action) {
+      state.needsGameOverview = action.payload;
+    },
     setNeedsGameData(state, action) {
       state.needsGameData = action.payload;
     },
@@ -249,16 +287,6 @@ const gameApiSlice = createSlice({
     selectMessageCountryID(state, action) {
       state.messages.countryIDSelected = action.payload;
     },
-    toggleVoteState(state, action) {
-      const voteKey: string = action.payload;
-      let votes = current(state.overview.user!.member.votes);
-      if (votes.includes(voteKey)) {
-        votes = votes.filter((vote) => vote !== voteKey);
-      } else {
-        votes = [...votes, voteKey];
-      }
-      state.overview.user!.member.votes = votes;
-    },
   },
   extraReducers(builder) {
     builder
@@ -270,8 +298,7 @@ const gameApiSlice = createSlice({
       .addCase(fetchGameData.fulfilled, fetchGameDataFulfilled)
       .addCase(fetchGameData.rejected, (state, action) => {
         // console.log("fetchGameData rejected!");
-        state.apiStatus = "failed";
-        state.error = action.error.message;
+        handleGetFailed(state, action);
       })
       // fetchGameOverview
       .addCase(fetchGameOverview.pending, (state) => {
@@ -280,9 +307,8 @@ const gameApiSlice = createSlice({
       })
       .addCase(fetchGameOverview.fulfilled, fetchGameOverviewFulfilled)
       .addCase(fetchGameOverview.rejected, (state, action) => {
-        state.apiStatus = "failed";
-        state.error = action.error.message;
         state.outstandingOverviewRequests = false;
+        handleGetFailed(state, action);
       })
       // fetchGameStatus
       .addCase(fetchGameStatus.pending, (state) => {
@@ -290,46 +316,87 @@ const gameApiSlice = createSlice({
       })
       .addCase(fetchGameStatus.fulfilled, fetchGameStatusFulfilled)
       .addCase(fetchGameStatus.rejected, (state, action) => {
-        state.apiStatus = "failed";
-        state.error = action.error.message;
+        handleGetFailed(state, action);
       })
       .addCase(fetchPlayerActiveGames.fulfilled, (state, action) => {
-        console.log(action.payload);
         if (typeof action.payload.games !== "undefined") {
+          handleGetSucceeded(state);
           state.activeGames = action.payload.games;
+        } else {
+          handleGetFailed(state, action);
         }
       })
       // saveOrders
+      .addCase(saveOrders.pending, saveOrdersPending)
       .addCase(saveOrders.fulfilled, saveOrdersFulfilled)
+      .addCase(saveOrders.rejected, saveOrdersRejected)
+      // setVoteStatus
+      .addCase(setVoteStatus.pending, (state, action) => {
+        state.apiStatus = "loading";
+        const { vote, voteOn } = action.meta.arg;
+        state.votingInProgress = { ...state.votingInProgress, [vote]: voteOn };
+      })
+      .addCase(setVoteStatus.fulfilled, (state, action) => {
+        const { vote } = action.meta.arg;
+        state.votingInProgress = { ...state.votingInProgress, [vote]: null };
+        if (action.payload) {
+          handlePostSucceeded(state);
+          if (state.overview.user) {
+            const newVotes = action.payload.split(",").filter((s) => !!s);
+            state.overview.user.member.votes = newVotes;
+            state.overview.members.forEach((member) => {
+              if (member.countryID === state.overview.user?.member.countryID) {
+                member.votes = newVotes;
+              }
+            });
+          }
+        } else {
+          handlePostFailed(
+            state,
+            "Error sending vote, network connection issue",
+          );
+        }
+      })
+      .addCase(setVoteStatus.rejected, (state, action) => {
+        handlePostFailed(state, "Error sending vote, network connection issue");
+        const { vote } = action.meta.arg;
+        state.votingInProgress = { ...state.votingInProgress, [vote]: null };
+      })
       // Send message
       .addCase(sendMessage.fulfilled, (state, action) => {
         if (action.payload) {
+          handlePostSucceeded(state);
           const { messages } = action.payload;
           const allMessages = mergeMessageArrays(
             state.messages.messages,
             messages,
           );
           state.messages.messages = allMessages;
+        } else {
+          handlePostFailed(
+            state,
+            "Error sending message, network connection issue",
+          );
         }
       })
       .addCase(sendMessage.rejected, (state, action) => {
-        state.apiStatus = "failed";
-        // console.log(`sendMessages failed: ${action.error.message}`);
-        state.error = action.error.message;
+        handlePostFailed(
+          state,
+          "Error sending message, network connection issue",
+        );
       })
       // Fetch Game Messages
       .addCase(fetchGameMessages.pending, (state, action) => {
         state.outstandingMessageRequests = true;
       })
       .addCase(fetchGameMessages.rejected, (state, action) => {
-        state.apiStatus = "failed";
-        // console.log(`fetchGameMessages failed: ${action.error.message}`);
         state.outstandingMessageRequests = false;
-        state.error = action.error.message;
+        handleGetFailed(state, action);
       })
       .addCase(fetchGameMessages.fulfilled, (state, action) => {
         state.outstandingMessageRequests = false;
         if (action.payload) {
+          handleGetSucceeded(state);
           const { messages, newMessagesFrom, time } = action.payload;
           if (messages) {
             const messagesWithStatus = messages.map((m) => {
@@ -371,6 +438,8 @@ const gameApiSlice = createSlice({
             // console.log(`Messages fetched at time=${time}`);
             state.messages.time = time;
           }
+        } else {
+          handleGetFailed(state, action);
         }
       });
   },

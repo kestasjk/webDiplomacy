@@ -222,7 +222,7 @@ const WDMain: React.FC = function (): React.ReactElement {
     const unitsHistorical = phaseHistorical.units;
     const prevPhaseOrders =
       drawingPhaseIdx > 0 ? status.phases[drawingPhaseIdx - 1].orders : [];
-    const unitsLive = getUnitsHistorical(
+    const units = getUnitsHistorical(
       data.data.territories,
       unitsHistorical,
       overview.members,
@@ -247,11 +247,27 @@ const WDMain: React.FC = function (): React.ReactElement {
         ? overview.phase
         : drawingPhase;
 
+    // On historical build phases, the API doesn't report the unit type of
+    // destroyed units! So we manually fill those in ourselves
+    let { orders } = phaseHistorical;
+    if (drawingPhase === "Builds") {
+      orders = orders.map((order) => {
+        if (order.type !== "Destroy") return order;
+        const foundUnit = units.find(
+          (unit) =>
+            unit.mappedTerritory.province ===
+            maps.terrIDToProvince[order.terrID],
+        );
+        if (!foundUnit) return order;
+        return { ...order, unitType: foundUnit.unit.type };
+      });
+    }
+
     return {
       phase,
       drawingPhase,
-      units: unitsLive,
-      orders: phaseHistorical.orders,
+      units,
+      orders,
       centersByProvince,
       isLivePhase: false,
     };
@@ -340,6 +356,7 @@ const WDMain: React.FC = function (): React.ReactElement {
         />
         <WDUI
           orders={orders}
+          units={units}
           viewingGameFinishedPhase={viewingGameFinishedPhase}
         />
       </WDMainController>

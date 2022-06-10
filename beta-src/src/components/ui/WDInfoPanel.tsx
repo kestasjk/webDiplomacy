@@ -10,9 +10,9 @@ import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
 import {
   gameApiSliceActions,
-  toggleVoteStatus,
+  setVoteStatus,
 } from "../../state/game/game-api-slice";
-import { useAppDispatch } from "../../state/hooks";
+import { useAppSelector, useAppDispatch } from "../../state/hooks";
 
 interface WDInfoPanelProps {
   allCountries: CountryTableData[];
@@ -32,15 +32,19 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
   const [viewport] = useViewport();
   const device = getDevice(viewport);
   const dispatch = useAppDispatch();
+  const votingInProgress = useAppSelector(
+    (state) => state.game.votingInProgress,
+  );
 
   const toggleVote = (voteKey: Vote) => {
-    dispatch(gameApiSliceActions.toggleVoteState(voteKey));
     if (userCountry) {
+      const desiredVoteOn = userCountry.votes.includes(voteKey) ? "No" : "Yes";
       dispatch(
-        toggleVoteStatus({
+        setVoteStatus({
           countryID: String(userCountry.countryID),
           gameID: String(gameID),
           vote: voteKey,
+          voteOn: desiredVoteOn,
         }),
       );
     }
@@ -59,6 +63,7 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
           <WDVoteButtons
             toggleVote={toggleVote}
             voteState={userCountry.votes}
+            votingInProgress={votingInProgress}
           />
         </Box>
       )}

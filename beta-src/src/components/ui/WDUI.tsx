@@ -13,7 +13,7 @@ import WDPhaseUI from "./WDPhaseUI";
 import UIState from "../../enums/UIState";
 import capitalizeString from "../../utils/capitalizeString";
 import Vote from "../../enums/Vote";
-import WDMoveControls from "./WDMoveControls";
+import WDOrderStatusControls from "./WDOrderStatusControls";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import WDHomeIcon from "./icons/WDHomeIcon";
 import WDBuildCounts from "./WDBuildCounts";
@@ -31,6 +31,7 @@ import { store } from "../../state/store";
 import { MessageStatus } from "../../state/interfaces/GameMessages";
 import { IOrderDataHistorical } from "../../models/Interfaces";
 import WDGameFinishedOverlay from "./WDGameFinishedOverlay";
+import { Unit } from "../../utils/map/getUnits";
 
 const abbrMap = {
   Russia: "RUS",
@@ -44,11 +45,13 @@ const abbrMap = {
 
 interface WDUIProps {
   orders: IOrderDataHistorical[];
+  units: Unit[];
   viewingGameFinishedPhase: boolean;
 }
 
 const WDUI: React.FC<WDUIProps> = function ({
   orders,
+  units,
   viewingGameFinishedPhase,
 }): React.ReactElement {
   const theme = useTheme();
@@ -197,6 +200,7 @@ const WDUI: React.FC<WDUIProps> = function ({
         potNumber={pot}
         season={season}
         title={name}
+        units={units}
         userCountry={userTableData}
         year={year}
         modalRef={modalRef}
@@ -257,7 +261,7 @@ const WDUI: React.FC<WDUIProps> = function ({
       </WDPositionContainer>
       {user && !gameIsFinished && (
         <WDPositionContainer position={Position.BOTTOM_RIGHT}>
-          <WDMoveControls orderStatus={user.member.orderStatus} />
+          <WDOrderStatusControls orderStatus={user.member.orderStatus} />
         </WDPositionContainer>
       )}
       {gameIsFinished && viewingGameFinishedPhase && (

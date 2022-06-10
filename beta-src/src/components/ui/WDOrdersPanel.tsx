@@ -5,9 +5,11 @@ import { IOrderDataHistorical } from "../../models/Interfaces";
 import GameStateMaps from "../../state/interfaces/GameStateMaps";
 import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
 import WDVerticalScroll from "./WDVerticalScroll";
+import { Unit } from "../../utils/map/getUnits";
 
 interface WDOrdersPanelProps {
   orders: IOrderDataHistorical[];
+  units: Unit[];
   allCountries: CountryTableData[];
   maps: GameStateMaps;
 }
@@ -20,16 +22,16 @@ function shortUnitType(unitType: string): string | undefined {
 
 const WDOrdersPanel: React.FC<WDOrdersPanelProps> = function ({
   orders,
+  units,
   allCountries,
   maps,
 }): React.ReactElement {
   const orderStringsByCountryID: { [key: number]: string[] } = {};
-  const supporteeUnitTypeByProvID: { [key: string]: string | undefined } = {};
-  orders.forEach((order) => {
-    if (order.terrID) {
-      supporteeUnitTypeByProvID[maps.terrIDToProvinceID[order.terrID]] =
-        shortUnitType(order.unitType);
-    }
+  const supporteeUnitTypeByProvince: { [key: string]: string | undefined } = {};
+  units.forEach((unit) => {
+    supporteeUnitTypeByProvince[unit.mappedTerritory.province] = shortUnitType(
+      unit.unit.type,
+    );
   });
 
   orders.forEach((order) => {
@@ -56,108 +58,111 @@ const WDOrdersPanel: React.FC<WDOrdersPanelProps> = function ({
     const toTerrStr = getTerrStr(order.toTerrID);
     const fromProvStr = getProvStr(order.fromTerrID);
     const supporteeTerrID = order.fromTerrID || order.toTerrID;
-    const supporteeProvID = supporteeTerrID
-      ? maps.terrIDToProvinceID[supporteeTerrID]
+    const supporteeProvince = supporteeTerrID
+      ? maps.terrIDToProvince[supporteeTerrID]
       : undefined;
-    const supporteeUType = supporteeProvID
-      ? supporteeUnitTypeByProvID[supporteeProvID]
+    const supporteeUType = supporteeProvince
+      ? supporteeUnitTypeByProvince[supporteeProvince]
       : undefined;
 
-    if (order.type === "Move" && uType && provStr && toTerrStr) {
+    if (order.type === "Move" && uType && terrStr && toTerrStr) {
       if (order.viaConvoy === "Yes") {
-        orderStrings.push(`${uType} ${provStr} -> ${toTerrStr} via convoy`);
+        orderStrings.push(`${uType} ${terrStr} -> ${toTerrStr} via convoy`);
       } else {
-        orderStrings.push(`${uType} ${provStr} -> ${toTerrStr}`);
+        orderStrings.push(`${uType} ${terrStr} -> ${toTerrStr}`);
       }
-    } else if (order.type === "Retreat" && uType && provStr && toTerrStr) {
-      orderStrings.push(`${uType} ${provStr} retreats to ${toTerrStr}`);
-    } else if (order.type === "Disband" && uType && provStr) {
-      orderStrings.push(`${uType} ${provStr} disbands`);
-    } else if (order.type === "Hold" && uType && provStr) {
-      orderStrings.push(`${uType} ${provStr} H`);
+    } else if (order.type === "Retreat" && uType && terrStr && toTerrStr) {
+      orderStrings.push(`${uType} ${terrStr} retreats to ${toTerrStr}`);
+    } else if (order.type === "Disband" && uType && terrStr) {
+      orderStrings.push(`${uType} ${terrStr} disbands`);
+    } else if (order.type === "Hold" && uType && terrStr) {
+      orderStrings.push(`${uType} ${terrStr} H`);
     } else if (
       order.type === "Support hold" &&
       uType &&
       supporteeUType &&
-      provStr &&
+      terrStr &&
       toProvStr
     ) {
       orderStrings.push(
-        `${uType} ${provStr} S ${supporteeUType} ${toProvStr} H`,
+        `${uType} ${terrStr} S ${supporteeUType} ${toProvStr} H`,
       );
     } else if (
       order.type === "Support move" &&
       uType &&
       supporteeUType &&
-      provStr &&
+      terrStr &&
       fromProvStr &&
       toProvStr
     ) {
       orderStrings.push(
-        `${uType} ${provStr} S ${supporteeUType} ${fromProvStr} -> ${toProvStr}`,
+        `${uType} ${terrStr} S ${supporteeUType} ${fromProvStr} -> ${toProvStr}`,
       );
     } else if (
       order.type === "Convoy" &&
       uType &&
       supporteeUType &&
-      provStr &&
+      terrStr &&
       fromProvStr &&
       toProvStr
     ) {
       orderStrings.push(
-        `${uType} ${provStr} C ${supporteeUType} ${fromProvStr} -> ${toProvStr}`,
+        `${uType} ${terrStr} C ${supporteeUType} ${fromProvStr} -> ${toProvStr}`,
       );
-    } else if (order.type === "Destroy" && uType && provStr) {
-      orderStrings.push(`Destroy ${uType} ${provStr}`);
+    } else if (order.type === "Destroy" && uType && terrStr) {
+      orderStrings.push(`Destroy ${uType} ${terrStr}`);
     } else if (order.type === "Build Army" && terrStr) {
       orderStrings.push(`Build A ${terrStr}`);
     } else if (order.type === "Build Fleet" && terrStr) {
       orderStrings.push(`Build F ${terrStr}`);
-    } else if (uType && provStr) {
-      orderStrings.push(`${uType} ${provStr} order unknown/unassigned`);
+    } else if (uType && terrStr) {
+      orderStrings.push(`${uType} ${terrStr} order unassigned`);
     }
   });
-  // console.log({ orders, orderStringsByCountryID });
+  console.log({ orders, orderStringsByCountryID });
 
   return (
     <WDVerticalScroll>
       <Table aria-label="country info table" size="small" stickyHeader>
         <TableBody>
-          {allCountries.map((country) => (
-            <React.Fragment key={country.power}>
-              <TableRow key="orderlabel">
-                <TableCell
-                  align="left"
-                  sx={{
-                    borderBottom: "none",
-                    paddingTop: "14px",
-                    paddingBottom: "2px",
-                  }}
-                >
-                  <span style={{ color: country.color, fontWeight: 700 }}>
-                    {country.power.toUpperCase()}
-                  </span>
-                </TableCell>
-              </TableRow>
-              {orderStringsByCountryID[country.countryID]?.map(
-                (orderString) => (
-                  <TableRow key={`order-${orderString}`}>
+          {allCountries.map(
+            (country) =>
+              orderStringsByCountryID[country.countryID] && (
+                <React.Fragment key={country.power}>
+                  <TableRow key="orderlabel">
                     <TableCell
+                      align="left"
                       sx={{
-                        paddingTop: "0px !important",
-                        fontSize: "10pt",
-                        fontFamily: "Roboto",
                         borderBottom: "none",
+                        paddingTop: "14px",
                         paddingBottom: "2px",
                       }}
                     >
-                      {orderString}
+                      <span style={{ color: country.color, fontWeight: 700 }}>
+                        {country.power.toUpperCase()}
+                      </span>
                     </TableCell>
                   </TableRow>
-                ),
-              )}
-            </React.Fragment>
-          ))}
+                  {orderStringsByCountryID[country.countryID]?.map(
+                    (orderString) => (
+                      <TableRow key={`order-${orderString}`}>
+                        <TableCell
+                          sx={{
+                            paddingTop: "0px !important",
+                            fontSize: "10pt",
+                            fontFamily: "Roboto",
+                            borderBottom: "none",
+                            paddingBottom: "2px",
+                          }}
+                        >
+                          {orderString}
+                        </TableCell>
+                      </TableRow>
+                    ),
+                  )}
+                </React.Fragment>
+              ),
+          )}
         </TableBody>
       </Table>
     </WDVerticalScroll>
