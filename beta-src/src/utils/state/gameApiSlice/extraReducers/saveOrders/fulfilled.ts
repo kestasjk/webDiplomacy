@@ -8,6 +8,10 @@ import { setAlert } from "../../../../../state/interfaces/GameAlert";
 import getOrderStates from "../../../getOrderStates";
 import { GameState } from "../../../../../state/interfaces/GameState";
 import OrderSubmission from "../../../../../interfaces/state/OrderSubmission";
+import {
+  handlePostSucceeded,
+  handlePostFailed,
+} from "../handleSucceededFailed";
 
 /* eslint-disable no-param-reassign */
 export function saveOrdersPending(state: GameState, action): void {
@@ -50,37 +54,26 @@ export function saveOrdersCommon(state: GameState, action): void {
 
     // Report any errors
     if (invalid) {
+      let alertMessage;
       if (notice) {
-        setAlert(state.alert, `Error saving orders: ${notice}`);
+        alertMessage = `Error saving orders: ${notice}`;
       } else {
-        setAlert(
-          state.alert,
-          `Unknown error saving orders, server indicated that API call was invalid`,
-        );
+        alertMessage = `Unknown error saving orders, server indicated that API call was invalid`;
       }
-      // In any error case saving orders, try reloading everything so that we can
-      // attempt to resync with the server again.
-      state.needsGameOverview = true;
-      state.needsGameData = true;
+      handlePostFailed(state, alertMessage);
+    } else {
+      handlePostSucceeded(state);
     }
   } else {
-    setAlert(
-      state.alert,
-      `Unknown error saving orders, server indicated that API call was invalid`,
-    );
-    // In any error case, try reloading everything so that we can attempt to resync
-    // with the server again.
-    state.needsGameOverview = true;
-    state.needsGameData = true;
+    const alertMessage = `Unknown error saving orders, server indicated that API call was invalid`;
+    handlePostFailed(state, alertMessage);
   }
 }
 
 export function saveOrdersFulfilled(state: GameState, action): void {
-  state.apiStatus = "succeeded";
   saveOrdersCommon(state, action);
 }
 
-export function saveOrdersRejected(state, action): void {
-  state.apiStatus = "failed";
+export function saveOrdersRejected(state: GameState, action): void {
   saveOrdersCommon(state, action);
 }
