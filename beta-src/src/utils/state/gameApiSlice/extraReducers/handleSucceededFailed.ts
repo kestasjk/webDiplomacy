@@ -2,15 +2,10 @@ import { setAlert } from "../../../../state/interfaces/GameAlert";
 import { GameState } from "../../../../state/interfaces/GameState";
 
 /* eslint-disable no-param-reassign */
-export function handlePostFailed(
-  state: GameState,
-  alertMessage?: string,
-): void {
+export function handlePostFailed(state: GameState, alertMessage: string): void {
   state.apiStatus = "failed";
-  // Show the user the message if there is one
-  if (alertMessage) {
-    setAlert(state.alert, alertMessage);
-  }
+  // Show the user the message
+  setAlert(state.alert, alertMessage);
   // In any error case where we attempted to modify the state of something
   // on the server, try reloading everything so that we can
   // attempt to resync with the server again.
