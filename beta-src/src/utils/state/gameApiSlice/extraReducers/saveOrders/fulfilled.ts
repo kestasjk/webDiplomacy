@@ -8,7 +8,10 @@ import { setAlert } from "../../../../../state/interfaces/GameAlert";
 import getOrderStates from "../../../getOrderStates";
 import { GameState } from "../../../../../state/interfaces/GameState";
 import OrderSubmission from "../../../../../interfaces/state/OrderSubmission";
-import { handlePostSucceeded, handlePostFailed } from "../handleFulfillReject";
+import {
+  handlePostSucceeded,
+  handlePostFailed,
+} from "../handleSucceededFailed";
 
 /* eslint-disable no-param-reassign */
 export function saveOrdersPending(state: GameState, action): void {

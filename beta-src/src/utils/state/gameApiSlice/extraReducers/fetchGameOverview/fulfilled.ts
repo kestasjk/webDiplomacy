@@ -1,7 +1,7 @@
 import GameOverviewResponse from "../../../../../state/interfaces/GameOverviewResponse";
 import { GameState } from "../../../../../state/interfaces/GameState";
 import getPhaseKey from "../../../getPhaseKey";
-import { handleGetSucceeded, handleGetFailed } from "../handleFulfillReject";
+import { handleGetSucceeded, handleGetFailed } from "../handleSucceededFailed";
 
 /* eslint-disable no-param-reassign */
 export default function fetchGameOverviewFulfilled(

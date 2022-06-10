@@ -13,7 +13,7 @@ import getPhaseKey from "../../../getPhaseKey";
 import resetOrder from "../../../resetOrder";
 import updateOrdersMeta from "../../../updateOrdersMeta";
 import { getLegalOrders } from "./precomputeLegalOrders";
-import { handleGetSucceeded, handleGetFailed } from "../handleFulfillReject";
+import { handleGetSucceeded, handleGetFailed } from "../handleSucceededFailed";
 
 /* eslint-disable no-param-reassign */
 export default function fetchGameDataFulfilled(state: GameState, action): void {

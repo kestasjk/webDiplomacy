@@ -41,7 +41,7 @@ import {
   handleGetFailed,
   handlePostSucceeded,
   handlePostFailed,
-} from "../../utils/state/gameApiSlice/extraReducers/handleFulfillReject";
+} from "../../utils/state/gameApiSlice/extraReducers/handleSucceededFailed";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
