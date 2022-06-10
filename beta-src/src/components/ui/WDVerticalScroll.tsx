@@ -12,11 +12,11 @@ const WDVerticalScroll: React.FC = function ({ children }): React.ReactElement {
   return (
     <Box
       sx={{
-        m: "20px 0 10px 0",
+        m: "0px 0 10px 0",
         width: "100%",
         height,
         display: "flex",
-        flexDirection: "column-reverse",
+        flexDirection: "column",
       }}
     >
       <Box sx={{ overflow: "auto" }}>{children}</Box>
