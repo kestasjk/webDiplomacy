@@ -29,6 +29,7 @@ import useViewport from "../../hooks/useViewport";
 import { store } from "../../state/store";
 import { MessageStatus } from "../../state/interfaces/GameMessages";
 import { IOrderDataHistorical } from "../../models/Interfaces";
+import { Unit } from "../../utils/map/getUnits";
 
 const abbrMap = {
   Russia: "RUS",
@@ -42,9 +43,13 @@ const abbrMap = {
 
 interface WDUIProps {
   orders: IOrderDataHistorical[];
+  units: Unit[];
 }
 
-const WDUI: React.FC<WDUIProps> = function ({ orders }): React.ReactElement {
+const WDUI: React.FC<WDUIProps> = function ({
+  orders,
+  units,
+}): React.ReactElement {
   const theme = useTheme();
 
   const [showControlModal, setShowControlModal] = React.useState(false);
@@ -167,6 +172,7 @@ const WDUI: React.FC<WDUIProps> = function ({ orders }): React.ReactElement {
         potNumber={pot}
         season={season}
         title={name}
+        units={units}
         userCountry={userTableData}
         year={year}
         modalRef={modalRef}

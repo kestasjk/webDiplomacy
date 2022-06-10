@@ -5,9 +5,11 @@ import { IOrderDataHistorical } from "../../models/Interfaces";
 import GameStateMaps from "../../state/interfaces/GameStateMaps";
 import TerritoryMap from "../../data/map/variants/classic/TerritoryMap";
 import WDVerticalScroll from "./WDVerticalScroll";
+import { Unit } from "../../utils/map/getUnits";
 
 interface WDOrdersPanelProps {
   orders: IOrderDataHistorical[];
+  units: Unit[];
   allCountries: CountryTableData[];
   maps: GameStateMaps;
 }
@@ -20,16 +22,16 @@ function shortUnitType(unitType: string): string | undefined {
 
 const WDOrdersPanel: React.FC<WDOrdersPanelProps> = function ({
   orders,
+  units,
   allCountries,
   maps,
 }): React.ReactElement {
   const orderStringsByCountryID: { [key: number]: string[] } = {};
-  const supporteeUnitTypeByProvID: { [key: string]: string | undefined } = {};
-  orders.forEach((order) => {
-    if (order.terrID) {
-      supporteeUnitTypeByProvID[maps.terrIDToProvinceID[order.terrID]] =
-        shortUnitType(order.unitType);
-    }
+  const supporteeUnitTypeByProvince: { [key: string]: string | undefined } = {};
+  units.forEach((unit) => {
+    supporteeUnitTypeByProvince[unit.mappedTerritory.province] = shortUnitType(
+      unit.unit.type,
+    );
   });
 
   orders.forEach((order) => {
@@ -56,11 +58,11 @@ const WDOrdersPanel: React.FC<WDOrdersPanelProps> = function ({
     const toTerrStr = getTerrStr(order.toTerrID);
     const fromProvStr = getProvStr(order.fromTerrID);
     const supporteeTerrID = order.fromTerrID || order.toTerrID;
-    const supporteeProvID = supporteeTerrID
-      ? maps.terrIDToProvinceID[supporteeTerrID]
+    const supporteeProvince = supporteeTerrID
+      ? maps.terrIDToProvince[supporteeTerrID]
       : undefined;
-    const supporteeUType = supporteeProvID
-      ? supporteeUnitTypeByProvID[supporteeProvID]
+    const supporteeUType = supporteeProvince
+      ? supporteeUnitTypeByProvince[supporteeProvince]
       : undefined;
 
     if (order.type === "Move" && uType && terrStr && toTerrStr) {

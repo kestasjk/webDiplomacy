@@ -323,7 +323,7 @@ const WDMain: React.FC = function (): React.ReactElement {
           standoffs={standoffs}
           isLivePhase={isLivePhase}
         />
-        <WDUI orders={orders} />
+        <WDUI orders={orders} units={units} />
       </WDMainController>
     </React.Suspense>
   );
