@@ -22,6 +22,7 @@ import {
   fetchGameMessages,
   gameApiSliceActions,
   gameMaps,
+  gameViewedPhase,
 } from "../../state/game/game-api-slice";
 import useInterval from "../../hooks/useInterval";
 import useOutsideAlerter from "../../hooks/useOutsideAlerter";
@@ -29,6 +30,7 @@ import useViewport from "../../hooks/useViewport";
 import { store } from "../../state/store";
 import { MessageStatus } from "../../state/interfaces/GameMessages";
 import { IOrderDataHistorical } from "../../models/Interfaces";
+import WDGameFinishedOverlay from "./WDGameFinishedOverlay";
 
 const abbrMap = {
   Russia: "RUS",
@@ -42,9 +44,13 @@ const abbrMap = {
 
 interface WDUIProps {
   orders: IOrderDataHistorical[];
+  viewingGameFinishedPhase: boolean;
 }
 
-const WDUI: React.FC<WDUIProps> = function ({ orders }): React.ReactElement {
+const WDUI: React.FC<WDUIProps> = function ({
+  orders,
+  viewingGameFinishedPhase,
+}): React.ReactElement {
   const theme = useTheme();
 
   const [showControlModal, setShowControlModal] = React.useState(false);
@@ -53,12 +59,15 @@ const WDUI: React.FC<WDUIProps> = function ({ orders }): React.ReactElement {
 
   const {
     alternatives,
+    anon,
+    drawType,
     excusedMissedTurns,
     gameID,
     members,
     name,
     phase,
     pot,
+    pressType,
     season,
     user,
     year,
@@ -152,6 +161,26 @@ const WDUI: React.FC<WDUIProps> = function ({ orders }): React.ReactElement {
 
   const gameIsFinished = phase === "Finished";
 
+  let moreAlternatives = alternatives;
+  if (anon === "Yes") {
+    moreAlternatives += ", Anonymous";
+  }
+  switch (pressType) {
+    case "Regular":
+      moreAlternatives += ", Regular Press";
+      break;
+    case "PublicPressOnly":
+      moreAlternatives += ", Public Press Only";
+      break;
+    case "NoPress":
+      moreAlternatives += ", Gunboat (no press)";
+      break;
+    case "RulebookPress":
+      moreAlternatives += ", Rulebook Press";
+      break;
+    default:
+      break;
+  }
   const popover = popoverTrigger.current ? (
     <WDPopover
       isOpen={showControlModal}
@@ -159,7 +188,7 @@ const WDUI: React.FC<WDUIProps> = function ({ orders }): React.ReactElement {
       anchorEl={popoverTrigger.current}
     >
       <WDFullModal
-        alternatives={alternatives}
+        alternatives={moreAlternatives}
         allCountries={allCountries}
         excusedMissedTurns={excusedMissedTurns}
         gameID={gameID}
@@ -231,6 +260,9 @@ const WDUI: React.FC<WDUIProps> = function ({ orders }): React.ReactElement {
         <WDPositionContainer position={Position.BOTTOM_RIGHT}>
           <WDMoveControls orderStatus={user.member.orderStatus} />
         </WDPositionContainer>
+      )}
+      {gameIsFinished && viewingGameFinishedPhase && (
+        <WDGameFinishedOverlay allCountries={allCountries} />
       )}
     </>
   );
