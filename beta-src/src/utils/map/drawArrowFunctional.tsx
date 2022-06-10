@@ -132,7 +132,7 @@ export function getArrowX1Y1X2Y2(
   // Draw the arrows slightly closer to a unit than their nominal size for the arrow source, the portion of
   // the unit's nominal size that the unit icon actually covers is a bit smaller and
   // the arrow looks a bit too far away otherwise.
-  const UNIT_SOURCE_SHRINK_FACTOR = 0.9;
+  const UNIT_SOURCE_SHRINK_FACTOR = 0.8;
   if (sourceType === "unit" || sourceType === "dislodger") {
     sourceWidth *= UNIT_SOURCE_SHRINK_FACTOR;
     sourceHeight *= UNIT_SOURCE_SHRINK_FACTOR;
@@ -153,8 +153,6 @@ export function getArrowX1Y1X2Y2(
 }
 
 // See getTargetXYWH for a description of the possible types and identifiers.
-// If skipDrawingProportion is specified, will skip drawing the first
-// skipDrawingProportion-th of the line segment of the arrow.
 export default function drawArrowFunctional(
   arrowType: ArrowType,
   arrowColor: ArrowColor,
