@@ -333,12 +333,8 @@ class ToggleVote extends ApiEntry {
 		$gameID = intval($args['gameID']);
 		$countryID = intval($args['countryID']);
 		$vote = $args['vote'];
-		if( $vote === 'Draw' ) $vote = 'Draw';
-		else if( $vote === 'Pause' ) $vote = 'Pause';
-		else if( $vote === 'Cancel' ) $vote = 'Cancel';
-		else if( $vote === 'Concede' ) $vote = 'Concede';
-		else throw new RequestException('Invalid vote type; allowed are Draw, Concede, Pause, Cancel');
-
+		if (!in_array($vote, ['Draw', 'Pause', 'Cancel', 'Concede']))
+		    throw new RequestException('Invalid vote type; allowed are Draw, Concede, Pause, Cancel');
 		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
 			throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 
@@ -395,11 +391,8 @@ class SetVote extends ApiEntry {
 		$countryID = intval($args['countryID']);
 		$vote = $args['vote'];
 		$voteOn = filter_var($args['voteOn'], FILTER_VALIDATE_BOOLEAN);
-		if( $vote === 'Draw' ) $vote = 'Draw';
-		else if( $vote === 'Pause' ) $vote = 'Pause';
-		else if( $vote === 'Cancel' ) $vote = 'Cancel';
-		else if( $vote === 'Concede' ) $vote = 'Concede';
-		else throw new RequestException('Invalid vote type; allowed are Draw, Concede, Pause, Cancel');
+		if (!in_array($vote, ['Draw', 'Pause', 'Cancel', 'Concede']))
+		    throw new RequestException('Invalid vote type; allowed are Draw, Concede, Pause, Cancel');
 
 		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
 			throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
