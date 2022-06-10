@@ -21,7 +21,7 @@ interface WDMapProps {
   territories: APITerritories;
   centersByProvince: { [key: string]: { ownerCountryID: string } };
   standoffs: StandoffInfo[];
-  isLatestPhase: boolean;
+  isLivePhase: boolean; // Game is live and user is viewing the latest phase?
 }
 
 const WDMap: React.ForwardRefExoticComponent<
@@ -36,7 +36,7 @@ const WDMap: React.ForwardRefExoticComponent<
       territories,
       centersByProvince,
       standoffs,
-      isLatestPhase,
+      isLivePhase,
     },
     ref,
   ): React.ReactElement => (
@@ -56,7 +56,7 @@ const WDMap: React.ForwardRefExoticComponent<
             units={units}
             centersByProvince={centersByProvince}
             phase={phase}
-            isLatestPhase={isLatestPhase}
+            isLivePhase={isLivePhase}
           />
           <WDArrowContainer
             phase={phase}
@@ -66,8 +66,8 @@ const WDMap: React.ForwardRefExoticComponent<
             territories={territories}
             standoffs={standoffs}
           />
-          {isLatestPhase && <WDBuildContainer />}
-          {isLatestPhase && <WDFlyoutContainer units={units} />}
+          {isLivePhase && <WDBuildContainer />}
+          {isLivePhase && <WDFlyoutContainer units={units} />}
         </g>
       </g>
       <defs>
