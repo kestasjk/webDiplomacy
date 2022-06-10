@@ -36,6 +36,12 @@ import {
 import shallowArraysEqual from "../../utils/shallowArraysEqual";
 import { setAlert } from "../interfaces/GameAlert";
 import PlayerActiveGames from "../interfaces/PlayerActiveGames";
+import {
+  handleGetSucceeded,
+  handleGetFailed,
+  handlePostSucceeded,
+  handlePostFailed,
+} from "../../utils/state/gameApiSlice/extraReducers/handleFulfillReject";
 
 export const fetchGameData = createAsyncThunk(
   ApiRoute.GAME_DATA,
@@ -207,13 +213,15 @@ export const loadGame = (gameID: string) => async (dispatch) => {
       gameID,
     }),
   );
-  const countryID = response.payload.user?.member.countryID;
-  const { phase } = response.payload;
-  if (phase === "Pre-game") {
-    return;
-  }
+  if (response.payload) {
+    const countryID = response.payload.user?.member.countryID;
+    const { phase } = response.payload;
+    if (phase === "Pre-game") {
+      return;
+    }
 
-  await loadGameData(gameID, countryID);
+    await loadGameData(gameID, countryID);
+  }
 };
 
 /**
@@ -290,8 +298,7 @@ const gameApiSlice = createSlice({
       .addCase(fetchGameData.fulfilled, fetchGameDataFulfilled)
       .addCase(fetchGameData.rejected, (state, action) => {
         // console.log("fetchGameData rejected!");
-        state.apiStatus = "failed";
-        state.error = action.error.message;
+        handleGetFailed(state, action);
       })
       // fetchGameOverview
       .addCase(fetchGameOverview.pending, (state) => {
@@ -300,9 +307,8 @@ const gameApiSlice = createSlice({
       })
       .addCase(fetchGameOverview.fulfilled, fetchGameOverviewFulfilled)
       .addCase(fetchGameOverview.rejected, (state, action) => {
-        state.apiStatus = "failed";
-        state.error = action.error.message;
         state.outstandingOverviewRequests = false;
+        handleGetFailed(state, action);
       })
       // fetchGameStatus
       .addCase(fetchGameStatus.pending, (state) => {
@@ -310,13 +316,14 @@ const gameApiSlice = createSlice({
       })
       .addCase(fetchGameStatus.fulfilled, fetchGameStatusFulfilled)
       .addCase(fetchGameStatus.rejected, (state, action) => {
-        state.apiStatus = "failed";
-        state.error = action.error.message;
+        handleGetFailed(state, action);
       })
       .addCase(fetchPlayerActiveGames.fulfilled, (state, action) => {
-        console.log(action.payload);
         if (typeof action.payload.games !== "undefined") {
+          handleGetSucceeded(state);
           state.activeGames = action.payload.games;
+        } else {
+          handleGetFailed(state, action);
         }
       })
       // saveOrders
@@ -330,11 +337,11 @@ const gameApiSlice = createSlice({
         state.votingInProgress = { ...state.votingInProgress, [vote]: voteOn };
       })
       .addCase(setVoteStatus.fulfilled, (state, action) => {
-        state.apiStatus = "succeeded";
         const { vote } = action.meta.arg;
         state.votingInProgress = { ...state.votingInProgress, [vote]: null };
-        if (state.overview.user) {
-          if (action.payload) {
+        if (action.payload) {
+          handlePostSucceeded(state);
+          if (state.overview.user) {
             const newVotes = action.payload.split(",").filter((s) => !!s);
             state.overview.user.member.votes = newVotes;
             state.overview.members.forEach((member) => {
@@ -342,51 +349,54 @@ const gameApiSlice = createSlice({
                 member.votes = newVotes;
               }
             });
-          } else {
-            // In any error case setting votes, try reloading everything so that we can
-            // attempt to resync with the server again.
-            state.needsGameOverview = true;
           }
+        } else {
+          handlePostFailed(
+            state,
+            "Error sending vote, network connection issue",
+          );
         }
       })
       .addCase(setVoteStatus.rejected, (state, action) => {
-        state.apiStatus = "failed";
-        state.error = action.error.message;
+        handlePostFailed(state, "Error sending vote, network connection issue");
         const { vote } = action.meta.arg;
         state.votingInProgress = { ...state.votingInProgress, [vote]: null };
-        // In any error case setting votes, try reloading everything so that we can
-        // attempt to resync with the server again.
-        state.needsGameOverview = true;
       })
       // Send message
       .addCase(sendMessage.fulfilled, (state, action) => {
         if (action.payload) {
+          handlePostSucceeded(state);
           const { messages } = action.payload;
           const allMessages = mergeMessageArrays(
             state.messages.messages,
             messages,
           );
           state.messages.messages = allMessages;
+        } else {
+          handlePostFailed(
+            state,
+            "Error sending message, network connection issue",
+          );
         }
       })
       .addCase(sendMessage.rejected, (state, action) => {
-        state.apiStatus = "failed";
-        // console.log(`sendMessages failed: ${action.error.message}`);
-        state.error = action.error.message;
+        handlePostFailed(
+          state,
+          "Error sending message, network connection issue",
+        );
       })
       // Fetch Game Messages
       .addCase(fetchGameMessages.pending, (state, action) => {
         state.outstandingMessageRequests = true;
       })
       .addCase(fetchGameMessages.rejected, (state, action) => {
-        state.apiStatus = "failed";
-        // console.log(`fetchGameMessages failed: ${action.error.message}`);
         state.outstandingMessageRequests = false;
-        state.error = action.error.message;
+        handleGetFailed(state, action);
       })
       .addCase(fetchGameMessages.fulfilled, (state, action) => {
         state.outstandingMessageRequests = false;
         if (action.payload) {
+          handleGetSucceeded(state);
           const { messages, newMessagesFrom, time } = action.payload;
           if (messages) {
             const messagesWithStatus = messages.map((m) => {
@@ -428,6 +438,8 @@ const gameApiSlice = createSlice({
             // console.log(`Messages fetched at time=${time}`);
             state.messages.time = time;
           }
+        } else {
+          handleGetFailed(state, action);
         }
       });
   },

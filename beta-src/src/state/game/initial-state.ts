@@ -169,6 +169,7 @@ const initialState: GameState = {
     visible: false,
   },
   activeGames: [],
+  numConsecutiveGetFailures: 0,
 };
 
 export default initialState;

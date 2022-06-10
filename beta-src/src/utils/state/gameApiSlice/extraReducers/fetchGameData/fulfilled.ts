@@ -13,10 +13,15 @@ import getPhaseKey from "../../../getPhaseKey";
 import resetOrder from "../../../resetOrder";
 import updateOrdersMeta from "../../../updateOrdersMeta";
 import { getLegalOrders } from "./precomputeLegalOrders";
+import { handleGetSucceeded, handleGetFailed } from "../handleFulfillReject";
 
 /* eslint-disable no-param-reassign */
 export default function fetchGameDataFulfilled(state: GameState, action): void {
-  state.apiStatus = "succeeded";
+  if (!action.payload) {
+    handleGetFailed(state, action);
+    return;
+  }
+  handleGetSucceeded(state);
 
   const oldPhaseKey = getPhaseKey(state.data.data, "<BAD OLD_DATA_KEY>");
   const newPhaseKey = getPhaseKey(action.payload.data, "<BAD NEW_DATA_KEY>");
