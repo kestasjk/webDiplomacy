@@ -19,20 +19,16 @@ import { RootState } from "../../state/store";
 import { OrderStatus } from "../../interfaces/state/MemberData";
 import OrderSubmission from "../../interfaces/state/OrderSubmission";
 
-enum Move {
+enum OrderStatusButton {
   SAVE = "save",
   READY = "ready",
 }
 
-type MoveStatus = {
-  [key in Move]: boolean;
-};
-
-interface WDMoveControlsProps {
+interface WDOrderStatsControlsProps {
   orderStatus: OrderStatus;
 }
 
-const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
+const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
   orderStatus,
 }): React.ReactElement {
   const theme = useTheme();
@@ -120,7 +116,7 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
   const doAnimateGlow =
     saveEnabled && ordersLength !== ordersSaved && !currentOrderInProgress;
 
-  const clickButton = (type: Move) => {
+  const clickButton = (whatButton: OrderStatusButton) => {
     // console.log("Entered save button click");
     // When you click save or ready, it should clear any actively entered order you have going,
     // and/or any of the move input flyover. It doesn't make sense to ready and have the UI
@@ -158,7 +154,7 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
           queryParams: {},
           userIntent: "saving",
         };
-        if (type === Move.READY) {
+        if (whatButton === OrderStatusButton.READY) {
           if (orderStatus.Ready) {
             orderSubmission.queryParams = { notready: "on" };
             orderSubmission.userIntent = "unreadying";
@@ -182,7 +178,7 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
       <WDButton
         color="primary"
         disabled={!saveEnabled}
-        onClick={() => saveEnabled && clickButton(Move.SAVE)}
+        onClick={() => saveEnabled && clickButton(OrderStatusButton.SAVE)}
         sx={{
           filter: !saveEnabled
             ? undefined
@@ -195,7 +191,7 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
       <WDButton
         color="primary"
         disabled={!readyEnabled}
-        onClick={() => readyEnabled && clickButton(Move.READY)}
+        onClick={() => readyEnabled && clickButton(OrderStatusButton.READY)}
         sx={{
           filter: !readyEnabled
             ? undefined
@@ -208,4 +204,4 @@ const WDMoveControls: React.FC<WDMoveControlsProps> = function ({
   );
 };
 
-export default WDMoveControls;
+export default WDOrderStatusControls;
