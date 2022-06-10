@@ -161,6 +161,7 @@ function accumulateSupportMoveOrderArrows(
   orders: IOrderDataHistorical[],
   ordersByProvID: { [key: number]: IOrderDataHistorical },
   territories: APITerritories,
+  ghostArrowsAlreadyAdded: Set<string>,
 ): void {
   orders
     .filter((order) => order.type === "Support move")
@@ -232,16 +233,20 @@ function accumulateSupportMoveOrderArrows(
           ),
         );
         // Also draw a ghosty arrow of what we're trying to support.
-        arrows.push(
-          drawArrowFunctional(
-            ArrowType.MOVE,
-            ArrowColor.IMPLIED_FOREIGN,
-            "unit",
-            supporteeTerr,
-            "territory",
-            toTerr,
-          ),
-        );
+        const ghostArrowID = `${supporteeTerr}|${toTerr}`;
+        if (!ghostArrowsAlreadyAdded.has(ghostArrowID)) {
+          ghostArrowsAlreadyAdded.add(ghostArrowID);
+          arrows.push(
+            drawArrowFunctional(
+              ArrowType.MOVE,
+              ArrowColor.IMPLIED_FOREIGN,
+              "unit",
+              supporteeTerr,
+              "territory",
+              toTerr,
+            ),
+          );
+        }
       }
     });
 }
@@ -251,6 +256,7 @@ function accumulateConvoyOrderArrows(
   orders: IOrderDataHistorical[],
   ordersByProvID: { [key: number]: IOrderDataHistorical },
   territories: APITerritories,
+  ghostArrowsAlreadyAdded: Set<string>,
 ): void {
   orders
     .filter((order) => order.type === "Convoy")
@@ -292,17 +298,21 @@ function accumulateConvoyOrderArrows(
         ),
       );
       if (!isCoordinated) {
-        // Also draw a ghosty arrow of what we're trying to convoy.
-        arrows.push(
-          drawArrowFunctional(
-            ArrowType.MOVE,
-            ArrowColor.IMPLIED_FOREIGN,
-            "unit",
-            convoyeeTerr,
-            "territory",
-            toTerr,
-          ),
-        );
+        // Also draw a ghosty arrow of what we're trying to support.
+        const ghostArrowID = `${convoyeeTerr}|${toTerr}`;
+        if (!ghostArrowsAlreadyAdded.has(ghostArrowID)) {
+          ghostArrowsAlreadyAdded.add(ghostArrowID);
+          arrows.push(
+            drawArrowFunctional(
+              ArrowType.MOVE,
+              ArrowColor.IMPLIED_FOREIGN,
+              "unit",
+              convoyeeTerr,
+              "territory",
+              toTerr,
+            ),
+          );
+        }
       }
     });
 }
@@ -386,6 +396,42 @@ function accumulateBuildCircles(
     });
 }
 
+function accumulateDisbandMarks(
+  arrows: (React.ReactElement | null)[],
+  units: Unit[],
+  territories: APITerritories,
+): void {
+  units
+    .filter((unit) => unit.drawMode === UnitDrawMode.DISBANDED)
+    .forEach((unit) => {
+      const terr = TerritoryMap[territories[unit.unit.terrID].name].territory;
+      const [x1, y1, w1, h1] = getTargetXYWH("unit", terr);
+      const MARKSIZE = 38;
+      arrows.push(
+        <line
+          key={`disbandmark-${terr}-1`}
+          x1={x1 - MARKSIZE}
+          y1={y1 - MARKSIZE}
+          x2={x1 + MARKSIZE}
+          y2={y1 + MARKSIZE}
+          stroke="red"
+          strokeWidth={4}
+        />,
+      );
+      arrows.push(
+        <line
+          key={`disbandmark-${terr}-2`}
+          x1={x1 + MARKSIZE}
+          y1={y1 - MARKSIZE}
+          x2={x1 - MARKSIZE}
+          y2={y1 + MARKSIZE}
+          stroke="red"
+          strokeWidth={4}
+        />,
+      );
+    });
+}
+
 function accumulateStandoffMarks(
   arrows: (React.ReactElement | null)[],
   standoffs: StandoffInfo[],
@@ -396,7 +442,7 @@ function accumulateStandoffMarks(
     if (!rootTerritory) return;
 
     const [x1, y1, w1, h1] = getTargetXYWH("territory", rootTerritory);
-    const MARKSIZE = 25;
+    const MARKSIZE = 15;
     arrows.push(
       <line
         key={`standoffmark-${province}-1`}
@@ -404,7 +450,7 @@ function accumulateStandoffMarks(
         y1={y1 - MARKSIZE}
         x2={x1 + MARKSIZE}
         y2={y1 + MARKSIZE}
-        stroke="red"
+        stroke="tomato"
         strokeWidth={6}
       />,
     );
@@ -415,7 +461,7 @@ function accumulateStandoffMarks(
         y1={y1 - MARKSIZE}
         x2={x1 - MARKSIZE}
         y2={y1 + MARKSIZE}
-        stroke="red"
+        stroke="tomato"
         strokeWidth={6}
       />,
     );
@@ -472,13 +518,29 @@ const WDArrowContainer: React.FC<WDArrowProps> = function ({
     ordersByProvID[getProvIDNumberOfTerrIDNumber(order.terrID, territories)] =
       order;
   });
+  // Accumulate ghosty arrows so that we don't draw multiples of them if we have
+  // multiple units supporting or convoying a unit that isn't coordinated with them.
+  const ghostArrowsAlreadyAdded = new Set<string>();
   accumulateMoveOrderArrows(arrows, orders, territories);
   accumulateSupportHoldOrderArrows(arrows, orders, ordersByProvID, territories);
-  accumulateSupportMoveOrderArrows(arrows, orders, ordersByProvID, territories);
-  accumulateConvoyOrderArrows(arrows, orders, ordersByProvID, territories);
+  accumulateSupportMoveOrderArrows(
+    arrows,
+    orders,
+    ordersByProvID,
+    territories,
+    ghostArrowsAlreadyAdded,
+  );
+  accumulateConvoyOrderArrows(
+    arrows,
+    orders,
+    ordersByProvID,
+    territories,
+    ghostArrowsAlreadyAdded,
+  );
   accumulateRetreatArrows(arrows, orders, territories);
   accumulateDislodgerArrows(arrows, units, territories);
   accumulateBuildCircles(arrows, units, territories);
+  accumulateDisbandMarks(arrows, units, territories);
   accumulateStandoffMarks(arrows, standoffs);
   return <g id="arrows">{arrows}</g>;
 };
