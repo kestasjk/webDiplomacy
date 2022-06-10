@@ -1,5 +1,6 @@
 import * as React from "react";
 import WDProvince from "../../../components/WDProvince";
+import WDProvinceBorderHighlight from "../../../components/WDProvinceBorderHighlight";
 import WDProvinceOverlay from "../../../components/WDProvinceOverlay";
 import { Unit } from "../../../../../utils/map/getUnits";
 import provincesMapData from "../../../../../data/map/ProvincesMapData";
@@ -175,13 +176,22 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
     );
   });
 
+  const playableProvinceBorderHighlights = playableProvincesData
+    .filter((data) => provincesToChooseSet.has(data.province))
+    .map((data) => {
+      return (
+        <WDProvinceBorderHighlight
+          provinceMapData={data}
+          key={`${data.province}-province-border-highlight`}
+        />
+      );
+    });
+
   const playableProvinceOverlays = playableProvincesData.map((data) => {
-    const highlightChoice = provincesToChooseSet.has(data.province);
     return (
       <WDProvinceOverlay
         provinceMapData={data}
         units={units}
-        highlightChoice={highlightChoice}
         key={`${data.province}-province-overlay`}
       />
     );
@@ -191,6 +201,9 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
     <g id="wD-boardmap-v10.3.4 1">
       <g id="unplayable">{unplayableProvinces}</g>
       <g id="playableProvinces">{playableProvinces}</g>
+      <g id="playableProvinceBorderHighlights">
+        {playableProvinceBorderHighlights}
+      </g>
       <g id="playableProvinceOverlays">{playableProvinceOverlays}</g>
     </g>
   );
