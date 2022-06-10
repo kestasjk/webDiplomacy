@@ -80,6 +80,7 @@ const initialState: GameState = {
           Saved: false,
           Hidden: false,
         },
+        pointsWon: null,
         status: "Playing",
         supplyCenterNo: 4,
         timeLoggedIn: 0,

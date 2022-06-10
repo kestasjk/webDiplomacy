@@ -100,7 +100,7 @@ const WDGameProgressOverlay: React.FC<WDGameProgressOverlayProps> = function ({
       );
       stuffToRender.push(
         <Box sx={{ m: "4px" }} key="newPhaseMsgBox">
-          Beginning new phase ${formatPSYForDisplay(psy)}.
+          Beginning new phase {formatPSYForDisplay(psy)}.
         </Box>,
       );
 

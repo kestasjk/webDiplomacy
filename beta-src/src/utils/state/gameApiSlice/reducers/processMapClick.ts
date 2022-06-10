@@ -100,6 +100,9 @@ export default function processMapClick(
   const { member } = overview.user!;
   const { orderStatus } = member;
 
+  if (phase === "Finished") {
+    return;
+  }
   if (viewedPhaseState.viewedPhaseIdx < status.phases.length - 1) {
     setAlert(
       state.alert,

@@ -64,7 +64,7 @@ const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
         season: gameSeason,
         year: gameYear,
       })}
-      }`;
+      `;
     } else {
       chipDisplay += " this phase";
     }
