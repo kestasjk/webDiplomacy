@@ -63,58 +63,58 @@ const WDOrdersPanel: React.FC<WDOrdersPanelProps> = function ({
       ? supporteeUnitTypeByProvID[supporteeProvID]
       : undefined;
 
-    if (order.type === "Move" && uType && provStr && toTerrStr) {
+    if (order.type === "Move" && uType && terrStr && toTerrStr) {
       if (order.viaConvoy === "Yes") {
-        orderStrings.push(`${uType} ${provStr} -> ${toTerrStr} via convoy`);
+        orderStrings.push(`${uType} ${terrStr} -> ${toTerrStr} via convoy`);
       } else {
-        orderStrings.push(`${uType} ${provStr} -> ${toTerrStr}`);
+        orderStrings.push(`${uType} ${terrStr} -> ${toTerrStr}`);
       }
-    } else if (order.type === "Retreat" && uType && provStr && toTerrStr) {
-      orderStrings.push(`${uType} ${provStr} retreats to ${toTerrStr}`);
-    } else if (order.type === "Disband" && uType && provStr) {
-      orderStrings.push(`${uType} ${provStr} disbands`);
-    } else if (order.type === "Hold" && uType && provStr) {
-      orderStrings.push(`${uType} ${provStr} H`);
+    } else if (order.type === "Retreat" && uType && terrStr && toTerrStr) {
+      orderStrings.push(`${uType} ${terrStr} retreats to ${toTerrStr}`);
+    } else if (order.type === "Disband" && uType && terrStr) {
+      orderStrings.push(`${uType} ${terrStr} disbands`);
+    } else if (order.type === "Hold" && uType && terrStr) {
+      orderStrings.push(`${uType} ${terrStr} H`);
     } else if (
       order.type === "Support hold" &&
       uType &&
       supporteeUType &&
-      provStr &&
+      terrStr &&
       toProvStr
     ) {
       orderStrings.push(
-        `${uType} ${provStr} S ${supporteeUType} ${toProvStr} H`,
+        `${uType} ${terrStr} S ${supporteeUType} ${toProvStr} H`,
       );
     } else if (
       order.type === "Support move" &&
       uType &&
       supporteeUType &&
-      provStr &&
+      terrStr &&
       fromProvStr &&
       toProvStr
     ) {
       orderStrings.push(
-        `${uType} ${provStr} S ${supporteeUType} ${fromProvStr} -> ${toProvStr}`,
+        `${uType} ${terrStr} S ${supporteeUType} ${fromProvStr} -> ${toProvStr}`,
       );
     } else if (
       order.type === "Convoy" &&
       uType &&
       supporteeUType &&
-      provStr &&
+      terrStr &&
       fromProvStr &&
       toProvStr
     ) {
       orderStrings.push(
-        `${uType} ${provStr} C ${supporteeUType} ${fromProvStr} -> ${toProvStr}`,
+        `${uType} ${terrStr} C ${supporteeUType} ${fromProvStr} -> ${toProvStr}`,
       );
-    } else if (order.type === "Destroy" && uType && provStr) {
-      orderStrings.push(`Destroy ${uType} ${provStr}`);
+    } else if (order.type === "Destroy" && uType && terrStr) {
+      orderStrings.push(`Destroy ${uType} ${terrStr}`);
     } else if (order.type === "Build Army" && terrStr) {
       orderStrings.push(`Build A ${terrStr}`);
     } else if (order.type === "Build Fleet" && terrStr) {
       orderStrings.push(`Build F ${terrStr}`);
-    } else if (uType && provStr) {
-      orderStrings.push(`${uType} ${provStr} order unassigned`);
+    } else if (uType && terrStr) {
+      orderStrings.push(`${uType} ${terrStr} order unassigned`);
     }
   });
   console.log({ orders, orderStringsByCountryID });
