@@ -293,9 +293,10 @@ export default function processMapClick(
         updateOrder(state, {
           fromTerrID: maps.territoryToTerrID[clickRootTerritory],
         });
+      } else {
+        // gotta support a unit
+        invalidClick(evt, clickProvince);
       }
-      // gotta support a unit
-      invalidClick(evt, clickProvince);
     } else {
       // click 2
       // eslint-disable-next-line no-lonely-if
