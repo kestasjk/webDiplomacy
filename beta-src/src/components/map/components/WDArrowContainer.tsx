@@ -159,6 +159,7 @@ function accumulateSupportMoveOrderArrows(
   orders: IOrderDataHistorical[],
   ordersByProvID: { [key: number]: IOrderDataHistorical },
   territories: APITerritories,
+  ghostArrowsAlreadyAdded: Set<string>,
 ): void {
   orders
     .filter((order) => order.type === "Support move")
@@ -230,16 +231,20 @@ function accumulateSupportMoveOrderArrows(
           ),
         );
         // Also draw a ghosty arrow of what we're trying to support.
-        arrows.push(
-          drawArrowFunctional(
-            ArrowType.MOVE,
-            ArrowColor.IMPLIED_FOREIGN,
-            "unit",
-            supporteeTerr,
-            "territory",
-            toTerr,
-          ),
-        );
+        const ghostArrowID = `${supporteeTerr}|${toTerr}`;
+        if (!ghostArrowsAlreadyAdded.has(ghostArrowID)) {
+          ghostArrowsAlreadyAdded.add(ghostArrowID);
+          arrows.push(
+            drawArrowFunctional(
+              ArrowType.MOVE,
+              ArrowColor.IMPLIED_FOREIGN,
+              "unit",
+              supporteeTerr,
+              "territory",
+              toTerr,
+            ),
+          );
+        }
       }
     });
 }
@@ -249,6 +254,7 @@ function accumulateConvoyOrderArrows(
   orders: IOrderDataHistorical[],
   ordersByProvID: { [key: number]: IOrderDataHistorical },
   territories: APITerritories,
+  ghostArrowsAlreadyAdded: Set<string>,
 ): void {
   orders
     .filter((order) => order.type === "Convoy")
@@ -290,17 +296,21 @@ function accumulateConvoyOrderArrows(
         ),
       );
       if (!isCoordinated) {
-        // Also draw a ghosty arrow of what we're trying to convoy.
-        arrows.push(
-          drawArrowFunctional(
-            ArrowType.MOVE,
-            ArrowColor.IMPLIED_FOREIGN,
-            "unit",
-            convoyeeTerr,
-            "territory",
-            toTerr,
-          ),
-        );
+        // Also draw a ghosty arrow of what we're trying to support.
+        const ghostArrowID = `${convoyeeTerr}|${toTerr}`;
+        if (!ghostArrowsAlreadyAdded.has(ghostArrowID)) {
+          ghostArrowsAlreadyAdded.add(ghostArrowID);
+          arrows.push(
+            drawArrowFunctional(
+              ArrowType.MOVE,
+              ArrowColor.IMPLIED_FOREIGN,
+              "unit",
+              convoyeeTerr,
+              "territory",
+              toTerr,
+            ),
+          );
+        }
       }
     });
 }
@@ -472,10 +482,25 @@ const WDArrowContainer: React.FC<WDArrowProps> = function ({
     ordersByProvID[getProvIDNumberOfTerrIDNumber(order.terrID, territories)] =
       order;
   });
+  // Accumulate ghosty arrows so that we don't draw multiples of them if we have
+  // multiple units supporting or convoying a unit that isn't coordinated with them.
+  const ghostArrowsAlreadyAdded = new Set<string>();
   accumulateMoveOrderArrows(arrows, orders, territories);
   accumulateSupportHoldOrderArrows(arrows, orders, ordersByProvID, territories);
-  accumulateSupportMoveOrderArrows(arrows, orders, ordersByProvID, territories);
-  accumulateConvoyOrderArrows(arrows, orders, ordersByProvID, territories);
+  accumulateSupportMoveOrderArrows(
+    arrows,
+    orders,
+    ordersByProvID,
+    territories,
+    ghostArrowsAlreadyAdded,
+  );
+  accumulateConvoyOrderArrows(
+    arrows,
+    orders,
+    ordersByProvID,
+    territories,
+    ghostArrowsAlreadyAdded,
+  );
   accumulateRetreatArrows(arrows, orders, territories);
   accumulateDislodgerArrows(arrows, units, territories);
   accumulateBuildCircles(arrows, units, territories);
