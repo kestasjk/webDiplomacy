@@ -1,9 +1,13 @@
 import { Box, Button, Stack } from "@mui/material";
 import * as React from "react";
+import Season from "../../enums/Season";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
 import GameStatusResponse from "../../state/interfaces/GameStatusResponse";
 import ViewedPhaseState from "../../state/interfaces/ViewedPhaseState";
-import formatPhaseForDisplay from "../../utils/formatPhaseForDisplay";
+import {
+  formatPhaseForDisplay,
+  formatPSYForDisplay,
+} from "../../utils/formatPhaseForDisplay";
 import {
   getGamePhaseSeasonYear,
   getHistoricalPhaseSeasonYear,
@@ -65,8 +69,12 @@ const WDGameProgressOverlay: React.FC<WDGameProgressOverlayProps> = function ({
             color="success"
             onClick={clickHandler}
           >
-            View {overview.season} {overview.year}{" "}
-            {formatPhaseForDisplay(overview.phase)}
+            View
+            {formatPSYForDisplay({
+              phase: overview.phase,
+              season: overview.season as Season,
+              year: overview.year,
+            })}
           </Button>
         </Stack>
       );
@@ -77,34 +85,30 @@ const WDGameProgressOverlay: React.FC<WDGameProgressOverlayProps> = function ({
         idx < status.phases.length - 1;
         idx += 1
       ) {
-        const [phase, season, year] = getHistoricalPhaseSeasonYear(status, idx);
+        const psy = getHistoricalPhaseSeasonYear(status, idx);
         stuffToRender.push(
           <Box key={`progressBox${idx}`} sx={{ m: "4px" }}>
-            Finished phase {`${season} ${year} ${formatPhaseForDisplay(phase)}`}
-            .
+            Finished phase ${formatPSYForDisplay(psy)}.
           </Box>,
         );
       }
 
-      const [phase, season, year] = getGamePhaseSeasonYear(
+      const psy = getGamePhaseSeasonYear(
         overview.phase,
         overview.season,
         overview.year,
       );
       stuffToRender.push(
         <Box sx={{ m: "4px" }} key="newPhaseMsgBox">
-          Beginning new phase{" "}
-          {`${season} ${year} ${formatPhaseForDisplay(phase)}`}.
+          Beginning new phase ${formatPSYForDisplay(psy)}.
         </Box>,
       );
 
-      const [oldPhase, oldSeason, oldYear] = getHistoricalPhaseSeasonYear(
+      const oldPsy = getHistoricalPhaseSeasonYear(
         status,
         viewedPhaseState.latestPhaseViewed,
       );
-      const buttonLabel = `View orders for ${oldSeason} ${oldYear} ${formatPhaseForDisplay(
-        oldPhase,
-      )}`;
+      const buttonLabel = `View orders for ${formatPSYForDisplay(oldPsy)}`;
 
       stuffToRender.push(
         <Button

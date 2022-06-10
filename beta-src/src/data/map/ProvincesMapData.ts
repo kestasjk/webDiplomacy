@@ -530,7 +530,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
         x: 0,
         y: 75,
         arrowReceiver: {
-          x: 45,
+          x: 40,
           y: 45,
         },
       },
@@ -2385,14 +2385,14 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
       {
         name: "main",
         x: 241,
-        y: 120,
+        y: 85,
       },
     ],
     unitSlots: [
       {
         name: "main",
         x: 230,
-        y: 45,
+        y: 95,
         arrowReceiver: {
           x: 200,
           y: 150,
@@ -2869,8 +2869,8 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
     unitSlots: [
       {
         name: "main",
-        x: 83,
-        y: 111,
+        x: 87,
+        y: 105,
         arrowReceiver: {
           x: 35,
           y: 80,

@@ -16,6 +16,7 @@ import WDOrdersPanel from "./WDOrdersPanel";
 import { IOrderDataHistorical } from "../../models/Interfaces";
 import GameStateMaps from "../../state/interfaces/GameStateMaps";
 import { Unit } from "../../utils/map/getUnits";
+import WDGamesList from "./WDGamesList";
 
 interface WDFullModalProps {
   alternatives: GameOverviewResponse["alternatives"];
@@ -39,6 +40,7 @@ const tabGroup: ModalViews[] = [
   ModalViews.PRESS,
   ModalViews.INFO,
   ModalViews.ORDERS,
+  ModalViews.GAMES,
 ];
 
 const WDFullModal: React.FC<WDFullModalProps> = function ({
@@ -115,6 +117,9 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
             allCountries={allCountries}
             maps={maps}
           />
+        </WDTabPanel>
+        <WDTabPanel currentTab={ModalViews.GAMES} currentView={view}>
+          <WDGamesList />
         </WDTabPanel>
       </WDViewsContainer>
     </Box>

@@ -7,6 +7,7 @@ import WDButton from "./WDButton";
 import WDMessage from "./WDMessage";
 import { GameMessage } from "../../state/interfaces/GameMessages";
 import { CountryTableData } from "../../interfaces/CountryTableData";
+import WDVerticalScroll from "./WDVerticalScroll";
 
 interface WDMessageListProps {
   messages: GameMessage[];
@@ -42,20 +43,10 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
   ));
 
   return (
-    <Box
-      sx={{
-        m: "20px 0 10px 0",
-        width: "100%",
-        height,
-        display: "flex",
-        flexDirection: "column-reverse",
-      }}
-    >
-      <Box sx={{ overflow: "auto" }}>
-        <Stack direction="column">{messageComponents}</Stack>
-        <Box ref={messagesEndRef} />
-      </Box>
-    </Box>
+    <WDVerticalScroll>
+      <Stack direction="column">{messageComponents}</Stack>
+      <Box ref={messagesEndRef} />
+    </WDVerticalScroll>
   );
 };
 
