@@ -4,6 +4,7 @@ export interface PlayerGame {
   gameID: number;
   countryID: number;
   orderStatus: string; // e.g. "Ready,Completed". Not converted to OrderStatus
+  pressType: string;
   newMessagesFrom: string[];
   unitNo: number;
   name: string;
