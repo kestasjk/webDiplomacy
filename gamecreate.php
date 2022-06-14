@@ -98,6 +98,15 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		{
 			throw new Exception(l_t("The phase value is too large or small; it must be between 5 minutes and 10 days."));
 		}
+		$input['phaseMinutesRB'] = isset($form['phaseMinutesRB']) ? (int) $form['phaseMinutesRB'] : -1;
+		if ( $input['phaseMinutesRB'] != -1 && ($input['phaseMinutesRB'] < 1 or $input['phaseMinutesRB'] > 1440*10 ))
+		{
+			throw new Exception(l_t("The phase value for retreats and builds is too large or small; it must be between 1 minute and 10 days."));
+		}
+		if ( $input['phaseMinutesRB'] != -1 && $input['phaseMinutesRB'] < $input['phaseMinutes']) 
+		{
+			throw new Exception(l_t("The phase length for retreats and builds must be shorter than the normal phase length"));
+		}
 
 		$input['nextPhaseMinutes'] = (int)$input['nextPhaseMinutes'];
 		$input['phaseSwitchPeriod'] = (int)$input['phaseSwitchPeriod'];
@@ -216,6 +225,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input['bet'], 
 			$input['potType'], 
 			$input['phaseMinutes'], 
+			$input['phaseMinutesRB'],
 			$input['nextPhaseMinutes'],
 			$input['phaseSwitchPeriod'],
 			$input['joinPeriod'], 

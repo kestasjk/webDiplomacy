@@ -120,7 +120,39 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				foreach ($phaseList as $i) { print '<option value="'.$i.'"'.($i==1440 ? ' selected' : '').'>'.libTime::timeLengthText($i*60).'</option>'; }
 			?>
 			</select>
-			
+
+
+			</br></br>
+			<strong>Phase length (Retreats & Adjustments)</strong>
+			<img id = "modBtnPhaseLengthRA" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+			<div id="phaseLengthRAModal" class="modal">
+				<!-- Modal content -->
+				<div class="modal-content">
+					<span class="close4">&times;</span>
+					<p><strong>Phase Length (Retreats/Adjustments): </strong></br>
+						How long retreat and adjustment phases will last.
+					</p>
+				</div>
+			</div>
+			<select class = "gameCreate" name="newGame[phaseMinutesRB]" id="selectPhaseMinutesRB">
+			<?php
+				$phaseList = array(-1,1, 2, 3, 5, 7, 10, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
+					1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400);
+
+				foreach ($phaseList as $i) { 
+					if ($i != -1)
+					{
+						print '<option value="'.$i.'"'.($i==-1 ? ' selected' : '').'>'.libTime::timeLengthText($i*60).'</option>'; 
+					}
+					else
+					{
+						print '<option value="'.$i.'"'.($i==-1 ? ' selected' : '').'> Same as Movement phases</option>';
+					}
+				}
+			?>
+			</select>
+
+
 			<p id="phaseSwitchPeriodPara">
 				<strong>Time Until Phase Swap</strong></br>
 				<select class = "gameCreate" id="selectPhaseSwitchPeriod" name="newGame[phaseSwitchPeriod]">

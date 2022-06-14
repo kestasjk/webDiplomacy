@@ -498,6 +498,7 @@ class Game
 			g.pot,
 			g.potType,
 			g.phaseMinutes,
+			g.phaseMinutesRB,
 			g.nextPhaseMinutes,
 			g.phaseSwitchPeriod,
 			g.processStatus,
@@ -615,6 +616,17 @@ class Game
 	function isLiveGame()
 	{
 		return $this->phaseMinutes < 60;
+	}
+
+	protected function getCurPhaseMinutes()
+	{
+		if ($this->phaseMinutesRB != -1 && ($this->phase == "Retreats" || $this->phase == "Builds")) {
+			return $this->phaseMinutesRB;
+		}
+		else
+		{
+			return $this->phaseMinutes;
+		}
 	}
 
 	/**
