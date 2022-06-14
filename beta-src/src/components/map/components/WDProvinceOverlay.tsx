@@ -1,26 +1,21 @@
-import { useTheme } from "@mui/material";
 import * as React from "react";
 import UIState from "../../../enums/UIState";
-import { Coordinates, ProvinceMapData } from "../../../interfaces";
-import OrderType from "../../../types/state/OrderType";
+import { ProvinceMapData } from "../../../interfaces";
 import UnitType from "../../../types/UnitType";
 import WDUnit from "../../ui/units/WDUnit";
 import WDUnitSlot from "./WDUnitSlot";
 import { Unit, UnitDrawMode } from "../../../utils/map/getUnits";
 import Province from "../../../enums/map/variants/classic/Province";
 import Territory from "../../../enums/map/variants/classic/Territory";
-import { IProvinceStatus } from "../../../models/Interfaces";
 
 interface WDProvinceOverlayProps {
   provinceMapData: ProvinceMapData;
   units: Unit[];
-  highlightChoice: boolean;
 }
 
 const WDProvinceOverlay: React.FC<WDProvinceOverlayProps> = function ({
   provinceMapData,
   units,
-  highlightChoice,
 }): React.ReactElement {
   const { province } = provinceMapData;
 
@@ -90,17 +85,6 @@ const WDProvinceOverlay: React.FC<WDProvinceOverlayProps> = function ({
       y={provinceMapData.y}
       overflow="visible"
     >
-      {highlightChoice && (
-        <path
-          d={provinceMapData.path}
-          fill="none"
-          fillOpacity={0.0}
-          id={`${province}-choice-outline`}
-          stroke="black"
-          strokeOpacity={1}
-          strokeWidth={5}
-        />
-      )}
       {provinceMapData.unitSlots
         .filter(({ name }) => name in unitFCs)
         .map(({ name, x, y }) => (

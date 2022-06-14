@@ -1,9 +1,26 @@
 import SavedOrdersConfirmation from "../../../../../interfaces/state/SavedOrdersConfirmation";
+import {
+  fetchGameOverview,
+  gameApiSliceActions,
+} from "../../../../../state/game/game-api-slice";
+import { useAppDispatch } from "../../../../../state/hooks";
 import { setAlert } from "../../../../../state/interfaces/GameAlert";
 import getOrderStates from "../../../getOrderStates";
+import { GameState } from "../../../../../state/interfaces/GameState";
+import OrderSubmission from "../../../../../interfaces/state/OrderSubmission";
+import {
+  handlePostSucceeded,
+  handlePostFailed,
+} from "../handleSucceededFailed";
 
 /* eslint-disable no-param-reassign */
-export default function saveOrdersFulfilled(state, action): void {
+export function saveOrdersPending(state: GameState, action): void {
+  const queryParams = action.meta.arg as OrderSubmission;
+  state.savingOrdersInProgress = queryParams.userIntent;
+}
+
+export function saveOrdersCommon(state: GameState, action): void {
+  state.savingOrdersInProgress = null;
   if (action.payload) {
     const {
       invalid,
@@ -18,12 +35,15 @@ export default function saveOrdersFulfilled(state, action): void {
         contextKey: newContextKey,
       };
       const orderStates = getOrderStates(newContext.orderStatus);
-      state.overview.user.member.orderStatus = {
-        Completed: orderStates.Completed,
-        Ready: orderStates.Ready,
-        None: orderStates.None,
-        Saved: orderStates.Saved,
-      };
+      if (state.overview.user) {
+        state.overview.user.member.orderStatus = {
+          Completed: orderStates.Completed,
+          Ready: orderStates.Ready,
+          None: orderStates.None,
+          Saved: orderStates.Saved,
+          Hidden: false,
+        };
+      }
     }
     // console.log({ returnOrders: orders });
     Object.entries(orders).forEach(([id, value]) => {
@@ -34,14 +54,26 @@ export default function saveOrdersFulfilled(state, action): void {
 
     // Report any errors
     if (invalid) {
+      let alertMessage;
       if (notice) {
-        setAlert(state.alert, `Error saving orders: ${notice}`);
+        alertMessage = `Error saving orders: ${notice}`;
       } else {
-        setAlert(
-          state.alert,
-          `Unknown error saving orders, server indicated that API call was invalid`,
-        );
+        alertMessage = `Unknown error saving orders, server indicated that API call was invalid`;
       }
+      handlePostFailed(state, alertMessage);
+    } else {
+      handlePostSucceeded(state);
     }
+  } else {
+    const alertMessage = `Unknown error saving orders, server indicated that API call was invalid`;
+    handlePostFailed(state, alertMessage);
   }
+}
+
+export function saveOrdersFulfilled(state: GameState, action): void {
+  saveOrdersCommon(state, action);
+}
+
+export function saveOrdersRejected(state: GameState, action): void {
+  saveOrdersCommon(state, action);
 }

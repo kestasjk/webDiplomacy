@@ -1,4 +1,5 @@
 import { ParsedTime } from "../interfaces/ParsedTime";
+import parseSeconds from "./parseSeconds";
 
 export default function formatTime(time: ParsedTime): string {
   const availableTimeIntervals = Object.keys(time).filter((key) => time[key]);
@@ -15,4 +16,10 @@ export default function formatTime(time: ParsedTime): string {
   return `${time[availableTimeIntervals[0]]}${
     availableTimeIntervals[0]
   } remaining`;
+}
+
+export function getFormattedTimeLeft(endTime: number) {
+  const secondsLeft = endTime - +new Date() / 1000;
+  const timeLeft = parseSeconds(secondsLeft);
+  return formatTime(timeLeft);
 }

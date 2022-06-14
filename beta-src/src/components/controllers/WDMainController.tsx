@@ -27,11 +27,11 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   const status = useAppSelector(gameStatus);
   const viewedPhaseState = useAppSelector(gameViewedPhase);
 
-  const { countryID } = overview.user.member;
+  const countryID = overview.user?.member.countryID;
 
   const overviewKey = getPhaseKey(overview, "<BAD OVERVIEW_KEY>");
   const statusKey = getPhaseKey(status, "<BAD STATUS_KEY>");
-  const dataKey = getPhaseKey(data.contextVars?.context, "<BAD DATA_KEY>");
+  const dataKey = getPhaseKey(data, "<BAD DATA_KEY>");
 
   const dispatchFetchOverview = () => {
     const { game } = store.getState();
@@ -49,14 +49,26 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   // FIXME: for now, crazily fetch all messages every 5sec
   useInterval(dispatchFetchOverview, 5000);
 
+  const needsGameOverview = useAppSelector(
+    ({ game }) => game.needsGameOverview,
+  );
   const needsGameData = useAppSelector(({ game }) => game.needsGameData);
   const noPhase = ["Error", "Pre-game"].includes(overview.phase);
   const consistentPhase =
     noPhase || (overviewKey === statusKey && overviewKey === dataKey);
 
+  if (needsGameOverview && !noPhase) {
+    dispatch(gameApiSliceActions.setNeedsGameOverview(false));
+    dispatch(fetchGameOverview({ gameID: String(overview.gameID) }));
+  }
   if (needsGameData && !noPhase) {
     dispatch(gameApiSliceActions.setNeedsGameData(false));
-    dispatch(loadGameData(String(overview.gameID), String(countryID)));
+    dispatch(
+      loadGameData(
+        String(overview.gameID),
+        countryID ? String(countryID) : undefined, // keep undefined when converting
+      ),
+    );
   }
 
   const { name, gameID } = overview;

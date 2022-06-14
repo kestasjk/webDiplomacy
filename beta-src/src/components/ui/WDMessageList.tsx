@@ -7,11 +7,12 @@ import WDButton from "./WDButton";
 import WDMessage from "./WDMessage";
 import { GameMessage } from "../../state/interfaces/GameMessages";
 import { CountryTableData } from "../../interfaces/CountryTableData";
+import WDVerticalScroll from "./WDVerticalScroll";
 
 interface WDMessageListProps {
   messages: GameMessage[];
-  userCountry: CountryTableData;
-  countries: CountryTableData[];
+  userCountry: CountryTableData | null;
+  allCountries: CountryTableData[];
   countryIDSelected: number;
   messagesEndRef: React.RefObject<HTMLDivElement>;
 }
@@ -19,7 +20,7 @@ interface WDMessageListProps {
 const WDMessageList: React.FC<WDMessageListProps> = function ({
   messages,
   userCountry,
-  countries,
+  allCountries,
   countryIDSelected,
   messagesEndRef,
 }): React.ReactElement {
@@ -37,25 +38,15 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
       key={`${message.timeSent}:${message.fromCountryID}:${message.toCountryID}:${message.message}`}
       message={message}
       userCountry={userCountry}
-      countries={countries}
+      allCountries={allCountries}
     />
   ));
 
   return (
-    <Box
-      sx={{
-        m: "20px 0 10px 0",
-        width: "100%",
-        height,
-        display: "flex",
-        flexDirection: "column-reverse",
-      }}
-    >
-      <Box sx={{ overflow: "auto" }}>
-        <Stack direction="column">{messageComponents}</Stack>
-        <Box ref={messagesEndRef} />
-      </Box>
-    </Box>
+    <WDVerticalScroll>
+      <Stack direction="column">{messageComponents}</Stack>
+      <Box ref={messagesEndRef} />
+    </WDVerticalScroll>
   );
 };
 

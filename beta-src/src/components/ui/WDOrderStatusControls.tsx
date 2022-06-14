@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Stack, useTheme } from "@mui/material";
 import WDButton from "./WDButton";
-import Move from "../../enums/Move";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
 import Device from "../../enums/Device";
@@ -16,16 +15,31 @@ import {
   saveOrders,
 } from "../../state/game/game-api-slice";
 import UpdateOrder from "../../interfaces/state/UpdateOrder";
-import MoveStatus from "../../types/MoveStatus";
 import { RootState } from "../../state/store";
+import { OrderStatus } from "../../interfaces/state/MemberData";
+import OrderSubmission from "../../interfaces/state/OrderSubmission";
 
-const WDMoveControls: React.FC = function (): React.ReactElement {
+enum OrderStatusButton {
+  SAVE = "save",
+  READY = "ready",
+}
+
+interface WDOrderStatsControlsProps {
+  orderStatus: OrderStatus;
+}
+
+const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
+  orderStatus,
+}): React.ReactElement {
   const theme = useTheme();
   const [viewport] = useViewport();
   const { data } = useAppSelector(gameData);
   const ordersMeta = useAppSelector(gameOrdersMeta);
   const status = useAppSelector(gameStatus);
   const viewedPhaseState = useAppSelector(gameViewedPhase);
+  const savingOrdersInProgress = useAppSelector(
+    (state) => state.game.savingOrdersInProgress,
+  );
 
   const viewingCurPhase =
     viewedPhaseState.viewedPhaseIdx >= status.phases.length - 1;
@@ -33,36 +47,6 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
   const currentOrderInProgress = useAppSelector(
     ({ game: { order } }: RootState) => order.inProgress,
   );
-  const [readyDisabled, setReadyDisabled] = React.useState(false);
-  const [gameState, setGameState] = React.useState<MoveStatus>({
-    save: false,
-    ready: false,
-  });
-  const {
-    user: {
-      member: { orderStatus },
-    },
-  } = useAppSelector(gameOverview);
-
-  if (orderStatus.None && !readyDisabled) {
-    setReadyDisabled(true);
-  }
-
-  React.useEffect(() => {
-    if (orderStatus.Ready !== gameState.ready) {
-      setGameState((preState) => ({
-        ...preState,
-        [Move.READY]: orderStatus.Ready,
-      }));
-    }
-  }, [orderStatus]);
-
-  const toggleState = (move: Move) => {
-    setGameState((preState) => ({
-      ...preState,
-      [move]: !gameState[move],
-    }));
-  };
 
   const dispatch = useAppDispatch();
   const device = getDevice(viewport);
@@ -79,7 +63,60 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
       break;
   }
 
-  const clickButton = (type: Move) => {
+  const ordersMetaValues = Object.values(ordersMeta);
+  const ordersLength = ordersMetaValues.length;
+  const ordersSaved = ordersMetaValues.reduce(
+    (acc, meta) => acc + +meta.saved,
+    0,
+  );
+
+  let readyEnabled: boolean;
+  let saveEnabled: boolean;
+  let readyButtonText: string;
+  let saveButtonText: string;
+
+  // orderStatus contains what the server thinks our order status is.
+  if (savingOrdersInProgress === "readying") {
+    readyEnabled = false;
+    saveEnabled = false;
+    readyButtonText = "Readying...";
+    saveButtonText = "Save";
+  } else if (savingOrdersInProgress === "unreadying") {
+    readyEnabled = false;
+    saveEnabled = false;
+    readyButtonText = "Unreadying...";
+    saveButtonText = "Save";
+  } else if (savingOrdersInProgress === "saving") {
+    readyEnabled = false;
+    saveEnabled = false;
+    readyButtonText = "Ready";
+    saveButtonText = "Saving...";
+  } else if (orderStatus.Ready) {
+    readyEnabled = viewingCurPhase;
+    saveEnabled = false;
+    readyButtonText = "Unready";
+    saveButtonText = "Save";
+  } else if (orderStatus.Saved) {
+    readyEnabled = viewingCurPhase;
+    saveEnabled = ordersLength !== ordersSaved && viewingCurPhase;
+    readyButtonText = "Ready";
+    saveButtonText = "Save";
+  } else if (orderStatus.Completed) {
+    readyEnabled = ordersLength !== ordersSaved && viewingCurPhase;
+    saveEnabled = ordersLength !== ordersSaved && viewingCurPhase;
+    readyButtonText = "Ready";
+    saveButtonText = "Save";
+  } else {
+    readyEnabled = ordersLength !== ordersSaved && viewingCurPhase;
+    saveEnabled = viewingCurPhase;
+    readyButtonText = "Ready";
+    saveButtonText = "Save";
+  }
+
+  const doAnimateGlow =
+    saveEnabled && ordersLength !== ordersSaved && !currentOrderInProgress;
+
+  const clickButton = (whatButton: OrderStatusButton) => {
     // console.log("Entered save button click");
     // When you click save or ready, it should clear any actively entered order you have going,
     // and/or any of the move input flyover. It doesn't make sense to ready and have the UI
@@ -110,42 +147,27 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
             orderUpdates.push(orderUpdate);
           },
         );
-        const orderSubmission = {
+        const orderSubmission: OrderSubmission = {
           orderUpdates,
           context: JSON.stringify(contextVars.context),
           contextKey: contextVars.contextKey,
           queryParams: {},
+          userIntent: "saving",
         };
-        if (type === Move.READY) {
-          orderSubmission.queryParams = gameState.ready
-            ? { notready: "on" }
-            : { ready: "on" };
+        if (whatButton === OrderStatusButton.READY) {
+          if (orderStatus.Ready) {
+            orderSubmission.queryParams = { notready: "on" };
+            orderSubmission.userIntent = "unreadying";
+          } else {
+            orderSubmission.queryParams = { ready: "on" };
+            orderSubmission.userIntent = "readying";
+          }
         }
         // console.log({ orderSubmission });
         dispatch(saveOrders(orderSubmission));
       }
     }
-    if (type === Move.READY) {
-      toggleState(type);
-    }
   };
-
-  const ordersMetaValues = Object.values(ordersMeta);
-  const ordersLength = ordersMetaValues.length;
-  const ordersSaved = ordersMetaValues.reduce(
-    (acc, meta) => acc + +meta.saved,
-    0,
-  );
-  if (
-    (ordersLength === ordersSaved && gameState.save) ||
-    (ordersLength !== ordersSaved && !gameState.save)
-  ) {
-    toggleState(Move.SAVE);
-  }
-
-  const saveDisabled = gameState.ready || !gameState.save;
-  const doAnimateGlow =
-    !saveDisabled && ordersLength !== ordersSaved && !currentOrderInProgress;
 
   return (
     <Stack
@@ -155,31 +177,31 @@ const WDMoveControls: React.FC = function (): React.ReactElement {
     >
       <WDButton
         color="primary"
-        disabled={saveDisabled || !viewingCurPhase}
-        onClick={() => clickButton(Move.SAVE)}
+        disabled={!saveEnabled}
+        onClick={() => saveEnabled && clickButton(OrderStatusButton.SAVE)}
         sx={{
-          filter: saveDisabled
+          filter: !saveEnabled
             ? undefined
             : theme.palette.svg.filters.dropShadows[0],
         }}
         doAnimateGlow={doAnimateGlow}
       >
-        Save
+        {saveButtonText}
       </WDButton>
       <WDButton
         color="primary"
-        disabled={readyDisabled || !viewingCurPhase}
-        onClick={() => clickButton(Move.READY)}
+        disabled={!readyEnabled}
+        onClick={() => readyEnabled && clickButton(OrderStatusButton.READY)}
         sx={{
-          filter: readyDisabled
+          filter: !readyEnabled
             ? undefined
             : theme.palette.svg.filters.dropShadows[0],
         }}
       >
-        {gameState.ready ? "Unready" : "Ready"}
+        {readyButtonText}
       </WDButton>
     </Stack>
   );
 };
 
-export default WDMoveControls;
+export default WDOrderStatusControls;

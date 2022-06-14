@@ -1,35 +1,43 @@
 import Season from "../../enums/Season";
 import GameStatusResponse from "../../state/interfaces/GameStatusResponse";
 import { GamePhaseType } from "../../models/enums";
+import { PhaseSeasonYear } from "../../interfaces/PhaseSeasonYear";
 
 export function getGamePhaseSeasonYear(
   webdipPhase: string,
   webdipSeason: string,
   webdipYear: number,
-): [string, Season, number] {
+): PhaseSeasonYear {
   const season =
     webdipPhase === GamePhaseType.Builds
       ? Season.WINTER
       : (webdipSeason as Season);
-  return [webdipPhase, season, webdipYear];
+  return { phase: webdipPhase, season, year: webdipYear };
+}
+
+export function getPhaseSeasonYear(
+  turn: number,
+  phase: string,
+): PhaseSeasonYear {
+  const year = Math.floor(turn / 2) + 1901;
+  let season: Season;
+  if (phase === GamePhaseType.Builds) season = Season.WINTER;
+  else if (turn % 2 === 0) season = Season.SPRING;
+  else season = Season.AUTUMN;
+  return { phase, season, year };
 }
 
 export function getHistoricalPhaseSeasonYear(
   gameStatus: GameStatusResponse,
   phaseIdx: number,
-): [string, Season, number] {
+): PhaseSeasonYear {
   if (phaseIdx < 0 || phaseIdx >= gameStatus.phases.length) {
-    return [GamePhaseType.Diplomacy, Season.SPRING, 1901];
+    return {
+      phase: GamePhaseType.Diplomacy,
+      season: Season.SPRING,
+      year: 1901,
+    };
   }
-
   const phaseData = gameStatus.phases[phaseIdx];
-  const year = Math.floor(phaseData.turn / 2) + 1901;
-
-  let season;
-  if (phaseData.phase === GamePhaseType.Builds) season = Season.WINTER;
-  else if (phaseData.turn % 2 === 0) season = Season.SPRING;
-  else season = Season.AUTUMN;
-
-  const { phase } = phaseData;
-  return [phase, season, year];
+  return getPhaseSeasonYear(phaseData.turn, phaseData.phase);
 }

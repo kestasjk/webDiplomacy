@@ -1,5 +1,6 @@
 import * as React from "react";
 import WDProvince from "../../../components/WDProvince";
+import WDProvinceBorderHighlight from "../../../components/WDProvinceBorderHighlight";
 import WDProvinceOverlay from "../../../components/WDProvinceOverlay";
 import { Unit } from "../../../../../utils/map/getUnits";
 import provincesMapData from "../../../../../data/map/ProvincesMapData";
@@ -22,14 +23,14 @@ interface WDBoardMapProps {
   units: Unit[];
   centersByProvince: { [key: string]: { ownerCountryID: string } };
   phase: string;
-  isLatestPhase: boolean;
+  isLivePhase: boolean; // Game is live and user is viewing the latest phase?
 }
 
 const WDBoardMap: React.FC<WDBoardMapProps> = function ({
   units,
   centersByProvince,
   phase,
-  isLatestPhase,
+  isLivePhase,
 }): React.ReactElement {
   const gameDataResponse = useAppSelector(gameData);
   const maps = useAppSelector(gameMaps);
@@ -42,11 +43,12 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
   const curOrder: OrderState = useAppSelector(gameOrder);
   const legalOrders: LegalOrders = useAppSelector(gameLegalOrders);
 
-  const { user, members } = useAppSelector(gameOverview);
+  const overview = useAppSelector(gameOverview);
+  const { members, user } = overview;
 
   let provincesToHighlight: Province[] = [];
   let provincesToChoose: Province[] = [];
-  if (isLatestPhase) {
+  if (isLivePhase && user) {
     if (phase === "Diplomacy") {
       if (!curOrder.inProgress) {
         provincesToHighlight = [];
@@ -144,7 +146,7 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
         <WDProvince
           provinceMapData={data}
           ownerCountryID={centersByProvince[data.province]?.ownerCountryID}
-          playerCountryID={user.member.countryID}
+          playerCountryID={user?.member.countryID}
           highlightSelection={false}
           key={`${data.province}-province`}
         />
@@ -167,20 +169,29 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
       <WDProvince
         provinceMapData={data}
         ownerCountryID={centersByProvince[data.province]?.ownerCountryID}
-        playerCountryID={user.member.countryID}
+        playerCountryID={user?.member.countryID}
         highlightSelection={highlightSelection}
         key={`${data.province}-province`}
       />
     );
   });
 
+  const playableProvinceBorderHighlights = playableProvincesData
+    .filter((data) => provincesToChooseSet.has(data.province))
+    .map((data) => {
+      return (
+        <WDProvinceBorderHighlight
+          provinceMapData={data}
+          key={`${data.province}-province-border-highlight`}
+        />
+      );
+    });
+
   const playableProvinceOverlays = playableProvincesData.map((data) => {
-    const highlightChoice = provincesToChooseSet.has(data.province);
     return (
       <WDProvinceOverlay
         provinceMapData={data}
         units={units}
-        highlightChoice={highlightChoice}
         key={`${data.province}-province-overlay`}
       />
     );
@@ -190,6 +201,9 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
     <g id="wD-boardmap-v10.3.4 1">
       <g id="unplayable">{unplayableProvinces}</g>
       <g id="playableProvinces">{playableProvinces}</g>
+      <g id="playableProvinceBorderHighlights">
+        {playableProvinceBorderHighlights}
+      </g>
       <g id="playableProvinceOverlays">{playableProvinceOverlays}</g>
     </g>
   );

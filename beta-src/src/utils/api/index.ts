@@ -7,6 +7,7 @@ export type QueryParams = {
 
 const buildQueryString = (params: QueryParams): string =>
   Object.entries(params)
+    .filter(([key, value]) => typeof value !== "undefined")
     .reduce((keyValuePairs: string[], [key, value]) => {
       if (value) {
         keyValuePairs.push(`${encodeURI(key)}=${encodeURI(value)}`);

@@ -23,6 +23,8 @@ import UnitsIcon from "./icons/country-table/WDUnits";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
 import WDCheckmarkIcon from "./icons/WDCheckmarkIcon";
+import WDOrderStatusIcon from "./WDOrderStatusIcon";
+
 import Vote from "../../enums/Vote";
 
 interface WDCountryTableProps {
@@ -128,17 +130,9 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                     case "orderStatus":
                       return (
                         <WDTableCell key={column.id} align={column.align}>
-                          {country.orderStatus.Hidden && (
-                            <Lock sx={{ fontSize: "16px", color: "#666" }} />
-                          )}
-                          {(country.orderStatus.Saved ||
-                            country.orderStatus.Ready) && (
-                            <WDCheckmarkIcon
-                              color={
-                                (country.orderStatus.Ready && "#0A0") || "#888"
-                              }
-                            />
-                          )}
+                          <WDOrderStatusIcon
+                            orderStatus={country.orderStatus}
+                          />
                         </WDTableCell>
                       );
                     case "excusedMissedTurns":
@@ -202,7 +196,6 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                       ),
                   )}
                 </WDTableCell>
-                <WDTableCell />
               </TableRow>
             </React.Fragment>
           ))}
