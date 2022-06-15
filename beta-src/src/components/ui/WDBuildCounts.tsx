@@ -12,6 +12,7 @@ import WDArmyIcon from "./units/WDArmyIcon";
 import UIState from "../../enums/UIState";
 import Country from "../../enums/Country";
 import { UNIT_HEIGHT, UNIT_WIDTH } from "./units/WDUnit";
+import countryMap from "../../data/map/variants/classic/CountryMap";
 
 const range = (N: number) => Array.from(Array(N).keys());
 
@@ -23,7 +24,7 @@ const WDBuildCounts: React.FC = function (): React.ReactElement {
 
   const isCurrent = viewedPhaseIdx >= phases.length - 1;
   if (phase !== "Builds" || !isCurrent) return <Box />;
-  const extraSCs = user.member.supplyCenterNo - user.member.unitNo;
+  const extraSCs = user ? user.member.supplyCenterNo - user.member.unitNo : 0;
   const numBuildOrders = Object.values(ordersMeta).filter((o) =>
     o.update?.type.startsWith("Build"),
   ).length;
@@ -33,6 +34,7 @@ const WDBuildCounts: React.FC = function (): React.ReactElement {
   const numRemainingBuilds = Math.max(extraSCs - numBuildOrders, 0);
   const numRemainingDestroys = Math.max(-extraSCs - numDestroyOrders, 0);
   const UNIT_WIDTH_SQUOOSHED = 40; // need to squoosh to avoid increasing HUD width
+  const country = user ? countryMap[user.member.country] : Country.FRANCE;
   return (
     <Box
       sx={{
@@ -51,7 +53,7 @@ const WDBuildCounts: React.FC = function (): React.ReactElement {
               overflow: "visible",
             }}
           >
-            <WDArmyIcon country={Country.FRANCE} iconState={UIState.BUILD} />
+            <WDArmyIcon country={country} iconState={UIState.BUILD} />
           </svg>
         ))}
         {range(numRemainingDestroys).map((buildIdx) => (
@@ -63,7 +65,7 @@ const WDBuildCounts: React.FC = function (): React.ReactElement {
               overflow: "visible",
             }}
           >
-            <WDArmyIcon country={Country.FRANCE} iconState={UIState.DESTROY} />
+            <WDArmyIcon country={country} iconState={UIState.DESTROY} />
           </svg>
         ))}
       </Stack>

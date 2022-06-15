@@ -17,6 +17,7 @@ export interface MemberData {
   newMessagesFrom: number[];
   online: boolean;
   orderStatus: OrderStatus;
+  pointsWon?: number | null;
   status: string;
   supplyCenterNo: number;
   timeLoggedIn: number;

@@ -23,14 +23,6 @@ const WDArmyIcon: React.FC<IconProps> = function ({
           fill="#fff"
         />
       )}
-      {iconState === UIState.SELECTED && (
-        <path
-          d="M32.977 8H17.023a6 6 0 0 0-6 6v17.73a6 6 0 0 0 3.45 5.43l7.976 3.747a6 6 0 0 0 5.102 0l7.977-3.747a6 6 0 0 0 3.45-5.43V14a6 6 0 0 0-6-6Z"
-          fill={theme.palette[country].main}
-          stroke="#fff"
-          strokeWidth={2}
-        />
-      )}
       {iconState === UIState.HOLD && (
         <path
           d="M32.977 8H17.023a6 6 0 0 0-6 6v17.73a6 6 0 0 0 3.45 5.43l7.976 3.747a6 6 0 0 0 5.102 0l7.977-3.747a6 6 0 0 0 3.45-5.43V14a6 6 0 0 0-6-6Z"
@@ -45,12 +37,28 @@ const WDArmyIcon: React.FC<IconProps> = function ({
             d="M32.977 7H17.023a7 7 0 0 0-7 7v17.73a7 7 0 0 0 4.024 6.335l7.977 3.747a7 7 0 0 0 5.952 0l7.977-3.747a7 7 0 0 0 4.024-6.336V14a7 7 0 0 0-7-7Z"
             fill="#fff"
             stroke="#B00"
-            strokeWidth={4}
+            strokeWidth={3}
           />
           <path
             stroke="#B00"
             strokeOpacity={0.5}
             strokeWidth={2}
+            d="m13.293 37.293 26-26M26.172 7 10.501 22.672M40 26 24 42"
+          />
+        </>
+      )}
+      {(iconState === UIState.DISBANDED || iconState === UIState.DESTROY) && (
+        <>
+          <path
+            d="M32.977 7H17.023a7 7 0 0 0-7 7v17.73a7 7 0 0 0 4.024 6.335l7.977 3.747a7 7 0 0 0 5.952 0l7.977-3.747a7 7 0 0 0 4.024-6.336V14a7 7 0 0 0-7-7Z"
+            fill="#fff"
+            stroke="#B00"
+            strokeWidth={4}
+          />
+          <path
+            stroke="#B00"
+            strokeOpacity={0.5}
+            strokeWidth={3}
             d="m13.293 37.293 26-26M26.172 7 10.501 22.672M40 26 24 42"
           />
         </>
@@ -62,7 +70,10 @@ const WDArmyIcon: React.FC<IconProps> = function ({
           stroke={theme.palette[country].main}
         />
       )}
-      {(iconState === UIState.DISBANDED || iconState === UIState.DESTROY) && (
+      {
+        false
+        /* Pretty explosion, but not using it right now since it doesn't show the unit type or owner 
+        (iconState === UIState.DISBANDED || iconState === UIState.DESTROY) && (
         <>
           <path
             d="m19.028 35.458-3.762 3.37.299-4.956L2.743 39.74l9.574-12.332-3.423-2.033 2.985-1.869L0 12.436l14.7 4.915-.85-15.133 5.75 9.707 1.21-5.97 3.386 8.745L39.23 0l-9.542 18.483 3.392.216-1.791 2.141L45 24.366l-13.125 3.15 3.093 3H30.44l5.446 9.013-10.943-5.544-4.946 8.122-.968-6.65Z"
@@ -77,13 +88,14 @@ const WDArmyIcon: React.FC<IconProps> = function ({
             fill="#FEF189"
           />
         </>
-      )}
-      {iconState !== UIState.DISBANDED && iconState !== UIState.DESTROY && (
-        <path
-          d="M34.065 20.963H27.58L25.024 14l-2.461 6.963H16.03l5.538 4.026L19.486 32l5.562-4.026L30.586 32l-2.036-6.987 5.515-4.05Z"
-          fill={iconState === "selected" ? "#fff" : theme.palette[country].main}
-        />
-      )}
+        ) */
+      }
+      <path
+        d="M34.065 20.963H27.58L25.024 14l-2.461 6.963H16.03l5.538 4.026L19.486 32l5.562-4.026L30.586 32l-2.036-6.987 5.515-4.05Z"
+        fill={theme.palette[country].main}
+        stroke={theme.palette[country].main}
+        strokeWidth={1.5}
+      />
     </>
   );
 };

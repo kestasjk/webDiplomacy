@@ -5,12 +5,13 @@ import WaterTexture from "../../assets/textures/sea-texture.png";
 import WDArrowMarkerDefs from "../../utils/map/WDArrowMarkerDefs";
 import WDBuildContainer from "./components/WDBuildContainer";
 import WDFlyoutContainer from "./components/WDFlyoutContainer";
-import WDArrowContainer from "./components/WDArrowContainer";
+import WDArrowContainer, { StandoffInfo } from "./components/WDArrowContainer";
 import { Unit } from "../../utils/map/getUnits";
 import { IOrderDataHistorical } from "../../models/Interfaces";
 import GameStateMaps from "../../state/interfaces/GameStateMaps";
 import { APITerritories } from "../../state/interfaces/GameDataResponse";
 import Territory from "../../enums/map/variants/classic/Territory";
+import Province from "../../enums/map/variants/classic/Province";
 
 interface WDMapProps {
   units: Unit[];
@@ -19,7 +20,8 @@ interface WDMapProps {
   maps: GameStateMaps;
   territories: APITerritories;
   centersByProvince: { [key: string]: { ownerCountryID: string } };
-  isLatestPhase: boolean;
+  standoffs: StandoffInfo[];
+  isLivePhase: boolean; // Game is live and user is viewing the latest phase?
 }
 
 const WDMap: React.ForwardRefExoticComponent<
@@ -33,7 +35,8 @@ const WDMap: React.ForwardRefExoticComponent<
       maps,
       territories,
       centersByProvince,
-      isLatestPhase,
+      standoffs,
+      isLivePhase,
     },
     ref,
   ): React.ReactElement => (
@@ -53,17 +56,17 @@ const WDMap: React.ForwardRefExoticComponent<
             units={units}
             centersByProvince={centersByProvince}
             phase={phase}
-            isLatestPhase={isLatestPhase}
+            isLivePhase={isLivePhase}
           />
           <WDArrowContainer
-            phase={phase}
             orders={orders}
             units={units}
             maps={maps}
             territories={territories}
+            standoffs={standoffs}
           />
-          {isLatestPhase && <WDBuildContainer />}
-          {isLatestPhase && <WDFlyoutContainer units={units} />}
+          {isLivePhase && <WDBuildContainer />}
+          {isLivePhase && <WDFlyoutContainer units={units} />}
         </g>
       </g>
       <defs>
@@ -90,6 +93,29 @@ const WDMap: React.ForwardRefExoticComponent<
           <image href={WaterTexture} x="0" y="0" width="1966" height="1615" />
         </pattern>
         {WDArrowMarkerDefs()}
+
+        <pattern
+          id="neutral-land-texture"
+          width="30"
+          height="10"
+          patternTransform="rotate(45 0 0)"
+          patternUnits="userSpaceOnUse"
+        >
+          <rect
+            x="0"
+            y="0"
+            width="30"
+            height="10"
+            style={{ fill: "#C5BFBE" }}
+          />
+          <line
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="10"
+            style={{ stroke: "#B5AFAE", strokeWidth: 30 }}
+          />
+        </pattern>
 
         <filter id="selectionGlow" height="120%" width="120%" x="-10%" y="-10%">
           <feMorphology

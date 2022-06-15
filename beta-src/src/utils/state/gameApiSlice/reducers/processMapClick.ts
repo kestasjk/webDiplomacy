@@ -18,7 +18,6 @@ import { TerritoryMeta } from "../../../../state/interfaces/TerritoriesState";
 import { getTargetXYWH } from "../../../map/drawArrowFunctional";
 import invalidClick from "../../../map/invalidClick";
 import getAvailableOrder from "../../getAvailableOrder";
-import getOrderStates from "../../getOrderStates";
 import resetOrder from "../../resetOrder";
 import startNewOrder from "../../startNewOrder";
 import updateOrder from "../../updateOrder";
@@ -90,14 +89,20 @@ export default function processMapClick(
   // ---------------------- PREPARATION ---------------------------
 
   const {
-    user: { member },
-    phase,
-  } = overview;
-  const { orderStatus } = member;
-
-  const {
     payload: { evt, clickProvince },
   } = clickData;
+
+  if (!overview.user) {
+    invalidClick(evt, clickProvince);
+    return;
+  }
+  const { phase } = overview;
+  const { member } = overview.user!;
+  const { orderStatus } = member;
+
+  if (phase === "Finished") {
+    return;
+  }
   if (viewedPhaseState.viewedPhaseIdx < status.phases.length - 1) {
     setAlert(
       state.alert,
@@ -290,9 +295,10 @@ export default function processMapClick(
         updateOrder(state, {
           fromTerrID: maps.territoryToTerrID[clickRootTerritory],
         });
+      } else {
+        // gotta support a unit
+        invalidClick(evt, clickProvince);
       }
-      // gotta support a unit
-      invalidClick(evt, clickProvince);
     } else {
       // click 2
       // eslint-disable-next-line no-lonely-if

@@ -267,12 +267,12 @@ class GameState {
 		$this->drawType=$gameRow['drawType'];
 		$this->processTime=$gameRow['processTime'];
 		$this->phaseLengthInMinutes = $gameRow['phaseMinutes'];
-
-		$memberData = $DB->sql_hash("SELECT countryID, votes, orderStatus, status FROM wD_Members WHERE gameID = ".$this->gameID." AND countryID = ".$this->countryID);
-		$this->votes = $memberData['votes'];
-		$this->orderStatus = $memberData['orderStatus'];
-		$this->status = $memberData['status'];
-
+		if ($this->countryID) {
+			$memberData = $DB->sql_hash("SELECT countryID, votes, orderStatus, status FROM wD_Members WHERE gameID = ".$this->gameID." AND countryID = ".$this->countryID);
+			$this->votes = $memberData['votes'];
+			$this->orderStatus = $memberData['orderStatus'];
+			$this->status = $memberData['status'];
+		}
 		$orderStatusData = $DB->sql_tabl("SELECT countryID, orderStatus FROM wD_Members WHERE gameID = ".$this->gameID);
 		$this->orderStatuses = [];
 		while ($member = $DB->tabl_hash($orderStatusData)) {
@@ -290,7 +290,6 @@ class GameState {
 				$votes = $member["votes"];
 				$this->publicVotes[$countryID] = $votes;
 			}	
-
 		}
 
 		$units = array();
@@ -411,7 +410,7 @@ class GameState {
 			$gameSteps->set($order->turn, $order->phase, $phase);
 		}
 		// messages
-		if ($this->pressType != 'NoPress') {
+		if ($this->pressType != 'NoPress' && $this->countryID) {
 			$msgTabl = $DB->sql_tabl(
 				"SELECT turn, fromCountryID, toCountryID, message, timeSent, phaseMarker
 				FROM wD_GameMessages_Redacted
@@ -544,7 +543,7 @@ class GameState {
 	function __construct($gameID, $countryID)
 	{
 		$this->gameID = intval($gameID);
-		$this->countryID = intval($countryID);
+		$this->countryID = $countryID ? intval($countryID) : null;
 		$this->load();
 	}
 

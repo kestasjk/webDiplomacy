@@ -10,36 +10,44 @@ import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
 import {
   gameApiSliceActions,
-  toggleVoteStatus,
+  setVoteStatus,
 } from "../../state/game/game-api-slice";
-import { useAppDispatch } from "../../state/hooks";
+import { useAppSelector, useAppDispatch } from "../../state/hooks";
 
 interface WDInfoPanelProps {
-  countries: CountryTableData[];
+  allCountries: CountryTableData[];
   gameID: GameOverviewResponse["gameID"];
   maxDelays: GameOverviewResponse["excusedMissedTurns"];
-  userCountry: CountryTableData;
+  userCountry: CountryTableData | null;
+  gameIsFinished: boolean;
 }
 
 const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
-  countries,
+  allCountries,
   gameID,
   maxDelays,
   userCountry,
+  gameIsFinished,
 }): React.ReactElement {
   const [viewport] = useViewport();
   const device = getDevice(viewport);
   const dispatch = useAppDispatch();
+  const votingInProgress = useAppSelector(
+    (state) => state.game.votingInProgress,
+  );
 
   const toggleVote = (voteKey: Vote) => {
-    dispatch(gameApiSliceActions.toggleVoteState(voteKey));
-    dispatch(
-      toggleVoteStatus({
-        countryID: String(userCountry.countryID),
-        gameID: String(gameID),
-        vote: voteKey,
-      }),
-    );
+    if (userCountry) {
+      const desiredVoteOn = userCountry.votes.includes(voteKey) ? "No" : "Yes";
+      dispatch(
+        setVoteStatus({
+          countryID: String(userCountry.countryID),
+          gameID: String(gameID),
+          vote: voteKey,
+          voteOn: desiredVoteOn,
+        }),
+      );
+    }
   };
   const mobileLandscapeLayout =
     device === Device.MOBILE_LANDSCAPE ||
@@ -50,25 +58,21 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
 
   return (
     <Box>
-      <Box sx={{ p: padding }}>
-        <WDVoteButtons toggleVote={toggleVote} voteState={userCountry.votes} />
-      </Box>
+      {userCountry && !gameIsFinished && (
+        <Box sx={{ p: padding }}>
+          <WDVoteButtons
+            toggleVote={toggleVote}
+            voteState={userCountry.votes}
+            votingInProgress={votingInProgress}
+          />
+        </Box>
+      )}
       <Box
         sx={{
           m: "20px 5px 10px 0",
         }}
       >
-        <WDCountryTable
-          maxDelays={maxDelays}
-          /**
-           * always show current user at the top
-           *
-           */
-          countries={[
-            { ...userCountry, votes: userCountry.votes },
-            ...countries,
-          ]}
-        />
+        <WDCountryTable maxDelays={maxDelays} countries={allCountries} />
       </Box>
     </Box>
   );

@@ -6,7 +6,7 @@ import ScrollButtonState from "../../enums/ScrollButton";
 import Season from "../../enums/Season";
 import { gameApiSliceActions } from "../../state/game/game-api-slice";
 import WDGamePhaseIcon from "./icons/WDGamePhaseIcon";
-import formatPhaseForDisplay from "../../utils/formatPhaseForDisplay";
+import { formatPhaseForDisplay } from "../../utils/formatPhaseForDisplay";
 
 interface WDPillScrollerProps {
   backwardDisabled: boolean;

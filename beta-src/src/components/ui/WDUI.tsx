@@ -13,7 +13,7 @@ import WDPhaseUI from "./WDPhaseUI";
 import UIState from "../../enums/UIState";
 import capitalizeString from "../../utils/capitalizeString";
 import Vote from "../../enums/Vote";
-import WDMoveControls from "./WDMoveControls";
+import WDOrderStatusControls from "./WDOrderStatusControls";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import WDHomeIcon from "./icons/WDHomeIcon";
 import WDBuildCounts from "./WDBuildCounts";
@@ -21,12 +21,17 @@ import {
   gameOverview,
   fetchGameMessages,
   gameApiSliceActions,
+  gameMaps,
+  gameViewedPhase,
 } from "../../state/game/game-api-slice";
 import useInterval from "../../hooks/useInterval";
 import useOutsideAlerter from "../../hooks/useOutsideAlerter";
 import useViewport from "../../hooks/useViewport";
 import { store } from "../../state/store";
 import { MessageStatus } from "../../state/interfaces/GameMessages";
+import { IOrderDataHistorical } from "../../models/Interfaces";
+import WDGameFinishedOverlay from "./WDGameFinishedOverlay";
+import { Unit } from "../../utils/map/getUnits";
 
 const abbrMap = {
   Russia: "RUS",
@@ -38,25 +43,38 @@ const abbrMap = {
   Turkey: "TUR",
 };
 
-const WDUI: React.FC = function (): React.ReactElement {
+interface WDUIProps {
+  orders: IOrderDataHistorical[];
+  units: Unit[];
+  viewingGameFinishedPhase: boolean;
+}
+
+const WDUI: React.FC<WDUIProps> = function ({
+  orders,
+  units,
+  viewingGameFinishedPhase,
+}): React.ReactElement {
   const theme = useTheme();
 
   const [showControlModal, setShowControlModal] = React.useState(false);
   const popoverTrigger = React.useRef<HTMLElement>(null);
   const modalRef = React.useRef<HTMLElement>(null);
-
   const {
     alternatives,
+    anon,
+    drawType,
     excusedMissedTurns,
     gameID,
     members,
     name,
     phase,
     pot,
+    pressType,
     season,
     user,
     year,
   } = useAppSelector(gameOverview);
+  const maps = useAppSelector(gameMaps);
 
   // console.log("WDUI RENDERED");
 
@@ -81,16 +99,21 @@ const WDUI: React.FC = function (): React.ReactElement {
     };
   };
 
-  const countries: CountryTableData[] = [];
+  const allCountries: CountryTableData[] = [];
+  const getCountrySortIdx = function (countryID: number) {
+    // Sort user country to the front
+    if (countryID === user?.member.countryID) return -1;
+    return countryID;
+  };
 
   members.forEach((member) => {
-    if (member.userID !== user.member.userID) {
-      countries.push(constructTableData(member));
-    }
+    allCountries.push(constructTableData(member));
   });
-  countries.sort((x, y) => x.countryID - y.countryID);
+  allCountries.sort(
+    (x, y) => getCountrySortIdx(x.countryID) - getCountrySortIdx(y.countryID),
+  );
 
-  const userTableData = constructTableData(user.member);
+  const userTableData = user ? constructTableData(user.member) : null;
 
   const closeControlModal = () => {
     setShowControlModal(false);
@@ -123,13 +146,12 @@ const WDUI: React.FC = function (): React.ReactElement {
   const dispatch = useAppDispatch();
   const dispatchFetchMessages = () => {
     const { game } = store.getState();
-    const { outstandingMessageRequests, overview } = game;
-    if (!outstandingMessageRequests && overview.phase !== "Pre-game") {
+    const { outstandingMessageRequests } = game;
+    if (!outstandingMessageRequests && phase !== "Pre-game") {
       dispatch(
         fetchGameMessages({
           gameID: String(gameID),
-          countryID: String(userTableData.countryID),
-          allMessages: "true",
+          countryID: user ? String(user.member.countryID) : undefined,
           sinceTime: String(game.messages.time),
         }),
       );
@@ -139,6 +161,28 @@ const WDUI: React.FC = function (): React.ReactElement {
   // FIXME: for now, crazily fetch all messages every 2sec
   useInterval(dispatchFetchMessages, 2000);
 
+  const gameIsFinished = phase === "Finished";
+
+  let moreAlternatives = alternatives;
+  if (anon === "Yes") {
+    moreAlternatives += ", Anonymous";
+  }
+  switch (pressType) {
+    case "Regular":
+      moreAlternatives += ", Regular Press";
+      break;
+    case "PublicPressOnly":
+      moreAlternatives += ", Public Press Only";
+      break;
+    case "NoPress":
+      moreAlternatives += ", Gunboat (no press)";
+      break;
+    case "RulebookPress":
+      moreAlternatives += ", Rulebook Press";
+      break;
+    default:
+      break;
+  }
   const popover = popoverTrigger.current ? (
     <WDPopover
       isOpen={showControlModal}
@@ -146,14 +190,17 @@ const WDUI: React.FC = function (): React.ReactElement {
       anchorEl={popoverTrigger.current}
     >
       <WDFullModal
-        alternatives={alternatives}
-        countries={countries}
+        alternatives={moreAlternatives}
+        allCountries={allCountries}
         excusedMissedTurns={excusedMissedTurns}
         gameID={gameID}
+        maps={maps}
+        orders={orders}
         phase={phase}
         potNumber={pot}
         season={season}
         title={name}
+        units={units}
         userCountry={userTableData}
         year={year}
         modalRef={modalRef}
@@ -185,34 +232,41 @@ const WDUI: React.FC = function (): React.ReactElement {
             controlModalTrigger
           )}
         </Box>
-        <Box
-          component="div"
-          sx={{
-            display: "block",
-            p: 1,
-            mt: 2,
-            bgcolor: theme.palette[user.member.country]?.light,
-            color: "black",
-            border: "1px solid",
-            borderColor: "grey.300",
-            borderRadius: 2,
-            fontSize: "0.875rem",
-            fontWeight: "700",
-            userSelect: "none",
-          }}
-          title={`Currently playing as ${user.member.country}`}
-        >
-          {abbrMap[user.member.country]}
-        </Box>
+        {user && (
+          <Box
+            component="div"
+            sx={{
+              display: "block",
+              p: 1,
+              mt: 2,
+              bgcolor: theme.palette[user.member.country]?.light,
+              color: "black",
+              border: "1px solid",
+              borderColor: "grey.300",
+              borderRadius: 2,
+              fontSize: "0.875rem",
+              fontWeight: "700",
+              userSelect: "none",
+            }}
+            title={`Currently playing as ${user.member.country}`}
+          >
+            {abbrMap[user.member.country]}
+          </Box>
+        )}
         <WDBuildCounts />
         {popover}
       </WDPositionContainer>
       <WDPositionContainer position={Position.TOP_LEFT}>
         <WDPhaseUI />
       </WDPositionContainer>
-      <WDPositionContainer position={Position.BOTTOM_RIGHT}>
-        <WDMoveControls />
-      </WDPositionContainer>
+      {user && !gameIsFinished && (
+        <WDPositionContainer position={Position.BOTTOM_RIGHT}>
+          <WDOrderStatusControls orderStatus={user.member.orderStatus} />
+        </WDPositionContainer>
+      )}
+      {gameIsFinished && viewingGameFinishedPhase && (
+        <WDGameFinishedOverlay allCountries={allCountries} />
+      )}
     </>
   );
 };

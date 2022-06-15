@@ -11,6 +11,8 @@ const initialState: GameState = {
       territories: {},
       territoryStatuses: [],
       units: {},
+      turn: 0,
+      phase: "",
     },
   },
   error: null,
@@ -56,6 +58,7 @@ const initialState: GameState = {
     playerTypes: "",
     pot: 35,
     potType: "",
+    pressType: "",
     processStatus: "",
     processTime: null,
     season: "Spring",
@@ -77,6 +80,7 @@ const initialState: GameState = {
           Saved: false,
           Hidden: false,
         },
+        pointsWon: null,
         status: "Playing",
         supplyCenterNo: 4,
         timeLoggedIn: 0,
@@ -143,6 +147,13 @@ const initialState: GameState = {
   },
   outstandingOverviewRequests: false,
   outstandingMessageRequests: false,
+  savingOrdersInProgress: null,
+  votingInProgress: {
+    Cancel: null,
+    Pause: null,
+    Draw: null,
+  },
+  needsGameOverview: false,
   needsGameData: false,
   legalOrders: {
     legalMoveDestsByUnitID: {},
@@ -158,6 +169,8 @@ const initialState: GameState = {
     idx: 0,
     visible: false,
   },
+  activeGames: [],
+  numConsecutiveGetFailures: 0,
 };
 
 export default initialState;

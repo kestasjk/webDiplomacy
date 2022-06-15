@@ -5,7 +5,7 @@ enum Texture {
   GERMANY = "url(#Germany)",
   ITALY = "url(#Italy)",
   LAND = "#F9F2E6",
-  NEUTRAL_LAND = "#E5CFBE",
+  NEUTRAL_LAND = "url(#neutral-land-texture)",
   RUSSIA = "url(#Russia)",
   SEA = "#96B2B2",
   TURKEY = "url(#Turkey)",

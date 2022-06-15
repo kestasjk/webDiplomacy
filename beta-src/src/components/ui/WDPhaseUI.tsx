@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Box } from "@mui/material";
 import {
+  gameOrdersMeta,
   gameOverview,
   gameStatus,
   gameViewedPhase,
@@ -20,17 +21,37 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
   const { viewedPhaseIdx, latestPhaseViewed } = useAppSelector(gameViewedPhase);
 
   const phaseSeconds = phaseMinutes * 60;
-  const [gamePhase, gameSeason, gameYear] = getGamePhaseSeasonYear(
-    phase,
-    season,
-    year,
-  );
-  const [viewedPhase, viewedSeason, viewedYear] = getHistoricalPhaseSeasonYear(
-    gameStatusData,
-    viewedPhaseIdx,
+  const {
+    phase: gamePhase,
+    season: gameSeason,
+    year: gameYear,
+  } = getGamePhaseSeasonYear(phase, season, year);
+  let {
+    phase: viewedPhase,
+    season: viewedSeason,
+    year: viewedYear,
+  } = getHistoricalPhaseSeasonYear(gameStatusData, viewedPhaseIdx);
+  const ordersMeta = useAppSelector(gameOrdersMeta);
+  const ordersMetaValues = Object.values(ordersMeta);
+  const ordersLength = ordersMetaValues.length;
+  const ordersSaved = ordersMetaValues.reduce(
+    (acc, meta) => acc + +meta.saved,
+    0,
   );
   const animateForwardGlow =
-    latestPhaseViewed < gameStatusData.phases.length - 1;
+    latestPhaseViewed < gameStatusData.phases.length - 1 ||
+    ordersSaved !== ordersLength;
+
+  // On the very last phase of a finished game, webdip API might give an
+  // entirely erroneous year/season/phase. So instead, trust the one in the
+  // overview.
+  if (viewedPhaseIdx === gameStatusData.phases.length - 1) {
+    viewedPhase = gamePhase;
+    viewedSeason = gameSeason;
+    viewedYear = gameYear;
+  }
+
+  const gameIsFinished = gamePhase === "Finished";
 
   return (
     <Box
@@ -53,7 +74,7 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
         viewedSeason={viewedSeason}
         viewedYear={viewedYear}
       />
-      {processTime && (
+      {processTime && !gameIsFinished && (
         <WDCountdownPill
           endTime={processTime}
           phaseTime={phaseSeconds}

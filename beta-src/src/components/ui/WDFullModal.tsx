@@ -12,34 +12,50 @@ import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
 import WDViewsContainer from "./WDViewsContainer";
 import WDTabPanel from "./WDTabPanel";
+import WDOrdersPanel from "./WDOrdersPanel";
+import { IOrderDataHistorical } from "../../models/Interfaces";
+import GameStateMaps from "../../state/interfaces/GameStateMaps";
+import { Unit } from "../../utils/map/getUnits";
+import WDGamesList from "./WDGamesList";
 
 interface WDFullModalProps {
   alternatives: GameOverviewResponse["alternatives"];
   children: React.ReactNode;
-  countries: CountryTableData[];
+  allCountries: CountryTableData[];
   excusedMissedTurns: GameOverviewResponse["excusedMissedTurns"];
+  maps: GameStateMaps;
+  orders: IOrderDataHistorical[];
   phase: GameOverviewResponse["phase"];
   potNumber: GameOverviewResponse["pot"];
   gameID: GameOverviewResponse["gameID"];
   season: GameOverviewResponse["season"];
   title: GameOverviewResponse["name"];
-  userCountry: CountryTableData;
+  units: Unit[];
+  userCountry: CountryTableData | null;
   year: GameOverviewResponse["year"];
   modalRef: React.RefObject<HTMLElement>;
 }
 
-const tabGroup: ModalViews[] = [ModalViews.PRESS, ModalViews.INFO];
+const tabGroup: ModalViews[] = [
+  ModalViews.PRESS,
+  ModalViews.INFO,
+  ModalViews.ORDERS,
+  ModalViews.GAMES,
+];
 
 const WDFullModal: React.FC<WDFullModalProps> = function ({
   alternatives,
   children,
-  countries,
+  allCountries,
   excusedMissedTurns,
   gameID,
+  maps,
+  orders,
   phase,
   potNumber,
   season,
   title,
+  units,
   userCountry,
   year,
   modalRef,
@@ -55,6 +71,8 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
     device === Device.MOBILE;
 
   const padding = mobileLandscapeLayout ? "0 6px" : "0 16px";
+
+  const gameIsFinished = phase === "Finished";
 
   return (
     <Box ref={modalRef}>
@@ -82,17 +100,29 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
               />
             </Box>
             <WDInfoPanel
-              countries={countries}
+              allCountries={allCountries}
               maxDelays={excusedMissedTurns}
               userCountry={userCountry}
               gameID={gameID}
+              gameIsFinished={gameIsFinished}
             />
           </Box>
         </WDTabPanel>
         <WDTabPanel currentTab={ModalViews.PRESS} currentView={view}>
-          <WDPress userCountry={userCountry} countries={countries}>
+          <WDPress userCountry={userCountry} allCountries={allCountries}>
             {children}
           </WDPress>
+        </WDTabPanel>
+        <WDTabPanel currentTab={ModalViews.ORDERS} currentView={view}>
+          <WDOrdersPanel
+            orders={orders}
+            units={units}
+            allCountries={allCountries}
+            maps={maps}
+          />
+        </WDTabPanel>
+        <WDTabPanel currentTab={ModalViews.GAMES} currentView={view}>
+          <WDGamesList />
         </WDTabPanel>
       </WDViewsContainer>
     </Box>

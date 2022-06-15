@@ -9,11 +9,13 @@ import WDCheckmarkIcon from "./icons/WDCheckmarkIcon";
 
 interface voteProps {
   voteState: string[];
+  votingInProgress: { [key in Vote]: string | null };
   toggleVote: (vote: Vote) => void;
 }
 
 const WDVoteButtons: React.FC<voteProps> = function ({
   voteState,
+  votingInProgress,
   toggleVote,
 }): React.ReactElement {
   const [viewport] = useViewport();
@@ -26,10 +28,12 @@ const WDVoteButtons: React.FC<voteProps> = function ({
   const spacing = mobileLandscapeLayout ? 1 : 2;
   const commandButtons = Object.keys(Vote).map((vote) => {
     const status = voteState.includes(vote);
+    const disabled = votingInProgress[vote] !== null;
     return (
       <WDButton
         key={vote}
         sx={{ p: padding }}
+        disabled={disabled}
         color={status ? "secondary" : "primary"}
         onClick={() => toggleVote(Vote[vote])}
         startIcon={status ? <WDCheckmarkIcon /> : ""}

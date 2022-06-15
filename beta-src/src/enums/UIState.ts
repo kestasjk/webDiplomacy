@@ -1,7 +1,6 @@
 enum UIState {
   DESTROY = "destroy",
   NONE = "none",
-  SELECTED = "selected",
   HOLD = "hold",
   DISBANDED = "disbanded",
   DISLODGED = "dislodged",
