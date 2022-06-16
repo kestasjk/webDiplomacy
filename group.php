@@ -153,47 +153,47 @@ if( $groupId === -1 )
 	print '<div class="hr"></div>';
 	
 	print '<h3>Declared relationships:</h3>';
-	print '<div class = "profile_title">Verified - '.count($groupUsersSorted['Declared']['Verified']).' - <em>Relationships which have been verified/acknowledged.</em></div>';
+	print '<div class = "profile_title">Verified - '.count($groupUsersSorted['Declared']['Verified'], null, null).' - <em>Relationships which have been verified/acknowledged.</em></div>';
 	print '<div class = "profile_content">';
-	print Group::outputUserTable_static($groupUsersSorted['Declared']['Verified']);
+	print Group::outputUserTable_static($groupUsersSorted['Declared']['Verified'], null, null);
 	print '</div>';
 
-	print '<div class = "profile_title">Unverified - '.count($groupUsersSorted['Declared']['Unverified']).' - <em>Relationships which are not acknowledged/verified and are unresolved.</em></div>';
+	print '<div class = "profile_title">Unverified - '.count($groupUsersSorted['Declared']['Unverified'], null, null).' - <em>Relationships which are not acknowledged/verified and are unresolved.</em></div>';
 	print '<div class = "profile_content">';
-	print Group::outputUserTable_static($groupUsersSorted['Declared']['Unverified']);
+	print Group::outputUserTable_static($groupUsersSorted['Declared']['Unverified'], null, null);
 	print '</div>';
-	print '<div class = "profile_title">Denied - '.count($groupUsersSorted['Declared']['Denied']).' - <em>Relationships which have been determined invalid.</em></div>';
+	print '<div class = "profile_title">Denied - '.count($groupUsersSorted['Declared']['Denied'], null, null).' - <em>Relationships which have been determined invalid.</em></div>';
 	print '<div class = "profile_content">';
-	print Group::outputUserTable_static($groupUsersSorted['Declared']['Denied']);
+	print Group::outputUserTable_static($groupUsersSorted['Declared']['Denied'], null, null);
 	print '</div>';
 
 	print '<h3>Suspicions of a relationship between you and others:</h3>';
-	print '<div class = "profile_title"><li>Verified - '.count($groupUsersSorted['Suspicions']['Verified']).' - <em>Suspicions which have been verified/acknowledged.</em></div>';
+	print '<div class = "profile_title"><li>Verified - '.count($groupUsersSorted['Suspicions']['Verified'], null, null).' - <em>Suspicions which have been verified/acknowledged.</em></div>';
 	print '<div class = "profile_content">';
-	print Group::outputUserTable_static($groupUsersSorted['Suspicions']['Verified']);
+	print Group::outputUserTable_static($groupUsersSorted['Suspicions']['Verified'], null, null);
 	print '</div>';
-	print '<div class = "profile_title">Unverified - '.count($groupUsersSorted['Suspicions']['Unverified']).' - <em>Suspicions which you have not verified/acknowledged.</em></div>';
+	print '<div class = "profile_title">Unverified - '.count($groupUsersSorted['Suspicions']['Unverified'], null, null).' - <em>Suspicions which you have not verified/acknowledged.</em></div>';
 	print '<div class = "profile_content">';
-	print Group::outputUserTable_static($groupUsersSorted['Suspicions']['Unverified']);
+	print Group::outputUserTable_static($groupUsersSorted['Suspicions']['Unverified'], null, null);
 	print '</div>';
 	print '<div class = "profile_title">Denied - '.count($groupUsersSorted['Suspicions']['Denied']).' - <em>Relationships which have been determined invalid.</em></div>';
 	print '<div class = "profile_content">';
-	print Group::outputUserTable_static($groupUsersSorted['Suspicions']['Denied']);
+	print Group::outputUserTable_static($groupUsersSorted['Suspicions']['Denied'], null, null);
 	print '</div>';
 	print '</ul>';
 
 	print '<h3>Suspicions of a relationship between others, created by you:</h3>';
 	print '<div class = "profile_title">Verified - '.count($groupUsersSorted['MySuspicions']['Verified']).' - <em>Your suspicions which have been verified/acknowledged.</em></div>';
 	print '<div class = "profile_content">';
-	print Group::outputUserTable_static($groupUsersSorted['MySuspicions']['Verified']);
+	print Group::outputUserTable_static($groupUsersSorted['MySuspicions']['Verified'], null, null);
 	print '</div>';
 	print '<div class = "profile_title">Unverified - '.count($groupUsersSorted['MySuspicions']['Unverified']).' - <em>Your suspicions which have not been verified/acknowledged</em></div>';
 	print '<div class = "profile_content">';
-	print Group::outputUserTable_static($groupUsersSorted['MySuspicions']['Unverified']);
+	print Group::outputUserTable_static($groupUsersSorted['MySuspicions']['Unverified'], null, null);
 	print '</div>';
 	print '<div class = "profile_title">Denied - '.count($groupUsersSorted['MySuspicions']['Denied']).' - <em>Your suspicions which have been determined invalid</em></div>';
 	print '<div class = "profile_content">';
-	print Group::outputUserTable_static($groupUsersSorted['MySuspicions']['Denied']);
+	print Group::outputUserTable_static($groupUsersSorted['MySuspicions']['Denied'], null, null);
 	print '</div>';
 
 	print '</div>';
