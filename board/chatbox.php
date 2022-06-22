@@ -117,17 +117,19 @@ class Chatbox
 				else
 					libGameMessage::send($msgCountryID, $Member->countryID, $newmessage);
 			}
-			elseif( $User->type['Moderator'] )
-			{
-				libGameMessage::send(0, 'Moderator', '('.$User->username.'): '.$newmessage);
-			}
-			elseif(isset($directorUserID) && $directorUserID == $User->id)
-			{
-				libGameMessage::send(0, 'Game Director', '('.$User->username.'): '.$newmessage);
-			}
-			elseif((isset($tournamentDirector) && $tournamentDirector == $User->id) || (isset($tournamentCodirector) && $tournamentCodirector == $User->id) )
-			{
-				libGameMessage::send(0, 'Tournament Director', '('.$User->username.'): '.$newmessage);
+			elseif ( $msgCountryID == 0 ) {
+				if ( $User->type['Moderator'] )
+				{
+					libGameMessage::send(0, 'Moderator', '('.$User->username.'): '.$newmessage);
+				}
+				elseif(isset($directorUserID) && $directorUserID == $User->id)
+				{
+					libGameMessage::send(0, 'Game Director', '('.$User->username.'): '.$newmessage);
+				}
+				elseif((isset($tournamentDirector) && $tournamentDirector == $User->id) || (isset($tournamentCodirector) && $tournamentCodirector == $User->id) )
+				{
+					libGameMessage::send(0, 'Tournament Director', '('.$User->username.'): '.$newmessage);
+				}
 			}
 		}
 
