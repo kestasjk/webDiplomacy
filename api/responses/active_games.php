@@ -60,7 +60,7 @@ class ActiveGames {
         // 2) On a map (and a gameID) that is supported by the API
         // 3) Only if the game is still active (i.e. not pre-game, finished, paused, etc.)
 
-		$countryTabl = $DB->sql_tabl("SELECT m.gameID, m.countryID, m.orderStatus, m.newMessagesFrom, m.unitNo, g.turn, g.phase, g.name, g.processTime, g.phaseMinutes, g.pressType
+		$countryTabl = $DB->sql_tabl("SELECT m.gameID, m.countryID, m.orderStatus, m.newMessagesFrom, m.unitNo, g.turn, g.phase, g.name, g.processTime, g.phaseMinutes, g.pressType, g.variantID
                                       FROM wD_Members AS m
                                       LEFT JOIN wD_Games AS g ON ( g.id = m.gameID )
                                       WHERE m.status = 'Playing'
@@ -84,6 +84,7 @@ class ActiveGames {
                 'phase' => $row['phase'],
                 'processTime' => intval($row['processTime']),
                 'phaseMinutes' => intval($row['phaseMinutes']),
+                'variantID' => intval($row['variantID']),
             ]);
         }
 	}
