@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Box, Stack } from "@mui/material";
+import DOMPurify from "dompurify";
 import Device from "../../enums/Device";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
@@ -55,11 +56,13 @@ const WDMessage: React.FC<WDMessageProps> = function ({
               {fromCountry?.country.toUpperCase().slice(0, 3)}
             </span>
             {": "}
-            {/* Here's a robust but dangerous choice... 
-            The messages are all sanitized in gamemessage.php, and newlines
-            converted to <br/>
-            */}
-            <span dangerouslySetInnerHTML={{ __html: message.message }} />
+            <span
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(message.message, {
+                  ALLOWED_TAGS: ["br", "strong"],
+                }),
+              }}
+            />
           </Box>
           <Box style={{ color: "#888888", fontStyle: "italic" }}>
             {msgTime.toLocaleTimeString([], {

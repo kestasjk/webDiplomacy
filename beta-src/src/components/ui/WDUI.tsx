@@ -11,7 +11,6 @@ import WDPopover from "./WDPopover";
 import WDActionIcon from "./icons/WDActionIcon";
 import WDPhaseUI from "./WDPhaseUI";
 import UIState from "../../enums/UIState";
-import capitalizeString from "../../utils/capitalizeString";
 import Vote from "../../enums/Vote";
 import WDOrderStatusControls from "./WDOrderStatusControls";
 import countryMap from "../../data/map/variants/classic/CountryMap";
