@@ -38,6 +38,9 @@ export interface Unit {
   unit: IUnit;
   drawMode: UnitDrawMode;
   movedFromTerrID: string | null;
+  // drawAsUnsaved is only present and set to true locally / internally when we
+  // want an order to be drawn in a way that indicates it is unsaved.
+  drawAsUnsaved?: boolean;
 }
 
 export function getUnitsLive(
@@ -129,6 +132,7 @@ export function getUnitsLive(
 
           const unitProvID = maps.terrIDToProvinceID[unit.terrID];
           let drawMode = UnitDrawMode.NONE;
+          let drawAsUnsaved = false;
           const isRetreat =
             territoryStatusesByProvID[unitProvID] &&
             territoryStatusesByProvID[unitProvID].unitID !== null &&
@@ -136,6 +140,7 @@ export function getUnitsLive(
 
           if (ordersMetaByTerrID[unit.terrID]?.update?.type === "Hold") {
             drawMode = UnitDrawMode.HOLD;
+            drawAsUnsaved = !ordersMetaByTerrID[unit.terrID].saved;
           } else if (
             isRetreat &&
             // Webdip API might specify disbands in terms of province ID.
@@ -144,6 +149,7 @@ export function getUnitsLive(
               ordersMetaByTerrID[unitProvID]?.update?.type === "Disband")
           ) {
             drawMode = UnitDrawMode.DISBANDED;
+            drawAsUnsaved = !ordersMetaByTerrID[unit.terrID].saved;
           } else if (
             // Webdip API specifies destroys in terms of province ID!!
             // So also check the province ID, i.e. the ID of the root territory.
@@ -151,6 +157,7 @@ export function getUnitsLive(
             ordersMetaByTerrID[unitProvID]?.update?.type === "Destroy"
           ) {
             drawMode = UnitDrawMode.DISBANDED;
+            drawAsUnsaved = !ordersMetaByTerrID[unit.terrID].saved;
           } else if (isRetreat) {
             drawMode = UnitDrawMode.DISLODGED;
           } else if (unitCountByProvID[unitProvID] >= 2) {
@@ -176,6 +183,7 @@ export function getUnitsLive(
             unit,
             drawMode,
             movedFromTerrID,
+            drawAsUnsaved,
           });
         }
       }
@@ -186,7 +194,7 @@ export function getUnitsLive(
   // Compute all the additional units to draw from the current orders
   // Namely, the builds.
   //--------------------------------------------------------------------
-  Object.entries(ordersMeta).forEach(([orderID, { update }], index) => {
+  Object.entries(ordersMeta).forEach(([orderID, { update, saved }], index) => {
     if (
       !update ||
       !update.type ||
@@ -226,6 +234,7 @@ export function getUnitsLive(
             unit: iUnit,
             drawMode: UnitDrawMode.BUILD,
             movedFromTerrID: null,
+            drawAsUnsaved: !saved,
           });
         }
       }

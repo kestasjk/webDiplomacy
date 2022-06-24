@@ -1,8 +1,5 @@
 import * as React from "react";
-import { GameIconProps } from "../../interfaces/Icons";
 import debounce from "../../utils/debounce";
-import { useAppDispatch, useAppSelector } from "../../state/hooks";
-import { gameApiSliceActions } from "../../state/game/game-api-slice";
 import WDFleetIcon, {
   FLEET_RAW_ICON_WIDTH,
   FLEET_RAW_ICON_HEIGHT,
@@ -11,26 +8,27 @@ import WDArmyIcon, {
   ARMY_RAW_ICON_WIDTH,
   ARMY_RAW_ICON_HEIGHT,
 } from "../ui/units/WDArmyIcon";
+import { Unit } from "../../utils/map/getUnits";
+import UIState from "../../enums/UIState";
+import { makeSVGDrawAsUnsavedAnimateElement } from "../../utils/map/drawArrowFunctional";
 
 interface UnitControllerProps {
-  meta: GameIconProps["meta"];
-  type: GameIconProps["type"];
-  iconState: GameIconProps["iconState"];
+  unit: Unit;
+  unitState: UIState;
   unitWidth: number;
   unitHeight: number;
 }
 
 const WDUnitController: React.FC<UnitControllerProps> = function ({
-  meta,
-  type,
-  iconState,
+  unit,
+  unitState,
   unitWidth,
   unitHeight,
 }): React.ReactElement {
   const iconWidth =
-    type === "Fleet" ? FLEET_RAW_ICON_WIDTH : ARMY_RAW_ICON_WIDTH;
+    unit.unit.type === "Fleet" ? FLEET_RAW_ICON_WIDTH : ARMY_RAW_ICON_WIDTH;
   const iconHeight =
-    type === "Fleet" ? FLEET_RAW_ICON_HEIGHT : ARMY_RAW_ICON_HEIGHT;
+    unit.unit.type === "Fleet" ? FLEET_RAW_ICON_HEIGHT : ARMY_RAW_ICON_HEIGHT;
 
   // The icons expect that 0,0 is the upper left corner of the unit, whereas this WDUnitController
   // svg element is expected to be positioned such that 0,0 is the center of the
@@ -49,12 +47,13 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
       style={{ pointerEvents: "none", overflow: "visible" }}
       transform={transform}
     >
-      {type === "Fleet" && (
-        <WDFleetIcon iconState={iconState} country={meta.country} />
+      {unit.unit.type === "Fleet" && (
+        <WDFleetIcon iconState={unitState} country={unit.country} />
       )}
-      {type === "Army" && (
-        <WDArmyIcon iconState={iconState} country={meta.country} />
+      {unit.unit.type === "Army" && (
+        <WDArmyIcon iconState={unitState} country={unit.country} />
       )}
+      {unit.drawAsUnsaved && makeSVGDrawAsUnsavedAnimateElement()}
     </g>
   );
 };

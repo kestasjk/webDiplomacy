@@ -60,13 +60,7 @@ const WDProvinceOverlay: React.FC<WDProvinceOverlayProps> = function ({
           break;
       }
       const wdUnit = (
-        <WDUnit
-          id={`${province}-unit`}
-          country={unit.country}
-          meta={unit}
-          type={unit.unit.type as UnitType}
-          iconState={unitState}
-        />
+        <WDUnit id={`${province}-unit`} unit={unit} unitState={unitState} />
       );
       if (unit.drawMode === UnitDrawMode.DISLODGING) {
         unitFCsDislodging[unit.mappedTerritory.unitSlotName] = wdUnit;

@@ -152,6 +152,17 @@ export function getArrowX1Y1X2Y2(
   return [x1, y1, x2, y2];
 }
 
+export function makeSVGDrawAsUnsavedAnimateElement(): React.ReactElement {
+  return (
+    <animate
+      attributeName="opacity"
+      values="1.0;0.5;1.0"
+      dur="0.8s"
+      repeatCount="indefinite"
+    />
+  );
+}
+
 // See getTargetXYWH for a description of the possible types and identifiers.
 export default function drawArrowFunctional(
   arrowType: ArrowType,
@@ -160,6 +171,7 @@ export default function drawArrowFunctional(
   sourceIdentifier: Territory | [number, number, number, number],
   receiverType: "territory" | "unit" | "arrow" | "dislodger",
   receiverIdentifier: Territory | [number, number, number, number],
+  drawAsUnsaved: boolean | undefined = false,
   offsetArrowSourcePixels = 0.0,
 ): React.ReactElement {
   // console.log(
@@ -231,6 +243,8 @@ export default function drawArrowFunctional(
       stroke={webDiplomacyTheme.palette.arrowColors[arrowColor].main}
       strokeWidth={strokeWidth}
       strokeDasharray={strokeDasharray}
-    />
+    >
+      {drawAsUnsaved && makeSVGDrawAsUnsavedAnimateElement()}
+    </line>
   );
 }
