@@ -156,7 +156,7 @@ export function makeSVGDrawAsUnsavedAnimateElement(): React.ReactElement {
   return (
     <animate
       attributeName="opacity"
-      values="1.0;0.5;1.0"
+      values="1.0;0.8;0.3;0.8;1.0"
       dur="0.8s"
       repeatCount="indefinite"
     />
