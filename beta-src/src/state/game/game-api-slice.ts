@@ -128,6 +128,7 @@ export const setVoteStatus = createAsyncThunk(
     vote: string;
     voteOn: string;
   }) => {
+    console.log("Submitting vote");
     const { data } = await postGameApiRequest(
       ApiRoute.GAME_SETVOTE,
       queryParams,
@@ -332,11 +333,13 @@ const gameApiSlice = createSlice({
       .addCase(saveOrders.rejected, saveOrdersRejected)
       // setVoteStatus
       .addCase(setVoteStatus.pending, (state, action) => {
+        console.log("Vote pending");
         state.apiStatus = "loading";
         const { vote, voteOn } = action.meta.arg;
         state.votingInProgress = { ...state.votingInProgress, [vote]: voteOn };
       })
       .addCase(setVoteStatus.fulfilled, (state, action) => {
+        console.log({ action });
         const { vote } = action.meta.arg;
         state.votingInProgress = { ...state.votingInProgress, [vote]: null };
         if (action.payload) {

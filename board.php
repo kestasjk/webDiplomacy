@@ -173,38 +173,8 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 	}
 	else
 	{
-		if( $Game->Members->votesPassed() && $Game->phase!='Finished' )
-		{
-			$MC->append('processHint',','.$Game->id);
-
-			$DB->get_lock('gamemaster',1);
-
-			$DB->sql_put("UPDATE wD_Games SET attempts=attempts+1 WHERE id=".$Game->id);
-			$DB->sql_put("COMMIT");
-
-			require_once(l_r('gamemaster/game.php'));
-			$Game = $Game->Variant->processGame($Game->id);
-			try
-			{
-				$Game->applyVotes(); // Will requery votesPassed()
-				$DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$Game->id);
-				$DB->sql_put("COMMIT");
-			}
-			catch(Exception $e)
-			{
-				if( $e->getMessage() == "Abandoned" || $e->getMessage() == "Cancelled" )
-				{
-					assert('$Game->phase=="Pre-game" || $e->getMessage() == "Cancelled"');
-					$DB->sql_put("COMMIT");
-					libHTML::notice(l_t('Cancelled'), l_t("Game was cancelled or didn't have enough players to start."));
-				}
-				else
-					$DB->sql_put("ROLLBACK");
-
-				throw $e;
-			}
-		}
-		else if( $Game->needsProcess() )
+		$Game->Members->processVotes();
+		if( $Game->needsProcess() )
 		{
 			$MC->append('processHint',','.$Game->id);
 		}
