@@ -339,22 +339,15 @@ const gameApiSlice = createSlice({
       .addCase(setVoteStatus.fulfilled, (state, action) => {
         const { vote } = action.meta.arg;
         state.votingInProgress = { ...state.votingInProgress, [vote]: null };
-        if (action.payload) {
-          handlePostSucceeded(state);
-          if (state.overview.user) {
-            const newVotes = action.payload.split(",").filter((s) => !!s);
-            state.overview.user.member.votes = newVotes;
-            state.overview.members.forEach((member) => {
-              if (member.countryID === state.overview.user?.member.countryID) {
-                member.votes = newVotes;
-              }
-            });
-          }
-        } else {
-          handlePostFailed(
-            state,
-            "Error sending vote, network connection issue",
-          );
+        handlePostSucceeded(state);
+        if (state.overview.user) {
+          const newVotes = action.payload.split(",").filter((s) => !!s);
+          state.overview.user.member.votes = newVotes;
+          state.overview.members.forEach((member) => {
+            if (member.countryID === state.overview.user?.member.countryID) {
+              member.votes = newVotes;
+            }
+          });
         }
       })
       .addCase(setVoteStatus.rejected, (state, action) => {
