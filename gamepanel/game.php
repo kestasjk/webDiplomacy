@@ -499,7 +499,7 @@ class panelGame extends Game
 							$buf .= '<br />'.self::passwordBox();
 
 						if ( $this->isClassicGame() && $User->isActiveBeta)
-							$buf .= ' <input type="submit" name="joinBeta" value="'.l_t('Play Beta').'" class="form-submit" />';
+							$buf .= ' <input type="submit" name="joinBeta" value="'.l_t('Join Beta').'" class="form-submit" />';
 
 						$buf .= ' <input type="submit" name="join" value="'.l_t('Join').'" class="form-submit" />';
 

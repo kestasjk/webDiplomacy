@@ -557,7 +557,8 @@ class User {
 			$this->optInFeatures = 0;
 		else
 			$this->optInFeatures = $this->optInFeatures & Config::$enabledOptInFeatures;
-			$this->isActiveBeta = (($this->optInFeatures & 0x1) > 0);
+		
+		$this->isActiveBeta = 1;
 
 		// For display, cdCount should include deletedCDs
 		$this->{'cdCount'} = $this->{'cdCount'} + $this->{'deletedCDs'};
