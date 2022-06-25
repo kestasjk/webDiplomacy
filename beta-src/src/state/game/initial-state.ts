@@ -55,6 +55,7 @@ const initialState: GameState = {
     pauseTimeRemaining: null,
     phase: "Loading",
     phaseMinutes: 14400,
+    phaseMinutesRB: -1,
     playerTypes: "",
     pot: 35,
     potType: "",

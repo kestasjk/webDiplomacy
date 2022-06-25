@@ -618,6 +618,17 @@ class Game
 		return $this->phaseMinutes < 60;
 	}
 
+	protected function getMissedTurnMinutes()
+	{
+		if ($this->phaseMinutesRB != -1) {
+			return $this->phaseMinutesRB;
+		}
+		else
+		{
+			return $this->phaseMinutes;
+		}
+	}
+
 	protected function getCurPhaseMinutes()
 	{
 		if ($this->phaseMinutesRB != -1 && ($this->phase == "Retreats" || $this->phase == "Builds")) {
