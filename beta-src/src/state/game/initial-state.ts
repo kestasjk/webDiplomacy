@@ -49,6 +49,7 @@ const initialState: GameState = {
     excusedMissedTurns: 4,
     gameID: 0,
     gameOver: "No",
+    isTempBanned: false,
     members: [],
     minimumBet: 5,
     name: "",
