@@ -475,17 +475,12 @@ class SetBackFromLeft extends ApiEntry {
 	}
 	public function run($userID, $permissionIsExplicit) {
 		global $Game, $DB;
-		error_log("000");
 		$args = $this->getArgs();
 		$countryID = intval($args['countryID']);
 		$Game = $this->getAssociatedGame();
 		$member = $Game->Members->ByUserID[$userID];
-		// $userMember = $Game->Variant->userMember($member);
-		error_log("AAA");
-		// $Game->Members->makeUserMember($userID);
 		$member->setBackFromLeft();
 		$DB->sql_put("COMMIT");
-		error_log("BB");
 	}
 }
 
@@ -1193,7 +1188,6 @@ class GetMessages extends ApiEntry {
 		parent::__construct('game/getmessages', 'GET', 'getStateOfAllGames', array('gameID','countryID','sinceTime'));
 	}
 	public function run($userID, $permissionIsExplicit) {
-		error_log("message start");
 		global $DB, $MC;
 		$args = $this->getArgs();
 		$countryID = $args['countryID'] ?? 0;
