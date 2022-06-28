@@ -440,8 +440,7 @@ class SetVote extends ApiEntry {
  */
 class MessagesSeen extends ApiEntry {
 	public function __construct() {
-		// lol why is this a GET
-		parent::__construct('game/messagesseen', 'GET', '', array('gameID','countryID','seenCountryID'));
+		parent::__construct('game/messagesseen', 'JSON', '', array('gameID','countryID','seenCountryID'));
 	}
 	public function run($userID, $permissionIsExplicit) {
 		global $Game, $DB;
@@ -463,6 +462,24 @@ class MessagesSeen extends ApiEntry {
 		$DB->sql_put("UPDATE wD_Members
 						SET newMessagesFrom = '".implode(',',$newMessagesFrom)."'
 						WHERE id = ".$member->id);
+		$DB->sql_put("COMMIT");
+	}
+}
+
+/**
+ * API entry game/setbackfromleft
+ */
+class SetBackFromLeft extends ApiEntry {
+	public function __construct() {
+		parent::__construct('game/setbackfromleft', 'JSON', '', array('gameID','countryID'));
+	}
+	public function run($userID, $permissionIsExplicit) {
+		global $Game, $DB;
+		$args = $this->getArgs();
+		$countryID = intval($args['countryID']);
+		$Game = $this->getAssociatedGame();
+		$member = $Game->Members->ByUserID[$userID];
+		$member->setBackFromLeft();
 		$DB->sql_put("COMMIT");
 	}
 }
@@ -660,6 +677,7 @@ class GetGameOverview extends ApiEntry {
 			'excusedMissedTurns' => $game->excusedMissedTurns,
 			'gameID' => $gameID,
 			'gameOver' => $game->gameOver,
+			'isTempBanned' => $game->Members->isTempBanned(),
 			'minimumBet' => $game->minimumBet,
 			'name' => $game->name,
 			'pauseTimeRemaining' => $game->pauseTimeRemaining,
@@ -1170,7 +1188,6 @@ class GetMessages extends ApiEntry {
 		parent::__construct('game/getmessages', 'GET', 'getStateOfAllGames', array('gameID','countryID','sinceTime'));
 	}
 	public function run($userID, $permissionIsExplicit) {
-		error_log("message start");
 		global $DB, $MC;
 		$args = $this->getArgs();
 		$countryID = $args['countryID'] ?? 0;
@@ -1518,6 +1535,7 @@ try {
 	$api->load(new SendMessage());
 	$api->load(new GetMessages());
 	$api->load(new MessagesSeen());
+	$api->load(new SetBackFromLeft());
 
 	$jsonEncodedResponse = $api->run();
 	// Set JSON header.

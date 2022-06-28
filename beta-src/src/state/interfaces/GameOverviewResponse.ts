@@ -60,6 +60,7 @@ interface GameOverviewResponse {
   };
   variantID: number;
   year: number;
+  isTempBanned: boolean;
 }
 
 export default GameOverviewResponse;

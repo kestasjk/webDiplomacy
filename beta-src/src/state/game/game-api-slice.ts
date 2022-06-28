@@ -143,8 +143,19 @@ export const markMessagesSeen = createAsyncThunk(
     gameID: string;
     seenCountryID: string;
   }) => {
-    const { data } = await getGameApiRequest(
+    const { data } = await postGameApiRequest(
       ApiRoute.MESSAGES_SEEN,
+      queryParams,
+    );
+    return data as string;
+  },
+);
+
+export const setBackFromLeft = createAsyncThunk(
+  ApiRoute.SET_BACK_FROM_LEFT,
+  async (queryParams: { countryID: string; gameID: string }) => {
+    const { data } = await postGameApiRequest(
+      ApiRoute.SET_BACK_FROM_LEFT,
       queryParams,
     );
     return data as string;
@@ -354,6 +365,9 @@ const gameApiSlice = createSlice({
         handlePostFailed(state, "Error sending vote, network connection issue");
         const { vote } = action.meta.arg;
         state.votingInProgress = { ...state.votingInProgress, [vote]: null };
+      })
+      .addCase(setBackFromLeft.fulfilled, (state, action) => {
+        state.status.status = "Playing";
       })
       // Send message
       .addCase(sendMessage.fulfilled, (state, action) => {
