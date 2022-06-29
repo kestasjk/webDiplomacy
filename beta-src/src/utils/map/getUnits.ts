@@ -138,9 +138,12 @@ export function getUnitsLive(
             territoryStatusesByProvID[unitProvID].unitID !== null &&
             territoryStatusesByProvID[unitProvID].unitID !== unit.id;
 
+          if (ordersMetaByTerrID[unit.terrID]?.update?.type) {
+            drawAsUnsaved = !ordersMetaByTerrID[unit.terrID].saved;
+          }
+
           if (ordersMetaByTerrID[unit.terrID]?.update?.type === "Hold") {
             drawMode = UnitDrawMode.HOLD;
-            drawAsUnsaved = !ordersMetaByTerrID[unit.terrID].saved;
           } else if (
             isRetreat &&
             // Webdip API might specify disbands in terms of province ID.
@@ -149,7 +152,6 @@ export function getUnitsLive(
               ordersMetaByTerrID[unitProvID]?.update?.type === "Disband")
           ) {
             drawMode = UnitDrawMode.DISBANDED;
-            drawAsUnsaved = !ordersMetaByTerrID[unit.terrID].saved;
           } else if (
             // Webdip API specifies destroys in terms of province ID!!
             // So also check the province ID, i.e. the ID of the root territory.
@@ -157,7 +159,6 @@ export function getUnitsLive(
             ordersMetaByTerrID[unitProvID]?.update?.type === "Destroy"
           ) {
             drawMode = UnitDrawMode.DISBANDED;
-            drawAsUnsaved = !ordersMetaByTerrID[unit.terrID].saved;
           } else if (isRetreat) {
             drawMode = UnitDrawMode.DISLODGED;
           } else if (unitCountByProvID[unitProvID] >= 2) {

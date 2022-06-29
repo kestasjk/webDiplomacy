@@ -70,13 +70,13 @@ const WDProvinceOverlay: React.FC<WDProvinceOverlayProps> = function ({
     });
 
   return (
-    <svg
+    <g
       height={provinceMapData.height}
       id={`${province}-province-overlay`}
-      viewBox={provinceMapData.viewBox}
       width={provinceMapData.width}
       x={provinceMapData.x}
       y={provinceMapData.y}
+      transform={`translate(${provinceMapData.x} ${provinceMapData.y})`}
       overflow="visible"
     >
       {provinceMapData.unitSlots
@@ -103,7 +103,7 @@ const WDProvinceOverlay: React.FC<WDProvinceOverlayProps> = function ({
             </WDUnitSlot>
           );
         })}
-    </svg>
+    </g>
   );
 };
 

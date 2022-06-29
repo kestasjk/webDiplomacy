@@ -10,7 +10,7 @@ import WDArmyIcon, {
 } from "../ui/units/WDArmyIcon";
 import { Unit } from "../../utils/map/getUnits";
 import UIState from "../../enums/UIState";
-import { makeSVGDrawAsUnsavedAnimateElement } from "../../utils/map/drawArrowFunctional";
+import { makeSVGDrawAsUnsavedAnimateElementGentle } from "../../utils/map/drawArrowFunctional";
 
 interface UnitControllerProps {
   unit: Unit;
@@ -53,7 +53,7 @@ const WDUnitController: React.FC<UnitControllerProps> = function ({
       {unit.unit.type === "Army" && (
         <WDArmyIcon iconState={unitState} country={unit.country} />
       )}
-      {unit.drawAsUnsaved && makeSVGDrawAsUnsavedAnimateElement()}
+      {unit.drawAsUnsaved && makeSVGDrawAsUnsavedAnimateElementGentle()}
     </g>
   );
 };

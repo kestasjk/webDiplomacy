@@ -156,9 +156,22 @@ export function makeSVGDrawAsUnsavedAnimateElement(): React.ReactElement {
   return (
     <animate
       attributeName="opacity"
-      values="1.0;1.0;0.25;0.25"
-      keyTimes="0; 0.5; 0.5; 1.0"
-      dur="1s"
+      values="1.0;0.8;0.25;0.8;1.0"
+      keyTimes="0; 0.25; 0.5; 0.75; 1.0"
+      dur="1.0s"
+      repeatCount="indefinite"
+    />
+  );
+}
+// Gentler blinking, for things that are larger and therefore don't need to blink
+// quite as hard as arrows do to be equally visually attention-drawing.
+export function makeSVGDrawAsUnsavedAnimateElementGentle(): React.ReactElement {
+  return (
+    <animate
+      attributeName="opacity"
+      values="1.0;0.9;0.5;0.9;1.0"
+      keyTimes="0; 0.25; 0.5; 0.75; 1.0"
+      dur="1.0s"
       repeatCount="indefinite"
     />
   );

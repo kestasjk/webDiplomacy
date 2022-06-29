@@ -20,7 +20,7 @@ const WDUnit: React.FC<WDUnitProps> = function ({
 }): React.ReactElement {
   const theme = useTheme();
   return (
-    <svg
+    <g
       filter={theme.palette.svg.filters.dropShadows[1]}
       height={UNIT_HEIGHT}
       id={id}
@@ -33,7 +33,7 @@ const WDUnit: React.FC<WDUnitProps> = function ({
         unitWidth={UNIT_WIDTH}
         unitHeight={UNIT_HEIGHT}
       />
-    </svg>
+    </g>
   );
 };
 
