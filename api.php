@@ -338,6 +338,7 @@ class ToggleVote extends ApiEntry {
 		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
 			throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 
+		$game = 
 		$currentVotes = $DB->sql_hash("SELECT votes FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." AND userID = ".$userID);
 		$currentVotes = $currentVotes['votes'];
 
@@ -368,8 +369,6 @@ class ToggleVote extends ApiEntry {
 		}
 		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."' WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
 		$DB->sql_put("COMMIT");
-		$Game = $this->getAssociatedGame();
-		$Game->Members->processVotes();
 		return $newVotes;
 	}
 }
@@ -398,6 +397,7 @@ class SetVote extends ApiEntry {
 		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
 			throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 
+		$game = 
 		$currentVotes = $DB->sql_hash("SELECT votes FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." AND userID = ".$userID);
 		$currentVotes = $currentVotes['votes'];
 
@@ -431,8 +431,6 @@ class SetVote extends ApiEntry {
 		}
 		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."' WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
 		$DB->sql_put("COMMIT");
-		$Game = $this->getAssociatedGame();
-		$Game->Members->processVotes();
 		return $newVotes;
 	}
 }
