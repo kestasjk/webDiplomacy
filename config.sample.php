@@ -256,7 +256,7 @@ class Config
 	 * 
 	 * @var int
 	 */
-	public static $enabledOptInFeatures = 0;
+	public static $enabledOptInFeatures = 1;
 	// Enable up to 24 opt-in features:
 	//public static $enabledOptInFeatures = 0b111111111111111111111111;
 
@@ -333,7 +333,7 @@ class Config
 					/* Uncomment the line below to use SSL to connect (e.g. for gmail) */
 					// , 'SMTPSecure'=>'ssl'
 				),
-			"UseDebug" => false // If this is set to true mail will be output to the browser instead of sent, useful for debugging
+			"UseDebug" => true // If this is set to true mail will be output to the browser instead of sent, useful for debugging
 		);
 
 	/**
