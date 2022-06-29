@@ -103,9 +103,9 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		{
 			throw new Exception(l_t("The phase value for retreats and builds is too large or small; it must be between 1 minute and 10 days."));
 		}
-		if ( $input['phaseMinutesRB'] != -1 && $input['phaseMinutesRB'] > $input['phaseMinutes']) 
+		if ( $input['phaseMinutesRB'] != -1 && ($input['phaseMinutesRB'] > $input['phaseMinutes'] || $input['phaseMinutesRB'] < $input['phaseMinutes'] / 10)) 
 		{
-			throw new Exception(l_t("The phase length for retreats and builds must be shorter than the normal phase length"));
+			throw new Exception(l_t("The phase length for retreats and builds must be within 10% and 100% of the regular phase length."));
 		}
 
 		$input['nextPhaseMinutes'] = (int)$input['nextPhaseMinutes'];

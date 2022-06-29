@@ -137,7 +137,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			<select class = "gameCreate" name="newGame[phaseMinutesRB]" id="selectPhaseMinutesRB">
 			<?php
 				$phaseList = array(-1,1, 2, 3, 5, 7, 10, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
-					1440);
+					1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400);
 
 				foreach ($phaseList as $i) { 
 					if ($i != -1)
@@ -264,7 +264,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				print '</select>';
 			?>
 			</br></br>
-			<div id="botFill" style="display:block">
+			<div id="botFill" style="display:none">
 			<strong>Fill Empty Spots with Bots: </strong>
 			<img id = "modBtnBot" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
 			<div id="botModal" class="modal">
@@ -510,6 +510,21 @@ function updatePhasePeriod(){
 			selectPhaseSwitchPeriod.options[i].disabled = true;
 		}
 	}
+
+	selectPhaseMinutesRB = document.getElementById("selectPhaseMinutesRB");
+
+	for (i = 0; i < selectPhaseMinutesRB.length; i++){
+		var optVal = parseInt(selectPhaseMinutesRB.options[i].value);
+		if (optVal < 0 || optVal >= phaseLength / 10 && optVal <= phaseLength){
+			selectPhaseMinutesRB.options[i].hidden = false;
+			selectPhaseMinutesRB.options[i].disabled = false;
+		}
+		else{
+			selectPhaseMinutesRB.options[i].hidden = true;
+			selectPhaseMinutesRB.options[i].disabled = true;
+		}
+	}
+	selectPhaseMinutesRB.value = -1;
 }
 
 
@@ -517,6 +532,7 @@ function updatePhasePeriod(){
 
 selectPhaseSwitchPeriod.addEventListener("change", updatePhasePeriod)
 selectPhaseMinutes.addEventListener("change", updatePhasePeriod)
+window.onload = updatePhasePeriod
 
 </script>
 
