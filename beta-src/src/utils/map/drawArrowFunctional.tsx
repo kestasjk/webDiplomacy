@@ -152,6 +152,31 @@ export function getArrowX1Y1X2Y2(
   return [x1, y1, x2, y2];
 }
 
+export function makeSVGDrawAsUnsavedAnimateElement(): React.ReactElement {
+  return (
+    <animate
+      attributeName="opacity"
+      values="1.0;0.8;0.25;0.8;1.0"
+      keyTimes="0; 0.25; 0.5; 0.75; 1.0"
+      dur="1.0s"
+      repeatCount="indefinite"
+    />
+  );
+}
+// Gentler blinking, for things that are larger and therefore don't need to blink
+// quite as hard as arrows do to be equally visually attention-drawing.
+export function makeSVGDrawAsUnsavedAnimateElementGentle(): React.ReactElement {
+  return (
+    <animate
+      attributeName="opacity"
+      values="1.0;0.9;0.5;0.9;1.0"
+      keyTimes="0; 0.25; 0.5; 0.75; 1.0"
+      dur="1.0s"
+      repeatCount="indefinite"
+    />
+  );
+}
+
 // See getTargetXYWH for a description of the possible types and identifiers.
 export default function drawArrowFunctional(
   arrowType: ArrowType,
@@ -160,6 +185,7 @@ export default function drawArrowFunctional(
   sourceIdentifier: Territory | [number, number, number, number],
   receiverType: "territory" | "unit" | "arrow" | "dislodger",
   receiverIdentifier: Territory | [number, number, number, number],
+  drawAsUnsaved: boolean | undefined = false,
   offsetArrowSourcePixels = 0.0,
 ): React.ReactElement {
   // console.log(
@@ -231,6 +257,8 @@ export default function drawArrowFunctional(
       stroke={webDiplomacyTheme.palette.arrowColors[arrowColor].main}
       strokeWidth={strokeWidth}
       strokeDasharray={strokeDasharray}
-    />
+    >
+      {drawAsUnsaved && makeSVGDrawAsUnsavedAnimateElement()}
+    </line>
   );
 }

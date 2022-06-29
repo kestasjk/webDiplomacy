@@ -117,6 +117,9 @@ export interface IOrderDataHistorical {
   type: string;
   unitType: string;
   viaConvoy: string;
+  // drawAsUnsaved is only present and set to true locally / internally when we 
+  // want an order to be drawn in a way that indicates it is unsaved.
+  drawAsUnsaved?: boolean; 
 }
 
 export interface IPhaseDataHistorical {

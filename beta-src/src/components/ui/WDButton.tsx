@@ -30,8 +30,7 @@ const WDButton: React.FC<WDButtonProps> = function ({
       startIcon={startIcon}
       variant="contained"
       style={{
-        animation:
-          doAnimateGlow && !disabled ? "glowing 1.5s ease infinite" : "",
+        animation: doAnimateGlow && !disabled ? "glowing 1s infinite" : "",
         pointerEvents: "auto",
       }}
     >
