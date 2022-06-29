@@ -93,7 +93,7 @@ class panelGameBoard extends panelGame
 		$buf = parent::pausedInfo();
 
 		if( is_null($this->pauseTimeRemaining) )
-			$remaining = $this->phaseMinutes*60;
+			$remaining = $this->getCurPhaseMinutes()*60;
 		else
 			$remaining = $this->pauseTimeRemaining;
 

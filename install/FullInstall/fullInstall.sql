@@ -1011,3 +1011,7 @@ CREATE TABLE `wD_GameMessages_Redacted` (
   KEY `toMember` (`gameID`,`toCountryID`) USING BTREE,                                                                                                                                
   KEY `fromMember` (`gameID`,`fromCountryID`) USING BTREE                                                                                                                             
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;                  
+
+UPDATE `wD_Misc` SET `value` = '170' WHERE `name` = 'Version';
+ALTER TABLE `wD_Games` ADD COLUMN `phaseMinutesRB` smallint(5) DEFAULT -1 AFTER `phaseMinutes`;
+ALTER TABLE `wD_Backup_Games` ADD COLUMN `phaseMinutesRB` smallint(5) DEFAULT -1 AFTER `phaseMinutes`;

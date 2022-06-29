@@ -14,6 +14,9 @@ import getDevice from "../../utils/getDevice";
 import useViewport from "../../hooks/useViewport";
 import Season from "../../enums/Season";
 import { formatPSYForDisplay } from "../../utils/formatPhaseForDisplay";
+import { gameOverview } from "../../state/game/game-api-slice";
+import { getFormattedTime } from "../../utils/formatTime";
+import { useAppSelector } from "../../state/hooks";
 
 /**
  * game setting datas which would be passed to the component by parent component/ context/redux store
@@ -50,6 +53,13 @@ const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
     device === Device.MOBILE ||
     device === Device.MOBILE_LG;
 
+  const { phaseMinutes, phaseMinutesRB } = useAppSelector(gameOverview);
+  let phaseLengthInfo = `${getFormattedTime(phaseMinutes * 60)} / phase`;
+  if (phaseMinutesRB !== -1) {
+    phaseLengthInfo = `${phaseLengthInfo} (M) | ${getFormattedTime(
+      phaseMinutesRB * 60,
+    )} / phase (R, B)`;
+  }
   const width = isMobile ? 260 : 320;
   return (
     <TableContainer sx={{ overflowX: "inherit" }}>
@@ -82,7 +92,7 @@ const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
         <TableBody>
           <TableRow>
             <TableCell sx={tableCellStyles}>
-              Pot: {potNumber} -
+              Pot: {potNumber} -{" "}
               <b>
                 {formatPSYForDisplay({
                   phase,
@@ -94,6 +104,9 @@ const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
           </TableRow>
           <TableRow>
             <TableCell sx={tableCellStyles}>{alternatives}</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell sx={tableCellStyles}>{phaseLengthInfo}</TableCell>
           </TableRow>
         </TableBody>
       </Table>

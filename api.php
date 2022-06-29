@@ -685,6 +685,7 @@ class GetGameOverview extends ApiEntry {
 			'pauseTimeRemaining' => $game->pauseTimeRemaining,
 			'phase' => $game->phase,
 			'phaseMinutes' => $game->phaseMinutes,
+			'phaseMinutesRB'=> $game->phaseMinutesRB,
 			'playerTypes' => $game->playerTypes,
 			'pot' => $game->pot,
 			'potType' => $game->potType,
