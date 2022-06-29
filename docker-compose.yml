@@ -6,11 +6,11 @@
 # webDiplomacy instructions:
 # Copy config.sample.php to config.php
 # Run install/FullInstall/FullInstall.sql
-# Register user account, use https://localhost:8895 to access registration mail
-# Go to https://localhost:8895/gamemaster.php?gameMasterSecret= to set self as admin
-# Go to https://localhost:8895/admincp.php and enable maintenance mode
-# Go to https://localhost:8895/datc.php and run batch test
-# Go to https://localhost:8895/admincp.php and disable maintenance mode
+# Register user account, use https://localhost:43000 to access registration mail
+# Go to https://localhost:43000/gamemaster.php?gameMasterSecret= to set self as admin
+# Go to https://localhost:43000/admincp.php and enable maintenance mode
+# Go to https://localhost:43000/datc.php and run batch test
+# Go to https://localhost:43000/admincp.php and disable maintenance mode
 # Server is ready for dev work
 #
 ###############################################################################
@@ -47,7 +47,7 @@ services:
       - './:/application'
       - './phpdocker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf'
     ports:
-      - '8895:80'
+      - '${WEBDIP_PORT:-43000}:80'
 
   beta:
     image: 'node:16.15.1-alpine3.14'
