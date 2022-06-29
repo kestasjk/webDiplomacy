@@ -338,7 +338,6 @@ class ToggleVote extends ApiEntry {
 		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
 			throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 
-		$game = 
 		$currentVotes = $DB->sql_hash("SELECT votes FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." AND userID = ".$userID);
 		$currentVotes = $currentVotes['votes'];
 
@@ -397,7 +396,6 @@ class SetVote extends ApiEntry {
 		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
 			throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 
-		$game = 
 		$currentVotes = $DB->sql_hash("SELECT votes FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." AND userID = ".$userID);
 		$currentVotes = $currentVotes['votes'];
 
