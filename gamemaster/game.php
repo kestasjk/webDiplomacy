@@ -293,7 +293,7 @@ class processGame extends Game
 	 *
 	 * @return Game The object corresponding to the new game
 	 */
-	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $nextPhaseMinutes, $phaseSwitchPeriod, $joinPeriod, $anon, $press, $missingPlayerPolicy='Normal', $drawType, $rrLimit, $excusedMissedTurns, $playerTypes)
+	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $phaseMinutesRB, $nextPhaseMinutes, $phaseSwitchPeriod, $joinPeriod, $anon, $press, $missingPlayerPolicy='Normal', $drawType, $rrLimit, $excusedMissedTurns, $playerTypes)
 	{
 		global $DB;
 
@@ -341,6 +341,7 @@ class processGame extends Game
 						".( $password ? "password = UNHEX('".md5($password)."')," : "").
 						"processTime = ".$pTime.",
 						phaseMinutes = ".$phaseMinutes.",
+						phaseMinutesRB = ".$phaseMinutesRB.",
 						nextPhaseMinutes = ".$nextPhaseMinutes.",
 						phaseSwitchPeriod = ".$phaseSwitchPeriod.",
 						missingPlayerPolicy = '".$missingPlayerPolicy."',
@@ -500,8 +501,7 @@ class processGame extends Game
 	protected function resetProcessTime() 
 	{
 		global $DB;
-		
-		$this->processTime = time() + $this->phaseMinutes*60;
+		$this->processTime = time() + $this->getCurPhaseMinutes()*60;
 		$DB->sql_put("UPDATE wD_Games SET processTime = ".$this->processTime." WHERE id = ".$this->id);
 	}
 
@@ -513,9 +513,10 @@ class processGame extends Game
 		global $DB;
 	
 		$newProcessTime = time() + 1440*60;
-		if ($this->phaseMinutes < 1440)
+		$minPhaseMinutes = $this->getMinPhaseMinutes();
+		if ($minPhaseMinutes < 1440)
 		{
-			$newProcessTime = time() + $this->phaseMinutes*60;
+			$newProcessTime = time() + $minPhaseMinutes*60;
 		}
 
 		$this->processTime = $newProcessTime;
@@ -548,7 +549,7 @@ class processGame extends Game
 		$this->phaseMinutes = $newPhaseMinutes;
 		$this->processTime = time()+($newPhaseMinutes*60);
 
-		$DB->sql_put("UPDATE wD_Games SET phaseMinutes = ".$this->phaseMinutes.", processTime = ".$this->processTime." WHERE id = ".$this->id);
+		$DB->sql_put("UPDATE wD_Games SET phaseMinutes = ".$this->phaseMinutes.", phaseMinutesRB = -1, processTime = ".$this->processTime." WHERE id = ".$this->id);
 	}
 
 	/**

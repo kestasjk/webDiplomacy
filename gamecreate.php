@@ -47,7 +47,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$form = $_REQUEST['newGame']; // This makes $form look harmless when it is unsanitized; the parameters must all be sanitized
 
 		$input = array();
-		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'nextPhaseMinutes', 'phaseSwitchPeriod', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy','drawType','minimumReliabilityRating','excusedMissedTurns');
+		$required = array('variantID', 'name', 'password', 'passwordcheck', 'bet', 'potType', 'phaseMinutes', 'phaseMinutesRB', 'nextPhaseMinutes', 'phaseSwitchPeriod', 'joinPeriod', 'anon', 'pressType', 'missingPlayerPolicy','drawType','minimumReliabilityRating','excusedMissedTurns');
 
 		$playerTypes = 'Members';
 
@@ -97,6 +97,15 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		if ( $input['phaseMinutes'] < 5 or $input['phaseMinutes'] > 1440*10 )
 		{
 			throw new Exception(l_t("The phase value is too large or small; it must be between 5 minutes and 10 days."));
+		}
+		$input['phaseMinutesRB'] = (int)$input['phaseMinutesRB'];
+		if ( $input['phaseMinutesRB'] != -1 && ($input['phaseMinutesRB'] < 1 or $input['phaseMinutesRB'] > 1440*10 ))
+		{
+			throw new Exception(l_t("The phase value for retreats and builds is too large or small; it must be between 1 minute and 10 days."));
+		}
+		if ( $input['phaseMinutesRB'] != -1 && ($input['phaseMinutesRB'] > $input['phaseMinutes'] || $input['phaseMinutesRB'] < $input['phaseMinutes'] / 10)) 
+		{
+			throw new Exception(l_t("The phase length for retreats and builds must be within 10% and 100% of the regular phase length."));
 		}
 
 		$input['nextPhaseMinutes'] = (int)$input['nextPhaseMinutes'];
@@ -216,6 +225,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			$input['bet'], 
 			$input['potType'], 
 			$input['phaseMinutes'], 
+			$input['phaseMinutesRB'],
 			$input['nextPhaseMinutes'],
 			$input['phaseSwitchPeriod'],
 			$input['joinPeriod'], 

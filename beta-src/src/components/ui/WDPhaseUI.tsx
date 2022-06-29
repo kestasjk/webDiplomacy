@@ -14,13 +14,22 @@ import {
 import WDCountdownPill from "./WDCountdownPill";
 import WDPillScroller from "./WDPillScroller";
 
+const getCurPhaseMinutes = function (phaseMinutes, phaseMinutesRB, phase) {
+  if (phaseMinutesRB !== -1 && (phase === "Retreats" || phase === "Builds")) {
+    return phaseMinutesRB;
+  }
+  return phaseMinutes;
+};
+
 const WDPhaseUI: React.FC = function (): React.ReactElement {
-  const { phaseMinutes, processTime, phase, season, year } =
+  const { phaseMinutes, phaseMinutesRB, processTime, phase, season, year } =
     useAppSelector(gameOverview);
   const gameStatusData = useAppSelector(gameStatus);
   const { viewedPhaseIdx, latestPhaseViewed } = useAppSelector(gameViewedPhase);
 
-  const phaseSeconds = phaseMinutes * 60;
+  const phaseSeconds =
+    getCurPhaseMinutes(phaseMinutes, phaseMinutesRB, phase) * 60;
+
   const {
     phase: gamePhase,
     season: gameSeason,
