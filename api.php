@@ -368,8 +368,6 @@ class ToggleVote extends ApiEntry {
 		}
 		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."' WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
 		$DB->sql_put("COMMIT");
-		$Game = $this->getAssociatedGame();
-		$Game->Members->processVotes();
 		return $newVotes;
 	}
 }
@@ -431,8 +429,6 @@ class SetVote extends ApiEntry {
 		}
 		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."' WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
 		$DB->sql_put("COMMIT");
-		$Game = $this->getAssociatedGame();
-		$Game->Members->processVotes();
 		return $newVotes;
 	}
 }
