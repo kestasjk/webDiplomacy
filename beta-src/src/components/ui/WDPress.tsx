@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { FC, ReactNode, ReactElement, useRef, useEffect } from "react";
 import {
   Box,
   Stack,
@@ -8,6 +8,7 @@ import {
   Divider,
 } from "@mui/material";
 import { Email, Send } from "@mui/icons-material";
+import useLocalStorageState from "use-local-storage-state";
 
 import Button from "@mui/material/Button";
 import useViewport from "../../hooks/useViewport";
@@ -24,23 +25,24 @@ import {
 import { store } from "../../state/store";
 
 interface WDPressProps {
-  children: React.ReactNode;
+  children: ReactNode;
   userCountry: CountryTableData | null;
   allCountries: CountryTableData[];
 }
 
-const WDPress: React.FC<WDPressProps> = function ({
+const WDPress: FC<WDPressProps> = function ({
   children,
   userCountry,
   allCountries,
-}): React.ReactElement {
+}): ReactElement {
   const [viewport] = useViewport();
   const device = getDevice(viewport);
   const dispatch = useAppDispatch();
 
   const padding = 0;
-
-  const [userMsg, setUserMsg] = React.useState("");
+  const [messageStack, setMessageStack] = useLocalStorageState("messageStack", {
+    defaultValue: {},
+  });
 
   const { user, gameID, pressType, phase } = useAppSelector(gameOverview);
 
@@ -52,8 +54,8 @@ const WDPress: React.FC<WDPressProps> = function ({
     ({ game }) => game.messages.newMessagesFrom,
   );
 
-  const messagesEndRef = React.useRef<HTMLDivElement>(null);
-  React.useEffect(() => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
     // scroll to the bottom of the message list
     // FIXME: should this happen if we get a message from a 3rd party?
     messagesEndRef.current?.scrollIntoView();
@@ -68,10 +70,12 @@ const WDPress: React.FC<WDPressProps> = function ({
         gameID: String(gameID),
         countryID: String(userCountry.countryID),
         toCountryID: String(countryIDSelected),
-        message: userMsg,
+        message: messageStack[countryIDSelected],
       }),
     );
-    setUserMsg("");
+    const ms = { ...messageStack };
+    ms[countryIDSelected] = "";
+    setMessageStack(ms);
   };
 
   const dispatchMessagesSeen = (countryID) => {
@@ -179,10 +183,14 @@ const WDPress: React.FC<WDPressProps> = function ({
               id="user-msg"
               label="Send Message"
               variant="outlined"
-              value={userMsg}
+              value={messageStack[countryIDSelected] || ""}
               multiline
               maxRows={4}
-              onChange={(text) => setUserMsg(text.target.value)}
+              onChange={(text) => {
+                const ms = { ...messageStack };
+                ms[countryIDSelected] = text.target.value;
+                setMessageStack(ms);
+              }}
               onKeyDown={keydownHandler}
               fullWidth
               disabled={!canMsg}
@@ -193,10 +201,14 @@ const WDPress: React.FC<WDPressProps> = function ({
                     <Divider orientation="vertical" />
                     <IconButton
                       onClick={clickSend}
-                      disabled={!userMsg || !canMsg}
+                      disabled={!messageStack[countryIDSelected] || !canMsg}
                     >
                       <Send
-                        color={userMsg && canMsg ? "primary" : "disabled"}
+                        color={
+                          messageStack[countryIDSelected] && canMsg
+                            ? "primary"
+                            : "disabled"
+                        }
                       />
                     </IconButton>
                   </>

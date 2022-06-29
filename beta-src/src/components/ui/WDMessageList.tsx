@@ -4,6 +4,8 @@ import WDMessage from "./WDMessage";
 import { GameMessage } from "../../state/interfaces/GameMessages";
 import { CountryTableData } from "../../interfaces/CountryTableData";
 import WDVerticalScroll from "./WDVerticalScroll";
+import { useAppSelector } from "../../state/hooks";
+import { gameViewedPhase } from "../../state/game/game-api-slice";
 import { getPhaseSeasonYear } from "../../utils/state/getPhaseSeasonYear";
 
 interface WDMessageListProps {
@@ -21,6 +23,8 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
   countryIDSelected,
   messagesEndRef,
 }): React.ReactElement {
+  const viewedPhaseState = useAppSelector(gameViewedPhase);
+
   const filteredMessages = messages.filter(
     (message) =>
       (message.fromCountryID === countryIDSelected ||
@@ -38,6 +42,7 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
         message={message}
         userCountry={userCountry}
         allCountries={allCountries}
+        viewedPhaseIdx={viewedPhaseState.viewedPhaseIdx}
       />,
     );
   });

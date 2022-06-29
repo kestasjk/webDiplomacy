@@ -23,3 +23,19 @@ export function getFormattedTimeLeft(endTime: number) {
   const timeLeft = parseSeconds(secondsLeft);
   return formatTime(timeLeft);
 }
+
+export function turnAsDate(turn: number, variant: string): string {
+  // TODO: For now I'm just adding the case for "Classic"
+  let phase = "";
+  if (turn === -1) return "Pre-game";
+  switch (variant) {
+    case "Classic": {
+      const year = Math.floor(turn / 2) + 1901;
+      phase = `${turn % 2 ? "Autumn, " : "Spring, "}${year}`;
+      break;
+    }
+    default:
+      break;
+  }
+  return phase;
+}

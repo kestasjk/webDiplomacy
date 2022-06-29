@@ -1238,7 +1238,7 @@ class GetMessages extends ApiEntry {
 			$where = "($where) AND timeSent >= $sinceTime";
 		}
 
-		$tabl = $DB->sql_tabl("SELECT message, toCountryID, fromCountryID, turn, timeSent
+		$tabl = $DB->sql_tabl("SELECT message, toCountryID, fromCountryID, turn, timeSent, phaseMarker
 		FROM wD_GameMessages WHERE gameID = $gameID AND ($where)");
 		while ($message = $DB->tabl_hash($tabl)) {
 			$messages[] = [
@@ -1247,6 +1247,7 @@ class GetMessages extends ApiEntry {
 				'timeSent' => (int) $message['timeSent'],
 				'toCountryID' => (int) $message['toCountryID'],
 				'turn' => (int) $message['turn'],
+				'phaseMarker' => $message['phaseMarker'],
 			];
 		}
 		// Return Messages.
