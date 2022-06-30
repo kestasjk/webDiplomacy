@@ -66,7 +66,7 @@ const WDGameProgressOverlay: React.FC<WDGameProgressOverlayProps> = function ({
             You failed to enter orders and had no excused absences.
           </Box>
           <Box sx={{ m: "4px" }}>
-            You are in Civil Disorder{" "}
+            You are in Civil Disorder
             {overview.isTempBanned
               ? " and cannot rejoin due to a temp ban"
               : ""}

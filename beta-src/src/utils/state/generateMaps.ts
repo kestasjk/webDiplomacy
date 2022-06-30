@@ -7,6 +7,7 @@ import GameStateMaps from "../../state/interfaces/GameStateMaps";
 export default function generateMaps(
   data: GameDataResponse["data"],
 ): GameStateMaps {
+  console.log({ data });
   const { territories, units } = data;
   const territoryToTerrID: GameStateMaps["territoryToTerrID"] = {};
   const terrIDToTerritory: GameStateMaps["terrIDToTerritory"] = {};

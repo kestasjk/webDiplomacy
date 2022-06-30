@@ -73,6 +73,8 @@ const WDUI: React.FC<WDUIProps> = function ({
     user,
     year,
   } = useAppSelector(gameOverview);
+  if (phase === "Error" || phase === "Pre-game") return <div />;
+
   const maps = useAppSelector(gameMaps);
 
   // console.log("WDUI RENDERED");
