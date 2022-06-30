@@ -316,7 +316,7 @@ class panelGame extends Game
 	{
 		$buf = l_t('<strong>%s</strong> /phase',libTime::timeLengthText($this->phaseMinutes*60));
 		if ($this->phaseMinutesRB != -1) {
-			$buf = $buf . l_t(' (M) | <strong>%s</strong> / phase (R, B)', libTime::timeLengthText($this->phaseMinutesRB*60));
+			$buf = $buf . l_t(' (M) | <strong>%s</strong> /phase (R, B)', libTime::timeLengthText($this->phaseMinutesRB*60));
 		}
 		return $buf ;
 	}
