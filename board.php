@@ -173,8 +173,12 @@ if( isset($Member) && $Member->status == 'Playing' && $Game->phase!='Finished' )
 	}
 	else
 	{
-		$Game->Members->processVotes();
-		if( $Game->needsProcess() )
+		$voteMessage = $Game->Members->processVotes();
+		if ( $voteMessage == "Abandoned" || $voteMessage == "Cancelled" )
+		{
+			libHTML::notice(l_t('Cancelled'), l_t("Game was cancelled or didn't have enough players to start."));
+		}
+		else if ( $Game->needsProcess() )
 		{
 			$MC->append('processHint',','.$Game->id);
 		}

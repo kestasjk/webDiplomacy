@@ -185,7 +185,7 @@ class Members
 				{
 					assert($Game->phase=="Pre-game" || $e->getMessage() == "Cancelled");
 					$DB->sql_put("COMMIT");
-					// libHTML::notice(l_t('Cancelled'), l_t("Game was cancelled or didn't have enough players to start."));
+					return $e->getMessage();
 				}
 				else
 					$DB->sql_put("ROLLBACK");
@@ -193,6 +193,7 @@ class Members
 				throw $e;
 			}
 		}
+		return null;
 	}
 
 	function isReady()
