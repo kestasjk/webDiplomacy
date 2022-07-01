@@ -115,7 +115,6 @@ class panelGameBoard extends panelGame
 
 		$vAllowed = Members::$votes;
 		$vSet = $this->Members->ByUserID[$User->id]->votes;
-		$vPassed = $this->Members->votesPassed();
 
 		$vCancel=array();
 		$vVote=array();
@@ -128,19 +127,17 @@ class panelGameBoard extends panelGame
 				if ( (empty(Config::$concedeVariants)) || (in_array($this->variantID, Config::$concedeVariants)) )
 				{
 					if(in_array($vote, $vSet))
-					{
-						if(!in_array($vote, $vPassed)) $vCancel[]=$vote;
-					}
-					else $vVote[]=$vote;
+						$vCancel[]=$vote;
+					else
+						$vVote[]=$vote;
 				}
 			}
 			else
 			{
 				if(in_array($vote, $vSet))
-				{
-					if(!in_array($vote, $vPassed)) $vCancel[]=$vote;
-				}
-				else $vVote[]=$vote;
+					$vCancel[]=$vote;
+				else 
+					$vVote[]=$vote;
 			}			
 		}
 

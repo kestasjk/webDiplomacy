@@ -70,34 +70,21 @@ class processGame extends Game
 	}
 
 	/**
-	 * Look for votes that have passed and process them (but only do one), then remove the
-	 * game from the process queue if there are no votes left to process.
+	 * Apply the vote given: Draw/Cancel/Pause/Concede
 	 */
-	function applyVotes()
+	function applyVote($vote)
 	{
 		assert('$this->phase != "Finished"');
 		if($this->phase != "Pre-game")
 		{
-			$votes = $this->Members->votesPassed();
+			$this->gamelog(l_t('Applying vote'));
 
-			$this->gamelog(l_t('Applying votes'));
-
-			// Only act on one vote at a time.
-			if ( in_array('Draw', $votes) )
+			switch($vote)
 			{
-				$this->setDrawn();
-			}
-			elseif ( in_array('Cancel', $votes) )
-			{
-				$this->setCancelled();
-			}
-			elseif( in_array('Pause', $votes) )
-			{
-				$this->togglePause();
-			}
-			elseif( in_array('Concede', $votes) )
-			{
-				$this->setConcede();
+				case 'Draw': $this->setDrawn(); break;
+				case 'Cancel': $this->setCancelled(); break;
+				case 'Pause': $this->togglePause(); break;
+				case 'Concede': $this->setConcede(); break;
 			}
 		}
 	}

@@ -214,6 +214,57 @@ class libGameMaster
 		
 		$DB->sql_put("COMMIT");
 	}
+
+	static public function findAndApplyGameVotes()
+	{
+		global $DB;
+
+		$tabl = $DB->sql_tabl("SELECT g.variantID, g.id, 
+			CASE 
+			WHEN DrawVotes = Voters THEN 'Draw'
+			WHEN CancelVotes = Voters THEN 'Cancel'
+			WHEN ConcedeVotes = Voters THEN 'Concede'
+			WHEN PauseVotes = Voters THEN 'Pause'
+			ELSE ''
+			END Vote
+			FROM (
+				SELECT g.variantID, g.id,
+					SUM(1) Voters,
+					SUM(CASE WHEN (votes & 1 ) = 1 THEN 1 ELSE 0 END) DrawVotes, 
+					SUM(CASE WHEN (votes & 2 ) = 2 THEN 1 ELSE 0 END) PauseVotes, 
+					SUM(CASE WHEN (votes & 4 ) = 4 THEN 1 ELSE 0 END) CancelVotes, 
+					SUM(CASE WHEN (votes & 8 ) = 8 THEN 1 ELSE 0 END) ConcedeVotes
+				FROM wD_Games g
+				INNER JOIN wD_Members m ON m.gameID = g.id
+				INNER JOIN wD_Users u ON u.id = m.userID
+				WHERE m.status = 'Playing' AND NOT u.`type` LIKE '%Bot%'
+				AND g.phase <> 'Finished'
+				GROUP BY g.id
+			) g
+			WHERE g.Voters = g.DrawVotes
+			OR g.Voters = g.CancelVotes
+			OR g.Voters = g.PauseVotes
+			OR g.Voters = g.ConcedeVotes");
+		$gameVotes = array();
+		while(list($variantID, $gameID, $vote) = $DB->tabl_row($tabl))
+		{
+			$gameVotes[$gameID] = array('variantID'=>$variantID, 'name'=>$vote);
+		}
+		$DB->sql_put("COMMIT");
+		$DB->sql_put("BEGIN");
+		if( count($gameVotes) > 0 )
+		{
+			foreach($gameVotes as $gameID => $vote)
+			{
+				$DB->sql_put("BEGIN");
+				$Variant=libVariant::loadFromVariantID($vote['variantID']);
+				$Game = $Variant->processGame($gameID, UPDATE);
+				$Game->applyVote($vote['name']);
+				$DB->sql_put("COMMIT");
+			}
+		}
+		$DB->sql_put("COMMIT");
+	}
 }
 
 ?>

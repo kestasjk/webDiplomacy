@@ -124,6 +124,10 @@ libGameMaster::updatePhasePerYearCount();
 print l_t('Updating reliabilty ratings');
 libGameMaster::updateReliabilityRating();
 
+// Now apply any votes that need to be applied:
+print l_t('Finding and applying votes');
+libGameMaster::findAndApplyGameVotes();
+
 // Get the current processing time. It is important to save this at this point so that next process the next 
 // LastProcessTime will exactly match this process' $currentProcessTime (this ensures all turns that pass over 1 year
 // old get processed properly .. unless the last process time gets reset, in which case the turn counts need to be
@@ -185,7 +189,7 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 		{
 			print 'Applying votes for '. $Game->id ;
 			$Game = $Variant->processGame($Game->id);
-			$Game->applyVotes();
+			$Game->applyVote();
 		}
 
 		if( $Game->processStatus!='Crashed' && $Game->attempts > count($Game->Members->ByID)*2 )

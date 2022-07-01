@@ -796,7 +796,6 @@ class processMembers extends Members
 	function processSummary()
 	{
 		$a=array(
-			'votesPassed'=>implode(',',$this->votesPassed()),
 			'ready'=>($this->isReady()?'true':'false'),
 			'members'=>array()
 		);

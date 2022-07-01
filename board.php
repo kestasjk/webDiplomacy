@@ -109,9 +109,6 @@ try
 					}
 				}
 
-				if( count($Game->Members->votesPassed()) > 0 )
-					$MC->append('processHint',','.$Game->id); // Alert the gamemaster that this game needs processing
-
 				if ( $Game->phase !='Finished' )
 				{
 					$OI = OrderInterface::newBoard();
