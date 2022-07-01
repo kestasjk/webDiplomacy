@@ -885,7 +885,7 @@ print '</div>';
 		}
 		else
 		{
-			print Group::outputUserTable_static($userJoinedGroups);
+			print Group::outputUserTable_static($userJoinedGroups, null, null);
 		}
 		
 		print '<h4>Unverified Relationships</h4>';
@@ -895,7 +895,7 @@ print '</div>';
 		}
 		else
 		{
-			print Group::outputUserTable_static($userJoinedGroupsUnverified);
+			print Group::outputUserTable_static($userJoinedGroupsUnverified, null, null);
 		}
 		
 		print '</table>';

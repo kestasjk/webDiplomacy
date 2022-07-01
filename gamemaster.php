@@ -118,11 +118,11 @@ if ( ( time() - $Misc->LastProcessTime ) > Config::$downtimeTriggerMinutes*60 )
 }
 
 // Update the reliability ratings:
-print l_t('Updating user phase/year counts').'<br />';
-libGameMaster::updatePhasePerYearCount();
+//print l_t('Updating user phase/year counts').'<br />';
+//libGameMaster::updatePhasePerYearCount();
 
-print l_t('Updating reliabilty ratings');
-libGameMaster::updateReliabilityRating();
+//print l_t('Updating reliabilty ratings');
+//libGameMaster::updateReliabilityRating();
 
 // Get the current processing time. It is important to save this at this point so that next process the next 
 // LastProcessTime will exactly match this process' $currentProcessTime (this ensures all turns that pass over 1 year

@@ -33,9 +33,30 @@ require_once('objects/notice.php');
 $groupId = -1;
 if( $User->type['User']) 
 {
-	
+	if( isset($_REQUEST['gameID']) && isset($_REQUEST['explanation']) && isset($_REQUEST['userWeighting']) )
+	{
+		$gameID = (int)$_REQUEST['gameID'];
+		// We are submitting a cheating accusation from a game
+		$Variant = libVariant::loadFromGameID($gameID);
+		$Game = $Variant->Game($gameID);
+		libAuth::formToken_Valid();
+		$suspectedCountries = array();
+		foreach($Game->Members->ByCountryID as $countryID=>$Member)
+		{
+			if( isset($_REQUEST['countryIsSuspected'.$countryID]) && $_REQUEST['countryIsSuspected'.$countryID] )
+				$suspectedCountries[] = $countryID;
+		}
+		try 
+		{
+			$groupId = Group::createSuspicionFromGame($gameID, $suspectedCountries, $_REQUEST['userWeighting'], $_REQUEST['explanation']);
+		}
+		catch(Exception $e)
+		{
+			libHTML::error(l_t("Could not lodge new suspicion: ". $e->getMessage()));
+		}
+	}
 	// Check for create group commands:
-	if( isset($_REQUEST['createGroup']) && isset($_REQUEST['groupType']) && isset($_REQUEST['groupName']) && isset($_REQUEST['groupDescription']) && (!isset($_REQUEST['groupId']) || strlen($_REQUEST['groupId'])==0) )
+	elseif( isset($_REQUEST['createGroup']) && isset($_REQUEST['groupType']) && isset($_REQUEST['groupName']) && isset($_REQUEST['groupDescription']) && (!isset($_REQUEST['groupId']) || strlen($_REQUEST['groupId'])==0) )
 	{
 		libAuth::formToken_Valid();
 		try
@@ -134,45 +155,45 @@ if( $groupId === -1 )
 	print '<h3>Declared relationships:</h3>';
 	print '<div class = "profile_title">Verified - '.count($groupUsersSorted['Declared']['Verified']).' - <em>Relationships which have been verified/acknowledged.</em></div>';
 	print '<div class = "profile_content">';
-	print Group::outputUserTable_static($groupUsersSorted['Declared']['Verified']);
+	print Group::outputUserTable_static($groupUsersSorted['Declared']['Verified'],null,null);
 	print '</div>';
 
 	print '<div class = "profile_title">Unverified - '.count($groupUsersSorted['Declared']['Unverified']).' - <em>Relationships which are not acknowledged/verified and are unresolved.</em></div>';
 	print '<div class = "profile_content">';
-	print Group::outputUserTable_static($groupUsersSorted['Declared']['Unverified']);
+	print Group::outputUserTable_static($groupUsersSorted['Declared']['Unverified'],null,null);
 	print '</div>';
 	print '<div class = "profile_title">Denied - '.count($groupUsersSorted['Declared']['Denied']).' - <em>Relationships which have been determined invalid.</em></div>';
 	print '<div class = "profile_content">';
-	print Group::outputUserTable_static($groupUsersSorted['Declared']['Denied']);
+	print Group::outputUserTable_static($groupUsersSorted['Declared']['Denied'],null,null);
 	print '</div>';
 
 	print '<h3>Suspicions of a relationship between you and others:</h3>';
 	print '<div class = "profile_title"><li>Verified - '.count($groupUsersSorted['Suspicions']['Verified']).' - <em>Suspicions which have been verified/acknowledged.</em></div>';
 	print '<div class = "profile_content">';
-	print Group::outputUserTable_static($groupUsersSorted['Suspicions']['Verified']);
+	print Group::outputUserTable_static($groupUsersSorted['Suspicions']['Verified'],null,null);
 	print '</div>';
 	print '<div class = "profile_title">Unverified - '.count($groupUsersSorted['Suspicions']['Unverified']).' - <em>Suspicions which you have not verified/acknowledged.</em></div>';
 	print '<div class = "profile_content">';
-	print Group::outputUserTable_static($groupUsersSorted['Suspicions']['Unverified']);
+	print Group::outputUserTable_static($groupUsersSorted['Suspicions']['Unverified'],null,null);
 	print '</div>';
 	print '<div class = "profile_title">Denied - '.count($groupUsersSorted['Suspicions']['Denied']).' - <em>Relationships which have been determined invalid.</em></div>';
 	print '<div class = "profile_content">';
-	print Group::outputUserTable_static($groupUsersSorted['Suspicions']['Denied']);
+	print Group::outputUserTable_static($groupUsersSorted['Suspicions']['Denied'],null,null);
 	print '</div>';
 	print '</ul>';
 
 	print '<h3>Suspicions of a relationship between others, created by you:</h3>';
 	print '<div class = "profile_title">Verified - '.count($groupUsersSorted['MySuspicions']['Verified']).' - <em>Your suspicions which have been verified/acknowledged.</em></div>';
 	print '<div class = "profile_content">';
-	print Group::outputUserTable_static($groupUsersSorted['MySuspicions']['Verified']);
+	print Group::outputUserTable_static($groupUsersSorted['MySuspicions']['Verified'],null,null);
 	print '</div>';
 	print '<div class = "profile_title">Unverified - '.count($groupUsersSorted['MySuspicions']['Unverified']).' - <em>Your suspicions which have not been verified/acknowledged</em></div>';
 	print '<div class = "profile_content">';
-	print Group::outputUserTable_static($groupUsersSorted['MySuspicions']['Unverified']);
+	print Group::outputUserTable_static($groupUsersSorted['MySuspicions']['Unverified'],null,null);
 	print '</div>';
 	print '<div class = "profile_title">Denied - '.count($groupUsersSorted['MySuspicions']['Denied']).' - <em>Your suspicions which have been determined invalid</em></div>';
 	print '<div class = "profile_content">';
-	print Group::outputUserTable_static($groupUsersSorted['MySuspicions']['Denied']);
+	print Group::outputUserTable_static($groupUsersSorted['MySuspicions']['Denied'],null,null);
 	print '</div>';
 
 	print '</div>';

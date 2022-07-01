@@ -1328,7 +1328,8 @@ class processGame extends Game
 			$this->Members->setConcede();
 			foreach($this->Members->ByStatus['Playing'] as $Member)
 				$Winner = $Member;
-			$this->setWon($Winner);
+			if ( isset($Winner) )
+				$this->setWon($Winner);
 
 			$DB->sql_put("DELETE FROM wD_Orders WHERE gameID = ".$this->id);
 			$DB->sql_put("DELETE FROM wD_Units WHERE gameID = ".$this->id);

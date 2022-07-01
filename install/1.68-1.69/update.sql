@@ -78,3 +78,5 @@ CREATE TABLE `wD_UserOpenIDLinks` (
 
 ALTER TABLE `wD_UserOpenIDLinks`
   ADD PRIMARY KEY (`userId`,`source`);
+
+ALTER TABLE wD_Groups ADD COLUMN gameId MEDIUMINT NULL;
