@@ -382,7 +382,6 @@ $tabl = $DB->sql_tabl("SELECT
 		silence.reason as silenceReason
 	FROM wD_ForumMessages f
 	INNER JOIN wD_Users u ON ( f.fromUserID = u.id )
-	--LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
 	LEFT JOIN wD_Silences silence ON ( f.silenceID = silence.id )
 	WHERE f.type = 'ThreadStart'
 	ORDER BY f.latestReplySent DESC
@@ -526,7 +525,6 @@ while( $message = $DB->tabl_hash($tabl) )
 					silence.reason as silenceReason
 				FROM wD_ForumMessages f
 				INNER JOIN wD_Users u ON f.fromUserID = u.id
-				--LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
 				LEFT JOIN wD_Silences silence ON ( f.silenceID = silence.id )
 				WHERE f.toID=".$message['id']." AND f.type='ThreadReply'
 				order BY f.timeSent ASC
