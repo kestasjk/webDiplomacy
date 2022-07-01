@@ -218,7 +218,7 @@ print '<div class = "profile-show-inside-left">';
 		print '<li>&nbsp;</li>';
 	}
 
-	if ( $UserProfile->online || time() - (24*60*60) < $UserProfile->timeLastSessionEnded)
+	if ( time() - (24*60*60) < $UserProfile->timeLastSessionEnded)
 		print '<li><strong>Visited in last 24 hours</strong></li>';
 	else
 		print '<li><strong>Last visited:</strong> '.libTime::text($UserProfile->timeLastSessionEnded).'</li>';

@@ -532,14 +532,14 @@ class User {
 			u.gameCount,
 			u.reliabilityRating,
 			u.tempBan,
-			IF(s.userID IS NULL,0,1) as online,
+			0 as online,
 			u.deletedCDs, 
 			u.emergencyPauseDate, 
 			u.yearlyPhaseCount,
 			u.tempBanReason,
 			u.optInFeatures
 			FROM wD_Users u
-			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
+			--LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
 			WHERE ".( $username ? "u.username='".$username."'" : "u.id=".$this->id ));
 
 		if ( ! isset($row['id']) or ! $row['id'] )

@@ -781,7 +781,7 @@ if ( $UserProfile->type['Moderator'] ||  $UserProfile->type['ForumModerator'] ||
 	print '<li>&nbsp;</li>';
 }
 
-if ( $UserProfile->online || time() - (24*60*60) < $UserProfile->timeLastSessionEnded)
+if ( time() - (24*60*60) < $UserProfile->timeLastSessionEnded)
 	print '<li><strong>'.l_t('Visited in last 24 hours').'</strong></li>';
 else
 	print '<li><strong>'.l_t('Last visited:').'</strong> '.libTime::text($UserProfile->timeLastSessionEnded).'</li>';
