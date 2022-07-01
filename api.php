@@ -1329,7 +1329,7 @@ abstract class ApiAuth {
 			// If game ID is required, then user must be member of this game.
 			// Otherwise, any user can call this function.
 			if ($apiEntry->requiresGameID() && !$apiEntry->isUserMemberOfGame($this->userID))
-				throw new ClientForbiddenException('Access denied. User is not member of associated game.');
+				throw new ClientForbiddenException('Access denied. User '.$this->userID.' is not member of associated game.');
 			
 		} else {
 			// Permission field available.
@@ -1345,7 +1345,7 @@ abstract class ApiAuth {
 					throw new ClientForbiddenException("Permission denied.");
 
 				if (!$apiEntry->isUserMemberOfGame($this->userID))
-					throw new ClientForbiddenException('Permission denied, and user is not member of associated game.');
+					throw new ClientForbiddenException('Permission denied, and user '.$this->userID.' is not member of associated game.');
 			}
 		}
 
