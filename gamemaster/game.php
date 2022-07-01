@@ -127,9 +127,6 @@ class processGame extends Game
 		$this->Members->setCancelled();
 
 		processGame::eraseGame($this->id);
-
-		// This will be caught by gamemaster.php
-		throw new Exception("Cancelled", 12345);
 	}
 
 	/**
