@@ -444,6 +444,9 @@ class processGame extends Game
 	private function recordNMRs()
 	{
 		global $DB;
+
+		// Don't record NMRs for bot games
+		if( $this->playerTypes == 'MemberVsBots' ) return;
 	
 		// detect which players NMR this turn, exclude anyone who is left to avoid giving them unearned un-excused missed turns. 
 		$tabl = $DB->sql_tabl("SELECT m.id 

@@ -658,6 +658,9 @@ class processMembers extends Members
 	{
 		global $DB;
 
+		// Bot games don't factor into NMR calcs
+		if( $this->Game->playerTypes == "MemberVsBots" ) return;
+
 		// Check if there is at least one active NMR and for that case reduce the excuses of all active members with NMRs and set members with no excuses as left.
 		$this->activeNMRs = false;
 		$needReset = 0;
