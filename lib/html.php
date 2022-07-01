@@ -569,11 +569,6 @@ class libHTML
 			die(l_t('Access to this page denied for your account type.'));
 		}
 
-		if( isset($User) and strlen($User->username) > 10 && substr($User->username,0,8)=="diplonow" && $scriptname != 'botgamecreate' && $scriptname != 'logon' && $scriptname != 'api' )
-		{
-			libHTML::notice('Diplonow account restricted', 'This account type is only allowed to play instant games against AI/bots. Please <a href="logon.php?logoff=on">log off</a> and register a user account to play games against humans.');
-		}
-
 		print libHTML::prebody($title===FALSE ? l_t($pages[$scriptname]['name']) : $title).
 			'<body>'.libHTML::menu($pages, $scriptname);
 
@@ -624,6 +619,13 @@ class libHTML
 						' because you were too unreliable. Contact the moderators at '.Config::$modEMail.' if you need help.<br><br></p>
 					</div>';
 			}
+		}
+
+		if( isset($User) and strlen($User->username) > 10 && substr($User->username,0,8)=="diplonow" && $scriptname != 'botgamecreate' && $scriptname != 'logon' && $scriptname != 'api' )
+		{
+			print '<div class="content-notice"><p class="notice"><br>This account type is only allowed to play instant games against AI/bots. Please <a href="logon.php?logoff=on">log off</a> and register a user account to play games against humans.</p></div>';
+			libHTML::footer();
+			die();
 		}
 
 		if ( is_object($User) && $User->type['User'] )
