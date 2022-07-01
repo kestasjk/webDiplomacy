@@ -573,10 +573,10 @@ class processMembers extends Members
 
 		// Redirect to beta game if user joined game via Play Beta button
 		if ($joinBeta) {
-			header('refresh: 4; url=beta?gameID='.$this->Game->id);
+			header('refresh: 3; url=beta?gameID='.$this->Game->id);
 		}
 		else {
-			header('refresh: 4; url=board.php?gameID='.$this->Game->id);
+			header('refresh: 3; url=board.php?gameID='.$this->Game->id);
 		}
 
 		$message = '<p class="notice">'.l_t('You are being redirected to %s. Good luck!','<a href="board.php?gameID='.$this->Game->id.'">'.$this->Game->name.'</a>').'</p>';
