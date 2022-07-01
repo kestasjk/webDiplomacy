@@ -155,7 +155,7 @@ class Members
 		{
 			$votes[]='Concede';
 		}
-
+		
 		return $votes;
 	}
 

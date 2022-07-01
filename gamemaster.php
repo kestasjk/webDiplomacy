@@ -55,7 +55,6 @@ if ( isset($_REQUEST['gameMasterSecret']) && $User->type['User'] && !$User->type
 libHTML::starthtml(l_t('GameMaster'));
 
 print '<div class="content">';
-
 $DB->sql_put("COMMIT"); // Unlock our user row, to prevent deadlocks below
 // This means our $User object should only be used for reading from
 
