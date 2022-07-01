@@ -627,7 +627,7 @@ class libHTML
 
 			print libHTML::pageTitle('Diplonow quick-game account restricted',l_t('Your quick-game account cannot view this page, which is only available to regular unrestricted user accounts.'));
 
-			print '<div class="content-notice"><br>This account type is only allowed to play instant games against AI/bots and view certain help pages. Please <a href="logon.php?logoff=on">log off</a> and register an unrestricted user account to play games against humans and view user-only areas.<br><br />
+			print '<br>This account type is only allowed to play instant games against AI/bots and view certain help pages. Please <a href="logon.php?logoff=on">log off</a> and register an unrestricted user account to play games against humans and view user-only areas.<br><br />
 				<a href="/beta/?gameID='.$gameID.'">Click here</a> to return to your AI game, or <a href="botgamecreate.php?diplonow=on">click here</a> to start a new AI game.
 				<br>
 				You can find more help and information on the <a href="help.php">help page</a>.
