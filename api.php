@@ -245,6 +245,13 @@ abstract class ApiEntry {
 		return in_array('gameID', $this->requirements);
 	}
 
+	public function isUserMemberOfGame()
+	{
+		global $DB;
+		list($isMember) = $DB->sql_row("SELECT COUNT(id) FROM wD_Members WHERE userID = " . $this->userID ." AND gameID = " . $this->getAssociatedGameId());
+		return $isMember === 1;
+	}
+
 	public function getAssociatedGameId() {
 		if (!in_array('gameID', $this->requirements))
 			throw new RequestException('No game ID available for this request.');
@@ -1302,12 +1309,6 @@ abstract class ApiAuth {
 		return $this->cacheKey;
 	}
 
-	private function isUserMemberOfGame()
-	{
-		global $DB;
-		list($isMember) = $DB->sql_row("SELECT COUNT(id) FROM wD_Members WHERE userID = " . $this->userID ." AND gameID = " . $this->getAssociatedGameId());
-		return $isMember === 1;
-	}
 	/**
 	 * Check if this API key is allowed to call given API entry.
 	 * Throw an exception if any problem occurs, meaning that either API key does not have enough permissions, or we are unable to check it.
@@ -1327,7 +1328,7 @@ abstract class ApiAuth {
 			// No permission field.
 			// If game ID is required, then user must be member of this game.
 			// Otherwise, any user can call this function.
-			if ($apiEntry->requiresGameID() && !$this->isUserMemberOfGame())
+			if ($apiEntry->requiresGameID() && !$apiEntry->isUserMemberOfGame())
 				throw new ClientForbiddenException('Access denied. User is not member of associated game.');
 			
 		} else {
@@ -1343,7 +1344,7 @@ abstract class ApiAuth {
 				if (!$apiEntry->requiresGameID())
 					throw new ClientForbiddenException("Permission denied.");
 
-				if (!$this->isUserMemberOfGame())
+				if (!$apiEntry->isUserMemberOfGame())
 					throw new ClientForbiddenException('Permission denied, and user is not member of associated game.');
 			}
 		}
