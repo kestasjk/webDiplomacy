@@ -10,6 +10,7 @@
 .DS_Store
 .env
 .env.local
+.env.development.local
 .env.production
 .env.test
 
