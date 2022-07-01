@@ -866,6 +866,10 @@ class SetOrders extends ApiEntry {
 		$phase = strval($phase);
 		$countryID = intval($countryID);
 
+		// Getting frequent deadlocks when getting the game and locking members for update, perhaps because the permission check has to query members.
+		// So commit and begin to release anything locked and start over
+		$DB->sql_put("COMMIT");
+		$DB->sql_put("BEGIN");
 		$game = $this->getAssociatedGame(true); // Get the game and lock it for update
 		if (!in_array($game->phase, array('Diplomacy', 'Retreats', 'Builds')))
 			throw new RequestException('Cannot submit orders in phase `'.$game->phase.'`.');
@@ -1539,7 +1543,8 @@ try {
 // 4xx - User errors - No need to log
 catch (RequestException $exc) {
 	handleAPIError($exc->getMessage(), 400);
-	trigger_error($exc->getMessage());
+	// trigger_error($exc->getMessage()); // This generates errors like "Invalid phase, expected Retreats got Diplomacy" etc, 
+	// might be worth looking into at some point
 }
 catch (ClientUnauthorizedException $exc) {
 	handleAPIError($exc->getMessage(), 401);
