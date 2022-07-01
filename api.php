@@ -249,7 +249,7 @@ abstract class ApiEntry {
 	{
 		global $DB;
 		list($isMember) = $DB->sql_row("SELECT COUNT(id) FROM wD_Members WHERE userID = " . $userID ." AND gameID = " . $this->getAssociatedGameId());
-		return $isMember === 1;
+		return ($isMember == 1);
 	}
 
 	public function getAssociatedGameId() {
