@@ -248,8 +248,18 @@ abstract class ApiEntry {
 	public function isUserMemberOfGame()
 	{
 		global $DB;
-		list($isMember) = $DB->sql_row("SELECT COUNT(id) FROM wD_Members WHERE userID = " . $this->userID ." AND gameID = " . $this->getAssociatedGameId());
+		list($isMember) = $DB->sql_row("SELECT COUNT(id) FROM wD_Members WHERE userID = " . $this->getAssociatedUserId() ." AND gameID = " . $this->getAssociatedGameId());
 		return $isMember === 1;
+	}
+
+	public function getAssociatedUserId() {
+		if (!in_array('userID', $this->requirements))
+			throw new RequestException('No user ID available for this request.');
+		$args = $this->getArgs();
+		$userID = $args['userID'];
+		if ($userID == null)
+			throw new RequestException('User ID not provided.');
+		return intval($userID);
 	}
 
 	public function getAssociatedGameId() {
