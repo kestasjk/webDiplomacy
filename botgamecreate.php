@@ -33,6 +33,51 @@ if ( $Misc->Panic )
 	l_t("Game creation has been temporarily disabled while we take care of an unexpected problem. Please try again later, sorry for the inconvenience."));
 }
 
+if( isset($_REQUEST['diplonow']) )
+{
+	if( !isset($User) || $User->type['Guest'] || !$User->type['User'] )
+	{
+		// Make a User
+		// Save their key, if present
+		// Until no key
+		// Set their new key their key
+		
+		// Save a cookie for a proper user account so it can be restored
+		if( isset($_COOKIE['wD-Key']) )
+		{
+			setcookie('wD-Key_Orig', $_COOKIE['wD-Key'],time()+24*24*60); 
+		}
+		
+		//libAuth::keyWipe();
+		// Generate user key
+		$acct = 'diplonow_'.round(rand(0,100000));
+		while( 0 != $DB->sql_row("SELECT COUNT(1) FROM wD_Users WHERE username='" . $acct . "'")[0] )
+		{
+			$acct = 'diplonow_'.round(rand(0,100000));
+		}
+		$pass = (string)(rand(0,1000000000)); 
+		//$DB->sql_put("INSERT INTO wd_Users (username,type,email,points,comment,homepage,timejoined,timeLastSessionEnded,password) VALUES ('".$acct."', 'User', '".$acct."', 0, '', '', ".time().", ".time().", UNHEX('".$passHash."'));");
+		$DB->sql_put("INSERT INTO wD_Users(
+			`username`,`email`,`points`,`comment`,`homepage`,`hideEmail`,`timeJoined`,`locale`,`timeLastSessionEnded`,`lastMessageIDViewed`,`password`,`type`,`notifications`,`muteReports`,`silenceID`,`cdCount`,`nmrCount`,`cdTakenCount`,`phaseCount`,`gameCount`,`reliabilityRating`,`deletedCDs`,`tempBan`,`emergencyPauseDate`,`yearlyPhaseCount`,`tempBanReason`,`optInFeatures`
+			)
+			SELECT '".$acct."' `username`,'".$acct."' `email`, 100 `points`,`comment`,`homepage`,`hideEmail`,`timeJoined`,`locale`,".time()." `timeLastSessionEnded`,".time()."`lastMessageIDViewed`,UNHEX('".libAuth::pass_Hash($pass)."'),'User' `type`,`notifications`,`muteReports`,`silenceID`,`cdCount`,`nmrCount`,`cdTakenCount`,`phaseCount`,`gameCount`,`reliabilityRating`,`deletedCDs`,`tempBan`,`emergencyPauseDate`,`yearlyPhaseCount`,`tempBanReason`,1
+			FROM wD_Users
+			WHERE id = 1");
+		list($newUserID) = $DB->sql_row("SELECT LAST_INSERT_ID()");
+		
+		//$NewUser = new User($newUserID);
+		$key = libAuth::userPass_Key($acct, $pass); // Password is never uysed
+		
+
+		$cookieKey = $key;//libAuth::generateKey($newUserID, $pass);
+		setcookie('wD-Key',$cookieKey,time()+24*60*60);
+
+		global $User;
+		$User = new User($newUserID);
+	}
+	$_REQUEST['newGame'] = array('variantID'=>1, 'name'=>$User->username, 'countryID'=>0);
+}
+
 if( !$User->type['User'] )
 {
 	libHTML::notice(l_t('Not logged on'),l_t("Only a logged on user can create games. Please <a href='logon.php' class='light'>log on</a> to create your own games."));
@@ -49,10 +94,6 @@ if ($User->getBotGameCount() > 2)
 
 libHTML::starthtml();
 
-if( isset($_REQUEST['diplonow']) )
-{
-	$_REQUEST['newGame'] = array('variantID'=>1, 'name'=>$User->username, 'countryID'=>0);
-}
 if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 {
 	try
@@ -124,7 +165,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			}
 			$currCountry += 1;
 		}
-		$Game->Members->joinedRedirect();
+		$Game->Members->joinedRedirect(true); // When playing against AI it's going to be classic, so go straight into the beta UI
 	}
 	catch(Exception $e)
 	{
