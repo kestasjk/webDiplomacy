@@ -558,7 +558,7 @@ class libHTML
 	 */
 	static public function starthtml($title=false)
 	{
-		global $User;
+		global $User, $DB;
 
 		self::$scriptname = $scriptname = basename($_SERVER['PHP_SELF']);
 
@@ -621,10 +621,21 @@ class libHTML
 			}
 		}
 
-		if( isset($User) and strlen($User->username) > 10 && substr($User->username,0,8)=="diplonow" && $scriptname != 'botgamecreate.php' && $scriptname != 'logon.php' && $scriptname != 'api.php' )
+		if( isset($User) and strlen($User->username) > 10 && substr($User->username,0,8)=="diplonow" && $scriptname != 'botgamecreate.php' && $scriptname != 'logon.php' && $scriptname != 'api.php' && $scriptname != 'help.php' && $scriptname != 'datc.php' && $scriptname != 'faq.php' && $scriptname != 'rules.php' )
 		{
-			print '<div class="content-notice"><p class="notice"><br>This account type is only allowed to play instant games against AI/bots. Please <a href="logon.php?logoff=on">log off</a> and register a user account to play games against humans.</p></div>';
+			list($gameID) = $DB->sql_row("SELECT gameID FROM wD_Members WHERE userID = " . $User->id . " ORDER BY gameID DESC LIMIT 1");
+
+			print libHTML::pageTitle('This is a quick-game only account',l_t('Your quick-game account cannot view this page. Available options below.'));
+
+			print '<div class="content-notice"><br>This account type is only allowed to play instant games against AI/bots and view certain help pages. Please <a href="logon.php?logoff=on">log off</a> and register an unrestricted user account to play games against humans and view user-only areas.<br><br />
+				<a href="/beta/?gameID='.$gameID.'">Click here</a> to return to your AI game, or <a href="botgamecreate.php?diplonow=on">click here</a> to start a new AI game.
+				<br>
+				You can find more help and information on the <a href="help.php">help page</a>.
+				<br>
+				</div>';
+			
 			libHTML::footer();
+
 			die();
 		}
 

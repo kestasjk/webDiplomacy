@@ -83,6 +83,11 @@ class webdip extends \phpbb\auth\provider\base
 			// No record found for this valid webDip ID; create the user in phpBB
 			
 			$wD_Data = $this->getWebDipDetails($userId);
+			if( strlen($wD_Data['username']) > 10 && substr($wD_Data['username'],0,8) == "diplonow" )
+			{
+				die("The forum can't be accessed as a quick-game user account. Please log off and register a regular user account to access the forum.");
+			}
+			
 			$user_row = array(
 					'username'=>$wD_Data['username'], 
 					'group_id'=>2, 
