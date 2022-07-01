@@ -1539,12 +1539,15 @@ try {
 // 4xx - User errors - No need to log
 catch (RequestException $exc) {
 	handleAPIError($exc->getMessage(), 400);
+	trigger_error($exc->getMessage());
 }
 catch (ClientUnauthorizedException $exc) {
 	handleAPIError($exc->getMessage(), 401);
+	trigger_error($exc->getMessage());
 }
 catch (ClientForbiddenException $exc) {
 	handleAPIError($exc->getMessage(), 403);
+	trigger_error($exc->getMessage());
 }
 
 // 5xx - Server errors
