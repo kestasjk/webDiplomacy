@@ -621,7 +621,7 @@ class libHTML
 			}
 		}
 
-		if( isset($User) and strlen($User->username) > 10 && substr($User->username,0,8)=="diplonow" && $scriptname != 'botgamecreate' && $scriptname != 'logon' && $scriptname != 'api' )
+		if( isset($User) and strlen($User->username) > 10 && substr($User->username,0,8)=="diplonow" && $scriptname != 'botgamecreate.php' && $scriptname != 'logon.php' && $scriptname != 'api.php' )
 		{
 			print '<div class="content-notice"><p class="notice"><br>This account type is only allowed to play instant games against AI/bots. Please <a href="logon.php?logoff=on">log off</a> and register a user account to play games against humans.</p></div>';
 			libHTML::footer();
