@@ -422,7 +422,7 @@ class SetOrders extends ApiEntry {
 		$phase = strval($phase);
 		$countryID = intval($countryID);
 
-		$game = $this->getAssociatedGame();
+		$game = $this->getAssociatedGame(true);
 		if (!in_array($game->phase, array('Diplomacy', 'Retreats', 'Builds')))
 			throw new RequestException('Cannot submit orders in phase `'.$game->phase.'`.');
 		if ($turn != $game->turn)
