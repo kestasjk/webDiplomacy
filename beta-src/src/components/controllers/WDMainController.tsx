@@ -89,7 +89,7 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   }
   return (
     <div>
-      {!noPhase && children}
+      {children}
       {showOverlay && (
         <WDGameProgressOverlay
           overview={overview}
