@@ -80,3 +80,6 @@ ALTER TABLE `wD_UserOpenIDLinks`
   ADD PRIMARY KEY (`userId`,`source`);
 
 ALTER TABLE wD_Groups ADD COLUMN gameId MEDIUMINT NULL;
+
+DELETE d FROM wD_TurnDate d INNER JOIN wD_Games g ON g.id = d.gameID WHERE g.playerTypes = 'MemberVsBots';
+DELETE d FROM wD_MissedTurns d INNER JOIN wD_Games g ON g.id = d.gameID WHERE g.playerTypes = 'MemberVsBots';

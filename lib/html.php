@@ -959,9 +959,11 @@ class libHTML
 					<div id="navSubMenu" class="clickable nav-tab">Games ▼
                         <div id="nav-drop">
 							<a href="gamelistings.php?gamelistType=New" title="Game listings; a searchable list of the games on this server">New Games</a>
-							<a href="gamelistings.php?gamelistType=Open%20Positions" title="Open positions dropped by other players, free to claim">Open Positions</a>
-							<a href="gamecreate.php" title="Start up a new game">Create a New Game</a>
-							<a href="ghostRatings.php" title="Ghost Ratings Information">Ghost Ratings</a>
+							<a href="gamelistings.php?gamelistType=Open%20Positions" title="Open positions dropped by other players, free to claim">Open Games</a>
+							<a href="gamecreate.php" title="Start up a new game">Start a New Game</a>
+							<a href="botgamecreate.php" title="Start up a new bots-only game">Start an AI/Bot Game</a>
+							<a href="gamelistings.php?gamelistType=Active" title="View/Spectate games currently running">Active Games</a>
+							<!-- <a href="ghostRatings.php" title="Ghost Ratings Information">Ghost Ratings</a> -->
 							<a href="tournaments.php" title="Information about tournaments on webDiplomacy">Tournaments</a>
 							<a href="halloffame.php" title="Information about tournaments on webDiplomacy">Hall of Fame</a>
                         </div>
