@@ -49,7 +49,6 @@ function exception_handler( $exception)
 function error_handler($errno, $errstr, $errfile=false, $errline=false, $errcontext=false)
 {
 	global $DB, $User, $Game;
-
 	if ( defined('ERROR') )
 		define('ERRORINERROR',true);
 	else
@@ -78,7 +77,6 @@ function error_handler($errno, $errstr, $errfile=false, $errline=false, $errcont
 		if ( isset($Game) and $Game instanceof Game )
 			$error .= ', gameID = '.$Game->id;
 	}
-
 	// PHP's print_r() is terrible, heap corruption errors all the time
 	function recursiveprint ( &$array, $depth )
 	{
@@ -114,7 +112,6 @@ function error_handler($errno, $errstr, $errfile=false, $errline=false, $errcont
 
 	$bt = debug_backtrace();
 	$error .= "Trace:\n".recursiveprint( $bt, 1 );
-
 	if ( Config::$debug )
 	{
 		/*
@@ -175,6 +172,7 @@ function error_handler($errno, $errstr, $errfile=false, $errline=false, $errcont
 	}
 
 	$errorlogFile = $errorlogDirectory.'/'.time().'.txt';
+	error_log("Error logged to $errorlogFile");
 	if ( @file_put_contents($errorlogFile, $error) )
 	{
 		$message .= 'The details of this error have been successfully logged and will be attended to by a developer.';
@@ -184,7 +182,7 @@ function error_handler($errno, $errstr, $errfile=false, $errline=false, $errcont
 		$message .= 'This error could not be logged! Please contact the administrator about this error.';
 	}
 	$message .= '</p>';
-
+	
 	libHTML::error($message);
 
 }

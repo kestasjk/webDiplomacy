@@ -49,6 +49,10 @@ if ($User->getBotGameCount() > 2)
 
 libHTML::starthtml();
 
+if( isset($_REQUEST['diplonow']) )
+{
+	$_REQUEST['newGame'] = array('variantID'=>1, 'name'=>$User->username, 'countryID'=>0);
+}
 if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 {
 	try

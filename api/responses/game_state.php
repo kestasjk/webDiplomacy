@@ -255,7 +255,7 @@ class GameState {
 		global $DB;
 
 		// Loading game state
-		$gameRow = $DB->sql_hash("SELECT id, variantID, potType, turn, phase, gameOver, pressType, drawType, processTime, phaseMinutes FROM wD_Games WHERE id=".$this->gameID);
+		$gameRow = $DB->sql_hash("SELECT id, variantID, potType, turn, phase, gameOver, pressType, drawType, processTime, phaseMinutes, anon FROM wD_Games WHERE id=".$this->gameID);
 		if ( ! $gameRow )
 			throw new \Exception("Unknown game ID.");
 		$this->variantID = intval($gameRow['variantID']);
@@ -267,17 +267,17 @@ class GameState {
 		$this->drawType=$gameRow['drawType'];
 		$this->processTime=$gameRow['processTime'];
 		$this->phaseLengthInMinutes = $gameRow['phaseMinutes'];
-
-		$memberData = $DB->sql_hash("SELECT countryID, votes, orderStatus, status FROM wD_Members WHERE gameID = ".$this->gameID." AND countryID = ".$this->countryID);
-		$this->votes = $memberData['votes'];
-		$this->orderStatus = $memberData['orderStatus'];
-		$this->status = $memberData['status'];
-
+		if ($this->countryID) {
+			$memberData = $DB->sql_hash("SELECT countryID, votes, orderStatus, status FROM wD_Members WHERE gameID = ".$this->gameID." AND countryID = ".$this->countryID);
+			$this->votes = $memberData['votes'];
+			$this->orderStatus = $memberData['orderStatus'];
+			$this->status = $memberData['status'];
+		}
 		$orderStatusData = $DB->sql_tabl("SELECT countryID, orderStatus FROM wD_Members WHERE gameID = ".$this->gameID);
 		$this->orderStatuses = [];
 		while ($member = $DB->tabl_hash($orderStatusData)) {
 			$countryID = $member["countryID"];
-			$orderStatus = $member["orderStatus"];
+			$orderStatus = $gameRow['anon'] == 'Yes' ? 'Hidden' : $member["orderStatus"];
 			$this->orderStatuses[$countryID] = $orderStatus;
 		}	
 
@@ -290,7 +290,6 @@ class GameState {
 				$votes = $member["votes"];
 				$this->publicVotes[$countryID] = $votes;
 			}	
-
 		}
 
 		$units = array();
@@ -339,7 +338,7 @@ class GameState {
 		$preGameCentersTabl = $DB->sql_tabl(
 			"SELECT t.id, t.countryID
 				  FROM wD_Territories t
-				  WHERE t.supply = 'Yes' AND t.mapID = ".$mapID
+				  WHERE t.mapID = ".$mapID
 		);
 		while ($row = $DB->tabl_hash($preGameCentersTabl)) {
 			array_push($preGameCenters, new Territory($row['id'], $row['countryID']));
@@ -351,7 +350,7 @@ class GameState {
 				  FROM wD_Territories t
 				  JOIN wD_TerrStatusArchive ts
 				  ON ( ts.terrID = t.id )
-				  WHERE ts.gameID = ".$this->gameID." AND t.supply = 'Yes' AND t.mapID=".$mapID
+				  WHERE ts.gameID = ".$this->gameID." AND t.mapID=".$mapID
 		);
 		while ($row = $DB->tabl_hash($centersTabl)) {
 			$inGameCenters[intval($row['turn'])][] = new Territory($row['id'], $row['countryID']);
@@ -411,7 +410,7 @@ class GameState {
 			$gameSteps->set($order->turn, $order->phase, $phase);
 		}
 		// messages
-		if ($this->pressType != 'NoPress') {
+		if ($this->pressType != 'NoPress' && $this->countryID) {
 			$msgTabl = $DB->sql_tabl(
 				"SELECT turn, fromCountryID, toCountryID, message, timeSent, phaseMarker
 				FROM wD_GameMessages_Redacted
@@ -544,7 +543,7 @@ class GameState {
 	function __construct($gameID, $countryID)
 	{
 		$this->gameID = intval($gameID);
-		$this->countryID = intval($countryID);
+		$this->countryID = $countryID ? intval($countryID) : null;
 		$this->load();
 	}
 

@@ -241,6 +241,12 @@ class User {
 	public $optInFeatures;
 
 	/**
+	 * only for beta feature
+	 * @var bool
+	 */
+	public $isActiveBeta;
+
+	/**
 	 * Give this user a supplement of points
 	 *
 	 * @param $userID The user ID
@@ -551,6 +557,7 @@ class User {
 			$this->optInFeatures = 0;
 		else
 			$this->optInFeatures = $this->optInFeatures & Config::$enabledOptInFeatures;
+			$this->isActiveBeta = (($this->optInFeatures & 0x1) > 0);
 
 		// For display, cdCount should include deletedCDs
 		$this->{'cdCount'} = $this->{'cdCount'} + $this->{'deletedCDs'};
@@ -713,7 +720,7 @@ class User {
 	}
 
 	/**
-	 * This will set a notification value in both the object and wd_users table if not already set.
+	 * This will set a notification value in both the object and wD_Users table if not already set.
 	 * @param notification notification value to set, must be 'PrivateMessage', 'GameMessage', 'Unfinalized', or 'GameUpdate'.
 	 **/
 	function setNotification($notification)
@@ -729,7 +736,7 @@ class User {
 	}
 
     /**
-	 * This will clear a notification value in both the object and the wd_users table if not already cleared.
+	 * This will clear a notification value in both the object and the wD_Users table if not already cleared.
 	 * @param notification notification value to clear, must be 'PrivateMessage', 'GameMessage', 'Unfinalized', or 'GameUpdate'.
 	 **/
 	function clearNotification($notification)
