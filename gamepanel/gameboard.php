@@ -144,32 +144,35 @@ class panelGameBoard extends panelGame
 			}			
 		}
 
-		$buf = '<div style="width: 300px; margin: 0 auto; text-align:center; padding-top:5px; padding-bottom:5px;">
-			<a href="contactUsDirect.php">Need help?</a> - <a href="javascript:lodgeCheatingSuspicion();return false;">Lodge cheating suspicion</a>
-			</div>
-			<div class="bar membersList memberVotePanel memberSuspectPanel" style="font-weight:normal !important">
+		$buf = '<div style="margin: 0 auto; text-align:center; padding-top:5px; padding-bottom:5px;">
+			<a href="contactUsDirect.php">Need help?</a> - <a id="suspicionToggle" href="#">Lodge cheating suspicion</a>
+			<div class="bar memberVotePanel memberSuspectPanel" style="display:none; font-size:90%; font-weight:normal !important; text-align:left">
 			<form action="group.php" method="post">
 			'.libAuth::formTokenHTML().'
-			<input type="hidden" name="gameID" value="'.$this->id.'" />
+			<input type="hidden" name="gameID" value="'.$this->id.'" /><br />
 			<strong>Countries:</strong> <em>Please select the countries / users which you believe are metagaming / multi-accounting.</em><br />
 			<div style="text-align:center">';
 		foreach($this->Members->ByCountryID as $countryID=>$Member)
 		{
 			if ($this->anon == 'No' || !$Member->isNameHidden() )
-				$buf .= '<input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . $Member->profile_link() . ', ';
-			//else
-			//	$buf .= '<input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . libVarina $Member->countryName() . ', ';		
+				$buf .= '<nobr><input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . $Member->profile_link() . ', </nobr>';
+//			else
+//				$buf .= '<input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . $Member->countryName() . ', ';
 		}
 		$buf .= '</div>
+			<br />
 			<strong>Explanation:</strong> <em>Below please enter a detailed explanation of why you believe the selected countries are meta/multi gaming.</em><br />
-			<textarea name="explanation"></textarea><br />
+			<textarea name="explanation" rows=5></textarea><br /><br />
 			<strong>Strength:</strong> '.Group::getSelectWeighting('user', '', 50).' <em>Choose from WEAK to STRONG, to select how strongly you suspect these users. This will determine whether mods urgently investigate or just take note of a possible link for future investigations.</em><br />
 		';
-		$buf .= '<em>Note: Accusations will be followed up by the mod team, and will be discussed all involved. Do not submit without a genuine suspicion of meta/multi-gaming</em><br />
-			<input class="form-submit" type="Submit" name="Submit" value="Submit" /> ';
+		$buf .= '<br /><strong>Note:</strong> Strong/mid-strength accusations will be followed up by the mod team, and will be discussed all involved. Do not submit without a genuine suspicion of meta/multi-gaming.<br />Other accusation strengths will be looked into as time permits, and combined with other accusations to detect possible links. Thanks for helping to keep the server fun to play on!<br /><br />
+			<input class="form-submit" type="Submit" name="Submit" value="Submit cheating suspicion" /> ';
 		$buf .= '</form>
-		</div>
-		<div class="bar membersList memberVotePanel"><a name="votebar"></a>
+		</div></div>';
+		$buf .= '<script type="text/javascript">
+document.getElementById("suspicionToggle").addEventListener("click", function() { this.nextElementSibling.style.display = this.nextElementSibling.style.display === "block" ? "none" : "block"; });
+</script>';
+		$buf .= '<div class="bar membersList memberVotePanel"><a name="votebar"></a>
 		<table><tr class="member">
 			<td class="memberLeftSide">
 				<strong>'.l_t('Votes:').'</strong>
@@ -356,7 +359,7 @@ class panelGameBoard extends panelGame
 		global $User;
 		libHTML::$alternate=2;
 		$buf = '<div class="titleBar">
-				'.$this->titleBar().'
+				'.$this->titleBar(true).'
 			</div>';
 
 		$noticeBar = $this->gameNoticeBar();

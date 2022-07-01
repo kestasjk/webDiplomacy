@@ -55,7 +55,9 @@ class OrderInterface
 		global $Game, $User, $Member;
 		return self::newContext($Game, $Member, $User);
 	}
-	public static function newContext(Game $Game, userMember $Member, User $User) {
+//	public static function newContext(Game $Game, userMember $Member, User $User) {
+// Specifying that userMember was required would give a rare error that userMember is expected but processMember received from board.php(117)
+	public static function newContext(Game $Game, $Member, User $User) {
 		$OI = $Game->Variant->OrderInterface($Game->id, $Game->Variant->id, $User->id, $Member->id, $Game->turn, $Game->phase, $Member->countryID,
 			$Member->orderStatus, $Game->processTime+6*60*60);
 		return $OI;
@@ -140,6 +142,8 @@ class OrderInterface
 		//elseif( $this->maxOrderID < $maxOrderID )
 
 		//if( $this->tokenExpireTime < time() ) throw new Exception("The game has moved on, you can no longer alter these orders, please refresh.");
+
+		return $this;
 	}
 
 	public function set($orderUpdates)
@@ -277,12 +281,21 @@ class OrderInterface
 		return array('context'=>$context, 'json'=>$json, 'key'=>md5(Config::$jsonSecret.$json).sha1(Config::$jsonSecret.$json));
 	}
 
-	protected function jsContextVars() {
+	public function getContextVars(){
 		$context = self::getContext($this);
+		return [
+			'context' => $context['json'],
+			'contextKey' => $context['key'],
+			'ordersData' => $this->Orders
+		];
+	}
+
+	protected function jsContextVars() {
+		$contextVars = $this->getContextVars();
 		libHTML::$footerScript[] = '
-	context='.$context['json'].';
-	contextKey="'.$context['key'].'";
-	ordersData = '.json_encode($this->Orders).';
+	context='.$contextVars['context'].';
+	contextKey="'.$contextVars['contextKey'].'";
+	ordersData = '.json_encode($contextVars['ordersData']).';
 	';
 	}
 
