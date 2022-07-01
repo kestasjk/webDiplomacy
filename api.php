@@ -1305,7 +1305,7 @@ abstract class ApiAuth {
 	private function isUserMemberOfGame()
 	{
 		global $DB;
-		list($isMember) = $DB->sql_row("SELECT COUNT(id) FROM wD_Members WHERE userID = " . $this->userID ." AND gameID = " . $this->gameID);
+		list($isMember) = $DB->sql_row("SELECT COUNT(id) FROM wD_Members WHERE userID = " . $this->userID ." AND gameID = " . $this->getAssociatedGameId());
 		return $isMember === 1;
 	}
 	/**
