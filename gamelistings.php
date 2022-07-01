@@ -65,7 +65,6 @@ if ( isset($_REQUEST['sortCol']))
 	else if ($_REQUEST['sortCol'] == 'phaseMinutes') { $sortCol='phaseMinutes'; }
 	else if ($_REQUEST['sortCol'] == 'minimumBet') {$sortCol='minimumBet'; }
 	else if ($_REQUEST['sortCol'] == 'minimumReliabilityRating') {$sortCol='minimumReliabilityRating'; }
-	else if ($_REQUEST['sortCol'] == 'watchedGames') {$sortCol='watchedGames'; }
 	else if ($_REQUEST['sortCol'] == 'turn') {$sortCol='turn'; }
 	else if ($_REQUEST['sortCol'] == 'processTime') {$sortCol='processTime'; }
 }
@@ -196,24 +195,24 @@ if ($tab == 'My games')
 {
 	if($User->type['User'])
 	{
-		$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
+		$SQL = "SELECT g.* FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
 			WHERE g.phase <> 'Finished' AND m.userID = ".$User->id;
 		$totalResults = $GamesMine;
 	}
 	else
 	{
-		$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND playerTypes <> 'MemberVsBots' ";
+		$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND playerTypes <> 'MemberVsBots' ";
 		$totalResults = $GamesActive;
 	}
 }
 elseif ($tab == 'New')
 {
-	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase = 'Pre-game' AND playerTypes <> 'MemberVsBots' ";
+	$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase = 'Pre-game' AND playerTypes <> 'MemberVsBots' ";
 	$totalResults = $GamesNew;
 }
 elseif ($tab == 'Open Positions')
 {
-	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND playerTypes <> 'MemberVsBots' 
+	$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND playerTypes <> 'MemberVsBots' 
 		AND g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No'";
 		if($User->type['User'])
 		{
@@ -223,12 +222,12 @@ elseif ($tab == 'Open Positions')
 }
 elseif ($tab == 'Active')
 {
-	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND playerTypes <> 'MemberVsBots' ";
+	$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND playerTypes <> 'MemberVsBots' ";
 	$totalResults = $GamesActive;
 }
 elseif ($tab == 'Finished')
 {
-	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase = 'Finished' AND playerTypes <> 'MemberVsBots' ";
+	$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase = 'Finished' AND playerTypes <> 'MemberVsBots' ";
 	$totalResults = $GamesFinished;
 }
 else
@@ -450,7 +449,6 @@ else
 				<option'.(($sortCol=='minimumBet') ? ' selected="selected"' : '').' value="minimumBet">Bet</option>
 				<option'.(($sortCol=='phaseMinutes') ? ' selected="selected"' : '').' value="phaseMinutes">Phase Length</option>
 				<option'.(($sortCol=='minimumReliabilityRating') ? ' selected="selected"' : '').' value="minimumReliabilityRating">Reliability Rating</option>
-				<option'.(($sortCol=='watchedGames') ? ' selected="selected"' : '').' value="watchedGames">Spectator Count</option>
 				<option'.(($sortCol=='turn') ? ' selected="selected"' : '').' value="turn">Game Turn</option>
 				<option'.(($sortCol=='processTime') ? ' selected="selected"' : '').' value="processTime">Time to Next Phase</option>
 			</select></p>
@@ -460,7 +458,7 @@ else
 			</select></p></strong>
 			<input type="submit" name="Submit" class="green-Submit" value="Search" /></form></div>
 			</br>';
-	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g";
+	$SQL = "SELECT g.* FROM wD_Games g";
 	$SQLCounter = "SELECT COUNT(1) FROM wD_Games g";
 	if($_REQUEST['userGames'] == 'include')
 	{
@@ -1105,7 +1103,7 @@ if($User->type['User'] && $tab <> 'My games' && $tab <> 'Search' && $tab <> 'Fin
 }
 
 $SQL = $SQL . " ORDER BY ";
-if ($sortCol <> 'watchedGames' && $sortCol <> 'processTime' && $sortCol <> 'minimumBet') {$SQL .= "g.";}
+if ( $sortCol <> 'processTime' && $sortCol <> 'minimumBet') {$SQL .= "g.";}
 $ordering = $sortCol;
 if ($sortCol == 'processTime') {$ordering = "(CASE WHEN g.processStatus = 'Paused' THEN (g.pauseTimeRemaining + ".time().") ELSE g.processTime END)";}
 elseif ($sortCol == 'minimumBet') {$ordering = "(SELECT m4.bet FROM wD_Members m4 WHERE m4.gameID = g.id AND m4.bet > 0 LIMIT 1)";}
@@ -1229,7 +1227,6 @@ function printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = False)
 				<option'.(($sortCol=='minimumBet') ? ' selected="selected"' : '').' value="minimumBet">Bet</option>
 				<option'.(($sortCol=='phaseMinutes') ? ' selected="selected"' : '').' value="phaseMinutes">Phase Length</option>
 				<option'.(($sortCol=='minimumReliabilityRating') ? ' selected="selected"' : '').' value="minimumReliabilityRating">Reliability Rating</option>
-				<option'.(($sortCol=='watchedGames') ? ' selected="selected"' : '').' value="watchedGames">Spectator Count</option>
 				<option'.(($sortCol=='turn') ? ' selected="selected"' : '').' value="turn">Game Turn</option>
 				<option'.(($sortCol=='processTime') ? ' selected="selected"' : '').' value="processTime">Time to Next Phase</option>
 			</select>
