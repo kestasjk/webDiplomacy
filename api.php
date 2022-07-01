@@ -249,12 +249,13 @@ abstract class ApiEntry {
 	/**
 	 * Return Game object for game associated to this API entry call.
 	 * To get associated game, API entry must expect a parameter named `gameID`.
+	 * @param useCache if true, use the cache, otherwise always re-fetch from DB.
 	 * @return Game
 	 * @throws RequestException - if no gameID field in requirements, or if no valid game ID provided.
 	 */
-	public function getAssociatedGame() {
+	public function getAssociatedGame($useCache = true) {
 		global $DB;
-		if( !is_null($this->gameCache) ) return $this->gameCache;
+		if( $useCache && !is_null($this->gameCache) ) return $this->gameCache;
 		if (!in_array('gameID', $this->requirements))
 			throw new RequestException('No game ID available for this request.');
 		$args = $this->getArgs();
@@ -368,6 +369,8 @@ class ToggleVote extends ApiEntry {
 		}
 		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."' WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
 		$DB->sql_put("COMMIT");
+		$Game = $this->getAssociatedGame(false);
+		$Game->Members->processVotes();
 		return $newVotes;
 	}
 }
@@ -429,6 +432,8 @@ class SetVote extends ApiEntry {
 		}
 		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."' WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
 		$DB->sql_put("COMMIT");
+		$Game = $this->getAssociatedGame(false);
+		$Game->Members->processVotes();
 		return $newVotes;
 	}
 }

@@ -155,8 +155,45 @@ class Members
 		{
 			$votes[]='Concede';
 		}
-
+		
 		return $votes;
+	}
+
+	function processVotes() {
+		global $MC, $DB;
+		$Game = $this->Game;
+		if( $Game->Members->votesPassed() && $Game->phase!='Finished' )
+		{
+			$MC->append('processHint',','.$Game->id);
+
+			$DB->get_lock('gamemaster',1);
+
+			$DB->sql_put("UPDATE wD_Games SET attempts=attempts+1 WHERE id=".$Game->id);
+			$DB->sql_put("COMMIT");
+
+			require_once(l_r('gamemaster/game.php'));
+			$Game = $Game->Variant->processGame($Game->id);
+			try
+			{
+				$Game->applyVotes(); // Will requery votesPassed()
+				$DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$Game->id);
+				$DB->sql_put("COMMIT");
+			}
+			catch(Exception $e)
+			{
+				if( $e->getMessage() == "Abandoned" || $e->getMessage() == "Cancelled" )
+				{
+					assert($Game->phase=="Pre-game" || $e->getMessage() == "Cancelled");
+					$DB->sql_put("COMMIT");
+					return $e->getMessage();
+				}
+				else
+					$DB->sql_put("ROLLBACK");
+
+				throw $e;
+			}
+		}
+		return null;
 	}
 
 	function isReady()
