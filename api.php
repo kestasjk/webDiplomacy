@@ -245,6 +245,16 @@ abstract class ApiEntry {
 		return in_array('gameID', $this->requirements);
 	}
 
+	public function getAssociatedGameId() {
+		if (!in_array('gameID', $this->requirements))
+			throw new RequestException('No game ID available for this request.');
+		$args = $this->getArgs();
+		$gameID = $args['gameID'];
+		if ($gameID == null)
+			throw new RequestException('Game ID not provided.');
+		return intval($gameID);
+	}
+	
 	private $gameCache = null;
 	/**
 	 * Return Game object for game associated to this API entry call.
@@ -252,23 +262,14 @@ abstract class ApiEntry {
 	 * @return Game
 	 * @throws RequestException - if no gameID field in requirements, or if no valid game ID provided.
 	 */
-	public function getAssociatedGame() {
+	public function getAssociatedGame($lockForUpdate = false) {
 		global $DB;
 		if( !is_null($this->gameCache) ) return $this->gameCache;
-		if (!in_array('gameID', $this->requirements))
-			throw new RequestException('No game ID available for this request.');
-		$args = $this->getArgs();
-		$gameID = $args['gameID'];
-		if ($gameID == null)
-			throw new RequestException('Game ID not provided.');
-		$gameID = intval($gameID);
+		$gameID = $this->getAssociatedGameId();
 		$Variant = libVariant::loadFromGameID($gameID);
 		libVariant::setGlobals($Variant);
-		$gameRow = $DB->sql_hash('SELECT * from wD_Games WHERE id = '.$gameID);
-		if (!$gameRow)
-			throw new RequestException('Invalid game ID');
-		$this->gameCache = new Game($gameRow, UPDATE);
-		return  $this->gameCache; // Lock game for update, which just ensures the game is always processed sequentially
+		$this->gameCache = new Game($gameID, $lockForUpdate ? UPDATE : NOLOCK);
+		return  $this->gameCache; // Lock game for update, which just ensures the game is always processed sequentially, if the game will be updated
 	}
 
 	/**
@@ -858,7 +859,7 @@ class SetOrders extends ApiEntry {
 		$phase = strval($phase);
 		$countryID = intval($countryID);
 
-		$game = $this->getAssociatedGame();
+		$game = $this->getAssociatedGame(true); // Get the game and lock it for update
 		if (!in_array($game->phase, array('Diplomacy', 'Retreats', 'Builds')))
 			throw new RequestException('Cannot submit orders in phase `'.$game->phase.'`.');
 		if ($turn != $game->turn)
@@ -1301,6 +1302,12 @@ abstract class ApiAuth {
 		return $this->cacheKey;
 	}
 
+	private function isUserMemberOfGame()
+	{
+		global $DB;
+		list($isMember) = $DB->sql_row("SELECT COUNT(id) FROM wD_Members WHERE userID = " . $this->userID ." AND gameID = " . $this->gameID);
+		return $isMember === 1;
+	}
 	/**
 	 * Check if this API key is allowed to call given API entry.
 	 * Throw an exception if any problem occurs, meaning that either API key does not have enough permissions, or we are unable to check it.
@@ -1312,6 +1319,7 @@ abstract class ApiAuth {
 	 * @throws RequestException
 	 */
 	public function assertHasPermissionFor(ApiEntry $apiEntry) {
+		global $DB;
 		$permissionIsExplicit = false;
 		$permissionField = $apiEntry->getPermissionField();
 
@@ -1319,8 +1327,9 @@ abstract class ApiAuth {
 			// No permission field.
 			// If game ID is required, then user must be member of this game.
 			// Otherwise, any user can call this function.
-			if ($apiEntry->requiresGameID() && !isset($apiEntry->getAssociatedGame()->Members->ByUserID[$this->userID]))
+			if ($apiEntry->requiresGameID() && !$this->isUserMemberOfGame())
 				throw new ClientForbiddenException('Access denied. User is not member of associated game.');
+			
 		} else {
 			// Permission field available.
 			if (!in_array($permissionField, self::$permissionFields))
@@ -1334,7 +1343,7 @@ abstract class ApiAuth {
 				if (!$apiEntry->requiresGameID())
 					throw new ClientForbiddenException("Permission denied.");
 
-				if (!isset($apiEntry->getAssociatedGame()->Members->ByUserID[$this->userID]))
+				if (!$this->isUserMemberOfGame())
 					throw new ClientForbiddenException('Permission denied, and user is not member of associated game.');
 			}
 		}
