@@ -59,7 +59,7 @@ require_once('gamemaster/member.php');
 
 
 // no account? no problem
-//if( !isset($User) || $User->type['Guest'] || !$User->type['User'] )
+if( !isset($User) || $User->type['Guest'] || !$User->type['User'] )
 {
 	// Make a User
 	// Save their key, if present
@@ -91,6 +91,9 @@ require_once('gamemaster/member.php');
 
 	$cookieKey = $key;//libAuth::generateKey($newUserID, $pass);
 	setcookie('wD-Key',$cookieKey,time()+24*60*60);
+
+	global $User;
+	$User = new User($newUserID);
 	//die(print_r(array($pass, $key, $cookieKey),true));
 	//setcookie('wD-Key_Orig', $_COOKIE['wD-Key'],time()+24*24*60); 
 	// Create new user
