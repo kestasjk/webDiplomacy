@@ -138,7 +138,7 @@ class libGameMaster
 			$DB->sql_put("UPDATE wD_Users u
 				INNER JOIN (
 					SELECT t.userID, COUNT(1) yearlyPhaseCountJustExpired
-					INNER JOIN wD_TurnDate t 
+					FROM wD_TurnDate t 
 					WHERE t.isInReliabilityPeriod IS NULL
 					GROUP BY t.userID
 				) p ON p.userID = u.id
