@@ -106,31 +106,47 @@ class libGameMaster
 
 		if( $recalculateAll )
 		{
+			// Recalculating everything; set all turns younger than a year to be in reliability period, and count all the phases younger than a year for each user
 			$DB->sql_put("UPDATE wD_TurnDate SET isInReliabilityPeriod = CASE WHEN turnDateTime>UNIX_TIMESTAMP() - 60*60*24*365 THEN 1 ELSE 0 END;");
+
+			$DB->sql_put("UPDATE wD_Users u LEFT JOIN (SELECT userID, COUNT(1) yearlyPhaseCount FROM wD_TurnDate WHERE isInReliabilityPeriod = 1 GROUP BY userID) phases ON phases.userID = u.id SET u.yearlyPhaseCount = COALESCE(phases.yearlyPhaseCount,0);");
 		}
+		else
+		{
+			/*
+			Every phase in non-bot games a users phasePerYear count is incremented and wD_TurnDate is added to, and when run 
+			this routine should find all phases from over a year ago which are still flagged as in the reliability period, and
+			decrement them from the users yearly phase count.
 
-		$DB->sql_put("UPDATE wD_TurnDate t
-			INNER JOIN (
-				-- Find the first id marked as in the last year using the isInReliabilityPeriod,turnDateTime index
-				SELECT id FROM wD_TurnDate WHERE isInReliabilityPeriod = 1 ORDER BY isInReliabilityPeriod,turnDateTime LIMIT 1
-			) lwr
-			INNER JOIN (
-				-- Up to the first id younger than a year using the turnDateTime index
-				SELECT id FROM wD_TurnDate WHERE turnDateTime > UNIX_TIMESTAMP() - 365*24*60*60 ORDER BY turnDateTime LIMIT 1
-			) upr
-			SET t.isInReliabilityPeriod = NULL
-			WHERE t.id >= lwr.id AND t.id <= upr.id;");
+			The aim is to need to scan as few turndate records as possible, and update as few user records as possible
+			*/
 
-		$DB->sql_put("UPDATE wD_Users u
-			INNER JOIN (
-				SELECT t.userID, COUNT(*) yearlyPhaseCount
-				FROM (SELECT userID FROM wD_TurnDate WHERE isInReliabilityPeriod IS NULL ".($recalculateAll?" OR 1=1 " :"").") phasesChanged
-				INNER JOIN wD_TurnDate t ON phasesChanged.userID = t.userID
-				WHERE t.isInReliabilityPeriod = 1
-				GROUP BY t.userID
-			) p ON p.userID = u.id
-			SET u.yearlyPhaseCount = p.yearlyPhaseCount;");
-		$DB->sql_put("UPDATE wD_TurnDate SET isInReliabilityPeriod = 0 WHERE isInReliabilityPeriod IS NULL;");
+			// Set any phases that have just turned older than 1 year to have a NULL isInReliabilityPeriod flag, so that
+			// the count of phases that have expired can be removed from the user's phases per year count.
+			$DB->sql_put("UPDATE wD_TurnDate t
+				INNER JOIN (
+					-- Find the first id marked as in the last year using the isInReliabilityPeriod,turnDateTime index
+					SELECT id FROM wD_TurnDate WHERE isInReliabilityPeriod = 1 ORDER BY isInReliabilityPeriod,turnDateTime LIMIT 1
+				) lwr
+				INNER JOIN (
+					-- Up to the first id younger than a year using the turnDateTime index
+					SELECT id FROM wD_TurnDate WHERE turnDateTime > UNIX_TIMESTAMP() - 365*24*60*60 ORDER BY turnDateTime LIMIT 1
+				) upr
+				SET t.isInReliabilityPeriod = NULL
+				WHERE t.id >= lwr.id AND t.id <= upr.id;");
+
+			$DB->sql_put("UPDATE wD_Users u
+				INNER JOIN (
+					SELECT t.userID, COUNT(1) yearlyPhaseCountJustExpired
+					INNER JOIN wD_TurnDate t 
+					WHERE t.isInReliabilityPeriod IS NULL
+					GROUP BY t.userID
+				) p ON p.userID = u.id
+				SET u.yearlyPhaseCount = u.yearlyPhaseCount - p.yearlyPhaseCountJustExpired;");
+
+			// Now set any phases that have just become older than a year as outside the reliability rating period:
+			$DB->sql_put("UPDATE wD_TurnDate SET isInReliabilityPeriod = 0 WHERE isInReliabilityPeriod IS NULL;");
+		}
 		$DB->sql_put("COMMIT"); // Ensure no users are left locked
 		$DB->sql_put("BEGIN"); // I think this might be needed to ensure we are within a transaction going forward?
 	}
@@ -144,41 +160,57 @@ class libGameMaster
 	{
 		global $DB, $Misc;
 
+		/*
+		The RR calculation is based on this query which recalculates the RR for a user, but in 
+		UPDATE wD_Users u 
+		set u.reliabilityRating = greatest(0, 
+		(100 *(1 - ((SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.modExcused = 0 and t.turnDateTime > ".$year.") / greatest(1,u.yearlyPhaseCount))))
+		-(6*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 0 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastMonth."))
+		-(6*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 1 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastWeek."))
+		-(5*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 1 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastMonth."))
+		-(5*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 0 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$year.")))
+		where u.id = ".$userIDtoUpdate;
+		*/
+
 		// Calculates the RR for members. 
-		$DB->sql_put("SELECT a.id, a.reliabilityRating RR_NOW, b.reliabilityRating RR_NEW FROM wD_Users a
-		INNER JOIN (
-			SELECT userID, IF(reliabilityRating<0,0,reliabilityRating) reliabilityRating
-			FROM (
-				SELECT t.userID, 
-				SUM(CASE 
-				-- If not missed for an exempt reasonwd_turndate
-				WHEN t.systemExcused = 0 AND t.samePeriodExcused = 0
-				THEN
-					CASE
-					-- If not live ..
-					WHEN liveGame = 0
+		$DB->sql_put("UPDATE wD_Users u
+		LEFT JOIN (
+			SELECT 
+				t.userID, 
+				SUM(
+				CASE 
+					-- If not missed for an exempt reason
+					WHEN t.systemExcused = 0 AND t.samePeriodExcused = 0
 					THEN
-						-- .. then take 6 for missed turns newer than 1 month ago
-						CASE WHEN t.turnDateTime > UNIX_TIMESTAMP() - 31*24*60*60 THEN -6 ELSE 0 END
-						- -- .. and 5 for older missed turns (only up to 1 year)
-						5
-					ELSE -- liveGame = 1
-						-- Or if live .. take 6 for missed turns under a week ago
-						CASE WHEN t.turnDateTime > UNIX_TIMESTAMP() - 7*24*60*60 THEN -6 ELSE 0 END
-						+
-						-- And take 5 for missed turns under a month ago
-						CASE WHEN t.turnDateTime > UNIX_TIMESTAMP() - 31*24*60*60 THEN -5 ELSE 0 END
-					END
-				-- If missed for an exempt reason add a value from 100 to 0 that gets smaller as the user does more games.
-				-- Goes from 99 with 100 phases / year, and 1 with 0 phases / year.
-				ELSE 100 * (1 - 1 / IF(u.yearlyPhaseCount < 1, 1, u.yearlyPhaseCount))
-				END) reliabilityRating
-			FROM wD_MissedTurns t  
-			INNER JOIN wD_Users u ON u.id = t.UserID
+						CASE
+						-- If not live ..
+						WHEN liveGame = 0
+						THEN
+							CASE WHEN t.turnDateTime > UNIX_TIMESTAMP() - 28*24*60*60 
+							THEN 0.11 -- .. add 11% for missed turns newer than 28 days
+							ELSE 0.05  -- .. or 5% for missed turns older than 28 days
+							END
+						ELSE -- liveGame = 1
+						
+							CASE WHEN t.turnDateTime > UNIX_TIMESTAMP() - 7*24*60*60 
+							THEN 0.11 -- .. add 11% for missed turns newer than 7 days
+							WHEN t.turnDateTime > UNIX_TIMESTAMP() - 28*24*60*60
+							THEN 0.05  -- .. or 5% for missed turns newer than 28 days
+							ELSE 0.0 
+							END
+						END
+					-- If missed for an exempt reason add a value from 100 to 0 that gets smaller as the user does more games.
+					-- Goes from 99 with 100 phases / year, and 1 with 0 phases / year.
+					ELSE 0.0
+				END) missedTurnPenalty,
+				COUNT(1) missedTurnCount
+			FROM wD_MissedTurns t
 			WHERE t.modExcused = 0 AND t.turnDateTime > UNIX_TIMESTAMP() - 60*60*24*365
 			GROUP BY t.userID
-			) b 
-		) b ON a.id = b.userID;");
+		) t ON t.userID = u.id
+		SET u.reliabilityRating = 100.0 * GREATEST(((1.0 - COALESCE(missedTurnCount,0) / GREATEST(u.yearlyPhaseCount,1)) 
+			- COALESCE(t.missedTurnPenalty,0)), 0);
+		");
 		
 		$DB->sql_put("COMMIT");
 	}

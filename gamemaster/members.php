@@ -591,9 +591,12 @@ class processMembers extends Members
 	{
 		global $DB;
 
+		// Don't count games against bots
+		if( $this->Game->playerTypes == 'MemberVsBots' ) return;
+
 		// enter a turn for each active player with orders
-		$DB->sql_put("INSERT INTO wD_TurnDate (gameID, userID, countryID, turn, turnDateTime)
-				SELECT m.gameID,m.userID,m.countryID,".$this->Game->turn.",".time()."
+		$DB->sql_put("INSERT INTO wD_TurnDate (gameID, userID, countryID, turn, turnDateTime, isInReliabilityPeriod)
+				SELECT m.gameID,m.userID,m.countryID,".$this->Game->turn.",".time().", 1
 				FROM wD_Members m
 				WHERE m.gameID = ".$this->Game->id."
 					AND ( m.status='Playing' OR m.status='Left' )

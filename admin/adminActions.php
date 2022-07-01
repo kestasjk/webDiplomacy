@@ -71,10 +71,10 @@ class adminActions extends adminActionsForms
 				ban. <strong>The user will see the reason provided</strong>',
 				'params' => array('userID'=>'User ID', 'ban'=>'Days','reason'=>'Reason')
 			),
-			'recalculateUserRR' => array(
-				'name' => 'Recalculate RR for a User',
-				'description' => 'Reruns the RR calculation for the user provided.',
-				'params' => array('userID'=>'User ID')
+			'recalculateRR' => array(
+				'name' => 'Recalculate reliability ratings for all users',
+				'description' => 'Refreshes all reliability ratings.',
+				'params' => array()
 			),
 			
 			'banUser' => array(
@@ -761,31 +761,16 @@ class adminActions extends adminActionsForms
 		}
 	}
 
-	public function recalculateUserRR(array $params)
+	public function recalculateRR(array $params)
 	{
 		global $DB;
 
-		$userIDtoUpdate = (int)$params['userID'];
-
 		require_once(l_r('gamemaster/gamemaster.php'));
 		 
-		$year = time() - 31536000;
-		$lastMonth = time() - 2419200;
-		$lastWeek = time() - 604800;
+		libGameMaster::updatePhasePerYearCount();
+		libGameMaster::updateReliabilityRating();
 
-		$RELIABILITY_QUERY = "
-		UPDATE wD_Users u 
-		set u.reliabilityRating = greatest(0, 
-		(100 *(1 - ((SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.modExcused = 0 and t.turnDateTime > ".$year.") / greatest(1,u.yearlyPhaseCount))))
-		-(6*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 0 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastMonth."))
-		-(6*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 1 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastWeek."))
-		-(5*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 1 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastMonth."))
-		-(5*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 0 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$year.")))
-		where u.id = ".$userIDtoUpdate;
-
-		$DB->sql_put($RELIABILITY_QUERY);
-
-		return "This user's RR has been recalculated.";
+		return "Reliabiility ratings have been recalculated.";
 	}
 
 	public function generateRegistrationLink(array $params)
