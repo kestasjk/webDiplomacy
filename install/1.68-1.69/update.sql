@@ -83,3 +83,7 @@ ALTER TABLE wD_Groups ADD COLUMN gameId MEDIUMINT NULL;
 
 DELETE d FROM wD_TurnDate d INNER JOIN wD_Games g ON g.id = d.gameID WHERE g.playerTypes = 'MemberVsBots';
 DELETE d FROM wD_MissedTurns d INNER JOIN wD_Games g ON g.id = d.gameID WHERE g.playerTypes = 'MemberVsBots';
+
+ ALTER TABLE wD_Users CHANGE `reliabilityRating` `reliabilityRating` double NOT NULL DEFAULT '100';
+
+ ALTER TABLE wD_MissedTurns ADD COLUMN reliabilityPeriod TINYINT NULL DEFAULT -1;

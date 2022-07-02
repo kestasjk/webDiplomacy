@@ -151,10 +151,9 @@ class libGameMaster
 		$DB->sql_put("BEGIN"); // I think this might be needed to ensure we are within a transaction going forward?
 	}
 	/**
-	 * Recalculates the reliability ratings for all users.
-	 * 
-	 * Each active phase players are in adds to TurnData, which GameMaster sums up for each user for the past 
-	 * year every 15 mins
+	 * Recalculates the reliability ratings for all users using wD_MissedTurns, the rules are on the profile page
+	 * A similar method to counting the yearly phase count is used to ensure this can be constantly updated without
+	 * having to scan the entire users table
 	 */
 	static public function updateReliabilityRating()
 	{
@@ -172,9 +171,25 @@ class libGameMaster
 		where u.id = ".$userIDtoUpdate;
 		*/
 
+
+		// Find all turns which are in the wrong reliabilityPeriod; -1 is unassigned, NULL is being updated, 3 is under 7 days, 2 is under 28 days, 1 is under a year, 0 is over a year
+		// Set all missed turns for those users to NULL (except missed turns already over a year old) which will cause a recalc:
+		$timestamp = time();
+		$DB->sql_put("UPDATE wD_MissedTurns 
+			SET reliabilityPeriod = NULL 
+			WHERE COALESCE(reliabilityPeriod,-1) <> 0 AND userID IN (
+				SELECT DISTINCT userID 
+				FROM wD_MissedTurns 
+				WHERE COALESCE(reliabilityPeriod,-1) <> (CASE 
+					WHEN turnDateTime > ".$timestamp." - 7*24*60*60 THEN 3 
+					WHEN turnDateTime > ".$timestamp." - 28*24*60*60 THEN 2 
+					WHEN turnDateTime > ".$timestamp." - 365*24*60*60 THEN 1 
+					ELSE 0
+				END )");
+
 		// Calculates the RR for members. 
 		$DB->sql_put("UPDATE wD_Users u
-		LEFT JOIN (
+		INNER JOIN (
 			SELECT 
 				t.userID, 
 				SUM(
@@ -186,15 +201,15 @@ class libGameMaster
 						-- If not live ..
 						WHEN liveGame = 0
 						THEN
-							CASE WHEN t.turnDateTime > UNIX_TIMESTAMP() - 28*24*60*60 
+							CASE WHEN t.turnDateTime > ".$timestamp." - 28*24*60*60 
 							THEN 0.11 -- .. add 11% for missed turns newer than 28 days
 							ELSE 0.05  -- .. or 5% for missed turns older than 28 days
 							END
 						ELSE -- liveGame = 1
 						
-							CASE WHEN t.turnDateTime > UNIX_TIMESTAMP() - 7*24*60*60 
+							CASE WHEN t.turnDateTime > ".$timestamp." - 7*24*60*60 
 							THEN 0.11 -- .. add 11% for missed turns newer than 7 days
-							WHEN t.turnDateTime > UNIX_TIMESTAMP() - 28*24*60*60
+							WHEN t.turnDateTime > ".$timestamp." - 28*24*60*60
 							THEN 0.05  -- .. or 5% for missed turns newer than 28 days
 							ELSE 0.0 
 							END
@@ -205,13 +220,24 @@ class libGameMaster
 				END) missedTurnPenalty,
 				COUNT(1) missedTurnCount
 			FROM wD_MissedTurns t
-			WHERE t.modExcused = 0 AND t.turnDateTime > UNIX_TIMESTAMP() - 60*60*24*365
+			WHERE t.modExcused = 0 AND reliabilityPeriod IS NULL AND t.turnDateTime > ".$timestamp." - 60*60*24*365
 			GROUP BY t.userID
 		) t ON t.userID = u.id
 		SET u.reliabilityRating = 100.0 * GREATEST(((1.0 - COALESCE(missedTurnCount,0) / GREATEST(u.yearlyPhaseCount,1)) 
 			- COALESCE(t.missedTurnPenalty,0)), 0);
 		");
 		
+		// Now set the turns just processed to the period they were calculated as, so that when they go into a different period it
+		// will trigger a recalc
+		$DB->sql_put("UPDATE wD_MissedTurns 
+			SET reliabilityPeriod = CASE 
+					WHEN turnDateTime > ".$timestamp." - 7*24*60*60 THEN 3 
+					WHEN turnDateTime > ".$timestamp." - 28*24*60*60 THEN 2 
+					WHEN turnDateTime > ".$timestamp." - 365*24*60*60 THEN 1 
+					ELSE 0
+				END  
+			WHERE reliabilityPeriod IS NULL");
+
 		$DB->sql_put("COMMIT");
 	}
 
