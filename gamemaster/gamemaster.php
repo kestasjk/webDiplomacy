@@ -185,7 +185,7 @@ class libGameMaster
 					WHEN turnDateTime > ".$timestamp." - 28*24*60*60 THEN 2 
 					WHEN turnDateTime > ".$timestamp." - 365*24*60*60 THEN 1 
 					ELSE 0
-				END )");
+				END ))");
 
 		// Calculates the RR for members. 
 		$DB->sql_put("UPDATE wD_Users u
