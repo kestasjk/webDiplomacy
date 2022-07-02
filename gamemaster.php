@@ -117,12 +117,17 @@ if ( ( time() - $Misc->LastProcessTime ) > Config::$downtimeTriggerMinutes*60 )
 	libHTML::notice(l_t('Games not processing'),libHTML::admincp('resetLastProcessTime',null,l_t('Continue processing now')));
 }
 
+// Disable transactions while updating reliability ratings:
+$DB->disableTransactions();
+
 // Update the reliability ratings:
 print l_t('Updating user phase/year counts').'<br />';
 libGameMaster::updatePhasePerYearCount();
 
 print l_t('Updating reliabilty ratings');
 libGameMaster::updateReliabilityRating();
+
+$DB->enableTransactions();
 
 // Now apply any votes that need to be applied:
 print l_t('Finding and applying votes');
