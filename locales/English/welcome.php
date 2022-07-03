@@ -22,7 +22,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 ?>
 <p style="text-align: center;"><img
-	src="<?php print l_s('images/startmap.png'); ?>" alt="<?php print l_t('The map'); ?>"
+	src="<?php print l_s('images/webDipWelcome.png'); ?>" alt="<?php print l_t('The map'); ?>"
 	title="<?php print l_t('A webDiplomacy map'); ?>" /></p>
 	<div class = "introToDiplomacy_show"><p class="welcome"><?php print l_t('<em> "Luck plays no part in Diplomacy. Cunning and
 	cleverness, honesty and perfectly-timed betrayal are the tools needed to
