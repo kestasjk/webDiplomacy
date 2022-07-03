@@ -19,8 +19,9 @@
  */
 
 define('IN_CODE', 1);
-require_once('header.php');
 require_once('config.php');
+if( Config::isOnPlayNowDomain() ) define('PLAYNOW',true);
+require_once('header.php');
 require_once('global/definitions.php');
 require_once('locales/layer.php');
 require_once('objects/database.php');
@@ -248,11 +249,11 @@ abstract class ApiEntry {
 	public function isUserMemberOfGame($userID)
 	{
 		global $DB;
-		list($isMember) = $DB->sql_row("SELECT COUNT(id) FROM wD_Members WHERE userID = " . $userID ." AND gameID = " . $this->getAssociatedGameId());
+		list($isMember) = $DB->sql_row("SELECT COUNT(id) FROM wD_Members WHERE userID = " . $userID ." AND gameID = " . $this->getAssociatedGameID());
 		return ($isMember == 1);
 	}
 
-	public function getAssociatedGameId() {
+	public function getAssociatedGameID() {
 		if (!in_array('gameID', $this->requirements))
 			throw new RequestException('No game ID available for this request.');
 		$args = $this->getArgs();
@@ -272,7 +273,7 @@ abstract class ApiEntry {
 	public function getAssociatedGame($lockForUpdate = false) {
 		global $DB;
 		if( !is_null($this->gameCache) ) return $this->gameCache;
-		$gameID = $this->getAssociatedGameId();
+		$gameID = $this->getAssociatedGameID();
 		$Variant = libVariant::loadFromGameID($gameID);
 		libVariant::setGlobals($Variant);
 		$this->gameCache = new Game($gameID, $lockForUpdate ? UPDATE : NOLOCK);
@@ -1374,10 +1375,10 @@ class ApiKey extends ApiAuth {
 
 	protected function load(){
 		global $DB;
-		$rowUserId = $DB->sql_hash("SELECT userID from wD_ApiKeys WHERE apiKey = '".$DB->escape($this->apiKey)."'");
-		if (!$rowUserId)
+		$rowUserID = $DB->sql_hash("SELECT userID from wD_ApiKeys WHERE apiKey = '".$DB->escape($this->apiKey)."'");
+		if (!$rowUserID)
 			throw new ClientUnauthorizedException('No user associated to this API key.');
-		$this->userID = intval($rowUserId['userID']);
+		$this->userID = intval($rowUserID['userID']);
 		$permissionRow = $DB->sql_hash("SELECT * FROM wD_ApiPermissions WHERE userID = ".$this->userID);
 		if ($permissionRow) {
 			foreach (self::$permissionFields as $permissionField) {

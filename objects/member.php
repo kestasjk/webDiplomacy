@@ -236,6 +236,20 @@ class Member
 	{
 		return libTime::timeLengthText(time()-$this->timeLoggedIn).' ('.libTime::text($this->timeLoggedIn).')';
 	}
+	/**
+	 * A textual display of this user's last log-in time, for when the exact time shouldn't be shown as it's anonymous
+	 * @return string Very rough last login time
+	 */
+	function lastLoggedInTxt_Anon()
+	{
+		$daysSinceLoggedIn = (time()-$this->timeLoggedIn) / 24*60*60;
+		if( $daysSinceLoggedIn < 1 )
+			return '< 1 day';
+		else if ( $daysSinceLoggedIn < 7 )
+			return '< 1 week';
+		else
+			return 'over a week';
+	}
 
 	function send($keep, $private, $text, $fromCountryID=null)
 	{

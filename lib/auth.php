@@ -308,8 +308,8 @@ class libAuth
 		}
 	}
 
-	public static function generateKey($userId, $userKey) {
-		return $userId.'_'.md5(md5(Config::$secret).$userId.$userKey.sha1(Config::$secret));
+	public static function generateKey($userID, $userKey) {
+		return $userID.'_'.md5(md5(Config::$secret).$userID.$userKey.sha1(Config::$secret));
 	}
 	
 	/**

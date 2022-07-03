@@ -102,7 +102,7 @@ if ( $User->type['Moderator'] )
 			}
 		}
 
-		print '<strong>UserId:</strong> '.$UserProfile->id.'</br></br>';
+		print '<strong>UserID:</strong> '.$UserProfile->id.'</br></br>';
 		print '<strong>Email:</strong></br>'.$UserProfile->email.'</br></br>';
 		/*print '<strong>Mobile linked:</strong></br>'.$UserProfile->email.'</br></br>';
 		print '<strong>Facebook linked:</strong></br>'.$UserProfile->email.'</br></br>';
@@ -716,7 +716,7 @@ print '</div>';
 
 		$DB->sql_put("COMMIT");
 		$DB->sql_put("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");  // https://stackoverflow.com/a/918092
-		$groupUsers = Group::getUsers("gr.isActive = 1 AND g.userId = ".$UserProfile->id);
+		$groupUsers = Group::getUsers("gr.isActive = 1 AND g.userID = ".$UserProfile->id);
 		$DB->sql_put("COMMIT"); // This will revert back to READ COMMITTED.
 		
 		$userJoinedGroups = array();
@@ -725,11 +725,11 @@ print '</div>';
 		{
 			if( $groupUser->isVerified() )
 			{
-				$userJoinedGroups[$groupUser->groupId] = $groupUser;
+				$userJoinedGroups[$groupUser->groupID] = $groupUser;
 			}
 			else if( !$groupUser->isDenied() )
 			{
-				$userJoinedGroupsUnverified[$groupUser->groupId] = $groupUser;
+				$userJoinedGroupsUnverified[$groupUser->groupID] = $groupUser;
 			}
 		}
 		unset($groupUsers);
@@ -743,10 +743,10 @@ print '</div>';
 
 			$declaredGroups = Group::declaredGroupNamesByID($User, true);
 			$suspectedGroups = Group::suspectedGroupNamesByID($User, true);
-			foreach($userJoinedGroups as $groupId => $groupName)
+			foreach($userJoinedGroups as $groupID => $groupName)
 			{
-				if( isset($declaredGroups[$groupId]) ) unset($declaredGroups[$groupId]);
-				if( isset($suspectedGroups[$groupId]) ) unset($suspectedGroups[$groupId]);
+				if( isset($declaredGroups[$groupID]) ) unset($declaredGroups[$groupID]);
+				if( isset($suspectedGroups[$groupID]) ) unset($suspectedGroups[$groupID]);
 			}
 
 			print '<div class = "profile_title">I have a relationship with this user</div>';
@@ -754,16 +754,16 @@ print '</div>';
 			print '<form action="group.php" method="post">';
 			print '<input type="hidden" name="createGroup" value="on" />';
 			print '<input type="hidden" name="addSelf" value="on" />';
-			print '<input type="hidden" name="addUserId" value="'.$UserProfile->id.'" />';
+			print '<input type="hidden" name="addUserID" value="'.$UserProfile->id.'" />';
 				print '<strong>New Name / Label:</strong> <input class="discloseNew" type="text" name="groupName" style="width:200px" /> ';
 				if( count($declaredGroups) > 0 )
 				{
 					print 'Or ';
-					print '<strong>Existing Name / Label:</strong> <select id="discloseExisting" name="groupId" style="width:200px"> ';
+					print '<strong>Existing Name / Label:</strong> <select id="discloseExisting" name="groupID" style="width:200px"> ';
 					print '<option value="">(Create new)</option>';
-					foreach($declaredGroups as $groupId=>$groupName)
+					foreach($declaredGroups as $groupID=>$groupName)
 					{
-						print '<option value="'.$groupId.'">'.$groupName.'</a>';
+						print '<option value="'.$groupID.'">'.$groupName.'</a>';
 					}
 					print '</select>';
 				}
@@ -791,18 +791,18 @@ print '</div>';
 			print '<div class = "profile_content">';
 			print '<form action="group.php" method="post">';
 			print '<input type="hidden" name="createGroup" value="on" />';
-			print '<input type="hidden" name="addUserId" value="'.$UserProfile->id.'" />';
+			print '<input type="hidden" name="addUserID" value="'.$UserProfile->id.'" />';
 			print '<input type="hidden" name="groupType" value="Unknown" />';
 			print '<strong>New Name / Label:</strong> <input class="suspectNew" type="text" name="groupName" style="width:200px" /> ';
 			
 			if( count($suspectedGroups) > 0 )
 			{
 				print 'Or ';
-				print '<strong>Existing Name / Label:</strong> <select id="suspectExisting" name="groupId" style="width:200px"> ';
+				print '<strong>Existing Name / Label:</strong> <select id="suspectExisting" name="groupID" style="width:200px"> ';
 				print '<option value="">(Create new)</option>';
-				foreach($suspectedGroups as $groupId=>$groupName)
+				foreach($suspectedGroups as $groupID=>$groupName)
 				{
-					print '<option value="'.$groupId.'">'.$groupName.'</option>';
+					print '<option value="'.$groupID.'">'.$groupName.'</option>';
 				}
 				print '</select>';
 			}
@@ -817,14 +817,14 @@ print '</div>';
 
 			print '<strong>Game reference:</strong> <select class="suspectNew" name="groupGameReference">'.
 				'<option value="">No reference</option>';
-			$tablActiveGamesShared = $DB->sql_tabl("SELECT g.id, g.name, g.turn FROM wD_Members a INNER JOIN wD_Games g ON g.id = a.gameId INNER JOIN wD_Members b ON g.id = b.gameId AND a.userId <> b.userId AND a.userId = " . $User->id." AND b.userId = ".$UserProfile->id." AND a.timeLoggedIn > ".(time() - 14*24*60*60)." AND b.timeLoggedIn > ".(time() - 14*24*60*60)." AND (g.anon='No' OR g.phase='Finished') ORDER BY a.timeLoggedIn DESC");
+			$tablActiveGamesShared = $DB->sql_tabl("SELECT g.id, g.name, g.turn FROM wD_Members a INNER JOIN wD_Games g ON g.id = a.gameID INNER JOIN wD_Members b ON g.id = b.gameID AND a.userID <> b.userID AND a.userID = " . $User->id." AND b.userID = ".$UserProfile->id." AND a.timeLoggedIn > ".(time() - 14*24*60*60)." AND b.timeLoggedIn > ".(time() - 14*24*60*60)." AND (g.anon='No' OR g.phase='Finished') ORDER BY a.timeLoggedIn DESC");
 			//$activeGamesShared = array();
 			$hasSharedGames = false;
 
-			while(list($gameId, $gameName, $gameTurn) = $DB->tabl_row($tablActiveGamesShared) )
+			while(list($gameID, $gameName, $gameTurn) = $DB->tabl_row($tablActiveGamesShared) )
 			{
-				//$activeGamesShared[] = array('gameID='.$gameId.',turn='.$gameTurn, $gameName );
-				print '<option value="gameID='.$gameId.',turn='.$gameTurn.'">'.$gameName.'</option>';
+				//$activeGamesShared[] = array('gameID='.$gameID.',turn='.$gameTurn, $gameName );
+				print '<option value="gameID='.$gameID.',turn='.$gameTurn.'">'.$gameName.'</option>';
 				$hasSharedGames = true;
 			}
 			print '</select>';
@@ -923,13 +923,13 @@ if( isset(Config::$customForumURL) )
 {
 	if ( $User->type['User'] && $User->id != $UserProfile->id)
 	{
-		list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
-		if ($newForumId > 0)
+		list($newForumID) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
+		if ($newForumID > 0)
 		{
 			print '
 			<div id="profile-forum-link-container">
 				<div class="profile-forum-links">
-					<a class="profile-link" href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumId.'">
+					<a class="profile-link" href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumID.'">
 						<button class="form-submit" id="view-forum-profile">
 							New Forum Profile
 						</button>
@@ -937,7 +937,7 @@ if( isset(Config::$customForumURL) )
 				</div>';
 			print '
 				<div class="profile-forum-links">
-					<a class="profile-link" href="/contrib/phpBB3/ucp.php?i=pm&mode=compose&u='.$newForumId.'">
+					<a class="profile-link" href="/contrib/phpBB3/ucp.php?i=pm&mode=compose&u='.$newForumID.'">
 						<button class="form-submit" id="send-pm">
 							Send a message to this user
 						</button>

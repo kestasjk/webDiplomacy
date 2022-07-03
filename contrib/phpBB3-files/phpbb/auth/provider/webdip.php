@@ -56,11 +56,11 @@ class webdip extends \phpbb\auth\provider\base
 	}
 	
 	// webDiplomacy user ID -> webDip user record
-	private function getWebDipDetails($userId) {
+	private function getWebDipDetails($userID) {
  
 		$sql = 'SELECT *
 				FROM wD_Users
-				WHERE Id = '.$userId;
+				WHERE id = '.$userID;
 		$result = $this->db->sql_query($sql);
 		$data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -68,13 +68,13 @@ class webdip extends \phpbb\auth\provider\base
 	}
 	// Autologin based on webDip session, returning phpBB user data
 	public function autologin() {
-		$userId = $this->getValidatedWebDipUserId();
+		$userID = $this->getValidatedWebDipUserID();
 		
-		if( $userId == -1 ) return false;
+		if( $userID == -1 ) return false;
 		
 		$sql = 'SELECT *
 				FROM ' . USERS_TABLE . '
-				WHERE webdip_user_id = '.$userId;
+				WHERE webdip_user_id = '.$userID;
 		$result = $this->db->sql_query($sql);
 		$data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -82,7 +82,7 @@ class webdip extends \phpbb\auth\provider\base
 		if ( !$data ) {
 			// No record found for this valid webDip ID; create the user in phpBB
 			
-			$wD_Data = $this->getWebDipDetails($userId);
+			$wD_Data = $this->getWebDipDetails($userID);
 			if( strlen($wD_Data['username']) > 10 && substr($wD_Data['username'],0,8) == "diplonow" )
 			{
 				die("The forum can't be accessed as a quick-game user account. Please log off and register a regular user account to access the forum.");
@@ -93,14 +93,14 @@ class webdip extends \phpbb\auth\provider\base
 					'group_id'=>2, 
 					'user_email'=>$wD_Data['email'], 
 					'user_type'=>0, // Normal user. 3 = founder
-					'webdip_user_id'=>$userId
+					'webdip_user_id'=>$userID
 			);
 			
 			if (!function_exists('user_add'))
 			{
 				include($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
 			}
-			$newId = user_add($user_row);
+			$newID = user_add($user_row);
 			
 			return $this->autologin();
 		}
@@ -121,7 +121,7 @@ class webdip extends \phpbb\auth\provider\base
 		return intval($userID);
 	}
 	
-	private function getValidatedWebDipUserId($key=false) {
+	private function getValidatedWebDipUserID($key=false) {
 		$key = $this->request->raw_variable('wD-Key', 'N/A', \phpbb\request\request_interface::COOKIE);
 		if( $key == 'N/A' ) return -1;
 		
@@ -129,7 +129,7 @@ class webdip extends \phpbb\auth\provider\base
 
 		$sql = 'SELECT LOWER(HEX(password)) as password
 				FROM wD_Users
-				WHERE Id = '.$userID;
+				WHERE id = '.$userID;
 		$result = $this->db->sql_query($sql);
 		$data = $this->db->sql_fetchrow($result);
 		
@@ -147,11 +147,11 @@ class webdip extends \phpbb\auth\provider\base
 	// Check if logged on as the right user based on the webDip session, if not reauth
 	public function validate_session($data) {
 
-		$userId = $this->getValidatedWebDipUserID();
+		$userID = $this->getValidatedWebDipUserID();
 		
-		$webDipUserId = $this->user->data['webdip_user_id'];
+		$webDipUserID = $this->user->data['webdip_user_id'];
 		
-		if( $userId != $webDipUserId ) return false;
+		if( $userID != $webDipUserID ) return false;
 		
 		return true;
 	}

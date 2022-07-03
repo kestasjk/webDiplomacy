@@ -613,11 +613,11 @@ class User {
 			$buffer .= '<a href="./userprofile.php?userID='.$id.'"';
 
 			// Allow javascript to use this ID link:
-			$buffer.=' profileLinkUserId="'.$id.'">'.$username;
+			$buffer.=' profileLinkUserID="'.$id.'">'.$username;
 
 			$buffer.='</a> ('.trim($points).libHTML::points().self::typeIcon($type).libHTML::loggedOn($id);
 			
-			$buffer .= ')<span class="userRelationships" profileLinkUserId="'.$id.'"></span>';
+			$buffer .= ')<span class="userRelationships" profileLinkUserID="'.$id.'"></span>';
 
 			if( isset($User) && $User->type['Moderator'] )
 			{

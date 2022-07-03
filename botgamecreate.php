@@ -23,6 +23,11 @@
  * @subpackage Forms
  */
 
+// Check whether we're in play-now mode:
+define('IN_CODE',true);
+require_once('config.php');
+if( Config::isOnPlayNowDomain() ) define('PLAYNOW',true);
+
 require_once('header.php');
 
 global $User, $Misc, $DB;
@@ -33,7 +38,7 @@ if ( $Misc->Panic )
 	l_t("Game creation has been temporarily disabled while we take care of an unexpected problem. Please try again later, sorry for the inconvenience."));
 }
 
-if( isset($_REQUEST['diplonow']) )
+if( defined('PLAYNOW') )
 {
 	if( !isset($User) || $User->type['Guest'] || !$User->type['User'] )
 	{
@@ -41,12 +46,6 @@ if( isset($_REQUEST['diplonow']) )
 		// Save their key, if present
 		// Until no key
 		// Set their new key their key
-		
-		// Save a cookie for a proper user account so it can be restored
-		if( isset($_COOKIE['wD-Key']) )
-		{
-			setcookie('wD-Key_Orig', $_COOKIE['wD-Key'],time()+24*24*60); 
-		}
 		
 		//libAuth::keyWipe();
 		// Generate user key
@@ -70,7 +69,7 @@ if( isset($_REQUEST['diplonow']) )
 		
 
 		$cookieKey = $key;//libAuth::generateKey($newUserID, $pass);
-		setcookie('wD-Key',$cookieKey,time()+24*60*60);
+		setcookie('wD-Key',$cookieKey,time()+365*24*60*60);
 
 		global $User;
 		$User = new User($newUserID);

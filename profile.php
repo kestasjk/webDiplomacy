@@ -948,13 +948,13 @@ else
 {
 	if ( $User->type['User'] && $User->id != $UserProfile->id)
 	{
-		list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
-		if ($newForumId > 0)
+		list($newForumID) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
+		if ($newForumID > 0)
 		{
 			print '
 			<div id="profile-forum-link-container">
 				<div class="profile-forum-links">
-					<a class="profile-link" href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumId.'">
+					<a class="profile-link" href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumID.'">
 						<button class="form-submit" id="view-forum-profile">
 							New Forum Profile
 						</button>
@@ -962,7 +962,7 @@ else
 				</div>';
 			print '
 				<div class="profile-forum-links">
-					<a class="profile-link" href="/contrib/phpBB3/ucp.php?i=pm&mode=compose&u='.$newForumId.'">
+					<a class="profile-link" href="/contrib/phpBB3/ucp.php?i=pm&mode=compose&u='.$newForumID.'">
 						<button class="form-submit" id="send-pm">
 							Send a message to this user
 						</button>

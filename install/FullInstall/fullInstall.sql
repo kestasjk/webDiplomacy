@@ -988,7 +988,7 @@ ALTER TABLE `wD_Users` ADD `optInFeatures` int(10) UNSIGNED NOT NULL DEFAULT 0 A
 UPDATE `wD_Misc` SET `value` = '168' WHERE `name` = 'Version';
 CREATE TABLE `wD_PaypalIPN` ( 
  `id` int(10) unsigned NOT NULL AUTO_INCREMENT, 
- `userId` int(10) unsigned NOT NULL, 
+ `userID` int(10) unsigned NOT NULL, 
  `email` varchar(250) NOT NULL, 
  `value` float NOT NULL, 
  `currency` varchar(10) NOT NULL, 

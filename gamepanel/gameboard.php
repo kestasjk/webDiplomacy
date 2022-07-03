@@ -142,7 +142,7 @@ class panelGameBoard extends panelGame
 		}
 
 		$buf = '<div style="margin: 0 auto; text-align:center; padding-top:5px; padding-bottom:5px;">
-			<a href="contactUsDirect.php">Need help?</a> - <a id="suspicionToggle" href="#">Lodge cheating suspicion</a>
+			<a href="contactUsDirect.php">Need help?</a> - <a id="suspicionToggle" href="#suspicion" name="suspicion">Lodge cheating suspicion</a>
 			<div class="bar memberVotePanel memberSuspectPanel" style="display:none; font-size:90%; font-weight:normal !important; text-align:left">
 			<form action="group.php" method="post">
 			'.libAuth::formTokenHTML().'
@@ -153,8 +153,8 @@ class panelGameBoard extends panelGame
 		{
 			if ($this->anon == 'No' || !$Member->isNameHidden() )
 				$buf .= '<nobr><input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . $Member->profile_link() . ', </nobr>';
-//			else
-//				$buf .= '<input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . $Member->countryName() . ', ';
+			else
+				$buf .= '<nobr><input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . $Member->countryName() . ', </nobr>';
 		}
 		$buf .= '</div>
 			<br />

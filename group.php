@@ -30,7 +30,7 @@ require_once('objects/notice.php');
 
 //createGroup=on&type=Family&joinSelf=on
 
-$groupId = -1;
+$groupID = -1;
 if( $User->type['User']) 
 {
 	if( isset($_REQUEST['gameID']) && isset($_REQUEST['explanation']) && isset($_REQUEST['userWeighting']) )
@@ -41,14 +41,22 @@ if( $User->type['User'])
 		$Game = $Variant->Game($gameID);
 		libAuth::formToken_Valid();
 		$suspectedCountries = array();
+		$suspectingCountryID = null;
 		foreach($Game->Members->ByCountryID as $countryID=>$Member)
 		{
 			if( isset($_REQUEST['countryIsSuspected'.$countryID]) && $_REQUEST['countryIsSuspected'.$countryID] )
 				$suspectedCountries[] = $countryID;
+
+			if( $Member->userID == $User->id )
+				$suspectingCountryID = $countryID;
 		}
 		try 
 		{
-			$groupId = Group::createSuspicionFromGame($gameID, $suspectedCountries, $_REQUEST['userWeighting'], $_REQUEST['explanation']);
+			if( $suspectingCountryID == null && !$User->type['Moderator']) 
+			{
+				throw new Exception("Cannot create a suspicion for this game; you are not a member of the game, and are not a moderator.");
+			}
+			$groupID = Group::createSuspicionFromGame($gameID, $suspectedCountries, $_REQUEST['userWeighting'], $_REQUEST['explanation'], $suspectingCountryID);
 		}
 		catch(Exception $e)
 		{
@@ -56,12 +64,12 @@ if( $User->type['User'])
 		}
 	}
 	// Check for create group commands:
-	elseif( isset($_REQUEST['createGroup']) && isset($_REQUEST['groupType']) && isset($_REQUEST['groupName']) && isset($_REQUEST['groupDescription']) && (!isset($_REQUEST['groupId']) || strlen($_REQUEST['groupId'])==0) )
+	elseif( isset($_REQUEST['createGroup']) && isset($_REQUEST['groupType']) && isset($_REQUEST['groupName']) && isset($_REQUEST['groupDescription']) && (!isset($_REQUEST['groupID']) || strlen($_REQUEST['groupID'])==0) )
 	{
 		libAuth::formToken_Valid();
 		try
 		{
-			$groupId = Group::create($_REQUEST['groupType'], $_REQUEST['groupName'], $_REQUEST['groupDescription'], isset($_REQUEST['groupGameReference']) ? $_REQUEST['groupGameReference'] : '');
+			$groupID = Group::create($_REQUEST['groupType'], $_REQUEST['groupName'], $_REQUEST['groupDescription'], isset($_REQUEST['groupGameReference']) ? $_REQUEST['groupGameReference'] : '');
 		}
 		catch (Exception $e)
 		{
@@ -70,19 +78,19 @@ if( $User->type['User'])
 	}
 }
 
-if ( isset($_REQUEST['groupId']) && intval($_REQUEST['groupId'])>0 )
+if ( isset($_REQUEST['groupID']) && intval($_REQUEST['groupID'])>0 )
 {
-	$groupId = (int)$_REQUEST['groupId'];
+	$groupID = (int)$_REQUEST['groupID'];
 }
 
-if( $groupId === -1 )
+if( $groupID === -1 )
 {
 	// No group specified; show an overview page for this user.
 
 	// Ensure user records don't get locked by this query;
 	$DB->sql_put("COMMIT");
 	$DB->sql_put("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");  // https://stackoverflow.com/a/918092
-	$groupUsers = Group::getUsers("gr.isActive = 1 AND (gr.ownerUserId = ". $User->id ." OR g.userId = ".$User->id.")");
+	$groupUsers = Group::getUsers("gr.isActive = 1 AND (gr.ownerUserID = ". $User->id ." OR g.userID = ".$User->id.")");
 	$DB->sql_put("COMMIT"); // This will revert back to READ COMMITTED.
 
 	$groupUsersSorted = array(
@@ -92,11 +100,11 @@ if( $groupId === -1 )
 	);
 	foreach($groupUsers as $groupUser)
 	{
-		if( $groupUser->groupType != 'Unknown' )
+		if( $groupUser->Group->type != 'Unknown' )
 		{
 			$relationType = 'Declared';
 		}
-		else if( $groupUser->userId == $User->id )
+		else if( $groupUser->userID == $User->id )
 		{
 			$relationType = 'Suspicions';
 		}
@@ -218,7 +226,7 @@ if( $groupId === -1 )
 	libHTML::footer();
 }
 
-function TryPostReply($groupId)
+function TryPostReply($groupID)
 {
 	global $User, $DB;
 
@@ -232,7 +240,7 @@ function TryPostReply($groupId)
 
 		$new['message'] = $DB->msg_escape($_REQUEST['newmessage']);
 
-		$new['sendtothread'] = $groupId;
+		$new['sendtothread'] = $groupID;
 
 		try
 		{
@@ -270,7 +278,7 @@ function TryPostReply($groupId)
 	return $new;
 }
 
-function OutputDiscussionThread($groupId, $new)
+function OutputDiscussionThread($groupID, $new)
 {
 	global $DB, $User;
 
@@ -298,11 +306,11 @@ function OutputDiscussionThread($groupId, $new)
 				u.username as fromusername, f.toID, u.type as userType
 			FROM wD_ForumMessages f
 			INNER JOIN wD_Users u ON f.fromUserID = u.id
-			WHERE f.toID=".$groupId." AND f.type='GroupDiscussion'
+			WHERE f.toID=".$groupID." AND f.type='GroupDiscussion'
 			order BY f.timeSent ASC");
 	$replyswitch = 2;
 	$replyNumber = 0;
-	list($maxReplyID) = $DB->sql_row("SELECT MAX(id) FROM wD_ForumMessages WHERE toID=".$groupId." AND type='GroupDiscussion'");
+	list($maxReplyID) = $DB->sql_row("SELECT MAX(id) FROM wD_ForumMessages WHERE toID=".$groupID." AND type='GroupDiscussion'");
 	while($reply = $DB->tabl_hash($replytabl) )
 	{
 		$replyToID = $reply['toID'];
@@ -326,7 +334,7 @@ function OutputDiscussionThread($groupId, $new)
 		print '<strong>'.User::profile_link_static($reply['fromusername'], $reply['fromUserID'], $reply['userType'], $reply['points']).
 			'</strong><br />';
 
-		print libHTML::forumMessage($groupId,$reply['id']);
+		print libHTML::forumMessage($groupID,$reply['id']);
 
 		print '<em>'.libTime::text($reply['timeSent']).'</em>';
 		
@@ -353,7 +361,7 @@ function OutputDiscussionThread($groupId, $new)
 	{
 		print '<div class="postbox">'.
 			( $new['id'] != (-1) ? '' : '<a name="postbox"></a>').
-			'<form class="safeForm" action="./group.php?groupId='.$groupId.'#postbox" method="post">
+			'<form class="safeForm" action="./group.php?groupID='.$groupID.'#postbox" method="post">
 			<p>';
 		print '<div class="hrthin"></div>';
 		if ( isset($messageproblem) and $new['sendtothread'] )
@@ -373,7 +381,7 @@ function OutputDiscussionThread($groupId, $new)
 
 try
 {
-	$GroupProfile = new Group($groupId);
+	$GroupProfile = new Group($groupID);
 }
 catch (Exception $e)
 {
@@ -388,15 +396,15 @@ if( $User->type['User'] )
 		// User wants to join the group themselves
 		$GroupProfile->userAdd($User, $User, isset($_REQUEST['groupUserStrength']) ? $_REQUEST['groupUserStrength'] : 100);
 
-		$GroupProfile = new Group($groupId);
+		$GroupProfile = new Group($groupID);
 	}
-	if( isset($_REQUEST['addUserId']) )
+	if( isset($_REQUEST['addUserID']) )
 	{
 		// User wants to add a user to the group
-		$addingUser = new User($_REQUEST['addUserId']);
+		$addingUser = new User($_REQUEST['addUserID']);
 		$GroupProfile->userAdd($User, $addingUser, isset($_REQUEST['groupUserStrength']) ? $_REQUEST['groupUserStrength'] : 66);
 
-		$GroupProfile = new Group($groupId);
+		$GroupProfile = new Group($groupID);
 	}
 	/*
 	This is a mandatory field on creation
@@ -404,49 +412,49 @@ if( $User->type['User'] )
 	{
 		$GroupProfile->userSetDescription($User, $_REQUEST['groupDescription']);
 		
-		$GroupProfile = new Group($groupId);
+		$GroupProfile = new Group($groupID);
 	}*/
 	if( isset($_REQUEST['moderatorNotes']) )
 	{
 		$GroupProfile->userSetModNotes($User, $_REQUEST['moderatorNotes']);
 		
-		$GroupProfile = new Group($groupId);
+		$GroupProfile = new Group($groupID);
 	}
 	if( isset($_REQUEST['deactivate']) )
 	{
 		$GroupProfile->userSetActive($User, 0);
 
-		$GroupProfile = new Group($groupId);
+		$GroupProfile = new Group($groupID);
 	}
 	if( isset($_REQUEST['activate']) )
 	{
 		$GroupProfile->userSetActive($User, 1);
 
-		$GroupProfile = new Group($groupId);
+		$GroupProfile = new Group($groupID);
 	}
 
 	$weightsUpdated = false;
 	foreach($GroupProfile->GroupUsers as $groupUser)
 	{
-		if( isset($_REQUEST['userWeighting'.$groupUser->userId]) )
+		if( isset($_REQUEST['userWeighting'.$groupUser->userID]) )
 		{
-			$GroupProfile->userUpdateUserWeighting($User, $groupUser, $_REQUEST['userWeighting'.$groupUser->userId]);
+			$GroupProfile->userUpdateUserWeighting($User, $groupUser, $_REQUEST['userWeighting'.$groupUser->userID]);
 			$weightsUpdated = true;
 		}
-		if( isset($_REQUEST['modWeighting'.$groupUser->userId]) )
+		if( isset($_REQUEST['modWeighting'.$groupUser->userID]) )
 		{
-			$GroupProfile->userUpdateModWeighting($User, $groupUser, $_REQUEST['modWeighting'.$groupUser->userId]);
+			$GroupProfile->userUpdateModWeighting($User, $groupUser, $_REQUEST['modWeighting'.$groupUser->userID]);
 			$weightsUpdated = true;
 		}
-		if( isset($_REQUEST['ownerWeighting'.$groupUser->userId]) )
+		if( isset($_REQUEST['ownerWeighting'.$groupUser->userID]) )
 		{
-			$GroupProfile->userUpdateOwnerWeighting($User, $groupUser, $_REQUEST['ownerWeighting'.$groupUser->userId]);
+			$GroupProfile->userUpdateOwnerWeighting($User, $groupUser, $_REQUEST['ownerWeighting'.$groupUser->userID]);
 			$weightsUpdated = true;
 		}
 	}
 	if( $weightsUpdated )
 	{
-		$GroupProfile = new Group($groupId);
+		$GroupProfile = new Group($groupID);
 	}
 }
 
@@ -474,10 +482,10 @@ print '<strong>Relationship Group Information:</strong> </div>';
 
 
 
-	if( $GroupProfile->ownerUserId == $User->id || $User->type['Moderator'] )
+	if( $GroupProfile->ownerUserID == $User->id || $User->type['Moderator'] )
 	{
 		print '<form>'.
-		'<input type="hidden" name="groupId" value="'.$GroupProfile->id.'" />';
+		'<input type="hidden" name="groupID" value="'.$GroupProfile->id.'" />';
 		if( $GroupProfile->isActive )
 		{
 			print '<input type="hidden" name="deactivate" value="on" />'.
@@ -500,7 +508,7 @@ print '<div class="profile-show-inside" style="width:45%">';
 print '<div class = "comment_title" style="width:90%">';
 print '<strong>Creator Info / Explanation:</strong> </div>';
 
-$owner = new User($GroupProfile->ownerUserId);
+$owner = new User($GroupProfile->ownerUserID);
 
 print '<p><ul>';
 print '<li><strong>Creator:</strong> '.$owner->profile_link().'</li></br>';
@@ -525,8 +533,8 @@ if ( $User->type['Moderator'] )
 			$modActions=array();
 
 			$modActions[] = libHTML::admincpType('Group',$GroupProfile->id);
-			$modActions[] = libHTML::admincp('groupChangeOwner',array('groupId'=>$GroupProfile->id), 'Change group owner');
-			$modActions[] = libHTML::admincp('groupChangeOwner',array('groupId'=>$GroupProfile->id), 'Change group type');
+			$modActions[] = libHTML::admincp('groupChangeOwner',array('groupID'=>$GroupProfile->id), 'Change group owner');
+			$modActions[] = libHTML::admincp('groupChangeOwner',array('groupID'=>$GroupProfile->id), 'Change group type');
 
 			$modActions[] = '<a href="admincp.php?tab=Multi-accounts&aGroupID='.$GroupProfile->id.'" class="light">Enter multi-account finder</a>';
 
@@ -541,7 +549,7 @@ if ( $User->type['Moderator'] )
 	
 	print 'Notes: </div>';
 	print '<div class = "comment_content">';
-	print '<form><input type="hidden" name="groupId" value="'.$GroupProfile->id.'" />';
+	print '<form><input type="hidden" name="groupID" value="'.$GroupProfile->id.'" />';
 	print '<textarea name="moderatorNotes" ROWS=4>'.$GroupProfile->moderatorNotes.'</textarea>';
 	print '<input type="Submit" class="form-submit" value="Update notes" />';
 	print libAuth::formTokenHTML();
@@ -553,7 +561,7 @@ if ( $User->type['Moderator'] )
 }
 
 print '<form>';
-print '<input type="hidden" name="groupId" value="'.$GroupProfile->id.'" />';
+print '<input type="hidden" name="groupID" value="'.$GroupProfile->id.'" />';
 print '<table class="rrInfo">';
 print $GroupProfile->outputUserTable($User);
 print '</table>';
@@ -601,7 +609,7 @@ if( $GroupProfile->canViewMessages($User) )
 
 	$tabl=$DB->sql_tabl("SELECT n.*
 		FROM wD_Notices n
-		WHERE n.fromId=".$GroupProfile->id." AND n.type='Group'
+		WHERE n.fromID=".$GroupProfile->id." AND n.type='Group'
 		ORDER BY n.timeSent DESC ");
 	while($hash=$DB->tabl_hash($tabl))
 	{

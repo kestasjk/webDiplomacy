@@ -183,7 +183,7 @@ class panelMember extends Member
 	{
 		global $User;
 
-		return ( $User->type['Moderator'] || $this->Game->isDirector($User->id) ) && !$this->Game->Members->isJoined();
+		return $this->isNameHidden(); //!( $User->type['Moderator'] || $this->Game->isDirector($User->id) ) && !$this->Game->Members->isJoined();
 	}
 
 	function isMissedTurnsHidden()
@@ -442,6 +442,9 @@ class panelMember extends Member
 			if ( !$this->isLastSeenHidden() )
 				$buf .= '<br /><span class="memberLastSeen">
 						'.l_t('Last seen:').' <strong>'.$this->lastLoggedInTxt().'</strong>';
+			else
+				$buf .= '<br /><span class="memberLastSeen">
+						'.l_t('Last seen:').' <strong>'.$this->lastLoggedInTxt_Anon().'</strong>';
 
 			$voteList = $this->memberVotes();
 			if($voteList)
