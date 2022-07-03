@@ -44,9 +44,9 @@ require_once(l_r('locales/English/welcome.php'));
 ?>
 </div>
 </div>
-
+<?php
 print libHTML::pageTitle(l_t('How to play'),l_t('A quick introduction to get you started playing Diplomacy.'));
-
+?>
 <div style="text-align:center">
 	<a href="#Basics">The Basics</a> - <a href="#Tactics">Advanced Tactics</a> - <a href="#More">Further Learning</a>
 </div>
