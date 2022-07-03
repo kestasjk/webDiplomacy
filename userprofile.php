@@ -102,7 +102,7 @@ if ( $User->type['Moderator'] )
 			}
 		}
 
-		print '<strong>UserId:</strong> '.$UserProfile->id.'</br></br>';
+		print '<strong>UserID:</strong> '.$UserProfile->id.'</br></br>';
 		print '<strong>Email:</strong></br>'.$UserProfile->email.'</br></br>';
 		/*print '<strong>Mobile linked:</strong></br>'.$UserProfile->email.'</br></br>';
 		print '<strong>Facebook linked:</strong></br>'.$UserProfile->email.'</br></br>';
@@ -218,7 +218,7 @@ print '<div class = "profile-show-inside-left">';
 		print '<li>&nbsp;</li>';
 	}
 
-	if ( $UserProfile->online || time() - (24*60*60) < $UserProfile->timeLastSessionEnded)
+	if ( time() - (24*60*60) < $UserProfile->timeLastSessionEnded)
 		print '<li><strong>Visited in last 24 hours</strong></li>';
 	else
 		print '<li><strong>Last visited:</strong> '.libTime::text($UserProfile->timeLastSessionEnded).'</li>';
@@ -716,7 +716,7 @@ print '</div>';
 
 		$DB->sql_put("COMMIT");
 		$DB->sql_put("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");  // https://stackoverflow.com/a/918092
-		$groupUsers = Group::getUsers("gr.isActive = 1 AND g.userId = ".$UserProfile->id);
+		$groupUsers = Group::getUsers("gr.isActive = 1 AND g.userID = ".$UserProfile->id);
 		$DB->sql_put("COMMIT"); // This will revert back to READ COMMITTED.
 		
 		$userJoinedGroups = array();
@@ -725,11 +725,11 @@ print '</div>';
 		{
 			if( $groupUser->isVerified() )
 			{
-				$userJoinedGroups[$groupUser->groupId] = $groupUser;
+				$userJoinedGroups[$groupUser->groupID] = $groupUser;
 			}
 			else if( !$groupUser->isDenied() )
 			{
-				$userJoinedGroupsUnverified[$groupUser->groupId] = $groupUser;
+				$userJoinedGroupsUnverified[$groupUser->groupID] = $groupUser;
 			}
 		}
 		unset($groupUsers);
@@ -743,10 +743,10 @@ print '</div>';
 
 			$declaredGroups = Group::declaredGroupNamesByID($User, true);
 			$suspectedGroups = Group::suspectedGroupNamesByID($User, true);
-			foreach($userJoinedGroups as $groupId => $groupName)
+			foreach($userJoinedGroups as $groupID => $groupName)
 			{
-				if( isset($declaredGroups[$groupId]) ) unset($declaredGroups[$groupId]);
-				if( isset($suspectedGroups[$groupId]) ) unset($suspectedGroups[$groupId]);
+				if( isset($declaredGroups[$groupID]) ) unset($declaredGroups[$groupID]);
+				if( isset($suspectedGroups[$groupID]) ) unset($suspectedGroups[$groupID]);
 			}
 
 			print '<div class = "profile_title">I have a relationship with this user</div>';
@@ -754,16 +754,16 @@ print '</div>';
 			print '<form action="group.php" method="post">';
 			print '<input type="hidden" name="createGroup" value="on" />';
 			print '<input type="hidden" name="addSelf" value="on" />';
-			print '<input type="hidden" name="addUserId" value="'.$UserProfile->id.'" />';
+			print '<input type="hidden" name="addUserID" value="'.$UserProfile->id.'" />';
 				print '<strong>New Name / Label:</strong> <input class="discloseNew" type="text" name="groupName" style="width:200px" /> ';
 				if( count($declaredGroups) > 0 )
 				{
 					print 'Or ';
-					print '<strong>Existing Name / Label:</strong> <select id="discloseExisting" name="groupId" style="width:200px"> ';
+					print '<strong>Existing Name / Label:</strong> <select id="discloseExisting" name="groupID" style="width:200px"> ';
 					print '<option value="">(Create new)</option>';
-					foreach($declaredGroups as $groupId=>$groupName)
+					foreach($declaredGroups as $groupID=>$groupName)
 					{
-						print '<option value="'.$groupId.'">'.$groupName.'</a>';
+						print '<option value="'.$groupID.'">'.$groupName.'</a>';
 					}
 					print '</select>';
 				}
@@ -791,18 +791,18 @@ print '</div>';
 			print '<div class = "profile_content">';
 			print '<form action="group.php" method="post">';
 			print '<input type="hidden" name="createGroup" value="on" />';
-			print '<input type="hidden" name="addUserId" value="'.$UserProfile->id.'" />';
+			print '<input type="hidden" name="addUserID" value="'.$UserProfile->id.'" />';
 			print '<input type="hidden" name="groupType" value="Unknown" />';
 			print '<strong>New Name / Label:</strong> <input class="suspectNew" type="text" name="groupName" style="width:200px" /> ';
 			
 			if( count($suspectedGroups) > 0 )
 			{
 				print 'Or ';
-				print '<strong>Existing Name / Label:</strong> <select id="suspectExisting" name="groupId" style="width:200px"> ';
+				print '<strong>Existing Name / Label:</strong> <select id="suspectExisting" name="groupID" style="width:200px"> ';
 				print '<option value="">(Create new)</option>';
-				foreach($suspectedGroups as $groupId=>$groupName)
+				foreach($suspectedGroups as $groupID=>$groupName)
 				{
-					print '<option value="'.$groupId.'">'.$groupName.'</option>';
+					print '<option value="'.$groupID.'">'.$groupName.'</option>';
 				}
 				print '</select>';
 			}
@@ -817,14 +817,14 @@ print '</div>';
 
 			print '<strong>Game reference:</strong> <select class="suspectNew" name="groupGameReference">'.
 				'<option value="">No reference</option>';
-			$tablActiveGamesShared = $DB->sql_tabl("SELECT g.id, g.name, g.turn FROM wD_Members a INNER JOIN wD_Games g ON g.id = a.gameId INNER JOIN wD_Members b ON g.id = b.gameId AND a.userId <> b.userId AND a.userId = " . $User->id." AND b.userId = ".$UserProfile->id." AND a.timeLoggedIn > ".(time() - 14*24*60*60)." AND b.timeLoggedIn > ".(time() - 14*24*60*60)." AND (g.anon='No' OR g.phase='Finished') ORDER BY a.timeLoggedIn DESC");
+			$tablActiveGamesShared = $DB->sql_tabl("SELECT g.id, g.name, g.turn FROM wD_Members a INNER JOIN wD_Games g ON g.id = a.gameID INNER JOIN wD_Members b ON g.id = b.gameID AND a.userID <> b.userID AND a.userID = " . $User->id." AND b.userID = ".$UserProfile->id." AND a.timeLoggedIn > ".(time() - 14*24*60*60)." AND b.timeLoggedIn > ".(time() - 14*24*60*60)." AND (g.anon='No' OR g.phase='Finished') ORDER BY a.timeLoggedIn DESC");
 			//$activeGamesShared = array();
 			$hasSharedGames = false;
 
-			while(list($gameId, $gameName, $gameTurn) = $DB->tabl_row($tablActiveGamesShared) )
+			while(list($gameID, $gameName, $gameTurn) = $DB->tabl_row($tablActiveGamesShared) )
 			{
-				//$activeGamesShared[] = array('gameID='.$gameId.',turn='.$gameTurn, $gameName );
-				print '<option value="gameID='.$gameId.',turn='.$gameTurn.'">'.$gameName.'</option>';
+				//$activeGamesShared[] = array('gameID='.$gameID.',turn='.$gameTurn, $gameName );
+				print '<option value="gameID='.$gameID.',turn='.$gameTurn.'">'.$gameName.'</option>';
 				$hasSharedGames = true;
 			}
 			print '</select>';
@@ -885,7 +885,7 @@ print '</div>';
 		}
 		else
 		{
-			print Group::outputUserTable_static($userJoinedGroups);
+			print Group::outputUserTable_static($userJoinedGroups, null, null);
 		}
 		
 		print '<h4>Unverified Relationships</h4>';
@@ -895,7 +895,7 @@ print '</div>';
 		}
 		else
 		{
-			print Group::outputUserTable_static($userJoinedGroupsUnverified);
+			print Group::outputUserTable_static($userJoinedGroupsUnverified, null, null);
 		}
 		
 		print '</table>';
@@ -923,13 +923,13 @@ if( isset(Config::$customForumURL) )
 {
 	if ( $User->type['User'] && $User->id != $UserProfile->id)
 	{
-		list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
-		if ($newForumId > 0)
+		list($newForumID) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
+		if ($newForumID > 0)
 		{
 			print '
 			<div id="profile-forum-link-container">
 				<div class="profile-forum-links">
-					<a class="profile-link" href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumId.'">
+					<a class="profile-link" href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumID.'">
 						<button class="form-submit" id="view-forum-profile">
 							New Forum Profile
 						</button>
@@ -937,7 +937,7 @@ if( isset(Config::$customForumURL) )
 				</div>';
 			print '
 				<div class="profile-forum-links">
-					<a class="profile-link" href="/contrib/phpBB3/ucp.php?i=pm&mode=compose&u='.$newForumId.'">
+					<a class="profile-link" href="/contrib/phpBB3/ucp.php?i=pm&mode=compose&u='.$newForumID.'">
 						<button class="form-submit" id="send-pm">
 							Send a message to this user
 						</button>
@@ -1095,14 +1095,13 @@ if ( isset($_REQUEST['sortCol']))
 	else if ($_REQUEST['sortCol'] == 'phaseMinutes') { $sortCol='phaseMinutes'; }
 	else if ($_REQUEST['sortCol'] == 'minimumBet') {$sortCol='minimumBet'; }
 	else if ($_REQUEST['sortCol'] == 'minimumReliabilityRating') {$sortCol='minimumReliabilityRating'; }
-	else if ($_REQUEST['sortCol'] == 'watchedGames') {$sortCol='watchedGames'; }
 	else if ($_REQUEST['sortCol'] == 'turn') {$sortCol='turn'; }
 	else if ($_REQUEST['sortCol'] == 'processTime') {$sortCol='processTime'; }
 }
 if ( isset($_REQUEST['sortType'])) { if ($_REQUEST['sortType'] == 'asc') { $sortType='asc'; } }
 if ( isset($_REQUEST['pagenum'])) { $pagenum=(int)$_REQUEST['pagenum']; }
 
-$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id WHERE m.userID = ".$UserProfile->id;
+$SQL = "SELECT g.* FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id WHERE m.userID = ".$UserProfile->id;
 $SQLCounter = "SELECT count(1) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id WHERE m.userID = ".$UserProfile->id;
 
 if($User->id != $UserProfile->id && !$User->type['Moderator'])
@@ -1112,7 +1111,7 @@ if($User->id != $UserProfile->id && !$User->type['Moderator'])
 }
 $SQL = $SQL . " ORDER BY ";
 
-if ($sortCol <> 'watchedGames' && $sortCol <> 'processTime' && $sortCol <> 'minimumBet') {$SQL .= "g.";}
+if ( $sortCol <> 'processTime' && $sortCol <> 'minimumBet') {$SQL .= "g.";}
 $ordering = $sortCol;
 
 if ($sortCol == 'processTime') {$ordering = "(CASE WHEN g.processStatus = 'Paused' THEN (g.pauseTimeRemaining + ".time().") ELSE g.processTime END)";}
@@ -1201,7 +1200,6 @@ function printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = False)
 				<option'.(($sortCol=='minimumBet') ? ' selected="selected"' : '').' value="minimumBet">Bet</option>
 				<option'.(($sortCol=='phaseMinutes') ? ' selected="selected"' : '').' value="phaseMinutes">Phase Length</option>
 				<option'.(($sortCol=='minimumReliabilityRating') ? ' selected="selected"' : '').' value="minimumReliabilityRating">Reliability Rating</option>
-				<option'.(($sortCol=='watchedGames') ? ' selected="selected"' : '').' value="watchedGames">Spectator Count</option>
 				<option'.(($sortCol=='turn') ? ' selected="selected"' : '').' value="turn">Game Turn</option>
 				<option'.(($sortCol=='processTime') ? ' selected="selected"' : '').' value="processTime">Time to Next Phase</option>
 			</select>

@@ -54,6 +54,23 @@ if ( isset($_REQUEST['gameMasterSecret']) && $User->type['User'] && !$User->type
 
 libHTML::starthtml(l_t('GameMaster'));
 
+if( isset(Config::$customForumURL) )
+{
+	if( $MC->get('CustomForumFixTimer') === false )
+	{
+		// If there is a phpBB link ensure users are added to the registered users group, as there is some issue that affected 129 out of 100k users that
+		// prevented those users from having any forum permissions.
+		// TODO: Find out how this happens
+		
+		$DB->sql_put("INSERT INTO phpbb_user_group (user_id, group_id, user_pending) ".
+			"SELECT u.user_id, 2 group_id, 0 user_pending ".
+			"FROM phpbb_users u ".
+			"WHERE NOT u.user_id IN ( SELECT user_id FROM phpbb_user_group WHERE group_id = 2 )");
+
+		$MC->set('CustomForumFixTimer', time(), 24*60*60);
+	}
+}
+
 print '<div class="content">';
 
 $DB->sql_put("COMMIT"); // Unlock our user row, to prevent deadlocks below
@@ -100,12 +117,21 @@ if ( ( time() - $Misc->LastProcessTime ) > Config::$downtimeTriggerMinutes*60 )
 	libHTML::notice(l_t('Games not processing'),libHTML::admincp('resetLastProcessTime',null,l_t('Continue processing now')));
 }
 
+// Disable transactions while updating reliability ratings:
+$DB->disableTransactions();
+
 // Update the reliability ratings:
 print l_t('Updating user phase/year counts').'<br />';
 libGameMaster::updatePhasePerYearCount();
 
 print l_t('Updating reliabilty ratings');
 libGameMaster::updateReliabilityRating();
+
+$DB->enableTransactions();
+
+// Now apply any votes that need to be applied:
+print l_t('Finding and applying votes');
+libGameMaster::findAndApplyGameVotes();
 
 // Get the current processing time. It is important to save this at this point so that next process the next 
 // LastProcessTime will exactly match this process' $currentProcessTime (this ensures all turns that pass over 1 year

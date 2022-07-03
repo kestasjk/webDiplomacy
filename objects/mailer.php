@@ -67,6 +67,12 @@ class Mailer
 			trigger_error(l_t("No mailer type chosen; either sendmail, smtp, or mail need to be selected for e-mailing."));
 	}
 
+	public function SetReplyTo($address, $name)
+	{
+		$this->PHPMailer->clearReplyTos();
+		$this->PHPMailer->addReplyTo($address, $name, false);
+	}
+	
 	private function Clear()
 	{
 		if( $this->useDebug ) return;

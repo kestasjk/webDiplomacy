@@ -35,13 +35,19 @@ class GroupUser
 	 * The group ID
 	 * @var int
 	 */
-	var $groupId;
+	var $groupID;
 
 	/**
-	 * The group ID
+	 * The user ID
 	 * @var int
 	 */
-	var $userId;
+	var $userID;
+
+	/**
+	 * The country ID if applicable
+	 * @var int?
+	 */
+	var $countryID;
 
 	/**
 	 * @var bool
@@ -64,11 +70,6 @@ class GroupUser
 	var $modWeighting;
 
 	/**
-	 * @var int User ID that created this
-	 */
-	var $createdByUserId;
-
-	/**
 	 * @var int Time this was last changed
 	 */
 	var $timeCreated;
@@ -81,38 +82,28 @@ class GroupUser
 	/**
 	 * @var int? The last moderator user ID that set a weighting, or null
 	 */
-	var $modUserId;
+	var $modUserID;
 
-	// Used to render individual user links
-	var $groupName;
-	var $groupType;
+	// A link to the group this group-user link is part of:
+	var $Group;
 
-	// Below vars used to render profile links:
+	// The username of the accounts involved, or the country names
+	// if this is an anonymous suspicion:
 	var $userUsername;
-	var $userPoints;
-	var $userType;
-	var $ownerUsername;
-	var $ownerPoints;
-	var $ownerType;
 	var $modUsername;
-	var $modPoints;
-	var $modType;
 
 	/**
 	 * Create a GroupUser object
 	 * @param array $row Hash row containing the record data
+	 * @param Group $Group The parent group
 	 */
-	public function __construct($row)
+	public function __construct($row, Group $Group)
 	{
-		/*
-			"u.username userUsername, u.points userPoints, u.type userType, ".
-			"o.username ownerUsername, o.points ownerPoints, o.type ownerType, ".
-			"m.username modUsername, m.points modPoints, m.type modType ".
-		*/
 		foreach ( $row as $name => $value )
 		{
 			$this->{$name} = $value;
 		}
+		$this->Group = $Group;
 	}
 
 	/**
@@ -120,10 +111,10 @@ class GroupUser
 	 */
 	public function isVerified() 
 	{
-		return $this->userWeighting > 0 || $this->modWeighting >= ( $this->groupType == 'Unknown' ? 33 : 100);
+		return $this->userWeighting > 0 || $this->modWeighting >= ( $this->Group->type == 'Unknown' ? 33 : 100);
 	}
 	public function isDenied() 
 	{
-		return $this->userWeighting < 0 || $this->modWeighting <= ( $this->groupType == 'Unknown' ? -33 : -100);
+		return $this->userWeighting < 0 || $this->modWeighting <= ( $this->Group->type == 'Unknown' ? -33 : -100);
 	}
 }

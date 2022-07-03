@@ -26,6 +26,7 @@ services:
 
     mariadb:
         image: 'mariadb:10.6'
+        restart: always
         working_dir: /application
         volumes:
             - './:/application'
@@ -36,7 +37,15 @@ services:
             - MYSQL_PASSWORD=mypassword123
         ports:
             - '43003:3306'
-
+    
+    phpmyadmin:
+        image: phpmyadmin
+        restart: always
+        ports:
+            - 8080:80
+        environment:
+            - PMA_ARBITRARY=1
+    
     clickhouse:
         image: 'yandex/clickhouse-server:latest'
 

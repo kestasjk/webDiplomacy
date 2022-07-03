@@ -55,7 +55,7 @@ if (isset($_COOKIE['wD-Tutorial-JoinNewGame'])) {
 global $User, $Misc, $DB;
 
 $tabs = array();
-$sortCol = 'id';
+$sortCol = 'pot'; // Show the high stakes games first by default
 $sortType = 'desc';
 
 if ( isset($_REQUEST['sortCol']))
@@ -65,7 +65,6 @@ if ( isset($_REQUEST['sortCol']))
 	else if ($_REQUEST['sortCol'] == 'phaseMinutes') { $sortCol='phaseMinutes'; }
 	else if ($_REQUEST['sortCol'] == 'minimumBet') {$sortCol='minimumBet'; }
 	else if ($_REQUEST['sortCol'] == 'minimumReliabilityRating') {$sortCol='minimumReliabilityRating'; }
-	else if ($_REQUEST['sortCol'] == 'watchedGames') {$sortCol='watchedGames'; }
 	else if ($_REQUEST['sortCol'] == 'turn') {$sortCol='turn'; }
 	else if ($_REQUEST['sortCol'] == 'processTime') {$sortCol='processTime'; }
 }
@@ -101,25 +100,43 @@ print '<div class="gamelistings-tabsNew">';
 $GamesNewUser = $GamesOpenUser = $GamesActiveUser = 0;
 if($User->type['User'] )
 {
-	list($GamesNewUser) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
+	/*list($GamesNewUser) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
 		WHERE g.phase = 'Pre-game' AND m.userID = ".$User->id);
 	list($GamesOpenUser) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
 		WHERE g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No' AND g.phase <> 'Pre-game' AND g.phase <> 'Finished'
-		AND m.userID = ".$User->id." AND ".$User->points." >= g.minimumBet AND ".$User->reliabilityRating." >= g.minimumReliabilityRating".($User->userIsTempBanned() ? " AND 0=1" : " "));
+		AND m.userID = ".$User->id." AND ".$User->points." >= g.minimumBet AND ".$User->reliabilityRating." >= g.minimumReliabilityRating".($User->userIsTempBanned() ? " AND 0=1" : " "));*/
 	list($GamesMine) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
 		WHERE g.phase <> 'Finished' AND m.userID = ".$User->id);
 	list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE minimumBet IS NOT NULL AND password IS NULL AND gameOver = 'No'
-		AND phase <> 'Pre-game' AND phase <> 'Finished'
+		AND phase <> 'Pre-game' AND phase <> 'Finished' AND playerTypes <> 'MemberVsBots' 
 		AND ".$User->points." >= minimumBet AND ".$User->reliabilityRating." >= minimumReliabilityRating".($User->userIsTempBanned() ? " AND 0=1" : " "));
 }
 else
 {
-	list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE minimumBet IS NOT NULL AND password IS NULL AND gameOver = 'No'
-		AND phase <> 'Pre-game' AND phase <> 'Finished'");
+	if( ($GamesOpen = $MC->get('GamesOpen')) === false )
+	{
+		list($GamesOpen) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE minimumBet IS NOT NULL AND password IS NULL AND gameOver = 'No'
+			AND phase <> 'Pre-game' AND phase <> 'Finished' AND playerTypes <> 'MemberVsBots' ");
+		$MC->set('GamesOpen', $GamesOpen, 600);
+	}
 }
-list($GamesNew) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Pre-game'");
-list($GamesActive) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase <> 'Pre-game' AND phase <> 'Finished'");
-list($GamesFinished) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Finished'");
+
+if( ($GamesNew = $MC->get('GamesNew')) === false )
+{
+	list($GamesNew) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Pre-game' AND playerTypes <> 'MemberVsBots'");
+	$MC->set('GamesNew', $GamesNew, 600);
+}
+if( ($GamesActive = $MC->get('GamesActive')) === false )
+{
+	list($GamesActive) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase <> 'Pre-game' AND phase <> 'Finished' AND playerTypes <> 'MemberVsBots'");
+	$MC->set('GamesActive', $GamesActive, 600);
+}
+if( ($GamesFinished = $MC->get('GamesFinished')) === false )
+{
+	list($GamesFinished) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games WHERE phase = 'Finished' AND playerTypes <> 'MemberVsBots'");
+	$MC->set('GamesFinished', $GamesFinished, 600);
+}
+
 
 $GamesNew -= $GamesNewUser;
 $GamesOpen -= $GamesOpenUser;
@@ -178,24 +195,24 @@ if ($tab == 'My games')
 {
 	if($User->type['User'])
 	{
-		$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
+		$SQL = "SELECT g.* FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
 			WHERE g.phase <> 'Finished' AND m.userID = ".$User->id;
 		$totalResults = $GamesMine;
 	}
 	else
 	{
-		$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished'";
+		$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND playerTypes <> 'MemberVsBots' ";
 		$totalResults = $GamesActive;
 	}
 }
 elseif ($tab == 'New')
 {
-	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase = 'Pre-game'";
+	$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase = 'Pre-game' AND playerTypes <> 'MemberVsBots' ";
 	$totalResults = $GamesNew;
 }
 elseif ($tab == 'Open Positions')
 {
-	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished'
+	$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND playerTypes <> 'MemberVsBots' 
 		AND g.minimumBet IS NOT NULL AND g.password IS NULL AND g.gameOver = 'No'";
 		if($User->type['User'])
 		{
@@ -205,12 +222,12 @@ elseif ($tab == 'Open Positions')
 }
 elseif ($tab == 'Active')
 {
-	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished'";
+	$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND playerTypes <> 'MemberVsBots' ";
 	$totalResults = $GamesActive;
 }
 elseif ($tab == 'Finished')
 {
-	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g WHERE g.phase = 'Finished'";
+	$SQL = "SELECT g.* FROM wD_Games g WHERE g.phase = 'Finished' AND playerTypes <> 'MemberVsBots' ";
 	$totalResults = $GamesFinished;
 }
 else
@@ -426,13 +443,12 @@ else
 			<input type="checkbox" class="gameCreate" name="messageRule" value="Yes"'.((isset($_REQUEST['Submit']) && $_REQUEST['messageRule'] <> "Yes") ? '' : ' checked').'>Rulebook
 			</p>
 			<p>Sort By: <select  class = "gameCreate" name="sortCol">
+			<option'.(($sortCol=='pot') ? ' selected="selected"' : '').' value="pot">Pot Size</option>
 				<option'.(($sortCol=='id') ? ' selected="selected"' : '').' value="id">Game ID</option>
 				<option'.(($sortCol=='name') ? ' selected="selected"' : '').' value="name">Game Name</option>
-				<option'.(($sortCol=='pot') ? ' selected="selected"' : '').' value="pot">Pot Size</option>
 				<option'.(($sortCol=='minimumBet') ? ' selected="selected"' : '').' value="minimumBet">Bet</option>
 				<option'.(($sortCol=='phaseMinutes') ? ' selected="selected"' : '').' value="phaseMinutes">Phase Length</option>
 				<option'.(($sortCol=='minimumReliabilityRating') ? ' selected="selected"' : '').' value="minimumReliabilityRating">Reliability Rating</option>
-				<option'.(($sortCol=='watchedGames') ? ' selected="selected"' : '').' value="watchedGames">Spectator Count</option>
 				<option'.(($sortCol=='turn') ? ' selected="selected"' : '').' value="turn">Game Turn</option>
 				<option'.(($sortCol=='processTime') ? ' selected="selected"' : '').' value="processTime">Time to Next Phase</option>
 			</select></p>
@@ -442,7 +458,7 @@ else
 			</select></p></strong>
 			<input type="submit" name="Submit" class="green-Submit" value="Search" /></form></div>
 			</br>';
-	$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g";
+	$SQL = "SELECT g.* FROM wD_Games g";
 	$SQLCounter = "SELECT COUNT(1) FROM wD_Games g";
 	if($_REQUEST['userGames'] == 'include')
 	{
@@ -1087,7 +1103,7 @@ if($User->type['User'] && $tab <> 'My games' && $tab <> 'Search' && $tab <> 'Fin
 }
 
 $SQL = $SQL . " ORDER BY ";
-if ($sortCol <> 'watchedGames' && $sortCol <> 'processTime' && $sortCol <> 'minimumBet') {$SQL .= "g.";}
+if ( $sortCol <> 'processTime' && $sortCol <> 'minimumBet') {$SQL .= "g.";}
 $ordering = $sortCol;
 if ($sortCol == 'processTime') {$ordering = "(CASE WHEN g.processStatus = 'Paused' THEN (g.pauseTimeRemaining + ".time().") ELSE g.processTime END)";}
 elseif ($sortCol == 'minimumBet') {$ordering = "(SELECT m4.bet FROM wD_Members m4 WHERE m4.gameID = g.id AND m4.bet > 0 LIMIT 1)";}
@@ -1211,7 +1227,6 @@ function printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = False)
 				<option'.(($sortCol=='minimumBet') ? ' selected="selected"' : '').' value="minimumBet">Bet</option>
 				<option'.(($sortCol=='phaseMinutes') ? ' selected="selected"' : '').' value="phaseMinutes">Phase Length</option>
 				<option'.(($sortCol=='minimumReliabilityRating') ? ' selected="selected"' : '').' value="minimumReliabilityRating">Reliability Rating</option>
-				<option'.(($sortCol=='watchedGames') ? ' selected="selected"' : '').' value="watchedGames">Spectator Count</option>
 				<option'.(($sortCol=='turn') ? ' selected="selected"' : '').' value="turn">Game Turn</option>
 				<option'.(($sortCol=='processTime') ? ' selected="selected"' : '').' value="processTime">Time to Next Phase</option>
 			</select>

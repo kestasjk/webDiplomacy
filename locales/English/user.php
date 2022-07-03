@@ -65,8 +65,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 if (isset(Config::$customForumURL))
 {
-	list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$User->id);
-	if ($newForumId > 0)
+	list($newForumID) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$User->id);
+	if ($newForumID > 0)
 	{
 		print '<p class="profileCommentURL"><strong><a href="/contrib/phpBB3/ucp.php?i=179">Forum User Settings</a></strong></p>';
 	}

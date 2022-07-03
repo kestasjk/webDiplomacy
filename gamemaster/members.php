@@ -573,10 +573,10 @@ class processMembers extends Members
 
 		// Redirect to beta game if user joined game via Play Beta button
 		if ($joinBeta) {
-			header('refresh: 4; url=beta?gameID='.$this->Game->id);
+			header('refresh: 3; url=beta?gameID='.$this->Game->id);
 		}
 		else {
-			header('refresh: 4; url=board.php?gameID='.$this->Game->id);
+			header('refresh: 3; url=board.php?gameID='.$this->Game->id);
 		}
 
 		$message = '<p class="notice">'.l_t('You are being redirected to %s. Good luck!','<a href="board.php?gameID='.$this->Game->id.'">'.$this->Game->name.'</a>').'</p>';
@@ -591,9 +591,12 @@ class processMembers extends Members
 	{
 		global $DB;
 
+		// Don't count games against bots
+		if( $this->Game->playerTypes == 'MemberVsBots' ) return;
+
 		// enter a turn for each active player with orders
-		$DB->sql_put("INSERT INTO wD_TurnDate (gameID, userID, countryID, turn, turnDateTime)
-				SELECT m.gameID,m.userID,m.countryID,".$this->Game->turn.",".time()."
+		$DB->sql_put("INSERT INTO wD_TurnDate (gameID, userID, countryID, turn, turnDateTime, isInReliabilityPeriod)
+				SELECT m.gameID,m.userID,m.countryID,".$this->Game->turn.",".time().", 1
 				FROM wD_Members m
 				WHERE m.gameID = ".$this->Game->id."
 					AND ( m.status='Playing' OR m.status='Left' )
@@ -654,6 +657,9 @@ class processMembers extends Members
 	function handleNMRs()
 	{
 		global $DB;
+
+		// Bot games don't factor into NMR calcs
+		if( $this->Game->playerTypes == "MemberVsBots" ) return;
 
 		// Check if there is at least one active NMR and for that case reduce the excuses of all active members with NMRs and set members with no excuses as left.
 		$this->activeNMRs = false;
@@ -790,7 +796,6 @@ class processMembers extends Members
 	function processSummary()
 	{
 		$a=array(
-			'votesPassed'=>implode(',',$this->votesPassed()),
 			'ready'=>($this->isReady()?'true':'false'),
 			'members'=>array()
 		);

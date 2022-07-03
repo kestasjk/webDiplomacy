@@ -195,7 +195,6 @@ if ( isset($_REQUEST['sortColg']))
 	if ($_REQUEST['sortColg'] == 'gameName') { $sortColg='gameName'; }
 	else if ($_REQUEST['sortColg'] == 'pot') { $sortColg='pot'; }
 	else if ($_REQUEST['sortColg'] == 'phaseMinutes') { $sortColg='phaseMinutes'; }
-	else if ($_REQUEST['sortColg'] == 'watchedGames') { $sortColg='watchedGames'; }
 }
 
 if ( isset($_REQUEST['seeGamename'])) { $seeGamename='checked'; }
@@ -408,7 +407,6 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tabl
 			<option value="gameName">Game Name</option>
 			<option value="pot">Pot</option>
 			<option value="phaseMinutes">Phase Length</option>
-			<option value="watchedGames">Number of Spectators</option>
 		</select>
 
 		<select  class = "advancedSearch" name="sortType">
@@ -475,7 +473,6 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tabl
 			<option value="gameName">Game Name</option>
 			<option value="pot">Pot</option>
 			<option value="phaseMinutes">Phase Length</option>
-			<option value="watchedGames">Number of Spectators</option>
 		</select>
 
 		<select  class = "advancedSearch" name="sortType">
@@ -722,8 +719,8 @@ if ($tab == 'UserSearch')
 			{
 				if ($seeNewForumLink)
 				{
-					list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$values->userID);
-					if ($newForumId > 0) { print '<TD class= "advancedSearch"><a href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumId.'">New Forum</a></TD>'; }
+					list($newForumID) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$values->userID);
+					if ($newForumID > 0) { print '<TD class= "advancedSearch"><a href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumID.'">New Forum</a></TD>'; }
 					else { print '<TD class= "advancedSearch">N/A</TD>'; }
 				}
 			}
@@ -771,8 +768,7 @@ else if ($tab == 'GameSearch')
 	if ($gamename != '' || $showOnlyJoinable == 'checked')
 	{
 		$sql = "SELECT g.id, g.name, g.pot,g.phase, g.gameOver, g.processStatus, ( CASE WHEN g.password IS NULL THEN 'False' ELSE 'True' END ) AS password,
-				g.potType, g.minimumBet, g.phaseMinutes, g.anon, g.pressType, g.directorUserID, g.minimumReliabilityRating, g.drawType,
-				(select count(1) from wD_WatchedGames w where w.gameID = g.id) AS watchedGames
+				g.potType, g.minimumBet, g.phaseMinutes, g.anon, g.pressType, g.directorUserID, g.minimumReliabilityRating, g.drawType
 				FROM wD_Games g WHERE 1 = 1";
 
 		$sqlCounter = "SELECT count(1) FROM wD_Games g WHERE 1 = 1";
@@ -850,13 +846,7 @@ else if ($tab == 'GameSearch')
 			$sqlCounter = $sqlCounter." and g.minimumBet is not null and g.password is null and g.gameOver = 'No' and g.phase <> 'Pre-game' ";
 		}
 
-		if ($sortColg == 'watchedGames')
-		{
-			$sql = $sql . " ORDER BY watchedGames ".$sortType." ";
-			$sql = $sql . " Limit ". ($resultsPerPage * ($pagenum - 1)) . "," . $resultsPerPage .";";
-
-		}
-		elseif ($sortColg == 'gameName')
+		if ($sortColg == 'gameName')
 		{
 			$sql = $sql . " ORDER BY g.name ".$sortType." ";
 			$sql = $sql . " LIMIT ". ($resultsPerPage * ($pagenum - 1)) . "," . $resultsPerPage .";";
@@ -927,8 +917,7 @@ else if ($tab == 'GamesByUser')
 	if ($IsUserValid == 1)
 	{
 		$sql = "SELECT g.id, g.name, g.pot,g.phase, g.gameOver, g.processStatus, ( CASE WHEN g.password IS NULL THEN 'False' ELSE 'True' END ) AS password,
-				g.potType, g.minimumBet, g.phaseMinutes, g.anon, g.pressType, g.directorUserID, g.minimumReliabilityRating, g.drawType,
-				(select count(1) from wD_WatchedGames w where w.gameID = g.id) AS watchedGames
+				g.potType, g.minimumBet, g.phaseMinutes, g.anon, g.pressType, g.directorUserID, g.minimumReliabilityRating, g.drawType
 				FROM wD_Games g inner join wD_Members m on m.gameID = g.id WHERE g.phase = 'Finished' and  m.userID = ".$paramUserID." ";
 
 		$sqlCounter = "SELECT count(1) FROM wD_Games g inner join wD_Members m on m.gameID = g.id WHERE g.phase = 'Finished' and m.userID = ".$paramUserID." ";
@@ -949,12 +938,7 @@ else if ($tab == 'GamesByUser')
 			$sqlCounter = $sqlCounter." and g.minimumBet is not null and g.password is null and g.gameOver = 'No' ";
 		}
 
-		if ($sortColg == 'watchedGames')
-		{
-			$sql = $sql . " ORDER BY watchedGames ".$sortType." ";
-			$sql = $sql . " Limit ". ($resultsPerPage * ($pagenum - 1)) . "," . $resultsPerPage .";";
-		}
-		elseif ($sortColg == 'gameName')
+		if ($sortColg == 'gameName')
 		{
 			$sql = $sql . " ORDER BY g.name ".$sortType." ";
 			$sql = $sql . " LIMIT ". ($resultsPerPage * ($pagenum - 1)) . "," . $resultsPerPage .";";
@@ -1106,17 +1090,6 @@ $seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount
 		if ($seeDirector=='checked') { print '<th class= "advancedSearch">Game Director</th>'; }
 		if ($seeMinRR=='checked') { print '<th class= "advancedSearch">Min RR</th>'; }
 		if ($seeDrawType=='checked') { print '<th class= "advancedSearch">Draw Type</th>'; }
-		if ($seeWatchedCount=='checked')
-		{
-			print '<th class= "advancedSearch"';
-			if ($sortColg == 'watchedGames')
-			{
-				print 'style="background-color: #006699;"';
-			}
-			print '>';
-			printHeaderLink('Spectators', $tab, $sortCol, $sortType, $sortColg);
-			print '</th>';
-		}
 
 		print "</tr>";
 
@@ -1190,7 +1163,7 @@ function printHeaderLink($header, $tab, $sortCol, $sortType, $sortColg)
 			print '<input type="hidden" name="'.$key.'" value="'.$value.'">';
 		}
 	}
-	$convert = array("UserID"=>"id","Username"=>"Username","Joined On"=>"timeJoined","RR"=>"reliabilityRating","Games"=>"gameCount","Points"=>"points", "Game ID"=>"id", "Name"=>"gameName", "Pot"=>"pot", "Length"=>"phaseMinutes", "Spectators"=>"watchedGames");
+	$convert = array("UserID"=>"id","Username"=>"Username","Joined On"=>"timeJoined","RR"=>"reliabilityRating","Games"=>"gameCount","Points"=>"points", "Game ID"=>"id", "Name"=>"gameName", "Pot"=>"pot", "Length"=>"phaseMinutes");
 	if($tab == 'UserSearch')
 	{
 		if ($convert[$header] == $sortCol)

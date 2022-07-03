@@ -257,6 +257,9 @@ if ($submitted == true)
     $worked = true;
     $pausedGames = '';
 
+    // Make it easier to respond to direct to the user
+    $Mailer->SetReplyTo($User->email, $User->username);
+
     if ($issueType=='emergencyIssue')
     {
         if ($User->qualifiesForEmergency())

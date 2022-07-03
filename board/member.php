@@ -124,7 +124,7 @@ class userMember extends panelMember
 	 */
 	public function toggleVote($voteName)
 	{
-		global $DB;
+		global $DB,$User;
 
 		// Unpause is stored as Pause in the database
 		if ( $voteName == 'Unpause' )
@@ -141,8 +141,21 @@ class userMember extends panelMember
 
 		// Keep a log that a vote was set in the game messages, so the vote time is recorded
 		require_once(l_r('lib/gamemessage.php'));
-		libGameMessage::send($this->countryID, $this->countryID, ($voteOn?'Un-':'').'Voted for '.$voteName, $this->gameID);
-		$DB->sql_put("UPDATE wD_Members SET votes='".implode(',',$this->votes)."' WHERE id=".$this->id);
+		
+		if( $this->Game->playerTypes=='MemberVsBots' && !$User->type['Bot'] && in_array($voteName, array('Pause','Cancel')) )
+		{
+			libGameMessage::send($this->countryID, $this->countryID, ($voteOn?'Un-':'').'Voted for '.$voteName, $this->gameID);
+			// If it's a member vs bots game allow the member to pause or cancel the game
+			if( $voteOn )
+				$DB->sql_put("UPDATE wD_Members SET votes=REPLACE(votes,'".$voteName."','') WHERE gameID=".$this->gameID);
+			else
+				$DB->sql_put("UPDATE wD_Members SET votes=CONCAT(COALESCE(CONCAT(votes,','),''),'".$voteName."') WHERE gameID=".$this->gameID);
+		}
+		else
+		{
+			libGameMessage::send($this->countryID, $this->countryID, ($voteOn?'Un-':'').'Voted for '.$voteName, $this->gameID);
+			$DB->sql_put("UPDATE wD_Members SET votes='".implode(',',$this->votes)."' WHERE id=".$this->id);
+		}
 	}
 
 	/**

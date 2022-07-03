@@ -131,9 +131,9 @@ class main_listener implements EventSubscriberInterface
 		
 		if( isset($this->user->data['webdip_user_id']) && $this->user->data['webdip_user_id'] >= 2 ) 
 		{
-			$wdId = (int)$this->user->data['webdip_user_id'];
+			$wdID = (int)$this->user->data['webdip_user_id'];
 			
-			$theme = $this->db->sql_query("SELECT case when darkMode is null or darkMode = 'No' then 'light' else 'dark' end as theme FROM wD_UserOptions WHERE userID =".$wdId);
+			$theme = $this->db->sql_query("SELECT case when darkMode is null or darkMode = 'No' then 'light' else 'dark' end as theme FROM wD_UserOptions WHERE userID =".$wdID);
 			while ($row = $this->db->sql_fetchrow($theme))
 			{
 				$finalTheme = $row['theme'];
@@ -141,8 +141,8 @@ class main_listener implements EventSubscriberInterface
 			$this->db->sql_freeresult($theme);
 			
 			$this->fetchMisc();
-			$this->fetchAndCheckUser($wdId);
-			$this->fetchGameNotices($wdId);
+			$this->fetchAndCheckUser($wdID);
+			$this->fetchGameNotices($wdID);
 			
 			if ($finalTheme == 'dark')
 			{
@@ -183,9 +183,9 @@ class main_listener implements EventSubscriberInterface
 	}
 	
 	// Fetches the user details, and will end here if they are banned in webDip
-	private function fetchAndCheckUser($wdId)
+	private function fetchAndCheckUser($wdID)
 	{
-		$result = $this->db->sql_query("SELECT type, points, notifications FROM wD_Users WHERE Id = " . $wdId);
+		$result = $this->db->sql_query("SELECT type, points, notifications FROM wD_Users WHERE id = " . $wdID);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			if( strpos($row['type'],'Banned') !== false ) {
@@ -197,9 +197,9 @@ class main_listener implements EventSubscriberInterface
 		$this->db->sql_freeresult($result);
 	}
 	
-	private function fetchGameNotices($wdId)
+	private function fetchGameNotices($wdID)
 	{
-		$result = $this->db->sql_query("SELECT g.id, g.variantID, g.name, g.phase, m.orderStatus, m.countryID, (m.newMessagesFrom+0) as newMessagesFrom, g.processStatus FROM wD_Members m INNER JOIN wD_Games g ON ( m.gameID = g.id ) WHERE m.userID = " . $wdId . " AND ( ( NOT m.orderStatus LIKE '%Ready%' AND NOT m.orderStatus LIKE '%None%' AND g.phase != 'Finished' ) OR NOT ( (m.newMessagesFrom+0) = 0 ) ) ORDER BY g.processStatus ASC, g.processTime ASC" );
+		$result = $this->db->sql_query("SELECT g.id, g.variantID, g.name, g.phase, m.orderStatus, m.countryID, (m.newMessagesFrom+0) as newMessagesFrom, g.processStatus FROM wD_Members m INNER JOIN wD_Games g ON ( m.gameID = g.id ) WHERE m.userID = " . $wdID . " AND ( ( NOT m.orderStatus LIKE '%Ready%' AND NOT m.orderStatus LIKE '%None%' AND g.phase != 'Finished' ) OR NOT ( (m.newMessagesFrom+0) = 0 ) ) ORDER BY g.processStatus ASC, g.processTime ASC" );
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$this->gameBar[] = $row;

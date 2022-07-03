@@ -70,34 +70,21 @@ class processGame extends Game
 	}
 
 	/**
-	 * Look for votes that have passed and process them (but only do one), then remove the
-	 * game from the process queue if there are no votes left to process.
+	 * Apply the vote given: Draw/Cancel/Pause/Concede
 	 */
-	function applyVotes()
+	function applyVote($vote)
 	{
 		assert('$this->phase != "Finished"');
 		if($this->phase != "Pre-game")
 		{
-			$votes = $this->Members->votesPassed();
+			$this->gamelog(l_t('Applying vote'));
 
-			$this->gamelog(l_t('Applying votes'));
-
-			// Only act on one vote at a time.
-			if ( in_array('Draw', $votes) )
+			switch($vote)
 			{
-				$this->setDrawn();
-			}
-			elseif ( in_array('Cancel', $votes) )
-			{
-				$this->setCancelled();
-			}
-			elseif( in_array('Pause', $votes) )
-			{
-				$this->togglePause();
-			}
-			elseif( in_array('Concede', $votes) )
-			{
-				$this->setConcede();
+				case 'Draw': $this->setDrawn(); break;
+				case 'Cancel': $this->setCancelled(); break;
+				case 'Pause': $this->togglePause(); break;
+				case 'Concede': $this->setConcede(); break;
 			}
 		}
 	}
@@ -140,9 +127,6 @@ class processGame extends Game
 		$this->Members->setCancelled();
 
 		processGame::eraseGame($this->id);
-
-		// This will be caught by gamemaster.php
-		throw new Exception("Cancelled", 12345);
 	}
 
 	/**
@@ -444,6 +428,9 @@ class processGame extends Game
 	private function recordNMRs()
 	{
 		global $DB;
+
+		// Don't record NMRs for bot games
+		if( $this->playerTypes == 'MemberVsBots' ) return;
 	
 		// detect which players NMR this turn, exclude anyone who is left to avoid giving them unearned un-excused missed turns. 
 		$tabl = $DB->sql_tabl("SELECT m.id 
@@ -1328,7 +1315,8 @@ class processGame extends Game
 			$this->Members->setConcede();
 			foreach($this->Members->ByStatus['Playing'] as $Member)
 				$Winner = $Member;
-			$this->setWon($Winner);
+			if ( isset($Winner) )
+				$this->setWon($Winner);
 
 			$DB->sql_put("DELETE FROM wD_Orders WHERE gameID = ".$this->id);
 			$DB->sql_put("DELETE FROM wD_Units WHERE gameID = ".$this->id);

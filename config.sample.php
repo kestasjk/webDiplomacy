@@ -132,6 +132,15 @@ class Config
 	public static $grActive = false;
 
 	/**
+	 * Play now domain; if not null the system will check whether it is being viewed as this
+	 * subdomain, e.g. play.webdiplomacy.net , and if it is the system will run in play-now
+	 * mode where no user account is needed and player vs bot games will be created and started
+	 * from any page.
+	 * @var string|null
+	 */
+	public static $playNowDomain = null;
+
+	/**
 	 * An array of categories to use when calculating GhostRatings
 	 * @var array
 	 */
@@ -444,6 +453,20 @@ class Config
 	 * @var bool
 	 */
 	public static $facebookDebug=false;
+
+	/**
+	 * Returns true if this request is happening on a play-now server.
+	 * @return bool
+	 */
+	public static function isOnPlayNowDomain()
+	{
+		if( isset(self::$playNowDomain) && self::$playNowDomain != null ) 
+		{
+			if( isset($_SERVER['HTTP_HOST']) && strstr(strtolower($_SERVER['HTTP_HOST']), strtolower(Config::$playNowDomain)) !== false )
+				return true;
+		}
+		return false;	
+	}
 }
 
 ?>

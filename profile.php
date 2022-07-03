@@ -781,7 +781,7 @@ if ( $UserProfile->type['Moderator'] ||  $UserProfile->type['ForumModerator'] ||
 	print '<li>&nbsp;</li>';
 }
 
-if ( $UserProfile->online || time() - (24*60*60) < $UserProfile->timeLastSessionEnded)
+if ( time() - (24*60*60) < $UserProfile->timeLastSessionEnded)
 	print '<li><strong>'.l_t('Visited in last 24 hours').'</strong></li>';
 else
 	print '<li><strong>'.l_t('Last visited:').'</strong> '.libTime::text($UserProfile->timeLastSessionEnded).'</li>';
@@ -864,6 +864,9 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 	if ( $User->type['Admin'] )
 		$modActions[] = '<a href="index.php?auid='.$UserProfile->id.'">'.l_t('Enter this user\'s account').'</a>';
 
+	if ( $User->type['Admin'] )
+		$modActions[] = '<a href="index.php?auid_cookie='.$UserProfile->id.'">'.l_t('Log on as user with cookie').'</a>';
+ 
 	$modActions[] = libHTML::admincpType('User',$UserProfile->id);
 
 	if( !$UserProfile->type['Admin'] && ( $User->type['Admin'] || !$UserProfile->type['Moderator'] ) )
@@ -945,13 +948,13 @@ else
 {
 	if ( $User->type['User'] && $User->id != $UserProfile->id)
 	{
-		list($newForumId) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
-		if ($newForumId > 0)
+		list($newForumID) = $DB->sql_row("SELECT user_id FROM `phpbb_users` WHERE webdip_user_id = ".$UserProfile->id);
+		if ($newForumID > 0)
 		{
 			print '
 			<div id="profile-forum-link-container">
 				<div class="profile-forum-links">
-					<a class="profile-link" href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumId.'">
+					<a class="profile-link" href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumID.'">
 						<button class="form-submit" id="view-forum-profile">
 							New Forum Profile
 						</button>
@@ -959,7 +962,7 @@ else
 				</div>';
 			print '
 				<div class="profile-forum-links">
-					<a class="profile-link" href="/contrib/phpBB3/ucp.php?i=pm&mode=compose&u='.$newForumId.'">
+					<a class="profile-link" href="/contrib/phpBB3/ucp.php?i=pm&mode=compose&u='.$newForumID.'">
 						<button class="form-submit" id="send-pm">
 							Send a message to this user
 						</button>
@@ -1009,14 +1012,13 @@ if ( isset($_REQUEST['sortCol']))
 	else if ($_REQUEST['sortCol'] == 'phaseMinutes') { $sortCol='phaseMinutes'; }
 	else if ($_REQUEST['sortCol'] == 'minimumBet') {$sortCol='minimumBet'; }
 	else if ($_REQUEST['sortCol'] == 'minimumReliabilityRating') {$sortCol='minimumReliabilityRating'; }
-	else if ($_REQUEST['sortCol'] == 'watchedGames') {$sortCol='watchedGames'; }
 	else if ($_REQUEST['sortCol'] == 'turn') {$sortCol='turn'; }
 	else if ($_REQUEST['sortCol'] == 'processTime') {$sortCol='processTime'; }
 }
 if ( isset($_REQUEST['sortType'])) { if ($_REQUEST['sortType'] == 'asc') { $sortType='asc'; } }
 if ( isset($_REQUEST['pagenum'])) { $pagenum=(int)$_REQUEST['pagenum']; }
 
-$SQL = "SELECT g.*, (SELECT count(1) FROM wD_WatchedGames w WHERE w.gameID = g.id) AS watchedGames FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
+$SQL = "SELECT g.* FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
 	WHERE m.userID = ".$UserProfile->id;
 $SQLCounter = "SELECT count(1) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id
 	WHERE m.userID = ".$UserProfile->id;
@@ -1026,7 +1028,7 @@ if($User->id != $UserProfile->id && !$User->type['Moderator'])
 	$SQLCounter .= " AND (g.anon = 'No' OR g.phase = 'Finished')";
 }
 $SQL = $SQL . " ORDER BY ";
-if ($sortCol <> 'watchedGames' && $sortCol <> 'processTime' && $sortCol <> 'minimumBet') {$SQL .= "g.";}
+if ( $sortCol <> 'processTime' && $sortCol <> 'minimumBet') {$SQL .= "g.";}
 $ordering = $sortCol;
 if ($sortCol == 'processTime') {$ordering = "(CASE WHEN g.processStatus = 'Paused' THEN (g.pauseTimeRemaining + ".time().") ELSE g.processTime END)";}
 elseif ($sortCol == 'minimumBet') {$ordering = "(SELECT m4.bet FROM wD_Members m4 WHERE m4.gameID = g.id AND m4.bet > 0 LIMIT 1)";}
@@ -1112,7 +1114,6 @@ function printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = False)
 				<option'.(($sortCol=='minimumBet') ? ' selected="selected"' : '').' value="minimumBet">Bet</option>
 				<option'.(($sortCol=='phaseMinutes') ? ' selected="selected"' : '').' value="phaseMinutes">Phase Length</option>
 				<option'.(($sortCol=='minimumReliabilityRating') ? ' selected="selected"' : '').' value="minimumReliabilityRating">Reliability Rating</option>
-				<option'.(($sortCol=='watchedGames') ? ' selected="selected"' : '').' value="watchedGames">Spectator Count</option>
 				<option'.(($sortCol=='turn') ? ' selected="selected"' : '').' value="turn">Game Turn</option>
 				<option'.(($sortCol=='processTime') ? ' selected="selected"' : '').' value="processTime">Time to Next Phase</option>
 			</select>

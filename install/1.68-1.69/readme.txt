@@ -15,5 +15,12 @@ that would otherwise get confused with multi-account/meta-game detection.
 User suspicions can also be managed using the same system.
 
 - Reliability rating calculations optimized to allow lock-free calculations in realtime.
+- Api locking improved
 
 - New 1v1 variant added: ColdWar
+
+- Added play-now mode allowing users without accounts to jump straight into a bot game
+
+WARNING: config.php has a function added to detect whether the server is in play-now mode, so 
+if you are updating from an old version with an old config.php you need to copy the new function
+from config.sample.php
