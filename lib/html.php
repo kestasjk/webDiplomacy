@@ -905,10 +905,10 @@ class libHTML
 							<a style="color:white" href="index.php">'.l_t('Home').'</a>
 						</div>
 						<div class="nav-tab">
-							<a href="botgamecreate.php" title="Go to the account-based server">Start New Game</a>
+							<a href="botgamecreate.php" title="Go to the account-based server">Start a New Game</a>
 						</div>
 						<div class="nav-tab">
-							<a href="https://webdiplomacy.net/" title="Go to the account-based server">Go to Community Site</a>
+							<a href="https://webdiplomacy.net/" title="Go to the account-based server">Go to the Community Site</a>
 						</div>
 					</div>
 				</div>';

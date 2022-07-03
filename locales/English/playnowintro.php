@@ -33,15 +33,19 @@ print libHTML::pageTitle(l_t('Play webDiplomacy now!'),l_t('A multiplayer web im
 ?>
 <div style="text-align:center">
 	<form action='botgamecreate.php'>
-		<input class='form-submit' type='submit' name='submit' value='Click here to start a new game of webDiplomacy against AI opponents!'></input>
+		<input class='green-Submit' style="font-size:100%; font-weight:bold; background-color:#0e8805 !important;" type='submit' name='submit' value='Click here to start a new game of webDiplomacy against AI opponents!'></input>
 	</form>
 </div>
+
 <?php
 
 //print '<div class="content">';
 require_once(l_r('locales/English/welcome.php'));
 ?>
 </div>
+</div>
+
+print libHTML::pageTitle(l_t('How to play'),l_t('A quick introduction to get you started playing Diplomacy.'));
 
 <div style="text-align:center">
 	<a href="#Basics">The Basics</a> - <a href="#Tactics">Advanced Tactics</a> - <a href="#More">Further Learning</a>

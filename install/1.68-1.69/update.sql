@@ -96,24 +96,3 @@ DELETE d FROM wD_MissedTurns d INNER JOIN wD_Games g ON g.id = d.gameID WHERE g.
 
 -- Period tracking to allow quick detection of changes in RRs when a missed turn moves over a threshold from e.g. being under a week old to over a week old
  ALTER TABLE wD_MissedTurns ADD COLUMN reliabilityPeriod TINYINT NULL DEFAULT -1;
-
-
-
- ALTER TABLE `wD_GroupUsers`
-	CHANGE COLUMN `userId` `userID` MEDIUMINT(8) UNSIGNED NOT NULL FIRST,
-	CHANGE COLUMN `groupId` `groupID` MEDIUMINT(8) UNSIGNED NOT NULL AFTER `userID`,
-	CHANGE COLUMN `modUserId` `modUserID` MEDIUMINT(8) UNSIGNED NULL DEFAULT NULL AFTER `modWeighting`,
-	CHANGE COLUMN `createdByUserId` `createdByUserID` MEDIUMINT(8) UNSIGNED NOT NULL AFTER `modUserID`,
-	DROP PRIMARY KEY,
-	ADD PRIMARY KEY (`userID`, `groupID`, `isActive`) USING BTREE,
-	DROP INDEX `groupUsersByGroup`,
-	ADD UNIQUE INDEX `groupUsersByGroup` (`userID`, `groupID`, `isActive`) USING BTREE;
-ALTER TABLE `wD_GroupUsers`
-	ADD COLUMN `countryID` TINYINT(3) UNSIGNED NULL DEFAULT NULL AFTER `userWeighting`;
-
-ALTER TABLE `wD_Groups`
-	CHANGE COLUMN `ownerUserId` `ownerUserID` MEDIUMINT(8) UNSIGNED NOT NULL AFTER `timeCreated`;
-
-	ALTER TABLE `wD_Groups`
-	ADD COLUMN `ownerCountryID` TINYINT(3) UNSIGNED NULL DEFAULT NULL AFTER `ownerUserID`;
-
