@@ -153,8 +153,8 @@ class panelGameBoard extends panelGame
 		{
 			if ($this->anon == 'No' || !$Member->isNameHidden() )
 				$buf .= '<nobr><input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . $Member->profile_link() . ', </nobr>';
-			else
-				$buf .= '<nobr><input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . $Member->countryName() . ', </nobr>';
+			//else
+				//$buf .= '<nobr><input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . $Member->countryName() . ', </nobr>';
 		}
 		$buf .= '</div>
 			<br />
