@@ -26,6 +26,12 @@ Although webDiplomacy has been able to work on a variety of systems and is insta
 number of sites we can only guarantee that it will work when installed as per the below
 procedure:
 
+Docker
+------
+The install guide below is the guide for setting up a production system. For development purposes
+it is highly recommended to use the Docker Compose image in /docker-compose.yml along with the
+guide within that file, which makes the process much, much easier.
+
 Installing
 ----------
 This script is the installation guide for installing on Ubuntu 20.04. It is oriented towards

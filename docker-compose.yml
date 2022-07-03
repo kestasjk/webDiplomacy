@@ -6,11 +6,12 @@
 # webDiplomacy instructions:
 # Copy config.sample.php to config.php
 # Run install/FullInstall/FullInstall.sql
-# Register user account, use https://localhost:43001 to access registration mail
-# Go to https://localhost:43000/gamemaster.php?gameMasterSecret= to set self as admin
-# Go to https://localhost:43000/admincp.php and enable maintenance mode
-# Go to https://localhost:43000/datc.php and run batch test
-# Go to https://localhost:43000/admincp.php and disable maintenance mode
+# Register user account, use http://localhost:43001 to access registration mail
+# Go to http://localhost:43000/gamemaster.php?gameMasterSecret= to set self as admin
+# Go to http://localhost:43000/admincp.php and enable maintenance mode
+# In the admin CP run the Clear variant caches command to ensure variants get installed fresh
+# Go to http://localhost:43000/datc.php and run batch test
+# Go to http://localhost:43000/admincp.php and disable maintenance mode
 # Server is ready for dev work
 #
 ###############################################################################
@@ -45,7 +46,7 @@ services:
             - 8080:80
         environment:
             - PMA_ARBITRARY=1
-    
+
     clickhouse:
         image: 'yandex/clickhouse-server:latest'
 
