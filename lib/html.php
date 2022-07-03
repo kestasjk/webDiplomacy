@@ -553,6 +553,9 @@ class libHTML
 
 			<script type="text/javascript" src="'.l_j('javascript/desktopMode.js').'?ver='.JSVERSION.'"></script>
 			<title>'.l_t('%s - webDiplomacy',$title).'</title>
+			'.
+			Config::customHeader()
+			.'
 		</head>';
 	}
 

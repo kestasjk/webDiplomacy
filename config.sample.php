@@ -346,6 +346,14 @@ class Config
 		);
 
 	/**
+	 * Something to add into the header, within <head></head>, as analytics now needs to be embedded there.
+	 */
+	public static function customHeader()
+	{
+		return '';
+	}
+
+	/**
 	 * Something to add after everything else has been printed off (except '</body></html>'), useful for
 	 * things like Google Analytics, or web-rings
 	 */
