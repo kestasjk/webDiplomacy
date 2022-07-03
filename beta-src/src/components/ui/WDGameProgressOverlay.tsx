@@ -88,7 +88,7 @@ const WDGameProgressOverlay: React.FC<WDGameProgressOverlayProps> = function ({
         const psy = getHistoricalPhaseSeasonYear(status, idx);
         stuffToRender.push(
           <Box key={`progressBox${idx}`} sx={{ m: "4px" }}>
-            Finished phase ${formatPSYForDisplay(psy)}.
+            Finished phase {formatPSYForDisplay(psy)}.
           </Box>,
         );
       }
