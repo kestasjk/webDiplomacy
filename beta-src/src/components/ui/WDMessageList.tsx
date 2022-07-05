@@ -31,7 +31,7 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
         message.toCountryID === countryIDSelected) &&
       (countryIDSelected === 0 || message.toCountryID !== 0), // public messages in public chat
   );
-  const messagesByTurn: { [key: number]: React.ReactElement[] } = {};
+  const messagesByTurn = new Map<number, React.ReactElement[]>();
   filteredMessages.forEach((message: GameMessage) => {
     if (!(message.turn in messagesByTurn)) {
       messagesByTurn[message.turn] = [];
@@ -48,7 +48,7 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
   });
   const messageTurnComponents = Object.entries(messagesByTurn).map(
     ([turn, msgs]) => {
-      const psy = getPhaseSeasonYear(Number(turn), "Diplomacy");
+      const psy = getPhaseSeasonYear(Number.parseInt(turn, 10), "Diplomacy");
       return (
         <Box key={turn}>
           <Box

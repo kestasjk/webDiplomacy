@@ -128,12 +128,11 @@ export const setVoteStatus = createAsyncThunk(
     vote: string;
     voteOn: string;
   }) => {
-    console.log("Submitting vote");
     const { data } = await postGameApiRequest(
       ApiRoute.GAME_SETVOTE,
       queryParams,
     );
-    return data as string;
+    return data;
   },
 );
 
@@ -148,18 +147,18 @@ export const markMessagesSeen = createAsyncThunk(
       ApiRoute.MESSAGES_SEEN,
       queryParams,
     );
-    return data as string;
+    return data;
   },
 );
 
-export const setBackFromLeft = createAsyncThunk(
+export const markBackFromLeft = createAsyncThunk(
   ApiRoute.SET_BACK_FROM_LEFT,
   async (queryParams: { countryID: string; gameID: string }) => {
     const { data } = await postGameApiRequest(
       ApiRoute.SET_BACK_FROM_LEFT,
       queryParams,
     );
-    return data as string;
+    return data;
   },
 );
 
@@ -344,13 +343,11 @@ const gameApiSlice = createSlice({
       .addCase(saveOrders.rejected, saveOrdersRejected)
       // setVoteStatus
       .addCase(setVoteStatus.pending, (state, action) => {
-        console.log("Vote pending");
         state.apiStatus = "loading";
         const { vote, voteOn } = action.meta.arg;
         state.votingInProgress = { ...state.votingInProgress, [vote]: voteOn };
       })
       .addCase(setVoteStatus.fulfilled, (state, action) => {
-        console.log({ action });
         const { vote } = action.meta.arg;
         state.votingInProgress = { ...state.votingInProgress, [vote]: null };
         handlePostSucceeded(state);
@@ -369,7 +366,7 @@ const gameApiSlice = createSlice({
         const { vote } = action.meta.arg;
         state.votingInProgress = { ...state.votingInProgress, [vote]: null };
       })
-      .addCase(setBackFromLeft.fulfilled, (state, action) => {
+      .addCase(markBackFromLeft.fulfilled, (state, action) => {
         state.status.status = "Playing";
       })
       // Send message

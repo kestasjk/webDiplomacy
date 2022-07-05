@@ -44,7 +44,7 @@ const WDMessage: React.FC<WDMessageProps> = function ({
   return (
     <div className={`flex justify-${justify}`}>
       <div
-        id={`message-${String(message.timeSent)}`}
+        id={`message-${message.timeSent}`}
         className={`p-3 m-2 bg-slate-100 max-w-[${msgWidth}] rounded-lg`}
       >
         <div className="flex-col">

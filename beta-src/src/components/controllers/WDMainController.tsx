@@ -9,7 +9,7 @@ import {
   gameStatus,
   gameViewedPhase,
   loadGameData,
-  setBackFromLeft,
+  markBackFromLeft,
 } from "../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import getPhaseKey from "../../utils/state/getPhaseKey";
@@ -105,7 +105,7 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
             dispatch(gameApiSliceActions.setViewedPhaseToLatestPhaseViewed());
             if (status.status === "Left") {
               dispatch(
-                setBackFromLeft({
+                markBackFromLeft({
                   countryID: String(countryID),
                   gameID: String(gameID),
                 }),

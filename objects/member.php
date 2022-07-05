@@ -263,7 +263,7 @@ class Member
 	 * civildisorder record, sets their orderStatus depending on whether they
 	 * have orderes to enter, puts them into the correct Game->Members->ByStatus list.
 	 */
-	function setBackFromLeft()
+	function markBackFromLeft()
 	{
 		global $DB,$Game,$User;
 		

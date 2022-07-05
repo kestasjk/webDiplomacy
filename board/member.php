@@ -43,7 +43,7 @@ class userMember extends panelMember
 
 		if ( $this->status == 'Left' )
 		{
-			$this->setBackFromLeft();
+			$this->markBackFromLeft();
 		}
 		elseif( (time() - $this->timeLoggedIn) > 3*60)
 		{

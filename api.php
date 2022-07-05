@@ -482,11 +482,11 @@ class MessagesSeen extends ApiEntry {
 }
 
 /**
- * API entry game/setbackfromleft
+ * API entry game/markbackfromleft
  */
-class SetBackFromLeft extends ApiEntry {
+class MarkBackFromLeft extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/setbackfromleft', 'JSON', '', array('gameID','countryID'));
+		parent::__construct('game/markbackfromleft', 'JSON', '', array('gameID','countryID'));
 	}
 	public function run($userID, $permissionIsExplicit) {
 		global $Game, $DB;
@@ -494,7 +494,7 @@ class SetBackFromLeft extends ApiEntry {
 		$countryID = intval($args['countryID']);
 		$Game = $this->getAssociatedGame();
 		$member = $Game->Members->ByUserID[$userID];
-		$member->setBackFromLeft();
+		$member->markBackFromLeft();
 		$DB->sql_put("COMMIT");
 	}
 }
@@ -1558,7 +1558,7 @@ try {
 	$api->load(new SendMessage());
 	$api->load(new GetMessages());
 	$api->load(new MessagesSeen());
-	$api->load(new SetBackFromLeft());
+	$api->load(new MarkBackFromLeft());
 
 	$jsonEncodedResponse = $api->run();
 	// Set JSON header.
