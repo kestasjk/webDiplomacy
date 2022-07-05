@@ -235,7 +235,7 @@ if( isset(Config::$auth0conf) )
 	
 	if( $userInfo )
 	{
-		$sql = "INSERT INTO wD_UserOpenIDLinks ( userId, source, timeCreated, timeUpdated, ";
+		$sql = "INSERT INTO wD_UserOpenIDLinks ( userID, source, timeCreated, timeUpdated, ";
 
 		$addedCols = array();
 		$addedVals = array();
@@ -290,7 +290,7 @@ if( isset(Config::$auth0conf) )
 
 	$validSources = array('facebook'=>false, 'google'=>false, 'sms'=>false);
 
-	$registeredSources = $DB->sql_tabl("SELECT source, sub FROM wD_UserOpenIDLinks WHERE userId = " . $User->id);
+	$registeredSources = $DB->sql_tabl("SELECT source, sub FROM wD_UserOpenIDLinks WHERE userID = " . $User->id);
 	while(list($source, $sub) = $DB->tabl_row($registeredSources) )
 	{
 		if( isset($validSources[$source]) )

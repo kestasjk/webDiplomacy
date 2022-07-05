@@ -59,10 +59,15 @@ $credits = array(
 	),
 	array(
 		'The webDiplomacy Developers',
-		'<a href="userprofile.php?userID=15658">jmo1121109</a>, current lead developer<br />
-		<a href="userprofile.php?userID=10">kestasjk</a><br />
+		'<a href="userprofile.php?userID=10">kestasjk</a><br />
+		<a href="userprofile.php?userID=15658">jmo1121109</a><br />
 		<a href="userprofile.php?userID=59641">Squigs44</a><br />
 		<a href="userprofile.php?userID=38739">bo_sox48</a>'
+	),
+	array(
+		'Point and click board development',
+		'<a href="https://www.codazen.com">Codazen</a><br />
+		<a href="https://ai.facebook.com/">Meta AI</a>'
 	),
 	array(
 		'Lifetime Site Contributors',
@@ -92,8 +97,9 @@ $credits = array(
 		<a href="userprofile.php?userID=15658">jmo1121109</a>'
 	),
 	array(
-		'Creator of the webDiplomacy AI',
-		'<a href="https://github.com/ppaquette">Philip Paquette</a> - <a href="https://github.com/diplomacy/research/blob/master/neurips_paper_v1.pdf" class="light">Underlying AI/ML Collaborative Research Paper</a>' 
+		'webDiplomacy AI development',
+		'<a href="https://github.com/ppaquette">Philip Paquette</a> - <a href="https://github.com/diplomacy/research/blob/master/neurips_paper_v1.pdf" class="light">Underlying AI/ML Collaborative Research Paper</a><br />
+		Noam Brown et al - <a href="https://ai.facebook.com/">Meta AI</a>' 
 	),
 	array(
 		'Past Contributors',

@@ -35,7 +35,7 @@ print libHTML::pageTitle('Intro to webDiplomacy','A quick guide to playing Diplo
 <div class="hr"></div>
 
 <a name="Basics"></a>
-<h2>The Basics of Diplomacy</h2>
+<h2>The Basics</h2>
 <p>
 	The objective of Diplomacy is to be the first nation to own half of the supply centers in the game. To accomplish this,
 	you can move your units around the board, fighting to claim other players' supply centers as your own. For each 

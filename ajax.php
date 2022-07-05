@@ -20,6 +20,10 @@
 
 define('AJAX', true); // Makes header.php ignore some of the unneeded stuff, mainly loading $User
 
+define('IN_CODE', 1);
+require_once('config.php');
+if( Config::isOnPlayNowDomain() ) define('PLAYNOW',true);
+
 require_once('header.php');
 
 /*
@@ -49,7 +53,7 @@ $results = array('status'=>'Invalid', 'notice'=>'No valid action specified');
 // footer JS needs to contain a cached 
 
 // Check for group link changes. Has to be a user at least, and specifying a group type:
-if( isset($User) && $User->type['User'] && isset($_GET['groupType']) && isset($_GET['userId']) && isset($_GET['groupId']) )
+if( isset($User) && $User->type['User'] && isset($_GET['groupType']) && isset($_GET['userID']) && isset($_GET['groupID']) )
 {
 	// Someone is making a group link change.
 	if( isset($_GET['setActive']) )
@@ -57,7 +61,7 @@ if( isset($User) && $User->type['User'] && isset($_GET['groupType']) && isset($_
 
 	}
 }
-if( isset($_GET['groupId']) && isset($_GET['userId']) && isset($User) && $User->type['User'] )
+if( isset($_GET['groupID']) && isset($_GET['userID']) && isset($User) && $User->type['User'] )
 {
 }
 else if( isset($_GET['likeMessageToggleToken']) ) {
@@ -114,7 +118,7 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 		if( $newReady && !$oldReady )
 		{
 			$results['process']='Checked';
-			$Game = libVariant::$Variant->Game($O->gameID, UPDATE); // No need to lock game for update to check whether it needs a process
+			$Game = libVariant::$Variant->Game($O->gameID);//, UPDATE); // No need to lock game for update to check whether it needs a process
 			if( $Game->needsProcess() )
 			{
 				$MC->append('processHint',','.$Game->id);

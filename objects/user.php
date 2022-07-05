@@ -532,14 +532,13 @@ class User {
 			u.gameCount,
 			u.reliabilityRating,
 			u.tempBan,
-			IF(s.userID IS NULL,0,1) as online,
+			0 as online,
 			u.deletedCDs, 
 			u.emergencyPauseDate, 
 			u.yearlyPhaseCount,
 			u.tempBanReason,
 			u.optInFeatures
 			FROM wD_Users u
-			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
 			WHERE ".( $username ? "u.username='".$username."'" : "u.id=".$this->id ));
 
 		if ( ! isset($row['id']) or ! $row['id'] )
@@ -615,11 +614,11 @@ class User {
 			$buffer .= '<a href="./userprofile.php?userID='.$id.'"';
 
 			// Allow javascript to use this ID link:
-			$buffer.=' profileLinkUserId="'.$id.'">'.$username;
+			$buffer.=' profileLinkUserID="'.$id.'">'.$username;
 
 			$buffer.='</a> ('.trim($points).libHTML::points().self::typeIcon($type).libHTML::loggedOn($id);
 			
-			$buffer .= ')<span class="userRelationships" profileLinkUserId="'.$id.'"></span>';
+			$buffer .= ')<span class="userRelationships" profileLinkUserID="'.$id.'"></span>';
 
 			if( isset($User) && $User->type['Moderator'] )
 			{
@@ -721,7 +720,7 @@ class User {
 	}
 
 	/**
-	 * This will set a notification value in both the object and wd_users table if not already set.
+	 * This will set a notification value in both the object and wD_Users table if not already set.
 	 * @param notification notification value to set, must be 'PrivateMessage', 'GameMessage', 'Unfinalized', or 'GameUpdate'.
 	 **/
 	function setNotification($notification)
@@ -737,7 +736,7 @@ class User {
 	}
 
     /**
-	 * This will clear a notification value in both the object and the wd_users table if not already cleared.
+	 * This will clear a notification value in both the object and the wD_Users table if not already cleared.
 	 * @param notification notification value to clear, must be 'PrivateMessage', 'GameMessage', 'Unfinalized', or 'GameUpdate'.
 	 **/
 	function clearNotification($notification)

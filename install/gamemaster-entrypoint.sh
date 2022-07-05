@@ -7,8 +7,6 @@ if mysql -u webdiplomacy -h mariadb -P 3306 --password=mypassword123 webdiplomac
   echo "DB was already created"
 else
   mysql -u webdiplomacy -h mariadb -P 3306 --password=mypassword123 < $HOME/install/FullInstall/fullInstall.sql
-  mysql -u webdiplomacy -h mariadb -P 3306 --password=mypassword123 webdiplomacy < $HOME/install/1.68-1.69/update.sql
-  mysql -u webdiplomacy -h mariadb -P 3306 --password=mypassword123 webdiplomacy < $HOME/install/1.69-1.70/update.sql
   mysql -u webdiplomacy -h mariadb -P 3306 --password=mypassword123 webdiplomacy < $HOME/install/createBotAccounts.sql
   echo "DB created"
   # the next lines are related to permissions, I'm not sure why we need them, I think because php-fpm doesn't have the right config

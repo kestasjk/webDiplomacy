@@ -21,6 +21,7 @@
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 require_once(l_r('gamepanel/game.php'));
+require_once(l_r('objects/group.php'));
 
 /**
  * This class displays the game panel within a board context. It displays more info
@@ -114,7 +115,6 @@ class panelGameBoard extends panelGame
 
 		$vAllowed = Members::$votes;
 		$vSet = $this->Members->ByUserID[$User->id]->votes;
-		$vPassed = $this->Members->votesPassed();
 
 		$vCancel=array();
 		$vVote=array();
@@ -127,24 +127,49 @@ class panelGameBoard extends panelGame
 				if ( (empty(Config::$concedeVariants)) || (in_array($this->variantID, Config::$concedeVariants)) )
 				{
 					if(in_array($vote, $vSet))
-					{
-						if(!in_array($vote, $vPassed)) $vCancel[]=$vote;
-					}
-					else $vVote[]=$vote;
+						$vCancel[]=$vote;
+					else
+						$vVote[]=$vote;
 				}
 			}
 			else
 			{
 				if(in_array($vote, $vSet))
-				{
-					if(!in_array($vote, $vPassed)) $vCancel[]=$vote;
-				}
-				else $vVote[]=$vote;
+					$vCancel[]=$vote;
+				else 
+					$vVote[]=$vote;
 			}			
 		}
 
-		$buf = '<div style="width: 300px; margin: 0 auto; text-align:center;"><a href="contactUsDirect.php" align="center";>Need help?</a></div>
-		<div class="bar membersList memberVotePanel"><a name="votebar"></a>
+		$buf = '<div style="margin: 0 auto; text-align:center; padding-top:5px; padding-bottom:5px;">
+			<a href="contactUsDirect.php">Need help?</a> - <a id="suspicionToggle" href="#suspicion" name="suspicion">Lodge cheating suspicion</a>
+			<div class="bar memberVotePanel memberSuspectPanel" style="display:none; font-size:90%; font-weight:normal !important; text-align:left">
+			<form action="group.php" method="post">
+			'.libAuth::formTokenHTML().'
+			<input type="hidden" name="gameID" value="'.$this->id.'" /><br />
+			<strong>Countries:</strong> <em>Please select the countries / users which you believe are metagaming / multi-accounting.</em><br />
+			<div style="text-align:center">';
+		foreach($this->Members->ByCountryID as $countryID=>$Member)
+		{
+			if ($this->anon == 'No' || !$Member->isNameHidden() )
+				$buf .= '<nobr><input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . $Member->profile_link() . ', </nobr>';
+			//else
+				//$buf .= '<nobr><input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . $Member->countryName() . ', </nobr>';
+		}
+		$buf .= '</div>
+			<br />
+			<strong>Explanation:</strong> <em>Below please enter a detailed explanation of why you believe the selected countries are meta/multi gaming.</em><br />
+			<textarea name="explanation" rows=5></textarea><br /><br />
+			<strong>Strength:</strong> '.Group::getSelectWeighting('user', '', 50).' <em>Choose from WEAK to STRONG, to select how strongly you suspect these users. This will determine whether mods urgently investigate or just take note of a possible link for future investigations.</em><br />
+		';
+		$buf .= '<br /><strong>Note:</strong> Strong/mid-strength accusations will be followed up by the mod team, and will be discussed all involved. Do not submit without a genuine suspicion of meta/multi-gaming.<br />Other accusation strengths will be looked into as time permits, and combined with other accusations to detect possible links. Thanks for helping to keep the server fun to play on!<br /><br />
+			<input class="form-submit" type="Submit" name="Submit" value="Submit cheating suspicion" /> ';
+		$buf .= '</form>
+		</div></div>';
+		$buf .= '<script type="text/javascript">
+document.getElementById("suspicionToggle").addEventListener("click", function() { this.nextElementSibling.style.display = this.nextElementSibling.style.display === "block" ? "none" : "block"; });
+</script>';
+		$buf .= '<div class="bar membersList memberVotePanel"><a name="votebar"></a>
 		<table><tr class="member">
 			<td class="memberLeftSide">
 				<strong>'.l_t('Votes:').'</strong>
@@ -255,7 +280,13 @@ class panelGameBoard extends panelGame
 					If all players vote cancel, the game will be cancelled. All points will be refunded, and the game will be deleted. Cancels are typically used in the first year or two of a game with missing players.
 				</p>';
 
-		if ($this->playerTypes <> 'Members')
+		if ($this->playerTypes == 'MemberVsBots')
+		{
+			$buf .= '<p><strong>Bot Voting: </strong></br>
+				A vote to Pause or Cancel will immediately Pause or Cancel the game.
+			</p>';
+		}
+		else if ($this->playerTypes == 'Mixed')
 		{
 			$buf .= '<p><strong>Bot Voting: </strong></br>
 				The bots in this game do not get a pause or unpause vote, pausing and unpausing only counts human votes. <br><br>

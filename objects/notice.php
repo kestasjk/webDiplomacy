@@ -63,7 +63,7 @@ class notice
 			elseif( $this->type=='PM' || $this->type=='User' )
 				$this->linkURL = 'profile.php?userID='.$this->linkID.'#message';
 			elseif( $this->type=='Group' )
-				$this->linkURL = 'group.php?groupId='.$this->linkID.'#message';
+				$this->linkURL = 'group.php?groupID='.$this->linkID.'#message';
 			else
 				$this->linkURL = '';
 		}

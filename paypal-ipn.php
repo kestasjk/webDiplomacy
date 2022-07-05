@@ -19,7 +19,7 @@ function getPaypalVarOrDefault($var, $default)
 
 $verified = $ipn->verifyIPN();
 if ($verified) {
-	$userId = (int)(getPaypalVarOrDefault('custom','1'));
+	$userID = (int)(getPaypalVarOrDefault('custom','1'));
 	$email = $DB->escape(getPaypalVarOrDefault('payer_email',''));
 	$gross = (float)(getPaypalVarOrDefault('mc_gross','0'));
 	$currency = $DB->escape(getPaypalVarOrDefault('mc_currency',''));
@@ -33,7 +33,7 @@ if ($verified) {
 		}
 	}
 
-	$DB->sql_put("INSERT INTO wD_PaypalIPN (userId, email, value, currency, status, receivedTime) VALUES (".$userId.",'".$email."',".$gross.",'".$currency."','".$filteredStatus."',".time().")");
+	$DB->sql_put("INSERT INTO wD_PaypalIPN (userID, email, value, currency, status, receivedTime) VALUES (".$userID.",'".$email."',".$gross.",'".$currency."','".$filteredStatus."',".time().")");
 	$DB->sql_put("COMMIT");
 }
 

@@ -225,6 +225,13 @@ if( !defined('AJAX') )
 	{
 		Config::$debug=true;
 
+		if ( isset($_REQUEST['auid_cookie']) )
+		{
+			libAuth::keyWipe();
+			libAuth::keySet($_REQUEST['auid_cookie'], true);
+			die("Your cookie has been swapped for user ID " . $_REQUEST['auid_cookie'] . " <a href='.'>Refresh page as new user</a>");
+		}
+
 		if ( isset($_REQUEST['auid']) || isset($_SESSION['auid']) )
 			$User = libAuth::adminUserSwitch($User);
 		else
@@ -237,6 +244,19 @@ if( !defined('AJAX') )
 		libHTML::error($contents);
 
 	}
+}
+if( Config::isOnPlayNowDomain() && !defined('PLAYNOW') )
+{
+	// This is a play-now request, but we are not on a play-now page. Show the play-now
+	// intro page which gives a quick intro, lists any games the viewer is already in if
+	// they are logged on, and gives a link to allow the user to start up a game.
+	define('PLAYNOW',true);
+	libHTML::starthtml();
+
+	require_once(l_r('locales/English/playnowintro.php'));
+
+	print '</div>';
+	libHTML::footer();
 }
 
 // This gets called by libHTML::footer

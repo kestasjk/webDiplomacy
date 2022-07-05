@@ -23,6 +23,11 @@
  * @subpackage Forms
  */
 
+// Check whether we're in play-now mode:
+define('IN_CODE',true);
+require_once('config.php');
+if( Config::isOnPlayNowDomain() ) define('PLAYNOW',true);
+
 require_once('header.php');
 
 global $User, $Misc, $DB;
@@ -31,6 +36,45 @@ if ( $Misc->Panic )
 {
 	libHTML::notice(l_t('Game creation disabled'), 
 	l_t("Game creation has been temporarily disabled while we take care of an unexpected problem. Please try again later, sorry for the inconvenience."));
+}
+
+if( defined('PLAYNOW') )
+{
+	if( !isset($User) || $User->type['Guest'] || !$User->type['User'] )
+	{
+		// Make a User
+		// Save their key, if present
+		// Until no key
+		// Set their new key their key
+		
+		//libAuth::keyWipe();
+		// Generate user key
+		$acct = 'diplonow_'.round(rand(0,100000));
+		while( 0 != $DB->sql_row("SELECT COUNT(1) FROM wD_Users WHERE username='" . $acct . "'")[0] )
+		{
+			$acct = 'diplonow_'.round(rand(0,100000));
+		}
+		$pass = (string)(rand(0,1000000000)); 
+		//$DB->sql_put("INSERT INTO wd_Users (username,type,email,points,comment,homepage,timejoined,timeLastSessionEnded,password) VALUES ('".$acct."', 'User', '".$acct."', 0, '', '', ".time().", ".time().", UNHEX('".$passHash."'));");
+		$DB->sql_put("INSERT INTO wD_Users(
+			`username`,`email`,`points`,`comment`,`homepage`,`hideEmail`,`timeJoined`,`locale`,`timeLastSessionEnded`,`lastMessageIDViewed`,`password`,`type`,`notifications`,`muteReports`,`silenceID`,`cdCount`,`nmrCount`,`cdTakenCount`,`phaseCount`,`gameCount`,`reliabilityRating`,`deletedCDs`,`tempBan`,`emergencyPauseDate`,`yearlyPhaseCount`,`tempBanReason`,`optInFeatures`
+			)
+			SELECT '".$acct."' `username`,'".$acct."' `email`, 100 `points`,`comment`,`homepage`,`hideEmail`,`timeJoined`,`locale`,".time()." `timeLastSessionEnded`,".time()."`lastMessageIDViewed`,UNHEX('".libAuth::pass_Hash($pass)."'),'User' `type`,`notifications`,`muteReports`,`silenceID`,`cdCount`,`nmrCount`,`cdTakenCount`,`phaseCount`,`gameCount`,`reliabilityRating`,`deletedCDs`,`tempBan`,`emergencyPauseDate`,`yearlyPhaseCount`,`tempBanReason`,1
+			FROM wD_Users
+			WHERE id = 1");
+		list($newUserID) = $DB->sql_row("SELECT LAST_INSERT_ID()");
+		
+		//$NewUser = new User($newUserID);
+		$key = libAuth::userPass_Key($acct, $pass); // Password is never uysed
+		
+
+		$cookieKey = $key;//libAuth::generateKey($newUserID, $pass);
+		setcookie('wD-Key',$cookieKey,time()+365*24*60*60);
+
+		global $User;
+		$User = new User($newUserID);
+	}
+	$_REQUEST['newGame'] = array('variantID'=>1, 'name'=>$User->username, 'countryID'=>0);
 }
 
 if( !$User->type['User'] )
@@ -121,7 +165,10 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			}
 			$currCountry += 1;
 		}
-		$Game->Members->joinedRedirect();
+		// Get the game started straight away
+		$DB->sql_put('UPDATE wD_Games SET processTime = ' . time() . ' WHERE id = ' . $Game->id);
+		$MC->append('processHint',','.$Game->id);
+		$Game->Members->joinedRedirect(true); // When playing against AI it's going to be classic, so go straight into the beta UI
 	}
 	catch(Exception $e)
 	{

@@ -578,7 +578,7 @@ class processMembers extends Members
 		else {
 			$page = "board.php";
 		}
-		header('refresh: 4; url='.$page.'?gameID='.$this->Game->id);
+		header('refresh: 3; url='.$page.'?gameID='.$this->Game->id);
 		$message = '<p class="notice">'.l_t('You are being redirected to %s. Good luck!','<a href="'.$page.'?gameID='.$this->Game->id.'">'.$this->Game->name.'</a>').'</p>';
 
 		libHTML::notice(l_t("Joined %s",$this->Game->name), $message);
@@ -591,9 +591,12 @@ class processMembers extends Members
 	{
 		global $DB;
 
+		// Don't count games against bots
+		if( $this->Game->playerTypes == 'MemberVsBots' ) return;
+
 		// enter a turn for each active player with orders
-		$DB->sql_put("INSERT INTO wD_TurnDate (gameID, userID, countryID, turn, turnDateTime)
-				SELECT m.gameID,m.userID,m.countryID,".$this->Game->turn.",".time()."
+		$DB->sql_put("INSERT INTO wD_TurnDate (gameID, userID, countryID, turn, turnDateTime, isInReliabilityPeriod)
+				SELECT m.gameID,m.userID,m.countryID,".$this->Game->turn.",".time().", 1
 				FROM wD_Members m
 				WHERE m.gameID = ".$this->Game->id."
 					AND ( m.status='Playing' OR m.status='Left' )
@@ -654,6 +657,9 @@ class processMembers extends Members
 	function handleNMRs()
 	{
 		global $DB;
+
+		// Bot games don't factor into NMR calcs
+		if( $this->Game->playerTypes == "MemberVsBots" ) return;
 
 		// Check if there is at least one active NMR and for that case reduce the excuses of all active members with NMRs and set members with no excuses as left.
 		$this->activeNMRs = false;
@@ -790,7 +796,6 @@ class processMembers extends Members
 	function processSummary()
 	{
 		$a=array(
-			'votesPassed'=>implode(',',$this->votesPassed()),
 			'ready'=>($this->isReady()?'true':'false'),
 			'members'=>array()
 		);

@@ -32,7 +32,7 @@ require_once(l_r('objects/basic/set.php'));
 class Group
 {
 	/**
-	 * The member ID
+	 * The group ID
 	 * @var int
 	 */
 	var $id;
@@ -43,6 +43,12 @@ class Group
 	var $name;
 
     static $validTypes = array('Person','Family','School','Work','Other','Unknown');
+
+	/**
+	 * The game ID, if applicable
+	 * @var int|null
+	 */
+	var $gameID;
 
 	/**
 	 * The type of group
@@ -88,7 +94,25 @@ class Group
 	 * Who owns this group
      * @var int
 	 */
-	var $ownerUserId;
+	var $ownerUserID;
+
+	/**
+	 * Who owns this group, the country ID if the owner is from a game
+     * @var int|null
+	 */
+	var $ownerCountryID;
+
+	/**
+	 * The variant ID of the game, if applicable
+	 * @var int|null
+	 */
+	var $variantID;
+
+	/**
+	 * Is the game anonymous 'Yes'/'No'/NULL
+	 * @var string|null
+	 */
+	var $anon;
 
 	/**
 	 * An array of GroupUser objects for this group
@@ -98,10 +122,64 @@ class Group
 	var $GroupUsers;
 
 	/**
+	 * Who owns this group, the country ID if the owner is from a game
+     * @var int|null
+	 */
+	var $ownerUsername;
+
+	/**
+	 * Who owns this group, the country ID if the owner is from a game
+     * @var int|null
+	 */
+	var $modUsername;
+
+	/**
+	 * This is called if a suspicion is submitted directly from a game. The intention is that when created this way 
+	 * suspicions can be created for anonymous games, tying them to the user IDs while keeping them anonymous by
+	 * linking to the gameID and getting the country.
+	 * 
+	 * @return int ID of the group created
+	 */
+	static function createSuspicionFromGame($gameID, $countriesSuspected, $suspicionStrength, $explanation, $suspectingCountryID = null )
+	{
+		global $DB, $User;
+
+		$gameID = (int)$gameID;
+		$filteredCountriesSuspected = array();
+		foreach($countriesSuspected as $countrySuspected)
+			$filteredCountriesSuspected[] = (int)$countrySuspected;
+		$countriesSuspected = $filteredCountriesSuspected;
+		unset($filteredCountriesSuspected);
+		$suspicionStrength = (int) $suspicionStrength;
+		// $explanation = Pass this in as-is, will be filtered within
+		
+		// Take the gameID and countries and get the user IDs
+		$Variant = libVariant::loadFromGameID($gameID);
+		$Game = $Variant->Game($gameID);
+
+		$suspectedUsers = array();
+		foreach($countriesSuspected as $countrySuspected)
+		{
+			$suspectedUsers[$countrySuspected] = new User($Game->Members->ByCountryID[$countrySuspected]->userID);
+		}
+	
+		$groupID = self::create('Unknown', $Game->name . ' - #' . $Game->turn, $explanation, $Game->id, $Game->id, $suspectingCountryID);
+		$Group = new Group($groupID);
+		foreach($suspectedUsers as $countrySuspected=>$suspectedUser)
+		{
+			$Group->userAdd($User, $suspectedUser, $suspicionStrength, $countrySuspected);
+		}
+
+		return $groupID;
+	}
+
+
+
+	/**
 	 * Validate the inputs and permissions and create a group in the DB, returning an ID, or else throw exception
 	 * @return int ID of the group created
 	 */
-	static function create($groupType, $groupName, $groupDescription, $groupGameReference)
+	static function create($groupType, $groupName, $groupDescription, $groupGameReference, $gameID = null, $createdByCountryID = null)
 	{
 		global $User, $DB;
 		if( Group::canUserCreate($User) )
@@ -121,15 +199,15 @@ class Group
 				$groupDescription .= '<br />Game Reference: ' . $groupGameReference;
 
 				$groupName = $DB->msg_escape($groupName);
-				$DB->sql_put("INSERT INTO wD_Groups (`name`,isActive,`type`,`display`,ownerUserId,timeCreated,timeChanged,`description`) VALUES ('".$groupName."',1,'" .$groupType ."','Moderators',".$User->id.",".time().",".time().",'".$groupDescription."')");
-				list($groupId) = $DB->sql_row("SELECT LAST_INSERT_ID()");
-				return $groupId;
+				$DB->sql_put("INSERT INTO wD_Groups (`name`,isActive,`type`,`display`,ownerUserID,timeCreated,timeChanged,`description`,`gameID`,ownerCountryID) VALUES ('".$groupName."',1,'" .$groupType ."','Moderators',".$User->id.",".time().",".time().",'".$groupDescription."',".($gameID == null ? "NULL" : $gameID).",".($createdByCountryID == null ? "NULL" : $createdByCountryID).")");
+				list($groupID) = $DB->sql_row("SELECT LAST_INSERT_ID()");
+				return $groupID;
 			}
 			throw new Exception("Group type provided is invalid.");
 		}
 		throw new Exception("User does not have permission to create groups.");
 	}
-	public function userAdd($userAdding, $userToBeAdded, $groupUserStrength = 0)
+	public function userAdd($userAdding, $userToBeAdded, $groupUserStrength = 0, $countrySuspected = null)
 	{
 		global $DB;
 		if( !$this->canUserAdd($userAdding, $userToBeAdded) )
@@ -146,15 +224,16 @@ class Group
 		$modWeighting = 0;
 		if( $userAdding->type['Moderator'] ) $modWeighting = $groupUserStrength;
 		if( $userAdding->id == $userToBeAdded->id ) $userWeighting = $groupUserStrength;
-		if( $userAdding->id == $this->ownerUserId ) $ownerWeighting = $groupUserStrength;
+		if( $userAdding->id == $this->ownerUserID ) $ownerWeighting = $groupUserStrength;
 		
-		$DB->sql_put("INSERT INTO wD_GroupUsers (userId, groupId, isActive, userWeighting, ownerWeighting, modWeighting, createdByUserId, timeChanged, timeCreated) VALUES (".
+		$DB->sql_put("INSERT INTO wD_GroupUsers (userID, groupID, isActive, userWeighting, ownerWeighting, modWeighting, timeChanged, timeCreated, countryID) VALUES (".
 			$userToBeAdded->id.", ". 
 			$this->id.", ".
 			"1, ".$userWeighting.", ".$ownerWeighting.", ".$modWeighting.", ".
-			$userAdding->id.", ".
 			time().", ".
-			time().") ON DUPLICATE KEY UPDATE timeChanged = VALUES(timeChanged)");
+			time().", ".
+			($countrySuspected == null ? "NULL":$countrySuspected).
+			") ON DUPLICATE KEY UPDATE timeChanged = VALUES(timeChanged)");
 	}
 
 	static private function canUserCreate($User)
@@ -175,7 +254,7 @@ class Group
 
 		if( !$userModifying->type['User'] ) return false;
 
-		if( $this->ownerUserId == $userModifying->id ) return true;
+		if( $this->ownerUserID == $userModifying->id ) return true;
 
 		return false;
 	}
@@ -211,11 +290,11 @@ class Group
 	}
 	private function canUserUpdateUserWeighting($userUpdating, $groupUserToUpdate)
 	{
-		return ( $userUpdating->id == $groupUserToUpdate->userId );
+		return ( $userUpdating->id == $groupUserToUpdate->userID );
 	}
 	private function canUserUpdateOwnerWeighting($userUpdating)
 	{
-		return ( $userUpdating->id == $this->ownerUserId );
+		return ( $userUpdating->id == $this->ownerUserID );
 	}
 	private function canUserUpdateModWeighting($userUpdating)
 	{
@@ -230,7 +309,7 @@ class Group
 		
 		if( $this->canUserUpdateUserWeighting($userUpdating, $groupUserToUpdate) )
 		{
-			$DB->sql_put("UPDATE wD_GroupUsers SET userWeighting = " . $newWeighting . ", timeChanged = ".time()." WHERE userId = ". $groupUserToUpdate->userId." AND groupId = ".$groupUserToUpdate->groupId);
+			$DB->sql_put("UPDATE wD_GroupUsers SET userWeighting = " . $newWeighting . ", timeChanged = ".time()." WHERE userID = ". $groupUserToUpdate->userID." AND groupID = ".$groupUserToUpdate->groupID);
 		}
 	}
 	public function userUpdateOwnerWeighting($userUpdating, $groupUserToUpdate, $newWeighting)
@@ -242,7 +321,7 @@ class Group
 		
 		if( $this->canUserUpdateOwnerWeighting($userUpdating, $groupUserToUpdate) )
 		{
-			$DB->sql_put("UPDATE wD_GroupUsers SET ownerWeighting = " . $newWeighting . ", timeChanged = ".time()." WHERE userId = ". $groupUserToUpdate->userId." AND groupId = ".$groupUserToUpdate->groupId);
+			$DB->sql_put("UPDATE wD_GroupUsers SET ownerWeighting = " . $newWeighting . ", timeChanged = ".time()." WHERE userID = ". $groupUserToUpdate->userID." AND groupID = ".$groupUserToUpdate->groupID);
 		}
 	}
 	public function userUpdateModWeighting($userUpdating, $groupUserToUpdate, $newWeighting)
@@ -254,23 +333,23 @@ class Group
 		
 		if( $this->canUserUpdateModWeighting($userUpdating, $groupUserToUpdate) )
 		{
-			$DB->sql_put("UPDATE wD_GroupUsers SET modWeighting = " . $newWeighting . ", modUserId = ".$userUpdating->id.", timeChanged = ".time()." WHERE userId = ". $groupUserToUpdate->userId." AND groupId = ".$groupUserToUpdate->groupId);
+			$DB->sql_put("UPDATE wD_GroupUsers SET modWeighting = " . $newWeighting . ", modUserID = ".$userUpdating->id.", timeChanged = ".time()." WHERE userID = ". $groupUserToUpdate->userID." AND groupID = ".$groupUserToUpdate->groupID);
 		}
 	}
 	public function canUserComment($userCommenting)
 	{
 		if( $userCommenting->type['Moderator'] ) return true;
 
-		if( $this->ownerUserId == $userCommenting->id ) return true;
+		if( $this->ownerUserID == $userCommenting->id ) return true;
 
 		foreach( $this->GroupUsers as $groupUser )
 		{
-			if( $groupUser->userId == $userCommenting->id ) return true;
+			if( $groupUser->userID == $userCommenting->id ) return true;
 		}
 
 		return false;
 	}
-	private static $SELECTSQL = "SELECT id, `name`, `type`, isActive, `description`, moderatorNotes, timeCreated, timeChanged, ownerUserId FROM wD_Groups ";
+	
 	/**
 	 * Create a Group object
 	 * @param int|array $id Group id, or an array containing the group data
@@ -281,11 +360,31 @@ class Group
 
 		if( !is_array($id) )
 		{
-			$row = $DB->sql_hash(self::$SELECTSQL . " WHERE id = " . intval($id));
-			if( !$row )
+			$row = $DB->sql_hash("SELECT 
+				gr.id, 
+				gr.`name`, 
+				gr.`type`, 
+				gr.isActive, 
+				gr.`description`, 
+				gr.moderatorNotes, 
+				gr.timeCreated, 
+				gr.timeChanged, 
+				gr.ownerUserID, 
+				gr.gameID, 
+				gr.ownerCountryID,
+				g.variantID,
+				g.anon
+			FROM wD_Groups gr 
+			LEFT JOIN wD_Games g ON g.id = gr.gameID 
+			WHERE gr.id = " . intval($id));
+				
+			if( !$row ) throw new Exception("Group ID not found.");
+
+			if( $row['gameID'] != null )
 			{
-				throw new Exception("Group ID not found.");
-			}
+				$Variant = libVariant::loadFromGameID($row['gameID']);
+				$Game = $Variant->Game($row['gameID']);
+			}			
 		}
 		else
 		{
@@ -301,27 +400,70 @@ class Group
 	}
 	private function loadUsers()
 	{
-		$this->GroupUsers = self::getUsers("groupId = " . $this->id);
+		$this->GroupUsers = self::getUsers("gr.id = " . $this->id, $this);
 	}
-	public static function getUsers($whereClause )
+	// This function has to operate to get the users for a group page with full details,
+	// and also get a list of group-users for multiple groups to show on a user profile page etc
+	public static function getUsers($whereClause, $Group = null)
 	{
-		global $DB;
+		global $DB, $User;
 
-		$groupUsers = array();
-		$users = $DB->sql_tabl("SELECT gr.name groupName, gr.type groupType, g.userId, g.groupId, g.isActive, g.userWeighting, g.ownerWeighting, g.modWeighting, g.createdByUserId, g.timeCreated, g.timeChanged, g.modUserId, ".
-			// Request the details needed to render links:
-			"u.username userUsername, u.points userPoints, u.type userType, ".
-			"o.username ownerUsername, o.points ownerPoints, o.type ownerType, ".
-			"m.username modUsername, m.points modPoints, m.type modType ".
+		// This is pretty nasty because it associates relations between user IDs, but for anonymous games it has to only show the country info and hide any user ID info,
+		// but internally it has to be user ID bound or else a user could take over a country and also take over the suspicion.
+		$users = $DB->sql_tabl("SELECT g.userID, g.countryID, g.groupID, g.isActive, g.userWeighting, g.ownerWeighting, g.modWeighting, g.timeCreated, g.timeChanged, g.modUserID, ".
+			"gr.id Group_id, ".
+			"gr.name Group_name, ".
+			"gr.type Group_type, ".
+			"gr.isActive Group_isActive, ".
+			"gr.gameID Group_gameID, ".
+			"gr.display Group_display, ".
+			"gr.timeCreated Group_timeCreated, ".
+			"gr.ownerUserID Group_ownerUserID, ".
+			"gr.ownerCountryID Group_ownerCountryID, ".
+			"gr.timeChanged Group_timeChanged, ".
+			"u.username userUsername, ".
+			"o.username Group_ownerUsername, ".
+			"m.username Group_modUsername ".
 			"FROM wD_GroupUsers g ".
-			"INNER JOIN wD_Groups gr ON gr.id = g.groupId ".
-			"INNER JOIN wD_Users u ON u.id = g.userId ".
-			"INNER JOIN wD_Users o ON o.id = g.createdByUserId ".
-			"LEFT JOIN wD_Users m ON m.id = g.modUserId ".
-			"WHERE ".$whereClause);
+			"INNER JOIN wD_Groups gr ON gr.id = g.groupID ".
+			"INNER JOIN wD_Users u ON u.id = g.userID ".
+			"INNER JOIN wD_Users o ON o.id = gr.ownerUserID ".
+			"LEFT JOIN wD_Users m ON m.id = g.modUserID ".
+			"LEFT JOIN wD_Games game ON game.id = gr.gameID ".
+			"LEFT JOIN wD_Members ucountry ON ucountry.gameID = gr.gameID AND ucountry.userID = g.userID ".
+			"LEFT JOIN wD_Members ocountry ON ocountry.gameID = gr.gameID AND ocountry.userID = gr.ownerUserID ".
+			"LEFT JOIN wD_Members modcountry ON modcountry.gameID = gr.gameID AND modcountry.userID = ".($User->type['Moderator'] ? $User->id : -1 )." ".
+			// Either this isn't game related, or it's a non-anonymous game, or the user is a moderator who isn't in the game:
+			"WHERE ( ( game.id IS NULL OR game.anon='No' ) ".($User->type['Moderator'] ? " OR modcountry.id IS NULL " : "")." ) ".
+			// And whatever else (e.g. show all the user's suspicions and relations if on the user's relation page,
+			// or show all the user's suspicions if another user is looking at their profile)
+			"AND (".$whereClause.")");
+			// Don't show records relating to anonymous games unless the viewer is a mod
+		$groupsCache = array();
+		$groupUsers = array();
 		while($userRec = $DB->tabl_hash($users) )
 		{
-			$groupUsers[] = new GroupUser($userRec);
+			if( $Group == null )
+			{
+				if( !isset($groupsCache[$userRec['Group_id']]) )
+				{
+					$groupRec = array();
+					foreach($userRec as $key=>$value)
+					{
+						if( strlen($key) > 6 && substr($key,0,6) == 'Group_' )
+						{
+							$groupRec[substr($key, 6)] = $value;
+						}
+					}
+					$groupsCache[$userRec['Group_id']] = new Group($groupRec);
+				}
+				$currentGroup = $groupsCache[$userRec['Group_id']];
+			}
+			else
+			{
+				$currentGroup = $Group;
+			}
+			$groupUsers[] = new GroupUser($userRec, $currentGroup);
 		}
 		return $groupUsers;
 	}
@@ -329,7 +471,7 @@ class Group
 	{
 		global $DB;
 		
-		$groups = $DB->sql_tabl('SELECT id, `name`, `type` FROM wD_Groups WHERE ownerUserId = '.$User->id.($activeOnly?' AND isActive = 1 ':' ').' ORDER BY timeChanged DESC');
+		$groups = $DB->sql_tabl('SELECT id, `name`, `type` FROM wD_Groups WHERE ownerUserID = '.$User->id.($activeOnly?' AND isActive = 1 ':' ').' ORDER BY timeChanged DESC');
 		$groupNames = array();
 		while($row = $DB->tabl_hash($groups))
 		{
@@ -346,7 +488,7 @@ class Group
 	{
 		global $DB;
 		
-		$groups = $DB->sql_tabl('SELECT g.id, g.`name`, g.`type` FROM wD_Groups g INNER JOIN wD_GroupUsers u ON u.groupId = g.id WHERE u.userId = '.$User->id.($activeOnly?' AND g.isActive = 1 AND u.isActive = 1 ':' ').' AND `type`<>"Unknown" AND (modWeighting > 0.0 OR userWeighting > 0.0)  ORDER BY g.timeChanged DESC');
+		$groups = $DB->sql_tabl('SELECT g.id, g.`name`, g.`type` FROM wD_Groups g INNER JOIN wD_GroupUsers u ON u.groupID = g.id WHERE u.userID = '.$User->id.($activeOnly?' AND g.isActive = 1 AND u.isActive = 1 ':' ').' AND `type`<>"Unknown" AND (modWeighting > 0.0 OR userWeighting > 0.0)  ORDER BY g.timeChanged DESC');
 		$groupNames = array();
 		while($row = $DB->tabl_hash($groups))
 		{
@@ -362,7 +504,7 @@ class Group
 	{
 		global $DB;
 		
-		$groups = $DB->sql_tabl('SELECT id, `name` FROM wD_Groups WHERE ownerUserId = '.$User->id.($activeOnly?' AND isActive = 1 ':' ').' AND `type`="Unknown" ORDER BY id DESC');
+		$groups = $DB->sql_tabl('SELECT id, `name` FROM wD_Groups WHERE ownerUserID = '.$User->id.($activeOnly?' AND isActive = 1 ':' ').' AND `type`="Unknown" ORDER BY id DESC');
 		$groupNames = array();
 		while($row = $DB->tabl_hash($groups))
 		{
@@ -375,7 +517,7 @@ class Group
 	{
 		global $DB;
 		
-		$groups = $DB->sql_tabl('SELECT g.id, g.`name`, g.`type` FROM wD_Groups g INNER JOIN wD_GroupUsers u ON u.groupId = g.id WHERE u.userId = '.$User->id.($activeOnly?' AND g.isActive = 1 AND u.isActive = 1 ':' ').' AND (modWeighting > 0.0 OR userWeighting > 0.0)  ORDER BY g.timeChanged DESC');
+		$groups = $DB->sql_tabl('SELECT g.id, g.`name`, g.`type` FROM wD_Groups g INNER JOIN wD_GroupUsers u ON u.groupID = g.id WHERE u.userID = '.$User->id.($activeOnly?' AND g.isActive = 1 AND u.isActive = 1 ':' ').' AND (modWeighting > 0.0 OR userWeighting > 0.0)  ORDER BY g.timeChanged DESC');
 		$groupNames = array();
 		while($row = $DB->tabl_hash($groups))
 		{
@@ -386,17 +528,25 @@ class Group
 	}
 	public function outputUserTable($User = null)
 	{
-		return self::outputUserTable_static($this->GroupUsers, $User);
+		$Game = null;
+		if( $this->gameID != null )
+		{
+			// This is associated with a game; if it is an anonymous game
+			// we need to ensure the user ID is not shown.
+			$Variant = libVariant::loadFromGameID($this->gameID);
+			$Game = $Variant->Game($this->gameID);
+		}
+		return self::outputUserTable_static($this->GroupUsers, $User, $Game);
 	}
-	public static function outputUserTable_static($groupUsers, $User = null)
+	public static function outputUserTable_static($groupUsers, $User = null, $Game)
 	{
-		$userId = -1;
+		$userID = -1;
 		$isModerator = false;
-		$creatorId = -1;
+		$creatorID = -1;
 
 		if( $User != null )
 		{
-			$userId = $creatorId = $User->id;
+			$userID = $creatorID = $User->id;
 			$isModerator = $User->type['Moderator'];	
 		}
 		
@@ -406,18 +556,19 @@ class Group
 		foreach($groupUsers as $groupUser)
 		{
 			
+			
 			$buf .= '<tr>';
 			$buf .= '<td style="text-align:right">';
-			$buf .= '<a href="group.php?groupId='.$groupUser->groupId.'">#'.$groupUser->groupId.' '.$groupUser->groupName.'</a>';
+			$buf .= '<a href="group.php?groupID='.$groupUser->groupID.'">#'.$groupUser->groupID.' '.$groupUser->Group->name.'</a>';
 			$buf .= ' <br /> ';
-			$buf .= $groupUser->groupType;
+			$buf .= $groupUser->Group->type;
 			$buf .= '</td>';
 			$buf .= '<td>';
-			$buf .= User::profile_link_static($groupUser->userUsername, $groupUser->userId, $groupUser->userType, $groupUser->userPoints);
+			$buf .= $groupUser->userUsername; //User::profile_link_static($groupUser->userUsername, $groupUser->userID, $groupUser->userType, $groupUser->userPoints);
 			$buf .= ' <br /> ';
-			if( $userId == $groupUser->userId )
+			if( $userID == $groupUser->userID )
 			{
-				$buf .= self::getSelectWeighting('user', $groupUser->userId, $groupUser->userWeighting);
+				$buf .= self::getSelectWeighting('user', $groupUser->userID, $groupUser->userWeighting);
 			}
 			else
 			{
@@ -426,11 +577,11 @@ class Group
 			
 			$buf .= '</td>';
 			$buf .= '<td>';
-			$buf .= User::profile_link_static($groupUser->ownerUsername, $groupUser->createdByUserId, $groupUser->ownerType, $groupUser->ownerPoints);
+			$buf .= $groupUser->Group->ownerUsername; //User::profile_link_static($groupUser->ownerUsername, $groupUser->ownerUserID, $groupUser->ownerType, $groupUser->ownerPoints);
 			$buf .= ' <br /> ';
-			if( $userId == $groupUser->createdByUserId )
+			if( $userID == $groupUser->Group->ownerUserID )
 			{
-				$buf .= self::getSelectWeighting('owner', $groupUser->userId, $groupUser->ownerWeighting);
+				$buf .= self::getSelectWeighting('owner', $groupUser->userID, $groupUser->ownerWeighting);
 			}
 			else
 			{
@@ -439,9 +590,9 @@ class Group
 			
 			$buf .= '</td>';
 			$buf .= '<td>';
-			if( $groupUser->modUserId )
+			if( $groupUser->modUserID )
 			{
-				$buf .= User::profile_link_static($groupUser->modUsername, $groupUser->modUserId, $groupUser->modType, $groupUser->modPoints);
+				$buf .= $groupUser->modUsername; //User::profile_link_static($groupUser->modUsername, $groupUser->modUserID, $groupUser->modType, $groupUser->modPoints);
 			}
 			else
 			{
@@ -450,7 +601,7 @@ class Group
 			$buf .= ' <br /> ';
 			if( $isModerator )
 			{
-				$buf .= self::getSelectWeighting('mod', $groupUser->userId, $groupUser->modWeighting);
+				$buf .= self::getSelectWeighting('mod', $groupUser->userID, $groupUser->modWeighting);
 			}
 			else
 			{
@@ -486,10 +637,10 @@ class Group
 		$closestWeighting = self::getClosestWeighting($givenWeighting);
 		return self::$allowedWeightings[$closestWeighting];
 	}
-	private static function getSelectWeighting($weightingType, $userId, $weighting)
+	public static function getSelectWeighting($weightingType, $userID, $weighting)
 	{
 		$closestWeighting = self::getClosestWeightingName($weighting);
-		$buf = '<select name="'.$weightingType.'Weighting'.$userId.'">';
+		$buf = '<select name="'.$weightingType.'Weighting'.$userID.'">';
 		foreach(self::$allowedWeightings as $weighting=>$weightingName)
 		{
 			$buf .= '<option value=';

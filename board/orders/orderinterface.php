@@ -55,7 +55,9 @@ class OrderInterface
 		global $Game, $User, $Member;
 		return self::newContext($Game, $Member, $User);
 	}
-	public static function newContext(Game $Game, userMember $Member, User $User) {
+//	public static function newContext(Game $Game, userMember $Member, User $User) {
+// Specifying that userMember was required would give a rare error that userMember is expected but processMember received from board.php(117)
+	public static function newContext(Game $Game, $Member, User $User) {
 		$OI = $Game->Variant->OrderInterface($Game->id, $Game->Variant->id, $User->id, $Member->id, $Game->turn, $Game->phase, $Member->countryID,
 			$Member->orderStatus, $Game->processTime+6*60*60);
 		return $OI;

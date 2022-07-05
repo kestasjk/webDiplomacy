@@ -137,6 +137,31 @@ class searchMemberStatus extends searchItemCheckbox
 			$WHERE[] = "NOT m.status='".$uncheck."'";
 	}
 }
+class searchPlayerTypes extends searchItemCheckbox
+{
+	public $name='playerTypes';
+	protected $label='Bot Status';
+	protected $options=array('Members'=>'Humans only','Mixed'=>'Humans and bots','MemberVsBots'=>'Human s bots');
+
+	//protected $locks=array('New');
+
+	protected $defaults=array(
+			'My games'=>array('Members','Mixed','MemberVsBots'),
+			'New'=>array('Members','Mixed'),
+			'Notifications'=>array('Members','Mixed','MemberVsBots'),
+			'Joinable'=>array('Members','Mixed'),
+			'Active'=>array('Members','Mixed'),
+			'Finished'=>array('Members','Mixed'),
+			'Profile'=>array('Members','Mixed'),
+		);
+
+	function sql(&$TABLES,&$WHERE,&$ORDER)
+	{
+		$unchecked = $this->invertedChecks();
+		foreach($unchecked as $uncheck)
+			$WHERE[] = "NOT g.playerTypes='".$uncheck."'";
+	}
+}
 class searchActivityTypes extends searchItemRadio
 {
 	public $name='activityTypes';

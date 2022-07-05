@@ -86,116 +86,6 @@ class Members
 
 	static $votes = array('Draw','Pause','Cancel','Concede');
 
-	function votesPassed()
-	{
-		global $DB;
-		$votes=self::$votes;
-
-		$concede=0;
-
-		//gets the number of players that are still playing for use of the bot
-		$playerCount = count($this->ByStatus['Playing']);
-
-		//initialize an int to keep track of how many bots are playing 
-		$botCount = 0; 
-		foreach($this->ByStatus['Playing'] as $Member)
-		{
-			$userPassed = new User($Member->userID);
-
-			//Bot votes are handled differently
-			if($userPassed->type['Bot']) 
-			{
-				$botCount += 1;
-
-				//Each bot will automatically vote for a pause
-				$botVotes = array('Pause'); 
-				$botSC = $Member->supplyCenterNo;
-
-				//This loop checks to see if the bot is winning or tied for the lead, since it will not vote draw or cancel in these cases
-				foreach($this->ByStatus['Playing'] as $CurMember) 
-				{
-					if ($botSC < $CurMember->supplyCenterNo)
-					{
-						$botVotes = array('Draw','Pause','Cancel');
-					}
-				}
-
-				//This variable and the following query get the SC count for 2 years ago, which will be used to prevent bot stalemates
-				$oldSC = 0; 
-				list($oldSC) = $DB->sql_row("SELECT COUNT(ts.terrID) FROM wD_TerrStatusArchive ts INNER JOIN wD_Territories t ON ( ts.terrID = t.id ) 
-				WHERE t.supply='Yes' AND ts.countryID = ".$Member->countryID." AND ts.gameID = ".$this->Game->id." 
-				AND t.mapID=".$this->Game->Variant->mapID." AND ts.turn = ".max(0,$this->Game->turn - 4));
-
-				//A bot will draw or cancel if it is stalled out or if it is the first year
-				if ($oldSC >= $botSC || $this->Game->turn < 2) 
-				{
-					$botVotes = array('Draw','Pause','Cancel');
-				}
-				//A bot will always cancel in the first two years
-				elseif ($this->Game->turn < 4) 
-				{
-					$botVotes = array('Pause','Cancel');
-				}
-				$votes = array_intersect($votes, $botVotes);
-			}
-			else
-			{
-				$votes = array_intersect($votes, $Member->votes);
-				if (in_array('Concede',$Member->votes))	$concede++;
-			}
-		}
-
-		//This condition will force draw the game if the only players left are bots
-		if ($playerCount == $botCount) 
-		{
-			$votes = array('Draw');
-		}
-
-		if ($concede >= (count($this->ByStatus['Playing']) - 1) && ($concede > 0))
-		{
-			$votes[]='Concede';
-		}
-		
-		return $votes;
-	}
-
-	function processVotes() {
-		global $MC, $DB;
-		$Game = $this->Game;
-		if( $Game->Members->votesPassed() && $Game->phase!='Finished' )
-		{
-			$MC->append('processHint',','.$Game->id);
-
-			$DB->get_lock('gamemaster',1);
-
-			$DB->sql_put("UPDATE wD_Games SET attempts=attempts+1 WHERE id=".$Game->id);
-			$DB->sql_put("COMMIT");
-
-			require_once(l_r('gamemaster/game.php'));
-			$Game = $Game->Variant->processGame($Game->id);
-			try
-			{
-				$Game->applyVotes(); // Will requery votesPassed()
-				$DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$Game->id);
-				$DB->sql_put("COMMIT");
-			}
-			catch(Exception $e)
-			{
-				if( $e->getMessage() == "Abandoned" || $e->getMessage() == "Cancelled" )
-				{
-					assert($Game->phase=="Pre-game" || $e->getMessage() == "Cancelled");
-					$DB->sql_put("COMMIT");
-					return $e->getMessage();
-				}
-				else
-					$DB->sql_put("ROLLBACK");
-
-				throw $e;
-			}
-		}
-		return null;
-	}
-
 	function isReady()
 	{
 		foreach($this->ByStatus['Playing'] as $Member)
@@ -326,11 +216,10 @@ class Members
 				u.username AS username,
 				u.points AS points,
 				m.pointsWon as pointsWon,
-				IF(s.userID IS NULL,0,1) as online,
+				0 as online,
 				u.type as userType
 			FROM wD_Members m
 			INNER JOIN wD_Users u ON ( m.userID = u.id )
-			LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
 			WHERE m.gameID = ".$this->Game->id."
 			ORDER BY m.status ASC, m.supplyCenterNo DESC, ".
 			($this->Game->anon=='Yes' ? "m.countryID ASC" : "u.points DESC" ).

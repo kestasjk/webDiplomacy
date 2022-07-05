@@ -172,7 +172,6 @@ class Game
 	// Arrays of aggregate objects
 	/**
 	 * An array of Member(/processMember) objects indexed by countryID
-	 * @var array
 	 */
 	public $Members;
 
@@ -261,6 +260,24 @@ class Game
 	public $startTime;
 
 	/**
+	 * User id of the game director or null if no director
+	 * @var int|null
+	 */
+	public $directorUserID;
+
+	/**
+	 * User id of the tournament director or null if no director
+	 * @var int|null
+	 */
+	public $tournamentDirectorUserID;
+
+	/**
+	 * User id of the co-tournament director or null if no director
+	 * @var int|null
+	 */
+	public $tournamentCodirectorUserID;
+
+	/**
 	 * @param int/array $gameData The game ID of the game to load, or the array of its database row
 	 * @param string[optional] $lockMode The database locking phase to use; no locking by default
 	 */
@@ -328,6 +345,16 @@ class Game
 
 	private $isMemberInfoHidden;
 
+	/**
+	 * Is the given user ID a director of this game, either game director, tournament director or tournament codirector
+	 * @return boolean
+	 */
+	public function isDirector($userID)
+	{
+		return ($this->directorUserID != null && $this->directorUserID == $userID) 
+			|| ($this->tournamentDirectorUserID != null && $this->tournamentDirectorUserID == $userID) 
+			|| ($this->tournamentCodirectorUserID != null && $this->tournamentCodirectorUserID == $userID);
+	}
 	/**
 	 * Should members be hidden for this game and this viewer?
 	 *
@@ -511,8 +538,13 @@ class Game
 			g.minimumReliabilityRating,
 			g.excusedMissedTurns,
 			g.playerTypes,
-			g.startTime
+			g.startTime,
+			g.directorUserID ,
+			t.directorID tournamentDirectorUserID,
+			t.coDirectorID tournamentCodirectorUserID
 			FROM wD_Games g
+			LEFT JOIN wD_TournamentGames tg ON g.id = tg.gameID
+			LEFT JOIN wD_Tournaments t ON t.id = tg.tournamentID
 			WHERE g.id=".$this->id.' '.$this->lockMode);
 
 		if ( ! isset($row['id']) or ! $row['id'] )
