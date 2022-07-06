@@ -373,6 +373,7 @@ class GameState {
 							"Wait" => "Builds",
 							"Destroy" => "Builds");
 
+		$maxOrderTurn = -1;
 		while( $row = $DB->tabl_hash($orderTabl) )
 		{
 			$order = new \webdiplomacy_api\Order(
@@ -387,8 +388,55 @@ class GameState {
 				$row['viaConvoy'],
 				$row['success'],
 				$row['dislodged']);
-			$orderedUnit = $order->getOrderedUnit();
 			array_push($orders, $order);
+			if ($order->turn > $maxOrderTurn)
+				$maxOrderTurn = $order->turn;
+		}
+
+		// For drawn games and some won games (namely those won by concession), webdip duplicates
+		// the final phase's orders in its database. So, we heuristically detect when this is
+		// the case and filter them out. If the game is over, and the final phase of the game is a
+		// duplicate of the phase just before, then we delete all the final phase orders.
+		$gameIsOver = $this->gameOver == "Won" || $this->gameOver == "Drawn";
+		if ($gameIsOver && $maxOrderTurn >= 1) {
+			$maxTurnOrders = array();
+			$preMaxTurnOrders = array();
+			foreach ($orders as $order) {
+				if ($order->turn == $maxOrderTurn) {
+					$maxTurnOrders[$order->terrID] = $order;
+				}
+				else if ($order->turn == $maxOrderTurn - 1) {
+					$preMaxTurnOrders[$order->terrID] = $order;
+				}
+			}
+			$ordersAreDuplicate = true;
+			foreach ($maxTurnOrders as $terrID=>$order) {
+				if (!array_key_exists($terrID,$preMaxTurnOrders)) {
+					$ordersAreDuplicate = false;
+					break;
+				}
+				$order2 = $preMaxTurnOrders[$terrID];
+				if($order2->countryID != $order->countryID || 
+				   $order2->unitType != $order->unitType || 
+				   $order2->type != $order->type || 
+				   $order2->toTerrID != $order->toTerrID || 
+				   $order2->fromTerrID != $order->fromTerrID || 
+				   $order2->viaConvoy != $order->viaConvoy ||
+				   $order2->success != $order->success
+				) {
+					$ordersAreDuplicate = false;
+					break;
+				}
+			}
+			if ($ordersAreDuplicate) {
+				$orders = array_filter($orders, function($order) use ($maxOrderTurn) {
+					return $order->turn != $maxOrderTurn;
+				});
+			}
+		}
+
+		foreach ($orders as $order) {
+			$orderedUnit = $order->getOrderedUnit();
 			if ($orderedUnit)
 				$units[$order->turn][$order->phase][] = $orderedUnit;
 		}
@@ -485,8 +533,11 @@ class GameState {
 		// Deduce units for Retreats and Builds phases.
 		$nbFinalPhases = count($finalPhases);
 
-		// Updating previous units for all phases, except the last
-		for ($i = 0; $i < $nbFinalPhases - 1; ++$i) {
+		// Updating previous units for all phases.
+		// If the game is unfinished, don't compute the last phase, it was already filled in above.
+		// If the game is finished, then also compute data the last phase.
+		$finalPhaseIdx = $gameIsOver ? $nbFinalPhases - 1 : $nbFinalPhases - 2;
+		for ($i = 0; $i <= $finalPhaseIdx; ++$i) {
 
 		    // Resetting game board on movement phase
             if ($finalPhases[$i]['phase'] == 'Diplomacy') {
@@ -527,6 +578,18 @@ class GameState {
             }
             $finalPhases[$i]['units'] = $units;
 		}
+
+		// Append a extra phase with the final unit positions and no orders
+		if ($gameIsOver && $finalPhaseIdx >= 0) {
+			$data = array();
+			$data['centers'] = $finalPhases[$finalPhaseIdx]['centers'];
+			$data['units'] = $gameBoard->getUnits();
+			$data['orders'] = array();
+			$data['turn'] = $finalPhases[$finalPhaseIdx]['turn'];
+			$data['phase'] = "Finished";
+			$finalPhases[] = $data;
+		}
+
 		$this->phases = $finalPhases;
 	}
 
