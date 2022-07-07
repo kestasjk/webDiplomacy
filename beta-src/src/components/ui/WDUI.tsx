@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import { Box, IconButton, Link, useTheme, Badge } from "@mui/material";
 
 import WDPositionContainer from "./WDPositionContainer";
@@ -16,6 +16,7 @@ import WDOrderStatusControls from "./WDOrderStatusControls";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import WDHomeIcon from "./icons/WDHomeIcon";
 import WDBuildCounts from "./WDBuildCounts";
+import ModalViews from "../../enums/ModalViews";
 import {
   gameOverview,
   fetchGameMessages,
@@ -184,6 +185,10 @@ const WDUI: React.FC<WDUIProps> = function ({
     default:
       break;
   }
+
+  useEffect(() => {
+    setShowControlModal(true);
+  }, []);
   const popover = popoverTrigger.current ? (
     <WDPopover
       isOpen={showControlModal}
@@ -205,6 +210,9 @@ const WDUI: React.FC<WDUIProps> = function ({
         userCountry={userTableData}
         year={year}
         modalRef={modalRef}
+        defaultView={
+          pressType === "NoPress" ? ModalViews.INFO : ModalViews.PRESS
+        }
       >
         {null}
       </WDFullModal>
