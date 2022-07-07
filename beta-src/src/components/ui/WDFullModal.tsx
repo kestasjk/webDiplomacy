@@ -34,6 +34,7 @@ interface WDFullModalProps {
   userCountry: CountryTableData | null;
   year: GameOverviewResponse["year"];
   modalRef: React.RefObject<HTMLElement>;
+  defaultView: ModalViews;
 }
 
 const tabGroup: ModalViews[] = [
@@ -59,8 +60,9 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
   userCountry,
   year,
   modalRef,
+  defaultView,
 }): React.ReactElement {
-  const [view, setView] = useState(ModalViews.PRESS);
+  const [view, setView] = useState(defaultView);
   const onChangeView = (tab: ModalViews) => setView(tab);
   const [viewport] = useViewport();
   const device = getDevice(viewport);
