@@ -500,7 +500,7 @@ class processGame extends Game
 		global $DB;
 	
 		$newProcessTime = time() + 1440*60;
-		$minPhaseMinutes = $this->getMinPhaseMinutes();
+		$minPhaseMinutes = 1441;//$this->getMinPhaseMinutes();
 		if ($minPhaseMinutes < 1440)
 		{
 			$newProcessTime = time() + $minPhaseMinutes*60;
