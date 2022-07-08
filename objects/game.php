@@ -661,9 +661,31 @@ class Game
 		}
 	}
 
+	/**
+	 * Return the total number of minutes for the current phase
+	 * 
+	 * @return int
+	 */
 	protected function getCurPhaseMinutes()
 	{
 		if ($this->phaseMinutesRB != -1 && ($this->phase == "Retreats" || $this->phase == "Builds")) {
+			return $this->phaseMinutesRB;
+		}
+		else
+		{
+			return $this->phaseMinutes;
+		}
+	}
+
+	/**
+	 * Return the minimum number of minutes for a phase.
+	 * This should be used for calculating grace period.
+	 * 
+	 * @return int
+	 */
+	protected function getMinPhaseMinutes()
+	{
+		if ($this->phaseMinutesRB != -1) {
 			return $this->phaseMinutesRB;
 		}
 		else
