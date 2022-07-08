@@ -1,3 +1,5 @@
+CREATE DATABASE IF NOT EXISTS webdiplomacy;
+USE webdiplomacy;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wD_AccessLog` (
@@ -978,12 +980,16 @@ ALTER TABLE `wD_Backup_Games`
 ADD COLUMN `grCalculated` INT NOT NULL DEFAULT 0,
 ADD INDEX (`grCalculated`);
 
+/**************************************** Version 1.67 ****************************************/
+
 UPDATE `wD_Misc` SET `value` = '167' WHERE `name` = 'Version';
 
 ALTER TABLE `wD_GameMessages` ADD `phaseMarker` ENUM('Finished','Pre-game','Diplomacy','Retreats','Builds') NULL DEFAULT NULL AFTER `gameID`; 
 ALTER TABLE `wD_Backup_GameMessages` ADD `phaseMarker` ENUM('Finished','Pre-game','Diplomacy','Retreats','Builds') NULL DEFAULT NULL AFTER `gameID`; 
 
 ALTER TABLE `wD_Users` ADD `optInFeatures` int(10) UNSIGNED NOT NULL DEFAULT 0 AFTER `tempBanReason`;
+
+/**************************************** Version 1.68 ****************************************/
 
 UPDATE `wD_Misc` SET `value` = '168' WHERE `name` = 'Version';
 CREATE TABLE `wD_PaypalIPN` ( 
@@ -1107,5 +1113,11 @@ DELETE d FROM wD_MissedTurns d INNER JOIN wD_Games g ON g.id = d.gameID WHERE g.
 -- Period tracking to allow quick detection of changes in RRs when a missed turn moves over a threshold from e.g. being under a week old to over a week old
  ALTER TABLE wD_MissedTurns ADD COLUMN reliabilityPeriod TINYINT NULL DEFAULT -1;
  
+UPDATE `wD_Misc` SET `value` = '170' WHERE `name` = 'Version';
+
 ALTER TABLE `wD_Misc` CHANGE `value` `value` BIGINT(10) UNSIGNED NOT NULL; 
-UPDATE `wD_Misc` SET `value` = '169' WHERE `name` = 'Version';
+
+UPDATE `wD_Misc` SET `value` = '171' WHERE `name` = 'Version';
+
+ALTER TABLE `wD_Games` ADD COLUMN `phaseMinutesRB` smallint(5) DEFAULT -1 AFTER `phaseMinutes`;
+ALTER TABLE `wD_Backup_Games` ADD COLUMN `phaseMinutesRB` smallint(5) DEFAULT -1 AFTER `phaseMinutes`;

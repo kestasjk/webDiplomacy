@@ -28,16 +28,27 @@ export const getGameApiRequest = (
   queryParams: QueryParams,
   timeout?: number,
 ): Promise<AxiosResponse> =>
-  api.get(`../api.php?route=${route}&${buildQueryString(queryParams)}`, {
-    timeout,
-  });
+  api.get(
+    `${
+      process.env.REACT_APP_WD_BASE_URL
+    }/api.php?route=${route}&${buildQueryString(queryParams)}`,
+    {
+      timeout,
+    },
+  );
 
 export const postGameApiRequest = (
   route: ApiRoute,
   json: QueryParams,
   timeout?: number,
 ): Promise<AxiosResponse> =>
-  api.post(`../api.php?route=${route}`, json, { timeout });
+  api.post(
+    `${process.env.REACT_APP_WD_BASE_URL}/api.php?route=${route}`,
+    json,
+    {
+      timeout,
+    },
+  );
 
 const orderSubmission = axios.create({
   // baseURL: process.env.REACT_APP_WD_BASE_URL,
@@ -53,9 +64,14 @@ export const submitOrders = (
   // console.log({ submittedOrders: orders });
   if (Object.keys(queryParams).length) {
     return orderSubmission.post(
-      `../ajax.php?${buildQueryString(queryParams)}`,
+      `${process.env.REACT_APP_WD_BASE_URL}/ajax.php?${buildQueryString(
+        queryParams,
+      )}`,
       orders,
     );
   }
-  return orderSubmission.post("../ajax.php", orders);
+  return orderSubmission.post(
+    `${process.env.REACT_APP_WD_BASE_URL}/ajax.php`,
+    orders,
+  );
 };

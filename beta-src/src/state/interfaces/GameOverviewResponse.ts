@@ -22,6 +22,7 @@ interface GameOverviewResponse {
   pauseTimeRemaining: number | null | undefined;
   phase: string;
   phaseMinutes: number;
+  phaseMinutesRB: number;
   playerTypes: string;
   pot: IntegerRange<35, 666>;
   potType: string;
@@ -60,6 +61,7 @@ interface GameOverviewResponse {
   };
   variantID: number;
   year: number;
+  isTempBanned: boolean;
 }
 
 export default GameOverviewResponse;

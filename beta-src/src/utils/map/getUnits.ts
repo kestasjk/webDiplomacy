@@ -38,6 +38,9 @@ export interface Unit {
   unit: IUnit;
   drawMode: UnitDrawMode;
   movedFromTerrID: string | null;
+  // drawAsUnsaved is only present and set to true locally / internally when we
+  // want an order to be drawn in a way that indicates it is unsaved.
+  drawAsUnsaved?: boolean;
 }
 
 export function getUnitsLive(
@@ -129,10 +132,15 @@ export function getUnitsLive(
 
           const unitProvID = maps.terrIDToProvinceID[unit.terrID];
           let drawMode = UnitDrawMode.NONE;
+          let drawAsUnsaved = false;
           const isRetreat =
             territoryStatusesByProvID[unitProvID] &&
             territoryStatusesByProvID[unitProvID].unitID !== null &&
             territoryStatusesByProvID[unitProvID].unitID !== unit.id;
+
+          if (ordersMetaByTerrID[unit.terrID]?.update?.type) {
+            drawAsUnsaved = !ordersMetaByTerrID[unit.terrID].saved;
+          }
 
           if (ordersMetaByTerrID[unit.terrID]?.update?.type === "Hold") {
             drawMode = UnitDrawMode.HOLD;
@@ -176,6 +184,7 @@ export function getUnitsLive(
             unit,
             drawMode,
             movedFromTerrID,
+            drawAsUnsaved,
           });
         }
       }
@@ -186,7 +195,7 @@ export function getUnitsLive(
   // Compute all the additional units to draw from the current orders
   // Namely, the builds.
   //--------------------------------------------------------------------
-  Object.entries(ordersMeta).forEach(([orderID, { update }], index) => {
+  Object.entries(ordersMeta).forEach(([orderID, { update, saved }], index) => {
     if (
       !update ||
       !update.type ||
@@ -226,6 +235,7 @@ export function getUnitsLive(
             unit: iUnit,
             drawMode: UnitDrawMode.BUILD,
             movedFromTerrID: null,
+            drawAsUnsaved: !saved,
           });
         }
       }

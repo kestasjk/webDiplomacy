@@ -59,7 +59,32 @@ const WDGameProgressOverlay: React.FC<WDGameProgressOverlayProps> = function ({
   if (
     ["Diplomacy", "Retreats", "Builds", "Finished"].includes(overview.phase)
   ) {
-    if (status.phases.length <= 1) {
+    if (status.status === "Left") {
+      innerElem = (
+        <Stack direction="column" alignItems="center">
+          <Box sx={{ m: "4px" }}>
+            You failed to enter orders and had no excused absences.
+          </Box>
+          <Box sx={{ m: "4px" }}>
+            You are in Civil Disorder
+            {overview.isTempBanned
+              ? " and cannot rejoin due to a temp ban"
+              : ""}
+            .
+          </Box>
+
+          <Button
+            size="large"
+            variant="contained"
+            color="success"
+            onClick={clickHandler}
+            disabled={overview.isTempBanned}
+          >
+            Rejoin Game
+          </Button>
+        </Stack>
+      );
+    } else if (status.phases.length <= 1) {
       innerElem = (
         <Stack direction="column" alignItems="center">
           <Box sx={{ m: "4px" }}>Game progressed to a new phase...</Box>
@@ -69,7 +94,7 @@ const WDGameProgressOverlay: React.FC<WDGameProgressOverlayProps> = function ({
             color="success"
             onClick={clickHandler}
           >
-            View
+            View{" "}
             {formatPSYForDisplay({
               phase: overview.phase,
               season: overview.season as Season,
@@ -88,7 +113,7 @@ const WDGameProgressOverlay: React.FC<WDGameProgressOverlayProps> = function ({
         const psy = getHistoricalPhaseSeasonYear(status, idx);
         stuffToRender.push(
           <Box key={`progressBox${idx}`} sx={{ m: "4px" }}>
-            Finished phase ${formatPSYForDisplay(psy)}.
+            Finished phase {formatPSYForDisplay(psy)}.
           </Box>,
         );
       }
