@@ -1,13 +1,9 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
-import Device from "../../enums/Device";
 import Vote from "../../enums/Vote";
 import WDCountryTable from "./WDCountryTable";
 import WDVoteButtons from "./WDVoteButtons";
 import { CountryTableData } from "../../interfaces/CountryTableData";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
-import useViewport from "../../hooks/useViewport";
-import getDevice from "../../utils/getDevice";
 import {
   gameApiSliceActions,
   setVoteStatus,
@@ -29,8 +25,6 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
   userCountry,
   gameIsFinished,
 }): React.ReactElement {
-  const [viewport] = useViewport();
-  const device = getDevice(viewport);
   const dispatch = useAppDispatch();
   const votingInProgress = useAppSelector(
     (state) => state.game.votingInProgress,
@@ -49,32 +43,33 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
       );
     }
   };
-  const mobileLandscapeLayout =
-    device === Device.MOBILE_LANDSCAPE ||
-    device === Device.MOBILE_LG_LANDSCAPE ||
-    device === Device.MOBILE;
 
-  const padding = mobileLandscapeLayout ? "0 6px" : "0 16px";
+  const intoCivilDisorder: boolean = allCountries.some(
+    (country) => country.status === "Left",
+  );
 
   return (
-    <Box>
+    <div>
       {userCountry && !gameIsFinished && (
-        <Box sx={{ p: padding }}>
+        <div className="pl-4">
           <WDVoteButtons
             toggleVote={toggleVote}
             voteState={userCountry.votes}
             votingInProgress={votingInProgress}
           />
-        </Box>
+        </div>
       )}
-      <Box
-        sx={{
-          m: "20px 5px 10px 0",
-        }}
-      >
-        <WDCountryTable maxDelays={maxDelays} countries={allCountries} />
-      </Box>
-    </Box>
+      {intoCivilDisorder && (
+        <div className="mt-4 ml-4 mr-3 p-3 bg-red-600 text-white text-center rounded-lg">
+          Game has fallen into civil disorder due to move missed by one player
+        </div>
+      )}
+      <WDCountryTable
+        maxDelays={maxDelays}
+        countries={allCountries}
+        userCountry={userCountry}
+      />
+    </div>
   );
 };
 

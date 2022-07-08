@@ -26,6 +26,7 @@
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.6",
     "react-scripts": "5.0.0",
+    "react-use": "^17.4.0",
     "upgrade": "^1.1.0",
     "use-local-storage-state": "^17.2.0",
     "uuid": "^8.3.2",
