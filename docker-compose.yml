@@ -86,7 +86,7 @@ services:
         links:
             - webserver
             - mariadb
-        command: /bin/sh -c "install/gamemaster-entrypoint.sh"
+        command: ./install/gamemaster-entrypoint.sh
 
     php-fpm:
         build: phpdocker/php-fpm
@@ -102,3 +102,8 @@ services:
                 cp config.sample.php config.php
               fi
               /usr/sbin/php-fpm7.4 -O
+        environment:
+            PHP_IDE_CONFIG: "serverName=Docker"
+            XDEBUG_MODE: debug
+            XDEBUG_CONFIG: client_host=host.docker.internal client_port=9003
+            XDEBUG_SESSION: 1
