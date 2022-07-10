@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Season from "../../enums/Season";
 import WDGamePhaseIcon from "./icons/WDGamePhaseIcon2";
+import { ReactComponent as MiniArrowIcon } from "../../assets/svg/miniArrow.svg";
 
 interface WDSeasonSelectorProps {
   onSelected: (season: Season, year: number) => void;
@@ -51,7 +52,7 @@ const WDYearSelector: React.FC<WDYearSelectorProps> = function ({
   const [yearSelected, setYearSelected] = useState<number>(defaultYear);
 
   return (
-    <div className="h-40 bg-black w-full absolute bottom-0 items-center flex space-x-2 justify-center overflow-x-auto no-scrollbar px-12">
+    <div className="h-40 bg-black w-full absolute bottom-0 left-0 items-center flex space-x-2 justify-center overflow-x-auto no-scrollbar px-12">
       <ul className="flex space-x-2 items-center justify-center mt-[-10px]">
         {years.map((year) => (
           <li>
@@ -70,6 +71,20 @@ const WDYearSelector: React.FC<WDYearSelectorProps> = function ({
           </li>
         ))}
       </ul>
+      <div className="flex text-gray-400 text-xss fixed bottom-3 w-full left-[-8px] px-7">
+        <div className="flex-1">
+          <button type="button" className="flex items-center">
+            <MiniArrowIcon className="mr-1 scale-x-[-1]" />
+            1901
+          </button>
+        </div>
+        <div>
+          <button type="button" className="flex items-center">
+            1916
+            <MiniArrowIcon className="ml-1" />
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
