@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, IconButton, Link, useTheme, Badge } from "@mui/material";
 
 import WDPositionContainer from "./WDPositionContainer";
@@ -12,6 +12,7 @@ import WDActionIcon from "./icons/WDActionIcon";
 import WDPhaseUI from "./WDPhaseUI";
 import UIState from "../../enums/UIState";
 import Vote from "../../enums/Vote";
+import Season from "../../enums/Season";
 import WDOrderStatusControls from "./WDOrderStatusControls";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import WDHomeIcon from "./icons/WDHomeIcon";
@@ -32,6 +33,7 @@ import { MessageStatus } from "../../state/interfaces/GameMessages";
 import { IOrderDataHistorical } from "../../models/Interfaces";
 import WDGameFinishedOverlay from "./WDGameFinishedOverlay";
 import { Unit } from "../../utils/map/getUnits";
+import WDSeasonSelector from "./WDSeasonSelector";
 
 const abbrMap = {
   Russia: "RUS",
@@ -49,6 +51,33 @@ interface WDUIProps {
   viewingGameFinishedPhase: boolean;
 }
 
+interface RightButtonProps {
+  image: string;
+  text: string;
+  onClick: () => void;
+  className?: string;
+}
+
+const RightButton: React.FC<RightButtonProps> = function ({
+  image,
+  text,
+  onClick,
+  className,
+}): React.ReactElement {
+  return (
+    <div className={className}>
+      <button onClick={onClick} type="button">
+        <img src={`beta/images/icons/${image}Button.svg`} alt="action" />
+      </button>
+      <div className="bg-black uppercase text-white text-center py-0.5 w-full text-xs font-bold rounded-md">
+        {text}
+      </div>
+    </div>
+  );
+};
+
+RightButton.defaultProps = { className: "" };
+
 const WDUI: React.FC<WDUIProps> = function ({
   orders,
   units,
@@ -56,9 +85,10 @@ const WDUI: React.FC<WDUIProps> = function ({
 }): React.ReactElement {
   const theme = useTheme();
 
-  const [showControlModal, setShowControlModal] = React.useState(false);
+  const [showControlModal, setShowControlModal] = useState<boolean>(false);
   const popoverTrigger = React.useRef<HTMLElement>(null);
   const modalRef = React.useRef<HTMLElement>(null);
+  const [phaseSelectorOpen, setPhaseSelectorOpen] = useState<boolean>(false);
   const {
     alternatives,
     anon,
@@ -269,9 +299,39 @@ const WDUI: React.FC<WDUIProps> = function ({
         <WDPhaseUI />
       </WDPositionContainer>
       {user && !gameIsFinished && (
-        <WDPositionContainer position={Position.BOTTOM_RIGHT}>
+        <WDPositionContainer
+          position={Position.BOTTOM_LEFT}
+          bottom={phaseSelectorOpen ? 48 : 2}
+        >
           <WDOrderStatusControls orderStatus={user.member.orderStatus} />
         </WDPositionContainer>
+      )}
+      <WDPositionContainer
+        position={Position.BOTTOM_RIGHT}
+        bottom={phaseSelectorOpen ? 48 : 2}
+      >
+        <div>
+          <RightButton
+            image="action"
+            text="eng"
+            onClick={() => console.log("clicked")}
+            className="mb-6"
+          />
+          <RightButton
+            image="phase"
+            text="a1916"
+            onClick={() => setPhaseSelectorOpen(!phaseSelectorOpen)}
+          />
+        </div>
+      </WDPositionContainer>
+      {phaseSelectorOpen && (
+        <WDSeasonSelector
+          defaultYear={1908}
+          defaultSeason={Season.SPRING}
+          onSelected={(seasonSelected: Season, yearSelected: number) =>
+            console.log(seasonSelected, yearSelected)
+          }
+        />
       )}
       {gameIsFinished && viewingGameFinishedPhase && (
         <WDGameFinishedOverlay allCountries={allCountries} />
