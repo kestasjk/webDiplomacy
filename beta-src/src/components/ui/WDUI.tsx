@@ -32,6 +32,7 @@ import { MessageStatus } from "../../state/interfaces/GameMessages";
 import { IOrderDataHistorical } from "../../models/Interfaces";
 import WDGameFinishedOverlay from "./WDGameFinishedOverlay";
 import { Unit } from "../../utils/map/getUnits";
+import WDLoading from "../miscellaneous/Loading";
 
 const abbrMap = {
   Russia: "RUS",
@@ -221,6 +222,7 @@ const WDUI: React.FC<WDUIProps> = function ({
 
   return (
     <>
+      <WDLoading percentage={80} />
       <WDPositionContainer position={Position.TOP_RIGHT}>
         <Link href="/">
           <WDHomeIcon />
