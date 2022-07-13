@@ -333,6 +333,8 @@ const WDUI: React.FC<WDUIProps> = function ({
           }
         />
       )}
+      {/* TODO: delete this */}
+      <div className="hidden bottom-2" />
       {gameIsFinished && viewingGameFinishedPhase && (
         <WDGameFinishedOverlay allCountries={allCountries} />
       )}
