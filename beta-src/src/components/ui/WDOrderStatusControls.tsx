@@ -1,9 +1,5 @@
 import * as React from "react";
-import { Stack, useTheme } from "@mui/material";
 import WDButton from "./WDButton";
-import useViewport from "../../hooks/useViewport";
-import getDevice from "../../utils/getDevice";
-import Device from "../../enums/Device";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import {
   gameApiSliceActions,
@@ -31,8 +27,6 @@ interface WDOrderStatsControlsProps {
 const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
   orderStatus,
 }): React.ReactElement {
-  const theme = useTheme();
-  const [viewport] = useViewport();
   const { data } = useAppSelector(gameData);
   const ordersMeta = useAppSelector(gameOrdersMeta);
   const status = useAppSelector(gameStatus);
@@ -49,19 +43,6 @@ const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
   );
 
   const dispatch = useAppDispatch();
-  const device = getDevice(viewport);
-  let isMobile: boolean;
-  switch (device) {
-    case Device.MOBILE:
-    case Device.MOBILE_LG:
-    case Device.MOBILE_LANDSCAPE:
-    case Device.MOBILE_LG_LANDSCAPE:
-      isMobile = true;
-      break;
-    default:
-      isMobile = false;
-      break;
-  }
 
   const ordersMetaValues = Object.values(ordersMeta);
   const ordersLength = ordersMetaValues.length;
@@ -170,37 +151,25 @@ const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
   };
 
   return (
-    <Stack
-      alignItems="center"
-      direction={isMobile ? "column" : "row"}
-      spacing={2}
-    >
+    <div className="flex flex-col sm:flex-row justify-end space-y-2 space-x-0 sm:space-x-3 sm:space-y-0">
       <WDButton
         color="primary"
+        className="w-16 sm:w-full"
         disabled={!saveEnabled}
         onClick={() => saveEnabled && clickButton(OrderStatusButton.SAVE)}
-        sx={{
-          filter: !saveEnabled
-            ? undefined
-            : theme.palette.svg.filters.dropShadows[0],
-        }}
         doAnimateGlow={doAnimateGlow}
       >
         {saveButtonText}
       </WDButton>
       <WDButton
         color="primary"
+        className="w-16 sm:w-full"
         disabled={!readyEnabled}
         onClick={() => readyEnabled && clickButton(OrderStatusButton.READY)}
-        sx={{
-          filter: !readyEnabled
-            ? undefined
-            : theme.palette.svg.filters.dropShadows[0],
-        }}
       >
         {readyButtonText}
       </WDButton>
-    </Stack>
+    </div>
   );
 };
 
