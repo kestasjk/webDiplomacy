@@ -1,38 +1,39 @@
-import * as React from "react";
-import Button from "@mui/material/Button";
-import { SxProps } from "@mui/material";
+import React, { ReactElement, FC } from "react";
+import { omit } from "lodash";
 
-interface WDButtonProps {
+interface WDButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   color?: "primary" | "secondary";
   disabled?: boolean;
-  onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
   startIcon?: React.ReactNode | undefined;
-  sx?: SxProps | undefined;
   doAnimateGlow?: boolean;
 }
 
-const WDButton: React.FC<WDButtonProps> = function ({
+const WDButton: FC<WDButtonProps> = function ({
   children,
   color,
   disabled,
-  onClick,
   startIcon,
   doAnimateGlow,
-  sx,
-}): React.ReactElement {
+  ...rest
+}): ReactElement {
   return (
-    <Button
-      sx={sx}
-      color={color}
+    <button
+      type="button"
+      className={`${rest.className} ${
+        color === "primary"
+          ? "bg-black text-white hover:bg-gray-500"
+          : "bg-white border border-black text-black hover:bg-gray-200"
+      } flex justify-center px-3 sm:px-5 py-2.5 rounded-full font-bold text-center ${
+        disabled && "bg-gray-400 cursor-not-allowed"
+      }`}
       disabled={disabled}
-      onClick={onClick}
-      startIcon={startIcon}
-      variant="contained"
       style={{
         animation: doAnimateGlow && !disabled ? "glowing 1s infinite" : "",
         pointerEvents: "auto",
       }}
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...omit(rest, ["className"])}
     >
       <style>
         {`
@@ -51,17 +52,16 @@ const WDButton: React.FC<WDButtonProps> = function ({
           }
         }`}
       </style>
+      {startIcon && <span className="mr-1">{startIcon}</span>}
       {children}
-    </Button>
+    </button>
   );
 };
 
 WDButton.defaultProps = {
   color: "primary",
   disabled: false,
-  onClick: undefined,
   startIcon: undefined,
-  sx: undefined,
   doAnimateGlow: false,
 };
 

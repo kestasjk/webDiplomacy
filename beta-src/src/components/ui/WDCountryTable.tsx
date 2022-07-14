@@ -18,6 +18,7 @@ interface WDCountryTableProps {
   userCountry: CountryTableData | null;
   countries: CountryTableData[];
   maxDelays: IntegerRange<0, 5>;
+  gameIsPaused: boolean;
 }
 
 interface Column {
@@ -60,6 +61,7 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
   userCountry,
   countries,
   maxDelays,
+  gameIsPaused,
 }): React.ReactElement {
   const { width } = useWindowSize();
 

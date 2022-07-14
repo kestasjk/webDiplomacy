@@ -103,6 +103,7 @@ const WDUI: React.FC<WDUIProps> = function ({
     season,
     user,
     year,
+    processStatus,
   } = useAppSelector(gameOverview);
   if (phase === "Error" || phase === "Pre-game") return <div />;
 
@@ -219,6 +220,7 @@ const WDUI: React.FC<WDUIProps> = function ({
   useEffect(() => {
     setShowControlModal(true);
   }, []);
+
   const popover = popoverTrigger.current ? (
     <WDPopover
       isOpen={showControlModal}
@@ -240,6 +242,7 @@ const WDUI: React.FC<WDUIProps> = function ({
         userCountry={userTableData}
         year={year}
         modalRef={modalRef}
+        gameIsPaused={processStatus === "Paused"}
         defaultView={
           pressType === "NoPress" ? ModalViews.INFO : ModalViews.PRESS
         }
