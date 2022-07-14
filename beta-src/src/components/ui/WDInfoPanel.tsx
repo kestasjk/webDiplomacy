@@ -16,6 +16,7 @@ interface WDInfoPanelProps {
   maxDelays: GameOverviewResponse["excusedMissedTurns"];
   userCountry: CountryTableData | null;
   gameIsFinished: boolean;
+  gameIsPaused: boolean;
 }
 
 const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
@@ -24,6 +25,7 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
   maxDelays,
   userCountry,
   gameIsFinished,
+  gameIsPaused,
 }): React.ReactElement {
   const dispatch = useAppDispatch();
   const votingInProgress = useAppSelector(
@@ -56,6 +58,7 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
             toggleVote={toggleVote}
             voteState={userCountry.votes}
             votingInProgress={votingInProgress}
+            gameIsPaused={gameIsPaused}
           />
         </div>
       )}
@@ -68,6 +71,7 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
         maxDelays={maxDelays}
         countries={allCountries}
         userCountry={userCountry}
+        gameIsPaused={gameIsPaused}
       />
     </div>
   );
