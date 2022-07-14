@@ -9,15 +9,7 @@ interface WDPositionContainerProps {
   bottom?: number;
 }
 
-// const MOBILE_DISTANCE = 16;
-// const TABLET_UP_DISTANCE = 24;
 const Z_INDEX = 2;
-
-// const responsiveDistance = {
-//   mobile: MOBILE_DISTANCE,
-//   tablet: TABLET_UP_DISTANCE,
-//   desktop: TABLET_UP_DISTANCE,
-// } as const;
 
 /**
  * This component is used to position a box and its children absolute

@@ -33,7 +33,7 @@ import { MessageStatus } from "../../state/interfaces/GameMessages";
 import { IOrderDataHistorical } from "../../models/Interfaces";
 import WDGameFinishedOverlay from "./WDGameFinishedOverlay";
 import { Unit } from "../../utils/map/getUnits";
-import WDSeasonSelector from "./WDSeasonSelector";
+import WDYearSelector from "./fast-foward-selector/WDYearSelector";
 
 const abbrMap = {
   Russia: "RUS",
@@ -301,14 +301,14 @@ const WDUI: React.FC<WDUIProps> = function ({
       {user && !gameIsFinished && (
         <WDPositionContainer
           position={Position.BOTTOM_LEFT}
-          bottom={phaseSelectorOpen ? 48 : 2}
+          bottom={phaseSelectorOpen ? 40 : 4}
         >
           <WDOrderStatusControls orderStatus={user.member.orderStatus} />
         </WDPositionContainer>
       )}
       <WDPositionContainer
         position={Position.BOTTOM_RIGHT}
-        bottom={phaseSelectorOpen ? 48 : 2}
+        bottom={phaseSelectorOpen ? 40 : 4}
       >
         <div>
           <RightButton
@@ -325,7 +325,7 @@ const WDUI: React.FC<WDUIProps> = function ({
         </div>
       </WDPositionContainer>
       {phaseSelectorOpen && (
-        <WDSeasonSelector
+        <WDYearSelector
           defaultYear={1908}
           defaultSeason={Season.SPRING}
           onSelected={(seasonSelected: Season, yearSelected: number) =>
@@ -334,7 +334,7 @@ const WDUI: React.FC<WDUIProps> = function ({
         />
       )}
       {/* TODO: delete this */}
-      <div className="hidden bottom-2" />
+      <div className="hidden bottom-4 bottom-40" />
       {gameIsFinished && viewingGameFinishedPhase && (
         <WDGameFinishedOverlay allCountries={allCountries} />
       )}
