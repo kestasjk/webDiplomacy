@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, HTMLAttributes } from "react";
 import TimeNotRunningOutIcon from "../../assets/png/icn_phase_countdown_black.png";
 import TimeRunningOutIcon from "../../assets/png/icn_phase_countdown_red.png";
 import Season from "../../enums/Season";
@@ -7,7 +7,7 @@ import formatTime, { getFormattedTimeLeft } from "../../utils/formatTime";
 import { formatPSYForDisplay } from "../../utils/formatPhaseForDisplay";
 import useViewport from "../../hooks/useViewport";
 
-interface WDCountdownPillProps {
+interface WDCountdownPillProps extends HTMLAttributes<HTMLDivElement> {
   endTime: number;
   phaseTime: number;
   viewedPhase: string;
@@ -31,6 +31,7 @@ const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
   gameSeason,
   gameYear,
   isPaused,
+  ...rest
 }) {
   const endTimeInMilliSeconds = endTime * milli;
   const phaseTimeInMilliSeconds = phaseTime * milli;
@@ -86,7 +87,9 @@ const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
 
   return (
     <div
-      className={`flex items-center py-1 pl-1 pr-3 rounded-full text-white ${
+      className={`${
+        rest.className
+      } flex items-center py-1 px-3 rounded-md text-white bg-opacity-60 text-xs w-fit select-none ${
         // eslint-disable-next-line no-nested-ternary
         isTimeRunningOut
           ? "bg-red-600"
@@ -95,13 +98,6 @@ const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
           : "bg-black"
       }`}
     >
-      <div>
-        <img
-          className="h-6 mr-1"
-          src={isTimeRunningOut ? TimeRunningOutIcon : TimeNotRunningOutIcon}
-          alt="Countdown icon"
-        />
-      </div>
       {chipDisplay}
     </div>
   );

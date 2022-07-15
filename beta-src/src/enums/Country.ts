@@ -8,4 +8,14 @@ enum Country {
   TURKEY = "Turkey",
 }
 
+export const abbrMap = {
+  Russia: "RUS",
+  Germany: "GER",
+  Italy: "ITA",
+  Austria: "AUS",
+  England: "ENG",
+  France: "FRA",
+  Turkey: "TUR",
+};
+
 export default Country;

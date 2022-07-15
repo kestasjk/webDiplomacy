@@ -43,3 +43,8 @@ textarea::-webkit-scrollbar-thumb {
     scrollbar-width: none; /* Firefox */
   }
 }
+
+/* It removes the blue rectangle when something is clicked on mobile devices */
+* {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}

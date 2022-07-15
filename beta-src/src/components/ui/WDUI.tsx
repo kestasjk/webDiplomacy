@@ -1,49 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { Box, IconButton, Link, useTheme, Badge } from "@mui/material";
+import React, { useState, FunctionComponent, ReactElement } from "react";
+import { useTheme } from "@mui/material";
 
-import WDPositionContainer from "./WDPositionContainer";
-import Position from "../../enums/Position";
-import { useAppSelector, useAppDispatch } from "../../state/hooks";
-import { CountryTableData } from "../../interfaces";
-import Country from "../../enums/Country";
-import WDFullModal from "./WDFullModal";
-import WDPopover from "./WDPopover";
-import WDActionIcon from "./icons/WDActionIcon";
-import WDPhaseUI from "./WDPhaseUI";
-import UIState from "../../enums/UIState";
-import Vote from "../../enums/Vote";
-import Season from "../../enums/Season";
-import WDOrderStatusControls from "./WDOrderStatusControls";
-import countryMap from "../../data/map/variants/classic/CountryMap";
-import WDHomeIcon from "./icons/WDHomeIcon";
-import WDBuildCounts from "./WDBuildCounts";
-import ModalViews from "../../enums/ModalViews";
-import {
-  gameOverview,
-  fetchGameMessages,
-  gameApiSliceActions,
-  gameMaps,
-  gameViewedPhase,
-} from "../../state/game/game-api-slice";
-import useInterval from "../../hooks/useInterval";
-import useOutsideAlerter from "../../hooks/useOutsideAlerter";
-import useViewport from "../../hooks/useViewport";
-import { store } from "../../state/store";
-import { MessageStatus } from "../../state/interfaces/GameMessages";
 import { IOrderDataHistorical } from "../../models/Interfaces";
 import WDGameFinishedOverlay from "./WDGameFinishedOverlay";
 import { Unit } from "../../utils/map/getUnits";
-import WDYearSelector from "./fast-foward-selector/WDYearSelector";
-
-const abbrMap = {
-  Russia: "RUS",
-  Germany: "GER",
-  Italy: "ITA",
-  Austria: "AUS",
-  England: "ENG",
-  France: "FRA",
-  Turkey: "TUR",
-};
+import { TopLeft, TopRight, BottomLeft, BottomRight } from "./main-screen";
+import { useAppSelector } from "../../state/hooks";
+import { gameOverview } from "../../state/game/game-api-slice";
+import { CountryTableData } from "../../interfaces";
+import countryMap from "../../data/map/variants/classic/CountryMap";
+import Country, { abbrMap } from "../../enums/Country";
 
 interface WDUIProps {
   orders: IOrderDataHistorical[];
@@ -51,75 +17,24 @@ interface WDUIProps {
   viewingGameFinishedPhase: boolean;
 }
 
-interface RightButtonProps {
-  image: string;
-  text: string;
-  onClick: () => void;
-  className?: string;
-}
-
-const RightButton: React.FC<RightButtonProps> = function ({
-  image,
-  text,
-  onClick,
-  className,
-}): React.ReactElement {
-  return (
-    <div className={className}>
-      <button onClick={onClick} type="button">
-        <img src={`beta/images/icons/${image}Button.svg`} alt="action" />
-      </button>
-      <div className="bg-black uppercase text-white text-center py-0.5 w-full text-xs font-bold rounded-md">
-        {text}
-      </div>
-    </div>
-  );
-};
-
-RightButton.defaultProps = { className: "" };
-
-const WDUI: React.FC<WDUIProps> = function ({
+const WDUI: FunctionComponent<WDUIProps> = function ({
   orders,
   units,
   viewingGameFinishedPhase,
-}): React.ReactElement {
+}): ReactElement {
   const theme = useTheme();
+  const { phase, user, members } = useAppSelector(gameOverview);
 
-  const [showControlModal, setShowControlModal] = useState<boolean>(false);
-  const popoverTrigger = React.useRef<HTMLElement>(null);
-  const modalRef = React.useRef<HTMLElement>(null);
   const [phaseSelectorOpen, setPhaseSelectorOpen] = useState<boolean>(false);
-  const {
-    alternatives,
-    anon,
-    drawType,
-    excusedMissedTurns,
-    gameID,
-    members,
-    name,
-    phase,
-    pot,
-    pressType,
-    season,
-    user,
-    year,
-    processStatus,
-  } = useAppSelector(gameOverview);
-  if (phase === "Error" || phase === "Pre-game") return <div />;
+  const gameIsFinished = phase === "Finished";
 
-  const maps = useAppSelector(gameMaps);
+  const allCountries: CountryTableData[] = [];
 
-  // console.log("WDUI RENDERED");
-
-  const messages = useAppSelector(({ game }) => game.messages.messages);
-  const numUnread = messages.reduce(
-    (acc, m) => acc + Number(m.status === MessageStatus.UNREAD),
-    0,
-  );
-  const numUnknown = messages.reduce(
-    (acc, m) => acc + Number(m.status === MessageStatus.UNKNOWN),
-    0,
-  );
+  const getCountrySortIdx = function (countryID: number) {
+    // Sort user country to the front
+    if (countryID === user?.member.countryID) return -1;
+    return countryID;
+  };
 
   const constructTableData = (member) => {
     const memberCountry: Country = countryMap[member.country];
@@ -132,13 +47,6 @@ const WDUI: React.FC<WDUIProps> = function ({
     };
   };
 
-  const allCountries: CountryTableData[] = [];
-  const getCountrySortIdx = function (countryID: number) {
-    // Sort user country to the front
-    if (countryID === user?.member.countryID) return -1;
-    return countryID;
-  };
-
   members.forEach((member) => {
     allCountries.push(constructTableData(member));
   });
@@ -148,195 +56,21 @@ const WDUI: React.FC<WDUIProps> = function ({
 
   const userTableData = user ? constructTableData(user.member) : null;
 
-  const closeControlModal = () => {
-    setShowControlModal(false);
-  };
-
-  const [viewport] = useViewport();
-  useOutsideAlerter([modalRef, popoverTrigger, viewport], () => {
-    // if viewport is too small to do chat and map at same time,
-    // then close the modal on outside click.
-    if (viewport.width <= theme.breakpoints.values.mobileLandscape) {
-      closeControlModal();
-    }
-  });
-
-  const toggleControlModal = () => {
-    setShowControlModal(!showControlModal);
-  };
-
-  const controlModalTrigger = (
-    <IconButton
-      sx={{ padding: 0, pointerEvents: "all" }}
-      onClick={toggleControlModal}
-    >
-      <WDActionIcon
-        iconState={showControlModal ? UIState.ACTIVE : UIState.INACTIVE}
-      />
-    </IconButton>
-  );
-
-  const dispatch = useAppDispatch();
-  const dispatchFetchMessages = () => {
-    const { game } = store.getState();
-    const { outstandingMessageRequests } = game;
-    if (!outstandingMessageRequests && phase !== "Pre-game") {
-      dispatch(
-        fetchGameMessages({
-          gameID: String(gameID),
-          countryID: user ? String(user.member.countryID) : undefined,
-          sinceTime: String(game.messages.time),
-        }),
-      );
-    }
-  };
-
-  // FIXME: for now, crazily fetch all messages every 2sec
-  useInterval(dispatchFetchMessages, 2000);
-
-  const gameIsFinished = phase === "Finished";
-
-  let moreAlternatives = alternatives;
-  if (anon === "Yes") {
-    moreAlternatives += ", Anonymous";
-  }
-  switch (pressType) {
-    case "Regular":
-      moreAlternatives += ", Regular Press";
-      break;
-    case "PublicPressOnly":
-      moreAlternatives += ", Public Press Only";
-      break;
-    case "NoPress":
-      moreAlternatives += ", Gunboat (no press)";
-      break;
-    case "RulebookPress":
-      moreAlternatives += ", Rulebook Press";
-      break;
-    default:
-      break;
-  }
-
-  useEffect(() => {
-    setShowControlModal(true);
-  }, []);
-
-  const popover = popoverTrigger.current ? (
-    <WDPopover
-      isOpen={showControlModal}
-      onClose={closeControlModal}
-      anchorEl={popoverTrigger.current}
-    >
-      <WDFullModal
-        alternatives={moreAlternatives}
-        allCountries={allCountries}
-        excusedMissedTurns={excusedMissedTurns}
-        gameID={gameID}
-        maps={maps}
-        orders={orders}
-        phase={phase}
-        potNumber={pot}
-        season={season}
-        title={name}
-        units={units}
-        userCountry={userTableData}
-        year={year}
-        modalRef={modalRef}
-        gameIsPaused={processStatus === "Paused"}
-        defaultView={
-          pressType === "NoPress" ? ModalViews.INFO : ModalViews.PRESS
-        }
-      >
-        {null}
-      </WDFullModal>
-    </WDPopover>
-  ) : null;
-
   return (
     <>
-      <WDPositionContainer position={Position.TOP_RIGHT}>
-        <Link href="/">
-          <WDHomeIcon />
-        </Link>
-
-        <Box
-          sx={{
-            pt: "15px",
-            pointerEvents: "auto",
-          }}
-          ref={popoverTrigger}
-        >
-          {numUnread + numUnknown ? (
-            <Badge badgeContent={numUnknown ? " " : numUnread} color="error">
-              {controlModalTrigger}
-            </Badge>
-          ) : (
-            controlModalTrigger
-          )}
-        </Box>
-        {user && (
-          <Box
-            component="div"
-            sx={{
-              display: "block",
-              p: 1,
-              mt: 2,
-              bgcolor: theme.palette[user.member.country]?.light,
-              color: "black",
-              border: "1px solid",
-              borderColor: "grey.300",
-              borderRadius: 2,
-              fontSize: "0.875rem",
-              fontWeight: "700",
-              userSelect: "none",
-            }}
-            title={`Currently playing as ${user.member.country}`}
-          >
-            {abbrMap[user.member.country]}
-          </Box>
-        )}
-        <WDBuildCounts />
-        {popover}
-      </WDPositionContainer>
-      <WDPositionContainer position={Position.TOP_LEFT}>
-        <WDPhaseUI />
-      </WDPositionContainer>
-      {user && !gameIsFinished && (
-        <WDPositionContainer
-          position={Position.BOTTOM_LEFT}
-          bottom={phaseSelectorOpen ? 40 : 4}
-        >
-          <WDOrderStatusControls orderStatus={user.member.orderStatus} />
-        </WDPositionContainer>
-      )}
-      <WDPositionContainer
-        position={Position.BOTTOM_RIGHT}
-        bottom={phaseSelectorOpen ? 40 : 4}
-      >
-        <div>
-          <RightButton
-            image="action"
-            text="eng"
-            onClick={() => console.log("clicked")}
-            className="mb-6"
-          />
-          <RightButton
-            image="phase"
-            text="a1916"
-            onClick={() => setPhaseSelectorOpen(!phaseSelectorOpen)}
-          />
-        </div>
-      </WDPositionContainer>
-      {phaseSelectorOpen && (
-        <WDYearSelector
-          defaultYear={1908}
-          defaultSeason={Season.SPRING}
-          onSelected={(seasonSelected: Season, yearSelected: number) =>
-            console.log(seasonSelected, yearSelected)
-          }
-        />
-      )}
-      {/* TODO: delete this */}
+      <TopLeft />
+      {!gameIsFinished && <BottomLeft phaseSelectorOpen={phaseSelectorOpen} />}
+      <TopRight
+        orders={orders}
+        units={units}
+        allCountries={allCountries}
+        userTableData={userTableData}
+      />
+      <BottomRight
+        phaseSelectorOpen={phaseSelectorOpen}
+        onPhaseSelectorClick={() => setPhaseSelectorOpen(!phaseSelectorOpen)}
+      />
+      {/* TODO: do not delete this yet */}
       <div className="hidden bottom-4 bottom-40" />
       {gameIsFinished && viewingGameFinishedPhase && (
         <WDGameFinishedOverlay allCountries={allCountries} />

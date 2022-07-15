@@ -14,6 +14,7 @@ import UpdateOrder from "../../interfaces/state/UpdateOrder";
 import { RootState } from "../../state/store";
 import { OrderStatus } from "../../interfaces/state/MemberData";
 import OrderSubmission from "../../interfaces/state/OrderSubmission";
+import { ReactComponent as CheckMarkIcon } from "../../assets/svg/checkmark.svg";
 
 enum OrderStatusButton {
   SAVE = "save",
@@ -154,7 +155,7 @@ const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
     <div className="flex flex-col sm:flex-row justify-end space-y-2 space-x-0 sm:space-x-3 sm:space-y-0">
       <WDButton
         color="primary"
-        className="w-16 sm:w-full"
+        className="w-14 sm:w-full h-14 rounded-xl !p-0"
         disabled={!saveEnabled}
         onClick={() => saveEnabled && clickButton(OrderStatusButton.SAVE)}
         doAnimateGlow={doAnimateGlow}
@@ -163,11 +164,12 @@ const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
       </WDButton>
       <WDButton
         color="primary"
-        className="w-16 sm:w-full"
+        className="w-14 sm:w-full h-14 rounded-md !p-0 flex-col"
         disabled={!readyEnabled}
         onClick={() => readyEnabled && clickButton(OrderStatusButton.READY)}
       >
-        {readyButtonText}
+        <CheckMarkIcon className="text-white" />
+        <div className="mt-1">{readyButtonText}</div>
       </WDButton>
     </div>
   );
