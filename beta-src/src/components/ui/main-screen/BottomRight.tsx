@@ -6,15 +6,27 @@ import RightButton from "./RightButton";
 import Season from "../../../enums/Season";
 import { gameOverview } from "../../../state/game/game-api-slice";
 import WDYearSelector from "../fast-foward-selector/WDYearSelector";
+import { IOrderDataHistorical } from "../../../models/Interfaces";
+import { Unit } from "../../../utils/map/getUnits";
+import { CountryTableData } from "../../../interfaces";
+import OpenModalButton from "./OpenModalButton";
 
 interface BottomRightProps {
   phaseSelectorOpen: boolean;
   onPhaseSelectorClick: () => void;
+  orders: IOrderDataHistorical[];
+  units: Unit[];
+  allCountries: CountryTableData[];
+  userTableData: any;
 }
 
 const BottomLeft: FunctionComponent<BottomRightProps> = function ({
   phaseSelectorOpen,
   onPhaseSelectorClick,
+  orders,
+  units,
+  allCountries,
+  userTableData,
 }: BottomRightProps): ReactElement {
   return (
     <>
@@ -23,23 +35,23 @@ const BottomLeft: FunctionComponent<BottomRightProps> = function ({
         bottom={phaseSelectorOpen ? 40 : 4}
       >
         <div>
-          <RightButton
-            image="action"
-            text="eng"
-            onClick={() => console.log("clicked")}
-            className="mb-6"
+          <OpenModalButton
+            orders={orders}
+            units={units}
+            allCountries={allCountries}
+            userTableData={userTableData}
           />
           <RightButton
             image="phase"
-            text="a1916"
+            text="a1901"
             onClick={onPhaseSelectorClick}
           />
         </div>
       </WDPositionContainer>
       {phaseSelectorOpen && (
         <WDYearSelector
-          defaultYear={1908}
-          defaultSeason={Season.SPRING}
+          defaultYear={1901}
+          defaultSeason={Season.AUTUMN}
           onSelected={(seasonSelected: Season, yearSelected: number) =>
             console.log(seasonSelected, yearSelected)
           }

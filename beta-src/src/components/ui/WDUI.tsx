@@ -59,16 +59,15 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
   return (
     <>
       <TopLeft />
+      <TopRight />
       {!gameIsFinished && <BottomLeft phaseSelectorOpen={phaseSelectorOpen} />}
-      <TopRight
+      <BottomRight
+        phaseSelectorOpen={phaseSelectorOpen}
+        onPhaseSelectorClick={() => setPhaseSelectorOpen(!phaseSelectorOpen)}
         orders={orders}
         units={units}
         allCountries={allCountries}
         userTableData={userTableData}
-      />
-      <BottomRight
-        phaseSelectorOpen={phaseSelectorOpen}
-        onPhaseSelectorClick={() => setPhaseSelectorOpen(!phaseSelectorOpen)}
       />
       {/* TODO: do not delete this yet */}
       <div className="hidden bottom-4 bottom-40" />

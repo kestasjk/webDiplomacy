@@ -1,11 +1,5 @@
 import * as React from "react";
-import {
-  Box,
-  ModalProps,
-  Popover,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, ModalProps, Popover, useTheme } from "@mui/material";
 import useViewport from "../../hooks/useViewport";
 import getDevice from "../../utils/getDevice";
 import Device from "../../enums/Device";
@@ -87,7 +81,7 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
                 height: 22,
                 position: "absolute",
                 left: "calc(93% - 11px)",
-                top: useMediaQuery(theme.breakpoints.up("tablet")) ? 76 : 68,
+                top: 350,
                 transform: "rotateX(45deg) rotateZ(45deg)",
                 width: 22,
               },
