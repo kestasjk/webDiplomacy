@@ -50,7 +50,6 @@ const WDFlyoutContainer: FC<WDFlyoutContainerProps> = function ({
   const canVia: boolean =
     unit?.unit?.type === "Army" &&
     legalOrders.legalViasByUnitID[order.unitID].length > 0;
-  };
 
   useKeyPressEvent("h", () => clickHandler("Hold"));
   useKeyPressEvent("d", () => clickHandler("Hold"));
