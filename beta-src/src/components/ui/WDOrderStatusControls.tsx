@@ -5,7 +5,6 @@ import {
   gameApiSliceActions,
   gameData,
   gameOrdersMeta,
-  gameOverview,
   gameStatus,
   gameViewedPhase,
   saveOrders,
@@ -15,6 +14,7 @@ import { RootState } from "../../state/store";
 import { OrderStatus } from "../../interfaces/state/MemberData";
 import OrderSubmission from "../../interfaces/state/OrderSubmission";
 import { ReactComponent as CheckMarkIcon } from "../../assets/svg/checkmark.svg";
+import { ReactComponent as CheckMarkCircleIcon } from "../../assets/svg/checkmarkCircle.svg";
 
 enum OrderStatusButton {
   SAVE = "save",
@@ -168,7 +168,13 @@ const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
         disabled={!readyEnabled}
         onClick={() => readyEnabled && clickButton(OrderStatusButton.READY)}
       >
-        <CheckMarkIcon className="text-white" />
+        {readyButtonText === "Unready" ? (
+          <CheckMarkCircleIcon
+            className={`text-white ${!readyEnabled ? "opacity-50" : ""}`}
+          />
+        ) : (
+          <CheckMarkIcon className="text-white" />
+        )}
         <div className="mt-1">{readyButtonText}</div>
       </WDButton>
     </div>
