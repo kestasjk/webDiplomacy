@@ -1,10 +1,12 @@
 /* eslint-disable no-nested-ternary */
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import Season from "../../../enums/Season";
-import WDPhaseSelector from "./WDPhaseSelector";
+import WDPhaseSelectorIcon from "./WDPhaseSelectorIcon";
+import { useAppDispatch } from "../../../state/hooks";
+import { gameApiSliceActions } from "../../../state/game/game-api-slice";
 import { ReactComponent as ThickArrowPhaseIcon } from "../../../assets/svg/thickArrowPhase.svg";
 
-interface WDSeasonSelectorProps {
+interface WDPhaseSelectorGroupProps {
   onSelected: (season: Season, year: number) => void;
   yearSelected: number;
   year: number;
@@ -12,9 +14,10 @@ interface WDSeasonSelectorProps {
   version: string;
   isFirstItem: boolean;
   isLastItem: boolean;
+  totalPhases: number;
 }
 
-const WDSeasonSelector: React.FC<WDSeasonSelectorProps> = function ({
+const WDPhaseSelectorGroup: React.FC<WDPhaseSelectorGroupProps> = function ({
   onSelected,
   year,
   yearSelected,
@@ -22,16 +25,17 @@ const WDSeasonSelector: React.FC<WDSeasonSelectorProps> = function ({
   version,
   isFirstItem,
   isLastItem,
+  totalPhases,
 }): React.ReactElement {
-  const [seasonSelected, setSeasonSelected] = useState<Season | null>(
-    version === "rounded" ? defaultSeason : null,
-  );
+  const dispatch = useAppDispatch();
   const boxRef = useRef<any>();
 
   const getPosition = () => {
     // I have the filing that we will need this later. Living here just in case
     const x = boxRef?.current.offsetLeft;
   };
+
+  const currentYear = year - 1901;
 
   return (
     <>
@@ -41,7 +45,7 @@ const WDSeasonSelector: React.FC<WDSeasonSelectorProps> = function ({
       >
         {year}
         {version === "rounded" ? (
-          <span className="ml-1">{seasonSelected}</span>
+          <span className="ml-1">{defaultSeason}</span>
         ) : (
           ""
         )}
@@ -56,6 +60,9 @@ const WDSeasonSelector: React.FC<WDSeasonSelectorProps> = function ({
             disabled={isFirstItem}
             type="button"
             className="flex items-center"
+            onClick={() =>
+              dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(-1))
+            }
           >
             <ThickArrowPhaseIcon
               className={`mr-1 ${isFirstItem ? "text-gray-800" : "text-white"}`}
@@ -64,13 +71,15 @@ const WDSeasonSelector: React.FC<WDSeasonSelectorProps> = function ({
         )}
         {(Object.keys(Season) as Array<keyof typeof Season>).map(
           (key, index) => (
-            <WDPhaseSelector
+            <WDPhaseSelectorIcon
               season={Season[key]}
-              active={seasonSelected === Season[key] && year === yearSelected}
+              active={defaultSeason === Season[key] && year === yearSelected}
               onClick={(season: Season) => {
                 getPosition();
-                setSeasonSelected(season);
                 onSelected(season, year);
+                dispatch(
+                  gameApiSliceActions.setViewedPhase(currentYear * 3 + index),
+                );
               }}
               version={version}
               roundness={
@@ -82,6 +91,9 @@ const WDSeasonSelector: React.FC<WDSeasonSelectorProps> = function ({
                   ? "rounded-r-md"
                   : ""
               }
+              disabled={
+                isLastItem && totalPhases + index < (currentYear + index) * 3
+              }
             />
           ),
         )}
@@ -90,6 +102,9 @@ const WDSeasonSelector: React.FC<WDSeasonSelectorProps> = function ({
             disabled={isLastItem}
             type="button"
             className="flex items-center"
+            onClick={() =>
+              dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1))
+            }
           >
             <ThickArrowPhaseIcon
               className={`ml-1 scale-x-[-1] ${
@@ -103,4 +118,4 @@ const WDSeasonSelector: React.FC<WDSeasonSelectorProps> = function ({
   );
 };
 
-export default WDSeasonSelector;
+export default WDPhaseSelectorGroup;

@@ -1,6 +1,6 @@
 enum Season {
-  AUTUMN = "Autumn",
   SPRING = "Spring",
+  AUTUMN = "Autumn",
   WINTER = "Winter",
 }
 

@@ -1,15 +1,13 @@
 import React, { ReactElement, FunctionComponent } from "react";
-import { useAppSelector } from "../../../state/hooks";
 import Position from "../../../enums/Position";
-import WDPositionContainer from "../WDPositionContainer";
-import RightButton from "./RightButton";
 import Season from "../../../enums/Season";
-import { gameOverview } from "../../../state/game/game-api-slice";
-import WDYearSelector from "../fast-foward-selector/WDYearSelector";
+import WDPositionContainer from "../WDPositionContainer";
+import WDPhaseButton from "./buttons/WDPhaseButton";
+import WDPhaseSelector from "../phase-selector/WDPhaseSelector";
 import { IOrderDataHistorical } from "../../../models/Interfaces";
 import { Unit } from "../../../utils/map/getUnits";
 import { CountryTableData } from "../../../interfaces";
-import OpenModalButton from "./OpenModalButton";
+import OpenModalButton from "./buttons/OpenModalButton";
 
 interface BottomRightProps {
   phaseSelectorOpen: boolean;
@@ -18,15 +16,21 @@ interface BottomRightProps {
   units: Unit[];
   allCountries: CountryTableData[];
   userTableData: any;
+  currentSeason: Season;
+  currentYear: number;
+  totalPhases: number;
 }
 
-const BottomLeft: FunctionComponent<BottomRightProps> = function ({
+const BottomRight: FunctionComponent<BottomRightProps> = function ({
   phaseSelectorOpen,
   onPhaseSelectorClick,
   orders,
   units,
   allCountries,
   userTableData,
+  currentSeason,
+  currentYear,
+  totalPhases,
 }: BottomRightProps): ReactElement {
   return (
     <>
@@ -41,24 +45,22 @@ const BottomLeft: FunctionComponent<BottomRightProps> = function ({
             allCountries={allCountries}
             userTableData={userTableData}
           />
-          <RightButton
-            image="phase"
-            text="a1901"
+          <WDPhaseButton
+            season={currentSeason}
+            text={`${currentSeason.charAt(0)}${currentYear}`}
             onClick={onPhaseSelectorClick}
           />
         </div>
       </WDPositionContainer>
       {phaseSelectorOpen && (
-        <WDYearSelector
-          defaultYear={1901}
-          defaultSeason={Season.AUTUMN}
-          onSelected={(seasonSelected: Season, yearSelected: number) =>
-            console.log(seasonSelected, yearSelected)
-          }
+        <WDPhaseSelector
+          currentSeason={currentSeason}
+          currentYear={currentYear}
+          totalPhases={totalPhases}
         />
       )}
     </>
   );
 };
 
-export default BottomLeft;
+export default BottomRight;

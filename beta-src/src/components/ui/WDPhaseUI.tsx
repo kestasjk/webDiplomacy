@@ -1,17 +1,10 @@
 import * as React from "react";
-import {
-  gameOverview,
-  gameStatus,
-  gameViewedPhase,
-} from "../../state/game/game-api-slice";
+import { gameOverview } from "../../state/game/game-api-slice";
 import { useAppSelector } from "../../state/hooks";
-import {
-  getGamePhaseSeasonYear,
-  getHistoricalPhaseSeasonYear,
-} from "../../utils/state/getPhaseSeasonYear";
 import WDCountdownPill from "./WDCountdownPill";
 import WDPillScroller from "./WDPillScroller";
 import { abbrMap } from "../../enums/Country";
+import Season from "../../enums/Season";
 
 const getCurPhaseMinutes = function (phaseMinutes, phaseMinutesRB, phase) {
   if (phaseMinutesRB !== -1 && (phase === "Retreats" || phase === "Builds")) {
@@ -20,43 +13,35 @@ const getCurPhaseMinutes = function (phaseMinutes, phaseMinutesRB, phase) {
   return phaseMinutes;
 };
 
-const WDPhaseUI: React.FC = function (): React.ReactElement {
+interface WDPhaseUIProps {
+  gamePhase: string;
+  gameSeason: Season;
+  gameYear: number;
+  viewedPhase: string;
+  viewedSeason: Season;
+  viewedYear: number;
+}
+
+const WDPhaseUI: React.FC<WDPhaseUIProps> = function ({
+  gamePhase,
+  gameSeason,
+  gameYear,
+  viewedPhase,
+  viewedSeason,
+  viewedYear,
+}: WDPhaseUIProps): React.ReactElement {
   const {
     phaseMinutes,
     phaseMinutesRB,
     processTime,
     phase,
-    season,
-    year,
     processStatus,
     pauseTimeRemaining,
     user,
   } = useAppSelector(gameOverview);
-  const gameStatusData = useAppSelector(gameStatus);
-  const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
 
   const phaseSeconds =
     getCurPhaseMinutes(phaseMinutes, phaseMinutesRB, phase) * 60;
-
-  const {
-    phase: gamePhase,
-    season: gameSeason,
-    year: gameYear,
-  } = getGamePhaseSeasonYear(phase, season, year);
-  let {
-    phase: viewedPhase,
-    season: viewedSeason,
-    year: viewedYear,
-  } = getHistoricalPhaseSeasonYear(gameStatusData, viewedPhaseIdx);
-
-  // On the very last phase of a finished game, webdip API might give an
-  // entirely erroneous year/season/phase. So instead, trust the one in the
-  // overview.
-  if (viewedPhaseIdx === gameStatusData.phases.length - 1) {
-    viewedPhase = gamePhase;
-    viewedSeason = gameSeason;
-    viewedYear = gameYear;
-  }
 
   const gameIsFinished = gamePhase === "Finished";
   const seconds = Math.floor(new Date().getTime() / 1000);
@@ -95,5 +80,3 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
 };
 
 export default WDPhaseUI;
-
-// bgcolor: theme.palette[user.member.country]?.light,

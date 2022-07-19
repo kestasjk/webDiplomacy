@@ -155,7 +155,7 @@ const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
     <div className="flex flex-col sm:flex-row justify-end space-y-2 space-x-0 sm:space-x-3 sm:space-y-0">
       <WDButton
         color="primary"
-        className="w-14 sm:w-full h-14 rounded-xl !p-0"
+        className="w-14 h-14 rounded-xl !p-0"
         disabled={!saveEnabled}
         onClick={() => saveEnabled && clickButton(OrderStatusButton.SAVE)}
         doAnimateGlow={doAnimateGlow}
@@ -164,7 +164,7 @@ const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
       </WDButton>
       <WDButton
         color="primary"
-        className="w-14 sm:w-full h-14 rounded-md !p-0 flex-col"
+        className="w-14 h-14 rounded-md !p-0 flex-col"
         disabled={!readyEnabled}
         onClick={() => readyEnabled && clickButton(OrderStatusButton.READY)}
       >

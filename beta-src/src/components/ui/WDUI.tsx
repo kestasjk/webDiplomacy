@@ -6,10 +6,18 @@ import WDGameFinishedOverlay from "./WDGameFinishedOverlay";
 import { Unit } from "../../utils/map/getUnits";
 import { TopLeft, TopRight, BottomLeft, BottomRight } from "./main-screen";
 import { useAppSelector } from "../../state/hooks";
-import { gameOverview } from "../../state/game/game-api-slice";
+import {
+  gameOverview,
+  gameStatus,
+  gameViewedPhase,
+} from "../../state/game/game-api-slice";
 import { CountryTableData } from "../../interfaces";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 import Country, { abbrMap } from "../../enums/Country";
+import {
+  getGamePhaseSeasonYear,
+  getHistoricalPhaseSeasonYear,
+} from "../../utils/state/getPhaseSeasonYear";
 
 interface WDUIProps {
   orders: IOrderDataHistorical[];
@@ -23,7 +31,7 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
   viewingGameFinishedPhase,
 }): ReactElement {
   const theme = useTheme();
-  const { phase, user, members } = useAppSelector(gameOverview);
+  const { phase, season, year, user, members } = useAppSelector(gameOverview);
 
   const [phaseSelectorOpen, setPhaseSelectorOpen] = useState<boolean>(false);
   const gameIsFinished = phase === "Finished";
@@ -56,9 +64,40 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
 
   const userTableData = user ? constructTableData(user.member) : null;
 
+  const gameStatusData = useAppSelector(gameStatus);
+  const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
+
+  const {
+    phase: gamePhase,
+    season: gameSeason,
+    year: gameYear,
+  } = getGamePhaseSeasonYear(phase, season, year);
+
+  let {
+    phase: viewedPhase,
+    season: viewedSeason,
+    year: viewedYear,
+  } = getHistoricalPhaseSeasonYear(gameStatusData, viewedPhaseIdx);
+
+  // On the very last phase of a finished game, webdip API might give an
+  // entirely erroneous year/season/phase. So instead, trust the one in the
+  // overview.
+  if (viewedPhaseIdx === gameStatusData.phases.length - 1) {
+    viewedPhase = gamePhase;
+    viewedSeason = gameSeason;
+    viewedYear = gameYear;
+  }
+
   return (
     <>
-      <TopLeft />
+      <TopLeft
+        gamePhase={gamePhase}
+        gameSeason={gameSeason}
+        gameYear={gameYear}
+        viewedPhase={viewedPhase}
+        viewedSeason={viewedSeason}
+        viewedYear={viewedYear}
+      />
       <TopRight />
       {!gameIsFinished && <BottomLeft phaseSelectorOpen={phaseSelectorOpen} />}
       <BottomRight
@@ -68,6 +107,9 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
         units={units}
         allCountries={allCountries}
         userTableData={userTableData}
+        currentSeason={viewedSeason}
+        currentYear={viewedYear}
+        totalPhases={gameStatusData.phases.length}
       />
       {/* TODO: do not delete this yet */}
       <div className="hidden bottom-4 bottom-40" />

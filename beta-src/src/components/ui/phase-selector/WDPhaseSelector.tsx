@@ -1,27 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 import { scroller } from "react-scroll";
 
 import Season from "../../../enums/Season";
-import WDSeasonSelector from "./WDSeasonSelector";
+import WDPhaseSelectorSeasons from "./WDPhaseSelectorGroup";
 import { ReactComponent as MiniArrowIcon } from "../../../assets/svg/miniArrow.svg";
 
-const years = [
-  1901, 1902, 1903, 1904, 1905, 1906, 1907, 1908, 1909, 1910, 1911, 1912, 1913,
-  1914, 1915, 1916,
-];
-interface WDYearSelectorProps {
-  defaultYear: number;
-  defaultSeason: Season;
-  onSelected: (season: Season, year: number) => void;
+interface WDPhaseSelectorProps {
+  currentSeason: Season;
+  currentYear: number;
+  totalPhases: number;
+  onSelected?: (season: Season, year: number) => void;
 }
 
-const WDYearSelector: React.FC<WDYearSelectorProps> = function ({
-  defaultYear,
-  defaultSeason,
+const WDPhaseSelector: React.FC<WDPhaseSelectorProps> = function ({
+  currentSeason,
+  currentYear,
+  totalPhases,
   onSelected,
 }): React.ReactElement {
-  const [yearSelected, setYearSelected] = useState<number>(defaultYear);
-
   const scrollToSection = (whereTo: string, offset: number) => {
     scroller.scrollTo(whereTo, {
       containerId: "yearsContainer",
@@ -33,6 +29,9 @@ const WDYearSelector: React.FC<WDYearSelectorProps> = function ({
     });
   };
 
+  const totalYears = Math.ceil(totalPhases / 3);
+  const years = Array.from(Array(totalYears), (_, index) => 1901 + index);
+
   return (
     <div
       id="yearsContainer"
@@ -41,20 +40,21 @@ const WDYearSelector: React.FC<WDYearSelectorProps> = function ({
       <ul className="flex space-x-2 items-center justify-center mt-[-20px] relative">
         {years.map((year, index) => (
           <li className={`year${year}Container`}>
-            <WDSeasonSelector
+            <WDPhaseSelectorSeasons
               onSelected={(season: Season, y: number) => {
-                setYearSelected(y);
-                onSelected(season, y);
+                if (onSelected) onSelected(season, y);
               }}
               year={year}
-              yearSelected={yearSelected}
-              defaultSeason={defaultSeason}
-              version={year === yearSelected ? "rounded" : "square"}
+              yearSelected={currentYear}
+              defaultSeason={currentSeason}
+              version={year === currentYear ? "rounded" : "square"}
               isFirstItem={index === 0}
               isLastItem={index === years.length - 1}
+              totalPhases={totalPhases}
             />
           </li>
         ))}
+        <li className="lastYear" />
       </ul>
       <div className="flex text-gray-400 text-xss fixed bottom-3 w-full left-[-8px] px-7">
         <div className="flex-1">
@@ -71,9 +71,9 @@ const WDYearSelector: React.FC<WDYearSelectorProps> = function ({
           <button
             type="button"
             className="flex items-center"
-            onClick={() => scrollToSection("year1916Container", 0)}
+            onClick={() => scrollToSection("lastYear", 0)}
           >
-            1916
+            {1900 + totalYears}
             <MiniArrowIcon className="ml-1" />
           </button>
         </div>
@@ -82,4 +82,8 @@ const WDYearSelector: React.FC<WDYearSelectorProps> = function ({
   );
 };
 
-export default WDYearSelector;
+WDPhaseSelector.defaultProps = {
+  onSelected: undefined,
+};
+
+export default WDPhaseSelector;

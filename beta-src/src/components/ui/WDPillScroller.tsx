@@ -13,8 +13,9 @@ const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
   viewedYear,
 }): React.ReactElement {
   return (
-    <div className="flex items-center py-2 px-3 rounded-md text-white bg-opacity-60 bg-black font-bold select-none">
-      {viewedSeason},{viewedYear}. {country}, Select a unit
+    <div className="flex items-center py-2 px-3 rounded-md text-white bg-opacity-60 bg-black font-bold select-none w-fit">
+      {viewedSeason},{viewedYear}. {country}
+      {/* , Select a unit */}
     </div>
   );
 };

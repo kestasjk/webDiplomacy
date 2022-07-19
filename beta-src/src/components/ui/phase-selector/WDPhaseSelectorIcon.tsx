@@ -4,7 +4,7 @@ import { ReactComponent as AutumnIcon } from "../../../assets/svg/phases/autumn.
 import { ReactComponent as SpringIcon } from "../../../assets/svg/phases/spring.svg";
 import { ReactComponent as WinterIcon } from "../../../assets/svg/phases/winter.svg";
 
-interface GamePhaseIconProps {
+interface WDPhaseSelectorIconProps {
   active?: boolean;
   disabled?: boolean;
   season: Season;
@@ -13,7 +13,7 @@ interface GamePhaseIconProps {
   roundness: string;
 }
 
-const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
+const WDPhaseSelectorIcon: React.FC<WDPhaseSelectorIconProps> = function ({
   active,
   disabled,
   season,
@@ -64,9 +64,9 @@ const WDGamePhaseIcon: React.FC<GamePhaseIconProps> = function ({
   );
 };
 
-WDGamePhaseIcon.defaultProps = {
+WDPhaseSelectorIcon.defaultProps = {
   active: false,
   disabled: false,
 };
 
-export default WDGamePhaseIcon;
+export default WDPhaseSelectorIcon;
