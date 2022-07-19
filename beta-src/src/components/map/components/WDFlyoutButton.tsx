@@ -1,12 +1,5 @@
 /* eslint-disable no-bitwise */
 import * as React from "react";
-import { Box, Button, Stack } from "@mui/material";
-import {
-  gameApiSliceActions,
-  gameOrder,
-} from "../../../state/game/game-api-slice";
-import { useAppDispatch, useAppSelector } from "../../../state/hooks";
-import WDBuildUnitButtons from "./WDBuildUnitButtons";
 import Province from "../../../enums/map/variants/classic/Province";
 import provincesMapData from "../../../data/map/ProvincesMapData";
 
@@ -27,10 +20,9 @@ const WDFlyoutButton: React.FC<WDOrderTypeButtonProps> = function ({
   text,
   clickHandler,
 }): React.ReactElement {
-  const dispatch = useAppDispatch();
   const provinceMapData = provincesMapData[province];
   if (!provinceMapData || !provinceMapData.unitSlotsBySlotName[unitSlotName])
-    return <Box />;
+    return <div />;
 
   const unitX =
     provinceMapData.x + provinceMapData.unitSlotsBySlotName[unitSlotName].x;
