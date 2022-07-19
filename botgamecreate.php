@@ -145,7 +145,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$botNum = $countryCount - 1;
 		// $tabl = $DB->sql_tabl("SELECT id FROM wD_Users WHERE type LIKE '%bot%' LIMIT ".$botNum);
 		// Use a specific bot for a specific variant for now. A new Config:: function is needed to be able to flexibly map variants to certain specialized bots
-		$tabl = $DB->sql_tabl("SELECT id FROM wD_Users WHERE type LIKE '%bot%' ".($input['variantID']==15?" AND username='FairBot' ":"")." LIMIT ".$botNum);
+		// $tabl = $DB->sql_tabl("SELECT id FROM wD_Users WHERE type LIKE '%bot%' ".($input['variantID']==15?" AND username='FairBot' ":"")." LIMIT ".$botNum);
         
 		$currCountry = 1;
 
