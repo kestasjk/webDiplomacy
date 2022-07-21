@@ -3,6 +3,7 @@ enum ModalViews {
   ORDERS = "ORDERS",
   INFO = "INFO",
   GAMES = "MY GAMES",
+  HELP = "HELP",
 }
 
 export default ModalViews;

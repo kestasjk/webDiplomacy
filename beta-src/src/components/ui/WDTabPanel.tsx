@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Box } from "@mui/material";
 import ModalViews from "../../enums/ModalViews";
 
 interface WDTabPanelProps {
@@ -14,13 +13,13 @@ const WDTabPanel: React.FC<WDTabPanelProps> = function ({
   children,
 }): React.ReactElement {
   return (
-    <Box
-      hidden={currentView !== currentTab}
+    <div
+      className={currentView !== currentTab ? "hidden" : ""}
       id={currentTab}
       aria-labelledby={currentTab}
     >
-      {currentView === currentTab && <Box>{children}</Box>}
-    </Box>
+      {currentView === currentTab && <div>{children}</div>}
+    </div>
   );
 };
 
