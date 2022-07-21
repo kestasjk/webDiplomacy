@@ -28,6 +28,7 @@ import { store } from "../../../../state/store";
 import { MessageStatus } from "../../../../state/interfaces/GameMessages";
 import RightButton from "./RightButton";
 import { abbrMap } from "../../../../enums/Country";
+import useComponentVisible from "../../../../hooks/useComponentVisible";
 
 interface BottomRightProps {
   orders: IOrderDataHistorical[];
@@ -43,9 +44,12 @@ const TopRight: FunctionComponent<BottomRightProps> = function ({
   userTableData,
 }: BottomRightProps): ReactElement {
   const theme = useTheme();
-  const modalRef = React.useRef<HTMLElement>(null);
   const popoverTrigger = React.useRef<HTMLDivElement>(null);
-  const [showControlModal, setShowControlModal] = useState<boolean>(false);
+  const {
+    ref: modalRef,
+    isComponentVisible,
+    setIsComponentVisible,
+  } = useComponentVisible(true);
   const [viewport] = useViewport();
 
   const {
@@ -84,15 +88,15 @@ const TopRight: FunctionComponent<BottomRightProps> = function ({
   useInterval(dispatchFetchMessages, 2000);
 
   const closeControlModal = () => {
-    setShowControlModal(false);
+    setIsComponentVisible(false);
   };
 
   const toggleControlModal = () => {
-    setShowControlModal(!showControlModal);
+    setIsComponentVisible(!isComponentVisible);
   };
 
   useEffect(() => {
-    setShowControlModal(true);
+    setIsComponentVisible(true);
   }, []);
 
   const controlModalTrigger = (
@@ -148,7 +152,7 @@ const TopRight: FunctionComponent<BottomRightProps> = function ({
 
   const popover = popoverTrigger.current ? (
     <WDPopover
-      isOpen={showControlModal}
+      isOpen={isComponentVisible}
       onClose={closeControlModal}
       anchorEl={popoverTrigger.current}
     >
