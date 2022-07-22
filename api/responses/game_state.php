@@ -396,7 +396,8 @@ class GameState {
 		// For drawn games and some won games (namely those won by concession), webdip duplicates
 		// the final phase's orders in its database. So, we heuristically detect when this is
 		// the case and filter them out. If the game is over, and the final phase of the game is a
-		// duplicate of the phase just before, then we delete all the final phase orders.
+		// duplicate of the phase just before, then we delete all the final phase orders from the response.
+
 		$gameIsOver = $this->gameOver == "Won" || $this->gameOver == "Drawn";
 		if ($gameIsOver && $maxOrderTurn >= 1) {
 			$maxTurnOrders = array();
