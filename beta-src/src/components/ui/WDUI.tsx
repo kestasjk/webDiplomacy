@@ -4,7 +4,13 @@ import { useTheme } from "@mui/material";
 import { IOrderDataHistorical } from "../../models/Interfaces";
 import WDGameFinishedOverlay from "./WDGameFinishedOverlay";
 import { Unit } from "../../utils/map/getUnits";
-import { TopLeft, TopRight, BottomLeft, BottomRight } from "./main-screen";
+import {
+  TopLeft,
+  TopRight,
+  BottomLeft,
+  BottomRight,
+  BottomMiddle,
+} from "./main-screen";
 import { useAppSelector } from "../../state/hooks";
 import {
   gameOverview,
@@ -65,6 +71,7 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
   const userTableData = user ? constructTableData(user.member) : null;
 
   const gameStatusData = useAppSelector(gameStatus);
+
   const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
 
   const {
@@ -111,6 +118,7 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
         currentYear={viewedYear}
         totalPhases={gameStatusData.phases.length}
       />
+      <BottomMiddle phaseSelectorOpen={phaseSelectorOpen} />
       {/* TODO: do not delete this yet */}
       <div className="hidden bottom-4 bottom-40" />
       {gameIsFinished && viewingGameFinishedPhase && (

@@ -58,6 +58,7 @@ const WDPhaseUI: React.FC<WDPhaseUIProps> = function ({
         </div>
       )}
       <WDPillScroller
+        orderStatus={user?.member.orderStatus}
         country={user?.member.country || ""}
         viewedSeason={viewedSeason}
         viewedYear={viewedYear}

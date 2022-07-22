@@ -13,7 +13,6 @@ import useViewport from "../../../../hooks/useViewport";
 import WDActionIcon from "../../icons/WDActionIcon";
 import UIState from "../../../../enums/UIState";
 import WDFullModal from "../../WDFullModal";
-import WDBuildCounts from "../../WDBuildCounts";
 import ModalViews from "../../../../enums/ModalViews";
 import { IOrderDataHistorical } from "../../../../models/Interfaces";
 import { Unit } from "../../../../utils/map/getUnits";
@@ -194,7 +193,6 @@ const TopRight: FunctionComponent<BottomRightProps> = function ({
           controlModalTrigger
         )}
       </div>
-      <WDBuildCounts />
       {popover}
     </>
   );

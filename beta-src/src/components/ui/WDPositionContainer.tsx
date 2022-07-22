@@ -1,6 +1,4 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import Position from "../../enums/Position";
 
 interface WDPositionContainerProps {
@@ -8,8 +6,6 @@ interface WDPositionContainerProps {
   position?: Position;
   bottom?: number;
 }
-
-const Z_INDEX = 2;
 
 /**
  * This component is used to position a box and its children absolute
@@ -25,6 +21,8 @@ const WDPositionContainer: React.FC<WDPositionContainerProps> = function ({
         return `bottom-${bottom} left-3`;
       case Position.BOTTOM_RIGHT:
         return `bottom-${bottom} right-3`;
+      case Position.BOTTOM_MIDDLE:
+        return `bottom-${bottom} left-1/2 -translate-x-1/2`;
       case Position.TOP_RIGHT:
         return "right-3 top-3";
       case Position.TOP_LEFT:
@@ -33,7 +31,7 @@ const WDPositionContainer: React.FC<WDPositionContainerProps> = function ({
     }
   }, [position, bottom]);
 
-  return <div className={`absolute ${placement} z-20`}>{children}</div>;
+  return <div className={`absolute ${placement} z-20 `}>{children}</div>;
 };
 
 WDPositionContainer.defaultProps = {
@@ -45,7 +43,6 @@ export default WDPositionContainer;
 
 // style={{
 //   touchAction: "none",
-//   zIndex: Z_INDEX,
 //   pointerEvents: "none", // this component is for layout alone, it shouldn't mask out clicks behind it
 //   ...placement,
 // }}
