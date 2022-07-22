@@ -37,19 +37,6 @@ const WDMain: React.FC = function (): React.ReactElement {
   const data = useAppSelector(gameData);
   const maps = useAppSelector(gameMaps);
 
-  // Webdip API sometimes gives us entirely bogus or erroneous data on the last phase
-  // of a finished game in the historical phase list. So instead, just get the units
-  // and orders of the phase before the last phase.
-  // drawingPhaseIdx is the phase that we actually do our drawing based on.
-  let drawingPhaseIdx = viewedPhaseState.viewedPhaseIdx;
-  if (
-    overview.phase === "Finished" &&
-    viewedPhaseState.viewedPhaseIdx > 0 &&
-    viewedPhaseState.viewedPhaseIdx === status.phases.length - 1
-  ) {
-    drawingPhaseIdx = viewedPhaseState.viewedPhaseIdx - 1;
-  }
-
   const updateForPhase = () => {
     // Only do live viewing if game is not over and not spectating
     const isPlayingGame =
@@ -201,7 +188,6 @@ const WDMain: React.FC = function (): React.ReactElement {
 
       return {
         phase: overview.phase,
-        drawingPhase: overview.phase,
         units,
         orders: ordersHistorical,
         centersByProvince,
@@ -209,21 +195,21 @@ const WDMain: React.FC = function (): React.ReactElement {
       };
     }
 
-    if (!status.phases[drawingPhaseIdx]) {
+    if (!status.phases[viewedPhaseState.viewedPhaseIdx]) {
       return {
         phase: "",
-        drawingPhase: "",
         units: [],
         orders: [],
         centersByProvince: {},
         isLivePhase: isPlayingGame,
       };
     }
-
-    const phaseHistorical = status.phases[drawingPhaseIdx];
+    const phaseHistorical = status.phases[viewedPhaseState.viewedPhaseIdx];
     const unitsHistorical = phaseHistorical.units;
     const prevPhaseOrders =
-      drawingPhaseIdx > 0 ? status.phases[drawingPhaseIdx - 1].orders : [];
+      viewedPhaseState.viewedPhaseIdx > 0
+        ? status.phases[viewedPhaseState.viewedPhaseIdx - 1].orders
+        : [];
     const units = getUnitsHistorical(
       data.data.territories,
       unitsHistorical,
@@ -241,18 +227,12 @@ const WDMain: React.FC = function (): React.ReactElement {
       };
     });
 
-    const drawingPhase = phaseHistorical.phase as string;
-    // The actual phase label corresponding to the viewed phase,
-    // rather than the drawingPhaseIdx's phase.
-    const phase =
-      viewedPhaseState.viewedPhaseIdx === status.phases.length - 1
-        ? overview.phase
-        : drawingPhase;
+    const phase = phaseHistorical.phase as string;
 
     // On historical build phases, the API doesn't report the unit type of
     // destroyed units! So we manually fill those in ourselves
     let { orders } = phaseHistorical;
-    if (drawingPhase === "Builds") {
+    if (phase === "Builds") {
       orders = orders.map((order) => {
         if (order.type !== "Destroy") return order;
         const foundUnit = units.find(
@@ -267,23 +247,22 @@ const WDMain: React.FC = function (): React.ReactElement {
 
     return {
       phase,
-      drawingPhase,
       units,
       orders,
       centersByProvince,
       isLivePhase: false,
     };
   };
-  const { phase, drawingPhase, units, orders, centersByProvince, isLivePhase } =
+  const { phase, units, orders, centersByProvince, isLivePhase } =
     updateForPhase();
   const { territories } = data.data;
 
   let standoffs: StandoffInfo[] = [];
-  if (drawingPhase === "Retreats" && drawingPhaseIdx > 0) {
+  if (phase === "Retreats" && viewedPhaseState.viewedPhaseIdx > 0) {
     const provincesWithUnits = new Set(
       units.map((unit) => unit.mappedTerritory.province),
     );
-    const prevPhase = status.phases[drawingPhaseIdx - 1];
+    const prevPhase = status.phases[viewedPhaseState.viewedPhaseIdx - 1];
     const standoffsByProvince: { [key: string]: StandoffInfo } = {};
     prevPhase.orders.forEach((order) => {
       if (order.type === "Move" && order.toTerrID) {
