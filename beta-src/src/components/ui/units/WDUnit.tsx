@@ -1,39 +1,39 @@
 import * as React from "react";
 import { useTheme } from "@mui/material/styles";
-import UIState from "../../../enums/UIState";
 import WDUnitController from "../../controllers/WDUnitController";
-import { GameIconProps } from "../../../interfaces/Icons";
-import WDArmyIcon from "./WDArmyIcon";
-import { useAppSelector } from "../../../state/hooks";
+import { Unit } from "../../../utils/map/getUnits";
+import UIState from "../../../enums/UIState";
 
 export const UNIT_HEIGHT = 75;
 export const UNIT_WIDTH = 75;
 
-const WDUnit: React.FC<GameIconProps> = function ({
-  id = undefined,
-  meta,
-  viewBox,
-  type,
-  iconState,
+interface WDUnitProps {
+  id: string | undefined;
+  unit: Unit;
+  unitState: UIState;
+}
+
+const WDUnit: React.FC<WDUnitProps> = function ({
+  id,
+  unit,
+  unitState,
 }): React.ReactElement {
   const theme = useTheme();
   return (
-    <svg
+    <g
       filter={theme.palette.svg.filters.dropShadows[1]}
       height={UNIT_HEIGHT}
       id={id}
       width={UNIT_WIDTH}
-      viewBox={viewBox}
       style={{ overflow: "visible" }}
     >
       <WDUnitController
-        meta={meta}
-        type={type}
-        iconState={iconState}
+        unit={unit}
+        unitState={unitState}
         unitWidth={UNIT_WIDTH}
         unitHeight={UNIT_HEIGHT}
       />
-    </svg>
+    </g>
   );
 };
 

@@ -14,6 +14,7 @@ import ArrowColor from "../../../enums/ArrowColor";
 import drawArrowFunctional, {
   getTargetXYWH,
   getArrowX1Y1X2Y2,
+  makeSVGDrawAsUnsavedAnimateElement,
 } from "../../../utils/map/drawArrowFunctional";
 import TerritoryMap from "../../../data/map/variants/classic/TerritoryMap";
 import { APITerritories } from "../../../state/interfaces/GameDataResponse";
@@ -61,6 +62,7 @@ function accumulateMoveOrderArrows(
           fromTerr,
           "territory",
           toTerr,
+          order.drawAsUnsaved,
         ),
       );
       // console.log("ARROW");
@@ -150,6 +152,7 @@ function accumulateSupportHoldOrderArrows(
           supporterTerr,
           "unit",
           supporteeTerr,
+          order.drawAsUnsaved,
           offsetArrowSourcePixels,
         ),
       );
@@ -217,6 +220,7 @@ function accumulateSupportMoveOrderArrows(
             supporterTerr,
             "arrow",
             getArrowX1Y1X2Y2("unit", supporteeTerr, "territory", toTerr),
+            order.drawAsUnsaved,
           ),
         );
       } else {
@@ -230,6 +234,7 @@ function accumulateSupportMoveOrderArrows(
             supporterTerr,
             "arrow",
             getArrowX1Y1X2Y2("unit", supporteeTerr, "territory", toTerr),
+            order.drawAsUnsaved,
           ),
         );
         // Also draw a ghosty arrow of what we're trying to support.
@@ -244,6 +249,7 @@ function accumulateSupportMoveOrderArrows(
               supporteeTerr,
               "territory",
               toTerr,
+              order.drawAsUnsaved,
             ),
           );
         }
@@ -295,6 +301,7 @@ function accumulateConvoyOrderArrows(
           convoyerTerr,
           "arrow",
           getArrowX1Y1X2Y2("unit", convoyeeTerr, "territory", toTerr),
+          order.drawAsUnsaved,
         ),
       );
       if (!isCoordinated) {
@@ -310,6 +317,7 @@ function accumulateConvoyOrderArrows(
               convoyeeTerr,
               "territory",
               toTerr,
+              order.drawAsUnsaved,
             ),
           );
         }
@@ -339,6 +347,7 @@ function accumulateRetreatArrows(
           fromTerr,
           "territory",
           toTerr,
+          order.drawAsUnsaved,
         ),
       );
     });
@@ -365,6 +374,7 @@ function accumulateDislodgerArrows(
           fromTerr,
           "dislodger",
           toTerr,
+          false,
         ),
       );
     });
@@ -391,7 +401,9 @@ function accumulateBuildCircles(
           fill="none"
           stroke="rgb(0,150,0)"
           strokeWidth={0.05 * (w + h)}
-        />,
+        >
+          {unit.drawAsUnsaved && makeSVGDrawAsUnsavedAnimateElement()}
+        </circle>,
       );
     });
 }
@@ -416,7 +428,9 @@ function accumulateDisbandMarks(
           y2={y1 + MARKSIZE}
           stroke="red"
           strokeWidth={4}
-        />,
+        >
+          {unit.drawAsUnsaved && makeSVGDrawAsUnsavedAnimateElement()}
+        </line>,
       );
       arrows.push(
         <line
@@ -427,7 +441,9 @@ function accumulateDisbandMarks(
           y2={y1 + MARKSIZE}
           stroke="red"
           strokeWidth={4}
-        />,
+        >
+          {unit.drawAsUnsaved && makeSVGDrawAsUnsavedAnimateElement()}
+        </line>,
       );
     });
 }
@@ -474,6 +490,7 @@ function accumulateStandoffMarks(
           src,
           "territory",
           dst,
+          false,
         ),
       );
     });

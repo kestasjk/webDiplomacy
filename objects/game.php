@@ -525,6 +525,7 @@ class Game
 			g.pot,
 			g.potType,
 			g.phaseMinutes,
+			g.phaseMinutesRB,
 			g.nextPhaseMinutes,
 			g.phaseSwitchPeriod,
 			g.processStatus,
@@ -647,6 +648,50 @@ class Game
 	function isLiveGame()
 	{
 		return $this->phaseMinutes < 60;
+	}
+
+	protected function getMissedTurnMinutes()
+	{
+		if ($this->phaseMinutesRB != -1) {
+			return $this->phaseMinutesRB;
+		}
+		else
+		{
+			return $this->phaseMinutes;
+		}
+	}
+
+	/**
+	 * Return the total number of minutes for the current phase
+	 * 
+	 * @return int
+	 */
+	protected function getCurPhaseMinutes()
+	{
+		if ($this->phaseMinutesRB != -1 && ($this->phase == "Retreats" || $this->phase == "Builds")) {
+			return $this->phaseMinutesRB;
+		}
+		else
+		{
+			return $this->phaseMinutes;
+		}
+	}
+
+	/**
+	 * Return the minimum number of minutes for a phase.
+	 * This should be used for calculating grace period.
+	 * 
+	 * @return int
+	 */
+	protected function getMinPhaseMinutes()
+	{
+		if ($this->phaseMinutesRB != -1) {
+			return $this->phaseMinutesRB;
+		}
+		else
+		{
+			return $this->phaseMinutes;
+		}
 	}
 
 	/**

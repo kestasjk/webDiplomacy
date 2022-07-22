@@ -13,15 +13,16 @@ const WDUnitSlot: React.FC<WDUnitSlotProps> = function ({
   y,
 }): React.ReactElement {
   return (
-    <svg
+    <g
       className="unit-slot"
       id={`${name}-unit-slot`}
       style={{ overflow: "visible" }}
       x={x}
       y={y}
+      transform={`translate(${x} ${y})`}
     >
       {children}
-    </svg>
+    </g>
   );
 };
 

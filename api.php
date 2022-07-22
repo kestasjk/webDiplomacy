@@ -267,12 +267,14 @@ abstract class ApiEntry {
 	/**
 	 * Return Game object for game associated to this API entry call.
 	 * To get associated game, API entry must expect a parameter named `gameID`.
+	 * @param useCache if true, use the cache, otherwise always re-fetch from DB.
 	 * @return Game
 	 * @throws RequestException - if no gameID field in requirements, or if no valid game ID provided.
 	 */
-	public function getAssociatedGame($lockForUpdate = false) {
+
+	public function getAssociatedGame($lockForUpdate = false, $useCache = true) {
 		global $DB;
-		if( !is_null($this->gameCache) ) return $this->gameCache;
+		if( $useCache && !is_null($this->gameCache) ) return $this->gameCache;
 		$gameID = $this->getAssociatedGameID();
 		$Variant = libVariant::loadFromGameID($gameID);
 		libVariant::setGlobals($Variant);
@@ -347,7 +349,6 @@ class ToggleVote extends ApiEntry {
 		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
 			throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 
-		$game = 
 		$currentVotes = $DB->sql_hash("SELECT votes FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." AND userID = ".$userID);
 		$currentVotes = $currentVotes['votes'];
 
@@ -378,6 +379,9 @@ class ToggleVote extends ApiEntry {
 		}
 		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."' WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
 		$DB->sql_put("COMMIT");
+		# refetch the game with the votes updated
+		$Game = $this->getAssociatedGame(true, false);
+		$Game->Members->processVotes();
 		return $newVotes;
 	}
 }
@@ -406,7 +410,6 @@ class SetVote extends ApiEntry {
 		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
 			throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 
-		$game = 
 		$currentVotes = $DB->sql_hash("SELECT votes FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." AND userID = ".$userID);
 		$currentVotes = $currentVotes['votes'];
 
@@ -440,6 +443,9 @@ class SetVote extends ApiEntry {
 		}
 		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."' WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
 		$DB->sql_put("COMMIT");
+		# refetch the game with the votes updated
+		$Game = $this->getAssociatedGame(true, false);
+		$Game->Members->processVotes();
 		return $newVotes;
 	}
 }
@@ -449,8 +455,7 @@ class SetVote extends ApiEntry {
  */
 class MessagesSeen extends ApiEntry {
 	public function __construct() {
-		// lol why is this a GET
-		parent::__construct('game/messagesseen', 'GET', '', array('gameID','countryID','seenCountryID'));
+		parent::__construct('game/messagesseen', 'JSON', '', array('gameID','countryID','seenCountryID'));
 	}
 	public function run($userID, $permissionIsExplicit) {
 		global $Game, $DB;
@@ -472,6 +477,24 @@ class MessagesSeen extends ApiEntry {
 		$DB->sql_put("UPDATE wD_Members
 						SET newMessagesFrom = '".implode(',',$newMessagesFrom)."'
 						WHERE id = ".$member->id);
+		$DB->sql_put("COMMIT");
+	}
+}
+
+/**
+ * API entry game/markbackfromleft
+ */
+class MarkBackFromLeft extends ApiEntry {
+	public function __construct() {
+		parent::__construct('game/markbackfromleft', 'JSON', '', array('gameID','countryID'));
+	}
+	public function run($userID, $permissionIsExplicit) {
+		global $Game, $DB;
+		$args = $this->getArgs();
+		$countryID = intval($args['countryID']);
+		$Game = $this->getAssociatedGame();
+		$member = $Game->Members->ByUserID[$userID];
+		$member->markBackFromLeft();
 		$DB->sql_put("COMMIT");
 	}
 }
@@ -669,11 +692,13 @@ class GetGameOverview extends ApiEntry {
 			'excusedMissedTurns' => $game->excusedMissedTurns,
 			'gameID' => $gameID,
 			'gameOver' => $game->gameOver,
+			'isTempBanned' => $game->Members->isTempBanned(),
 			'minimumBet' => $game->minimumBet,
 			'name' => $game->name,
 			'pauseTimeRemaining' => $game->pauseTimeRemaining,
 			'phase' => $game->phase,
 			'phaseMinutes' => $game->phaseMinutes,
+			'phaseMinutesRB'=> $game->phaseMinutesRB,
 			'playerTypes' => $game->playerTypes,
 			'pot' => $game->pot,
 			'potType' => $game->potType,
@@ -1183,7 +1208,6 @@ class GetMessages extends ApiEntry {
 		parent::__construct('game/getmessages', 'GET', 'getStateOfAllGames', array('gameID','countryID','sinceTime'));
 	}
 	public function run($userID, $permissionIsExplicit) {
-		error_log("message start");
 		global $DB, $MC;
 		$args = $this->getArgs();
 		$countryID = $args['countryID'] ?? 0;
@@ -1232,7 +1256,7 @@ class GetMessages extends ApiEntry {
 			$where = "($where) AND timeSent >= $sinceTime";
 		}
 
-		$tabl = $DB->sql_tabl("SELECT message, toCountryID, fromCountryID, turn, timeSent
+		$tabl = $DB->sql_tabl("SELECT message, toCountryID, fromCountryID, turn, timeSent, phaseMarker
 		FROM wD_GameMessages WHERE gameID = $gameID AND ($where)");
 		while ($message = $DB->tabl_hash($tabl)) {
 			$messages[] = [
@@ -1241,6 +1265,7 @@ class GetMessages extends ApiEntry {
 				'timeSent' => (int) $message['timeSent'],
 				'toCountryID' => (int) $message['toCountryID'],
 				'turn' => (int) $message['turn'],
+				'phaseMarker' => $message['phaseMarker'],
 			];
 		}
 		// Return Messages.
@@ -1533,6 +1558,7 @@ try {
 	$api->load(new SendMessage());
 	$api->load(new GetMessages());
 	$api->load(new MessagesSeen());
+	$api->load(new MarkBackFromLeft());
 
 	$jsonEncodedResponse = $api->run();
 	// Set JSON header.

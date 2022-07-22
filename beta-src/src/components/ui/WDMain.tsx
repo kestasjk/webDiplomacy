@@ -85,6 +85,7 @@ const WDMain: React.FC = function (): React.ReactElement {
         let toTerrID = 0;
         let type: string | null = "";
         let viaConvoy;
+        const drawAsUnsaved = !orderMeta.saved;
 
         let { originalOrder } = orderMeta;
         if (!originalOrder) {
@@ -163,6 +164,7 @@ const WDMain: React.FC = function (): React.ReactElement {
           type,
           unitType,
           viaConvoy,
+          drawAsUnsaved,
         };
         ordersHistorical.push(orderHistorical);
       });

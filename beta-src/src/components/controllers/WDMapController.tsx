@@ -63,6 +63,7 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
   const device = getDevice(viewport);
   const [scaleMin, scaleMax] = getInitialScaleForDevice(device);
 
+  if (phase === "Error") return <div />;
   // const legalOrders = useAppSelector(gameLegalOrders);
   // console.log({ legalOrders });
 

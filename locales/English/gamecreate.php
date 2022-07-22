@@ -120,7 +120,39 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				foreach ($phaseList as $i) { print '<option value="'.$i.'"'.($i==1440 ? ' selected' : '').'>'.libTime::timeLengthText($i*60).'</option>'; }
 			?>
 			</select>
-			
+
+
+			</br></br>
+			<strong>Phase length (Retreats, Builds & Missed Turns)</strong>
+			<img id = "modBtnPhaseLengthRB" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
+			<div id="phaseLengthRBModal" class="modal">
+				<!-- Modal content -->
+				<div class="modal-content">
+					<span class="close9">&times;</span>
+					<p><strong>Phase length (Retreats, Builds & Missed Turns): </strong></br>
+						How long retreat and build phases, and grace periods for missed turns will last.
+					</p>
+				</div>
+			</div>
+			<select class = "gameCreate" name="newGame[phaseMinutesRB]" id="selectPhaseMinutesRB">
+			<?php
+				$phaseList = array(-1,1, 2, 3, 5, 7, 10, 15, 20, 30, 60, 120, 240, 360, 480, 600, 720, 840, 960, 1080, 1200, 1320,
+					1440, 1440+60, 2160, 2880, 2880+60*2, 4320, 5760, 7200, 8640, 10080, 14400);
+
+				foreach ($phaseList as $i) { 
+					if ($i != -1)
+					{
+						print '<option value="'.$i.'"'.($i==-1 ? ' selected' : '').'>'.libTime::timeLengthText($i*60).'</option>'; 
+					}
+					else
+					{
+						print '<option value="'.$i.'"'.($i==-1 ? ' selected' : '').'> Same as Movement phases</option>';
+					}
+				}
+			?>
+			</select>
+
+
 			<p id="phaseSwitchPeriodPara">
 				<strong>Time Until Phase Swap</strong></br>
 				<select class = "gameCreate" id="selectPhaseSwitchPeriod" name="newGame[phaseSwitchPeriod]">
@@ -357,6 +389,7 @@ var modal5 = document.getElementById('betModal');
 var modal6 = document.getElementById('anonModal');
 var modal7 = document.getElementById('messagingModal');
 var modal8 = document.getElementById('botModal');
+var modal9 = document.getElementById('phaseLengthRBModal');
 
 // Get the button that opens the modal
 var btn1 = document.getElementById("modBtnDelays");
@@ -367,6 +400,7 @@ var btn5 = document.getElementById("modBtnBet");
 var btn6 = document.getElementById("modBtnAnon");
 var btn7 = document.getElementById("modBtnMessaging");
 var btn8 = document.getElementById("modBtnBot");
+var btn9 = document.getElementById("modBtnPhaseLengthRB");
 
 // Get the <span> element that closes the modal
 var span1 = document.getElementsByClassName("close1")[0];
@@ -377,6 +411,7 @@ var span5 = document.getElementsByClassName("close5")[0];
 var span6 = document.getElementsByClassName("close6")[0];
 var span7 = document.getElementsByClassName("close7")[0];
 var span8 = document.getElementsByClassName("close8")[0];
+var span9 = document.getElementsByClassName("close9")[0];
 
 // When the user clicks the button, open the modal 
 btn1.onclick = function() { modal1.style.display = "block"; }
@@ -387,6 +422,7 @@ btn5.onclick = function() { modal5.style.display = "block"; }
 btn6.onclick = function() { modal6.style.display = "block"; }
 btn7.onclick = function() { modal7.style.display = "block"; }
 btn8.onclick = function() { modal8.style.display = "block"; }
+btn9.onclick = function() { modal9.style.display = "block"; }
 
 // When the user clicks on <span> (x), close the modal
 span1.onclick = function() { modal1.style.display = "none"; }
@@ -397,6 +433,7 @@ span5.onclick = function() { modal5.style.display = "none"; }
 span6.onclick = function() { modal6.style.display = "none"; }
 span7.onclick = function() { modal7.style.display = "none"; }
 span8.onclick = function() { modal8.style.display = "none"; }
+span9.onclick = function() { modal9.style.display = "none"; }
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
@@ -408,6 +445,8 @@ window.onclick = function(event) {
 	if (event.target == modal6) { modal6.style.display = "none"; }
 	if (event.target == modal7) { modal7.style.display = "none"; }
 	if (event.target == modal8) { modal8.style.display = "none"; }
+	if (event.target == modal9) { modal9.style.display = "none"; }
+
 }
 
 function setBotFill(){
@@ -471,6 +510,21 @@ function updatePhasePeriod(){
 			selectPhaseSwitchPeriod.options[i].disabled = true;
 		}
 	}
+
+	selectPhaseMinutesRB = document.getElementById("selectPhaseMinutesRB");
+
+	for (i = 0; i < selectPhaseMinutesRB.length; i++){
+		var optVal = parseInt(selectPhaseMinutesRB.options[i].value);
+		if (optVal < 0 || optVal >= phaseLength / 10 && optVal <= phaseLength){
+			selectPhaseMinutesRB.options[i].hidden = false;
+			selectPhaseMinutesRB.options[i].disabled = false;
+		}
+		else{
+			selectPhaseMinutesRB.options[i].hidden = true;
+			selectPhaseMinutesRB.options[i].disabled = true;
+		}
+	}
+	selectPhaseMinutesRB.value = -1;
 }
 
 
@@ -478,6 +532,7 @@ function updatePhasePeriod(){
 
 selectPhaseSwitchPeriod.addEventListener("change", updatePhasePeriod)
 selectPhaseMinutes.addEventListener("change", updatePhasePeriod)
+window.onload = updatePhasePeriod
 
 </script>
 

@@ -67,7 +67,7 @@ class VariantData
 				'systemToken' => $this->systemToken,
 				'typeID' => $this->typeID,
 				'userID' => $this->userID,
-				'offset' => $offset);
+				'`offset`' => $offset);
 		
 		$arr = array();
 		foreach($params as $k=>$v)

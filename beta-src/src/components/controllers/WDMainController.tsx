@@ -9,6 +9,7 @@ import {
   gameStatus,
   gameViewedPhase,
   loadGameData,
+  markBackFromLeft,
 } from "../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import getPhaseKey from "../../utils/state/getPhaseKey";
@@ -79,15 +80,16 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   if (!consistentPhase) {
     return <Box>Loading...</Box>;
   }
-
   const showOverlay =
-    noPhase || (displayedPhaseKey && overviewKey !== displayedPhaseKey);
+    noPhase ||
+    status.status === "Left" ||
+    (displayedPhaseKey && overviewKey !== displayedPhaseKey);
   if (displayedPhaseKey === null && overview.phase) {
     setDisplayedPhaseKey(overviewKey);
   }
   return (
     <div>
-      {!noPhase && children}
+      {children}
       {showOverlay && (
         <WDGameProgressOverlay
           overview={overview}
@@ -101,6 +103,14 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
             // *not* yet seen (i.e. presumably they saw this phase when they were entering
             // orders for it, before that phase ended and other powers' orders appeared).
             dispatch(gameApiSliceActions.setViewedPhaseToLatestPhaseViewed());
+            if (status.status === "Left") {
+              dispatch(
+                markBackFromLeft({
+                  countryID: String(countryID),
+                  gameID: String(gameID),
+                }),
+              );
+            }
           }}
         />
       )}

@@ -113,6 +113,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		unset($required, $form);
 
 		$input['variantID']=(int)$input['variantID'];
+		$input['countryID']=(int)$input['countryID'];
 		if( !in_array($input['variantID'],Config::$apiConfig['variantIDs']) ) { throw new Exception(l_t("Variant ID given (%s) doesn't represent a real variant.",$input['variantID'])); }
 
 		// If the name isn't unique or is too long the database will stop it
@@ -128,7 +129,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 
 		// Create Game record & object
 		require_once(l_r('gamemaster/game.php'));
-		$Game = processGame::create($input['variantID'],$input['name'],'',5,'Unranked',4320, 4320, -1, 60,'No','Regular','Normal','draw-votes-public',0,4,'MemberVsBots');
+		$Game = processGame::create($input['variantID'],$input['name'],'',5,'Unranked',4320, -1, 4320, -1, 60,'No','Regular','Normal','draw-votes-public',0,4,'MemberVsBots');
 
 		// Prevent temp banned players from making new games.
 		if ($User->userIsTempBanned())
@@ -142,7 +143,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 
 		//Add Bots
 		$botNum = $countryCount - 1;
-		//$tabl = $DB->sql_tabl("SELECT id FROM wD_Users WHERE type LIKE '%bot%' LIMIT ".$botNum);
+		// $tabl = $DB->sql_tabl("SELECT id FROM wD_Users WHERE type LIKE '%bot%' LIMIT ".$botNum);
 		// Use a specific bot for a specific variant for now. A new Config:: function is needed to be able to flexibly map variants to certain specialized bots
 		$tabl = $DB->sql_tabl("SELECT id FROM wD_Users WHERE type LIKE '%bot%' ".($input['variantID']==15?" AND username='FairBot' ":"")." LIMIT ".$botNum);
         

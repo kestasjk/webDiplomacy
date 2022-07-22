@@ -43,7 +43,7 @@ class userMember extends panelMember
 
 		if ( $this->status == 'Left' )
 		{
-			$this->setBackFromLeft();
+			$this->markBackFromLeft();
 		}
 		elseif( (time() - $this->timeLoggedIn) > 3*60)
 		{
@@ -56,62 +56,6 @@ class userMember extends panelMember
 
 		if( $commit )
 			$DB->sql_put("COMMIT");
-	}
-
-	/**
-	 * Set that this user is no longer in civil disorder for this membership. Sets as playing, removes
-	 * civildisorder record, sets their orderStatus depending on whether they
-	 * have orderes to enter, puts them into the correct Game->Members->ByStatus list.
-	 */
-	protected function setBackFromLeft()
-	{
-		global $DB,$Game,$User;
-		
-		if ( $this->Game->Members->isTempBanned() )
-		{
-			throw new Exception("You are blocked from rejoining your games.");
-		}
-
-		unset($this->Game->Members->ByStatus[$this->status][$this->id]);
-		$this->status = 'Playing';
-		$this->Game->Members->ByStatus[$this->status][$this->id] = $this;
-
-		/*
-		 * Remove the CD mark from this person's record
-		 * Someone could possible go into CD, be taken over, join another country, go CD again, then rejoin, so country has to be specified
-		 */
-		 // Was this a mod forced CD?
-		$DB->sql_tabl("SELECT * FROM wD_CivilDisorders
-					WHERE forcedByMod=0 
-					AND gameID = ".$this->gameID."
-					AND userID = ".$this->userID."
-					AND countryID = ".$this->countryID);
-
-		if ($DB->affected() != 0) 
-		{
-            $DB->sql_put("UPDATE wD_Users SET deletedCDs = deletedCDs + 1 where id=" .$this->userID);
-		}
-		 
-		$DB->sql_put("DELETE FROM wD_CivilDisorders
-					WHERE gameID = ".$this->gameID."
-					AND userID = ".$this->userID."
-					AND countryID = ".$this->countryID
-				);
-				
-		$this->orderStatus->Ready=false;
-
-		$DB->sql_put(
-				"UPDATE wD_Members
-				SET status = 'Playing', ".( $this->orderStatus->updated ? "orderStatus='".$this->orderStatus."', " : '' )."
-					timeLoggedIn = ".time()."
-				WHERE id = ".$this->id
-			);
-
-		// Reset the min bet so that the game no longer appears in open games searches. 
-		require_once(l_r('gamemaster/game.php'));
-		$Variant=libVariant::loadFromGameID($this->gameID);
-		$Game = $Variant->processGame($this->gameID);
-		$Game->resetMinimumBet();
 	}
 
 	/**

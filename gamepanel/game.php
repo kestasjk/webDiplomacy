@@ -315,6 +315,9 @@ class panelGame extends Game
 	function gameHoursPerPhase()
 	{
 		$buf = l_t('<strong>%s</strong> /phase',libTime::timeLengthText($this->phaseMinutes*60));
+		if ($this->phaseMinutesRB != -1) {
+			$buf = $buf . l_t(' (M) | <strong>%s</strong> /phase (R, B)', libTime::timeLengthText($this->phaseMinutesRB*60));
+		}
 		return $buf ;
 	}
 
@@ -497,9 +500,6 @@ class panelGame extends Game
 
 						if ( $this->private )
 							$buf .= '<br />'.self::passwordBox();
-
-						if ( $this->isClassicGame() && $User->isActiveBeta)
-							$buf .= ' <input type="submit" name="joinBeta" value="'.l_t('Play Beta').'" class="form-submit" />';
 
 						$buf .= ' <input type="submit" name="join" value="'.l_t('Join').'" class="form-submit" />';
 

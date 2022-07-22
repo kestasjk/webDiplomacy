@@ -72,7 +72,6 @@ if( isset(Config::$customForumURL) )
 }
 
 print '<div class="content">';
-
 $DB->sql_put("COMMIT"); // Unlock our user row, to prevent deadlocks below
 // This means our $User object should only be used for reading from
 
@@ -127,7 +126,25 @@ libGameMaster::updatePhasePerYearCount();
 print l_t('Updating reliabilty ratings');
 libGameMaster::updateReliabilityRating();
 
+if( Config::$playNowDomain != null )
+{
+	// If there is a play-now domain set up ensure that games that have been left for over 24 hours don't linger and waste resources:
+	// If a diplonow_ member hasn't logged onto a game for 24 hours set the member to vote for cancellation of the game.
+	$DB->sql_put(
+		"UPDATE wD_Members 
+		SET votes='Cancel' 
+		WHERE userID IN (
+			SELECT id 
+			FROM wD_Users 
+			WHERE username LIKE 'diplonow%'
+		) 
+		AND timeLoggedIn < UNIX_TIMESTAMP()-24*60*60 
+		AND status='Playing';"
+	);
+}
+
 $DB->enableTransactions();
+$DB->sql_put("BEGIN");
 
 // Now apply any votes that need to be applied:
 print l_t('Finding and applying votes');

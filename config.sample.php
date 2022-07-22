@@ -260,9 +260,9 @@ class Config
 	/**
 	 * A bit-mask that masks an int stored against wD_Users to allow users to opt-in to various experimental features
 	 * in a way that doesn't need any database changes to add/remove new features.
-	 * 
+	 *
 	 * If this is non-zero the user will see a list of options as defined in locales/[locale]/user.php
-	 * 
+	 *
 	 * @var int
 	 */
 	public static $enabledOptInFeatures = 0;
@@ -344,6 +344,14 @@ class Config
 				),
 			"UseDebug" => false // If this is set to true mail will be output to the browser instead of sent, useful for debugging
 		);
+
+	/**
+	 * Something to add into the header, within <head></head>, as analytics now needs to be embedded there.
+	 */
+	public static function customHeader()
+	{
+		return '';
+	}
 
 	/**
 	 * Something to add after everything else has been printed off (except '</body></html>'), useful for

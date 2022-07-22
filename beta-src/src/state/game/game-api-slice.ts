@@ -132,7 +132,7 @@ export const setVoteStatus = createAsyncThunk(
       ApiRoute.GAME_SETVOTE,
       queryParams,
     );
-    return data as string;
+    return data;
   },
 );
 
@@ -143,11 +143,22 @@ export const markMessagesSeen = createAsyncThunk(
     gameID: string;
     seenCountryID: string;
   }) => {
-    const { data } = await getGameApiRequest(
+    const { data } = await postGameApiRequest(
       ApiRoute.MESSAGES_SEEN,
       queryParams,
     );
-    return data as string;
+    return data;
+  },
+);
+
+export const markBackFromLeft = createAsyncThunk(
+  ApiRoute.SET_BACK_FROM_LEFT,
+  async (queryParams: { countryID: string; gameID: string }) => {
+    const { data } = await postGameApiRequest(
+      ApiRoute.SET_BACK_FROM_LEFT,
+      queryParams,
+    );
+    return data;
   },
 );
 
@@ -339,28 +350,24 @@ const gameApiSlice = createSlice({
       .addCase(setVoteStatus.fulfilled, (state, action) => {
         const { vote } = action.meta.arg;
         state.votingInProgress = { ...state.votingInProgress, [vote]: null };
-        if (action.payload) {
-          handlePostSucceeded(state);
-          if (state.overview.user) {
-            const newVotes = action.payload.split(",").filter((s) => !!s);
-            state.overview.user.member.votes = newVotes;
-            state.overview.members.forEach((member) => {
-              if (member.countryID === state.overview.user?.member.countryID) {
-                member.votes = newVotes;
-              }
-            });
-          }
-        } else {
-          handlePostFailed(
-            state,
-            "Error sending vote, network connection issue",
-          );
+        handlePostSucceeded(state);
+        if (state.overview.user) {
+          const newVotes = action.payload.split(",").filter((s) => !!s);
+          state.overview.user.member.votes = newVotes;
+          state.overview.members.forEach((member) => {
+            if (member.countryID === state.overview.user?.member.countryID) {
+              member.votes = newVotes;
+            }
+          });
         }
       })
       .addCase(setVoteStatus.rejected, (state, action) => {
         handlePostFailed(state, "Error sending vote, network connection issue");
         const { vote } = action.meta.arg;
         state.votingInProgress = { ...state.votingInProgress, [vote]: null };
+      })
+      .addCase(markBackFromLeft.fulfilled, (state, action) => {
+        state.status.status = "Playing";
       })
       // Send message
       .addCase(sendMessage.fulfilled, (state, action) => {

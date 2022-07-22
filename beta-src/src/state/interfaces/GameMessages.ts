@@ -11,6 +11,7 @@ export interface GameMessage {
   toCountryID: number;
   turn: number;
   status: MessageStatus;
+  phaseMarker: string;
 }
 
 export interface GameMessages {

@@ -60,13 +60,7 @@ const WDProvinceOverlay: React.FC<WDProvinceOverlayProps> = function ({
           break;
       }
       const wdUnit = (
-        <WDUnit
-          id={`${province}-unit`}
-          country={unit.country}
-          meta={unit}
-          type={unit.unit.type as UnitType}
-          iconState={unitState}
-        />
+        <WDUnit id={`${province}-unit`} unit={unit} unitState={unitState} />
       );
       if (unit.drawMode === UnitDrawMode.DISLODGING) {
         unitFCsDislodging[unit.mappedTerritory.unitSlotName] = wdUnit;
@@ -76,13 +70,13 @@ const WDProvinceOverlay: React.FC<WDProvinceOverlayProps> = function ({
     });
 
   return (
-    <svg
+    <g
       height={provinceMapData.height}
       id={`${province}-province-overlay`}
-      viewBox={provinceMapData.viewBox}
       width={provinceMapData.width}
       x={provinceMapData.x}
       y={provinceMapData.y}
+      transform={`translate(${provinceMapData.x} ${provinceMapData.y})`}
       overflow="visible"
     >
       {provinceMapData.unitSlots
@@ -109,7 +103,7 @@ const WDProvinceOverlay: React.FC<WDProvinceOverlayProps> = function ({
             </WDUnitSlot>
           );
         })}
-    </svg>
+    </g>
   );
 };
 

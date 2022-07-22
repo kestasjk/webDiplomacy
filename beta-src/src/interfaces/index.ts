@@ -5,5 +5,4 @@ export * from "./map/ProvinceMapData";
 export * from "./map/Label";
 export * from "./map/TextureData";
 export * from "./state/MemberData";
-export * from "./map/UnitMeta";
 export * from "./state/UpdateOrder";
