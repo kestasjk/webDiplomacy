@@ -29,7 +29,6 @@ services:
 
     mariadb:
         image: 'mariadb:10.6'
-        restart: always
         working_dir: /application
         volumes:
             - './:/application'
@@ -49,8 +48,8 @@ services:
         environment:
             - PMA_ARBITRARY=1
 
-    clickhouse:
-        image: 'yandex/clickhouse-server:latest'
+    #clickhouse:
+    #    image: 'yandex/clickhouse-server:latest'
 
     webserver:
         image: 'nginx:alpine'
@@ -72,21 +71,6 @@ services:
         command: >
             sh -c "npm install &&
                    npm run start"
-    
-    # Since we already downloaded the mariadb:10.6 image, we can re-use it to 
-    # create the DB if it wasn't created and run the cron
-    gamemaster-cron:
-        image: 'mariadb:10.6'
-        working_dir: /application
-        volumes:
-            - './:/application'
-        depends_on:
-            - webserver
-            - mariadb
-        links:
-            - webserver
-            - mariadb
-        command: ./install/gamemaster-entrypoint.sh
 
     php-fpm:
         build: phpdocker/php-fpm
@@ -94,14 +78,7 @@ services:
         volumes:
             - './:/application'
             - './phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini'
-        command:
-            - /bin/sh
-            - -c
-            - |
-              if [ ! -f config.php ]; then
-                cp config.sample.php config.php
-              fi
-              /usr/sbin/php-fpm7.4 -O
+        command: ./install/gamemaster-entrypoint.sh
         environment:
             PHP_IDE_CONFIG: "serverName=Docker"
             XDEBUG_MODE: debug

@@ -1,5 +1,6 @@
 {                                                                                                                                                                                                          
     "require": {                                                                                                                                                                                           
-        "auth0/auth0-php": "~7.0"                                                                                                                                                                          
+        "auth0/auth0-php": "~7.0",
+        "pusher/pusher-php-server": "^7.0"                                                                                                                                                                          
     }                                                                                                                                                                                                      
 }

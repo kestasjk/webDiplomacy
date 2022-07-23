@@ -2,24 +2,43 @@
 
 HOME=/application
 
-sleep 10
-if mysql -u webdiplomacy -h mariadb -P 3306 --password=mypassword123 webdiplomacy -e "SELECT COUNT(id) FROM wD_Users;" ; then
-  echo "DB was already created"
+cd $HOME
+
+echo "Make sure all cache folders exist"
+mkdir $HOME/cache
+ls $HOME/variants/*/variant.php | sed -e 's/variant.php//' | (while read v; do mkdir "$v""/cache"; done)
+
+echo "Make sure all cache folders writable"
+# Make sure the cache folders are writable
+find . -name "cache" -exec chmod a+rwx {} \;
+
+echo "Make sure config present"
+# If no config has been set up use the sample, which is compatible with docker
+if [ ! -f config.php ]; then
+  cp config.sample.php config.php
+fi
+
+echo "Start PHP server"
+# Fork the FPM server
+/usr/sbin/php-fpm7.4 -O &
+
+sleep 2
+
+echo "Checking if DB installed"
+if mysql -u webdiplomacy -h mariadb -P 3306 --password=mypassword123 webdiplomacy -e "SHOW TABLES;" | grep -q 'w[Dd]_[Uu]ser' ; then
+  echo "DB installed"
 else
+  echo "DB not installed, installing new DB"
   mysql -u webdiplomacy -h mariadb -P 3306 --password=mypassword123 < $HOME/install/FullInstall/fullInstall.sql
   mysql -u webdiplomacy -h mariadb -P 3306 --password=mypassword123 webdiplomacy < $HOME/install/createBotAccounts.sql
   echo "DB created"
-  # the next lines are related to permissions, I'm not sure why we need them, I think because php-fpm doesn't have the right config
-  mkdir $HOME/cache
-  mkdir $HOME/variants/ColdWar/cache
-  cd $HOME
-  find . -name "cache" -exec chmod a+rwx {} \;
 fi
-if [ ! -x /usr/bin/wget ]; then
-  apt-get update && apt-get install -y wget
-fi
-sleep 10
+
+sleep 2
+
+echo "Start gamemaster"
 while true; do
-  wget 'http://webserver/gamemaster.php?gameMasterSecret=' -O /dev/null >> /tmp/gamemaster.log 2>&1
-  sleep 2
+  gameMasterSecret='' QUERY_STRING='' php -f $HOME/gamemaster.php > /dev/null 2>&1
+  sleep 5
+  echo -n "."
 done

@@ -141,6 +141,30 @@ class Config
 	public static $playNowDomain = null;
 
 	/**
+	 * The memcached server
+	 * @var string
+	 */
+	public static $memcachedHost='memcached';
+
+	/**
+	 * The memcached port
+	 * @var int
+	 */
+	public static $memcachedPort='11211';
+	
+	/**
+	 * The config for the pusher websockets server
+	 */
+	public static $pusherConfig = array(
+		'key'=>'',
+		'secret'=>'',
+		'id'=>'webdiplomacy',
+		'server'=>'pusher',
+		'port'=>6001,
+		'useTLS'=>false
+	);
+
+	/**
 	 * An array of categories to use when calculating GhostRatings
 	 * @var array
 	 */

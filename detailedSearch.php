@@ -768,7 +768,7 @@ else if ($tab == 'GameSearch')
 	if ($gamename != '' || $showOnlyJoinable == 'checked')
 	{
 		$sql = "SELECT g.id, g.name, g.pot,g.phase, g.gameOver, g.processStatus, ( CASE WHEN g.password IS NULL THEN 'False' ELSE 'True' END ) AS password,
-				g.potType, g.minimumBet, g.phaseMinutes, g.anon, g.pressType, g.directorUserID, g.minimumReliabilityRating, g.drawType
+				g.potType, g.minimumBet, g.phaseMinutes, g.anon, g.pressType, g.directorUserID, g.minimumReliabilityRating, g.drawType, 0 watchedCount
 				FROM wD_Games g WHERE 1 = 1";
 
 		$sqlCounter = "SELECT count(1) FROM wD_Games g WHERE 1 = 1";
@@ -917,7 +917,7 @@ else if ($tab == 'GamesByUser')
 	if ($IsUserValid == 1)
 	{
 		$sql = "SELECT g.id, g.name, g.pot,g.phase, g.gameOver, g.processStatus, ( CASE WHEN g.password IS NULL THEN 'False' ELSE 'True' END ) AS password,
-				g.potType, g.minimumBet, g.phaseMinutes, g.anon, g.pressType, g.directorUserID, g.minimumReliabilityRating, g.drawType
+				g.potType, g.minimumBet, g.phaseMinutes, g.anon, g.pressType, g.directorUserID, g.minimumReliabilityRating, g.drawType, 0 watchedCount
 				FROM wD_Games g inner join wD_Members m on m.gameID = g.id WHERE g.phase = 'Finished' and  m.userID = ".$paramUserID." ";
 
 		$sqlCounter = "SELECT count(1) FROM wD_Games g inner join wD_Members m on m.gameID = g.id WHERE g.phase = 'Finished' and m.userID = ".$paramUserID." ";
