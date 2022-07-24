@@ -552,7 +552,7 @@ class Game
 	{
 		$row = self::fetchRow($this->id, $this->lockMode);
 		
-		if ( ! isset($row['id']) or ! $row['id'] )
+		if ( $row === false || (! isset($row['id'])) || (! $row['id']) )
 		{
 			libHTML::error(l_t("Game not found; ensure a valid game ID has been given. Check that this game hasn't been canceled, you may have received a message about it on your <a href='index.php' class='light'>home page</a>."));
 		}

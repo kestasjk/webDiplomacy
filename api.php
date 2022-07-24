@@ -289,6 +289,9 @@ abstract class ApiEntry {
 		$lockMode = $this->gameLocking ? UPDATE : NOLOCK;
 
 		$gameRow = Game::fetchRow($gameID, $lockMode);
+		if( $gameRow === null )
+			throw new Exception("Could not fetch row for give gameID, game may have been cancelled");
+
 		$Variant = libVariant::loadFromVariantID($gameRow['variantID']);
 		libVariant::setGlobals($Variant);
 		
@@ -1465,11 +1468,11 @@ class Api {
 	 * API entries. Array mapping API entry name to ApiEntry instance.
 	 * @var array
 	 */
-	private $entries;
+	public $entries;
 
-	private $route;
+	public $route;
 
-	private $authClass;
+	public $authClass;
 
 	public function __construct() {
 		$this->entries = array();
@@ -1577,6 +1580,24 @@ try {
 	header('Content-Type: application/json');
 	// Print response.
 	print $jsonEncodedResponse;
+/*
+	$apiAuth = new $api->authClass($api->route);
+	$userID = $apiAuth->getUserID();
+	if( $userID == 11 )
+	{
+		$apiEntry = $api->entries[$api->route];
+		file_put_contents('bot_requestlog.txt',
+			date('l jS \of F Y h:i:s A')."\n".
+			"-------------------\n".
+			$_SERVER['REQUEST_URI']."\n".
+			"-------------------\n".
+			json_encode($apiEntry->getArgs(), JSON_PRETTY_PRINT)."\n".
+			"-------------------\n".
+			json_encode(json_decode($jsonEncodedResponse), JSON_PRETTY_PRINT)."\n".
+			"-------------------\n\n"
+			, FILE_APPEND);
+	}
+	*/
 }
 
 // 4xx - User errors - No need to log

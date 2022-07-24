@@ -29,7 +29,7 @@ if mysql -u webdiplomacy -h mariadb -P 3306 --password=mypassword123 webdiplomac
   echo "DB installed"
 else
   echo "DB not installed, installing new DB"
-  mysql -u webdiplomacy -h mariadb -P 3306 --password=mypassword123 < $HOME/install/FullInstall/fullInstall.sql
+  mysql -u webdiplomacy -h mariadb -P 3306 --password=mypassword123 webdiplomacy < $HOME/install/FullInstall/fullInstall.sql
   mysql -u webdiplomacy -h mariadb -P 3306 --password=mypassword123 webdiplomacy < $HOME/install/createBotAccounts.sql
   echo "DB created"
 fi
