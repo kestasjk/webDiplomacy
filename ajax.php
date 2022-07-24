@@ -165,7 +165,18 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 			'statusText'=>'', 'notice'=>l_t('Exception: ').$e->getMessage(), 'orders'=>array());
 	}
 }
-
+/*
+file_put_contents(
+	'bot_ajax_requestlog.txt', 
+	date('l jS \of F Y h:i:s A')."\n".
+	"UserID: ".$User->id."\n".
+	"-------------------\n".
+	$_SERVER['REQUEST_URI']."\n".
+	"-------------------\n".
+	json_encode($results, JSON_PRETTY_PRINT)."\n".
+	"-------------------\n\n", 
+	FILE_APPEND);
+*/
 header('X-JSON: ('.json_encode($results).')');
 
 close();

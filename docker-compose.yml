@@ -60,6 +60,8 @@ services:
         ports:
             - '${WEBDIP_PORT:-43000}:80'
 
+    # This is necessary for doing live React dev for the new board, but isn't needed after doing a build 
+    # if the nginx config is changed to not redirect /beta/ to port 3000:
     beta:
         image: 'node:16.15.1-alpine3.14'
         container_name: webdiplomacy-beta
@@ -78,9 +80,27 @@ services:
         volumes:
             - './:/application'
             - './phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini'
-        command: ./install/gamemaster-entrypoint.sh
-        environment:
-            PHP_IDE_CONFIG: "serverName=Docker"
-            XDEBUG_MODE: debug
-            XDEBUG_CONFIG: client_host=host.docker.internal client_port=9003
-            XDEBUG_SESSION: 1
+        command: /bin/sh -c "install/gamemaster-entrypoint.sh"
+        #environment:
+        #    PHP_IDE_CONFIG: "serverName=Docker"
+        #    XDEBUG_MODE: debug
+        #    XDEBUG_CONFIG: client_host=host.docker.internal client_port=9003
+        #    XDEBUG_SESSION: 1
+
+    soketi:
+        container_name: 'soketi_server'
+        restart: unless-stopped
+        image: 'quay.io/soketi/soketi:0.17-16-alpine'
+        ports:
+            - '${SOKETI_PORT:-6001}:6001'
+            - '${SOKETI_METRICS_SERVER_PORT:-9601}:9601'
+        #environment:
+        #    - DEBUG='${DEBUG:-1}'
+        #    - PUSHER_APP_ID='webdiplomacy'
+        #    - PUSHER_APP_KEY='webdiplomacykey123'
+        #    - PUSHER_APP_SECRET='webdiplomacysecret123'
+        #    - PUSHER_HOST='${PUSHER_HOST:-127.0.0.1}'
+        #    - PUSHER_PORT= '${PUSHER_PORT:-6001}'
+        #    - PUSHER_SCHEME='${PUSHER_SCHEME:-http}' # or https
+        #    - METRICS_SERVER_PORT=${METRICS_SERVER_PORT-9601}
+        #    - DEFAULT_APP_ENABLE_CLIENT_MESSAGES=true
