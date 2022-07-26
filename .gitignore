@@ -28,4 +28,5 @@ adminInfo.php
 tmp/
 apilog.txt
 git*
-/vendor/
+beta-src/node_modules/
+vendor/

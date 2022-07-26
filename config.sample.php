@@ -123,7 +123,7 @@ class Config
 	 * An array of variants available on the server (for future releases, not yet enabled)
 	 * @var array
 	 */
-	public static $variants=array(1=>'Classic',2=>'World',9=>'AncMed',15=>'ClassicFvA',17=>'ClassicChaos',19=>'Modern2',20=>'Empire4',23=>'ClassicGvI',57=>'KnownWorld_901',91=>'ColdWar');
+	public static $variants=array(1=>'Classic',2=>'World',9=>'AncMed',15=>'ClassicFvA',17=>'ClassicChaos',19=>'Modern2',20=>'Empire4',23=>'ClassicGvI',91=>'ColdWar');
 
 	/**
 	 * A boolean controlling whether automatic gr calculations are enabled. Set to true for auto-GR calculation and false to require manual calculations via the modtool. Note that $grCategories must exist to work.
@@ -139,6 +139,30 @@ class Config
 	 * @var string|null
 	 */
 	public static $playNowDomain = null;
+
+	/**
+	 * The memcached server
+	 * @var string
+	 */
+	public static $memcachedHost='memcached';
+
+	/**
+	 * The memcached port
+	 * @var int
+	 */
+	public static $memcachedPort='11211';
+	
+	/**
+	 * The config for the pusher websockets server
+	 */
+	public static $pusherConfig = array(
+		'id'=>'webdiplomacy',
+		'key'=>'webdiplomacykey123',
+		'secret'=>'webdiplomacysecret123',
+		'server'=>'soketi',
+		'port'=>6001,
+		'useTLS'=>false
+	);
 
 	/**
 	 * An array of categories to use when calculating GhostRatings
