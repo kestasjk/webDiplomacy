@@ -1,15 +1,16 @@
-import React from "react";
+import React, { HTMLAttributes, RefObject } from "react";
 import { scroller } from "react-scroll";
 
 import Season from "../../../enums/Season";
 import WDPhaseSelectorSeasons from "./WDPhaseSelectorGroup";
 import { ReactComponent as MiniArrowIcon } from "../../../assets/svg/miniArrow.svg";
 
-interface WDPhaseSelectorProps {
+interface WDPhaseSelectorProps extends HTMLAttributes<HTMLDivElement> {
   currentSeason: Season;
   currentYear: number;
   totalPhases: number;
   onSelected?: (season: Season, year: number) => void;
+  ref: RefObject<HTMLDivElement>;
 }
 
 const WDPhaseSelector: React.FC<WDPhaseSelectorProps> = function ({
@@ -17,6 +18,7 @@ const WDPhaseSelector: React.FC<WDPhaseSelectorProps> = function ({
   currentYear,
   totalPhases,
   onSelected,
+  ref,
 }): React.ReactElement {
   const scrollToSection = (whereTo: string, offset: number) => {
     scroller.scrollTo(whereTo, {
@@ -36,10 +38,11 @@ const WDPhaseSelector: React.FC<WDPhaseSelectorProps> = function ({
     <div
       id="yearsContainer"
       className="h-[140px] bg-black w-full absolute bottom-0 left-0 items-center flex space-x-2 overflow-x-auto no-scrollbar px-12"
+      ref={ref}
     >
       <ul className="flex space-x-2 items-center justify-center mt-[-20px] relative">
         {years.map((year, index) => (
-          <li className={`year${year}Container`}>
+          <li key={year} className={`year${year}Container`}>
             <WDPhaseSelectorSeasons
               onSelected={(season: Season, y: number) => {
                 if (onSelected) onSelected(season, y);

@@ -21,6 +21,7 @@ interface WDPillScrollerProps {
   viewedYear: number;
   orderStatus: OrderStatus | undefined;
   orders: IOrderDataHistorical[];
+  phaseSelectorOpen: boolean;
 }
 
 const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
@@ -29,6 +30,7 @@ const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
   viewedYear,
   orderStatus,
   orders,
+  phaseSelectorOpen,
 }): React.ReactElement {
   const maps = useAppSelector(gameMaps);
   const { phases } = useAppSelector(gameStatus);
@@ -81,7 +83,9 @@ const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
     } else if (phase === "Builds" && isCurrent && !orderStatus?.None) {
       return `${prefix}, build a unit.`;
     } else {
-      return `${prefix}, select a unit.`;
+      return `${prefix}${
+        phaseSelectorOpen && !isCurrent ? "." : ", select a unit."
+      }`;
     }
   };
 

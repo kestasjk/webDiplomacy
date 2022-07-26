@@ -1,4 +1,4 @@
-import React, { ReactElement, FunctionComponent } from "react";
+import React, { ReactElement, FunctionComponent, useEffect } from "react";
 import Position from "../../../enums/Position";
 import Season from "../../../enums/Season";
 import WDPositionContainer from "../WDPositionContainer";
@@ -8,6 +8,7 @@ import { IOrderDataHistorical } from "../../../models/Interfaces";
 import { Unit } from "../../../utils/map/getUnits";
 import { CountryTableData } from "../../../interfaces";
 import OpenModalButton from "./buttons/OpenModalButton";
+import useComponentVisible from "../../../hooks/useComponentVisible";
 
 interface BottomRightProps {
   phaseSelectorOpen: boolean;
@@ -32,6 +33,16 @@ const BottomRight: FunctionComponent<BottomRightProps> = function ({
   currentYear,
   totalPhases,
 }: BottomRightProps): ReactElement {
+  const {
+    ref: phaseSelectorRef,
+    isComponentVisible,
+    setIsComponentVisible,
+  } = useComponentVisible(phaseSelectorOpen);
+
+  // useEffect(() => {
+  //   setIsComponentVisible(phaseSelectorOpen);
+  // }, []);
+
   return (
     <>
       <WDPositionContainer
@@ -54,6 +65,7 @@ const BottomRight: FunctionComponent<BottomRightProps> = function ({
       </WDPositionContainer>
       {phaseSelectorOpen && (
         <WDPhaseSelector
+          ref={phaseSelectorRef}
           currentSeason={currentSeason}
           currentYear={currentYear}
           totalPhases={totalPhases}

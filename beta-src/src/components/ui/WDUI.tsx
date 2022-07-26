@@ -105,6 +105,7 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
         viewedSeason={viewedSeason}
         viewedYear={viewedYear}
         orders={orders}
+        phaseSelectorOpen={phaseSelectorOpen}
       />
       <TopRight />
       {!gameIsFinished && <BottomLeft phaseSelectorOpen={phaseSelectorOpen} />}
@@ -119,7 +120,11 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
         currentYear={viewedYear}
         totalPhases={gameStatusData.phases.length}
       />
-      <BottomMiddle phaseSelectorOpen={phaseSelectorOpen} />
+      <BottomMiddle
+        phaseSelectorOpen={phaseSelectorOpen}
+        viewedSeason={viewedSeason}
+        viewedYear={viewedYear}
+      />
       {/* TODO: do not delete this yet */}
       <div className="hidden bottom-4 bottom-40" />
       {gameIsFinished && viewingGameFinishedPhase && (

@@ -72,6 +72,7 @@ const WDPhaseSelectorGroup: React.FC<WDPhaseSelectorGroupProps> = function ({
         {(Object.keys(Season) as Array<keyof typeof Season>).map(
           (key, index) => (
             <WDPhaseSelectorIcon
+              key={key}
               season={Season[key]}
               active={defaultSeason === Season[key] && year === yearSelected}
               onClick={(season: Season) => {

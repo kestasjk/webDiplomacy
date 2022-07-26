@@ -22,6 +22,7 @@ interface WDPhaseUIProps {
   viewedSeason: Season;
   viewedYear: number;
   orders: IOrderDataHistorical[];
+  phaseSelectorOpen: boolean;
 }
 
 const WDPhaseUI: React.FC<WDPhaseUIProps> = function ({
@@ -32,6 +33,7 @@ const WDPhaseUI: React.FC<WDPhaseUIProps> = function ({
   viewedSeason,
   viewedYear,
   orders,
+  phaseSelectorOpen,
 }: WDPhaseUIProps): React.ReactElement {
   const {
     phaseMinutes,
@@ -66,6 +68,7 @@ const WDPhaseUI: React.FC<WDPhaseUIProps> = function ({
         viewedSeason={viewedSeason}
         viewedYear={viewedYear}
         orders={orders}
+        phaseSelectorOpen={phaseSelectorOpen}
       />
       {(processTime || pauseTimeRemaining) && !gameIsFinished && (
         <WDCountdownPill

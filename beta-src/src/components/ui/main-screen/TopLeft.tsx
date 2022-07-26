@@ -13,6 +13,7 @@ interface TopLeftProps {
   viewedSeason: Season;
   viewedYear: number;
   orders: IOrderDataHistorical[];
+  phaseSelectorOpen: boolean;
 }
 
 const TopLeft: FunctionComponent<TopLeftProps> = function ({
@@ -23,6 +24,7 @@ const TopLeft: FunctionComponent<TopLeftProps> = function ({
   viewedSeason,
   viewedYear,
   orders,
+  phaseSelectorOpen,
 }: TopLeftProps): ReactElement {
   return (
     <WDPositionContainer position={Position.TOP_LEFT}>
@@ -34,6 +36,7 @@ const TopLeft: FunctionComponent<TopLeftProps> = function ({
         viewedSeason={viewedSeason}
         viewedYear={viewedYear}
         orders={orders}
+        phaseSelectorOpen={phaseSelectorOpen}
       />
     </WDPositionContainer>
   );
