@@ -47,7 +47,7 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   };
 
   // FIXME: for now, crazily fetch all messages every 5sec
-  // useInterval(dispatchFetchOverview, 5000);
+  useInterval(dispatchFetchOverview, 5000);
 
   const needsGameOverview = useAppSelector(
     ({ game }) => game.needsGameOverview,

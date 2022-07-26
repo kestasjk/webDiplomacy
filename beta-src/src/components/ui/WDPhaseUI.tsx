@@ -5,6 +5,7 @@ import WDCountdownPill from "./WDCountdownPill";
 import WDPillScroller from "./WDPillScroller";
 import { abbrMap } from "../../enums/Country";
 import Season from "../../enums/Season";
+import { IOrderDataHistorical } from "../../models/Interfaces";
 
 const getCurPhaseMinutes = function (phaseMinutes, phaseMinutesRB, phase) {
   if (phaseMinutesRB !== -1 && (phase === "Retreats" || phase === "Builds")) {
@@ -20,6 +21,7 @@ interface WDPhaseUIProps {
   viewedPhase: string;
   viewedSeason: Season;
   viewedYear: number;
+  orders: IOrderDataHistorical[];
 }
 
 const WDPhaseUI: React.FC<WDPhaseUIProps> = function ({
@@ -29,6 +31,7 @@ const WDPhaseUI: React.FC<WDPhaseUIProps> = function ({
   viewedPhase,
   viewedSeason,
   viewedYear,
+  orders,
 }: WDPhaseUIProps): React.ReactElement {
   const {
     phaseMinutes,
@@ -62,6 +65,7 @@ const WDPhaseUI: React.FC<WDPhaseUIProps> = function ({
         country={user?.member.country || ""}
         viewedSeason={viewedSeason}
         viewedYear={viewedYear}
+        orders={orders}
       />
       {(processTime || pauseTimeRemaining) && !gameIsFinished && (
         <WDCountdownPill

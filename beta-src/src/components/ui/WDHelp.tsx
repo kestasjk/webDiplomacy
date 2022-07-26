@@ -59,7 +59,7 @@ const WDHelp: FunctionComponent = function (): ReactElement {
                       }}
                     >
                       <BtnArrowIcon
-                        className={`${
+                        className={`text-black stroke-white ${
                           index === 0 && "text-gray-300 cursor-not-allowed"
                         }`}
                       />
@@ -73,7 +73,7 @@ const WDHelp: FunctionComponent = function (): ReactElement {
                       }}
                     >
                       <BtnArrowIcon
-                        className={`scale-y-[-1] ${
+                        className={`scale-y-[-1] text-black stroke-white ${
                           index === items.length - 1 &&
                           "text-gray-300 cursor-not-allowed"
                         }`}

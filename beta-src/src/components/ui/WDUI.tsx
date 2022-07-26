@@ -104,6 +104,7 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
         viewedPhase={viewedPhase}
         viewedSeason={viewedSeason}
         viewedYear={viewedYear}
+        orders={orders}
       />
       <TopRight />
       {!gameIsFinished && <BottomLeft phaseSelectorOpen={phaseSelectorOpen} />}

@@ -3,6 +3,7 @@ import WDPhaseUI from "../WDPhaseUI";
 import Position from "../../../enums/Position";
 import Season from "../../../enums/Season";
 import WDPositionContainer from "../WDPositionContainer";
+import { IOrderDataHistorical } from "../../../models/Interfaces";
 
 interface TopLeftProps {
   gamePhase: string;
@@ -11,6 +12,7 @@ interface TopLeftProps {
   viewedPhase: string;
   viewedSeason: Season;
   viewedYear: number;
+  orders: IOrderDataHistorical[];
 }
 
 const TopLeft: FunctionComponent<TopLeftProps> = function ({
@@ -20,6 +22,7 @@ const TopLeft: FunctionComponent<TopLeftProps> = function ({
   viewedPhase,
   viewedSeason,
   viewedYear,
+  orders,
 }: TopLeftProps): ReactElement {
   return (
     <WDPositionContainer position={Position.TOP_LEFT}>
@@ -30,6 +33,7 @@ const TopLeft: FunctionComponent<TopLeftProps> = function ({
         viewedPhase={viewedPhase}
         viewedSeason={viewedSeason}
         viewedYear={viewedYear}
+        orders={orders}
       />
     </WDPositionContainer>
   );
