@@ -24,6 +24,7 @@ import {
   getGamePhaseSeasonYear,
   getHistoricalPhaseSeasonYear,
 } from "../../utils/state/getPhaseSeasonYear";
+import WDLoading from "../miscellaneous/Loading";
 
 interface WDUIProps {
   orders: IOrderDataHistorical[];
@@ -97,6 +98,7 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
 
   return (
     <>
+      <WDLoading percentage={80} />
       <TopLeft
         gamePhase={gamePhase}
         gameSeason={gameSeason}

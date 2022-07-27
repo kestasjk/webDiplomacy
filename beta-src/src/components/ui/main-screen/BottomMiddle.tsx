@@ -6,6 +6,7 @@ import WDBuildCounts from "../WDBuildCounts";
 import Season from "../../../enums/Season";
 import WDPositionContainer from "../WDPositionContainer";
 import { ReactComponent as BtnArrowIcon } from "../../../assets/svg/btnArrow.svg";
+import WDLoading from "../../miscellaneous/Loading";
 
 import {
   gameViewedPhase,
@@ -47,7 +48,7 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
       bottom={phaseSelectorOpen ? 40 : 4}
     >
       <WDBuildCounts />
-      {/* <WDLoading percentage={80} /> */}
+      <WDLoading percentage={80} />
       {viewedPhaseIdx < gameStatusData.phases.length - 1 && !phaseSelectorOpen && (
         <div className="flex display-block px-5 sm:px-10 py-5 mt-1 bg-black rounded-xl text-white items-center select-none">
           <div>
