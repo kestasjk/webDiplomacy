@@ -22,8 +22,16 @@ const getCurPhaseMinutes = function (phaseMinutes, phaseMinutesRB, phase) {
 };
 
 const WDPhaseUI: React.FC = function (): React.ReactElement {
-  const { phaseMinutes, phaseMinutesRB, processTime, phase, season, year } =
-    useAppSelector(gameOverview);
+  const {
+    phaseMinutes,
+    phaseMinutesRB,
+    processTime,
+    phase,
+    season,
+    year,
+    processStatus,
+    pauseTimeRemaining,
+  } = useAppSelector(gameOverview);
   const gameStatusData = useAppSelector(gameStatus);
   const { viewedPhaseIdx, latestPhaseViewed } = useAppSelector(gameViewedPhase);
 
@@ -61,6 +69,7 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
   }
 
   const gameIsFinished = gamePhase === "Finished";
+  const seconds = Math.floor(new Date().getTime() / 1000);
 
   return (
     <Box
@@ -83,9 +92,9 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
         viewedSeason={viewedSeason}
         viewedYear={viewedYear}
       />
-      {processTime && !gameIsFinished && (
+      {(processTime || pauseTimeRemaining) && !gameIsFinished && (
         <WDCountdownPill
-          endTime={processTime}
+          endTime={processTime || (pauseTimeRemaining || 0) + seconds}
           phaseTime={phaseSeconds}
           viewedPhase={viewedPhase}
           viewedSeason={viewedSeason}
@@ -93,6 +102,7 @@ const WDPhaseUI: React.FC = function (): React.ReactElement {
           gamePhase={gamePhase}
           gameSeason={gameSeason}
           gameYear={gameYear}
+          isPaused={processStatus === "Paused" || false}
         />
       )}
     </Box>

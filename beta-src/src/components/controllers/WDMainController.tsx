@@ -1,4 +1,3 @@
-import { Box } from "@mui/material";
 import * as React from "react";
 import { useEffect } from "react";
 import {
@@ -78,7 +77,7 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   }, [name, gameID]);
 
   if (!consistentPhase) {
-    return <Box>Loading...</Box>;
+    return <div>Loading...</div>;
   }
   const showOverlay =
     noPhase ||

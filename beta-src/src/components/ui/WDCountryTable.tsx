@@ -1,35 +1,24 @@
-import * as React from "react";
-import {
-  Box,
-  Chip,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  tableCellClasses,
-  useTheme,
-} from "@mui/material";
-import { Lock } from "@mui/icons-material";
-import { styled } from "@mui/material/styles";
+import React, { Fragment } from "react";
+import { useWindowSize } from "react-use";
+
 import BetIcon from "./icons/country-table/WDBet";
 import CentersIcon from "./icons/country-table/WDCenters";
 import { CountryTableData } from "../../interfaces";
 import DelaysIcon from "./icons/country-table/WDDelays";
-import Device from "../../enums/Device";
 import IntegerRange from "../../types/IntegerRange";
 import PowerIcon from "./icons/country-table/WDPower";
 import UnitsIcon from "./icons/country-table/WDUnits";
-import useViewport from "../../hooks/useViewport";
-import getDevice from "../../utils/getDevice";
 import WDCheckmarkIcon from "./icons/WDCheckmarkIcon";
 import WDOrderStatusIcon from "./WDOrderStatusIcon";
+import LeftGameIcon from "./icons/country-table/WDLeftGame";
 
 import Vote from "../../enums/Vote";
 
 interface WDCountryTableProps {
+  userCountry: CountryTableData | null;
   countries: CountryTableData[];
   maxDelays: IntegerRange<0, 5>;
+  gameIsPaused: boolean;
 }
 
 interface Column {
@@ -69,71 +58,61 @@ const columns: readonly Column[] = [
 ];
 
 const WDCountryTable: React.FC<WDCountryTableProps> = function ({
+  userCountry,
   countries,
   maxDelays,
+  gameIsPaused,
 }): React.ReactElement {
-  const theme = useTheme();
-  const [viewport] = useViewport();
-  const device = getDevice(viewport);
-  const isMobile =
-    device === Device.MOBILE_LANDSCAPE ||
-    device === Device.MOBILE_LG_LANDSCAPE ||
-    device === Device.MOBILE ||
-    device === Device.MOBILE_LG;
-  const WDTableCell = styled(TableCell)(() => {
-    const padding = "8px 5px 0px 5px";
-    return {
-      [`&.${tableCellClasses.head}`]: {
-        borderBottom: 0,
-        lineHeight: "normal",
-        padding,
-      },
-      [`&.${tableCellClasses.body}`]: {
-        borderBottom: 0,
-        padding,
-      },
-    };
-  });
+  const { width } = useWindowSize();
+
   return (
-    <div>
-      <Table aria-label="country info table" size="small" stickyHeader>
-        <TableHead sx={{ height: "55px" }}>
-          <TableRow sx={{ verticalAlign: "top" }}>
+    <div className="mt-5 pl-4 pr-1">
+      <table aria-label="country info table" className="w-full">
+        <thead style={{ height: "55px" }}>
+          <tr style={{ verticalAlign: "top" }}>
             {columns.map((column) => (
-              <WDTableCell key={column.id} align={column.align}>
+              <th key={column.id} align={column.align}>
                 {column.icon && <column.icon />}
-                <Box sx={{ fontSize: 10, fontWeight: 400 }}>
+                <div className="text-xss mt-1 font-normal">
                   {column.label.toUpperCase()}
-                </Box>
-              </WDTableCell>
+                </div>
+              </th>
             ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
+          </tr>
+        </thead>
+        <tbody>
           {countries.map((country) => (
-            <React.Fragment key={country.power}>
-              <TableRow>
+            <Fragment key={country.power}>
+              <tr>
                 {columns.map((column) => {
-                  const style = {
-                    color: theme.palette.primary.main,
+                  const style: any = {
                     fontWeight: 400,
                   };
                   let value;
                   switch (column.id) {
                     case "power":
-                      value = isMobile
-                        ? country.abbr.toUpperCase()
-                        : country.power.toUpperCase();
+                      value =
+                        width < 1200
+                          ? country.abbr.toUpperCase()
+                          : country.power.toUpperCase();
                       style.color = country.color;
                       style.fontWeight = 700;
                       break;
                     case "orderStatus":
                       return (
-                        <WDTableCell key={column.id} align={column.align}>
-                          <WDOrderStatusIcon
-                            orderStatus={country.orderStatus}
-                          />
-                        </WDTableCell>
+                        <td key={column.id} align={column.align}>
+                          {country.status !== "Left" ? (
+                            <WDOrderStatusIcon
+                              orderStatus={country.orderStatus}
+                              isHidden={
+                                country.orderStatus.Hidden &&
+                                country.countryID !== userCountry?.countryID
+                              }
+                            />
+                          ) : (
+                            <LeftGameIcon height={13} />
+                          )}
+                        </td>
                       );
                     case "excusedMissedTurns":
                       value = `${country[column.id]}/${maxDelays}`;
@@ -143,64 +122,50 @@ const WDCountryTable: React.FC<WDCountryTableProps> = function ({
                       break;
                   }
                   return (
-                    <WDTableCell key={column.id} align={column.align}>
-                      <span style={style}>{value}</span>
-                    </WDTableCell>
+                    <td key={column.id} align={column.align}>
+                      <span className="text-black" style={style}>
+                        {value}
+                      </span>
+                    </td>
                   );
                 })}
-              </TableRow>
-              <TableRow>
-                <WDTableCell
-                  sx={{
-                    paddingTop: "0px !important",
-                    fontSize: "10pt",
-                    fontFamily: "Roboto",
-                  }}
-                >
+              </tr>
+              <tr>
+                <td className="pt-0 text-sm font-roboto pb-2">
                   {country.username}
-                </WDTableCell>
-                <WDTableCell
-                  sx={{
-                    fontSize: "70%",
-                    paddingTop: "0px !important",
-                    fontWeight: 700,
-                  }}
+                </td>
+                <td
+                  className="text-xss pt-0 font-medium pb-2"
                   colSpan={columns.length}
                 >
-                  <Box
-                    sx={{
-                      color: theme.palette.action.disabledBackground,
-                      display: country.votes.length ? "inline-block" : "none",
-                      marginRight: 1.5,
-                    }}
+                  <div
+                    className={`${
+                      country.votes.length ? "inline-block" : "hidden"
+                    } mr-2 text-gray-400`}
                   >
                     VOTED
-                  </Box>
+                  </div>
 
                   {Object.keys(Vote).map(
                     (vote) =>
                       country.votes.includes(vote) && (
-                        <Chip
+                        <span
                           key={`${country.power}-vote-${vote}`}
-                          size="small"
-                          label={vote.toUpperCase()}
-                          sx={{
-                            color: theme.palette.secondary.main,
+                          className="mr-1 text-white font-bold px-2 py-0.5 rounded-full text-xsss"
+                          style={{
                             background: country.color,
-                            fontWeight: 900,
-                            fontSize: "90%",
-                            height: 14,
-                            marginRight: 1,
                           }}
-                        />
+                        >
+                          {vote.toUpperCase()}
+                        </span>
                       ),
                   )}
-                </WDTableCell>
-              </TableRow>
-            </React.Fragment>
+                </td>
+              </tr>
+            </Fragment>
           ))}
-        </TableBody>
-      </Table>
+        </tbody>
+      </table>
     </div>
   );
 };

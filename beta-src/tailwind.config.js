@@ -6,6 +6,13 @@ module.exports = {
       backgroundImage: {
         loading: "url('../../../src/assets/png/spacebg.jpg')",
       },
+      fontSize: {
+        xsss: "0.55rem",
+        xss: "0.68rem",
+      },
+    },
+    fontFamily: {
+      roboto: ["Roboto", "sans-serif"],
     },
   },
   plugins: [],
