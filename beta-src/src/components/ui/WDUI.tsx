@@ -55,7 +55,7 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
     return {
       ...member,
       abbr: abbrMap[member.country],
-      color: theme.palette[memberCountry].main,
+      color: theme.palette[memberCountry]?.main,
       power: memberCountry,
       votes: member.votes,
     };
@@ -119,6 +119,7 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
         currentSeason={viewedSeason}
         currentYear={viewedYear}
         totalPhases={gameStatusData.phases.length}
+        onClickOutside={() => setPhaseSelectorOpen(false)}
       />
       <BottomMiddle
         phaseSelectorOpen={phaseSelectorOpen}

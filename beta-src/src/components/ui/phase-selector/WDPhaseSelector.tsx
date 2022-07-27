@@ -1,16 +1,17 @@
-import React, { HTMLAttributes, RefObject } from "react";
+import React, { HTMLAttributes, useEffect } from "react";
 import { scroller } from "react-scroll";
 
 import Season from "../../../enums/Season";
 import WDPhaseSelectorSeasons from "./WDPhaseSelectorGroup";
 import { ReactComponent as MiniArrowIcon } from "../../../assets/svg/miniArrow.svg";
+import useComponentVisible from "../../../hooks/useComponentVisible";
 
 interface WDPhaseSelectorProps extends HTMLAttributes<HTMLDivElement> {
   currentSeason: Season;
   currentYear: number;
   totalPhases: number;
   onSelected?: (season: Season, year: number) => void;
-  ref: RefObject<HTMLDivElement>;
+  onClickOutside: () => void;
 }
 
 const WDPhaseSelector: React.FC<WDPhaseSelectorProps> = function ({
@@ -18,7 +19,7 @@ const WDPhaseSelector: React.FC<WDPhaseSelectorProps> = function ({
   currentYear,
   totalPhases,
   onSelected,
-  ref,
+  onClickOutside,
 }): React.ReactElement {
   const scrollToSection = (whereTo: string, offset: number) => {
     scroller.scrollTo(whereTo, {
@@ -34,11 +35,20 @@ const WDPhaseSelector: React.FC<WDPhaseSelectorProps> = function ({
   const totalYears = Math.ceil(totalPhases / 3);
   const years = Array.from(Array(totalYears), (_, index) => 1901 + index);
 
+  const { ref: phaseSelectorRef, isComponentVisible } =
+    useComponentVisible(true);
+
+  useEffect(() => {
+    if (isComponentVisible === false) {
+      onClickOutside();
+    }
+  }, [isComponentVisible]);
+
   return (
     <div
       id="yearsContainer"
       className="h-[140px] bg-black w-full absolute bottom-0 left-0 items-center flex space-x-2 overflow-x-auto no-scrollbar px-12"
-      ref={ref}
+      ref={phaseSelectorRef}
     >
       <ul className="flex space-x-2 items-center justify-center mt-[-20px] relative">
         {years.map((year, index) => (

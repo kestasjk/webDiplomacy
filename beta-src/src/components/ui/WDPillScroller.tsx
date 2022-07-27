@@ -6,6 +6,10 @@ import OrderState from "../../state/interfaces/OrderState";
 import { IOrderDataHistorical } from "../../models/Interfaces";
 import { ReactComponent as ArmyIconPlain } from "../../assets/svg/armyIconPlain.svg";
 import { ReactComponent as FleetIconPlain } from "../../assets/svg/fleetIconPlain.svg";
+import { getHistoricalPhaseSeasonYear } from "../../utils/state/getPhaseSeasonYear";
+import { ReactComponent as AutumnIcon } from "../../assets/svg/phases/autumn.svg";
+import { ReactComponent as SpringIcon } from "../../assets/svg/phases/spring.svg";
+import { ReactComponent as WinterIcon } from "../../assets/svg/phases/winter.svg";
 
 import {
   gameOverview,
@@ -34,7 +38,8 @@ const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
 }): React.ReactElement {
   const maps = useAppSelector(gameMaps);
   const { phases } = useAppSelector(gameStatus);
-  const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
+  const status = useAppSelector(gameStatus);
+  const { viewedPhaseIdx, latestPhaseViewed } = useAppSelector(gameViewedPhase);
   const { phase } = useAppSelector(gameOverview);
   const isCurrent = viewedPhaseIdx >= phases.length - 1;
 
@@ -44,6 +49,17 @@ const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
     (order: IOrderDataHistorical) => order.terrID === Number(terrID || 0),
   );
 
+  // eslint-disable-next-line consistent-return
+  const getIcon = (season: Season) => {
+    const iconClassName = "text-white mr-2 h-4";
+    if (season === Season.AUTUMN)
+      return <AutumnIcon className={iconClassName} />;
+    if (season === Season.SPRING)
+      return <SpringIcon className={iconClassName} />;
+    if (season === Season.WINTER)
+      return <WinterIcon className={iconClassName} />;
+  };
+
   const buildMessage = () => {
     const prefix = `${viewedSeason},${viewedYear}. ${country}`;
     const icon =
@@ -52,6 +68,21 @@ const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
       ) : (
         <FleetIconPlain className="w-4 h-4 mr-2" />
       );
+
+    if (phase === "Pre-game") {
+      return "Pre-game";
+    }
+
+    if (status.status !== "Left" && phases.length > 1 && !isCurrent) {
+      const idx = latestPhaseViewed;
+      const psy = getHistoricalPhaseSeasonYear(status, idx);
+      return (
+        <>
+          {getIcon(psy.season)}
+          {psy.season} {psy.year} complete
+        </>
+      );
+    }
 
     if (orderStatus?.Completed && orderStatus?.Ready) {
       return "Orders ready";

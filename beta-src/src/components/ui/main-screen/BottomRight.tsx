@@ -1,4 +1,4 @@
-import React, { ReactElement, FunctionComponent, useEffect } from "react";
+import React, { ReactElement, FunctionComponent } from "react";
 import Position from "../../../enums/Position";
 import Season from "../../../enums/Season";
 import WDPositionContainer from "../WDPositionContainer";
@@ -8,7 +8,8 @@ import { IOrderDataHistorical } from "../../../models/Interfaces";
 import { Unit } from "../../../utils/map/getUnits";
 import { CountryTableData } from "../../../interfaces";
 import OpenModalButton from "./buttons/OpenModalButton";
-import useComponentVisible from "../../../hooks/useComponentVisible";
+import { useAppSelector } from "../../../state/hooks";
+import { gameOverview } from "../../../state/game/game-api-slice";
 
 interface BottomRightProps {
   phaseSelectorOpen: boolean;
@@ -20,6 +21,7 @@ interface BottomRightProps {
   currentSeason: Season;
   currentYear: number;
   totalPhases: number;
+  onClickOutside: () => void;
 }
 
 const BottomRight: FunctionComponent<BottomRightProps> = function ({
@@ -32,16 +34,12 @@ const BottomRight: FunctionComponent<BottomRightProps> = function ({
   currentSeason,
   currentYear,
   totalPhases,
+  onClickOutside,
 }: BottomRightProps): ReactElement {
-  const {
-    ref: phaseSelectorRef,
-    isComponentVisible,
-    setIsComponentVisible,
-  } = useComponentVisible(phaseSelectorOpen);
+  const { phase } = useAppSelector(gameOverview);
 
-  // useEffect(() => {
-  //   setIsComponentVisible(phaseSelectorOpen);
-  // }, []);
+  // eslint-disable-next-line react/jsx-no-useless-fragment
+  if (phase === "Pre-game") return <></>;
 
   return (
     <>
@@ -65,10 +63,10 @@ const BottomRight: FunctionComponent<BottomRightProps> = function ({
       </WDPositionContainer>
       {phaseSelectorOpen && (
         <WDPhaseSelector
-          ref={phaseSelectorRef}
           currentSeason={currentSeason}
           currentYear={currentYear}
           totalPhases={totalPhases}
+          onClickOutside={onClickOutside}
         />
       )}
     </>

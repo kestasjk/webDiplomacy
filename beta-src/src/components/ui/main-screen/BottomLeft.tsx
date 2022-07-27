@@ -12,12 +12,12 @@ interface BottomLeftProps {
 const BottomLeft: FunctionComponent<BottomLeftProps> = function ({
   phaseSelectorOpen,
 }: BottomLeftProps): ReactElement {
-  const { user } = useAppSelector(gameOverview);
+  const { user, phase } = useAppSelector(gameOverview);
 
   return (
     // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
-      {user && (
+      {user && phase !== "Pre-game" && (
         <WDPositionContainer
           position={Position.BOTTOM_LEFT}
           bottom={phaseSelectorOpen ? 40 : 4}
