@@ -95,10 +95,21 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
     viewedSeason = gameSeason;
     viewedYear = gameYear;
   }
+  const [showLoading, setShowLoading] = useState<boolean>(false);
 
   return (
     <>
-      <WDLoading percentage={80} />
+      <WDLoading
+        show={showLoading}
+        onLoadingFinished={() => console.log("loading finished")}
+      />
+      <button
+        type="button"
+        onClick={() => setShowLoading(!showLoading)}
+        className="absolute z-20 top-0"
+      >
+        popo
+      </button>
       <TopLeft
         gamePhase={gamePhase}
         gameSeason={gameSeason}
