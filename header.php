@@ -57,6 +57,7 @@ if( strlen(Config::$serverMessages['ServerOffline']) )
 		'<body>'.Config::$serverMessages['ServerOffline'].'</body></html>');
 
 require_once('objects/memcached.php');
+require_once('objects/pusher.php');
 
 if( ini_get('request_order') !== false ) {
 

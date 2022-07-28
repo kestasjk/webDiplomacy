@@ -295,7 +295,7 @@ class Game
 
 		$GLOBALS['Game'] = $this;
 
-		if ( $lockMode == NOLOCK && is_array($gameData) )
+		if ( is_array($gameData) ) // && $lockMode == NOLOCK Sometimes a game record is fetched and locked before being constructed here
 			$this->loadRow($gameData);
 		else
 		{
@@ -504,15 +504,12 @@ class Game
 		}
 	}
 
-	/**
-	 * Reload the variables which are stored within this object specificially, ie everything
-	 * except aggregates
-	 */
-	function load()
+	// Get a game row with all the expected columns etc, using the locking mode given
+	public static function fetchRow($gameID, $lockMode = NOLOCK)
 	{
 		global $DB;
 
-		$row = $DB->sql_hash("SELECT
+		return $DB->sql_hash("SELECT
 			g.id,
 			g.variantID,
 			LOWER(HEX(g.password)) as password,
@@ -545,9 +542,17 @@ class Game
 			FROM wD_Games g
 			LEFT JOIN wD_TournamentGames tg ON g.id = tg.gameID
 			LEFT JOIN wD_Tournaments t ON t.id = tg.tournamentID
-			WHERE g.id=".$this->id.' '.$this->lockMode);
-
-		if ( ! isset($row['id']) or ! $row['id'] )
+			WHERE g.id=".$gameID.' '.$lockMode);
+	}
+	/**
+	 * Reload the variables which are stored within this object specificially, ie everything
+	 * except aggregates
+	 */
+	function load()
+	{
+		$row = self::fetchRow($this->id, $this->lockMode);
+		
+		if ( $row === false || (! isset($row['id'])) || (! $row['id']) )
 		{
 			libHTML::error(l_t("Game not found; ensure a valid game ID has been given. Check that this game hasn't been canceled, you may have received a message about it on your <a href='index.php' class='light'>home page</a>."));
 		}
@@ -661,9 +666,31 @@ class Game
 		}
 	}
 
+	/**
+	 * Return the total number of minutes for the current phase
+	 * 
+	 * @return int
+	 */
 	protected function getCurPhaseMinutes()
 	{
 		if ($this->phaseMinutesRB != -1 && ($this->phase == "Retreats" || $this->phase == "Builds")) {
+			return $this->phaseMinutesRB;
+		}
+		else
+		{
+			return $this->phaseMinutes;
+		}
+	}
+
+	/**
+	 * Return the minimum number of minutes for a phase.
+	 * This should be used for calculating grace period.
+	 * 
+	 * @return int
+	 */
+	protected function getMinPhaseMinutes()
+	{
+		if ($this->phaseMinutesRB != -1) {
 			return $this->phaseMinutesRB;
 		}
 		else

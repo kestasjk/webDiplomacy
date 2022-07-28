@@ -241,6 +241,7 @@ class libGameMaster
 		$DB->sql_put("COMMIT");
 	}
 
+	// Finds and processes all games where all playing members excluding bots have voted for something
 	static public function findAndApplyGameVotes()
 	{
 		global $DB;
@@ -290,6 +291,35 @@ class libGameMaster
 			}
 		}
 		$DB->sql_put("COMMIT");
+	}
+	// Finds all games where all users (incuding bots) with orders have set ready. It's similar to the function above
+	// but there are enough differences to make it messy to combine
+	static public function findGameReadyVotes()
+	{
+		global $DB;
+
+		$tabl = $DB->sql_tabl("SELECT g.id
+			FROM (
+				SELECT g.id,
+					SUM(1) Players,
+					SUM(CASE WHEN (orderStatus & 1 ) = 1 THEN 1 ELSE 0 END) NoOrders, 
+					SUM(CASE WHEN (orderStatus & 2 ) = 2 THEN 1 ELSE 0 END) SavedOrders, 
+					SUM(CASE WHEN (orderStatus & 2 ) = 2 THEN 1 ELSE 0 END) CompletedOrders, 
+					SUM(CASE WHEN (orderStatus & 8 ) = 8 THEN 1 ELSE 0 END) ReadyOrders
+				FROM wD_Games g
+				INNER JOIN wD_Members m ON m.gameID = g.id
+				INNER JOIN wD_Users u ON u.id = m.userID
+				WHERE m.status = 'Playing'
+				AND g.phase <> 'Finished'
+				GROUP BY g.id
+			) g
+			WHERE (g.Players - g.NoOrders) <= g.ReadyOrders"); // Everyone is ready, or only people with no orders arent ready
+		$readyGames = array();
+		while(list($gameID) = $DB->tabl_row($tabl))
+		{
+			$readyGames[] = $gameID;
+		}
+		return $readyGames;
 	}
 }
 

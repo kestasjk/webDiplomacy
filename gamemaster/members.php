@@ -573,7 +573,7 @@ class processMembers extends Members
 
 		// Redirect to beta game if user joined game via Play Beta button
 		if ($joinBeta) {
-			$page = "beta";
+			$page = "beta/";
 		}
 		else {
 			$page = "board.php";

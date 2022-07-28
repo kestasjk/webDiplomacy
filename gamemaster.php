@@ -34,6 +34,12 @@ if ( $Misc->Panic )
 		"unexpected problem. Please try again later, sorry for the inconvenience."));
 }
 
+if( php_sapi_name() == "cli" )
+{
+	// If requestion from the CLI allow the gamemaster secret to be passed via an environment variable (it's not that bad if it leaks it's just to limit resources)
+	$_REQUEST['gameMasterSecret'] = $_SERVER['gameMasterSecret'];
+}
+
 if ( !( $User->type['Moderator']
 	or ( isset($_REQUEST['gameMasterSecret']) and $_REQUEST['gameMasterSecret'] == Config::$gameMasterSecret )
 	or ( isset($_REQUEST['gameMasterToken']) and libAuth::gamemasterToken_Valid($_REQUEST['gameMasterToken']) )
@@ -146,9 +152,14 @@ if( Config::$playNowDomain != null )
 $DB->enableTransactions();
 $DB->sql_put("BEGIN");
 
-// Now apply any votes that need to be applied:
+// Now apply any votes that need to be applied, and get any votes to process now:
 print l_t('Finding and applying votes');
 libGameMaster::findAndApplyGameVotes();
+
+print l_t('Finding games where all players are ready');
+// When users set their orders to ready it should set a memcached hint to process the game, but memcached isn't guaranteed and on dev systems
+// it's not good to rely on it, so this acts as a backup to ensure when all players have set their orders to ready it will process
+$readyGames = libGameMaster::findGameReadyVotes();
 
 // Get the current processing time. It is important to save this at this point so that next process the next 
 // LastProcessTime will exactly match this process' $currentProcessTime (this ensures all turns that pass over 1 year
@@ -191,9 +202,13 @@ else
 	$gameIDHints = "";
 }
 
+
 $startTime = $currentProcessTime; // Only do ~30 sec of processing per cycle
 $tabl = $DB->sql_tabl("SELECT * FROM wD_Games
-	WHERE processStatus='Not-processing' AND ( processTime <= ".time()." ".$gameIDHints." ) AND NOT phase='Finished'");
+	WHERE processStatus='Not-processing' AND ( processTime <= ".time()." ".
+	$gameIDHints." ". // Game IDs triggered from memcached
+	( count($readyGames) > 0 ? " OR id IN ( ".implode(',',$readyGames)." ) " : "" ). // Game IDs triggered from ready votes
+	" ) AND NOT phase='Finished'");
 
 $dirtyApiKeys = array(); // Keep track of any api keys with cached data that needs cleansing
 while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
