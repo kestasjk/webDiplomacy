@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Box, Stack } from "@mui/material";
 import DOMPurify from "dompurify";
 import Device from "../../enums/Device";
 import useViewport from "../../hooks/useViewport";

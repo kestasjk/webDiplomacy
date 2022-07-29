@@ -359,7 +359,7 @@ const mapDrawData: { [key in Province]: ProvinceMapDrawData } = {
         name: "nc",
         x: 180,
         y: 40,
-        text: "NC",
+        text: "EC",
       },
       {
         name: "sc",

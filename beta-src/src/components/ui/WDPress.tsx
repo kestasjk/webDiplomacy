@@ -65,14 +65,16 @@ const WDPress: FC<WDPressProps> = function ({
     if (!userCountry) {
       return;
     }
-    dispatch(
-      sendMessage({
-        gameID: String(gameID),
-        countryID: String(userCountry.countryID),
-        toCountryID: String(countryIDSelected),
-        message: messageStack[countryIDSelected],
-      }),
-    );
+    if (messageStack[countryIDSelected]) {
+      dispatch(
+        sendMessage({
+          gameID: String(gameID),
+          countryID: String(userCountry.countryID),
+          toCountryID: String(countryIDSelected),
+          message: messageStack[countryIDSelected],
+        }),
+      );
+    }
     const ms = { ...messageStack };
     ms[countryIDSelected] = "";
     setMessageStack(ms);
