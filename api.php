@@ -587,7 +587,7 @@ class GetGameMembers extends ApiEntry {
 			'timeLoggedIn' => $member->timeLoggedIn,
 			'unitNo' => $member->unitNo,
 			'userID' => $member->userID,
-			'username' => $this->isAnon && !$retrievePrivateData ? '' : $member->username,
+			'username' => $this->isAnon && $member->Game->gameOver == 'No' && !$retrievePrivateData ? '' : $member->username,
 			'votes' => $votes,
 		];
 	}
@@ -635,34 +635,6 @@ class GetGameMembers extends ApiEntry {
 class GetGameOverview extends ApiEntry {
 	public function __construct() {
 		parent::__construct('game/overview', 'GET', 'getStateOfAllGames', array('gameID'), false);
-	}
-
-	private function getMembers( $members ){
-		return array_map( function( $member ){
-			return $this->getMemberData($member);
-		}, $members->ByOrder );
-	}
-
-	private function getMemberData($member){
-		return [
-			'bet' => $member->bet,
-			'country' => $member->country,
-			'countryID' => $member->countryID,
-			'excusedMissedTurns' => $member->excusedMissedTurns,
-			'id' => $member->id,
-			'missedPhases' => $member->missedPhases,
-			'newMessagesFrom' => $member->newMessagesFrom,
-			'online' => $member->online,
-			'orderStatus' => $member->orderStatus,
-			'pointsWon' => $member->pointsWon,
-			'status' => $member->status,
-			'supplyCenterNo' => $member->supplyCenterNo,
-			'timeLoggedIn' => $member->timeLoggedIn,
-			'unitNo' => $member->unitNo,
-			'userID' => $member->userID,
-			'username' => $member->username,
-			'votes' => $member->votes,
-		];
 	}
 
 	/**

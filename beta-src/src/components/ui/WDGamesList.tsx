@@ -1,26 +1,8 @@
 import * as React from "react";
-import {
-  Box,
-  Chip,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  tableCellClasses,
-  Typography,
-  useTheme,
-  Link,
-  Stack,
-  Button,
-  Badge,
-} from "@mui/material";
+import { Box, useTheme, Stack, Button } from "@mui/material";
 import { Email } from "@mui/icons-material";
 
 import { styled } from "@mui/material/styles";
-import Device from "../../enums/Device";
-import useViewport from "../../hooks/useViewport";
-import getDevice from "../../utils/getDevice";
 import { useAppSelector } from "../../state/hooks";
 import {
   gameOverview,
@@ -34,8 +16,6 @@ import getOrderStates from "../../utils/state/getOrderStates";
 import { getFormattedTimeLeft } from "../../utils/formatTime";
 
 const WDGamesList: React.FC = function (): React.ReactElement {
-  const [viewport] = useViewport();
-  const device = getDevice(viewport);
   const activeGames = useAppSelector(playerActiveGames);
   const overview = useAppSelector(gameOverview); // just for country mapping
   const theme = useTheme();
@@ -135,6 +115,7 @@ const WDGamesList: React.FC = function (): React.ReactElement {
                       sx={{ verticalAlign: "middle", m: "3px" }}
                     >
                       <WDOrderStatusIcon
+                        isHidden={getOrderStates(game.orderStatus).Hidden}
                         orderStatus={getOrderStates(game.orderStatus)}
                       />
                     </SBox>

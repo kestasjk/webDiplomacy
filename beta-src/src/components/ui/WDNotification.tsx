@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Box } from "@mui/material";
 import GameNotification from "../../state/interfaces/GameNotification";
 
 interface WDNotificationProps {
@@ -10,11 +9,11 @@ const WDNotification: React.FC<WDNotificationProps> = function ({
   notification,
 }): React.ReactElement {
   return (
-    <Box>
+    <div className="">
       {notification && (
-        <Box sx={notification.style}>{notification.message}</Box>
+        <div style={notification.style}>{notification.message}</div>
       )}
-    </Box>
+    </div>
   );
 };
 

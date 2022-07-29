@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { Avatar, Box, Chip, useTheme } from "@mui/material";
 import TimeNotRunningOutIcon from "../../assets/png/icn_phase_countdown_black.png";
 import TimeRunningOutIcon from "../../assets/png/icn_phase_countdown_red.png";
 import Season from "../../enums/Season";
@@ -17,6 +16,7 @@ interface WDCountdownPillProps {
   gamePhase: string;
   gameSeason: Season;
   gameYear: number;
+  isPaused: boolean;
 }
 
 const milli = 1000;
@@ -30,8 +30,8 @@ const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
   gamePhase,
   gameSeason,
   gameYear,
+  isPaused,
 }) {
-  const theme = useTheme();
   const endTimeInMilliSeconds = endTime * milli;
   const phaseTimeInMilliSeconds = phaseTime * milli;
   const [viewport] = useViewport();
@@ -42,53 +42,68 @@ const WDCountdownPill: React.FC<WDCountdownPillProps> = function ({
     getFormattedTimeLeft(endTime),
   );
 
+  const [chipDisplay, setChipDisplay] = useState<string>();
+
   useEffect(() => {
-    const timer = setInterval(() => {
-      const newFormattedTimeLeft = getFormattedTimeLeft(endTime);
-      setFormattedTimeLeft(newFormattedTimeLeft);
-    }, 1000);
+    let timer;
+    if (!isPaused) {
+      timer = setInterval(() => {
+        const newFormattedTimeLeft = getFormattedTimeLeft(endTime);
+        setFormattedTimeLeft(newFormattedTimeLeft);
+      }, milli);
+    }
 
     return () => clearInterval(timer);
-  }, [endTime]);
+  }, [endTime, setFormattedTimeLeft]);
 
   const isTimeRunningOut = +new Date() > quarterTimeRemaining;
   const shouldDisplayGamePhase =
     viewedPhase !== gamePhase ||
     viewedSeason !== gameSeason ||
     viewedYear !== gameYear;
-  let chipDisplay = formattedTimeLeft;
-  if (viewport.width >= 600) {
-    if (shouldDisplayGamePhase) {
-      chipDisplay += ` for ${formatPSYForDisplay({
-        phase: gamePhase,
-        season: gameSeason,
-        year: gameYear,
-      })}
+
+  useEffect(() => {
+    let cd = formattedTimeLeft;
+    if (viewport.width >= 600) {
+      if (shouldDisplayGamePhase) {
+        cd += ` for ${formatPSYForDisplay({
+          phase: gamePhase,
+          season: gameSeason,
+          year: gameYear,
+        })}
       `;
-    } else {
-      chipDisplay += " this phase";
+      } else {
+        cd += " this phase";
+      }
     }
-  }
+
+    if (isPaused) {
+      cd = `PAUSED (${cd})`;
+    }
+
+    setChipDisplay(cd);
+  }, [formattedTimeLeft, setChipDisplay]);
 
   return (
-    <Chip
-      avatar={
-        <Avatar>
-          <img
-            src={isTimeRunningOut ? TimeRunningOutIcon : TimeNotRunningOutIcon}
-            alt="Countdown icon"
-          />
-        </Avatar>
-      }
-      sx={{
-        backgroundColor: isTimeRunningOut
-          ? theme.palette.error.main
-          : theme.palette.primary.main,
-        color: theme.palette.secondary.main,
-        filter: theme.palette.svg.filters.dropShadows[0],
-      }}
-      label={chipDisplay}
-    />
+    <div
+      className={`flex items-center py-1 pl-1 pr-3 rounded-full text-white ${
+        // eslint-disable-next-line no-nested-ternary
+        isTimeRunningOut
+          ? "bg-red-600"
+          : isPaused
+          ? "bg-yellow-300 text-black"
+          : "bg-black"
+      }`}
+    >
+      <div>
+        <img
+          className="h-6 mr-1"
+          src={isTimeRunningOut ? TimeRunningOutIcon : TimeNotRunningOutIcon}
+          alt="Countdown icon"
+        />
+      </div>
+      {chipDisplay}
+    </div>
   );
 };
 

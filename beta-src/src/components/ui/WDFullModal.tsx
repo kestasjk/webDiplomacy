@@ -34,6 +34,7 @@ interface WDFullModalProps {
   userCountry: CountryTableData | null;
   year: GameOverviewResponse["year"];
   modalRef: React.RefObject<HTMLElement>;
+  gameIsPaused: boolean;
   defaultView: ModalViews;
 }
 
@@ -60,6 +61,7 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
   userCountry,
   year,
   modalRef,
+  gameIsPaused,
   defaultView,
 }): React.ReactElement {
   const [view, setView] = useState(defaultView);
@@ -101,12 +103,14 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
                 year={year}
               />
             </Box>
+
             <WDInfoPanel
               allCountries={allCountries}
               maxDelays={excusedMissedTurns}
               userCountry={userCountry}
               gameID={gameID}
               gameIsFinished={gameIsFinished}
+              gameIsPaused={gameIsPaused}
             />
           </Box>
         </WDTabPanel>
