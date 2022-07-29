@@ -289,7 +289,7 @@ abstract class ApiEntry {
 		$lockMode = $this->gameLocking ? UPDATE : NOLOCK;
 
 		$gameRow = Game::fetchRow($gameID, $lockMode);
-		if( $gameRow === null )
+		if( $gameRow === false )
 			throw new Exception("Could not fetch row for give gameID, game may have been cancelled");
 
 		$Variant = libVariant::loadFromVariantID($gameRow['variantID']);
