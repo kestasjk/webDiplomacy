@@ -30,46 +30,52 @@ const variants = {
   showLayover: {
     opacity: 1,
     y: 0,
-    x: 0,
+    transition: {
+      duration: 0.5,
+    },
+  },
+  hideLayover: {
+    y: -1500,
+    transition: {
+      duration: 1,
+    },
   },
   showPencil: {
     opacity: 1,
     y: 0,
     x: 0,
-    transition: {
-      delay: 3,
-    },
+    display: "block",
+    transition: {},
   },
   showDagger: {
     opacity: 1,
     y: 0,
     x: 0,
-    transition: {
-      delay: 3,
-    },
+    display: "block",
+    transition: {},
   },
   showIcons: {
     opacity: 1,
     transition: {
-      delay: 0.5,
       duration: 2,
-    },
-  },
-  showMessage: {
-    opacity: 1,
-    transition: {
-      delay: 0.5,
-      duration: 4,
     },
   },
   loadingUp: {
     opacity: 1,
     y: 0,
+    display: "block",
     transition: {
-      delay: 3.5,
+      delay: 2,
       duration: 0.5,
     },
   },
+};
+
+const initialValues = {
+  icons: false,
+  daggerAndPencil: false,
+  loadingContainer: false,
+  loadingBar: false,
 };
 
 const WDLoading: FC<WDUIProps> = function ({
@@ -77,23 +83,23 @@ const WDLoading: FC<WDUIProps> = function ({
   onLoadingFinished,
 }): ReactElement {
   const [percentage, setPercentage] = useState<number>(0);
-  const [startLoading, setStartLoading] = useState<boolean>(false);
-  const [startAnimations, setStartAnimations] = useState<boolean>(false);
+  const [animationsSequence, setAnimationsSequence] = useState(initialValues);
 
   // eslint-disable-next-line consistent-return
   useEffect(() => {
-    if (startLoading) {
+    if (animationsSequence.loadingBar) {
       const interval = setInterval(() => {
-        setPercentage((p) => p + 1);
+        setPercentage((p) => p + 2);
       }, 100);
       if (percentage === 100) {
+        setPercentage(0);
+        setAnimationsSequence(initialValues);
         clearInterval(interval);
-        setStartLoading(false);
         onLoadingFinished();
       }
       return () => clearInterval(interval);
     }
-  }, [startLoading, percentage]);
+  }, [animationsSequence.loadingBar, percentage]);
 
   return (
     <motion.div
@@ -102,50 +108,69 @@ const WDLoading: FC<WDUIProps> = function ({
       style={{ y: -1500 }}
       onAnimationComplete={(definition) => {
         if (definition === "showLayover") {
-          setStartAnimations(true);
+          setAnimationsSequence({ ...animationsSequence, icons: true });
         }
       }}
-      className="absolute top-0 w-full h-full loading bg-loading bg-contain z-[9999] flex flex-col justify-center"
+      className="absolute top-0 w-full h-full loading bg-loading bg-contain z-[9999] flex flex-col justify-center select-none"
     >
       <div className="relative w-[70%] sm:w-[600px] mx-auto">
         <motion.img
           src={seasonIcons}
           alt="season icons"
-          animate={startAnimations && "show2Icons"}
+          animate={animationsSequence.icons ? "showIcons" : ""}
           variants={variants}
           className="mx-auto opacity-0"
+          onAnimationComplete={(definition) => {
+            if (definition === "showIcons") {
+              setAnimationsSequence({
+                ...animationsSequence,
+                daggerAndPencil: true,
+              });
+            }
+          }}
         />
         <motion.img
           src={dagger}
           alt="diplomacy icon"
-          animate="showDagger"
+          animate={animationsSequence.daggerAndPencil ? "showDagger" : ""}
           style={{ x: "-100%", y: "-100%" }}
           variants={variants}
-          className="absolute top-0 left-0 opacity-0"
+          className="absolute top-0 left-0 hidden"
         />
         <motion.img
           src={pencil}
           alt="diplomacy icon"
-          animate="showPencil"
+          animate={animationsSequence.daggerAndPencil ? "showPencil" : ""}
           style={{ x: "100%", y: "-100%" }}
           variants={variants}
-          className="absolute top-0 left-0 opacity-0"
+          className="absolute top-0 left-0 hidden"
         />
       </div>
       <motion.div
         className="w-full text-white text-center uppercase text-lg tracking-[0.5rem] font-medium mt-20 sm:mt-26 opacity-0"
-        animate="showMessage"
+        animate={animationsSequence.icons ? "showIcons" : ""}
         variants={variants}
+        onAnimationComplete={(definition) => {
+          if (definition === "showIcons") {
+            setAnimationsSequence({
+              ...animationsSequence,
+              loadingContainer: true,
+            });
+          }
+        }}
       >
         spring <br /> 1916
       </motion.div>
       <motion.div
-        className="text-white mt-20"
-        animate="loadingUp"
+        className="text-white mt-20 opacity-0"
+        animate={animationsSequence.icons ? "loadingUp" : ""}
         variants={variants}
         style={{ y: 1000 }}
         onAnimationComplete={() => {
-          setStartLoading(true);
+          setAnimationsSequence({
+            ...animationsSequence,
+            loadingBar: true,
+          });
         }}
       >
         <WDLoadingBar percentage={percentage} />

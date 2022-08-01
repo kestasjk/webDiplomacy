@@ -101,7 +101,7 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
     <>
       <WDLoading
         show={showLoading}
-        onLoadingFinished={() => console.log("loading finished")}
+        onLoadingFinished={() => setShowLoading(false)}
       />
       <button
         type="button"
