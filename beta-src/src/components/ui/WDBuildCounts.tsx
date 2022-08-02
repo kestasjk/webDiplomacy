@@ -9,7 +9,6 @@ import { useAppSelector } from "../../state/hooks";
 import WDArmyIcon from "./units/WDArmyIcon";
 import UIState from "../../enums/UIState";
 import Country from "../../enums/Country";
-import { UNIT_HEIGHT, UNIT_WIDTH } from "./units/WDUnit";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 
 const range = (N: number) => Array.from(Array(N).keys());
@@ -40,7 +39,7 @@ const WDBuildCounts: React.FC = function (): React.ReactElement {
         "display-block px-7 py-3 mt-1 bg-black rounded-xl"
       }`}
     >
-      <div className="pr-2">
+      <div className="pr-2 flex">
         {range(numRemainingBuilds).map((buildIdx) => (
           <svg
             key={buildIdx}

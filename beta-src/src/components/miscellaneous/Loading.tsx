@@ -7,6 +7,7 @@ import seasonIcons from "../../assets/png/season-icons.png";
 interface WDUIProps {
   show: boolean;
   onLoadingFinished: () => void;
+  children: React.ReactNode;
 }
 
 interface WDLoadingBarProps {
@@ -81,6 +82,7 @@ const initialValues = {
 const WDLoading: FC<WDUIProps> = function ({
   show,
   onLoadingFinished,
+  children,
 }): ReactElement {
   const [percentage, setPercentage] = useState<number>(0);
   const [animationsSequence, setAnimationsSequence] = useState(initialValues);
@@ -147,7 +149,7 @@ const WDLoading: FC<WDUIProps> = function ({
         />
       </div>
       <motion.div
-        className="w-full text-white text-center uppercase text-lg tracking-[0.5rem] font-medium mt-20 sm:mt-26 opacity-0"
+        className="w-full text-white text-center uppercase text-lg tracking-[0.5rem] font-medium mt-20 sm:mt-26 opacity-0 whitespace-pre-line"
         animate={animationsSequence.icons ? "showIcons" : ""}
         variants={variants}
         onAnimationComplete={(definition) => {
@@ -159,7 +161,7 @@ const WDLoading: FC<WDUIProps> = function ({
           }
         }}
       >
-        spring <br /> 1916
+        {children}
       </motion.div>
       <motion.div
         className="text-white mt-20 opacity-0"
