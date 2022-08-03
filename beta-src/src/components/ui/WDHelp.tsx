@@ -3,6 +3,7 @@ import React, {
   ReactElement,
   FunctionComponent,
   useState,
+  MouseEvent,
 } from "react";
 import WDVerticalScroll from "./WDVerticalScroll";
 import Move from "../../assets/help/move.gif";
@@ -44,7 +45,7 @@ const WDHelp: FunctionComponent = function (): ReactElement {
               <>
                 <div
                   className="w-full h-48 bg-cover bg-center rounded-2xl"
-                  style={{ backgroundImage: `url(${Hold})` }}
+                  style={{ backgroundImage: `url(${item.image})` }}
                 />
                 <div className="flex mt-4 mb-2">
                   <div className="flex-1 text-lg font-bold">{item.title}</div>
@@ -52,7 +53,8 @@ const WDHelp: FunctionComponent = function (): ReactElement {
                     <button
                       className="mr-1"
                       type="button"
-                      onClick={() => {
+                      onClick={(event: MouseEvent<HTMLButtonElement>) => {
+                        event.stopPropagation();
                         if (index > 0) {
                           setCurrentIndex(index - 1);
                         }
@@ -66,7 +68,8 @@ const WDHelp: FunctionComponent = function (): ReactElement {
                     </button>
                     <button
                       type="button"
-                      onClick={() => {
+                      onClick={(event: MouseEvent<HTMLButtonElement>) => {
+                        event.stopPropagation();
                         if (index < items.length - 1) {
                           setCurrentIndex(index + 1);
                         }
