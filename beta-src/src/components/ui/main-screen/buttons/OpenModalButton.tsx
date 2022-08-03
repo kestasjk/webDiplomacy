@@ -1,17 +1,10 @@
-import React, {
-  ReactElement,
-  FunctionComponent,
-  useEffect,
-  useState,
-} from "react";
+import React, { ReactElement, FunctionComponent, useEffect } from "react";
 import { IconButton, useTheme, Badge } from "@mui/material";
 
 import { useAppSelector, useAppDispatch } from "../../../../state/hooks";
 import WDPopover from "../../WDPopover";
 import useOutsideAlerter from "../../../../hooks/useOutsideAlerter";
 import useViewport from "../../../../hooks/useViewport";
-import WDActionIcon from "../../icons/WDActionIcon";
-import UIState from "../../../../enums/UIState";
 import WDFullModal from "../../WDFullModal";
 import ModalViews from "../../../../enums/ModalViews";
 import { IOrderDataHistorical } from "../../../../models/Interfaces";
@@ -86,10 +79,6 @@ const TopRight: FunctionComponent<BottomRightProps> = function ({
   // FIXME: for now, crazily fetch all messages every 2sec
   useInterval(dispatchFetchMessages, 2000);
 
-  const closeControlModal = () => {
-    setIsComponentVisible(false);
-  };
-
   const toggleControlModal = () => {
     setIsComponentVisible(!isComponentVisible);
   };
@@ -108,14 +97,6 @@ const TopRight: FunctionComponent<BottomRightProps> = function ({
   );
   // TODO: where to show this?:
   // iconState={showControlModal ? UIState.ACTIVE : UIState.INACTIVE}
-
-  useOutsideAlerter([modalRef, popoverTrigger, viewport], () => {
-    // if viewport is too small to do chat and map at same time,
-    // then close the modal on outside click.
-    if (viewport.width <= theme.breakpoints.values.mobileLandscape) {
-      closeControlModal();
-    }
-  });
 
   const messages = useAppSelector(({ game }) => game.messages.messages);
 
@@ -150,11 +131,7 @@ const TopRight: FunctionComponent<BottomRightProps> = function ({
   }
 
   const popover = popoverTrigger.current ? (
-    <WDPopover
-      isOpen={isComponentVisible}
-      onClose={closeControlModal}
-      anchorEl={popoverTrigger.current}
-    >
+    <WDPopover isOpen={isComponentVisible}>
       <WDFullModal
         alternatives={moreAlternatives}
         allCountries={allCountries}
