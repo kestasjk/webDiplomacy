@@ -157,7 +157,7 @@ const WDPress: FC<WDPressProps> = function ({
       {userCountry && (
         <div>
           <div className="flex-row items-center">
-            {/* <Button
+            {/* <button
             href="#message-reload-button"
             onClick={dispatchFetchMessages}
             style={{
@@ -166,7 +166,7 @@ const WDPress: FC<WDPressProps> = function ({
             }}
           >
             <AutorenewIcon sx={{ fontSize: "medium" }} />
-          </Button> */}
+          </button> */}
             <TextField
               id="user-msg"
               label="Send Message"

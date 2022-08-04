@@ -92,7 +92,7 @@ const WDLoading: FC<WDUIProps> = function ({
     if (animationsSequence.loadingBar) {
       const interval = setInterval(() => {
         setPercentage((p) => p + 2);
-      }, 100);
+      }, 350);
       if (percentage === 100) {
         setPercentage(0);
         setAnimationsSequence(initialValues);
