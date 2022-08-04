@@ -1,4 +1,5 @@
-import * as React from "react";
+import React, { useEffect } from "react";
+import useLocalStorageState from "use-local-storage-state";
 import WDButton from "./WDButton";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
 import {
@@ -28,6 +29,12 @@ interface WDOrderStatsControlsProps {
 const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
   orderStatus,
 }): React.ReactElement {
+  // This is here because I have the feeling that there is not a consensus about the auto-save feature yet.
+  // We might have to have this in the back-end
+  const [settings] = useLocalStorageState("settings", {
+    defaultValue: { autoSave: true },
+  });
+
   const { data } = useAppSelector(gameData);
   const ordersMeta = useAppSelector(gameOrdersMeta);
   const status = useAppSelector(gameStatus);
@@ -56,18 +63,19 @@ const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
   let saveEnabled: boolean;
   let readyButtonText: string;
   let saveButtonText: string;
+  const saveText = settings.autoSave ? "Auto save on" : "Save";
 
   // orderStatus contains what the server thinks our order status is.
   if (savingOrdersInProgress === "readying") {
     readyEnabled = false;
     saveEnabled = false;
     readyButtonText = "Readying...";
-    saveButtonText = "Save";
+    saveButtonText = saveText;
   } else if (savingOrdersInProgress === "unreadying") {
     readyEnabled = false;
     saveEnabled = false;
     readyButtonText = "Unreadying...";
-    saveButtonText = "Save";
+    saveButtonText = saveText;
   } else if (savingOrdersInProgress === "saving") {
     readyEnabled = false;
     saveEnabled = false;
@@ -77,22 +85,22 @@ const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
     readyEnabled = viewingCurPhase;
     saveEnabled = false;
     readyButtonText = "Unready";
-    saveButtonText = "Save";
+    saveButtonText = saveText;
   } else if (orderStatus.Saved) {
     readyEnabled = viewingCurPhase;
     saveEnabled = ordersLength !== ordersSaved && viewingCurPhase;
     readyButtonText = "Ready";
-    saveButtonText = "Save";
+    saveButtonText = saveText;
   } else if (orderStatus.Completed) {
     readyEnabled = ordersLength !== ordersSaved && viewingCurPhase;
     saveEnabled = ordersLength !== ordersSaved && viewingCurPhase;
     readyButtonText = "Ready";
-    saveButtonText = "Save";
+    saveButtonText = saveText;
   } else {
     readyEnabled = ordersLength !== ordersSaved && viewingCurPhase;
     saveEnabled = viewingCurPhase;
     readyButtonText = "Ready";
-    saveButtonText = "Save";
+    saveButtonText = saveText;
   }
 
   const doAnimateGlow =
@@ -150,6 +158,15 @@ const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
       }
     }
   };
+
+  useEffect(() => {
+    const needsToSave = Object.keys(ordersMeta).some(
+      (key) => ordersMeta[key].saved === false,
+    );
+    if (needsToSave && saveEnabled && settings.autoSave) {
+      clickButton(OrderStatusButton.SAVE);
+    }
+  }, [ordersMeta]);
 
   return (
     <div className="flex flex-col sm:flex-row justify-end space-y-2 space-x-0 sm:space-x-3 sm:space-y-0">

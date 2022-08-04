@@ -14,6 +14,7 @@ import GameStateMaps from "../../state/interfaces/GameStateMaps";
 import { Unit } from "../../utils/map/getUnits";
 import WDGamesList from "./WDGamesList";
 import WDHelp from "./WDHelp";
+import WDSettings from "./WDSettings";
 
 interface WDFullModalProps {
   alternatives: GameOverviewResponse["alternatives"];
@@ -41,6 +42,7 @@ const tabGroup: ModalViews[] = [
   ModalViews.ORDERS,
   ModalViews.GAMES,
   ModalViews.HELP,
+  ModalViews.SETTINGS,
 ];
 
 const WDFullModal: React.FC<WDFullModalProps> = function ({
@@ -114,6 +116,9 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
         </WDTabPanel>
         <WDTabPanel currentTab={ModalViews.HELP} currentView={view}>
           <WDHelp />
+        </WDTabPanel>
+        <WDTabPanel currentTab={ModalViews.SETTINGS} currentView={view}>
+          <WDSettings />
         </WDTabPanel>
       </WDViewsContainer>
     </div>
