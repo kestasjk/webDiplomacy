@@ -7,7 +7,12 @@ const WDHomeIcon: React.FC<NavIconProps> = function ({
   iconState = UIState.INACTIVE,
 }): React.ReactElement {
   return (
-    <img src={LogoImage} alt="Web Diplomacy logo" width="46" height="46" />
+    <div className="has-tooltip">
+      <span className="tooltip rounded shadow-lg px-3 py-1 text-white mt-12 right-8 text-xs flex">
+        Go to home page
+      </span>
+      <img src={LogoImage} alt="Web Diplomacy logo" width="46" height="46" />
+    </div>
   );
 };
 

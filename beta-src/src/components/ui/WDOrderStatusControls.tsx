@@ -170,15 +170,23 @@ const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
 
   return (
     <div className="flex flex-col sm:flex-row justify-end space-y-2 space-x-0 sm:space-x-3 sm:space-y-0">
-      <WDButton
-        color="primary"
-        className="w-14 h-14 rounded-md !p-0"
-        disabled={!saveEnabled}
-        onClick={() => saveEnabled && clickButton(OrderStatusButton.SAVE)}
-        doAnimateGlow={doAnimateGlow}
-      >
-        {saveButtonText}
-      </WDButton>
+      <div className="has-tooltip">
+        {settings.autoSave && (
+          <span className="tooltip rounded shadow-lg px-3 py-1 text-white -mt-16 text-xs flex">
+            Toggle auto-save in the settings panel
+          </span>
+        )}
+        <WDButton
+          color="primary"
+          className="w-14 h-14 rounded-md !p-0"
+          disabled={!saveEnabled}
+          onClick={() => saveEnabled && clickButton(OrderStatusButton.SAVE)}
+          doAnimateGlow={doAnimateGlow}
+        >
+          {saveButtonText}
+        </WDButton>
+      </div>
+
       <WDButton
         color="primary"
         className="w-14 h-14 rounded-md !p-0 flex-col"

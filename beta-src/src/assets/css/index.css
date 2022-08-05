@@ -57,3 +57,12 @@ textarea::-webkit-scrollbar-thumb {
     box-shadow: none !important;
   }
 }
+
+/* Helper for tooltip */
+.tooltip {
+  @apply invisible absolute bg-opacity-50 bg-black;
+}
+
+.has-tooltip:hover .tooltip {
+  @apply visible z-50;
+}
