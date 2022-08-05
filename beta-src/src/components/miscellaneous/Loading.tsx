@@ -36,7 +36,7 @@ const variants = {
     },
   },
   hideLayover: {
-    y: -1500,
+    y: -2000,
     transition: {
       duration: 1,
     },
@@ -107,7 +107,7 @@ const WDLoading: FC<WDUIProps> = function ({
     <motion.div
       animate={show ? "showLayover" : "hideLayover"}
       variants={variants}
-      style={{ y: -1500 }}
+      style={{ y: -2000 }}
       onAnimationComplete={(definition) => {
         if (definition === "showLayover") {
           setAnimationsSequence({ ...animationsSequence, icons: true });
