@@ -48,3 +48,12 @@ textarea::-webkit-scrollbar-thumb {
 * {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
+
+@layer components {
+  input,
+  input:focus,
+  textarea {
+    outline: 0 !important;
+    box-shadow: none !important;
+  }
+}

@@ -54,7 +54,7 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
           <div
             className="bg-white m-0 sm:rounded-lg overflow-x-hidden overflow-y-scroll py-4"
             style={{
-              minHeight: 264,
+              minHeight: 590,
               maxHeight: height - 32,
             }}
           >

@@ -24,7 +24,7 @@ import {
   getGamePhaseSeasonYear,
   getHistoricalPhaseSeasonYear,
 } from "../../utils/state/getPhaseSeasonYear";
-import WDLoading from "../miscellaneous/Loading";
+import WDClassesJIT from "./WDClassesJIT";
 
 interface WDUIProps {
   orders: IOrderDataHistorical[];
@@ -126,8 +126,7 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
         viewedSeason={viewedSeason}
         viewedYear={viewedYear}
       />
-      {/* TODO: do not delete this yet */}
-      <div className="hidden bottom-4 bottom-40" />
+      <WDClassesJIT />
       {gameIsFinished && viewingGameFinishedPhase && (
         <WDGameFinishedOverlay allCountries={allCountries} />
       )}

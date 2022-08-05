@@ -1,11 +1,23 @@
-import * as React from "react";
+import React, { FunctionComponent, ReactElement } from "react";
 
-const WDVerticalScroll: React.FC = function ({ children }): React.ReactElement {
+interface WDVerticalScrollProps {
+  children: ReactElement | ReactElement[];
+  height?: number;
+}
+
+const WDVerticalScroll: FunctionComponent<WDVerticalScrollProps> = function ({
+  children,
+  height,
+}: WDVerticalScrollProps): ReactElement {
   return (
-    <div className="flex flex-col w-full h-[350px] mb-4">
+    <div className="flex flex-col w-full mb-4" style={{ height }}>
       <div className="overflow-auto">{children}</div>
     </div>
   );
+};
+
+WDVerticalScroll.defaultProps = {
+  height: 480,
 };
 
 export default WDVerticalScroll;

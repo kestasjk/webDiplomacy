@@ -59,7 +59,6 @@ const WDPhaseUI: React.FC<WDPhaseUIProps> = function ({
         >
           {/* title={`Currently playing as ${user.member.country}`} */}
           {abbrMap[user.member.country]}
-          <div className="hidden bg-france-main bg-austria-main bg-england-main bg-germany-main bg-russia-main bg-italy-main bg-turkey-main" />
         </div>
       )}
       <WDPillScroller

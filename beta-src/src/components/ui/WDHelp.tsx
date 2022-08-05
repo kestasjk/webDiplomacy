@@ -7,7 +7,14 @@ import React, {
 } from "react";
 import WDVerticalScroll from "./WDVerticalScroll";
 import Move from "../../assets/help/move.gif";
+import Convoy from "../../assets/help/convoy.gif";
 import Hold from "../../assets/help/hold.gif";
+import SupportHold from "../../assets/help/support-hold.gif";
+import SupportMove from "../../assets/help/support-move.gif";
+import Retreat from "../../assets/help/retreat.gif";
+import Build from "../../assets/help/build.gif";
+import ViaConvoy from "../../assets/help/via-convoy.gif";
+
 import { ReactComponent as BtnArrowIcon } from "../../assets/svg/btnArrow.svg";
 
 interface itemProps {
@@ -23,13 +30,55 @@ const items: itemProps[] = [
     image: Move,
     description:
       "Select Unit (or territory), select Move, select Destination Territory.",
-    shortcutKey: "m",
+    shortcutKey: "m or a",
+  },
+  {
+    title: "Convoy",
+    image: Convoy,
+    description:
+      "Select Army (or territory), select Convoy, select Destination Territory.",
+    shortcutKey: "c",
+  },
+  {
+    title: "Via Convoy",
+    image: ViaConvoy,
+    description:
+      "Select Army (or territory), select Via Convoy, select Destination Territory.",
+    shortcutKey: "v",
   },
   {
     title: "Hold",
     image: Hold,
     description: "Select Unit or territory, select Hold.",
-    shortcutKey: "h",
+    shortcutKey: "h or d",
+  },
+  {
+    title: "Support Hold",
+    image: SupportHold,
+    description:
+      "Select Supporting Unit (or territory), select Support, select Unit (or territory) to Support.",
+    shortcutKey: "",
+  },
+  {
+    title: "Support Move",
+    image: SupportMove,
+    description:
+      "Select Supporting Unit (or territory), select Support, select Unit (or territory) to Support, select Destination Territory.",
+    shortcutKey: "s",
+  },
+  {
+    title: "Retreat",
+    image: Retreat,
+    description:
+      "Select Unit (or territory), select Retreat, select Destination Territory.",
+    shortcutKey: "",
+  },
+  {
+    title: "Build",
+    image: Build,
+    description:
+      "Select supply center territory, select type of unit (Army or Fleet).",
+    shortcutKey: "",
   },
 ];
 
@@ -85,8 +134,13 @@ const WDHelp: FunctionComponent = function (): ReactElement {
                   </div>
                 </div>
                 <div>
-                  {item.description} Shortcut Key:{" "}
-                  <span className="font-bold">{item.shortcutKey}</span>
+                  {item.description}{" "}
+                  {item.shortcutKey && (
+                    <span>
+                      Shortcut Key:{" "}
+                      <span className="font-bold">{item.shortcutKey}</span>
+                    </span>
+                  )}
                 </div>
               </>
             )}

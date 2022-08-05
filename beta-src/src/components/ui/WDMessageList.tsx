@@ -60,7 +60,7 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
   );
 
   return (
-    <WDVerticalScroll>
+    <WDVerticalScroll height={435}>
       <div className="flex-column">{messageTurnComponents}</div>
       <div ref={messagesEndRef} />
     </WDVerticalScroll>

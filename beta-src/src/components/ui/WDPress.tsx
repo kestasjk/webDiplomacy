@@ -95,7 +95,7 @@ const WDPress: FC<WDPressProps> = function ({
     return (
       <button
         type="button"
-        className={`rounded-full py-1 px-3 ${
+        className={`rounded-full py-1 px-3 font-medium ${
           countryIDSelected === countryID
             ? `bg-${color} text-white`
             : `text-${color} bg-white`
@@ -135,7 +135,7 @@ const WDPress: FC<WDPressProps> = function ({
       className="p-0"
       onClick={() => dispatchMessagesSeen(countryIDSelected)} // clicking anywhere in the window means you've seen it
     >
-      <div className="ml-2 mt-3 p-0 items-center">
+      <div className="ml-3 mt-3 p-0 items-center">
         <div
           className="dialogue-countries inline"
           style={{
@@ -146,7 +146,6 @@ const WDPress: FC<WDPressProps> = function ({
           {countryButtons}
         </div>
       </div>
-      <div className="text-france-main text-england-main text-austria-main" />
       <WDMessageList
         messages={messages}
         allCountries={allCountries}
@@ -156,17 +155,17 @@ const WDPress: FC<WDPressProps> = function ({
       />
       {userCountry && (
         <div>
-          <div className="flex-row items-center">
+          <div className="flex-row items-center pr-3 pl-2">
             {/* <button
-            href="#message-reload-button"
-            onClick={dispatchFetchMessages}
-            style={{
-              maxWidth: "12px",
-              minWidth: "12px",
-            }}
-          >
-            <AutorenewIcon sx={{ fontSize: "medium" }} />
-          </button> */}
+                href="#message-reload-button"
+                onClick={dispatchFetchMessages}
+                style={{
+                  maxWidth: "12px",
+                  minWidth: "12px",
+                }}
+              >
+                <AutorenewIcon sx={{ fontSize: "medium" }} />
+              </button> */}
             <TextField
               id="user-msg"
               label="Send Message"
