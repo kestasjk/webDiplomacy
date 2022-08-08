@@ -4,10 +4,7 @@ import Season from "../../enums/Season";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
 import GameStatusResponse from "../../state/interfaces/GameStatusResponse";
 import ViewedPhaseState from "../../state/interfaces/ViewedPhaseState";
-import {
-  formatPhaseForDisplay,
-  formatPSYForDisplay,
-} from "../../utils/formatPhaseForDisplay";
+import { formatPSYForDisplay } from "../../utils/formatPhaseForDisplay";
 import {
   getGamePhaseSeasonYear,
   getHistoricalPhaseSeasonYear,

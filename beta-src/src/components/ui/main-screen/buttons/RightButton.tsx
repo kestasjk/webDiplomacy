@@ -15,8 +15,12 @@ const RightButton: FunctionComponent<RightButtonProps> = function ({
 }): ReactElement {
   return (
     <div className={className}>
-      <button onClick={onClick} type="button">
-        <img src={`beta/images/icons/${image}Button.svg`} alt="action" />
+      <button onClick={onClick} type="button" className="w-full">
+        <img
+          src={`beta/images/icons/${image}Button.svg`}
+          alt="action"
+          className="mx-auto"
+        />
       </button>
       <div className="bg-black uppercase text-white text-center py-0.5 w-full text-xs font-bold rounded-md">
         {text}

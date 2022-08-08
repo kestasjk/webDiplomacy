@@ -1,5 +1,5 @@
 import React, { ReactElement, FunctionComponent, useEffect } from "react";
-import { IconButton, useTheme, Badge } from "@mui/material";
+import { Badge } from "@mui/material";
 
 import { useAppSelector, useAppDispatch } from "../../../../state/hooks";
 import WDPopover from "../../WDPopover";
@@ -35,7 +35,6 @@ const TopRight: FunctionComponent<BottomRightProps> = function ({
   allCountries,
   userTableData,
 }: BottomRightProps): ReactElement {
-  const theme = useTheme();
   const popoverTrigger = React.useRef<HTMLDivElement>(null);
   const {
     ref: modalRef,

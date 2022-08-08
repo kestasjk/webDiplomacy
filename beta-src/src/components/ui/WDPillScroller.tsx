@@ -4,6 +4,7 @@ import { OrderStatus } from "../../interfaces";
 import { useAppSelector } from "../../state/hooks";
 import OrderState from "../../state/interfaces/OrderState";
 import { IOrderDataHistorical } from "../../models/Interfaces";
+import { formatPhaseForDisplay } from "../../utils/formatPhaseForDisplay";
 import { ReactComponent as ArmyIconPlain } from "../../assets/svg/armyIconPlain.svg";
 import { ReactComponent as FleetIconPlain } from "../../assets/svg/fleetIconPlain.svg";
 import { getHistoricalPhaseSeasonYear } from "../../utils/state/getPhaseSeasonYear";
@@ -21,6 +22,7 @@ import {
 
 interface WDPillScrollerProps {
   country: string;
+  viewedPhase: string;
   viewedSeason: Season;
   viewedYear: number;
   orderStatus: OrderStatus | undefined;
@@ -30,6 +32,7 @@ interface WDPillScrollerProps {
 
 const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
   country,
+  viewedPhase,
   viewedSeason,
   viewedYear,
   orderStatus,
@@ -48,6 +51,7 @@ const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
   const historicalOrder = orders.find(
     (order: IOrderDataHistorical) => order.terrID === Number(terrID || 0),
   );
+  const formattedPhase = formatPhaseForDisplay(viewedPhase);
 
   // eslint-disable-next-line consistent-return
   const getIcon = (season: Season) => {
@@ -61,7 +65,9 @@ const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
   };
 
   const buildMessage = () => {
-    const prefix = `${viewedSeason},${viewedYear}. ${country}`;
+    const prefix = `${viewedSeason},${viewedYear}${
+      formattedPhase ? ` ${formattedPhase}` : ""
+    }. ${country}`;
     const icon =
       historicalOrder?.unitType === "Army" ? (
         <ArmyIconPlain className="w-4 h-4 mr-2" />

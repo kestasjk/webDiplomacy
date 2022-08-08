@@ -21,6 +21,7 @@ interface BottomRightProps {
   currentSeason: Season;
   currentYear: number;
   totalPhases: number;
+  viewedPhase: string;
   onClickOutside: () => void;
 }
 
@@ -34,6 +35,7 @@ const BottomRight: FunctionComponent<BottomRightProps> = function ({
   currentSeason,
   currentYear,
   totalPhases,
+  viewedPhase,
   onClickOutside,
 }: BottomRightProps): ReactElement {
   const { phase } = useAppSelector(gameOverview);
@@ -58,6 +60,7 @@ const BottomRight: FunctionComponent<BottomRightProps> = function ({
             season={currentSeason}
             text={`${currentSeason.charAt(0)}${currentYear}`}
             onClick={onPhaseSelectorClick}
+            viewedPhase={viewedPhase}
           />
         </div>
       </WDPositionContainer>

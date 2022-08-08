@@ -116,6 +116,7 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
         units={units}
         allCountries={allCountries}
         userTableData={userTableData}
+        viewedPhase={viewedPhase}
         currentSeason={viewedSeason}
         currentYear={viewedYear}
         totalPhases={gameStatusData.phases.length}
