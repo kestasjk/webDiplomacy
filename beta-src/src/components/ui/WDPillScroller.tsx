@@ -121,7 +121,7 @@ const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
       return `${prefix}, build a unit.`;
     } else {
       return `${prefix}${
-        phaseSelectorOpen && !isCurrent ? "." : ", select a unit."
+        phaseSelectorOpen && !isCurrent ? "." : ", enter your orders."
       }`;
     }
   };
