@@ -79,10 +79,7 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   if (!consistentPhase) {
     return <div>Loading...</div>;
   }
-  const showOverlay =
-    noPhase ||
-    status.status === "Left" ||
-    (displayedPhaseKey && overviewKey !== displayedPhaseKey);
+  const showOverlay = noPhase || status.status === "Left";
   if (displayedPhaseKey === null && overview.phase) {
     setDisplayedPhaseKey(overviewKey);
   }

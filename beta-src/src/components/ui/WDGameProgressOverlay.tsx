@@ -98,55 +98,6 @@ const WDGameProgressOverlay: React.FC<WDGameProgressOverlayProps> = function ({
           </Button>
         </Stack>
       );
-    } else {
-      const stuffToRender: React.ReactElement[] = [];
-      for (
-        let idx = viewedPhaseState.latestPhaseViewed;
-        idx < status.phases.length - 1;
-        idx += 1
-      ) {
-        const psy = getHistoricalPhaseSeasonYear(status, idx);
-        stuffToRender.push(
-          <div key={`progressBox${idx}`} className="m-2">
-            Finished phase {formatPSYForDisplay(psy)}.
-          </div>,
-        );
-      }
-
-      const psy = getGamePhaseSeasonYear(
-        overview.phase,
-        overview.season,
-        overview.year,
-      );
-      stuffToRender.push(
-        <div className="m-2" key="newPhaseMsgBox">
-          Beginning new phase {formatPSYForDisplay(psy)}.
-        </div>,
-      );
-
-      const oldPsy = getHistoricalPhaseSeasonYear(
-        status,
-        viewedPhaseState.latestPhaseViewed,
-      );
-      const buttonLabel = `View orders for ${formatPSYForDisplay(oldPsy)}`;
-
-      stuffToRender.push(
-        <Button
-          size="large"
-          variant="contained"
-          color="success"
-          onClick={clickHandler}
-          key="newPhaseOverlayButton"
-        >
-          {buttonLabel}
-        </Button>,
-      );
-
-      innerElem = (
-        <Stack direction="column" alignItems="center">
-          {stuffToRender}
-        </Stack>
-      );
     }
   } else if (overview.phase === "Pre-game") {
     innerElem = (
