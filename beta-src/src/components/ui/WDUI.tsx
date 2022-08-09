@@ -1,5 +1,6 @@
 import React, { useState, FunctionComponent, ReactElement } from "react";
 import { useTheme } from "@mui/material";
+import WDShortcuts from "./WDShortcuts";
 
 import { IOrderDataHistorical } from "../../models/Interfaces";
 import WDGameFinishedOverlay from "./WDGameFinishedOverlay";
@@ -128,6 +129,9 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
         viewedYear={viewedYear}
       />
       <WDClassesJIT />
+      <WDShortcuts
+        onPhaseSelectorShortcut={() => setPhaseSelectorOpen(!phaseSelectorOpen)}
+      />
       {gameIsFinished && viewingGameFinishedPhase && (
         <WDGameFinishedOverlay allCountries={allCountries} />
       )}
