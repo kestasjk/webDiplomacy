@@ -120,6 +120,20 @@ class Config
 	public static $modEMail='moderators@yourdiplomacyserver.com';
 
 	/**
+	 * Memcached hostname
+	 *
+	 * @var string
+	 */
+	public static $memcachedHost='webdiplomacy-memcached';
+
+	/**
+	 * Memcached port number
+	 *
+	 * @var int
+	 */
+	public static $memcachedPort=11211;
+
+	/**
 	 * An array of variants available on the server (for future releases, not yet enabled)
 	 * @var array
 	 */
