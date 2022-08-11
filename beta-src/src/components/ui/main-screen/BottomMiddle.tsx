@@ -12,7 +12,6 @@ import WDBuildCounts from "../WDBuildCounts";
 import Season from "../../../enums/Season";
 import WDPositionContainer from "../WDPositionContainer";
 import { ReactComponent as BtnArrowIcon } from "../../../assets/svg/btnArrow.svg";
-import WDLoading from "../../miscellaneous/Loading";
 
 import {
   gameViewedPhase,
@@ -31,7 +30,6 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
   viewedSeason,
   viewedYear,
 }: BottomMiddleProps): ReactElement {
-  const [showLoading, setShowLoading] = useState<boolean>(false);
   const [nextPhase, setNextPhase] = useState<any>("");
   const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
   const gameStatusData = useAppSelector(gameStatus);
@@ -60,44 +58,35 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
   }, [viewedPhaseIdx, gameStatusData.phases, phaseSelectorOpen]);
 
   return (
-    <>
-      <WDLoading
-        show={showLoading}
-        onLoadingFinished={() => setShowLoading(false)}
-      >
-        {nextPhase.replace(/ /g, "\n")}
-      </WDLoading>
-      <WDPositionContainer
-        position={Position.BOTTOM_MIDDLE}
-        bottom={phaseSelectorOpen ? 40 : 4}
-      >
-        <WDBuildCounts />
-        {viewedPhaseIdx < gameStatusData.phases.length - 1 &&
-          !phaseSelectorOpen && (
-            <div className="flex display-block px-5 sm:px-10 py-5 mt-1 bg-black rounded-xl text-white items-center select-none">
-              <div>
-                <div className="text-xs">Next phase</div>
-                <div className="text-sm font-bold uppercase">{nextPhase}</div>
-              </div>
-              <div className="ml-4">
-                <button
-                  type="button"
-                  onClick={async () => {
-                    setShowLoading(true);
-                    await wait(2000);
-                    dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1));
-                  }}
-                >
-                  <BtnArrowIcon
-                    className="text-white stroke-black cursor-pointer rotate-90"
-                    onClick={() => setShowLoading(true)}
-                  />
-                </button>
-              </div>
-            </div>
-          )}
-      </WDPositionContainer>
-    </>
+    <WDPositionContainer
+      position={Position.BOTTOM_MIDDLE}
+      bottom={phaseSelectorOpen ? 40 : 4}
+    >
+      <WDBuildCounts />
+      {viewedPhaseIdx < gameStatusData.phases.length - 1 && !phaseSelectorOpen && (
+        <div className="flex display-block px-5 sm:px-10 py-5 mt-1 bg-black rounded-xl text-white items-center select-none">
+          <div>
+            <div className="text-xs">Next phase</div>
+            <div className="text-sm font-bold uppercase">{nextPhase}</div>
+          </div>
+          <div className="ml-4">
+            <button
+              type="button"
+              onClick={async () => {
+                dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1));
+              }}
+            >
+              <BtnArrowIcon
+                className="text-white stroke-black cursor-pointer rotate-90"
+                onClick={() =>
+                  dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1))
+                }
+              />
+            </button>
+          </div>
+        </div>
+      )}
+    </WDPositionContainer>
   );
 };
 

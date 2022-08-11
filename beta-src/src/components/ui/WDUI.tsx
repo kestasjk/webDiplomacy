@@ -26,6 +26,7 @@ import {
   getHistoricalPhaseSeasonYear,
 } from "../../utils/state/getPhaseSeasonYear";
 import WDClassesJIT from "./WDClassesJIT";
+import WDLoading from "../miscellaneous/Loading";
 
 interface WDUIProps {
   orders: IOrderDataHistorical[];
@@ -96,6 +97,13 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
     viewedSeason = gameSeason;
     viewedYear = gameYear;
   }
+
+  // Un-comment this when WebSockets is fully implemented
+  // const [showLoading, setShowLoading] = useState<boolean>(false);
+  // const allReady = allCountries.every(
+  //   (country: any) => country.orderStatus.Completed,
+  // );
+
   return (
     <>
       <TopLeft
@@ -132,6 +140,12 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
       <WDShortcuts
         onPhaseSelectorShortcut={() => setPhaseSelectorOpen(!phaseSelectorOpen)}
       />
+      {/* <WDLoading
+        show={showLoading}
+        onLoadingFinished={() => setShowLoading(false)}
+      >
+        Next phase
+      </WDLoading> */}
       {gameIsFinished && viewingGameFinishedPhase && (
         <WDGameFinishedOverlay allCountries={allCountries} />
       )}

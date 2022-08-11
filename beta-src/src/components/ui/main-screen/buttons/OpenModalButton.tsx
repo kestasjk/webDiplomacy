@@ -29,7 +29,7 @@ interface BottomRightProps {
   userTableData: any;
 }
 
-const TopRight: FunctionComponent<BottomRightProps> = function ({
+const OpenModalButton: FunctionComponent<BottomRightProps> = function ({
   orders,
   units,
   allCountries,
@@ -174,4 +174,4 @@ const TopRight: FunctionComponent<BottomRightProps> = function ({
   );
 };
 
-export default TopRight;
+export default OpenModalButton;
