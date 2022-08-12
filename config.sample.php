@@ -153,18 +153,6 @@ class Config
 	public static $memcachedPort='11211';
 	
 	/**
-	 * The config for the pusher websockets server
-	 */
-	public static $pusherConfig = array(
-		'id'=>'webdiplomacy',
-		'key'=>'webdiplomacykey123',
-		'secret'=>'webdiplomacysecret123',
-		'server'=>'soketi',
-		'port'=>6001,
-		'useTLS'=>false
-	);
-
-	/**
 	 * An array of categories to use when calculating GhostRatings
 	 * @var array
 	 */
