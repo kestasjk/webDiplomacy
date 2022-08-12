@@ -85,3 +85,17 @@ services:
     #    XDEBUG_MODE: debug
     #    XDEBUG_CONFIG: client_host=host.docker.internal client_port=9003
     #    XDEBUG_SESSION: 1
+
+  soketi:
+    container_name: "webdiplomacy-websocket"
+    restart: unless-stopped
+    image: "quay.io/soketi/soketi:1.0-16-debian"
+    ports:
+      - "${SOKETI_PORT:-6001}:6001"
+      - "${SOKETI_METRICS_SERVER_PORT:-9601}:9601"
+    environment:
+      - SOKETI_DEBUG=${SOKETI_DEBUG:-1}
+      - SOKETI_DEFAULT_APP_ID=${SOKETI_DEFAULT_APP_ID:-app-id}
+      - SOKETI_DEFAULT_APP_KEY=${SOKETI_DEFAULT_APP_KEY:-app-key}
+      - SOKETI_DEFAULT_APP_SECRET=${SOKETI_DEFAULT_APP_SECRET:-app-secret}
+      - USER_AUTHENTICATION_TIMEOUT=${SOKETI_USER_AUTHENTICATION_TIMEOUT:-5000}
