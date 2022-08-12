@@ -90,6 +90,10 @@ class libGameMessage
 			libGameMessage::notify($toCountryID, $fromCountryID);
 		}
 
+		require_once('lib/pusher.php');
+		$channel = "private-game" . $Game->id . "-country" . $toCountryID;
+		libPusher::trigger($channel, 'message', 'messageSent');
+
 		return $timeSent;
 	}
 

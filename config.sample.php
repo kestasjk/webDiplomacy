@@ -487,6 +487,47 @@ class Config
 		}
 		return false;	
 	}
-}
 
+	// ---
+	// --- The following settings are for WebSockets using Pusher or Soketi
+	// --- https://docs.soketi.app/getting-started/backend-configuration/pusher-sdk
+	// ---
+
+	/**
+	 * The default app id for the pusher/soketi array driver.
+	 *
+	 * @var string
+	 */
+	public static $pusherAppKey = 'app-key';
+
+	/**
+	 * The default app key for the pusher/soketi array driver.
+	 *
+	 * @var string
+	 */
+	public static $pusherAppSecret = 'app-secret';
+
+	/**
+	 * The default app secret for the pusher/soketi array driver.
+	 *
+	 * @var string
+	 */
+	public static $pusherAppId = 'app-id';
+
+	/**
+	 * The default host for the pusher/soketi array driver.
+	 * By default it's the defined name of the docker 
+	 * container defined in docker-compose.yml
+	 *
+	 * @var string
+	 */
+	public static $pusherHost = 'webdiplomacy-websocket';
+
+	/**
+	 * The default port for the pusher/soketi array driver.
+	 *
+	 * @var int
+	 */
+	public static $pusherPort = 6001;
+}
 ?>

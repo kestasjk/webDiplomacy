@@ -11,8 +11,6 @@ import { Email, Send } from "@mui/icons-material";
 import useLocalStorageState from "use-local-storage-state";
 
 import Button from "@mui/material/Button";
-import useViewport from "../../hooks/useViewport";
-import getDevice from "../../utils/getDevice";
 import WDMessageList from "./WDMessageList";
 import { CountryTableData } from "../../interfaces";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
@@ -35,8 +33,6 @@ const WDPress: FC<WDPressProps> = function ({
   userCountry,
   allCountries,
 }): ReactElement {
-  const [viewport] = useViewport();
-  const device = getDevice(viewport);
   const dispatch = useAppDispatch();
 
   const padding = 0;
@@ -44,8 +40,8 @@ const WDPress: FC<WDPressProps> = function ({
     defaultValue: {},
   });
 
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user, gameID, pressType, phase } = useAppSelector(gameOverview);
-
   const messages = useAppSelector(({ game }) => game.messages.messages);
   const countryIDSelected = useAppSelector(
     ({ game }) => game.messages.countryIDSelected,
@@ -54,7 +50,6 @@ const WDPress: FC<WDPressProps> = function ({
     ({ game }) => game.messages.newMessagesFrom,
   );
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     // scroll to the bottom of the message list
     // FIXME: should this happen if we get a message from a 3rd party?

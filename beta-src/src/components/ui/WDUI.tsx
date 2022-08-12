@@ -24,7 +24,7 @@ import {
   gameMaps,
   gameViewedPhase,
 } from "../../state/game/game-api-slice";
-import useInterval from "../../hooks/useInterval";
+import client from "../../lib/pusher";
 import useOutsideAlerter from "../../hooks/useOutsideAlerter";
 import useViewport from "../../hooks/useViewport";
 import { store } from "../../state/store";
@@ -42,7 +42,6 @@ const abbrMap = {
   France: "FRA",
   Turkey: "TUR",
 };
-
 interface WDUIProps {
   orders: IOrderDataHistorical[];
   units: Unit[];
@@ -161,8 +160,29 @@ const WDUI: React.FC<WDUIProps> = function ({
     }
   };
 
-  // FIXME: for now, crazily fetch all messages every 2sec
-  useInterval(dispatchFetchMessages, 2000);
+  useEffect(() => {
+    dispatchFetchMessages();
+    const channel = client.subscribe(
+      `private-game${gameID}-country${user?.member.countryID}`,
+    );
+
+    channel.bind("message", (message) => {
+      // it would be ideal to push the message in the state manager but
+      // I couldn't find an elegant way to do it with redux-toolkit
+      // come back to this later
+      dispatchFetchMessages();
+    });
+
+    channel.bind("pusher:subscription_succeeded", () => {
+      // eslint-disable-next-line no-console
+      console.info("messages subscription succeeded");
+    });
+
+    channel.bind("pusher:subscription_error", (data) => {
+      // eslint-disable-next-line no-console
+      console.error("messages subscription error", data);
+    });
+  }, []);
 
   const gameIsFinished = phase === "Finished";
 

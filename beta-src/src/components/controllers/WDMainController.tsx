@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useEffect } from "react";
+import client from "../../lib/pusher";
 import {
   fetchGameOverview,
   gameApiSliceActions,
@@ -15,7 +16,6 @@ import getPhaseKey from "../../utils/state/getPhaseKey";
 import WDGameProgressOverlay from "../ui/WDGameProgressOverlay";
 import WDAlertModal from "../ui/WDAlertModal";
 import { store } from "../../state/store";
-import useInterval from "../../hooks/useInterval";
 
 const WDMainController: React.FC = function ({ children }): React.ReactElement {
   const [displayedPhaseKey, setDisplayedPhaseKey] = React.useState<
@@ -35,19 +35,35 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
 
   const dispatchFetchOverview = () => {
     const { game } = store.getState();
-    const { outstandingOverviewRequests } = game;
-    // console.log({ outstandingOverviewRequests });
-    if (!outstandingOverviewRequests) {
+    if (!game.outstandingOverviewRequests) {
       dispatch(
         fetchGameOverview({
-          gameID: String(overview.gameID),
+          gameID: String(game.overview.gameID),
         }),
       );
     }
   };
 
-  // FIXME: for now, crazily fetch all messages every 5sec
-  useInterval(dispatchFetchOverview, 5000);
+  useEffect(() => {
+    dispatchFetchOverview();
+    if (overview.gameID > 0) {
+      const channel = client.subscribe(`private-game${overview.gameID}`);
+
+      channel.bind("overview", (content) => {
+        dispatchFetchOverview();
+      });
+
+      channel.bind("pusher:subscription_succeeded", () => {
+        // eslint-disable-next-line no-console
+        console.info("overview subscription succeeded");
+      });
+
+      channel.bind("pusher:subscription_error", (error) => {
+        // eslint-disable-next-line no-console
+        console.error("overview subscription error", error);
+      });
+    }
+  }, [overview.gameID]);
 
   const needsGameOverview = useAppSelector(
     ({ game }) => game.needsGameOverview,
