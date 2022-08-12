@@ -1,5 +1,3 @@
-CREATE DATABASE IF NOT EXISTS webdiplomacy;
-USE webdiplomacy;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wD_AccessLog` (
@@ -1016,6 +1014,10 @@ CREATE TABLE `wD_GameMessages_Redacted` (
   KEY `fromMember` (`gameID`,`fromCountryID`) USING BTREE                                                                                                                             
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;                  
 
+/**************************************** Version 1.69 ****************************************/
+
+ALTER TABLE `wD_Misc` CHANGE `value` `value` BIGINT(10) UNSIGNED NOT NULL; 
+UPDATE `wD_Misc` SET `value` = '169' WHERE `name` = 'Version';
 
 -- Group tags for quick flagging of relationships between players without needing to link to a bunch of tables
 ALTER TABLE `wD_Users` ADD COLUMN `groupTag` VARCHAR(30) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL; 
@@ -1112,10 +1114,14 @@ DELETE d FROM wD_MissedTurns d INNER JOIN wD_Games g ON g.id = d.gameID WHERE g.
 
 -- Period tracking to allow quick detection of changes in RRs when a missed turn moves over a threshold from e.g. being under a week old to over a week old
  ALTER TABLE wD_MissedTurns ADD COLUMN reliabilityPeriod TINYINT NULL DEFAULT -1;
+
+ /**************************************** Version 1.70 ****************************************/
  
 UPDATE `wD_Misc` SET `value` = '170' WHERE `name` = 'Version';
 
-ALTER TABLE `wD_Misc` CHANGE `value` `value` BIGINT(10) UNSIGNED NOT NULL; 
+ALTER TABLE `wD_Misc` CHANGE `value` `value` BIGINT(10) UNSIGNED NOT NULL;
+
+/**************************************** Version 1.71 ****************************************/
 
 UPDATE `wD_Misc` SET `value` = '171' WHERE `name` = 'Version';
 

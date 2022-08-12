@@ -18,6 +18,8 @@
     along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+use function PHPSTORM_META\map;
+
 define('IN_CODE', 1);
 require_once('config.php');
 if( Config::isOnPlayNowDomain() ) define('PLAYNOW',true);
@@ -173,6 +175,12 @@ abstract class ApiEntry {
 	protected $requirements;
 
 	/**
+	 * Whether to lock the game record for update; increases chance of deadlocks, but prevents game corruption
+	 * @var bool
+	 */
+	protected $gameLocking = false;
+
+	/**
 	 * Initialize an ApiEntry.
 	 * @param string $route - API entry name.
 	 * @param string $type - API entry type ('GET' or 'POST').
@@ -180,7 +188,7 @@ abstract class ApiEntry {
 	 * @param array $requirements - array of API entry parameters names.
 	 * @throws Exception - if invalid type or if requirements is not an array.
 	 */
-	public function __construct($route, $type, $databasePermissionField, $requirements) {
+	public function __construct($route, $type, $databasePermissionField, $requirements, $gameLocking = false) {
 		if (!in_array($type, array('GET', 'POST', 'JSON')))
 			throw new ServerInternalException('Invalid API entry type');
 		if (!is_array($requirements))
@@ -189,6 +197,7 @@ abstract class ApiEntry {
 		$this->type = $type;
 		$this->databasePermissionField = $databasePermissionField;
 		$this->requirements = $requirements;
+		$this->gameLocking = $gameLocking;
 	}
 
 	protected function JSONResponse(string $msg, string $referenceCode, bool $success, array $data = [], $JSON_NUMERIC_CHECK = false){
@@ -272,13 +281,22 @@ abstract class ApiEntry {
 	 * @throws RequestException - if no gameID field in requirements, or if no valid game ID provided.
 	 */
 
-	public function getAssociatedGame($lockForUpdate = false, $useCache = true) {
+	public function getAssociatedGame($useCache = true) {
 		global $DB;
 		if( $useCache && !is_null($this->gameCache) ) return $this->gameCache;
 		$gameID = $this->getAssociatedGameID();
-		$Variant = libVariant::loadFromGameID($gameID);
+
+		$lockMode = $this->gameLocking ? UPDATE : NOLOCK;
+
+		$gameRow = Game::fetchRow($gameID, $lockMode);
+		if( $gameRow === null )
+			throw new Exception("Could not fetch row for give gameID, game may have been cancelled");
+
+		$Variant = libVariant::loadFromVariantID($gameRow['variantID']);
 		libVariant::setGlobals($Variant);
-		$this->gameCache = new Game($gameID, $lockForUpdate ? UPDATE : NOLOCK);
+		
+		$this->gameCache = $Variant->Game($gameRow, $lockMode);
+		
 		return  $this->gameCache; // Lock game for update, which just ensures the game is always processed sequentially, if the game will be updated
 	}
 
@@ -295,7 +313,7 @@ abstract class ApiEntry {
  */
 class ListGamesWithPlayersInCD extends ApiEntry {
 	public function __construct() {
-		parent::__construct('players/cd', 'GET', 'listGamesWithPlayersInCD', array());
+		parent::__construct('players/cd', 'GET', 'listGamesWithPlayersInCD', array(), false);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		$countriesInCivilDisorder = new \webdiplomacy_api\CountriesInCivilDisorder();
@@ -308,7 +326,7 @@ class ListGamesWithPlayersInCD extends ApiEntry {
  */
 class ListGamesWithMissingOrders extends ApiEntry {
 	public function __construct() {
-		parent::__construct('players/missing_orders', 'GET', '', array());
+		parent::__construct('players/missing_orders', 'GET', '', array(), false);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		$unorderedCountries = new \webdiplomacy_api\UnorderedCountries($userID);
@@ -322,7 +340,7 @@ class ListGamesWithMissingOrders extends ApiEntry {
  */
 class ListActiveGamesForUser extends ApiEntry {
 	public function __construct() {
-		parent::__construct('players/active_games', 'GET', '', array());
+		parent::__construct('players/active_games', 'GET', '', array(), false);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		$activeGames = new \webdiplomacy_api\ActiveGames($userID);
@@ -335,7 +353,7 @@ class ListActiveGamesForUser extends ApiEntry {
  */
 class ToggleVote extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/togglevote', 'GET', '', array('gameID','countryID','vote'));
+		parent::__construct('game/togglevote', 'GET', '', array('gameID','countryID','vote'), true);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		global $DB;
@@ -379,9 +397,7 @@ class ToggleVote extends ApiEntry {
 		}
 		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."' WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
 		$DB->sql_put("COMMIT");
-		# refetch the game with the votes updated
-		$Game = $this->getAssociatedGame(true, false);
-		$Game->Members->processVotes();
+		
 		return $newVotes;
 	}
 }
@@ -394,7 +410,7 @@ class ToggleVote extends ApiEntry {
  */
 class SetVote extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/setvote', 'JSON', '', array('gameID','countryID','vote','voteOn'));
+		parent::__construct('game/setvote', 'JSON', '', array('gameID','countryID','vote','voteOn'), false);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		global $DB;
@@ -443,10 +459,62 @@ class SetVote extends ApiEntry {
 		}
 		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."' WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
 		$DB->sql_put("COMMIT");
-		# refetch the game with the votes updated
-		$Game = $this->getAssociatedGame(true, false);
-		$Game->Members->processVotes();
+		
 		return $newVotes;
+	}
+}
+
+/**
+ * API entry websockets/authentication
+ * https://pusher.com/docs/channels/library_auth_reference/auth-signatures/
+ * Every time a user subscribes to a channel, it needs to be authenticated and authorized.
+ * This function works along with beta-src/src/lib/pusher.ts
+ */
+class WebSocketsAuthentication extends ApiEntry {
+	public function __construct() {
+		parent::__construct('websockets/authentication', 'JSON', '', array('gameID', 'socket_id', 'channel_name'));
+	}
+	public function run($userID, $permissionIsExplicit) {
+		$args 				= $this->getArgs();
+		$socketID 		= $args['socket_id'];
+		$channelName	= $args['channel_name'];
+
+		$channelNameParams = explode("-", $channelName);
+		$gameID = intval(str_replace("game", "", $channelNameParams[1]));
+		$countryID = 0;
+		
+		if (count($channelNameParams) > 2) {
+			$countryID = intval(str_replace("country", "", $channelNameParams[2]));
+		}
+		
+		$Game = $this->getAssociatedGame();
+
+		// There are 2 authorization validations because a player can
+		// subscribe to the game overview channel or to the messages channel
+		// game overview channel doesn't include the countryID
+		if (!(isset($Game->Members->ByUserID[$userID]))) {
+			throw new ClientForbiddenException('User doesn\'t belong to this game.');
+		}
+
+		if ($countryID != 0) {
+			if (!(isset($Game->Members->ByUserID[$userID]) && $countryID == $Game->Members->ByUserID[$userID]->countryID)) {
+				throw new ClientForbiddenException('User does not have explicit permission to make this API call.');
+			}
+		}
+		
+		$appKey				= Config::$pusherAppKey;
+		$appSecret		= Config::$pusherAppSecret;
+		$stringToSign = $socketID.":".$channelName;
+		$hash       	= hash_hmac('sha256', $stringToSign, $appSecret);
+		
+		return $this->JSONResponse(
+			"User was successfully authenticated for this channel",
+			'',
+			true,
+			[
+				'auth' => $appKey.':'.$hash
+			]
+		);
 	}
 }
 
@@ -455,7 +523,7 @@ class SetVote extends ApiEntry {
  */
 class MessagesSeen extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/messagesseen', 'JSON', '', array('gameID','countryID','seenCountryID'));
+		parent::__construct('game/messagesseen', 'JSON', '', array('gameID','countryID','seenCountryID'), false);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		global $Game, $DB;
@@ -486,7 +554,7 @@ class MessagesSeen extends ApiEntry {
  */
 class MarkBackFromLeft extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/markbackfromleft', 'JSON', '', array('gameID','countryID'));
+		parent::__construct('game/markbackfromleft', 'JSON', '', array('gameID','countryID'), true);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		global $Game, $DB;
@@ -504,7 +572,7 @@ class MarkBackFromLeft extends ApiEntry {
  */
 class GetGamesStates extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/status', 'GET', 'getStateOfAllGames', array('gameID', 'countryID'));
+		parent::__construct('game/status', 'GET', 'getStateOfAllGames', array('gameID', 'countryID'), false);
 	}
 	/**
 	 * @throws RequestException
@@ -535,7 +603,7 @@ class GetGameMembers extends ApiEntry {
 	private $showDrawVotes;
 
 	public function __construct() {
-		parent::__construct('game/members', 'GET', 'getStateOfAllGames', array('gameID'));
+		parent::__construct('game/members', 'GET', 'getStateOfAllGames', array('gameID'), false);
 	}
 
 	private function getMembers( $members ){
@@ -620,7 +688,7 @@ class GetGameMembers extends ApiEntry {
  */
 class GetGameOverview extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/overview', 'GET', 'getStateOfAllGames', array('gameID'));
+		parent::__construct('game/overview', 'GET', 'getStateOfAllGames', array('gameID'), false);
 	}
 
 	/**
@@ -697,7 +765,7 @@ class GetGameData extends ApiEntry {
 	private $contextVars;
 
 	public function __construct() {
-		parent::__construct('game/data', 'GET', 'getStateOfAllGames', array('gameID', 'countryID'));
+		parent::__construct('game/data', 'GET', 'getStateOfAllGames', array('gameID', 'countryID'), true);
 	}
 
 	private function setContextVars( $game, $gameID, $userID, $countryID, $member ){
@@ -830,7 +898,8 @@ class SetOrders extends ApiEntry {
 			'game/orders',
 			'JSON',
 			'submitOrdersForUserInCD',
-			array('gameID', 'turn', 'phase', 'countryID', 'orders', 'ready'));
+			array('gameID', 'turn', 'phase', 'countryID', 'orders', 'ready'),
+			true);
 			// 'ready' is optional.
 	}
 	/**
@@ -868,7 +937,7 @@ class SetOrders extends ApiEntry {
 		// So commit and begin to release anything locked and start over
 		$DB->sql_put("COMMIT");
 		$DB->sql_put("BEGIN");
-		$game = $this->getAssociatedGame(true); // Get the game and lock it for update
+		$game = $this->getAssociatedGame(); // Get the game and lock it for update
 		if (!in_array($game->phase, array('Diplomacy', 'Retreats', 'Builds')))
 			throw new RequestException('Cannot submit orders in phase `'.$game->phase.'`.');
 		if ($turn != $game->turn)
@@ -1099,7 +1168,7 @@ w            {
  */
 class SendMessage extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/sendmessage', 'JSON', '', array('gameID','countryID','toCountryID', 'message'));
+		parent::__construct('game/sendmessage', 'JSON', '', array('gameID','countryID','toCountryID', 'message'), false);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		global $Game, $DB;
@@ -1177,7 +1246,7 @@ class SendMessage extends ApiEntry {
  */
 class GetMessages extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/getmessages', 'GET', 'getStateOfAllGames', array('gameID','countryID','sinceTime'));
+		parent::__construct('game/getmessages', 'GET', 'getStateOfAllGames', array('gameID','countryID','sinceTime'), false);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		global $DB, $MC;
@@ -1425,11 +1494,11 @@ class Api {
 	 * API entries. Array mapping API entry name to ApiEntry instance.
 	 * @var array
 	 */
-	private $entries;
+	public $entries;
 
-	private $route;
+	public $route;
 
-	private $authClass;
+	public $authClass;
 
 	public function __construct() {
 		$this->entries = array();
@@ -1527,6 +1596,7 @@ try {
 	$api->load(new SetOrders());
 	$api->load(new ToggleVote());
 	$api->load(new SetVote());
+	$api->load(new WebSocketsAuthentication());
 	$api->load(new SendMessage());
 	$api->load(new GetMessages());
 	$api->load(new MessagesSeen());
@@ -1537,6 +1607,24 @@ try {
 	header('Content-Type: application/json');
 	// Print response.
 	print $jsonEncodedResponse;
+/*
+	$apiAuth = new $api->authClass($api->route);
+	$userID = $apiAuth->getUserID();
+	if( $userID == 11 )
+	{
+		$apiEntry = $api->entries[$api->route];
+		file_put_contents('bot_requestlog.txt',
+			date('l jS \of F Y h:i:s A')."\n".
+			"-------------------\n".
+			$_SERVER['REQUEST_URI']."\n".
+			"-------------------\n".
+			json_encode($apiEntry->getArgs(), JSON_PRETTY_PRINT)."\n".
+			"-------------------\n".
+			json_encode(json_decode($jsonEncodedResponse), JSON_PRETTY_PRINT)."\n".
+			"-------------------\n\n"
+			, FILE_APPEND);
+	}
+	*/
 }
 
 // 4xx - User errors - No need to log
@@ -1547,11 +1635,11 @@ catch (RequestException $exc) {
 }
 catch (ClientUnauthorizedException $exc) {
 	handleAPIError($exc->getMessage(), 401);
-	trigger_error($exc->getMessage());
+	//trigger_error($exc->getMessage());
 }
 catch (ClientForbiddenException $exc) {
 	handleAPIError($exc->getMessage(), 403);
-	trigger_error($exc->getMessage());
+	//trigger_error($exc->getMessage());
 }
 
 // 5xx - Server errors

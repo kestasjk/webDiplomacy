@@ -81,7 +81,7 @@ export function getUnitsLive(
   // Maps current terrID => previous terrID for units that successfully moved last phase.
   const successfulPrevMoves: { [key: string]: string } = {};
   prevPhaseOrders.forEach((prevOrder) => {
-    if (prevOrder.success && prevOrder.type === "Move") {
+    if (prevOrder.success === "Yes" && prevOrder.type === "Move") {
       successfulPrevMoves[prevOrder.toTerrID.toString()] =
         prevOrder.terrID.toString();
     }
@@ -272,7 +272,7 @@ export function getUnitsHistorical(
   // Maps current terrID => previous terrID for units that successfully moved last phase.
   const successfulPrevMoves: { [key: string]: string } = {};
   prevPhaseOrders.forEach((prevOrder) => {
-    if (prevOrder.success && prevOrder.type === "Move") {
+    if (prevOrder.success === "Yes" && prevOrder.type === "Move") {
       successfulPrevMoves[prevOrder.toTerrID.toString()] =
         prevOrder.terrID.toString();
     }

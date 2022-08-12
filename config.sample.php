@@ -137,7 +137,7 @@ class Config
 	 * An array of variants available on the server (for future releases, not yet enabled)
 	 * @var array
 	 */
-	public static $variants=array(1=>'Classic',2=>'World',9=>'AncMed',15=>'ClassicFvA',17=>'ClassicChaos',19=>'Modern2',20=>'Empire4',23=>'ClassicGvI',57=>'KnownWorld_901',91=>'ColdWar');
+	public static $variants=array(1=>'Classic',2=>'World',9=>'AncMed',15=>'ClassicFvA',17=>'ClassicChaos',19=>'Modern2',20=>'Empire4',23=>'ClassicGvI',91=>'ColdWar');
 
 	/**
 	 * A boolean controlling whether automatic gr calculations are enabled. Set to true for auto-GR calculation and false to require manual calculations via the modtool. Note that $grCategories must exist to work.
@@ -154,6 +154,18 @@ class Config
 	 */
 	public static $playNowDomain = null;
 
+	/**
+	 * The memcached server
+	 * @var string
+	 */
+	public static $memcachedHost='memcached';
+
+	/**
+	 * The memcached port
+	 * @var int
+	 */
+	public static $memcachedPort='11211';
+	
 	/**
 	 * An array of categories to use when calculating GhostRatings
 	 * @var array
@@ -489,6 +501,47 @@ class Config
 		}
 		return false;	
 	}
-}
 
+	// ---
+	// --- The following settings are for WebSockets using Pusher or Soketi
+	// --- https://docs.soketi.app/getting-started/backend-configuration/pusher-sdk
+	// ---
+
+	/**
+	 * The default app id for the pusher/soketi array driver.
+	 *
+	 * @var string
+	 */
+	public static $pusherAppKey = 'app-key';
+
+	/**
+	 * The default app key for the pusher/soketi array driver.
+	 *
+	 * @var string
+	 */
+	public static $pusherAppSecret = 'app-secret';
+
+	/**
+	 * The default app secret for the pusher/soketi array driver.
+	 *
+	 * @var string
+	 */
+	public static $pusherAppId = 'app-id';
+
+	/**
+	 * The default host for the pusher/soketi array driver.
+	 * By default it's the defined name of the docker 
+	 * container defined in docker-compose.yml
+	 *
+	 * @var string
+	 */
+	public static $pusherHost = 'webdiplomacy-websocket';
+
+	/**
+	 * The default port for the pusher/soketi array driver.
+	 *
+	 * @var int
+	 */
+	public static $pusherPort = 6001;
+}
 ?>

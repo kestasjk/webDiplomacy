@@ -31,8 +31,8 @@ const WDPress: FC<WDPressProps> = function ({
     defaultValue: {},
   });
 
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user, gameID, pressType, phase } = useAppSelector(gameOverview);
-
   const messages = useAppSelector(({ game }) => game.messages.messages);
   const countryIDSelected = useAppSelector(
     ({ game }) => game.messages.countryIDSelected,
@@ -41,7 +41,6 @@ const WDPress: FC<WDPressProps> = function ({
     ({ game }) => game.messages.newMessagesFrom,
   );
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     // scroll to the bottom of the message list
     // FIXME: should this happen if we get a message from a 3rd party?
@@ -52,14 +51,16 @@ const WDPress: FC<WDPressProps> = function ({
     if (!userCountry) {
       return;
     }
-    dispatch(
-      sendMessage({
-        gameID: String(gameID),
-        countryID: String(userCountry.countryID),
-        toCountryID: String(countryIDSelected),
-        message: messageStack[countryIDSelected],
-      }),
-    );
+    if (messageStack[countryIDSelected]) {
+      dispatch(
+        sendMessage({
+          gameID: String(gameID),
+          countryID: String(userCountry.countryID),
+          toCountryID: String(countryIDSelected),
+          message: messageStack[countryIDSelected],
+        }),
+      );
+    }
     const ms = { ...messageStack };
     ms[countryIDSelected] = "";
     setMessageStack(ms);
