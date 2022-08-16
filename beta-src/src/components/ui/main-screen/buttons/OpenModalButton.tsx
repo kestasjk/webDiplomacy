@@ -21,6 +21,7 @@ import { MessageStatus } from "../../../../state/interfaces/GameMessages";
 import RightButton from "./RightButton";
 import { abbrMap } from "../../../../enums/Country";
 import useComponentVisible from "../../../../hooks/useComponentVisible";
+import client from "../../../../lib/pusher";
 
 interface BottomRightProps {
   orders: IOrderDataHistorical[];
@@ -75,8 +76,29 @@ const OpenModalButton: FunctionComponent<BottomRightProps> = function ({
     }
   };
 
-  // FIXME: for now, crazily fetch all messages every 2sec
-  useInterval(dispatchFetchMessages, 2000);
+  useEffect(() => {
+    dispatchFetchMessages();
+    const channel = client.subscribe(
+      `private-game${gameID}-country${user?.member.countryID}`,
+    );
+
+    channel.bind("message", (message) => {
+      // it would be ideal to push the message in the state manager but
+      // I couldn't find an elegant way to do it with redux-toolkit
+      // come back to this later
+      dispatchFetchMessages();
+    });
+
+    channel.bind("pusher:subscription_succeeded", () => {
+      // eslint-disable-next-line no-console
+      console.info("messages subscription succeeded");
+    });
+
+    channel.bind("pusher:subscription_error", (data) => {
+      // eslint-disable-next-line no-console
+      console.error("messages subscription error", data);
+    });
+  }, []);
 
   const toggleControlModal = () => {
     setIsComponentVisible(!isComponentVisible);
