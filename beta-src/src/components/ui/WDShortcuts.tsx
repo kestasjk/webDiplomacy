@@ -10,6 +10,11 @@ interface WDShortcutsProps {
 const WDShortcuts: React.FC<WDShortcutsProps> = function ({
   onPhaseSelectorShortcut,
 }): React.ReactElement {
+  // TODO: create a Provider for this with the appropriate
+  // element reference once it's accepted after UX validation.
+  // Do not access the dom like this.
+  const inputMessage = document.getElementById("user-msg");
+
   const dispatch = useAppDispatch();
   const [left] = useKeyboardJs("shift + left");
   const [right] = useKeyboardJs("shift + right");
@@ -18,20 +23,23 @@ const WDShortcuts: React.FC<WDShortcutsProps> = function ({
   const [phases] = useKeyboardJs("shift + ctrl + p");
 
   useEffect(() => {
-    if (left) {
-      dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(-1));
-    }
-    if (right) {
-      dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1));
-    }
-    if (up) {
-      dispatch(gameApiSliceActions.setViewedPhaseToLatestPhaseViewed());
-    }
-    if (down) {
-      dispatch(gameApiSliceActions.setViewedPhase(0));
-    }
-    if (phases) {
-      onPhaseSelectorShortcut();
+    const inputMessageActive = inputMessage === document.activeElement;
+    if (!inputMessageActive) {
+      if (left) {
+        dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(-1));
+      }
+      if (right) {
+        dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1));
+      }
+      if (up) {
+        dispatch(gameApiSliceActions.setViewedPhaseToLatestPhaseViewed());
+      }
+      if (down) {
+        dispatch(gameApiSliceActions.setViewedPhase(0));
+      }
+      if (phases) {
+        onPhaseSelectorShortcut();
+      }
     }
   }, [left, right, up, down, phases]);
 
