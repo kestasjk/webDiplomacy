@@ -283,14 +283,19 @@ abstract class ApiEntry {
 
 	public function getAssociatedGame($useCache = true) {
 		global $DB;
+			
 		if( $useCache && !is_null($this->gameCache) ) return $this->gameCache;
 		$gameID = $this->getAssociatedGameID();
-
+	
+		// This seems to happen when the client loses the game it was on
+		if( $gameID == 0 )
+			throw new RequestException("Game ID = 0, invalid request");
+	
 		$lockMode = $this->gameLocking ? UPDATE : NOLOCK;
 
 		$gameRow = Game::fetchRow($gameID, $lockMode);
 		if( $gameRow === false )
-			throw new Exception("Could not fetch row for give gameID, game may have been cancelled");
+			throw new RequestException("Could not fetch row for give gameID, game may have been cancelled");
 
 		$Variant = libVariant::loadFromVariantID($gameRow['variantID']);
 		libVariant::setGlobals($Variant);
