@@ -1,10 +1,14 @@
-import React, { ReactElement, FunctionComponent, useEffect } from "react";
+import React, {
+  ReactElement,
+  FunctionComponent,
+  useEffect,
+  useState,
+} from "react";
+import { useWindowSize } from "react-use";
 import { Badge } from "@mui/material";
 
 import { useAppSelector, useAppDispatch } from "../../../../state/hooks";
 import WDPopover from "../../WDPopover";
-import useOutsideAlerter from "../../../../hooks/useOutsideAlerter";
-import useViewport from "../../../../hooks/useViewport";
 import WDFullModal from "../../WDFullModal";
 import ModalViews from "../../../../enums/ModalViews";
 import { IOrderDataHistorical } from "../../../../models/Interfaces";
@@ -15,7 +19,6 @@ import {
   fetchGameMessages,
   gameMaps,
 } from "../../../../state/game/game-api-slice";
-import useInterval from "../../../../hooks/useInterval";
 import { store } from "../../../../state/store";
 import { MessageStatus } from "../../../../state/interfaces/GameMessages";
 import RightButton from "./RightButton";
@@ -36,13 +39,15 @@ const OpenModalButton: FunctionComponent<BottomRightProps> = function ({
   allCountries,
   userTableData,
 }: BottomRightProps): ReactElement {
+  const { width } = useWindowSize();
   const popoverTrigger = React.useRef<HTMLDivElement>(null);
+  const [currentTab, setCurrentTab] = useState(ModalViews.PRESS);
+
   const {
     ref: modalRef,
     isComponentVisible,
     setIsComponentVisible,
-  } = useComponentVisible(true);
-  const [viewport] = useViewport();
+  } = useComponentVisible(true, currentTab !== ModalViews.PRESS || width < 500);
 
   const {
     alternatives,
@@ -167,11 +172,11 @@ const OpenModalButton: FunctionComponent<BottomRightProps> = function ({
         units={units}
         userCountry={userTableData}
         year={year}
-        modalRef={modalRef}
         gameIsPaused={processStatus === "Paused"}
         defaultView={
           pressType === "NoPress" ? ModalViews.INFO : ModalViews.PRESS
         }
+        onChangeView={setCurrentTab}
       >
         {null}
       </WDFullModal>
@@ -181,7 +186,7 @@ const OpenModalButton: FunctionComponent<BottomRightProps> = function ({
   if (phase === "Error" || phase === "Pre-game") return <div />;
 
   return (
-    <>
+    <div ref={modalRef}>
       <div className="pt-3 pointer-events-auto" ref={popoverTrigger}>
         {numUnread + numUnknown ? (
           <Badge badgeContent={numUnknown ? " " : numUnread} color="error">
@@ -192,7 +197,7 @@ const OpenModalButton: FunctionComponent<BottomRightProps> = function ({
         )}
       </div>
       {popover}
-    </>
+    </div>
   );
 };
 

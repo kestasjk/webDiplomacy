@@ -31,9 +31,10 @@ interface WDFullModalProps {
   units: Unit[];
   userCountry: CountryTableData | null;
   year: GameOverviewResponse["year"];
-  modalRef: React.RefObject<HTMLDivElement>;
+  modalRef?: React.RefObject<HTMLDivElement>;
   gameIsPaused: boolean;
   defaultView: ModalViews;
+  onChangeView: (view: ModalViews) => void;
 }
 
 const tabGroup: ModalViews[] = [
@@ -63,9 +64,13 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
   modalRef,
   gameIsPaused,
   defaultView,
+  onChangeView,
 }): React.ReactElement {
   const [view, setView] = useState(defaultView);
-  const onChangeView = (tab: ModalViews) => setView(tab);
+  const handleOnChangeView = (tab: ModalViews) => {
+    setView(tab);
+    onChangeView(tab);
+  };
   const gameIsFinished = phase === "Finished";
 
   return (
@@ -73,7 +78,7 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
       <WDViewsContainer
         tabGroup={tabGroup}
         currentView={view}
-        onChange={onChangeView}
+        onChange={handleOnChangeView}
       >
         <WDTabPanel currentTab={ModalViews.INFO} currentView={view}>
           <div>
@@ -124,5 +129,7 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
     </div>
   );
 };
+
+WDFullModal.defaultProps = { modalRef: undefined };
 
 export default WDFullModal;

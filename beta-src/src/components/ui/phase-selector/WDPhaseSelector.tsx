@@ -35,8 +35,10 @@ const WDPhaseSelector: React.FC<WDPhaseSelectorProps> = function ({
   const totalYears = Math.ceil(totalPhases / 3);
   const years = Array.from(Array(totalYears), (_, index) => 1901 + index);
 
-  const { ref: phaseSelectorRef, isComponentVisible } =
-    useComponentVisible(true);
+  const { ref: phaseSelectorRef, isComponentVisible } = useComponentVisible(
+    true,
+    true,
+  );
 
   useEffect(() => {
     if (isComponentVisible === false) {
