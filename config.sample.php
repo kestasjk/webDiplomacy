@@ -153,18 +153,6 @@ class Config
 	 * @var string|null
 	 */
 	public static $playNowDomain = null;
-
-	/**
-	 * The memcached server
-	 * @var string
-	 */
-	public static $memcachedHost='memcached';
-
-	/**
-	 * The memcached port
-	 * @var int
-	 */
-	public static $memcachedPort='11211';
 	
 	/**
 	 * An array of categories to use when calculating GhostRatings
