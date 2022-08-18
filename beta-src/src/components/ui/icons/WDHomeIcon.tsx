@@ -1,7 +1,7 @@
 import * as React from "react";
 import UIState from "../../../enums/UIState";
 import { NavIconProps } from "../../../interfaces/Icons";
-import LogoImage from "../../../assets/png/web-diplomacy-logo.png";
+import LogoImage from "../../../assets/png/logo-d.png";
 
 const WDHomeIcon: React.FC<NavIconProps> = function ({
   iconState = UIState.INACTIVE,
