@@ -34,7 +34,7 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
   }
 
   state.data = action.payload;
-  const currentState = current(state);
+  const currentState = current(state) as GameState;
   const {
     data: { data },
     overview: { phase, user },
