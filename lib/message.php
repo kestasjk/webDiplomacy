@@ -79,7 +79,8 @@ class Message
 	{
 		global $DB;
 
-		if( defined('AdminUserSwitch') ) $fromUserID = AdminUserSwitch;
+		// Disabled for testing
+		// if( defined('AdminUserSwitch') ) $fromUserID = AdminUserSwitch;
 
 		$message = self::linkify($message);
 
