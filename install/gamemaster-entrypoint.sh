@@ -22,7 +22,7 @@ echo "Start PHP server"
 # Fork the FPM server
 /usr/sbin/php-fpm7.4 -O &
 
-sleep 2
+sleep 10 # wait for DB container internal DB setup
 
 echo "Checking if DB installed"
 if mysql -u webdiplomacy -h webdiplomacy-db -P 3306 --password=mypassword123 webdiplomacy -e "SHOW TABLES;" | grep -q 'w[Dd]_[Uu]ser' ; then

@@ -82,6 +82,8 @@ services:
       - "./:/application"
       - "./phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini"
     command: /bin/sh -c "install/gamemaster-entrypoint.sh"
+    depends_on:
+      - "mariadb"
     #environment:
     #    PHP_IDE_CONFIG: "serverName=Docker"
     #    XDEBUG_MODE: debug
