@@ -428,7 +428,7 @@ class Group
 		global $User;
 		if( intval($this->anon) !== 1 )  return false;
 		if( $User->id == $userID ) return false;
-		if( $User->type['Admin'] ) return false;
+		//if( $User->type['Admin'] ) return false;
 		if( $User->type['Moderator'] && $this->isViewerInGame !== 1 ) return false;
 		
 		return true;
