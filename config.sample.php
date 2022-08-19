@@ -38,7 +38,7 @@ class Config
 	 *
 	 * @var string
 	 */
-	public static $database_socket='mariadb';
+	public static $database_socket='webdiplomacy-db';
 
 	/**
 	 * The user who will perform all database actions. You should
