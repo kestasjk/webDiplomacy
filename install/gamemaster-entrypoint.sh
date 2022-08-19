@@ -11,6 +11,7 @@ ls $HOME/variants/*/variant.php | sed -e 's/variant.php//' | (while read v; do m
 echo "Make sure all cache folders writable"
 # Make sure the cache folders are writable
 find . -name "cache" -exec chmod a+rwx {} \;
+find . -name "cache" -exec chown -R www-data:www-data {} \;
 
 echo "Make sure config present"
 # If no config has been set up use the sample, which is compatible with docker
