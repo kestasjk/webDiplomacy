@@ -6,7 +6,7 @@ cd $HOME
 
 echo "Make sure all cache folders exist"
 mkdir $HOME/cache
-ls $HOME/variants/*/variant.php | sed -e 's/variant.php//' | (while read v; do mkdir "$v""/cache"; done)
+ls $HOME/variants/*/variant.php | sed -e 's/variant.php//' | (while read v; do mkdir "$v""cache"; done)
 
 echo "Make sure all cache folders writable"
 # Make sure the cache folders are writable
