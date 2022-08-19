@@ -180,7 +180,7 @@ class Group
 			$suspectedUsers[$countrySuspected] = new User($Game->Members->ByCountryID[$countrySuspected]->userID);
 		}
 	
-		$groupID = self::create('Game accusation', $Game->name . ' - #' . $Game->turn, $explanation, $Game->id, $Game->id, $suspectingCountryID);
+		$groupID = self::create('Suspicion', $Game->name . ' - #' . $Game->turn, $explanation, $Game->id, $Game->id, $suspectingCountryID);
 		$Group = Group::loadFromID($groupID);
 		foreach($suspectedUsers as $countrySuspected=>$suspectedUser)
 		{
