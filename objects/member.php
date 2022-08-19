@@ -242,7 +242,7 @@ class Member
 	 */
 	function lastLoggedInTxt_Anon()
 	{
-		$daysSinceLoggedIn = (time()-$this->timeLoggedIn) / 24*60*60;
+		$daysSinceLoggedIn = (time()-$this->timeLoggedIn) / (24*60*60);
 		if( $daysSinceLoggedIn < 1 )
 			return '< 1 day';
 		else if ( $daysSinceLoggedIn < 7 )

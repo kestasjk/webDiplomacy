@@ -43,9 +43,23 @@ class GroupUser
 	 */
 	var $userID;
 
+	// The username of the accounts involved, or the country names
+	// if this is an anonymous suspicion:
+	var $userUsername;
+	/**
+	 * The country name if applicable
+	 * @var string|null
+	 */
+	var $userCountryName;
+	public function userLink($type = 'User', $points = 100)
+	{
+		if( $this->isUserHidden() ) return '<strong>'.$this->userCountryName.'</strong>';
+		else return User::profile_link_static($this->userUsername, $this->userID, $type, $points). ($this->userCountryName ? ' ('.$this->userCountryName.')' : '');
+	}
+
 	/**
 	 * The country ID if applicable
-	 * @var int?
+	 * @var int|null
 	 */
 	var $countryID;
 
@@ -83,14 +97,16 @@ class GroupUser
 	 * @var int? The last moderator user ID that set a weighting, or null
 	 */
 	var $modUserID;
+	var $modUsername;
+	public function modUsernameLink()
+	{
+		if( $this->modUsername == null ) return '<strong>N/A</strong>';
+
+		return User::profile_link_static($this->modUsername, $this->modUserID, 'Moderator', 100);
+	}
 
 	// A link to the group this group-user link is part of:
 	var $Group;
-
-	// The username of the accounts involved, or the country names
-	// if this is an anonymous suspicion:
-	var $userUsername;
-	var $modUsername;
 
 	/**
 	 * Create a GroupUser object
@@ -99,13 +115,25 @@ class GroupUser
 	 */
 	public function __construct($row, Group $Group)
 	{
+		$this->Group = $Group;
+
 		foreach ( $row as $name => $value )
 		{
 			$this->{$name} = $value;
 		}
-		$this->Group = $Group;
+		
+		if( $this->countryID )
+		{
+			$Variant = libVariant::loadFromVariantID($this->Group->gameVariantID);
+			$this->userCountryName = $Variant->countries[$this->countryID-1];
+		}
+		if( $this->isUserHidden() )
+		{
+			$this->userUsername = $this->userCountryName;
+			$this->userCountryName = $this->userCountryName;
+		}
 	}
-
+	public function isUserHidden() { return $this->Group->isUserIDHidden($this->userID); }
 	/**
 	 * If it is a suspicion then a small mod weighting means verified, if it is a disclosure the user is trusted, but a mod setting of 100 will force the relationship
 	 */
