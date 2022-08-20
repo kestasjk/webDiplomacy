@@ -494,7 +494,7 @@ if ( $GroupProfile->canUserComment($User) )
 
 libHTML::starthtml();
 
-print libHTML::pageTitle('Group Panel: #'.$GroupProfile->id.' '.$GroupProfile->name,l_t('Group arbit.'));
+print libHTML::pageTitle('Group Panel: #'.$GroupProfile->id.' '.$GroupProfile->name,l_t('A space for the community and mod team to discuss, decide and resolve problems.'));
 
 print '<div>';
 print '<div class = "profile-show-floating" style="margin-left:2.5%">';
