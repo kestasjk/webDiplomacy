@@ -368,6 +368,18 @@ class Config
 				),
 			"UseDebug" => false // If this is set to true mail will be output to the browser instead of sent, useful for debugging
 		);
+	
+	/**
+	 * The configuration for sending SMS messages, currently only set up to use Twilio
+	 */
+	public static $smsConfig = array(
+		"isEnabled"				=> false,
+		"isValidationEnabled" 	=> false,
+		"isNotificationEnabled" => false,
+        "twilioSID"    			=> "",
+        "twilioToken"  			=> "",
+        "twilioServiceSID" 		=> ""
+	);
 
 	/**
 	 * Something to add into the header, within <head></head>, as analytics now needs to be embedded there.

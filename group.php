@@ -22,6 +22,7 @@
  * @package Base
  */
 
+
 require_once('header.php');
 require_once('objects/group.php');
 require_once('objects/groupUser.php');
@@ -250,6 +251,8 @@ function TryPostReply($groupID)
 		{
 			libAuth::formToken_Valid();
 			
+			$DB->sql_put("UPDATE wD_GroupUsers SET timeLastMessageSent = ".time().", messageCount = messageCount + 1 WHERE groupID = ".$groupID." AND userID = ".$User->id);
+			$DB->sql_put("UPDATE wD_Groups SET timeLastMessageSent = ".time().", messageCount = messageCount + 1 WHERE groupID = ".$groupID." AND userID = ".$User->id);
 			$new['id'] = Message::send( $new['sendtothread'],
 				$User->id,
 				$new['message'],

@@ -142,6 +142,24 @@ class User {
 	public $comment;
 
 	/**
+	 * The user's mobile country code, or null (no + included)
+	 * @var string|null
+	 */
+	public $mobileCountryCode;
+	
+	/**
+	 * The user's mobile number code, or null without country code
+	 * @var string|null
+	 */
+	public $mobileNumber;
+	
+	/**
+	 * Does this user have a validated mobile number
+	 * @var bool
+	 */
+	public $isMobileValidated = false;
+
+	/**
 	 * User-profile homepage
 	 * @var string
 	 */
@@ -401,7 +419,8 @@ class User {
 		$SQLVars = array();
 
 		$available = array('username'=>'', 'password'=>'', 'passwordcheck'=>'', 'email'=>'',
-					'hideEmail'=>'','showEmail'=>'', 'homepage'=>'','comment'=>'', 'darkMode'=>'');
+					'hideEmail'=>'','showEmail'=>'', 'homepage'=>'','comment'=>'', 'darkMode'=>'', 
+					'mobileCountryCode'=>'', 'mobileNumber'=>'', 'mobileValidationCode'=> '');
 
 		$userForm = array();
 
@@ -478,6 +497,21 @@ class User {
 				$SQLVars['darkMode'] = "No";
 		}
 
+		if(isset($userForm['mobileCountryCode']))
+		{
+			$SQLVars['mobileCountryCode'] = intval($userForm['mobileCountryCode']);
+		}
+
+		if(isset($userForm['mobileNumber']))
+		{
+			$SQLVars['mobileNumber'] = libSMS::filterNumber($userForm['mobileNumber']);
+		}
+
+		if(isset($userForm['mobileValidationCode']))
+		{
+			$SQLVars['mobileValidationCode'] = intval($userForm['mobileValidationCode']);
+		}
+
 		return $SQLVars;
 	}
 
@@ -537,7 +571,10 @@ class User {
 			u.emergencyPauseDate, 
 			u.yearlyPhaseCount,
 			u.tempBanReason,
-			u.optInFeatures
+			u.optInFeatures,
+			u.mobileCountryCode,
+			u.mobileNumber,
+			u.isMobileValidated
 			FROM wD_Users u
 			WHERE ".( $username ? "u.username='".$username."'" : "u.id=".$this->id ));
 
@@ -586,6 +623,7 @@ class User {
 		$this->notifications=new setUserNotifications($this->notifications);
 
 		$this->online = (bool) $this->online;
+		$this->isMobileValidated = (bool) $this->isMobileValidated;
 
 		$this->options = new UserOptions($this->id);
 	}
