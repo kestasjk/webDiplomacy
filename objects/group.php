@@ -285,7 +285,7 @@ class Group
 		
 		$groupDescription = $DB->msg_escape($groupDescription);
 
-		$DB->sql_put("UPDATE wD_Groups SET `description` = '" . $groupDescription . "' WHERE id = " . $this->id);
+		$DB->sql_put("UPDATE wD_Groups SET timeChanged = ".time().", `description` = '" . $groupDescription . "' WHERE id = " . $this->id);
 	}
 	public function userSetModNotes($userModifying, $modNotes)
 	{
@@ -305,7 +305,7 @@ class Group
 		
 		$groupActive = intval($groupActive) ? 1 : 0;
 
-		$DB->sql_put("UPDATE wD_Groups SET `isActive` = '" . $groupActive . "' WHERE id = " . $this->id);
+		$DB->sql_put("UPDATE wD_Groups SET timeChanged = ".time().", `isActive` = '" . $groupActive . "' WHERE id = " . $this->id);
 	}
 	private function canUserUpdateUserWeighting($userUpdating, $groupUserToUpdate)
 	{
@@ -328,7 +328,7 @@ class Group
 		
 		if( $this->canUserUpdateUserWeighting($userUpdating, $groupUserToUpdate) )
 		{
-			$DB->sql_put("UPDATE wD_GroupUsers SET userWeighting = " . $newWeighting . ", timeChanged = ".time()." WHERE userID = ". $groupUserToUpdate->userID." AND groupID = ".$groupUserToUpdate->groupID);
+			$DB->sql_put("UPDATE wD_GroupUsers SET timeChanged = ".time().", userWeighting = " . $newWeighting . ", timeChanged = ".time()." WHERE userID = ". $groupUserToUpdate->userID." AND groupID = ".$groupUserToUpdate->groupID);
 		}
 	}
 	public function userUpdateOwnerWeighting($userUpdating, $groupUserToUpdate, $newWeighting)
@@ -340,7 +340,7 @@ class Group
 		
 		if( $this->canUserUpdateOwnerWeighting($userUpdating, $groupUserToUpdate) )
 		{
-			$DB->sql_put("UPDATE wD_GroupUsers SET ownerWeighting = " . $newWeighting . ", timeChanged = ".time()." WHERE userID = ". $groupUserToUpdate->userID." AND groupID = ".$groupUserToUpdate->groupID);
+			$DB->sql_put("UPDATE wD_GroupUsers SET timeChanged = ".time().", ownerWeighting = " . $newWeighting . ", timeChanged = ".time()." WHERE userID = ". $groupUserToUpdate->userID." AND groupID = ".$groupUserToUpdate->groupID);
 		}
 	}
 	public function userUpdateModWeighting($userUpdating, $groupUserToUpdate, $newWeighting)
@@ -352,7 +352,7 @@ class Group
 		
 		if( $this->canUserUpdateModWeighting($userUpdating, $groupUserToUpdate) )
 		{
-			$DB->sql_put("UPDATE wD_GroupUsers SET modWeighting = " . $newWeighting . ", modUserID = ".$userUpdating->id.", timeChanged = ".time()." WHERE userID = ". $groupUserToUpdate->userID." AND groupID = ".$groupUserToUpdate->groupID);
+			$DB->sql_put("UPDATE wD_GroupUsers SET timeChanged = ".time().", modWeighting = " . $newWeighting . ", modUserID = ".$userUpdating->id.", timeChanged = ".time()." WHERE userID = ". $groupUserToUpdate->userID." AND groupID = ".$groupUserToUpdate->groupID);
 		}
 	}
 	public function canUserComment($userCommenting)
@@ -473,7 +473,8 @@ class Group
 			"LEFT JOIN wD_Members ucountry ON ucountry.gameID = gr.gameID AND ucountry.userID = g.userID ".
 			"LEFT JOIN wD_Members ocountry ON ocountry.gameID = gr.gameID AND ocountry.userID = gr.ownerUserID ".
 			"LEFT JOIN wD_Members viewercountry ON viewercountry.gameID = gr.gameID AND viewercountry.userID = ".$User->id." ".
-			"WHERE  (".$whereClause.")");
+			"WHERE (gr.gameID IS NULL OR g.id IS NOT NULL) " // Ensure no groups are shown for cancelled games
+			." AND (".$whereClause.")");
 			// And whatever else (e.g. show all the user's suspicions and relations if on the user's relation page,
 			// or show all the user's suspicions if another user is looking at their profile)
 		$groupsCache = array();
