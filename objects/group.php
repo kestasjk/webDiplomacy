@@ -473,7 +473,7 @@ class Group
 			"LEFT JOIN wD_Members ucountry ON ucountry.gameID = gr.gameID AND ucountry.userID = g.userID ".
 			"LEFT JOIN wD_Members ocountry ON ocountry.gameID = gr.gameID AND ocountry.userID = gr.ownerUserID ".
 			"LEFT JOIN wD_Members viewercountry ON viewercountry.gameID = gr.gameID AND viewercountry.userID = ".$User->id." ".
-			"WHERE (gr.gameID IS NULL OR g.id IS NOT NULL) " // Ensure no groups are shown for cancelled games
+			"WHERE (gr.gameID IS NULL OR game.id IS NOT NULL) " // Ensure no groups are shown for cancelled games
 			." AND (".$whereClause.")");
 			// And whatever else (e.g. show all the user's suspicions and relations if on the user's relation page,
 			// or show all the user's suspicions if another user is looking at their profile)
