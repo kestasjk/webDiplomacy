@@ -2,12 +2,23 @@ import Pusher from "pusher-js";
 import { postGameApiRequest } from "../utils/api";
 import ApiRoute from "../enums/ApiRoute";
 
-const { PUSHER_APP_KEY, PUSHER_HOST, PUSHER_PORT } = process.env;
+const {
+  REACT_APP_PUSHER_APP_KEY,
+  REACT_APP_PUSHER_HOST,
+  REACT_APP_PUSHER_PORT,
+} = process.env;
+
+console.log(
+  "PUSHER_APP_KEY, PUSHER_HOST, PUSHER_PORT",
+  REACT_APP_PUSHER_APP_KEY,
+  REACT_APP_PUSHER_HOST,
+  REACT_APP_PUSHER_PORT,
+);
 
 // Pusher.logToConsole = true;
-const client = new Pusher(PUSHER_APP_KEY || "app-key", {
-  wsHost: PUSHER_HOST || "127.0.0.1",
-  wsPort: Number(PUSHER_PORT) || 6001,
+const client = new Pusher(REACT_APP_PUSHER_APP_KEY || "app-key", {
+  wsHost: REACT_APP_PUSHER_HOST || "127.0.0.1",
+  wsPort: Number(REACT_APP_PUSHER_PORT) || 6001,
   forceTLS: false,
   // encrypted: true,
   disableStats: true,
