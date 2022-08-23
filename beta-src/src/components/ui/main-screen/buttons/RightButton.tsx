@@ -1,5 +1,8 @@
 import React, { FunctionComponent, ReactElement } from "react";
 
+import { ReactComponent as BtnActionButton } from "../../../../assets/svg/icons/actionButton.svg";
+import { ReactComponent as BtnPhaseButton } from "../../../../assets/svg/icons/phaseButton.svg";
+
 interface RightButtonProps {
   image: string;
   text: string;
@@ -16,11 +19,11 @@ const RightButton: FunctionComponent<RightButtonProps> = function ({
   return (
     <div className={className}>
       <button onClick={onClick} type="button" className="w-full">
-        <img
-          src={`beta/images/icons/${image}Button.svg`}
-          alt="action"
-          className="mx-auto"
-        />
+        {image === "action" ? (
+          <BtnActionButton className="mx-auto" />
+        ) : (
+          <BtnPhaseButton className="mx-auto" />
+        )}
       </button>
       <div className="bg-black uppercase text-white text-center py-0.5 w-full text-xs font-bold rounded-md">
         {text}
