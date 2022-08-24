@@ -69,25 +69,6 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
     }
   }, [overview.gameID]);
 
-  // TODO: temporary fix for the state change. When all the users voted, the game state should be updated in the api game/setvote function
-  const everybodyVoted = React.useCallback(async () => {
-    console.log("overview", overview);
-    const everyVoted = overview.members.every(
-      (member: any) => member.votes.length > 0,
-    );
-    if (everyVoted) {
-      await wait(4000);
-      dispatchFetchOverview();
-    }
-    console.log("everyVoted", everyVoted);
-  }, []);
-
-  useEffect(() => {
-    if (overview.gameOver !== "Drawn") {
-      everybodyVoted();
-    }
-  }, [overview.gameOver, overview.members, everybodyVoted]);
-
   const needsGameOverview = useAppSelector(
     ({ game }) => game.needsGameOverview,
   );
