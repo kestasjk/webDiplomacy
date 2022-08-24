@@ -54,7 +54,7 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
 
       overviewChannel.bind("overview", (content) => {
         dispatchFetchOverview();
-        console.log("overview", overview);
+        console.log("overview", overview, content);
       });
 
       overviewChannel.bind("pusher:subscription_succeeded", () => {
