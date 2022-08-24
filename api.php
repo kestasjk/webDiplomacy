@@ -397,6 +397,9 @@ class ToggleVote extends ApiEntry {
 		}
 		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."' WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
 		$DB->sql_put("COMMIT");
+
+		require_once('lib/pusher.php');
+		libPusher::trigger("private-game" . $gameID, 'overview', 'processed');
 		
 		return $newVotes;
 	}
