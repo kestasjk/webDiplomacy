@@ -39,8 +39,10 @@ require_once('lib/cache.php');
 require_once('lib/html.php');
 require_once('lib/time.php');
 require_once('lib/gamemessage.php');
+require_once('lib/variant.php');
 require_once('board/orders/jsonBoardData.php');
 require_once('variants/install.php');
+require_once('gamemaster/gamemaster.php');
 $DB = new Database();
 
 /**
@@ -462,6 +464,13 @@ class SetVote extends ApiEntry {
 		}
 		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."' WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
 		$DB->sql_put("COMMIT");
+
+		// libGameMaster::findAndApplyGameVotes();
+		require_once(l_r('gamemaster/game.php'));
+		$game = libVariant::$Variant->processGame($gameID);
+		if($game->needsProcess()) {
+			$game->process();
+		}
 
 		require_once('lib/pusher.php');
 		libPusher::trigger("private-game" . $gameID, 'overview', 'processed');
