@@ -52,7 +52,8 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
         `private-game${overview.gameID}`,
       );
 
-      overviewChannel.bind("overview", (content) => {
+      overviewChannel.bind("overview", async (content) => {
+        // if (content === "set-vote") await wait(5000);
         dispatchFetchOverview();
         console.log("overview", overview, content);
       });

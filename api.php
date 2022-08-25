@@ -465,6 +465,11 @@ class SetVote extends ApiEntry {
 		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."' WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
 		$DB->sql_put("COMMIT");
 
+		require_once(l_r('gamemaster/game.php'));
+		$game = $this->getAssociatedGame();
+		// TODO: this should apply votes only for the current game
+		libGameMaster::findAndApplyGameVotes();
+		
 		require_once('lib/pusher.php');
 		libPusher::trigger("private-game" . $gameID, 'overview', 'set-vote');
 		
