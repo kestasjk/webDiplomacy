@@ -14,8 +14,6 @@ import UpdateOrder from "../../interfaces/state/UpdateOrder";
 import { RootState } from "../../state/store";
 import { OrderStatus } from "../../interfaces/state/MemberData";
 import OrderSubmission from "../../interfaces/state/OrderSubmission";
-import { ReactComponent as CheckMarkIcon } from "../../assets/svg/checkmark.svg";
-import { ReactComponent as CheckMarkCircleIcon } from "../../assets/svg/checkmarkCircle.svg";
 
 enum OrderStatusButton {
   SAVE = "save",
@@ -63,7 +61,7 @@ const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
   let saveEnabled: boolean;
   let readyButtonText: string;
   let saveButtonText: string;
-  const saveText = settings.autoSave ? "Auto save on" : "Save";
+  const saveText = "Save";
 
   // orderStatus contains what the server thinks our order status is.
   if (savingOrdersInProgress === "readying") {
@@ -168,39 +166,28 @@ const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
     }
   }, [ordersMeta]);
 
+  const buttonClass = "w-14 h-14 rounded-full sm:w-fit sm:px-[30px]";
+
   return (
-    <div className="flex flex-col sm:flex-row justify-end space-y-2 space-x-0 sm:space-x-3 sm:space-y-0">
-      <div className="has-tooltip">
-        {settings.autoSave && (
-          <span className="tooltip rounded shadow-lg px-3 py-1 text-white -mt-28 sm:-mt-16 text-xs flex">
-            Toggle auto-save in the settings panel
-          </span>
-        )}
+    <div className="flex flex-col sm:flex-row justify-end space-y-2 space-x-0 sm:space-x-3 sm:space-y-0 w-fit">
+      {!settings.autoSave && (
         <WDButton
           color="primary"
-          className="w-14 h-14 rounded-md !p-0"
+          className={buttonClass}
           disabled={!saveEnabled}
           onClick={() => saveEnabled && clickButton(OrderStatusButton.SAVE)}
           doAnimateGlow={doAnimateGlow}
         >
           {saveButtonText}
         </WDButton>
-      </div>
-
+      )}
       <WDButton
         color="primary"
-        className="w-14 h-14 rounded-md !p-0 flex-col"
+        className={buttonClass}
         disabled={!readyEnabled}
         onClick={() => readyEnabled && clickButton(OrderStatusButton.READY)}
       >
-        {readyButtonText === "Unready" ? (
-          <CheckMarkCircleIcon
-            className={`text-white ${!readyEnabled ? "opacity-50" : ""}`}
-          />
-        ) : (
-          <CheckMarkIcon className="text-white" />
-        )}
-        <div className="mt-1">{readyButtonText}</div>
+        {readyButtonText}
       </WDButton>
     </div>
   );

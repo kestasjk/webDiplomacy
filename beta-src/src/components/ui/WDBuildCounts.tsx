@@ -36,7 +36,7 @@ const WDBuildCounts: React.FC = function (): React.ReactElement {
     <div
       className={`${
         (numRemainingBuilds > 0 || numRemainingDestroys > 0) &&
-        "display-block px-7 py-3 mt-1 bg-black rounded-xl"
+        "display-block px-7 py-3 mt-1 bg-black rounded-xl mb-3"
       }`}
     >
       <div className="pr-2 flex">

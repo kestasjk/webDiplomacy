@@ -1,4 +1,5 @@
 import React, { ReactElement, FunctionComponent } from "react";
+import { useWindowSize } from "react-use";
 import Position from "../../../enums/Position";
 import Season from "../../../enums/Season";
 import WDPositionContainer from "../WDPositionContainer";
@@ -39,6 +40,7 @@ const BottomRight: FunctionComponent<BottomRightProps> = function ({
   onClickOutside,
 }: BottomRightProps): ReactElement {
   const { phase } = useAppSelector(gameOverview);
+  const { width } = useWindowSize();
 
   // eslint-disable-next-line react/jsx-no-useless-fragment
   if (phase === "Pre-game") return <></>;
@@ -47,22 +49,15 @@ const BottomRight: FunctionComponent<BottomRightProps> = function ({
     <>
       <WDPositionContainer
         position={Position.BOTTOM_RIGHT}
-        bottom={phaseSelectorOpen ? 40 : 4}
+        bottom={width < 500 ? 14 : 4}
+        zIndex={30}
       >
-        <div>
-          <OpenModalButton
-            orders={orders}
-            units={units}
-            allCountries={allCountries}
-            userTableData={userTableData}
-          />
-          <WDPhaseButton
-            season={currentSeason}
-            text={`${currentSeason.charAt(0)}${currentYear}`}
-            onClick={onPhaseSelectorClick}
-            viewedPhase={viewedPhase}
-          />
-        </div>
+        <OpenModalButton
+          orders={orders}
+          units={units}
+          allCountries={allCountries}
+          userTableData={userTableData}
+        />
       </WDPositionContainer>
       {phaseSelectorOpen && (
         <WDPhaseSelector

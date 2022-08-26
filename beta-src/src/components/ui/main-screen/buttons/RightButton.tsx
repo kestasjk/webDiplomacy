@@ -1,6 +1,6 @@
 import React, { FunctionComponent, ReactElement } from "react";
 
-import { ReactComponent as BtnActionButton } from "../../../../assets/svg/icons/actionButton.svg";
+import { ReactComponent as BtnActionButton } from "../../../../assets/svg/icons/btnPanel.svg";
 import { ReactComponent as BtnPhaseButton } from "../../../../assets/svg/icons/phaseButton.svg";
 
 interface RightButtonProps {
@@ -25,9 +25,6 @@ const RightButton: FunctionComponent<RightButtonProps> = function ({
           <BtnPhaseButton className="mx-auto" />
         )}
       </button>
-      <div className="bg-black uppercase text-white text-center py-0.5 w-full text-xs font-bold rounded-md">
-        {text}
-      </div>
     </div>
   );
 };

@@ -118,7 +118,7 @@ const OpenModalButton: FunctionComponent<BottomRightProps> = function ({
       image="action"
       text={abbrMap[user?.member.country || ""]}
       onClick={toggleControlModal}
-      className="mb-6"
+      className=""
     />
   );
   // TODO: where to show this?:
@@ -187,7 +187,7 @@ const OpenModalButton: FunctionComponent<BottomRightProps> = function ({
 
   return (
     <div ref={modalRef}>
-      <div className="pt-3 pointer-events-auto" ref={popoverTrigger}>
+      <div className="pointer-events-auto h-[66px]" ref={popoverTrigger}>
         {numUnread + numUnknown ? (
           <Badge badgeContent={numUnknown ? " " : numUnread} color="error">
             {controlModalTrigger}

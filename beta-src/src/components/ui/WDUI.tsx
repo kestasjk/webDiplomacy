@@ -132,9 +132,9 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
         onClickOutside={() => setPhaseSelectorOpen(false)}
       />
       <BottomMiddle
-        phaseSelectorOpen={phaseSelectorOpen}
         viewedSeason={viewedSeason}
         viewedYear={viewedYear}
+        totalPhases={gameStatusData.phases.length}
       />
       <WDClassesJIT />
       <WDShortcuts

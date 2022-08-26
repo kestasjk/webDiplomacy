@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector } from "../../state/hooks";
 
 const alertStyle = {
   position: "absolute",
-  bottom: "10px",
+  top: "15px",
   left: "50%",
   transform: "translate(-50%, 0)",
   backgroundColor: "rgba(255,200,200,0.85)",

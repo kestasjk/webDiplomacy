@@ -4,13 +4,14 @@ import React, {
   useState,
   useEffect,
 } from "react";
-import wait from "waait";
+import { useWindowSize } from "react-use";
 import { useAppSelector, useAppDispatch } from "../../../state/hooks";
 import Position from "../../../enums/Position";
 
 import WDBuildCounts from "../WDBuildCounts";
 import Season from "../../../enums/Season";
 import WDPositionContainer from "../WDPositionContainer";
+import PhaseSelectorSimple from "../phase-selector/PhaseSelectorSimple";
 import { ReactComponent as BtnArrowIcon } from "../../../assets/svg/btnArrow.svg";
 
 import {
@@ -20,16 +21,20 @@ import {
 } from "../../../state/game/game-api-slice";
 
 interface BottomMiddleProps {
-  phaseSelectorOpen: boolean;
+  viewedSeason: Season;
+  viewedYear: number;
+  totalPhases: number;
+}
+
+interface NextPhaseProps {
   viewedSeason: Season;
   viewedYear: number;
 }
 
-const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
-  phaseSelectorOpen,
+const NextPhase = function ({
   viewedSeason,
   viewedYear,
-}: BottomMiddleProps): ReactElement {
+}: NextPhaseProps): ReactElement {
   const [nextPhase, setNextPhase] = useState<any>("");
   const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
   const gameStatusData = useAppSelector(gameStatus);
@@ -49,43 +54,58 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
   };
 
   useEffect(() => {
-    if (
-      viewedPhaseIdx < gameStatusData.phases.length - 1 &&
-      !phaseSelectorOpen
-    ) {
+    if (viewedPhaseIdx < gameStatusData.phases.length - 1) {
       setNextPhase(getNextPhase());
     }
-  }, [viewedPhaseIdx, gameStatusData.phases, phaseSelectorOpen]);
+  }, [viewedPhaseIdx, gameStatusData.phases]);
+
+  return (
+    <div className="flex display-block px-5 sm:px-10 py-5 mt-1 bg-black rounded-xl text-white items-center select-none w-fit mb-3 mx-auto">
+      <div>
+        <div className="text-xs">Next phase</div>
+        <div className="text-sm font-bold uppercase">{nextPhase}</div>
+      </div>
+      <div className="ml-4">
+        <button
+          type="button"
+          onClick={async () => {
+            dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1));
+          }}
+        >
+          <BtnArrowIcon
+            className="text-white stroke-black cursor-pointer rotate-90"
+            onClick={() =>
+              dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1))
+            }
+          />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
+  viewedSeason,
+  viewedYear,
+  totalPhases,
+}: BottomMiddleProps): ReactElement {
+  const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
+  const { width } = useWindowSize();
 
   return (
     <WDPositionContainer
       position={Position.BOTTOM_MIDDLE}
-      bottom={phaseSelectorOpen ? 40 : 4}
+      bottom={width < 500 ? 14 : 4}
     >
       <WDBuildCounts />
-      {viewedPhaseIdx < gameStatusData.phases.length - 1 && !phaseSelectorOpen && (
-        <div className="flex display-block px-5 sm:px-10 py-5 mt-1 bg-black rounded-xl text-white items-center select-none">
-          <div>
-            <div className="text-xs">Next phase</div>
-            <div className="text-sm font-bold uppercase">{nextPhase}</div>
-          </div>
-          <div className="ml-4">
-            <button
-              type="button"
-              onClick={async () => {
-                dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1));
-              }}
-            >
-              <BtnArrowIcon
-                className="text-white stroke-black cursor-pointer rotate-90"
-                onClick={() =>
-                  dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1))
-                }
-              />
-            </button>
-          </div>
-        </div>
+      {viewedPhaseIdx === totalPhases - 2 && (
+        <NextPhase viewedSeason={viewedSeason} viewedYear={viewedYear} />
       )}
+      <PhaseSelectorSimple
+        viewedSeason={viewedSeason}
+        viewedYear={viewedYear}
+        totalPhases={totalPhases}
+      />
     </WDPositionContainer>
   );
 };

@@ -35,9 +35,9 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
     <motion.div
       className="fixed"
       style={{
-        bottom: width < 500 ? 0 : 70,
+        bottom: width < 500 ? 0 : 20,
         left: width < 500 ? 0 : "unset",
-        right: width > 500 ? 100 : "unset",
+        right: width > 500 ? 120 : "unset",
         y: width < 500 ? 1500 : "unset",
         x: width > 500 ? 1500 : "unset",
       }}
@@ -60,7 +60,7 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
           >
             {children}
             {width > 500 && (
-              <div className="absolute bottom-20 right-[-12px] w-6 h-6 bg-white rotate-45" />
+              <div className="absolute bottom-7 right-[-12px] w-6 h-6 bg-white rotate-45" />
             )}
           </div>
         </div>

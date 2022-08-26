@@ -5,6 +5,7 @@ interface WDPositionContainerProps {
   children: React.ReactNode;
   position?: Position;
   bottom?: number;
+  zIndex?: number;
 }
 
 /**
@@ -14,6 +15,7 @@ const WDPositionContainer: React.FC<WDPositionContainerProps> = function ({
   children,
   position,
   bottom,
+  zIndex,
 }): React.ReactElement {
   const placement = useMemo(() => {
     switch (position) {
@@ -31,12 +33,13 @@ const WDPositionContainer: React.FC<WDPositionContainerProps> = function ({
     }
   }, [position, bottom]);
 
-  return <div className={`absolute ${placement} z-20 `}>{children}</div>;
+  return <div className={`absolute ${placement} z-${zIndex}`}>{children}</div>;
 };
 
 WDPositionContainer.defaultProps = {
   position: Position.TOP_LEFT,
   bottom: 2,
+  zIndex: 20,
 };
 
 export default WDPositionContainer;
