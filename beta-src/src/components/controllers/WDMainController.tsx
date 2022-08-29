@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useEffect } from "react";
-import wait from "waait";
 import client from "../../lib/pusher";
 import {
   fetchGameOverview,
@@ -53,7 +52,6 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
       );
 
       overviewChannel.bind("overview", async (content) => {
-        // if (content === "set-vote") await wait(5000);
         dispatchFetchOverview();
         console.log("overview", overview, content);
       });

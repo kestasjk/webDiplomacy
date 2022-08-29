@@ -13,6 +13,7 @@ import Season from "../../../enums/Season";
 import WDPositionContainer from "../WDPositionContainer";
 import PhaseSelectorSimple from "../phase-selector/PhaseSelectorSimple";
 import { ReactComponent as BtnArrowIcon } from "../../../assets/svg/btnArrow.svg";
+import useSettings from "../../../hooks/useSettings";
 
 import {
   gameViewedPhase,
@@ -39,6 +40,7 @@ const NextPhase = function ({
   const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
   const gameStatusData = useAppSelector(gameStatus);
   const dispatch = useAppDispatch();
+  const { setSetting } = useSettings();
 
   // eslint-disable-next-line consistent-return
   const getNextPhase = () => {
@@ -74,9 +76,10 @@ const NextPhase = function ({
         >
           <BtnArrowIcon
             className="text-white stroke-black cursor-pointer rotate-90"
-            onClick={() =>
-              dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1))
-            }
+            onClick={() => {
+              dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1));
+              setSetting("lastPhaseClicked", viewedPhaseIdx);
+            }}
           />
         </button>
       </div>
@@ -91,6 +94,7 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
 }: BottomMiddleProps): ReactElement {
   const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
   const { width } = useWindowSize();
+  const { settings } = useSettings();
 
   return (
     <WDPositionContainer
@@ -98,14 +102,16 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
       bottom={width < 500 ? 14 : 4}
     >
       <WDBuildCounts />
-      {viewedPhaseIdx === totalPhases - 2 && (
+      {viewedPhaseIdx === totalPhases - 2 &&
+      viewedPhaseIdx > settings.lastPhaseClicked ? (
         <NextPhase viewedSeason={viewedSeason} viewedYear={viewedYear} />
+      ) : (
+        <PhaseSelectorSimple
+          viewedSeason={viewedSeason}
+          viewedYear={viewedYear}
+          totalPhases={totalPhases}
+        />
       )}
-      <PhaseSelectorSimple
-        viewedSeason={viewedSeason}
-        viewedYear={viewedYear}
-        totalPhases={totalPhases}
-      />
     </WDPositionContainer>
   );
 };
