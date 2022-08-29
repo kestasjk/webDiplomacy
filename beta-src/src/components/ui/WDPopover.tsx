@@ -33,7 +33,7 @@ const WDPopover: React.FC<WDPopoverProps> = function ({
 
   return (
     <motion.div
-      className="fixed"
+      className="fixed z-30"
       style={{
         bottom: width < 500 ? 0 : 20,
         left: width < 500 ? 0 : "unset",
