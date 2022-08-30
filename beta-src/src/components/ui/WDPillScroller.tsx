@@ -80,7 +80,7 @@ const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
     }
 
     if (status.status !== "Left" && phases.length > 1 && !isCurrent) {
-      const idx = latestPhaseViewed;
+      const idx = viewedPhaseIdx;
       const psy = getHistoricalPhaseSeasonYear(status, idx);
       return (
         <>
