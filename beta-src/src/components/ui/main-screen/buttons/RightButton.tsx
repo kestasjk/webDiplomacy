@@ -18,7 +18,7 @@ const RightButton: FunctionComponent<RightButtonProps> = function ({
 }): ReactElement {
   return (
     <div className={className}>
-      <button onClick={onClick} type="button" className="w-full">
+      <button onClick={onClick} type="button" className="w-full outline-0">
         {image === "action" ? (
           <BtnActionButton className="mx-auto" />
         ) : (

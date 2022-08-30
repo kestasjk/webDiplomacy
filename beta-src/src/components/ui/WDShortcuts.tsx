@@ -1,7 +1,12 @@
 import React, { useEffect } from "react";
 import useKeyboardJs from "react-use/lib/useKeyboardJs";
-import { useAppDispatch } from "../../state/hooks";
-import { gameApiSliceActions } from "../../state/game/game-api-slice";
+import useSettings from "../../hooks/useSettings";
+import { useAppSelector, useAppDispatch } from "../../state/hooks";
+import {
+  gameApiSliceActions,
+  gameViewedPhase,
+  gameStatus,
+} from "../../state/game/game-api-slice";
 
 interface WDShortcutsProps {
   onPhaseSelectorShortcut: () => void;
@@ -14,6 +19,9 @@ const WDShortcuts: React.FC<WDShortcutsProps> = function ({
   // element reference once it's accepted after UX validation.
   // Do not access the dom like this.
   const inputMessage = document.getElementById("user-msg");
+  const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
+  const { settings, setSetting } = useSettings();
+  const gameStatusData = useAppSelector(gameStatus);
 
   const dispatch = useAppDispatch();
   const [left] = useKeyboardJs("shift + left");
@@ -22,10 +30,18 @@ const WDShortcuts: React.FC<WDShortcutsProps> = function ({
   const [down] = useKeyboardJs("shift + down");
   const [phases] = useKeyboardJs("shift + ctrl + p");
 
+  // gameStatusData.phases.length;
+
   useEffect(() => {
     const inputMessageActive = inputMessage === document.activeElement;
     if (!inputMessageActive) {
       if (left) {
+        if (
+          viewedPhaseIdx === gameStatusData.phases.length - 2 &&
+          viewedPhaseIdx > settings.lastPhaseClicked
+        ) {
+          setSetting("lastPhaseClicked", viewedPhaseIdx);
+        }
         dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(-1));
       }
       if (right) {
