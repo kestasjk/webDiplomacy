@@ -36,16 +36,18 @@ const WDShortcuts: React.FC<WDShortcutsProps> = function ({
     const inputMessageActive = inputMessage === document.activeElement;
     if (!inputMessageActive) {
       if (left) {
+        dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(-1));
+      }
+      if (right) {
+        dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1));
+      }
+      if (left || right) {
         if (
           viewedPhaseIdx === gameStatusData.phases.length - 2 &&
           viewedPhaseIdx > settings.lastPhaseClicked
         ) {
           setSetting("lastPhaseClicked", viewedPhaseIdx);
         }
-        dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(-1));
-      }
-      if (right) {
-        dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1));
       }
       if (up) {
         dispatch(gameApiSliceActions.setViewedPhaseToLatestPhaseViewed());
