@@ -43,7 +43,7 @@ const tabGroup: ModalViews[] = [
   ModalViews.ORDERS,
   ModalViews.GAMES,
   ModalViews.HELP,
-  ModalViews.SETTINGS,
+  // ModalViews.SETTINGS, {/* hide settings for now, we'll need it later */}
 ];
 
 const WDFullModal: React.FC<WDFullModalProps> = function ({

@@ -22,28 +22,30 @@ const PhaseSelectorSimple: FunctionComponent<PhaseSelectorSimpleProps> =
   }: PhaseSelectorSimpleProps): ReactElement {
     const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
     const dispatch = useAppDispatch();
+    const notAllowed = "text-gray-600 cursor-not-allowed";
     const rightArrowsClassName =
-      viewedPhaseIdx < totalPhases - 1
-        ? "text-white"
-        : "text-gray-600 cursor-not-allowed";
+      viewedPhaseIdx < totalPhases - 1 ? "text-white" : notAllowed;
+    const leftArrowsClassName = `scale-x-[-1] ${
+      viewedPhaseIdx === 0 ? notAllowed : "text-white"
+    }`;
 
     return (
       <div className="bg-black flex text-white items-center h-14 px-4 sm:px-8 rounded-full space-x-3 sm:space-x-8 z-20 select-none">
         <button
           type="button"
-          className="h-full"
+          className="h-full outline-0"
           onClick={() => dispatch(gameApiSliceActions.setViewedPhase(0))}
         >
-          <StepTwoIcon className="scale-x-[-1]" />
+          <StepTwoIcon className={leftArrowsClassName} />
         </button>
         <button
           type="button"
-          className="h-full"
+          className="h-full outline-0"
           onClick={() =>
             dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(-1))
           }
         >
-          <StepOneIcon className="scale-x-[-1] " />
+          <StepOneIcon className={leftArrowsClassName} />
         </button>
         <div className="text-center uppercase text-xs font-medium">
           <div>{viewedSeason}</div>
@@ -51,7 +53,7 @@ const PhaseSelectorSimple: FunctionComponent<PhaseSelectorSimpleProps> =
         </div>
         <button
           type="button"
-          className="h-full"
+          className="h-full outline-0"
           onClick={() =>
             dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1))
           }
@@ -60,7 +62,7 @@ const PhaseSelectorSimple: FunctionComponent<PhaseSelectorSimpleProps> =
         </button>
         <button
           type="button"
-          className="h-full"
+          className="h-full outline-0"
           onClick={() =>
             dispatch(gameApiSliceActions.setViewedPhaseToLatestPhaseViewed())
           }
