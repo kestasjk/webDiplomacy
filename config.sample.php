@@ -38,7 +38,7 @@ class Config
 	 *
 	 * @var string
 	 */
-	public static $database_socket='mariadb';
+	public static $database_socket='webdiplomacy-db';
 
 	/**
 	 * The user who will perform all database actions. You should
@@ -120,6 +120,20 @@ class Config
 	public static $modEMail='moderators@yourdiplomacyserver.com';
 
 	/**
+	 * Memcached hostname
+	 *
+	 * @var string
+	 */
+	public static $memcachedHost='webdiplomacy-memcached';
+
+	/**
+	 * Memcached port number
+	 *
+	 * @var int
+	 */
+	public static $memcachedPort=11211;
+
+	/**
 	 * An array of variants available on the server (for future releases, not yet enabled)
 	 * @var array
 	 */
@@ -139,18 +153,6 @@ class Config
 	 * @var string|null
 	 */
 	public static $playNowDomain = null;
-
-	/**
-	 * The memcached server
-	 * @var string
-	 */
-	public static $memcachedHost='memcached';
-
-	/**
-	 * The memcached port
-	 * @var int
-	 */
-	public static $memcachedPort='11211';
 	
 	/**
 	 * An array of categories to use when calculating GhostRatings

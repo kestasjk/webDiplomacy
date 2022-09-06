@@ -4,10 +4,7 @@ import WDCountryTable from "./WDCountryTable";
 import WDVoteButtons from "./WDVoteButtons";
 import { CountryTableData } from "../../interfaces/CountryTableData";
 import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
-import {
-  gameApiSliceActions,
-  setVoteStatus,
-} from "../../state/game/game-api-slice";
+import { setVoteStatus } from "../../state/game/game-api-slice";
 import { useAppSelector, useAppDispatch } from "../../state/hooks";
 
 interface WDInfoPanelProps {

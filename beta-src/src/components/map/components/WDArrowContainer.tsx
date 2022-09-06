@@ -1,13 +1,6 @@
 /* eslint-disable no-bitwise */
 import * as React from "react";
-import countryMap from "../../../data/map/variants/classic/CountryMap";
 import { IOrderDataHistorical } from "../../../models/Interfaces";
-import {
-  gameApiSliceActions,
-  gameOverview,
-  gameTerritoriesMeta,
-} from "../../../state/game/game-api-slice";
-import { useAppDispatch, useAppSelector } from "../../../state/hooks";
 import GameStateMaps from "../../../state/interfaces/GameStateMaps";
 import ArrowType from "../../../enums/ArrowType";
 import ArrowColor from "../../../enums/ArrowColor";

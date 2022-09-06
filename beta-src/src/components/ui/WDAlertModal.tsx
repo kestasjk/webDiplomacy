@@ -1,22 +1,9 @@
-import { Box } from "@mui/material";
 import * as React from "react";
 import {
   gameAlert,
   gameApiSliceActions,
 } from "../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../state/hooks";
-
-const alertStyle = {
-  position: "absolute",
-  bottom: "10px",
-  left: "50%",
-  transform: "translate(-50%, 0)",
-  backgroundColor: "rgba(255,200,200,0.85)",
-  p: "20px",
-  borderRadius: "10px",
-  fontSize: 18,
-  fontWeight: 700,
-};
 
 const WDAlertModal: React.FC = function () {
   const alert = useAppSelector(gameAlert);
@@ -36,13 +23,15 @@ const WDAlertModal: React.FC = function () {
   }, [alert]);
 
   return (
-    <Box
-      className={alert.visible ? "fade-in" : "fade-out"}
-      sx={alertStyle}
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+    <div
+      className={`absolute top-1/2 md:top-2 -translate-y-1/2 md:-translate-y-0 left-[50%] -translate-x-1/2 p-3 bg-red-300 rounded-lg bg-opacity-80 text-lg font-semibold text-center z-30 ${
+        alert.visible ? "fade-in" : "fade-out"
+      }`}
       onClick={hideAlert}
     >
       {alert.message}
-    </Box>
+    </div>
   );
 };
 

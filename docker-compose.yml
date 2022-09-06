@@ -19,8 +19,9 @@ version: "3.1"
 services:
   memcached:
     image: "memcached:alpine"
+    container_name: webdiplomacy-memcached
     ports:
-      - "11211:11211"
+      - "11211"
 
   mailhog:
     image: "mailhog/mailhog:latest"
@@ -29,6 +30,7 @@ services:
 
   mariadb:
     image: "mariadb:10.6"
+    container_name: "webdiplomacy-db"
     restart: always
     working_dir: /application
     volumes:
@@ -61,6 +63,8 @@ services:
       - "./phpdocker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf"
     ports:
       - "${WEBDIP_PORT:-43000}:80"
+    depends_on:
+      - "php-fpm"
   beta:
     image: "node:16.15.1-alpine3.14"
     container_name: webdiplomacy-beta
@@ -80,6 +84,8 @@ services:
       - "./:/application"
       - "./phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini"
     command: /bin/sh -c "install/gamemaster-entrypoint.sh"
+    depends_on:
+      - "mariadb"
     #environment:
     #    PHP_IDE_CONFIG: "serverName=Docker"
     #    XDEBUG_MODE: debug

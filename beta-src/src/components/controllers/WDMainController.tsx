@@ -47,20 +47,23 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   useEffect(() => {
     dispatchFetchOverview();
     if (overview.gameID > 0) {
-      const channel = client.subscribe(`private-game${overview.gameID}`);
+      const overviewChannel = client.subscribe(
+        `private-game${overview.gameID}`,
+      );
 
-      channel.bind("overview", (content) => {
+      overviewChannel.bind("overview", async (content) => {
         dispatchFetchOverview();
+        console.log("overview", overview, content);
       });
 
-      channel.bind("pusher:subscription_succeeded", () => {
+      overviewChannel.bind("pusher:subscription_succeeded", () => {
         // eslint-disable-next-line no-console
-        console.info("overview subscription succeeded");
+        console.info("overview channel subscription succeeded");
       });
 
-      channel.bind("pusher:subscription_error", (error) => {
+      overviewChannel.bind("pusher:subscription_error", (error) => {
         // eslint-disable-next-line no-console
-        console.error("overview subscription error", error);
+        console.error("overview channel subscription error", error);
       });
     }
   }, [overview.gameID]);
@@ -95,10 +98,7 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   if (!consistentPhase) {
     return <div>Loading...</div>;
   }
-  const showOverlay =
-    noPhase ||
-    status.status === "Left" ||
-    (displayedPhaseKey && overviewKey !== displayedPhaseKey);
+  const showOverlay = noPhase || status.status === "Left";
   if (displayedPhaseKey === null && overview.phase) {
     setDisplayedPhaseKey(overviewKey);
   }
