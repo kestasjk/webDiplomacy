@@ -102,16 +102,16 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
       bottom={width < 500 ? 14 : 4}
     >
       <WDBuildCounts />
-      {viewedPhaseIdx === totalPhases - 2 &&
+      {/* {viewedPhaseIdx === totalPhases - 2 &&
       viewedPhaseIdx > settings.lastPhaseClicked ? (
         <NextPhase viewedSeason={viewedSeason} viewedYear={viewedYear} />
-      ) : (
-        <PhaseSelectorSimple
-          viewedSeason={viewedSeason}
-          viewedYear={viewedYear}
-          totalPhases={totalPhases}
-        />
-      )}
+      ) : ( */}
+      <PhaseSelectorSimple
+        viewedSeason={viewedSeason}
+        viewedYear={viewedYear}
+        totalPhases={totalPhases}
+      />
+      {/* )} */}
     </WDPositionContainer>
   );
 };
