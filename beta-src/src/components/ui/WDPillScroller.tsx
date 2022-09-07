@@ -65,7 +65,7 @@ const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
   };
 
   const buildMessage = () => {
-    const prefix = `${viewedSeason},${viewedYear}${
+    const prefix = `${viewedSeason} ${viewedYear}${
       formattedPhase ? ` ${formattedPhase}` : ""
     }. ${country}`;
     const icon =
@@ -85,7 +85,7 @@ const WDPillScroller: React.FC<WDPillScrollerProps> = function ({
       return (
         <>
           {getIcon(psy.season)}
-          {psy.season} {psy.year} complete
+          {psy.season} {psy.year} {formatPhaseForDisplay(psy.phase)} complete
         </>
       );
     }

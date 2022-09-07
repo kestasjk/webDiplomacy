@@ -134,6 +134,7 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
       <BottomMiddle
         viewedSeason={viewedSeason}
         viewedYear={viewedYear}
+        viewedPhase={viewedPhase}
         totalPhases={gameStatusData.phases.length}
       />
       <WDClassesJIT />
