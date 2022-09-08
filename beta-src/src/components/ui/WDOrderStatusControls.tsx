@@ -14,6 +14,7 @@ import UpdateOrder from "../../interfaces/state/UpdateOrder";
 import { RootState } from "../../state/store";
 import { OrderStatus } from "../../interfaces/state/MemberData";
 import OrderSubmission from "../../interfaces/state/OrderSubmission";
+import useSettings from "../../hooks/useSettings";
 
 enum OrderStatusButton {
   SAVE = "save",
@@ -27,11 +28,7 @@ interface WDOrderStatsControlsProps {
 const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
   orderStatus,
 }): React.ReactElement {
-  // This is here because I have the feeling that there is not a consensus about the auto-save feature yet.
-  // We might have to have this in the back-end
-  const [settings] = useLocalStorageState("settings", {
-    defaultValue: { autoSave: true },
-  });
+  const { settings } = useSettings();
 
   const { data } = useAppSelector(gameData);
   const ordersMeta = useAppSelector(gameOrdersMeta);

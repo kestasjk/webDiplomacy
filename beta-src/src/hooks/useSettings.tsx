@@ -3,19 +3,22 @@ import React, { useCallback } from "react";
 import useLocalStorageState from "use-local-storage-state";
 
 interface Settings {
-  lastPhaseClicked: number;
+  autoSave: boolean;
 }
 
 const useSettings = () => {
-  const [settings, setSettings] = useLocalStorageState<Settings>("settings-2", {
-    defaultValue: { lastPhaseClicked: 0 },
+  const [settings, setSettings] = useLocalStorageState<Settings>("settings", {
+    defaultValue: { autoSave: true },
   });
 
-  const setSetting = useCallback((key: string, value: string | number) => {
-    const newSettings = { ...settings };
-    newSettings[key] = value;
-    setSettings(newSettings);
-  }, []);
+  const setSetting = useCallback(
+    (key: string, value: string | number | boolean) => {
+      const newSettings = { ...settings };
+      newSettings[key] = value;
+      setSettings(newSettings);
+    },
+    [],
+  );
 
   return {
     settings,

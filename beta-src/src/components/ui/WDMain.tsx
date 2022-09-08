@@ -19,7 +19,7 @@ import {
   Unit,
 } from "../../utils/map/getUnits";
 import { StandoffInfo } from "../map/components/WDArrowContainer";
-import WDGameFinishedOverlay from "./WDGameFinishedOverlay";
+import useSettings from "../../hooks/useSettings";
 
 const WDMapController = React.lazy(
   () => import("../controllers/WDMapController"),
@@ -40,6 +40,7 @@ const WDMain: React.FC = function (): React.ReactElement {
   const data = useAppSelector(gameData);
   const maps = useAppSelector(gameMaps);
   const legalOrders = useAppSelector(gameLegalOrders);
+  const { settings } = useSettings();
 
   const updateForPhase = () => {
     // Only do live viewing if game is not over and not spectating
@@ -258,6 +259,7 @@ const WDMain: React.FC = function (): React.ReactElement {
     };
   };
 
+  // Automatically enter implied moves for CONVOY
   useEffect(() => {
     Object.entries(ordersMeta).forEach(([_, orderMeta]) => {
       // Let's use as an example ION C APU - TUN
@@ -317,7 +319,7 @@ const WDMain: React.FC = function (): React.ReactElement {
                   dispatch(
                     gameApiSliceActions.updateOrdersMeta({
                       [availableOrderID]: {
-                        saved: false,
+                        saved: settings.autoSave,
                         update,
                       },
                     }),
