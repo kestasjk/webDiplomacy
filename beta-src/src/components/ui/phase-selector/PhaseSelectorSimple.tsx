@@ -11,6 +11,7 @@ import {
 interface PhaseSelectorSimpleProps {
   viewedSeason: string;
   viewedYear: number;
+  viewedPhase: string;
   totalPhases: number;
 }
 
@@ -18,6 +19,7 @@ const PhaseSelectorSimple: FunctionComponent<PhaseSelectorSimpleProps> =
   function ({
     viewedSeason,
     viewedYear,
+    viewedPhase,
     totalPhases,
   }: PhaseSelectorSimpleProps): ReactElement {
     const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
@@ -49,7 +51,10 @@ const PhaseSelectorSimple: FunctionComponent<PhaseSelectorSimpleProps> =
         </button>
         <div className="text-center uppercase text-xs font-medium">
           <div>{viewedSeason}</div>
-          <div>{viewedYear}</div>
+          <div>
+            {viewedYear}
+            {viewedPhase === "Retreats" ? " (R)" : ""}
+          </div>
         </div>
         <button
           type="button"
