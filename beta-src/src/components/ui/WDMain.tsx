@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import WDMainController from "../controllers/WDMainController";
 import WDUI from "./WDUI";
 import {
@@ -8,8 +8,10 @@ import {
   gameData,
   gameMaps,
   gameViewedPhase,
+  gameLegalOrders,
+  gameApiSliceActions,
 } from "../../state/game/game-api-slice";
-import { useAppSelector } from "../../state/hooks";
+import { useAppSelector, useAppDispatch } from "../../state/hooks";
 import { IOrderData, IOrderDataHistorical } from "../../models/Interfaces";
 import {
   getUnitsHistorical,
@@ -25,6 +27,7 @@ const WDMapController = React.lazy(
 
 const WDMain: React.FC = function (): React.ReactElement {
   // console.log("WDMain rerendered");
+  const dispatch = useAppDispatch();
 
   // FIXME: it's not ideal for us to be fetching the whole world from store here
   // This is hard to untangle though because the representation of the data in the
@@ -36,6 +39,8 @@ const WDMain: React.FC = function (): React.ReactElement {
   const status = useAppSelector(gameStatus);
   const data = useAppSelector(gameData);
   const maps = useAppSelector(gameMaps);
+  const legalOrders = useAppSelector(gameLegalOrders);
+  const gameDataResponse = useAppSelector(gameData);
 
   const updateForPhase = () => {
     // Only do live viewing if game is not over and not spectating
@@ -253,6 +258,78 @@ const WDMain: React.FC = function (): React.ReactElement {
       isLivePhase: false,
     };
   };
+
+  useEffect(() => {
+    Object.entries(ordersMeta).forEach(([_, orderMeta]) => {
+      // Let's use as an example ION C APU - TUN
+      // The board should automatically also enters APU - TUN (Via Convoy)
+      // More info in CHR-68
+      const orderMetaUpdate = orderMeta.update;
+
+      if (
+        orderMetaUpdate?.type === "Convoy" &&
+        orderMetaUpdate?.fromTerrID &&
+        orderMetaUpdate.toTerrID
+      ) {
+        const fromTerr = maps.terrIDToProvince[orderMetaUpdate.fromTerrID];
+        const toTerr = maps.terrIDToProvince[orderMetaUpdate.toTerrID];
+
+        const legalConvoysByUnitIDs = Object.keys(
+          legalOrders.hasAnyLegalConvoysByUnitID,
+        );
+        if (legalConvoysByUnitIDs.length === 1) {
+          const availableViaConvoy = legalConvoysByUnitIDs[0];
+          // Verify if the order APU -> TUN is possible
+          const legalOrderViaConvoy =
+            legalOrders.legalConvoysByUnitID[availableViaConvoy];
+          if (legalOrderViaConvoy[fromTerr][toTerr]) {
+            // Get the unit ID that is located at the source territory (APU)
+            const asArray = Object.entries(gameDataResponse.data.units);
+            const findUnit = asArray.find(
+              (elem) =>
+                elem["1"].countryID === String(status.countryID) &&
+                elem["1"].terrID === orderMetaUpdate.fromTerrID &&
+                elem["1"].type === "Army",
+            );
+            if (findUnit && gameDataResponse.data.currentOrders) {
+              const unitID = findUnit["1"].id;
+              // Get the orderID related to the unit that needs to do Via Convoy, so e can update it.
+              const findOrder = gameDataResponse.data.currentOrders.find(
+                (currentOrder) => currentOrder.unitID === unitID,
+              );
+              const availableOrderID = findOrder?.id || "";
+
+              const update = {
+                convoyPath: orderMetaUpdate.convoyPath,
+                fromTerrID: undefined,
+                orderID: availableOrderID,
+                toTerrID: orderMetaUpdate.toTerrID,
+                type: "Move",
+                unitID,
+                viaConvoy: "Yes",
+                inProgress: true,
+              };
+
+              if (
+                !ordersMeta[availableOrderID].update?.viaConvoy &&
+                update.convoyPath
+              ) {
+                dispatch(
+                  gameApiSliceActions.updateOrdersMeta({
+                    [availableOrderID]: {
+                      saved: false,
+                      update,
+                    },
+                  }),
+                );
+              }
+            }
+          }
+        }
+      }
+    });
+  }, [ordersMeta]);
+
   const { phase, units, orders, centersByProvince, isLivePhase } =
     updateForPhase();
   const { territories } = data.data;
