@@ -154,7 +154,7 @@ abstract class WDVariant {
 	public function __call($name, $args) {
 
 		$name = l_vc($name);
-		
+
 		if( isset($this->variantClasses[$name]) )
 			$classname=$this->variantClasses[$name].'Variant_'.$name;
 		else
@@ -388,7 +388,7 @@ abstract class WDVariant {
  * [Name]Variant -> variants/[Name]/variant.php
  * [Name]Variant_[Class] -> variants/[Name]/classes/[Class].php
  */
-function __autoload($classname) {
+function variant_autoloader($classname) {
 
 	if( !( $pos=strpos($classname,'Variant') ) || $pos==0 ) return;
 
@@ -399,5 +399,7 @@ function __autoload($classname) {
 	else
 		require_once(l_r('variants/'.$variantName.'/classes/'.substr($classname, ($pos+8)).'.php'));
 }
+
+spl_autoload_register('variant_autoloader');
 
 ?>

@@ -57,7 +57,7 @@ const WDFlyoutContainer: FC<WDFlyoutContainerProps> = function ({
   useKeyPressEvent("a", () => clickHandler("Move"));
   useKeyPressEvent("v", () => canVia && clickHandler("Move", "Yes"));
   useKeyPressEvent("s", () => clickHandler("Support"));
-  useKeyPressEvent("c", () => clickHandler("Convoy"));
+  useKeyPressEvent("c", () => canConvoy && clickHandler("Convoy"));
 
   if (!order.inProgress || order.type || !order.unitID) {
     return <div />;

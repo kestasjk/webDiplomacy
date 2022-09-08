@@ -19,53 +19,39 @@ import {
   gameViewedPhase,
   gameStatus,
   gameApiSliceActions,
+  gameOverview,
 } from "../../../state/game/game-api-slice";
+import { getGamePhaseSeasonYear } from "../../../utils/state/getPhaseSeasonYear";
+import { formatPhaseForDisplay } from "../../../utils/formatPhaseForDisplay";
 
 interface BottomMiddleProps {
   viewedSeason: Season;
   viewedYear: number;
+  viewedPhase: string;
   totalPhases: number;
 }
 
-interface NextPhaseProps {
-  viewedSeason: Season;
-  viewedYear: number;
-}
-
-const NextPhase = function ({
-  viewedSeason,
-  viewedYear,
-}: NextPhaseProps): ReactElement {
-  const [nextPhase, setNextPhase] = useState<any>("");
+const NextPhase = function (): ReactElement {
   const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
+  const { phase, season, year } = useAppSelector(gameOverview);
   const gameStatusData = useAppSelector(gameStatus);
   const dispatch = useAppDispatch();
   const { setSetting } = useSettings();
 
-  // eslint-disable-next-line consistent-return
-  const getNextPhase = () => {
-    if (viewedSeason === Season.SPRING) {
-      return `Autumn ${viewedYear}`;
-    }
-    if (viewedSeason === Season.AUTUMN) {
-      return `Winter ${viewedYear}`;
-    }
-    if (viewedSeason === Season.WINTER) {
-      return `Spring ${viewedYear + 1}`;
-    }
-  };
-
-  useEffect(() => {
-    if (viewedPhaseIdx < gameStatusData.phases.length - 1) {
-      setNextPhase(getNextPhase());
-    }
-  }, [viewedPhaseIdx, gameStatusData.phases]);
+  const {
+    phase: gamePhase,
+    season: gameSeason,
+    year: gameYear,
+  } = getGamePhaseSeasonYear(phase, season, year);
+  const formattedPhase = formatPhaseForDisplay(gamePhase);
 
   return (
     <div className="flex display-block px-5 sm:px-10 py-5 mt-1 bg-black rounded-xl text-white items-center select-none w-fit mb-3 mx-auto">
       <div>
-        <div className="text-xs">Next phase</div>
-        <div className="text-sm font-bold uppercase">{nextPhase}</div>
+        <div className="text-xs">New phase</div>
+        <div className="text-sm font-bold uppercase">
+          {gameSeason} {gameYear} {formattedPhase}
+        </div>
       </div>
       <div className="ml-4">
         <button
@@ -78,7 +64,6 @@ const NextPhase = function ({
             className="text-white stroke-black cursor-pointer rotate-90"
             onClick={() => {
               dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1));
-              setSetting("lastPhaseClicked", viewedPhaseIdx);
             }}
           />
         </button>
@@ -90,11 +75,24 @@ const NextPhase = function ({
 const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
   viewedSeason,
   viewedYear,
+  viewedPhase,
   totalPhases,
 }: BottomMiddleProps): ReactElement {
   const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
   const { width } = useWindowSize();
-  const { settings } = useSettings();
+  const [isNewPhase, setIsNewPhase] = useState<boolean>(true);
+  const [lastViewedPhase, setLastViewedPhase] =
+    useState<number>(viewedPhaseIdx);
+
+  useEffect(() => {
+    if (
+      viewedPhaseIdx !== lastViewedPhase ||
+      viewedPhaseIdx === totalPhases - 1
+    ) {
+      setIsNewPhase(false);
+    }
+    setLastViewedPhase(viewedPhaseIdx);
+  }, [viewedPhaseIdx]);
 
   return (
     <WDPositionContainer
@@ -102,13 +100,13 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
       bottom={width < 500 ? 14 : 4}
     >
       <WDBuildCounts />
-      {viewedPhaseIdx === totalPhases - 2 &&
-      viewedPhaseIdx > settings.lastPhaseClicked ? (
-        <NextPhase viewedSeason={viewedSeason} viewedYear={viewedYear} />
+      {isNewPhase ? (
+        <NextPhase />
       ) : (
         <PhaseSelectorSimple
           viewedSeason={viewedSeason}
           viewedYear={viewedYear}
+          viewedPhase={viewedPhase}
           totalPhases={totalPhases}
         />
       )}
