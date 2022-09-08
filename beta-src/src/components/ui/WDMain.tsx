@@ -40,7 +40,6 @@ const WDMain: React.FC = function (): React.ReactElement {
   const data = useAppSelector(gameData);
   const maps = useAppSelector(gameMaps);
   const legalOrders = useAppSelector(gameLegalOrders);
-  const gameDataResponse = useAppSelector(gameData);
 
   const updateForPhase = () => {
     // Only do live viewing if game is not over and not spectating
@@ -271,8 +270,8 @@ const WDMain: React.FC = function (): React.ReactElement {
         orderMetaUpdate?.fromTerrID &&
         orderMetaUpdate.toTerrID
       ) {
-        const fromTerr = maps.terrIDToProvince[orderMetaUpdate.fromTerrID];
-        const toTerr = maps.terrIDToProvince[orderMetaUpdate.toTerrID];
+        const fromProvince = maps.terrIDToProvince[orderMetaUpdate.fromTerrID];
+        const toProvince = maps.terrIDToProvince[orderMetaUpdate.toTerrID];
 
         const legalConvoysByUnitIDs = Object.keys(
           legalOrders.hasAnyLegalConvoysByUnitID,
@@ -282,46 +281,48 @@ const WDMain: React.FC = function (): React.ReactElement {
           // Verify if the order APU -> TUN is possible
           const legalOrderViaConvoy =
             legalOrders.legalConvoysByUnitID[availableViaConvoy];
-          if (legalOrderViaConvoy[fromTerr][toTerr]) {
+          if (legalOrderViaConvoy[fromProvince][toProvince]) {
             // Get the unit ID that is located at the source territory (APU)
-            const asArray = Object.entries(gameDataResponse.data.units);
+            const asArray = Object.entries(data.data.units);
             const findUnit = asArray.find(
               (elem) =>
                 elem["1"].countryID === String(status.countryID) &&
                 elem["1"].terrID === orderMetaUpdate.fromTerrID &&
                 elem["1"].type === "Army",
             );
-            if (findUnit && gameDataResponse.data.currentOrders) {
+            if (findUnit && data.data.currentOrders) {
               const unitID = findUnit["1"].id;
               // Get the orderID related to the unit that needs to do Via Convoy, so e can update it.
-              const findOrder = gameDataResponse.data.currentOrders.find(
+              const findOrder = data.data.currentOrders.find(
                 (currentOrder) => currentOrder.unitID === unitID,
               );
-              const availableOrderID = findOrder?.id || "";
+              if (findOrder) {
+                const availableOrderID = findOrder.id;
 
-              const update = {
-                convoyPath: orderMetaUpdate.convoyPath,
-                fromTerrID: undefined,
-                orderID: availableOrderID,
-                toTerrID: orderMetaUpdate.toTerrID,
-                type: "Move",
-                unitID,
-                viaConvoy: "Yes",
-                inProgress: true,
-              };
+                const update = {
+                  convoyPath: orderMetaUpdate.convoyPath,
+                  fromTerrID: undefined,
+                  orderID: availableOrderID,
+                  toTerrID: orderMetaUpdate.toTerrID,
+                  type: "Move",
+                  unitID,
+                  viaConvoy: "Yes",
+                  inProgress: true,
+                };
 
-              if (
-                !ordersMeta[availableOrderID].update?.viaConvoy &&
-                update.convoyPath
-              ) {
-                dispatch(
-                  gameApiSliceActions.updateOrdersMeta({
-                    [availableOrderID]: {
-                      saved: false,
-                      update,
-                    },
-                  }),
-                );
+                if (
+                  !ordersMeta[availableOrderID].update?.viaConvoy &&
+                  update.convoyPath
+                ) {
+                  dispatch(
+                    gameApiSliceActions.updateOrdersMeta({
+                      [availableOrderID]: {
+                        saved: false,
+                        update,
+                      },
+                    }),
+                  );
+                }
               }
             }
           }
