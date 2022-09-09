@@ -94,6 +94,11 @@ class adminActionsRestricted extends adminActionsSeniorMod
 				'description' => 'Changes user\'s current name to the specified username.',
 				'params' => array('userID'=>'User ID', 'username'=>'New Username', 'reason'=>'Reason'), 
 			),
+			'createUser' => array(
+				'name' => 'Create user',
+				'description' => 'Creates a new user with the given username and a random password, for use on test servers for quick account creation.',
+				'params' => array('username'=>'Username')
+			),
 			'giveBot' => array(
 				'name' => 'Give bot status',
 				'description' => 'Gives bot status to the specified user ID.',
@@ -694,6 +699,15 @@ class adminActionsRestricted extends adminActionsSeniorMod
 		return l_t("This user's username has been changed from %s to %s.",$oldUsername, $newUsername);
 	}
 	
+	public function createUser(array $params)
+	{
+		global $DB;
+		$username = $DB->escape($params['username']);
+		$DB->sql_put("INSERT INTO wD_Users (username,email,points,timeJoined,locale,type) VALUES ('" . $username . "','" . $username . "',100,".time().",'English','User')");
+		$userID = $DB->last_inserted();
+
+		return l_t("<a href='profile.php?userID=".$userID."'>User #".$userID."</a> created.");
+	}
 	public function giveBot(array $params)
 	{
 		global $DB;

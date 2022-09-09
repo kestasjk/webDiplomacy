@@ -92,6 +92,15 @@ services:
     #    XDEBUG_CONFIG: client_host=host.docker.internal client_port=9003
     #    XDEBUG_SESSION: 1
 
+  webserver:
+      image: 'nginx:alpine'
+      working_dir: /application
+      volumes:
+          - './:/application'
+          - './phpdocker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf'
+      ports:
+          - '${WEBDIP_PORT:-43000}:80'
+
   soketi:
     container_name: "webdiplomacy-websocket"
     restart: unless-stopped
