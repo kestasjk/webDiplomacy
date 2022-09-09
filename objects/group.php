@@ -42,13 +42,25 @@ class Group
 	 */
 	var $name;
 
-    static $validTypes = array('Person','Family','School','Work','Other','Unknown');
+    static $validTypes = array('Suspicion','Force Draw','Force Pause','Pause request','Person','Family','School','Work','Other','Unknown');
 
 	/**
 	 * The game ID, if applicable
 	 * @var int|null
 	 */
 	var $gameID;
+
+	/**
+	 * 1 if the game anonymous or not, if applicable
+     * @var int
+	 */
+	var $anon;
+
+	/**
+	 * The variant ID of the game, if applicable
+     * @var Game|null
+	 */
+	var $gameVariantID;
 
 	/**
 	 * The type of group
@@ -97,6 +109,23 @@ class Group
 	var $ownerUserID;
 
 	/**
+	 * Who owns this group, or the country if the owner is from a game
+     * @var string
+	 */
+	var $ownerUsername;
+	/**
+	 * Country name of owner if applicable
+     * @var string
+	 */
+	var $ownerCountryName;
+
+	public function ownerLink($type='User', $points=100)
+	{
+		if( $this->isOwnerHidden() ) return '<strong>'.$this->ownerCountryName.'</strong>';
+		else return User::profile_link_static($this->ownerUsername, $this->ownerUserID, $type, $points) . ($this->ownerCountryName ? ' ('.$this->ownerCountryName.')' : '');
+	}
+
+	/**
 	 * Who owns this group, the country ID if the owner is from a game
      * @var int|null
 	 */
@@ -109,10 +138,10 @@ class Group
 	var $variantID;
 
 	/**
-	 * Is the game anonymous 'Yes'/'No'/NULL
-	 * @var string|null
+	 * 1 if the current user is in the game, 0 otherwise
+	 * @var int 
 	 */
-	var $anon;
+	var $isViewerInGame;
 
 	/**
 	 * An array of GroupUser objects for this group
@@ -120,18 +149,6 @@ class Group
 	 * @var GroupUser[]
 	 */
 	var $GroupUsers;
-
-	/**
-	 * Who owns this group, the country ID if the owner is from a game
-     * @var int|null
-	 */
-	var $ownerUsername;
-
-	/**
-	 * Who owns this group, the country ID if the owner is from a game
-     * @var int|null
-	 */
-	var $modUsername;
 
 	/**
 	 * This is called if a suspicion is submitted directly from a game. The intention is that when created this way 
@@ -163,8 +180,8 @@ class Group
 			$suspectedUsers[$countrySuspected] = new User($Game->Members->ByCountryID[$countrySuspected]->userID);
 		}
 	
-		$groupID = self::create('Unknown', $Game->name . ' - #' . $Game->turn, $explanation, $Game->id, $Game->id, $suspectingCountryID);
-		$Group = new Group($groupID);
+		$groupID = self::create('Suspicion', $Game->name . ' - #' . $Game->turn, $explanation, $Game->id, $Game->id, $suspectingCountryID);
+		$Group = Group::loadFromID($groupID);
 		foreach($suspectedUsers as $countrySuspected=>$suspectedUser)
 		{
 			$Group->userAdd($User, $suspectedUser, $suspicionStrength, $countrySuspected);
@@ -192,15 +209,17 @@ class Group
 				{
 					throw new Exception("Description / explanation does not contain enough detail, please enter a description / explanation.");
 				}
-				if( $groupType === 'Unknown' && ( strlen($groupGameReference) < 5 && !$User->type['Moderator'] ) )
+				/*if( $groupType === 'Unknown' && ( strlen($groupGameReference) < 5 && !$User->type['Moderator'] ) )
 				{
 					throw new Exception("Please select a game you are actively/recently playing against this user, which is causing you to suspect the user.");
-				}
+				}*/
 				$groupDescription .= '<br />Game Reference: ' . $groupGameReference;
 
 				$groupName = $DB->msg_escape($groupName);
 				$DB->sql_put("INSERT INTO wD_Groups (`name`,isActive,`type`,`display`,ownerUserID,timeCreated,timeChanged,`description`,`gameID`,ownerCountryID) VALUES ('".$groupName."',1,'" .$groupType ."','Moderators',".$User->id.",".time().",".time().",'".$groupDescription."',".($gameID == null ? "NULL" : $gameID).",".($createdByCountryID == null ? "NULL" : $createdByCountryID).")");
 				list($groupID) = $DB->sql_row("SELECT LAST_INSERT_ID()");
+				$DB->sql_put("COMMIT");
+				$DB->sql_put("BEGIN");
 				return $groupID;
 			}
 			throw new Exception("Group type provided is invalid.");
@@ -266,7 +285,7 @@ class Group
 		
 		$groupDescription = $DB->msg_escape($groupDescription);
 
-		$DB->sql_put("UPDATE wD_Groups SET `description` = '" . $groupDescription . "' WHERE id = " . $this->id);
+		$DB->sql_put("UPDATE wD_Groups SET timeChanged = ".time().", `description` = '" . $groupDescription . "' WHERE id = " . $this->id);
 	}
 	public function userSetModNotes($userModifying, $modNotes)
 	{
@@ -286,7 +305,7 @@ class Group
 		
 		$groupActive = intval($groupActive) ? 1 : 0;
 
-		$DB->sql_put("UPDATE wD_Groups SET `isActive` = '" . $groupActive . "' WHERE id = " . $this->id);
+		$DB->sql_put("UPDATE wD_Groups SET timeChanged = ".time().", `isActive` = '" . $groupActive . "' WHERE id = " . $this->id);
 	}
 	private function canUserUpdateUserWeighting($userUpdating, $groupUserToUpdate)
 	{
@@ -309,7 +328,7 @@ class Group
 		
 		if( $this->canUserUpdateUserWeighting($userUpdating, $groupUserToUpdate) )
 		{
-			$DB->sql_put("UPDATE wD_GroupUsers SET userWeighting = " . $newWeighting . ", timeChanged = ".time()." WHERE userID = ". $groupUserToUpdate->userID." AND groupID = ".$groupUserToUpdate->groupID);
+			$DB->sql_put("UPDATE wD_GroupUsers SET timeChanged = ".time().", userWeighting = " . $newWeighting . ", timeChanged = ".time()." WHERE userID = ". $groupUserToUpdate->userID." AND groupID = ".$groupUserToUpdate->groupID);
 		}
 	}
 	public function userUpdateOwnerWeighting($userUpdating, $groupUserToUpdate, $newWeighting)
@@ -321,7 +340,7 @@ class Group
 		
 		if( $this->canUserUpdateOwnerWeighting($userUpdating, $groupUserToUpdate) )
 		{
-			$DB->sql_put("UPDATE wD_GroupUsers SET ownerWeighting = " . $newWeighting . ", timeChanged = ".time()." WHERE userID = ". $groupUserToUpdate->userID." AND groupID = ".$groupUserToUpdate->groupID);
+			$DB->sql_put("UPDATE wD_GroupUsers SET timeChanged = ".time().", ownerWeighting = " . $newWeighting . ", timeChanged = ".time()." WHERE userID = ". $groupUserToUpdate->userID." AND groupID = ".$groupUserToUpdate->groupID);
 		}
 	}
 	public function userUpdateModWeighting($userUpdating, $groupUserToUpdate, $newWeighting)
@@ -333,7 +352,7 @@ class Group
 		
 		if( $this->canUserUpdateModWeighting($userUpdating, $groupUserToUpdate) )
 		{
-			$DB->sql_put("UPDATE wD_GroupUsers SET modWeighting = " . $newWeighting . ", modUserID = ".$userUpdating->id.", timeChanged = ".time()." WHERE userID = ". $groupUserToUpdate->userID." AND groupID = ".$groupUserToUpdate->groupID);
+			$DB->sql_put("UPDATE wD_GroupUsers SET timeChanged = ".time().", modWeighting = " . $newWeighting . ", modUserID = ".$userUpdating->id.", timeChanged = ".time()." WHERE userID = ". $groupUserToUpdate->userID." AND groupID = ".$groupUserToUpdate->groupID);
 		}
 	}
 	public function canUserComment($userCommenting)
@@ -350,122 +369,138 @@ class Group
 		return false;
 	}
 	
+	public static function loadFromID($id)
+	{
+		$Groups = self::getGroups("gr.id = " . $id);
+		if( count($Groups) == 0 ) throw new Exception("Group ID ". $id ." not found.");
+		return $Groups[0]; // Each group user contains the parent group record
+	}
 	/**
 	 * Create a Group object
-	 * @param int|array $id Group id, or an array containing the group data
+	 * @param array $row An array containing the group data
 	 */
-	public function __construct($id)
+	public function __construct(array $row)
 	{
-		global $DB;
-
-		if( !is_array($id) )
-		{
-			$row = $DB->sql_hash("SELECT 
-				gr.id, 
-				gr.`name`, 
-				gr.`type`, 
-				gr.isActive, 
-				gr.`description`, 
-				gr.moderatorNotes, 
-				gr.timeCreated, 
-				gr.timeChanged, 
-				gr.ownerUserID, 
-				gr.gameID, 
-				gr.ownerCountryID,
-				g.variantID,
-				g.anon
-			FROM wD_Groups gr 
-			LEFT JOIN wD_Games g ON g.id = gr.gameID 
-			WHERE gr.id = " . intval($id));
-				
-			if( !$row ) throw new Exception("Group ID not found.");
-
-			if( $row['gameID'] != null )
-			{
-				$Variant = libVariant::loadFromGameID($row['gameID']);
-				$Game = $Variant->Game($row['gameID']);
-			}			
-		}
-		else
-		{
-			$row = $id;
-		}
-
 		foreach ( $row as $name => $value )
 		{
 			$this->{$name} = $value;
 		}
-
-		$this->loadUsers();
+		$this->GroupUsers = array();
+		
+		if( $this->ownerCountryID )
+		{
+			$Variant = libVariant::loadFromVariantID($this->gameVariantID);
+			$this->ownerCountryName = $Variant->countries[$this->ownerCountryID-1];
+		}
+		if( $this->isOwnerHidden() )
+		{
+			$this->ownerUsername = $this->ownerCountryName;
+		}
 	}
-	private function loadUsers()
+	public static function getUsers($whereClause)
 	{
-		$this->GroupUsers = self::getUsers("gr.id = " . $this->id, $this);
+		$groups = self::getGroups($whereClause);
+		$groupUsers = array();
+		foreach($groups as $group)
+		{
+			foreach($group->GroupUsers as $groupUser)
+			{
+				$groupUsers[] = $groupUser;
+			}
+		}
+		return $groupUsers;
 	}
+	/*	
+	* 
+	* A username/userID is replaced by a countryname/countryID if:
+	* - The game is anonymous
+	* - AND it is not your userID
+	* - AND you are not a moderator that is in the game
+	* - AND you are not an administrator
+	* 
+	* A user's profile page will not show a suspicion group they are in if:
+	* - That user's username/userID is not visible
+	*/
 	// This function has to operate to get the users for a group page with full details,
 	// and also get a list of group-users for multiple groups to show on a user profile page etc
-	public static function getUsers($whereClause, $Group = null)
+	public function isUserIDHidden($userID)
+	{
+		global $User;
+		if( intval($this->anon) !== 1 )  return false;
+		if( $User->id == $userID ) return false;
+		//if( $User->type['Admin'] ) return false;
+		if( $User->type['Moderator'] && $this->isViewerInGame !== 1 ) return false;
+		
+		return true;
+	}
+	public function isOwnerHidden() { return $this->isUserIDHidden($this->ownerUserID); }
+
+	public static function getGroups($whereClause)
 	{
 		global $DB, $User;
 
 		// This is pretty nasty because it associates relations between user IDs, but for anonymous games it has to only show the country info and hide any user ID info,
 		// but internally it has to be user ID bound or else a user could take over a country and also take over the suspicion.
-		$users = $DB->sql_tabl("SELECT g.userID, g.countryID, g.groupID, g.isActive, g.userWeighting, g.ownerWeighting, g.modWeighting, g.timeCreated, g.timeChanged, g.modUserID, ".
+		$users = $DB->sql_tabl("SELECT ".
 			"gr.id Group_id, ".
 			"gr.name Group_name, ".
 			"gr.type Group_type, ".
 			"gr.isActive Group_isActive, ".
 			"gr.gameID Group_gameID, ".
+			"IF(COALESCE(game.anon,'No')='Yes', 1, 0) Group_anon, ".
+			"game.variantID Group_gameVariantID, ".
 			"gr.display Group_display, ".
 			"gr.timeCreated Group_timeCreated, ".
+			"gr.type Group_type, ".
+			"gr.description Group_description, ".
+			"gr.moderatorNotes Group_moderatorNotes, ".
 			"gr.ownerUserID Group_ownerUserID, ".
 			"gr.ownerCountryID Group_ownerCountryID, ".
-			"gr.timeChanged Group_timeChanged, ".
-			"u.username userUsername, ".
 			"o.username Group_ownerUsername, ".
-			"m.username Group_modUsername ".
-			"FROM wD_GroupUsers g ".
-			"INNER JOIN wD_Groups gr ON gr.id = g.groupID ".
-			"INNER JOIN wD_Users u ON u.id = g.userID ".
+			"gr.timeChanged Group_timeChanged, ".
+			"IF(viewercountry.id IS NULL, 1, 0) Group_isViewerInGame, ".
+			"g.modUserID, ".
+			"m.username modUsername, ".//$groupUser->modUserID
+			"u.username userUsername, ".
+			"ucountry.countryID countryID, ".
+			"g.userID, g.countryID, g.groupID, g.isActive, g.userWeighting, g.ownerWeighting, g.modWeighting, g.timeCreated, g.timeChanged, g.modUserID " .
+			"FROM wD_Groups gr ".
 			"INNER JOIN wD_Users o ON o.id = gr.ownerUserID ".
+			"LEFT JOIN wD_GroupUsers g ON gr.id = g.groupID ".
+			"LEFT JOIN wD_Users u ON u.id = g.userID ".
 			"LEFT JOIN wD_Users m ON m.id = g.modUserID ".
 			"LEFT JOIN wD_Games game ON game.id = gr.gameID ".
 			"LEFT JOIN wD_Members ucountry ON ucountry.gameID = gr.gameID AND ucountry.userID = g.userID ".
 			"LEFT JOIN wD_Members ocountry ON ocountry.gameID = gr.gameID AND ocountry.userID = gr.ownerUserID ".
-			"LEFT JOIN wD_Members modcountry ON modcountry.gameID = gr.gameID AND modcountry.userID = ".($User->type['Moderator'] ? $User->id : -1 )." ".
-			// Either this isn't game related, or it's a non-anonymous game, or the user is a moderator who isn't in the game:
-			"WHERE ( ( game.id IS NULL OR game.anon='No' ) ".($User->type['Moderator'] ? " OR modcountry.id IS NULL " : "")." ) ".
+			"LEFT JOIN wD_Members viewercountry ON viewercountry.gameID = gr.gameID AND viewercountry.userID = ".$User->id." ".
+			"WHERE (gr.gameID IS NULL OR game.id IS NOT NULL) " // Ensure no groups are shown for cancelled games
+			." AND (".$whereClause.")");
 			// And whatever else (e.g. show all the user's suspicions and relations if on the user's relation page,
 			// or show all the user's suspicions if another user is looking at their profile)
-			"AND (".$whereClause.")");
-			// Don't show records relating to anonymous games unless the viewer is a mod
 		$groupsCache = array();
-		$groupUsers = array();
 		while($userRec = $DB->tabl_hash($users) )
 		{
-			if( $Group == null )
+			// Each group suspicion record contains the group information for that record, so if we haven't collected the group info do so now:
+			if( !isset($groupsCache[$userRec['Group_id']]) )
 			{
-				if( !isset($groupsCache[$userRec['Group_id']]) )
+				$groupRec = array();
+				foreach($userRec as $key=>$value)
 				{
-					$groupRec = array();
-					foreach($userRec as $key=>$value)
+					if( strlen($key) > 6 && substr($key,0,6) == 'Group_' )
 					{
-						if( strlen($key) > 6 && substr($key,0,6) == 'Group_' )
-						{
-							$groupRec[substr($key, 6)] = $value;
-						}
+						$groupRec[substr($key, 6)] = $value;
 					}
-					$groupsCache[$userRec['Group_id']] = new Group($groupRec);
 				}
-				$currentGroup = $groupsCache[$userRec['Group_id']];
+				$groupsCache[$userRec['Group_id']] = new Group($groupRec);
 			}
-			else
+			$currentGroup = $groupsCache[$userRec['Group_id']];
+			
+			if( !is_null($userRec['groupID']) )
 			{
-				$currentGroup = $Group;
+				$currentGroup->GroupUsers[$userRec['userID']] = new GroupUser($userRec, $currentGroup);
 			}
-			$groupUsers[] = new GroupUser($userRec, $currentGroup);
 		}
-		return $groupUsers;
+		return array_values($groupsCache);
 	}
 	public static function ownedGroupNamesByID($User, $activeOnly = true)
 	{
@@ -542,7 +577,7 @@ class Group
 	{
 		$userID = -1;
 		$isModerator = false;
-		$creatorID = -1;
+		$creatorID = -1;                      
 
 		if( $User != null )
 		{
@@ -564,7 +599,7 @@ class Group
 			$buf .= $groupUser->Group->type;
 			$buf .= '</td>';
 			$buf .= '<td>';
-			$buf .= $groupUser->userUsername; //User::profile_link_static($groupUser->userUsername, $groupUser->userID, $groupUser->userType, $groupUser->userPoints);
+			$buf .= $groupUser->userLink(); //User::profile_link_static($groupUser->userUsername, $groupUser->userID, $groupUser->userType, $groupUser->userPoints);
 			$buf .= ' <br /> ';
 			if( $userID == $groupUser->userID )
 			{
@@ -577,7 +612,7 @@ class Group
 			
 			$buf .= '</td>';
 			$buf .= '<td>';
-			$buf .= $groupUser->Group->ownerUsername; //User::profile_link_static($groupUser->ownerUsername, $groupUser->ownerUserID, $groupUser->ownerType, $groupUser->ownerPoints);
+			$buf .= $groupUser->Group->ownerLink(); //User::profile_link_static($groupUser->ownerUsername, $groupUser->ownerUserID, $groupUser->ownerType, $groupUser->ownerPoints);
 			$buf .= ' <br /> ';
 			if( $userID == $groupUser->Group->ownerUserID )
 			{
@@ -592,7 +627,7 @@ class Group
 			$buf .= '<td>';
 			if( $groupUser->modUserID )
 			{
-				$buf .= $groupUser->modUsername; //User::profile_link_static($groupUser->modUsername, $groupUser->modUserID, $groupUser->modType, $groupUser->modPoints);
+				$buf .= User::profile_link_static($groupUser->modUsername, $groupUser->modUserID, 'User,Moderator', 100);
 			}
 			else
 			{

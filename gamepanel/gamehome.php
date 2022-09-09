@@ -169,11 +169,13 @@ class panelGameHome extends panelGameBoard
 
 		if ($this->watched() || $userInGame == 0)
 		{
+			if ($User->isActiveBeta && $this->isClassicGame()) { $playBeta = '- <a href="beta?gameID='.$this->id.'" >'.l_t('View Beta').'</a> '; }
 			if ($this->watched()) { $watchString = '- <a href="board.php?gameID='.$this->id.'&unwatch">'.l_t('Stop spectating').'</a>'; }
 			if( $this->phase == 'Pre-game')
 			{
 				return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
 					<a href="board.php?gameID='.$this->id.'">'.l_t('Open').'</a>
+					'.$playBeta.'
 					'.$watchString.'
 					</div>';
 			}
@@ -181,6 +183,7 @@ class panelGameHome extends panelGameBoard
 			{
 				return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
 					<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t('Open').'</a> 
+					'.$playBeta.'
 					'.$watchString.'
 					</div>';
 			}

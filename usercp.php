@@ -79,18 +79,20 @@ if ( isset($_REQUEST['userForm']) )
 	libAuth::formToken_Valid();
 	
 	$formOutput = '';
+	
+	require_once('lib/sms.php');
 
 	try
 	{
 		$errors = array();
 		$SQLVars = User::processForm($_REQUEST['userForm'], $errors);
-
+		
 		if( count($errors) )
 			throw new Exception(implode('. ',$errors));
 
 		unset($errors);
 
-		$allowed = array('E-mail'=>'email','E-mail hiding'=>'hideEmail', 'Homepage'=>'homepage','Comment'=>'comment');
+		$allowed = array('E-mail'=>'email','E-mail hiding'=>'hideEmail', 'Homepage'=>'homepage','Comment'=>'comment','Country code'=>'mobileCountryCode','Mobile number'=>'mobileNumber');
 
 		$User->options->set($_REQUEST['userForm']);
 		$User->options->load();
@@ -153,6 +155,35 @@ if ( isset($_REQUEST['userForm']) )
 				if ( $set != '' ) $set .= ', ';
 				$set .= "optInFeatures = " . $User->optInFeatures;
 				$formOutput .= l_t('Optional feature set selection updated.').' ';
+			}
+		}
+		
+		if( isset($SQLVars['mobileCountryCode']) && isset($SQLVars['mobileNumber']) && $SQLVars['mobileCountryCode'] && $SQLVars['mobileNumber'] )
+		{
+			$isMobileChanged = ($SQLVars['mobileNumber'] != $User->mobileNumber || $SQLVars['mobileCountryCode'] != $User->mobileCountryCode);
+			if( !$User->isMobileValidated || $isMobileChanged )
+			{
+				$isMobileValidated = false;
+				if( isset($SQLVars['mobileValidationCode'] ) && $SQLVars['mobileValidationCode'] )
+				{
+					if( intval($SQLVars['mobileValidationCode']) === intval(libSMS::getSixDigitTokenForNumber(libSMS::combineCountryCodeAndNumber($SQLVars['mobileCountryCode'],$SQLVars['mobileNumber']))) )
+					{
+						$formOutput .= l_t('SMS code validated succesfully. ').' ';
+						$isMobileValidated = true;
+					}
+					else
+					{
+						$formOutput .= l_t('SMS code could not be validated, please try again. ').' ';
+					}
+				}
+				else
+				{
+					libSMS::sendValidationText($SQLVars['mobileCountryCode'], $SQLVars['mobileNumber']);
+					$formOutput .= l_t('Phone validation SMS message sent. Please submit the verification code you receive below. ').' ';
+				}
+				
+				if ( $set != '' ) $set .= ', ';
+				$set .= ' isMobileValidated = '.($isMobileValidated? '1' : '0').' ';
 			}
 		}
 

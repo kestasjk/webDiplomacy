@@ -97,7 +97,31 @@ class libAuth
 		
 		return true;
 	}
-
+	public static function sendSMSToken_Key($phonenumber, $message) {
+		
+		return md5('sendSMS-'.$phonenumber.'-'.$message.'-'.Config::$secret);
+	}
+	public static function sendSMSToken($phonenumber, $message) {
+		
+		return $phonenumber.'_'.$message.'_'.self::likeToggleToken_Key($phonenumber, $message);
+	}
+	public static function sendSMSToken_Valid($token) {
+		
+		$token = explode('_',$token);
+		
+		if( count($token) != 3 )
+			throw new Exception(l_t('Corrupt token %s',$token));
+		
+		$phonenumber = $token[0];
+		$message = $token[1];
+		$key = $token[2];
+		
+		if( $key !== self::sendSMSToken_Key($phonenumber, $message))
+			throw new Exception(l_t('Invalid token %s',$token));
+		
+		return true;
+	}
+	
 	public static function gamemasterToken($gameID)
 	{
 		$time=time();

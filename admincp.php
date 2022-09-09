@@ -113,6 +113,7 @@ function adminCPTabs()
 			// 'Mod notes'=>l_t('Notes/reports left for/by the mod team'),
 			'Status Info'=>l_t('View server status lists'),
 			'Logs'=>l_t('Log of recent admin tasks'),
+			'Groups'=>l_t('Management of Groups used for relationship / dispute management'),
 			'Multi-accounts'=>l_t('Multi-account detector'),
 			'Chatlogs'=>l_t('Check the ingame chat.'),
 			'AccessLog'=>l_t('Check the user-actions sort by IP and Username.'),
@@ -126,6 +127,7 @@ function adminCPTabs()
 			// 'Mod notes'=>l_t('Notes/reports left for/by the mod team'),
 			'Status Info'=>l_t('View server status lists'),
 			'Logs'=>l_t('Log of recent admin tasks'),
+			'Groups'=>l_t('Management of Groups used for relationship / dispute management'),
 			'Multi-accounts'=>l_t('Multi-account detector'),
 			'Chatlogs'=>l_t('Check the ingame chat.'),
 			'AccessLog'=>l_t('Check the user-actions sort by IP and Username.')
@@ -179,6 +181,9 @@ switch($tab)
 		break;
 	case 'Logs':
 		require_once(l_r('admin/adminLog.php'));
+		break;
+	case 'Groups':
+		require_once(l_r('admin/adminGroups.php'));
 		break;
 	case 'Multi-accounts':
 		require_once(l_r('admin/adminMultiFinder.php'));

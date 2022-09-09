@@ -723,6 +723,8 @@ print '</div>';
 		$userJoinedGroupsUnverified = array();
 		foreach($groupUsers as $groupUser)
 		{
+			if( $groupUser->isUserHidden() ) continue;
+
 			if( $groupUser->isVerified() )
 			{
 				$userJoinedGroups[$groupUser->groupID] = $groupUser;

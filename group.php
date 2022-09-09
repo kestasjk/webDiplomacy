@@ -22,6 +22,7 @@
  * @package Base
  */
 
+
 require_once('header.php');
 require_once('objects/group.php');
 require_once('objects/groupUser.php');
@@ -55,6 +56,10 @@ if( $User->type['User'])
 			if( $suspectingCountryID == null && !$User->type['Moderator']) 
 			{
 				throw new Exception("Cannot create a suspicion for this game; you are not a member of the game, and are not a moderator.");
+			}
+			if( count($suspectedCountries) <= 1 )
+			{
+				throw new Exception("Please select at least two countries that you suspect.");
 			}
 			$groupID = Group::createSuspicionFromGame($gameID, $suspectedCountries, $_REQUEST['userWeighting'], $_REQUEST['explanation'], $suspectingCountryID);
 		}
@@ -246,6 +251,8 @@ function TryPostReply($groupID)
 		{
 			libAuth::formToken_Valid();
 			
+			$DB->sql_put("UPDATE wD_GroupUsers SET timeLastMessageSent = ".time().", messageCount = messageCount + 1 WHERE groupID = ".$groupID." AND userID = ".$User->id);
+			$DB->sql_put("UPDATE wD_Groups SET timeLastMessageSent = ".time().", messageCount = messageCount + 1 WHERE groupID = ".$groupID." AND userID = ".$User->id);
 			$new['id'] = Message::send( $new['sendtothread'],
 				$User->id,
 				$new['message'],
@@ -280,7 +287,7 @@ function TryPostReply($groupID)
 
 function OutputDiscussionThread($groupID, $new)
 {
-	global $DB, $User;
+	global $DB, $User, $GroupProfile;
 
 	if( isset($new['messageproblem']) ) $messageproblem = $new['messageproblem'];
 
@@ -313,9 +320,26 @@ function OutputDiscussionThread($groupID, $new)
 	list($maxReplyID) = $DB->sql_row("SELECT MAX(id) FROM wD_ForumMessages WHERE toID=".$groupID." AND type='GroupDiscussion'");
 	while($reply = $DB->tabl_hash($replytabl) )
 	{
-		$replyToID = $reply['toID'];
-		$replyID = $reply['id'];
-
+		$userLink = null;
+		if( $reply['fromUserID'] == $GroupProfile->ownerUserID )
+		{
+			$userLink = $GroupProfile->ownerLink($reply['userType'], $reply['points']);
+		}
+		else
+		{
+			foreach($GroupProfile->GroupUsers as $groupUser)
+			{
+				if( $reply['fromUserID'] == $groupUser->userID )
+				{
+					$userLink = $groupUser->userLink($reply['userType'], $reply['points']);
+				}
+			}
+		}
+		if( $userLink == null )
+		{
+			$userLink = User::profile_link_static($reply['fromusername'], $reply['fromUserID'], $reply['userType'], $reply['points']);
+		}
+		
 		$replyswitch = 3-$replyswitch;//1,2,1,2,1...
 		
 		print '<div class="reply replyborder'.$replyswitch.' replyalternate'.$replyswitch.'
@@ -331,8 +355,7 @@ function OutputDiscussionThread($groupID, $new)
 
 		print '<div class="message-head replyalternate'.$replyswitch.' leftRule">';
 
-		print '<strong>'.User::profile_link_static($reply['fromusername'], $reply['fromUserID'], $reply['userType'], $reply['points']).
-			'</strong><br />';
+		print $userLink.'<br />';
 
 		print libHTML::forumMessage($groupID,$reply['id']);
 
@@ -381,7 +404,7 @@ function OutputDiscussionThread($groupID, $new)
 
 try
 {
-	$GroupProfile = new Group($groupID);
+	$GroupProfile = Group::loadFromID($groupID);
 }
 catch (Exception $e)
 {
@@ -390,71 +413,79 @@ catch (Exception $e)
 
 if( $User->type['User'] )
 {
-	// Check for modify group commands
-	if( isset($_REQUEST['addSelf']) )
+	try
 	{
-		// User wants to join the group themselves
-		$GroupProfile->userAdd($User, $User, isset($_REQUEST['groupUserStrength']) ? $_REQUEST['groupUserStrength'] : 100);
-
-		$GroupProfile = new Group($groupID);
-	}
-	if( isset($_REQUEST['addUserID']) )
-	{
-		// User wants to add a user to the group
-		$addingUser = new User($_REQUEST['addUserID']);
-		$GroupProfile->userAdd($User, $addingUser, isset($_REQUEST['groupUserStrength']) ? $_REQUEST['groupUserStrength'] : 66);
-
-		$GroupProfile = new Group($groupID);
-	}
-	/*
-	This is a mandatory field on creation
-	if( isset($_REQUEST['groupDescription']) && strlen($_REQUEST['groupDescription']) > 0 ) // Prevent overwriting description with blank when adding user from usercp
-	{
-		$GroupProfile->userSetDescription($User, $_REQUEST['groupDescription']);
 		
-		$GroupProfile = new Group($groupID);
-	}*/
-	if( isset($_REQUEST['moderatorNotes']) )
-	{
-		$GroupProfile->userSetModNotes($User, $_REQUEST['moderatorNotes']);
-		
-		$GroupProfile = new Group($groupID);
-	}
-	if( isset($_REQUEST['deactivate']) )
-	{
-		$GroupProfile->userSetActive($User, 0);
-
-		$GroupProfile = new Group($groupID);
-	}
-	if( isset($_REQUEST['activate']) )
-	{
-		$GroupProfile->userSetActive($User, 1);
-
-		$GroupProfile = new Group($groupID);
-	}
-
-	$weightsUpdated = false;
-	foreach($GroupProfile->GroupUsers as $groupUser)
-	{
-		if( isset($_REQUEST['userWeighting'.$groupUser->userID]) )
+		// Check for modify group commands
+		if( isset($_REQUEST['addSelf']) )
 		{
-			$GroupProfile->userUpdateUserWeighting($User, $groupUser, $_REQUEST['userWeighting'.$groupUser->userID]);
-			$weightsUpdated = true;
+			// User wants to join the group themselves
+			$GroupProfile->userAdd($User, $User, isset($_REQUEST['groupUserStrength']) ? $_REQUEST['groupUserStrength'] : 100);
+
+			$GroupProfile = Group::loadFromID($groupID);
 		}
-		if( isset($_REQUEST['modWeighting'.$groupUser->userID]) )
+		if( isset($_REQUEST['addUserID']) )
 		{
-			$GroupProfile->userUpdateModWeighting($User, $groupUser, $_REQUEST['modWeighting'.$groupUser->userID]);
-			$weightsUpdated = true;
+			// User wants to add a user to the group
+			$addingUser = new User($_REQUEST['addUserID']);
+			$GroupProfile->userAdd($User, $addingUser, isset($_REQUEST['groupUserStrength']) ? $_REQUEST['groupUserStrength'] : 66);
+
+			$GroupProfile = Group::loadFromID($groupID);
 		}
-		if( isset($_REQUEST['ownerWeighting'.$groupUser->userID]) )
+		/*
+		This is a mandatory field on creation
+		if( isset($_REQUEST['groupDescription']) && strlen($_REQUEST['groupDescription']) > 0 ) // Prevent overwriting description with blank when adding user from usercp
 		{
-			$GroupProfile->userUpdateOwnerWeighting($User, $groupUser, $_REQUEST['ownerWeighting'.$groupUser->userID]);
-			$weightsUpdated = true;
+			$GroupProfile->userSetDescription($User, $_REQUEST['groupDescription']);
+			
+			$GroupProfile = Group::loadFromID($groupID);
+		}*/
+		if( isset($_REQUEST['moderatorNotes']) )
+		{
+			$GroupProfile->userSetModNotes($User, $_REQUEST['moderatorNotes']);
+			
+			$GroupProfile = Group::loadFromID($groupID);
+		}
+		if( isset($_REQUEST['deactivate']) )
+		{
+			$GroupProfile->userSetActive($User, 0);
+
+			$GroupProfile = Group::loadFromID($groupID);
+		}
+		if( isset($_REQUEST['activate']) )
+		{
+			$GroupProfile->userSetActive($User, 1);
+
+			$GroupProfile = Group::loadFromID($groupID);
+		}
+
+		$weightsUpdated = false;
+		foreach($GroupProfile->GroupUsers as $groupUser)
+		{
+			if( isset($_REQUEST['userWeighting'.$groupUser->userID]) )
+			{
+				$GroupProfile->userUpdateUserWeighting($User, $groupUser, $_REQUEST['userWeighting'.$groupUser->userID]);
+				$weightsUpdated = true;
+			}
+			if( isset($_REQUEST['modWeighting'.$groupUser->userID]) )
+			{
+				$GroupProfile->userUpdateModWeighting($User, $groupUser, $_REQUEST['modWeighting'.$groupUser->userID]);
+				$weightsUpdated = true;
+			}
+			if( isset($_REQUEST['ownerWeighting'.$groupUser->userID]) )
+			{
+				$GroupProfile->userUpdateOwnerWeighting($User, $groupUser, $_REQUEST['ownerWeighting'.$groupUser->userID]);
+				$weightsUpdated = true;
+			}
+		}
+		if( $weightsUpdated )
+		{
+			$GroupProfile = Group::loadFromID($groupID);
 		}
 	}
-	if( $weightsUpdated )
+	catch(Exception $ex)
 	{
-		$GroupProfile = new Group($groupID);
+		libHTML::error("<strong>Failed to apply changes to group:</strong> " . $ex->getMessage() . "<br />Please ensure you have permissions to do this operation.");
 	}
 }
 
@@ -466,7 +497,7 @@ if ( $GroupProfile->canUserComment($User) )
 
 libHTML::starthtml();
 
-print libHTML::pageTitle('User Relationship Panel: #'.$GroupProfile->id.' '.$GroupProfile->name,l_t('View and manage the links created between accounts that disclose outside relationships to players.'));
+print libHTML::pageTitle('Group Panel: #'.$GroupProfile->id.' '.$GroupProfile->name,l_t('A space for the community and mod team to discuss, decide and resolve problems.'));
 
 print '<div>';
 print '<div class = "profile-show-floating" style="margin-left:2.5%">';
@@ -474,27 +505,29 @@ print '<div class = "profile-show-floating" style="margin-left:2.5%">';
 // Profile Information
 print '<div class = "profile-show-inside-left" style="width:45%">';
 print '<div class = "comment_title" style="width:90%">';
-print '<strong>Relationship Group Information:</strong> </div>';
+print '<strong>Group Information:</strong> </div>';
 	print '<p><ul class="profile">';
 
-	print '<p><strong>Relationship Type:</strong> '.$GroupProfile->type.'</p>';
+	if( $GroupProfile->gameID )
+	{
+		print '<p><strong>Open game:</strong> <a href="board.php?gameID='.$GroupProfile->gameID.'">Game board</a></p>';
+	}
+	print '<p><strong>Group Type:</strong> '.$GroupProfile->type.'</p>';
 	print '<p><strong>Status:</strong> '.($GroupProfile->isActive ? 'Active' : 'Inactive').'</p>';
-
-
-
-	if( $GroupProfile->ownerUserID == $User->id || $User->type['Moderator'] )
+	
+	if( $GroupProfile->ownerUserID == $User->id || ( $User->type['Moderator'] && $GroupProfile->isViewerInGame !== 1 ) )
 	{
 		print '<form>'.
 		'<input type="hidden" name="groupID" value="'.$GroupProfile->id.'" />';
 		if( $GroupProfile->isActive )
 		{
 			print '<input type="hidden" name="deactivate" value="on" />'.
-				'<input type="Submit" class="form-submit" value="Deactivate relationship" />';
+				'<input type="Submit" class="form-submit" value="Deactivate group" />';
 		}
 		else
 		{
 			print '<input type="hidden" name="activate" value="on" />'.
-				'<input type="Submit" class="form-submit" value="Reactivate relationship" />';
+				'<input type="Submit" class="form-submit" value="Reactivate group" />';
 		}
 		print libAuth::formTokenHTML().
 		'</form>';
@@ -508,10 +541,8 @@ print '<div class="profile-show-inside" style="width:45%">';
 print '<div class = "comment_title" style="width:90%">';
 print '<strong>Creator Info / Explanation:</strong> </div>';
 
-$owner = new User($GroupProfile->ownerUserID);
-
 print '<p><ul>';
-print '<li><strong>Creator:</strong> '.$owner->profile_link().'</li></br>';
+print '<li><strong>Creator:</strong> '.$GroupProfile->ownerLink().'</li></br>';
 print '<li><strong>Created:</strong> '.libTime::text($GroupProfile->timeCreated).'</li></ul></p>';
 
 print '<p class="profileComment">"'.$GroupProfile->description.'"</p>';
