@@ -259,6 +259,24 @@ const WDMain: React.FC = function (): React.ReactElement {
     };
   };
 
+  const findUnitInTerritory = (territoryID: string): string | undefined => {
+    const asArray = Object.entries(data.data.units);
+    const findUnit = asArray.find(
+      (elem) =>
+        elem["1"].countryID === String(status.countryID) &&
+        elem["1"].terrID === territoryID &&
+        elem["1"].type === "Army",
+    );
+    return findUnit ? findUnit["1"].id : undefined;
+  };
+
+  const findOrderByUnitID = (unitID: string): string | undefined => {
+    const findOrder = data.data.currentOrders?.find(
+      (currentOrder) => currentOrder.unitID === unitID,
+    );
+    return findOrder ? findOrder.id : undefined;
+  };
+
   // Automatically enter implied moves for CONVOY
   useEffect(() => {
     Object.entries(ordersMeta).forEach(([_, orderMeta]) => {
@@ -272,62 +290,79 @@ const WDMain: React.FC = function (): React.ReactElement {
         orderMetaUpdate?.fromTerrID &&
         orderMetaUpdate.toTerrID
       ) {
-        const fromProvince = maps.terrIDToProvince[orderMetaUpdate.fromTerrID];
-        const toProvince = maps.terrIDToProvince[orderMetaUpdate.toTerrID];
+        // Get the unit ID that is located at the source territory (APU)
+        const unitID = findUnitInTerritory(orderMetaUpdate.fromTerrID);
+        if (!unitID || !data.data.currentOrders) return;
 
-        const legalConvoysByUnitIDs = Object.keys(
-          legalOrders.hasAnyLegalConvoysByUnitID,
-        );
-        if (legalConvoysByUnitIDs.length === 1) {
-          const availableViaConvoy = legalConvoysByUnitIDs[0];
-          // Verify if the order APU -> TUN is possible
-          const legalOrderViaConvoy =
-            legalOrders.legalConvoysByUnitID[availableViaConvoy];
-          if (legalOrderViaConvoy[fromProvince][toProvince]) {
-            // Get the unit ID that is located at the source territory (APU)
-            const asArray = Object.entries(data.data.units);
-            const findUnit = asArray.find(
-              (elem) =>
-                elem["1"].countryID === String(status.countryID) &&
-                elem["1"].terrID === orderMetaUpdate.fromTerrID &&
-                elem["1"].type === "Army",
-            );
-            if (findUnit && data.data.currentOrders) {
-              const unitID = findUnit["1"].id;
-              // Get the orderID related to the unit that needs to do Via Convoy, so e can update it.
-              const findOrder = data.data.currentOrders.find(
-                (currentOrder) => currentOrder.unitID === unitID,
-              );
-              if (findOrder) {
-                const availableOrderID = findOrder.id;
+        // Get the orderID related to the unit that needs to do Via Convoy, so e can update it.
+        const availableOrderID = findOrderByUnitID(unitID);
+        if (!availableOrderID) return;
 
-                const update = {
-                  convoyPath: orderMetaUpdate.convoyPath,
-                  fromTerrID: undefined,
-                  orderID: availableOrderID,
-                  toTerrID: orderMetaUpdate.toTerrID,
-                  type: "Move",
-                  unitID,
-                  viaConvoy: "Yes",
-                  inProgress: true,
-                };
+        const update = {
+          convoyPath: orderMetaUpdate.convoyPath,
+          fromTerrID: undefined,
+          orderID: availableOrderID,
+          toTerrID: orderMetaUpdate.toTerrID,
+          type: "Move",
+          unitID,
+          viaConvoy: "Yes",
+          inProgress: true,
+        };
 
-                if (
-                  !ordersMeta[availableOrderID].update?.viaConvoy &&
-                  update.convoyPath
-                ) {
-                  dispatch(
-                    gameApiSliceActions.updateOrdersMeta({
-                      [availableOrderID]: {
-                        saved: settings.autoSave,
-                        update,
-                      },
-                    }),
-                  );
-                }
-              }
-            }
-          }
+        if (ordersMeta[availableOrderID].update?.type === "Hold") {
+          dispatch(
+            gameApiSliceActions.updateOrdersMeta({
+              [availableOrderID]: {
+                saved: settings.autoSave,
+                update,
+              },
+            }),
+          );
+        }
+      }
+    });
+  }, [ordersMeta]);
+
+  // Automatically enter implied moves for SUPPORT
+  useEffect(() => {
+    Object.entries(ordersMeta).forEach(([_, orderMeta]) => {
+      // Let's use as an example BUR S PAR - BUR
+      // The board should automatically also enters PAR - BUR (Move)
+      // More info in CHR-68
+      const orderMetaUpdate = orderMeta.update;
+
+      if (
+        orderMetaUpdate?.type === "Support move" &&
+        orderMetaUpdate?.fromTerrID &&
+        orderMetaUpdate.toTerrID
+      ) {
+        // Get the unit ID that is located at the source territory (PAR)
+        const unitID = findUnitInTerritory(orderMetaUpdate.fromTerrID);
+        if (!unitID || !data.data.currentOrders) return;
+
+        // Get the orderID related to the unit that needs to do Support, so e can update it.
+        const availableOrderID = findOrderByUnitID(unitID);
+        if (!availableOrderID) return;
+
+        const update = {
+          fromTerrID: undefined,
+          orderID: availableOrderID,
+          toTerrID: orderMetaUpdate.toTerrID,
+          type: "Move",
+          unitID,
+          viaConvoy: "No",
+          inProgress: true,
+        };
+
+        if (ordersMeta[availableOrderID].update?.type === "Hold") {
+          dispatch(
+            gameApiSliceActions.updateOrdersMeta({
+              [availableOrderID]: {
+                saved: settings.autoSave,
+                update,
+              },
+            }),
+          );
         }
       }
     });
