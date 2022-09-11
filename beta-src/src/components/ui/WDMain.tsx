@@ -19,9 +19,7 @@ import {
 import { StandoffInfo } from "../map/components/WDArrowContainer";
 import WDGameFinishedOverlay from "./WDGameFinishedOverlay";
 
-const WDMapController = React.lazy(
-  () => import("../controllers/WDMapController"),
-);
+import WDMapController from "../controllers/WDMapController"
 
 const WDMain: React.FC = function (): React.ReactElement {
   // console.log("WDMain rerendered");
@@ -323,7 +321,6 @@ const WDMain: React.FC = function (): React.ReactElement {
     (viewedPhaseState.viewedPhaseIdx === status.phases.length - 1 ||
       status.phases.length === 0);
   return (
-    <React.Suspense fallback={<div>Loading...</div>}>
       <WDMainController>
         <WDMapController
           units={units}
@@ -341,7 +338,6 @@ const WDMain: React.FC = function (): React.ReactElement {
           viewingGameFinishedPhase={viewingGameFinishedPhase}
         />
       </WDMainController>
-    </React.Suspense>
   );
 };
 

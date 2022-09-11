@@ -57,7 +57,7 @@ const NextPhase = function (): ReactElement {
         <button
           type="button"
           onClick={async () => {
-            dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1));
+            dispatch(gameApiSliceActions.setViewedPhaseToLatest());
           }}
         >
           <BtnArrowIcon
@@ -79,20 +79,28 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
   totalPhases,
 }: BottomMiddleProps): ReactElement {
   const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
+  const { phase, season, year } = useAppSelector(gameOverview);
   const { width } = useWindowSize();
-  const [isNewPhase, setIsNewPhase] = useState<boolean>(true);
+  const [isNewPhase, setIsNewPhase] = useState<boolean>(false);
   const [lastViewedPhase, setLastViewedPhase] =
     useState<number>(viewedPhaseIdx);
+  const [lastPhase, setLastPhase] =
+    useState<string>("");
 
   useEffect(() => {
+    if (phase === "Loading") return;
+    const curPhase = `${phase}-${season}-${year}`;
+    if (lastPhase !== curPhase && viewedPhaseIdx < totalPhases) {
+      setIsNewPhase(true);
+    }
     if (
-      viewedPhaseIdx !== lastViewedPhase ||
-      viewedPhaseIdx === totalPhases - 1
+      viewedPhaseIdx !== lastViewedPhase
     ) {
       setIsNewPhase(false);
     }
     setLastViewedPhase(viewedPhaseIdx);
-  }, [viewedPhaseIdx]);
+    setLastPhase(curPhase);
+  }, [viewedPhaseIdx, phase, season, year]);
 
   return (
     <WDPositionContainer

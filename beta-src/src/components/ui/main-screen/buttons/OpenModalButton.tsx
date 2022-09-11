@@ -42,12 +42,11 @@ const OpenModalButton: FunctionComponent<BottomRightProps> = function ({
   const { width } = useWindowSize();
   const popoverTrigger = React.useRef<HTMLDivElement>(null);
   const [currentTab, setCurrentTab] = useState(ModalViews.PRESS);
-
   const {
     ref: modalRef,
     isComponentVisible,
     setIsComponentVisible,
-  } = useComponentVisible(true, currentTab !== ModalViews.PRESS || width < 500);
+  } = useComponentVisible(false, width < 1000);
 
   const {
     alternatives,
@@ -108,10 +107,6 @@ const OpenModalButton: FunctionComponent<BottomRightProps> = function ({
   const toggleControlModal = () => {
     setIsComponentVisible(!isComponentVisible);
   };
-
-  useEffect(() => {
-    setIsComponentVisible(true);
-  }, []);
 
   const controlModalTrigger = (
     <RightButton
