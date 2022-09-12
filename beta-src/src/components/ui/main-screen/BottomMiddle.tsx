@@ -84,8 +84,7 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
   const [isNewPhase, setIsNewPhase] = useState<boolean>(false);
   const [lastViewedPhase, setLastViewedPhase] =
     useState<number>(viewedPhaseIdx);
-  const [lastPhase, setLastPhase] =
-    useState<string>("");
+  const [lastPhase, setLastPhase] = useState<string>("");
 
   useEffect(() => {
     if (phase === "Loading") return;
@@ -93,9 +92,7 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
     if (lastPhase !== curPhase && viewedPhaseIdx < totalPhases) {
       setIsNewPhase(true);
     }
-    if (
-      viewedPhaseIdx !== lastViewedPhase
-    ) {
+    if (viewedPhaseIdx !== lastViewedPhase) {
       setIsNewPhase(false);
     }
     setLastViewedPhase(viewedPhaseIdx);
