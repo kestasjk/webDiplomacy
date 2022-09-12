@@ -1,27 +1,23 @@
-import * as React from "react";
-import { Box } from "@mui/material";
-import Device from "../../enums/Device";
-import useViewport from "../../hooks/useViewport";
-import getDevice from "../../utils/getDevice";
+import React, { FunctionComponent, ReactElement } from "react";
 
-const WDVerticalScroll: React.FC = function ({ children }): React.ReactElement {
-  const [viewport] = useViewport();
-  const device = getDevice(viewport);
-  const height = "350px";
+interface WDVerticalScrollProps {
+  children: ReactElement | ReactElement[];
+  height?: number;
+}
 
+const WDVerticalScroll: FunctionComponent<WDVerticalScrollProps> = function ({
+  children,
+  height,
+}: WDVerticalScrollProps): ReactElement {
   return (
-    <Box
-      sx={{
-        m: "0px 0 10px 0",
-        width: "100%",
-        height,
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <Box sx={{ overflow: "auto" }}>{children}</Box>
-    </Box>
+    <div className="flex flex-col w-full mb-4" style={{ height }}>
+      <div className="overflow-auto">{children}</div>
+    </div>
   );
+};
+
+WDVerticalScroll.defaultProps = {
+  height: 480,
 };
 
 export default WDVerticalScroll;

@@ -19,8 +19,9 @@ version: "3.1"
 services:
   memcached:
     image: "memcached:alpine"
+    container_name: webdiplomacy-memcached
     ports:
-      - "11211:11211"
+      - "11211"
 
   mailhog:
     image: "mailhog/mailhog:latest"
@@ -29,6 +30,7 @@ services:
 
   mariadb:
     image: "mariadb:10.6"
+    container_name: "webdiplomacy-db"
     restart: always
     working_dir: /application
     volumes:
@@ -52,8 +54,17 @@ services:
   clickhouse:
     image: "yandex/clickhouse-server:latest"
 
-  # This is necessary for doing live React dev for the new board, but isn't needed after doing a build
-  # if the nginx config is changed to not redirect /beta/ to port 3000:
+  # This is necessary for doing live React dev for the new board, but isn't needed after doing a build. If the nginx config is changed to not redirect /beta/ to port 3000:
+  webserver:
+    image: "nginx:alpine"
+    working_dir: /application
+    volumes:
+      - "./:/application"
+      - "./phpdocker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf"
+    ports:
+      - "${WEBDIP_PORT:-43000}:80"
+    depends_on:
+      - "php-fpm"
   beta:
     image: "node:16.15.1-alpine3.14"
     container_name: webdiplomacy-beta
@@ -61,7 +72,7 @@ services:
     volumes:
       - "./beta-src:/application"
     ports:
-      - "3000"
+      - "3000:3000"
     command: >
       sh -c "npm install &&
               npm run start"
@@ -73,6 +84,8 @@ services:
       - "./:/application"
       - "./phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini"
     command: /bin/sh -c "install/gamemaster-entrypoint.sh"
+    depends_on:
+      - "mariadb"
     #environment:
     #    PHP_IDE_CONFIG: "serverName=Docker"
     #    XDEBUG_MODE: debug
@@ -89,19 +102,15 @@ services:
           - '${WEBDIP_PORT:-43000}:80'
 
   soketi:
-    container_name: "soketi_server"
+    container_name: "webdiplomacy-websocket"
     restart: unless-stopped
-    image: "quay.io/soketi/soketi:0.17-16-alpine"
+    image: "quay.io/soketi/soketi:1.0-16-debian"
     ports:
       - "${SOKETI_PORT:-6001}:6001"
       - "${SOKETI_METRICS_SERVER_PORT:-9601}:9601"
-    #environment:
-    #    - DEBUG='${DEBUG:-1}'
-    #    - PUSHER_APP_ID='webdiplomacy'
-    #    - PUSHER_APP_KEY='webdiplomacykey123'
-    #    - PUSHER_APP_SECRET='webdiplomacysecret123'
-    #    - PUSHER_HOST='${PUSHER_HOST:-127.0.0.1}'
-    #    - PUSHER_PORT= '${PUSHER_PORT:-6001}'
-    #    - PUSHER_SCHEME='${PUSHER_SCHEME:-http}' # or https
-    #    - METRICS_SERVER_PORT=${METRICS_SERVER_PORT-9601}
-    #    - DEFAULT_APP_ENABLE_CLIENT_MESSAGES=true
+    environment:
+      - SOKETI_DEBUG=${SOKETI_DEBUG:-1}
+      - SOKETI_DEFAULT_APP_ID=${SOKETI_DEFAULT_APP_ID:-app-id}
+      - SOKETI_DEFAULT_APP_KEY=${SOKETI_DEFAULT_APP_KEY:-app-key}
+      - SOKETI_DEFAULT_APP_SECRET=${SOKETI_DEFAULT_APP_SECRET:-app-secret}
+      - USER_AUTHENTICATION_TIMEOUT=${SOKETI_USER_AUTHENTICATION_TIMEOUT:-5000}

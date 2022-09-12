@@ -31,8 +31,14 @@
     "use-local-storage-state": "^17.2.0",
     "uuid": "^8.3.2",
     "web-vitals": "^1.1.2",
+    "pusher-js": "^7.0.6",
     "react-scroll": "^1.8.7",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "framer-motion": "^6.5.1",
+    "waait": "^1.0.5",
+    "formik": "^2.2.9",
+    "@tailwindcss/forms": "^0.5.2",
+    "keyboardjs": "github:markjaniczak/KeyboardJS"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useEffect } from "react";
+import client from "../../lib/pusher";
 import {
   fetchGameOverview,
   gameApiSliceActions,
@@ -15,7 +16,6 @@ import getPhaseKey from "../../utils/state/getPhaseKey";
 import WDGameProgressOverlay from "../ui/WDGameProgressOverlay";
 import WDAlertModal from "../ui/WDAlertModal";
 import { store } from "../../state/store";
-import useInterval from "../../hooks/useInterval";
 
 const WDMainController: React.FC = function ({ children }): React.ReactElement {
   const [displayedPhaseKey, setDisplayedPhaseKey] = React.useState<
@@ -35,19 +35,38 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
 
   const dispatchFetchOverview = () => {
     const { game } = store.getState();
-    const { outstandingOverviewRequests } = game;
-    // console.log({ outstandingOverviewRequests });
-    if (!outstandingOverviewRequests) {
+    if (!game.outstandingOverviewRequests) {
       dispatch(
         fetchGameOverview({
-          gameID: String(overview.gameID),
+          gameID: String(game.overview.gameID),
         }),
       );
     }
   };
 
-  // FIXME: for now, crazily fetch all messages every 5sec
-  useInterval(dispatchFetchOverview, 5000);
+  useEffect(() => {
+    dispatchFetchOverview();
+    if (overview.gameID > 0) {
+      const overviewChannel = client.subscribe(
+        `private-game${overview.gameID}`,
+      );
+
+      overviewChannel.bind("overview", async (content) => {
+        dispatchFetchOverview();
+        console.log("overview", overview, content);
+      });
+
+      overviewChannel.bind("pusher:subscription_succeeded", () => {
+        // eslint-disable-next-line no-console
+        console.info("overview channel subscription succeeded");
+      });
+
+      overviewChannel.bind("pusher:subscription_error", (error) => {
+        // eslint-disable-next-line no-console
+        console.error("overview channel subscription error", error);
+      });
+    }
+  }, [overview.gameID]);
 
   const needsGameOverview = useAppSelector(
     ({ game }) => game.needsGameOverview,
@@ -79,10 +98,7 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   if (!consistentPhase) {
     return <div>Loading...</div>;
   }
-  const showOverlay =
-    noPhase ||
-    status.status === "Left" ||
-    (displayedPhaseKey && overviewKey !== displayedPhaseKey);
+  const showOverlay = noPhase || status.status === "Left";
   if (displayedPhaseKey === null && overview.phase) {
     setDisplayedPhaseKey(overviewKey);
   }

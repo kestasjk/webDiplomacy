@@ -137,6 +137,8 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 			{
 				$MC->append('processHint',','.$Game->id);
 			}
+			require_once('lib/pusher.php');
+			libPusher::trigger("private-game" . $Game->id, 'overview', 'processed');
 			/*
 			Old instant-process code which was disabled as it was causing deadlocks
 			\

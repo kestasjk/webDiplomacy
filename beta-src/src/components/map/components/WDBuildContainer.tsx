@@ -1,5 +1,4 @@
 /* eslint-disable no-bitwise */
-import { Box } from "@mui/material";
 import * as React from "react";
 import BuildUnitMap from "../../../data/BuildUnit";
 import countryMap from "../../../data/map/variants/classic/CountryMap";
@@ -49,7 +48,7 @@ const WDBuildContainer: React.FC = function (): React.ReactElement {
     (state) => state.game.overview.user!.member,
   );
   if (!order || order.type !== "Build") {
-    return <Box />;
+    return <div />;
   }
   const territory = maps.terrIDToTerritory[order.toTerrID];
   const { province, unitSlotName } = TerritoryMap[territory];

@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Box, Stack } from "@mui/material";
 import WDMessage from "./WDMessage";
 import { GameMessage } from "../../state/interfaces/GameMessages";
 import { CountryTableData } from "../../interfaces/CountryTableData";
@@ -50,27 +49,20 @@ const WDMessageList: React.FC<WDMessageListProps> = function ({
     ([turn, msgs]) => {
       const psy = getPhaseSeasonYear(Number.parseInt(turn, 10), "Diplomacy");
       return (
-        <Box key={turn}>
-          <Box
-            sx={{
-              textAlign: "center",
-              color: "#666",
-              fontWeight: 500,
-              p: "6px",
-            }}
-          >
+        <div key={turn}>
+          <div className="text-center font-medium p-3 text-[#666]">
             {psy.season} {psy.year}
-          </Box>
+          </div>
           {msgs}
-        </Box>
+        </div>
       );
     },
   );
 
   return (
-    <WDVerticalScroll>
-      <Stack direction="column">{messageTurnComponents}</Stack>
-      <Box ref={messagesEndRef} />
+    <WDVerticalScroll height={435}>
+      <div className="flex-column">{messageTurnComponents}</div>
+      <div ref={messagesEndRef} />
     </WDVerticalScroll>
   );
 };

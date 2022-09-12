@@ -1,19 +1,16 @@
 import * as React from "react";
-import { Stack } from "@mui/material";
 import ModalViews from "../../enums/ModalViews";
 import WDTabItem from "./WDTabItem";
 
 interface WDTabGroupProps {
   currentView: ModalViews;
   onChange: (currentTab: ModalViews) => void;
-  padding: string;
   tabGroup: ModalViews[];
 }
 
 const WDTabGroup: React.FC<WDTabGroupProps> = function ({
   currentView,
   onChange,
-  padding,
   tabGroup,
 }): React.ReactElement {
   const tabList = tabGroup.map((currentTab) => {
@@ -27,11 +24,7 @@ const WDTabGroup: React.FC<WDTabGroupProps> = function ({
     );
   });
 
-  return (
-    <Stack alignItems="center" direction="row" spacing={2} sx={{ p: padding }}>
-      {tabList}
-    </Stack>
-  );
+  return <div className="flex space-x-3 px-3 sm:px-4">{tabList}</div>;
 };
 
 export default WDTabGroup;
