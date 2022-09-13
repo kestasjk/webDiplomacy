@@ -13,7 +13,6 @@ import Season from "../../../enums/Season";
 import WDPositionContainer from "../WDPositionContainer";
 import PhaseSelectorSimple from "../phase-selector/PhaseSelectorSimple";
 import { ReactComponent as BtnArrowIcon } from "../../../assets/svg/btnArrow.svg";
-import useSettings from "../../../hooks/useSettings";
 
 import {
   gameViewedPhase,
@@ -36,7 +35,6 @@ const NextPhase = function (): ReactElement {
   const { phase, season, year } = useAppSelector(gameOverview);
   const gameStatusData = useAppSelector(gameStatus);
   const dispatch = useAppDispatch();
-  const { setSetting } = useSettings();
 
   const {
     phase: gamePhase,
