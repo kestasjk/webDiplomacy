@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { useWindowSize } from "react-use";
+import { useKeyPressEvent, useWindowSize } from "react-use";
 import { Badge } from "@mui/material";
 
 import { useAppSelector, useAppDispatch } from "../../../../state/hooks";
@@ -42,12 +42,11 @@ const OpenModalButton: FunctionComponent<BottomRightProps> = function ({
   const { width } = useWindowSize();
   const popoverTrigger = React.useRef<HTMLDivElement>(null);
   const [currentTab, setCurrentTab] = useState(ModalViews.PRESS);
-
   const {
     ref: modalRef,
     isComponentVisible,
     setIsComponentVisible,
-  } = useComponentVisible(true, currentTab !== ModalViews.PRESS || width < 500);
+  } = useComponentVisible(false, width < 1000);
 
   const {
     alternatives,
@@ -108,17 +107,18 @@ const OpenModalButton: FunctionComponent<BottomRightProps> = function ({
   const toggleControlModal = () => {
     setIsComponentVisible(!isComponentVisible);
   };
-
-  useEffect(() => {
-    setIsComponentVisible(true);
-  }, []);
+  const inputMessage = document.getElementById("user-msg");
+  useKeyPressEvent("p", () => {
+    if (inputMessage !== document.activeElement) {
+      toggleControlModal();
+    }
+  });
 
   const controlModalTrigger = (
     <RightButton
       image="action"
       text={abbrMap[user?.member.country || ""]}
       onClick={toggleControlModal}
-      className=""
     />
   );
   // TODO: where to show this?:
@@ -187,7 +187,11 @@ const OpenModalButton: FunctionComponent<BottomRightProps> = function ({
 
   return (
     <div ref={modalRef}>
-      <div className="pointer-events-auto h-[66px]" ref={popoverTrigger}>
+      <div
+        className="pointer-events-auto h-[66px] has-tooltip"
+        ref={popoverTrigger}
+        title="Toggle open with 'P'"
+      >
         {numUnread + numUnknown ? (
           <Badge badgeContent={numUnknown ? " " : numUnread} color="error">
             {controlModalTrigger}

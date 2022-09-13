@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import useKeyboardJs from "react-use/lib/useKeyboardJs";
-import useSettings from "../../hooks/useSettings";
 import { useAppSelector, useAppDispatch } from "../../state/hooks";
 import {
   gameApiSliceActions,
@@ -20,7 +19,6 @@ const WDShortcuts: React.FC<WDShortcutsProps> = function ({
   // Do not access the dom like this.
   const inputMessage = document.getElementById("user-msg");
   const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
-  const { settings, setSetting } = useSettings();
   const gameStatusData = useAppSelector(gameStatus);
 
   const dispatch = useAppDispatch();
@@ -28,7 +26,7 @@ const WDShortcuts: React.FC<WDShortcutsProps> = function ({
   const [right] = useKeyboardJs("shift + right");
   const [up] = useKeyboardJs("shift + up");
   const [down] = useKeyboardJs("shift + down");
-  const [phases] = useKeyboardJs("shift + ctrl + p");
+  // const [phases] = useKeyboardJs("shift + ctrl + p");
 
   // gameStatusData.phases.length;
 
@@ -41,25 +39,14 @@ const WDShortcuts: React.FC<WDShortcutsProps> = function ({
       if (right) {
         dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1));
       }
-      if (left || right) {
-        if (
-          viewedPhaseIdx === gameStatusData.phases.length - 2 &&
-          viewedPhaseIdx > settings.lastPhaseClicked
-        ) {
-          setSetting("lastPhaseClicked", viewedPhaseIdx);
-        }
-      }
       if (up) {
-        dispatch(gameApiSliceActions.setViewedPhaseToLatestPhaseViewed());
+        dispatch(gameApiSliceActions.setViewedPhaseToLatest());
       }
       if (down) {
         dispatch(gameApiSliceActions.setViewedPhase(0));
       }
-      if (phases) {
-        onPhaseSelectorShortcut();
-      }
     }
-  }, [left, right, up, down, phases]);
+  }, [left, right, up, down]);
 
   // eslint-disable-next-line react/jsx-no-useless-fragment
   return <></>;
