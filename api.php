@@ -39,8 +39,10 @@ require_once('lib/cache.php');
 require_once('lib/html.php');
 require_once('lib/time.php');
 require_once('lib/gamemessage.php');
+require_once('lib/variant.php');
 require_once('board/orders/jsonBoardData.php');
 require_once('variants/install.php');
+require_once('gamemaster/gamemaster.php');
 $DB = new Database();
 
 /**
@@ -402,6 +404,9 @@ class ToggleVote extends ApiEntry {
 		}
 		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."' WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
 		$DB->sql_put("COMMIT");
+
+		require_once('lib/pusher.php');
+		libPusher::trigger("private-game" . $gameID, 'overview', 'processed');
 		
 		return $newVotes;
 	}
@@ -464,8 +469,70 @@ class SetVote extends ApiEntry {
 		}
 		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."' WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
 		$DB->sql_put("COMMIT");
+
+		require_once(l_r('gamemaster/game.php'));
+		$game = $this->getAssociatedGame();
+		// TODO: this should apply votes only for the current game
+		libGameMaster::findAndApplyGameVotes();
+		
+		require_once('lib/pusher.php');
+		libPusher::trigger("private-game" . $gameID, 'overview', 'set-vote');
 		
 		return $newVotes;
+	}
+}
+
+/**
+ * API entry websockets/authentication
+ * https://pusher.com/docs/channels/library_auth_reference/auth-signatures/
+ * Every time a user subscribes to a channel, it needs to be authenticated and authorized.
+ * This function works along with beta-src/src/lib/pusher.ts
+ */
+class WebSocketsAuthentication extends ApiEntry {
+	public function __construct() {
+		parent::__construct('websockets/authentication', 'JSON', '', array('gameID', 'socket_id', 'channel_name'));
+	}
+	public function run($userID, $permissionIsExplicit) {
+		$args 				= $this->getArgs();
+		$socketID 		= $args['socket_id'];
+		$channelName	= $args['channel_name'];
+
+		$channelNameParams = explode("-", $channelName);
+		$gameID = intval(str_replace("game", "", $channelNameParams[1]));
+		$countryID = 0;
+		
+		if (count($channelNameParams) > 2) {
+			$countryID = intval(str_replace("country", "", $channelNameParams[2]));
+		}
+		
+		$Game = $this->getAssociatedGame();
+
+		// There are 2 authorization validations because a player can
+		// subscribe to the game overview channel or to the messages channel
+		// game overview channel doesn't include the countryID
+		if (!(isset($Game->Members->ByUserID[$userID]))) {
+			throw new ClientForbiddenException('User doesn\'t belong to this game.');
+		}
+
+		if ($countryID != 0) {
+			if (!(isset($Game->Members->ByUserID[$userID]) && $countryID == $Game->Members->ByUserID[$userID]->countryID)) {
+				throw new ClientForbiddenException('User does not have explicit permission to make this API call.');
+			}
+		}
+		
+		$appKey				= Config::$pusherAppKey;
+		$appSecret		= Config::$pusherAppSecret;
+		$stringToSign = $socketID.":".$channelName;
+		$hash       	= hash_hmac('sha256', $stringToSign, $appSecret);
+		
+		return $this->JSONResponse(
+			"User was successfully authenticated for this channel",
+			'',
+			true,
+			[
+				'auth' => $appKey.':'.$hash
+			]
+		);
 	}
 }
 
@@ -1547,6 +1614,7 @@ try {
 	$api->load(new SetOrders());
 	$api->load(new ToggleVote());
 	$api->load(new SetVote());
+	$api->load(new WebSocketsAuthentication());
 	$api->load(new SendMessage());
 	$api->load(new GetMessages());
 	$api->load(new MessagesSeen());

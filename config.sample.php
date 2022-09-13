@@ -38,7 +38,7 @@ class Config
 	 *
 	 * @var string
 	 */
-	public static $database_socket='mariadb';
+	public static $database_socket='webdiplomacy-db';
 
 	/**
 	 * The user who will perform all database actions. You should
@@ -120,6 +120,20 @@ class Config
 	public static $modEMail='moderators@yourdiplomacyserver.com';
 
 	/**
+	 * Memcached hostname
+	 *
+	 * @var string
+	 */
+	public static $memcachedHost='webdiplomacy-memcached';
+
+	/**
+	 * Memcached port number
+	 *
+	 * @var int
+	 */
+	public static $memcachedPort=11211;
+
+	/**
 	 * An array of variants available on the server (for future releases, not yet enabled)
 	 * @var array
 	 */
@@ -139,31 +153,7 @@ class Config
 	 * @var string|null
 	 */
 	public static $playNowDomain = null;
-
-	/**
-	 * The memcached server
-	 * @var string
-	 */
-	public static $memcachedHost='memcached';
-
-	/**
-	 * The memcached port
-	 * @var int
-	 */
-	public static $memcachedPort='11211';
 	
-	/**
-	 * The config for the pusher websockets server
-	 */
-	public static $pusherConfig = array(
-		'id'=>'webdiplomacy',
-		'key'=>'webdiplomacykey123',
-		'secret'=>'webdiplomacysecret123',
-		'server'=>'soketi',
-		'port'=>6001,
-		'useTLS'=>false
-	);
-
 	/**
 	 * An array of categories to use when calculating GhostRatings
 	 * @var array
@@ -511,6 +501,47 @@ class Config
 		}
 		return false;	
 	}
-}
 
+	// ---
+	// --- The following settings are for WebSockets using Pusher or Soketi
+	// --- https://docs.soketi.app/getting-started/backend-configuration/pusher-sdk
+	// ---
+
+	/**
+	 * The default app id for the pusher/soketi array driver.
+	 *
+	 * @var string
+	 */
+	public static $pusherAppKey = 'app-key';
+
+	/**
+	 * The default app key for the pusher/soketi array driver.
+	 *
+	 * @var string
+	 */
+	public static $pusherAppSecret = 'app-secret';
+
+	/**
+	 * The default app secret for the pusher/soketi array driver.
+	 *
+	 * @var string
+	 */
+	public static $pusherAppId = 'app-id';
+
+	/**
+	 * The default host for the pusher/soketi array driver.
+	 * By default it's the defined name of the docker 
+	 * container defined in docker-compose.yml
+	 *
+	 * @var string
+	 */
+	public static $pusherHost = 'webdiplomacy-websocket';
+
+	/**
+	 * The default port for the pusher/soketi array driver.
+	 *
+	 * @var int
+	 */
+	public static $pusherPort = 6001;
+}
 ?>

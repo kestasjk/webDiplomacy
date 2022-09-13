@@ -248,6 +248,9 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 					$dirtyApiKeys[] = $apiKey;
 			}
 		}
+
+		require_once('lib/pusher.php');
+		libPusher::trigger("private-game" . $Game->id, 'overview', 'processed');
 	}
 	catch(Exception $e)
 	{
@@ -292,3 +295,4 @@ print '</div>';
 libHTML::footer();
 
 ?>
+	

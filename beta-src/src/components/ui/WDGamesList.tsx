@@ -1,8 +1,4 @@
 import * as React from "react";
-import { Box, useTheme, Stack, Button } from "@mui/material";
-import { Email } from "@mui/icons-material";
-
-import { styled } from "@mui/material/styles";
 import { useAppSelector } from "../../state/hooks";
 import {
   gameOverview,
@@ -15,116 +11,80 @@ import WDOrderStatusIcon from "./WDOrderStatusIcon";
 import getOrderStates from "../../utils/state/getOrderStates";
 import { getFormattedTimeLeft } from "../../utils/formatTime";
 
+interface GameProps {
+  game: any;
+  className?: string;
+}
+
+function Game({ game, className }: GameProps) {
+  return (
+    <div
+      className={`${className} rounded-lg border border-gray-300 mb-3 px-4 py-2 text-xs drop-shadow-sm bg-white`}
+    >
+      <a className="flex" href={`?gameID=${game.gameID}`}>
+        <div className="flex-1">
+          <div className="text-lg font-bold">{game.name}</div>
+          <div className="mt-0">
+            {/* <div>Starts in 44:00:00, 2 days / phase,</div> */}
+            <div>
+              {formatPSYForDisplay(getPhaseSeasonYear(game.turn, game.phase))}
+            </div>
+            {/* <div>Pot: 35 - Pre-Game Phase,</div>
+            <div>Classic, Bot Game, Unranked</div> */}
+          </div>
+        </div>
+        <div className="text-right">
+          <div className="text-sm font-bold">
+            {getFormattedTimeLeft(game.processTime).replace(" remaining", "")}
+          </div>
+          <div className="mt-2">
+            {/* Players <br />
+            {game.players.length} of 7 */}
+          </div>
+        </div>
+      </a>
+      <div className="mt-3">
+        {/* {game.players.map((player: any, index: number) => (
+          <span key={player.id}>
+            {player.name}
+            {index < game.players.length - 1 && <>,&nbsp;</>}
+          </span>
+        ))} */}
+      </div>
+      {/* {game.moves && (
+        <div className="mt-3 uppercase">
+          {game.moves.map((move: any, index: number) => (
+            <span key={move.country} className={`${index > 0 && "ml-3"}`}>
+              {move.country}&nbsp;{move.number}
+            </span>
+          ))}
+        </div>
+      )} */}
+    </div>
+  );
+}
+
+Game.defaultProps = {
+  className: undefined,
+};
+
 const WDGamesList: React.FC = function (): React.ReactElement {
   const activeGames = useAppSelector(playerActiveGames);
   const overview = useAppSelector(gameOverview); // just for country mapping
-  const theme = useTheme();
 
   const countries = Object.fromEntries(
     overview.members.map((m) => [m.countryID, m.country]),
   );
 
-  const SBox = styled(Box)(() => ({ padding: "2px", fontWeight: 700 }));
-
   return (
     <WDVerticalScroll>
-      <Stack sx={{ alignItems: "center" }}>
+      <div className="items-center px-4 mt-4">
         {activeGames
           .filter((game) => game.gameID !== overview.gameID)
           .map((game) => (
-            <Button
-              key={game.gameID}
-              variant="outlined"
-              sx={{
-                width: "90%",
-                m: "6px",
-              }}
-              href={`?gameID=${game.gameID}`}
-            >
-              <SBox
-                sx={{
-                  display: "grid",
-                  gridTemplateRows: "auto",
-                  gridTemplateColumns: "auto",
-                  width: "100%",
-                }}
-              >
-                <Stack sx={{ gridColumn: 1, gridRow: 1 }}>
-                  <SBox
-                    sx={{
-                      fontSize: "16px",
-                    }}
-                  >
-                    {game.name}
-                  </SBox>
-                  <SBox
-                    sx={{
-                      fontWeight: 400,
-                      fontSize: "11px",
-                    }}
-                  >
-                    {formatPSYForDisplay(
-                      getPhaseSeasonYear(game.turn, game.phase),
-                    )}
-                    <br />
-                    <span
-                      style={{
-                        color: theme.palette[countries[game.countryID]].main,
-                        fontSize: "11px",
-                        fontWeight: 700,
-                        padding: 0,
-                      }}
-                    >
-                      {countries[game.countryID]}
-                    </span>{" "}
-                    - {game.unitNo} units
-                  </SBox>
-                </Stack>
-                <Stack sx={{ gridColumn: 2, gridRow: 1 }}>
-                  <SBox
-                    sx={{
-                      fontSize: "14px",
-                      textAlign: "right",
-                    }}
-                  >
-                    {getFormattedTimeLeft(game.processTime).replace(
-                      " remaining",
-                      "",
-                    )}
-                  </SBox>
-                  <SBox
-                    component="span"
-                    sx={{
-                      fontSize: "10px",
-                      textAlign: "right",
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    {!!game.newMessagesFrom.length && (
-                      <Email
-                        fontSize="small"
-                        sx={{
-                          verticalAlign: "middle",
-                          color: "#88A",
-                          m: "3px",
-                        }}
-                      />
-                    )}
-                    <SBox
-                      component="span"
-                      sx={{ verticalAlign: "middle", m: "3px" }}
-                    >
-                      <WDOrderStatusIcon
-                        isHidden={getOrderStates(game.orderStatus).Hidden}
-                        orderStatus={getOrderStates(game.orderStatus)}
-                      />
-                    </SBox>
-                  </SBox>
-                </Stack>
-              </SBox>
-            </Button>
+            <Game key={game.gameID} game={game} />
           ))}
-      </Stack>
+      </div>
     </WDVerticalScroll>
   );
 };

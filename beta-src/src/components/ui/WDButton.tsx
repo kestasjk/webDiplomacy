@@ -24,7 +24,7 @@ const WDButton: FC<WDButtonProps> = function ({
         color === "primary"
           ? "bg-black text-white hover:bg-gray-500"
           : "bg-white border border-black text-black hover:bg-gray-200"
-      } flex justify-center px-3 sm:px-5 py-2.5 rounded-full font-bold text-center ${
+      } flex justify-center items-center px-3 sm:px-5 py-2.5 rounded-full text-center ${
         disabled && "bg-gray-400 cursor-not-allowed"
       }`}
       disabled={disabled}

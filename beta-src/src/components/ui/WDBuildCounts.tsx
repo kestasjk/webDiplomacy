@@ -1,6 +1,4 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
-import { Box, Stack } from "@mui/material";
 import {
   gameOrdersMeta,
   gameOverview,
@@ -11,7 +9,6 @@ import { useAppSelector } from "../../state/hooks";
 import WDArmyIcon from "./units/WDArmyIcon";
 import UIState from "../../enums/UIState";
 import Country from "../../enums/Country";
-import { UNIT_HEIGHT, UNIT_WIDTH } from "./units/WDUnit";
 import countryMap from "../../data/map/variants/classic/CountryMap";
 
 const range = (N: number) => Array.from(Array(N).keys());
@@ -23,7 +20,7 @@ const WDBuildCounts: React.FC = function (): React.ReactElement {
   const ordersMeta = useAppSelector(gameOrdersMeta);
 
   const isCurrent = viewedPhaseIdx >= phases.length - 1;
-  if (phase !== "Builds" || !isCurrent) return <Box />;
+  if (phase !== "Builds" || !isCurrent) return <div />;
   const extraSCs = user ? user.member.supplyCenterNo - user.member.unitNo : 0;
   const numBuildOrders = Object.values(ordersMeta).filter((o) =>
     o.update?.type.startsWith("Build"),
@@ -36,19 +33,18 @@ const WDBuildCounts: React.FC = function (): React.ReactElement {
   const UNIT_WIDTH_SQUOOSHED = 40; // need to squoosh to avoid increasing HUD width
   const country = user ? countryMap[user.member.country] : Country.FRANCE;
   return (
-    <Box
-      sx={{
-        display: "block",
-        p: 0,
-        mt: 2,
-      }}
+    <div
+      className={`${
+        (numRemainingBuilds > 0 || numRemainingDestroys > 0) &&
+        "display-block px-7 py-3 mt-1 bg-black rounded-xl mb-3"
+      }`}
     >
-      <Stack>
+      <div className="pr-2 flex">
         {range(numRemainingBuilds).map((buildIdx) => (
           <svg
             key={buildIdx}
             style={{
-              height: UNIT_HEIGHT,
+              height: 50,
               width: UNIT_WIDTH_SQUOOSHED,
               overflow: "visible",
             }}
@@ -60,7 +56,7 @@ const WDBuildCounts: React.FC = function (): React.ReactElement {
           <svg
             key={buildIdx}
             style={{
-              height: UNIT_HEIGHT,
+              height: 50,
               width: UNIT_WIDTH_SQUOOSHED,
               overflow: "visible",
             }}
@@ -68,8 +64,8 @@ const WDBuildCounts: React.FC = function (): React.ReactElement {
             <WDArmyIcon country={country} iconState={UIState.DESTROY} />
           </svg>
         ))}
-      </Stack>
-    </Box>
+      </div>
+    </div>
   );
 };
 

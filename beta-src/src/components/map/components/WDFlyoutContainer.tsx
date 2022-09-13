@@ -5,6 +5,7 @@ import {
   gameApiSliceActions,
   gameLegalOrders,
   gameMaps,
+  gameOverview,
   gameOrder,
 } from "../../../state/game/game-api-slice";
 import { useAppDispatch, useAppSelector } from "../../../state/hooks";
@@ -21,6 +22,7 @@ const WDFlyoutContainer: FC<WDFlyoutContainerProps> = function ({
   units,
 }): ReactElement {
   const dispatch = useAppDispatch();
+  const overview = useAppSelector(gameOverview);
   const order = useAppSelector(gameOrder);
   const maps = useAppSelector(gameMaps);
   const legalOrders = useAppSelector(gameLegalOrders);
@@ -33,6 +35,7 @@ const WDFlyoutContainer: FC<WDFlyoutContainerProps> = function ({
     viaConvoy: string | undefined = undefined,
   ) => {
     if (!order.inProgress) return;
+    if (overview.phase !== "Diplomacy") return;
     console.log(`Dispatched ${orderType}`);
     dispatch(
       gameApiSliceActions.updateOrder({
@@ -49,7 +52,7 @@ const WDFlyoutContainer: FC<WDFlyoutContainerProps> = function ({
 
   const canVia: boolean =
     unit?.unit?.type === "Army" &&
-    legalOrders.legalViasByUnitID[order.unitID].length > 0;
+    legalOrders.legalViasByUnitID[order.unitID]?.length > 0;
 
   useKeyPressEvent("h", () => clickHandler("Hold"));
   useKeyPressEvent("d", () => clickHandler("Hold"));
@@ -57,7 +60,7 @@ const WDFlyoutContainer: FC<WDFlyoutContainerProps> = function ({
   useKeyPressEvent("a", () => clickHandler("Move"));
   useKeyPressEvent("v", () => canVia && clickHandler("Move", "Yes"));
   useKeyPressEvent("s", () => clickHandler("Support"));
-  useKeyPressEvent("c", () => clickHandler("Convoy"));
+  useKeyPressEvent("c", () => canConvoy && clickHandler("Convoy"));
 
   if (!order.inProgress || order.type || !order.unitID) {
     return <div />;

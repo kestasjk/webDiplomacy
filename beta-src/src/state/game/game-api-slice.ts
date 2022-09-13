@@ -277,8 +277,21 @@ const gameApiSlice = createSlice({
     },
     changeViewedPhaseIdxBy(state, action) {
       let newIdx = state.viewedPhaseState.viewedPhaseIdx + action.payload;
+      console.log(
+        "state.viewedPhaseState.viewedPhaseIdx",
+        state.viewedPhaseState.viewedPhaseIdx,
+      );
+      console.log("newIdx", newIdx);
       newIdx = Math.min(newIdx, state.status.phases.length - 1);
       newIdx = Math.max(newIdx, 0);
+      state.viewedPhaseState.viewedPhaseIdx = newIdx;
+      state.viewedPhaseState.latestPhaseViewed = Math.max(
+        state.viewedPhaseState.latestPhaseViewed,
+        newIdx,
+      );
+    },
+    setViewedPhase(state, action) {
+      const newIdx = action.payload;
       state.viewedPhaseState.viewedPhaseIdx = newIdx;
       state.viewedPhaseState.latestPhaseViewed = Math.max(
         state.viewedPhaseState.latestPhaseViewed,
