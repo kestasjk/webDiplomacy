@@ -80,8 +80,11 @@ const OpenModalButton: FunctionComponent<BottomRightProps> = function ({
     }
   };
 
+  const countryID = user?.member.countryID;
   useEffect(() => {
+    if (gameID === 0) return;
     dispatchFetchMessages();
+    console.log("creating press socket");
     const channel = client.subscribe(
       `private-game${gameID}-country${user?.member.countryID}`,
     );
@@ -102,7 +105,7 @@ const OpenModalButton: FunctionComponent<BottomRightProps> = function ({
       // eslint-disable-next-line no-console
       console.error("messages subscription error", data);
     });
-  }, []);
+  }, [gameID, countryID]);
 
   const toggleControlModal = () => {
     setIsComponentVisible(!isComponentVisible);
@@ -125,7 +128,6 @@ const OpenModalButton: FunctionComponent<BottomRightProps> = function ({
   // iconState={showControlModal ? UIState.ACTIVE : UIState.INACTIVE}
 
   const messages = useAppSelector(({ game }) => game.messages.messages);
-
   const numUnread = messages.reduce(
     (acc, m) => acc + Number(m.status === MessageStatus.UNREAD),
     0,
