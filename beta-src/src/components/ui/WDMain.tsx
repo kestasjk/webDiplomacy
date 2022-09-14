@@ -21,9 +21,7 @@ import {
 import { StandoffInfo } from "../map/components/WDArrowContainer";
 import useSettings from "../../hooks/useSettings";
 
-const WDMapController = React.lazy(
-  () => import("../controllers/WDMapController"),
-);
+import WDMapController from "../controllers/WDMapController";
 
 const WDMain: React.FC = function (): React.ReactElement {
   // console.log("WDMain rerendered");
@@ -438,25 +436,23 @@ const WDMain: React.FC = function (): React.ReactElement {
     (viewedPhaseState.viewedPhaseIdx === status.phases.length - 1 ||
       status.phases.length === 0);
   return (
-    <React.Suspense fallback={<div>Loading...</div>}>
-      <WDMainController>
-        <WDMapController
-          units={units}
-          phase={phase}
-          orders={orders}
-          maps={maps}
-          territories={territories}
-          centersByProvince={centersByProvince}
-          standoffs={standoffs}
-          isLivePhase={isLivePhase}
-        />
-        <WDUI
-          orders={orders}
-          units={units}
-          viewingGameFinishedPhase={viewingGameFinishedPhase}
-        />
-      </WDMainController>
-    </React.Suspense>
+    <WDMainController>
+      <WDMapController
+        units={units}
+        phase={phase}
+        orders={orders}
+        maps={maps}
+        territories={territories}
+        centersByProvince={centersByProvince}
+        standoffs={standoffs}
+        isLivePhase={isLivePhase}
+      />
+      <WDUI
+        orders={orders}
+        units={units}
+        viewingGameFinishedPhase={viewingGameFinishedPhase}
+      />
+    </WDMainController>
   );
 };
 

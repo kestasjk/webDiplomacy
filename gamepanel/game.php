@@ -154,12 +154,12 @@ class panelGame extends Game
 	{
 		global $User;
 
-		if (!$this->Members->isJoined()) {
-			return null;
-		}
-
 		if ($User->isActiveBeta && $this->isClassicGame()) {
-			return'<a href="beta?gameID='.$this->id.'" >'.l_t('Play Beta').'</a> ';
+			if ($this->Members->isJoined()) {
+				return '<a href="beta?gameID='.$this->id.'" >'.l_t('Play Beta').'</a> ';
+			} else {
+				return '<a href="beta?gameID='.$this->id.'" >'.l_t('View Beta').'</a> ';
+			}
 		};
 
 		return null;

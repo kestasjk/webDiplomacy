@@ -20,7 +20,7 @@ const WDShortcuts: React.FC<WDShortcutsProps> = function ({
   const [right] = useKeyboardJs("shift + right");
   const [up] = useKeyboardJs("shift + up");
   const [down] = useKeyboardJs("shift + down");
-  const [phases] = useKeyboardJs("shift + ctrl + p");
+  // const [phases] = useKeyboardJs("shift + ctrl + p");
 
   // gameStatusData.phases.length;
 
@@ -34,16 +34,13 @@ const WDShortcuts: React.FC<WDShortcutsProps> = function ({
         dispatch(gameApiSliceActions.changeViewedPhaseIdxBy(1));
       }
       if (up) {
-        dispatch(gameApiSliceActions.setViewedPhaseToLatestPhaseViewed());
+        dispatch(gameApiSliceActions.setViewedPhaseToLatest());
       }
       if (down) {
         dispatch(gameApiSliceActions.setViewedPhase(0));
       }
-      if (phases) {
-        onPhaseSelectorShortcut();
-      }
     }
-  }, [left, right, up, down, phases]);
+  }, [left, right, up, down]);
 
   // eslint-disable-next-line react/jsx-no-useless-fragment
   return <></>;

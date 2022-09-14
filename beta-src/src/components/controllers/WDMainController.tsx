@@ -95,9 +95,6 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
     document.title = `${name} - webDiplomacy`;
   }, [name, gameID]);
 
-  if (!consistentPhase) {
-    return <div>Loading...</div>;
-  }
   const showOverlay = noPhase || status.status === "Left";
   if (displayedPhaseKey === null && overview.phase) {
     setDisplayedPhaseKey(overviewKey);

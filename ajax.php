@@ -64,6 +64,20 @@ if( isset($User) && $User->type['User'] && isset($_GET['groupType']) && isset($_
 if( isset($_GET['groupID']) && isset($_GET['userID']) && isset($User) && $User->type['User'] )
 {
 }
+else if( isset($_GET['sendSMSToken']) ) {
+	if( libAuth::sendSMSToken_Valid($_GET['sendSMSToken']) ) {
+		
+		$token = explode('_', $_GET['sendSMSToken']);
+		$number = $token[0];
+		$message = $token[1];
+		
+		require_once('lib/sms.php');
+		
+		libSMS::send($number, $message);
+		
+		$results = "Success";
+	}
+}
 else if( isset($_GET['likeMessageToggleToken']) ) {
 	if( libAuth::likeToggleToken_Valid($_GET['likeMessageToggleToken']) ) {
 		

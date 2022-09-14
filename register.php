@@ -24,6 +24,7 @@
  */
 
 require_once('header.php');
+require_once('lib/sms.php');
 
 require_once(l_r('objects/mailer.php'));
 global $Mailer;

@@ -32,7 +32,10 @@ const PhaseSelectorSimple: FunctionComponent<PhaseSelectorSimpleProps> =
     }`;
 
     return (
-      <div className="bg-black flex text-white items-center h-14 px-4 sm:px-8 rounded-full space-x-3 sm:space-x-8 z-20 select-none">
+      <div
+        className="has-tooltip bg-black flex text-white items-center h-14 px-4 sm:px-8 rounded-full space-x-3 sm:space-x-8 z-20 select-none"
+        title="Change phases with Shift-Left and Shift-Right."
+      >
         <button
           type="button"
           className="h-full outline-0"

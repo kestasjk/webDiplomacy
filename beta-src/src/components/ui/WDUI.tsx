@@ -26,7 +26,7 @@ import {
   getHistoricalPhaseSeasonYear,
 } from "../../utils/state/getPhaseSeasonYear";
 import WDClassesJIT from "./WDClassesJIT";
-import WDLoading from "../miscellaneous/Loading";
+// import WDLoading from "../miscellaneous/Loading";
 
 interface WDUIProps {
   orders: IOrderDataHistorical[];

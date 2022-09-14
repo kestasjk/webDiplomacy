@@ -147,14 +147,17 @@ class panelGameBoard extends panelGame
 			<form action="group.php" method="post">
 			'.libAuth::formTokenHTML().'
 			<input type="hidden" name="gameID" value="'.$this->id.'" /><br />
+			<input type="hidden" name="gameID" value="'.$this->id.'" /><br />
 			<strong>Countries:</strong> <em>Please select the countries / users which you believe are metagaming / multi-accounting.</em><br />
 			<div style="text-align:center">';
 		foreach($this->Members->ByCountryID as $countryID=>$Member)
 		{
+			if( $Member->userID == $User->id ) continue;
+
 			if ($this->anon == 'No' || !$Member->isNameHidden() )
 				$buf .= '<nobr><input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . $Member->profile_link() . ', </nobr>';
-			//else
-				//$buf .= '<nobr><input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . $Member->countryName() . ', </nobr>';
+			else
+				$buf .= '<nobr><input type="checkbox" name="countryIsSuspected'.$countryID.'" /> ' . $Member->memberNameCountry() . ', </nobr>';
 		}
 		$buf .= '</div>
 			<br />
@@ -164,10 +167,21 @@ class panelGameBoard extends panelGame
 		';
 		$buf .= '<br /><strong>Note:</strong> Strong/mid-strength accusations will be followed up by the mod team, and will be discussed all involved. Do not submit without a genuine suspicion of meta/multi-gaming.<br />Other accusation strengths will be looked into as time permits, and combined with other accusations to detect possible links. Thanks for helping to keep the server fun to play on!<br /><br />
 			<input class="form-submit" type="Submit" name="Submit" value="Submit cheating suspicion" /> ';
-		$buf .= '</form>
-		</div></div>';
+		$buf .= '</form>';
+		require_once('objects/group.php');
+		require_once('objects/groupUser.php');
+		$groupUsers = Group::getUsers("gr.isActive = 1 AND gr.gameID = ".$this->id);
+		$buf .= Group::outputUserTable_static($groupUsers, null, null);
+		$buf .= '</div></div>';
+		
 		$buf .= '<script type="text/javascript">
-document.getElementById("suspicionToggle").addEventListener("click", function() { this.nextElementSibling.style.display = this.nextElementSibling.style.display === "block" ? "none" : "block"; });
+document.getElementById("suspicionToggle").addEventListener("click", function() { 
+	
+	this.nextElementSibling.style.display = this.nextElementSibling.style.display === "block" ? "none" : "block";
+	if( this.nextElementSibling.style.display === "block" ) {
+		window.leavepagedanger = false; // Disable the warning about leaving with unsubmitted text
+	}
+});
 </script>';
 		$buf .= '<div class="bar membersList memberVotePanel"><a name="votebar"></a>
 		<table><tr class="member">
