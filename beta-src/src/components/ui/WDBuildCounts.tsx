@@ -14,13 +14,14 @@ import countryMap from "../../data/map/variants/classic/CountryMap";
 const range = (N: number) => Array.from(Array(N).keys());
 
 const WDBuildCounts: React.FC = function (): React.ReactElement {
-  const { user, phase } = useAppSelector(gameOverview);
+  const { user } = useAppSelector(gameOverview);
   const { phases } = useAppSelector(gameStatus);
   const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
   const ordersMeta = useAppSelector(gameOrdersMeta);
 
+  const phase = phases[viewedPhaseIdx];
   const isCurrent = viewedPhaseIdx >= phases.length - 1;
-  if (phase !== "Builds" || !isCurrent) return <div />;
+  if (phase?.phase !== "Builds" || !isCurrent) return <div />;
   const extraSCs = user ? user.member.supplyCenterNo - user.member.unitNo : 0;
   const numBuildOrders = Object.values(ordersMeta).filter((o) =>
     o.update?.type.startsWith("Build"),
