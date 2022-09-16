@@ -161,7 +161,7 @@ const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
     if (needsToSave && saveEnabled && settings.autoSave) {
       clickButton(OrderStatusButton.SAVE);
     }
-  }, [ordersMeta]);
+  }, [ordersMeta, settings]);
 
   const buttonClass = "w-14 h-14 rounded-full sm:w-fit sm:px-[30px]";
 
