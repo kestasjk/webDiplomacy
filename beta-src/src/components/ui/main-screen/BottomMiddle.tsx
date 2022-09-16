@@ -16,7 +16,6 @@ import { ReactComponent as BtnArrowIcon } from "../../../assets/svg/btnArrow.svg
 
 import {
   gameViewedPhase,
-  gameStatus,
   gameApiSliceActions,
   gameOverview,
 } from "../../../state/game/game-api-slice";
@@ -31,9 +30,7 @@ interface BottomMiddleProps {
 }
 
 const NextPhase = function (): ReactElement {
-  const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
   const { phase, season, year } = useAppSelector(gameOverview);
-  const gameStatusData = useAppSelector(gameStatus);
   const dispatch = useAppDispatch();
 
   const {

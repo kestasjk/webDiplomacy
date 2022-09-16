@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import WDMainController from "../controllers/WDMainController";
 import WDUI from "./WDUI";
 import {
@@ -17,13 +17,10 @@ import {
   Unit,
 } from "../../utils/map/getUnits";
 import { StandoffInfo } from "../map/components/WDArrowContainer";
-import WDGameFinishedOverlay from "./WDGameFinishedOverlay";
 
 import WDMapController from "../controllers/WDMapController";
 
 const WDMain: React.FC = function (): React.ReactElement {
-  // console.log("WDMain rerendered");
-
   // FIXME: it's not ideal for us to be fetching the whole world from store here
   // This is hard to untangle though because the representation of the data in the
   // store is relatively bad. You have to depend on a lot of stuff in order to
@@ -251,6 +248,7 @@ const WDMain: React.FC = function (): React.ReactElement {
       isLivePhase: false,
     };
   };
+
   const { phase, units, orders, centersByProvince, isLivePhase } =
     updateForPhase();
   const { territories } = data.data;
