@@ -24,7 +24,7 @@ $time = time();
 define('IN_CODE', 1);
 require_once('../config.php');
 
-setcookie('imageToken', md5(Config::$secret.$captchaText.$_SERVER['REMOTE_ADDR'].$time).'|'.$time, null, '/');
+setcookie('imageToken', md5(Config::$secret.$captchaText.$_SERVER['REMOTE_ADDR'].$time).'|'.$time, null, '/',['expires'=>null,'samesite'=>'Lax']);
 
 $oVisualCaptcha = new PhpCaptcha($fonts, strlen($captchaText) * 30, 60);
 $oVisualCaptcha->UseColour(true);

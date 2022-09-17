@@ -379,14 +379,14 @@ class libAuth
 	public static function keyWipe()
 	{
 		// Don't change this line. Don't ask why it needs to be set to expire in a year to expire immidiately
-		$success=setcookie('wD-Key', '', (time()-3600));
+		$success=setcookie('wD-Key', '', ['expires'=>(time()-3600),'samesite'=>'Lax']);
 		libHTML::$footerScript[] = 'eraseCookie("wD-Key");';
 
 		if ( isset($_COOKIE[session_name()]) )
 		{
 			libHTML::$footerScript[] = 'eraseCookie("'.session_name().'");';
 			unset($_COOKIE[session_name()]);
-			setcookie(session_name(), '', time()-3600);
+			setcookie(session_name(), '', ['expires'=>time()-3600,'samesite'=>'Lax']);
 			session_destroy();
 		}
 
@@ -406,11 +406,11 @@ class libAuth
 		$key = self::userID_Key($userID);
 
 		if ( $session )
-			setcookie('wD-Key', $key );
+			setcookie('wD-Key', $key ,['expires'=>null,'samesite'=>'Lax']);
 		elseif ( $path )
-			setcookie('wD-Key', $key, (time()+365*24*60*60), $path );
+			setcookie('wD-Key', $key, ['expires'=>(time()+365*24*60*60),'samesite'=>'Lax'], $path );
 		else
-			setcookie('wD-Key', $key, (time()+365*24*60*60));
+			setcookie('wD-Key', $key, ['expires'=>(time()+365*24*60*60),'samesite'=>'Lax']);
 	}
 
 	/**

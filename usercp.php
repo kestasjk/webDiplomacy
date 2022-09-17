@@ -231,7 +231,7 @@ if (isset($_COOKIE['wD-Tutorial-Settings']))
 	libHTML::help('Settings', $tutorialMessage);
 
 	unset($_COOKIE['wD-Tutorial-Settings']);
-	setcookie('wD-Tutorial-Settings', '', time()-3600);
+	setcookie('wD-Tutorial-Settings', '', ['expires'=>time()-3600,'samesite'=>'Lax']);
 }
 
 print libHTML::pageTitle(l_t('User account settings'),l_t('Control settings for your account.'));

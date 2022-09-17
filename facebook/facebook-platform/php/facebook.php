@@ -240,12 +240,12 @@ class Facebook {
        foreach ($cookies as $name) {
          setcookie($this->api_key . '_' . $name,
                    false,
-                   time() - 3600,
+                   ['expires'=>time() - 3600,'samesite'=>'Lax'],
                    '',
                    $this->base_domain);
          unset($_COOKIE[$this->api_key . '_' . $name]);
        }
-       setcookie($this->api_key, false, time() - 3600, '', $this->base_domain);
+       setcookie($this->api_key, false, ['expires'=>time() - 3600,'samesite'=>'Lax'], '', $this->base_domain);
        unset($_COOKIE[$this->api_key]);
      }
 
@@ -394,16 +394,16 @@ class Facebook {
     }
 
     foreach ($cookies as $name => $val) {
-      setcookie($this->api_key . '_' . $name, $val, (int)$expires, '', $this->base_domain);
+      setcookie($this->api_key . '_' . $name, $val, ['expires'=>(int)$expires,'samesite'=>'Lax'], '', $this->base_domain);
       $_COOKIE[$this->api_key . '_' . $name] = $val;
     }
     $sig = self::generate_sig($cookies, $this->secret);
-    setcookie($this->api_key, $sig, (int)$expires, '', $this->base_domain);
+    setcookie($this->api_key, $sig, ['expires'=>(int)$expires,'samesite'=>'Lax'], '', $this->base_domain);
     $_COOKIE[$this->api_key] = $sig;
 
     if ($this->base_domain != null) {
       $base_domain_cookie = 'base_domain_' . $this->api_key;
-      setcookie($base_domain_cookie, $this->base_domain, (int)$expires, '', $this->base_domain);
+      setcookie($base_domain_cookie, $this->base_domain, ['expires'=>(int)$expires,'samesite'=>'Lax'], '', $this->base_domain);
       $_COOKIE[$base_domain_cookie] = $this->base_domain;
     }
   }

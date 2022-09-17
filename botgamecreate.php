@@ -69,7 +69,7 @@ if( defined('PLAYNOW') )
 		
 
 		$cookieKey = $key;//libAuth::generateKey($newUserID, $pass);
-		setcookie('wD-Key',$cookieKey,time()+365*24*60*60);
+		setcookie('wD-Key',$cookieKey,['expires'=>time()+365*24*60*60,'samesite'=>'Lax']);
 
 		global $User;
 		$User = new User($newUserID);

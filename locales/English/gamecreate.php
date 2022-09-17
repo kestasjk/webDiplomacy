@@ -73,7 +73,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			libHTML::help('Create New Game', $tutorialMessage);
 
 			unset($_COOKIE['wD-Tutorial-GameCreate']);
-			setcookie('wD-Tutorial-GameCreate', '', time()-3600);
+			setcookie('wD-Tutorial-GameCreate', '', ['expires'=>time()-3600,'samesite'=>'Lax']);
 		}
 	?>
 	<p><a href="botgamecreate.php">Play a game against bots</a></p>
