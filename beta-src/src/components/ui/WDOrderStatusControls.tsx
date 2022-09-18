@@ -6,6 +6,7 @@ import {
   gameApiSliceActions,
   gameData,
   gameOrdersMeta,
+  gameOverview,
   gameStatus,
   gameViewedPhase,
   saveOrders,
@@ -30,6 +31,7 @@ const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
 }): React.ReactElement {
   const { settings } = useSettings();
 
+  const overview = useAppSelector(gameOverview);
   const { data } = useAppSelector(gameData);
   const ordersMeta = useAppSelector(gameOrdersMeta);
   const status = useAppSelector(gameStatus);
@@ -59,6 +61,13 @@ const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
   let readyButtonText: string;
   let saveButtonText: string;
   const saveText = "Save";
+  const { user } = overview;
+  const extraSCs = user ? user.member.supplyCenterNo - user.member.unitNo : 0;
+  const canSave =
+    ordersLength > 0 &&
+    (overview.phase === "Diplomacy" ||
+      ordersLength !== ordersSaved ||
+      (overview.phase === "Builds" && extraSCs > 0));
 
   // orderStatus contains what the server thinks our order status is.
   if (savingOrdersInProgress === "readying") {
@@ -81,19 +90,14 @@ const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
     saveEnabled = false;
     readyButtonText = "Unready";
     saveButtonText = saveText;
-  } else if (orderStatus.Saved) {
+  } else if (orderStatus.Saved || orderStatus.Completed) {
     readyEnabled = viewingCurPhase;
     saveEnabled = ordersLength !== ordersSaved && viewingCurPhase;
     readyButtonText = "Ready";
     saveButtonText = saveText;
-  } else if (orderStatus.Completed) {
-    readyEnabled = ordersLength !== ordersSaved && viewingCurPhase;
-    saveEnabled = ordersLength !== ordersSaved && viewingCurPhase;
-    readyButtonText = "Ready";
-    saveButtonText = saveText;
   } else {
-    readyEnabled = ordersLength !== ordersSaved && viewingCurPhase;
-    saveEnabled = viewingCurPhase;
+    readyEnabled = viewingCurPhase && canSave;
+    saveEnabled = viewingCurPhase && canSave;
     readyButtonText = "Ready";
     saveButtonText = saveText;
   }
@@ -158,7 +162,7 @@ const WDOrderStatusControls: React.FC<WDOrderStatsControlsProps> = function ({
     const needsToSave = Object.keys(ordersMeta).some(
       (key) => ordersMeta[key].saved === false,
     );
-    if (needsToSave && saveEnabled && settings.autoSave) {
+    if (needsToSave && doAnimateGlow && settings.autoSave) {
       clickButton(OrderStatusButton.SAVE);
     }
   }, [ordersMeta, settings]);

@@ -318,7 +318,7 @@ export default function processMapClick(
         const targetUnitID =
           maps.provinceIDToUnits[maps.terrIDToProvinceID[order.fromTerrID]][0];
         if (ownUnits.includes(targetUnitID) && fromTerrID !== toTerrID) {
-          startNewOrder(state, { targetUnitID });
+          startNewOrder(state, { unitID: targetUnitID });
           updateOrder(state, {
             convoyPath,
             toTerrID,
@@ -364,7 +364,7 @@ export default function processMapClick(
           maps.provinceIDToUnits[maps.terrIDToProvinceID[order.fromTerrID]][0];
         // if it's a convoy of my own unit, fill it in
         if (state.ownUnits.includes(targetUnitID)) {
-          startNewOrder(state, { targetUnitID });
+          startNewOrder(state, { unitID: targetUnitID });
           updateOrder(state, {
             convoyPath,
             toTerrID,

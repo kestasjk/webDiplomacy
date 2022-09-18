@@ -71,9 +71,7 @@ const PhaseSelectorSimple: FunctionComponent<PhaseSelectorSimpleProps> =
         <button
           type="button"
           className="h-full outline-0"
-          onClick={() =>
-            dispatch(gameApiSliceActions.setViewedPhaseToLatestPhaseViewed())
-          }
+          onClick={() => dispatch(gameApiSliceActions.setViewedPhaseToLatest())}
         >
           <StepTwoIcon className={rightArrowsClassName} />
         </button>

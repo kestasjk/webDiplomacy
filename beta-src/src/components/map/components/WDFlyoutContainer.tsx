@@ -36,7 +36,6 @@ const WDFlyoutContainer: FC<WDFlyoutContainerProps> = function ({
   ) => {
     if (!order.inProgress) return;
     if (overview.phase !== "Diplomacy") return;
-    console.log(`Dispatched ${orderType}`);
     dispatch(
       gameApiSliceActions.updateOrder({
         type: orderType,
