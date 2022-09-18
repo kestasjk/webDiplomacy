@@ -74,25 +74,26 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
   totalPhases,
 }: BottomMiddleProps): ReactElement {
   const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
-  const { phase, season, year } = useAppSelector(gameOverview);
   const { width } = useWindowSize();
   const [isNewPhase, setIsNewPhase] = useState<boolean>(false);
   const [lastViewedPhase, setLastViewedPhase] =
     useState<number>(viewedPhaseIdx);
-  const [lastPhase, setLastPhase] = useState<string>("");
+  const [lastPhase, setLastPhase] = useState<number>(-1);
 
   useEffect(() => {
-    if (phase === "Loading") return;
-    const curPhase = `${phase}-${season}-${year}`;
-    if (lastPhase !== curPhase && viewedPhaseIdx < totalPhases) {
+    if (
+      lastPhase !== totalPhases &&
+      viewedPhaseIdx !== totalPhases - 1 &&
+      lastPhase !== -1
+    ) {
       setIsNewPhase(true);
     }
     if (viewedPhaseIdx !== lastViewedPhase) {
       setIsNewPhase(false);
     }
     setLastViewedPhase(viewedPhaseIdx);
-    setLastPhase(curPhase);
-  }, [viewedPhaseIdx, phase, season, year]);
+    setLastPhase(totalPhases);
+  }, [viewedPhaseIdx, totalPhases]);
 
   return (
     <WDPositionContainer

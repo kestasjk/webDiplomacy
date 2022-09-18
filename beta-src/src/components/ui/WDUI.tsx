@@ -92,7 +92,10 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
   // On the very last phase of a finished game, webdip API might give an
   // entirely erroneous year/season/phase. So instead, trust the one in the
   // overview.
-  if (viewedPhaseIdx === gameStatusData.phases.length - 1) {
+  if (
+    viewedPhaseIdx === gameStatusData.phases.length - 1 &&
+    gamePhase === "Finished"
+  ) {
     viewedPhase = gamePhase;
     viewedSeason = gameSeason;
     viewedYear = gameYear;

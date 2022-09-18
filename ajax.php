@@ -128,6 +128,11 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 		$DB->sql_put("COMMIT");
 
 		$results = $O->getResults();
+		if( $newReady != $oldReady) {
+			$Game = libVariant::$Variant->Game($O->gameID);//, UPDATE); // No need to lock game for update to check whether it needs a process
+			require_once('lib/pusher.php');
+			libPusher::trigger("private-game" . $Game->id, 'overview', 'processed');
+		}
 
 		if( $newReady && !$oldReady )
 		{
@@ -137,8 +142,7 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 			{
 				$MC->append('processHint',','.$Game->id);
 			}
-			require_once('lib/pusher.php');
-			libPusher::trigger("private-game" . $Game->id, 'overview', 'processed');
+			
 			/*
 			Old instant-process code which was disabled as it was causing deadlocks
 			\

@@ -3,7 +3,7 @@ export default function getAvailableOrder(currentOrders, ordersMeta) {
   for (let i = 0; i < currentOrders?.length; i += 1) {
     const { id } = currentOrders[i];
     const orderMeta = ordersMeta[id];
-    if (!orderMeta.update || !orderMeta.update?.toTerrID) {
+    if (!orderMeta?.update || !orderMeta.update?.toTerrID) {
       availableOrder = id;
       break;
     }

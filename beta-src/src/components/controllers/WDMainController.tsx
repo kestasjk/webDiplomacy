@@ -81,12 +81,15 @@ const WDMainController: React.FC = function ({ children }): React.ReactElement {
   }
   if (needsGameData && !noPhase) {
     dispatch(gameApiSliceActions.setNeedsGameData(false));
+    // uncomment this setTimeout in order to test a slow update
+    // setTimeout(() => {
     dispatch(
       loadGameData(
         String(overview.gameID),
         countryID ? String(countryID) : undefined, // keep undefined when converting
       ),
     );
+    // }, 1000);
   }
 
   const { name, gameID } = overview;
