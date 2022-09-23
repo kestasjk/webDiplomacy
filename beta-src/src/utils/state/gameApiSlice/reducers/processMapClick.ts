@@ -319,9 +319,17 @@ export default function processMapClick(
           maps.provinceIDToUnits[maps.terrIDToProvinceID[order.fromTerrID]][0];
         if (ownUnits.includes(targetUnitID) && fromTerrID !== toTerrID) {
           startNewOrder(state, { unitID: targetUnitID });
+          let coastalToTerrID = toTerrID;
+          if (data.units[targetUnitID].type === "Fleet") {
+            const coastalToTerr = getBestCoastalUnitTerritory(
+              evt,
+              clickProvinceMapData,
+            );
+            coastalToTerrID = maps.territoryToTerrID[coastalToTerr];
+          }
           updateOrder(state, {
             convoyPath,
-            toTerrID,
+            toTerrID: coastalToTerrID,
             type: "Move",
             viaConvoy: convoyPath ? "Yes" : "No",
           });
