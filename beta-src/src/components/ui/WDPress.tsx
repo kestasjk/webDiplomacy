@@ -43,9 +43,14 @@ const WDPress: FC<WDPressProps> = function ({
 
   useEffect(() => {
     // scroll to the bottom of the message list
-    // FIXME: should this happen if we get a message from a 3rd party?
     messagesEndRef.current?.scrollIntoView();
-  }, [messages, countryIDSelected]);
+  }, [countryIDSelected]);
+  useEffect(() => {
+    const lastID = messages[messages.length - 1]?.fromCountryID;
+    if (lastID === userCountry?.countryID || lastID === countryIDSelected) {
+      messagesEndRef.current?.scrollIntoView();
+    }
+  }, [messages]);
 
   const clickSend = () => {
     if (!userCountry) {
