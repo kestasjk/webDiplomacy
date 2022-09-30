@@ -41,7 +41,7 @@ const NextPhase = function (): ReactElement {
   const formattedPhase = formatPhaseForDisplay(gamePhase);
 
   return (
-    <div className="flex display-block px-5 sm:px-10 py-5 mt-1 bg-[#1C2B33] rounded-xl text-white items-center select-none w-fit mb-3 mx-auto">
+    <div className="flex display-block px-5 sm:px-10 py-5 mt-1 bg-black rounded-xl text-white items-center select-none w-fit mb-3 mx-auto">
       <div>
         <div className="text-xs">New phase</div>
         <div className="text-sm font-bold uppercase">
@@ -105,13 +105,10 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
     ));
 
   return (
-    <WDPositionContainer
-      position={Position.BOTTOM_MIDDLE}
-      bottom={width < 500 ? 14 : 4}
-    >
+    <WDPositionContainer position={Position.BOTTOM_MIDDLE} bottom={8}>
       <WDBuildCounts />
       {width > 650 && (
-        <div className="bg-[#1C2B33] text-white items-center p-1 m-2 font-medium uppercase text-xs">
+        <div className="bg-black text-white items-center p-1 m-2 font-medium uppercase text-xs">
           {centerCounts}
         </div>
       )}
