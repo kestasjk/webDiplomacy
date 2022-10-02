@@ -41,7 +41,7 @@ const NextPhase = function (): ReactElement {
   const formattedPhase = formatPhaseForDisplay(gamePhase);
 
   return (
-    <div className="flex display-block px-5 sm:px-10 py-5 mt-1 bg-black rounded-xl text-white items-center select-none w-fit mb-3 mx-auto">
+    <div className="flex display-block px-5 sm:px-10 py-5 mt-1 bg-[#1C2B33] rounded-xl text-white items-center select-none w-fit mb-3 mx-auto">
       <div>
         <div className="text-xs">New phase</div>
         <div className="text-sm font-bold uppercase">
@@ -79,6 +79,7 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
   const [lastViewedPhase, setLastViewedPhase] =
     useState<number>(viewedPhaseIdx);
   const [lastPhase, setLastPhase] = useState<number>(-1);
+  const { members } = useAppSelector(gameOverview);
 
   useEffect(() => {
     if (
@@ -95,12 +96,26 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
     setLastPhase(totalPhases);
   }, [viewedPhaseIdx, totalPhases]);
 
+  const centerCounts = [...members]
+    .sort((a, b) => a.countryID - b.countryID)
+    .map((m) => (
+      <span key={m.countryID} className="p-1">
+        {m.country.substring(0, 3)}: {m.supplyCenterNo}
+      </span>
+    ));
+
   return (
     <WDPositionContainer
       position={Position.BOTTOM_MIDDLE}
       bottom={width < 500 ? 14 : 4}
     >
       <WDBuildCounts />
+      {width > 650 && (
+        <div className="bg-[#1C2B33] text-white items-center p-1 m-2 font-medium uppercase text-xs">
+          {centerCounts}
+        </div>
+      )}
+
       {isNewPhase ? (
         <NextPhase />
       ) : (
