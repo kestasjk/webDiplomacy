@@ -16,7 +16,6 @@ import { ReactComponent as BtnArrowIcon } from "../../../assets/svg/btnArrow.svg
 
 import {
   gameViewedPhase,
-  gameStatus,
   gameApiSliceActions,
   gameOverview,
 } from "../../../state/game/game-api-slice";
@@ -31,9 +30,7 @@ interface BottomMiddleProps {
 }
 
 const NextPhase = function (): ReactElement {
-  const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
   const { phase, season, year } = useAppSelector(gameOverview);
-  const gameStatusData = useAppSelector(gameStatus);
   const dispatch = useAppDispatch();
 
   const {
@@ -44,7 +41,7 @@ const NextPhase = function (): ReactElement {
   const formattedPhase = formatPhaseForDisplay(gamePhase);
 
   return (
-    <div className="flex display-block px-5 sm:px-10 py-5 mt-1 bg-black rounded-xl text-white items-center select-none w-fit mb-3 mx-auto">
+    <div className="flex display-block px-5 sm:px-10 py-5 mt-1 bg-[#1C2B33] rounded-xl text-white items-center select-none w-fit mb-3 mx-auto">
       <div>
         <div className="text-xs">New phase</div>
         <div className="text-sm font-bold uppercase">
@@ -77,25 +74,35 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
   totalPhases,
 }: BottomMiddleProps): ReactElement {
   const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
-  const { phase, season, year } = useAppSelector(gameOverview);
   const { width } = useWindowSize();
   const [isNewPhase, setIsNewPhase] = useState<boolean>(false);
   const [lastViewedPhase, setLastViewedPhase] =
     useState<number>(viewedPhaseIdx);
-  const [lastPhase, setLastPhase] = useState<string>("");
+  const [lastPhase, setLastPhase] = useState<number>(-1);
+  const { members } = useAppSelector(gameOverview);
 
   useEffect(() => {
-    if (phase === "Loading") return;
-    const curPhase = `${phase}-${season}-${year}`;
-    if (lastPhase !== curPhase && viewedPhaseIdx < totalPhases) {
+    if (
+      lastPhase !== totalPhases &&
+      viewedPhaseIdx !== totalPhases - 1 &&
+      lastPhase !== -1
+    ) {
       setIsNewPhase(true);
     }
     if (viewedPhaseIdx !== lastViewedPhase) {
       setIsNewPhase(false);
     }
     setLastViewedPhase(viewedPhaseIdx);
-    setLastPhase(curPhase);
-  }, [viewedPhaseIdx, phase, season, year]);
+    setLastPhase(totalPhases);
+  }, [viewedPhaseIdx, totalPhases]);
+
+  const centerCounts = [...members]
+    .sort((a, b) => a.countryID - b.countryID)
+    .map((m) => (
+      <span key={m.countryID} className="p-1">
+        {m.country.substring(0, 3)}: {m.supplyCenterNo}
+      </span>
+    ));
 
   return (
     <WDPositionContainer
@@ -103,6 +110,12 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
       bottom={width < 500 ? 14 : 4}
     >
       <WDBuildCounts />
+      {width > 650 && (
+        <div className="bg-[#1C2B33] text-white items-center p-1 m-2 font-medium uppercase text-xs">
+          {centerCounts}
+        </div>
+      )}
+
       {isNewPhase ? (
         <NextPhase />
       ) : (

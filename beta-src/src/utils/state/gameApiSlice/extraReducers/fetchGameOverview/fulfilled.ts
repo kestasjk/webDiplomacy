@@ -19,7 +19,12 @@ export default function fetchGameOverviewFulfilled(
   const oldPhaseKey = getPhaseKey(state.overview, "<BAD OVERVIEW_KEY>");
   const newPhaseKey = getPhaseKey(response, "<BAD OVERVIEW_KEY>");
   // console.log({ oldPhaseKey, newPhaseKey });
-  if (oldPhaseKey !== newPhaseKey) {
+  // probably we only need to look at processTime, not phase key. But I'm leaving in the
+  // phase key to be safe (since this is the historical way we did it).
+  if (
+    oldPhaseKey !== newPhaseKey ||
+    state.overview.processTime !== response.processTime
+  ) {
     state.needsGameData = true;
   }
   state.overview = response;

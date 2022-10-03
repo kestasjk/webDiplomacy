@@ -5,7 +5,7 @@ export default function mergeMessageArrays(
   msgs2: GameMessage[],
 ): GameMessage[] {
   const map = new Map();
-  const msgs = msgs1.concat(msgs2);
+  const msgs = msgs2.concat(msgs1);
   msgs.forEach((msg) => {
     // can't use array as key, so just mush it all into a string
     const key = `${msg.timeSent}:${msg.fromCountryID}:${msg.toCountryID}:${msg.message}`;

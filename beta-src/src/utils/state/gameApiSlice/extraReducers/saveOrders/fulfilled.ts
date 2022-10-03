@@ -45,7 +45,6 @@ export function saveOrdersCommon(state: GameState, action): void {
         };
       }
     }
-    // console.log({ returnOrders: orders });
     Object.entries(orders).forEach(([id, value]) => {
       if (value.status === "Complete") {
         state.ordersMeta[id].saved = true;

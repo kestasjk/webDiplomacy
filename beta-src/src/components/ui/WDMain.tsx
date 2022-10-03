@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import WDMainController from "../controllers/WDMainController";
 import WDUI from "./WDUI";
 import {
@@ -17,13 +17,11 @@ import {
   Unit,
 } from "../../utils/map/getUnits";
 import { StandoffInfo } from "../map/components/WDArrowContainer";
-import WDGameFinishedOverlay from "./WDGameFinishedOverlay";
 
 import WDMapController from "../controllers/WDMapController";
+import getPhaseKey from "../../utils/state/getPhaseKey";
 
 const WDMain: React.FC = function (): React.ReactElement {
-  // console.log("WDMain rerendered");
-
   // FIXME: it's not ideal for us to be fetching the whole world from store here
   // This is hard to untangle though because the representation of the data in the
   // store is relatively bad. You have to depend on a lot of stuff in order to
@@ -44,13 +42,14 @@ const WDMain: React.FC = function (): React.ReactElement {
     if (
       viewedPhaseState.viewedPhaseIdx >= status.phases.length - 1 &&
       isPlayingGame &&
-      overview.user
+      overview.user &&
+      getPhaseKey(status.phases[status.phases.length - 1], "<BAD1>") ===
+        getPhaseKey(overview, "<BAD2>") // check that we're not in an intermediate loading state
     ) {
       // Convert from our internal order representation to webdip's
       // historical representation of orders so that we draw
       // our internal orders and webdip's historical orders
       // exactly the same way.
-
       const ordersHistorical: IOrderDataHistorical[] = [];
       const currentOrdersById: { [key: number]: IOrderData } = {};
       if (data.data.currentOrders) {
@@ -185,7 +184,7 @@ const WDMain: React.FC = function (): React.ReactElement {
       });
 
       return {
-        phase: overview.phase,
+        phase: overview.phase, // status.phases[viewedPhaseState.viewedPhaseIdx].phase,
         units,
         orders: ordersHistorical,
         centersByProvince,
@@ -251,6 +250,7 @@ const WDMain: React.FC = function (): React.ReactElement {
       isLivePhase: false,
     };
   };
+
   const { phase, units, orders, centersByProvince, isLivePhase } =
     updateForPhase();
   const { territories } = data.data;
@@ -265,6 +265,10 @@ const WDMain: React.FC = function (): React.ReactElement {
     prevPhase.orders.forEach((order) => {
       if (order.type === "Move" && order.toTerrID) {
         const provID = maps.terrIDToProvinceID[order.toTerrID];
+        if (!provID) {
+          // happens if maps hasn't been loaded yet.
+          return;
+        }
         const province = maps.terrIDToProvince[order.toTerrID];
         if (!provincesWithUnits.has(province)) {
           // FIXME: This logic is wrong because a unit might fail to move

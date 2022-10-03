@@ -490,7 +490,7 @@ class SetVote extends ApiEntry {
  */
 class WebSocketsAuthentication extends ApiEntry {
 	public function __construct() {
-		parent::__construct('websockets/authentication', 'JSON', '', array('gameID', 'socket_id', 'channel_name'));
+		parent::__construct('websockets/authentication', 'JSON', 'getStateOfAllGames', array('gameID', 'socket_id', 'channel_name'));
 	}
 	public function run($userID, $permissionIsExplicit) {
 		$args 				= $this->getArgs();
@@ -509,11 +509,7 @@ class WebSocketsAuthentication extends ApiEntry {
 
 		// There are 2 authorization validations because a player can
 		// subscribe to the game overview channel or to the messages channel
-		// game overview channel doesn't include the countryID
-		if (!(isset($Game->Members->ByUserID[$userID]))) {
-			throw new ClientForbiddenException('User doesn\'t belong to this game.');
-		}
-
+		// game overview channel doesn't include the countryID, and anyone can subscribe
 		if ($countryID != 0) {
 			if (!(isset($Game->Members->ByUserID[$userID]) && $countryID == $Game->Members->ByUserID[$userID]->countryID)) {
 				throw new ClientForbiddenException('User does not have explicit permission to make this API call.');
