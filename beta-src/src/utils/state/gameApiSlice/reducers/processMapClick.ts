@@ -256,7 +256,6 @@ export default function processMapClick(
       orderUnit.type === "Fleet"
         ? getBestCoastalUnitTerritory(evt, clickProvinceMapData)
         : clickRootTerritory;
-    // -----------------------------------------------------------
 
     if (!order.viaConvoy) {
       // direct move
@@ -307,10 +306,34 @@ export default function processMapClick(
         fromProvince
       ].find((support) => support.dest === clickProvince);
       if (foundSupport) {
+        const convoyPath = foundSupport.convoyProvIDPath;
+        const { fromTerrID } = order;
+        const toTerrID = maps.territoryToTerrID[clickRootTerritory];
         updateOrder(state, {
-          toTerrID: maps.territoryToTerrID[clickRootTerritory],
-          convoyPath: foundSupport.convoyProvIDPath,
+          toTerrID,
+          convoyPath,
         });
+
+        // if it's a support-move of my unit, fill it in
+        const targetUnitID =
+          maps.provinceIDToUnits[maps.terrIDToProvinceID[order.fromTerrID]][0];
+        if (ownUnits.includes(targetUnitID) && fromTerrID !== toTerrID) {
+          startNewOrder(state, { unitID: targetUnitID });
+          let coastalToTerrID = toTerrID;
+          if (data.units[targetUnitID].type === "Fleet") {
+            const coastalToTerr = getBestCoastalUnitTerritory(
+              evt,
+              clickProvinceMapData,
+            );
+            coastalToTerrID = maps.territoryToTerrID[coastalToTerr];
+          }
+          updateOrder(state, {
+            convoyPath,
+            toTerrID: coastalToTerrID,
+            type: "Move",
+            viaConvoy: convoyPath ? "Yes" : "No",
+          });
+        }
       } else {
         invalidClick(evt, clickProvince);
       }
@@ -338,11 +361,27 @@ export default function processMapClick(
           clickProvince
         ];
       if (convoy) {
+        const toTerrID = maps.territoryToTerrID[clickRootTerritory];
+        const convoyPath = [...convoy.provIDPath1, ...convoy.provIDPath2];
         updateOrder(state, {
-          toTerrID: maps.territoryToTerrID[clickRootTerritory],
-          convoyPath: [...convoy.provIDPath1, ...convoy.provIDPath2],
+          toTerrID,
+          convoyPath,
         });
+
+        const targetUnitID =
+          maps.provinceIDToUnits[maps.terrIDToProvinceID[order.fromTerrID]][0];
+        // if it's a convoy of my own unit, fill it in
+        if (state.ownUnits.includes(targetUnitID)) {
+          startNewOrder(state, { unitID: targetUnitID });
+          updateOrder(state, {
+            convoyPath,
+            toTerrID,
+            type: "Move",
+            viaConvoy: "Yes",
+          });
+        }
       }
     }
   }
+  // -----------------------------------------------------------
 }

@@ -151,7 +151,7 @@ else
 		libHTML::help('Home', $tutorialMessage);
 
 		unset($_COOKIE['wD-Tutorial-Index']);
-		setcookie('wD-Tutorial-Index', '', time()-3600);
+		setcookie('wD-Tutorial-Index', '', ['expires'=>time()-3600,'samesite'=>'Lax']);
 	}
 
 	print '<table class="homeTable"><tr>';

@@ -1,11 +1,7 @@
 import React, { useEffect } from "react";
 import useKeyboardJs from "react-use/lib/useKeyboardJs";
-import { useAppSelector, useAppDispatch } from "../../state/hooks";
-import {
-  gameApiSliceActions,
-  gameViewedPhase,
-  gameStatus,
-} from "../../state/game/game-api-slice";
+import { useAppDispatch } from "../../state/hooks";
+import { gameApiSliceActions } from "../../state/game/game-api-slice";
 
 interface WDShortcutsProps {
   onPhaseSelectorShortcut: () => void;
@@ -18,8 +14,6 @@ const WDShortcuts: React.FC<WDShortcutsProps> = function ({
   // element reference once it's accepted after UX validation.
   // Do not access the dom like this.
   const inputMessage = document.getElementById("user-msg");
-  const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
-  const gameStatusData = useAppSelector(gameStatus);
 
   const dispatch = useAppDispatch();
   const [left] = useKeyboardJs("shift + left");

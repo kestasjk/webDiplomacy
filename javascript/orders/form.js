@@ -101,6 +101,10 @@ function OrdersHTMLFormClass() {
 	}
 	
 	this.onSuccess = function(response) {
+		if( response.responseJSON )
+		{
+			response.headerJSON = response.responseJSON;
+		}
 		if( response.headerJSON == null )
 		{
 			document.write(response.responseText);

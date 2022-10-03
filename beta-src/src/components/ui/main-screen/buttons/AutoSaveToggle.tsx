@@ -1,5 +1,5 @@
 import React, { FunctionComponent, ReactElement } from "react";
-import useLocalStorageState from "use-local-storage-state";
+import useSettings from "../../../../hooks/useSettings";
 
 import { ReactComponent as CheckmarkIcon } from "../../../../assets/svg/checkmark.svg";
 
@@ -12,14 +12,15 @@ const AutoSaveToggle: FunctionComponent<AutoSaveToggleProps> = function ({
 }): ReactElement {
   // This is here because I have the feeling that there is not a consensus about the auto-save feature yet.
   // We might have to have this in the back-end
-  const [settings, setSettings] = useLocalStorageState("settings", {
-    defaultValue: { autoSave: true },
-  });
+  // const [settings, setSettings] = useLocalStorageState("settings", {
+  //   defaultValue: { autoSave: true },
+  // });
+  const { settings, setSetting } = useSettings();
 
   return (
     <div className={className}>
       <button
-        onClick={() => setSettings({ autoSave: !settings.autoSave })}
+        onClick={() => setSetting("autoSave", !settings.autoSave)}
         type="button"
         className="w-full"
       >

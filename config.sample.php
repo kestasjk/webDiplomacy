@@ -390,6 +390,17 @@ class Config
 	}
 
 	/**
+	 * The username that the web hook with authenticate against
+	 * @var string
+	 */
+	public static $fingerPrintWebHookUsername = null;
+	/**
+	 * The password that the web hook will authenticate against
+	 * @var string
+	 */
+	public static $fingerPrintWebHookPassword = null;
+
+	/**
 	 * Read /contrib/phpBB3-files/README.txt for instructions on enabling the phpBB3 integration support. The final step
 	 * is uncommenting the line below (assuming this is where it was installed to.)
 	 */

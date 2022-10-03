@@ -278,6 +278,10 @@ class datcGame extends processGame
 			document.write(response.responseText);
 		};
 		OrdersHTML.onSuccess=function(response) {
+			if ( response.responseJSON )                                                                                                                                          
+			{                                                                                                                                                                     
+					response.headerJSON = response.responseJSON;                                                                                                                  
+			}
 			if( null == response.headerJSON )
 			{
 				OrdersHTML.onFailure(response);

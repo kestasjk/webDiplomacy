@@ -1,43 +1,10 @@
-import {
-  Box,
-  Button,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  useTheme,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
 import * as React from "react";
-import Device from "../../enums/Device";
-import Season from "../../enums/Season";
-import useViewport from "../../hooks/useViewport";
+import { useWindowSize } from "react-use";
 import { CountryTableData } from "../../interfaces/CountryTableData";
-import { MemberData } from "../../interfaces/state/MemberData";
-import { gameOverview } from "../../state/game/game-api-slice";
-import { useAppSelector } from "../../state/hooks";
-import GameOverviewResponse from "../../state/interfaces/GameOverviewResponse";
-import GameStatusResponse from "../../state/interfaces/GameStatusResponse";
-import { formatPSYForDisplay } from "../../utils/formatPhaseForDisplay";
-import getDevice from "../../utils/getDevice";
 import BetIcon from "./icons/country-table/WDBet";
 import CentersIcon from "./icons/country-table/WDCenters";
 import PowerIcon from "./icons/country-table/WDPower";
 import WDCheckmarkIcon from "./icons/WDCheckmarkIcon";
-
-const centeredStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  // justifyContent: "center",
-  // alignItems: "center",
-  transform: "translate(-50%, -50%)",
-  backgroundColor: "rgba(255,255,255,1)",
-  p: "10px",
-  borderRadius: "5px",
-};
 
 interface Column {
   align?: "right" | "left" | "center";
@@ -45,15 +12,6 @@ interface Column {
   id: keyof CountryTableData;
   label: string;
 }
-
-const WDTableCell = styled(TableCell)(() => {
-  return {
-    // paddingTop: "15px",
-    // paddingBottom: "0px",
-    borderTop: "1px solid rgba(224,224,224,1)",
-    borderBottom: 0,
-  };
-});
 
 const columns: readonly Column[] = [
   { id: "power", label: "Power", icon: PowerIcon, align: "left" },
@@ -90,53 +48,38 @@ interface WDGameFinishedOverlayProps {
 const WDGameFinishedOverlay: React.FC<WDGameFinishedOverlayProps> = function ({
   allCountries,
 }) {
-  const theme = useTheme();
-  const [viewport] = useViewport();
-  const device = getDevice(viewport);
-  const isMobile =
-    device === Device.MOBILE_LANDSCAPE ||
-    device === Device.MOBILE_LG_LANDSCAPE ||
-    device === Device.MOBILE ||
-    device === Device.MOBILE_LG;
-  const overview = useAppSelector(gameOverview);
+  const { width } = useWindowSize();
 
   const innerElem = (
-    <Stack direction="column" alignItems="center">
-      <Box sx={{ m: "10px" }}>Game is finished.</Box>
-      <Table aria-label="game finished table" size="small" stickyHeader>
-        <TableHead sx={{ height: "55px" }}>
-          <TableRow sx={{ verticalAlign: "top" }}>
+    <div className="flex flex-col text-center w-[300px]">
+      <div className="m-3">Game is finished.</div>
+      <table aria-label="game finished table">
+        <thead className="h-[55px]">
+          <tr className="align-top">
             {columns.map((column) => (
-              <WDTableCell
-                key={column.id}
-                align={column.align}
-                sx={{ borderTop: 0 }}
-              >
+              <th key={column.id} align={column.align}>
                 {column.icon && <column.icon />}
-                <Box sx={{ fontSize: 10, fontWeight: 400 }}>
+                <div className="text-xss font-medium block mt-1">
                   {column.label.toUpperCase()}
-                </Box>
-              </WDTableCell>
+                </div>
+              </th>
             ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
+          </tr>
+        </thead>
+        <tbody>
           {allCountries.map((country) => (
             <React.Fragment key={country.power}>
-              <TableRow>
+              <tr className="border-t border-gray-200 mt-1">
                 {columns.map((column) => {
-                  const style = {
-                    color: theme.palette.primary.main,
-                    fontWeight: 400,
-                  };
+                  let className = "text-black font-normal";
                   let value;
                   switch (column.id) {
                     case "power":
-                      value = isMobile
-                        ? country.abbr.toUpperCase()
-                        : country.power.toUpperCase();
-                      style.color = country.color;
-                      style.fontWeight = 700;
+                      value =
+                        width < 500
+                          ? country.abbr.toUpperCase()
+                          : country.power.toUpperCase();
+                      className = `text-${country.power.toLowerCase()}-main font-bold`;
                       break;
                     case "pointsWon":
                       value = `${country[column.id] || "-"}`;
@@ -146,31 +89,46 @@ const WDGameFinishedOverlay: React.FC<WDGameFinishedOverlayProps> = function ({
                       break;
                   }
                   return (
-                    <WDTableCell key={column.id} align={column.align}>
-                      <span style={style}>{value}</span>
-                    </WDTableCell>
+                    <td key={column.id} align={column.align} className="pt-2">
+                      <span className={className}>{value}</span>
+                    </td>
                   );
                 })}
-              </TableRow>
-              <TableRow>
-                <WDTableCell
-                  sx={{
-                    paddingTop: "0px !important",
-                    borderTop: 0,
-                    fontSize: "10pt",
-                    fontFamily: "Roboto",
-                  }}
-                >
+              </tr>
+              <tr>
+                <td className="text-left text-xs pb-2 font-roboto">
                   {country.username}
-                </WDTableCell>
-              </TableRow>
+                </td>
+              </tr>
             </React.Fragment>
           ))}
-        </TableBody>
-      </Table>
-    </Stack>
+        </tbody>
+      </table>
+      {/* Forces the user to rotate the phone to portrait mode to see the results */}
+      <style jsx global>{`
+        @media screen and (min-width: 320px) and (max-width: 900px) and (orientation: landscape) {
+          html {
+            transform: rotate(-90deg);
+            transform-origin: left top;
+            width: 100vh;
+            height: 150vh;
+            overflow-x: hidden;
+            position: absolute;
+            top: 100%;
+            left: 0px;
+          }
+          #map-container {
+            height: 250vh !important;
+          }
+        }
+      `}</style>
+    </div>
   );
-  return <Box sx={centeredStyle}>{innerElem}</Box>;
+  return (
+    <div className="absolute p-3 rounded-md bg-white top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+      {innerElem}
+    </div>
+  );
 };
 
 export default WDGameFinishedOverlay;

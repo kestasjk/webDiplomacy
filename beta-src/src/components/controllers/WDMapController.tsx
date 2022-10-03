@@ -131,6 +131,7 @@ const WDMapController: React.FC<WDMapControllerProps> = function ({
 
   return (
     <div
+      id="map-container"
       style={{
         width: viewport.width,
         height: viewport.height,

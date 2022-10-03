@@ -49,7 +49,7 @@ if (isset($_COOKIE['wD-Tutorial-JoinNewGame'])) {
 	libHTML::help('Game Search', $tutorialMessage);
 
 	unset($_COOKIE['wD-Tutorial-JoinNewGame']);
-	setcookie('wD-Tutorial-JoinNewGame', '', time()-3600);
+	setcookie('wD-Tutorial-JoinNewGame', '', ['expires'=>time()-3600,'samesite'=>'Lax']);
 }
 
 global $User, $Misc, $DB;

@@ -821,7 +821,7 @@ class User {
 		{
 			// Making this larger than 2^31 makes it negative..
 			$cookieCode = rand(2, 2000000000);
-			setcookie('wD_Code', $cookieCode,time()+365*7*24*60*60);
+			setcookie('wD_Code', $cookieCode,['expires'=>time()+365*7*24*60*60,'samesite'=>'Lax']);
 		}
 		else
 		{
