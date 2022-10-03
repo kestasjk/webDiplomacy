@@ -197,7 +197,11 @@ file_put_contents(
 	"-------------------\n\n", 
 	FILE_APPEND);
 */
+
+header('Content-Type: application/json');
 header('X-JSON: ('.json_encode($results).')');
+
+print json_encode($results);
 
 close();
 
