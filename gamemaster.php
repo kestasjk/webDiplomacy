@@ -125,7 +125,7 @@ if ( ( time() - $Misc->LastProcessTime ) > Config::$downtimeTriggerMinutes*60 )
 if( (time() - $Misc->LastGroupUpdate) > 10*60 )
 {
 	// Update the user group calculations
-	require_once('lib\group.php');
+	require_once('lib/group.php');
 	libGroup::generateGameRelationCache($Misc->LastGroupUpdate);	
 	$Misc->LastGroupUpdate = time();
 }

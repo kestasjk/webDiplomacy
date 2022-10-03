@@ -173,6 +173,8 @@ class libGroup
     private static function outputJSONGameCache()
     {
         global $DB;
+	    
+	    return;
 
         $DB->sql_put("COMMIT");
         //-- Per game-member JSON cache data
