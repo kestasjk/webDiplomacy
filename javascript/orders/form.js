@@ -64,7 +64,7 @@ function OrdersHTMLFormClass() {
 		new Ajax.Request(url, 
 			{
 				method: 'post', asynchronous : this.asynchronous, 
-				parameters: {'orderUpdates':up.toJSON(),'context':Object.toJSON(this.context),'contextKey':this.contextKey},
+				parameters: {'orderUpdates':Object.toJSON(up),'context':Object.toJSON(this.context),'contextKey':this.contextKey},
 				onFailure: function(response) {
 					document.write(response.responseText);
 				},
