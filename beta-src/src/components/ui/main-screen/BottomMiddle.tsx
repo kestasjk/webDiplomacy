@@ -21,6 +21,7 @@ import {
 } from "../../../state/game/game-api-slice";
 import { getGamePhaseSeasonYear } from "../../../utils/state/getPhaseSeasonYear";
 import { formatPhaseForDisplay } from "../../../utils/formatPhaseForDisplay";
+import WDCenterCounts from "../WDCenterCounts";
 
 interface BottomMiddleProps {
   viewedSeason: Season;
@@ -79,7 +80,7 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
   const [lastViewedPhase, setLastViewedPhase] =
     useState<number>(viewedPhaseIdx);
   const [lastPhase, setLastPhase] = useState<number>(-1);
-  const { members } = useAppSelector(gameOverview);
+  const { phase } = useAppSelector(gameOverview);
 
   useEffect(() => {
     if (
@@ -96,20 +97,12 @@ const BottomMiddle: FunctionComponent<BottomMiddleProps> = function ({
     setLastPhase(totalPhases);
   }, [viewedPhaseIdx, totalPhases]);
 
-  const centerCounts = [...members]
-    .sort((a, b) => a.countryID - b.countryID)
-    .map((m) => (
-      <span key={m.countryID} className="p-1">
-        {m.country.substring(0, 3)}: {m.supplyCenterNo}
-      </span>
-    ));
-
   return (
     <WDPositionContainer position={Position.BOTTOM_MIDDLE} bottom={8}>
       <WDBuildCounts />
-      {width > 650 && (
+      {width > 650 && phase !== "Pre-game" && (
         <div className="bg-black text-white items-center p-1 m-2 font-medium uppercase text-xs">
-          {centerCounts}
+          <WDCenterCounts />
         </div>
       )}
 

@@ -146,7 +146,7 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
         totalPhases={gameStatusData.phases.length}
       />
 
-      {width <= 650 && (
+      {width <= 650 && phase !== "Pre-game" && (
         <div className="bg-black text-white items-center p-1 m-0 font-medium uppercase text-xs absolute bottom-0 z-30 left-0 center w-full">
           <WDCenterCounts />
         </div>
