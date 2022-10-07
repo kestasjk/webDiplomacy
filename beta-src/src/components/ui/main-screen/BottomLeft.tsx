@@ -19,13 +19,9 @@ const BottomLeft: FunctionComponent<BottomLeftProps> = function ({
     // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
       {user && phase !== "Pre-game" && (
-        <WDPositionContainer
-          position={Position.BOTTOM_LEFT}
-          bottom={phaseSelectorOpen ? 40 : 4}
-        >
-          <AutoSaveToggle className="hidden mb-3 sm:block" />
+        <WDPositionContainer position={Position.BOTTOM_LEFT} bottom={8}>
+          <AutoSaveToggle className="mb-3" />
           <WDOrderStatusControls orderStatus={user?.member.orderStatus} />
-          <AutoSaveToggle className="sm:hidden mt-3 sm:mt-0" />
         </WDPositionContainer>
       )}
     </>
