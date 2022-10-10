@@ -189,7 +189,7 @@ class libGameMaster
 
 		// Calculates the RR for members. 
 		$DB->sql_put("UPDATE wD_Users u
-		INNER JOIN (
+		LEFT JOIN (
 			SELECT 
 				t.userID, 
 				SUM(
