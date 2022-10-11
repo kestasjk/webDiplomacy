@@ -114,6 +114,24 @@ if( $Misc->LastStatsUpdate < (time() - 37*60) )
 	miscUpdate::game();
 	miscUpdate::user();
 	$Misc->LastStatsUpdate = time();
+
+	// This is also only needed infrequently
+	if( Config::$playNowDomain != null )
+	{
+		// If there is a play-now domain set up ensure that games that have been left for over 24 hours don't linger and waste resources:
+		// If a diplonow_ member hasn't logged onto a game for 24 hours set the member to vote for cancellation of the game.
+		$DB->sql_put(
+			"UPDATE wD_Members 
+			SET votes='Cancel' 
+			WHERE userID IN (
+				SELECT id 
+				FROM wD_Users 
+				WHERE username LIKE 'diplonow%'
+			) 
+			AND timeLoggedIn < UNIX_TIMESTAMP()-24*60*60 
+			AND status='Playing';"
+		);
+	}
 }
 
 //- Check last process time, pause processing/save current process time
@@ -136,23 +154,6 @@ $DB->disableTransactions();
 // Update the reliability ratings:
 print l_t('Updating user phase/year counts and reliability ratings').'<br />';
 libGameMaster::updateReliabilityRatings();
-
-if( Config::$playNowDomain != null )
-{
-	// If there is a play-now domain set up ensure that games that have been left for over 24 hours don't linger and waste resources:
-	// If a diplonow_ member hasn't logged onto a game for 24 hours set the member to vote for cancellation of the game.
-	$DB->sql_put(
-		"UPDATE wD_Members 
-		SET votes='Cancel' 
-		WHERE userID IN (
-			SELECT id 
-			FROM wD_Users 
-			WHERE username LIKE 'diplonow%'
-		) 
-		AND timeLoggedIn < UNIX_TIMESTAMP()-24*60*60 
-		AND status='Playing';"
-	);
-}
 
 $DB->enableTransactions();
 $DB->sql_put("BEGIN");
