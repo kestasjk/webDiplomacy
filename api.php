@@ -1626,7 +1626,7 @@ try {
 	$apiAuth = new $api->authClass($api->route);
 	$userID = $apiAuth->getUserID();
 	*/
-	if( Config::$botsLogFile )
+	if( isset(Config::$botsLogFile) && Config::$botsLogFile )
 	{
 		$apiEntry = $api->entries[$api->route];
 		file_put_contents(Config::$botsLogFile,

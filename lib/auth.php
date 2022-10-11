@@ -199,7 +199,9 @@ class libAuth
 
 		list($key, $timestamp, $email) = $emailToken;
 
-		if( (time() - $timestamp) > 60*60 ) throw new Exception("The given e-mail token link has expired; please request another one and click the link within an hour.");
+		// Check that the validation link isn't expired, or that there is no secret set implying (I hope!) that 
+		// we are in a dev / docker environment:
+		if( Config::$secret != "" && (time() - $timestamp) > 60*60 ) throw new Exception("The given e-mail token link has expired; please request another one and click the link within an hour.");
 
 		if ( $key !== substr(md5(Config::$secret.$email.$timestamp),0,8) )
 			return false;
