@@ -418,7 +418,7 @@ class libGameMaster
 		$DB->sql_put("UPDATE wD_Users u SET u.reliabilityRating = 100 * (
 			greatest(0,
 			1.0
-			- ((u.missedPhasesTotalLastYear+u.missedPhasesTotalLastMonth+u.missedPhasesTotalLastWeek) / u.yearlyPhaseCount)
+			- ((u.missedPhasesTotalLastYear+u.missedPhasesTotalLastMonth+u.missedPhasesTotalLastWeek) / IF(u.yearlyPhaseCount=0,1,u.yearlyPhaseCount))
 			- 0.11 * u.missedPhasesLiveLastWeek
 			- 0.11 * (u.missedPhasesNonLiveLastWeek+u.missedPhasesNonLiveLastMonth)
 			- 0.05 * u.missedPhasesLiveLastMonth
