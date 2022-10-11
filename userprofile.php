@@ -603,7 +603,7 @@ if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 
 	$totalMissed = ($reliabilityData['missedPhasesTotalLastWeek']+$reliabilityData['missedPhasesTotalLastMonth']+$reliabilityData['missedPhasesTotalLastYear']);
 	
-	$baseReduction = round(100*$totalMissed/($reliabilityData['yearlyPhaseCount']==0 ? 1 : 0),1);
+	$baseReduction = round(100*$totalMissed/($reliabilityData['yearlyPhaseCount']==0 ? 1 : $reliabilityData['yearlyPhaseCount']),1);
 	print '<tr><th>Totals/Base (includes system/same-period excused)</th><td>'.
 		$reliabilityData['missedPhasesTotalLastWeek'].'</td><td>'.
 		$reliabilityData['missedPhasesTotalLastMonth'].'</td><td>'.
@@ -614,7 +614,7 @@ if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 		'</td><td>'.
 		$totalMissed.'</td><td><strong>'.
 		-$baseReduction.'%</strong> '.
-		'('.$totalMissed.' / '.($reliabilityData['yearlyPhaseCount']==0 ? 1 : 0).')'.'</td></tr>';
+		'('.$totalMissed.' / '.$reliabilityData['yearlyPhaseCount'].')'.'</td></tr>';
 
 
 	$nonLiveRecent = ($reliabilityData['missedPhasesNonLiveLastWeek']+$reliabilityData['missedPhasesNonLiveLastMonth']);
