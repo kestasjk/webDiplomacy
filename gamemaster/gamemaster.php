@@ -500,10 +500,12 @@ class libGameMaster
 				INNER JOIN wD_Members m ON m.gameID = g.id
 				INNER JOIN wD_Users u ON u.id = m.userID
 				WHERE m.status = 'Playing'
-				AND g.phase <> 'Finished'
+				AND g.gameOver = 'No' AND g.phase <> 'Pre-game' AND g.phase <> 'Finished'
 				GROUP BY g.id
 			) g
-			WHERE (g.Players - g.NoOrders) <= g.ReadyOrders"); // Everyone is ready, or only people with no orders arent ready
+			WHERE (g.Players - g.NoOrders) <= g.ReadyOrders"); 
+		// Everyone is ready, or only people with no orders arent ready
+		
 		$readyGames = array();
 		while(list($gameID) = $DB->tabl_row($tabl))
 		{
