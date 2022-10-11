@@ -1,6 +1,7 @@
 webDiplomacy readme, for webmasters
 ----------------------------------------
 => Note to players
+=> Setting up a local / test install with Docker
 => Requirements
 => Installing
 => Updating
@@ -19,18 +20,25 @@ this software.
 If you just want to play with friends try to find an existing webDiplomacy server and set up 
 a private game there. (http://webdiplomacy.net/ is the official server.)
 
+Setting up a local / test install with Docker
+---------------------------------------------
+The install guide below is the guide for setting up a production system. For development purposes
+it is highly recommended to use the Docker Compose image in /docker-compose.yml along with the
+guide within that file, which makes the process much, much easier.
+
+If you want to develop or try webDiplomacy locally you should use the docker-compose.yml file
+with the default config.php . The instructions for this file are within the docker-compose.yml
+file header.
+Note that this default install is not configured to be secure; it is intended to be very quick
+and easy to get started with. For a production install follow on a dedicated machine follow the
+guide below, but as above note the guide is for experienced system administrators who can 
+troubleshoot an installation process.
 
 Requirements
 ------------
 Although webDiplomacy has been able to work on a variety of systems and is installed on a 
 number of sites we can only guarantee that it will work when installed as per the below
 procedure:
-
-Docker
-------
-The install guide below is the guide for setting up a production system. For development purposes
-it is highly recommended to use the Docker Compose image in /docker-compose.yml along with the
-guide within that file, which makes the process much, much easier.
 
 Installing
 ----------
