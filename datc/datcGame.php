@@ -239,7 +239,7 @@ class datcGame extends processGame
 		if( !isset($_REQUEST['verySlowStep']) && !isset($_REQUEST['slowStep']) )
 		{
 			libHTML::$footerScript[] = '
-				document.location.href="datc.php?'.( isset($_REQUEST['batchTest']) ? 'batchTest=on&':'').'DATCResults="+DATCResults.toJSON();
+				document.location.href="datc.php?'.( isset($_REQUEST['batchTest']) ? 'batchTest=on&':'').'DATCResults="+JSON.stringify(DATCResults);
 			';
 		}
 	}

@@ -25,5 +25,10 @@ CREATE TABLE `wD_FingerprintProRequests` (
 )
 ;
 
+ALTER TABLE `wD_Users`
+  ADD COLUMN `mobileCountryCode` mediumint(8) UNSIGNED DEFAULT NULL,
+  ADD COLUMN `mobileNumber` bigint(20) UNSIGNED DEFAULT NULL,
+  ADD COLUMN `isMobileValidated` bit(1) NOT NULL DEFAULT b'0';
+
 ALTER TABLE `wD_Misc` CHANGE COLUMN `Name` `Name` ENUM('Version','Hits','Panic','Notice','Maintenance','LastProcessTime','GamesNew','GamesActive','GamesFinished','RankingPlayers','OnlinePlayers','ActivePlayers','TotalPlayers','ErrorLogs','GamesPaused','GamesOpen','GamesCrashed','LastModAction','ForumThreads','ThreadActiveThreshold','ThreadAliveThreshold','GameFeaturedThreshold','LastGroupUpdate') NOT NULL;
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastGroupUpdate',0);

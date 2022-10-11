@@ -1130,8 +1130,7 @@ ALTER TABLE `wD_Backup_Games` ADD COLUMN `phaseMinutesRB` smallint(5) DEFAULT -1
 
 -- Change group types to be freetext for more flexibility
 ALTER TABLE `wD_Groups`
-	CHANGE COLUMN `type` `type` VARCHAR(50) NOT NULL DEFAULT 'Unknown' AFTER `name`,
-	ADD COLUMN `timeMessageRequired` BIGINT UNSIGNED NULL DEFAULT NULL AFTER `timeWeightingRequired`;
+	CHANGE COLUMN `type` `type` VARCHAR(50) NOT NULL DEFAULT 'Unknown' AFTER `name`;
 
 ALTER TABLE `wD_GroupUsers`
 	ADD COLUMN `isDirty` BIT(1) NOT NULL DEFAULT 0 AFTER `timeCreated`,
@@ -1150,3 +1149,8 @@ CREATE TABLE `wD_Group_UserByUserBySourceWeights` (
 	`judgeCount` MEDIUMINT(9) NOT NULL DEFAULT '0',
 	PRIMARY KEY (`fromUserID`, `toUserID`, `source`) USING BTREE
 ) ENGINE=InnoDB;
+
+ALTER TABLE `wD_Users`
+  ADD COLUMN `mobileCountryCode` mediumint(8) UNSIGNED DEFAULT NULL,
+  ADD COLUMN `mobileNumber` bigint(20) UNSIGNED DEFAULT NULL,
+  ADD COLUMN `isMobileValidated` bit(1) NOT NULL DEFAULT b'0';
