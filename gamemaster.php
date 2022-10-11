@@ -106,14 +106,14 @@ while(list($userID)=$DB->tabl_row($tabl))
 file_put_contents($onlineFile, 'onlineUsers=$A(['.implode(',',$onlineUsers).']);');
 
 //- Update misc values (if running as admin/mod)
-if( !$User->type['System'] || (time()%(15*60)<=5*60) )
+if( $Misc->LastStatsUpdate < (time() - 37*60) )
 {
 	print l_t('Updating Misc values').'<br />';
 	miscUpdate::errorLog();
 	miscUpdate::forum();
 	miscUpdate::game();
 	miscUpdate::user();
-
+	$Misc->LastStatsUpdate = time();
 }
 
 //- Check last process time, pause processing/save current process time
