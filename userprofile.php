@@ -583,7 +583,7 @@ you will begin getting temporarily banned from making new games, joining existin
 	- 0.05 * u.missedPhasesLiveLastMonth
 	- 0.05 * u.missedPhasesNonLiveLastYear)) */
 
-if ( $reliabilityData['yearlyPhaseCount']>0 && ($User->type['Moderator'] || $User->id == $UserProfile->id) )
+if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 {	
 	print '<h4>Reliability rating calculation info:</h4>';
 
@@ -603,7 +603,7 @@ if ( $reliabilityData['yearlyPhaseCount']>0 && ($User->type['Moderator'] || $Use
 
 	$totalMissed = ($reliabilityData['missedPhasesTotalLastWeek']+$reliabilityData['missedPhasesTotalLastMonth']+$reliabilityData['missedPhasesTotalLastYear']);
 	
-	$baseReduction = round(100*$totalMissed/$reliabilityData['yearlyPhaseCount'],1);
+	$baseReduction = round(100*$totalMissed/($reliabilityData['yearlyPhaseCount']==0 ? 1 : 0),1);
 	print '<tr><th>Totals/Base (includes system/same-period excused)</th><td>'.
 		$reliabilityData['missedPhasesTotalLastWeek'].'</td><td>'.
 		$reliabilityData['missedPhasesTotalLastMonth'].'</td><td>'.
@@ -614,7 +614,7 @@ if ( $reliabilityData['yearlyPhaseCount']>0 && ($User->type['Moderator'] || $Use
 		'</td><td>'.
 		$totalMissed.'</td><td><strong>'.
 		-$baseReduction.'%</strong> '.
-		'('.$totalMissed.' / '.$reliabilityData['yearlyPhaseCount'].')'.'</td></tr>';
+		'('.$totalMissed.' / '.($reliabilityData['yearlyPhaseCount']==0 ? 1 : 0).')'.'</td></tr>';
 
 
 	$nonLiveRecent = ($reliabilityData['missedPhasesNonLiveLastWeek']+$reliabilityData['missedPhasesNonLiveLastMonth']);
@@ -667,7 +667,7 @@ if ( $reliabilityData['yearlyPhaseCount']>0 && ($User->type['Moderator'] || $Use
 	CASE n.reliabilityPeriod WHEN -1 THEN 'New' WHEN 3 THEN 'Week' WHEN 2 THEN 'Month' WHEN 1 THEN 'Year' ELSE 'Expired' END
 	FROM wD_MissedTurns n
 	LEFT JOIN wD_Games g ON n.gameID = g.id
-	WHERE n.userID = ".$UserProfile->id. " and n.turnDateTime > ".(time() - 31536000));
+	WHERE n.userID = ".$UserProfile->id. " and n.turnDateTime > ".(time() - 365*24*60*60));
 
 	if ($DB->last_affected() != 0)
 	{
