@@ -4,13 +4,18 @@
 # Generic instructions: docker-compose up -d
 #
 # webDiplomacy instructions:
-# Copy config.sample.php to config.php
-# Run install/FullInstall/FullInstall.sql
-# Register user account, use http://localhost:43001 to access registration mail
+# Run composer update in the source root folder to create the vendor folder 
+# which contains the required PHP dependencies.
+# Check http://localhost:43000/gamemaster-entrypoint.txt ; once the server is ready you should see
+# that gamemaster has started running. If there is an issue this is the best place to check.
+# Register a user account, use http://localhost:43001 / mailhog to access the registration link
+# Taking the registration link code and adding it to your webserver should give e.g.:
+# http://localhost:43000/register.php?emailToken=9513e6f6%7C1665482821%7Ctest%40test.com
+# Complete filling the registration form
 # Go to http://localhost:43000/gamemaster.php?gameMasterSecret= to set self as admin
-# Go to http://localhost:43000/admincp.php and enable maintenance mode
-# In the admin CP run the Clear variant caches command to ensure variants get installed fresh
-# Go to http://localhost:43000/datc.php and run batch test
+# Go to http://localhost:43000/admincp.php?tab=Control%20Panel and Toggle maintenance, 
+# Clear variant caches, and Update wD_VariantInfo to ensure variant data is installed.
+# Go to http://localhost:43000/datc.php and run batch test to test that processing is working
 # Go to http://localhost:43000/admincp.php and disable maintenance mode
 # Server is ready for dev work
 #
@@ -83,7 +88,7 @@ services:
     volumes:
       - "./:/application"
       - "./phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini"
-    command: /bin/sh -c "install/gamemaster-entrypoint.sh"
+    command: /bin/sh -c "install/gamemaster-entrypoint.sh > /application/gamemaster-entrypoint.txt"
     depends_on:
       - "mariadb"
     #environment:
