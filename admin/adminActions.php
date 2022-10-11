@@ -767,9 +767,8 @@ class adminActions extends adminActionsForms
 
 		require_once(l_r('gamemaster/gamemaster.php'));
 		 
-		libGameMaster::updatePhasePerYearCount(true);
-		libGameMaster::updateReliabilityRating();
-
+		libGameMaster::updateReliabilityRatings(true);
+		
 		return "Reliabiility ratings have been recalculated.";
 	}
 

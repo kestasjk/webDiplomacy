@@ -424,6 +424,8 @@ class processGame extends Game
 	/**
 	 * Record NMRs by entering any NMRs into wD_MissedTurns.
 	 * 
+	 * See gamemaste/gamemaster.php updateReliabilityRating for the code that uses wD_MissedTurns to calculate reliability ratings
+	 * 
 	 * @return array A list of member ids corresponding to members who missed the deadline
 	 */
 	private function recordNMRs()
@@ -450,13 +452,18 @@ class processGame extends Game
 			if ($this->phaseMinutes > 60)
 			{
 				// Insert a Missed Turn for anyone who missed the turn, accounting for systemExcused and samePeriodExcused
-				$DB->sql_put("INSERT INTO wD_MissedTurns (gameID, userID, countryID, turn, bet, SCCount, forcedByMod, systemExcused, modExcused, turnDateTime, modExcusedReason, samePeriodExcused, liveGame)
-						SELECT m.gameID, m.userID, m.countryID, ".$this->turn." as turn, m.bet, m.supplyCenterNo, 0, CASE WHEN excusedMissedTurns > 0 THEN 1 ELSE 0 END, 0,".time().",'', 
+				$DB->sql_put("INSERT INTO wD_MissedTurns (gameID, userID, countryID, turn, bet, SCCount, forcedByMod, systemExcused, modExcused, turnDateTime, modExcusedReason, 
+						samePeriodExcused, liveGame)
+						SELECT m.gameID, m.userID, m.countryID, ".$this->turn." as turn, m.bet, m.supplyCenterNo, 0, 
+						/* System excused if there are excusedMissedTurns remaining for this member, else not system excused */
+						CASE WHEN excusedMissedTurns > 0 THEN 1 ELSE 0 END,
+						 0,".time().",'', 
+						/* Same period excused if it has been less than 24 hours since the last missed turn for this member */
 						CASE WHEN (
 							SELECT COUNT(1) 
 							FROM wD_MissedTurns 
 							WHERE userID = m.userID 
-								AND turnDateTime > ".time()." - (86400)
+								AND turnDateTime > ".time()." - (24*60*60)
 								AND systemExcused = 0 
 								AND modExcused = 0 
 								AND samePeriodExcused = 0

@@ -121,7 +121,24 @@ class adminActionsSeniorMod extends adminActionsForum
 
 		$modReason = $DB->msg_escape($params['reason']);
 
+		// Set the mod excused flag, and set the reliability period to NULL to trigger a recalculation
 		$DB->sql_put("UPDATE wD_MissedTurns SET modExcused = 1, modExcusedReason = '".$modReason."' WHERE id=".$excuseID);
+
+		// Update the missed phase period count buckets for this user:
+		// See gamemaster/gamemaster.php updatePhasePerYearCount to see how these are used to calculate reliability ratings
+		$DB->sql_put("UPDATE wD_Users u
+		INNER JOIN wD_MissedTurns t ON t.userID = u.id
+		SET u.isPhasesDirty = 1,
+			u.missedPhasesTotalLastWeek = u.missedPhasesTotalLastWeek - CASE WHEN u.turnDateTime > UNIX_TIMESTAMP() - 7*24*60*60 THEN 1 ELSE 0 END,
+			u.missedPhasesTotalLastMonth = u.missedPhasesTotalLastMonth - CASE WHEN UNIX_TIMESTAMP() - 7*24*60*60 >= u.turnDateTime AND u.turnDateTime > UNIX_TIMESTAMP() - 28*24*60*60 THEN 1 ELSE 0 END,
+			u.missedPhasesTotalLastYear = u.missedPhasesTotalLastYear - CASE WHEN UNIX_TIMESTAMP() - 28*24*60*60 >= u.turnDateTime AND u.turnDateTime > UNIX_TIMESTAMP() - 365*24*60*60 THEN 1 ELSE 0 END, 
+			u.missedPhasesLiveLastWeek = u.missedPhasesLiveLastWeek - CASE WHEN t.liveGame = 1 AND t.systemExcused = 0 AND t.samePeriodExcused = 0 AND u.turnDateTime > UNIX_TIMESTAMP() - 7*24*60*60 THEN 1 ELSE 0 END,
+			u.missedPhasesLiveLastMonth = u.missedPhasesLiveLastMonth - CASE WHEN t.liveGame = 1 AND t.systemExcused = 0 AND t.samePeriodExcused = 0 AND UNIX_TIMESTAMP() - 7*24*60*60 >= u.turnDateTime AND u.turnDateTime > UNIX_TIMESTAMP() - 28*24*60*60 THEN 1 ELSE 0 END,
+			u.missedPhasesLiveLastYear = u.missedPhasesLiveLastYear - CASE WHEN t.liveGame = 1 AND t.systemExcused = 0 AND t.samePeriodExcused = 0 AND UNIX_TIMESTAMP() - 28*24*60*60 >= u.turnDateTime AND u.turnDateTime > UNIX_TIMESTAMP() - 365*24*60*60 THEN 1 ELSE 0 END, 
+			u.missedPhasesNonLiveLastWeek = u.missedPhasesNonLiveLastWeek - CASE WHEN t.liveGame = 0 AND t.systemExcused = 0 AND t.samePeriodExcused = 0 AND u.turnDateTime > UNIX_TIMESTAMP() - 7*24*60*60 THEN 1 ELSE 0 END,
+			u.missedPhasesNonLiveLastMonth = u.missedPhasesNonLiveLastMonth - CASE WHEN t.liveGame = 0 AND t.systemExcused = 0 AND t.samePeriodExcused = 0 AND UNIX_TIMESTAMP() - 7*24*60*60 >= u.turnDateTime AND u.turnDateTime > UNIX_TIMESTAMP() - 28*24*60*60 THEN 1 ELSE 0 END,
+			u.missedPhasesNonLiveLastYear = u.missedPhasesNonLiveLastYear - CASE WHEN t.liveGame = 0 AND t.systemExcused = 0 AND t.samePeriodExcused = 0 AND UNIX_TIMESTAMP() - 28*24*60*60 >= u.turnDateTime AND u.turnDateTime > UNIX_TIMESTAMP() - 365*24*60*60 THEN 1 ELSE 0 END
+		WHERE t.id=".$excuseID);
 
 		return 'This user\'s missed turn has been excused.';
 	}

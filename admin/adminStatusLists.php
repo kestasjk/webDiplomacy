@@ -35,6 +35,8 @@ if( $User->type['Admin'] )
 
 	print '<p class="modTools"><strong>'.l_t('Error logs:').'</strong> '.libError::stats().' ('.libHTML::admincp('clearErrorLogs',null,'Clear').')</p>';
 
+	print '<p><strong>Script to extract the count of errors by type:</strong> cat *.txt | perl -ne \'m/^(Error)/ and s/\n// and $e=$_; m/^(Raised)/ and s/\n// and $r=$_; m/^(Line)/ and print $e.$r.$_;\' | sort | uniq -c | less </p>';
+
 	$dir =  libError::directory();
 	$errorlogs = libError::errorTimes();
 

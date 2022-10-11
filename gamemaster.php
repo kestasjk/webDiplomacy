@@ -134,11 +134,8 @@ if( (time() - $Misc->LastGroupUpdate) > 10*60 )
 $DB->disableTransactions();
 
 // Update the reliability ratings:
-print l_t('Updating user phase/year counts').'<br />';
-libGameMaster::updatePhasePerYearCount();
-
-print l_t('Updating reliabilty ratings');
-libGameMaster::updateReliabilityRating();
+print l_t('Updating user phase/year counts and reliability ratings').'<br />';
+libGameMaster::updateReliabilityRatings();
 
 if( Config::$playNowDomain != null )
 {
@@ -174,10 +171,6 @@ $readyGames = libGameMaster::findGameReadyVotes();
 // old get processed properly .. unless the last process time gets reset, in which case the turn counts need to be
 // recalculated)
 $currentProcessTime = time();
-
-// Before the LastProcessTime is overwritten with the current time decrement any turns older than a year from players' phase counts
-// Temporarily disabled, still causing deadlocks:
-//$DB->sql_put("UPDATE wD_Users u INNER JOIN ( SELECT userID, COUNT(*) turns FROM wD_TurnDate WHERE (".$Misc->LastProcessTime." - 365*24*60*60) <= turnDateTime AND turnDateTime < (".$currentProcessTime." - 365*24*60*60) GROUP BY userID ) expiredTurns ON expiredTurns.userID = u.id SET u.yearlyPhaseCount = u.yearlyPhaseCount - expiredTurns.turns");
 
 $Misc->LastProcessTime = $currentProcessTime;
 $Misc->write();
@@ -216,7 +209,8 @@ $tabl = $DB->sql_tabl("SELECT * FROM wD_Games
 	WHERE processStatus='Not-processing' AND ( processTime <= ".time()." ".
 	$gameIDHints." ". // Game IDs triggered from memcached
 	( count($readyGames) > 0 ? " OR id IN ( ".implode(',',$readyGames)." ) " : "" ). // Game IDs triggered from ready votes
-	" ) AND NOT phase='Finished'");
+	" ) AND gameOver='No'"); // Using gameOver means one index can be used making the query much quicker
+	//" ) AND NOT phase='Finished'");
 
 $dirtyApiKeys = array(); // Keep track of any api keys with cached data that needs cleansing
 while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )

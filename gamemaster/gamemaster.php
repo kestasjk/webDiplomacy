@@ -94,11 +94,27 @@ class libGameMaster
 	}
 
 	/**
-	 * Update users' phase-per-year count, which is used to calculate reliability ratings. This has to be 
-	 * done carefully as the refresh rate is fairly high and the dataset is v large. The queries below have 
-	 * been optimized to ensure they don't scan the table but go straight to the index boundaries.
+	 * Update users' phase-per-year count and the missing turn counts which are then used to calculate reliability ratings. 
+	 * This has to be done carefully as the refresh rate is fairly high and the dataset is v large. The queries below have 
+	 * been optimized to ensure they don't scan the table but go straight to the index boundaries based on different periods.
+	 * 
+	 * All these updates rely on turns falling into different age buckets, and being able to look things up quickly by the bucket,
+	 * the time, and the id.
+	 * 
+	 * For wD_TurnDate there is just one bucket; younger than a year and older than a year. 
+	 * 
+	 * Every gamemaster cycle the TurnDate with the oldest record that is within the year is selected, 
+	 * and the oldest record that is flagged as younger than a year is selected.
+	 * All records from the oldest flagged as younger than a year up to and not including the oldest record that is within 
+	 * the year are set to NULL to indicate they are moving from being within the year / period to being outside it.
+	 * 
+	 * These NULL turn records can be efficiently queried to find the user IDs that need to be updated, and counted to know
+	 * how many turns to subtract from the users' turn per year counter.
+	 * 
+	 * This allows up to date reliability ratings without the full table scans during exclusive lock periods, which caused locking
+	 * as the datasets grew in size.
 	 */
-	static public function updatePhasePerYearCount($recalculateAll = false)
+	static public function updateReliabilityRatings($recalculateAll = false)
 	{
 		global $DB;
 
@@ -109,32 +125,103 @@ class libGameMaster
 			// Recalculating everything; set all turns younger than a year to be in reliability period, and count all the phases younger than a year for each user
 			$DB->sql_put("UPDATE wD_TurnDate SET isInReliabilityPeriod = CASE WHEN turnDateTime>UNIX_TIMESTAMP() - 60*60*24*365 THEN 1 ELSE 0 END;");
 
-			$DB->sql_put("UPDATE wD_Users u LEFT JOIN (SELECT userID, COUNT(1) yearlyPhaseCount FROM wD_TurnDate WHERE isInReliabilityPeriod = 1 GROUP BY userID) phases ON phases.userID = u.id SET u.yearlyPhaseCount = COALESCE(phases.yearlyPhaseCount,0);");
+			$DB->sql_put("UPDATE wD_Users u LEFT JOIN (
+					SELECT userID, COUNT(1) yearlyPhaseCount 
+					FROM wD_TurnDate 
+					WHERE isInReliabilityPeriod = 1 
+					GROUP BY userID
+				) phases ON phases.userID = u.id 
+				SET u.yearlyPhaseCount = COALESCE(phases.yearlyPhaseCount,0),
+					u.isPhasesDirty = 1;");
+				
+			// Do the same for missed turns, which is more complicated as there are several different reliability periods:
+			$DB->sql_put("UPDATE wD_MissedTurns 
+				SET reliabilityPeriod = CASE 
+						WHEN turnDateTime > UNIX_TIMESTAMP() - 7*24*60*60 THEN 3 
+						WHEN turnDateTime > UNIX_TIMESTAMP() - 28*24*60*60 THEN 2 
+						WHEN turnDateTime > UNIX_TIMESTAMP() - 365*24*60*60 THEN 1 
+						ELSE 0
+				END");
+
+			// Set the week period missed turns to the users
+			$DB->sql_put("UPDATE wD_Users u LEFT JOIN (
+					SELECT userID,
+						SUM(CASE WHEN liveGame = 0 AND samePeriodExcused = 0 AND systemExcused = 0 AND modExcused = 0 THEN 1 ELSE 0 END) nonLiveNew,
+						SUM(CASE WHEN liveGame = 1 AND samePeriodExcused = 0 AND systemExcused = 0 AND modExcused = 0 THEN 1 ELSE 0 END) liveNew,
+						SUM(CASE WHEN modExcused = 0 THEN 1 ELSE 0 END) totalNew 
+					FROM wD_MissedTurns
+					WHERE reliabilityPeriod = 3
+					GROUP BY userID
+				) phases ON phases.userID = u.id
+				SET u.missedPhasesLiveLastWeek = COALESCE(phases.liveNew,0),
+					u.missedPhasesNonLiveLastWeek = COALESCE(phases.nonLiveNew,0),
+					u.missedPhasesTotalLastWeek = COALESCE(phases.totalNew,0),
+					u.isPhasesDirty = 1;");
+					
+			// Set the month period missed turns to the users
+			$DB->sql_put("UPDATE wD_Users u LEFT JOIN (
+				SELECT userID,
+					SUM(CASE WHEN liveGame = 0 AND samePeriodExcused = 0 AND systemExcused = 0 AND modExcused = 0 THEN 1 ELSE 0 END) nonLiveNew,
+					SUM(CASE WHEN liveGame = 1 AND samePeriodExcused = 0 AND systemExcused = 0 AND modExcused = 0 THEN 1 ELSE 0 END) liveNew,
+					SUM(CASE WHEN modExcused = 0 THEN 1 ELSE 0 END) totalNew 
+				FROM wD_MissedTurns
+				WHERE reliabilityPeriod = 2
+				GROUP BY userID
+			) phases ON phases.userID = u.id
+			SET u.missedPhasesLiveLastMonth = COALESCE(phases.liveNew,0),
+				u.missedPhasesNonLiveLastMonth = COALESCE(phases.nonLiveNew,0),
+				u.missedPhasesTotalLastMonth = COALESCE(phases.totalNew,0),
+				u.isPhasesDirty = 1;");
+				
+			// Set the year period missed turns to the users
+			$DB->sql_put("UPDATE wD_Users u LEFT JOIN (
+				SELECT userID,
+					SUM(CASE WHEN liveGame = 0 AND samePeriodExcused = 0 AND systemExcused = 0 AND modExcused = 0 THEN 1 ELSE 0 END) nonLiveNew,
+					SUM(CASE WHEN liveGame = 1 AND samePeriodExcused = 0 AND systemExcused = 0 AND modExcused = 0 THEN 1 ELSE 0 END) liveNew,
+					SUM(CASE WHEN modExcused = 0 THEN 1 ELSE 0 END) totalNew 
+				FROM wD_MissedTurns
+				WHERE reliabilityPeriod = 1
+				GROUP BY userID
+			) phases ON phases.userID = u.id
+			SET u.missedPhasesLiveLastYear = COALESCE(phases.liveNew,0),
+				u.missedPhasesNonLiveLastYear = COALESCE(phases.nonLiveNew,0),
+				u.missedPhasesTotalLastYear = COALESCE(phases.totalNew,0),
+				u.isPhasesDirty = 1;");
 		}
 		else
 		{
 			/*
-			Every phase in non-bot games a users phasePerYear count is incremented and wD_TurnDate is added to, and when run 
-			this routine should find all phases from over a year ago which are still flagged as in the reliability period, and
+			This branch has the same end result as the above which recalculates everything, but is made to be quick enough that
+			it can be rerun on every gamemaster cycle and will only update/reference the turn and user records that need to be 
+			updated. There are many GB of turns and the missing turns is several MB, so doing a full scan every second isn't an option.
+
+
+			Every phase in non-bot games a users phasePerYear count is incremented in gamemaster/members.php and wD_TurnDate is 
+			added to. Left to itself the phases per year would go up always.
+			
+			This routine should find all phases from over a year ago which are still flagged as in the reliability period, and
 			decrement them from the users yearly phase count.
 
-			The aim is to need to scan as few turndate records as possible, and update as few user records as possible
+			The aim is to need to scan as few turndate records as possible, and update as few user records as possible; only the
+			turndate records moving from one turn to another, and only the users that have turns that have changed
 			*/
 
 			// Set any phases that have just turned older than 1 year to have a NULL isInReliabilityPeriod flag, so that
 			// the count of phases that have expired can be removed from the user's phases per year count.
-			$DB->sql_put("UPDATE wD_TurnDate t
+			$DB->sql_put("UPDATE wD_TurnDate turns
 				INNER JOIN (
 					-- Find the first id marked as in the last year using the isInReliabilityPeriod,turnDateTime index
 					SELECT id FROM wD_TurnDate WHERE isInReliabilityPeriod = 1 ORDER BY isInReliabilityPeriod,turnDateTime LIMIT 1
-				) lwr
+				) oldestTurnFlaggedInPeriod
 				INNER JOIN (
 					-- Up to the first id younger than a year using the turnDateTime index
 					SELECT id FROM wD_TurnDate WHERE turnDateTime > UNIX_TIMESTAMP() - 365*24*60*60 ORDER BY turnDateTime LIMIT 1
-				) upr
-				SET t.isInReliabilityPeriod = NULL
-				WHERE t.id >= lwr.id AND t.id <= upr.id;");
+				) oldestTurnWithinPeriod
+				SET turns.isInReliabilityPeriod = NULL
+				WHERE oldestTurnFlaggedInPeriod.id <= turns.id AND turns.id < oldestTurnWithinPeriod.id;");
 
+			// Now the turns with a NULL isInReliabilityPeriod are the turns that have just expired and can be removed from the user's 
+			// turn count.
 			$DB->sql_put("UPDATE wD_Users u
 				INNER JOIN (
 					SELECT t.userID, COUNT(1) yearlyPhaseCountJustExpired
@@ -142,103 +229,206 @@ class libGameMaster
 					WHERE t.isInReliabilityPeriod IS NULL
 					GROUP BY t.userID
 				) p ON p.userID = u.id
-				SET u.yearlyPhaseCount = u.yearlyPhaseCount - p.yearlyPhaseCountJustExpired;");
+				SET u.yearlyPhaseCount = u.yearlyPhaseCount - p.yearlyPhaseCountJustExpired,
+					u.isPhasesDirty = 1;");
 
 			// Now set any phases that have just become older than a year as outside the reliability rating period:
 			$DB->sql_put("UPDATE wD_TurnDate SET isInReliabilityPeriod = 0 WHERE isInReliabilityPeriod IS NULL;");
+
+			$DB->sql_put("COMMIT"); // Ensure no users are left locked
+			$DB->sql_put("BEGIN"); // I think this might be needed to ensure we are within a transaction going forward?
+
+			// Start processing missed turns
+
+			// Process all missed turns set to -1 (new):
+			$DB->sql_put("UPDATE wD_MissedTurns turns
+			SET turns.reliabilityPeriod = NULL
+			WHERE reliabilityPeriod = -1;");
+			// Update the user missed phase buckets for the new->week missed turns:
+			$DB->sql_put("UPDATE wD_Users u
+				INNER JOIN (
+					SELECT t.userID, 
+						SUM(CASE WHEN liveGame = 0 AND samePeriodExcused = 0 AND systemExcused = 0 AND modExcused = 0 THEN 1 ELSE 0 END) nonLiveNew,
+						SUM(CASE WHEN liveGame = 1 AND samePeriodExcused = 0 AND systemExcused = 0 AND modExcused = 0 THEN 1 ELSE 0 END) liveNew,
+						SUM(CASE WHEN modExcused = 0 THEN 1 ELSE 0 END) totalNew
+					FROM wD_MissedTurns t 
+					WHERE t.reliabilityPeriod IS NULL
+					GROUP BY t.userID
+				) changedPhases ON changedPhases.userID = u.id
+				SET u.missedPhasesLiveLastWeek = u.missedPhasesLiveLastWeek + changedPhases.liveNew,
+					u.missedPhasesNonLiveLastWeek = u.missedPhasesNonLiveLastWeek + changedPhases.nonLiveNew,
+					u.missedPhasesTotalLastWeek = u.missedPhasesTotalLastWeek + changedPhases.totalNew,
+					u.isPhasesDirty = 1;");
+			// Set new missed turns to the week (3)
+			$DB->sql_put("UPDATE wD_MissedTurns turns SET turns.reliabilityPeriod = 3 WHERE turns.reliabilityPeriod = NULL;");
+
+			$DB->sql_put("COMMIT"); // Ensure no users are left locked
+			$DB->sql_put("BEGIN"); // I think this might be needed to ensure we are within a transaction going forward?
+
+			// Process all missed turns that are set to 3 (this week) but should be 2 (this month):
+			$DB->sql_put("UPDATE wD_MissedTurns turns
+			INNER JOIN (
+				-- Find the first id marked as in this period
+				SELECT id FROM wD_MissedTurns WHERE reliabilityPeriod = 3 ORDER BY reliabilityPeriod,turnDateTime LIMIT 1
+			) oldestTurnFlaggedInPeriod
+			INNER JOIN (
+				-- Up to the first id younger than this period using the turnDateTime index
+				SELECT id FROM wD_MissedTurns WHERE turnDateTime > UNIX_TIMESTAMP() - 7*24*60*60 ORDER BY turnDateTime LIMIT 1
+			) oldestTurnWithinPeriod
+			SET turns.reliabilityPeriod = NULL
+			WHERE oldestTurnFlaggedInPeriod.id <= turns.id AND turns.id < oldestTurnWithinPeriod.id;");
+			// Update the user missed phase buckets for the week->month missed turns:
+			$DB->sql_put("UPDATE wD_Users u
+				INNER JOIN (
+					SELECT t.userID, 
+						SUM(CASE WHEN liveGame = 0 AND samePeriodExcused = 0 AND systemExcused = 0 AND modExcused = 0 THEN 1 ELSE 0 END) nonLiveNew,
+						SUM(CASE WHEN liveGame = 1 AND samePeriodExcused = 0 AND systemExcused = 0 AND modExcused = 0 THEN 1 ELSE 0 END) liveNew,
+						SUM(CASE WHEN modExcused = 0 THEN 1 ELSE 0 END) totalNew
+					FROM wD_MissedTurns t 
+					WHERE t.reliabilityPeriod IS NULL
+					GROUP BY t.userID
+				) changedPhases ON changedPhases.userID = u.id
+				SET u.missedPhasesLiveLastWeek = u.missedPhasesLiveLastWeek - changedPhases.liveNew,
+					u.missedPhasesLiveLastMonth = u.missedPhasesLiveLastMonth + changedPhases.liveNew,
+					u.missedPhasesNonLiveLastWeek = u.missedPhasesNonLiveLastWeek - changedPhases.nonLiveNew,
+					u.missedPhasesNonLiveLastMonth = u.missedPhasesNonLiveLastMonth + changedPhases.nonLiveNew,
+					u.missedPhasesTotalLastWeek = u.missedPhasesTotalLastWeek - changedPhases.totalNew,
+					u.missedPhasesTotalLastMonth = u.missedPhasesTotalLastMonth + changedPhases.totalNew,
+					u.isPhasesDirty = 1;");
+			// Set new missed turns to the month (2)
+			$DB->sql_put("UPDATE wD_MissedTurns turns SET turns.reliabilityPeriod = 2 WHERE turns.reliabilityPeriod = NULL;");
+
+			$DB->sql_put("COMMIT"); // Ensure no users are left locked
+			$DB->sql_put("BEGIN"); // I think this might be needed to ensure we are within a transaction going forward?
+
+			// Process all missed turns that are set to 2 (this month) but should be 1 (this year):
+			$DB->sql_put("UPDATE wD_MissedTurns turns
+			INNER JOIN (
+				-- Find the first id marked as in this period
+				SELECT id FROM wD_MissedTurns WHERE reliabilityPeriod = 2 ORDER BY reliabilityPeriod,turnDateTime LIMIT 1
+			) oldestTurnFlaggedInPeriod
+			INNER JOIN (
+				-- Up to the first id younger than this period using the turnDateTime index
+				SELECT id FROM wD_MissedTurns WHERE turnDateTime > UNIX_TIMESTAMP() - 28*24*60*60 ORDER BY turnDateTime LIMIT 1
+			) oldestTurnWithinPeriod
+			SET turns.reliabilityPeriod = NULL
+			WHERE oldestTurnFlaggedInPeriod.id <= turns.id AND turns.id < oldestTurnWithinPeriod.id;");
+			// Update the user missed phase buckets for the month->year missed turns:
+			$DB->sql_put("UPDATE wD_Users u
+				INNER JOIN (
+					SELECT t.userID, 
+						SUM(CASE WHEN liveGame = 0 AND samePeriodExcused = 0 AND systemExcused = 0 AND modExcused = 0 THEN 1 ELSE 0 END) nonLiveNew,
+						SUM(CASE WHEN liveGame = 1 AND samePeriodExcused = 0 AND systemExcused = 0 AND modExcused = 0 THEN 1 ELSE 0 END) liveNew,
+						SUM(CASE WHEN modExcused = 0 THEN 1 ELSE 0 END) totalNew
+					FROM wD_MissedTurns t 
+					WHERE t.reliabilityPeriod IS NULL
+					GROUP BY t.userID
+				) changedPhases ON changedPhases.userID = u.id
+				SET u.missedPhasesLiveLastMonth = u.missedPhasesLiveLastMonth - changedPhases.liveNew,
+					u.missedPhasesLiveLastYear = u.missedPhasesLiveLastYear + changedPhases.liveNew,
+					u.missedPhasesNonLiveLastMonth = u.missedPhasesNonLiveLastMonth - changedPhases.nonLiveNew,
+					u.missedPhasesNonLiveLastYear = u.missedPhasesNonLiveLastYear + changedPhases.nonLiveNew,
+					u.missedPhasesTotalLastMonth = u.missedPhasesTotalLastMonth - changedPhases.totalNew,
+					u.missedPhasesTotalLastYear = u.missedPhasesTotalLastYear + changedPhases.totalNew,
+					u.isPhasesDirty = 1;");
+			// Set new missed turns to the year (1)
+			$DB->sql_put("UPDATE wD_MissedTurns turns SET turns.reliabilityPeriod = 1 WHERE turns.reliabilityPeriod = NULL;");
+
+			$DB->sql_put("COMMIT"); // Ensure no users are left locked
+			$DB->sql_put("BEGIN"); // I think this might be needed to ensure we are within a transaction going forward?
+
+			// Process all missed turns that are set to 1 (this year) but should be 0 (expired):
+			$DB->sql_put("UPDATE wD_MissedTurns turns
+			INNER JOIN (
+				-- Find the first id marked as in this period
+				SELECT id FROM wD_MissedTurns WHERE reliabilityPeriod = 1 ORDER BY reliabilityPeriod,turnDateTime LIMIT 1
+			) oldestTurnFlaggedInPeriod
+			INNER JOIN (
+				-- Up to the first id younger than this period using the turnDateTime index
+				SELECT id FROM wD_MissedTurns WHERE turnDateTime > UNIX_TIMESTAMP() - 365*24*60*60 ORDER BY turnDateTime LIMIT 1
+			) oldestTurnWithinPeriod
+			SET turns.reliabilityPeriod = NULL
+			WHERE oldestTurnFlaggedInPeriod.id <= turns.id AND turns.id < oldestTurnWithinPeriod.id;");
+			// Update the user missed phase buckets for the month->year missed turns:
+			$DB->sql_put("UPDATE wD_Users u
+				INNER JOIN (
+					SELECT t.userID, 
+						SUM(CASE WHEN liveGame = 0 AND samePeriodExcused = 0 AND systemExcused = 0 AND modExcused = 0 THEN 1 ELSE 0 END) nonLiveNew,
+						SUM(CASE WHEN liveGame = 1 AND samePeriodExcused = 0 AND systemExcused = 0 AND modExcused = 0 THEN 1 ELSE 0 END) liveNew,
+						SUM(CASE WHEN modExcused = 0 THEN 1 ELSE 0 END) totalNew
+					FROM wD_MissedTurns t 
+					WHERE t.reliabilityPeriod IS NULL
+					GROUP BY t.userID
+				) changedPhases ON changedPhases.userID = u.id
+				SET u.missedPhasesLiveLastYear = u.missedPhasesLiveLastYear - changedPhases.liveNew,
+					u.missedPhasesNonLiveLastYear = u.missedPhasesNonLiveLastYear - changedPhases.nonLiveNew,
+					u.missedPhasesTotalLastYear = u.missedPhasesTotalLastYear - changedPhases.totalNew,
+					u.isPhasesDirty = 1;");
+			// Set new missed turns to expired (0)
+			$DB->sql_put("UPDATE wD_MissedTurns turns SET turns.reliabilityPeriod = 0 WHERE turns.reliabilityPeriod = NULL;");
+			
 		}
 		$DB->sql_put("COMMIT"); // Ensure no users are left locked
 		$DB->sql_put("BEGIN"); // I think this might be needed to ensure we are within a transaction going forward?
-	}
-	/**
-	 * Recalculates the reliability ratings for all users using wD_MissedTurns, the rules are on the profile page
-	 * A similar method to counting the yearly phase count is used to ensure this can be constantly updated without
-	 * having to scan the entire users table
-	 */
-	static public function updateReliabilityRating()
-	{
-		global $DB, $Misc;
-
-		/*
-		The RR calculation is based on this query which recalculates the RR for a user, but in 
+/*
+		The RR calculation is based on this query which recalculates the RR for a user:
 		UPDATE wD_Users u 
 		set u.reliabilityRating = greatest(0, 
-		(100 *(1 - ((SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.modExcused = 0 and t.turnDateTime > ".$year.") / greatest(1,u.yearlyPhaseCount))))
+		(100 *
+			(
+				1 - 
+				(
+					(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.modExcused = 0 and t.turnDateTime > ".$year.") 
+					/ 
+					greatest(1,u.yearlyPhaseCount)
+				)
+			)
+		)
 		-(6*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 0 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastMonth."))
 		-(6*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 1 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastWeek."))
 		-(5*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 1 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$lastMonth."))
 		-(5*(SELECT COUNT(1) FROM wD_MissedTurns t  WHERE t.userID = u.id AND t.liveGame = 0 AND t.modExcused = 0 and t.samePeriodExcused = 0 and t.systemExcused = 0 and t.turnDateTime > ".$year.")))
 		where u.id = ".$userIDtoUpdate;
+
+		See gamemaster/game.php Game::recordNMRs for the logic that inserts MissedTurns and has the logic for samePeriodExcused and systemExcused.
+		See gamemaster/members.php Members::handleNMRs for the logic that decrements the excusedMissedTurns and sets a player to left etc, sends a message, bans players etc
+		See adminActionsSeniorMod.php for the code that sets modExcused (and at the same time the reliabilityPeriod to NULL)
+
+		samePeriodExcused is set for all missed turns that are within a 24 hour period of the first missed turn
+		systemExcused is set for all missed turns where there was an excusedMissedTurn remaining in the wD_Members table
+		modExcused is set when a mod excuses the missed turn via the admin control panel
+
+		So the logic for reliability ratings is: 
+			Exclude all mod-excused missed turns; they do not count towards the total missed turns.
+
+			100% - % of missed turns over the last year (missed turns in last year / turns played in last year)
+			
+			For games that aren't same-period-excused (within 24 hours of another) or system-excused (forgiven by an excused turn):
+			
+				For non-live games:
+					Take off 5% if within the last year
+					Take off 11% (6+5) if within the last month
+				For live games:
+					Take off 5% if within the last month
+					Take off 11% (6+5) if within the last week
+			
+		Note that MissedTurns should really be MissedPhases, as you get one for each NMR for each missed phase; turns/phases 
+		are used interchangeably below, but phases is what is meant always.
 		*/
+		$DB->sql_put("UPDATE wD_Users u SET u.reliabilityRating = 100 * (
+			greatest(0,
+			1.0
+			- ((u.missedPhasesTotalLastYear+u.missedPhasesTotalLastMonth+u.missedPhasesTotalLastWeek) / u.yearlyPhaseCount)
+			- 0.11 * u.missedPhasesLiveLastWeek
+			- 0.11 * (u.missedPhasesNonLiveLastWeek+u.missedPhasesNonLiveLastMonth)
+			- 0.05 * u.missedPhasesLiveLastMonth
+			- 0.05 * u.missedPhasesNonLiveLastYear)),
+			u.isPhasesDirty = 0
+		WHERE u.isPhasesDirty = 1;");
 
+		$DB->sql_put("COMMIT"); // Ensure no users are left locked
+		$DB->sql_put("BEGIN"); // I think this might be needed to ensure we are within a transaction going forward?
 
-		// Find all turns which are in the wrong reliabilityPeriod; -1 is unassigned, NULL is being updated, 3 is under 7 days, 2 is under 28 days, 1 is under a year, 0 is over a year
-		// Set all missed turns for those users to NULL (except missed turns already over a year old) which will cause a recalc:
-		$timestamp = time();
-		$DB->sql_put("UPDATE wD_MissedTurns 
-			SET reliabilityPeriod = NULL 
-			WHERE COALESCE(reliabilityPeriod,-1) <> 0 AND userID IN (
-				SELECT DISTINCT userID 
-				FROM wD_MissedTurns 
-				WHERE COALESCE(reliabilityPeriod,-1) <> (CASE 
-					WHEN turnDateTime > ".$timestamp." - 7*24*60*60 THEN 3 
-					WHEN turnDateTime > ".$timestamp." - 28*24*60*60 THEN 2 
-					WHEN turnDateTime > ".$timestamp." - 365*24*60*60 THEN 1 
-					ELSE 0
-				END ))");
-
-		// Calculates the RR for members. 
-		$DB->sql_put("UPDATE wD_Users u
-		LEFT JOIN (
-			SELECT 
-				t.userID, 
-				SUM(
-				CASE 
-					-- If not missed for an exempt reason
-					WHEN t.systemExcused = 0 AND t.samePeriodExcused = 0
-					THEN
-						CASE
-						-- If not live ..
-						WHEN liveGame = 0
-						THEN
-							CASE WHEN t.turnDateTime > ".$timestamp." - 28*24*60*60 
-							THEN 0.11 -- .. add 11% for missed turns newer than 28 days
-							ELSE 0.05  -- .. or 5% for missed turns older than 28 days
-							END
-						ELSE -- liveGame = 1
-						
-							CASE WHEN t.turnDateTime > ".$timestamp." - 7*24*60*60 
-							THEN 0.11 -- .. add 11% for missed turns newer than 7 days
-							WHEN t.turnDateTime > ".$timestamp." - 28*24*60*60
-							THEN 0.05  -- .. or 5% for missed turns newer than 28 days
-							ELSE 0.0 
-							END
-						END
-					-- If missed for an exempt reason add a value from 100 to 0 that gets smaller as the user does more games.
-					-- Goes from 99 with 100 phases / year, and 1 with 0 phases / year.
-					ELSE 0.0
-				END) missedTurnPenalty,
-				COUNT(1) missedTurnCount
-			FROM wD_MissedTurns t
-			WHERE t.modExcused = 0 AND reliabilityPeriod IS NULL AND t.turnDateTime > ".$timestamp." - 60*60*24*365
-			GROUP BY t.userID
-		) t ON t.userID = u.id
-		SET u.reliabilityRating = 100.0 * GREATEST(((1.0 - COALESCE(missedTurnCount,0) / GREATEST(u.yearlyPhaseCount,1)) 
-			- COALESCE(t.missedTurnPenalty,0)), 0);
-		");
-		
-		// Now set the turns just processed to the period they were calculated as, so that when they go into a different period it
-		// will trigger a recalc
-		$DB->sql_put("UPDATE wD_MissedTurns 
-			SET reliabilityPeriod = CASE 
-					WHEN turnDateTime > ".$timestamp." - 7*24*60*60 THEN 3 
-					WHEN turnDateTime > ".$timestamp." - 28*24*60*60 THEN 2 
-					WHEN turnDateTime > ".$timestamp." - 365*24*60*60 THEN 1 
-					ELSE 0
-				END  
-			WHERE reliabilityPeriod IS NULL");
-
-		$DB->sql_put("COMMIT");
 	}
 
 	// Finds and processes all games where all playing members excluding bots have voted for something

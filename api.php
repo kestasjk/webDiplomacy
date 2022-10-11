@@ -913,7 +913,8 @@ class SetOrders extends ApiEntry {
 			'JSON',
 			'submitOrdersForUserInCD',
 			array('gameID', 'turn', 'phase', 'countryID', 'orders', 'ready'),
-			true);
+			false); // This should only require the member record for the country being updated get locked for update, this is how the ajax.php
+			// order interface locking works. Locking on this is creating 95+% of deadlocks, which is causing 80+% of errors as of 2022-10-12
 			// 'ready' is optional.
 	}
 	/**
@@ -951,7 +952,9 @@ class SetOrders extends ApiEntry {
 		// So commit and begin to release anything locked and start over
 		$DB->sql_put("COMMIT");
 		$DB->sql_put("BEGIN");
-		$game = $this->getAssociatedGame(); // Get the game and lock it for update
+		// Lock the member record for update, as this will be updated but the game will not be
+		$DB->sql_row("SELECT id FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." FOR UPDATE");
+		$game = $this->getAssociatedGame();
 		if (!in_array($game->phase, array('Diplomacy', 'Retreats', 'Builds')))
 			throw new RequestException('Cannot submit orders in phase `'.$game->phase.'`.');
 		if ($turn != $game->turn)

@@ -520,31 +520,21 @@ print '<div class = "profile-show-inside">';
 
 print '</div>';
 
-// Do all the RR calculations here
-$missedTurns = $UserProfile->getMissedTurns();
-$liveMissedTurns = $UserProfile->getLiveMissedTurns();
-$allMissedTurns = $missedTurns + $liveMissedTurns;
-
-$recentUnExcusedMissedTurns = $UserProfile->getRecentUnExcusedMissedTurns();
-$allUnExcusedMissedTurns = $UserProfile->getYearlyUnExcusedMissedTurns();
-
-$recentLiveUnExcusedMissedTurns = $UserProfile->getLiveRecentUnExcusedMissedTurns();
-$allLiveUnExcusedMissedTurns = $UserProfile->getLiveUnExcusedMissedTurns();
-
-$basePercentage = (100*(1- ($allMissedTurns/max($UserProfile->yearlyPhaseCount,1))));
-$yearlyPenalty = ($allUnExcusedMissedTurns*5);
-$recentPenalty = ($recentUnExcusedMissedTurns*6);
-$liveLongPenalty = ($allLiveUnExcusedMissedTurns*5);
-$liveShortPenalty = ($recentLiveUnExcusedMissedTurns*6);
-
-$totalRR = max(($basePercentage - $recentPenalty - $yearlyPenalty - $liveShortPenalty - $liveLongPenalty),0);
 
 // Print out relibality rating information here instead of having it a new link.
 
 print '<div class = "profile-show">';
 print '<div class = "rrInfo">';
 
-print '<div class = "profile_title"> Reliability Rating: '.$totalRR.'%</div>';
+// Fetch reliability info:
+$reliabilityData = $DB->sql_hash("SELECT yearlyPhaseCount, reliabilityRating, isPhasesDirty, 
+	missedPhasesTotalLastYear, missedPhasesTotalLastMonth, missedPhasesTotalLastWeek,
+	missedPhasesLiveLastYear, missedPhasesLiveLastMonth, missedPhasesLiveLastWeek,
+	missedPhasesNonLiveLastYear, missedPhasesNonLiveLastMonth, missedPhasesNonLiveLastWeek,
+	cdCount, nmrCount, cdTakenCount, phaseCount, gameCount, deletedCDs
+	FROM wD_Users WHERE id = ". $UserProfile->id);
+
+print '<div class = "profile_title"> Reliability Rating: '.round($reliabilityData['reliabilityRating'],1).'%</div>';
 print '<div class = "profile_content">';
 
 print '<h4>Reliability Explained:</h4>';
@@ -582,46 +572,88 @@ you will begin getting temporarily banned from making new games, joining existin
 	result in a 24 hour temp ban. The 2 warnings reset every 28 days resulting in significantly more yearly warnings for live game players then the normal system.
 </p></div>';
 
-print '<h4>Factors Impacting RR:</h4>';
 
-if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
+
+ /* RR calc, calculated in gamemaster/gamemaster.php updateReliabilityRatings:
+	greatest(0,
+	1.0
+	- ((u.missedPhasesTotalLastYear+u.missedPhasesTotalLastMonth+u.missedPhasesTotalLastWeek) / u.yearlyPhaseCount)
+	- 0.11 * u.missedPhasesLiveLastWeek
+	- 0.11 * (u.missedPhasesNonLiveLastWeek+u.missedPhasesNonLiveLastMonth)
+	- 0.05 * u.missedPhasesLiveLastMonth
+	- 0.05 * u.missedPhasesNonLiveLastYear)) */
+
+if ( $reliabilityData['yearlyPhaseCount']>0 && ($User->type['Moderator'] || $User->id == $UserProfile->id) )
 {	
-	print '<p> <Strong>Yearly Turns:</Strong> '.$UserProfile->yearlyPhaseCount.'</br>';
-}
+	print '<h4>Reliability rating calculation info:</h4>';
 
-if ($allLiveUnExcusedMissedTurns > 0 ) 
-{ 
-	print '<Strong>Yearly Missed Turns:</Strong> '.$missedTurns.'</br>
-	<Strong>Past Month Live Missed Turns:</Strong> '.$liveMissedTurns.'</br>'; 
-}
+	if( $reliabilityData['isPhasesDirty'] == 1 )
+	{
+		print '<p class="notice">Warning: Your reliability rating does not factor in all data; this may be because games are not processing. Please contact the mod team.</p>';
+	}
+	/*
+	yearlyPhaseCount, reliabilityRating, isPhasesDirty, 
+	missedPhasesTotalLastYear, missedPhasesTotalLastMonth, missedPhasesTotalLastWeek,
+	missedPhasesLiveLastYear, missedPhasesLiveLastMonth, missedPhasesLiveLastWeek,
+	missedPhasesNonLiveLastYear, missedPhasesNonLiveLastMonth, missedPhasesNonLiveLastWeek,
+	*/
+	
+	print '<Strong>Phases in last year:</Strong> '.$reliabilityData['yearlyPhaseCount'].'</br>';
+	print '<table><tr><th></th><th>Week</th><th>Month</th><th>Year</th><th>Recent</th><th>Non-recent</th><th>Total</th><th>% Reliability</th></tr>';
 
-if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
-{
-	print'<Strong>Total Counted Missed Turns:</Strong> '.$allMissedTurns.'</br>';
-}
+	$totalMissed = ($reliabilityData['missedPhasesTotalLastWeek']+$reliabilityData['missedPhasesTotalLastMonth']+$reliabilityData['missedPhasesTotalLastYear']);
+	
+	$baseReduction = round(100*$totalMissed/$reliabilityData['yearlyPhaseCount'],1);
+	print '<tr><th>Totals/Base (includes system/same-period excused)</th><td>'.
+		$reliabilityData['missedPhasesTotalLastWeek'].'</td><td>'.
+		$reliabilityData['missedPhasesTotalLastMonth'].'</td><td>'.
+		$reliabilityData['missedPhasesTotalLastYear'].'</td><td>'.
+		'N/A'.
+		'</td><td>'.
+		'N/A'.
+		'</td><td>'.
+		$totalMissed.'</td><td><strong>'.
+		-$baseReduction.'%</strong> '.
+		'('.$totalMissed.' / '.$reliabilityData['yearlyPhaseCount'].')'.'</td></tr>';
 
-print '</br><strong>Base Percentage:</strong> '.$basePercentage.'%</br>';
 
-if ($allLiveUnExcusedMissedTurns > 0 ) { print'(100* (1 - (Yearly Missed Turns + Live Missed Turns)/Yearly Turns))'; }
-else { print'(100* (1 - Yearly Missed Turns/Yearly Turns))'; }
+	$nonLiveRecent = ($reliabilityData['missedPhasesNonLiveLastWeek']+$reliabilityData['missedPhasesNonLiveLastMonth']);
+	$nonLivePenalty = (11*$nonLiveRecent+5*$reliabilityData['missedPhasesNonLiveLastYear']);
+	print '<tr><th>Non-live Penalties</th><td>'.
+		$reliabilityData['missedPhasesNonLiveLastWeek'].'</td><td>'.
+		$reliabilityData['missedPhasesNonLiveLastMonth'].'</td><td>'.
+		$reliabilityData['missedPhasesNonLiveLastYear'].'</td><td>'.
+		($reliabilityData['missedPhasesNonLiveLastWeek']+$reliabilityData['missedPhasesNonLiveLastMonth']).' ('.
+		-(11 * $nonLiveRecent).'%)'.
+		'</td><td>'.
+		$reliabilityData['missedPhasesNonLiveLastYear'].' ('.
+		-(5 * $reliabilityData['missedPhasesNonLiveLastYear']).'%)'.
+		'</td><td>'.
+		($reliabilityData['missedPhasesNonLiveLastWeek']+$reliabilityData['missedPhasesNonLiveLastMonth']+$reliabilityData['missedPhasesNonLiveLastYear']).'</td><td><strong>'.
+		-$nonLivePenalty.'%</strong> ('.
+		(11 * $nonLiveRecent).'% + '.(5*$reliabilityData['missedPhasesNonLiveLastYear']).'%)</td></tr>';
 
-print'<h4>Added Penalties:</h4>
-<Strong>Yearly Unexcused Missed Turns:</Strong> '.$allUnExcusedMissedTurns.' for a penalty of '.$yearlyPenalty.'%</br>
-<Strong>Recent Unexcused Missed Turns:</Strong> '.$recentUnExcusedMissedTurns.' for a penalty of '.$recentPenalty.'%</br>';
+	$livePenalty = (11*$reliabilityData['missedPhasesLiveLastWeek']+ 5*$reliabilityData['missedPhasesLiveLastMonth']);
+		print '<tr><th>Live Penalties</th><td>'.
+			$reliabilityData['missedPhasesLiveLastWeek'].'</td><td>'.
+			$reliabilityData['missedPhasesLiveLastMonth'].'</td><td>'.
+			'N/A'.'</td><td>'.
+			$reliabilityData['missedPhasesLiveLastWeek'].' ('.
+			-(11 * $reliabilityData['missedPhasesLiveLastWeek']).'%)'.
+			'</td><td>'.
+			$reliabilityData['missedPhasesLiveLastMonth'].' ('.
+			-(5 * $reliabilityData['missedPhasesLiveLastMonth']).'%)'.
+			'</td><td>'.
+			($reliabilityData['missedPhasesLiveLastWeek']+$reliabilityData['missedPhasesLiveLastMonth']).'</td><td><strong>'.
+			-$livePenalty.'%</strong> ('.
+			(11 * $reliabilityData['missedPhasesLiveLastWeek']).'% + '.(5*$reliabilityData['missedPhasesLiveLastMonth']).'%)</td></tr>';
 
-if ($allLiveUnExcusedMissedTurns > 0 )
-{
-	print' <h4>Added Live Game Penalties:</h4>
-	<Strong>Last Month Live Unexcused Missed Turns:</Strong> '.$allLiveUnExcusedMissedTurns.' for a penalty of '.$liveLongPenalty.'%</br>
-	<Strong>Last Week Live Unexcused Missed Turns:</Strong> '.$recentLiveUnExcusedMissedTurns.' for a penalty of '.$liveShortPenalty.'%</br>';
-}
+	print '</table>';
+	
+	print'<h4>Total:</h4>
+	<Strong>Reliability Rating:</Strong> 100% - Base/Total reduction ('.$baseReduction.'%) - Non-live penalty ('.$nonLivePenalty.'%) - Live penalty ('.$livePenalty.'%) = Reliability rating ('.round($reliabilityData['reliabilityRating'],1).'%)
+	</p>';
 
-print'<h4>Total:</h4>
-<Strong>Reliability Rating:</Strong> '.max(($basePercentage - $recentPenalty - $yearlyPenalty - $liveShortPenalty - $liveLongPenalty),0) .'%
-</p>';
-
-if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
-{
 	print '<h4>Missed Turns:</h4>
 	<p>Red = Unexcused</p>';
 	$tabl = $DB->sql_tabl("SELECT n.gameID, n.countryID, n.turn, 
@@ -631,7 +663,8 @@ if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 	( CASE WHEN n.modExcused = 1 THEN 'Yes' ELSE 'No' END ),
 	( CASE WHEN n.samePeriodExcused = 1 THEN 'Yes' ELSE 'No' END ),
 	n.id,
-	n.turnDateTime
+	n.turnDateTime,
+	CASE n.reliabilityPeriod WHEN -1 THEN 'New' WHEN 3 THEN 'Week' WHEN 2 THEN 'Month' WHEN 1 THEN 'Year' ELSE 'Expired' END
 	FROM wD_MissedTurns n
 	LEFT JOIN wD_Games g ON n.gameID = g.id
 	WHERE n.userID = ".$UserProfile->id. " and n.turnDateTime > ".(time() - 31536000));
@@ -640,23 +673,24 @@ if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 	{
 		print '<TABLE class="rrInfo">';
 		print '<tr>';
-		print '<th class= "rrInfo">ID:</th>';
+		//print '<th class= "rrInfo">ID:</th>';
 		print '<th class= "rrInfo">Game:</th>';
 		print '<th class= "rrInfo">Country</th>';
 		print '<th class= "rrInfo">Turn:</th>';
-		print '<th class= "rrInfo">LiveGame:</th>';
+		print '<th class= "rrInfo">Live Game:</th>';
 		print '<th class= "rrInfo">System Excused:</th>';
 		print '<th class= "rrInfo">Mod Excused:</th>';
 		print '<th class= "rrInfo">Same Period Excused:</th>';
 		print '<th class= "rrInfo">Turn Date:</th>';
+		print '<th class= "rrInfo">Period:</th>';
 		print '</tr>';
 
-		while(list($gameID, $countryID, $turn, $liveGame, $name, $systemExcused, $modExcused, $samePeriodExcused, $id, $turnDateTime)=$DB->tabl_row($tabl))
+		while(list($gameID, $countryID, $turn, $liveGame, $name, $systemExcused, $modExcused, $samePeriodExcused, $id, $turnDateTime, $period)=$DB->tabl_row($tabl))
 		{
 			if ($systemExcused == 'No' && $modExcused == 'No' && $samePeriodExcused == 'No') { print '<tr style="background-color:#F08080;">'; }
 			else { print '<tr>'; }
 
-			print '<td> <strong>'.$id.'</strong></td>';
+			//print '<td> <strong>'.$id.'</strong></td>';
 			if ($name != '')
 			{
 				$Variant=libVariant::loadFromGameID($gameID);
@@ -668,6 +702,7 @@ if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 				print '<td> <strong>'.$modExcused.'</strong></td>';
 				print '<td> <strong>'.$samePeriodExcused.'</strong></td>';
 				print '<td> <strong>'.libTime::detailedText($turnDateTime).'</strong></td>';
+				print '<td> <strong>'.$period.'</strong></td>';
 			}
 			else
 			{
@@ -679,6 +714,7 @@ if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 				print '<td> <strong>'.$modExcused.'</strong></td>';
 				print '<td> <strong>'.$samePeriodExcused.'</strong></td>';
 				print '<td> <strong>'.libTime::detailedText($turnDateTime).'</strong></td>';
+				print '<td> <strong>'.$period.'</strong></td>';
 			}
 			
 			print '</tr>';
