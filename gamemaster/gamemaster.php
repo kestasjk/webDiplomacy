@@ -493,9 +493,10 @@ class libGameMaster
 				SELECT g.id,
 					SUM(1) Players,
 					SUM(CASE WHEN (orderStatus & 1 ) = 1 THEN 1 ELSE 0 END) NoOrders, 
-					SUM(CASE WHEN (orderStatus & 2 ) = 2 THEN 1 ELSE 0 END) SavedOrders, 
-					SUM(CASE WHEN (orderStatus & 2 ) = 2 THEN 1 ELSE 0 END) CompletedOrders, 
-					SUM(CASE WHEN (orderStatus & 8 ) = 8 THEN 1 ELSE 0 END) ReadyOrders
+					/* AND NOT ((orderStatus & 1 ) = 1) accounts for cases like 'None,Ready' which can get set as an order status */
+					SUM(CASE WHEN (orderStatus & 2 ) = 2 AND NOT ((orderStatus & 1 ) = 1) THEN 1 ELSE 0 END) SavedOrders, 
+					SUM(CASE WHEN (orderStatus & 2 ) = 2 AND NOT ((orderStatus & 1 ) = 1) THEN 1 ELSE 0 END) CompletedOrders, 
+					SUM(CASE WHEN (orderStatus & 8 ) = 8 AND NOT ((orderStatus & 1 ) = 1) THEN 1 ELSE 0 END) ReadyOrders
 				FROM wD_Games g
 				INNER JOIN wD_Members m ON m.gameID = g.id
 				INNER JOIN wD_Users u ON u.id = m.userID
