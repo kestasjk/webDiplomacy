@@ -1621,13 +1621,15 @@ try {
 	header('Content-Type: application/json');
 	// Print response.
 	print $jsonEncodedResponse;
+
 /*
 	$apiAuth = new $api->authClass($api->route);
 	$userID = $apiAuth->getUserID();
-	if( $userID == 11 )
+	*/
+	if( Config::$botsLogFile )
 	{
 		$apiEntry = $api->entries[$api->route];
-		file_put_contents('bot_requestlog.txt',
+		file_put_contents(Config::$botsLogFile,
 			date('l jS \of F Y h:i:s A')."\n".
 			"-------------------\n".
 			$_SERVER['REQUEST_URI']."\n".
@@ -1638,7 +1640,6 @@ try {
 			"-------------------\n\n"
 			, FILE_APPEND);
 	}
-	*/
 }
 
 // 4xx - User errors - No need to log

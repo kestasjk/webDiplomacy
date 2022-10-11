@@ -31,3 +31,5 @@ git*
 beta-src/node_modules/
 vendor/
 composer.lock
+gamemaster-entrypoint.txt
+botslog.txt

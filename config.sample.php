@@ -325,6 +325,13 @@ class Config
 	public static $pointsLogFile=false;//'../pointslog.txt';
 
 	/**
+	 * Where to log bot requests, for troubleshooting the bot API
+	 *
+	 * @var string
+	 */
+	public static $botsLogFile=false;//'botslog.txt';
+
+	/**
 	 * An array of e-mail settings, to validate e-mails etc.
 	 *
 	 * @var array

@@ -8,16 +8,36 @@
 # which contains the required PHP dependencies.
 # Check http://localhost:43000/gamemaster-entrypoint.txt ; once the server is ready you should see
 # that gamemaster has started running. If there is an issue this is the best place to check.
-# Register a user account, use http://localhost:43001 / mailhog to access the registration link
+# Register a user account via http://localhost:43000/register.php, using any e-mail address
+# then use http://localhost:43001 / mailhog to access the registration link.
 # Taking the registration link code and adding it to your webserver should give e.g.:
 # http://localhost:43000/register.php?emailToken=9513e6f6%7C1665482821%7Ctest%40test.com
-# Complete filling the registration form
+# Complete filling the registration form, then once logged on:
 # Go to http://localhost:43000/gamemaster.php?gameMasterSecret= to set self as admin
 # Go to http://localhost:43000/admincp.php?tab=Control%20Panel and Toggle maintenance, 
 # Clear variant caches, and Update wD_VariantInfo to ensure variant data is installed.
 # Go to http://localhost:43000/datc.php and run batch test to test that processing is working
 # Go to http://localhost:43000/admincp.php and disable maintenance mode
+# If config.php isn't changed you can use these links below to quickly register 7 users:
+# http://localhost:43000/logon.php?logoff=on
+# http://localhost:43000/register.php?emailToken=9513e6f6%7C1665482821%7Ctest%40test.com
+# http://localhost:43000/logon.php?logoff=on
+# http://localhost:43000/register.php?emailToken=b3aa9320%7C1665483920%7Ctest2%40test.com
+# http://localhost:43000/logon.php?logoff=on
+# http://localhost:43000/register.php?emailToken=8749c175%7C1665483937%7Ctest3%40test.com
+# http://localhost:43000/logon.php?logoff=on
+# http://localhost:43000/register.php?emailToken=d9da3907%7C1665483948%7Ctest4%40test.com
+# http://localhost:43000/logon.php?logoff=on
+# http://localhost:43000/register.php?emailToken=f62e0ff3%7C1665483960%7Ctest5%40test.com
+# http://localhost:43000/logon.php?logoff=on
+# http://localhost:43000/register.php?emailToken=d63245b5%7C1665483971%7Ctest6%40test.com
+# http://localhost:43000/logon.php?logoff=on
+# http://localhost:43000/register.php?emailToken=e2c45b63%7C1665483982%7Ctest7%40test.com
 # Server is ready for dev work
+#
+# To use the default no-press bots start up the bots profile.
+# Note that the bot docker image has to download a ~300MB file on startup, and on first run
+# there is more installation than most, so bots can take some time to start.
 #
 ###############################################################################
 version: "3.1"
@@ -70,6 +90,7 @@ services:
       - "${WEBDIP_PORT:-43000}:80"
     depends_on:
       - "php-fpm"
+
   beta:
     image: "node:16.15.1-alpine3.14"
     container_name: webdiplomacy-beta
@@ -119,3 +140,20 @@ services:
       - SOKETI_DEFAULT_APP_KEY=${SOKETI_DEFAULT_APP_KEY:-app-key}
       - SOKETI_DEFAULT_APP_SECRET=${SOKETI_DEFAULT_APP_SECRET:-app-secret}
       - USER_AUTHENTICATION_TIMEOUT=${SOKETI_USER_AUTHENTICATION_TIMEOUT:-5000}
+
+# Philip Paquette's publically available no-press bot docker image. Note this is not started by default as it uses a lot of resources and may not be
+# relevant to all development situations.
+  bots:
+    profiles: ["bots"]
+    image: 'public.ecr.aws/n4k3z7o3/webdiplomacy:latest'
+    restart: always
+    environment:
+      - API_WEBDIPLOMACY=http://webserver/api.php
+      - API_KEY_CD_01=bot1
+      - API_KEY_USER_01=bot1
+      - API_KEY_USER_02=bot2
+      - API_KEY_USER_03=bot3
+      - API_KEY_USER_04=bot4
+      - API_KEY_USER_05=bot5
+      - API_KEY_USER_06=bot6
+      - API_KEY_USER_07=bot7
