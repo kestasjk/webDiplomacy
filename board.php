@@ -177,6 +177,8 @@ if ( isset($_REQUEST['viewArchive']) )
 	libHTML::footer();
 }
 
+// The error where this isn't a panelGameBoard but is probably a processGame appears to be related to someone rejoining a game they were previously
+// in civil disorder for. Need to trace how $Game gets set up when rejoining from a CD TODO
 $map = $Game->mapHTML();
 
 /*

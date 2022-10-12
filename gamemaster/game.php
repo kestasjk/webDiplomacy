@@ -138,10 +138,31 @@ class processGame extends Game
 	 */
 	private static $gameTables=array(
 			'Games'=>'id',
-			'Members'=>'gameID','Orders'=>'gameID','TerrStatus'=>'gameID','Units'=>'gameID',
-			'GameMessages'=>'gameID','TerrStatusArchive'=>'gameID','MovesArchive'=>'gameID'
+			'Members'=>'gameID',
+			'Orders'=>'gameID',
+			'TerrStatus'=>'gameID',
+			'Units'=>'gameID',
+			'GameMessages'=>'gameID',
+			'TerrStatusArchive'=>'gameID',
+			'MovesArchive'=>'gameID'
 		);
 
+	/**
+	 * An array of game related table columns used by backup functions to avoid column changes breaking backup functions. The table name is the key.
+	 * $gameTables[$tableName]=array('id','name','etc')
+	 *
+	 * @var array
+	 */
+	private static $gameTableColumns=array(
+			'Games'=>'variantID;id;turn;phase;processTime;pot;name;gameOver;processStatus;password;potType;pauseTimeRemaining;minimumBet;phaseMinutes;phaseMinutesRB;nextPhaseMinutes;phaseSwitchPeriod;anon;pressType;attempts;missingPlayerPolicy;directorUserID;minimumReliabilityRating;minimumNMRScore;drawType;excusedMissedTurns;finishTime;playerTypes;startTime;grCalculated',
+			'Members'=>'id;userID;gameID;countryID;status;timeLoggedIn;bet;missedPhases;newMessagesFrom;supplyCenterNo;unitNo;votes;pointsWon;gameMessagesSent;orderStatus;hideNotifications;excusedMissedTurns;groupTag',
+			'Orders'=>'id;gameID;countryID;type;unitID;toTerrID;fromTerrID;viaConvoy',
+			'TerrStatus'=>'id;terrID;occupiedFromTerrID;standoff;gameID;occupyingUnitID;retreatingUnitID;countryID',
+			'Units'=>'id;type;terrID;countryID;gameID',
+			'GameMessages'=>'id;timeSent;message;turn;toCountryID;fromCountryID;gameID;phaseMarker',
+			'TerrStatusArchive'=>'terrID;turn;standoff;gameID;countryID',
+			'MovesArchive'=>'gameID;turn;terrID;countryID;unitType;success;dislodged;type;toTerrID;fromTerrID;viaConvoy'
+		);
 	/**
 	 * Returns an array of game IDs in the backup tables.
 	 *
@@ -196,10 +217,13 @@ class processGame extends Game
 			self::eraseGame($gameID);
 
 		foreach(self::$gameTables as $tableName=>$idColName)
+		{
+			$cols = implode(',',explode(';',self::$gameTableColumns[$tableName]));
 			$DB->sql_put(
-				"INSERT INTO wD_".$tableName."
-				SELECT * FROM wD_Backup_".$tableName." WHERE ".$idColName." = ".$gameID
+				"INSERT INTO wD_".$tableName." (".$cols.") 
+				SELECT ".$cols." FROM wD_Backup_".$tableName." WHERE ".$idColName." = ".$gameID
 			);
+		}
 
 		$DB->sql_put("COMMIT");
 	}
@@ -231,10 +255,13 @@ class processGame extends Game
 			$DB->sql_put("DELETE FROM wD_Backup_".$tableName." WHERE ".$idColName." = ".$gameID);
 
 		foreach(self::$gameTables as $tableName=>$idColName)
+		{
+			$cols = implode(',',explode(';',self::$gameTableColumns[$tableName]));
 			$DB->sql_put(
-				"INSERT INTO wD_Backup_".$tableName."
-				SELECT * FROM wD_".$tableName." WHERE ".$idColName." = ".$gameID
+				"INSERT INTO wD_Backup_".$tableName." (".$cols.")
+				SELECT ".$cols." FROM wD_".$tableName." WHERE ".$idColName." = ".$gameID
 			);
+		}
 
 		if ( $commitNow )
 			$DB->sql_put("COMMIT");

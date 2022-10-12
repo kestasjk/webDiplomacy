@@ -398,6 +398,32 @@ class Database {
 			$this->profiler($timeStart, $sql);
 	}
 
+	/**
+	 * Runs a multi-statement SQL script
+	 *
+	 * @param string $sql The SQL script
+	 *
+	 * @returns int The ID of the last inserted row, which may be irrelevant if an INSERT/UPDATE query weren't performed
+	 */
+	public function sql_script($sql)
+	{
+		if( Config::$debug )
+			$timeStart=microtime(true);
+
+		/* execute multi query */
+		if( !mysqli_multi_query($this->link, $sql) )
+		{
+			trigger_error(mysqli_error($this->link));
+		}
+
+		do 
+		{
+			$this->putqueries++;
+		} while (mysqli_next_result($this->link));
+
+		if( Config::$debug )
+			$this->profiler($timeStart, $sql);
+	}
 	public function last_affected()
 	{
 		return mysqli_affected_rows($this->link);

@@ -18,7 +18,7 @@
     along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once(l_r('objects/basic/set.php'));
+require_once('objects/basic/set.php');
 
 /**
  * An object representing a relationship between users. Many to many between users and groups,
@@ -149,6 +149,21 @@ class Group
 	 * @var GroupUser[]
 	 */
 	var $GroupUsers;
+
+	/**
+	 * @var int? The moderator ID that requested a message response (note the modUserID most relevent is on wD_GroupUser)
+	 */
+	var $modUserID;
+
+	/**
+	 * @var bool Has a moderator requested a message back?
+	 */
+	var $isMessageNeeded;
+
+	/**
+	 * @var bool Has a moderator received a requested respnose
+	 */
+	var $isMessageWaiting;
 
 	/**
 	 * This is called if a suspicion is submitted directly from a game. The intention is that when created this way 
@@ -295,7 +310,7 @@ class Group
 		
 		$modNotes = $DB->msg_escape($modNotes . "-" . $userModifying->username);
 
-		$DB->sql_put("UPDATE wD_Groups SET `moderatorNotes` = '" . $modNotes . "' WHERE id = " . $this->id);
+		$DB->sql_put("UPDATE wD_Groups SET modUserID = ".$userModifying->id.", `moderatorNotes` = '" . $modNotes . "' WHERE id = " . $this->id);
 	}
 	public function userSetActive($userModifying, $groupActive)
 	{
@@ -328,7 +343,10 @@ class Group
 		
 		if( $this->canUserUpdateUserWeighting($userUpdating, $groupUserToUpdate) )
 		{
-			$DB->sql_put("UPDATE wD_GroupUsers SET timeChanged = ".time().", userWeighting = " . $newWeighting . ", timeChanged = ".time()." WHERE userID = ". $groupUserToUpdate->userID." AND groupID = ".$groupUserToUpdate->groupID);
+			$DB->sql_put("UPDATE wD_GroupUsers SET timeChanged = ".time().", userWeighting = " . $newWeighting . 
+			// If a mod was waiting for us to submit our weighting set the flag to inform them
+			", isWeightingWaiting = greatest(isWeightingWaiting, isWeightingNeeded), isWeightingNeeded = 0 ".
+			"WHERE userID = ". $groupUserToUpdate->userID." AND groupID = ".$groupUserToUpdate->groupID);
 		}
 	}
 	public function userUpdateOwnerWeighting($userUpdating, $groupUserToUpdate, $newWeighting)
@@ -458,12 +476,14 @@ class Group
 			"gr.ownerCountryID Group_ownerCountryID, ".
 			"o.username Group_ownerUsername, ".
 			"gr.timeChanged Group_timeChanged, ".
+			"gr.isMessageWaiting Group_isMessageWaiting, gr.isMessageNeeded Group_isMessageNeeded, gr.modUserID Group_modUserID, ".
 			"IF(viewercountry.id IS NULL, 1, 0) Group_isViewerInGame, ".
 			"g.modUserID, ".
 			"m.username modUsername, ".//$groupUser->modUserID
 			"u.username userUsername, ".
 			"ucountry.countryID countryID, ".
-			"g.userID, g.countryID, g.groupID, g.isActive, g.userWeighting, g.ownerWeighting, g.modWeighting, g.timeCreated, g.timeChanged, g.modUserID " .
+			"g.userID, g.countryID, g.groupID, g.isActive, g.userWeighting, g.ownerWeighting, g.modWeighting, g.timeCreated, g.timeChanged, g.modUserID, ".
+			"g.isWeightingWaiting, g.isMessageWaiting, g.isWeightingNeeded, g.isMessageNeeded " .
 			"FROM wD_Groups gr ".
 			"INNER JOIN wD_Users o ON o.id = gr.ownerUserID ".
 			"LEFT JOIN wD_GroupUsers g ON gr.id = g.groupID ".
@@ -603,11 +623,27 @@ class Group
 			$buf .= ' <br /> ';
 			if( $userID == $groupUser->userID )
 			{
+				if( $groupUser->isWeightingNeeded )
+				{
+					$buf .= '<em style="color:darkred">Please select the strength of this relationship, or deny it, below, then submit.</em><br />';
+				}
 				$buf .= self::getSelectWeighting('user', $groupUser->userID, $groupUser->userWeighting);
 			}
 			else
 			{
 				$buf .= self::getClosestWeightingName($groupUser->userWeighting);
+			}
+			if( $isModerator )
+			{
+				if( $groupUser->isMessageNeeded )
+					$buf .= '<br /><a class="light" href="group.php?groupID='.$groupUser->groupID.'&messageNeeded=0&messageNeededUserID='.$groupUser->userID.'">Cancel Message</a>';
+				else
+					$buf .= '<br /><a class="light" href="group.php?groupID='.$groupUser->groupID.'&messageNeeded=1&messageNeededUserID='.$groupUser->userID.'">Get Message</a>';
+				
+				if( $groupUser->isWeightingNeeded )
+					$buf .= '<br /><a class="light" href="group.php?groupID='.$groupUser->groupID.'&weightingNeeded=0&weightingNeededUserID='.$groupUser->userID.'">Cancel Weighting</a>';
+				else
+					$buf .= '<br /><a class="light" href="group.php?groupID='.$groupUser->groupID.'&weightingNeeded=1&weightingNeededUserID='.$groupUser->userID.'">Get Weighting</a>';
 			}
 			
 			$buf .= '</td>';

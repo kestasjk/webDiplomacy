@@ -635,6 +635,7 @@ class libHTML
 			$gameNotifyBlock = libHTML::gameNotifyBlock();
 			if ( $gameNotifyBlock )
 				print '<div class="content-notice"><div class="gamelistings-tabs">'.$gameNotifyBlock.'</div></div>';
+
 		}
 	}
 

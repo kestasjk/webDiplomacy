@@ -18,7 +18,7 @@
     along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once(l_r('objects/basic/set.php'));
+require_once('objects/basic/set.php');
 
 /**
  * An object representing a relationship between users. Many to many between users and groups,
@@ -98,6 +98,27 @@ class GroupUser
 	 */
 	var $modUserID;
 	var $modUsername;
+
+	/**
+	 * @var bool Has a moderator requested a message back?
+	 */
+	var $isMessageNeeded;
+
+	/**
+	 * @var bool Has a moderator received a requested respnose
+	 */
+	var $isMessageWaiting;
+	
+	/**
+	 * @var bool Has a moderator requested a weighting be set?
+	 */
+	var $isWeightingNeeded;
+	
+	/**
+	 * @var bool Has a moderator received a requested response
+	 */
+	var $isWeightingWaiting;
+
 	public function modUsernameLink()
 	{
 		if( $this->modUsername == null ) return '<strong>N/A</strong>';

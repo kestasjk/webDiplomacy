@@ -151,6 +151,7 @@ ob_start(); // Buffer output. libHTML::footer() flushes.
 // All the standard includes.
 require_once('lib/cache.php');
 require_once('lib/time.php');
+require_once('lib/group.php');
 require_once('lib/html.php');
 
 require_once('locales/layer.php');
@@ -257,6 +258,13 @@ if( Config::isOnPlayNowDomain() && !defined('PLAYNOW') )
 
 	print '</div>';
 	libHTML::footer();
+}
+
+if( isset($User) && $User->type['User'] )
+{
+	// If we aren't currently looking at the group page check whether we need to redirect to a group panel:
+	if( false === strstr(strtolower($_SERVER['PHP_SELF']),'group') )
+		libGroup::redirectToGroup();
 }
 
 // This gets called by libHTML::footer

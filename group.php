@@ -251,12 +251,19 @@ function TryPostReply($groupID)
 		{
 			libAuth::formToken_Valid();
 			
-			$DB->sql_put("UPDATE wD_GroupUsers SET timeLastMessageSent = ".time().", messageCount = messageCount + 1 WHERE groupID = ".$groupID." AND userID = ".$User->id);
+			// If a mod was waiting for this message let them know we have replied
+			$DB->sql_put("UPDATE wD_GroupUsers SET isMessageWaiting = greatest(isMessageWaiting,isMessageNeeded), isMessageNeeded = 0, ".
+				"timeLastMessageSent = ".time().", messageCount = messageCount + 1 WHERE groupID = ".$groupID." AND userID = ".$User->id);
+			
+			$DB->sql_put("UPDATE wD_Groups SET isMessageWaiting = greatest(isMessageWaiting,isMessageNeeded), isMessageNeeded = 0 ".
+				"WHERE id = ".$groupID." AND ownerUserID = ".$User->id);
+
 			$new['id'] = Message::send( $new['sendtothread'],
 				$User->id,
 				$new['message'],
 					'',
 					'GroupDiscussion');
+			
 			header("Location: " . $_SERVER['REQUEST_URI'] . '&reply=success');
 		}
 		catch(Exception $e)
@@ -401,6 +408,33 @@ function OutputDiscussionThread($groupID, $new)
 	print '</div>';
 }
 
+if( $User->type['Moderator'] )
+{
+	// Reset any flags that directed us here
+	$DB->sql_put("UPDATE wD_GroupUsers SET isWeightingWaiting = 0, isMessageWaiting = 0 WHERE groupID = ".$groupID." AND modUserID=".$User->id);
+	$DB->sql_put("UPDATE wD_Groups SET isMessageWaiting = 0 WHERE id = ".$groupID." AND modUserID=".$User->id);
+
+	// If we are requesting a response or weighting from a user set that flag now
+	if( isset($_REQUEST['messageNeeded']) && isset($_REQUEST['messageNeededUserID']) )
+	{
+		$messageNeeded = (int)$_REQUEST['messageNeeded'];
+		$messageNeededUserID = (int)$_REQUEST['messageNeededUserID'];
+		$DB->sql_put("UPDATE wD_GroupUsers SET isMessageNeeded = ".$messageNeeded.", modUserID = ".$User->id." WHERE groupID = ".$groupID." AND userID = ".$messageNeededUserID);
+	}
+	if( isset($_REQUEST['weightingNeeded']) && isset($_REQUEST['weightingNeededUserID']) )
+	{
+		$weightingNeeded = (int)$_REQUEST['weightingNeeded'];
+		$weightingNeededUserID = (int)$_REQUEST['weightingNeededUserID'];
+		$DB->sql_put("UPDATE wD_GroupUsers SET isWeightingNeeded = ".$weightingNeeded.", modUserID = ".$User->id." WHERE groupID = ".$groupID." AND userID = ".$weightingNeededUserID);
+	}
+	if( isset($_REQUEST['ownerMessageNeeded']) )
+	{
+		$ownerMessageNeeded = (int)$_REQUEST['ownerMessageNeeded'];
+		$DB->sql_put("UPDATE wD_Groups SET isMessageNeeded = ".$ownerMessageNeeded.", modUserID = ".$User->id." WHERE id = ".$groupID);
+	}
+	
+}
+
 try
 {
 	$GroupProfile = Group::loadFromID($groupID);
@@ -542,9 +576,20 @@ print '<strong>Creator Info / Explanation:</strong> </div>';
 
 print '<p><ul>';
 print '<li><strong>Creator:</strong> '.$GroupProfile->ownerLink().'</li></br>';
-print '<li><strong>Created:</strong> '.libTime::text($GroupProfile->timeCreated).'</li></ul></p>';
+print '<li><strong>Created:</strong> '.libTime::text($GroupProfile->timeCreated).'</li>';
+if( $User->id == $GroupProfile->ownerUserID )
+{
+	if( $GroupProfile->isMessageNeeded )
+	{
+		print '<li><strong style="color:darkred">A moderator has requested a message response in the discussion below. Thank you!</strong></li>';
+	}
+
+}
+print '</ul></p>';
 
 print '<p class="profileComment">"'.$GroupProfile->description.'"</p>';
+
+
 
 print '</div></br>';
 print '</div>';
@@ -562,10 +607,15 @@ if ( $User->type['Moderator'] )
 
 			$modActions=array();
 
-			$modActions[] = libHTML::admincpType('Group',$GroupProfile->id);
-			$modActions[] = libHTML::admincp('groupChangeOwner',array('groupID'=>$GroupProfile->id), 'Change group owner');
-			$modActions[] = libHTML::admincp('groupChangeOwner',array('groupID'=>$GroupProfile->id), 'Change group type');
+			//$modActions[] = libHTML::admincpType('Group',$GroupProfile->id);
+			//$modActions[] = libHTML::admincp('groupChangeOwner',array('groupID'=>$GroupProfile->id), 'Change group owner');
+			//$modActions[] = libHTML::admincp('groupChangeOwner',array('groupID'=>$GroupProfile->id), 'Change group type');
 
+			if( $GroupProfile->isMessageNeeded )
+				$modActions[] = '<a class="light" href="group.php?groupID='.$groupUser->groupID.'&ownerMessageNeeded=0">Cancel Message</a>';
+			else
+				$modActions[] = '<a class="light" href="group.php?groupID='.$groupUser->groupID.'&ownerMessageNeeded=1">Get Message</a>';
+			
 			$modActions[] = '<a href="admincp.php?tab=Multi-accounts&aGroupID='.$GroupProfile->id.'" class="light">Enter multi-account finder</a>';
 
 			if($modActions)
@@ -601,8 +651,15 @@ print '</div>';
 
 if ( $GroupProfile->canUserComment($User) )
 {
-	print '<div class="content">';
+	print '<div class="content"><a name="discussion"></a>';
 	print '<h2>Discussion</h2>';
+	foreach($GroupProfile->GroupUsers as $groupUser)
+	{
+		if( $groupUser->userID == $User->id && $groupUser->isMessageNeeded )
+		{
+			print '<p style="color:darkred">A moderator has requested you please respond to this group panel below before you continue to use the site. Thank you.</p>';
+		}
+	}
 	OutputDiscussionThread($GroupProfile->id, $new);
 }
 print '</div>';

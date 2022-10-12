@@ -32,140 +32,160 @@ require_once('objects/groupUser.php');
  */
 class libGroup
 {
+    // If the current user is required to respond to something in a group this function will redirect them there.
+    public static function redirectToGroup() 
+    {
+        global $User, $DB;
+
+        if( $User->type['Moderator'] )
+        {
+            if( list($groupID) = $DB->sql_row("SELECT groupID FROM wD_GroupUsers WHERE (isWeightingWaiting = 1 AND modUserID = " . $User->id. ") OR (isMessageWaiting = 1 AND modUserID = " . $User->id. ")" ) )
+            {
+                header('refresh: 3; url=group.php?groupID='.$groupID);
+                libHTML::notice("Redirecting to group panel", "A message or weighting you requested from a user has been provided; redirecting you to <a href='group.php?groupID=".$groupID."'>the group panel</a> now. Thank you!");
+            }
+            if( list($groupID) = $DB->sql_row("SELECT id FROM wD_Groups WHERE (isMessageWaiting = 1 AND modUserID = " . $User->id. ")" ) )
+            {
+                header('refresh: 3; url=group.php?groupID='.$groupID);
+                libHTML::notice("Redirecting to group panel", "A message or weighting you requested from a user has been provided; redirecting you to <a href='group.php?groupID=".$groupID."'>the group panel</a> now. Thank you!");
+            }
+        }
+        
+        if( $User->type['User'] )
+        {
+            if( list($groupID) = $DB->sql_row("SELECT groupID FROM wD_GroupUsers WHERE (isWeightingNeeded = 1 AND userID = " . $User->id. ") OR (isMessageNeeded = 1 AND userID = " . $User->id. ")" ) )
+            {
+                header('refresh: 3; url=group.php?groupID='.$groupID);
+                libHTML::notice("Redirecting to group panel", "A moderator has requested you provide a message or set a weighting for a group panel; redirecting you to <a href='group.php?groupID=".$groupID."'>the group panel</a> now. Thank you!");
+            }
+            if( list($groupID) = $DB->sql_row("SELECT id FROM wD_Groups WHERE (isMessageNeeded = 1 AND ownerUserID = " . $User->id. ")" ) )
+            {
+                header('refresh: 3; url=group.php?groupID='.$groupID);
+                libHTML::notice("Redirecting to group panel", "A moderator has requested you provide a message or set a weighting for a group panel; redirecting you to <a href='group.php?groupID=".$groupID."'>the group panel</a> now. Thank you!");
+            }
+        }
+    }
+
     // For all active games get all group data and use it to generate JSON that can display which users are in relationships.
     public static function generateGameRelationCache($lastUpdated)
     {
         global $DB;
         
-        $DB->sql_put("COMMIT");
-        // Find all users that need their stats updated
-        $DB->sql_put("
-        DROP TABLE IF EXISTS wd_Group_DirtyUsers;
-        ");
-        $DB->sql_put("
-        CREATE TABLE wd_Group_DirtyUsers SELECT DISTINCT userID FROM wD_GroupUsers WHERE isActive = 1 AND timeChanged > ".$lastUpdated.";
-        ");
-        
-        // Mark all users that need to be recalculated
-        $DB->sql_put("
-        UPDATE wD_GroupUsers SET isDirty = 1 WHERE isActive = 1 AND userID IN (SELECT userID FROM wd_Group_DirtyUsers);
-        ");
-        
-        $DB->sql_put("COMMIT");
+        $DB->sql_script("
+        -- Step one; find all groups that need their weightings recalculated. These are all users in any group that 
+-- have been changed since the last refresh:
 
-        // Calculate group-source-user-judge-weighting
-        $DB->sql_put("
-        DROP TABLE IF EXISTS wD_Group_Staging;
-        ");
-        $DB->sql_put("
-        CREATE TABLE wD_Group_Staging
-        SELECT groupID, source, userID, judgeUserID, (agree + deny) weighting
+    -- Set records directly changed to dirty
+        UPDATE wD_GroupUsers SET isDirty = 1 WHERE timeChanged > ".$lastUpdated.";
+    
+    -- Set records in the same group as also dirty
+        UPDATE wD_GroupUsers dirtyRecords, wD_GroupUsers alsoInGroup
+        SET alsoInGroup.isDirty = 1 
+        WHERE dirtyRecords.isDirty = 1 
+            AND alsoInGroup.isDirty = 0 
+            AND dirtyRecords.groupID = alsoInGroup.groupID;
+        
+        -- Clear out the aggregation tables that are used to store calculated weightings before being aggregated up
+        -- to the user - user level: (This prevents needing to recalc groups linked to groups linked to groups, by keeping
+        -- recalcs within individual groups then reapplying the recalced groups to affected users, rather than recalcing every
+        -- group for every affected user)
+        DELETE FROM wD_GroupSourceJudgeUserWeightings WHERE groupID IN (SELECT DISTINCT groupID FROM wD_GroupUsers WHERE isDirty = 1);
+        DELETE FROM wD_GroupSourceJudgeUserToUserWeightings WHERE groupID IN (SELECT DISTINCT groupID FROM wD_GroupUsers WHERE isDirty = 1);
+        -- For the final table we need to delete and refresh the calculations for any user affected, to bring in the calcs from other groups
+        DELETE FROM wD_GroupSourceUserToUserLinks 
+        WHERE fromUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
+            OR toUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1);
+        
+    -- Extract the group structure from a record per user/owner/mod to a record for each weighting for each record, so 
+    -- that one user/owner/mod record becomes three records, one for the user, one for the owner, one for the mod, each
+    -- as the judge of the group relationship with a weighting, and the type/source of judge they are (user/owner/mod = self/peer/mod)
+        INSERT INTO wD_GroupSourceJudgeUserWeightings (groupID, source, judgeUserID, userID, weighting)
+        SELECT groupID, source, judgeUserID, userID, (agree + deny) weighting
         FROM (
             SELECT gu.groupID, 
                 'Self' source,
                 gu.userID,
                 gu.userID judgeUserID, 
-                IF(gu.userWeighting<0,-gu.userWeighting/100.0,0) deny, 
+                IF(gu.userWeighting<0,gu.userWeighting/100.0,0) deny, 
                 IF(gu.userWeighting>0,gu.userWeighting/100.0,0) agree
             FROM wD_GroupUsers gu 
             WHERE gu.isDirty = 1
             UNION ALL
             SELECT
                 gu.groupID, 
-                'Mods' source,
+                'Mod' source,
                 gu.userID,
                 gu.modUserID judgeUserID, 
-                IF(gu.modWeighting<0,-gu.modWeighting/100.0,0) deny, 
+                IF(gu.modWeighting<0,gu.modWeighting/100.0,0) deny, 
                 IF(gu.modWeighting>0,gu.modWeighting/100.0,0) agree
             FROM wD_GroupUsers gu 
             WHERE gu.isDirty = 1 AND gu.modUserID IS NOT NULL
             UNION ALL
             SELECT
                 gu.groupID,
-                'Peers' source,
+                'Peer' source,
                 gu.userID userID,
-                0 judgeUserID,
-                IF(gu.ownerWeighting<0,-gu.ownerWeighting/100.0,0) deny, 
+                g.ownerUserID judgeUserID,
+                IF(gu.ownerWeighting<0,gu.ownerWeighting/100.0,0) deny, 
                 IF(gu.ownerWeighting>0,gu.ownerWeighting/100.0,0) agree
             FROM wD_GroupUsers gu 
+            INNER JOIN wD_Groups g ON g.id = gu.groupID
             WHERE gu.isDirty = 1 
-        ) X
-        WHERE ABS(agree + deny) > 0.01;
-        ");
+        ) groupJudgeTypeUserWeightings;
+      
+      
+      -- Now take the judge - user link and apply each weighting in the group to/from each user, so that weightings are on a user - user level within each group.
+      -- (The grouping here is probably unnecessary as group logic should prevent one person being added multiple times to one group, but this just makes it clear
+      -- that at this point there can't be multiple records for one group-judge-source-fromUser-toUser)
+        INSERT INTO wD_GroupSourceJudgeUserToUserWeightings (groupID, source, judgeUserID, fromUserID, toUserID, toWeighting)
+        SELECT a.groupID, a.source, a.judgeUserID, a.userID fromUserID, b.userID toUserID, MAX(b.weighting) toWeighting
+        FROM wD_GroupSourceJudgeUserWeightings a
+        INNER JOIN wD_GroupSourceJudgeUserWeightings b ON a.groupID = b.groupID AND a.source = b.source AND a.userID <> b.userID
+        -- Ensure we are only reaggregating the dirty groups
+        WHERE a.groupID IN (SELECT DISTINCT groupID FROM wD_GroupUsers WHERE isDirty = 1)
+        GROUP BY a.groupID, a.judgeUserID, a.source, a.userID, b.userID;
         
-        $DB->sql_put("COMMIT");
-
-        // Bring in the owner/accuser information, excluding any double-weightings group-source-user-judge-weighting
-        // TODO: This would be a good place to add weightings based on the accuracy of the owner
-        $DB->sql_put("
-        DROP TABLE IF EXISTS wD_Group_Staging_ByUser;
-        ");
-        $DB->sql_put("
-        CREATE TABLE wD_Group_Staging_ByUser
-        SELECT a.groupID, 
-            a.source,
-            a.userID, 
-            IF(a.judgeUserID=0,g.ownerUserID,a.judgeUserID) judgeUserID,
-            a.weighting weighting
-        FROM wD_Group_Staging a
-        INNER JOIN wD_Groups g ON g.id = a.groupID
-        WHERE NOT (a.judgeUserID = 0 AND g.ownerUserID = a.userID);
-        ");
-        // No extra score from voting twice for yourself
-        
-        $DB->sql_put("COMMIT");
-        
-        // Calculate group-source-judge-userA-userB-weighting , getting each judges most significant weighting for each user pair in each group
-        $DB->sql_put("
-        DROP TABLE IF EXISTS wD_Group_Staging_UserToUser_ByGroup;
-        ");
-        $DB->sql_put("
-        CREATE TABLE wD_Group_Staging_UserToUser_ByGroup
-        SELECT groupID, SOURCE, judgeUserID, fromUserID, toUserID, IF(ABS(maxWeighting)>ABS(minWeighting),maxWeighting,minWeighting) weighting
+        -- During this final operation we aggregate the group/judge calculations so that it's simply a user to user link with a weighting, by the type/source 
+        -- (self / peer / mod). This also as to take into account that a judge user may have created multiple groups with the same users associations,
+        -- and those shouldn't be counted as if it was multiple people creating the associations.
+        -- Also during this aggregation we need to aggregate not only the dirty recalculated records but all records for each user being included
+        INSERT INTO wD_GroupSourceUserToUserLinks (source, fromUserID, toUserID, 
+            avgPositiveWeighting, maxPositiveWeighting, countPositiveWeighting, 
+            avgNegativeWeighting, maxNegativeWeighting, countNegativeWeighting)
+        SELECT source, fromUserID, toUserID, 
+            AVG(IF(toWeighting>0,toWeighting,0)) avgPositiveWeighting, 
+            MAX(IF(toWeighting>0,toWeighting,0)) maxPositiveWeighting, 
+            SUM(IF(toWeighting>0,1,0)) countPositiveWeighting, 
+            AVG(IF(toWeighting<0,toWeighting,0)) avgNegativeWeighting, 
+            MAX(IF(toWeighting<0,toWeighting,0)) maxNegativeWeighting, 
+            SUM(IF(toWeighting<0,1,0)) countNegativeWeighting
         FROM (
-            SELECT a.groupID, a.source, a.judgeUserID, a.userID fromUserID, b.userID toUserID, MAX(a.weighting) maxWeighting, MIN(a.weighting) minWeighting
-            FROM wD_Group_Staging_ByUser a
-            INNER JOIN wD_Group_Staging_ByUser b ON a.groupID = b.groupID AND a.source = b.source AND a.userID <> b.userID
-            GROUP BY a.groupID, a.source, a.judgeUserID, a.userID, b.userID
-        ) judgeMax;
-        ");
-        
-        // DROP TABLE IF EXISTS wD_Group_UserByUserBySourceWeights;
-        // CREATE TABLE wD_Group_UserByUserBySourceWeights
-        
-        // Remove the records to be replaced:
-        $DB->sql_put("
-        DELETE FROM wD_Group_UserByUserBySourceWeights WHERE fromUserID IN (SELECT userID FROM wd_Group_DirtyUsers);
-        ");
-        // Calculate userA-userB-source-weighting ; the weights that link each user to each other user
-        $DB->sql_put("
-        INSERT INTO wD_Group_UserByUserBySourceWeights (fromUserID, toUserID, SOURCE, weighting, judgeCount)
-        SELECT fromUserID, toUserID, source, IF(ABS(maxWeighting)>ABS(minWeighting),maxWeighting,minWeighting) weighting, judgeCount
-        FROM (
-            SELECT fromUserID, toUserID, source, MAX(weighting) maxWeighting, MIN(weighting) minWeighting, COUNT(*) judgeCount
-            FROM wD_Group_Staging_UserToUser_ByGroup
-            GROUP BY fromUserID, toUserID, source
-        ) USER2user;
-        ");
+            SELECT a.source, a.fromUserID, a.toUserID, toWeighting
+            FROM wD_GroupSourceJudgeUserToUserWeightings a
+            -- At this point we bring in all users 
+            WHERE a.fromUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
+                OR a.toUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
+        ) x
+        GROUP BY source, fromUserID, toUserID;
 
-        // Reset the dirty flag
-        $DB->sql_put("
-        UPDATE wD_GroupUsers SET isDirty = 0 WHERE isDirty = 1;
-        ");
+-- Now that the update is done unset the dirty flag
+UPDATE wD_GroupUsers SET isDirty = 0 WHERE isDirty = 1;
 
-        $DB->sql_put("COMMIT");
+-- The user to user link info needs to be available for people to see, but one lump of data that contains every link across
+-- every user would be too big of a dataset, and would grow with time, and querying it out of the DB for every place it should
+-- be seen would be a large extra amount of data extraction where for every user you would need to query all their group links.
 
-        // Group weightings are now up to date
-        
-        $DB->sql_put("
-        DROP TABLE IF EXISTS wD_Group_Staging;
-        ");
-        $DB->sql_put("
-        DROP TABLE IF EXISTS wD_Group_Staging_ByUser;
-        ");
-        $DB->sql_put("
-        DROP TABLE IF EXISTS wD_Group_Staging_UserToUser_ByGroup;
-        ");
+-- Instead group data should be made available in lumps based on the context it's needed in, with the lumps cached so a browser
+-- can fetch it and display the data.
+-- Group data needs to be available for all user-user group links for games, groups, and users, along with fingerprint info,
+-- SMS link info, and Facebook/Google/Apple/Paypal links also. 
+-- It needs to be available server-side just for specific tests, e.g. when a user joins a game that they meet the game criteria.
+/*
+SELECT * FROM wD_GroupSourceJudgeUserWeightings WHERE userID IN (76827, 77129);
+SELECT * FROM wD_GroupSourceJudgeUserToUserWeightings WHERE fromUserID IN (76827, 77129) OR toUserID IN (76827, 77129) ;
+SELECT * FROM wD_GroupSourceUserToUserLinks WHERE fromUserID IN (76827, 77129) OR toUserID IN (76827, 77129) ;
+*/
+");
         
         self::outputJSONGameCache();
     }

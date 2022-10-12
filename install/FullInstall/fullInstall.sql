@@ -1204,6 +1204,57 @@ ALTER TABLE `wD_Members` ADD INDEX `gid` (gameID, countryID);
 
 ALTER TABLE `wD_FingerprintProRequests` ADD `timestamp` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `accuracyRadius`; 
 
+CREATE TABLE IF NOT EXISTS `wD_GroupSourceJudgeUserWeightings` (
+	`groupID` MEDIUMINT(8) UNSIGNED NOT NULL,
+	`source` ENUM('Self','Peer','Mod') NOT NULL,
+	`judgeUserID` MEDIUMINT(8) UNSIGNED NOT NULL,
+	`userID` MEDIUMINT(8) UNSIGNED NOT NULL,
+	`weighting` DECIMAL(9,4) NOT NULL
+)
+ENGINE=InnoDB
+;
+CREATE TABLE IF NOT EXISTS `wD_GroupSourceJudgeUserToUserWeightings` (
+	`groupID` MEDIUMINT(8) UNSIGNED NOT NULL,
+	`source` VARCHAR(5) NOT NULL,
+	`judgeUserID` MEDIUMINT(8) UNSIGNED NOT NULL,
+	`fromUserID` MEDIUMINT(8) UNSIGNED NOT NULL,
+	`toUserID` MEDIUMINT(8) UNSIGNED NOT NULL,
+	`toWeighting` DECIMAL(9,4) NOT NULL
+)
+ENGINE=InnoDB
+;
+CREATE TABLE IF NOT EXISTS `wD_GroupSourceUserToUserLinks` (
+	`source` VARCHAR(5) NOT NULL,
+	`fromUserID` MEDIUMINT(8) UNSIGNED NOT NULL,
+	`toUserID` MEDIUMINT(8) UNSIGNED NOT NULL,
+	`avgPositiveWeighting` DECIMAL(9,4) NOT NULL,
+	`maxPositiveWeighting` DECIMAL(9,4) NOT NULL,
+	`countPositiveWeighting` DECIMAL(9,4) NOT NULL,
+	`avgNegativeWeighting` DECIMAL(9,4) NOT NULL,
+	`maxNegativeWeighting` DECIMAL(9,4) NOT NULL,
+	`countNegativeWeighting` DECIMAL(9,4) NOT NULL
+)
+ENGINE=InnoDB
+;
+
+ALTER TABLE `wD_GroupUsers`
+	CHANGE COLUMN `timeWeightingRequired` `isWeightingNeeded` BIT NOT NULL DEFAULT '0' AFTER `timeLastMessageSent`,
+	CHANGE COLUMN `timeMessageRequired` `isMessageNeeded` BIT NOT NULL DEFAULT '0' AFTER `isWeightingNeeded`,
+	ADD COLUMN `isWeightingWaiting` BIT NOT NULL DEFAULT '0' AFTER `isMessageNeeded`,
+	ADD COLUMN `isMessageWaiting` BIT NOT NULL DEFAULT '0' AFTER `isWeightingWaiting`,
+	ADD INDEX `userNeedsWeighting` (`isWeightingNeeded`, `userID`),
+	ADD INDEX `userNeedsMessage` (`isMessageNeeded`, `userID`),
+	ADD INDEX `modMessageWaiting` (`isMessageWaiting`, `modUserID`),
+	ADD INDEX `modWeightingWaiting` (`isWeightingWaiting`, `modUserID`);
+
+ALTER TABLE `wD_Groups`
+	ADD COLUMN `modUserID` MEDIUMINT UNSIGNED NULL DEFAULT NULL,
+	ADD COLUMN `isMessageNeeded` BIT NOT NULL DEFAULT 0,
+	ADD COLUMN `isMessageWaiting` BIT NOT NULL DEFAULT 0,
+	ADD INDEX `indMessageNeeded` (`isMessageNeeded`, `ownerUserID`),
+	ADD INDEX `indMessageWaiting` (`isMessageWaiting`, `modUserID`);
+
+
 ALTER TABLE `wD_Misc` CHANGE COLUMN `Name` `Name` ENUM('Version','Hits','Panic','Notice','Maintenance','LastProcessTime','GamesNew','GamesActive','GamesFinished','RankingPlayers','OnlinePlayers','ActivePlayers','TotalPlayers','ErrorLogs','GamesPaused','GamesOpen','GamesCrashed','LastModAction','ForumThreads','ThreadActiveThreshold','ThreadAliveThreshold','GameFeaturedThreshold','LastGroupUpdate','LastStatsUpdate') NOT NULL;
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastGroupUpdate',0);
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastStatsUpdate',0);

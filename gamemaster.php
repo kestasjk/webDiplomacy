@@ -140,7 +140,7 @@ if ( ( time() - $Misc->LastProcessTime ) > Config::$downtimeTriggerMinutes*60 )
 	libHTML::notice(l_t('Games not processing'),libHTML::admincp('resetLastProcessTime',null,l_t('Continue processing now')));
 }
 
-if( (time() - $Misc->LastGroupUpdate) > 10*60 )
+if( (time() - $Misc->LastGroupUpdate) > 1*60 )
 {
 	// Update the user group calculations
 	require_once('lib/group.php');
