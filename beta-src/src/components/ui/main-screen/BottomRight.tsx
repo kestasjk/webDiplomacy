@@ -49,7 +49,7 @@ const BottomRight: FunctionComponent<BottomRightProps> = function ({
     <>
       <WDPositionContainer
         position={Position.BOTTOM_RIGHT}
-        bottom={width < 500 ? 14 : 4}
+        bottom={8}
         zIndex={30}
       >
         <OpenModalButton
