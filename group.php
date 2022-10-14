@@ -447,7 +447,8 @@ if( $User->type['Moderator'] )
 
 		// User wants to add a user to the group
 		$addingUser = $User;
-		$GroupProfile->userAdd($User, $addingUser, 0);
+		$newUser = new User((int)$_REQUEST['modAddUserID']);
+		$GroupProfile->userAdd($newUser, $addingUser, 0);
 	}
 }
 
@@ -660,7 +661,7 @@ if ( $User->type['Moderator'] )
 				print '<p class="notice">'.implode(' - ', $modActions).'</p>';
 			}
 			
-			print '<br /><form><input type="hidden" name="groupID" value="'.$GroupProfile->id.'" /><input type="text" name="modAddUserID" /><input type="Submit" name="Add user ID" /></form>';
+			print '<br /><form><input type="hidden" name="groupID" value="'.$GroupProfile->id.'" /><input type="text" name="modAddUserID" /><input type="Submit" value="Add user ID" /></form>';
 
 			print '</div>';
 			
