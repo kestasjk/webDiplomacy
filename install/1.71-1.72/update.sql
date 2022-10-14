@@ -116,6 +116,11 @@ ALTER TABLE `wD_Groups`
 	ADD INDEX `indMessageNeeded` (`isMessageNeeded`, `ownerUserID`),
 	ADD INDEX `indMessageWaiting` (`isMessageWaiting`, `modUserID`);
 
+ALTER TABLE `wD_Sessions`
+	ADD COLUMN `ipv6` BINARY(16) NULL DEFAULT NULL;
+ALTER TABLE `wD_AccessLog`
+	ADD COLUMN `ipv6` BINARY(16) NULL DEFAULT NULL;
+
 
 ALTER TABLE `wD_Misc` CHANGE COLUMN `Name` `Name` ENUM('Version','Hits','Panic','Notice','Maintenance','LastProcessTime','GamesNew','GamesActive','GamesFinished','RankingPlayers','OnlinePlayers','ActivePlayers','TotalPlayers','ErrorLogs','GamesPaused','GamesOpen','GamesCrashed','LastModAction','ForumThreads','ThreadActiveThreshold','ThreadAliveThreshold','GameFeaturedThreshold','LastGroupUpdate','LastStatsUpdate') NOT NULL;
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastStatsUpdate',0);

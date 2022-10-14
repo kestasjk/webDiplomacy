@@ -871,7 +871,25 @@ class User {
 			libHTML::notice(l_t('Banned'), l_t('You have been banned from this server. If you think there has been a mistake contact the moderator team at %s , and if you still aren\'t satisfied contact the admin at %s (with details of what happened).',Config::$modEMail, Config::$adminEMail));
 
 		$ip = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
-
+		if( strstr($ip, ':') !== false )
+		{
+			// It's an IPv6; just take the last 0xffffffff
+			// '2409:8a00:184f:70d0:652f:47b3:7ee1:5f50'
+			$ip=str_replace(':','',$ip);
+			// '24098a00184f70d0652f47b37ee15f50'
+			if( strlen($ip) >= 6)
+			{
+				$ip=substr($ip, min(strlen($ip)-6,0), 6);
+				// 'e15f50'
+				$ip  = long2ip('0x'.$ip);
+				// '0.225.95.80'
+				// first number is always 0 to indicate this is an ipv6 snippet; this is only a small part of the whole address so is just an indicator
+			}
+			else
+			{
+				$ip='1.1.1.1';
+			}
+		}
 		$DB->sql_put("INSERT INTO wD_Sessions (userID, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint)
 					VALUES (".$this->id.",CURRENT_TIMESTAMP,1, INET_ATON('".$ip."'),
 							UNHEX('".$userAgentHash."'), ".$cookieCode.", '".$browserFingerprint."' )

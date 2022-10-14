@@ -616,7 +616,19 @@ if ( $User->type['Moderator'] )
 			else
 				$modActions[] = '<a class="light" href="group.php?groupID='.$groupUser->groupID.'&ownerMessageNeeded=1">Get Message</a>';
 			
-			$modActions[] = '<a href="admincp.php?tab=Multi-accounts&aGroupID='.$GroupProfile->id.'" class="light">Enter multi-account finder</a>';
+			$multiAccountParams = '';
+			foreach($GroupProfile->GroupUsers as $groupUser)
+			{
+				if( $multiAccountParams == '' )
+				{
+					$multiAccountParams = 'aUserID=' . $groupUser->userID . '&bUserIDs=';
+				}
+				else
+				{
+					$multiAccountParams .= $groupUser->userID . '%2C';
+				}
+			}
+			$modActions[] = '<a href="admincp.php?tab=Multi-accounts&'.$multiAccountParams.'" class="light">Enter multi-account finder</a>';
 
 			if($modActions)
 			{
