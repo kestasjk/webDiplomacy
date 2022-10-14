@@ -880,8 +880,10 @@ class User {
 			if( strlen($ip) >= 6)
 			{
 				$ip=substr($ip, min(strlen($ip)-6,0), 6);
-				// 'e15f50'
-				$ip  = long2ip(hexdec('0x'.$ip));
+				// 'e15f50'\
+				$h='0x'.$ip;
+				$hd=hexdec($h);
+				$ip  = long2ip($hd);
 				// '0.225.95.80'
 				// first number is always 0 to indicate this is an ipv6 snippet; this is only a small part of the whole address so is just an indicator
 			}
