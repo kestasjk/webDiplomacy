@@ -21,6 +21,7 @@
 require_once(l_r('lib/variant.php'));
 require_once(l_r('objects/members.php'));
 require_once(l_r('objects/scoringsystem.php'));
+require_once(l_r('objects/groupUserToUserLinks.php'));
 
 /**
  * Prints data on a game, and loads and manages the collections of members which this game contains.

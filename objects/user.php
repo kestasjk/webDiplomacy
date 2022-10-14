@@ -23,6 +23,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 require_once(l_r('objects/notice.php'));
 require_once(l_r('objects/useroptions.php'));
 require_once(l_r('objects/basic/set.php'));
+require_once(l_r('objects/groupUserToUserLinks.php'));
 
 /**
  * Holds information on a user for display, or to manage certain user related functions such as logging

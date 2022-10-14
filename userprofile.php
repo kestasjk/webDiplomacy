@@ -772,6 +772,10 @@ print '</div>';
 		}
 		unset($groupUsers);
 		
+		print '<div>';
+		print GroupUserToUserLinks::loadFromUser($UserProfile)->outputTable();
+		print '</div>';
+
 		if( $User->type['User'] && $User->id != $UserProfile->id )
 		{
 			print '<div class="hr"></div>';

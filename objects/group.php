@@ -19,6 +19,7 @@
  */
 
 require_once('objects/basic/set.php');
+require_once('objects/groupUserToUserLinks.php');
 
 /**
  * An object representing a relationship between users. Many to many between users and groups,

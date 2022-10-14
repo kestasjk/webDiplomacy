@@ -613,6 +613,12 @@ print '</div>';
 print '</div>';
 
 print '<div class="hr"></div>';
+
+print '<div>';
+print GroupUserToUserLinks::loadFromGroup($GroupProfile)->outputTable();
+print '</div>';
+
+print '<div class="hr"></div>';
 // Show moderator information
 if ( $User->type['Moderator'] )
 {	

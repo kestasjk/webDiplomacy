@@ -170,6 +170,11 @@ class panelGameBoard extends panelGame
 		$buf .= '</form>';
 		require_once('objects/group.php');
 		require_once('objects/groupUser.php');
+		
+		$buf .= '<div>';
+		$buf .= GroupUserToUserLinks::loadFromGame($this)->outputTable();
+		$buf .= '</div>';
+
 		$groupUsers = Group::getUsers("gr.isActive = 1 AND gr.gameID = ".$this->id);
 		$buf .= Group::outputUserTable_static($groupUsers, null, null);
 		$buf .= '</div></div>';

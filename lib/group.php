@@ -76,7 +76,7 @@ class libGroup
 -- have been changed since the last refresh:
 
     -- Set records directly changed to dirty
-        UPDATE wD_GroupUsers SET isDirty = 1 WHERE timeChanged > ".$lastUpdated.";
+        UPDATE wD_GroupUsers SET isDirty = 1 WHERE timeChanged >= ".$lastUpdated.";
     
     -- Set records in the same group as also dirty
         UPDATE wD_GroupUsers dirtyRecords, wD_GroupUsers alsoInGroup
@@ -173,9 +173,9 @@ class libGroup
 
     INSERT INTO wD_GroupUserToUserLinks (fromUserID, toUserID, peerAvgScore, peerCount, modAvgScore, modCount, selfAvgScore, selfCount)
     SELECT p.fromUserID, p.toUserID, 
-        COALESCE(p.avgScore peerAvgScore,0), COALESCE(p.count,0) peerCount, 
-        COALESCE(m.avgScore modAvgScore,0), COALESCE(m.count,0) modCount, 
-        COALESCE(s.avgScore selfAvgScore,0), COALESCE(s.count,0) selfCount
+        COALESCE(p.avgScore ,0), COALESCE(p.count,0) peerCount, 
+        COALESCE(m.avgScore ,0), COALESCE(m.count,0) modCount, 
+        COALESCE(s.avgScore ,0), COALESCE(s.count,0) selfCount
     FROM 
     (
         SELECT fromUserID, toUserID,
