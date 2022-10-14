@@ -636,7 +636,7 @@ if ( $User->type['Moderator'] )
 					$multiAccountParams .= $groupUser->userID . '%2C';
 				}
 			}
-			$modActions[] = '<a href="group.php?groupID='.$groupUser->groupID.'&modSetGroupType=" class="light">Enter multi-account finder</a>';
+			$modActions[] = '<a href="admincp.php?tab=Multi-accounts&'.$multiAccountParams.'" class="light">Enter multi-account finder</a>';
 			
 			$modActions[] = 'Set type:';
 			$modActions[] = '<a href="group.php?groupID='.$groupUser->groupID.'&modSetGroupType=Suspicion" class="light">Suspicion</a>';
