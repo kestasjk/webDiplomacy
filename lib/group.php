@@ -95,7 +95,10 @@ class libGroup
         DELETE FROM wD_GroupSourceUserToUserLinks 
         WHERE fromUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
             OR toUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1);
-        
+        DELETE FROM wD_GroupUserToUserLinks 
+            WHERE fromUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
+                OR toUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1);
+            
     -- Extract the group structure from a record per user/owner/mod to a record for each weighting for each record, so 
     -- that one user/owner/mod record becomes three records, one for the user, one for the owner, one for the mod, each
     -- as the judge of the group relationship with a weighting, and the type/source of judge they are (user/owner/mod = self/peer/mod)
@@ -167,6 +170,43 @@ class libGroup
                 OR a.toUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
         ) x
         GROUP BY source, fromUserID, toUserID;
+
+    INSERT INTO wD_GroupUserToUserLinks (fromUserID, toUserID, peerAvgScore, peerCount, modAvgScore, modCount, selfAvgScore, selfCount)
+    SELECT p.fromUserID, p.toUserID, 
+        COALESCE(p.avgScore peerAvgScore,0), COALESCE(p.count,0) peerCount, 
+        COALESCE(m.avgScore modAvgScore,0), COALESCE(m.count,0) modCount, 
+        COALESCE(s.avgScore selfAvgScore,0), COALESCE(s.count,0) selfCount
+    FROM 
+    (
+        SELECT fromUserID, toUserID,
+            (avgPositiveWeighting*countPositiveWeighting+avgNegativeWeighting*countNegativeWeighting)/(countPositiveWeighting+countNegativeWeighting) avgScore,
+            (countPositiveWeighting+countNegativeWeighting) count
+        FROM wd_groupsourceusertouserlinks
+        WHERE SOURCE='Peer' AND (
+            fromUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
+            OR toUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
+        )
+    ) p
+    LEFT JOIN (
+        SELECT fromUserID, toUserID, 
+            avgPositiveWeighting*countPositiveWeighting+avgNegativeWeighting*countNegativeWeighting avgScore,
+            (countPositiveWeighting+countNegativeWeighting) count
+        FROM wd_groupsourceusertouserlinks
+        WHERE SOURCE='Mod' AND (
+            fromUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
+            OR toUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
+        )
+    ) m ON m.fromUserID = p.fromUserID AND m.toUserID = p.toUserID
+    LEFT JOIN (
+        SELECT fromUserID, toUserID,
+            (avgPositiveWeighting*countPositiveWeighting+avgNegativeWeighting*countNegativeWeighting)/(countPositiveWeighting+countNegativeWeighting) avgScore,
+            (countPositiveWeighting+countNegativeWeighting) count
+        FROM wd_groupsourceusertouserlinks
+        WHERE SOURCE='Self' AND (
+            fromUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
+            OR toUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
+        )
+    ) s ON s.fromUserID = p.fromUserID AND s.toUserID = p.toUserID;
 
 -- Now that the update is done unset the dirty flag
 UPDATE wD_GroupUsers SET isDirty = 0 WHERE isDirty = 1;

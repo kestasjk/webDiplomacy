@@ -1236,6 +1236,18 @@ CREATE TABLE IF NOT EXISTS `wD_GroupSourceUserToUserLinks` (
 )
 ENGINE=InnoDB
 ;
+CREATE TABLE `wD_GroupUserToUserLinks` (
+	`fromUserID` MEDIUMINT(8) UNSIGNED NOT NULL,
+	`toUserID` MEDIUMINT(8) UNSIGNED NOT NULL,
+	`peerAvgScore` DECIMAL(9,4) NOT NULL DEFAULT 0,
+	`peerCount` DECIMAL(9,4) NOT NULL DEFAULT 0,
+	`modAvgScore` DECIMAL(9,4) NOT NULL DEFAULT 0,
+	`modCount` DECIMAL(9,4) NOT NULL DEFAULT 0,
+	`selfAvgScore` DECIMAL(9,4) NOT NULL DEFAULT 0,
+	`selfCount` DECIMAL(9,4) NOT NULL DEFAULT 0
+)
+ENGINE=InnoDB
+;
 
 ALTER TABLE `wD_GroupUsers`
 	CHANGE COLUMN `timeWeightingRequired` `isWeightingNeeded` BIT NOT NULL DEFAULT '0' AFTER `timeLastMessageSent`,

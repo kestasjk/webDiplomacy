@@ -51,7 +51,10 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	<p><strong>Confirm Password:</strong></br>
 		<input type="password" name="userForm[passwordcheck]" maxlength=30 autocomplete="new-password" class = "settings">
 	</p>
-
+<?php
+if( $User->type['User'] ) 
+{
+?>
 	<p>
 		<strong>Mobile number:</strong></br>
 		<div style="float:right"><i>Certain games reuqire you to validate a mobile phone number by entering your number below, clicking send, 
@@ -67,7 +70,9 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			<input type="text" class="settings" name="userForm[mobileValidationCode]" size="6" value="" />
 		<?php } ?>
 	</p>
-
+<?php
+}
+?>
 	<form
 	<p>
 		<div style="float:right"><i>Profile quote visible to others. Consider favorite quotes or links to games.</i></div>
