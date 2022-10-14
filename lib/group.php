@@ -145,7 +145,7 @@ class libGroup
         WHERE a.groupID IN (SELECT DISTINCT groupID FROM wD_GroupUsers WHERE isDirty = 1)
         GROUP BY a.groupID, a.judgeUserID, a.source, a.userID, b.userID;
         
-        -- During this final operation we aggregate the group/judge calculations so that it's simply a user to user link with a weighting, by the type/source 
+        -- During this operation we aggregate the group/judge calculations so that it's simply a user to user link with a weighting, by the type/source 
         -- (self / peer / mod). This also as to take into account that a judge user may have created multiple groups with the same users associations,
         -- and those shouldn't be counted as if it was multiple people creating the associations.
         -- Also during this aggregation we need to aggregate not only the dirty recalculated records but all records for each user being included

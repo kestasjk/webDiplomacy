@@ -870,8 +870,10 @@ class User {
 		if($this->type['Banned'])
 			libHTML::notice(l_t('Banned'), l_t('You have been banned from this server. If you think there has been a mistake contact the moderator team at %s , and if you still aren\'t satisfied contact the admin at %s (with details of what happened).',Config::$modEMail, Config::$adminEMail));
 
+		$ip = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
+
 		$DB->sql_put("INSERT INTO wD_Sessions (userID, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint)
-					VALUES (".$this->id.",CURRENT_TIMESTAMP,1, INET_ATON('".$_SERVER['REMOTE_ADDR']."'),
+					VALUES (".$this->id.",CURRENT_TIMESTAMP,1, INET_ATON('".$ip."'),
 							UNHEX('".$userAgentHash."'), ".$cookieCode.", '".$browserFingerprint."' )
 					ON DUPLICATE KEY UPDATE hits=hits+1");
 
