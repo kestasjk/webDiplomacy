@@ -872,6 +872,9 @@ class User {
 			libHTML::notice(l_t('Banned'), l_t('You have been banned from this server. If you think there has been a mistake contact the moderator team at %s , and if you still aren\'t satisfied contact the admin at %s (with details of what happened).',Config::$modEMail, Config::$adminEMail));
 
 		$ip = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
+
+		$ip = (explode(',',$ip))[0]; // Somehow this seems to be of the form 1.2.3.4,1.2.3.5, as in a list of IPS
+		// Don't know whyu but need a fix as causing ip is null errors on insert
 		if( strstr($ip, ':') !== false )
 		{
 			// It's an IPv6; just take the last 0xffffffff

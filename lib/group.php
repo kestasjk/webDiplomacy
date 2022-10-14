@@ -77,6 +77,7 @@ class libGroup
 
     -- Set records directly changed to dirty
         UPDATE wD_GroupUsers SET isDirty = 1 WHERE timeChanged >= ".$lastUpdated.";
+        --UPDATE wD_GroupUsers SET isDirty = 1 WHERE timeChanged >= 0;
     
     -- Set records in the same group as also dirty
         UPDATE wD_GroupUsers dirtyRecords, wD_GroupUsers alsoInGroup
@@ -181,7 +182,7 @@ class libGroup
         SELECT fromUserID, toUserID,
             (avgPositiveWeighting*countPositiveWeighting+avgNegativeWeighting*countNegativeWeighting)/(countPositiveWeighting+countNegativeWeighting) avgScore,
             (countPositiveWeighting+countNegativeWeighting) count
-        FROM wd_groupsourceusertouserlinks
+        FROM wD_GroupSourceUserToUserLinks
         WHERE SOURCE='Peer' AND (
             fromUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
             OR toUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
@@ -191,7 +192,7 @@ class libGroup
         SELECT fromUserID, toUserID, 
             avgPositiveWeighting*countPositiveWeighting+avgNegativeWeighting*countNegativeWeighting avgScore,
             (countPositiveWeighting+countNegativeWeighting) count
-        FROM wd_groupsourceusertouserlinks
+        FROM wD_GroupSourceUserToUserLinks
         WHERE SOURCE='Mod' AND (
             fromUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
             OR toUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
@@ -201,7 +202,7 @@ class libGroup
         SELECT fromUserID, toUserID,
             (avgPositiveWeighting*countPositiveWeighting+avgNegativeWeighting*countNegativeWeighting)/(countPositiveWeighting+countNegativeWeighting) avgScore,
             (countPositiveWeighting+countNegativeWeighting) count
-        FROM wd_groupsourceusertouserlinks
+        FROM wD_GroupSourceUserToUserLinks
         WHERE SOURCE='Self' AND (
             fromUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
             OR toUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
