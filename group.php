@@ -447,7 +447,7 @@ if( $User->type['Moderator'] )
 		$GroupProfile = Group::loadFromID($groupID);
 		$ownerUser = new User($GroupProfile->ownerUserID);
 		$newUser = new User((int)$_REQUEST['modAddUserID']);
-		$GroupProfile->userAdd($newUser, $ownerUser, 0);
+		$GroupProfile->userAdd($ownerUser, $newUser, 0);
 	}
 }
 
