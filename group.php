@@ -432,7 +432,15 @@ if( $User->type['Moderator'] )
 		$ownerMessageNeeded = (int)$_REQUEST['ownerMessageNeeded'];
 		$DB->sql_put("UPDATE wD_Groups SET isMessageNeeded = ".$ownerMessageNeeded.", modUserID = ".$User->id." WHERE id = ".$groupID);
 	}
-	
+	// If we are requesting a response or weighting from a user set that flag now
+	if( isset($_REQUEST['modSetGroupType']) )
+	{
+		if ( in_array($_REQUEST['modSetGroupType'], Group::$validTypes, true) )
+		{
+			$DB->sql_put("UPDATE wD_Group SET type = '".$_REQUEST['modSetGroupType'].", modUserID = ".$User->id." WHERE id = ".$groupID);
+		}
+		
+	}
 }
 
 try
@@ -628,7 +636,16 @@ if ( $User->type['Moderator'] )
 					$multiAccountParams .= $groupUser->userID . '%2C';
 				}
 			}
-			$modActions[] = '<a href="admincp.php?tab=Multi-accounts&'.$multiAccountParams.'" class="light">Enter multi-account finder</a>';
+			$modActions[] = '<a href="group.php?groupID='.$groupUser->groupID.'&modSetGroupType=" class="light">Enter multi-account finder</a>';
+			
+			$modActions[] = 'Set type:';
+			$modActions[] = '<a href="group.php?groupID='.$groupUser->groupID.'&modSetGroupType=Suspicion" class="light">Suspicion</a>';
+			$modActions[] = '<a href="group.php?groupID='.$groupUser->groupID.'&modSetGroupType=Person" class="light">Person</a>';
+			$modActions[] = '<a href="group.php?groupID='.$groupUser->groupID.'&modSetGroupType=Other" class="light">Other</a>';
+			$modActions[] = '<a href="group.php?groupID='.$groupUser->groupID.'&modSetGroupType=Unknown" class="light">Unknown</a>';
+			$modActions[] = '<a href="group.php?groupID='.$groupUser->groupID.'&modSetGroupType=Family" class="light">Family</a>';
+			$modActions[] = '<a href="group.php?groupID='.$groupUser->groupID.'&modSetGroupType=School" class="light">School</a>';
+			$modActions[] = '<a href="group.php?groupID='.$groupUser->groupID.'&modSetGroupType=Work" class="light">Work</a>';
 
 			if($modActions)
 			{
