@@ -437,7 +437,7 @@ if( $User->type['Moderator'] )
 	{
 		if ( in_array($_REQUEST['modSetGroupType'], Group::$validTypes, true) )
 		{
-			$DB->sql_put("UPDATE wD_Group SET type = '".$_REQUEST['modSetGroupType']."', modUserID = ".$User->id." WHERE id = ".$groupID);
+			$DB->sql_put("UPDATE wD_Groups SET type = '".$_REQUEST['modSetGroupType']."', modUserID = ".$User->id." WHERE id = ".$groupID);
 		}
 		
 	}
