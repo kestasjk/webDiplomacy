@@ -76,6 +76,11 @@ class adminActions extends adminActionsForms
 				'description' => 'Refreshes all reliability ratings.',
 				'params' => array()
 			),
+			'recalculateGroups' => array(
+				'name' => 'Recalculate the group panel user to user links',
+				'description' => 'Refreshes all group panel user to user links.',
+				'params' => array()
+			),
 			
 			'banUser' => array(
 				'name' => 'Ban a user',
@@ -771,7 +776,17 @@ class adminActions extends adminActionsForms
 		
 		return "Reliabiility ratings have been recalculated.";
 	}
+	public function recalculateGroups(array $params)
+	{
+		global $DB;
 
+		require_once(l_r('lib/group.php'));
+		 
+		libGroup::generateGameRelationCache(1);
+		
+		return "Group user link levels recalculated.";
+	}
+	
 	public function generateRegistrationLink(array $params)
 	{
 		global $DB;
