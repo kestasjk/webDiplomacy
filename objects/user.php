@@ -881,7 +881,7 @@ class User {
 			{
 				$ip=substr($ip, min(strlen($ip)-6,0), 6);
 				// 'e15f50'
-				$ip  = long2ip('0x'.$ip);
+				$ip  = long2ip(hexdec('0x'.$ip));
 				// '0.225.95.80'
 				// first number is always 0 to indicate this is an ipv6 snippet; this is only a small part of the whole address so is just an indicator
 			}
