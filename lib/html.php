@@ -503,11 +503,10 @@ class libHTML
 		require_once(l_r('global/definitions.php'));
 		
 		global $User;
-		global $UserOptions;
 		$variantCSS=array();
 
 		// set user's dark or light theme
-		if(isset($User) && ($User->options->value['darkMode'] == 'No'))
+		if(isset($User) && ($User->getOptions()->value['darkMode'] == 'No'))
 			$darkMode = '';
 		else
 			$darkMode = 'darkMode/';
@@ -515,6 +514,9 @@ class libHTML
 		foreach(Config::$variants as $variantName)
 			$variantCSS[] = '<link rel="stylesheet" href="'.STATICSRV.l_s('variants/'.$variantName.'/resources/'.$darkMode.'style.css').'?var='.CSSVERSION.'" type="text/css" />';
 		$variantCSS=implode("\n",$variantCSS);
+
+		// Embed user options inline here rather than using a separate server request to get information already loaded
+		$userOptionsJS = isset($User) ? $User->getOptions()->asJS() : (new UserOptions())->asJS();
 
 		/*
 		 * This line when included in the header caused certain translated hyphenated letters to come out as black diamonds with question marks.
@@ -534,7 +536,7 @@ class libHTML
 			<link rel="shortcut icon" href="'.STATICSRV.l_s('favicon.ico').'" />
 			<link rel="icon" href="'.STATICSRV.l_s('favicon.ico').'" />
 			
-			<script type="text/javascript" src="useroptions.php"></script>
+			<script type="text/javascript">'.$userOptionsJS.'</script>
 			<script type="text/javascript" src="javascript/clickhandler.js"></script>
 			<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/prototype.js').'"></script>
 			<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/scriptaculous.js').'"></script>

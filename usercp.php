@@ -94,8 +94,7 @@ if ( isset($_REQUEST['userForm']) )
 
 		$allowed = array('E-mail'=>'email','E-mail hiding'=>'hideEmail', 'Homepage'=>'homepage','Comment'=>'comment','Country code'=>'mobileCountryCode','Mobile number'=>'mobileNumber');
 
-		$User->options->set($_REQUEST['userForm']);
-		$User->options->load();
+		$User->getOptions()->set($_REQUEST['userForm']);
 
 		$set = '';
 		foreach( $allowed as $name=>$SQLName )

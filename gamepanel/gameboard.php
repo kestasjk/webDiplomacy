@@ -36,12 +36,12 @@ class panelGameBoard extends panelGame
 		global $User;
 
 		$mapTurn = (($this->phase=='Pre-game'||$this->phase=='Diplomacy') ? $this->turn-1 : $this->turn);
-		$smallmapLink = 'map.php?gameID='.$this->id.'&turn='.$mapTurn .($User->options->value['showMoves'] == 'No'? '&hideMoves':'');
-		$largemapLink = $smallmapLink.'&mapType=large'.($User->options->value['showMoves']=='No'?'&hideMoves':'');
+		$smallmapLink = 'map.php?gameID='.$this->id.'&turn='.$mapTurn .($User->getOptions()->value['showMoves'] == 'No'? '&hideMoves':'');
+		$largemapLink = $smallmapLink.'&mapType=large'.($User->getOptions()->value['showMoves']=='No'?'&hideMoves':'');
 
 		$staticFilename=Game::mapFilename($this->id, $mapTurn, 'small');
 
-		if( file_exists($staticFilename) && $User->options->value['showMoves'] == 'Yes' )
+		if( file_exists($staticFilename) && $User->getOptions()->value['showMoves'] == 'Yes' )
 			$smallmapLink = STATICSRV.$staticFilename.'?nocache='.rand(0,99999);
 
 		$map = '

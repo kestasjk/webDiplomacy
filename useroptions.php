@@ -18,15 +18,10 @@
     along with webDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// This may be redundant but is kept in case there are unknown references to it e.g in phpBB?
 require_once('header.php');
 global $User;
 header('Content-Type: application/javascript');
 
-if ($User->options != null) 
-{
-	print $User->options->asJS();	
-}
-else
-{
-	print UserOptions::defaultJS();	
-}
+print $User->getOptions()->asJS();
+

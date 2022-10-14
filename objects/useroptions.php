@@ -64,23 +64,30 @@ class UserOptions
 	/**
 	 * Load the UserOptions object. It is assumed that username is already escaped.
 	 */
-	function load()
+	function load($cachedOptions = null)
 	{
 		global $DB;
-		$this->value = UserOptions::$defaults;
-
-		$row = $DB->sql_hash("SELECT * FROM wD_UserOptions WHERE userID=".$this->id );
-
-		if ( ! isset($row['userID']) or ! $row['userID'] )
+		if( $cachedOptions != null )
 		{
-			// No object was loaded
-		} 
-		else 
+			$this->value = $cachedOptions;
+		}
+		else
 		{
-			foreach( $row as $name=>$value )
+			$this->value = UserOptions::$defaults;
+
+			$row = $DB->sql_hash("SELECT * FROM wD_UserOptions WHERE userID=".$this->id );
+
+			if ( ! isset($row['userID']) or ! $row['userID'] )
 			{
-				if (isset(UserOptions::$defaults[$name]))
-					$this->value[$name] = $value;
+				// No object was loaded
+			} 
+			else 
+			{
+				foreach( $row as $name=>$value )
+				{
+					if (isset(UserOptions::$defaults[$name]))
+						$this->value[$name] = $value;
+				}
 			}
 		}
 	}
@@ -89,6 +96,8 @@ class UserOptions
 	{
 		global $DB;
 
+		if( $this->id == 0 ) return; // Don't save settings for guest users
+
 		$updates = array();
 
 		// Sanitise array
@@ -96,16 +105,17 @@ class UserOptions
 		{
 			if ( ! isset($newValues[$name]) )
 			{
-				$newValues[$name] = UserOptions::$defaults[$name];
+				$newValues[$name] = $val;
 			}
 			if( in_array($newValues[$name], UserOptions::$possibleValues[$name], true ))
 			{
-			     $updates[] = $name .'='.'"'.$newValues[$name].'"';
+			    $updates[] = $name .'='.'"'.$newValues[$name].'"';
 			}
 		}
 
 		$update = implode(',',$updates);
 
+		// TODO: This might as well be in wD_Users, it's 1:1
 		$row = $DB->sql_hash("SELECT * FROM wD_UserOptions WHERE userID=".$this->id );
 		if ( ! isset($row['userID']) or ! $row['userID'] ) 
 		{
@@ -114,15 +124,16 @@ class UserOptions
 		}
 
 		$DB->sql_put("UPDATE wD_UserOptions SET $update WHERE userID=".$this->id);
+
+		// Refetch the saved data
+		$this->load();
+		// Save the new data to the cache
+		$this->saveToCache();
 	}
 
 	function asJS()
 	{
 		return 'var useroptions='. json_encode($this->value).';';
-	}
-	static function defaultJS()
-	{
-		return 'var useroptions='. json_encode(UserOptions::$defaults).';';
 	}
 
 	/**
@@ -130,10 +141,60 @@ class UserOptions
 	 *
 	 * @param int $id User ID
 	 */
-	function __construct($id, $username=false)
+	function __construct($id=0, $cachedOptions=null)
 	{
-		$this->id = intval($id);
-		$this->load();
+		if( $id == 0 )
+		{
+			// This is a guest user with default options
+			$this->id = 0;
+			$this->value = UserOptions::$defaults;
+		}
+		else
+		{
+			$this->id = intval($id);
+			$this->load($cachedOptions);
+		}
 	}
+	
+	public static function fetchFromCache($id)
+	{
+		global $MC;
+		if( !isset($MC) ) return false;
 
+		$cachedOptions = $MC->get('userOptions_'.$id);
+		if( $cachedOptions === false ) return false;
+		
+		$cachedOptions = self::unpack($cachedOptions);
+		return new UserOptions($id, $cachedOptions);
+	}
+	public function saveToCache()
+	{
+		global $MC;
+		if( isset($MC) )
+		{
+			// Try to save to memcache
+			$packedOptions = self::pack($this->value);
+			$MC->set('userOptions_'.$this->id, $packedOptions, 24*60*60);
+		}
+	}
+	private static function unpack($optionsStr)
+	{
+		$optionsArr = explode('|',$optionsStr);
+		$options = array();
+		foreach($optionsArr as $optionStr)
+		{
+			$option = explode('=',$optionStr);
+			$options[$option[0]] = $option[1];
+		}
+		return $options;
+	}
+	private static function pack($options)
+	{
+		$packedOptions = array();
+		foreach($options as $k=>$v)
+		{
+			$packedOptions[] = $k.'='.$v;
+		}
+		return implode('|', $packedOptions);
+	}
 }

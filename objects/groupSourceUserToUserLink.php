@@ -34,16 +34,28 @@ class GroupSourceUserToUserLink
 	public $source;
 	public $fromUserID;
 	public $toUserID;
-	public $avgPositiveWeighting;
+	public $avgPositive;
 	public $maxPositiveWeighting;
 	public $countPositiveWeighting;
 	public $avgNegativeWeighting;
 	public $maxNegativeWeighting;
 	public $countNegativeWeighting;
 
+	public $fromCountryID;
+	public $toCountryID;
+
 	public function __construct($row)
 	{
 		foreach($row as $key=>$val)
 			$this->{$key} = $val;
+	}
+
+	public function applyGame($Game)
+	{
+
+	}
+	public function applyGroup($Group)
+	{
+		
 	}
 }

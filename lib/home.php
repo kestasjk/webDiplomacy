@@ -239,7 +239,7 @@ class libHome
 	{
 		global $User, $DB;
 
-        if ($User->options->value['displayUpcomingLive'] == 'No') return '';
+        if ($User->getOptions()->value['displayUpcomingLive'] == 'No') return '';
 
 		$tabl=$DB->sql_tabl("SELECT g.* FROM wD_Games g
 			WHERE (g.phase = 'Pre-game' OR (g.phase in ('Diplomacy','Retreats','Builds') and g.minimumBet is not null and g.gameOver = 'No')) AND g.phaseMinutes < 60 AND g.password IS NULL

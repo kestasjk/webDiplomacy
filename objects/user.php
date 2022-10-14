@@ -198,10 +198,12 @@ class User {
 	public $online;
 
 	/**
+	 * Replaced with getOptions() which includes memcache caching and ensures options are only fetched when needed (e.g. they
+	 * are needed for the user viewing the page, but not for user objects loaded for other users)
 	 * The user's options
 	 * @var UserOptions
+	 * public $options;
 	 */
-	public $options;
 
 	/*
 	 * The user is blocked from joining or creating new games till the given time
@@ -264,6 +266,34 @@ class User {
 	 */
 	public $isActiveBeta;
 
+	/**
+	 * Fetches options from the user options table in a lazy cached way
+	 * @var UserOptions
+	 */
+	public function getOptions()
+	{
+		if( $this->userOptionsCache == null )
+		{
+			if( $this->id == 1 )
+			{
+				$this->userOptionsCache = new UserOptions();
+			}
+
+			if( ! ($this->userOptionsCache = UserOptions::fetchFromCache($this->id) ) )
+			{
+				// No cached data available, load from DB.
+				$this->userOptionsCache = new UserOptions($this->id);
+				$this->userOptionsCache->saveToCache();
+			}
+		}
+		return $this->userOptionsCache;
+	}
+	/**
+	 * Cache for user options to prevent multiple loads
+	 * @var UserOptions
+	 */
+	private $userOptionsCache = null;
+	
 	/**
 	 * Give this user a supplement of points
 	 *
