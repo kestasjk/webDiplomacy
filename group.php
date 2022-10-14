@@ -443,12 +443,11 @@ if( $User->type['Moderator'] )
 	}
 	if( isset($_REQUEST['modAddUserID']) )
 	{
+		// Mod wants to add a user to the group
 		$GroupProfile = Group::loadFromID($groupID);
-
-		// User wants to add a user to the group
-		$addingUser = $User;
+		$ownerUser = new User($GroupProfile->ownerUserID);
 		$newUser = new User((int)$_REQUEST['modAddUserID']);
-		$GroupProfile->userAdd($newUser, $addingUser, 0);
+		$GroupProfile->userAdd($newUser, $ownerUser, 0);
 	}
 }
 
