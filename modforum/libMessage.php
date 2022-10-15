@@ -52,7 +52,7 @@ class ModForumMessage
 	 *
 	 * @return int The message ID
 	 */
-	static public function send($toID, $fromUserID, $message, $subject="", $type='Bulletin', $adminReply='No')
+	static public function send($toID, $fromUserID, $message, $subject="", $type='Bulletin', $adminReply='No', $requestType='', $gameId=null)
 	{
 		global $DB, $User;
 
@@ -72,7 +72,8 @@ class ModForumMessage
 		$DB->sql_put("INSERT INTO wD_ModForumMessages
 						SET toID = ".$toID.", fromUserID = ".$fromUserID.", timeSent = ".$sentTime.",
 						message = '".$message."', subject = '".$subject."', replies = 0,
-						type = '".$type."', latestReplySent = 0, adminReply = '".$adminReply."'");
+						type = '".$type."', latestReplySent = 0, adminReply = '".$adminReply."',
+						requestType = '" .$requestType. "', gameID = " . ($gameId == null ? "NULL" : $gameId));
 
 		$id = $DB->last_inserted();
 

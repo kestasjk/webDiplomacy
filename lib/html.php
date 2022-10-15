@@ -1064,6 +1064,7 @@ class libHTML
 
 						$menu.='
 							<a href="admincp.php?tab=Multi-accounts">Multi Finder</a>
+							<a href="admincp.php?tab=Groups">User Groups</a>
 							<a href="admincp.php?tab=Chatlogs">Pull Press</a>
 							<a href="admincp.php?tab=AccessLog">Access Log</a>
 							<a href="search.php">Find User</a>';

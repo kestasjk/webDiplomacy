@@ -121,6 +121,13 @@ if (isset($_REQUEST['setAssigned']) && $User->type['Moderator'])
 if( !isset($_REQUEST['newmessage']) ) $_REQUEST['newmessage']  = '';
 if( !isset($_REQUEST['newsubject']) ) $_REQUEST['newsubject'] = '';
 
+$requestTypes = array(
+	'Pause/Unpause request',
+	'Rules broken',
+	'Forum issue',
+	'Other'
+);
+
 $new = array('message' => "", 'subject' => "", 'id' => -1);
 if(isset($_REQUEST['newmessage']) AND $User->type['User']
 AND ($_REQUEST['newmessage'] != "") ) {
@@ -189,12 +196,21 @@ AND ($_REQUEST['newmessage'] != "") ) {
 							throw new Exception("A word in the subject, '".$subjectWord."' is longer than 25 ".
 								"characters, please choose a subject with normal words.");
 
-					
+					$requestType = '';
+					if( in_array($_REQUEST['newrequesttype'], $requestTypes, true) )
+					{
+						$requestType = $_REQUEST['newrequesttype'];
+					}
+
 					$new['id'] = ModForumMessage::send(0,
 						$fromUserID,
 						$new['message'],
 						$new['subject'],
-						'ThreadStart');
+						'ThreadStart',
+						'No',
+						$requestType,
+						(isset($_REQUEST['newgameid']) ? (int)$_REQUEST['newgameid'] : null)
+					);
 
 					$_SESSION['lastPostText']=$new['message'];
 					$_SESSION['lastPostTime']=time();
@@ -231,6 +247,7 @@ AND ($_REQUEST['newmessage'] != "") ) {
 				// It's being sent to an existing, non-silenced / dated thread.
 				try
 				{
+
 					$new['id'] = ModForumMessage::send( $new['sendtothread'],
 						$fromUserID,
 						$new['message'],
@@ -452,11 +469,17 @@ else
 		$gameSelection = '<select name="newgameid">';
 		// Let the user choose a game they are in that they are referencing.
 		$tabl = $DB->sql_tabl("SELECT g.id, g.name FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id WHERE m.userID = ".$User->id." AND g.gameOver='No' ORDER BY name");
+		$gameSelection .= '<option value=""></option>';
 		while($row = $DB->tabl_hash($tabl))
 		{
-			$gameSelection .= '<option name="'.$row['id'].'">'.$row['name'].'</option>';
+			$gameSelection .= '<option value="'.$row['id'].'">'.$row['name'].'</option>';
 		}
 		$gameSelection .= '</select><br />';
+	}
+	$requestOptions = '';
+	foreach($requestTypes as $requestType)
+	{
+		$requestOptions .= '<option name="'.$requestType.'">'.$requestType.'</a>';
 	}
 	print '
 	<div class="message-body threadalternate1 postboxadvice"><br />
@@ -472,7 +495,12 @@ else
 		<strong>Subject:</strong><br />
 		<input style="width:100%" maxLength=2000 size=60 name="newsubject" value="'.$_REQUEST['newsubject'].'"><br /><br />
 		<strong>Game:</strong></br />
-		'.$gameSelection.'
+		'.$gameSelection.'</br />
+		<strong>Request type:</strong></br />
+		<select name="newrequesttype">
+			<option name=""></option>
+			'.$requestOptions.'
+		</select></br />
 		<strong>Message:</strong><br />
 		<TEXTAREA NAME="newmessage" ROWS="6" style="width:100%">'.$_REQUEST['newmessage'].'</TEXTAREA>
 		<input type="hidden" name="viewthread" value="0" />
@@ -521,7 +549,8 @@ $tabl = $DB->sql_tabl("SELECT
 	f.id, f.fromUserID, f.timeSent, f.message, f.subject, f.replies,
 		u.username as fromusername, u.points as points, f.latestReplySent, IF(s.userID IS NULL,0,1) as online, u.type as userType, 
 		f.status as status,
-		f.assigned, u2.username as modname
+		f.assigned, u2.username as modname, 
+		f.gameID, f.requestType
 	FROM wD_ModForumMessages f
 	INNER JOIN wD_Users u ON ( f.fromUserID = u.id )
 	LEFT JOIN wD_Users u2 ON ( f.assigned = u2.id )
@@ -621,6 +650,14 @@ while( $message = $DB->tabl_hash($tabl) )
 		print '<strong>'.$message['subject'].' (deleted)</strong>';
 	else
 		print '<strong>'.$message['subject'].'</strong>';
+
+	if( $message['requestType'] != null ) {
+		print ' <strong>Type:</strong> '.$message['requestType'];
+	}
+		
+	if( $message['gameID'] != null ) {
+		print ' <a href="board.php?gameID='.$message['gameID'].'">Link to game</a> ';
+	}
 
 	if ($message['modname'] != "")
 		print '<strong> - assigned'.($User->type['Moderator'] ? ' to: '.$message['modname'] : '').'</strong>';
