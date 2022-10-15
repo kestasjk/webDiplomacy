@@ -42,8 +42,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		        ?>"></li>
 		<li class="formlistdesc">
 			By making sure every user has a real e-mail address we stop cheaters from creating many users for themselves. 
-			This will not be spammed, shared, or released. <strong>Please make sure your email 
-			address is current so that the moderators can contact you if needed!</strong>
+			This will not be spammed, shared, or released.
 		</li>
 </ul>
 

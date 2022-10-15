@@ -639,6 +639,16 @@ class libHTML
 				print '<div class="content-notice"><div class="gamelistings-tabs">'.$gameNotifyBlock.'</div></div>';
 
 		}
+		
+		// Displayes a ModMessage and prevent any other site-content to be load.
+		if ( is_object($User) && $User->notifications->ForceModMessage )
+		{
+			require_once('modforum/modforum.php');
+			ModForum::checkReply();
+			// If there are still uncleared cases...
+			if ( $User->notifications->ForceModMessage )
+				ModForum::printModMessages();
+		}
 	}
 
 	/**
@@ -742,6 +752,17 @@ class libHTML
 			}
 		}
 
+		/*****************************************************
+		*  Alert the mods about a new Mesage in the ModForum *
+		*****************************************************/
+		if ( $User->notifications->ModForum && (strpos($_SERVER["REQUEST_URI"], 'modforum.php') === false) )
+		{
+			$gameNotifyBlock .= '<span class=""><a href="modforum.php">'.
+				'New Post in Modforum <img src="images/icons/mail.png" alt="New private messages" title="New private messages!" />'.
+				'</a></span> ';
+		}
+		// END ModMessage
+
 		foreach ( $gameIDs as $gameID )
 		{
 			$notifyGame = $notifyGames[$gameID];
@@ -825,11 +846,11 @@ class libHTML
 				$links['gamecreate.php']=array('name'=>'New game', 'inmenu'=>TRUE, 'title'=>"Start up a new game");
 				$links['detailedSearch.php']=array('name'=>'Search', 'inmenu'=>TRUE, 'title'=>"advanced search of users and games");
 				$links['usercp.php']=array('name'=>'Settings', 'inmenu'=>TRUE, 'title'=>"Change your user specific settings");
+				$links['modforum.php']=array('name'=>'Mod Forum', 'inmenu'=>TRUE, 'title'=>"Get help from the mod team");
 			}
 		}
 
 		$links['help.php']=array('name'=>'Help/Donate', 'inmenu'=>TRUE, 'title'=>'Get help and information; guides, intros, FAQs, stats, links');
-		$links['diplonow.php']=array('name'=>'DiploNow', 'inmenu'=>FALSE, 'title'=>'Start playing Diplomacy with bots now, stop whenever you want.');
 
 		// Items not displayed on the menu
 		$links['map.php']=array('name'=>'Map', 'inmenu'=>FALSE);
@@ -1035,6 +1056,8 @@ class libHTML
 					{
 						$menu.=' <div id="navSubMenu" class = "clickable nav-tab">Mods ▼
 							<div id="nav-drop">
+								<a href="modforum.php" title="The modforum; ask your mod-team for help.">ModForum</a>
+								<div class="hr"></div>
 								<a href="admincp.php">Admin CP</a>';
 
 						if( isset(Config::$customForumURL) ) { $menu.='<a href="contrib/phpBB3/mcp.php">Forum CP</a>'; }
@@ -1053,6 +1076,8 @@ class libHTML
 						$menu.=' </div>
 						</div>';
 					}
+					//else
+					//	$menu.='<div class = "nav-tab"> <a href="modforum.php" title="The modforum; ask your mod-team for help.">ModForum</a> </div>';
 				}
 				$menu.='</div></div></div>';
 			}

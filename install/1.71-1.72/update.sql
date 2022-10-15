@@ -122,6 +122,48 @@ ALTER TABLE `wD_AccessLog`
 	ADD COLUMN `ipv6` BINARY(16) NULL DEFAULT NULL;
 
 
+CREATE TABLE `wD_ModForumMessages` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `toID` int(10) unsigned NOT NULL,
+  `fromUserID` mediumint(8) unsigned NOT NULL,
+  `timeSent` int(10) unsigned NOT NULL,
+  `message` text NOT NULL,
+  `subject` varchar(100) NOT NULL,
+  `type` enum('ThreadStart','ThreadReply') NOT NULL,
+  `replies` smallint(5) unsigned NOT NULL,
+  `latestReplySent` int(10) unsigned NOT NULL,
+  `silenceID` INT UNSIGNED NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `latest` (`timeSent`),
+  KEY `threadReplies` (`type`,`toID`,`timeSent`),
+  KEY `latestReplySent` (`latestReplySent`),
+  KEY `profileLinks` (`type`,`fromUserID`,`timeSent`),
+  KEY `type` (`type`,`latestReplySent`)
+) ENGINE=InnoDB;
+ALTER TABLE `wD_Users` MODIFY `notifications` set('PrivateMessage','GameMessage','Unfinalized','GameUpdate','ModForum','CountrySwitch','ForceModMessage');
+
+ALTER TABLE `wD_ModForumMessages` ADD `adminReply` enum('Yes','No') NOT NULL DEFAULT 'No';
+ALTER TABLE `wD_ModForumMessages` ADD `status` enum('New','Open','Resolved') NOT NULL DEFAULT 'New';
+
+ALTER TABLE `wD_ModForumMessages` MODIFY `status` enum('New','Open','Resolved','Bugs','Sticky') NOT NULL DEFAULT 'New';
+ALTER TABLE `wD_ModForumMessages` ADD `toUserID` mediumint(8) unsigned DEFAULT 0;
+ALTER TABLE `wD_ModForumMessages` ADD  `forceReply` enum('Yes','No','Done') NOT NULL DEFAULT 'No';
+
+CREATE TABLE `wD_ForceReply` (
+  `id` int(10) unsigned NOT NULL,
+  `toUserID` mediumint(8) unsigned DEFAULT 0,
+  `forceReply` enum('Yes','No','Done') NOT NULL DEFAULT 'No',
+  PRIMARY KEY (`id`,`toUserID`)
+) ENGINE=InnoDB;
+
+ALTER TABLE `wD_ModForumMessages` DROP `toUserID`;	
+ALTER TABLE `wD_ModForumMessages` DROP `forceReply`;	
+ALTER TABLE `wD_ModForumMessages` ADD `assigned` mediumint(8) unsigned DEFAULT 0;
+ALTER TABLE `wD_ForceReply` ADD `status` enum('Sent','Read','Replied') NOT NULL DEFAULT 'Sent';
+ALTER TABLE `wD_ForceReply` ADD `readIP`  int(10) unsigned NOT NULL;
+ALTER TABLE `wD_ForceReply` ADD `readTime` int(10) unsigned NOT NULL;
+ALTER TABLE `wD_ForceReply` ADD `replyIP` int(10) unsigned NOT NULL;
+
 ALTER TABLE `wD_Misc` CHANGE COLUMN `Name` `Name` ENUM('Version','Hits','Panic','Notice','Maintenance','LastProcessTime','GamesNew','GamesActive','GamesFinished','RankingPlayers','OnlinePlayers','ActivePlayers','TotalPlayers','ErrorLogs','GamesPaused','GamesOpen','GamesCrashed','LastModAction','ForumThreads','ThreadActiveThreshold','ThreadAliveThreshold','GameFeaturedThreshold','LastGroupUpdate','LastStatsUpdate') NOT NULL;
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastStatsUpdate',0);
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastGroupUpdate',0);

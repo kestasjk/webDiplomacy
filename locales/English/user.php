@@ -97,6 +97,8 @@ if (isset(Config::$customForumURL))
 if( isset(Config::$enabledOptInFeatures) && Config::$enabledOptInFeatures > 0 )
 	{
 		// Opt-in features are enabled in the config, so enumerate all the features this user can use
+		/*
+		This went unused and should be phased out
 		$optInFeatures = array(
 			0x1 => array(
 				'Early Access: show in-development features (may be buggy!)', 
@@ -115,7 +117,8 @@ if( isset(Config::$enabledOptInFeatures) && Config::$enabledOptInFeatures > 0 )
 				<input type="radio" name="userForm[optInFeature_'.$featureFlag.']" value="0" ' . ( ($featureFlag & $User->optInFeatures) == 0 ? "checked" : "") . '>No
 			</p>
 			';
-		}
+		}*/
+		print '<input type="hidden" name="userForm[optInFeature_1]" value="1" />';
 	}
 
 foreach ($User->options->value as $name=>$val) 

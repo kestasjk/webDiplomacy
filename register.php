@@ -172,6 +172,7 @@ switch($page)
 		print '<h2>'.l_t('Welcome to webDiplomacy!').'</h2>';
 		print '<p>'.l_t('We are a competitive community looking for fair and fun games; to ensure you are a human with a working email address, please fill out the registration form below. Help us keep the server free of spam and cheaters!').'</p>';
 
+		/*
 		print '<h2>'.l_t('Site User Agreement (We aren’t Apple™, so please read this.)').'</h2>';
 		print '<p>'.l_t('I agree not to create more than one account.<br /> '.
 		'I agree not to work around game communication rules.<br /> '.
@@ -180,6 +181,7 @@ switch($page)
 		'I agree to treat all members with respect regardless of race, religion, gender, or creed.<br /><br /> '.
 
 		'If you can agree to these values and adhere to our site rules, you are welcome here!').'</p>';
+		*/
 		
 	case 'validationForm':
 
@@ -219,8 +221,9 @@ switch($page)
 
 		print "<p>".l_t("Thank you for verifying your email address!</p>
 			<p>Enter the username, password, and any of the optional settings you want into the screen below to
-			complete the registration process.")." </br></br><font color='red'>Your username is visible to other members and cannot be changed, so please make sure you're sure about it. Keep it appropriate and 
-			and avoid using your full name if you are concerned about privacy.</font></p>";
+			complete the registration process.")."</p>";
+			//" </br></br><font color='darkred'>Your username is visible to other members and cannot be changed, so please make sure you're sure about it. Keep it appropriate and 
+			//and avoid using your full name if you are concerned about privacy.</font>
 
 	case 'userForm':
 		print '<form method="post" class = "settings_show" autocomplete="off"><ul class="formlist">';
