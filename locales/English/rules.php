@@ -218,7 +218,7 @@
          <li>Forum bans do not prevent a user from playing in games.</li>
       </ul>
       <p>
-         When in doubt about whether posting something is allowed, remember your first responsibility is to use common sense and respect other players. Please <a href='contactUs.php' class='light'>contact us</a> with questions if you have any. 
+         When in doubt about whether posting something is allowed, remember your first responsibility is to use common sense and respect other players. Please <a href='modforum.php' class='light'>contact us</a> with questions if you have any. 
       </p>
    </div>
    <div class = "rules_title">Appealing decisions</div>
@@ -233,12 +233,12 @@
          The appeal will be dealt with by one of the admins who was not involved in the original decision or by the 
          site owner. Appeals made on behalf of other members will not be considered. The outcome of an appeal is final. 
          <br><br>
-         Please keep all appeals to email. When multiple forum threads are made about a moderation decision the resulting confusion becomes a frustration for members and moderators alike.
+         Please keep all appeals to the mod forum. When multiple forum threads are made about a moderation decision the resulting confusion becomes a frustration for members and moderators alike.
          There may be a formal explanation and discussion on moderator decisions in the forum, but the moderator staff will never disclose information that may contain personal information about members or about the methods used to enforce the rules.
          In situations where multiple threads are opened on a specific topic the site administrators may close the duplicate threads and open an official thread to 
          explain the issue and give the final determination on the appeal.
          <br><br>
-         See our <a href='contactUs.php' class='light'>contact us</a> page for more on mod and admin contact details.
+         See our <a href='modforum.php' class='light'>moderator forum</a> to get in contact with the moderator team.
       </p>
    </div>
 
@@ -270,7 +270,7 @@
             <strong>Students only need one account.</strong>
             <br>
             <p style="padding-right: 30px">
-               There is never a scenario where anyone needs more than one account to enjoy webDiplomacy. All new accounts are given 100 points, which is enough to enter up to 20 games if the bets are low. If a player loses a game and falls under 100 points, our site automatically tops off their points when the game is concluded, so our players never fall beneath 100 points. Likewise, we have multiple map options, or variants, so that games can start with as few as 2 players and as many as 17. If a student ever needs help recovering their account, they should <a href='contactUs.php' class='light'>contact us</a>.
+               There is never a scenario where anyone needs more than one account to enjoy webDiplomacy. All new accounts are given 100 points, which is enough to enter up to 20 games if the bets are low. If a player loses a game and falls under 100 points, our site automatically tops off their points when the game is concluded, so our players never fall beneath 100 points. Likewise, we have multiple map options, or variants, so that games can start with as few as 2 players and as many as 17. If a student ever needs help recovering their account, they should e-mail <a href='mailto:<?php print Config::$modEMail; ?>' class='light'><?php print Config::$modEMail; ?></a>.
             </p>
          </li>
          <li>
@@ -316,7 +316,7 @@
             <strong>You will never need more than one account.</strong>
             <br>
             <p style="padding-right: 30px">
-               webDiplomacy has games you can play with as few as 2 players and as many as 34. You can always find a way to play on our site regardless of how many of your classmates or friends can play. Likewise, you're given 100 points when you register your account, and you will never fall below 100 points. That is enough for 20 games playing with the minimum 5 point bet. If you bet more, you may win more, and as long as you have enough points to enter a game, you can play as many as you want. As such, there is no reason for you to ever create more than one account. Doing so will result in a permanent ban from webDiplomacy. If you ever forget your password and need help recovering your account, you should <a href='contactUs.php' class='light'>contact us</a> and we will help you.
+               webDiplomacy has games you can play with as few as 2 players and as many as 34. You can always find a way to play on our site regardless of how many of your classmates or friends can play. Likewise, you're given 100 points when you register your account, and you will never fall below 100 points. That is enough for 20 games playing with the minimum 5 point bet. If you bet more, you may win more, and as long as you have enough points to enter a game, you can play as many as you want. As such, there is no reason for you to ever create more than one account. Doing so will result in a permanent ban from webDiplomacy. If you ever forget your password and need help recovering your account, you should e-mail <a href='mailto:<?php print Config::$modEMail; ?>' class='light'><?php print Config::$modEMail; ?></a> and we will help you.
             </p>
          </li>
          <li>

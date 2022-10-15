@@ -25,9 +25,16 @@
 
 require_once('header.php');
 
+header('refresh: 4; url=modforum.php');
+
+libHTML::notice('Redirecting to Mod forum', 'Redirecting you to the moderator forum where you can submit a request to the mod team.');
+
+die();
+
 libHTML::starthtml();
 
 print libHTML::pageTitle(l_t('Contact the Moderators'),l_t('Learn how to contact the moderators and what information to include.'));
+
 
 require_once(l_r('locales/English/contactUs.php'));
 

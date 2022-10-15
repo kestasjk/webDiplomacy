@@ -442,12 +442,24 @@ if( $User->isSilenced() ) {
 }
 else
 {
+	if( isset($_REQUEST['fromGameID']) ) 
+	{
+		// User is posted a thread referencing a game
+		$gameSelection = '<input type="hidden" name="newgameid" value="'.$_REQUEST['fromGameID'].'" /> #'.$_REQUEST['fromGameID'].'<br /><br />';
+	}
+	else
+	{
+		$gameSelection = '<select name="newgameid">';
+		// Let the user choose a game they are in that they are referencing.
+		$tabl = $DB->sql_tabl("SELECT g.id, g.name FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id WHERE m.userID = ".$User->id." AND g.gameOver='No' ORDER BY name");
+		while($row = $DB->tabl_hash($tabl))
+		{
+			$gameSelection .= '<option name="'.$row['id'].'">'.$row['name'].'</option>';
+		}
+		$gameSelection .= '</select><br />';
+	}
 	print '
-	<div class="message-body threadalternate1 postboxadvice">
-		'.l_t('If your post relates to a particular game please include the <strong>URL or ID#</strong>
-		of the game.').'<br />
-		'.l_t('We get a lot of feature requests. If your feature request isn\'t already on our <a href="https://github.com/kestasjk/webDiplomacy/issues">issue tracker</a>, 
-		then the best place to ask is the forum. This will help us gauge support for your ideas, before we add it to the todo list.').'<br />
+	<div class="message-body threadalternate1 postboxadvice"><br />
 		'.l_t('If you are posting a question please <strong>check the <a href="faq.php">FAQ</a></strong> before posting.').'<br />
 		'.l_t('If your message is long you may need to write a summary message, and add the full message as a reply.').'	
 	</div>
@@ -459,6 +471,8 @@ else
 		<div style="text-align:left; width:80%; margin-left:auto; margin-right:auto; float:middle">
 		<strong>Subject:</strong><br />
 		<input style="width:100%" maxLength=2000 size=60 name="newsubject" value="'.$_REQUEST['newsubject'].'"><br /><br />
+		<strong>Game:</strong></br />
+		'.$gameSelection.'
 		<strong>Message:</strong><br />
 		<TEXTAREA NAME="newmessage" ROWS="6" style="width:100%">'.$_REQUEST['newmessage'].'</TEXTAREA>
 		<input type="hidden" name="viewthread" value="0" />

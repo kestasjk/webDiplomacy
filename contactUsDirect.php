@@ -391,8 +391,8 @@ else
     If you have a question about how the game works, please read the <a href="faq.php" class="contactUs">FAQ</a> 
     and the <a href="intro.php" class="contactUs"> intro to webDiplomacy</a> before using this form. </p>
 
-    <p> Need something else? Take a look at our <a href="contactUs.php" class="contactUs">Contact Info</a> 
-    page to learn how to contact an owner and see all the problems moderators can help with!</p>
+    <p> Need something else? Take a look at our <a href="modforum.php" class="contactUs">Moderator forum</a> 
+    page to get in contact with the moderator team!</p>
     
     </div>';
     print '<div class = "contactUsShow">';

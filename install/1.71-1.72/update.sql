@@ -167,3 +167,9 @@ ALTER TABLE `wD_ForceReply` ADD `replyIP` int(10) unsigned NOT NULL;
 ALTER TABLE `wD_Misc` CHANGE COLUMN `Name` `Name` ENUM('Version','Hits','Panic','Notice','Maintenance','LastProcessTime','GamesNew','GamesActive','GamesFinished','RankingPlayers','OnlinePlayers','ActivePlayers','TotalPlayers','ErrorLogs','GamesPaused','GamesOpen','GamesCrashed','LastModAction','ForumThreads','ThreadActiveThreshold','ThreadAliveThreshold','GameFeaturedThreshold','LastGroupUpdate','LastStatsUpdate') NOT NULL;
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastStatsUpdate',0);
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastGroupUpdate',0);
+
+ALTER TABLE wD_AccessLog 
+	ADD INDEX `indBrowserFingerprint` (`browserFingerprint`);
+
+ALTER TABLE `wD_ModForumMessages`
+	ADD COLUMN `gameID` MEDIUMINT UNSIGNED NULL DEFAULT NULL;

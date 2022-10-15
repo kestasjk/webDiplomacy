@@ -41,11 +41,10 @@ print libHTML::pageTitle('Information and Links','Links to pages with more infor
         </p>
     </div>
 
-    <div class = 'help_title'>Contact Information</div>
+    <div class = 'help_title'>Mod forum</div>
     <div class = 'help_content'>
         <p>
-            If you need to contact one of the site owners, or see more about what the moderator team and owners can help you out with, see their 
-            <a href="contactUs.php">Contact Information</a> here!
+            If you need to get in touch with the mod team please submit a message to the <a href="modforum.php">moderator forum</a>!
         </p>
     </div>
 

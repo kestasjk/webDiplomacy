@@ -1043,6 +1043,7 @@ class libHTML
 								<a href="points.php" title="Points and Scoring Systems">Points/Scoring</a>
 								<a href="variants.php" title="Active webDiplomacy variants">Variants</a>
 								<a href="help.php" title="Site information; guides, stats, links">More Info</a>
+								<a href="modforum.php">Mod Forum</a>
 								<a href="contactUsDirect.php">Contact Us</a>
 								<a href="donations.php">Donate</a>
 							</div>

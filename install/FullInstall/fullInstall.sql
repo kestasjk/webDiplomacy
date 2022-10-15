@@ -1314,3 +1314,6 @@ ALTER TABLE `wD_ForceReply` ADD `status` enum('Sent','Read','Replied') NOT NULL 
 ALTER TABLE `wD_ForceReply` ADD `readIP`  int(10) unsigned NOT NULL;
 ALTER TABLE `wD_ForceReply` ADD `readTime` int(10) unsigned NOT NULL;
 ALTER TABLE `wD_ForceReply` ADD `replyIP` int(10) unsigned NOT NULL;
+
+ALTER TABLE wD_AccessLog 
+	ADD INDEX `indBrowserFingerprint` (`browserFingerprint`);

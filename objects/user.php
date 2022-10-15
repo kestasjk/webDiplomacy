@@ -1540,5 +1540,12 @@ class User {
 		$reversed = array_reverse($ghostRatingTrends);
 		return $reversed;
 	}
+
+	public function summaryPanel()
+	{
+		/*
+		
+		*/
+	}
 }
 ?>

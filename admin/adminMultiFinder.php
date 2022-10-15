@@ -34,6 +34,8 @@ $DB->get_lock('gamemaster');
 
 adminMultiCheck::form();
 
+require_once('objects/groupUserToUserLinks.php');
+
 if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 {
 	try
@@ -60,6 +62,27 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 		}
 		else
 		{
+			// Fetch the user record data
+			$bUsers = array();
+			foreach($m->bUserIDs as $bUserID)
+			{
+				try {
+					$bUsers[$bUserID] = new User($bUserID);
+				} catch(Exception $e) {
+					print '<p><strong>'.l_t('%s is an invalid user ID.',$bUserID).'</strong></p>';
+					continue;
+				}
+			}
+
+			// Output the group panel user to user links for this set of users:
+			print '<div>';
+			$uids = $m->bUserIDs;
+			$uids[] = $m->aUserID;
+			$relations = GroupUserToUserLinks::loadFromUserIDs($uids,$uids);
+			$relations->applyUsers($bUsers);
+			print $relations->outputTable();
+			print '</div>';
+			
 			if( isset($_REQUEST['showHistory']) )
 			{
 				$m->printUserTimeprint();
@@ -68,15 +91,8 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 			}
 			else
 			{
-				foreach($m->bUserIDs as $bUserID)
+				foreach($bUsers as $bUser)
 				{
-					try {
-						$bUser = new User($bUserID);
-					} catch(Exception $e) {
-						print '<p><strong>'.l_t('%s is an invalid user ID.',$bUserID).'</strong></p>';
-						continue;
-					}
-
 					$m->compare($bUser);
 				}
 			}
@@ -457,6 +473,11 @@ class adminMultiCheck
 			FROM wD_AccessLog
 			WHERE userID = ".$this->aUserID
 		);
+		$this->aLogsData['browserFingerprints'] = self::sql_list(
+			"SELECT DISTINCT browserFingerprint
+			FROM wD_AccessLog
+			WHERE userID = ".$this->aUserID." AND browserFingerprint IS NOT NULL"
+		);
 
 		// Up until now all aLogsData arrays must be populated
 		foreach($this->aLogsData as $name=>$data)
@@ -631,6 +652,31 @@ class adminMultiCheck
 		}
 	}
 
+	private function compareFingerprintData($bUserID, $bUserTotal)
+	{
+		$aUserTotal = $this->aLogsData['total'];
+		$aUserData = $this->aLogsData['browserFingerprints'];
+
+		$bTally=array();
+		$matches = self::sql_list(
+			"SELECT browserFingerprint, COUNT(browserFingerprint)
+			FROM wD_AccessLog
+			WHERE userID = ".$bUserID." AND browserFingerprint IN ( '".implode("','",$aUserData)."')
+			GROUP BY browserFingerprint", $bTally
+		);
+		if( count($matches) )
+		{
+			$aTally=array();
+			self::sql_list(
+				"SELECT browserFingerprint, COUNT(browserFingerprint)
+				FROM wD_AccessLog
+				WHERE userID = ".$this->aUserID." AND browserFingerprint IN ( '".implode("','",$matches)."' )
+				GROUP BY browserFingerprint", $aTally
+			);
+			self::printDataComparison('BrowserFingerprint', $matches, count($matches), count($aUserData),
+					array('Italy'=>0.1,'Turkey'=>0.2,'Austria'=>0.3), $aTally, $aUserTotal, $bTally, $bUserTotal);
+		}
+	}
 	private function compareUserAgentData($bUserID, $bUserTotal)
 	{
 		$aUserTotal = $this->aLogsData['total'];
@@ -708,6 +754,7 @@ class adminMultiCheck
 		$this->compareIPData($bUser->id, $bUserTotal);
 		$this->compareCookieCodeData($bUser->id, $bUserTotal);
 		$this->compareUserAgentData($bUser->id, $bUserTotal);
+		$this->compareFingerprintData($bUser->id, $bUserTotal);
 		
 		if ( count($this->aLogsData['fullGameIDs']) > 0 )
 			$this->compareGames('All games', $bUser->id, $this->aLogsData['fullGameIDs']);
