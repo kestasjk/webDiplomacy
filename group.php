@@ -295,6 +295,17 @@ function OutputDiscussionThread($groupID, $new)
 {
 	global $DB, $User, $GroupProfile;
 
+	// If we are in gunboat mode we need to ensure players don't see each others' messages so that no-press is preserved
+	$gunboatMode = false;
+	if( $GroupProfile->gameID )
+	{
+		list($pressType) = $DB->sql_row("SELECT pressType FROM wD_Games WHERE id = ". $GroupProfile->gameID);
+		if( $pressType == 'NoPress' && !$User->type['Moderator'] )
+		{
+			$gunboatMode = true;
+		}
+	}
+
 	if( isset($new['messageproblem']) ) $messageproblem = $new['messageproblem'];
 
 ?>
@@ -326,6 +337,8 @@ function OutputDiscussionThread($groupID, $new)
 	list($maxReplyID) = $DB->sql_row("SELECT MAX(id) FROM wD_ForumMessages WHERE toID=".$groupID." AND type='GroupDiscussion'");
 	while($reply = $DB->tabl_hash($replytabl) )
 	{
+		$replyFromModerator = ( strstr($reply['userType'], 'Moderator') !== false );
+
 		$userLink = null;
 		if( $reply['fromUserID'] == $GroupProfile->ownerUserID )
 		{
@@ -369,11 +382,10 @@ function OutputDiscussionThread($groupID, $new)
 		
 		print '</div>';
 
-
 		print '
 			<div class="message-body replyalternate'.$replyswitch.'">
 				<div class="message-contents" fromUserID="'.$reply['fromUserID'].'">
-					'.$reply['message'].'
+					'.(($gunboatMode && !$replyFromModerator) ? '<i>Message only visible to moderators as this is a no-press game</i>' : $reply['message']).'
 				</div>
 			</div>
 
