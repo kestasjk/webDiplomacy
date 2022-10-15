@@ -72,27 +72,28 @@ class libGroup
         global $DB;
         
         $DB->sql_script("
-        -- Step one; find all groups that need their weightings recalculated. These are all users in any group that 
--- have been changed since the last refresh:
+        /* Step one; find all groups that need their weightings recalculated. These are all users in any group that 
+-- have been changed since the last refresh:*/
 
-    -- Set records directly changed to dirty
+    /*-- Set records directly changed to dirty*/
         UPDATE wD_GroupUsers SET isDirty = 1 WHERE timeChanged >= ".$lastUpdated.";
-        --UPDATE wD_GroupUsers SET isDirty = 1 WHERE timeChanged >= 0;
+        /*--UPDATE wD_GroupUsers SET isDirty = 1 WHERE timeChanged >= 0;*/
     
-    -- Set records in the same group as also dirty
+    /*-- Set records in the same group as also dirty*/
         UPDATE wD_GroupUsers dirtyRecords, wD_GroupUsers alsoInGroup
         SET alsoInGroup.isDirty = 1 
         WHERE dirtyRecords.isDirty = 1 
             AND alsoInGroup.isDirty = 0 
             AND dirtyRecords.groupID = alsoInGroup.groupID;
         
-        -- Clear out the aggregation tables that are used to store calculated weightings before being aggregated up
+            /*-- Clear out the aggregation tables that are used to store calculated weightings before being aggregated up
         -- to the user - user level: (This prevents needing to recalc groups linked to groups linked to groups, by keeping
         -- recalcs within individual groups then reapplying the recalced groups to affected users, rather than recalcing every
-        -- group for every affected user)
+        -- group for every affected user)*/
         DELETE FROM wD_GroupSourceJudgeUserWeightings WHERE groupID IN (SELECT DISTINCT groupID FROM wD_GroupUsers WHERE isDirty = 1);
         DELETE FROM wD_GroupSourceJudgeUserToUserWeightings WHERE groupID IN (SELECT DISTINCT groupID FROM wD_GroupUsers WHERE isDirty = 1);
-        -- For the final table we need to delete and refresh the calculations for any user affected, to bring in the calcs from other groups
+        /*-- For the final table we need to delete and refresh the calculations for any user affected, to bring in the calcs from other groups
+        */
         DELETE FROM wD_GroupSourceUserToUserLinks 
         WHERE fromUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
             OR toUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1);
@@ -100,9 +101,10 @@ class libGroup
             WHERE fromUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
                 OR toUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1);
             
-    -- Extract the group structure from a record per user/owner/mod to a record for each weighting for each record, so 
+                /*-- Extract the group structure from a record per user/owner/mod to a record for each weighting for each record, so 
     -- that one user/owner/mod record becomes three records, one for the user, one for the owner, one for the mod, each
     -- as the judge of the group relationship with a weighting, and the type/source of judge they are (user/owner/mod = self/peer/mod)
+    */
         INSERT INTO wD_GroupSourceJudgeUserWeightings (groupID, source, judgeUserID, userID, weighting)
         SELECT groupID, source, judgeUserID, userID, (agree + deny) weighting
         FROM (
@@ -138,21 +140,23 @@ class libGroup
         ) groupJudgeTypeUserWeightings;
       
       
-      -- Now take the judge - user link and apply each weighting in the group to/from each user, so that weightings are on a user - user level within each group.
+        /*-- Now take the judge - user link and apply each weighting in the group to/from each user, so that weightings are on a user - user level within each group.
       -- (The grouping here is probably unnecessary as group logic should prevent one person being added multiple times to one group, but this just makes it clear
       -- that at this point there can't be multiple records for one group-judge-source-fromUser-toUser)
+      */
         INSERT INTO wD_GroupSourceJudgeUserToUserWeightings (groupID, source, judgeUserID, fromUserID, toUserID, toWeighting)
         SELECT a.groupID, a.source, a.judgeUserID, a.userID fromUserID, b.userID toUserID, MAX(b.weighting) toWeighting
         FROM wD_GroupSourceJudgeUserWeightings a
         INNER JOIN wD_GroupSourceJudgeUserWeightings b ON a.groupID = b.groupID AND a.source = b.source AND a.userID <> b.userID
-        -- Ensure we are only reaggregating the dirty groups
+        /*-- Ensure we are only reaggregating the dirty groups*/
         WHERE a.groupID IN (SELECT DISTINCT groupID FROM wD_GroupUsers WHERE isDirty = 1)
         GROUP BY a.groupID, a.judgeUserID, a.source, a.userID, b.userID;
         
-        -- During this operation we aggregate the group/judge calculations so that it's simply a user to user link with a weighting, by the type/source 
+        /*-- During this operation we aggregate the group/judge calculations so that it's simply a user to user link with a weighting, by the type/source 
         -- (self / peer / mod). This also as to take into account that a judge user may have created multiple groups with the same users associations,
         -- and those shouldn't be counted as if it was multiple people creating the associations.
         -- Also during this aggregation we need to aggregate not only the dirty recalculated records but all records for each user being included
+        */
         INSERT INTO wD_GroupSourceUserToUserLinks (source, fromUserID, toUserID, 
             avgPositiveWeighting, maxPositiveWeighting, countPositiveWeighting, 
             avgNegativeWeighting, maxNegativeWeighting, countNegativeWeighting)
@@ -166,7 +170,7 @@ class libGroup
         FROM (
             SELECT a.source, a.fromUserID, a.toUserID, toWeighting
             FROM wD_GroupSourceJudgeUserToUserWeightings a
-            -- At this point we bring in all users 
+            /*-- At this point we bring in all users */
             WHERE a.fromUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
                 OR a.toUserID IN (SELECT DISTINCT userID FROM wD_GroupUsers WHERE isDirty = 1)
         ) x
@@ -209,10 +213,10 @@ class libGroup
         )
     ) s ON s.fromUserID = p.fromUserID AND s.toUserID = p.toUserID;
 
--- Now that the update is done unset the dirty flag
+    /*-- Now that the update is done unset the dirty flag*/
 UPDATE wD_GroupUsers SET isDirty = 0 WHERE isDirty = 1;
 
--- The user to user link info needs to be available for people to see, but one lump of data that contains every link across
+/*-- The user to user link info needs to be available for people to see, but one lump of data that contains every link across
 -- every user would be too big of a dataset, and would grow with time, and querying it out of the DB for every place it should
 -- be seen would be a large extra amount of data extraction where for every user you would need to query all their group links.
 
@@ -221,12 +225,12 @@ UPDATE wD_GroupUsers SET isDirty = 0 WHERE isDirty = 1;
 -- Group data needs to be available for all user-user group links for games, groups, and users, along with fingerprint info,
 -- SMS link info, and Facebook/Google/Apple/Paypal links also. 
 -- It needs to be available server-side just for specific tests, e.g. when a user joins a game that they meet the game criteria.
-/*
 SELECT * FROM wD_GroupSourceJudgeUserWeightings WHERE userID IN (76827, 77129);
 SELECT * FROM wD_GroupSourceJudgeUserToUserWeightings WHERE fromUserID IN (76827, 77129) OR toUserID IN (76827, 77129) ;
 SELECT * FROM wD_GroupSourceUserToUserLinks WHERE fromUserID IN (76827, 77129) OR toUserID IN (76827, 77129) ;
 */
 ");
+        $DB->sql_put("COMMIT");
         
         self::outputJSONGameCache();
     }
@@ -237,7 +241,6 @@ SELECT * FROM wD_GroupSourceUserToUserLinks WHERE fromUserID IN (76827, 77129) O
 	    
 	    return;
 
-        $DB->sql_put("COMMIT");
         //-- Per game-member JSON cache data
         $tabl = $DB->sql_tabl("
             SELECT m2.gameID, m2.countryID, m3.countryID, source, weighting, judgeCount

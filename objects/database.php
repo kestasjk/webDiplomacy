@@ -410,16 +410,16 @@ class Database {
 		if( Config::$debug )
 			$timeStart=microtime(true);
 
-		/* execute multi query */
-		if( !mysqli_multi_query($this->link, $sql) )
-		{
-			trigger_error(mysqli_error($this->link));
+		if(mysqli_multi_query($this->link,$sql)){
+			do{
+				if($result=mysqli_store_result($this->link)){ 
+					mysqli_free_result($result);
+				}
+			} while(mysqli_more_results($this->link) && mysqli_next_result($this->link));
 		}
-
-		do 
-		{
-			$this->putqueries++;
-		} while (mysqli_next_result($this->link));
+		if($error_mess=mysqli_error($this->link)){
+			trigger_error($error_mess);
+		}
 
 		if( Config::$debug )
 			$this->profiler($timeStart, $sql);

@@ -285,7 +285,7 @@ document.getElementById("suspicionToggle").addEventListener("click", function() 
 		if( $this->processStatus == 'Paused' )
 		{
 			$buf .= '<p><strong>Unpause Vote: </strong></br>
-						If all players vote unpause, the game will be unpaused. If a game is stuck paused, email the mods at webdipmod@gmail.com for help.
+						If all players vote unpause, the game will be unpaused. If a game is stuck paused, message the mods via the <a href="modforum.php">Mod forum</a>.
 					</p>';
 		}
 		else
