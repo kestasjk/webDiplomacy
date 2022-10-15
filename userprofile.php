@@ -213,7 +213,7 @@ print '<div class = "profile-show-inside-left">';
 	if ( $UserProfile->type['Moderator'] ||  $UserProfile->type['ForumModerator'] || $UserProfile->type['Admin'] )
 	{
 		print '<li><strong>Mod/Admin team</strong></li>';
-		print '<li>The best way to get moderator assistance is using our built in <a href="contactUsDirect.php">help page</a>. Please do not message
+		print '<li>The best way to get moderator assistance is using our built in <a href="modforum.php">moderator forum</a>. Please do not message
 		moderators directly for help.</li>';
 		print '<li>&nbsp;</li>';
 	}

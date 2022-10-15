@@ -23,6 +23,10 @@ if( !$User->type['User'] )
 	libHTML::error(l_t("This page is only for registered users."));
 }
 
+header('refresh: 4; url=modforum.php');
+
+libHTML::notice('Redirecting to Mod forum', 'Redirecting you to the moderator forum where you can submit a request to the mod team.');
+
 $submitted = false;
 $issueType = '';
 $gamesValid = false;

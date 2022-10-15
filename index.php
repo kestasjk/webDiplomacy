@@ -144,7 +144,7 @@ else
 			latest posts on our forum, a place you can go to ask questions, find high quality games with other players, read Diplomacy advice from 
 			some of the best players in the world, join tournaments, and play some forum games. 
 			<br><br>
-			To reach out to the moderators for help with your account, you can click <a href="contactUsDirect.php" target="_blank">here</a>. 
+			To reach out to the moderators for help with your account, submit a message to the  <a href="modforum.php" target="_blank">moderator forum</a>. 
 			Thank you for joining the site, and have fun!'
 		);
 	

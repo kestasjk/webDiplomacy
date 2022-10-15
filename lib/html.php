@@ -1044,7 +1044,6 @@ class libHTML
 								<a href="variants.php" title="Active webDiplomacy variants">Variants</a>
 								<a href="help.php" title="Site information; guides, stats, links">More Info</a>
 								<a href="modforum.php">Mod Forum</a>
-								<a href="contactUsDirect.php">Contact Us</a>
 								<a href="donations.php">Donate</a>
 							</div>
 						</div>';
@@ -1254,7 +1253,7 @@ class libHTML
 
 			<a href="http://github.com/kestasjk/webDiplomacy" class="light">GitHub Project</a> |
 			<a href="http://github.com/kestasjk/webDiplomacy/issues" class="light">Bug Reports</a> | <a href="mailto:'.Config::$modEMail.'" class="light">Moderator Email</a> |
-			<a href="contactUsDirect.php" class="light">Contact Us Directly</a>';
+			<a href="modforum.php" class="light">Moderator forum</a>';
 	}
 
 	public static $footerScript=array();
