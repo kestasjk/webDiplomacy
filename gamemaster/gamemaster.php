@@ -431,6 +431,287 @@ class libGameMaster
 
 	}
 
+	static public function updateUserConnections($lastUpdate)
+	{
+		global $DB;
+
+		$DB->sql_put("BEGIN");
+
+		$DB->sql_script("
+		INSERT INTO wD_UserConnections (userID)
+SELECT userID
+FROM (
+	SELECT userID, DAYOFWEEK(lastRequest)-1 d, HOUR(lastRequest) h, SUM(hits) c
+	FROM wD_AccessLog
+	WHERE lastRequest >= FROM_UNIXTIME(".$lastUpdate.")
+	GROUP BY userID, DAYOFWEEK(lastRequest), HOUR(lastRequest)
+) rec
+ON DUPLICATE KEY UPDATE  
+	day0hour0  = day0hour0  + IF(d=0 AND h=0 ,c,0),
+	day0hour1  = day0hour1  + IF(d=0 AND h=1 ,c,0),
+	day0hour2  = day0hour2  + IF(d=0 AND h=2 ,c,0),
+	day0hour3  = day0hour3  + IF(d=0 AND h=3 ,c,0),
+	day0hour4  = day0hour4  + IF(d=0 AND h=4 ,c,0),
+	day0hour5  = day0hour5  + IF(d=0 AND h=5 ,c,0),
+	day0hour6  = day0hour6  + IF(d=0 AND h=6 ,c,0),
+	day0hour7  = day0hour7  + IF(d=0 AND h=7 ,c,0),
+	day0hour8  = day0hour8  + IF(d=0 AND h=8 ,c,0),
+	day0hour9  = day0hour9  + IF(d=0 AND h=9 ,c,0),
+	day0hour10 = day0hour10 + IF(d=0 AND h=10,c,0),
+	day0hour11 = day0hour11 + IF(d=0 AND h=11,c,0),
+	day0hour12 = day0hour12 + IF(d=0 AND h=12,c,0),
+	day0hour13 = day0hour13 + IF(d=0 AND h=13,c,0),
+	day0hour14 = day0hour14 + IF(d=0 AND h=14,c,0),
+	day0hour15 = day0hour15 + IF(d=0 AND h=15,c,0),
+	day0hour16 = day0hour16 + IF(d=0 AND h=16,c,0),
+	day0hour17 = day0hour17 + IF(d=0 AND h=17,c,0),
+	day0hour18 = day0hour18 + IF(d=0 AND h=18,c,0),
+	day0hour19 = day0hour19 + IF(d=0 AND h=19,c,0),
+	day0hour20 = day0hour20 + IF(d=0 AND h=20,c,0),
+	day0hour21 = day0hour21 + IF(d=0 AND h=21,c,0),
+	day0hour22 = day0hour22 + IF(d=0 AND h=22,c,0),
+	day0hour23 = day0hour23 + IF(d=0 AND h=23,c,0),
+	day1hour0  = day1hour0  + IF(d=1 AND h=0 ,c,0),
+	day1hour1  = day1hour1  + IF(d=1 AND h=1 ,c,0),
+	day1hour2  = day1hour2  + IF(d=1 AND h=2 ,c,0),
+	day1hour3  = day1hour3  + IF(d=1 AND h=3 ,c,0),
+	day1hour4  = day1hour4  + IF(d=1 AND h=4 ,c,0),
+	day1hour5  = day1hour5  + IF(d=1 AND h=5 ,c,0),
+	day1hour6  = day1hour6  + IF(d=1 AND h=6 ,c,0),
+	day1hour7  = day1hour7  + IF(d=1 AND h=7 ,c,0),
+	day1hour8  = day1hour8  + IF(d=1 AND h=8 ,c,0),
+	day1hour9  = day1hour9  + IF(d=1 AND h=9 ,c,0),
+	day1hour10 = day1hour10 + IF(d=1 AND h=10,c,0),
+	day1hour11 = day1hour11 + IF(d=1 AND h=11,c,0),
+	day1hour12 = day1hour12 + IF(d=1 AND h=12,c,0),
+	day1hour13 = day1hour13 + IF(d=1 AND h=13,c,0),
+	day1hour14 = day1hour14 + IF(d=1 AND h=14,c,0),
+	day1hour15 = day1hour15 + IF(d=1 AND h=15,c,0),
+	day1hour16 = day1hour16 + IF(d=1 AND h=16,c,0),
+	day1hour17 = day1hour17 + IF(d=1 AND h=17,c,0),
+	day1hour18 = day1hour18 + IF(d=1 AND h=18,c,0),
+	day1hour19 = day1hour19 + IF(d=1 AND h=19,c,0),
+	day1hour20 = day1hour20 + IF(d=1 AND h=20,c,0),
+	day1hour21 = day1hour21 + IF(d=1 AND h=21,c,0),
+	day1hour22 = day1hour22 + IF(d=1 AND h=22,c,0),
+	day1hour23 = day1hour23 + IF(d=1 AND h=23,c,0),
+	day2hour0  = day2hour0  + IF(d=2 AND h=0 ,c,0),
+	day2hour1  = day2hour1  + IF(d=2 AND h=1 ,c,0),
+	day2hour2  = day2hour2  + IF(d=2 AND h=2 ,c,0),
+	day2hour3  = day2hour3  + IF(d=2 AND h=3 ,c,0),
+	day2hour4  = day2hour4  + IF(d=2 AND h=4 ,c,0),
+	day2hour5  = day2hour5  + IF(d=2 AND h=5 ,c,0),
+	day2hour6  = day2hour6  + IF(d=2 AND h=6 ,c,0),
+	day2hour7  = day2hour7  + IF(d=2 AND h=7 ,c,0),
+	day2hour8  = day2hour8  + IF(d=2 AND h=8 ,c,0),
+	day2hour9  = day2hour9  + IF(d=2 AND h=9 ,c,0),
+	day2hour10 = day2hour10 + IF(d=2 AND h=10,c,0),
+	day2hour11 = day2hour11 + IF(d=2 AND h=11,c,0),
+	day2hour12 = day2hour12 + IF(d=2 AND h=12,c,0),
+	day2hour13 = day2hour13 + IF(d=2 AND h=13,c,0),
+	day2hour14 = day2hour14 + IF(d=2 AND h=14,c,0),
+	day2hour15 = day2hour15 + IF(d=2 AND h=15,c,0),
+	day2hour16 = day2hour16 + IF(d=2 AND h=16,c,0),
+	day2hour17 = day2hour17 + IF(d=2 AND h=17,c,0),
+	day2hour18 = day2hour18 + IF(d=2 AND h=18,c,0),
+	day2hour19 = day2hour19 + IF(d=2 AND h=19,c,0),
+	day2hour20 = day2hour20 + IF(d=2 AND h=20,c,0),
+	day2hour21 = day2hour21 + IF(d=2 AND h=21,c,0),
+	day2hour22 = day2hour22 + IF(d=2 AND h=22,c,0),
+	day2hour23 = day2hour23 + IF(d=2 AND h=23,c,0),
+	day3hour0  = day3hour0  + IF(d=3 AND h=0 ,c,0),
+	day3hour1  = day3hour1  + IF(d=3 AND h=1 ,c,0),
+	day3hour2  = day3hour2  + IF(d=3 AND h=2 ,c,0),
+	day3hour3  = day3hour3  + IF(d=3 AND h=3 ,c,0),
+	day3hour4  = day3hour4  + IF(d=3 AND h=4 ,c,0),
+	day3hour5  = day3hour5  + IF(d=3 AND h=5 ,c,0),
+	day3hour6  = day3hour6  + IF(d=3 AND h=6 ,c,0),
+	day3hour7  = day3hour7  + IF(d=3 AND h=7 ,c,0),
+	day3hour8  = day3hour8  + IF(d=3 AND h=8 ,c,0),
+	day3hour9  = day3hour9  + IF(d=3 AND h=9 ,c,0),
+	day3hour10 = day3hour10 + IF(d=3 AND h=10,c,0),
+	day3hour11 = day3hour11 + IF(d=3 AND h=11,c,0),
+	day3hour12 = day3hour12 + IF(d=3 AND h=12,c,0),
+	day3hour13 = day3hour13 + IF(d=3 AND h=13,c,0),
+	day3hour14 = day3hour14 + IF(d=3 AND h=14,c,0),
+	day3hour15 = day3hour15 + IF(d=3 AND h=15,c,0),
+	day3hour16 = day3hour16 + IF(d=3 AND h=16,c,0),
+	day3hour17 = day3hour17 + IF(d=3 AND h=17,c,0),
+	day3hour18 = day3hour18 + IF(d=3 AND h=18,c,0),
+	day3hour19 = day3hour19 + IF(d=3 AND h=19,c,0),
+	day3hour20 = day3hour20 + IF(d=3 AND h=20,c,0),
+	day3hour21 = day3hour21 + IF(d=3 AND h=21,c,0),
+	day3hour22 = day3hour22 + IF(d=3 AND h=22,c,0),
+	day3hour23 = day3hour23 + IF(d=3 AND h=23,c,0),
+	day4hour0  = day4hour0  + IF(d=4 AND h=0 ,c,0),
+	day4hour1  = day4hour1  + IF(d=4 AND h=1 ,c,0),
+	day4hour2  = day4hour2  + IF(d=4 AND h=2 ,c,0),
+	day4hour3  = day4hour3  + IF(d=4 AND h=3 ,c,0),
+	day4hour4  = day4hour4  + IF(d=4 AND h=4 ,c,0),
+	day4hour5  = day4hour5  + IF(d=4 AND h=5 ,c,0),
+	day4hour6  = day4hour6  + IF(d=4 AND h=6 ,c,0),
+	day4hour7  = day4hour7  + IF(d=4 AND h=7 ,c,0),
+	day4hour8  = day4hour8  + IF(d=4 AND h=8 ,c,0),
+	day4hour9  = day4hour9  + IF(d=4 AND h=9 ,c,0),
+	day4hour10 = day4hour10 + IF(d=4 AND h=10,c,0),
+	day4hour11 = day4hour11 + IF(d=4 AND h=11,c,0),
+	day4hour12 = day4hour12 + IF(d=4 AND h=12,c,0),
+	day4hour13 = day4hour13 + IF(d=4 AND h=13,c,0),
+	day4hour14 = day4hour14 + IF(d=4 AND h=14,c,0),
+	day4hour15 = day4hour15 + IF(d=4 AND h=15,c,0),
+	day4hour16 = day4hour16 + IF(d=4 AND h=16,c,0),
+	day4hour17 = day4hour17 + IF(d=4 AND h=17,c,0),
+	day4hour18 = day4hour18 + IF(d=4 AND h=18,c,0),
+	day4hour19 = day4hour19 + IF(d=4 AND h=19,c,0),
+	day4hour20 = day4hour20 + IF(d=4 AND h=20,c,0),
+	day4hour21 = day4hour21 + IF(d=4 AND h=21,c,0),
+	day4hour22 = day4hour22 + IF(d=4 AND h=22,c,0),
+	day4hour23 = day4hour23 + IF(d=4 AND h=23,c,0),
+	day5hour0  = day5hour0  + IF(d=5 AND h=0 ,c,0),
+	day5hour1  = day5hour1  + IF(d=5 AND h=1 ,c,0),
+	day5hour2  = day5hour2  + IF(d=5 AND h=2 ,c,0),
+	day5hour3  = day5hour3  + IF(d=5 AND h=3 ,c,0),
+	day5hour4  = day5hour4  + IF(d=5 AND h=4 ,c,0),
+	day5hour5  = day5hour5  + IF(d=5 AND h=5 ,c,0),
+	day5hour6  = day5hour6  + IF(d=5 AND h=6 ,c,0),
+	day5hour7  = day5hour7  + IF(d=5 AND h=7 ,c,0),
+	day5hour8  = day5hour8  + IF(d=5 AND h=8 ,c,0),
+	day5hour9  = day5hour9  + IF(d=5 AND h=9 ,c,0),
+	day5hour10 = day5hour10 + IF(d=5 AND h=10,c,0),
+	day5hour11 = day5hour11 + IF(d=5 AND h=11,c,0),
+	day5hour12 = day5hour12 + IF(d=5 AND h=12,c,0),
+	day5hour13 = day5hour13 + IF(d=5 AND h=13,c,0),
+	day5hour14 = day5hour14 + IF(d=5 AND h=14,c,0),
+	day5hour15 = day5hour15 + IF(d=5 AND h=15,c,0),
+	day5hour16 = day5hour16 + IF(d=5 AND h=16,c,0),
+	day5hour17 = day5hour17 + IF(d=5 AND h=17,c,0),
+	day5hour18 = day5hour18 + IF(d=5 AND h=18,c,0),
+	day5hour19 = day5hour19 + IF(d=5 AND h=19,c,0),
+	day5hour20 = day5hour20 + IF(d=5 AND h=20,c,0),
+	day5hour21 = day5hour21 + IF(d=5 AND h=21,c,0),
+	day5hour22 = day5hour22 + IF(d=5 AND h=22,c,0),
+	day5hour23 = day5hour23 + IF(d=5 AND h=23,c,0),
+	day6hour0  = day6hour0  + IF(d=6 AND h=0 ,c,0),
+	day6hour1  = day6hour1  + IF(d=6 AND h=1 ,c,0),
+	day6hour2  = day6hour2  + IF(d=6 AND h=2 ,c,0),
+	day6hour3  = day6hour3  + IF(d=6 AND h=3 ,c,0),
+	day6hour4  = day6hour4  + IF(d=6 AND h=4 ,c,0),
+	day6hour5  = day6hour5  + IF(d=6 AND h=5 ,c,0),
+	day6hour6  = day6hour6  + IF(d=6 AND h=6 ,c,0),
+	day6hour7  = day6hour7  + IF(d=6 AND h=7 ,c,0),
+	day6hour8  = day6hour8  + IF(d=6 AND h=8 ,c,0),
+	day6hour9  = day6hour9  + IF(d=6 AND h=9 ,c,0),
+	day6hour10 = day6hour10 + IF(d=6 AND h=10,c,0),
+	day6hour11 = day6hour11 + IF(d=6 AND h=11,c,0),
+	day6hour12 = day6hour12 + IF(d=6 AND h=12,c,0),
+	day6hour13 = day6hour13 + IF(d=6 AND h=13,c,0),
+	day6hour14 = day6hour14 + IF(d=6 AND h=14,c,0),
+	day6hour15 = day6hour15 + IF(d=6 AND h=15,c,0),
+	day6hour16 = day6hour16 + IF(d=6 AND h=16,c,0),
+	day6hour17 = day6hour17 + IF(d=6 AND h=17,c,0),
+	day6hour18 = day6hour18 + IF(d=6 AND h=18,c,0),
+	day6hour19 = day6hour19 + IF(d=6 AND h=19,c,0),
+	day6hour20 = day6hour20 + IF(d=6 AND h=20,c,0),
+	day6hour21 = day6hour21 + IF(d=6 AND h=21,c,0),
+	day6hour22 = day6hour22 + IF(d=6 AND h=22,c,0),
+	day6hour23 = day6hour23 + IF(d=6 AND h=23,c,0),
+	totalHits = totalHits + c
+	;
+	
+	INSERT INTO wD_UserConnections (userID)
+	SELECT DISTINCT u.userID 
+	FROM wD_UserCodeConnections u
+	LEFT JOIN wD_UserConnections c ON c.userID = u.userID
+	WHERE u.isNew = 1 AND c.userID IS NULL;
+
+		INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
+SELECT userID, type, code , earliestRequest, latestRequest, requestCount
+FROM (
+	SELECT userID, 'Cookie' type, CAST(cookieCode AS BINARY) code, MIN(lastRequest) earliestRequest, MAX(lastRequest) latestRequest, SUM(hits) requestCount
+	FROM wD_AccessLog
+	WHERE lastRequest >= FROM_UNIXTIME(".$lastUpdate.")
+	GROUP BY userID, cookieCode
+) r
+ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
+
+INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
+SELECT userID, type, code , earliestRequest, latestRequest, requestCount
+FROM (
+	SELECT userID, 'IP' type, ip code, MIN(lastRequest) earliestRequest, MAX(lastRequest) latestRequest, SUM(hits) requestCount
+	FROM wD_AccessLog
+	WHERE lastRequest >= FROM_UNIXTIME(".$lastUpdate.")
+	GROUP BY userID, ip
+) r
+ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
+
+INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
+SELECT userID, type, code , earliestRequest, latestRequest, requestCount
+FROM (
+	SELECT userID, 'Fingerprint' type, browserFingerprint code, MIN(lastRequest) earliestRequest, MAX(lastRequest) latestRequest, SUM(hits) requestCount
+	FROM wD_AccessLog
+	WHERE lastRequest >= FROM_UNIXTIME(".$lastUpdate.")
+	WHERE browserFingerprint IS NOT NULL AND browserFingerprint <> 0
+	GROUP BY userID, browserFingerprint
+) r
+ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
+
+INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
+SELECT userID, type, code , earliestRequest, latestRequest, requestCount
+FROM (
+	SELECT linkedId userId, 'FingerprintPro' type, 
+		FROM_BASE64(visitorId) code, FROM_UNIXTIME(CAST(LEFT(requestId,10) AS INT)) earliestRequest, 
+		FROM_UNIXTIME(CAST(LEFT(requestId,10) AS INT)) latestRequest, 
+		1 requestCount
+ 	FROM wD_FingerprintProRequests f
+	 WHERE CAST(LEFT(requestId,10) AS INT) >= FROM_UNIXTIME(".$lastUpdate.")
+) r
+ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
+
+
+UPDATE wD_UserConnections uc
+INNER JOIN (
+	SELECT a.userID, a.type, COUNT(*) matches
+	FROM wD_UserCodeConnections a
+	INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
+  WHERE a.type = 'IP'
+	GROUP BY a.userID, a.type
+) rec ON rec.userID = uc.userId
+SET countMatchedIPUsers = countMatchedIPUsers + rec.matches;
+UPDATE wD_UserConnections uc
+INNER JOIN (
+	SELECT a.userID, a.type, COUNT(*) matches
+	FROM wD_UserCodeConnections a
+	INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
+  WHERE a.type = 'Cookie'
+	GROUP BY a.userID, a.type
+) rec ON rec.userID = uc.userId
+SET countMatchedCookieUsers = countMatchedCookieUsers + rec.matches;
+UPDATE wD_UserConnections uc
+INNER JOIN (
+	SELECT a.userID, a.type, COUNT(*) matches
+	FROM wD_UserCodeConnections a
+	INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
+  WHERE a.type = 'Fingerprint'
+	GROUP BY a.userID, a.type
+) rec ON rec.userID = uc.userId
+SET countMatchedFingerprintUsers = countMatchedFingerprintUsers + rec.matches;
+UPDATE wD_UserConnections uc
+INNER JOIN (
+	SELECT a.userID, a.type, COUNT(*) matches
+	FROM wD_UserCodeConnections a
+	INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
+  WHERE a.type = 'FingerprintPro'
+	GROUP BY a.userID, a.type
+) rec ON rec.userID = uc.userId
+SET countMatchedFingerprintProUsers = countMatchedFingerprintProUsers + rec.matches;
+
+
+UPDATE wD_UserCodeConnections SET isNew = 0 WHERE isNew = 1;
+		");
+
+		$DB->sql_put("COMMIT");
+	}
+
 	// Finds and processes all games where all playing members excluding bots have voted for something
 	static public function findAndApplyGameVotes()
 	{
