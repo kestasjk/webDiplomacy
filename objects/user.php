@@ -897,8 +897,8 @@ class User {
 			}
 		}
 		$DB->sql_put("INSERT INTO wD_Sessions (userID, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint)
-					VALUES (".$this->id.",CURRENT_TIMESTAMP,1, INET_ATON('".$ip."'),
-							UNHEX('".$userAgentHash."'), ".$cookieCode.", '".$browserFingerprint."' )
+					VALUES (".$this->id.",CURRENT_TIMESTAMP,1, CAST(INET_ATON('".$ip."') as binary),
+							UNHEX('".$userAgentHash."'), ".$cookieCode.", UNHEX('".$browserFingerprint."') )
 					ON DUPLICATE KEY UPDATE hits=hits+1");
 
 		$this->online = true;
