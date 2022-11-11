@@ -456,7 +456,7 @@ class adminMultiCheck
 		$this->aLogsData = array();
 
 		$this->aLogsData['IPs'] = self::sql_list(
-			"SELECT ip, COUNT(ip)
+			"SELECT HEX(ip) ip, COUNT(ip)
 			FROM wD_AccessLog
 			WHERE userID = ".$this->aUserID."
 			GROUP BY ip"
