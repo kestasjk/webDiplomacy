@@ -355,7 +355,7 @@ class adminMultiCheck
 					AND NOT a.userID = ".$this->aUserID."
 					AND (
 						a.cookieCode IN ( ".implode(',',$this->aLogsData['cookieCodes'])." )
-						OR a.ip IN ( ".implode(',',$this->aLogsData['IPs'])." )
+						OR HEX(a.ip) IN ( ".implode(',',$this->aLogsData['IPs'])." )
 					)"
 				);
 		}
@@ -367,7 +367,7 @@ class adminMultiCheck
 				WHERE NOT userID = ".$this->aUserID."
 					AND (
 						cookieCode IN ( ".implode(',',$this->aLogsData['cookieCodes'])." )
-						OR ip IN ( ".implode(',',$this->aLogsData['IPs'])." )
+						OR HEX(ip) IN ( ".implode(',',$this->aLogsData['IPs'])." )
 					)"
 				);
 		}
