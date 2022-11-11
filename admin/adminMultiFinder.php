@@ -607,18 +607,18 @@ class adminMultiCheck
 
 		$bTally=array();
 		$matches = self::sql_list(
-			"SELECT ip, COUNT(ip)
+			"SELECT HEX(ip) ip, COUNT(ip)
 			FROM wD_AccessLog
-			WHERE userID = ".$bUserID." AND ip IN ( ".implode(',',$aUserData)." )
+			WHERE userID = ".$bUserID." AND HEX(ip) IN ( ".implode(',',$aUserData)." )
 			GROUP BY ip", $bTally
 		);
 		if( count($matches) )
 		{
 			$aTally=array();
 			self::sql_list(
-				"SELECT ip, COUNT(ip)
+				"SELECT HEX(ip) ip, COUNT(ip)
 				FROM wD_AccessLog
-				WHERE userID = ".$this->aUserID." AND ip IN ( ".implode(',',$matches)." )
+				WHERE userID = ".$this->aUserID." AND HEX(ip) IN ( ".implode(',',$matches)." )
 				GROUP BY ip", $aTally
 			);
 			self::printDataComparison('IPs', $matches, count($matches), count($aUserData),
