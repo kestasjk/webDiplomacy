@@ -260,7 +260,7 @@ class libGameMaster
 					u.missedPhasesTotalLastWeek = u.missedPhasesTotalLastWeek + changedPhases.totalNew,
 					u.isPhasesDirty = 1;");
 			// Set new missed turns to the week (3)
-			$DB->sql_put("UPDATE wD_MissedTurns turns SET turns.reliabilityPeriod = 3 WHERE turns.reliabilityPeriod = NULL;");
+			$DB->sql_put("UPDATE wD_MissedTurns turns SET turns.reliabilityPeriod = 3 WHERE turns.reliabilityPeriod IS NULL;");
 
 			$DB->sql_put("COMMIT"); // Ensure no users are left locked
 			$DB->sql_put("BEGIN"); // I think this might be needed to ensure we are within a transaction going forward?
@@ -296,7 +296,7 @@ class libGameMaster
 					u.missedPhasesTotalLastMonth = u.missedPhasesTotalLastMonth + changedPhases.totalNew,
 					u.isPhasesDirty = 1;");
 			// Set new missed turns to the month (2)
-			$DB->sql_put("UPDATE wD_MissedTurns turns SET turns.reliabilityPeriod = 2 WHERE turns.reliabilityPeriod = NULL;");
+			$DB->sql_put("UPDATE wD_MissedTurns turns SET turns.reliabilityPeriod = 2 WHERE turns.reliabilityPeriod IS NULL;");
 
 			$DB->sql_put("COMMIT"); // Ensure no users are left locked
 			$DB->sql_put("BEGIN"); // I think this might be needed to ensure we are within a transaction going forward?
@@ -332,7 +332,7 @@ class libGameMaster
 					u.missedPhasesTotalLastYear = u.missedPhasesTotalLastYear + changedPhases.totalNew,
 					u.isPhasesDirty = 1;");
 			// Set new missed turns to the year (1)
-			$DB->sql_put("UPDATE wD_MissedTurns turns SET turns.reliabilityPeriod = 1 WHERE turns.reliabilityPeriod = NULL;");
+			$DB->sql_put("UPDATE wD_MissedTurns turns SET turns.reliabilityPeriod = 1 WHERE turns.reliabilityPeriod IS NULL;");
 
 			$DB->sql_put("COMMIT"); // Ensure no users are left locked
 			$DB->sql_put("BEGIN"); // I think this might be needed to ensure we are within a transaction going forward?
@@ -365,7 +365,7 @@ class libGameMaster
 					u.missedPhasesTotalLastYear = u.missedPhasesTotalLastYear - changedPhases.totalNew,
 					u.isPhasesDirty = 1;");
 			// Set new missed turns to expired (0)
-			$DB->sql_put("UPDATE wD_MissedTurns turns SET turns.reliabilityPeriod = 0 WHERE turns.reliabilityPeriod = NULL;");
+			$DB->sql_put("UPDATE wD_MissedTurns turns SET turns.reliabilityPeriod = 0 WHERE turns.reliabilityPeriod IS NULL;");
 			
 		}
 		$DB->sql_put("COMMIT"); // Ensure no users are left locked
