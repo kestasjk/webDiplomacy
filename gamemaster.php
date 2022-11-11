@@ -142,10 +142,16 @@ if ( ( time() - $Misc->LastProcessTime ) > Config::$downtimeTriggerMinutes*60 )
 
 if( (time() - $Misc->LastGroupUpdate) > 1*60 )
 {
+	$groupUpdateTime = time();
 	// Update the user group calculations
 	require_once('lib/group.php');
 	libGroup::generateGameRelationCache($Misc->LastGroupUpdate);	
-	$Misc->LastGroupUpdate = time();
+
+	// Update the user connections
+	print l_t('Updating user connection stats').'<br />';
+	libGameMaster::updateUserConnections($Misc->LastGroupUpdate);
+
+	$Misc->LastGroupUpdate = $groupUpdateTime;
 }
 
 // Disable transactions while updating reliability ratings:
