@@ -673,7 +673,7 @@ FROM (
   FROM_UNIXTIME(CAST(LEFT(requestId,10) AS INT)) latestRequest, 
   1 requestCount
   FROM wD_FingerprintProRequests f
-  WHERE CAST(LEFT(requestId,10) AS INT) >= FROM_UNIXTIME(".$lastUpdate.")
+  WHERE CAST(LEFT(requestId,10) AS INT) >= ".$lastUpdate."
 ) r
 ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
 
