@@ -161,6 +161,9 @@ $DB->disableTransactions();
 print l_t('Updating user phase/year counts and reliability ratings').'<br />';
 libGameMaster::updateReliabilityRatings();
 
+print l_t('Updating game message stats').'<br />';
+libGameMaster::updateGameMessageStats();
+
 $DB->enableTransactions();
 $DB->sql_put("BEGIN");
 

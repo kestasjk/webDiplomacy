@@ -70,8 +70,8 @@ class libGameMaster
 
 			// Save access logs, to detect multi-accounters
 			$DB->sql_put("INSERT INTO wD_AccessLog
-				( userID, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint )
-				SELECT userID, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint
+				( userID, firstRequest, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint )
+				SELECT userID, firstRequest, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint
 				FROM wD_Sessions
 				WHERE userID IN (".$userIDs.")");
 
@@ -751,6 +751,53 @@ UPDATE wD_UserCodeConnections SET isNew = 0 WHERE isNew = 1;
 		$DB->sql_put("COMMIT");
 	}
 
+	static public function updateGameMessageStats()
+	{
+		global $Misc, $DB;
+
+		list($lastMessageID) = $DB->sql_row("SELECT MAX(id) FROM wD_GameMessages");
+
+		if( $lastMessageID > ( $Misc->LastMessageID + 100 ) )
+		{
+			// If there are more than 100 messages to process merge these new messages into the user connection stats
+			$DB->sql_put("COMMIT");
+			$DB->sql_put("BEGIN");
+			$DB->sql_script("
+DROP TABLE IF EXISTS wD_Tmp_MessageCount;
+
+CREATE TABLE wD_Tmp_MessageCount
+  SELECT m1.userID userID, m2.userID code, FROM_UNIXTIME(MIN(timeSent)) earliestM, FROM_UNIXTIME(MAX(timeSent))  latestM, SUM(CHAR_LENGTH(g.message) ) countMLen, COUNT(*) countM
+  FROM wD_GameMessages g
+  INNER JOIN wD_Members m1 ON m1.gameID = g.gameID AND m1.countryID = g.fromCountryID
+  INNER JOIN wD_Members m2 ON m2.gameID = g.gameID AND m2.countryID = g.toCountryID
+  WHERE g.id > ".$Misc->LastMessageID." AND g.id <= ".$lastMessageID."
+  GROUP BY m1.userID, m2.userID;
+
+INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
+SELECT userID, 'MessageLength' type, code , earliestM, latestM, countM
+FROM wD_Tmp_MessageCount r
+ON DUPLICATE KEY UPDATE latest=greatest(r.latestM, latest), count=count+r.countM;
+
+INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
+SELECT userID, 'MessageCount' type, code , earliestM, latestM, countM
+FROM wD_Tmp_MessageCount r
+ON DUPLICATE KEY UPDATE latest=greatest(r.latestM, latest), count=count+r.countM;
+
+INSERT INTO wD_UserConnections (userID, gameMessageCount, gameMessageLength)
+SELECT userID, countM, countMLen
+FROM (
+SELECT userID, SUM(countMLen) countMLen, SUM(countM) countM
+FROM wD_Tmp_MessageCount
+GROUP BY userID
+) r
+ON DUPLICATE KEY UPDATE gameMessageCount=gameMessageCount + countM, gameMessageLength=gameMessageLength+countMLen;
+");
+			$Misc->LastMessageID = $lastMessageID;
+			$Misc->write();
+			$DB->sql_put("COMMIT");
+			$DB->sql_put("BEGIN");
+		}
+	}
 	// Finds and processes all games where all playing members excluding bots have voted for something
 	static public function findAndApplyGameVotes()
 	{

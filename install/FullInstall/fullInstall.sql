@@ -1971,5 +1971,19 @@ ON DUPLICATE KEY UPDATE
 	day6hour21 = day6hour21 + IF(d=6 AND h=21,c,0),
 	day6hour22 = day6hour22 + IF(d=6 AND h=22,c,0),
 	day6hour23 = day6hour23 + IF(d=6 AND h=23,c,0),
-  totalHits = totalHits + c
+ 	totalHits = totalHits + c
 	;
+
+ALTER TABLE `wD_Sessions` ADD COLUMN `firstRequest` TIMESTAMP NOT NULL DEFAULT current_timestamp() AFTER `lastRequest`;
+ALTER TABLE `wD_AccessLog` ADD COLUMN `firstRequest` TIMESTAMP NOT NULL DEFAULT current_timestamp() AFTER `lastRequest`;
+UPDATE wD_AccessLog SET firstRequest = lastRequest;
+
+ALTER TABLE `wD_Misc` CHANGE COLUMN `Name` `Name` ENUM('Version','Hits','Panic','Notice','Maintenance','LastProcessTime','GamesNew','GamesActive','GamesFinished','RankingPlayers','OnlinePlayers','ActivePlayers','TotalPlayers','ErrorLogs','GamesPaused','GamesOpen','GamesCrashed','LastModAction','ForumThreads','ThreadActiveThreshold','ThreadAliveThreshold','GameFeaturedThreshold','LastGroupUpdate','LastStatsUpdate','LastMessageID') NOT NULL COLLATE 'utf8mb3_general_ci' FIRST;
+INSERT INTO wD_Misc (Name,value) VALUES ('LastMessageID', 0);
+
+ALTER TABLE `wD_UserConnections`
+ADD COLUMN `gameMessageCount` INT(11) NOT NULL DEFAULT '0' AFTER `totalHits`,
+ADD COLUMN `gameMessageLength` INT(11) NOT NULL DEFAULT '0' AFTER `gameMessageCount`;
+
+ALTER TABLE `wD_UserCodeConnections`
+CHANGE COLUMN `type` `type` ENUM('Cookie','IP','Fingerprint','FingerprintPro','MessageCount','MessageLength') NOT NULL COLLATE 'utf8mb4_unicode_ci' AFTER `userID`;
