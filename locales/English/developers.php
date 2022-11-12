@@ -41,8 +41,8 @@ and our code <a href="https://github.com/kestasjk/webDiplomacy">here</a></p>
 
 <p>If you're familiar with github, you're welcome to submit a bug report in our issue tracker. Please be as detailed as possible, 
     and include steps to reproduce the bug, what happens, and what you expect to happen instead. If you don't want to use github, 
-    you can also email bug reports to <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>">
-         <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a>.</p>                                                                                                                                                                                                     
+    please lodge a request in the <a href="modforum.php">moderator forum</a>.
+</p>                                                                                                                                                                                                     
 
 <h3>Code contributions</h3> 
 
@@ -63,8 +63,7 @@ and our code <a href="https://github.com/kestasjk/webDiplomacy">here</a></p>
 <li>The github issue number that this pull request is a fix for if applicable</li>
 </ul>
 
-<p>Any questions, please email <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" >
-         <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a>, and a member of the dev team will answer.</p>
+<p>Any questions, please use the <a href="modforum.php">moderator forum</a> or contact us via GitHub, and a member of the dev team will answer.</p>
 
 <h3>Code links</h3> 
 <p><a href="https://github.com/kestasjk/webDiplomacy" class="light">github.com/kestasjk/webDiplomacy</a> - the code</p>

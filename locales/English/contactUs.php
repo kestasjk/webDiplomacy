@@ -20,7 +20,8 @@
         <h4>Where to send</h4>
         <ul>
             <li>
-                Email the moderators at <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">
+                If you are able to log into your account please use the <a href="modforum.php">moderator forum</a> to ask for help. Otherwise for help logging in 
+                email the moderators at <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">
                 <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a>, not their personal addresses.<br />
                 A Co-Owner can be contacted at <a href="mailto:<?php print Config::$adminEMail; ?>" class="light"><?php print Config::$adminEMail; ?></a>, if you want to appeal an admin or mod decision.</a>
             </li>
@@ -33,7 +34,7 @@
             <li>If making a game request (e.g for a pause or unpause):</li>
             <ul>
                 <li>
-                Please provide a link to your game or the game name (spelled correctly!)
+                    Use the "Need help?" button in the game board, underneath the map and order entry section.
                 </li>
                 <li>
                     Please explain why you need a pause, how long you need it for, and the urgency. 
@@ -43,10 +44,7 @@
                 If reporting a cheater:
                 <ul>
                 <li>
-                    Links to the accounts of the players who you suspect.
-                </li>
-                <li>
-                    Link(s) to any specific game(s) that raised your suspicions.
+                    Use the "Lodge cheating suspicion" button in the game board, underneath the map and order entry section, next to "Need help?"
                 </li>
                 </ul>
             </li>

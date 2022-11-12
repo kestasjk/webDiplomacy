@@ -10,8 +10,7 @@
       <ul>
          <li>No more than 14 players (exceptions being variants like world and chaos)</li>
          <li>May require shuffling players by the moderator team</li>
-         <li>Must email <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">
-            <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a> for quick approval, this email should include participants, pause agreements (if any), end game requirements (if any), and alteration to press rules (if any).
+         <li>Must contact us via the <a href="modforum.php">moderator forum</a> for quick approval, this email should include participants, pause agreements (if any), end game requirements (if any), and alteration to press rules (if any).
          </li>
       </ul>
       <h4>2. Tournaments</h4>
@@ -33,8 +32,7 @@
          <li>As with all mod/admin decisions if you disagree with a TD's decision you can appeal it directly to an admin or owner. See below for the mod/admin contact details.</li>
          <li>All tournaments will be assigned a prize payout pool by the moderator team scaled to the size and type of tournament being run.</li>
       </ul>
-      <p>Please e-mail the mod/admin team at <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">
-         <?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a> if you want to start a tournament (see the contact details below), and you will be asked to fill out an application form that will help us set the tournament up.
+      <p>Please contact the mod/admin team via the <a href="modforum.php">moderator forum</a> if you want to start a tournament (see the contact details below), and you will be asked to fill out an application form that will help us set the tournament up.
       </p>
    </div>
 </div>

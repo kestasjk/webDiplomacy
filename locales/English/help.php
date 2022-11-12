@@ -41,7 +41,7 @@ print libHTML::pageTitle('Information and Links','Links to pages with more infor
         </p>
     </div>
 
-    <div class = 'help_title'>Mod forum</div>
+    <div class = 'help_title'>Get Help - Mod forum</div>
     <div class = 'help_content'>
         <p>
             If you need to get in touch with the mod team please submit a message to the <a href="modforum.php">moderator forum</a>!
@@ -106,8 +106,7 @@ print libHTML::pageTitle('Information and Links','Links to pages with more infor
         </p>
     </div>
 
-<p>Didn't find the help or information you were looking for? Post a message in the <a href="contrib/phpBB3/" class="light">forum</a>, or contact the moderators at <a href="mailto:<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?>" class="light">
-<?php print (isset(Config::$modEMail) ? Config::$modEMail : Config::$adminEMail); ?></a>.</p>
+<p>Didn't find the help or information you were looking for? Post a message in the <a href="contrib/phpBB3/" class="light">forum</a>, or contact the moderators in the <a href="modforum.php">moderator forum</a>.</p>
 
 </div>
 

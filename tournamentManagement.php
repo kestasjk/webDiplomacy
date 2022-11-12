@@ -440,7 +440,7 @@ else
         }
         catch(Exception $e)
         {
-            print '<div class="contactUs"> Sorry, but there was a problem making this tournament, contact the moderator team at '.Config::$modEMail;
+            print '<div class="contactUs"> Sorry, but there was a problem making this tournament, contact the moderator team in the <a href="modforum.php">moderator forum</a>';
             print '<p class="contactUs">'.$e->getMessage().'</p>';
             print '</div>';
             $worked = false;
@@ -464,7 +464,7 @@ else
         }
         catch(Exception $e)
         {
-            print '<div class="contactUs"> Sorry, but there was a problem making this tournament, contact the moderator team at '.Config::$modEMail;
+            print '<div class="contactUs"> Sorry, but there was a problem making this tournament, contact the moderator team in the <a href="modforum.php">moderator forum</a>';
             print '<p class="contactUs">'.$e->getMessage().'</p>';
             print '</div>';
             $worked = false;

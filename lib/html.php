@@ -611,7 +611,7 @@ class libHTML
 				print '<div class="content-notice">
 					<p class="notice"><br>You are blocked from joining, rejoining, or creating new games by the moderators for '.libTime::remainingText($User->tempBan).
 					 ' for the following reason:</br> '.$User->tempBanReason.' </br>
-					Contact the moderators at '.Config::$modEMail.' for help. If you attempt to get around this temp ban 
+					Contact the moderators in the <a href="modforum.php">moderator forum</a> for help. If you attempt to get around this temp ban 
 					by making a new account your accounts will be banned with no chance for appeal.<br><br></p>
 				</div>';
 			}
@@ -619,7 +619,7 @@ class libHTML
 			{
 				print '<div class="content-notice">
 					<p class="notice"><br>You are blocked from joining, rejoining, or creating new games for a year because you were too unreliable. 
-					Contact the moderators at '.Config::$modEMail.' for help. If you attempt to get around this temp ban 
+					Contact the moderators in the <a href="modforum.php">moderator forum</a> for help. If you attempt to get around this temp ban 
 					by making a new account your accounts will be banned with no chance for appeal.<br><br></p>
 				</div>';
 			}
@@ -627,7 +627,7 @@ class libHTML
 			{
 				print '<div class="content-notice">
 						<p class="notice"><br>You are blocked from joining, rejoining, or creating new games for '.libTime::remainingText($User->tempBan).
-						' because you were too unreliable. Contact the moderators at '.Config::$modEMail.' if you need help.<br><br></p>
+						' because you were too unreliable. Contact the moderators in the <a href="modforum.php">moderator forum</a> if you need help.<br><br></p>
 					</div>';
 			}
 		}
@@ -846,7 +846,7 @@ class libHTML
 				$links['gamecreate.php']=array('name'=>'New game', 'inmenu'=>TRUE, 'title'=>"Start up a new game");
 				$links['detailedSearch.php']=array('name'=>'Search', 'inmenu'=>TRUE, 'title'=>"advanced search of users and games");
 				$links['usercp.php']=array('name'=>'Settings', 'inmenu'=>TRUE, 'title'=>"Change your user specific settings");
-				$links['modforum.php']=array('name'=>'Mod Forum', 'inmenu'=>TRUE, 'title'=>"Get help from the mod team");
+				$links['modforum.php']=array('name'=>'Get Help', 'inmenu'=>TRUE, 'title'=>"Get help from the mod team");
 			}
 		}
 
@@ -1043,7 +1043,7 @@ class libHTML
 								<a href="points.php" title="Points and Scoring Systems">Points/Scoring</a>
 								<a href="variants.php" title="Active webDiplomacy variants">Variants</a>
 								<a href="help.php" title="Site information; guides, stats, links">More Info</a>
-								<a href="modforum.php">Mod Forum</a>
+								<a href="modforum.php">Get Help</a>
 								<a href="donations.php">Donate</a>
 							</div>
 						</div>';
