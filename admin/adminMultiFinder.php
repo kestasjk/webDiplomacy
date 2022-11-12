@@ -54,7 +54,11 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 		$m->aLogsDataCollect();
 
 		if ( !is_array($m->bUserIDs) )
+		{
 			$m->findbUserIDs();
+			
+		}
+			
 		
 		if ( ! $m->bUserIDs )
 		{
@@ -79,8 +83,9 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 			$uids = $m->bUserIDs;
 			$uids[] = $m->aUserID;
 			$relations = GroupUserToUserLinks::loadFromUserIDs($uids,$uids);
-			$relations->applyUsers($bUsers);
-			print $relations->outputTable();
+			$relations->applyUsers($bUsers, false); // Don't filter out peer suspicions
+			
+			print $relations->outputTable(-1000,-1000,-1000); // Be inclusive of suspicions
 			print '</div>';
 			
 			if( isset($_REQUEST['showHistory']) )
@@ -93,7 +98,7 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 			{
 				foreach($bUsers as $bUser)
 				{
-					$m->compare($bUser);
+					$m->compare($bUser, $relations);
 				}
 			}
 		}
@@ -347,28 +352,27 @@ class adminMultiCheck
 		if ( isset($_REQUEST['activeLinks']) and count($this->aLogsData['PublicGameIDs']) )
 		{
 			$tabl = $DB->sql_tabl(
-				"SELECT DISTINCT a.userID
-				FROM wD_AccessLog a
-				INNER JOIN wD_Members m ON ( a.userID = m.userID )
+				"SELECT DISTINCT b.userID
+				FROM wD_UserCodeConnections a
+				INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code
+				INNER JOIN wD_Members m ON ( b.userID = m.userID )
 				WHERE
 					m.gameID IN (".implode(',', $this->aLogsData['PublicGameIDs']).")
-					AND NOT a.userID = ".$this->aUserID."
-					AND (
-						a.cookieCode IN ( ".implode(',',$this->aLogsData['cookieCodes'])." )
-						OR HEX(a.ip) IN ( ".implode(',',$this->aLogsData['IPs'])." )
-					)"
+					AND a.userID = ".$this->aUserID."
+					AND b.userID <> ".$this->aUserID."
+				LIMIT 100"
 				);
 		}
 		else
 		{
 			$tabl = $DB->sql_tabl(
-				"SELECT DISTINCT userID
-				FROM wD_AccessLog
-				WHERE NOT userID = ".$this->aUserID."
-					AND (
-						cookieCode IN ( ".implode(',',$this->aLogsData['cookieCodes'])." )
-						OR HEX(ip) IN ( ".implode(',',$this->aLogsData['IPs'])." )
-					)"
+				"SELECT DISTINCT b.userID
+				FROM wD_UserCodeConnections a
+				INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code
+				WHERE
+					a.userID = ".$this->aUserID."
+					AND b.userID <> ".$this->aUserID."
+					LIMIT 100"
 				);
 		}
 
@@ -378,6 +382,10 @@ class adminMultiCheck
 		{
 			$arr[] = $bUserID;
 		}
+
+		// Add in any suspicions/relationships:
+		$arr = array_merge($arr, GroupUserToUserLinks::loadFromUserID($this->aUserID, false)->getUserIDsOverThreshold(-1000,-1000,-1000));
+		$arr = array_unique($arr, SORT_NUMERIC);
 
 		$this->bUserIDs = $arr;
 	}
@@ -455,42 +463,34 @@ class adminMultiCheck
 		global $User;
 		$this->aLogsData = array();
 
-		$this->aLogsData['IPs'] = self::sql_list(
-			"SELECT HEX(ip) ip, COUNT(ip)
-			FROM wD_AccessLog
-			WHERE userID = ".$this->aUserID."
-			GROUP BY ip"
+		list($this->aLogsData['IPs']) = self::sql_list(
+			"SELECT COUNT(*) FROM wD_UserCodeConnections WHERE userID = ".$this->aUserID." AND type='IP'"
 		);
 
-		$this->aLogsData['cookieCodes'] = self::sql_list(
-			"SELECT DISTINCT cookieCode
-			FROM wD_AccessLog
-			WHERE userID = ".$this->aUserID." AND cookieCode > 1"
+		list($this->aLogsData['cookieCodes']) = self::sql_list(
+			"SELECT COUNT(*) FROM wD_UserCodeConnections WHERE userID = ".$this->aUserID." AND type='Cookie'"
 		);
 
-		$this->aLogsData['userAgents'] = self::sql_list(
-			"SELECT DISTINCT HEX(userAgent)
-			FROM wD_AccessLog
-			WHERE userID = ".$this->aUserID
+		list($this->aLogsData['browserFingerprints']) = self::sql_list(
+			"SELECT COUNT(*)FROM wD_UserCodeConnections WHERE userID = ".$this->aUserID." AND type='Fingerprint'"
 		);
-		$this->aLogsData['browserFingerprints'] = self::sql_list(
-			"SELECT DISTINCT browserFingerprint
-			FROM wD_AccessLog
-			WHERE userID = ".$this->aUserID." AND browserFingerprint IS NOT NULL"
+
+		list($this->aLogsData['fpPro']) = self::sql_list(
+			"SELECT COUNT(*)FROM wD_UserCodeConnections WHERE userID = ".$this->aUserID." AND type='FingerprintPro'"
 		);
 
 		// Up until now all aLogsData arrays must be populated
-		foreach($this->aLogsData as $name=>$data)
+		/*foreach($this->aLogsData as $name=>$data)
 		{
 			if ( ! is_array($data) or ! count($data) )
 			{
 				throw new Exception(l_t('%s does not have enough data; this account cannot be checked.',$name));
 			}
-		}
+		}*/
 
 		// Insert or update the wD_UserConnections record here with the mod who checked it and when it was checked.  
-        $DB->sql_put("INSERT INTO wD_UserConnections (userID, modLastCheckedBy, modLastCheckedOn, matchesLastUpdatedOn, countMatchedIPUsers, countMatchedCookieUsers) 
-        VALUES (".$this->aUserID.", ".$User->id.", ".time().", null, 0, 0) ON DUPLICATE KEY UPDATE modLastCheckedBy=VALUES(modLastCheckedBy), 
+        $DB->sql_put("INSERT INTO wD_UserConnections (userID, modLastCheckedBy, modLastCheckedOn) 
+        VALUES (".$this->aUserID.", ".$User->id.", ".time().") ON DUPLICATE KEY UPDATE modLastCheckedBy=VALUES(modLastCheckedBy), 
         modLastCheckedOn=VALUES(modLastCheckedOn)");
 
 		$this->aLogsData['fullGameIDs'] = self::sql_list(
@@ -500,7 +500,7 @@ class adminMultiCheck
 		);
 
 		list($this->aLogsData['total']) = $DB->sql_row(
-				"SELECT COUNT(ip) FROM wD_AccessLog WHERE userID = ".$this->aUserID
+				"SELECT COUNT(*) FROM wD_UserCodeConnections WHERE type='IP' AND userID = ".$this->aUserID
 			);
 
 		$this->aLogsData['activeGameIDs'] = self::sql_list(
@@ -581,13 +581,17 @@ class adminMultiCheck
 		}
 
 		print '<li><strong>'.$name.':</strong> '.$ratioText.'<br />';
-
 		// Display the matches; in the case of tallys used provide a tallied match list, otherwise a plain match list
 		if ( is_array($aTally) and is_array($bTally) )
 		{
 			$newMatches = array();
 			foreach($matches as $match)
 			{
+				print '<i>match '.$match.'</i> zxcvb<br/>';
+				print '<i>aTotalCount'.$aTotalCount.'</i>zxcvb<br/>';
+				print '<i>aTally '.$aTally[$match].'</i> zxcvb<br/>';
+		print '<i>bTotalCount '.$bTotalCount.'</i> zxcvb<br/>';
+		print '<i>bTally '.$bTally[$match].'</i> zxcvb<br/>';
 				$newMatches[] = $match.' ('.round(100*$aTally[$match]/$aTotalCount).'%-'.round(100*$bTally[$match]/$bTotalCount).'%)';
 			}
 			print implode(', ', $newMatches);
@@ -607,22 +611,24 @@ class adminMultiCheck
 
 		$bTally=array();
 		$matches = self::sql_list(
-			"SELECT ip, COUNT(ip)
-			FROM wD_AccessLog
-			WHERE userID = ".$bUserID." AND ip IN ( ".implode(',',$aUserData)." )
-			GROUP BY ip", $bTally
+			"SELECT b.code, b.count 
+			FROM wD_UserCodeConnections a 
+			INNER JOIN wD_UserCodeConnections b 
+			ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID 
+			WHERE a.userID = ".$this->aUserID." AND b.userID = ".$bUserID." AND a.type = 'IP'", $bTally
 		);
 		if( count($matches) )
 		{
 			$aTally=array();
 			self::sql_list(
-				"SELECT ip, COUNT(ip)
-				FROM wD_AccessLog
-				WHERE userID = ".$this->aUserID." AND ip IN ( ".implode(',',$matches)." )
-				GROUP BY ip", $aTally
+				"SELECT a.code, a.count 
+				FROM wD_UserCodeConnections a 
+				INNER JOIN wD_UserCodeConnections b 
+				ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID 
+				WHERE a.userID = ".$this->aUserID." AND b.userID = ".$bUserID." AND a.type = 'IP'", $aTally
 			);
-			self::printDataComparison('IPs', $matches, count($matches), count($aUserData),
-					array('Italy'=>0.1,'Turkey'=>0.2,'Austria'=>0.3), $aTally, $aUserTotal, $bTally, $bUserTotal);
+			self::printDataComparison('IPs', $matches, count($matches), ($aUserTotal),
+					array('Italy'=>0.1,'Turkey'=>0.2,'Austria'=>0.3), $aTally, $aUserData, $bTally, $bUserTotal);
 		}
 	}
 
@@ -633,21 +639,29 @@ class adminMultiCheck
 
 		$bTally=array();
 		$matches = self::sql_list(
+			"SELECT b.code, b.count 
+			FROM wD_UserCodeConnections a 
+			INNER JOIN wD_UserCodeConnections b 
+			ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID 
+			WHERE a.userID = ".$this->aUserID." AND b.userID = ".$bUserID." AND a.type = 'Cookie'"
+			, $bTally
+			/*
 			"SELECT cookieCode, COUNT(cookieCode)
 			FROM wD_AccessLog
 			WHERE userID = ".$bUserID." AND cookieCode IN ( ".implode(',',$aUserData)." )
-			GROUP BY cookieCode", $bTally
+			GROUP BY cookieCode", $bTally*/
 		);
 		if( count($matches) )
 		{
 			$aTally=array();
 			self::sql_list(
-				"SELECT cookieCode, COUNT(cookieCode)
-				FROM wD_AccessLog
-				WHERE userID = ".$this->aUserID." AND cookieCode IN ( ".implode(',',$matches)." )
-				GROUP BY cookieCode", $aTally
+				"SELECT a.code, a.count 
+				FROM wD_UserCodeConnections a 
+				INNER JOIN wD_UserCodeConnections b 
+				ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID 
+				WHERE a.userID = ".$this->aUserID." AND b.userID = ".$bUserID." AND a.type = 'Cookie'", $aTally
 			);
-			self::printDataComparison('CookieCode', $matches, count($matches), count($aUserData),
+			self::printDataComparison('CookieCode', $matches, count($matches), ($aUserData),
 					array('Italy'=>0.1,'Turkey'=>0.2,'Austria'=>0.3), $aTally, $aUserTotal, $bTally, $bUserTotal);
 		}
 	}
@@ -659,52 +673,55 @@ class adminMultiCheck
 
 		$bTally=array();
 		$matches = self::sql_list(
-			"SELECT browserFingerprint, COUNT(browserFingerprint)
-			FROM wD_AccessLog
-			WHERE userID = ".$bUserID." AND browserFingerprint IN ( '".implode("','",$aUserData)."')
-			GROUP BY browserFingerprint", $bTally
+			"SELECT b.code, b.count 
+			FROM wD_UserCodeConnections a 
+			INNER JOIN wD_UserCodeConnections b 
+			ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID 
+			WHERE a.userID = ".$this->aUserID." AND b.userID = ".$bUserID." AND a.type = 'Fingerprint'", $bTally
 		);
 		if( count($matches) )
 		{
 			$aTally=array();
 			self::sql_list(
-				"SELECT browserFingerprint, COUNT(browserFingerprint)
-				FROM wD_AccessLog
-				WHERE userID = ".$this->aUserID." AND browserFingerprint IN ( '".implode("','",$matches)."' )
-				GROUP BY browserFingerprint", $aTally
+				"SELECT a.code, a.count 
+				FROM wD_UserCodeConnections a 
+				INNER JOIN wD_UserCodeConnections b 
+				ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID 
+				WHERE a.userID = ".$this->aUserID." AND b.userID = ".$bUserID." AND a.type = 'Fingerprint'", $aTally
 			);
-			self::printDataComparison('BrowserFingerprint', $matches, count($matches), count($aUserData),
+			self::printDataComparison('BrowserFingerprint', $matches, count($matches), ($aUserData),
 					array('Italy'=>0.1,'Turkey'=>0.2,'Austria'=>0.3), $aTally, $aUserTotal, $bTally, $bUserTotal);
 		}
 	}
-	private function compareUserAgentData($bUserID, $bUserTotal)
+	private function compareFingerprintProData($bUserID, $bUserTotal)
 	{
-		$aUserTotal = $this->aLogsData['total'];
-		$aUserData = $this->aLogsData['userAgents'];
+		$aUserTotal = $this->aLogsData['fpPro'];//['total'];
+		$aUserData = $this->aLogsData['fpPro'];
 
 		$bTally=array();
 		$matches = self::sql_list(
-			"SELECT HEX(userAgent), COUNT(userAgent)
-			FROM wD_AccessLog
-			WHERE userID = ".$bUserID." AND
-				( ".Database::packArray("UNHEX('",$aUserData, "') = userAgent", " OR ")." )
-			GROUP BY userAgent", $bTally
+			"SELECT b.code, b.count 
+			FROM wD_UserCodeConnections a 
+			INNER JOIN wD_UserCodeConnections b 
+			ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID 
+			WHERE a.userID = ".$this->aUserID." AND b.userID = ".$bUserID." AND a.type = 'FingerprintPro'
+			", $bTally
 		);
 		if( count($matches) )
 		{
 			$aTally=array();
 			self::sql_list(
-				"SELECT HEX(userAgent), COUNT(userAgent)
-				FROM wD_AccessLog
-				WHERE userID = ".$this->aUserID." AND
-					( ".Database::packArray("UNHEX('",$matches, "') = userAgent", " OR ")." )
-				GROUP BY userAgent", $aTally
+				"SELECT a.code, a.count 
+				FROM wD_UserCodeConnections a 
+				INNER JOIN wD_UserCodeConnections b 
+				ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID 
+				WHERE a.userID = ".$this->aUserID." AND b.userID = ".$bUserID." AND a.type = 'FingerprintPro'
+				", $aTally
 			);
-			self::printDataComparison('UserAgent', $matches, count($matches), count($aUserData),
-					array('Italy'=>2/3,'Turkey'=>3/4,'Austria'=>7/8), $aTally, $aUserTotal, $bTally, $bUserTotal);
+			self::printDataComparison('BrowserFingerprintPro', $matches, count($matches), ($aUserData),
+					array('Italy'=>0.1,'Turkey'=>0.2,'Austria'=>0.3), $aTally, $aUserTotal, $bTally, $bUserTotal);
 		}
 	}
-
 	private function compareGames($name, $bUserID, $gameIDs)
 	{
 		global $DB;
@@ -732,13 +749,22 @@ class adminMultiCheck
 				array('Italy'=>1/4,'Turkey'=>1/2,'Austria'=>2/3) );
 	}
 
+	private static function getCodeTotalsByType($userID)
+	{
+		global $DB;
+		$tabl = $DB->sql_tabl("SELECT type, SUM(count) total FROM wD_UserCodeConnections WHERE userID = ".$userID." GROUP BY type");
+		$totals = array();
+		while(list($type, $total) = $DB->tabl_row($tabl))
+		$totals[$type] = $total;
+		return $totals;
+	}
 	/**
 	 * Compares this class' aUser with one of its bUsers, and the data returned from the comparison
 	 * makes it easy to tell if the two users are being played by the same player.
 	 *
 	 * @param User $bUser The user to compare aUser with
 	 */
-	public function compare(User $bUser)
+	public function compare(User $bUser, GroupUserToUserLinks $relations=null)
 	{
 		global $DB;
 
@@ -749,13 +775,18 @@ class adminMultiCheck
 			(<a href="?aUserID='.$bUser->id.'#viewMultiFinder" class="light">'.l_t('check userID=%s',$bUser->id).'</a>)
 				<ul><li><strong>email:</strong> ' .$bUser->email.'</li>';
 
-		list($bUserTotal) = $DB->sql_row("SELECT COUNT(ip) FROM wD_AccessLog WHERE userID = ".$bUser->id);
+		$bUserTotals = self::getCodeTotalsByType($bUser->id);
 
-		$this->compareIPData($bUser->id, $bUserTotal);
-		$this->compareCookieCodeData($bUser->id, $bUserTotal);
-		$this->compareUserAgentData($bUser->id, $bUserTotal);
-		$this->compareFingerprintData($bUser->id, $bUserTotal);
+		$this->compareIPData($bUser->id, isset($bUserTotals['IP']) ? $bUserTotals['IP'] : 0);
+		$this->compareCookieCodeData($bUser->id, isset($bUserTotals['Cookie']) ? $bUserTotals['Cookie'] : 0);
+		$this->compareFingerprintData($bUser->id, isset($bUserTotals['Fingerprint']) ? $bUserTotals['Fingerprint'] : 0);
+		$this->compareFingerprintProData($bUser->id, isset($bUserTotals['FingerprintPro']) ? $bUserTotals['FingerprintPro'] : 0);
 		
+		if ( !is_null($relations) )
+		{
+			if( in_array($bUser->id, $relations->getUserIDsOverThreshold(-1000,-1000,-1000)) )
+				print $relations->outputTable(array($bUser->id));
+		}
 		if ( count($this->aLogsData['fullGameIDs']) > 0 )
 			$this->compareGames('All games', $bUser->id, $this->aLogsData['fullGameIDs']);
 
