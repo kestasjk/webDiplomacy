@@ -523,6 +523,8 @@ class Config
 	// ---
 	// --- The following settings are for WebSockets using Pusher or Soketi
 	// --- https://docs.soketi.app/getting-started/backend-configuration/pusher-sdk
+	// --- Note that the client-side pusher config needs to be in sync with this
+	// --- config; see beta-src/.env.production
 	// ---
 
 	/**
@@ -561,5 +563,20 @@ class Config
 	 * @var int
 	 */
 	public static $pusherPort = 6001;
+
+	/**
+	 * The scheme to use for pusher
+	 *
+	 * @var int
+	 */
+	public static $pusherScheme = 'https';
+
+	/**
+	 * Force pusher to use TLS
+	 *
+	 * @var int
+	 */
+	public static $pusherForceTLS = true;
+
 }
 ?>

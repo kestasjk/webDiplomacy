@@ -37,9 +37,9 @@ class libPusher
     return new Pusher(Config::$pusherAppKey, Config::$pusherAppSecret, Config::$pusherAppId, [
       'host' => Config::$pusherHost,
       'port' => Config::$pusherPort,
-      'scheme' => 'http',
-      'encrypted' => true,
-      'useTLS' => false,
+      'scheme' => isset(Config::$pusherScheme) ? Config::$pusherScheme : 'http',
+      'encrypted' => isset(Config::$pusherForceTLS) ? Config::$pusherForceTLS : true,
+      'useTLS' => isset(Config::$pusherForceTLS) ? Config::$pusherForceTLS : false,
     ]);
   }
 
