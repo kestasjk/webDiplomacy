@@ -657,6 +657,30 @@ ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requ
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, type, code , earliestRequest, latestRequest, requestCount
 FROM (
+ SELECT a.userID, 'LatLon' type, UNHEX(LPAD(CONV(ROUND((u.latitude+90.0)*10,0)*10000+ROUND((u.longitude+180.0)*10,0),10,16),16,'0')) code, MIN(a.earliest) earliestRequest, MAX(a.latest) latestRequest, SUM(a.count) requestCount
+ FROM wD_UserCodeConnections a
+ INNER JOIN wD_IPLookups u ON a.code = u.ipCode
+ WHERE a.type='IP' AND u.timeLookedUp >= FROM_UNIXTIME(".$lastUpdate.")
+ GROUP BY a.userID, a.code
+) r
+ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
+
+INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
+SELECT userID, type, code , earliestRequest, latestRequest, requestCount
+FROM (
+ SELECT linkedId userId, 'LatLon' type, 
+  FROM_BASE64(visitorId) code, FROM_UNIXTIME(timeLastHit) earliestRequest, 
+  FROM_UNIXTIME(timeLastHit) latestRequest, 
+  hits requestCount
+  FROM wD_IPLookups f
+  INNER JOIN wD_AccessLog u ON u
+  WHERE u. >= ".$lastUpdate."
+) r
+ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
+
+INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
+SELECT userID, type, code , earliestRequest, latestRequest, requestCount
+FROM (
  SELECT userID, 'Fingerprint' type, browserFingerprint code, MIN(lastRequest) earliestRequest, MAX(lastRequest) latestRequest, SUM(hits) requestCount
  FROM wD_AccessLog
  WHERE lastRequest >= FROM_UNIXTIME(".$lastUpdate.")
