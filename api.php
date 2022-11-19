@@ -1469,6 +1469,7 @@ class ApiKey extends ApiAuth {
 					$this->permissions[$permissionField] = true;
 			}
 		}
+		$DB->sql_put("UPDATE wD_ApiKeys SET hits = hits + 1, lastHit = UNIX_TIMESTAMP() WHERE apiKey = '".$DB->escape($this->apiKey)."'");
 	}
 
 	public function __construct($route){

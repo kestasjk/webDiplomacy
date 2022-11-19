@@ -2010,6 +2010,13 @@ UPDATE `wD_AccessLog` SET `cookieCode` = UNHEX(LPAD(CONV(cookieCode32,10,16),16,
 
 ALTER TABLE `wD_AccessLog` DROP `cookieCode32`;
 ALTER TABLE `wD_AccessLog` ADD INDEX(`lastRequest`); 
+ALTER TABLE `wD_ApiKeys` ADD hits INT UNSIGNED DEFAULT 0 NULL,
+	ADD lastHit INT UNSIGNED DEFAULT 0 NULL,
+	ADD isChecked TINYINT UNSIGNED DEFAULT 0 NULL;
+UPDATE wD_ApiKeys SET hits = 0, lastHit = 0, isChecked = 0;
+ALTER TABLE `wD_ApiKeys` CHANGE hits hits INT UNSIGNED DEFAULT 0,
+	CHANGE lastHit lastHit INT UNSIGNED DEFAULT 0,
+	CHANGE isChecked isChecked TINYINT UNSIGNED DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS `wD_IPLookups` (
   `ipCode` binary(16) NOT NULL,
