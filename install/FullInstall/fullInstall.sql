@@ -2040,3 +2040,5 @@ CREATE TABLE IF NOT EXISTS `wD_IPLookups` (
 
 DELETE FROM wD_AccessLog WHERE userID IN (SELECT id FROM wD_Users WHERE username LIKE 'diplonow_%' OR id <= 1);
 
+ALTER TABLE `wD_UserCodeConnections` CHANGE `type` `type` ENUM('Cookie','IP','Fingerprint','FingerprintPro','MessageCount','MessageLength','LatLon','Network') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL; 
+
