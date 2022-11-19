@@ -114,6 +114,55 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 	}
 }
 
+class adminUserCodeConnection
+{
+	public $type;
+	public $code;
+	public $earliest;
+	public $latest;
+	public $count;
+}
+
+class adminUserCodeConnections
+{
+	public $userID;
+	public $type;
+	public $Connections;
+	
+	public $minEarliest;
+	public $maxLatest;
+	public $sumCount;
+	public $maxCount;
+	public $minCount;
+	public $avgCount;
+	public $count;
+}
+
+class adminUserToUserCodeConnection
+{
+	public adminUserCodeConnection $userA;
+	public adminUserCodeConnection $userB;
+	
+}
+
+class adminUserToUserCodeConnections
+{
+	public adminUserToUserCodeConnections $userA;
+	public adminUserToUserCodeConnections $userB;
+
+	public $MatchingConnections;
+
+	public $type;
+	public $Connections;
+	
+	public $minEarliest;
+	public $maxLatest;
+	public $sumCount;
+	public $maxCount;
+	public $minCount;
+	public $avgCount;
+	public $count;
+}
 /**
  * This class manages a certain user's often used multi-account comparison data, as well
  * as a list of users which are being compared to. $aUser is the first user, $bUser is the
