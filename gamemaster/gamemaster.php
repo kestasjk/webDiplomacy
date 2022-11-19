@@ -669,7 +669,7 @@ ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requ
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, type, code , earliestRequest, latestRequest, requestCount
 FROM (
- SELECT a.userID, 'City' type, u.city code, MIN(a.earliest) earliestRequest, MAX(a.latest) latestRequest, SUM(a.count) requestCount
+ SELECT a.userID, 'City' type, LEFT(u.city,16) code, MIN(a.earliest) earliestRequest, MAX(a.latest) latestRequest, SUM(a.count) requestCount
  FROM wD_UserCodeConnections a
  INNER JOIN wD_IPLookups u ON a.code = u.ipCode
  WHERE a.type='IP' AND u.timeLookedUp >= ".$lastUpdate."
@@ -680,7 +680,7 @@ ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requ
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, type, code , earliestRequest, latestRequest, requestCount
 FROM (
- SELECT a.userID, 'Region' type, u.region code, MIN(a.earliest) earliestRequest, MAX(a.latest) latestRequest, SUM(a.count) requestCount
+ SELECT a.userID, 'Region' type, LEFT(u.region,16) code, MIN(a.earliest) earliestRequest, MAX(a.latest) latestRequest, SUM(a.count) requestCount
  FROM wD_UserCodeConnections a
  INNER JOIN wD_IPLookups u ON a.code = u.ipCode
  WHERE a.type='IP' AND u.timeLookedUp >= ".$lastUpdate."
@@ -730,9 +730,17 @@ SELECT a.userID, b.userID code, MIN(a.turnDateTime) earliestT, MAX(a.turnDateTim
   WHERE a.turnDateTime >= ".$lastUpdate." AND b.turnDateTime >= ".$lastUpdate."
   GROUP BY a.userID, b.userID;
 
+  DROP TABLE IF EXISTS wD_Tmp_MissedTurnCount;
+  CREATE TABLE wD_Tmp_MissedTurnCount
+  SELECT a.userID, b.userID code, MIN(a.turnDateTime) earliestT, MAX(a.turnDateTime) latestT, COUNT(*) tCount
+	FROM  wD_MissedTurns  a
+	INNER JOIN  wD_MissedTurns  b ON a.gameID = b.gameID AND a.userID <> b.userID AND a.turnDateTime = b.turnDateTime
+	WHERE a.turnDateTime >= ".$lastUpdate." AND b.turnDateTime >= ".$lastUpdate."
+	GROUP BY a.userID, b.userID;
+    
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
-SELECT userID, 'UserTurn' type, UNHEX(LPAD(CONV(code,10,16),16,'0')), FROM_UNIXTIME(earliestT), FROM_UNIXTIME(latestT), tCount
-FROM wD_Tmp_TurnCount r
+SELECT userID, 'UserTurnMissed' type, UNHEX(LPAD(CONV(code,10,16),16,'0')), FROM_UNIXTIME(earliestT), FROM_UNIXTIME(latestT), tCount
+FROM wD_Tmp_MissedTurnCount r
 ON DUPLICATE KEY UPDATE latest=greatest(latestT, latest), count=count+tCount;
 
  INSERT INTO wD_UserConnections (userID)
