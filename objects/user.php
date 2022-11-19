@@ -848,7 +848,7 @@ class User {
 		else
 			$userAgentHash = '0000';
 
-		if ( ! isset($_COOKIE['wD_Code']) or !( is_int($_COOKIE['wD_Code']) or ctype_xdigit($_COOKIE['wD_Code'])) )
+		if ( ! isset($_COOKIE['wD_Code']) or !( is_numeric($_COOKIE['wD_Code']) or ctype_xdigit($_COOKIE['wD_Code'])) )
 		{
 			// Cookie code used to be a 32 bit int, now a 128 bit hex string is generated, but old int based cookie codes
 			// should still be collected if given
@@ -857,7 +857,7 @@ class User {
 		}
 		else
 		{
-			if( is_int($_COOKIE['wD_Code']) )
+			if( is_numeric($_COOKIE['wD_Code']) )
 				$cookieCode = '000000000000000000000000'.dechex($_COOKIE['wD_Code']);
 			else if( ctype_xdigit($_COOKIE['wD_Code']) )
 				$cookieCode = $_COOKIE['wD_Code'];
