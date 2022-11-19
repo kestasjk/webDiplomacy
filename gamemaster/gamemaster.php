@@ -668,19 +668,6 @@ ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requ
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, type, code , earliestRequest, latestRequest, requestCount
 FROM (
- SELECT linkedId userId, 'LatLon' type, 
-  FROM_BASE64(visitorId) code, FROM_UNIXTIME(timeLastHit) earliestRequest, 
-  FROM_UNIXTIME(timeLastHit) latestRequest, 
-  hits requestCount
-  FROM wD_IPLookups f
-  INNER JOIN wD_AccessLog u ON u
-  WHERE u. >= ".$lastUpdate."
-) r
-ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
-
-INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
-SELECT userID, type, code , earliestRequest, latestRequest, requestCount
-FROM (
  SELECT userID, 'Fingerprint' type, browserFingerprint code, MIN(lastRequest) earliestRequest, MAX(lastRequest) latestRequest, SUM(hits) requestCount
  FROM wD_AccessLog
  WHERE lastRequest >= FROM_UNIXTIME(".$lastUpdate.")
