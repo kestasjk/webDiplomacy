@@ -114,14 +114,19 @@ class libGameMaster
 	 * This allows up to date reliability ratings without the full table scans during exclusive lock periods, which caused locking
 	 * as the datasets grew in size.
 	 */
-	static public function updateReliabilityRatings($recalculateAll = false)
+	static public function updateReliabilityRatings($recalculateAll = false, $recalculateUsers = false)
 	{
 		global $DB;
 
 		//-- Careful, the below is carefully optimized to use the indexes in the best way, small changes can make this v slow:
 
-		if( $recalculateAll )
+		if( $recalculateAll || is_array($recalculateUsers) )
 		{
+			$whereClause = "";
+			if( is_array($recalculateUsers) )
+			{
+				$whereClause = " WHERE userID IN (".implode(",", $recalculateUsers).") ";
+			}
 			// Recalculating everything; set all turns younger than a year to be in reliability period, and count all the phases younger than a year for each user
 			$DB->sql_put("UPDATE wD_TurnDate SET isInReliabilityPeriod = CASE WHEN turnDateTime>UNIX_TIMESTAMP() - 60*60*24*365 THEN 1 ELSE 0 END;");
 
@@ -132,7 +137,8 @@ class libGameMaster
 					GROUP BY userID
 				) phases ON phases.userID = u.id 
 				SET u.yearlyPhaseCount = COALESCE(phases.yearlyPhaseCount,0),
-					u.isPhasesDirty = 1;");
+					u.isPhasesDirty = 1 ".
+			$whereClause.";");
 				
 			// Do the same for missed turns, which is more complicated as there are several different reliability periods:
 			$DB->sql_put("UPDATE wD_MissedTurns 
@@ -141,22 +147,24 @@ class libGameMaster
 						WHEN turnDateTime > UNIX_TIMESTAMP() - 28*24*60*60 THEN 2 
 						WHEN turnDateTime > UNIX_TIMESTAMP() - 365*24*60*60 THEN 1 
 						ELSE 0
-				END");
+				END ".
+			$whereClause.";");
 
 			// Set the week period missed turns to the users
 			$DB->sql_put("UPDATE wD_Users u LEFT JOIN (
-					SELECT userID,
+					SELECT userID, reliabilityPeriod
 						SUM(CASE WHEN liveGame = 0 AND samePeriodExcused = 0 AND systemExcused = 0 AND modExcused = 0 THEN 1 ELSE 0 END) nonLiveNew,
 						SUM(CASE WHEN liveGame = 1 AND samePeriodExcused = 0 AND systemExcused = 0 AND modExcused = 0 THEN 1 ELSE 0 END) liveNew,
 						SUM(CASE WHEN modExcused = 0 THEN 1 ELSE 0 END) totalNew 
 					FROM wD_MissedTurns
 					WHERE reliabilityPeriod = 3
-					GROUP BY userID
+					GROUP BY userID, reliabilityPeriod
 				) phases ON phases.userID = u.id
 				SET u.missedPhasesLiveLastWeek = COALESCE(phases.liveNew,0),
 					u.missedPhasesNonLiveLastWeek = COALESCE(phases.nonLiveNew,0),
 					u.missedPhasesTotalLastWeek = COALESCE(phases.totalNew,0),
-					u.isPhasesDirty = 1;");
+					u.isPhasesDirty = 1 ".
+			$whereClause.";");
 					
 			// Set the month period missed turns to the users
 			$DB->sql_put("UPDATE wD_Users u LEFT JOIN (
@@ -171,7 +179,8 @@ class libGameMaster
 			SET u.missedPhasesLiveLastMonth = COALESCE(phases.liveNew,0),
 				u.missedPhasesNonLiveLastMonth = COALESCE(phases.nonLiveNew,0),
 				u.missedPhasesTotalLastMonth = COALESCE(phases.totalNew,0),
-				u.isPhasesDirty = 1;");
+				u.isPhasesDirty = 1 ".
+			$whereClause.";");
 				
 			// Set the year period missed turns to the users
 			$DB->sql_put("UPDATE wD_Users u LEFT JOIN (
@@ -186,7 +195,8 @@ class libGameMaster
 			SET u.missedPhasesLiveLastYear = COALESCE(phases.liveNew,0),
 				u.missedPhasesNonLiveLastYear = COALESCE(phases.nonLiveNew,0),
 				u.missedPhasesTotalLastYear = COALESCE(phases.totalNew,0),
-				u.isPhasesDirty = 1;");
+				u.isPhasesDirty = 1 ".
+			$whereClause.";");
 		}
 		else
 		{
@@ -431,6 +441,43 @@ class libGameMaster
 
 	}
 
+	// Generate the SQL to aggregate each of the user code match summary columns
+	static private function userConnectionAggregateSQL()
+	{
+		$sql = "";
+		$codes = array('Cookie','IP','Fingerprint','FingerprintPro','LatLon','Network','City','UserTurn','Region','MessageLength','MessageCount');
+		foreach($codes as $code)
+		{
+			$sql .= "
+			UPDATE wD_UserConnections uc
+			INNER JOIN (
+			 SELECT a.userID, a.type, COUNT(*) matches, SUM(a.count) matchCount
+			 FROM wD_UserCodeConnections a
+			 INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
+			  WHERE a.type = '".$code."' AND a.isNew = 1
+			 GROUP BY a.userID, a.type
+			 UNION
+			  SELECT a.userID, a.type, COUNT(*) matches, SUM(a.count) matchCount
+			 FROM wD_UserCodeConnections a
+			 INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
+			  WHERE a.type = '".$code."' AND b.isNew = 1
+			 GROUP BY a.userID, a.type
+			) rec ON rec.userID = uc.userId
+			SET matched".$code." = matched".$code." + rec.matches, matched".$code."Total = matched".$code."Total + rec.matchCount;
+			
+			UPDATE wD_UserConnections uc
+			INNER JOIN (
+			SELECT a.userID, a.type, COUNT(*) codes, SUM(count) codesCount
+			FROM wD_UserCodeConnections a
+			WHERE a.type = '".$code."' AND a.isNew = 1
+			GROUP BY a.userID, a.type
+			) rec ON rec.userID = uc.userId
+			SET count".$code." = count".$code." + rec.codes, count".$code."Total = count".$code."Total + rec.codesCount;
+			";
+		}
+		
+		return $sql;
+	}
 	static public function updateUserConnections($lastUpdate = 0)
 	{
 		global $DB;
@@ -463,174 +510,30 @@ FROM (
  GROUP BY userID, DAYOFWEEK(lastRequest), HOUR(lastRequest)
 ) rec
 ON DUPLICATE KEY UPDATE  
- day0hour0  = day0hour0  + IF(d=0 AND h=0 ,c,0),
- day0hour1  = day0hour1  + IF(d=0 AND h=1 ,c,0),
- day0hour2  = day0hour2  + IF(d=0 AND h=2 ,c,0),
- day0hour3  = day0hour3  + IF(d=0 AND h=3 ,c,0),
- day0hour4  = day0hour4  + IF(d=0 AND h=4 ,c,0),
- day0hour5  = day0hour5  + IF(d=0 AND h=5 ,c,0),
- day0hour6  = day0hour6  + IF(d=0 AND h=6 ,c,0),
- day0hour7  = day0hour7  + IF(d=0 AND h=7 ,c,0),
- day0hour8  = day0hour8  + IF(d=0 AND h=8 ,c,0),
- day0hour9  = day0hour9  + IF(d=0 AND h=9 ,c,0),
- day0hour10 = day0hour10 + IF(d=0 AND h=10,c,0),
- day0hour11 = day0hour11 + IF(d=0 AND h=11,c,0),
- day0hour12 = day0hour12 + IF(d=0 AND h=12,c,0),
- day0hour13 = day0hour13 + IF(d=0 AND h=13,c,0),
- day0hour14 = day0hour14 + IF(d=0 AND h=14,c,0),
- day0hour15 = day0hour15 + IF(d=0 AND h=15,c,0),
- day0hour16 = day0hour16 + IF(d=0 AND h=16,c,0),
- day0hour17 = day0hour17 + IF(d=0 AND h=17,c,0),
- day0hour18 = day0hour18 + IF(d=0 AND h=18,c,0),
- day0hour19 = day0hour19 + IF(d=0 AND h=19,c,0),
- day0hour20 = day0hour20 + IF(d=0 AND h=20,c,0),
- day0hour21 = day0hour21 + IF(d=0 AND h=21,c,0),
- day0hour22 = day0hour22 + IF(d=0 AND h=22,c,0),
- day0hour23 = day0hour23 + IF(d=0 AND h=23,c,0),
- day1hour0  = day1hour0  + IF(d=1 AND h=0 ,c,0),
- day1hour1  = day1hour1  + IF(d=1 AND h=1 ,c,0),
- day1hour2  = day1hour2  + IF(d=1 AND h=2 ,c,0),
- day1hour3  = day1hour3  + IF(d=1 AND h=3 ,c,0),
- day1hour4  = day1hour4  + IF(d=1 AND h=4 ,c,0),
- day1hour5  = day1hour5  + IF(d=1 AND h=5 ,c,0),
- day1hour6  = day1hour6  + IF(d=1 AND h=6 ,c,0),
- day1hour7  = day1hour7  + IF(d=1 AND h=7 ,c,0),
- day1hour8  = day1hour8  + IF(d=1 AND h=8 ,c,0),
- day1hour9  = day1hour9  + IF(d=1 AND h=9 ,c,0),
- day1hour10 = day1hour10 + IF(d=1 AND h=10,c,0),
- day1hour11 = day1hour11 + IF(d=1 AND h=11,c,0),
- day1hour12 = day1hour12 + IF(d=1 AND h=12,c,0),
- day1hour13 = day1hour13 + IF(d=1 AND h=13,c,0),
- day1hour14 = day1hour14 + IF(d=1 AND h=14,c,0),
- day1hour15 = day1hour15 + IF(d=1 AND h=15,c,0),
- day1hour16 = day1hour16 + IF(d=1 AND h=16,c,0),
- day1hour17 = day1hour17 + IF(d=1 AND h=17,c,0),
- day1hour18 = day1hour18 + IF(d=1 AND h=18,c,0),
- day1hour19 = day1hour19 + IF(d=1 AND h=19,c,0),
- day1hour20 = day1hour20 + IF(d=1 AND h=20,c,0),
- day1hour21 = day1hour21 + IF(d=1 AND h=21,c,0),
- day1hour22 = day1hour22 + IF(d=1 AND h=22,c,0),
- day1hour23 = day1hour23 + IF(d=1 AND h=23,c,0),
- day2hour0  = day2hour0  + IF(d=2 AND h=0 ,c,0),
- day2hour1  = day2hour1  + IF(d=2 AND h=1 ,c,0),
- day2hour2  = day2hour2  + IF(d=2 AND h=2 ,c,0),
- day2hour3  = day2hour3  + IF(d=2 AND h=3 ,c,0),
- day2hour4  = day2hour4  + IF(d=2 AND h=4 ,c,0),
- day2hour5  = day2hour5  + IF(d=2 AND h=5 ,c,0),
- day2hour6  = day2hour6  + IF(d=2 AND h=6 ,c,0),
- day2hour7  = day2hour7  + IF(d=2 AND h=7 ,c,0),
- day2hour8  = day2hour8  + IF(d=2 AND h=8 ,c,0),
- day2hour9  = day2hour9  + IF(d=2 AND h=9 ,c,0),
- day2hour10 = day2hour10 + IF(d=2 AND h=10,c,0),
- day2hour11 = day2hour11 + IF(d=2 AND h=11,c,0),
- day2hour12 = day2hour12 + IF(d=2 AND h=12,c,0),
- day2hour13 = day2hour13 + IF(d=2 AND h=13,c,0),
- day2hour14 = day2hour14 + IF(d=2 AND h=14,c,0),
- day2hour15 = day2hour15 + IF(d=2 AND h=15,c,0),
- day2hour16 = day2hour16 + IF(d=2 AND h=16,c,0),
- day2hour17 = day2hour17 + IF(d=2 AND h=17,c,0),
- day2hour18 = day2hour18 + IF(d=2 AND h=18,c,0),
- day2hour19 = day2hour19 + IF(d=2 AND h=19,c,0),
- day2hour20 = day2hour20 + IF(d=2 AND h=20,c,0),
- day2hour21 = day2hour21 + IF(d=2 AND h=21,c,0),
- day2hour22 = day2hour22 + IF(d=2 AND h=22,c,0),
- day2hour23 = day2hour23 + IF(d=2 AND h=23,c,0),
- day3hour0  = day3hour0  + IF(d=3 AND h=0 ,c,0),
- day3hour1  = day3hour1  + IF(d=3 AND h=1 ,c,0),
- day3hour2  = day3hour2  + IF(d=3 AND h=2 ,c,0),
- day3hour3  = day3hour3  + IF(d=3 AND h=3 ,c,0),
- day3hour4  = day3hour4  + IF(d=3 AND h=4 ,c,0),
- day3hour5  = day3hour5  + IF(d=3 AND h=5 ,c,0),
- day3hour6  = day3hour6  + IF(d=3 AND h=6 ,c,0),
- day3hour7  = day3hour7  + IF(d=3 AND h=7 ,c,0),
- day3hour8  = day3hour8  + IF(d=3 AND h=8 ,c,0),
- day3hour9  = day3hour9  + IF(d=3 AND h=9 ,c,0),
- day3hour10 = day3hour10 + IF(d=3 AND h=10,c,0),
- day3hour11 = day3hour11 + IF(d=3 AND h=11,c,0),
- day3hour12 = day3hour12 + IF(d=3 AND h=12,c,0),
- day3hour13 = day3hour13 + IF(d=3 AND h=13,c,0),
- day3hour14 = day3hour14 + IF(d=3 AND h=14,c,0),
- day3hour15 = day3hour15 + IF(d=3 AND h=15,c,0),
- day3hour16 = day3hour16 + IF(d=3 AND h=16,c,0),
- day3hour17 = day3hour17 + IF(d=3 AND h=17,c,0),
- day3hour18 = day3hour18 + IF(d=3 AND h=18,c,0),
- day3hour19 = day3hour19 + IF(d=3 AND h=19,c,0),
- day3hour20 = day3hour20 + IF(d=3 AND h=20,c,0),
- day3hour21 = day3hour21 + IF(d=3 AND h=21,c,0),
- day3hour22 = day3hour22 + IF(d=3 AND h=22,c,0),
- day3hour23 = day3hour23 + IF(d=3 AND h=23,c,0),
- day4hour0  = day4hour0  + IF(d=4 AND h=0 ,c,0),
- day4hour1  = day4hour1  + IF(d=4 AND h=1 ,c,0),
- day4hour2  = day4hour2  + IF(d=4 AND h=2 ,c,0),
- day4hour3  = day4hour3  + IF(d=4 AND h=3 ,c,0),
- day4hour4  = day4hour4  + IF(d=4 AND h=4 ,c,0),
- day4hour5  = day4hour5  + IF(d=4 AND h=5 ,c,0),
- day4hour6  = day4hour6  + IF(d=4 AND h=6 ,c,0),
- day4hour7  = day4hour7  + IF(d=4 AND h=7 ,c,0),
- day4hour8  = day4hour8  + IF(d=4 AND h=8 ,c,0),
- day4hour9  = day4hour9  + IF(d=4 AND h=9 ,c,0),
- day4hour10 = day4hour10 + IF(d=4 AND h=10,c,0),
- day4hour11 = day4hour11 + IF(d=4 AND h=11,c,0),
- day4hour12 = day4hour12 + IF(d=4 AND h=12,c,0),
- day4hour13 = day4hour13 + IF(d=4 AND h=13,c,0),
- day4hour14 = day4hour14 + IF(d=4 AND h=14,c,0),
- day4hour15 = day4hour15 + IF(d=4 AND h=15,c,0),
- day4hour16 = day4hour16 + IF(d=4 AND h=16,c,0),
- day4hour17 = day4hour17 + IF(d=4 AND h=17,c,0),
- day4hour18 = day4hour18 + IF(d=4 AND h=18,c,0),
- day4hour19 = day4hour19 + IF(d=4 AND h=19,c,0),
- day4hour20 = day4hour20 + IF(d=4 AND h=20,c,0),
- day4hour21 = day4hour21 + IF(d=4 AND h=21,c,0),
- day4hour22 = day4hour22 + IF(d=4 AND h=22,c,0),
- day4hour23 = day4hour23 + IF(d=4 AND h=23,c,0),
- day5hour0  = day5hour0  + IF(d=5 AND h=0 ,c,0),
- day5hour1  = day5hour1  + IF(d=5 AND h=1 ,c,0),
- day5hour2  = day5hour2  + IF(d=5 AND h=2 ,c,0),
- day5hour3  = day5hour3  + IF(d=5 AND h=3 ,c,0),
- day5hour4  = day5hour4  + IF(d=5 AND h=4 ,c,0),
- day5hour5  = day5hour5  + IF(d=5 AND h=5 ,c,0),
- day5hour6  = day5hour6  + IF(d=5 AND h=6 ,c,0),
- day5hour7  = day5hour7  + IF(d=5 AND h=7 ,c,0),
- day5hour8  = day5hour8  + IF(d=5 AND h=8 ,c,0),
- day5hour9  = day5hour9  + IF(d=5 AND h=9 ,c,0),
- day5hour10 = day5hour10 + IF(d=5 AND h=10,c,0),
- day5hour11 = day5hour11 + IF(d=5 AND h=11,c,0),
- day5hour12 = day5hour12 + IF(d=5 AND h=12,c,0),
- day5hour13 = day5hour13 + IF(d=5 AND h=13,c,0),
- day5hour14 = day5hour14 + IF(d=5 AND h=14,c,0),
- day5hour15 = day5hour15 + IF(d=5 AND h=15,c,0),
- day5hour16 = day5hour16 + IF(d=5 AND h=16,c,0),
- day5hour17 = day5hour17 + IF(d=5 AND h=17,c,0),
- day5hour18 = day5hour18 + IF(d=5 AND h=18,c,0),
- day5hour19 = day5hour19 + IF(d=5 AND h=19,c,0),
- day5hour20 = day5hour20 + IF(d=5 AND h=20,c,0),
- day5hour21 = day5hour21 + IF(d=5 AND h=21,c,0),
- day5hour22 = day5hour22 + IF(d=5 AND h=22,c,0),
- day5hour23 = day5hour23 + IF(d=5 AND h=23,c,0),
- day6hour0  = day6hour0  + IF(d=6 AND h=0 ,c,0),
- day6hour1  = day6hour1  + IF(d=6 AND h=1 ,c,0),
- day6hour2  = day6hour2  + IF(d=6 AND h=2 ,c,0),
- day6hour3  = day6hour3  + IF(d=6 AND h=3 ,c,0),
- day6hour4  = day6hour4  + IF(d=6 AND h=4 ,c,0),
- day6hour5  = day6hour5  + IF(d=6 AND h=5 ,c,0),
- day6hour6  = day6hour6  + IF(d=6 AND h=6 ,c,0),
- day6hour7  = day6hour7  + IF(d=6 AND h=7 ,c,0),
- day6hour8  = day6hour8  + IF(d=6 AND h=8 ,c,0),
- day6hour9  = day6hour9  + IF(d=6 AND h=9 ,c,0),
- day6hour10 = day6hour10 + IF(d=6 AND h=10,c,0),
- day6hour11 = day6hour11 + IF(d=6 AND h=11,c,0),
- day6hour12 = day6hour12 + IF(d=6 AND h=12,c,0),
- day6hour13 = day6hour13 + IF(d=6 AND h=13,c,0),
- day6hour14 = day6hour14 + IF(d=6 AND h=14,c,0),
- day6hour15 = day6hour15 + IF(d=6 AND h=15,c,0),
- day6hour16 = day6hour16 + IF(d=6 AND h=16,c,0),
- day6hour17 = day6hour17 + IF(d=6 AND h=17,c,0),
- day6hour18 = day6hour18 + IF(d=6 AND h=18,c,0),
- day6hour19 = day6hour19 + IF(d=6 AND h=19,c,0),
- day6hour20 = day6hour20 + IF(d=6 AND h=20,c,0),
- day6hour21 = day6hour21 + IF(d=6 AND h=21,c,0),
- day6hour22 = day6hour22 + IF(d=6 AND h=22,c,0),
- day6hour23 = day6hour23 + IF(d=6 AND h=23,c,0),
+ period0    = period0    + IF(h=0  OR h=1  OR h=2 ,c,0),
+ period1    = period1    + IF(h=1  OR h=2  OR h=3 ,c,0),
+ period2    = period2    + IF(h=2  OR h=3  OR h=4 ,c,0),
+ period3    = period3    + IF(h=3  OR h=4  OR h=5 ,c,0),
+ period4    = period4    + IF(h=4  OR h=5  OR h=6 ,c,0),
+ period5    = period5    + IF(h=5  OR h=6  OR h=7 ,c,0),
+ period6    = period6    + IF(h=6  OR h=7  OR h=8 ,c,0),
+ period7    = period7    + IF(h=7  OR h=8  OR h=9 ,c,0),
+ period8    = period8    + IF(h=8  OR h=9  OR h=10,c,0),
+ period9    = period9    + IF(h=9  OR h=10 OR h=11,c,0),
+ period10   = period10   + IF(h=10 OR h=11 OR h=12,c,0),
+ period11   = period11   + IF(h=11 OR h=12 OR h=13,c,0),
+ period12   = period12   + IF(h=12 OR h=13 OR h=14,c,0),
+ period13   = period13   + IF(h=13 OR h=14 OR h=15,c,0),
+ period14   = period14   + IF(h=14 OR h=15 OR h=16,c,0),
+ period15   = period15   + IF(h=15 OR h=16 OR h=17,c,0),
+ period16   = period16   + IF(h=16 OR h=17 OR h=18,c,0),
+ period17   = period17   + IF(h=17 OR h=18 OR h=19,c,0),
+ period18   = period18   + IF(h=18 OR h=19 OR h=20,c,0),
+ period19   = period19   + IF(h=19 OR h=20 OR h=21,c,0),
+ period20   = period20   + IF(h=20 OR h=21 OR h=22,c,0),
+ period21   = period21   + IF(h=21 OR h=22 OR h=23,c,0),
+ period22   = period22   + IF(h=22 OR h=23 OR h=0 ,c,0),
+ period23   = period23   + IF(h=23 OR h=0  OR h=1 ,c,0),
  totalHits = totalHits + c
  ;
  
@@ -642,7 +545,7 @@ FROM (
  WHERE lastRequest >= FROM_UNIXTIME(".$lastUpdate.")
  GROUP BY userID, cookieCode
 ) r
-ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
+ON DUPLICATE KEY UPDATE isNew=1, earliest=least(earliestRequest, earliest), latest=greatest(latestRequest, latest), count=count+requestCount;
 
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, type, code , earliestRequest, latestRequest, requestCount
@@ -652,7 +555,7 @@ FROM (
  WHERE lastRequest >= FROM_UNIXTIME(".$lastUpdate.")
  GROUP BY userID, ip
 ) r
-ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
+ON DUPLICATE KEY UPDATE isNew=1, earliest=least(earliestRequest, earliest), latest=greatest(latestRequest, latest), count=count+requestCount;
 
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, type, code , earliestRequest, latestRequest, requestCount
@@ -664,7 +567,7 @@ FROM (
  WHERE a.type='IP' AND u.timeLookedUp >= ".$lastUpdate."
  GROUP BY a.userID, a.code
 ) r
-ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
+ON DUPLICATE KEY UPDATE isNew=1, earliest=least(earliestRequest, earliest), latest=greatest(latestRequest, latest), count=count+requestCount;
 
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, type, code , earliestRequest, latestRequest, requestCount
@@ -675,7 +578,7 @@ FROM (
  WHERE a.type='IP' AND u.timeLookedUp >= ".$lastUpdate."
  GROUP BY a.userID, u.city
 ) r
-ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
+ON DUPLICATE KEY UPDATE isNew=1, earliest=least(earliestRequest, earliest), latest=greatest(latestRequest, latest), count=count+requestCount;
 
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, type, code , earliestRequest, latestRequest, requestCount
@@ -686,7 +589,7 @@ FROM (
  WHERE a.type='IP' AND u.timeLookedUp >= ".$lastUpdate."
  GROUP BY a.userID, u.region
 ) r
-ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
+ON DUPLICATE KEY UPDATE isNew=1, earliest=least(earliestRequest, earliest), latest=greatest(latestRequest, latest), count=count+requestCount;
 
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, type, code , earliestRequest, latestRequest, requestCount
@@ -697,7 +600,7 @@ FROM (
  WHERE a.type='IP' AND u.timeLookedUp >= ".$lastUpdate."
  GROUP BY a.userID, u.network
 ) r
-ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
+ON DUPLICATE KEY UPDATE isNew=1, earliest=least(earliestRequest, earliest), latest=greatest(latestRequest, latest), count=count+requestCount;
 
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, type, code , earliestRequest, latestRequest, requestCount
@@ -708,19 +611,20 @@ FROM (
  AND browserFingerprint IS NOT NULL
  GROUP BY userID, browserFingerprint
 ) r
-ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
+ON DUPLICATE KEY UPDATE isNew=1, earliest=least(earliestRequest, earliest), latest=greatest(latestRequest, latest), count=count+requestCount;
 
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, type, code , earliestRequest, latestRequest, requestCount
 FROM (
  SELECT linkedId userId, 'FingerprintPro' type, 
-  FROM_BASE64(visitorId) code, FROM_UNIXTIME(CAST(LEFT(requestId,10) AS INT)) earliestRequest, 
-  FROM_UNIXTIME(CAST(LEFT(requestId,10) AS INT)) latestRequest, 
-  1 requestCount
+	FROM_BASE64(visitorId) code, MIN(FROM_UNIXTIME(CAST(LEFT(requestId,10) AS INT))) earliestRequest, 
+	MAX(FROM_UNIXTIME(CAST(LEFT(requestId,10) AS INT))) latestRequest, 
+	COUNT(*) requestCount
   FROM wD_FingerprintProRequests f
   WHERE CAST(LEFT(requestId,10) AS INT) >= ".$lastUpdate."
+  GROUP BY linkedID, visitorID
 ) r
-ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
+ON DUPLICATE KEY UPDATE isNew=1, earliest=least(earliestRequest, earliest), latest=greatest(latestRequest, latest), count=count+requestCount;
 
 DROP TABLE IF EXISTS wD_Tmp_TurnCount;
 CREATE TABLE wD_Tmp_TurnCount
@@ -730,6 +634,11 @@ SELECT a.userID, b.userID code, MIN(a.turnDateTime) earliestT, MAX(a.turnDateTim
   WHERE a.turnDateTime >= ".$lastUpdate." AND b.turnDateTime >= ".$lastUpdate."
   GROUP BY a.userID, b.userID;
 
+  INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
+  SELECT userID, 'UserTurn' type, UNHEX(LPAD(CONV(code,10,16),16,'0')), FROM_UNIXTIME(earliestT), FROM_UNIXTIME(latestT), tCount
+  FROM wD_Tmp_TurnCount r
+  ON DUPLICATE KEY UPDATE isNew=1, earliest=least(FROM_UNIXTIME(earliestT), earliest), latest=greatest(FROM_UNIXTIME(latestT), latest), count=count+tCount;
+  
   DROP TABLE IF EXISTS wD_Tmp_MissedTurnCount;
   CREATE TABLE wD_Tmp_MissedTurnCount
   SELECT a.userID, b.userID code, MIN(a.turnDateTime) earliestT, MAX(a.turnDateTime) latestT, COUNT(*) tCount
@@ -741,7 +650,7 @@ SELECT a.userID, b.userID code, MIN(a.turnDateTime) earliestT, MAX(a.turnDateTim
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, 'UserTurnMissed' type, UNHEX(LPAD(CONV(code,10,16),16,'0')), FROM_UNIXTIME(earliestT), FROM_UNIXTIME(latestT), tCount
 FROM wD_Tmp_MissedTurnCount r
-ON DUPLICATE KEY UPDATE latest=greatest(latestT, latest), count=count+tCount;
+ON DUPLICATE KEY UPDATE isNew=1, earliest=least(FROM_UNIXTIME(earliestT), earliest), latest=greatest(FROM_UNIXTIME(latestT), latest), count=count+tCount;
 
  INSERT INTO wD_UserConnections (userID)
  SELECT DISTINCT u.userID 
@@ -749,66 +658,7 @@ ON DUPLICATE KEY UPDATE latest=greatest(latestT, latest), count=count+tCount;
  LEFT JOIN wD_UserConnections c ON c.userID = u.userID
  WHERE u.isNew = 1 AND c.userID IS NULL;
 
-UPDATE wD_UserConnections uc
-INNER JOIN (
- SELECT a.userID, a.type, COUNT(*) matches
- FROM wD_UserCodeConnections a
- INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
-  WHERE a.type = 'IP' AND a.isNew = 1
- GROUP BY a.userID, a.type
- UNION
-  SELECT a.userID, a.type, COUNT(*) matches
- FROM wD_UserCodeConnections a
- INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
-  WHERE a.type = 'IP' AND b.isNew = 1
- GROUP BY a.userID, a.type
-) rec ON rec.userID = uc.userId
-SET countMatchedIPUsers = countMatchedIPUsers + rec.matches;
-UPDATE wD_UserConnections uc
-INNER JOIN (
- SELECT a.userID, a.type, COUNT(*) matches
- FROM wD_UserCodeConnections a
- INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
-  WHERE a.type = 'Cookie' AND a.isNew = 1
- GROUP BY a.userID, a.type
- UNION
- SELECT a.userID, a.type, COUNT(*) matches
- FROM wD_UserCodeConnections a
- INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
-  WHERE a.type = 'Cookie' AND b.isNew = 1
- GROUP BY a.userID, a.type
-) rec ON rec.userID = uc.userId
-SET countMatchedCookieUsers = countMatchedCookieUsers + rec.matches;
-UPDATE wD_UserConnections uc
-INNER JOIN (
- SELECT a.userID, a.type, COUNT(*) matches
- FROM wD_UserCodeConnections a
- INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
-  WHERE a.type = 'Fingerprint' AND a.isNew = 1
- GROUP BY a.userID, a.type
- UNION
- SELECT a.userID, a.type, COUNT(*) matches
- FROM wD_UserCodeConnections a
- INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
-  WHERE a.type = 'Fingerprint' AND b.isNew = 1
- GROUP BY a.userID, a.type
-) rec ON rec.userID = uc.userId
-SET countMatchedFingerprintUsers = countMatchedFingerprintUsers + rec.matches;
-UPDATE wD_UserConnections uc
-INNER JOIN (
- SELECT a.userID, a.type, COUNT(*) matches
- FROM wD_UserCodeConnections a
- INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
-  WHERE a.type = 'FingerprintPro' AND a.isNew = 1
- GROUP BY a.userID, a.type
- UNION
- SELECT a.userID, a.type, COUNT(*) matches
- FROM wD_UserCodeConnections a
- INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
-  WHERE a.type = 'FingerprintPro' AND b.isNew = 1
- GROUP BY a.userID, a.type
-) rec ON rec.userID = uc.userId
-SET countMatchedFingerprintProUsers = countMatchedFingerprintProUsers + rec.matches;
+ ".self::userConnectionAggregateSQL()."
 
 UPDATE wD_UserCodeConnections SET isNew = 0 WHERE isNew = 1;
 		");
@@ -841,21 +691,12 @@ CREATE TABLE wD_Tmp_MessageCount
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, 'MessageLength' type, UNHEX(LPAD(CONV(code,10,16),16,'0')) code , earliestM, latestM, countM
 FROM wD_Tmp_MessageCount r
-ON DUPLICATE KEY UPDATE latest=greatest(r.latestM, latest), count=count+r.countM;
+ON DUPLICATE KEY UPDATE isNew=1, earliest=least(r.earliestM, earliest), latest=greatest(r.latestM, latest), count=count+r.countM;
 
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, 'MessageCount' type, UNHEX(LPAD(CONV(code,10,16),16,'0')) code , earliestM, latestM, countM
 FROM wD_Tmp_MessageCount r
-ON DUPLICATE KEY UPDATE latest=greatest(r.latestM, latest), count=count+r.countM;
-
-INSERT INTO wD_UserConnections (userID, gameMessageCount, gameMessageLength)
-SELECT userID, countM, countMLen
-FROM (
-SELECT userID, SUM(countMLen) countMLen, SUM(countM) countM
-FROM wD_Tmp_MessageCount
-GROUP BY userID
-) r
-ON DUPLICATE KEY UPDATE gameMessageCount=gameMessageCount + countM, gameMessageLength=gameMessageLength+countMLen;
+ON DUPLICATE KEY UPDATE isNew=1, earliest=least(r.earliestM, earliest), latest=greatest(r.latestM, latest), count=count+r.countM;
 ");
 			$Misc->LastMessageID = $lastMessageID;
 			$Misc->write();

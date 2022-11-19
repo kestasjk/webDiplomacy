@@ -123,23 +123,12 @@ class adminActionsSeniorMod extends adminActionsForum
 
 		// Set the mod excused flag, and set the reliability period to -1 to trigger a recalculation
 		$DB->sql_put("UPDATE wD_MissedTurns SET modExcused = 1, modExcusedReason = '".$modReason."' WHERE id=".$excuseID);
-		$DB->sql_put("UPDATE wD_MissedTurns SET reliabilityPeriod = -1 WHERE userID=".$userID);
+		
+		require_once(l_r('gamemaster/gamemaster.php'));
+		 
+		libGameMaster::updateReliabilityRatings(false, array($userID));
 
-		// Reset the missed phase bucked so that the recalc will start from 0 for this user
-		$DB->sql_put("UPDATE wD_Users u
-		SET u.isPhasesDirty = 1,
-			u.missedPhasesTotalLastWeek = 0,
-			u.missedPhasesTotalLastMonth = 0,
-			u.missedPhasesTotalLastYear = 0,
-			u.missedPhasesLiveLastWeek = 0,
-			u.missedPhasesLiveLastMonth = 0,
-			u.missedPhasesLiveLastYear = 0, 
-			u.missedPhasesNonLiveLastWeek = 0,
-			u.missedPhasesNonLiveLastMonth = 0,
-			u.missedPhasesNonLiveLastYear = 0
-		WHERE u.id=".$userID);
-
-		return 'This user\'s missed turn has been excused, it may take a minute for the recalc to occur.';
+		return 'This user\'s missed turn has been excused and RRs have been recalculated.';
 	}
 
 	public function modExcuseDelayByPeriod(array $params)
@@ -156,23 +145,15 @@ class adminActionsSeniorMod extends adminActionsForum
 
 		// Set the mod excused flag, and set the reliability period to -1 to trigger a recalculation
 		$DB->sql_put("UPDATE wD_MissedTurns SET modExcused = 1, modExcusedReason = '".$modReason."' WHERE turnDateTime>=".$periodStartTime." AND turnDateTime <= ".$periodEndTime);
-		$DB->sql_put("UPDATE wD_MissedTurns SET reliabilityPeriod = -1 WHERE userID IN (SELECT userID FROM turnDateTime>=".$periodStartTime." AND turnDateTime <= ".$periodEndTime.")");
 
-		// Reset the missed phase bucked so that the recalc will start from 0 for this user
-		$DB->sql_put("UPDATE wD_Users u
-		SET u.isPhasesDirty = 1,
-			u.missedPhasesTotalLastWeek = 0,
-			u.missedPhasesTotalLastMonth = 0,
-			u.missedPhasesTotalLastYear = 0,
-			u.missedPhasesLiveLastWeek = 0,
-			u.missedPhasesLiveLastMonth = 0,
-			u.missedPhasesLiveLastYear = 0, 
-			u.missedPhasesNonLiveLastWeek = 0,
-			u.missedPhasesNonLiveLastMonth = 0,
-			u.missedPhasesNonLiveLastYear = 0
-		WHERE u.id IN userID IN (SELECT userID FROM turnDateTime>=".$periodStartTime." AND turnDateTime <= ".$periodEndTime.")");
+		$tabl = $DB->sql_tabl("SELECT DISTINCT userID FROM wD_MissedTurns WHERE turnDateTime>=".$periodStartTime." AND turnDateTime <= ".$periodEndTime);
+		$userIDs = array();
+		while(list($userID) = $DB->tabl_row($tabl)) $userIDs[]=$userID;
+		 
+		require_once(l_r('gamemaster/gamemaster.php'));
+		libGameMaster::updateReliabilityRatings(false, $userIDs);
 
-		return 'Missed turns in this period have been excused, it may take a minute for the recalc to occur.';
+		return 'Missed turns in this period have been excused and RRs have been recalculated.';
 	}
 
 	public function setProcessTimeToNowConfirm(array $params)

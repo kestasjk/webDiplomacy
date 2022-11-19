@@ -166,42 +166,147 @@ class adminUserToUserCodeConnections
 
 // Verification score
 // ------------------
-// Admin 300
-// Moderator 200
-// Moderator checked 100
+// verificationUserType
+// Admin 500
+// Moderator 300
+
+// verificationAccountDetail
 // Facebook 200
-// Paypal 200
+// Paypal or Donor flag 200
 // SMS 150
 // Google 50
-// Moderator suspicion doubts/denys * 5
-// Forum messages log(messageCount)*5 (10 -> 14, 1000 -> 30) phpbb_users.webdip_user_id .user_posts
-// Non-bot games played log(gamesCount)*20
-// Game messages log(messageCount)*10 (10 -> 14, 1000 -> 30)
-// Points log(point)
-// Time joined log()
+// Entered location 10
 
-// Suspicion score
-// ---------------
+// verificationRelationships
+// Relationships declared 5
+
+// verificationUserActivity
+// Forum messages (log(messageCount)-1)*5 (10 -> 14, 1000 -> 30) phpbb_users.webdip_user_id .user_posts
+// Mod forum messages (log(messageCount)-1)*5 (10 -> 14, 1000 -> 30) phpbb_users.webdip_user_id .user_posts
+// Non-bot games (log(gamesCount)-1)*20
+// Game messages (log(messageCount)-1)*10 (10 -> 14, 1000 -> 30)
+// Points (log(point)-1)
+// Weeks joined (log((UNIX_TIMESTAMP() - timeJoined)/(7*24*60))-1)*50
+
+
+// Independent suspicion score
+// ---------------------------
+// suspicionRelationshipsMod
 // Moderator suspicion Weak * 10
 // Moderator suspicion Mid * 20
-// Moderator suspicion Strong * 50w
+// Moderator suspicion Strong * 50
+
+// suspicionRelationshipsPeer
+// Peer suspicion Weak * 1
+// Peer suspicion Mid * 2
+// Peer suspicion Strong * 5
+
+// suspicionIPLookup
 // Lots of IP addresses
 // Lots of IP networks
-// Lots of IP regions
+// IP address overlap to other accounts
+// IP address overlap from other accounts
+// IP lookup vpn alerts
+
+// suspicionLocationLookup
+// Lots of regions
+// Lots of cities
 // Lots of Lat/Lon locations
-// Lat/Lon wide spread
+// Lat/Lon locations wide spread
+// Lat/Lon to daily sleep period mismatch
+// Lat/Lon to declared location mismatch
+
+// suspicionCookieCode
 // Lots of cookie codes
+// Cookie code length of life
 // Cookie code / browser fingerprint ratio
 // Cookie code / fingerprint pro ratio
+
+// suspicionBrowserFingerprint
 // Lots of browser fingerprints
+
+// suspicionFingerprintPro
 // Not enough fingerprint pro
 // Fingerprint pro uncertainty
 // Fingerprint pro VPN alert
 // Fingerprint pro incognito alert
-// IP lookup vpn alert
-// IP addresses with VPN etc scores
+// Fingerprint pro length of life
+
+// suspicionGameActivity
 // Plays with few different people
 // Repeatedly plays with certain people
+// Messages a few people much more/less
+// Missed turn overlap
+// Supports a few people much more
+
+
+// User code suspicion score
+// -------------------------
+// For each code how many user matches - average user matches over last period
+// Top codes for each type - how many user matches - 
+
+/* 
+-- Get the main codes for a user:
+SELECT a.userID, a.type, a.code, a.count, a.latest, c.oldest, c.newest, c.codeCount, c.countSum, c.countAvg, c.countMax, c.users, c.newestUser, c.oldestUser 
+FROM wD_UserCodeConnections a 
+INNER JOIN (
+    SELECT type, code, MIN(latest) oldest, MAX(latest) newest, 
+        COUNT(*) codeCount, SUM(count) countSum, AVG(count) countAvg, MAX(count) countMax, 
+        COUNT(DISTINCT userID) users, MAX(userID) newestUser, MIN(userID) oldestUser 
+    FROM wD_UserCodeConnections 
+    WHERE userID <> 10 GROUP BY type, code
+) c ON c.type = a.type AND c.code = a.code 
+WHERE a.userID = 10 
+ORDER BY c.type, a.count DESC;
+*/
+
+// User A-User B suspicion score
+// -----------------------------
+// Matches that trigger user - user evaluation
+// 1000 * Fingerprint pro match * Certainty
+// 500 * Cookie code match
+// 100 * Browser fingerprint match
+// 100 * IP match
+
+// 500 * Moderator relationship rating
+// 100 * Self relationship rating
+// 50 * Peer relationship rating
+
+// Code overlap
+// time distance user A, time distance user B,
+// time distance between user A user B,
+// average code % with other users,
+// average code % with other users that have a match
+
+// LatLon match
+// City match
+// Network match
+// Region match
+
+// Daily 6 hour sleep period overlap
+// Game missed turn overlap
+// Game turn overlap
+
+// LatLon match
+// City match
+// Region match
+
+// Game message count; lower than normal / higher than normal
+
+// User A - User B code match suspicion score
+// ------------------------------------
+// Individual code match ->
+// For code matches in the past month and/or all code matches
+// Matching code count% => What % of the total count does this matching code make up for the user
+// Distinct codes => How many different codes does the user have
+// Code # => How many 
+// Code % user A, Code % user B, 
+// average code %/user,
+// average code %/user,
+// Code # user A, Code # user B, 
+// average code #/user,
+// how many codes user A, how many codes user B,
+
 
 /**
  * This class manages a certain user's often used multi-account comparison data, as well
