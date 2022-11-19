@@ -911,7 +911,7 @@ class User {
 			$ip = dechex($ip);
 		}
 
-		if( !isset($_SESSION['auid']) )
+		if( !isset($_SESSION['auid']) && $this->id > 1 && !defined('PLAYNOW') && !str_starts_with($this->username,'diplonow_') )
 		{
 			// Only store a session hit if we are not impersonating a user
 			$DB->sql_put("INSERT INTO wD_Sessions (userID, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint)

@@ -361,12 +361,10 @@ class adminMultiCheck
 				FROM wD_UserCodeConnections a
 				INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code
 				INNER JOIN wD_Members m ON ( b.userID = m.userID )
-				INNER JOIN wD_Users u ON u.id = b.UserID
 				WHERE
 					m.gameID IN (".implode(',', $this->aLogsData['PublicGameIDs']).")
 					AND a.userID = ".$this->aUserID."
 					AND b.userID <> ".$this->aUserID."
-					AND NOT u.username LIKE 'diplonow_%'
 				LIMIT 100"
 				);
 		}
@@ -376,11 +374,9 @@ class adminMultiCheck
 				"SELECT DISTINCT b.userID
 				FROM wD_UserCodeConnections a
 				INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code
-				INNER JOIN wD_Users u ON u.id = b.UserID
 				WHERE
 					a.userID = ".$this->aUserID."
 					AND b.userID <> ".$this->aUserID."
-					AND NOT u.username LIKE 'diplonow_%'
 					LIMIT 100"
 				);
 		}

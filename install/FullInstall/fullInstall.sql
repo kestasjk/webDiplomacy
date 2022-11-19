@@ -2037,3 +2037,6 @@ CREATE TABLE IF NOT EXISTS `wD_IPLookups` (
   `hits` int(10) UNSIGNED DEFAULT 0,
   PRIMARY KEY (`ipCode`)
 ) ENGINE=InnoDB;
+
+DELETE FROM wD_AccessLog WHERE userID IN (SELECT id FROM wD_Users WHERE username LIKE 'diplonow_%' OR id <= 1);
+

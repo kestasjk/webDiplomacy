@@ -82,6 +82,8 @@ try
 
 	if( User::findUsername($SQLVars['username']) )
 		throw new Exception(l_t("The username '%s' is already in use. Please choose another.",$SQLVars['username']));
+	elseif( str_starts_with($SQLVars['username'], 'diplonow_') )
+		throw new Exception(l_t("This username is reserved for a play now server. Please choose another username."));
 	elseif( User::findEmail($SQLVars['email']) )
 		throw new Exception(l_t("The e-mail address '%s', is already in use. If this is your e-mail, please use the Forgot your username and password features to recover your account or contact the moderators at %s for assistance. Making a second account for any reason is against the site rules.",$SQLVars['email'], Config::$modEMail));
 
