@@ -1988,11 +1988,28 @@ ADD COLUMN `gameMessageLength` INT(11) NOT NULL DEFAULT '0' AFTER `gameMessageCo
 ALTER TABLE `wD_UserCodeConnections`
 CHANGE COLUMN `type` `type` ENUM('Cookie','IP','Fingerprint','FingerprintPro','MessageCount','MessageLength') NOT NULL COLLATE 'utf8mb4_unicode_ci' AFTER `userID`;
 
-ALTER TABLE `wD_Sessions` CHANGE `cookieCode` `cookieCode` BIGINT(10) UNSIGNED NOT NULL; 
-ALTER TABLE `wD_AccessLog` CHANGE `cookieCode` `cookieCode` BIGINT(10) UNSIGNED NOT NULL; 
-ALTER TABLE `wD_Sessions` CHANGE `cookieCode` `cookieCode` BINARY(16) UNSIGNED NOT NULL; 
-ALTER TABLE `wD_AccessLog` CHANGE `cookieCode` `cookieCode` BIGINT(10) UNSIGNED NOT NULL; 
-ALTER TABLE `wD_AccessLog` ADD `cookieCode128` BIGINT(10) NOT NULL; 
+DELETE FROM wD_Sessions;
+ALTER TABLE `wD_Sessions` CHANGE `cookieCode` `cookieCode` BINARY(16) NULL;  
+
+ALTER TABLE `wD_Sessions` 
+	DROP `fingerprintProVisitorId`,
+	DROP `fingerprintProConfidence`, 
+	ADD `fingerprintPro` BINARY(16) NULL;
+
+ALTER TABLE `wD_AccessLog` DROP INDEX `userID`,DROP INDEX `cookieCode`,DROP INDEX `indBrowserFingerprint`,DROP INDEX `indIP`,DROP INDEX `lastRequest`;
+
+ALTER TABLE `wD_AccessLog` 
+	DROP `fingerprintProVisitorId`,
+	DROP `fingerprintProConfidence`,
+	DROP `cookieCode128`,
+	ADD `cookieCodeTemp` BINARY(16) NULL, 
+	ADD `fingerprintPro` BINARY(16) NULL;
+ALTER TABLE `wD_AccessLog` CHANGE `cookieCode` cookieCode32 BIGINT UNSIGNED NOT NULL; 
+ALTER TABLE `wD_AccessLog` CHANGE `cookieCodeTemp` cookieCode BINARY(16) NOT NULL; 
+UPDATE `wD_AccessLog` SET `cookieCode` = UNHEX(LPAD(CONV(cookieCode32,10,16),16,'0')) WHERE cookieCode32 <> 0;
+
+ALTER TABLE `wD_AccessLog` DROP `cookieCode32`;
+ALTER TABLE `wD_AccessLog` ADD INDEX(`lastRequest`); 
 
 CREATE TABLE IF NOT EXISTS `wD_IPLookups` (
   `ipCode` binary(16) NOT NULL,

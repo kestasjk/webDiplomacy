@@ -637,7 +637,7 @@ ON DUPLICATE KEY UPDATE
   INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, type, code , earliestRequest, latestRequest, requestCount
 FROM (
- SELECT userID, 'Cookie' type, UNHEX(LPAD(CONV(cookieCode,10,16),16,'0')) code, MIN(lastRequest) earliestRequest, MAX(lastRequest) latestRequest, SUM(hits) requestCount
+ SELECT userID, 'Cookie' type, cookieCode code, MIN(lastRequest) earliestRequest, MAX(lastRequest) latestRequest, SUM(hits) requestCount
  FROM wD_AccessLog
  WHERE lastRequest >= FROM_UNIXTIME(".$lastUpdate.")
  GROUP BY userID, cookieCode
@@ -657,10 +657,10 @@ ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requ
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, type, code , earliestRequest, latestRequest, requestCount
 FROM (
- SELECT userID, 'Fingerprint' type, UNHEX(LPAD(CONV(browserFingerprint,10,16),16,'0')) code, MIN(lastRequest) earliestRequest, MAX(lastRequest) latestRequest, SUM(hits) requestCount
+ SELECT userID, 'Fingerprint' type, browserFingerprint code, MIN(lastRequest) earliestRequest, MAX(lastRequest) latestRequest, SUM(hits) requestCount
  FROM wD_AccessLog
  WHERE lastRequest >= FROM_UNIXTIME(".$lastUpdate.")
- AND browserFingerprint IS NOT NULL AND browserFingerprint <> 0
+ AND browserFingerprint IS NOT NULL
  GROUP BY userID, browserFingerprint
 ) r
 ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
@@ -743,7 +743,6 @@ INNER JOIN (
  GROUP BY a.userID, a.type
 ) rec ON rec.userID = uc.userId
 SET countMatchedFingerprintProUsers = countMatchedFingerprintProUsers + rec.matches;
-
 
 UPDATE wD_UserCodeConnections SET isNew = 0 WHERE isNew = 1;
 		");
