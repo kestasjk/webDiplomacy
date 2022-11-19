@@ -1990,6 +1990,9 @@ CHANGE COLUMN `type` `type` ENUM('Cookie','IP','Fingerprint','FingerprintPro','M
 
 ALTER TABLE `wD_Sessions` CHANGE `cookieCode` `cookieCode` BIGINT(10) UNSIGNED NOT NULL; 
 ALTER TABLE `wD_AccessLog` CHANGE `cookieCode` `cookieCode` BIGINT(10) UNSIGNED NOT NULL; 
+ALTER TABLE `wD_Sessions` CHANGE `cookieCode` `cookieCode` BINARY(16) UNSIGNED NOT NULL; 
+ALTER TABLE `wD_AccessLog` CHANGE `cookieCode` `cookieCode` BIGINT(10) UNSIGNED NOT NULL; 
+ALTER TABLE `wD_AccessLog` ADD `cookieCode128` BIGINT(10) NOT NULL; 
 
 CREATE TABLE IF NOT EXISTS `wD_IPLookups` (
   `ipCode` binary(16) NOT NULL,
