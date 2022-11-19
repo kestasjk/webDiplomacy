@@ -848,15 +848,21 @@ class User {
 		else
 			$userAgentHash = '0000';
 
-		if ( ! isset($_COOKIE['wD_Code']) or intval($_COOKIE['wD_Code']) == 0 or intval($_COOKIE['wD_Code']) == 1 )
+		if ( ! isset($_COOKIE['wD_Code']) or !( is_int($_COOKIE['wD_Code']) or ctype_xdigit($_COOKIE['wD_Code'])) )
 		{
-			// Making this larger than 2^31 makes it negative..
-			$cookieCode = rand(2, 2000000000);
+			// Cookie code used to be a 32 bit int, now a 128 bit hex string is generated, but old int based cookie codes
+			// should still be collected if given
+			$cookieCode = md5("".rand(1,pow(2,32)).rand(1,pow(2,32)).rand(1,pow(2,32)).rand(1,pow(2,32)).rand(1,pow(2,32)));//rand(2, 2000000000);
 			setcookie('wD_Code', $cookieCode,['expires'=>time()+365*7*24*60*60,'samesite'=>'Lax']);
 		}
 		else
 		{
-			$cookieCode = (int) $_COOKIE['wD_Code'];
+			if( is_int($_COOKIE['wD_Code']) )
+				$cookieCode = '000000000000000000000000'.dechex($_COOKIE['wD_Code']);
+			else if( ctype_xdigit($_COOKIE['wD_Code']) )
+				$cookieCode = $_COOKIE['wD_Code'];
+			else
+				$cookieCode = '00000000000000000000000000000000';
 		}
 
         if( isset($_COOKIE['wD_FJT']) && ctype_xdigit($_COOKIE['wD_FJT']) )
@@ -910,7 +916,7 @@ class User {
 			// Only store a session hit if we are not impersonating a user
 			$DB->sql_put("INSERT INTO wD_Sessions (userID, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint)
 			VALUES (".$this->id.",CURRENT_TIMESTAMP,1, UNHEX('".$ip."'),
-					UNHEX('".$userAgentHash."'), ".$cookieCode.", UNHEX('".$browserFingerprint."') )
+					UNHEX('".$userAgentHash."'), UNHEX('".$cookieCode."'), UNHEX('".$browserFingerprint."') )
 			ON DUPLICATE KEY UPDATE hits=hits+1");
 
 			$DB->sql_put("INSERT INTO wD_IPLookups (ipCode, ip, timeInserted, timeLastHit)
