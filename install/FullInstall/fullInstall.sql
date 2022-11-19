@@ -2008,6 +2008,8 @@ ALTER TABLE `wD_AccessLog` CHANGE `cookieCode` cookieCode32 BIGINT UNSIGNED NOT 
 ALTER TABLE `wD_AccessLog` CHANGE `cookieCodeTemp` cookieCode BINARY(16) NOT NULL; 
 UPDATE `wD_AccessLog` SET `cookieCode` = UNHEX(LPAD(CONV(cookieCode32,10,16),16,'0')) WHERE cookieCode32 <> 0;
 
+UPDATE wD_AccessLog SET ip = UNHEX(RPAD(CONV(INET_ATON(INET_NTOA(ip)),10,16),32,'0'));
+
 ALTER TABLE `wD_AccessLog` DROP `cookieCode32`;
 ALTER TABLE `wD_AccessLog` ADD INDEX(`lastRequest`); 
 ALTER TABLE `wD_ApiKeys` ADD hits INT UNSIGNED DEFAULT 0 NULL,
@@ -2040,5 +2042,5 @@ CREATE TABLE IF NOT EXISTS `wD_IPLookups` (
 
 DELETE FROM wD_AccessLog WHERE userID IN (SELECT id FROM wD_Users WHERE username LIKE 'diplonow_%' OR id <= 1);
 
-ALTER TABLE `wD_UserCodeConnections` CHANGE `type` `type` ENUM('Cookie','IP','Fingerprint','FingerprintPro','MessageCount','MessageLength','LatLon','Network') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL; 
+ALTER TABLE `wD_UserCodeConnections` CHANGE `type` `type` ENUM('Cookie','IP','Fingerprint','FingerprintPro','MessageCount','MessageLength','LatLon','Network','City','UserTurn','Region') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL; 
 

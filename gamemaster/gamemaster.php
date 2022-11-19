@@ -657,11 +657,45 @@ ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requ
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, type, code , earliestRequest, latestRequest, requestCount
 FROM (
+	/* Round lat/lon to 1 decimal place */
  SELECT a.userID, 'LatLon' type, UNHEX(LPAD(CONV(ROUND((u.latitude+90.0)*10,0)*10000+ROUND((u.longitude+180.0)*10,0),10,16),16,'0')) code, MIN(a.earliest) earliestRequest, MAX(a.latest) latestRequest, SUM(a.count) requestCount
  FROM wD_UserCodeConnections a
  INNER JOIN wD_IPLookups u ON a.code = u.ipCode
  WHERE a.type='IP' AND u.timeLookedUp >= ".$lastUpdate."
  GROUP BY a.userID, a.code
+) r
+ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
+
+INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
+SELECT userID, type, code , earliestRequest, latestRequest, requestCount
+FROM (
+ SELECT a.userID, 'City' type, u.city code, MIN(a.earliest) earliestRequest, MAX(a.latest) latestRequest, SUM(a.count) requestCount
+ FROM wD_UserCodeConnections a
+ INNER JOIN wD_IPLookups u ON a.code = u.ipCode
+ WHERE a.type='IP' AND u.timeLookedUp >= ".$lastUpdate."
+ GROUP BY a.userID, u.city
+) r
+ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
+
+INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
+SELECT userID, type, code , earliestRequest, latestRequest, requestCount
+FROM (
+ SELECT a.userID, 'Region' type, u.region code, MIN(a.earliest) earliestRequest, MAX(a.latest) latestRequest, SUM(a.count) requestCount
+ FROM wD_UserCodeConnections a
+ INNER JOIN wD_IPLookups u ON a.code = u.ipCode
+ WHERE a.type='IP' AND u.timeLookedUp >= ".$lastUpdate."
+ GROUP BY a.userID, u.region
+) r
+ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
+
+INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
+SELECT userID, type, code , earliestRequest, latestRequest, requestCount
+FROM (
+ SELECT a.userID, 'Network' type, UNHEX(LPAD(REPLACE(REPLACE(REPLACE(network,':',''),'/',''),'.',''),16,'0')) code, MIN(a.earliest) earliestRequest, MAX(a.latest) latestRequest, SUM(a.count) requestCount
+ FROM wD_UserCodeConnections a
+ INNER JOIN wD_IPLookups u ON a.code = u.ipCode
+ WHERE a.type='IP' AND u.timeLookedUp >= ".$lastUpdate."
+ GROUP BY a.userID, u.network
 ) r
 ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
 
@@ -687,6 +721,19 @@ FROM (
   WHERE CAST(LEFT(requestId,10) AS INT) >= ".$lastUpdate."
 ) r
 ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
+
+DROP TABLE IF EXISTS wD_Tmp_TurnCount;
+CREATE TABLE wD_Tmp_TurnCount
+SELECT a.userID, b.userID code, MIN(a.turnDateTime) earliestT, MAX(a.turnDateTime) latestT, COUNT(*) tCount
+  FROM wD_TurnDate a
+  INNER JOIN wD_TurnDate b ON a.gameID = b.gameID AND a.userID <> b.userID AND a.turnDateTime = b.turnDateTime
+  WHERE a.turnDateTime >= ".$lastUpdate." AND b.turnDateTime >= ".$lastUpdate."
+  GROUP BY a.userID, b.userID;
+
+INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
+SELECT userID, 'UserTurn' type, UNHEX(LPAD(CONV(code,10,16),16,'0')), FROM_UNIXTIME(earliestT), FROM_UNIXTIME(latestT), tCount
+FROM wD_Tmp_TurnCount r
+ON DUPLICATE KEY UPDATE latest=greatest(latestT, latest), count=count+tCount;
 
  INSERT INTO wD_UserConnections (userID)
  SELECT DISTINCT u.userID 

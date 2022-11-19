@@ -163,6 +163,46 @@ class adminUserToUserCodeConnections
 	public $avgCount;
 	public $count;
 }
+
+// Verification score
+// ------------------
+// Admin 300
+// Moderator 200
+// Moderator checked 100
+// Facebook 200
+// Paypal 200
+// SMS 150
+// Google 50
+// Moderator suspicion doubts/denys * 5
+// Forum messages log(messageCount)*5 (10 -> 14, 1000 -> 30) phpbb_users.webdip_user_id .user_posts
+// Non-bot games played log(gamesCount)*20
+// Game messages log(messageCount)*10 (10 -> 14, 1000 -> 30)
+// Points log(point)
+// Time joined log()
+
+// Suspicion score
+// ---------------
+// Moderator suspicion Weak * 10
+// Moderator suspicion Mid * 20
+// Moderator suspicion Strong * 50w
+// Lots of IP addresses
+// Lots of IP networks
+// Lots of IP regions
+// Lots of Lat/Lon locations
+// Lat/Lon wide spread
+// Lots of cookie codes
+// Cookie code / browser fingerprint ratio
+// Cookie code / fingerprint pro ratio
+// Lots of browser fingerprints
+// Not enough fingerprint pro
+// Fingerprint pro uncertainty
+// Fingerprint pro VPN alert
+// Fingerprint pro incognito alert
+// IP lookup vpn alert
+// IP addresses with VPN etc scores
+// Plays with few different people
+// Repeatedly plays with certain people
+
 /**
  * This class manages a certain user's often used multi-account comparison data, as well
  * as a list of users which are being compared to. $aUser is the first user, $bUser is the
