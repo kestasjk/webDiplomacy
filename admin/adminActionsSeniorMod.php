@@ -117,30 +117,62 @@ class adminActionsSeniorMod extends adminActionsForum
 		$excuseID   = (int)$params['excuseID'];
 
 		if( !isset($params['reason']) || strlen($params['reason'])==0 )
-			return l_t('Couldn\'t ban user; no reason was given.');
+			return l_t('Couldn\'t excuse delay for user; no reason was given.');
 
 		$modReason = $DB->msg_escape($params['reason']);
 
-		// Set the mod excused flag, and set the reliability period to NULL to trigger a recalculation
+		// Set the mod excused flag, and set the reliability period to -1 to trigger a recalculation
 		$DB->sql_put("UPDATE wD_MissedTurns SET modExcused = 1, modExcusedReason = '".$modReason."' WHERE id=".$excuseID);
+		$DB->sql_put("UPDATE wD_MissedTurns SET reliabilityPeriod = -1 WHERE userID=".$userID);
 
-		// Update the missed phase period count buckets for this user:
-		// See gamemaster/gamemaster.php updatePhasePerYearCount to see how these are used to calculate reliability ratings
+		// Reset the missed phase bucked so that the recalc will start from 0 for this user
 		$DB->sql_put("UPDATE wD_Users u
-		INNER JOIN wD_MissedTurns t ON t.userID = u.id
 		SET u.isPhasesDirty = 1,
-			u.missedPhasesTotalLastWeek = u.missedPhasesTotalLastWeek - CASE WHEN u.turnDateTime > UNIX_TIMESTAMP() - 7*24*60*60 THEN 1 ELSE 0 END,
-			u.missedPhasesTotalLastMonth = u.missedPhasesTotalLastMonth - CASE WHEN UNIX_TIMESTAMP() - 7*24*60*60 >= u.turnDateTime AND u.turnDateTime > UNIX_TIMESTAMP() - 28*24*60*60 THEN 1 ELSE 0 END,
-			u.missedPhasesTotalLastYear = u.missedPhasesTotalLastYear - CASE WHEN UNIX_TIMESTAMP() - 28*24*60*60 >= u.turnDateTime AND u.turnDateTime > UNIX_TIMESTAMP() - 365*24*60*60 THEN 1 ELSE 0 END, 
-			u.missedPhasesLiveLastWeek = u.missedPhasesLiveLastWeek - CASE WHEN t.liveGame = 1 AND t.systemExcused = 0 AND t.samePeriodExcused = 0 AND u.turnDateTime > UNIX_TIMESTAMP() - 7*24*60*60 THEN 1 ELSE 0 END,
-			u.missedPhasesLiveLastMonth = u.missedPhasesLiveLastMonth - CASE WHEN t.liveGame = 1 AND t.systemExcused = 0 AND t.samePeriodExcused = 0 AND UNIX_TIMESTAMP() - 7*24*60*60 >= u.turnDateTime AND u.turnDateTime > UNIX_TIMESTAMP() - 28*24*60*60 THEN 1 ELSE 0 END,
-			u.missedPhasesLiveLastYear = u.missedPhasesLiveLastYear - CASE WHEN t.liveGame = 1 AND t.systemExcused = 0 AND t.samePeriodExcused = 0 AND UNIX_TIMESTAMP() - 28*24*60*60 >= u.turnDateTime AND u.turnDateTime > UNIX_TIMESTAMP() - 365*24*60*60 THEN 1 ELSE 0 END, 
-			u.missedPhasesNonLiveLastWeek = u.missedPhasesNonLiveLastWeek - CASE WHEN t.liveGame = 0 AND t.systemExcused = 0 AND t.samePeriodExcused = 0 AND u.turnDateTime > UNIX_TIMESTAMP() - 7*24*60*60 THEN 1 ELSE 0 END,
-			u.missedPhasesNonLiveLastMonth = u.missedPhasesNonLiveLastMonth - CASE WHEN t.liveGame = 0 AND t.systemExcused = 0 AND t.samePeriodExcused = 0 AND UNIX_TIMESTAMP() - 7*24*60*60 >= u.turnDateTime AND u.turnDateTime > UNIX_TIMESTAMP() - 28*24*60*60 THEN 1 ELSE 0 END,
-			u.missedPhasesNonLiveLastYear = u.missedPhasesNonLiveLastYear - CASE WHEN t.liveGame = 0 AND t.systemExcused = 0 AND t.samePeriodExcused = 0 AND UNIX_TIMESTAMP() - 28*24*60*60 >= u.turnDateTime AND u.turnDateTime > UNIX_TIMESTAMP() - 365*24*60*60 THEN 1 ELSE 0 END
-		WHERE t.id=".$excuseID);
+			u.missedPhasesTotalLastWeek = 0,
+			u.missedPhasesTotalLastMonth = 0,
+			u.missedPhasesTotalLastYear = 0,
+			u.missedPhasesLiveLastWeek = 0,
+			u.missedPhasesLiveLastMonth = 0,
+			u.missedPhasesLiveLastYear = 0, 
+			u.missedPhasesNonLiveLastWeek = 0,
+			u.missedPhasesNonLiveLastMonth = 0,
+			u.missedPhasesNonLiveLastYear = 0
+		WHERE u.id=".$userID);
 
-		return 'This user\'s missed turn has been excused.';
+		return 'This user\'s missed turn has been excused, it may take a minute for the recalc to occur.';
+	}
+
+	public function modExcuseDelayByPeriod(array $params)
+	{
+		global $DB;
+
+		$periodStartTime = (int)$params['periodStartTime'];
+		$periodEndTime   = (int)$params['periodEndTime'];
+
+		if( !isset($params['reason']) || strlen($params['reason'])==0 )
+			return l_t('Couldn\'t excuse delay for period; no reason was given.');
+
+		$modReason = $DB->msg_escape($params['reason']);
+
+		// Set the mod excused flag, and set the reliability period to -1 to trigger a recalculation
+		$DB->sql_put("UPDATE wD_MissedTurns SET modExcused = 1, modExcusedReason = '".$modReason."' WHERE turnDateTime>=".$periodStartTime." AND turnDateTime <= ".$periodEndTime);
+		$DB->sql_put("UPDATE wD_MissedTurns SET reliabilityPeriod = -1 WHERE userID IN (SELECT userID FROM turnDateTime>=".$periodStartTime." AND turnDateTime <= ".$periodEndTime.")");
+
+		// Reset the missed phase bucked so that the recalc will start from 0 for this user
+		$DB->sql_put("UPDATE wD_Users u
+		SET u.isPhasesDirty = 1,
+			u.missedPhasesTotalLastWeek = 0,
+			u.missedPhasesTotalLastMonth = 0,
+			u.missedPhasesTotalLastYear = 0,
+			u.missedPhasesLiveLastWeek = 0,
+			u.missedPhasesLiveLastMonth = 0,
+			u.missedPhasesLiveLastYear = 0, 
+			u.missedPhasesNonLiveLastWeek = 0,
+			u.missedPhasesNonLiveLastMonth = 0,
+			u.missedPhasesNonLiveLastYear = 0
+		WHERE u.id IN userID IN (SELECT userID FROM turnDateTime>=".$periodStartTime." AND turnDateTime <= ".$periodEndTime.")");
+
+		return 'Missed turns in this period have been excused, it may take a minute for the recalc to occur.';
 	}
 
 	public function setProcessTimeToNowConfirm(array $params)
