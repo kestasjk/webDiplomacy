@@ -660,7 +660,7 @@ FROM (
  SELECT a.userID, 'LatLon' type, UNHEX(LPAD(CONV(ROUND((u.latitude+90.0)*10,0)*10000+ROUND((u.longitude+180.0)*10,0),10,16),16,'0')) code, MIN(a.earliest) earliestRequest, MAX(a.latest) latestRequest, SUM(a.count) requestCount
  FROM wD_UserCodeConnections a
  INNER JOIN wD_IPLookups u ON a.code = u.ipCode
- WHERE a.type='IP' AND u.timeLookedUp >= FROM_UNIXTIME(".$lastUpdate.")
+ WHERE a.type='IP' AND u.timeLookedUp >= ".$lastUpdate."
  GROUP BY a.userID, a.code
 ) r
 ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requestCount;
