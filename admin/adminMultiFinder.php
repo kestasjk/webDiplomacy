@@ -56,7 +56,6 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 		if ( !is_array($m->bUserIDs) )
 		{
 			$m->findbUserIDs();
-			
 		}
 			
 		
@@ -88,6 +87,7 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 			print $relations->outputTable(-1000,-1000,-1000); // Be inclusive of suspicions
 			print '</div>';
 			
+			
 			if( isset($_REQUEST['showHistory']) )
 			{
 				$m->printUserTimeprint();
@@ -98,6 +98,11 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 			{
 				foreach($bUsers as $bUser)
 				{
+					// Reliability rating
+					// Games joined: password, no press, bot games
+					// Messages / game Messages / user Messages / suspect stats
+					// Social media links, SMS, paypal links, time joined
+					// Forum messages
 					$m->compare($bUser, $relations);
 				}
 			}
@@ -356,10 +361,12 @@ class adminMultiCheck
 				FROM wD_UserCodeConnections a
 				INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code
 				INNER JOIN wD_Members m ON ( b.userID = m.userID )
+				INNER JOIN wD_Users u ON u.id = b.UserID
 				WHERE
 					m.gameID IN (".implode(',', $this->aLogsData['PublicGameIDs']).")
 					AND a.userID = ".$this->aUserID."
 					AND b.userID <> ".$this->aUserID."
+					AND NOT u.username LIKE 'diplonow_%'
 				LIMIT 100"
 				);
 		}
@@ -369,9 +376,11 @@ class adminMultiCheck
 				"SELECT DISTINCT b.userID
 				FROM wD_UserCodeConnections a
 				INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code
+				INNER JOIN wD_Users u ON u.id = b.UserID
 				WHERE
 					a.userID = ".$this->aUserID."
 					AND b.userID <> ".$this->aUserID."
+					AND NOT u.username LIKE 'diplonow_%'
 					LIMIT 100"
 				);
 		}

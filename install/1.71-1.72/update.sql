@@ -837,3 +837,26 @@ ADD COLUMN `gameMessageLength` INT(11) NOT NULL DEFAULT '0' AFTER `gameMessageCo
 
 ALTER TABLE `wD_UserCodeConnections`
 CHANGE COLUMN `type` `type` ENUM('Cookie','IP','Fingerprint','FingerprintPro','MessageCount','MessageLength') NOT NULL COLLATE 'utf8mb4_unicode_ci' AFTER `userID`;
+
+ALTER TABLE `wD_Sessions` CHANGE `cookieCode` `cookieCode` BIGINT(10) UNSIGNED NOT NULL; 
+ALTER TABLE `wD_AccessLog` CHANGE `cookieCode` `cookieCode` BIGINT(10) UNSIGNED NOT NULL; 
+
+CREATE TABLE IF NOT EXISTS `wD_IPLookups` (
+  `ipCode` binary(16) NOT NULL,
+  `ip` varchar(50) NOT NULL,
+  `security` set('vpn','proxy','tor','relay') DEFAULT NULL,
+  `city` varchar(50) DEFAULT NULL,
+  `region` varchar(50) DEFAULT NULL,
+  `country` varchar(50) DEFAULT NULL,
+  `continent` varchar(50) DEFAULT NULL,
+  `latitude` double DEFAULT NULL,
+  `longitude` double DEFAULT NULL,
+  `network` varchar(50) DEFAULT NULL,
+  `autonomous_system_number` varchar(50) DEFAULT NULL,
+  `autonomous_system_organization` varchar(50) DEFAULT NULL,
+  `timeInserted` bigint(20) UNSIGNED NOT NULL,
+  `timeLastHit` bigint(20) UNSIGNED NOT NULL,
+  `timeLookedUp` bigint(20) UNSIGNED DEFAULT NULL,
+  `hits` int(10) UNSIGNED DEFAULT 0,
+  PRIMARY KEY (`ipCode`)
+) ENGINE=InnoDB;

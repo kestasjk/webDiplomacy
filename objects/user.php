@@ -871,7 +871,7 @@ class User {
 		if($this->type['Banned'])
 			libHTML::notice(l_t('Banned'), l_t('You have been banned from this server. If you think there has been a mistake contact the moderator team at %s , and if you still aren\'t satisfied contact the admin at %s (with details of what happened).',Config::$modEMail, Config::$adminEMail));
 
-		$ip = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
+		$ip = $originalIP = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
 
 		$ip = (explode(',',$ip))[0]; // Somehow this seems to be of the form 1.2.3.4,1.2.3.5, as in a list of IPS
 		// Don't know whyu but need a fix as causing ip is null errors on insert
@@ -881,6 +881,8 @@ class User {
 			// '2409:8a00:184f:70d0:652f:47b3:7ee1:5f50'
 			$ip=str_replace(':','',$ip);
 			// '24098a00184f70d0652f47b37ee15f50'
+			/*
+			Previous truncation of 128 bit address to 32 bit address no longer needed
 			if( strlen($ip) >= 6)
 			{
 				$ip=substr($ip, min(strlen($ip)-6,0), 6);
@@ -894,13 +896,28 @@ class User {
 			else
 			{
 				$ip='1.1.1.1';
-			}
+			}*/
 		}
-		$DB->sql_put("INSERT INTO wD_Sessions (userID, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint)
-					VALUES (".$this->id.",CURRENT_TIMESTAMP,1, CAST(INET_ATON('".$ip."') as binary),
-							UNHEX('".$userAgentHash."'), ".$cookieCode.", UNHEX('".$browserFingerprint."') )
-					ON DUPLICATE KEY UPDATE hits=hits+1");
+		else
+		{
+			$ip = ip2long($ip);
+			if( !$ip ) $ip = 0;
+			$ip = dechex($ip);
+		}
 
+		if( !isset($_SESSION['auid']) )
+		{
+			// Only store a session hit if we are not impersonating a user
+			$DB->sql_put("INSERT INTO wD_Sessions (userID, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint)
+			VALUES (".$this->id.",CURRENT_TIMESTAMP,1, UNHEX('".$ip."'),
+					UNHEX('".$userAgentHash."'), ".$cookieCode.", UNHEX('".$browserFingerprint."') )
+			ON DUPLICATE KEY UPDATE hits=hits+1");
+
+			$DB->sql_put("INSERT INTO wD_IPLookups (ipCode, ip, timeInserted, timeLastHit)
+			VALUES (UNHEX('".$ip."'), '".$originalIP."', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())
+			ON DUPLICATE KEY UPDATE hits=hits+1, timeLastHit=UNIX_TIMESTAMP()");
+		}
+		
 		$this->online = true;
 	}
 
