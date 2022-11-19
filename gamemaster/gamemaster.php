@@ -637,7 +637,7 @@ ON DUPLICATE KEY UPDATE
   INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, type, code , earliestRequest, latestRequest, requestCount
 FROM (
- SELECT userID, 'Cookie' type, CAST(cookieCode AS BINARY) code, MIN(lastRequest) earliestRequest, MAX(lastRequest) latestRequest, SUM(hits) requestCount
+ SELECT userID, 'Cookie' type, UNHEX(LPAD(CONV(cookieCode,10,16),16,'0')) code, MIN(lastRequest) earliestRequest, MAX(lastRequest) latestRequest, SUM(hits) requestCount
  FROM wD_AccessLog
  WHERE lastRequest >= FROM_UNIXTIME(".$lastUpdate.")
  GROUP BY userID, cookieCode
@@ -657,7 +657,7 @@ ON DUPLICATE KEY UPDATE latest=greatest(latestRequest, latest), count=count+requ
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, type, code , earliestRequest, latestRequest, requestCount
 FROM (
- SELECT userID, 'Fingerprint' type, browserFingerprint code, MIN(lastRequest) earliestRequest, MAX(lastRequest) latestRequest, SUM(hits) requestCount
+ SELECT userID, 'Fingerprint' type, UNHEX(LPAD(CONV(browserFingerprint,10,16),16,'0')) code, MIN(lastRequest) earliestRequest, MAX(lastRequest) latestRequest, SUM(hits) requestCount
  FROM wD_AccessLog
  WHERE lastRequest >= FROM_UNIXTIME(".$lastUpdate.")
  AND browserFingerprint IS NOT NULL AND browserFingerprint <> 0
@@ -774,12 +774,12 @@ CREATE TABLE wD_Tmp_MessageCount
   GROUP BY m1.userID, m2.userID;
 
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
-SELECT userID, 'MessageLength' type, code , earliestM, latestM, countM
+SELECT userID, 'MessageLength' type, UNHEX(LPAD(CONV(code,10,16),16,'0')) code , earliestM, latestM, countM
 FROM wD_Tmp_MessageCount r
 ON DUPLICATE KEY UPDATE latest=greatest(r.latestM, latest), count=count+r.countM;
 
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
-SELECT userID, 'MessageCount' type, code , earliestM, latestM, countM
+SELECT userID, 'MessageCount' type, UNHEX(LPAD(CONV(code,10,16),16,'0')) code , earliestM, latestM, countM
 FROM wD_Tmp_MessageCount r
 ON DUPLICATE KEY UPDATE latest=greatest(r.latestM, latest), count=count+r.countM;
 
