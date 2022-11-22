@@ -775,6 +775,64 @@ class Game
     {
         return $this->name;
     }
+    
+    /**
+ 	* Create a webDip animation for stored .map files
+ 	* 
+	* stores animation.gif in game cache folder
+	*/
+	function create_webDip_animation()
+	{
+
+		// Set the parameter for delays between frames of the gif file in 1/100 s.
+		// It would be nice if the users could set this parameter themselves,
+		// but that would lead to a large number of gif files in the cache folder.
+		$delay = 80;
+
+		// Only allow to make an animation if at least one turn was played.
+		if ( $this->turn == 0 )
+		{
+			return 	libHTML::error(l_t("Can not make an animation since the game ended on the first term."));
+		}
+
+		$folder = "cache/games/0/".$this->id."/";
+		$files_in_folder = scandir($folder);
+
+		function drop_suffix ($string)
+		{
+			return (int)substr($string, 0, -10);
+		}
+
+		$frames = array();
+		$durations = array();
+		foreach ($files_in_folder as $file)
+		{
+			if ( (strpos($file, "small.map") !== false) and (is_numeric(drop_suffix ($file))))
+			{
+				array_push($frames, drop_suffix($file));
+				array_push($durations, $delay);
+			}
+		}
+		
+		sort($frames);
+		
+		// Check that all the map files are in the cache.
+		if ( $frames != range(0, $this->turn) )
+		{
+			return 	libHTML::error(l_t("Some maps are missing in the cache. Try loading the map archive before making the animation."));	
+		}
+
+		// Modify $frames to contain full file paths.
+		$frames = array_map(function ($s) {return "cache/games/0/".$this->id."/".$s."-small.map";}, $frames);
+		// Modify $durations to make the last frame longer.
+		$durations[$this->turn] = 2*$delay;
+
+		$anim = new AnimGif();
+		$anim->create($frames, $durations);
+		$anim->save($folder.'animation.gif');
+
+	}
+
 }
 
 

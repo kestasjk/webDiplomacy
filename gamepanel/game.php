@@ -414,10 +414,17 @@ class panelGame extends Game
 	 */
 	function archiveBar()
 	{
+	    $gifLink = '';
+	    
+	    if ($this->phase == 'Finished' )
+	    {
+	    	$gifLink = ' - <a href="board.php?gameID='.$this->id.'&amp;viewArchive=Gif">'.l_t('GIF').'</a>';
+	    }
+	    
 		return '<strong>'.l_t('Archive:').'</strong> '.
 			'<a href="board.php?gameID='.$this->id.'&amp;viewArchive=Orders">'.l_t('Orders').'</a>
 			- <a href="board.php?gameID='.$this->id.'&amp;viewArchive=Maps">'.l_t('Maps').'</a>
-			- <a href="board.php?gameID='.$this->id.'&amp;viewArchive=Messages">'.l_t('Messages').'</a>';
+			- <a href="board.php?gameID='.$this->id.'&amp;viewArchive=Messages">'.l_t('Messages').'</a>'.$gifLink;
 //			- <a href="board.php?gameID='.$this->id.'&amp;viewArchive=Reports">Reports</a>';
 	}
 
