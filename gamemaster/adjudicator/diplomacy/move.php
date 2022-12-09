@@ -289,6 +289,14 @@ class adjMove extends adjHold
 	 */
 	protected function supportStrength($checkCountryID=false)
 	{
+		// If attacking our own country we have no support strength
+		if( $checkCountryID and $this->countryID == $this->defender->countryID )
+		{
+			$min = 0;
+			$max = 0;
+		}
+		else
+		{
 		$min = 1;
 		$max = 1;
 		
@@ -314,6 +322,7 @@ class adjMove extends adjHold
 				$max++; // It is a possible supporter
 				if ( isset($p) ) $p->downSizeTo($pe);
 				else $p = $pe;
+				}
 			}
 		}
 		

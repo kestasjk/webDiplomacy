@@ -460,7 +460,7 @@ class Game
 	
 	function isClassicGame()
 	{
-		return $this->Variant->name == Config::$variants[1];
+		return $this->Variant->name == 'Classic' || $this->Variant->name == 'ClassicGvI' || $this->Variant->name == 'ClassicFvA';
 	}
 
 	function watched() 

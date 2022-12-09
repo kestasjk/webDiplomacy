@@ -860,3 +860,31 @@ CREATE TABLE IF NOT EXISTS `wD_IPLookups` (
   `hits` int(10) UNSIGNED DEFAULT 0,
   PRIMARY KEY (`ipCode`)
 ) ENGINE=InnoDB;
+
+
+DELETE FROM wD_Datc WHERE testID IN (902,903,904);
+DELETE FROM wD_DatcOrders WHERE testID IN (902,903,904);
+
+INSERT INTO wD_Datc (testID, variantID, testName, testDesc, status) VALUES
+(902, 1, 'wD.Test.2', 'Testing for an adjudication error regarding self dislodgement and paradoxes', 'NotPassed');
+
+INSERT INTO wD_DatcOrders (testID, countryID, unitType, terrID, moveType, toTerrID, fromTerrID, criteria, viaConvoy, legal) VALUES 
+(902, 5, 'Army', 19, 'Move', 20, NULL, 'Hold', 'No', 'Yes'),
+(902, 5, 'Army', 20, 'Move', 22, NULL, 'Hold', 'No', 'Yes'),
+(902, 5, 'Fleet', 22, 'Move', 69, NULL, 'Hold', 'No', 'Yes'),
+(902, 7, 'Army', 24, 'Move', 22, NULL, 'Hold', 'No', 'Yes'),
+(902, 7, 'Fleet', 69, 'Move', 80, NULL, 'Hold', 'No', 'Yes'),
+(902, 3, 'Fleet', 23, 'Support Move', 22, 20, 'Hold', 'No', 'Yes');
+
+INSERT INTO wD_Datc (testID, variantID, testName, testDesc, status) VALUES
+(903, 1, 'wD.Test.3', 'Testing for an adjudication error regarding self dislodgement and paradoxes', 'NotPassed');
+
+INSERT INTO wD_DatcOrders (testID, countryID, unitType, terrID, moveType, toTerrID, fromTerrID, criteria, viaConvoy, legal) VALUES 
+(903, 5, 'Army', 19, 'Move', 20, NULL, 'Hold', 'No', 'Yes'),
+(903, 5, 'Army', 20, 'Move', 22, NULL, 'Hold', 'No', 'Yes'),
+(903, 5, 'Fleet', 22, 'Move', 69, NULL, 'Hold', 'No', 'Yes'),
+(903, 7, 'Army', 24, 'Move', 22, NULL, 'Hold', 'No', 'Yes'),
+(903, 5, 'Fleet', 69, 'Move', 21, NULL, 'Hold', 'No', 'Yes'),
+(903, 7, 'Fleet', 21, 'Move', 20, NULL, 'Hold', 'No', 'Yes'),
+(903, 3, 'Fleet', 23, 'Support Move', 22, 20, 'Hold', 'No', 'Yes'),
+(903, 3, 'Fleet', 24, 'Support Move', 69, 22, 'Hold', 'No', 'Yes');
