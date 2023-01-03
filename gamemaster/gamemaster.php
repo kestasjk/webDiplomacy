@@ -152,7 +152,7 @@ class libGameMaster
 
 			// Set the week period missed turns to the users
 			$DB->sql_put("UPDATE wD_Users u LEFT JOIN (
-					SELECT userID, reliabilityPeriod
+					SELECT userID, reliabilityPeriod,
 						SUM(CASE WHEN liveGame = 0 AND samePeriodExcused = 0 AND systemExcused = 0 AND modExcused = 0 THEN 1 ELSE 0 END) nonLiveNew,
 						SUM(CASE WHEN liveGame = 1 AND samePeriodExcused = 0 AND systemExcused = 0 AND modExcused = 0 THEN 1 ELSE 0 END) liveNew,
 						SUM(CASE WHEN modExcused = 0 THEN 1 ELSE 0 END) totalNew 
