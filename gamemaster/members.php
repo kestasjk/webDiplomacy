@@ -605,7 +605,7 @@ class processMembers extends Members
 		// increment the turn count (turn counts are decremented after 1 year in /gamemaster.php)
 		$DB->sql_put("UPDATE wD_Users u
 				INNER JOIN wD_Members m ON m.userID = u.id
-				SET u.yearlyPhaseCount = u.yearlyPhaseCount + 1
+				SET u.yearlyPhaseCount = u.yearlyPhaseCount + 1, u.isPhasesDirty = 1
 				WHERE m.gameID = ".$this->Game->id."
 					AND ( m.status='Playing' OR m.status='Left' )
 					AND EXISTS(SELECT o.id FROM wD_Orders o WHERE o.gameID = m.gameID AND o.countryID = m.countryID)");
