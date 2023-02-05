@@ -246,7 +246,13 @@ class User {
 	 * @var int|float
 	 */
 	public $cdCount, $nmrCount, $cdTakenCount, $phaseCount, $gameCount, $reliabilityRating;
-
+	
+	/**
+	 * The users identity rating from 0 to 100
+	 * 
+	 * @var int
+	 */
+	public $identityRating;
 	/**
 	 * darkMode
 	 * Choose css style theme
@@ -605,7 +611,8 @@ class User {
 			u.optInFeatures,
 			u.mobileCountryCode,
 			u.mobileNumber,
-			u.isMobileValidated
+			u.isMobileValidated,
+			u.identityRating
 			FROM wD_Users u
 			WHERE ".( $username ? "u.username='".$username."'" : "u.id=".$this->id ));
 
@@ -666,13 +673,13 @@ class User {
 	 */
 	function profile_link($welcome = false)
 	{
-		return self::profile_link_static($this->username, $this->id, $this->type, $this->points);
+		return self::profile_link_static($this->username, $this->id, $this->type, $this->points, $this->identityRating);
 	}
 
 	/**
 	 * Generate a profile link using raw database values ($type can be a $User->type array or string ENUM field)
 	 */
-	static function profile_link_static($username, $id, $type, $points)
+	static function profile_link_static($username, $id, $type, $points, $identityRating = -1)
 	{
 		global $User;
 
@@ -685,7 +692,7 @@ class User {
 			// Allow javascript to use this ID link:
 			$buffer.=' profileLinkUserID="'.$id.'">'.$username;
 
-			$buffer.='</a> ('.trim($points).libHTML::points().self::typeIcon($type).libHTML::loggedOn($id);
+			$buffer.='</a> ('.trim($points).libHTML::points().self::typeIcon($type).libHTML::identityIcon($identityRating).libHTML::loggedOn($id);
 			
 			$buffer .= ')<span class="userRelationships" profileLinkUserID="'.$id.'"></span>';
 

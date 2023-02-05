@@ -261,73 +261,9 @@ if( isset(Config::$auth0conf) )
 	print '<p>Currently Facebook and Google authentication is supported, with Apple and SMS support coming soon.</p>';
 
 	$userInfo = libOpenID::getUserInfo();
-	//print str_replace("\n","<br />", print_r($userInfo,true));
+	if( $userInfo ) libOpenID::saveOpenIDData($userInfo);
 	
-	if( $userInfo )
-	{
-		$sql = "INSERT INTO wD_UserOpenIDLinks ( userID, source, timeCreated, timeUpdated, ";
-
-		$addedCols = array();
-		$addedVals = array();
-		foreach(libOpenID::$validColumns as $col)
-		{
-			if( isset($userInfo[$col]) )
-			{
-				$addedCols[] = $col;
-				$addedVals[] = $DB->msg_escape($userInfo[$col]);
-			}
-		}
-
-		if( count($addedCols) > 0 )
-		{
-			
-			if( isset($userInfo['sub']) )
-			{
-				if( false!==strstr($userInfo['sub'], 'facebook') )
-					$source = 'facebook';
-				elseif( false!==strstr($userInfo['sub'], 'google') )
-					$source = 'google';
-				else
-					$source = 'unknown';
-			}
-
-			if( $source == 'unknown' )
-			{
-				throw new Exception("Unknown source of authentication info; rejected.");
-			}
-
-			$sql .= "`".implode('`, `', $addedCols)."`";
-			$sql .= ') VALUES (';
-			$sql .= $User->id;
-			$sql .= ", '";
-			$sql .= $source;
-			$sql .= "', ";
-			$sql .= time();
-			$sql .= ', ';
-			$sql .= time();
-			$sql .= ', ';
-			$sql .= "'".implode("', '", $addedVals)."'";
-			$sql .= ') ON DUPLICATE KEY UPDATE timeUpdated = VALUES(timeUpdated)';
-			foreach($addedCols as $addedCol)
-			{
-				$sql .= ", `" . $addedCol . "` = VALUES(`" . $addedCol . "`)";
-			}
-
-			$DB->sql_put($sql);
-			$DB->sql_put("COMMIT");
-		}
-	}
-
-	$validSources = array('facebook'=>false, 'google'=>false, 'sms'=>false);
-
-	$registeredSources = $DB->sql_tabl("SELECT source, sub FROM wD_UserOpenIDLinks WHERE userID = " . $User->id);
-	while(list($source, $sub) = $DB->tabl_row($registeredSources) )
-	{
-		if( isset($validSources[$source]) )
-		{
-			$validSources[$source] = $sub;
-		}
-	}
+	$validSources = libOpenID::getValidSources($userInfo);
 
 	print '<h4>Current links:</h4>';
 	print '<ul>';

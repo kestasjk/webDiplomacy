@@ -118,11 +118,11 @@ services:
     command: /bin/sh -c "install/gamemaster-entrypoint.sh > /application/gamemaster-entrypoint.txt"
     depends_on:
       - "mariadb"
-    #environment:
-    #    PHP_IDE_CONFIG: "serverName=Docker"
-    #    XDEBUG_MODE: debug
-    #    XDEBUG_CONFIG: client_host=host.docker.internal client_port=9003
-    #    XDEBUG_SESSION: 1
+    environment:
+        PHP_IDE_CONFIG: "serverName=Docker"
+        XDEBUG_MODE: debug
+        XDEBUG_CONFIG: client_host=host.docker.internal client_port=9003
+        XDEBUG_SESSION: 1
 
   soketi:
     container_name: "webdiplomacy-websocket"

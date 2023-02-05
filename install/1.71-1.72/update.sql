@@ -862,13 +862,13 @@ CREATE TABLE IF NOT EXISTS `wD_IPLookups` (
 ) ENGINE=InnoDB;
 
 
-DELETE FROM wD_Datc WHERE testID IN (902,903,904);
-DELETE FROM wD_DatcOrders WHERE testID IN (902,903,904);
+DELETE FROM wD_DATC WHERE testID IN (902,903,904);
+DELETE FROM wD_DATCOrders WHERE testID IN (902,903,904);
 
-INSERT INTO wD_Datc (testID, variantID, testName, testDesc, status) VALUES
+INSERT INTO wD_DATC (testID, variantID, testName, testDesc, status) VALUES
 (902, 1, 'wD.Test.2', 'Testing for an adjudication error regarding self dislodgement and paradoxes', 'NotPassed');
 
-INSERT INTO wD_DatcOrders (testID, countryID, unitType, terrID, moveType, toTerrID, fromTerrID, criteria, viaConvoy, legal) VALUES 
+INSERT INTO wD_DATCOrders (testID, countryID, unitType, terrID, moveType, toTerrID, fromTerrID, criteria, viaConvoy, legal) VALUES 
 (902, 5, 'Army', 19, 'Move', 20, NULL, 'Hold', 'No', 'Yes'),
 (902, 5, 'Army', 20, 'Move', 22, NULL, 'Hold', 'No', 'Yes'),
 (902, 5, 'Fleet', 22, 'Move', 69, NULL, 'Hold', 'No', 'Yes'),
@@ -876,10 +876,10 @@ INSERT INTO wD_DatcOrders (testID, countryID, unitType, terrID, moveType, toTerr
 (902, 7, 'Fleet', 69, 'Move', 80, NULL, 'Hold', 'No', 'Yes'),
 (902, 3, 'Fleet', 23, 'Support Move', 22, 20, 'Hold', 'No', 'Yes');
 
-INSERT INTO wD_Datc (testID, variantID, testName, testDesc, status) VALUES
+INSERT INTO wD_DATC (testID, variantID, testName, testDesc, status) VALUES
 (903, 1, 'wD.Test.3', 'Testing for an adjudication error regarding self dislodgement and paradoxes', 'NotPassed');
 
-INSERT INTO wD_DatcOrders (testID, countryID, unitType, terrID, moveType, toTerrID, fromTerrID, criteria, viaConvoy, legal) VALUES 
+INSERT INTO wD_DATCOrders (testID, countryID, unitType, terrID, moveType, toTerrID, fromTerrID, criteria, viaConvoy, legal) VALUES 
 (903, 5, 'Army', 19, 'Move', 20, NULL, 'Hold', 'No', 'Yes'),
 (903, 5, 'Army', 20, 'Move', 22, NULL, 'Hold', 'No', 'Yes'),
 (903, 5, 'Fleet', 22, 'Move', 69, NULL, 'Hold', 'No', 'Yes'),
@@ -888,3 +888,36 @@ INSERT INTO wD_DatcOrders (testID, countryID, unitType, terrID, moveType, toTerr
 (903, 7, 'Fleet', 21, 'Move', 20, NULL, 'Hold', 'No', 'Yes'),
 (903, 3, 'Fleet', 23, 'Support Move', 22, 20, 'Hold', 'No', 'Yes'),
 (903, 3, 'Fleet', 24, 'Support Move', 69, 22, 'Hold', 'No', 'Yes');
+
+
+CREATE TABLE `wD_UserIdentity` (
+`id` INT UNSIGNED NOT NULL,
+`userID` MEDIUMINT(8) UNSIGNED NOT NULL,
+`identityType` ENUM('facebook','google','youtube','instagram','github','twitter','playdiplomacy',
+'backstabbr','vdiplomacy','webdiplomacyFork','paypal','sms','photo','relationshipDeclared',
+'relationshipModChecked','longTimePlayer','forumMember') NOT NULL,
+`systemVerified` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+`systemVerifiedTime` BIGINT UNSIGNED NULL DEFAULT NULL,
+`timeCreated` BIGINT UNSIGNED NOT NULL,
+`identityText` VARCHAR(500) NULL DEFAULT NULL,
+`identityNumber` BIGINT UNSIGNED NULL DEFAULT NULL,
+`modVerified` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+`modVerifiedTime` TINYINT UNSIGNED NULL DEFAULT NULL,
+`modRequestedTime` BIGINT UNSIGNED NULL DEFAULT NULL,
+`modRequestedUserID` BIGINT UNSIGNED NULL DEFAULT NULL,
+`modUserID` MEDIUMINT UNSIGNED NULL DEFAULT NULL,
+`timeSubmitted` BIGINT UNSIGNED NULL DEFAULT NULL,
+`modRequestedFromGroupID` INT UNSIGNED NULL DEFAULT NULL,
+`isDirty` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+`score` TINYINT NOT NULL DEFAULT 0,
+`userComment` VARCHAR(500) NULL DEFAULT NULL,
+`modComment` VARCHAR(500) NULL DEFAULT NULL,
+PRIMARY KEY (`id`),
+UNIQUE INDEX `userID_identityType` (`userID`, `identityType`)
+)
+ENGINE=InnoDB
+;
+
+ALTER TABLE `wD_Games` ADD COLUMN `minimumIdentityScore` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0' AFTER `minimumNMRScore`;
+
+ALTER TABLE `wD_Users` ADD COLUMN `identityScore` TINYINT(3) UNSIGNED;

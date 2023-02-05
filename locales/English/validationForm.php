@@ -22,10 +22,13 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 ?><h2>Anti-bot Validation</h2>
 
-<form method="post" action="register.php">
+<form method="post" action="register.php" id="wd-register-form">
 
 	<ul class="formlist">
-
+		<?php 
+		if( !(isset(Config::$recaptchaSiteKey) && Config::$recaptchaSiteKey != null) )
+		{
+		?>
 		<li class="formlisttitle">Anti-script code</li>
 		<li class="formlistfield">
 		        <img alt="EasyCaptcha image" src="<?php print STATICSRV; ?>contrib/easycaptcha.php" /><br />
@@ -34,7 +37,9 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		<li class="formlistdesc">
 			By entering the above code you protect our forum from spam-bots and other scripts
 		</li>
-
+		<?php 
+		}
+		?>
 		<li class="formlisttitle">E-mail address</li>
 		<li class="formlistfield"><input type="text" name="emailValidate" value="<?php
 		        if ( isset($_REQUEST['emailValidate'] ) )
@@ -49,6 +54,32 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 <div class="hr"></div>
 
 <p class="notice">
+	<?php 
+	if( isset(Config::$recaptchaSiteKey) && Config::$recaptchaSiteKey != null )
+	{
+	?>
+	
+		
+		<script>
+		function onSubmit(token) {
+			document.getElementById("wd-register-form").submit();
+		}
+		</script>
+		<button type="submit" 
+			class="green-Submit g-recaptcha" 
+			data-callback='onSubmit'
+			data-action='submit' 
+			data-sitekey="<?php print Config::$recaptchaSiteKey ?>" 
+			value="Validate me">Submit</button>
+
+	<?php
+	}
+	else
+	{
+	?>
 	<input type="submit" class="green-Submit" value="Validate me">
+	<?php
+	}
+	?>
 </p>
 </form>

@@ -408,6 +408,24 @@ class Config
 	public static $fingerPrintWebHookPassword = null;
 
 	/**
+	 * If using reCaptcha v3 instead of the built-in easyCaptcha (which can be unreliable) enter the site key here:
+	 * @var string
+	 */
+	public static $recaptchaSiteKey = null;
+
+	/**
+	 * Site key for a web pusher account, to allow users to subscribe to notifications
+	 * @var string
+	 */
+	public static $webpushrSiteKey = null;
+
+	/**
+	 * The auth token for a web pusher account to allow users to subscribe to notifications
+	 * @var string
+	 */
+	public static $webpushrAuthToken = null;
+
+	/**
 	 * Read /contrib/phpBB3-files/README.txt for instructions on enabling the phpBB3 integration support. The final step
 	 * is uncommenting the line below (assuming this is where it was installed to.)
 	 */

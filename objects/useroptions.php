@@ -66,6 +66,7 @@ class UserOptions
 	 */
 	function load($cachedOptions = null)
 	{
+		
 		global $DB;
 		if( $cachedOptions != null )
 		{

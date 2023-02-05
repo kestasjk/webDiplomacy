@@ -164,30 +164,6 @@ class adminUserToUserCodeConnections
 	public $count;
 }
 
-// Verification score
-// ------------------
-// verificationUserType
-// Admin 500
-// Moderator 300
-
-// verificationAccountDetail
-// Facebook 200
-// Paypal or Donor flag 200
-// SMS 150
-// Google 50
-// Entered location 10
-
-// verificationRelationships
-// Relationships declared 5
-
-// verificationUserActivity
-// Forum messages (log(messageCount)-1)*5 (10 -> 14, 1000 -> 30) phpbb_users.webdip_user_id .user_posts
-// Mod forum messages (log(messageCount)-1)*5 (10 -> 14, 1000 -> 30) phpbb_users.webdip_user_id .user_posts
-// Non-bot games (log(gamesCount)-1)*20
-// Game messages (log(messageCount)-1)*10 (10 -> 14, 1000 -> 30)
-// Points (log(point)-1)
-// Weeks joined (log((UNIX_TIMESTAMP() - timeJoined)/(7*24*60))-1)*50
-
 
 // Independent suspicion score
 // ---------------------------
