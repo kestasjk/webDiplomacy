@@ -159,8 +159,8 @@ if( (time() - $Misc->LastGroupUpdate) > 1*60 )
 	libGroup::generateGameRelationCache($Misc->LastGroupUpdate);	
 
 	// Update the user connections
-	print l_t('Updating user connection stats').'<br />';
-	libGameMaster::updateUserConnections($Misc->LastGroupUpdate);
+	//print l_t('Updating user connection stats').'<br />';
+	//libGameMaster::updateUserConnections($Misc->LastGroupUpdate);
 
 	$Misc->LastGroupUpdate = $groupUpdateTime;
 }
