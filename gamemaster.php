@@ -134,6 +134,17 @@ if( $Misc->LastStatsUpdate < (time() - 37*60) )
 	}
 }
 
+// Temporary fudge to prevent the FairBot2 bot from not readying orders after submitting
+$DB->sql_put(
+	"UPDATE wD_Members 
+	SET orderStatus=CONCAT(orderStatus,',Ready')
+	WHERE userID IN (
+		SELECT id 
+		FROM wD_Users 
+		WHERE username = 'Fairbot2'
+	) AND orderStatus LIKE '%Saved%';"
+);
+
 //- Check last process time, pause processing/save current process time
 if ( ( time() - $Misc->LastProcessTime ) > Config::$downtimeTriggerMinutes*60 )
 {
@@ -155,7 +166,7 @@ if( (time() - $Misc->LastGroupUpdate) > 1*60 )
 }
 
 // Disable transactions while updating reliability ratings:
-$DB->disableTransactions();
+$DB->disableTransactions(); 
 
 // Update the reliability ratings:
 print l_t('Updating user phase/year counts and reliability ratings').'<br />';

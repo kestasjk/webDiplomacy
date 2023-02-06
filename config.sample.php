@@ -569,14 +569,14 @@ class Config
 	 *
 	 * @var int
 	 */
-	public static $pusherScheme = 'https';
+	public static $pusherScheme = 'http';
 
 	/**
 	 * Force pusher to use TLS
 	 *
 	 * @var int
 	 */
-	public static $pusherForceTLS = true;
+	public static $pusherForceTLS = false;
 
 }
 ?>

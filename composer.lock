@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "efc2d3c7a4323240aa7a4ea251a1a748",
+    "content-hash": "26881047684a853b7385c7ef5478b5f4",
     "packages": [
         {
             "name": "auth0/auth0-php",
@@ -59,6 +59,10 @@
             ],
             "description": "Auth0 PHP SDK.",
             "homepage": "https://github.com/auth0/auth0-PHP",
+            "support": {
+                "issues": "https://github.com/auth0/auth0-PHP/issues",
+                "source": "https://github.com/auth0/auth0-PHP/tree/7.9.2"
+            },
             "time": "2021-08-04T13:08:48+00:00"
         },
         {
@@ -66,7 +70,7 @@
             "version": "3.3.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/auth0/php-jwt.git",
+                "url": "git@github.com:auth0/php-jwt.git",
                 "reference": "a0daa1a728cf85230843ebb8c1183047fe493284"
             },
             "dist": {
@@ -114,16 +118,7 @@
                 "JWS",
                 "jwt"
             ],
-            "funding": [
-                {
-                    "url": "https://github.com/lcobucci",
-                    "type": "github"
-                },
-                {
-                    "url": "https://www.patreon.com/lcobucci",
-                    "type": "patreon"
-                }
-            ],
+            "abandoned": "auth0/auth0-php",
             "time": "2021-01-04T20:39:06+00:00"
         },
         {
@@ -234,6 +229,10 @@
                 "rest",
                 "web service"
             ],
+            "support": {
+                "issues": "https://github.com/guzzle/guzzle/issues",
+                "source": "https://github.com/guzzle/guzzle/tree/7.5.0"
+            },
             "funding": [
                 {
                     "url": "https://github.com/GrahamCampbell",
@@ -314,6 +313,10 @@
             "keywords": [
                 "promise"
             ],
+            "support": {
+                "issues": "https://github.com/guzzle/promises/issues",
+                "source": "https://github.com/guzzle/promises/tree/1.5.2"
+            },
             "funding": [
                 {
                     "url": "https://github.com/GrahamCampbell",
@@ -420,6 +423,10 @@
                 "uri",
                 "url"
             ],
+            "support": {
+                "issues": "https://github.com/guzzle/psr7/issues",
+                "source": "https://github.com/guzzle/psr7/tree/1.9.0"
+            },
             "funding": [
                 {
                     "url": "https://github.com/GrahamCampbell",
@@ -479,6 +486,11 @@
                 "pseudorandom",
                 "random"
             ],
+            "support": {
+                "email": "info@paragonie.com",
+                "issues": "https://github.com/paragonie/random_compat/issues",
+                "source": "https://github.com/paragonie/random_compat"
+            },
             "time": "2020-10-15T08:29:30+00:00"
         },
         {
@@ -561,6 +573,10 @@
                 "secret-key cryptography",
                 "side-channel resistant"
             ],
+            "support": {
+                "issues": "https://github.com/paragonie/sodium_compat/issues",
+                "source": "https://github.com/paragonie/sodium_compat/tree/v1.19.0"
+            },
             "time": "2022-09-26T03:40:35+00:00"
         },
         {
@@ -610,6 +626,9 @@
                 "psr",
                 "psr-18"
             ],
+            "support": {
+                "source": "https://github.com/php-fig/http-client/tree/master"
+            },
             "time": "2020-06-29T06:28:15+00:00"
         },
         {
@@ -660,6 +679,9 @@
                 "request",
                 "response"
             ],
+            "support": {
+                "source": "https://github.com/php-fig/http-message/tree/master"
+            },
             "time": "2016-08-06T14:39:51+00:00"
         },
         {
@@ -707,6 +729,9 @@
                 "psr",
                 "psr-3"
             ],
+            "support": {
+                "source": "https://github.com/php-fig/log/tree/1.1.4"
+            },
             "time": "2021-05-03T11:20:27+00:00"
         },
         {
@@ -755,20 +780,23 @@
                 "psr-16",
                 "simple-cache"
             ],
+            "support": {
+                "source": "https://github.com/php-fig/simple-cache/tree/master"
+            },
             "time": "2017-10-23T01:57:42+00:00"
         },
         {
             "name": "pusher/pusher-php-server",
-            "version": "7.2.0",
+            "version": "7.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pusher/pusher-http-php.git",
-                "reference": "7ed4a62956c7426814c7dc67b2bb764cd0e1a603"
+                "reference": "a9a7f739a2a03e3fef33633499ba586cabd57686"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pusher/pusher-http-php/zipball/7ed4a62956c7426814c7dc67b2bb764cd0e1a603",
-                "reference": "7ed4a62956c7426814c7dc67b2bb764cd0e1a603",
+                "url": "https://api.github.com/repos/pusher/pusher-http-php/zipball/a9a7f739a2a03e3fef33633499ba586cabd57686",
+                "reference": "a9a7f739a2a03e3fef33633499ba586cabd57686",
                 "shasum": ""
             },
             "require": {
@@ -777,7 +805,7 @@
                 "guzzlehttp/guzzle": "^7.2",
                 "paragonie/sodium_compat": "^1.6",
                 "php": "^7.3|^8.0",
-                "psr/log": "^1.0|^2.0|^3.0"
+                "psr/log": "^1.0"
             },
             "require-dev": {
                 "overtrue/phplint": "^2.3",
@@ -812,7 +840,11 @@
                 "rest",
                 "trigger"
             ],
-            "time": "2022-10-03T14:28:42+00:00"
+            "support": {
+                "issues": "https://github.com/pusher/pusher-http-php/issues",
+                "source": "https://github.com/pusher/pusher-http-php/tree/7.0.0"
+            },
+            "time": "2021-05-10T15:22:51+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
@@ -852,6 +884,10 @@
                 }
             ],
             "description": "A polyfill for getallheaders.",
+            "support": {
+                "issues": "https://github.com/ralouphie/getallheaders/issues",
+                "source": "https://github.com/ralouphie/getallheaders/tree/develop"
+            },
             "time": "2019-03-08T08:55:37+00:00"
         },
         {
@@ -902,6 +938,9 @@
             ],
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/deprecation-contracts/tree/v2.5.2"
+            },
             "funding": [
                 {
                     "url": "https://symfony.com/sponsor",
@@ -920,16 +959,16 @@
         },
         {
             "name": "twilio/sdk",
-            "version": "6.42.2",
+            "version": "6.40.0",
             "source": {
                 "type": "git",
                 "url": "git@github.com:twilio/twilio-php.git",
-                "reference": "a86746d7e5d88e0406fe002768c4007f5cb26174"
+                "reference": "86aa13d855f4624d07a5e6e8c0b7f2096d7d856c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/a86746d7e5d88e0406fe002768c4007f5cb26174",
-                "reference": "a86746d7e5d88e0406fe002768c4007f5cb26174",
+                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/86aa13d855f4624d07a5e6e8c0b7f2096d7d856c",
+                "reference": "86aa13d855f4624d07a5e6e8c0b7f2096d7d856c",
                 "shasum": ""
             },
             "require": {
@@ -965,7 +1004,7 @@
                 "sms",
                 "twilio"
             ],
-            "time": "2022-10-05T18:22:45+00:00"
+            "time": "2022-07-21T19:54:34+00:00"
         }
     ],
     "packages-dev": [],
@@ -976,5 +1015,8 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "1.1.0"
+    "platform-overrides": {
+        "php": "7.4"
+    },
+    "plugin-api-version": "2.2.0"
 }
