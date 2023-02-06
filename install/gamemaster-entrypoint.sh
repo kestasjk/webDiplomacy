@@ -62,3 +62,6 @@ else
   done
 
 fi
+
+echo Waiting for request
+while true; do sleep 1; done

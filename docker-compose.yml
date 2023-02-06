@@ -53,11 +53,13 @@ services:
     container_name: webdiplomacy-memcached
     ports:
       - "11211"
+    hostname: memcached
 
   mailhog:
     image: "mailhog/mailhog:latest"
     ports:
       - "43001:8025"
+    hostname: mailhog
 
   mariadb:
     image: "mariadb:10.6"
@@ -73,6 +75,7 @@ services:
       - MYSQL_PASSWORD=mypassword123
     ports:
       - "43003:3306"
+    hostname: mariadb
 
   phpmyadmin:
     image: phpmyadmin
@@ -81,9 +84,11 @@ services:
       - ${PHPMYADMIN_PORT:-8080}:80
     environment:
       - PMA_ARBITRARY=1
+    hostname: phpmyadmin
 
   clickhouse:
     image: "yandex/clickhouse-server:latest"
+    hostname: clickhouse
 
   # This is necessary for doing live React dev for the new board, but isn't needed after doing a build. If the nginx config is changed to not redirect /beta/ to port 3000:
   webserver:
@@ -96,6 +101,7 @@ services:
       - "${WEBDIP_PORT:-43000}:80"
     depends_on:
       - "php-fpm"
+    hostname: webserver
 
   beta:
     image: "node:16.15.1-alpine3.14"
@@ -108,6 +114,7 @@ services:
     command: >
       sh -c "npm install &&
               npm run start"
+    hostname: beta
 
   php-fpm:
     build: phpdocker/php-fpm
@@ -118,6 +125,7 @@ services:
     command: /bin/sh -c "install/gamemaster-entrypoint.sh > /application/gamemaster-entrypoint.txt"
     depends_on:
       - "mariadb"
+    hostname: php-fpm
     #environment:
     #    PHP_IDE_CONFIG: "serverName=Docker"
     #    XDEBUG_MODE: debug
@@ -137,6 +145,7 @@ services:
       - SOKETI_DEFAULT_APP_KEY=${SOKETI_DEFAULT_APP_KEY:-app-key}
       - SOKETI_DEFAULT_APP_SECRET=${SOKETI_DEFAULT_APP_SECRET:-app-secret}
       - USER_AUTHENTICATION_TIMEOUT=${SOKETI_USER_AUTHENTICATION_TIMEOUT:-5000}
+    hostname: soketi
 
 # Philip Paquette's publically available no-press bot docker image. Note this is not started by default as it uses a lot of resources and may not be
 # relevant to all development situations.
@@ -154,3 +163,4 @@ services:
       - API_KEY_USER_05=bot5
       - API_KEY_USER_06=bot6
       - API_KEY_USER_07=bot7
+    hostname: bots
