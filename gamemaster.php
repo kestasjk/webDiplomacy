@@ -136,13 +136,9 @@ if( $Misc->LastStatsUpdate < (time() - 37*60) )
 
 // Temporary fudge to prevent the FairBot2 bot from not readying orders after submitting
 $DB->sql_put(
-	"UPDATE wD_Members 
+	"UPDATE wD_Members m INNER JOIN wD_Users u ON u.id = m.userID
 	SET orderStatus=CONCAT(orderStatus,',Ready')
-	WHERE userID IN (
-		SELECT id 
-		FROM wD_Users 
-		WHERE username = 'Fairbot2'
-	) AND orderStatus LIKE '%Saved%';"
+	WHERE u.username = 'Fairbot2' AND orderStatus LIKE '%Saved%';"
 );
 
 //- Check last process time, pause processing/save current process time
