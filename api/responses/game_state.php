@@ -594,9 +594,13 @@ class GameState {
 		$this->phases = $finalPhases;
 	}
 
-	function toJson()
+	function toJson($gameIDMultiplexer)
 	{
-		return json_encode($this);
+		$gameID = $this->gameID;
+		$this->gameID = $gameIDMultiplexer->gameIDToMultiplexedGameID($this->gameID);
+		$jsonString = json_encode($this);
+		$this->gameID = $gameID;
+		return $jsonString;
 	}
 
 	/**

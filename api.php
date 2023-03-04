@@ -152,6 +152,21 @@ function cleanRoute($route) {
  */
 abstract class ApiEntry {
 	/**
+	 * The FAIR bots use a lot of GPU memory, so there is a need to to have a single bot instance switch between
+	 * different accounts, even if those accounts are in the same game. As the bots are stateful this means a single
+	 * bot needs to be able to submit orders with an API key against a certain game, and for the API to recognize
+	 * that the game ID the bot has given encodes both the actual game ID and the bot's account ID.
+	 * 
+	 * Also when returning a request that contains game ID(s) the ID needs to be adjusted so that it encodes the 
+	 * account of the bot that is making the request.
+	 * 
+	 * This is done by multiplying the game ID by 100 then adding the wD_ApiKey.multiplexOffset to any games returned
+	 * to a multiplexed bot, and dividing the game ID by 100 to get the actual game ID when a multiplexed game ID is
+	 * given and taking the remainder to look up the multiplexOffset, giving the bot's specific account ID for that 
+	 * request.
+	 */
+
+	/**
 	 * API entry name.
 	 * @var string
 	 */
@@ -227,27 +242,107 @@ abstract class ApiEntry {
 		return $this->databasePermissionField;
 	}
 
+	private $argsCache = null;
 	/**
-	 * Return an array of actual API parameters values, retrieved from $_GET or $_POST, depending on API entry type.
-	 * @return array
-	 * @throws RequestException
+	 * Prepare / parse the args for this API entry, including detecting and extracing a multiplex ID
 	 */
-	public function getArgs() {
+	public function cacheAndProcessArgs() {
+		if( $this->argsCache !== null )
+			return $this->argsCache;
+		
 		$rawArgs = array();
 		if ($this->type == 'GET')
 			$rawArgs = $_GET;
 		else if ($this->type == 'POST')
 			$rawArgs = $_POST;
 		else if ($this->type == 'JSON') {
+			// TODO: json_decode() makes me nervous
 			$rawArgs = json_decode(file_get_contents("php://input"), true);
 			if (!$rawArgs)
 				throw new RequestException('Invalid JSON request data.');
 		}
 		$selectedArgs = array();
 		foreach ($this->requirements as $fieldName) {
-			$selectedArgs[$fieldName] = isset($rawArgs[$fieldName]) ? $rawArgs[$fieldName] : null;
+			$arg = isset($rawArgs[$fieldName]) ? $rawArgs[$fieldName] : null;
+			if( $fieldName === 'gameID' && !is_null($arg) )
+			{
+				// There is a gameID being given as an input. If it is a multiplexed gameID then we need to
+				// adjust it to the actual gameID and store the multiplexOffset and so that we can adjust the
+				// gameID back to a non-multiplexed gameID when returning it.
+				$arg = (int) $arg;
+
+				// Game IDs between 1 and 1000000000 are not multiplexed.
+				if( $arg > 1000000000 )
+				{
+					// It's a multiplexed gameID
+					$arg = $arg - 1000000000;
+					$selectedArgs['multiplexOffset'] = $arg % 100;
+					$arg = (int)($arg / 100);
+				}
+			}
+			$selectedArgs[$fieldName] = $arg;
 		}
+		$this->argsCache = $selectedArgs;
 		return $selectedArgs;
+	}
+
+	private $multiplexOffsetCache = -1;
+	/**
+	 * If the args sent has a gameID that's multiplexed this will return the multiplex offset
+	 */
+	public function getMultiplexOffsetOrNull()
+	{
+		if( $this->multiplexOffsetCache === -1 )
+		{
+			$args = $this->cacheAndProcessArgs();
+			if( isset($args['multiplexOffset']) )
+				$this->multiplexOffsetCache = $args['multiplexOffset'];
+			else
+				$this->multiplexOffsetCache = null;
+		}
+		return $this->multiplexOffsetCache;
+	}
+	
+	/**
+	 * If a multiplex offset came from the gameID in the args then this class provides the multiplex offset, however if there is
+	 * no multiplex offset provided but a multiplexed api key is being used the multiplex offset needs to be set so that 
+	 * game IDs returned will be encoded with the multiplex offset.
+	 */
+	public function setMultiplexOffset($multiplexOffset)
+	{
+		$this->multiplexOffsetCache = $multiplexOffset;
+	}
+
+	/**
+	 * Convert a game ID into a multiplexed game ID, which when provided in future API calls can identify the bot userID that requested that game.
+	 * 
+	 * All game IDs returned via the API must be run throuhg this function
+	 */
+	public function gameIDToMultiplexedGameID($gameID)
+	{
+		$multiplexOffset = $this->getMultiplexOffsetOrNull();
+		if( $multiplexOffset == null ) return $gameID;
+
+		if( $multiplexOffset >= 100 || $multiplexOffset == null || $multiplexOffset <= 0 )
+		{
+			throw new Exception("Multiplex offset cannot be >= 100, null, or <= 0");
+		}
+		if( $gameID > 1000000000 )
+		{
+			throw new Exception("Being asked to multiplex a multiplexed ID");
+		}
+		$gameID *= 100;
+		$gameID += $multiplexOffset;
+		$gameID += 1000000000;
+		return $gameID;
+	}
+	/**
+	 * Return an array of actual API parameters values, retrieved from $_GET or $_POST, depending on API entry type.
+	 * @return array
+	 * @throws RequestException
+	 */
+	public function getArgs() {
+		return self::cacheAndProcessArgs($this->type, $this->requirements);
 	}
 
 	/**
@@ -317,6 +412,7 @@ abstract class ApiEntry {
 
 /**
  * API entry players/cd
+ * *Multiplexed
  */
 class ListGamesWithPlayersInCD extends ApiEntry {
 	public function __construct() {
@@ -324,12 +420,13 @@ class ListGamesWithPlayersInCD extends ApiEntry {
 	}
 	public function run($userID, $permissionIsExplicit) {
 		$countriesInCivilDisorder = new \webdiplomacy_api\CountriesInCivilDisorder();
-		return $countriesInCivilDisorder->toJson();
+		return $countriesInCivilDisorder->toJson($this);
 	}
 }
 
 /**
  * API entry players/missing_orders
+ * *Multiplexed
  */
 class ListGamesWithMissingOrders extends ApiEntry {
 	public function __construct() {
@@ -338,12 +435,13 @@ class ListGamesWithMissingOrders extends ApiEntry {
 	public function run($userID, $permissionIsExplicit) {
 		$unorderedCountries = new \webdiplomacy_api\UnorderedCountries($userID);
 
-		return $unorderedCountries->toJson();
+		return $unorderedCountries->toJson($this);
 	}
 }
 
 /**
  * API entry players/active_games
+ * *Multiplexed
  */
 class ListActiveGamesForUser extends ApiEntry {
 	public function __construct() {
@@ -351,12 +449,13 @@ class ListActiveGamesForUser extends ApiEntry {
 	}
 	public function run($userID, $permissionIsExplicit) {
 		$activeGames = new \webdiplomacy_api\ActiveGames($userID);
-		return $activeGames->toJson();
+		return $activeGames->toJson($this);
 	}
 }
 
 /**
  * API entry game/togglevote
+ * *Multiplexed
  */
 class ToggleVote extends ApiEntry {
 	public function __construct() {
@@ -417,6 +516,7 @@ class ToggleVote extends ApiEntry {
 // for state-modifying web queries. So probably togglevote should be deprecated.
 /**
  * API entry game/setvote
+ * *Multiplexed
  */
 class SetVote extends ApiEntry {
 	public function __construct() {
@@ -487,6 +587,7 @@ class SetVote extends ApiEntry {
  * https://pusher.com/docs/channels/library_auth_reference/auth-signatures/
  * Every time a user subscribes to a channel, it needs to be authenticated and authorized.
  * This function works along with beta-src/src/lib/pusher.ts
+ * *Multiplexed
  */
 class WebSocketsAuthentication extends ApiEntry {
 	public function __construct() {
@@ -534,6 +635,7 @@ class WebSocketsAuthentication extends ApiEntry {
 
 /**
  * API entry game/messagesseen
+ * *Multiplexed
  */
 class MessagesSeen extends ApiEntry {
 	public function __construct() {
@@ -565,6 +667,7 @@ class MessagesSeen extends ApiEntry {
 
 /**
  * API entry game/markbackfromleft
+ * *Multiplexed
  */
 class MarkBackFromLeft extends ApiEntry {
 	public function __construct() {
@@ -583,6 +686,7 @@ class MarkBackFromLeft extends ApiEntry {
 
 /**
  * API entry game/status
+ * *Multiplexed
  */
 class GetGamesStates extends ApiEntry {
 	public function __construct() {
@@ -596,20 +700,21 @@ class GetGamesStates extends ApiEntry {
 		$gameID = $args['gameID'];
 		$countryID = $args['countryID'] ?? null;
 		if ($gameID === null || !ctype_digit($gameID))
-			throw new RequestException('Invalid game ID: '.$gameID);
+			throw new RequestException('Invalid game ID: '.$this->gameIDToMultiplexedGameID($gameID));
 		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
 		    throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 		$game = $this->getAssociatedGame();
 		if ($countryID != null && (!isset($game->Members->ByUserID[$userID]) || $countryID != $game->Members->ByUserID[$userID]->countryID))
 			throw new ClientForbiddenException('A user can only view game state for the country it controls.');
 		$gameState = new \webdiplomacy_api\GameState(intval($gameID), $countryID ? intval($countryID) : null);
-		return $gameState->toJson();
+		return $gameState->toJson($this);
 	}
 }
 
 /**
  * API entry game/members
  * Retrieves member data related to a game. 
+ * *Multiplexed
  */
 class GetGameMembers extends ApiEntry {
 	private $isAnon;
@@ -669,7 +774,7 @@ class GetGameMembers extends ApiEntry {
 					'Invalid game ID.', 
 					'ggm-err-001', 
 					false,
-					['gameID' => $gameID]
+					['gameID' => $this->gameIDToMultiplexedGameID($gameID)]
 				)
 			);
 		}
@@ -699,6 +804,7 @@ class GetGameMembers extends ApiEntry {
  * API entry game/overview
  * 
  * This should be cleaned up. 
+ * *Multiplexed
  */
 class GetGameOverview extends ApiEntry {
 	public function __construct() {
@@ -717,7 +823,7 @@ class GetGameOverview extends ApiEntry {
 					'Invalid game ID.', 
 					'GGO-err-001', 
 					false,
-					['gameID' => $gameID]
+					['gameID' => $this->gameIDToMultiplexedGameID($gameID)]
 				)
 			);
 		}
@@ -727,7 +833,7 @@ class GetGameOverview extends ApiEntry {
 					'Game ID is not in list of gameIDs where API usage is permitted.', 
 					'GGO-err-002', 
 					false, 
-					['gameID' => $gameID]
+					['gameID' => $this->gameIDToMultiplexedGameID($gameID)]
 				)
 			);
 		}   
@@ -744,7 +850,7 @@ class GetGameOverview extends ApiEntry {
 			'season' => $season,
 			'year' => $year,
 			'excusedMissedTurns' => $game->excusedMissedTurns,
-			'gameID' => $gameID,
+			'gameID' => $this->gameIDToMultiplexedGameID($gameID),
 			'gameOver' => $game->gameOver,
 			'isTempBanned' => $game->Members->isTempBanned(),
 			'minimumBet' => $game->minimumBet,
@@ -765,7 +871,7 @@ class GetGameOverview extends ApiEntry {
 			'variant' => $game->Variant,
 			'variantID' => $game->variantID,
 			'year' => $year,
-		], (new GetGameMembers)->getData($userID));
+		], (new GetGameMembers)->getData($userID)); // This calls getArgs which will make it set its own gameID to the multiplexed one.
 		return $this->JSONResponse('Successfully retrieved game overview.', 'GGO-s-001', true, $payload, true);
 	}
 }
@@ -773,6 +879,7 @@ class GetGameOverview extends ApiEntry {
 /**
  * API entry game/data
  * Retrieves API data needed for order generation code and game functionality. 
+ * *Multiplexed (but needs testing, not trivial)
  */
 class GetGameData extends ApiEntry {
 
@@ -830,7 +937,7 @@ class GetGameData extends ApiEntry {
 					'Invalid game ID.', 
 					'GGD-err-001', 
 					false,
-					['gameID' => $gameID]
+					['gameID' => $this->gameIDToMultiplexedGameID($gameID)]
 				)
 			);
 		}
@@ -840,7 +947,7 @@ class GetGameData extends ApiEntry {
 					'Game ID is not in list of gameIDs where API usage is permitted.', 
 					'GGD-err-003', 
 					false, 
-					['gameID' => $gameID]
+					['gameID' => $this->gameIDToMultiplexedGameID($gameID)]
 				)
 			);
 		}
@@ -864,13 +971,14 @@ class GetGameData extends ApiEntry {
 						'A user can only view game state for the country it controls.', 
 						'GGD-err-004', 
 						false, 
-						['gameID' => $gameID]
+						['gameID' => $this->gameIDToMultiplexedGameID($gameID)]
 					)
 				);
 			}
 			$member = $game->Members->ByCountryID[$countryID];
 			$this->setContextVars($game, $gameID, $userID, $countryID, $member);
 			$payload['contextVars'] = $this->getContextVars();
+			$payload['contextVars']['gameID'] = $this->gameIDToMultiplexedGameID($payload['contextVars']['gameID']);
 			$payload['currentOrders'] = $this->getCurrentOrders();
 		}
 
@@ -905,6 +1013,7 @@ class GetGameData extends ApiEntry {
 
 /**
  * API entry game/orders
+ * *Multiplexed
  */
 class SetOrders extends ApiEntry {
 	public function __construct() {
@@ -1182,6 +1291,7 @@ w            {
 }
 /**
  * API entry game/sendmessage
+ * *Multiplexed
  */
 class SendMessage extends ApiEntry {
 	public function __construct() {
@@ -1260,6 +1370,7 @@ class SendMessage extends ApiEntry {
 
 /**
  * API entry game/getmessages
+ * *Multiplexed
  */
 class GetMessages extends ApiEntry {
 	public function __construct() {
@@ -1300,7 +1411,7 @@ class GetMessages extends ApiEntry {
 
 		if ($gameID === null || !is_numeric($gameID))
 			throw new RequestException(
-				$this->JSONResponse('A gameID is required.', '', false, ['gameID' => $gameID])
+				$this->JSONResponse('A gameID is required.', '', false, ['gameID' => $this->gameIDToMultiplexedGameID($gameID)])
 			);
 
 		if ($countryID === null || !is_numeric($countryID))
@@ -1381,7 +1492,7 @@ abstract class ApiAuth {
 	 * Load API auth.
 	 * @throws ClientUnauthorizedException - if associated user cannot be found.
 	 */
-	abstract protected function load();
+	abstract public function load($multiplexOffset = 0);
 
 	/**
 	 * Initialize API auth object.
@@ -1456,12 +1567,31 @@ class ApiKey extends ApiAuth {
 	 */
 	private $apiKey;
 
-	protected function load(){
+	/**
+	 * Multiplex offset associated to this API key. If an API key has multiple associated accounts then when load()
+	 * is called here without a multiplex offset the last requested account will be used, but if an offset if provided
+	 * , typically because a gameID arg was given containing a multiplex offset, that particular account will be loaded.
+	 * 
+	 * If no multiplex offset this is null.
+	 */
+	private $multiplexOffset = null;
+
+	public function load($multiplexOffset = 0)
+	{
 		global $DB;
-		$rowUserID = $DB->sql_hash("SELECT userID from wD_ApiKeys WHERE apiKey = '".$DB->escape($this->apiKey)."'");
+		
+		if( $multiplexOffset == null ) $multiplexOffset = 0;
+
+		// By selecting the multiplex offset account if an offset is provided, but if one isn't provided choosing
+		// the last requested multiplexed account, we can ensure a multiplexed api key will rotate between accounts.
+		$rowUserID = $DB->sql_hash(
+			"SELECT userID, multiplexOffset FROM wD_ApiKeys WHERE apiKey = '".$DB->escape($this->apiKey)."' "
+			.($multiplexOffset > 0 ? " AND multiplexOffset = " . $multiplexOffset . " " : "" ) 
+			." ORDER BY lastHit LIMIT 1");
 		if (!$rowUserID)
 			throw new ClientUnauthorizedException('No user associated to this API key.');
 		$this->userID = intval($rowUserID['userID']);
+		$this->multiplexOffset = $rowUserID['multiplexOffset'];
 		$permissionRow = $DB->sql_hash("SELECT * FROM wD_ApiPermissions WHERE userID = ".$this->userID);
 		if ($permissionRow) {
 			foreach (self::$permissionFields as $permissionField) {
@@ -1480,12 +1610,11 @@ class ApiKey extends ApiAuth {
 		$this->cacheKey = str_replace(' ', '_', 'api' . $this->apiKey . $route );
 		foreach (self::$permissionFields as $permissionField)
 			$this->permissions[$permissionField] = false;
-		$this->load();
 	}
 }
 
 class ApiSession extends ApiAuth {
-	protected function load(){
+	public function load($multiplexOffset = 0){
 		global $User;
 		if( !empty( $User ) && $User->type['User'] === true && (int)$User->id > 0 ){
 			$this->userID = $User->id;
@@ -1498,8 +1627,6 @@ class ApiSession extends ApiAuth {
 		
 		// every session user can get state of all games (i.e. spectate)
 		$this->permissions["getStateOfAllGames"] = true;
-
-		$this->load();
 	}
 }
 
@@ -1572,9 +1699,20 @@ class Api {
 		$apiAuth = new $this->authClass($this->route);
 		// Get API entry.
 		$apiEntry = $this->entries[$this->route]; /** @var ApiEntry $apiEntry */
+
+		// If the args contains a game ID which encodes a multiplex offset, which lets one bot enter orders for several bot user accounts,
+		// extract it here and use it to load the correct bot account. (Note has no effect if it's an ApiSession request)
+		$multiplexOffset = $apiEntry->getMultiplexOffsetOrNull();
+		$apiAuth->load($multiplexOffset);
+		// If there was no game ID to get a multiplexed offset from, but this is a multiplexed account, then instead of
+		// the $apiEntry setting the $apiAuth multiplexOffset the $apiAuth needs to set the $apiEntry multiplexOffset.
+		$apiEntry->setMultiplexOffset($multiplexOffset); 
+		// The user ID and API entry are now set up with the multiplex offset, so any game IDs returned can be multiplexed.
+		
 		// Check if request is authorized.
 		$permissionIsExplicit = $apiAuth->assertHasPermissionFor($apiEntry);
 		// Execute request.
+		
 		$userID = $apiAuth->getUserID();
 		$result = $apiEntry->run($userID, $permissionIsExplicit); 
 		

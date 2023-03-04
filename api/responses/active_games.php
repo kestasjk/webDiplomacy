@@ -89,9 +89,14 @@ class ActiveGames {
         }
 	}
 
-	function toJson()
+	function toJson($gameIDMultiplexer)
 	{
-		return json_encode(['games' => $this->value]);
+        $multiplexedValue = array();
+        foreach($this->value as $gameID=>$countryID)
+        {
+            $multiplexedValue[$gameIDMultiplexer->getMultiplexedID($gameID)] = $countryID;
+        }
+		return json_encode(['games' => $multiplexedValue]);
 	}
 
 	/**
