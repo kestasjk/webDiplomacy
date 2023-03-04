@@ -160,8 +160,9 @@ abstract class ApiEntry {
 	 * Also when returning a request that contains game ID(s) the ID needs to be adjusted so that it encodes the 
 	 * account of the bot that is making the request.
 	 * 
-	 * This is done by multiplying the game ID by 100 then adding the wD_ApiKey.multiplexOffset to any games returned
-	 * to a multiplexed bot, and dividing the game ID by 100 to get the actual game ID when a multiplexed game ID is
+	 * This is done by multiplying the game ID by 10 then adding the wD_ApiKey.multiplexOffset to any games returned
+	 * to a multiplexed bot, and adding 100000000 to ensure no conflicts with real game IDs and dividing the game ID 
+	 * by 10 to get the actual game ID when a multiplexed game ID is
 	 * given and taking the remainder to look up the multiplexOffset, giving the bot's specific account ID for that 
 	 * request.
 	 */
@@ -269,16 +270,17 @@ abstract class ApiEntry {
 				// There is a gameID being given as an input. If it is a multiplexed gameID then we need to
 				// adjust it to the actual gameID and store the multiplexOffset and so that we can adjust the
 				// gameID back to a non-multiplexed gameID when returning it.
-				$arg = (int) $arg;
+				$arg = (int)$arg;
 
-				// Game IDs between 1 and 1000000000 are not multiplexed.
-				if( $arg > 1000000000 )
+				// Game IDs between 1 and 100000000 are not multiplexed.
+				if( $arg > 100000000 )
 				{
 					// It's a multiplexed gameID
-					$arg = $arg - 1000000000;
-					$selectedArgs['multiplexOffset'] = $arg % 100;
-					$arg = (int)($arg / 100);
+					$arg = $arg - 100000000;
+					$selectedArgs['multiplexOffset'] = $arg % 10;
+					$arg = (int)($arg / 10);
 				}
+				$arg = (string)$arg; // Convert the int back to a string as expected by the API calls
 			}
 			$selectedArgs[$fieldName] = $arg;
 		}
@@ -323,18 +325,18 @@ abstract class ApiEntry {
 		$multiplexOffset = $this->getMultiplexOffsetOrNull();
 		if( $multiplexOffset == null ) return $gameID;
 
-		if( $multiplexOffset >= 100 || $multiplexOffset == null || $multiplexOffset <= 0 )
+		if( $multiplexOffset >= 10 || $multiplexOffset == null || $multiplexOffset <= 0 )
 		{
-			throw new Exception("Multiplex offset cannot be >= 100, null, or <= 0");
+			throw new Exception("Multiplex offset cannot be >= 10, null, or <= 0");
 		}
-		if( $gameID > 1000000000 )
+		if( $gameID > 100000000 )
 		{
 			throw new Exception("Being asked to multiplex a multiplexed ID");
 		}
-		$gameID *= 100;
+		$gameID *= 10;
 		$gameID += $multiplexOffset;
-		$gameID += 1000000000;
-		return $gameID;
+		$gameID += 100000000;
+		return (int)$gameID;
 	}
 	/**
 	 * Return an array of actual API parameters values, retrieved from $_GET or $_POST, depending on API entry type.
@@ -1575,12 +1577,14 @@ class ApiKey extends ApiAuth {
 	 * If no multiplex offset this is null.
 	 */
 	private $multiplexOffset = null;
+	public function getMultiplexOffsetOrNull() { return $this->multiplexOffset; }
 
 	public function load($multiplexOffset = 0)
 	{
 		global $DB;
 		
 		if( $multiplexOffset == null ) $multiplexOffset = 0;
+		$multiplexOffset = intval($multiplexOffset);
 
 		// By selecting the multiplex offset account if an offset is provided, but if one isn't provided choosing
 		// the last requested multiplexed account, we can ensure a multiplexed api key will rotate between accounts.
@@ -1599,7 +1603,9 @@ class ApiKey extends ApiAuth {
 					$this->permissions[$permissionField] = true;
 			}
 		}
-		$DB->sql_put("UPDATE wD_ApiKeys SET hits = hits + 1, lastHit = UNIX_TIMESTAMP() WHERE apiKey = '".$DB->escape($this->apiKey)."'");
+		$DB->sql_put("UPDATE wD_ApiKeys SET hits = hits + 1, lastHit = UNIX_TIMESTAMP() WHERE apiKey = '".$DB->escape($this->apiKey)."'"
+			.($this->multiplexOffset > 0 ? " AND multiplexOffset = " . $this->multiplexOffset . " " : "" ) );
+		$DB->sql_put("COMMIT");
 	}
 
 	public function __construct($route){
@@ -1706,7 +1712,7 @@ class Api {
 		$apiAuth->load($multiplexOffset);
 		// If there was no game ID to get a multiplexed offset from, but this is a multiplexed account, then instead of
 		// the $apiEntry setting the $apiAuth multiplexOffset the $apiAuth needs to set the $apiEntry multiplexOffset.
-		$apiEntry->setMultiplexOffset($multiplexOffset); 
+		$apiEntry->setMultiplexOffset($apiAuth->getMultiplexOffsetOrNull()); 
 		// The user ID and API entry are now set up with the multiplex offset, so any game IDs returned can be multiplexed.
 		
 		// Check if request is authorized.
@@ -1771,10 +1777,13 @@ try {
 	if( isset(Config::$botsLogFile) && Config::$botsLogFile )
 	{
 		$apiEntry = $api->entries[$api->route];
+		$multiplexOffset = $apiEntry->getMultiplexOffsetOrNull() ?? -1;
 		file_put_contents(Config::$botsLogFile,
 			date('l jS \of F Y h:i:s A')."\n".
 			"-------------------\n".
 			$_SERVER['REQUEST_URI']."\n".
+			"-------------------\n".
+			"multiplexOffset: $multiplexOffset\n".
 			"-------------------\n".
 			json_encode($apiEntry->getArgs(), JSON_PRETTY_PRINT)."\n".
 			"-------------------\n".

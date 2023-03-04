@@ -462,7 +462,7 @@ class GameState {
 		if ($this->pressType != 'NoPress' && $this->countryID) {
 			$msgTabl = $DB->sql_tabl(
 				"SELECT turn, fromCountryID, toCountryID, message, timeSent, phaseMarker
-				FROM wD_GameMessages_Redacted
+				FROM ".(isset(\Config::$allowBotsAccessToUnredactedMessages) && \Config::$allowBotsAccessToUnredactedMessages ? "wD_GameMessages" : "wD_GameMessages_Redacted")." 
 				WHERE gameID = ".$this->gameID. 
 				" AND (fromCountryID = ".$this->countryID." OR toCountryID = ".$this->countryID.
 				" OR toCountryID = 0)
@@ -493,7 +493,7 @@ class GameState {
 
 			$msgTabl = $DB->sql_tabl(
 				"SELECT turn, fromCountryID, toCountryID, message, timeSent, phaseMarker 
-				FROM wD_GameMessages_Redacted
+				FROM ".(isset(\Config::$allowBotsAccessToUnredactedMessages) && \Config::$allowBotsAccessToUnredactedMessages ? "wD_GameMessages" : "wD_GameMessages_Redacted")." 
 				WHERE gameID = ".$this->gameID." AND 
 				fromCountryID = toCountryID 
 				AND message in ('".implode("','",$msgs)."')

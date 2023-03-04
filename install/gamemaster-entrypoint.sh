@@ -13,8 +13,11 @@ else
   mkdir $HOME/cache
   ls $HOME/variants/*/variant.php | sed -e 's/variant.php//' | (while read v; do mkdir "$v""cache"; done)
 
+  echo "Erase old cache data"
+  rm -rf cache/*
+
   echo "Make sure all cache folders writable"
-  # Make sure the cache folders are writable
+  # Make sure the cache folders are writable, this is v slow in hyper-v docker with a large cache, so first clear the cache
   find . -name "cache" -exec chmod a+rwx {} \;
 
   echo "Make sure config present"

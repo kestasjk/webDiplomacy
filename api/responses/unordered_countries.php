@@ -81,9 +81,9 @@ class UnorderedCountries {
 	function toJson($gameIDMultiplexer)
 	{
         $multiplexedValues = array();
-        foreach($this->value as $gameID=>$countryID)
+        foreach($this->value as $gameCountry)
         {
-            $multiplexedValues[$gameIDMultiplexer->get($gameID)] = $countryID;
+            array_push($multiplexedValues, new GameCountry($gameIDMultiplexer->gameIDToMultiplexedGameID($gameCountry->gameID), $gameCountry->countryID));
         }
 		return json_encode($multiplexedValues);
 	}

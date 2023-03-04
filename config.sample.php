@@ -587,14 +587,19 @@ class Config
 	 *
 	 * @var int
 	 */
-	public static $pusherScheme = 'https';
+	public static $pusherScheme = 'http';
 
 	/**
 	 * Force pusher to use TLS
 	 *
 	 * @var int
 	 */
-	public static $pusherForceTLS = true;
+	public static $pusherForceTLS = false;
 
+	/**
+	 * If set to true bots are allowed to get messages directly from the unredacted messages table, for use
+	 * with testing bots in a development environment without needing a separate redaction process running.
+	 */
+	public static $allowBotsAccessToUnredactedMessages = true;
 }
 ?>

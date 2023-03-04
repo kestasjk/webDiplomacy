@@ -918,10 +918,17 @@ UNIQUE INDEX `userID_identityType` (`userID`, `identityType`)
 ENGINE=InnoDB
 ;
 
-ALTER TABLE `wD_Games` ADD COLUMN `minimumIdentityScore` TINYINT(3) UNSIGNED NOT NULL DEFAULT '0' AFTER `minimumNMRScore`;
+ALTER TABLE `wD_Games` ADD COLUMN `minimumIdentityRating` TINYINT(3) UNSIGNED NOT NULL DEFAULT 0;
+ALTER TABLE `wD_Games` ADD COLUMN `minimumNMRScore` TINYINT(3) UNSIGNED NOT NULL DEFAULT 0;
+ALTER TABLE `wD_Backup_Games` ADD COLUMN `minimumIdentityRating` TINYINT(3) UNSIGNED NOT NULL DEFAULT 0;
+ALTER TABLE `wD_Backup_Games` ADD COLUMN `minimumNMRScore` TINYINT(3) UNSIGNED NOT NULL DEFAULT 0;
 
-ALTER TABLE `wD_Users` ADD COLUMN `identityScore` TINYINT(3) UNSIGNED;
+ALTER TABLE `wD_Users` ADD COLUMN `identityRating` TINYINT(3) UNSIGNED;
 
 -- Add a column to allow a single bot to play as multiple bot user accounts to reduce memory requirements by adding an offset
 -- to game IDs.
 ALTER TABLE wD_ApiKeys ADD COLUMN multiplexOffset INT UNSIGNED NULL;
+
+ ALTER TABLE `wD_ApiKeys` DROP PRIMARY KEY; 
+ ALTER TABLE `wD_ApiKeys` ADD PRIMARY KEY(`apiKey`, `userID`); 
+  ALTER TABLE `wD_ApiKeys` DROP INDEX `apiKey`; 
