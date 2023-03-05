@@ -537,12 +537,15 @@ class Game
 			g.excusedMissedTurns,
 			g.playerTypes,
 			g.startTime,
-			g.directorUserID ,
+			g.directorUserID /*,
+			These are only used in the isDirector function, which isn't worth it right now as
+			it potentially brings in more records to be locked. To restore this perhaps the game
+			should have this information applied on creation?
 			t.directorID tournamentDirectorUserID,
-			t.coDirectorID tournamentCodirectorUserID
+			t.coDirectorID tournamentCodirectorUserID*/
 			FROM wD_Games g
-			LEFT JOIN wD_TournamentGames tg ON g.id = tg.gameID
-			LEFT JOIN wD_Tournaments t ON t.id = tg.tournamentID
+			/*LEFT JOIN wD_TournamentGames tg ON g.id = tg.gameID
+			LEFT JOIN wD_Tournaments t ON t.id = tg.tournamentID*/
 			WHERE g.id=".$gameID.' '.$lockMode);
 	}
 	/**
