@@ -779,7 +779,7 @@ class GetGameData extends ApiEntry {
 	private $contextVars;
 
 	public function __construct() {
-		parent::__construct('game/data', 'GET', 'getStateOfAllGames', array('gameID', 'countryID'), true);
+		parent::__construct('game/data', 'GET', 'getStateOfAllGames', array('gameID', 'countryID'), false);
 	}
 
 	private function setContextVars( $game, $gameID, $userID, $countryID, $member ){
