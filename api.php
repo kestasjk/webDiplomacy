@@ -472,8 +472,9 @@ class SetVote extends ApiEntry {
 
 		require_once(l_r('gamemaster/game.php'));
 		$game = $this->getAssociatedGame();
-		// TODO: this should apply votes only for the current game
-		libGameMaster::findAndApplyGameVotes();
+		// TODO: this should be removed, votes that need to be processed should get processed via gamemaster.php
+		// this is an expensive call, even filtering for one gameID, as it locks for update and does GM processing
+		libGameMaster::findAndApplyGameVotes($gameID);
 		
 		require_once('lib/pusher.php');
 		libPusher::trigger("private-game" . $gameID, 'overview', 'set-vote');
