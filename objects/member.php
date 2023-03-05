@@ -311,8 +311,8 @@ class Member
 		// Reset the min bet so that the game no longer appears in open games searches. 
 		require_once(l_r('gamemaster/game.php'));
 		$Variant=libVariant::loadFromGameID($this->gameID);
-		$Game = $Variant->processGame($this->gameID);
-		$Game->resetMinimumBet();
+		$ProcessGame = $Variant->processGame($this->gameID);
+		$ProcessGame->resetMinimumBet();
 	}
 }
 ?>
