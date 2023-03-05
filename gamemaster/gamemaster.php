@@ -705,7 +705,10 @@ ON DUPLICATE KEY UPDATE isNew=1, earliest=least(r.earliestM, earliest), latest=g
 		}
 	}
 	// Finds and processes all games where all playing members excluding bots have voted for something
-	static public function findAndApplyGameVotes()
+	// A gameID can be given because the setVote function expects a game with a vote set to be processed
+	// immidiately and it changing it might break the beta UI. 
+	// TODO: Test whether votes need to be processed immidiately via api.php or if they can wait for gamemaster to run
+	static public function findAndApplyGameVotes($gameID = -1)
 	{
 		global $DB;
 
@@ -728,7 +731,7 @@ ON DUPLICATE KEY UPDATE isNew=1, earliest=least(r.earliestM, earliest), latest=g
 				INNER JOIN wD_Members m ON m.gameID = g.id
 				INNER JOIN wD_Users u ON u.id = m.userID
 				WHERE m.status = 'Playing' AND NOT u.`type` LIKE '%Bot%'
-				AND g.phase <> 'Finished'
+				AND g.phase <> 'Finished' ".($gameID != -1 ? "AND g.id = ".$gameID : "")."
 				GROUP BY g.id
 			) g
 			WHERE g.Voters = g.DrawVotes
