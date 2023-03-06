@@ -138,7 +138,7 @@ if( !isset($_REQUEST['variantID']) )
 	libVariant::setGlobals($Variant);
 	// Get a global lock to prevent two people writing the map at the same time, or rendering the map while a game is being processed
 	// This replaces a game FOR UPDATE lock which would cause deadlocks
-	$DB->get_lock('gamemaster',1);
+	$DB->get_lock('generate_map_'.$_REQUEST['gameID'],1);
 	$Game=$Variant->Game($_REQUEST['gameID']);
 
 	/*

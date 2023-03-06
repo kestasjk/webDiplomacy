@@ -143,24 +143,6 @@ class User {
 	public $comment;
 
 	/**
-	 * The user's mobile country code, or null (no + included)
-	 * @var string|null
-	 */
-	public $mobileCountryCode;
-	
-	/**
-	 * The user's mobile number code, or null without country code
-	 * @var string|null
-	 */
-	public $mobileNumber;
-	
-	/**
-	 * Does this user have a validated mobile number
-	 * @var bool
-	 */
-	public $isMobileValidated = false;
-
-	/**
 	 * User-profile homepage
 	 * @var string
 	 */
@@ -171,13 +153,6 @@ class User {
 	 * @var string
 	 */
 	public $tempBanReason;
-
-	/**
-	 * Hide-email? 'Yes'/'No'
-	 *
-	 * @var string
-	 */
-	public $hideEmail;
 
 	/**
 	 * UNIX timestamp of join-date
@@ -248,11 +223,11 @@ class User {
 	public $cdCount, $nmrCount, $cdTakenCount, $phaseCount, $gameCount, $reliabilityRating;
 	
 	/**
-	 * The users identity rating from 0 to 100
+	 * The users identity score from 0 to 100
 	 * 
 	 * @var int
 	 */
-	public $identityRating;
+	public $identityScore;
 	/**
 	 * darkMode
 	 * Choose css style theme
@@ -456,8 +431,7 @@ class User {
 		$SQLVars = array();
 
 		$available = array('username'=>'', 'password'=>'', 'passwordcheck'=>'', 'email'=>'',
-					'hideEmail'=>'','showEmail'=>'', 'homepage'=>'','comment'=>'', 'darkMode'=>'', 
-					'mobileCountryCode'=>'', 'mobileNumber'=>'', 'mobileValidationCode'=> '');
+					'homepage'=>'','comment'=>'', 'darkMode'=>'');
 
 		$userForm = array();
 
@@ -500,18 +474,6 @@ class User {
 			}
 		}
 
-		if( isset($userForm['hideEmail']) )
-		{
-			if ( $userForm['hideEmail'] == "Yes" )
-			{
-				$SQLVars['hideEmail'] = "Yes";
-			}
-			else
-			{
-				$SQLVars['hideEmail'] = "No";
-			}
-		}
-
 		if( isset($userForm['homepage']) AND $userForm['homepage'] )
 		{
 			$userForm['homepage'] = $DB->escape($userForm['homepage']);
@@ -532,21 +494,6 @@ class User {
 				$SQLVars['darkMode'] = "Yes";
 			else
 				$SQLVars['darkMode'] = "No";
-		}
-
-		if(isset($userForm['mobileCountryCode']))
-		{
-			$SQLVars['mobileCountryCode'] = intval($userForm['mobileCountryCode']);
-		}
-
-		if(isset($userForm['mobileNumber']))
-		{
-			$SQLVars['mobileNumber'] = libSMS::filterNumber($userForm['mobileNumber']);
-		}
-
-		if(isset($userForm['mobileValidationCode']))
-		{
-			$SQLVars['mobileValidationCode'] = intval($userForm['mobileValidationCode']);
 		}
 
 		return $SQLVars;
@@ -588,7 +535,6 @@ class User {
 			u.type,
 			u.comment,
 			u.homepage,
-			u.hideEmail,
 			u.timeJoined,
 			u.timeLastSessionEnded,
 			u.points,
@@ -609,10 +555,7 @@ class User {
 			u.yearlyPhaseCount,
 			u.tempBanReason,
 			u.optInFeatures,
-			u.mobileCountryCode,
-			u.mobileNumber,
-			u.isMobileValidated,
-			u.identityRating
+			u.identityScore
 			FROM wD_Users u
 			WHERE ".( $username ? "u.username='".$username."'" : "u.id=".$this->id ));
 
@@ -661,7 +604,6 @@ class User {
 		$this->notifications=new setUserNotifications($this->notifications);
 
 		$this->online = (bool) $this->online;
-		$this->isMobileValidated = (bool) $this->isMobileValidated;
 
 		$this->options = new UserOptions($this->id);
 	}
@@ -673,13 +615,13 @@ class User {
 	 */
 	function profile_link($welcome = false)
 	{
-		return self::profile_link_static($this->username, $this->id, $this->type, $this->points, $this->identityRating);
+		return self::profile_link_static($this->username, $this->id, $this->type, $this->points, $this->identityScore);
 	}
 
 	/**
 	 * Generate a profile link using raw database values ($type can be a $User->type array or string ENUM field)
 	 */
-	static function profile_link_static($username, $id, $type, $points, $identityRating = -1)
+	static function profile_link_static($username, $id, $type, $points, $identityScore = -1)
 	{
 		global $User;
 
@@ -692,7 +634,7 @@ class User {
 			// Allow javascript to use this ID link:
 			$buffer.=' profileLinkUserID="'.$id.'">'.$username;
 
-			$buffer.='</a> ('.trim($points).libHTML::points().self::typeIcon($type).libHTML::identityIcon($identityRating).libHTML::loggedOn($id);
+			$buffer.='</a> ('.trim($points).libHTML::points().self::typeIcon($type).libHTML::identityIcon($identityScore).libHTML::loggedOn($id);
 			
 			$buffer .= ')<span class="userRelationships" profileLinkUserID="'.$id.'"></span>';
 
@@ -727,7 +669,7 @@ class User {
 
 		if( strstr($type,'Moderator') )
 		{
-			if ($User->getTheme() == 'No' || $User->getTheme() == null)
+			if (!$User->isDarkMode())
 			{
 				$buf .= '<img src="'.l_s('images/icons/mod.png').'" alt="'.l_t('Mod').'" title="'.l_t('Moderator/Admin').'" />';
 			}
@@ -1467,23 +1409,11 @@ class User {
 	}
 
 	/* 
-	 * Get style theme user is using, 'No' = light mode; 'Yes' = dark mode. If the user has not accessed their user settings, this will default to light mode.
+	 * Returns true if in dark mode, false otherwise
 	 */
-	public function getTheme()
+	public function isDarkMode()
 	{
-		global $DB;
-
-		if( is_null($DB) ) return 'No';
-
-		list($variable) = $DB->sql_row("SELECT darkMode FROM wD_UserOptions WHERE userID=".$this->id);
-		if ($variable == null) 
-		{
-			return 'No';
-		}
-		else
-		{
-			return $variable;
-		}
+		return $this->getOptions()->value['darkMode'] === 'Yes';
 	}
 
 	/*

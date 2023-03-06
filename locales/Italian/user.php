@@ -38,17 +38,6 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		}
 		?>" <?php if ( isset($_REQUEST['emailToken']) ) print 'readonly '; ?> /></li>
 	<li class="formlistdesc">Il tuo indirizzo di posta elettronica; <strong>non</strong> verrà usato per inviare spam e <strong>non</strong> verrà dato a terzi.</li>
-
-	<li class="formlisttitle">Nascondi l'indirizzo e-mail:</li>
-	<li class="formlistfield">
-		<input type="radio" name="userForm[hideEmail]" value="Yes" <?php if($User->hideEmail=='Yes') print "checked"; ?>>Sì
-		<input type="radio" name="userForm[hideEmail]" value="No" <?php if($User->hideEmail=='No') print "checked"; ?>>No
-	</li>
-	<li class="formlistdesc">
-	  Scegli se rendere visibile il tuo indirizzo di posta agli altri giocatori.
-	  Se decidi di renderlo visibile, sarà visualizzato come immagine per evitare
-	  che sia preda dei bot automatici.
-	</li>
 	
 	<li class="formlisttitle">Ricevi notifiche delle partite via mail:</li>
 	<li class="formlistfield">

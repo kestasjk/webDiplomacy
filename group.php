@@ -135,11 +135,20 @@ if( $groupID === -1 )
 	
 	libHTML::starthtml();
 
-	print libHTML::pageTitle('Your User Relationships',l_t('View and manage the links created between accounts that disclose outside relationships to players.'));
+	print libHTML::pageTitle('Your User Relationships',
+		l_t('View and manage the links created between accounts that disclose outside relationships to players.'),
+		'images/icons/link.svg');
 
 	print '<div>';
 	print '<p>This page lets you view and manage your user relationships; confirm or deny relationships other users have created, and view the '.
-		'relationships you have created for yourself and others.</p>';
+		'relationships you have created for yourself and others. This makes sure others know about relationships between other user accounts, which
+		keeps things fair, makes it easier for webDiplomacy moderators to investigate, and lets players either exclude strongly linked user accounts from 
+		games or create games exclusively for their group.</p>';
+	print '<p>To disclose a relationship you have with another user account, or to lodge a suspicion that another account has an undisclosed relationship,
+		please go to the user\'s profile and go to the "User relationships" section. You can search for a user via <a href="search.php">Search &gt; Find User</a></p>';
+
+	print '<p>To disclose a relationship you have with another user account, or to lodge a suspicion that another account has an undisclosed relationship,
+		please go to the user\'s profile and go to the "User relationships" section. You can search for a user via <a href="search.php">Search &gt; Find User</a></p>';
 
 	print '<div class = "profile_title">Terminology</div>';
 	print '<div class = "profile_content">';
@@ -558,7 +567,9 @@ if ( $GroupProfile->canUserComment($User) )
 
 libHTML::starthtml();
 
-print libHTML::pageTitle('Group Panel: #'.$GroupProfile->id.' '.$GroupProfile->name,l_t('A space for the community and mod team to discuss, decide and resolve problems.'));
+print libHTML::pageTitle('Account Group: #'.$GroupProfile->id.' '.$GroupProfile->name,
+	l_t('A space for the community and mod team to discuss and resolve issues regarding related user accounts.'),
+	'images/icons/link.svg');
 
 print '<div>';
 print '<div class = "profile-show-floating" style="margin-left:2.5%">';
@@ -571,10 +582,10 @@ print '<strong>Group Information:</strong> </div>';
 
 	if( $GroupProfile->gameID )
 	{
-		print '<p><strong>Open game:</strong> <a href="board.php?gameID='.$GroupProfile->gameID.'">Game board</a></p>';
+		print '<li><strong>Open game:</strong> <a href="board.php?gameID='.$GroupProfile->gameID.'">Game board</a></li><br />';
 	}
-	print '<p><strong>Group Type:</strong> '.$GroupProfile->type.'</p>';
-	print '<p><strong>Status:</strong> '.($GroupProfile->isActive ? 'Active' : 'Inactive').'</p>';
+	print '<li><strong>Group/Relation Type:</strong> '.$GroupProfile->type.'</li><br />';
+	print '<li><strong>Status:</strong> '.($GroupProfile->isActive ? 'Active' : 'Inactive').'</li><br />';
 	
 	if( $GroupProfile->ownerUserID == $User->id || ( $User->type['Moderator'] && $GroupProfile->isViewerInGame !== 1 ) )
 	{
@@ -603,8 +614,8 @@ print '<div class = "comment_title" style="width:90%">';
 print '<strong>Creator Info / Explanation:</strong> </div>';
 
 print '<p><ul>';
-print '<li><strong>Creator:</strong> '.$GroupProfile->ownerLink().'</li></br>';
-print '<li><strong>Created:</strong> '.libTime::text($GroupProfile->timeCreated).'</li>';
+print '<li><strong>Creator:</strong> '.$GroupProfile->ownerLink().'</li><br />';
+print '<li><strong>Created:</strong> '.libTime::text($GroupProfile->timeCreated).'</li><br />';
 if( $User->id == $GroupProfile->ownerUserID )
 {
 	if( $GroupProfile->isMessageNeeded )
@@ -613,9 +624,9 @@ if( $User->id == $GroupProfile->ownerUserID )
 	}
 
 }
+print '<li><strong>Comment:</strong> "<em>'.$GroupProfile->description.'</em>"</li>';
 print '</ul></p>';
 
-print '<p class="profileComment">"'.$GroupProfile->description.'"</p>';
 
 
 
@@ -636,7 +647,7 @@ if ( $User->type['Moderator'] )
 {	
 	print '<div class = "profile-show">';
 
-	print '<div class = "profile_title"> Moderator Info</div>';
+	print '<div class = "profile_title"><strong>Moderator Info</strong></div>';
 	print '<div class = "profile_content_show">';
 
 			$modActions=array();
@@ -662,7 +673,7 @@ if ( $User->type['Moderator'] )
 					$multiAccountParams .= $groupUser->userID . '%2C';
 				}
 			}
-			$modActions[] = '<a href="admincp.php?tab=Multi-accounts&'.$multiAccountParams.'" class="light">Enter multi-account finder</a>';
+			$modActions[] = '<a href="admincp.php?tab=Account Analyzer&'.$multiAccountParams.'" class="light">Enter multi-account finder</a>';
 			
 			$modActions[] = 'Set type:';
 			$modActions[] = '<a href="group.php?groupID='.$groupUser->groupID.'&modSetGroupType=Suspicion" class="light">Suspicion</a>';
@@ -703,7 +714,7 @@ print '<input type="hidden" name="groupID" value="'.$GroupProfile->id.'" />';
 print '<table class="rrInfo">';
 print $GroupProfile->outputUserTable($User);
 print '</table>';
-print '<input id="submitRatingUpdates" type="Submit" class="form-submit" value="Submit rating updates" />';
+print '<div style="text-align:center"><input id="submitRatingUpdates" type="Submit" class="form-submit" value="Submit rating updates" /></div>';
 print '</form>';
 print '</div>';
 

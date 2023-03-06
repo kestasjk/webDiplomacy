@@ -284,7 +284,7 @@ function close()
 		unset($DB);
 	}
 
-	ob_end_flush();
+	if( !defined('RUNNINGFROMCLI')) ob_end_flush();
 
 	die();
 }

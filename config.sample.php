@@ -146,6 +146,12 @@ class Config
 	public static $grActive = false;
 
 	/**
+	 * An array of variants where concede votes are allowed. If empty then all variants will allow concede voting.
+	 * @var array
+	 */
+	public static $concedeVariants=array(15,23);
+
+	/**
 	 * Play now domain; if not null the system will check whether it is being viewed as this
 	 * subdomain, e.g. play.webdiplomacy.net , and if it is the system will run in play-now
 	 * mode where no user account is needed and player vs bot games will be created and started
@@ -431,6 +437,16 @@ class Config
 	 */
 	//public static $customForumURL='/contrib/phpBB3/';
 
+    /**
+    * Settings needed for auth0 to function
+    public static $auth0conf = array(
+		'domain' => '',
+		'client_id' => '',
+		'client_secret' => '',
+		'redirect_url' => '',
+	);
+    */
+	
 	// ---
 	// --- From here on down the default settings will probably be fine.
 	// ---

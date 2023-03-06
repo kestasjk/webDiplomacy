@@ -129,13 +129,14 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 
 		// Create Game record & object
 		require_once(l_r('gamemaster/game.php'));
-		$Game = processGame::create($input['variantID'],$input['name'],'',5,'Unranked',4320, -1, 4320, -1, 60,'No','Regular','Normal','draw-votes-public',0,4,'MemberVsBots');
+		$phaseMinutes = defined('PLAYNOW') ? 24*60 : 3*24*60;
+		$Game = processGame::create($input['variantID'],$input['name'],'',5,'Unranked', $phaseMinutes, -1, $phaseMinutes, -1, 60,'No','Regular','Normal','draw-votes-public',0,4,'MemberVsBots');
 
 		// Prevent temp banned players from making new games.
 		if ($User->userIsTempBanned())
 		{
 			processGame::eraseGame($Game->id);
-			libHTML::notice('You are blocked from creating new games.', 'You are blocked from creating new games.');
+			libHTML::notice('Temporary block', 'You are blocked from creating new games. Please visit the <a href="modforum.php">mod forum</a> to speak to a moderator.');
 		}
 
 		// Create first Member record & object

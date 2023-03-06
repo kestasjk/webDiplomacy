@@ -112,12 +112,7 @@ become a highly skilled, elite Diplomacy player, and perhaps will end up playing
 Generally speaking, lower pot games, such as games where each player only bets 5 points, may have more players who are new or inexperienced. 
 If you are more experienced and play in those games, we encourage you to be patient with new players. We were all new players once. 
 The best way to welcome a newer player to the site is to play fairly and patiently, and perhaps offer constructive criticism that could help 
-make them better in the long run.
-<br><br>
-If you find that you would like additional help with your Diplomacy strategy and tactics from a more experienced player on webDiplomacy, consider 
-signing up for the <a href='https://docs.google.com/document/d/1dSq6zlizecb90F3OKSqyFUWGI32Or87ZNmkFmhCVz-c/edit' class='light'>
-webDiplomacy Mentor Program</a>. In this program, you will be paired up with a more experienced player who will be available for you to ask questions, 
-get constructive feedback, and receive advice and guidance.",
+make them better in the long run.",
 
 "What are all these settings on the game creation page?" => "When you create a game on webDiplomacy, you have to specify some settings. 
 First and foremost, every game has a name, bet size, and phase length. The name is up to you, so long as it abides by our <a href='rules.php' class='light'>site rules</a>. 

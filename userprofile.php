@@ -94,7 +94,7 @@ if ( $User->type['Moderator'] )
 			if( !$UserProfile->type['Admin'] && ( $User->type['Admin'] || !$UserProfile->type['Moderator'] ) )
 				$modActions[] = libHTML::admincp('banUser',array('userID'=>$UserProfile->id), 'Ban user');
 
-			$modActions[] = '<a href="admincp.php?tab=Multi-accounts&aUserID='.$UserProfile->id.'" class="light">Enter multi-account finder</a>';
+			$modActions[] = '<a href="admincp.php?tab=Account Analyzer&aUserID='.$UserProfile->id.'" class="light">Enter multi-account finder</a>';
 
 			if($modActions)
 			{
@@ -104,11 +104,7 @@ if ( $User->type['Moderator'] )
 
 		print '<strong>UserID:</strong> '.$UserProfile->id.'</br></br>';
 		print '<strong>Email:</strong></br>'.$UserProfile->email.'</br></br>';
-		/*print '<strong>Mobile linked:</strong></br>'.$UserProfile->email.'</br></br>';
-		print '<strong>Facebook linked:</strong></br>'.$UserProfile->email.'</br></br>';
-		print '<strong>Google linked:</strong></br>'.$UserProfile->email.'</br></br>';
-		print '<strong>Apple linked:</strong></br>'.$UserProfile->email.'</br></br>';
-		*/
+		
 		$lastCheckedBy = $UserProfile->modLastCheckedBy();
 		$modLastCheckedOn = $UserProfile->modLastCheckedOn();
 		list($previousUsernames) = $DB->sql_row(
@@ -285,7 +281,7 @@ print '<strong>Ranking Info</strong>
 	$ghostRatingTrends = $UserProfile->getGRTrending(0,12);
 
 	// Determine user theme and set colors for use in the javascript for chart generation, Yes is Dark Mode, No is Light Mode.
-	if ($User->getTheme() == 'Yes') 
+	if ($User->isDarkMode()) 
 	{
 		$chartLineColor = 'white';
 		$chartBackgroundColor = '#757b81';
@@ -973,7 +969,7 @@ if( isset(Config::$customForumURL) )
 				<div class="profile-forum-links">
 					<a class="profile-link" href="/contrib/phpBB3/memberlist.php?mode=viewprofile&u='.$newForumID.'">
 						<button class="form-submit" id="view-forum-profile">
-							New Forum Profile
+							Forum Profile
 						</button>
 					</a>
 				</div>';
@@ -989,7 +985,7 @@ if( isset(Config::$customForumURL) )
 		}
 		else
 		{
-			print '<p class="profileCommentURL">This user cannot currently receive messages.</p>';
+			print '<p class="profileCommentURL">This user has not yet used the forum.</p>';
 		}
 	}
 }

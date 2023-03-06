@@ -106,33 +106,16 @@ function adminCPTabs()
 {
 	global $User;
 	
-	if ($User->type['Admin'])
-	{
-		$tabs = array(
-			'Control Panel'=>l_t('Perform admin tasks'),
-			// 'Mod notes'=>l_t('Notes/reports left for/by the mod team'),
-			'Status Info'=>l_t('View server status lists'),
-			'Logs'=>l_t('Log of recent admin tasks'),
-			'Groups'=>l_t('Management of Groups used for relationship / dispute management'),
-			'Multi-accounts'=>l_t('Multi-account detector'),
-			'Chatlogs'=>l_t('Check the ingame chat.'),
-			'AccessLog'=>l_t('Check the user-actions sort by IP and Username.'),
-			'Locales'=>l_t('Locale management')
-		);
-	}
-	else
-	{
-		$tabs = array(
-			'Control Panel'=>l_t('Perform admin tasks'),
-			// 'Mod notes'=>l_t('Notes/reports left for/by the mod team'),
-			'Status Info'=>l_t('View server status lists'),
-			'Logs'=>l_t('Log of recent admin tasks'),
-			'Groups'=>l_t('Management of Groups used for relationship / dispute management'),
-			'Multi-accounts'=>l_t('Multi-account detector'),
-			'Chatlogs'=>l_t('Check the ingame chat.'),
-			'AccessLog'=>l_t('Check the user-actions sort by IP and Username.')
-		);
-	}
+	$tabs = array(
+		'Control Panel'=>l_t('Perform admin tasks'),
+		// 'Mod notes'=>l_t('Notes/reports left for/by the mod team'),
+		'Status Info'=>l_t('View server status lists'),
+		'Logs'=>l_t('Log of recent admin tasks'),
+		'Relationships'=>l_t('Management of Groups used for relationship / dispute management'),
+		'Chatlogs'=>l_t('Check the ingame chat.'),
+		'Account Analyzer'=>l_t('Analyze/compare specific accounts'),
+		'Account Searcher'=>l_t('Search new accounts for suspect ones.')
+	);
 
 	$tab = 'Control Panel';
 	$tabNames = array_keys($tabs);
@@ -182,19 +165,20 @@ switch($tab)
 	case 'Logs':
 		require_once(l_r('admin/adminLog.php'));
 		break;
-	case 'Groups':
+	case 'Relationships':
 		require_once(l_r('admin/adminGroups.php'));
 		break;
-	case 'Multi-accounts':
+	case 'Account Analyzer':
 		require_once(l_r('admin/adminMultiFinder.php'));
 		break;
+	/* Disabled for now as I'm sure this is very insecure
 	case 'Locales':
 		require_once(l_r('admin/adminLocales.php'));
-		break;
+		break;*/
 	case 'Chatlogs':
 		require_once(l_r('admin/adminChatAnalyser.php'));
 		break;
-	case 'AccessLog':
+	case 'Account Searcher':
 		require_once(l_r('admin/adminAdvancedAccessLog.php'));
 		break;
 	default:

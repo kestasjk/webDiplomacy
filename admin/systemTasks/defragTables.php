@@ -40,7 +40,7 @@ ini_set('max_execution_time','60');
 
 header('Content-Type: text/plain');
 
-ob_end_flush();
+if( !defined('RUNNINGFROMCLI')) ob_end_flush();
 
 print l_t('Defragmenting')."\n"; flush();
 

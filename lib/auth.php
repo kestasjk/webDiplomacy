@@ -27,6 +27,18 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  */
 class libAuth
 {
+	public static function generateToken($inputData)
+	{
+		$inputData = (string)$inputData;
+		$randInput = rand(0,1000000000);
+		return md5($randInput.$inputData.Config::$salt.Config::$secret.'generateToken').'_'.$randInput;
+	}
+	public static function validateToken($token)
+	{
+		$inputData = explode('_',$token)[0];
+		$randInput = explode('_',$token)[1];
+		return $token === (md5($randInput.$inputData.Config::$salt.Config::$secret.'generateToken').'_'.$randInput);
+	}
 	public static function resourceLimiter($name, $seconds)
 	{
 		global $User;
@@ -148,7 +160,7 @@ class libAuth
 			throw new Exception(l_t('Invalid form token %s',$formToken));
 
 		if ( (time()-$time)>60*60 )
-			throw new Exception(l_t('Form token %s expired (%s), over an hour old. Please resubmit.',$formToken,time()));
+			libHTML::notice("Token expired",l_t('Form token %s expired (%s), over an hour old. Please resubmit.',$formToken,time()));
 	}
 	private static function formToken_Key($time)
 	{

@@ -765,8 +765,8 @@ class adminMultiCheck
 				print '<i>match '.$match.'</i> zxcvb<br/>';
 				print '<i>aTotalCount'.$aTotalCount.'</i>zxcvb<br/>';
 				print '<i>aTally '.$aTally[$match].'</i> zxcvb<br/>';
-		print '<i>bTotalCount '.$bTotalCount.'</i> zxcvb<br/>';
-		print '<i>bTally '.$bTally[$match].'</i> zxcvb<br/>';
+				print '<i>bTotalCount '.$bTotalCount.'</i> zxcvb<br/>';
+				print '<i>bTally '.$bTally[$match].'</i> zxcvb<br/>';
 				$newMatches[] = $match.' ('.round(100*$aTally[$match]/$aTotalCount).'%-'.round(100*$bTally[$match]/$bTotalCount).'%)';
 			}
 			print implode(', ', $newMatches);
@@ -1073,7 +1073,7 @@ class adminMultiCheck
 	
 	public function printUserTimeprint() {
 		global $User;
-		if ($User->getTheme() == 'No')
+		if (!$User->isDarkMode())
 		{
 			print '<style>
 			.timeprintData table {

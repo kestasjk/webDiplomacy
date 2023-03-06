@@ -27,7 +27,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 ?>
 <div class="content-bare content-board-header content-title-header">
 	<div class="pageTitle barAlt1">Create a new game</div>
-	<div class="pageDescription">Start a new customized game of Diplomacy.</div>
+	<div class="pageDescription">Start a new game of Diplomacy that other players can join, or <a href="botgamecreate.php">play against bots here</a>.</div>
 </div>
 <div class="content content-follow-on">
 	<?php
@@ -41,13 +41,6 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				about in order to make your game and make sure that you know what each setting you select
 				means.
 				<br>
-				On webDiplomacy, you can play games against humans or bots. If you want to play against other players,
-				you\'re in the right place. You can just fill out this form. If you want to play against bots,
-				you can click "Play a game against bots." Our bots are artificial intelligence users, so they are not 
-				computer players like you might encounter in online chess, for example. They are very unique and 
-				they are trained rigorously based on the decisions real players made, which means they are both 
-				intelligent and unpredictable. Give them a try sometime, you might be surprised how good they are!
-				<br>
 				You should first give your game an appropriate title, determine how much you want each player 
 				to have to bet to join, and how long each phase would last. If you want to play a game that lasts
 				a few hours in the evening but takes your full attention, your phase length should be 5 or 10 minutes, 
@@ -60,11 +53,6 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				but is full within 3 days, it will start in 3 days, not 7. A live game will be "scheduled," meaning that
 				it will not start until the time to fill has expired, even if it fills early.
 				<br>
-				If you are playing with friends, family, or people you know outside of webDiplomacy, you are required
-				to set an invite code to your game. You can send this invite code to whoever you want to invite and know
-				that people who you do not want in your game will not accidentally join. If you are just looking for a 
-				game with some other players, you do not need to add an invite code. 
-				<br>
 				You also get to choose whether players can send messages or not, whether players are anonymized or 
 				displayed, what map you want to play on, how the game should be scored, and more. For more information on
 				these settings, just click the "?" icon next to them on the form after you close this tutorial. Good luck!
@@ -76,21 +64,20 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			setcookie('wD-Tutorial-GameCreate', '', ['expires'=>time()-3600,'samesite'=>'Lax']);
 		}
 	?>
-	<p><a href="botgamecreate.php">Play a game against bots</a></p>
-
 	<div class = "gameCreateShow">
 		<form method="post">
+			<h3>Basic settings</h3>
 			<p>
 				<strong>Game Name:</strong></br>
 				<input class = "gameCreate" type="text" name="newGame[name]" value="" size="30">
 			</p>
 
 			<strong>Bet size: (5-<?php print $User->points.libHTML::points(); ?>)</strong>
-			<img id = "modBtnBet" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-			<div id="betModal" class="modal">
+			<img id = "modBtnBet" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" class="modalButtonList" />
+			<div id="modBtnBetModal" class="modal">
 				<!-- Modal content -->
 				<div class="modal-content">
-					<span class="close5">&times;</span>
+					<span id="modBtnBetClose">&times;</span>
 					<p><strong>Bet:</strong> </br>
 						The bet required to join this game. This is the amount of points that all players, including you,
 						must put into the game's "pot" (<a href="points.php" class="light">read more</a>).<br /><br />
@@ -101,11 +88,11 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			
 			</br></br>
 			<strong>Phase length: (5 min - 10 days)</strong>
-			<img id = "modBtnPhaseLength" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-			<div id="phaseLengthModal" class="modal">
+			<img id = "modBtnPhaseLength" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" class="modalButtonList" />
+			<div id="modBtnPhaseLengthModal" class="modal">
 				<!-- Modal content -->
 				<div class="modal-content">
-					<span class="close4">&times;</span>
+					<span id="modBtnPhaseLengthClose">&times;</span>
 					<p><strong>Phase Length: </strong></br>
 						How long each phase of the game will last in hours. Longer phase hours means a slow game with more time to talk. 
 						Shorter phases require players be available to check the game frequently.
@@ -121,14 +108,15 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			?>
 			</select>
 
+			<div class="hr"></div>
 
-			</br></br>
+			<h3>Advanced settings</h3>
 			<strong>Phase length (Retreats, Builds & Missed Turns)</strong>
-			<img id = "modBtnPhaseLengthRB" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-			<div id="phaseLengthRBModal" class="modal">
+			<img id = "modBtnPhaseLengthRB" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" class="modalButtonList" />
+			<div id="modBtnPhaseLengthRBModal" class="modal">
 				<!-- Modal content -->
 				<div class="modal-content">
-					<span class="close9">&times;</span>
+					<span id="modBtnPhaseLengthRBClose">&times;</span>
 					<p><strong>Phase length (Retreats, Builds & Missed Turns): </strong></br>
 						How long retreat and build phases, and grace periods for missed turns will last.
 					</p>
@@ -201,11 +189,11 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			</p>
 			
 			<strong>Game Messaging:</strong>
-			<img id = "modBtnMessaging" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-			<div id="messagingModal" class="modal">
+			<img id = "modBtnMessaging" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" class="modalButtonList" />
+			<div id="modBtnMessagingModal" class="modal">
 				<!-- Modal content -->
 				<div class="modal-content">
-					<span class="close7">&times;</span>
+					<span id="modBtnMessagingClose">&times;</span>
 					<p><strong>Game Messaging:</strong> </br>
 						The type of messaging allowed in a game.</br></br>
 						All: Global and Private Messaging allowed. </br></br>
@@ -223,12 +211,12 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			</select>
 
 			</br></br>
-			<strong>Variant type (map choices):</strong>
-			<img id = "modBtnVariant" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-			<div id="variantModal" class="modal">
+			<strong>Variant/Map type (map choices):</strong>
+			<img id = "modBtnVariant" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" class="modalButtonList" />
+			<div id="modBtnVariantModal" class="modal">
 				<!-- Modal content -->
 				<div class="modal-content">
-					<span class="close3">&times;</span>
+					<span id="modBtnVariantClose">&times;</span>
 					<p><strong>Variant:</strong> </br>
 						Type of Diplomacy game from a selection of maps and alternate rule settings available. Click any of the variant names to view the details on the variants page.
 						<br /><br />
@@ -266,11 +254,11 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			</br></br>
 			<div id="botFill" style="display:none">
 			<strong>Fill Empty Spots with Bots: </strong>
-			<img id = "modBtnBot" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-			<div id="botModal" class="modal">
+			<img id = "modBtnBot" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" class="modalButtonList" />
+			<div id="modBtnBotModal" class="modal">
 				<!-- Modal content -->
 				<div class="modal-content">
-					<span class="close8">&times;</span>
+					<span id="modBtnBotClose">&times;</span>
 					<p><strong>Fill with Bots:</strong> </br>
 						If the game has at least 2 human players it will 
 						fill with bots if there are empty spaces at the designated start time instead of being cancelled. This type 
@@ -284,11 +272,11 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			</div>
 			
 			<strong>Scoring:(<a href="points.php#DSS">See scoring types here</a>)</strong>
-			<img id = "modBtnScoring" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-			<div id="scoringModal" class="modal">
+			<img id = "modBtnScoring" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" class="modalButtonList" />
+			<div id="modBtnScoringModal" class="modal">
 				<!-- Modal content -->
 				<div class="modal-content">
-					<span class="close2">&times;</span>
+					<span id="modBtnScoringClose">&times;</span>
 					<p><strong>Scoring:</strong> </br>
 						This setting determines how points are split up if/when the game draws. <br/><br/>
 						In Draw-Size Scoring, the pot is split equally between the remaining players when the game draws (this setting used to be called WTA). 
@@ -308,11 +296,11 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			</select></br></br>
 
 			<strong>Anonymous players: </strong>
-			<img id = "modBtnAnon" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-			<div id="anonModal" class="modal">
+			<img id = "modBtnAnon" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" class="modalButtonList" />
+			<div id="modBtnAnonModal" class="modal">
 				<!-- Modal content -->
 				<div class="modal-content">
-					<span class="close6">&times;</span>
+					<span id="modBtnAnonClose">&times;</span>
 					<p><strong>Anonymous players: </strong></br>
 						Decide if player names should be shown or hidden.</br></br> *Please note that games with no messaging are always anonymous regardless of what is set here to prevent cheating.
 					</p>
@@ -331,23 +319,12 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				</select>
 			</p>
 
-			<p>
-				<strong>Required reliability rating:</strong></br>
-				<input id="minRating" class = "gameCreate" type="text" name="newGame[minimumReliabilityRating]" size="2" value="<?php print $defaultRR ?>"
-					onkeypress="if (event.keyCode==13) this.blur(); return event.keyCode!=13"
-					onChange="
-						this.value = parseInt(this.value);
-						if (this.value == 'NaN' ) this.value = 0;
-						if (this.value < 0 ) this.value = 0;
-						if (this.value > <?php print $maxRR ?> ) this.value = <?php print $User->reliabilityRating ?>;"/>
-			</p>
-
 			<strong>Excused delays per player:</strong>
-			<img id = "modBtnDelays" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" />
-			<div id="delayModal" class="modal">
+			<img id = "modBtnDelays" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" class="modalButtonList" />
+			<div id="modBtnDelaysModal" class="modal">
 				<!-- Modal content -->
 				<div class="modal-content">
-					<span class="close1">&times;</span>
+					<span id="modBtnDelaysClose">&times;</span>
 					<p><strong>Excused delays per player:</strong></br>
 						The number of excused delays before a player is removed from the game and can be replaced. 
 						If a player is missing orders at a deadline, the deadline will reset and the player will be 
@@ -359,15 +336,55 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			</div>
 			<select class = "gameCreate" id="NMR" name="newGame[excusedMissedTurns]">
 			<?php
-				for ($i=0; $i<=4; $i++) { print '<option value="'.$i.'"'.($i==1 ? ' selected' : '').'>'.$i.(($i==0)?' (strict)':'').'</option>'; }
+				for ($i=0; $i<=4; $i++) { print '<option value="'.$i.'"'.($i==3 ? ' selected' : '').'>'.$i.(($i==0)?' (strict)':'').'</option>'; }
 			?>
 			</select>
 
+			<div class="hr"></div>
+
 			<p>
-				<img src="images/icons/lock.png" alt="Private" /> <strong>Add Invite Code (optional):</strong></br>
-				<input class = "gameCreate" type="password"autocomplete="new-password" name="newGame[password]" value="" size="20" /></br>
-				Confirm: <input class = "gameCreate" autocomplete="new-password" type="password" name="newGame[passwordcheck]" value="" size="20" /></br>
+				<strong>Required reliability rating:</strong>
+				<img id = "modBtnReliability" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" class="modalButtonList" /></br>
+				<div id="modBtnReliabilityModal" class="modal">
+					<!-- Modal content -->
+					<div class="modal-content">
+						<span id="modBtnReliabilityClose">&times;</span>
+						<p><strong>Required reliability rating:</strong></br>
+							A player's reliability rating varies from 0% to 100% depending on how many times they have 
+							failed to submit orders when they are due. By setting this to higher values you will exclude
+							less reliable players, but you may have more trouble finding players to join.
+						</p>
+					</div>
+				</div>
+				<input id="minRating" class = "gameCreate" type="text" name="newGame[minimumReliabilityRating]" size="2" value="<?php print $defaultRR ?>"
+					onkeypress="if (event.keyCode==13) this.blur(); return event.keyCode!=13"
+					onChange="
+						this.value = parseInt(this.value);
+						if (this.value == 'NaN' ) this.value = 0;
+						if (this.value < 0 ) this.value = 0;
+						if (this.value > <?php print $maxRR ?> ) this.value = <?php print $User->reliabilityRating ?>;"/>
 			</p>
+
+			<p>
+				<img src="images/icons/lock.png" alt="Private" /> <strong>Add Invite Code / Password:</strong>
+				<img id = "modBtnPassword" height="16" width="16" src="images/icons/help.png" alt="Help" title="Help" class="modalButtonList" />
+				<div id="modBtnPasswordModal" class="modal">
+					<!-- Modal content -->
+					<div class="modal-content">
+						<span id="modBtnPasswordClose">&times;</span>
+						<p><strong>Invite Code / Password: </strong></br>
+							Optionally add a code / password so that only people you tell the code / password to can join. 
+							Leave blank if you do not want to add a code / password.
+						</p>
+					</div>
+				</div>
+				<input class = "gameCreate" type="password"autocomplete="new-password" name="newGame[password]" value="" size="20" />
+			</p>
+			<p>
+				<img src="images/icons/lock.png" alt="Private" /> <strong>Confirm Invite Code / Password:</strong></br> <input class = "gameCreate" autocomplete="new-password" type="password" name="newGame[passwordcheck]" value="" size="20" /></br>
+			</p>
+
+			<div class="hr"></div>
 
 			<p class="notice">
 				<input class = "green-Submit" type="submit"  value="Create">
@@ -380,73 +397,21 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	</div>
 
 <script>
-// Get the modal
-var modal1 = document.getElementById('delayModal');
-var modal2 = document.getElementById('scoringModal');
-var modal3 = document.getElementById('variantModal');
-var modal4 = document.getElementById('phaseLengthModal');
-var modal5 = document.getElementById('betModal');
-var modal6 = document.getElementById('anonModal');
-var modal7 = document.getElementById('messagingModal');
-var modal8 = document.getElementById('botModal');
-var modal9 = document.getElementById('phaseLengthRBModal');
-
-// Get the button that opens the modal
-var btn1 = document.getElementById("modBtnDelays");
-var btn2 = document.getElementById("modBtnScoring");
-var btn3 = document.getElementById("modBtnVariant");
-var btn4 = document.getElementById("modBtnPhaseLength");
-var btn5 = document.getElementById("modBtnBet");
-var btn6 = document.getElementById("modBtnAnon");
-var btn7 = document.getElementById("modBtnMessaging");
-var btn8 = document.getElementById("modBtnBot");
-var btn9 = document.getElementById("modBtnPhaseLengthRB");
-
-// Get the <span> element that closes the modal
-var span1 = document.getElementsByClassName("close1")[0];
-var span2 = document.getElementsByClassName("close2")[0];
-var span3 = document.getElementsByClassName("close3")[0];
-var span4 = document.getElementsByClassName("close4")[0];
-var span5 = document.getElementsByClassName("close5")[0];
-var span6 = document.getElementsByClassName("close6")[0];
-var span7 = document.getElementsByClassName("close7")[0];
-var span8 = document.getElementsByClassName("close8")[0];
-var span9 = document.getElementsByClassName("close9")[0];
-
-// When the user clicks the button, open the modal 
-btn1.onclick = function() { modal1.style.display = "block"; }
-btn2.onclick = function() { modal2.style.display = "block"; }
-btn3.onclick = function() { modal3.style.display = "block"; }
-btn4.onclick = function() { modal4.style.display = "block"; }
-btn5.onclick = function() { modal5.style.display = "block"; }
-btn6.onclick = function() { modal6.style.display = "block"; }
-btn7.onclick = function() { modal7.style.display = "block"; }
-btn8.onclick = function() { modal8.style.display = "block"; }
-btn9.onclick = function() { modal9.style.display = "block"; }
-
-// When the user clicks on <span> (x), close the modal
-span1.onclick = function() { modal1.style.display = "none"; }
-span2.onclick = function() { modal2.style.display = "none"; }
-span3.onclick = function() { modal3.style.display = "none"; }
-span4.onclick = function() { modal4.style.display = "none"; }
-span5.onclick = function() { modal5.style.display = "none"; }
-span6.onclick = function() { modal6.style.display = "none"; }
-span7.onclick = function() { modal7.style.display = "none"; }
-span8.onclick = function() { modal8.style.display = "none"; }
-span9.onclick = function() { modal9.style.display = "none"; }
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-	if (event.target == modal1) { modal1.style.display = "none"; }
-	if (event.target == modal2) { modal2.style.display = "none"; }
-	if (event.target == modal3) { modal3.style.display = "none"; }
-	if (event.target == modal4) { modal4.style.display = "none"; }
-	if (event.target == modal5) { modal5.style.display = "none"; }
-	if (event.target == modal6) { modal6.style.display = "none"; }
-	if (event.target == modal7) { modal7.style.display = "none"; }
-	if (event.target == modal8) { modal8.style.display = "none"; }
-	if (event.target == modal9) { modal9.style.display = "none"; }
-
+var buttons = document.getElementsByClassName("modalButtonList");
+for(var i = 0; i < buttons.length; i++) {
+	buttons[i].onclick = function() {
+		var modal = document.getElementById(this.id + "Modal");
+		modal.style.display = "block";
+		var closeButton = document.getElementById(this.id + "Close");
+		closeButton.onclick = function() {
+			modal.style.display = "none"; 
+		};
+		closeButton.innerHTML = "<a href='#'>&times;</a>";
+		closeButton.style = "float: right; color: #000; font-size: 28px; font-weight: bold; padding-right:10px;";
+		window.onclick = function(event) {
+			if (event.target == modal) { modal.style.display = "none"; }
+		}
+	}
 }
 
 function setBotFill(){

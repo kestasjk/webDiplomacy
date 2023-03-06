@@ -129,18 +129,18 @@ elseif( isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($
 
 		$results = $O->getResults();
 		if( $newReady != $oldReady) {
-			$Game = libVariant::$Variant->Game($O->gameID);//, UPDATE); // No need to lock game for update to check whether it needs a process
+			//$Game = libVariant::$Variant->Game($O->gameID);//, UPDATE); // No need to lock game for update to check whether it needs a process
 			require_once('lib/pusher.php');
-			libPusher::trigger("private-game" . $Game->id, 'overview', 'processed');
+			libPusher::trigger("private-game" . $O->gameID, 'overview', 'processed');
 		}
 
 		if( $newReady && !$oldReady )
 		{
 			$results['process']='Checked';
-			$Game = libVariant::$Variant->Game($O->gameID);//, UPDATE); // No need to lock game for update to check whether it needs a process
+			//$Game = libVariant::$Variant->Game($O->gameID);//, UPDATE); // No need to lock game for update to check whether it needs a process
 			if( $Game->needsProcess() )
 			{
-				$MC->append('processHint',','.$Game->id);
+				$MC->append('processHint',','.$O->gameID);
 			}
 			
 			/*

@@ -690,7 +690,7 @@ if ($tab == 'UserSearch')
 			// Print the mod or banned icons if the user is one or the other.
 			if ($values->mod) 
 			{ 
-				if ($User->getTheme() == 'No') 
+				if (!$User->isDarkMode()) 
 				{
 					print ' <img src="images/icons/mod.png" title="Moderator/Admin" />';
 				}

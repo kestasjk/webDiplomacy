@@ -39,11 +39,6 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		?>" <?php if ( isset($_REQUEST['emailToken']) ) print 'readonly '; ?> >
 	</p>
 
-	<p><strong>Hide e-mail address?</strong></br>
-		<input type="radio" name="userForm[hideEmail]" value="Yes" <?php if($User->hideEmail=='Yes') print "checked"; ?>>Yes
-		<input type="radio" name="userForm[hideEmail]" value="No" <?php if($User->hideEmail=='No') print "checked"; ?>>No
-	</p>
-
 	<p><strong>Password:</strong></br>
 		<input type="password" name="userForm[password]" maxlength=30 autocomplete="new-password" class = "settings">
 	</p>
@@ -51,28 +46,6 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	<p><strong>Confirm Password:</strong></br>
 		<input type="password" name="userForm[passwordcheck]" maxlength=30 autocomplete="new-password" class = "settings">
 	</p>
-<?php
-if( $User->type['User'] ) 
-{
-?>
-	<p>
-		<strong>Mobile number:</strong></br>
-		<div style="float:right"><i>Certain games reuqire you to validate a mobile phone number by entering your number below, clicking send, 
-			then entering the code received.</i></div>
-		<?php
-		require_once('lib/sms.php');
-		print libSMS::getCountryCodeOptions("name='userForm[mobileCountryCode]'", $User->mobileCountryCode); 
-		?>
-		<input type="text" class="settings" name='userForm[mobileNumber]' style="width:50% !important;" size="10" value="<?php print $User->mobileNumber == null ? '' : $User->mobileNumber; ?>" /><br /><br />
-
-		<?php if( !$User->isMobileValidated ) { ?>
-			<strong>Validation code (will be sent when a mobile number is submitted until the code is entered):</strong></br>
-			<input type="text" class="settings" name="userForm[mobileValidationCode]" size="6" value="" />
-		<?php } ?>
-	</p>
-<?php
-}
-?>
 	<form
 	<p>
 		<div style="float:right"><i>Profile quote visible to others. Consider favorite quotes or links to games.</i></div>

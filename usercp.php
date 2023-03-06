@@ -92,7 +92,7 @@ if ( isset($_REQUEST['userForm']) )
 
 		unset($errors);
 
-		$allowed = array('E-mail'=>'email','E-mail hiding'=>'hideEmail', 'Homepage'=>'homepage','Comment'=>'comment','Country code'=>'mobileCountryCode','Mobile number'=>'mobileNumber');
+		$allowed = array('E-mail'=>'email', 'Homepage'=>'homepage','Comment'=>'comment');
 
 		$User->getOptions()->set($_REQUEST['userForm']);
 
@@ -157,35 +157,6 @@ if ( isset($_REQUEST['userForm']) )
 			}
 		}
 		
-		if( isset($SQLVars['mobileCountryCode']) && isset($SQLVars['mobileNumber']) && $SQLVars['mobileCountryCode'] && $SQLVars['mobileNumber'] )
-		{
-			$isMobileChanged = ($SQLVars['mobileNumber'] != $User->mobileNumber || $SQLVars['mobileCountryCode'] != $User->mobileCountryCode);
-			if( !$User->isMobileValidated || $isMobileChanged )
-			{
-				$isMobileValidated = false;
-				if( isset($SQLVars['mobileValidationCode'] ) && $SQLVars['mobileValidationCode'] )
-				{
-					if( intval($SQLVars['mobileValidationCode']) === intval(libSMS::getSixDigitTokenForNumber(libSMS::combineCountryCodeAndNumber($SQLVars['mobileCountryCode'],$SQLVars['mobileNumber']))) )
-					{
-						$formOutput .= l_t('SMS code validated succesfully. ').' ';
-						$isMobileValidated = true;
-					}
-					else
-					{
-						$formOutput .= l_t('SMS code could not be validated, please try again. ').' ';
-					}
-				}
-				else
-				{
-					libSMS::sendValidationText($SQLVars['mobileCountryCode'], $SQLVars['mobileNumber']);
-					$formOutput .= l_t('Phone validation SMS message sent. Please submit the verification code you receive below. ').' ';
-				}
-				
-				if ( $set != '' ) $set .= ', ';
-				$set .= ' isMobileValidated = '.($isMobileValidated? '1' : '0').' ';
-			}
-		}
-
 		if ( $set != '' )
 		{
 			$DB->sql_put("UPDATE wD_Users SET ".$set." WHERE id = ".$User->id);
@@ -235,71 +206,13 @@ if (isset($_COOKIE['wD-Tutorial-Settings']))
 
 print libHTML::pageTitle(l_t('User account settings'),l_t('Control settings for your account.'));
 
-print '
-<div class = "settings">
-<div class = "settings">This page allows you to update your profile settings. Your email address will never be spammed or given out, and is only used 
-by the moderator team to contact you. Please ensure your email is updated so that the moderators can contact you. </br></br> 
-If you select "no" for "Hide email address" your email will be displayed to other site users in an image file to protect you from bots. 
-If you leave the default of "yes" it is only visible to moderators.</div></br>';
+print '<div class = "settings">';
 
 print '<form method="post" class = "settings_show" autocomplete="off"><ul class="formlist">';
 
 require_once(l_r('locales/English/user.php'));
 
 print '</div>';
-
-if( isset(Config::$auth0conf) )
-{
-	print libHTML::pageTitle(l_t('External authentication / verification providers (Experimental)'),l_t('Help fight cheaters and improve security by linking to your external accounts.'));
-	print '<div class="settings">';
-	print '<a name="externalAuth"></a>';
-	print '<p>webDiplomacy is trialing support for external sources of user authentication / verification. By linking to ';
-	print 'an external provider you are making things easier for the webDiplomacy moderator team, and harder for cheaters, as well ';
-	print 'as allowing a more modern user registration/authentication experience.</p>';
-	print '<p>The data a linked account provides is only your publically available information, and the relationship between your webDiplomacy ';
-	print 'and external accounts is only viewable by the mod team for account verification purposes.</p>';
-	print '<p>Currently Facebook and Google authentication is supported, with Apple and SMS support coming soon.</p>';
-
-	$userInfo = libOpenID::getUserInfo();
-	if( $userInfo ) libOpenID::saveOpenIDData($userInfo);
-	
-	$validSources = libOpenID::getValidSources($userInfo);
-
-	print '<h4>Current links:</h4>';
-	print '<ul>';
-	foreach($validSources as $source=>$sub)
-	{
-		print '<li><strong>'.$source.':</strong> ';
-		if( $sub === false )
-		{
-			print 'Not linked';
-		}
-		else
-		{
-			print 'Linked, ID='.$sub;
-		}
-		print '</li>';
-	}
-	print '</ul>';
-	
-	print '<h4>Link an account:</h4>';
-	print '<p>To link an external account simply use the links below to authenticate yourself, and the external provider will ';
-	print 'return a token verifying that you have an account with that provider.<br />To link multiple accounts simply use the ';
-	print 'log out button to log out of one external provider, then use the log in link to log into a secondary external provider.</p>';
-	
-	print '<p class="notice" style="text-align:center">';
-	if( $userInfo )
-	{
-		print '<a href="usercp.php?auth0Logout=on">Log out from external provider</a>';
-	}
-	else
-	{
-		print '<a href="usercp.php?auth0Login=on">Log into an external provider</a>';
-	}
-	print '</p>';
-	print '</div>';
-	print '</div>';
-}
 
 libHTML::$footerIncludes[] = l_j('help.js');
 libHTML::footer();

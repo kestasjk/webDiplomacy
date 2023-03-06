@@ -36,9 +36,20 @@ if ( $Misc->Panic )
 
 if( php_sapi_name() == "cli" )
 {
+	define('RUNNINGFROMCLI', true);
+
+	ob_end_flush();
+	
+	Config::$debug = true; // Always debug / show SQL etc when running from the CLI
 	// If requestion from the CLI allow the gamemaster secret to be passed via an environment variable (it's not that bad if it leaks it's just to limit resources)
+	if( !isset($_SERVER['gameMasterSecret']))
+	{
+		die("gameMasterSecret environment variable not set");
+	}
 	$_REQUEST['gameMasterSecret'] = $_SERVER['gameMasterSecret'];
+	$_SERVER['QUERY_STRING'] = ''; // Fix for libHTML expecting this
 }
+
 
 if ( !( $User->type['Moderator']
 	or ( isset($_REQUEST['gameMasterSecret']) and $_REQUEST['gameMasterSecret'] == Config::$gameMasterSecret )
@@ -48,7 +59,59 @@ if ( !( $User->type['Moderator']
 	libHTML::notice(l_t('Denied'), l_t('Only the cron script and moderators can run the gamemaster script.'));
 }
 
-if ( isset($_REQUEST['gameMasterSecret']) && $User->type['User'] && !$User->type['Moderator'] && $Misc->LastProcessTime == 0 )
+$DB->get_lock('gamemaster',1);
+ini_set('memory_limit',"100M");
+ini_set('max_execution_time','60');
+
+if( defined('RUNNINGFROMCLI') && isset($argv) )
+{
+	print "Running from CLI\n";
+
+	// Disable transactions while doing batch updates:
+	$DB->disableTransactions();
+
+	if( in_array("NOTIFICATIONS", $argv) )
+	{
+		print "Running notification updates\n";
+		
+	}
+	
+	if( in_array("GROUPUPDATE", $argv) )
+	{
+		print "Running group relationship updates\n";
+	
+		$groupUpdateTime = time();
+		// Update the user group calculations
+		require_once('lib/group.php');
+		libGroup::generateGameRelationCache($Misc->LastGroupUpdate);	
+	}
+
+	if( in_array("CONNECTIONUPDATE", $argv) )
+	{
+		print "Running user connection updates\n";
+
+		// Update the user connections
+		require_once('gamemaster/userConnections.php');
+		
+		print l_t('Updating game message user connection stats').'<br />';
+		libUserConnections::updateGameMessageStats();
+		
+		print l_t('Updating user connection stats').'<br />';
+		libUserConnections::updateUserConnections($Misc->LastGroupUpdate);
+	
+		$Misc->LastGroupUpdate = $groupUpdateTime;
+	}
+
+	if( in_array("RELIABILITYRATINGS", $argv) )
+	{
+		// Update the reliability ratings:
+		print l_t('Updating user phase/year counts and reliability ratings').'<br />';
+		libGameMaster::updateReliabilityRatings();
+	}
+}
+
+if ( isset($_REQUEST['gameMasterSecret']) && $_REQUEST['gameMasterSecret'] == Config::$gameMasterSecret && 
+	$User->type['User'] && !$User->type['Moderator'] && $Misc->LastProcessTime == 0 )
 {
 	// The server has just been installed; make this user the admin now.
 	$DB->sql_put("UPDATE wD_Users SET type = CONCAT(type,',Moderator,Admin') WHERE id = ".$User->id);
@@ -58,7 +121,10 @@ if ( isset($_REQUEST['gameMasterSecret']) && $User->type['User'] && !$User->type
 	libHTML::notice(l_t('Admin'),l_t("You have been made admin. Please continue with the install instructions in README.txt."));
 }
 
+// If running from the CLI don't display the HTML header, but do run it as it may do something relevent to this script(?), but I don't think it does
+if( defined('RUNNINGFROMCLI') ) ob_start();
 libHTML::starthtml(l_t('GameMaster'));
+if( defined('RUNNINGFROMCLI') ) ob_end_clean();
 
 if( isset(Config::$customForumURL) )
 {
@@ -80,11 +146,6 @@ if( isset(Config::$customForumURL) )
 print '<div class="content">';
 $DB->sql_put("COMMIT"); // Unlock our user row, to prevent deadlocks below
 // This means our $User object should only be used for reading from
-
-$DB->get_lock('gamemaster',1);
-
-ini_set('memory_limit',"40M");
-ini_set('max_execution_time','40');
 
 
 /*
@@ -116,6 +177,8 @@ if( $Misc->LastStatsUpdate < (time() - 37*60) )
 	$Misc->LastStatsUpdate = time();
 
 	// This is also only needed infrequently
+	/*
+	This should be unnecessary after changing the way the play-now games are created, but leaving it in for now just in case.
 	if( Config::$playNowDomain != null )
 	{
 		// If there is a play-now domain set up ensure that games that have been left for over 24 hours don't linger and waste resources:
@@ -131,7 +194,7 @@ if( $Misc->LastStatsUpdate < (time() - 37*60) )
 			AND timeLoggedIn < UNIX_TIMESTAMP()-24*60*60 
 			AND status='Playing';"
 		);
-	}
+	}*/
 }
 
 //- Check last process time, pause processing/save current process time
@@ -139,30 +202,6 @@ if ( ( time() - $Misc->LastProcessTime ) > Config::$downtimeTriggerMinutes*60 )
 {
 	libHTML::notice(l_t('Games not processing'),libHTML::admincp('resetLastProcessTime',null,l_t('Continue processing now')));
 }
-
-if( (time() - $Misc->LastGroupUpdate) > 1*60 )
-{
-	$groupUpdateTime = time();
-	// Update the user group calculations
-	require_once('lib/group.php');
-	libGroup::generateGameRelationCache($Misc->LastGroupUpdate);	
-
-	// Update the user connections
-	print l_t('Updating user connection stats').'<br />';
-	libGameMaster::updateUserConnections($Misc->LastGroupUpdate);
-
-	$Misc->LastGroupUpdate = $groupUpdateTime;
-}
-
-// Disable transactions while updating reliability ratings:
-$DB->disableTransactions();
-
-// Update the reliability ratings:
-print l_t('Updating user phase/year counts and reliability ratings').'<br />';
-libGameMaster::updateReliabilityRatings();
-
-print l_t('Updating game message stats').'<br />';
-libGameMaster::updateGameMessageStats();
 
 $DB->enableTransactions();
 $DB->sql_put("BEGIN");
@@ -285,26 +324,27 @@ $dirtyApiKeys = array_unique($dirtyApiKeys);
 foreach($dirtyApiKeys as $key)
 	$MC->delete(str_replace(' ','_','api'.$key.'players/missing_orders'));
 
-// Find any turns which have just passed more than one year old, and 
-// If it took over 30 secs there may still be games to process
-if( (time() - $startTime)>=30 )
+
+if( defined('RUNNINGFROMCLI') ) 
 {
-	/*
-	 * For when you're developing and just reloaded the DB from a backup,
-	 * you usually have to refresh a few times before it runs out of games
-	 * to process
-	 */
-	header('refresh: 4; url=gamemaster.php');
-	print '<p class="notice">'.l_t('Timed-out; re-running').'</p>';
+	$DB->sql_put("COMMIT");
+	print "Gamemaster script ended successfully.\n";
 }
 else
 {
-	// Finished all remaining games with time to spare; update the civil disorder and NMR counts
-	//libGameMaster::updateCDNMRCounts();
+	// Find any turns which have just passed more than one year old, and 
+	// If it took over 30 secs there may still be games to process
+	if( (time() - $startTime)>=30 )
+	{
+		/*
+		 * For when you're developing and just reloaded the DB from a backup,
+		 * you usually have to refresh a few times before it runs out of games
+		 * to process
+		 */
+		header('refresh: 4; url=gamemaster.php');
+		print '<p class="notice">'.l_t('Timed-out; re-running').'</p>';
+	}
+	print '</div>';
+
+	libHTML::footer();
 }
-
-print '</div>';
-libHTML::footer();
-
-?>
-	

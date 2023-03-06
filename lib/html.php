@@ -29,9 +29,10 @@
 
 class libHTML
 {
-	public static function pageTitle($title, $description=false)
+	public static function pageTitle($title, $description=false, $icon=false)
 	{
 		return '<div class="content-bare content-board-header content-title-header">
+					'.($icon === false ? '' : '<div style="float:right; padding:3px; padding-right:20px"><img src="'.l_s($icon).'" width=28 height=28 /></div>').'
 					<div class="pageTitle barAlt1">
 						'.$title.'
 					</div>
@@ -42,43 +43,25 @@ class libHTML
 				<div class="content content-follow-on">';
 	}
 
-    private static $identityIcons = array(
-        0 => 'm 44.867028,4.8060653 c -1.349375,0 -2.275417,0.3705217 -2.513542,0.5028118 -0.238125,0.1058399 -0.396875,0.3436517 -0.396875,0.6082316 v 1.9580201 c 0,2.0637497 2.619582,3.4662452 2.725415,3.5191652 0.05292,0.0265 0.132085,0.05271 0.185002,0.05271 0.05292,0 0.132601,-0.02631 0.185518,-0.05271 0.105833,-0.0529 2.724899,-1.4554155 2.724899,-3.5191652 V 5.9171087 c 0,-0.2910401 -0.15875,-0.5023917 -0.396875,-0.6082316 C 47.142445,5.2030469 46.216403,4.8060653 44.867028,4.8060653 Z m 0.02636,0.79375 c 0.926042,0 1.614165,0.1850033 1.931665,0.3172934 l 0.185002,0.053227 v 1.8784382 h -0.02636 c 0,1.19063 -1.243542,2.1432286 -1.984375,2.6194791 l -0.132292,0.07906 -0.132292,-0.07906 C 44.152653,10.097832 42.776716,9.0658635 42.776716,7.8487736 V 5.9703354 l 0.185518,-0.053227 C 43.359109,5.7848183 44.020258,5.599815 44.893383,5.599815 Z m -0.106455,0.4015258 c -0.608539,0 -1.111348,0.5025015 -1.16427,1.1110434 0,0.079372 0.05291,0.1322917 0.132292,0.1322917 h 0.502811 c 0.07938,0 0.132189,-0.02605 0.158647,-0.1054198 0.05292,-0.1852081 0.185314,-0.2914552 0.37052,-0.2914552 0.15875,0 0.317294,0.079375 0.317294,0.2645833 0,0.4233331 -0.608434,0.4234362 -0.687814,1.0319784 0,0.07938 0.05292,0.1586466 0.132292,0.1586466 h 0.714168 c 0.05291,0 0.105834,-0.02605 0.132292,-0.1054198 0.07938,-0.4233341 0.60896,-0.4237469 0.556038,-1.2174969 -0.02646,-0.6879158 -0.608645,-0.9787517 -1.16427,-0.9787517 z m -0.132292,2.5662517 c -0.15875,0 -0.264583,0.1058333 -0.264583,0.2645833 v 0.5291667 c 0,0.15875 0.105833,0.2645833 0.264583,0.2645833 h 0.529167 c 0.15875,0 0.264583,-0.1058333 0.264583,-0.2645833 V 8.8321761 c 0,-0.15875 -0.105833,-0.2645833 -0.264583,-0.2645833 z',
-        1 => 'm 55.42532,5.057616 c -0.238125,-0.10583 -1.164166,-0.50271 -2.513541,-0.50271 -1.349375,0 -2.275417,0.37042 -2.513542,0.50271 -0.238125,0.10584 -0.396875,0.34396 -0.396875,0.60854 v 1.95792 c 0,2.06375 2.619375,3.46604 2.725208,3.51896 0.05292,0.0265 0.132292,0.0529 0.185209,0.0529 0.05292,0 0.132291,-0.0265 0.185208,-0.0529 0.105833,-0.0529 2.725208,-1.45521 2.725208,-3.51896 v -1.95792 c 0,-0.29104 -0.15875,-0.5027 -0.396875,-0.60854 z m -0.396875,2.54 c 0,1.19063 -1.243541,2.14313 -1.984375,2.61938 l -0.132291,0.0794 -0.132292,-0.0794 C 52.197404,9.846576 50.82157,8.814706 50.82157,7.597616 v -1.87854 l 0.185209,-0.0529 c 0.396875,-0.13229 1.058333,-0.3175 1.931458,-0.3175 0.926042,0 1.613958,0.18521 1.931458,0.3175 l 0.185209,0.0529 v 1.87854 z',
-        2 => 'M 63.424405,5.02519 C 63.18628,4.91936 62.260239,4.52248 60.910864,4.52248 c -1.349375,0 -2.275417,0.37042 -2.513542,0.50271 -0.238125,0.10584 -0.396875,0.34396 -0.396875,0.60854 v 1.95792 c 0,2.06375 2.619375,3.46604 2.725208,3.51896 0.05292,0.0265 0.132292,0.0529 0.185209,0.0529 0.05292,0 0.132291,-0.0265 0.185208,-0.0529 0.105833,-0.0529 2.725208,-1.45521 2.725208,-3.51896 V 5.63373 c 0,-0.29104 -0.15875,-0.5027 -0.396875,-0.60854 z m -0.396875,2.54 c 0,1.32292 -1.561041,2.38125 -2.116666,2.72521 V 5.31623 c 1.084791,0 1.852083,0.26459 2.116666,0.37042 z',
-        3 => 'M 71.815476,5.02519 C 71.577351,4.91936 70.65131,4.52248 69.301935,4.52248 c -1.349375,0 -2.275417,0.37042 -2.513542,0.50271 -0.238125,0.10584 -0.396875,0.34396 -0.396875,0.60854 v 1.95792 c 0,2.06375 2.619375,3.46604 2.725208,3.51896 0.05292,0.0265 0.132292,0.0529 0.185209,0.0529 0.05292,0 0.132291,-0.0265 0.185208,-0.0529 0.105833,-0.0529 2.725208,-1.45521 2.725208,-3.51896 V 5.63373 c 0,-0.29104 -0.15875,-0.5027 -0.396875,-0.60854 z M 69.301935,10.2904 V 7.69748 h -2.116667 c 0,-0.0529 0,-0.0794 0,-0.13229 V 5.68665 c 0.264583,-0.10583 1.031875,-0.37042 2.116667,-0.37042 v 2.38125 h 2.116666 c -0.105833,1.24355 -1.5875,2.27542 -2.116666,2.59292 z',
-        4 => 'M 80.567255,5.02519 C 80.32913,4.91936 79.403089,4.52248 78.053714,4.52248 c -1.349375,0 -2.275417,0.37042 -2.513542,0.50271 -0.238125,0.10584 -0.396875,0.34396 -0.396875,0.60854 v 1.95792 c 0,2.06375 2.619375,3.46604 2.725208,3.51896 0.05292,0.0265 0.132292,0.0529 0.185209,0.0529 0.05292,0 0.132291,-0.0265 0.185208,-0.0529 0.105833,-0.0529 2.725208,-1.45521 2.725208,-3.51896 V 5.63373 c 0,-0.29104 -0.15875,-0.5027 -0.396875,-0.60854 z m -0.396875,2.54 c 0,1.19063 -1.243541,2.14313 -1.984375,2.61938 l -0.132291,0.0794 -0.132292,-0.0794 C 77.339339,9.81415 75.963505,8.78228 75.963505,7.56519 V 5.68665 l 0.185209,-0.0529 c 0.396875,-0.13229 1.058333,-0.3175 1.931458,-0.3175 0.926042,0 1.613958,0.18521 1.931458,0.3175 l 0.185209,0.0529 v 1.87854 z m -0.449791,-0.44979 -0.47625,0.34396 -0.449792,0.3175 0.15875,0.52917 0.185208,0.55562 c 0.02646,0.10583 -0.07937,0.18521 -0.185208,0.13229 l -0.47625,-0.34396 -0.449792,-0.3175 -0.449791,0.3175 -0.47625,0.34396 c -0.07937,0.0529 -0.211667,-0.0265 -0.185209,-0.13229 l 0.185209,-0.55562 0.15875,-0.52917 -0.449792,-0.3175 -0.47625,-0.34396 c -0.07937,-0.0529 -0.05292,-0.21167 0.07938,-0.21167 h 1.137708 l 0.15875,-0.52916 0.185209,-0.55563 c 0.02646,-0.10583 0.185208,-0.10583 0.211666,0 l 0.185209,0.55563 0.15875,0.52916 h 1.137708 c 0.185208,0 0.211667,0.1323 0.132292,0.21167 z',
-        5 => 'm 88.981249,5.02519 c -0.23812,-0.10583 -1.16416,-0.50271 -2.513536,-0.50271 -1.349375,0 -2.275417,0.37042 -2.513542,0.50271 -0.238125,0.10584 -0.396875,0.34396 -0.396875,0.60854 v 1.95792 c 0,2.06375 2.619375,3.46604 2.725208,3.51896 0.05292,0.0265 0.132292,0.0529 0.185209,0.0529 0.05292,0 0.132291,-0.0265 0.185208,-0.0529 0.105833,-0.0529 2.725208,-1.45521 2.725208,-3.51896 V 5.63373 c 0,-0.29104 -0.15875,-0.5027 -0.39688,-0.60854 z m -0.84666,2.09021 -0.47625,0.34396 -0.449793,0.3175 0.15875,0.52917 0.185203,0.55562 c 0.0265,0.10583 -0.0794,0.18521 -0.185203,0.13229 l -0.47625,-0.34396 -0.449792,-0.3175 -0.449791,0.3175 -0.47625,0.34396 c -0.07937,0.0529 -0.211667,-0.0265 -0.185209,-0.13229 l 0.185209,-0.55562 0.15875,-0.52917 -0.449792,-0.3175 -0.47625,-0.34396 c -0.07937,-0.0529 -0.05292,-0.21167 0.07938,-0.21167 h 1.137708 l 0.15875,-0.52916 0.185209,-0.55563 c 0.02646,-0.10583 0.185208,-0.10583 0.211666,0 l 0.185209,0.55563 0.15875,0.52916 h 1.137706 c 0.18521,0 0.21167,0.1323 0.13229,0.21167 z',
-        6 => 'm 98.144686,5.02519 c -0.23813,-0.10583 -1.16417,-0.50271 -2.51355,-0.50271 -1.34937,0 -2.27541,0.37042 -2.51354,0.50271 -0.23812,0.10584 -0.39687,0.34396 -0.39687,0.60854 v 1.95792 c 0,2.06375 2.61937,3.46604 2.72521,3.51896 0.0529,0.0265 0.13229,0.0529 0.1852,0.0529 0.0529,0 0.1323,-0.0265 0.18521,-0.0529 0.10584,-0.0529 2.72521,-1.45521 2.72521,-3.51896 V 5.63373 c 0,-0.29104 -0.15875,-0.5027 -0.39687,-0.60854 z m -0.74084,1.5875 -1.77271,2.01084 c -0.10583,0.10583 -0.29104,0.13229 -0.39687,0 l -0.84667,-0.89959 c -0.0529,-0.0529 -0.0529,-0.13229 0,-0.18521 l 0.13229,-0.15875 c 0.0265,-0.0529 0.10584,-0.0529 0.15875,-0.0264 l 0.68792,0.34395 1.69333,-1.4552 c 0.0529,-0.0529 0.1323,-0.0529 0.18521,0 l 0.15875,0.15875 c 0.0529,0.0794 0.0529,0.15875 0,0.21166 z'
-    );
 	private static $identityExplanations = array(
-        0 => 'There is no information about the identity behind this account',
-        1 => 'There is a small amount of information about the identity behind this account',
-        2 => 'There is some information that could loosely associate this account with an individual',
-        3 => 'There is reasonable information associating this account with an individual',
-        4 => 'There is some information that associates this account with an individual',
-        5 => 'There is a lot of information associating this account with an individual',
-        6 => 'This account is definitely identified with a particular individual'
+        1 => 'There is no information about the identity behind this account',
+        2 => 'There is a small amount of information about the identity behind this account',
+        3 => 'There is some information that could loosely associate this account with an individual',
+        4 => 'There is reasonable information associating this account with an individual',
+        5 => 'There is some information that associates this account with an individual',
+        6 => 'There is a lot of information associating this account with an individual',
+        7 => 'This account is definitely identified with a particular individual'
     );
-	private static function pathToIcon($path)
-    {
-        return '<svg viewBox="-5 -5 10 10" xmlns="http://www.w3.org/2000/svg" height="120" width="120"><g transform="translate(-44.16 -5.87)">
-		<path fill="#333333" d="'.$path.'"></path>
-		</g></svg>';
-    }
     public static function identityIcon($score)
     {
 		if( $score == -1 ) return '';
-		$score = rand(0,100);
         $score = min(max(0.0,$score),100.0) / 100.0;
-		if( $score == 0 ) return '';
-        if ( $score <= 1/7 ) return self::pathToIcon(self::$identityIcons[0]);
-        if ( $score <= 2/7 ) return self::pathToIcon(self::$identityIcons[1]);
-        if ( $score <= 3/7 ) return self::pathToIcon(self::$identityIcons[2]);
-        if ( $score <= 4/7 ) return self::pathToIcon(self::$identityIcons[3]);
-        if ( $score <= 5/7 ) return self::pathToIcon(self::$identityIcons[4]);
-        if ( $score <= 6/7 ) return self::pathToIcon(self::$identityIcons[5]);
-        if ( $score <= 7/7 ) return self::pathToIcon(self::$identityIcons[6]);
+        if ( $score <= 1/5 ) $icon = 1;
+        else if ( $score <= 2/5 ) $icon = 2;
+        else if ( $score <= 3/5 ) $icon = 4;
+        else if ( $score <= 4/5 ) $icon = 6;
+        else if ( $score <= 5/5 ) $icon = 7;
+		return '<img src="'.l_s('images/icons/shield'.$icon.'.svg').'" width=12 height=12 alt="(I'.$icon.')" title="'.$score.'%: '.l_t(self::$identityExplanations[$icon]).'" />';
     }
 	/**
 	 * The style which prevents an element from displaying (usually cached HTML to be displayed via JS)
@@ -390,6 +373,12 @@ class libHTML
 	 */
 	static public function notice($title, $message)
 	{
+		if( defined('RUNNINGFROMCLI')) 
+		{
+			print 'libHTML::notice() called from CLI: '.$title.' - '.$message."\n";
+			die();
+		}
+
 		ob_clean();
 
 		libHTML::starthtml($title);
@@ -893,6 +882,8 @@ class libHTML
 				$links['gamecreate.php']=array('name'=>'New game', 'inmenu'=>TRUE, 'title'=>"Start up a new game");
 				$links['detailedSearch.php']=array('name'=>'Search', 'inmenu'=>TRUE, 'title'=>"advanced search of users and games");
 				$links['usercp.php']=array('name'=>'Settings', 'inmenu'=>TRUE, 'title'=>"Change your user specific settings");
+				$links['useridentity.php']=array('name'=>'Identity', 'inmenu'=>FALSE, 'title'=>"Validate your identity");
+				$links['usernotifications.php']=array('name'=>'Notifications', 'inmenu'=>FALSE, 'title'=>"Manage notifications");
 				$links['modforum.php']=array('name'=>'Get Help', 'inmenu'=>TRUE, 'title'=>"Get help from the mod team");
 			}
 		}
@@ -927,7 +918,7 @@ class libHTML
 		$links['tournamentScoring.php']=array('name'=>'Tournament Scoring', 'inmenu'=>FALSE);
 		$links['tournamentRegistration.php']=array('name'=>'Tournament Registration', 'inmenu'=>FALSE);
 		$links['botgamecreate.php']=array('name'=>'New Bot Game', 'inmenu'=>TRUE, 'title'=>"Start up a new bot game");
-		$links['group.php']=array('name'=>'User Relationships', 'inmenu'=>FALSE);
+		$links['group.php']=array('name'=>'Relationships', 'inmenu'=>FALSE);
 
 
 		if ( is_object($User) )
@@ -1078,8 +1069,10 @@ class libHTML
 									<a href="contrib/phpBB3/ucp.php?i=179" title="Change your forum user settings">Forum Settings</a>';
 							}
 							$menu.='
-								<a href="usercp.php" title="Change your user specific settings">Site Settings</a>
-								<a href="group.php" title="Manage your user relationships">User Relationships</a>
+								<a href="usercp.php" title="Change your user specific settings">Settings</a>
+								<a href="group.php" title="Manage your user relationships">Relationships</a>
+								<a href="useridentity.php" title="Verify your identity">Identity</a>
+								<a href="usernotifications.php" title="Manage site notifications">Notifications</a>
 							</div>
 						</div>
 						<div id="navSubMenu" class = "clickable nav-tab">Help ▼
@@ -1110,10 +1103,10 @@ class libHTML
 						if( isset(Config::$customForumURL) ) { $menu.='<a href="contrib/phpBB3/mcp.php">Forum CP</a>'; }
 
 						$menu.='
-							<a href="admincp.php?tab=Multi-accounts">Multi Finder</a>
-							<a href="admincp.php?tab=Groups">User Groups</a>
+							<a href="admincp.php?tab=Relationships">Relationships/Suspicions</a>
+							<a href="admincp.php?tab=Account Analyzer">Account Analyzer</a>
 							<a href="admincp.php?tab=Chatlogs">Pull Press</a>
-							<a href="admincp.php?tab=AccessLog">Access Log</a>
+							<a href="admincp.php?tab=Account Searcher">Account Searcher</a>
 							<a href="search.php">Find User</a>';
 
 						if ( $User->type['Admin'] && isset(Config::$customForumURL))

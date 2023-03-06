@@ -2063,50 +2063,74 @@ CREATE TABLE IF NOT EXISTS `wD_UserConnections` (
   `period23` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedCookie` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedCookieTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherCookie` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherCookieTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countCookie` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countCookieTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedIP` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedIPTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherIP` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherIPTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countIP` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countIPTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedFingerprint` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedFingerprintTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherFingerprint` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherFingerprintTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countFingerprint` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countFingerprintTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedFingerprintPro` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedFingerprintProTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherFingerprintPro` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherFingerprintProTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countFingerprintPro` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countFingerprintProTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedLatLon` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedLatLonTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherLatLon` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherLatLonTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countLatLon` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countLatLonTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedNetwork` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedNetworkTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedNetworkCookie` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedNetworkCookieTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countNetwork` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countNetworkTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedCity` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedCityTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherCity` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherCityTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countCity` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countCityTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedUserTurn` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedUserTurnTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherUserTurn` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherUserTurnTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countUserTurn` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countUserTurnTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedRegion` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedRegionTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherRegion` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherRegionTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countRegion` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countRegionTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedMessageLength` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedMessageLengthTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherMessageLength` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherMessageLengthTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countMessageLength` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countMessageLengthTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedMessageCount` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedMessageCountTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherMessage` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherMessageTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countMessageCount` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countMessageCountTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedUserTurnMissed` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `matchedUserTurnMissedTotal` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedUserTurnCookie` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedUserTurnCookieTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countUserTurnMissed` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `countUserTurnMissedTotal` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `suspicionRelationshipsMod` mediumint(8) UNSIGNED DEFAULT NULL,
@@ -2120,12 +2144,13 @@ CREATE TABLE IF NOT EXISTS `wD_UserConnections` (
   PRIMARY KEY (`userID`)
 ) ENGINE=InnoDB ;
 
-ALTER TABLE `wD_Games` ADD COLUMN `minimumIdentityRating` TINYINT(3) UNSIGNED NOT NULL DEFAULT 0;
+
+ALTER TABLE `wD_Games` ADD COLUMN `minimumIdentityScore` TINYINT(3) UNSIGNED NOT NULL DEFAULT 0;
 ALTER TABLE `wD_Games` ADD COLUMN `minimumNMRScore` TINYINT(3) UNSIGNED NOT NULL DEFAULT 0;
-ALTER TABLE `wD_Backup_Games` ADD COLUMN `minimumIdentityRating` TINYINT(3) UNSIGNED NOT NULL DEFAULT 0;
+ALTER TABLE `wD_Backup_Games` ADD COLUMN `minimumIdentityScore` TINYINT(3) UNSIGNED NOT NULL DEFAULT 0;
 ALTER TABLE `wD_Backup_Games` ADD COLUMN `minimumNMRScore` TINYINT(3) UNSIGNED NOT NULL DEFAULT 0;
 
-ALTER TABLE `wD_Users` ADD COLUMN `identityRating` TINYINT(3) UNSIGNED;
+ALTER TABLE `wD_Users` ADD COLUMN `identityScore` TINYINT(3) UNSIGNED;
 
 -- Add a column to allow a single bot to play as multiple bot user accounts to reduce memory requirements by adding an offset
 -- to game IDs.
@@ -2134,3 +2159,168 @@ ALTER TABLE wD_ApiKeys ADD COLUMN multiplexOffset INT UNSIGNED NULL;
  ALTER TABLE `wD_ApiKeys` DROP PRIMARY KEY; 
  ALTER TABLE `wD_ApiKeys` ADD PRIMARY KEY(`apiKey`, `userID`); 
   ALTER TABLE `wD_ApiKeys` DROP INDEX `apiKey`; 
+  
+CREATE TABLE IF NOT EXISTS `wD_Member_Delegate` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `userID` mediumint(8) UNSIGNED NOT NULL,
+  `userIDDelegatedTo` mediumint(8) UNSIGNED NOT NULL,
+  `gameID` mediumint(8) UNSIGNED NOT NULL,
+  `countryID` mediumint(8) UNSIGNED NOT NULL,
+  `delegationStartTime` int(8) UNSIGNED DEFAULT NULL,
+  `delegationEndTime` int(10) UNSIGNED DEFAULT NULL,
+  `createdTime` int(10) UNSIGNED DEFAULT NULL,
+  `acceptedTime` int(10) UNSIGNED DEFAULT NULL,
+  `cancelledTime` int(10) UNSIGNED DEFAULT NULL,
+  `expiredTime` int(10) UNSIGNED DEFAULT NULL,
+  PRIMARY KEY (`id`),
+	INDEX ( `userID` ) ,
+	INDEX ( `userIDDelegatedTo` ),
+	INDEX ( `delegationEndTime` )
+) ENGINE=InnoDB ;
+
+ALTER TABLE `wD_ApiKeys`
+	ADD COLUMN `description` VARCHAR(500) NULL DEFAULT NULL,
+	ADD COLUMN `label` VARCHAR(500) NULL DEFAULT NULL;
+
+ALTER TABLE `wD_ApiPermissions`
+	CHANGE COLUMN `submitOrdersForUserInCD` `submitOrdersForUserInCD` ENUM('No','Yes') NOT NULL DEFAULT 'No',
+	CHANGE COLUMN `listGamesWithPlayersInCD` `listGamesWithPlayersInCD` ENUM('No','Yes') NOT NULL DEFAULT 'No',
+	ADD COLUMN `getRedactedMessages` ENUM('No','Yes') NULL DEFAULT 'No',
+	ADD COLUMN `submitOrdersForDelegatedMembers` ENUM('No','Yes') NULL DEFAULT 'No',
+	ADD COLUMN `submitMessages` ENUM('No','Yes') NULL DEFAULT 'No',
+	ADD COLUMN `voteDraw` ENUM('No','Yes') NULL DEFAULT 'No',
+	ADD COLUMN `playBotsVsHuman` ENUM('No','Yes') NULL DEFAULT 'No',
+	ADD COLUMN `playBotVsHuman` ENUM('No','Yes') NULL DEFAULT 'No',
+	ADD COLUMN `minimumPhaseLength` MEDIUMINT NULL DEFAULT 3600,
+	ADD COLUMN `variantIDs` VARCHAR(50) NULL DEFAULT '';
+
+UPDATE wD_ApiPermissions SET getRedactedMessages='No', submitOrdersForDelegatedMembers='No', submitMessages='No', voteDraw='No', playBotsVsHuman='No', playBotVsHuman='No', minimumPhaseLength=3600, variantIDs='';
+
+
+ALTER TABLE `wD_ApiPermissions`
+	CHANGE COLUMN `getRedactedMessages` `getRedactedMessages` ENUM('No','Yes') NOT NULL DEFAULT 'No',
+	CHANGE COLUMN `submitOrdersForDelegatedMembers` `submitOrdersForDelegatedMembers` ENUM('No','Yes') NOT NULL DEFAULT 'No',
+	CHANGE COLUMN `submitMessages` `submitMessages` ENUM('No','Yes') NOT NULL DEFAULT 'No',
+	CHANGE COLUMN `voteDraw` `voteDraw` ENUM('No','Yes') NOT NULL DEFAULT 'No',
+	CHANGE COLUMN `playBotsVsHuman` `playBotsVsHuman` ENUM('No','Yes') NOT NULL DEFAULT 'No',
+	CHANGE COLUMN `playBotVsHuman` `playBotVsHuman` ENUM('No','Yes') NOT NULL DEFAULT 'No',
+	CHANGE COLUMN `minimumPhaseLength` `minimumPhaseLength` MEDIUMINT NOT NULL DEFAULT 3600,
+	CHANGE COLUMN `variantIDs` `variantIDs` VARCHAR(50) NOT NULL DEFAULT '';
+	
+DROP TABLE IF EXISTS wD_UserCodeConnections;
+CREATE TABLE `wD_UserCodeConnections` (
+	`type` ENUM('Cookie','IP','IPVPN','Fingerprint','FingerprintPro','MessageCount','MessageLength','LatLon','Network','City','UserTurn','UserTurnMissed') NOT NULL,
+	`userID` MEDIUMINT(8) UNSIGNED NOT NULL,
+	`code` BINARY(16) NOT NULL,
+	`earliest` TIMESTAMP NOT NULL DEFAULT current_timestamp(),
+	`latest` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`count` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+	`previousCount` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+	`isNew` TINYINT(3) UNSIGNED NOT NULL DEFAULT 1,
+	`isUpdated` TINYINT(3) UNSIGNED NOT NULL DEFAULT 1,
+	PRIMARY KEY (`userID`, `type`, `code`) USING BTREE,
+	INDEX `typeCode` (`type`, `code`) USING BTREE,
+	INDEX `updatedTypeCode` (`type`, `isUpdated`, `code`) USING BTREE
+)
+ENGINE=InnoDB
+;
+DROP TABLE IF EXISTS wD_UserCodeConnectionMatches;
+CREATE TABLE `wD_UserCodeConnectionMatches` (
+	`type` ENUM('Cookie','IP','IPVPN','Fingerprint','FingerprintPro','MessageCount','MessageLength','LatLon','Network','City','UserTurn','UserTurnMissed') NOT NULL,
+	`userIDFrom` MEDIUMINT(8) UNSIGNED NOT NULL,
+	`userIDTo` MEDIUMINT(8) UNSIGNED NOT NULL,
+	`matches` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+	`previousMatches` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+	`matchCount` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+	`previousMatchCount` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+	`isNew` TINYINT(3) UNSIGNED NOT NULL DEFAULT 1,
+	`isUpdated` TINYINT(3) UNSIGNED NOT NULL DEFAULT 1,
+	PRIMARY KEY (`type`,`userIDFrom`,`userIDTo`) USING BTREE,
+	INDEX `typeUpdatedFrom` (`type`, `isUpdated`, `userIDFrom`) USING BTREE,
+	INDEX `typeUpdatedTo` (`type`, `isUpdated`, `userIDTo`) USING BTREE
+)
+ENGINE=InnoDB
+;
+DROP TABLE IF EXISTS wD_UserConnections;
+CREATE TABLE IF NOT EXISTS `wD_UserConnections` (
+  `userID` mediumint(8) UNSIGNED NOT NULL,
+  `modLastCheckedBy` mediumint(8) UNSIGNED DEFAULT NULL,
+  `modLastCheckedOn` int(10) UNSIGNED DEFAULT NULL,
+  `matchesLastUpdatedOn` int(10) UNSIGNED DEFAULT NULL,
+  `totalHits` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `period0` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period1` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period2` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period3` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period4` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period5` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period6` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period7` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period8` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period9` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period10` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period11` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period12` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period13` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period14` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period15` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period16` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period17` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period18` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period19` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period20` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period21` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period22` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `period23` mediumint(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedCookie` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedCookieTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherCookieTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countCookie` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countCookieTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedIP` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedIPTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherIPTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countIP` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countIPTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countIPVPN` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countIPVPNTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedFingerprint` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedFingerprintTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherFingerprintTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countFingerprint` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countFingerprintTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedFingerprintPro` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedFingerprintProTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherFingerprintProTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countFingerprintPro` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countFingerprintProTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countLatLon` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countLatLonTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countNetwork` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countNetworkTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countCity` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countCityTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countUserTurn` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countUserTurnTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countMessageLength` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countMessageLengthTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countMessageCount` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `countMessageCountTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedUserTurnMissed` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedUserTurnMissedTotal` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `matchedOtherUserTurnMissedTotal` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `countUserTurnMissed` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `countUserTurnMissedTotal` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `suspicionRelationshipsMod` mediumint(8) UNSIGNED DEFAULT NULL,
+  `suspicionRelationshipsPeer` mediumint(8) UNSIGNED DEFAULT NULL,
+  `suspicionIPLookup` mediumint(8) UNSIGNED DEFAULT NULL,
+  `suspicionLocationLookup` mediumint(8) UNSIGNED DEFAULT NULL,
+  `suspicionCookieCode` mediumint(8) UNSIGNED DEFAULT NULL,
+  `suspicionBrowserFingerprint` mediumint(8) UNSIGNED DEFAULT NULL,
+  `suspicionFingerprintPro` mediumint(8) UNSIGNED DEFAULT NULL,
+  `suspicionGameActivity` mediumint(8) UNSIGNED DEFAULT NULL,
+  PRIMARY KEY (`userID`)
+) ENGINE=InnoDB ;
+
+-- Prevent full table scanes in phpBB like module
+ALTER TABLE IF EXISTS `phpbb_posts_likes` ADD INDEX `CountLikes` (`user_id`, `post_id`);

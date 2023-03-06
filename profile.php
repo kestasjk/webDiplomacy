@@ -814,34 +814,7 @@ print '<li><strong>'.l_t('Joined:').'</strong> '.$UserProfile->timeJoinedtxt().'
 print '<li><strong>'.l_t('User ID#:').'</strong> '.$UserProfile->id.'</li>';
 if( $User->type['Moderator'] )
 {
-	print '<li><strong>'.l_t('E-mail:').'</strong>
-			'.$UserProfile->email.($UserProfile->hideEmail == 'No' ? '' : ' <em>'.l_t('(hidden for non-mods)').'</em>').'</li>';
-}
-else if ( $UserProfile->hideEmail == 'No' )
-{
-	$emailCacheFilename = libCache::dirID('users',$UserProfile->id).'/email.png';
-	if( !file_exists($emailCacheFilename) )
-	{
-		$image = imagecreate( strlen($UserProfile->email) *8, 15);
-		$white = imagecolorallocate( $image, 255, 255, 255);
-		$black = imagecolorallocate( $image, 0, 0, 0 );
-
-		imagestring( $image, 2, 10, 1, $UserProfile->email, $black );
-
-		imagepng($image, $emailCacheFilename);
-	}
-
-	print '<li><strong>'.l_t('E-mail:').'</strong>
-			<img src="'.STATICSRV.$emailCacheFilename.'" alt="'.l_t('[E-mail address image]').'" title="'.l_t('To protect e-mails from spambots they are embedded in an image').'" >
-		</li>';
-}
-
-if ( $UserProfile->hideEmail != 'No' )
-{
-	$emailCacheFilename = libCache::dirID('users',$UserProfile->id).'/email.png';
-
-	if( file_exists($emailCacheFilename) )
-		unlink($emailCacheFilename);
+	print '<li><strong>'.l_t('E-mail:').'</strong>'.$UserProfile->email.'</li>';
 }
 
 print '<li>&nbsp;</li>';
@@ -872,7 +845,7 @@ if ( $User->type['Moderator'] && $User->id != $UserProfile->id )
 	if( !$UserProfile->type['Admin'] && ( $User->type['Admin'] || !$UserProfile->type['Moderator'] ) )
 		$modActions[] = libHTML::admincp('banUser',array('userID'=>$UserProfile->id), l_t('Ban user'));
 
-	$modActions[] = '<a href="admincp.php?tab=Multi-accounts&aUserID='.$UserProfile->id.'" class="light">'.
+	$modActions[] = '<a href="admincp.php?tab=Account Analyzer&aUserID='.$UserProfile->id.'" class="light">'.
 		l_t('Enter multi-account finder').'</a>';
 
 	if($modActions)

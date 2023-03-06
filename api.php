@@ -458,10 +458,11 @@ class ListActiveGamesForUser extends ApiEntry {
 /**
  * API entry game/togglevote
  * *Multiplexed
+ * TODO: Merge with SetVote
  */
 class ToggleVote extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/togglevote', 'GET', '', array('gameID','countryID','vote'), true);
+		parent::__construct('game/togglevote', 'GET', '', array('gameID','countryID','vote'), false);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		global $DB;
@@ -573,9 +574,11 @@ class SetVote extends ApiEntry {
 		$DB->sql_put("COMMIT");
 
 		require_once(l_r('gamemaster/game.php'));
-		$game = $this->getAssociatedGame();
-		// TODO: this should apply votes only for the current game
-		libGameMaster::findAndApplyGameVotes();
+		//$game = $this->getAssociatedGame();
+
+		// TODO: this should be removed, votes that need to be processed should get processed via gamemaster.php
+		// this is an expensive call, even filtering for one gameID, as it locks for update and does GM processing
+		libGameMaster::findAndApplyGameVotes($gameID);
 		
 		require_once('lib/pusher.php');
 		libPusher::trigger("private-game" . $gameID, 'overview', 'set-vote');
@@ -673,7 +676,7 @@ class MessagesSeen extends ApiEntry {
  */
 class MarkBackFromLeft extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/markbackfromleft', 'JSON', '', array('gameID','countryID'), true);
+		parent::__construct('game/markbackfromleft', 'JSON', '', array('gameID','countryID'), false);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		global $Game, $DB;
@@ -888,7 +891,7 @@ class GetGameData extends ApiEntry {
 	private $contextVars;
 
 	public function __construct() {
-		parent::__construct('game/data', 'GET', 'getStateOfAllGames', array('gameID', 'countryID'), true);
+		parent::__construct('game/data', 'GET', 'getStateOfAllGames', array('gameID', 'countryID'), false);
 	}
 
 	private function setContextVars( $game, $gameID, $userID, $countryID, $member ){
@@ -1169,7 +1172,8 @@ class SetOrders extends ApiEntry {
 						'type' => 'Wait',
 						'fromTerrID' => null,
 						'toTerrID' => null,
-						'viaConvoy' => null
+						'viaConvoy' => null,
+						'id' => $orderID
 					);
 				}
 			}
@@ -1579,6 +1583,13 @@ class ApiKey extends ApiAuth {
 	private $multiplexOffset = null;
 	public function getMultiplexOffsetOrNull() { return $this->multiplexOffset; }
 
+	/**
+	 * Initialize API auth object, getting a userID from the API key. If an API key is associated with multiple 
+	 * userIDs either a multiplexOffset can be given to select a specific userID, or else if no multiplexOffset is
+	 * given this function will return the userID which hasn't been selected for the longest
+	 * 
+	 * @param $multiplexOffset - If the args provided contain a game with an embedded multiplex offset it is set here
+	 */
 	public function load($multiplexOffset = 0)
 	{
 		global $DB;

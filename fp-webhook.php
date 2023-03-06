@@ -59,6 +59,9 @@ $requestId = isset($json_data['requestId']) ? $json_data['requestId'] : '';
 $visitorId = isset($json_data['visitorId']) ? $json_data['visitorId'] : '';
 $visitorFound = isset($json_data['visitorFound']) ? $json_data['visitorFound'] : '';
 $incognito = isset($json_data['incognito']) ? $json_data['incognito'] : '';
+$accuracyRadius = 0;
+$latitude = 0;
+$longitude = 0;
 if( isset($json_data['ipLocation']) )
 {
 	$accuracyRadius = isset($json_data['ipLocation']['accuracyRadius']) ? $json_data['ipLocation']['accuracyRadius'] : 0;
@@ -66,9 +69,15 @@ if( isset($json_data['ipLocation']) )
 	$longitude = isset($json_data['ipLocation']['longitude']) ? $json_data['ipLocation']['longitude'] : 0;
 }
 $linkedId = isset($json_data['linkedId']) ? $json_data['linkedId'] : -1;
+$confidence = -1;
 if( isset($json_data['confidence']) )
 {
 	$confidence = isset($json_data['confidence']['score']) ? $json_data['confidence']['score'] : -1;
+}
+
+if( $linkedId < 1 ) // 1 is the minimum user ID
+{
+    die('Invalid linked ID');
 }
 
 $DB->sql_put("INSERT INTO wD_FingerprintProRequests (requestId, visitorId, linkedId, confidence, visitorFound, incognito, latitude, longitude, accuracyRadius) VALUES ".

@@ -30,17 +30,6 @@ print libHTML::pageTitle('Information and Links','Links to pages with more infor
 
 <div class='help'>
     
-    <div class = 'help_title'>Mentor Program</div>
-    <div class = 'help_content'>
-        <p>
-            <a href="https://docs.google.com/document/d/1dSq6zlizecb90F3OKSqyFUWGI32Or87ZNmkFmhCVz-c/edit">Mentor-Apprentice Program (External Link)</a>
-            This is a program to allow new members to receive advice and guidance on the game from our more experienced members. </br>
-            If you are a new member and want a mentor, <a href="https://goo.gl/forms/tHxJMZQ7mKgjAtEO2">click here</a> to sign up. </br>
-            If you would like to mentor a new member, please <a href="https://goo.gl/forms/XdMDvxfxdQQQJjDI3">click here</a> to sign up. </br>
-            Any questions on this program can be directed to webdipmentors@gmail.com.
-        </p>
-    </div>
-
     <div class = 'help_title'>Get Help - Mod forum</div>
     <div class = 'help_content'>
         <p>

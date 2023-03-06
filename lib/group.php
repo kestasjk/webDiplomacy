@@ -67,6 +67,12 @@ class libGroup
     }
 
     // For all active games get all group data and use it to generate JSON that can display which users are in relationships.
+    /**
+     * Summarize all suspicions / declared relationships etc from the wD_Groups/wD_GroupUsers tables into user to user relationship
+     * summaries that can be used to highlight which users are in declared/validation relationships, and also so that moderators can 
+     * spot when a suspicion has been lodged between users a lot of times.
+     * Outputs JSON so that it can be used by the javascript to highlight the relevant users in the game panel.
+     */
     public static function generateGameRelationCache($lastUpdated)
     {
         global $DB;

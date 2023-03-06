@@ -241,6 +241,27 @@ class Game
 	 */
 	public $minimumReliabilityRating;
 
+	/**
+	 * The minimum value for identity score before a player can join this game
+	 */
+	public $minimumIdentityScore;
+
+	/**
+	 * The relationship policy, which sets what the criteria are for users with suspected/declared/verified relationships
+	 * 'ModStrong'
+	 * 'ModMid'
+	 * 'ModWeak'
+	 * 'MemberSuspicionStrong'
+	 * 'MemberSuspicionMid'
+	 * 'MemberSuspicionWeak'
+	 * 'DeclaredStrong'
+	 * 'DeclaredMid'
+	 * 'DeclaredWeak'
+	 * 'DeclaredOnly'
+	 * 'GroupOnly'
+	 */
+	public $relationshipRestrictions;
+
 	public $civilDisorderInfo;
 
 	/**

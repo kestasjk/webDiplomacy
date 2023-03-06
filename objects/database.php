@@ -221,6 +221,8 @@ class Database {
 
 		$this->getqueries++;
 
+		if( defined('RUNNINGFROMCLI') ) print $sql."\n";
+		
 		if( Config::$debug )
 			$timeStart=microtime(true);
 
@@ -346,6 +348,8 @@ class Database {
 	 */
 	public function sql_row($sql)
 	{
+		if( defined('RUNNINGFROMCLI') ) print $sql."\n";
+
 		$tabl = $this->sql_tabl($sql);
 		$row = $this->tabl_row($tabl);
 
@@ -366,6 +370,8 @@ class Database {
 	{
 		$tabl = $this->sql_tabl($sql);
 		$row = $this->tabl_hash($tabl);
+
+		if( defined('RUNNINGFROMCLI') ) print $sql."\n";
 
 		// Free the table resource from memory, if it hasn't already been freed by tabl_row
 		if ( $row ) mysqli_free_result($tabl);
@@ -389,6 +395,8 @@ class Database {
 		if( Config::$debug )
 			$timeStart=microtime(true);
 
+		if( defined('RUNNINGFROMCLI') ) print $sql."\n";
+
 		if(! mysqli_query($this->link,$sql) )
 		{
 			trigger_error(mysqli_error($this->link));
@@ -409,6 +417,8 @@ class Database {
 	{
 		if( Config::$debug )
 			$timeStart=microtime(true);
+		
+		if( defined('RUNNINGFROMCLI') ) print $sql."\n";
 
 		if(mysqli_multi_query($this->link,$sql)){
 			do{

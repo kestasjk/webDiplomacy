@@ -221,7 +221,7 @@ else // In this space a bunch of ajax.php requests update wD_Orders.
 
 		header('refresh: 0; url=datc.php?next=on&batchTest='.rand(0,999999));
 
-		ob_clean();
+		if( !defined('RUNNINGFROMCLI')) ob_clean();
 		libHTML::starthtml('Batch testing');
 
 		print '<div class="content datc">
