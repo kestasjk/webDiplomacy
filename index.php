@@ -72,14 +72,7 @@ require_once('lib/home.php');
 
 if( !$User->type['User'] )
 {
-	print '<div class = "introToDiplomacy"><div class="content-notice" style="text-align:center">'.libHome::globalInfo().'</div></div>';
-	print libHTML::pageTitle(l_t('Welcome to webDiplomacy!'),l_t('A multiplayer web implementation of the popular turn-based strategy game Diplomacy.'));
-	//print '<div class="content">';
-	require_once(l_r('locales/English/welcome.php'));
-	print '</div></div>';
-
-	require_once(l_r('locales/English/intro.php'));
-	print '</div>';
+	libHTML::printWelcomePage();
 }
 elseif( isset($_REQUEST['notices']) )
 {

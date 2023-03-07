@@ -30,14 +30,7 @@ require_once(l_r('lib/home.php'));
 print '<div class = "introToDiplomacy"><div class="content-notice" style="text-align:center">'.libHome::globalInfo().'</div></div>';
 print libHTML::pageTitle(l_t('Play webDiplomacy now!'),l_t('A multiplayer web implementation of the popular turn-based strategy game Diplomacy.'));
 
-?>
-<div style="text-align:center">
-	<form action='botgamecreate.php'>
-		<input class='green-Submit' style="font-size:100%; font-weight:bold; background-color:#0e8805 !important;" type='submit' name='submit' value='Click here to start a new game of webDiplomacy against AI opponents!'></input>
-	</form>
-</div>
-
-<?php
+print libHTML::playNowButton();
 
 //print '<div class="content">';
 require_once(l_r('locales/English/welcome.php'));

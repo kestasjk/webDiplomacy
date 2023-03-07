@@ -254,7 +254,7 @@ if( Config::isOnPlayNowDomain() && !defined('PLAYNOW') )
 	define('PLAYNOW',true);
 	libHTML::starthtml();
 
-	require_once(l_r('locales/English/playnowintro.php'));
+	libHTML::printWelcomePage();
 
 	print '</div>';
 	libHTML::footer();

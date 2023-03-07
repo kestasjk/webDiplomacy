@@ -42,6 +42,28 @@ class libHTML
 				</div>
 				<div class="content content-follow-on">';
 	}
+	public static function printWelcomePage()
+	{
+		print '<div class = "introToDiplomacy"><div class="content-notice" style="text-align:center">'.libHome::globalInfo().'</div></div>';
+		print libHTML::pageTitle(l_t('Welcome to webDiplomacy!'),l_t('A multiplayer web implementation of the popular turn-based strategy game Diplomacy.'));
+		//print '<div class="content">';
+		
+		print libHTML::playNowButton();
+		
+		require_once(l_r('locales/English/welcome.php'));
+		print '</div></div>';
+	
+		require_once(l_r('locales/English/intro.php'));
+		print '</div>';
+	}
+
+	public static function playNowButton()
+	{
+		return '<button onclick="window.location.href='.(defined("PLAYNOW") ? "botgamecreate.php" : "https://play.webdiplomacy.net/botgamecreate.php").';" '.
+			' class="green-Submit" style="font-size:100%; font-weight:bold; background-color:#0e8805 !important;">
+			Click here to start a new game of webDiplomacy against AI opponents!
+		</button>';
+	}
 
 	private static $identityExplanations = array(
         1 => 'There is no information about the identity behind this account',
