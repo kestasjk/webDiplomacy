@@ -40,6 +40,10 @@ print libHTML::pageTitle(l_t('Notifications setup'),l_t('Configure whether and h
 
 print 'Coming soon!';
 
+print '<div id="webpushr-subscription-button" data-background-color="#45a049"></div>';
+
+print '</div>';
+
 libHTML::footer();
 
 die();

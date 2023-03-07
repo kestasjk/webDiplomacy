@@ -81,13 +81,13 @@ class libGameMaster
 			if( !isset(Config::$customForumURL) )
 			{
 				$DB->sql_put("UPDATE wD_Users
-					SET timeLastSessionEnded = ".time().", lastMessageIDViewed = (SELECT MAX(f.id) FROM wD_ForumMessages f), webPushrSID=".$webPushrSID."
+					SET timeLastSessionEnded = ".time().", lastMessageIDViewed = (SELECT MAX(f.id) FROM wD_ForumMessages f), webPushrSID=".((!$webPushrSID) ? 0 : $webPushrSID)."
 					WHERE id IN (".$userIDs.")");
 			}
 			else
 			{
 				// No need for this query if using a third party DB
-				$DB->sql_put("UPDATE wD_Users SET timeLastSessionEnded = ".time().", webPushrSID=".$webPushrSID." WHERE id IN (".$userIDs.")");
+				$DB->sql_put("UPDATE wD_Users SET timeLastSessionEnded = ".time().", webPushrSID=".((!$webPushrSID) ? 0 : $webPushrSID)." WHERE id IN (".$userIDs.")");
 			}
 		}
 
