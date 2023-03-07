@@ -168,7 +168,7 @@ class panelGameHome extends panelGameBoard
 			return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
 				<a href="board.php?gameID='.$this->id.($this->phase == 'Pre-game' ? '' : '#gamePanel').'">'.l_t('View').'</a> 
 				'.($this->watched() ? '- <a href="index.php?gameID='.$this->id.'&unwatch">'.l_t('Stop spectating').'</a>' : '').'
-				'.(!isset($this->Members->ByUserID[$User->id]) && $this->isJoinable()? '- <a href="board.php?gameID='.$this->id.'&join=on">'.l_t('Stop spectating').'</a>' : '').'
+				'.(!isset($this->Members->ByUserID[$User->id]) && $this->isJoinable()? '- <a href="board.php?gameID='.$this->id.'&join=on">'.l_t('Join').'</a>' : '').'
 				</div>';
 		}
 		else
