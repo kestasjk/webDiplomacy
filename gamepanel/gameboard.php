@@ -37,7 +37,10 @@ class panelGameBoard extends panelGame
 
 		$mapTurn = (($this->phase=='Pre-game'||$this->phase=='Diplomacy') ? $this->turn-1 : $this->turn);
 		$smallmapLink = 'map.php?gameID='.$this->id.'&turn='.$mapTurn .($User->getOptions()->value['showMoves'] == 'No'? '&hideMoves':'');
-		$largemapLink = 'beta?gameID='.$this->id;//$smallmapLink.'&mapType=large'.($User->getOptions()->value['showMoves']=='No'?'&hideMoves':'');
+		if( $this->Variant->mapID == 1 )
+			$largemapLink = 'beta?gameID='.$this->id;
+		else
+			$largemapLink = $smallmapLink.'&mapType=large'.($User->getOptions()->value['showMoves']=='No'?'&hideMoves':'');
 
 		$staticFilename=Game::mapFilename($this->id, $mapTurn, 'small');
 
@@ -46,7 +49,7 @@ class panelGameBoard extends panelGame
 
 		$map = '
 		<div id="mapstore">
-			<img id="mapImage" src="'.$smallmapLink.'" alt=" " title="'.l_t('The small map for the current phase. If you are starting a new turn this will show the last turn\'s orders').'" style="width: auto; max-width: 100%;" onclick="window.open(\'beta?gameID='.$this->id.'\');" />
+			<img id="mapImage" src="'.$smallmapLink.'" alt=" " title="'.l_t('The small map for the current phase. If you are starting a new turn this will show the last turn\'s orders').'" style="width: auto; max-width: 100%;" onclick="window.open(\''.$largemapLink.'\');" />
 			<p class="lightgrey" style="text-align:center">
 				<a class="mapnav" href="#" onClick="loadMap('.$this->id.','.$mapTurn.',-1); return false;">
                       <img id="Start" src="'.l_s('images/historyicons/Start_disabled.png').'" alt="'.l_t('Start').'" title="'.l_t('View the map from the first turn').'" /></a>
