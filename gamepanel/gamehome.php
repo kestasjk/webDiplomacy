@@ -102,6 +102,7 @@ class panelGameHome extends panelGameBoard
 		$buf = '
 			<div class="titleBarRightSide">
 				<span class="gameTimeRemaining">'.$this->gameTimeRemaining().'</span>
+				(<span class="gameHoursPerPhase"><em>'.$this->gameHoursPerPhase().'</em></span>)
 			</div>
 
 			<div class="titleBarLeftSide">
