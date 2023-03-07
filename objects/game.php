@@ -483,6 +483,12 @@ class Game
 	{
 		return $this->Variant->name == 'Classic' || $this->Variant->name == 'ClassicGvI' || $this->Variant->name == 'ClassicFvA';
 	}
+	function usePointAndClickUI()
+	{
+		global $User;
+
+		return $this->isClassicGame() && (!isset($User) || !$User->type['User'] || $User->isMapUIPointAndClick() );
+	}
 
 	function watched() 
 	{

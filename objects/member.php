@@ -267,6 +267,11 @@ class Member
 	{
 		global $DB,$Game,$User;
 		
+		if( !$this->status == 'Left' )
+		{
+			throw new Exception("Unnecessary call to markBackFromLeft, member is ".$this->status.". These calls lock the database so should be avoided.");
+		}
+		
 		if ( $this->Game->Members->isTempBanned() )
 		{
 			throw new Exception("You are blocked from rejoining your games.");

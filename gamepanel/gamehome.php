@@ -164,18 +164,15 @@ class panelGameHome extends panelGameBoard
 		global $DB, $User;
 		$userInGame = 0;
 		list($userInGame) = $DB->sql_row("SELECT count(1) FROM wD_Members WHERE userID =".$User->id." and gameID =".$this->id);
-		$watchString= '';	
-		$playBeta = '';
+		$watchString= '';
 
 		if ($this->watched() || $userInGame == 0)
 		{
-			if ($User->isActiveBeta && $this->isClassicGame()) { $playBeta = '- <a href="beta?gameID='.$this->id.'" >'.l_t('View Beta').'</a> '; }
 			if ($this->watched()) { $watchString = '- <a href="board.php?gameID='.$this->id.'&unwatch">'.l_t('Stop spectating').'</a>'; }
 			if( $this->phase == 'Pre-game')
 			{
 				return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
 					<a href="board.php?gameID='.$this->id.'">'.l_t('Open').'</a>
-					'.$playBeta.'
 					'.$watchString.'
 					</div>';
 			}
@@ -183,7 +180,6 @@ class panelGameHome extends panelGameBoard
 			{
 				return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
 					<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t('Open').'</a> 
-					'.$playBeta.'
 					'.$watchString.'
 					</div>';
 			}
@@ -192,7 +188,6 @@ class panelGameHome extends panelGameBoard
 		{
 			$noticesStatus = 5;
 			$SubmitName = 'Toggle Notices';
-			if ($User->isActiveBeta && $this->isClassicGame()) { $playBeta = '<a href="beta?gameID='.$this->id.'" >'.l_t('Play Beta').'</a> '; }
 			list($noticesStatus) = $DB->sql_row("SELECT hideNotifications FROM wD_Members WHERE userID =".$User->id." and gameID =".$this->id);
 			if ($noticesStatus == 1) { $SubmitName = 'Enable Notices'; }
 			else if ($noticesStatus == 0) { $SubmitName = 'Disable Notices'; }
@@ -205,7 +200,6 @@ class panelGameHome extends panelGameBoard
 							'.libAuth::formTokenHTML().'
 							<a href="board.php?gameID='.$this->id.'">'.l_t('Open').'</a>
 							<input type="hidden" value="'.$this->id.'" name="gameToggleName" />
-							'.$playBeta.'
 							<input type="submit" title="Turn on/off the notifications for this game." class = "home-submit toggle-notice" name="submit" value="'.$SubmitName.'"/>
 						</form>
 					</div>';
@@ -218,7 +212,6 @@ class panelGameHome extends panelGameBoard
 							'.libAuth::formTokenHTML().'
 							<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t('Open').'</a> 
 							<input type="hidden" value="'.$this->id.'" name="gameToggleName" />
-							'.$playBeta.'
 							<input type="submit" title="Turn on/off the notifications for this game." class = "home-submit toggle-notice" name="submit" value="'.$SubmitName.'"/>
 						</form>
 					</div>';

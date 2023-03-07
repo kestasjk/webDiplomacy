@@ -169,7 +169,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		// Get the game started straight away
 		$DB->sql_put('UPDATE wD_Games SET processTime = ' . time() . ' WHERE id = ' . $Game->id);
 		$MC->append('processHint',','.$Game->id);
-		$Game->Members->joinedRedirect(true); // When playing against AI it's going to be classic, so go straight into the beta UI
+		$Game->Members->joinedRedirect();
 	}
 	catch(Exception $e)
 	{

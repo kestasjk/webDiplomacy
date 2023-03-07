@@ -243,12 +243,6 @@ class User {
 	public $optInFeatures;
 
 	/**
-	 * only for beta feature
-	 * @var bool
-	 */
-	public $isActiveBeta;
-
-	/**
 	 * Fetches options from the user options table in a lazy cached way
 	 * @var UserOptions
 	 */
@@ -575,8 +569,6 @@ class User {
 		else
 			$this->optInFeatures = $this->optInFeatures & Config::$enabledOptInFeatures;
 		
-		$this->isActiveBeta = 1;
-
 		// For display, cdCount should include deletedCDs
 		$this->{'cdCount'} = $this->{'cdCount'} + $this->{'deletedCDs'};
 
@@ -606,6 +598,11 @@ class User {
 		$this->online = (bool) $this->online;
 
 		$this->options = new UserOptions($this->id);
+	}
+
+	function isMapUIPointAndClick()
+	{
+		return $this->options->value['mapUI'] == 'Point and click';
 	}
 
 	/**

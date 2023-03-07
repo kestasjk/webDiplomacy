@@ -36,30 +36,30 @@ class UserOptions
 	public $id;
 
 	public static $defaults = array(
+		'mapUI' => 'Point and click',
         'colourblind' => 'No',
         'darkMode' => 'No',
 		'displayUpcomingLive' => 'Yes',
 		'showMoves' => 'Yes',
-		'orderSort' => 'Convoys Last',
-		'mapUI' => 'Point and click'
+		'orderSort' => 'Convoys Last'
 	);
 
 	public static $titles = array(
+		'mapUI' => 'Default map UI',
 		'colourblind' => 'Colourblindness',
 		'darkMode' => 'Dark Theme',
 		'displayUpcomingLive' => 'Display upcoming live games',
 		'showMoves' => 'Show move arrows on the game map',
-		'orderSort' => 'Sort possible orders',
-		'mapUI' => 'Default map UI'
+		'orderSort' => 'Sort possible orders'
 	);
 
 	public static $possibleValues = array(
+		'mapUI' => array('Point and click','Dropdown menus'),
 		'colourblind' => array('No','Protanope','Deuteranope','Tritanope'),
 		'darkMode' => array('Yes', 'No'),
 		'displayUpcomingLive' => array('Yes','No'),
 		'showMoves' => array('Yes','No'),
-		'orderSort' => array('No Sort','Alphabetical','Convoys Last'),
-		'mapUI' => array('Point and click','Dropdown menus')
+		'orderSort' => array('No Sort','Alphabetical','Convoys Last')
 	);
 
 	public $value;

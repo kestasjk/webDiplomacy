@@ -466,7 +466,7 @@ class processMembers extends Members
 	 * @param string[optional] $password The optional password supplied to enter the game
 	 * @param string[optional] $countryID The countryID to be taken (filtered)
 	 */
-	function join($password="", $countryID=-1, $joinBeta=false)
+	function join($password="", $countryID=-1)
 	{
 		global $DB, $User;
 
@@ -561,23 +561,16 @@ class processMembers extends Members
 
 		$this->Game->gamelog(l_t('New member joined'));
 
-		$this->joinedRedirect($joinBeta);
+		$this->joinedRedirect();
 	}
 
 	/**
 	 * Redirect to a game after joining it. Script ends here.
 	 */
-	function joinedRedirect($joinBeta=false)
+	function joinedRedirect()
 	{
-		// We have successfully joined, now give a message to tell the user so
+		$page = $this->Game->usePointAndClickUI() ? "beta/" : "board.php";
 
-		// Redirect to beta game if user joined game via Play Beta button
-		if ($joinBeta) {
-			$page = "beta/";
-		}
-		else {
-			$page = "board.php";
-		}
 		header('refresh: 3; url='.$page.'?gameID='.$this->Game->id);
 		$message = '<p class="notice">'.l_t('You are being redirected to %s. Good luck!','<a href="'.$page.'?gameID='.$this->Game->id.'">'.$this->Game->name.'</a>').'</p>';
 

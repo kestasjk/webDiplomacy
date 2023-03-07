@@ -150,21 +150,6 @@ class panelGame extends Game
 		return $buf;
 	}
 
-	function gamePlayBeta()
-	{
-		global $User;
-
-		if ($User->isActiveBeta && $this->isClassicGame()) {
-			if ($this->Members->isJoined()) {
-				return '<a href="beta?gameID='.$this->id.'" >'.l_t('Play Beta').'</a> ';
-			} else {
-				return '<a href="beta?gameID='.$this->id.'" >'.l_t('View Beta').'</a> ';
-			}
-		};
-
-		return null;
-	}
-
 	/**
 	 * What circumstances did the game end in? Who won, etc
 	 * @return string
@@ -246,9 +231,6 @@ class panelGame extends Game
 		$rightTop = '
 			<div class="titleBarRightSide">
 					<span class="gameTimeRemaining">'.$this->gameTimeRemaining().'</span>';
-
-		if ($isGameBoard)
-			$rightTop .= '<span class="gamePlayBeta">'.$this->gamePlayBeta().'</span>';
 
 		$rightTop .= '<div style="clear:both"></div></div>';
 
@@ -547,17 +529,12 @@ class panelGame extends Game
 	 */
 	function openBar()
 	{
-		global $User;
-		$playBeta = '';
-		if ($User->isActiveBeta && $this->isClassicGame()) { $playBeta = '<a href="beta?gameID='.$this->id.'" style="margin-left: 40px">'.l_t('Play Beta').'</a> '; }
-
 		if( !$this->Members->isJoined() && $this->phase == 'Pre-game' )
 			return '';
 
 		return
 			'
 				<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t($this->Members->isJoined()?'Open':'View').'</a>
-				'.$playBeta.'
 			';
 	}
 }

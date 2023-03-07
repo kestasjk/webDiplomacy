@@ -32,7 +32,7 @@ if ( ! isset($_REQUEST['gameID']) )
 $gameID = (int)$_REQUEST['gameID'];
 
 // If we are trying to join the game lock it for update, so it won't get changed while we are joining it.
-if ( $User->type['User'] && ( isset($_REQUEST['join']) || isset($_REQUEST['joinBeta']) || isset($_REQUEST['leave']) ) && libHTML::checkTicket() )
+if ( $User->type['User'] && ( isset($_REQUEST['join']) || isset($_REQUEST['leave']) ) && libHTML::checkTicket() )
 {
 	try
 	{
@@ -45,13 +45,13 @@ if ( $User->type['User'] && ( isset($_REQUEST['join']) || isset($_REQUEST['joinB
 		// If viewing an archive page make that the title, otherwise us the name of the game
 		libHTML::starthtml(isset($_REQUEST['viewArchive'])?$_REQUEST['viewArchive']:$Game->titleBarName());
 
-		if ( isset($_REQUEST['join']) || isset($_REQUEST['joinBeta']))
+		if ( isset($_REQUEST['join']) )
 		{
 			// They will be stopped here if they're not allowed.
 			$Game->Members->join(
 				( $_REQUEST['gamepass'] ?? null ),
-				( $_REQUEST['countryID'] ?? null ),
-				( $_REQUEST['joinBeta'] ?? null ) );
+				( $_REQUEST['countryID'] ?? null )
+			 );
 		}
 		elseif ( isset($_REQUEST['leave']) )
 		{
@@ -79,6 +79,18 @@ try
 	$Variant=libVariant::loadFromGameID($gameID);
 	libVariant::setGlobals($Variant);
 	$Game = $Variant->panelGameBoard($gameID);
+
+	// If this user defaults to the point and click UI redirect them here
+	if( $Game->usePointAndClickUI() && $User->id == 10 )
+	{
+		// Default to using the point and click UI for this user.
+
+		header("Location: beta?gameID=".$gameID);
+
+		libHTML::notice('Loading board', '<em>Loading the game board, please wait.. If you are not redirected within 5 seconds, <a href="beta?gameID='.$gameID.'">click here</a>.</em>');
+
+		die();
+	}
 	
 	// If viewing an archive page make that the title, otherwise us the name of the game
 	libHTML::starthtml(isset($_REQUEST['viewArchive'])?$_REQUEST['viewArchive']:$Game->titleBarName());
