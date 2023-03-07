@@ -983,7 +983,8 @@ class GetGameData extends ApiEntry {
 			$member = $game->Members->ByCountryID[$countryID];
 			$this->setContextVars($game, $gameID, $userID, $countryID, $member);
 			$payload['contextVars'] = $this->getContextVars();
-			$payload['contextVars']['gameID'] = $this->gameIDToMultiplexedGameID($payload['contextVars']['gameID']);
+			if( isset ($payload['contextVars']['gameID']) )
+				$payload['contextVars']['gameID'] = $this->gameIDToMultiplexedGameID($payload['contextVars']['gameID']);
 			$payload['currentOrders'] = $this->getCurrentOrders();
 		}
 
