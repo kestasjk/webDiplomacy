@@ -168,7 +168,7 @@ class panelGameHome extends panelGameBoard
 
 		if ($this->watched() || $userInGame == 0)
 		{
-			if ($this->watched()) { $watchString = '- <a href="board.php?gameID='.$this->id.'&unwatch">'.l_t('Stop spectating').'</a>'; }
+			if ($this->watched()) { $watchString = '- <a href="redirect.php?gameID='.$this->id.'&unwatch">'.l_t('Stop spectating').'</a>'; }
 			if( $this->phase == 'Pre-game')
 			{
 				return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
@@ -192,31 +192,16 @@ class panelGameHome extends panelGameBoard
 			if ($noticesStatus == 1) { $SubmitName = 'Enable Notices'; }
 			else if ($noticesStatus == 0) { $SubmitName = 'Disable Notices'; }
 
-			if( $this->phase == 'Pre-game')
-			{
-				return 
-					'<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
-						<form class="homeGameLinksForm" action="#" method="post" >
-							'.libAuth::formTokenHTML().'
-							<a href="board.php?gameID='.$this->id.'">'.l_t('Open').'</a>
-							<input type="hidden" value="'.$this->id.'" name="gameToggleName" />
-							<input type="submit" title="Turn on/off the notifications for this game." class = "home-submit toggle-notice" name="submit" value="'.$SubmitName.'"/>
-						</form>
-					</div>';
-			}
-			else
-			{
-				return 
-					'<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
-						<form class="homeGameLinksForm" action="#" method="post" >
-							'.libAuth::formTokenHTML().'
-							<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t('Open').'</a> 
-							<input type="hidden" value="'.$this->id.'" name="gameToggleName" />
-							<input type="submit" title="Turn on/off the notifications for this game." class = "home-submit toggle-notice" name="submit" value="'.$SubmitName.'"/>
-						</form>
-					</div>';
-			}
-		}	
+			return 
+				'<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
+					<form class="homeGameLinksForm" action="#" method="post" >
+						'.libAuth::formTokenHTML().'
+						<a href="board.php?gameID='.$this->id.''.($this->phase == 'Pre-game' ? '' : '#gamePanel').'">'.l_t('Open').'</a> 
+						<input type="hidden" value="'.$this->id.'" name="gameToggleNotices" />
+						<input type="submit" title="Turn on/off the notifications for this game." class = "home-submit toggle-notice" name="submit" value="'.$SubmitName.'"/>
+					</form>
+				</div>';
+		}
 	}
 }
 ?>

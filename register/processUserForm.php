@@ -113,7 +113,7 @@ try
 	print "<h3>".l_t("Welcome to webDiplomacy!")."</h3>
 			<p>".l_t("Welcome, %s!",$SQLVars['username'])."<br /><br />
 				".l_t("<strong>New to the game?</strong> Check out the <a href='intro.php' class='light'>Intro to Diplomacy</a> which explains the technical bits you'll need to dominate every board.".
-				"<br /><br /> <strong>Want to practice?</strong> Play a quick no-press/no-message <a href='botgamecreate.php.php' class='light'>game against bots</a>. ".
+				"<br /><br /> <strong>Want to practice?</strong> Play a quick no-press/no-message <a href='botgamecreate.php' class='light'>game against bots</a>. ".
 				"<br /><br /> <strong>Want to meet other players?</strong> Introduce yourself in our <a href='/contrib/phpBB3/' class='light'>forum</a>.".
 				"<br /><br /> <strong>Confident in yourself already?</strong> Well then, you can jump right into a <a href='gamelistings.php' class='light'>game</a> or <a href='gamecreate.php' class='light'>create your own</a>.")."<br /> ".
 				l_t("<br /> Don’t forget to bookmark the <a href='index.php' class='light'>Home Page</a>, ".

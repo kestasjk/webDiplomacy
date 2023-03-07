@@ -39,7 +39,7 @@ class UserOptions
 		'mapUI' => 'Point and click',
         'colourblind' => 'No',
         'darkMode' => 'No',
-		'displayUpcomingLive' => 'Yes',
+		'displayUpcomingLive' => 'No',
 		'showMoves' => 'Yes',
 		'orderSort' => 'Convoys Last'
 	);
