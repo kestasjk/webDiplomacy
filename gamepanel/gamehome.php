@@ -102,7 +102,6 @@ class panelGameHome extends panelGameBoard
 		$buf = '
 			<div class="titleBarRightSide">
 				<span class="gameTimeRemaining">'.$this->gameTimeRemaining().'</span>
-				(<span class="gameHoursPerPhase"><em>'.$this->gameHoursPerPhase().'</em></span>)
 			</div>
 
 			<div class="titleBarLeftSide">
@@ -115,33 +114,41 @@ class panelGameHome extends panelGameBoard
 				<span class="gamePhase">'.l_t($this->phase).'</span>
 			</div>
 			<div class="titleBarLeftSide">
-				Pot: <span class="gamePot">'.$this->pot().'</span>';
+				Pot: <span class="gamePot">'.$this->pot().'</span>
+			</div>
+			<div style="clear:both"></div>
+			
+			<div class="titleBarRightSide">
+				<span class="gameHoursPerPhase">'.$this->gameHoursPerPhase().'</span>
+			</div>
+			<div class="titleBarLeftSide">';
 
-		$alternatives=array();
-		if( $this->pressType=='NoPress')
-			$alternatives[]=l_t('No chat');
-		elseif( $this->pressType=='RulebookPress' )
-			$alternatives[]=l_t('Rulebook chat');
-		elseif( $this->pressType=='PublicPressOnly' )
-			$alternatives[]=l_t('Public chat');
-		if( $this->anon=='Yes' )
-			$alternatives[]=l_t('Anon');
-		if( $this->drawType=='draw-votes-hidden')
-			$alternatives[]=l_t('Hidden draw votes');
-
-		if( $this->minimumReliabilityRating > 0) 
-		{
-			$alternatives[]= l_t('<span class="%s">RR%s%%</span>',
-			($User->reliabilityRating < $this->minimumReliabilityRating ? 'Austria' :''), 
-			($this->minimumReliabilityRating));
-		}
-
-		if ( $alternatives )
-			$buf .= '
-				<br /><span class="gamePot">'.implode(', ',$alternatives).'</span>
-			';
+			$alternatives=array();
+			if( $this->pressType=='NoPress')
+				$alternatives[]=l_t('No chat');
+			elseif( $this->pressType=='RulebookPress' )
+				$alternatives[]=l_t('Rulebook chat');
+			elseif( $this->pressType=='PublicPressOnly' )
+				$alternatives[]=l_t('Public chat');
+			if( $this->anon=='Yes' )
+				$alternatives[]=l_t('Anon');
+			if( $this->drawType=='draw-votes-hidden')
+				$alternatives[]=l_t('Hidden draw votes');
+	
+			if( $this->minimumReliabilityRating > 0) 
+			{
+				$alternatives[]= l_t('<span class="%s">RR%s%%</span>',
+				($User->reliabilityRating < $this->minimumReliabilityRating ? 'Austria' :''), 
+				($this->minimumReliabilityRating));
+			}
+	
+			if ( count($alternatives) == 0 ) $alternatives[] = '';
+			
+		$buf .= '<span class="gamePot">'.implode(', ',$alternatives).'</span>';
 
 		$buf .= '</div>
+		
+		<div class="titleBarRightSide">
 			<div style="clear:both"></div>';
 
 		return $buf;
