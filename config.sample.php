@@ -420,13 +420,19 @@ class Config
 	public static $recaptchaSiteKey = null;
 
 	/**
-	 * Site key for a web pusher account, to allow users to subscribe to notifications
+	 * Public Site key for a web pusher account, to allow users to subscribe to notifications
 	 * @var string
 	 */
 	public static $webpushrSiteKey = null;
 
 	/**
-	 * The auth token for a web pusher account to allow users to subscribe to notifications
+	 * Private Auth key for a web pusher account, to allow pushing notifications to users
+	 * @var string
+	 */
+	public static $webpushrAuthKey = null;
+
+	/**
+	 * Private The auth token for a web pusher account to allow users to subscribe to notifications
 	 * @var string
 	 */
 	public static $webpushrAuthToken = null;

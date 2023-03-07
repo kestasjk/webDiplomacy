@@ -876,12 +876,17 @@ class User {
 			$ip = dechex($ip);
 		}
 
+		if ( isset($_COOKIE['wD_WP']) )
+			$webPushrSID = (int)$_COOKIE['wD_WP'];
+		else
+			$webPushrSID = 0;
+
 		if( !isset($_SESSION['auid']) && $this->id > 1 && !defined('PLAYNOW') && strstr($this->username,'diplonow_') === false )
 		{
 			// Only store a session hit if we are not impersonating a user
-			$DB->sql_put("INSERT INTO wD_Sessions (userID, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint)
+			$DB->sql_put("INSERT INTO wD_Sessions (userID, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint, webPushrSID)
 			VALUES (".$this->id.",CURRENT_TIMESTAMP,1, UNHEX('".$ip."'),
-					UNHEX('".$userAgentHash."'), UNHEX('".$cookieCode."'), UNHEX('".$browserFingerprint."') )
+					UNHEX('".$userAgentHash."'), UNHEX('".$cookieCode."'), UNHEX('".$browserFingerprint."'), ".$webPushrSID.")
 			ON DUPLICATE KEY UPDATE hits=hits+1");
 
 			$DB->sql_put("INSERT INTO wD_IPLookups (ipCode, ip, timeInserted, timeLastHit)

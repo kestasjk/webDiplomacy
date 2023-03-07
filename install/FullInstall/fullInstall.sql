@@ -2330,3 +2330,6 @@ ALTER TABLE `wD_UserOptions` CHANGE COLUMN `displayUpcomingLive` `displayUpcomin
 
 UPDATE wD_UserOptions SET mapUI = 'Point and click';
 UPDATE wD_UserOptions SET displayUpcomingLive = 'No';
+
+ALTER TABLE wD_Sessions ADD COLUMN `webPushrSID` INTEGER UNSIGNED DEFAULT NULL;
+ALTER TABLE wD_Users ADD COLUMN `webPushrSID` INTEGER UNSIGNED DEFAULT NULL;
