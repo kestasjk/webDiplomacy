@@ -209,9 +209,20 @@ class libHome
 	{
 		global $User, $DB;
 
-		$tabl=$DB->sql_tabl("SELECT g.* FROM wD_Games g
-			INNER JOIN wD_WatchedGames w ON ( w.userID = ".$User->id." AND w.gameID = g.id )
-			WHERE NOT g.phase = 'Finished'
+		$watchedGames = $User->getWatchedGameIDs();
+
+		if(count($watchedGames)==0)
+		{
+			return '<div class="hr"></div>'.
+			 	'<div><p class="notice">'.l_t('You\'re not spectating any games.').'<br />
+				'.l_t('Click the \'spectate\' button on an existing game to add games to your list of spectated games.').
+			      	'</p></div>';
+		}
+
+		// The filter on finished isn't totally necessary as watched games are pruned by the gamemaster
+		$tabl=$DB->sql_tabl("SELECT g.* 
+			FROM wD_Games g
+			WHERE NOT g.phase = 'Finished' AND g.id IN (".implode(",", $watchedGames).")
 			ORDER BY g.processStatus ASC, g.processTime ASC");
 		$buf = '';
 
@@ -226,24 +237,18 @@ class libHome
 			$buf .= $Game->summary();
 		}
 
-		if($count==0)
-		{
-			$buf .= '<div class="hr"></div>';
-			$buf .= '<div><p class="notice">'.l_t('You\'re not spectating any games.').'<br />
-				'.l_t('Click the \'spectate\' button on an existing game to add games to your list of spectated games.').
-			      	'</p></div>';
-		}
 		return $buf;
 	}
-	static public function upcomingLiveGames ()
+	static public function joinableGames ()
 	{
 		global $User, $DB;
 
-        if ($User->getOptions()->value['displayUpcomingLive'] == 'No') return '';
-
-		$tabl=$DB->sql_tabl("SELECT g.* FROM wD_Games g
-			WHERE (g.phase = 'Pre-game' OR (g.phase in ('Diplomacy','Retreats','Builds') and g.minimumBet is not null and g.gameOver = 'No')) AND g.phaseMinutes < 60 AND g.password IS NULL
-			ORDER BY g.processStatus ASC, g.processTime ASC LIMIT 3");
+		$tabl=$DB->sql_tabl("SELECT g.* 
+			FROM wD_Games g
+			WHERE g.minimumBet <= ".$User->points." 
+				AND ".$User->reliabilityRating." >= g.minimumReliabilityRating
+				AND g.gameOver = 'No'
+				AND g.password IS NULL");
 		$buf = '';
 		$count=0;
 		while($game=$DB->tabl_hash($tabl))

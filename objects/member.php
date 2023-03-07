@@ -161,6 +161,13 @@ class Member
 	var $userType;
 
 	/**
+	 * 0 if the user wants to receive notifications, 1 if they don't
+	 *
+	 * @var int
+	 */
+	var $hideNotifications;
+
+	/**
 	 * Create a Member object from a database Member record row
 	 * @param array $row Member record
 	 */

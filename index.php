@@ -215,11 +215,11 @@ else
 	print libHome::gameWatchBlock();
 	print '<div class="homeHeader">'.l_t('Defeated games').'</div>';
 	print libHome::gameDefeatedNotifyBlock();
-	
-	$liveGames = libHome::upcomingLiveGames();
+
+	$liveGames = libHome::joinableGames();
 	if ($liveGames != '') 
 	{
-		print '<div class="homeHeader">'.l_t('Joinable live games').' <a href="gamelistings.php?gamelistType=Search&phaseLengthMax=30m&messageNorm=Yes&messagePub=Yes&messageNon=Yes&messageRule=Yes&Submit=Search#results">'.libHTML::link().'</a></div>';
+		print '<div class="homeHeader">'.l_t('Joinable games').' <a href="gamelistings.php?gamelistType=Search&messageNorm=Yes&messagePub=Yes&messageNon=Yes&messageRule=Yes&Submit=Search#results">'.libHTML::link().'</a></div>';
 		print $liveGames;
 	}
 

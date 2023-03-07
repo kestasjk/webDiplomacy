@@ -213,6 +213,7 @@ class Members
 				m.supplyCenterNo as supplyCenterNo,
 				m.unitNo as unitNo,
 				m.excusedMissedTurns as excusedMissedTurns,
+				COALESCE(m.hideNotifications,0) as hideNotifications,
 				u.username AS username,
 				u.points AS points,
 				m.pointsWon as pointsWon,

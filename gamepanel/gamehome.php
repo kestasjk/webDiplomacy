@@ -162,35 +162,21 @@ class panelGameHome extends panelGameBoard
 	function links()
 	{
 		global $DB, $User;
-		$userInGame = 0;
-		list($userInGame) = $DB->sql_row("SELECT count(1) FROM wD_Members WHERE userID =".$User->id." and gameID =".$this->id);
-		$watchString= '';
 
-		if ($this->watched() || $userInGame == 0)
+		if ($this->watched() || !isset($this->Members->ByUserID[$User->id]) )
 		{
-			if ($this->watched()) { $watchString = '- <a href="index.php?gameID='.$this->id.'&unwatch">'.l_t('Stop spectating').'</a>'; }
-			if( $this->phase == 'Pre-game')
-			{
-				return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
-					<a href="board.php?gameID='.$this->id.'">'.l_t('Open').'</a>
-					'.$watchString.'
-					</div>';
-			}
-			else
-			{
-				return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
-					<a href="board.php?gameID='.$this->id.'#gamePanel">'.l_t('Open').'</a> 
-					'.$watchString.'
-					</div>';
-			}
+			return '<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">
+				<a href="board.php?gameID='.$this->id.($this->phase == 'Pre-game' ? '' : '#gamePanel').'">'.l_t('View').'</a> 
+				'.($this->watched() ? '- <a href="index.php?gameID='.$this->id.'&unwatch">'.l_t('Stop spectating').'</a>' : '').'
+				'.(!isset($this->Members->ByUserID[$User->id]) && $this->isJoinable()? '- <a href="board.php?gameID='.$this->id.'&join=on">'.l_t('Stop spectating').'</a>' : '').'
+				</div>';
 		}
 		else
 		{
-			$noticesStatus = 5;
 			$SubmitName = 'Toggle Notices';
-			list($noticesStatus) = $DB->sql_row("SELECT hideNotifications FROM wD_Members WHERE userID =".$User->id." and gameID =".$this->id);
+			$noticesStatus = $this->Members->ByUserID[$User->id]->hideNotifications;
 			if ($noticesStatus == 1) { $SubmitName = 'Enable Notices'; }
-			else if ($noticesStatus == 0) { $SubmitName = 'Disable Notices'; }
+			else { $SubmitName = 'Disable Notices'; }
 
 			return 
 				'<div class="bar homeGameLinks barAlt'.libHTML::alternate().'">

@@ -492,10 +492,9 @@ class Game
 
 	function watched() 
 	{
-        global $DB, $User;
+        global $User;
 
-		$row = $DB->sql_row('SELECT * from wD_WatchedGames WHERE gameID='.$this->id.' AND userID=' . $User->id);
-		return $row != false;
+		return $User->isWatchingGame($this->id);
 	}
 	function watch() 
 	{

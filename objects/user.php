@@ -605,6 +605,20 @@ class User {
 		return $this->options->value['mapUI'] == 'Point and click';
 	}
 
+	private $watchedGameIDsCache = null;
+	function getWatchedGameIDs()
+	{
+		global $DB;
+		if( $this->watchedGameIDsCache == null )
+			$this->watchedGameIDsCache = $DB->sql_list('SELECT gameID from wD_WatchedGames WHERE userID=' . $this->id);
+		return $this->watchedGameIDsCache;
+	}
+
+	function isWatchingGame($gameID)
+	{
+		return in_array($gameID, $this->getWatchedGameIDs());
+	}
+
 	/**
 	 * Return a profile link for this user
 	 * @param bool[optional] $welcome If true this profile link is tweaked to be used as the Welcome link
