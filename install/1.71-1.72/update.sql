@@ -468,3 +468,6 @@ UPDATE wD_UserCodeConnections SET isNew = 1, isUpdated = 1, previousCount = 0;
 
 -- Prevent full table scanes in phpBB like module
 ALTER TABLE IF EXISTS `phpbb_posts_likes` ADD INDEX `CountLikes` (`user_id`, `post_id`);
+
+ALTER TABLE `wD_UserOptions` ADD COLUMN `mapUI` enum('Point and click','Dropdown menus') NOT NULL DEFAULT 'Point and click';
+UPDATE wD_UserOptions SET mapUI = 'Point and click';

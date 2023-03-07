@@ -40,7 +40,8 @@ class UserOptions
         'darkMode' => 'No',
 		'displayUpcomingLive' => 'Yes',
 		'showMoves' => 'Yes',
-		'orderSort' => 'Convoys Last'
+		'orderSort' => 'Convoys Last',
+		'mapUI' => 'Point and click'
 	);
 
 	public static $titles = array(
@@ -48,7 +49,8 @@ class UserOptions
 		'darkMode' => 'Dark Theme',
 		'displayUpcomingLive' => 'Display upcoming live games',
 		'showMoves' => 'Show move arrows on the game map',
-		'orderSort' => 'Sort possible orders'
+		'orderSort' => 'Sort possible orders',
+		'mapUI' => 'Default map UI'
 	);
 
 	public static $possibleValues = array(
@@ -56,7 +58,8 @@ class UserOptions
 		'darkMode' => array('Yes', 'No'),
 		'displayUpcomingLive' => array('Yes','No'),
 		'showMoves' => array('Yes','No'),
-		'orderSort' => array('No Sort','Alphabetical','Convoys Last')
+		'orderSort' => array('No Sort','Alphabetical','Convoys Last'),
+		'mapUI' => array('Point and click','Dropdown menus')
 	);
 
 	public $value;

@@ -9,11 +9,11 @@
 '%s hours, %s minutes' => '%s ore, %s minuti',
 '%s minutes' => '%s minuti',
 '%s minutes, %s seconds' => '%s minuti, %s secondi',
-'%s players joined; game will start at the scheduled time' => '%s giocatori entrato; partita inizierà al tempo previsto'
-'%s players joined; game will start on next process cycle' => '%s giocatori entrato; gioco avrà inizio di lavorazione successiva il ciclo'
+'%s players joined; game will start at the scheduled time' => '%s giocatori entrato; partita inizierï¿½ al tempo previsto'
+'%s players joined; game will start on next process cycle' => '%s giocatori entrato; gioco avrï¿½ inizio di lavorazione successiva il ciclo'
 '%s replies' => '%s risposte',
-'%s supply-centers, %s units' => '%s centri, %s unitÃ ',
-'%s units' => '%s unitÃ ',
+'%s supply-centers, %s units' => '%s centri, %s unitï¿½ ',
+'%s units' => '%s unitï¿½ ',
 '%s\'s games' => 'Le partite di %s',
 '%s, for %s' => '%s, per %s ',
 '< Return' => '< Indietro',
@@ -45,12 +45,12 @@
 			complete the registration process.' => 'Bene; non sei un bot e hai un indirizzo email valido!</p>
 			<p>Inserisci ora il nome utente che preferisci e la password per completare il processo di registrazione.
                         Potrai modificare le altre impostazioni anche dopo la registrazione se preferisci.',
-'Alter game messaging' => 'Cambia la modalitÃ  dei messaggi',
+'Alter game messaging' => 'Cambia la modalitï¿½  dei messaggi',
 'Alter the length of an existing silence (note that this only applies to user silences; thread silences are indefinite).<br />0 length silences are indefinite.' => 'Cambia la durata del SILENZIO (si aplpica solo al silenzio utente).<br /> Durata 0 uguale a indeterminato.',
 'Alter the settings for your webDiplomacy user account; e.g. change your password/e-mail.' => 'Cambia le impostazioni del tuo account webDiplomacy; comunicazioni/password/email ecc...',
 'Abbina le nazioni a ciascun giocatore. Inserisci una lista. Per esempio:
 					\"<em>R,T,A,G,U,F,E</em>\".<br />
-                                         CosÃ¬ il giocatore ora in InghilterrÃ  giocherÃ  per la Russia, Francia per la Turchia e cosÃ¬ via.<br /><br />
+                                         CosÃ¬ il giocatore ora in Inghilterrï¿½  giocherï¿½  per la Russia, Francia per la Turchia e cosÃ¬ via.<br /><br />
 					Se non sei sicuro dell\'ordine delle nazioni, inserisci solo l\'ID della partita e vedrai la lista delle nazioni.<br /><br />
 					Per impedire ai giocatori di scambiarsi informazioni prima del ricollocamento delle nazioni, solo le partite senza diplomazia possono usufruire di questa   opzione. La diplomazia puÃ² essere abilitata una volta decise definitivamente le Nazioni.<br /><br />
 					(The substitution string to reverse the reallocation will be generated, in case you need to reverse the reallocation.)<br />
@@ -58,7 +58,7 @@
 					(Alternatively you can enter [userID1]=[countryLetter1],[userID2]=[countryLetter2],etc)' => '',
 'An e-mail has been sent to the address you provided (<strong>%s</strong>) with a link that you can click on to confirm that it\'s your real e-mail address, and then you\'re ready to go!' => 'Una mail Ã¨ stata inviata all\'indirizzo da te fornito (<strong>%s</strong>). Contiene il link che devi usare per confermare il tuo indirizzo.',
 'An e-mail has been sent with a verification link, which will allow you to have your password reset. If you can\'t find the e-mail in your inbox try your junk folder/spam-box.' => 'Ti abbiamo inviato una mail con il link per resettare la tua password. Se non la ricevi entro breve, controlla la tua cartella antispam.',
-'An optional comma-separated list of user-IDs to compare the above user ID to. If this is not specified the user ID above will be checked against accounts which have matching IP/cookie-code data.' => 'Questa qui proprio non l ho capita. vediamo a cosa corrisponde in realtÃ .',
+'An optional comma-separated list of user-IDs to compare the above user ID to. If this is not specified the user ID above will be checked against accounts which have matching IP/cookie-code data.' => 'Questa qui proprio non l ho capita. vediamo a cosa corrisponde in realtï¿½ .',
 'Anon' => 'Anon',
 'Anonymous' => 'Anonimo',
 'Anonymous players' => 'Giocatori anonimi',
@@ -82,7 +82,7 @@
 'Banned users' => 'Utenti bannati',
 'Bans a certain IP address' => 'Banna un certo indirizzo IP',
 'Bans a user, setting his games to civil disorder, and removing his points.' => 'Banna l\'utente togliendolo da tutte le partite e rimuovendo tutti i suoi punti.',
-'Be sure to bookmark the <a href=\'index.php\' class=\'light\'>home page</a>, which displays a summary of your games and forum activity.' => 'Aggiungi il <a href=\'index.php\' class=\'light\'>sito</a> ai preferiti: avrai sempre sutto controlo le tue partite e le attivitÃ  del forum.',
+'Be sure to bookmark the <a href=\'index.php\' class=\'light\'>home page</a>, which displays a summary of your games and forum activity.' => 'Aggiungi il <a href=\'index.php\' class=\'light\'>sito</a> ai preferiti: avrai sempre sutto controlo le tue partite e le attivitï¿½  del forum.',
 'Bet to join: %s: ' => 'Scommessa per entrare %s:',
 'Bet:' => 'Scommessa',
 'Build %s at %s' => 'Costruisci %s in %s',
@@ -97,7 +97,7 @@
 					The time must be given in minutes (5 minutes to 10 days = 5-14400).<br />
 					Also the next process time is reset to the new phase length.' => 'Cambia la durata del turno (in minuti).
                       Puoi scegliere un tempo compreso tra 5min e 10 giorni =5 - 14400 minuti.<br />
-                      Il prossimo turno sarÃ  impostato uguale al valore che inserisci adesso.',
+                      Il prossimo turno sarï¿½  impostato uguale al valore che inserisci adesso.',
 'Chat archive' => 'Archivio messaggi',
 'Chatbox' => 'Finestra dei messaggi',
 'Check' => 'Controlla',
@@ -117,7 +117,7 @@
 'Clears admin log table.' => 'Cancella la tabella dei log di amministrazione',
 'Clears error log text files.' => 'Cancella i file di testo dei log di errore',
 'Clears order log text files.' => 'Cancella i file di testo dei log di errore',
-'Clears out all variant data and cache files, forcing them all to be reinstalled.' => 'Cancella tutte le varianti e la cache (bisognerÃ  installare di nuovo tutte le varianti)',
+'Clears out all variant data and cache files, forcing them all to be reinstalled.' => 'Cancella tutte le varianti e la cache (bisognerï¿½  installare di nuovo tutte le varianti)',
 'Click this to follow the link' => 'Clicca qui per aprire il link',
 'Close' => 'Chiudi',
 'Close search' => 'Chiudi la ricerca',
@@ -130,7 +130,7 @@
 'Currently logged in.' => 'Online',
 'DATC Tests' => 'Test DATC',
 'Defeated' => 'Sconfitto',
-'Destroy the unit at %s' => 'Distruggi l\'unitÃ  in %s',
+'Destroy the unit at %s' => 'Distruggi l\'unitï¿½  in %s',
 'Details' => 'Dettagli',
 'Diplomacy' => 'Diplomazia',
 'Diplomacy Adjudicator Test Cases' => 'Diplomacy Adjudicator Test Cases',
@@ -156,7 +156,7 @@
 'Enter a positive number of points to give, or a negative number of points to take.' => 'Inserisci un numero positivo di punti da aggiungere o negativo da togliere.',
 'Enter multi-account finder' => 'Controlla i multi-account',
 'Enter this user\'s account' => 'Utilizza l\'account di questo utente',
-'Enter your username here, and an e-mail will be sent to the address you registered with, with an activation link that will set a new password.' => 'Inserisci il tuo nome utente qui. Una mail con il link di attivazione della nuova password verrÃ  inviata all\'indirizzo con il quale ti sei registrato.',
+'Enter your username here, and an e-mail will be sent to the address you registered with, with an activation link that will set a new password.' => 'Inserisci il tuo nome utente qui. Una mail con il link di attivazione della nuova password verrï¿½  inviata all\'indirizzo con il quale ti sei registrato.',
 'Enter your webDiplomacy account username and password to log into your account.' => 'Inserisci il tuo nome utente e la password di webDiplomacy per collegarti al sito.',
 'Error' => 'Errore',
 'Error logs' => 'Log di errore',
@@ -169,7 +169,7 @@
 'Finished:' => 'Finita',
 'First' => 'Primo',
 'First page' => 'Prima pagina',
-'Flips a game\'s paused status; if it\'s paused it\'s unpaused, otherwise it\'s paused.' => 'Mette in pausa una partita. Se questa Ã¨ giÃ  in pausa, questa opzione la toglie.',
+'Flips a game\'s paused status; if it\'s paused it\'s unpaused, otherwise it\'s paused.' => 'Mette in pausa una partita. Se questa Ã¨ giï¿½  in pausa, questa opzione la toglie.',
 'For more stats on your ranking visit <a class=\"light\" href=\"profile.php?userID=10\">your profile</a>.' => 'Per maggiori statistiche, visita il tuo <a class=\"light\" href=\"profile.php?userID=10\">profilo</a>.',
 'Force a user into CD' => 'Forza il disordine civile di un utente',
 'Force a user into CD in all his games, or in one game specifically if non-zero gameID given.' => 'Metti tutte le partite dell\'utente nel disordine civile. Inserendo un ID partita specifico, scegli solo le partite concrete.',
@@ -213,7 +213,7 @@
 'Home page:' => 'Home page:',
 'IP address (xxx.xxx.xxx.xxx)' => 'Indirizzo IP (xxx.xxx.xxx.xxx)',
 'If this e-mail was unexpected it can be ignored, please don\'t reply.' => 'Se non si aspettava quest\'email la preghiamo di ignorarla e di non rispondere.',
-'If you are posting a <strong>feature request</strong> please check that it isn\'t mentioned in the <a href=\"http://forum.webdiplomacy.net\">todo list</a>.' => 'Se state richiedendo un <strong>intervento</strong> controllate sul <a href=\"http://forum.webdiplomacy.net\">forum</a> che non sia giÃ  stato richiesto da altri.',
+'If you are posting a <strong>feature request</strong> please check that it isn\'t mentioned in the <a href=\"http://forum.webdiplomacy.net\">todo list</a>.' => 'Se state richiedendo un <strong>intervento</strong> controllate sul <a href=\"http://forum.webdiplomacy.net\">forum</a> che non sia giï¿½  stato richiesto da altri.',
 'If you are posting a question please <strong>check the <a href=\"faq.php\">FAQ</a></strong> before posting.' => 'Se volete chiedere un\'informazione, <strong>controllate prima le <a href=\"faq.php\">FAQ</a></strong>.',
 'If you don\'t know what Diplomacy is about yet check out the quick
 				<a href=\'intro.php\' light=\'class\'>graphical intro to webDiplomacy</a>,
@@ -295,7 +295,7 @@
 'Okay, now that we know you\'re a human we need to check that you have a real e-mail address.' => 'Bene, ora che sappiamo che sei un umano dobbiamo controllare che tu abbia un indirizzo e-mail valido.',
 'Once the reason for the period of no processing is known, and it\'s safe to reenable
 					game processing, the last process time can be reset here' => 'Una volta che il motivo dello stop alla risoluzione degli ordini sia chiaro e che far ripartire l\'aggiornamento delle partite sia considerato sicuro, da qui si puÃ² resettare l\'ultima fase di aggiornamento',
-'One or more players need to complete their orders before this strict/tournament game can go on' => 'Uno o più giocatori devono completare i loro ordini prima questo gioco rigida / torneo può continuare'
+'One or more players need to complete their orders before this strict/tournament game can go on' => 'Uno o piï¿½ giocatori devono completare i loro ordini prima questo gioco rigida / torneo puï¿½ continuare'
 'Online' => 'Connesso',
 'Open' => 'Aperte',
 'Open %s chatbox tab\"' => 'Open %s chatbox tab\"',
@@ -431,12 +431,12 @@
 'The current page; click to refresh' => 'La pagina corrente; clicca per aggiornare',
 'The e-mail may take a couple of minutes to arrive; if it doesn\'t appear check your spam inbox.' => 'L\'invio dell\'email potrebbe impiegare un paio di minuti; se non appare nella vostra casella di posta, controllate la vostra sezione di spam.',
 'The full game listing search panel' => 'Il pannello di ricerca con la lista di tutte le partite',
-'The game will start at the scheduled time even if all %s players have joined.' => 'Il gioco inizierà al tempo previsto, anche quando tutti e %s i giocatori si sono uniti.'
-'The game will start when all %s players have joined.' => 'Il gioco inizierà quando tutti e %s i giocatori si sono uniti.'
+'The game will start at the scheduled time even if all %s players have joined.' => 'Il gioco inizierï¿½ al tempo previsto, anche quando tutti e %s i giocatori si sono uniti.'
+'The game will start when all %s players have joined.' => 'Il gioco inizierï¿½ quando tutti e %s i giocatori si sono uniti.'
 'The map for the %s Variant' => 'La mappa della variante %s',
 'The password you entered is incorrect.' => 'La password inserita Ã¨ errata.',
-'The results of a set of automated tests which show the webDiplomacy\'s compliance with the official Diplomacy rules.' => 'Il risultato di un set di test automatici che mostra la conformitÃ  di webDiplomacy con le regole ufficiali di Diplomacy.',
-'The small map for the current phase. If you are starting a new turn this will show the last turn\'s orders' => 'La mappa piccola del turno corrente. Se stai cominciando un nuovo turno, questa mostrerÃ  gli ordini dell\'ultimo turno',
+'The results of a set of automated tests which show the webDiplomacy\'s compliance with the official Diplomacy rules.' => 'Il risultato di un set di test automatici che mostra la conformitï¿½  di webDiplomacy con le regole ufficiali di Diplomacy.',
+'The small map for the current phase. If you are starting a new turn this will show the last turn\'s orders' => 'La mappa piccola del turno corrente. Se stai cominciando un nuovo turno, questa mostrerï¿½  gli ordini dell\'ultimo turno',
 'The user ID to check' => 'L\'ID utente da controllare',
 'The webDiplomacy Gamemaster' => 'Il Gamemaster di webDiplomacy',
 'The webDiplomacy hall of fame; the 100 highest ranking players on this server.' => 'I primi 100 giocatori in classifica di questo server.',
@@ -454,22 +454,22 @@
 'To:' => 'A:',
 'Toggle maintenance' => 'Attiva la manutenzione',
 'Toggle maintenance mode, which makes the server inaccessible except to admins
-					so changes can be made.' => 'Attiva la modalitÃ  Manutenzione, che rende il server accessibile solo agli amministratori per poter effettuare i cambiamenti necessari',
-'Toggle maintenance-mode' => 'Attiva la modalitÃ  Manutenzione',
+					so changes can be made.' => 'Attiva la modalitï¿½  Manutenzione, che rende il server accessibile solo agli amministratori per poter effettuare i cambiamenti necessari',
+'Toggle maintenance-mode' => 'Attiva la modalitï¿½  Manutenzione',
 'Toggle mod-report mute' => 'Attiva l\'oscuramento dei report di moderazione',
 'Toggle panic button' => 'Attiva il tasto PANIC',
-'Toggle panic-mode' => 'Attiva la modalitÃ  PANIC',
+'Toggle panic-mode' => 'Attiva la modalitï¿½  PANIC',
 'Toggle pause' => 'Attiva la pausa',
 'Toggle site-wide notice' => 'Notifica un avviso in tutto il sito',
 'Toggle the notice which is displayed in a noticebar across the whole site. The
-					notice itself can be set in config.php' => 'Notifica un avviso che verrÃ  evidenziato in una barra visibile in tutto il sito. L\'avviso
+					notice itself can be set in config.php' => 'Notifica un avviso che verrï¿½  evidenziato in una barra visibile in tutto il sito. L\'avviso
 					stesso puÃ² essere impostato in config.php',
 'Toggle the panic button; turning it on prevents games from being processed, users joining games,
 						users registering. It is intended to limit the damage a problem can do' => 'Attiva il tasto PANIC; l\'attivazione impedisce l\'aggiornamento delle partite, l\'iscrizione degli utenti, l\'iscrizione 
 					alle partite. Serve a limitare i danni di un possibile problema',
 'Toggle the site-wide notice' => 'Notifica un avviso in tutto il sito',
 'Toggle-pause game' => 'Mette in pausa una partita',
-'Toggles whether the given userID can submit reports, to prevent annoying users from abusing the report feature.' => 'Attiva la possibilitÃ  per uno specifico utente ID di inserire notifiche, per evitare che utenti rompiscatole intasino lo strumento \"report\" (messaggi) delle partite.',
+'Toggles whether the given userID can submit reports, to prevent annoying users from abusing the report feature.' => 'Attiva la possibilitï¿½  per uno specifico utente ID di inserire notifiche, per evitare che utenti rompiscatole intasino lo strumento \"report\" (messaggi) delle partite.',
 'Total (finished):' => 'Totali (terminate):',
 'Total points:' => 'Punti totali:',
 'Total query time' => 'Tempo totale della query',
@@ -478,7 +478,7 @@
 'Unbans a user; does not return the player from civil disorder or return the points taken.' => 'Toglie il ban ad un utente; non ripristina la sua partecipazione alle partite abbandonate nÃ© restituisce i punti tolti.',
 'Uncrash games' => 'Ripristina le partite in crash',
 'Uncrashes all crashed games except the games specified (if any).' => 'Ripristina tutte le partite in crash tranne quelle specificate (se indicate).',
-'Unit-placement' => 'Piazzamento delle unitÃ ',
+'Unit-placement' => 'Piazzamento delle unitï¿½ ',
 'Unread message' => 'Messaggio non letto',
 'Unread messages!' => 'Messaggi non letti!',
 'Unsilence something' => 'Desilenzia qualcosa',
@@ -510,7 +510,7 @@
 'Winner-takes-all' => 'Il Vincitore Intasca la Posta',
 'Wipe game backups' => 'Cancella i backup delle partite',
 'With this checked links between users will be ignored if they aren\'t currently playing in the same games. This helps ensure that the data being checked is relevant and cuts out the clutter.' => 'Spuntando questa opzione, i collegamenti tra gli utenti verranno ignorati se non stanno giocando nelle stesse partite. Questo aiuta a selezionare i dati piÃ¹ rilevanti eliminando il resto.',
-'With this checked the complete access log data for all the matching accounts will be displayed, instead of displaying the list of linked accounts. This makes it easy to check whether people are accessing the site during the same time periods, and gives a more detailed picture of what is happening.' => 'Spuntanto questa opzione, si mostreranno i dati completi di accesso per tutti gli account comparati, invece di mostrare la lista degli account collegati. Questo rende facile confrontare gli orari di connessione e dÃ  un\'immagine piÃ¹ completa della situazione.',
+'With this checked the complete access log data for all the matching accounts will be displayed, instead of displaying the list of linked accounts. This makes it easy to check whether people are accessing the site during the same time periods, and gives a more detailed picture of what is happening.' => 'Spuntanto questa opzione, si mostreranno i dati completi di accesso per tutti gli account comparati, invece di mostrare la lista degli account collegati. Questo rende facile confrontare gli orari di connessione e dï¿½  un\'immagine piÃ¹ completa della situazione.',
 'Won' => 'Vinte',
 'You are being redirected to %s. Good luck!' => 'Stai per entrare alla partita %s. Buona fortuna!',
 'You are not in any active games, select the \"New\" tab to view games that you can join, or if you can\'t find a game you want to join select \"New game\" in the menu to create your own.' => 'Non stai giocando alcuna partita, controlla la finestra \"Nuove\" per vedere le partite alle quali aggiungerti e se non trovi la partita adatta seleziona \"Nuova Partita\" nel menu per creare la tua.',
@@ -523,7 +523,7 @@
 'You have been logged out, and are being redirected to the logon page.' => 'Sei uscito dal tuo account, stai per essere diretto alla pagina di accesso.',
 'You have participated in this thread.' => 'Hai partecipato alla discussione.',
 'You sent:' => 'Hai inviato:',
-'You\'re attempting to create a new user account when you already have one. Please use your existing user account.' => 'Stai cercando di creare un nuovo account utente quando ne hai giÃ  uno. Utilizza quello giÃ  esistente, grazie.',
+'You\'re attempting to create a new user account when you already have one. Please use your existing user account.' => 'Stai cercando di creare un nuovo account utente quando ne hai giï¿½  uno. Utilizza quello giï¿½  esistente, grazie.',
 'You\'re not joined to any games!' => 'Non stai partecipando ad alcuna partita!',
 'Your new webDiplomacy account' => 'Il tuo nuovo account webDiplomacy',
 'Your webDiplomacy password.' => 'La tua password webDiplomacy.',
@@ -553,7 +553,7 @@
 'webDiplomacy introduction image generating tests' => 'webDiplomacy introduction image generating tests',
 'webDiplomacy is an online, multiplayer, turn-based strategy game that lets you play Diplomacy online.' => 'WebDiplomacy Ã¨ un gioco di strategia online, multigiocatore basato su turni di gioco, che permette di giocare online a Diplomacy.',
 'webDiplomacy points' => 'Punti di webDiplomacy',
-'webDiplomacy ranking points; who are the most skilled at gathering them from their foes?' => 'Punti in classifica di webDiplomacy; chi sarÃ  il piÃ¹ abile a raccoglierli dai propri avversari?',
+'webDiplomacy ranking points; who are the most skilled at gathering them from their foes?' => 'Punti in classifica di webDiplomacy; chi sarï¿½  il piÃ¹ abile a raccoglierli dai propri avversari?',
 'webDiplomacy rulebook' => 'Regolamento webDiplomacy',
 'webDiplomacy specific test cases' => 'Casi di test specifici di webDiplomacy',
 'webDiplomacy variants' => 'Varianti di webDiplomacy',
@@ -582,8 +582,8 @@
 '2-5 days' => '2-5 giorni',
 '5-10 days' => '5-10 giorni',
 '6-12 hours' => '6-12 ore',
-'<em> \"Luck plays no part in Diplomacy. Cunning and cleverness, honesty and perfectly-timed betrayal are the tools needed to outwit your fellow players. The most skillful negotiator will climb to victory over the backs of both enemies and friends.<br /> <br /> Who do you trust?\"<br /> (<a href=\"http://www.wizards.com/default.asp?x=ah/prod/diplomacy\" class=\"light\">Avalon Hill</a>)</em>' => '<em> \"A Diplomacy non c\'Ã¨ spazio per la fortuna. AbilitÃ , intelligenza e il giusto tempismo nei tradimenti sono tutto ciÃ² di cui avrai bisogno per importi sui tuoi avversari. Il negoziatore piÃ¹ abile raggiungerÃ  la vittoria travolgendo amici e nemici. <br /> <br /> Di chi ti fiderai? <br /> (<a href=\"http://www.wizards.com/default.asp?x=ah/prod/diplomacy\" class=\"light\">Avalon Hill</a>)</em>',
-'A first check of this e-mail is finding it invalid. Remember you need one to play, and it will not be spammed or released.' => 'Un primo controllo ha evidenziato un\'email invalida. Ricorda che ne hai bisogno per giocare, e non ci sarÃ  spam.',
+'<em> \"Luck plays no part in Diplomacy. Cunning and cleverness, honesty and perfectly-timed betrayal are the tools needed to outwit your fellow players. The most skillful negotiator will climb to victory over the backs of both enemies and friends.<br /> <br /> Who do you trust?\"<br /> (<a href=\"http://www.wizards.com/default.asp?x=ah/prod/diplomacy\" class=\"light\">Avalon Hill</a>)</em>' => '<em> \"A Diplomacy non c\'Ã¨ spazio per la fortuna. Abilitï¿½ , intelligenza e il giusto tempismo nei tradimenti sono tutto ciÃ² di cui avrai bisogno per importi sui tuoi avversari. Il negoziatore piÃ¹ abile raggiungerï¿½  la vittoria travolgendo amici e nemici. <br /> <br /> Di chi ti fiderai? <br /> (<a href=\"http://www.wizards.com/default.asp?x=ah/prod/diplomacy\" class=\"light\">Avalon Hill</a>)</em>',
+'A first check of this e-mail is finding it invalid. Remember you need one to play, and it will not be spammed or released.' => 'Un primo controllo ha evidenziato un\'email invalida. Ricorda che ne hai bisogno per giocare, e non ci sarï¿½  spam.',
 'A multiplayer web implementation of the popular turn-based strategy game Diplomacy.' => 'Un\'implementazione multiplayer online del popolare gioco strategico a turni, Diplomacy.',
 'A place to discuss topics/games with other webDiplomacy players.' => 'Un posto per discutere di partite o altro con altri giocatori di WebDiplomacy.',
 'A user object has been created which doesn\'t represent a real user.' => 'E\'stato creato un oggetto utente che non rappresenta un utente reale.',
@@ -600,7 +600,7 @@
 'All' => 'Tutto',
 'Alphabetical order (A->Z)' => 'Ordine alfabetico (A->Z)',
 'Alphabetical order (Z->A)' => 'Ordine alfabetico (Z->A)',
-'Alter which player has which country. Enter a list like so: \"<em>R,T,A,G,U,F,E</em>\".<br /> The result will be that England will be set to Russia, France to Turkey, etc.<br /><br /> If you aren\'t sure about the order of each country just enter the gameID without anything else and the list of countries in the order will be output.<br /><br /> To prevent people sharing invalid info before the countries have been reallocated only no-message games can have their countries reallocated; messages should be enabled only after the countries have been reallocated.<br /><br /> (The substitution string to reverse the reallocation will be generated, in case you need to reverse the reallocation.)<br /> (If changing the countries of a variant for which the first letter of the countries are not distinct countryID numbers must be used instead.)<br /> (Alternatively you can enter [userID1]=[countryLetter1],[userID2]=[countryLetter2],etc)' => 'Altera gli accoppiamenti giocatore - potenza. Inserisci una lista del tipo: \"<em>R,T,A,G,U,F,E</em>\".<br /> Il risultato vedrÃ  il giocatore inglese in Russia, il francese in Turchia, etc.<br /><br /> Se non sei sicuro dell\'ordine di ciascuna potenza Ã¨ sufficiente inserire l\'ID partita senza aggiungere altro e si otterrÃ  la lista ordinata delle potenze.<br /><br /> Per evitare che i giocatori confividano informazioni errate prima della riallocazione, solamente messaggi senza diplomazia possono essere riallocati. La messaggistica dovrebbe essere attivata solo dopo la riallocazione.<br /><br /> (verrÃ  generata una stringa di sostituzione per invertire la riallocazione, in caso ce ne fosse il bisogno.)<br /> (se si cambiano le potenze di una variante per le quali le prime lettere delle potenze non sono univoche, occorre usare il numero ID della potenza.)<br /> (Alternativamente, si puÃ² inserire [userID1]=[countryLetter1],[userID2]=[countryLetter2],etc)',
+'Alter which player has which country. Enter a list like so: \"<em>R,T,A,G,U,F,E</em>\".<br /> The result will be that England will be set to Russia, France to Turkey, etc.<br /><br /> If you aren\'t sure about the order of each country just enter the gameID without anything else and the list of countries in the order will be output.<br /><br /> To prevent people sharing invalid info before the countries have been reallocated only no-message games can have their countries reallocated; messages should be enabled only after the countries have been reallocated.<br /><br /> (The substitution string to reverse the reallocation will be generated, in case you need to reverse the reallocation.)<br /> (If changing the countries of a variant for which the first letter of the countries are not distinct countryID numbers must be used instead.)<br /> (Alternatively you can enter [userID1]=[countryLetter1],[userID2]=[countryLetter2],etc)' => 'Altera gli accoppiamenti giocatore - potenza. Inserisci una lista del tipo: \"<em>R,T,A,G,U,F,E</em>\".<br /> Il risultato vedrï¿½  il giocatore inglese in Russia, il francese in Turchia, etc.<br /><br /> Se non sei sicuro dell\'ordine di ciascuna potenza Ã¨ sufficiente inserire l\'ID partita senza aggiungere altro e si otterrï¿½  la lista ordinata delle potenze.<br /><br /> Per evitare che i giocatori confividano informazioni errate prima della riallocazione, solamente messaggi senza diplomazia possono essere riallocati. La messaggistica dovrebbe essere attivata solo dopo la riallocazione.<br /><br /> (verrï¿½  generata una stringa di sostituzione per invertire la riallocazione, in caso ce ne fosse il bisogno.)<br /> (se si cambiano le potenze di una variante per le quali le prime lettere delle potenze non sono univoche, occorre usare il numero ID della potenza.)<br /> (Alternativamente, si puÃ² inserire [userID1]=[countryLetter1],[userID2]=[countryLetter2],etc)',
 'An invalid anti-script code was given, please try again' => 'E\' stato inserito un codice anti-script invalido, riprova',
 'AncMed' => 'Antico Mediterraneo',
 'Angola' => 'Angola',
@@ -678,7 +678,7 @@
 'Delhi' => 'Delhi',
 'Denied' => 'Non consentito',
 'Denmark' => 'Danimarca',
-'Destroy a unit' => 'Distruggi un\'unitÃ ',
+'Destroy a unit' => 'Distruggi un\'unitï¿½ ',
 'Diplomacy,Retreats,Builds' => 'Diplomacy,Ritirate,Costruzioni',
 'Dislodged' => 'Sbandata',
 'Donator:' => 'Donatore',
@@ -760,7 +760,7 @@
 'Livonia' => 'Livonia',
 'Loading test' => 'Caricamento del test',
 'London' => 'Londra',
-'Maintenance mode turned on' => 'ModalitÃ  di manutenzione attiva',
+'Maintenance mode turned on' => 'Modalitï¿½  di manutenzione attiva',
 'Make a new user account' => 'Crea un nuovo account utente',
 'Mar' => 'Marzo',
 'Marie Byrd Land' => 'Marie Byrd Land',
@@ -921,7 +921,7 @@
 'The %s at %s' => 'La %s in %s',
 'The %s at %s ' => 'La %s in %s ',
 'The Ancient Mediterranean' => 'L\'Antico Mediterraneo',
-'The e-mail address \'%s\', is already in use. Please choose another.' => 'L\'indirizzo e-mail \'%s\' Ã¨ giÃ  in uso. Scegline un altro, per favore.',
+'The e-mail address \'%s\', is already in use. Please choose another.' => 'L\'indirizzo e-mail \'%s\' Ã¨ giï¿½  in uso. Scegline un altro, per favore.',
 'The e-mail address you entered isn\'t valid. Please enter a valid one' => 'L\'indirizzo e-mail inserito non Ã¨ valido. Inseriscine uno valido, per favore',
 'The forum; chat, get help, help others, arrange games, discuss strategies' => 'Il forum: comunica, ottieni aiuto, aiuta gli altri, organizza partita, discuti strategie',
 'The map' => 'La mappa',
@@ -1000,7 +1000,7 @@
 'support move' => 'supporta il movimento',
 'tick' => 'tick',
 'tick_faded' => 'tick_faded',
-'unit' => 'unitÃ ',
+'unit' => 'unitï¿½ ',
 'user search' => 'ricerca utente',
 'via convoy' => 'mediante trasporto',
 'via land' => 'via terra',
@@ -1013,7 +1013,6 @@
 'Please confirm this action' => 'Please confirm this action',
 'Recent changes' => 'Recent changes',
 "Lists and explains the most recent changes to the webdiplomacy software, from a user's perspective" => "Lists and explains the most recent changes to the webdiplomacy software, from a user's perspective",
-'locales/English/recentchanges.php' => 'locales/English/recentchanges.php',
 'civil disorders' => 'civil disorders',
 'ignored:' => 'ignored:',
 'No civil disorders found for this profile.' => 'No civil disorders found for this profile.',
