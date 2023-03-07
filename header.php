@@ -248,6 +248,8 @@ if( !defined('AJAX') )
 }
 if( Config::isOnPlayNowDomain() && !defined('PLAYNOW') )
 {
+	require_once('lib/home.php');
+
 	// This is a play-now request, but we are not on a play-now page. Show the play-now
 	// intro page which gives a quick intro, lists any games the viewer is already in if
 	// they are logged on, and gives a link to allow the user to start up a game.
