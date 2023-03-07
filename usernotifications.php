@@ -38,6 +38,12 @@ libHTML::starthtml();
 
 print libHTML::pageTitle(l_t('Notifications setup'),l_t('Configure whether and how you want notifications to be sent to you.'));
 
+print 'Coming soon!';
+
+libHTML::footer();
+
+die();
+
 require_once('objects/notifications.php');
 //userIdentity::panel($PanelUser);
 

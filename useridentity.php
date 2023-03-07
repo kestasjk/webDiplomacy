@@ -53,6 +53,12 @@ libHTML::starthtml();
 
 print libHTML::pageTitle(l_t('Identity setup'),l_t('Help prevent cheating and get access to advanced features by verifying your identity.'));
 
+print 'Coming soon!';
+
+libHTML::footer();
+
+die();
+
 if( isset($_REQUEST['userID']) )
 {
 	$PanelUser = new User((int)$_REQUEST['userID']);
