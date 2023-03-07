@@ -1460,7 +1460,7 @@ class libHTML
 		// If set up for webpushr hook in here:
 		if( isset(Config::$webpushrSiteKey) && Config::$webpushrSiteKey )
 		{
-			if( $User->type['User'] && $User->id == 10 )
+			if( $User->type['User'] )
 			{
 					$buf .= "<script>(function(w,d, s, id) {if(typeof(w.webpushr)!=='undefined') return;w.webpushr=w.webpushr||function(){(w.webpushr.q=w.webpushr.q||[]).push(arguments)};var js, fjs = d.getElementsByTagName(s)[0];js = d.createElement(s); js.id = id;js.async=1;js.src = \"https://cdn.webpushr.com/app.min.js\";fjs.parentNode.appendChild(js);}(window,document, 'script', 'webpushr-jssdk'));";
 					$buf .= "webpushr('setup',{'key':'".Config::$webpushrSiteKey."' });";
