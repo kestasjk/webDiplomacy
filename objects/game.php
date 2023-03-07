@@ -487,7 +487,7 @@ class Game
 	{
 		global $User;
 
-		return $this->isClassicGame() && (!isset($User) || !$User->type['User'] || $User->isMapUIPointAndClick() );
+		return $this->isClassicGame() && (defined('PLAYNOW') || !isset($User) || !$User->type['User'] || $User->isMapUIPointAndClick() );
 	}
 
 	function watched() 

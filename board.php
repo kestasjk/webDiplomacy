@@ -81,7 +81,7 @@ try
 	$Game = $Variant->panelGameBoard($gameID);
 
 	// If this user defaults to the point and click UI redirect them here
-	if( $Game->usePointAndClickUI() && $User->id == 10 )
+	if( $Game->usePointAndClickUI() )
 	{
 		// Default to using the point and click UI for this user.
 
