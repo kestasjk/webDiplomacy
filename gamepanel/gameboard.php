@@ -46,7 +46,7 @@ class panelGameBoard extends panelGame
 
 		$map = '
 		<div id="mapstore">
-			<img id="mapImage" src="'.$smallmapLink.'" alt=" " title="'.l_t('The small map for the current phase. If you are starting a new turn this will show the last turn\'s orders').'" style="width: auto; max-width: 100%;" onclick="window.open(\'beta?gameID=\''.$this->id.'\')" />
+			<img id="mapImage" src="'.$smallmapLink.'" alt=" " title="'.l_t('The small map for the current phase. If you are starting a new turn this will show the last turn\'s orders').'" style="width: auto; max-width: 100%;" onclick="window.open(\'beta?gameID='.$this->id.'\');" />
 			<p class="lightgrey" style="text-align:center">
 				<a class="mapnav" href="#" onClick="loadMap('.$this->id.','.$mapTurn.',-1); return false;">
                       <img id="Start" src="'.l_s('images/historyicons/Start_disabled.png').'" alt="'.l_t('Start').'" title="'.l_t('View the map from the first turn').'" /></a>
