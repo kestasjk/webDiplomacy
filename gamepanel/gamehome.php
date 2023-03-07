@@ -148,7 +148,6 @@ class panelGameHome extends panelGameBoard
 
 		$buf .= '</div>
 		
-		<div class="titleBarRightSide">
 			<div style="clear:both"></div>';
 
 		return $buf;
