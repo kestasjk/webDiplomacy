@@ -39,6 +39,8 @@ class miscUpdate
 	{
 		global $DB,$Misc;
 
+		if( !isset(Config::$customForumURL) ) return;
+
 		list($Misc->ForumThreads) = $DB->sql_row("SELECT COUNT(type) FROM wD_ForumMessages WHERE type='ThreadStart'");
 
 		$Misc->ThreadAliveThreshold=0;

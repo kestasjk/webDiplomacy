@@ -173,7 +173,7 @@ while(list($userID)=$DB->tabl_row($tabl))
 file_put_contents($onlineFile, 'onlineUsers=$A(['.implode(',',$onlineUsers).']);');
 
 //- Update misc values (if running as admin/mod)
-if( $Misc->LastStatsUpdate < (time() - 37*60) )
+if( $Misc->LastStatsUpdate < (time() - 60) )
 {
 	print l_t('Updating Misc values').'<br />';
 	miscUpdate::errorLog();
