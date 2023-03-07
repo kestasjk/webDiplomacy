@@ -1645,6 +1645,8 @@ class ApiSession extends ApiAuth {
 		// every session user can get state of all games (i.e. spectate)
 		$this->permissions["getStateOfAllGames"] = true;
 	}
+	
+	public function getMultiplexOffsetOrNull() { return null; }
 }
 
 /**
