@@ -88,7 +88,7 @@ class panelGameHome extends panelGameBoard
 	function titleBarName()
 	{
 		$name=parent::titleBarName();
-		if(strlen($name)>30) $name = substr($name,0,30).'...';
+		if(strlen($name)>15) $name = substr($name,0,15).'...';
 		return '<span class="homeGameTitleBar" gameID="'.$this->id.'">'.$name.'</span>';
 	}
 
@@ -106,7 +106,7 @@ class panelGameHome extends panelGameBoard
 			</div>
 
 			<div class="titleBarLeftSide">
-				<div class="titleBarHomeGameName">'.$this->gameIcons().' <span class="gameName">'.$this->titleBarName().'</span></div>
+				<div class="titleBarHomeGameName">'.$this->gameIcons().' <span class="gameName">'.substr($this->titleBarName().'</span></div>
 			</div>
 			<div style="clear:both"></div>
 
