@@ -210,17 +210,18 @@ else
 
 	print '<td class="homeGamesStats">';
 	print '<div class="homeHeader">'.l_t('My games').' <a href="gamelistings.php?page=1&gamelistType=My games">'.libHTML::link().'</a></div>';
-	print libHome::gameDefeatedNotifyBlock();
+	print libHome::gameNotifyBlock();
 	print '<div class="homeHeader">'.l_t('Spectated games').'</div>';
 	print libHome::gameWatchBlock();
+	print '<div class="homeHeader">'.l_t('Defeated games').'</div>';
+	print libHome::gameDefeatedNotifyBlock();
+	
 	$liveGames = libHome::upcomingLiveGames();
 	if ($liveGames != '') 
 	{
 		print '<div class="homeHeader">'.l_t('Joinable live games').' <a href="gamelistings.php?gamelistType=Search&phaseLengthMax=30m&messageNorm=Yes&messagePub=Yes&messageNon=Yes&messageRule=Yes&Submit=Search#results">'.libHTML::link().'</a></div>';
 		print $liveGames;
 	}
-	print libHome::gameNotifyBlock();
-	print '<div class="homeHeader">'.l_t('Defeated games').'</div>';
 
 	$sql = "select distinct t.id, t.name, t.status from wD_Tournaments t inner join wD_TournamentParticipants s on s.tournamentID = t.id 
 	where t.status <> 'Finished' and ( s.userID =".$User->id." or t.directorID = ".$User->id." or t.coDirectorID = ".$User->id.")";
