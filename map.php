@@ -489,7 +489,6 @@ if (PREVIEW && $Game->Members->isJoined())
 		}
 		
 		$drawMap->caption('Preview');
-		$drawMap->drawRedBox();
 		
 	}
 	

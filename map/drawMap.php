@@ -706,19 +706,6 @@ abstract class drawMap
 
 		if ( !$success ) $this->drawFailure(array($fromX, $fromY), array($toX, $toY));
 	}
-	
-	/**
-	 * Draw a red alert boy around the image...
-	 * Usefull for the Preview-function 
-	 */	
-	public function drawRedBox()
-	{
-		$red=$this->color(array(240,20,20),$this->map['image']);
-		self::imagelinethick($this->map['image'],0, 0, 0, $this->map['height'], $red, 8);
-		self::imagelinethick($this->map['image'],0, $this->map['height'], $this->map['width'], $this->map['height'], $red, 8);
-		self::imagelinethick($this->map['image'],$this->map['width'], $this->map['height'], $this->map['width'], 0, $red, 8);
-		self::imagelinethick($this->map['image'], $this->map['width'], 0, 0, 0, $red, 8);
-	}
 
 	/**
 	 * Draw a support hold arrow

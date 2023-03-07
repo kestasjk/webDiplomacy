@@ -664,7 +664,7 @@ class MessagesSeen extends ApiEntry {
 			}
 		}
 		$DB->sql_put("UPDATE wD_Members
-						SET newMessagesFrom = '".implode(',',$newMessagesFrom)."'
+						SET newMessagesFrom = '".implode(',',$newMessagesFrom)."', timeLoggedIn = ".time()."
 						WHERE id = ".$member->id);
 		$DB->sql_put("COMMIT");
 	}
