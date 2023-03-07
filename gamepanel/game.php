@@ -506,7 +506,7 @@ class panelGame extends Game
 			}
 			if( $User->type['User'] && $this->phase != 'Finished')
 			{
-				$buf .= '<form method="post" action="redirect.php">'
+				$buf .= '<form method="post" action="index.php">'
 						.libAuth::formTokenHTML()
 				       .'<input type="hidden" name="gameID" value="'.$this->id.'">';
 				if( ! $this->watched() ) {

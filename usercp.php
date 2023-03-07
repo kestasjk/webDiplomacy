@@ -57,7 +57,7 @@ libHTML::starthtml();
 
 if ( isset($_REQUEST['emailToken']))
 {
-	libAuth::formToken_Valid();
+	// libAuth::formToken_Valid(); I think this is linked from e-mail so don't require a form token
 
 	if( !($email = libAuth::emailToken_email($_REQUEST['emailToken'])) )
 		libHTML::notice(l_t("Email change validation"), l_t("A bad email token was given, please check the validation link try again"));

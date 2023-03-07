@@ -197,17 +197,6 @@ $map = $Game->mapHTML();
  * Now there is $orders, $form, and $map. That's all the HTML cached, now begin printing
  */
 
-if ( $Game->watched() && isset($_REQUEST['unwatch'])) {
-	print '<div class="content-notice gameTimeRemaining">'
-		.'<form method="post" action="redirect.php">'
-		.libAuth::formTokenHTML()
-		.'Are you sure you wish to remove this game from your spectated games list? '
-		.'<input type="hidden" name="gameID" value="'.$Game->id.'">'
-		.'<input type="submit" class="form-submit" name="unwatch" value="Confirm">
-		</form></div>';
-}
-
-
 print '</div>';
 print '<div class="content-bare content-board-header">';
 print '<div class="boardHeader">'.$Game->contentHeader().'</div>';

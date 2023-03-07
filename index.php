@@ -43,17 +43,12 @@ if( !isset($_SESSION['lastSeenHome']) || $_SESSION['lastSeenHome'] < $User->time
 global $DB;
 $gameToggleID = 0;
 
-if(isset($_POST['submit']))
+if(isset($_REQUEST['gameToggleNotices']))
 {
-	if(isset($_POST['gameToggleNotices']))
-	{
-		$gameToggleID = (int)$_POST['gameToggleNotices'];
-	}
+	$gameToggleID = (int)$_REQUEST['gameToggleNotices'];
 
 	if ($User->type['User'] and $gameToggleID > 0)
 	{
-		libAuth::formToken_Valid();
-		
 		$noticesStatus = 5;
 		list($noticesStatus) = $DB->sql_row("SELECT hideNotifications FROM wD_Members WHERE userID =".$User->id." and gameID =".$gameToggleID);
 
@@ -65,6 +60,25 @@ if(isset($_POST['submit']))
 		{
 			$DB->sql_put("UPDATE wD_Members SET hideNotifications = 0 WHERE userID =".$User->id." and gameID =".$gameToggleID);
 		}
+	}
+}
+if ((isset($_REQUEST['watch']) || isset($_REQUEST['unwatch'])) && isset($_REQUEST['gameID'])) {
+	require_once(l_r('objects/game.php'));
+	require_once(l_r('gamepanel/gameboard.php'));
+
+	$gameID = (int)$_REQUEST['gameID'];
+	// Get the game object, if this fails, then someone has entered some rubbish for the gameID
+	$Variant=libVariant::loadFromGameID($gameID);
+	libVariant::setGlobals($Variant);
+	$Game = $Variant->panelGameBoard($gameID);
+
+	if (isset($_REQUEST['unwatch']))
+	{
+		$Game->unwatch();
+	}
+	else if (isset($_REQUEST['watch']))
+	{
+		$Game->watch();
 	}
 }
 
