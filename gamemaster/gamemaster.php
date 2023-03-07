@@ -50,12 +50,13 @@ class libGameMaster
 
 		$DB->sql_put("BEGIN");
 
-		$tabl = $DB->sql_tabl("SELECT userID FROM wD_Sessions
+		$tabl = $DB->sql_tabl("SELECT userID, webPushrSID FROM wD_Sessions
 						WHERE UNIX_TIMESTAMP(lastRequest) < UNIX_TIMESTAMP(CURRENT_TIMESTAMP) - 10 * 60");
 
 		$userIDs = array();
 
-		while ( list($userID) = $DB->tabl_row($tabl) )
+		// TODO: Feels a bit hackish having something as site specific as a web pushr sid here
+		while ( list($userID, $webPushrSID) = $DB->tabl_row($tabl) )
 			$userIDs[] = $userID;
 
 		if ( count($userIDs) > 0 )
@@ -77,16 +78,16 @@ class libGameMaster
 
 			$DB->sql_put("DELETE FROM wD_Sessions WHERE userID IN (".$userIDs.")");
 
-			if( isset(Config::$customForumURL) )
+			if( !isset(Config::$customForumURL) )
 			{
 				$DB->sql_put("UPDATE wD_Users
-					SET timeLastSessionEnded = ".time().", lastMessageIDViewed = (SELECT MAX(f.id) FROM wD_ForumMessages f)
+					SET timeLastSessionEnded = ".time().", lastMessageIDViewed = (SELECT MAX(f.id) FROM wD_ForumMessages f), webPushrSID=".$webPushrSID."
 					WHERE id IN (".$userIDs.")");
 			}
 			else
 			{
 				// No need for this query if using a third party DB
-				$DB->sql_put("UPDATE wD_Users SET timeLastSessionEnded = ".time()." WHERE id IN (".$userIDs.")");
+				$DB->sql_put("UPDATE wD_Users SET timeLastSessionEnded = ".time().", webPushrSID=".$webPushrSID." WHERE id IN (".$userIDs.")");
 			}
 		}
 
