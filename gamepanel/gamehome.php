@@ -106,7 +106,7 @@ class panelGameHome extends panelGameBoard
 			</div>
 
 			<div class="titleBarLeftSide">
-				<div class="titleBarHomeGameName">'.$this->gameIcons().' <span class="gameName">'.substr($this->titleBarName().'</span></div>
+				<div class="titleBarHomeGameName">'.$this->gameIcons().' <span class="gameName">'.$this->titleBarName().'</span></div>
 			</div>
 			<div style="clear:both"></div>
 
