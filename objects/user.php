@@ -610,7 +610,12 @@ class User {
 	{
 		global $DB;
 		if( $this->watchedGameIDsCache == null )
-			$this->watchedGameIDsCache = $DB->sql_list('SELECT gameID from wD_WatchedGames WHERE userID=' . $this->id);
+		{
+			$this->watchedGameIDsCache = array();
+			$tabl = $DB->sql_tabl('SELECT gameID from wD_WatchedGames WHERE userID=' . $this->id);
+			while(list($gameID) = $DB->tabl_row($tabl))
+				$this->watchedGameIDsCache[] = $gameID;
+		}
 		return $this->watchedGameIDsCache;
 	}
 
