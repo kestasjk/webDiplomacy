@@ -59,7 +59,7 @@ class libHTML
 
 	public static function playNowButton()
 	{
-		return '<button onclick="window.location.href='.(defined("PLAYNOW") ? "botgamecreate.php" : "https://play.webdiplomacy.net/botgamecreate.php").';" '.
+		return '<button onclick="window.location.href=\''.(defined("PLAYNOW") ? "botgamecreate.php" : "https://play.webdiplomacy.net/botgamecreate.php").'\';" '.
 			' class="green-Submit" style="font-size:100%; font-weight:bold; background-color:#0e8805 !important;">
 			Click here to start a new game of webDiplomacy against AI opponents!
 		</button>';
