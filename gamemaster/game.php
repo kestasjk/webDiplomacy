@@ -262,6 +262,7 @@ class processGame extends Game
 				SELECT ".$cols." FROM wD_".$tableName." WHERE ".$idColName." = ".$gameID
 			);
 		}
+		$DB->sql_put("INSERT INTO wD_Backup_Log (gameID, turn, `timestamp`, isExported) VALUES (".$gameID.", 0, ".time().", 0)");
 
 		if ( $commitNow )
 			$DB->sql_put("COMMIT");

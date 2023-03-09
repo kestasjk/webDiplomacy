@@ -306,6 +306,12 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 			}
 		}
 
+		if( $Game->phaseMinutes > 3*60 && $Game->playerTypes != 'MembersVsBots' )
+		{
+			// Take a backup of non-bot games with a phase length 3 hours to a table that can be written out without transactions
+			processGame::backupGame($Game->id, false);
+		}
+
 		require_once('lib/pusher.php');
 		libPusher::trigger("private-game" . $Game->id, 'overview', 'processed');
 	}

@@ -479,3 +479,34 @@ ALTER TABLE wD_Sessions ADD COLUMN `webPushrSID` INTEGER UNSIGNED DEFAULT NULL;
 ALTER TABLE wD_Users ADD COLUMN `webPushrSID` INTEGER UNSIGNED DEFAULT NULL;
 ALTER TABLE `wD_Games` ADD COLUMN `sandboxCreatedByUserID` MEDIUMINT NULL DEFAULT NULL;
 ALTER TABLE `wD_Games` ADD INDEX `sandboxList` (`sandboxCreatedByUserID`);
+
+
+CREATE TABLE `wD_Backup_Log` (
+	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	`gameID` MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,
+	`turn` MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,
+	`timestamp` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+	`isExported` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+	PRIMARY KEY (`id`),
+	INDEX `timestamp` (`timestamp`)
+)
+;
+
+ALTER TABLE `wD_Backup_Games` ADD INDEX `gameID` (`id`);
+ALTER TABLE `wD_Backup_Members` ADD INDEX `gameID` (`gameID`);
+ALTER TABLE `wD_Backup_MovesArchive` ADD INDEX `gameID` (`gameID`);
+ALTER TABLE `wD_Backup_Orders` ADD INDEX `gameID` (`gameID`);
+ALTER TABLE `wD_Backup_TerrStatus` ADD INDEX `gameID` (`gameID`);
+ALTER TABLE `wD_Backup_TerrStatusArchive` ADD INDEX `gameID` (`gameID`);
+ALTER TABLE `wD_Backup_Units` ADD INDEX `gameID` (`gameID`);
+ALTER TABLE `wD_Backup_GameMessages` ADD INDEX `gameID` (`gameID`);
+
+
+ALTER TABLE `wD_Backup_Games` ADD INDEX `gameID` (`id`);
+ALTER TABLE `wD_Backup_Members` ADD INDEX `gameID` (`gameID`);
+ALTER TABLE `wD_Backup_MovesArchive` ADD INDEX `gameID` (`gameID`);
+ALTER TABLE `wD_Backup_Orders` ADD INDEX `gameID` (`gameID`);
+ALTER TABLE `wD_Backup_TerrStatus` ADD INDEX `gameID` (`gameID`);
+ALTER TABLE `wD_Backup_TerrStatusArchive` ADD INDEX `gameID` (`gameID`);
+ALTER TABLE `wD_Backup_Units` ADD INDEX `gameID` (`gameID`);
+ALTER TABLE `wD_Backup_GameMessages` ADD INDEX `gameID` (`gameID`);
