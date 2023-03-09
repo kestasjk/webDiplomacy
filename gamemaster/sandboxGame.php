@@ -148,7 +148,7 @@ class processSandboxGame extends processGame
 
 		return $Game;
 	}
-	public static function eraseGame($gameID)
+	public static function eraseGame($gameID, $takeBackup=false)
 	{
 		global $DB, $User;
 
@@ -156,7 +156,7 @@ class processSandboxGame extends processGame
 		list($sandboxCreatedByUserID) = $DB->sql_row("SELECT sandboxCreatedByUserID FROM wD_Games WHERE id = ".$gameID);
 		if( $sandboxCreatedByUserID !== $User->id ) throw new Exception("You can only erase sandbox games you created.");
 
-		processGame::eraseGame($gameID, false);
+		processGame::eraseGame($gameID, $takeBackup);
 	}
 }
 
