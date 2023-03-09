@@ -23,6 +23,9 @@
 # Go to http://localhost:43000/datc.php?testID=101&batchTest=12345 to run through the DATC test cases
 # Go to http://localhost:43000/admincp.php?tab=Control%20Panel&actionName=maintenance#maintenance to disable maintenance mode
 # 
+# If docker is running in hyper-V mode on Windows you may need to enable developer mode so that symlinks work for non-admins,
+# in order for npm to work over the hyper-V fileshare.
+# 
 # Server is ready for dev work
 #
 # If config.php isn't changed you can use these links below to quickly register 7 users:
@@ -107,7 +110,7 @@ services:
       - "3000:3000"
     command: >
       sh -c "npm install &&
-              npm run start"
+              npm run start || (while true; do sleep 1; done)"
 
   php-fpm:
     build: phpdocker/php-fpm

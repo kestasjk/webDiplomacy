@@ -110,7 +110,7 @@ export function getAllLegalRetreatDestsByUnitID(
   const ourCountryID = overview.user!.member.countryID.toString();
   Object.entries(data.units).forEach(([unitID, unit]) => {
     // If this unit is owned by someone else, then don't compute.
-    if (unit.countryID !== ourCountryID) {
+    if (unit.countryID !== ourCountryID && !data.isSandboxMode) {
       return;
     }
     const provID = maps.terrIDToProvinceID[unit.terrID];
@@ -168,14 +168,15 @@ export function getAllPossibleBuildDests(
   const ourCountryID = overview.user!.member.countryID.toString();
   data.territoryStatuses.forEach((provStatus) => {
     // We have to own this province.
-    if (provStatus.ownerCountryID !== ourCountryID) {
+    if (provStatus.ownerCountryID !== ourCountryID && !data.isSandboxMode) {
       return;
     }
     // It has to be a supply center, and our home center
     // And there can't be any units there.
     if (
       data.territories[provStatus.id].supply !== "Yes" ||
-      data.territories[provStatus.id].countryID !== ourCountryID ||
+      (data.territories[provStatus.id].countryID !== ourCountryID &&
+        !data.isSandboxMode) ||
       provStatus.unitID !== null
     ) {
       return;
@@ -293,7 +294,7 @@ export function getAllLegalConvoys(
   Object.entries(data.units).forEach(([unitID, unit]) => {
     // If this unit is owned by someone else or isn't a fleet on a sea, then don't compute.
     if (
-      unit.countryID !== ourCountryID ||
+      (unit.countryID !== ourCountryID && !data.isSandboxMode) ||
       unit.type !== UnitType.Fleet ||
       data.territories[unit.terrID].type !== "Sea"
     ) {
@@ -432,7 +433,7 @@ export function getAllLegalSupportsByUnitID(
   const ourCountryID = overview.user!.member.countryID.toString();
   Object.entries(data.units).forEach(([unitID, unit]) => {
     // If this unit is owned by someone else, then don't compute.
-    if (unit.countryID !== ourCountryID) {
+    if (unit.countryID !== ourCountryID && !data.isSandboxMode) {
       return;
     }
 

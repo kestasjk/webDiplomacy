@@ -52,7 +52,7 @@ function loadBoard()
 			else
 				u.Territory = Territories.get(u.terrID);
 			
-			if( u.countryID == context.countryID )
+			if( u.countryID == context.countryID || context.isSandboxMode )
 				MyUnits.push(u);
 		}
 	},this);
@@ -91,7 +91,7 @@ function loadBoard()
 				
 				RetreatingUnits.push(unit);
 				
-				if( unit.countryID == context.countryID )
+				if( unit.countryID == context.countryID || context.isSandboxMode )
 					MyUnits.push(unit);
 			}
 		},this);
@@ -103,9 +103,12 @@ function loadBoard()
 		
 		Territories.each(function(p){
 			var t=p[1];
-			if( t.coastParent.supply && t.coastParent.countryID == context.countryID && t.coastParent.ownerCountryID == context.countryID && Object.isUndefined(t.coastParent.Unit) )
+			if( t.coastParent.supply && Object.isUndefined(t.coastParent.Unit) )
 			{
-				SupplyCenters.push(t);
+				if( ( t.coastParent.ownerCountryID == context.countryID  && t.coastParent.countryID == context.countryID ) || context.isSandboxMode )
+				{
+					SupplyCenters.push(t);
+				}
 			}
 		},this);
 	}

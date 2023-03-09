@@ -21,6 +21,7 @@
 use function PHPSTORM_META\map;
 
 define('IN_CODE', 1);
+define('IN_API', 1); // This will cause errors that would return HTML to instead output JSON
 require_once('config.php');
 if( Config::isOnPlayNowDomain() ) define('PLAYNOW',true);
 require_once('header.php');
@@ -358,7 +359,7 @@ abstract class ApiEntry {
 	{
 		global $DB;
 		list($isMember) = $DB->sql_row("SELECT COUNT(id) FROM wD_Members WHERE userID = " . $userID ." AND gameID = " . $this->getAssociatedGameID());
-		return ($isMember == 1);
+		return ($isMember >= 1); // Can be greater if the game is a sandbox game
 	}
 
 	public function getAssociatedGameID() {
@@ -441,6 +442,57 @@ class ListGamesWithMissingOrders extends ApiEntry {
 	}
 }
 
+// The sandbox API calls will check the permissions internally and throw an exception on error
+class SandboxCreate extends ApiEntry {
+	public function __construct() {
+		parent::__construct('sandbox/create', 'GET', '', array('variantID'), false);
+	}
+	public function run($userID, $permissionIsExplicit) {
+		require_once(l_r('gamemaster/sandboxGame.php'));
+		$args = $this->getArgs();
+		$sandboxGame = processSandboxGame::newGame(isset($args['variantID']) ? (int)$args['variantID'] : 1);
+		return json_encode(['gameID' => $sandboxGame->id]);
+	}
+}
+
+class SandboxCopy extends ApiEntry {
+	public function __construct() {
+		parent::__construct('sandbox/copy', 'GET', '', array('copyGameID'), false);
+	}
+	public function run($userID, $permissionIsExplicit) {
+		require_once(l_r('gamemaster/sandboxGame.php'));
+		$args = $this->getArgs();
+		$sandboxGame = processSandboxGame::copy((int)$args['copyGameID']);
+		return json_encode(['gameID' => $sandboxGame->id]);
+	}
+}
+
+class SandboxMoveTurnBack extends ApiEntry {
+	public function __construct() {
+		parent::__construct('sandbox/moveTurnBack', 'GET', '', array('gameID'), false);
+	}
+	public function run($userID, $permissionIsExplicit) {
+		require_once(l_r('gamemaster/sandboxGame.php'));
+		$args = $this->getArgs();
+		$gameID = (int)$args['gameID'];
+		$Variant = libVariant::loadFromGameID($gameID);
+		$sandboxGame = $Variant->processGame($gameID);
+		$sandboxGame->moveTurnBack();
+	}
+}
+
+class SandboxDelete extends ApiEntry {
+	public function __construct() {
+		parent::__construct('sandbox/delete', 'GET', '', array('gameID'), false);
+	}
+	public function run($userID, $permissionIsExplicit) {
+		require_once(l_r('gamemaster/sandboxGame.php'));
+		$args = $this->getArgs();
+		$gameID = (int)$args['gameID'];
+		processSandboxGame::eraseGame($gameID);
+	}
+}
+
 /**
  * API entry players/active_games
  * *Multiplexed
@@ -508,7 +560,7 @@ class ToggleVote extends ApiEntry {
 		$DB->sql_put("COMMIT");
 
 		require_once('lib/pusher.php');
-		libPusher::trigger("private-game" . $gameID, 'overview', 'processed');
+		libPusher::trigger("private-game" . $gameID, 'overview', 'set-vote');
 		
 		return $newVotes;
 	}
@@ -905,8 +957,9 @@ class GetGameData extends ApiEntry {
 			$countryID,
 			$member->orderStatus,
 			null,
-			false
-		))->load()->getContextVars();
+			false,
+			!is_null($game->sandboxCreatedByUserID)
+		))->load(false)->getContextVars();
 	}
 
 	private function getContextVars(){
@@ -1010,6 +1063,7 @@ class GetGameData extends ApiEntry {
                 'territoryStatuses' => $this->getTerrStatus($gameID),
                 'turn' => $game->turn,
                 'phase' => $game->phase,
+				'isSandboxMode' => !is_null($game->sandboxCreatedByUserID),
             ],
         );
 
@@ -1063,7 +1117,7 @@ class SetOrders extends ApiEntry {
 		$phase = strval($phase);
 		$countryID = intval($countryID);
 
-		// Getting frequent deadlocks when getting the game and locking members for update, perhaps because the permission check has to query members.
+		// Getting frequent deadlocks when getting the game and locking wmembers for update, perhaps because the permission check has to query members.
 		// So commit and begin to release anything locked and start over
 		$DB->sql_put("COMMIT");
 		$DB->sql_put("BEGIN");
@@ -1113,7 +1167,8 @@ class SetOrders extends ApiEntry {
 		$updatedOrders = array();
 		$sql = 'SELECT wD_Orders.id AS orderID, wD_Units.terrID AS terrID FROM wD_Orders
 				LEFT JOIN wD_Units ON (wD_Orders.gameID = wD_Units.gameID AND wD_Orders.countryID = wD_Units.countryID AND wD_Orders.unitID = wD_Units.id) 
-				WHERE wD_Orders.gameID = '.$gameID.' AND wD_Orders.countryID = '.$countryID;
+				WHERE wD_Orders.gameID = '.$gameID.
+				(!is_null($game->sandboxCreatedByUserID) ? ' AND wD_Orders.countryID = '.$countryID : '');
 		$res = $DB->sql_tabl($sql);
 		while ($row = $DB->tabl_hash($res)) {
 			$orderID = $row['orderID'];
@@ -1126,7 +1181,7 @@ class SetOrders extends ApiEntry {
 		$waitIsSubmitted = false;
 		foreach ($orders as $order) {
 			$newOrder = array();
-			foreach (array('terrID', 'type', 'fromTerrID', 'toTerrID', 'viaConvoy') as $bodyField) {
+			foreach (array('terrID', 'type', 'fromTerrID', 'toTerrID', 'viaConvoy', 'countryID') as $bodyField) {
 				if (!array_key_exists($bodyField, $order))
 					throw new RequestException('Missing order info: ' . $bodyField);
 				$newOrder[$bodyField] = $order[$bodyField];
@@ -1194,7 +1249,8 @@ class SetOrders extends ApiEntry {
 				$countryID,
 				$member->orderStatus,
 				null,
-				false
+				false,
+				!is_null($game->sandboxCreatedByUserID)
 			);
 			$orderInterface->orderStatus->Ready = false;
 			// If there are no (or no more) updated orders, stop.
@@ -1203,7 +1259,7 @@ class SetOrders extends ApiEntry {
 			// Load updated orders.
 			// FIXME this function (board/orders/orderinterface.php) may report an error
 			// via libHTML::notice, which is not friendly to JSON API.
-			$orderInterface->load();
+			$orderInterface->load(true);
 			$orderInterface->set(json_encode(array_values($updatedOrders)));
 			$results = $orderInterface->validate();
 			if ($results['invalid']) {
@@ -1235,11 +1291,13 @@ class SetOrders extends ApiEntry {
 			wD_Orders.toTerrID AS toTerrID,
 			wD_Orders.viaConvoy AS viaConvoy,
             wD_Units.type as unitType,
-			wD_Units.terrID AS terrID
+			wD_Units.terrID AS terrID,
+			wD_Orders.countryID AS countryID
 			FROM wD_Orders
 			LEFT JOIN wD_Units
 			ON (wD_Orders.gameID = wD_Units.gameID AND wD_Orders.countryID = wD_Units.countryID AND wD_Orders.unitID = wD_Units.id)
-			WHERE wD_Orders.gameID = '.$gameID.' AND wD_Orders.countryID = '.$countryID
+			WHERE wD_Orders.gameID = '.$gameID.
+			(!is_null($game->sandboxCreatedByUserID) ? ' AND wD_Orders.countryID = '.$countryID : '')
 		);
 		while ($row = $DB->tabl_hash($currentOrdersTabl)) {
 			$currentOrders[] = array(
@@ -1248,7 +1306,8 @@ class SetOrders extends ApiEntry {
 				'type' => $row['type'],
 				'fromTerrID' => ctype_digit($row['fromTerrID']) ? intval($row['fromTerrID']) : $row['fromTerrID'],
 				'toTerrID' => ctype_digit($row['toTerrID']) ? intval($row['toTerrID']) : $row['toTerrID'],
-				'viaConvoy' => $row['viaConvoy']
+				'viaConvoy' => $row['viaConvoy'],
+				'countryID' => $row['countryID']
 			);
 		}
 
@@ -1257,41 +1316,6 @@ class SetOrders extends ApiEntry {
 		{
 			$MC->append('processHint',','.$gameID);
 		}
-	/*       
-	Disabled; all game processing must be done via one path
-	elseif (false && $orderInterface->orderStatus->Ready && !$previousReadyValue) {
-            require_once(l_r('objects/misc.php'));
-            require_once(l_r('objects/notice.php'));
-            require_once(l_r('objects/user.php'));
-            global $Misc;
-            $Misc = new Misc();
-            $game = $this->getAssociatedGame();
-
-            if( $game->processStatus!='Crashed' && $game->attempts > count($game->Members->ByID)*2 )
-            {
-                $DB->sql_put("COMMIT");
-                require_once(l_r('gamemaster/game.php'));
-
-                $game = libVariant::$Variant->processGame($game->id);
-                $game->crashed();
-                $DB->sql_put("COMMIT");
-            }
-            elseif( $game->needsProcess() )
-w            {
-                $DB->sql_put("UPDATE wD_Games SET attempts=attempts+1 WHERE id=".$game->id);
-                $DB->sql_put("COMMIT");
-
-                require_once(l_r('gamemaster/game.php'));
-                $game = libVariant::$Variant->processGame($gameID);
-                if( $game->needsProcess() )
-                {
-                    $game->process();
-                    $DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$game->id);
-                    $DB->sql_put("COMMIT");
-                }
-            }
-        }*/
-
         // Returning current orders
 		return json_encode($currentOrders);
 	}
@@ -1765,18 +1789,28 @@ try {
 	$api->load(new ListGamesWithPlayersInCD());
 	$api->load(new ListGamesWithMissingOrders());
 	$api->load(new ListActiveGamesForUser());
+
 	$api->load(new GetGamesStates());
 	$api->load(new GetGameOverview());
 	$api->load(new GetGameData());
 	$api->load(new GetGameMembers());
+	
 	$api->load(new SetOrders());
 	$api->load(new ToggleVote());
 	$api->load(new SetVote());
+	
 	$api->load(new WebSocketsAuthentication());
+	
 	$api->load(new SendMessage());
 	$api->load(new GetMessages());
 	$api->load(new MessagesSeen());
+	
 	$api->load(new MarkBackFromLeft());
+
+	$api->load(new SandboxCreate());
+	$api->load(new SandboxCopy());
+	$api->load(new SandboxMoveTurnBack());
+	$api->load(new SandboxDelete());
 
 	$jsonEncodedResponse = $api->run();
 	// Set JSON header.

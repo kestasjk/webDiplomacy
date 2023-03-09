@@ -379,6 +379,10 @@ div.memberBoardHeader {
 	padding:0 5%;
 }
 
+.archiveBar{
+	float:left;
+}
+
 @media only screen and (max-width: 800px) {
 	.titleBarRightSide {
 		float: none;

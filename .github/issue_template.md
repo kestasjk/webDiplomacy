@@ -6,7 +6,7 @@
 
    It is not for problems that require moderator attention to games 
    on webdiplomacy.net. If you're having a non-software problem, 
-   please email webdipmod@gmail.com
+   please email admin@webdiplomacy.net
 
    It is also not for bugs with vdiplomacy.net, unless those bugs
    are also present in this code.

@@ -266,9 +266,11 @@ class libHome
 	{
 		global $User, $DB;
 
-		$tabl=$DB->sql_tabl("SELECT g.* FROM wD_Games g
+		$tabl=$DB->sql_tabl("SELECT g.* 
+			FROM wD_Games g
 			INNER JOIN wD_Members m ON ( m.userID = ".$User->id." AND m.gameID = g.id )
 			WHERE NOT g.phase = 'Finished' and m.status <> 'Defeated'
+				AND (g.sandboxCreatedByUserID IS NULL OR m.countryID = 1) 
 			ORDER BY g.processStatus ASC, g.processTime ASC");
 		$buf = '';
 

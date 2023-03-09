@@ -311,7 +311,7 @@ class User {
 	{
 		global $DB;
 
-		assert('$points >= 0');
+		if( $points == 0 ) return;
 
 		$userPassed = new User($userID);
 

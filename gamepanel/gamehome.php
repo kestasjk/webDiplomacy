@@ -141,6 +141,9 @@ class panelGameHome extends panelGameBoard
 				($User->reliabilityRating < $this->minimumReliabilityRating ? 'Austria' :''), 
 				($this->minimumReliabilityRating));
 			}
+			if( !is_null($this->sandboxCreatedByUserID) ){
+				$alternatives[] = l_t( 'Sandbox' );
+			}
 	
 			if ( count($alternatives) == 0 ) $alternatives[] = '';
 			

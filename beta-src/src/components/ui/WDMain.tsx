@@ -173,6 +173,7 @@ const WDMain: React.FC = function (): React.ReactElement {
         overview.user,
         overview.phase,
         maps,
+        data.data.isSandboxMode,
       );
 
       const centersByProvince: { [key: string]: { ownerCountryID: string } } =

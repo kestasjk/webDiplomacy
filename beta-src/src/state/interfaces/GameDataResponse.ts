@@ -26,6 +26,8 @@ export interface GameData {
   territoryStatuses: IProvinceStatus[];
   turn: number;
   phase: string;
+  // If this is on country filters are disabled so that one user can order for all countries in a game, i.e. sandbox mode
+  isSandboxMode: boolean;
 }
 
 interface GameDataResponse {

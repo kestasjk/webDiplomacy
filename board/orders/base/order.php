@@ -53,7 +53,7 @@ abstract class order
 	 * The countryID corresponding to this order
 	 * @var int
 	 */
-	protected $countryID;
+	public $countryID;
 
 	/**
 	 * The ID of the unit in the order; may or may not be fixed
@@ -94,6 +94,9 @@ abstract class order
 	 * @var string 'Yes'/'No'
 	 */
 	public $viaConvoy;
+
+	// If true countryIDs are ignored and a user can enter orders for any country
+	public $isSandboxMode = false;
 
 	/**
 	 * Create the order and initialize objects from a $row
@@ -142,7 +145,7 @@ abstract class order
 					$this->Unit->Territory = libVariant::$Variant->Territory($this->Unit->terrID);
 					if( $this->Unit->gameID != $this->gameID )
 						throw new Exception(l_t("Invalid unitID given; does not belong in this game."));
-					if( $this->Unit->countryID != $this->countryID )
+					if( $this->Unit->countryID != $this->countryID && !$this->isSandboxMode )
 						throw new Exception(l_t("Invalid unitID given; does not belong to this country."));
 					return true;
 				}

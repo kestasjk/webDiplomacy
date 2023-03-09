@@ -3,7 +3,7 @@ import OrderState from "../../state/interfaces/OrderState";
 
 export default function getDataForOrder(
   state,
-  { fromTerrID, orderID, toTerrID, type, unitID }: OrderState,
+  { fromTerrID, orderID, toTerrID, type, unitID, countryID }: OrderState,
 ): OrderState {
   const {
     data: { data: gameData },
@@ -18,6 +18,7 @@ export default function getDataForOrder(
     unitID,
     type,
     viaConvoy: "",
+    countryID,
   };
   return newOrder;
 }

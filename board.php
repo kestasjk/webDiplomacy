@@ -124,7 +124,7 @@ try
 				if ( $Game->phase !='Finished' )
 				{
 					$OI = OrderInterface::newBoard();
-					$OI->load();
+					$OI->load(false);
 
 					$Orders = '<div id="orderDiv'.$Member->id.'">'.$OI->html().'</div>';
 					unset($OI);

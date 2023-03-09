@@ -185,7 +185,7 @@ class datcGame extends processGame
 			WHERE testID=".$this->testID);
 	}
 
-	private function loadOI($memberID, $countryID){
+	private function loadOIForDATC($memberID, $countryID){
 		global $DB;
 
 		$con=array();
@@ -199,6 +199,7 @@ class datcGame extends processGame
 		$con['orderStatus']='Saved';
 		$con['tokenExpireTime']=time()+60*60*6;
 		list($con['maxOrderID'])=$DB->sql_row("SELECT MAX(id)+100 FROM wD_Orders");
+		$con['isSandboxMode']=false;
 
 		$con=OrderInterface::getContext($con);
 		return OrderInterface::newJSON($con['key'], $con['json']);
@@ -222,8 +223,8 @@ class datcGame extends processGame
 		{
 			libHTML::$footerScript[] = '(function() {';
 
-			$OI = $this->loadOI($memberID, $countryID);
-			$OI->load();
+			$OI = $this->loadOIForDATC($memberID, $countryID);
+			$OI->load(true);
 
 			print '<p><strong>'.l_t($this->Variant->countries[$countryID-1]).'</strong></p>';
 

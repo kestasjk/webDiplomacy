@@ -46,63 +46,67 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
   const overview = useAppSelector(gameOverview);
   const { members, user } = overview;
 
-  let provincesToHighlight: Province[] = [];
+  let provinceCountryHighlightByProvince: { [key: string]: string } = {};
   let provincesToChoose: Province[] = [];
   if (isLivePhase && user) {
     if (phase === "Diplomacy") {
       if (!curOrder.inProgress) {
-        provincesToHighlight = [];
+        provinceCountryHighlightByProvince = {};
         provincesToChoose = [];
       } else if (curOrder.type === "Move") {
         if (curOrder.viaConvoy) {
-          provincesToHighlight = [
-            maps.terrIDToProvince[maps.unitToTerrID[curOrder.unitID]],
-          ];
+          provinceCountryHighlightByProvince[
+            maps.terrIDToProvince[maps.unitToTerrID[curOrder.unitID]]
+          ] = curOrder.countryID;
           provincesToChoose = legalOrders.legalViasByUnitID[
             curOrder.unitID
           ].map((via) => TerritoryMap[via.dest].province);
         } else {
-          provincesToHighlight = [
-            maps.terrIDToProvince[maps.unitToTerrID[curOrder.unitID]],
-          ];
+          provinceCountryHighlightByProvince[
+            maps.terrIDToProvince[maps.unitToTerrID[curOrder.unitID]]
+          ] = curOrder.countryID;
           provincesToChoose = legalOrders.legalMoveDestsByUnitID[
             curOrder.unitID
           ].map((territory) => TerritoryMap[territory].province);
         }
       } else if (curOrder.type === "Support") {
         if (curOrder.fromTerrID) {
-          provincesToHighlight = [
-            maps.terrIDToProvince[maps.unitToTerrID[curOrder.unitID]],
-            maps.terrIDToProvince[curOrder.fromTerrID],
-          ];
+          provinceCountryHighlightByProvince[
+            maps.terrIDToProvince[maps.unitToTerrID[curOrder.unitID]]
+          ] = curOrder.countryID;
+          provinceCountryHighlightByProvince[
+            maps.terrIDToProvince[curOrder.fromTerrID]
+          ] = curOrder.countryID;
           provincesToChoose = legalOrders.legalSupportsByUnitID[
             curOrder.unitID
           ][maps.terrIDToProvince[curOrder.fromTerrID]].map(
             (support) => support.dest,
           );
         } else {
-          provincesToHighlight = [
-            maps.terrIDToProvince[maps.unitToTerrID[curOrder.unitID]],
-          ];
+          provinceCountryHighlightByProvince[
+            maps.terrIDToProvince[maps.unitToTerrID[curOrder.unitID]]
+          ] = curOrder.countryID;
           provincesToChoose = Object.keys(
             legalOrders.legalSupportsByUnitID[curOrder.unitID],
           ) as Province[];
         }
       } else if (curOrder.type === "Convoy") {
         if (curOrder.fromTerrID) {
-          provincesToHighlight = [
-            maps.terrIDToProvince[maps.unitToTerrID[curOrder.unitID]],
-            maps.terrIDToProvince[curOrder.fromTerrID],
-          ];
+          provinceCountryHighlightByProvince[
+            maps.terrIDToProvince[maps.unitToTerrID[curOrder.unitID]]
+          ] = curOrder.countryID;
+          provinceCountryHighlightByProvince[
+            maps.terrIDToProvince[curOrder.fromTerrID]
+          ] = curOrder.countryID;
           provincesToChoose = Object.keys(
             legalOrders.legalConvoysByUnitID[curOrder.unitID][
               maps.terrIDToProvince[curOrder.fromTerrID]
             ],
           ) as Province[];
         } else {
-          provincesToHighlight = [
-            maps.terrIDToProvince[maps.unitToTerrID[curOrder.unitID]],
-          ];
+          provinceCountryHighlightByProvince[
+            maps.terrIDToProvince[maps.unitToTerrID[curOrder.unitID]]
+          ] = curOrder.countryID;
           provincesToChoose = Object.keys(
             legalOrders.legalConvoysByUnitID[curOrder.unitID],
           ) as Province[];
@@ -110,18 +114,20 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
       }
     } else if (phase === "Retreats") {
       if (!curOrder.inProgress) {
-        provincesToHighlight = [];
+        provinceCountryHighlightByProvince = {};
         provincesToChoose = Object.keys(
           legalOrders.legalRetreatDestsByUnitID,
         ).map((unitID) => maps.terrIDToProvince[maps.unitToTerrID[unitID]]);
       } else if (curOrder.type === "Retreat") {
-        provincesToHighlight = [
-          maps.terrIDToProvince[maps.unitToTerrID[curOrder.unitID]],
-        ];
+        provinceCountryHighlightByProvince[
+          maps.terrIDToProvince[maps.unitToTerrID[curOrder.unitID]]
+        ] = curOrder.countryID;
         provincesToChoose = legalOrders.legalRetreatDestsByUnitID[
           curOrder.unitID
         ].map((territory) => TerritoryMap[territory].province);
-        provincesToChoose.push(provincesToHighlight[0]);
+        provincesToChoose.push(
+          maps.terrIDToProvince[maps.unitToTerrID[curOrder.unitID]],
+        );
       }
     } else if (phase === "Builds") {
       if (user.member.supplyCenterNo < user.member.unitNo) {
@@ -135,7 +141,9 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
       }
     }
   }
-  const provincesToHighlightSet = new Set(provincesToHighlight);
+  const provincesToHighlightSet = new Set(
+    Object.keys(provinceCountryHighlightByProvince),
+  );
   const provincesToChooseSet = new Set(provincesToChoose);
   // console.log({ provincesToChooseSet });
 
@@ -165,6 +173,8 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
 
   const playableProvinces = playableProvincesData.map((data) => {
     const highlightSelection = provincesToHighlightSet.has(data.province);
+    const highlightCountryID =
+      provinceCountryHighlightByProvince[data.province];
     return (
       <WDProvince
         provinceMapData={data}

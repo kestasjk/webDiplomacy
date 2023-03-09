@@ -42,7 +42,10 @@ export default function fetchGameDataFulfilled(state: GameState, action): void {
   state.maps = generateMaps(data);
   state.ownUnits = [];
   Object.values(data.units).forEach((unit) => {
-    if (unit.countryID === user?.member.countryID.toString()) {
+    if (
+      unit.countryID === user?.member.countryID.toString() ||
+      data.isSandboxMode
+    ) {
       state.ownUnits.push(unit.id);
     }
   });

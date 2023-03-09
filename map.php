@@ -435,7 +435,8 @@ if (PREVIEW && $Game->Members->isJoined())
 	$sql = "SELECT u.type, u.terrID, o.type, o.toTerrID, o.fromTerrID, o.viaConvoy	
 				FROM wD_Orders o
 			LEFT JOIN wD_Units u ON (u.id = o.unitID)
-				WHERE o.gameID = ".$Game->id." AND o.countryID = ".$Game->Members->ByUserID[$User->id]->countryID."
+				WHERE o.gameID = ".$Game->id." ".
+					(!is_null($Game->sandboxCreatedByUserID) && isset($User) && $User->id == $Game->sandboxCreatedByUserID ? "" : " AND o.countryID = ".$Game->Members->ByUserID[$User->id]->countryID)."
 				ORDER BY FIELD(o.type, 'Move')";
 
 	$tabl = $DB->sql_tabl($sql);

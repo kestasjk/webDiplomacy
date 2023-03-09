@@ -54,6 +54,7 @@ export function getUnitsLive(
   currentUser: { member: MemberData },
   phase: string,
   maps: GameStateMaps,
+  isSandboxMode: boolean,
 ): Unit[] {
   // Accumulate all the units we want to draw into here
   const unitsToDraw: Unit[] = [];
@@ -164,7 +165,8 @@ export function getUnitsLive(
           } else if (unitCountByProvID[unitProvID] >= 2) {
             drawMode = UnitDrawMode.DISLODGING;
           } else if (
-            unit.countryID === currentUser.member.countryID.toString() &&
+            (unit.countryID === currentUser.member.countryID.toString() ||
+              isSandboxMode) &&
             isDestroyPhase &&
             !allDestroysAssigned
           ) {

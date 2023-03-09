@@ -400,7 +400,23 @@ class panelGame extends Game
 			'<a href="board.php?gameID='.$this->id.'&amp;viewArchive=Orders">'.l_t('Orders').'</a>
 			- <a href="board.php?gameID='.$this->id.'&amp;viewArchive=Maps">'.l_t('Maps').'</a>
 			- <a href="board.php?gameID='.$this->id.'&amp;viewArchive=Messages">'.l_t('Messages').'</a>';
-//			- <a href="board.php?gameID='.$this->id.'&amp;viewArchive=Reports">Reports</a>';
+	}
+
+	/**
+	 * Links to the sandbox operations
+	 * @return string
+	 */
+	function sandboxBar()
+	{
+		global $User;
+
+		if( !$User->type['User'] ) return '';
+
+		return '<br /><strong>'.l_t('Sandbox:').'</strong> 
+			 <a href="javascript:copySandboxFromGame('.$this->id.')">'.l_t('Copy game to sandbox').'</a>'.
+			(!is_null($this->sandboxCreatedByUserID) && $User->id == $this->sandboxCreatedByUserID ? '
+			 - <a name="movedBack" href="javascript:moveSandboxTurnBack('.$this->id.')">'.l_t('Move sandbox back a turn').'</a>
+			 - <a href="javascript:deleteSandbox('.$this->id.')">'.l_t('Delete sandbox').'</a>' : '');
 	}
 
 	/**

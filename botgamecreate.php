@@ -127,17 +127,16 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			throw new Exception(l_t("%s is an invalid country ID.",(string)$input['countryID']));
 		}
 
+		// Prevent temp banned players from making new games.
+		if ($User->userIsTempBanned())
+		{
+			libHTML::notice('Temporary block', 'You are blocked from creating new games. Please visit the <a href="modforum.php">mod forum</a> to speak to a moderator.');
+		}
+
 		// Create Game record & object
 		require_once(l_r('gamemaster/game.php'));
 		$phaseMinutes = defined('PLAYNOW') ? 24*60 : 3*24*60;
 		$Game = processGame::create($input['variantID'],$input['name'],'',5,'Unranked', $phaseMinutes, -1, $phaseMinutes, -1, 60,'No','Regular','Normal','draw-votes-public',0,4,'MemberVsBots');
-
-		// Prevent temp banned players from making new games.
-		if ($User->userIsTempBanned())
-		{
-			processGame::eraseGame($Game->id);
-			libHTML::notice('Temporary block', 'You are blocked from creating new games. Please visit the <a href="modforum.php">mod forum</a> to speak to a moderator.');
-		}
 
 		// Create first Member record & object
 		processMember::create($User->id, 5, $input['countryID']);

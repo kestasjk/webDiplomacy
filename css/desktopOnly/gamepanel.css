@@ -361,6 +361,10 @@ div.memberBoardHeader {
 	font-weight:normal !important;
 }
 
+.archiveBar {
+	float:left;
+}
+
 .homeGameLinks {
 	font-size:12px;
 }

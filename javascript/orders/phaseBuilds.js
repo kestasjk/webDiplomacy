@@ -61,6 +61,8 @@ function loadOrdersPhase() {
 					case 'Build Army':
 					case 'Build Fleet':
 						this.toTerrChoices = SupplyCenters.select(function(sc){
+							if( sc.countryID != this.countryID ) return false;
+
 							if( this.type=='Build Army' && ( sc.coast=='Parent'||sc.coast=='No') ) 
 								return true;
 							else if ( this.type=='Build Fleet' && ( sc.type != 'Land' && sc.coast!='Parent' ) )
@@ -70,7 +72,9 @@ function loadOrdersPhase() {
 						},this).pluck('id');
 						break;
 					case 'Destroy':
-						this.toTerrChoices = MyUnits.pluck('Territory').pluck('coastParent').pluck('id');
+						this.toTerrChoices = MyUnits.select(function(sc) {
+							return ( sc.countryID == this.countryID ); // For SC mode filter this specific order by countryID
+						},this).pluck('Territory').pluck('coastParent').pluck('id');
 						break;
 				}
 				

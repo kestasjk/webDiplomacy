@@ -50,7 +50,6 @@ abstract class userOrder extends order
 	public $error;
 	// The status, invalid until proven valid
 	public $status='Loading'; // Loading, Loaded, Validating, Incomplete, Invalid, Complete
-
 	/**
 	 * Load different orders depending on the current phase
 	 *

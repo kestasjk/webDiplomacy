@@ -130,9 +130,9 @@ class processMember extends Member
 
 		$this->points -= $bet;
 		$this->Game->pot += $bet;
-
-		if($User instanceof User && $User->id == $this->userID) $User->points -= $bet;
-
+	
+		if($User instanceof User && $User->id == $this->userID) $User->points -= $bet;	
+		
 		return $bet;
 	}
 

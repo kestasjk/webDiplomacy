@@ -30,10 +30,10 @@ class ClassicChaosVariant_OrderInterface extends OrderInterface {
 	 * Call the parent constructor transparently to keep things working
 	 */
 	public function __construct($gameID, $variantID, $userID, $memberID, $turn, $phase, $countryID,
-		setMemberOrderStatus $orderStatus, $tokenExpireTime, $maxOrderID=false)
+		setMemberOrderStatus $orderStatus, $tokenExpireTime, $maxOrderID=false,$isSandboxMode=false)
 	{
 		parent::__construct($gameID, $variantID, $userID, $memberID, $turn, $phase, $countryID,
-			$orderStatus, $tokenExpireTime, $maxOrderID);
+			$orderStatus, $tokenExpireTime, $maxOrderID, $isSandboxMode);
 	}
 
 	protected function jsLoadBoard() {

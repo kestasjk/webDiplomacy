@@ -136,7 +136,7 @@ class processGame extends Game
 	 *
 	 * @var array
 	 */
-	private static $gameTables=array(
+	protected static $gameTables=array(
 			'Games'=>'id',
 			'Members'=>'gameID',
 			'Orders'=>'gameID',
@@ -153,7 +153,7 @@ class processGame extends Game
 	 *
 	 * @var array
 	 */
-	private static $gameTableColumns=array(
+	protected static $gameTableColumns=array(
 			'Games'=>'variantID;id;turn;phase;processTime;pot;name;gameOver;processStatus;password;potType;pauseTimeRemaining;minimumBet;phaseMinutes;phaseMinutesRB;nextPhaseMinutes;phaseSwitchPeriod;anon;pressType;attempts;missingPlayerPolicy;directorUserID;minimumReliabilityRating;minimumNMRScore;drawType;excusedMissedTurns;finishTime;playerTypes;startTime;grCalculated',
 			'Members'=>'id;userID;gameID;countryID;status;timeLoggedIn;bet;missedPhases;newMessagesFrom;supplyCenterNo;unitNo;votes;pointsWon;gameMessagesSent;orderStatus;hideNotifications;excusedMissedTurns;groupTag',
 			'Orders'=>'id;gameID;countryID;type;unitID;toTerrID;fromTerrID;viaConvoy',
@@ -267,18 +267,108 @@ class processGame extends Game
 			$DB->sql_put("COMMIT");
 	}
 
+	function canMoveTurnBack()
+	{
+		global $User;
+
+		if( $this->turn <= 0 || ($this->turn == 0 && $this->phase == 'Diplomacy' && $this->phase == 'Pre-game')) 
+			return false;
+		
+		if( isset($User) && $User->type['Admin'] || $User->id === $this->sandboxCreatedByUserID ) 
+			return true;
+		
+		return false;
+	}
+	/**
+	 * Moves the game back a turn / returns to the Diplomacy phase. Used by admins to reprocess a game and for sandbox games.
+	 */
+	function moveTurnBack()
+	{
+		global $DB;
+
+		if( !$this->canMoveTurnBack() ) throw new Exception(l_t("You do not have permission to move this game back a turn, or it is on the first turn."));
+
+		// - Check that the game is still active and can be turned back
+		if ( $this->turn < 1 )
+		{
+			throw new Exception(l_t('This game cannot be turned back; it is new or is finished.'));
+		}
+
+		// - Delete current turn values
+		$DB->sql_put("DELETE FROM wD_Units WHERE gameID = ".$this->id);
+		$DB->sql_put("DELETE FROM wD_TerrStatus WHERE gameID = ".$this->id);
+		$DB->sql_put("DELETE FROM wD_Orders WHERE gameID = ".$this->id);
+
+		// - Calculate the turn being moved back to
+		$lastTurn = ( ( $this->phase == 'Diplomacy' ) ? $this->turn-1 : $this->turn );
+
+		// Begin moving the archives back
+		{
+			// - Move the old MovesArchive back to Units
+			$DB->sql_put("INSERT INTO wD_Units ( type, terrID, countryID, gameID )
+						SELECT unitType, terrID, countryID, gameID FROM wD_MovesArchive
+						WHERE gameID = ".$this->id." AND turn = ".$lastTurn."
+							/* Make sure only the Diplomacy phase unit positions are used */
+							AND type IN ( 'Hold', 'Move', 'Support hold', 'Support move', 'Convoy' )");
+
+			// - Move the old MovesArchive (JOIN Units) back to Orders
+			$DB->sql_put("INSERT INTO wD_Orders (gameID, countryID, type, toTerrID, fromTerrID, viaConvoy, unitID)
+						SELECT m.gameID, m.countryID, m.type, m.toTerrID, m.fromTerrID, m.viaConvoy, u.id
+						FROM wD_MovesArchive m INNER JOIN wD_Units u ON ( u.terrID = m.terrID AND u.gameID = m.gameID )
+						WHERE m.gameID = ".$this->id." AND m.turn = ".$lastTurn."
+							/* Make sure only the Diplomacy phase unit positions are used */
+							AND m.type IN ( 'Hold', 'Move', 'Support hold', 'Support move', 'Convoy' )");
+
+			// - Move the old TerrStatusArchive back to TerrStatus
+			$DB->sql_put("INSERT INTO wD_TerrStatus ( terrID, standoff, gameID, countryID, occupyingUnitID )
+						SELECT t.terrID, t.standoff, t.gameID, t.countryID, u.id
+						FROM wD_TerrStatusArchive t
+							LEFT JOIN wD_Units u
+							ON ( ".$this->Variant->deCoastCompare('t.terrID','u.terrID')." AND u.gameID = t.gameID )
+						WHERE t.gameID = ".$this->id." AND t.turn = ".$lastTurn);
+		}
+
+		// - Update the game turn, phase and next process time
+		$DB->sql_put("UPDATE wD_Games
+					SET turn = ".$lastTurn.", phase = 'Diplomacy', gameOver='No', processTime = phaseMinutes*60+".time().",
+						processStatus='Not-processing', pauseTimeRemaining=NULL
+					WHERE id = ".$this->id);
+
+		$undefeatedCountries = array();
+		$tabl=$DB->sql_tabl("SELECT countryID FROM wD_Units WHERE gameID = ".$this->id." GROUP BY countryID");
+		while(list($countryID) = $DB->tabl_row($tabl)) $undefeatedCountries[] = $countryID;
+
+		$DB->sql_put("UPDATE wD_Members SET votes='', orderStatus='',
+			status=IF(countryID IN (".implode(',',$undefeatedCountries)."),'Playing','Defeated')
+			WHERE gameID = ".$this->id);
+
+		$DB->sql_put("COMMIT");
+
+		// - Delete Archive values if we have moved back a turn
+		$DB->sql_put("DELETE FROM wD_TerrStatusArchive WHERE gameID = ".$this->id." AND turn = ".$lastTurn);
+		$DB->sql_put("DELETE FROM wD_MovesArchive WHERE gameID = ".$this->id." AND turn = ".$lastTurn);
+
+		// - Remove the invalid maps in the mapstore
+		$this->load();
+		Game::wipeCache($this->id);
+
+		require_once(l_r('lib/gamemessage.php'));
+		libGameMessage::send(0, 'GameMaster', l_t('This game has been moved back to %s',$this->datetxt($lastTurn)), $this->id);
+	}
+
 	/**
 	 * Deletes a live game's data. If run within Game::process() an appropriate exception should be
 	 * thrown after running this.
 	 *
 	 * @param $gameID
 	 */
-	static function eraseGame($gameID)
+	static function eraseGame($gameID, $takeBackup = true)
 	{
 		global $DB;
 
 		self::wipeCache($gameID);
-		self::backupGame($gameID, false);
+		
+		if( $takeBackup ) self::backupGame($gameID, false);
 
 		foreach(self::$gameTables as $tableName=>$idColName)
 			$DB->sql_put("DELETE FROM wD_".$tableName." WHERE ".$idColName." = ".$gameID);
@@ -754,33 +844,7 @@ class processGame extends Game
 				 */
 				$this->resetMinimumBet();
 
-				/*
-				 * We are moving on to the next phase; create new orders, and set players who
-				 * have new orders to no longer be ready
-				 */
-				switch($this->phase)
-				{
-					case 'Diplomacy':
-						$PO = $this->Variant->processOrderDiplomacy();
-						$PO->create();
-						break;
-					case 'Retreats':
-						$PO = $this->Variant->processOrderRetreats();
-						$PO->create();
-						break;
-					case 'Builds':
-						$PO = $this->Variant->processOrderBuilds();
-						$PO->create();
-						break;
-				}
-				
-				/*
-				 * Update the orderStatus of each member.
-				 */
-				$DB->sql_put("UPDATE wD_Members m
-						LEFT JOIN wD_Orders o ON ( o.gameID = m.gameID AND o.countryID = m.countryID )
-						SET m.orderStatus=IF(o.id IS NULL, 'None','')
-						WHERE m.gameID = ".$this->id);
+				$this->generateOrders();
 				
 				$this->resetProcessTime();
 			}
@@ -804,6 +868,39 @@ class processGame extends Game
 				$this->setDrawn();
 			}
 		}
+	}
+
+	function generateOrders()
+	{
+		global $DB;
+
+		/*
+		 * We are moving on to the next phase; create new orders, and set players who
+		 * have new orders to no longer be ready
+		 */
+		switch($this->phase)
+		{
+			case 'Diplomacy':
+				$PO = $this->Variant->processOrderDiplomacy();
+				$PO->create();
+				break;
+			case 'Retreats':
+				$PO = $this->Variant->processOrderRetreats();
+				$PO->create();
+				break;
+			case 'Builds':
+				$PO = $this->Variant->processOrderBuilds();
+				$PO->create();
+				break;
+		}
+		
+		/*
+		 * Update the orderStatus of each member.
+		 */
+		$DB->sql_put("UPDATE wD_Members m
+				LEFT JOIN wD_Orders o ON ( o.gameID = m.gameID AND o.countryID = m.countryID )
+				SET m.orderStatus=IF(o.id IS NULL, 'None','')
+				WHERE m.gameID = ".$this->id);
 	}
 
 	/**

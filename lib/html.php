@@ -403,12 +403,20 @@ class libHTML
 
 		ob_clean();
 
-		libHTML::starthtml($title);
+		if( defined('IN_API') )
+		{
+			// Don't return HTML in the event of an error in the API
+			print strip_tags($title.': '.$message);
+		}
+		else
+		{
+			libHTML::starthtml($title);
 
-		print '<div class="content-notice"><p>'.$message.'</p></div>';
+			print '<div class="content-notice"><p>'.$message.'</p></div>';
 
-		print '</div>';
-		libHTML::footer();
+			print '</div>';
+			libHTML::footer();
+		}
 	}
 
 	/**
@@ -598,6 +606,7 @@ class libHTML
 			<script type="text/javascript" src="javascript/clickhandler.js"></script>
 			<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/prototype.js').'"></script>
 			<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/scriptaculous.js').'"></script>
+			<script type="text/javascript" src="https://js.pusher.com/7.0/pusher.min.js"></script>
 			<link rel="stylesheet" type="text/css" href="'.STATICSRV.l_s('contrib/js/pushup/src/css/pushup.css').'" />
 			<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/pushup/src/js/pushup.js').'"></script>
 			<script type="text/javascript">
@@ -767,7 +776,8 @@ class libHTML
 			"SELECT g.id, g.variantID, g.name, g.phase, m.orderStatus, m.countryID, (m.newMessagesFrom+0) as newMessagesFrom, g.processStatus
 			FROM wD_Members m
 			INNER JOIN wD_Games g ON ( m.gameID = g.id )
-			WHERE m.userID = ".$User->id."
+			WHERE m.userID = ".$User->id." 
+				AND (g.sandboxCreatedByUserID IS NULL OR m.countryID = 1) 
 				AND ( ( NOT m.orderStatus LIKE '%Ready%' AND NOT m.orderStatus LIKE '%None%' AND g.phase != 'Finished' ) OR NOT ( (m.newMessagesFrom+0) = 0 ) ) ".
 				( ($User->userIsTempBanned()) ? "AND m.status != 'Left'" : "" ) // ignore left games of temp banned user who are banned from rejoining
 				." ORDER BY  g.processStatus ASC, g.processTime ASC");
@@ -1373,6 +1383,7 @@ class libHTML
 		$footerIncludes[] = l_j('cacheUpdate.js');
 		$footerIncludes[] = l_j('timeHandler.js');
 		$footerIncludes[] = l_j('forum.js');
+		$footerIncludes[] = l_j('api.js');
 		$footerIncludes[] = l_j('Color.Vision.Daltonize.js');
 		$footerIncludes[] = l_j('../cache/stats/onlineUsers.json');
 
@@ -1415,14 +1426,14 @@ class libHTML
 					'.l_jf('Locale.afterLoad').'();
 				}
 				catch( e ) {
-					'.(Config::$debug ? 'alert(e);':'').'
+					console.error("Error in footer dom:loaded: " + e);
 				}
 			}, this);
 			document.observe("click", function(e) {
 				try {
 					'.l_jf('clickOut').'(e);
 				} catch (e) {
-					'.(Config::$debug ? 'alert(e);':'').'
+					console.error("Error in footer clickOut: " + e);
 				}
 			}, this)
 			for (var i = 0; i < headerEvent.length; i++) {
@@ -1430,7 +1441,7 @@ class libHTML
 					try {
 						'.l_jf('click').'(e);
 					} catch ( e ){
-						'.(Config::$debug ? 'alert(e);':'').'
+						console.error("Error in footer headerEvent: " + e);
 					}
 				}, this);
 			}

@@ -800,70 +800,7 @@ class adminActionsRestricted extends adminActionsSeniorMod
 		$oldPhase = $Game->phase;
 		$oldTurn = $Game->turn;
 
-		// - Check that the game is still active and can be turned back
-		if ( $Game->turn < 1 )
-		{
-			throw new Exception(l_t('This game cannot be turned back; it is new or is finished.'));
-		}
-
-		// - Delete current turn values
-		$DB->sql_put("DELETE FROM wD_Units WHERE gameID = ".$Game->id);
-		$DB->sql_put("DELETE FROM wD_TerrStatus WHERE gameID = ".$Game->id);
-		$DB->sql_put("DELETE FROM wD_Orders WHERE gameID = ".$Game->id);
-
-		// - Calculate the turn being moved back to
-		$lastTurn = ( ( $Game->phase == 'Diplomacy' ) ? $Game->turn-1 : $Game->turn );
-
-		// Begin moving the archives back
-		{
-			// - Move the old MovesArchive back to Units
-			$DB->sql_put("INSERT INTO wD_Units ( type, terrID, countryID, gameID )
-						SELECT unitType, terrID, countryID, gameID FROM wD_MovesArchive
-						WHERE gameID = ".$Game->id." AND turn = ".$lastTurn."
-							/* Make sure only the Diplomacy phase unit positions are used */
-							AND type IN ( 'Hold', 'Move', 'Support hold', 'Support move', 'Convoy' )");
-
-			// - Move the old MovesArchive (JOIN Units) back to Orders
-			$DB->sql_put("INSERT INTO wD_Orders (gameID, countryID, type, toTerrID, fromTerrID, viaConvoy, unitID)
-						SELECT m.gameID, m.countryID, m.type, m.toTerrID, m.fromTerrID, m.viaConvoy, u.id
-						FROM wD_MovesArchive m INNER JOIN wD_Units u ON ( u.terrID = m.terrID AND u.gameID = m.gameID )
-						WHERE m.gameID = ".$Game->id." AND m.turn = ".$lastTurn."
-							/* Make sure only the Diplomacy phase unit positions are used */
-							AND m.type IN ( 'Hold', 'Move', 'Support hold', 'Support move', 'Convoy' )");
-
-			// - Move the old TerrStatusArchive back to TerrStatus
-			$DB->sql_put("INSERT INTO wD_TerrStatus ( terrID, standoff, gameID, countryID, occupyingUnitID )
-						SELECT t.terrID, t.standoff, t.gameID, t.countryID, u.id
-						FROM wD_TerrStatusArchive t
-							LEFT JOIN wD_Units u
-							ON ( ".$Game->Variant->deCoastCompare('t.terrID','u.terrID')." AND u.gameID = t.gameID )
-						WHERE t.gameID = ".$Game->id." AND t.turn = ".$lastTurn);
-		}
-
-		// - Update the game turn, phase and next process time
-		$DB->sql_put("UPDATE wD_Games
-					SET turn = ".$lastTurn.", phase = 'Diplomacy', gameOver='No', processTime = phaseMinutes*60+".time().",
-						processStatus='Not-processing', pauseTimeRemaining=NULL
-					WHERE id = ".$Game->id);
-
-		$DB->sql_put("UPDATE wD_Members SET votes='', orderStatus='',
-			status=IF(status='Won' OR status='Survived' OR status='Drawn' OR status='Playing',
-				'Playing',
-				IF(status='Resigned' OR status='Left','Left','Defeated')
-			)
-			WHERE gameID = ".$Game->id);
-
-		$DB->sql_put("COMMIT");
-
-		// - Delete Archive values if we have moved back a turn
-		$DB->sql_put("DELETE FROM wD_TerrStatusArchive WHERE gameID = ".$Game->id." AND turn = ".$lastTurn);
-		$DB->sql_put("DELETE FROM wD_MovesArchive WHERE gameID = ".$Game->id." AND turn = ".$lastTurn);
-
-		// - Remove the invalid maps in the mapstore
-		$Game->load();
-		Game::wipeCache($Game->id);
-
-		libGameMessage::send(0, 'GameMaster', l_t('This game has been moved back to %s',$Game->datetxt($lastTurn)), $Game->id);
+		$Game->moveTurnBack();
 
 		return l_t('This game was moved from %s, %s back to Diplomacy, %s, and is ready to be reprocessed.',
 			$oldPhase,$Game->datetxt($oldTurn),$Game->datetxt($lastTurn));

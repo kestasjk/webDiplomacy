@@ -128,9 +128,21 @@ export default function processMapClick(
   let clickUnitID: string | undefined;
   {
     const clickUnitIDs = maps.provinceToUnits[clickProvince];
-    // Handle multiple units on retreat, pick the one that we own if there are multiple
+    // Handle multiple units on retreat, pick the one that we own and which is retreating if there are multiple
+    // With sandbox mode, we can't assume that the unit we own is the one that is retreating as we may own both
+    // so exclude units that aren't retreating.
     if (clickUnitIDs && clickUnitIDs.length >= 2) {
-      clickUnitID = clickUnitIDs.find((unitID) => ownUnits.includes(unitID));
+      clickUnitID = clickUnitIDs.find((unitID) => {
+        if (ownUnits.includes(unitID)) {
+          const isRetreating = data.currentOrders?.find(
+            (o) => o.unitID === unitID,
+          );
+          if (isRetreating) {
+            return true;
+          }
+        }
+        return false;
+      });
     } else if (clickUnitIDs && clickUnitIDs.length === 1) {
       [clickUnitID] = clickUnitIDs;
     }
@@ -169,7 +181,10 @@ export default function processMapClick(
     // Cannot click on other people's units, and on builds you can only
     // click on your own supply centers.
     // FIXME ugh string vs number
-    if (member.countryID !== Number(territoryMeta.ownerCountryID)) {
+    if (
+      member.countryID !== Number(territoryMeta.ownerCountryID) &&
+      !data.isSandboxMode
+    ) {
       invalidClick(evt, clickProvince);
       return;
     }
@@ -218,7 +233,11 @@ export default function processMapClick(
         (o) => o.unitID === clickUnitID,
       );
       if (clickUnitID && ownsCurUnit && isRetreating) {
-        startNewOrder(state, { unitID: clickUnitID, type: "Retreat" });
+        startNewOrder(state, {
+          unitID: clickUnitID,
+          type: "Retreat",
+          countryID: order.countryID,
+        });
       } else {
         invalidClick(evt, clickProvince);
       }
@@ -244,7 +263,7 @@ export default function processMapClick(
   // ---------------------- MOVE PHASE ---------------------------
   if (!order.inProgress) {
     if (clickUnitID && ownsCurUnit) {
-      startNewOrder(state, { unitID: clickUnitID });
+      startNewOrder(state, { unitID: clickUnitID, countryID: order.countryID });
     } else {
       invalidClick(evt, clickProvince);
     }
@@ -318,7 +337,10 @@ export default function processMapClick(
         const targetUnitID =
           maps.provinceIDToUnits[maps.terrIDToProvinceID[order.fromTerrID]][0];
         if (ownUnits.includes(targetUnitID) && fromTerrID !== toTerrID) {
-          startNewOrder(state, { unitID: targetUnitID });
+          startNewOrder(state, {
+            unitID: targetUnitID,
+            countryID: order.countryID,
+          });
           let coastalToTerrID = toTerrID;
           if (data.units[targetUnitID].type === "Fleet") {
             const coastalToTerr = getBestCoastalUnitTerritory(
@@ -372,7 +394,10 @@ export default function processMapClick(
           maps.provinceIDToUnits[maps.terrIDToProvinceID[order.fromTerrID]][0];
         // if it's a convoy of my own unit, fill it in
         if (state.ownUnits.includes(targetUnitID)) {
-          startNewOrder(state, { unitID: targetUnitID });
+          startNewOrder(state, {
+            unitID: targetUnitID,
+            countryID: order.countryID,
+          });
           updateOrder(state, {
             convoyPath,
             toTerrID,

@@ -30,7 +30,7 @@ function Order(orderData)
 	this.toTerrID = (orderData.toTerrID==null?'':orderData.toTerrID);
 	this.fromTerrID = (orderData.fromTerrID==null?'':orderData.fromTerrID);
 	this.viaConvoy = (orderData.viaConvoy==null?'':orderData.viaConvoy);
-
+	this.countryID = orderData.countryID;
 	this.autoFill = true;
 
 	this.requirements = [ 'type' ];

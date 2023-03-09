@@ -84,8 +84,13 @@ class panelGameBoard extends panelGame
 	{
 		$buf = '';
 
-		if ( $this->phase != 'Pre-game') 
-			$buf .= '<div class="bar archiveBar"> '.$this->archiveBar().'</div> ';
+		if ( $this->phase != 'Pre-game')
+		{
+			$buf .= '<div class="bar archiveBar"> '.
+				$this->archiveBar().
+				$this->sandboxBar().
+				'</div> ';
+		}
 
 		$buf .= parent::links();
 
@@ -145,7 +150,7 @@ class panelGameBoard extends panelGame
 		}
 
 		// archiveBar class to make the text visible in dark mode
-		$buf = '<div style="margin: 0 auto; text-align:center; padding-top:5px; padding-bottom:5px;" class="archiveBar">
+		$buf = '<div style="margin: 0 auto; text-align:center; padding-top:5px; padding-bottom:5px;">
 			<a href="modforum.php?fromGameID='.$this->id.'">Need help?</a> - <a id="suspicionToggle" href="#suspicion" name="suspicion">Lodge cheating suspicion</a>
 			<div class="bar memberVotePanel memberSuspectPanel" style="display:none; font-size:90%; font-weight:normal !important; text-align:left">
 			<form action="group.php" method="post">

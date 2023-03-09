@@ -183,6 +183,9 @@ function error_handler($errno, $errstr, $errfile=false, $errline=false, $errcont
 	}
 	$message .= '</p>';
 	
+	// Don't return 200 if erroring out, return 509 so API calls can recognize a failure
+	if( http_response_code() == 200 ) http_response_code(509);
+
 	libHTML::error($message);
 
 }

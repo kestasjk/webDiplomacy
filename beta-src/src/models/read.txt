@@ -20,7 +20,7 @@ Below is the current steps to create game board and order
     - Assume $User data will be available after auth.
 
 3. With $Game, $User, and $Member data, generates context which includes
-    ['gameID','userID','memberID','variantID','turn','phase','countryID','tokenExpireTime','maxOrderID']
+    ['gameID','userID','memberID','variantID','turn','phase','countryID','tokenExpireTime','maxOrderID','isSandboxMode']
 
     - board/orders/orderInterface.php line 318 - jsContextVars()
     - jsContextVars() query orders data as well - line 113 - 143 ["SELECT id, type, unitID, toTerrID, fromTerrID, viaConvoy

@@ -300,6 +300,12 @@ class Game
 	public $tournamentCodirectorUserID;
 
 	/**
+	 * User id of the user who created this game, if it is a sandbox game
+	 * @var int|null
+	 */
+	public $sandboxCreatedByUserID;
+
+	/**
 	 * @param int/array $gameData The game ID of the game to load, or the array of its database row
 	 * @param string[optional] $lockMode The database locking phase to use; no locking by default
 	 */
@@ -444,6 +450,10 @@ class Game
 			$alternatives[] = l_t( 'Wait for orders' );
 		}
 
+		if( !is_null($this->sandboxCreatedByUserID) ){
+			$alternatives[] = l_t( 'Sandbox game' );
+		}
+
 		return $alternatives;
 	}
 
@@ -563,7 +573,8 @@ class Game
 			g.excusedMissedTurns,
 			g.playerTypes,
 			g.startTime,
-			g.directorUserID ,
+			g.directorUserID,
+			g.sandboxCreatedByUserID,
 			t.directorID tournamentDirectorUserID,
 			t.coDirectorID tournamentCodirectorUserID
 			FROM wD_Games g
@@ -803,5 +814,3 @@ class Game
     }
 }
 
-
-?>
