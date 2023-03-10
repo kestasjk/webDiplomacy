@@ -1168,7 +1168,7 @@ class SetOrders extends ApiEntry {
 		$sql = 'SELECT wD_Orders.id AS orderID, wD_Units.terrID AS terrID FROM wD_Orders
 				LEFT JOIN wD_Units ON (wD_Orders.gameID = wD_Units.gameID AND wD_Orders.countryID = wD_Units.countryID AND wD_Orders.unitID = wD_Units.id) 
 				WHERE wD_Orders.gameID = '.$gameID.
-				(!is_null($game->sandboxCreatedByUserID) ? ' AND wD_Orders.countryID = '.$countryID : '');
+				(is_null($game->sandboxCreatedByUserID) ? ' AND wD_Orders.countryID = '.$countryID : '');
 		$res = $DB->sql_tabl($sql);
 		while ($row = $DB->tabl_hash($res)) {
 			$orderID = $row['orderID'];
@@ -1185,7 +1185,7 @@ class SetOrders extends ApiEntry {
 				if (!array_key_exists($bodyField, $order))
 				{
 					if( $bodyField == 'countryID' )
-						$order[$bodyField] = $member->countryID;
+						$order[$bodyField] = $countryID; // Bots that were done before sandbox mode won't provide this, so fill in the member country ID
 					else
 						throw new RequestException('Missing order info: ' . $bodyField);
 				}
@@ -1235,7 +1235,8 @@ class SetOrders extends ApiEntry {
 						'fromTerrID' => null,
 						'toTerrID' => null,
 						'viaConvoy' => null,
-						'id' => $orderID
+						'id' => $orderID,
+						'countryID' => $countryID
 					);
 				}
 			}
@@ -1303,7 +1304,7 @@ class SetOrders extends ApiEntry {
 			LEFT JOIN wD_Units
 			ON (wD_Orders.gameID = wD_Units.gameID AND wD_Orders.countryID = wD_Units.countryID AND wD_Orders.unitID = wD_Units.id)
 			WHERE wD_Orders.gameID = '.$gameID.
-			(!is_null($game->sandboxCreatedByUserID) ? ' AND wD_Orders.countryID = '.$countryID : '')
+			(is_null($game->sandboxCreatedByUserID) ? ' AND wD_Orders.countryID = '.$countryID : '')
 		);
 		while ($row = $DB->tabl_hash($currentOrdersTabl)) {
 			$currentOrders[] = array(
