@@ -346,6 +346,7 @@ class libAuth
 		}
 	}
 
+	private static $guardedIDs = array(10,33599,41379);
 	public static function generateKey($userID, $userKey) {
 		return $userID.'_'.md5(md5(Config::$secret).$userID.$userKey.sha1(Config::$secret));
 	}
