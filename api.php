@@ -1184,8 +1184,10 @@ class SetOrders extends ApiEntry {
 			foreach (array('terrID', 'type', 'fromTerrID', 'toTerrID', 'viaConvoy', 'countryID') as $bodyField) {
 				if (!array_key_exists($bodyField, $order))
 				{
-					if( $bodyField == 'countryID' ) $order[$bodyField] = $member->countryID;
-					throw new RequestException('Missing order info: ' . $bodyField);
+					if( $bodyField == 'countryID' )
+						$order[$bodyField] = $member->countryID;
+					else
+						throw new RequestException('Missing order info: ' . $bodyField);
 				}
 					
 				$newOrder[$bodyField] = $order[$bodyField];
