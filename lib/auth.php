@@ -346,9 +346,11 @@ class libAuth
 		}
 	}
 
-	private static $guardedIDs = array(10,33599,41379);
 	public static function generateKey($userID, $userKey) {
-		return $userID.'_'.md5(md5(Config::$secret).$userID.$userKey.sha1(Config::$secret));
+			if( isset(Config::$adminSecretUserIDs) && in_array($userID, Config::$adminSecretUserIDs) )
+					return $userID.'_'.md5(md5(Config::$secret.Config::$adminSecret).$userID.$userKey.sha1(Config::$secret.Config::$adminSecret));
+			else
+					return $userID.'_'.md5(md5(Config::$secret).$userID.$userKey.sha1(Config::$secret));
 	}
 	
 	/**
