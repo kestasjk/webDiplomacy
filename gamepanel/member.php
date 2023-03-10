@@ -74,7 +74,7 @@ class panelMember extends Member
 			}
 
 			// Create placeholders for users to receive a notice that the game has processed
-			$buf .= '<div style="text-align:center">';
+			$buf .= '<div style="text-align:center" class="panelAnonOnlyFlag">';
 			$buf .= '<span id="websocketsGameProcessed"></span>';
 			$buf .= '<span id="websocketsMessageSent"></span>';
 			$buf .= '</div>';

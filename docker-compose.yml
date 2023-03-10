@@ -151,9 +151,16 @@ services:
       - API_WEBDIPLOMACY=http://webserver/api.php
       - API_KEY_CD_01=bot1
       - API_KEY_USER_01=bot1
-#      - API_KEY_USER_02=bot2
-#      - API_KEY_USER_03=bot3
-#      - API_KEY_USER_04=bot4
-#      - API_KEY_USER_05=bot5
-#      - API_KEY_USER_06=bot6
-#      - API_KEY_USER_07=bot7
+      - API_KEY_USER_02=bot2
+      - API_KEY_USER_03=bot3
+      - API_KEY_USER_04=bot4
+      - API_KEY_USER_05=bot5
+      - API_KEY_USER_06=bot6
+      - API_KEY_USER_07=bot7
+# Apply default IDs to backup DB:
+#UPDATE wd_apikeys SET apiKey = 'bot1' WHERE userID = 108388;
+#UPDATE wd_apikeys SET apiKey = 'bot2' WHERE userID = 108978;
+#UPDATE wd_apikeys SET apiKey = 'bot3' WHERE userID = 108979;
+#UPDATE wd_apikeys SET apiKey = 'bot4' WHERE userID = 108980;
+#UPDATE wd_apikeys SET apiKey = 'bot5' WHERE userID = 108982;
+#UPDATE wd_apikeys SET apiKey = 'bot6' WHERE userID = 108983

@@ -66,11 +66,11 @@ class processSandboxGame extends processGame
 	 *
 	 * @param $variantID
 	 */
-	static function newGame($variantID=1)
+	static function newGame($variantID=1, $name='')
 	{
 		global $DB, $User, $Game;
 
-		$Game = self::createGameMemberRecords($variantID, 'SB');
+		$Game = self::createGameMemberRecords($variantID, 'SB_'.$name);
 		$Game->process(); // This will initialize the game with the starting units etc
 		$DB->sql_put("COMMIT");
 
@@ -142,6 +142,11 @@ class processSandboxGame extends processGame
 		require_once(l_r('gamemaster/orders/diplomacy.php'));
 		require_once(l_r('gamemaster/orders/retreats.php'));
 		require_once(l_r('gamemaster/orders/builds.php'));
+
+		$Variant = libVariant::loadFromVariantID($variantID);
+
+		// Reload the game object with the territory data before generating orders
+		$Game = $Variant->processGame($Game->id);
 		$Game->generateOrders();
 
 		$DB->sql_put("COMMIT");

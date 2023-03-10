@@ -2357,12 +2357,3 @@ ALTER TABLE `wD_Backup_TerrStatusArchive` ADD INDEX `gameID` (`gameID`);
 ALTER TABLE `wD_Backup_Units` ADD INDEX `gameID` (`gameID`);
 ALTER TABLE `wD_Backup_GameMessages` ADD INDEX `gameID` (`gameID`);
 
-
-ALTER TABLE `wD_Backup_Games` ADD INDEX `gameID` (`id`);
-ALTER TABLE `wD_Backup_Members` ADD INDEX `gameID` (`gameID`);
-ALTER TABLE `wD_Backup_MovesArchive` ADD INDEX `gameID` (`gameID`);
-ALTER TABLE `wD_Backup_Orders` ADD INDEX `gameID` (`gameID`);
-ALTER TABLE `wD_Backup_TerrStatus` ADD INDEX `gameID` (`gameID`);
-ALTER TABLE `wD_Backup_TerrStatusArchive` ADD INDEX `gameID` (`gameID`);
-ALTER TABLE `wD_Backup_Units` ADD INDEX `gameID` (`gameID`);
-ALTER TABLE `wD_Backup_GameMessages` ADD INDEX `gameID` (`gameID`);

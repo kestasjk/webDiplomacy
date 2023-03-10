@@ -647,7 +647,7 @@ class libHTML
 		}
 
 		print libHTML::prebody($title===FALSE ? l_t($pages[$scriptname]['name']) : $title,
-			$scriptname == 'botgamecreate.php'). // Don't let robots into the account create page
+			$scriptname == 'botgamecreate.php' || $scriptname == 'gamecreateSandbox.php'). // Don't let robots into the account create page
 			'<body>'.libHTML::menu($pages, $scriptname);
 
 		if( defined('FACEBOOKSCRIPT') ) 
@@ -949,6 +949,7 @@ class libHTML
 		$links['tournamentScoring.php']=array('name'=>'Tournament Scoring', 'inmenu'=>FALSE);
 		$links['tournamentRegistration.php']=array('name'=>'Tournament Registration', 'inmenu'=>FALSE);
 		$links['botgamecreate.php']=array('name'=>'New Bot Game', 'inmenu'=>TRUE, 'title'=>"Start up a new bot game");
+		$links['gamecreateSandbox.php']=array('name'=>'New Sandbox Game', 'inmenu'=>TRUE, 'title'=>"Start up a new sandbox game");
 		$links['group.php']=array('name'=>'Relationships', 'inmenu'=>FALSE);
 
 
@@ -1002,6 +1003,7 @@ class libHTML
 						</div>
 						<div class="nav-tab">
 							<a href="botgamecreate.php" title="Go to the account-based server">Start a New Game</a>
+							<a href="gamecreateSandbox.php" title="Go to the account-based server">Start a New Sandbox</a>
 						</div>
 						<div class="nav-tab">
 							<a href="https://webdiplomacy.net/" title="Go to the account-based server">Go to the Community Site</a>
@@ -1086,6 +1088,7 @@ class libHTML
 								<a href="gamelistings.php?gamelistType=Open%20Positions" title="Open positions dropped by other players, free to claim">Open Games</a>
 								<a href="gamecreate.php" title="Start up a new game">Start a New Game</a>
 								<a href="botgamecreate.php" title="Start up a new bots-only game">Start an AI/Bot Game</a>
+								<a href="gamecreateSandbox.php" title="Start up a new bots-only game">Start a Sandbox Game</a>
 								<a href="gamelistings.php?gamelistType=Active" title="View/Spectate games currently running">Active Games</a>
 								<!-- <a href="ghostRatings.php" title="Ghost Ratings Information">Ghost Ratings</a> -->
 								<a href="tournaments.php" title="Information about tournaments on webDiplomacy">Tournaments</a>
