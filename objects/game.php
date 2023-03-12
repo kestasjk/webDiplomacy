@@ -497,7 +497,9 @@ class Game
 	{
 		global $User;
 
-		return $this->isClassicGame() && (defined('PLAYNOW') || !isset($User) || !$User->type['User'] || $User->isMapUIPointAndClick() );
+		return $this->isClassicGame() 
+			&& (defined('PLAYNOW') || !isset($User) || !$User->type['User'] || $User->isMapUIPointAndClick() ) 
+			&& is_null($this->sandboxCreatedByUserID); // Sandbox games currently not supported for build mode in point and click UI
 	}
 
 	function watched() 
