@@ -61,7 +61,7 @@ function loadOrdersPhase() {
 					case 'Build Army':
 					case 'Build Fleet':
 						this.toTerrChoices = SupplyCenters.select(function(sc){
-							if( sc.countryID != this.countryID || sc.coastParent.countryID == this.countryID ) return false;
+							if( ! (sc.countryID == this.countryID || sc.coastParent.countryID == this.countryID) ) return false;
 
 							if( this.type=='Build Army' && ( sc.coast=='Parent'||sc.coast=='No') ) 
 								return true;
