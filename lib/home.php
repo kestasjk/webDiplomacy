@@ -247,7 +247,7 @@ class libHome
 			FROM wD_Games g
 			WHERE g.minimumBet <= ".$User->points." 
 				AND ".$User->reliabilityRating." >= g.minimumReliabilityRating
-				AND g.gameOver = 'No'
+				AND g.gameOver = 'No' AND playerTypes <> 'MemberVsBots' 
 				AND g.password IS NULL");
 		$buf = '';
 		$count=0;
