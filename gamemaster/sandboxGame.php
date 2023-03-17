@@ -91,7 +91,7 @@ class processSandboxGame extends processGame
 		list($name, $variantID, $turn, $phase) = $DB->sql_row("SELECT name, variantID, turn, phase FROM wD_Games WHERE id = ".$gameID);
 		
 		if( $turn == 0 && $phase == 'Pre-game' ) throw new Exception("You cannot create a sandbox game from a game which hasn't started yet.");
-
+		$name = $DB->escape($name);
 		$Game = self::createGameMemberRecords($variantID, 'SB_'.$name, $turn, $phase);
 		
 		foreach(self::$gameTables as $tableName=>$idColName)
