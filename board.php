@@ -80,6 +80,11 @@ try
 	libVariant::setGlobals($Variant);
 	$Game = $Variant->panelGameBoard($gameID);
 
+	if( !is_null($Game->sandboxCreatedByUserID) && $Game->sandboxCreatedByUserID != $User->id && !$User->type['Moderator'] )
+	{
+		libHTML::notice('Access denied',l_t("You can't view this game, it is a sandbox game which you didn't create."));
+	}
+
 	// If this user defaults to the point and click UI redirect them here
 	if( $Game->usePointAndClickUI() )
 	{
