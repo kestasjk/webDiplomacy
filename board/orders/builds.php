@@ -76,7 +76,6 @@ class userOrderBuilds extends userOrder
 				INNER JOIN wD_Territories t
 					ON ( t.id = ts.terrID )
 				WHERE ts.gameID = ".$this->gameID."
-					AND ts.countryID = ".$this->countryID."
 					AND t.countryID = ".$this->countryID."
 					AND ts.occupyingUnitID IS NULL
 					AND t.supply = 'Yes' AND NOT t.type='Sea'
@@ -93,7 +92,6 @@ class userOrderBuilds extends userOrder
 				INNER JOIN wD_Territories t ON ( t.id = ts.terrID )
 				LEFT JOIN wD_Territories coast ON ( coast.mapID=t.mapID AND coast.coastParentID = t.id AND NOT t.id = coast.id )
 				WHERE ts.gameID = ".$this->gameID."
-					AND ts.countryID = ".$this->countryID."
 					AND t.countryID = ".$this->countryID."
 					AND ts.occupyingUnitID IS NULL
 					AND t.supply = 'Yes'

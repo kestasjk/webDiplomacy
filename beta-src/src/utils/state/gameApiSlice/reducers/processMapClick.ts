@@ -174,23 +174,52 @@ export default function processMapClick(
       return;
     }
 
-    const isDestroy =
-      overview.user.member.supplyCenterNo < overview.user.member.unitNo;
-    const isBuild =
-      overview.user.member.supplyCenterNo > overview.user.member.unitNo;
+    // When in sandbox mode we need to find the country that we are acting as
+    let isDestroy = false;
+    let isBuild = false;
+    let actingAsMember = member; // Used for sandbox mode
+    if (data.isSandboxMode) {
+      overview.members
+        .filter((m) => m.supplyCenterNo !== m.unitNo)
+        .filter(
+          (m) =>
+            m.countryID === Number(territoryMeta?.countryID ?? "-1") ||
+            m.countryID === Number(clickUnit?.countryID ?? "-1"),
+        )
+        .forEach((m) => {
+          actingAsMember = m;
+        });
+    }
+
+    isBuild = actingAsMember.supplyCenterNo > actingAsMember.unitNo;
+    isDestroy = actingAsMember.supplyCenterNo < actingAsMember.unitNo;
+
     // Cannot click on other people's units, and on builds you can only
     // click on your own supply centers.
     // FIXME ugh string vs number
     if (
-      member.countryID !== Number(territoryMeta.ownerCountryID) &&
-      !data.isSandboxMode
+      isDestroy &&
+      actingAsMember.countryID !== Number(clickUnit?.countryID ?? "-1")
+    ) {
+      invalidClick(evt, clickProvince);
+      return;
+    }
+
+    if (
+      isBuild &&
+      actingAsMember.countryID !== Number(territoryMeta?.countryID ?? "-1")
     ) {
       invalidClick(evt, clickProvince);
       return;
     }
 
     const { currentOrders } = data;
-    const availableOrder = getAvailableOrder(currentOrders, ordersMeta);
+    const availableOrder = getAvailableOrder(
+      currentOrders?.filter(
+        (o) => Number(o.countryID) === actingAsMember.countryID,
+      ),
+      ordersMeta,
+    );
     if (!availableOrder) {
       invalidClick(evt, clickProvince);
       return;

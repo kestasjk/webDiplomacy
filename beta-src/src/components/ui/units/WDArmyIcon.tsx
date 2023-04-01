@@ -2,6 +2,7 @@ import * as React from "react";
 import { useTheme } from "@mui/material/styles";
 import UIState from "../../../enums/UIState";
 import { IconProps } from "../../../interfaces/Icons";
+import Country from "../../../enums/Country";
 
 // The drawing of this icon assumes a coordinate system where the icon fits within
 // a rectangle from [0,0] to [ARMY_RAW_ICON_WIDTH,ARMY_RAW_ICON_HEIGHT]
@@ -10,7 +11,7 @@ export const ARMY_RAW_ICON_WIDTH = 50;
 export const ARMY_RAW_ICON_HEIGHT = 50;
 
 const WDArmyIcon: React.FC<IconProps> = function ({
-  country,
+  country = Country.ENGLAND,
   iconState = UIState.NONE,
 }): React.ReactElement {
   const theme = useTheme();

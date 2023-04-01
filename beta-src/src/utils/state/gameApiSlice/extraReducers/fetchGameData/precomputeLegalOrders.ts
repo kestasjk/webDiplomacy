@@ -41,6 +41,7 @@ export interface LegalOrders {
   legalMoveDestsByUnitID: { [key: UnitID]: Territory[] };
   legalRetreatDestsByUnitID: { [key: UnitID]: Territory[] };
   possibleBuildDests: Territory[];
+  legalDestroyDestsByUnitID: { [key: UnitID]: Territory };
   legalViasByUnitID: { [key: UnitID]: LegalVia[] };
   // The inner keys are provinces
   legalConvoysByUnitID: {
@@ -166,32 +167,73 @@ export function getAllPossibleBuildDests(
   }
   const possibleBuildDests: Territory[] = [];
   const ourCountryID = overview.user!.member.countryID.toString();
-  data.territoryStatuses.forEach((provStatus) => {
-    // We have to own this province.
-    if (provStatus.ownerCountryID !== ourCountryID && !data.isSandboxMode) {
-      return;
-    }
-    // It has to be a supply center, and our home center
-    // And there can't be any units there.
-    if (
-      data.territories[provStatus.id].supply !== "Yes" ||
-      (data.territories[provStatus.id].countryID !== ourCountryID &&
-        !data.isSandboxMode) ||
-      provStatus.unitID !== null
-    ) {
-      return;
-    }
 
-    // Iterate through all
-    provincesMapData[maps.terrIDToProvince[provStatus.id]].unitSlots.forEach(
-      (unitSlot) => {
-        possibleBuildDests.push(unitSlot.territory);
-      },
-    );
-  });
+  overview.members
+    .filter(
+      (member) =>
+        (String(member.countryID) === ourCountryID || data.isSandboxMode) &&
+        member.supplyCenterNo > member.unitNo,
+    )
+    .forEach((member) => {
+      data.territoryStatuses.forEach((provStatus) => {
+        // We have to own this province.
+        if (
+          provStatus.ownerCountryID !== String(member.countryID) &&
+          !data.isSandboxMode
+        ) {
+          return;
+        }
+        // It has to be a supply center, and our home center
+        // And there can't be any units there.
+        if (
+          data.territories[provStatus.id].supply !== "Yes" ||
+          data.territories[provStatus.id].countryID !==
+            String(member.countryID) ||
+          provStatus.unitID !== null
+        ) {
+          return;
+        }
+
+        // Iterate through all
+        provincesMapData[
+          maps.terrIDToProvince[provStatus.id]
+        ].unitSlots.forEach((unitSlot) => {
+          possibleBuildDests.push(unitSlot.territory);
+        });
+      });
+    });
   return possibleBuildDests;
 }
 
+// Returns all units that we could destroy
+export function getAllPossibleDestroyDests(
+  overview: GameOverviewResponse,
+  data: GameData,
+  maps: GameStateMaps,
+): {
+  [key: UnitID]: Territory;
+} {
+  if (overview.phase !== "Builds") {
+    return {};
+  }
+  const possibleDestroyDests: { [key: UnitID]: Territory } = {};
+  const ourCountryID = overview.user!.member.countryID.toString();
+  overview.members
+    .filter(
+      (member) =>
+        String(member.countryID) === ourCountryID || data.isSandboxMode,
+    )
+    .filter((member) => member.supplyCenterNo < member.unitNo)
+    .forEach((member) => {
+      Object.values(data.units)
+        .filter((unit) => unit.countryID === String(member.countryID))
+        .forEach((unit) => {
+          possibleDestroyDests[unit.id] =
+            TerritoryMap[data.territories[unit.terrID].name].territory;
+        });
+    });
+  return possibleDestroyDests;
+}
 interface PathToCoast {
   dest: Territory;
   provIDPath: UnitID[];
@@ -523,6 +565,11 @@ export function getLegalOrders(
     maps,
   );
   const possibleBuildDests = getAllPossibleBuildDests(overview, data, maps);
+  const legalDestroyDestsByUnitID = getAllPossibleDestroyDests(
+    overview,
+    data,
+    maps,
+  );
   const [legalViasByUnitID, legalConvoysByUnitID] = getAllLegalConvoys(
     overview,
     data,
@@ -550,6 +597,7 @@ export function getLegalOrders(
     legalMoveDestsByUnitID,
     legalRetreatDestsByUnitID,
     possibleBuildDests,
+    legalDestroyDestsByUnitID,
     legalViasByUnitID,
     legalConvoysByUnitID,
     hasAnyLegalConvoysByUnitID,

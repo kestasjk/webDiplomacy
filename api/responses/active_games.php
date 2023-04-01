@@ -69,9 +69,15 @@ class ActiveGames {
                                             " . $filterGameClause . "
                                             AND g.phase IN ('Diplomacy', 'Retreats', 'Builds')
                                       ORDER BY g.processTime ASC;");
-
+        $gameIDs = array();
         while( $row = $DB->tabl_hash($countryTabl) )
         {
+            // Ensure only one row per gameID, for sandbox games.
+            if( in_array($row['gameID'], $gameIDs) )
+                continue;
+
+            $gameIDs[] = intval($row['gameID']);
+
             array_push($this->value, [
                 'gameID' => intval($row['gameID']),
                 'countryID' => intval($row['countryID']),

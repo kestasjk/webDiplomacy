@@ -40,10 +40,10 @@ interface WDFullModalProps {
 const tabGroup: ModalViews[] = [
   ModalViews.PRESS,
   ModalViews.INFO,
+  ModalViews.SETTINGS,
   ModalViews.ORDERS,
   ModalViews.GAMES,
   ModalViews.HELP,
-  // ModalViews.SETTINGS, {/* hide settings for now, we'll need it later */}
 ];
 
 const WDFullModal: React.FC<WDFullModalProps> = function ({
@@ -108,6 +108,16 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
             {children}
           </WDPress>
         </WDTabPanel>
+        <WDTabPanel currentTab={ModalViews.SETTINGS} currentView={view}>
+          <WDSettings
+            allCountries={allCountries}
+            maxDelays={excusedMissedTurns}
+            userCountry={userCountry}
+            gameID={gameID}
+            gameIsFinished={gameIsFinished}
+            gameIsPaused={gameIsPaused}
+          />
+        </WDTabPanel>
         <WDTabPanel currentTab={ModalViews.ORDERS} currentView={view}>
           <WDOrdersPanel
             orders={orders}
@@ -121,9 +131,6 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
         </WDTabPanel>
         <WDTabPanel currentTab={ModalViews.HELP} currentView={view}>
           <WDHelp />
-        </WDTabPanel>
-        <WDTabPanel currentTab={ModalViews.SETTINGS} currentView={view}>
-          <WDSettings />
         </WDTabPanel>
       </WDViewsContainer>
     </div>

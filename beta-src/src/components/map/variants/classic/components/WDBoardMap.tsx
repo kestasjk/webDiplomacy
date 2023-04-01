@@ -130,13 +130,28 @@ const WDBoardMap: React.FC<WDBoardMapProps> = function ({
         );
       }
     } else if (phase === "Builds") {
-      if (user.member.supplyCenterNo < user.member.unitNo) {
-        provincesToChoose = units
-          .filter((unit) => unit.country === user.member.country)
-          .map((unit) => unit.mappedTerritory.province);
-      } else if (user.member.supplyCenterNo > user.member.unitNo) {
-        provincesToChoose = legalOrders.possibleBuildDests.map(
-          (territory) => TerritoryMap[territory].province,
+      if (
+        gameDataResponse.data.isSandboxMode ||
+        user.member.supplyCenterNo < user.member.unitNo
+      ) {
+        provincesToChoose = provincesToChoose.concat(
+          units
+            .filter((unit) =>
+              Object.keys(legalOrders.legalDestroyDestsByUnitID).includes(
+                unit.unit.id,
+              ),
+            )
+            .map((unit) => unit.mappedTerritory.province),
+        );
+      }
+      if (
+        gameDataResponse.data.isSandboxMode ||
+        user.member.supplyCenterNo > user.member.unitNo
+      ) {
+        provincesToChoose = provincesToChoose.concat(
+          legalOrders.possibleBuildDests.map(
+            (territory) => TerritoryMap[territory].province,
+          ),
         );
       }
     }

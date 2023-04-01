@@ -107,11 +107,24 @@ export function getUnitsLive(
     }
   });
 
-  const excessUnitsBeyondSCs =
-    currentUser.member.unitNo - currentUser.member.supplyCenterNo;
-  const isDestroyPhase = phase === "Builds" && excessUnitsBeyondSCs > 0;
-  const allDestroysAssigned =
-    !isDestroyPhase || !getAvailableOrder(currentOrders, ordersMeta);
+  const highlightDestroyUnitsByMember = members
+    .filter(
+      (m) => m.countryID === currentUser.member.countryID || isSandboxMode,
+    )
+    .map((m) => {
+      const excessUnitsBeyondSCs = m.unitNo - m.supplyCenterNo;
+      const countryOrders = getAvailableOrder(
+        currentOrders.filter(
+          (o) => Number(o.countryID) === Number(m.countryID),
+        ),
+        ordersMeta,
+      );
+      return {
+        countryID: m.countryID,
+        isDestroyPhase: phase === "Builds" && excessUnitsBeyondSCs > 0,
+        allDestroysAssigned: !excessUnitsBeyondSCs || !countryOrders,
+      };
+    });
 
   // console.log({ prevPhaseOrders });
   // console.log({ successfulMoves });
@@ -139,6 +152,11 @@ export function getUnitsLive(
             territoryStatusesByProvID[unitProvID].unitID !== null &&
             territoryStatusesByProvID[unitProvID].unitID !== unit.id;
 
+          const { isDestroyPhase, allDestroysAssigned } =
+            highlightDestroyUnitsByMember
+              .filter((h) => h.countryID === memberCountry.countryID)
+              .shift() ?? { isDestroyPhase: false, allDestroysAssigned: false };
+
           if (ordersMetaByTerrID[unit.terrID]?.update?.type) {
             drawAsUnsaved = !ordersMetaByTerrID[unit.terrID].saved;
           }
@@ -164,12 +182,7 @@ export function getUnitsLive(
             drawMode = UnitDrawMode.DISLODGED;
           } else if (unitCountByProvID[unitProvID] >= 2) {
             drawMode = UnitDrawMode.DISLODGING;
-          } else if (
-            (unit.countryID === currentUser.member.countryID.toString() ||
-              isSandboxMode) &&
-            isDestroyPhase &&
-            !allDestroysAssigned
-          ) {
+          } else if (isDestroyPhase && !allDestroysAssigned) {
             // while the user hasn't inputted enough destroy orders,
             // mark all units according to the little red striping for dislodged
             drawMode = UnitDrawMode.DISLODGED;

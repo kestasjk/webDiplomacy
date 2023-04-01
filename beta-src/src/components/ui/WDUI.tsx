@@ -40,7 +40,8 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
   viewingGameFinishedPhase,
 }): ReactElement {
   const theme = useTheme();
-  const { phase, season, year, user, members } = useAppSelector(gameOverview);
+  const { phase, season, year, user, members, gameID } =
+    useAppSelector(gameOverview);
 
   const [phaseSelectorOpen, setPhaseSelectorOpen] = useState<boolean>(false);
   const gameIsFinished = phase === "Finished";
@@ -121,19 +122,6 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
       />
       <TopRight />
       {!gameIsFinished && <BottomLeft phaseSelectorOpen={phaseSelectorOpen} />}
-      <BottomRight
-        phaseSelectorOpen={phaseSelectorOpen}
-        onPhaseSelectorClick={() => setPhaseSelectorOpen(!phaseSelectorOpen)}
-        orders={orders}
-        units={units}
-        allCountries={allCountries}
-        userTableData={userTableData}
-        viewedPhase={viewedPhase}
-        currentSeason={viewedSeason}
-        currentYear={viewedYear}
-        totalPhases={gameStatusData.phases.length}
-        onClickOutside={() => setPhaseSelectorOpen(false)}
-      />
       <BottomMiddle
         viewedSeason={viewedSeason}
         viewedYear={viewedYear}
@@ -153,6 +141,19 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
       {gameIsFinished && viewingGameFinishedPhase && (
         <WDGameFinishedOverlay allCountries={allCountries} />
       )}
+      <BottomRight
+        phaseSelectorOpen={phaseSelectorOpen}
+        onPhaseSelectorClick={() => setPhaseSelectorOpen(!phaseSelectorOpen)}
+        orders={orders}
+        units={units}
+        allCountries={allCountries}
+        userTableData={userTableData}
+        viewedPhase={viewedPhase}
+        currentSeason={viewedSeason}
+        currentYear={viewedYear}
+        totalPhases={gameStatusData.phases.length}
+        onClickOutside={() => setPhaseSelectorOpen(false)}
+      />
     </>
   );
 };

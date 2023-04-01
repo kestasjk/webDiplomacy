@@ -1072,6 +1072,89 @@ class GetGameData extends ApiEntry {
 }
 
 /**
+ * API entry game/join
+ */
+class JoinGame extends ApiEntry {
+	public function __construct() {
+		parent::__construct(
+			'game/join',
+			'POST',
+			'',
+			array('gameID'),
+			false);
+	}
+	/**
+	 * @throws Exception
+	 * @throws RequestException
+	 * @throws ClientForbiddenException
+	 */
+	public function run($userID, $permissionIsExplicit) {
+		$User = new User($userID);
+
+		if ( !$User->type['User'] ) throw new Exception("Only users can join games");
+
+		$args = $this->getArgs();
+		$gameID = (int)$args['gameID'];
+
+		require_once(l_r('gamemaster/game.php'));
+		
+		$Variant=libVariant::loadFromGameID($gameID);
+		libVariant::setGlobals($Variant);
+		$Game = $Variant->processGame($gameID);
+		
+		// They will be stopped here if they're not allowed.
+		$Game->Members->join(
+			( isset($args['gamepass']) && $args['gamepass'] ?? null ),
+			( isset($args['countryID']) && $args['countryID'] ?? null )
+		 );
+		
+		return $this->JSONResponse('Successfully joined.', 'GGD-JOIN', true);
+	}
+}
+
+/**
+ * API entry game/leave
+ */
+class LeaveGame extends ApiEntry {
+	public function __construct() {
+		parent::__construct(
+			'game/leave',
+			'POST',
+			'',
+			array('gameID'),
+			false);
+	}
+	/**
+	 * @throws Exception
+	 * @throws RequestException
+	 * @throws ClientForbiddenException
+	 */
+	public function run($userID, $permissionIsExplicit) {
+		$User = new User($userID);
+
+		if ( !$User->type['User'] ) throw new Exception("Only users can join games");
+
+		$args = $this->getArgs();
+		$gameID = (int)$args['gameID'];
+
+		require_once(l_r('gamemaster/game.php'));
+		
+		$Variant=libVariant::loadFromGameID($gameID);
+		libVariant::setGlobals($Variant);
+		$Game = $Variant->processGame($gameID);
+		
+		$reason=$Game->Members->cantLeaveReason();
+
+		if($reason)
+			throw new Exception(l_t("Can't leave game; %s.",$reason));
+		else
+			$Game->Members->ByUserID[$User->id]->leave();
+
+		return $this->JSONResponse('Successfully left game.', 'GGD-LEAVE', true);
+	}
+}
+
+/**
  * API entry game/orders
  * *Multiplexed
  */
@@ -1801,6 +1884,9 @@ try {
 	$api->load(new GetGameOverview());
 	$api->load(new GetGameData());
 	$api->load(new GetGameMembers());
+	
+	$api->load(new JoinGame());
+	$api->load(new LeaveGame());
 	
 	$api->load(new SetOrders());
 	$api->load(new ToggleVote());

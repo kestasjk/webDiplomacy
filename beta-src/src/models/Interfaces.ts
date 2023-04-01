@@ -102,7 +102,8 @@ export interface IOrderData {
   unitID: string;
   // Can be null on retreats or other moves where convoying doesn't make sense
   // Otherwise equal to "Yes" or "No".
-  viaConvoy: string | null; 
+  viaConvoy: string | null;
+  countryID: number;
 }
 
 export interface IOrderDataHistorical {

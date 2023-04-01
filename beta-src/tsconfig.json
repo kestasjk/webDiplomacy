@@ -15,7 +15,9 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "outDir": "../beta",
+    "sourceMap": true
   },
   "include": ["src"]
 }

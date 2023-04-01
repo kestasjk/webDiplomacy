@@ -73,7 +73,7 @@ function loadOrdersPhase() {
 						break;
 					case 'Destroy':
 						this.toTerrChoices = MyUnits.select(function(sc) {
-							return ( sc.countryID == this.countryID || sc.coastParent.countryID == this.countryID ); // For SC mode filter this specific order by countryID
+							return ( sc.countryID == this.countryID ); // For sandbox mode filter this specific order by countryID
 						},this).pluck('Territory').pluck('coastParent').pluck('id');
 						break;
 				}

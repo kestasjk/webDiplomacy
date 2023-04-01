@@ -162,6 +162,7 @@ const initialState: GameState = {
   legalOrders: {
     legalMoveDestsByUnitID: {},
     legalRetreatDestsByUnitID: {},
+    legalDestroyDestsByUnitID: {},
     possibleBuildDests: [],
     legalViasByUnitID: {},
     legalConvoysByUnitID: {},

@@ -1,7 +1,7 @@
 /* eslint-disable no-bitwise */
 import * as React from "react";
 import BuildUnitMap from "../../../data/BuildUnit";
-import countryMap from "../../../data/map/variants/classic/CountryMap";
+import countryIDMap from "../../../data/map/variants/classic/CountryIDMap";
 import BuildUnit from "../../../enums/BuildUnit";
 import {
   gameApiSliceActions,
@@ -44,25 +44,31 @@ const WDBuildContainer: React.FC = function (): React.ReactElement {
     dispatch(gameApiSliceActions.resetOrder());
   };
   const order = useAppSelector(gameOrder);
-  const userMember = useAppSelector(
-    (state) => state.game.overview.user!.member,
-  );
+  const orders = useAppSelector((state) => state.game.data.data.currentOrders);
+  let countryID = 0;
+  orders
+    ?.filter((o) => o.id === order.orderID)
+    .forEach((o) => {
+      countryID = o.countryID;
+    });
   if (!order || order.type !== "Build") {
     return <div />;
   }
+
   const territory = maps.terrIDToTerritory[order.toTerrID];
   const { province, unitSlotName } = TerritoryMap[territory];
   const canBuild =
     provincesMapData[province].type === "Coast"
       ? BuildUnit.All
       : BuildUnit.Army;
+  const country = countryIDMap[Number(countryID)];
   return (
     <WDBuildUnitButtons
       key={`${province}-${unitSlotName}`}
       availableOrder={order.orderID}
       canBuild={canBuild}
       clickCallback={build}
-      country={countryMap[userMember.country]}
+      country={country}
       province={province}
       unitSlotName={unitSlotName}
       toTerrID={order.toTerrID}

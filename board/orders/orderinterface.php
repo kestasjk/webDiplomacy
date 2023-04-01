@@ -264,7 +264,9 @@ class OrderInterface
 			if( isset($Member) && $Member instanceof Member && $Member->id == $this->memberID )
 				$Member->orderStatus = $this->orderStatus;
 
-			$DB->sql_put("UPDATE wD_Members SET orderStatus = '".$this->orderStatus."' WHERE ".($this->isSandboxMode ? "gameID = ".$this->gameID : "id = ".$this->memberID));
+			// If in sandbox mode and setting the moves to ready set all other members to ready too
+			$DB->sql_put("UPDATE wD_Members SET orderStatus = '".$this->orderStatus."' WHERE ".
+				($this->isSandboxMode && $this->orderStatus->Ready ? "gameID = ".$this->gameID : "id = ".$this->memberID));
 
 			$newContext = $this->getContext($this);
 			$this->results['newContext'] = $newContext['context'];
