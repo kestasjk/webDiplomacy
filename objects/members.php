@@ -188,11 +188,15 @@ class Members
 		{
 			$this->ByID[$Member->id] = $Member;
 			$this->ByStatus[$Member->status][$Member->id] = $Member;
-			$this->ByUserID[$Member->userID] = $Member;
 
 			// If pre-game all countries are 'Unassigned', so members cannot be indexed by countryID.
 			if ( $Member->countryID != 0 )
 				$this->ByCountryID[$Member->countryID] = $Member;
+			
+			// If in sandbox mode make sure we don't accidentally get set as a player that has been defeated:
+			if( isset($this->ByUserID[$Member->userID]) && $this->ByUserID[$Member->userID]->status = 'Playing' )
+				continue;
+			$this->ByUserID[$Member->userID] = $Member;
 		}
 	}
 	public function load()
