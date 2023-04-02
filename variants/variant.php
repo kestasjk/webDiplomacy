@@ -161,7 +161,7 @@ abstract class WDVariant {
 			return supplyCenters;
 		},
 		';
-		require_once('gamemaster/adjudicator/preGame.php');
+		require_once('gamemaster/adjudicator/pregame.php');
 		$adj=$this->adjudicatorPreGame();
 		$countryUnits = $adj->getCountryUnits();
 		$js .= '
