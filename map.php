@@ -190,11 +190,10 @@ else
 	$drawMap = $Variant->drawMap($mapType=='small');
 }
 
-
 /*
  * Draw TerrStatus
  */
-if( $turn==-1 )
+if( $turn==-1 && is_null($Game->sandboxCreatedByUserID) )
 {
 	// Pre-game; just draw country default terrstatus
 	$sql = "SELECT t.id, t.name, t.type, t.countryID, 'No' as standoff
@@ -207,7 +206,7 @@ else
 			/* Territories are selected first, not TerrStatus, so that unoccupied territories can be drawn neutral */
 			FROM wD_Territories t
 			LEFT JOIN wD_TerrStatusArchive ts
-				ON ( ts.gameID = ".$Game->id." AND ts.turn = ".$turn." AND ts.terrID = t.id )
+				ON ( ts.gameID = ".$Game->id." AND ts.turn = ".($turn < 0 ? 0 : $turn)." AND ts.terrID = t.id )
 			/* TerrStatus is non-coastal */
 			WHERE (t.coast='No' OR t.coast='Parent') AND t.mapID=".$Variant->mapID;
 }

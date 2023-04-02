@@ -14,16 +14,16 @@ interface SettingsProps {
   autoSave: boolean;
 }
 
-interface WDSettingsProps {
+interface WDControlProps {
   allCountries: CountryTableData[];
   gameID: GameOverviewResponse["gameID"];
   maxDelays: GameOverviewResponse["excusedMissedTurns"];
-  userCountry: CountryTableData | null;
+  userCountry: CountryTableData;
   gameIsFinished: boolean;
   gameIsPaused: boolean;
 }
 
-const WDHelp: FunctionComponent<WDSettingsProps> = function ({
+const WDHelp: FunctionComponent<WDControlProps> = function ({
   allCountries,
   gameID,
   maxDelays,
@@ -43,17 +43,15 @@ const WDHelp: FunctionComponent<WDSettingsProps> = function ({
   );
 
   const toggleVote = (voteKey: Vote) => {
-    if (userCountry) {
-      const desiredVoteOn = userCountry.votes.includes(voteKey) ? "No" : "Yes";
-      dispatch(
-        setVoteStatus({
-          countryID: String(userCountry.countryID),
-          gameID: String(gameID),
-          vote: voteKey,
-          voteOn: desiredVoteOn,
-        }),
-      );
-    }
+    const desiredVoteOn = userCountry.votes.includes(voteKey) ? "No" : "Yes";
+    dispatch(
+      setVoteStatus({
+        countryID: String(userCountry.countryID),
+        gameID: String(gameID),
+        vote: voteKey,
+        voteOn: desiredVoteOn,
+      }),
+    );
   };
   const form = useFormik({
     initialValues: settings,
@@ -71,7 +69,8 @@ const WDHelp: FunctionComponent<WDSettingsProps> = function ({
   return (
     <WDVerticalScroll>
       <FormikProvider value={form}>
-        {userCountry && !gameIsFinished && (
+        <div className="mt-3 px-3 sm:px-4">
+          <div className="text-xs">Votes:</div>
           <div className="pl-4">
             <WDVoteButtons
               toggleVote={toggleVote}
@@ -80,7 +79,7 @@ const WDHelp: FunctionComponent<WDSettingsProps> = function ({
               gameIsPaused={gameIsPaused}
             />
           </div>
-        )}
+        </div>
         <div className="mt-3 px-3 sm:px-4">
           <div className="text-xs">Automatically Save Game:</div>
           <Checkbox

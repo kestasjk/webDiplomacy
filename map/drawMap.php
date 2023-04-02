@@ -222,21 +222,25 @@ abstract class drawMap
 	 */
 	public function __construct($smallmap)
 	{
-		global $Game;
-
-		$this->mapID = MAPID;
-
 		$this->smallmap = (bool) $smallmap;
 
-		if ( !$this->smallmap )
-			ini_set('memory_limit',"20M");
+		// This is an annoying hack needed to extract the country colors which are protected, without
+		// loading unnecessary resources. If the variant is fully loaded MAPID will be set
+		if( defined('MAPID') )
+		{
+			// TODO: Remove the MAPID constant
+			$this->mapID = MAPID;
 
-		$this->loadTerritories();
-		$this->loadImages();
-		$this->loadColors();
-		$this->setTransparancies();
-		$this->loadFont();
-		$this->loadOrderArrows();
+			if ( !$this->smallmap )
+				ini_set('memory_limit',"20M");
+
+			$this->loadTerritories();
+			$this->loadImages();
+			$this->loadColors();
+			$this->setTransparancies();
+			$this->loadFont();
+			$this->loadOrderArrows();
+		}
 	}
 
 	protected $mapID;
@@ -267,8 +271,8 @@ abstract class drawMap
 		 * More could be deallocated here, but this is by far the largest, and the
 		 * script is probably about to end anyway.
 		 */
-
-		imagedestroy($this->map['image']);
+		if( isset($this->map['image']) )
+			imagedestroy($this->map['image']);
 	}
 
 	/**
@@ -1226,6 +1230,22 @@ abstract class drawMap
  			}
 		}
  	}
+
+	public function getColors() {
+		return $this->countryColors;
+	}
+	public function getArmyURL() {
+		return $this->resources()['army'];
+	}
+	public function getFleetURL() {
+		return $this->resources()['fleet'];
+	}
+	public function getMapURL() {
+		return $this->resources()['map'];
+	}
+	public function getNamesURL() {
+		return $this->resources()['names'];
+	}
 }
 
 ?>

@@ -119,6 +119,189 @@ abstract class WDVariant {
 	public $supplyCenterTarget;
 
 	/**
+	 * 
+	 */
+	public function generateSandboxSetupForm()
+	{
+		// For each supply center a unit can be assigned, and a supply center allocated
+
+		$js = '{ ';
+		$js .= 'getEmptyOptions: function () {
+			let supplyCenterTargetOptions = [];';
+			for($i=0; $i<= $this->supplyCenterCount; $i++)
+			{
+				$js .= 'supplyCenterTargetOptions['.$i.'] = {
+					index: '.$i.',
+					countryID: -1,
+					unitPositionTerrID: -1,
+					unitPositionTerrIDParent: -1,
+					unitSCTerrID: -1,
+					unitType: null,
+				};
+				';
+			}
+		$js .= 'return supplyCenterTargetOptions;
+		},
+		fetchTerritories: (callback) => downloadAndLoadTerritories("'.$this->territoriesJSONFile().'", callback),
+		getSupplyCenters: function () {
+			let supplyCenters = [];
+			for(const terrID in Territories)
+			{
+				let terr = Territories[terrID];
+				let parentTerr = terr;
+				if( terr.coastParentID != terr.id )
+				{
+					parentTerr = Territories[terr.coastParentID];
+				}
+				if(terr.supply == "Yes" || parentTerr.supply == "Yes")
+				{
+					supplyCenters.push(terr);
+				}
+			}
+			return supplyCenters;
+		},
+		';
+		require_once('gamemaster/adjudicator/preGame.php');
+		$adj=$this->adjudicatorPreGame();
+		$countryUnits = $adj->getCountryUnits();
+		$js .= '
+		getCountryUnits: function () {
+			return '.json_encode($countryUnits).';
+		},
+		getCountryNamesByID: function() {
+			return '.json_encode($this->countries).';
+		},
+		getCountryIDByName: function (countryName) {
+			let countryNamesByID = this.getCountryNamesByID();
+			for(let i=0; i< countryNamesByID.length; i++)
+			{
+				if(countryNamesByID[i] == countryName)
+				{
+					return i+1;
+				}
+			}
+			return -1;
+		},
+		getDefaultOptions: function () {
+			let supplyCenterTargetOptions = this.getEmptyOptions(); // [{index, countryID, unitPositionTerrID, unitPositionTerrIDParent, unitSCTerrID, unitType}]
+			let countryUnits = this.getCountryUnits(); // {countryName: {territoryName, unitType}}
+			let supplyCenters = this.getSupplyCenters(); // {terrID: {id, name, type, supply, countryID, coast, coastParentID}}
+
+			// Loop through countryUnits
+			for (const countryName in countryUnits) {
+			  const countryID = this.getCountryIDByName(countryName);
+			  const units = countryUnits[countryName];
+			
+			  // Loop through units for each country
+			  for (const territoryName in units) {
+				const unitType = units[territoryName];
+			
+				// Loop through supplyCenters to find the matching territoryID
+				for (const terrID in supplyCenters) {
+				  const supplyCenter = supplyCenters[terrID];
+			
+				  if (supplyCenter.name === territoryName) {
+					// Find the first empty slot in supplyCenterTargetOptions
+					for (const option of supplyCenterTargetOptions) {
+					  if (option.countryID === -1) {
+						// Assign the values
+						option.countryID = countryID;
+						option.unitPositionTerrID = supplyCenter.id;
+						option.unitPositionTerrIDParent = supplyCenter.coastParentID;
+						option.unitSCTerrID = supplyCenter.coastParentID;
+						option.unitType = unitType;
+			
+						// Break out of the loop as the empty slot is filled
+						break;
+					  }
+					}
+					// Break out of the loop as the territoryID is found
+					break;
+				  }
+				}
+			  }
+			}
+
+			return supplyCenterTargetOptions;
+		},
+		getEmptyFormHTML: function () {
+			let supplyCenterTargetOptions = this.getEmptyOptions();
+			let html = "<table class=\'hof variant'.$this->name.'\'><tr><th>Country</th><th>Unit type</th><th>Unit position</th><th>Supply center</th></tr>";
+			for (const option of supplyCenterTargetOptions) {
+				html += "<tr class=\'hof\'>";
+				html += "<td id=\'scOptionID"+option.index+"Country\' class=\'hof\'></td>";
+				html += "<td id=\'scOptionID"+option.index+"UnitType\' class=\'hof\'></td>";
+				html += "<td id=\'scOptionID"+option.index+"UnitPosition\' class=\'hof\'></td>";
+				html += "<td id=\'scOptionID"+option.index+"UnitSC\' class=\'hof\'></td>";
+				html += "</tr>";
+			}
+			html += "</table>";
+			return html;
+		},
+		applyOptionsToTable: function (supplyCenterTargetOptions) {
+			countryNamesByID = this.getCountryNamesByID();
+			for (const option of supplyCenterTargetOptions) {
+				document.getElementById("scOptionID"+option.index+"Country").innerHTML = option.countryID;
+				if( option.countryID > 0 ) {
+					
+					document.getElementById("scOptionID"+option.index+"Country").classList.add("country"+option.countryID);
+					document.getElementById("scOptionID"+option.index+"Country").innerHTML = countryNamesByID[option.countryID-1];
+					
+					document.getElementById("scOptionID"+option.index+"UnitType").innerHTML = option.unitType;
+					// if Territories doesn\'t contain the index put empty into the cell
+					document.getElementById("scOptionID"+option.index+"UnitPosition").innerHTML = "";
+					if( Territories[option.unitPositionTerrID] ) {
+						document.getElementById("scOptionID"+option.index+"UnitPosition").innerHTML = Territories[option.unitPositionTerrID].name;
+					}
+					document.getElementById("scOptionID"+option.index+"UnitSC").innerHTML = "";
+					if( Territories[option.unitSCTerrID] ) {
+						document.getElementById("scOptionID"+option.index+"UnitSC").innerHTML = Territories[option.unitSCTerrID].name;
+					}
+					document.getElementById("scOptionID"+option.index+"Country").style = "";
+					document.getElementById("scOptionID"+option.index+"UnitType").style = "";
+					document.getElementById("scOptionID"+option.index+"UnitPosition").style = "";
+					document.getElementById("scOptionID"+option.index+"UnitSC").style = "";
+				}
+				else {
+					document.getElementById("scOptionID"+option.index+"Country").style = "display:none";
+					document.getElementById("scOptionID"+option.index+"UnitType").style = "display:none";
+					document.getElementById("scOptionID"+option.index+"UnitPosition").style = "display:none";
+					document.getElementById("scOptionID"+option.index+"UnitSC").style = "display:none";
+				}
+			}
+		},
+		';
+		
+		require_once(l_r('map/drawMap.php'));
+		
+		$drawMap = $this->drawMap(true); // Set the doNotLoad flag so we can access the map colors without loading everything
+		$colors = $drawMap->getColors();
+		$js .= '
+		getCountryColors: function() {
+			return '.json_encode($colors).';
+			let colors = [];
+			// foreach country get the color:
+			let countries = this.getCountryNamesByID();
+			for(let i = 0; i < countries.length; i++) {
+				colors.push(getCssSelectorColor(["variant'.$this->name.'","country"+(i+1),"occupationBar"+(i+1)]));
+			}
+			return colors;
+		},
+		smallMapURL: "variants/'.$this->name.'/resources/smallmap.png",
+		cssURL: "variants/'.$this->name.'/resources/style.css",
+		';
+		
+		$js .= 'armyURL: "'.$drawMap->getArmyURL().'",';
+		$js .= 'fleetURL: "'.$drawMap->getFleetURL().'",';
+		$js .= 'mapURL: "'.$drawMap->getMapURL().'",';
+		$js .= 'namesURL: "'.$drawMap->getNamesURL().'",';
+
+		$js .= '
+	}';
+		return $js;
+	}
+
+	/**
 	 * Return the in-game turn in text format. This should be overridden
 	 *
 	 * @param int $turn The turn to textualize
@@ -402,4 +585,3 @@ function variant_autoloader($classname) {
 
 spl_autoload_register('variant_autoloader');
 
-?>

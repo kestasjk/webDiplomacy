@@ -1088,7 +1088,7 @@ class processGame extends Game
 	/**
 	 * Archive the TerrStatus data into the TerrStatusArchive table
 	 */
-	protected function archiveTerrStatus()
+	public function archiveTerrStatus()
 	{
 		global $DB;
 

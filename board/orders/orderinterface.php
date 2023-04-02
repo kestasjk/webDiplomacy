@@ -378,11 +378,20 @@ class OrderInterface
 		$alternate = false;
 		foreach($this->Orders as $Order)
 		{
+			$html .= '<tr class="barAlt'.($alternate ? '1' : '2').'">';
 			$alternate = ! $alternate;
-			$html .= '<tr class="barAlt'.($alternate ? '1' : '2').'">
-				<td class="uniticon"><span id="orderID'.$Order->id.'UnitIconArea"></span></td>
-				<td class="order"><div id="orderID'.$Order->id.'">'.l_t('Loading order').'...</div></td>
-				</tr>';
+			
+			// If it's a sandbox game show the country color:
+			if(!is_null($Game->sandboxCreatedByUserID)) $class = 'occupationBar'.$Order->countryID;
+			else $class = '';
+
+			$html .= '<td class="uniticon '.$class.'">';
+			$html .= '<span id="orderID'.$Order->id.'UnitIconArea"></span>';
+			$html .= '</td>';
+
+			$html .= '<td class="order"><div id="orderID'.$Order->id.'">'.l_t('Loading order').'...</div></td>';
+			
+			$html .= '</tr>';
 		}
 
 		$html .= "</table></div>".'

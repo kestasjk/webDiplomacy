@@ -147,6 +147,10 @@ class adjudicatorPreGame
 		);
 	}
 
+	public function getCountryUnits() {
+		return $this->countryUnits;
+	}
+	
 	protected function assignUnits() 
 	{
 		global $DB, $Game;
@@ -170,6 +174,32 @@ class adjudicatorPreGame
 		}
 
 		$DB->sql_put("INSERT INTO wD_Units ( gameID, countryID, terrID, type ) VALUES ".implode(', ', $UnitINSERTs));
+	}
+
+	// For sandbox games where units and SCs are inserted manually ensure terrstatus has the right occupation records:
+	public function reassignUnitOccupations() 
+	{
+		global $DB, $Game;
+		
+		$DB->sql_put("UPDATE wD_TerrStatus t SET occupyingUnitID=NULL WHERE gameID = ".$Game->id);
+
+		// Also create any missing TerrStatus records
+		$DB->sql_put(
+			"INSERT INTO wD_TerrStatus ( gameID, countryID, terrID )
+			SELECT ".$Game->id." as gameID, u.countryID, u.terrID
+			FROM wD_Units u
+			INNER JOIN wD_Territories t
+				ON (t.id = u.terrID AND t.mapID=".$Game->Variant->mapID.")
+			LEFT JOIN wD_TerrStatus ts
+				ON (
+					ts.gameID = u.gameID
+					/* TerrStatus does not deal with coasts */
+					AND ".$Game->Variant->deCoastCompare('t.id','ts.terrID')."
+				)
+			WHERE u.gameID = ".$Game->id." AND (t.coast='No' OR t.coast='Parent') AND ts.gameID IS NULL"
+		);
+
+		$this->assignUnitOccupations();
 	}
 
 	protected function assignUnitOccupations() 

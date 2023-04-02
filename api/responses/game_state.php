@@ -515,6 +515,7 @@ class GameState {
 
 		foreach ($gameSteps->toArray() as $step) {
 			list($turn, $phaseName, $data) = $step;
+			if( $turn > $this->turn ) continue; // If a sandbox game has been moved back this can fail as there are game steps for future turns.
 			$centerTurn = $turn;
 			if (($centerTurn % 2 == 1) && ($phaseName != 'Builds'))
 				$centerTurn -= 1;

@@ -14,7 +14,7 @@ import GameStateMaps from "../../state/interfaces/GameStateMaps";
 import { Unit } from "../../utils/map/getUnits";
 import WDGamesList from "./WDGamesList";
 import WDHelp from "./WDHelp";
-import WDSettings from "./WDSettings";
+import WDControl from "./WDControl";
 
 interface WDFullModalProps {
   alternatives: GameOverviewResponse["alternatives"];
@@ -37,11 +37,11 @@ interface WDFullModalProps {
   onChangeView: (view: ModalViews) => void;
 }
 
+// ModalViews.ORDERS,
 const tabGroup: ModalViews[] = [
   ModalViews.PRESS,
   ModalViews.INFO,
-  ModalViews.SETTINGS,
-  ModalViews.ORDERS,
+  ModalViews.CONTROL,
   ModalViews.GAMES,
   ModalViews.HELP,
 ];
@@ -90,6 +90,7 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
                 season={season}
                 title={title}
                 year={year}
+                gameID={gameID}
               />
             </div>
 
@@ -108,29 +109,33 @@ const WDFullModal: React.FC<WDFullModalProps> = function ({
             {children}
           </WDPress>
         </WDTabPanel>
-        <WDTabPanel currentTab={ModalViews.SETTINGS} currentView={view}>
-          <WDSettings
-            allCountries={allCountries}
-            maxDelays={excusedMissedTurns}
-            userCountry={userCountry}
-            gameID={gameID}
-            gameIsFinished={gameIsFinished}
-            gameIsPaused={gameIsPaused}
-          />
-        </WDTabPanel>
-        <WDTabPanel currentTab={ModalViews.ORDERS} currentView={view}>
-          <WDOrdersPanel
-            orders={orders}
-            units={units}
-            allCountries={allCountries}
-            maps={maps}
-          />
-        </WDTabPanel>
+        {userCountry && !gameIsFinished && (
+          <WDTabPanel currentTab={ModalViews.CONTROL} currentView={view}>
+            <WDControl
+              allCountries={allCountries}
+              maxDelays={excusedMissedTurns}
+              userCountry={userCountry}
+              gameID={gameID}
+              gameIsFinished={gameIsFinished}
+              gameIsPaused={gameIsPaused}
+            />
+          </WDTabPanel>
+        )}
+        {false && ( // This seems like a waste of space, so I'm disabling it for now.
+          <WDTabPanel currentTab={ModalViews.ORDERS} currentView={view}>
+            <WDOrdersPanel
+              orders={orders}
+              units={units}
+              allCountries={allCountries}
+              maps={maps}
+            />
+          </WDTabPanel>
+        )}
         <WDTabPanel currentTab={ModalViews.GAMES} currentView={view}>
           <WDGamesList />
         </WDTabPanel>
         <WDTabPanel currentTab={ModalViews.HELP} currentView={view}>
-          <WDHelp />
+          <WDHelp gameID={gameID} />
         </WDTabPanel>
       </WDViewsContainer>
     </div>

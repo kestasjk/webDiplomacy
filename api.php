@@ -445,7 +445,7 @@ class ListGamesWithMissingOrders extends ApiEntry {
 // The sandbox API calls will check the permissions internally and throw an exception on error
 class SandboxCreate extends ApiEntry {
 	public function __construct() {
-		parent::__construct('sandbox/create', 'GET', '', array('variantID'), false);
+		parent::__construct('sandbox/create', 'GET', '', array('variantID', 'territoryUnits'), false);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		require_once(l_r('gamemaster/sandboxGame.php'));
@@ -1719,7 +1719,7 @@ class ApiKey extends ApiAuth {
 			.($multiplexOffset > 0 ? " AND multiplexOffset = " . $multiplexOffset . " " : "" ) 
 			." ORDER BY lastHit LIMIT 1");
 		if (!$rowUserID)
-			throw new ClientUnauthorizedException('No user associated to this API key.');
+			die();//throw new ClientUnauthorizedException('No user associated to this API key.');
 		$this->userID = intval($rowUserID['userID']);
 		$this->multiplexOffset = $rowUserID['multiplexOffset'];
 		$permissionRow = $DB->sql_hash("SELECT * FROM wD_ApiPermissions WHERE userID = ".$this->userID);

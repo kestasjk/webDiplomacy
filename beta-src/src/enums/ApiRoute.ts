@@ -11,6 +11,10 @@ enum ApiRoute {
   GAME_SETVOTE = "game/setvote",
   SET_BACK_FROM_LEFT = "game/markbackfromleft",
   WEBSOCKETS_AUTHENTICATION = "websockets/authentication",
+  // get sandbox
+  SANDBOX_COPY = "sandbox/copy",
+  SANDBOX_MOVETURNBACK = "sandbox/moveTurnBack",
+  SANDBOX_DELETE = "sandbox/delete",
 }
 
 export default ApiRoute;

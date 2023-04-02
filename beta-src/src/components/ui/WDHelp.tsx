@@ -24,6 +24,10 @@ interface itemProps {
   shortcutKey: string;
 }
 
+interface HelpProps {
+  gameID: number;
+}
+
 const items: itemProps[] = [
   {
     title: "Move",
@@ -82,12 +86,16 @@ const items: itemProps[] = [
   },
 ];
 
-const WDHelp: FunctionComponent = function (): ReactElement {
+const WDHelp: FunctionComponent<HelpProps> = function ({
+  gameID,
+}): ReactElement {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-
+  const modForumLink = `/modforum.php?fromGameID=${gameID}`;
+  const suspicionLink = `/board.php?gameID=${gameID}&view=dropDown&lodgeSuspicion=on`;
   return (
     <WDVerticalScroll>
       <div className="mt-3 px-3 sm:px-4">
+        <div className="text-lg font-bold">Using the UI:</div>
         {items.map((item: itemProps, index: number) => (
           <Fragment key={item.title}>
             {currentIndex === index && (
@@ -146,6 +154,91 @@ const WDHelp: FunctionComponent = function (): ReactElement {
             )}
           </Fragment>
         ))}
+      </div>
+      <div className="mt-3 px-3 sm:px-4">
+        <hr />
+        <div className="mt-4 mb-2">
+          <div className="text-lg font-bold">Helpful information:</div>
+          <div>
+            <ul>
+              <li>
+                For a summary of the rules of the game:
+                <br />
+                <a href="intro.php" className="text-blue-500">
+                  <b>An intro to Diplomacy</b>
+                  <br />
+                  <br />
+                </a>
+              </li>
+              <li>
+                Before asking a general question, check if it has already been
+                asked:
+                <br />
+                <a href="faq.php" className="text-blue-500">
+                  <b>Frequently asked questions</b>
+                  <br />
+                  <br />
+                </a>
+              </li>
+              <li>
+                To check whether something breaks the site rules:
+                <br />
+                <a href="rules.php" className="text-blue-500">
+                  <b>Site rules</b>
+                  <br />
+                  <br />
+                </a>
+              </li>
+              <li>
+                To find out how points and scoring works:
+                <br />
+                <a href="points.php" className="text-blue-500">
+                  <b>Guide to points / scoring</b>
+                  <br />
+                  <br />
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div className="mt-3 px-3 sm:px-4">
+        <hr />
+        <div className="mt-4 mb-2">
+          <div className="text-lg font-bold">Requesting help:</div>
+          <div>
+            <ul>
+              <li>
+                If you have a reason to suspect other player(s) of cheating /
+                rule breaking / collusion:
+                <br />
+                <a href={suspicionLink} className="text-blue-500">
+                  <b>Lodge a cheating suspicion</b>
+                  <br />
+                  <br />
+                </a>
+              </li>
+              <li>
+                For any other issue relating to this game that requires a
+                moderator:
+                <br />
+                <a href={modForumLink} className="text-blue-500">
+                  <b>Lodge a moderator forum ticket</b>
+                  <br />
+                  <br />
+                </a>
+              </li>
+              <li>
+                For advice, help with the interface or rules, bug reports,
+                questions on the rules, etc:
+                <br />
+                <a href="contrib/phpBB3/" className="text-blue-500">
+                  <b>Go to the forum</b>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </WDVerticalScroll>
   );

@@ -21,7 +21,6 @@ const WDInfoPanel: React.FC<WDInfoPanelProps> = function ({
   gameIsFinished,
   gameIsPaused,
 }): React.ReactElement {
-
   const intoCivilDisorder: boolean = allCountries.some(
     (country) => country.status === "Left",
   );

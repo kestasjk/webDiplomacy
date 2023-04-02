@@ -90,6 +90,7 @@ class panelGameBoard extends panelGame
 			$buf .= '<div class="bar archiveBar"> '.
 				$this->archiveBar().
 				$this->sandboxBar().
+				$this->pointAndClickBar().
 				'</div> ';
 		}
 
@@ -152,8 +153,32 @@ class panelGameBoard extends panelGame
 
 		// archiveBar class to make the text visible in dark mode
 		$buf = '<div style="margin: 0 auto; text-align:center; padding-top:5px; padding-bottom:5px;">
-			<a href="modforum.php?fromGameID='.$this->id.'">Need help?</a> - <a id="suspicionToggle" href="#suspicion" name="suspicion">Lodge cheating suspicion</a>
-			<div class="bar memberVotePanel memberSuspectPanel" style="display:none; font-size:90%; font-weight:normal !important; text-align:left">
+			<a href="modforum.php?fromGameID='.$this->id.'">Need help?</a> - <a href="board.php?gameID='.$this->id.'&lodgeSuspicion=on">Lodge cheating suspicion</a></div>';
+		
+		$buf .= '<div class="bar membersList memberVotePanel"><a name="votebar"></a>
+		<table><tr class="member">
+			<td class="memberLeftSide">
+				<strong>'.l_t('Votes:').'</strong>
+			</td>
+			<td class="memberRightSide">
+				'.$this->showVoteForm($vVote, $vCancel).'
+			</td>
+			</tr>
+		</table>';
+
+		return $buf . '</div>';
+	}
+
+	/**
+	 * The form that lets users lodge suspicions of other players. TODO: Move to group.php
+	 */
+	function lodgeSuspicionForm()
+	{
+		global $User;
+
+		if( !$this->Members->isJoined() ) return "";
+
+		$buf = '<div class="bar memberVotePanel memberSuspectPanel" style="font-size:90%; font-weight:normal !important; text-align:left">
 			<form action="group.php" method="post">
 			'.libAuth::formTokenHTML().'
 			<input type="hidden" name="gameID" value="'.$this->id.'" /><br />
@@ -188,28 +213,8 @@ class panelGameBoard extends panelGame
 		$groupUsers = Group::getUsers("gr.isActive = 1 AND gr.gameID = ".$this->id);
 		$buf .= Group::outputUserTable_static($groupUsers, null, null);
 		$buf .= '</div></div>';
-		
-		$buf .= '<script type="text/javascript">
-document.getElementById("suspicionToggle").addEventListener("click", function() { 
-	
-	this.nextElementSibling.style.display = this.nextElementSibling.style.display === "block" ? "none" : "block";
-	if( this.nextElementSibling.style.display === "block" ) {
-		window.leavepagedanger = false; // Disable the warning about leaving with unsubmitted text
-	}
-});
-</script>';
-		$buf .= '<div class="bar membersList memberVotePanel"><a name="votebar"></a>
-		<table><tr class="member">
-			<td class="memberLeftSide">
-				<strong>'.l_t('Votes:').'</strong>
-			</td>
-			<td class="memberRightSide">
-				'.$this->showVoteForm($vVote, $vCancel).'
-			</td>
-			</tr>
-		</table>';
 
-		return $buf . '</div>';
+		return $buf;
 	}
 
 	/**

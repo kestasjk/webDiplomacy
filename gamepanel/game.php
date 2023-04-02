@@ -420,6 +420,18 @@ class panelGame extends Game
 	}
 
 	/**
+	 * Links to the point and click UI, if a classic game
+	 * @return string
+	 */
+	function pointAndClickBar()
+	{
+		if( !$this->isClassicGame() ) return '';
+
+		return '<br /><strong>'.l_t('Point and click UI:').'</strong> 
+			 <a href="board.php?gameID='.$this->id.'&view=pointAndClick">'.l_t('Open').'</a>';
+	}
+
+	/**
 	 * The invite code box for joining private games
 	 * @return string
 	 */

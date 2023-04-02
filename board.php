@@ -163,7 +163,7 @@ catch(Exception $e)
 		($User->type['User'] ? l_t("Check your <a href='index.php' class='light'>notices</a> for messages regarding this game."):''));
 }
 
-if ( isset($_REQUEST['viewArchive']) )
+if ( isset($_REQUEST['viewArchive']) || isset($_REQUEST['lodgeSuspicion']) )
 {
 	// Start HTML with board gamepanel header
 	print '</div>';
@@ -174,22 +174,36 @@ if ( isset($_REQUEST['viewArchive']) )
 
 	print '<p><a href="board.php?gameID='.$Game->id.'" class="light">'.l_t('&lt; Return').'</a></p>';
 
-	switch($_REQUEST['viewArchive'])
+	if( isset($_REQUEST['viewArchive']) )
 	{
-		case 'Orders': require_once(l_r('board/info/orders.php')); break;
-		case 'Messages': require_once(l_r('board/info/messages.php')); break;
-		case 'Graph': require_once(l_r('board/info/graph.php')); break;
-		case 'Maps': require_once(l_r('board/info/maps.php')); break;
-		case 'Reports':
-			require_once(l_r('lib/modnotes.php'));
-			libModNotes::checkDeleteNote();
-			libModNotes::checkInsertNote();
-			print libModNotes::reportBoxHTML('Game',$Game->id);
-			print libModNotes::reportsDisplay('Game', $Game->id);
-			break;
-		default: libHTML::error(l_t("Invalid info parameter given."));
+		switch($_REQUEST['viewArchive'])
+		{
+			case 'Orders': require_once(l_r('board/info/orders.php')); break;
+			case 'Messages': require_once(l_r('board/info/messages.php')); break;
+			case 'Graph': require_once(l_r('board/info/graph.php')); break;
+			case 'Maps': require_once(l_r('board/info/maps.php')); break;
+			case 'Reports':
+				require_once(l_r('lib/modnotes.php'));
+				libModNotes::checkDeleteNote();
+				libModNotes::checkInsertNote();
+				print libModNotes::reportBoxHTML('Game',$Game->id);
+				print libModNotes::reportsDisplay('Game', $Game->id);
+				break;
+			default: libHTML::error(l_t("Invalid info parameter given."));
+		}
 	}
-
+	else if ( isset($_REQUEST['lodgeSuspicion']) )
+	{
+		if( $Game->Members->isJoined() )
+		{
+			print $Game->lodgeSuspicionForm();
+		}
+		else
+		{
+			print l_t("You are not a member of this game, so you cannot lodge a suspicion.");
+		}
+	}
+	
 	print '</div>';
 	libHTML::footer();
 }

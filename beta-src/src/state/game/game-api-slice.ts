@@ -136,6 +136,39 @@ export const setVoteStatus = createAsyncThunk(
   },
 );
 
+export const copySandboxFromGame = createAsyncThunk(
+  ApiRoute.SANDBOX_COPY,
+  async (queryParams: { copyGameID: string }) => {
+    const { data } = await getGameApiRequest(
+      ApiRoute.SANDBOX_COPY,
+      queryParams,
+    );
+    return data;
+  },
+);
+
+export const moveSandboxTurnBack = createAsyncThunk(
+  ApiRoute.SANDBOX_MOVETURNBACK,
+  async (queryParams: { gameID: string }) => {
+    const { data } = await getGameApiRequest(
+      ApiRoute.SANDBOX_MOVETURNBACK,
+      queryParams,
+    );
+    return data;
+  },
+);
+
+export const deleteSandbox = createAsyncThunk(
+  ApiRoute.SANDBOX_DELETE,
+  async (queryParams: { gameID: string }) => {
+    const { data } = await getGameApiRequest(
+      ApiRoute.SANDBOX_DELETE,
+      queryParams,
+    );
+    return data;
+  },
+);
+
 export const markMessagesSeen = createAsyncThunk(
   ApiRoute.MESSAGES_SEEN,
   async (queryParams: {

@@ -4,7 +4,7 @@ enum ModalViews {
   INFO = "INFO",
   GAMES = "MY GAMES",
   HELP = "HELP",
-  SETTINGS = "SETTINGS",
+  CONTROL = "CONTROL",
 }
 
 export default ModalViews;
