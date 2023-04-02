@@ -194,7 +194,7 @@ class adjudicatorPreGame
 				ON (
 					ts.gameID = u.gameID
 					/* TerrStatus does not deal with coasts */
-					AND ".$Game->Variant->deCoastCompare('t.id','ts.terrID')."
+					AND ".$Game->Variant->deCoastCompare('ts.terrID','t.id')."
 				)
 			WHERE u.gameID = ".$Game->id." AND (t.coast='No' OR t.coast='Parent') AND ts.gameID IS NULL"
 		);
