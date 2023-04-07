@@ -36,6 +36,78 @@ adminMultiCheck::form();
 
 require_once('objects/groupUserToUserLinks.php');
 
+/*
+SELECT c.type, c.userIDTo, c.matches, c.matchCount, 
+	f.code, 
+	f.earliest fromEarliest, t.earliest toEarliest,
+	f.latest fromLatest, t.latest toLatest, 
+	f.count fromCount, t.count toCount,
+	CASE c.type WHEN 'Cookie' THEN fU.countCookie WHEN 'IP' THEN fU.countIP WHEN 'Fingerprint' THEN fU.countFingerprint WHEN 'FingerprintPro' THEN fU.countFingerprintPro WHEN 'UserTurnMissed' THEN fU.countUserTurnMissed WHEN 'UserTurn' THEN fU.countUserTurn ELSE 0 END fromUserCount,
+	CASE c.type WHEN 'Cookie' THEN tU.countCookie WHEN 'IP' THEN tU.countIP WHEN 'Fingerprint' THEN tU.countFingerprint WHEN 'FingerprintPro' THEN tU.countFingerprintPro WHEN 'UserTurnMissed' THEN tU.countUserTurnMissed WHEN 'UserTurn' THEN tU.countUserTurn ELSE 0 END toUserCount,
+	CASE c.type WHEN 'Cookie' THEN fU.countCookieTotal WHEN 'IP' THEN fU.countIPTotal WHEN 'Fingerprint' THEN fU.countFingerprintTotal WHEN 'FingerprintPro' THEN fU.countFingerprintProTotal WHEN 'UserTurnMissed' THEN fU.countUserTurnMissedTotal WHEN 'UserTurn' THEN fU.countUserTurnTotal ELSE 0 END fromUserCountTotal,
+	CASE c.type WHEN 'Cookie' THEN tU.countCookieTotal WHEN 'IP' THEN tU.countIPTotal WHEN 'Fingerprint' THEN tU.countFingerprintTotal WHEN 'FingerprintPro' THEN tU.countFingerprintProTotal WHEN 'UserTurnMissed' THEN tU.countUserTurnMissedTotal WHEN 'UserTurn' THEN tU.countUserTurnTotal ELSE 0 END toUserCountTotal,
+	CASE c.type WHEN 'Cookie' THEN fU.matchedCookie WHEN 'IP' THEN fU.matchedIP WHEN 'Fingerprint' THEN fU.matchedFingerprint WHEN 'FingerprintPro' THEN fU.matchedFingerprintPro WHEN 'UserTurnMissed' THEN fU.matchedUserTurnMissed WHEN 'UserTurn' THEN fU.matchedUserTurn ELSE 0 END fromUserMatched,
+	CASE c.type WHEN 'Cookie' THEN tU.matchedCookie WHEN 'IP' THEN tU.matchedIP WHEN 'Fingerprint' THEN tU.matchedFingerprint WHEN 'FingerprintPro' THEN tU.matchedFingerprintPro WHEN 'UserTurnMissed' THEN tU.matchedUserTurnMissed WHEN 'UserTurn' THEN tU.matchedUserTurn ELSE 0 END toUserMatched,
+	CASE c.type WHEN 'Cookie' THEN fU.matchedCookieTotal WHEN 'IP' THEN fU.matchedIPTotal WHEN 'Fingerprint' THEN fU.matchedFingerprintTotal WHEN 'FingerprintPro' THEN fU.matchedFingerprintProTotal WHEN 'UserTurnMissed' THEN fU.matchedUserTurnMissedTotal WHEN 'UserTurn' THEN fU.matchedUserTurnTotal ELSE 0 END fromUserMatchedTotal,
+	CASE c.type WHEN 'Cookie' THEN tU.matchedCookieTotal WHEN 'IP' THEN tU.matchedIPTotal WHEN 'Fingerprint' THEN tU.matchedFingerprintTotal WHEN 'FingerprintPro' THEN tU.matchedFingerprintProTotal WHEN 'UserTurnMissed' THEN tU.matchedUserTurnMissedTotal WHEN 'UserTurn' THEN tU.matchedUserTurnTotal ELSE 0 END toUserMatchedTotal,
+	CASE c.type WHEN 'Cookie' THEN fU.matchedOtherCookieTotal WHEN 'IP' THEN fU.matchedOtherIPTotal WHEN 'Fingerprint' THEN fU.matchedOtherFingerprintTotal WHEN 'FingerprintPro' THEN fU.matchedOtherFingerprintProTotal WHEN 'UserTurnMissed' THEN fU.matchedOtherUserTurnMissedTotal WHEN 'UserTurn' THEN fU.matchedOtherUserTurnTotal ELSE 0 END fromUserOtherMatchedTotal,
+	CASE c.type WHEN 'Cookie' THEN tU.matchedOtherCookieTotal WHEN 'IP' THEN tU.matchedOtherIPTotal WHEN 'Fingerprint' THEN tU.matchedOtherFingerprintTotal WHEN 'FingerprintPro' THEN tU.matchedOtherFingerprintProTotal WHEN 'UserTurnMissed' THEN tU.matchedOtherUserTurnMissedTotal WHEN 'UserTurn' THEN tU.matchedOtherUserTurnTotal ELSE 0 END toUserOtherMatchedTotal,
+	fU.countLatLon, fU.countLatLonTotal, 
+	tU.countLatLon, tU.countLatLonTotal, 
+	fU.countNetwork, fU.countNetworkTotal, 
+	tU.countNetwork, tU.countNetworkTotal, 
+	fU.countCity, fU.countCityTotal, 
+	tU.countCity, tU.countCityTotal, 
+	fU.countIPVPN, fU.countIPVPNTotal, 
+	tU.countIPVPN, tU.countIPVPNTotal, 
+	fU.countMessageLength, fU.countMessageLengthTotal, 
+	tU.countMessageLength, tU.countMessageLengthTotal, 
+	fU.countMessageCount, fU.countMessageCountTotal, 
+	tU.countMessageCount, tU.countMessageCountTotal
+FROM wd_usercodeconnectionmatches c
+INNER JOIN wd_usercodeconnections f ON f.userID = c.userIDFrom AND f.type = c.type
+INNER JOIN wd_userconnections fU ON fU.userID = f.userID
+INNER JOIN wd_usercodeconnections t ON t.userID = c.userIDTo AND t.type = c.type AND f.code = t.code
+INNER JOIN wd_userconnections tU ON tU.userID = t.userID
+WHERE userIDFrom = 138972
+ORDER BY f.code, userIDFrom, userIDTo, c.type;
+
+*/
+
+// UserConnection - Aggregate stats for a user; what time of the day they play, how many codes of each type they matched etc
+// UserCodeConnection - A link between a user and a code, e.g. a cookie/IP/turns with another user, and the stats for 
+// how often the connection has occurred over what timespan.
+// UserCodeConnectionMatches - A link between two users based on a code that they share, how many matches, and how often the match occurred
+class UserCodeConnection {
+	public static function loadForUserIDByType($userID) {
+		global $DB;
+		$tabl = $DB->sql_tabl("SELECT type, userID, HEX(code) code, earliest, latest, count FROM wD_UserCodeConnections WHERE userID = ".$userID);
+		$res = array();
+		while($row = $DB->tabl_hash($tabl))
+		{
+			if( !isset($res[$row['type']]) ) {
+				$res[$row['type']] = array();
+			}
+			$res[$row['type']][$row['code']] = new UserCodeConnection($row);
+		}
+		return $res;
+	}
+	public function __construct($row) {
+		$this->type = $row['type'];
+		$this->userID = $row['userID'];
+		$this->code = $row['code'];
+		$this->earliest = $row['earliest'];
+		$this->latest = $row['latest'];
+		$this->count = $row['count'];
+	}
+	public $type;
+	public $userID;
+	public $code;
+	public $earliest;
+	public $latest;
+	public $count;
+}
+
 if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 {
 	try
@@ -87,10 +159,10 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 			print $relations->outputTable(-1000,-1000,-1000); // Be inclusive of suspicions
 			print '</div>';
 			
+			$m->printUserTimeprint();
 			
 			if( isset($_REQUEST['showHistory']) )
 			{
-				$m->printUserTimeprint();
 				
 				$m->timeData();
 			}
@@ -113,57 +185,6 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 		print '<p><strong>'.l_t('Error').':</strong> '.$e->getMessage().'</p>';
 	}
 }
-
-class adminUserCodeConnection
-{
-	public $type;
-	public $code;
-	public $earliest;
-	public $latest;
-	public $count;
-}
-
-class adminUserCodeConnections
-{
-	public $userID;
-	public $type;
-	public $Connections;
-	
-	public $minEarliest;
-	public $maxLatest;
-	public $sumCount;
-	public $maxCount;
-	public $minCount;
-	public $avgCount;
-	public $count;
-}
-
-class adminUserToUserCodeConnection
-{
-	public adminUserCodeConnection $userA;
-	public adminUserCodeConnection $userB;
-	
-}
-
-class adminUserToUserCodeConnections
-{
-	public adminUserToUserCodeConnections $userA;
-	public adminUserToUserCodeConnections $userB;
-
-	public $MatchingConnections;
-
-	public $type;
-	public $Connections;
-	
-	public $minEarliest;
-	public $maxLatest;
-	public $sumCount;
-	public $maxCount;
-	public $minCount;
-	public $avgCount;
-	public $count;
-}
-
 
 // Independent suspicion score
 // ---------------------------
@@ -625,6 +646,7 @@ class adminMultiCheck
 		return $list;
 	}
 
+	public static $types = array('Cookie','IP','IPVPN','Fingerprint','FingerprintPro','UserTurn', 'UserTurnMissed', 'MessageCount', 'MessageLength');
 	/**
 	 * Collect data aboue aUser from the AccessLogs which is useful for checking
 	 * for multi-accounts, so that it can be saved in aLogsData and re-used for
@@ -638,21 +660,12 @@ class adminMultiCheck
 		global $User;
 		$this->aLogsData = array();
 
-		list($this->aLogsData['IPs']) = self::sql_list(
-			"SELECT COUNT(*) FROM wD_UserCodeConnections WHERE userID = ".$this->aUserID." AND type='IP'"
-		);
-
-		list($this->aLogsData['cookieCodes']) = self::sql_list(
-			"SELECT COUNT(*) FROM wD_UserCodeConnections WHERE userID = ".$this->aUserID." AND type='Cookie'"
-		);
-
-		list($this->aLogsData['browserFingerprints']) = self::sql_list(
-			"SELECT COUNT(*)FROM wD_UserCodeConnections WHERE userID = ".$this->aUserID." AND type='Fingerprint'"
-		);
-
-		list($this->aLogsData['fpPro']) = self::sql_list(
-			"SELECT COUNT(*)FROM wD_UserCodeConnections WHERE userID = ".$this->aUserID." AND type='FingerprintPro'"
-		);
+		foreach(self::$types as $type)
+		{
+			list($this->aLogsData[$type]) = self::sql_list(
+				"SELECT COUNT(*) FROM wD_UserCodeConnections WHERE userID = ".$this->aUserID." AND type = '".$type."'"
+			);
+		}
 
 		// Up until now all aLogsData arrays must be populated
 		/*foreach($this->aLogsData as $name=>$data)
@@ -897,6 +910,39 @@ class adminMultiCheck
 					array('Italy'=>0.1,'Turkey'=>0.2,'Austria'=>0.3), $aTally, $aUserTotal, $bTally, $bUserTotal);
 		}
 	}
+	private function compareType($bUserID, $bUserTotal, $type)
+	{
+		$aUserTotal = $this->aLogsData[$type];//['total'];
+		$aUserData = $this->aLogsData[$type];
+
+		$bTally=array();
+		$matches = self::sql_list(
+			"SELECT b.code, b.count 
+			FROM wD_UserCodeConnections a 
+			INNER JOIN wD_UserCodeConnections b 
+			ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID 
+			WHERE a.userID = ".$this->aUserID." AND b.userID = ".$bUserID." AND a.type = '".$type."'
+			", $bTally
+		);
+		$bSum = 0;
+		foreach($bTally as $codeMatch=>$matchCount)
+			$bSum += $matchCount;
+		$bUserTotal = $bSum;
+		if( count($matches) )
+		{
+			$aTally=array();
+			self::sql_list(
+				"SELECT a.code, a.count 
+				FROM wD_UserCodeConnections a 
+				INNER JOIN wD_UserCodeConnections b 
+				ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID 
+				WHERE a.userID = ".$this->aUserID." AND b.userID = ".$bUserID." AND a.type = '".$type."'
+				", $aTally
+			);
+			self::printDataComparison($type, $matches, count($matches), ($aUserData),
+					array('Italy'=>0.1,'Turkey'=>0.2,'Austria'=>0.3), $aTally, $aUserTotal, $bTally, $bUserTotal);
+		}
+	}
 	private function compareGames($name, $bUserID, $gameIDs)
 	{
 		global $DB;
@@ -952,10 +998,8 @@ class adminMultiCheck
 
 		$bUserTotals = self::getCodeTotalsByType($bUser->id);
 
-		$this->compareIPData($bUser->id, isset($bUserTotals['IP']) ? $bUserTotals['IP'] : 0);
-		$this->compareCookieCodeData($bUser->id, isset($bUserTotals['Cookie']) ? $bUserTotals['Cookie'] : 0);
-		$this->compareFingerprintData($bUser->id, isset($bUserTotals['Fingerprint']) ? $bUserTotals['Fingerprint'] : 0);
-		$this->compareFingerprintProData($bUser->id, isset($bUserTotals['FingerprintPro']) ? $bUserTotals['FingerprintPro'] : 0);
+		foreach(self::$types as $type)
+			$this->compareType($bUser->id, 0, $type);
 		
 		if ( !is_null($relations) )
 		{
@@ -982,40 +1026,20 @@ class adminMultiCheck
 	
 		$userID = (int)$userID;
 	
-		$tabl = $DB->sql_tabl("SELECT day, hour, SUM(hits) as hits FROM (SELECT userID, hits, DAYOFWEEK(lastRequest) as day, HOUR(lastRequest) as hour FROM wD_AccessLog WHERE userID=".$userID.") as a GROUP BY day, hour");
-	
-		$result = $this->timeprintBlank();
+		$tabl = $DB->sql_tabl("SELECT period0, period1, period2, period3, period4, period5, period6, period7, period8, period9, period10, period11, period12, period13, period14, period15, period16, period17, period18, period19, period20, period21, period22, period23 FROM wD_UserConnections WHERE userID=".$userID);	
 		
-		while ( list($day, $hour, $hits) = $DB->tabl_row($tabl) )
-			$result[$day][$hour] = $hits;
+		while ( $row = $DB->tabl_row($tabl) )
+			$result = $row;
 	
 		return $this->timeprintReduce($result);
 	}
 	
-	/**
-	 * Get a blank timeprint array
-	 * @return array[int][int] $array[$day][$hour] = An array of 0s. $day is 1 to 7, $hour is 0 to 23
-	 */
-	private function timeprintBlank() {
-		
-		$result = array();
-		
-		for($day=1; $day<=7; $day++) {
-			$result[$day] = array();
-			for($hour=0; $hour<24; $hour++)
-				$result[$day][$hour] = 0;
-		}
-		
-		return $result;
-	}
-	
-	private function timeprintSum(array $weekData) {
+	private function timeprintSum(array $dayData) {
 		
 		// Sum it all up
 		$sum=0;
-		foreach($weekData as $day=>$dayData)
-			foreach($dayData as $hour=>$value)
-				$sum += $value;
+		foreach($dayData as $hour=>$value)
+			$sum += $value;
 		
 		return $sum;
 	}
@@ -1025,18 +1049,16 @@ class adminMultiCheck
 	 * 
 	 * @return array[int][int] $array[$day][$hour] = An array of 0-1 values which adds up to 1, (or 0 if it was 0 before). $day is 1 to 7, $hour is 0 to 23
 	 */
-	private function timeprintReduce(array $weekData) {
-		
-		$result = $this->timeprintBlank();
+	private function timeprintReduce(array $dayData) {
 		
 		// Sum it all up
-		$sum=$this->timeprintSum($weekData);
+		$sum=$this->timeprintSum($dayData);
 		
+		$result = array();
 		// Divide it all by the sum
 		if( $sum > 0 )
-			foreach($weekData as $day=>$dayData)
-				foreach($dayData as $hour=>$value)
-					$result[$day][$hour] = $value / $sum;
+			foreach($dayData as $hour=>$value)
+				$result[$hour] = $value / $sum;
 		
 		return $result;
 	}
@@ -1051,23 +1073,22 @@ class adminMultiCheck
 	 * 
 	 * @return array[int][int] $array[$day][$hour] = An array of 0-1 values which adds up to 1, (or 0 if it was 0 before). $day is 1 to 7, $hour is 0 to 23
 	 */
-	private function timeprintMerge(array $weekDataA, array $weekDataB) {
-		$weekDataA = $this->timeprintReduce($weekDataA);
-		$weekDataB = $this->timeprintReduce($weekDataB);
+	private function timeprintMerge(array $dayDataA, array $dayDataB) {
+		$dayDataA = $this->timeprintReduce($dayDataA);
+		$dayDataB = $this->timeprintReduce($dayDataB);
 		
-		if( $this->timeprintSum($weekDataA) == 0 )
-			return $weekDataB;
-		elseif( $this->timeprintSum($weekDataB) == 0 )
-			return $weekDataA;
+		if( $this->timeprintSum($dayDataA) == 0 )
+			return $dayDataB;
+		elseif( $this->timeprintSum($dayDataB) == 0 )
+			return $dayDataA;
 		else
 		{
-			$weekDataC = $this->timeprintBlank();
+			$dayDataC = array();
 			
-			foreach($weekDataA as $day=>$hourDataA)
-				foreach($hourDataA as $hour=>$valueA)
-					$weekDataC[$day][$hour] = $valueA * $weekDataB[$day][$hour];
+			foreach($dayDataA as $hour=>$valueA)
+				$dayDataC[$hour] = $valueA * $dayDataB[$hour];
 			
-			return $this->timeprintReduce($weekDataC);
+			return $this->timeprintReduce($dayDataC);
 		}
 	}
 	
@@ -1145,7 +1166,7 @@ class adminMultiCheck
 			}
 			
 			print '<h4>'.l_t('Comparison timeprint:').'</h4>';
-			$timeprintComparison = $this->timeprintBlank();
+			$timeprintComparison = array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
 			foreach($timeprints as $timeprint)
 				$timeprintComparison = $this->timeprintMerge($timeprintComparison, $timeprint);
 			
@@ -1157,35 +1178,23 @@ class adminMultiCheck
 		print '</div>';
 	}
 	
-	private function printTimeprint(array $weekData) {
+	private function printTimeprint(array $hourData) {
 		$buf = '<table>';
 		
-		$buf .= '<tr><th><strong>'.l_t('Hour:').'</strong></th>';
+		$buf .= '<tr>';
 		for($i=0;$i<24;$i++)
 			$buf .= '<th>'.$i.'</th>';
 		$buf .= '</tr>';
 		
-		foreach( $weekData as $day=>$hourData) {
-			switch($day) {
-				case 1: $day = 'Mon'; break;
-				case 2: $day = 'Tue'; break;
-				case 3: $day = 'Wed'; break;
-				case 4: $day = 'Thu'; break;
-				case 5: $day = 'Fri'; break;
-				case 6: $day = 'Sat'; break;
-				case 7: $day = 'Sun'; break;
-			}
-			$buf .= '<tr><th>'.$day.'</th>';
-			foreach($hourData as $hour=>$value) {
-				$value = round($value * 100).'%';
-				if( $value == 0 )
-					$value = '&nbsp;';
-				
-				$buf .= '<td>'.$value.'</td>';
-			}
-			$buf .= '</tr>';
+		foreach($hourData as $hour=>$value) {
+			$value = round($value * 100).'%';
+			if( $value == 0 )
+				$value = '&nbsp;';
+			
+			$buf .= '<td>'.$value.'</td>';
 		}
-		
+		$buf .= '</tr>';
+			
 		$buf .= '</table>';
 		
 		return $buf;

@@ -27,6 +27,9 @@ if( !isset($_REQUEST['variantID']) && ( !isset($_REQUEST['gameID']) || !isset($_
 
 define('IN_CODE', 1);
 
+require_once('config.php');
+require_once('objects/memcached.php');
+
 if( isset($_REQUEST['DATC'])||isset($_REQUEST['nocache'])||isset($_REQUEST['uncache'])||isset($_REQUEST['profile']) )
 	define('IGNORECACHE',1);
 else
@@ -36,6 +39,12 @@ if( isset($_REQUEST['uncache'])||isset($_REQUEST['profile']) )
 	define('DELETECACHE',1);
 else
 	define('DELETECACHE',0);
+
+// This game was recently processed so suppress cacheing in case we save only half the units etc
+if( isset($_REQUEST['gameID']) && $MC->get('processing'.((int)$_REQUEST['gameID'])) !== false )
+	define('DONOTCACHE',1);
+else
+	define('DONOTCACHE',0);
     
 // Check if we should hide the move arrows. (Preview do not need the old move-arrows too...)
 if( isset($_REQUEST['hideMoves']) || isset($_REQUEST['preview']))
@@ -68,7 +77,7 @@ if( isset($_REQUEST['countryNames']))
 else
 	define('COUNTRYNAMES',0);
 
-if( !IGNORECACHE && !PREVIEW)
+if( !IGNORECACHE && !PREVIEW && !DONOTCACHE )
 {
 	// We might be able to fetch the map from the cache
 	
@@ -100,7 +109,7 @@ if( !IGNORECACHE && !PREVIEW)
 require_once('header.php');
 
 if( DELETECACHE && !$User->type['Admin'] )
-	die(l_t('Disable-cacheing flags set, but you are not an admin.'));
+	die(l_t('Delete-cache flags set, but you are not an admin.'));
 
 if ( isset($_REQUEST['DATC']) )
 {
@@ -170,7 +179,6 @@ else
 	$turn=-1;
 }
 
-
 // Load the drawMap object for the given map type
 if ( $mapType == 'xml' )
 {
@@ -180,9 +188,23 @@ if ( $mapType == 'xml' )
 elseif ( $mapType == 'json' )
 {
 	require_once(l_r('board/orders/jsonBoardData.php'));
-	$filename=Game::mapFilename($Game->id, $turn, 'json');
-	file_put_contents($filename, jsonBoardData::getBoardTurnData($Game->id) );
-	libHTML::serveImage($filename, 'text/plain');
+	
+	$jsonData = jsonBoardData::getBoardTurnData($Game->id);
+	if( !DONOTCACHE )
+	{
+		$filename=Game::mapFilename($Game->id, $turn, 'json');
+		file_put_contents($filename,  $jsonData);
+		libHTML::serveImage($filename, 'text/plain');
+	}
+	else
+	{
+		header('Content-Length: '.strlen($jsonData));
+		header('Content-Type: text/plain');
+
+		print $jsonData;
+	}
+	die();
+
 }
 else
 {
@@ -542,7 +564,7 @@ if (COLORCORRECT)
 if (COUNTRYNAMES)
 	$filename = str_replace(".map","-names.map",$filename);
 
-if (PREVIEW)
+if ( PREVIEW || DONOTCACHE )
 {
 	$drawMap->writeToBrowser();
 }
@@ -552,5 +574,3 @@ else
 	libHTML::serveImage($filename);
 }
 unset($drawMap); // $drawMap is memory intensive and should be freed as soon as no longer needed
-
-?>

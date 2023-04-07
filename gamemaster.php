@@ -75,15 +75,17 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 		print "Running notification updates\n";
 		
 	}
-	
+
+	$groupUpdateTime = time();
 	if( in_array("GROUPUPDATE", $argv) )
 	{
 		print "Running group relationship updates\n";
 	
-		$groupUpdateTime = time();
 		// Update the user group calculations
 		require_once('lib/group.php');
-		libGroup::generateGameRelationCache($Misc->LastGroupUpdate);	
+		libGroup::generateGameRelationCache($Misc->LastGroupUpdate);
+		
+		$Misc->LastGroupUpdate = $groupUpdateTime;
 	}
 
 	if( in_array("CONNECTIONUPDATE", $argv) )
@@ -91,7 +93,7 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 		print "Running user connection updates\n";
 
 		// Update the user connections
-		require_once('gamemaster/userConnections.php');
+		require_once('gamemaster/userconnections.php');
 		
 		print l_t('Updating game message user connection stats').'<br />';
 		libUserConnections::updateGameMessageStats();
@@ -182,6 +184,9 @@ if( $Misc->LastStatsUpdate < (time() - 60) )
 	miscUpdate::user();
 	$Misc->LastStatsUpdate = time();
 
+	// Keep sandbox games from clogging things up using a hack for now:
+	$DB->sql_put("UPDate wD_Games SET processTime = 2000000000 WHERE name LIKE 'SB_%'");
+
 	// This is also only needed infrequently
 	/*
 	This should be unnecessary after changing the way the play-now games are created, but leaving it in for now just in case.
@@ -270,9 +275,10 @@ $tabl = $DB->sql_tabl("SELECT * FROM wD_Games
 $dirtyApiKeys = array(); // Keep track of any api keys with cached data that needs cleansing
 while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 {
+	$MC->set('processing'.$gameRow['id'], time(), 60); // Set a hint that nothing should be saved/cached for this game as it's being processed
+
 	$Variant=libVariant::loadFromVariantID($gameRow['variantID']);
 	$Game=$Variant->Game($gameRow);
-
 	print '<a href="board.php?gameID='.$Game->id.'">gameID='.$Game->id.': '.$Game->name.'</a>: ';
 
 	try
@@ -329,6 +335,12 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 		}
 	}
 
+	// Wipe the whole cache; regenerating game maps used to be a big drain on performance but these days locking is more of a concern,
+	// and disabling locking on map generation might mean that a user loads half the units up
+	Game::wipeCache($Game->id);
+
+	$MC->delete('processing'.$Game->id);
+	
 	print '<br />';
 }
 

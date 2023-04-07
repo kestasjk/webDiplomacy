@@ -72,7 +72,7 @@ class libUserConnections
         // Codes to aggregate totals for
 		$codes = array('Cookie','IP','IPVPN','Fingerprint','FingerprintPro','LatLon','Network','City','UserTurn','UserTurnMissed','MessageLength','MessageCount');
         // Codes to also look for matches for (matching all users who are in the same region / have played with the same user wouldn't be useful)
-        $matchCodes = array('Cookie','IP','Fingerprint','FingerprintPro','UserTurnMissed');
+        $matchCodes = array('Cookie','IP','Fingerprint','FingerprintPro','UserTurnMissed','UserTurn');
 		foreach($codes as $codeType)
 		{
 			$sql .= "
@@ -319,34 +319,34 @@ ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(earliestRequest, earliest), 
 /* Enter turns shared */
 DROP TABLE IF EXISTS wD_Tmp_TurnCount;
 CREATE TABLE wD_Tmp_TurnCount
-SELECT a.userID, b.userID otherUserID, MIN(a.turnDateTime) earliestT, MAX(a.turnDateTime) latestT, COUNT(*) tCount
+SELECT a.userID, a.gameID*1000 + a.turn gameIDTurn, b.userID otherUserID, MIN(a.turnDateTime) earliestT, MAX(a.turnDateTime) latestT, COUNT(*) tCount
   FROM wD_TurnDate a
   INNER JOIN wD_TurnDate b ON a.gameID = b.gameID AND a.userID <> b.userID AND a.turnDateTime = b.turnDateTime
   WHERE a.turnDateTime >= ".$lastUpdate." AND b.turnDateTime >= ".$lastUpdate."
-  GROUP BY a.userID, b.userID;
+  GROUP BY a.userID, a.gameID, a.turn, b.userID;
 
   DELETE FROM wD_Tmp_TurnCount WHERE userID IN (".self::getExcludedUserIDCSVList().") OR otherUserID IN (".self::getExcludedUserIDCSVList().");
 
   INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
-  SELECT userID, 'UserTurn' type, UNHEX(LPAD(CONV(otherUserID,10,16),16,'0')), FROM_UNIXTIME(earliestT), FROM_UNIXTIME(latestT), tCount
+  SELECT userID, 'UserTurn' type, UNHEX(LPAD(CONV(gameIDTurn,10,16),16,'0')), FROM_UNIXTIME(earliestT), FROM_UNIXTIME(latestT), tCount
   FROM wD_Tmp_TurnCount r
   ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(FROM_UNIXTIME(earliestT), earliest), latest=greatest(FROM_UNIXTIME(latestT), latest), count=count+tCount;
 
   /* Enter missed turns shared */  
   DROP TABLE IF EXISTS wD_Tmp_MissedTurnCount;
   CREATE TABLE wD_Tmp_MissedTurnCount
-  SELECT a.userID, b.userID otherUserID, MIN(a.turnDateTime) earliestT, MAX(a.turnDateTime) latestT, COUNT(*) tCount
+  SELECT a.userID, a.gameID*1000 + a.turn gameIDTurn, b.userID otherUserID, MIN(a.turnDateTime) earliestT, MAX(a.turnDateTime) latestT, COUNT(*) tCount
 	FROM  wD_MissedTurns  a
 	INNER JOIN  wD_MissedTurns  b ON a.gameID = b.gameID AND a.userID <> b.userID AND a.turnDateTime = b.turnDateTime
 	WHERE a.turnDateTime >= ".$lastUpdate." AND b.turnDateTime >= ".$lastUpdate."
-	GROUP BY a.userID, b.userID;
+	GROUP BY a.userID, a.gameID, a.turn, b.userID;
 
     DELETE FROM wD_Tmp_MissedTurnCount WHERE userID IN (".self::getExcludedUserIDCSVList().") OR otherUserID IN (".self::getExcludedUserIDCSVList().");
-    
-INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
-SELECT userID, 'UserTurnMissed' type, UNHEX(LPAD(CONV(otherUserID,10,16),16,'0')), FROM_UNIXTIME(earliestT), FROM_UNIXTIME(latestT), tCount
-FROM wD_Tmp_MissedTurnCount r
-ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(FROM_UNIXTIME(earliestT), earliest), latest=greatest(FROM_UNIXTIME(latestT), latest), count=count+tCount;
+        
+    INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
+    SELECT userID, 'UserTurnMissed' type, UNHEX(LPAD(CONV(gameIDTurn,10,16),16,'0')), FROM_UNIXTIME(earliestT), FROM_UNIXTIME(latestT), tCount
+    FROM wD_Tmp_MissedTurnCount r
+    ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(FROM_UNIXTIME(earliestT), earliest), latest=greatest(FROM_UNIXTIME(latestT), latest), count=count+tCount;
 
 COMMIT;");
 
@@ -388,12 +388,12 @@ CREATE TABLE wD_Tmp_MessageCount
   DELETE FROM wD_Tmp_MessageCount WHERE userID IN (".self::getExcludedUserIDCSVList().") OR otherUserID IN (".self::getExcludedUserIDCSVList().");
 
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
-SELECT userID, 'MessageLength' type, UNHEX(LPAD(CONV(otherUserID,10,16),16,'0')) code , earliestM, latestM, countMLen
+SELECT userID, 'MessageLength' type, UNHEX(LPAD(CONV(code,10,16),16,'0')) code , earliestM, latestM, countMLen
 FROM wD_Tmp_MessageCount r
 ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(r.earliestM, earliest), latest=greatest(r.latestM, latest), count=count+r.countM;
 
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
-SELECT userID, 'MessageCount' type, UNHEX(LPAD(CONV(otherUserID,10,16),16,'0')) code , earliestM, latestM, countM
+SELECT userID, 'MessageCount' type, UNHEX(LPAD(CONV(code,10,16),16,'0')) code , earliestM, latestM, countM
 FROM wD_Tmp_MessageCount r
 ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(r.earliestM, earliest), latest=greatest(r.latestM, latest), count=count+r.countM;
 ");

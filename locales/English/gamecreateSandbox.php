@@ -34,7 +34,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		<form method="post">
 			<p>
 				<strong>Sandbox Name:</strong></br>
-				<input class = "gameCreate" type="text" name="newGame[name]" value="" size="30">
+				<input class = "gameCreate" type="text" name="newGame[name]" value="<?php print md5(time()); ?>" size="30">
 			</p>
 
 			</br></br>
@@ -63,17 +63,16 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					</p>
 				</div>
 			</div>
-			<select id="variant" class="gameCreate" name="newGame[variantID]" onchange="getVariantTerritoryBuildChoices()">
+			<select id="variant" class="gameCreate" name="newGame[variantID]" onchange="variantSelectionChanged()">
 			<?php
-				$first=true;
+				$defaultVariantID = ( isset($_REQUEST['newGame']) && isset($_REQUEST['newGame']['variantID']) ) ? (int)$_REQUEST['newGame']['variantID'] : 1;
 				foreach(Config::$variants as $variantID=>$variantName)
 				{
 					if($variantID != 57)
 					{
 						$Variant = libVariant::loadFromVariantName($variantName);
-						if($first) { print '<option name="newGame[variantID]" selected value="'.$variantID.'">'.$variantName.'</option>'; }
-						else { print '<option name="newGame[variantID]" value="'.$variantID.'">'.$variantName.'</option>'; }			
-						$first=false;
+						if($variantID === $defaultVariantID ) { print '<option name="newGame[variantID]" selected value="'.$variantID.'">'.$variantName.'</option>'; }
+						else { print '<option name="newGame[variantID]" value="'.$variantID.'">'.$variantName.'</option>'; }
 					}
 				}
 				print '</select>';
@@ -85,7 +84,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			<input type="hidden" name="newGame[armyAssignments]" id="armyAssignments" value=""  />
 			<input type="hidden" name="newGame[fleetAssignments]" id="fleetAssignments" value="" />
 			<input type="hidden" name="newGame[scAssignments]" id="scAssignments" value="" />
-
+			<input type="hidden" name="savedOptions" id="savedOptions" value="<?php print isset($_REQUEST['savedOptions']) ? htmlentities($_REQUEST['savedOptions']) : '' ?>" />
+			
 			<p class="notice">
 				<input class = "green-Submit" type="submit"  value="Create">
 			</p>
@@ -166,9 +166,10 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	const canvasElementBase = document.getElementById('customUnitAssignmentCanvasBase');
 	const ctxBase = canvasElementBase.getContext('2d');
 	
-	function getVariantTerritoryBuildChoices() {
+	function variantSelectionChanged() {
 		let selection = document.getElementById('variant');
 		let variantID = selection.options[selection.selectedIndex].value;
+		defaultOptions = {};
 		loadVariant(variantID);
 	}
 	function drawCircle(ctx, x, y, colorArray) {
@@ -177,18 +178,48 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
 		ctx.fillStyle = 'rgb('+colorArray[0]+','+colorArray[1]+','+colorArray[2]+')';
 		ctx.fill();
+		// Set the width to 1 pixel
 		ctx.lineWidth = 1;
 		ctx.strokeStyle = 'black';
 		ctx.stroke();
 	}
+	const RGBToHSL = (r, g, b) => {
+		r /= 255;
+		g /= 255;
+		b /= 255;
+		const l = Math.max(r, g, b);
+		const s = l - Math.min(r, g, b);
+		const h = s
+			? l === r
+			? (g - b) / s
+			: l === g
+			? 2 + (b - r) / s
+			: 4 + (r - g) / s
+			: 0;
+		return [
+			60 * h < 0 ? 60 * h + 360 : 60 * h,
+			100 * (s ? (l <= 0.5 ? s / (2 * l - s) : s / (2 - (2 * l - s))) : 0),
+			(100 * (2 * l - s)) / 2,
+		];
+	};
+	const HSLToRGB = (h, s, l) => {
+		s /= 100;
+		l /= 100;
+		const k = n => (n + h / 30) % 12;
+		const a = s * Math.min(l, 1 - l);
+		const f = n =>
+			l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+		return [255 * f(0), 255 * f(8), 255 * f(4)];
+	};
 	function drawRect(ctx, x, y, colorArray) {
-		const radius = 5;
+		x = Math.round(x)+0.5; // 0.5 needed to avoid blurry lines
+		y = Math.round(y)+0.5;
 		ctx.beginPath();
 		ctx.rect(x, y-10, 10, 10);
 		ctx.fillStyle = 'rgb('+colorArray[0]+','+colorArray[1]+','+colorArray[2]+')';
 		ctx.fill();
 		ctx.lineWidth = 1;
-		ctx.strokeStyle = 'black';
+		ctx.strokeStyle = 'rgb(0,0,0)';
 		ctx.stroke();
 	}
 	function findClosestTerritory(Territories, x, y) {
@@ -212,7 +243,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 		return closestTerritory;
 	}
-	function convertIndexedPngToTrueColor(image, callback) {
+	function convertWhiteToTransparent(image, callback) {
 		// Create a temporary canvas
 		const tempCanvas = document.createElement('canvas');
 		const tempCtx = tempCanvas.getContext('2d');
@@ -220,10 +251,16 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		// Set the dimensions of the canvas to be the same size as the image
 		tempCanvas.width = image.width;
 		tempCanvas.height = image.height;
-
 		// Draw the image onto the canvas
 		tempCtx.drawImage(image, 0, 0, image.width, image.height);
-
+		let imageData = tempCtx.getImageData(0, 0, image.width, image.height);
+		let data = imageData.data;
+		for (let i = 0; i < data.length; i += 4) {
+			if( data[i] == 255 && data[i + 1] == 255 && data[i + 2] == 255 ) {
+				data[i + 3] = 0;
+			}
+		}
+		tempCtx.putImageData(imageData, 0, 0);
 		// Create a new Image instance for the true color image
 		const trueColorImage = new Image();
 
@@ -231,7 +268,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		trueColorImage.onload = function() {
 			console.log('True color image loaded successfully:', trueColorImage);
 			if (typeof callback === 'function') {
-			callback(trueColorImage);
+				callback(trueColorImage);
 			}
 		};
 
@@ -266,7 +303,10 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		const terr = Territories[highlightedTerrID];
 		if( terr.countryID >= 0 && terr.type != 'Sea' )
 		{
-			const color = countryColors[terr.countryID];
+			let color = countryColors[selectedCountryID];
+			let hsl = RGBToHSL(color[0], color[1], color[2]);
+			hsl[2] *= 1.1;
+			color = HSLToRGB(hsl[0], hsl[1], hsl[2]);
 			//colorAllPixelsWithSameColor(ctx, terr.smallMapX, terr.smallMapY, color);
 		}
 		
@@ -493,17 +533,36 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 		updateVariantConfig();
 	});
+	// Store the bounding boxes of each color so that after the first time that color is filled it will only go to the pixels that need to be filled
+	let targetColorBoundingBoxes = {};
 	function colorAllPixelsWithSameColor(ctx, x, y, fillColor) {
 		const canvasWidth = ctx.canvas.width;
 		const canvasHeight = ctx.canvas.height;
 
+		let xStart = 0;
+		let yStart = 0;
+		let boxWidth = canvasWidth;
+		let boxHeight = canvasHeight;
+
 		// Get the color of the pixel at (x, y)
 		const targetColor = ctxBase.getImageData(x, y, 1, 1).data;
 
+		let hasBoundingBox = false;
+		const targetColorKey = targetColor.join('-');
+		if( targetColorKey in targetColorBoundingBoxes )
+		{
+			let boundingBox = targetColorBoundingBoxes[targetColorKey];
+			xStart = boundingBox.xStart;
+			yStart = boundingBox.yStart;
+			boxWidth = boundingBox.boxWidth;
+			boxHeight = boundingBox.boxHeight;
+			hasBoundingBox = true;
+		}
+
 		// Get the entire canvas pixel data
-		const imageDataBase = ctxBase.getImageData(0, 0, canvasWidth, canvasHeight);
+		const imageDataBase = ctxBase.getImageData(xStart, yStart, boxWidth, boxHeight);
 		const dataBase = imageDataBase.data;
-		const imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+		const imageData = ctx.getImageData(xStart, yStart, boxWidth, boxHeight);
 		const data = imageData.data;
 
 		// Convert the fillColor to an RGBA array
@@ -511,17 +570,41 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		if (colorArray.length === 3) colorArray.push(255);
 
 		// Iterate over all pixels and replace the target color with the fill color
+		let minX = canvasWidth;
+		let minY = canvasHeight;
+		let maxX = 0;
+		let maxY = 0;
 		for (let i = 0; i < data.length; i += 4) {
 			if (dataBase[i] === targetColor[0] && dataBase[i + 1] === targetColor[1] && dataBase[i + 2] === targetColor[2] && dataBase[i + 3] === targetColor[3]) {
-			data[i] = colorArray[0];
-			data[i + 1] = colorArray[1];
-			data[i + 2] = colorArray[2];
-			data[i + 3] = colorArray[3];
+				data[i] = colorArray[0];
+				data[i + 1] = colorArray[1];
+				data[i + 2] = colorArray[2];
+				data[i + 3] = colorArray[3];
+				
+				// Get the coordinates to find the bounding box
+				const xPosition = (i / 4) % canvasWidth;
+				const yPosition = Math.floor((i / 4) / canvasWidth);
+
+				// Add 5 pixes around the bounding box to make sure that the fill doesn't miss any pixels
+				minX = Math.min(minX, Math.max(0,xPosition - 5));
+				minY = Math.min(minY, Math.max(0,yPosition - 5));
+				maxX = Math.max(maxX, Math.min(canvasWidth, xPosition + 5));
+				maxY = Math.max(maxY, Math.min(canvasHeight, yPosition + 5));
 			}
 		}
 
+		if( ! hasBoundingBox )
+		{
+			targetColorBoundingBoxes[targetColorKey] = {
+				xStart: minX,
+				yStart: minY,
+				boxWidth: maxX - minX,
+				boxHeight: maxY - minY
+			};	
+		}
+
 		// Put the modified pixel data back onto the canvas
-		ctx.putImageData(imageData, 0, 0);
+		ctx.putImageData(imageData, xStart, yStart);
 	}
 
 	function loadMapIntoCanvas() {
@@ -578,6 +661,9 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				}
 			}
 		}
+		// Draw names
+		ctxOptions.drawImage(names, 0, 0, names.width, names.height);
+
 		// Draw unit icons:
 		for (const optionInd in defaultOptions)
 		{
@@ -706,15 +792,21 @@ function getSCListByCountryID() {
 	return listByCountry;
 }
 
-
 let updateVariantConfig = () => {};
 function loadVariant(variantID)
 {
 	selectedCountryID = 0;
+	targetColorBoundingBoxes = {};
+	highlightedTerrID = -1;
+
 	sandboxSetupByVariant[variantID].fetchTerritories(
 		() => {
-			
-			defaultOptions = sandboxSetupByVariant[variantID].getDefaultOptions()
+			// if defaultOptions is empty:
+			if( Object.keys(defaultOptions).length == 0 )
+			{
+				// set defaultOptions to the default options for this variant:
+				defaultOptions = sandboxSetupByVariant[variantID].getDefaultOptions()
+			}
 
 			let countryNamesByID = sandboxSetupByVariant[variantID].getCountryNamesByID();
 
@@ -749,34 +841,33 @@ function loadVariant(variantID)
 				countryID++;
 			}
 			let remainingToLoad = 4;
-			army.onload = () => convertIndexedPngToTrueColor(army, (im) => {
+			army.onload = () => convertWhiteToTransparent(army, (im) => {
 				army = im;
 				if(--remainingToLoad == 0)
 				{
 					updateVariantConfig();
 				}
 			});
-			fleet.onload = () => convertIndexedPngToTrueColor(fleet, (im) => {
+			fleet.onload = () => convertWhiteToTransparent(fleet, (im) => {
 				fleet = im;
 				if(--remainingToLoad == 0)
 				{
 					updateVariantConfig();
 				}
 			});
-			names.onload = () => convertIndexedPngToTrueColor(names, (im) => {
+			names.onload = () => convertWhiteToTransparent(names, (im) => {
 				names = im;
 				if(--remainingToLoad == 0)
 				{
 					updateVariantConfig();
 				}
 			});
-			map.onload = () => convertIndexedPngToTrueColor(map, (im) => {
-				map = im;
+			map.onload = () => {
 				if(--remainingToLoad == 0)
 				{
 					updateVariantConfig();
 				}
-			});
+			};
 			army.src = sandboxSetupByVariant[variantID].armyURL;
 			fleet.src = sandboxSetupByVariant[variantID].fleetURL;
 			map.src = sandboxSetupByVariant[variantID].mapURL;
@@ -795,13 +886,18 @@ function loadVariant(variantID)
 				document.getElementById('armyAssignments').value = armyTerrIDsByCountry;
 				document.getElementById('fleetAssignments').value = fleetTerrIDs;
 				document.getElementById('scAssignments').value = scTerrIDs;
+				document.getElementById('savedOptions').value = JSON.stringify(defaultOptions);
 			};
 		}
 	);
 }
 
-loadVariant(1);
+if( document.getElementById('savedOptions').value != '' )
+{
+	defaultOptions = JSON.parse(document.getElementById('savedOptions').value);
+}
 
+loadVariant(document.getElementById('variant').value);
 
 </script>
 

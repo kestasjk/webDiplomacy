@@ -367,14 +367,14 @@ class processGame extends Game
 	{
 		global $DB;
 
-		self::wipeCache($gameID);
-		
 		if( $takeBackup ) self::backupGame($gameID, false);
 
 		foreach(self::$gameTables as $tableName=>$idColName)
 			$DB->sql_put("DELETE FROM wD_".$tableName." WHERE ".$idColName." = ".$gameID);
 
 		$DB->sql_put("COMMIT");
+
+		self::wipeCache($gameID);
 	}
 
 	/**
@@ -787,20 +787,6 @@ class processGame extends Game
 			 * have been taken now only Games and Members need to be updated, and new orders added
 			 */
 			$this->Members->countUnitsSCs();
-
-			if( $this->turn<1 )
-			{
-				Game::wipeCache($this->id);
-			}
-			elseif ( $this->phase == 'Retreats' or $this->phase == 'Builds' )
-			{
-				/*
-				 * If we have just processed either of these two phases then there will already be
-				 * a map drawn for our turn, which don't have the new moves drawn onto them.
-				 * The current turn's map is deleted
-				 */
-				Game::wipeCache($this->id,$this->turn);
-			}
 
 			/*
 			 * Move to a new phase, and also a new turn if necessary. The turn changes when it's a

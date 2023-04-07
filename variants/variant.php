@@ -244,6 +244,7 @@ abstract class WDVariant {
 				document.getElementById("scOptionID"+option.index+"Country").innerHTML = option.countryID;
 				if( option.countryID > 0 ) {
 					
+					document.getElementById("scOptionID"+option.index+"Country").className = "hof";
 					document.getElementById("scOptionID"+option.index+"Country").classList.add("country"+option.countryID);
 					document.getElementById("scOptionID"+option.index+"Country").innerHTML = countryNamesByID[option.countryID-1];
 					

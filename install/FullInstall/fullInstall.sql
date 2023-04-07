@@ -2129,8 +2129,6 @@ CREATE TABLE IF NOT EXISTS `wD_UserConnections` (
   `countMessageCountTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `matchedUserTurnMissed` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `matchedUserTurnMissedTotal` int(10) UNSIGNED NOT NULL DEFAULT 0,
-  `matchedUserTurnCookie` int(8) UNSIGNED NOT NULL DEFAULT 0,
-  `matchedUserTurnCookieTotal` int(8) UNSIGNED NOT NULL DEFAULT 0,
   `countUserTurnMissed` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `countUserTurnMissedTotal` int(10) UNSIGNED NOT NULL DEFAULT 0,
   `suspicionRelationshipsMod` mediumint(8) UNSIGNED DEFAULT NULL,
