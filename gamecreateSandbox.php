@@ -23,12 +23,22 @@
  * @subpackage Forms
  */
 
+// Check whether we're in play-now mode:
+define('IN_CODE',true);
+require_once('config.php');
+if( Config::isOnPlayNowDomain() ) define('PLAYNOW',true);
+
 require_once('header.php');
 
 if ( $Misc->Panic )
 {
 	libHTML::notice(l_t('Game creation disabled'), 
 	l_t("Game creation has been temporarily disabled while we take care of an unexpected problem. Please try again later, sorry for the inconvenience."));
+}
+
+if( defined('PLAYNOW') )
+{
+	libAuth::configurePlayNowUser();
 }
 
 if( !$User->type['User'] )
