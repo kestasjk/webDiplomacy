@@ -517,7 +517,7 @@ class libGameMaster
 				INNER JOIN wD_Members m ON m.gameID = g.id
 				INNER JOIN wD_Users u ON u.id = m.userID
 				WHERE m.status = 'Playing'
-				AND g.gameOver = 'No' AND g.phase <> 'Pre-game' AND g.phase <> 'Finished'
+				AND g.gameOver = 'No' AND g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND g.processStatus <> 'Paused'
 				GROUP BY g.id
 			) g
 			WHERE (g.Players - g.NoOrders) <= g.ReadyOrders"); 
