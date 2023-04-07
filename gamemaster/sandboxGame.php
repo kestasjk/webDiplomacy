@@ -59,6 +59,10 @@ class processSandboxGame extends processGame
 		WHERE id = ".$Game->id);
 		$Game->phase = $phase;
 		$Game->turn = $turn;
+		
+		// Disable notifications for the game:
+		$DB->sql_put("UPDATE wD_Members SET hideNotifications = 1 WHERE gameID=".$Game->id);
+
 		return $Game;
 	}
 	/**

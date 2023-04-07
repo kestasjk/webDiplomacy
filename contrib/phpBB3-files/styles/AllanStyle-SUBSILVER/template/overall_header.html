@@ -115,7 +115,7 @@ li {
 						<a href="../../" style="display:inline !important">
 							<img id="logo" src="../../images/logo.png" alt="webDiplomacy" />
 						</a>
-				<div style="float:right; text-align:right; width:100%">
+				<div style="text-align:right; width:100%">
 					
 	<!-- IF S_REGISTERED_USER -->
 	<div id="header-welcome">
@@ -136,8 +136,52 @@ li {
 			</span>
 		<!-- ENDIF -->
 		</div>
-		<div id="header-goto"><a href="../../index.php" title="See what's happening" >Home</a><a href="./" class="current" title="The forum; chat, get help, help others, arrange games, discuss strategies" >Forum</a><a href="../../gamelistings.php" title="Game listings; a searchable list of the games on this server" >Games</a><a href="../../gamecreate.php" title="Start up a new game" >New game</a><a href="../../usercp.php" title="Change your user specific settings" >Settings</a><a href="../../help.php" title="Get help and information; guides, intros, FAQs, stats, links" >Help</a></div>
-
+		<div id="header-goto">
+			<div class="nav-wrap">
+				<div class="nav-tab"> 
+					<a href="/index.php?" title="See what's happening">Home</a> </div><div class="nav-tab"> <a href="/contrib/phpBB3/" title="The forum; chat, get help, help others, arrange games, discuss strategies">Forum</a> </div>
+					<div id="navSubMenu" class="clickable nav-tab">Search ▼
+						<div id="nav-drop" style="visibility: hidden;">
+							<a href="/search.php">Find User</a>
+							<a href="/gamelistings.php?gamelistType=Search">Game Search</a>
+							<a href="/detailedSearch.php" title="advanced search of users and games">Advanced Search</a>
+						</div>
+					</div>
+					<div id="navSubMenu" class="clickable nav-tab">Games ▼
+						<div id="nav-drop" style="visibility: hidden;">
+							<a href="/gamelistings.php?gamelistType=New" title="Game listings; a searchable list of the games on this server">New Games</a>
+							<a href="/gamelistings.php?gamelistType=Open%20Positions" title="Open positions dropped by other players, free to claim">Open Games</a>
+							<a href="/gamecreate.php" title="Start up a new game">Start a New Game</a>
+							<a href="/botgamecreate.php" title="Start up a new bots-only game">Start an AI/Bot Game</a>
+							<a href="/gamecreateSandbox.php" title="Start up a new bots-only game">Start a Sandbox Game</a>
+							<a href="/gamelistings.php?gamelistType=Active" title="View/Spectate games currently running">Active Games</a>
+							<!-- <a href="/ghostRatings.php" title="Ghost Ratings Information">Ghost Ratings</a> -->
+							<a href="/tournaments.php" title="Information about tournaments on webDiplomacy">Tournaments</a>
+							<a href="/halloffame.php" title="Information about tournaments on webDiplomacy">Hall of Fame</a>
+						</div>
+					</div>
+					<div id="navSubMenu" class="clickable nav-tab">Account ▼
+						<div id="nav-drop" style="visibility: hidden;">
+							<a href="/usercp.php" title="Change your user specific settings">Settings</a>
+							<a href="/group.php" title="Manage your user relationships">Relationships</a>
+							<a href="/useridentity.php" title="Verify your identity">Identity</a>
+							<a href="/usernotifications.php" title="Manage site notifications">Notifications</a>
+						</div>
+					</div>
+					<div id="navSubMenu" class="clickable nav-tab">Help ▼
+						<div id="nav-drop" style="visibility: hidden;">
+							<a href="/rules.php">Site Rules</a>
+							<a href="/faq.php" title="Frequently Asked Questions">FAQ</a>
+							<a href="/intro.php" title="Intro to Diplomacy">Diplomacy Intro</a>
+							<a href="/points.php" title="Points and Scoring Systems">Points/Scoring</a>
+							<a href="/variants.php" title="Active webDiplomacy variants">Variants</a>
+							<a href="/help.php" title="Site information; guides, stats, links">More Info</a>
+							<a href="/modforum.php">Get Help</a>
+							<a href="/donations.php">Donate</a>
+						</div>
+					</div>
+				</div>
+			</div>
 		<!-- EVENT navbar_header_user_profile_append -->
 	<!-- ELSE -->
 		<div id="header-welcome">
@@ -145,7 +189,44 @@ li {
 						<span class="logon">(<a href="../../logon.php" class="light">Log on</a>)</span>
 					</div>
 					
-		<div id="header-goto"><a href="../../index.php" title="See what's happening" >Home</a><a href="./" class="current" title="The forum; chat, get help, help others, arrange games, discuss strategies" >Forum</a><a href="../../gamelistings.php" title="Game listings; a searchable list of the games on this server" >Games</a><a href="../../register.php" title="Make a new user account" >Register</a><a href="../../help.php" title="Get help and information; guides, intros, FAQs, stats, links" >Help</a></div>
+		
+					<div id="header-goto">
+						<div class="nav-wrap">
+							<div class="nav-tab"> <a href="/index.php?" title="See what's happening">Home</a> </div>
+								<div class="nav-tab"> <a href="/contrib/phpBB3/" title="The forum; chat, get help, help others, arrange games, discuss strategies">Forum</a> </div>
+								<div id="navSubMenu" class="clickable nav-tab">Search ▼
+									<div id="nav-drop" style="visibility: hidden;">
+										<a href="/search.php">Find User</a>
+										<a href="/gamelistings.php?gamelistType=Search">Game Search</a>
+										<a href="/detailedSearch.php" title="advanced search of users and games">Advanced Search</a>
+									</div>
+								</div>
+								<div id="navSubMenu" class="clickable nav-tab">Games ▼
+									<div id="nav-drop" style="visibility: hidden;">
+										<a href="/gamelistings.php?gamelistType=New" title="Game listings; a searchable list of the games on this server">New Games</a>
+										<a href="https://play.webdiplomacy.net/botgamecreate.php" title="Start up a new bots-only game">Start an AI/Bot Game</a>
+										<a href="https://play.webdiplomacy.net/gamecreateSandbox.php" title="Start up a new bots-only game">Start a Sandbox Game</a>
+										<a href="/gamelistings.php?gamelistType=Active" title="View games currently running">Active Games</a>
+										<!-- <a href="/ghostRatings.php" title="Ghost Ratings Information">Ghost Ratings</a> -->
+										<a href="/tournaments.php" title="Information about tournaments on webDiplomacy">Tournaments</a>
+										<a href="/halloffame.php" title="Information about tournaments on webDiplomacy">Hall of Fame</a>
+									</div>
+								</div>
+								<div class="nav-tab"> <a href="/register.php" title="Register">Register</a> </div>
+								<div id="navSubMenu" class="clickable nav-tab">Help ▼
+									<div id="nav-drop" style="visibility: hidden;">
+										<a href="/rules.php">Site Rules</a>
+										<a href="/faq.php" title="Frequently Asked Questions">FAQ</a>
+										<a href="/intro.php" title="Intro to Diplomacy">Diplomacy Intro</a>
+										<a href="/points.php" title="Points and Scoring Systems">Points/Scoring</a>
+										<a href="/variants.php" title="Active webDiplomacy variants">Variants</a>
+										<a href="/help.php" title="Site information; guides, stats, links">More Info</a>
+										<a href="/modforum.php">Get Help</a>
+										<a href="/donations.php">Donate</a>
+									</div>
+								</div>
+							</div>
+						</div>
 		<!-- EVENT navbar_header_logged_out_content -->
 	<!-- ENDIF -->
 	
