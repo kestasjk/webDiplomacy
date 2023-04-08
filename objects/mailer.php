@@ -114,7 +114,8 @@ class Mailer
 	$email,
 	$name,
 	gmdate("Y-m-d\TH:i:s\Z"),
-	htmlentities($_SERVER['REMOTE_ADDR'])
+	// Check for REMOTE_ADDR as this might be from a console
+	htmlentities(isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'webdiplomacy.net')
 )."<br /><br />
 
 ".l_t("If this e-mail was unexpected it can be ignored, please don't reply.")."<br />
