@@ -121,16 +121,15 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 					htmlentities($warning['gameName']).
 					'</a> - '.
 					l_t($warning['phase']).' - '.
-					libTime::remainingText($warning['processTime']);
+					'<strong>'.libTime::remainingText($warning['processTime']).' remaining</strong>';
 			}
 			print 'E-mailing '.$email.' about '.count($links).' games'."\n";
 			$Mailer->Send(
-				array('kestas.j.k@gmail.com'=>$username), 
-				l_t('webDip NMR Warning: No orders submitted!'),
-				l_t("Hi %s,<br>You haven't submitted orders for the following game(s), which will be processed soon (less than 20% of phase left)!").
-				l_t("Not submitting orders will affect your reliability rating, and makes the game less enjoyable for others. Please use the link(s) below to submit orders for these games asap!<br><br>").
-				"<ul><li>".implode('</li><li>',$links)."</li></ul><br><br>".
-				l_t("<i>Thank you! - webDiplomacy notification bot</i><br>")
+				array($email=>$username), 
+				l_t('NMR Warning: No orders submitted!'),
+				l_t("You haven't submitted orders for the following game(s), which will be processed soon (less than 20% of phase left)!<br><br>").
+				l_t("Not submitting orders will affect your reliability rating, and makes the game less enjoyable for others.<br><br>Please use the link(s) below to submit orders for these games asap!<br><br>").
+				"<ul><li>".implode('</li><li>',$links)."</li></ul>"
 			);
 		}
 
