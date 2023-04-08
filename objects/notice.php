@@ -275,7 +275,7 @@ class notice
 		$linkName=$DB->escape($linkName,true);
 		$text=$DB->msg_escape($text,true);
 		$DB->sql_put("INSERT INTO wD_Notices
-			(toUserID, fromID, type, keep, private, `text`, linkName, linkID,timeSent)
+			(toUserID, fromID, type, keep, private, `text`, linkName, linkID, timeSent)
 			VALUES (
 			".$toUserID.", ".$fromID.", '".$type."', '".$keep."',
 				'".$private."', '".$text."', '".$linkName."', ".$linkID.",".time().")");

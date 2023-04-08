@@ -91,7 +91,7 @@ class libUserConnections
             {
 
                 $sql .= "
-                /* Find any new matches between users, and add them to the matched code table */
+                /* Find any new matches between users, and add them to the matched code table. */
                 INSERT INTO wD_UserCodeConnectionMatches (type, userIDFrom, userIDTo, matches, matchCount)
                 SELECT a.type, a.userID userIDFrom, b.userID userIDTo, SUM(a.isNew) matches, SUM(a.count-a.previousCount) matchCount
                 FROM wD_UserCodeConnections a
@@ -99,41 +99,16 @@ class libUserConnections
                 WHERE a.type = '".$codeType."' AND a.isUpdated = 1
                 GROUP BY a.userID, b.userID, a.type
                 ON DUPLICATE KEY UPDATE matches = matches + VALUES(matches), matchCount = matchCount + VALUES(matchCount), isUpdated = 1;
-    
-                /* Ensure the summary records are there before updating them */
-                INSERT INTO wD_UserConnections (userID)
-                SELECT DISTINCT userIDFrom 
-                FROM wD_UserCodeConnectionMatches a
-                LEFT JOIN wD_UserConnections b ON a.userIDFrom = b.userID
-                WHERE a.isNew = 1 AND a.type = '".$codeType."' AND b.userID IS NULL;
                 
-                INSERT INTO wD_UserConnections (userID)
-                SELECT DISTINCT userIDTo 
-                FROM wD_UserCodeConnectionMatches a
-                LEFT JOIN wD_UserConnections b ON a.userIDTo = b.userID
-                WHERE a.isNew = 1 AND a.type = '".$codeType."' AND b.userID IS NULL;
-               
-                /* Aggregate new matches from a user A into user A's summary record */
-                UPDATE wD_UserConnections uc
-                INNER JOIN (
-                    SELECT userIDFrom, SUM(matches - previousMatches) newMatches, SUM(matchCount - previousMatchCount) newMatchCount 
-                    FROM  wD_UserCodeConnectionMatches 
-                    WHERE isUpdated = 1 AND type = '".$codeType."'
-                    GROUP BY userIDFrom
-                )rec ON rec.userIDFrom = uc.userID
-                SET matched".$codeType." = matched".$codeType." + newMatches, 
-                    matched".$codeType."Total = matched".$codeType."Total + newMatchCount;
-                
-                /* Aggregate new matches from user A to user B's summary record */
-                UPDATE wD_UserConnections uc
-                INNER JOIN (
-                    SELECT userIDTo, SUM(matches - previousMatches) newMatches, SUM(matchCount - previousMatchCount) newMatchCount 
-                    FROM  wD_UserCodeConnectionMatches 
-                    WHERE isUpdated = 1 AND type = '".$codeType."'
-                    GROUP BY userIDTo
-                )rec ON rec.userIDTo = uc.userID
-                SET matchedOther".$codeType."Total = matchedOther".$codeType."Total + newMatchCount;
-                    ";
+                /* Also add the reverse matches; this will double the match counts but that's fine */
+                INSERT INTO wD_UserCodeConnectionMatches (type, userIDFrom, userIDTo, matches, matchCount)
+                SELECT b.type, b.userID userIDFrom, a.userID userIDTo, SUM(a.isNew) matches, SUM(a.count-a.previousCount) matchCount
+                FROM wD_UserCodeConnections a
+                INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
+                WHERE a.type = '".$codeType."' AND a.isUpdated = 1
+                GROUP BY a.userID, b.userID, a.type
+                ON DUPLICATE KEY UPDATE matches = matches + VALUES(matches), matchCount = matchCount + VALUES(matchCount), isUpdated = 1;
+                ";
             }
 
 			$sql .= "
@@ -388,12 +363,12 @@ CREATE TABLE wD_Tmp_MessageCount
   DELETE FROM wD_Tmp_MessageCount WHERE userID IN (".self::getExcludedUserIDCSVList().") OR otherUserID IN (".self::getExcludedUserIDCSVList().");
 
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
-SELECT userID, 'MessageLength' type, UNHEX(LPAD(CONV(code,10,16),16,'0')) code , earliestM, latestM, countMLen
+SELECT userID, 'MessageLength' type, UNHEX(LPAD(CONV(otherUserID,10,16),16,'0')) code , earliestM, latestM, countMLen
 FROM wD_Tmp_MessageCount r
 ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(r.earliestM, earliest), latest=greatest(r.latestM, latest), count=count+r.countM;
 
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
-SELECT userID, 'MessageCount' type, UNHEX(LPAD(CONV(code,10,16),16,'0')) code , earliestM, latestM, countM
+SELECT userID, 'MessageCount' type, UNHEX(LPAD(CONV(otherUserID,10,16),16,'0')) code , earliestM, latestM, countM
 FROM wD_Tmp_MessageCount r
 ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(r.earliestM, earliest), latest=greatest(r.latestM, latest), count=count+r.countM;
 ");

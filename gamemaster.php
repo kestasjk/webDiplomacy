@@ -70,15 +70,84 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 	// Disable transactions while doing batch updates:
 	$DB->disableTransactions();
 
+	if( in_array("NMRWARNING", $argv) )
+	{
+		print "Generating NMR warnings\n";
+		
+		$nmrWarningUpdateTime = time();
+
+		$tabl = $DB->sql_tabl("SELECT u.username, u.email, m.userID, g.id gameID, g.name gameName, 
+				g.phaseMinutes, g.processTime, m.countryID, g.phase, g.phaseMinutesRB 
+			FROM wD_Members m 
+			INNER JOIN wD_Games g ON g.id = m.gameID 
+			INNER JOIN wD_Users u ON u.id = m.userID 
+			WHERE m.status = 'Playing' AND orderStatus = 'None' 
+				AND g.gameOver='No' AND g.processStatus = 'Not-processing' 
+				AND g.phaseMinutes > 60 
+				AND (
+					(
+						(COALESCE(phaseMinutesRB,0) <= 0 OR phase='Diplomacy') 
+						AND 100*(processTime - ".$nmrWarningUpdateTime.")/(60*g.phaseMinutes) < 20
+						AND 100*(processTime - ".$Misc->LastNMRWarningUpdate.")/(60*g.phaseMinutes) >= 20
+					) 
+					OR (
+						COALESCE(phaseMinutesRB,0) > 0 
+						AND phase <> 'Diplomacy' 
+						AND 100*((processTime - ".$nmrWarningUpdateTime.")/(60*g.phaseMinutesRB)) < 20
+						AND 100*(processTime - ".$Misc->LastNMRWarningUpdate.")/(60*g.phaseMinutes) >= 20
+					)
+				) 
+				AND g.playerTypes <> 'MemberVsBots' 
+				AND g.sandboxCreatedByUserID IS NULL 
+				AND g.processTime > ".$nmrWarningUpdateTime."");
+		
+		// Aggregate warnings by user email address, so we only send one email per user
+		$nmrWarningMessagesByUserEmail = array();
+		while($row = $DB->tabl_hash($tabl))
+		{
+			$nmrWarningMessagesByUserEmail[$row['email']][] = $row;
+		}
+		$DB->sql_put("COMMIT");
+
+		require_once(l_r('objects/mailer.php'));
+		$Mailer = new Mailer();
+		foreach($nmrWarningMessagesByUserEmail as $email => $warnings)
+		{
+			$username = $warnings[0]['username'];
+			$links = array();
+			foreach($warnings as $warning)
+			{
+				$links[] = '<a href="https://webdiplomacy.net/board.php?gameID='.$warning['gameID'].'">'.
+					htmlentities($warning['gameName']).
+					'</a> - '.
+					l_t($warning['phase']).' - '.
+					libTime::remainingText($warning['processTime']);
+			}
+			print 'E-mailing '.$email.' about '.count($links).' games'."\n";
+			$Mailer->Send(
+				array('kestas.j.k@gmail.com'=>$username), 
+				l_t('webDip NMR Warning: No orders submitted!'),
+				l_t("Hi %s,<br>You haven't submitted orders for the following game(s), which will be processed soon (less than 20% of phase left)!").
+				l_t("Not submitting orders will affect your reliability rating, and makes the game less enjoyable for others. Please use the link(s) below to submit orders for these games asap!<br><br>").
+				"<ul><li>".implode('</li><li>',$links)."</li></ul><br><br>".
+				l_t("<i>Thank you! - webDiplomacy notification bot</i><br>")
+			);
+		}
+
+		$Misc->LastNMRWarningUpdate = $nmrWarningUpdateTime;
+		$Misc->write();
+		
+	}
+
 	if( in_array("NOTIFICATIONS", $argv) )
 	{
 		print "Running notification updates\n";
 		
 	}
 
-	$groupUpdateTime = time();
 	if( in_array("GROUPUPDATE", $argv) )
 	{
+		$groupUpdateTime = time();
 		print "Running group relationship updates\n";
 	
 		// Update the user group calculations
@@ -86,10 +155,13 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 		libGroup::generateGameRelationCache($Misc->LastGroupUpdate);
 		
 		$Misc->LastGroupUpdate = $groupUpdateTime;
+		$Misc->write();
 	}
 
 	if( in_array("CONNECTIONUPDATE", $argv) )
 	{
+		$connectionUpdateTime = time();
+
 		print "Running user connection updates\n";
 
 		// Update the user connections
@@ -99,9 +171,10 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 		libUserConnections::updateGameMessageStats();
 		
 		print l_t('Updating user connection stats').'<br />';
-		libUserConnections::updateUserConnections($Misc->LastGroupUpdate);
+		libUserConnections::updateUserConnections($Misc->LastConnectionUpdate);
 	
-		$Misc->LastGroupUpdate = $groupUpdateTime;
+		$Misc->LastConnectionUpdate = $connectionUpdateTime;
+		$Misc->write();
 	}
 
 	if( in_array("RELIABILITYRATINGS", $argv) )
