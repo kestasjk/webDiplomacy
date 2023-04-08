@@ -70,6 +70,29 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 	// Disable transactions while doing batch updates:
 	$DB->disableTransactions();
 
+	if( in_array("BACKUPGAMES", $argv) )
+	{
+		print "Backing up games\n";
+
+		if( !isset(Config::$gameBackupDirectory) || !is_dir(Config::$gameBackupDirectory) )
+			throw new Exception(Config::$gameBackupDirectory." is not set or is not a directory");
+
+		$backupTime = time();
+
+		$tabl = $DB->sql_tabl("SELECT DISTINCT gameID FROM wD_Backup_Log WHERE timestamp >= ".$Misc->LastBackupUpdate);
+		while(list($gameID) = $DB->tabl_row($tabl))
+		{
+			print 'Backing up '.$gameID;
+			$data = processGame::getBackupData($gameID);
+			$jsonData = json_encode($data);
+			file_put_contents(Config::$gameBackupDirectory.'/'.$gameID.'.json', $jsonData);
+		}
+
+		print 'Backups complete';
+		$Misc->LastBackupUpdate = $backupTime;
+		$Misc->write();
+	}
+
 	if( in_array("NMRWARNING", $argv) )
 	{
 		print "Generating NMR warnings\n";

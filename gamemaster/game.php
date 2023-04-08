@@ -268,6 +268,26 @@ class processGame extends Game
 			$DB->sql_put("COMMIT");
 	}
 
+	/**
+	 * Return an array of backup data for this gameID for each table *warning: includes game messages*
+	 */
+	static function getBackupData($gameID)
+	{
+		global $DB;
+		$backupDataset = array();
+		foreach(self::$gameTables as $tableName=>$idColName)
+		{
+			$cols = implode(',',explode(';',self::$gameTableColumns[$tableName]));
+			$tabl = $DB->sql_tabl(
+				"SELECT ".$cols." FROM wD_".$tableName." WHERE ".$idColName." = ".$gameID
+			);
+			$backupDataset[$tableName] = array();
+			while($row = $DB->sql_hash($tabl))
+				$backupDataset[$tableName][] = $row;
+		}
+		return $backupDataset;
+	}
+
 	function canMoveTurnBack()
 	{
 		global $User;

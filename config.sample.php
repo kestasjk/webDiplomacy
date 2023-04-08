@@ -323,6 +323,15 @@ class Config
 	}
 
 	/**
+	 * This is the folder that game backup JSON files will be written to when gamemaster.php is called with BACKUPGAMES.
+	 * Note that this will contain message data so should be somewhere private, and there should be code that will compress
+	 * and clean this folder up regularly.
+	 * It should be reset every time a full site backup is taken; this dataset is so if something happens to the site the
+	 * game data, which is the most important thing, can still be restored (without requiring constant downtime to take backups)
+	 */
+	public static $gameBackupDirectory = false;
+
+	/**
 	 * Where to log points before/after logs to, which log the points before/after games have ended.
 	 * If false points are not logged.
 	 *
