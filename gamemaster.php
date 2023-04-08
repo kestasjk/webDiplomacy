@@ -88,6 +88,22 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 			file_put_contents(Config::$gameBackupDirectory.'/'.$gameID.'.json', $jsonData);
 		}
 
+		// ALso backup critical user data, as without this a restore of games couldn't be associated to new users
+		print 'Backing up new users';
+		$tabl = $DB->sql_tabl("SELECT id, username, email, password FROM wD_Users WHERE timeJoined >= ".$Misc->LastBackupUpdate);
+		$newUserRows = array();
+		while($row = $DB->tabl_row($tabl))
+		{
+			$newUserRows[] = $row;
+		}
+		$DB->sql_put("COMMIT");
+		if( count($newUserRows) > 0 )
+		{
+			print 'Backing up '.count($newUserRows).' new users';
+			$jsonData = json_encode($newUserRows);
+			file_put_contents(Config::$gameBackupDirectory.'/newUsers_'.$backupTime.'.json', $jsonData);
+		}
+
 		print 'Backups complete';
 		$Misc->LastBackupUpdate = $backupTime;
 		$Misc->write();
