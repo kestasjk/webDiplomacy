@@ -211,6 +211,13 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 		print l_t('Clearing old watched game records').'<br />';
 		$DB->sql_put("DELETE wg FROM wD_WatchedGames wg LEFT JOIN wD_Games g ON g.id = wg.gameID WHERE g.id IS NULL OR g.phase = 'Finished' OR g.gameOver <> 'No'");
 	}
+
+	$DB->sql_put("COMMIT");
+
+	if( !in_array("PROCESSGAMES", $argv) )
+	{
+		die('PROCESSGAMES not specified, ending now');
+	}
 }
 
 if ( isset($_REQUEST['gameMasterSecret']) && $_REQUEST['gameMasterSecret'] == Config::$gameMasterSecret && 
