@@ -282,7 +282,7 @@ class processGame extends Game
 				"SELECT ".$cols." FROM wD_".$tableName." WHERE ".$idColName." = ".$gameID
 			);
 			$backupDataset[$tableName] = array();
-			while($row = $DB->sql_hash($tabl))
+			while($row = $DB->tabl_hash($tabl))
 				$backupDataset[$tableName][] = $row;
 		}
 		return $backupDataset;
