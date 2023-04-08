@@ -515,6 +515,7 @@ ALTER TABLE `wD_Backup_Units` ADD INDEX `gameID` (`gameID`);
 ALTER TABLE `wD_Backup_GameMessages` ADD INDEX `gameID` (`gameID`);
 
 
-ALTER TABLE `wD_Misc` CHANGE COLUMN `Name` `Name` ENUM('Version','Hits','Panic','Notice','Maintenance','LastProcessTime','GamesNew','GamesActive','GamesFinished','RankingPlayers','OnlinePlayers','ActivePlayers','TotalPlayers','ErrorLogs','GamesPaused','GamesOpen','GamesCrashed','LastModAction','ForumThreads','ThreadActiveThreshold','ThreadAliveThreshold','GameFeaturedThreshold','LastGroupUpdate','LastStatsUpdate','LastMessageID','LastNMRWarningUpdate','LastConnectionUpdate') NOT NULL COLLATE 'utf8mb3_general_ci' FIRST;
+ALTER TABLE `wD_Misc` CHANGE COLUMN `Name` `Name` ENUM('Version','Hits','Panic','Notice','Maintenance','LastProcessTime','GamesNew','GamesActive','GamesFinished','RankingPlayers','OnlinePlayers','ActivePlayers','TotalPlayers','ErrorLogs','GamesPaused','GamesOpen','GamesCrashed','LastModAction','ForumThreads','ThreadActiveThreshold','ThreadAliveThreshold','GameFeaturedThreshold','LastGroupUpdate','LastStatsUpdate','LastMessageID','LastNMRWarningUpdate','LastConnectionUpdate','LastBackupUpdate') NOT NULL COLLATE 'utf8mb3_general_ci' FIRST;
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastNMRWarningUpdate',0);
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastConnectionUpdate',0);
+INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastBackupUpdate',0);
