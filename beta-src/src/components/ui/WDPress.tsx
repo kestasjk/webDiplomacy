@@ -130,6 +130,7 @@ const WDPress: FC<WDPressProps> = function ({
   countryButtons = userCountry ? [allButton, ...countryButtons] : [allButton];
 
   const canMsg =
+    phase === "Finished" ||
     pressType === "Regular" ||
     (pressType === "PublicPressOnly" && countryIDSelected === 0) ||
     (pressType === "RulebookPress" &&
