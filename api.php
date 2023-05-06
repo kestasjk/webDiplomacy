@@ -1039,6 +1039,21 @@ class GetGameData extends ApiEntry {
 			if( isset ($payload['contextVars']['gameID']) )
 				$payload['contextVars']['gameID'] = $this->gameIDToMultiplexedGameID($payload['contextVars']['gameID']);
 			$payload['currentOrders'] = $this->getCurrentOrders();
+
+			// The point and click UI can't handle incomplete move orders, which occurs if there is an error, so we convert them to holds.
+			foreach ($payload['currentOrders'] as &$order)
+			{
+				if( $order->type == 'Move' && $order->toTerrID == null )
+					$order->type = 'Hold';
+				if( $order->type == 'Support Hold' && $order->toTerrID == null )
+					$order->type = 'Hold';
+				if( ($order->type == 'Support Move' || $order->type == 'Convoy') && ($order->toTerrID == null || $order->fromTerrID == null ) )
+				{
+					$order->type = 'Hold';
+					$order->toTerrID = null;
+					$order->fromTerrID == null;
+				}
+			}
 		}
 
 		if($game->variantID && is_numeric($game->variantID)){
