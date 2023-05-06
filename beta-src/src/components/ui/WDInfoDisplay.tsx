@@ -70,6 +70,8 @@ const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
   }
   const width = isMobile ? 260 : 320;
   const dropDownBoardLink = `/board.php?gameID=${gameID}&view=dropDown`;
+  // TODO: Need to replace this with a proper unified join API / UI for the point and click map and board UI
+  const shareGameLink = `/board.php?gameID=${gameID}&view=dropDown#enterBar`;
   const archiveOrdersLink = `/board.php?gameID=${gameID}&view=dropDown&viewArchive=Orders`;
   const archiveMapsLink = `/board.php?gameID=${gameID}&view=dropDown&viewArchive=Maps`;
   const archiveMessagesLink = `/board.php?gameID=${gameID}&view=dropDown&viewArchive=Messages`;
@@ -121,7 +123,9 @@ const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
                 maxHeight="2.4rem"
                 WebkitLineClamp={2}
               >
-                {title}
+                <a href={shareGameLink} className="text-blue-500">
+                  {title}
+                </a>
               </WDLineClamp>
             </TableCell>
           </TableRow>

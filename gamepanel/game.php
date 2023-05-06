@@ -377,6 +377,7 @@ class panelGame extends Game
 	{
 		$buf = '
 			<div class="bar enterBar">
+				<a name="enterBar"></a>
 				<div class="enterBarJoin">
 					'.$this->joinBar().'
 				</div>
