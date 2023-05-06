@@ -1445,7 +1445,7 @@ class User {
 		global $DB;
 		if( is_null($DB) ) return 0;
 		list($totalBotGames) = $DB->sql_row("SELECT COUNT(1) FROM wD_Games g inner join wD_Members m on m.gameID = g.id  
-			WHERE m.userID = ".$this->id." AND g.gameOver = 'No' and g.playerTypes = 'MemberVsBots'");
+			WHERE m.userID = ".$this->id." AND g.gameOver = 'No' and g.playerTypes = 'MemberVsBots' AND g.sandboxCreatedByUserID IS NULL");
 		
 		return $totalBotGames;
 	}
