@@ -1452,7 +1452,8 @@ class SendMessage extends ApiEntry {
 
 		$Game = $this->getAssociatedGame();
 
-		$allowed = ($Game->pressType == 'Regular') || 
+		$allowed = ($Game->phase == 'Finished') ||
+		           ($Game->pressType == 'Regular') || 
 		           ($countryID == $toCountryID) ||
 		           ($Game->pressType == 'RulebookPress' && ($Game->phase == 'Diplomacy' || $Game->phase == 'Finished')) ||
 		           ($Game->pressType == 'PublicPressOnly' && $toCountryID == 0);
