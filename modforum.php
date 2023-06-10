@@ -109,9 +109,9 @@ $requestTypes = array(
 );
 
 $new = array('message' => "", 'subject' => "", 'id' => -1);
-if( $User->type['User'] && isset($_REQUEST['ThankMod']) && isset($new['sendtothread']) )
+if( $User->type['User'] && isset($_REQUEST['ThankMod']) && $viewthread )
 {
-	$DB->sql_put("UPDATE wD_ModForumMessages SET isThanked = 1 WHERE id = ".((int)$new['sendtothread'])." AND fromUserId = ".$User->id );
+	$DB->sql_put("UPDATE wD_ModForumMessages SET isThanked = 1 WHERE id = ".$viewthread." AND fromUserId = ".$User->id );
 }
 
 if(isset($_REQUEST['newmessage']) AND $User->type['User'] AND ($_REQUEST['newmessage'] != "") ) {
@@ -716,7 +716,7 @@ while( $message = $DB->tabl_hash($tabl) )
 				print '<p class="notice">'.$messageproblem.'</p>';
 			}
 
-			if( $newReplyAlertText == "Reply required" )
+			if( $newAlertText == "Reply required" )
 			{
 				print '<p class="notice">A moderator has requested you reply to this thread before you can continue.</p>';
 			}
@@ -775,9 +775,9 @@ while( $message = $DB->tabl_hash($tabl) )
 				{
 					print '<input type="checkbox" value="Force reply" name="forceReply"> Force reply';
 				}
-				else
+				else if ( $message['isThanked'] == 0 )
 				{
-					print '<input type="submit" class="form-submit" value="+1 / Thanks" name="ThankMod" value="ThankMod">';
+					print ' <input type="submit" class="form-submit" value="Send a +1 / Thanks" name="ThankMod" value="ThankMod">';
 				}
 			}		
 									
