@@ -81,7 +81,7 @@ try
 	$Game = $Variant->panelGameBoard($gameID);
 
 	if( !is_null($Game->sandboxCreatedByUserID) && $Game->sandboxCreatedByUserID != $User->id && !$User->type['Moderator'] 
-		&& !(isset($_REQUEST['sbToken']) && libAuth::sandboxToken_Valid($this->id, $_REQUEST['sbToken'])) )
+		&& !(isset($_REQUEST['sbToken']) && libAuth::sandboxToken_Valid($gameID, $_REQUEST['sbToken'])) )
 	{
 		libHTML::notice('Access denied',l_t("You can't view this game, it is a sandbox game which you didn't create. You can ask the creator for a public link."));
 	}
