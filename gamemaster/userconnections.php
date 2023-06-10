@@ -294,29 +294,27 @@ ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(earliestRequest, earliest), 
 /* Enter turns shared */
 DROP TABLE IF EXISTS wD_Tmp_TurnCount;
 CREATE TABLE wD_Tmp_TurnCount
-SELECT a.userID, a.gameID*1000 + a.turn gameIDTurn, b.userID otherUserID, MIN(a.turnDateTime) earliestT, MAX(a.turnDateTime) latestT, COUNT(*) tCount
+SELECT a.userID, a.gameID, MIN(a.turnDateTime) earliestT, MAX(a.turnDateTime) latestT, COUNT(*) tCount
   FROM wD_TurnDate a
-  INNER JOIN wD_TurnDate b ON a.gameID = b.gameID AND a.userID <> b.userID AND a.turnDateTime = b.turnDateTime
-  WHERE a.turnDateTime >= ".$lastUpdate." AND b.turnDateTime >= ".$lastUpdate."
-  GROUP BY a.userID, a.gameID, a.turn, b.userID;
+  WHERE a.turnDateTime >= ".$lastUpdate." 
+  GROUP BY a.userID, a.gameID;
 
-  DELETE FROM wD_Tmp_TurnCount WHERE userID IN (".self::getExcludedUserIDCSVList().") OR otherUserID IN (".self::getExcludedUserIDCSVList().");
+  DELETE FROM wD_Tmp_TurnCount WHERE userID IN (".self::getExcludedUserIDCSVList().");
 
   INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
-  SELECT userID, 'UserTurn' type, UNHEX(LPAD(CONV(gameIDTurn,10,16),16,'0')), FROM_UNIXTIME(earliestT), FROM_UNIXTIME(latestT), tCount
+  SELECT userID, 'UserTurn' type, UNHEX(LPAD(CONV(gameID,10,16),16,'0')), FROM_UNIXTIME(earliestT), FROM_UNIXTIME(latestT), tCount
   FROM wD_Tmp_TurnCount r
   ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(FROM_UNIXTIME(earliestT), earliest), latest=greatest(FROM_UNIXTIME(latestT), latest), count=count+tCount;
 
   /* Enter missed turns shared */  
   DROP TABLE IF EXISTS wD_Tmp_MissedTurnCount;
   CREATE TABLE wD_Tmp_MissedTurnCount
-  SELECT a.userID, a.gameID*1000 + a.turn gameIDTurn, b.userID otherUserID, MIN(a.turnDateTime) earliestT, MAX(a.turnDateTime) latestT, COUNT(*) tCount
+  SELECT a.userID, a.gameID*1000 + a.turn gameIDTurn, MIN(a.turnDateTime) earliestT, MAX(a.turnDateTime) latestT, COUNT(*) tCount
 	FROM  wD_MissedTurns  a
-	INNER JOIN  wD_MissedTurns  b ON a.gameID = b.gameID AND a.userID <> b.userID AND a.turnDateTime = b.turnDateTime
-	WHERE a.turnDateTime >= ".$lastUpdate." AND b.turnDateTime >= ".$lastUpdate."
-	GROUP BY a.userID, a.gameID, a.turn, b.userID;
+	WHERE a.turnDateTime >= ".$lastUpdate." 
+	GROUP BY a.userID, a.gameID;
 
-    DELETE FROM wD_Tmp_MissedTurnCount WHERE userID IN (".self::getExcludedUserIDCSVList().") OR otherUserID IN (".self::getExcludedUserIDCSVList().");
+    DELETE FROM wD_Tmp_MissedTurnCount WHERE userID IN (".self::getExcludedUserIDCSVList().");
         
     INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
     SELECT userID, 'UserTurnMissed' type, UNHEX(LPAD(CONV(gameIDTurn,10,16),16,'0')), FROM_UNIXTIME(earliestT), FROM_UNIXTIME(latestT), tCount
