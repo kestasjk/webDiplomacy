@@ -176,6 +176,14 @@ class libAuth
 		}
 		return self::$formToken_cached; // One token per page is fine
 	}
+	public static function sandboxToken_Key($gameID)
+	{
+		return substr(md5('SandboxToken_'.$gameID.'_'.Config::$secret),0,8);
+	}
+	public static function sandboxToken_Valid($gameID, $key)
+	{
+		return self::sandboxToken_Key($gameID) === $key;
+	}
 
 	/**
 	 * Return a URL allowing the user to validate a given e-mail.

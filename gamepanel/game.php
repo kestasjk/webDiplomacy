@@ -417,7 +417,8 @@ class panelGame extends Game
 			 <a href="javascript:copySandboxFromGame('.$this->id.')">'.l_t('Copy game to sandbox').'</a>'.
 			(!is_null($this->sandboxCreatedByUserID) && $User->id == $this->sandboxCreatedByUserID ? '
 			 - <a name="movedBack" href="javascript:moveSandboxTurnBack('.$this->id.')">'.l_t('Move sandbox back a turn').'</a>
-			 - <a href="javascript:deleteSandbox('.$this->id.')">'.l_t('Delete sandbox').'</a>' : '');
+			 - <a href="javascript:deleteSandbox('.$this->id.')">'.l_t('Delete sandbox').'</a>' : '').'
+			 - <a href="board.php?gameID='.$this->id.'&sbToken='.libAuth::sandboxToken_Key($this->id).')">'.l_t('Public link to sandbox').'</a>';
 	}
 
 	/**

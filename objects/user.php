@@ -881,7 +881,7 @@ class User {
 		else
 			$webPushrSID = 0;
 
-		if( !isset($_SESSION['auid']) && $this->id > 1 && !defined('PLAYNOW') && strstr($this->username,'diplonow_') === false )
+		if( !isset($_SESSION['auid']) && !defined('AdminUserSwitch')  && $this->id > 1 && !defined('PLAYNOW') && strstr($this->username,'diplonow_') === false )
 		{
 			// Only store a session hit if we are not impersonating a user
 			$DB->sql_put("INSERT INTO wD_Sessions (userID, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint, webPushrSID)
