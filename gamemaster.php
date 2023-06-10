@@ -74,7 +74,7 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 		$restoreGameIDs = array();
 		foreach($argv as $arg)
 		{
-			if( substr($arg, strlen("RESTOREGAMEIDS=")) === "RESTOREGAMEIDS=" )
+			if( substr($arg, 0, strlen("RESTOREGAMEIDS=")) === "RESTOREGAMEIDS=" )
 			{
 				$restoreGameIDs = explode(",", substr($arg, strlen("RESTOREGAMEIDS=")));
 				break;
