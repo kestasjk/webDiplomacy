@@ -291,16 +291,18 @@ $_SESSION['lastSeenModForum']=time();
 
 libHTML::starthtml();
 
-print libHTML::pageTitle(l_t('Mod forum'),l_t('Get support for any problems you are having by contacting the mod team.'));
+print libHTML::pageTitle(l_t('Moderator / Help forum'),l_t('Get help with any problems you are having by contacting the moderator team.'));
 
-print '<div class="content-notice">';
-print '
-	<p class="notice">
-		Every thread you post here is confidential and can only be viewed by yourself and the moderators.<br>
+print '<p>
+		Every thread you post here is confidential and can only be viewed by yourself and the moderators.<br /><br />
+		
 		You will be redirected here as soon as a moderator responds to your request. If a moderator has requested 
-		a response you must reply before continuing to other pages.
+		a response you must reply before continuing to other pages.<br /><br />
+
+		Please remember moderators are volunteers and may not be able to respond immediately; thanks for your patience.
 	</p>';
-print '<h4>Mod team</h4>';
+print '<div class="hr"></div>';
+print '<h4>Moderator team stats / activity:</h4>';
 $modStatsTabl = $DB->sql_tabl("SELECT 
 	COALESCE(u.id,0) id, 
 	COALESCE(u.username,'Unassigned') username, 
@@ -340,23 +342,35 @@ $modStatsTabl = $DB->sql_tabl("SELECT
 	LEFT JOIN wD_Users u ON u.id = fm.assigned
 	LEFT JOIN wD_Sessions s ON s.userID = u.id
 	ORDER BY timeLastSessionEnded DESC");
-print '<table><tr><th><Moderator></th><th>Joined</th><th>Last seen</th><th>Threads</th><th>Open</th><th>Resolved</th><th>Thanked</th><th>Replies</th><th>Latest reply</th></tr>';
+print '<table class="hof">
+	<tr class="hof">
+	<th class="hof">Username</th>
+	<th class="hof">Joined</th>
+	<th class="hof">Last seen</th>
+	<th class="hof">Threads</th>
+	<th class="hof">Open</th>
+	<th class="hof">Resolved</th>
+	<th class="hof">Thanked</th>
+	<th class="hof">Replies</th>
+	<th class="hof">Latest reply</th>
+</tr>';
 while($row = $DB->tabl_hash($modStatsTabl))
 {
-	print '<tr>';
-	print '<td>'.User::profile_link_static($row['username'], $row['id'], $row['type'], $row['points']).'</td>';
-	print '<td>'.($row['timeJoined'] == 0 ? "N/A" : date('Y-m-d',$row['timeJoined'])).'</td>';
-	print '<td>'.($row['timeLastSessionEnded'] == 0 ? "N/A" : date('Y-m-d',$row['timeLastSessionEnded'])).'</td>';
-	print '<td>'.$row['countTotal'].'</td>';
-	print '<td>'.$row['countOpen'].'</td>';
-	print '<td>'.$row['countResolved'].'</td>';
-	print '<td>'.$row['countThanked'].'</td>';
-	print '<td>'.$row['countMessages'].'</td>';
-	print '<td>'.($row['timeLastSessionEnded'] == 0 ? "N/A" : date('Y-m-d',$row['latestReplySent'])).'</td>';
+	print '<tr class="hof">';
+	print '<td class="hof">'.User::profile_link_static($row['username'], $row['id'], $row['type'], $row['points']).'</td>';
+	print '<td class="hof">'.($row['timeJoined'] == 0 ? "N/A" : date('Y-m-d',$row['timeJoined'])).'</td>';
+	print '<td class="hof">'.($row['timeLastSessionEnded'] == 0 ? "N/A" : date('Y-m-d',$row['timeLastSessionEnded'])).'</td>';
+	print '<td class="hof">'.$row['countTotal'].'</td>';
+	print '<td class="hof">'.$row['countOpen'].'</td>';
+	print '<td class="hof">'.$row['countResolved'].'</td>';
+	print '<td class="hof">'.$row['countThanked'].'</td>';
+	print '<td class="hof">'.$row['countMessages'].'</td>';
+	print '<td class="hof">'.($row['latestReplySent'] == 0 ? "N/A" : date('Y-m-d',$row['latestReplySent'])).'</td>';
 	print '</tr>';
 }
 print '</table>';
-print '</div>';
+
+print '<div class="hr"></div>';
 
 // More tabs for admins
 if( $User->type['Moderator'] )
