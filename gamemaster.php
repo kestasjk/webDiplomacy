@@ -83,7 +83,7 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 		foreach($restoreGameIDs as $restoreGameID)
 		{
 			$jsonData = file_get_contents(Config::$gameBackupDirectory.'/'.$restoreGameID.'.json');
-			$data = json_decode($jsonData);
+			$data = json_decode($jsonData, true); // true means return as array instead of stdClass
 			$sqlData = processGame::restoreBackupData($restoreGameID, $data);
 			file_put_contents(Config::$gameBackupDirectory.'/'.$restoreGameID.'.sql', $sqlData);
 		}
