@@ -531,7 +531,7 @@ $tabl = $DB->sql_tabl("SELECT
 		u.username as fromusername, u.points as points, f.latestReplySent, IF(s.userID IS NULL,0,1) as online, u.type as userType, 
 		f.status as status,
 		f.assigned, u2.username as modname, 
-		f.gameID, f.requestType
+		f.gameID, f.requestType, f.gameTurn, f.isUserRead, f.isModRead
 	FROM wD_ModForumMessages f
 	INNER JOIN wD_Users u ON ( f.fromUserID = u.id )
 	LEFT JOIN wD_Users u2 ON ( f.assigned = u2.id )
@@ -646,10 +646,8 @@ while( $message = $DB->tabl_hash($tabl) )
 			$Variant=libVariant::loadFromGameID($message['gameID']);
 			$G = $Variant->panelGame($message['gameID']);
 			print $G->summary(false);
-
-			list($turn) = $DB->sql_row("SELECT MAX(turn) FROM wD_TurnDate WHERE gameID = ".$message['gameID']." AND turnDateTime < ".$message['timeSent']);
-			if( !$turn ) $turn = 0;
-			print ' <strong>Posted during turn:</strong> '.$turn.' - '.$Variant->turnAsDate($turn);
+			
+			print ' <strong>Posted during turn:</strong> '.$message['gameTurn'].' - '.$Variant->turnAsDate($message['gameTurn']);
 		}
 		else
 			print ' <a href="board.php?gameID='.$message['gameID'].'">Link to game</a> ';

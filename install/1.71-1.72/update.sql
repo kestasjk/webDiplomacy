@@ -519,3 +519,16 @@ ALTER TABLE `wD_Misc` CHANGE COLUMN `Name` `Name` ENUM('Version','Hits','Panic',
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastNMRWarningUpdate',0);
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastConnectionUpdate',0);
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastBackupUpdate',0);
+
+ALTER TABLE wD_ModForumMessages ADD gameTurn smallint(5) unsigned NULL, ADD isUserRead tinyint unsigned NULL, ADD isModRead tinyint unsigned NULL;
+
+ALTER TABLE wD_TurnDate ADD INDEX(`gameID`,`turnDateTime`);
+
+UPDATE wD_ModForumMessages fm 
+INNER JOIN (
+    SELECT fm.id, MAX(td.turn) AS turn 
+    FROM wD_TurnDate td 
+    INNER JOIN wD_ModForumMessages fm ON fm.gameID = td.gameID AND fm.timeSent > td.turnDateTime 
+    GROUP BY fm.id
+) t ON t.id = fm.id
+SET fm.gameTurn = t.turn;
