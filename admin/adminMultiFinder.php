@@ -1028,6 +1028,9 @@ class adminMultiCheck
 	
 		$tabl = $DB->sql_tabl("SELECT period0, period1, period2, period3, period4, period5, period6, period7, period8, period9, period10, period11, period12, period13, period14, period15, period16, period17, period18, period19, period20, period21, period22, period23 FROM wD_UserConnections WHERE userID=".$userID);	
 		
+		$result = array();
+		for($i=0; $i<24;$i++) $result[] = 0;
+		
 		while ( $row = $DB->tabl_row($tabl) )
 			$result = $row;
 	
