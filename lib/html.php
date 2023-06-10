@@ -836,14 +836,6 @@ class libHTML
 			}
 		}
         
-		/*****************************************************
-		*  Alert the mods about a new Mesage in the ModForum *
-		*****************************************************/
-		if ( $User->notifications->ModForum && () )
-		{
-		}
-		// END ModMessage
-
 		foreach ( $gameIDs as $gameID )
 		{
 			$notifyGame = $notifyGames[$gameID];
