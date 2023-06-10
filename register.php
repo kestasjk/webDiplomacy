@@ -49,6 +49,8 @@ libHTML::starthtml();
 
 $page = 'firstValidationForm';
 
+$exception = null;
+
 if ( isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText']) && isset($_REQUEST['emailValidate']) )
 {
 	try
@@ -106,10 +108,7 @@ if ( isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText']) && isset($_R
 	}
 	catch(Exception $e)
 	{
-		print '<div class="content">';
-		print '<p class="notice">'.$e->getMessage().'</p>';
-		print '</div>';
-
+		$exception = $e;
 		$page = 'validationForm';
 	}
 }
@@ -143,10 +142,7 @@ elseif ( isset($_REQUEST['emailToken']) )
 	}
 	catch( Exception $e)
 	{
-		print '<div class="content">';
-		print '<p class="notice">'.$e->getMessage().'</p>';
-		print '</div>';
-
+		$exception = $e;
 		$page = 'emailTokenFailed';
 	}
 }
@@ -163,6 +159,13 @@ switch($page)
 	case 'firstUserForm':
 	case 'userForm':
 		print libHTML::pageTitle(l_t('Register a webDiplomacy account'),l_t('Validate your email address -&gt; <strong>Enter your account settings</strong> -&gt; Play webDiplomacy!'));
+}
+
+// The exception is printed here so that it's below the title and easier to spot
+if( !is_null($exception) )
+{
+	print '<p class="notice">'.$e->getMessage().'</p>';
+	print '<div class="hr"></div>';
 }
 
 switch($page)
