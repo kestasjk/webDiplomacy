@@ -283,6 +283,11 @@ class Member
 		{
 			throw new Exception("You are blocked from rejoining your games.");
 		}
+		
+		if ( $User->reliabilityRating < $this->Game->minimumReliabilityRating )
+		{
+			throw new Exception("Your reliability rating is too low to rejoin this game.");
+		}
 
 		unset($this->Game->Members->ByStatus[$this->status][$this->id]);
 		$this->status = 'Playing';
