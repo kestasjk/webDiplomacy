@@ -297,10 +297,8 @@ class processGame extends Game
 		
 		$buf = '';
 
-		$backupDataset = array();
 		foreach(self::$gameTables as $tableName=>$idColName)
 		{
-			$backupDataset[$tableName] = array();
 			foreach($backupDataset[$tableName] as $row)
 			{
 				$escaped_values = array();
