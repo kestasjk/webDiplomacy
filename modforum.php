@@ -4,6 +4,11 @@
  * @package Base
  */
 require_once('header.php');
+
+// If we have switched to another user switch back while in the mod forum to avoid confusion
+if( isset($User) && defined('AdminUserSwitch') && AdminUserSwitch != $User->id)
+	$User = new User(AdminUserSwitch);
+
 require_once('modforum/libPager.php');
 require_once('modforum/libMessage.php');
 

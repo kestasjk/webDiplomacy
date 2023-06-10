@@ -24,6 +24,11 @@
 
 
 require_once('header.php');
+
+// If we have switched to another user switch back while in the relation area to avoid confusion
+if( isset($User) && defined('AdminUserSwitch') && AdminUserSwitch != $User->id)
+	$User = new User(AdminUserSwitch);
+
 require_once('objects/group.php');
 require_once('objects/groupUser.php');
 require_once('lib/message.php');

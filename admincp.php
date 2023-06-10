@@ -27,6 +27,10 @@ require_once('header.php');
 ini_set('memory_limit',"128M"); // 8M is the default
 ini_set('max_execution_time','240');
 
+// If we have switched to another user switch back while in the relation area to avoid confusion
+if( isset($User) && defined('AdminUserSwitch') && AdminUserSwitch != $User->id)
+	$User = new User(AdminUserSwitch);
+
 if ( $User->type['Moderator'] && isset($_REQUEST['viewOrderLogGame']) && isset($_REQUEST['viewOrderLogCountryID']) )
 {
 	$gameID=(int)$_REQUEST['viewOrderLogGame'];
@@ -35,8 +39,6 @@ if ( $User->type['Moderator'] && isset($_REQUEST['viewOrderLogGame']) && isset($
 	require_once(l_r('objects/game.php'));
 	$Variant=libVariant::loadFromGameID($gameID);
 	$Game=$Variant->Game($gameID);
-
-
 
 	if( !($data=file_get_contents(libCache::dirID(Config::orderlogDirectory(), $gameID, true).'/'.$countryID.'.txt')) )
 	{
