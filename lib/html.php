@@ -831,7 +831,7 @@ class libHTML
 				if( list($viewthreadID) = $DB->sql_row("SELECT id FROM wD_ModForumMessages WHERE type = 'ThreadStart' AND fromUserID = " . $User->id. " AND (isUserRead = 0 OR (isUserReplied = 0 AND isUserMustReply = 1)) LIMIT 1" ) )
 				{
 					header('refresh: 3; url=modforum.php?viewthread='.$viewthreadID.'#'.$viewthreadID);
-					libHTML::notice("Redirecting to moderator forum", "A moderator forum message has been responded to or requires a response; redirecting you to <a href='modforum.php?viewthread=".$viewthreadID."#".$viewthreadID."'>the moderator forum</a> now. Thank you!");
+					$gameNotifyBlock .= '<span class=""><a href="modforum.php?viewthread='.$viewthreadID.'#'.$viewthreadID.'">Redirecting to the moderator forum.</a></span> ';
 				}
 			}
 		}
