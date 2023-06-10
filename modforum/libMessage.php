@@ -81,7 +81,7 @@ class ModForumMessage
 		
 		$DB->sql_put("UPDATE wD_ModForumMessages SET latestReplySent = ".$id.", 
 				".($toID == 0 ? "" : 'replies = replies + 1,')."
-				".($User->type['Moderator'] ? "isModReplied = 1" : "isUserReplied = 1").",
+				".($User->type['Moderator'] ? "isModReplied = 1, isUserReplied = 0" : "isUserReplied = 1, isModReplied = 0").",
 				".($User->type['Moderator'] ? "isModRead = 1, isUserRead = 0" : "isUserRead = 1, isModRead = 0").",
 				isUserMustReply = ".($forceReply ? 1 : 0)."
 			WHERE ( id=".$id." OR id=".$toID." )");

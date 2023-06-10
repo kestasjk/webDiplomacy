@@ -90,6 +90,8 @@ if (isset($_REQUEST['toggleStatus']) && isset($_REQUEST['actiontargetthread']) &
 	if ($newstatus != $status)
 	{
 		$DB->sql_put("UPDATE wD_ModForumMessages SET status='".$newstatus."' WHERE id = ".$actiontargetthread);
+		if( $newstatus == "Deleted" )
+			$DB->sql_put("UPDATE wD_ModForum SET isUserMustReply = 0 WHERE id = ".$actiontargetthread);
 	}
 }
 
