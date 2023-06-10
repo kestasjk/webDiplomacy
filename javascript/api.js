@@ -80,10 +80,13 @@ function moveSandboxTurnBack(gameID)
 
 function deleteSandbox(gameID)
 {
-    apiCall('sandbox/delete', 'GET', {gameID: gameID}, function(response) {
-        window.location.href = '/';
+    if( confirm("Are you sure you want to delete this sandbox?") )
+    {
+        apiCall('sandbox/delete', 'GET', {gameID: gameID}, function(response) {
+                window.location.href = '/';
+            }
+        );
     }
-    );
 }
 var configurePusher = function(appKey, host, wsPort, wssPort, gameID, countryID) {
 
