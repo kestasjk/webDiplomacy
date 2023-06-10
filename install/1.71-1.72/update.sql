@@ -520,8 +520,9 @@ INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastNMRWarningUpdate',0);
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastConnectionUpdate',0);
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastBackupUpdate',0);
 
-ALTER TABLE wD_ModForumMessages ADD gameTurn smallint(5) unsigned NULL, ADD isUserRead tinyint unsigned NULL, ADD isUserReplied tinyint unsigned NULL, ADD isUserMustReply tinyint unsigned NULL, ADD isModRead tinyint unsigned NULL, ADD isModReplied tinyint unsigned NULL;
+ALTER TABLE wD_ModForumMessages ADD gameTurn smallint(5) unsigned NULL, ADD isUserRead tinyint unsigned NULL, ADD isUserReplied tinyint unsigned NULL, ADD isUserMustReply tinyint unsigned NULL, ADD isModRead tinyint unsigned NULL, ADD isModReplied tinyint unsigned NULL, ADD isThanked tinyint unsigned NULL;
 ALTER TABLE wD_TurnDate ADD INDEX(`gameID`,`turnDateTime`);
+ALTER TABLE wD_ModForumMessages ADD isThanked tinyint unsigned NULL;
 
 UPDATE wD_ModForumMessages fm 
 INNER JOIN (
@@ -532,5 +533,5 @@ INNER JOIN (
 ) t ON t.id = fm.id
 SET fm.gameTurn = t.turn;
 
-UPDATE wD_ModForumMessages SET isUserRead = 1, isUserReplied = 1, isModRead = 1, isModReplied = 1, isUserMustReply = 0;
+UPDATE wD_ModForumMessages SET isUserRead = 1, isUserReplied = 1, isModRead = 1, isModReplied = 1, isUserMustReply = 0, isThanked = 0;
 DROP TABLE `wD_ForceReply`;

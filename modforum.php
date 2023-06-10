@@ -109,8 +109,12 @@ $requestTypes = array(
 );
 
 $new = array('message' => "", 'subject' => "", 'id' => -1);
-if(isset($_REQUEST['newmessage']) AND $User->type['User']
-AND ($_REQUEST['newmessage'] != "") ) {
+if( $User->type['User'] && isset($_REQUEST['ThankMod']) && isset($new['sendtothread']) )
+{
+	$DB->sql_put("UPDATE wD_ModForumMessages SET isThanked = 1 WHERE id = ".((int)$new['sendtothread'])." AND fromUserId = ".$User->id );
+}
+
+if(isset($_REQUEST['newmessage']) AND $User->type['User'] AND ($_REQUEST['newmessage'] != "") ) {
 	// We're being asked to send a message.
 
 	$new['message'] = $DB->msg_escape($_REQUEST['newmessage']);
@@ -291,7 +295,8 @@ print '
 <div class="content-notice">
 	<p class="notice">
 		Every thread you post here is confidential and can only be viewed by yourself and the moderators.<br>
-		You will be redirected here as soon as a moderator responds to your request.
+		You will be redirected here as soon as a moderator responds to your request. If a moderator has requested 
+		a response you must reply before continuing to other pages.
 	</p>
 </div>';
 
@@ -438,7 +443,7 @@ $tabl = $DB->sql_tabl("SELECT
 		u.username as fromusername, u.points as points, f.latestReplySent, IF(s.userID IS NULL,0,1) as online, u.type as userType, 
 		f.status as status,
 		f.assigned, u2.username as modname, 
-		f.gameID, f.requestType, f.gameTurn, f.isUserRead, f.isModRead, f.isUserReplied, f.isModReplied, f.isUserMustReply
+		f.gameID, f.requestType, f.gameTurn, f.isUserRead, f.isModRead, f.isUserReplied, f.isModReplied, f.isUserMustReply, f.isThanked
 	FROM wD_ModForumMessages f
 	INNER JOIN wD_Users u ON ( f.fromUserID = u.id )
 	LEFT JOIN wD_Users u2 ON ( f.assigned = u2.id )
@@ -483,6 +488,19 @@ while( $message = $DB->tabl_hash($tabl) )
 		$deleteLink = ' <br /><a title="Move this thread to trash section" class="light likeMessageToggleLink" href="'.$deleteURL.'">Delete thread</a>';
 	}
 
+	// Check if this thread needs an unread / alert icon
+	$newMessageText = '';
+	$newAlertText = '';
+	if( !$message['isModRead'] && $User->type['Moderator'] && (!$message['assigned'] || $message['assigned']==$User->id) )
+		$newMessageText = "Unread user message";
+	else if( !$message['isUserRead'] && $User->type['User'] && $message['fromUserID']==$User->id )
+		$newMessageText = "Unread mod response";
+	if( $User->type['Moderator'] && !$message['assigned'] )
+		$newAlertText = "Request unassigned";
+	else if ( $message['isUserMustReply'] && $message['fromUserID']==$User->id && !$message['isUserReplied'] )
+		$newAlertText = "Reply required";
+	
+		
 	print '<div class="leftRule message-head threadalternate'.$switch.'">
 
 		<a href="profile.php?userID='.$message['fromUserID'].'">'.$message['fromusername'].
@@ -490,8 +508,8 @@ while( $message = $DB->tabl_hash($tabl) )
 				' ('.$message['points'].' '.libHTML::points().User::typeIcon($message['userType']).')</a>'.
 			'<br />
 			<strong><em>'.libTime::text($message['timeSent']).'</em></strong>'.$deleteLink.'<br />
-			Mod read/replied: '.($message['isModRead']?'Yes':'No').'/'.($message['isModReplied']?'Yes':'No').'<br />
-			User read/replied/must-reply: '.($message['isUserRead']?'Yes':'No').'/'.($message['isUserRead']?'Yes':'No').'/'.($message['isUserMustReply']?'Yes':'No').'
+			'.($newMessageText != '' ? '<img src="'.l_s('images/icons/mail.png').'" alt="'.l_t($newMessageText).'" title="'.l_t($newMessageText).'" /> ' : '')
+			.($newAlertText != '' ? '<img src="'.l_s('images/icons/alert.png').'" alt="'.l_t($newAlertText).'" title="'.l_t($newAlertText).'" /> ' : '').'
 		</div>';
 	
 	
@@ -502,6 +520,11 @@ while( $message = $DB->tabl_hash($tabl) )
 	else
 		print '<div class="message-subject">';
 	
+	if( $message['isThanked'])
+	{
+		print '<img src="images/icons/star.png" title="The requester says +1 / thanks" alt="The requester says +1 / thanks" /> ';
+	}
+
 	print libHTML::forumMessage($message['id'],$message['latestReplySent']);
 	print libHTML::forumParticipated($message['id']);
 
@@ -636,20 +659,27 @@ while( $message = $DB->tabl_hash($tabl) )
 
 			print '<div class="message-head replyalternate'.$replyswitch.' leftRule">';
 
-			if ($User->type['Moderator'] || $reply['fromUserID'] == $User->id || $reply['fromUserID'] == 5)
-				print '<strong><a href="profile.php?userID='.$reply['fromUserID'].'">'.$reply['fromusername'].' '.
-					libHTML::loggedOn($reply['fromUserID']).
-						' ('.$reply['points'].' '.libHTML::points().User::typeIcon($reply['userType']).')';
-			else
-				print '<strong><a href="modforum.php">Mod-Team';
+			print '<strong><a href="profile.php?userID='.$reply['fromUserID'].'">'.$reply['fromusername'].' '.
+					libHTML::loggedOn($reply['fromUserID']).' ('.$reply['points'].' '.libHTML::points().User::typeIcon($reply['userType']).')';
 			
 			print '</a></strong><br />';
 
 			print libHTML::forumMessage($message['id'],$reply['id']);
 
+			// Check if this reply needs an unread / alert icon
+			$newReplyMessageText = '';
+			$newReplyAlertText = '';
+			if( !$reply['isModRead'] && $User->type['Moderator'] && (!$reply['assigned'] || $reply['assigned']==$User->id) )
+				$newReplyMessageText = "Unread user message";
+			else if( !$reply['isUserRead'] && $User->type['User'] && $reply['fromUserID']==$User->id )
+				$newReplyMessageText = "Unread mod response";
+			if( $User->type['Moderator'] && !$reply['assigned'] )
+				$newReplyAlertText = "Request unassigned";
+			else if ( $reply['isUserMustReply'] && $reply['fromUserID']==$User->id && !$reply['isUserReplied'] )
+				$newReplyAlertText = "Reply required";
 			print '<em>'.libTime::text($reply['timeSent']).'</em><br />
-				Mod read/replied: '.($reply['isModRead']?'Yes':'No').'/'.($reply['isModReplied']?'Yes':'No').'<br />
-				User read/replied/must-reply: '.($reply['isUserRead']?'Yes':'No').'/'.($reply['isUserRead']?'Yes':'No').'/'.($reply['isUserMustReply']?'Yes':'No');
+			'.($newReplyMessageText != '' ? '<img src="'.l_s('images/icons/mail.png').'" alt="'.l_t($newReplyMessageText).'" title="'.l_t($newReplyMessageText).'" /> ' : '')
+			.($newReplyAlertText != '' ? '<img src="'.l_s('images/icons/alert.png').'" alt="'.l_t($newReplyAlertText).'" title="'.l_t($newReplyAlertText).'" /> ' : '');
 
 			print '</div>';
 
@@ -671,7 +701,7 @@ while( $message = $DB->tabl_hash($tabl) )
 	// Now we show the Reply and Close Thread box.
 	if ( $message['id'] == $viewthread )
 	{
-		if($User->type['User'] && !isset($postLockedReason) )
+		if($User->type['User'] && (!isset($postLockedReason) || $newReplyAlertText == "Reply required") )
 		{
 			print '<div class="postbox">'.
 				( $new['id'] != (-1) ? '' : '<a name="postbox"></a>').
@@ -684,6 +714,11 @@ while( $message = $DB->tabl_hash($tabl) )
 			if ( isset($messageproblem) and $new['sendtothread'] )
 			{
 				print '<p class="notice">'.$messageproblem.'</p>';
+			}
+
+			if( $newReplyAlertText == "Reply required" )
+			{
+				print '<p class="notice">A moderator has requested you reply to this thread before you can continue.</p>';
 			}
 
 			if (isset($newstatus) && $User->type['Moderator'])
@@ -739,6 +774,10 @@ while( $message = $DB->tabl_hash($tabl) )
 				if( $User->type['Moderator'] )
 				{
 					print '<input type="checkbox" value="Force reply" name="forceReply"> Force reply';
+				}
+				else
+				{
+					print '<input type="submit" class="form-submit" value="+1 / Thanks" name="ThankMod">';
 				}
 			}		
 									

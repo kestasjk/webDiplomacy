@@ -80,7 +80,7 @@ class ModForumMessage
 			$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications, 'ModForum') WHERE type LIKE '%Moderator%' AND id != ".$fromUserID);
 		
 		$DB->sql_put("UPDATE wD_ModForumMessages SET latestReplySent = ".$id.", 
-				replies = replies + 1,
+				".($toID == 0 ? "" : 'replies = replies + 1,')."
 				".($User->type['Moderator'] ? "isModReplied = 1" : "isUserReplied = 1").",
 				".($User->type['Moderator'] ? "isModRead = 1, isUserRead = 0" : "isUserRead = 1, isModRead = 0").",
 				isUserMustReply = ".($forceReply ? 1 : 0)."
