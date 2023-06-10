@@ -52,6 +52,12 @@ class Group
 	var $gameID;
 
 	/**
+	 * The game turn when the suspicion was created, if applicable
+	 * @var int|null
+	 */
+	var $gameTurn;
+
+	/**
 	 * 1 if the game anonymous or not, if applicable
      * @var int
 	 */
@@ -231,8 +237,11 @@ class Group
 				}*/
 				$groupDescription .= '<br />Game Reference: ' . $groupGameReference;
 
+				$gameTurn = null;
+				if( !is_null($gameID) ) list($gameTurn) = $DB->sql_row("SELECT turn FROM wD_Games WHERE id = ".$gameID);
+				
 				$groupName = $DB->msg_escape($groupName);
-				$DB->sql_put("INSERT INTO wD_Groups (`name`,isActive,`type`,`display`,ownerUserID,timeCreated,timeChanged,`description`,`gameID`,ownerCountryID) VALUES ('".$groupName."',1,'" .$groupType ."','Moderators',".$User->id.",".time().",".time().",'".$groupDescription."',".($gameID == null ? "NULL" : $gameID).",".($createdByCountryID == null ? "NULL" : $createdByCountryID).")");
+				$DB->sql_put("INSERT INTO wD_Groups (`name`,isActive,`type`,`display`,ownerUserID,timeCreated,timeChanged,`description`,`gameID`,ownerCountryID, gameTurn) VALUES ('".$groupName."',1,'" .$groupType ."','Moderators',".$User->id.",".time().",".time().",'".$groupDescription."',".($gameID == null ? "NULL" : $gameID).",".($createdByCountryID == null ? "NULL" : $createdByCountryID).", ".($gameTurn == null ? "NULL" : $gameTurn).")");
 				list($groupID) = $DB->sql_row("SELECT LAST_INSERT_ID()");
 				$DB->sql_put("COMMIT");
 				$DB->sql_put("BEGIN");
@@ -466,6 +475,7 @@ class Group
 			"gr.type Group_type, ".
 			"gr.isActive Group_isActive, ".
 			"gr.gameID Group_gameID, ".
+			"gr.gameTurn Group_gameTurn, ".
 			"IF(COALESCE(game.anon,'No')='Yes', 1, 0) Group_anon, ".
 			"game.variantID Group_gameVariantID, ".
 			"gr.display Group_display, ".

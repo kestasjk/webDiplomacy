@@ -588,6 +588,18 @@ print '<strong>Group Information:</strong> </div>';
 	if( $GroupProfile->gameID )
 	{
 		print '<li><strong>Open game:</strong> <a href="board.php?gameID='.$GroupProfile->gameID.'">Game board</a></li><br />';
+		
+		if( $User->type['Moderator'] )
+		{
+			// If we're a moderator print extra info about the game and user
+			require_once(l_r('objects/game.php'));
+			require_once(l_r('gamepanel/game.php'));
+			$Variant=libVariant::loadFromGameID($message['gameID']);
+			$G = $Variant->panelGame($message['gameID']);
+			print $G->summary(false);
+			
+			print ' <strong>Posted during turn:</strong> '.$GroupProfile->gameTurn.' - '.$Variant->turnAsDate($GroupProfile->gameTurn);
+		}
 	}
 	print '<li><strong>Group/Relation Type:</strong> '.$GroupProfile->type.'</li><br />';
 	print '<li><strong>Status:</strong> '.($GroupProfile->isActive ? 'Active' : 'Inactive').'</li><br />';
@@ -641,6 +653,20 @@ print '</div>';
 print '</div>';
 
 print '<div class="hr"></div>';
+
+if( $GroupProfile->gameID && $User->type['Moderator'] )
+{
+	// If we're a moderator print extra info about the game and user
+	require_once(l_r('objects/game.php'));
+	require_once(l_r('gamepanel/game.php'));
+	$Variant=libVariant::loadFromGameID($GroupProfile->gameID);
+	$G = $Variant->panelGame($GroupProfile->gameID);
+	print $G->summary(false);
+	
+	print ' <strong>Created during turn:</strong> '.$GroupProfile->gameTurn.' - '.$Variant->turnAsDate($GroupProfile->gameTurn);
+
+	print '<div class="hr"></div>';
+}
 
 print '<div>';
 print GroupUserToUserLinks::loadFromGroup($GroupProfile)->outputTable();

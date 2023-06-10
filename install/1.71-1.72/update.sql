@@ -550,3 +550,14 @@ SET fm.latestReplySentTime = x.latestReplySentTime;
 
 ALTER TABLE wD_ModForumMessages CHANGE COLUMN `status` `status` enum('New','Open','Resolved','Bugs','Sticky','Deleted');
 UPDATE wD_ModForumMessages SET status = 'Deleted' WHERE status = '';
+
+ALTER TABLE wD_Groups ADD gameTurn smallint(5) unsigned NULL;
+
+UPDATE wD_Groups fm 
+INNER JOIN (
+    SELECT fm.id, MAX(td.turn) AS turn 
+    FROM wD_TurnDate td 
+    INNER JOIN wD_Groups fm ON fm.gameID = td.gameID AND fm.timeCreated > td.turnDateTime 
+    GROUP BY fm.id
+) t ON t.id = fm.id
+SET fm.gameTurn = t.turn;
