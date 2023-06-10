@@ -671,7 +671,7 @@ while( $message = $DB->tabl_hash($tabl) )
 			// Check if this reply needs an unread / alert icon
 			$newReplyMessageText = '';
 			$newReplyAlertText = '';
-			if( !$reply['isModRead'] && $User->type['Moderator'] && (!$reply['assigned'] || $reply['assigned']==$User->id) )
+			if( !$reply['isModRead'] && $User->type['Moderator'] && (!$message['assigned'] || $message['assigned']==$User->id) )
 				$newReplyMessageText = "Unread user message";
 			else if( !$reply['isUserRead'] && $User->type['User'] && $reply['fromUserID']==$User->id )
 				$newReplyMessageText = "Unread mod response";
