@@ -308,7 +308,6 @@ $modStatsTabl = $DB->sql_tabl("SELECT
 	COALESCE(u.username,'Unassigned') username, 
 	COALESCE(u.timeJoined,0) timeJoined, 
 	COALESCE(u.timeLastSessionEnded, 0) timeLastSessionEnded, 
-	IF(s.userID IS NULL,0,1) as online, 
 	COALESCE(u.type,'Moderator') type, 
 	COALESCE(u.points, 100) points, 
 	countTotal,
@@ -340,7 +339,6 @@ $modStatsTabl = $DB->sql_tabl("SELECT
 		GROUP BY fm.assigned
 	) fm
 	LEFT JOIN wD_Users u ON u.id = fm.assigned
-	LEFT JOIN wD_Sessions s ON s.userID = u.id
 	ORDER BY timeLastSessionEnded DESC");
 print '<table class="hof">
 	<tr class="hof">
@@ -357,7 +355,10 @@ print '<table class="hof">
 while($row = $DB->tabl_hash($modStatsTabl))
 {
 	print '<tr class="hof">';
-	print '<td class="hof">'.User::profile_link_static($row['username'], $row['id'], $row['type'], $row['points']).'</td>';
+	print '<td class="hof">'.
+		User::profile_link_static($row['username'], $row['id'], $row['type'], $row['points']).
+		libHTML::loggedOn($row['id']).
+		'</td>';
 	print '<td class="hof">'.($row['timeJoined'] == 0 ? "N/A" : date('Y-m-d',$row['timeJoined'])).'</td>';
 	print '<td class="hof">'.($row['timeLastSessionEnded'] == 0 ? "N/A" : date('Y-m-d',$row['timeLastSessionEnded'])).'</td>';
 	print '<td class="hof">'.$row['countTotal'].'</td>';
@@ -512,14 +513,13 @@ print '<div style="clear:both;"> </div>
 
 $tabl = $DB->sql_tabl("SELECT
 	f.id, f.fromUserID, f.timeSent, f.message, f.subject, f.replies,
-		u.username as fromusername, u.points as points, f.latestReplySent, IF(s.userID IS NULL,0,1) as online, u.type as userType, 
+		u.username as fromusername, u.points as points, f.latestReplySent, u.type as userType, 
 		f.status as status,
 		f.assigned, u2.username as modname, 
 		f.gameID, f.requestType, f.gameTurn, f.isUserRead, f.isModRead, f.isUserReplied, f.isModReplied, f.isUserMustReply, f.isThanked
 	FROM wD_ModForumMessages f
 	INNER JOIN wD_Users u ON ( f.fromUserID = u.id )
 	LEFT JOIN wD_Users u2 ON ( f.assigned = u2.id )
-	LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
 	WHERE f.type = 'ThreadStart'
 	".($User->type['Moderator'] ? $tabs[$tab][1] : " AND fromUserID = '".$User->id."'")."
 	ORDER BY f.latestReplySent DESC
@@ -674,12 +674,11 @@ while( $message = $DB->tabl_hash($tabl) )
 		}
 		// We are viewing the thread; print replies
 		$replytabl = $DB->sql_tabl(
-			"SELECT f.id, fromUserID, f.timeSent, f.message, u.points as points, IF(s.userID IS NULL,0,1) as online,
+			"SELECT f.id, fromUserID, f.timeSent, f.message, u.points as points, 
 					u.username as fromusername, f.toID, u.type as userType, 
 					f.isUserRead, f.isModRead, f.isUserReplied, f.isModReplied, f.isUserMustReply
 				FROM wD_ModForumMessages f
 				INNER JOIN wD_Users u ON ( f.fromUserID = u.id )
-				LEFT JOIN wD_Sessions s ON ( u.id = s.userID )
 				WHERE f.toID=".$message['id']." AND f.type='ThreadReply'
 				GROUP BY f.id
 				ORDER BY f.timeSent ASC
