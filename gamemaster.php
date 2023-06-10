@@ -59,7 +59,6 @@ if ( !( $User->type['Moderator']
 	libHTML::notice(l_t('Denied'), l_t('Only the cron script and moderators can run the gamemaster script.'));
 }
 
-$DB->get_lock('gamemaster',1);
 ini_set('memory_limit',"100M");
 ini_set('max_execution_time','60');
 
@@ -217,6 +216,7 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 
 	if( in_array("RELIABILITYRATINGS", $argv) )
 	{
+		$DB->get_lock('gamemaster',1);
 		// Update the reliability ratings:
 		print l_t('Updating user phase/year counts and reliability ratings').'<br />';
 		libGameMaster::updateReliabilityRatings();
@@ -235,6 +235,8 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 		die('PROCESSGAMES not specified, ending now');
 	}
 }
+
+$DB->get_lock('gamemaster',1);
 
 if ( isset($_REQUEST['gameMasterSecret']) && $_REQUEST['gameMasterSecret'] == Config::$gameMasterSecret && 
 	$User->type['User'] && !$User->type['Moderator'] && $Misc->LastProcessTime == 0 )
