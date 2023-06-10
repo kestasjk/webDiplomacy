@@ -158,6 +158,7 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 					)
 				) 
 				AND g.playerTypes <> 'MemberVsBots' 
+				AND g.phase <> 'Retreats' AND g.phase <> 'Builds' /* Until these phases are behaving correctly */
 				AND g.sandboxCreatedByUserID IS NULL 
 				AND g.processTime > ".$nmrWarningUpdateTime."");
 		
