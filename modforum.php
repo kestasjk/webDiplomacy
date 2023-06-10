@@ -320,7 +320,7 @@ $modStatsTabl = $DB->sql_tabl("SELECT
 	countRead, 
 	countReplies, 
 	countMustReply,
-	latestReplySent, 
+	latestReplySentTime, 
 	countMessages
 	FROM (
 		SELECT fm.assigned,
@@ -333,7 +333,7 @@ $modStatsTabl = $DB->sql_tabl("SELECT
 			SUM(isUserRead) countRead, 
 			SUM(isUserReplied) countReplies, 
 			SUM(isUserMustReply) countMustReply,
-			MAX(latestReplySent) latestReplySent, 
+			MAX(COALESCE(latestReplySentTime,0)) latestReplySentTime, 
 			SUM(replies) countMessages
 		FROM wD_ModForumMessages fm
 		WHERE fm.type='ThreadStart'
@@ -365,7 +365,7 @@ while($row = $DB->tabl_hash($modStatsTabl))
 	print '<td class="hof">'.$row['countResolved'].'</td>';
 	print '<td class="hof">'.$row['countThanked'].'</td>';
 	print '<td class="hof">'.$row['countMessages'].'</td>';
-	print '<td class="hof">'.($row['latestReplySent'] == 0 ? "N/A" : date('Y-m-d',$row['latestReplySent'])).'</td>';
+	print '<td class="hof">'.($row['latestReplySentTime'] == 0 ? "N/A" : date('Y-m-d',$row['latestReplySentTime'])).'</td>';
 	print '</tr>';
 }
 print '</table>';
