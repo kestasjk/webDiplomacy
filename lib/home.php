@@ -66,8 +66,8 @@ class libHome
 	{
 		global $User;
 
-		if( $_REQUEST['olderThan'] )
-			$olderThan = $_REQUEST['olderThan'];
+		if( isset($_REQUEST['olderThan']) )
+			$olderThan = (int)$_REQUEST['olderThan'];
 		else
 			$olderThan = 0;
 
@@ -114,8 +114,8 @@ class libHome
 	{
 		global $User;
 
-		if( $_REQUEST['olderThan'] )
-			$olderThan = $_REQUEST['olderThan'];
+		if( isset($_REQUEST['olderThan']) )
+			$olderThan = (int)$_REQUEST['olderThan'];
 		else
 			$olderThan = 0;
 
