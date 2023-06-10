@@ -69,6 +69,27 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 	// Disable transactions while doing batch updates:
 	$DB->disableTransactions();
 
+	if( in_array("RESTOREGAMES", $argv) )
+	{
+		$restoreGameIDs = array();
+		foreach($argv as $arg)
+		{
+			if( str_starts_with($arg, "RESTOREGAMEIDS=") )
+			{
+				$restoreGameIDs = explode(",", substr($arg, strlen("RESTOREGAMEIDS=")));
+				break;
+			}
+		}
+		foreach($restoreGameIDs as $restoreGameID)
+		{
+			$jsonData = file_get_contents(Config::$gameBackupDirectory.'/'.$restoreGameID.'.json');
+			$data = json_decode($jsonData);
+			$sqlData = processGame::restoreBackupData($restoreGameID, $data);
+			file_put_contents(Config::$gameBackupDirectory.'/'.$restoreGameID.'.sql', $sqlData);
+		}
+	}
+
+	// Restore with RESTOREGAMES RESTOREGAMEIDS=1234,1235,1236. This will output SQL which can be restored to the backup directory
 	if( in_array("BACKUPGAMES", $argv) )
 	{
 		print "Backing up games\n";
@@ -86,6 +107,7 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 			$jsonData = json_encode($data);
 			file_put_contents(Config::$gameBackupDirectory.'/'.$gameID.'.json', $jsonData);
 		}
+
 
 		// ALso backup critical user data, as without this a restore of games couldn't be associated to new users
 		print 'Backing up new users';

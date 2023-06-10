@@ -288,6 +288,30 @@ class processGame extends Game
 		return $backupDataset;
 	}
 
+	/**
+	 * Given a backup dataset generated above generate SQL that will import the dataset into the database (do not use on untrusted input)
+	 */
+	static function restoreBackupData($gameID, $backupDataset)
+	{
+		global $DB;
+		
+		$buf = '';
+
+		$backupDataset = array();
+		foreach(self::$gameTables as $tableName=>$idColName)
+		{
+			$backupDataset[$tableName] = array();
+			foreach($backupDataset[$tableName] as $row)
+			{
+				$escaped_values = array();
+				foreach($row as $value) $escaped_values[] = "'".str_replace("'","\'",$value)."'";
+				
+				$buf .= "INSERT INTO wD_".$tableName." (".implode(',', array_keys($row)).") VALUES (".implode(',',array_values($escaped_values)).");\n";
+			}
+		}
+		return $buf;
+	}
+
 	function canMoveTurnBack()
 	{
 		global $User;
