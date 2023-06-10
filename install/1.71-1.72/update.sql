@@ -536,3 +536,14 @@ SET fm.gameTurn = t.turn;
 UPDATE wD_ModForumMessages SET isUserRead = 1, isUserReplied = 1, isModRead = 1, isModReplied = 1, isUserMustReply = 0, isThanked = 0;
 DROP TABLE `wD_ForceReply`;
 ALTER TABLE wD_ModForumMessages ADD INDEX(`type`,`assigned`);
+
+ALTER TABLE wD_ModForumMessages ADD latestReplySentTime int unsigned NULL;
+UPDATE wD_ModForumMessages SET latestReplySentTime = timeSent;
+UPDATE wD_ModForumMessages fm 
+INNER JOIN (
+  SELECT toID, MAX(timeSent) latestReplySentTime 
+  FROM wD_ModForumMessages 
+  WHERE type = 'ThreadReply'
+  GROUP BY toID
+) x ON fm.id = x.toID
+SET fm.latestReplySentTime = x.latestReplySentTime;
