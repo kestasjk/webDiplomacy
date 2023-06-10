@@ -38,7 +38,7 @@ class notice
 	private $linkName;
 	private $linkID;
 	private $linkURL;
-	private $timeSent;
+	public $timeSent;
 
 	private static $recent;
 	private static $new;
