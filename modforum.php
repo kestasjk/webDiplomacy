@@ -673,7 +673,7 @@ while( $message = $DB->tabl_hash($tabl) )
 				$newReplyMessageText = "Unread user message";
 			else if( !$reply['isUserRead'] && $User->type['User'] && $reply['fromUserID']==$User->id )
 				$newReplyMessageText = "Unread mod response";
-			if( $User->type['Moderator'] && !$reply['assigned'] )
+			if( $User->type['Moderator'] && !$message['assigned'] )
 				$newReplyAlertText = "Request unassigned";
 			else if ( $reply['isUserMustReply'] && $reply['fromUserID']==$User->id && !$reply['isUserReplied'] )
 				$newReplyAlertText = "Reply required";
@@ -777,7 +777,7 @@ while( $message = $DB->tabl_hash($tabl) )
 				}
 				else
 				{
-					print '<input type="submit" class="form-submit" value="+1 / Thanks" name="ThankMod">';
+					print '<input type="submit" class="form-submit" value="+1 / Thanks" name="ThankMod" value="ThankMod">';
 				}
 			}		
 									
