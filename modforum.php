@@ -643,11 +643,11 @@ while( $message = $DB->tabl_hash($tabl) )
 			// If we're a moderator print extra info about the game and user
 			require_once(l_r('objects/game.php'));
 			require_once(l_r('gamepanel/game.php'));
-			$Variant=libVariant::loadFromGameID($gameID);
-			$G = $Variant->panelGame($row);
+			$Variant=libVariant::loadFromGameID($message['gameID']);
+			$G = $Variant->panelGame($message['gameID']);
 			print $G->summary(false);
 
-			list($turn) = $DB->sql_row("SELECT MAX(turn) FROM wD_TurnDate WHERE gameID = ".$gameID." AND turnDateTime < ".$message['timeSent']);
+			list($turn) = $DB->sql_row("SELECT MAX(turn) FROM wD_TurnDate WHERE gameID = ".$message['gameID']." AND turnDateTime < ".$message['timeSent']);
 			if( !$turn ) $turn = 0;
 			print ' <strong>Posted during turn:</strong> '.$turn.' - '.$Variant->turnAsDate($turn);
 		}
