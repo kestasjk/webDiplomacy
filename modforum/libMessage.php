@@ -65,11 +65,14 @@ class ModForumMessage
 			throw new Exception("Message too long");
 		}
 
+		$gameTurn = 0;
+		if( $gameId != null ) list($gameTurn) = $DB->sql_row("SELECT turn FROM wD_Games WHERE id = " . $gameId);
+
 		$DB->sql_put("INSERT INTO wD_ModForumMessages
 						SET toID = ".$toID.", fromUserID = ".$fromUserID.", timeSent = ".$sentTime.",
 						message = '".$message."', subject = '".$subject."', replies = 0,
 						type = '".$type."', latestReplySent = 0, adminReply = '".$adminReply."',
-						requestType = '" .$requestType. "', gameID = " . ($gameId == null ? "NULL" : $gameId));
+						requestType = '" .$requestType. "', gameID = " . ($gameId == null ? "NULL" : $gameId) .", gameTurn = " . $gameTurn);
 
 		$id = $DB->last_inserted();
 
