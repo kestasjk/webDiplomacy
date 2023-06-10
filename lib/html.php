@@ -811,14 +811,36 @@ class libHTML
 			}
 		}
 
+		if( $User->type['User'] )
+		{
+			if( $User->type['Moderator'] )
+			{
+				$tabl = $DB->sql_row("SELECT id, assigned FROM wD_ModForumMessages WHERE type = 'ThreadStart' AND ((assigned = 0 OR assigned IS NULL) OR (assigned = " . $User->id. " AND isModRead = 0))");
+				while( list($viewthreadID, $assignedToUserID) =  $DB->tabl_row($tabl) )
+				{
+					$gameNotifyBlock .= '<span class=""><a href="modforum.php?viewthread='.$viewthreadID.'#'.$viewthreadID.'">'.
+						($assignedToUserID == 0 || is_null($assignedToUserID) ?
+						'Modforum Unassigned <img src="images/icons/mail_faded.png" alt="New unassigned" title="New unassigned" />'
+						: 'Modforum Response <img src="images/icons/mail.png" alt="New response" title="New response" />'
+						).
+						'</a></span> ';
+				}
+			}
+			else if( strpos($_SERVER["REQUEST_URI"], 'modforum.php') === false )
+			{
+				if( list($viewthreadID) = $DB->sql_row("SELECT id FROM wD_ModForumMessages WHERE type = 'ThreadStart' AND fromUserID = " . $User->id. " AND (isUserRead = 0 OR (isUserReplied = 0 AND isUserMustReply = 1)) LIMIT 1" ) )
+				{
+					header('refresh: 3; url=modforum.php?viewthread='.$viewthreadID.'#'.$viewthreadID);
+					libHTML::notice("Redirecting to moderator forum", "A moderator forum message has been responded to or requires a response; redirecting you to <a href='modforum.php?viewthread=".$viewthreadID."#".$viewthreadID."'>the moderator forum</a> now. Thank you!");
+				}
+			}
+		}
+        
 		/*****************************************************
 		*  Alert the mods about a new Mesage in the ModForum *
 		*****************************************************/
-		if ( $User->notifications->ModForum && (strpos($_SERVER["REQUEST_URI"], 'modforum.php') === false) )
+		if ( $User->notifications->ModForum && () )
 		{
-			$gameNotifyBlock .= '<span class=""><a href="modforum.php">'.
-				'New Post in Modforum <img src="images/icons/mail.png" alt="New private messages" title="New private messages!" />'.
-				'</a></span> ';
 		}
 		// END ModMessage
 

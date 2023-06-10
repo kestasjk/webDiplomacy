@@ -66,33 +66,6 @@ class libGroup
         }
     }
 
-    // Redirect to the mod forum. TODO: This should probably be in a mod forum library instead of the group library
-    public static function redirectToModForum() 
-    {
-        global $User, $DB;
-
-        ////modforum.php?viewthread=523#523
-
-        if( $User->type['Moderator'] )
-        {
-            
-            if( list($viewthreadID) = $DB->sql_row("SELECT id FROM wD_ModForumMessages WHERE type = 'ThreadStart' AND assigned = " . $User->id. " AND isModRead = 0 LIMIT 1" ) )
-            {
-                header('refresh: 3; url=modforum.php?viewthread='.$viewthreadID.'#'.$viewthreadID);
-                libHTML::notice("Redirecting to moderator forum", "A moderator forum message assigned to you has been responded to; redirecting you to <a href='modforum.php?viewthread=".$viewthreadID."#".$viewthreadID."'>the moderator forum</a> now. Thank you!");
-            }
-        }
-        
-        if( $User->type['User'] )
-        {
-            if( list($viewthreadID) = $DB->sql_row("SELECT id FROM wD_ModForumMessages WHERE type = 'ThreadStart' AND fromUserID = " . $User->id. " AND (isUserRead = 0 OR (isUserReplied = 0 AND isUserMustReply = 1)) LIMIT 1" ) )
-            {
-                header('refresh: 3; url=modforum.php?viewthread='.$viewthreadID.'#'.$viewthreadID);
-                libHTML::notice("Redirecting to moderator forum", "A moderator forum message has been responded to or requires a response; redirecting you to <a href='modforum.php?viewthread=".$viewthreadID."#".$viewthreadID."'>the moderator forum</a> now. Thank you!");
-            }
-        }
-    }
-
     // For all active games get all group data and use it to generate JSON that can display which users are in relationships.
     /**
      * Summarize all suspicions / declared relationships etc from the wD_Groups/wD_GroupUsers tables into user to user relationship
