@@ -66,6 +66,11 @@ class libHome
 	{
 		global $User;
 
+		if( $_REQUEST['olderThan'] )
+			$olderThan = $_REQUEST['olderThan'];
+		else
+			$olderThan = 0;
+
 		try
 		{
 			$message=notice::sendPMs();
@@ -78,7 +83,7 @@ class libHome
 		if ( $message )
 			print '<p class="notice">'.$message.'</p>';
 
-		$pms = notice::getType('PM',50);
+		$pms = notice::getType('PM', 50, 0, $olderThan);
 
 		if(!count($pms))
 		{
@@ -89,18 +94,32 @@ class libHome
 
 		print '<div class="hr"></div>';
 
+		$oldestTimeSent = 0;
 		foreach($pms as $pm)
 		{
 			print $pm->viewedSplitter();
 
 			print $pm->html();
+
+			$oldestTimeSent = $pm->timeSent;
+		}
+
+		if( $oldestTimeSent != 0 )
+		{
+			print '<div class="hr"></div>';
+			print '<p class="notice"><a href="index.php?notices=on&olderThan='.$oldestTimeSent.'">View older notices</a></p>';
 		}
 	}
 	public static function NoticeGame()
 	{
 		global $User;
 
-		$pms = notice::getType('Game');
+		if( $_REQUEST['olderThan'] )
+			$olderThan = $_REQUEST['olderThan'];
+		else
+			$olderThan = 0;
+
+		$pms = notice::getType('Game', 35, 0, $olderThan);
 
 		if(!count($pms))
 		{
@@ -112,11 +131,20 @@ class libHome
 
 		print '<div class="hr"></div>';
 
+		$oldestTimeSent = 0;
 		foreach($pms as $pm)
 		{
 			print $pm->viewedSplitter();
 
 			print $pm->html();
+
+			$oldestTimeSent = $pm->timeSent;
+		}
+
+		if( $oldestTimeSent != 0 )
+		{
+			print '<div class="hr"></div>';
+			print '<p class="notice"><a href="index.php?notices=on&olderThan='.$oldestTimeSent.'">View older notices</a></p>';
 		}
 	}
 	public static function Notice()
@@ -140,6 +168,7 @@ class libHome
 
 			print $pm->html();
 		}
+		
 	}
 	static function topUsers()
 	{

@@ -250,7 +250,7 @@ class notice
 		return $this->text;
 	}
 
-	static public function getType($type=false, $limit=35, $linkID=0)
+	static public function getType($type=false, $limit=35, $linkID=0, $olderThan = 0)
 	{
 		global $DB, $User;
 
@@ -261,6 +261,7 @@ class notice
 			LEFT JOIN wD_Games g on g.name = n.linkName and n.type = 'Game'
 			LEFT JOIN wD_Members m on m.gameID = g.id and n.type = 'Game' and m.userID = ".$User->id."
 			WHERE (m.hideNotifications is null or m.hideNotifications = 0) and n.toUserID=".$User->id.($type ? " AND n.type='".$type."'" : '').($linkID>0?" AND n.fromID = ".$linkID." ":"")."
+				".($olderThan == 0 ? "" : "AND timeSent < ".((int)$olderThan))."
 			ORDER BY n.timeSent DESC ".($limit?'LIMIT '.$limit:''));
 		while($hash=$DB->tabl_hash($tabl))
 		{
