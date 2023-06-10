@@ -332,7 +332,7 @@ $modStatsTabl = $DB->sql_tabl("SELECT
 			SUM(isUserReplied) countReplies, 
 			SUM(isUserMustReply) countMustReply,
 			MAX(latestReplySent) latestReplySent, 
-			COUNT(replies) countMessages
+			SUM(replies) countMessages
 		FROM wD_ModForumMessages fm
 		WHERE fm.type='ThreadStart'
 		GROUP BY fm.assigned
@@ -340,23 +340,19 @@ $modStatsTabl = $DB->sql_tabl("SELECT
 	LEFT JOIN wD_Users u ON u.id = fm.assigned
 	LEFT JOIN wD_Sessions s ON s.userID = u.id
 	ORDER BY timeLastSessionEnded DESC");
-print '<table><tr><th><Moderator></th><th>Joined</th><th>Last seen</th><th>Threads</th><th>Open</th><th>Resolved</th><th>Thanked</th><th>Unread</th><th>Unreplied</th><th>User unread</th><th>User unreplied</th><th>Latest reply</th><th>Messages</th></tr>';
+print '<table><tr><th><Moderator></th><th>Joined</th><th>Last seen</th><th>Threads</th><th>Open</th><th>Resolved</th><th>Thanked</th><th>Replies</th><th>Latest reply</th></tr>';
 while($row = $DB->tabl_hash($modStatsTabl))
 {
 	print '<tr>';
-	print '<td>'.User::profile_link_static($row['id'], $row['username'], $row['type'], $row['points']).'</td>';
-	print '<td>'.date('Y-m-d',$row['timeJoined']).'</td>';
-	print '<td>'.date('Y-m-d',$row['timeLastSessionEnded']).'</td>';
+	print '<td>'.User::profile_link_static($row['username'], $row['id'], $row['type'], $row['points']).'</td>';
+	print '<td>'.($row['timeJoined'] == 0 ? "N/A" : date('Y-m-d',$row['timeJoined'])).'</td>';
+	print '<td>'.($row['timeLastSessionEnded'] == 0 ? "N/A" : date('Y-m-d',$row['timeLastSessionEnded'])).'</td>';
 	print '<td>'.$row['countTotal'].'</td>';
 	print '<td>'.$row['countOpen'].'</td>';
 	print '<td>'.$row['countResolved'].'</td>';
 	print '<td>'.$row['countThanked'].'</td>';
-	print '<td>'.$row['countModRead'].'</td>';
-	print '<td>'.$row['countModReplies'].'</td>';
-	print '<td>'.$row['countRead'].'</td>';
-	print '<td>'.$row['countReplies'].'</td>';
-	print '<td>'.date('Y-m-d',$row['latestReplySent']).'</td>';
 	print '<td>'.$row['countMessages'].'</td>';
+	print '<td>'.($row['timeLastSessionEnded'] == 0 ? "N/A" : date('Y-m-d',$row['latestReplySent'])).'</td>';
 	print '</tr>';
 }
 print '</table>';
