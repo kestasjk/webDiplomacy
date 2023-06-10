@@ -535,7 +535,7 @@ SET fm.gameTurn = t.turn;
 
 UPDATE wD_ModForumMessages SET isUserRead = 1, isUserReplied = 1, isModRead = 1, isModReplied = 1, isUserMustReply = 0, isThanked = 0;
 DROP TABLE `wD_ForceReply`;
-ALTER TABLE wD_ModForumMessages ADD INDEX(`type`,`assigned`);
+ALTER TABLE wD_ModForumMessages ADD INDEX(`type`,`assigned`,`isModRead`);
 
 ALTER TABLE wD_ModForumMessages ADD latestReplySentTime int unsigned NULL;
 UPDATE wD_ModForumMessages SET latestReplySentTime = timeSent;

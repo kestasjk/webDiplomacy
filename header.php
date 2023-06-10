@@ -267,6 +267,10 @@ if( isset($User) && $User->type['User'] )
 	// If we aren't currently looking at the group page check whether we need to redirect to a group panel:
 	if( false === strstr(strtolower($_SERVER['PHP_SELF']),'group') )
 		libGroup::redirectToGroup();
+	
+	// If we aren't currently looking at the modforum page check whether we need to redirect to it:
+	if( false === strstr(strtolower($_SERVER['PHP_SELF']),'modforum') )
+		libGroup::redirectToModForum();
 }
 
 // This gets called by libHTML::footer
