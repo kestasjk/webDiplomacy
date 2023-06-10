@@ -17,7 +17,7 @@
     You should have received a copy of the GNU Affero General Public License
     along with vDiplomacy.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+/*
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 $imap = imap_open(Config::$modEMailServerIMAP, Config::$modEMailLogin, Config::$modEMailPassword);
@@ -58,3 +58,4 @@ if ($headers != false)
 imap_close($imap);
 
 ?>
+*/

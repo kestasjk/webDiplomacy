@@ -27,15 +27,13 @@ class ModForumMessage
 				'/gameID[:= _]?([0-9]+)/i',
 				'/userID[:= _]?([0-9]+)/i',
 				'#(modforum.php.*viewthread[:= _]?)([0-9]+)#i',
-				'#/forum.php.*threadID[:= _]?([0-9]+)#i',
-				'/((?:[^a-z0-9])|(?:^))([0-9]+) ?(?:(?:D)|(?:points))((?:[^a-z])|(?:$))/i',
+				'#/forum.php.*threadID[:= _]?([0-9]+)#i'
 			);
 		$replacements = array(
 				'<a href="board.php?gameID=\1" class="light">gameID=\1</a>',
 				'<a href="profile.php?userID=\1" class="light">userID=\1</a>',
-				'<a href="modforum.php?viewthread=\2#\2" class="light">\1\2</a>',
-				'/forum.php?<a href="forum.php?threadID=\1#\1" class="light">threadID=\1</a>',
-				'\1\2'.libHTML::points().'\3'
+				'<a href="modforum.php?viewthread=\2#\2" class="light">modforumthreadID=\2</a>',
+				'/forum.php?<a href="forum.php?threadID=\1#\1" class="light">threadID=\1</a>'
 			);
 
 		return preg_replace($patterns, $replacements, $message);
@@ -66,8 +64,6 @@ class ModForumMessage
 		{
 			throw new Exception("Message too long");
 		}
-
-		libCache::wipeDir(libCache::dirName('mod_forum'));
 
 		$DB->sql_put("INSERT INTO wD_ModForumMessages
 						SET toID = ".$toID.", fromUserID = ".$fromUserID.", timeSent = ".$sentTime.",

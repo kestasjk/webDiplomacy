@@ -26,14 +26,16 @@ if( isset($_REQUEST['tab']) && in_array($_REQUEST['tab'], $tabNames) )
 	$tab = $_SESSION['modForumTab'] = $_REQUEST['tab'];
 elseif( isset($_SESSION['modForumTab']) && in_array($_SESSION['modForumTab'], $tabNames) )
 	$tab = $_SESSION['modForumTab'];
+else
+	$tab = 'Open';
 
 // End Modforumtabs	
 	
-$postboxopen = false;
+$postboxopen = true;
 $viewthread = false;
 
 if ( isset($_REQUEST['threadID']) )
-	$_REQUEST['viewthread'] = $_REQUEST['threadID'];
+	$_REQUEST['viewthread'] = (int) $_REQUEST['threadID'];
 
 if( $User->type['User'] AND isset($_REQUEST['postboxopen'])) {
 	$postboxopen = (bool) $_REQUEST['postboxopen'];
@@ -42,7 +44,7 @@ if( $User->type['User'] AND isset($_REQUEST['postboxopen'])) {
 	$viewthread = (int) $_REQUEST['viewthread'];
 
 } elseif (isset($_SESSION['viewthread'])) {
-	$viewthread = $_SESSION['viewthread'];
+	$viewthread = (int) $_SESSION['viewthread'];
 }
 
 if( !$viewthread) $viewthread=false;
@@ -63,7 +65,7 @@ $forceReply = (isset($_REQUEST['forceReply'])) ? $_REQUEST['forceReply'] : '';
 switch($forceReply) {
 	case 'Yes':
 	case 'No': break;
-	default: $sc = '';
+	default: $sc = ''; $forceReply = '';
 }
 
 $forceUserIDs = array();
@@ -98,18 +100,14 @@ if( !isset($_REQUEST['page']) && isset($_REQUEST['viewthread']) && $viewthread )
 
 if (isset($_REQUEST['toggleStatus']) && isset($_REQUEST['actiontargetthread']) && $User->type['Moderator'])
 {
-	$actiontargetthread = $_REQUEST['actiontargetthread'];
+	$actiontargetthread = (int)$_REQUEST['actiontargetthread'];
 
 	list($status)=$DB->sql_row("SELECT status FROM wD_ModForumMessages WHERE id = ".$actiontargetthread);
 	$newstatus = $_REQUEST['toggleStatus'];
 
 	if ($newstatus != $status)
 	{
-		$DB->sql_put("UPDATE wD_ModForumMessages SET status='".$newstatus."' WHERE id = ".$actiontargetthread);		
-
-		// switch tabs if thread should still be viewed
-		if($actiontargetthread == $viewthread)
-			$tab = $_SESSION['modForumTab'] = $newstatus;
+		$DB->sql_put("UPDATE wD_ModForumMessages SET status='".$newstatus."' WHERE id = ".$actiontargetthread);
 	}
 }
 
@@ -374,12 +372,10 @@ print '
 		createCookie("wD_ModRead_"+threadID, lastMessageID);
 	}
 	</script>';
-	libHTML::$footerScript[]='setModForumMessageIcons();';
 
-if( $User->type['Guest'] )
-	print libHTML::pageTitle('ModForum', 'A place to discuss Mod topics.');
-else
-	print '<div class="content">';
+libHTML::$footerScript[]='setModForumMessageIcons();';
+
+print '<div class="content">';
 
 // More tabs for admins
 if( $User->type['Moderator'] )
@@ -387,7 +383,6 @@ if( $User->type['Moderator'] )
 	print '<div class="gamelistings-tabs">';
 	foreach($tabs as $tabChoice=>$tabParams)
 	{
-	
 		list ($tabTitle, $sql) = $tabParams;
 		print '<a title="'.$tabTitle.'" alt="'.l_t($tabChoice).'" href="modforum.php?tab='.$tabChoice;
 		
@@ -406,27 +401,16 @@ if( $User->type['Moderator'] )
 	}
 	print '</div>';
 }
-// end of more tabs for admins
-	
-if (!$User->type['Moderator'])
+else
 {
-	print '<div class="content-notice">';
-
-	if ($ForumThreads == 0)
-	{
-		list($threads)= $DB->sql_row("SELECT COUNT(type) FROM wD_ModForumMessages WHERE type='ThreadStart'");
-		list($posts)= $DB->sql_row("SELECT COUNT(type) FROM wD_ModForumMessages WHERE 1");
-
-		print '<p class="notice">
-				This is where you post issues you may have with certain users, games and bugs.<br>
-				Every thread you post here is confidential and can only be viewed by yourself and the moderators.<br>
-				All mods receive an alert when you make a post in this forum. </p><br>
-				<p class="notice">To date there have been '.$threads.' threads and a total of '.$posts.' posts made here.</p><br>';
-	}
-
-	print '<p class="notice">
-			Please make sure to include a gameID in the form of gameID=XXX for an example of your problem.
-			</p></div>';
+	print '
+	<div class="content-notice">
+		<p class="notice">
+			This is where you post issues you may have with certain users, games and bugs.<br>
+			Every thread you post here is confidential and can only be viewed by yourself and the moderators.<br>
+			All mods receive an alert when you make a post in this forum.
+		</p>
+	</div>';
 }
 	
 if(isset($messageproblem) and !$new['sendtothread']) {
@@ -447,7 +431,8 @@ print '
 	</div>
 	<div class="hr"></div>';
 	
-if( $User->isSilenced() ) {
+if( $User->isSilenced() )
+{
 	print '<div class="message-body postbox" style="padding-top:0; padding-left:auto; padding-right:auto">';
 	
 	print '<p>Cannot post due to a temporary silence:'.$User->getActiveSilence()->toString().'</p>
@@ -540,10 +525,6 @@ if($User->type['User'] )
 print '<div style="clear:both;"> </div>
 	</div>
 	';
-
-$cacheHTML=libCache::dirName('mod_forum').'/page_'.$forumPager->currentPage.'.html';
-if( file_exists($cacheHTML) )
-	print $cacheHTML;
 
 $tabl = $DB->sql_tabl("SELECT
 	f.id, f.fromUserID, f.timeSent, f.message, f.subject, f.replies,
@@ -655,8 +636,23 @@ while( $message = $DB->tabl_hash($tabl) )
 		print ' <strong>Type:</strong> '.$message['requestType'];
 	}
 		
-	if( $message['gameID'] != null ) {
-		print ' <a href="board.php?gameID='.$message['gameID'].'">Link to game</a> ';
+	if( $message['gameID'] != null )
+	{
+		if( $User->type['Moderator'] )
+		{
+			// If we're a moderator print extra info about the game and user
+			require_once(l_r('objects/game.php'));
+			require_once(l_r('gamepanel/game.php'));
+			$Variant=libVariant::loadFromGameID($gameID);
+			$G = $Variant->panelGame($row);
+			print $G->summary(false);
+
+			list($turn) = $DB->sql_row("SELECT MAX(turn) FROM wD_TurnDate WHERE gameID = ".$gameID." AND turnDateTime < ".$message['timeSent']);
+			if( !$turn ) $turn = 0;
+			print ' <strong>Posted during turn:</strong> '.$turn.' - '.$Variant->turnAsDate($turn);
+		}
+		else
+			print ' <a href="board.php?gameID='.$message['gameID'].'">Link to game</a> ';
 	}
 
 	if ($message['modname'] != "")
@@ -952,19 +948,10 @@ while( $message = $DB->tabl_hash($tabl) )
 
 			print '<br>';
 			
-			if ($message['modname'] == '' || $message['modname'] == $User->username || $message['fromUserID'] == $User->id || ($User->id == 5 && $tab=='Bugs'))
+			if ($message['modname'] == '' || $message['modname'] == $User->username || $message['fromUserID'] == $User->id )
 			{
-				print '<input type="submit" ';
-				if (strpos($message['userType'],'Moderator')===false && $User->type['Moderator'])
-					print 'onclick="return confirm(\'Are you sure you want post this reply visible for the thread-starter too?\');"';
-				print 'class="form-submit" value="Post reply" name="Reply">';
-				
-				if (strpos($message['userType'],'Moderator')===false && $User->type['Moderator'])
-					print ' - ';
-			}
-			
-			if (strpos($message['userType'],'Moderator')===false && $User->type['Moderator'])
-				print '<input type="submit" class="form-submit" value="Only for admins" name="ReplyAdmin">';			
+				print '<input type="submit" class="form-submit" value="Post reply" name="Reply">';
+			}		
 									
 			print '</p></form></div>
 					<div class="hrthin"></div>';
