@@ -87,7 +87,7 @@ try
 	}
 
 	// If this user defaults to the point and click UI redirect them here
-	if( $Game->usePointAndClickUI() )
+	if( !isset($_REQUEST['sbToken']) && $Game->usePointAndClickUI() ) // TODO: Get sandbox public access tokens working with legacy UI
 	{
 		// Default to using the point and click UI for this user.
 
