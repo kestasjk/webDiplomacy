@@ -547,3 +547,6 @@ INNER JOIN (
   GROUP BY toID
 ) x ON fm.id = x.toID
 SET fm.latestReplySentTime = x.latestReplySentTime;
+
+ALTER TABLE wD_ModForumMessages CHANGE COLUMN `status` `status` enum('New','Open','Resolved','Bugs','Sticky','Deleted');
+UPDATE wD_ModForumMessages SET status = 'Deleted' WHERE status = '';
