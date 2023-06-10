@@ -1293,20 +1293,9 @@ ALTER TABLE `wD_ModForumMessages` MODIFY `status` enum('New','Open','Resolved','
 ALTER TABLE `wD_ModForumMessages` ADD `toUserID` mediumint(8) unsigned DEFAULT 0;
 ALTER TABLE `wD_ModForumMessages` ADD  `forceReply` enum('Yes','No','Done') NOT NULL DEFAULT 'No';
 
-CREATE TABLE `wD_ForceReply` (
-  `id` int(10) unsigned NOT NULL,
-  `toUserID` mediumint(8) unsigned DEFAULT 0,
-  `forceReply` enum('Yes','No','Done') NOT NULL DEFAULT 'No',
-  PRIMARY KEY (`id`,`toUserID`)
-) ENGINE=InnoDB;
-
 ALTER TABLE `wD_ModForumMessages` DROP `toUserID`;	
 ALTER TABLE `wD_ModForumMessages` DROP `forceReply`;	
 ALTER TABLE `wD_ModForumMessages` ADD `assigned` mediumint(8) unsigned DEFAULT 0;
-ALTER TABLE `wD_ForceReply` ADD `status` enum('Sent','Read','Replied') NOT NULL DEFAULT 'Sent';
-ALTER TABLE `wD_ForceReply` ADD `readIP`  int(10) unsigned NOT NULL;
-ALTER TABLE `wD_ForceReply` ADD `readTime` int(10) unsigned NOT NULL;
-ALTER TABLE `wD_ForceReply` ADD `replyIP` int(10) unsigned NOT NULL;
 
 ALTER TABLE wD_AccessLog 
 	ADD INDEX `indBrowserFingerprint` (`browserFingerprint`);

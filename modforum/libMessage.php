@@ -50,7 +50,7 @@ class ModForumMessage
 	 *
 	 * @return int The message ID
 	 */
-	static public function send($toID, $fromUserID, $message, $subject="", $type='Bulletin', $adminReply='No', $requestType='', $gameId=null)
+	static public function send($toID, $fromUserID, $message, $subject="", $type='Bulletin', $forceReply=false, $requestType='', $gameId=null)
 	{
 		global $DB, $User;
 
@@ -71,41 +71,38 @@ class ModForumMessage
 		$DB->sql_put("INSERT INTO wD_ModForumMessages
 						SET toID = ".$toID.", fromUserID = ".$fromUserID.", timeSent = ".$sentTime.",
 						message = '".$message."', subject = '".$subject."', replies = 0,
-						type = '".$type."', latestReplySent = 0, adminReply = '".$adminReply."',
+						type = '".$type."', latestReplySent = 0, 
 						requestType = '" .$requestType. "', gameID = " . ($gameId == null ? "NULL" : $gameId) .", gameTurn = " . $gameTurn);
 
 		$id = $DB->last_inserted();
 
-		$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications, 'ModForum') WHERE type LIKE '%Moderator%' AND id != ".$fromUserID);
+		if( !$User->type['Moderator'] )
+			$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications, 'ModForum') WHERE type LIKE '%Moderator%' AND id != ".$fromUserID);
 		
-		if ( $type == 'ThreadReply' )
-			$DB->sql_put("UPDATE wD_ModForumMessages SET latestReplySent = ".$id.", replies = replies + 1 WHERE ( id=".$id." OR id=".$toID." )");
-		else
-			$DB->sql_put("UPDATE wD_ModForumMessages SET latestReplySent = id WHERE id = ".$id);
+		$DB->sql_put("UPDATE wD_ModForumMessages SET latestReplySent = ".$id.", 
+				replies = replies + 1,
+				".($User->type['Moderator'] ? "isModReplied = 1" : "isUserReplied = 1").",
+				".($User->type['Moderator'] ? "isModRead = 1, isUserRead = 0" : "isUserRead = 1, isModRead = 0").",
+				isUserMustReply = ".($forceReply ? 1 : 0)."
+			WHERE ( id=".$id." OR id=".$toID." )");
 			
 		if ($User->type['Moderator'])
 		{
 			$DB->sql_put("UPDATE wD_ModForumMessages SET status='Open' WHERE status='New' AND id = ".$toID);
 		}
 		
-		if ( $type == 'ThreadReply' && $adminReply=='No')
+		if ( $type == 'ThreadReply')
 		{
-			list($starter) = $DB->sql_row('SELECT fromUserID FROM wD_ModForumMessages WHERE id = '.$toID);
-			if ($starter != $fromUserID)
-				$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications, 'ModForum') WHERE id = ".$starter);
-		}	
-
-
-		$tabl=$DB->sql_tabl("SELECT t.id FROM wD_ModForumMessages t LEFT JOIN wD_ModForumMessages r ON ( r.toID=t.id AND r.fromUserID=".$fromUserID." AND r.type='ThreadReply' ) WHERE t.type='ThreadStart' AND ( t.fromUserID=".$fromUserID." OR r.id IS NOT NULL ) GROUP BY t.id");
-		$participatedThreadIDs=array();
-		while(list($participatedThreadID)=$DB->tabl_row($tabl)) {
-			$participatedThreadIDs[$participatedThreadID] = $participatedThreadID;
+			list($starterUserID, $modUserID) = $DB->sql_row('SELECT fromUserID, assigned FROM wD_ModForumMessages WHERE id = '.$toID);
+			if ($starterUserID != $fromUserID)
+			{
+				$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications, 'ModForum') WHERE id = ".$starterUserID);
+			}
+			if ($modUserID != $fromUserID)
+			{
+				$DB->sql_put("UPDATE wD_Users SET notifications = CONCAT_WS(',',notifications, 'ModForum') WHERE id = ".$modUserID);
+			}
 		}
-
-		$cacheUserParticipatedThreadIDsFilename = libCache::dirID('users',$fromUserID).'/readModThreads.js';
-
-		file_put_contents($cacheUserParticipatedThreadIDsFilename, 'participatedModThreadIDs = $A(['.implode(',',$participatedThreadIDs).']);');
-
 		return $id;
 	}
 
