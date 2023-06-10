@@ -293,14 +293,74 @@ libHTML::starthtml();
 
 print libHTML::pageTitle(l_t('Mod forum'),l_t('Get support for any problems you are having by contacting the mod team.'));
 
+print '<div class="content-notice">';
 print '
-<div class="content-notice">
 	<p class="notice">
 		Every thread you post here is confidential and can only be viewed by yourself and the moderators.<br>
 		You will be redirected here as soon as a moderator responds to your request. If a moderator has requested 
 		a response you must reply before continuing to other pages.
-	</p>
-</div>';
+	</p>';
+print '<h4>Mod team</h4>';
+$modStatsTabl = $DB->sql_tabl("SELECT 
+	COALESCE(u.id,0) id, 
+	COALESCE(u.username,'Unassigned') username, 
+	COALESCE(u.timeJoined,0) timeJoined, 
+	COALESCE(u.timeLastSessionEnded, 0) timeLastSessionEnded, 
+	IF(s.userID IS NULL,0,1) as online, 
+	COALESCE(u.type,'Moderator') type, 
+	COALESCE(u.points, 100) points, 
+	countTotal,
+	countOpen, 
+	countResolved, 
+	countThanked, 
+	countModRead, 
+	countModReplies, 
+	countRead, 
+	countReplies, 
+	countMustReply,
+	latestReplySent, 
+	countMessages
+	FROM (
+		SELECT fm.assigned,
+			COUNT(*) countTotal,
+			SUM(IF(status = 'Resolved', 0, 1)) countOpen, 
+			SUM(IF(status = 'Resolved', 1, 0)) countResolved, 
+			SUM(isThanked) countThanked, 
+			SUM(isModRead) countModRead, 
+			SUM(isModReplied) countModReplies, 
+			SUM(isUserRead) countRead, 
+			SUM(isUserReplied) countReplies, 
+			SUM(isUserMustReply) countMustReply,
+			MAX(latestReplySent) latestReplySent, 
+			COUNT(replies) countMessages
+		FROM wD_ModForumMessages fm
+		WHERE fm.type='ThreadStart'
+		GROUP BY fm.assigned
+	) fm
+	LEFT JOIN wD_Users u ON u.id = fm.assigned
+	LEFT JOIN wD_Sessions s ON s.userID = u.id
+	ORDER BY timeLastSessionEnded DESC");
+print '<table><tr><th><Moderator></th><th>Joined</th><th>Last seen</th><th>Threads</th><th>Open</th><th>Resolved</th><th>Thanked</th><th>Unread</th><th>Unreplied</th><th>User unread</th><th>User unreplied</th><th>Latest reply</th><th>Messages</th></tr>';
+while($row = $DB->tabl_hash($modStatsTabl))
+{
+	print '<tr>';
+	print '<td>'.User::profile_link_static($row['id'], $row['username'], $row['type'], $row['points']).'</td>';
+	print '<td>'.date('Y-m-d',$row['timeJoined']).'</td>';
+	print '<td>'.date('Y-m-d',$row['timeLastSessionEnded']).'</td>';
+	print '<td>'.$row['countTotal'].'</td>';
+	print '<td>'.$row['countOpen'].'</td>';
+	print '<td>'.$row['countResolved'].'</td>';
+	print '<td>'.$row['countThanked'].'</td>';
+	print '<td>'.$row['countModRead'].'</td>';
+	print '<td>'.$row['countModReplies'].'</td>';
+	print '<td>'.$row['countRead'].'</td>';
+	print '<td>'.$row['countReplies'].'</td>';
+	print '<td>'.date('Y-m-d',$row['latestReplySent']).'</td>';
+	print '<td>'.$row['countMessages'].'</td>';
+	print '</tr>';
+}
+print '</table>';
+print '</div>';
 
 // More tabs for admins
 if( $User->type['Moderator'] )
