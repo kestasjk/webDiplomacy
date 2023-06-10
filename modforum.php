@@ -291,10 +291,14 @@ $_SESSION['lastSeenModForum']=time();
 
 libHTML::starthtml();
 
+/*
+SELECT * FROM wD_ModForumMessages WHERE type = 'ThreadStart' AND fromUserID = 10 AND (isUserRead = 0 OR (isUserReplied = 0 AND isUserMustReply = 1))
+SELECT * FROM wD_ModForumMessages WHERE type = 'ThreadStart' AND assigned = 10 AND isModRead = 0
+*/
 print libHTML::pageTitle(l_t('Moderator / Help forum'),l_t('Get help with any problems you are having by contacting the moderator team.'));
 
 print '<p>
-		Every thread you post here is confidential and can only be viewed by yourself and the moderators.<br /><br />
+		Requests/queries you post here are confidential and can only be viewed by yourself and the moderators.<br /><br />
 		
 		You will be redirected here as soon as a moderator responds to your request. If a moderator has requested 
 		a response you must reply before continuing to other pages.<br /><br />
@@ -357,7 +361,6 @@ while($row = $DB->tabl_hash($modStatsTabl))
 	print '<tr class="hof">';
 	print '<td class="hof">'.
 		User::profile_link_static($row['username'], $row['id'], $row['type'], $row['points']).
-		libHTML::loggedOn($row['id']).
 		'</td>';
 	print '<td class="hof">'.($row['timeJoined'] == 0 ? "N/A" : date('Y-m-d',$row['timeJoined'])).'</td>';
 	print '<td class="hof">'.($row['timeLastSessionEnded'] == 0 ? "N/A" : date('Y-m-d',$row['timeLastSessionEnded'])).'</td>';
