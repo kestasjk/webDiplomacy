@@ -100,7 +100,9 @@ class libUserConnections
                 GROUP BY a.userID, b.userID, a.type
                 ON DUPLICATE KEY UPDATE matches = matches + VALUES(matches), matchCount = matchCount + VALUES(matchCount), isUpdated = 1;
                 
-                /* Also add the reverse matches; this will double the match counts but that's fine */
+                /*
+                This seems to just duplicate the same data:
+                 Also add the reverse matches; this will double the match counts but that's fine 
                 INSERT INTO wD_UserCodeConnectionMatches (type, userIDFrom, userIDTo, matches, matchCount)
                 SELECT b.type, b.userID userIDFrom, a.userID userIDTo, SUM(a.isNew) matches, SUM(a.count-a.previousCount) matchCount
                 FROM wD_UserCodeConnections a
@@ -108,9 +110,36 @@ class libUserConnections
                 WHERE a.type = '".$codeType."' AND a.isUpdated = 1
                 GROUP BY a.userID, b.userID, a.type
                 ON DUPLICATE KEY UPDATE matches = matches + VALUES(matches), matchCount = matchCount + VALUES(matchCount), isUpdated = 1;
+                */
                 ";
             }
 
+			$sql .= "
+            /* Add any newly found matches to the count, and the updated sum to the total matches */
+			UPDATE wD_UserConnections uc
+			INNER JOIN (
+                SELECT a.userIDFrom userID, a.type, SUM(isNew) matches, SUM(count-previousCount) matchCount
+                FROM wD_UserCodeConnectionMatches a
+                WHERE a.type = '".$codeType."' AND a.isUpdated = 1
+                GROUP BY a.userIDFrom, a.type
+			) rec ON rec.userID = uc.userId
+			SET matched".$codeType." = matched".$codeType." + rec.matches, matched".$codeType."Total = matched".$codeType."Total + rec.matchCount;
+            ";
+
+			$sql .= "
+            /* Add in the matchedOther___Total, which gives an indication of the matches other users have to this user, indicating whether the matches are symmetrical
+            (i.e. is this a user that matched 1 cookie code a user with 100000 cookie code matches, or is this a user that matched 1 cookie code with another user
+            that has 1 cookie code match, a lot more suspicious) */
+			UPDATE wD_UserConnections uc
+			INNER JOIN (
+                SELECT a.userIDTo userID, a.type, SUM(isNew) matches, SUM(count-previousCount) matchCount
+                FROM wD_UserCodeConnectionMatches a
+                WHERE a.type = '".$codeType."' AND a.isUpdated = 1
+                GROUP BY a.userIDTo, a.type
+			) rec ON rec.userID = uc.userId
+			SET matchedOther".$codeType."Total = matchedOther".$codeType."Total + rec.matchCount;
+            ";
+            
 			$sql .= "
             UPDATE wD_UserCodeConnectionMatches SET isUpdated = 0, isNew = 0, previousMatches = matches, previousMatchCount = matchCount WHERE isUpdated = 1 AND type = '".$codeType."';
             UPDATE wD_UserCodeConnections SET isUpdated = 0, isNew = 0, previousCount = count WHERE isUpdated = 1 AND type = '".$codeType."';

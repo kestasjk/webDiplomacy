@@ -692,6 +692,8 @@ if ( $User->type['Moderator'] )
 					$multiAccountParams .= $groupUser->userID . '%2C';
 				}
 			}
+			$multiAccountParams = substr($multiAccountParams, 0, len($multiAccountParams)-3);
+			
 			$modActions[] = '<a href="admincp.php?tab=Account Analyzer&'.$multiAccountParams.'" class="light">Enter multi-account finder</a>';
 			
 			$modActions[] = 'Set type:';
