@@ -203,6 +203,10 @@ class libUserConnections
 		increased for that user.
 
 		*/
+
+        // Collect message data first
+        self::updateGameMessageStats();
+
 		$DB->sql_script("
         /* Generate data from wD_AccessLog */
 		INSERT INTO wD_UserConnections (userID)
@@ -403,7 +407,7 @@ CREATE TABLE wD_Tmp_MessageCount
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, 'MessageLength' type, UNHEX(LPAD(CONV(otherUserID,10,16),16,'0')) code , earliestM, latestM, countMLen
 FROM wD_Tmp_MessageCount r
-ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(r.earliestM, earliest), latest=greatest(r.latestM, latest), count=count+r.countM;
+ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(r.earliestM, earliest), latest=greatest(r.latestM, latest), count=count+r.countMLen;
 
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, 'MessageCount' type, UNHEX(LPAD(CONV(otherUserID,10,16),16,'0')) code , earliestM, latestM, countM

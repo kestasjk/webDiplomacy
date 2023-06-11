@@ -30,6 +30,8 @@ print libHTML::pageTitle(l_t('Bot status'),l_t('View the current status of the A
  
 print '<div class="content">';
 
+//SELECT userID, u.username, UNIX_TIMESTAMP() - lastHit secondsSinceLastHit, a.hits, FROM_UNIXTIME(lastHit) latestHit FROM wD_ApiKeys a INNER JOIN wD_Users u ON u.id = a.userID WHERE isChecked = 1;
+
 print '<table><tr><th>Label</th><th>User</th><th>API Calls</th><th>Last API Call</th><th>Multiplex offset*</th><th>Description</th></tr>';
 
 $tabl = $DB->sql_tabl("SELECT u.id, u.username, u.type, u.points, u.identityScore, 

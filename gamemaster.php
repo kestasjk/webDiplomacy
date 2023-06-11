@@ -227,9 +227,6 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 		// Update the user connections
 		require_once('gamemaster/userconnections.php');
 		
-		print l_t('Updating game message user connection stats').'<br />';
-		libUserConnections::updateGameMessageStats();
-		
 		print l_t('Updating user connection stats').'<br />';
 		libUserConnections::updateUserConnections($Misc->LastConnectionUpdate);
 	
