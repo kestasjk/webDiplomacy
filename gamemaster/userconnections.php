@@ -23,136 +23,185 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 /**
 	 * Judging and Matching Optimizer
      * ------------------------------
-     * 
-     * This is the system that helps detecting multi accounters / meta gamers in a more systematic and less time-consuming way,
-     * with the goal being to make multi-accounting / meta-gaming too difficult to be worthwhile.
-     * 
-     * 
-     * To analyze lots of different data that might associate users without lots of separate queries into large datasets
-	 * data is aggregated in this function into the UserCodeConnections and UserConnections table.
-	 * 
-	 * UserCodeConnections contains for each user, for each type of code (IP, Cookie, Fingerprint, etc); the code, the 
-	 * number of times that code has been seen, and the first and last time it was seen.
-	 * e.g. if a user had an IP 1.2.3.4 since 2019 until 2021 and made 10000 requests during that period there would be
-	 * a record in the UserCodeConnections table for that IP that would total to the 10000 hits, with a range from 2019 to 2021.
-	 * 
-	 * When new records are added they are inserted into UserCodeConnections, and if any duplicate codes that already exist
-	 * are present the record will be updated with the new count and timestamp.
-	 * 
-	 * UserTurn: Links to other userIDs that the user has had a game turn with, for spotting users that always play together
-	 * UserTurnMissed: Same as UserTurn, but for missed turns that both user accounts missed
-	 * LatLon/City/Region/Network: Contains data from the IP lookup information, to link users by IP location
-	 * Fingerprint/FingerprintPro: Links based on the fingerprint.js library / fingerprint pro
-	 * Cookie: Links based on the cookie code that gets set
-	 * 
-	 * These are collected in a different function below from wD_GameMessages:
-	 * MessageCount: Links to other userIDs that this user messaged, for spotting users with oddly high/low correspondence
-	 * MessageLength: As above but for character count
-	 * 
-	 * UserConnections is also updated from the AccessLog with the period during the day that the account logged on, to detect
- 	 * users that log in at similar times, or that are never online at a particular time e.g. early morning.
-
-
-     * UserConnections contains a record for each user which summarizes how many connections with other users, what time of day
-     * the user is typically online, and how many matches of each type of code (IP, Cookie, Fingerprint, etc) have been found.
-     * This can be used with the UserCodeConnection records to tell whether a code connection is very odd given the user's total
-     * stats.
-     * e.g. if a user matches cookie codes with 5 other users but has used 10000 cookie codes over 15 years that's not a strong 
-     * link, but if a user matches cookie codes with 5 other users and only has 5 cookie codes that's a very strong link.
-     * 
-     * countCookie contains the number of different cookie codes the user has used
-     * countCookieTotal contains the number of times the user has used a cookie code
-     * matchedCookie contains the number of other users that the user has matched cookie codes with
-     * matchedCookieTotal contains the total number of times the user used the cookie code that matched another user
-     * 
-     * So someone might have countCookie = 1000, countCookieTotal = 100000000, matchedCookie = 5, matchedCookieTotal = 5000
-     * and that wouldn't be a very strong indication, but if another user has countCookie = 5, countCookieTotal = 5000,
-     * matchedCookie = 5, matchedCookieTotal = 5000 then that would be a very strong indication.
+     * Judging and Matching Optimizer
+ * ==============================
+ * 
+ * Data-structures and processing
+ * ==============================
+ * This section gives an example going from the collected data to the aggregated data. This is stored across three tables:
+ * wD_UserCodeConnections - For each user, code type, and code it has the earliest and latest use of that code, and a count of times it was used
+ * wD_UserCodeConnectionMatches - For each code type and pair of users which both used the same code contains how many codes matched, and how many times that code was used
+ * wD_UserConnections - For each user has a summary of the counts and matches for each code type
+ * 
+ * This data is aggregated and collected by running gamemaster.php from the commandline with the argument CONNECTIONUPDATE. 
+ * It uses wD_Misc.LastConnectionUpdate to know what time it should start collecting new codes from (if 0 it will start from scratch),
+ * and uses wD_Misc.LastMessageID to know what game message it should start collecting new message data from.
+ * The script takes 10-20 minutes to run from scratch against a large webDiplomacy.net sized system, but every time it runs subsequently
+ * it only processes new records and runs very quickly. The datasets generated can be searched and analyzed without locking any live 
+ * datasets.
+ * 
+ * 
+ * wD_UserCodeConnections
+ * ----------------------
+ * The count of hits per user per code, with the earliest and latest instance of the code use. Data is collected from the
+ * access logs, game membership records, NMR records, game messages, and aggregated into this table.
+ * 
+ * SELECT type, userID, HEX(code) code, earliest, latest, count, previousCount FROM wD_UserCodeConnections WHERE userID IN (141625, 141626) AND type = 'Fingerprint';
+ * +-------------+--------+----------------------------------+---------------------+---------------------+-------+
+ * | type        | userID | code                             | earliest            | latest              | count |
+ * +-------------+--------+----------------------------------+---------------------+---------------------+-------+
+ * | Fingerprint | 141625 | 15DAC94746E0EC9886271752D045E40C | 2022-11-26 05:32:02 | 2022-12-03 16:47:52 |   213 |
+ * | Fingerprint | 141625 | 163FD103DFE295000000000000000000 | 2022-10-15 14:05:11 | 2022-10-15 20:12:16 |   192 |
+ * | Fingerprint | 141625 | BBAD353EEBF5E85DDFC8328287F9B0AE | 2022-10-16 02:18:43 | 2023-01-21 03:19:06 |  6686 | <--
+ * | Fingerprint | 141625 | EC1E85BAC2B2DD09A6603C3740D59A1E | 2023-02-01 04:06:53 | 2023-05-14 17:32:15 |   746 |
+ * | Fingerprint | 141626 | 0F924B5564881E9449A7C57BAF636821 | 2023-01-26 03:56:36 | 2023-04-24 03:43:12 |    91 |
+ * | Fingerprint | 141626 | 16383A07CA5DFE2434CD2E348E23C9AD | 2023-01-24 04:27:30 | 2023-05-07 03:02:18 |  6912 |
+ * | Fingerprint | 141626 | 30DA2EAAE5D9937A83B40ADA8AA0DE2E | 2022-10-16 02:11:13 | 2022-11-24 00:40:16 |  3512 |
+ * | Fingerprint | 141626 | 35730C91E446B0059219B4C0527617E7 | 2022-11-24 12:40:29 | 2023-01-22 17:55:52 |  4419 |
+ * | Fingerprint | 141626 | 3FE9C75487E342EC3159ED16F6C59376 | 2023-02-22 09:02:54 | 2023-02-22 10:34:26 |    10 |
+ * | Fingerprint | 141626 | 4897729AF60B799F1ACD0B9ED3FF8E05 | 2023-01-24 18:26:21 | 2023-04-23 06:40:30 |   227 |
+ * | Fingerprint | 141626 | 53607E32881C437EACCAB498C4690CAE | 2022-10-21 07:31:03 | 2022-11-20 10:29:39 |    32 |
+ * | Fingerprint | 141626 | 631B03E8ED587B243D5BD5D75BA78543 | 2022-10-19 10:54:33 | 2022-11-23 01:31:44 |   300 |
+ * | Fingerprint | 141626 | 68B779897B73BFF455198297777A0404 | 2022-11-26 09:33:08 | 2023-01-23 13:56:08 |  2128 |
+ * | Fingerprint | 141626 | 70468D0F4AF75F2BE3A8620D5ECFAD94 | 2023-01-23 16:37:49 | 2023-04-28 15:39:56 |  1939 |
+ * | Fingerprint | 141626 | 9F4A8B574EED39CBD3730855F3549F9E | 2022-12-06 17:41:48 | 2023-01-23 14:33:07 |   186 |
+ * | Fingerprint | 141626 | A5D1D12AE0A8BBFC3641FD6402E1F1EB | 2022-12-02 15:55:29 | 2023-01-21 08:59:10 |   313 |
+ * | Fingerprint | 141626 | BBAD353EEBF5E85DDFC8328287F9B0AE | 2022-11-14 11:56:22 | 2022-12-15 08:31:55 |    27 | <--
+ * | Fingerprint | 141626 | BD5347B9C08210000000000000000000 | 2022-10-15 15:45:04 | 2022-10-15 22:02:49 |    63 |
+ * +-------------+--------+----------------------------------+---------------------+---------------------+-------+
+ * 
+ * From the wD_UserCodeConnections table matches are found where other users have used the same code (for certain types, some types like LatLon would
+ * generate too many matches to be useful).
+ * SELECT a.type, a.userID userIDFrom, b.userID userIDTo, HEX(a.code) code, a.earliest earliestFrom, a.latest latestFrom, a.count countFrom, b.earliest earliestTo, b.latest latestTo, b.count countTo
+ * FROM wD_UserCodeConnections a
+ * INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
+ * WHERE a.type = 'Fingerprint' AND a.userID = 141625 AND b.userID = 141626
+ * +-------------+------------+----------+----------------------------------+---------------------+---------------------+-----------+---------------------+---------------------+---------+
+ * | type        | userIDFrom | userIDTo | code                             | earliestFrom        | latestFrom          | countFrom | earliestTo          | latestTo            | countTo |
+ * +-------------+------------+----------+----------------------------------+---------------------+---------------------+-----------+---------------------+---------------------+---------+
+ * | Fingerprint |     141625 |   141626 | BBAD353EEBF5E85DDFC8328287F9B0AE | 2022-10-16 02:18:43 | 2023-01-21 03:19:06 |      6686 | 2022-11-14 11:56:22 | 2022-12-15 08:31:55 |      27 |
+ * +-------------+------------+----------+----------------------------------+---------------------+---------------------+-----------+---------------------+---------------------+---------+
+ * 
+ * Here matches are searched for other users, where 141625 matches codes from other users. This is important as a match between two users
+ * may be significant if they match each other but no-one else, but not significant if a user has been around for 20 years and has hundreds of 
+ * cookie codes, and matches a new user with one of those codes but matches many other users as well.
+ * SELECT a.type, a.userID userIDFrom, b.userID userIDTo, HEX(a.code) code, a.earliest earliestFrom, a.latest latestFrom, a.count countFrom, b.earliest earliestTo, b.latest latestTo, b.count countTo
+ * FROM wD_UserCodeConnections a
+ * INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
+ * WHERE a.type = 'Fingerprint' AND a.userID = 141625 AND NOT b.userID = 141626;
+ * Empty set (0.000 sec)
+ * 
+ * 
+ * wD_UserCodeConnectionMatches
+ * ----------------------------
+ * These are aggregated into UserCodeConnectionMatches. The matches are the number of users found that used the same code, and the matchCount is the 
+ * number of times the user used that matching code.
+ * 
+ * SELECT type, userIDFrom, userIDTo, matches, matchCount, earliestFrom, latestFrom, earliestTo, latestTo FROM wD_UserCodeConnectionMatches WHERE type = 'Fingerprint' AND ((userIDFrom = 141625 AND
+ * userIDTo = 141626) OR (userIDFrom = 141626 AND userIDTo = 141625));
+ * +-------------+------------+----------+---------+------------+---------------------+---------------------+---------------------+---------------------+
+ * | type        | userIDFrom | userIDTo | matches | matchCount | earliestFrom        | latestFrom          | earliestTo          | latestTo            |
+ * +-------------+------------+----------+---------+------------+---------------------+---------------------+---------------------+---------------------+
+ * | Fingerprint |     141625 |   141626 |       1 |       6686 | 2022-10-16 02:18:43 | 2023-01-21 03:19:06 | 2022-11-14 11:56:22 | 2022-12-15 08:31:55 |
+ * | Fingerprint |     141626 |   141625 |       1 |         27 | 2022-11-14 11:56:22 | 2022-12-15 08:31:55 | 2022-10-16 02:18:43 | 2023-01-21 03:19:06 |
+ * +-------------+------------+----------+---------+------------+---------------------+---------------------+---------------------+---------------------+
+ * 
+ * 
+ * wD_UserConnections
+ * ------------------
+ * 
+ * These matches are then aggregated into a per-user table, where the count of the number of codes and code uses is aggregated, and the 
+ * number of users with matching codes is aggregated, the number of codes matched with other users is aggregated, and the number of codes
+ * other users matched with this user is aggregated.
+ * 
+ * SELECT userID, matchedFingerprint, matchedFingerprintTotal, matchedOtherFingerprintTotal, matchedFingerprintCount, matchedOtherFingerprintCount, countFingerprint, countFingerprintTotal FROM wD_UserConnections WHERE userID IN (141625, 141626);
+ * +--------+--------------------+-------------------------+------------------------------+-------------------------+------------------------------+------------------+-----------------------+
+ * | userID | matchedFingerprint | matchedFingerprintTotal | matchedOtherFingerprintTotal | matchedFingerprintCount | matchedOtherFingerprintCount | countFingerprint | countFingerprintTotal |
+ * +--------+--------------------+-------------------------+------------------------------+-------------------------+------------------------------+------------------+-----------------------+
+ * | 141625 |                  1 |                       1 |                            1 |                    6686 |                           27 |                4 |                  7837 |
+ * | 141626 |                  1 |                       1 |                            1 |                      27 |                         6686 |               14 |                 20159 |
+ * +--------+--------------------+-------------------------+------------------------------+-------------------------+------------------------------+------------------+-----------------------+
+ * 
+ * 
+ * Code types
+ * ==========
+ * Codes are various bits of data relating to an account that tend to overlap when accounts are related. e.g. Cookie codes are from randomly generated 
+ * cookies that get stored in users browsers; if two accounts share the same cookie codes it indicates they were using the same browser.
+ * 
+ * However these days everyone is aware of cookies, there are lots of tools for managing them etc, so they have limited use. Similarly IP addresses 
+ * are less useful than they once were with VPNs cheap and easy to use.
+ * This means many methods have to be used together to get an indication of whether accounts are related. If a user changes cookie codes / IPs constantly, 
+ * that raises the suspicion about that indicator.
+ * 
+ * fingerprint.js and fingerprint-pro.js are used to generate fingerprint codes that match against a certain browser, like a cookie code but much harder 
+ * to hide and mask.
+ * 
+ * Then there are codes like UserTurn, which just track gameIDs. This will generate many matches that aren't suspicious, but can be used to indicate 
+ * whether user accounts share an unusually large number of games. UserTurnMissed matches a gameID and turn that the player missed, which if two players
+ * miss at the same time can be a good indicator. At the same time if an account misses turns when the other doesn't and has no matches that can be a
+ * negative indicator (against multi-accounting) as it implies the multi-accounter intentionally missed an order submission with one account but not 
+ * another, which would take a lot of care.
+ * 
+ * Similarly the MessageCount and MessageLength codes match the number of messages and number of message characters that users have shared within a game.
+ * If this is unusually little for a pair that indicates they are communicating outside the game, or don't need to communicate. If the average message 
+ * lengths are different overall that is a negative indicator (for multi-accounting), as it implies the multi-accounter has a different messaging style
+ * across two accounts.
+ * 
+ * IPs are looked up with a VPN lookup service which gives IP location info and whether the IP runs a VPN. This can be used to tell if a user is appearing
+ * from all over the globe, if two IPs come from the same area, and if IPs being used are associated with a VPN.
+ * 
+ * Some codes like LatLon/Network/City aren't matched as it would generate too many matches, but are just provided as extra info.
+ * 
+ * => Matched:
+ * Cookie - Randomly generated number that gets stored in a cookie
+ * IP - IP address, IPv4/IPv6
+ * IPv6 => '2409:8a00:184f:70d0:652f:47b3:7ee1:5f50' $ip=str_replace(':','',$ip); '24098a00184f70d0652f47b37ee15f50'
+ * IPv4 => $ip = ip2long($ip); if( !$ip ) $ip = 0; $ip = dechex($ip);
+ * Fingerprint - fingerprint.js free library that generates a fingerprint for the user's browser and sends it back to the site
+ * FingerprintPro - fingerprint pro 3rd party API that generates a fingerprint externally with some secret sauce etc, and sends it from the server to the site
+ * UserTurn - The game ID the user was in for a turn UNHEX(LPAD(CONV(gameID,10,16),16,'0'))
+ * UserTurnMissed - The game ID * 1000 + the game turn that the user missed a.gameID*1000 + a.turn UNHEX(LPAD(CONV(gameIDTurn,10,16),16,'0'))
+ * 
+ * => Not matched
+ * MessageCount - The user ID a game message was sent to, for every message UNHEX(LPAD(CONV(otherUserID,10,16),16,'0'))
+ * MessageLength - The user ID a game message was sent to, for every character UNHEX(LPAD(CONV(otherUserID,10,16),16,'0'))
+ * IPVPN - A UTF-8 string indicating an IP is associated with a vpn, relay, or proxy from the IP lookup
+ * LatLon - Lat/Lon from the IP lookup UNHEX(LPAD(CONV(ROUND((u.latitude+90.0)*10,0)*10000+ROUND((u.longitude+180.0)*10,0),10,16),16,'0'))
+ * Network - Network subnet from the IP lookup UNHEX(LPAD(REPLACE(REPLACE(REPLACE(network,':',''),'/',''),'.',''),16,'0'))
+ * City - A UTF-8 string containing the city from the IP lookup
+ * 
+ * 
+ * Match parameters
+ * ================
+ * For each code matched there are various things to take into account:
+ * - What type of match is it? A UserTurn match is much less significant than a FingerprintPro match.
+ * - How many other users does the user share this code with? If a code is common to lots of users it is less of a strong indicator.
+ * - How many non-matching codes does the user not share? If there are lots of unmatched codes and only a few matched it is less strong.
+ * - How many times was the matching code used? If very rarely that is less of an indicator, if it is used most of the time that is a stronger indicator.
+ * - For users that have a matching code how many *other* users does that user have a matching code with? If a matching user also matches with hundreds of 
+ * other users that is less of a strong indicator than if a matching user doesn't match with anyone else.
+ * - For users that have a matching code how many times did that user use the code? If the other user rarely used that code it is less of an indicator.
+ * 
+ * Within a certain code match there are other details:
+ * - What is the overlap time for the matching code? Has it matched over a long period of time, or just for a short period?
+ * - What is the overlap time for all the matching codes? Does it make up a fairly continuous sequence of matches across different codes, or do the codes
+ * used not match up in terms of when they were used? A cookie code match where one user used the code today and the other used it 10 years ago is less of
+ * an indicator than a match where both users matched at the same time.
+ * 
+ * 
+ * Other information
+ * =================
+ * Also feeding into the system are the daily usage pattern. The times and frequency that the site accessed over the day is tracked and given in 24 hour
+ * slices. This can be used to indicate whether users are likely in the same timezone, and whether they access the site during the same periods with the
+ * same frequency. To work around this indicator a multi-accounter would have to log on to their alternate account during early hours of the morning, and
+ * never use their other account during certain hours, as the early morning period from 2-5am is usually very conspicuous for an account.
+ * 
+ * Other indicators that help correlate users are the e-mail address; is the e-mail a regular looking one, or does it look like a throwaway. Do the join 
+ * times match.
  * @package GameMaster
  */
 class libUserConnections
 {
-    // Generate the SQL to aggregate each of the user code match summary columns, which aggregates up UserCodeConnections into UserConnections
-	static private function userConnectionAggregateSQL()
-	{
-		$sql = "";
-        // Codes to aggregate totals for
-		$codes = array('Cookie','IP','IPVPN','Fingerprint','FingerprintPro','LatLon','Network','City','UserTurn','UserTurnMissed','MessageLength','MessageCount');
-        // Codes to also look for matches for (matching all users who are in the same region / have played with the same user wouldn't be useful)
-        $matchCodes = array('Cookie','IP','Fingerprint','FingerprintPro','UserTurnMissed','UserTurn');
-		foreach($codes as $codeType)
-		{
-			$sql .= "
-            /* Add any newly found codes to the count, and the updated sum to the total count */
-			UPDATE wD_UserConnections uc
-			INNER JOIN (
-                SELECT a.userID, a.type, SUM(isNew) codes, SUM(count-previousCount) codesCount
-                FROM wD_UserCodeConnections a
-                WHERE a.type = '".$codeType."' AND a.isUpdated = 1
-                GROUP BY a.userID, a.type
-			) rec ON rec.userID = uc.userId
-			SET count".$codeType." = count".$codeType." + rec.codes, count".$codeType."Total = count".$codeType."Total + rec.codesCount;
-            ";
-            
-            if( in_array($codeType, $matchCodes) )
-            {
-                $sql .= "
-                /* Find any new matches between users, and add them to the matched code table. */
-                INSERT INTO wD_UserCodeConnectionMatches (type, userIDFrom, userIDTo, matches, matchCount, earliestFrom, latestFrom, earliestTo, latestTo)
-                SELECT a.type, a.userID userIDFrom, b.userID userIDTo, SUM(a.isNew) matches, SUM(a.count-a.previousCount) matchCount, 
-                    MIN(a.earliest) earliestFrom, MAX(a.latest) latestFrom, MIN(b.earliest) earliestTo, MAX(b.latest) latestTo
-                FROM wD_UserCodeConnections a
-                INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
-                WHERE a.type = '".$codeType."' AND a.isUpdated = 1
-                GROUP BY a.userID, b.userID, a.type
-                ON DUPLICATE KEY UPDATE matches = matches + VALUES(matches), matchCount = matchCount + VALUES(matchCount), isUpdated = 1,
-                    earliestFrom = LEAST(earliestFrom, VALUES(earliestFrom)), latestFrom = GREATEST(latestFrom, VALUES(latestFrom)),
-                    earliestTo = LEAST(earliestTo, VALUES(earliestTo)), latestTo = GREATEST(latestTo, VALUES(latestTo));
-                
-                ";
-
-                $sql .= "
-                /* Add any newly found matches to the count, and the updated sum to the total matches.
-                Note the matches / matched___ is the number of users where there is at least one code match,
-                matchedCodes / matched____Total is the number of times a code has matched another user (this is
-                not the same as the number of times a code has been used, which would be matchCount - previousMatchCount) */
-                UPDATE wD_UserConnections uc
-                INNER JOIN (
-                    SELECT a.userIDFrom userID, a.type, SUM(isNew) matches, SUM(matches-previousMatches) matchedCodes, SUM(matchCount-previousMatchCount) matchedCodeCount
-                    FROM wD_UserCodeConnectionMatches a
-                    WHERE a.type = '".$codeType."' AND a.isUpdated = 1
-                    GROUP BY a.userIDFrom, a.type
-                ) rec ON rec.userID = uc.userId
-                SET matched".$codeType." = matched".$codeType." + rec.matches, matched".$codeType."Total = matched".$codeType."Total + rec.matchedCodes, matched".$codeType."Count = matched".$codeType."Count + rec.matchedCodeCount;
-                ";
-    
-                $sql .= "
-                /* Add in the matchedOther___Total, which gives an indication of the matches other users have to this user, indicating whether the matches are symmetrical
-                (i.e. is this a user that matched 1 cookie code a user with 100000 cookie code matches, or is this a user that matched 1 cookie code with another user
-                that has 1 cookie code match, a lot more suspicious) */
-                UPDATE wD_UserConnections uc
-                INNER JOIN (
-                    SELECT a.userIDTo userID, a.type, SUM(isNew) matches, SUM(matches-previousMatches) matchedCodes, SUM(matchCount-previousMatchCount) matchedCodeCount
-                    FROM wD_UserCodeConnectionMatches a
-                    WHERE a.type = '".$codeType."' AND a.isUpdated = 1
-                    GROUP BY a.userIDTo, a.type
-                ) rec ON rec.userID = uc.userId
-                SET matchedOther".$codeType."Total = matchedOther".$codeType."Total + rec.matchedCodes, matchedOther".$codeType."Count = matchedOther".$codeType."Count + rec.matchedCodeCount;
-                ";
-            }
-
-            
-			$sql .= "
-            UPDATE wD_UserCodeConnectionMatches SET isUpdated = 0, isNew = 0, previousMatches = matches, previousMatchCount = matchCount WHERE isUpdated = 1 AND type = '".$codeType."';
-            UPDATE wD_UserCodeConnections SET isUpdated = 0, isNew = 0, previousCount = count WHERE isUpdated = 1 AND type = '".$codeType."';
-
-            COMMIT;
-			";
-		}
-		
-		return $sql;
-	}
-
     private static $excludedUserIDCSVListCache = null;
     /**
      * A comma separated list of user IDs that shouldn't be included in the user connections, for performance and to reduce
@@ -411,4 +460,85 @@ ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(r.earliestM, earliest), late
 			$DB->sql_put("BEGIN");
 		}
 	}
+    // Generate the SQL to aggregate each of the user code match summary columns, which aggregates up UserCodeConnections into UserConnections
+	static private function userConnectionAggregateSQL()
+	{
+		$sql = "";
+        // Codes to aggregate totals for
+		$codes = array('Cookie','IP','IPVPN','Fingerprint','FingerprintPro','LatLon','Network','City','UserTurn','UserTurnMissed','MessageLength','MessageCount');
+        // Codes to also look for matches for (matching all users who are in the same region / have played with the same user wouldn't be useful)
+        $matchCodes = array('Cookie','IP','Fingerprint','FingerprintPro','UserTurnMissed','UserTurn');
+		foreach($codes as $codeType)
+		{
+			$sql .= "
+            /* Add any newly found codes to the count, and the updated sum to the total count */
+			UPDATE wD_UserConnections uc
+			INNER JOIN (
+                SELECT a.userID, a.type, SUM(isNew) codes, SUM(count-previousCount) codesCount
+                FROM wD_UserCodeConnections a
+                WHERE a.type = '".$codeType."' AND a.isUpdated = 1
+                GROUP BY a.userID, a.type
+			) rec ON rec.userID = uc.userId
+			SET count".$codeType." = count".$codeType." + rec.codes, count".$codeType."Total = count".$codeType."Total + rec.codesCount;
+            ";
+            
+            if( in_array($codeType, $matchCodes) )
+            {
+                $sql .= "
+                /* Find any new matches between users, and add them to the matched code table. */
+                INSERT INTO wD_UserCodeConnectionMatches (type, userIDFrom, userIDTo, matches, matchCount, earliestFrom, latestFrom, earliestTo, latestTo)
+                SELECT a.type, a.userID userIDFrom, b.userID userIDTo, SUM(a.isNew) matches, SUM(a.count-a.previousCount) matchCount, 
+                    MIN(a.earliest) earliestFrom, MAX(a.latest) latestFrom, MIN(b.earliest) earliestTo, MAX(b.latest) latestTo
+                FROM wD_UserCodeConnections a
+                INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
+                WHERE a.type = '".$codeType."' AND a.isUpdated = 1
+                GROUP BY a.userID, b.userID, a.type
+                ON DUPLICATE KEY UPDATE matches = matches + VALUES(matches), matchCount = matchCount + VALUES(matchCount), isUpdated = 1,
+                    earliestFrom = LEAST(earliestFrom, VALUES(earliestFrom)), latestFrom = GREATEST(latestFrom, VALUES(latestFrom)),
+                    earliestTo = LEAST(earliestTo, VALUES(earliestTo)), latestTo = GREATEST(latestTo, VALUES(latestTo));
+                
+                ";
+
+                $sql .= "
+                /* Add any newly found matches to the count, and the updated sum to the total matches.
+                Note the matches / matched___ is the number of users where there is at least one code match,
+                matchedCodes / matched____Total is the number of times a code has matched another user (this is
+                not the same as the number of times a code has been used, which would be matchCount - previousMatchCount) */
+                UPDATE wD_UserConnections uc
+                INNER JOIN (
+                    SELECT a.userIDFrom userID, a.type, SUM(isNew) matches, SUM(matches-previousMatches) matchedCodes, SUM(matchCount-previousMatchCount) matchedCodeCount
+                    FROM wD_UserCodeConnectionMatches a
+                    WHERE a.type = '".$codeType."' AND a.isUpdated = 1
+                    GROUP BY a.userIDFrom, a.type
+                ) rec ON rec.userID = uc.userId
+                SET matched".$codeType." = matched".$codeType." + rec.matches, matched".$codeType."Total = matched".$codeType."Total + rec.matchedCodes, matched".$codeType."Count = matched".$codeType."Count + rec.matchedCodeCount;
+                ";
+    
+                $sql .= "
+                /* Add in the matchedOther___Total, which gives an indication of the matches other users have to this user, indicating whether the matches are symmetrical
+                (i.e. is this a user that matched 1 cookie code a user with 100000 cookie code matches, or is this a user that matched 1 cookie code with another user
+                that has 1 cookie code match, a lot more suspicious) */
+                UPDATE wD_UserConnections uc
+                INNER JOIN (
+                    SELECT a.userIDTo userID, a.type, SUM(isNew) matches, SUM(matches-previousMatches) matchedCodes, SUM(matchCount-previousMatchCount) matchedCodeCount
+                    FROM wD_UserCodeConnectionMatches a
+                    WHERE a.type = '".$codeType."' AND a.isUpdated = 1
+                    GROUP BY a.userIDTo, a.type
+                ) rec ON rec.userID = uc.userId
+                SET matchedOther".$codeType."Total = matchedOther".$codeType."Total + rec.matchedCodes, matchedOther".$codeType."Count = matchedOther".$codeType."Count + rec.matchedCodeCount;
+                ";
+            }
+
+            
+			$sql .= "
+            UPDATE wD_UserCodeConnectionMatches SET isUpdated = 0, isNew = 0, previousMatches = matches, previousMatchCount = matchCount WHERE isUpdated = 1 AND type = '".$codeType."';
+            UPDATE wD_UserCodeConnections SET isUpdated = 0, isNew = 0, previousCount = count WHERE isUpdated = 1 AND type = '".$codeType."';
+
+            COMMIT;
+			";
+		}
+		
+		return $sql;
+	}
+
 }
