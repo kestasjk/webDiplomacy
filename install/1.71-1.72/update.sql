@@ -561,3 +561,18 @@ INNER JOIN (
     GROUP BY fm.id
 ) t ON t.id = fm.id
 SET fm.gameTurn = t.turn;
+
+
+ALTER TABLE `wD_UserConnections` 
+  ADD `matchedCookieCount` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedOtherCookieCount` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedIPCount` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedOtherIPCount` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedFingerprintCount` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedOtherFingerprintCount` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedFingerprintProCount` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedOtherFingerprintProCount` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedUserTurnMissedCount` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedOtherUserTurnMissedCount` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedUserTurnCount` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedOtherUserTurnCount` int(10) UNSIGNED NOT NULL DEFAULT 0;

@@ -119,7 +119,7 @@ class libUserConnections
                 ON DUPLICATE KEY UPDATE matches = matches + VALUES(matches), matchCount = matchCount + VALUES(matchCount), isUpdated = 1;
                 */
                 ";
-                
+
                 $sql .= "
                 /* Add any newly found matches to the count, and the updated sum to the total matches.
                 Note the matches / matched___ is the number of users where there is at least one code match,
@@ -127,12 +127,12 @@ class libUserConnections
                 not the same as the number of times a code has been used, which would be matchCount - previousMatchCount) */
                 UPDATE wD_UserConnections uc
                 INNER JOIN (
-                    SELECT a.userIDFrom userID, a.type, SUM(isNew) matches, SUM(matches-previousMatches) matchedCodes
+                    SELECT a.userIDFrom userID, a.type, SUM(isNew) matches, SUM(matches-previousMatches) matchedCodes, SUM(matchCount-previousMatchCount) matchedCodeCount
                     FROM wD_UserCodeConnectionMatches a
                     WHERE a.type = '".$codeType."' AND a.isUpdated = 1
                     GROUP BY a.userIDFrom, a.type
                 ) rec ON rec.userID = uc.userId
-                SET matched".$codeType." = matched".$codeType." + rec.matches, matched".$codeType."Total = matched".$codeType."Total + rec.matchedCodes;
+                SET matched".$codeType." = matched".$codeType." + rec.matches, matched".$codeType."Total = matched".$codeType."Total + rec.matchedCodes, matched".$codeType."Count = matched".$codeType."Count + rec.matchedCodeCount;
                 ";
     
                 $sql .= "
@@ -141,12 +141,12 @@ class libUserConnections
                 that has 1 cookie code match, a lot more suspicious) */
                 UPDATE wD_UserConnections uc
                 INNER JOIN (
-                    SELECT a.userIDTo userID, a.type, SUM(isNew) matches, SUM(matches-previousMatches) matchedCodes
+                    SELECT a.userIDTo userID, a.type, SUM(isNew) matches, SUM(matches-previousMatches) matchedCodes, SUM(matchCount-previousMatchCount) matchedCodeCount
                     FROM wD_UserCodeConnectionMatches a
                     WHERE a.type = '".$codeType."' AND a.isUpdated = 1
                     GROUP BY a.userIDTo, a.type
                 ) rec ON rec.userID = uc.userId
-                SET matchedOther".$codeType."Total = matchedOther".$codeType."Total + rec.matchedCodes;
+                SET matchedOther".$codeType."Total = matchedOther".$codeType."Total + rec.matchedCodes, matchedOther".$codeType."Count = matchedOther".$codeType."Count + rec.matchedCodeCount;
                 ";
             }
 
