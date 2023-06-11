@@ -888,7 +888,7 @@ class User {
 			VALUES (".$this->id.",CURRENT_TIMESTAMP,1, UNHEX('".$ip."'),
 					UNHEX('".$userAgentHash."'), UNHEX('".$cookieCode."'), UNHEX('".$browserFingerprint."'), ".$webPushrSID.")
 			ON DUPLICATE KEY UPDATE hits=hits+1,ip=UNHEX('".$ip."'),userAgent=UNHEX('".$userAgentHash."'), cookieCode=UNHEX('".$cookieCode."'), browserFingerprint=UNHEX('".$browserFingerprint."'), webPushrSID=".$webPushrSID);
-
+			
 			$DB->sql_put("INSERT INTO wD_IPLookups (ipCode, ip, timeInserted, timeLastHit)
 			VALUES (UNHEX('".$ip."'), '".$originalIP."', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())
 			ON DUPLICATE KEY UPDATE hits=hits+1, timeLastHit=UNIX_TIMESTAMP()");

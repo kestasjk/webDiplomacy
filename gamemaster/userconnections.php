@@ -156,7 +156,7 @@ class libUserConnections
     private static $excludedUserIDCSVListCache = null;
     /**
      * A comma separated list of user IDs that shouldn't be included in the user connections, for performance and to reduce
-     * the number of false positives for mods
+     * the number of false positives for mods, e.g. bots
      */
     static private function getExcludedUserIDCSVList()
     {
