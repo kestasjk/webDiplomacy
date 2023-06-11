@@ -576,3 +576,5 @@ ALTER TABLE `wD_UserConnections`
   ADD `matchedOtherUserTurnMissedCount` int(10) UNSIGNED NOT NULL DEFAULT 0,
   ADD `matchedUserTurnCount` int(10) UNSIGNED NOT NULL DEFAULT 0,
   ADD `matchedOtherUserTurnCount` int(10) UNSIGNED NOT NULL DEFAULT 0;
+
+ALTER TABLE wD_UserCodeConnectionMatches ADD earliestFrom TIMESTAMP NULL, ADD latestFrom TIMESTAMP NULL, ADD earliestTo TIMESTAMP NULL, ADD latestTo TIMESTAMP NULL;

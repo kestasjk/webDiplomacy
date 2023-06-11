@@ -234,18 +234,18 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 		$Misc->write();
 	}
 
+	if( in_array("TIDYWATCHED", $argv) )
+	{
+		print l_t('Clearing old watched game records').'<br />';
+		$DB->sql_put("DELETE wg FROM wD_WatchedGames wg LEFT JOIN wD_Games g ON g.id = wg.gameID WHERE g.id IS NULL OR g.phase = 'Finished' OR g.gameOver <> 'No'");
+	}
+
 	if( in_array("RELIABILITYRATINGS", $argv) )
 	{
 		$DB->get_lock('gamemaster',1);
 		// Update the reliability ratings:
 		print l_t('Updating user phase/year counts and reliability ratings').'<br />';
 		libGameMaster::updateReliabilityRatings();
-	}
-
-	if( in_array("TIDYWATCHED", $argv) )
-	{
-		print l_t('Clearing old watched game records').'<br />';
-		$DB->sql_put("DELETE wg FROM wD_WatchedGames wg LEFT JOIN wD_Games g ON g.id = wg.gameID WHERE g.id IS NULL OR g.phase = 'Finished' OR g.gameOver <> 'No'");
 	}
 
 	$DB->sql_put("COMMIT");

@@ -96,20 +96,22 @@ class libUserConnections
             
             if( in_array($codeType, $matchCodes) )
             {
-
                 $sql .= "
                 /* Find any new matches between users, and add them to the matched code table. */
-                INSERT INTO wD_UserCodeConnectionMatches (type, userIDFrom, userIDTo, matches, matchCount)
-                SELECT a.type, a.userID userIDFrom, b.userID userIDTo, SUM(a.isNew) matches, SUM(a.count-a.previousCount) matchCount
+                INSERT INTO wD_UserCodeConnectionMatches (type, userIDFrom, userIDTo, matches, matchCount, earliestFrom, latestFrom, earliestTo, latestTo)
+                SELECT a.type, a.userID userIDFrom, b.userID userIDTo, SUM(a.isNew) matches, SUM(a.count-a.previousCount) matchCount, 
+                    MIN(a.earliest) earliestFrom, MAX(a.latest) latestFrom, MIN(b.earliest) earliestTo, MAX(b.latest) latestTo
                 FROM wD_UserCodeConnections a
                 INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
                 WHERE a.type = '".$codeType."' AND a.isUpdated = 1
                 GROUP BY a.userID, b.userID, a.type
-                ON DUPLICATE KEY UPDATE matches = matches + VALUES(matches), matchCount = matchCount + VALUES(matchCount), isUpdated = 1;
+                ON DUPLICATE KEY UPDATE matches = matches + VALUES(matches), matchCount = matchCount + VALUES(matchCount), isUpdated = 1,
+                    earliestFrom = LEAST(earliestFrom, VALUES(earliestFrom)), latestFrom = GREATEST(latestFrom, VALUES(latestFrom)),
+                    earliestTo = LEAST(earliestTo, VALUES(earliestTo)), latestTo = GREATEST(latestTo, VALUES(latestTo));
                 
                 /*
                 This seems to just duplicate the same data:
-                 Also add the reverse matches; this will double the match counts but that's fine 
+                Also add the reverse matches; this will double the match counts but that's fine 
                 INSERT INTO wD_UserCodeConnectionMatches (type, userIDFrom, userIDTo, matches, matchCount)
                 SELECT b.type, b.userID userIDFrom, a.userID userIDTo, SUM(a.isNew) matches, SUM(a.count-a.previousCount) matchCount
                 FROM wD_UserCodeConnections a
