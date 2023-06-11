@@ -21,7 +21,14 @@
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 /**
-	 * To analyze lots of different data that might associate users without lots of separate queries into large datasets
+	 * Judging and Matching Optimizer
+     * ------------------------------
+     * 
+     * This is the system that helps detecting multi accounters / meta gamers in a more systematic and less time-consuming way,
+     * with the goal being to make multi-accounting / meta-gaming too difficult to be worthwhile.
+     * 
+     * 
+     * To analyze lots of different data that might associate users without lots of separate queries into large datasets
 	 * data is aggregated in this function into the UserCodeConnections and UserConnections table.
 	 * 
 	 * UserCodeConnections contains for each user, for each type of code (IP, Cookie, Fingerprint, etc); the code, the 
@@ -112,36 +119,37 @@ class libUserConnections
                 ON DUPLICATE KEY UPDATE matches = matches + VALUES(matches), matchCount = matchCount + VALUES(matchCount), isUpdated = 1;
                 */
                 ";
+                
+                $sql .= "
+                /* Add any newly found matches to the count, and the updated sum to the total matches.
+                Note the matches / matched___ is the number of users where there is at least one code match,
+                matchedCodes / matched____Total is the number of times a code has matched another user (this is
+                not the same as the number of times a code has been used, which would be matchCount - previousMatchCount) */
+                UPDATE wD_UserConnections uc
+                INNER JOIN (
+                    SELECT a.userIDFrom userID, a.type, SUM(isNew) matches, SUM(matches-previousMatches) matchedCodes
+                    FROM wD_UserCodeConnectionMatches a
+                    WHERE a.type = '".$codeType."' AND a.isUpdated = 1
+                    GROUP BY a.userIDFrom, a.type
+                ) rec ON rec.userID = uc.userId
+                SET matched".$codeType." = matched".$codeType." + rec.matches, matched".$codeType."Total = matched".$codeType."Total + rec.matchedCodes;
+                ";
+    
+                $sql .= "
+                /* Add in the matchedOther___Total, which gives an indication of the matches other users have to this user, indicating whether the matches are symmetrical
+                (i.e. is this a user that matched 1 cookie code a user with 100000 cookie code matches, or is this a user that matched 1 cookie code with another user
+                that has 1 cookie code match, a lot more suspicious) */
+                UPDATE wD_UserConnections uc
+                INNER JOIN (
+                    SELECT a.userIDTo userID, a.type, SUM(isNew) matches, SUM(matches-previousMatches) matchedCodes
+                    FROM wD_UserCodeConnectionMatches a
+                    WHERE a.type = '".$codeType."' AND a.isUpdated = 1
+                    GROUP BY a.userIDTo, a.type
+                ) rec ON rec.userID = uc.userId
+                SET matchedOther".$codeType."Total = matchedOther".$codeType."Total + rec.matchedCodes;
+                ";
             }
 
-			$sql .= "
-            /* Add any newly found matches to the count, and the updated sum to the total matches.
-            Note the matches / matched___ is the number of users where there is at least one code match,
-            matchedCodes / matched____Total is the number of times a code has matched another user (this is
-            not the same as the number of times a code has been used, which would be matchCount - previousMatchCount) */
-			UPDATE wD_UserConnections uc
-			INNER JOIN (
-                SELECT a.userIDFrom userID, a.type, SUM(isNew) matches, SUM(matches-previousMatches) matchedCodes
-                FROM wD_UserCodeConnectionMatches a
-                WHERE a.type = '".$codeType."' AND a.isUpdated = 1
-                GROUP BY a.userIDFrom, a.type
-			) rec ON rec.userID = uc.userId
-			SET matched".$codeType." = matched".$codeType." + rec.matches, matched".$codeType."Total = matched".$codeType."Total + rec.matchedCodes;
-            ";
-
-			$sql .= "
-            /* Add in the matchedOther___Total, which gives an indication of the matches other users have to this user, indicating whether the matches are symmetrical
-            (i.e. is this a user that matched 1 cookie code a user with 100000 cookie code matches, or is this a user that matched 1 cookie code with another user
-            that has 1 cookie code match, a lot more suspicious) */
-			UPDATE wD_UserConnections uc
-			INNER JOIN (
-                SELECT a.userIDTo userID, a.type, SUM(isNew) matches, SUM(matches-previousMatches) matchedCodes
-                FROM wD_UserCodeConnectionMatches a
-                WHERE a.type = '".$codeType."' AND a.isUpdated = 1
-                GROUP BY a.userIDTo, a.type
-			) rec ON rec.userID = uc.userId
-			SET matchedOther".$codeType."Total = matchedOther".$codeType."Total + rec.matchedCodes;
-            ";
             
 			$sql .= "
             UPDATE wD_UserCodeConnectionMatches SET isUpdated = 0, isNew = 0, previousMatches = matches, previousMatchCount = matchCount WHERE isUpdated = 1 AND type = '".$codeType."';
