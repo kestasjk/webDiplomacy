@@ -109,17 +109,6 @@ class libUserConnections
                     earliestFrom = LEAST(earliestFrom, VALUES(earliestFrom)), latestFrom = GREATEST(latestFrom, VALUES(latestFrom)),
                     earliestTo = LEAST(earliestTo, VALUES(earliestTo)), latestTo = GREATEST(latestTo, VALUES(latestTo));
                 
-                /*
-                This seems to just duplicate the same data:
-                Also add the reverse matches; this will double the match counts but that's fine 
-                INSERT INTO wD_UserCodeConnectionMatches (type, userIDFrom, userIDTo, matches, matchCount)
-                SELECT b.type, b.userID userIDFrom, a.userID userIDTo, SUM(a.isNew) matches, SUM(a.count-a.previousCount) matchCount
-                FROM wD_UserCodeConnections a
-                INNER JOIN wD_UserCodeConnections b ON a.type = b.type AND a.code = b.code AND a.userID <> b.userID
-                WHERE a.type = '".$codeType."' AND a.isUpdated = 1
-                GROUP BY a.userID, b.userID, a.type
-                ON DUPLICATE KEY UPDATE matches = matches + VALUES(matches), matchCount = matchCount + VALUES(matchCount), isUpdated = 1;
-                */
                 ";
 
                 $sql .= "
@@ -270,21 +259,21 @@ ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(earliestRequest, earliest), 
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, type, code , earliestRequest, latestRequest, requestCount
 FROM (
- SELECT a.userID, 'IPVPN' type, ip code, MIN(a.earliest) earliestRequest, MAX(a.latest) latestRequest, SUM(a.count) requestCount
- FROM wD_UserCodeConnections a
- INNER JOIN wD_IPLookups u ON a.code = u.ipCode
- WHERE a.type='IPVPN' AND u.timeLookedUp >= ".$lastUpdate."
- GROUP BY a.userID, u.region
+ SELECT userID, 'Fingerprint' type, browserFingerprint code, MIN(lastRequest) earliestRequest, MAX(lastRequest) latestRequest, SUM(hits) requestCount
+ FROM wD_AccessLog
+ WHERE lastRequest >= FROM_UNIXTIME(".$lastUpdate.") AND browserFingerprint IS NOT NULL AND browserFingerprint <> UNHEX('00000000000000000000000000000000')
+ GROUP BY userID, browserFingerprint
 ) r
 ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(earliestRequest, earliest), latest=greatest(latestRequest, latest), count=count+requestCount;
 
 INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
 SELECT userID, type, code , earliestRequest, latestRequest, requestCount
 FROM (
- SELECT userID, 'Fingerprint' type, browserFingerprint code, MIN(lastRequest) earliestRequest, MAX(lastRequest) latestRequest, SUM(hits) requestCount
- FROM wD_AccessLog
- WHERE lastRequest >= FROM_UNIXTIME(".$lastUpdate.") AND browserFingerprint IS NOT NULL AND browserFingerprint <> UNHEX('00000000000000000000000000000000')
- GROUP BY userID, browserFingerprint
+ SELECT a.userID, 'IPVPN' type, LEFT(u.security,16) code, MIN(a.earliest) earliestRequest, MAX(a.latest) latestRequest, SUM(a.count) requestCount
+ FROM wD_UserCodeConnections a
+ INNER JOIN wD_IPLookups u ON a.code = u.ipCode
+ WHERE a.type='IP' AND u.timeLookedUp >= ".$lastUpdate."
+ GROUP BY a.userID, u.security
 ) r
 ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(earliestRequest, earliest), latest=greatest(latestRequest, latest), count=count+requestCount;
 
@@ -297,7 +286,7 @@ FROM (
  FROM wD_UserCodeConnections a
  INNER JOIN wD_IPLookups u ON a.code = u.ipCode
  WHERE a.type='IP' AND u.timeLookedUp >= ".$lastUpdate."
- GROUP BY a.userID, a.code
+ GROUP BY a.userID, ROUND((u.latitude+90.0)*10,0), ROUND((u.longitude+180.0)*10,0)
 ) r
 ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(earliestRequest, earliest), latest=greatest(latestRequest, latest), count=count+requestCount;
 
