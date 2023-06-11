@@ -115,15 +115,18 @@ class libUserConnections
             }
 
 			$sql .= "
-            /* Add any newly found matches to the count, and the updated sum to the total matches */
+            /* Add any newly found matches to the count, and the updated sum to the total matches.
+            Note the matches / matched___ is the number of users where there is at least one code match,
+            matchedCodes / matched____Total is the number of times a code has matched another user (this is
+            not the same as the number of times a code has been used, which would be matchCount - previousMatchCount) */
 			UPDATE wD_UserConnections uc
 			INNER JOIN (
-                SELECT a.userIDFrom userID, a.type, SUM(isNew) matches, SUM(count-previousCount) matchCount
+                SELECT a.userIDFrom userID, a.type, SUM(isNew) matches, SUM(matches-previousMatches) matchedCodes
                 FROM wD_UserCodeConnectionMatches a
                 WHERE a.type = '".$codeType."' AND a.isUpdated = 1
                 GROUP BY a.userIDFrom, a.type
 			) rec ON rec.userID = uc.userId
-			SET matched".$codeType." = matched".$codeType." + rec.matches, matched".$codeType."Total = matched".$codeType."Total + rec.matchCount;
+			SET matched".$codeType." = matched".$codeType." + rec.matches, matched".$codeType."Total = matched".$codeType."Total + rec.matchedCodes;
             ";
 
 			$sql .= "
@@ -132,12 +135,12 @@ class libUserConnections
             that has 1 cookie code match, a lot more suspicious) */
 			UPDATE wD_UserConnections uc
 			INNER JOIN (
-                SELECT a.userIDTo userID, a.type, SUM(isNew) matches, SUM(count-previousCount) matchCount
+                SELECT a.userIDTo userID, a.type, SUM(isNew) matches, SUM(matches-previousMatches) matchedCodes
                 FROM wD_UserCodeConnectionMatches a
                 WHERE a.type = '".$codeType."' AND a.isUpdated = 1
                 GROUP BY a.userIDTo, a.type
 			) rec ON rec.userID = uc.userId
-			SET matchedOther".$codeType."Total = matchedOther".$codeType."Total + rec.matchCount;
+			SET matchedOther".$codeType."Total = matchedOther".$codeType."Total + rec.matchedCodes;
             ";
             
 			$sql .= "
