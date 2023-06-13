@@ -14,7 +14,7 @@ require_once('modforum/libMessage.php');
 
 // Set different tabs for admins to see...
 $tabs = array(
-	'Open'     =>array (l_t('Unresolved reports'),' AND (status = "New" OR status = "Open")' ),
+	'Open'     =>array (l_t('Unresolved reports'),' AND (COALESCE(status,"New") = "New" OR status = "Open")' ),
 	'Assigned' =>array (l_t('My reports'),' AND status = "Open" AND (assigned = "'.$User->id.'" OR fromUserID = "'.$User->id.'")' ),
 	'Resolved' =>array (l_t('Resolved reports'),' AND status = "Resolved"'),
 	'Bugs'     =>array (l_t('Bugs to take care of'),' AND status = "Bugs"'),
