@@ -690,7 +690,15 @@ if ( $User->type['Moderator'] || $User->id == $UserProfile->id )
 			if ($name != '')
 			{
 				$Variant=libVariant::loadFromGameID($gameID);
-				print '<td> <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a></strong></td>';
+				print '<td> <strong><a href="board.php?gameID='.$gameID.'">'.$name.'</a>';
+				if( $User->type['Moderator'] )
+				{
+					if( $modExcused == 'No' )
+						print '<br /> <a href="admincp.php?actionName=modExcuseDelay&userId='.$UserProfile->id.'&excuseId='.$id.'&reason=None">Excuse</a>';
+					else
+						print '<br /> <a href="admincp.php?actionName=modExcuseDelay&userId='.$UserProfile->id.'&excuseId='.$id.'&reason=None">Unexcuse</a>';
+				}
+				print '</strong></td>';
 				print '<td> <strong>'.$Variant->countries[$countryID-1].'</strong></td>';
 				print '<td> <strong>'.$Variant->turnAsDate($turn).'</strong></td>';
 				print '<td> <strong>'.$liveGame.'</strong></td>';
