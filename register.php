@@ -109,7 +109,7 @@ if ( ((isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText'])) || isset(
 			}
 
 			$responseData = json_decode($res, true);
-			if( $responseData['tokenProperties']['valid'] === 'true' )
+			if( $responseData['tokenProperties']['valid'] === true )
 			{
 				
 			}
