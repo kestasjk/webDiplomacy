@@ -78,7 +78,7 @@ if ( ((isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText'])) || isset(
 		else if( isset($_REQUEST['recaptchaToken']) )
 		{
 			// Validate the given token using the CURL API
-			print 'Validating token: '.$_REQUEST['recaptchaToken'].'<br />';
+			//print 'Validating token: '.$_REQUEST['recaptchaToken'].'<br />';
 
 			$ch = curl_init('https://recaptchaenterprise.googleapis.com/v1/projects/'.Config::$recaptchaProject.'/assessments?key='.Config::$recaptchaApiKey.'');
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
@@ -93,28 +93,44 @@ if ( ((isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText'])) || isset(
 			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 				'Content-Type: application/json; charset=utf-8'
 			));
-			print 'Executing request<br />';
+			//print 'Executing request<br />';
 			$res = curl_exec($ch);
 			if ( ! ($res)) {
 				$errno = curl_errno($ch);
 				$errstr = curl_error($ch);
 				curl_close($ch);
-				throw new Exception("cURL error: [$errno] $errstr");
+				throw new Exception("Error validating anti-bot token: [$errno] $errstr");
 			}
-
-			print 'Got response: '.$res.'<br />';
-
+			
 			$info = curl_getinfo($ch);
 			$http_code = $info['http_code'];
 			if ($http_code != 200) {
 				throw new Exception("Google responded with http code $http_code");
 			}
 
-			print 'Got info: '.print_r($info, true).'<br />';
+			$responseData = json_decode($res, true);
+			if( $responseData['tokenProperties']['valid'] === 'true' )
+			{
+				
+			}
+			else
+			{
+				throw new Exception("Google responded with invalid token: " . $responseData['tokenProperties']['invalidReason']);
+			}
+
+			/*if( $responseData['riskAnalysis']['score'] )
+			{
+				//  $responseData['riskAnalysis']['reasons']
+			}*/
+
+			//print 'Got response: '.$res.'<br />';
+
+			
+
+			//print 'Got info: '.print_r($info, true).'<br />';
 
 			curl_close($ch);
 
-			die();
 		}
 		else
 		{
@@ -212,6 +228,7 @@ switch($page)
 if( !is_null($exception) )
 {
 	print '<p class="notice">'.$e->getMessage().'</p>';
+	print '<p class="notice">Please contact <a href="mailto:admin@webdiplomacy.net">admin@webdiplomacy.net</a> if you are experiencing continuous issues registering an account.</p>';
 	print '<div class="hr"></div>';
 }
 
