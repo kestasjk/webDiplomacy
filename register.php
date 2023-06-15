@@ -110,7 +110,7 @@ if ( ((isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText'])) || isset(
 				throw new Exception("Google responded with http code $http_code");
 			}
 
-			print 'Got info: '.$info.'<br />';
+			print 'Got info: '.print_r($info, true).'<br />';
 
 			curl_close($ch);
 
