@@ -60,7 +60,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	?>
 		<input type="hidden" name="recaptchaToken" id="recaptchaToken" value="" />
 		<script>
-		function onSubmit() {
+		function onSubmit(e) {
 			e.preventDefault();
 			grecaptcha.enterprise.ready(async () => {
 				const token = await grecaptcha.enterprise.execute('<?php print Config::$recaptchaSiteKey; ?>', {action: 'LOGIN'});
@@ -69,7 +69,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			});
 		}
 		</script>
-		<button type="submit" 
+		<button type="button" 
 			class="green-Submit" 
 			onClick="onSubmit()"
 			value="Validate me">Submit</button>
