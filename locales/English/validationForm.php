@@ -61,7 +61,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		<input type="hidden" name="recaptchaToken" id="recaptchaToken" value="" />
 		<script>
 		function onSubmit(e) {
-			e.preventDefault();
+			//e.preventDefault();
 			grecaptcha.enterprise.ready(async () => {
 				const token = await grecaptcha.enterprise.execute('<?php print Config::$recaptchaSiteKey; ?>', {action: 'LOGIN'});
 				document.getElementById("recaptchaToken").value = token;
