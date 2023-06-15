@@ -28,16 +28,16 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		<?php 
 		if( !(isset(Config::$recaptchaSiteKey) && Config::$recaptchaSiteKey != null) )
 		{
-		?>
-		<li class="formlisttitle">Anti-script code</li>
-		<li class="formlistfield">
-		        <img alt="EasyCaptcha image" src="<?php print STATICSRV; ?>contrib/easycaptcha.php" /><br />
-		        <input type="text" name="imageText" />
-		</li>
-		<li class="formlistdesc">
-			By entering the above code you protect our forum from spam-bots and other scripts
-		</li>
-		<?php 
+			?>
+			<li class="formlisttitle">Anti-script code</li>
+			<li class="formlistfield">
+					<img alt="EasyCaptcha image" src="<?php print STATICSRV; ?>contrib/easycaptcha.php" /><br />
+					<input type="text" name="imageText" />
+			</li>
+			<li class="formlistdesc">
+				By entering the above code you protect our forum from spam-bots and other scripts
+			</li>
+			<?php 
 		}
 		?>
 		<li class="formlisttitle">E-mail address</li>
@@ -58,18 +58,20 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	if( isset(Config::$recaptchaSiteKey) && Config::$recaptchaSiteKey != null )
 	{
 	?>
-	
-		
+		<input type="hidden" name="recaptchaToken" id="recaptchaToken" value="" />
 		<script>
-		function onSubmit(token) {
-			document.getElementById("wd-register-form").submit();
+		function onSubmit() {
+			e.preventDefault();
+			grecaptcha.enterprise.ready(async () => {
+				const token = await grecaptcha.enterprise.execute('<?php print Config::$recaptchaSiteKey; ?>', {action: 'LOGIN'});
+				document.getElementById("recaptchaToken").value = token;
+				document.getElementById("wd-register-form").submit();
+			});
 		}
 		</script>
 		<button type="submit" 
-			class="green-Submit g-recaptcha" 
-			data-callback='onSubmit'
-			data-action='submit' 
-			data-sitekey="<?php print Config::$recaptchaSiteKey ?>" 
+			class="green-Submit" 
+			onClick="onSubmit()"
 			value="Validate me">Submit</button>
 
 	<?php
@@ -77,7 +79,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	else
 	{
 	?>
-	<input type="submit" class="green-Submit" value="Validate me">
+		<input type="submit" class="green-Submit" value="Validate me">
 	<?php
 	}
 	?>

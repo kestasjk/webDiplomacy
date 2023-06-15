@@ -609,6 +609,9 @@ class libHTML
 			<script type="text/javascript" src="https://js.pusher.com/7.0/pusher.min.js"></script>
 			<link rel="stylesheet" type="text/css" href="'.STATICSRV.l_s('contrib/js/pushup/src/css/pushup.css').'" />
 			<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/pushup/src/js/pushup.js').'"></script>
+			'.( isset(Config::$recaptchaSiteKey) && !is_null(Config::$recaptchaSiteKey) && strlen(Config::$recaptchaSiteKey) > 1 ? 
+				'<script src="https://www.google.com/recaptcha/enterprise.js?render='.Config::$recaptchaSiteKey.'"></script>'
+				: '').'
 			<script type="text/javascript">
 				STATICSRV="'.STATICSRV.'";
 				var cssDirectory = "'.CSSDIR.'";

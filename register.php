@@ -51,28 +51,75 @@ $page = 'firstValidationForm';
 
 $exception = null;
 
-if ( isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText']) && isset($_REQUEST['emailValidate']) )
+if ( ((isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText'])) || isset($_REQUEST['recaptchaToken'])) && isset($_REQUEST['emailValidate']) )
 {
 	try
 	{
-		// Validate and send email
-		$imageToken = explode('|', $_COOKIE['imageToken'], 2);
-
-		if ( count($imageToken) != 2 )
-			throw new Exception(l_t("A bad anti-script code was given, please try again"));
-
-
-		list($Hash, $Time) = $imageToken;
-
-		if ( md5(Config::$secret.$_REQUEST['imageText'].$_SERVER['REMOTE_ADDR'].$Time) != $Hash )
+		if(isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText']))
 		{
-			throw new Exception(l_t("An invalid anti-script code was given, please try again"));
-		}
-		elseif( (time() - 3*60) > $Time)
-		{
-			throw new Exception(l_t("This anti-script code has expired, please submit it within 3 minutes"));
-		}
+			// Validate using the built in easycaptcha, which is fairly easy to work around and has cookie issues with certain browser configs
+			// Validate and send email
+			$imageToken = explode('|', $_COOKIE['imageToken'], 2);
 
+			if ( count($imageToken) != 2 )
+				throw new Exception(l_t("A bad anti-script code was given, please try again"));
+
+			list($Hash, $Time) = $imageToken;
+
+			if ( md5(Config::$secret.$_REQUEST['imageText'].$_SERVER['REMOTE_ADDR'].$Time) != $Hash )
+			{
+				throw new Exception(l_t("An invalid anti-script code was given, please try again"));
+			}
+			elseif( (time() - 3*60) > $Time)
+			{
+				throw new Exception(l_t("This anti-script code has expired, please submit it within 3 minutes"));
+			}
+		}
+		else if( isset($_REQUEST['recaptchaToken']) )
+		{
+			// Validate the given token using the CURL API
+			print 'Validating token: '.$_REQUEST['recaptchaToken'].'<br />';
+
+			$ch = curl_init('https://recaptchaenterprise.googleapis.com/v1/projects/'.Config::$recaptchaProject.'/assessments?key='.Config::$recaptchaApiKey.'');
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
+			curl_setopt($ch, CURLOPT_POST,           1 );
+			curl_setopt($ch, CURLOPT_POSTFIELDS,     '{
+	"event": {
+		"token": "'.$_REQUEST['recaptchaToken'].'",
+		"siteKey": "'.Config::$recaptchaSiteKey.'",
+		"expectedAction": "LOGIN"
+	}
+	}' ); 
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+				'Content-Type: application/json; charset=utf-8'
+			));
+			print 'Executing request<br />';
+			$res = curl_exec($ch);
+			if ( ! ($res)) {
+				$errno = curl_errno($ch);
+				$errstr = curl_error($ch);
+				curl_close($ch);
+				throw new Exception("cURL error: [$errno] $errstr");
+			}
+
+			print 'Got response: '.$res.'<br />';
+
+			$info = curl_getinfo($ch);
+			$http_code = $info['http_code'];
+			if ($http_code != 200) {
+				throw new Exception("Google responded with http code $http_code");
+			}
+
+			print 'Got info: '.$info.'<br />';
+
+			curl_close($ch);
+
+			die();
+		}
+		else
+		{
+			throw new Exception(l_t("No anti-bot token provided"));
+		}
 
 		// The user's imageText is validated; he's not a robot. But does he have a real email address?
 		$email = trim($DB->escape($_REQUEST['emailValidate']));

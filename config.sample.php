@@ -427,6 +427,8 @@ class Config
 	 * @var string
 	 */
 	public static $recaptchaSiteKey = null;
+	public static $recaptchaProject = null;
+	public static $recaptchaApiKey = null;
 
 	/**
 	 * Public Site key for a web pusher account, to allow users to subscribe to notifications
