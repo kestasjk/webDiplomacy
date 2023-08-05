@@ -312,7 +312,7 @@ foreach(Config::$variants as $variantID=>$variantName)
 </script>
 
 <?php
-libHTML::$footerScript[] = 'initializeSandboxSetupBoard();';
 libHTML::$footerIncludes[] = l_j('help.js'); 
 libHTML::$footerIncludes[] = l_j('canvasBoard.js');
+libHTML::$footerScript[] = 'initializeSandboxSetupBoard();';
 ?>

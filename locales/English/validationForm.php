@@ -29,7 +29,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		if( !(isset(Config::$recaptchaSiteKey) && Config::$recaptchaSiteKey != null) )
 		{
 			?>
-			<li class="formlisttitle">Anti-script code</li>
+			<li class="formlisttitle">Anti-bot code</li>
 			<li class="formlistfield">
 					<img alt="EasyCaptcha image" src="<?php print STATICSRV; ?>contrib/easycaptcha.php" /><br />
 					<input type="text" name="imageText" />
@@ -38,6 +38,40 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				By entering the above code you protect our forum from spam-bots and other scripts
 			</li>
 			<?php 
+		}
+		else if (isset($_REQUEST['antiBotTest']))
+		{
+			?>
+			
+			<li class="formlisttitle">Anti-bot challenge</li>
+			<li class="formlistdesc">
+				To keep the site free of bots please select Munich, Berlin, and Kiel on the map below:
+			</li>
+			<li class="formlistfield">
+				<canvas id="boardCanvasBase" style="display:none"></canvas>
+				<canvas id="boardCanvasOptions" style="display:none"></canvas>
+				<div style="text-align:center">
+					<canvas id="boardCanvas"></canvas>
+				</div>
+			</li>
+<script>
+	function initializeSandboxSetupBoard() {
+		// Load the default variant
+		variantID = "1";
+
+		// When the map is clicked apply an assignment, redraw the map, and save the new options
+		canvasElement.addEventListener('click', (event) => {
+			applyAssignment();
+			drawMap();
+		});
+
+		loadVariant(applyVariantToForm);
+	}
+</script>
+
+<?php
+libHTML::$footerIncludes[] = l_j('canvasBoard.js');
+libHTML::$footerScript[] = 'initializeAntiBotBoard();';
 		}
 		?>
 		<li class="formlisttitle">E-mail address</li>
