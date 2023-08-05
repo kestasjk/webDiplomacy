@@ -121,7 +121,7 @@ abstract class WDVariant {
 	/**
 	 * 
 	 */
-	public function generateSandboxSetupForm()
+	public function canvasBoardConfigJS()
 	{
 		// For each supply center a unit can be assigned, and a supply center allocated
 
