@@ -846,6 +846,7 @@ foreach(Config::$variants as $variantID=>$variantName)
 	// Load the default variant
 	variantID = document.getElementById('variant').value;
 	loadVariant();
+	setupCountryButtons();
 </script>
 
 <?php libHTML::$footerIncludes[] = l_j('help.js'); ?>
