@@ -56,6 +56,12 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				</div>
 			</li>
 <script>
+	// Contains default assignments, code to generate a summary table, variant specific data
+	let canvasBoardConfigJS = {};
+<?php
+	$Variant = libVariant::loadFromVariantID(1);
+	print 'canvasBoardConfigJS['.$Variant->id.'] = '.$Variant->canvasBoardConfigJS().';';
+?>
 	function initializeAntiBotBoard() {
 		// Load the default variant
 		variantID = "1";
