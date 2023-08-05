@@ -114,6 +114,9 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				challengeText += ' <strong><em>Challenge not passed.</em></strong>';
 			document.getElementById('antiBotRequestStatus').innerHTML = challengeText;
 			
+			supplyCenterIDs = supplyCenterIDs.sort((a, b) => {
+				return a - b;
+			});
 			let scTerrIDs = innerArray => supplyCenterIDs.join(',');
 			document.getElementById('antiBotTerritoryIDs').value = scTerrIDs;
 		}
