@@ -57,7 +57,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			</li>
 			<li class="formlistfield">
 				<canvas id="boardCanvasBase" style="display:none"></canvas>
-				<canvas id="boardCanvasOptions" style="display:none"></cawnvas>
+				<canvas id="boardCanvasOptions" style="display:none"></canvas>
 				<div style="text-align:center">
 					<canvas id="boardCanvas"></canvas>
 					<div id="antiBotRequestStatus"></div>
@@ -114,10 +114,6 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			});
 			refreshAntiBotRequestText();
 		});
-	}
-	function refreshAntiBotRequest() {
-		let supplyCenters = canvasBoardConfigJS[variantID].getSupplyCenters(); // {terrID: {id, name, type, supply, countryID, coast, coastParentID}}
-
 	}
 </script>
 
