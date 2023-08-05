@@ -45,7 +45,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			
 			<li class="formlisttitle">Anti-bot challenge</li>
 			<li class="formlistdesc">
-				To keep the site free of bots please select Munich, Berlin, and Kiel on the map below.<br />
+				To prevent bots from joining please verify you are human by clicking these territories: <strong><span id="antiBotRequest"></span></strong>.<br />
 				If you are having trouble with this anti-bot challenge please contact <a href="mailto:admin@webdiplomacy.net">admin@webdiplomacy.net</a>.
 			</li>
 			<li class="formlistfield">
@@ -53,6 +53,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				<canvas id="boardCanvasOptions" style="display:none"></canvas>
 				<div style="text-align:center">
 					<canvas id="boardCanvas"></canvas>
+					<div id="antiBotRequestStatus"></div>
 				</div>
 			</li>
 <script>
@@ -61,22 +62,55 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 <?php
 	$Variant = libVariant::loadFromVariantID(1);
 	print 'canvasBoardConfigJS['.$Variant->id.'] = '.$Variant->canvasBoardConfigJS().';';
+	// Select a random countryID:
+	$countryIDChallenge = array_rand($Variant->countries) + 1;
+	$countryIDName = $Variant->countries[$countryIDChallenge-1];
 ?>
+
+	let countryIDChallenge = <?php print $countryIDChallenge; ?>;
+	let countryIDChallengeName = '<?php print $countryIDName; ?>';
+
 	function initializeAntiBotBoard() {
 		// Load the default variant
 		variantID = "1";
+
+		let supplyCenters = Object.values(canvasBoardConfigJS[variantID].getSupplyCenters()).filter((supplyCenter) => {
+			return supplyCenter.countryID == countryIDChallenge;
+		});
+
+		function refreshAntiBotRequestText() {
+			let supplyCenterIDs = supplyCenters.map((supplyCenter) => {
+				// Check if the currentUnitSCState has a record where unitPostitionTerrID = supplyCenter.id
+				let isSelected = false;
+				currentUnitSCState.find((unitPosition) => {
+					isSelected = true;
+				});
+
+				return supplyCenter.name + ( isSelected ? ' (selected)' : '' );
+			});
+			// Combine into a comma seperated string:
+			var text = supplyCenterIDs.join(', ');
+			document.getElementById('antiBotRequest').innerHTML = text;
+			document.getElementById('antiBotRequestStatus').innerHTML = 'Territories to select: ' + text;
+		}
 
 		// When the map is clicked apply an assignment, redraw the map, and save the new options
 		canvasElement.addEventListener('click', (event) => {
 			applyAssignment();
 			drawMap();
+			refreshAntiBotRequestText();
 		});
 
 		loadVariant(() => {
 			currentUnitSCState = canvasBoardConfigJS[variantID].getEmptyOptions()
-			assigningCountryID = 4;
+			assigningCountryID = countryIDChallenge;
 			drawMap();
+			refreshAntiBotRequestText();
 		});
+	}
+	function refreshAntiBotRequest() {
+		let supplyCenters = canvasBoardConfigJS[variantID].getSupplyCenters(); // {terrID: {id, name, type, supply, countryID, coast, coastParentID}}
+
 	}
 </script>
 
