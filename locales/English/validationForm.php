@@ -65,16 +65,18 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	function initializeAntiBotBoard() {
 		// Load the default variant
 		variantID = "1";
-		currentUnitSCState = {};
-		assigningCountryID = 4;
-		
+
 		// When the map is clicked apply an assignment, redraw the map, and save the new options
 		canvasElement.addEventListener('click', (event) => {
 			applyAssignment();
 			drawMap();
 		});
 
-		loadVariant();
+		loadVariant(() => {
+			currentUnitSCState = {};
+			assigningCountryID = 4;
+			drawMap();
+		});
 	}
 </script>
 
