@@ -414,7 +414,8 @@ foreach(Config::$variants as $variantID=>$variantName)
 ?>
 
 	let drawMap = () => {};
-	function loadVariant()
+	// Loads the variant data and redraws the map for the set variantID value, and calls back once the data is loaded and map drawn
+	function loadVariant(callback)
 	{
 		assigningCountryID = 0;
 		targetColorBoundingBoxes = {};
@@ -656,8 +657,11 @@ foreach(Config::$variants as $variantID=>$variantName)
 					}
 					loadMapIntoCanvas();
 					drawCurrentOptions();
-					//canvasBoardConfigJS[variantID].applyOptionsToTable(currentOptions);
-					//drawCurrentOptions();
+
+					if( typeof callback === 'function' )
+					{
+						callback();
+					}
 				};
 			}
 		);
@@ -774,15 +778,6 @@ foreach(Config::$variants as $variantID=>$variantName)
 		}
 	}
 
-	// Triggers when a different variant is selected from the dropdown, triggering the variant map and options to be loaded
-	function variantSelectionChanged() {
-		let selection = document.getElementById('variant');
-		variantID = selection.options[selection.selectedIndex].value;
-		currentOptions = {};
-		loadVariant();
-		setupCountryButtons();
-	}
-
 	// Saves the currentOptions to the form so that it will be submitted
 	function saveCurrentOptions() {
 		// The list of army/fleet/SC territories by country ID, in a format 2,3,4;5,6,7;8,9,10 , where countryID 1 has terr IDs 2,3,4, countryID 2 has terr IDs 5,6,7, etc:
@@ -843,10 +838,26 @@ foreach(Config::$variants as $variantID=>$variantName)
 		saveCurrentOptions();
 	});
 
+	function applyVariantToForm()
+	{
+		setupCountryButtons();
+		canvasBoardConfigJS[variantID].applyOptionsToTable(currentOptions);
+		saveCurrentOptions();
+	}
+
+	// Triggers when a different variant is selected from the dropdown, triggering the variant map and options to be loaded
+	function variantSelectionChanged() {
+		let selection = document.getElementById('variant');
+		variantID = selection.options[selection.selectedIndex].value;
+		currentOptions = {};
+		loadVariant(applyVariantToForm);
+	}
+
 	// Load the default variant
 	variantID = document.getElementById('variant').value;
-	loadVariant();
-	setupCountryButtons();
+	loadVariant(applyVariantToForm);
+	
+	
 </script>
 
 <?php libHTML::$footerIncludes[] = l_j('help.js'); ?>
