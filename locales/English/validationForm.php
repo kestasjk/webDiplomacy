@@ -74,9 +74,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		// Load the default variant
 		variantID = "1";
 
-		let supplyCenters = Object.values(canvasBoardConfigJS[variantID].getSupplyCenters()).filter((supplyCenter) => {
-			return supplyCenter.countryID == countryIDChallenge;
-		});
+		let supplyCenters = [];
 
 		function refreshAntiBotRequestText() {
 			let supplyCenterIDs = supplyCenters.map((supplyCenter) => {
@@ -105,6 +103,9 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			currentUnitSCState = canvasBoardConfigJS[variantID].getEmptyOptions()
 			assigningCountryID = countryIDChallenge;
 			drawMap();
+			supplyCenters = Object.values(canvasBoardConfigJS[variantID].getSupplyCenters()).filter((supplyCenter) => {
+				return supplyCenter.countryID == countryIDChallenge;
+			});
 			refreshAntiBotRequestText();
 		});
 	}
