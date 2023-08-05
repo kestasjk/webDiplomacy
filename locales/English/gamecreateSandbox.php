@@ -780,6 +780,7 @@ foreach(Config::$variants as $variantID=>$variantName)
 		variantID = selection.options[selection.selectedIndex].value;
 		currentOptions = {};
 		loadVariant();
+		setupCountryButtons();
 	}
 
 	// Saves the currentOptions to the form so that it will be submitted
