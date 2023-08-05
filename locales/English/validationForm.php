@@ -133,7 +133,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			assigningCountryID = countryIDChallenge;
 			drawMap();
 			supplyCenters = Object.values(canvasBoardConfigJS[variantID].getSupplyCenters()).filter((supplyCenter) => {
-				return supplyCenter.countryID == countryIDChallenge;
+				return supplyCenter.countryID == countryIDChallenge && supplyCenter.coastParentID == supplyCenter.id;
 			});
 			refreshAntiBotRequestText();
 		});
