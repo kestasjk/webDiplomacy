@@ -146,7 +146,7 @@ if ( ((isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText'])) || isset(
 		
 		$tabl = $DB->sql_tabl("SELECT id FROM wD_Territories WHERE mapID = 1 AND countryID = ".$antiBotCountryID." AND supply='Yes' ORDER BY id");
 		$validTerritoryIDs = array();
-		while( $row = $DB->sql_row($tabl) ) $validTerritoryIDs[] = $row[0];
+		while( $row = $DB->tabl_row($tabl) ) $validTerritoryIDs[] = $row[0];
 		$validTerritoryIDs = implode(',', $validTerritoryIDs);
 		if( $validTerritoryIDs !== $antiBotTerritoryIDs )
 		{
