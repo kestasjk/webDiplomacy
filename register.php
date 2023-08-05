@@ -150,7 +150,7 @@ if ( ((isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText'])) || isset(
 		$validTerritoryIDs = implode(',', $validTerritoryIDs);
 		if( $validTerritoryIDs !== $antiBotTerritoryIDs )
 		{
-			throw new Exception(l_t("The selected territories do not match the expected values. Please click on the supply center territories requested."));
+			throw new Exception(l_t("The selected territories (".$antiBotTerritoryIDs.") do not match the expected values (".$validTerritoryIDs."). Please click on the supply center territories requested."));
 		}
 
 		// The user's imageText is validated; he's not a robot. But does he have a real email address?
