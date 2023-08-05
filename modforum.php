@@ -662,11 +662,19 @@ while( $message = $DB->tabl_hash($tabl) )
 				// If we're a moderator print extra info about the game and user
 				require_once(l_r('objects/game.php'));
 				require_once(l_r('gamepanel/game.php'));
-				$Variant=libVariant::loadFromGameID($message['gameID']);
-				$G = $Variant->panelGame($message['gameID']);
-				print $G->summary(false);
-				
-				print ' <strong>Posted during turn:</strong> '.$message['gameTurn'].' - '.$Variant->turnAsDate($message['gameTurn']);
+				list($gameExists) = $DB->sql_row("SELECT COUNT(*) FROM wD_Games WHERE id = ".$message['gameID']);
+				if( $gameExists )
+				{
+					$Variant=libVariant::loadFromGameID($message['gameID']);
+					$G = $Variant->panelGame($message['gameID']);
+					print $G->summary(false);
+					
+					print ' <strong>Posted during turn:</strong> '.$message['gameTurn'].' - '.$Variant->turnAsDate($message['gameTurn']);
+				}
+				else
+				{
+					print ' <strong>Game #'.$message['gameID'].' no longer exists.</strong>';
+				}
 			}
 			else
 				print ' <a href="board.php?gameID='.$message['gameID'].'">Link to game</a> ';
