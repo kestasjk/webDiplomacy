@@ -45,7 +45,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			
 			<li class="formlisttitle">Anti-bot challenge</li>
 			<li class="formlistdesc">
-				To keep the site free of bots please select Munich, Berlin, and Kiel on the map below:
+				To keep the site free of bots please select Munich, Berlin, and Kiel on the map below.<br />
+				If you are having trouble with this anti-bot challenge please contact <a href="mailto:admin@webdiplomacy.net">admin@webdiplomacy.net</a>.
 			</li>
 			<li class="formlistfield">
 				<canvas id="boardCanvasBase" style="display:none"></canvas>
