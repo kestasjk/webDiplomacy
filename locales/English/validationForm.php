@@ -85,7 +85,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			var cross = '<img src="/images/icons/cross.png" alt="(Not selected)" />';
 			var isAllSelected = true;
 			var supplyCenterIDs = [];
-			let supplyCenterIDs = supplyCenters.map((supplyCenter) => {
+			let supplyCenterNames = supplyCenters.map((supplyCenter) => {
 				// Check if the currentUnitSCState has a record where unitPostitionTerrID = supplyCenter.id
 				let isSelected = false;
 				currentUnitSCState.find((unitPosition) => {
@@ -103,10 +103,10 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				return supplyCenter.name + ' ' + ( isSelected ? tick : cross );
 			});
 			// Combine into a comma seperated string:
-			var text = supplyCenterIDs.join(', ');
-			document.getElementById('antiBotRequest').innerHTML = text;
+			var supplyCenterList = supplyCenterNames.join(', ');
+			document.getElementById('antiBotRequest').innerHTML = supplyCenterList;
 
-			var challengeText = 'Supply centers to select: <strong>' + text + '</strong>';
+			var challengeText = 'Supply centers to select: <strong>' + supplyCenterList + '</strong>';
 			if( isAllSelected )
 				challengeText += ' <strong><em>Challenge passed!</em></strong>';
 			else
