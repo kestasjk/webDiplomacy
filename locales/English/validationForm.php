@@ -56,7 +56,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				</div>
 			</li>
 <script>
-	function initializeSandboxSetupBoard() {
+	function initializeAntiBotBoard() {
 		// Load the default variant
 		variantID = "1";
 
