@@ -515,8 +515,9 @@
 
 					if( typeof callbackOnFirstDraw === 'function' )
 					{
-						callbackOnFirstDraw();
+                        let firstCallback = callbackOnFirstDraw;
 						callbackOnFirstDraw = null;
+						firstCallback(); // Prevent infinite recursion if the callback redraws the map
 					}
 				};
 			}
