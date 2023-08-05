@@ -162,6 +162,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	// Store the bounding boxes of each color so that after the first time that color is filled it will only go to the pixels that need to be filled
 	let targetColorBoundingBoxes = {};
 	
+	let variantID = -1;
 	let selectedTerrID = -1; // Territory ID that the mouse is currently hovering over / finger is clicking
 	let assigningCountryID = 0; // The country ID being assigned, or 0 for none to clear
 	let assignmentMode = 0; // 0 = unit and SC, 1 = unit only, 2 = SC only
@@ -413,7 +414,7 @@ foreach(Config::$variants as $variantID=>$variantName)
 ?>
 
 	let drawMap = () => {};
-	function loadVariant(variantID)
+	function loadVariant()
 	{
 		assigningCountryID = 0;
 		targetColorBoundingBoxes = {};
@@ -776,9 +777,9 @@ foreach(Config::$variants as $variantID=>$variantName)
 	// Triggers when a different variant is selected from the dropdown, triggering the variant map and options to be loaded
 	function variantSelectionChanged() {
 		let selection = document.getElementById('variant');
-		let variantID = selection.options[selection.selectedIndex].value;
+		variantID = selection.options[selection.selectedIndex].value;
 		currentOptions = {};
-		loadVariant(variantID);
+		loadVariant();
 	}
 
 	// Saves the currentOptions to the form so that it will be submitted
@@ -842,7 +843,8 @@ foreach(Config::$variants as $variantID=>$variantName)
 	});
 
 	// Load the default variant
-	loadVariant(document.getElementById('variant').value);
+	variantID = document.getElementById('variant').value;
+	loadVariant();
 </script>
 
 <?php libHTML::$footerIncludes[] = l_j('help.js'); ?>
