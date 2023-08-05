@@ -415,7 +415,7 @@ foreach(Config::$variants as $variantID=>$variantName)
 
 	let drawMap = () => {};
 	// Loads the variant data and redraws the map for the set variantID value, and calls back once the data is loaded and map drawn
-	function loadVariant(callback)
+	function loadVariant(callbackOnFirstDraw)
 	{
 		assigningCountryID = 0;
 		targetColorBoundingBoxes = {};
@@ -658,9 +658,10 @@ foreach(Config::$variants as $variantID=>$variantName)
 					loadMapIntoCanvas();
 					drawCurrentOptions();
 
-					if( typeof callback === 'function' )
+					if( typeof callbackOnFirstDraw === 'function' )
 					{
-						callback();
+						callbackOnFirstDraw();
+						callbackOnFirstDraw = null;
 					}
 				};
 			}
