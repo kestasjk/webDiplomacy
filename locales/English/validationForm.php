@@ -73,8 +73,9 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		});
 
 		loadVariant(() => {
-			currentUnitSCState = {};
+			currentUnitSCState = canvasBoardConfigJS[variantID].getEmptyOptions()
 			assigningCountryID = 4;
+			drawMap();
 		});
 	}
 </script>
