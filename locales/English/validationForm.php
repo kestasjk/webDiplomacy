@@ -86,7 +86,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			var cross = '<img src="/images/icons/cross.png" alt="(Not selected)" />';
 			var isAllSelected = true;
 			var supplyCenterIDs = [];
-			let supplyCenterNames = supplyCenters.map((supplyCenter) => {
+			let supplyCenterNames = supplyCenters.sort((a, b) => a.id - b.id).map((supplyCenter) => {
 				// Check if the currentUnitSCState has a record where unitPostitionTerrID = supplyCenter.id
 				let isSelected = false;
 				currentUnitSCState.find((unitPosition) => {
@@ -114,9 +114,6 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				challengeText += ' <strong><em>Challenge not passed.</em></strong>';
 			document.getElementById('antiBotRequestStatus').innerHTML = challengeText;
 			
-			supplyCenterIDs = supplyCenterIDs.sort((a, b) => {
-				return a - b;
-			});
 			let scTerrIDs = innerArray => supplyCenterIDs.join(',');
 			document.getElementById('antiBotTerritoryIDs').value = scTerrIDs;
 		}
