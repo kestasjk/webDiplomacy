@@ -72,7 +72,6 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 ?>
 
 	let countryIDChallenge = <?php print $countryIDChallenge; ?>;
-	let countryIDChallengeName = '<?php print $countryIDName; ?>';
 
 	function initializeAntiBotBoard() {
 		// Load the default variant
