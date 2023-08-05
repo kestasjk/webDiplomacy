@@ -47,15 +47,15 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			?>
 			
 			<li class="formlisttitle">Anti-bot challenge</li>
-			<li class="formlistdesc">
+			<li class="formlistdesc variantClassic">
 				To prevent bots from joining please verify you are human by clicking 
-				the <span class="variantClassic country<?php print $countryIDChallenge;?>"><?php print $countryIDChallengeName; ?></span> supply centers 
+				the supply centers for <strong><span class="country<?php print $countryIDChallenge;?>"><?php print $countryIDChallengeName; ?></span></strong>
 				in the map below: 
 
-				<strong><span id="antiBotRequest" class="variantClassic country<?php print $countryIDChallenge;?>"></span></strong>.<br />
-				If you are having trouble with this anti-bot challenge please contact <a href="mailto:admin@webdiplomacy.net">admin@webdiplomacy.net</a>.
+				<strong><span id="antiBotRequest" class="country<?php print $countryIDChallenge;?>"></span></strong>.<br />
+				<em>If you are having trouble with this anti-bot challenge please contact <a href="mailto:admin@webdiplomacy.net">admin@webdiplomacy.net</a></em>.
 			</li>
-			<li class="formlistfield">
+			<li class="formlistfield variantClassic">
 				<canvas id="boardCanvasBase" style="display:none"></canvas>
 				<canvas id="boardCanvasOptions" style="display:none"></canvas>
 				<div style="text-align:center">
@@ -80,6 +80,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		let supplyCenters = [];
 
 		function refreshAntiBotRequestText() {
+			var tick = '<img src="/images/icons/tick.png" alt="(Selected)" />';
+			var cross = '<img src="/images/icons/tick.png" alt="(Not selected)" />';
 			let supplyCenterIDs = supplyCenters.map((supplyCenter) => {
 				// Check if the currentUnitSCState has a record where unitPostitionTerrID = supplyCenter.id
 				let isSelected = false;
@@ -89,13 +91,12 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 						isSelected = true;
 					}
 				});
-
-				return supplyCenter.name + ( isSelected ? ' (selected)' : '' );
+				return supplyCenter.name + ' ' + ( isSelected ? tick : cross );
 			});
 			// Combine into a comma seperated string:
 			var text = supplyCenterIDs.join(', ');
 			document.getElementById('antiBotRequest').innerHTML = text;
-			document.getElementById('antiBotRequestStatus').innerHTML = 'Territories to select: ' + text;
+			document.getElementById('antiBotRequestStatus').innerHTML = 'Supply centers to select: <strong>' + text + '</strong>';
 		}
 
 		// When the map is clicked apply an assignment, redraw the map, and save the new options
