@@ -273,20 +273,6 @@ foreach(Config::$variants as $variantID=>$variantName)
 		document.getElementById('scAssignments').value = scTerrIDs;
 		document.getElementById('savedOptions').value = JSON.stringify(currentUnitSCState);
 	}
-	
-	// If there was an error reload the previously saved options
-	if( document.getElementById('savedOptions').value != '' )
-	{
-		currentUnitSCState = JSON.parse(document.getElementById('savedOptions').value);
-	}
-
-	// When the map is clicked apply an assignment, redraw the map, and save the new options
-	canvasElement.addEventListener('click', (event) => {
-		applyAssignment();
-		drawMap();
-		canvasBoardConfigJS[variantID].applyOptionsToTable(currentUnitSCState);
-		savecurrentUnitSCState();
-	});
 
 	function applyVariantToForm()
 	{
@@ -305,10 +291,27 @@ foreach(Config::$variants as $variantID=>$variantName)
 	// Load the default variant
 	variantID = document.getElementById('variant').value;
 	
+	function initializeSandboxSetupBoard() {
+		// If there was an error reload the previously saved options
+		if( document.getElementById('savedOptions').value != '' )
+		{
+			currentUnitSCState = JSON.parse(document.getElementById('savedOptions').value);
+		}
+
+		// When the map is clicked apply an assignment, redraw the map, and save the new options
+		canvasElement.addEventListener('click', (event) => {
+			applyAssignment();
+			drawMap();
+			canvasBoardConfigJS[variantID].applyOptionsToTable(currentUnitSCState);
+			savecurrentUnitSCState();
+		});
+
+		loadVariant(applyVariantToForm);
+	}
 </script>
 
 <?php
-libHTML::$footerScript[] = 'loadVariant(applyVariantToForm);';
+libHTML::$footerScript[] = 'initializeSandboxSetupBoard();';
 libHTML::$footerIncludes[] = l_j('help.js'); 
 libHTML::$footerIncludes[] = l_j('canvasBoard.js');
 ?>
