@@ -288,10 +288,11 @@ foreach(Config::$variants as $variantID=>$variantName)
 		currentUnitSCState = {};
 		loadVariant(applyVariantToForm);
 	}
-	// Load the default variant
-	variantID = document.getElementById('variant').value;
 	
 	function initializeSandboxSetupBoard() {
+		// Load the default variant
+		variantID = document.getElementById('variant').value;
+
 		// If there was an error reload the previously saved options
 		if( document.getElementById('savedOptions').value != '' )
 		{
