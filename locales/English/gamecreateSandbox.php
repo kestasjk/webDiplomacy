@@ -425,7 +425,7 @@ foreach(Config::$variants as $variantID=>$variantName)
 				if( Object.keys(currentOptions).length == 0 )
 				{
 					// set currentOptions to the default options for this variant:
-					currentOptions = canvasBoardConfigJS[variantID].getcurrentOptions()
+					currentOptions = canvasBoardConfigJS[variantID].getDefaultOptions()
 				}
 				countryColors = canvasBoardConfigJS[variantID].getCountryColors();
 			
