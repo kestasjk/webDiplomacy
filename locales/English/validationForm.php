@@ -43,7 +43,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		{
 			$Variant = libVariant::loadFromVariantID(1);
 			$countryIDChallenge = array_rand($Variant->countries) + 1;
-			$countryIDChallengeName = $Variant->countries[$countryIDChallenge-1]);
+			$countryIDChallengeName = $Variant->countries[$countryIDChallenge-1];
 			?>
 			
 			<li class="formlisttitle">Anti-bot challenge</li>
