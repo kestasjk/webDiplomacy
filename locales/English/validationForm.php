@@ -26,7 +26,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 	<ul class="formlist">
 		<?php 
-		if( !(isset(Config::$recaptchaSiteKey) && Config::$recaptchaSiteKey != null) )
+		/*if( !(isset(Config::$recaptchaSiteKey) && Config::$recaptchaSiteKey != null) )
 		{
 			?>
 			<li class="formlisttitle">Anti-bot code</li>
@@ -40,7 +40,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 			<?php 
 		}
 		else if (isset($_REQUEST['antiBotTest']))
-		{
+		{*/
 			$Variant = libVariant::loadFromVariantID(1);
 			$countryIDChallenge = array_rand($Variant->countries) + 1;
 			$countryIDChallengeName = $Variant->countries[$countryIDChallenge-1];
@@ -56,6 +56,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				<em>If you are having trouble with this anti-bot challenge please contact <a href="mailto:admin@webdiplomacy.net">admin@webdiplomacy.net</a></em>.
 			</li>
 			<li class="formlistfield">
+				<input type="hidden" name="antiBotCountryID" value="<?php print $countryIDChallenge;?>"  />
 				<input type="hidden" name="antiBotTerritoryIDs" id="antiBotTerritoryIDs" value=""  />
 				<canvas id="boardCanvasBase" style="display:none"></canvas>
 				<canvas id="boardCanvasOptions" style="display:none"></canvas>
@@ -139,7 +140,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 <?php
 libHTML::$footerIncludes[] = l_j('canvasBoard.js');
 libHTML::$footerScript[] = 'initializeAntiBotBoard();';
-		}
+		//}
 		?>
 		<li class="formlisttitle">E-mail address</li>
 		<li class="formlistfield"><input type="text" name="emailValidate" value="<?php

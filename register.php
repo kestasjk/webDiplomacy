@@ -137,6 +137,22 @@ if ( ((isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText'])) || isset(
 			throw new Exception(l_t("No anti-bot token provided"));
 		}
 
+		if( !isset($_REQUEST['antiBotCountryID']) || !isset($_REQUEST['antiBotTerritoryIDs']) )
+		{
+			throw new Exception(l_t("No anti-bot country selection provided."));
+		}
+		$antiBotCountryID = (int)$_REQUEST['antiBotCountryID'];
+		$antiBotTerritoryIDs = $_REQUEST['antiBotTerritoryIDs'];
+		
+		$tabl = $DB->sql_tabl("SELECT id FROM wD_Territories WHERE mapID = 1 AND countryID = ".$antiBotCountryID." AND supply='Yes' ORDER BY id");
+		$validTerritoryIDs = array();
+		while( $row = $DB->sql_row($tabl) ) $validTerritoryIDs[] = $row[0];
+		$validTerritoryIDs = implode(',', $validTerritoryIDs);
+		if( $validTerritoryIDs !== $antiBotTerritoryIDs )
+		{
+			throw new Exception(l_t("The selected territories do not match the expected values. Please click on the supply center territories requested. Contact admin@webdiplomacy.net if you continue to have issues."));
+		}
+
 		// The user's imageText is validated; he's not a robot. But does he have a real email address?
 		$email = trim($DB->escape($_REQUEST['emailValidate']));
 
