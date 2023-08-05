@@ -41,16 +41,23 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		}
 		else if (isset($_REQUEST['antiBotTest']))
 		{
+			$Variant = libVariant::loadFromVariantID(1);
+			$countryIDChallenge = array_rand($Variant->countries) + 1;
+			$countryIDChallengeName = $Variant->countries[$countryIDChallenge-1]);
 			?>
 			
 			<li class="formlisttitle">Anti-bot challenge</li>
 			<li class="formlistdesc">
-				To prevent bots from joining please verify you are human by clicking these territories: <strong><span id="antiBotRequest"></span></strong>.<br />
+				To prevent bots from joining please verify you are human by clicking 
+				the <span class="variantClassic country<?php print $countryIDChallenge;?>"><?php print $countryIDChallengeName; ?></span> supply centers 
+				in the map below: 
+
+				<strong><span id="antiBotRequest" class="variantClassic country<?php print $countryIDChallenge;?>"></span></strong>.<br />
 				If you are having trouble with this anti-bot challenge please contact <a href="mailto:admin@webdiplomacy.net">admin@webdiplomacy.net</a>.
 			</li>
 			<li class="formlistfield">
 				<canvas id="boardCanvasBase" style="display:none"></canvas>
-				<canvas id="boardCanvasOptions" style="display:none"></canvas>
+				<canvas id="boardCanvasOptions" style="display:none"></cawnvas>
 				<div style="text-align:center">
 					<canvas id="boardCanvas"></canvas>
 					<div id="antiBotRequestStatus"></div>
@@ -60,11 +67,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	// Contains default assignments, code to generate a summary table, variant specific data
 	let canvasBoardConfigJS = {};
 <?php
-	$Variant = libVariant::loadFromVariantID(1);
 	print 'canvasBoardConfigJS['.$Variant->id.'] = '.$Variant->canvasBoardConfigJS().';';
 	// Select a random countryID:
-	$countryIDChallenge = array_rand($Variant->countries) + 1;
-	$countryIDName = $Variant->countries[$countryIDChallenge-1];
 ?>
 
 	let countryIDChallenge = <?php print $countryIDChallenge; ?>;
@@ -81,8 +85,11 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 				// Check if the currentUnitSCState has a record where unitPostitionTerrID = supplyCenter.id
 				let isSelected = false;
 				currentUnitSCState.find((unitPosition) => {
-					isSelected = true;
-				});
+					if( unitPosition.unitPositionTerrID == supplyCenter.id )
+					{
+						isSelected = true;
+					}
+				});w
 
 				return supplyCenter.name + ( isSelected ? ' (selected)' : '' );
 			});
