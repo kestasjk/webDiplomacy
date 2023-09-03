@@ -77,7 +77,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			else{ throw new Exception(l_t('The variable "%s" is needed to create a game, but was not entered.',$requiredName)); }
         }
         
-		$input['fullPress'] = isset($form['fullPress'] ? (int)$form['fullPress'] : 0);
+		$input['fullPress'] = isset($form['fullPress']) ? (int)$form['fullPress'] : 0;
 
 		unset($required, $form);
 
