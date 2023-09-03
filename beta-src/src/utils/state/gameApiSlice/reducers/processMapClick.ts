@@ -313,20 +313,34 @@ export default function processMapClick(
           toTerrID,
           convoyPath,
         });
-
         // if it's a support-move of my unit, fill it in
         const targetUnitID =
           maps.provinceIDToUnits[maps.terrIDToProvinceID[order.fromTerrID]][0];
+
         if (ownUnits.includes(targetUnitID) && fromTerrID !== toTerrID) {
-          startNewOrder(state, { unitID: targetUnitID });
           let coastalToTerrID = toTerrID;
+          let coastalToTerr = clickRootTerritory;
+
           if (data.units[targetUnitID].type === "Fleet") {
-            const coastalToTerr = getBestCoastalUnitTerritory(
-              evt,
-              clickProvinceMapData,
+            const legalDests = legalOrders.legalMoveDestsByUnitID[targetUnitID];
+            const slotDests = clickProvinceMapData.unitSlots.map(
+              (slot) => slot.territory,
             );
+            const legalDestsInProvince = legalDests.filter((terr) =>
+              slotDests.includes(terr),
+            );
+            if (legalDestsInProvince.length === 1) {
+              [coastalToTerr] = legalDestsInProvince;
+            } else {
+              // find the best one
+              coastalToTerr = getBestCoastalUnitTerritory(
+                evt,
+                clickProvinceMapData,
+              );
+            }
             coastalToTerrID = maps.territoryToTerrID[coastalToTerr];
           }
+          startNewOrder(state, { unitID: targetUnitID });
           updateOrder(state, {
             convoyPath,
             toTerrID: coastalToTerrID,

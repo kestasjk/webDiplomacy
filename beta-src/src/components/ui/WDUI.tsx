@@ -1,4 +1,5 @@
 import React, { useState, FunctionComponent, ReactElement } from "react";
+import { useWindowSize } from "react-use";
 import { useTheme } from "@mui/material";
 import WDShortcuts from "./WDShortcuts";
 
@@ -26,6 +27,9 @@ import {
   getHistoricalPhaseSeasonYear,
 } from "../../utils/state/getPhaseSeasonYear";
 import WDClassesJIT from "./WDClassesJIT";
+import WDPositionContainer from "./WDPositionContainer";
+import Position from "../../enums/Position";
+import WDCenterCounts from "./WDCenterCounts";
 // import WDLoading from "../miscellaneous/Loading";
 
 interface WDUIProps {
@@ -74,6 +78,7 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
   const userTableData = user ? constructTableData(user.member) : null;
 
   const gameStatusData = useAppSelector(gameStatus);
+  const { width } = useWindowSize();
 
   const { viewedPhaseIdx } = useAppSelector(gameViewedPhase);
 
@@ -140,6 +145,13 @@ const WDUI: FunctionComponent<WDUIProps> = function ({
         viewedPhase={viewedPhase}
         totalPhases={gameStatusData.phases.length}
       />
+
+      {width <= 650 && phase !== "Pre-game" && (
+        <div className="bg-black text-white items-center p-1 m-0 font-medium uppercase text-xs absolute bottom-0 z-30 left-0 center w-full">
+          <WDCenterCounts />
+        </div>
+      )}
+
       <WDClassesJIT />
       <WDShortcuts
         onPhaseSelectorShortcut={() => setPhaseSelectorOpen(!phaseSelectorOpen)}
