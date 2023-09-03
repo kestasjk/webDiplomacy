@@ -77,11 +77,15 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			else{ throw new Exception(l_t('The variable "%s" is needed to create a game, but was not entered.',$requiredName)); }
         }
         
+		$input['fullPress'] = (int)$form['fullPress'];
+
 		unset($required, $form);
 
 		$input['variantID']=(int)$input['variantID'];
 		$input['countryID']=(int)$input['countryID'];
 		if( !in_array($input['variantID'],Config::$apiConfig['variantIDs']) ) { throw new Exception(l_t("Variant ID given (%s) doesn't represent a real variant.",$input['variantID'])); }
+
+		$input['fullPress'] = ( $input['variantID'] == 1 && $input['fullPress'] == 1 ) ? 1 : 0;
 
 		// If the name isn't unique or is too long the database will stop it
 		$input['name'] = $DB->escape($input['name']);
@@ -112,7 +116,11 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$botNum = $countryCount - 1;
 		// $tabl = $DB->sql_tabl("SELECT id FROM wD_Users WHERE type LIKE '%bot%' LIMIT ".$botNum);
 		// Use a specific bot for a specific variant for now. A new Config:: function is needed to be able to flexibly map variants to certain specialized bots
-		$tabl = $DB->sql_tabl("SELECT id FROM wD_Users WHERE type LIKE '%bot%' ".($input['variantID']==15?" AND username='FairBot' ":"")." LIMIT ".$botNum);
+		$tabl = $DB->sql_tabl("SELECT id FROM wD_Users WHERE type LIKE '%bot%' ".
+			($input['variantID']==15 ? " AND username='FairBot' ":
+				$input['fullPress']==1 ? " AND username LIKE 'dipgpt%' ":
+				" AND NOT username LIKE 'dipgpt%' ")
+			." LIMIT ".$botNum);
         
 		$currCountry = 1;
 
@@ -217,6 +225,16 @@ print '<div class="content-bare content-board-header content-title-header">
 			<select id="countryID" class="gameCreate" name="newGame[countryID]">
 			</select>
 			</br></br>
+
+			<strong>Full-press setting: (Classic only)</strong><br/>
+			<em>This is currently a beta feature; full-press bots will take longer to respond than gunboat/no-press bots, 
+			and their behavior / performance is still being determined / improved.</em>
+			<select id="fullPress" class="gameCreate" name="newGame[fullPress]">
+				<option value="0" selected>No - Gunboat / No-press</option>
+				<option value="1">Yes - Full-press</option>
+			</select>
+			</br></br>
+
 			<p class="notice">
 				<input class = "green-Submit" type="submit"  value="Create">
 			</p>';
