@@ -112,6 +112,9 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
         
 		unset($required, $form);
 
+		// Enable / disable full-press mode
+		$input['fullPress'] = isset($_REQUEST['fullPress']) && $_REQUEST['fullPress'] == '1' ? 1 : 0;
+
 		$input['variantID']=(int)$input['variantID'];
 		$input['countryID']=(int)$input['countryID'];
 		if( !in_array($input['variantID'],Config::$apiConfig['variantIDs']) ) { throw new Exception(l_t("Variant ID given (%s) doesn't represent a real variant.",$input['variantID'])); }
@@ -145,7 +148,13 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		$botNum = $countryCount - 1;
 		// $tabl = $DB->sql_tabl("SELECT id FROM wD_Users WHERE type LIKE '%bot%' LIMIT ".$botNum);
 		// Use a specific bot for a specific variant for now. A new Config:: function is needed to be able to flexibly map variants to certain specialized bots
-		$tabl = $DB->sql_tabl("SELECT id FROM wD_Users WHERE type LIKE '%bot%' ".($input['variantID']==15?" AND username='FairBot2' ":"")." LIMIT ".$botNum);
+		$tabl = $DB->sql_tabl("SELECT id FROM wD_Users WHERE type LIKE '%bot%' ".
+			($input['variantID']==15 ? 
+				" AND username='FairBot2' "
+				:($input['fullPress']==1 ? 
+					" AND username LIKE 'dipgpt%'"
+					:" AND NOT username LIKE 'dipgpt%') " // TODO: Make bot selection not rely on the bot username
+				))." LIMIT ".$botNum);
         
 		$currCountry = 1;
 
@@ -250,6 +259,14 @@ print '<div class="content-bare content-board-header content-title-header">
 			<select id="countryID" class="gameCreate" name="newGame[countryID]">
 			</select>
 			</br></br>
+
+			<strong>Full-press AI: (Experimental / Beta)</strong>
+			<select id="fullPress" class="gameCreate" name="fullPress">
+				<option value="0" selected>No, gunboat / no-press</option>
+				<option value="1" selected>Yes, full-press bots (note full-press bots have longer response times)</option>
+			</select>
+			</br></br>
+
 			<p class="notice">
 				<input class = "green-Submit" type="submit"  value="Create">
 			</p>';
