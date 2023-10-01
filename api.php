@@ -1385,6 +1385,8 @@ class SetOrders extends ApiEntry {
 		if (!empty($updatedOrders))
 			$orderInterface->writeOrders();
 		$orderInterface->orderStatus->Ready = ($readyArg ? $readyArg == 'Yes' : $previousReadyValue);
+		$orderInterface->orderStatus->Saved = true; // Always ensure the order status is saved, which it may not be if a bot is submitting all hold orders
+		// which can cause the bot to loop, thinking it hasnt submitted orders yet
 		$orderInterface->writeOrderStatus();
         $DB->sql_put("COMMIT");
 
