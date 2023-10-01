@@ -2348,3 +2348,5 @@ ALTER TABLE `wD_Misc` CHANGE COLUMN `Name` `Name` ENUM('Version','Hits','Panic',
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastNMRWarningUpdate',0);
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastConnectionUpdate',0);
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastBackupUpdate',0);
+
+ALTER TABLE wD_ApiKeys ADD username varchar(150) NULL, ADD description varchar(500) NULL, ADD lastActive bigint UNSIGNED NULL, ADD lastOrder bigint unsigned NULL, ADD lastMessage bigint unsigned null, ADD lastVote bigint unsigned null, ADD messagesSent int unsigned null, ADD phasesPlayed int unsigned null, ADD gamesPlaying int unsigned null, ADD gamesWon int unsigned null, ADD gamesDrawn int unsigned null, ADD gamesLostToHuman int unsigned null, ADD gamesLostToBot int unsigned null;

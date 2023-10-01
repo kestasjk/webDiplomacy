@@ -578,3 +578,84 @@ ALTER TABLE `wD_UserConnections`
   ADD `matchedOtherUserTurnCount` int(10) UNSIGNED NOT NULL DEFAULT 0;
 
 ALTER TABLE wD_UserCodeConnectionMatches ADD earliestFrom TIMESTAMP NULL, ADD latestFrom TIMESTAMP NULL, ADD earliestTo TIMESTAMP NULL, ADD latestTo TIMESTAMP NULL;
+
+ALTER TABLE wD_ApiKeys ADD username varchar(150) NULL, ADD description varchar(500) NULL, 
+  ADD lastActive bigint UNSIGNED NULL, 
+  ADD lastOrder bigint unsigned NULL, 
+  ADD lastMessage bigint unsigned null, 
+  ADD lastVote bigint unsigned null, 
+  ADD messagesSent int unsigned null, 
+  ADD phasesPlayed int unsigned null, 
+  ADD gamesPlaying int unsigned null, 
+  ADD gamesWon int unsigned null, 
+  ADD gamesDrawn int unsigned null, 
+  ADD gamesLostToHuman int unsigned null, 
+  ADD gamesLostToBot int unsigned null;
+
+ALTER TABLE wD_ApiKeys 
+  ADD supplyCenters int unsigned null, 
+  ADD ordersSaved int unsigned null, 
+  ADD ordersCompleted int unsigned null, 
+  ADD ordersReady int unsigned null;
+
+UPDATE wD_ApiKeys a INNER JOIN wD_Users u ON u.id = a.userID SET a.username = u.username;
+UPDATE wD_ApiKeys a SET a.lastActive = a.lastHit;
+/*
+UPDATE wD_ApiKeys a INNER JOIN (
+  SELECT a.userID, COUNT(*) messageCount
+  FROM wD_ApiKeys a
+  INNER JOIN wD_Members m ON m.userID = a.userID
+  INNER JOIN wD_GameMessages gm ON gm.gameID = m.gameID AND gm.fromCountryID = m.countryID
+  GROUP BY a.userID
+) msg ON msg.userID = a.userID
+SET a.messagesSent = msg.messageCount;
+*/
+
+UPDATE wD_ApiKeys a 
+INNER JOIN (
+  SELECT a.userID, 
+    SUM(m.gameMessagesSent) messagesSent, 
+    SUM(g.turn) phasesPlayed,
+    SUM(IF(m.status = 'Playing',1,0)) gamesPlaying, 
+    SUM(IF(m.status = 'Won',1,0)) gamesWon, 
+    SUM(IF(m.status = 'Drawn',1,0)) gamesDrawn,
+    SUM(IF(m.status = 'Defeated' AND ma.id IS NOT NULL AND ama.userID IS NULL,1,0)) gamesLostToHuman, 
+    SUM(IF(m.status = 'Defeated' AND ma.id IS NOT NULL AND ama.userID IS NOT NULL,1,0)) gamesLostToBot,
+    SUM(m.supplyCenterNo) supplyCenters,
+    SUM(IF(m.orderStatus LIKE '%Saved%',1,0)) ordersSaved,
+    SUM(IF(m.orderStatus LIKE '%Completed%',1,0)) ordersCompleted,
+    SUM(IF(m.orderStatus LIKE '%Ready%',1,0)) ordersReady
+  FROM wD_ApiKeys a
+  INNER JOIN wD_Members m ON m.userID = a.userID
+  INNER JOIN wD_Games g ON g.id = m.gameID
+  LEFT JOIN wD_Members ma ON ma.gameID = g.id AND ma.status = 'Won' AND ma.id <> m.id
+  LEFT JOIN wD_ApiKeys ama ON ama.userID = ma.userID
+  GROUP BY a.userID
+) sts ON sts.userID = a.userID
+SET a.lastActive = a.lastHit,
+  a.messagesSent = sts.messagesSent,
+  a.phasesPlayed = sts.phasesPlayed,
+  a.gamesPlaying = sts.gamesPlaying,
+  a.gamesWon = sts.gamesWon,
+  a.gamesDrawn = sts.gamesDrawn,
+  a.gamesLostToHuman = sts.gamesLostToHuman,
+  a.gamesLostToBot = sts.gamesLostToBot,
+  a.ordersSaved = sts.ordersSaved,
+  a.ordersCompleted = sts.ordersCompleted,
+  a.ordersReady = sts.ordersReady;
+
+orderStatus        | set('None','Saved','Completed','Ready')
+status             | enum('Playing','Defeated','Left','Won','Drawn','Survived','Resigned')
+
+playerTypes              | enum('Members','Mixed','MemberVsBots')
+
+
+SELECT g.id, IF(a.userID IS NULL,1,0) fromHuman, gm.timeSent, gm.turn, gm.phaseMarker, gm.fromCountryID, gm.toCountryID, gm.message
+FROM wD_Games g
+INNER JOIN wD_Members m ON m.gameID = g.id
+LEFT JOIN wD_ApiKeys a ON a.userID = m.userID AND a.multiplexOffset IS NOT NULL
+INNER JOIN wD_GameMessages gm ON gm.gameID = g.id AND gm.fromCountryID = m.countryID
+WHERE g.id IN (
+  SELECT DISTINCT gameID FROM wD_Members m WHERE m.userID IN (SELECT userID FROM wD_ApiKeys WHERE multiplexOffset IS NOT NULL)
+)
+ORDER BY g.id, gm.timeSent

@@ -118,8 +118,8 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		// Use a specific bot for a specific variant for now. A new Config:: function is needed to be able to flexibly map variants to certain specialized bots
 		$tabl = $DB->sql_tabl("SELECT id FROM wD_Users WHERE type LIKE '%bot%' ".
 			($input['variantID']==15 ? " AND username='FairBot' ":
-				$input['fullPress']==1 ? " AND username LIKE 'dipgpt%' ":
-				" AND NOT username LIKE 'dipgpt%' ")
+				($input['fullPress']==1 ? " AND username LIKE 'dipgpt%' ": " AND NOT username LIKE 'dipgpt%' ")
+			)
 			." LIMIT ".$botNum);
         
 		$currCountry = 1;

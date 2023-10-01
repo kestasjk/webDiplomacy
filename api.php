@@ -264,6 +264,8 @@ abstract class ApiEntry {
 				throw new RequestException('Invalid JSON request data.');
 		}
 		$selectedArgs = array();
+		if( isset($rawArgs['multiplexOffset']))
+			$selectedArgs['multiplexOffset'] = (int)$rawArgs['multiplexOffset']; // If there is an explicit multiplexOffset save it now
 		foreach ($this->requirements as $fieldName) {
 			$arg = isset($rawArgs[$fieldName]) ? $rawArgs[$fieldName] : null;
 			if( $fieldName === 'gameID' && !is_null($arg) )

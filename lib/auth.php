@@ -185,6 +185,11 @@ class libAuth
 		return self::sandboxToken_Key($gameID) === $key;
 	}
 
+	public static function email_token($email)
+	{
+		$timestamp = time();
+		return substr(md5(Config::$secret.$email.$timestamp),0,8).'|'.$timestamp.'|'.$email;
+	}
 	/**
 	 * Return a URL allowing the user to validate a given e-mail.
 	 * emailToken is the name used, and additional GET vars can be added
@@ -196,9 +201,8 @@ class libAuth
 	{
 		$thisURL = 'https://'.$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'];
 
-		$timestamp = time();
 		// %7C = | , but some webmail clients think that | is the end of the link
-		$emailToken = substr(md5(Config::$secret.$email.$timestamp),0,8).'%7C'.$timestamp.'%7C'.urlencode($email);
+		$emailToken = urlencode(email_token($email));
 
 		return $thisURL.'?emailToken='.$emailToken;
 	}
@@ -221,7 +225,7 @@ class libAuth
 
 		// Check that the validation link isn't expired, or that there is no secret set implying (I hope!) that 
 		// we are in a dev / docker environment:
-		if( Config::$secret != "" && (time() - $timestamp) > 60*60 ) throw new Exception("The given e-mail token link has expired; please request another one and click the link within an hour.");
+		if( Config::$secret != "" && (time() - $timestamp) > 60*60*24 ) throw new Exception("The given e-mail token link has expired; please request another one and click the link within an hour.");
 
 		if ( $key !== substr(md5(Config::$secret.$email.$timestamp),0,8) )
 			return false;
