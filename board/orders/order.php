@@ -447,8 +447,9 @@ abstract class userOrder extends order
 		if( count($setSQL) )
 		{
 			$DB->sql_put("UPDATE wD_Orders SET ".implode(', ',$setSQL)." WHERE id = ".$this->id." AND gameID=".$this->gameID);
-			if( $DB->affected() )
-				return true;
+			//if( $DB->affected() ) // By checking if the DB is affected a submission of hold orders won't count as saved, which throws off the bots
+			// when going through orders with unsubmitted orders.
+			return true;
 		}
 
 		return false;
