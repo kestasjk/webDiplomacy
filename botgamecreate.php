@@ -106,7 +106,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 
 		// Create Game record & object
 		require_once(l_r('gamemaster/game.php'));
-		$phaseMinutes = defined('PLAYNOW') ? 24*60 : 3*24*60;
+		$phaseMinutes = defined('PLAYNOW') ? 24*60; // : 3*24*60;
 		$Game = processGame::create($input['variantID'],$input['name'],'',5,'Unranked', $phaseMinutes, -1, $phaseMinutes, -1, 60,'No','Regular','Normal','draw-votes-public',0,4,'MemberVsBots');
 
 		// Create first Member record & object
@@ -226,6 +226,7 @@ print '<div class="content-bare content-board-header content-title-header">
 			</select>
 			</br></br>
 
+			'.(!isset($_REQUEST['enableBotOption']) ? '<hidden id="fullPress" name="newGame[fullPress]" value="0">':'
 			<strong>Full-press setting: (Classic only)</strong><br/>
 			<em>This is currently a beta feature; full-press bots will take longer to respond than gunboat/no-press bots, 
 			and their behavior / performance is still being determined / improved.</em>
@@ -233,7 +234,7 @@ print '<div class="content-bare content-board-header content-title-header">
 				<option value="0" selected>No - Gunboat / No-press</option>
 				<option value="1">Yes - Full-press</option>
 			</select>
-			</br></br>
+			</br></br>').'
 
 			<p class="notice">
 				<input class = "green-Submit" type="submit"  value="Create">
