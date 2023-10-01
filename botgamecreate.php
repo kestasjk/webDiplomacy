@@ -106,7 +106,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 
 		// Create Game record & object
 		require_once(l_r('gamemaster/game.php'));
-		$phaseMinutes = defined('PLAYNOW') ? 24*60; // : 3*24*60;
+		$phaseMinutes = defined('PLAYNOW') ? 24*60 : 3*24*60;
 		$Game = processGame::create($input['variantID'],$input['name'],'',5,'Unranked', $phaseMinutes, -1, $phaseMinutes, -1, 60,'No','Regular','Normal','draw-votes-public',0,4,'MemberVsBots');
 
 		// Create first Member record & object
