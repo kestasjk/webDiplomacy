@@ -202,7 +202,7 @@ class libAuth
 		$thisURL = 'https://'.$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'];
 
 		// %7C = | , but some webmail clients think that | is the end of the link
-		$emailToken = urlencode(email_token($email));
+		$emailToken = urlencode(self::email_token($email));
 
 		return $thisURL.'?emailToken='.$emailToken;
 	}
