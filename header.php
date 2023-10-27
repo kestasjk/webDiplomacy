@@ -140,7 +140,7 @@ if ( isset($_REQUEST['uid']) ) $_REQUEST['userID'] = $_REQUEST['uid'];
 $GLOBALS = array();
 $GLOBALS['scriptStartTime'] = microtime(true);
 
-ini_set('memory_limit',"8M"); // 8M is the default
+ini_set('memory_limit',"32M"); // From 8M to 32M to cater for games that are very large
 ini_set('max_execution_time','4');
 //ini_set('session.cache_limiter','public');
 ignore_user_abort(TRUE); // Carry on if the user exits before the script gets printed.
