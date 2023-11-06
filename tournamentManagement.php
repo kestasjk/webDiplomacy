@@ -370,7 +370,7 @@ if ($submitted == false)
         </select></br></br>
 
         <strong>Required reliability:</strong></br>
-        <input id="minRating" class = "gameCreate" type="text" name="minRR" size="2" value="80"
+        <input id="minRating" class = "gameCreate" type="text" name="minRR" size="2" value="60"
             onkeypress="if (event.keyCode==13) this.blur(); return event.keyCode!=13"
             onChange="
                 this.value = parseInt(this.value);
