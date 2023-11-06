@@ -760,8 +760,8 @@ class processMembers extends Members
 
 				elseif( $yearlyCount >= 9)
 				{
-					User::tempBanUser($Member->userID, 365, 'System', FALSE);
-					$Member->send('No','No',$memberMsg." ".l_t("Due to your unreliable behavior you will be prevented from joining games for a year. "
+					User::tempBanUser($Member->userID, 6, 'System', FALSE);
+					$Member->send('No','No',$memberMsg." ".l_t("Due to your unreliable behavior you will be prevented from joining games for six days. "
 					. "Contact the Mods to lift the ban."));
 				}
 
@@ -771,15 +771,15 @@ class processMembers extends Members
 					switch($yearlyCount)
 					{
 						case 4: $days = 1; break;
-						case 5: $days = 3; break;
-						case 6: $days = 7; break;
-						case 7: $days = 14; break;
-						case 8: $days = 30; break;
+						case 5: $days = 2; break;
+						case 6: $days = 3; break;
+						case 7: $days = 4; break;
+						case 8: $days = 5; break;
 					}
 
 					User::tempBanUser($Member->userID, $days,'System', FALSE);
 					$Member->send('No','No',$memberMsg." ".l_t("You are temporarily banned from joining, rejoining, or making games for %s "
-							. (($days==1)?"day":"days")	. ". Be more reliable!", $days));
+							. (($days==1)?"day":"days")	. ". Please be more reliable!", $days));
 				}
 
 			}

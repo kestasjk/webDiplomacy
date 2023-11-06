@@ -952,10 +952,10 @@ class User {
 		{
 			list($tempBan) = $DB->sql_row("SELECT tempBan FROM wD_Users WHERE id = ".$userID);
 		
-			if( $tempBan > time() + ($days * 86400) ) return;
+			if( $tempBan > time() + ($days * 5*24*60*60) ) return;
 		}
 		
-		$DB->sql_put("UPDATE wD_Users SET tempBanReason = '".$reason."', tempBan = ". ( time() + ($days * 86400) )." WHERE id=".$userID);
+		$DB->sql_put("UPDATE wD_Users SET tempBanReason = '".$reason."', tempBan = ". ( time() + ($days * 5*24*60*60) )." WHERE id=".$userID);
 	}
 
 	public function rankingDetails()

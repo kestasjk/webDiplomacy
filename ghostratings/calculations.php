@@ -23,6 +23,12 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 /**
  * Code that calculates and alters Ghost Ratings
  *
+ * The PPSC calcs don't make much sense and aren't used as PPSC isn't in use, so can be ignored.
+ * 
+ * The other calcs essentially operate when the game is drawn/won, and it calculates what each player
+ * is expected to get based on their current ranking, and what they got based on the game result, and 
+ * gives them the difference. WTA and SoS are equivalent except for the draw result, and 1v1 is quite
+ * different.
  */
  class GhostRatings
  {  
@@ -73,8 +79,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
      $this->winner = $winner;
      $this->botGame = $botGame;
      $this->time = $time;
-     $this->k = 32; //A higher k value means players will move faster up and down in rankings.
-     $this->start = 100; //32 and 100 are arbitrary numbers used for scaling in 1v1 rankings.
+     $this->k = 32; //A higher k value means players will move faster up and down in rankings. This is the maximum GR movement per game in 1v1.
+     $this->start = 100; //32 and 100 are arbitrary numbers used for scaling in 1v1 rankings. This is a users starting GR.
      if (isset(Config::$grPressMods[$this->pressType]))
      {
        $this->pressMod = Config::$grPressMods[$this->pressType];
@@ -85,7 +91,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
      }
      $this->modvalue = (17.5 * $this->variantMod * $this->pressMod); //17.5 is the 'k' value for non 1v1 games and is used for scaling.
    }
-     
+  
+   // This is called when a game is drawn or won
    public function processGR()
    {
      global $DB;
@@ -94,6 +101,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
      {
        foreach(Config::$grCategories as $categoryID => $categoryData)
        {
+         // Check if the game is part of this category:
          $calculate = True;
          if(in_array($this->variantID,$categoryData["variants"]))
          {
@@ -144,10 +152,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
              $rating = $this->start;
              $peakRating = $rating;
              $userDate = $date;
-             $sqlCount = "SELECT COUNT(1) FROM wD_GhostRatings WHERE categoryID=".$categoryID." AND userID=".$userID;
-             $sql = "SELECT rating, peakRating, yearMonth FROM wD_GhostRatings WHERE categoryID=".$categoryID." AND userID=".$userID;
              $inDB = 1;
-             list($inDB) = $DB->sql_row($sqlCount);
+             list($inDB) = $DB->sql_row("SELECT COUNT(1) FROM wD_GhostRatings WHERE categoryID=".$categoryID." AND userID=".$userID);
              if ($inDB < 1)
              {
                $DB->sql_put("INSERT INTO wD_GhostRatings(userID, categoryID, rating, peakrating, yearMonth) VALUES(".$userID.", ".$categoryID.", ".$rating.", ".$peakRating.", ".$date.")");
@@ -155,7 +161,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
              }
              else
              {
-               list($rating, $peakRating, $userDate) = $DB->sql_row($sql);
+               list($rating, $peakRating, $userDate) = $DB->sql_row("SELECT rating, peakRating, yearMonth FROM wD_GhostRatings WHERE categoryID=".$categoryID." AND userID=".$userID);
              }
              $userGR[$userID] = $rating;
              $peakGR[$userID] = $peakRating;
@@ -167,6 +173,31 @@ defined('IN_CODE') or die('This script can not be run by itself.');
            switch($this->potType)
            {
              case "Points-per-supply-center":
+              // FirstPlace[i] = GR[i] / Sum(GR)
+              // SecondPlace[i] = Sum( GR[i]*GR[j] / (Sum(GR)^2 - GR[j]*Sum(GR)) )
+              // SecondPlace[i] = GR[i]* Sum( GR[j] / (Sum(GR)^2 - GR[j]*Sum(GR)) )
+              // SecondPlace[i] = GR[i]* Sum( GR[j] / ((Sum(GR) - GR[j])*Sum(GR)) )
+              // SecondPlace[i] = GR[i]/Sum(GR) * Sum( GR[j] / (Sum(GR) - GR[j]) )
+
+              // SecondPlace[i] = FirstPlace[i] * (1 - FirstPlace[i]) * Sum( GR[j] / (Sum(GR) - GR[j]) )
+              // SecondPlace[i] = (FirstPlace[i] - FirstPlace[i]^2) * Sum( GR[j] / (Sum(GR) - GR[j]) )
+
+              
+              // Expected[i] = ( ( VictorySC * FirstPlace[i] ) + ( ( VariantSC - VictorySC ) * SecondPlace[i] ) / Sum(SecondPlace) ) / VariantSC
+              
+              // Expected[i] = ( VictorySC * FirstPlace[i] ) / VariantSC + ( ( VariantSC - VictorySC ) * SecondPlace[i] ) / (Sum(SecondPlace) * VariantSC)
+              // Expected[i] = ( VictorySC * FirstPlace[i] ) / VariantSC + ( ( ( VariantSC - VictorySC ) / VariantSC ) * SecondPlace[i] ) / (Sum(SecondPlace))
+              // Expected[i] = VictorySC / VariantSC * FirstPlace[i] + ( 1 - VictorySC / VariantSC ) * ( SecondPlace[i] / Sum(SecondPlace) )
+
+              // Expected[i] = VictorySC / VariantSC * FirstPlace[i] + ( 1 - VictorySC / VariantSC ) * ( SecondPlace[i] / Sum(SecondPlace) )
+
+              // a * b + (1-a) * c = a * (b-c) + c
+
+              // Expected[i] = ( VictorySC * FirstPlace[i] ) / VariantSC + ( ( VariantSC - VictorySC ) * SecondPlace[i] ) / Sum(SecondPlace) / VariantSC
+              // Expected[i] = VictorySC / VariantSC * ( FirstPlace[i] - (SecondPlace[i] / Sum(SecondPlace) )
+              // Actual[i] (Won) = SCs[i] / VariantSC
+              // Actual[i] (Draw) = 1 / DrawNum
+              // Adjustment[i] = Sum(GR)/ModValue * (Actual[i] - Expected[i])
                $expectedResult = array();
                $actualResult = array();
                $firstplace = array();
@@ -213,6 +244,11 @@ defined('IN_CODE') or die('This script can not be run by itself.');
                }
                break;
              case "Winner-takes-all":
+              // Expected = GR[i] / Sum(GR)
+              // Actual (Won) = 1/0
+              // Actual (Draw) = 1/DrawNum
+              // Adjustment[i] = Sum(GR)/ModValue * (Actual[i] - Expected[i])
+              // Adjustment[i] = Sum(GR)/ModValue * (Actual[i] - GR[i] / Sum(GR))
                $expectedResult = array();
                $actualResult = array();
                $drawNum = 0;
@@ -253,19 +289,18 @@ defined('IN_CODE') or die('This script can not be run by itself.');
                
                break;
              case "Sum-of-squares":
+              // Expected[i] = GR[i]^2 / Sum(GR^2)
+              // Actual[i] (Won) = 1/0
+              // Actual[i] (Draw) = SC[i]^2 / Sum(SC^2)
+              // Adjustment[i] = Sum(GR)/ModValue * (Actual[i] - Expected[i])
                $expectedResult = array();
                $actualResult = array();
                $expectedSquare = array();
                $actualSquare = array();
                $expectedSum = 0;
                $actualSum = 0;
-               $drawNum = 0;
                foreach($userGR as $userID => $rating)
                {
-                 if ($this->memberStatus[$userID] == 'Drawn')
-                 {
-                   $drawNum += 1;
-                 }
                    $actualSquare[$userID] = $this->SCcounts[$userID] * $this->SCcounts[$userID];
                    $expectedSquare[$userID] = $rating * $rating;
                    $actualSum += $actualSquare[$userID];
@@ -293,10 +328,13 @@ defined('IN_CODE') or die('This script can not be run by itself.');
                }
                break;
              //In this case we assume that all 1v1 games are unranked, and the previous code excludes unranked non-1v1 games from being calculated, so this is the 1v1 calculation 
-             case "Unranked":
+             case "Unranked": // aka 1v1 ....
+              // Expected[i] = 10^(GR[i]/400) / (10^(GR[i]/400) + 10^(GR[1-i]/400))
+              // Actual[i] Loss / Draw / Win = 0 / 0.5 / 1
+              // Adjustment[i] = K * (Actual[i] - Expected[i])
                $first = True;
-               $r1 = 0;
-               $r2 = 0;
+               $rating1 = 0;
+               $rating2 = 0;
                $id1 = 0;
                $id2 = 0;
                $result = 0;
@@ -304,13 +342,13 @@ defined('IN_CODE') or die('This script can not be run by itself.');
                {
                  if($first)
                  {
-                   $r1 = $rating;
+                   $rating1 = $rating;
                    $id1 = $userID;
                    $first = False;
                  }
                  else
                  {
-                   $r2 = $rating;
+                   $rating2 = $rating;
                    $id2 = $userID;
                  }
                }
@@ -322,12 +360,12 @@ defined('IN_CODE') or die('This script can not be run by itself.');
                {
                  $result = 1;
                }
-               $R1 = pow(10,($r1/400));
-               $R2 = pow(10,($r2/400));
-               $E1 = $R1 / ($R1 + $R2);
-               $E2 = $R2 / ($R1 + $R2);
-               $grAdjustment[$id1] = $this->k * ($result - $E1);
-               $grAdjustment[$id2] = $this->k * (1 - $result - $E2);
+               $rating1 = pow(10,($rating1/400));
+               $rating2 = pow(10,($rating2/400));
+               $expected1 = $rating1 / ($rating1 + $rating2);
+               $expected2 = $rating2 / ($rating1 + $rating2);
+               $grAdjustment[$id1] = $this->k * ($result - $expected1);
+               $grAdjustment[$id2] = $this->k * (1 - $result - $expected2);
                break;
            }
            foreach ($grAdjustment as $userID=>$adjustment)
