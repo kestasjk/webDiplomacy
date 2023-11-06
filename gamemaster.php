@@ -358,6 +358,17 @@ print l_t('Finding games where all players are ready');
 // it's not good to rely on it, so this acts as a backup to ensure when all players have set their orders to ready it will process
 $readyGames = libGameMaster::findGameReadyVotes();
 
+// Set all games where all users have joined to process now:
+$DB->sql_put("UPDATE wD_Games g
+	INNER JOIN wD_VariantInfo v ON v.variantID = g.variantID
+	INNER JOIN (
+		SELECT gameID, COUNT(*) membersJoined
+		FROM wD_Members m
+		GROUP BY gameID
+	) m ON m.gameID = g.id
+	SET g.processTime = UNIX_TIMESTAMP()
+	WHERE g.phase = 'Pre-game' AND m.membersJoined = v.countryCount");
+
 // Get the current processing time. It is important to save this at this point so that next process the next 
 // LastProcessTime will exactly match this process' $currentProcessTime (this ensures all turns that pass over 1 year
 // old get processed properly .. unless the last process time gets reset, in which case the turn counts need to be
