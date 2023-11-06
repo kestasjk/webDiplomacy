@@ -977,8 +977,21 @@ class User {
 		{
 			$rankingDetails['stats'][$status] = $number;
 		}
-		$rankingDetails['stats']['Civil disorder'] = $this->cdCount;
-		$rankingDetails['stats']['Civil disorders taken over'] = $this->cdTakenCount;
+
+		// $rankingDetails['stats']['Civil disorder'] = $this->cdCount; // These don't get updated anywhere
+		// $rankingDetails['stats']['Civil disorders taken over'] = $this->cdTakenCount;
+		list($rankingDetails['stats']['Civil disorder']) = $DB->sql_row(
+			"SELECT COUNT(c.userID) FROM wD_CivilDisorders c ".
+				/*INNER JOIN wD_Games g ON ( g.id = c.gameID )
+				LEFT JOIN wD_Members m ON ( c.gameID = m.gameID and c.userID = ".$this->id." )*/
+				" WHERE c.userID = ".$this->id //." AND m.userID IS NULL"
+			);
+
+		list($rankingDetails['stats']['Civil disorders taken over']) = $DB->sql_row(
+			"SELECT COUNT(c.userID) FROM wD_CivilDisorders c 
+			INNER JOIN wD_Members m ON ( c.gameID = m.gameID and m.countryID = c.countryID )
+			WHERE c.userID <> ".$this->id." AND m.userID = ".$this->id
+			);
 
 		$tabl = $DB->sql_tabl( "SELECT COUNT(m.id), m.status, SUM(m.bet) FROM wD_Members AS m
 					INNER JOIN wD_Games AS g ON m.gameID = g.id
@@ -994,14 +1007,6 @@ class User {
 		}
 
 		$rankingDetails['anon']['points'] = $points;
-
-		list($rankingDetails['takenOver']) = $DB->sql_row(
-			"SELECT COUNT(c.userID) FROM wD_CivilDisorders c
-				INNER JOIN wD_Games g ON ( g.id = c.gameID )
-				LEFT JOIN wD_Members m ON ( c.gameID = m.gameID and c.userID = ".$this->id." )
-				WHERE c.userID = ".$this->id." AND m.userID IS NULL"
-			);
-
 
 		$rankingDetails['rankingPlayers'] = $Misc->RankingPlayers;
 
