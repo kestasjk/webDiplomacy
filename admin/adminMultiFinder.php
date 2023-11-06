@@ -161,22 +161,19 @@ if ( isset($_REQUEST['aUserID']) and $_REQUEST['aUserID'] )
 			
 			$m->printUserTimeprint();
 			
+			foreach($bUsers as $bUser)
+			{
+				// Reliability rating
+				// Games joined: password, no press, bot games
+				// Messages / game Messages / user Messages / suspect stats
+				// Social media links, SMS, paypal links, time joined, time last accessed
+				// Forum messages
+				$m->compare($bUser, $relations);
+			}
+
 			if( isset($_REQUEST['showHistory']) )
 			{
-				
 				$m->timeData();
-			}
-			else
-			{
-				foreach($bUsers as $bUser)
-				{
-					// Reliability rating
-					// Games joined: password, no press, bot games
-					// Messages / game Messages / user Messages / suspect stats
-					// Social media links, SMS, paypal links, time joined
-					// Forum messages
-					$m->compare($bUser, $relations);
-				}
 			}
 		}
 	}

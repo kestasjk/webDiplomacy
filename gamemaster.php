@@ -324,8 +324,8 @@ if( $Misc->LastStatsUpdate < (time() - 60) )
 	miscUpdate::user();
 	$Misc->LastStatsUpdate = time();
 
-	// Keep sandbox games from clogging things up using a hack for now:
-	$DB->sql_put("UPDate wD_Games SET processTime = 2000000000 WHERE name LIKE 'SB_%'");
+	// Keep sandbox games from clogging things up using a hack for now, and ensure this doesn't cause paused games to error:
+	$DB->sql_put("UPDATE wD_Games SET processTime = 2000000000, pauseTimeRemaining = NULL WHERE name LIKE 'SB_%' AND processStatus <> 'Paused'");
 
 	// This is also only needed infrequently
 	/*
