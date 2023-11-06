@@ -559,6 +559,7 @@ class adminMultiCheck
 					m.gameID IN (".implode(',', $this->aLogsData['PublicGameIDs']).")
 					AND a.userID = ".$this->aUserID."
 					AND b.userID <> ".$this->aUserID."
+					AND a.type IN ('IP','Cookie','Fingerprint','FingerprintPro')
 				LIMIT 100"
 				);
 		}
@@ -571,6 +572,7 @@ class adminMultiCheck
 				WHERE
 					a.userID = ".$this->aUserID."
 					AND b.userID <> ".$this->aUserID."
+					AND a.type IN ('IP','Cookie','Fingerprint','FingerprintPro')
 					LIMIT 100"
 				);
 		}
