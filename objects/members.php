@@ -228,7 +228,7 @@ class Members
 			WHERE m.gameID = ".$this->Game->id."
 			ORDER BY m.status ASC, m.supplyCenterNo DESC, ".
 			($this->Game->anon=='Yes' ? "m.countryID ASC, " : "u.points DESC, " ).
-			", m.id ASC" // Ordering by ID ensures the ordering is consistent across requests, which unfortunately 
+			", m.id ASC", // Ordering by ID ensures the ordering is consistent across requests, which unfortunately 
 			// matters for e.g. sandbox games where the country that's loaded for authentication depends on this load order.
 			$this->Game->lockMode
 			);
