@@ -7,7 +7,7 @@ function SupplyCentersCorrect() {
 	 */
 	Territories.each(function(p){
 		var t=p[1];
-		if( t.coastParent.supply && t.coastParent.ownerCountryID == context.countryID && Object.isUndefined(t.coastParent.Unit) )
+		if( t.coastParent.supply && ( t.coastParent.ownerCountryID == context.countryID || context.isSandboxMode ) && Object.isUndefined(t.coastParent.Unit) )
 		{
 			t.countryID = context.countryID; // Ensure this passes the extra countryID filter for sandbox games
 			SupplyCenters.push(t);
