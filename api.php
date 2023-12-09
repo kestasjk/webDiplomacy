@@ -1026,9 +1026,9 @@ class GetGameData extends ApiEntry {
 					)
 				);
 			}
-			//if (!isset($game->Members->ByUserID[$userID]) || $countryID != $game->Members->ByUserID[$userID]->countryID){
+			if (!isset($game->Members->ByUserID[$userID]) || $countryID != $game->Members->ByUserID[$userID]->countryID){
 			// If in sandbox mode the ByUserID has only one user in it
-			if (!isset($Game->Members->ByCountryID[$countryID]) || $userID != $Game->Members->ByCountryID[$countryID]->userID) {
+			//if (!isset($Game->Members->ByCountryID[$countryID]) || $userID != $Game->Members->ByCountryID[$countryID]->userID) {
 				throw new ClientForbiddenException(
 					$this->JSONResponse(
 						'A user can only view game state for the country it controls.',
