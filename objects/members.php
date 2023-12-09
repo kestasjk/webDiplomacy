@@ -210,6 +210,7 @@ class Members
 			sort($loadedCountries);
 			foreach($loadedCountries as $countryID) $this->ByCountryID[$countryID] = $unorderedCountries[$countryID];
 		}
+	}
 	public function load()
 	{
 		global $DB;
