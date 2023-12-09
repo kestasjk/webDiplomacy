@@ -368,6 +368,7 @@ class Game
 			{
 				// This is a hack to fix a bug where the pause time remaining was not set correctly, which often happens with sandbox games
 				$DB->sql_put("UPDATE wD_Games SET processTime = NULL, pauseTimeRemaining = 600 WHERE id = ".$this->id);
+				$DB->sql_put("COMMIT"); // Save the change
 				// Continue to log as an error instead of moving on so that this is tracked and properly fixed
 				trigger_error(l_t("Paused game timeout values incorrectly set, please refresh the page."));
 			}
