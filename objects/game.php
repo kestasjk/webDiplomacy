@@ -311,6 +311,8 @@ class Game
 	 */
 	public function __construct($gameData, $lockMode = NOLOCK)
 	{
+		global $DB;
+		
 		$this->lockMode = $lockMode;
 
 		/* If a Game has already been loaded it gets moved out of the way
