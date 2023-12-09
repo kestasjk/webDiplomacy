@@ -671,7 +671,8 @@ class WebSocketsAuthentication extends ApiEntry {
 		// subscribe to the game overview channel or to the messages channel
 		// game overview channel doesn't include the countryID, and anyone can subscribe
 		if ($countryID != 0) {
-			if (!(isset($Game->Members->ByUserID[$userID]) && $countryID == $Game->Members->ByUserID[$userID]->countryID)) {
+			if (!(isset($Game->Members->ByCountryID[$countryID]) && $userID == $Game->Members->ByCountryID[$countryID]->userID)) {
+			// if (!(isset($Game->Members->ByUserID[$userID]) && $countryID == $Game->Members->ByUserID[$userID]->countryID)) {
 				throw new ClientForbiddenException('User does not have explicit permission to make this API call.');
 			}
 		}
@@ -1025,10 +1026,12 @@ class GetGameData extends ApiEntry {
 					)
 				);
 			}
-			if (!isset($game->Members->ByUserID[$userID]) || $countryID != $game->Members->ByUserID[$userID]->countryID){
+			//if (!isset($game->Members->ByUserID[$userID]) || $countryID != $game->Members->ByUserID[$userID]->countryID){
+			// If in sandbox mode the ByUserID has only one user in it
+			if (!isset($Game->Members->ByCountryID[$countryID]) || $userID != $Game->Members->ByCountryID[$countryID]->userID) {
 				throw new ClientForbiddenException(
 					$this->JSONResponse(
-						'A user can only view game state for the country it controls.', 
+						'A user can only view game state for the country it controls.',
 						'GGD-err-004', 
 						false, 
 						['gameID' => $this->gameIDToMultiplexedGameID($gameID)]
