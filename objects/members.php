@@ -184,6 +184,7 @@ class Members
 		else
 			$this->ByCountryID=array();
 
+		$loadedCountries = array();
 		foreach($this->ByOrder as $Member)
 		{
 			$this->ByID[$Member->id] = $Member;
@@ -191,12 +192,23 @@ class Members
 
 			// If pre-game all countries are 'Unassigned', so members cannot be indexed by countryID.
 			if ( $Member->countryID != 0 )
+			{
 				$this->ByCountryID[$Member->countryID] = $Member;
+				$loadedCountries[] = $Member->countryID;
+			}
 			
 			// If in sandbox mode make sure we don't accidentally get set as a player that has been defeated:
 			if( isset($this->ByUserID[$Member->userID]) && $this->ByUserID[$Member->userID]->status = 'Playing' )
 				continue;
 			$this->ByUserID[$Member->userID] = $Member;
+		}
+		// Ensure ByCountryID is sorted, as the order of countries can affect certain things like which sandbox country is chosen.
+		if( count($loadedCountries) > 0 )
+		{
+			$unorderedCountries = $this->ByCountryID;
+			$this->ByCountryID = array();
+			sort($loadedCountries);
+			foreach($countryID in $loadedCountries) $this->ByCountryID[$countryID] = $unorderedCountries[$countryID];
 		}
 	}
 	public function load()
