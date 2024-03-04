@@ -818,7 +818,7 @@ class libHTML
 		{
 			if( $User->type['Moderator'] )
 			{
-				$tabl = $DB->sql_tabl("SELECT id, assigned FROM wD_ModForumMessages WHERE type = 'ThreadStart' AND ((assigned = 0 OR assigned IS NULL) OR (assigned = " . $User->id. " AND isModRead = 0))");
+				$tabl = $DB->sql_tabl("SELECT id, assigned FROM wD_ModForumMessages WHERE Status='Open' AND type = 'ThreadStart'  AND ((assigned = 0 OR assigned IS NULL) OR (assigned = " . $User->id. " AND isModRead = 0))");
 				while( list($viewthreadID, $assignedToUserID) =  $DB->tabl_row($tabl) )
 				{
 					$gameNotifyBlock .= '<span class=""><a href="modforum.php?viewthread='.$viewthreadID.'#'.$viewthreadID.'">'.

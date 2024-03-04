@@ -622,14 +622,22 @@ INNER JOIN (
     SUM(IF(m.status = 'Defeated' AND ma.id IS NOT NULL AND ama.userID IS NULL,1,0)) gamesLostToHuman, 
     SUM(IF(m.status = 'Defeated' AND ma.id IS NOT NULL AND ama.userID IS NOT NULL,1,0)) gamesLostToBot,
     SUM(m.supplyCenterNo) supplyCenters,
-    SUM(IF(m.orderStatus LIKE '%Saved%',1,0)) ordersSaved,
-    SUM(IF(m.orderStatus LIKE '%Completed%',1,0)) ordersCompleted,
-    SUM(IF(m.orderStatus LIKE '%Ready%',1,0)) ordersReady
+    SUM(IF(m.status = 'Playing' AND NOT m.orderStatus LIKE '%None%',1,0)) ordersNeeded,
+    -- orderCount.orderCount -- Verifies that ordersNeeded is correct
+    SUM(IF(m.status = 'Playing' AND (NOT m.orderStatus LIKE '%None%') AND m.orderStatus LIKE '%Saved%',1,0)) ordersSaved,
+    SUM(IF(m.status = 'Playing' AND (NOT m.orderStatus LIKE '%None%') AND m.orderStatus LIKE '%Completed%',1,0)) ordersCompleted,
+    SUM(IF(m.status = 'Playing' AND (NOT m.orderStatus LIKE '%None%') AND m.orderStatus LIKE '%Ready%',1,0)) ordersReady,
+    MAX(g.turn) oldestGameTurn,
+    MIN(g.turn) newestGameTurn,
+    MIN(g.id) oldestGameID,
+    MAX(g.id) newestGameID,
   FROM wD_ApiKeys a
   INNER JOIN wD_Members m ON m.userID = a.userID
   INNER JOIN wD_Games g ON g.id = m.gameID
   LEFT JOIN wD_Members ma ON ma.gameID = g.id AND ma.status = 'Won' AND ma.id <> m.id
   LEFT JOIN wD_ApiKeys ama ON ama.userID = ma.userID
+  -- LEFT JOIN (SELECT m.userID, COUNT(DISTINCT oc.gameID) orderCount FROM wD_Orders oc INNER JOIN wD_Members m ON m.gameID = oc.gameID AND m.countryID = oc.countryID GROUP BY m.userID) orderCount ON orderCount.userID = a.userID
+  WHERE a.userID > 181040
   GROUP BY a.userID
 ) sts ON sts.userID = a.userID
 SET a.lastActive = a.lastHit,
