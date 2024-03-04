@@ -163,18 +163,20 @@ class processOrderBuilds extends processOrder
 				$links[$fromTerrID][] = $toTerrID;
 			}
 			
+			$maxDistance = 0;
+			$territoryDistances = array();
 			if( count($supplyCenters) == 0 )
 			{
 				// If there are no supply centers all units are equivalent
-				$candidateTerritories = array_keys($units);
+				foreach($units as $terrID => $unitID)
+					$territoryDistances[$terrID] = 0;
 			}
 			else
 			{
 				// Find the distance of each territory from the supply centers, until we find one or more units
 				$distances = array();
 				foreach($supplyCenters as $sc) $distances[$sc] = 0;
-				$candidateTerritories = array();
-				while(count($candidateTerritories) == 0 )
+				while(count($territoryDistances) < count($units) )
 				{
 					foreach($distances as $terrID => $distance)
 					{
@@ -186,9 +188,19 @@ class processOrderBuilds extends processOrder
 					foreach($units as $terrID => $unitID)
 					{
 						if( key_exists($terrID, $distances) )
-							$candidateTerritories[] = $terrID;
+						{
+							$territoryDistances[$terrID] = $distances[$terrID];
+							if( $maxDistance < $distances[$terrID] ) $maxDistance = $distances[$terrID];
+						}
 					}
 				}
+			}
+
+			// Get the furthest territories as the candidate territories that can be deleted:
+			$candidateTerritories = array();
+			foreach($territoryDistances as $terrID => $distance)
+			{
+				if( $distance == $maxDistance ) $candidateTerritories[] = $terrID;
 			}
 
 			// Get the first territory from the candidate territories ordered by the territory name:
