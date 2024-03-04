@@ -115,7 +115,6 @@ class processOrderBuilds extends processOrder
 							VALUES ".implode(', ', $newOrders));
 		}
 	}
-
 	/**
 	 * Apply the adjudicated moves; retreat/disband units as decided
 	 */
@@ -139,19 +138,71 @@ class processOrderBuilds extends processOrder
 				);
 		while(list($orderID, $countryID) = $DB->tabl_row($tabl))
 		{
-			list($unitID, $terrID) = $DB->sql_row(
-				"SELECT u.id, u.terrID FROM wD_Units u
-					INNER JOIN wD_UnitDestroyIndex i
-						ON ( u.countryID = i.countryID AND u.type = i.unitType AND u.terrID = i.terrID )
-				WHERE u.gameID = ".$Game->id." AND u.countryID = ".$countryID."
-					AND i.mapID=".$Game->Variant->mapID."
-				ORDER BY i.destroyIndex ASC LIMIT 1");
+			// For the given failed destroy order / country we need to find the unit which is furthest from an owned supply center,
+			// where the distance is defined by number of hops between territories as if armies and fleets can both move anywhere.
+			// If two units are equally distant the territory that comes first alphabetically is chosen.
 
-			$DB->sql_put("UPDATE wD_Orders SET toTerrID = '".$terrID."' WHERE id = ".$orderID);
+			// Get all the supply center territories for the country:
+			$tabl = $DB->sql_tabl("SELECT t.id FROM wD_Territories t
+				INNER JOIN wD_TerrStatus ts ON ( ts.terrID = t.id AND ts.gameID = ".$Game->id." AND ts.countryID = ".$countryID." )
+				WHERE t.supply = 'Yes' AND t.mapID=".$Game->Variant->mapID);
+			$supplyCenters = array();
+			while(list($terrID) = $DB->tabl_row($tabl)) $supplyCenters[] = $terrID;
+			
+			// Get all the non-coastal territories for units of the country:
+			$tabl = $DB->sql_tabl("SELECT u.id, t.coastParentID FROM wD_Units u INNER JOIN wD_Territories t ON t.id = u.terrID WHERE u.gameID = ".$Game->id." AND u.countryID = ".$countryID);
+			$units = array();
+			while(list($unitID, $terrID) = $DB->tabl_row($tabl)) $units[$terrID] = $unitID;
+
+			// Get the non-coastal territory to territory links:
+			$tabl = $DB->sql_row("SELECT fromTerrID, toTerrID FROM wD_Borders WHERE mapID=".$Game->Variant->mapID);
+			$links = array();
+			while(list($fromTerrID, $toTerrID) = $DB->tabl_row($tabl))
+			{
+				if( !key_exists($fromTerrID, $links) ) $links[$fromTerrID] = array();
+				$links[$fromTerrID][] = $toTerrID;
+			}
+			
+			if( count($supplyCenters) == 0 )
+			{
+				// If there are no supply centers all units are equivalent
+				$candidateTerritories = array_keys($units);
+			}
+			else
+			{
+				// Find the distance of each territory from the supply centers, until we find one or more units
+				$distances = array();
+				foreach($supplyCenters as $sc) $distances[$sc] = 0;
+				$candidateTerritories = array();
+				while(count($candidateTerritories) == 0 )
+				{
+					foreach($distances as $terrID => $distance)
+					{
+						foreach($links[$terrID] as $toTerrID)
+							if( !key_exists($toTerrID, $distances) || $distances[$toTerrID] > $distance + 1 )
+								$distances[$toTerrID] = $distance + 1;
+					}
+					// After each extra distance check whether we have found any distances to units:
+					foreach($units as $terrID => $unitID)
+					{
+						if( key_exists($terrID, $distances) )
+							$candidateTerritories[] = $terrID;
+					}
+				}
+			}
+
+			// Get the first territory from the candidate territories ordered by the territory name:
+			list($destroyTerrID) = $DB->sql_row("SELECT id FROM wD_Territories ".
+				"WHERE mapID=".$Game->Variant->mapID.
+					" AND id IN (".implode(',',$candidateTerritories).") ".
+				"ORDER BY name LIMIT 1");
+			$destroyUnitID = $units[$destroyTerrID];
+				
+			$DB->sql_put("UPDATE wD_Orders SET toTerrID = '".$destroyTerrID."' WHERE id = ".$orderID);
 			$DB->sql_put("UPDATE wD_Moves
-				SET success = 'Yes', toTerrID = ".$Game->Variant->deCoast($terrID)." WHERE gameID=".$GLOBALS['GAMEID']." AND orderID = ".$orderID);
+				SET success = 'Yes', toTerrID = ".$destroyTerrID." WHERE gameID=".$GLOBALS['GAMEID']." AND orderID = ".$orderID);
 
-			$DB->sql_put("DELETE FROM wD_Units WHERE id = ".$unitID);
+			$DB->sql_put("DELETE FROM wD_Units WHERE id = ".$destroyUnitID);
 		}
 
 		$DB->sql_put("INSERT INTO wD_Units ( gameID, countryID, type, terrID )

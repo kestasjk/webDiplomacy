@@ -27,7 +27,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 ?>
 <div class="datc">
 <p>
-This is the output from webDiplomacy's <a href="http://web.inter.nl.net/users/L.B.Kruijswijk/">DATC</a>
+This is the output from webDiplomacy's <a href="https://webdiplomacy.net/doc/DATC_v3_0.html">DATC</a>
 test script, which loads certain tricky scenarios and runs the adjudicator on them, checking to see that
 the end result is correct. It checks the adjudicator and the client-side order generation code, as all
 orders have to also be correctly generated in the client-side Javascript.<br />
@@ -74,32 +74,32 @@ print '</ul>';
 <p>
 Wherever there was an option the recommended one was taken, giving these results:<br />
 <ul>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.1">4.A.1</a> - B - A convoy is disrupted when all routes are disrupted</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.2">4.A.2</a> - D - Szykman convoy paradox rule</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.3">4.A.3</a> - D - Via convoy can be specified (and is always explicit)</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.4">4.A.4</a> - A - Attacking a unit supporting a move against you will not cut the support, even when you are attacking the support via convoy</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.5">4.A.5</a> - B - If dislodged by an adjacent unit which attacked via convoy the dislodged unit can retreat to the territory which the attacking convoyed move came from</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.6">4.A.6</a> - A - Convoy path specifications cannot be made</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.A.7">4.A.7</a> - B - A dislodged unit can affect the territory which dislodged it, if it was dislodged by a unit moving via convoy</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.B">4.B</a> - Invalid</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.C">4.C</a> - Invalid</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.1">4.D.1</a> - Invalid</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.2">4.D.2</a> - Invalid</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.3">4.D.3</a> - Invalid</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.4">4.D.4</a> - Invalid</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.5">4.D.5</a> - B - If many build orders are specified for the same place the first order will be used, and the rest discarded.</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.6">4.D.6</a> - B - If many destroy orders are specified for the same place the first order will be used, and the rest discarded.</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.7">4.D.7</a> - A - You can wait and build units at a later turn</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.8">4.D.8</a> - D - In civil disorder units will be removed by distance from the nearest supply center, allowing armies to move
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.A.1">4.A.1</a> - B - A convoy is disrupted when all routes are disrupted</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.A.2">4.A.2</a> - D - Szykman convoy paradox rule</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.A.3">4.A.3</a> - D - Via convoy can be specified (and is always explicit)</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.A.4">4.A.4</a> - A - Attacking a unit supporting a move against you will not cut the support, even when you are attacking the support via convoy</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.A.5">4.A.5</a> - B - If dislodged by an adjacent unit which attacked via convoy the dislodged unit can retreat to the territory which the attacking convoyed move came from</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.A.6">4.A.6</a> - A - Convoy path specifications cannot be made</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.A.7">4.A.7</a> - B - A dislodged unit can affect the territory which dislodged it, if it was dislodged by a unit moving via convoy</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.B">4.B</a> - Invalid</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.C">4.C</a> - Invalid</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.D.1">4.D.1</a> - Invalid</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.D.2">4.D.2</a> - Invalid</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.D.3">4.D.3</a> - Invalid</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.D.4">4.D.4</a> - Invalid</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.D.5">4.D.5</a> - B - If many build orders are specified for the same place the first order will be used, and the rest discarded.</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.D.6">4.D.6</a> - B - If many destroy orders are specified for the same place the first order will be used, and the rest discarded.</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.D.7">4.D.7</a> - A - You can wait and build units at a later turn</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.D.8">4.D.8</a> - D - In civil disorder units will be removed by distance from the nearest supply center, allowing armies to move
 	over any territory, and fleets to only move over places where fleets may move. If two units are at equal distance alphabetical order of the territories is used.</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.D.9">4.D.9</a> - B - Players can support hold civil disorder players</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.E.1">4.E.1</a> - D - Only orders which are valid in the current situation are legal.</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.E.2">4.E.2</a> - Invalid</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.E.3">4.E.3</a> - B - Implicit orders are not allowed. Making certain orders does imply and set other orders, but
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.D.9">4.D.9</a> - B - Players can support hold civil disorder players</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.E.1">4.E.1</a> - D - Only orders which are valid in the current situation are legal.</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.E.2">4.E.2</a> - Invalid</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.E.3">4.E.3</a> - B - Implicit orders are not allowed. Making certain orders does imply and set other orders, but
 	those orders are not implicit, because they are displayed as normal, and are not fixed. This gives the convenience of implicit orders without the ambiguity and other issues.</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.E.4">4.E.4</a> - B - Perpetual orders are not allowed</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.E.5">4.E.5</a> - C - Proxy orders are not allowed</li>
-<li><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#4.E.6">4.E.6</a> - Invalid</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.E.4">4.E.4</a> - B - Perpetual orders are not allowed</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.E.5">4.E.5</a> - C - Proxy orders are not allowed</li>
+<li><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#4.E.6">4.E.6</a> - Invalid</li>
 </ul>
 </p>
 </div>
@@ -145,7 +145,7 @@ while ( list($id, $name, $status, $description) = $DB->tabl_row($tabl) )
 			'</a>
 			';
 
-	$details = '<a name="test'.$id.'" href="http://web.inter.nl.net/users/L.B.Kruijswijk/#'.$name.'">'.
+	$details = '<a name="test'.$id.'" href="https://webdiplomacy.net/doc/DATC_v3_0.html#'.$name.'">'.
 			$name.'</a> - '.$status.'<br />'.$description;
 
 	print '

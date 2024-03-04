@@ -267,7 +267,7 @@ class adjParadoxException extends Exception
 			 */
 
 			/*
-			 * http://web.inter.nl.net/users/L.B.Kruijswijk/#5.B.9
+			 * https://webdiplomacy.net/doc/DATC_v3_0.html#5.B.9
 			 * 
 			 * 5.B.9. CIRCULAR MOVEMENT AND PARADOXES (excerpt on convoy paradoxes)
 			 * 

@@ -152,7 +152,7 @@ list($testName, $variantID, $testDesc) = $DB->sql_row(
  * Non-Diplomacy phase DATC tests are currently unsupported.
  */
 
-print l_t('Loading test').' <strong><a href="http://web.inter.nl.net/users/L.B.Kruijswijk/#'.$testName.'">'.
+print l_t('Loading test').' <strong><a href="https://webdiplomacy.net/doc/DATC_v3_0.html#'.$testName.'">'.
 		$testName.'</a></strong>: '.$testDesc.'<br /><br />';
 
 global $Variant;

@@ -30,7 +30,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  * Handles Diplomacy phase orders; the adjudicator script.
  *
  * Many thanks to Lucas Kruijswijk for his algorithm, which this script implements:
- * http://web.inter.nl.net/users/L.B.Kruijswijk/#5
+ * https://webdiplomacy.net/doc/DATC_v3_0.html#5
  */
 
 /*
