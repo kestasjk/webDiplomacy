@@ -155,7 +155,7 @@ class processOrderBuilds extends processOrder
 			while(list($unitID, $terrID) = $DB->tabl_row($tabl)) $units[$terrID] = $unitID;
 
 			// Get the non-coastal territory to territory links:
-			$tabl = $DB->sql_row("SELECT fromTerrID, toTerrID FROM wD_Borders WHERE mapID=".$Game->Variant->mapID);
+			$tabl = $DB->sql_tabl("SELECT fromTerrID, toTerrID FROM wD_Borders WHERE mapID=".$Game->Variant->mapID);
 			$links = array();
 			while(list($fromTerrID, $toTerrID) = $DB->tabl_row($tabl))
 			{
