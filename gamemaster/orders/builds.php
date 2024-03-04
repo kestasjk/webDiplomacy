@@ -143,21 +143,21 @@ class processOrderBuilds extends processOrder
 			// If two units are equally distant the territory that comes first alphabetically is chosen.
 
 			// Get all the supply center territories for the country:
-			$tabl = $DB->sql_tabl("SELECT t.id FROM wD_Territories t
+			$subTabl = $DB->sql_tabl("SELECT t.id FROM wD_Territories t
 				INNER JOIN wD_TerrStatus ts ON ( ts.terrID = t.id AND ts.gameID = ".$Game->id." AND ts.countryID = ".$countryID." )
 				WHERE t.supply = 'Yes' AND t.mapID=".$Game->Variant->mapID);
 			$supplyCenters = array();
-			while(list($terrID) = $DB->tabl_row($tabl)) $supplyCenters[] = $terrID;
+			while(list($terrID) = $DB->tabl_row($subTabl)) $supplyCenters[] = $terrID;
 			
 			// Get all the non-coastal territories for units of the country:
-			$tabl = $DB->sql_tabl("SELECT u.id, t.coastParentID FROM wD_Units u INNER JOIN wD_Territories t ON t.id = u.terrID WHERE u.gameID = ".$Game->id." AND u.countryID = ".$countryID);
+			$subTabl = $DB->sql_tabl("SELECT u.id, t.coastParentID FROM wD_Units u INNER JOIN wD_Territories t ON t.id = u.terrID WHERE u.gameID = ".$Game->id." AND u.countryID = ".$countryID);
 			$units = array();
-			while(list($unitID, $terrID) = $DB->tabl_row($tabl)) $units[$terrID] = $unitID;
+			while(list($unitID, $terrID) = $DB->tabl_row($subTabl)) $units[$terrID] = $unitID;
 
 			// Get the non-coastal territory to territory links:
-			$tabl = $DB->sql_tabl("SELECT fromTerrID, toTerrID FROM wD_Borders WHERE mapID=".$Game->Variant->mapID);
+			$subTabl = $DB->sql_tabl("SELECT fromTerrID, toTerrID FROM wD_Borders WHERE mapID=".$Game->Variant->mapID);
 			$links = array();
-			while(list($fromTerrID, $toTerrID) = $DB->tabl_row($tabl))
+			while(list($fromTerrID, $toTerrID) = $DB->tabl_row($subTabl))
 			{
 				if( !key_exists($fromTerrID, $links) ) $links[$fromTerrID] = array();
 				$links[$fromTerrID][] = $toTerrID;
