@@ -175,14 +175,28 @@ class processOrderBuilds extends processOrder
 			{
 				// Find the distance of each territory from the supply centers, until we find one or more units
 				$distances = array();
+				$searchedDisances = array(); // Store t 
 				foreach($supplyCenters as $sc) $distances[$sc] = 0;
-				while(count($territoryDistances) < count($units) )
+				while( count($territoryDistances) < count($units) )
 				{
 					foreach($distances as $terrID => $distance)
 					{
-						foreach($links[$terrID] as $toTerrID)
-							if( !key_exists($toTerrID, $distances) || $distances[$toTerrID] > $distance + 1 )
-								$distances[$toTerrID] = $distance + 1;
+						if( key_exists($terrID, $searchedDistances) )
+						{
+							// If a distance isn't updated from this territory then no adjacent
+							// territories can be found to be closer to this terriotry later,
+							// so don't check again
+							$distanceUpdated = false;
+							foreach($links[$terrID] as $toTerrID)
+							{
+								if( !key_exists($toTerrID, $distances) || $distances[$toTerrID] > $distance + 1 )
+								{
+									$distances[$toTerrID] = $distance + 1;
+									$distanceUpdated = true;
+								}
+							}
+							if( !$distanceUpdated ) $searchedDistances[$terrID] = true;
+						}
 					}
 					// After each extra distance check whether we have found any distances to units:
 					foreach($units as $terrID => $unitID)
