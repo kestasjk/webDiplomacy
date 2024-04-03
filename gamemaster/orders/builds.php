@@ -175,7 +175,7 @@ class processOrderBuilds extends processOrder
 			{
 				// Find the distance of each territory from the supply centers, until we find one or more units
 				$distances = array();
-				$searchedDisances = array(); // Store t 
+				$searchedDistances = array(); // Store t 
 				foreach($supplyCenters as $sc) $distances[$sc] = 0;
 				while( count($territoryDistances) < count($units) )
 				{
