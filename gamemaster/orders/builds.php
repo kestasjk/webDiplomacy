@@ -138,6 +138,51 @@ class processOrderBuilds extends processOrder
 				);
 		while(list($orderID, $countryID) = $DB->tabl_row($tabl))
 		{
+			list($unitID, $terrID) = $DB->sql_row(
+				"SELECT u.id, u.terrID FROM wD_Units u
+					INNER JOIN wD_UnitDestroyIndex i
+						ON ( u.countryID = i.countryID AND u.type = i.unitType AND u.terrID = i.terrID )
+				WHERE u.gameID = ".$Game->id." AND u.countryID = ".$countryID."
+					AND i.mapID=".$Game->Variant->mapID."
+				ORDER BY i.destroyIndex ASC LIMIT 1");
+
+			$DB->sql_put("UPDATE wD_Orders SET toTerrID = '".$terrID."' WHERE id = ".$orderID);
+			$DB->sql_put("UPDATE wD_Moves
+				SET success = 'Yes', toTerrID = ".$Game->Variant->deCoast($terrID)." WHERE gameID=".$GLOBALS['GAMEID']." AND orderID = ".$orderID);
+
+			$DB->sql_put("DELETE FROM wD_Units WHERE id = ".$unitID);
+		}
+
+		$DB->sql_put("INSERT INTO wD_Units ( gameID, countryID, type, terrID )
+					SELECT o.gameID, o.countryID, IF(o.type = 'Build Army','Army','Fleet') as type, o.toTerrID
+					FROM wD_Orders o INNER JOIN wD_Moves m ON ( m.orderID = o.id AND m.gameID=".$GLOBALS['GAMEID']." )
+					WHERE o.gameID=".$Game->id." AND o.type LIKE 'Build%' AND m.success = 'Yes'");
+		// All players have the correct amount of units
+	}
+	/**
+	 * Apply the adjudicated moves; retreat/disband units as decided
+	 */
+	public function apply_2023rules()
+	{
+		// Temporarily reverted to database lookup due to excessive CPU usage in gamemaster which may be related
+		global $Game, $DB;
+
+		$DB->sql_put(
+				"DELETE FROM u
+				USING wD_Units AS u
+				INNER JOIN wD_Orders AS o ON ( ".$Game->Variant->deCoastCompare('o.toTerrID','u.terrID')." AND u.gameID = o.gameID )
+				INNER JOIN wD_Moves m ON ( m.orderID = o.id AND m.gameID=".$GLOBALS['GAMEID']." )
+				WHERE o.gameID = ".$Game->id." AND o.type = 'Destroy'
+					AND m.success='Yes'");
+
+		// Remove units as per the destroyindex table for any destory orders that weren't successful
+		$tabl = $DB->sql_tabl(
+					"SELECT o.id, o.countryID FROM wD_Orders o
+					INNER JOIN wD_Moves m ON ( m.orderID = o.id AND m.gameID=".$GLOBALS['GAMEID']." )
+					WHERE o.type = 'Destroy' AND m.success = 'No' AND o.gameID = ".$Game->id
+				);
+		while(list($orderID, $countryID) = $DB->tabl_row($tabl))
+		{
 			// For the given failed destroy order / country we need to find the unit which is furthest from an owned supply center,
 			// where the distance is defined by number of hops between territories as if armies and fleets can both move anywhere.
 			// If two units are equally distant the territory that comes first alphabetically is chosen.
