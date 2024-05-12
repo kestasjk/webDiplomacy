@@ -66,6 +66,12 @@ class main_listener implements EventSubscriberInterface
 
 	public function modify_post_row($event)
 	{
+		if ($this->user->data['user_type'] == 1 || $this->user->data['user_type'] == 2)
+		{
+			$this->template->assign_var('DISABLE', '1');
+			return;
+		}
+
 		//var_dump($event['row']['post_id']);
 		$image = $likes = '';
 		$isliked = false;
@@ -127,10 +133,6 @@ class main_listener implements EventSubscriberInterface
 			$post_row = $event['post_row'];
 			$post_row['DISABLE'] = 1;
 			$event['post_row'] = $post_row;
-		}
-		if ($this->user->data['user_type'] == 1 || $this->user->data['user_type'] == 2)
-		{
-			$this->template->assign_var('DISABLE', '1');
 		}
 
 		//so should we display more info?
