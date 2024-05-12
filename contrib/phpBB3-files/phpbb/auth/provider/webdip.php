@@ -146,13 +146,25 @@ class webdip extends \phpbb\auth\provider\base
 	
 	// Check if logged on as the right user based on the webDip session, if not reauth
 	public function validate_session($data) {
+		global $request;
 
-		$userID = $this->getValidatedWebDipUserID();
+		$userId = $this->getValidatedWebDipUserID();
 		
-		$webDipUserID = $this->user->data['webdip_user_id'];
-		
-		if( $userID != $webDipUserID ) return false;
-		
+		$webDipUserId = $this->user->data['webdip_user_id'];
+
+		if( $userId != $webDipUserId || $webDipUserId < 10 )
+		{
+				$scriptName = $request->server('PHP_SELF', '');
+				
+				if( strstr($scriptName, 'index.php') === false
+						&& strstr($scriptName, 'viewforum.php') === false
+						&& strstr($scriptName, 'viewtopic.php') === false )
+						die("To limit server resources unauthenticated users can only access pages for viewing posts.".$userId);
+
+				return false;
+		}
+
 		return true;
+
 	}
 }
