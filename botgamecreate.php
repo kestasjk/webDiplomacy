@@ -277,15 +277,15 @@ print '<div class="content-bare content-board-header content-title-header">
 			</select>
 			</br></br>
 
-			'.($fullPressBotGames < 7 || !isset($_REQUEST['enableBotOption']) ? '<hidden id="fullPress" name="newGame[fullPress]" value="0"> '.(7-$fullPressBotGames).'/7 full-press game slots available; please try again later for a full-press bot game.':'
-			<strong>Full-press setting: (Classic only) '.(7-$fullPressBotGames).'/7 game slots available</strong><br/>
+			<strong>Full-press setting: (Classic only): '.(7-$fullPressBotGames).'/7 game slots available</strong><br/>
+			'.($fullPressBotGames > 7 || !isset($_REQUEST['enableBotOption']) ? '<hidden id="fullPress" name="newGame[fullPress]" value="0"> <em>Please try again later when a full-press slot becomes available.</em>':'
 			<em>This is currently a beta feature; full-press bots will take longer to respond than gunboat/no-press bots, 
 			and their behavior / performance is still being determined / improved.</em>
 			<select id="fullPress" class="gameCreate" name="newGame[fullPress]">
 				<option value="0" selected>No - Gunboat / No-press</option>
 				<option value="1">Yes - Full-press</option>
 			</select>
-			</br></br>').'
+			').'</br></br>
 
 			<p class="notice">
 				<input class = "green-Submit" type="submit"  value="Create">
