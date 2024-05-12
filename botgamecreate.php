@@ -277,7 +277,7 @@ print '<div class="content-bare content-board-header content-title-header">
 			</select>
 			</br></br>
 
-			'.($fullPressBotGames < 7 || !isset($_REQUEST['enableBotOption']) ? '<hidden id="fullPress" name="newGame[fullPress]" value="0">':'
+			'.($fullPressBotGames < 7 || !isset($_REQUEST['enableBotOption']) ? '<hidden id="fullPress" name="newGame[fullPress]" value="0"> '.(7-$fullPressBotGames).'/7 full-press game slots available; please try again later for a full-press bot game.':'
 			<strong>Full-press setting: (Classic only) '.(7-$fullPressBotGames).'/7 game slots available</strong><br/>
 			<em>This is currently a beta feature; full-press bots will take longer to respond than gunboat/no-press bots, 
 			and their behavior / performance is still being determined / improved.</em>
