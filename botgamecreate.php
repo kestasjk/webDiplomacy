@@ -72,9 +72,9 @@ if( defined('PLAYNOW') )
 else
 {
 	list($nopressBotGameCount) = $DB->sql_row("SELECT COUNT(DISTINCT g.id) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND NOT u.username LIKE 'diplonow_%'");
-	if( $nopressBotGameCount > 299 )
+	if( $nopressBotGameCount > 599 )
 	{
-		libHTML::notice(l_t('No-press bot game limit reached'), l_t('No-press bot game limit '.$nopressBotGameCount.'/300 reached: Apologies, the no-press bot game limit has been reached. To conserve server resources we have to limit the number of anonymous games. Please try again later.'));
+		libHTML::notice(l_t('No-press bot game limit reached'), l_t('No-press bot game limit '.$nopressBotGameCount.'/600 reached: Apologies, the no-press bot game limit has been reached. To conserve server resources we have to limit the number of anonymous games. Please try again later.'));
 	}
 
 	list($fullPressBotGames, $userFullPressBotGames) = $DB->sql_row(
