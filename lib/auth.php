@@ -727,10 +727,10 @@ class libAuth
 			
 			//libAuth::keyWipe();
 			// Generate user key
-			$acct = 'diplonow_'.round(rand(0,100000));
+			$acct = 'diplonow_'.round(rand(0,1000000));
 			while( 0 != $DB->sql_row("SELECT COUNT(1) FROM wD_Users WHERE username='" . $acct . "'")[0] )
 			{
-				$acct = 'diplonow_'.round(rand(0,100000));
+				$acct = 'diplonow_'.round(rand(0,1000000));
 			}
 			$pass = (string)(rand(0,1000000000)); 
 			//$DB->sql_put("INSERT INTO wd_Users (username,type,email,points,comment,homepage,timejoined,timeLastSessionEnded,password) VALUES ('".$acct."', 'User', '".$acct."', 0, '', '', ".time().", ".time().", UNHEX('".$passHash."'));");

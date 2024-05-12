@@ -26,7 +26,7 @@
 // Check whether we're in play-now mode:
 define('IN_CODE',true);
 require_once('config.php');
-if( Config::isOnPlayNowDomain() ) define('PLAYNOW',true);
+if( Config::isOnPlayNowDomain() ) die('Sandbox games are not allowed on the anonymous site; please create an account on the community site to use sandbox functionality.');
 
 require_once('header.php');
 

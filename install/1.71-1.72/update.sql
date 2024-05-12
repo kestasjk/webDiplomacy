@@ -666,4 +666,21 @@ INNER JOIN wD_GameMessages gm ON gm.gameID = g.id AND gm.fromCountryID = m.count
 WHERE g.id IN (
   SELECT DISTINCT gameID FROM wD_Members m WHERE m.userID IN (SELECT userID FROM wD_ApiKeys WHERE multiplexOffset IS NOT NULL)
 )
-ORDER BY g.id, gm.timeSent
+ORDER BY g.id, gm.timeSent;
+
+-- Add a like count to the users table to prevent having to constantly count for each post:
+ALTER TABLE `phpbb_users` ADD `webdip_like_count` INT(0) UNSIGNED NULL AFTER `webdip_user_id`;
+
+-- Calculate the initial counts:
+UPDATE phpbb_users u
+SET webdip_like_count = 0
+UPDATE phpbb_users u
+INNER JOIN (
+    SELECT p.poster_id, COUNT(*) AS likes
+    FROM phpbb_posts p
+    INNER JOIN phpbb_posts_likes l ON l.post_id = p.post_id
+    GROUP BY p.poster_id
+) x ON x.poster_id = u.user_id
+SET u.webdip_like_count = x.likes;
+-- This will be updated when a like is added or removed, and recounted
+-- in total on a daily basis.

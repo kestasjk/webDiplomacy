@@ -322,11 +322,32 @@ if( $Misc->LastStatsUpdate < (time() - 60) )
 	miscUpdate::forum();
 	miscUpdate::game();
 	miscUpdate::user();
-	$Misc->LastStatsUpdate = time();
-
+	
 	// Keep sandbox games from clogging things up using a hack for now, and ensure this doesn't cause paused games to error:
 	$DB->sql_put("UPDATE wD_Games SET processTime = 2000000000, pauseTimeRemaining = NULL WHERE name LIKE 'SB_%' AND processStatus <> 'Paused'");
 
+	// Cancel bot games that haven't been used for an hour if they are anonymous:
+	$DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID SET g.gameOver='Draw', g.phase= 'Finished' WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND u.timeLastSessionEnded < UNIX_TIMESTAMP() - 60*60 AND u.username LIKE 'diplonow_%';");
+
+	// Cancel bot games that haven't been used for two days if they are not anonymous:
+	$DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID SET g.gameOver='Draw', g.phase= 'Finished' WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND u.timeLastSessionEnded < UNIX_TIMESTAMP() - 2*24*60*60 AND NOT u.username LIKE 'diplonow_%';");
+
+	// Update like counts for the forum every day:
+	if( floor($Misc->LastStatsUpdate / (24*60*60)) < floor(time() / (24*60*60)) )
+	{
+		$DB->sql_put("UPDATE phpbb_users u
+			SET webdip_like_count = 0
+			UPDATE phpbb_users u
+			INNER JOIN (
+				SELECT p.poster_id, COUNT(*) AS likes
+				FROM phpbb_posts p
+				INNER JOIN phpbb_posts_likes l ON l.post_id = p.post_id
+				GROUP BY p.poster_id
+			) x ON x.poster_id = u.user_id
+			SET u.webdip_like_count = x.likes;");
+	}
+
+	$Misc->LastStatsUpdate = time();
 	// This is also only needed infrequently
 	/*
 	This should be unnecessary after changing the way the play-now games are created, but leaving it in for now just in case.

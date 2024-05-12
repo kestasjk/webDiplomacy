@@ -49,13 +49,25 @@ if( !$User->type['User'] )
 	libHTML::notice(l_t('Not logged on'),l_t("Only a logged on user can create games. Please <a href='logon.php' class='light'>log on</a> to create your own games."));
 }
 
-// Limit users to 3 bot games at a time unless they are a moderator. 
-if ($User->getBotGameCount() > 2)
+// Limit users to 3 bot games at a time unless they are a moderator,
+// and 1 game at a time if playing anonymously.
+$userBotGameCount = $User->getBotGameCount();
+if ($userBotGameCount > 2 || (defined('PLAYNOW') && $userBotGameCount > 0))
 {
     if (!$User->type['Moderator'])
     {
-        libHTML::notice('3 bot games at a time.','Sorry, only 3 bot games at a time, please finish one of your current ones to start another!');
+        libHTML::notice(l_t('3 bot games at a time.'),l_t('Sorry, only 3 bot games at a time, please finish one of your current ones to start another!'));
     }
+}
+
+// Limit the number of simultaneous play now / anonymous bot games to 60
+if( defined('PLAYNOW') )
+{
+	list($botGameCount) = $DB->sql_row("SELECT COUNT(DISTINCT g.id) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND u.username LIKE 'diplonow_%'");
+	if( $botGameCount > 59 )
+	{
+		libHTML::notice(l_t('Anonymous bot game limit reached'), l_t('Anonymous bot game limit reached: Apologies, the anonymous bot game limit has been reached. To conserve server resources we have to limit the number of anonymous games. Please try again later, or create an account on the community page.'));
+	}
 }
 
 libHTML::starthtml();
