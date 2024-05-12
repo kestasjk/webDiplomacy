@@ -78,7 +78,7 @@ else
 	}
 
 	list($fullPressBotGames, $userFullPressBotGames) = $DB->sql_row(
-		"SELECT COUNT(*) totalGames, SUM(IIF(u.id = ".$User->id.",1,0)) userGames
+		"SELECT COUNT(*) totalGames, SUM(IF(u.id = ".$User->id.",1,0)) userGames
 		FROM wD_ApiKeys a 
 		INNER JOIN wD_Members m ON m.userID = a.userID
 		INNER JOIN wD_Games g ON g.id = m.gameID 
