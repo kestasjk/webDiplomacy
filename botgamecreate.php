@@ -64,14 +64,14 @@ if ($userBotGameCount > 2 || (defined('PLAYNOW') && $userBotGameCount > 0))
 if( defined('PLAYNOW') )
 {
 	list($nopressBotGameCount) = $DB->sql_row("SELECT COUNT(DISTINCT g.id) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND u.username LIKE 'diplonow_%'");
-	if( $nopressBotGameCount > 99 )
+	if( $nopressBotGameCount > 199 )
 	{
 		libHTML::notice(l_t('Anonymous bot game limit reached'), l_t('Anonymous bot game limit '.$nopressBotGameCount.'/100 reached: Apologies, the anonymous bot game limit has been reached. To conserve server resources we have to limit the number of anonymous games. Please try again later, or create an account on the community page.'));
 	}
 }
 else
 {
-	list($nopressBotGameCount) = $DB->sql_row("SELECT COUNT(DISTINCT g.id) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND NOT u.username LIKE 'diplonow_%'");
+	list($nopressBotGameCount) = $DB->sql_row("SELECT COUNT(DISTINCT g.id) FROM wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND NOT u.username LIKE 'diplonow_%' AND NOT g.name LIKE 'SB_%'");
 	if( $nopressBotGameCount > 599 )
 	{
 		libHTML::notice(l_t('No-press bot game limit reached'), l_t('No-press bot game limit '.$nopressBotGameCount.'/600 reached: Apologies, the no-press bot game limit has been reached. To conserve server resources we have to limit the number of anonymous games. Please try again later.'));
@@ -124,7 +124,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			{
 				throw new Exception(l_t('Full-press games are not available in play-now mode.'));
 			}
-			if( $fullPressBotGames > 96 )
+			if( $fullPressBotGames >= 9 )
 			{
 				throw new Exception(l_t('Full-press game limit reached, please try again later.'));
 			}
@@ -277,8 +277,8 @@ print '<div class="content-bare content-board-header content-title-header">
 			</select>
 			</br></br>
 
-			<strong>Full-press setting: (Classic only): '.(7-$fullPressBotGames).'/7 game slots available</strong><br/>
-			'.($fullPressBotGames > 7 && !isset($_REQUEST['enableBotOption']) ? '<hidden id="fullPress" name="newGame[fullPress]" value="0"> <em>Please try again later when a full-press slot becomes available.</em>':'
+			<strong>Full-press setting: (Classic only): '.(9-$fullPressBotGames).'/9 game slots available</strong><br/>
+			'.($fullPressBotGames >= 9 && !isset($_REQUEST['enableBotOption']) ? '<hidden id="fullPress" name="newGame[fullPress]" value="0"> <em>Please try again later when a full-press slot becomes available.</em>':'
 			<em>This is currently a beta feature; full-press bots will take longer to respond than gunboat/no-press bots, 
 			and their behavior / performance is still being determined / improved.</em>
 			<select id="fullPress" class="gameCreate" name="newGame[fullPress]">
