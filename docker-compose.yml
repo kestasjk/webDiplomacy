@@ -76,6 +76,8 @@ services:
     ports:
       - "43003:3306"
     hostname: webdiplomacy-db
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
 
   phpmyadmin:
     image: phpmyadmin
@@ -124,7 +126,8 @@ services:
       - "./phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini"
     command: /bin/sh -c "install/gamemaster-entrypoint.sh > /application/gamemaster-entrypoint.txt"
     depends_on:
-      - "mariadb"
+      mariadb:
+        condition: service_healthy
     hostname: php-fpm
     #environment:
     #    PHP_IDE_CONFIG: "serverName=Docker"
