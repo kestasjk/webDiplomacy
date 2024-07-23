@@ -25,13 +25,7 @@ else
 
   echo "Start PHP server"
   # Fork the FPM server
-  /usr/sbin/php-fpm7.4 -O &
-
-  echo "Waiting for DB to be available"
-  while [ 0 -ne `echo "SELECT 1" | mysql --connect-timeout=1 -u webdiplomacy -h webdiplomacy-db -P 3306 --password=mypassword123 webdiplomacy` ]; do
-    sleep 1;
-    echo -n "."
-  done
+  /usr/sbin/php-fpm7.4 -O
 
   echo "Checking if DB installed"
   if mysql -u webdiplomacy -h webdiplomacy-db -P 3306 --password=mypassword123 webdiplomacy -e "SHOW TABLES;" | grep -q 'w[Dd]_[Uu]ser' ; then
