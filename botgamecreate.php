@@ -124,7 +124,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			{
 				throw new Exception(l_t('Full-press games are not available in play-now mode.'));
 			}
-			if( $fullPressBotGames >= 9 )
+			if( $fullPressBotGames >= 9 && !isset($_REQUEST['enableBotOption']) )
 			{
 				throw new Exception(l_t('Full-press game limit reached, please try again later.'));
 			}
@@ -284,7 +284,8 @@ print '<div class="content-bare content-board-header content-title-header">
 			<select id="fullPress" class="gameCreate" name="newGame[fullPress]">
 				<option value="0" selected>No - Gunboat / No-press</option>
 				<option value="1">Yes - Full-press</option>
-			</select>
+			</select>'.(isset($_REQUEST['enableBotOption']) ? '
+   			<input type="hidden" name="enableBotOption" value="1" />':'').'
 			').'</br></br>
 
 			<p class="notice">
