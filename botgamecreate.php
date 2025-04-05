@@ -153,7 +153,7 @@ class BotGameQueue
 				GROUP BY gameID
 			) stats ON stats.gameID = g.id
 			LEFT JOIN wD_Users u ON u.id = q.userID
-			".($includeFinished ? "" : "WHERE q.finishedTime IS NULL AND ")."
+			".($includeFinished ? "" : "WHERE q.finishedTime IS NULL ")."
 			ORDER BY queuedTime DESC"
 		);
 
