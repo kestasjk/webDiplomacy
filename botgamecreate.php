@@ -160,13 +160,14 @@ class BotGameQueue
 		$buf = '<strong>Full-press bot game queue</strong> ('.self::$botGamesQueued.' queued, '.self::$usersNotifiedAndWaiting.' notified and waiting, '.self::$botGamesStarted.' started)<br />';
 		if( self::$openSpacesReadyToNotify > 0 )
 		{
-			$buf .= '<strong>There are currently '.self::$openSpacesReadyToNotify.' open slots. Click <a href="botgamecreate.php?joinQueue=1">here</a> to start a full-press game.</strong><br />';
+			$buf .= '<em>There are currently '.self::$openSpacesReadyToNotify.' open slots. Click <a href="botgamecreate.php?joinQueue=1">here</a> to start a full-press game.</em><br />';
 		}
 		else if( self::canUserJoinQueue() )
 		{
-			$buf .= '<strong>There are currently no open slots. Click <a href="botgamecreate.php?joinQueue=1">here</a> to join the queue.</strong><br />';
+			$buf .= '<em>There are currently no open slots. Click <a href="botgamecreate.php?joinQueue=1">here</a> to join the queue.</em><br />';
 		}
 
+		$buf .= '<table class="botGameQueue">';
 		$buf .= '<tr><th>Username</th><th>Queued</th><th>Notified</th><th>Started</th><th>Finished</th>';
 		$buf .= '<th>Game</th><th>Turn</th><th>Ready Orders</th><th>Messages</th></tr>';
 		while (list($username, $queuedTime, $notifiedTime, $startedTime, $finishedTime, $gameID, $gameName, $turn, $readyOrders, $messages) = $DB->tabl_row($tabl))
