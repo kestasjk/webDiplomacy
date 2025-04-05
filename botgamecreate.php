@@ -100,12 +100,12 @@ class BotGameQueue
 			$Mailer->Send(
 				array($email=>$username), 
 				l_t('Full-press bot game ready to start'),
-				l_t("You are next in the queue to join a full-press bot-game. Please visit <a href='https://webdiplomacy.net/botgamecreate.php'>https://webdiplomacy.net/botgamecreate.php</a> within 24 hours to start your game.").
+				l_t("You are next in the queue to join a full-press bot-game. Please visit <a href='https://webdiplomacy.net/botgamecreate.php'>https://webdiplomacy.net/botgamecreate.php</a> within 24 hours to start your game.")
 			);
 
 			// Mark the user as notified:
 			$DB->sql_put("UPDATE wD_BotGameQueue SET notifiedTime = UNIX_TIMESTAMP() WHERE id = ".$id);
-			
+
 			self::$usersNotifiedAndWaiting++;
 		}
 	}
