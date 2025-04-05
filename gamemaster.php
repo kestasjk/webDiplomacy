@@ -258,6 +258,16 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 
 $DB->get_lock('gamemaster',1);
 
+if( $Misc->LastReliabilityRatingsRefresh < (time() - 60*60*24*(3 + rand(0,100)/100.0)) )
+{
+	// Update the reliability ratings from scratch every few days:
+	print l_t('Updating user phase/year counts and reliability ratings').'<br />';
+	libGameMaster::updateReliabilityRatings(true);
+	$Misc->LastReliabilityRatingsRefresh = time();
+	$Misc->write();
+	$DB->sql_put("COMMIT");
+}
+
 if ( isset($_REQUEST['gameMasterSecret']) && $_REQUEST['gameMasterSecret'] == Config::$gameMasterSecret && 
 	$User->type['User'] && !$User->type['Moderator'] && $Misc->LastProcessTime == 0 )
 {
