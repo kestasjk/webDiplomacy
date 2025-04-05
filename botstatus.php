@@ -48,7 +48,9 @@ if( isset($User) && $User->id == 10 )
 }
 /*
 Find users who have played most with full press bots:
-SELECT SUM(c) FROM (SELECT u.username, u.email, u.points, COUNT(*) c, SUM(IF(g.gameOver='No',1,0)) active, MAX(g.turn) maxTurn FROM wD_Members b INNER JOIN wD_Games g ON g.id = b.gameID INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_ApiKeys a ON a.userID = u.id WHERE b.userID = 181048 AND a.userID IS NULL GROUP BY u.username, u.email, u.points) a ORDER BY c;
+SELECT * FROM (SELECT u.username, u.email, u.points, COUNT(*) c, SUM(IF(g.gameOver='No',1,0)) active, MAX(g.turn) maxTurn FROM wD_Members b INNER JOIN wD_Games g ON g.id = b.gameID INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_ApiKeys a ON a.userID = u.id WHERE b.userID = 181048 AND a.userID IS NULL GROUP BY u.username, u.email, u.points) a ORDER BY c;
+
+
 
 Find backup games played with bots:
 

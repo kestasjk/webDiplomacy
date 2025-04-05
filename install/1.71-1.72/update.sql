@@ -696,3 +696,19 @@ ALTER TABLE wD_Members ADD votesChanged INT UNSIGNED NULL DEFAULT NULL;
 ALTER TABLE `wD_Members` ADD INDEX `indVotesChanged` (`votesChanged`, `gameID`); 
 ALTER TABLE wD_Members ADD orderStatusChanged INT UNSIGNED NULL DEFAULT NULL;
 ALTER TABLE `wD_Members` ADD INDEX `indOrderStatusChanged` (`orderStatusChanged`, `gameID`); 
+
+-- Table to allow queueing of users for bot games with limited spaces:
+CREATE TABLE wD_BotGameQueue(
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	userID MEDIUMINT UNSIGNED NOT NULL,
+  queuedTime INT UNSIGNED NULL DEFAULT NULL,
+  notifiedTime INT UNSIGNED NULL DEFAULT NULL,
+  startedTime INT UNSIGNED NULL DEFAULT NULL,
+  finishedTime INT UNSIGNED NULL DEFAULT NULL,
+  gameID MEDIUMINT UNSIGNED NULL DEFAULT NULL,
+	PRIMARY KEY (`id`),
+	INDEX indQueuedNotNotified (finishedTime,startedTime,notifiedTime,queuedTime)
+);
+
+INSERT INTO wD_BotGameQueue ( userID, queuedTime, notifiedTime, startedTime, gameID, finishedTime )
+SELECT u.id, g.processTime, g.processTime, g.processTime, g.id, IF(g.gameOver='No',NULL,g.processTime) FROM wD_Members b INNER JOIN wD_Games g ON g.id = b.gameID INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_ApiKeys a ON a.userID = u.id WHERE b.userID = 181048 AND a.userID IS NULL GROUP BY u.username, u.email, u.points;

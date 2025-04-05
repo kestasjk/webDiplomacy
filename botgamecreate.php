@@ -44,6 +44,158 @@ if( defined('PLAYNOW') )
 	$_REQUEST['newGame'] = array('variantID'=>1, 'name'=>$User->username, 'countryID'=>0);
 }
 
+/*
+A class to get the number of active bot games, the bot game limit, the number of people in the queue
+who can join, and tell if the current user is in the queue and/or can join.
+*/
+class BotGameQueue
+{
+	public static $botGamesAllowed = 10;
+	public static $botGamesQueued;
+	public static $usersNotifiedAndWaiting;
+	public static $botGamesStarted;
+
+	public static $openSpacesReadyToNotify;
+
+	public static function loadQueueStats()
+	{
+		global $DB;
+
+		// Find how many games are currently in the queue and how many are waiting:
+		list(self::$botGamesQueued, self::$usersNotifiedAndWaiting, self::$botGamesStarted) = $DB->sql_row("SELECT 
+				COUNT(*) queued,
+				SUM(IF(notifiedTime IS NOT NULL,1,0))-SUM(IF(startedTime IS NOT NULL,1,0)) notifiedAndWaiting,
+				SUM(IF(startedTime IS NOT NULL,1,0)) started
+			FROM wD_BotGameQueue 
+			WHERE finishedTime IS NULL");
+
+		self::$openSpacesReadyToNotify = (self::$botGamesAllowed - self::$botGamesStarted) - self::$usersNotifiedAndWaiting;
+	}
+
+	public static function updateQueue()
+	{
+		global $DB;
+
+		// Set finished/cancelled games to finished:
+		$DB->sql_put("UPDATE wD_BotGameQueue q LEFT JOIN wD_Games g ON g.id = q.gameID SET q.finishedTime = UNIX_TIMESTAMP() WHERE q.startedTime IS NOT NULL AND q.gameID IS NOT NULL AND q.finishedTime IS NULL AND (g.id IS NULL OR g.gameOver <> 'No')");
+		
+		// Remove queued users who have been notified for over 24 hours and haven't started:
+		$DB->sql_put("DELETE FROM wD_BotGameQueue WHERE notifiedTime IS NOT NULL AND startedTime IS NULL AND UNIX_TIMESTAMP()-notifiedTime > 24*60*60");
+		
+		self::loadQueueStats();
+
+		// Notify queued users who haven't been notified:
+		$tabl = $DB->sql_tabl("SELECT id, userID FROM wD_BotGameQueue WHERE notifiedTime IS NULL ORDER BY queuedTime LIMIT ".self::$openSpacesReadyToNotify);
+		while (list($id, $userID) = $DB->tabl_row($tabl))
+		{
+			// Notify the user:
+			// Mark the user as notified:
+			$DB->sql_put("UPDATE wD_BotGameQueue SET notifiedTime = UNIX_TIMESTAMP() WHERE id = ".$id);
+			self::$usersNotifiedAndWaiting++;
+		}
+	}
+
+	public static function canUserJoinQueue()
+	{
+		global $DB, $User;
+
+		// Check if the user is already in the queue for a non-finished game:
+		list($inQueue) = $DB->sql_row("SELECT COUNT(*) FROM wD_BotGameQueue WHERE userID = ".$User->id." AND finishedTime IS NULL");
+
+		return ($inQueue == 0); // If they're not in the queue they can join:
+	}
+
+	public static function addToQueue()
+	{
+		global $DB, $User;
+
+		// If there is currently a free slot to send someone a notification they can start this user can start immidiately without 
+		// being notified:
+		$userCanStartNow = self::$openSpacesReadyToNotify > 0;
+
+		$DB->sql_put("INSERT INTO wD_BotGameQueue (userID, queuedTime, notifiedTime) VALUES (".$User->id.", UNIX_TIMESTAMP(), " . ($userCanStartNow ? "UNIX_TIMESTAMP()" : "NULL") . ")");
+	}
+
+	public static function canUserCreateGame()
+	{
+		global $DB, $User;
+
+		// Check if the user is in the queue for a non-started game they've been notified for:
+		list($isNotified) = $DB->sql_row("SELECT COUNT(*) FROM wD_BotGameQueue WHERE userID = ".$User->id." AND finishedTime IS NULL AND startedTime IS NULL AND notifiedTime IS NOT NULL");
+
+		return ($isNotified > 0);
+	}
+
+	public static function gameQueueTable($includeFinished = false)
+	{
+		global $DB, $User;
+
+		if( isset($_REQUEST['joinQueue']) )
+		{
+			if( self::canUserJoinQueue() )
+			{
+				self::addToQueue();
+			}
+			else
+			{
+				libHTML::notice(l_t('Already in queue'), l_t('You are already in the bot game queue; please finish your current game or wait for your turn.'));
+			}
+		}
+
+		$tabl = $DB->sql_tabl(
+			"SELECT u.username, q.queuedTime, q.notifiedTime, q.startedTime, q.finishedTime, g.id, g.name, g.turn, stats.readyOrders, stats.messages
+			FROM wD_BotGameQueue q
+			LEFT JOIN wD_Games g ON g.id = q.gameID
+			LEFT JOIN wD_Members m ON m.gameID = g.id AND m.userID = q.userID
+			LEFT JOIN (
+				SELECT gameID, SUM(IIF(orderStatus LIKE '%Completed%' OR orderStatus LIKE '%None%',1,0)) readyOrders, SUM(gameMessagesSent) messages
+				FROM wD_Members
+				GROUP BY gameID
+			) stats ON stats.gameID = g.id
+			LEFT JOIN wD_Users u ON u.id = q.userID
+			".($includeFinished ? "" : "q.finishedTime IS NULL AND ")."
+			ORDER BY queuedTime DESC"
+		);
+
+		$buf = '<strong>Full-press bot game queue</strong> ('.self::$botGamesQueued.' queued, '.self::$usersNotifiedAndWaiting.' notified and waiting, '.self::$botGamesStarted.' started)<br />';
+		if( self::$openSpacesReadyToNotify > 0 )
+		{
+			$buf .= '<strong>There are currently '.self::$openSpacesReadyToNotify.' open slots. Click <a href="botgamecreate.php?joinQueue=1">here</a> to start a full-press game.</strong><br />';
+		}
+		else if( self::canUserJoinQueue() )
+		{
+			$buf .= '<strong>There are currently no open slots. Click <a href="botgamecreate.php?joinQueue=1">here</a> to join the queue.</strong><br />';
+		}
+
+		$buf .= '<tr><th>Username</th><th>Queued</th><th>Notified</th><th>Started</th><th>Finished</th>';
+		$buf .= '<th>Game</th><th>Turn</th><th>Ready Orders</th><th>Messages</th></tr>';
+		while (list($username, $queuedTime, $notifiedTime, $startedTime, $finishedTime, $gameID, $gameName, $turn, $readyOrders, $messages) = $DB->tabl_row($tabl))
+		{
+			$buf .= '<tr>';
+			$buf .= '<td>' . libHTML::profile_link($username) . '</td>';
+			$buf .= '<td>' . libTime::text($queuedTime) . '</td>';
+			$buf .= '<td>' . libTime::text($notifiedTime) . '</td>';
+			$buf .= '<td>' . libTime::text($startedTime) . '</td>';
+			$buf .= '<td>' . libTime::text($finishedTime) . '</td>';
+			if ($gameID)
+			{
+				$buf .= '<td><a href="board.php?gameID='.$gameID.'">'.$gameName.'</a></td>';
+				$buf .= '<td>'.$turn.'</td>';
+				$buf .= '<td>'.$readyOrders.'</td>';
+				$buf .= '<td>'.$messages.'</td>';
+			}
+			else
+			{
+				$buf .= '<td colspan="4">No game started</td>';
+			}
+			$buf .= '</tr>';
+		}
+		
+		$buf .= '</table>';
+		return $buf;
+	}
+}
+
 if( !$User->type['User'] )
 {
 	libHTML::notice(l_t('Not logged on'),l_t("Only a logged on user can create games. Please <a href='logon.php' class='light'>log on</a> to create your own games."));
@@ -88,7 +240,6 @@ else
 		WHERE a.username = 'dipgpt3' AND g.phase <> 'Finished' AND ha.userID IS NULL");
 }
 
-
 libHTML::starthtml();
 
 if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
@@ -124,7 +275,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			{
 				throw new Exception(l_t('Full-press games are not available in play-now mode.'));
 			}
-			if( $fullPressBotGames >= 9 && !isset($_REQUEST['enableBotOption']) )
+			if( $fullPressBotGames >= 10 && !isset($_REQUEST['enableBotOption']) )
 			{
 				throw new Exception(l_t('Full-press game limit reached, please try again later.'));
 			}
@@ -277,8 +428,16 @@ print '<div class="content-bare content-board-header content-title-header">
 			</select>
 			</br></br>
 
-			<strong>Full-press setting: (Classic only): '.(9-$fullPressBotGames).'/9 game slots available</strong><br/>
-			'.($fullPressBotGames >= 9 && !isset($_REQUEST['enableBotOption']) ? '<hidden id="fullPress" name="newGame[fullPress]" value="0"> <em>Please try again later when a full-press slot becomes available.</em>':'
+			';
+			if( $User->id == 10 )
+			{
+				BotGameQueue::loadQueueStats();
+				BotGameQueue::updateQueue();
+				print BotGameQueue::gameQueueTable();
+			}
+			print '
+			<strong>Full-press setting: (Classic only): '.(9-$fullPressBotGames).'/10 game slots available</strong><br/>
+			'.($fullPressBotGames >= 10 && !isset($_REQUEST['enableBotOption']) ? '<hidden id="fullPress" name="newGame[fullPress]" value="0"> <em>Please try again later when a full-press slot becomes available.</em>':'
 			<em>This is currently a beta feature; full-press bots will take longer to respond than gunboat/no-press bots, 
 			and their behavior / performance is still being determined / improved.</em>
 			<select id="fullPress" class="gameCreate" name="newGame[fullPress]">
