@@ -469,6 +469,9 @@ class libGameMaster
 
 			if( count($gameIDs) == 0 ) return;
 
+			$Misc->write();
+			$DB->sql_put("COMMIT");
+
 			$gameIDs = implode(',', $gameIDs);
 		}
 		else
@@ -522,8 +525,6 @@ class libGameMaster
 			}
 		}
 
-		$Misc->write();
-
 		$DB->sql_put("COMMIT");
 	}
 	// Finds all games where all users (incuding bots) with orders have set ready. It's similar to the function above
@@ -532,25 +533,20 @@ class libGameMaster
 	{
 		global $DB, $Misc;
 
-		if( $gameID == -1 )
+		// Look up all gameID where votesChanged is greater than the last wD_Misc LastVotesCounted,
+		// as counting votes for all games is slow and not needed if no votes have changed
+		$lastOrderStatusCounted = $Misc->LastOrderStatusCounted;
+		$Misc->LastOrderStatusCounted = time();
+		$tabl = $DB->sql_tabl("SELECT DISTINCT gameID FROM wD_Members WHERE orderStatusChanged >= " . $lastOrderStatusCounted);
+		$gameIDs = array();
+		while(list($gameID) = $DB->tabl_row($tabl))
 		{
-			// Look up all gameID where votesChanged is greater than the last wD_Misc LastVotesCounted,
-			// as counting votes for all games is slow and not needed if no votes have changed
-
-			$lastOrderStatusCounted = $Misc->LastOrderStatusCounted;
-			$Misc->LastOrderStatusCounted = time();
-
-			$tabl = $DB->sql_tabl("SELECT DISTINCT gameID FROM wD_Members WHERE orderStatusChanged >= " . $lastOrderStatusCounted);
-			$gameIDs = array();
-			while(list($gameID) = $DB->tabl_row($tabl))
-			{
-				$gameIDs[] = $gameID;
-			}
-
-			if( count($gameIDs) == 0 ) return;
-
-			$gameIDs = implode(',', $gameIDs);
+			$gameIDs[] = $gameID;
 		}
+		if( count($gameIDs) == 0 ) return;
+		$gameIDs = implode(',', $gameIDs);
+		$Misc->write();
+
 		$tabl = $DB->sql_tabl("SELECT g.id
 			FROM (
 				SELECT g.id,
