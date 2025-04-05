@@ -433,6 +433,8 @@ print '<div class="content-bare content-board-header content-title-header">
 
 			';
 
+			BotGameQueue::loadQueueStats();
+
 			if( isset($_REQUEST['joinQueue']) )
 			{
 				if( BotGameQueue::canUserJoinQueue() )
@@ -447,13 +449,9 @@ print '<div class="content-bare content-board-header content-title-header">
 
 			BotGameQueue::updateQueue();
 
-			BotGameQueue::loadQueueStats();
-			
-			print BotGameQueue::gameQueueTable();
-
 			if( BotGameQueue::canUserCreateGame() )
 			{
-				print '<strong>Would you like to start a full-press game?</strong> <em>Note: You will lose your place in the queue within 24 hours, and 
+				print '<strong>Would you like to start a full-press game?</strong><br /><em>Note: You will lose your place in the queue within 24 hours, and 
 				the game will be cancelled if you are inactive.</em>
 				<em>This is currently a beta feature; full-press bots will take longer to respond than gunboat/no-press bots, 
 				and their behavior / performance is still being determined / improved.</em><br />
@@ -466,6 +464,10 @@ print '<div class="content-bare content-board-header content-title-header">
 			print '<p class="notice">
 				<input class = "green-Submit" type="submit"  value="Create">
 			</p>';
+			
+			print '<div class="hr"></div>';
+
+			print BotGameQueue::gameQueueTable();
 			?>
 <script type="text/javascript">
 	setExtOptions(<?php print $first;?>);
