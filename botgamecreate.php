@@ -229,16 +229,6 @@ else
 	{
 		libHTML::notice(l_t('No-press bot game limit reached'), l_t('No-press bot game limit '.$nopressBotGameCount.'/600 reached: Apologies, the no-press bot game limit has been reached. To conserve server resources we have to limit the number of anonymous games. Please try again later.'));
 	}
-
-	list($fullPressBotGames, $userFullPressBotGames) = $DB->sql_row(
-		"SELECT COUNT(*) totalGames, SUM(IF(u.id = ".$User->id.",1,0)) userGames
-		FROM wD_ApiKeys a 
-		INNER JOIN wD_Members m ON m.userID = a.userID
-		INNER JOIN wD_Games g ON g.id = m.gameID 
-		INNER JOIN wD_Members hm ON hm.gameID = g.id 
-		INNER JOIN wD_Users u ON u.id = hm.userID 
-		LEFT JOIN wD_ApiKeys ha ON ha.userID = u.id 
-		WHERE a.username = 'dipgpt3' AND g.phase <> 'Finished' AND ha.userID IS NULL");
 }
 
 libHTML::starthtml();
@@ -276,13 +266,10 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 			{
 				throw new Exception(l_t('Full-press games are not available in play-now mode.'));
 			}
-			if( $fullPressBotGames >= 10 && !isset($_REQUEST['enableBotOption']) )
+			BotGameQueue::loadQueueStats();
+			if( !BotGameQueue::canUserCreateGame() )
 			{
-				throw new Exception(l_t('Full-press game limit reached, please try again later.'));
-			}
-			if( !is_null($userFullPressBotGames) && $userFullPressBotGames > 0 )
-			{
-				throw new Exception(l_t('One full-press game at a time, please complete / cancel your current full-press game before starting another.'));
+				throw new Exception(l_t('You cannot create a new full-press game now.'));
 			}
 		}
 		// If the name isn't unique or is too long the database will stop it
@@ -309,6 +296,12 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 
 		// Create first Member record & object
 		processMember::create($User->id, 5, $input['countryID']);
+
+		if( $input['fullPress'] == 1 )
+		{
+			// Log this in the queue:
+			$DB->sql_put("UPDATE wD_BotGameQueue SET gameID = " + $Game->id . ", startedTime = UNIX_TIMESTAMP() WHERE userID = ".$User->id." AND finishedTime IS NULL AND startedTime IS NULL AND notifiedTime IS NOT NULL");
+		}
 
 		//Add Bots
 		$botNum = $countryCount - 1;
