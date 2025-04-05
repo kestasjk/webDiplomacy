@@ -79,7 +79,9 @@ if ( ((isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText'])) || isset(
 		{
 			// Validate the given token using the CURL API
 			//print 'Validating token: '.$_REQUEST['recaptchaToken'].'<br />';
+			/*
 
+			Disabled as Google is returning 400
 			$ch = curl_init('https://recaptchaenterprise.googleapis.com/v1/projects/'.Config::$recaptchaProject.'/assessments?key='.Config::$recaptchaApiKey.'');
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
 			curl_setopt($ch, CURLOPT_POST,           1 );
@@ -118,19 +120,15 @@ if ( ((isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText'])) || isset(
 				throw new Exception("Google responded with invalid token: " . $responseData['tokenProperties']['invalidReason']);
 			}
 
-			/*if( $responseData['riskAnalysis']['score'] )
-			{
-				//  $responseData['riskAnalysis']['reasons']
-			}*/
 
 			//print 'Got response: '.$res.'<br />';
 
 			
 
 			//print 'Got info: '.print_r($info, true).'<br />';
-
+			
 			curl_close($ch);
-
+			*/
 		}
 		else
 		{
