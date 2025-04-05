@@ -172,11 +172,11 @@ class BotGameQueue
 		while (list($username, $queuedTime, $notifiedTime, $startedTime, $finishedTime, $gameID, $gameName, $turn, $readyOrders, $messages) = $DB->tabl_row($tabl))
 		{
 			$buf .= '<tr>';
-			$buf .= '<td>' . libHTML::profile_link($username) . '</td>';
+			$buf .= '<td>' . $username . '</td>';
 			$buf .= '<td>' . libTime::text($queuedTime) . '</td>';
-			$buf .= '<td>' . libTime::text($notifiedTime) . '</td>';
-			$buf .= '<td>' . libTime::text($startedTime) . '</td>';
-			$buf .= '<td>' . libTime::text($finishedTime) . '</td>';
+			$buf .= '<td>' . ( $notifiedTime == null ? "" : libTime::text($notifiedTime)) . '</td>';
+			$buf .= '<td>' . ( $startedTime == null ? "" : libTime::text($startedTime)) . '</td>';
+			$buf .= '<td>' . ( $finishedTime == null ? "" : libTime::text($finishedTime)) . '</td>';
 			if ($gameID)
 			{
 				$buf .= '<td><a href="board.php?gameID='.$gameID.'">'.$gameName.'</a></td>';
