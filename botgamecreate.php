@@ -300,7 +300,7 @@ if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 		if( $input['fullPress'] == 1 )
 		{
 			// Log this in the queue:
-			$DB->sql_put("UPDATE wD_BotGameQueue SET gameID = " + $Game->id . ", startedTime = UNIX_TIMESTAMP() WHERE userID = ".$User->id." AND finishedTime IS NULL AND startedTime IS NULL AND notifiedTime IS NOT NULL");
+			$DB->sql_put("UPDATE wD_BotGameQueue SET gameID = " . $Game->id . ", startedTime = UNIX_TIMESTAMP() WHERE userID = ".$User->id." AND finishedTime IS NULL AND startedTime IS NULL AND notifiedTime IS NOT NULL");
 		}
 
 		//Add Bots
