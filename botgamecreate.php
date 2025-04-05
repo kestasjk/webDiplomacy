@@ -148,7 +148,7 @@ class BotGameQueue
 			LEFT JOIN wD_Games g ON g.id = q.gameID
 			LEFT JOIN wD_Members m ON m.gameID = g.id AND m.userID = q.userID
 			LEFT JOIN (
-				SELECT gameID, SUM(IIF(orderStatus LIKE '%Completed%' OR orderStatus LIKE '%None%',1,0)) readyOrders, SUM(gameMessagesSent) messages
+				SELECT gameID, SUM(IF(orderStatus LIKE '%Completed%' OR orderStatus LIKE '%None%',1,0)) readyOrders, SUM(gameMessagesSent) messages
 				FROM wD_Members
 				GROUP BY gameID
 			) stats ON stats.gameID = g.id
