@@ -711,4 +711,4 @@ CREATE TABLE wD_BotGameQueue(
 );
 
 INSERT INTO wD_BotGameQueue ( userID, queuedTime, notifiedTime, startedTime, gameID, finishedTime )
-SELECT u.id, g.processTime, g.processTime, g.processTime, g.id, IF(g.gameOver='No',NULL,g.processTime) FROM wD_Members b INNER JOIN wD_Games g ON g.id = b.gameID INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_ApiKeys a ON a.userID = u.id WHERE b.userID = 181048 AND a.userID IS NULL GROUP BY u.username, u.email, u.points;
+SELECT u.id, g.processTime, g.processTime, g.processTime, g.id, IF(g.gameOver='No' AND g.phase <> 'Finished',NULL,g.processTime) FROM wD_Members b INNER JOIN wD_Games g ON g.id = b.gameID INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_ApiKeys a ON a.userID = u.id WHERE b.userID = 181048 AND a.userID IS NULL GROUP BY u.username, u.email, u.points;

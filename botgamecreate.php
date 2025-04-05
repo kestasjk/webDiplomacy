@@ -77,11 +77,14 @@ class BotGameQueue
 		global $DB;
 
 		// Set finished/cancelled games to finished:
-		$DB->sql_put("UPDATE wD_BotGameQueue q LEFT JOIN wD_Games g ON g.id = q.gameID SET q.finishedTime = UNIX_TIMESTAMP() WHERE q.startedTime IS NOT NULL AND q.gameID IS NOT NULL AND q.finishedTime IS NULL AND (g.id IS NULL OR g.gameOver <> 'No')");
+		$DB->sql_put("UPDATE wD_BotGameQueue q LEFT JOIN wD_Games g ON g.id = q.gameID SET q.finishedTime = UNIX_TIMESTAMP() WHERE q.startedTime IS NOT NULL AND q.gameID IS NOT NULL AND q.finishedTime IS NULL AND (g.id IS NULL OR g.gameOver <> 'No' OR g.phase = 'Finished')");
 		
 		// Remove queued users who have been notified for over 24 hours and haven't started:
 		$DB->sql_put("DELETE FROM wD_BotGameQueue WHERE notifiedTime IS NOT NULL AND startedTime IS NULL AND UNIX_TIMESTAMP()-notifiedTime > 24*60*60");
 		
+		// Update message sent counts for bot games:
+		// UPDATE wD_Members m INNER JOIN wD_BotGameQueue b ON b.gameID = m.gameID LEFT JOIN (SELECT gameID, fromCountryID, count(*) c FROM wD_GameMessages GROUP BY gameID, fromCountryID) gm ON gm.gameID = b.gameID AND gm.fromCountryID = m.countryID SET m.gameMessagesSent = gm.c;
+
 		self::loadQueueStats();
 
 		// Notify queued users who haven't been notified:
@@ -154,7 +157,7 @@ class BotGameQueue
 			) stats ON stats.gameID = g.id
 			LEFT JOIN wD_Users u ON u.id = q.userID
 			".($includeFinished ? "" : "WHERE q.finishedTime IS NULL ")."
-			ORDER BY queuedTime DESC"
+			ORDER BY queuedTime"
 		);
 
 		$buf = '<strong>Full-press bot game queue</strong> ('.self::$botGamesQueued.' queued, '.self::$usersNotifiedAndWaiting.' notified and waiting, '.self::$botGamesStarted.' started)<br />';
@@ -167,7 +170,7 @@ class BotGameQueue
 			$buf .= '<em>There are currently no open slots. Click <a href="botgamecreate.php?joinQueue=1">here</a> to join the queue.</em><br />';
 		}
 
-		$buf .= '<table class="botGameQueue">';
+		$buf .= '<table class="hof">';
 		$buf .= '<tr><th>Username</th><th>Queued</th><th>Notified</th><th>Started</th><th>Finished</th>';
 		$buf .= '<th>Game</th><th>Turn</th><th>Ready Orders</th><th>Messages</th></tr>';
 		while (list($username, $queuedTime, $notifiedTime, $startedTime, $finishedTime, $gameID, $gameName, $turn, $readyOrders, $messages) = $DB->tabl_row($tabl))
@@ -437,7 +440,7 @@ print '<div class="content-bare content-board-header content-title-header">
 				print BotGameQueue::gameQueueTable();
 			}
 			print '
-			<strong>Full-press setting: (Classic only): '.(9-$fullPressBotGames).'/10 game slots available</strong><br/>
+			<strong>Full-press setting: (Classic only): '.(10-$fullPressBotGames).'/10 game slots available</strong><br/>
 			'.($fullPressBotGames >= 10 && !isset($_REQUEST['enableBotOption']) ? '<hidden id="fullPress" name="newGame[fullPress]" value="0"> <em>Please try again later when a full-press slot becomes available.</em>':'
 			<em>This is currently a beta feature; full-press bots will take longer to respond than gunboat/no-press bots, 
 			and their behavior / performance is still being determined / improved.</em>
