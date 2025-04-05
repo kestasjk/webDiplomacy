@@ -167,8 +167,8 @@ class BotGameQueue
 		}
 
 		$buf .= '<table class="hof">';
-		$buf .= '<tr><th>User</th><th>Queued</th><th>Started</th><th>Next turn</th>';
-		$buf .= '<th>Game</th><th>Turn</th><th>Ready Orders</th></tr>';//<th>Messages</th></tr>';
+		$buf .= '<tr><th>User</th><th>Queued</th><th>Started</th>';//<th>Next turn</th>';
+		$buf .= '<th>Game</th><th>Turn</th><th>Turn Orders/Messages</th></tr>';
 		while (list($userID, $username, $userType, $points, $identityScore, $queuedTime, $notifiedTime, $startedTime, $processTime, $finishedTime, $gameID, $gameName, $turn, $readyOrders, $messages) = $DB->tabl_row($tabl))
 		{
 			$buf .= '<tr>';
@@ -179,13 +179,12 @@ class BotGameQueue
 			$buf .= '<td>' . ( $notifiedTime == null ? libTime::text($queuedTime) : '<strong>'.libTime::text($notifiedTime)).'</strong>' . '</td>';
 			$buf .= '<td>' . ( $startedTime == null ? "" : libTime::text($startedTime)) . '</td>';
 			//$buf .= '<td>' . ( $finishedTime == null ? "" : libTime::text($finishedTime)) . '</td>';
-			$buf .= '<td>' . ( $processTime == null ? "" : libTime::text($processTime)) . '</td>';
+			//$buf .= '<td>' . ( $processTime == null ? "" : libTime::text($processTime)) . '</td>';
 			if ($gameID)
 			{
 				$buf .= '<td><a href="board.php?gameID='.$gameID.'">'.$gameName.'</a></td>';
 				$buf .= '<td>'.$turn.'</td>';
-				$buf .= '<td>'.$readyOrders.'</td>';
-				//$buf .= '<td>'.$messages.'</td>';
+				$buf .= '<td>'.$readyOrders.' / '.$messages.'</td>';
 			}
 			else
 			{
