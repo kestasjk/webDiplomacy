@@ -80,7 +80,7 @@ class miscUpdate
 		global $DB, $Misc;
 
 		list($Misc->GamesNew) = $DB->sql_row("SELECT COUNT(phase) FROM wD_Games WHERE phase = 'Pre-game'");
-		list($Misc->GamesActive) = $DB->sql_row("SELECT COUNT(phase) FROM wD_Games WHERE phase = 'Diplomacy' OR phase = 'Retreats' OR phase = 'Builds'");
+		list($Misc->GamesActive) = $DB->sql_row("SELECT COUNT(phase) FROM wD_Games WHERE phase IN ('Diplomacy', 'Retreats', 'Builds')");
 		list($Misc->GamesFinished) = $DB->sql_row("SELECT COUNT(phase) FROM wD_Games WHERE phase = 'Finished'");
 		list($Misc->GamesCrashed) = $DB->sql_row("SELECT COUNT(processStatus) FROM wD_Games WHERE processStatus = 'Crashed'");
 		list($Misc->GamesPaused) = $DB->sql_row("SELECT COUNT(processStatus) FROM wD_Games WHERE processStatus = 'Paused'");

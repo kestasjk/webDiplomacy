@@ -59,8 +59,8 @@ if ( !( $User->type['Moderator']
 	libHTML::notice(l_t('Denied'), l_t('Only the cron script and moderators can run the gamemaster script.'));
 }
 
-ini_set('memory_limit',"100M");
-ini_set('max_execution_time','60');
+ini_set('memory_limit',"200M");
+ini_set('max_execution_time','300');
 
 if( defined('RUNNINGFROMCLI') && isset($argv) )
 {
@@ -332,6 +332,12 @@ if( $Misc->LastStatsUpdate < (time() - 60) )
 	// Cancel bot games that haven't been used for two days if they are not anonymous:
 	$DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_Sessions s ON s.userID = u.id SET g.gameOver='Draw', g.phase= 'Finished' WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND (u.timeLastSessionEnded < UNIX_TIMESTAMP() - 2*24*60*60 AND u.timeJoined < UNIX_TIMESTAMP() - 2*60*60 AND m.timeLoggedIn < UNIX_TIMESTAMP() - 2*60*60 AND s.userID IS NULL) AND NOT u.username LIKE 'diplonow_%' AND NOT g.name LIKE 'SB_%';");
 
+	// Cancel sandbox games that haven't been accessed for a week, otherwise these clog things up:
+	$DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id LEFT JOIN wD_ApiKeys a ON a.userID = m.userID SET g.gameOver='Draw' AND g.phase='Finished' WHERE g.phase IN ('Diplomacy','Retreats','Builds') AND a.userID IS NULL AND g.sandboxCreatedByUserID IS NOT NULL AND m.timeLoggedIn < UNIX_TIMESTAMP() - 24*60*60*7 AND g.gameOver = 'No';")
+
+	// Update member status for games that have finished, which makes vote queries etc faster and ensures stats are right:
+	$DB->sql_put("UPDATE wD_Members m INNER JOIN wD_Games g ON g.id = m.gameID SET m.status = 'Survived' WHERE m.status = 'Playing' AND g.phase = 'Finished';");
+
 	// Update like counts for the forum every day:
 	if( false && floor($Misc->LastStatsUpdate / (24*60*60)) < floor(time() / (24*60*60)) )
 	{
@@ -356,7 +362,7 @@ if( $Misc->LastStatsUpdate < (time() - 60) )
 		// If there is a play-now domain set up ensure that games that have been left for over 24 hours don't linger and waste resources:
 		// If a diplonow_ member hasn't logged onto a game for 24 hours set the member to vote for cancellation of the game.
 		$DB->sql_put(
-			"UPDATE wD_Members SET votes='Cancel' WHERE userID IN (SELECT id FROM wD_Users WHERE username LIKE 'diplonow%') AND timeLoggedIn < UNIX_TIMESTAMP()-24*60*60 AND status='Playing';"
+			"UPDATE wD_Members SET votes='Cancel', votesChanged=UNIX_TIMESTAMP() WHERE userID IN (SELECT id FROM wD_Users WHERE username LIKE 'diplonow%') AND timeLoggedIn < UNIX_TIMESTAMP()-24*60*60 AND status='Playing';"
 		);
 	}*/
 }

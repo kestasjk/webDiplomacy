@@ -558,7 +558,7 @@ class ToggleVote extends ApiEntry {
 			$voteArr[] = $vote;
 			$newVotes = implode(',', $voteArr);
 		}
-		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."' WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
+		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."', votesChanged=UNIX_TIMESTAMP() WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
 		$DB->sql_put("COMMIT");
 
 		require_once('lib/pusher.php');
@@ -624,7 +624,7 @@ class SetVote extends ApiEntry {
 			$voteArr[] = $vote;
 			$newVotes = implode(',', $voteArr);
 		}
-		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."' WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
+		$DB->sql_put("UPDATE wD_Members SET votes = '".$newVotes."', votesChanged=UNIX_TIMESTAMP() WHERE gameID = ".$gameID." AND userID = ".$userID." AND countryID = ".$countryID);
 		$DB->sql_put("COMMIT");
 
 		require_once(l_r('gamemaster/game.php'));

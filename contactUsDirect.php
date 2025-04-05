@@ -287,7 +287,7 @@ if ($submitted == true)
                             WHERE id = ".$values->gameID);
 
                         // Any votes to toggle the pause are now void
-                        $DB->sql_put("UPDATE wD_Members SET votes = REPLACE(votes,'Pause','') WHERE gameID = ".$values->gameID);
+                        $DB->sql_put("UPDATE wD_Members SET votes = REPLACE(votes,'Pause',''), votesChanged=UNIX_TIMESTAMP() WHERE gameID = ".$values->gameID);
                     }
                 }
             }

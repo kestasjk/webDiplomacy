@@ -450,7 +450,32 @@ class libGameMaster
 	// TODO: Test whether votes need to be processed immidiately via api.php or if they can wait for gamemaster to run
 	static public function findAndApplyGameVotes($gameID = -1)
 	{
-		global $DB;
+		global $DB, $Misc;
+
+		if( $gameID == -1 )
+		{
+			// Look up all gameID where votesChanged is greater than the last wD_Misc LastVotesCounted,
+			// as counting votes for all games is slow and not needed if no votes have changed
+
+			$lastVotesCounted = $Misc->LastVotesCounted;
+			$Misc->LastVotesCounted = time();
+
+			$tabl = $DB->sql_tabl("SELECT DISTINCT gameID FROM wD_Members WHERE votesChanged >= " . $lastVotesCounted);
+			$gameIDs = array();
+			while(list($gameID) = $DB->tabl_row($tabl))
+			{
+				$gameIDs[] = $gameID;
+			}
+
+			if( count($gameIDs) == 0 ) return;
+
+			$gameIDs = implode(',', $gameIDs);
+		}
+		else
+		{
+			$gameIDs = $gameID;
+		}
+		
 
 		$tabl = $DB->sql_tabl("SELECT g.variantID, g.id, 
 			CASE 
@@ -471,7 +496,7 @@ class libGameMaster
 				INNER JOIN wD_Members m ON m.gameID = g.id
 				INNER JOIN wD_Users u ON u.id = m.userID
 				WHERE m.status = 'Playing' AND NOT u.`type` LIKE '%Bot%'
-				AND g.phase <> 'Finished' ".($gameID != -1 ? "AND g.id = ".$gameID : "")."
+				AND g.phase <> 'Finished' AND g.id IN (".$gameIDs.")
 				GROUP BY g.id
 			) g
 			WHERE g.Voters = g.DrawVotes
@@ -496,6 +521,9 @@ class libGameMaster
 				$DB->sql_put("COMMIT");
 			}
 		}
+
+		$Misc->write();
+
 		$DB->sql_put("COMMIT");
 	}
 	// Finds all games where all users (incuding bots) with orders have set ready. It's similar to the function above

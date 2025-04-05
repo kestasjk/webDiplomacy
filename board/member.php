@@ -91,14 +91,14 @@ class userMember extends panelMember
 			libGameMessage::send($this->countryID, $this->countryID, ($voteOn?'Un-':'').'Voted for '.$voteName, $this->gameID);
 			// If it's a member vs bots game allow the member to pause or cancel the game
 			if( $voteOn )
-				$DB->sql_put("UPDATE wD_Members SET votes=REPLACE(votes,'".$voteName."','') WHERE gameID=".$this->gameID);
+				$DB->sql_put("UPDATE wD_Members SET votes=REPLACE(votes,'".$voteName."',''), votesChanged=UNIX_TIMESTAMP() WHERE gameID=".$this->gameID);
 			else
-				$DB->sql_put("UPDATE wD_Members SET votes=CONCAT(COALESCE(CONCAT(votes,','),''),'".$voteName."') WHERE gameID=".$this->gameID);
+				$DB->sql_put("UPDATE wD_Members SET votes=CONCAT(COALESCE(CONCAT(votes,','),''),'".$voteName."'), votesChanged=UNIX_TIMESTAMP() WHERE gameID=".$this->gameID);
 		}
 		else
 		{
 			libGameMessage::send($this->countryID, $this->countryID, ($voteOn?'Un-':'').'Voted for '.$voteName, $this->gameID);
-			$DB->sql_put("UPDATE wD_Members SET votes='".implode(',',$this->votes)."' WHERE id=".$this->id);
+			$DB->sql_put("UPDATE wD_Members SET votes='".implode(',',$this->votes)."', votesChanged=UNIX_TIMESTAMP() WHERE id=".$this->id);
 		}
 	}
 

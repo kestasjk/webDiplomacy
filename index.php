@@ -291,5 +291,3 @@ libHTML::$footerScript[] = l_jf('homeGameHighlighter').'();';
 $_SESSION['lastSeenHome']=time();
 
 libHTML::footer();
-
-?>

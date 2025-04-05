@@ -1394,7 +1394,7 @@ class processGame extends Game
 			WHERE id = ".$this->id);
 
 		// Any votes to toggle the pause are now void
-		$DB->sql_put("UPDATE wD_Members SET votes = REPLACE(votes,'Pause','') WHERE gameID = ".$this->id);
+		$DB->sql_put("UPDATE wD_Members SET votes = REPLACE(votes,'Pause',''), votesChanged=UNIX_TIMESTAMP() WHERE gameID = ".$this->id);
 	}
 
 	/**

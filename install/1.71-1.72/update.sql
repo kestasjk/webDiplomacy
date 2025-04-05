@@ -684,3 +684,12 @@ INNER JOIN (
 SET u.webdip_like_count = x.likes;
 -- This will be updated when a like is added or removed, and recounted
 -- in total on a daily basis.
+
+-- Health check for when last backup was successfully archived:
+ALTER TABLE `wD_Misc` CHANGE COLUMN `Name` `Name` enum('Version','Hits','Panic','Notice','Maintenance','LastProcessTime','GamesNew','GamesActive','GamesFinished','RankingPlayers','OnlinePlayers','ActivePlayers','TotalPlayers','ErrorLogs','GamesPaused','GamesOpen','GamesCrashed','LastModAction','ForumThreads','ThreadActiveThreshold','ThreadAliveThreshold','GameFeaturedThreshold','LastGroupUpdate','LastStatsUpdate','LastMessageID','LastNMRWarningUpdate','LastConnectionUpdate','LastBackupUpdate','LastBackupArchived','LastVotesCounted') NOT NULL;
+INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastBackupArchived',0);
+INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastVotesCounted',0);
+
+-- Flag for when a user changed their votes, as vote counting across all active games is expensive:
+ALTER TABLE wD_Members ADD votesChanged INT UNSIGNED NULL DEFAULT NULL;
+ALTER TABLE `wD_Members` ADD INDEX `indVotesChanged` (`votesChanged`, `gameID`); 
