@@ -176,8 +176,7 @@ class BotGameQueue
 				$username, $userID, $userType, $points, $identityScore
 			);
 			$buf .= '<td><nobr>' . $profileLink. '</nobr></td>';
-			$buf .= '<td>' . libTime::text($queuedTime) . '</td>';
-			$buf .= '<td>' . ( $notifiedTime == null ? "" : libTime::text($notifiedTime)) . '</td>';
+			$buf .= '<td>' . ( $notifiedTime == null ? libTime::text($queuedTime) : '<strong>'.libTime::text($notifiedTime)).'</strong>' . '</td>';
 			$buf .= '<td>' . ( $startedTime == null ? "" : libTime::text($startedTime)) . '</td>';
 			//$buf .= '<td>' . ( $finishedTime == null ? "" : libTime::text($finishedTime)) . '</td>';
 			$buf .= '<td>' . ( $processTime == null ? "" : libTime::text($processTime)) . '</td>';
@@ -190,7 +189,7 @@ class BotGameQueue
 			}
 			else
 			{
-				$buf .= '<td colspan="4"><em>No game started</em></td>';
+				$buf .= '<td colspan="4"><em>No game started'.($notifiedTime == null ? '' : ' - <strong>Open</strong>') . '</em></td>';
 			}
 			$buf .= '</tr>';
 		}
