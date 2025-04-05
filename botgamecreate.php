@@ -167,7 +167,7 @@ class BotGameQueue
 		}
 
 		$buf .= '<table class="hof">';
-		$buf .= '<tr><th>User</th><th>Queued</th><th>Notified</th><th>Started</th><th>Next turn</th>';
+		$buf .= '<tr><th>User</th><th>Queued</th><th>Started</th><th>Next turn</th>';
 		$buf .= '<th>Game</th><th>Turn</th><th>Ready Orders</th></tr>';//<th>Messages</th></tr>';
 		while (list($userID, $username, $userType, $points, $identityScore, $queuedTime, $notifiedTime, $startedTime, $processTime, $finishedTime, $gameID, $gameName, $turn, $readyOrders, $messages) = $DB->tabl_row($tabl))
 		{
