@@ -543,7 +543,7 @@ class libGameMaster
 		{
 			$gameIDs[] = $gameID;
 		}
-		if( count($gameIDs) == 0 ) return;
+		if( count($gameIDs) == 0 ) return array();
 		$gameIDs = implode(',', $gameIDs);
 		$Misc->write();
 
