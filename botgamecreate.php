@@ -234,6 +234,18 @@ else
 
 libHTML::starthtml();
 
+
+if( $User->id == 10 && isset($_REQUEST['emailtest']) ) {
+	require_once(l_r('objects/mailer.php'));
+	$Mailer = new Mailer();
+	$Mailer->Send(
+		array('JfsLnJRlUiWS4m@dkimvalidator.com'=>'JfsLnJRlUiWS4m@dkimvalidator.com'), 
+		l_t('Full-press bot game ready to start'),
+		l_t("You are next in the queue to join a full-press bot-game. Please visit <a href='https://webdiplomacy.net/botgamecreate.php'>https://webdiplomacy.net/botgamecreate.php</a> within 24 hours to start your game.")
+	);
+	
+}
+
 if( isset($_REQUEST['newGame']) and is_array($_REQUEST['newGame']) )
 {
 	try
