@@ -119,7 +119,7 @@ class Members
 			$Member->orderStatus->Ready=false;
 			
 			if( $Member->orderStatus->updated )
-				$DB->sql_put("UPDATE wD_Members SET orderStatus='".$Member->orderStatus."' WHERE id = ".$Member->id);
+				$DB->sql_put("UPDATE wD_Members SET orderStatus='".$Member->orderStatus."', orderStatusChanged=UNIX_TIMESTAMP() WHERE id = ".$Member->id);
 		}
 	}
 

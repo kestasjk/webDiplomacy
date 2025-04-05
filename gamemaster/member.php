@@ -93,7 +93,7 @@ class processMember extends Member
 		// It is assumed this is being run within a transaction
 
 		$DB->sql_put("INSERT INTO wD_Members SET
-			userID = ".$userID.", gameID = ".$Game->id.", countryID=".$countryID.", orderStatus='None,Completed,Ready', bet = 0, timeLoggedIn = ".time().", excusedMissedTurns = ".$Game->excusedMissedTurns);
+			userID = ".$userID.", gameID = ".$Game->id.", countryID=".$countryID.", orderStatus='None,Completed,Ready', orderStatusChanged=UNIX_TIMESTAMP(), bet = 0, timeLoggedIn = ".time().", excusedMissedTurns = ".$Game->excusedMissedTurns);
 
 		$Game->Members->load();
 

@@ -928,7 +928,7 @@ class processGame extends Game
 		 */
 		$DB->sql_put("UPDATE wD_Members m
 				LEFT JOIN wD_Orders o ON ( o.gameID = m.gameID AND o.countryID = m.countryID )
-				SET m.orderStatus=IF(o.id IS NULL, 'None','')
+				SET m.orderStatus=IF(o.id IS NULL, 'None',''), orderStatusChanged=UNIX_TIMESTAMP()
 				WHERE m.gameID = ".$this->id);
 	}
 

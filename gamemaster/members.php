@@ -531,7 +531,7 @@ class processMembers extends Members
 						AND countryID = ".$CD->countryID);
 
 			$DB->sql_put("UPDATE wD_Members
-					SET userID = ".$User->id.", status='Playing', orderStatus=REPLACE(orderStatus,'Ready',''),
+					SET userID = ".$User->id.", status='Playing', orderStatus=REPLACE(orderStatus,'Ready',''), orderStatusChanged=UNIX_TIMESTAMP(),
 						timeLoggedIn = ".time()."
 					WHERE id = ".$CD->id);
 			$DB->sql_put('DELETE FROM wD_WatchedGames WHERE userID='.$User->id. ' AND gameID='.$this->Game->id);

@@ -530,8 +530,27 @@ class libGameMaster
 	// but there are enough differences to make it messy to combine
 	static public function findGameReadyVotes()
 	{
-		global $DB;
+		global $DB, $Misc;
 
+		if( $gameID == -1 )
+		{
+			// Look up all gameID where votesChanged is greater than the last wD_Misc LastVotesCounted,
+			// as counting votes for all games is slow and not needed if no votes have changed
+
+			$lastOrderStatusCounted = $Misc->LastOrderStatusCounted;
+			$Misc->LastOrderStatusCounted = time();
+
+			$tabl = $DB->sql_tabl("SELECT DISTINCT gameID FROM wD_Members WHERE orderStatusChanged >= " . $lastOrderStatusCounted);
+			$gameIDs = array();
+			while(list($gameID) = $DB->tabl_row($tabl))
+			{
+				$gameIDs[] = $gameID;
+			}
+
+			if( count($gameIDs) == 0 ) return;
+
+			$gameIDs = implode(',', $gameIDs);
+		}
 		$tabl = $DB->sql_tabl("SELECT g.id
 			FROM (
 				SELECT g.id,
@@ -544,7 +563,7 @@ class libGameMaster
 				FROM wD_Games g
 				INNER JOIN wD_Members m ON m.gameID = g.id
 				INNER JOIN wD_Users u ON u.id = m.userID
-				WHERE m.status = 'Playing'
+				WHERE m.status = 'Playing' AND g.id IN (".$gameIDs.") 
 				AND g.gameOver = 'No' AND g.phase <> 'Pre-game' AND g.phase <> 'Finished' AND g.processStatus <> 'Paused'
 				GROUP BY g.id
 			) g
