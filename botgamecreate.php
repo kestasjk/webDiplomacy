@@ -146,7 +146,7 @@ class BotGameQueue
 		global $DB, $User;
 
 		$tabl = $DB->sql_tabl(
-			"SELECT u.username, q.queuedTime, q.notifiedTime, q.startedTime, g.processTime, q.finishedTime, g.id, g.name, g.turn, stats.readyOrders, stats.messages
+			"SELECT u.id, u.username, u.type, u.points, u.identityScore, q.queuedTime, q.notifiedTime, q.startedTime, g.processTime, q.finishedTime, g.id, g.name, g.turn, stats.readyOrders, stats.messages
 			FROM wD_BotGameQueue q
 			LEFT JOIN wD_Games g ON g.id = q.gameID
 			LEFT JOIN wD_Members m ON m.gameID = g.id AND m.userID = q.userID
@@ -163,16 +163,19 @@ class BotGameQueue
 		$buf = '<strong>Full-press bot game queue</strong> ('.self::$botGamesQueued.' queued, '.self::$usersNotifiedAndWaiting.' notified and waiting, '.self::$botGamesStarted.' started)<br />';
 		if( self::canUserJoinQueue() )
 		{
-			$buf .= '<em>Click <a href="botgamecreate.php?joinQueue=1">here</a> to join the queue.</em><br />';
+			$buf .= '<p class="notice">Click <a href="botgamecreate.php?joinQueue=1">here</a> to join the queue.</p>';
 		}
 
 		$buf .= '<table class="hof">';
 		$buf .= '<tr><th>Username</th><th>Queued</th><th>Notified</th><th>Started</th><th>Next turn</th>';
 		$buf .= '<th>Game</th><th>Turn</th><th>Ready Orders</th></tr>';//<th>Messages</th></tr>';
-		while (list($username, $queuedTime, $notifiedTime, $startedTime, $processTime, $finishedTime, $gameID, $gameName, $turn, $readyOrders, $messages) = $DB->tabl_row($tabl))
+		while (list($userID, $username, $userType, $points, $identityScore, $queuedTime, $notifiedTime, $startedTime, $processTime, $finishedTime, $gameID, $gameName, $turn, $readyOrders, $messages) = $DB->tabl_row($tabl))
 		{
 			$buf .= '<tr>';
-			$buf .= '<td>' . $username . '</td>';
+			$profileLink = User::profile_link_static(
+				$userID, $username, $userType, $points, $identityScore
+			);
+			$buf .= '<td>' . $profileLink. '</td>';
 			$buf .= '<td>' . libTime::text($queuedTime) . '</td>';
 			$buf .= '<td>' . ( $notifiedTime == null ? "" : libTime::text($notifiedTime)) . '</td>';
 			$buf .= '<td>' . ( $startedTime == null ? "" : libTime::text($startedTime)) . '</td>';
@@ -187,7 +190,7 @@ class BotGameQueue
 			}
 			else
 			{
-				$buf .= '<td colspan="4">No game started</td>';
+				$buf .= '<td colspan="4"><em>No game started</em></td>';
 			}
 			$buf .= '</tr>';
 		}
