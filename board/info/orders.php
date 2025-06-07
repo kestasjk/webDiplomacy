@@ -231,9 +231,20 @@ while ( $row = $DB->tabl_hash($tabl) )
 			$lastTurn = $row['turn'];
 		}
 
-		$buffer .= orderIndex(l_t($countryIDToName[$row['countryID']]), 2);
+		// Check if $countryIDToName contains the key:
+		if( !isset($countryIDToName[$row['countryID']]) )
+		{
+			// If not, use the countryID as a fallback
+			$countryName = $row['countryID'];
+		}
+		else
+		{
+			$countryName = l_t($countryIDToName[$row['countryID']]);
+		}
+		
+		$buffer .= orderIndex($countryName, 2);
 
-               $buffer .= '<strong><span class="country'.$row['countryID'].'">'.l_t($countryIDToName[$row['countryID']])."</span>:</strong><br />";
+        $buffer .= '<strong><span class="country'.$row['countryID'].'">'.$countryName."</span>:</strong><br />";
 		$lastCountryID = $row['countryID'];
 	}
 
