@@ -20,24 +20,19 @@
 
 defined('IN_CODE') or die('This script can not be run by itself.');
 
-require_once('vendor/autoload.php');
+//require_once('vendor/autoload.php');
 
-use Pusher\Pusher;
+//use Pusher\Pusher;
 
 require_once('objects/redis.php');
 
 /**
- * An class that handles Pusher config and methods
- * 
- * Will be refactored to just use Redis, but for now allow easy switching:
+ * An class that handles Pusher config and methods; just redirects to Redis. libPushed will be phased out.
  *
  * @package Base
  */
 class libPusher
 {
-  // Reuse the same pusher instance to avoid creating a new web request for each call, which affects the latency and cost
-  private static ?Pusher $pusher = null;
-
   // If Redis is available use that instead, and the messages will be forwarded to a node.js SSE server
   private static ?RedisInterface $redis = null;
   private static function initialize()
@@ -61,20 +56,6 @@ class libPusher
         }
       }
     }
-
-    if( self::$pusher === null )
-    {
-      if( self::$pusher === null )
-      {
-        self::$pusher = new Pusher(Config::$pusherAppKey, Config::$pusherAppSecret, Config::$pusherAppId, [
-          'host' => Config::$pusherHost,
-          'port' => Config::$pusherPort,
-          'scheme' => isset(Config::$pusherScheme) ? Config::$pusherScheme : 'http',
-          'encrypted' => isset(Config::$pusherForceTLS) ? Config::$pusherForceTLS : true,
-          'useTLS' => isset(Config::$pusherForceTLS) ? Config::$pusherForceTLS : false,
-        ]);
-      }
-    }
   }
 
   public static function trigger($channel, $event, $message)
@@ -89,11 +70,6 @@ class libPusher
     if( self::$redis !== null )
     {
       $result = self::$redis->publish($channel, json_encode(['event' => $event, 'data' => $message]));
-    }
-    
-    if( self::$pusher === null )
-    {
-      $result = self::$pusher->trigger($channel, $event, $message);
     }
   }
 }
