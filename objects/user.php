@@ -880,18 +880,13 @@ class User {
 			$ip = dechex($ip);
 		}
 
-		if ( isset($_COOKIE['wD_WP']) )
-			$webPushrSID = (int)$_COOKIE['wD_WP'];
-		else
-			$webPushrSID = 0;
-
 		if( !isset($_SESSION['auid']) && !defined('AdminUserSwitch')  && $this->id > 1 && !defined('PLAYNOW') && strstr($this->username,'diplonow_') === false )
 		{
 			// Only store a session hit if we are not impersonating a user
-			$DB->sql_put("INSERT INTO wD_Sessions (userID, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint, webPushrSID)
+			$DB->sql_put("INSERT INTO wD_Sessions (userID, lastRequest, hits, ip, userAgent, cookieCode, browserFingerprint)
 			VALUES (".$this->id.",CURRENT_TIMESTAMP,1, UNHEX('".$ip."'),
-					UNHEX('".$userAgentHash."'), UNHEX('".$cookieCode."'), UNHEX('".$browserFingerprint."'), ".$webPushrSID.")
-			ON DUPLICATE KEY UPDATE hits=hits+1,ip=UNHEX('".$ip."'),userAgent=UNHEX('".$userAgentHash."'), cookieCode=UNHEX('".$cookieCode."'), browserFingerprint=UNHEX('".$browserFingerprint."'), webPushrSID=".$webPushrSID);
+					UNHEX('".$userAgentHash."'), UNHEX('".$cookieCode."'), UNHEX('".$browserFingerprint."'))
+			ON DUPLICATE KEY UPDATE hits=hits+1,ip=UNHEX('".$ip."'),userAgent=UNHEX('".$userAgentHash."'), cookieCode=UNHEX('".$cookieCode."'), browserFingerprint=UNHEX('".$browserFingerprint."')");
 			
 			$DB->sql_put("INSERT INTO wD_IPLookups (ipCode, ip, timeInserted, timeLastHit)
 			VALUES (UNHEX('".$ip."'), '".$originalIP."', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())

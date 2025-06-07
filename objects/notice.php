@@ -43,49 +43,6 @@ class notice
 	private static $recent;
 	private static $new;
 	
-	public function webPush()
-	{
-		if( ! isset(Config::$webpushrSiteKey) || ! isset(Config::$webpushrAuthToken) || ! Config::$webpushrSiteKey || ! Config::$webpushrAuthToken )
-			return;
-		
-		$end_point = 'https://api.webpushr.com/v1/notification/send/sid';
-
-		$http_header = array( 
-			"Content-Type: Application/Json", 
-			"webpushrKey: ".Config::$webpushrSiteKey, 
-			"webpushrAuthToken: ".Config::$webpushrAuthToken
-		);
-
-		$req_data = array(
-			'title' 		=> "Notification title", //required
-			'message' 		=> "Notification message", //required
-			'target_url'	=> 'https://www.webpushr.com', //required
-			'sid'           => '41685975' //required
-
-			//following parameters are optional
-			//'name'		=> 'Test campaign',
-			//'icon'		=> 'https://cdn.webpushr.com/siteassets/wSxoND3TTb.png',
-			//'image'		=> 'https://cdn.webpushr.com/siteassets/aRB18p3VAZ.jpeg',
-			//'auto_hide'	=> 1,
-			//'expire_push'	=> '5m',
-			//'send_at'		=> '2022-01-04 11:01 +5:30',
-			//'action_buttons'=> array(	
-				//array('title'=> 'Demo', 'url' => 'https://www.webpushr.com/demo'),
-				//array('title'=> 'Rates', 'url' => 'https://www.webpushr.com/pricing')
-			//)
-
-		);
-
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $http_header);
-		curl_setopt($ch, CURLOPT_URL, $end_point );
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($req_data) );
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-		$response = curl_exec($ch);
-		echo $response;
-	}
 	public function viewedSplitter()
 	{
 		global $User;

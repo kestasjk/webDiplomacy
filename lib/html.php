@@ -608,12 +608,8 @@ class libHTML
 			<script type="text/javascript" src="javascript/clickhandler.js"></script>
 			<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/prototype.js').'"></script>
 			<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/scriptaculous.js').'"></script>
-			<script type="text/javascript" src="https://js.pusher.com/7.0/pusher.min.js"></script>
 			<link rel="stylesheet" type="text/css" href="'.STATICSRV.l_s('contrib/js/pushup/src/css/pushup.css').'" />
 			<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/pushup/src/js/pushup.js').'"></script>
-			'.( isset(Config::$recaptchaSiteKey) && !is_null(Config::$recaptchaSiteKey) && strlen(Config::$recaptchaSiteKey) > 1 ? 
-				'<script src="https://www.google.com/recaptcha/enterprise.js?render='.Config::$recaptchaSiteKey.'"></script>'
-				: '').'
 			<script type="text/javascript">
 				STATICSRV="'.STATICSRV.'";
 				var cssDirectory = "'.CSSDIR.'";
@@ -1511,19 +1507,6 @@ class libHTML
 			setUserOnlineIcons();
 		</script>
 		';
-
-		// If set up for webpushr hook in here:
-		if( isset(Config::$webpushrSiteKey) && Config::$webpushrSiteKey )
-		{
-			if( $User->type['User'] )
-			{
-					$buf .= "<script>(function(w,d, s, id) {if(typeof(w.webpushr)!=='undefined') return;w.webpushr=w.webpushr||function(){(w.webpushr.q=w.webpushr.q||[]).push(arguments)};var js, fjs = d.getElementsByTagName(s)[0];js = d.createElement(s); js.id = id;js.async=1;js.src = \"https://cdn.webpushr.com/app.min.js\";fjs.parentNode.appendChild(js);}(window,document, 'script', 'webpushr-jssdk'));";
-					$buf .= "webpushr('setup',{'key':'".Config::$webpushrSiteKey."' });";
-					$buf .= "webpushr('fetch_id',function(sid) { document.cookie = 'wD_WP=' + sid + ';path=/'; });";
-					$buf .= "webpushr('attributes',{\"User ID\" : \"".$User->id."\"});";
-					$buf .= "</script>";
-			}
-		}
 
 		if( Config::$debug )
 			$buf .= '<br /><strong>JavaScript localization lookup failures:</strong><br /><span id="jsLocalizationDebug"></span>';
