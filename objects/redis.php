@@ -91,10 +91,10 @@ class RedisInterface
                 restore_error_handler();
                 // Handle the unserialize warning here (e.g., log and return null)
                 // error_log("Unserialize failed: " . $e->getMessage());
-                return null;
+                return false;
             }
         } else {
-            return null; // Key does not exist
+            return false; // Key does not exist
         }
     }
 
