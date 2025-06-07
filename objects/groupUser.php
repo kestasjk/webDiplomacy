@@ -140,6 +140,10 @@ class GroupUser
 
 		foreach ( $row as $name => $value )
 		{
+			// If name starts with 'Group_' then ignore:
+			if( strpos($name, 'Group_') === 0 )
+				continue;
+
 			$this->{$name} = $value;
 		}
 		
