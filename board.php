@@ -91,9 +91,9 @@ try
 	{
 		// Default to using the point and click UI for this user.
 
-		header("Location: beta?gameID=".$gameID);
+		header("Location: beta/?gameID=".$gameID);
 
-		libHTML::notice('Loading board', '<em>Loading the game board, please wait.. If you are not redirected within 5 seconds, <a href="beta?gameID='.$gameID.'">click here</a>.</em>');
+		libHTML::notice('Loading board', '<em>Loading the game board, please wait.. If you are not redirected within 5 seconds, <a href="beta/?gameID='.$gameID.'">click here</a>.</em>');
 
 		die();
 	}

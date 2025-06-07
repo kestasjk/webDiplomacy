@@ -10,7 +10,7 @@ abstract class set
 		foreach($this->allowed as $name)
 			$this->set[$name]=false;
 
-		$setNames=explode(',',$set);
+		$setNames=explode(',',$set ?? '');
 		foreach($this->set as $name=>$value)
 			if( in_array($name, $setNames) )
 				$this->set[$name] = true;

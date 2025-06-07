@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useEffect } from "react";
-import client from "../../lib/pusher";
+// import client from "../../lib/pusher";
+import client from "../../lib/sselistener";
 import {
   fetchGameOverview,
   gameApiSliceActions,

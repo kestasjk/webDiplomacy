@@ -51,96 +51,19 @@ $page = 'firstValidationForm';
 
 $exception = null;
 
-if ( ((isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText'])) || isset($_REQUEST['recaptchaToken'])) && isset($_REQUEST['emailValidate']) )
+if ( isset($_REQUEST['emailValidate']) )
 {
 	try
 	{
-		if(isset($_COOKIE['imageToken']) && isset($_REQUEST['imageText']))
-		{
-			// Validate using the built in easycaptcha, which is fairly easy to work around and has cookie issues with certain browser configs
-			// Validate and send email
-			$imageToken = explode('|', $_COOKIE['imageToken'], 2);
-
-			if ( count($imageToken) != 2 )
-				throw new Exception(l_t("A bad anti-script code was given, please try again"));
-
-			list($Hash, $Time) = $imageToken;
-
-			if ( md5(Config::$secret.$_REQUEST['imageText'].$_SERVER['REMOTE_ADDR'].$Time) != $Hash )
-			{
-				throw new Exception(l_t("An invalid anti-script code was given, please try again"));
-			}
-			elseif( (time() - 3*60) > $Time)
-			{
-				throw new Exception(l_t("This anti-script code has expired, please submit it within 3 minutes"));
-			}
-		}
-		else if( isset($_REQUEST['recaptchaToken']) )
-		{
-			// Validate the given token using the CURL API
-			//print 'Validating token: '.$_REQUEST['recaptchaToken'].'<br />';
-			/*
-
-			Disabled as Google is returning 400
-			$ch = curl_init('https://recaptchaenterprise.googleapis.com/v1/projects/'.Config::$recaptchaProject.'/assessments?key='.Config::$recaptchaApiKey.'');
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
-			curl_setopt($ch, CURLOPT_POST,           1 );
-			curl_setopt($ch, CURLOPT_POSTFIELDS,     '{
-	"event": {
-		"token": "'.$_REQUEST['recaptchaToken'].'",
-		"siteKey": "'.Config::$recaptchaSiteKey.'",
-		"expectedAction": "LOGIN"
-	}
-	}' ); 
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-				'Content-Type: application/json; charset=utf-8'
-			));
-			//print 'Executing request<br />';
-			$res = curl_exec($ch);
-			if ( ! ($res)) {
-				$errno = curl_errno($ch);
-				$errstr = curl_error($ch);
-				curl_close($ch);
-				throw new Exception("Error validating anti-bot token: [$errno] $errstr");
-			}
-			
-			$info = curl_getinfo($ch);
-			$http_code = $info['http_code'];
-			if ($http_code != 200) {
-				throw new Exception("Google responded with http code $http_code");
-			}
-
-			$responseData = json_decode($res, true);
-			if( $responseData['tokenProperties']['valid'] === true )
-			{
-				
-			}
-			else
-			{
-				throw new Exception("Google responded with invalid token: " . $responseData['tokenProperties']['invalidReason']);
-			}
-
-
-			//print 'Got response: '.$res.'<br />';
-
-			
-
-			//print 'Got info: '.print_r($info, true).'<br />';
-			
-			curl_close($ch);
-			*/
-		}
-		else
-		{
-			throw new Exception(l_t("No anti-bot token provided"));
-		}
-
 		if( !isset($_REQUEST['antiBotCountryID']) || !isset($_REQUEST['antiBotTerritoryIDs']) )
 		{
 			throw new Exception(l_t("No anti-bot country selection provided."));
 		}
 		$antiBotCountryID = (int)$_REQUEST['antiBotCountryID'];
 		$antiBotTerritoryIDs = $_REQUEST['antiBotTerritoryIDs'];
+	
+		// Ensure this variant is installed, if we are registering the first user:
+		libVariant::loadFromVariantID(1);
 		
 		$tabl = $DB->sql_tabl("SELECT id FROM wD_Territories WHERE mapID = 1 AND countryID = ".$antiBotCountryID." AND supply='Yes' ORDER BY id");
 		$validTerritoryIDs = array();

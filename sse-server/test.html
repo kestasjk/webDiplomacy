@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SSE Client</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #events { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; }
+    .event { margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Redis SSE Client</h1>
+  <label>
+    Channels (comma-separated): 
+    <input type="text" id="channels" value="channel1,channel2" />
+  </label>
+  <button id="connectBtn">Connect</button>
+  <button id="disconnectBtn" disabled>Disconnect</button>
+
+  <div id="events"></div>
+
+  <script>
+    let eventSource;
+
+    const eventsDiv = document.getElementById('events');
+    const channelsInput = document.getElementById('channels');
+    const connectBtn = document.getElementById('connectBtn');
+    const disconnectBtn = document.getElementById('disconnectBtn');
+
+    function logEvent(msg) {
+      const el = document.createElement('div');
+      el.className = 'event';
+      el.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+      eventsDiv.appendChild(el);
+      eventsDiv.scrollTop = eventsDiv.scrollHeight;
+    }
+
+    connectBtn.onclick = () => {
+      const channels = channelsInput.value.trim();
+      if (!channels) {
+        alert('Please enter at least one channel');
+        return;
+      }
+
+      eventSource = new EventSource(`http://localhost:23542/events?channelList=${encodeURIComponent(channels)}`);
+
+      eventSource.onopen = () => {
+        logEvent('Connected to SSE server');
+        connectBtn.disabled = true;
+        disconnectBtn.disabled = false;
+      };
+
+      eventSource.onerror = (e) => {
+        logEvent('Connection error or closed');
+        connectBtn.disabled = false;
+        disconnectBtn.disabled = true;
+        eventSource.close();
+      };
+
+      eventSource.onmessage = (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          logEvent(`Channel: ${data.channel} - Message: ${data.message}`);
+        } catch {
+          logEvent(`Raw message: ${e.data}`);
+        }
+      };
+    };
+
+    disconnectBtn.onclick = () => {
+      if (eventSource) {
+        eventSource.close();
+        logEvent('Disconnected from SSE server');
+        connectBtn.disabled = false;
+        disconnectBtn.disabled = true;
+      }
+    };
+  </script>
+</body>
+</html>

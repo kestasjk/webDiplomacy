@@ -634,5 +634,29 @@ class Config
 	 * with testing bots in a development environment without needing a separate redaction process running.
 	 */
 	public static $allowBotsAccessToUnredactedMessages = true;
+
+	/**
+	 * Location of the SSE server, which is used to push updates to clients about game/message updates
+	 * via Server-Sent Events.
+	 * @var string
+	 */
+	public static $sseHost = "sse";
+	public static $ssePort = 43006;
+	/**
+	 * Secret that is used to generate tokens that say a user is allowed to get events relating to a country.
+	 * The potential for abuse is low, you could only find out that a player has just received a message but
+	 * not from who or the content. Tokens are invalid after 1 day. Needs to be in sync with the value in the 
+	 * sse-server config file.
+	 * @var string
+	 */
+	public static $sseSecret = null;
+
+	/**
+	 * The Redis host and port. This replaces Memcached and Pusher, as Redis can do what Memcached can, and
+	 * has PUB/SUB functionality which can be used to serve updates to clients via SSE more efficiently.
+	 * @var string
+	 */
+	public static $redisHost = 'redis';
+	public static $redisPort = 6379;
 }
 ?>

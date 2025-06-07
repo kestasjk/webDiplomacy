@@ -386,7 +386,13 @@ class InstallTerritory {
 	/**
 	 * Basic territory data, more or less as given
 	 */
-	public $mapID, $name, $type, $supply, $countryID, $mapX, $mapY, $smallMapX, $smallMapY, $coastParentID;
+	public $id, $mapID, $name, $type, $supply, $countryID, $mapX, $mapY, $smallMapX, $smallMapY, $coastParentID;
+
+	/**
+	 * Yes/No/etc
+	 * @var 
+	 */
+	public $coast;
 
 	/**
 	 * The coastParent object ($this if not a child-coast). Used for coastParentID after ID allocation.

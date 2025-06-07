@@ -1124,7 +1124,7 @@ abstract class drawMap
 		}
 
 		$color = $this->color($color);
-		imagefilledpolygon($this->map['image'], $polygon, $corners, $color);
+		imagefilledpolygon($this->map['image'], $polygon, $color);
 	}
 
 	/**
@@ -1169,7 +1169,7 @@ abstract class drawMap
 	protected static function imagelinethick($image, $x1, $y1, $x2, $y2, $color, $thick = 1)
 	{
 		imagesetthickness($image, $thick);
-		imageline($image, $x1, $y1, $x2, $y2, $color);
+		imageline($image, (int) $x1, (int) $y1, (int) $x2, (int) $y2, $color);
 		imagesetthickness($image, 1);
 	}
 
@@ -1192,7 +1192,7 @@ abstract class drawMap
 		$rectangle=array($x1-$tv,$y1-$tv,$x1-$tv,$y1+$tv,$x1+$v+$tv,$y1+$tv,$x1+$v+$tv,$y1-$tv);
 		$rad=self::lineAngle(array($x1,$y1),array($x2,$y2));
 		$rectangle=self::rotate($rectangle,array($x1,$y1),$rad);
-		return imagefilledpolygon($image, $rectangle, 4, $color);
+		return imagefilledpolygon($image, $rectangle, $color);
 	}
 
 	/**

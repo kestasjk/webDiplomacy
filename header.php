@@ -40,11 +40,6 @@ echo ( '<a href="'.$_SERVER['PHP_SELF'].'">View Again</a><br />' );
 
 die();*/
 
-if( strpos($_SERVER['PHP_SELF'], 'header.php') )
-{
-	die("You can't view this document by itself.");
-}
-
 if( !defined('IN_CODE') )
 	define('IN_CODE', 1); // A flag to tell scripts they aren't being executed by themselves
 
@@ -137,7 +132,8 @@ if ( isset($_REQUEST['uid']) ) $_REQUEST['userID'] = $_REQUEST['uid'];
 
 // Reset globals
 // FIXME: Resetting this means $GLOBALS['asdf'] is no longer kept in sync with global $asdf. This causes problems during construction
-$GLOBALS = array();
+// $GLOBALS = array(); // Removed for PHP 8.4 compat
+//die(print_r($_GLOBALS, true));
 $GLOBALS['scriptStartTime'] = microtime(true);
 
 ini_set('memory_limit',"32M"); // From 8M to 32M to cater for games that are very large
@@ -171,6 +167,7 @@ date_default_timezone_set('UTC');
 
 // Create database object
 require_once(l_r('objects/database.php'));
+global $DB;
 $DB = new Database();
 
 // Set up the misc values object
@@ -265,7 +262,7 @@ if( Config::isOnPlayNowDomain() && !defined('PLAYNOW') )
 if( isset($User) && $User->type['User'] )
 {
 	// If we aren't currently looking at the group page check whether we need to redirect to a group panel:
-	if( false === strstr(strtolower($_SERVER['PHP_SELF']),'group') )
+	if( false === strstr(strtolower(libHTML::getScriptName()),'group') )
 		libGroup::redirectToGroup();
 }
 

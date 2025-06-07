@@ -228,6 +228,8 @@ class assignmentSolver
         $this->augment(1);
         return $this->makeXY1Indexed($this->xy);
     }
+
+    public $n, $weights, $matchedCountries, $xy, $yx, $lx, $ly, $S, $T, $prevXs, $slack, $slackx, $q;
 }
 
 ?>

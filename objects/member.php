@@ -186,12 +186,12 @@ class Member
 		// If making a userMember the $row is a userMember object not an array, and these operations have already been performed
 		if ( ! $row instanceof Member )
 		{
-			if( strlen($this->votes) )
+			if( strlen($this->votes ?? '') )
 				$this->votes = explode(',', $this->votes);
 			else
 				$this->votes=array();
 
-			if( strlen($this->newMessagesFrom) )
+			if( strlen($this->newMessagesFrom ?? '') )
 				$this->newMessagesFrom = explode(',', $this->newMessagesFrom);
 			else
 				$this->newMessagesFrom = array();

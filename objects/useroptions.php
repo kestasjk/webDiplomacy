@@ -183,6 +183,8 @@ class UserOptions
 	}
 	private static function unpack($optionsStr)
 	{
+		if( $optionsStr == null ) return array();
+
 		$optionsArr = explode('|',$optionsStr);
 		$options = array();
 		foreach($optionsArr as $optionStr)

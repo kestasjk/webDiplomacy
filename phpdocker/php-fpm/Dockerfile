@@ -1,13 +1,20 @@
-FROM phpdockerio/php:7.4-fpm
+FROM phpdockerio/php:8.4-fpm
 WORKDIR "/application"
 
 RUN apt-get update; \
     apt-get -y --no-install-recommends install \
+        php8.4-gd \ 
+        php8.4-memcached \ 
+        php8.4-redis \ 
+        php8.4-mysql \ 
+        php8.4-xdebug \
+        redis \
+        nano \
+        less \
+        net-tools \
+        iputils-ping \
         git \ 
-        php7.4-gd \ 
-        php7.4-memcached \ 
-        php7.4-mysql \ 
-        php7.4-xdebug \
+        wget \
         mariadb-client; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*

@@ -262,6 +262,8 @@ class Game
 	 */
 	public $relationshipRestrictions;
 
+	public $phaseMinutesRB;
+
 	public $civilDisorderInfo;
 
 	/**
@@ -279,7 +281,7 @@ class Game
 	 * The time the game was started, a UNIX timestamp. Initialized as -1.
 	 * @var int
 	 */
-	public $startTime;
+	public $startTime, $finishTime;
 
 	/**
 	 * User id of the game director or null if no director
@@ -304,6 +306,8 @@ class Game
 	 * @var int|null
 	 */
 	public $sandboxCreatedByUserID;
+
+	public $grCalculated, $gameMasterUserID, $relationshipLimit, $suspicionLimit, $identityRequirement, $minimumNMRScore;
 
 	/**
 	 * @param int/array $gameData The game ID of the game to load, or the array of its database row

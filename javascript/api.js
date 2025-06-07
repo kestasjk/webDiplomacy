@@ -88,6 +88,122 @@ function deleteSandbox(gameID)
         );
     }
 }
+var configureSSE = function(sseHost, ssePort, gameID, countryID) {
+
+    // This resolves within docker but not outside it, so if using the docker config allow the browser to connect using localhost:
+    if( sseHost == "webdiplomacy-sse") sseHost = "127.0.0.1";
+
+    console.log(
+      "sseHost, ssePort, gameID, countryID",
+      sseHost,
+      ssePort,
+      gameID,
+      countryID
+    );
+
+    const overviewChannel = 'private-game' + gameID;
+    const messageChannel = 'private-game' + gameID + '-country'+countryID;
+
+    // Wait a few seconds before doing this, as unless the user is staying on this page they won't need to get notifications:
+    setTimeout(() => {
+        apiCall(
+        'sse/authentication',
+        'JSON',
+        { channel_name: messageChannel, gameID },
+        function (response) {
+            console.log("sse/authentication: Successfully authenticated");
+            var auth = response.responseJSON.data.auth;
+            console.log("sse/authentication: Auth: ");
+            console.log(auth);
+            console.log("sse/authentication: Connecting to SSE server with auth");
+
+            var channels = overviewChannel;
+            if( countryID > 0 ) channels = channels + ',' + messageChannel;
+            
+            if( sseHost == "sse" )
+            {
+                // This is the docker container for dev purposes, so it's sse to the php-fpm container but 
+                // the browser needs to connect to localhost
+                sseHost = "localhost";
+            }
+            // http is fine; nothing sensitive is sent over this connection
+            var sseURL = `http://${sseHost}:${ssePort}/events?auth=${encodeURIComponent(auth)}&channelList=${encodeURIComponent(channels)}`;
+            
+            var eventSource = new EventSource(sseURL);
+            eventSource.onopen = () => {
+                console.log('Connected to SSE server');
+            };
+
+            // Set next reconnect time to now + 30 seconds:
+            var nextReconnectTime = new Date();
+            nextReconnectTime.setSeconds(nextReconnectTime.getSeconds() + 30);
+
+            eventSource.onerror = (e) => {
+                console.log('Connection error or closed. Will attempt reconnection in 5 seconds.');
+                eventSource.close();
+                nextReconnectTime = new Date();
+            };
+
+            // Every 5 seconds check if we need to reconnect:
+            setInterval(() => {
+                var now = new Date();
+                if( eventSource != null && now >= nextReconnectTime )
+                {
+                    console.log('Nothing received from server in reconnect timeout period. Reconnecting');
+                    eventSource.close();
+
+                    eventSource = null; // Ensure this timer won't keep reconnecting
+                    
+                    configureSSE(sseHost, ssePort, gameID, countryID); // Reconfigure SSE connection
+                }
+            }, 5000);
+
+            eventSource.onmessage = (e) => {
+                try {
+                    const data = JSON.parse(e.data);
+                    // If message starts with "overview", it's an overview message:
+                    // Message = vote-sent|processed|message
+                    
+                    console.log(`Message received via SSE: ${e.data}`);
+
+                    // Update the next reconnect time to 30 seconds from now:
+                    var newReconnectTime = new Date();
+                    newReconnectTime.setSeconds(newReconnectTime.getSeconds() + 30);
+                    nextReconnectTime = newReconnectTime;
+
+                    // If data.message contains "message":
+                    if (data.message && data.message.includes("message")) {
+                        console.log(`New game message received`);
+                        var messageSentArea = document.getElementById('websocketsMessageSent');
+                        if( messageSentArea )
+                        {
+                            messageSentArea.innerHTML = "New message received: <a href='board.php?gameID="+gameID+"&monitorUpdated="+Math.round(10000.0*Math.random())+"#monitorUpdated'>Click here</a> to refresh the board.";
+                        }
+                    } else if (data.message && data.message.includes("vote-sent")) {
+                        console.log(`Vote cast in game.. ignore`);
+                    } else if (data.message && data.message.includes("processed")) {
+                        console.log(`Game processed`);
+
+                        var gameProcessedArea = document.getElementById('websocketsGameProcessed');
+                        if( gameProcessedArea )
+                        {
+                            gameProcessedArea.innerHTML = "Game has been processed: <a href='board.php?gameID="+gameID+"&monitorUpdated="+Math.round(10000.0*Math.random())+"#monitorUpdated'>Click here</a> to refresh the board.";
+                        }
+                    }
+                    else if (data.message && data.message.includes("ping")) {
+                        console.log(`Ping received`);
+                    }
+                } catch {
+                    console.log(`Raw message: ${e.data}`);
+                }
+            };
+        },
+        function (response) {
+            console.error("sse/authentication: Got error authenticating against sse/authentication: " + response);
+        }
+        );
+    }, 7000);
+}
 var configurePusher = function(appKey, host, wsPort, wssPort, gameID, countryID) {
 
     // This resolves within docker but not outside it, so if using the docker config allow the browser to connect using localhost:

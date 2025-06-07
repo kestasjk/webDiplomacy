@@ -1254,7 +1254,7 @@ function printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = False)
 				<option'.(($sortType=='desc') ? ' selected="selected"' : '').' value="desc">Descending</option>
 			</select>';
 
-			foreach($_REQUEST as $key => $value)
+			foreach(libHTML::sanitizeREQUESTForHiddenFormVariables($_REQUEST) as $key => $value)
 			{
 				if ($key == 'searchUser')
 				{
@@ -1285,7 +1285,7 @@ function printPageButton($pagenum, $currPage)
 		print '<div style="display:inline-block; margin:3px;">';
 		print '<FORM method="get" action=userprofile.php#results>';
 
-		foreach($_REQUEST as $key => $value)
+		foreach(libHTML::sanitizeREQUESTForHiddenFormVariables($_REQUEST) as $key => $value)
 		{
 			if ($key == 'searchUser')
 			{

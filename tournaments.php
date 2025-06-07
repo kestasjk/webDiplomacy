@@ -354,7 +354,7 @@ while (list($id, $name, $description, $status, $minRR, $year, $totalRounds, $for
                     print '<td>'.$winningMembers.'</td>';
                 }
                 
-                print '<td>'.gmstrftime(" %d %b %y", $processTime).'</td>';
+                print '<td>'.libTime::text($processTime).'</td>';
             }
             print '</table>';
         }

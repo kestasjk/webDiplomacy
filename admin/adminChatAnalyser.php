@@ -71,14 +71,14 @@ if ((($gameID != 0) && (count($countryID1) > 0) && (count($countryID2) > 0)) && 
 	while ( list($message, $to, $from, $turn, $timeSent) = $DB->tabl_row($tabl) )
 	{
 		if ($asCsv) {
-			print '"'.gmstrftime("%d %b %y %I:%M %p", $timeSent).'",'.
+			print '"'.libTime::text($timeSent).'",'.
 					'"'.$Variant->turnAsDate($turn).'",'.
 					'"'.($to==0?'Global':$Variant->countries[$to-1]).'",'.
 					'"'.($from==0?'Global':$Variant->countries[$from-1]).'",'.
 					'"'.addslashes($message).'"'."\n";	
 		}	
 		else {
-			print gmstrftime("%d %b %y %I:%M %p", $timeSent).
+			print libTime::text($timeSent).
 					' ('.$Variant->turnAsDate($turn).')'.
 					' / To '.($to==0?'Global':$Variant->countries[$to-1]).
 					' from '.($from==0?'Global':$Variant->countries[$from-1]).': '.

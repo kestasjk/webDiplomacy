@@ -116,9 +116,9 @@ class processOrderBuilds extends processOrder
 		}
 	}
 	/**
-	 * Apply the adjudicated moves; retreat/disband units as decided
+	 * Apply the adjudicated moves; retreat/disband units as decided. (Updated to account for the 2024 Renegade Games rule changes)
 	 */
-	public function apply()
+	public function apply_pre2024Rules()
 	{
 		global $Game, $DB;
 
@@ -160,13 +160,13 @@ class processOrderBuilds extends processOrder
 		// All players have the correct amount of units
 	}
 	/**
-	 * Apply the adjudicated moves; retreat/disband units as decided
+	 * Apply the adjudicated moves; retreat/disband units as decided (Updated for the 2024 Renegade Games rule changes)
 	 */
-	public function apply_2023rules()
+	public function apply()
 	{
-		// Temporarily reverted to database lookup due to excessive CPU usage in gamemaster which may be related
 		global $Game, $DB;
 
+		// Apply valid destroy orders first, deleting destroyed units:
 		$DB->sql_put(
 				"DELETE FROM u
 				USING wD_Units AS u
@@ -175,7 +175,8 @@ class processOrderBuilds extends processOrder
 				WHERE o.gameID = ".$Game->id." AND o.type = 'Destroy'
 					AND m.success='Yes'");
 
-		// Remove units as per the destroyindex table for any destory orders that weren't successful
+		// Now for destroy orders that weren't successful, we need to find the unit that should be destroyed. The rules
+		// changed in 2024.
 		$tabl = $DB->sql_tabl(
 					"SELECT o.id, o.countryID FROM wD_Orders o
 					INNER JOIN wD_Moves m ON ( m.orderID = o.id AND m.gameID=".$GLOBALS['GAMEID']." )
@@ -209,24 +210,33 @@ class processOrderBuilds extends processOrder
 			}
 			
 			$maxDistance = 0;
-			$territoryDistances = array();
+			$unitDistances = array(); // For each unit that remains this is its territory's distance from the closest supply center
 			if( count($supplyCenters) == 0 )
 			{
 				// If there are no supply centers all units are equivalent
 				foreach($units as $terrID => $unitID)
-					$territoryDistances[$terrID] = 0;
+					$unitDistances[$terrID] = 0;
 			}
 			else
 			{
+				// A breadth-first search; start with home SCs then go through bordering territories, iterate until all units have distances:
+
 				// Find the distance of each territory from the supply centers, until we find one or more units
-				$distances = array();
-				$searchedDistances = array(); // Store t 
-				foreach($supplyCenters as $sc) $distances[$sc] = 0;
-				while( count($territoryDistances) < count($units) )
+				$distances = array(); // The distance in hops from the home supply centers to any territory
+				$searched = array(); // Keep track of which territories have been searched so they aren't repeated
+				foreach($supplyCenters as $sc) $distances[$sc] = 0; // Initalize with the distances to the home SCs being 0
+
+				while( count($unitDistances) < count($units) ) // Iterate until we have distances for all units
 				{
-					foreach($distances as $terrID => $distance)
+					// For each territory distance look at all bordering territories, either:
+					// - We don't have a distance for the bordering territory; add it in as the distance + 1
+					// - We already have a distance for the bordering territory, but it is further away than the distance + 1; so reduce it to the new distance + 1 from this territory
+					// - The distance is equal or less than the distance + 1, so don't change it
+					//
+					foreach($distances as $terrID => $distance) // Start with the home supply centers, then branch out
 					{
-						if( key_exists($terrID, $searchedDistances) )
+						// If it has been searched already skip it:
+						if( !key_exists($terrID, $searched) )
 						{
 							// If a distance isn't updated from this territory then no adjacent
 							// territories can be found to be closer to this terriotry later,
@@ -240,7 +250,7 @@ class processOrderBuilds extends processOrder
 									$distanceUpdated = true;
 								}
 							}
-							if( !$distanceUpdated ) $searchedDistances[$terrID] = true;
+							if( !$distanceUpdated ) $searched[$terrID] = true;
 						}
 					}
 					// After each extra distance check whether we have found any distances to units:
@@ -248,24 +258,25 @@ class processOrderBuilds extends processOrder
 					{
 						if( key_exists($terrID, $distances) )
 						{
-							$territoryDistances[$terrID] = $distances[$terrID];
+							$unitDistances[$terrID] = $distances[$terrID];
 							if( $maxDistance < $distances[$terrID] ) $maxDistance = $distances[$terrID];
 						}
 					}
 				}
 			}
 
-			// Get the furthest territories as the candidate territories that can be deleted:
-			$candidateTerritories = array();
-			foreach($territoryDistances as $terrID => $distance)
+			// Get the furthest territories as the candidate territories that can be deleted. This will usually be one territory/unit
+			// which is the furthest, but there could be several equally distant units to choose between by alphabetical order of territory name.
+			$candidateUnits = array();
+			foreach($unitDistances as $terrID => $distance)
 			{
-				if( $distance == $maxDistance ) $candidateTerritories[] = $terrID;
+				if( $distance == $maxDistance ) $candidateUnits[] = $terrID;
 			}
 
 			// Get the first territory from the candidate territories ordered by the territory name:
 			list($destroyTerrID) = $DB->sql_row("SELECT id FROM wD_Territories ".
 				"WHERE mapID=".$Game->Variant->mapID.
-					" AND id IN (".implode(',',$candidateTerritories).") ".
+					" AND id IN (".implode(',',$candidateUnits).") ".
 				"ORDER BY name LIMIT 1");
 			$destroyUnitID = $units[$destroyTerrID];
 				
@@ -274,6 +285,8 @@ class processOrderBuilds extends processOrder
 				SET success = 'Yes', toTerrID = ".$destroyTerrID." WHERE gameID=".$GLOBALS['GAMEID']." AND orderID = ".$orderID);
 
 			$DB->sql_put("DELETE FROM wD_Units WHERE id = ".$destroyUnitID);
+
+			// Now start again finding the next furthest unit for the next missing order
 		}
 
 		$DB->sql_put("INSERT INTO wD_Units ( gameID, countryID, type, terrID )

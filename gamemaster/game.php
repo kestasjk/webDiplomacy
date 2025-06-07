@@ -36,39 +36,6 @@ require_once(l_r('ghostratings/calculations.php'));
  */
 class processGame extends Game
 {
-	function gamelog($message)
-	{
-		global $User;
-
-		$message = libTime::stamp().' (UTC): '.$message."\n\t".__FILE__.
-			"\n\t".print_r($this->processSummary(),true)."\n\n-----------------\n\n";
-
-		if( !($fh = fopen(self::gameFolder($this->id).'/gamelog.txt', 'a')) )
-			trigger_error(l_t("Couldn't open gamelog.txt"));
-
-		fwrite($fh, $message);
-
-		fclose($fh);
-	}
-
-	private static $processSummaryFields=array('id','attempts','phase','processStatus','minimumBet','pot','gameOver','pauseTimeRemaining');
-	function processSummary()
-	{
-		$a=array();
-		foreach(self::$processSummaryFields as $field)
-			$a[$field]=$this->{$field};
-
-		if( $this->processTime )
-			$a['processTime']=libTime::stamp($this->processTime);
-		else
-			$a['processTime']='NULL';
-
-		$a['turn']=$this->datetxt();
-		$a['members']=$this->Members->processSummary();
-
-		return $a;
-	}
-
 	/**
 	 * Apply the vote given: Draw/Cancel/Pause/Concede
 	 */
@@ -77,7 +44,7 @@ class processGame extends Game
 		assert('$this->phase != "Finished"');
 		if($this->phase != "Pre-game")
 		{
-			$this->gamelog(l_t('Applying vote'));
+			//$this->gamelog(l_t('Applying vote'));
 
 			switch($vote)
 			{
@@ -437,7 +404,7 @@ class processGame extends Game
 	 *
 	 * @return Game The object corresponding to the new game
 	 */
-	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $phaseMinutesRB, $nextPhaseMinutes, $phaseSwitchPeriod, $joinPeriod, $anon, $press, $missingPlayerPolicy='Normal', $drawType, $rrLimit, $excusedMissedTurns, $playerTypes)
+	public static function create($variantID, $name, $password, $bet, $potType, $phaseMinutes, $phaseMinutesRB, $nextPhaseMinutes, $phaseSwitchPeriod, $joinPeriod, $anon, $press, $missingPlayerPolicy, $drawType, $rrLimit, $excusedMissedTurns, $playerTypes)
 	{
 		global $DB;
 
@@ -511,7 +478,7 @@ class processGame extends Game
 
 		assert('$this->processStatus != "Paused"');
 
-		$this->gamelog('Game crashed');
+		//$this->gamelog('Game crashed');
 
 		// The game has crashed
 		$this->Members->sendToPlaying('No',l_t('The game has not completed a process cycle, due to either a '.
@@ -730,7 +697,7 @@ class processGame extends Game
 	{
 		global $DB;
 
-		$this->gamelog('Beginning process');
+		//$this->gamelog('Beginning process');
 
 		require_once(l_r('gamemaster/orders/order.php'));
 		require_once(l_r('gamemaster/orders/diplomacy.php'));

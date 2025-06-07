@@ -1234,7 +1234,7 @@ function printPageBar($pagenum, $maxPage, $sortCol, $sortType, $sortBar = False)
 				<option'.(($sortType=='asc') ? ' selected="selected"' : '').' value="asc">Ascending</option>
 				<option'.(($sortType=='desc') ? ' selected="selected"' : '').' value="desc">Descending</option>
 			</select>';
-			foreach($_REQUEST as $key => $value)
+			foreach(libHTML::sanitizeREQUESTForHiddenFormVariables($_REQUEST) as $key => $value)
 			{
 				if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3') == false && strpos('x'.$key,'__utm')== false && $key!="pagenum" && $key!="sortCol" && $key!="sortType")
 				{
@@ -1257,7 +1257,7 @@ function printPageButton($pagenum, $currPage)
 	{
 		print '<div style="display:inline-block; margin:3px;">';
 		print '<FORM method="get" action=gamelistings.php#results>';
-		foreach($_REQUEST as $key => $value)
+		foreach(libHTML::sanitizeREQUESTForHiddenFormVariables($_REQUEST) as $key => $value)
 		{
 			if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && $key!="pagenum")
 			{

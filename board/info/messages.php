@@ -164,7 +164,7 @@ function printPageBar($pagenum, $maxPage, $msgFilter, $sortBar = False)
 					}
 				}
 			print '</select>';
-			foreach($_REQUEST as $key => $value)
+			foreach(libHTML::sanitizeREQUESTForHiddenFormVariables($_REQUEST) as $key => $value)
 			{
 				if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3') == false && strpos('x'.$key,'__utm')== false && $key!="pagenum" && $key!="msgFilter")
 				{
@@ -187,7 +187,7 @@ function printPageButton($pagenum, $currPage)
 	{
 		print '<div style="display:inline-block; margin:3px;">';
 		print '<FORM method="get" action=board.php#results>';
-		foreach($_REQUEST as $key => $value)
+		foreach(libHTML::sanitizeREQUESTForHiddenFormVariables($_REQUEST) as $key => $value)
 		{
 			if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && $key!="pagenum")
 			{

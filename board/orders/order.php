@@ -39,6 +39,8 @@ require_once(l_r('board/orders/base/order.php'));
  */
 abstract class userOrder extends order
 {
+	protected $fixed=array();
+	
 	/**
 	 * An array of requirements; Type is chosen, and this selects the sub-array of further
 	 * requirements which need to be filled to complete the order.

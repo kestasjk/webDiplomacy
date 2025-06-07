@@ -579,7 +579,7 @@ ALTER TABLE `wD_UserConnections`
 
 ALTER TABLE wD_UserCodeConnectionMatches ADD earliestFrom TIMESTAMP NULL, ADD latestFrom TIMESTAMP NULL, ADD earliestTo TIMESTAMP NULL, ADD latestTo TIMESTAMP NULL;
 
-ALTER TABLE wD_ApiKeys ADD username varchar(150) NULL, ADD description varchar(500) NULL, 
+ALTER TABLE wD_ApiKeys ADD username varchar(150) NULL, 
   ADD lastActive bigint UNSIGNED NULL, 
   ADD lastOrder bigint unsigned NULL, 
   ADD lastMessage bigint unsigned null, 

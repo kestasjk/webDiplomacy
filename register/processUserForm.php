@@ -95,8 +95,9 @@ try
 	$NewUser->sendNotice('No','No',l_t("Welcome! This area displays your notices, which let you catch "
 		."up with what has happened since you were last here"));
 
-	$NewUser->options->set($_REQUEST['userForm']);
-	$NewUser->options->load();
+	$userOptions = $NewUser->getOptions();
+	$userOptions->set($_REQUEST['userForm']);
+	$userOptions->load();
 
 	// Give user access to tutorial views for 365 days
 	setcookie('wD-Tutorial', 'wD-Tutorial', ['expires'=>time()+60*60*24*365,'samesite'=>'Lax']);

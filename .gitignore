@@ -33,3 +33,9 @@ vendor/
 composer.lock
 gamemaster-entrypoint.txt
 botslog.txt
+*/package-lock.json
+*/node_modules/
+.env*
+composer.lock
+.vscode/
+.github/

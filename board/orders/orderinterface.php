@@ -327,7 +327,16 @@ class OrderInterface
 		foreach(array('loadTerritories','loadBoardTurnData','loadModel','loadBoard','loadOrdersModel','loadOrdersForm','loadOrdersPhase') as $jf)
 			libHTML::$footerScript[] = l_jf($jf).'();';
 
-		if( isset(Config::$pusherAppKey) && Config::$pusherAppKey )
+		if( isset(Config::$sseHost) && isset(Config::$ssePort) )
+		{
+			libHTML::$footerScript[] = "configureSSE(".
+				"'".Config::$sseHost."',".
+				Config::$ssePort.",".
+				$this->gameID.",".
+				$this->countryID.
+			");";
+		}
+		else if ( isset(Config::$pusherAppKey) && Config::$pusherAppKey )
 		{
 			//(appKey, host, wsPort, wssPort, gameID, countryID)
 			libHTML::$footerScript[] = "configurePusher('".

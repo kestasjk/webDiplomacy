@@ -60,7 +60,7 @@ if(isset($_REQUEST['tournamentID']))
 
   if ($editor)
   {
-    foreach($_REQUEST as $key => $value)
+    foreach(libHTML::sanitizeREQUESTForHiddenFormVariables($_REQUEST) as $key => $value)
   	{
   		if(strpos('x'.$key,'id') == 1)
   		{
@@ -163,7 +163,7 @@ if(isset($_REQUEST['tournamentID']))
     if ($editor)
     {
       print "<FORM Method='Get' Action='tournamentScoring.php?tournamentID=".$tournamentID."#tableLocation'>";
-      foreach($_REQUEST as $key => $value)
+      foreach(libHTML::sanitizeREQUESTForHiddenFormVariables($_REQUEST) as $key => $value)
       {
         if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && strpos('x'.$key,'id') == false && $key <> 'submit')
         {
@@ -257,7 +257,7 @@ else
 function printHeaderLink($header, $sortCol, $sortType, $rounds)
 {
 	print '<FORM method="get" action=tournamentScoring.php#tableLocation>';
-	foreach($_REQUEST as $key => $value)
+	foreach(libHTML::sanitizeREQUESTForHiddenFormVariables($_REQUEST) as $key => $value)
 	{
 		if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && $key!="sortCol" && $key!="sortType" && strpos('x'.$key,'id') == false && $key <> 'submit')
 		{

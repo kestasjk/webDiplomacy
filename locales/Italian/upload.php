@@ -62,31 +62,31 @@ if( isset($_FILES["file"]) ) {
 	for( $i = 0; $i < $length; $i++)
 	{
 		
-		//print "Character ".$i.". Mode: ".$mode.". Character: ".$translations{$i}.".<br />";
+		//print "Character ".$i.". Mode: ".$mode.". Character: ".$translations[$i].".<br />";
 		
 		switch($mode) {
 			case 'whitespace_before':
-				if( $translations{$i} == ' ' || $translations{$i} == "\r" || $translations{$i} == "\n"  || $translations{$i} == "\t" )
+				if( $translations[$i] == ' ' || $translations[$i] == "\r" || $translations[$i] == "\n"  || $translations[$i] == "\t" )
 					continue;
-				else if( $translations{$i} == "'" )
+				else if( $translations[$i] == "'" )
 				{
 					$quote_mode = 'single';
 					$mode = "string_from";
 				}
-				else if( $translations{$i} == '"' )
+				else if( $translations[$i] == '"' )
 				{
 					$quote_mode = 'double';
 					$mode = "string_from";
 				}
 				else
 				{
-					die("Parse error at character ".$i.". Mode: ".$mode.". Character: ".$translations{$i}."."." Context: ".error_context($translations, $i));
+					die("Parse error at character ".$i.". Mode: ".$mode.". Character: ".$translations[$i]."."." Context: ".error_context($translations, $i));
 				}
 				break;
 				
 			case 'string_from':
-				if( ( $quote_mode == 'single' && ($translations{$i} == "'" && ( $i == 0 || $translations{$i-1} != '\\' ) ) )  ||
-					( $quote_mode == 'double' && ($translations{$i} == '"' && ( $i == 0 || $translations{$i-1} != '\\' ) ) ) ) 
+				if( ( $quote_mode == 'single' && ($translations[$i] == "'" && ( $i == 0 || $translations[$i-1] != '\\' ) ) )  ||
+					( $quote_mode == 'double' && ($translations[$i] == '"' && ( $i == 0 || $translations[$i-1] != '\\' ) ) ) ) 
 				{
 					$mode = 'whitespace_between_first';
 					$string_from = process_string(implode('',$string));
@@ -95,46 +95,46 @@ if( isset($_FILES["file"]) ) {
 				}
 				else
 				{
-					$string[] = $translations{$i};
+					$string[] = $translations[$i];
 				}
 				break;
 				
 			case 'whitespace_between_first':
-				if( $translations{$i} == ' ' || $translations{$i} == "\n"  || $translations{$i} == "\t" )
+				if( $translations[$i] == ' ' || $translations[$i] == "\n"  || $translations[$i] == "\t" )
 					continue;
-				else if( $translations{$i} == '=' && $translations{$i+1} == '>' )
+				else if( $translations[$i] == '=' && $translations[$i+1] == '>' )
 				{
 					$i++;
 					$mode = 'whitespace_between_last';
 				}
 				else
 				{
-					die("Parse error at character ".$i.". Mode: ".$mode.". Character: ".$translations{$i}.". String from: ".$string_from." Context: ".error_context($translations, $i));
+					die("Parse error at character ".$i.". Mode: ".$mode.". Character: ".$translations[$i].". String from: ".$string_from." Context: ".error_context($translations, $i));
 				}
 				break;
 				
 			case 'whitespace_between_last':
-				if( $translations{$i} == ' ' || $translations{$i} == "\n"  || $translations{$i} == "\t" )
+				if( $translations[$i] == ' ' || $translations[$i] == "\n"  || $translations[$i] == "\t" )
 					continue;
-				else if( $translations{$i} == "'" )
+				else if( $translations[$i] == "'" )
 				{
 					$quote_mode = 'single';
 					$mode = "string_to";
 				}
-				else if( $translations{$i} == '"' )
+				else if( $translations[$i] == '"' )
 				{
 					$quote_mode = 'double';
 					$mode = "string_to";
 				}
 				else
 				{
-					die("Parse error at character ".$i.". Mode: ".$mode.". Character: ".$translations{$i}.". String from: ".$string_from." Context: ".error_context($translations, $i));
+					die("Parse error at character ".$i.". Mode: ".$mode.". Character: ".$translations[$i].". String from: ".$string_from." Context: ".error_context($translations, $i));
 				}
 				break;
 				
 			case 'string_to':
-				if( ( $quote_mode == 'single' && ($translations{$i} == "'" && $translations{$i-1} != '\\' ) ) ||
-					( $quote_mode == 'double' && ($translations{$i} == '"' && $translations{$i-1} != '\\' ) ) ) 
+				if( ( $quote_mode == 'single' && ($translations[$i] == "'" && $translations[$i-1] != '\\' ) ) ||
+					( $quote_mode == 'double' && ($translations[$i] == '"' && $translations[$i-1] != '\\' ) ) ) 
 				{
 					$mode = 'whitespace_after';
 					$parsed[$string_from] = process_string(implode('',$string));
@@ -142,20 +142,20 @@ if( isset($_FILES["file"]) ) {
 				}
 				else
 				{
-					$string[] = $translations{$i};
+					$string[] = $translations[$i];
 				}
 				break;
 				
 			case 'whitespace_after':
-				if( $translations{$i} == ' ' || $translations{$i} == "\n"  || $translations{$i} == "\t" )
+				if( $translations[$i] == ' ' || $translations[$i] == "\n"  || $translations[$i] == "\t" )
 					continue;
-				else if( $translations{$i} == ',' )
+				else if( $translations[$i] == ',' )
 				{
 					$mode = "whitespace_before";
 				}
 				else
 				{
-					die("Parse error at character ".$i.". Mode: ".$mode.". Character: ".$translations{$i}.". String from: ".$string_from." Context: ".error_context($translations, $i));
+					die("Parse error at character ".$i.". Mode: ".$mode.". Character: ".$translations[$i].". String from: ".$string_from." Context: ".error_context($translations, $i));
 				}
 				break;
 				

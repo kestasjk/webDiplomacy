@@ -65,8 +65,19 @@ else
     <div class = 'donations_title'>Why don't you get ad revenue, sell user data, or charge for premium features?</div>
     <div class = 'donations_content'>
         <p>
-           We do not believe that it is right to distract you with obnoxious advertisements, sell your private data to third parties, or charge you for extra features. We are an 
-           entirely free, safe-to-use site and always will be.
+           <em>We do not believe that it is right to distract you with obnoxious advertisements, sell your private data to third parties, or charge you for extra features. We are an 
+           entirely free, safe-to-use site and always will be. *</em><br /><br />
+
+           * 2025-06-02: This was written as a student a long time ago, and was maintained for two decades.. Unfortunately the reality of having a full-time job as a software
+           developer, having a family and mortgage, having clients with a queue of paid development tasks, means time spent on this project is expensive, which makes 
+           the above a bit unsustainable if the project/site is going to be developed / maintained.<br /><br />
+           This means we are now looking at ways to fund the project, so unfortunately the above will change. Any revenue raising
+           measures introduced will be done with the aim of keeping the site free to use, growing the hobby, and not
+           being obnoxious / intrusive.<br /><br />
+
+           Note we have provided redacted and anonymized press/messages to research organizations to allow for the training of AI models and research, under
+           strict NDAs with time limits. This helps fund the project, and is what lets us run our full-press AI bots (including the two very expensive 4090 GPUs
+           required to run them).
         </p>
     </div>
 

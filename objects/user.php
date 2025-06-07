@@ -220,7 +220,7 @@ class User {
 	 * 
 	 * @var int|float
 	 */
-	public $cdCount, $nmrCount, $cdTakenCount, $phaseCount, $gameCount, $reliabilityRating;
+	public $cdCount, $deletedCDs, $nmrCount, $cdTakenCount, $phaseCount, $gameCount, $reliabilityRating;
 	
 	/**
 	 * The users identity score from 0 to 100
@@ -241,6 +241,12 @@ class User {
 	 * @var int
 	 */
 	public $optInFeatures;
+
+	/**
+	 * Summary of options
+	 * @var UserOptions|null
+	 */
+	public $options;
 
 	/**
 	 * Fetches options from the user options table in a lazy cached way
@@ -596,13 +602,11 @@ class User {
 		$this->notifications=new setUserNotifications($this->notifications);
 
 		$this->online = (bool) $this->online;
-
-		$this->options = new UserOptions($this->id);
 	}
 
 	function isMapUIPointAndClick()
 	{
-		return $this->options->value['mapUI'] == 'Point and click';
+		return $this->getOptions()->value['mapUI'] == 'Point and click';
 	}
 
 	private $watchedGameIDsCache = null;

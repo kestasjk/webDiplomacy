@@ -44,6 +44,7 @@ require_once('lib/variant.php');
 require_once('board/orders/jsonBoardData.php');
 require_once('variants/install.php');
 require_once('gamemaster/gamemaster.php');
+global $DB;
 $DB = new Database();
 
 /**
@@ -688,6 +689,55 @@ class WebSocketsAuthentication extends ApiEntry {
 			true,
 			[
 				'auth' => $appKey.':'.$hash
+			]
+		);
+	}
+}
+
+/**
+ * API entry sse/authentication
+ * Game auth isn't important, but we need some auth to ensure no-one is seeing who else is receiving messages.
+ * Just take the user's ID and the game ID and return a 
+ */
+class SSEAuthentication extends ApiEntry {
+	public function __construct() {
+		parent::__construct('sse/authentication', 'JSON', 'getStateOfAllGames', array('gameID', 'channel_name'));
+	}
+	public function run($userID, $permissionIsExplicit) {
+		$args 				= $this->getArgs();
+		$channelName	= $args['channel_name'];
+
+		$channelNameParams = explode("-", $channelName);
+		$gameID = intval(str_replace("game", "", $channelNameParams[1]));
+		$countryID = 0;
+		
+		if (count($channelNameParams) > 2) {
+			$countryID = intval(str_replace("country", "", $channelNameParams[2]));
+		}
+		
+		$Game = $this->getAssociatedGame();
+
+		// There are 2 authorization validations because a player can
+		// subscribe to the game overview channel or to the messages channel
+		// game overview channel doesn't include the countryID, and anyone can subscribe
+		if ($countryID != 0) {
+			if (!(isset($Game->Members->ByCountryID[$countryID]) && $userID == $Game->Members->ByCountryID[$countryID]->userID)) {
+			// if (!(isset($Game->Members->ByUserID[$userID]) && $countryID == $Game->Members->ByUserID[$userID]->countryID)) {
+				throw new ClientForbiddenException('User does not have explicit permission to make this API call.');
+			}
+		}
+
+		$timestamp = time(); // The token will expire every day to prevent reusing on games that the user has since left		
+		$token = md5($channelName.Config::$sseSecret.$timestamp.'generateToken').'_'.$timestamp;
+		// This token is passed to any validated by the SSE server, but the info it gives is not very useful, 
+		// just who is receiving messages when.
+		
+		return $this->JSONResponse(
+			"User was successfully authenticated for this channel",
+			'',
+			true,
+			[
+				'auth' => $token
 			]
 		);
 	}
@@ -1611,7 +1661,7 @@ abstract class ApiAuth {
 	 * Cache key associated with this API request.
 	 * @var string
 	 */
-	private $cacheKey = null;
+	protected $cacheKey = null;
 
 	/**
 	 * Permissions associated to this API key.
@@ -1913,8 +1963,9 @@ try {
 	$api->load(new ToggleVote());
 	$api->load(new SetVote());
 	
-	$api->load(new WebSocketsAuthentication());
-	
+	$api->load(new WebSocketsAuthentication()); // This will be replaced with SSE, but support both for now
+	$api->load(new SSEAuthentication());
+
 	$api->load(new SendMessage());
 	$api->load(new GetMessages());
 	$api->load(new MessagesSeen());

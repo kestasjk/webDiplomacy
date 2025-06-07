@@ -152,6 +152,8 @@ class webdip extends \phpbb\auth\provider\base
 		
 		$webDipUserId = $this->user->data['webdip_user_id'];
 
+		/*
+		Disabled for migration to nginx where PHP_SELF is unreliable
 		if( $userId != $webDipUserId || $webDipUserId < 10 )
 		{
 				$scriptName = $request->server('PHP_SELF', '');
@@ -163,6 +165,7 @@ class webdip extends \phpbb\auth\provider\base
 
 				return false;
 		}
+		*/
 
 		return true;
 

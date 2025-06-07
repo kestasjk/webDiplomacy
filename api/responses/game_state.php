@@ -213,6 +213,16 @@ class GameState {
 	 */
 	public $pressType;
 
+	public $drawType;
+
+	public $processTime;
+
+	public $phaseLengthInMinutes;
+	
+	public $publicVotes = array();
+
+	public $orderStatuses = array();
+
 	/**
 	 * List of game phases (units, centers and orders per phase)
 	 * @var array
@@ -245,6 +255,7 @@ class GameState {
 	 * @var array
 	 */
 	public $status = '';
+
 
 	/**
 	 * Load the GameState object.

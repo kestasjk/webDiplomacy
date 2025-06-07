@@ -209,8 +209,7 @@ class processMembers extends Members
 				 * while counting the active SCs and seeing who is still playing. All
 				 * member status changes occur within Members->pointsDistributePot()
 				 */
-				foreach($this->ByStatus['Playing'] as $Member);
-				return $Member;
+				foreach($this->ByStatus['Playing'] as $Member) return $Member;
 			}
 			elseif ( $countPlaying == 0 )
 				$this->Game->setAbandoned(); // Throws exception
@@ -559,7 +558,7 @@ class processMembers extends Members
 			$CD->send('No','No',l_t('You took over %s! Good luck',$CDCountryName));
 		}
 
-		$this->Game->gamelog(l_t('New member joined'));
+		//$this->Game->gamelog(l_t('New member joined'));
 
 		$this->joinedRedirect();
 	}
@@ -784,19 +783,6 @@ class processMembers extends Members
 
 			}
 		}
-	}
-
-	function processSummary()
-	{
-		$a=array(
-			'ready'=>($this->isReady()?'true':'false'),
-			'members'=>array()
-		);
-
-		foreach($this->ByID as $Member)
-			$a['members'][] = $Member->processStatus();
-
-		return $a;
 	}
 }
 ?>

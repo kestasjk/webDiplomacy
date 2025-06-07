@@ -87,7 +87,7 @@ if ($tournamentID > 0)
 	  {
 			if ($userType <> 'Normal')
 			{
-				foreach($_REQUEST as $key => $value)
+				foreach(libHTML::sanitizeREQUESTForHiddenFormVariables($_REQUEST) as $key => $value)
 				{
 					if(strpos('x'.$key,'id') <> 0)
 					{

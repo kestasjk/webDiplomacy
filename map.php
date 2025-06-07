@@ -77,7 +77,8 @@ if( isset($_REQUEST['countryNames']))
 else
 	define('COUNTRYNAMES',0);
 
-if( !IGNORECACHE && !PREVIEW && !DONOTCACHE )
+// A game ID might not be set if viewing variant maps
+if( !IGNORECACHE && !PREVIEW && !DONOTCACHE && isset($_REQUEST['gameID']) )
 {
 	// We might be able to fetch the map from the cache
 	
@@ -215,7 +216,7 @@ else
 /*
  * Draw TerrStatus
  */
-if( $turn==-1 && is_null($Game->sandboxCreatedByUserID) )
+if( $turn==-1 && (!isset($Game) || is_null($Game->sandboxCreatedByUserID)) )
 {
 	// Pre-game; just draw country default terrstatus
 	$sql = "SELECT t.id, t.name, t.type, t.countryID, 'No' as standoff

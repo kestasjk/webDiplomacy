@@ -51,7 +51,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		<div style="float:right"><i>Profile quote visible to others. Consider favorite quotes or links to games.</i></div>
 		<strong>Comment:</strong></br>
 		<TEXTAREA NAME="userForm[comment]" ROWS="3" COLS="50" class = "settings"><?php
-			print str_replace('<br />', "\n", $User->comment);
+			print str_replace('<br />', "\n", $User->comment ?? '');
 		?></textarea>
 	</p>
 
@@ -94,7 +94,7 @@ if( isset(Config::$enabledOptInFeatures) && Config::$enabledOptInFeatures > 0 )
 		print '<input type="hidden" name="userForm[optInFeature_1]" value="1" />';
 	}
 
-foreach ($User->options->value as $name=>$val) 
+foreach ($User->getOptions()->value as $name=>$val) 
 {
 	print '<div><li class="settings"><strong>'.UserOptions::$titles[$name].':</strong></li>';
 	foreach (UserOptions::$possibleValues[$name] as $possible) 

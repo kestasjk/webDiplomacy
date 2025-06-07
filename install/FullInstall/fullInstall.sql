@@ -2344,9 +2344,199 @@ ALTER TABLE `wD_Backup_TerrStatusArchive` ADD INDEX `gameID` (`gameID`);
 ALTER TABLE `wD_Backup_Units` ADD INDEX `gameID` (`gameID`);
 ALTER TABLE `wD_Backup_GameMessages` ADD INDEX `gameID` (`gameID`);
 
+
 ALTER TABLE `wD_Misc` CHANGE COLUMN `Name` `Name` ENUM('Version','Hits','Panic','Notice','Maintenance','LastProcessTime','GamesNew','GamesActive','GamesFinished','RankingPlayers','OnlinePlayers','ActivePlayers','TotalPlayers','ErrorLogs','GamesPaused','GamesOpen','GamesCrashed','LastModAction','ForumThreads','ThreadActiveThreshold','ThreadAliveThreshold','GameFeaturedThreshold','LastGroupUpdate','LastStatsUpdate','LastMessageID','LastNMRWarningUpdate','LastConnectionUpdate','LastBackupUpdate') NOT NULL COLLATE 'utf8mb3_general_ci' FIRST;
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastNMRWarningUpdate',0);
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastConnectionUpdate',0);
 INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastBackupUpdate',0);
 
-ALTER TABLE wD_ApiKeys ADD username varchar(150) NULL, ADD description varchar(500) NULL, ADD lastActive bigint UNSIGNED NULL, ADD lastOrder bigint unsigned NULL, ADD lastMessage bigint unsigned null, ADD lastVote bigint unsigned null, ADD messagesSent int unsigned null, ADD phasesPlayed int unsigned null, ADD gamesPlaying int unsigned null, ADD gamesWon int unsigned null, ADD gamesDrawn int unsigned null, ADD gamesLostToHuman int unsigned null, ADD gamesLostToBot int unsigned null;
+ALTER TABLE wD_ModForumMessages ADD gameTurn smallint(5) unsigned NULL, ADD isUserRead tinyint unsigned NULL, ADD isUserReplied tinyint unsigned NULL, ADD isUserMustReply tinyint unsigned NULL, ADD isModRead tinyint unsigned NULL, ADD isModReplied tinyint unsigned NULL, ADD isThanked tinyint unsigned NULL;
+ALTER TABLE wD_TurnDate ADD INDEX(`gameID`,`turnDateTime`);
+
+UPDATE wD_ModForumMessages fm 
+INNER JOIN (
+    SELECT fm.id, MAX(td.turn) AS turn 
+    FROM wD_TurnDate td 
+    INNER JOIN wD_ModForumMessages fm ON fm.gameID = td.gameID AND fm.timeSent > td.turnDateTime 
+    GROUP BY fm.id
+) t ON t.id = fm.id
+SET fm.gameTurn = t.turn;
+
+UPDATE wD_ModForumMessages SET isUserRead = 1, isUserReplied = 1, isModRead = 1, isModReplied = 1, isUserMustReply = 0, isThanked = 0;
+--DROP TABLE `wD_ForceReply`;
+ALTER TABLE wD_ModForumMessages ADD INDEX(`type`,`assigned`,`isModRead`);
+
+ALTER TABLE wD_ModForumMessages ADD latestReplySentTime int unsigned NULL;
+UPDATE wD_ModForumMessages SET latestReplySentTime = timeSent;
+UPDATE wD_ModForumMessages fm 
+INNER JOIN (
+  SELECT toID, MAX(timeSent) latestReplySentTime 
+  FROM wD_ModForumMessages 
+  WHERE type = 'ThreadReply'
+  GROUP BY toID
+) x ON fm.id = x.toID
+SET fm.latestReplySentTime = x.latestReplySentTime;
+
+ALTER TABLE wD_ModForumMessages CHANGE COLUMN `status` `status` enum('New','Open','Resolved','Bugs','Sticky','Deleted');
+UPDATE wD_ModForumMessages SET status = 'Deleted' WHERE status = '';
+
+ALTER TABLE wD_Groups ADD gameTurn smallint(5) unsigned NULL;
+
+UPDATE wD_Groups fm 
+INNER JOIN (
+    SELECT fm.id, MAX(td.turn) AS turn 
+    FROM wD_TurnDate td 
+    INNER JOIN wD_Groups fm ON fm.gameID = td.gameID AND fm.timeCreated > td.turnDateTime 
+    GROUP BY fm.id
+) t ON t.id = fm.id
+SET fm.gameTurn = t.turn;
+
+
+ALTER TABLE `wD_UserConnections` 
+  ADD `matchedCookieCount` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedOtherCookieCount` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedIPCount` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedOtherIPCount` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedFingerprintCount` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedOtherFingerprintCount` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedFingerprintProCount` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedOtherFingerprintProCount` int(8) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedUserTurnMissedCount` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedOtherUserTurnMissedCount` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedUserTurnCount` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  ADD `matchedOtherUserTurnCount` int(10) UNSIGNED NOT NULL DEFAULT 0;
+
+ALTER TABLE wD_UserCodeConnectionMatches ADD earliestFrom TIMESTAMP NULL, ADD latestFrom TIMESTAMP NULL, ADD earliestTo TIMESTAMP NULL, ADD latestTo TIMESTAMP NULL;
+
+ALTER TABLE wD_ApiKeys ADD username varchar(150) NULL, 
+  ADD lastActive bigint UNSIGNED NULL, 
+  ADD lastOrder bigint unsigned NULL, 
+  ADD lastMessage bigint unsigned null, 
+  ADD lastVote bigint unsigned null, 
+  ADD messagesSent int unsigned null, 
+  ADD phasesPlayed int unsigned null, 
+  ADD gamesPlaying int unsigned null, 
+  ADD gamesWon int unsigned null, 
+  ADD gamesDrawn int unsigned null, 
+  ADD gamesLostToHuman int unsigned null, 
+  ADD gamesLostToBot int unsigned null;
+
+ALTER TABLE wD_ApiKeys 
+  ADD supplyCenters int unsigned null, 
+  ADD ordersSaved int unsigned null, 
+  ADD ordersCompleted int unsigned null, 
+  ADD ordersReady int unsigned null;
+
+UPDATE wD_ApiKeys a INNER JOIN wD_Users u ON u.id = a.userID SET a.username = u.username;
+UPDATE wD_ApiKeys a SET a.lastActive = a.lastHit;
+
+--UPDATE wD_ApiKeys a INNER JOIN (
+--  SELECT a.userID, COUNT(*) messageCount
+--  FROM wD_ApiKeys a
+--  INNER JOIN wD_Members m ON m.userID = a.userID
+--  INNER JOIN wD_GameMessages gm ON gm.gameID = m.gameID AND gm.fromCountryID = m.countryID
+--  GROUP BY a.userID
+--) msg ON msg.userID = a.userID
+--SET a.messagesSent = msg.messageCount;
+
+UPDATE wD_ApiKeys a 
+INNER JOIN (
+  SELECT a.userID, 
+    SUM(m.gameMessagesSent) messagesSent, 
+    SUM(g.turn) phasesPlayed,
+    SUM(IF(m.status = 'Playing',1,0)) gamesPlaying, 
+    SUM(IF(m.status = 'Won',1,0)) gamesWon, 
+    SUM(IF(m.status = 'Drawn',1,0)) gamesDrawn,
+    SUM(IF(m.status = 'Defeated' AND ma.id IS NOT NULL AND ama.userID IS NULL,1,0)) gamesLostToHuman, 
+    SUM(IF(m.status = 'Defeated' AND ma.id IS NOT NULL AND ama.userID IS NOT NULL,1,0)) gamesLostToBot,
+    SUM(m.supplyCenterNo) supplyCenters,
+    SUM(IF(m.status = 'Playing' AND NOT m.orderStatus LIKE '%None%',1,0)) ordersNeeded,
+    -- orderCount.orderCount -- Verifies that ordersNeeded is correct
+    SUM(IF(m.status = 'Playing' AND (NOT m.orderStatus LIKE '%None%') AND m.orderStatus LIKE '%Saved%',1,0)) ordersSaved,
+    SUM(IF(m.status = 'Playing' AND (NOT m.orderStatus LIKE '%None%') AND m.orderStatus LIKE '%Completed%',1,0)) ordersCompleted,
+    SUM(IF(m.status = 'Playing' AND (NOT m.orderStatus LIKE '%None%') AND m.orderStatus LIKE '%Ready%',1,0)) ordersReady,
+    MAX(g.turn) oldestGameTurn,
+    MIN(g.turn) newestGameTurn,
+    MIN(g.id) oldestGameID,
+    MAX(g.id) newestGameID
+  FROM wD_ApiKeys a
+  INNER JOIN wD_Members m ON m.userID = a.userID
+  INNER JOIN wD_Games g ON g.id = m.gameID
+  LEFT JOIN wD_Members ma ON ma.gameID = g.id AND ma.status = 'Won' AND ma.id <> m.id
+  LEFT JOIN wD_ApiKeys ama ON ama.userID = ma.userID
+  -- LEFT JOIN (SELECT m.userID, COUNT(DISTINCT oc.gameID) orderCount FROM wD_Orders oc INNER JOIN wD_Members m ON m.gameID = oc.gameID AND m.countryID = oc.countryID GROUP BY m.userID) orderCount ON orderCount.userID = a.userID
+  WHERE a.userID > 181040
+  GROUP BY a.userID
+) sts ON sts.userID = a.userID
+SET a.lastActive = a.lastHit,
+  a.messagesSent = sts.messagesSent,
+  a.phasesPlayed = sts.phasesPlayed,
+  a.gamesPlaying = sts.gamesPlaying,
+  a.gamesWon = sts.gamesWon,
+  a.gamesDrawn = sts.gamesDrawn,
+  a.gamesLostToHuman = sts.gamesLostToHuman,
+  a.gamesLostToBot = sts.gamesLostToBot,
+  a.ordersSaved = sts.ordersSaved,
+  a.ordersCompleted = sts.ordersCompleted,
+  a.ordersReady = sts.ordersReady;
+
+
+SELECT g.id, IF(a.userID IS NULL,1,0) fromHuman, gm.timeSent, gm.turn, gm.phaseMarker, gm.fromCountryID, gm.toCountryID, gm.message
+FROM wD_Games g
+INNER JOIN wD_Members m ON m.gameID = g.id
+LEFT JOIN wD_ApiKeys a ON a.userID = m.userID AND a.multiplexOffset IS NOT NULL
+INNER JOIN wD_GameMessages gm ON gm.gameID = g.id AND gm.fromCountryID = m.countryID
+WHERE g.id IN (
+  SELECT DISTINCT gameID FROM wD_Members m WHERE m.userID IN (SELECT userID FROM wD_ApiKeys WHERE multiplexOffset IS NOT NULL)
+)
+ORDER BY g.id, gm.timeSent;
+
+-- If phpbb is installed:
+-- -- Add a like count to the users table to prevent having to constantly count for each post:
+-- ALTER TABLE `phpbb_users` ADD `webdip_like_count` INT(0) UNSIGNED NULL AFTER `webdip_user_id`;
+-- 
+-- -- Calculate the initial counts:
+-- UPDATE phpbb_users u
+-- SET webdip_like_count = 0
+-- UPDATE phpbb_users u
+-- INNER JOIN (
+--     SELECT p.poster_id, COUNT(*) AS likes
+--     FROM phpbb_posts p
+--     INNER JOIN phpbb_posts_likes l ON l.post_id = p.post_id
+--     GROUP BY p.poster_id
+-- ) x ON x.poster_id = u.user_id
+-- SET u.webdip_like_count = x.likes;
+-- -- This will be updated when a like is added or removed, and recounted
+-- -- in total on a daily basis.
+
+-- Health check for when last backup was successfully archived:
+ALTER TABLE `wD_Misc` CHANGE COLUMN `Name` `Name` enum('Version','Hits','Panic','Notice','Maintenance','LastProcessTime','GamesNew','GamesActive','GamesFinished','RankingPlayers','OnlinePlayers','ActivePlayers','TotalPlayers','ErrorLogs','GamesPaused','GamesOpen','GamesCrashed','LastModAction','ForumThreads','ThreadActiveThreshold','ThreadAliveThreshold','GameFeaturedThreshold','LastGroupUpdate','LastStatsUpdate','LastMessageID','LastNMRWarningUpdate','LastConnectionUpdate','LastBackupUpdate','LastBackupArchived','LastVotesCounted','LastOrderStatusCounted','LastReliabilityRatingsRefresh') NOT NULL;
+INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastBackupArchived',0);
+INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastVotesCounted',0);
+INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastOrderStatusCounted',0);
+INSERT INTO wD_Misc (`Name`,`Value`) VALUES ('LastReliabilityRatingsRefresh',0);
+
+-- Flag for when a user changed their votes, as vote counting across all active games is expensive:
+ALTER TABLE wD_Members ADD votesChanged INT UNSIGNED NULL DEFAULT NULL;
+ALTER TABLE `wD_Members` ADD INDEX `indVotesChanged` (`votesChanged`, `gameID`); 
+ALTER TABLE wD_Members ADD orderStatusChanged INT UNSIGNED NULL DEFAULT NULL;
+ALTER TABLE `wD_Members` ADD INDEX `indOrderStatusChanged` (`orderStatusChanged`, `gameID`); 
+
+-- Table to allow queueing of users for bot games with limited spaces:
+CREATE TABLE wD_BotGameQueue(
+	id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+	userID MEDIUMINT UNSIGNED NOT NULL,
+  queuedTime INT UNSIGNED NULL DEFAULT NULL,
+  notifiedTime INT UNSIGNED NULL DEFAULT NULL,
+  startedTime INT UNSIGNED NULL DEFAULT NULL,
+  finishedTime INT UNSIGNED NULL DEFAULT NULL,
+  gameID MEDIUMINT UNSIGNED NULL DEFAULT NULL,
+	PRIMARY KEY (`id`),
+	INDEX indQueuedNotNotified (finishedTime,startedTime,notifiedTime,queuedTime)
+);
+
+INSERT INTO wD_BotGameQueue ( userID, queuedTime, notifiedTime, startedTime, gameID, finishedTime )
+SELECT u.id, g.processTime, g.processTime, g.processTime, g.id, IF(g.gameOver='No' AND g.phase <> 'Finished',NULL,g.processTime) FROM wD_Members b INNER JOIN wD_Games g ON g.id = b.gameID INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_ApiKeys a ON a.userID = u.id WHERE b.userID = 181048 AND a.userID IS NULL GROUP BY u.username, u.email, u.points;
+UPDATE wD_BotGameQueue bg INNER JOIN (SELECT gameID, MIN(timeSent) t FROM wD_GameMessages GROUP BY
+gameID) g ON g.gameID = bg.gameID SET bg.queuedTime = g.t, bg.notifiedTime = g.t, bg.startedTime = g.t;
+

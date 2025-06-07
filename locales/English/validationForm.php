@@ -155,34 +155,6 @@ libHTML::$footerScript[] = 'initializeAntiBotBoard();';
 <div class="hr"></div>
 
 <p class="notice">
-	<?php 
-	if( isset(Config::$recaptchaSiteKey) && Config::$recaptchaSiteKey != null )
-	{
-	?>
-		<input type="hidden" name="recaptchaToken" id="recaptchaToken" value="" />
-		<script>
-		function onSubmit(e) {
-			//e.preventDefault();
-			grecaptcha.enterprise.ready(async () => {
-				const token = await grecaptcha.enterprise.execute('<?php print Config::$recaptchaSiteKey; ?>', {action: 'LOGIN'});
-				document.getElementById("recaptchaToken").value = token;
-				document.getElementById("wd-register-form").submit();
-			});
-		}
-		</script>
-		<button type="button" 
-			class="green-Submit" 
-			onClick="onSubmit()"
-			value="Validate me">Submit</button>
-
-	<?php
-	}
-	else
-	{
-	?>
-		<input type="submit" class="green-Submit" value="Validate me">
-	<?php
-	}
-	?>
+	<input type="submit" class="green-Submit" value="Validate me">
 </p>
 </form>

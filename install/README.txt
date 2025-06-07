@@ -44,6 +44,9 @@ Installing
 ----------
 This script is the installation guide for installing on Ubuntu 20.04. It is oriented towards
 quickly getting started on a fresh Ubuntu install, e.g. a WSL/Hyper-V VM. 
+Recommend installing using the docker-compose.yml for test installations, as the instructions 
+and versions below are outdated (but still can serve as a guide).
+
 # Starting from a fresh (minimal) Ubuntu 20.04 install in a sandbox VM:
 
 # Get system up to date etc

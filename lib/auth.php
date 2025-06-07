@@ -199,7 +199,7 @@ class libAuth
 	 */
 	public static function email_validateURL($email)
 	{
-		$thisURL = 'https://'.$_SERVER['SERVER_NAME'].$_SERVER['PHP_SELF'];
+		$thisURL = 'https://'.$_SERVER['SERVER_NAME'].'/register.php';
 
 		// %7C = | , but some webmail clients think that | is the end of the link
 		$emailToken = urlencode(self::email_token($email));
@@ -241,34 +241,17 @@ class libAuth
 	 */
 	public static function auth()
 	{
-		if( false )
-		{
-			if (!strpos($_SERVER['PHP_SELF'], 'register.php')
-				and !strpos($_SERVER['PHP_SELF'], 'map.php')
-				and !strpos($_SERVER['PHP_SELF'], 'gamemaster.php'))
-			{
-				$User = new User($facebook->require_login());
-				$User->logon(); //key_User does  this if not on facebook
-			}
-			else
-			{
-				$User = new User(GUESTID);
-			}
-		}
+		if(isset($_REQUEST['loginuser']) AND isset($_REQUEST['loginpass']))
+			$key = self::userPass_Key($_REQUEST['loginuser'], $_REQUEST['loginpass'], isset($_REQUEST['loginsession']));
+		elseif(isset($_COOKIE['wD-Key']) and $_COOKIE['wD-Key'])
+			$key = $_COOKIE['wD-Key'];
 		else
-		{
-			if(isset($_REQUEST['loginuser']) AND isset($_REQUEST['loginpass']))
-				$key = self::userPass_Key($_REQUEST['loginuser'], $_REQUEST['loginpass'], isset($_REQUEST['loginsession']));
-			elseif(isset($_COOKIE['wD-Key']) and $_COOKIE['wD-Key'])
-				$key = $_COOKIE['wD-Key'];
-			else
-				$key = false;
-
-			if ( $key )
-				$User = self::key_User($key);
-			else
-				$User = new User(GUESTID);
-		}
+			$key = false;
+		
+		if ( $key )
+			$User = self::key_User($key);
+		else
+			$User = new User(GUESTID);
 
 		return $User;
 	}

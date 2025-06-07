@@ -37,7 +37,7 @@ class panelGameBoard extends panelGame
 
 		$mapTurn = (($this->phase=='Pre-game'||$this->phase=='Diplomacy') ? $this->turn-1 : $this->turn);
 		$smallmapLink = 'map.php?gameID='.$this->id.'&turn='.$mapTurn .($User->getOptions()->value['showMoves'] == 'No'? '&hideMoves':'');
-		$betaLink = 'beta?gameID='.$this->id;
+		$betaLink = 'beta/?gameID='.$this->id;
 		$largemapLink = $smallmapLink.'&mapType=large'.($User->getOptions()->value['showMoves']=='No'?'&hideMoves':'');
 
 		if( $this->Variant->mapID != 1 )

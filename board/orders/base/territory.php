@@ -35,6 +35,8 @@ class Territory {
 	 */
 	var $id;
 
+	var $mapID;
+
 	/**
 	 * The territory name
 	 *

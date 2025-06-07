@@ -28,9 +28,9 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 set_exception_handler('exception_handler');
 set_error_handler('error_handler');
-assert_options (ASSERT_CALLBACK, 'assert_handler');
-assert_options (ASSERT_WARNING, 0);
-error_reporting(E_STRICT | E_ALL | E_NOTICE);
+//assert_options (ASSERT_CALLBACK, 'assert_handler'); // 8.4 deprecated
+//assert_options (ASSERT_WARNING, 0);
+error_reporting( E_ALL | E_NOTICE);
 
 function assert_handler ($file, $line, $expr)
 {
@@ -77,35 +77,40 @@ function error_handler($errno, $errstr, $errfile=false, $errline=false, $errcont
 		if ( isset($Game) and $Game instanceof Game )
 			$error .= ', gameID = '.$Game->id;
 	}
-	// PHP's print_r() is terrible, heap corruption errors all the time
-	function recursiveprint ( &$array, $depth )
+	
+	// If the error handler is called twice ensure this doesn't redeclare:
+	if (!function_exists('recursiveprint'))
 	{
-		$tab = '';
-		$tracetxt = '';
-		for ( $i=1; $i<$depth; $i++ )
-			$tab .= "\t";
-
-		if ( $depth == 7 ) return $tab."*Max depth reached*\n";
-
-		foreach ( $array as $name => $sub )
+		// PHP's print_r() is terrible, heap corruption errors all the time
+		function recursiveprint ( &$array, $depth )
 		{
-			if ( $name === "_REQUEST" or $name === "defined_vars" or $name === "_SERVER" ) continue;
+			$tab = '';
+			$tracetxt = '';
+			for ( $i=1; $i<$depth; $i++ )
+				$tab .= "\t";
 
-			$tracetxt .= $tab.$name.' => ';
+			if ( $depth == 7 ) return $tab."*Max depth reached*\n";
 
-			if ( is_object($sub) or is_array ( $sub ) )
+			foreach ( $array as $name => $sub )
 			{
-				$tracetxt .= "Array: (\n";
-				$depth++;
-				$tracetxt .= recursiveprint ( $sub, $depth );
-				$depth--;
-				$tracetxt .= $tab.")\n";
-			}
-			else
-				$tracetxt .= $sub."\n";
-		}
+				if ( $name === "_REQUEST" or $name === "defined_vars" or $name === "_SERVER" ) continue;
 
-		return $tracetxt;
+				$tracetxt .= $tab.$name.' => ';
+
+				if ( is_object($sub) or is_array ( $sub ) )
+				{
+					$tracetxt .= "Array: (\n";
+					$depth++;
+					$tracetxt .= recursiveprint ( $sub, $depth );
+					$depth--;
+					$tracetxt .= $tab.")\n";
+				}
+				else
+					$tracetxt .= $sub."\n";
+			}
+
+			return $tracetxt;
+		}
 	}
 
 	$error .= ($errcontext ? 'Variable dump: '.recursiveprint($errcontext, 1)."\n\n" : '');
@@ -130,6 +135,7 @@ function error_handler($errno, $errstr, $errfile=false, $errline=false, $errcont
 		libHTML::error('Error while outputting an error: '.$errstr);
 
 	// By setting Database and User to null libHTML knows something isn't right.
+	// TODO: Set a define instead
 	$User = null;
 	if ( is_object($DB) )
 	{

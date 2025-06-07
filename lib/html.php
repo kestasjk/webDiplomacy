@@ -407,6 +407,8 @@ class libHTML
 		{
 			// Don't return HTML in the event of an error in the API
 			print strip_tags($title.': '.$message);
+			
+			die();
 		}
 		else
 		{
@@ -631,16 +633,27 @@ class libHTML
 		</head>';
 	}
 
+	// Be able to run off the PHP_SELF or SCRIPT_NAME, which can very between nginx and Apache
+	static public function getScriptName()
+	{
+		if( isset($_SERVER['PHP_SELF']) && $_SERVER['PHP_SELF'] && $_SERVER['PHP_SELF'] != '' ) 
+			return basename(path: $_SERVER['PHP_SELF']);
+		else if( isset($_SERVER['SCRIPT_NAME']) && $_SERVER['SCRIPT_NAME'] && $_SERVER['SCRIPT_NAME'] != '' )
+			return basename(path: $_SERVER['SCRIPT_NAME']);
+		else
+			return '';
+	}
+
 	/**
 	 * Print the HTML which comes before the main content; title, menu, notification bar.
 	 *
 	 * @param string|bool[optional] $title If a string is given it will be used as the page title
 	 */
-	static public function starthtml($title=false)
+	static public function starthtml($title=false): void
 	{
 		global $User, $DB;
 
-		self::$scriptname = $scriptname = basename($_SERVER['PHP_SELF']);
+		self::$scriptname = $scriptname = self::getScriptName();
 
 		$pages = libHTML::pages();
 
@@ -1325,6 +1338,17 @@ class libHTML
 		return $buf;
 	}
 
+	// This function takes a reference to $_REQUEST, and returns a cloned dictionary with all $key / $value pairs run cast to string and run through $_REQUEST,
+	// to prevent XSS attacks when a common (bad) approach is used throughout forms in webDiplomacy which iterates through $_REQUEST and saves 
+	// to hidden form variables to persist state. TODO: It should use $_SESSION or some other approach, but this is a quick fix to prevent XSS attacks.
+	static public function sanitizeREQUESTForHiddenFormVariables($unsanitizedRequestArray)
+	{
+		$sanitizedRequestArray = array();
+		foreach($unsanitizedRequestArray as $key => $value)
+			$sanitizedRequestArray[$key] = htmlentities((string)$value, ENT_QUOTES, 'UTF-8');
+		return $sanitizedRequestArray;
+	}
+
 	static private function footerCopyright()
 	{
 		// Version, sourceforge and HTML compliance logos
@@ -1413,7 +1437,7 @@ class libHTML
 				this.lastMessageIDViewed='.$User->lastMessageIDViewed.';
 				this.timeLastSessionEnded='.$User->timeLastSessionEnded.';
 				this.token="'.md5(Config::$secret.$User->id.'Array').'";
-				this.darkMode="'.$User->options->value['darkMode'].'";
+				this.darkMode="'.$User->getOptions()->value['darkMode'].'";
 			}
 			User = new UserClass();
 			var headerEvent = document.getElementsByClassName("clickable");

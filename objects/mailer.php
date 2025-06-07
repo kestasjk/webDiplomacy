@@ -43,7 +43,7 @@ class Mailer
 
 		$this->PHPMailer->setFrom(Config::$mailerConfig['From'], Config::$mailerConfig['FromName']);
 		$this->PHPMailer->addReplyTo(Config::$mailerConfig['From'], Config::$mailerConfig['FromName']);
-		$this->PHPMailer->wordWrap = 50;
+		// $this->PHPMailer->wordWrap = 50;
 		$this->PHPMailer->isHTML(true);
 
 		if ( Config::$mailerConfig["UseSendmail"] )

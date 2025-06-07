@@ -92,7 +92,7 @@ class libTime
 
         static public function stamp()
         {
-            return gmstrftime("%c");
+            return (new DateTimeImmutable('now', new DateTimeZone('UTC')))->format('D M j H:i:s Y');
         }
 
         static private function remainingTextString($givenTime, $timeFrom, $isMaf=false)
@@ -154,30 +154,34 @@ class libTime
 
         static private function textString($givenTime)
         {
-                $timeDifference = abs(time() - $givenTime);
+            $timeDifference = abs(time() - $givenTime);
+            $date = (new DateTimeImmutable())->setTimestamp($givenTime)->setTimezone(new DateTimeZone('UTC'));
 
-                if ( $timeDifference < 22*60*60 )
-                    return gmstrftime("%I:%M %p", $givenTime); // HH:MM AM/PM
-                elseif ( $timeDifference < 4*24*60*60 )
-                    return gmstrftime("%a %I %p", $givenTime); // Day HH AM/PM
-                elseif ( $timeDifference < 3*7*22*60*60 )
-                    return gmstrftime("%a %d %b", $givenTime); // Day Day# Month
-                else
-                    return gmstrftime("%d %b %y", $givenTime); // Day# Month Year
+            if ($timeDifference < 22 * 60 * 60) {
+                return $date->format('h:i A'); // HH:MM AM/PM
+            } elseif ($timeDifference < 4 * 24 * 60 * 60) {
+                return $date->format('D h A'); // Day HH AM/PM
+            } elseif ($timeDifference < 3 * 7 * 22 * 60 * 60) {
+                return $date->format('D d M'); // Day Day# Month
+            } else {
+                return $date->format('d M y'); // Day# Month Year
+            }
         }
 
         static private function textStringDetailed($givenTime)
         {
-                $timeDifference = abs(time() - $givenTime);
+            $timeDifference = abs(time() - $givenTime);
+            $date = (new DateTimeImmutable())->setTimestamp($givenTime)->setTimezone(new DateTimeZone('UTC'));
 
-                if ( $timeDifference < 22*60*60 )
-                    return gmstrftime("%I:%M %p", $givenTime); // HH:MM AM/PM
-                elseif ( $timeDifference < 4*24*60*60 )
-                    return gmstrftime("%a %I %p", $givenTime); // Day HH AM/PM
-                elseif ( $timeDifference < 3*7*22*60*60 )
-                    return gmstrftime("%I %p %a %d %b", $givenTime); // Day Day# Month
-                else
-                    return gmstrftime("%I %p %a %d %b %y", $givenTime); // Day# Month Year
+            if ($timeDifference < 22 * 60 * 60) {
+                return $date->format('h:i A'); // HH:MM AM/PM
+            } elseif ($timeDifference < 4 * 24 * 60 * 60) {
+                return $date->format('D h A'); // Day HH AM/PM
+            } elseif ($timeDifference < 3 * 7 * 22 * 60 * 60) {
+                return $date->format('h A D d M'); // HH AM/PM Day Day# Month
+            } else {
+                return $date->format('h A D d M y'); // HH AM/PM Day Day# Month Year
+            }
         }
 }
 ?>

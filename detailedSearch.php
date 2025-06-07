@@ -725,7 +725,7 @@ if ($tab == 'UserSearch')
 				}
 			}
 
-			if ($seeJoined=='checked') { print '<TD class= "advancedSearch">'.gmstrftime("%b %d %Y",$values->timeJoined).'</TD>'; }
+			if ($seeJoined=='checked') { print '<TD class= "advancedSearch">'.libTime::text($values->timeJoined).'</TD>'; }
 			if ($seeGameCount=='checked') { print '<TD class= "advancedSearch">'.$values->gameCount.'</TD>'; }
 			if ($seePoints=='checked') { print '<TD class= "advancedSearch">'.$values->points.libHTML::points().'</TD>'; }
 			if ($seeRR=='checked') { print '<TD class= "advancedSearch">'.round($values->reliabilityRating,2).'%</TD>'; }
@@ -1142,7 +1142,7 @@ function printPageButton($pagenum, $currPage)
 	{
 		print '<div style="display:inline-block; margin:3px;">';
 		print '<FORM method="get" action=detailedSearch.php#tableLocation>';
-		foreach($_REQUEST as $key => $value)
+		foreach(libHTML::sanitizeREQUESTForHiddenFormVariables($_REQUEST) as $key => $value)
 		{
 			if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && $key!="pagenum")
 			{
@@ -1156,7 +1156,7 @@ function printPageButton($pagenum, $currPage)
 function printHeaderLink($header, $tab, $sortCol, $sortType, $sortColg)
 {
 	print '<FORM method="get" action=detailedSearch.php#tableLocation>';
-	foreach($_REQUEST as $key => $value)
+	foreach(libHTML::sanitizeREQUESTForHiddenFormVariables($_REQUEST) as $key => $value)
 	{
 		if(strpos('x'.$key,'wD') == false && strpos('x'.$key,'phpbb3')== false && strpos('x'.$key,'__utm')== false && $key!="sortCol" && $key!="sortColg" && $key!="sortType" && $key!="pagenum")
 		{

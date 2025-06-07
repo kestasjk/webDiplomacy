@@ -168,7 +168,7 @@ if( isset($_FILES["file"]) )
 			case 'whitespace_between_first':
 				if( $translations[$i] == ' ' || $translations[$i] == "\n"  || $translations[$i] == "\t" )
 					continue;
-				else if( $translations[$i] == '=' && $translations{$i+1} == '>' )
+				else if( $translations[$i] == '=' && $translations[$i+1] == '>' )
 				{
 					$i++;
 					$mode = 'whitespace_between_last';
