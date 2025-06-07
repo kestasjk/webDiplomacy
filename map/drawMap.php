@@ -434,12 +434,12 @@ abstract class drawMap
 			);
 
 		imagefilledrectangle($this->map['image'],
-			$coordinates['top-left']['x'], $coordinates['top-left']['y'],
-			$coordinates['bottom-right']['x'], $coordinates['bottom-right']['y'],
+			(int)$coordinates['top-left']['x'], (int)$coordinates['top-left']['y'],
+			(int)$coordinates['bottom-right']['x'], (int)$coordinates['bottom-right']['y'],
 			$flagBlackback);
 		imagefilledrectangle($this->map['image'],
-			$coordinates['top-left']['x']+1, $coordinates['top-left']['y']+1,
-			$coordinates['bottom-right']['x']-1, $coordinates['bottom-right']['y']-1,
+			(int)$coordinates['top-left']['x']+1, (int)$coordinates['top-left']['y']+1,
+			(int)$coordinates['bottom-right']['x']-1, (int)$coordinates['bottom-right']['y']-1,
 			$flagColor);
 	}
 
