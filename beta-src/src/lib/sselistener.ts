@@ -7,15 +7,10 @@ event is triggered; the game is processed, a vote was cast, or a message was sen
 This is a simple SSE-based implementation that uses Redis to receive events from the PHP server,
 then a simple node.js server sends these events to clients via SSE.
 */
-const { REACT_APP_SSE_HOST, REACT_APP_SSE_PORT } = process.env;
 
 function sseDebugLog(msg: any) {
   console.log(`[SSE] ${msg}`);
 }
-
-sseDebugLog(
-  `"REACT_APP_SSE_HOST, REACT_APP_SSE_PORT", ${REACT_APP_SSE_HOST}, ${REACT_APP_SSE_PORT}`,
-);
 
 // This function should be kept in sync with javascript/api.js, which does the same function for the legacy board
 
@@ -75,7 +70,7 @@ const client = {
             throw new Error("No authentication token received from SSE server");
           }
           eventSource = new EventSource(
-            `http://${REACT_APP_SSE_HOST}:${REACT_APP_SSE_PORT}/events?channelList=private-game${gameID},private-game${gameID}-country${countryID}&auth=${response.data.data.auth}`,
+            `/events?channelList=private-game${gameID},private-game${gameID}-country${countryID}&auth=${response.data.data.auth}`,
           );
           eventSource.onopen = () => {
             sseDebugLog("Connected to SSE server");

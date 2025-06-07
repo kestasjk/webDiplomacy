@@ -327,11 +327,9 @@ class OrderInterface
 		foreach(array('loadTerritories','loadBoardTurnData','loadModel','loadBoard','loadOrdersModel','loadOrdersForm','loadOrdersPhase') as $jf)
 			libHTML::$footerScript[] = l_jf($jf).'();';
 
-		if( isset(Config::$sseHost) && isset(Config::$ssePort) )
+		if( isset(Config::$sseSecret) )
 		{
 			libHTML::$footerScript[] = "configureSSE(".
-				"'".Config::$sseHost."',".
-				Config::$ssePort.",".
 				$this->gameID.",".
 				$this->countryID.
 			");";

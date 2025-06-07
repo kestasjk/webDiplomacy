@@ -88,18 +88,7 @@ function deleteSandbox(gameID)
         );
     }
 }
-var configureSSE = function(sseHost, ssePort, gameID, countryID) {
-
-    // This resolves within docker but not outside it, so if using the docker config allow the browser to connect using localhost:
-    if( sseHost == "webdiplomacy-sse") sseHost = "127.0.0.1";
-
-    console.log(
-      "sseHost, ssePort, gameID, countryID",
-      sseHost,
-      ssePort,
-      gameID,
-      countryID
-    );
+var configureSSE = function(gameID, countryID) {
 
     const overviewChannel = 'private-game' + gameID;
     const messageChannel = 'private-game' + gameID + '-country'+countryID;
@@ -120,14 +109,8 @@ var configureSSE = function(sseHost, ssePort, gameID, countryID) {
             var channels = overviewChannel;
             if( countryID > 0 ) channels = channels + ',' + messageChannel;
             
-            if( sseHost == "sse" )
-            {
-                // This is the docker container for dev purposes, so it's sse to the php-fpm container but 
-                // the browser needs to connect to localhost
-                sseHost = "localhost";
-            }
             // http is fine; nothing sensitive is sent over this connection
-            var sseURL = `http://${sseHost}:${ssePort}/events?auth=${encodeURIComponent(auth)}&channelList=${encodeURIComponent(channels)}`;
+            var sseURL = `/events?auth=${encodeURIComponent(auth)}&channelList=${encodeURIComponent(channels)}`;
             
             var eventSource = new EventSource(sseURL);
             eventSource.onopen = () => {
@@ -154,7 +137,7 @@ var configureSSE = function(sseHost, ssePort, gameID, countryID) {
 
                     eventSource = null; // Ensure this timer won't keep reconnecting
                     
-                    configureSSE(sseHost, ssePort, gameID, countryID); // Reconfigure SSE connection
+                    configureSSE(gameID, countryID); // Reconfigure SSE connection
                 }
             }, 5000);
 

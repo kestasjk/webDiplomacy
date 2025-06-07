@@ -1,7 +1,7 @@
 {
   "name": "sse-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Events server to replace websockets/pusher with simple self-hosted SSE server to notify clients of new messages and game updates",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

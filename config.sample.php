@@ -636,13 +636,6 @@ class Config
 	public static $allowBotsAccessToUnredactedMessages = true;
 
 	/**
-	 * Location of the SSE server, which is used to push updates to clients about game/message updates
-	 * via Server-Sent Events.
-	 * @var string
-	 */
-	public static $sseHost = "sse";
-	public static $ssePort = 43006;
-	/**
 	 * Secret that is used to generate tokens that say a user is allowed to get events relating to a country.
 	 * The potential for abuse is low, you could only find out that a player has just received a message but
 	 * not from who or the content. Tokens are invalid after 1 day. Needs to be in sync with the value in the 
