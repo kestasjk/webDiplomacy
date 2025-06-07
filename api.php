@@ -1462,10 +1462,10 @@ class SetOrders extends ApiEntry {
 		while ($row = $DB->tabl_hash($currentOrdersTabl)) {
 			$currentOrders[] = array(
 			    'unitType' => $row['unitType'],
-				'terrID' => ctype_digit($row['terrID']) ? intval($row['terrID']) : $row['terrID'],
+				'terrID' => $row['terrID'] !== null && ctype_digit($row['terrID']) ? intval($row['terrID']) : $row['terrID'],
 				'type' => $row['type'],
-				'fromTerrID' => ctype_digit($row['fromTerrID']) ? intval($row['fromTerrID']) : $row['fromTerrID'],
-				'toTerrID' => ctype_digit($row['toTerrID']) ? intval($row['toTerrID']) : $row['toTerrID'],
+				'fromTerrID' => $row['fromTerrID'] !== null && ctype_digit($row['fromTerrID']) ? intval($row['fromTerrID']) : $row['fromTerrID'],
+				'toTerrID' => $row['toTerrID'] !== null && ctype_digit($row['toTerrID']) ? intval($row['toTerrID']) : $row['toTerrID'],
 				'viaConvoy' => $row['viaConvoy'],
 				'countryID' => $row['countryID']
 			);
