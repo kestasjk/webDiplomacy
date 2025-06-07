@@ -125,6 +125,7 @@ class Group
      * @var string
 	 */
 	var $ownerCountryName;
+	var $timeChanged;
 
 	public function ownerLink($type='User', $points=100)
 	{
@@ -171,6 +172,8 @@ class Group
 	 * @var bool Has a moderator received a requested respnose
 	 */
 	var $isMessageWaiting;
+
+	var $display;
 
 	/**
 	 * This is called if a suspicion is submitted directly from a game. The intention is that when created this way 
