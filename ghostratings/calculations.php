@@ -53,6 +53,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
    private $k; //This determines how much an individual game affects a players ranking in 1v1s.
    private $start; //This determines the starting ranking for a player in 1v1s.
    private $modMultiplier;
+   private $botGame;
 
  	
  	public function __construct($gameID, $SCcounts, $memberStatus, $variantID, $pressType, $potType, $gameTurns, $gameStatus, $phaseMinutes, $victorySC, $variantSC, $winner, $botGame, $time)
@@ -89,7 +90,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
      {
        $this->pressMod = 1;
      }
-     $this->modvalue = (17.5 * $this->variantMod * $this->pressMod); //17.5 is the 'k' value for non 1v1 games and is used for scaling.
+     $this->modValue = (17.5 * $this->variantMod * $this->pressMod); //17.5 is the 'k' value for non 1v1 games and is used for scaling.
    }
   
    // This is called when a game is drawn or won
@@ -240,7 +241,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
                  {
                    $actualResult[$userID] = $this->SCcounts[$userID] / (float) $this->variantSC;
                  }
-                 $grAdjustment[$userID] = (($grSum / $this->modvalue) * ($actualResult[$userID]-$expectedResult[$userID]));
+                 $grAdjustment[$userID] = (($grSum / $this->modValue) * ($actualResult[$userID]-$expectedResult[$userID]));
                }
                break;
              case "Winner-takes-all":
@@ -284,7 +285,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
                      $actualResult[$userID] = 0;
                    }
                  }
-                 $grAdjustment[$userID] = (($grSum / $this->modvalue) * ($actualResult[$userID]-$expectedResult[$userID]));
+                 $grAdjustment[$userID] = (($grSum / $this->modValue) * ($actualResult[$userID]-$expectedResult[$userID]));
                }
                
                break;
@@ -324,7 +325,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
                      $actualResult[$userID] = 0;
                    }
                  }
-                 $grAdjustment[$userID] = (($grSum / $this->modvalue) * ($actualResult[$userID]-$expectedResult[$userID]));
+                 $grAdjustment[$userID] = (($grSum / $this->modValue) * ($actualResult[$userID]-$expectedResult[$userID]));
                }
                break;
              //In this case we assume that all 1v1 games are unranked, and the previous code excludes unranked non-1v1 games from being calculated, so this is the 1v1 calculation 
