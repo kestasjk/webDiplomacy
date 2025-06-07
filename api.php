@@ -595,7 +595,7 @@ class SetVote extends ApiEntry {
 			throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 
 		$currentVotes = $DB->sql_hash("SELECT votes FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." AND userID = ".$userID);
-		$currentVotes = $currentVotes['votes'];
+		$currentVotes = $currentVotes['votes'] ?? ''; // If no votes are set, default to empty string
 
 		if( $voteOn === in_array($vote, explode(',',$currentVotes)) )
 		{
