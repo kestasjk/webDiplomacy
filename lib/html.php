@@ -1345,7 +1345,16 @@ class libHTML
 	{
 		$sanitizedRequestArray = array();
 		foreach($unsanitizedRequestArray as $key => $value)
-			$sanitizedRequestArray[$key] = htmlentities((string)$value, ENT_QUOTES, 'UTF-8');
+		{
+			if( $key === 'searchUser' )
+			{
+				$sanitizedRequestArray[$key] = self::sanitizeREQUESTForHiddenFormVariables($value);
+			}
+			else
+			{
+				$sanitizedRequestArray[$key] = htmlentities((string)$value, ENT_QUOTES, 'UTF-8');
+			}
+		}
 		return $sanitizedRequestArray;
 	}
 
