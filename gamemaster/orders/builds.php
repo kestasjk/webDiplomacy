@@ -196,7 +196,7 @@ class processOrderBuilds extends processOrder
 			while(list($terrID) = $DB->tabl_row($subTabl)) $supplyCenters[] = $terrID;
 			
 			// Get all the non-coastal territories for units of the country:
-			$subTabl = $DB->sql_tabl("SELECT u.id, t.coastParentID FROM wD_Units u INNER JOIN wD_Territories t ON t.id = u.terrID WHERE u.gameID = ".$Game->id." AND u.countryID = ".$countryID);
+			$subTabl = $DB->sql_tabl("SELECT u.id, t.coastParentID FROM wD_Units u INNER JOIN wD_Territories t ON t.id = u.terrID WHERE u.gameID = ".$Game->id." AND u.countryID = ".$countryID." AND t.mapID=".$Game->Variant->mapID);
 			$units = array();
 			while(list($unitID, $terrID) = $DB->tabl_row($subTabl)) $units[$terrID] = $unitID;
 
