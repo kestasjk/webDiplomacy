@@ -384,7 +384,10 @@ abstract class ApiEntry {
 	 * @throws RequestException - if no gameID field in requirements, or if no valid game ID provided.
 	 */
 
-	public function getAssociatedGame($useCache = true) {
+	 // Changed to $useCache = false to try and resolve sudden new issue where Cicero posts a message then
+	 // does poll_until_message_appears until the message appears, but after 10 attempts it doesnt appear,
+	 // get the message is posted??
+	public function getAssociatedGame($useCache = false) {
 		global $DB;
 			
 		if( $useCache && !is_null($this->gameCache) ) return $this->gameCache;

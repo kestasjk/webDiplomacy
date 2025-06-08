@@ -182,8 +182,9 @@ if ( $Misc->Version != VERSION )
 
 // Taken from the php manual to disable cacheing.
 header("Last-Modified: Mon, 26 Jul 1997 05:00:00 GMT");
-header("Cache-Control: no-store, no-cache, must-revalidate");
-header("Cache-Control: post-check=0, pre-check=0", false);
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
+header("Expires: 0", false);
 header("X-Frame-Options: SAMEORIGIN"); //@ibarrionuevo
 
 if( defined('FACEBOOKSCRIPT') ) {
