@@ -1,10 +1,11 @@
 #!/bin/sh
 
+# For docker development environments this is the php-fpm entrypoint script, which will initialize the database
+# and clean/prepare the blank system for use.
+
 HOME=/application
 
 cd $HOME
-
-export TESTENV=asdf
 
 if [ ! -d vendor ]; then
   echo "ERROR: vendor directory not found; please run composer update in the source directory"

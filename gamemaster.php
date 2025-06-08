@@ -248,6 +248,25 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 		libGameMaster::updateReliabilityRatings();
 	}
 
+	if( in_array('RESTOREMISSINGPOINTS', $argv) )
+	{
+		$DB->get_lock('gamemaster',1);
+
+		print l_t('Ensuring all users have the minimum 100 points available').'<br />';
+
+		// TODO: Look into why points balances drift from this, as when users join / leave / etc it 
+		// should balance users at that point
+		$DB->sql_put("UPDATE wD_Users u INNER JOIN (
+			SELECT u.id, u.points, SUM(m.bet) pointsBet 
+			FROM wD_Users u 
+			LEFT JOIN wD_Members m ON m.userID = u.id 
+			WHERE m.status = 'Playing' 
+			GROUP BY u.id, u.points
+		) up ON up.id = u.id 
+		SET u.points = u.points + (100 - (up.points + IF(up.pointsBet IS NULL, 0, up.pointsBet))) 
+		WHERE up.points + IF(up.pointsBet IS NULL, 0, up.pointsBet) < 100");
+	}
+
 	$DB->sql_put("COMMIT");
 
 	if( !in_array("PROCESSGAMES", $argv) )

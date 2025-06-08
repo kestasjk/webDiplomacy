@@ -4,11 +4,26 @@
 // Pusher / Durable Objects / Workers / etc was inefficient and expensive for 
 // a simple client notification requirement.
 
+// Web-sockets allows clients to talk back to the server, and allows for other
+// use cases, however for basic server->client notifications it is overly complex
+// and the solutions are expensive and complex. SSE is simply an HTTP connection
+// where the client opens a "page" and the server then waits until messages arrive.
+
+// PHP can't handle this as it would block, using an FPM worker for each connection,
+// whereas node.js works asynchronously so can handle many connections without using
+// much resources.
+
 // sseSecret and ssePort must be in sync with the secret and port set in Config.php
+
+// This server will serve from /events , and apache/nginx need to be configured to proxy requests to this server.
 
 const crypto = require('crypto');
 const cors = require('cors');
 require('dotenv').config(); // Load environment variables from .env file
+// The .env file should be protected by the web server or file permissions, however 
+// getting access to the secret only allows clients to see when a user in a game has 
+// received a message from another unknown user in the game, so the potential for 
+// abuse is low.
 // Load environment variables:
 const redisHost = process.env.REDIS_HOST || 'localhost';
 const redisPort = process.env.REDIS_PORT || 6379;

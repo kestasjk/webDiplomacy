@@ -38,6 +38,40 @@ libHTML::starthtml();
 
 print libHTML::pageTitle(l_t('Notifications setup'),l_t('Configure whether and how you want notifications to be sent to you.'));
 
+/**
+ * - Notifications
+  * => Game related:
+ * - They are about to NMR
+ * - They have NMR'd and have a grace period
+ * - They have NMR'd and have no grace period, and have left the game, affecting your reliability
+ * - You have new messages/press
+ * - A turn has progressed and you have orders to enter
+ * - A game has completed
+ * - You have been defeated in a game
+ * - A vote has passed in a game
+ * - A vote has been called in a game
+ * - A moderator/gamemaster has changed a game: turn extension, pause/unpause, delay, etc
+ * - A civil disorder position just opened up
+ * - A player went into civil disorder
+ * - A player has taken over a civil disorder position
+ * 
+ * => Moderator related:
+ * - A moderator has replied to your support request
+ * - A moderator sent you a message
+ * - A moderator changed your account: reliability reset/points change/ban lift/ban/etc
+ * - You have been asked to provide more user verification information: Social media link, SMS message, paypal/patreon
+ * 
+ * => Relationship related:
+ * - A player has added you to a relationship
+ * - A relationship has been updated
+ * - A moderator is requesting input on a relationship
+ * 
+ * => Bot game related:
+ * - Your full-press slot has opened up
+ * - Your full-press slot has been taken by another player
+ * - You are going to lose your full-press game due to inactivity
+ * 
+ */
 print 'Coming soon!';
 
 print '</div>';

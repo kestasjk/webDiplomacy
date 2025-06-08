@@ -65,7 +65,7 @@
 services:
   php-fpm:
     command: /bin/sh -c "install/gamemaster-entrypoint.sh > /application/gamemaster-entrypoint.txt"
-    environment:
+    environment: 
       - PHP_IDE_CONFIG="serverName=Docker"
       - XDEBUG_CONFIG="client_host=172.17.0.1 client_port=9003"
       - XDEBUG_MODE=debug
@@ -96,10 +96,6 @@ services:
     environment:
       - PMA_ARBITRARY=1
 
-#  clickhouse:
-#    profiles: ["dev"]
-#    image: "yandex/clickhouse-server:latest"
-
 # This is necessary for doing live React dev for the new board, but isn't needed after doing a build. If the nginx config is changed to not redirect /beta/ to port 3000:
   beta:
     profiles: ["dev"]
@@ -116,9 +112,13 @@ services:
 
 # Philip Paquette's publically available no-press bot docker image. Note this is not started by default as it uses a lot of resources and may not be
 # relevant to all development situations.
+# The webdiplomacy/gunboatbots:2025-06-10 image is a fork with a couple of minor bugfixes, but mainly it contains all the
+# required model data, which were previously hosted on URLs that had gone down. With access to this image only the API 
+# endpoint and API keys are needed to run the bots.
   bots:
-    profiles: ["bots"]
-    image: 'public.ecr.aws/n4k3z7o3/webdiplomacy:latest'
+    container_name: webdip-gunboatbots
+    profiles: ["dev"]
+    image: 'webdiplomacy/gunboatbots:2025-06-09'
     restart: always
     environment:
       - API_WEBDIPLOMACY=http://webserver/api.php
@@ -130,6 +130,8 @@ services:
       - API_KEY_USER_05=bot5
       - API_KEY_USER_06=bot6
       - API_KEY_USER_07=bot7
+    depends_on:
+      - "webserver"
 # Apply default IDs to backup DB:
 #UPDATE wd_apikeys SET apiKey = 'bot1' WHERE userID = 108388;
 #UPDATE wd_apikeys SET apiKey = 'bot2' WHERE userID = 108978;

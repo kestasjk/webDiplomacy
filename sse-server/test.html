@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>SSE Client</title>
+  <title>Redis SSE Test Client</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
     #events { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; }
@@ -10,7 +10,7 @@
   </style>
 </head>
 <body>
-  <h1>Redis SSE Client</h1>
+  <h1>Redis SSE Test Client</h1>
   <label>
     Channels (comma-separated): 
     <input type="text" id="channels" value="channel1,channel2" />
@@ -43,7 +43,7 @@
         return;
       }
 
-      eventSource = new EventSource(`http://localhost:23542/events?channelList=${encodeURIComponent(channels)}`);
+      eventSource = new EventSource(`/events?channelList=${encodeURIComponent(channels)}`);
 
       eventSource.onopen = () => {
         logEvent('Connected to SSE server');
