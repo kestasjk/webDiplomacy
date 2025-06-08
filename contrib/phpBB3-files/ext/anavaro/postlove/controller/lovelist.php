@@ -159,9 +159,19 @@ class lovelist
 			{
 				$post_link = '<a href="' . $this->root_path .($short == 1 ? '' : ($page > 1 ? '../../../' : '../')) .'viewtopic.php?p=' . $row['post_id'] . '#'. $row['post_id'] .'" target="_blank" >' . $row['post_subject'] . '</a>';
 				$topic_link = '<a href="' . $this->root_path .($short == 1 ? '' : ($page > 1 ? '../../../' : '../')) .'viewtopic.php?t=' . $row['topic_id'] . '" target="_blank" class="topictitle">' . $row['topic_title'] . '</a>';
-				$this->template->assign_block_vars('lovelist', array(
-					'LINE' => $this->lang->lang('LIKE_LINE', $this->user->format_date($row['timestamp']), $this->user_loader->get_username($row['liker_id'], 'full'), $this->user_loader->get_username($row['poster'], 'full'), $post_link, $topic_link),
-				));
+                $liker_link = $this->user_loader->get_username($row['liker_id'], 'full');
+                $poster_link = $this->user_loader->get_username($row['poster'], 'full');
+                if( $short == 1 )
+                {
+					// Fix for the profile link when running from ajax, where the URL of the ajax request
+					// doesn't match the location where the generated HTML from teh ajax request will run
+					// which causes the path to be wrong.
+					$liker_link = str_replace('./../../', '', $liker_link);
+					$poster_link = str_replace('./../../', '', $poster_link);
+                }
+                $this->template->assign_block_vars('lovelist', array(
+                	'LINE' => $this->lang->lang('LIKE_LINE', $this->user->format_date($row['timestamp']), $liker_link, $poster_link, $post_link, $topic_link),
+                ));
 			}
 
 			$this->pagination->generate_template_pagination(array(
