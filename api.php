@@ -1948,7 +1948,7 @@ if( isset(Config::$botsLogFile) && Config::$botsLogFile )
 	file_put_contents(Config::$botsLogFile,
 		date('l jS \of F Y h:i:s A')."\n".
 		"-------------------\n".
-		print_r($_SERVER['REQUEST_URI'],true)."\n".
+		print_r($_SERVER,true)."\n".
 		"-------------------\n\n"
 		, FILE_APPEND);
 }
