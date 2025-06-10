@@ -1810,6 +1810,13 @@ class ApiKey extends ApiAuth {
 
 	public function __construct($route){
 		$apiKeyString = getBearerToken();
+		/*
+		If you suddenly get this error for no reason all of a sudden try this in .htaccess:
+		RewriteEngine On
+		RewriteCond %{HTTP:Authorization} ^(.*)
+		RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
+		TODO: Make more stable solution for getting the API key from the request.
+		*/
 		if ($apiKeyString == null)
 			throw new ClientUnauthorizedException('No API key provided.');
 		$this->apiKey = $apiKeyString;
