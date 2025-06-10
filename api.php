@@ -1943,6 +1943,16 @@ class Api {
 	}
 }
 
+if( isset(Config::$botsLogFile) && Config::$botsLogFile )
+{
+	file_put_contents(Config::$botsLogFile,
+		date('l jS \of F Y h:i:s A')."\n".
+		"-------------------\n".
+		print_r($_SERVER['REQUEST_URI'],true)."\n".
+		"-------------------\n\n"
+		, FILE_APPEND);
+}
+
 try {
     if (!property_exists('Config', 'apiConfig') || !Config::$apiConfig['enabled']) {
         http_response_code(404);
