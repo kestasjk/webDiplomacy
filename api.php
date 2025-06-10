@@ -387,7 +387,7 @@ abstract class ApiEntry {
 	 // Changed to $useCache = false to try and resolve sudden new issue where Cicero posts a message then
 	 // does poll_until_message_appears until the message appears, but after 10 attempts it doesnt appear,
 	 // get the message is posted??
-	public function getAssociatedGame($useCache = false) {
+	public function getAssociatedGame($useCache = true) {
 		global $DB;
 			
 		if( $useCache && !is_null($this->gameCache) ) return $this->gameCache;
