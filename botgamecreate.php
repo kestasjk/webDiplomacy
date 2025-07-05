@@ -50,7 +50,7 @@ who can join, and tell if the current user is in the queue and/or can join.
 */
 class BotGameQueue
 {
-	public static $botGamesAllowed = 10;
+	public static $botGamesAllowed = 15;
 	public static $botGamesQueued;
 	public static $usersNotifiedAndWaiting;
 	public static $botGamesStarted;
