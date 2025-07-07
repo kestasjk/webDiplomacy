@@ -1003,6 +1003,17 @@ class GetGameData extends ApiEntry {
 	}
 
 	private function setContextVars( $game, $gameID, $userID, $countryID, $member ){
+		if( $game->phase == 'Finished' )
+		{
+			throw new ClientForbiddenException(
+				$this->JSONResponse(
+					'This game is finished; cannot load orders.',
+					'GGD-err-005', 
+					false, 
+					['gameID' => $this->gameIDToMultiplexedGameID($gameID)]
+				)
+			);
+		}
 		$this->contextVars = (new OrderInterface(
 			$gameID,
 			$game->variantID,
@@ -1897,7 +1908,7 @@ class Api {
 		$this->route = strtolower(trim($_GET['route']));
 
 		if (!isset($this->entries[$this->route]))
-			throw new NotImplementedException('Unknown route.');
+			throw new NotImplementedException('Unknown route '.$this->route.'.');
 
 		if ( !empty( $User ) && ( $User->type['User'] ?? false ) === true ){
 			/**

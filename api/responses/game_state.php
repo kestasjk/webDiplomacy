@@ -79,6 +79,7 @@ class GameSteps {
 				'Diplomacy' => 0,
 				'Retreats' => 1,
 				'Builds' => 2,
+				'Finished' => 3,
 			);
 			list($turn1, $phase1, $data1) = $step1;
 			list($turn2, $phase2, $data2) = $step2;
@@ -528,19 +529,31 @@ class GameState {
 			list($turn, $phaseName, $data) = $step;
 			if( $turn > $this->turn ) continue; // If a sandbox game has been moved back this can fail as there are game steps for future turns.
 			$centerTurn = $turn;
+			
 			if (($centerTurn % 2 == 1) && ($phaseName != 'Builds'))
 				$centerTurn -= 1;
 			elseif ($phaseName == 'Diplomacy')
                 $centerTurn -= 1;
+
 			if ($centerTurn == -1)
 				$centers = $preGameCenters;
 			else
-				$centers = $inGameCenters[$centerTurn];
+			{
+				// This sometimes givesn an undefined key array error, but it is not clear why.
+				if (!isset($inGameCenters[$centerTurn]))
+					// This will log the contents of the error, the state etc, vs an exception which won't.
+					trigger_error("Game state error: no centers found for turn $turn, phase $phaseName.", E_ERROR);
+				else
+					$centers = $inGameCenters[$centerTurn]; // Why
+			}
+
 			$data['centers'] = $centers;
 			$data['turn'] = $turn;
 			$data['phase'] = $phaseName;
+
 			if (!isset($data['units'])) $data['units'] = array();
 			if (!isset($data['orders'])) $data['orders'] = array();
+
 			$finalPhases[] = $data;
 		}
 		// Deduce units for Retreats and Builds phases.

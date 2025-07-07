@@ -30,6 +30,7 @@ class UserResultData
 	public $username;
 	public $email;
 	public $timeJoined;
+	public $points;
 	public $gameCount;
 	public $reliabilityRating;
 	public $banned;
@@ -132,6 +133,7 @@ class GameResultData
 	public $phase; 						//enum('Finished','Pre-game','Diplomacy','Retreats','Builds')
 	public $gameOver; 				// enum('No','Won','Drawn')
 	public $processStatus; 		// enum('Not-processing','Processing','Crashed','Paused')
+	public $password;
 	public $hasPassword; 			// is password set?
 	public $potType; 					//enum('Winner-takes-all','Points-per-supply-center','Unranked','Sum-of-squares')
 	public $minimumBet;

@@ -43,7 +43,11 @@ function exception_handler( $exception)
 	$trace = $exception->getTraceAsString();
 	$line = $exception->getLine();
 
-	trigger_error('A software exception was not caught: "'.$exception->getMessage().'"');
+	error_handler(E_ERROR, 'A software exception was not caught: "'.$exception->getMessage().'"',
+		$file, $line, array(
+			'exception' => $exception,
+			'trace' => $trace
+		));
 }
 
 function error_handler($errno, $errstr, $errfile=false, $errline=false, $errcontext=false)
