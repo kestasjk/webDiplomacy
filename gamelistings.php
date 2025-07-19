@@ -607,8 +607,11 @@ else
 		if($variantName != 'All')
 		{
 			$variantID = array_search($variantName, Config::$variants);
-			$SQL .= " AND g.variantID = ".$variantID;
-			$SQLCounter .= " AND g.variantID = ".$variantID;
+			if( $variantID !== false )
+			{
+				$SQL .= " AND g.variantID = ".$variantID;
+				$SQLCounter .= " AND g.variantID = ".$variantID;
+			}
 		}
 	}
 	if(isset($_REQUEST['excusedTurns']))

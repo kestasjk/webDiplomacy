@@ -542,7 +542,7 @@ class GameState {
 				// This sometimes givesn an undefined key array error, but it is not clear why.
 				if (!isset($inGameCenters[$centerTurn]))
 					// This will log the contents of the error, the state etc, vs an exception which won't.
-					trigger_error("Game state error: no centers found for turn $turn, phase $phaseName.", E_ERROR);
+					trigger_error("Game state error: no centers found for turn $turn, phase $phaseName.", E_USER_ERROR);
 				else
 					$centers = $inGameCenters[$centerTurn]; // Why
 			}
