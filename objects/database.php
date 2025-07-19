@@ -87,6 +87,10 @@ class Database {
 						"If this problem persists please inform the admin."));
 
 		$this->enableTransactions();
+
+		// Turn off error reporting to prevent exceptions being thrown; webDiplomacy checks for errors
+		// within this wrapper class.
+		mysqli_report(MYSQLI_REPORT_OFF);
 	}
 
 	public function enableTransactions()
