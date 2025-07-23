@@ -1004,7 +1004,7 @@ class GetGameData extends ApiEntry {
 	private function setContextVars( $game, $gameID, $userID, $countryID, $member ){
 		if( $game->phase == 'Finished' )
 		{
-			$this->contextVars = ['context' => [
+			$this->contextVars = ['context' => json_encode([
 					'gameID' => $gameID,
 					'userID' => $userID,
 					'memberID' => $member->id,
@@ -1015,7 +1015,7 @@ class GetGameData extends ApiEntry {
 					'tokenExpireTime' => null,
 					'maxOrderID' => false,
 					'isSandboxMode' => !is_null($game->sandboxCreatedByUserID)
-				],
+				]),
 				'contextKey' => '', 
 				'ordersData' => []
 			];
