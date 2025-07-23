@@ -163,6 +163,16 @@ class GameBoard {
 
 /**
  * Game State JSON response
+ * 
+ * This API call needs to be optimized; it gets called constantly by the React
+ * clients and the bots; so in theory as this is the entire game state put the result in 
+ * Redis so it can be fetched as needed, but it's used both to load the entire game state
+ * and history and to get the latest updates and game state.
+ * e.g. when a vote is sent by a bot, it will use this API call every second to poll 
+ * whether the vote went through by fetching, which fetches every order, move, unit, 
+ * territory, message, vote, civil disorder, and it fetches the game records twice as 
+ * it uses the game object to check the user is a member, it's obscenely wasteful.
+ * 
  * @package webdiplomacy_api
  */
 class GameState {
@@ -495,7 +505,7 @@ class GameState {
 			}
 		}
 
-		// draw vote history
+		// draw vote history, this is used by the CICERO bot
 		if ($this->drawType === 'draw-votes-public') {
 			$messagify_vote = function($vote) {
 				return ["Voted for ".$vote, "Un-Voted for ".$vote];
@@ -539,12 +549,13 @@ class GameState {
 				$centers = $preGameCenters;
 			else
 			{
-				// This sometimes givesn an undefined key array error, but it is not clear why.
+				// This sometimes gives an undefined key array error, but it is not clear why. Probably due to the
+				// game being processed/finishing while being fetched. TODO: Wrap this in a transaction, and cache it
+				// in redis for performance.
 				if (!isset($inGameCenters[$centerTurn]))
-					// This will log the contents of the error, the state etc, vs an exception which won't.
-					trigger_error("Game state error: no centers found for turn $turn, phase $phaseName.", E_USER_ERROR);
+                    throw new \Exception("Game state error: no centers found for turn $turn, phase $phaseName.");
 				else
-					$centers = $inGameCenters[$centerTurn]; // Why
+					$centers = $inGameCenters[$centerTurn];
 			}
 
 			$data['centers'] = $centers;

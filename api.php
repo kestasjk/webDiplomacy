@@ -383,10 +383,6 @@ abstract class ApiEntry {
 	 * @return Game
 	 * @throws RequestException - if no gameID field in requirements, or if no valid game ID provided.
 	 */
-
-	 // Changed to $useCache = false to try and resolve sudden new issue where Cicero posts a message then
-	 // does poll_until_message_appears until the message appears, but after 10 attempts it doesnt appear,
-	 // get the message is posted??
 	public function getAssociatedGame($useCache = true) {
 		global $DB;
 			
@@ -816,9 +812,12 @@ class GetGamesStates extends ApiEntry {
 			throw new RequestException('Invalid game ID: '.$this->gameIDToMultiplexedGameID($gameID));
 		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
 		    throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
-		$game = $this->getAssociatedGame();
+
+		// Urgh this is appalling.. it's fetching the game and all associated records just to check the user/country, and then it fetches it all again in GameState
+		$game = $this->getAssociatedGame(); 
 		if ($countryID != null && (!isset($game->Members->ByUserID[$userID]) || $countryID != $game->Members->ByUserID[$userID]->countryID))
 			throw new ClientForbiddenException('A user can only view game state for the country it controls.');
+		
 		$gameState = new \webdiplomacy_api\GameState(intval($gameID), $countryID ? intval($countryID) : null);
 		return $gameState->toJson($this);
 	}
@@ -1005,28 +1004,39 @@ class GetGameData extends ApiEntry {
 	private function setContextVars( $game, $gameID, $userID, $countryID, $member ){
 		if( $game->phase == 'Finished' )
 		{
-			throw new ClientForbiddenException(
-				$this->JSONResponse(
-					'This game is finished; cannot load orders.',
-					'GGD-err-005', 
-					false, 
-					['gameID' => $this->gameIDToMultiplexedGameID($gameID)]
-				)
-			);
+			$this->contextVars = ['context' => [
+					'gameID' => $gameID,
+					'userID' => $userID,
+					'memberID' => $member->id,
+					'variantID' => $game->variantID,
+					'turn' => $game->turn,
+					'phase' => $game->phase,
+					'countryID' => $countryID,
+					'tokenExpireTime' => null,
+					'maxOrderID' => false,
+					'isSandboxMode' => !is_null($game->sandboxCreatedByUserID)
+				],
+				'contextKey' => '', 
+				'ordersData' => []
+			];
 		}
-		$this->contextVars = (new OrderInterface(
-			$gameID,
-			$game->variantID,
-			$userID,
-			$member->id,
-			$game->turn,
-			$game->phase,
-			$countryID,
-			$member->orderStatus,
-			null,
-			false,
-			!is_null($game->sandboxCreatedByUserID)
-		))->load(false)->getContextVars();
+		else
+		{		
+			$this->contextVars = (new OrderInterface(
+				$gameID,
+				$game->variantID,
+				$userID,
+				$member->id,
+				$game->turn,
+				$game->phase,
+				$countryID,
+				$member->orderStatus,
+				null,
+				false,
+				!is_null($game->sandboxCreatedByUserID)
+			))->load(false)->getContextVars();
+		}
+
 	}
 
 	private function getContextVars(){
