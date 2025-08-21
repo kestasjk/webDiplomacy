@@ -164,7 +164,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 foreach(Config::$variants as $variantID=>$variantName)
 {
-	if($variantID != 57)
+	// Exclude incompatible variants (TODO: put this in the config)
+	if($variantID != 57 && $variantID != 70)
 	{
 		$Variant = libVariant::loadFromVariantName($variantName);
 		print 'canvasBoardConfigJS['.$Variant->id.'] = '.$Variant->canvasBoardConfigJS().';';
