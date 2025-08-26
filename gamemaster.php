@@ -64,6 +64,9 @@ ini_set('max_execution_time','300');
 
 if( defined('RUNNINGFROMCLI') && isset($argv) )
 {
+	ini_set('memory_limit',"1024M");
+	ini_set('max_execution_time','600');
+
 	print "Running from CLI\n";
 
 	// Disable transactions while doing batch updates:
