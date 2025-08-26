@@ -197,9 +197,9 @@ class libAuth
 	 * @param $email
 	 * @return string
 	 */
-	public static function email_validateURL($email)
+	public static function email_validateURL($email, $loginPage='register.php')
 	{
-		$thisURL = 'https://'.$_SERVER['SERVER_NAME'].'/register.php';
+		$thisURL = 'https://'.$_SERVER['SERVER_NAME'].'/'.$loginPage;
 
 		// %7C = | , but some webmail clients think that | is the end of the link
 		$emailToken = urlencode(self::email_token($email));

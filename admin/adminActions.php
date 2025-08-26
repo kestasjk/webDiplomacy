@@ -828,7 +828,7 @@ class adminActions extends adminActionsForms
 			return "Could not find this e-mail address, or this is a Mod/Admin e-mail which cannot be reset using this method.";
 		}
 		
-		$thisURL = libAuth::email_validateURL($email)."&forgotPassword=3";
+		$thisURL = libAuth::email_validateURL($email,'logon.php')."&forgotPassword=3";
 		
 		return "Please give the user the following link: <br>".$thisURL;
 	}

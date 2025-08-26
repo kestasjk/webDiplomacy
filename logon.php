@@ -70,7 +70,7 @@ if( isset($_REQUEST['forgotPassword']) and $User->type['Guest'] )
 			$Mailer = new Mailer();
 			$Mailer->Send(array($forgottenUser->email=>$forgottenUser->username), l_t('webDiplomacy forgotten password verification link'),
 			l_t("You can use this link to get a new password generated:")."<br>
-			".libAuth::email_validateURL($forgottenUser->email)."&forgotPassword=3<br><br>
+			".libAuth::email_validateURL($forgottenUser->email,'logon.php')."&forgotPassword=3<br><br>
 
 			".l_t("If you have any further problems contact the moderator team at %s.",Config::$modEMail)."<br>");
 

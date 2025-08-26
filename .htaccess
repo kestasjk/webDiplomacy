@@ -1,1 +1,4 @@
 RedirectMatch 404 /\.git
+RewriteEngine On
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
