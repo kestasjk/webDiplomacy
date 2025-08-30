@@ -46,7 +46,7 @@ class CoastConvoy_OrderInterface extends AlternateBuildSC_OrderInterface
 
 		if( $this->phase=='Diplomacy' )
 		{
-			$convoyCoastsJS='Array("'.implode($Variant->convoyCoasts, '","').'")';
+			$convoyCoastsJS='Array("'.implode('","',$Variant->convoyCoasts).'")';
 			
 			libHTML::$footerIncludes[] = '../variants/'.$Variant->name.'/resources/coastConvoy_V1.3.js';
 			foreach(libHTML::$footerScript as $index=>$script)
