@@ -447,7 +447,7 @@ class ListGamesWithMissingOrders extends ApiEntry {
 // The sandbox API calls will check the permissions internally and throw an exception on error
 class SandboxCreate extends ApiEntry {
 	public function __construct() {
-		parent::__construct('sandbox/create', 'GET', '', array('variantID', 'territoryUnits'), false);
+		parent::__construct('sandbox/create', 'GET', '', array('variantID', 'territoryUnits'), true);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		require_once(l_r('gamemaster/sandboxGame.php'));
@@ -459,7 +459,7 @@ class SandboxCreate extends ApiEntry {
 
 class SandboxCopy extends ApiEntry {
 	public function __construct() {
-		parent::__construct('sandbox/copy', 'GET', '', array('copyGameID'), false);
+		parent::__construct('sandbox/copy', 'GET', '', array('copyGameID'), true);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		require_once(l_r('gamemaster/sandboxGame.php'));
@@ -471,7 +471,7 @@ class SandboxCopy extends ApiEntry {
 
 class SandboxMoveTurnBack extends ApiEntry {
 	public function __construct() {
-		parent::__construct('sandbox/moveTurnBack', 'GET', '', array('gameID'), false);
+		parent::__construct('sandbox/moveTurnBack', 'GET', '', array('gameID'), true);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		require_once(l_r('gamemaster/sandboxGame.php'));
@@ -485,7 +485,7 @@ class SandboxMoveTurnBack extends ApiEntry {
 
 class SandboxDelete extends ApiEntry {
 	public function __construct() {
-		parent::__construct('sandbox/delete', 'GET', '', array('gameID'), false);
+		parent::__construct('sandbox/delete', 'GET', '', array('gameID'), true);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		require_once(l_r('gamemaster/sandboxGame.php'));
@@ -516,7 +516,7 @@ class ListActiveGamesForUser extends ApiEntry {
  */
 class ToggleVote extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/togglevote', 'GET', '', array('gameID','countryID','vote'), false);
+		parent::__construct('game/togglevote', 'GET', '', array('gameID','countryID','vote'), true);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		global $DB;
@@ -577,7 +577,7 @@ class ToggleVote extends ApiEntry {
  */
 class SetVote extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/setvote', 'JSON', '', array('gameID','countryID','vote','voteOn'), false);
+		parent::__construct('game/setvote', 'JSON', '', array('gameID','countryID','vote','voteOn'), true);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		global $DB;
@@ -748,7 +748,7 @@ class SSEAuthentication extends ApiEntry {
  */
 class MessagesSeen extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/messagesseen', 'JSON', '', array('gameID','countryID','seenCountryID'), false);
+		parent::__construct('game/messagesseen', 'JSON', '', array('gameID','countryID','seenCountryID'), true);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		global $Game, $DB;
@@ -767,9 +767,7 @@ class MessagesSeen extends ApiEntry {
 				break;
 			}
 		}
-		$DB->sql_put("UPDATE wD_Members
-						SET newMessagesFrom = '".implode(',',$newMessagesFrom)."', timeLoggedIn = ".time()."
-						WHERE id = ".$member->id);
+		$DB->sql_put("UPDATE wD_Members SET newMessagesFrom = '".implode(',',$newMessagesFrom)."', timeLoggedIn = ".time()." WHERE id = ".$member->id);
 		$DB->sql_put("COMMIT");
 	}
 }
@@ -780,7 +778,7 @@ class MessagesSeen extends ApiEntry {
  */
 class MarkBackFromLeft extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/markbackfromleft', 'JSON', '', array('gameID','countryID'), false);
+		parent::__construct('game/markbackfromleft', 'JSON', '', array('gameID','countryID'), true);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		global $Game, $DB;
@@ -1173,7 +1171,7 @@ class JoinGame extends ApiEntry {
 			'POST',
 			'',
 			array('gameID'),
-			false);
+			true);
 	}
 	/**
 	 * @throws Exception
@@ -1214,7 +1212,7 @@ class LeaveGame extends ApiEntry {
 			'POST',
 			'',
 			array('gameID'),
-			false);
+			true);
 	}
 	/**
 	 * @throws Exception
@@ -1257,9 +1255,10 @@ class SetOrders extends ApiEntry {
 			'JSON',
 			'submitOrdersForUserInCD',
 			array('gameID', 'turn', 'phase', 'countryID', 'orders', 'ready'),
-			false); // This should only require the member record for the country being updated get locked for update, this is how the ajax.php
+			true); // This should only require the member record for the country being updated get locked for update, this is how the ajax.php
 			// order interface locking works. Locking on this is creating 95+% of deadlocks, which is causing 80+% of errors as of 2022-10-12
 			// 'ready' is optional.
+			// 20250919 Even with game locking disabled this still caused deadlocks, probably better to lock the game record for update
 	}
 	/**
 	 * @throws Exception
@@ -1510,7 +1509,7 @@ class SetOrders extends ApiEntry {
  */
 class SendMessage extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/sendmessage', 'JSON', '', array('gameID','countryID','toCountryID', 'message'), false);
+		parent::__construct('game/sendmessage', 'JSON', '', array('gameID','countryID','toCountryID', 'message'), true);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		global $Game, $DB;

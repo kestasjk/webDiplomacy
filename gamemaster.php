@@ -129,8 +129,27 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 		}
 
 		print 'Backups complete';
+
+		// Tidy up any sandbox / bot games as part of this process (todo: create seperate process to clean these up)
+		// Keep sandbox games from clogging things up using a hack for now, and ensure this doesn't cause paused games to error:
+		$DB->sql_put("UPDATE wD_Games SET processTime = 2000000000, pauseTimeRemaining = NULL WHERE name LIKE 'SB_%' AND processStatus <> 'Paused'");
+
+		// Cancel bot games that haven't been used for an hour if they are anonymous:
+		$DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_Sessions s ON s.userID = u.id SET g.gameOver='Draw', g.phase= 'Finished' WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND (u.timeLastSessionEnded < UNIX_TIMESTAMP() - 2*60*60 AND u.timeJoined < UNIX_TIMESTAMP() - 2*60*60 AND m.timeLoggedIn < UNIX_TIMESTAMP() - 2*60*60 AND s.userID IS NULL) AND u.username LIKE 'diplonow_%' AND NOT g.name LIKE 'SB_%';");
+
+		// Cancel bot games that haven't been used for two days if they are not anonymous:
+		$DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_Sessions s ON s.userID = u.id SET g.gameOver='Draw', g.phase= 'Finished' WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND (u.timeLastSessionEnded < UNIX_TIMESTAMP() - 2*24*60*60 AND u.timeJoined < UNIX_TIMESTAMP() - 2*60*60 AND m.timeLoggedIn < UNIX_TIMESTAMP() - 2*60*60 AND s.userID IS NULL) AND NOT u.username LIKE 'diplonow_%' AND NOT g.name LIKE 'SB_%';");
+
+		// Cancel sandbox games that haven't been accessed for a week, otherwise these clog things up:
+		$DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id LEFT JOIN wD_ApiKeys a ON a.userID = m.userID SET g.gameOver='Draw' AND g.phase='Finished' WHERE g.phase IN ('Diplomacy','Retreats','Builds') AND a.userID IS NULL AND g.sandboxCreatedByUserID IS NOT NULL AND m.timeLoggedIn < UNIX_TIMESTAMP() - 24*60*60*7 AND g.gameOver = 'No';");
+
+		// Update member status for games that have finished, which makes vote queries etc faster and ensures stats are right:
+		$DB->sql_put("UPDATE wD_Members m INNER JOIN wD_Games g ON g.id = m.gameID SET m.status = 'Survived' WHERE m.status = 'Playing' AND g.phase = 'Finished';");
+
+		
 		$Misc->LastBackupUpdate = $backupTime;
 		$Misc->write();
+		$DB->sql_put("COMMIT");
 	}
 
 	if( in_array("NMRWARNING", $argv) )
@@ -199,6 +218,7 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 
 		$Misc->LastNMRWarningUpdate = $nmrWarningUpdateTime;
 		$Misc->write();
+		$DB->sql_put("COMMIT");
 		
 	}
 
@@ -219,6 +239,7 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 		
 		$Misc->LastGroupUpdate = $groupUpdateTime;
 		$Misc->write();
+		$DB->sql_put("COMMIT");
 	}
 
 	if( in_array("CONNECTIONUPDATE", $argv) )
@@ -235,12 +256,14 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 	
 		$Misc->LastConnectionUpdate = $connectionUpdateTime;
 		$Misc->write();
+		$DB->sql_put("COMMIT");
 	}
 
 	if( in_array("TIDYWATCHED", $argv) )
 	{
 		print l_t('Clearing old watched game records').'<br />';
 		$DB->sql_put("DELETE wg FROM wD_WatchedGames wg LEFT JOIN wD_Games g ON g.id = wg.gameID WHERE g.id IS NULL OR g.phase = 'Finished' OR g.gameOver <> 'No'");
+		$DB->sql_put("COMMIT");
 	}
 
 	if( in_array("RELIABILITYRATINGS", $argv) )
@@ -249,6 +272,7 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 		// Update the reliability ratings:
 		print l_t('Updating user phase/year counts and reliability ratings').'<br />';
 		libGameMaster::updateReliabilityRatings();
+		$DB->sql_put("COMMIT");
 	}
 
 	if( in_array('RESTOREMISSINGPOINTS', $argv) )
@@ -268,6 +292,7 @@ if( defined('RUNNINGFROMCLI') && isset($argv) )
 		) up ON up.id = u.id 
 		SET u.points = u.points + (100 - (up.points + IF(up.pointsBet IS NULL, 0, up.pointsBet))) 
 		WHERE up.points + IF(up.pointsBet IS NULL, 0, up.pointsBet) < 100");
+		$DB->sql_put("COMMIT");
 	}
 
 	$DB->sql_put("COMMIT");
@@ -355,21 +380,6 @@ if( $Misc->LastStatsUpdate < (time() - 60) )
 	miscUpdate::game();
 	miscUpdate::user();
 	
-	// Keep sandbox games from clogging things up using a hack for now, and ensure this doesn't cause paused games to error:
-	$DB->sql_put("UPDATE wD_Games SET processTime = 2000000000, pauseTimeRemaining = NULL WHERE name LIKE 'SB_%' AND processStatus <> 'Paused'");
-
-	// Cancel bot games that haven't been used for an hour if they are anonymous:
-	$DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_Sessions s ON s.userID = u.id SET g.gameOver='Draw', g.phase= 'Finished' WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND (u.timeLastSessionEnded < UNIX_TIMESTAMP() - 2*60*60 AND u.timeJoined < UNIX_TIMESTAMP() - 2*60*60 AND m.timeLoggedIn < UNIX_TIMESTAMP() - 2*60*60 AND s.userID IS NULL) AND u.username LIKE 'diplonow_%' AND NOT g.name LIKE 'SB_%';");
-
-	// Cancel bot games that haven't been used for two days if they are not anonymous:
-	$DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_Sessions s ON s.userID = u.id SET g.gameOver='Draw', g.phase= 'Finished' WHERE NOT u.type LIKE '%Bot%' AND g.gameOver = 'No' AND g.playerTypes = 'MemberVsBots' AND (u.timeLastSessionEnded < UNIX_TIMESTAMP() - 2*24*60*60 AND u.timeJoined < UNIX_TIMESTAMP() - 2*60*60 AND m.timeLoggedIn < UNIX_TIMESTAMP() - 2*60*60 AND s.userID IS NULL) AND NOT u.username LIKE 'diplonow_%' AND NOT g.name LIKE 'SB_%';");
-
-	// Cancel sandbox games that haven't been accessed for a week, otherwise these clog things up:
-	$DB->sql_put("UPDATE wD_Games g INNER JOIN wD_Members m ON m.gameID = g.id LEFT JOIN wD_ApiKeys a ON a.userID = m.userID SET g.gameOver='Draw' AND g.phase='Finished' WHERE g.phase IN ('Diplomacy','Retreats','Builds') AND a.userID IS NULL AND g.sandboxCreatedByUserID IS NOT NULL AND m.timeLoggedIn < UNIX_TIMESTAMP() - 24*60*60*7 AND g.gameOver = 'No';");
-
-	// Update member status for games that have finished, which makes vote queries etc faster and ensures stats are right:
-	$DB->sql_put("UPDATE wD_Members m INNER JOIN wD_Games g ON g.id = m.gameID SET m.status = 'Survived' WHERE m.status = 'Playing' AND g.phase = 'Finished';");
-
 	// Update like counts for the forum every day:
 	if( false && floor($Misc->LastStatsUpdate / (24*60*60)) < floor(time() / (24*60*60)) )
 	{

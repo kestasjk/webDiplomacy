@@ -315,66 +315,6 @@ FROM (
 ) r
 ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(earliestRequest, earliest), latest=greatest(latestRequest, latest), count=count+requestCount;
 
-INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
-SELECT userID, type, code , earliestRequest, latestRequest, requestCount
-FROM (
- SELECT a.userID, 'IPVPN' type, LEFT(u.security,16) code, MIN(a.earliest) earliestRequest, MAX(a.latest) latestRequest, SUM(a.count) requestCount
- FROM wD_UserCodeConnections a
- INNER JOIN wD_IPLookups u ON a.code = u.ipCode
- WHERE a.type='IP' AND u.timeLookedUp >= ".$lastUpdate."
- GROUP BY a.userID, u.security
-) r
-ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(earliestRequest, earliest), latest=greatest(latestRequest, latest), count=count+requestCount;
-
-/* Done with AccessLog, start on IPLookups */
-INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
-SELECT userID, type, code , earliestRequest, latestRequest, requestCount
-FROM (
-	/* Round lat/lon to 1 decimal place */
- SELECT a.userID, 'LatLon' type, UNHEX(LPAD(CONV(ROUND((u.latitude+90.0)*10,0)*10000+ROUND((u.longitude+180.0)*10,0),10,16),16,'0')) code, MIN(a.earliest) earliestRequest, MAX(a.latest) latestRequest, SUM(a.count) requestCount
- FROM wD_UserCodeConnections a
- INNER JOIN wD_IPLookups u ON a.code = u.ipCode
- WHERE a.type='IP' AND u.timeLookedUp >= ".$lastUpdate."
- GROUP BY a.userID, ROUND((u.latitude+90.0)*10,0), ROUND((u.longitude+180.0)*10,0)
-) r
-ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(earliestRequest, earliest), latest=greatest(latestRequest, latest), count=count+requestCount;
-
-INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
-SELECT userID, type, code , earliestRequest, latestRequest, requestCount
-FROM (
- SELECT a.userID, 'City' type, LEFT(u.city,16) code, MIN(a.earliest) earliestRequest, MAX(a.latest) latestRequest, SUM(a.count) requestCount
- FROM wD_UserCodeConnections a
- INNER JOIN wD_IPLookups u ON a.code = u.ipCode
- WHERE a.type='IP' AND u.timeLookedUp >= ".$lastUpdate."
- GROUP BY a.userID, u.city
-) r
-ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(earliestRequest, earliest), latest=greatest(latestRequest, latest), count=count+requestCount;
-
-INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
-SELECT userID, type, code , earliestRequest, latestRequest, requestCount
-FROM (
- SELECT a.userID, 'Network' type, UNHEX(LPAD(REPLACE(REPLACE(REPLACE(network,':',''),'/',''),'.',''),16,'0')) code, MIN(a.earliest) earliestRequest, MAX(a.latest) latestRequest, SUM(a.count) requestCount
- FROM wD_UserCodeConnections a
- INNER JOIN wD_IPLookups u ON a.code = u.ipCode
- WHERE a.type='IP' AND u.timeLookedUp >= ".$lastUpdate."
- GROUP BY a.userID, u.network
-) r
-ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(earliestRequest, earliest), latest=greatest(latestRequest, latest), count=count+requestCount;
-
-/* Done with IPLookups, enter fingerprint pro lookups */
-INSERT INTO wD_UserCodeConnections (userID, type, code, earliest, latest, count)
-SELECT userID, type, code , earliestRequest, latestRequest, requestCount
-FROM (
- SELECT linkedId userId, 'FingerprintPro' type, 
-	FROM_BASE64(visitorId) code, MIN(FROM_UNIXTIME(CAST(LEFT(requestId,10) AS INT))) earliestRequest, 
-	MAX(FROM_UNIXTIME(CAST(LEFT(requestId,10) AS INT))) latestRequest, 
-	COUNT(*) requestCount
-  FROM wD_FingerprintProRequests f
-  WHERE CAST(LEFT(requestId,10) AS INT) >= ".$lastUpdate."
-  GROUP BY linkedID, visitorID
-) r
-ON DUPLICATE KEY UPDATE isUpdated=1, earliest=least(earliestRequest, earliest), latest=greatest(latestRequest, latest), count=count+requestCount;
-
 /* Enter turns shared */
 DROP TABLE IF EXISTS wD_Tmp_TurnCount;
 CREATE TABLE wD_Tmp_TurnCount
