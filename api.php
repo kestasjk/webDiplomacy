@@ -2069,6 +2069,12 @@ try {
 				($Redis->get('APIMETRIC_' . $route . '_DB_PUT') ?: 0) + $dbMetrics['db_put']);
 			$Redis->set('APIMETRIC_' . $route . '_DB_TIME_MS',
 				($Redis->get('APIMETRIC_' . $route . '_DB_TIME_MS') ?: 0) + $dbMetrics['db_time_ms']);
+
+			// Track bot API calls separately (only for API key authentication)
+			if ($api->authClass === 'ApiKey') {
+				$Redis->set('APIMETRIC_' . $route . '_BOTCOUNT',
+					($Redis->get('APIMETRIC_' . $route . '_BOTCOUNT') ?: 0) + 1);
+			}
 		} catch (Exception $e) {
 			// Silently ignore Redis errors to not break the API
 		}

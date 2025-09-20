@@ -265,6 +265,7 @@ if( $User->type['Admin'] )
 						'db_get' => $Redis->get('APIMETRIC_' . $endpoint . '_DB_GET') ?: 0,
 						'db_put' => $Redis->get('APIMETRIC_' . $endpoint . '_DB_PUT') ?: 0,
 						'db_time_ms' => $Redis->get('APIMETRIC_' . $endpoint . '_DB_TIME_MS') ?: 0,
+						'bot_count' => $Redis->get('APIMETRIC_' . $endpoint . '_BOTCOUNT') ?: 0,
 						'type' => 'API'
 					);
 				}
@@ -281,6 +282,7 @@ if( $User->type['Admin'] )
 						'db_get' => $Redis->get('APIMETRICS_AJAX_' . $endpoint . '_DB_GET') ?: 0,
 						'db_put' => $Redis->get('APIMETRICS_AJAX_' . $endpoint . '_DB_PUT') ?: 0,
 						'db_time_ms' => $Redis->get('APIMETRICS_AJAX_' . $endpoint . '_DB_TIME_MS') ?: 0,
+						'bot_count' => null, // AJAX doesn't use API key authentication
 						'type' => 'AJAX'
 					);
 				}
@@ -300,6 +302,7 @@ if( $User->type['Admin'] )
 				print '<th class="modTools">Type</th>';
 				print '<th class="modTools">Route</th>';
 				print '<th class="modTools">Hits</th>';
+				print '<th class="modTools">Bot Hits</th>';
 				print '<th class="modTools">Avg Time (ms)</th>';
 				print '<th class="modTools">Avg DB GET/hit</th>';
 				print '<th class="modTools">Avg DB PUT/hit</th>';
@@ -325,10 +328,14 @@ if( $User->type['Admin'] )
 					$avgDbPut = round($data['db_put'] / $data['count'], 2);
 					$avgDbTime = round($data['db_time_ms'] / $data['count'], 2);
 
+					// Format bot hits display
+					$botHits = ($data['bot_count'] === null) ? 'N/A' : $data['bot_count'];
+
 					print '<tr>';
 					print '<td class="modTools">'.$type.'</td>';
 					print '<td class="modTools">'.$routeName.'</td>';
 					print '<td class="modTools" style="text-align:right">'.$data['count'].'</td>';
+					print '<td class="modTools" style="text-align:right">'.$botHits.'</td>';
 					print '<td class="modTools" style="text-align:right">'.$avgTime.'</td>';
 					print '<td class="modTools" style="text-align:right">'.$avgDbGet.'</td>';
 					print '<td class="modTools" style="text-align:right">'.$avgDbPut.'</td>';
