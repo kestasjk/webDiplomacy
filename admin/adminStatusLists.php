@@ -331,6 +331,14 @@ if( $User->type['Admin'] )
 				'INVALID'
 			);
 
+			// Known PAGE endpoints to check
+			$pageEndpoints = array(
+				'HOME', 'BOARD', 'FORUM', 'USERCP', 'ADMINCP', 'PROFILE', 'GAMES', 'TOURNAMENTS',
+				'RULES', 'FAQ', 'CREDITS', 'VARIANTS', 'REGISTER', 'CONTACTUS', 'DEVELOPERS',
+				'DONATIONS', 'POINTS', 'SEARCH', 'MESSAGE', 'MODFORUM', 'BOTGAMECREATE',
+				'BOTSTATUS', 'DETAILEDSEARCH', 'USERPROFILE', 'USEROPTIONS', 'USERNOTIFICATIONS'
+			);
+
 			// Collect metrics for API endpoints
 			foreach ($apiEndpoints as $endpoint) {
 				$count = $Redis->get('METRICS_API_' . $endpoint . '_COUNT');
