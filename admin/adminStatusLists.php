@@ -199,4 +199,122 @@ print '<br/><br/>';
 print '<b>Site-Wide Notice: '.$notice.'</b><br/><br/>';
 print '<b>Panic Message: '.$panic.'</b><br/><br/>';
 print '<b>Maintenance Message: '.$maintenance.'</b><br/><br/>';
+
+// Display API Metrics from Redis if available (Admin only)
+if( $User->type['Admin'] )
+{
+	print '<br/><hr/><br/>';
+	print '<p class="modTools"><strong>'.l_t('API Performance Metrics:').'</strong></p>';
+
+	// Check if Redis extension is available
+	if (!class_exists('Redis')) {
+		print '<p class="notice">'.l_t('Redis PHP extension is not installed. API metrics collection requires Redis.').'</p>';
+	} else {
+		try {
+			// Try to connect to Redis
+			require_once(l_r('objects/redis.php'));
+			$Redis = new RedisInterface(Config::$redisHost, Config::$redisPort);
+
+			// Fetch all API metric keys
+			$metrics = array();
+			$allKeys = array();
+
+			// Known API endpoints to check
+			$endpoints = array(
+				'PLAYERS_CD',
+				'PLAYERS_MISSING_ORDERS',
+				'PLAYERS_ACTIVE_GAMES',
+				'GAME_STATUS',
+				'GAME_OVERVIEW',
+				'GAME_DATA',
+				'GAME_MEMBERS',
+				'GAME_JOIN',
+				'GAME_LEAVE',
+				'GAME_ORDERS',
+				'GAME_TOGGLEVOTE',
+				'GAME_SETVOTE',
+				'WEBSOCKETS_AUTHENTICATION',
+				'SSE_AUTHENTICATION',
+				'GAME_SENDMESSAGE',
+				'GAME_GETMESSAGES',
+				'GAME_MESSAGESSEEN',
+				'GAME_MARKBACKFROMLEFT',
+				'SANDBOX_CREATE',
+				'SANDBOX_COPY',
+				'SANDBOX_MOVETURNBACK',
+				'SANDBOX_DELETE'
+			);
+
+			// Collect metrics for each endpoint
+			foreach ($endpoints as $endpoint) {
+				$count = $Redis->get('APIMETRIC_' . $endpoint . '_COUNT');
+
+				if ($count && $count > 0) {
+					$metrics[$endpoint] = array(
+						'count' => $count,
+						'time_ms' => $Redis->get('APIMETRIC_' . $endpoint . '_TIME_MS') ?: 0,
+						'db_get' => $Redis->get('APIMETRIC_' . $endpoint . '_DB_GET') ?: 0,
+						'db_put' => $Redis->get('APIMETRIC_' . $endpoint . '_DB_PUT') ?: 0,
+						'db_time_ms' => $Redis->get('APIMETRIC_' . $endpoint . '_DB_TIME_MS') ?: 0
+					);
+				}
+			}
+
+			if (empty($metrics)) {
+				print '<p class="notice">'.l_t('No API metrics have been collected yet. Metrics will appear here once API calls are made.').'</p>';
+			} else {
+				// Sort by hit count (descending)
+				uasort($metrics, function($a, $b) {
+					return $b['count'] - $a['count'];
+				});
+
+				// Display the metrics table
+				print '<TABLE class="modTools">';
+				print '<tr>';
+				print '<th class="modTools">API Route</th>';
+				print '<th class="modTools">Hits</th>';
+				print '<th class="modTools">Avg Time (ms)</th>';
+				print '<th class="modTools">DB GET Ops</th>';
+				print '<th class="modTools">DB PUT Ops</th>';
+				print '<th class="modTools">Avg DB Time (ms)</th>';
+				print '</tr>';
+
+				foreach ($metrics as $endpoint => $data) {
+					// Convert endpoint name back to readable format
+					$routeName = strtolower(str_replace('_', '/', $endpoint));
+
+					// Calculate averages
+					$avgTime = round($data['time_ms'] / $data['count'], 2);
+					$avgDbTime = round($data['db_time_ms'] / $data['count'], 2);
+
+					print '<tr>';
+					print '<td class="modTools">'.$routeName.'</td>';
+					print '<td class="modTools" style="text-align:right">'.$data['count'].'</td>';
+					print '<td class="modTools" style="text-align:right">'.$avgTime.'</td>';
+					print '<td class="modTools" style="text-align:right">'.$data['db_get'].'</td>';
+					print '<td class="modTools" style="text-align:right">'.$data['db_put'].'</td>';
+					print '<td class="modTools" style="text-align:right">'.$avgDbTime.'</td>';
+					print '</tr>';
+				}
+
+				print '</TABLE>';
+
+				// Display totals
+				$totalCalls = array_sum(array_column($metrics, 'count'));
+				$totalTime = array_sum(array_column($metrics, 'time_ms'));
+				$totalDbGet = array_sum(array_column($metrics, 'db_get'));
+				$totalDbPut = array_sum(array_column($metrics, 'db_put'));
+
+				print '<p class="modTools"><strong>'.l_t('Totals:').'</strong> ';
+				print $totalCalls . ' calls, ';
+				print round($totalTime / 1000, 2) . ' seconds total time, ';
+				print $totalDbGet . ' DB fetches, ';
+				print $totalDbPut . ' DB writes</p>';
+			}
+
+		} catch (Exception $e) {
+			print '<p class="notice">'.l_t('Could not connect to Redis: ').$e->getMessage().'</p>';
+		}
+	}
+}
 ?>
