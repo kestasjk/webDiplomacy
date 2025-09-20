@@ -274,8 +274,8 @@ if( $User->type['Admin'] )
 				print '<th class="modTools">API Route</th>';
 				print '<th class="modTools">Hits</th>';
 				print '<th class="modTools">Avg Time (ms)</th>';
-				print '<th class="modTools">DB GET Ops</th>';
-				print '<th class="modTools">DB PUT Ops</th>';
+				print '<th class="modTools">Avg DB GET/hit</th>';
+				print '<th class="modTools">Avg DB PUT/hit</th>';
 				print '<th class="modTools">Avg DB Time (ms)</th>';
 				print '</tr>';
 
@@ -285,14 +285,16 @@ if( $User->type['Admin'] )
 
 					// Calculate averages
 					$avgTime = round($data['time_ms'] / $data['count'], 2);
+					$avgDbGet = round($data['db_get'] / $data['count'], 2);
+					$avgDbPut = round($data['db_put'] / $data['count'], 2);
 					$avgDbTime = round($data['db_time_ms'] / $data['count'], 2);
 
 					print '<tr>';
 					print '<td class="modTools">'.$routeName.'</td>';
 					print '<td class="modTools" style="text-align:right">'.$data['count'].'</td>';
 					print '<td class="modTools" style="text-align:right">'.$avgTime.'</td>';
-					print '<td class="modTools" style="text-align:right">'.$data['db_get'].'</td>';
-					print '<td class="modTools" style="text-align:right">'.$data['db_put'].'</td>';
+					print '<td class="modTools" style="text-align:right">'.$avgDbGet.'</td>';
+					print '<td class="modTools" style="text-align:right">'.$avgDbPut.'</td>';
 					print '<td class="modTools" style="text-align:right">'.$avgDbTime.'</td>';
 					print '</tr>';
 				}
