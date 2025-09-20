@@ -766,7 +766,7 @@ class SSEAuthentication extends ApiEntry {
  */
 class MessagesSeen extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/messagesseen', 'JSON', '', array('gameID','countryID','seenCountryID'), true);
+		parent::__construct('game/messagesseen', 'JSON', '', array('gameID','countryID','seenCountryID'), false); // Shouldnt need to lock whole game
 	}
 	public function run($userID, $permissionIsExplicit) {
 		global $Game, $DB;
@@ -1273,11 +1273,13 @@ class SetOrders extends ApiEntry {
 			'JSON',
 			'submitOrdersForUserInCD',
 			array('gameID', 'turn', 'phase', 'countryID', 'orders', 'ready'),
-			true); // This should only require the member record for the country being updated get locked for update, this is how the ajax.php
+			gameLocking: false); // This should only require the member record for the country being updated get locked for update, this is how the ajax.php
 			// order interface locking works. Locking on this is creating 95+% of deadlocks, which is causing 80+% of errors as of 2022-10-12
 			// 'ready' is optional.
 			// 20250919 Even with game locking disabled this still caused deadlocks, probably better to lock the game record for update
-	}
+			// Concerned locking game for update on every order submission will cause more deadlocks, though it seems to be OK so far during low traffic with
+			// just 1. Disabling for now 20250920
+	}		
 	/**
 	 * @throws Exception
 	 * @throws RequestException
@@ -1527,7 +1529,7 @@ class SetOrders extends ApiEntry {
  */
 class SendMessage extends ApiEntry {
 	public function __construct() {
-		parent::__construct('game/sendmessage', 'JSON', '', array('gameID','countryID','toCountryID', 'message'), true);
+		parent::__construct('game/sendmessage', 'JSON', '', array('gameID','countryID','toCountryID', 'message'), false);
 	}
 	public function run($userID, $permissionIsExplicit) {
 		global $Game, $DB;
