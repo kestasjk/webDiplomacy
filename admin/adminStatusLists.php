@@ -220,7 +220,7 @@ if( $User->type['Admin'] )
 			$allKeys = array();
 
 			// Known API endpoints to check
-			$endpoints = array(
+			$apiEndpoints = array(
 				'PLAYERS_CD',
 				'PLAYERS_MISSING_ORDERS',
 				'PLAYERS_ACTIVE_GAMES',
@@ -245,23 +245,49 @@ if( $User->type['Admin'] )
 				'SANDBOX_DELETE'
 			);
 
-			// Collect metrics for each endpoint
-			foreach ($endpoints as $endpoint) {
+			// Known AJAX endpoints to check
+			$ajaxEndpoints = array(
+				'SMS_TOKEN',
+				'LIKE_MESSAGE_TOGGLE',
+				'ORDER_UPDATES',
+				'GROUP_MANAGEMENT',
+				'INVALID'
+			);
+
+			// Collect metrics for API endpoints
+			foreach ($apiEndpoints as $endpoint) {
 				$count = $Redis->get('APIMETRIC_' . $endpoint . '_COUNT');
 
 				if ($count && $count > 0) {
-					$metrics[$endpoint] = array(
+					$metrics['API_' . $endpoint] = array(
 						'count' => $count,
 						'time_ms' => $Redis->get('APIMETRIC_' . $endpoint . '_TIME_MS') ?: 0,
 						'db_get' => $Redis->get('APIMETRIC_' . $endpoint . '_DB_GET') ?: 0,
 						'db_put' => $Redis->get('APIMETRIC_' . $endpoint . '_DB_PUT') ?: 0,
-						'db_time_ms' => $Redis->get('APIMETRIC_' . $endpoint . '_DB_TIME_MS') ?: 0
+						'db_time_ms' => $Redis->get('APIMETRIC_' . $endpoint . '_DB_TIME_MS') ?: 0,
+						'type' => 'API'
+					);
+				}
+			}
+
+			// Collect metrics for AJAX endpoints
+			foreach ($ajaxEndpoints as $endpoint) {
+				$count = $Redis->get('APIMETRICS_AJAX_' . $endpoint . '_COUNT');
+
+				if ($count && $count > 0) {
+					$metrics['AJAX_' . $endpoint] = array(
+						'count' => $count,
+						'time_ms' => $Redis->get('APIMETRICS_AJAX_' . $endpoint . '_TIME_MS') ?: 0,
+						'db_get' => $Redis->get('APIMETRICS_AJAX_' . $endpoint . '_DB_GET') ?: 0,
+						'db_put' => $Redis->get('APIMETRICS_AJAX_' . $endpoint . '_DB_PUT') ?: 0,
+						'db_time_ms' => $Redis->get('APIMETRICS_AJAX_' . $endpoint . '_DB_TIME_MS') ?: 0,
+						'type' => 'AJAX'
 					);
 				}
 			}
 
 			if (empty($metrics)) {
-				print '<p class="notice">'.l_t('No API metrics have been collected yet. Metrics will appear here once API calls are made.').'</p>';
+				print '<p class="notice">'.l_t('No API or AJAX metrics have been collected yet. Metrics will appear here once API or AJAX calls are made.').'</p>';
 			} else {
 				// Sort by hit count (descending)
 				uasort($metrics, function($a, $b) {
@@ -271,7 +297,8 @@ if( $User->type['Admin'] )
 				// Display the metrics table
 				print '<TABLE class="modTools">';
 				print '<tr>';
-				print '<th class="modTools">API Route</th>';
+				print '<th class="modTools">Type</th>';
+				print '<th class="modTools">Route</th>';
 				print '<th class="modTools">Hits</th>';
 				print '<th class="modTools">Avg Time (ms)</th>';
 				print '<th class="modTools">Avg DB GET/hit</th>';
@@ -280,8 +307,17 @@ if( $User->type['Admin'] )
 				print '</tr>';
 
 				foreach ($metrics as $endpoint => $data) {
+					// Extract type and clean endpoint name
+					$type = $data['type'];
+					$cleanEndpoint = str_replace($type . '_', '', $endpoint);
+
 					// Convert endpoint name back to readable format
-					$routeName = strtolower(str_replace('_', '/', $endpoint));
+					if ($type == 'API') {
+						$routeName = strtolower(str_replace('_', '/', $cleanEndpoint));
+					} else {
+						// For AJAX, keep underscores but make lowercase
+						$routeName = strtolower($cleanEndpoint);
+					}
 
 					// Calculate averages
 					$avgTime = round($data['time_ms'] / $data['count'], 2);
@@ -290,6 +326,7 @@ if( $User->type['Admin'] )
 					$avgDbTime = round($data['db_time_ms'] / $data['count'], 2);
 
 					print '<tr>';
+					print '<td class="modTools">'.$type.'</td>';
 					print '<td class="modTools">'.$routeName.'</td>';
 					print '<td class="modTools" style="text-align:right">'.$data['count'].'</td>';
 					print '<td class="modTools" style="text-align:right">'.$avgTime.'</td>';

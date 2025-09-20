@@ -26,6 +26,37 @@ if( Config::isOnPlayNowDomain() ) define('PLAYNOW',true);
 
 require_once('header.php');
 
+// Override the Database with MetricsDatabase for AJAX metrics collection
+require_once('objects/database_metrics.php');
+require_once('objects/redis.php');
+
+global $DB, $Redis;
+
+// Initialize Redis for AJAX metrics
+$Redis = null;
+if (Config::$redisHost && Config::$redisPort) {
+	try {
+		// Only try to use Redis if the extension is installed
+		if (class_exists('Redis')) {
+			$Redis = new RedisInterface(Config::$redisHost, Config::$redisPort);
+		}
+	} catch (Exception $e) {
+		// If Redis connection fails, continue without metrics
+		$Redis = null;
+	}
+}
+
+// Replace the Database with MetricsDatabase for AJAX calls to track performance
+$DB = new MetricsDatabase();
+
+// Track AJAX call metrics
+$ajaxStartTime = microtime(true);
+
+// Reset database metrics before the AJAX call
+if ($DB instanceof MetricsDatabase) {
+	$DB->resetMetrics();
+}
+
 /*
  * This function logs a huge amount of javascript errors, sent from javascript/utility.js on error,
  * but it seems to log trivial errors in lots of different languages, and isn't very useful except
@@ -162,6 +193,44 @@ file_put_contents(
 	"-------------------\n\n", 
 	FILE_APPEND);
 */
+
+// Determine AJAX route for metrics
+$ajaxRoute = 'INVALID';
+if (isset($_GET['sendSMSToken'])) {
+	$ajaxRoute = 'SMS_TOKEN';
+} elseif (isset($_GET['likeMessageToggleToken'])) {
+	$ajaxRoute = 'LIKE_MESSAGE_TOGGLE';
+} elseif (isset($_REQUEST['context']) && isset($_REQUEST['contextKey']) && isset($_REQUEST['orderUpdates'])) {
+	$ajaxRoute = 'ORDER_UPDATES';
+} elseif (isset($_GET['groupType']) && isset($_GET['userID']) && isset($_GET['groupID'])) {
+	$ajaxRoute = 'GROUP_MANAGEMENT';
+}
+
+// Calculate total AJAX call time and store metrics
+$ajaxEndTime = microtime(true);
+$ajaxTimeMs = round(($ajaxEndTime - $ajaxStartTime) * 1000);
+
+// Store metrics in Redis if available
+if ($Redis !== null && $DB instanceof MetricsDatabase) {
+	try {
+		// Get database metrics
+		$dbMetrics = $DB->getMetrics();
+
+		// Increment counters and add times in Redis for AJAX calls
+		$Redis->set('APIMETRICS_AJAX_' . $ajaxRoute . '_COUNT',
+			($Redis->get('APIMETRICS_AJAX_' . $ajaxRoute . '_COUNT') ?: 0) + 1);
+		$Redis->set('APIMETRICS_AJAX_' . $ajaxRoute . '_TIME_MS',
+			($Redis->get('APIMETRICS_AJAX_' . $ajaxRoute . '_TIME_MS') ?: 0) + $ajaxTimeMs);
+		$Redis->set('APIMETRICS_AJAX_' . $ajaxRoute . '_DB_GET',
+			($Redis->get('APIMETRICS_AJAX_' . $ajaxRoute . '_DB_GET') ?: 0) + $dbMetrics['db_get']);
+		$Redis->set('APIMETRICS_AJAX_' . $ajaxRoute . '_DB_PUT',
+			($Redis->get('APIMETRICS_AJAX_' . $ajaxRoute . '_DB_PUT') ?: 0) + $dbMetrics['db_put']);
+		$Redis->set('APIMETRICS_AJAX_' . $ajaxRoute . '_DB_TIME_MS',
+			($Redis->get('APIMETRICS_AJAX_' . $ajaxRoute . '_DB_TIME_MS') ?: 0) + $dbMetrics['db_time_ms']);
+	} catch (Exception $e) {
+		// Silently ignore Redis errors to not break the AJAX
+	}
+}
 
 header('Content-Type: application/json');
 header('X-JSON: ('.json_encode($results).')');
