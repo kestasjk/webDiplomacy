@@ -40,7 +40,7 @@ if( $User->type['Admin'] && isset($_GET['clearAPIMetrics']) )
 
 			// Since Redis doesn't have a direct way to get keys by pattern in our interface,
 			// we'll delete known metric types for all known endpoints
-			$allEndpoints = array(
+			$apiEndpoints = array(
 				// API endpoints
 				'PLAYERS_CD', 'PLAYERS_MISSING_ORDERS', 'PLAYERS_ACTIVE_GAMES',
 				'GAME_STATUS', 'GAME_OVERVIEW', 'GAME_DATA', 'GAME_MEMBERS',
@@ -52,13 +52,20 @@ if( $User->type['Admin'] && isset($_GET['clearAPIMetrics']) )
 
 			$ajaxEndpoints = array('SMS_TOKEN', 'LIKE_MESSAGE_TOGGLE', 'ORDER_UPDATES', 'GROUP_MANAGEMENT', 'INVALID');
 
+			$pageEndpoints = array(
+				'HOME', 'BOARD', 'FORUM', 'USERCP', 'ADMINCP', 'PROFILE', 'GAMES', 'TOURNAMENTS',
+				'RULES', 'FAQ', 'CREDITS', 'VARIANTS', 'REGISTER', 'CONTACTUS', 'DEVELOPERS',
+				'DONATIONS', 'POINTS', 'SEARCH', 'MESSAGE', 'MODFORUM', 'BOTGAMECREATE',
+				'BOTSTATUS', 'DETAILEDSEARCH', 'USERPROFILE', 'USEROPTIONS', 'USERNOTIFICATIONS'
+			);
+
 			$metricTypes = array('COUNT', 'TIME_MS', 'DB_GET', 'DB_PUT', 'DB_TIME_MS', 'BOTCOUNT');
 			$clearedCount = 0;
 
 			// Clear API metrics
-			foreach ($allEndpoints as $endpoint) {
+			foreach ($apiEndpoints as $endpoint) {
 				foreach ($metricTypes as $type) {
-					$key = 'APIMETRIC_' . $endpoint . '_' . $type;
+					$key = 'METRICS_API_' . $endpoint . '_' . $type;
 					if ($Redis->delete($key)) {
 						$clearedCount++;
 					}
@@ -69,14 +76,25 @@ if( $User->type['Admin'] && isset($_GET['clearAPIMetrics']) )
 			foreach ($ajaxEndpoints as $endpoint) {
 				foreach ($metricTypes as $type) {
 					if ($type == 'BOTCOUNT') continue; // AJAX doesn't have bot counts
-					$key = 'APIMETRICS_AJAX_' . $endpoint . '_' . $type;
+					$key = 'METRICS_AJAX_' . $endpoint . '_' . $type;
 					if ($Redis->delete($key)) {
 						$clearedCount++;
 					}
 				}
 			}
 
-			print '<div class="notice">'.l_t('API metrics cleared successfully. Removed %s metric keys from Redis.', $clearedCount).'</div>';
+			// Clear PAGE metrics
+			foreach ($pageEndpoints as $endpoint) {
+				foreach ($metricTypes as $type) {
+					if ($type == 'BOTCOUNT') continue; // PAGE doesn't have bot counts
+					$key = 'METRICS_PAGE_' . $endpoint . '_' . $type;
+					if ($Redis->delete($key)) {
+						$clearedCount++;
+					}
+				}
+			}
+
+			print '<div class="notice">'.l_t('All metrics cleared successfully. Removed %s metric keys from Redis (API, AJAX, and PAGE metrics).', $clearedCount).'</div>';
 		} else {
 			print '<div class="notice">'.l_t('Redis extension not available. Cannot clear metrics.').'</div>';
 		}
@@ -315,16 +333,16 @@ if( $User->type['Admin'] )
 
 			// Collect metrics for API endpoints
 			foreach ($apiEndpoints as $endpoint) {
-				$count = $Redis->get('APIMETRIC_' . $endpoint . '_COUNT');
+				$count = $Redis->get('METRICS_API_' . $endpoint . '_COUNT');
 
 				if ($count && $count > 0) {
 					$metrics['API_' . $endpoint] = array(
 						'count' => $count,
-						'time_ms' => $Redis->get('APIMETRIC_' . $endpoint . '_TIME_MS') ?: 0,
-						'db_get' => $Redis->get('APIMETRIC_' . $endpoint . '_DB_GET') ?: 0,
-						'db_put' => $Redis->get('APIMETRIC_' . $endpoint . '_DB_PUT') ?: 0,
-						'db_time_ms' => $Redis->get('APIMETRIC_' . $endpoint . '_DB_TIME_MS') ?: 0,
-						'bot_count' => $Redis->get('APIMETRIC_' . $endpoint . '_BOTCOUNT') ?: 0,
+						'time_ms' => $Redis->get('METRICS_API_' . $endpoint . '_TIME_MS') ?: 0,
+						'db_get' => $Redis->get('METRICS_API_' . $endpoint . '_DB_GET') ?: 0,
+						'db_put' => $Redis->get('METRICS_API_' . $endpoint . '_DB_PUT') ?: 0,
+						'db_time_ms' => $Redis->get('METRICS_API_' . $endpoint . '_DB_TIME_MS') ?: 0,
+						'bot_count' => $Redis->get('METRICS_API_' . $endpoint . '_BOTCOUNT') ?: 0,
 						'type' => 'API'
 					);
 				}
@@ -332,23 +350,40 @@ if( $User->type['Admin'] )
 
 			// Collect metrics for AJAX endpoints
 			foreach ($ajaxEndpoints as $endpoint) {
-				$count = $Redis->get('APIMETRICS_AJAX_' . $endpoint . '_COUNT');
+				$count = $Redis->get('METRICS_AJAX_' . $endpoint . '_COUNT');
 
 				if ($count && $count > 0) {
 					$metrics['AJAX_' . $endpoint] = array(
 						'count' => $count,
-						'time_ms' => $Redis->get('APIMETRICS_AJAX_' . $endpoint . '_TIME_MS') ?: 0,
-						'db_get' => $Redis->get('APIMETRICS_AJAX_' . $endpoint . '_DB_GET') ?: 0,
-						'db_put' => $Redis->get('APIMETRICS_AJAX_' . $endpoint . '_DB_PUT') ?: 0,
-						'db_time_ms' => $Redis->get('APIMETRICS_AJAX_' . $endpoint . '_DB_TIME_MS') ?: 0,
+						'time_ms' => $Redis->get('METRICS_AJAX_' . $endpoint . '_TIME_MS') ?: 0,
+						'db_get' => $Redis->get('METRICS_AJAX_' . $endpoint . '_DB_GET') ?: 0,
+						'db_put' => $Redis->get('METRICS_AJAX_' . $endpoint . '_DB_PUT') ?: 0,
+						'db_time_ms' => $Redis->get('METRICS_AJAX_' . $endpoint . '_DB_TIME_MS') ?: 0,
 						'bot_count' => null, // AJAX doesn't use API key authentication
 						'type' => 'AJAX'
 					);
 				}
 			}
 
+			// Collect metrics for PAGE endpoints
+			foreach ($pageEndpoints as $endpoint) {
+				$count = $Redis->get('METRICS_PAGE_' . $endpoint . '_COUNT');
+
+				if ($count && $count > 0) {
+					$metrics['PAGE_' . $endpoint] = array(
+						'count' => $count,
+						'time_ms' => $Redis->get('METRICS_PAGE_' . $endpoint . '_TIME_MS') ?: 0,
+						'db_get' => $Redis->get('METRICS_PAGE_' . $endpoint . '_DB_GET') ?: 0,
+						'db_put' => $Redis->get('METRICS_PAGE_' . $endpoint . '_DB_PUT') ?: 0,
+						'db_time_ms' => $Redis->get('METRICS_PAGE_' . $endpoint . '_DB_TIME_MS') ?: 0,
+						'bot_count' => null, // PAGE doesn't use API key authentication
+						'type' => 'PAGE'
+					);
+				}
+			}
+
 			if (empty($metrics)) {
-				print '<p class="notice">'.l_t('No API or AJAX metrics have been collected yet. Metrics will appear here once API or AJAX calls are made.').'</p>';
+				print '<p class="notice">'.l_t('No metrics have been collected yet. Metrics will appear here once API calls, AJAX requests, or page views are made.').'</p>';
 			} else {
 				// Sort by hit count (descending)
 				uasort($metrics, function($a, $b) {
@@ -376,9 +411,12 @@ if( $User->type['Admin'] )
 					// Convert endpoint name back to readable format
 					if ($type == 'API') {
 						$routeName = strtolower(str_replace('_', '/', $cleanEndpoint));
-					} else {
+					} elseif ($type == 'AJAX') {
 						// For AJAX, keep underscores but make lowercase
 						$routeName = strtolower($cleanEndpoint);
+					} else {
+						// For PAGE, make lowercase with .php extension
+						$routeName = strtolower($cleanEndpoint) . '.php';
 					}
 
 					// Calculate averages

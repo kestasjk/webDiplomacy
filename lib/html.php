@@ -1206,7 +1206,47 @@ class libHTML
 	 */
 	static public function footer()
 	{
-		global $DB;
+		global $DB, $Redis, $pageStartTime;
+
+		// Collect page metrics if Redis is available and we have a MetricsDatabase
+		if (isset($Redis) && $Redis !== null && isset($pageStartTime) && $DB instanceof MetricsDatabase) {
+			try {
+				// Get page name from current script
+				$pageName = '';
+				if (isset($_SERVER['PHP_SELF']) && $_SERVER['PHP_SELF']) {
+					$pageName = strtoupper(basename($_SERVER['PHP_SELF'], '.php'));
+				} elseif (isset($_SERVER['SCRIPT_NAME']) && $_SERVER['SCRIPT_NAME']) {
+					$pageName = strtoupper(basename($_SERVER['SCRIPT_NAME'], '.php'));
+				}
+
+				// Handle special cases
+				if ($pageName === 'INDEX' || $pageName === '') {
+					$pageName = 'HOME';
+				}
+
+				if ($pageName) {
+					// Calculate page generation time
+					$pageTimeMs = round((microtime(true) - $pageStartTime) * 1000);
+
+					// Get database metrics
+					$dbMetrics = $DB->getMetrics();
+
+					// Store page metrics in Redis
+					$Redis->set('METRICS_PAGE_' . $pageName . '_COUNT',
+						($Redis->get('METRICS_PAGE_' . $pageName . '_COUNT') ?: 0) + 1);
+					$Redis->set('METRICS_PAGE_' . $pageName . '_TIME_MS',
+						($Redis->get('METRICS_PAGE_' . $pageName . '_TIME_MS') ?: 0) + $pageTimeMs);
+					$Redis->set('METRICS_PAGE_' . $pageName . '_DB_GET',
+						($Redis->get('METRICS_PAGE_' . $pageName . '_DB_GET') ?: 0) + $dbMetrics['db_get']);
+					$Redis->set('METRICS_PAGE_' . $pageName . '_DB_PUT',
+						($Redis->get('METRICS_PAGE_' . $pageName . '_DB_PUT') ?: 0) + $dbMetrics['db_put']);
+					$Redis->set('METRICS_PAGE_' . $pageName . '_DB_TIME_MS',
+						($Redis->get('METRICS_PAGE_' . $pageName . '_DB_TIME_MS') ?: 0) + $dbMetrics['db_time_ms']);
+				}
+			} catch (Exception $e) {
+				// Silently ignore Redis errors to not break the page
+			}
+		}
 
 		print '<div id="footer">';
 

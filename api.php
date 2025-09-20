@@ -2059,21 +2059,21 @@ try {
 			$dbMetrics = $DB->getMetrics();
 
 			// Increment counters and add times in Redis
-			$Redis->set('APIMETRIC_' . $route . '_COUNT',
-				($Redis->get('APIMETRIC_' . $route . '_COUNT') ?: 0) + 1);
-			$Redis->set('APIMETRIC_' . $route . '_TIME_MS',
-				($Redis->get('APIMETRIC_' . $route . '_TIME_MS') ?: 0) + $apiTimeMs);
-			$Redis->set('APIMETRIC_' . $route . '_DB_GET',
-				($Redis->get('APIMETRIC_' . $route . '_DB_GET') ?: 0) + $dbMetrics['db_get']);
-			$Redis->set('APIMETRIC_' . $route . '_DB_PUT',
-				($Redis->get('APIMETRIC_' . $route . '_DB_PUT') ?: 0) + $dbMetrics['db_put']);
-			$Redis->set('APIMETRIC_' . $route . '_DB_TIME_MS',
-				($Redis->get('APIMETRIC_' . $route . '_DB_TIME_MS') ?: 0) + $dbMetrics['db_time_ms']);
+			$Redis->set('METRICS_API_' . $route . '_COUNT',
+				($Redis->get('METRICS_API_' . $route . '_COUNT') ?: 0) + 1);
+			$Redis->set('METRICS_API_' . $route . '_TIME_MS',
+				($Redis->get('METRICS_API_' . $route . '_TIME_MS') ?: 0) + $apiTimeMs);
+			$Redis->set('METRICS_API_' . $route . '_DB_GET',
+				($Redis->get('METRICS_API_' . $route . '_DB_GET') ?: 0) + $dbMetrics['db_get']);
+			$Redis->set('METRICS_API_' . $route . '_DB_PUT',
+				($Redis->get('METRICS_API_' . $route . '_DB_PUT') ?: 0) + $dbMetrics['db_put']);
+			$Redis->set('METRICS_API_' . $route . '_DB_TIME_MS',
+				($Redis->get('METRICS_API_' . $route . '_DB_TIME_MS') ?: 0) + $dbMetrics['db_time_ms']);
 
 			// Track bot API calls separately (only for API key authentication)
 			if ($api->authClass === 'ApiKey') {
-				$Redis->set('APIMETRIC_' . $route . '_BOTCOUNT',
-					($Redis->get('APIMETRIC_' . $route . '_BOTCOUNT') ?: 0) + 1);
+				$Redis->set('METRICS_API_' . $route . '_BOTCOUNT',
+					($Redis->get('METRICS_API_' . $route . '_BOTCOUNT') ?: 0) + 1);
 			}
 		} catch (Exception $e) {
 			// Silently ignore Redis errors to not break the API

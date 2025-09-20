@@ -47,6 +47,10 @@ require_once('config.php');
 
 require_once('global/definitions.php');
 
+// Initialize page timing for metrics collection
+global $pageStartTime;
+$pageStartTime = microtime(true);
+
 if( strlen(Config::$serverMessages['ServerOffline']) )
 	die('<html><head><title>Server offline</title></head>'.
 		'<body>'.Config::$serverMessages['ServerOffline'].'</body></html>');
@@ -167,8 +171,27 @@ date_default_timezone_set('UTC');
 
 // Create database object
 require_once(l_r('objects/database.php'));
-global $DB;
-$DB = new Database();
+require_once(l_r('objects/database_metrics.php'));
+require_once(l_r('objects/redis.php'));
+
+global $DB, $Redis;
+
+// Initialize Redis for page metrics (if available)
+$Redis = null;
+if (Config::$redisHost && Config::$redisPort) {
+	try {
+		// Only try to use Redis if the extension is installed
+		if (class_exists('Redis')) {
+			$Redis = new RedisInterface(Config::$redisHost, Config::$redisPort);
+		}
+	} catch (Exception $e) {
+		// If Redis connection fails, continue without metrics
+		$Redis = null;
+	}
+}
+
+// Use MetricsDatabase for page metrics tracking
+$DB = new MetricsDatabase();
 
 // Set up the misc values object
 require_once(l_r('objects/misc.php'));
