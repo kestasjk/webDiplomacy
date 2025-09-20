@@ -41,6 +41,9 @@ class RedisInterface
 
     public function __construct($host = '127.0.0.1', $port = 6379)
     {
+        if (!class_exists('Redis')) {
+            throw new Exception('Redis PHP extension is not installed');
+        }
         $this->redis = new Redis();
         $this->redis->connect($host, $port);
     }

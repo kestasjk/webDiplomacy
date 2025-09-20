@@ -28,6 +28,8 @@ require_once('header.php');
 require_once('global/definitions.php');
 require_once('locales/layer.php');
 require_once('objects/database.php');
+require_once('objects/database_metrics.php');
+require_once('objects/redis.php');
 require_once('objects/memcached.php');
 require_once('board/orders/orderinterface.php');
 require_once('api/responses/members_in_cd.php');
@@ -44,8 +46,24 @@ require_once('lib/variant.php');
 require_once('board/orders/jsonBoardData.php');
 require_once('variants/install.php');
 require_once('gamemaster/gamemaster.php');
-global $DB;
-$DB = new Database();
+global $DB, $Redis;
+
+// Initialize Redis for metrics
+$Redis = null;
+if (Config::$redisHost && Config::$redisPort) {
+	try {
+		// Only try to use Redis if the extension is installed
+		if (class_exists('Redis')) {
+			$Redis = new RedisInterface(Config::$redisHost, Config::$redisPort);
+		}
+	} catch (Exception $e) {
+		// If Redis connection fails, continue without metrics
+		$Redis = null;
+	}
+}
+
+// Use MetricsDatabase for API calls to track performance
+$DB = new MetricsDatabase();
 
 /**
  * Exception class - missing credentials (API key).
@@ -2017,7 +2035,45 @@ try {
 	$api->load(new SandboxMoveTurnBack());
 	$api->load(new SandboxDelete());
 
+	// Track API call metrics
+	$apiStartTime = microtime(true);
+
+	// Reset database metrics before the API call
+	if ($DB instanceof MetricsDatabase) {
+		$DB->resetMetrics();
+	}
+
 	$jsonEncodedResponse = $api->run();
+
+	// Calculate total API call time
+	$apiEndTime = microtime(true);
+	$apiTimeMs = round(($apiEndTime - $apiStartTime) * 1000);
+
+	// Store metrics in Redis if available
+	if ($Redis !== null && $DB instanceof MetricsDatabase) {
+		try {
+			// Get the route and normalize it for Redis key
+			$route = strtoupper(str_replace('/', '_', $api->getRoute()));
+
+			// Get database metrics
+			$dbMetrics = $DB->getMetrics();
+
+			// Increment counters and add times in Redis
+			$Redis->set('APIMETRIC_' . $route . '_COUNT',
+				($Redis->get('APIMETRIC_' . $route . '_COUNT') ?: 0) + 1);
+			$Redis->set('APIMETRIC_' . $route . '_TIME_MS',
+				($Redis->get('APIMETRIC_' . $route . '_TIME_MS') ?: 0) + $apiTimeMs);
+			$Redis->set('APIMETRIC_' . $route . '_DB_GET',
+				($Redis->get('APIMETRIC_' . $route . '_DB_GET') ?: 0) + $dbMetrics['db_get']);
+			$Redis->set('APIMETRIC_' . $route . '_DB_PUT',
+				($Redis->get('APIMETRIC_' . $route . '_DB_PUT') ?: 0) + $dbMetrics['db_put']);
+			$Redis->set('APIMETRIC_' . $route . '_DB_TIME_MS',
+				($Redis->get('APIMETRIC_' . $route . '_DB_TIME_MS') ?: 0) + $dbMetrics['db_time_ms']);
+		} catch (Exception $e) {
+			// Silently ignore Redis errors to not break the API
+		}
+	}
+
 	// Set JSON header.
 	header('Content-Type: application/json');
 	// Print response.
