@@ -25,6 +25,65 @@ defined('IN_CODE') or die('This script can not be run by itself.');
  *
  * @package Admin
  */
+
+// Handle clearing API metrics if requested
+if( $User->type['Admin'] && isset($_GET['clearAPIMetrics']) )
+{
+	try {
+		if (class_exists('Redis')) {
+			require_once(l_r('objects/redis.php'));
+			$Redis = new RedisInterface(Config::$redisHost, Config::$redisPort);
+
+			// Get all keys that start with APIMETRIC
+			$pattern = 'APIMETRIC*';
+			$keys = array();
+
+			// Since Redis doesn't have a direct way to get keys by pattern in our interface,
+			// we'll delete known metric types for all known endpoints
+			$allEndpoints = array(
+				// API endpoints
+				'PLAYERS_CD', 'PLAYERS_MISSING_ORDERS', 'PLAYERS_ACTIVE_GAMES',
+				'GAME_STATUS', 'GAME_OVERVIEW', 'GAME_DATA', 'GAME_MEMBERS',
+				'GAME_JOIN', 'GAME_LEAVE', 'GAME_ORDERS', 'GAME_TOGGLEVOTE', 'GAME_SETVOTE',
+				'WEBSOCKETS_AUTHENTICATION', 'SSE_AUTHENTICATION', 'GAME_SENDMESSAGE',
+				'GAME_GETMESSAGES', 'GAME_MESSAGESSEEN', 'GAME_MARKBACKFROMLEFT',
+				'SANDBOX_CREATE', 'SANDBOX_COPY', 'SANDBOX_MOVETURNBACK', 'SANDBOX_DELETE',
+			);
+
+			$ajaxEndpoints = array('SMS_TOKEN', 'LIKE_MESSAGE_TOGGLE', 'ORDER_UPDATES', 'GROUP_MANAGEMENT', 'INVALID');
+
+			$metricTypes = array('COUNT', 'TIME_MS', 'DB_GET', 'DB_PUT', 'DB_TIME_MS', 'BOTCOUNT');
+			$clearedCount = 0;
+
+			// Clear API metrics
+			foreach ($allEndpoints as $endpoint) {
+				foreach ($metricTypes as $type) {
+					$key = 'APIMETRIC_' . $endpoint . '_' . $type;
+					if ($Redis->delete($key)) {
+						$clearedCount++;
+					}
+				}
+			}
+
+			// Clear AJAX metrics
+			foreach ($ajaxEndpoints as $endpoint) {
+				foreach ($metricTypes as $type) {
+					if ($type == 'BOTCOUNT') continue; // AJAX doesn't have bot counts
+					$key = 'APIMETRICS_AJAX_' . $endpoint . '_' . $type;
+					if ($Redis->delete($key)) {
+						$clearedCount++;
+					}
+				}
+			}
+
+			print '<div class="notice">'.l_t('API metrics cleared successfully. Removed %s metric keys from Redis.', $clearedCount).'</div>';
+		} else {
+			print '<div class="notice">'.l_t('Redis extension not available. Cannot clear metrics.').'</div>';
+		}
+	} catch (Exception $e) {
+		print '<div class="notice">'.l_t('Error clearing metrics: ').$e->getMessage().'</div>';
+	}
+}
 if( !isset($_REQUEST['full']) )
 	print '<p class = "modTools"> <a class="modTools" href="admincp.php?tab=Status Info&full=on">'.l_t('View all logs').'</a>
 	</br> Error logs, banned users, and donator lists are limited to 50 items, use this link to see full result set.</p>';
@@ -204,7 +263,7 @@ print '<b>Maintenance Message: '.$maintenance.'</b><br/><br/>';
 if( $User->type['Admin'] )
 {
 	print '<br/><hr/><br/>';
-	print '<p class="modTools"><strong>'.l_t('API Performance Metrics:').'</strong></p>';
+	print '<p class="modTools"><strong>'.l_t('API Performance Metrics:').'</strong> (<a href="admincp.php?tab=Status%20Info&clearAPIMetrics=1" onclick="return confirm(\'Are you sure you want to clear all API metrics? This action cannot be undone.\')" class="modTools">Clear All Metrics</a>)</p>';
 
 	// Check if Redis extension is available
 	if (!class_exists('Redis')) {
