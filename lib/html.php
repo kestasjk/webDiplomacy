@@ -1091,12 +1091,6 @@ class libHTML
 					else
 					{
 						$menu.='
-						<div id="navSubMenu" class="clickable nav-tab">Search ▼
-							<div id="nav-drop">
-								<a href="search.php">Find User</a>
-								<a href="gamelistings.php?gamelistType=Search">Game Search</a>
-							</div>
-						</div>
 						<div id="navSubMenu" class="clickable nav-tab">Games ▼
 							<div id="nav-drop">
 								<a href="gamelistings.php?gamelistType=New" title="Game listings; a searchable list of the games on this server">New Games</a>
