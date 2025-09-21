@@ -21,11 +21,54 @@
 defined('IN_CODE') or die('This script can not be run by itself.');
 
 /**
- * Display the error logs and other lists useful for admins
+ * Display the error logs and other lists useful for admins such as performance metrics
  *
  * @package Admin
  */
 
+// Known API endpoints to check
+$apiEndpoints = array(
+	'PLAYERS_CD',
+	'PLAYERS_MISSING_ORDERS',
+	'PLAYERS_ACTIVE_GAMES',
+	'GAME_STATUS',
+	'GAME_OVERVIEW',
+	'GAME_DATA',
+	'GAME_MEMBERS',
+	'GAME_JOIN',
+	'GAME_LEAVE',
+	'GAME_ORDERS',
+	'GAME_TOGGLEVOTE',
+	'GAME_SETVOTE',
+	'WEBSOCKETS_AUTHENTICATION',
+	'SSE_AUTHENTICATION',
+	'GAME_SENDMESSAGE',
+	'GAME_GETMESSAGES',
+	'GAME_MESSAGESSEEN',
+	'GAME_MARKBACKFROMLEFT',
+	'SANDBOX_CREATE',
+	'SANDBOX_COPY',
+	'SANDBOX_MOVETURNBACK',
+	'SANDBOX_DELETE'
+);
+// Known AJAX endpoints to check
+$ajaxEndpoints = array(
+	'SMS_TOKEN',
+	'LIKE_MESSAGE_TOGGLE',
+	'ORDER_UPDATES',
+	'GROUP_MANAGEMENT',
+	'INVALID'
+);
+// Known PAGE endpoints to check
+$pageEndpoints = array(
+	'HOME', 'BOARD', 'FORUM', 'USERCP', 'ADMINCP', 'PROFILE', 'GAMES', 'TOURNAMENTS',
+	'RULES', 'FAQ', 'CREDITS', 'VARIANTS', 'REGISTER', 'CONTACTUS', 'DEVELOPERS',
+	'DONATIONS', 'POINTS', 'SEARCH', 'MESSAGE', 'MODFORUM', 'BOTGAMECREATE',
+	'BOTSTATUS', 'DETAILEDSEARCH', 'USERPROFILE', 'USEROPTIONS', 'USERNOTIFICATIONS',
+	'GAMEMASTER', 'GAMELISTINGS'
+);
+$metricTypes = array('COUNT', 'TIME_MS', 'DB_GET', 'DB_PUT', 'DB_TIME_MS', 'BOTCOUNT');
+					
 // Handle clearing API metrics if requested
 if( $User->type['Admin'] && isset($_GET['clearAPIMetrics']) )
 {
@@ -34,32 +77,7 @@ if( $User->type['Admin'] && isset($_GET['clearAPIMetrics']) )
 			require_once(l_r('objects/redis.php'));
 			$Redis = new RedisInterface(Config::$redisHost, Config::$redisPort);
 
-			// Get all keys that start with APIMETRIC
-			$pattern = 'APIMETRIC*';
-			$keys = array();
 
-			// Since Redis doesn't have a direct way to get keys by pattern in our interface,
-			// we'll delete known metric types for all known endpoints
-			$apiEndpoints = array(
-				// API endpoints
-				'PLAYERS_CD', 'PLAYERS_MISSING_ORDERS', 'PLAYERS_ACTIVE_GAMES',
-				'GAME_STATUS', 'GAME_OVERVIEW', 'GAME_DATA', 'GAME_MEMBERS',
-				'GAME_JOIN', 'GAME_LEAVE', 'GAME_ORDERS', 'GAME_TOGGLEVOTE', 'GAME_SETVOTE',
-				'WEBSOCKETS_AUTHENTICATION', 'SSE_AUTHENTICATION', 'GAME_SENDMESSAGE',
-				'GAME_GETMESSAGES', 'GAME_MESSAGESSEEN', 'GAME_MARKBACKFROMLEFT',
-				'SANDBOX_CREATE', 'SANDBOX_COPY', 'SANDBOX_MOVETURNBACK', 'SANDBOX_DELETE',
-			);
-
-			$ajaxEndpoints = array('SMS_TOKEN', 'LIKE_MESSAGE_TOGGLE', 'ORDER_UPDATES', 'GROUP_MANAGEMENT', 'INVALID');
-
-			$pageEndpoints = array(
-				'HOME', 'BOARD', 'FORUM', 'USERCP', 'ADMINCP', 'PROFILE', 'GAMES', 'TOURNAMENTS',
-				'RULES', 'FAQ', 'CREDITS', 'VARIANTS', 'REGISTER', 'CONTACTUS', 'DEVELOPERS',
-				'DONATIONS', 'POINTS', 'SEARCH', 'MESSAGE', 'MODFORUM', 'BOTGAMECREATE',
-				'BOTSTATUS', 'DETAILEDSEARCH', 'USERPROFILE', 'USEROPTIONS', 'USERNOTIFICATIONS'
-			);
-
-			$metricTypes = array('COUNT', 'TIME_MS', 'DB_GET', 'DB_PUT', 'DB_TIME_MS', 'BOTCOUNT');
 			$clearedCount = 0;
 
 			// Clear API metrics
@@ -295,49 +313,7 @@ if( $User->type['Admin'] )
 			// Fetch all API metric keys
 			$metrics = array();
 			$allKeys = array();
-
-			// Known API endpoints to check
-			$apiEndpoints = array(
-				'PLAYERS_CD',
-				'PLAYERS_MISSING_ORDERS',
-				'PLAYERS_ACTIVE_GAMES',
-				'GAME_STATUS',
-				'GAME_OVERVIEW',
-				'GAME_DATA',
-				'GAME_MEMBERS',
-				'GAME_JOIN',
-				'GAME_LEAVE',
-				'GAME_ORDERS',
-				'GAME_TOGGLEVOTE',
-				'GAME_SETVOTE',
-				'WEBSOCKETS_AUTHENTICATION',
-				'SSE_AUTHENTICATION',
-				'GAME_SENDMESSAGE',
-				'GAME_GETMESSAGES',
-				'GAME_MESSAGESSEEN',
-				'GAME_MARKBACKFROMLEFT',
-				'SANDBOX_CREATE',
-				'SANDBOX_COPY',
-				'SANDBOX_MOVETURNBACK',
-				'SANDBOX_DELETE'
-			);
-
-			// Known AJAX endpoints to check
-			$ajaxEndpoints = array(
-				'SMS_TOKEN',
-				'LIKE_MESSAGE_TOGGLE',
-				'ORDER_UPDATES',
-				'GROUP_MANAGEMENT',
-				'INVALID'
-			);
-
-			// Known PAGE endpoints to check
-			$pageEndpoints = array(
-				'HOME', 'BOARD', 'FORUM', 'USERCP', 'ADMINCP', 'PROFILE', 'GAMES', 'TOURNAMENTS',
-				'RULES', 'FAQ', 'CREDITS', 'VARIANTS', 'REGISTER', 'CONTACTUS', 'DEVELOPERS',
-				'DONATIONS', 'POINTS', 'SEARCH', 'MESSAGE', 'MODFORUM', 'BOTGAMECREATE',
-				'BOTSTATUS', 'DETAILEDSEARCH', 'USERPROFILE', 'USEROPTIONS', 'USERNOTIFICATIONS'
-			);
+			
 
 			// Collect metrics for API endpoints
 			foreach ($apiEndpoints as $endpoint) {
