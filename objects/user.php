@@ -1484,7 +1484,7 @@ class User {
 
 		$tabl = $DB->sql_tabl(
 				"SELECT g.categoryID, g.rating, g.peakRating, 
-				(select count(1)+1 from wD_GhostRatings g1 where g1.categoryID = g.categoryID and g1.rating > g.rating) as position 
+					RANK() OVER (PARTITION BY g.categoryID ORDER BY g.rating DESC) AS position
 				FROM wD_GhostRatings g WHERE g.userID = ".$this->id
 			);
 
