@@ -37,14 +37,16 @@ if( isset($_REQUEST['forgotPassword']) and $User->type['Guest'] )
 	{
 		if ( $_REQUEST['forgotPassword'] == 1 )
 		{
-			print '<p> <strong>Forgot your username?</strong></br> Search for it by the email you registered with <a href="profile.php">here.</a> If you cannot find it email 
-			the moderator team at '.Config::$modEMail.' and they will help you get back into your account. <strong>Do not make a new account.</strong> </p>
-			
-			<p><strong>Forgot your password?</strong></br> Enter your username below and an e-mail will be sent to the email you registered containing an '.
-			'activation link that will set a new password. If you no longer have access to that email account email the moderator team at '.Config::$modEMail.'</p>
+			print '<p>
+			<p><strong>Forgot your password?</strong></br> Enter your username or e-mail below, and an e-mail will be sent to the email you registered containing an '.
+			'activation link that will set a new password.<br /><br />
+			If you no longer have access to that email account or no longer remember your username or e-mail address we have no way to verify your identity 
+			and help you regain access to your account, so you need to create a new one with your new e-mail.</p>
+
+			<p>If you cannot get access after trying this please contact the moderator team at '.Config::$modEMail.', but note it may take some time to respond so please try to use the below first.</p>
 
 			<form action="./logon.php?forgotPassword=2" method="post">
-				<strong>'.l_t('Username').'</strong>
+				<strong>'.l_t('Username / E-mail').'</strong>
 				<input type="text" tabindex="1" maxlength=30 size=15 class="login" name="forgotUsername"></br></br>
 				<input type="submit" class="green-Submit" value="Reset Password">
 			</form>';
@@ -52,10 +54,16 @@ if( isset($_REQUEST['forgotPassword']) and $User->type['Guest'] )
 		elseif ( $_REQUEST['forgotPassword'] == 2 && isset($_REQUEST['forgotUsername']) )
 		{
 			try {
-				$forgottenUser = new User(0,$DB->escape($_REQUEST['forgotUsername']));
+				$search_username = $DB->escape($_REQUEST['forgotUsername']);
+
+				// Check if this is an email address:
+				$tabl = $DB->sql_tabl("SELECT username FROM wD_Users WHERE email = '".$DB->escape($_REQUEST['forgotUsername'])."'");
+				while( list($username) = $DB->tabl_row($tabl) ) $search_username = $username;
+
+				$forgottenUser = new User(0,$search_username);
 			} catch(Exception $e) {
-				throw new Exception(l_t("Cannot find an account for the given username, please ".
-					"<a href='logon.php?forgotPassword=1' class='light'>go back</a> and check your spelling."));
+				throw new Exception(l_t("Cannot find an account for the given username / e-mail, please ".
+					"<a href='logon.php?forgotPassword=1' class='light'>go back</a> and check for typos."));
 			}
 
 			if( $MC->get('forgot_'.$forgottenUser->id) !== false )
@@ -94,12 +102,31 @@ if( isset($_REQUEST['forgotPassword']) and $User->type['Guest'] )
 				SET password=UNHEX('".libAuth::pass_Hash($newPassword)."')
 				WHERE id=".$userID." LIMIT 1");
 
-			print '<p>'.l_t('Thanks for verifying your email, this is your new password, which you can '.
-					'change once you have logged back on:').'<br /><br />
+			libAuth::keySet($userID);
 
-				<strong>'.$newPassword.'</strong></p>
+			print '<p>'.l_t('Thanks for verifying your email. This is your newly generated password, which you are now logged on as and can '.
+					'either change via the profile page or stay logged in with:').'<br /><br />';
 
-				<p><a href="logon.php" class="light">'.l_t('Back to log-on prompt').'</a></p>';
+			print '<strong id="newPassword">'.$newPassword.'</strong></p>';
+			print '<button onclick="copyToClipboard()"><i>Copy password</i></button>
+			<script>
+			function copyToClipboard() {
+				const password = document.getElementById("newPassword").innerText;
+				navigator.clipboard.writeText(password).then(function() {
+					alert("Password copied to clipboard");
+				}, function(err) {
+					alert("Could not copy password: ", err);
+				});
+			}
+			</script>';
+
+			print '<p class="notice">
+				<a href="index.php">'.l_t('Home page').'</a>
+				- 
+				<a href="usercp.php">'.l_t('Change password').'</a>
+				- 
+				<a href="logon.php">'.l_t('Logoff / Logon').'</a>
+				</p>';
 		}
 	}
 	catch(Exception $e)
