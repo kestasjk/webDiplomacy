@@ -715,3 +715,6 @@ INSERT INTO wD_BotGameQueue ( userID, queuedTime, notifiedTime, startedTime, gam
 SELECT u.id, g.processTime, g.processTime, g.processTime, g.id, IF(g.gameOver='No' AND g.phase <> 'Finished',NULL,g.processTime) FROM wD_Members b INNER JOIN wD_Games g ON g.id = b.gameID INNER JOIN wD_Members m ON m.gameID = g.id INNER JOIN wD_Users u ON u.id = m.userID LEFT JOIN wD_ApiKeys a ON a.userID = u.id WHERE b.userID = 181048 AND a.userID IS NULL GROUP BY u.username, u.email, u.points;
 UPDATE wD_BotGameQueue bg INNER JOIN (SELECT gameID, MIN(timeSent) t FROM wD_GameMessages GROUP BY
 gameID) g ON g.gameID = bg.gameID SET bg.queuedTime = g.t, bg.notifiedTime = g.t, bg.startedTime = g.t;
+
+-- Optimize query to count games played on variant page
+CREATE INDEX idx_wD_Games_variant_phase  ON wD_Games (variantID, phase);

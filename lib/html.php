@@ -929,7 +929,6 @@ class libHTML
 			{
 				$links['logon.php']=array('name'=>'Log off', 'inmenu'=>false, 'title'=>"Log onto webDiplomacy using an existing user account");
 				$links['gamecreate.php']=array('name'=>'New game', 'inmenu'=>TRUE, 'title'=>"Start up a new game");
-				$links['detailedSearch.php']=array('name'=>'Search', 'inmenu'=>TRUE, 'title'=>"advanced search of users and games");
 				$links['usercp.php']=array('name'=>'Settings', 'inmenu'=>TRUE, 'title'=>"Change your user specific settings");
 				$links['useridentity.php']=array('name'=>'Identity', 'inmenu'=>FALSE, 'title'=>"Validate your identity");
 				$links['usernotifications.php']=array('name'=>'Notifications', 'inmenu'=>FALSE, 'title'=>"Manage notifications");
@@ -1096,7 +1095,6 @@ class libHTML
 							<div id="nav-drop">
 								<a href="search.php">Find User</a>
 								<a href="gamelistings.php?gamelistType=Search">Game Search</a>
-								<a href="detailedSearch.php" title="advanced search of users and games">Advanced Search</a>
 							</div>
 						</div>
 						<div id="navSubMenu" class="clickable nav-tab">Games ▼

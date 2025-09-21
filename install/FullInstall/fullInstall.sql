@@ -2540,3 +2540,6 @@ SELECT u.id, g.processTime, g.processTime, g.processTime, g.id, IF(g.gameOver='N
 UPDATE wD_BotGameQueue bg INNER JOIN (SELECT gameID, MIN(timeSent) t FROM wD_GameMessages GROUP BY
 gameID) g ON g.gameID = bg.gameID SET bg.queuedTime = g.t, bg.notifiedTime = g.t, bg.startedTime = g.t;
 
+
+-- Optimize query to count games played on variant page
+CREATE INDEX idx_wD_Games_variant_phase  ON wD_Games (variantID, phase);
