@@ -46,7 +46,7 @@ class panelGameBoard extends panelGame
 		$staticFilename = Game::mapFilename($this->id, $mapTurn, 'small');
 
 		if( file_exists($staticFilename) && $User->getOptions()->value['showMoves'] == 'Yes' )
-			$smallmapLink = STATICSRV.$staticFilename.'?nocache='.rand(0,99999);
+			$smallmapLink = $staticFilename.'?nocache='.rand(0,99999);
 
 		$map = '
 		<div id="mapstore">

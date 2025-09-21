@@ -329,44 +329,6 @@ REQUESTLOCATION;
             }
         }
     }
-    public static function googleProcess()
-    {
-        $validSources = $this->getOpenIDUserValidSources();
-        if( $validSources['google'] )
-        {
-            //$validSources['google'];
-        }
-    }
-    public static function facebookForm()
-    {
-        global $User;
-
-        $validSources = libOpenID::getValidSources($User->id);
-        if( $validSources['facebook'] )
-        {
-            return 'You are linked to a Facebook account.';
-        }
-        else
-        {
-            if( !is_null($self::$openIDUserInfo) )
-            {
-                return '<a href="usercp.php?auth0Logout=on">Log out of your current OpenID provider to log into Facebook</a>';        
-            }
-            else
-            {
-                return '<a href="usercp.php?auth0Login=on">Log in</a>';
-            }
-        }
-    }
-    public static function facebookProcess()
-    {
-        global $User;
-        $validSources = libOpenID::getValidSources($User->id);
-        if( $validSources['facebook'] )
-        {
-            //$validSources['facebook'];
-        }
-    }
     public static function panel($PanelUser)
     {
         global $User;
@@ -432,13 +394,6 @@ REQUESTLOCATION;
                 $buf .= libHTML::pathToSVG(self::$identityIcon[$identityType]);
             else   
                 $buf .= $identityType;
-            $buf .= '</td>';
-            
-            $buf .= '<td>';
-            if( !isset($identityRecords[$identityType]) )
-                $buf .= '0';
-            else
-                $identityRecords[$identityType]->score;
             $buf .= '</td>';
             
             $buf .= '</tr>';

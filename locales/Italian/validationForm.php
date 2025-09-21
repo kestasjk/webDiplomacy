@@ -28,7 +28,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 
 		<li class="formlisttitle">Codice di Verifica</li>
 		<li class="formlistfield">
-		        <img alt="EasyCaptcha image" src="<?php print STATICSRV; ?>contrib/easycaptcha.php" /><br />
+		        <img alt="EasyCaptcha image" src="contrib/easycaptcha.php" /><br />
 		        <input type="text" name="imageText" />
 		</li>
 		<li class="formlistdesc">

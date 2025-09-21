@@ -60,13 +60,13 @@ I centri di approvigionamento hanno dei segni, che li distinguono dalle semplici
 <a name="Unità"></a>
 <h3>Unità in campo</h3>
 <ul class="formlist">
-	<li class="formlisttitle">Armata <img src="<?php print STATICSRV; ?>contrib/army.png"
+	<li class="formlisttitle">Armata <img src="contrib/army.png"
 		alt="Diplomacy - Armata "  title="L'icona di un'Armata" /></li>
 	<li class="formlistdesc">
 	Questa unità può muoversi solo sulla terraferma.
 	</li>
 
-	<li class="formlisttitle">Flotta <img src="<?php print STATICSRV; ?>contrib/fleet.png"
+	<li class="formlisttitle">Flotta <img src="contrib/fleet.png"
 		alt="Diplomacy - Flotta " title="L'icona di una Flotta" /></li>
 	<li class="formlistdesc">
 	 Questa unità può muoversi solo sui mari e sulle regioni con delle coste.
@@ -82,7 +82,7 @@ I centri di approvigionamento hanno dei segni, che li distinguono dalle semplici
 	<li class="formlistdesc">
 		L'Unità difenderà il terrirorio sul quale si trova, se questo viene attaccato; altrimenti starà ferma.
 		<p style="text-align:center;">
-			<img src="<?php print STATICSRV; ?>datc/maps/801-large.map-thumb" alt="Diplomacy - Armata ferma " title="Armata ferma a Napoli" />
+			<img src="datc/maps/801-large.map-thumb" alt="Diplomacy - Armata ferma " title="Armata ferma a Napoli" />
 		</p>
 	</li>
 
@@ -91,7 +91,7 @@ I centri di approvigionamento hanno dei segni, che li distinguono dalle semplici
 	<li class="formlistdesc">
 		L'Unità tenta di andare verso(/attaccare) un territorio adiacente.
 		<p style="text-align:center;">
-			<img src="<?php print STATICSRV; ?>datc/maps/802-large.map-thumb" alt="Diplomacy - Armata in movimento " title="L'Armata da Napoli muove verso Roma" />
+			<img src="datc/maps/802-large.map-thumb" alt="Diplomacy - Armata in movimento " title="L'Armata da Napoli muove verso Roma" />
 		</p>
 	</li>
 
@@ -103,9 +103,9 @@ I centri di approvigionamento hanno dei segni, che li distinguono dalle semplici
 		<br />
 		<em>(Tieni fermo il cursore del mouse sulle immagini per avere spiegazioni più dettagliate.)</em>
 		<p style="text-align:center;">
-			<img src="<?php print STATICSRV; ?>datc/maps/803-large.map-thumb" alt="Diplomacy - Esempio regola supporto "
+			<img src="datc/maps/803-large.map-thumb" alt="Diplomacy - Esempio regola supporto "
 				title="Il Supporto (in giallo) all'Attacco, dato dall'Armata in Toscana, permette all'Armata di Venezia di sconfiggere l'Armata che stava a difesa di Roma" />
-			<img src="<?php print STATICSRV; ?>datc/maps/804-large.map-thumb" alt="Diplomacy - Esempio regola supporto "
+			<img src="datc/maps/804-large.map-thumb" alt="Diplomacy - Esempio regola supporto "
 				title="Il Supporto alla Difesa (Verde) dato dalla flotta nel mare Tirreno all'Armata di Roma, permette di difendere la città da un attacco di uguale supporto" />
 		</p>
 	</li>
@@ -118,7 +118,7 @@ I centri di approvigionamento hanno dei segni, che li distinguono dalle semplici
     
 
 		<p style="text-align:center;">
-			<img src="<?php print STATICSRV; ?>datc/maps/805-large.map-thumb" alt="Diplomacy - regola trasporto armata "
+			<img src="datc/maps/805-large.map-thumb" alt="Diplomacy - regola trasporto armata "
 				title="L'Armata da Venezia muove verso Tunisia, e le Flotte in Adriatico e nello Ionio la trasportano" />
 		</p>
 	</li>
@@ -132,9 +132,9 @@ I centri di approvigionamento hanno dei segni, che li distinguono dalle semplici
   Tutte le Armate e le Flotte hanno uguale forza, e, a parità di supporti, un'Unità che <strong>difende</strong>
 	sconfiggerà sempre l'Unità che <strong>attacca</strong>.
 	<p style="text-align:center;">
-		<img src="<?php print STATICSRV; ?>datc/maps/806-large.map-thumb" alt="Diplomacy - attacco non riuscito "
+		<img src="datc/maps/806-large.map-thumb" alt="Diplomacy - attacco non riuscito "
 			title="L'Armata di Napoli ha provato a muovere senza supporti verso Roma. Il difensore riesce a resistere all'Attacco" />
-		<img src="<?php print STATICSRV; ?>datc/maps/807-large.map-thumb" alt="Diplomacy - stallo "
+		<img src="datc/maps/807-large.map-thumb" alt="Diplomacy - stallo "
 			title="La Flotta e l'Armata che muovono verso la Puglia hanno uguale forza (1) e quindi nessuno dei due entra nel territorio conteso" />
 	</p>
 </li>
@@ -144,7 +144,7 @@ I centri di approvigionamento hanno dei segni, che li distinguono dalle semplici
 	L'unico modo per vincere le battaglie è quello di suportare l'<strong>Attacco</strong> con altre unità. Il <strong>supporto all'attacco</strong>
   viene visualizzato sulla mappa con frecce gialle.
 	<p style="text-align:center;">
-		<img src="<?php print STATICSRV; ?>datc/maps/803-large.map-thumb" alt="Diplomacy - attacco riuscito "
+		<img src="datc/maps/803-large.map-thumb" alt="Diplomacy - attacco riuscito "
 				title="Il supporto dato dall'Armata in Toscana permette all'Armata di Venezia di sconfiggere l'Armata di Roma" />
 	</p>
 </li>
@@ -153,7 +153,7 @@ I centri di approvigionamento hanno dei segni, che li distinguono dalle semplici
 <li class="formlistdesc">
 	Ovviamente, il supporto può essere dato anche in <strong>difesa</strong>. Segnato sulla mappa in verde.
 	<p style="text-align:center;">
-		<img src="<?php print STATICSRV; ?>datc/maps/804-large.map-thumb" alt="Diplomacy - difesa riuscita "
+		<img src="datc/maps/804-large.map-thumb" alt="Diplomacy - difesa riuscita "
 				title="Il Supporto alla Difesa (Verde) dato dalla flotta nel mare Tirreno all'Armata di Roma, permette di difendere la città da un attacco di uguale supporto" />
 	</p>
 </li>
@@ -163,9 +163,9 @@ I centri di approvigionamento hanno dei segni, che li distinguono dalle semplici
 	Se il numero di supporti all'<strong>Attacco</strong> è maggiore del numero dei supporti alla <strong>Difesa</strong>,
 	l'attacco riesce. Altrimenti vince il difensore.
 	<p style="text-align:center;">
-		<img src="<?php print STATICSRV; ?>datc/maps/808-large.map-thumb" alt="Diplomacy - attacco riuscito "
+		<img src="datc/maps/808-large.map-thumb" alt="Diplomacy - attacco riuscito "
 				title="La Flotta di Trieste viene aiutata da due unità (totale 3), mentre l'armata di Venezia aveva solo un aiuto (Roma), quindi La Flotta di Trieste entra a Venezia. L'Armata che in precedenza era in Venezia non è più visibile sulla mappa perchè sconfitta e costretta a ritirare in un territorio adiacente" />
-		<img src="<?php print STATICSRV; ?>datc/maps/809-large.map-thumb" alt="Diplomacy - attacco non riuscito "
+		<img src="datc/maps/809-large.map-thumb" alt="Diplomacy - attacco non riuscito "
 				title="La Flotta di Trieste viene aiutata da due unità (totale 3), ma anche la Flotta di Venezia ha due aiuti questa volta (Roma e Puglia), quindi l'attacco è bloccato" />
 	</p>
 </li>
@@ -173,11 +173,11 @@ I centri di approvigionamento hanno dei segni, che li distinguono dalle semplici
 <li class="formlistdesc">
 	Un'Unità che viene attaccata, deve <strong>Difendersi</strong>, e non può supportare altre Unità per quel turno.
 	<p style="text-align:center;">
-		<img src="<?php print STATICSRV; ?>datc/maps/808-large.map-thumb" alt="Diplomacy - supporti e tagli "
+		<img src="datc/maps/808-large.map-thumb" alt="Diplomacy - supporti e tagli "
 				title="Nessuna unità di supporto viene attaccata, quindi: Trieste 2 - Venezia 1; Trieste muove in Venezia" />
-		<img src="<?php print STATICSRV; ?>datc/maps/810-large.map-thumb" alt="Diplomacy - supporti e tagli  "
+		<img src="datc/maps/810-large.map-thumb" alt="Diplomacy - supporti e tagli  "
 				title="Un'Armata attacca il Tirolo da Monaco, vanificando il suo supporto all'Attacco: Trieste 1 - Venezia 1; Trieste non muove in Venezia" />
-		<img src="<?php print STATICSRV; ?>datc/maps/811-large.map-thumb" alt="Diplomacy - supporti e tagli  "
+		<img src="datc/maps/811-large.map-thumb" alt="Diplomacy - supporti e tagli  "
 				title="Una flotta nel mare Tirreno attacca ROma, rendendo nullo il suo supporto in Difesa di Venezia: Trieste 1 - Venice 0; Trieste muove in Venezia" />
 	</p>
 </li>
@@ -194,7 +194,7 @@ I centri di approvigionamento hanno dei segni, che li distinguono dalle semplici
 	<a href="gamecreate.php" class="light">creare</a> nuove partite oppure
 	<a href="gamelistings.php" class="light">giocare online</a> alle partite che aspettano solo te.
 	<p style="text-align:center;">
-		<img src="<?php print STATICSRV; ?>datc/maps/812-large.map-thumb" alt=" "
+		<img src="datc/maps/812-large.map-thumb" alt=" "
 				title="Il supporto dato dalla Flotta in Prussia a difesa della Flotta del Baltico permette a quest'ultima di ressitere all'attacco dalla Livonia e di procedere al trasporto di un'armata da Berlino in Svezia"  />
 	</p>
 	</li>

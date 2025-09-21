@@ -210,24 +210,6 @@ header("Pragma: no-cache");
 header("Expires: 0", false);
 header("X-Frame-Options: SAMEORIGIN"); //@ibarrionuevo
 
-if( defined('FACEBOOKSCRIPT') ) {
-	require_once(l_r('facebook/facebook-platform/php/facebook.php'));
-	$facebook=new Facebook(Config::$facebookAPIKey,Config::$facebookSecret);
-	$facebook->require_frame();
-
-	$fb_user=$facebook->get_loggedin_user();
-
-	if( !$fb_user ) {
-		if( !isset($_REQUEST['wD_FB_AuthNow'])) {
-			libHTML::notice(l_t('Not authorized'),l_t('To play in webDiplomacy games you need to authorize this application, so that '.
-				'it can send you notifications informing you when a game you\'re playing in needs your attention. '.
-				'Please <a href="index.php?wD_FB_AuthNow=on">authorize this application</a> to continue.'));
-		} else {
-			$fb_user=$facebook->require_login();
-		}
-	}
-}
-
 require_once(l_r('lib/auth.php'));
 
 if( !defined('AJAX') )

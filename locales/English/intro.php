@@ -75,7 +75,7 @@ print libHTML::pageTitle('Intro to webDiplomacy','A quick guide to playing Diplo
 		itself and Naples, but otherwise, it will do nothing. If it is attacked by two units, it will be forced to retreat to another 
 		adjacent territory, or, if there are none unoccupied, it will be forced to disband.
 		<p style="text-align:center;">
-			<img src="<?php print STATICSRV; ?>datc/maps/801-large.map-thumb" alt="An army holds in Naples"/>
+			<img src="datc/maps/801-large.map-thumb" alt="An army holds in Naples"/>
 		</p>
 	</li>
 
@@ -84,7 +84,7 @@ print libHTML::pageTitle('Intro to webDiplomacy','A quick guide to playing Diplo
 		This time, the army in Naples is moving to Rome. There is no unit occupying Rome, so it can move there freely. If there were 
 		a unit occupying Rome, this unit could only move there if it were supported by another unit to do so.
 		<p style="text-align:center;">
-			<img src="<?php print STATICSRV; ?>datc/maps/802-large.map-thumb" alt="An army in Naples moves to Rome"/>
+			<img src="datc/maps/802-large.map-thumb" alt="An army in Naples moves to Rome"/>
 		</p>
 	</li>
 
@@ -94,7 +94,7 @@ print libHTML::pageTitle('Intro to webDiplomacy','A quick guide to playing Diplo
 		across multiple sea territories in one move. Below, the army in Venice moves all the way to Tunis on the North African coast because 
 		the fleets in the Adriatic Sea and Ionian Sea work together to convoy it across the ocean.
 		<p style="text-align:center;">
-			<img src="<?php print STATICSRV; ?>datc/maps/805-large.map-thumb"
+			<img src="datc/maps/805-large.map-thumb"
 				alt="An army in Venice moves to Tunis, convoyed by the fleets in Adriatic Sea and Ionian Sea" />
 		</p>
 	</li>
@@ -120,7 +120,7 @@ print libHTML::pageTitle('Intro to webDiplomacy','A quick guide to playing Diplo
 		Here an Italian army in Venice and an Austrian fleet in the Ionian Sea both attempt to move to Apulia at the same time 
 		without any support and bounce.
 		<p style="text-align:center;">
-			<img src="<?php print STATICSRV; ?>datc/maps/807-large.map-thumb" 
+			<img src="datc/maps/807-large.map-thumb" 
 			alt="The fleet and army are both equally matched in their attempt to move into Apulia, so neither succeeds"/>
 		</p>
 	</li>
@@ -131,7 +131,7 @@ print libHTML::pageTitle('Intro to webDiplomacy','A quick guide to playing Diplo
 		<br><br>
 		Below, the Austrian army in Rome is unaffected by the Italian army in Naples attempting to displace it and take Rome for itself.
 		<p style="text-align:center;">
-			<img src="<?php print STATICSRV; ?>datc/maps/806-large.map-thumb" 
+			<img src="datc/maps/806-large.map-thumb" 
 			alt="An army in Naples attempts to move to Rome, but has no support, so the defending army is not dislodged"/>
 		</p>
 	</li>
@@ -145,7 +145,7 @@ print libHTML::pageTitle('Intro to webDiplomacy','A quick guide to playing Diplo
 		This example shows an army moving from Venice to Rome. The army in Tuscany supports the move, and as a result it moves in successfully 
 		even if the territory had been occupied by another unit. 
 		<p style="text-align:center;">
-			<img src="<?php print STATICSRV; ?>datc/maps/803-large.map-thumb" 
+			<img src="datc/maps/803-large.map-thumb" 
 			alt="A yellow support-move lets the army in Venice overpower the army holding in Rome"/>
 		</p>
 	</li>
@@ -161,7 +161,7 @@ print libHTML::pageTitle('Intro to webDiplomacy','A quick guide to playing Diplo
 		supported by the Italian army in Tuscany. However, because the Austrian fleet in the Tyrrhenian Sea is support holding Rome, 
 		the attack is unsuccessful, and Rome is still owned by Austria.
 		<p style="text-align:center;">
-			<img src="<?php print STATICSRV; ?>datc/maps/804-large.map-thumb" 
+			<img src="datc/maps/804-large.map-thumb" 
 			alt="A green support-hold from the fleet in Tyrrhenian Sea lets Rome hold against an attack from Venice, supported by Tuscany"/>
 		</p>
 	</li>
@@ -175,7 +175,7 @@ print libHTML::pageTitle('Intro to webDiplomacy','A quick guide to playing Diplo
 		With two units supporting its move, the fleet to Trieste is able to overcome the Italian unit supported to hold by only one unit in Venice. 
 		Italy loses Venice, and Austria claims its new supply center.
 		<p style="text-align:center;">
-			<img src="<?php print STATICSRV; ?>datc/maps/808-large.map-thumb"
+			<img src="datc/maps/808-large.map-thumb"
 				alt="The fleet moving from Trieste to Venice has two support-moves, and the fleet in Venice has only one support-hold, so Trieste succeeds" />
 		</p>
 	</li>
@@ -189,7 +189,7 @@ print libHTML::pageTitle('Intro to webDiplomacy','A quick guide to playing Diplo
 		This time, the Italian army in Venice is well protected with support from an army in Rome and a fleet in Apulia. Even though Austria 
 		has two units supporting its attack on Venice, the attack is repelled, and Venice remains in Italy's possession.
 		<p style="text-align:center;">
-			<img src="<?php print STATICSRV; ?>datc/maps/809-large.map-thumb" 
+			<img src="datc/maps/809-large.map-thumb" 
 			alt="A green support-hold from the fleet in Tyrrhenian Sea lets Rome hold against an equally well-supported Venice"/>
 		</p>
 	</li>

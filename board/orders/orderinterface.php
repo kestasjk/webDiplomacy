@@ -361,7 +361,7 @@ class OrderInterface
 		else
 			$jsonBoardDataFile.='?phase='.$this->phase.'&nocache='.rand(0,10000);
 
-		return '<script type="text/javascript" src="'.STATICSRV.$jsonBoardDataFile.'"></script>';
+		return '<script type="text/javascript" src="'.$jsonBoardDataFile.'"></script>';
 	}
 
 	public function jsHTML() {

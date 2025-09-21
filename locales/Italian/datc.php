@@ -141,7 +141,7 @@ while ( list($id, $name, $status, $description) = $DB->tabl_row($tabl) )
 	else
 		$image = '
 <a href="#" onclick="$(\'testimage'.$id.'\').src=\'datc/maps/'.$id.'-large.map\'; return false;">'.
-			'<img id="testimage'.$id.'" src="'.STATICSRV.'datc/maps/'.$id.'-large.map-thumb" alt="Test ID #'.$id.' map thumbnail" />'.
+			'<img id="testimage'.$id.'" src="'.'datc/maps/'.$id.'-large.map-thumb" alt="Test ID #'.$id.' map thumbnail" />'.
 			'</a>
 			';
 

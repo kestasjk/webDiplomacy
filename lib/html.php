@@ -582,7 +582,7 @@ class libHTML
 		}
 
 		foreach(Config::$variants as $variantName)
-			$variantCSS[] = '<link rel="stylesheet" href="'.STATICSRV.l_s('variants/'.$variantName.'/resources/'.$darkMode.'style.css').'?var='.CSSVERSION.'" type="text/css" />';
+			$variantCSS[] = '<link rel="stylesheet" href="'.l_s('variants/'.$variantName.'/resources/'.$darkMode.'style.css').'?var='.CSSVERSION.'" type="text/css" />';
 		$variantCSS=implode("\n",$variantCSS);
 
 
@@ -601,17 +601,16 @@ class libHTML
 			).'
 			<meta name="description" content="'.l_t('webDiplomacy is an online, multiplayer, turn-based strategy game that lets you play Diplomacy online.').'" />
 			<meta name="keywords" content="'.l_t('diplomacy,diplomacy game,online diplomacy,classic diplomacy,web diplomacy,diplomacy board game,play diplomacy,php diplomacy').'" />
-			<link rel="shortcut icon" href="'.STATICSRV.l_s('favicon.ico').'" />
-			<link rel="icon" href="'.STATICSRV.l_s('favicon.ico').'" />
+			<link rel="shortcut icon" href="'.l_s('favicon.ico').'" />
+			<link rel="icon" href="'.l_s('favicon.ico').'" />
 			
 			<script type="text/javascript">'.$userOptionsJS.'</script>
 			<script type="text/javascript" src="javascript/clickhandler.js"></script>
-			<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/prototype.js').'"></script>
-			<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/scriptaculous.js').'"></script>
-			<link rel="stylesheet" type="text/css" href="'.STATICSRV.l_s('contrib/js/pushup/src/css/pushup.css').'" />
-			<script type="text/javascript" src="'.STATICSRV.l_j('contrib/js/pushup/src/js/pushup.js').'"></script>
+			<script type="text/javascript" src="'.l_j('contrib/js/prototype.js').'"></script>
+			<script type="text/javascript" src="'.l_j('contrib/js/scriptaculous.js').'"></script>
+			<link rel="stylesheet" type="text/css" href="'.l_s('contrib/js/pushup/src/css/pushup.css').'" />
+			<script type="text/javascript" src="'.l_j('contrib/js/pushup/src/js/pushup.js').'"></script>
 			<script type="text/javascript">
-				STATICSRV="'.STATICSRV.'";
 				var cssDirectory = "'.CSSDIR.'";
 					var cssVersion = "'.CSSVERSION.'";
 			</script>
@@ -661,21 +660,6 @@ class libHTML
 		print libHTML::prebody($title===FALSE ? l_t($pages[$scriptname]['name']) : $title,
 			$scriptname == 'botgamecreate.php' || $scriptname == 'gamecreateSandbox.php'). // Don't let robots into the account create page
 			'<body>'.libHTML::menu($pages, $scriptname);
-
-		if( defined('FACEBOOKSCRIPT') ) 
-		{
-			?>
-			<script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php/en_US" type="text/javascript"></script>
-			<script type="text/javascript">
-			FB.init("b24f8dc93cdbf2ff1ee7db508ae14c6d");
-			FB_RequireFeatures(["CanvasUtil"], function(){
-				FB.XdComm.Server.init("xd_receiver.htm");
-				FB.CanvasClient.startTimerToSizeToContent();
-			});
-			</script>
-			<div id="FB_HiddenIFrameContainer" style="display:none; position:absolute; left:-100px; top:-100px; width:0px; height: 0px;"></div>
-			<?php
-		}
 
 		print '<noscript><div class="content-notice">
 					<p class="notice">'.l_t('You do not have JavaScript enabled. It is required to use webDiplomacy fully.').'</p>
@@ -977,13 +961,6 @@ class libHTML
 				$links['admincp.php']=array('name'=>'Admin CP', 'inmenu'=>true);
 			}
 			$links['gamemaster.php']=array('name'=>'GameMaster', 'inmenu'=>FALSE);
-		}
-
-		if ( defined('FACEBOOKSCRIPT') )
-		{
-			$links['invite.php']=array('name'=>'Invite', 'inmenu'=>TRUE);
-			$links['logon.php']['inmenu']=false;
-			$links['register.php']['inmenu']=false;
 		}
 
 		return $links;
@@ -1438,7 +1415,7 @@ class libHTML
 
 			if( file_exists($cacheUserParticipatedThreadIDsFilename) )
 			{
-				$buf .= '<script type="text/javascript" src="'.STATICSRV.$cacheUserParticipatedThreadIDsFilename.'?nocache='.rand(0,999999).'"></script>';
+				$buf .= '<script type="text/javascript" src="'.$cacheUserParticipatedThreadIDsFilename.'?nocache='.rand(0,999999).'"></script>';
 				libHTML::$footerScript[]=l_jf('setForumParticipatedIcons').'();';
 			}
 		}
@@ -1461,7 +1438,7 @@ class libHTML
 
 		// Don't localize all the footer includes here, as some of them may be dynamically generated
 		foreach( array_merge($footerIncludes,self::$footerIncludes) as $includeJS ) // Add on the dynamically added includes
-			$buf .= '<script type="text/javascript" src="'.STATICSRV.JSDIR.'/'.$includeJS.'?ver='.JSVERSION.'"></script>';
+			$buf .= '<script type="text/javascript" src="'.JSDIR.'/'.$includeJS.'?ver='.JSVERSION.'"></script>';
 
 		// Utility (error detection, message protection), HTML post-processing,
 		// time handling functions. Only logged-in users need to run these
