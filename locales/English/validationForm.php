@@ -144,7 +144,7 @@ libHTML::$footerScript[] = 'initializeAntiBotBoard();';
 		<li class="formlisttitle">E-mail address</li>
 		<li class="formlistfield"><input type="text" name="emailValidate" value="<?php
 		        if ( isset($_REQUEST['emailValidate'] ) )
-					print $_REQUEST['emailValidate'];
+					print htmlspecialchars($_REQUEST['emailValidate'], ENT_QUOTES, 'UTF-8');
 		        ?>"></li>
 		<li class="formlistdesc">
 			By making sure every user has a real e-mail address we stop cheaters from creating many users for themselves. 

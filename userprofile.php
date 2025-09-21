@@ -70,7 +70,7 @@ libHTML::starthtml();
 
 print '<div class="content">';
 print '<div>';
-print '<h2 class = "profileUsername">'.$UserProfile->username.'</h2>';
+print '<h2 class = "profileUsername">'.htmlspecialchars($UserProfile->username, ENT_QUOTES, 'UTF-8').'</h2>';
 
 // Show moderator information
 if ( $User->type['Moderator'] )
@@ -202,7 +202,7 @@ print '<div class = "profile-show-inside-left">';
 		print '<strong>User Comment:</strong> </div></li>';
 
 		print	'<div class = "comment_content">';
-		print '<p class="profileComment">"'.$UserProfile->comment.'"</p>';
+		print '<p class="profileComment">"'.htmlspecialchars($UserProfile->comment, ENT_QUOTES, 'UTF-8').'"</p>';
 		print '</div></br>';
 	}
 

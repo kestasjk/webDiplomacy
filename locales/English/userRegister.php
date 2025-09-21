@@ -30,7 +30,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
     <input type="text" name="userForm[username]" value="<?php
 	if ( isset($_REQUEST['userForm']['username'] ) )
 	{
-		print $_REQUEST['userForm']['username'];
+		print htmlspecialchars($_REQUEST['userForm']['username'], ENT_QUOTES, 'UTF-8');
 	}
 	?>">
 </p>

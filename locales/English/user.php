@@ -30,11 +30,11 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	<input type="text" class = "settings" name="userForm[email]" size="40" value="<?php
 		if ( isset($_REQUEST['userForm']['email'] ) )
 		{
-			print $_REQUEST['userForm']['email'];
+			print htmlspecialchars($_REQUEST['userForm']['email'], ENT_QUOTES, 'UTF-8');
 		}
 		elseif( isset($User->email) )
 		{
-			print $User->email;
+			print htmlspecialchars($User->email, ENT_QUOTES, 'UTF-8');
 		}
 		?>" <?php if ( isset($_REQUEST['emailToken']) ) print 'readonly '; ?> >
 	</p>

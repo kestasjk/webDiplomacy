@@ -38,7 +38,7 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 		<li class="formlisttitle">indirizzo E-mail </li>
 		<li class="formlistfield"><input type="text" name="emailValidate" value="<?php
 		        if ( isset($_REQUEST['emailValidate'] ) )
-					print $_REQUEST['emailValidate'];
+					print htmlspecialchars($_REQUEST['emailValidate'], ENT_QUOTES, 'UTF-8');
 		        ?>"></li>
 		<li class="formlistdesc">
 		 L'indirizzo serve per evitare doppie iscrizioni. <strong>Non</strong> verrà dato a terzi o usato per inviare spam 

@@ -275,7 +275,7 @@ print '<div class="advancedSearchContent">';
 print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tableLocation">
 		<INPUT type="hidden" name="tab" value="UserSearch" />
 
-		<p>Username: <INPUT class="advancedSearch" type="text" name="username"  value="'. $username .'" size="20" />
+		<p>Username: <INPUT class="advancedSearch" type="text" name="username"  value="'. htmlspecialchars($username, ENT_QUOTES, 'UTF-8') .'" size="20" />
 		<select  class = "advancedSearch" name="searchType1">
 			<option selected="selected" value="Starts">Starts With</option>
 			<option value="Contains">Contains</option>
@@ -356,7 +356,7 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tabl
 			<option value="Contains">Contains</option>
 			<option value="Ends">Ends with</option>
 		</select>
-		<INPUT class="advancedSearch" type="text" name="gamename"  value="'. $gamename .'" size="20" />
+		<INPUT class="advancedSearch" type="text" name="gamename"  value="'. htmlspecialchars($gamename, ENT_QUOTES, 'UTF-8') .'" size="20" />
 		</br>
 		Or
 		</br>
@@ -366,7 +366,7 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tabl
 			<option value="Contains">Contains</option>
 			<option value="Ends">Ends with</option>
 		</select>
-		<INPUT class="advancedSearch" type="text" name="gamename2"  value="'. $gamename2 .'" size="20" />
+		<INPUT class="advancedSearch" type="text" name="gamename2"  value="'. htmlspecialchars($gamename2, ENT_QUOTES, 'UTF-8') .'" size="20" />
 		</br>
 		Or
 		</br>
@@ -376,7 +376,7 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tabl
 			<option value="Contains">Contains</option>
 			<option value="Ends">Ends with</option>
 		</select>
-		<INPUT class="advancedSearch" type="text" name="gamename3"  value="'. $gamename3 .'" size="20" />
+		<INPUT class="advancedSearch" type="text" name="gamename3"  value="'. htmlspecialchars($gamename3, ENT_QUOTES, 'UTF-8') .'" size="20" />
 		</br></br>
 		<input class="advancedSearch" type="checkbox" name="showOnlyJoinable" value="showOnlyJoinable" >Show only joinable public games?
 		</p>
@@ -440,9 +440,9 @@ print '<FORM class="advancedSearch" method="get" action="detailedSearch.php#tabl
 		<INPUT type="hidden" name="tab" value="GamesByUser" />
 
 		<p>Username:
-		<INPUT class="advancedSearch" type="text" name="username2"  value="'. $username2 .'" size="20"/>
+		<INPUT class="advancedSearch" type="text" name="username2"  value="'. htmlspecialchars($username2, ENT_QUOTES, 'UTF-8') .'" size="20"/>
 		User ID:
-		<INPUT class="advancedSearch" type="text" name="paramUserID"  value="'. $paramUserID .'" size="20"/>
+		<INPUT class="advancedSearch" type="text" name="paramUserID"  value="'. htmlspecialchars($paramUserID, ENT_QUOTES, 'UTF-8') .'" size="20"/>
 		</br></br>
 		<input class="advancedSearch" type="checkbox" name="checkAgainstMe" value="checkAgainstMe">Show games the user and I have in common
 		</p>
@@ -711,7 +711,7 @@ if ($tab == 'UserSearch')
 
 			print '</TD>';
 
-			if ($seeUsername=='checked') { print '<TD class= "advancedSearch">'.$values->username.'</TD>'; }
+			if ($seeUsername=='checked') { print '<TD class= "advancedSearch">'.htmlspecialchars($values->username, ENT_QUOTES, 'UTF-8').'</TD>'; }
 
 			/*
 			 * If the server has a phpbb forum table structure then we can safely query those tables to get the data.
@@ -899,8 +899,10 @@ else if ($tab == 'GamesByUser')
 	if ($username2 != '')
 	{
 		$username2 = strip_tags(html_entity_decode(trim($username2)));
+		// SECURITY FIX: Properly escape username to prevent SQL injection
+		$username2_escaped = $DB->escape($username2);
 
-		list($userIDResult) = $DB->sql_row("SELECT id FROM wD_Users WHERE username = '".$username2."'");
+		list($userIDResult) = $DB->sql_row("SELECT id FROM wD_Users WHERE username = '".$username2_escaped."'");
 		if ($userIDResult > 0)
 		{
 			$paramUserID = $userIDResult;
@@ -1101,7 +1103,7 @@ $seeAnon, $seePressType, $seeDirector, $seeMinRR, $seeDrawType, $seeWatchedCount
 
 			print '<TR><TD class= "advancedSearch"><a href="board.php?gameID='.$values->gameID.'">'.$values->gameID.'</a></TD>';
 			if ($seeVariant=='checked') {print '<TD class= "advancedSearch">'.$Variant->link().'</a></TD>'; }
-			if ($seeGamename=='checked') { print '<TD class= "advancedSearch">'.$values->gameName.'</TD>'; }
+			if ($seeGamename=='checked') { print '<TD class= "advancedSearch">'.htmlspecialchars($values->gameName, ENT_QUOTES, 'UTF-8').'</TD>'; }
 			if ($seeGameOver=='checked') { print '<TD class= "advancedSearch">'.$values->gameOver.'</TD>'; }
 			if ($seePot=='checked') { print '<TD class= "advancedSearch">'.$values->pot.libHTML::points().'</TD>'; }
 			if ($seeInviteCode=='checked')

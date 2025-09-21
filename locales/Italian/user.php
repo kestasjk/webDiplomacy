@@ -30,11 +30,11 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 	<li class="formlistfield"><input type="text" name="userForm[email]" size="50" value="<?php
 		if ( isset($_REQUEST['userForm']['email'] ) )
 		{
-			print $_REQUEST['userForm']['email'];
+			print htmlspecialchars($_REQUEST['userForm']['email'], ENT_QUOTES, 'UTF-8');
 		}
 		elseif( isset($User->email) )
 		{
-			print $User->email;
+			print htmlspecialchars($User->email, ENT_QUOTES, 'UTF-8');
 		}
 		?>" <?php if ( isset($_REQUEST['emailToken']) ) print 'readonly '; ?> /></li>
 	<li class="formlistdesc">Il tuo indirizzo di posta elettronica; <strong>non</strong> verrà usato per inviare spam e <strong>non</strong> verrà dato a terzi.</li>
