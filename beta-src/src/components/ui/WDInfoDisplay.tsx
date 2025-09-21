@@ -163,7 +163,7 @@ const WDInfoDisplay: React.FC<WDInfoDisplayProps> = function ({
               <a href={archiveMessagesLink} className="text-blue-500">
                 Messages
               </a>
-              &nbsp;-&nbsp;
+              &nbsp;|&nbsp;
               <a href={dropDownBoardLink} className="text-blue-500">
                 Legacy Board
               </a>
