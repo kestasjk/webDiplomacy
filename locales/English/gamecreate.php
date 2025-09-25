@@ -244,8 +244,8 @@ defined('IN_CODE') or die('This script can not be run by itself.');
 					if($variantID != 57)
 					{
 						$Variant = libVariant::loadFromVariantName($variantName);
-						if($first) { print '<option name="newGame[variantID]" selected value="'.$variantID.'">'.$variantName.'</option>'; }
-						else { print '<option name="newGame[variantID]" value="'.$variantID.'">'.$variantName.'</option>'; }			
+						if($first) { print '<option name="newGame[variantID]" selected value="'.$variantID.'">'.$Variant->fullName.'</option>'; }
+						else { print '<option name="newGame[variantID]" value="'.$variantID.'">'.$Variant->fullName.'</option>'; }			
 						$first=false;
 					}
 				}
