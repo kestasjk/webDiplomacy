@@ -1203,15 +1203,15 @@ class libHTML
 
 					// Store page metrics in Redis
 					$Redis->set('METRICS_PAGE_' . $pageName . '_COUNT',
-						($Redis->get('METRICS_PAGE_' . $pageName . '_COUNT') ?: 0) + 1);
+						(intval($Redis->get('METRICS_PAGE_' . $pageName . '_COUNT') ?: 0)) + 1);
 					$Redis->set('METRICS_PAGE_' . $pageName . '_TIME_MS',
-						($Redis->get('METRICS_PAGE_' . $pageName . '_TIME_MS') ?: 0) + $pageTimeMs);
+						(intval($Redis->get('METRICS_PAGE_' . $pageName . '_TIME_MS') ?: 0)) + $pageTimeMs);
 					$Redis->set('METRICS_PAGE_' . $pageName . '_DB_GET',
-						($Redis->get('METRICS_PAGE_' . $pageName . '_DB_GET') ?: 0) + $dbMetrics['db_get']);
+						(intval($Redis->get('METRICS_PAGE_' . $pageName . '_DB_GET') ?: 0)) + $dbMetrics['db_get']);
 					$Redis->set('METRICS_PAGE_' . $pageName . '_DB_PUT',
-						($Redis->get('METRICS_PAGE_' . $pageName . '_DB_PUT') ?: 0) + $dbMetrics['db_put']);
+						(intval($Redis->get('METRICS_PAGE_' . $pageName . '_DB_PUT') ?: 0)) + $dbMetrics['db_put']);
 					$Redis->set('METRICS_PAGE_' . $pageName . '_DB_TIME_MS',
-						($Redis->get('METRICS_PAGE_' . $pageName . '_DB_TIME_MS') ?: 0) + $dbMetrics['db_time_ms']);
+						(intval($Redis->get('METRICS_PAGE_' . $pageName . '_DB_TIME_MS') ?: 0)) + $dbMetrics['db_time_ms']);
 				}
 			} catch (Exception $e) {
 				// Silently ignore Redis errors to not break the page

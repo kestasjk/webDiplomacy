@@ -7,10 +7,10 @@
 $headers = apache_request_headers();
 if( !isset($headers['X-Hub-Signature-256']) )
 {
-	if( isset($_REQUEST['log']) )
-		die(file_get_contents('../gitpull.log'));
-	else
-		die('Unauthorized');
+	#if( isset($_REQUEST['log']) )
+	#	die(file_get_contents('../gitpull.log'));
+	#else
+	die('Unauthorized');
 }
 
 $rawReq = file_get_contents('php://input');
