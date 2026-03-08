@@ -42,6 +42,4 @@ composer.lock
 javascript/adsense.js
 ads.txt
 backup.flag
-beta/static/
-/beta/static/
 beta/adsense.js
