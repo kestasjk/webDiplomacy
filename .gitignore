@@ -40,3 +40,6 @@ composer.lock
 .vscode/
 .github/
 javascript/adsense.js
+ads.txt
+backup.flag
+beta/static/*
