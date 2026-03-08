@@ -146,5 +146,3 @@ class libOpenID
         return $validSources;
     }
 }
-
-*/

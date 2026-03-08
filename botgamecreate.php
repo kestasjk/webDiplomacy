@@ -203,14 +203,14 @@ if( !$User->type['User'] )
 	libHTML::notice(l_t('Not logged on'),l_t("Only a logged on user can create games. Please <a href='logon.php' class='light'>log on</a> to create your own games."));
 }
 
-// Limit users to 3 bot games at a time unless they are a moderator,
-// and 1 game at a time if playing anonymously.
+// Limit users to 3 bot games at a time unless they are a moderator, and 1 game at a time if playing anonymously.
 $userBotGameCount = $User->getBotGameCount();
-if ($userBotGameCount > 2 || (defined('PLAYNOW') && $userBotGameCount > 0))
+$limit = (defined('PLAYNOW') ? 1 : 3);
+if ($userBotGameCount > $limit - 1)
 {
     if (!$User->type['Moderator'])
     {
-        libHTML::notice(l_t('3 bot games at a time.'),l_t('Sorry, only 3 bot games at a time, please finish one of your current ones to start another!'));
+        libHTML::notice(l_t($limit.' bot games at a time.'),l_t('Sorry, only '.$limit.' bot games at a time, please finish one of your current ones to start another!'));
     }
 }
 

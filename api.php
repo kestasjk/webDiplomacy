@@ -809,9 +809,9 @@ class GetGameMembers extends ApiEntry {
 			'pointsWon' => $member->pointsWon,
 			'status' => $member->status,
 			'supplyCenterNo' => $member->supplyCenterNo,
-			'timeLoggedIn' => $member->timeLoggedIn,
+			'timeLoggedIn' => ($this->isAnon && !$retrievePrivateData ? time() : $member->timeLoggedIn),
 			'unitNo' => $member->unitNo,
-			'userID' => $member->userID,
+			'userID' => ($this->isAnon && !$retrievePrivateData ? -1 : $member->userID ),
 			'username' => $this->isAnon && $member->Game->gameOver == 'No' && !$retrievePrivateData ? '' : $member->username,
 			'votes' => $votes,
 		];

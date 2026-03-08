@@ -996,7 +996,6 @@ class libHTML
 						</div>
 						<div class="nav-tab">
 							<a href="botgamecreate.php" title="Go to the account-based server">Start a New Game</a>
-							<a href="gamecreateSandbox.php" title="Go to the account-based server">Start a New Sandbox</a>
 						</div>
 						<div class="nav-tab">
 							<a href="https://webdiplomacy.net/" title="Go to the account-based server">Go to the Community Site</a>
