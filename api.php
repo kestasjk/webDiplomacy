@@ -792,6 +792,7 @@ class GetGameMembers extends ApiEntry {
 				$votes = array_values($votes);
 			}
 		}
+		// Test change
 		return [
 			'bet' => $member->bet,
 			'country' => $member->country,
