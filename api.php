@@ -1545,7 +1545,7 @@ class GetMessages extends ApiEntry {
 		$gameID = $args['gameID'];
 		$messages = array();
 
-		$sinceTime = $args['sinceTime'];
+		$sinceTime = isset($args['sinceTime']) ? (int)$args['sinceTime'] : null;
 		$lastMsgKey = "lastmsgtime_{$gameID}_{$countryID}";
 		// error_log("fetch messages since time= $sinceTime");
 		if (isset($sinceTime)) {
