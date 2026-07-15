@@ -68,7 +68,8 @@ class PlayerPulse {
         // players/active_games and players/pulse and see the identical game set.
 		$countryTabl = $DB->sql_tabl("SELECT m.gameID, m.countryID, m.orderStatus, m.votes, m.status,
                                              g.variantID, g.turn, g.phase, g.gameOver, g.pressType, g.potType,
-                                             g.drawType, g.processTime, g.phaseMinutes
+                                             g.drawType, g.processTime, g.phaseMinutes,
+                                             (SELECT MAX(mm.votesChanged) FROM wD_Members mm WHERE mm.gameID = m.gameID) AS lastVoteTime
                                       FROM wD_Members AS m
                                       LEFT JOIN wD_Games AS g ON ( g.id = m.gameID )
                                       WHERE m.status = 'Playing'
@@ -102,6 +103,7 @@ class PlayerPulse {
                 'votes' => $row['votes'],
                 'status' => $row['status'],
                 'lastMessageTimeSent' => null,
+                'lastVoteTime' => intval($row['lastVoteTime']),
             ]);
         }
 

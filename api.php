@@ -815,11 +815,14 @@ class GetGamePulse extends ApiEntry {
 		$drawVotesPublic = ($gameRow['drawType'] === 'draw-votes-public');
 		$members = array();
 		$callerRow = null; // The member row for the requested countryID
-		$memberTabl = $DB->sql_tabl("SELECT countryID, userID, orderStatus, votes, status, supplyCenterNo, unitNo
+		$lastVoteTime = 0; // The latest vote change by any member, for change detection
+		$memberTabl = $DB->sql_tabl("SELECT countryID, userID, orderStatus, votes, votesChanged, status, supplyCenterNo, unitNo
 			FROM wD_Members WHERE gameID = ".$gameID." ORDER BY countryID");
 		while ($member = $DB->tabl_hash($memberTabl)) {
 			if ($countryID != 0 && intval($member['countryID']) == $countryID)
 				$callerRow = $member;
+			if (intval($member['votesChanged']) > $lastVoteTime)
+				$lastVoteTime = intval($member['votesChanged']);
 			$entry = array(
 				'countryID' => intval($member['countryID']),
 				'orderStatus' => ($anon ? 'Hidden' : $member['orderStatus']),
@@ -879,6 +882,7 @@ class GetGamePulse extends ApiEntry {
 			'status' => ($callerRow ? $callerRow['status'] : ''),
 			'members' => $members,
 			'lastMessageTimeSent' => $lastMessageTimeSent,
+			'lastVoteTime' => $lastVoteTime,
 		));
 	}
 }
