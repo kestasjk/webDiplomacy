@@ -34,6 +34,7 @@ require_once('board/orders/orderinterface.php');
 require_once('api/responses/members_in_cd.php');
 require_once('api/responses/unordered_countries.php');
 require_once('api/responses/active_games.php');
+require_once('api/responses/player_pulse.php');
 require_once('api/responses/game_state.php');
 require_once('objects/game.php');
 require_once('objects/user.php');
@@ -513,6 +514,22 @@ class ListActiveGamesForUser extends ApiEntry {
 }
 
 /**
+ * API entry players/pulse
+ * A batched lightweight poll: one pulse row per active game for the calling user, so a
+ * polling client can detect per-game changes without a game/status call per game.
+ * *Multiplexed (via explicit multiplexOffset GET param, like players/active_games)
+ */
+class ListGamePulsesForUser extends ApiEntry {
+	public function __construct() {
+		parent::__construct('players/pulse', 'GET', '', array(), false);
+	}
+	public function run($userID, $permissionIsExplicit) {
+		$playerPulse = new \webdiplomacy_api\PlayerPulse($userID);
+		return $playerPulse->toJson($this);
+	}
+}
+
+/**
  * API entry game/togglevote
  * *Multiplexed
  * TODO: Merge with SetVote
@@ -534,7 +551,7 @@ class ToggleVote extends ApiEntry {
 			throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
 
 		$currentVotes = $DB->sql_hash("SELECT votes FROM wD_Members WHERE gameID = ".$gameID." AND countryID = ".$countryID." AND userID = ".$userID);
-		$currentVotes = $currentVotes['votes'];
+		$currentVotes = $currentVotes['votes'] ?? ''; // If no votes are set, default to empty string
 
 		// Keep a log that a vote was set in the game messages, so the vote time is recorded
 		require_once(l_r('lib/gamemessage.php'));
@@ -760,6 +777,109 @@ class GetGamesStates extends ApiEntry {
 		
 		$gameState = new \webdiplomacy_api\GameState(intval($gameID), $countryID ? intval($countryID) : null);
 		return $gameState->toJson($this);
+	}
+}
+
+/**
+ * API entry game/pulse
+ * A lightweight alternative to game/status for polling: returns only the fields that
+ * change when a game event occurs (phase/turn/processTime/orderStatus/votes/gameOver and
+ * the time of the latest visible message), without the full game-history payload.
+ * Cost: 2 SELECTs + 1 Redis GET (a Redis miss adds one MAX(timeSent) query + re-seed).
+ * *Multiplexed
+ */
+class GetGamePulse extends ApiEntry {
+	public function __construct() {
+		parent::__construct('game/pulse', 'GET', 'getStateOfAllGames', array('gameID', 'countryID'), false);
+	}
+	/**
+	 * @throws RequestException
+	 */
+	public function run($userID, $permissionIsExplicit) {
+		global $DB, $Redis;
+
+		$args = $this->getArgs();
+		$gameID = intval($args['gameID'] ?? 0);
+		$countryID = intval($args['countryID'] ?? 0); // 0 = spectator
+		if ($gameID <= 0)
+			throw new RequestException('Invalid game ID: '.$args['gameID']);
+		if (!empty(Config::$apiConfig['restrictToGameIDs']) && !in_array($gameID, Config::$apiConfig['restrictToGameIDs']))
+			throw new ClientForbiddenException('Game ID is not in list of gameIDs where API usage is permitted.');
+
+		$gameRow = $DB->sql_hash("SELECT id, variantID, potType, turn, phase, gameOver, pressType, drawType,
+			processTime, phaseMinutes, anon FROM wD_Games WHERE id = ".$gameID);
+		if (!$gameRow)
+			throw new RequestException('Unknown game ID.');
+
+		$anon = ($gameRow['anon'] == 'Yes');
+		$drawVotesPublic = ($gameRow['drawType'] === 'draw-votes-public');
+		$members = array();
+		$callerRow = null; // The member row for the requested countryID
+		$memberTabl = $DB->sql_tabl("SELECT countryID, userID, orderStatus, votes, status, supplyCenterNo, unitNo
+			FROM wD_Members WHERE gameID = ".$gameID." ORDER BY countryID");
+		while ($member = $DB->tabl_hash($memberTabl)) {
+			if ($countryID != 0 && intval($member['countryID']) == $countryID)
+				$callerRow = $member;
+			$entry = array(
+				'countryID' => intval($member['countryID']),
+				'orderStatus' => ($anon ? 'Hidden' : $member['orderStatus']),
+				'status' => $member['status'],
+				'supplyCenterNo' => intval($member['supplyCenterNo']),
+				'unitNo' => intval($member['unitNo']),
+			);
+			if ($drawVotesPublic)
+				$entry['votes'] = $member['votes'];
+			$members[] = $entry;
+		}
+
+		// Ensure the country ID matches the user ID making the request, before anything is
+		// returned (including the Redis message-time read below, which could otherwise leak
+		// message activity in games the caller isn't in).
+		if ($countryID != 0) {
+			if ($callerRow === null)
+				throw new RequestException('Invalid countryID for this game.');
+			if (intval($callerRow['userID']) != $userID)
+				throw new ClientForbiddenException('A user can only view the game pulse for the country it controls.');
+		}
+
+		// The time the latest message visible to this country was sent; the same
+		// lastmsgtime_{gameID}_{countryID} key game/getmessages short-circuits on,
+		// set on every send by libGameMessage::send()
+		$lastMessageTimeSent = null;
+		$lastMsgKey = "lastmsgtime_".$gameID."_".$countryID;
+		try {
+			$val = $Redis->get($lastMsgKey);
+			if ($val !== false && $val !== null)
+				$lastMessageTimeSent = intval($val);
+		} catch (Exception $e) { /* Redis down; fall back to the DB below */ }
+		if ($lastMessageTimeSent === null) {
+			// Key missing (e.g. Redis flush): re-seed from the DB so this is paid once per game.
+			// The game-wide MAX is >= the per-country value, so a client can never miss a message.
+			$msgRow = $DB->sql_hash("SELECT MAX(timeSent) AS t FROM wD_GameMessages WHERE gameID = ".$gameID);
+			$lastMessageTimeSent = ($msgRow && $msgRow['t'] !== null) ? intval($msgRow['t']) : 0;
+			try {
+				$Redis->set($lastMsgKey, $lastMessageTimeSent);
+			} catch (Exception $e) { /* ignore; next call will fall back again */ }
+		}
+
+		return $this->JSONResponse('Game pulse', '', true, array(
+			'gameID' => $this->gameIDToMultiplexedGameID($gameID),
+			'countryID' => $countryID,
+			'variantID' => intval($gameRow['variantID']),
+			'potType' => $gameRow['potType'],
+			'turn' => intval($gameRow['turn']),
+			'phase' => $gameRow['phase'],
+			'gameOver' => $gameRow['gameOver'],
+			'pressType' => $gameRow['pressType'],
+			'drawType' => $gameRow['drawType'],
+			'processTime' => ($gameRow['processTime'] === null ? null : intval($gameRow['processTime'])),
+			'phaseLengthInMinutes' => intval($gameRow['phaseMinutes']),
+			'votes' => ($callerRow ? $callerRow['votes'] : ''),
+			'orderStatus' => ($callerRow ? $callerRow['orderStatus'] : ''),
+			'status' => ($callerRow ? $callerRow['status'] : ''),
+			'members' => $members,
+			'lastMessageTimeSent' => $lastMessageTimeSent,
+		));
 	}
 }
 
@@ -1927,8 +2047,10 @@ try {
 	$api->load(new ListGamesWithPlayersInCD());
 	$api->load(new ListGamesWithMissingOrders());
 	$api->load(new ListActiveGamesForUser());
+	$api->load(new ListGamePulsesForUser());
 
 	$api->load(new GetGamesStates());
+	$api->load(new GetGamePulse());
 	$api->load(new GetGameOverview());
 	$api->load(new GetGameData());
 	$api->load(new GetGameMembers());
