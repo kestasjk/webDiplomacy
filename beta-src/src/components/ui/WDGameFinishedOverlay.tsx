@@ -105,7 +105,7 @@ const WDGameFinishedOverlay: React.FC<WDGameFinishedOverlayProps> = function ({
         </tbody>
       </table>
       {/* Forces the user to rotate the phone to portrait mode to see the results */}
-      <style jsx global>{`
+      <style>{`
         @media screen and (min-width: 320px) and (max-width: 900px) and (orientation: landscape) {
           html {
             transform: rotate(-90deg);
