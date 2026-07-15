@@ -39,7 +39,6 @@ botslog.txt
 composer.lock
 .vscode/
 .github/
-javascript/adsense.js
 ads.txt
 backup.flag
 beta/adsense.js
