@@ -101,6 +101,28 @@ class libGameMessage
 			$Redis->trigger($channel, 'message', 'messageSent');
 		}
 
+		// Notify the recipient(s) via Web Push. Only the sending country's name is included, never
+		// the message contents, so nothing is leaked that the recipient's game screen wouldn't show.
+		try
+		{
+			require_once(l_r('lib/push.php'));
+			$pushUserIDs = array();
+			if ($toCountryID == 0) {
+				foreach($Game->Members->ByCountryID as $countryID => $member)
+					if( $countryID != $fromCountryID ) $pushUserIDs[] = $member->userID;
+			} elseif ($toCountryID != $fromCountryID && isset($Game->Members->ByCountryID[$toCountryID])) {
+				$pushUserIDs[] = $Game->Members->ByCountryID[$toCountryID]->userID;
+			}
+			if( count($pushUserIDs) )
+			{
+				$fromName = ($fromCountryID == 0) ? l_t('GameMaster') : $Game->Variant->countries[$fromCountryID-1];
+				libPush::sendToUsers($pushUserIDs, $Game->name, l_t('New message from %s',$fromName),
+					'/board.php?gameID='.$Game->id.'&msgCountryID='.($toCountryID == 0 ? 0 : $fromCountryID).'#chatbox',
+					'game-'.$Game->id.'-msg');
+			}
+		}
+		catch(\Throwable $e) { /* Push delivery must never break message sending */ }
+
 		return $timeSent;
 	}
 

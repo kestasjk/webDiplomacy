@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/beta/static/css/main.4fe6a106.css",
-    "main.js": "/beta/static/js/main.d302bad8.js",
+    "main.css": "/beta/static/css/main.7bc5cd38.css",
+    "main.js": "/beta/static/js/main.5e5a6656.js",
     "static/media/capturable-land.jpeg": "/beta/static/media/capturable-land.379f9cca7138664bf782.jpeg",
     "static/media/spacebg.jpg": "/beta/static/media/spacebg.e30d9ac8aea285612755.jpg",
     "static/media/convoy.gif": "/beta/static/media/convoy.f402baf84bebe7bd16bd.gif",
@@ -28,11 +28,11 @@
     "static/media/thickArrowPhase.svg": "/beta/static/media/thickArrowPhase.556cd5920712c48d950ab6aa1a622992.svg",
     "static/media/stepOne.svg": "/beta/static/media/stepOne.483d7100e0a00f88612f4e669d48b3cc.svg",
     "static/media/checkmark.svg": "/beta/static/media/checkmark.47c026763a1cfce655654177634d907f.svg",
-    "main.4fe6a106.css.map": "/beta/static/css/main.4fe6a106.css.map",
-    "main.d302bad8.js.map": "/beta/static/js/main.d302bad8.js.map"
+    "main.7bc5cd38.css.map": "/beta/static/css/main.7bc5cd38.css.map",
+    "main.5e5a6656.js.map": "/beta/static/js/main.5e5a6656.js.map"
   },
   "entrypoints": [
-    "static/css/main.4fe6a106.css",
-    "static/js/main.d302bad8.js"
+    "static/css/main.7bc5cd38.css",
+    "static/js/main.5e5a6656.js"
   ]
 }

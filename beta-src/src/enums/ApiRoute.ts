@@ -11,6 +11,8 @@ enum ApiRoute {
   GAME_SETVOTE = "game/setvote",
   SET_BACK_FROM_LEFT = "game/markbackfromleft",
   SSE_AUTHENTICATION = "sse/authentication",
+  PUSH_CONFIG = "push/config",
+  PUSH_SUBSCRIBE = "push/subscribe",
   // get sandbox
   SANDBOX_COPY = "sandbox/copy",
   SANDBOX_MOVETURNBACK = "sandbox/moveTurnBack",

@@ -26,6 +26,7 @@ require_once('header.php');
 
 require_once(l_r('gamemaster/game.php'));
 require_once(l_r('gamemaster/misc.php'));
+require_once(l_r('lib/push.php'));
 
 if ( $Misc->Panic )
 {
@@ -226,6 +227,21 @@ while( (time() - $startTime)<30 && $gameRow=$DB->tabl_hash($tabl) )
 				$DB->sql_put("UPDATE wD_Games SET attempts=0 WHERE id=".$Game->id);
 				$DB->sql_put("COMMIT");
 				print l_t('Processed.');
+
+				// The turn has processed and committed; notify the players via Web Push. This must
+				// stay after the COMMIT (a rolled-back turn must never notify), and inside this
+				// branch only: the 'processed' Redis trigger below fires for every game examined,
+				// not just games which actually processed.
+				try
+				{
+					$pushUserIDs = array();
+					foreach($Game->Members->ByCountryID as $member)
+						if( $member->status == 'Playing' ) $pushUserIDs[] = $member->userID;
+					libPush::sendToUsers($pushUserIDs, $Game->name,
+						l_t('A new phase has started: %s',$Game->datetxt($Game->turn).', '.$Game->phase),
+						'/board.php?gameID='.$Game->id, 'game-'.$Game->id);
+				}
+				catch(\Throwable $e) { print ' (push notify failed)'; }
 			}
 		}
 

@@ -113,6 +113,32 @@ class Config
 	public static $sseSecret = '';
 
 	/**
+	 * Web Push (PWA notifications) VAPID keys, used to sign push messages sent to browser push services.
+	 * Generate once with:
+	 * php -r "require 'vendor/autoload.php'; var_export(Minishlink\WebPush\VAPID::createVapidKeys());"
+	 * Leaving these empty disables push notifications site-wide.
+	 *
+	 * @var string
+	 */
+	public static $vapidPublicKey = '';
+	public static $vapidPrivateKey = '';
+
+	/**
+	 * Contact for the push service operators (e.g. 'mailto:admin@example.com' or the site URL).
+	 *
+	 * @var string
+	 */
+	public static $vapidSubject = '';
+
+	/**
+	 * TEMPORARY feature flag: userIDs for whom push notifications are enabled (both subscribing and
+	 * receiving). To be replaced with a per-user option once the feature is generally available.
+	 *
+	 * @var array
+	 */
+	public static $pushEnabledUserIDs = array();
+
+	/**
 	 * The administrators e-mail; if a user experiences a problem they will be invited to contact this
 	 * e-mail address. It's unlikely bots will experience the sort of problem resulting in your e-mail
 	 * being displayed, but if your e-mail provider doesn't filter spam well you may want to be careful.
