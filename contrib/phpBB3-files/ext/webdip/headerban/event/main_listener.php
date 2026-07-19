@@ -123,7 +123,8 @@ class main_listener implements EventSubscriberInterface
 			$this->template->assign_vars(array(
 				'U_WD_WEBDIPPOINTS' => '',
 				'U_WD_NOTICEBLOCK' => '',
-				'U_WD_GAMENOTIFYBLOCK' => ''
+				'U_WD_GAMENOTIFYBLOCK' => '',
+				'U_WD_PROFILE' => ''
 			));
 			
 			return;
@@ -149,7 +150,8 @@ class main_listener implements EventSubscriberInterface
 				$this->template->assign_vars(array(
 				'U_WD_WEBDIPPOINTS' => '(' . $this->points . ' <img src="' . $this->WEBDIPPATH . 'images/icons/points.png" alt="D" />)'.'<link rel="stylesheet" href="'.$this->WEBDIPPATH.('/css/darkMode/global.css').'" type="text/css" />',
 				'U_WD_NOTICEBLOCK' => $this->noticeBlock() . $this->variantCSS($finalTheme),
-				'U_WD_GAMENOTIFYBLOCK' => $this->gameNotifyBlock()
+				'U_WD_GAMENOTIFYBLOCK' => $this->gameNotifyBlock(),
+				'U_WD_PROFILE' => $this->WEBDIPPATH.'userprofile.php?userID='.$wdID
 				));
 			}
 			else
@@ -157,16 +159,18 @@ class main_listener implements EventSubscriberInterface
 				$this->template->assign_vars(array(
 				'U_WD_WEBDIPPOINTS' => '(' . $this->points . ' <img src="' . $this->WEBDIPPATH . 'images/icons/points.png" alt="D" />)',
 				'U_WD_NOTICEBLOCK' => $this->noticeBlock() . $this->variantCSS($finalTheme),
-				'U_WD_GAMENOTIFYBLOCK' => $this->gameNotifyBlock()
+				'U_WD_GAMENOTIFYBLOCK' => $this->gameNotifyBlock(),
+				'U_WD_PROFILE' => $this->WEBDIPPATH.'userprofile.php?userID='.$wdID
 				));
-			}			
+			}
 		}
 		else
 		{
 			$this->template->assign_vars(array(
 				'U_WD_WEBDIPPOINTS' => "0",
 				'U_WD_GAMENOTIFYBLOCK' => '',
-				'U_WD_NOTICEBLOCK' => ''
+				'U_WD_NOTICEBLOCK' => '',
+				'U_WD_PROFILE' => ''
 			));
 		}
     }

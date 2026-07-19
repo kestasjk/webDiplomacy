@@ -12,6 +12,22 @@
 		<link rel="icon" href="/favicon.ico" />
 		<link rel="stylesheet" href="/css/global.css?ver=10" type="text/css" />
 		<script defer src="/javascript/adsense.js?ver=2"></script>
+		<script defer src="/javascript/clickhandler.js"></script>
+		<script>
+		// Activate the webDip nav drop-down menus; click/clickOut come from
+		// clickhandler.js, listeners attached as lib/html.php does on the main site
+		document.addEventListener('DOMContentLoaded', function() {
+			document.addEventListener('click', function(e) {
+				try { clickOut(e); } catch (err) { }
+			});
+			var tabs = document.getElementsByClassName('clickable');
+			for (var i = 0; i < tabs.length; i++) {
+				tabs[i].addEventListener('click', function(e) {
+					try { click(e); } catch (err) { }
+				});
+			}
+		});
+		</script>
 {META}
 <title><!-- IF not S_VIEWTOPIC and not S_VIEWFORUM -->{SITENAME} - <!-- ENDIF --><!-- IF S_IN_MCP -->{L_MCP} - <!-- ELSEIF S_IN_UCP -->{L_UCP} - <!-- ENDIF -->{PAGE_TITLE}<!-- IF S_VIEWTOPIC or S_VIEWFORUM --> - {SITENAME}<!-- ENDIF --></title>
 
@@ -126,8 +142,7 @@ li {
 		<span id="username_logged_in" class="rightside <!-- IF CURRENT_USER_AVATAR --> no-bulletin<!-- ENDIF -->" data-skip-responsive="true">
 			<!-- EVENT navbar_header_username_prepend -->
 			<div class="header-profile dropdown-container">
-				Welcome back, {CURRENT_USERNAME_SIMPLE}</a>
-				
+				Welcome back, <!-- IF U_WD_PROFILE --><a href="{U_WD_PROFILE}">{CURRENT_USERNAME_SIMPLE}</a><!-- ELSE -->{CURRENT_USERNAME_SIMPLE}<!-- ENDIF -->
 			</div>
 			<!-- EVENT navbar_header_username_append -->
 		</span>
