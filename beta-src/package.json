@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "homepage": "beta",
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
@@ -19,9 +22,9 @@
     "@types/node": "^12.20.37",
     "@types/react": "^17.0.37",
     "@types/react-dom": "^17.0.11",
-    "axios": "^0.26.1",
+    "axios": "^0.32.0",
     "d3": "^7.3.0",
-    "dompurify": "^2.3.8",
+    "dompurify": "^3.4.12",
     "env-cmd": "^10.1.0",
     "formik": "^2.2.9",
     "framer-motion": "^6.5.1",
@@ -31,12 +34,11 @@
     "react-dom": "^17.0.2",
     "react-ga4": "^2.1.0",
     "react-redux": "^7.2.6",
-    "react-scripts": "5.0.0",
+    "react-scripts": "5.0.1",
     "react-scroll": "^1.8.7",
     "react-use": "^17.4.0",
     "upgrade": "^1.1.0",
     "use-local-storage-state": "^17.2.0",
-    "uuid": "^8.3.2",
     "waait": "^1.0.5",
     "web-vitals": "^1.1.2"
   },
@@ -50,6 +52,11 @@
     "eject": "react-scripts eject",
     "prepare": "cd .. && husky install beta-src/.husky",
     "start:local": "nodemon server.js"
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!(d3|d3-[a-z0-9-]+|internmap|delaunator|robust-predicates)/)"
+    ]
   },
   "eslintConfig": {
     "extends": [
@@ -85,12 +92,19 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "express": "^4.18.1",
     "husky": "^7.0.4",
-    "i": "^0.3.7",
-    "npm": "^8.2.0",
-    "postcss": "^8.4.14",
+    "postcss": "^8.5.10",
     "prettier": "^2.5.1",
     "tailwindcss": "^3.1.3",
     "ts-node": "^10.8.2",
     "typescript": ">=4.5.2 <4.6.0"
+  },
+  "overrides": {
+    "@svgr/webpack": "^6.5.1",
+    "nth-check": "^2.1.1",
+    "node-forge": "^1.4.0",
+    "underscore": "^1.13.8",
+    "postcss": "^8.5.10",
+    "serialize-javascript": "^7.0.5",
+    "uuid": "^11.1.1"
   }
 }

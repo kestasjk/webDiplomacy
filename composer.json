@@ -1,6 +1,5 @@
 {
   "require": {
-    "auth0/auth0-php": "~7.0",
     "twilio/sdk": "^6.40",
     "minishlink/web-push": "^9.0"
   }
