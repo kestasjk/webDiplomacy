@@ -31,6 +31,7 @@ require_once('objects/database.php');
 require_once('objects/database_metrics.php');
 require_once('objects/redis.php');
 require_once('board/orders/orderinterface.php');
+require_once('lib/push.php');
 require_once('api/responses/members_in_cd.php');
 require_once('api/responses/unordered_countries.php');
 require_once('api/responses/active_games.php');
@@ -728,6 +729,75 @@ class MessagesSeen extends ApiEntry {
 		}
 		$DB->sql_put("UPDATE wD_Members SET newMessagesFrom = '".implode(',',$newMessagesFrom)."', timeLoggedIn = ".time()." WHERE id = ".$member->id);
 		$DB->sql_put("COMMIT");
+	}
+}
+
+/**
+ * API entry push/config
+ * Tells the browser whether Web Push is enabled for the logged-in user, and if so which VAPID
+ * public key to subscribe with. Returning enabled=false for non-flagged users is what keeps the
+ * feature invisible while it is being trialled.
+ */
+class GetPushConfig extends ApiEntry {
+	public function __construct() {
+		parent::__construct('push/config', 'GET', '', array());
+	}
+	public function run($userID, $permissionIsExplicit) {
+		$enabled = libPush::isEnabledForUser($userID);
+		return $this->JSONResponse(
+			'Push notification configuration',
+			'',
+			true,
+			array(
+				'enabled' => $enabled,
+				'vapidPublicKey' => $enabled ? Config::$vapidPublicKey : ''
+			)
+		);
+	}
+}
+
+/**
+ * API entry push/subscribe
+ * Stores the browser's push subscription (endpoint + encryption keys) against the logged-in user.
+ * Called after the user grants notification permission, and again on page loads to keep the
+ * subscription in sync.
+ */
+class PushSubscribe extends ApiEntry {
+	public function __construct() {
+		parent::__construct('push/subscribe', 'JSON', '', array('endpoint', 'p256dh', 'auth'));
+	}
+	public function run($userID, $permissionIsExplicit) {
+		global $DB;
+		if (!libPush::isEnabledForUser($userID))
+			throw new ClientForbiddenException('Push notifications are not enabled for this user.');
+		$args = $this->getArgs();
+		if ($args['endpoint'] === null || $args['p256dh'] === null || $args['auth'] === null)
+			throw new RequestException('endpoint, p256dh and auth are required.');
+		if (!libPush::registerSubscription($userID, $args['endpoint'], $args['p256dh'], $args['auth'],
+				isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : ''))
+			throw new RequestException('Invalid push subscription.');
+		$DB->sql_put("COMMIT");
+		return $this->JSONResponse('Push subscription registered.', '', true);
+	}
+}
+
+/**
+ * API entry push/unsubscribe
+ * Removes one of the logged-in user's push subscriptions. Deliberately not gated on the push
+ * feature flag: a user removed from the trial must still be able to clean up their subscription.
+ */
+class PushUnsubscribe extends ApiEntry {
+	public function __construct() {
+		parent::__construct('push/unsubscribe', 'JSON', '', array('endpoint'));
+	}
+	public function run($userID, $permissionIsExplicit) {
+		global $DB;
+		$args = $this->getArgs();
+		if ($args['endpoint'] === null)
+			throw new RequestException('endpoint is required.');
+		libPush::unregisterSubscription($userID, $args['endpoint']);
+		$DB->sql_put("COMMIT");
+		return $this->JSONResponse('Push subscription removed.', '', true);
 	}
 }
 
@@ -2067,6 +2137,10 @@ try {
 	$api->load(new SetVote());
 	
 	$api->load(new SSEAuthentication());
+
+	$api->load(new GetPushConfig());
+	$api->load(new PushSubscribe());
+	$api->load(new PushUnsubscribe());
 
 	$api->load(new SendMessage());
 	$api->load(new GetMessages());

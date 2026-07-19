@@ -5,8 +5,10 @@ RUN apt-get update; \
     apt-get -y --no-install-recommends install \
         php8.4-gd \ 
         php8.4-redis \ 
-        php8.4-mysql \ 
+        php8.4-mysql \
         php8.4-xdebug \
+        php8.4-gmp \
+        php8.4-bcmath \
         redis \
         nano \
         less \

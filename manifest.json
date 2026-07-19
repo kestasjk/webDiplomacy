@@ -1,0 +1,22 @@
+{
+  "name": "webDiplomacy",
+  "short_name": "webDip",
+  "description": "webDiplomacy is an online, multiplayer, turn-based strategy game that lets you play Diplomacy online.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#d9d9d9",
+  "background_color": "#d9d9d9",
+  "icons": [
+    {
+      "src": "/beta/logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/beta/logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}

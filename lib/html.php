@@ -603,7 +603,10 @@ class libHTML
 			<meta name="keywords" content="'.l_t('diplomacy,diplomacy game,online diplomacy,classic diplomacy,web diplomacy,diplomacy board game,play diplomacy,php diplomacy').'" />
 			<link rel="shortcut icon" href="'.l_s('favicon.ico').'" />
 			<link rel="icon" href="'.l_s('favicon.ico').'" />
-			
+			<link rel="manifest" href="/manifest.json" />
+			<link rel="apple-touch-icon" href="/beta/logo192.png" />
+			<meta name="theme-color" content="#d9d9d9" />
+
 			<script type="text/javascript">'.$userOptionsJS.'</script>
 			<script type="text/javascript" src="javascript/clickhandler.js"></script>
 			<script type="text/javascript" src="'.l_j('contrib/js/prototype.js').'"></script>
@@ -1410,6 +1413,9 @@ class libHTML
 			unset($gameMutePairs);
 			self::$footerIncludes[] = l_j('mute.js');
 			self::$footerScript[] = l_jf('muteAll').'();';
+
+			// Web Push (PWA) notification registration; does nothing unless enabled for this user
+			self::$footerIncludes[] = l_j('push.js');
 
 			// Participated threads
 			$cacheUserParticipatedThreadIDsFilename = libCache::dirID('users',$User->id).'/readThreads.js';

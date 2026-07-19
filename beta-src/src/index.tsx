@@ -7,9 +7,13 @@ import webDiplomacyTheme from "./webDiplomacyTheme";
 import "./assets/css/index.css";
 import App from "./App";
 import { store } from "./state/store";
+import syncPushSubscription from "./utils/pushSync";
 
 ReactGA.initialize("G-MC45SZ2JEC"); // Replace with your Measurement ID
 ReactGA.send("pageview"); // Optional: Send initial pageview
+
+// Fire-and-forget; no-op unless push is enabled for this user
+syncPushSubscription().catch(() => undefined);
 
 ReactDOM.render(
   <Provider store={store}>
