@@ -40,6 +40,11 @@ export const RAIL_WIDTH = 160;
 export const TOP_BANNER_HEIGHT_SMALL = 50;
 export const TOP_BANNER_HEIGHT_LARGE = 90;
 
+// The taller banner is only worth its space when the screen is tall as
+// well as wide; a landscape phone is wider than the tablet breakpoint but
+// only ~400px tall, where 90px would swallow a quarter of the screen.
+const TOP_BANNER_LARGE_MIN_HEIGHT = 600;
+
 // Side rails are only used when the game area left over after reserving
 // them still counts as a desktop-sized viewport; otherwise reserving the
 // rails would knock the whole UI down into a tablet/mobile layout
@@ -81,7 +86,11 @@ export function getRawViewportSize(): { width: number; height: number } {
   };
 }
 
-export function getAdPlacement(width: number, showAds: boolean): AdPlacement {
+export function getAdPlacement(
+  width: number,
+  height: number,
+  showAds: boolean,
+): AdPlacement {
   if (!showAds) {
     return { mode: "NONE", insets: { top: 0, left: 0, right: 0 } };
   }
@@ -92,7 +101,8 @@ export function getAdPlacement(width: number, showAds: boolean): AdPlacement {
     };
   }
   const top =
-    width >= webDiplomacyTheme.breakpoints.values.tablet
+    width >= webDiplomacyTheme.breakpoints.values.tablet &&
+    height >= TOP_BANNER_LARGE_MIN_HEIGHT
       ? TOP_BANNER_HEIGHT_LARGE
       : TOP_BANNER_HEIGHT_SMALL;
   return { mode: "TOP_BANNER", insets: { top, left: 0, right: 0 } };

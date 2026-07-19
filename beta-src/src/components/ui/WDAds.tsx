@@ -15,11 +15,17 @@ import { AdPlacement, RAIL_WIDTH } from "../../utils/adPlacement";
 interface WDAdUnitProps {
   slot: string;
   format: "horizontal" | "vertical";
+  // Fixed height in px for the top banner. With an explicit CSS size (and
+  // no data-ad-format) AdSense serves a creative that fits the strip, e.g.
+  // 320x50 on phones, instead of picking its own height and getting
+  // clipped by the overflow:hidden container.
+  height?: number;
 }
 
 const WDAdUnit: React.FC<WDAdUnitProps> = function ({
   slot,
   format,
+  height,
 }): React.ReactElement {
   const insRef = useRef<HTMLModElement>(null);
 
@@ -47,14 +53,19 @@ const WDAdUnit: React.FC<WDAdUnitProps> = function ({
     <ins
       ref={insRef}
       className="adsbygoogle"
-      style={{ display: "block", width: "100%", height: "100%" }}
+      style={{
+        display: "block",
+        width: "100%",
+        height: height !== undefined ? `${height}px` : "100%",
+      }}
       data-ad-client={window.wDAds?.client}
       data-ad-slot={slot}
-      data-ad-format={format}
-      data-full-width-responsive={format === "horizontal" ? "true" : undefined}
+      data-ad-format={height !== undefined ? undefined : format}
     />
   );
 };
+
+WDAdUnit.defaultProps = { height: undefined };
 
 interface WDAdsProps {
   placement: AdPlacement;
@@ -93,6 +104,7 @@ const WDAds: React.FC<WDAdsProps> = function ({
           key={`top-${insets.top}`}
           slot={slots.top}
           format="horizontal"
+          height={insets.top}
         />
       </div>
     );

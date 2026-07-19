@@ -11,7 +11,9 @@ const App: React.FC = function (): React.ReactElement {
   const urlParams = new URLSearchParams(window.location.search);
   const currentGameID = urlParams.get("gameID");
   const dispatch = useAppDispatch();
-  dispatch(loadGame(String(currentGameID)));
+  React.useEffect(() => {
+    dispatch(loadGame(String(currentGameID)));
+  }, [dispatch, currentGameID]);
   const adPlacement = useAdPlacement();
   return (
     <div className="App">

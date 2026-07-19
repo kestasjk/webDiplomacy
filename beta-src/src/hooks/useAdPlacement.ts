@@ -6,7 +6,6 @@ import {
   getRawViewportSize,
 } from "../utils/adPlacement";
 import { useAppSelector } from "../state/hooks";
-import { gameOverview } from "../state/game/game-api-slice";
 
 const samePlacement = (a: AdPlacement, b: AdPlacement): boolean =>
   a.mode === b.mode &&
@@ -24,16 +23,20 @@ const samePlacement = (a: AdPlacement, b: AdPlacement): boolean =>
  * feedback loop between the reserved ad space and the layout decision.
  */
 export default function useAdPlacement(): AdPlacement {
-  const { user } = useAppSelector(gameOverview);
-  const showAds = adsEnabled(user);
+  // Select just the boolean, not the overview object: the overview is
+  // replaced wholesale on every game/overview refresh, and subscribing to
+  // it would re-render App (and remount the game UI) each time.
+  const showAds = useAppSelector(({ game }) => adsEnabled(game.overview.user));
 
-  const [placement, setPlacement] = React.useState<AdPlacement>(() =>
-    getAdPlacement(getRawViewportSize().width, showAds),
-  );
+  const [placement, setPlacement] = React.useState<AdPlacement>(() => {
+    const { width, height } = getRawViewportSize();
+    return getAdPlacement(width, height, showAds);
+  });
 
   React.useEffect(() => {
     const update = () => {
-      const next = getAdPlacement(getRawViewportSize().width, showAds);
+      const { width, height } = getRawViewportSize();
+      const next = getAdPlacement(width, height, showAds);
       setPlacement((prev) => (samePlacement(prev, next) ? prev : next));
     };
     update();

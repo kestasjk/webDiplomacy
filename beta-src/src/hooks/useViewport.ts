@@ -6,11 +6,13 @@ import {
   getRawViewportSize,
 } from "../utils/adPlacement";
 import { useAppSelector } from "../state/hooks";
-import { gameOverview } from "../state/game/game-api-slice";
 
 export default function useViewport(): [Viewport, () => void] {
-  const { user } = useAppSelector(gameOverview);
-  const showAds = adsEnabled(user);
+  // Select just the boolean, not the overview object: the overview is
+  // replaced wholesale on every game/overview refresh, and this hook is
+  // used all over the UI — subscribing to the object would re-render
+  // every consumer on every refresh.
+  const showAds = useAppSelector(({ game }) => adsEnabled(game.overview.user));
 
   const getViewport = (): Viewport => {
     const { height, width } = getRawViewportSize();
@@ -18,7 +20,7 @@ export default function useViewport(): [Viewport, () => void] {
     // The dedicated ad areas (top banner on mobile, side rails on desktop)
     // are reserved out of the window, so the viewport every layout
     // consumer sees is the game area that remains.
-    const { insets } = getAdPlacement(width, showAds);
+    const { insets } = getAdPlacement(width, height, showAds);
     return {
       height: height - insets.top,
       width: width - insets.left - insets.right,
