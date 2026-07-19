@@ -47,6 +47,19 @@ webDiplomacy is a web-based Diplomacy game platform built with PHP and MySQL, fe
 - **Install**: `npm install` in `sse-server/`
 - **Run**: `node server.js`
 
+## Deploying to Production
+
+- Pushing to `master` on GitHub deploys to production: a webhook calls `gitpull.php` on
+  the production server, which runs `git pull`, rebuilds the beta React app if `beta-src/`
+  changed, and overlays `contrib/phpBB3-files/` onto the phpBB install (wiping its
+  compiled cache) if those files changed.
+- To deploy: commit to `master` and `git push origin master`.
+- To verify: fetch https://webdiplomacy.net/gitpull.txt — it holds the latest deploy run's
+  full output and should end with `Deploy finished` and a timestamp. A beta rebuild takes
+  a few minutes, so refetch until the marker appears; any npm or copy errors show here.
+- Manual/forced deploy (e.g. after a failed build): run `sudo -u www-data php gitpull.php FORCEALL`
+  from the production webroot to force the beta rebuild and phpBB overlay without new commits.
+
 ## Database Schema
 
 The system uses MySQL with a comprehensive schema including:
