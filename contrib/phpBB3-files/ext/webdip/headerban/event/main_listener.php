@@ -88,9 +88,30 @@ class main_listener implements EventSubscriberInterface
     static public function getSubscribedEvents()
     {
         return array(
-            'core.user_setup' => 'load_webdip' // Event fires on every page, including ACP
+            'core.user_setup' => 'load_webdip', // Event fires on every page, including ACP
+            'core.memberlist_view_profile' => 'memberlist_profile_link' // Fires on memberlist.php?mode=viewprofile
         );
     }
+
+    /**
+     * Link the viewed member's webDiplomacy profile page from their phpBB profile
+     * (rendered by styles/all/template/event/memberlist_view_user_statistics_after.html)
+     *
+     * @param \phpbb\event\data $event The event object, containing the viewed member's user row
+     */
+	public function memberlist_profile_link($event)
+	{
+		if( $this->disableExt )
+			return;
+
+		$member = $event['member'];
+		if( !empty($member['webdip_user_id']) && $member['webdip_user_id'] >= 2 )
+		{
+			$this->template->assign_vars(array(
+				'U_WD_MEMBER_PROFILE' => $this->WEBDIPPATH.'profile.php?userID='.(int)$member['webdip_user_id']
+			));
+		}
+	}
 	
     /**
      * @param \phpbb\event\data $event The variant CSS
