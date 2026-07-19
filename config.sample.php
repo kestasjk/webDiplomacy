@@ -131,10 +131,11 @@ class Config
 	public static $vapidSubject = '';
 
 	/**
-	 * TEMPORARY feature flag: userIDs for whom push notifications are enabled (both subscribing and
-	 * receiving). To be replaced with a per-user option once the feature is generally available.
+	 * Feature flag: set to true to enable push notifications for all users, or to an array of
+	 * userIDs to trial it with just those users (both subscribing and receiving). An empty
+	 * array disables the feature.
 	 *
-	 * @var array
+	 * @var true|array
 	 */
 	public static $pushEnabledUserIDs = array();
 

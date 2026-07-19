@@ -45,13 +45,15 @@ class libPush
 	}
 
 	/**
-	 * Whether push is enabled for the given user. While the feature is being trialled this is
-	 * limited to the userIDs in Config::$pushEnabledUserIDs.
+	 * Whether push is enabled for the given user: for everyone when
+	 * Config::$pushEnabledUserIDs is true, otherwise only for the userIDs it lists.
 	 */
 	public static function isEnabledForUser($userID)
 	{
 		if( !self::isConfigured() ) return false;
-		if( !isset(Config::$pushEnabledUserIDs) || !is_array(Config::$pushEnabledUserIDs) ) return false;
+		if( !isset(Config::$pushEnabledUserIDs) ) return false;
+		if( Config::$pushEnabledUserIDs === true ) return true;
+		if( !is_array(Config::$pushEnabledUserIDs) ) return false;
 		return in_array(intval($userID), Config::$pushEnabledUserIDs);
 	}
 
